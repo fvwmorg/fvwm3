@@ -125,9 +125,11 @@ as long as the copyright is kept intact.
 
 
 .SH INITIALIZATION
-During initialization, \fIFvwmPager\fP will eventually search a
-configuration file which describes the time-outs and actions to take.
-The configuration file is the same file that fvwm used during initialization.
+During initialization, \fIFvwmPager\fP gets config info from \fBfvwm\fP's
+module configuration database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" ).
 
 To use FvwmPager with several different configurations, you can
 invoke FvwmPager with an optional parameter, which it will use
@@ -154,9 +156,6 @@ not need to be visible, but it does need to be on the current page.
 The invocation method was shown in the synopsis section
 
 .SH CONFIGURATION OPTIONS
-FvwmPager reads the same .fvwmrc file as fvwm reads when it starts up,
-and looks for certain configuration options:
-
 .IP "*FvwmPager: Geometry \fIgeometry\fP"
 Completely or partially specifies the pager windows location and
 geometry, in standard X11 notation.

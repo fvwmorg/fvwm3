@@ -36,11 +36,13 @@
  * This is so FvwmBorder windows have a correct bottom edge and the sticky lines
  * look like just lines
  */
-void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
-		      GC ReliefGC, GC ShadowGC, int line_width)
+static void do_relieve_rectangle(
+  Display *dpy, Drawable d, int x, int y, int w, int h,
+  GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading)
 {
   XSegment* seg;
   int i;
+  int a = (use_alternate_shading) ? 1 : 0;
 
   if (w <= 0 || h <= 0)
   {
@@ -53,29 +55,43 @@ void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
   seg = (XSegment*)safemalloc(sizeof(XSegment) * line_width);
   /* left side, from 0 to the lesser of line_width & just over half w */
   for (i = 0; (i < line_width) && (i <= w / 2); i++) {
-    seg[i].x1 = x+i; seg[i].y1 = y+i;
-    seg[i].x2 = x+i; seg[i].y2 = y+h-i-1;
+    seg[i].x1 = x+i; seg[i].y1 = y+i+a;
+    seg[i].x2 = x+i; seg[i].y2 = y+h-i-1+a;
   }
   XDrawSegments(dpy, d, ReliefGC, seg, i);
   /* bottom */
   for (i = 0; (i < line_width) && (i <= h / 2); i++) {
-    seg[i].x1 = x+i;   seg[i].y1 = y+h-i;
-    seg[i].x2 = x+w-i; seg[i].y2 = y+h-i;
+    seg[i].x1 = x+i+a;     seg[i].y1 = y+h-i;
+    seg[i].x2 = x+w-i-1+a; seg[i].y2 = y+h-i;
   }
   XDrawSegments(dpy, d, ShadowGC, seg, i);
   /* right */
   for (i = 0; (i < line_width) && (i <= w / 2); i++) {
-    seg[i].x1 = x+w-i; seg[i].y1 = y+h-i-1;
-    seg[i].x2 = x+w-i; seg[i].y2 = y+i;
+    seg[i].x1 = x+w-i; seg[i].y1 = y+h-i-a;
+    seg[i].x2 = x+w-i; seg[i].y2 = y+i+1-a;
   }
   XDrawSegments(dpy, d, ShadowGC, seg, i);
   /* draw top segments */
   for (i = 0; (i < line_width) && (i <= h / 2); i++) {
-    seg[i].x1 = x+w-i; seg[i].y1 = y+i;
-    seg[i].x2 = x+i;   seg[i].y2 = y+i;
+    seg[i].x1 = x+w-i-a; seg[i].y1 = y+i;
+    seg[i].x2 = x+i+1-a; seg[i].y2 = y+i;
   }
   XDrawSegments(dpy, d, ReliefGC, seg, i);
   free(seg);
+}
+
+void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
+		      GC ReliefGC, GC ShadowGC, int line_width)
+{
+  do_relieve_rectangle(
+    dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, False);
+}
+
+void RelieveRectangle2(Display *dpy, Drawable d, int x,int y,int w,int h,
+		       GC ReliefGC, GC ShadowGC, int line_width)
+{
+  do_relieve_rectangle(
+    dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, True);
 }
 
 

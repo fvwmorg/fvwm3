@@ -31,11 +31,13 @@ as long as the copyright is kept intact.
 
 
 .SH INITIALIZATION
-During initialization, \fIFvwmWharf\fP will search for a configuration
-file which describes the button panel geometry, color, icons, and
-actions. The format of
-this file will be described later. The configuration file will be the
-one which Fvwm used during its initialization.
+During initialization, \fIFvwmWharf\fP gets config info from \fBfvwm\fP's
+module configuration database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" )
+to obtain a description of button panel geometry, color, icons, and
+actions.
 
 If the FvwmWharf executable is linked to another name, ie ln -s
 FvwmWharf Pier, then another module called Pier can be
@@ -48,8 +50,6 @@ FvwmWharf should be invoked in the same way as other
 Fvwm modules.
 
 .SH CONFIGURATION OPTIONS
-The following options can be placed in the .steprc file
-
 .IP "*FvwmWharfAnimate"
 If specified, the opening and closing of Folders will be animated,
 rather than simply drawn in one frame.

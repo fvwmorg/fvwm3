@@ -25,9 +25,12 @@ You may freely use this module or any portion of it for any purpose as long
 as the copyright is kept intact.
 
 .SH INITIALIZATION
-During initialization, \fIFvwmWinList\fP will scan the same configuration file
-that FVWM used during startup to find the options that pertain to it.  These
-options are discussed in a later section.
+During initialization, \fIFvwmWinList\fP gets config info from \fBfvwm\fP's
+module configuration database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" ).
+Available options are discussed in a later section.
 
 .SH INVOCATION
 FvwmWinList can be invoked by fvwm during initialization by inserting the
@@ -41,8 +44,6 @@ FvwmWinList must reside in a directory that is listed in the ModulePath option
 of FVWM for it to be executed by FVWM.
 
 .SH CONFIGURATION OPTIONS
-The following options can be placed in the .fvwmrc file
-
 .IP "*FvwmWinList: Geometry \fI{+-}<X>{+-}<Y>\fP"
 Specifies the location and gravity of the FvwmWinList window.  At the current
 time, size is not supported and FvwmWinList will resize itself as buttons are

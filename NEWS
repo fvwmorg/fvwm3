@@ -3,6 +3,10 @@ _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
+* Desk and page can be given as X resources in .Xdefaults, for example:
+    xterm.desk: 1
+    xterm.page: 1 2 3
+
 Changes in stable release 2.4.1 (15-Sep-2001)
 
 * Added Xinerama and SingleLogicalScreen support.

@@ -1127,7 +1127,7 @@ static void RedrawButtons(
 	  case DFS_BUTTON_IS_SUNK:
 	    reverse = !is_inverted;
 	  case DFS_BUTTON_IS_UP:
-	    RelieveRectangle(
+	    RelieveRectangle2(
 	      dpy, t->button_w[i], 0, 0, t->title_g.height - 1,
 	      t->title_g.height - 1, (reverse ? cd->shadow_gc : cd->relief_gc),
 	      (reverse ? cd->relief_gc : cd->shadow_gc), cd->relief_width);

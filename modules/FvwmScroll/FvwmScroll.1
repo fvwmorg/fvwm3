@@ -13,10 +13,6 @@ the module was not launched from within a window context in Fvwm.
 After that, it adds scroll bars to the selected window, to reduce the
 total desktop space consumed by the window.
 
-
-FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
-and looks for lines similar to "*FvwmScroll: Back green".
-
 FvwmScroll should not be used with windows which move or resize
 themselves, nor should it be used with windows which set the
 WM_COLORMAP_WINDOWS property. Operation is fine with windows that have
@@ -35,9 +31,12 @@ as long as the copyright is kept intact.
 
 
 .SH INITIALIZATION
-During initialization, \fIFvwmScroll\fP will eventually search a 
-configuration file which describes the colors to use.
-The configuration file is the same file that fvwm used during initialization.
+During initialization, \fIFvwmScroll\fP gets config info from \fBfvwm\fP's
+module configuration database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" )
+to determine which colors to use.
 
 If the FvwmScroll executable is linked to another name, ie ln -s
 FvwmScroll MoreScroll, then another module called MoreScroll can be
@@ -58,9 +57,6 @@ keeps you from launching FvwmScroll at start-up time, you probably don't
 want to.
 
 .SH CONFIGURATION OPTIONS
-FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
-and looks for lines as listed below:
-
 .IP "*FvwmScroll: Colorset \fIn\fP"
 Tells the module to use colorset \fIn\fP. See FvwmTheme.
 

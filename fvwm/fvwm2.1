@@ -7188,6 +7188,28 @@ calls (as in the last example).
 
 .SS MODULE COMMANDS
 
+Fvwm maintains a database of module configuration lines in a form
+.EX
+.BI "*" "<ModuleName>" ": " "<Config-Resource>"
+.EE
+where
+.I "<ModuleName>"
+is either a real module name or an alias.
+
+This database is initially filled from config file (or from
+output of
+.B \-cmd
+config command), and can be later modified either by user (via 
+.BR FvwmCommand )
+or by modules.
+
+When modules are run, they read appropriate portion of database.
+(The concept of this database is similar to one used in X resource
+database).
+
+Commands for manipulating module configuration database are
+described below.
+
 .TP
 .BI "*" module_config_line
 Defines a module configuration.

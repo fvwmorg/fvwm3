@@ -15,9 +15,12 @@ that support the Xdnd standard.  The fvwm2 module FvwmWharf accepts
 drops of type "text/uri-list".
 
 .SH INITIALIZATION
-During initialization, \fIFvwmDragWell\fP will search a configuration
-file which is the same file that fvwm used during initialization.  If
-the FvwmDragWell executable is linked to another name, i.e. ln -s
+During initialization, \fIFvwmDragWell\fP gets config info from
+\fBfvwm\fP's module configuration database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" ).
+If the FvwmDragWell executable is linked to another name, i.e. ln -s
 FvwmDragWell OtherDragWell, then another module called OtherDragWell
 can be started, with a completely different configuration than
 FvwmDragWell, simply by changing the keyword FvwmDragWell to

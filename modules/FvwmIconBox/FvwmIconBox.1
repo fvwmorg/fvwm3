@@ -14,9 +14,6 @@ The FvwmIconBox module provides an icon manager. The user can do
 operations, like iconify and de-iconify, for each icon shown in the
 module via mouse and keyboard.
 
-FvwmIconBox reads the same .fvwm2rc file as fvwm reads when it starts up,
-and looks for lines similar to "*FvwmIconBox: Fore green".
-
 .SH COPYRIGHTS
 The FvwmIconBox program is original work of Nobutaka Suzuki.
 
@@ -27,9 +24,11 @@ as long as the copyright is kept intact.
 
 
 .SH INITIALIZATION
-During initialization, \fIFvwmIconBox\fP will eventually search a
-configuration file. The configuration file is the same file that fvwm
-used during initialization.
+During initialization, \fIFvwmIconBox\fP gets config info from \fBfvwm\fP's
+module configuration database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" ).
 
 If the FvwmIconBox executable is linked to another name, i.e. ln -s
 FvwmIconBox MoreIconBox, then another module called MoreIconBox can be

@@ -64,8 +64,12 @@ creating a symlink) enables FvwmAudio compatibility mode.
 .sp
 
 .SH CONFIGURATION OPTIONS
-\fIFvwmEvent\fP reads the same \fI.fvwm2rc\fP file as \fIfvwm\fP
-reads when it starts up, and looks for certain configuration options:
+\fIFvwmEvent\fP gets config info from \fBfvwm\fP's module configuration
+database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" ),
+and looks for certain configuration options:
 
 .IP "*FvwmEvent: Cmd \fIcommand\fP"
 This determines the \fIfvwm\fP function that is to be called with the

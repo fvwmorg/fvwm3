@@ -13,9 +13,6 @@ the module was not launched from within a window context in Fvwm.
 After that, it pops up a window with information about the window
 which was selected.
 
-FvwmIdent reads the same .fvwmrc file as fvwm reads when it starts up,
-and looks for lines similar to "*FvwmIdent: Fore green".
-
 .SH COPYRIGHTS
 The FvwmIdent program, and the concept for
 interfacing this module to the Window Manager, are all original work
@@ -29,9 +26,12 @@ as long as the copyright is kept intact.
 
 
 .SH INITIALIZATION
-During initialization, \fIFvwmIdent\fP will eventually search a
-configuration file which describes the colors and font to use.
-The configuration file is the same file that fvwm used during initialization.
+During initialization, \fIFvwmIdent\fP gets config info from \fBfvwm\fP's
+module configuration database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" )
+to determine which colors and font to use.
 
 If the FvwmIdent executable is linked to another name, ie ln -s
 FvwmIdent MoreIdentify, then another module called MoreIdentify can be

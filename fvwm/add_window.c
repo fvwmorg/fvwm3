@@ -93,20 +93,6 @@ long isIconicState = 0;
 Bool PPosOverride = False;
 Bool isIconifiedByParent = False;
 
-/* Used to parse command line of clients for specific desk requests. */
-/* Todo: check for multiple desks. */
-static XrmDatabase db;
-static XrmOptionDescRec table [] = {
-  /* Want to accept "-workspace N" or -xrm "fvwm*desk:N" as options
-   * to specify the desktop. I have to include dummy options that
-   * are meaningless since Xrm seems to allow -w to match -workspace
-   * if there would be no ambiguity. */
-    {"-workspacf",      "*junk",        XrmoptionSepArg, (caddr_t) NULL},
-    {"-workspace",	"*desk",	XrmoptionSepArg, (caddr_t) NULL},
-    {"-xrn",		NULL,		XrmoptionResArg, (caddr_t) NULL},
-    {"-xrm",		NULL,		XrmoptionResArg, (caddr_t) NULL},
-};
-
 void FetchWmProtocols(FvwmWindow *);
 void GetWindowSizeHints(FvwmWindow *);
 /***********************************************************************/
@@ -562,22 +548,37 @@ Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
 {
   int client_argc;
   char **client_argv = NULL;
-  char *str_type;
-  Bool status;
   XrmValue rm_value;
-/*  RBW - 11/02/1998  */
   int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
-/**/
+  /* Used to parse command line of clients for specific desk requests. */
+  /* Todo: check for multiple desks. */
+  XrmDatabase db = NULL;
+  static XrmOptionDescRec table [] = {
+    /* Want to accept "-workspace N" or -xrm "fvwm*desk:N" as options
+     * to specify the desktop. I have to include dummy options that
+     * are meaningless since Xrm seems to allow -w to match -workspace
+     * if there would be no ambiguity. */
+    {"-workspacf",      "*junk",        XrmoptionSepArg, (caddr_t) NULL},
+    {"-workspace",	"*desk",	XrmoptionSepArg, (caddr_t) NULL},
+    {"-xrn",		NULL,		XrmoptionResArg, (caddr_t) NULL},
+    {"-xrm",		NULL,		XrmoptionResArg, (caddr_t) NULL},
+  };
 
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
+
   if (XGetCommand (dpy, tmp_win->w, &client_argv, &client_argc))
   {
-    XrmParseCommand(&db, table, 4, "fvwm", &client_argc, client_argv);
-    XFreeStringList(client_argv);
-    status = XrmGetResource(db, "fvwm.desk", "Fvwm.Desk",
-			    &str_type, &rm_value);
-    if ((status == True) && (rm_value.size != 0))
+    /* Get global X resources */
+    MergeXResources(dpy, &db, False);
+
+    /* command line takes precedence over all */
+    MergeCmdLineResources(
+      &db, table, 4, client_argv[0], &client_argc, client_argv, True);
+
+    /* Now parse the database values: */
+    if (GetResourceString(db, "desk", client_argv[0], &rm_value) &&
+	rm_value.size != 0)
     {
       SGET_START_DESK(*pstyle) = atoi(rm_value.addr);
       /*  RBW - 11/20/1998  */
@@ -587,12 +588,8 @@ Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
       }
       pstyle->flags.use_start_on_desk = 1;
     }
-/*  RBW - 11/02/1998  */
-/*  RBW - 11/20/1998 - allow desk or page specs of -1 to work.  */
-    /*  Handle the X Resource equivalent of StartsOnPage.  */
-    status = XrmGetResource (db, "fvwm.page", "Fvwm.Page", &str_type,
-			     &rm_value);
-    if ((status == True) && (rm_value.size != 0))
+    if (GetResourceString(db, "page", client_argv[0], &rm_value) &&
+	rm_value.size != 0)
     {
       spargs = sscanf (rm_value.addr, "%d %d %d", &tmpno1, &tmpno2, &tmpno3);
       switch (spargs)
@@ -617,8 +614,8 @@ Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
       }
     }
 
-    XrmDestroyDatabase (db);
-    db = NULL;
+    XFreeStringList(client_argv);
+    XrmDestroyDatabase(db);
   }
 
   return PlaceWindow(

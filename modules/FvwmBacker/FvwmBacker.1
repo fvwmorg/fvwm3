@@ -24,9 +24,12 @@ at your own risk.  You may freely use this module or any portion of it
 for any purpose as long as the copyright is kept intact.
 
 .SH INITIALIZATION
-During initialization, \fIFvwmBacker\fP will scan the same
-configuration file that FVWM used during startup to find the options
-that pertain to it.  These options are discussed in a later section.
+During initialization, \fIFvwmBacker\fP gets config info from 
+\fBfvwm\fP's module configuration database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" ).
+Available options are discussed in a later section.
 
 .SH INVOCATION
 FvwmBacker can be invoked by fvwm during initialization by inserting

@@ -1,4 +1,28 @@
+2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (RedrawButtons):
+	fixed top border hilight drawing of title buttons
+
+	* libs/Graphics.c (do_relieve_rectangle):
+	(RelieveRectangle):
+	(RelieveRectangle2):
+	allow alternate shading for title buttons
+
 2001-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	**/*.1:
+	Applied man page patch by Dmitry Yu. Bolkhovityanov:
+	Add a formal description of how fvwm maintains module's configs
+	Change manpages of individual modules to refer to fvwm2(1) for
+	details about specifying configuration
+
+	* fvwm/add_window.c (setup_window_placement):
+	desk and page can now really be given as X resources a la
+	  xterm.desk: 1
+
+	* libs/XResource.c (GetResourceString):
+	resource -> lower case, class -> upper case
+	changed signature
 
 	* configure.in:
 	changed version to 2.5.0

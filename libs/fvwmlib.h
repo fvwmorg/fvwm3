@@ -268,8 +268,8 @@ void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
 			   Bool fNoDefaults);
 Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
 			     char *bindstr);
-Bool GetResourceString(XrmDatabase db, const char *resource,
-		       const char *prefix, char **val);
+Bool GetResourceString(
+  XrmDatabase db, const char *resource, const char *prefix, XrmValue *xval);
 
 
 /***********************************************************************
@@ -277,6 +277,8 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
  ***********************************************************************/
 
 void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
+		      GC ReliefGC, GC ShadowGC, int line_width);
+void RelieveRectangle2(Display *dpy, Drawable d, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width);
 
 Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, int src_width,

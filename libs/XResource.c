@@ -43,7 +43,7 @@
     {
       const char *MyName = "MyModule";
       XrmDatabase db = NULL;
-      char *value;
+      XrmValue *rm_value;
       char *line;
 
       /* our private options */
@@ -79,12 +79,12 @@
 			    &opt_argc, opt_argv, True /*no default options*/);
 
       /* Now parse the database values: */
-      if (GetResourceString(db, "iconic", MyName, &value))
+      if (GetResourceString(db, "iconic", MyName, &rm_value))
       {
 	/* Just see if there is *any* string and don't mind it's value. */
         /* flags |= ICONIC */
       }
-      if (GetResourceString(db, "bar", MyName, &value))
+      if (GetResourceString(db, "bar", MyName, &rm_value))
       {
         /* ... */
       }
@@ -255,33 +255,46 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
  *
  * Example:
  *
- *   GetResourceString(db, "Geometry", "MyModule", &s)
+ *   GetResourceString(db, "Geometry", "MyModule", &r)
  *
- * returns the string value of the "Geometry" resource for MyModule in s.
+ * returns the resource value of the "Geometry" resource for MyModule in r.
  *
  ***************************************************************************/
-Bool GetResourceString(XrmDatabase db, const char *resource,
-		       const char *prefix, char **val)
+Bool GetResourceString(
+  XrmDatabase db, const char *resource, const char *prefix, XrmValue *xval)
 {
-  XrmValue xval = { 0, NULL };
   char *str_type;
   char *name;
+  char *Name;
+  int i;
 
   name = (char *)safemalloc(strlen(resource) + strlen(prefix) + 2);
+  Name = (char *)safemalloc(strlen(resource) + strlen(prefix) + 2);
   strcpy(name, prefix);
   strcat(name, ".");
   strcat(name, resource);
+  strcpy(Name, name);
+  if (isupper(name[0]))
+    name[0] = tolower(name[0]);
+  if (islower(Name[0]))
+    Name[0] = toupper(Name[0]);
+  i = strlen(prefix) + 1;
+  if (isupper(name[i]))
+    name[i] = tolower(name[i]);
+  if (islower(Name[i]))
+    Name[i] = toupper(Name[i]);
+  if (!XrmGetResource(db, name, Name, &str_type, xval) ||
+      xval->addr == NULL || xval->size == 0)
+  {
+    free(name);
+    free(Name);
+    xval->size = 0;
+    xval->addr = NULL;
 
-  if (!XrmGetResource(db, name, name, &str_type, &xval) || xval.addr == NULL)
-    {
-      free(name);
-      if (val)
-	*val = NULL;
-      return False;
-    }
+    return False;
+  }
   free(name);
-  if (val)
-    *val = xval.addr;
+  free(Name);
 
   return True;
 }

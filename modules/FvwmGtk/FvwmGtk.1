@@ -45,8 +45,13 @@ instead of "FvwmGtk".
 This includes the labels and pixmaps to show; configuration of the appearance
 must be done through the GTK rc file mechanism.
 
-\fBFvwmGtk\fP reads the same configuration file as \fBfvwm\fP when it starts
-up. In addition, \fBFvwmGtk\fP accepts commands from fvwm and its modules as
+\fBFvwmGtk\fP gets config info from \fBfvwm\fP's module configuration
+database (see 
+.IR fvwm2 (1),
+section
+.BR "MODULE COMMANDS" )
+when it starts up.
+In addition, \fBFvwmGtk\fP accepts commands from fvwm and its modules as
 it runs.
 
 If the optional \fIname\fP is used to start FvwmGtk, \fIname\fP is used
