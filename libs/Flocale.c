@@ -75,6 +75,7 @@
 
 static FlocaleFont *FlocaleFontList = NULL;
 static char *Flocale = NULL;
+static char *Fmodifiers = NULL;
 static Bool FlocaleSeted = False;
 
 /* ---------------------------- exported variables (globals) ---------------- */
@@ -352,7 +353,7 @@ void FlocaleRotateDrawString(
 					    fg, fgsh, has_fg_pixels,
 					    fws, len, True);
 	}
-	else if (FlocaleMultibyteSupport && flf->fontset != None)
+	else if (flf->fontset != None)
 	{
 		XmbDrawString(
 			dpy, canvas_pix, flf->fontset, font_gc, 0,
@@ -482,6 +483,11 @@ void FlocaleRotateDrawString(
 		}
 		XSetForeground(dpy, my_gc, fg);
 	}
+	else
+	{
+		FlocaleGetShadowTextPosition(flf, fws, xpfg, ypfg,
+					     &xpsh, &ypsh, &step);
+	}
 	XSetTSOrigin(dpy, my_gc, xpsh, ypsh);
 	XFillRectangle(dpy, fws->win, my_gc, xpsh, ypsh, rotated_w, rotated_h);
 
@@ -534,11 +540,6 @@ FlocaleFont *FlocaleGetFontSet(Display *dpy, char *fontname, char *module)
 	char *ds;
 	XFontSetExtents *fset_extents;
 	char *fn, *hints = NULL;
-
-	if (!FlocaleMultibyteSupport)
-	{
-		return NULL;
-	}
 
 	hints = GetQuotedString(fontname, &fn, "/", NULL, NULL, NULL);
 	if (!(fontset = XCreateFontSet(dpy, fn, &ml, &mc, &ds)))
@@ -664,8 +665,7 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 		}
 		return flf;
 	}
-	if (FlocaleMultibyteSupport && flf == NULL && Flocale != NULL &&
-	    fontname)
+	if (flf == NULL && Flocale != NULL && fontname)
 	{
 		flf = FlocaleGetFontSet(dpy, fontname, module);
 	}
@@ -726,18 +726,10 @@ void FlocaleSetlocaleForX(
  * locale initialisation
  * ***************************************************************************/
 
-#if FlocaleMultibyteSupport
-
-static char *Fmodifiers = NULL;
-
 void FlocaleInit(
 	int category, const char *locale, const char *modifiers,
 	const char *module)
 {
-	if (!FlocaleMultibyteSupport)
-	{
-		return;
-	}
 
 	FlocaleSetlocaleForX(category, locale, module);
 	if (Flocale == NULL)
@@ -755,8 +747,6 @@ void FlocaleInit(
 		module, Flocale, Fmodifiers);
 #endif
 }
-
-#endif /* FlocaleMultibyteSupport */
 
 /* ***************************************************************************
  * fonts loading
@@ -784,8 +774,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	if (fontname == NULL || *fontname == 0)
 	{
 		ask_default = True;
-		fontname = (FlocaleMultibyteSupport) ?
-			FLOCALE_MB_FALLBACK_FONT : FLOCALE_FALLBACK_FONT;
+		fontname = FLOCALE_MB_FALLBACK_FONT;
 	}
 
 	while (flf)
@@ -826,8 +815,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		}
 		if (!fn || !*fn)
 		{
-			fn = (FlocaleMultibyteSupport) ?
-				FLOCALE_MB_FALLBACK_FONT : FLOCALE_FALLBACK_FONT;
+			fn = FLOCALE_MB_FALLBACK_FONT;
 		}
 	}
 	else
@@ -869,7 +857,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		{
 			/* we already tried default fonts: try again? yes */
 		}
-		if (FlocaleMultibyteSupport && Flocale != NULL)
+		if (Flocale != NULL)
 		{
 			if (!ask_default)
 			{
@@ -908,11 +896,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 					"[%s][FlocaleLoadFont]: ERROR"
 					" -- can't load default font:\n",
 					(module)? module: "FVWM");
-				if (FlocaleMultibyteSupport)
-				{
-					fprintf(stderr, "\t%s\n",
-						FLOCALE_MB_FALLBACK_FONT);
-				}
+				fprintf(stderr, "\t%s\n",
+					FLOCALE_MB_FALLBACK_FONT);
 				fprintf(stderr, "\t%s\n",
 					FLOCALE_FALLBACK_FONT);
 			}
@@ -975,7 +960,7 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 		if (flf->fftf.fftfont_rotated_270 != NULL)
 			FftFontClose(dpy, flf->fftf.fftfont_rotated_270);
 	}
-	if (FlocaleMultibyteSupport && flf->fontset != NULL)
+	if (flf->fontset != NULL)
 	{
 		XFreeFontSet(dpy, flf->fontset);
 	}
@@ -1040,13 +1025,14 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 	{
 		direction = MULTI_DIR_NONE;
 	}
-	if (*step == 0 || inter_step == flf->shadow_size)
+	if ((*step == 0 || inter_step == flf->shadow_size) &&
+	    flf->shadow_size != 0)
 	{
 		/* setup a new direction */
 		inter_step = 0;
 		GetNextMultiDirection(flf->flags.shadow_dir, &direction);
 	}
-	if (direction == MULTI_DIR_NONE)
+	if (direction == MULTI_DIR_NONE || flf->shadow_size == 0)
 	{
 		/* finished; return the position for the no shadow drawing */
 		switch(fws->flags.text_rotation)
@@ -1375,7 +1361,7 @@ void FlocaleDrawString(
 		FftDrawString(
 			    dpy, flf, fws, fg, fgsh, has_fg_pixels, len, flags);
 	}
-	else if (FlocaleMultibyteSupport && flf->fontset != None)
+	else if (flf->fontset != None)
 	{
 		int xt = fws->x, yt = fws->y;
 		int step = 0;
@@ -1450,7 +1436,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	{
 		result = FftTextWidth(&flf->fftf, str, sl);
 	}
-	else if (FlocaleMultibyteSupport && flf->fontset != None)
+	else if (flf->fontset != None)
 	{
 		result = XmbTextEscapement(flf->fontset, str, sl);
 	}
@@ -1497,54 +1483,29 @@ void FlocaleGetNameProperty(
 	int num;
 	XTextProperty text_prop;
 
-	if (func(dpy, w, &text_prop) == 0 ||
-	    (FlocaleCompoundText && !text_prop.value))
+	if (func(dpy, w, &text_prop) == 0)
 	{
 		return;
 	}
 
-	if (FlocaleMultibyteSupport && text_prop.encoding == XA_STRING)
+	if (text_prop.encoding == XA_STRING)
 	{
 		/* STRING encoding, use this as it is */
 		ret_name->name = (char *)text_prop.value;
 		ret_name->name_list = NULL;
 		return;
 	}
-	else if (FlocaleCompoundText && text_prop.encoding == XA_STRING)
-	{
-		/* STRING encoding, use this as it is */
-		CopyString(&(ret_name->name), (char *)text_prop.value);
-		XFree(text_prop.value);
-		return;
-	}
-	else if (!FlocaleMultibyteSupport && !FlocaleCompoundText)
-	{
-		ret_name->name = (char *)text_prop.value;
-		return;
-	}
-	/* not STRING encoding, try to convert */
-	if (FlocaleCompoundText && !FlocaleSeted)
-	{
-		FlocaleSetlocaleForX(LC_CTYPE, "", "fvwmlibs");
-	}
+	/* not STRING encoding, try to convert XA_COMPOUND_TEXT */
 	if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
 	    && num > 0 && *list)
 	{
-		/* XXX: does not consider the conversion is REALLY succeeded */
+		/* Does not consider the conversion is REALLY succeeded:
+		 * XmbTextPropertyToTextList return 0 (== Success) on success,
+		 * a negative int if it fails (and in this case we are not here),
+		 * the number of unconvertible char on "partial" success*/
 		XFree(text_prop.value); /* return of XGetWM(Icon)Name() */
-		if (FlocaleCompoundText)
-		{
-			CopyString(&(ret_name->name), *list);
-			if (list)
-			{
-				XFreeStringList(list);
-			}
-		}
-		else
-		{
-			ret_name->name = *list;
-			ret_name->name_list = list;
-		}
+		ret_name->name = *list;
+		ret_name->name_list = list;
 	}
 	else
 	{
@@ -1552,32 +1513,19 @@ void FlocaleGetNameProperty(
 		{
 			XFreeStringList(list);
 		}
-		if (FlocaleCompoundText)
-		{
-			CopyString(&(ret_name->name), (char *)text_prop.value);
-			XFree(text_prop.value);
-		}
-		else if (FlocaleMultibyteSupport)
-		{
-			ret_name->name = (char *)text_prop.value;
-			ret_name->name_list = NULL;
-		}
+		ret_name->name = (char *)text_prop.value;
+		ret_name->name_list = NULL;
 	}
 }
 
 void FlocaleFreeNameProperty(FlocaleNameString *ptext)
 {
-	if (FlocaleMultibyteSupport && ptext->name_list != NULL)
+	if (ptext->name_list != NULL)
 	{
 		if (ptext->name != NULL && ptext->name != *ptext->name_list)
 			XFree(ptext->name);
 		XFreeStringList(ptext->name_list);
 		ptext->name_list = NULL;
-	}
-	else if (FlocaleCompoundText && ptext->name != NULL)
-	{
-		free(ptext->name); /* this is not reall needed IMHO we
-				    * can XFree I think (olicha) */
 	}
 	else if (ptext->name != NULL)
 	{
@@ -1594,7 +1542,7 @@ Bool FlocaleTextListToTextProperty(
 {
 	int ret = False;
 
-	if (FlocaleMultibyteSupport && Flocale != NULL)
+	if (Flocale != NULL)
 	{
 		ret = XmbTextListToTextProperty(
 			dpy, list, count, style, text_prop_return);

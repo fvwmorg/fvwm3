@@ -320,8 +320,7 @@ void FiconvInit(Display *dpy, const char *module)
 			fprintf(stderr,", locale_charset");
 		if (FlocaleCodesetSupport)
 			fprintf(stderr,", nl_langinfo");
-		if (FlocaleMultibyteSupport)
-			fprintf(stderr,", XOM");
+		fprintf(stderr,", XOM");
 		fprintf(stderr,"\n");
 	}
 
@@ -356,11 +355,8 @@ void FiconvInit(Display *dpy, const char *module)
 			"iconv charset with:\n", module);
 		fprintf(stderr, "\tlocale charset '%s'\n",
 			FLC_DEBUG_GET_X_CHARSET(FLCDefaultIconvCharset));
-		if (FlocaleMultibyteSupport)
-		{
-			fprintf(stderr, "\tXOM charset '%s'\n",
-				FLC_GET_X_CHARSET(xom_charset));
-		}
+		fprintf(stderr, "\tXOM charset '%s'\n",
+			FLC_GET_X_CHARSET(xom_charset));
 		FLCUtf8Charset = NULL;
 		FLCDefaultIconvCharset = NULL;
 	}

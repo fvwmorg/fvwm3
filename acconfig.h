@@ -270,9 +270,6 @@
 #  include <unistd.h>
 #endif
 
-/* Enables X11 multibyte character support (was I18N_MB) */
-#define MULTIBYTE
-
 #ifndef min
 #  define min(a,b) (((a)<(b)) ? (a) : (b))
 #endif

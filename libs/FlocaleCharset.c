@@ -391,9 +391,6 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 	XOMCharSetList cs;
 	int i;
 
-	if (!FlocaleMultibyteSupport)
-		return;
-
 	om = XOpenOM(dpy, NULL, NULL, NULL);
 	if (om && (XGetOMValues(om, XNRequiredCharSet, &cs, NULL)) == NULL)
 	{
@@ -515,7 +512,7 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints
 		{
 			flf->fc =  FlocaleCharsetOfXCharset(flf->fftf.encoding);
 		}
-		else if (FlocaleMultibyteSupport && flf->fontset != None)
+		else if (flf->fontset != None)
 		{
 			if (FLCXOMCharset != NULL)
 			{

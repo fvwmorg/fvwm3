@@ -35,22 +35,6 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
-/* always off */
-#ifdef COMPOUND_TEXT
-#define FlocaleCompoundText 1
-#else
-#define FlocaleCompoundText 0
-#endif
-
-/* always on */
-#ifdef MULTIBYTE
-#define FlocaleMultibyteSupport 1
-#undef FlocaleCompoundText
-#define FlocaleCompoundText 0
-#else
-#define FlocaleMultibyteSupport 0
-#endif
-
 #define FWS_HAVE_LENGTH (1)
 
 /* ---------------------------- global macros ------------------------------- */
@@ -199,10 +183,8 @@ typedef struct
 
 /* ---------------------------- interface functions ------------------------- */
 
-#if FlocaleMultibyteSupport
-
 /*
- * i18n X initialization (if  MULTIBYTE).
+ * i18n X initialization
  * category: the usual category LC_CTYPE, LC_CTIME, ...
  * modifier: "" or NULL if NULL XSetLocaleModifiers is not called
  * module: the name of the fvwm module that call the function for reporting
@@ -216,12 +198,6 @@ typedef struct
 void FlocaleInit(
 	int category, const char *local, const char *modifier,
 	const char *module);
-
-#else /* !FlocaleMultibyteSupport */
-
-#define FlocaleInit(x,y,z,t)
-
-#endif /* FlocaleMultibyteSupport */
 
 /* ***************************************************************************
  * font loading
@@ -241,27 +217,21 @@ void FlocaleInit(
  *    as follows:
  *    a - if fn begin with "xft:", then if FftSupport fn is loaded as an xft
  *        font; if !FftSupport fn is skipped (ignored)
- *    b - If FlocaleMultibyteSupport and the locale is supported fn is loaded
- *        using XCreateFontSet. If this fail fallback into 1-c)
- *    c - If !FlocaleMultibyteSupport (or the locale is not supported or 1-b)
- *        fail) fn is loaded using XLoadQueryFont (the first loadable font in
- *        the fn "," separated list is load)
+ *    b - If the locale is supported fn is loaded using XCreateFontSet. If this
+ *        fail fallback into 1-c)
+ *    c - If the locale is not supported or 1-b fail fn is loaded using
+ *        XLoadQueryFont (the first loadable font in the fn "," separated list
+ *        is load)
  * 2) If 0) and 1) fail:
- *    - If FlocaleMultibyteSupport try to load MB_FALLBACK_FONT with
- *      XCreateFontSet
- *    - If !FlocaleMultibyteSupport try to load FALLBACK_FONT with
- *      XLoadQueryFont
- * 3) If FlocaleMultibyteSupport and 0), 1) and 2) fail fall back to 2)
- *    !FlocaleMultibyteSupport
- * 4) If everything fail the function return NULL.
+ *    - try to load MB_FALLBACK_FONT with XCreateFontSet
+ *    - If this fail try to load FALLBACK_FONT with XLoadQueryFont
+ * 3) If everything fail the function return NULL.
  *
  * If font loading succed. Only one of the font, fontset, fftfont member of the
  * FlocaleFont structure is not NULL/None. The caller should use this to
  * set appropriately the gc member of the FlocaleWinString struct (the fid
  * gc member should be set only if font is not NULL).
  *
- * In the FlocaleMultibyteSupport case, if the locale is not supported by the
- * Xlib, font loading is done as if !FlocaleMultibyteSupport
  */
 FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module);
 
@@ -321,7 +291,7 @@ void FlocaleAllocateWinString(FlocaleWinString **pfws);
  * func: XGetWMName or XGetWMIconName
  * dpy: the display
  * w: the window for which we want the (icon) name
- * ret_name_list: used only if FlocaleMultibyteSupport
+ * ret_name_list: for 
  * ret_name: the icon or the window name of the window
  */
 void FlocaleGetNameProperty(

@@ -1,3 +1,25 @@
+2002-06-05  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c (FlocaleRotateDrawString):
+	(FlocaleGetShadowTextPosition):
+	Fixed side title text position if the font has no shadow
+
+	* acconfig.h:
+	* libs/Ficonv.c (FiconvInit):
+	* libs/FlocaleCharset.c (FlocaleInit_X_Charset):
+	* libs/Flocale.c (FlocaleInit):
+	(FlocaleRotateDrawString): 
+	(FlocaleGetFontSet):
+	(FlocaleGetFontOrFontSet):
+	(FlocaleLoadFont):
+	(FlocaleDrawString):
+	(FlocaleTextWidth):
+	(FlocaleFreeNameProperty):
+	(FlocaleGetNameProperty):
+	(FlocaleTextListToTextProperty):
+	Finish to remove the multibyte patch. This gives a more clean code
+	and can only prevent bugs
+
 2002-06-05  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/placement.c (PlaceWindow):
