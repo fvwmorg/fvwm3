@@ -203,6 +203,10 @@ static void apply_window_updates(
 		setup_window_font(t, pstyle, flags->do_update_window_font);
 		flags->do_redecorate = True;
 	}
+	if (flags->do_update_title_text_dir)
+	{
+		flags->do_redecorate = True;
+	}
 	if (flags->do_redecorate || flags->do_update_title_dir)
 	{
 		size_borders b_old;
@@ -311,14 +315,6 @@ static void apply_window_updates(
 			get_relative_geometry(&frame_g, new_g);
 		}
 		flags->do_setup_frame = True;
-		flags->do_redraw_decoration = True;
-	}
-	if (flags->do_update_title_text_dir)
-	{
-		if (!flags->do_update_title_dir)
-		{
-			setup_title_geometry(t, pstyle);
-		}
 		flags->do_redraw_decoration = True;
 	}
 	if (flags->do_update_rotated_title)

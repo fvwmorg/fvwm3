@@ -1,3 +1,17 @@
+2002-12-26  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/frame.c (frame_get_titlebar_dimensions):
+	(frame_set_decor_gravities):
+	* fvwm/borders.c (border_set_button_pixmap):
+	(border_get_titlebar_descr):
+	(border_draw_one_button):
+	Buttons order follows the title text rotations.
+	More UseTitleDecorRotation preparation
+
+	* fvwm/borders.c (border_draw_decor_to_pixmap):
+	Fixed SolidButton
+
 2002-12-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/borders.c (border_mp_render_into_pixmap):

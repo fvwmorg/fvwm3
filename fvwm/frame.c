@@ -545,6 +545,7 @@ static void frame_set_decor_gravities(
 	int valuemask;
 	XSetWindowAttributes xcwa;
 	int i;
+	Bool button_reverted = False;
 
 	/* using bit gravity can reduce redrawing dramatically */
 	valuemask = CWWinGravity;
@@ -578,7 +579,19 @@ static void frame_set_decor_gravities(
 	}
 	xcwa.win_gravity = grav->title_grav;
 	XChangeWindowAttributes(dpy, FW_W_TITLE(fw), valuemask, &xcwa);
-	xcwa.win_gravity = grav->lbutton_grav;
+	if (fw->title_text_rotation == ROTATION_270 ||
+	    fw->title_text_rotation == ROTATION_180)
+	{
+		button_reverted = True;
+	}
+	if (button_reverted)
+	{
+		xcwa.win_gravity = grav->rbutton_grav;
+	}
+	else
+	{
+		xcwa.win_gravity = grav->lbutton_grav;
+	}
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i))
@@ -587,7 +600,14 @@ static void frame_set_decor_gravities(
 				dpy, FW_W_BUTTON(fw, i), valuemask, &xcwa);
 		}
 	}
-	xcwa.win_gravity = grav->rbutton_grav;
+	if (button_reverted)
+	{
+		xcwa.win_gravity = grav->lbutton_grav;
+	}
+	else
+	{
+		xcwa.win_gravity = grav->rbutton_grav;
+	}
 	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i))
@@ -1249,6 +1269,7 @@ void frame_get_titlebar_dimensions(
 	int nbuttons_big;
 	int *padd_coord;
 	int *b_l;
+	Bool revert_button = False;
 
 	if (!HAS_TITLE(fw))
 	{
@@ -1345,10 +1366,17 @@ void frame_get_titlebar_dimensions(
 		tb_w = tb_length;
 		tb_h = tb_thick;
 	}
-	/* configure left buttons */
-	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+	if (fw->title_text_rotation == ROTATION_270 ||
+	    fw->title_text_rotation == ROTATION_180)
 	{
-		if (FW_W_BUTTON(fw, i) == None)
+		revert_button = True;
+	}
+
+	/* configure left buttons */
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		if ((revert_button && !(i & 1)) || (!revert_button && (i & 1)) ||
+		    FW_W_BUTTON(fw, i) == None)
 		{
 			continue;
 		}
@@ -1392,9 +1420,10 @@ void frame_get_titlebar_dimensions(
 	*padd_coord += t_length;
 	/* configure right buttons */
 	*padd_coord -= br_sub;
-	for (i = 1 + ((NUMBER_OF_BUTTONS - 1) / 2) * 2; i >= 0; i -= 2)
+	for (i = NUMBER_OF_BUTTONS-1; i > -1; i--)
 	{
-		if (FW_W_BUTTON(fw, i) == None)
+		if ((revert_button && (i & 1)) || (!revert_button && !(i & 1)) ||
+		    FW_W_BUTTON(fw, i) == None)
 		{
 			continue;
 		}

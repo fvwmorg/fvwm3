@@ -210,7 +210,6 @@ typedef struct
 	border_titlebar_state tbstate;
 	int length;                   /* text */
 	int offset;                   /* text offset */
-	unsigned has_vt : 1;          /* vertical title ? */
 	/* MultiPixmap Geometries */
 	rectangle under_text_g;      /* vs the titlebar */
 	rectangle left_main_g;       /* vs the titlebar */
@@ -222,8 +221,10 @@ typedef struct
 	int right_end_length;
 	int right_of_text_length;
 	rotation_type draw_rotation;
-	Bool is_rotated;
-	Bool has_been_saved;
+	unsigned is_rotated : 1;
+	unsigned has_been_saved : 1;
+	unsigned has_vt : 1;          /* vertical title ? */
+	unsigned buttons_reverted : 1;
 } titlebar_descr;
 
 /* ---------------------------- forward declarations ------------------------ */
@@ -2593,7 +2594,9 @@ static void border_draw_decor_to_pixmap(
 		break;
 	case SolidButton:
 		/* overwrite with the default background */
-		border_fill_pixmap_background(dest_pix, w_g, solid_bg, cd);
+		dest_g.x = 0;
+		dest_g.y = 0;
+		border_fill_pixmap_background(dest_pix, &dest_g, solid_bg, cd);
 		break;
 	case VectorButton:
 	case DefaultVectorButton:
@@ -2951,7 +2954,14 @@ static void border_set_button_pixmap(
 
 	/* prepare variables */
 	mask = (1 << button);
-	is_left_button = !(button & 1);
+	if (td->buttons_reverted)
+	{
+		is_left_button = (button & 1);
+	}
+	else
+	{
+		is_left_button = !(button & 1);
+	}
 	button_g = &td->layout.button_g[button];
 	bs = td->tbstate.bstate[button];
 	df = &TB_STATE(GetDecor(fw, buttons[button]))[bs];
@@ -3533,7 +3543,7 @@ static void border_rotate_titlebar_descr(
 	FvwmWindow *fw, titlebar_descr *td)
 {
 	rotation_type rotation;
-	int i;
+	int i, tmp_i;
 	static titlebar_descr saved_td;
 
 	if (td->draw_rotation == ROTATION_0)
@@ -3543,7 +3553,7 @@ static void border_rotate_titlebar_descr(
 	if (!td->has_been_saved)
 	{
 		td->has_been_saved = True;
-		memcpy(&saved_td, td, sizeof(saved_td)); 
+		memcpy(&saved_td, td, sizeof(titlebar_descr)); 
 	}
 	if (!td->is_rotated)
 	{
@@ -3568,12 +3578,12 @@ static void border_rotate_titlebar_descr(
 	else
 	{
 		/* restore */
-		memcpy(td, &saved_td, sizeof(td)); 
+		memcpy(td, &saved_td, sizeof(titlebar_descr)); 
 		td->is_rotated = 0;
 		return;
 	}
 
-#define ROTATE_RECTANGLE(rot, r, vs_frame, vs_bar) \
+#define ROTATE_RECTANGLE(rot, r, vs_frame, vs_titlebar) \
 	{ \
 		rectangle tr; \
 		switch(rot) \
@@ -3584,9 +3594,10 @@ static void border_rotate_titlebar_descr(
 			{ \
 				tr.y = td->frame_g.width - (r->x+r->width); \
 			} \
-			if (vs_bar) \
+			if (vs_titlebar) \
 			{ \
-				tr.y = td->bar_g.width - (r->x+r->width); \
+				tr.y = td->bar_g.width - \
+					(r->x+r->width); \
 			} \
 			else \
 			{ \
@@ -3600,9 +3611,10 @@ static void border_rotate_titlebar_descr(
 			{ \
 				tr.x = td->frame_g.height - (r->y+r->height); \
 			} \
-			else if (vs_bar) \
+			else if (vs_titlebar) \
 			{ \
-				tr.x = td->bar_g.height - (r->y+r->height); \
+				tr.x = td->bar_g.height - \
+					(r->y+r->height); \
 			} \
 			else \
 			{ \
@@ -3738,6 +3750,9 @@ static window_parts border_get_titlebar_descr(
 	DecorFace *df;
 	int is_start = 0;
 	JustificationType just;
+	int lbl = 0;
+	int rbl = 0;
+
 	ret_td->cd = cd;
 	ret_td->frame_g = *new_g;
 	if (old_g == NULL)
@@ -3752,35 +3767,40 @@ static window_parts border_get_titlebar_descr(
 	{
 		ret_td->draw_rotation = fw->title_text_rotation;
 	}
+	if (fw->title_text_rotation == ROTATION_270 ||
+	    fw->title_text_rotation == ROTATION_180)
+	{
+		ret_td->buttons_reverted = True;
+	}
 	/* geometry of the title bar title + buttons */
 	if (!ret_td->has_vt)
 	{
 		ret_td->bar_g.width = new_g->width - 2 * fw->boundary_width;
 		ret_td->bar_g.height = ret_td->layout.title_g.height;
+		ret_td->bar_g.x = fw->boundary_width;
+		ret_td->bar_g.y = ret_td->layout.title_g.y;
 	}
 	else
 	{
 		ret_td->bar_g.width = ret_td->layout.title_g.width;
 		ret_td->bar_g.height = new_g->height - 2 * fw->boundary_width;
+		ret_td->bar_g.y = fw->boundary_width;
+		ret_td->bar_g.x = ret_td->layout.title_g.x;
 	}
-	ret_td->bar_g.y = fw->boundary_width;
-	ret_td->bar_g.x = fw->boundary_width;
 	
-	/* left buttons geometry */
+	/* buttons geometries */
 	if (ret_td->has_vt)
 	{
-		ret_td->left_buttons_g.height = 0;
 		ret_td->left_buttons_g.width = ret_td->bar_g.width;
+		ret_td->right_buttons_g.width = ret_td->bar_g.width;
 	}
 	else
 	{
 		ret_td->left_buttons_g.height = ret_td->bar_g.height;
-		ret_td->left_buttons_g.width = 0;
+		ret_td->right_buttons_g.height = ret_td->bar_g.width;
 	}
-	ret_td->left_buttons_g.y = fw->boundary_width;
-	ret_td->left_buttons_g.x = fw->boundary_width;
 
-	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
@@ -3788,36 +3808,73 @@ static window_parts border_get_titlebar_descr(
 		}
 		if (ret_td->has_vt)
 		{
-			ret_td->left_buttons_g.height +=
-				ret_td->layout.button_g[i].height;
+			if (i & 1)
+			{
+				rbl += ret_td->layout.button_g[i].height;
+			}
+			else
+			{
+				lbl += ret_td->layout.button_g[i].height;
+			}
 		}
 		else
 		{
-			ret_td->left_buttons_g.width += 
-				ret_td->layout.button_g[i].width;
+			if (i & 1)
+			{
+				rbl += ret_td->layout.button_g[i].width;
+			}
+			else
+			{
+				lbl += ret_td->layout.button_g[i].width;
+			}
 		}
 	}
 
-	/* right buttons geometry */
-	if (ret_td->has_vt)
+	if (ret_td->buttons_reverted)
 	{
-		ret_td->right_buttons_g.height =
-			ret_td->bar_g.height - ret_td->left_buttons_g.height
-			- ret_td->layout.title_g.height;
-		ret_td->right_buttons_g.width = ret_td->bar_g.width;
-		ret_td->right_buttons_g.y = ret_td->layout.title_g.y +
-			ret_td->layout.title_g.height;
-		ret_td->right_buttons_g.x = fw->boundary_width;
+		if (ret_td->has_vt)
+		{
+			ret_td->left_buttons_g.height = rbl;
+			ret_td->right_buttons_g.height = lbl;
+			ret_td->right_buttons_g.y = fw->boundary_width;
+			ret_td->right_buttons_g.x = ret_td->bar_g.x;
+			ret_td->left_buttons_g.y = ret_td->layout.title_g.y +
+				ret_td->layout.title_g.height;
+			ret_td->left_buttons_g.x = ret_td->bar_g.x;
+		}
+		else
+		{
+			ret_td->left_buttons_g.width = rbl;
+			ret_td->right_buttons_g.width = lbl;
+			ret_td->right_buttons_g.x = fw->boundary_width;
+			ret_td->right_buttons_g.y = ret_td->bar_g.y;
+			ret_td->left_buttons_g.x = ret_td->layout.title_g.x +
+				ret_td->layout.title_g.width;
+			ret_td->left_buttons_g.y = ret_td->bar_g.y;
+		}
 	}
 	else
 	{
-		ret_td->right_buttons_g.height = ret_td->bar_g.height;
-		ret_td->right_buttons_g.width =
-			ret_td->bar_g.width - ret_td->left_buttons_g.width
-			- ret_td->layout.title_g.width;
-		ret_td->right_buttons_g.y = fw->boundary_width;
-		ret_td->right_buttons_g.x = ret_td->layout.title_g.x +
-			ret_td->layout.title_g.width;
+		if (ret_td->has_vt)
+		{
+			ret_td->left_buttons_g.height = lbl;
+			ret_td->right_buttons_g.height = rbl;
+			ret_td->left_buttons_g.y = fw->boundary_width;
+			ret_td->left_buttons_g.x = ret_td->bar_g.x;
+			ret_td->right_buttons_g.y = ret_td->layout.title_g.y +
+				ret_td->layout.title_g.height;
+			ret_td->right_buttons_g.x = ret_td->bar_g.x;
+		}
+		else
+		{
+			ret_td->left_buttons_g.width = lbl;
+			ret_td->right_buttons_g.width = rbl;
+			ret_td->left_buttons_g.x = fw->boundary_width;
+			ret_td->left_buttons_g.y = ret_td->bar_g.y;
+			ret_td->right_buttons_g.x = ret_td->layout.title_g.x +
+				ret_td->layout.title_g.width;
+			ret_td->right_buttons_g.y = ret_td->bar_g.y;
+		}
 	}
 
 	/* initialise flags */
