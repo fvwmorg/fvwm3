@@ -78,13 +78,15 @@ void do_relieve_rectangle_with_rotation(
 	XSegment* seg;
 	GC shadow_gc, relief_gc;
 	int i,i2;
-	int a = (use_alternate_shading) ? 1 : 0;
+	int a;
+	int l;
 
+	a = (use_alternate_shading) ? 1 : 0;
+	l = 1 - a;
 	if (w <= 0 || h <= 0)
 	{
 		return;
 	}
-
 	if (rotation == ROTATION_270)
 	{
 		rotation = ROTATION_90;
@@ -102,7 +104,6 @@ void do_relieve_rectangle_with_rotation(
 		shadow_gc = ShadowGC;
 		relief_gc = ReliefGC;
 	}
-
 	seg = (XSegment*)alloca((sizeof(XSegment) * line_width) * 2);
 	/* from 0 to the lesser of line_width & just over half w */
 	for (i = 0; (i < line_width) && (i <= w / 2); i++)
@@ -111,7 +112,7 @@ void do_relieve_rectangle_with_rotation(
 		{
 			/* left */
 			seg[i].x1 = x+i; seg[i].y1 = y+i+a;
-			seg[i].x2 = x+i; seg[i].y2 = y+h-i-1+a;
+			seg[i].x2 = x+i; seg[i].y2 = y+h-i+a+l;
 		}
 		else /* ROTATION_90 */
 		{
@@ -131,7 +132,7 @@ void do_relieve_rectangle_with_rotation(
 	/* bottom */
 	for (i = 0; (i < line_width) && (i <= h / 2); i++)
 	{
-		seg[i].x1 = x+i+a;     seg[i].y1 = y+h-i;
+		seg[i].x1 = x+i+a+l;   seg[i].y1 = y+h-i;
 		seg[i].x2 = x+w-i-1+a; seg[i].y2 = y+h-i;
 	}
 	i2 = i;
@@ -143,11 +144,11 @@ void do_relieve_rectangle_with_rotation(
 			seg[i2].x1 = x+w-i; seg[i2].y1 = y+h-i-a;
 			seg[i2].x2 = x+w-i; seg[i2].y2 = y+i+1-a;
 		}
-		else
+		else /* ROTATION_90 */
 		{
 			/* left */
 			seg[i2].x1 = x+i; seg[i2].y1 = y+i+a;
-			seg[i2].x2 = x+i; seg[i2].y2 = y+h-i-1+a;
+			seg[i2].x2 = x+i; seg[i2].y2 = y+h-i+a+l;
 		}
 	}
 	XDrawSegments(dpy, d, shadow_gc, seg, i2);

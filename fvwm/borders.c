@@ -683,8 +683,10 @@ static window_parts border_get_tb_parts_to_draw(
 			continue;
 		}
 		if (DFS_USE_BORDER_STYLE(*bs) &&
-		    (((td->old_layout.button_g[i].x != td->layout.button_g[i].x||
-		       td->old_layout.button_g[i].y != td->layout.button_g[i].y)
+		    (((td->old_layout.button_g[i].x !=
+		       td->layout.button_g[i].x||
+		       td->old_layout.button_g[i].y !=
+		       td->layout.button_g[i].y)
 		      && ((td->cd->valuemask & CWBackPixmap) ||
 			  CSET_PIXMAP_IS_TILED(td->cd->bg_border_cs)))
 		     ||
@@ -1599,13 +1601,6 @@ static void border_draw_all_border_parts(
 	/* draw everything in a big loop */
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 	draw_handles = (draw_parts & PART_HANDLES);
-#if 0
-	{
-		static int count = 0;
-		fprintf(stderr, "drawing border parts 0x%04x %d\n", draw_parts,
-			count++);
-	}
-#endif
 	for (part = PART_BORDER_N; (part & PART_FRAME); part <<= 1)
 	{
 		if (part & draw_parts)
@@ -3406,8 +3401,8 @@ static void border_draw_title_stick_lines(
 		under_text_offset = td->under_text_g.y;
 		left_length = td->left_main_g.height - td->left_of_text_length
 			- td->left_end_length;
-		right_length = td->right_main_g.height - td->right_of_text_length
-			- td->right_end_length;
+		right_length = td->right_main_g.height -
+			td->right_of_text_length - td->right_end_length;
 
 	}
 	else if (!td->has_vt && td->under_text_g.width > 0)
@@ -3416,8 +3411,8 @@ static void border_draw_title_stick_lines(
 		under_text_offset = td->under_text_g.x;
 		left_length = td->left_main_g.width - td->left_of_text_length
 			- td->left_end_length;
-		right_length = td->right_main_g.width - td->right_of_text_length
-			- td->right_end_length;
+		right_length = td->right_main_g.width -
+			td->right_of_text_length - td->right_end_length;
 	}
 	num = (int)(fw->title_thickness / WINDOW_TITLE_STICK_VERT_DIST / 2) *
 		2 - 1;
