@@ -1,10 +1,14 @@
 2002-10-08  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmTaskBar/Goodies.c (DrawGoodies):
+	Removed some testing code
+
 	* FvwmPager/x_pager.c (initialize_viz_pager): 
 	* FvwmForm/FvwmForm.c (InitConstants):
 	(CheckAlloc):
 	* FvwmBanner/FvwmBanner.c (main):
 	* FvwmTaskBar/Goodies.c (CreateOrUpdateGoodyGC):
+	(DrawGoodies): 
 	* FvwmTaskBar/FvwmTaskBar.c (StartMeUp):
 	(CreateOrUpdateGCs):
 	(CreateTipWindow):

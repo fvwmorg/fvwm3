@@ -336,7 +336,7 @@ void DrawGoodies(void)
       XBell(dpy, BellVolume);
   }
 
-  if (!mailcleared && (unreadmail || newmail ||1))
+  if (!mailcleared && (unreadmail || newmail))
     XCopyArea(dpy, wmailpix, win, statusgc, 0, 0,
 	      minimail_width, minimail_height,
 	      win_width - stwin_width + clock_width + 3,
