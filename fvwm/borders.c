@@ -460,7 +460,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
           if ((borderflags & NoInset) && (rwidth == 2)) {
             blength += 1;
           }
-#endif BORDERSTYLE
+#endif /* BORDERSTYLE */
 
           for (j = 0; j < rwidth; ) { /* j is incremented below */
             /* shorten marks for beveled effect */

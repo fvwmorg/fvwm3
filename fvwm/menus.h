@@ -71,10 +71,10 @@ typedef enum {
 typedef struct MenuFeel {
     struct
     {
-      unsigned char Animated : 1;
-      unsigned char PopupImmediately : 1;
-      unsigned char TitleWarp : 1;
-      unsigned char PopupAsRootmenu : 1;
+      unsigned Animated : 1;
+      unsigned PopupImmediately : 1;
+      unsigned TitleWarp : 1;
+      unsigned PopupAsRootmenu : 1;
     } f;
     int PopupOffsetPercent;
     int PopupOffsetAdd;
@@ -101,13 +101,13 @@ typedef struct MenuLook {
     MenuFace face;
     struct
     {
-      unsigned char Hilight : 1;
-      unsigned char hasActiveFore : 1;
-      unsigned char hasActiveBack : 1;
-      unsigned char hasStippleFore : 1;
-      unsigned char LongSeparators : 1;
-      unsigned char TriangleRelief : 1;
-      unsigned char hasSideColor : 1;
+      unsigned Hilight : 1;
+      unsigned hasActiveFore : 1;
+      unsigned hasActiveBack : 1;
+      unsigned hasStippleFore : 1;
+      unsigned LongSeparators : 1;
+      unsigned TriangleRelief : 1;
+      unsigned hasSideColor : 1;
     } f;
     char ReliefThickness;
     char TitleUnderlines;

@@ -21,6 +21,15 @@
 # error One of waitpid or wait3 is needed.
 #endif
 
+typedef enum {
+  ADDED_NONE = 0,
+  ADDED_MENU,
+#ifdef USEDECOR
+  ADDED_DECOR,
+#endif
+  ADDED_FUNCTION
+} last_added_item_type;
+
 typedef struct name_list_struct
 {
   struct name_list_struct *next;   /* pointer to the next name */

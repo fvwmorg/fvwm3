@@ -1,3 +1,12 @@
+1999-04-05  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/borders.c: #endif FOO -> #endif /* FOO */
+	* fvwm/screen.h, fvwm/misc.h: Moved the last_added_item_type from
+	screen.h to misc.h since that's where it's mostly used, and because
+	misc.h is included in most .c files, but screen.h is not.
+	* fvwm/menus.h: Changed 2 bitfields to use unsigned instead of unsigned
+	char, now it compiles with xlc (AIX).
+
 1999-04-05  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/misc.h: moved prototype of set_last_added_item out of GNOME
