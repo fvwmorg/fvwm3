@@ -106,7 +106,7 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state)
 /* -------------------------------------------------------------------------
    ButtonNew - Allocates and fills a new button structure
    ------------------------------------------------------------------------- */
-Button *ButtonNew(const char *title, Picture *p, int state)
+Button *ButtonNew(const char *title, Picture *p, int state, int count)
 {
   Button *new;
 
@@ -124,6 +124,7 @@ Button *ButtonNew(const char *title, Picture *p, int state)
   }
 
   new->state = state;
+  new->count = count;
   new->next  = NULL;
   new->needsupdate = 1;
   new->iconified = 0;
@@ -187,7 +188,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 
   if ((button->p.picture != 0) &&
       (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)) {
-
+/*        (newx + button->p.width + w3p + 3 < w)) { */
     gcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
     gcv.clip_mask = button->p.mask;
     gcv.clip_x_origin = x + 3;
@@ -321,15 +322,16 @@ void UpdateArray(ButtonArray *array,int x,int y,int w, int h, int tw)
 /* -------------------------------------------------------------------------
    AddButton - Allocate space for and add the button to the list
    ------------------------------------------------------------------------- */
-void AddButton(ButtonArray *array, const char *title, Picture *p, int state)
+void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
+               int count)
 {
-  Button *new;
+  Button *new, *temp;
 
-  new = ButtonNew(title, p, state);
-  if (array->head == NULL) array->head = array->tail = new;
+  new = ButtonNew(title, p, state,count);
+  if (array->head == NULL) array->head = new;
   else {
-    array->tail->next = new;
-    array->tail = new;
+    for (temp=array->head; temp->next; temp=temp->next);
+    temp->next = new;
   }
   array->count++;
 
@@ -371,7 +373,9 @@ int UpdateButton(ButtonArray *array, int butnum, const char *title, int state)
 {
   Button *temp;
 
-  temp = find_n(array, butnum);
+  for (temp=array->head; temp; temp=temp->next)
+    if (temp->count == butnum) break;
+
   return ButtonUpdate(temp, title, state);
 }
 
@@ -382,7 +386,9 @@ int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
 {
   Button *temp;
 
-  temp = find_n(array, butnum);
+  for (temp=array->head; temp; temp=temp->next)
+    if (temp->count == butnum) break;
+
   if (temp == NULL) return -1;
   if (temp->p.picture != p->picture || temp->p.mask != p->mask) {
     temp->p.picture = p->picture;
@@ -402,29 +408,30 @@ void RemoveButton(ButtonArray *array, int butnum)
 {
   Button *temp, *to_die;
 
-  if (butnum == 0) {
-    to_die = array->head;
-    temp = NULL;
+  if (array->head) {
+      if (array->head->count == butnum) {
+          to_die = array->head;
+          array->head = array->head->next;
+      } else {
+          for (temp=array->head, to_die=temp->next;
+               to_die;
+               to_die=to_die->next, temp=temp->next)
+              if (to_die->count == butnum) break;
+          if (to_die) temp->next = to_die->next;
+      }
+      if (to_die) temp->next = to_die->next;
   } else {
-    temp = find_n(array, butnum-1);
-    if ( !temp ) return;
-    to_die = temp->next;
+      to_die = NULL;
   }
-  if ( !to_die ) return;
-
-  if (array->tail == to_die)
-    array->tail = temp;
-  if ( !temp )
-    array->head = to_die->next;
-  else
-    temp->next = to_die->next;
-
-  ButtonDelete(to_die);
-  array->count--;
-  if (temp && temp != array->head)
-    temp = temp->next;
-  for (; temp; temp=temp->next)
-    temp->needsupdate = 1;
+ 
+  if (to_die) {
+      ButtonDelete(to_die);
+      if (array->count > 0)
+        array->count--;
+  }
+ 
+  for (temp=array->head; temp; temp=temp->next)
+      temp->needsupdate = 1;
 
   ArrangeButtonArray(array);
 }
@@ -483,10 +490,9 @@ void DrawButtonArray(ButtonArray *array, int all)
 void RadioButton(ButtonArray *array, int butnum, int state)
 {
   Button *button;
-  int i;
 
-  for(button=array->head,i=0; button!=NULL; button=button->next,i++) {
-    if (i == butnum) {
+  for(button=array->head; button!=NULL; button=button->next) {
+    if (button->count == butnum) {
       button->state = state;
       button->needsupdate = 1;
     } else {
@@ -539,5 +545,5 @@ int LocateButton(ButtonArray *array, int xp,  int yp, int *xb, int *yb,
     *name = NULL;
   }
 
-  return num;
+  return (num == -1) ? num : temp->count;
 }

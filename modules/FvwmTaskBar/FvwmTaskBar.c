@@ -162,11 +162,17 @@ int UseSkipList    = False,
     AutoStick      = False,
     AutoHide       = False,
     AutoFocus      = False,
-    HighlightFocus = False;
+    HighlightFocus = False,
+    DeskOnly       = False;
 
 unsigned int ScreenWidth, ScreenHeight;
 
 int NRows, RowHeight, Midline;
+
+#define COUNT_LIMIT    10000
+long DeskNumber;               /* Added by Balaji R */
+int  First = 1;
+int  Count = 0;
 
 /* Imported from Goodies */
 extern int stwin_width, goodies_width;
@@ -271,7 +277,7 @@ int main(int argc, char **argv)
   SetMessageMask(Fvwm_fd,M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
 		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY |
 		 M_ICONIFY | M_END_WINDOWLIST | M_FOCUS_CHANGE |
-		 M_CONFIG_INFO | M_END_CONFIG_INFO
+		 M_CONFIG_INFO | M_END_CONFIG_INFO | M_NEW_DESK
 #ifdef FVWM95
 		 | M_FUNCTION_END | M_SCROLLREGION
 #endif
@@ -378,9 +384,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   int redraw=-1;
   int i;
   char *string;
+  long Desk;
   Picture p;
   struct ConfigWinPacket  *cfgpacket;
   unsigned long tb_flags;
+
+/*    memset(&p, 0, sizeof(Picture)); */
 
   switch(type) {
   case M_FOCUS_CHANGE:
@@ -418,23 +427,52 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     }
 
-    if (FindItem(&windows, cfgpacket->w) != -1)
+    if ((i=FindItem(&windows, cfgpacket->w)) != -1) {
+      if (GetDeskNumber(&windows,i,&Desk) && DeskOnly) {
+        if (DeskNumber != Desk && DeskNumber == cfgpacket->desk) {
+          /* window moving to current desktop */
+          AddButton(&buttons, ItemName(&windows,i), 
+                    GetItemPicture(&windows,i), BUTTON_UP, i);
+          redraw = 1;
+        }
+        if (DeskNumber != cfgpacket->desk && DeskNumber == Desk) {
+          /* window moving to another desktop */
+          RemoveButton(&buttons, i);
+          redraw = 1;
+        }
+      }
+      /* NEED TO DETERMINE IF BODY[8] IS RIGHT HERE!!! */
+      tb_flags = ItemFlags(&windows, cfgpacket->w);
+      UpdateItemFlagsDesk(&windows, cfgpacket->w, 
+                          tb_flags, cfgpacket->desk);
       break;
+    }
+
     if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList) {
       AddItem(&windows,
         cfgpacket->w,
         IS_ICONIFIED(cfgpacket) ? F_ICONIFIED : 0,
-        cfgpacket);
+        cfgpacket, cfgpacket->desk, Count++);
+      if (Count > COUNT_LIMIT) Count = 0;
     }
     break;
 
   case M_DESTROY_WINDOW:
-    if ((i = DeleteItem(&windows, body[0])) == -1)
+/*      if ((i = DeleteItem(&windows, body[0])) == -1) */
+    if ((i = FindItem(&windows, body[0])) == -1)
       break;
     if (FindItem(&swallowed, body[0]) != -1)
       break;
-    RemoveButton(&buttons, i);
-    redraw = 1;
+
+    if (GetDeskNumber(&windows, i, &Desk)) {
+      DeleteItem(&windows, body[0]);
+      if (Desk == DeskNumber || !DeskOnly) {
+        RemoveButton(&buttons, i); /* what about sticky windows? */
+                                   /* problem when they are deleted */
+                                   /* from another desktop! */
+        redraw = 1;
+      }
+    }
     break;
 
 #ifdef MINI_ICONS
@@ -467,8 +505,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     if (UpdateButton(&buttons, i, string, DONT_CARE) == -1)
       {
-      AddButton(&buttons, string, NULL, BUTTON_UP);
-      redraw = 1;
+      if (GetDeskNumber(&windows, i, &Desk) == 0) return; /* ?? */
+         if (!DeskOnly || Desk == DeskNumber)
+         {
+           AddButton(&buttons, string, NULL, BUTTON_UP, i);
+           redraw = 1;
+         }
       }
     else
       redraw = 0;
@@ -521,6 +563,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 #endif /*FVWM95*/
 
   case M_NEW_DESK:
+    DeskNumber = body[0];
+    if (!First && DeskOnly)
+      redraw_buttons();
+    else
+      First = 0;
     break;
 
   case M_NEW_PAGE:
@@ -530,6 +577,65 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
   if (redraw >= 0) RedrawWindow(redraw);
 }
+
+
+/* #define DEBUG_DESKONLY */
+
+void redraw_buttons()
+{
+  Item *item;
+
+#ifdef DEBUG_DESKONLY
+  /* print buttons.count, buttons.tw here */
+  fprintf(stderr,"Beginning of redraw_buttons()\n");
+  fprintf(stderr,"-----------------------------\n\n");
+  fprintf(stderr,"buttons.count = %i \t ",buttons.count);
+  fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
+
+  fprintf(stderr,"Starting to remove old buttons...\n");
+#endif
+  while (buttons.head) {
+      RemoveButton(&buttons, buttons.head->count);
+#ifdef DEBUG_DESKONLY
+      /* print buttons.count, buttons.tw here */
+      fprintf(stderr,"buttons.count = %i \t ",buttons.count);
+      fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
+#endif
+  }
+
+#ifdef DEBUG_DESKONLY
+  /* print buttons.count, buttons.tw here */
+  fprintf(stderr,"\nEnd of removing old buttons...\n\n");
+  fprintf(stderr,"Starting to add new desk buttons...\n");
+#endif
+
+  for (item=windows.head; item; item=item->next) {
+/*        if (DeskNumber == item->Desk || (item->flags & STICKY)) { */
+      /* I'm not sure if this check for sticky makes sense.  */
+      if (DeskNumber == item->Desk || (item->flags.common.is_sticky)) {
+          AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count);
+#ifdef DEBUG_DESKONLY
+          /* print buttons.count, buttons.tw here */
+          fprintf(stderr,"buttons.count = %i \t ",buttons.count);
+          fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
+#endif
+      }
+  }
+
+#ifdef DEBUG_DESKONLY
+  /* print buttons.count, buttons.tw here */
+  fprintf(stderr,"\nBefore RedrawWindow()...\n");
+#endif
+    
+  RedrawWindow(1);
+
+#ifdef DEBUG_DESKONLY
+  fprintf(stderr,"\nAfter RedrawWindow()...\n");
+  fprintf(stderr,"buttons.count = %i \t ",buttons.count);
+  fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
+#endif
+}
+
 
 /******************************************************************************
   SendFvwmPipe - Send a message back to fvwm
@@ -709,6 +815,8 @@ static void ParseConfigLine(char *tline) {
                       Clength+12)==0) UseIconNames=True;
   else if(strncasecmp(tline,CatString3(Module, "ShowTransients",""),
                       Clength+14)==0) ShowTransients=True;
+  else if(strncasecmp(tline,CatString3(Module, "DeskOnly",""),
+                      Clength+8)==0) DeskOnly=True;
   else if(strncasecmp(tline,CatString3(Module, "UpdateInterval",""),
                       Clength+14)==0)
     UpdateInterval=atoi(&tline[Clength+14]);
@@ -921,6 +1029,12 @@ void LoopOnEvents(void)
           BelayHide = True; /* Don't AutoHide when function ends */
           SendFvwmPipe(ClickAction[Event.xbutton.button-1],
                        ItemID(&windows, num));
+        }
+
+        if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y)) {
+          StartButtonUpdate(NULL, BUTTON_UP);
+          redraw = 0;
+          usleep(50000);
         }
 
         if (HighlightFocus) {
@@ -1559,12 +1673,15 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 void WarpTaskBar(int y) {
   win_x = win_border;
 
-  if (y < Midline)
-    win_y = win_border;
-  else
-    win_y = (int)ScreenHeight - win_height - win_border;
+  if (!AutoHide) {
+     if (y < Midline)
+       win_y = win_border;
+     else
+       win_y = (int)ScreenHeight - win_height - win_border;
 
-  XMoveWindow(dpy, win, win_x, win_y);
+     XMoveWindow(dpy, win, win_x, win_y);
+  }
+
   if (AutoHide)
     SetAlarm(HIDE_TASK_BAR);
 
@@ -1578,30 +1695,47 @@ void WarpTaskBar(int y) {
 /***********************************************************************
  RevealTaskBar -- Make taskbar fully visible
  ***********************************************************************/
-void RevealTaskBar(void) {
+void RevealTaskBar() {
+  int new_win_y;
+
   ClearAlarm();
 
-  if (win_y < Midline)
-    win_y = win_border;
-  else
-    win_y = (int)ScreenHeight - win_height - win_border;
+  if (win_y < Midline) {
+    new_win_y = win_border;
+    for (; win_y<=new_win_y; win_y+=2)
+      XMoveWindow(dpy, win, win_x, win_y);
+  } else {
+    new_win_y = (int)ScreenHeight - win_height - win_border;
+    for (; win_y>=new_win_y; win_y-=2)
+      XMoveWindow(dpy, win, win_x, win_y);
+  }
 
-  BelayHide = False;
+  win_y = new_win_y;
   XMoveWindow(dpy, win, win_x, win_y);
+  BelayHide = False; 
 }
 
 /***********************************************************************
  HideTaskbar -- Make taskbar partially visible
  ***********************************************************************/
-void HideTaskBar(void) {
+void HideTaskBar() {
+  int new_win_y;
+
   ClearAlarm();
 
-  if (win_y < Midline)
-    win_y = 2 - win_height;
-  else
-    win_y = (int)ScreenHeight - 2;
+  if (win_y < Midline) {
+    new_win_y = 1 - win_height;
+    for (; win_y>=new_win_y; --win_y)
+      XMoveWindow(dpy, win, win_x, win_y);
+  } else {
+    new_win_y = (int)ScreenHeight - 1;
+    for (; win_y<=new_win_y; ++win_y)
+      XMoveWindow(dpy, win, win_x, win_y);
+  }
+ 
+  win_y = new_win_y;
 
-  XMoveWindow(dpy, win, win_x, win_y);
+/*    XMoveWindow(dpy, win, win_x, win_y); */
 }
 
 /***********************************************************************

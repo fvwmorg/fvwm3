@@ -69,7 +69,7 @@ void StartButtonInit(int height)
   **/
   p = GetPicture(dpy, win, ImagePath, StartIconName, -1);
 
-  StartButton = (Button *)ButtonNew(StartName, p, BUTTON_UP);
+  StartButton = (Button *)ButtonNew(StartName, p, BUTTON_UP,0);
   if (p != NULL) pw = p->width+3; else pw = 0;
   StartButtonWidth = XTextWidth(ButtonFont, StartName, strlen(StartName)) +
     pw + 14;

@@ -18,6 +18,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 #include <fcntl.h>
 #include <pwd.h>
 #include <time.h>
@@ -26,9 +28,12 @@
 #include <sys/types.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xproto.h>
+#include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/extensions/shape.h>
 
+#include "libs/fvwmlib.h"
 #include "Goodies.h"
 #include "FvwmTaskBar.h"
 #include "Mallocs.h"

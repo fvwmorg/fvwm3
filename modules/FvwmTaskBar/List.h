@@ -38,6 +38,9 @@ typedef struct item {
   long tb_flags;
   /* The new, post-gsfr flags - for possible future use.  */
   window_flags flags;
+  long Desk;
+  int  count;
+  Picture p;
   struct item *next;
 } Item;
 
@@ -48,12 +51,14 @@ typedef struct {
 
 /* Function Prototypes */
 void InitList(List *list);
-void AddItem(List *list, long id, long flags, ConfigWinPacket *cfgpacket);
+void AddItem(List *list, long id, long flags, ConfigWinPacket *cfgpacket,
+             long Desk, int count);
 void AddItemName(List *list, char *string, long flags);
 int FindItem(List *list, long id);
 int FindNameItem(List *list, char *string);
 int UpdateItemName(List *list, long id, char *string);
 int UpdateItemFlags(List *list, long id, long flags);
+int UpdateItemFlagsDesk(List *list, long id, long flags, long desk);
 int UpdateNameItem(List *list, char *string, long id, long flags);
 void FreeItem(Item *ptr);
 int DeleteItem(List *list,long id);
@@ -62,7 +67,10 @@ void PrintList(List *list);
 char *ItemName(List *list, int n);
 long ItemFlags(List *list, long id );
 long ItemIndexFlags(List *list, int i);
-long XorFlags(List *list, int n, long value);
+/* long XorFlags(List *list, int n, long value); */
 int ItemCount(List *list);
 long ItemID(List *list, int n);
 void CopyItem(List *dest,List *source,int n);
+void UpdateItemPicture(List *list, int n, Picture *p);
+int GetDeskNumber(List *list, int n, long *Desk);
+Picture *GetItemPicture(List *list, int n);

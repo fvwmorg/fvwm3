@@ -38,6 +38,7 @@
 
 #include "config.h"
 #include "fvwm/fvwm.h"
+#include "libs/fvwmlib.h"
 #include "libs/vpacket.h"
 
 #include <X11/Xlib.h>
@@ -136,6 +137,7 @@ extern void RevealTaskBar(void);
 extern void HideTaskBar(void);
 extern void WarpTaskBar(int x);
 extern void PurgeConfigEvents(void);
+extern void redraw_buttons(void);
 
 extern void Swallow(unsigned long *body);
 

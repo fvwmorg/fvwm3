@@ -51,7 +51,8 @@ void InitList(List *list)
 /******************************************************************************
   AddItem - Allocates spaces for and appends an item to the list
 ******************************************************************************/
-void AddItem(List *list,  long id, long flags, ConfigWinPacket *cfgpacket)
+void AddItem(List *list,  long id, long flags, ConfigWinPacket *cfgpacket,
+             long Desk, int count)
 {
 Item *new;
   new=(Item *)safemalloc(sizeof(Item));
@@ -64,6 +65,8 @@ Item *new;
     memcpy(&new->flags, &cfgpacket->flags, sizeof(new->flags));
     }
 
+  new->Desk=Desk;
+  new->count=count;
   new->next=NULL;
   if (list->tail==NULL) list->head=list->tail=new;
   else {
@@ -101,10 +104,9 @@ void AddItemName(List *list, char *string, long flags) {
 int FindItem(List *list, long id)
 {
 Item *temp;
-int i;
-  for(i=0,temp=list->head;temp!=NULL && temp->id!=id;i++,temp=temp->next);
+  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next);
   if (temp==NULL) return -1;
-  return i;
+  return temp->count;
 }
 
 /******************************************************************************
@@ -113,13 +115,12 @@ int i;
 int FindNameItem(List *list, char *string)
 {
   Item *temp;
-  int i;
 
-  for(i = 0, temp=list->head;
+  for(temp=list->head;
       temp!=NULL && strcmp(temp->name,string) != 0;
-      i++,temp=temp->next);
+      temp=temp->next);
   if (temp==NULL) return -1;
-  return i;
+  return temp->count;
 }
 
 /******************************************************************************
@@ -128,35 +129,42 @@ int FindNameItem(List *list, char *string)
 int UpdateItemName(List *list, long id, char *string)
 {
 Item *temp;
-int i;
-  for(i=0,temp=list->head;temp!=NULL && id!=temp->id;i++,temp=temp->next);
+  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
   UpdateString(&temp->name,string);
-  return i;
+  return temp->count;
 }
 
 int UpdateItemFlags(List *list, long id, long flags)
 {
 Item *temp;
-int i;
-  for(i=0,temp=list->head;temp!=NULL && id!=temp->id;i++,temp=temp->next);
+  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
   if (flags!=-1) temp->tb_flags=flags;
-  return i;
+  return temp->count;
+}
+
+int UpdateItemFlagsDesk(List *list, long id, long flags, long desk)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
+  if (temp==NULL) return -1;
+  if (flags!=-1) temp->tb_flags=flags;
+  temp->Desk=desk;
+  return temp->count;
 }
 
 int UpdateNameItem(List *list, char *string, long id, long flags) {
   Item *temp;
-  int i;
 
-  for(i = 0, temp=list->head;
+  for(temp=list->head;
       temp!=NULL && strcmp(temp->name,string) != 0;
-      i++,temp=temp->next);
+      temp=temp->next);
   if (temp==NULL) return -1;
   else {
     if (id != -1) temp->id = id;
     if (flags != -1) temp->tb_flags = flags;
-    return i;
+    return temp->count;
   }
 }
 
@@ -182,20 +190,24 @@ int i;
   if (list->head->id==id) {
     temp2=list->head;
     temp=list->head=list->head->next;
-    i=-1;
+    i=temp2->count;
   } else {
-    for(i=0,temp=list->head;temp->next!=NULL && temp->next->id!=id;
-      i++,temp=temp->next);
-    if (temp->next==NULL) return -1;
-    temp2=temp->next;
+     for(temp=list->head,temp2=temp->next; temp2; temp2=temp2->next) {
+      if (temp2->id == id)
+        break;
+      temp = temp2;
+    }
+    if (temp2 == NULL) return -1;
     temp->next=temp2->next;
   }
 
   if (temp2==list->tail) list->tail=temp;
 
+  i=temp2->count;
   FreeItem(temp2);
   list->count--;
-  return i+1;
+  return i;
+/*    return i+1; */
 }
 
 /******************************************************************************
@@ -235,8 +247,7 @@ void PrintList(List *list)
 char *ItemName(List *list, int n)
 {
 Item *temp;
-int i;
-  for(i=0,temp=list->head;temp!=NULL && i<n;i++,temp=temp->next);
+  for(temp=list->head;temp!=NULL && temp->count!=n;temp=temp->next);
   if (temp==NULL) return NULL;
   return temp->name;
 }
@@ -258,8 +269,7 @@ Item *temp;
 long ItemIndexFlags(List *list, int i)
 {
 Item *temp;
-int j;
-  for(temp=list->head, j=0;temp!=NULL && j!=i;temp=temp->next,j++);
+  for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
   if (temp==NULL) return -1;
   else return temp->tb_flags;
 }
@@ -272,9 +282,8 @@ int j;
 long XorFlags(List *list, int n, long value)
 {
 Item *temp;
-int i;
 long ret;
-  for(i=0,temp=list->head;temp!=NULL && i<n;i++,temp=temp->next)
+  for(temp=list->head;temp!=NULL && i<n;temp=temp->next)
   if (temp==NULL) return -1;
   ret=temp->flags;
   temp->flags^=value;
@@ -296,8 +305,7 @@ int ItemCount(List *list)
 long ItemID(List *list, int n)
 {
 Item *temp;
-int i;
-  for(i=0,temp=list->head;temp!=NULL && i<n;i++,temp=temp->next);
+  for(temp=list->head;temp!=NULL && temp->count!=n;temp=temp->next);
   if (temp==NULL) return -1;
   return temp->id;
 }
@@ -308,14 +316,56 @@ int i;
 void CopyItem(List *dest, List *source, int n)
 {
 Item *temp;
-int i;
 ConfigWinPacket cfgpkt;
 
-  for(i=0,temp=source->head;temp!=NULL && i<n;i++,temp=temp->next);
+  for(temp=source->head;temp!=NULL && temp->count!=n;temp=temp->next);
   if (temp==NULL) return;
   memcpy(&cfgpkt.flags, &temp->flags, sizeof(cfgpkt.flags));
-  AddItem(dest, temp->id, temp->tb_flags, &cfgpkt);
+  AddItem(dest, temp->id, temp->tb_flags, &cfgpkt,temp->Desk,temp->count);
   UpdateItemName(dest,temp->id,temp->name);
   DeleteItem(source,temp->id);
 }
 
+/******************************************************************************
+  UpdateItemPicture - Adds the picture information in the list
+******************************************************************************/
+void UpdateItemPicture(List *list, int n, Picture *p)
+{
+  Item *temp;
+
+  for (temp=list->head;temp && temp->count!=n;temp=temp->next);
+  if (temp==NULL) return;
+  if (p != NULL)
+  {
+    temp->p.picture = p->picture;
+    temp->p.mask    = p->mask;
+    temp->p.width   = p->width;
+    temp->p.height  = p->height;
+    temp->p.depth   = p->depth;
+  }
+}
+
+/******************************************************************************
+  GetDeskNumber - Returns the desknumber of the item
+******************************************************************************/
+int GetDeskNumber(List *list, int n, long *Desk)
+{
+  Item *temp;
+
+  for (temp=list->head;temp && temp->count!=n;temp=temp->next);
+  if (temp==NULL) return 0;
+  *Desk=temp->Desk;
+  return 1;
+}
+
+/******************************************************************************
+  GetItemPicture - Returns the picture
+******************************************************************************/
+Picture *GetItemPicture(List *list, int n)
+{
+  Item *temp;
+
+  for (temp=list->head;temp && temp->count!=n;temp=temp->next);
+  if (temp==NULL) return 0;
+  return &(temp->p);
+}
