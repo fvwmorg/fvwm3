@@ -1,5 +1,8 @@
 1999-09-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Graphics.c (CreateGradientPixmap): and another attempt to fix
+	the ABR in CGradients
+
 	* libs/Graphics.c (CreateGradientPixmap): another attempt to fix the
 	ABR in CGradients
 

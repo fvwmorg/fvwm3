@@ -669,7 +669,7 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
       {
 	register int w = t_width - 1;
 	register int h = t_height - 1;
-	register int t_scale = (double)(w * h) / sqrt(8);
+	register double t_scale = (double)(w * h) / sqrt(8);
 
 	for (i = 0; i <= w; i++)
 	  for (j = 0; j <= h; j++) {
