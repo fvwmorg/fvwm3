@@ -9,7 +9,7 @@ typeset -i c3
 
 usage ()
 {
-  echo "usage: $myname [ -0 | -1 | -2 ] ..."
+  echo "usage: $myname [ -0 | -1 | -2 ] [ make options ]"
   echo "  -0: run tests with all options defined and disabled (2 builds)"
   echo "  -1: run tests with one option defined and disabled"
   echo "  -2: run tests with two options defined and disabled"
@@ -47,11 +47,12 @@ while [ -n "$1" ] ; do
     run_depth_2=1
     custom=1
   else
-    usage
-    exit 1
+    break;
   fi
   shift
 done
+
+MAKE_OPTS="$*"
 
 # set default if nothing was selected
 if [ -z "$custom" ]; then
@@ -125,7 +126,7 @@ return
   echo >> $log
   echo "building" >> $log
   echo >> $log
-  if nice make > $log.$1 2>&1; then
+  if nice make $MAKE_OPTS > $log.$1 2>&1; then
     echo ok >> $log
   else
     echo FAILED >> $log
