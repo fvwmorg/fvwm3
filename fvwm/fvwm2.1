@@ -432,6 +432,27 @@ Window-Ops, then you don't need quotes: Popup Window-Ops, but if you
 replace the dash with a space, then you need quotes: Popup "Window
 Ops".
 
+.SH BUILT IN KEY AND MOUSE BINDINGS
+The following commands are built-in to fvwm2:
+.EX
+Key Help R A Popup MenuFvwmRoot
+Key F1 R A Popup MenuFvwmRoot
+Key Tab A M WindowList Root c c NoDeskSort
+.EE
+
+The "Help" and "F1" keys invoke a built-in menu that fvwm2 creates.
+This is primarily for new users that haven't created their own configuration
+file.  Either key on the root (background) window will popup an menu
+which should help you get started.
+
+The tab key pressed anywhere with the "meta" key held down will pop-up
+a window list.
+
+There is no reason why you can't override or remove these bindings.
+To remove the window list binding, use this:
+.EX
+Key Tab A M -
+.EE
 
 .IP "AddButtonStyle \fIbutton\fP [ \fIstate\fP ] [ \fIstyle\fP ] [-- \fI[!]flag ...\fP]"
 Adds a button style to \fIbutton\fP.  \fIbutton\fP can be a button
