@@ -594,24 +594,37 @@ void get_default_window_background(
 void setup_frame_window(
   FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
 {
-  Pixmap TexturePixmap = None;
-  Pixmap TexturePixmapSave;
+  Pixmap TexturePixmapSave = pattributes->background_pixmap;
 
-  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
-
+  valuemask |= CWCursor | CWEventMask | CWBackPixmap;
+  valuemask &= ~CWBackPixel;
+  pattributes->background_pixmap = ParentRelative;
   pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
-  pattributes->colormap = Pcmap;
-  pattributes->border_pixel = 0;
   pattributes->event_mask = (SubstructureRedirectMask | EnterWindowMask
 			     | LeaveWindowMask);
 
   /* create the frame window, child of root, grandparent of client */
   tmp_win->frame = XCreateWindow(
       dpy, Scr.Root, tmp_win->frame_g.x, tmp_win->frame_g.y,
-      tmp_win->frame_g.width, tmp_win->frame_g.height, 0, Pdepth, InputOutput,
-      Pvisual, valuemask, pattributes);
+      tmp_win->frame_g.width, tmp_win->frame_g.height, 0, CopyFromParent,
+      InputOutput, CopyFromParent, valuemask, pattributes);
   XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
   XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
+
+  /* restore background */
+  pattributes->background_pixmap = TexturePixmapSave;
+}
+
+void setup_decor_window(
+  FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
+{
+  Pixmap TexturePixmap = None;
+  Pixmap TexturePixmapSave;
+
+  valuemask |= CWCursor | CWColormap | CWBorderPixel | CWEventMask;
+
+  pattributes->colormap = Pcmap;
+  pattributes->border_pixel = 0;
 
   /* stash valuemask bits in case BorderStyle TiledPixmap overwrites */
   TexturePixmapSave = pattributes->background_pixmap;
@@ -625,10 +638,8 @@ void setup_frame_window(
     valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
   }
 
-  pattributes->event_mask =
-    (ExposureMask | VisibilityChangeMask | ButtonPressMask |
-     ButtonReleaseMask);
-  pattributes->event_mask |= KeyPressMask;
+  pattributes->event_mask = ExposureMask | VisibilityChangeMask
+    | ButtonPressMask | ButtonReleaseMask | KeyPressMask;
   /* decor window, parent of all decorative subwindows */
   tmp_win->decor_w =
     XCreateWindow(
@@ -768,15 +779,13 @@ void setup_parent_window(FvwmWindow *tmp_win)
   unsigned long valuemask;
   XSetWindowAttributes attributes;
 
-  /* make sure this does not have a BackPixel or BackPixmap so that
-     that when the client dies there is no flash of BackPixel/BackPixmap */
-  /* may look odd with shaped windows if fvwm has shapes disabled */
-  valuemask = CWBackingStore | CWBackPixmap | CWBorderPixel | CWColormap
-	      | CWCursor | CWEventMask;
+  /* This window is exactly the same size as the client for the
+     benefit of some clients */
+  valuemask = CWBackingStore | CWBackPixmap | CWCursor | CWEventMask;
   attributes.backing_store = NotUseful;
-  attributes.background_pixmap = None;
-  attributes.border_pixel = 0;
-  attributes.colormap = Pcmap;
+  /* The background is ParentRelative so that clients with the same work
+     If problems then use a style flag to toggle ParentRelative/None */
+  attributes.background_pixmap = ParentRelative;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.event_mask = SubstructureRedirectMask;
   tmp_win->Parent = XCreateWindow(
@@ -875,7 +884,10 @@ void setup_auxiliary_windows(
 
   /****** frame window ******/
   if (setup_frame_and_parent)
+  {
     setup_frame_window(tmp_win, valuemask_save, &attributes);
+    setup_decor_window(tmp_win, valuemask_save, &attributes);
+  }
 
   /****** title window ******/
   if (HAS_TITLE(tmp_win))
