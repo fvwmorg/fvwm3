@@ -32,11 +32,11 @@ look to window frames, and provide a simple virtual desktop.  Version
 global options being able to be window specific now.
 
 Note that there are several window managers around that have 'fvwm'
-in their name.  In the past version 2.x of fvwm was commonly called
-'fvwm2' to distinguish it from the former version 1.x ('fvwm' or
-even 'fvwm1'.  Since version 1.x has been replaced by version 2.x
+in their name.  In the past version 2.x of fvwm was commonly called 'fvwm2'
+to distinguish it from the former version 1.x ('fvwm' or even 'fvwm1').
+Since version 1.x has been replaced by version 2.x
 a long time ago we will simply call version 2.x and all versions
-to come 'fvwm' throughout this document, although the ecxecutable
+to come 'fvwm' throughout this document, although the executable
 program is 'fvwm2'.  There is a fvwm offspring called 'fvwm95'.
 Although it is very similar to older versions of fvwm version 2
 it is technically a different window manager that has been developed
@@ -78,7 +78,7 @@ window doesn't lose focus unnecessarily.
 .SH OPTIONS
 These are the command line options that are recognized by \fIfvwm\fP:
 .IP "\fB-blackout\fP"
-This option is provided for backwards compatibility only.  Blacking out
+This option is provided for backward compatibility only.  Blacking out
 the screen during startup is not necessary anymore.
 .IP "\fB-clientId id\fP"
 This options is used when fvwm is restarted by means of the 'Restart'
@@ -105,7 +105,7 @@ A short usage description is printed.
 Try to take over from a previously running wm. This will not work
 unless the other wm is ICCCM 2.0 compliant.
 .IP "\fB-restore\fP"
-This option are used when fvwm is restarted by means of the 'Restart'
+This option is used when fvwm is restarted by means of the 'Restart'
 command or by the session manager.
 .IP "\fB-s\fP"
 On a multi-screen display, run fvwm only on the screen named in
@@ -113,12 +113,11 @@ the $DISPLAY environment variable or provided through the -d
 option. Normally, fvwm will attempt to start up on all screens
 of a multi-screen display.
 .IP "\fB-version\fP"
-Print the version of fvwm to stderr. Also print configuration informations:
-says if fvwm has been compiled with readline, rplay, stroke, xpm, imlib or
-gnome support.
-.IP "\fB-visual\fP \fIvisual class\fP"
-Causes fvwm to use \fIvisual class\fP for the window borders and menus.
-\fIvisual class\fP can be StaticGray, GrayScale, StaticColor, PseudoColor,
+Prints the version of fvwm to stderr. Also prints an information about the
+compiled in support for readline, rplay, stroke, xpm, imlib and gnome.
+.IP "\fB-visual\fP \fIvisual_class\fP"
+Causes fvwm to use \fIvisual_class\fP for the window borders and menus.
+\fIvisual_class\fP can be StaticGray, GrayScale, StaticColor, PseudoColor,
 TrueColor or DirectColor.
 .IP "\fB-visualId\fP \fIid\fP"
 Causes fvwm to use \fIid\fP as the visualID for the window borders
@@ -161,7 +160,7 @@ the screen or large groups of related windows can easily be viewed.
 The (m by n) size (i.e. number of pages) of the virtual desktops can be
 changed any time, by using the DeskTopSize built-in command.  All
 virtual desktops must be (are) the same size.  The total number of
-distinct desktops need not be specified, but is limited to
+distinct desktops does not need to be specified, but is limited to
 approximately 4 billion total.  All windows on a range of desktops can
 be viewed in the Pager, a miniature view of the desktops.  The pager
 is an accessory program, called a module, which is not essential for
@@ -271,6 +270,18 @@ of the display.  $HOSTDISPLAY will always use the TCP/IP transport
 protocol (even for a local connection) so $DISPLAY should be used for
 local connections, as it may use Unix-domain sockets, which are
 faster.
+
+If you want to start some applications or modules with fvwm,
+you can simply put 'Exec app' or 'Module FvwmXxx' into your .fvwm2rc,
+but it is not recomended; do this only if you know what you are doing.
+It is usually critical to start applications or modules after .fvwm2rc is
+read, because it contains styles or module configurations which can affect
+window appearance and functionality.
+
+The standard way to start applications or modules on fvwm's start up is to
+add them to an initialization function (usually StartFunction or
+InitFunction). This way they are only started after fvwm reads
+the entire .fvwm2rc.
 
 Fvwm has three special functions for initialization:
 StartFunction, which is executed on startups and restarts; InitFunction
@@ -647,8 +658,8 @@ configuration lines, is is possible to use this class of
 parameters.  They can be used whereever a module expects a
 color name.  Since the FvwmTheme module is not running when
 fvwm first passes through its configuration file, you may not
-get the desired results if you use this in commands like
-'HilightColor $[fg.cs0] $[bg.cs0]'.
+get the desired results if you use this in commands
+like 'HilightColor $[fg.cs0] $[bg.cs0]'.
 .in -.3i
 .in -.5i
 
@@ -1102,7 +1113,7 @@ DoubleClickTime,
 SidePic,
 SideColor,
 PopupAsRootMenu / PopupAsSubmenu,
-DeleteSubmenus / HoldSubmenus,
+RemoveSubmenus / HoldSubmenus,
 SubmenusRight / SubmenusLeft,
 ItemFormat,
 VerticalItemSpacing,
@@ -1141,7 +1152,7 @@ BorderWidth 2, AutomaticHotkeysOff.
 \fIWIN\fP style is equivalent to HilightBack, Hilight3DOff,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
 TitleWarpOff, TitleUnderlines1, SeparatorsShort, TrianglesSolid,
-PopupImmediately, PopupAsSubmenu, DeleteSubmenus, SubmenusRight,
+PopupImmediately, PopupAsSubmenu, RemoveSubmenus, SubmenusRight,
 BorderWidth 2, AutomaticHotkeysOff.
 
 \fIBorderWidth\fP takes the thickness of the border around the menus
@@ -1325,7 +1336,7 @@ the original menu is closed before the sub menu appears, with
 \fIPopupAsSubmenu\fP it is not, so you can navigate back into the
 parent menu. Note that \fIPopupAsSubmenu\fP is the default.
 
-\fIDeleteSubmenus\fP instructs fvwm to remove submenus when you move back
+\fIRemoveSubmenus\fP instructs fvwm to remove submenus when you move back
 into the parent menu. With \fIHoldSubmenus\fP the submenu remains visible.
 You will probably want to use \fIHoldSubmenus\fP if you are using the
 \fIPopupDelayed\fP style.
@@ -3577,8 +3588,8 @@ causes problems then the separate ForeColor and BackColor options can
 be used.
 
 \fIColorset\fP takes the colorset number as its sole argument and
-overrides the colors set with \fIColors\fP.  Instead the
-corresponding colors from the colorset are used.  Note that all
+overrides the colors set by \fIColors\fP.  Instead, the
+corresponding colors from the given colorset are used.  Note that all
 other features of a colorset are unsupported yet.
 
 .B "DefaultColors" "[\fI foreground background\fP] | [\fI Colorset num\fP]"
