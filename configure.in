@@ -498,18 +498,21 @@ chmod +x config.status
 echo "
 Configuration:
 
-  FVWM Version:                      $VERSION
+  FVWM Version:                          $VERSION
 
-  Have ReadLine support?             $with_readline
-  Have RPlay support?                $with_rplay
-  Have Stroke support?               $with_stroke
-  Have XPM support?                  $with_xpm$xpm_problem
-  Have GTK support?                  $with_gtk
-  Have GNOME Window Manager support? $with_gnome
-  Have Session Management support?   $with_sm
-  Have GNOME support in FvwmGtk?     $want_gnome
-"
-
+  Have ReadLine support?                 $with_readline
+  Have RPlay support?                    $with_rplay
+  Have Stroke support?                   $with_stroke
+  Have XPM support?                      $with_xpm$xpm_problem
+  Have GTK support?                      $with_gtk
+  Have GNOME Window Manager support?     $with_gnome
+  Have Session Management support?       $with_sm
+  Have GNOME support in FvwmGtk?         $want_gnome"
+case "$enable_kanji" in
+  yes) echo "  Have multibyte support (experimental)? yes" ;;
+  **)  echo "  Have multibyte support (experimental)? no" ;;
+esac
+echo
 case "$ac_cv_dmalloc" in
   yes) echo "  DMALLOC heap debugging library enabled." ;;
 esac
