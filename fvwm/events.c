@@ -534,11 +534,13 @@ void HandlePropertyNotify(void)
     if ((Tmp_win->wmhints->flags & IconPixmapHint) ||
 	(old_wmhints_flags       & IconPixmapHint))
     {
+fprintf(stderr,"hpn: iph changed (%d) '%s'\n", !!(int)(Tmp_win->wmhints->flags & IconPixmapHint), Tmp_win->name);
       has_icon_pixmap_hint_changed = True;
     }
     if ((Tmp_win->wmhints->flags & IconWindowHint) ||
 	(old_wmhints_flags       & IconWindowHint))
     {
+fprintf(stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(Tmp_win->wmhints->flags & IconWindowHint), Tmp_win->name);
       has_icon_window_hint_changed = True;
     }
     increase_icon_hint_count(Tmp_win);
@@ -546,6 +548,7 @@ void HandlePropertyNotify(void)
     {
       if (ICON_OVERRIDE_MODE(Tmp_win) == ICON_OVERRIDE)
       {
+fprintf(stderr,"hpn: icon override '%s'\n", Tmp_win->name);
 	has_icon_changed = False;
       }
       else if (ICON_OVERRIDE_MODE(Tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
@@ -553,29 +556,41 @@ void HandlePropertyNotify(void)
 #if 0
 	has_icon_changed = True;
 #else
-	if (WAS_ICON_HINT_PROVIDED(Tmp_win) == ICON_HINT_ONCE &&
-	    has_icon_pixmap_hint_changed)
+	if (has_icon_pixmap_hint_changed)
 	{
-	  /* ignore the first icon pixmap hint if the application did not
-	   * provide it from the start */
-	  has_icon_changed = False;
+	  if (WAS_ICON_HINT_PROVIDED(Tmp_win) == ICON_HINT_MULTIPLE)
+	  {
+fprintf(stderr,"hpn: using further iph '%s'\n", Tmp_win->name);
+	    has_icon_changed = True;
+	  }
+	  else
+	  {
+	    /* ignore the first icon pixmap hint if the application did not
+	     * provide it from the start */
+fprintf(stderr,"hpn: first iph ignored '%s'\n", Tmp_win->name);
+	    has_icon_changed = False;
+	  }
 	}
 	else if (has_icon_window_hint_changed)
 	{
+fprintf(stderr,"hpn: using iwh '%s'\n", Tmp_win->name);
 	  has_icon_changed = True;
 	}
 	else
 	{
+fprintf(stderr,"hpn: iwh not changed, hint ignored '%s'\n", Tmp_win->name);
 	  has_icon_changed = False;
 	}
 #endif
       }
       else
       {
+fprintf(stderr,"hpn: using hint '%s'\n", Tmp_win->name);
 	has_icon_changed = True;
       }
       if (has_icon_changed)
       {
+fprintf(stderr,"hpn: icon changed '%s'\n", Tmp_win->name);
 	/* Okay, the icon hint has changed and style options tell us to honour
 	 * this change.  Now let's see if we have to use the application
 	 * provided pixmap or window (if any), the icon file provided by the
@@ -593,6 +608,7 @@ void HandlePropertyNotify(void)
 
       if (IS_ICONIFIED(Tmp_win) && has_icon_changed)
       {
+fprintf(stderr,"hpn: applying new icon '%s'\n", Tmp_win->name);
 	SET_ICONIFIED(Tmp_win, 0);
 	SET_ICON_UNMAPPED(Tmp_win, 0);
 	CreateIconWindow(Tmp_win, Tmp_win->icon_g.x,Tmp_win->icon_g.y);
