@@ -7,10 +7,11 @@ release 2.4.12.
 
 Contents
 
-0. *The* most frequently asked question :)
+0. *The* most frequently asked questions :)
 
      0.1  A few minutes after fvwm is started my keyboard and
           mouse bindings stop working.  What can I do?
+     0.2  I use XMMS, but it ignores some window styles.
 
 1. About Fvwm
 
@@ -205,6 +206,21 @@ Trivia: In all my years as an fvwm developer this has been by far the
    that this question is never asked again will be mentioned in big
    letters on the fvwm home page :-)
 
+0.2  I use XMMS, but it ignores some window styles.
+
+A: XMMS wants to do evrything by itself and overrides many
+   settings of the window manager.  Check the options menu in XMMS
+   and if that does not help, ask the XMMS people about it at
+
+        http://xmms.org/
+
+   *Please* do not ask XMMS questions on the fvwm mailing lists
+   and so not report XMMS related bugs before you tried the XMMS
+   mailing lists.  No offence meant, but we really have more
+   important things to do than providing user support for third
+   party software.
+
+
 ======================================================================
                             1 - About Fvwm
 ======================================================================
@@ -235,7 +251,7 @@ A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
    Know what? I found another one while stroking my cats: FEEDING :-)
 
    Check this link:
-   	http://fvwm.org/fvwm-cats/
+       http://fvwm.org/fvwm-cats/
 
 ----------------------------------------------------------------------
 
@@ -461,7 +477,7 @@ A: Sure - here's one from Graeme McCaffery:
      On the other hand, here is a link to a web page that describes how to
      add multiple window managers to the CDE login menu:
 
-     	http://twirl.mcc.ac.uk/~zzassgl/wm.html
+        http://twirl.mcc.ac.uk/~zzassgl/wm.html
 
 ----------------------------------------------------------------------
 
@@ -934,7 +950,7 @@ A: Start with a new one or convert your old one.  This can be done by
    PagerBackColor colorname                   (obsoleted, use FvwmPager)
    PagerFont fontname                         (obsoleted, use FvwmPager)
    PagingDefault pagingdefaultvalue           (obsoleted)
-   PixmapPath				      ImagePath path
+   PixmapPath                                 ImagePath path
    Popup PopupName                            AddToMenu (not compatible)
    RandomPlacement                            Style (RandomPlacement)
    SaveUnders                                 (obsoleted)
@@ -1558,14 +1574,14 @@ A: First of all, please read the first section of the answer to Q5.1!
 
         Mail it to the fvwm-workers mailing list <fvwm-workers@fvwm.org>.
 
-	If your patch is large you should compress it (preferably
+        If your patch is large you should compress it (preferably
         with gzip).  Should it still be larger than 25k you might want
         to to place it on a web page and email the URL to the mailing
         list or ask on the fvwm-workers list first.
 
-	Be sure to read the answer to Q5.1.
+        Be sure to read the answer to Q5.1.
 
-	Don't forget the ChangeLog and the documentation.
+        Don't forget the ChangeLog and the documentation.
 
    Applying a patch -
 
@@ -1873,8 +1889,8 @@ A: This problem might occur on other applications besides the one
    There are 2 Mainsoft Knowledgebase pages that relate to UNIX
    window managers:
 
-	http://www.mainsoft.com/kb_mainwin/kbmw0027.html
-	http://www.mainsoft.com/kb_mainwin/kbmw0034.html
+        http://www.mainsoft.com/kb_mainwin/kbmw0027.html
+        http://www.mainsoft.com/kb_mainwin/kbmw0034.html
 
    These pages suggest that you export MWWM=allwm or MWWM=MWM before
    starting the application.
@@ -1984,7 +2000,7 @@ A: This is not our primary mission, but we think fvwm does a pretty
    good job of producing these appearances.
 
    You may want to take a look at the
-   	http://fvwm-themes.sourceforge.net/
+        http://fvwm-themes.sourceforge.net/
    package.
 
 ----------------------------------------------------------------------
@@ -2002,7 +2018,7 @@ A: If you want more color icons, grab the ones out of the ctwm
    links at the fvwm web site to other sources of icons.
 
    You may want to take a look at the
-   	http://wm-icons.sourceforge.net/
+        http://wm-icons.sourceforge.net/
    package.
 
 ----------------------------------------------------------------------
@@ -2063,7 +2079,7 @@ A: Under this heading we've had questions about FvwmForm being all
    it at once.
 
    This is explained in excruciating detail in the
-   	http://www.sunhelp.org/faq/FrameBuffer.html
+        http://www.sunhelp.org/faq/FrameBuffer.html
 
    If your display can support more than 256 colors, that's the way to
    go.  Look up the documentation for your X server.  You may want to
@@ -2102,11 +2118,11 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
    Replace
 
-     #define NUMBER_OF_MOUSE_BUTTONS		   5
+     #define NUMBER_OF_MOUSE_BUTTONS               5
 
    with
 
-     #define NUMBER_OF_MOUSE_BUTTONS		   7
+     #define NUMBER_OF_MOUSE_BUTTONS               7
 
    and recompile and reinstall fvwm.  However, the buttons with numbers
    higher than 5 do not work as well as 1 to 5.  This is because X
