@@ -211,7 +211,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       {
         XWindowChanges xwc;
         xwc.sibling = tmp_win->frame;
-        xwc.stack_mode = Above;
+        xwc.stack_mode = Below;
         XConfigureWindow(dpy, tmp_win->icon_w, CWSibling|CWStackMode, &xwc);
       }
 #endif
@@ -230,7 +230,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       {
         XWindowChanges xwc;
         xwc.sibling = tmp_win->frame;
-        xwc.stack_mode = Above;
+        xwc.stack_mode = Below;
         XConfigureWindow(dpy, tmp_win->icon_pixmap_w, CWSibling|CWStackMode, &xwc);
       }
 #endif
@@ -393,7 +393,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       XWindowChanges xwc;
       int mask;
       xwc.sibling = Tmp_win->frame;
-      xwc.stack_mode = Above;
+      xwc.stack_mode = Below;
       mask = CWSibling|CWStackMode;
       if (Tmp_win->icon_w != None)
 	{      

@@ -876,6 +876,9 @@ void LowerWindow(FvwmWindow *t)
 
   if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
     {
+      changes.sibling = t->frame;
+      changes.stack_mode = Below;
+      flags = CWSibling|CWStackMode;
       if (t->icon_w != None)
 	XConfigureWindow(dpy, t->icon_w, flags, &changes);
       if (t->icon_pixmap_w != None)

@@ -1,3 +1,12 @@
+1999-04-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/events.c (HandleConfigureRequest): 
+	* fvwm/icons.c (CreateIconWindow): 
+	(DrawIconWindow): 
+	* fvwm/misc.c (LowerWindow): 
+	(RaiseWindow): make sure icon windows are always restacked
+	below their frame.
+
 1999-04-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.h (window_flags): new flags is_icon_entered 

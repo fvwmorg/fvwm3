@@ -1525,6 +1525,18 @@ void HandleConfigureRequest(void)
     xwc.stack_mode = cre->detail;
     XConfigureWindow (dpy, Tmp_win->frame,
                       cre->value_mask & (CWSibling | CWStackMode), &xwc);
+
+    xwc.sibling = Tmp_win->frame;
+    xwc.stack_mode = Below;
+      if (Tmp_win->icon_w != None)
+	{      
+	  XConfigureWindow(dpy,Tmp_win->icon_w,CWSibling|CWStackMode,&xwc);
+	}
+      if (Tmp_win->icon_pixmap_w != None)
+	{
+	  XConfigureWindow(dpy,Tmp_win->icon_pixmap_w,CWSibling|CWStackMode,&xwc);
+	}
+
     sendEvent = True;
 
     /*
