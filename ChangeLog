@@ -1,5 +1,9 @@
 2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (style_parse_one_style_option):
+	(style_parse_one_style_option):
+	fixed icon box crash
+
 	* fvwm/bindings.c (update_nr_buttons):
 	fixed extra buttons on window decorations
 

@@ -1476,7 +1476,7 @@ static void style_parse_icon_fill_style(
 
 
 static Bool style_parse_one_style_option(
-	char *token, char *rest, window_style *ps)
+	char *token, char *rest, window_style *ps, icon_boxes **cur_ib)
 {
 	window_style *add_style;
 	/* work area for button number */
@@ -1487,8 +1487,6 @@ static Bool style_parse_one_style_option(
 	int val[4];
 	int spargs = 0;
 	Bool found;
-	/* which current boxes to chain to */
-	icon_boxes *cur_ib = NULL;
 
 	found = True;
 	switch (tolower(token[0]))
@@ -2307,15 +2305,15 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "IconBox"))
 		{
-			style_parse_icon_box_style(&cur_ib, token, rest, ps);
+			style_parse_icon_box_style(cur_ib, token, rest, ps);
 		} /* end iconbox parameter */
 		else if (StrEquals(token, "ICONGRID"))
 		{
-			style_parse_icon_grid_style(token, rest, ps, cur_ib);
+			style_parse_icon_grid_style(token, rest, ps, *cur_ib);
 		}
 		else if (StrEquals(token, "ICONFILL"))
 		{
-			style_parse_icon_fill_style(token, rest, ps, cur_ib);
+			style_parse_icon_fill_style(token, rest, ps, *cur_ib);
 		} /* end iconfill */
 		else if (StrEquals(token, "IconifyWindowGroups"))
 		{
@@ -3613,6 +3611,8 @@ void parse_and_set_window_style(char *action, window_style *ps)
 	char *token;
 	char *rest;
 	Bool found;
+	/* which current boxes to chain to */
+	icon_boxes *cur_ib = NULL;
 
 	while (isspace((unsigned char)*action))
 	{
@@ -3636,8 +3636,7 @@ void parse_and_set_window_style(char *action, window_style *ps)
 		/* It might make more sense to capture the whole word, fix its
 		 * case, and use strcmp, but there aren't many caseless compares
 		 * because of this "switch" on the first letter. */
-		found = style_parse_one_style_option(token, rest, ps);
-
+		found = style_parse_one_style_option(token, rest, ps, &cur_ib);
 
 		if (found == False)
 		{
