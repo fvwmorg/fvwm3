@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* New module FvwmGtk. It implements menus, dialogs and window-lists 
+  using the GTK toolkit.
+
 * NoInset is independent from HiddenHandles, it now works on NoHandles style
   windows.
   

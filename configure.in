@@ -224,6 +224,7 @@ AM_PROG_LEX
 AC_PROG_YACC
 AC_PATH_PROG(PERL, perl)
 
+
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
@@ -274,6 +275,15 @@ dnl -lSM -lICE are in X_PRE_LIBS when they exist.
 AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), , 
              [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 
+dnl FIXME: this requires AM_PATH_GTK to be defined.
+AM_PATH_GTK(1.1.0,[FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)],)
+if test "x$no_gtk" = x ; then
+  with_gtk=yes
+else
+  with_gtk=no
+fi
+
+
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile docs/Makefile
 icons/Makefile sample.fvwmrc/Makefile tests/Makefile
@@ -308,6 +318,7 @@ modules/FvwmTalk/Makefile
 modules/FvwmTaskBar/Makefile
 modules/FvwmWharf/Makefile
 modules/FvwmWinList/Makefile
+modules/FvwmGtk/Makefile
 )
 
 echo "
@@ -318,4 +329,5 @@ Configuration:
   Have ReadLine support?    $with_readline
   Have RPlay support?	    $with_rplay
   Have XPM support? 	    $with_xpm$xpm_problem
+  Have GTK support?         $with_gtk 
 "

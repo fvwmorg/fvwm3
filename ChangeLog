@@ -1,3 +1,18 @@
+1999-03-15  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* libs/Module.c (SendText): Send packets atomically in order
+	to avoid fvwm accidentially killing a module after reading the
+	first word of the packet too fast.
+
+	* acinclude.m4: include gtk.m4 in order to make rebuilding
+	on gtk-less hosts less error-prone.
+
+1999-03-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/module.c (SendStrToModule): Make sure fvwm doesn't hold
+	any grabs while sending strings to modules. This is necessary for 
+	implementing menus in modules.
+
 1999-03-14  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* utils/fvwmrc_convert: applied MenuStyle patch

@@ -76,22 +76,26 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
  ***********************************************************************/
 void SendText(int *fd,char *message,unsigned long window)
 {
+  char *p, buf[1024]; /* should be ok; fvwm limits packet length to 1000 */
   int w;
 
   if(message != NULL)
   {
-    write(fd[0],&window, sizeof(unsigned long));
+    p = buf;
+    *((unsigned long*)p) = window;
+    p += sizeof (unsigned long);
+    w = strlen (message);
+    *((int*)p) = w;
+    p += sizeof (int);
+    strncpy (p, message, 1000);
+    p += w;
+    *((int*)p) = 1;
+    p += sizeof (int);
 
-    w=strlen(message);
-    write(fd[0],&w,sizeof(int));
-    if (w)
-      write(fd[0],message,w);
-
-    /* keep going */
-    w = 1;
-    write(fd[0],&w,sizeof(int));
+    write(fd[0], buf, p - buf);
   }
 }
+
 
 /***************************************************************************
  *

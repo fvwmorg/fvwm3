@@ -312,11 +312,14 @@ int HandleModuleInput(Window w, int channel)
   n = read(readPipes[channel],text, size);
   if(n < size)
     {
+      if (n == -1)
+	perror ("while reading from module:");
+      fprintf(stderr, "Module read[%d] (%dy): `%s'", n, size, text); 
       KillModule(channel,2);
       return 0;
     }
   text[n] = '\0';
-  /* DB(("Module read[%d] (%d): `%s'", n, size, text)); */
+  /* DB(("Module read[%d] (%dy): `%s'", n, size, text)); */
 
   n = read(readPipes[channel],&cont, sizeof(cont));
   /* DB(("Module read[%d] cont = %d", n, cont)); */
@@ -385,6 +388,7 @@ RETSIGTYPE DeadPipe(int nonsense)
 
 void KillModule(int channel, int place)
 {
+  fprintf(stderr, "KillModule %i\n", place);
   close(readPipes[channel]);
   close(writePipes[channel]);
 
@@ -623,8 +627,12 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
                      unsigned long context, char *action,int* Module)
 {
   char *module,*str;
+  unsigned long data0, data1, data2;
   int i;
 
+  /* FIXME: Without this, popup menus can't be implemented properly in
+     modules */
+  UngrabEm();
   if (!action)
     return;
   GetNextToken(action,&module);
@@ -632,11 +640,22 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     return;
   str = strdup(action + strlen(module) + 1);
 
+  if (tmp_win) {
+    /* Modules may need to know which window this applies to */
+    data0 = tmp_win->w;
+    data1 = tmp_win->frame;
+    data2 = (unsigned long)tmp_win;
+  } else {
+    data0 = 0;
+    data1 = 0;
+    data2 = 0;
+  }
   for (i=0;i<npipes;i++)
   {
     if((pipeName[i] != NULL)&&(matchWildcards(module,pipeName[i])))
     {
-      SendName(i,M_STRING,0,0,0,str);
+      SendName(i,M_STRING,data0,data1,data2,str);
+      FlushQueue(i);
     }
   }
 
@@ -684,6 +703,8 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
       }
     }
     if (e <= 0) {
+      if (e == -1)
+	perror ("while reading from module:");
       KillModule(module,10);
     }
     fcntl(readPipes[module],F_SETFL,O_NDELAY);

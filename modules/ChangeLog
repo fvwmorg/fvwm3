@@ -1,3 +1,15 @@
+1999-03-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk: New module. It implements menus, dialogs and 
+	window-lists using the GTK toolkit.
+
+1999-03-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmPager/FvwmPager.c (list_restack): rewritten to
+	change the stacking order separately for the icon window
+	and each desk, since this is how the pager organizes its
+	windows.
+
 Sat Mar 13 15:25:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmCommand/scripts/Makefile.am: created.  Substitutes the
