@@ -117,25 +117,25 @@ void MakeButton(button_info *b)
     fprintf(stderr,"%s: BUG: MakeButton called with NULL pointer\n",MyName);
     exit(2);
   }
-  if(b->flags&b_Container)
+  if(b->flags.b_Container)
   {
     fprintf(stderr,"%s: BUG: MakeButton called with container\n",MyName);
     exit(2);
   }
 
-  if ((b->flags & b_Swallow) && !(b->flags & b_Icon) &&
+  if (b->flags.b_Swallow && !b->flags.b_Icon &&
       buttonSwallowCount(b) < 3)
   {
     return;
   }
 
   /* Check if parent container has an icon as background */
-  if (b->parent->c->flags&b_IconBack || b->parent->c->flags&b_IconParent)
-    b->flags|=b_IconParent;
+  if (b->parent->c->flags.b_IconBack || b->parent->c->flags.b_IconParent)
+    b->flags.b_IconParent = 1;
 
   /* Check if parent container has a colorset definition as background */
-  if (b->parent->c->flags&b_Colorset || b->parent->c->flags&b_ColorsetParent)
-    b->flags|=b_ColorsetParent;
+  if (b->parent->c->flags.b_Colorset || b->parent->c->flags.b_ColorsetParent)
+    b->flags.b_ColorsetParent = 1;
 
   Ffont = buttonFont(b);
 
@@ -145,7 +145,7 @@ void MakeButton(button_info *b)
      place title and iconwin in their proper positions */
 
   /* For now, hardcoded window centered, title bottom centered, below window */
-  if(buttonSwallowCount(b)==3 && (b->flags & b_Swallow))
+  if(buttonSwallowCount(b)==3 && b->flags.b_Swallow)
   {
     long supplied;
     if(!b->IconWin)
@@ -154,7 +154,7 @@ void MakeButton(button_info *b)
       exit(2);
     }
 
-    if (b->flags&b_Title && Ffont && !(buttonJustify(b)&b_Horizontal))
+    if (b->flags.b_Title && Ffont && !(buttonJustify(b)&b_Horizontal))
       ih -= Ffont->height;
 
     b->icon_w=iw;
@@ -168,9 +168,9 @@ void MakeButton(button_info *b)
 	  b->hints->flags=0;
 	ConstrainSize(b->hints, &b->icon_w, &b->icon_h);
       }
-      if (b->flags & b_Right)
+      if (b->flags.b_Right)
 	ix += iw-b->icon_w;
-      else if (!(b->flags & b_Left))
+      else if (!b->flags.b_Left)
 	ix += (iw-b->icon_w)/2;
       XMoveResizeWindow(Dpy,b->IconWin,ix,iy+(ih-b->icon_h)/2,
 			b->icon_w,b->icon_h);
@@ -184,32 +184,32 @@ void MakeButton(button_info *b)
 
 static int buttonBGColorset(button_info *b)
 {
-	if (b->flags & b_Hangon)
+	if (b->flags.b_Hangon)
 	{
-		if ((UberButton->c->flags & b_PressColorset) &&
+		if (b->flags.b_PressColorset)
+			return b->pressColorset;
+		if (UberButton->c->flags.b_PressColorset &&
 			(buttonSwallow(b) & b_UseOld))
 		{
 			return UberButton->c->pressColorset;
 		}
 	}
-	else if (b == ActiveButton &&
-		UberButton->c->flags & b_ActiveColorset)
-	{
-		return UberButton->c->activeColorset;
-	}
-	else if (b == CurrentButton &&
-		UberButton->c->flags & b_PressColorset)
-	{
-		return UberButton->c->pressColorset;
-	}
+	else if (b == ActiveButton && b->flags.b_ActiveColorset)
+		return b->activeColorset; /* button has it's own active CS */
+	else if (b == ActiveButton && UberButton->c->flags.b_ActiveColorset)
+		return UberButton->c->activeColorset; /* global active CS */
+	else if (b == CurrentButton && b->flags.b_PressColorset)
+		return b->pressColorset; /* button has it's own press CS */
+	else if (b == CurrentButton && UberButton->c->flags.b_PressColorset)
+		return UberButton->c->pressColorset; /* global press CS */
 
-	if (b->flags & b_Colorset)
-	{
+	if (b->flags.b_Colorset)
 		return b->colorset;
-	}
 
 	return -1;
 }
+
+
 
 /**
 *** RedrawButton()
@@ -279,7 +279,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 	/* This probably isn't the place for this, but it seems to work here
 	 * and not elsewhere, so... */
-	if ((b->flags & b_Swallow) && (buttonSwallowCount(b) == 3) &&
+	if (b->flags.b_Swallow && (buttonSwallowCount(b) == 3) &&
 		b->IconWin != None)
 	{
 		XSetWindowBorderWidth(Dpy,b->IconWin,0);
@@ -320,7 +320,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 	/* ------------------------------------------------------------------ */
 
-	if (b->flags & b_Panel)
+	if (b->flags.b_Panel)
 	{
 		if ((b->newflags.panel_mapped))
 		{
@@ -331,14 +331,14 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 			rev_xor = 1;
 		}
 	}
-	else if ((b->flags & b_Hangon) ||
+	else if (b->flags.b_Hangon ||
 		 (b == CurrentButton && is_pointer_in_current_button))
 	{
 		/* Hanging swallow or held down by user */
 		rev = 1;
 	}
 
-	if (b->flags&b_Action)
+	if (b->flags.b_Action)
 	{
 		/* If this is a Desk button that takes you to here.. */
 		int n;
@@ -420,9 +420,9 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				   pev->xexpose.width, pev->xexpose.height,
 				   &clip));
 
-		if(b->flags&b_Container)
+		if(b->flags.b_Container)
 		{
-			if (b->c->flags & b_Colorset)
+			if (b->c->flags.b_Colorset)
 			{
 				if (do_draw)
 				{
@@ -434,8 +434,8 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 						Pdepth, NormalGC);
 				}
 			}
-			else if (!(b->c->flags&b_IconParent) &&
-				 !(b->c->flags&b_ColorsetParent))
+			else if (!b->c->flags.b_IconParent &&
+				 !b->c->flags.b_ColorsetParent)
 			{
 				int x1 = x + f;
 				int y1 = y + f;
@@ -490,8 +490,8 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				}
 			}
 		} /* container */
-		else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
-			 b->flags&b_Colorset)
+		else if (buttonSwallowCount(b) == 3 && b->flags.b_Swallow &&
+			 b->flags.b_Colorset)
 		{
 			/* Set the back color of the buttons for shaped apps
 			 * (olicha 00-03-09) and also for transparent modules */
@@ -503,14 +503,12 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 					&clip, &Colorset[b->colorset],
 					Pdepth, NormalGC);
 			}
-			if (!(b->flags & b_FvwmModule))
+#if 0
+			if (!b->swallow & b_FvwmModule)
 			{
 				change_swallowed_window_colorset(b, False);
 			}
-			else
-			{
-				/* module */
-			}
+#endif
 		}
 		else if (do_draw)
 		{
@@ -526,8 +524,8 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 					clip.height, &Colorset[cs],
 					Pdepth, NormalGC);
 			}
-			else if (b->flags & b_Back &&
-				!(UberButton->c->flags & b_Colorset))
+			else if (b->flags.b_Back &&
+				!UberButton->c->flags.b_Colorset)
 			{
 				gcv.background = b->bc;
 				XChangeGC(Dpy,NormalGC,GCBackground,
@@ -545,7 +543,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 			   so we need to be careful. Currently, to avoid this
 			   we ensure ActiveColorset is specified if
 			   ActiveIcon is used. */
-			if (UberButton->c->flags & b_TransBack &&
+			if (UberButton->c->flags.b_TransBack &&
 				FShapesSupported)
 			{
 				int w = buttonWidth(b), h = buttonHeight(b);
@@ -570,7 +568,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				else
 				{
 					int xx, yy, ww, hh;
-					GetIconPosition(b, buttonIconFlag(b),
+					GetIconPosition(b,
 						icon, &xx, &yy, &ww, &hh);
 					XCopyArea(Dpy, icon->mask, shapeMask,
 						transGC, 0, 0, icon->width,
@@ -595,7 +593,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 		DrawTitle(b,MyWindow,NormalGC,pev,False);
 	}
 
-	if (title == NULL && (b->flags & b_Panel) &&
+	if (title == NULL && b->flags.b_Panel &&
 	    (b->panel_flags.panel_indicator))
 	{
 		XGCValues gcv;
@@ -679,7 +677,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 	if (cleaned)
 	{
-		if (b->flags & buttonIconFlag(b))
+		if (iconFlagSet(b))
 		{
 			/* draw icon */
 			DrawForegroundIcon(b, pev);
@@ -709,7 +707,7 @@ void DrawTitle(
 	XRectangle clip;
 	Region region = None;
 	FvwmPicture *pic;
-	unsigned long iconFlag;
+	unsigned short bIconFlagSet;
 
 	BH = buttonHeight(b);
 
@@ -744,17 +742,17 @@ void DrawTitle(
 	XChangeGC(Dpy,gc,gcm,&gcv);
 
 	pic = buttonIcon(b);
-	iconFlag = buttonIconFlag(b);
+	bIconFlagSet = iconFlagSet(b);
 
 	/* If a title is to be shown, truncate it until it fits */
-	if(justify&b_Horizontal && !(b->flags & b_Right))
+	if(justify&b_Horizontal && !b->flags.b_Right)
 	{
-		if (b->flags & iconFlag)
+		if (bIconFlagSet)
 		{
 			ix += pic->width+buttonXPad(b);
 			iw -= pic->width+buttonXPad(b);
 		}
-		else if ((b->flags & b_Swallow) && buttonSwallowCount(b)==3)
+		else if (b->flags.b_Swallow && buttonSwallowCount(b)==3)
 		{
 			ix += b->icon_w+buttonXPad(b);
 			iw -= b->icon_w+buttonXPad(b);
@@ -781,7 +779,7 @@ void DrawTitle(
 			}
 		}
 	}
-	if(just==0 || ((justify&b_Horizontal) && (b->flags&b_Right))) /* Left */
+	if(just==0 || ((justify&b_Horizontal) && b->flags.b_Right)) /* Left */
 	{
 		xpos=ix;
 	}
@@ -812,8 +810,8 @@ void DrawTitle(
 		FwinString.x = xpos;
 		/* If there is more than the title, put it at the bottom */
 		/* Unless stack flag is set, put it to the right of icon */
-		if ((b->flags & iconFlag ||
-		    ((buttonSwallowCount(b)==3) && (b->flags&b_Swallow))) &&
+		if ((bIconFlagSet ||
+		    ((buttonSwallowCount(b)==3) && b->flags.b_Swallow)) &&
 		   !(justify&b_Horizontal))
 		{
 			FwinString.y = iy+ih-Ffont->descent;

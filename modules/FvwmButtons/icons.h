@@ -13,6 +13,6 @@
  *
  */
 
-Bool GetIconPosition(button_info *b, unsigned long iconFlag,
+Bool GetIconPosition(button_info *b,
     FvwmPicture *pic, int *r_x, int *r_y, int *r_w, int *r_h);
 void DrawForegroundIcon(button_info *b, XEvent *pev);

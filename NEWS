@@ -19,6 +19,8 @@ Changes in beta release 2.5.13 (not released yet)
    - FvwmIconMan: added tool tips with Tips, TipsDelays, TipsFont,
      TipsColorset, TipsFormat, TipsBorderWidth, TipsPlacement,
      TipsJustification and TipsOffsets options.
+   - FvwmButtons: PressColorset & ActiveColorset options for
+	 _individual_ buttons.
 
 -------------------------------------------------------------------
 

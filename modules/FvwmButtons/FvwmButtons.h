@@ -42,47 +42,45 @@
 /* ------------------------------- structs --------------------------------- */
 
 /* flags for b->flags */
-#define b_Container  0x00000001 /* Contains several buttons */
-#define b_Font       0x00000002 /* Has personal font data */
-#define b_Fore       0x00000004 /* Has personal text color */
-#define b_Back       0x00000008 /* Has personal background color (or "none")*/
-#define b_Padding    0x00000010 /* Has personal padding data */
-#define b_Frame      0x00000020 /* Has personal framewidth */
-#define b_Title      0x00000040 /* Contains title */
-#define b_Icon       0x00000080 /* Contains icon */
-#define b_Swallow    0x00000100 /* Contains swallowed window */
-#define b_Action     0x00000200 /* Fvwm action when clicked on */
-#define b_Hangon     0x00000400 /* Is waiting for a window before turning
-				 * active */
-#define b_Justify    0x00000800 /* Has justification info */
-#define b_Size       0x00001000 /* Has a minimum size, don't guess */
-#define b_IconBack   0x00002000 /* Has an icon as background */
-#define b_IconParent 0x00004000 /* Parent button has an icon as background */
-#define b_TransBack  0x00008000 /* Transparent background */
-#define b_Left       0x00010000 /* Button is left-aligned */
-#define b_Right      0x00020000 /* Button is right-aligned */
-#define b_SizeFixed  0x00040000 /* User provided rows/columns may not be
-				 * altered */
-#define b_PosFixed   0x00080000 /* User provided button position */
-#define b_SizeSmart  0x00100000 /* Improved button box sizing */
-#define b_Colorset   0x00200000 /* use colorset instead of fore/back colours */
-#define b_ColorsetParent 0x00400000 /* Parent has a colorset background */
-#define b_Panel      0x00800000 /* similar to swallow, but drawn differently */
-#define b_ActionIgnoresClientWindow \
-		     0x01000000 /* Actions work only on the background of a
-				 * button with a swallowed app. */
-#define b_ActionOnPress \
-		     0x02000000 /* By default this only done on Popup */
-#define b_Id             0x04000000 /* Has a user defined id for referencing */
-#define b_ActiveIcon     0x08000000 /* Use alternate Icon on hover */
-#define b_ActiveColorset 0x10000000 /* Use alternate colorset on hover */
-#define b_ActiveTitle    0x20000000 /* Use alternate Title text on hover */
-#define b_PressIcon      0x40000000 /* Use alternate Icon on press */
-#define b_PressColorset  0x80000000 /* Use alternate Colorset on press */
-/* FIXME: We're out of bits!
-   Nasty hack: b_PressColorset is used by UberButton & it would never use
-   b_PressTitle (& vice-versa) so they have the same bit-value. */
-#define b_PressTitle    0x80000000 /* Use alternate Title text on press */
+typedef struct
+{
+  unsigned b_Container  : 1;	/* Contains several buttons */
+  unsigned b_Font       : 1;	/* Has personal font data */
+  unsigned b_Fore       : 1;	/* Has personal text color */
+  unsigned b_Back       : 1;	/* Has personal background color (or "none")*/
+  unsigned b_Padding    : 1;	/* Has personal padding data */
+  unsigned b_Frame      : 1;	/* Has personal framewidth */
+  unsigned b_Title      : 1;	/* Contains title */
+  unsigned b_Icon       : 1;	/* Contains icon */
+  unsigned b_Swallow    : 1;	/* Contains swallowed window */
+  unsigned b_Action     : 1;	/* Fvwm action when clicked on */
+  unsigned b_Hangon     : 1;	/* Is waiting for a window before turning
+				  active */
+  unsigned b_Justify    : 1;	/* Has justification info */
+  unsigned b_Size       : 1;	/* Has a minimum size, don't guess */
+  unsigned b_IconBack   : 1;	/* Has an icon as background */
+  unsigned b_IconParent : 1;	/* Parent button has an icon as background */
+  unsigned b_TransBack  : 1;	/* Transparent background */
+  unsigned b_Left       : 1;	/* Button is left-aligned */
+  unsigned b_Right      : 1;	/* Button is right-aligned */
+  unsigned b_SizeFixed  : 1;	/* User provided rows/columns may not be
+				   altered */
+  unsigned b_PosFixed   : 1;	/* User provided button position */
+  unsigned b_SizeSmart  : 1;	/* Improved button box sizing */
+  unsigned b_Colorset   : 1;	/* use colorset instead of fore/back colours */
+  unsigned b_ColorsetParent : 1;/* Parent has a colorset background */
+  unsigned b_Panel      : 1;	/* similar to swallow, but drawn differently */
+  unsigned b_ActionIgnoresClientWindow : 1; /* Actions work only on the
+			       background of a button with a swallowed app. */
+  unsigned b_ActionOnPress : 1;	/* By default this only done on Popup */
+  unsigned b_Id         : 1;	/* Has a user defined id for referencing */
+  unsigned b_ActiveIcon     : 1;	/* Use alternate Icon on hover */
+  unsigned b_ActiveColorset : 1;	/* Use alternate colorset on hover */
+  unsigned b_ActiveTitle    : 1;	/* Use alternate Title text on hover */
+  unsigned b_PressIcon      : 1;	/* Use alternate Icon on press */
+  unsigned b_PressColorset  : 1;	/* Use alternate Colorset on press */
+  unsigned b_PressTitle     : 1;	/* Use alternate Title text on press */
+}flags_type;
 
 /* Flags for b->swallow */
 #define b_Count       0x0003 /* Init counter for swallowing */
@@ -116,7 +114,7 @@ struct container_info_struct
   int width;
   int height;
 
-  unsigned long flags;       /* Which data are set in this container? */
+  flags_type flags;          /* Which data are set in this container? */
   byte justify;              /* b_Justify */
   byte justify_mask;         /* b_Justify */
   unsigned int swallow;      /* b_Swallow */
@@ -152,7 +150,7 @@ typedef struct
 struct button_info_struct
 {
   /* required fields */
-  unsigned long flags;
+  flags_type flags;
   int  BPosX,BPosY;               /* position in button units from top left */
   unsigned int BWidth,BHeight;     /* width and height in button units  */
   button_info *parent;
@@ -185,6 +183,8 @@ struct button_info_struct
   FvwmPicture *backicon;   /* b_Back && b_IconBack */
   FvwmPicture *activeicon; /* b_ActiveIcon */
   FvwmPicture *pressicon;  /* b_PressIcon */
+  int activeColorset;      /* b_ActiveColorset */
+  int pressColorset;       /* b_PressColorset */
   Window IconWin;          /* b_Swallow */
   Window PanelWin;         /* b_Panel */
   Window BackIconWin;      /* b_Back && b_IconBack */
@@ -198,6 +198,7 @@ struct button_info_struct
   int x,y;                    /* b_Swallow */
   ushort w,h,bw;              /* b_Swallow */
 
+  /* The newflags struct can probably be merged in with flags_type struct. */
   struct
   {
     unsigned is_panel : 1;        /* b_Panel */
@@ -206,6 +207,7 @@ struct button_info_struct
     unsigned panel_shaded : 1;    /* b_Panel */
     unsigned do_swallow_new : 1;
   } newflags;
+
 #define SLIDE_UP 'u'
 #define SLIDE_DOWN 'd'
 #define SLIDE_LEFT 'l'

@@ -30,7 +30,7 @@ Pixel buttonShadow(button_info*);
 int buttonColorset(button_info *b);
 char *buttonTitle (button_info *b);
 FvwmPicture *buttonIcon (button_info *b);
-unsigned long buttonIconFlag (button_info *b);
+unsigned short iconFlagSet (button_info *b);
 int buttonBackgroundButton(button_info *b, button_info **r_b);
 byte buttonSwallow(button_info*);
 byte buttonJustify(button_info*);

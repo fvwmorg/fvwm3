@@ -207,7 +207,7 @@ Bool DestroyedWindow(Display *d,XEvent *e,char *a)
 
 static Window SwallowedWindow(button_info *b)
 {
-  return (b->flags & b_Panel) ? b->PanelWin : b->IconWin;
+  return (b->flags.b_Panel) ? b->PanelWin : b->IconWin;
 }
 
 int IsThereADestroyEvent(button_info *b)
@@ -299,7 +299,7 @@ static void DeadPipeCleanup(void)
 	  XMoveWindow(Dpy,swin,b->x,b->y);
 	  XResizeWindow(Dpy,swin,b->w,b->h);
 	  XSetWindowBorderWidth(Dpy,swin,b->bw);
-	  if ((b->flags & b_Panel))
+	  if (b->flags.b_Panel)
 	  {
 	    XMapWindow(Dpy, swin);
 	  }
@@ -321,12 +321,12 @@ static void DeadPipeCleanup(void)
   while(NextButton(&ub,&b,&button,1))
   {
     /* The picture pointer is NULL if the pixmap came from a colorset. */
-    if(b->flags&b_Icon && b->icon != NULL)
+    if(b->flags.b_Icon && b->icon != NULL)
       PDestroyFvwmPicture(Dpy, b->icon);
-    if(b->flags&b_IconBack && b->backicon != NULL)
+    if(b->flags.b_IconBack && b->backicon != NULL)
       PDestroyFvwmPicture(Dpy, b->icon);
-    if(b->flags&b_Container && b->c->flags&b_IconBack &&
-       !(b->c->flags&b_TransBack) && b->c->backicon != NULL)
+    if(b->flags.b_Container && b->c->flags.b_IconBack &&
+       !(b->c->flags.b_TransBack) && b->c->backicon != NULL)
       PDestroyFvwmPicture(Dpy, b->c->backicon);
   }
 }
@@ -341,7 +341,7 @@ void SetButtonSize(button_info *ub, int w, int h)
   int dx;
   int dy;
 
-  if(!ub || !(ub->flags & b_Container))
+  if(!ub || !(ub->flags.b_Container))
   {
     fprintf(stderr,"%s: BUG: Tried to set size of noncontainer\n",MyName);
     exit(2);
@@ -370,7 +370,7 @@ void SetButtonSize(button_info *ub, int w, int h)
   i = 0;
   while (i < ub->c->num_buttons)
   {
-    if (ub->c->buttons[i] && ub->c->buttons[i]->flags & b_Container)
+    if (ub->c->buttons[i] && ub->c->buttons[i]->flags.b_Container)
     {
       SetButtonSize(ub->c->buttons[i], buttonWidth(ub->c->buttons[i]),
 		    buttonHeight(ub->c->buttons[i]));
@@ -394,7 +394,7 @@ void AddButtonAction(button_info *b,int n,char *action)
     fprintf(stderr, "%s: BUG: AddButtonAction failed\n", MyName);
     exit(2);
   }
-  if(b->flags&b_Action)
+  if(b->flags.b_Action)
   {
     if(b->action[n])
       free(b->action[n]);
@@ -406,7 +406,7 @@ void AddButtonAction(button_info *b,int n,char *action)
 			       sizeof(char*));
     for (i = 0; i <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS; b->action[i++] = NULL)
       ;
-    b->flags|=b_Action;
+    b->flags.b_Action = 1;
   }
 
   while (*action && isspace((unsigned char)*action))
@@ -446,7 +446,7 @@ char *GetButtonAction(button_info *b, int n)
 	rectangle r;
 	char *act;
 
-	if(!b || !(b->flags&b_Action) || !(b->action) || n < 0 ||
+	if(!b || !(b->flags.b_Action) || !(b->action) || n < 0 ||
 	   n > NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 	{
 		return NULL;
@@ -685,14 +685,14 @@ int main(int argc, char **argv)
 
   /* To avoid an infinite loop of Enter/Leave-Notify events, if the user
      uses ActiveIcon with "Pixmap none" they MUST specify ActiveColorset. */
-  if (FShapesSupported && (UberButton->c->flags & b_TransBack) &&
-    !(UberButton->c->flags & b_ActiveColorset))
+  if (FShapesSupported && (UberButton->c->flags.b_TransBack) &&
+    !(UberButton->c->flags.b_ActiveColorset))
   {
     i = -1;
     ub=UberButton;
     while (NextButton(&ub, &b, &i, 0))
     {
-      if (b->flags & (b_ActiveIcon|b_ActiveTitle))
+      if (b->flags.b_ActiveIcon || b->flags.b_ActiveTitle)
       {
         fprintf(stderr, "%s: Must specify ActiveColorset when using ActiveIcon or ActiveTitle with \"Pixmap none\".\n", MyName);
 	exit(0);
@@ -767,7 +767,7 @@ int main(int argc, char **argv)
 
   if (FShapesSupported)
   {
-    if (UberButton->c->flags&b_TransBack)
+    if (UberButton->c->flags.b_TransBack)
       SetTransparentBackground(UberButton,Width,Height);
   }
 
@@ -828,7 +828,7 @@ static Bool reallyLeaveWindow (const int x, const int y,
 
 	/* TODO: fix situation when mouse enters window overlapping
 	   with a b_Swallow button. */
-	if (b->flags & b_Swallow)
+	if (b->flags.b_Swallow)
 	{
 		return False;
 	}
@@ -865,8 +865,8 @@ static button_info *handle_new_position(
 			ActiveButton = b;
 			RedrawButton(tmp, DRAW_FORCE, NULL);
 		}
-		if (b->flags & (b_ActiveIcon | b_ActiveTitle) ||
-		    UberButton->c->flags & b_ActiveColorset)
+		if (b->flags.b_ActiveIcon || b->flags.b_ActiveTitle ||
+		    UberButton->c->flags.b_ActiveColorset)
 		{
 			ActiveButton = b;
 			redraw = True;
@@ -909,7 +909,7 @@ void Loop(void)
 
 	if (sev->kind != FShapeBounding)
 	  return;
-	if (UberButton->c->flags & b_TransBack)
+	if (UberButton->c->flags.b_TransBack)
 	{
 	  SetTransparentBackground(UberButton, Width, Height);
 	}
@@ -951,7 +951,7 @@ void Loop(void)
 		      tmpb = b;
 		      while(tmpb->parent != NULL)
 		      {
-			      if(tmpb->flags&b_Container)
+			      if(tmpb->flags.b_Container)
 			      {
 				      x=buttonXPos(tmpb,buttonNum(tmpb));
 				      y=buttonYPos(tmpb,buttonNum(tmpb));
@@ -970,7 +970,7 @@ void Loop(void)
 		      }
 		      if(r)
 		      {
-			      if(ready<1 && !(b->flags&b_Container))
+			      if(ready<1 && !(b->flags.b_Container))
 				      MakeButton(b);
 			      RedrawButton(b, DRAW_ALL, &Event);
 		      }
@@ -1010,13 +1010,13 @@ void Loop(void)
 	  /* what follow can be optimized */
 	  while(NextButton(&ub,&b,&button,0))
 	    MakeButton(b);
-	  if (FShapesSupported && UberButton->c->flags & b_TransBack)
+	  if (FShapesSupported && UberButton->c->flags.b_TransBack)
 	  {
 	    SetTransparentBackground(UberButton, Width, Height);
 	  }
 	  for (i = 0; i < nColorsets; i++)
 		  change_colorset(i, &Event);
-	  if (!(UberButton->c->flags & b_Colorset))
+	  if (!UberButton->c->flags.b_Colorset)
 	  {
 		  XClearWindow(Dpy, MyWindow);
 		  RedrawWindow();
@@ -1098,8 +1098,8 @@ void Loop(void)
 	is_pointer_in_current_button = True;
 
 	act = NULL;
-	if (!(b->flags & b_Panel) &&
-	    (!b || !(b->flags&b_Action) ||
+	if (!b->flags.b_Panel &&
+	    (!b || !b->flags.b_Action ||
 	     ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
 	      (act=GetButtonAction(b,0)) == NULL)))
 	{
@@ -1121,7 +1121,7 @@ void Loop(void)
 	{
 	  break;
 	}
-	if (act && !(b->flags & b_ActionOnPress) &&
+	if (act && !b->flags.b_ActionOnPress &&
 	    strncasecmp(act, "popup", 5) != 0)
 	{
 	  free(act);
@@ -1171,7 +1171,7 @@ void Loop(void)
 	}
 	b = select_button(UberButton, x, y);
 	act = GetButtonAction(b,Event.xbutton.button);
-	if (b && !act && (b->flags & b_Panel))
+	if (b && !act && b->flags.b_Panel)
 	{
 	  ActiveButton = b;
 	  HandlePanelPress(b);
@@ -1211,7 +1211,7 @@ void Loop(void)
 
 		if(i2-i>1)
 		{
-		  b->flags|=b_Hangon;
+		  b->flags.b_Hangon = 1;
 		  b->hangon = mymalloc(i2-i);
 		  strncpy(b->hangon,&act[i+1],i2-i-1);
 		  b->hangon[i2-i-1] = 0;
@@ -1278,7 +1278,7 @@ void Loop(void)
 	b = CurrentButton;
 	CurrentButton=NULL;
 	ActiveButton = b;
-	if (b && !(b->flags & b_Hangon))
+	if (b && !b->flags.b_Hangon)
 	  RedrawButton(b, DRAW_FORCE, NULL);
 	break;
 
@@ -1303,9 +1303,9 @@ void Loop(void)
 	    if(Event.xproperty.atom==XA_WM_NAME &&
 	       buttonSwallow(b)&b_UseTitle)
 	    {
-	      if(b->flags&b_Title)
+	      if(b->flags.b_Title)
 		free(b->title);
-	      b->flags|=b_Title;
+	      b->flags.b_Title = 1;
 	      FlocaleGetNameProperty(XGetWMName, Dpy, swin, &tmp);
 	      if (tmp.name != NULL)
 	      {
@@ -1327,7 +1327,7 @@ void Loop(void)
 	      MakeButton(b);
 	      if (FShapesSupported)
 	      {
-		if (UberButton->c->flags & b_TransBack)
+		if (UberButton->c->flags.b_TransBack)
 		{
 		  SetTransparentBackground(UberButton, Width, Height);
 		}
@@ -1345,7 +1345,7 @@ void Loop(void)
 	button=-1;
 	while(NextButton(&ub,&b,&button,0))
 	{
-	  if (b->flags & b_Panel && Event.xany.window == b->PanelWin)
+	  if (b->flags.b_Panel && Event.xany.window == b->PanelWin)
 	  {
 	    /* A panel has been unmapped, update the button */
 	    b->newflags.panel_mapped = (Event.type == MapNotify);
@@ -1369,7 +1369,7 @@ void Loop(void)
 		    MyName,(ushort)b,(ushort)swin,b->hangon);
 #endif
 	    b->swallow&=~b_Count;
-	    if (b->flags & b_Panel)
+	    if (b->flags.b_Panel)
 	      b->PanelWin=None;
 	    else
 	      b->IconWin=None;
@@ -1387,10 +1387,14 @@ void Loop(void)
 	      }
 	      b->swallow|=1;
 	      if (!b->newflags.is_panel)
-		b->flags |= (b_Swallow | b_Hangon);
+	      {
+		b->flags.b_Swallow = 1;
+		b->flags.b_Hangon = 1;
+	      }
 	      else
 	      {
-		b->flags |= (b_Panel | b_Hangon);
+		b->flags.b_Panel = 1;
+		b->flags.b_Hangon = 1;
 		b->newflags.panel_mapped = 0;
 	      }
 	      p = module_expand_action(
@@ -1414,7 +1418,8 @@ void Loop(void)
 	      fprintf(stderr,", waiting for respawned window\n");
 #endif
 	      b->swallow |= 1;
-	      b->flags |= (b_Swallow | b_Hangon);
+	      b->flags.b_Swallow = 1;
+	      b->flags.b_Hangon = 1;
 	      RedrawButton(b, DRAW_CLEAN, NULL);
 	      if (is_transient_panel)
 	      {
@@ -1423,7 +1428,8 @@ void Loop(void)
 	    }
 	    else
 	    {
-	      b->flags &= ~(b_Swallow | b_Panel);
+	      b->flags.b_Swallow = 0;
+	      b->flags.b_Panel = 0;
 	      RedrawButton(b, DRAW_FORCE, NULL);
 #ifdef DEBUG_HANGON
 	      fprintf(stderr,"\n");
@@ -1494,7 +1500,7 @@ int LoadIconFile(const char *s, FvwmPicture **p, int cset)
 	{
 		fpa.mask |= FPAM_DITHER;
 	}
-	if (UberButton->c->flags&b_TransBack)
+	if (UberButton->c->flags.b_TransBack)
 	{
 		fpa.mask |= FPAM_NO_ALPHA;
 	}
@@ -1524,16 +1530,17 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 
 
   /* initialise button colours and background */
-  if (b->flags & b_Colorset)
+  if (b->flags.b_Colorset)
   {
     int cset = b->colorset;
 
     /* override normal icon options */
-    if (b->flags & b_IconBack && !(b->flags & b_TransBack))
+    if (b->flags.b_IconBack && !b->flags.b_TransBack)
     {
       free(b->back);
     }
-    b->flags &= ~(b_IconBack | b_TransBack);
+    b->flags.b_IconBack = 0;
+    b->flags.b_TransBack = 0;
 
     /* fetch the colours from the colorset */
     b->fc = Colorset[cset].fg;
@@ -1544,40 +1551,41 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     {
       /* we have a pixmap */
       b->backicon = NULL;
-      b->flags |= b_IconBack;
+      b->flags.b_IconBack = 1;
     }
   }
   else /* no colorset */
   {
     b->colorset = -1;
-    if(b->flags&b_Fore)
+    if(b->flags.b_Fore)
       b->fc=GetColor(b->fore);
-    if(b->flags&b_Back)
+    if(b->flags.b_Back)
     {
       b->bc = GetColor(b->back);
       b->hc = GetHilite(b->bc);
       b->sc = GetShadow(b->bc);
-      if(b->flags&b_IconBack)
+      if(b->flags.b_IconBack)
       {
 	if(!LoadIconFile(b->back,&b->backicon, b->colorset))
-	  b->flags&=~b_Back;
+	  b->flags.b_Back = 0;
       }
     } /* b_Back */
   } /* !b_Colorset */
 
   /* initialise container colours and background */
-  if (b->flags & b_Container)
+  if (b->flags.b_Container)
   {
-    if(b->c->flags & b_Colorset)
+    if(b->c->flags.b_Colorset)
     {
       int cset = b->c->colorset;
 
       /* override normal icon options */
-      if (b->c->flags & b_IconBack && !(b->c->flags & b_TransBack))
+      if (b->c->flags.b_IconBack && !b->c->flags.b_TransBack)
       {
 	free(b->c->back_file);
       }
-      b->c->flags &= ~(b_IconBack | b_TransBack);
+      b->c->flags.b_IconBack = 0;
+      b->c->flags.b_TransBack = 0;
 
       /* fetch the colours from the colorset */
       b->c->fc = Colorset[cset].fg;
@@ -1588,7 +1596,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
       {
 	/* we have a pixmap */
 	b->c->backicon = NULL;
-	b->c->flags |= b_IconBack;
+	b->c->flags.b_IconBack = 1;
       }
     }
     else /* no colorset */
@@ -1597,17 +1605,17 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 #ifdef DEBUG_LOADDATA
       fprintf(stderr,", colors2");
 #endif
-      if(b->c->flags&b_Fore)
+      if(b->c->flags.b_Fore)
 	b->c->fc=GetColor(b->c->fore);
-      if(b->c->flags&b_Back)
+      if(b->c->flags.b_Back)
       {
 	b->c->bc = GetColor(b->c->back);
 	b->c->hc = GetHilite(b->c->bc);
 	b->c->sc = GetShadow(b->c->bc);
-	if(b->c->flags&b_IconBack && !(b->c->flags&b_TransBack))
+	if(b->c->flags.b_IconBack && !b->c->flags.b_TransBack)
 	{
 	  if(!LoadIconFile(b->c->back_file,&b->c->backicon,-1))
-	    b->c->flags&=~b_IconBack;
+	    b->c->flags.b_IconBack = 0;
 	}
       }
     } /* !b_Colorset */
@@ -1616,7 +1624,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 
 
   /* Load the font */
-  if(b->flags&b_Font)
+  if(b->flags.b_Font)
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", font \"%s\"",b->font_string);
@@ -1628,11 +1636,11 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     }
     else if (!(b->Ffont = FlocaleLoadFont(Dpy, b->font_string, MyName)))
     {
-      b->flags&=~b_Font;
+      b->flags.b_Font = 0;
     }
   }
 
-  if(b->flags&b_Container && b->c->flags&b_Font)
+  if(b->flags.b_Container && b->c->flags.b_Font)
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", font2 \"%s\"",b->c->font_string);
@@ -1643,12 +1651,12 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     }
     else if (!(b->c->Ffont = FlocaleLoadFont(Dpy, b->c->font_string, MyName)))
     {
-      b->c->flags&=~b_Font;
+      b->c->flags.b_Font = 0;
     }
   }
 
   /* Calculate subbutton sizes */
-  if(b->flags&b_Container && b->c->num_buttons)
+  if(b->flags.b_Container && b->c->num_buttons)
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", entering container\n");
@@ -1657,7 +1665,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
       if(b->c->buttons[i])
 	RecursiveLoadData(b->c->buttons[i],&x,&y);
 
-    if(b->c->flags&b_Size)
+    if(b->c->flags.b_Size)
     {
       x=b->c->minx;
       y=b->c->miny;
@@ -1684,7 +1692,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   ix = iy = tx = ty = hix = hiy = htx = hty = pix = piy = ptx = pty = 0;
 
   /* Load the icon */
-  if(b->flags&b_Icon && LoadIconFile(b->icon_file,&b->icon, buttonColorset(b)))
+  if(b->flags.b_Icon && LoadIconFile(b->icon_file,&b->icon, buttonColorset(b)))
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", icon \"%s\"",b->icon_file);
@@ -1693,10 +1701,10 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     iy = b->icon->height;
   }
   else
-    b->flags &= ~b_Icon;
+    b->flags.b_Icon = 0;
 
   /* load the active icon. */
-  if (b->flags & b_ActiveIcon &&
+  if (b->flags.b_ActiveIcon &&
       LoadIconFile(b->active_icon_file, &b->activeicon, buttonColorset(b)))
   {
 #ifdef DEBUG_LOADDATA
@@ -1710,11 +1718,11 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   {
     hix = ix;
     hiy = iy;
-    b->flags &= ~b_ActiveIcon;
+    b->flags.b_ActiveIcon = 0;
   }
 
   /* load the press icon. */
-  if (b->flags & b_PressIcon &&
+  if (b->flags.b_PressIcon &&
       LoadIconFile(b->press_icon_file, &b->pressicon, buttonColorset(b)))
   {
 #ifdef DEBUG_LOADDATA
@@ -1728,11 +1736,11 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   {
     pix = ix;
     piy = iy;
-    b->flags &= ~b_PressIcon;
+    b->flags.b_PressIcon = 0;
   }
 
   /* calculate Title dimensions. */
-  if(b->flags&b_Title && (Ffont = buttonFont(b)))
+  if(b->flags.b_Title && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", title \"%s\"",b->title);
@@ -1750,7 +1758,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   }
 
   /* calculate ActiveTitle dimensions. */
-  if (b->flags & b_ActiveTitle && (Ffont = buttonFont(b)))
+  if (b->flags.b_ActiveTitle && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", title \"%s\"",b->title);
@@ -1774,7 +1782,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   }
 
   /* calculate PressTitle dimensions. */
-  if (b->flags & b_PressTitle && (Ffont = buttonFont(b)))
+  if (b->flags.b_PressTitle && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", title \"%s\"",b->title);
@@ -1800,7 +1808,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   x += max(max(ix, tx), max(hix, htx));
   y += max(iy + ty, hiy + hty);
 
-  if(b->flags&b_Size)
+  if(b->flags.b_Size)
   {
     x=b->minx;
     y=b->miny;
@@ -2155,13 +2163,13 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   gcv.background = fore_pix;
   ShadowGC = fvwmlib_XCreateGC(Dpy, MyWindow, gcm, &gcv);
 
-  if (ub->c->flags&b_Colorset)
+  if (ub->c->flags.b_Colorset)
   {
     SetWindowBackground(
       Dpy, MyWindow, mysizehints.width, mysizehints.height,
       &Colorset[ub->c->colorset], Pdepth, NormalGC, True);
   }
-  else if (ub->c->flags & b_IconBack && !(ub->c->flags & b_TransBack))
+  else if (ub->c->flags.b_IconBack && !ub->c->flags.b_TransBack)
   {
     XSetWindowBackgroundPixmap(Dpy,MyWindow,ub->c->backicon->picture);
   }
@@ -2320,7 +2328,7 @@ void SpawnSome(void)
     return;
   first=0;
   while(NextButton(&ub,&b,&button,0))
-    if((buttonSwallowCount(b)==1) && (b->flags&b_Hangon) &&
+    if((buttonSwallowCount(b)==1) && b->flags.b_Hangon &&
        (buttonSwallow(b)&b_UseOld))
       if(b->spawn)
       {
@@ -2440,7 +2448,7 @@ static void update_root_transparency(XEvent *Event)
 	button=-1;
 	while(NextButton(&ub,&b,&button,0))
 	{
-		if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow))
+		if (buttonSwallowCount(b) == 3 && b->flags.b_Swallow)
 		{
 			/* should handle 2 cases: module or not */
 			if (b->swallow & b_FvwmModule)
@@ -2451,7 +2459,7 @@ static void update_root_transparency(XEvent *Event)
 					send_bg_change_to_module(b, Event);
 				}
 			}
-			else if ((b->flags & b_Colorset) &&
+			else if (b->flags.b_Colorset &&
 				 CSET_IS_TRANSPARENT(b->colorset))
 			{
 				change_swallowed_window_colorset(b, True);
@@ -2488,13 +2496,13 @@ static void recursive_change_colorset(
 		{
 			continue;
 		}
-		if (b->flags & b_Swallow)
+		if (b->flags.b_Swallow)
 		{
 			/* swallowed window */
 			if (buttonSwallowCount(b) == 3 && b->IconWin != None)
 			{
 				RedrawButton(b, DRAW_ALL, NULL);
-				if (b->flags&b_Colorset &&
+				if (b->flags.b_Colorset &&
 				    !(b->swallow&b_FvwmModule))
 				{
 					change_swallowed_window_colorset(
@@ -2513,7 +2521,7 @@ static void recursive_change_colorset(
 
 static void change_colorset(int colorset, XEvent *Event)
 {
-	if (UberButton->c->flags & b_Colorset &&
+	if (UberButton->c->flags.b_Colorset &&
 	    colorset == UberButton->c->colorset)
 	{
 		button_info *ub,*b;
@@ -2529,7 +2537,7 @@ static void change_colorset(int colorset, XEvent *Event)
 		ub=UberButton;
 		while(NextButton(&ub,&b,&button,0))
 		{
-			if (b->flags&b_Swallow && buttonSwallowCount(b) == 3)
+			if (b->flags.b_Swallow && buttonSwallowCount(b) == 3)
 			{
 				if (b->swallow&b_FvwmModule)
 				{
@@ -2703,7 +2711,7 @@ void CheckForHangon(unsigned long *body)
 
   while(NextButton(&ub,&b,&button,0))
   {
-    if(b->flags&b_Hangon && matchWildcards(b->hangon, cbody))
+    if(b->flags.b_Hangon && matchWildcards(b->hangon, cbody))
     {
       /* Is this a swallowing button in state 1? */
       if(buttonSwallowCount(b)==1)
@@ -2713,11 +2721,11 @@ void CheckForHangon(unsigned long *body)
 
 	/* must grab the server here to make sure the window is not swallowed
 	 * by some other application. */
-	if (b->flags & b_Panel)
+	if (b->flags.b_Panel)
 	  b->PanelWin=(Window)body[0];
 	else
 	  b->IconWin=(Window)body[0];
-	b->flags&=~b_Hangon;
+	b->flags.b_Hangon = 0;
 
 	/* We get the parent of the window to compare with later... */
 	b->IconWinParent=
@@ -2740,7 +2748,7 @@ void CheckForHangon(unsigned long *body)
 	fprintf(stderr,"%s: Button 0x%06x %s 0x%lx \"%s\", released\n",
 		MyName,(int)b,"hung on window",body[0],cbody);
 #endif
-	b->flags&=~b_Hangon;
+	b->flags.b_Hangon = 0;
 	free(b->hangon);
 	b->hangon=NULL;
 	RedrawButton(b, DRAW_FORCE, NULL);
@@ -3007,7 +3015,9 @@ void swallow(unsigned long *body)
 	fprintf(stderr,"%s: Window 0x%lx (\"%s\") disappeared %s\n",
 		MyName,swin,b->hangon,"before swallow complete");
 	/* Now what? Nothing? For now: give up that button */
-	b->flags&=~(b_Hangon|b_Swallow|b_Panel);
+	b->flags.b_Hangon = 0;
+	b->flags.b_Swallow = 0;
+	b->flags.b_Panel = 0;
 	return;
       }
 
@@ -3024,7 +3034,7 @@ void swallow(unsigned long *body)
 	/* Back one square and lose one turn */
 	b->swallow&=~b_Count;
 	b->swallow|=1;
-	b->flags|=b_Hangon;
+	b->flags.b_Hangon = 1;
 	return;
       }
 
@@ -3033,7 +3043,7 @@ void swallow(unsigned long *body)
 	      MyName,(ushort)b,body[0]);
 #endif
 
-      if (b->flags & b_Swallow)
+      if (b->flags.b_Swallow)
       {
 	/* "Swallow" the window! Place it in the void so we don't see it
 	 * until it's MoveResize'd */
@@ -3050,12 +3060,12 @@ void swallow(unsigned long *body)
 	  /* Back one square and lose one turn */
 	  b->swallow&=~b_Count;
 	  b->swallow|=1;
-	  b->flags|=b_Hangon;
+	  b->flags.b_Hangon = 1;
 	  MyXUngrabServer(Dpy);
 	  return;
 	}
 	/*error checking*/
-	for (i = 0; !(b->flags & b_ActionIgnoresClientWindow) &&
+	for (i = 0; !b->flags.b_ActionIgnoresClientWindow &&
 		     i <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS; i++)
 	{
 	  if (b->action != NULL && b->action[i] != NULL)
@@ -3081,9 +3091,9 @@ void swallow(unsigned long *body)
 	b->swallow |= 3;
 	if (buttonSwallow(b) & b_UseTitle)
 	{
-	  if (b->flags & b_Title)
+	  if (b->flags.b_Title)
 	    free(b->title);
-	  b->flags |= b_Title;
+	  b->flags.b_Title = 1;
 	  FlocaleGetNameProperty(XGetWMName, Dpy, swin, &temp);
 	  if (temp.name != NULL)
 	  {
@@ -3109,7 +3119,7 @@ void swallow(unsigned long *body)
 		  (swallower_win)? swallower_win:MyWindow);
 	  SendText(fd,cmd,0);
 	}
-	if ((b->flags & b_Colorset) &&  !(b->swallow & b_FvwmModule))
+	if (b->flags.b_Colorset &&  !(b->swallow & b_FvwmModule))
 	{
 	  /* A short delay to give the application the chance to set the
 	   * background itself, so we can override it. If we don't do this, the
@@ -3122,7 +3132,7 @@ void swallow(unsigned long *body)
 	}
 	if (FShapesSupported)
 	{
-	  if (UberButton->c->flags & b_TransBack)
+	  if (UberButton->c->flags.b_TransBack)
 	  {
 	    SetTransparentBackground(UberButton, Width, Height);
 	    FShapeSelectInput(Dpy, swin, FShapeNotifyMask);

@@ -64,7 +64,7 @@
  * Combines icon shape masks after a resize
  *
  */
-Bool GetIconPosition(button_info *b, unsigned long iconFlag,
+Bool GetIconPosition(button_info *b,
 	FvwmPicture *pic, int *r_x, int *r_y, int *r_w, int *r_h)
 {
 #ifdef NO_ICONS
@@ -97,9 +97,9 @@ Bool GetIconPosition(button_info *b, unsigned long iconFlag,
 		height = min(height,BH-2*(ypad+framew));
 	}
 
-	if (b->flags & b_Right)
+	if (b->flags.b_Right)
 		xoff = BW-framew-xpad-width;
-	else if (b->flags & b_Left)
+	else if (b->flags.b_Left)
 		xoff = framew+xpad;
 	else
 	{
@@ -138,10 +138,9 @@ void DrawForegroundIcon(button_info *b, XEvent *pev)
 	int cset;
 	XRectangle clip;
 	FvwmRenderAttributes fra;
-	unsigned long flag = buttonIconFlag(b);
 	FvwmPicture *pic = buttonIcon(b);
 
-	if (!GetIconPosition(b, flag, pic, &x,&y,&w,&h))
+	if (!GetIconPosition(b, pic, &x,&y,&w,&h))
 	{
 		return;
 	}

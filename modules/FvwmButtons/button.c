@@ -77,7 +77,7 @@ int buttonHeight(const button_info *b)
 
 int buttonSwallowCount(button_info *b)
 {
-  return (b->flags & (b_Swallow | b_Panel)) ? (b->swallow & b_Count) : 0;
+  return (b->flags.b_Swallow || b->flags.b_Panel) ? (b->swallow & b_Count) : 0;
 }
 
 
@@ -87,37 +87,37 @@ int buttonSwallowCount(button_info *b)
 **/
 void buttonInfo(const button_info *b, int *x, int *y, int *px, int *py, int *f)
 {
-  ushort w=b_Padding|b_Frame;
+  ushort bPadding = (b->flags.b_Padding ? 0 : 1);
+  ushort bFrame = (b->flags.b_Frame ? 0 : 1);
   *x=buttonXPos(b,b->n);
   *y=buttonYPos(b,b->n);
   *px=b->xpad;
   *py=b->ypad;
   *f=b->framew;
-  w&=~(b->flags&(b_Frame|b_Padding));
 
-  if(b->flags&b_Container && w&b_Frame)
+  if(b->flags.b_Container && bFrame)
   {
     *f=0;
-    w&=~b_Frame;
+    bFrame = 0;
   }
-  if((b->flags&b_Container || b->flags&b_Swallow) && w&b_Padding)
+  if((b->flags.b_Container || b->flags.b_Swallow) && bPadding)
   {
     *px=*py=0;
-    w&=~b_Padding;
+    bPadding = 0;
   }
 
-  while(w && (b=b->parent))
+  while((bPadding || bFrame) && (b=b->parent))
   {
-    if(w&b_Frame && b->c->flags&b_Frame)
+    if(bFrame && b->c->flags.b_Frame)
     {
       *f=b->c->framew;
-      w&=~b_Frame;
+      bFrame = 0;
     }
-    if(w&b_Padding && b->c->flags&b_Padding)
+    if(bPadding && b->c->flags.b_Padding)
     {
       *px=b->c->xpad;
       *py=b->c->ypad;
-      w&=~b_Padding;
+      bPadding = 0;
     }
   }
 }
@@ -152,12 +152,12 @@ void GetInternalSize(button_info *b,int *x,int *y,int *w,int *h)
 **/
 int buttonFrameSigned(button_info *b)
 {
-  if(b->flags&b_Frame)
+  if(b->flags.b_Frame)
     return b->framew;
-  if(b->flags&b_Container)              /* Containers usually gets 0 relief  */
+  if(b->flags.b_Container)	/* Containers usually gets 0 relief  */
     return 0;
   while((b=b->parent))
-    if(b->c->flags&b_Frame)
+    if(b->c->flags.b_Frame)
       return b->c->framew;
 #ifdef DEBUG
   fprintf(stderr,"%s: BUG: No relief width definition?\n",MyName);
@@ -171,12 +171,12 @@ int buttonFrameSigned(button_info *b)
 **/
 int buttonXPad(button_info *b)
 {
-  if(b->flags&b_Padding)
+  if(b->flags.b_Padding)
     return b->xpad;
-  if(b->flags&(b_Container|b_Swallow))  /* Normally no padding for these     */
+  if(b->flags.b_Container || b->flags.b_Swallow) /* Normally no padding for these     */
     return 0;
   while((b=b->parent))
-    if(b->c->flags&b_Padding)
+    if(b->c->flags.b_Padding)
       return b->c->xpad;
 #ifdef DEBUG
   fprintf(stderr,"%s: BUG: No padding definition?\n",MyName);
@@ -190,12 +190,12 @@ int buttonXPad(button_info *b)
 **/
 int buttonYPad(button_info *b)
 {
-  if(b->flags&b_Padding)
+  if(b->flags.b_Padding)
     return b->ypad;
-  if(b->flags&(b_Container|b_Swallow))  /* Normally no padding for these     */
+  if(b->flags.b_Container || b->flags.b_Swallow) /* Normally no padding for these     */
     return 0;
   while((b=b->parent))
-    if(b->c->flags&b_Padding)
+    if(b->c->flags.b_Padding)
       return b->c->ypad;
 #ifdef DEBUG
   fprintf(stderr,"%s: BUG: No padding definition?\n",MyName);
@@ -209,10 +209,10 @@ int buttonYPad(button_info *b)
 **/
 FlocaleFont *buttonFont(button_info *b)
 {
-  if(b->flags&b_Font)
+  if(b->flags.b_Font)
     return b->Ffont;
   while((b=b->parent))
-    if(b->c->flags&b_Font)
+    if(b->c->flags.b_Font)
       return b->c->Ffont;
 #ifdef DEBUG
   fprintf(stderr,"%s: BUG: No font definition?\n",MyName);
@@ -226,11 +226,11 @@ FlocaleFont *buttonFont(button_info *b)
 **/
 Pixel buttonFore(const button_info *b)
 {
-  if(b->flags&b_Fore)
+  if(b->flags.b_Fore)
     return b->fc;
   while ((b=b->parent))
   {
-    if(b->c->flags&b_Fore)
+    if(b->c->flags.b_Fore)
       return b->c->fc;
   }
 #ifdef DEBUG
@@ -245,11 +245,11 @@ Pixel buttonFore(const button_info *b)
 **/
 Pixel buttonBack(const button_info *b)
 {
-  if(b->flags&b_Back)
+  if(b->flags.b_Back)
     return b->bc;
   while((b=b->parent))
   {
-    if(b->c->flags&b_Back)
+    if(b->c->flags.b_Back)
       return b->c->bc;
   }
 #ifdef DEBUG
@@ -264,11 +264,11 @@ Pixel buttonBack(const button_info *b)
 **/
 Pixel buttonHilite(button_info *b)
 {
-  if(b->flags&b_Back)
+  if(b->flags.b_Back)
     return b->hc;
   while((b=b->parent))
   {
-    if(b->c->flags&b_Back)
+    if(b->c->flags.b_Back)
       return b->c->hc;
   }
 #ifdef DEBUG
@@ -283,11 +283,11 @@ Pixel buttonHilite(button_info *b)
 **/
 Pixel buttonShadow(button_info *b)
 {
-  if(b->flags&b_Back)
+  if(b->flags.b_Back)
     return b->sc;
   while((b=b->parent))
   {
-    if(b->c->flags&b_Back)
+    if(b->c->flags.b_Back)
       return b->c->sc;
   }
 #ifdef DEBUG
@@ -298,23 +298,29 @@ Pixel buttonShadow(button_info *b)
 
 int buttonColorset(button_info *b)
 {
-  if (b->flags & b_Hangon)
+  if (b->flags.b_Hangon)
   {
-	if (UberButton->c->flags & b_PressColorset)
+	if (b->flags.b_PressColorset)
+		return b->pressColorset;
+	if (UberButton->c->flags.b_PressColorset)
 		return UberButton->c->pressColorset;
   }
-  else if (b == ActiveButton && UberButton->c->flags & b_ActiveColorset)
+  else if (b == ActiveButton && b->flags.b_ActiveColorset)
+    return b->activeColorset;
+  else if (b == ActiveButton && UberButton->c->flags.b_ActiveColorset)
     return UberButton->c->activeColorset;
-  else if (b == CurrentButton && UberButton->c->flags & b_PressColorset)
+  else if (b == CurrentButton && b->flags.b_PressColorset)
+    return b->pressColorset;
+  else if (b == CurrentButton && UberButton->c->flags.b_PressColorset)
     return UberButton->c->pressColorset;
 
-  if (b->flags & b_Colorset)
+  if (b->flags.b_Colorset)
     return b->colorset;
-  else if (b->flags & b_Container && b->c->flags & b_Colorset)
+  else if (b->flags.b_Container && b->c->flags.b_Colorset)
     return b->c->colorset;
   while ((b = b->parent))
   {
-    if (b->c->flags & b_Colorset)
+    if (b->c->flags.b_Colorset)
       return b->c->colorset;
   }
   return -1;
@@ -322,20 +328,20 @@ int buttonColorset(button_info *b)
 
 char *buttonTitle (button_info *b)
 {
-	if (b->flags & b_Hangon)
+	if (b->flags.b_Hangon)
 	{
-	    if (b->flags & b_PressTitle)
+	    if (b->flags.b_PressTitle)
 		return b->pressTitle;
 	}
 	/* If this is the current active button but no explicit ActiveTitle was
 	   specified, use the Title (if there is one).
 	   Similarly for PressTitle. */
-	else if (b == ActiveButton && b->flags & b_ActiveTitle)
+	else if (b == ActiveButton && b->flags.b_ActiveTitle)
 		return b->activeTitle;
-	else if (b == CurrentButton && b->flags & b_PressTitle)
+	else if (b == CurrentButton && b->flags.b_PressTitle)
 		return b->pressTitle;
 
-	if (b->flags & b_Title)
+	if (b->flags.b_Title)
 		return b->title;
 
 	return NULL;
@@ -343,33 +349,33 @@ char *buttonTitle (button_info *b)
 
 FvwmPicture *buttonIcon (button_info *b)
 {
-	if (b->flags & b_Hangon)
+	if (b->flags.b_Hangon)
         {
-		if (b->flags & b_PressIcon)
+		if (b->flags.b_PressIcon)
 			return b->pressicon;
 	}
-	else if (b == ActiveButton && b->flags & b_ActiveIcon)
+	else if (b == ActiveButton && b->flags.b_ActiveIcon)
 		return b->activeicon;
-	else if (b == CurrentButton && b->flags & b_PressIcon)
+	else if (b == CurrentButton && b->flags.b_PressIcon)
 		return b->pressicon;
 
 	/* b->icon == None if no icon specified */
 	return b->icon;
 }
 
-unsigned long buttonIconFlag (button_info *b)
+unsigned short iconFlagSet (button_info *b)
 {
-	if (b->flags & b_Hangon)
+	if (b->flags.b_Hangon)
         {
-                if (b->flags & b_PressIcon)
-                        return b_PressIcon;
+                if (b->flags.b_PressIcon)
+                        return 1;
         }
-        else if (b == ActiveButton && b->flags & b_ActiveIcon)
-                return b_ActiveIcon;
-        else if (b == CurrentButton && b->flags & b_PressIcon)
-                return b_PressIcon;
+        else if (b == ActiveButton && b->flags.b_ActiveIcon)
+                return 1;
+        else if (b == CurrentButton && b->flags.b_PressIcon)
+                return 1;
 
-        return b_Icon;
+        return (b->flags.b_Icon ? 1 : 0);
 }
 
 int buttonBackgroundButton(button_info *b, button_info **r_b)
@@ -381,31 +387,31 @@ int buttonBackgroundButton(button_info *b, button_info **r_b)
 	while(tmpb->parent != NULL && !done)
 	{
 		pb = tmpb;
-		if (tmpb->flags&b_Container)
+		if (tmpb->flags.b_Container)
 		{
-			if(tmpb->c->flags & b_Colorset)
+			if(tmpb->c->flags.b_Colorset)
 			{
 				done = True;
 			}
-			else if (!(tmpb->c->flags&b_IconParent) &&
-				 !(tmpb->c->flags&b_ColorsetParent))
+			else if (!(tmpb->c->flags.b_IconParent) &&
+				 !(tmpb->c->flags.b_ColorsetParent))
 			{
 				done = True;
 			}
 
 		}
-		else if (tmpb->flags&b_Swallow && buttonSwallowCount(b) == 3 &&
-			 tmpb->flags&b_Colorset)
+		else if (tmpb->flags.b_Swallow && buttonSwallowCount(b) == 3 &&
+			 tmpb->flags.b_Colorset)
 		{
 			done = True;
 		}
-		else if (tmpb->flags & b_Colorset)
+		else if (tmpb->flags.b_Colorset)
 		{
 			done = True;
 		}
-		else if (!(tmpb->flags&b_IconBack) && !(tmpb->flags&b_IconParent)
-			 && !(tmpb->flags&b_Swallow) &&
-			 !(tmpb->flags&b_ColorsetParent))
+		else if (!tmpb->flags.b_IconBack && !tmpb->flags.b_IconParent
+			 && !tmpb->flags.b_Swallow &&
+			 !tmpb->flags.b_ColorsetParent)
 		{
 			done = True;
 		}
@@ -429,14 +435,14 @@ int buttonBackgroundButton(button_info *b, button_info **r_b)
 byte buttonSwallow(button_info *b)
 {
   byte s=0,t=0;
-  if(b->flags & (b_Swallow | b_Panel))
+  if(b->flags.b_Swallow || b->flags.b_Panel)
   {
     s=b->swallow;
     t=b->swallow_mask;
   }
   while((b=b->parent))
   {
-    if(b->c->flags & (b_Swallow | b_Panel))
+    if(b->c->flags.b_Swallow || b->c->flags.b_Panel)
     {
       s&=~(b->c->swallow_mask&~t);
       s|=(b->c->swallow&b->c->swallow_mask&~t);
@@ -453,14 +459,14 @@ byte buttonSwallow(button_info *b)
 byte buttonJustify(button_info *b)
 {
   byte j=1,i=0;
-  if(b->flags&b_Justify)
+  if(b->flags.b_Justify)
   {
     i=b->justify_mask;
     j=b->justify;
   }
   while((b=b->parent))
   {
-    if(b->c->flags&b_Justify)
+    if(b->c->flags.b_Justify)
     {
       j&=~(b->c->justify_mask&~i);
       j|=(b->c->justify&b->c->justify_mask&~i);
@@ -525,7 +531,6 @@ button_info *alloc_button(button_info *ub,int num)
   ub->c->buttons[num]=b;
 
   memset((void *)b, 0, sizeof(*b));
-  b->flags = 0;
   b->swallow = 0;
   b->BWidth = b->BHeight = 1;
   b->BPosX = b->BPosY = 0;
@@ -560,18 +565,22 @@ void MakeContainer(button_info *b)
 {
   b->c=(container_info*)mymalloc(sizeof(container_info));
   memset((void *)b->c, 0, sizeof(container_info));
-  b->flags|=b_Container;
+  b->flags.b_Container = 1;
   if(b->parent != NULL)
   {
-    if (b->parent->c->flags & b_IconBack || b->parent->c->flags & b_IconParent)
-      b->c->flags |= b_IconParent;
-    if (b->parent->c->flags & b_Colorset ||
-	b->parent->c->flags & b_ColorsetParent)
-      b->c->flags |= b_ColorsetParent;
+    if (b->parent->c->flags.b_IconBack || b->parent->c->flags.b_IconParent)
+      b->c->flags.b_IconParent = 1;
+    if (b->parent->c->flags.b_Colorset ||
+	b->parent->c->flags.b_ColorsetParent)
+      b->c->flags.b_ColorsetParent = 1;
   }
   else /* This applies to the UberButton */
   {
-    b->c->flags=b_Font|b_Padding|b_Frame|b_Back|b_Fore;
+    b->c->flags.b_Font = 1;
+    b->c->flags.b_Padding = 1;
+    b->c->flags.b_Frame = 1;
+    b->c->flags.b_Back = 1;
+    b->c->flags.b_Fore = 1;
     b->c->font_string=safestrdup("fixed");
     b->c->xpad=2;
     b->c->ypad=4;
@@ -595,7 +604,7 @@ void NumberButtons(button_info *b)
     if(b->c->buttons[i])
     {
       b->c->buttons[i]->n=i;
-      if(b->c->buttons[i]->flags&b_Container)
+      if(b->c->buttons[i]->flags.b_Container)
 	NumberButtons(b->c->buttons[i]);
     }
 }
@@ -619,7 +628,7 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
   }
   if (y>=c->num_rows || y<0)
   {
-    if (b->flags&b_PosFixed || !(ub->c->flags&b_SizeSmart) || y<0)
+    if (b->flags.b_PosFixed || !ub->c->flags.b_SizeSmart || y<0)
     {
       fprintf(stderr,"%s: Button out of vertical range. Quitting.\n",
 	      MyName);
@@ -640,7 +649,7 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
   }
   if(y+b->BHeight>c->num_rows)
   {
-    if (c->flags&b_SizeSmart)
+    if (c->flags.b_SizeSmart)
     {
       c->num_rows=y+b->BHeight;
       c->num_buttons=c->num_columns*c->num_rows;
@@ -729,7 +738,7 @@ void ShuffleButtons(button_info *ub)
   for(i=0;i<num_items;i++)
     actual_buttons_used+=local_buttons[i]->BWidth*local_buttons[i]->BHeight;
 
-  if (!(c->flags&b_SizeFixed)||!(c->num_rows)||!(c->num_columns))
+  if (!c->flags.b_SizeFixed||!(c->num_rows)||!(c->num_columns))
   {
     /* Size and create the window */
     if(c->num_rows==0 && c->num_columns==0)
@@ -740,7 +749,7 @@ void ShuffleButtons(button_info *ub)
       c->num_rows=1+(actual_buttons_used-1)/c->num_columns;
     while(c->num_rows * c->num_columns < actual_buttons_used)
       c->num_columns++;
-    if (!(c->flags&b_SizeFixed))
+    if (!c->flags.b_SizeFixed)
     {
       while(c->num_rows*c->num_columns >=
 	    actual_buttons_used + c->num_columns)
@@ -748,7 +757,7 @@ void ShuffleButtons(button_info *ub)
     }
   }
 
-  if (c->flags&b_SizeSmart)
+  if (c->flags.b_SizeSmart)
   {
     /* Set rows/columns to at least the height/width of largest button */
     for(i=0;i<num_items;i++)
@@ -758,13 +767,13 @@ void ShuffleButtons(button_info *ub)
 	c->num_rows=b->BHeight;
       if (c->num_columns<b->BWidth)
 	c->num_columns=b->BWidth;
-      if (b->flags&b_PosFixed && c->num_columns<b->BWidth+b->BPosX)
+      if (b->flags.b_PosFixed && c->num_columns<b->BWidth+b->BPosX)
 	c->num_columns=b->BWidth+b->BPosX;
-      if (b->flags&b_PosFixed && c->num_columns<b->BWidth-b->BPosX)
+      if (b->flags.b_PosFixed && c->num_columns<b->BWidth-b->BPosX)
 	c->num_columns=b->BWidth-b->BPosX;
-      if (b->flags&b_PosFixed && c->num_rows<b->BHeight+b->BPosY)
+      if (b->flags.b_PosFixed && c->num_rows<b->BHeight+b->BPosY)
 	c->num_rows=b->BHeight+b->BPosY;
-      if (b->flags&b_PosFixed && c->num_rows<b->BHeight-b->BPosY)
+      if (b->flags.b_PosFixed && c->num_rows<b->BHeight-b->BPosY)
 	c->num_rows=b->BHeight-b->BPosY;
     }
   }
@@ -778,7 +787,7 @@ void ShuffleButtons(button_info *ub)
   {
     b=local_buttons[i];
     /* Shuffle subcontainers recursively */
-    if(b && b->flags&b_Container)
+    if(b && b->flags.b_Container)
       ShuffleButtons(b);
   }
 
@@ -786,7 +795,7 @@ void ShuffleButtons(button_info *ub)
   for(i=0;i<num_items;i++)
   {
     b=local_buttons[i];
-    if (!(b->flags&b_PosFixed)) continue;
+    if (!b->flags.b_PosFixed) continue;
     /* recalculate position for negative offsets */
     if (b->BPosX<0) b->BPosX=b->BPosX+c->num_columns-b->BWidth+1;
     if (b->BPosY<0) b->BPosY=b->BPosY+c->num_rows-b->BHeight+1;
@@ -804,7 +813,7 @@ void ShuffleButtons(button_info *ub)
   for(i=0;i<num_items;i++)
   {
     b=local_buttons[i];
-    if (b->flags&b_PosFixed) continue;
+    if (b->flags.b_PosFixed) continue;
 
     if (next_button_x+b->BWidth>c->num_columns)
     {
@@ -874,7 +883,7 @@ button_info *NextButton(button_info **ub,button_info **b,int *i,int all)
   *b=(*ub)->c->buttons[*i];
 
   /* Found new container */
-  if((*b)->flags & b_Container)
+  if((*b)->flags.b_Container)
   {
     *i=-1;
     *ub=*b;
@@ -925,7 +934,7 @@ button_info *get_xy_button(button_info *ub, int row, int column)
 {
 	int i;
 
-	if (!(ub->flags & b_Container))
+	if (!ub->flags.b_Container)
 	{
 		return NULL;
 	}
@@ -949,7 +958,7 @@ button_info *select_button(button_info *ub,int x,int y)
   int column;
   button_info *b;
 
-  if (!(ub->flags&b_Container))
+  if (!ub->flags.b_Container)
     return ub;
 
   x -= buttonXPad(ub) + buttonFrame(ub);

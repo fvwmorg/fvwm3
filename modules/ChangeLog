@@ -1,3 +1,22 @@
+2005-02-26  Scott Smedley  <scottie7@tpg.com.au>
+
+	* modules/FvwmButtons/FvwmButtons.1.in:
+	* modules/FvwmButtons/FvwmButtons.c:
+	* modules/FvwmButtons/FvwmButtons.h:
+	* modules/FvwmButtons/button.c:
+	* modules/FvwmButtons/button.h:
+	* modules/FvwmButtons/draw.c:
+	* modules/FvwmButtons/dynamic.c:
+	* modules/FvwmButtons/icons.c:
+	* modules/FvwmButtons/icons.h:
+	* modules/FvwmButtons/output.c:
+	* modules/FvwmButtons/parse.c:
+	Changed 'flags' from 'unsigned int' to proper struct. Now more
+	flags are available.
+	Added ActiveColorset & PressColorset options for _individual_
+	buttons. (Overrides global ActiveColorset & PressColorset options.)
+
+
 2005-02-05  Bjoern Steinbrink <b.steinbrink@gmx.de>
 
 	* FvwmScript/FvwmScript.c (MainLoop):

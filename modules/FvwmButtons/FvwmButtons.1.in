@@ -298,6 +298,14 @@ transparent colorset background, then the FvwmButtons background
 background of the swallowed module. Refer to the man page of the
 FvwmTheme module for details about colorsets.
 
+.IP "ActiveColorset \fIcolorset\fP"
+Use colorset \fIcolorset\fP for the background color/image and/or title
+color of the button when the mouse is hovering above it.
+
+.IP "PressColorset \fIcolorset\fP"
+Use colorset \fIcolorset\fP for the background color/image and/or title
+color of the button when it is pressed.
+
 .IP "Container [(\fIoptions\fP)]"
 Specifies that this button will contain a miniature buttonbox,
 equivalent to swallowing another FvwmButtons module. The options

@@ -51,33 +51,33 @@ void DumpButtons(button_info *b)
   if(b!=UberButton)
   {
     int button=buttonNum(b);
-    fprintf(stderr,"0x%lx(%ix%i@(%i,%i),0x%04lx): ",
+    fprintf(stderr,"0x%lx(%ix%i@(%i,%i)): ",
 	    (unsigned long)b,b->BWidth,b->BHeight,
-	    buttonXPos(b,button),buttonYPos(b,button),b->flags);
+	    buttonXPos(b,button),buttonYPos(b,button));
   }
   else
-    fprintf(stderr,"0x%lx(%ix%i@,0x%04lx): ",(unsigned long)b,
-	    b->BWidth,b->BHeight,b->flags);
+    fprintf(stderr,"0x%lx(%ix%i@): ",(unsigned long)b,
+	    b->BWidth,b->BHeight);
 
-  if(b->flags&b_Font)
+  if(b->flags.b_Font)
     fprintf(stderr,"Font(%s,0x%lx) ",b->font_string,(unsigned long)b->Ffont);
-  if(b->flags&b_Padding)
+  if(b->flags.b_Padding)
     fprintf(stderr,"Padding(%i,%i) ",b->xpad,b->ypad);
-  if(b->flags&b_Frame)
+  if(b->flags.b_Frame)
     fprintf(stderr,"Framew(%i) ",b->framew);
-  if(b->flags&b_Title)
+  if(b->flags.b_Title)
     fprintf(stderr,"Title(%s) ",b->title);
-  if(b->flags&b_Icon)
+  if(b->flags.b_Icon)
     fprintf(stderr,"Icon(%s,%i) ",b->icon_file,(int)b->IconWin);
-  if(b->flags&b_Icon)
+  if(b->flags.b_Icon)
     fprintf(stderr,"Panelw(%i) ",(int)b->PanelWin);
-  if(b->flags&b_Action)
+  if(b->flags.b_Action)
     fprintf(stderr,"\n  Action(%s,%s,%s,%s) ",
 	    b->action[0]?b->action[0]:"",
 	    b->action[1]?b->action[1]:"",
 	    b->action[2]?b->action[2]:"",
 	    b->action[3]?b->action[3]:"");
-  if(b->flags&b_Swallow)
+  if(b->flags.b_Swallow)
   {
     fprintf(stderr,"Swallow(0x%02x) ",b->swallow);
     if(b->swallow&b_Respawn)
@@ -85,7 +85,7 @@ void DumpButtons(button_info *b)
     if(b->newflags.do_swallow_new)
       fprintf(stderr,"\n  SwallowNew(%s) ",b->spawn);
   }
-  if(b->flags&b_Panel)
+  if(b->flags.b_Panel)
   {
     fprintf(stderr,"Panel(0x%02x) ",b->swallow);
     if(b->swallow&b_Respawn)
@@ -93,15 +93,15 @@ void DumpButtons(button_info *b)
     if(b->newflags.do_swallow_new)
       fprintf(stderr,"\n  SwallowNew(%s) ",b->spawn);
   }
-  if(b->flags&b_Hangon)
+  if(b->flags.b_Hangon)
     fprintf(stderr,"Hangon(%s) ",b->hangon);
   fprintf(stderr,"\n");
-  if(b->flags&b_Container)
+  if(b->flags.b_Container)
   {
     int i=0;
-    fprintf(stderr,"  Container(%ix%i=%i buttons 0x%04lx (alloc %i),"
+    fprintf(stderr,"  Container(%ix%i=%i buttons (alloc %i),"
 	    " size %ix%i, pos %i,%i)\n{ ",
-	    b->c->num_columns,b->c->num_rows,b->c->num_buttons,b->c->flags,
+	    b->c->num_columns,b->c->num_rows,b->c->num_buttons,
 	    b->c->allocated_buttons,
 	    b->c->width,b->c->height,b->c->xpos,b->c->ypos);
     /*
@@ -126,20 +126,20 @@ void SaveButtons(button_info *b)
     return;
   if(b->BWidth>1 || b->BHeight>1)
     fprintf(stderr,"%ix%i ",b->BWidth,b->BHeight);
-  if(b->flags&b_Font)
+  if(b->flags.b_Font)
     fprintf(stderr,"Font %s ",b->font_string);
-  if(b->flags&b_Fore)
+  if(b->flags.b_Fore)
     fprintf(stderr,"Fore %s ",b->fore);
-  if(b->flags&b_Back)
+  if(b->flags.b_Back)
     fprintf(stderr,"Back %s ",b->back);
-  if(b->flags&b_Frame)
+  if(b->flags.b_Frame)
     fprintf(stderr,"Frame %i ",b->framew);
-  if(b->flags&b_Padding)
+  if(b->flags.b_Padding)
     fprintf(stderr,"Padding %i %i ",b->xpad,b->ypad);
-  if(b->flags&b_Title)
+  if(b->flags.b_Title)
   {
     fprintf(stderr,"Title ");
-    if(b->flags&b_Justify)
+    if(b->flags.b_Justify)
     {
       fprintf(stderr,"(");
       switch(b->justify&b_TitleHoriz)
@@ -160,11 +160,11 @@ void SaveButtons(button_info *b)
     }
     fprintf(stderr,"\"%s\" ",b->title);
   }
-  if(b->flags&b_Icon)
+  if(b->flags.b_Icon)
     fprintf(stderr,"Icon \"%s\" ",b->icon_file);
-  if(b->flags & (b_Swallow | b_Panel))
+  if(b->flags.b_Swallow || b->flags.b_Panel)
   {
-    if (b->flags & b_Swallow)
+    if (b->flags.b_Swallow)
       fprintf(stderr,"Swallow ");
     else
       fprintf(stderr,"Panel ");
@@ -223,7 +223,7 @@ void SaveButtons(button_info *b)
     }
     fprintf(stderr,"\"%s\" \"%s\" ",b->hangon,b->spawn);
   }
-  if(b->flags&b_Action)
+  if(b->flags.b_Action)
   {
     if(b->action[0])
       fprintf(stderr,"Action `%s` ",b->action[0]);
@@ -233,23 +233,22 @@ void SaveButtons(button_info *b)
   }
 
 
-  if(b->flags&b_Container)
+  if(b->flags.b_Container)
   {
     fprintf(stderr,"Container (Columns %i Rows %i ",b->c->num_columns,
 	    b->c->num_rows);
-    if(b->c->flags)
-    {
-      if(b->c->flags&b_Font)
+
+      if(b->c->flags.b_Font)
 	fprintf(stderr,"Font %s ",b->c->font_string);
-      if(b->c->flags&b_Fore)
+      if(b->c->flags.b_Fore)
 	fprintf(stderr,"Fore %s ",b->c->fore);
-      if(b->c->flags&b_Back)
+      if(b->c->flags.b_Back)
 	fprintf(stderr,"Back %s ",b->c->back);
-      if(b->c->flags&b_Frame)
+      if(b->c->flags.b_Frame)
 	fprintf(stderr,"Frame %i ",b->c->framew);
-      if(b->c->flags&b_Padding)
+      if(b->c->flags.b_Padding)
 	fprintf(stderr,"Padding %i %i ",b->c->xpad,b->c->ypad);
-      if(b->c->flags&b_Justify)
+      if(b->c->flags.b_Justify)
       {
 	fprintf(stderr,"Title (");
 	switch(b->c->justify&b_TitleHoriz)
@@ -321,12 +320,12 @@ void SaveButtons(button_info *b)
 
 	fprintf(stderr,") ");
       }
-    }
+    
     fprintf(stderr,")");
   }
   fprintf(stderr,"\n");
 
-  if(b->flags&b_Container)
+  if(b->flags.b_Container)
   {
     i=0;
     while(i<b->c->num_buttons)

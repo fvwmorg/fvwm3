@@ -71,80 +71,7 @@ static void show_error(const char *msg, ...)
 	va_end(args);
 }
 
-static void change_button_title(button_info *b, const char *text,
-	const unsigned long flag)
-{
-	char **title;
-	if (text == NULL)
-	{
-		show_error("No title to change specified, unsupported\n");
-		return;
-	}
-	b->flags |= flag;
-	if (flag == b_Title)
-		title = &b->title;
-	else if (flag == b_ActiveTitle)
-		title = &b->activeTitle;
-	else if (flag == b_PressTitle)
-		title = &b->pressTitle;
-	else
-	{
-		show_error("BUG: invalid flag %d\n", flag);
-		return;
-	}
 
-	free(*title);
-	CopyString(title, text);
-}
-
-static void change_button_icon(button_info *b, const char *file,
-	const unsigned long flag)
-{
-	FvwmPicture *new_icon, **icon;
-	char		**icon_file;
-
-	if (file == NULL)
-	{
-		show_error("No icon to change specified, unsupported\n");
-		return;
-	}
-	if (LoadIconFile(file, &new_icon, b->colorset) == 0)
-	{
-		show_error("Cannot load icon %s\n", file);
-		return;
-	}
-	/* The dimensions of individual buttons (& the overall size of the
-	 * FvwmButtons window) is based on the initial configuration for the
-	 * module. In some configurations, dynamically adding/changing a
-	 * title/icon may mean it no longer fits on a button. Currently, there
-	 * are no checks for this occurance.
-	 */
-	b->flags |= flag;
-	if (flag == b_Icon)
-	{
-		icon_file = &b->icon_file;
-		icon = &b->icon;
-	}
-	else if (flag == b_ActiveIcon)
-	{
-		icon_file = &b->active_icon_file;
-		icon = &b->activeicon;
-	}
-	else if (flag == b_PressIcon)
-	{
-		icon_file = &b->press_icon_file;
-		icon = &b->pressicon;
-	}
-	else
-	{
-		show_error("BUG: invalid flag %d\n", flag);
-		return;
-	}
-	free(*icon_file);
-	PDestroyFvwmPicture(Dpy, *icon);
-	*icon = new_icon;
-	CopyString(icon_file, file);
-}
 
 #if 0
 /* to be used in module_expand_action */
@@ -168,8 +95,8 @@ static char *expand_button_vars(const button_info *b, const char *line)
 	char *expanded_line;
 
 	/* there should be a function evaluating fore/back from colorset */
-	char *fore = (b->flags & b_Fore) ? b->fore : "black";
-	char *back = (b->flags & b_Back) ? b->back : "gray";
+	char *fore = (b->flags.b_Fore) ? b->fore : "black";
+	char *back = (b->flags.b_Back) ? b->back : "gray";
 
 	get_button_root_geometry(&r, b);
 	expanded_line = module_expand_action(
@@ -243,7 +170,7 @@ static button_info *parse_button_id(char **line)
 		/* find the button */
 		while (NextButton(&ub, &b, &i, 0))
 		{
-			if ((b->flags & b_Id) && StrEquals(b->id, s))
+			if (b->flags.b_Id && StrEquals(b->id, s))
 			{
 				found = True;
 				break;
@@ -310,11 +237,18 @@ void parse_message_line(char *line)
 	{
 	case 1:
 		/* ChangeButton */
+		/* The dimensions of individual buttons (& the overall size of the
+		 * FvwmButtons window) is based on the initial configuration for the
+		 * module. In some configurations, dynamically adding/changing a
+		 * title/icon may mean it no longer fits on a button. Currently, there
+		 * are no checks for this occurance.
+		 */
 		while (rest && rest[0] != '\0')
 		{
 			char *option_pair;
 			int option;
 			char *value0, *value;
+			FvwmPicture *icon;
 
 			/* parse option and value and give diagnostics */
 			rest = GetQuotedString(
@@ -323,10 +257,8 @@ void parse_message_line(char *line)
 			{
 				rest++;
 			}
-	                if (!option_pair)
-		        {
+			if (!option_pair)
 				continue;
-	                }
 
 			option = GetTokenIndex(
 				option_pair, button_options, -1, &value0);
@@ -342,42 +274,84 @@ void parse_message_line(char *line)
 			GetNextToken(value0, &value);
 			free(option_pair);
 
+			if (value == NULL)
+			{
+				show_error("No title/icon to change specified.\n");
+				continue;
+			}
 			switch (option)
 			{
 			case 0:
 				/* Title */
-				change_button_title(b, value, b_Title);
-				break;
-			case 1:
-				/* Icon */
-				change_button_icon(b, value, b_Icon);
+				if (b->flags.b_Title)
+					free(b->title);
+				b->flags.b_Title = 1;
+				CopyString(&b->title, value);
 				break;
 			case 2:
 				/* ActiveTitle */
-				change_button_title(b, value, b_ActiveTitle);
-				break;
-			case 3:
-				/* ActiveIcon */
-				change_button_icon(b, value, b_ActiveIcon);
+				if (b->flags.b_ActiveTitle)
+					free(b->activeTitle);
+				b->flags.b_ActiveTitle = 1;
+				CopyString(&b->activeTitle, value);
 				break;
 			case 4:
 				/* PressTitle */
-				change_button_title(b, value, b_PressTitle);
+				if (b->flags.b_PressTitle)
+					free(b->pressTitle);
+				b->flags.b_PressTitle = 1;
+				CopyString(&b->pressTitle, value);
 				break;
-			case 5:
-				/* PressIcon */
-				change_button_icon(b, value, b_PressIcon);
+			default:
+				if (LoadIconFile(value, &icon, b->colorset) == 0)
+					show_error("Cannot load icon \"%s\"\n", value);
+				else
+				{
+				    switch (option)
+				    {
+					case 1: /* Icon */
+						if (b->flags.b_Icon)
+						{
+							free(b->icon_file);
+							PDestroyFvwmPicture(Dpy, b->icon);
+						}
+						b->flags.b_Icon = 1;
+						CopyString(&b->icon_file, value);
+						b->icon = icon;
+						break;
+					case 3: /* ActiveIcon */
+						if (b->flags.b_ActiveIcon)
+						{
+							free(b->active_icon_file);
+							PDestroyFvwmPicture(Dpy, b->activeicon);
+						}
+						b->flags.b_ActiveIcon = 1;
+						CopyString(&b->active_icon_file, value);
+						b->activeicon = icon;
+						break;
+					case 5: /* PressIcon */
+						if (b->flags.b_PressIcon)
+						{
+							free(b->press_icon_file);
+							PDestroyFvwmPicture(Dpy, b->pressicon);
+						}
+						b->flags.b_PressIcon = 1;
+						CopyString(&b->press_icon_file, value);
+						b->pressicon = icon;
+						break;
+					}
+				}
 				break;
 			}
 
 			if (value)
-			{
-				free(value);
-			}
+		    {
+			    free(value);
+		    }
 		}
 
 		RedrawButton(b, DRAW_FORCE, NULL);
-		if (UberButton->c->flags & b_TransBack)
+		if (UberButton->c->flags.b_TransBack)
 		{
 			SetTransparentBackground(UberButton, Width, Height);
 		}

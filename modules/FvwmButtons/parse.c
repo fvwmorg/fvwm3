@@ -156,7 +156,7 @@ static int ParseBack(char **ss)
 *** ParseBoxSize()
 *** Parses the options possible to BoxSize
 **/
-static void ParseBoxSize(char **ss, unsigned long *flags)
+static void ParseBoxSize(char **ss, flags_type *flags)
 {
   char *opts[] =
   {
@@ -174,18 +174,20 @@ static void ParseBoxSize(char **ss, unsigned long *flags)
   switch(m)
   {
   case 0:
-    *flags &= ~(b_SizeFixed|b_SizeSmart);
+    flags->b_SizeFixed = 0;
+	flags->b_SizeSmart = 0;
     break;
   case 1:
-    *flags |= b_SizeFixed;
-    *flags &= ~b_SizeSmart;
+    flags->b_SizeFixed = 1;
+    flags->b_SizeSmart = 0;
     break;
   case 2:
-    *flags |= b_SizeSmart;
-    *flags &= ~b_SizeFixed;
+    flags->b_SizeSmart = 1;
+    flags->b_SizeFixed = 0;
     break;
   default:
-    *flags &= ~(b_SizeFixed|b_SizeSmart);
+    flags->b_SizeFixed = 0;
+	flags->b_SizeSmart = 0;
     fprintf(stderr,"%s: Illegal boxsize option \"%s\"\n",MyName, s);
     break;
   }
@@ -611,40 +613,34 @@ static void ParseContainer(char **ss,button_info *b)
       if (b->c->font_string)
 	free(b->c->font_string);
       b->c->font_string = my_get_font(&s);
-      if(b->c->font_string)
-      {
-	b->c->flags|=b_Font;
-      } else
-	b->c->flags&=~b_Font;
+      b->c->flags.b_Font = (b->c->font_string ? 1 : 0);
       break;
     case 3: /* Frame */
       b->c->framew=strtol(s,&t,10);
-      b->c->flags|=b_Frame;
+      b->c->flags.b_Frame = 1;
       s=t;
       break;
     case 4: /* Back */
       s = trimleft(s);
       if(*s=='(' && s++)
 	if(ParseBack(&s))
-	  b->c->flags|=b_IconBack;
+	  b->c->flags.b_IconBack = 1;
       if (b->c->back) free(b->c->back);
       b->c->back=seekright(&s);
       if(b->c->back)
       {
-	b->c->flags|=b_Back;
+	b->c->flags.b_Back = 1;
       }
       else
-	b->c->flags&=~(b_IconBack|b_Back);
+      {
+	b->c->flags.b_IconBack = 0;
+	b->c->flags.b_Back = 0;
+      }
       break;
     case 5: /* Fore */
       if (b->c->fore) free(b->c->fore);
       b->c->fore=seekright(&s);
-      if(b->c->fore)
-      {
-	b->c->flags|=b_Fore;
-      }
-      else
-	b->c->flags&=~b_Fore;
+      b->c->flags.b_Fore = (b->c->fore ? 1 : 0);
       break;
     case 6: /* Padding */
       i=strtol(s,&t,10);
@@ -658,7 +654,7 @@ static void ParseContainer(char **ss,button_info *b)
 	  b->c->ypad=i;
 	  s=t;
 	}
-	b->c->flags|=b_Padding;
+	b->c->flags.b_Padding = 1;
       }
       else
 	fprintf(stderr,"%s: Illegal padding argument\n",MyName);
@@ -671,7 +667,7 @@ static void ParseContainer(char **ss,button_info *b)
 	b->c->justify_mask=0;
 	ParseTitle(&s,&b->c->justify,&b->c->justify_mask);
 	if(b->c->justify_mask)
-	  b->c->flags|=b_Justify;
+	  b->c->flags.b_Justify = 1;
       }
       else
       {
@@ -688,10 +684,10 @@ static void ParseContainer(char **ss,button_info *b)
 	Bool failed = False;
 
 	s = trimleft(s);
-	if (b->c->flags & (b_Swallow | b_Panel))
+	if (b->c->flags.b_Swallow || b->c->flags.b_Panel)
 	{
 	  fprintf(stderr, "%s: Multiple Swallow or Panel options are not"
-		" allowed in a signle button", MyName);
+		" allowed in a single button", MyName);
 	  failed = True;
 	}
 	else if(*s=='(' && s++)
@@ -701,7 +697,7 @@ static void ParseContainer(char **ss,button_info *b)
 	  ParseSwallow(&s, &b->c->swallow, &b->c->swallow_mask, b);
 	  if(b->c->swallow_mask)
 	  {
-	    b->c->flags |= b_Swallow;
+	    b->c->flags.b_Swallow = 1;
 	  }
 	}
 	else
@@ -722,7 +718,7 @@ static void ParseContainer(char **ss,button_info *b)
       }
       break;
     case 9: /* NoSize */
-      b->c->flags|=b_Size;
+      b->c->flags.b_Size = 1;
       b->c->minx=b->c->miny=0;
       break;
 
@@ -733,7 +729,7 @@ static void ParseContainer(char **ss,button_info *b)
       {
 	b->c->minx=i;
 	b->c->miny=j;
-	b->c->flags|=b_Size;
+	b->c->flags.b_Size = 1;
 	s=o;
       }
       else
@@ -749,13 +745,13 @@ static void ParseContainer(char **ss,button_info *b)
       if(t > s)
       {
 	b->c->colorset = i;
-	b->c->flags |= b_Colorset;
+	b->c->flags.b_Colorset = 1;
 	AllocColorset(i);
 	s = t;
       }
       else
       {
-	b->c->flags &= ~b_Colorset;
+	b->c->flags.b_Colorset = 0;
       }
       break;
 
@@ -816,6 +812,8 @@ static void ParseButton(button_info **uberb,char *s)
       "activetitle",
       "pressicon",
       "presstitle",
+      "activecolorset",
+      "presscolorset",
       NULL
     };
     s = trimleft(s);
@@ -845,12 +843,12 @@ static void ParseButton(button_info **uberb,char *s)
 	  if(flags&XValue)
 	  {
 	    b->BPosX=x;
-	    b->flags|=b_PosFixed;
+	    b->flags.b_PosFixed = 1;
 	  }
 	  if(flags&YValue)
 	  {
 	    b->BPosY=y;
-	    b->flags|=b_PosFixed;
+	    b->flags.b_PosFixed = 1;
 	  }
 	  if(flags&XNegative)
 	    b->BPosX=-1-x;
@@ -867,40 +865,33 @@ static void ParseButton(button_info **uberb,char *s)
 	s = trimleft(s);
 	if(*s=='(' && s++)
 	  if(ParseBack(&s))
-	    b->flags|=b_IconBack;
-	if(b->flags&b_Back && b->back)
+	    b->flags.b_IconBack = 1;
+	if(b->flags.b_Back && b->back)
 	  free(b->back);
 	b->back=seekright(&s);
 	if(b->back)
 	{
-	  b->flags|=b_Back;
+	  b->flags.b_Back = 1;
 	}
 	else
-	  b->flags&=~(b_IconBack|b_Back);
+	{
+	  b->flags.b_IconBack = 0;
+	  b->flags.b_Back = 0;
+	}
 	break;
 
       case 1: /* Fore */
-	if(b->flags&b_Fore && b->fore)
+	if(b->flags.b_Fore && b->fore)
 	  free(b->fore);
 	b->fore=seekright(&s);
-	if(b->fore)
-	{
-	  b->flags|=b_Fore;
-	}
-	else
-	  b->flags&=~b_Fore;
+	b->flags.b_Fore = (b->fore ? 1 : 0);
 	break;
 
       case 2: /* Font */
-	if(b->flags&b_Font && b->font_string)
+	if(b->flags.b_Font && b->font_string)
 	  free(b->font_string);
 	b->font_string = my_get_font(&s);
-	if(b->font_string)
-	{
-	  b->flags|=b_Font;
-	}
-	else
-	  b->flags&=~b_Font;
+	b->flags.b_Font = (b->font_string ? 1 : 0);
 	break;
 
 	/* --------------------------- Title ------------------------- */
@@ -913,7 +904,7 @@ static void ParseButton(button_info **uberb,char *s)
 	  b->justify_mask=0;
 	  ParseTitle(&s,&b->justify,&b->justify_mask);
 	  if(b->justify_mask)
-	    b->flags|=b_Justify;
+	    b->flags.b_Justify = 1;
 	}
 	t=seekright(&s);
 	if(t && *t && (t[0]!='-' || t[1]!=0))
@@ -924,7 +915,7 @@ static void ParseButton(button_info **uberb,char *s)
 #ifdef DEBUG_PARSER
 	  fprintf(stderr,"PARSE: Title \"%s\"\n",b->title);
 #endif
-	  b->flags|=b_Title;
+	  b->flags.b_Title = 1;
 	}
 	else
 	{
@@ -939,7 +930,7 @@ static void ParseButton(button_info **uberb,char *s)
 	t=seekright(&s);
 	if(t && *t && (t[0] != '-' || t[1] != 0))
 	{
-	  if (b->flags & b_Swallow)
+	  if (b->flags.b_Swallow)
 	  {
 	    fprintf(
 	      stderr,"%s: a button can not have an icon and a swallowed window"
@@ -950,7 +941,7 @@ static void ParseButton(button_info **uberb,char *s)
 	    if (b->icon_file)
 	      free(b->icon_file);
 	    b->icon_file=t;
-	    b->flags|=b_Icon;
+	    b->flags.b_Icon = 1;
 	  }
 	}
 	else
@@ -966,7 +957,7 @@ static void ParseButton(button_info **uberb,char *s)
 	i=strtol(s,&t,10);
 	if(t>s)
 	{
-	  b->flags|=b_Frame;
+	  b->flags.b_Frame = 1;
 	  b->framew=i;
 	  s=t;
 	}
@@ -981,7 +972,7 @@ static void ParseButton(button_info **uberb,char *s)
 	if(t>s)
 	{
 	  b->xpad=b->ypad=i;
-	  b->flags |= b_Padding;
+	  b->flags.b_Padding = 1;
 	  s=t;
 	  i=strtol(s,&t,10);
 	  if(t>s)
@@ -1038,19 +1029,21 @@ static void ParseButton(button_info **uberb,char *s)
 	  b->hangon=t;
 	  if (is_swallow)
 	  {
-	    if (b->flags & b_Icon)
+	    if (b->flags.b_Icon)
 	    {
 	      fprintf(
 		stderr,"%s: a button can not have an icon and a swallowed "
 		" window at the same time. Ignoring icon", MyName);
-	      b->flags &= ~ b_Icon;
+	      b->flags.b_Icon = 0;
 	    }
 
-	    b->flags |= (b_Swallow | b_Hangon);
+	    b->flags.b_Swallow = 1;
+	    b->flags.b_Hangon = 1;
 	  }
 	  else
 	  {
-	    b->flags |= (b_Panel | b_Hangon);
+	    b->flags.b_Panel = 1;
+	    b->flags.b_Hangon = 1;
 	    b->newflags.is_panel = 1;
 	    b->newflags.panel_mapped = 0;
 	  }
@@ -1097,17 +1090,24 @@ static void ParseButton(button_info **uberb,char *s)
 	break;
 
       case 9: /* ActionIgnoresClientWindow */
-	b->flags |= b_ActionIgnoresClientWindow;
+	b->flags.b_ActionIgnoresClientWindow = 1;
 	break;
 
       case 10: /* ActionIgnoresClientWindow */
-	b->flags |= b_ActionOnPress;
+	b->flags.b_ActionOnPress = 1;
 	break;
 
 	/* -------------------------- container ---------------------- */
 
       case 11: /* Container */
-	b->flags&=b_Frame|b_Back|b_Fore|b_Padding|b_Action;
+	/*
+	 * SS: This looks very buggy! The FvwmButtons(1) man page suggests
+	 * it's here to restrict the options used with "Container", but it
+	 * only restricts those options appearing _before_ the "Container"
+	 * keyword for a button.
+	 * b->flags&=b_Frame|b_Back|b_Fore|b_Padding|b_Action;
+	 */
+
 	MakeContainer(b);
 	*uberb=b;
 	s = trimleft(s);
@@ -1124,19 +1124,19 @@ static void ParseButton(button_info **uberb,char *s)
 	  fprintf(stderr,"%s: Unmatched END in config file\n",MyName);
 	  exit(1);
 	}
-	if (ub->parent->c->flags&b_Colorset ||
-	    ub->parent->c->flags&b_ColorsetParent)
+	if (ub->parent->c->flags.b_Colorset ||
+	    ub->parent->c->flags.b_ColorsetParent)
 	{
-		ub->c->flags |= b_ColorsetParent;
+		ub->c->flags.b_ColorsetParent = 1;
 	}
-	if (ub->parent->c->flags&b_IconBack || ub->parent->c->flags&b_IconParent)
+	if (ub->parent->c->flags.b_IconBack || ub->parent->c->flags.b_IconParent)
 	{
-		ub->c->flags |= b_IconParent;
+		ub->c->flags.b_IconParent = 1;
 	}
 	return;
 
       case 13: /* NoSize */
-	b->flags|=b_Size;
+	b->flags.b_Size = 1;
 	b->minx=b->miny=0;
 	break;
 
@@ -1147,7 +1147,7 @@ static void ParseButton(button_info **uberb,char *s)
 	{
 	  b->minx=i;
 	  b->miny=j;
-	  b->flags|=b_Size;
+	  b->flags.b_Size = 1;
 	  s=o;
 	}
 	else
@@ -1155,17 +1155,18 @@ static void ParseButton(button_info **uberb,char *s)
 	break;
 
       case 15: /* Left */
-	b->flags |= b_Left;
-	b->flags &= ~b_Right;
+	b->flags.b_Left = 1;
+	b->flags.b_Right = 0;
 	break;
 
       case 16: /* Right */
-	b->flags |= b_Right;
-	b->flags &= ~b_Left;
+	b->flags.b_Right = 1;
+	b->flags.b_Left = 0;
 	break;
 
       case 17: /* Center */
-	b->flags &= ~(b_Right|b_Left);
+	b->flags.b_Right = 1;
+	b->flags.b_Left = 1;
 	break;
 
       case 18: /* Colorset */
@@ -1173,13 +1174,13 @@ static void ParseButton(button_info **uberb,char *s)
 	if(t > s)
 	{
 	  b->colorset = i;
-	  b->flags |= b_Colorset;
+	  b->flags.b_Colorset = 1;
 	  s=t;
 	  AllocColorset(i);
 	}
 	else
 	{
-	  b->flags &= ~b_Colorset;
+	  b->flags.b_Colorset = 0;
 	}
 	break;
 
@@ -1246,7 +1247,7 @@ static void ParseButton(button_info **uberb,char *s)
 	  if (isalpha(t[0]))
 	  {
 	    /* should check for duplicate ids first... */
-	    b->flags |= b_Id;
+	    b->flags.b_Id = 1;
 	    if (b->id)
 	      free(b->id);
 	    CopyString(&b->id, t);
@@ -1268,7 +1269,7 @@ static void ParseButton(button_info **uberb,char *s)
 		t = seekright(&s);
 		if (t && *t && (t[0] != '-' || t[1] != 0))
 		{
-			if (b->flags & b_Swallow)
+			if (b->flags.b_Swallow)
 			{
 				fprintf(stderr,"%s: a button can not have a "
 					"ActiveIcon and a swallowed window at "
@@ -1280,7 +1281,7 @@ static void ParseButton(button_info **uberb,char *s)
 				if (b->active_icon_file)
 					free(b->active_icon_file);
 				b->active_icon_file = t;
-				b->flags |= b_ActiveIcon;
+				b->flags.b_ActiveIcon = 1;
 			}
 		}
 		else
@@ -1310,7 +1311,7 @@ static void ParseButton(button_info **uberb,char *s)
 			fprintf(stderr,"PARSE: ActiveTitle \"%s\"\n",
 				b->activeTitle);
 #endif
-			b->flags |= b_ActiveTitle;
+			b->flags.b_ActiveTitle = 1;
 		}
 		else
 		{
@@ -1326,7 +1327,7 @@ static void ParseButton(button_info **uberb,char *s)
 		t = seekright(&s);
 		if (t && *t && (t[0] != '-' || t[1] != 0))
 		{
-			if (b->flags & b_Swallow)
+			if (b->flags.b_Swallow)
 			{
 				fprintf(stderr,"%s: a button can not have a "
 					"PressIcon and a swallowed window at "
@@ -1338,7 +1339,7 @@ static void ParseButton(button_info **uberb,char *s)
 				if (b->press_icon_file)
 					free(b->press_icon_file);
 				b->press_icon_file = t;
-				b->flags |= b_PressIcon;
+				b->flags.b_PressIcon = 1;
 			}
 		}
 		else
@@ -1368,7 +1369,7 @@ static void ParseButton(button_info **uberb,char *s)
 			fprintf(stderr,"PARSE: PressTitle \"%s\"\n",
 				b->pressTitle);
 #endif
-			b->flags |= b_PressTitle;
+			b->flags.b_PressTitle = 1;
 		}
 		else
 		{
@@ -1380,6 +1381,32 @@ static void ParseButton(button_info **uberb,char *s)
 		break;
 
 	/* ------------------------- ------------------------- */
+	case 25: /* ActiveColorset */
+		i = strtol(s, &t, 10);
+		if (t > s)
+		{
+			b->activeColorset = i;
+			b->flags.b_ActiveColorset = 1;
+			s = t;
+			AllocColorset(i);
+		}
+		else
+			b->flags.b_ActiveColorset = 0;
+		break;
+	/* ------------------------- ------------------------- */
+	case 26: /* PressColorset */
+		i = strtol(s, &t, 10);
+		if (t > s)
+		{
+			b->pressColorset = i;
+			b->flags.b_PressColorset = 1;
+			s = t;
+			AllocColorset(i);
+		}
+		else
+			b->flags.b_PressColorset = 0;
+		break;
+	/* ------------------------- ------------------------- */
       default:
 	t=seekright(&s);
 	fprintf(stderr,"%s: Illegal button option \"%s\"\n",MyName,
@@ -1387,7 +1414,7 @@ static void ParseButton(button_info **uberb,char *s)
 	if (t)
 	  free(t);
 	break;
-      }
+      } /* end switch */
       s = trimleft(s);
     }
     if (s && *s)
@@ -1398,11 +1425,11 @@ static void ParseButton(button_info **uberb,char *s)
   }
 
   /* get title and iconname */
-  if(!(b->flags&b_Title))
+  if(!b->flags.b_Title)
   {
     b->title=seekright(&s);
     if(b->title && *b->title && ((b->title)[0]!='-'||(b->title)[1]!=0))
-      b->flags |= b_Title;
+      b->flags.b_Title = 1;
     else
       if(b->title)free(b->title);
   }
@@ -1414,13 +1441,13 @@ static void ParseButton(button_info **uberb,char *s)
       free(temp);
   }
 
-  if(!(b->flags&b_Icon))
+  if(!b->flags.b_Icon)
   {
     b->icon_file=seekright(&s);
     if(b->icon_file && b->icon_file &&
        ((b->icon_file)[0]!='-'||(b->icon_file)[1]!=0))
     {
-      b->flags|=b_Icon;
+      b->flags.b_Icon = 1;
     }
     else
       if(b->icon_file)free(b->icon_file);
@@ -1438,7 +1465,7 @@ static void ParseButton(button_info **uberb,char *s)
   /* Swallow hangon command */
   if (strncasecmp(s,"swallow",7)==0 || strncasecmp(s,"panel",7)==0)
   {
-    if(b->flags & (b_Swallow | b_Panel))
+    if(b->flags.b_Swallow || b->flags.b_Panel)
     {
       fprintf(stderr,"%s: Illegal with both old and new swallow!\n",
 	      MyName);
@@ -1458,9 +1485,15 @@ static void ParseButton(button_info **uberb,char *s)
     if (!b->hangon)
       b->hangon = safestrdup("");
     if (tolower(*s) == 's')
-      b->flags |= b_Swallow | b_Hangon;
+    {
+      b->flags.b_Swallow = 1;
+      b->flags.b_Hangon = 1;
+    }
     else
-      b->flags |= b_Panel | b_Hangon;
+    {
+      b->flags.b_Panel = 1;
+      b->flags.b_Hangon = 1;
+    }
     b->swallow|=1;
     s = trimleft(s);
     if(!(b->swallow&b_NoHints))
@@ -1573,14 +1606,14 @@ static void ParseConfigLine(button_info **ubb,char *s)
   case 10:/* Pixmap */
     s = trimleft(s);
     if (strncasecmp(s,"none",4)==0)
-      ub->c->flags|=b_TransBack;
+      ub->c->flags.b_TransBack = 1;
     else
     {
       if (ub->c->back_file)
 	free(ub->c->back_file);
       CopyString(&(ub->c->back_file),s);
     }
-    ub->c->flags|=b_IconBack;
+    ub->c->flags.b_IconBack = 1;
     break;
   case 11: /* BoxSize */
     ParseBoxSize(&s, &ub->c->flags);
@@ -1590,12 +1623,12 @@ static void ParseConfigLine(button_info **ubb,char *s)
     if (i > 0)
     {
       ub->c->colorset = j;
-      ub->c->flags |= b_Colorset;
+      ub->c->flags.b_Colorset = 1;
       AllocColorset(j);
     }
     else
     {
-      ub->c->flags &= ~b_Colorset;
+      ub->c->flags.b_Colorset = 0;
     }
     break;
   case 13: /* ActiveColorset */
@@ -1603,12 +1636,12 @@ static void ParseConfigLine(button_info **ubb,char *s)
     if (i > 0)
     {
       ub->c->activeColorset = j;
-      ub->c->flags |= b_ActiveColorset;
+      ub->c->flags.b_ActiveColorset = 1;
       AllocColorset(j);
     }
     else
     {
-      ub->c->flags &= ~b_ActiveColorset;
+      ub->c->flags.b_ActiveColorset = 0;
     }
     break;
 
@@ -1617,12 +1650,12 @@ static void ParseConfigLine(button_info **ubb,char *s)
     if (i > 0)
     {
       ub->c->pressColorset = j;
-      ub->c->flags |= b_PressColorset;
+      ub->c->flags.b_PressColorset = 1;
       AllocColorset(j);
     }
     else
     {
-      ub->c->flags &= ~b_PressColorset;
+      ub->c->flags.b_PressColorset = 0;
     }
     break;
 
