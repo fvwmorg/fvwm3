@@ -441,7 +441,8 @@ void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
  ****************************************************************************/
 void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
 {
-  int FinalX, FinalY;
+  int FinalX = 0;
+  int FinalY = 0;
   int n;
   int x,y;
   unsigned int width, height;

@@ -845,6 +845,8 @@ Bool PlaceWindow(
        * border width here. */
       final_g.x += tmp_win->old_bw;
       final_g.y += tmp_win->old_bw;
+      final_g.width = 0;
+      final_g.height = 0;
       gravity_resize(
 	tmp_win->hints.win_gravity, &final_g,
 	2 * tmp_win->boundary_width,

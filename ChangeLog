@@ -1,3 +1,9 @@
+2000-01-31  Brad Giaccio  <bgiaccio@psrw.com>
+
+	* fvwm/placement.c (PlaceWindow): fixed UMR on final_g width and height
+
+	* fvwm/move_resize.c (move_window_doit): fixed UMR on FinalX and FinalY
+
 2000-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised):
