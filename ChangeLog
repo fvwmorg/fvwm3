@@ -1,3 +1,16 @@
+1999-03-03  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/builtins.c (WindowShade): Enhanced WindowShade() to do
+	animation, with the number of steps configured by the command
+	'WindowShadeAnimate <steps>'
+	* fvwm/builtins.c: New function 'setShadeAnim()', called by the Fvwm
+	command 'WindowShadeAnimate', sets the animation steps used in
+	WindowShade().
+	* fvwm/parse.h: Added F_SHADE_ANIMATE
+	* fvwm/misc.h: Function prototype for setShadeAnim().
+	* fvwm/functions.c: Added Fvwm command 'WindowShadeAnimate <steps>'
+	* fvwm/fvwm2.1: Updated man-page with WindowShadeAnimate
+
 1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
 
 	* fvwm/fvwm.h: add 'extern' keyword to Bool fFvwmInStartup,

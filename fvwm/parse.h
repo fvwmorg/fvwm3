@@ -89,7 +89,9 @@ enum {
     F_DFLT_LAYERS,
     F_GLOBAL_OPTS,
     F_EMULATE,
+    F_SHADE_ANIMATE,
     F_LAYER,
+
     F_RESIZE = 100,
     F_RAISE,
     F_LOWER,

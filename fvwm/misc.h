@@ -224,7 +224,9 @@ void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert);
 void Maximize(F_CMD_ARGS);
 #ifdef  WINDOWSHADE
 void WindowShade(F_CMD_ARGS);
+void setShadeAnim(F_CMD_ARGS);
 #endif
+
 extern void       RaiseWindow(FvwmWindow *t);
 extern void       LowerWindow(FvwmWindow *t);
 extern Bool       GrabEm(int);

@@ -24,6 +24,10 @@
 #include "screen.h"
 #include "module.h"
 
+#ifdef WINDOWSHADE
+static int shade_anim_steps=0;
+#endif
+
 static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose);
 static void FreeMenuFace(Display *dpy, MenuFace *mf);
 
@@ -404,51 +408,117 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  *  WindowShade -- shades or unshades a window (veliaa@rpi.edu)
  *
  *  Args: 1 -- force shade, 2 -- force unshade  No Arg: toggle
+ * 
+ ***********************************************************************
+ *
+ *  Animation added. 
+ *     Based on code from AfterStep-1.0 (CT: ctibirna@gch.ulaval.ca)
+ *     Additional fixes by Tomas Ogren <stric@ing.umu.se>
+ *
+ *  Builtin function: WindowShadeAnimate <steps>
+ *      <steps> is number of steps in animation. If 0, the
+ *              windowshade animation goes off. Default = 0.
  *
  ***********************************************************************/
 void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 unsigned long context, char *action, int *Module)
 {
-    int n = 0;
+    int oper = 0;
+    int h, y, step, old_h;
     int new_x, new_y, new_width, new_height;
+    char *token;
 
     if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+	return;
+    if (tmp_win == NULL)
 	return;
 
     if (!(tmp_win->flags & TITLE)) {
 	XBell(dpy, 0);
 	return;
     }
-    while (isspace(*action))++action;
-    if (isdigit(*action))
-	sscanf(action,"%d",&n);
 
-    if (((tmp_win->buttons & WSHADE)||(n==2))&&(n!=1))
+    action = GetNextToken(action, &token);
+    if (token)
+	sscanf(token,"%d",&oper);
+
+    if (shade_anim_steps)
+	step = tmp_win->orig_ht/shade_anim_steps;
+    if (step <= 0)  /* We don't want an endless loop, do we? */
+	step = 1;
+
+    if (((tmp_win->buttons & WSHADE)||(oper==2))&&(oper!=1))
     {
 	tmp_win->buttons &= ~WSHADE;
 	new_x = tmp_win->frame_x;
 	new_y = tmp_win->frame_y;
 	new_width = tmp_win->frame_width;
-	if (tmp_win->flags & MAXIMIZED) 
-	  new_height = tmp_win->maximized_ht;
+	if (tmp_win->flags & MAXIMIZED)
+	    new_height = tmp_win->maximized_ht;
 	else
-	  new_height = tmp_win->orig_ht;
-	SetupFrame(tmp_win, new_x, new_y, new_width, new_height, True);
-        BroadcastPacket(M_DEWINDOWSHADE, 3,
-                        tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
+	    new_height = tmp_win->orig_ht;
+
+	if (shade_anim_steps > 0) {
+	    h = tmp_win->title_height+tmp_win->boundary_width;
+	    XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
+	    y = h - new_height;
+	    old_h = tmp_win->frame_height;
+	    while (h < new_height) {
+		XResizeWindow(dpy, tmp_win->frame, new_width, h);
+		XMoveWindow(dpy, tmp_win->w, 0, y);
+		tmp_win->frame_height = h;
+		BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
+		FlushOutputQueues();
+		XSync(dpy, 0);
+		h+=step;
+		y+=step;
+	    }
+	    tmp_win->frame_height = old_h;
+	    XMoveWindow(dpy, tmp_win->w, 0, 0);
+	}
+	SetupFrame(tmp_win,
+		   new_x,
+		   new_y,
+		   new_width,
+		   new_height,
+		   True);
+	BroadcastPacket(M_DEWINDOWSHADE, 3,
+			tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
     }
     else
     {
 	tmp_win->buttons |= WSHADE;
+
+	if (shade_anim_steps > 0) {
+	    XLowerWindow(dpy, tmp_win->w);
+	    h = tmp_win->frame_height;
+	    y = 0;
+	    old_h = tmp_win->frame_height;
+	    while (h > tmp_win->title_height+tmp_win->boundary_width) {
+		XMoveWindow(dpy, tmp_win->w, 0, y);
+		XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
+		tmp_win->frame_height = h;
+		BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
+		FlushOutputQueues();
+		XSync(dpy, 0);
+		h-=step;
+		y-=step;
+	    }
+	    tmp_win->frame_height = old_h;
+	    XMoveWindow(dpy, tmp_win->w, 0, 0);
+	}
 	SetupFrame(tmp_win,
 		   tmp_win->frame_x,
 		   tmp_win->frame_y,
 		   tmp_win->frame_width,
-                   tmp_win->title_height+tmp_win->boundary_width,
+		   tmp_win->title_height+tmp_win->boundary_width,
 		   False);
-        BroadcastPacket(M_WINDOWSHADE, 3,
-                        tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
+	BroadcastPacket(M_WINDOWSHADE,3,
+			tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
     }
+    FlushOutputQueues();
+    XSync(dpy, 0);
+
 }
 #endif /* WINDOWSHADE */
 
@@ -4985,6 +5055,26 @@ void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     rgpctMovementDefault[i++] = 1.0;
   }
 }
+
+#ifdef WINDOWSHADE
+void setShadeAnim (XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		   unsigned long context, char *action,int* Module) 
+{
+    int val_unit,n = 0;
+    int val;
+    char *opt;
+
+    action = GetNextToken(action, &opt);
+    if (opt)
+	n = sscanf(opt, "%d", &val);
+    if (n != 1) {
+	fvwm_msg(ERR,"setShadeAnim","WindowShadeAnimate requires 1 argument");
+	return;
+    }
+
+    shade_anim_steps = val;
+}
+#endif /* WINDOWSHADE */
 
 void change_layer(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		  unsigned long context, char *action,int* Module)
