@@ -98,6 +98,7 @@ int ParseBinding(
   KeySym keysym = NoSymbol;
   int contexts;
   int mods;
+  int unbind_request = False;
 
   /* tline points after the key word "Mouse" or "Key" */
   ptr = GetNextToken(tline, &token);
@@ -200,28 +201,34 @@ int ParseBinding(
   */
   while (*action && (*action == ' ' || *action == '\t'))
     action++;
+  /* see if it is an unbind request */
+  if (!action || action[0] == '-') 
+    unbind_request = True;
 
   /*
   ** Remove the "old" bindings if any
   */
   {
     Bool is_binding_removed = False;
-    Binding *b;
-    Binding *tmp;
-
-    for (b = *pblist; b != NULL; b = tmp)
-    {
-      tmp = b->NextBinding;
-      if (MatchBinding(dpy, b, STROKE_ARG(stroke)
-		       button, keysym, mods, GetUnusedModifiers(), contexts,
-		       type))
-      {
-        /* we found it, unbind it */
-	activate_binding(b, type, False, do_ungrab_root);
-	RemoveBinding(dpy, pblist, type, STROKE_ARG(stroke)
+    Binding *b = RemoveBinding(dpy, pblist, type, STROKE_ARG(stroke)
 		      button, keysym, mods, contexts);
+    if (b != NULL) 
+    {
+      if (unbind_request) {
+	activate_binding(b, type, False, do_ungrab_root);
 	is_binding_removed = True;
       }
+      if (b->key_name)
+	free(b->key_name);
+      STROKE_CODE(
+      if (b->Stroke_Seq)
+        free(b->Stroke_Seq);
+      );
+      if (b->Action)
+	free(b->Action);
+      if (b->Action2)
+	free(b->Action2);
+      free(b);
     }
 
     if (is_binding_removed)
@@ -256,7 +263,7 @@ int ParseBinding(
   }
 
   /* return if it is an unbind request */
-  if (!action || action[0] == '-') return 0;
+  if (unbind_request) return 0;
 
   update_nr_buttons(contexts, nr_left_buttons, nr_right_buttons);
 

@@ -379,7 +379,7 @@ int AddBinding(Display *dpy, Binding **pblist, BindingType type,
 	       STROKE_ARG(void *stroke)
 	       int button, KeySym keysym, char *key_name,
 	       int modifiers, int contexts, void *action, void *action2);
-void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
+Binding *RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 		   STROKE_ARG(char *stroke)
 		   int button, KeySym keysym, int modifiers, int contexts);
 void *CheckBinding(Binding *blist,
@@ -431,5 +431,10 @@ Window fvwmlib_client_window(Display *dpy, Window input);
 #include <dmalloc.h>
 #endif
 
+/* Set up mtrace from glibc 2.1.x for x > ?  */
+#define MTRACE_DEBUGGING 1
+#ifdef MTRACE_DEBUGGING
+#include <mcheck.h>
+#endif
 
 #endif

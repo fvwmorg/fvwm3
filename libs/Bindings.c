@@ -138,11 +138,11 @@ Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask)
 ** for mouse binding lines though, like when context is a title bar button).
 ** Specify either button or keysym, depending on type.
 */
-void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
+Binding *RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 		   STROKE_ARG(char *stroke)
 		   int button, KeySym keysym, int modifiers, int contexts)
 {
-  Binding *temp=*pblist, *temp2, *prev=NULL;
+  Binding *temp=*pblist, *temp2, *prev=NULL, *b=NULL;
   KeyCode keycode = 0;
 
   if (type == KEY_BINDING)
@@ -166,6 +166,18 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 	  (temp->Modifier == modifiers))
       {
         /* we found it, remove it from list */
+	if (b != NULL) 
+	  free(b);
+	b = (Binding *)safemalloc(sizeof(Binding));
+	b->type = temp->type;
+	b->Button_Key = temp->Button_Key;
+	b->Context = temp->Context;
+	b->Modifier = temp->Modifier;
+	/* just return the needed information for  activate_binding */
+	STROKE_CODE(b->Stroke_Seq = NULL);
+	b->key_name = NULL;
+	b->Action = NULL;
+ 	b->Action2 = NULL;
         if (prev) /* middle of list */
         {
           prev->NextBinding = temp2;
@@ -192,6 +204,7 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
       prev=temp;
     temp=temp2;
   }
+  return b;
 }
 
 

@@ -1,3 +1,10 @@
+2000-10-03  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/bindings.c (ParseBinding):
+	* libs/Bindings.c (RemoveBinding):
+	* libs/fvwmlib.h
+	Try to fix the Add/Remove bindings code
+
 2000-09-30  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Bindings.c (MatchBinding):
