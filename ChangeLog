@@ -1,3 +1,9 @@
+2002-01-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (CMD_ResizeMaximize):
+	(CMD_ResizeMoveMaximize):
+	fixed ResizeMaximize and ResizeMoveMaximize on pages other than 0 0
+
 2002-01-21  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm2.1:

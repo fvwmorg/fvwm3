@@ -3528,6 +3528,8 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 		/* set the new geometry as the maximized geometry and restore
 		 * the old normal geometry */
 		max_g = tmp_win->normal_g;
+                max_g.x -= Scr.Vx;
+                max_g.y -= Scr.Vy;
 		tmp_win->normal_g = normal_g;
 		/* and mark it as maximized */
 		maximize_fvwm_window(tmp_win, &max_g);
@@ -3560,6 +3562,8 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 		/* set the new geometry as the maximized geometry and restore
 		 * the old normal geometry */
 		max_g = tmp_win->normal_g;
+                max_g.x -= Scr.Vx;
+                max_g.y -= Scr.Vy;
 		tmp_win->normal_g = normal_g;
 		/* and mark it as maximized */
 		maximize_fvwm_window(tmp_win, &max_g);
