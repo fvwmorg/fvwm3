@@ -1,17 +1,17 @@
 ----- Summary ------------------------------------------------------------------
 
 Issues opened recently: 0 (E.17)
-Issues closed recently: 0
+Issues closed recently: 1 (E.2)
                              open / closed
 A. Release stopping bugs:       0 / 1
 B. Normal bugs:                 3 / 5
 C. To be verified:             14 / 12
 D. To be discussed:             1 / 0
-E. To do:                      12 / 5
+E. To do:                      11 / 6
 F. Distribution issues:         3 / 1
 G. Testing:                     5 / 0
 
-Total:                         38 / 24
+Total:                         37 / 25
 
 - When you add/close an item give dates
 
@@ -36,7 +36,7 @@ B. Normal Bugs
 
   B.5 The "titles" sometimes aren't shown when no items are available in a
       FvwmIconMan
-      [Olivier]
+      [Olivier: unable to reproduce this]
 
   B.7 strange xawtv fullscreen handling [#973,2002-12-23]. Not a bug? Dominik?
       [dv: if (contains_string("xawtv", report) { move_to_dev_null(report); }]
@@ -112,10 +112,6 @@ D. To be discussed
 E. To do
 --------
 
-  E.2 Add locale support to FvwmScript
-      [Olivier]
-      [dv: why does this have to be in 2.6?  we are in feature freeze]
-
   E.3 After F.1 try to find translator
       [Olivier]
 
@@ -178,7 +174,7 @@ G. Testing
   G.1 Update and run the purify script again
 
   G.2 Test fvwm with GNOME2 and KDE3 [see in particular: #980]
-      [Olivier]
+      [Olivier: seems to work not so bad]
 
   G.3 Test fvwm with the latest SUN and IBM java [#654,#664,#707,#714,#863,#954]
       [dv:  That test will only prove that we did not do anything about these
@@ -190,6 +186,10 @@ G. Testing
 
 
 ---- Closed recently ----------------------------------------------------------
+
+  E.2 Add locale support to FvwmScript
+      [Olivier]
+      [dv: why does this have to be in 2.6?  we are in feature freeze]
 
 ---- Postponed until after 2.6 ------------------------------------------------
 
