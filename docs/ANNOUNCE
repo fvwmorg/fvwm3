@@ -9,6 +9,8 @@ The FVWM-Workers list is pleased to announce FVWM version 2.4 "F2K"
 %% domivogt: Ha ha ha 8-). "F2K" reminds me a bit of "F**k"
 %% domivogt: how about "Fvwm 3000 - The window manager of the next millenium"
 %% domivogt: ;-)
+%% dan: No, how about F2K,  like thanks a lot for asking over and over whether
+        fvwm was complaint, and making sure I was at work on New Years Eve. :)
 
 Available at http://www.fvwm.org/ it includes the following
 
@@ -16,7 +18,7 @@ Highlights:
 
  ** A new "Themes" module called FvwmTheme and "colorsets" including
     8 kinds of gradients and pixmap support controlling the appearance
-    of borders, titlebars, frames, menus and modules.
+    of borders, titlebars, frames, 3D shadows, menus and modules.
 
  ** Gnome compliance as a compile time option.
 
@@ -28,7 +30,8 @@ Highlights:
     FvwmWinList.
 
  ** Mouse stroke support.
-%% domivogt: add a pointer to libstroke here?
+    You will need the libstroke library, found at
+    http://www.etla.net/~willey/projects/libstroke/
 
  ** Titlebars at the bottom or the top of windows with the
     TitleAtBottom and TitleAtTop styles.
@@ -37,10 +40,9 @@ Highlights:
 
  ** New command to configure a way to abort Fvwm.
 %% domivogt: What does this mean? Which command?
+%% dan: beats me.
 
- ** Menus on the fly and some menu generating scripts.
-%% What are 'Menus on the fly'? Do I get these if I use fvwm on a laptop
-   when traveling with a plane?
+ ** Dynamically generated menus and some menu generating scripts.
 
  ** Much more flexibility and control in menu definition.
 
@@ -68,11 +70,37 @@ Highlights:
  ** Layers.
 %% domivogt: we need an introduction about layers somewhere
 
- ** The WindowList command has more option to allow better
+ ** The WindowList command has options to allow better
     control of which windows are shown.
 
+ ** Using alt-tab now works exactly like the other one.
 
 More detailed information on the contents of this release can be
 found at:
 
   http://www.fvwm.org/NEWS.html
+
+You will  probably  have   to make   the following   changes  to  your
+configuration file:
+
+Recapture should be removed from any style changing code.
+
+"HilightColor fore/back" becomes
+"sytle "*" Hilightfore fore, HilightBack back"
+
+"WindowFont font" becomes
+"Style "*" Font font"
+
+IconPath/PixmapPath becomes
+ImagePath
+The directories from both statements should be merged,
+any directories built in should be removed,
+and a plus sign should be added to the end.
+
+In most cases, the ModulePath statement can be removed
+or treated like the ImagePath.
+
+Users should consider removing any alt-tab binding they have over
+the builtin binding.
+
+The Colorlimit command can be removed.
