@@ -1847,7 +1847,7 @@ void ExecuteCommandQueue(void)
 		/* execute and destroy */
 		if (obj->command)
 		{
-			DBUG("EmptyCommandQueue", temp->command);
+			DBUG("EmptyCommandQueue", obj->command);
 			ExecuteModuleCommand(
 				obj->window, obj->module, obj->command);
 			free(obj->command);
