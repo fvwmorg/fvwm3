@@ -82,7 +82,7 @@
 
 Sat Nov  7 02:01:41 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* configure.in: Version 2.1.1 released (CVS tag = release-2_1_1)
+	* configure.in: Version 2.1.1 released (CVS tag = version-2_1_1)
 	and current version bumped to 2.1.2.
 
 1998-11-06  Paul D. Smith  <psmith@gnu.org>
