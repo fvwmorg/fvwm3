@@ -191,6 +191,7 @@ typedef struct
   int NbChild;
   time_t BeginTime;
   char *TabArg[20];
+  Bool swallowed;
 } X11base ;
 
 typedef struct

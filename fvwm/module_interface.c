@@ -1307,6 +1307,21 @@ void BroadcastColorset(int n)
   }
 }
 
+/**********************************************************************
+ * Broadcasts a string to all modules as M_CONFIG_INFO.
+ **********************************************************************/
+void BroadcastPropertyChange(unsigned long argument, unsigned long data1,
+			     unsigned long data2, char *string)
+{
+  int i;
+
+  for (i = 0; i < npipes; i++)
+  {
+    /* just a quick check to save us lots of overhead */
+    if (pipeOn[i] >= 0)
+      SendName(i, MX_PROPERTY_CHANGE, argument, data1, data2, string);
+  }
+}
 
 /**********************************************************************
  * Broadcasts a string to all modules as M_CONFIG_INFO.

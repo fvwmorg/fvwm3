@@ -213,6 +213,7 @@ int main(int argc, char **argv)
   SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
                  | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
                  | M_END_CONFIG_INFO | M_SENDCONFIG);
+  SetMessageMask(fd, MX_PROPERTY_CHANGE);
   /* scan config file for set-up parameters */
   /* Colors and fonts */
 
@@ -423,6 +424,15 @@ void list_res_name(unsigned long *body)
   if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
     {
       strncpy(target.res,(char *)&body[3],255);
+    }
+}
+
+void list_property_change(unsigned long *body)
+{
+  if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
+      (colorset >= 0 && Colorset[colorset].pixmap == ParentRelative))
+    {
+      XClearArea(dpy, main_win, 0,0,0,0, True);
     }
 }
 
@@ -679,6 +689,10 @@ void list_end(void)
       packet = ReadFvwmPacket(fd[1]);
       if (packet == NULL)
 	exit(0);
+      if (packet &&  packet->type == MX_PROPERTY_CHANGE)
+      {
+	list_property_change(packet->body);
+      }
       if (packet && packet->type == M_CONFIG_INFO) {
 	tline = (char*)&(packet->body[3]);
 	tline = GetNextToken(tline, &token);
@@ -700,11 +714,6 @@ void list_end(void)
 	}
 	else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
 	  FScreenConfigureModule(tline);
-	}
-	else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
-	{
-	  if (colorset >= 0 && Colorset[colorset].pixmap == ParentRelative)
-	    XClearArea(dpy, main_win, 0,0,0,0, True);
 	}
 	if (token)
 	  free(token);

@@ -97,6 +97,7 @@ XGlobals xg;    /*X related globals*/
 DragWellMenuGlobals mg; /*menu related globals */
 DragWellButton dragBut; /*not really used as a button but rather a drag well*/
 char dropData[MAX_PATH_LEN];    /*data used for the drop*/
+Bool Swallowed = False;
 
 /* Don't know what this does yet...*/
 void deadPipe(int nonsense)
@@ -830,6 +831,24 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
 	      return FOUND_FVWM_NON_MESSAGE;
 	    }
 	  }
+	  else if (packet->type == MX_PROPERTY_CHANGE)
+	  {
+	    if (packet->body[0] == MX_PROPERTY_CHANGE_BACKGROUND &&
+		xg.colorset >= 0 &&
+		Colorset[xg.colorset].pixmap == ParentRelative &&
+		((!Swallowed && packet->body[2] == 0) || 
+		 (Swallowed && packet->body[2] == xg.win)))
+	    {
+	      XClearArea(xg.dpy, xg.win, 0,0,0,0, True);
+	    }
+	    else if  (packet->body[0] == MX_PROPERTY_CHANGE_SWALLOW &&
+		      packet->body[2] == xg.win)
+	    {
+	      Swallowed = packet->body[1];
+	    }
+	    return FOUND_FVWM_NON_MESSAGE;
+	  }
+	  
           else
           {
 	    return FOUND_FVWM_NON_MESSAGE;

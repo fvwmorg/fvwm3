@@ -176,7 +176,7 @@ event_entry event_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN] =
   { "mini_icon", -1 },
   { "windowshade", 0 },
   { "dewindowshade", 0 },
-  { "lockonsend", -1 },
+  { "visible_name", 0 },
   { "sendconfig", -1 },
   { "restack", -1 },
   { "add_window", 0 },
@@ -185,6 +185,7 @@ event_entry event_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN] =
   { "visible_icon_name", 0 },
   { "enter_window", 0 },
   { "leave_window", 0 },
+  { "property_change", 0},
   /* built in events */
 #ifdef M_BELL
   { "beep", -1 },

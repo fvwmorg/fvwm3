@@ -246,7 +246,7 @@ static void ParseTitle(char **ss, byte *flags, byte *mask)
 *** ParseSwallow()
 *** Parses the options possible to Swallow
 **/
-static void ParseSwallow(char **ss,byte *flags,byte *mask)
+static void ParseSwallow(char **ss,unsigned int *flags,unsigned int *mask)
 {
   char *swallowopts[] =
   {
@@ -256,6 +256,7 @@ static void ParseSwallow(char **ss,byte *flags,byte *mask)
     "respawn","norespawn",
     "useold", "noold",
     "usetitle", "notitle",
+    "fvwmmodule", "nofvwmmodule",
     NULL
   };
   char *t,*s=*ss;
@@ -315,6 +316,14 @@ static void ParseSwallow(char **ss,byte *flags,byte *mask)
       *flags&=~b_UseTitle;
       *mask|=b_UseTitle;
       break;
+    case 12: /* FvwmModule */
+      *flags|=b_FvwmModule;
+      *mask|=b_FvwmModule;
+      break;
+    case 13: /* NoFvwmModule */
+      *flags&=~b_FvwmModule;
+      *mask|=b_FvwmModule;
+      break;
     default:
       t=seekright(&s);
       fprintf(stderr,"%s: Illegal Swallow option \"%s\"\n",MyName,
@@ -331,8 +340,9 @@ static void ParseSwallow(char **ss,byte *flags,byte *mask)
 *** ParsePanel()
 *** Parses the options possible to Panel
 **/
-static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
-		       int *steps, int *delay, panel_flags_type *panel_flags,
+static void ParsePanel(char **ss, unsigned int *flags, unsigned int *mask,
+		       char *direction, int *steps, int *delay,
+		       panel_flags_type *panel_flags,
 		       int *indicator_size, int *rela_x, int *rela_y,
 		       char *position, char *context)
 {
@@ -1051,6 +1061,17 @@ static void ParseButton(button_info **uberb,char *s)
 	    free(t);
 	  if(o)
 	    free(o);
+	}
+	/* check if it is a module by command line inspection if 
+	 * this hints has not been given in the swallow option */
+	if (is_swallow && !(b->swallow_mask & b_FvwmModule))
+	{
+	  if (b->spawn != NULL &&
+	      (strncasecmp(b->spawn,"module",6) == 0 ||
+	       strncasecmp(b->spawn,"fvwm",4) == 0))
+	  {
+	    b->swallow |= b_FvwmModule;
+	  }
 	}
 	break;
 

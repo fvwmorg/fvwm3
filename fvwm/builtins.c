@@ -1275,6 +1275,20 @@ void CMD_Colorset(F_CMD_ARGS)
   update_style_colorset(n);
 }
 
+void CMD_PropertyChange(F_CMD_ARGS)
+{
+  char string[256] = "\0";
+  int ret;
+  unsigned long argument, data1 = 0, data2 = 0;
+
+  if (action == NULL || action == "\0")
+    return;
+
+  ret = sscanf(action,"%lu %lu %lu %255c", &argument, &data1, &data2, string);
+  if (ret < 1)
+    return;
+  BroadcastPropertyChange(argument, data1, data2, (string == NULL)? "":string);
+}
 
 void CMD_DefaultIcon(F_CMD_ARGS)
 {

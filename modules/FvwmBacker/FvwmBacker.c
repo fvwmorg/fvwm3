@@ -400,9 +400,6 @@ void ProcessMessage(unsigned long type, unsigned long *body)
   {
   case M_CONFIG_INFO:
     tline = (char*)&(body[3]);
-    if (strncasecmp(tline, ROOT_BG_CHANGE_STRING,
-		    sizeof(ROOT_BG_CHANGE_STRING) - 1) == 0)
-      break;
     ExecuteMatchingCommands(ParseConfigLine(tline), EXEC_ALWAYS);
     break;
 

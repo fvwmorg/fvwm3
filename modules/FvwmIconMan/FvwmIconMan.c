@@ -290,7 +290,7 @@ main(int argc, char **argv)
 #endif
 		 M_STRING);
   /* extended messages */
-  SetMessageMask(Fvwm_fd, MX_VISIBLE_ICON_NAME);
+  SetMessageMask(Fvwm_fd, MX_VISIBLE_ICON_NAME | MX_PROPERTY_CHANGE);
 
   SendInfo(Fvwm_fd, "Send_WindowList", 0);
 

@@ -45,7 +45,7 @@
 
 /* ---------------------------- compatibility ------------------------------ */
 
-#define OLD_EXPOSE     /* Try this if resizing/exposes screw up */
+/*#define OLD_EXPOSE*/     /* Try this if resizing/exposes screw up */
 
 /* -------------------------------- more  ---------------------------------- */
 
@@ -87,13 +87,14 @@
 				 * button with a swallowed app. */
 
 /* Flags for b->swallow */
-#define b_Count       0x03 /* Init counter for swallowing */
-#define b_NoHints     0x04 /* Ignore window hints from swallowed window */
-#define b_NoClose     0x08 /* Don't close window when exiting, unswallow it */
-#define b_Kill        0x10 /* Don't close window when exiting, kill it */
-#define b_Respawn     0x20 /* Respawn if swallowed window dies */
-#define b_UseOld      0x40 /* Try to capture old window, don't spawn it */
-#define b_UseTitle    0x80 /* Allow window to write to b->title */
+#define b_Count       0x0003 /* Init counter for swallowing */
+#define b_NoHints     0x0004 /* Ignore window hints from swallowed window */
+#define b_NoClose     0x0008 /* Don't close window when exiting, unswallow it */
+#define b_Kill        0x0010 /* Don't close window when exiting, kill it */
+#define b_Respawn     0x0020 /* Respawn if swallowed window dies */
+#define b_UseOld      0x0040 /* Try to capture old window, don't spawn it */
+#define b_UseTitle    0x0080 /* Allow window to write to b->title */
+#define b_FvwmModule  0x0100 /* consider the swallowed app as module */
 
 /* Flags for b->justify */
 #define b_TitleHoriz  0x03 /* Mask for title x positioning info */
@@ -117,14 +118,14 @@ struct container_info_struct
   int width;
   int height;
 
-  unsigned long flags;     /* Which data are set in this container? */
-  byte justify;            /* b_Justify */
-  byte justify_mask;       /* b_Justify */
-  byte swallow;            /* b_Swallow */
-  byte swallow_mask;       /* b_Swallow */
-  byte xpad,ypad;          /* b_Padding */
-  signed char framew;             /* b_Frame */
-  XFontStruct *font;       /* b_Font */
+  unsigned long flags;       /* Which data are set in this container? */
+  byte justify;              /* b_Justify */
+  byte justify_mask;         /* b_Justify */
+  unsigned int swallow;      /* b_Swallow */
+  unsigned int swallow_mask; /* b_Swallow */
+  byte xpad,ypad;            /* b_Padding */
+  signed char framew;        /* b_Frame */
+  XFontStruct *font;         /* b_Font */
 #ifdef I18N_MB
   XFontSet fontset;        /* b_Font */
 #endif
@@ -187,14 +188,14 @@ struct button_info_struct
   Window PanelWin;         /* b_Panel */
   Window BackIconWin;      /* b_Back && b_IconBack */
 
-  byte swallow;            /* b_Swallow */
-  byte swallow_mask;       /* b_Swallow */
-  int icon_w,icon_h;       /* b_Swallow */
-  Window IconWinParent;    /* b_Swallow */
-  XSizeHints *hints;       /* b_Swallow && !b_NoHints */
-  char *spawn;             /* b_Swallow */
-  int x,y;                 /* b_Swallow */
-  ushort w,h,bw;           /* b_Swallow */
+  unsigned int swallow;       /* b_Swallow */
+  unsigned int swallow_mask;  /* b_Swallow */
+  int icon_w,icon_h;          /* b_Swallow */
+  Window IconWinParent;       /* b_Swallow */
+  XSizeHints *hints;          /* b_Swallow && !b_NoHints */
+  char *spawn;                /* b_Swallow */
+  int x,y;                    /* b_Swallow */
+  ushort w,h,bw;              /* b_Swallow */
 
   struct
   {

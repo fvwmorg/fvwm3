@@ -151,6 +151,7 @@ PagerStringList string_list = { NULL, 0, -1, -1, -1, NULL, NULL, NULL };
 Bool is_transient = False;
 Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
+Bool Swallowed = False;
 
 static void SetDeskLabel(int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
@@ -347,7 +348,8 @@ int main(int argc, char **argv)
 		 M_END_WINDOWLIST|
 		 M_RESTACK);
   SetMessageMask(fd,
-		 MX_VISIBLE_ICON_NAME);
+		 MX_VISIBLE_ICON_NAME|
+		 MX_PROPERTY_CHANGE);
 #ifdef DEBUG
   fprintf(stderr,"[main]: calling ParseOptions\n");
 #endif
@@ -566,6 +568,8 @@ void process_message( FvwmPacket* packet )
     case M_CONFIG_INFO:
       list_config_info(body);
       break;
+    case MX_PROPERTY_CHANGE:
+      list_property_change(body);
     default:
       /* ignore unknown packet */
       break;
@@ -1349,11 +1353,6 @@ void list_config_info(unsigned long *body)
   {
     FScreenConfigureModule(tline);
   }
-  else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
-  {
-    if (default_pixmap == ParentRelative)
-      ReConfigure();
-  }
   else if (StrEquals(token, "DesktopName"))
   {
     int val;
@@ -1378,6 +1377,35 @@ void list_config_info(unsigned long *body)
   }
 }
 
+void list_property_change(unsigned long *body)
+{
+  int i;
+
+  if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND)
+  {
+
+    if (default_pixmap == ParentRelative &&
+	((!Swallowed && body[2] == 0) || (Swallowed && body[2] == Scr.Pager_w)))
+    {
+      ReConfigure();
+    }
+    if (BalloonView != None)
+    {
+      for(i=0;i<ndesks;i++)
+      {
+	if (Desks[i].ballooncolorset > -1 &&
+	    Colorset[Desks[i].ballooncolorset].pixmap == ParentRelative)
+	{
+	  XClearArea(dpy, Desks[i].balloon.w, 0, 0, 0, 0, True);
+	}
+      }
+    }
+  }
+  else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == Scr.Pager_w)
+  {
+    Swallowed = body[1];
+  }
+}
 
 /***************************************************************************
  *

@@ -357,7 +357,7 @@ void HandlePropertyNotify(void)
      * the problem here is that with some Esetroot compatible program we get
      * the message _before_ the background change.
      * This is fixed with Esetroot 9.2 (not yet released, 2002-01-14) */
-    BroadcastConfigInfoString(ROOT_BG_CHANGE_STRING);
+    BroadcastPropertyChange(MX_PROPERTY_CHANGE_BACKGROUND, 0, 0, "");
     return;
   }
 

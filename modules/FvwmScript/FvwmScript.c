@@ -746,8 +746,8 @@ void UpdateRootTransparency(void)
     {
       if (Rectangle != tabxobj[i]->TypeWidget &&
 	  SwallowExec != tabxobj[i]->TypeWidget && 
-	  tabxobj[i]->colorset > 0 &&
-	  Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)
+	  ((tabxobj[i]->colorset > 0 &&
+	   Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)))
       {
 	XClearArea(dpy, tabxobj[i]->win, 0, 0, 0, 0, True);
       }
@@ -1035,17 +1035,37 @@ void MainLoop (void)
 	      SetWindowBackground(dpy, x11base->win, x11base->size.width,
 				  x11base->size.height, &Colorset[n], Pdepth,
 				  x11base->gc, True);
+	      for (i=0; i<nbobj; i++)
+	      {
+		if (Rectangle != tabxobj[i]->TypeWidget &&
+		    SwallowExec != tabxobj[i]->TypeWidget && 
+		    ((tabxobj[i]->colorset > 0 &&
+		      Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)))
+		{
+		  XClearArea(dpy, tabxobj[i]->win, 0, 0, 0, 0, True);
+		}
+	      }
 	    }
 	  }
 	  else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
 	    FScreenConfigureModule(line);
 	  }
-	  else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
+	  if (token)
+	    free(token);
+	}
+	else if (packet->type == MX_PROPERTY_CHANGE)
+	{
+	  if (packet->body[0] == MX_PROPERTY_CHANGE_BACKGROUND &&
+	      ((!x11base->swallowed && packet->body[2] == 0) ||
+	       (x11base->swallowed && packet->body[2] == x11base->win)))
 	  {
 	    UpdateRootTransparency();
 	  }
-	  if (token)
-	    free(token);
+	  else if  (packet->body[0] == MX_PROPERTY_CHANGE_SWALLOW &&
+		    packet->body[2] == x11base->win)
+	  {
+	    x11base->swallowed = packet->body[1];
+	  }
 	}
 	else if (packet->type == M_STRING) {
 	  char *action, *token;
@@ -1148,7 +1168,7 @@ int main (int argc, char **argv)
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST| M_STRING |
 		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
 		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
-
+  SetMessageMask(fd, MX_PROPERTY_CHANGE);
   /* Enregistrement des arguments du script */
   x11base = (X11base*) safecalloc(1,sizeof(X11base));
   x11base->TabArg[0] = ModuleName;
@@ -1161,6 +1181,7 @@ int main (int argc, char **argv)
   x11base->shadcolor = safestrdup("grey55");
   x11base->hilicolor = safestrdup("grey100");
   x11base->colorset = -1;
+  x11base->swallowed = False;
 
   /* Initialisation du serveur X et de la fenetre */
   Xinit(IsFather);

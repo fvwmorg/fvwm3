@@ -57,6 +57,10 @@ typedef struct {
   } name;
 } m_name_data;
 
+typedef struct {
+  Ulong arg, toggle, id;
+} m_property_data;
+
 #ifdef MINI_ICONS
 
 typedef struct {
@@ -67,6 +71,7 @@ typedef struct {
     Uchar name[4];
   } name;
 } m_mini_icon_data;
+
 
 #endif
 
@@ -81,6 +86,7 @@ typedef union {
 #ifdef MINI_ICONS
   m_mini_icon_data     mini_icon_data;
 #endif
+  m_property_data      property_data;
 } FvwmPacketBody;
 
 /* only used by count_nonsticky_in_hashtab */
@@ -242,18 +248,6 @@ static void handle_config_info (unsigned long *body)
   else if (StrEquals(token, "IgnoreModifiers"))
   {
     sscanf(tline, "%d", &mods_unused);
-  }
-  else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
-  {
-    int j;
-    WinManager *man;
-
-    for (j = 0; j < globals.num_managers; j++)
-    {
-      man = &globals.managers[j];
-      if (man->pixmap[DEFAULT] == ParentRelative)
-	XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
-    }
   }
 }
 
@@ -542,6 +536,38 @@ static void sendtomodule (FvwmPacketBody *body)
   execute_function ((char *)string);
 }
 
+static void property_change (FvwmPacketBody *body)
+{
+  WinManager *man = NULL;
+  int j;
+
+  if (body->property_data.id != 0)
+  {
+    if (!(man = find_windows_manager(body->property_data.id)))
+      return;
+  }
+
+  if (body->property_data.arg == MX_PROPERTY_CHANGE_BACKGROUND)
+  {
+    if (man != NULL && man->pixmap[DEFAULT] == ParentRelative)
+    {
+      XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
+    }
+    if (man != NULL)
+      return;
+    for (j = 0; j < globals.num_managers; j++)
+    {
+      man = &globals.managers[j];
+      if (man->pixmap[DEFAULT] == ParentRelative)
+	XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
+    }
+  }
+  else if  (body->property_data.arg == MX_PROPERTY_CHANGE_SWALLOW && man != NULL)
+  {
+    man->swallowed = body->property_data.toggle;
+  }
+}
+
 static void ProcessMessage (Ulong type, FvwmPacketBody *body)
 {
   int i;
@@ -671,6 +697,11 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
   case M_STRING:
     ConsoleDebug (FVWM, "DEBUG::M_STRING\n");
     sendtomodule (body);
+    break;
+    
+  case MX_PROPERTY_CHANGE:
+    ConsoleDebug (FVWM, "DEBUG::MX_PROPERTY_CHANGE\n");
+    property_change(body);
     break;
 
   default:

@@ -123,6 +123,7 @@ void CMD_PointerKey(F_CMD_ARGS);
 void CMD_PointerWindow(F_CMD_ARGS);
 void CMD_Popup(F_CMD_ARGS);
 void CMD_Prev(F_CMD_ARGS);
+void CMD_PropertyChange(F_CMD_ARGS);
 void CMD_Quit(F_CMD_ARGS);
 void CMD_QuitScreen(F_CMD_ARGS);
 void CMD_QuitSession(F_CMD_ARGS);

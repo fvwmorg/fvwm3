@@ -80,6 +80,7 @@ char *screen_background_color;
 char *MyName;
 int MyNameLen;
 int Channel[2];
+Bool Swallowed = False;
 
 /* Font/color stuff
    The colors are:
@@ -1572,7 +1573,6 @@ void RedrawItem (Item *item, int click)
 }
 
 /* update transparency if backgroude colorset is transparent */
-
 void UpdateRootTransapency(void)
 {
   Item *item;
@@ -1879,6 +1879,17 @@ static void process_message(unsigned long type, unsigned long *body)
     myfprintf((stderr,"process_message: Got command: %s\n", (char *)&body[3]));
     ParseActiveMessage((char *)&body[3]);
     break;
+  case MX_PROPERTY_CHANGE:
+    if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND &&
+	((!Swallowed && body[2] == 0) || (Swallowed && body[2] == CF.frame)))
+    {
+      UpdateRootTransapency();
+    }
+    else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == CF.frame)
+    {
+	Swallowed = body[1];
+    }
+    break;
   case M_ERROR:
   case M_STRING:
     if (CF.last_error) {                /* if form has message area */
@@ -1971,11 +1982,6 @@ static void ParseActiveMessage(char *buf)
     FScreenConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
     return;
   }
-  if (strncasecmp(buf, ROOT_BG_CHANGE_STRING, sizeof(ROOT_BG_CHANGE_STRING)) == 0)
-  {
-    UpdateRootTransapency();
-    return;
-  }
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
     return;
   } /* Now I know its for me. */
@@ -2053,8 +2059,7 @@ int main (int argc, char **argv)
 {
   int i;
   FILE *fdopen();
-  char *s;                              /* FvwmAnimate */
-  char mask_mesg[20];
+  char *s;
   char cmd[200];
 
 #ifdef DEBUGTOFILE
@@ -2179,10 +2184,9 @@ int main (int argc, char **argv)
 
   MassageConfig();                      /* add data, calc window x/y */
 
-  /* Now tell fvwm we want *Alias commands in real time */
-  sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)
-          (M_SENDCONFIG|M_CONFIG_INFO|M_ERROR|M_STRING));
-  SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
+  /* tell fvwm about our mask */
+  SetMessageMask(Channel, M_SENDCONFIG|M_CONFIG_INFO|M_ERROR|M_STRING);
+  SetMessageMask(Channel, MX_PROPERTY_CHANGE);
   OpenWindows();                        /* create initial window */
   SendFinishedStartupNotification(Channel);/* tell fvwm we're running */
   MainLoop();                           /* start */

@@ -73,6 +73,7 @@ void list_window_name(unsigned long *body);
 void list_icon_name(unsigned long *body);
 void list_class(unsigned long *body);
 void list_res_name(unsigned long *body);
+void list_property_change(unsigned long *body);
 void list_end(void);
 
 /* I18N_MB stuff */

@@ -92,6 +92,7 @@ int colorset = -1;
 int Iconcolorset = -1;
 int IconHicolorset = -1;
 Bool UseSkipList = False;
+Bool Swallowed = False;
 
 /* same strings as in misc.c */
 char NoClass[] = "NoClass";
@@ -128,7 +129,7 @@ unsigned long m_mask = M_CONFIGURE_WINDOW|M_ADD_WINDOW|M_DESTROY_WINDOW|
   M_END_WINDOWLIST| M_ICONIFY|M_DEICONIFY|
   M_RES_NAME|M_RES_CLASS|M_VISIBLE_NAME|M_ICON_FILE|
   M_DEFAULTICON|M_CONFIG_INFO|M_END_CONFIG_INFO;
-unsigned long mx_mask = MX_VISIBLE_ICON_NAME;
+unsigned long mx_mask = MX_VISIBLE_ICON_NAME|MX_PROPERTY_CHANGE;
 
 struct icon_info *Hilite;
 int main_width, main_height;
@@ -378,7 +379,7 @@ void Loop(void)
 		  (colorset < 0 ||
 		   Colorset[colorset].pixmap != ParentRelative))
 	      {
-		/* needs this event only for transparency */
+		/* needs this event for transparency */
 		break;
 	      }
 	      if (!XGetGeometry(dpy,main_win,&root,&x,&y,
@@ -436,7 +437,10 @@ void Loop(void)
 		       Colorset[colorset].pixmap == ParentRelative)
 	      {
 		/* moved */
-		XClearArea(dpy, icon_win, 0,0,0,0, True);
+		XClearArea(dpy, icon_win, 0,0,0,0, False);
+		/* XClearArea(dpy, icon_win, 0,0,0,0, True); is not enough
+		 * when you unshade */
+		RedrawWindow();
 	      }
 	      break;
 	    case KeyPress:
@@ -2466,20 +2470,32 @@ void process_message(unsigned long type, unsigned long *body)
     ready = 1;
     break;
   case M_CONFIG_INFO:
-  {
-    char *tline, *token;
-    int color;
-    tline = (char*)&(body[3]);
-    token = PeekToken(tline, &tline);
-    if (StrEquals(token, "Colorset")) {
-      color = LoadColorset(tline);
-      change_colorset(color);
-    }
-    else if (StrEquals(token, XINERAMA_CONFIG_STRING))
     {
-      FScreenConfigureModule(tline);
-    }
+      char *tline, *token;
+      int color;
+      tline = (char*)&(body[3]);
+      token = PeekToken(tline, &tline);
+      if (StrEquals(token, "Colorset")) {
+	color = LoadColorset(tline);
+	change_colorset(color);
+      }
+      else if (StrEquals(token, XINERAMA_CONFIG_STRING))
+      {
+	  FScreenConfigureModule(tline);
+      }
   }
+  break;
+  case MX_PROPERTY_CHANGE:
+    if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND &&
+	(colorset > -1 && Colorset[colorset].pixmap == ParentRelative) &&
+	((!Swallowed && body[2] == 0) || (Swallowed && body[2] == icon_win)))
+    {
+      XClearArea(dpy, icon_win, 0,0,0,0, False);
+    }
+    else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == icon_win)
+    {
+      Swallowed = body[1];
+    }
     break;
   default:
     break;

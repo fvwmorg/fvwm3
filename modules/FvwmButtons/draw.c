@@ -342,11 +342,13 @@ void RedrawButton(button_info *b,int clean)
     else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
 	     b->flags & b_Colorset)
     {
-      /* Set the back color of the buttons for shaped apps (olicha 00-03-09) */
+      /* Set the back color of the buttons for shaped apps (olicha 00-03-09) 
+       * and also for transparent modules */
       SetRectangleBackground(
 	Dpy, MyWindow, x+f, y+f, BW-2*f, BH-2*f, &Colorset[b->colorset],
 	Pdepth, NormalGC);
-      change_swallowed_window_colorset(b, False);
+      if (!(b->flags & b_FvwmModule))
+	change_swallowed_window_colorset(b, False);
     }
     else if (b->flags & b_Colorset)
     {

@@ -308,7 +308,7 @@ int main(int argc, char **argv)
 		 M_ICONIFY | M_END_WINDOWLIST | M_NEW_DESK | M_FOCUS_CHANGE |
 		 M_CONFIG_INFO | M_SENDCONFIG);
   /* extended messages */
-  SetMessageMask(Fvwm_fd, MX_VISIBLE_ICON_NAME);
+  SetMessageMask(Fvwm_fd, MX_VISIBLE_ICON_NAME | MX_PROPERTY_CHANGE);
 
   SendFvwmPipe(Fvwm_fd, "Send_WindowList",0);
 
@@ -545,6 +545,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         RedrawWindow(True, True);
       }
       break;
+  case MX_PROPERTY_CHANGE:
+    if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
+	WindowState &&  win_bg == ParentRelative)
+    {
+      RedrawWindow(True, True);
+    }
+    break;
     case M_CONFIG_INFO:
       ParseConfigLine((char *)&body[3]);
       break;
@@ -762,12 +769,6 @@ ParseConfigLine(char *tline)
 			 sizeof(XINERAMA_CONFIG_STRING) - 1) == 0) {
       FScreenConfigureModule(
 	tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
-    }
-    else if (strncasecmp(tline, ROOT_BG_CHANGE_STRING,
-			 sizeof(ROOT_BG_CHANGE_STRING) - 1) == 0)
-    {
-      if (WindowState && win_bg == ParentRelative)
-	RedrawWindow(True, True);
     }
   }
 }

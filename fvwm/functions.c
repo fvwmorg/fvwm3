@@ -203,6 +203,7 @@ static const func_type func_config[] =
   CMD_ENTRY("pointerwindow", CMD_PointerWindow, F_POINTERWINDOW, 0),
   CMD_ENTRY("popup", CMD_Popup, F_POPUP, 0),
   CMD_ENTRY("prev", CMD_Prev, F_PREV, 0),
+  CMD_ENTRY("propertychange", CMD_PropertyChange, F_NOP, 0),
   CMD_ENTRY("quit", CMD_Quit, F_QUIT, 0),
   CMD_ENTRY("quitscreen", CMD_QuitScreen, F_QUIT_SCREEN, 0),
   CMD_ENTRY("quitsession", CMD_QuitSession, F_QUIT_SESSION, 0),

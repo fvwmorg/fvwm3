@@ -81,6 +81,8 @@ void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data5, unsigned long data6,
 		       unsigned long data7, unsigned long data8,
 		       const char *name);
+void BroadcastPropertyChange(unsigned long argument, unsigned long data1,
+			     unsigned long data2, char *string);
 void BroadcastColorset(int n);
 void BroadcastConfigInfoString(char *string);
 void broadcast_xinerama_state(void);
