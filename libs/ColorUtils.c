@@ -64,75 +64,6 @@ extern Display *Pdpy;
 
 static XColor color;
 
-typedef struct
-{
-  int colors;
-  int size;
-  int first;
-  Pixel *pixelp;
-  XColor *xcolorp;
-  char **namep;
-} color_cache;
-
-static void init_color_cache(color_cache *cache, int size)
-{
-  memset(cache, 0, sizeof(color_cache));
-  cache->size = size;
-  cache->pixelp = (Pixel *)safemalloc(size * sizeof(Pixel));
-  cache->xcolorp = (XColor *)safemalloc(size * sizeof(XColor));
-  cache->namep = (char **)safemalloc(size * sizeof(char *));
-}
-
-Bool get_color_from_cache(
-  color_cache *cache, Pixel pixel, XColor **ret_xcolor, char **ret_name)
-{
-  int i;
-  int n;
-
-  for (i = cache->first, n = 0; n < cache->colors; n++, i++)
-  {
-    if (i >= cache->size)
-      i = 0;
-    if (cache->pixelp[i] == pixel)
-    {
-      /* found the color */
-      if (ret_xcolor)
-	*ret_xcolor = &(cache->xcolorp[i]);
-      if (ret_name)
-	*ret_name = cache->namep[i];
-      return True;
-    }
-  }
-  /* color is not in the cache */
-  return False;
-}
-
-static void cache_color(
-  color_cache *cache, Pixel pixel, XColor *xcolorp, char *name)
-{
-  int n;
-
-  if (cache->colors < cache->size)
-  {
-    n = cache->colors;
-    cache->colors++;
-  }
-  else
-  {
-    n = cache->first;
-    if (cache->namep[n])
-      free(cache->namep[n]);
-    cache->first++;
-    if (cache->first >= cache->size)
-      cache->first = 0;
-  }
-  cache->pixelp[n] = pixel;
-  memcpy(&(cache->xcolorp[n]), xcolorp, sizeof(XColor));
-  if (name)
-    cache->namep[n] = strdup(name);
-}
-
-
 /**** This part is the old fvwm way to calculate colours. Still used for
  **** 'medium' brigness colours. */
 #define DARKNESS_FACTOR 0.5
@@ -284,19 +215,6 @@ XColor *GetShadowColor(Pixel background)
 {
   long brightness;
   unsigned short red, green, blue;
-  static color_cache ccache;
-  static Bool is_cache_initialised = False;
-  static XColor *xcolorp;
-
-  if (!is_cache_initialised)
-  {
-    init_color_cache(&ccache, 8);
-    is_cache_initialised = True;
-  }
-  if (get_color_from_cache(&ccache, background, &xcolorp, NULL))
-  {
-    return xcolorp;
-  }
 
   color.pixel = background;
   XQueryColor (Pdpy, Pcmap, &color);
@@ -336,30 +254,15 @@ XColor *GetShadowColor(Pixel background)
       color.blue = (blue * brightadj + 50) / 100;
 #endif
     }
-  cache_color(&ccache, background, &color, NULL);
   return &color;
 }
 
 Pixel GetShadow(Pixel background)
 {
   XColor *colorp;
-  static color_cache ccache;
-  static Bool is_cache_initialised = False;
-  static XColor *xcolorp;
-
-  if (!is_cache_initialised)
-  {
-    init_color_cache(&ccache, 8);
-    is_cache_initialised = True;
-  }
-  if (get_color_from_cache(&ccache, background, &xcolorp, NULL))
-  {
-    return xcolorp->pixel;
-  }
 
   colorp = GetShadowColor(background);
   XAllocColor (Pdpy, Pcmap, colorp);
-  cache_color(&ccache, background, colorp, NULL);
   return colorp->pixel;
 }
 
@@ -367,19 +270,6 @@ XColor *GetHiliteColor(Pixel background)
 {
   long brightness;
   unsigned short red, green, blue;
-  static color_cache ccache;
-  static Bool is_cache_initialised = False;
-  static XColor *xcolorp;
-
-  if (!is_cache_initialised)
-  {
-    init_color_cache(&ccache, 8);
-    is_cache_initialised = True;
-  }
-  if (get_color_from_cache(&ccache, background, &xcolorp, NULL))
-  {
-    return xcolorp;
-  }
 
   color.pixel = background;
   XQueryColor (Pdpy, Pcmap, &color);
@@ -419,30 +309,15 @@ XColor *GetHiliteColor(Pixel background)
       color.blue = 0xffff - ((0xffff - blue) * brightadj + 50) / 100;
 #endif
     }
-  cache_color(&ccache, background, &color, NULL);
   return &color;
 }
 
 Pixel GetHilite(Pixel background)
 {
   XColor *colorp;
-  static color_cache ccache;
-  static Bool is_cache_initialised = False;
-  static XColor *xcolorp;
-
-  if (!is_cache_initialised)
-  {
-    init_color_cache(&ccache, 8);
-    is_cache_initialised = True;
-  }
-  if (get_color_from_cache(&ccache, background, &xcolorp, NULL))
-  {
-    return xcolorp->pixel;
-  }
 
   colorp = GetHiliteColor(background);
   XAllocColor (Pdpy, Pcmap, colorp);
-  cache_color(&ccache, background, colorp, NULL);
   return colorp->pixel;
 }
 
@@ -459,20 +334,6 @@ int pixel_to_color_string(
 {
   XColor color;
   int n;
-  static color_cache ccache;
-  static Bool is_cache_initialised = False;
-  char *name;
-
-  if (!is_cache_initialised)
-  {
-    init_color_cache(&ccache, 16);
-    is_cache_initialised = True;
-  }
-  if (get_color_from_cache(&ccache, pixel, NULL, &name))
-  {
-    strcpy(output, name);
-    return strlen(output);
-  }
 
   color.pixel = pixel;
   color.red = 0;
@@ -490,7 +351,6 @@ int pixel_to_color_string(
     sprintf(output, "#%04x%04x%04x%n", (int)color.red, (int)color.green,
 	    (int)color.blue, &n);
   }
-  cache_color(&ccache, pixel, &color, output);
 
   return n;
 }

@@ -1,3 +1,7 @@
+2000-01-19  Hippo
+
+	* libs/ColorUtils.c: Removed the color cache
+
 2000-01-18 olicha	<olivier.chapuis@free.fr>
  	
 	* fvwm/builtins.c (wait_func, recapture):
