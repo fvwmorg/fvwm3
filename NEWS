@@ -9,6 +9,9 @@ Changes in alpha release 2.5.10 (not released yet)
 
 * New BugOpts option ExplainWindowPlacement.
 
+* Security patch in fvwm-bug.
+  See http://securitytracker.com/alerts/2004/Jan/1008781.html
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.9 (2-Mar-2004)
