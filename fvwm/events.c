@@ -2244,11 +2244,18 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     }
     /* override even if border change */
 
+#if 0
     if (cre->value_mask & CWX)
       dx = cre->x - Tmp_win->frame_g.x - Tmp_win->boundary_width;
     if (cre->value_mask & CWY)
       dy = cre->y - Tmp_win->frame_g.y - Tmp_win->boundary_width -
 	Tmp_win->title_top_height;
+#else
+    if (cre->value_mask & CWX)
+      dx = cre->x;
+    if (cre->value_mask & CWY)
+      dy = cre->y;
+#endif
     if (cre->value_mask & CWWidth)
       dw = cre->width - (Tmp_win->frame_g.width - 2 * Tmp_win->boundary_width);
 

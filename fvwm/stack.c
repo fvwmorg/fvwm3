@@ -1303,22 +1303,26 @@ void init_stack_and_layers(void)
   return;
 }
 
-Bool is_on_top_of_layer(FvwmWindow *fw)
+
+static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 {
   FvwmWindow *t;
   Bool ontop = True;
 
-  if (Scr.bo.RaiseOverUnmanaged)
-  {
-    return False;
-  }
   for (t = fw->stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
   {
     if (t->layer > fw->layer)
     {
       break;
     }
-    if (overlap(fw, t))
+    if (t->Desk != fw->Desk)
+    {
+      continue;
+    }
+    /* For RaiseOverUnmanaged we can not determine if the window is on top by
+     * checking if the window overlaps another one.  If it was below unmanaged
+     * windows, but on top of its layer, it would be considered on top. */
+    if (Scr.bo.RaiseOverUnmanaged || overlap(fw, t))
     {
       if (!IS_TRANSIENT(t) || t->transientfor != fw->w ||
 	  !DO_RAISE_TRANSIENT(fw))
@@ -1330,6 +1334,15 @@ Bool is_on_top_of_layer(FvwmWindow *fw)
   }
 
   return ontop;
+}
+
+Bool is_on_top_of_layer(FvwmWindow *fw)
+{
+  if (Scr.bo.RaiseOverUnmanaged)
+  {
+    return False;
+  }
+  return is_on_top_of_layer_ignore_rom(fw);
 }
 
 /* ----------------------------- built in functions ------------------------ */
@@ -1361,9 +1374,7 @@ void CMD_RaiseLower(F_CMD_ARGS)
 #endif
     return;
   }
-
-  ontop = is_on_top_of_layer(tmp_win);
-
+  ontop = is_on_top_of_layer_ignore_rom(tmp_win);
   if (ontop)
     LowerWindow(tmp_win);
   else
