@@ -214,9 +214,7 @@ typedef struct MenuRoot
       unsigned char allflags;
       struct
       {
-#ifdef GRADIENT_BUTTONS
 	unsigned painted : 1;
-#endif
 	unsigned redrawn : 1;
 	unsigned is_left : 1;   /* menu direction relative to parent menu */
 	unsigned is_right : 1;

@@ -1,3 +1,11 @@
+1999-01-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (FPopupMenu): made painted flag independent of gradients
+	(PaintMenu): dito
+	(MenuInteraction): cleaned up redrawing
+	(PopDownAndRepaintParent): new function to handle redrawing without an
+	expose event for servers without backing storage (fix for bug #118)
+
 Sun Jan 10 22:23:14 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/XResource.c: Now includes config.h to get function
@@ -10,11 +18,11 @@ Sun Jan 10 22:13:10 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Sun Jan 10 22:11:36 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* fvwm/misc.c (GetMoveArguments): 
-	* fvwm/menus.c: 
-	* fvwm/icons.c (Iconify): 
-	* fvwm/focus.c (SetFocus): 
-	* fvwm/builtins.c (ButtonStyle): 
+	* fvwm/misc.c (GetMoveArguments):
+	* fvwm/menus.c:
+	* fvwm/icons.c (Iconify):
+	* fvwm/focus.c (SetFocus):
+	* fvwm/builtins.c (ButtonStyle):
 	* fvwm/borders.c (SetBorder): Inserted explicit braces to avoid
 	ambiguous `else'.
 
@@ -30,10 +38,10 @@ Sun Jan 10 21:31:32 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Sun Jan 10 21:22:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* fvwm/read.c: 
-	* fvwm/placement.c: 
-	* fvwm/move.c: 
-	* fvwm/menus.c: 
+	* fvwm/read.c:
+	* fvwm/placement.c:
+	* fvwm/move.c:
+	* fvwm/menus.c:
 	* fvwm/builtins.c: Removed unused variables.
 
 Sun Jan 10 18:11:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
