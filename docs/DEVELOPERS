@@ -268,7 +268,9 @@ Update fvwm-web:
   - Update the release numbers in fvwm-web/index.html and
     fvwm-web/download.html.  Commit this change.
   - Use fvwm-web generated/txt2html.sh to update the NEWS, FAQ and
-    AUTHORS file
+    AUTHORS file.  This assumes the fvwm-web module is located in
+    a directory fvwm-web and the development sources are in a
+    sibling directory fvwm.
       cd fvwm-web/generated && \
         ./txt2html.sh ../../fvwm/NEWS && \
         ./txt2html.sh ../../fvwm/AUTHORS && \
