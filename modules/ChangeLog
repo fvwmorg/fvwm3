@@ -1,3 +1,8 @@
+2002-09-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmButtons/dynamic.c:
+	removed non-portable #include <X11/Xdefs.h>
+
 2002-09-15  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmBacker/FvwmBacker.c (SetDeskPageBackground):
