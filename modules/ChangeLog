@@ -1,5 +1,6 @@
 2002-04-29  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmTaskBar/List.c (UpdateItemPicture):
 	* FvwmTaskBar/ButtonArray.c (ButtonDraw):
 	A picture fix
 
