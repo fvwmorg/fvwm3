@@ -654,7 +654,6 @@ Drawable CreateGradientPixmap(
   /* create space for drawing the image locally */
   image->data = safemalloc(image->bytes_per_line * t_height);
   /* now do the fancy drawing */
-  /* draw one pixel further than expected in case line style is CapNotLast */
   switch (type)
   {
     case H_GRADIENT:
@@ -696,14 +695,12 @@ Drawable CreateGradientPixmap(
       }
     case S_GRADIENT:
       {
-        register int w = t_width - 1;
-        register int h = t_height - 1;
-	register int t_scale = w * h;
+	register int t_scale = t_width * t_height;
 	register int myncolors = ncolors * 2;
-        for (i = 0; i <= w; i++) {
-          register int pi = min(i, w - i) * h;
-          for (j = 0; j <= h; j++) {
-            register int pj = min(j, h - j) * w;
+        for (i = 0; i < t_width; i++) {
+          register int pi = min(i, t_width - 1 - i) * t_height;
+          for (j = 0; j < t_height; j++) {
+            register int pj = min(j, t_height - 1 - j) * t_width;
             XPutPixel(image, i, j,
 		      pixels[(min(pi, pj) * myncolors - 1) / t_scale]);
           }
@@ -712,14 +709,11 @@ Drawable CreateGradientPixmap(
       break;
     case C_GRADIENT:
       {
-	register int w = t_width - 1;
-	register int h = t_height - 1;
-	register double t_scale = (double)(w * h) / sqrt(8);
-
-	for (i = 0; i <= w; i++)
-	  for (j = 0; j <= h; j++) {
-            register double x = (double)((2 * i - w) * h) / 4.0;
-            register double y = (double)((h - 2 * j) * w) / 4.0;
+	register double t_scale = (double)(t_width * t_height) / sqrt(8);
+	for (i = 0; i < t_width; i++)
+	  for (j = 0; j < t_height; j++) {
+            register double x = (double)((2 * i - t_width) * t_height) / 4.0;
+            register double y = (double)((t_height - 2 * j) * t_width) / 4.0;
             register double rad = sqrt(x * x + y * y);
 	    XPutPixel(image, i, j,
 		      pixels[(int)((rad * ncolors - 0.5) / t_scale)]);
@@ -763,14 +757,11 @@ Drawable CreateGradientPixmap(
  * ************************************************************************/
     case Y_GRADIENT:
       {
-	register int w = t_width - 1;
-	register int h = t_height - 1;
-	register int r = w * h / 4;
-
-        for (i = 0; i <= w; i++) {
-          for (j = 0; j <= h; j++) {
-            register double x = (double)((2 * i - w) * h) / 4.0;
-            register double y = (double)((h - 2 * j) * w) / 4.0;
+	register int r = t_width * t_height / 4;
+        for (i = 0; i < t_width; i++) {
+          for (j = 0; j < t_height; j++) {
+            register double x = (double)((2 * i - t_width) * t_height) / 4.0;
+            register double y = (double)((t_height - 2 * j) * t_width) / 4.0;
             register double rad = sqrt(x * x + y * y);
             /* angle ranges from -pi/2 to +pi/2 */
             register double angle;

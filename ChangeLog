@@ -1,3 +1,8 @@
+2001-05-14  Dan Espen  <dane@mk.telcordia.com>
+
+	* libs/Graphics.c (CreateGradientPixmap): Avoid divide by zero errors
+	in S,C,Y Gradients with the help of a very smart horse.
+
 2001-05-14  olicha  <olivier.chapuis@free.fr>
 	
 	* acinclude.m4:
