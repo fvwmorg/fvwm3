@@ -1,3 +1,11 @@
+2001-04-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (FvwmErrorHandler):
+	suppress error messages for X_ConfigureWindow requests
+
+	* fvwm/events.c (HandleEnterNotify):
+	make sure window under pointer gets the focus after a restart
+
 2001-04-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Target.c (fvwmlib_get_target_window):
