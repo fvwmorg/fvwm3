@@ -1217,7 +1217,7 @@ static void CreateDrawGC(void) {
 	}
 	else if (Animate.color)
 	{       /* if color called for */
-		if (XParseColor( dpy, Pcmap,Animate.color, &xcol))
+		if (XParseColor(dpy, Pcmap,Animate.color, &xcol))
 		{
 			if (PictureAllocColor(dpy, Pcmap, &xcol, True))
 			{

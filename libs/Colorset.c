@@ -397,10 +397,11 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 		  PGraphicsRenderPixmaps(
 			  dpy, win, pixmap, None, None,
 			  Pdepth, &fra, pixmap,
-			  gc, None, None,
+			  fill_gc, None, None,
 			  0, 0, width, height,
 			  0, 0, width, height, False);
 	  }
+	  XFreeGC(dpy,fill_gc);
 	  return pixmap;
   }
   if (!is_shape_mask)
@@ -442,6 +443,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	  /* create a solid pixmap - not very useful most of the time */
 	  pixmap = XCreatePixmap(dpy, win, width, height, depth);
 	  XFillRectangle(dpy, pixmap, fill_gc, 0, 0, width, height);
+	  XFreeGC(dpy,fill_gc);
   }
   else if (cs_keep_aspect)
   {

@@ -2069,7 +2069,7 @@ int main(int argc, char **argv)
 			for(i = 0; i<total; i++)
 			{
 				if (Pdepth < vizinfo[i].depth &&
-				    vizinfo[i].depth >= 8)
+				    vizinfo[i].depth > 8)
 				{
 					Pvisual = vizinfo[i].visual;
 					Pdepth = vizinfo[i].depth;

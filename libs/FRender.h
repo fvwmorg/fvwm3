@@ -41,9 +41,11 @@ typedef XRenderDirectFormat FRenderDirectFormat;
 typedef PictFormat FRPictFormat;
 typedef XRenderPictFormat FRenderPictFormat;
 typedef XRenderPicture FRenderPicture;
+#if 0 /* this has disappeared */
 typedef XRenderVisual FRenderVisual;
 typedef XRenderDepth FRenderDepth;
 typedef XRenderInfo FRenderInfo;
+#endif
 typedef XRenderPictureAttributes FRenderPictureAttributes;
 typedef XRenderColor FRenderColor;
 typedef XGlyphInfo FGlyphInfo;

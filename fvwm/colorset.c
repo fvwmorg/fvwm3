@@ -185,19 +185,14 @@ Pixmap get_root_pixmap(Atom prop)
 
 void update_root_pixmap(Atom prop)
 {
-	static Atom a_eset = None;
-	static Atom a_x = None;
+	static Atom a_rootpix = None;
 	unsigned int w = 0, h = 0;
 	XID dummy;
 	Pixmap pix;
 
-	if (a_eset == None)
+	if (a_rootpix == None)
 	{
-		a_eset = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
-	}
-	if (a_x == None)
-	{
-		a_x = XInternAtom(dpy, "_XSETROOT_ID", False);
+		a_rootpix = XInternAtom(dpy,"_XROOTPMAP_ID", False);
 	}
 	XSync(dpy, False);
 	if (prop != 0)
@@ -212,17 +207,7 @@ void update_root_pixmap(Atom prop)
 	}
 	else
 	{
-		pix = get_root_pixmap(a_x);
-		if (pix && !XGetGeometry(
-			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
-			&w, &h, (unsigned int *)&dummy, (unsigned int *)&dummy))
-		{
-			pix = None;
-		}
-	}
-	if (prop == 0 && pix == None)
-	{
-		pix = get_root_pixmap(a_eset);
+		pix = get_root_pixmap(a_rootpix);
 		if (pix && !XGetGeometry(
 			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
 			&w, &h, (unsigned int *)&dummy, (unsigned int *)&dummy))

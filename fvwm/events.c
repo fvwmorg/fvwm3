@@ -2480,7 +2480,10 @@ void HandlePropertyNotify(const evh_args_t *ea)
 				DrawIconWindow(t, False, True, False, NULL);
 			}
 		}
-		update_root_transparent_colorset(te->xproperty.atom);
+		if (te->xproperty.atom == _XA_XROOTPMAP_ID)
+		{
+			update_root_transparent_colorset(te->xproperty.atom);
+		}
 		BroadcastPropertyChange(
 			MX_PROPERTY_CHANGE_BACKGROUND, 0, 0, "");
 		return;

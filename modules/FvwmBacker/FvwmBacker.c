@@ -127,8 +127,7 @@ int MyDisplayHeight;
 int MyDisplayWidth;
 char* displayName = NULL;
 
-Bool RetainPixmapEsetroot = False;
-Bool RetainPixmapXsetroot = False;
+Bool RetainPixmap = False;
 Atom XA_XSETROOT_ID = None;
 Atom XA_ESETROOT_PMAP_ID = None;
 Atom XA_XROOTPMAP_ID = None;
@@ -270,9 +269,6 @@ void DeleteRootAtoms(Display *dpy2, Window root2)
 	    type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
 	    *((Pixmap *)data) != None)
 	{
-#if 0
-		fprintf(stderr,"FB: XKillClient: 0x%lx\n", *((Pixmap *)data));
-#endif
 		XKillClient(dpy2, *((Pixmap *)data));
 	}
 	if (XGetWindowProperty(
@@ -281,9 +277,6 @@ void DeleteRootAtoms(Display *dpy2, Window root2)
 	    type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
 	    *((Pixmap *)data) != None)
 	{
-#if 0
-		fprintf(stderr,"FB: XKillClient: 0x%lx\n", *((Pixmap *)data));
-#endif
 		e_deleted = True;
 		XKillClient(dpy2, *((Pixmap *)data));
 	}
@@ -295,10 +288,7 @@ void DeleteRootAtoms(Display *dpy2, Window root2)
 
 void SetRootAtoms(Display *dpy2, Window root2, Pixmap RootPix)
 {
-#if 0
-	fprintf(stderr,"FB: SetAtom: 0x%lx\n", RootPix);
-#endif
-	if (RetainPixmapEsetroot && RootPix != None)
+	if (RetainPixmap && RootPix != None)
 	{
 		XChangeProperty(
 			dpy2, root2, XA_ESETROOT_PMAP_ID, XA_PIXMAP, 32,
@@ -323,7 +313,6 @@ void SetDeskPageBackground(const Command *c)
 	Window root2 = None;
 	int screen2;
 	Pixmap pix = None;
-	Bool Retain = (RetainPixmapEsetroot || RetainPixmapXsetroot);
 
 	current_colorset = -1;
 
@@ -341,7 +330,7 @@ void SetDeskPageBackground(const Command *c)
 			}
 			screen2 = DefaultScreen(dpy2);
 			root2 = RootWindow(dpy2, screen2);
-			if (Retain)
+			if (RetainPixmap)
 			{
 				XSetCloseDownMode(dpy2, RetainPermanent);
 			}
@@ -371,7 +360,7 @@ void SetDeskPageBackground(const Command *c)
 					XCloseDisplay(dpy2);
 					return;
 				}
-				else if (Retain)
+				else if (RetainPixmap)
 				{
 					pix = CreateBackgroundPixmap(
 						dpy2, root2, MyDisplayWidth,
@@ -397,7 +386,7 @@ void SetDeskPageBackground(const Command *c)
 				}
 				break;
 			case 1: /* Process a solid color request */
-				if (Retain)
+				if (RetainPixmap)
 				{
 					GC gc;
 					XGCValues xgcv;
@@ -545,15 +534,14 @@ int ParseConfigLine(char *line)
 		if (strncasecmp(line, configPrefix, cpl) == 0)
 		{
 			if (strncasecmp(
-				line+cpl, "RetainPixmapEsetroot", 20) == 0)
+				line+cpl, "RetainPixmap", 12) == 0)
 			{
-				RetainPixmapEsetroot = True;
-				RetainPixmapXsetroot = False;
+				RetainPixmap = True;
 			}
-			else if (strncasecmp(line+cpl, "RetainPixmap", 12) == 0)
+			else if (strncasecmp(
+				line+cpl, "DoNotRetainPixmap", 17) == 0)
 			{
-				RetainPixmapXsetroot = True;
-				RetainPixmapEsetroot = False;
+				RetainPixmap = False;
 			}
 			else
 			{
