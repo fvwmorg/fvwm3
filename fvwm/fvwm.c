@@ -653,8 +653,7 @@ int main(int argc, char **argv)
   attributes.background_pixel = Colorset[0].bg;
   attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
-  attributes.save_under = True;
-  valuemask = CWBackPixel | CWColormap | CWBorderPixel | CWSaveUnder;
+  valuemask = CWBackPixel | CWColormap | CWBorderPixel;
 
   if(!Scr.gs.EmulateMWM)
   {

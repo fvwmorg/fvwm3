@@ -1,4 +1,18 @@
+1999-08-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.c (main): removed save_under attribute for feedback window.
+	It actually slow things down instead of speeding them up.
+
+	* fvwm/move_resize.c (moveLoop):
+	* fvwm/virtual.c (HandlePaging): fixed slow movement of windows with
+	some ideas from icewm
+
 1999-08-20  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move_resize.c (InteractiveMove): use new function
+	GetLocationFromEventOrQuery
+
+	* libs/Pointer.c (GetLocationFromEventOrQuery): new file and function
 
 	* fvwm/borders.c: removed debug code causing title bars not to draw
 	properly with less that 20 bitplanes :-)

@@ -365,27 +365,32 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
   do
     {
-      if(XCheckWindowEvent(dpy,Scr.PanFrameTop.win, LeaveWindowMask,&Event)  ||
-	 XCheckWindowEvent(dpy,Scr.PanFrameBottom.win,LeaveWindowMask,&Event)||
-	 XCheckWindowEvent(dpy,Scr.PanFrameLeft.win, LeaveWindowMask,&Event) ||
-	 XCheckWindowEvent(dpy,Scr.PanFrameRight.win, LeaveWindowMask,&Event))
+      if(XPending(dpy) > 0 &&
+	 (XCheckWindowEvent(
+	    dpy, Scr.PanFrameTop.win, LeaveWindowMask, &Event) ||
+	  XCheckWindowEvent(
+	    dpy, Scr.PanFrameBottom.win, LeaveWindowMask, &Event) ||
+	  XCheckWindowEvent(
+	    dpy, Scr.PanFrameLeft.win, LeaveWindowMask, &Event) ||
+	  XCheckWindowEvent(
+	    dpy, Scr.PanFrameRight.win, LeaveWindowMask, &Event)))
 	{
 	  StashEventTime(&Event);
 	  is_timestamp_valid = False;
 	  add_time = 0;
 	  return False;
 	}
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &x, &y, &JunkX, &JunkY, &JunkMask);
+      /* get pointer location */
+      GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &x, &y);
       /* check actual pointer location since PanFrames can get buried under
 	 a window being moved or resized - mab */
       if(( x >= edge_thickness )&&( x < Scr.MyDisplayWidth-edge_thickness )&&
 	 ( y >= edge_thickness )&&( y < Scr.MyDisplayHeight-edge_thickness ))
-	{
-	  is_timestamp_valid = False;
-	  add_time = 0;
-	  return False;
-	}
+      {
+	is_timestamp_valid = False;
+	add_time = 0;
+	return False;
+      }
       if (!fLoop && is_last_position_valid &&
 	  ((x - last_x) > MAX_PAGING_MOVE_DISTANCE ||
 	   (x - last_x) < -MAX_PAGING_MOVE_DISTANCE ||
@@ -993,7 +998,6 @@ void UnmapDesk(int desk, Bool grab)
   {
     MyXUngrabServer(dpy);
   }
-
 
 return;
 }

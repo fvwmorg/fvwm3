@@ -177,40 +177,7 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
 
   /* Although a move is usually done with a button depressed we have to check
    * for ButtonRelease too since the event may be faked. */
-  if (eventp->type == ButtonPress || eventp->type == ButtonRelease)
-  {
-    DragX = eventp->xbutton.x_root;
-    DragY = eventp->xbutton.y_root;
-  }
-  else if (eventp->type == KeyPress || eventp->type == KeyRelease)
-  {
-    DragX = eventp->xkey.x_root;
-    DragY = eventp->xkey.y_root;
-  }
-  else if (eventp->type == MotionNotify)
-  {
-    DragX = eventp->xmotion.x_root;
-    DragY = eventp->xmotion.y_root;
-  }
-  else
-  {
-    fvwm_msg(WARN, "InteractiveMove",
-	     "BUG: move triggered by event type %d."
-	     " Please report to fvwm-workers@fvwm.org", eventp->type);
-    /* we're getting desparate now... */
-    if (XCheckMaskEvent(dpy, PointerMotionMask|ButtonMotionMask, &my_event))
-    {
-      /* hope these coordinates are good enough */
-      DragX = my_event.xmotion.x_root;
-      DragY = my_event.xmotion.y_root;
-    }
-    else
-    {
-      /* it's hopeless, just query the pointer position */
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY,
-		    &JunkX, &JunkY, &JunkMask);
-    }
-  }
+  GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &DragX, &DragY);
 
   if(!GrabEm(CRS_MOVE))
   {
@@ -795,6 +762,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   FvwmWindow tmp_win_copy;
   int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
   int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
+  int count;
 
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
@@ -814,8 +782,9 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
   while (!finished)
   {
-    /* block until there is an interesting event */
-    while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+    /* wait until there is an interesting event */
+    while (!XPending(dpy) ||
+	   !XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
 			    KeyPressMask | PointerMotionMask |
 			    ButtonMotionMask | ExposureMask, &Event))
     {
@@ -837,17 +806,30 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     /* discard any extra motion events before a logical release */
     if (Event.type == MotionNotify)
     {
-      int count = Scr.MoveSmoothness;
+      XEvent new_event;
+
+      /*** logic borrowed from icewm ***/
+      count = Scr.MoveSmoothness;
       /* if count is zero, loop 'infinitely'; this test is not a bug */
-      while (--count != 0 &&
+      while (--count != 0 && XPending(dpy) > 0 &&
 	     XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
-			     ButtonPressMask |ButtonRelease, &Event))
+			     ButtonPressMask | ButtonRelease | KeyPressMask,
+			     &new_event))
       {
-	StashEventTime(&Event);
-	if(Event.type == ButtonRelease || Event.type == ButtonPress)
+	if (Event.type != new_event.type)
+	{
+	  XPutBackEvent(dpy, &new_event);
 	  break;
+	}
+	else
+	{
+	  Event = new_event;
+	}
       }
-    }
+      /*** end of code borrowed from icewm ***/
+      StashEventTime(&Event);
+
+    } /* if (Event.type == MotionNotify) */
 
     done = FALSE;
     /* Handle a limited number of key press events to allow mouseless
@@ -1064,21 +1046,27 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 #endif
     if(opaque_move)
     {
-      /* no point in doing this if server grabbed */
       if (!IS_ICONIFIED(tmp_win))
       {
 	tmp_win_copy.frame_g.x = xl;
 	tmp_win_copy.frame_g.y = yt;
       }
+      /* no point in doing this if server grabbed */
+      /* domivogt (20-Aug-1999): Then don't do it. Slows things down quite a
+       * bit! */
+#if 0
       BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
       FlushOutputQueues();
+#endif
     }
-  }
+  } /* while (!finished) */
   if (!NeedToResizeToo)
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */
     WaitForButtonsUp();
   SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, 0);
+
+  return;
 }
 
 /***********************************************************************

@@ -598,8 +598,7 @@ CoerceEnterNotifyOnCurrentWindow(void)
                          &child, &root_x, &root_y, &win_x, &win_y, &JunkMask);
   if (f && child != None) {
     Event.xany.window = child;
-    if (XFindContext(dpy, child, FvwmContext, (caddr_t *) &Tmp_win) ==
-XCNOENT)
+    if (XFindContext(dpy, child, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
       Tmp_win = NULL;
     HandleEnterNotify();
     Tmp_win = None;
