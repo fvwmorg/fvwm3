@@ -1,5 +1,7 @@
 Changes in beta release 2.3.6 (July 1999)
 
+* New function variables $c, $r, $n.
+
 * The new commands QuitSession, SaveSession, SaveQuitSession allow to
   manage the session from the window manager.
 

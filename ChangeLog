@@ -1,5 +1,12 @@
 1999-07-23  Mikhael Goikhman  <migo@homemail.com>
 
+	* fvwm/functions.c (expand):
+	* fvwm/fvwm2.1:
+	* NEWS:
+	Applied patch by Neil Bird - new function variables $c, $r, $n.
+
+1999-07-23  Mikhael Goikhman  <migo@homemail.com>
+
 	* fvwm/builtins.c:
 	* fvwm/functions.c:
 	* fvwm/functions.h:

@@ -286,6 +286,8 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
   {
     addto = 1;
   }
+
+  /* Calculate best guess at length of expanded string */
   i=0;
   while(i<l)
     {
@@ -317,11 +319,30 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 	      l2 += 16;
 	      i++;
 	      break;
+	    case 'c':
+	      if (tmp_win && tmp_win->class.res_class && tmp_win->class.res_class[0])
+		{
+		  l2 += strlen(tmp_win->class.res_class) + 2;
+		}
+	      break;
+	    case 'r':
+	      if (tmp_win && tmp_win->class.res_name && tmp_win->class.res_name[0])
+		{
+		  l2 += strlen(tmp_win->class.res_name) + 2;
+		}
+	      break;
+	    case 'n':
+	      if (tmp_win && tmp_win->name && tmp_win->name[0])
+		{
+		  l2 += strlen(tmp_win->name) + 2;
+		}
+	      break;
 	    }
 	}
       i++;
     }
 
+  /* Actually create expanded string */
   i=0;
   out = safemalloc(l2+1);
   j=0;
@@ -344,20 +365,20 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 	      n = input[i+1] - '0';
 	      if(arguments[n] != NULL)
 		{
-		  for(k=0;k<strlen(arguments[n]);k++)
+		  for(k=0;arguments[n][k];k++)
 		    out[j++] = arguments[n][k];
 		  i++;
 		}
-            else if (addto == 1)
-        {
-		out[j++] = '$';
-        }
-          else
-        {
-          i++;
-          if (isspace(input[i+1]))
-            i++; /*eliminates extra white space*/
-        }
+	      else if (addto == 1)
+		{
+		  out[j++] = '$';
+		}
+	      else
+		{
+		  i++;
+		  if (isspace(input[i+1]))
+		    i++; /*eliminates extra white space*/
+		}
 	      break;
 	    case 'w':
 	      if(tmp_win)
@@ -380,6 +401,48 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 	    case 'y':
 	      sprintf(&out[j], "%d", Scr.Vy);
 	      i++;
+	      break;
+	    case 'c':
+	      if (tmp_win && tmp_win->class.res_class && tmp_win->class.res_class[0])
+		{
+		  out[j++] = '\'';
+		  for(k=0;tmp_win->class.res_class[k];k++)
+		    out[j++] = tmp_win->class.res_class[k];
+		  out[j++] = '\'';
+		  i++;
+		}
+	      else
+		{
+		  out[j++] = '$';
+		}
+	      break;
+	    case 'r':
+	      if (tmp_win && tmp_win->class.res_name && tmp_win->class.res_name[0])
+		{
+		  out[j++] = '\'';
+		  for(k=0;tmp_win->class.res_name[k];k++)
+		    out[j++] = tmp_win->class.res_name[k];
+		  out[j++] = '\'';
+		  i++;
+		}
+	      else
+		{
+		  out[j++] = '$';
+		}
+	      break;
+	    case 'n':
+	      if (tmp_win && tmp_win->name && tmp_win->name[0])
+		{
+		  out[j++] = '\'';
+		  for(k=0;tmp_win->name[k];k++)
+		    out[j++] = tmp_win->name[k];
+		  out[j++] = '\'';
+		  i++;
+		}
+	      else
+		{
+		  out[j++] = '$';
+		}
 	      break;
 	    case '$':
 	      out[j++] = '$';
