@@ -394,7 +394,7 @@ void FftDrawString(
 
 	XQueryColor(dpy, Pcmap, &xfg);
 	alpha_factor = ((fws->flags.has_colorset)?
-		 ((float)fws->colorset->fg_alpha/100) : 1);
+		 ((float)fws->colorset->fg_alpha_percent/100) : 1);
 	/* Render uses premultiplied alpha */
 	fft_fg.color.red = xfg.red * alpha_factor;
 	fft_fg.color.green = xfg.green * alpha_factor;

@@ -412,8 +412,9 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 	Fontheight=FButtonFont->height;
 
 	if ((FftSupport && Ffont->fftf.fftfont != NULL) ||
-	    (button->p.picture != 0 && button->p.alpha != 0) || 
-	    (colorset[set] >= 0 && Colorset[colorset[set]].icon_alpha < 100))
+	    (button->p.picture != 0 && button->p.alpha != 0) ||
+	    (colorset[set] >= 0 &&
+	     Colorset[colorset[set]].icon_alpha_percent < 100))
 	{
 		clear_bg = True;
 	}
@@ -498,7 +499,7 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 					       FButtonFont, string,
 					       strlen(string))
 					+ 2 * button->reliefwidth +
-					INNER_MARGIN) > w) 
+					INNER_MARGIN) > w)
 				{
 					string++;
 					len--;

@@ -2480,7 +2480,8 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			}
 			if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t) &&
 			    (t->icon_alphaPixmap != None ||
-			     (cs >= 0 && Colorset[cs].icon_alpha < 100)))
+			     (cs >= 0 &&
+			      Colorset[cs].icon_alpha_percent < 100)))
 			{
 				DrawIconWindow(t, False, True, False, NULL);
 			}

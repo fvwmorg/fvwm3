@@ -1,12 +1,20 @@
+2002-10-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/ButtonArray.c (DoButton):
+	* FvwmPager/x_pager.c (do_picture_window):
+	* FvwmIconBox/FvwmIconBox.c (RedrawIcon):
+	* FvwmButtons/icons.c (CreateIconWindow):
+	use renamed colorset_struct members
+
 2002-10-18  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/x.c:
-	* FvwmIconMan/xmanager.c: 
+	* FvwmIconMan/xmanager.c:
 	Replaced (Pdepht < 2) test by (PictureUseBWOnly())
-	
+
 2002-10-17  olicha  <olivier.chapuis@free.fr>
 
-	* FvwmBacker/FvwmBacker.1: 
+	* FvwmBacker/FvwmBacker.1:
 	Documented RetainPixmap
 
 2002-10-16  olicha  <olivier.chapuis@free.fr>

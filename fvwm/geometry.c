@@ -1091,7 +1091,7 @@ void move_icon_to_position(
 			fw->icon_g.picture_w_g.x,
 			fw->icon_g.picture_w_g.y);
 		if (fw->icon_alphaPixmap ||
-		    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+		    (cs >= 0 && Colorset[cs].icon_alpha_percent < 100))
 		{
 			DrawIconWindow(fw, False, True, False, NULL);
 		}

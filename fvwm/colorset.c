@@ -703,9 +703,9 @@ void parse_colorset(int n, char *line)
 			{
 				tmp = 100;
 			}
-			if (tmp != cs->fg_alpha)
+			if (tmp != cs->fg_alpha_percent)
 			{
-				cs->fg_alpha = tmp;
+				cs->fg_alpha_percent = tmp;
 				has_fg_alpha_changed = True;
 			}
 			break;
@@ -904,10 +904,10 @@ void parse_colorset(int n, char *line)
 			{
 				tmp = 100;
 			}
-			if (tmp != cs->icon_alpha)
+			if (tmp != cs->icon_alpha_percent)
 			{
 				has_icon_pixels_changed = True;
-				cs->icon_alpha = tmp;
+				cs->icon_alpha_percent = tmp;
 			}
 			break;
 		default:
@@ -1664,9 +1664,9 @@ void alloc_colorset(int n)
 		/* in case just a pixmap is given */
 		ncs->color_flags = FG_CONTRAST | BG_AVERAGE;
 		ncs->fg_saved = ncs->fg;
-		ncs->fg_alpha = 100;
+		ncs->fg_alpha_percent = 100;
 		ncs->image_alpha_percent = 100;
-		ncs->icon_alpha = 100;
+		ncs->icon_alpha_percent = 100;
 		ncs->tint_percent = 0;
 		ncs->icon_tint_percent = 0;
 		ncs->fg_tint_percent = ncs->bg_tint_percent = 0;

@@ -259,7 +259,7 @@ void PTileRectangle(Display *dpy, Window win, Pixmap pixmap, Pixmap mask,
 	}
 }
 
-static 
+static
 void PGrabImageErrorHandler(void)
 {
 	PGrabImageError = True;
@@ -281,7 +281,7 @@ XImage *PGrabXImage(
 		XGrabServer(dpy);
 		XGetWindowAttributes(dpy, d, &xwa);
 		XSync(dpy, False);
-			
+
 		if (xwa.map_state != IsViewable &&
 		    xwa.backing_store == NotUseful)
 		{
@@ -315,7 +315,7 @@ XImage *PGrabXImage(
 		}
 		if (d_is_a_window)
 		{
-			XSetErrorHandler((XErrorHandler) saved_eh);	
+			XSetErrorHandler((XErrorHandler) saved_eh);
 		}
 	}
 
@@ -376,7 +376,7 @@ Pixmap PCreateRenderPixmap(
 			error = True;
 			goto bail;
 		}
-		src_x = src_y = 0;	
+		src_x = src_y = 0;
 	}
 	src_pix = (pixmap_copy)? pixmap_copy:pixmap;
 
@@ -778,7 +778,7 @@ Pixmap PCreateRenderPixmap(
 		XDestroyImage(out_im);
 	}
 	if (error)
-	{ 
+	{
 		if (out_pix != None)
 		{
 			XFreePixmap(dpy, out_pix);
@@ -885,7 +885,7 @@ Pixmap PCreateDitherPixmap(
 	{
 		for (i = 0; i < out_width; i++)
 		{
-			
+
 			if (cm[m] > 0)
 			{
 				c = colors[k++];
@@ -960,9 +960,10 @@ void PGraphicsRenderPixmaps(
 		t_fra.mask = fra->mask;
 		if (fra->mask & FRAM_HAVE_ICON_CSET)
 		{
-			t_fra.added_alpha_percent = fra->colorset->icon_alpha;
+			t_fra.added_alpha_percent =
+				fra->colorset->icon_alpha_percent;
 			t_fra.tint_percent = fra->colorset->icon_tint_percent;
-			t_fra.tint = fra->colorset->icon_tint;
+			t_fra.tint = fra->colorset->icon_tint_percent;
 		}
 		if (fra->mask & FRAM_HAVE_ADDED_ALPHA)
 		{
@@ -1006,7 +1007,7 @@ void PGraphicsRenderPixmaps(
 			dpy, win, pixmap, mask, alpha, depth,
 			t_fra.added_alpha_percent, t_fra.tint,
 			t_fra.tint_percent, d_is_a_window, d,
-			gc, mono_gc, alpha_gc, 
+			gc, mono_gc, alpha_gc,
 			src_x, src_y, src_w, src_h,
 			dest_x, dest_y, dest_w, dest_h, do_repeat,
 			&new_w, &new_h, &new_do_repeat, &xrs_mask);
@@ -1116,7 +1117,7 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 	if (src->alpha)
 	{
 		alpha = CreateStretchPixmap(
-			dpy, src->alpha, src->width, src->height, 
+			dpy, src->alpha, src->width, src->height,
 			FRenderGetAlphaDepth(),
 			dest_width, dest_height, alpha_gc);
 	}

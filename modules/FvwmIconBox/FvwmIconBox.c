@@ -772,7 +772,8 @@ void RedrawIcon(struct icon_info *item, int f)
 					fra.colorset = &Colorset[cs];
 				}
 				if (item->icon_alphaPixmap != None ||
-				    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+				    (cs >= 0 &&
+				     Colorset[cs].icon_alpha_percent < 100))
 				{
 					XClearWindow(dpy, item->icon_pixmap_w);
 				}

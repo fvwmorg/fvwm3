@@ -92,7 +92,7 @@ void CreateIconWindow(button_info *b)
 
 	cset = buttonColorset(b);
 	if (b->icon->alpha != None ||
-	    (cset >= 0 && Colorset[cset].icon_alpha < 100 &&
+	    (cset >= 0 && Colorset[cset].icon_alpha_percent < 100 &&
 	     !(UberButton->c->flags&b_TransBack)))
 	{
 		/* in this case we drawn on the button, with a shaped
@@ -109,7 +109,7 @@ void CreateIconWindow(button_info *b)
 		fc = Colorset[cset].fg;
 		fra.mask |= FRAM_HAVE_ICON_CSET;
 		fra.colorset = &Colorset[cset];
-		if (Colorset[cset].icon_alpha < 100)
+		if (Colorset[cset].icon_alpha_percent < 100)
 		{
 			fra.added_alpha_percent = 100;
 			fra.mask |= FRAM_HAVE_ADDED_ALPHA;
@@ -271,7 +271,7 @@ Bool GetIconWindowPosition(
 	*r_y = y;
 	*r_w = w;
 	*r_h = h;
-	
+
 	return 1;
 #endif
 }

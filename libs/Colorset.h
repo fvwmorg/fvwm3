@@ -21,7 +21,8 @@
 #ifndef LIBS_COLORSETS_H
 #define LIBS_COLORSETS_H
 
-typedef struct {
+typedef struct
+{
 	Pixel fg;
 	Pixel bg;
 	Pixel hilite;
@@ -31,17 +32,17 @@ typedef struct {
 	Pixel icon_tint;
 	Pixmap pixmap;
 	Pixmap shape_mask;
-	unsigned int fg_alpha : 7;
 	unsigned int width : 12;
 	unsigned int height : 12;
 	unsigned int pixmap_type: 3;
 	unsigned int shape_width : 12;
 	unsigned int shape_height : 12;
 	unsigned int shape_type : 2;
-	unsigned int tint_percent : 12;
 	unsigned int do_dither_icon : 1;
-	unsigned int icon_tint_percent : 12;
-	unsigned int icon_alpha : 12;
+	unsigned int fg_alpha_percent : 7;
+	unsigned int tint_percent : 7;
+	unsigned int icon_alpha_percent : 7;
+	unsigned int icon_tint_percent : 7;
 #ifdef FVWM_COLORSET_PRIVATE
 	/* fvwm/colorset.c use only */
 	Pixel fg_tint;

@@ -1,5 +1,22 @@
 2002-10-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/geometry.c (move_icon_to_position):
+	* fvwm/colorset.c (parse_colorset):
+	(alloc_colorset):
+	* fvwm/icons.c (DrawIconPixmapWindow):
+	(DrawIconWindow):
+	* fvwm/events.c (HandlePropertyNotify):
+	* libs/Fft.c (FftDrawString):
+	* libs/Colorset.c (DumpColorset):
+	(LoadColorset):
+	* libs/PictureGraphics.c (PGraphicsRenderPixmaps):
+	use renamed colorset_struct members
+
+	* libs/Colorset.h (colorset_struct):
+	renamed and re-sorted members and cut down bit field lengths for
+	percentile members
+
 	* fvwm/menustyle.c (menustyle_update):
 	fixed core dump
 

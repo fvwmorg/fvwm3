@@ -224,6 +224,9 @@ seg-fault bug fix in FvwmButtons.
 Cameron Simpson:
 Documentation fixes.
 
+Ben Winslow:
+Fixed a core dump.
+
 Along with a cast of thousands (well, dozens) mentioned in old
 ChangeLog entries.  If you find your name below, please send an entry
 in the style of the above entries, to the mailing list fvwm-workers@fvwm.org.

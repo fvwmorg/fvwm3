@@ -245,7 +245,7 @@ void initialize_viz_pager(void)
   XSetWindowAttributes attr;
   XGCValues xgcv;
 
-  /* FIXME: I think that we only need that Pdepth == 
+  /* FIXME: I think that we only need that Pdepth ==
    * DefaultDepth(dpy, Scr.screen) to use the Scr.Root for Scr.Pager_w */
   if (Pdefault) {
     Scr.Pager_w = Scr.Root;
@@ -1447,7 +1447,7 @@ void update_pr_transparent_windows(void)
 					SetWindowBackground(
 						dpy, Desks[i].CPagerWin, w, h,
 						&Colorset[Desks[i].highcolorset],
-						Pdepth, Scr.NormalGC, True);	
+						Pdepth, Scr.NormalGC, True);
 				}
 			}
 		}
@@ -1735,7 +1735,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 			XSetClipMask(dpy, FwinString->gc, None);
 		}
 	}
-	
+
 	if (FShapesSupported)
 	{
 		UpdateWindowShape ();
@@ -2720,7 +2720,8 @@ static void do_picture_window(
 				cs = windowcolorset;
 			}
 			if (t->mini_icon.alpha != None ||
-			    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+			    (cs >= 0 &&
+			     Colorset[cs].icon_alpha_percent < 100))
 			{
 				XClearArea(dpy, w, iconX, iconY,
 					   t->mini_icon.width,

@@ -1003,7 +1003,8 @@ void DrawIconPixmapWindow(
 			if (draw_icon)
 			{
 				if (fw->icon_alphaPixmap ||
-				    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+				    (cs >= 0 &&
+				     Colorset[cs].icon_alpha_percent < 100))
 				{
 					XClearArea(
 						dpy, FW_W_ICON_PIXMAP(fw),
@@ -1161,8 +1162,8 @@ void DrawIconWindow(
 		if (cs >= 0 && co_cs >= 0)
 		{
 			alpha_change =
-				(Colorset[cs].icon_alpha !=
-				 Colorset[co_cs].icon_alpha);
+				(Colorset[cs].icon_alpha_percent !=
+				 Colorset[co_cs].icon_alpha_percent);
 			tint_change =
 				(Colorset[cs].icon_tint_percent !=
 				 Colorset[co_cs].icon_tint_percent) ||
@@ -1172,12 +1173,13 @@ void DrawIconWindow(
 		}
 		else if (cs >= 0 && co_cs < 0)
 		{
-			alpha_change = (Colorset[cs].icon_alpha < 100);
+			alpha_change = (Colorset[cs].icon_alpha_percent < 100);
 			tint_change = (Colorset[cs].icon_tint_percent > 0);
 		}
 		else if (cs < 0 && co_cs >= 0)
 		{
-			alpha_change = (Colorset[co_cs].icon_alpha < 100);
+			alpha_change =
+				(Colorset[co_cs].icon_alpha_percent < 100);
 			tint_change = (Colorset[co_cs].icon_tint_percent > 0);
 		}
 		if (alpha_change || tint_change || relief_change ||

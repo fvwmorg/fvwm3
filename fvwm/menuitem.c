@@ -787,7 +787,8 @@ void menuitem_paint(
 		if (draw_picture)
 		{
 			if (!item_cleared && (MI_PICTURE(mi)->alpha != None ||
-			     (tmp_cs >=0 && Colorset[tmp_cs].icon_alpha < 100)))
+			     (tmp_cs >=0 &&
+			      Colorset[tmp_cs].icon_alpha_percent < 100)))
 			{
 				clear_menu_item_background(
 					mpip, b.x, b.y, b.width, b.height);
@@ -872,7 +873,8 @@ void menuitem_paint(
 				if (!item_cleared &&
 				    (MI_MINI_ICON(mi)[i]->alpha != None
 				    || (tmp_cs >=0 &&
-					Colorset[tmp_cs].icon_alpha < 100)))
+					Colorset[tmp_cs].icon_alpha_percent <
+					100)))
 				{
 					clear_menu_item_background(
 						mpip,
