@@ -1,6 +1,9 @@
 2001-02-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction):
+	small modification to posting behaviour
+
+	* fvwm/menus.c (MenuInteraction):
 	* fvwm/menus.h (struct):
 	rewrote posting logic
 

@@ -1589,12 +1589,13 @@ static void MenuInteraction(
 	if (pmret->flags.do_unpost_submenu)
 	{
 	  pmret->flags.do_unpost_submenu = 0;
+	  pmret->flags.is_menu_posted = 0;
 	  /* just ignore the event */
 	  continue;
 	}
 	else if (MI_IS_POPUP(mi) && mrMi == pmp->menu)
 	{
-	  /*!!!post - done below*/
+	  /* post menu - done below */
 	}
 	else if (MR_PARENT_ITEM(pmp->menu) && mi == MR_PARENT_ITEM(pmp->menu))
 	{
