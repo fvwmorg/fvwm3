@@ -1,5 +1,9 @@
 Changes in beta release 2.3.7 (August 1999)
 
+* New menu generating scripts fvwm-menu-directory, fvwm-menu-desktop
+  and fvwm-menu-xlock (was BuildXLockMenu). There are man pages and --help
+  option for all fvwm-menu scripts.
+
 * Geometry (-g) command line option to FvwmButtons.
 
 * FvwmButtons parses action strings for certain variables that describe the

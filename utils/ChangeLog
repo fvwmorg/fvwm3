@@ -1,0 +1,18 @@
+1999-08-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* ChangeLog:
+	* fvwm-menu-xlock.in:
+	* fvwm-menu-xlock.1:
+	* fvwm-menu-directory.in:
+	* fvwm-menu-directory.1:
+	* fvwm-menu-desktop.in:
+	* fvwm-menu-desktop.1:
+	New files added.
+	fvwm-menu perl scripts can be used to auto build fvwm menus.
+	All scripts are very configurable, see --help and man pages.
+
+	* BuildXLockMenu.in:
+	* BuildXLockMenu.1:
+	* fvwm_make_browse_menu.sh:
+	* fvwm_make_directory_menu.sh:
+	Removed in favor of new more configurable scripts.

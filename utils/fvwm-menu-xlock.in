@@ -1,0 +1,143 @@
+#!@PERL@
+
+# Filter this script to pod2man to get a man page:
+#   pod2man -c "Fvwm Utility" fvwm-menu-xlock | nroff -man | less -e
+
+use Getopt::Long;
+
+my $version = "@VERSION@";
+
+my $name  = "XLockMenu";
+my $title = "XLock Modes";
+my $icon  = "";
+
+sub showHelp {
+	# GNU says it must be \*STDOUT, but this is not very good for us
+	my $out = \*STDERR;
+	print $out "A small perl script which builds xlock menu for fvwm.\n\n";
+	print $out "Usage: $0 [OPTIONS] [-- xlock-params]\n";
+	print $out "Options:\n";
+	print $out "\t--help        show this help and exit\n";
+	print $out "\t--version     show the version and exit\n";
+	print $out "\t--name=NAME   menu name,  default is '$name'\n";
+	print $out "\t--title=NAME  menu title, default is '$title'\n";
+	print $out "\t--icon=XPM    menu icon,  default is no\n";
+	print $out "Short options are ok if not ambiguous: -h, -n.\n";
+	exit 0;
+}
+
+sub showVersion {
+	print "$version\n";
+	exit 0;
+}
+
+sub wrongUsage {
+	print STDERR "Try '$0 --help' for more information.\n";
+	exit -1;
+}
+
+GetOptions(
+	"help"    => \&showHelp,
+	"version" => \&showVersion,
+	"name=s"  => \$name,
+	"title=s" => \$title,
+	"icon=s"  => \$icon,
+) || wrongUsage();
+
+my $iconStr = $icon? "%$icon%": "";
+my $params  = @ARGV? ' ' . join(' ', @ARGV): '';
+my $dscLen  = 36;
+
+my $start = 0;
+open(XL, "xlock -h 2>&1 |") || die "Exec echo 'Could not run xlock'\n";
+
+print "DestroyMenu $name\n";
+print "AddToMenu $name \"$title\" Title\n";
+
+while (<XL>) {
+	chomp;
+
+	/where mode is one of:/ && do {
+		$start = 1;
+		next;
+	};
+	if ($start && $_) {
+		@foo = split;
+		$mode = shift @foo;
+		next if $mode =~ /^-/;
+		printf "+ \"%s\t%-${dscLen}s Exec xlock$params -mode $mode\n",
+			"$iconStr$mode", "(@foo)\"";
+	}
+}
+
+close XL;
+
+
+# ---------------------------------------------------------------------------
+
+=head1 NAME
+
+fvwm-menu-xlock - builds xlock menu definition for Fine Virtual Window Manager
+
+=head1 SYNOPSIS
+
+B<fvwm-menu-xlock>
+[ B<--name>|B<-n> name ]
+[ B<--title>|B<-t> title ]
+[ B<--icon>|B<-i> icon ]
+[ -- xlock params ]
+
+=head1 DESCRIPTION
+
+A simple perl script which parses xlock's output to build an fvwm 2.xx
+menu definition of all xlock's modes.
+
+=head1 OPTIONS
+
+B<--help>    - show the help and exit
+
+B<--version> - show the version and exit
+
+B<--name>, B<--title>, B<--icon> - define menu name, menu title and menu icon
+accordingly given in the following argument. Default is name "XLockMenu",
+title "XLock Modes" and no mini-icon (equivalent to an empty icon argument).
+
+Option parameters can be specified both using '=' and in the next argument.
+Short options are ok if not ambiguous: -h, -n.
+
+Additional arguments (after B<-->) will be passed to xlock.
+
+=head1 USAGE
+
+Add these lines to your fvwm configuration file:
+
+  PipeRead 'fvwm-menu-xlock -n MenuSSaver -t "Screensaver" \
+    -i mini-bball.xpm -- -nice 19 -nolock'
+  PipeRead 'fvwm-menu-xlock -n MenuSLock  -t "Lock Screen" \
+    -i mini-rball.xpm -- -nice 19'
+  AddToMenu "Utilities" "Screensaver%mini-monitor.xpm%" Popup MenuSSaver
+  AddToMenu "Utilities" "Screenlock%mini-lock.xpm%"     Popup MenuSLock
+
+=head1 AUTHORS
+
+Charles K. Hines <chuck_hines@vnet.ibm.com>, initial version.
+
+Mikhael Goikhman <migo@homemail.com>, 24 Feb 1999.
+
+Mikhael Goikhman <migo@homemail.com>, 02 Aug 1999.
+
+=head1 COPYING
+
+The script is distributed by the same terms as fvwm itself.
+See GNU General Public License for details.
+
+=head1 BUGS
+
+Depends on the output of xlock. Will produce an empty menu if the structure
+of the output is changed.
+
+Report bugs to fvwm-bug@fvwm.org.
+
+=cut
+
+# ===========================================================================

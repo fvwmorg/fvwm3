@@ -1,3 +1,8 @@
+1999-08-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in: produce utils/fvwm-menu-{xlock|directory|desktop}
+	from utils/fvwm-menu-{xlock|directory|desktop}.in
+
 1999-08-16  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Colorset.c (LoadColorset): fixed bug that caused colorsets 10

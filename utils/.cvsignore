@@ -3,6 +3,8 @@ Makefile.in
 .deps
 xpmroot
 xselection
-BuildXLockMenu
+fvwm-menu-xlock
+fvwm-menu-directory
+fvwm-menu-desktop
 fvwmbug
 fvwmbug.sh

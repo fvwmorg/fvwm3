@@ -1,0 +1,357 @@
+#!@PERL@
+
+# Filter this script to pod2man to get a man page:
+#   pod2man -c "Fvwm Utility" fvwm-menu-directory | nroff -man | less -e
+
+use strict;
+use Getopt::Long;
+
+my $version = "@VERSION@";
+
+my $name  = "MenuBrowser";  # used only with --reuse
+my $title = "%p";  # %d, %p subtitute the current directory name, full path
+my $iconA = "";
+my $iconD = "";
+my $iconF = "";
+my $iconT = "";
+my $home  = $ENV{'HOME'} || '/';
+my $dir   = $home;
+my $xterm = "xterm -e";              # the X terminal program to invoke
+my $execA = undef;
+my $execT = $ENV{'SHELL'} || '/bin/sh';
+my $execF = $ENV{'EDITOR'} || "vi";  # the command to execute on plain files
+my $all   = 0;  # either show hidden files (like in 'ls -a')
+my $links = 0;  # either follow linked dirs or not
+my $order = 5;  # -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6
+my $reuse = 0;  # non-popup mode
+my $checkSubdir = 0;  # either check subdirs for +x permissions
+my $specialDirs = 0;  # either include '..' and '~' dirs
+my $memoryForSpeed = 0;
+my $submenuPos = " item +100 c";  # " menu +0 +0"
+my $dirFile = "$home/.fmd.dir";
+
+sub showHelp {
+	print "A perl script that builds directory listing for fvwm.\n\n";
+	print "Usage: $0 [OPTIONS]\n";
+	print "Options:\n";
+	print "\t--help             show this help and exit\n";
+	print "\t--version          show the version and exit\n";
+	print "\t--name=NAME        menu name,  default is '$name'\n";
+	print "\t--title=NAME       menu title, default is '$title'\n";
+	print "\t--icon-app=XPM     menu +x    icon, default is no\n";
+	print "\t--icon-dir=XPM     menu dir   icon, default is no\n";
+	print "\t--icon-file=XPM    menu file  icon, default is no\n";
+	print "\t--icon-title=XPM   menu title icon, default is no\n";
+	print "\t--dir=NAME         starting dir, default is '$dir'\n";
+	print "\t--order=NUM        NUM (-6 .. 6), default is 5\n";
+	print "\t\t1 - do not sort,  2 - dirs first, 3 - files first\n";
+	print "\t\t4 - sort by name, 5 - dirs first, 6 - files first\n";
+	print "\t\tNegative number represents reverse order.\n";
+	print "\t--all              show hidden files, default is no\n";
+	print "\t--links            follow linked dirs, default is no\n";
+	print "\t--xterm=CMD        xterm call, default is '$xterm'\n";
+	print "\t--exec-app[=CMD]   +x files action, default is '-'\n";
+	print "\t--exec-file=CMD    file action, default is '$execF'\n";
+	print "\t--exec-title=CMD   title action, default is '$execT'\n";
+	print "\t--reuse            no popups, reuse the same menu (no)\n";
+	print "\t--check-subdir     check subdir for +x permission (no)\n";
+	print "\t--special-dirs     include .. and ~ directories (no)\n";
+	print "\t--memory-for-speed use speed optimization (no)\n";
+	print "Short options are ok if not ambiguous: -a, -icon-f.\n";
+	exit 0;
+}
+
+sub showVersion {
+	print "$version\n";
+	exit 0;
+}
+
+sub wrongUsage {
+	print STDERR "Try '$0 --help' for more information.\n";
+	exit -1;
+}
+
+GetOptions(
+	"help"         => \&showHelp,
+	"version"      => \&showVersion,
+	"name=s"       => \$name,
+	"title=s"      => \$title,
+	"icon-app=s"   => \$iconA,
+	"icon-dir=s"   => \$iconD,
+	"icon-file=s"  => \$iconF,
+	"icon-title=s" => \$iconT,
+	"dir=s"        => \$dir,
+	"order=i"      => \$order,
+	"all!"         => \$all,
+	"links!"       => \$links,
+	"xterm=s"      => \$xterm,
+	"exec-app:s"   => \$execA,
+	"exec-file=s"  => \$execF,
+	"exec-title=s" => \$execT,
+	"reuse!"       => \$reuse,
+	"check-subdir!"     => \$checkSubdir,
+	"special-dirs!"     => \$specialDirs,
+	"memory-for-speed!" => \$memoryForSpeed,
+) || wrongUsage();
+wrongUsage() if @ARGV;
+
+chomp($dir = `cat "$dirFile"`) if $reuse && -f $dirFile;
+$name = $dir unless $reuse;
+
+unless (-d $dir) {
+	# the next line may be commented not to throw error
+	die "$dir does not exist, exiting.\n";
+	$dir = $home;
+}
+
+$links || !-l $dir || exit(-1);  # exit if linked directories are disabled
+chdir($dir) || exit(-1);  # exit if no execute permission on the directory
+
+$title =~ s|%d|(split('/', $dir))[-1] or '/'|ge;
+$title =~ s|%p|$dir|g;
+
+my $iconAStr = $iconA? "%$iconA%": "";
+my $iconDStr = $iconD? "%$iconD%": "";
+my $iconFStr = $iconF? "%$iconF%": "";
+my $iconTStr = $iconT? "%$iconT%": "";
+
+$execA = undef if defined $execA && $execA eq '-';
+$execF = undef if defined $execF && $execF eq '-';
+$execT = undef if defined $execT && $execT eq '-';
+
+$execT = $execT =~ /^\^(.*)$/? $1: "$xterm $execT" if defined $execT;
+$execF = $execF =~ /^\^(.*)$/? $1: "$xterm $execF" if defined $execF;
+$execA = $execA =~ /^\^(.*)$/? $1: "$xterm $execA" if defined $execA;
+$execF =~ s/[\s]*$/ / if $execF;
+$execA =~ s/[\s]*$/ / if $execA;
+
+opendir(DIR, ".");
+my @files = readdir(DIR);
+closedir(DIR);
+@files = grep /^[^.]/, @files unless $all;
+
+my $absOrder = abs($order);
+# To avoid warnings, '!!' must be added before '-d'. Will this slow things?
+*sortSub =
+	$absOrder == 2? sub { -d $b <=> -d $a }:
+	$absOrder == 3? sub { -d $a <=> -d $b }:
+	$absOrder == 4? sub { $a cmp $b }:
+	$absOrder == 5? sub { -d $b <=> -d $a || $a cmp $b }:
+	$absOrder == 6? sub { -d $a <=> -d $b || $a cmp $b }:
+	sub { 0 };
+@files = sort sortSub @files if $absOrder != 1;
+@files = reverse @files if $order < 0;
+
+# dump all menu items and start adding new items
+print qq(DestroyMenu recreate "$name"\nAddToMenu "$name"\n);
+
+# destroy the menu after it is popped down
+print qq(+ DynamicPopDownAction DestroyMenu "$name"\n) unless $memoryForSpeed || $reuse;
+
+# set the 'missing submenu function'
+print qq(+ MissingSubmenuFunction FuncFvwmMenuDirectory\n) unless $reuse;
+
+# add a new title
+my $titleAct = $execT? "Exec cd $dir; $execT": "Nop";
+print qq(+ "$iconTStr$title" $titleAct\n);
+
+# add a separator
+print qq(+ "" Nop\n);
+
+if ($specialDirs) {
+	my $parentDir = $dir eq '/' || $dir !~ m!^(.*)/[^\/]+$!? undef: $1;
+	$parentDir = '/' if defined $parentDir && $parentDir eq '';
+	print makeFolderItem("..", $parentDir);
+	print qq(+ "" Nop\n);
+	print makeFolderItem("~", $home);
+	print qq(+ "" Nop\n);
+}
+
+# add directory contents
+foreach (@files) {
+	next if $_ eq '.' or $_ eq '..';
+	my $filePath = "$dir/$_";
+	$filePath =~ s|/+|/|g;
+	if (-d) {
+		# it's a directory
+		print makeFolderItem($_, $filePath);
+	} else {
+		# something else, apply editor to it or run it
+		my $isApp = ($iconAStr || defined $execA) && -x && -f;
+		my $iconStr = $isApp && $iconAStr? $iconAStr: $iconFStr;
+		my $execF = $isApp && defined $execA? $execA: $execF;
+		my $fileAct = defined $execF? qq(Exec $execF"$filePath"): "Nop";
+		print qq(+ "$iconStr$_" $fileAct\n);
+	}
+}
+
+sub makeFolderItem ($$) {
+	my ($text, $dir) = @_;
+	my $act = !$dir || $checkSubdir && !-x $dir? "Nop": !$reuse?
+		qq(Popup "$dir"$submenuPos):
+		qq(PipeRead 'echo "$dir" >$dirFile; echo Menu "$name" WarpTitle');
+	return qq(+ "$iconDStr$text" $act\n);
+}
+
+
+# ---------------------------------------------------------------------------
+
+=head1 NAME
+
+fvwm-menu-directory - builds a directory browsing menu for Feline Virtual Window Manager
+
+=head1 SYNOPSIS
+
+B<fvwm-menu-directory>
+[ B<--help>|B<-h> ]
+[ B<--version>|B<-v> ]
+[ B<--name>|B<-n> NAME ]
+[ B<--title>|B<-t> NAME ]
+[ B<--icon-app>|B<-icon-a> XPM ]
+[ B<--icon-dir>|B<-icon-d> XPM ]
+[ B<--icon-file>|B<-icon-f> XPM ]
+[ B<--icon-title>|B<-icon-t> XPM ]
+[ B<--dir>|B<-d> NAME ]
+[ B<--order>|B<-o> NUM ]
+[ B<--[no]all>|B<-a> ]
+[ B<--[no]links>|B<-l> ]
+[ B<--xterm>|B<-x> CMD ]
+[ B<--exec-app>|B<-exec-a> [CMD] ]
+[ B<--exec-file>|B<-exec-f> CMD ]
+[ B<--exec-title>|B<-exec-t> CMD ]
+[ B<--[no]reuse>|B<-r> ]
+[ B<--[no]check-subdir>|B<-c> ]
+[ B<--[no]special-dirs>|B<-s> ]
+[ B<--[no]memory-for-speed>|B<-m> ]
+
+=head1 DESCRIPTION
+
+A perl script which provides an output to read in with PipeRead to build an
+fvwm menu containing a directory listing. Almost everything can be configured.
+
+=head1 OPTIONS
+
+B<--help>    - show the usage and exit
+
+B<--version> - show version and exit
+
+B<--name=NAME>  - menu name, used only with --reuse, default is MenuBrowser
+
+B<--title=NAME> - menu title, default is '%p'. Formats %d, %p may be used
+to subtitute the current directory name or the full path.
+
+B<--icon-app=XPM>   - menu application icon, default is no
+
+B<--icon-dir=XPM>   - menu dir   icon, default is no
+
+B<--icon-file=XPM>  - menu file  icon, default is no
+
+B<--icon-title=XPM> - menu title icon, default is no
+
+B<--dir=NAME> - starting dir, default is ${HOME-.}
+
+B<--order=NUM> - NUM (-6 .. 6), default is 5.
+  1 - do not sort,  2 - dirs first, 3 - files first
+  4 - sort by name, 5 - dirs first, 6 - files first
+  Negative number represents reverse order.
+
+B<--[no]all> - show hidden files, like in 'ls -A', default is --noall
+
+B<--[no]links> - follow linked directories, default is --nolinks
+
+B<--xterm=CMD> - X terminal call, default is 'xterm -e'
+
+B<--exec-shell=CMD> - an action on directory title (usually the shell),
+default is ${SHELL-/bin/sh}.
+'-' means no action.
+If the command is not started with '^' X terminal call is prepended.
+The command is started in the currently browsed directory.
+
+B<--exec-file=CMD> - an action on regular files, default is ${EDITOR-vi}.
+'-' means no action.
+If the command is not started with '^' X terminal call is prepended.
+The actual file name is appended to the command.
+
+B<--exec-app[=CMD]> - an action on +x files, default is '-',
+which means the same action as on regular files. If no command is given,
+it is assumed to be an empty - simply run the +x file.
+If the command is not started with '^' X terminal call is prepended.
+The actual file name is appended to the command.
+
+B<--[no]reuse> - no pop-up menus, reuse the same menu, default is --noreuse.
+When you specify this option the Menu style is used, not Popup. Also,
+the --name parameter is not ignored and --dir parameter is ignored
+if there is ~/.fmd.dir file. This file is only created or used with this
+option specified, it is the only solution for the current fvwm menu state.
+
+B<--[no]check-subdirs> - check all subdirs for having execute (+x) permission
+and replace "Popup"/"Menu" command with "Nop" for these without permissions.
+This has a visual effect of disabling popup triangle in the subdirectory item.
+The default is --nocheck-subdirs, because: 1) enabling this slows a bit the
+script, 2) with this option enabled, if no icons used and no dir/file separate
+sorting used there is no way to know that the item is directory and not file.
+
+B<--[no]special-dirs> - include .. and ~ directories, default is
+--nospecial-dirs
+
+B<--[no]memory-for-speed> - use speed optimization, default is
+--nomemory-for-speed
+
+    Warning: speed optimization takes up a lot of memory
+    that is never free'd again while fvwm is running.
+
+Option parameters can be specified both using '=' and in the next argument.
+Short options are ok if not ambiguous: -a, -x, -icon-f.
+
+=head1 USAGE
+
+Put this into your fvwm configuration file to invoke the script:
+
+  AddToFunc FuncFvwmMenuDirectory
+  + I PipeRead "fvwm-menu-directory -d $0"
+
+More complex example (the + line is one long line):
+
+  # AddToFunc FuncFvwmMenuDirectory
+  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --icon-file menu/editor.xpm --icon-dir menu/folder.xpm --icon-title menu/shell.xpm --icon-app menu/utility.xpm
+
+And put this in the menu from which you want to pop-up the directory menus:
+
+  AddToMenu SomeMenu MissingSubmenuFunction FuncFvwmMenuDirectory
+  + "Httpd Directory" Popup /home/httpd
+
+Note: please use absolute path names.
+
+It is a good idea to set the menu pop-up delay to something positive:
+
+  MenuStyle * PopupDelayed, PopupDelay 100
+
+in your configuration file when using this script for better results.
+
+Another very interesting usage (--reuse or -r is mandatary for this):
+
+  AddToMenu MenuBrowser
+  + DynamicPopupAction Piperead "fvwm-menu-directory -r -na MenuBrowser -d / -s"
+  AddToMenu SomeMenu "My Browser" Menu MenuBrowser
+
+Here --dir starting parameter is ignored if there is ~/.fmd.dir file,
+you can delete it.
+
+=head1 AUTHORS
+
+Created   on 06-07-1999 by Dominik Vogt     <domivogt@fvwm.org>.
+
+Rewritten on 05-08-1999 by Mikhael Goikhman <migo@homemail.com>.
+
+=head1 COPYING
+
+The script is distributed by the same terms as fvwm itself.
+See GNU General Public License for details.
+
+=head1 BUGS
+
+Report bugs to fvwm-bug@fvwm.org.
+
+=cut
+
+# ===========================================================================
