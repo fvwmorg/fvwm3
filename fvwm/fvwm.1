@@ -477,7 +477,7 @@ For multi-screen implementations other than Xinerama, such as
 Single Logical Screen, it is possible to simulate a Xinerama
 configuration if the total screen seen by FVWM is made up of
 equal sized monitors in a rectangular grid.  The commands
-.BR XineramaSls " and " XineramaSlsSize
+.BR XineramaSls ", " XineramaSlsSize " and " XineramaSlsScreens
 are used to configure this feature.
 
 
@@ -7889,7 +7889,7 @@ state, depending on if the boolean argument is "True", "False" or
 "toggle".  If no argument is given, this is treated like "toggle".
 The default layout uses 1 by one screens.  To configure the
 layout, use the
-.B XineramaSlsSize
+.BR XineramaSlsSize " or " XineramaSlsScreens
 command.
 
 .TP
@@ -7903,6 +7903,32 @@ monitors side by side which appear as one screen through the
 X-Server with the right screen as the primary screen, use:
 .EX
 XineramaSlsSize 2x1
+XineramaSlsOn
+XineramaPrimaryScreen 1
+XineramaOn
+.EE
+
+.TP
+.BI "XineramaSlsScreens " "number-of-screens screen-spec ..."
+This command configures the layout of the Single Logical screen
+feature.  Its first argument is the number of screens to use.  It
+must be followed by exactly this number of
+.I screen-spec
+arguments.  Each of these can be written either in standard X
+geometry format: "<width>x<height>+<x>+<y>" or as a space separated
+list of numbers: "x y width height". Both ways of describing
+screens can be mixed in a single command.  All four numbers must
+be supplied.  The
+.IR x and y
+values specify the origin of the screen in relation to the global
+screen's origin while
+.IR width and height
+specify the size of the screen in pixels.  No checks are done if
+the geometries make sense, so it is possible to define overlapping
+screens (with random results) or screens that are not visible at
+all.
+.EX
+XineramaSlsScreens 3 512x768+0+0 512x300+512+0 512 300 512 468
 XineramaSlsOn
 XineramaPrimaryScreen 1
 XineramaOn

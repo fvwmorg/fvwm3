@@ -38,6 +38,8 @@ Changes in alpha release 2.5.2 (not released yet)
 * FvwmIconMan may now change the resolution dynamically, just issue
   "*FvwmIconMan: resolution page" while FvwmIconMan is running.
 
+* New command XineramaSlsScreens.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)

@@ -279,6 +279,8 @@ static const func_type func_config[] =
   CMD_ENTRY("xineramaprimaryscreen", CMD_XineramaPrimaryScreen,
 	    F_XINERAMAPRIMARYSCREEN, 0),
   CMD_ENTRY("xineramasls", CMD_XineramaSls, F_XINERAMASLS, 0),
+  CMD_ENTRY("xineramaslsscreens", CMD_XineramaSlsScreens, F_XINERAMASLSSCREENS,
+	    0),
   CMD_ENTRY("xineramaslssize", CMD_XineramaSlsSize, F_XINERAMASLSSIZE, 0),
   CMD_ENTRY("xorpixmap", CMD_XorPixmap, F_XOR, 0),
   CMD_ENTRY("xorvalue", CMD_XorValue, F_XOR, 0),

@@ -1442,7 +1442,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 
 	/* get the direction */
 	direction = ParseDirectionArgument( action , &action , DIR_NONE ) ;
-	
+
 	if ( direction == DIR_N ||
 	     direction == DIR_S ||
 	     direction == DIR_E ||
@@ -1450,7 +1450,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 
 		/* check if the command does contain at least one token */
 		command = safestrdup( action );
-		if ( PeekToken( action , &action ) == NULL ) {  	
+		if ( PeekToken( action , &action ) == NULL ) {
 			/* the command does not contain a token so
 			   the command of this edge is removed */
 			free( command );
@@ -1458,25 +1458,25 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 		}
 		/* assign command to the edge(s) */
 		if ( direction == DIR_N ) {
-			
+
 			if ( Scr.PanFrameTop.command != NULL )
 				free( Scr.PanFrameTop.command );
 			Scr.PanFrameTop.command = command;
-			
+
 		} else
 		if ( direction == DIR_S ) {
-				
+
 			if ( Scr.PanFrameBottom.command != NULL )
 				free( Scr.PanFrameBottom.command );
 			Scr.PanFrameBottom.command = command;
-			
+
 		} else
 		if ( direction == DIR_W ) {
-			
+
 			if ( Scr.PanFrameLeft.command != NULL )
 				free( Scr.PanFrameLeft.command );
 			Scr.PanFrameLeft.command = command;
-					
+
 		} else
 		if ( direction == DIR_E ) {
 
@@ -1493,7 +1493,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 	} else {
 
 		/* check if the argument does contain at least one token */
-		if ( PeekToken( action , &action ) == NULL ) {  	
+		if ( PeekToken( action , &action ) == NULL ) {
 			/* Just plain EdgeCommand, so all edge commands are removed */
 			if ( Scr.PanFrameTop.command != NULL ) {
 				free( Scr.PanFrameTop.command );
@@ -1680,7 +1680,29 @@ void CMD_XineramaSlsSize(F_CMD_ARGS)
 		val[0] = 1;
 		val[1] = 1;
 	}
-	if (FScreenConfigureSLS(val[0], val[1]))
+	if (FScreenConfigureSLSSize(val[0], val[1]))
+	{
+		broadcast_xinerama_state();
+	}
+
+	return;
+}
+
+void CMD_XineramaSlsScreens(F_CMD_ARGS)
+{
+	int nscreens;
+	char *args;
+
+	if (GetIntegerArguments(action, &args, &nscreens, 1) != 1)
+	{
+		nscreens = 0;
+		args = NULL;
+	}
+	else if (args == NULL)
+	{
+		nscreens = 0;
+	}
+	if (FScreenConfigureSLSScreens(nscreens, args))
 	{
 		broadcast_xinerama_state();
 	}
