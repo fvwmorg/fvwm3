@@ -1,5 +1,8 @@
 2002-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (__execute_function):
+	improved command log output
+
 	* fvwm/schedule.c (execute_obj_func):
 	fixed schedule queue timing
 

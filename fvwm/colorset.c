@@ -838,7 +838,7 @@ void parse_colorset(int n, char *line)
 			{
 				cs->bg_tint_percent = percent;
 			}
-			break;	
+			break;
 		case 32: /* dither */
 #else
 				&has_bg_tint_changed, &percent);
@@ -1011,7 +1011,7 @@ void parse_colorset(int n, char *line)
 	}
 
 	/*
-	 * reset the pixmap if the tint or the alpha has changed 
+	 * reset the pixmap if the tint or the alpha has changed
 	 */
 	if (!do_reload_pixmap && (has_tint_changed || has_image_alpha_changed))
 	{
