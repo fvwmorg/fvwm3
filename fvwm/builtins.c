@@ -2321,8 +2321,10 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    } else {
 		nsegs = atoi(item);
 		free(item);
-		if (nsegs < 1) nsegs = 1;
-		if (nsegs > 128) nsegs = 128;
+		if (nsegs < 1)
+		  nsegs = 1;
+		if (nsegs > MAX_GRADIENT_SEGMENTS)
+		  nsegs = MAX_GRADIENT_SEGMENTS;
 		s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
 		perc = (int *)safemalloc(sizeof(int) * nsegs);
 		for (i = 0; i <= nsegs; ++i) {
@@ -2354,8 +2356,10 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		return False;
 	    }
 
-	    if (npixels < 2) npixels = 2;
-	    if (npixels > 128) npixels = 128;
+	    if (npixels < 2)
+	      npixels = 2;
+	    if (npixels > MAX_GRADIENT_SEGMENTS)
+	      npixels = MAX_GRADIENT_SEGMENTS;
 
 	    pixels = AllocNonlinearGradient(s_colors, perc, nsegs, npixels);
 	    for (i = 0; i <= nsegs; ++i)

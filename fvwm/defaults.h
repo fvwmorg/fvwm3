@@ -16,18 +16,22 @@
 /* File: defaults.h
  *
  * Description:
- *      #defines for default values shall go into this file
+ *      #defines for default values shall go into this file as well as tunable
+ *      parameters.
  *
  * Created:
  *       23 Dec 1998 - Dominik Vogt <dominik_vogt@hp.com>
  */
 
-#define DEFAULT_CLICKTIME 150        /* ms */
-#define DEFAULT_POPUP_DELAY 15       /* ms*10 */
-#define DEFAULT_MENU_CLICKTIME (3*DEFAULT_CLICKTIME)
-#define DEFAULT_MOVE_THRESHOLD 3
-#define DEFAULT_MAX_WINDOW_WIDTH 32767
-#define DEFAULT_MAX_WINDOW_HEIGHT 32767
-#define DEFAULT_MIN_MAX_WINDOW_WIDTH 100
-#define DEFAULT_MIN_MAX_WINDOW_HEIGHT 100
-#define DEFAULT_OPAQUE_MOVE_SIZE 5;
+#define DEFAULT_CLICKTIME               150           /* ms */
+#define DEFAULT_POPUP_DELAY              15           /* ms*10 */
+#define DEFAULT_MENU_CLICKTIME           (3*DEFAULT_CLICKTIME)
+#define DEFAULT_MOVE_THRESHOLD            3
+#define DEFAULT_MAX_WINDOW_WIDTH      32767
+#define DEFAULT_MAX_WINDOW_HEIGHT     32767
+#define DEFAULT_MIN_MAX_WINDOW_WIDTH    100
+#define DEFAULT_MIN_MAX_WINDOW_HEIGHT   100
+#define DEFAULT_OPAQUE_MOVE_SIZE          5
+
+/* Tunable parameters. */
+#define MAX_GRADIENT_SEGMENTS          1000

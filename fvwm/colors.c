@@ -253,7 +253,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
     fvwm_msg(ERR, me, "couldn't create gradient");
     return None;
   }
- 
+
   /* grok the size to create from the type */
   type = toupper(type);
   switch (type) {
@@ -291,7 +291,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
       fvwm_msg(ERR, me, "%cGradient not supported", type);
       return None;
   }
-  
+
   /* create a pixmap to use */
   pixmap = XCreatePixmap(dpy, d, width, height, depth);
   if (pixmap == None)
@@ -316,7 +316,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
   xgcv.clip_mask = None;
   XChangeGC(dpy, gc, GCFunction | GCPlaneMask | GCForeground | GCFillStyle
 		     | GCClipMask, &xgcv);
-  
+
   /* now do the fancy drawing */
   /* draw one pixel further than expected in case line style is CapNotLast */
   switch (type) {
@@ -445,8 +445,10 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
     /* get a list of colors and percentages */
     nsegs = atoi(item);
     free(item);
-    if (nsegs < 1) nsegs = 1;
-    if (nsegs > 128) nsegs = 128;
+    if (nsegs < 1)
+      nsegs = 1;
+    if (nsegs > MAX_GRADIENT_SEGMENTS)
+      nsegs = MAX_GRADIENT_SEGMENTS;
     s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
     perc = (int *)safemalloc(sizeof(int) * nsegs);
     for (i = 0; i <= nsegs; i++) {
@@ -478,8 +480,10 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
   }
 
   /* sensible limits */
-  if (npixels < 2) npixels = 2;
-  if (npixels > 128) npixels = 128;
+  if (npixels < 2)
+    npixels = 2;
+  if (npixels > MAX_GRADIENT_SEGMENTS)
+    npixels = MAX_GRADIENT_SEGMENTS;
 
   /* send data back */
   *colors_return = s_colors;

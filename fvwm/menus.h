@@ -224,44 +224,34 @@ typedef struct MenuItem
  * copies of the menu */
 typedef struct MenuRootStatic
 {
-    MenuItem *first;            /* first item in menu */
-    MenuItem *last;             /* last item in menu */
+  MenuItem *first;            /* first item in menu */
+  MenuItem *last;             /* last item in menu */
 
-    int copies;                 /* # of copies, 0 if none except this one */
-    int usage_count;            /* # of mapped instances */
-    char *name;                 /* name of root */
-    short height;               /* height of the menu */
-    short width0;               /* width of the menu-left-picture col */
-    short width;                /* width of the menu for 1st col */
-    short width2;               /* width of the menu for 2nd col */
-    short width3;               /* width of the submenu triangle col */
-    short xoffset;              /* the distance between the left border and the
+  int copies;                 /* # of copies, 0 if none except this one */
+  int usage_count;            /* # of mapped instances */
+  char *name;                 /* name of root */
+  short height;               /* height of the menu */
+  short width0;               /* width of the menu-left-picture col */
+  short width;                /* width of the menu for 1st col */
+  short width2;               /* width of the menu for 2nd col */
+  short width3;               /* width of the submenu triangle col */
+  short xoffset;              /* the distance between the left border and the
                                  * beginning of the menu items */
-    short items;                /* number of items in the menu */
-    Picture *sidePic;
-    Pixel sideColor;
-    /* Menu Face    */
-    MenuStyle *ms;
-    /* temporary flags, deleted when menu pops down! */
-    struct
-    {
-      unsigned is_background_set : 1; /* is win background set? */
-      unsigned is_continuation_menu : 1;
-      unsigned is_left : 1;   /* menu direction relative to parent menu */
-      unsigned is_right : 1;
-      unsigned is_up : 1;
-      unsigned is_down : 1;
-    } temp_flags;
-    /* permanent flags */
-    struct
-    {
-      unsigned has_side_color : 1;
-    } flags;
-    struct
-    {
-      char *popup_action;
-      char *popdown_action;
-    } dynamic;
+  short items;                /* number of items in the menu */
+  Picture *sidePic;
+  Pixel sideColor;
+  /* Menu Face    */
+  MenuStyle *ms;
+  /* permanent flags */
+  struct
+  {
+    unsigned has_side_color : 1;
+  } flags;
+  struct
+  {
+    char *popup_action;
+    char *popdown_action;
+  } dynamic;
 } MenuRootStatic;
 
 /* access macros to static menu members */
@@ -280,16 +270,9 @@ typedef struct MenuRootStatic
 #define MR_SIDEPIC(m)       ((m)->s->sidePic)
 #define MR_SIDECOLOR(m)     ((m)->s->sideColor)
 #define MR_STYLE(m)         ((m)->s->ms)
-#define MR_TEMP_FLAGS(m)    ((m)->s->temp_flags)
 /* flags */
 #define MR_FLAGS(m)         ((m)->s->flags)
 #define MR_DYNAMIC(m)       ((m)->s->dynamic)
-#define MR_IS_BACKGROUND_SET(m)     ((m)->s->temp_flags.is_background_set)
-#define MR_IS_CONTINUATION_MENU(m)  ((m)->s->temp_flags.is_continuation_menu)
-#define MR_IS_LEFT(m)               ((m)->s->temp_flags.is_left)
-#define MR_IS_RIGHT(m)              ((m)->s->temp_flags.is_right)
-#define MR_IS_UP(m)                 ((m)->s->temp_flags.is_up)
-#define MR_IS_DOWN(m)               ((m)->s->temp_flags.is_down)
 #define MR_HAS_SIDECOLOR(m)         ((m)->s->flags.has_side_color)
 
 
@@ -312,6 +295,11 @@ typedef struct MenuRootDynamic
   struct
   {
     unsigned is_painted : 1;
+    unsigned is_background_set : 1; /* is win background set? */
+    unsigned is_left : 1;   /* menu direction relative to parent menu */
+    unsigned is_right : 1;
+    unsigned is_up : 1;
+    unsigned is_down : 1;
   } dflags;
 #ifdef GRADIENT_BUTTONS
   struct
@@ -339,6 +327,11 @@ typedef struct MenuRootDynamic
 /* flags */
 #define MR_DYNAMIC_FLAGS(m)         ((m)->d->dflags)
 #define MR_IS_PAINTED(m)            ((m)->d->dflags.is_painted)
+#define MR_IS_BACKGROUND_SET(m)     ((m)->d->dflags.is_background_set)
+#define MR_IS_LEFT(m)               ((m)->d->dflags.is_left)
+#define MR_IS_RIGHT(m)              ((m)->d->dflags.is_right)
+#define MR_IS_UP(m)                 ((m)->d->dflags.is_up)
+#define MR_IS_DOWN(m)               ((m)->d->dflags.is_down)
 
 typedef struct MenuRoot
 {
@@ -402,6 +395,7 @@ typedef struct
     unsigned is_menu_from_frame_or_window_or_titlebar : 1;
     unsigned is_sticky : 1;
     unsigned is_submenu : 1;
+    unsigned is_already_mapped : 1;
   } flags;
 } MenuParameters;
 

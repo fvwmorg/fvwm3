@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.3 (May 1999)
 
+* Colour gradients may use up to 1000 colours. The old limit was 128 colours.
+
 * New command MaxWindowSize limits the initial dimensions of a window.
 
 * Include fvwmbug script for reporting bugs.

@@ -396,6 +396,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
   mp.flags.is_sticky = True;
   mp.flags.is_submenu = False;
+  mp.flags.is_already_mapped = False;
   mp.eventp = teventp;
   mp.pops = &mops;
   mp.ret_paction = &ret_action;

@@ -226,8 +226,11 @@ MenuStatus do_menu(MenuParameters *pmp)
     }
   }
   /* Figure out where we should popup, if possible */
+  if (!pmp->flags.is_already_mapped)
+#if 0
   if (!pmp->flags.is_submenu || !IsSubmenuMapped(pmp->parent_menu,
 						 pmp->parent_item))
+#endif
   {
     if(pmp->flags.is_submenu)
     {
@@ -724,7 +727,6 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 				  Bool *pfWarpToTitle, Bool *pfMouseMoved)
 {
   extern XEvent Event;
-  Bool fPopupImmediately;
   MenuItem *mi = NULL;
   MenuItem *tmi;
   MenuRoot *mrMi = NULL;
@@ -732,27 +734,37 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
   MenuRoot *mrPopup = NULL;
   MenuRoot *mrMiPopup = NULL;
   MenuRoot *mrNeedsPainting = NULL;
-  Bool fDoPopupNow = False; /* used for delay popups, to just popup the menu */
-  Bool fPopupAndWarp = False; /* used for keystrokes, to popup and move to
-			       * that menu */
-  Bool fKeyPress = False;
-  Bool fForceReposition = True;
   int x_init = 0, y_init = 0;
   int x_offset = 0;
   MenuStatus retval = MENU_NOP;
   int c10msDelays = 0;
   MenuOptions mops;
-  Bool fOffMenuAllowed = False;
-  Bool fPopdown = False;
-  Bool fPopup   = False;
-  Bool fDoMenu  = False;
-  Bool fMotionFirst = False;
-  Bool fReleaseFirst = False;
-  Bool fFakedMotion = False;
-  Bool fSubmenuOverlaps = False;
+  struct
+  {
+    unsigned do_popup_immediately : 1;
+    /* used for delay popups, to just popup the menu */
+    unsigned do_popup_now : 1;
+    /* used for keystrokes, to popup and move to that menu */
+    unsigned do_popup_and_warp : 1;
+    unsigned is_key_press : 1;
+    unsigned do_force_reposition : 1;
+    unsigned is_off_menu_allowed : 1;
+    unsigned do_popdown : 1;
+    unsigned do_popup : 1;
+    unsigned do_menu : 1;
+    unsigned is_motion_first : 1;
+    unsigned is_release_first : 1;
+    unsigned is_motion_faked : 1;
+    unsigned is_submenu_mapped : 1;
+  } flags;
+  /* Can't make this a member of the flags as we have to take its address. */
+  Bool does_submenu_overlap = False;
+
+  memset(&flags, 0, sizeof(flags));
+  flags.do_force_reposition = 1;
 
   memset(&(mops.flags), 0, sizeof(mops.flags));
-  fPopupImmediately = (MR_STYLE(pmp->menu)->feel.flags.do_popup_immediately &&
+  flags.do_popup_immediately = (MR_STYLE(pmp->menu)->feel.flags.do_popup_immediately &&
 		       (Menus.PopupDelay10ms > 0));
 
   /* remember where the pointer was so we can tell if it has moved */
@@ -761,15 +773,15 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 
   while (True)
   {
-      fPopupAndWarp = False;
-      fDoPopupNow = False;
-      fKeyPress = False;
-      if (fForceReposition)
+      flags.do_popup_and_warp = False;
+      flags.do_popup_now = False;
+      flags.is_key_press = False;
+      if (flags.do_force_reposition)
       {
 	Event.type = MotionNotify;
 	Event.xmotion.time = lastTimestamp;
-	fFakedMotion = True;
-	fForceReposition = False;
+	flags.is_motion_faked = True;
+	flags.do_force_reposition = False;
       }
       else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
       {
@@ -786,11 +798,11 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	    if (c10msDelays++ == Menus.PopupDelay10ms)
 	    {
 	      DBUG("MenuInteraction","Faking motion");
-	      /* fake a motion event, and set fDoPopupNow */
+	      /* fake a motion event, and set flags.do_popup_now */
 	      Event.type = MotionNotify;
 	      Event.xmotion.time = lastTimestamp;
-	      fFakedMotion = True;
-	      fDoPopupNow = True;
+	      flags.is_motion_faked = True;
+	      flags.do_popup_now = True;
 	      break;
 	    }
 	  }
@@ -822,9 +834,9 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	  mi = FindEntry(&x_offset, &mrMi);
 	  /* hold the menu up when the button is released
 	     for the first time if released OFF of the menu */
-	  if(pmp->flags.is_sticky && !fMotionFirst)
+	  if(pmp->flags.is_sticky && !flags.is_motion_first)
 	  {
-	    fReleaseFirst = True;
+	    flags.is_release_first = True;
 	    pmp->flags.is_sticky = False;
 	    continue;
 	    /* break; */
@@ -834,7 +846,7 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	      !MR_STYLE(pmp->menu)->feel.flags.do_popup_as_root_menu)
 	  {
 	      retval = MENU_POPUP;
-	      fDoPopupNow = True;
+	      flags.do_popup_now = True;
 	      break;
 	  }
 	  pdkp->timestamp = 0;
@@ -851,7 +863,7 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 
 	case KeyPress:
 	  /* Handle a key press events to allow mouseless operation */
-	  fKeyPress = True;
+	  flags.is_key_press = True;
 	  x_offset = 0;
 	  retval = menuShortcuts(pmp->menu, &Event, &mi, pdkp);
 	  if (retval == MENU_SELECTED && mi && IS_POPUP_ITEM(mi) &&
@@ -869,8 +881,8 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	  }
 	  if (retval == MENU_POPUP && mi && IS_POPUP_ITEM(mi))
 	  {
-	    fPopupAndWarp = True;
-	    DBUG("MenuInteraction","fPopupAndWarp = True");
+	    flags.do_popup_and_warp = True;
+	    DBUG("MenuInteraction","flags.do_popup_and_warp = True");
 	    break;
 	  }
 	  break;
@@ -892,9 +904,10 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	    }
 	  }
 	  mi = FindEntry(&x_offset, &mrMi);
-	  if (!fReleaseFirst && !fFakedMotion && *pfMouseMoved)
-	    fMotionFirst = True;
-	  fFakedMotion = False;
+	  if (!flags.is_release_first && !flags.is_motion_faked &&
+	      *pfMouseMoved)
+	    flags.is_motion_first = True;
+	  flags.is_motion_faked = False;
 	  break;
 
 	case Expose:
@@ -921,9 +934,9 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
       if (mi)
       {
 	/* we're on a menu item */
-	fOffMenuAllowed = False;
+	flags.is_off_menu_allowed = False;
 	mrMiPopup = MrPopupForMi(pmp->menu, mi);
-	if (mrMi != pmp->menu && mrMi != mrPopup && mrMi != mrMiPopup)
+	if (mrMi != pmp->menu && mrMi != mrPopup)
 	{
 	  /* we're on an item from a prior menu */
 	  /* DBUG("MenuInteraction","menu %s: returning popdown",
@@ -944,7 +957,7 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	    /* something else was already selected on this menu */
 	    if (mrPopup)
 	    {
-	      PopDownAndRepaintParent(&mrPopup, &fSubmenuOverlaps, pmp);
+	      PopDownAndRepaintParent(&mrPopup, &does_submenu_overlap, pmp);
 	      mrPopup = NULL;
 	    }
 	    /* We have to pop down the menu before unselecting the item in case
@@ -964,63 +977,66 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	} /* new item of the same menu */
 
 	/* check what has to be done with the item */
-	fPopdown = False;
-	fPopup   = False;
-	fDoMenu  = False;
+	flags.do_popdown = False;
+	flags.do_popup = False;
+	flags.do_menu = False;
+	flags.is_submenu_mapped = False;
 
 	if (mrMi == mrPopup)
 	{
 	  /* must make current popup menu a real menu */
-	  fDoMenu = True;
+	  flags.do_menu = True;
+	  flags.is_submenu_mapped = True;
 	}
-	else if (fPopupAndWarp)
+	else if (flags.do_popup_and_warp)
 	{
 	  /* must create a real menu and warp into it */
 	  if (mrPopup == NULL || mrPopup != mrMiPopup)
 	  {
-	    fPopup = True;
+	    flags.do_popup = True;
 	  }
 	  else
 	  {
 	    XRaiseWindow(dpy, MR_WINDOW(mrPopup));
 	    MiWarpPointerToItem(mrPopup, MR_FIRST_ITEM(mrPopup), True);
-	    fDoMenu = True;
+	    flags.do_menu = True;
+	    flags.is_submenu_mapped = True;
 	  }
 	}
 	else if (mi && IS_POPUP_ITEM(mi))
 	{
-	  if (x_offset >= MR_WIDTH(mrMi)*3/4 || fDoPopupNow ||
-	      fPopupImmediately)
+	  if (x_offset >= MR_WIDTH(mrMi)*3/4 || flags.do_popup_now ||
+	      flags.do_popup_immediately)
 	  {
 	    /* must create a new menu or popup */
 	    if (mrPopup == NULL || mrPopup != mrMiPopup)
 	    {
-	      fPopup = True;
+	      flags.do_popup = True;
 	    }
-	    else if (fPopupAndWarp)
+	    else if (flags.do_popup_and_warp)
 	    {
 	      MiWarpPointerToItem(mrPopup, MR_FIRST_ITEM(mrPopup), True);
 	    }
 	  }
 	} /* else if (mi && IS_POPUP_ITEM(mi)) */
-	if (fPopup && mrPopup && mrPopup != mrMiPopup)
+	if (flags.do_popup && mrPopup && mrPopup != mrMiPopup)
 	{
 	  /* must remove previous popup first */
-	  fPopdown = True;
+	  flags.do_popdown = True;
 	}
 
-	if (fPopdown)
+	if (flags.do_popdown)
 	{
 	  DBUG("MenuInteraction","Popping down");
 	  /* popdown previous popup */
 	  if (mrPopup)
 	  {
-	    PopDownAndRepaintParent(&mrPopup, &fSubmenuOverlaps, pmp);
+	    PopDownAndRepaintParent(&mrPopup, &does_submenu_overlap, pmp);
 	    mrPopup = NULL;
 	  }
-	  fPopdown = False;
+	  flags.do_popdown = False;
 	}
-	if (fPopup)
+	if (flags.do_popup)
 	{
 	  DBUG("MenuInteraction","Popping up");
           /* get pos hints for item's action */
@@ -1028,8 +1044,8 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	  mrPopup = mrMiPopup;
 	  if (!mrPopup)
 	  {
-	    fDoMenu = False;
-	    fPopdown = False;
+	    flags.do_menu = False;
+	    flags.do_popdown = False;
 	  }
 	  else
 	  {
@@ -1041,9 +1057,11 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 		 want to be able to popdown w/o actually removing the menu */
 	      int x, y;
 	      GetPreferredPopupPosition(pmp->menu,&x,&y);
+	      /* Note that we don't care if popping up the menu works. If it
+	       * doesn't we'll catch it below. */
 	      PopUpMenu(&mrPopup, pmp->menu, pmp->pTmp_win, pmp->pcontext, x,
-			y, fPopupAndWarp, &mops, &fSubmenuOverlaps,
-			pfWarpToTitle);
+			y, flags.do_popup_and_warp, &mops,
+			&does_submenu_overlap, pfWarpToTitle);
 	      if (mrPopup == NULL)
 	      {
 		/* the menu deleted itself when execution the dynamic popup
@@ -1057,22 +1075,24 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	      mi = FindEntry(NULL, &mrMi);
 	      if (mi && mrMi == mrPopup)
 	      {
-		fDoMenu = True;
-		fPopdown =
+		flags.do_menu = True;
+		flags.is_submenu_mapped = True;
+		flags.do_popdown =
 		  !MR_STYLE(pmp->menu)->feel.flags.do_popup_immediately;
 	      }
 	    }
 	    else
 	    {
 	      /* This menu must be already mapped somewhere else, so ignore
-	       * it completely. */
-	      fDoMenu = False;
-	      fPopdown = False;
+	       * it completely. This can only happen if we have reached the
+	       * maximum allowed number of menu copies. */
+	      flags.do_menu = False;
+	      flags.do_popdown = False;
 	      mrPopup = NULL;
 	    }
 	  } /* if (!mrPopup) */
-	} /* if (fPopup) */
-	if (fDoMenu)
+	} /* if (flags.do_popup) */
+	if (flags.do_menu)
 	{
 	  MenuParameters mp;
 
@@ -1085,7 +1105,8 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	  mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	  mp.flags.is_sticky = False;
 	  mp.flags.is_submenu = True;
-	  mp.eventp = (fPopupAndWarp) ? (XEvent *)1 : NULL;
+	  mp.flags.is_already_mapped = flags.is_submenu_mapped;
+	  mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
 	  mp.pops = &mops;
 	  mp.ret_paction = pmp->ret_paction;
 
@@ -1096,20 +1117,19 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	    pdkp->timestamp = 0;
 	    goto DO_RETURN;
 	  }
-	  XRaiseWindow(dpy, MR_WINDOW(pmp->menu));
-	  if ((fPopdown ||
+	  if ((flags.do_popdown ||
 	       !MR_STYLE(pmp->menu)->feel.flags.do_popup_immediately) &&
 	      MR_STYLE(pmp->menu)->feel.flags.do_unmap_submenu_on_popdown)
 	  {
-	    PopDownAndRepaintParent(&mrPopup, &fSubmenuOverlaps, pmp);
+	    PopDownAndRepaintParent(&mrPopup, &does_submenu_overlap, pmp);
 	    mrPopup = NULL;
 	  }
 	  if (retval == MENU_POPDOWN)
 	  {
 	    c10msDelays = 0;
-	    fForceReposition = True;
+	    flags.do_force_reposition = True;
 	  }
-	} /* if (fDoMenu) */
+	} /* if (flags.do_menu) */
 
 	/* Now check whether we can animate the current popup menu
 	   over to the right to unobscure the current menu;  this
@@ -1148,13 +1168,12 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	}
 
       } /* if (mi) */
-      else {
+      else
+      {
         /* moved off menu, deselect selected item... */
         if (MR_SELECTED_ITEM(pmp->menu))
 	{
-          SelectMenuItem(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			 (*pmp->pTmp_win));
-          if (mrPopup && fOffMenuAllowed == False)
+          if (mrPopup && flags.is_off_menu_allowed == False)
 	  {
 	    int x, y, mx, my;
 	    unsigned int mw, mh;
@@ -1167,14 +1186,21 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 		(!MR_IS_UP(mrPopup)    && y < my)    ||
 		(!MR_IS_DOWN(mrPopup)  && y > my+mh))
 	    {
-	      PopDownAndRepaintParent(&mrPopup, &fSubmenuOverlaps, pmp);
+	      SelectMenuItem(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			     (*pmp->pTmp_win));
+	      PopDownAndRepaintParent(&mrPopup, &does_submenu_overlap, pmp);
 	      mrPopup = NULL;
 	    }
 	    else
 	    {
-	      fOffMenuAllowed = True;
+	      flags.is_off_menu_allowed = True;
 	    }
-	  } /* if (mrPopup && fOffMenuAllowed == False) */
+	  } /* if (mrPopup && flags.is_off_menu_allowed == False) */
+	  else if (flags.is_off_menu_allowed == False)
+	  {
+	    SelectMenuItem(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			   (*pmp->pTmp_win));
+	  }
         } /* if (MR_SELECTED_ITEM(menu)) */
       } /* else (!mi) */
       XFlush(dpy);
@@ -1183,7 +1209,7 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
   DO_RETURN:
   if (mrPopup)
   {
-    PopDownAndRepaintParent(&mrPopup, &fSubmenuOverlaps, pmp);
+    PopDownAndRepaintParent(&mrPopup, &does_submenu_overlap, pmp);
     mrPopup = NULL;
   }
   if (retval == MENU_POPDOWN)
@@ -1191,7 +1217,7 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
     if (MR_SELECTED_ITEM(pmp->menu))
       SelectMenuItem(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
 		     (*pmp->pTmp_win));
-    if (fKeyPress)
+    if (flags.is_key_press)
     {
       if (!pmp->flags.is_submenu)
 	/* abort a root menu rather than pop it down */
@@ -1201,10 +1227,10 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
 	MiWarpPointerToItem(pmp->parent_menu,
 			    MR_SELECTED_ITEM(pmp->parent_menu), False);
 	tmi = FindEntry(NULL, &tmrMi);
-	if ((MR_SELECTED_ITEM(pmp->parent_menu) != tmi ||
-	     pmp->parent_menu != tmrMi) &&
-	    MR_XANIMATION(pmp->menu) == 0)
+	if (pmp->parent_menu != tmrMi && MR_XANIMATION(pmp->menu) == 0)
 	{
+	  /* Warping didn't take us to the correct menu, i.e. the spot we want
+	   * to warp to is obscured. So raise our window first. */
 	  XRaiseWindow(dpy, MR_WINDOW(pmp->parent_menu));
 	}
       }
@@ -1222,7 +1248,7 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
     /* save action to execute so that the menu may be destroyed now */
     if (pmp->ret_paction)
       *pmp->ret_paction = (mi) ? strdup(mi->action) : NULL;
-    retval = MENU_ADD_BUTTON_IF(fKeyPress,MENU_DONE);
+    retval = MENU_ADD_BUTTON_IF(flags.is_key_press,MENU_DONE);
     if (pmp->ret_paction && *pmp->ret_paction && mi)
     {
       if (IS_MENU_ITEM(mi))
@@ -1256,7 +1282,7 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
       }
     } /* ((retval == MENU_DONE ||... */
   }
-  return MENU_ADD_BUTTON_IF(fKeyPress,retval);
+  return MENU_ADD_BUTTON_IF(flags.is_key_press,retval);
 }
 
 static
@@ -1449,8 +1475,6 @@ Bool PopUpMenu(MenuRoot **pmenu, MenuRoot *parent_menu, FvwmWindow **pfw,
   MR_IS_DOWN(menu) = 0;
   MR_XANIMATION(menu) = 0;
 
-  /*  RepaintAlreadyReversedMenuItems(menu); */
-
   InstallRootColormap();
 
   /* First handle popups from button clicks on buttons in the title bar,
@@ -1636,9 +1660,8 @@ Bool PopUpMenu(MenuRoot **pmenu, MenuRoot *parent_menu, FvwmWindow **pfw,
   MR_MAPPED_COPIES(menu)++;
   if (ret_overlap)
   {
-    *ret_overlap =
-      DoMenusOverlap(parent_menu, x, y, MR_WIDTH(menu), MR_HEIGHT(menu), False)?
-      True : False;
+    *ret_overlap = DoMenusOverlap(parent_menu, x, y, MR_WIDTH(menu),
+				  MR_HEIGHT(menu), False) ? True : False;
   }
 
   if (!fWarpToItem)
@@ -1745,6 +1768,7 @@ void SelectMenuItem(MenuRoot *mr, MenuItem *mi, Bool select, FvwmWindow *fw)
 		  0, MR_STORED_ITEM(mr).y);
 
         XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
+        MR_STORED_ITEM(mr).stored = None;
         MR_STORED_ITEM(mr).width = 0;
         MR_STORED_ITEM(mr).height = 0;
         MR_STORED_ITEM(mr).y = 0;
@@ -1755,6 +1779,7 @@ void SelectMenuItem(MenuRoot *mr, MenuItem *mi, Bool select, FvwmWindow *fw)
     if (MR_STORED_ITEM(mr).width != 0)
     {
       XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
+      MR_STORED_ITEM(mr).stored = None;
       MR_STORED_ITEM(mr).width = 0;
       MR_STORED_ITEM(mr).height = 0;
       MR_STORED_ITEM(mr).y = 0;
@@ -1851,7 +1876,7 @@ void PopDownMenu(MenuRoot **pmr, MenuParameters *pmp)
   MenuItem *mi;
   assert(*pmr);
 
-  memset(&(MR_TEMP_FLAGS(*pmr)), 0, sizeof(MR_TEMP_FLAGS(*pmr)));
+  memset(&(MR_DYNAMIC_FLAGS(*pmr)), 0, sizeof(MR_DYNAMIC_FLAGS(*pmr)));
   XUnmapWindow(dpy, MR_WINDOW(*pmr));
   MR_MAPPED_COPIES(*pmr)--;
 
@@ -2473,28 +2498,24 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	{
 	  if (MR_IS_BACKGROUND_SET(mr) == False)
 	  {
-	  register int i = 0;
-	  register int dw;
+	    register int i = 0;
+	    register int dw;
 
-             pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr), 5,
-				  Scr.depth);
-	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
-
-	     bounds.width = MR_WIDTH(mr);
-	  dw= (float) bounds.width / ms->look.face.u.grad.npixels + 1;
-	  while (i < ms->look.face.u.grad.npixels)
-          {
-	    unsigned short x = i * bounds.width / ms->look.face.u.grad.npixels;
-	       XSetForeground(dpy, pmapgc,
-			   ms->look.face.u.grad.pixels[i++ ]);
-	       XFillRectangle(dpy, pmap, pmapgc,
-			      x, 0,
-			      dw, 5);
-	     }
-	     XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
-	     XFreeGC(dpy,pmapgc);
-	     XFreePixmap(dpy,pmap);
-	     MR_IS_BACKGROUND_SET(mr) = True;
+	    pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr), 5,
+				 Scr.depth);
+	    pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
+	    bounds.width = MR_WIDTH(mr);
+	    dw= (float) bounds.width / ms->look.face.u.grad.npixels + 1;
+	    while (i < ms->look.face.u.grad.npixels)
+	    {
+	      unsigned short x = i*bounds.width/ms->look.face.u.grad.npixels;
+	      XSetForeground(dpy, pmapgc, ms->look.face.u.grad.pixels[i++ ]);
+	      XFillRectangle(dpy, pmap, pmapgc, x, 0, dw, 5);
+	    }
+	    XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
+	    XFreeGC(dpy,pmapgc);
+	    XFreePixmap(dpy,pmap);
+	    MR_IS_BACKGROUND_SET(mr) = True;
 	  }
 	  XClearWindow(dpy, MR_WINDOW(mr));
         }
@@ -2502,26 +2523,23 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
         {
 	  if (MR_IS_BACKGROUND_SET(mr) == False)
 	  {
-	  register int i = 0;
-	  register int dh = bounds.height / ms->look.face.u.grad.npixels + 1;
+	    register int i = 0;
+	    register int dh = bounds.height / ms->look.face.u.grad.npixels + 1;
 
-             pmap = XCreatePixmap(dpy, MR_WINDOW(mr), 5, MR_HEIGHT(mr),
-				  Scr.depth);
-	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
+	    pmap = XCreatePixmap(dpy, MR_WINDOW(mr), 5, MR_HEIGHT(mr),
+				 Scr.depth);
+	    pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 
-	  while (i < ms->look.face.u.grad.npixels)
-          {
-	    unsigned short y = i*bounds.height / ms->look.face.u.grad.npixels;
-	       XSetForeground(dpy, pmapgc,
-			   ms->look.face.u.grad.pixels[i++]);
-	       XFillRectangle(dpy, pmap, pmapgc,
-			      0, y,
-			      5, dh);
-	     }
-	     XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
-	     XFreeGC(dpy,pmapgc);
-	     XFreePixmap(dpy,pmap);
-	     MR_IS_BACKGROUND_SET(mr) = True;
+	    while (i < ms->look.face.u.grad.npixels)
+	    {
+	      unsigned short y = i*bounds.height/ms->look.face.u.grad.npixels;
+	      XSetForeground(dpy, pmapgc, ms->look.face.u.grad.pixels[i++]);
+	      XFillRectangle(dpy, pmap, pmapgc, 0, y, 5, dh);
+	    }
+	    XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
+	    XFreeGC(dpy,pmapgc);
+	    XFreePixmap(dpy,pmap);
+	    MR_IS_BACKGROUND_SET(mr) = True;
 	  }
 	  XClearWindow(dpy, MR_WINDOW(mr));
         }
@@ -2542,8 +2560,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 			     ms->look.face.u.grad.pixels[cindex]);
             }
             if (type == DGradMenu)
-              XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC,
-	                0, i, i, 0);
+              XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC, 0, i, i, 0);
 	    else /* BGradient */
 	      XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC,
 	                0, MR_HEIGHT(mr) - 1 - i, i, MR_HEIGHT(mr) - 1);
@@ -3006,7 +3023,6 @@ void MakeMenu(MenuRoot *mr)
 	 since strlen("Popup ")==6 ) */
       menuContinuation = NewMenuRoot(szMenuContinuationActionAndName+6);
       MR_CONTINUATION_MENU(mr) = menuContinuation;
-      MR_IS_CONTINUATION_MENU(menuContinuation) = True;
 
       /* Now move this item and the remaining items into the new menu */
       cItems--;
@@ -3033,7 +3049,6 @@ void MakeMenu(MenuRoot *mr)
   } /* for */
   /* allow two pixels for top border */
   MR_HEIGHT(mr) = y + ((MR_STYLE(mr)->look.ReliefThickness == 1) ? 2 : 3);
-  memset(&(MR_TEMP_FLAGS(mr)), 0, sizeof(MR_TEMP_FLAGS(mr)));
   MR_XANIMATION(mr) = 0;
 
   MR_XOFFSET(mr) = 0;
@@ -3048,7 +3063,7 @@ void MakeMenu(MenuRoot *mr)
 
   MR_WIDTH(mr) = MR_WIDTH0(mr) + MR_WIDTH(mr) + MR_WIDTH2(mr) + MR_WIDTH3(mr) +
     MR_XOFFSET(mr);
-  MR_IS_BACKGROUND_SET(mr) = False;
+  memset(&(MR_DYNAMIC_FLAGS(mr)), 0, sizeof(MR_DYNAMIC_FLAGS(mr)));
 
   /* create a new window for the menu */
   MakeMenuWindow(mr);
@@ -3535,6 +3550,7 @@ static MenuRoot *CopyMenuRoot(MenuRoot *menu)
   MR_NEXT_MENU(tmp) = MR_NEXT_MENU(menu);
   MR_NEXT_MENU(menu) = tmp;
   MR_WINDOW(tmp) = None;
+  memset(&(MR_DYNAMIC_FLAGS(menu)), 0, sizeof(MR_DYNAMIC_FLAGS(menu)));
 
   return tmp;
 }
@@ -3657,6 +3673,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
   mp.flags.is_sticky = fStaysUp;
   mp.flags.is_submenu = False;
+  mp.flags.is_already_mapped = False;
   mp.eventp = teventp;
   mp.pops = &mops;
   mp.ret_paction = &ret_action;
@@ -3765,7 +3782,7 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
 	   StrEquals(style,"DGradient") || StrEquals(style, "BGradient"))
   {
     char *item, **s_colors;
-    int npixels, nsegs, i, sum, perc[128];
+    int npixels, nsegs, i, sum, perc[MAX_GRADIENT_SEGMENTS];
     Pixel *pixels;
     char gtype = style[0];
 
@@ -3813,8 +3830,8 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
       free(item);
       if (nsegs < 1)
 	nsegs = 1;
-      if (nsegs > 128)
-	nsegs = 128;
+      if (nsegs > MAX_GRADIENT_SEGMENTS)
+	nsegs = MAX_GRADIENT_SEGMENTS;
       s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
       for (i = 0; i <= nsegs; ++i)
       {
@@ -3846,8 +3863,8 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
 
     if (npixels < 2)
       npixels = 2;
-    if (npixels > 128)
-      npixels = 128;
+    if (npixels > MAX_GRADIENT_SEGMENTS)
+      npixels = MAX_GRADIENT_SEGMENTS;
 
     pixels = AllocNonlinearGradient(s_colors, perc, nsegs, npixels);
     for (i = 0; i <= nsegs; ++i)
@@ -4238,7 +4255,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	  tmpms->feel.PopupOffsetAdd = 0;
 	  tmpms->feel.flags.do_popup_immediately = 0;
 	  tmpms->feel.flags.do_title_warp = 1;
-	  tmpms->feel.flags.do_unmap_submenu_on_popdown = 1;
+	  tmpms->feel.flags.do_unmap_submenu_on_popdown = 0;
 	  tmpms->look.ReliefThickness = 1;
 	  tmpms->look.TitleUnderlines = 1;
 	  tmpms->look.flags.has_long_separators = 0;
@@ -4251,7 +4268,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	  tmpms->feel.PopupOffsetAdd = -3;
 	  tmpms->feel.flags.do_popup_immediately = 1;
 	  tmpms->feel.flags.do_title_warp = 0;
-	  tmpms->feel.flags.do_unmap_submenu_on_popdown = 1;
+	  tmpms->feel.flags.do_unmap_submenu_on_popdown = 0;
 	  tmpms->look.ReliefThickness = 2;
 	  tmpms->look.TitleUnderlines = 2;
 	  tmpms->look.flags.has_long_separators = 1;
@@ -4264,7 +4281,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	  tmpms->feel.PopupOffsetAdd = -5;
 	  tmpms->feel.flags.do_popup_immediately = 1;
 	  tmpms->feel.flags.do_title_warp = 0;
-	  tmpms->feel.flags.do_unmap_submenu_on_popdown = 0;
+	  tmpms->feel.flags.do_unmap_submenu_on_popdown = 1;
 	  tmpms->look.ReliefThickness = 0;
 	  tmpms->look.TitleUnderlines = 1;
 	  tmpms->look.flags.has_long_separators = 0;

@@ -1,3 +1,39 @@
+1999-05-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (SelectMenuItem): Fixed X error message 54/4/14: No
+	longer try to delete a stored item twice.
+	(MenuInteraction): Do not unselect a popup menu item when we leave the
+	menu and the submenu stays up.
+	(MenuInteraction): Fixed bug that caused a submenu to pop up when
+	leaving a menu into an item of its parent that pops up the parent
+	itself.
+	(MenuInteraction): Only raise the parent menu if it is obscured when
+	moving back with the keyboard.
+
+1999-05-29  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.h (MenuRootStatic): moved temp_flags to dflags of
+	MenuRootDynamic. Multiple copies of a menu now get their V/HGradient
+	drawn.
+
+	* fvwm/menus.c (MenuInteraction): Harmonized function internal flags
+	with GSFR style flags.
+
+	* fvwm/windowlist.c (do_windowList):
+	* fvwm/menus.c (do_menu):
+	(menu_func):
+	* fvwm/menus.h (MenuParameters):
+	Added flag 'is_already_mapped' to be used in do_menu() to fix
+	unnecessary menu duplication with mouse movement.
+
+	* fvwm/builtins.c (ReadButtonFace):
+	* fvwm/colors.c (ParseGradient):
+	* fvwm/menus.c (ReadMenuFace):
+	* fvwm/defaults.h: Macro MAX_GRADIENT_SEGMENTS controls how many
+	colours may be allocated for a single gradient. Increased this from
+	128 to 1000. The menu code uses an array for this and wastes 4k. I hope
+	this will soon be changed when the gradient code is moved into the lib.
+
 Sat May 29 13:54:21 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Module.h: replaced HEADER_SIZE and the like with two macro
