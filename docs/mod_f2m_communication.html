@@ -303,6 +303,15 @@ type. The packet consists of three zeros, followed by a variable
 length character string. In addition, the PixmapPath, IconPath, and
 ClickTime  are sent to the module.
 <P>
+Note that all the module configuration commands are sent.  Each
+module has to check the configuration commands to see if
+it is a command for that specific module.  This is actually
+a feature.  This way one module can learn about all other
+modules configurations.  Also fvwm2 doesn't currently know
+anything about module aliases so all module configuration
+commands have to be sent for at least 2 reasons.
+It is unlikely that this behavior will ever change.
+<P>
 Starting with release 2.0.47, a module can set M_SENDCONFIG on in its
 mask and recieve M_CONFIG_INFO packets while it is running.
 (M_CONFIG_INFO has to be on also.)  A module can use M_SENDCONFIG
