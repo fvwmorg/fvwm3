@@ -1,5 +1,7 @@
 1999-06-06  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/menus.c (paint_item): Fixed previous patch.
+
 	* fvwm/menus.c (paint_item):
 	gradient menus may have a hilit background too
 

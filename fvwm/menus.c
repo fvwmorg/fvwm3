@@ -960,7 +960,7 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
 	return MENU_NOP;
       break;
 
-#ifndef NO_TEAR_OFF_MENUS
+#ifdef TEAR_OFF_MENUS
     case XK_BackSpace:
 fprintf(stderr,"menu torn off\n");
       return MENU_TEAR_OFF;
@@ -1148,7 +1148,7 @@ static MenuStatus MenuInteraction(
 	  if (retval == MENU_POPDOWN ||
 	      retval == MENU_ABORTED ||
 	      retval == MENU_SELECTED
-#ifndef NO_TEAR_OFF_MENUS
+#ifdef TEAR_OFF_MENUS
 	      || retval == MENU_TEAR_OFF
 #endif
 )
@@ -1571,7 +1571,7 @@ static MenuStatus MenuInteraction(
       } /* mops.flags.select_in_place */
     }
   }
-#ifndef NO_TEAR_OFF_MENUS
+#ifdef TEAR_OFF_MENUS
   else if (retval == MENU_TEAR_OFF)
   {
 fprintf(stderr,"got MENU_TEAR_OFF\n");
@@ -2497,7 +2497,11 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     }
   }
   else if (MI_WAS_DESELECTED(mi) &&
-	   (relief_thickness > 0 || MR_STYLE(mr)->look.flags.do_hilight))
+	   (relief_thickness > 0 || MR_STYLE(mr)->look.flags.do_hilight)
+#ifdef GRADIENT_BUTTONS
+	   && !is_gradient_menu
+#endif
+	  )
   {
     int d = 0;
     if (MI_PREV_ITEM(mi) && MR_SELECTED_ITEM(mr) == MI_PREV_ITEM(mi))
