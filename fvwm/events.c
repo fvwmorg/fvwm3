@@ -885,7 +885,49 @@ void HandlePropertyNotify(void)
         }
         else
         {
+	  int w;
+	  int h;
+
           maximize_adjust_offset(Tmp_win);
+	  /* domivogt (07-Apr-2000): as terrible hack to work around a xterm
+	   * bug: when the font size is changed in a xterm, xterm simply assumes
+	   * that the wm will grant its new size.  Of course this is wrong if
+	   * the xterm is maximised.  To make xterm happy, we first send a
+	   * ConfigureNotify with the current (maximised) geometry + 1 pixel in
+	   * height, then another one with the correct old geometry.  Changing
+	   * the font multiple times will cause the xterm to shrink because
+	   * gravity_constrain_size doesn't know about the initially requested
+	   * dimensions. */
+	  w = Tmp_win->max_g.width;
+	  h = Tmp_win->max_g.height;
+	  gravity_constrain_size(
+	    Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->max_g);
+	  if (w != Tmp_win->max_g.width ||
+	      h != Tmp_win->max_g.height)
+	  {
+	    rectangle new_g;
+
+	    /* This is in case the size_inc changed and the old dimensions are
+	     * not multiples of the new values. */
+	    get_relative_geometry(&new_g, &Tmp_win->max_g);
+	    if (IS_SHADED(Tmp_win))
+	      get_shaded_geometry(Tmp_win, &new_g, &new_g);
+	    ForceSetupFrame(
+	      Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+	  }
+	  else
+	  {
+	    SendConfigureNotify(
+	      Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
+	      Tmp_win->frame_g.width, Tmp_win->frame_g.height+1, 0, False);
+	    XSync(dpy, 0);
+	    /* free some CPU */
+	    usleep(1);
+	    SendConfigureNotify(
+	      Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
+	      Tmp_win->frame_g.width, Tmp_win->frame_g.height, 0, False);
+	    XSync(dpy, 0);
+	  }
         }
         GNOME_SetWinArea(Tmp_win);
       }
@@ -2137,44 +2179,57 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d)\n",
    * ask for a nonsense height and expect that they really get it. */
   if (do_send_event)
     {
-      XEvent client_event;
-      client_event.type = ConfigureNotify;
-      client_event.xconfigure.display = dpy;
-      client_event.xconfigure.event = Tmp_win->w;
-      client_event.xconfigure.window = Tmp_win->w;
-
-      client_event.xconfigure.x = Tmp_win->frame_g.x + Tmp_win->boundary_width;
-      client_event.xconfigure.y =
-	Tmp_win->frame_g.y + Tmp_win->boundary_width +
-	((HAS_BOTTOM_TITLE(Tmp_win)) ? 0 : Tmp_win->title_g.height);
-      client_event.xconfigure.width =
-	new_g.width - 2 * Tmp_win->boundary_width;
-      client_event.xconfigure.height =
-	new_g.height - 2 * Tmp_win->boundary_width - Tmp_win->title_g.height;
-      client_event.xconfigure.border_width = cre->border_width;
-      /* Real ConfigureNotify events say we're above title window, so ...
-         what if we don't have a title ?????
-	 Doesn't really matter since the ICCCM demands that above field
-	 of ConfigureNotify events be ignored by clients. */
-      client_event.xconfigure.above = Tmp_win->frame;
-      client_event.xconfigure.override_redirect = False;
-
-      XSendEvent(dpy, Tmp_win->w, False, StructureNotifyMask, &client_event);
-
-#if 1
-      /* This is for buggy tk, which waits for the real ConfigureNotify
-	 on frame instead of the synthetic one on w. The geometry data
-         in the event will not be correct for the frame, but tk doesn't
-	 look at that data anyway. */
-      client_event.xconfigure.event = Tmp_win->frame;
-      client_event.xconfigure.window = Tmp_win->frame;
-
-      XSendEvent(dpy, Tmp_win->frame, False,StructureNotifyMask,&client_event);
-#endif
-
+      SendConfigureNotify(
+	Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
+	new_g.width, new_g.height, cre->border_width, True);
       XSync(dpy,0);
     }
 #endif
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	SendConfigureNotify - inform a client window of its geometry.
+ *
+ *  The input (frame) geometry will be translated to client geometry
+ *  before sending.
+ *
+ ************************************************************************/
+void SendConfigureNotify(
+  FvwmWindow *tmp_win, int x, int y, unsigned int w, unsigned int h, int bw,
+  Bool send_for_frame_too)
+{
+  if (!tmp_win || IS_SHADED(tmp_win))
+    return;
+  {
+    XEvent client_event;
+
+    client_event.type = ConfigureNotify;
+    client_event.xconfigure.display = dpy;
+    client_event.xconfigure.event = tmp_win->w;
+    client_event.xconfigure.window = tmp_win->w;
+    client_event.xconfigure.x = x + tmp_win->boundary_width;
+    client_event.xconfigure.y = y + tmp_win->boundary_width +
+      ((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height);
+    client_event.xconfigure.width = w - 2 * tmp_win->boundary_width;
+    client_event.xconfigure.height = h -
+      2 * tmp_win->boundary_width - tmp_win->title_g.height;
+    client_event.xconfigure.border_width = bw;
+    client_event.xconfigure.above = tmp_win->frame;
+    client_event.xconfigure.override_redirect = False;
+    XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
+    if (send_for_frame_too)
+    {
+      /* This is for buggy tk, which waits for the real ConfigureNotify
+       * on frame instead of the synthetic one on w. The geometry data
+       * in the event will not be correct for the frame, but tk doesn't
+       * look at that data anyway. */
+      client_event.xconfigure.event = tmp_win->frame;
+      client_event.xconfigure.window = tmp_win->frame;
+      XSendEvent(dpy, tmp_win->frame, False,StructureNotifyMask,&client_event);
+    }
+  }
 }
 
 /***********************************************************************

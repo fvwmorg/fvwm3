@@ -37,6 +37,7 @@
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "events.h"
 #include "cursor.h"
 #include "functions.h"
 #include "bindings.h"
@@ -1299,7 +1300,6 @@ void DrawDecorations(
 void SetupFrame(
   FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent)
 {
-  XEvent client_event;
   XWindowChanges xwc;
   unsigned long xwcm;
   int i;
@@ -1591,38 +1591,10 @@ void SetupFrame(
    * look at their current geometry */
   if (sendEvent && !shaded)
   {
-    client_event.type = ConfigureNotify;
-    client_event.xconfigure.display = dpy;
-    client_event.xconfigure.event = tmp_win->w;
-    client_event.xconfigure.window = tmp_win->w;
-
-    client_event.xconfigure.x = x + tmp_win->boundary_width;
-    client_event.xconfigure.y =
-      y + ((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height) +
-      tmp_win->boundary_width;
-    client_event.xconfigure.width = w-2*tmp_win->boundary_width;
-    client_event.xconfigure.height =h-2*tmp_win->boundary_width -
-      tmp_win->title_g.height;
-
-    client_event.xconfigure.border_width = 0;
-    /* Real ConfigureNotify events say we're above title window, so ... */
-    /* what if we don't have a title ????? */
-    client_event.xconfigure.above = tmp_win->frame;
-    client_event.xconfigure.override_redirect = False;
-    XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
+    SendConfigureNotify(tmp_win, x, y, w, h, 0, True);
 #ifdef FVWM_DEBUG_MSGS
     fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
              client_event.xconfigure.width,client_event.xconfigure.height);
-#endif
-#if 1
-    /* This is for buggy tk, which waits for the real ConfigureNotify
-       on frame instead of the synthetic one on w. The geometry data
-       in the event will not be correct for the frame, but tk doesn't
-       look at that data anyway. */
-    client_event.xconfigure.event = tmp_win->frame;
-    client_event.xconfigure.window = tmp_win->frame;
-
-    XSendEvent(dpy, tmp_win->frame, False,StructureNotifyMask,&client_event);
 #endif
   }
 

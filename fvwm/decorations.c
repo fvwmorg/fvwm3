@@ -98,12 +98,10 @@ typedef PropMotifWmHints        PropMwmHints;
 #define MWM_DECOR_BORDER              (1L << 1)
 #define MWM_DECOR_RESIZEH             (1L << 2)
 #define MWM_DECOR_TITLE               (1L << 3)
- #define MWM_DECOR_MENU                (1L << 4)
- #define MWM_DECOR_MINIMIZE            (1L << 5)
- #define MWM_DECOR_MAXIMIZE            (1L << 6)
+#define MWM_DECOR_MENU                (1L << 4)
+#define MWM_DECOR_MINIMIZE            (1L << 5)
+#define MWM_DECOR_MAXIMIZE            (1L << 6)
 #endif
-/* has nothing to do with MWM, but we need it here */
-#define DECOR_BORDER                  (1L << 7)
 
 #define PROP_MOTIF_WM_HINTS_ELEMENTS  4
 #define PROP_MWM_HINTS_ELEMENTS       PROP_MOTIF_WM_HINTS_ELEMENTS
@@ -115,6 +113,8 @@ typedef PropMotifWmHints        PropMwmHints;
 #define OL_DECOR_HEADER               (1L << 2)
 #define OL_DECOR_ICON_NAME            (1L << 3)
 #define OL_DECOR_ALL                  (OL_DECOR_CLOSE | OL_DECOR_RESIZEH | OL_DECOR_HEADER | OL_DECOR_ICON_NAME)
+/* indicates if there are any OL hints */
+#define OL_ANY_HINTS                  (1L << 7)
 
 extern FvwmWindow *Tmp_win;
 
@@ -184,74 +184,79 @@ void GetOlHints(FvwmWindow *t)
                           _XA_OL_WIN_ATTR, &actual_type, &actual_format,
 			  &nitems, &bytesafter,
 			  (unsigned char **)&hints)==Success)
+  {
+    if (nitems > 0)
     {
-      if (nitems > 0)
-        {
-          if (nitems == 3)
-            win_type = hints[0];
-          else
-            win_type = hints[1];
+      t->ol_hints |= OL_ANY_HINTS;
 
-	  /* got this from olvwm and sort of mapped it to
-	   * FVWM/MWM hints */
-          if (win_type == _XA_OL_WT_BASE)
-	    t->ol_hints = OL_DECOR_ALL;
-          else if (win_type == _XA_OL_WT_CMD)
-	    t->ol_hints = OL_DECOR_ALL & ~OL_DECOR_CLOSE;
-          else if (win_type == _XA_OL_WT_HELP)
-	    t->ol_hints = OL_DECOR_ALL & ~(OL_DECOR_CLOSE | OL_DECOR_RESIZEH);
-          else if (win_type == _XA_OL_WT_NOTICE)
-	    t->ol_hints = OL_DECOR_ALL & ~(OL_DECOR_CLOSE | OL_DECOR_RESIZEH |
-	        OL_DECOR_HEADER | OL_DECOR_ICON_NAME);
-          else if (win_type == _XA_OL_WT_OTHER)
-	    t->ol_hints = 0;
-          else
-	    t->ol_hints = OL_DECOR_ALL;
+      if (nitems == 3)
+	win_type = hints[0];
+      else
+	win_type = hints[1];
 
-	  if (nitems == 3)
-	    t->ol_hints &= ~OL_DECOR_ICON_NAME;
-	}
+      /* got this from olvwm and sort of mapped it to
+       * FVWM/MWM hints */
+      if (win_type == _XA_OL_WT_BASE)
+	t->ol_hints = OL_DECOR_ALL;
+      else if (win_type == _XA_OL_WT_CMD)
+	t->ol_hints = OL_DECOR_ALL & ~OL_DECOR_CLOSE;
+      else if (win_type == _XA_OL_WT_HELP)
+	t->ol_hints = OL_DECOR_ALL & ~(OL_DECOR_CLOSE | OL_DECOR_RESIZEH);
+      else if (win_type == _XA_OL_WT_NOTICE)
+	t->ol_hints = OL_DECOR_ALL & ~(OL_DECOR_CLOSE | OL_DECOR_RESIZEH |
+				       OL_DECOR_HEADER | OL_DECOR_ICON_NAME);
+      else if (win_type == _XA_OL_WT_OTHER)
+	t->ol_hints = 0;
+      else
+	t->ol_hints = OL_DECOR_ALL;
 
-      if (hints)
-        XFree (hints);
+      if (nitems == 3)
+	t->ol_hints &= ~OL_DECOR_ICON_NAME;
     }
+
+    if (hints)
+      XFree (hints);
+  }
 
   if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_ADD, 0L, 20L, False,
 			 XA_ATOM, &actual_type, &actual_format, &nitems,
 			 &bytesafter,(unsigned char **)&hints)==Success)
+  {
+    for (i = 0; i < nitems; i++)
     {
-      for (i = 0; i < nitems; i++) {
-	if (hints[i] == _XA_OL_DECOR_CLOSE)
-            t->ol_hints |= OL_DECOR_CLOSE;
-	else if (hints[i] == _XA_OL_DECOR_RESIZE)
-            t->ol_hints |= OL_DECOR_RESIZEH;
-	else if (hints[i] == _XA_OL_DECOR_HEADER)
-            t->ol_hints |= OL_DECOR_HEADER;
-	else if (hints[i] == _XA_OL_DECOR_ICON_NAME)
-            t->ol_hints |= OL_DECOR_ICON_NAME;
-      }
-      if (hints)
-        XFree (hints);
+      t->ol_hints |= OL_ANY_HINTS;
+      if (hints[i] == _XA_OL_DECOR_CLOSE)
+	t->ol_hints |= OL_DECOR_CLOSE;
+      else if (hints[i] == _XA_OL_DECOR_RESIZE)
+	t->ol_hints |= OL_DECOR_RESIZEH;
+      else if (hints[i] == _XA_OL_DECOR_HEADER)
+	t->ol_hints |= OL_DECOR_HEADER;
+      else if (hints[i] == _XA_OL_DECOR_ICON_NAME)
+	t->ol_hints |= OL_DECOR_ICON_NAME;
     }
+    if (hints)
+      XFree (hints);
+  }
 
   if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_DEL, 0L, 20L, False,
 			 XA_ATOM, &actual_type, &actual_format, &nitems,
 			 &bytesafter,(unsigned char **)&hints)==Success)
+  {
+    for (i = 0; i < nitems; i++)
     {
-      for (i = 0; i < nitems; i++) {
-	if (hints[i] == _XA_OL_DECOR_CLOSE)
-            t->ol_hints &= ~OL_DECOR_CLOSE;
-	else if (hints[i] == _XA_OL_DECOR_RESIZE)
-            t->ol_hints &= ~OL_DECOR_RESIZEH;
-	else if (hints[i] == _XA_OL_DECOR_HEADER)
-            t->ol_hints &= ~OL_DECOR_HEADER;
-	else if (hints[i] == _XA_OL_DECOR_ICON_NAME)
-            t->ol_hints &= ~OL_DECOR_ICON_NAME;
-      }
-      if (hints)
-        XFree (hints);
+      t->ol_hints |= OL_ANY_HINTS;
+      if (hints[i] == _XA_OL_DECOR_CLOSE)
+	t->ol_hints &= ~OL_DECOR_CLOSE;
+      else if (hints[i] == _XA_OL_DECOR_RESIZE)
+	t->ol_hints &= ~OL_DECOR_RESIZEH;
+      else if (hints[i] == _XA_OL_DECOR_HEADER)
+	t->ol_hints &= ~OL_DECOR_HEADER;
+      else if (hints[i] == _XA_OL_DECOR_ICON_NAME)
+	t->ol_hints &= ~OL_DECOR_ICON_NAME;
     }
-
+    if (hints)
+      XFree (hints);
+  }
 }
 
 
@@ -329,7 +334,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
     }
 
   /* now add/remove any functions specified in the OL hints */
-  if (SHAS_OL_DECOR(sflags))
+  if (SHAS_OL_DECOR(sflags) && (t->ol_hints & OL_ANY_HINTS))
     {
       if (t->ol_hints & OL_DECOR_CLOSE)
       {
@@ -411,7 +416,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
   if (ShapesSupported)
   {
     if(t->wShaped)
-      decor &= ~(DECOR_BORDER|MWM_DECOR_RESIZEH);
+      decor &= ~(MWM_DECOR_BORDER|MWM_DECOR_RESIZEH);
   }
 #endif
   /* Assume no decorations, and build up */

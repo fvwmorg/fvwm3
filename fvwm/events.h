@@ -35,6 +35,9 @@ void HandleButtonPress(void);
 void HandleEnterNotify(void);
 void HandleLeaveNotify(void);
 void HandleConfigureRequest(void);
+void SendConfigureNotify(
+  FvwmWindow *tmp_win, int x, int y, unsigned int w, unsigned int h, int bw,
+  Bool send_for_frame_too);
 void HandleClientMessage(void);
 void HandlePropertyNotify(void);
 void HandleKeyPress(void);

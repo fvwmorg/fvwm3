@@ -362,24 +362,9 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
     {
       /* send configure notify event for windows that care about their
        * location */
-      XEvent client_event;
-      client_event.type = ConfigureNotify;
-      client_event.xconfigure.display = dpy;
-      client_event.xconfigure.event = tmp_win->w;
-      client_event.xconfigure.window = tmp_win->w;
-      client_event.xconfigure.x = currentX + tmp_win->boundary_width;
-      client_event.xconfigure.y = currentY + tmp_win->boundary_width +
-	((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height);
-      client_event.xconfigure.width = tmp_win->frame_g.width -
-	2 * tmp_win->boundary_width;
-      client_event.xconfigure.height = tmp_win->frame_g.height -
-	2 * tmp_win->boundary_width - tmp_win->title_g.height;
-      client_event.xconfigure.border_width = 0;
-      /* Real ConfigureNotify events say we're above title window, so ... */
-      /* what if we don't have a title ????? */
-      client_event.xconfigure.above = tmp_win->frame;
-      client_event.xconfigure.override_redirect = False;
-      XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
+      SendConfigureNotify(
+	tmp_win, currentX, currentY, tmp_win->frame_g.width,
+	tmp_win->frame_g.height, 0, False);
 #ifdef FVWM_DEBUG_MSGS
       fvwm_msg(DBG,"AnimatedMoveAnyWindow",
 	       "Sent ConfigureNotify (w == %d, h == %d)",
@@ -1184,35 +1169,13 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     if (do_move_opaque && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their
-       * location */
-      XEvent client_event;
-      int nx = xl + tmp_win->boundary_width;
-      int ny = yt + tmp_win->boundary_width +
-	((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height);
-
-
-      /* Don't send anything if position didn't change */
-      if (!sent_cn || cnx != nx || cny != ny)
+       * location; don't send anything if position didn't change */
+      if (!sent_cn || cnx != xl || cny != yt)
       {
-        cnx = nx;
-        cny = ny;
+        cnx = xl;
+        cny = yt;
         sent_cn = True;
-        client_event.type = ConfigureNotify;
-        client_event.xconfigure.display = dpy;
-        client_event.xconfigure.event = tmp_win->w;
-        client_event.xconfigure.window = tmp_win->w;
-        client_event.xconfigure.x = nx;
-	client_event.xconfigure.y = ny;
-        client_event.xconfigure.width = Width - 2 * tmp_win->boundary_width;
-        client_event.xconfigure.height = Height -
-            2 * tmp_win->boundary_width - tmp_win->title_g.height;
-        client_event.xconfigure.border_width = 0;
-        /* Real ConfigureNotify events say we're above title window, so... */
-        /* what if we don't have a title ????? */
-        client_event.xconfigure.above = tmp_win->frame;
-        client_event.xconfigure.override_redirect = False;
-        XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask,
-                   &client_event);
+	SendConfigureNotify(tmp_win, xl, yt, Width, Height, 0, False);
 #ifdef FVWM_DEBUG_MSGS
         fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
                  client_event.xconfigure.width,
