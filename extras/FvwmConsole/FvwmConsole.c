@@ -29,8 +29,13 @@ int main(int argc, char *argv[]){
   char client[120];
   char **eargv;
   int i,j,k;
-  char *xterm_a[] = {"-title", Name,"-name",Name, "-e",client,NULL };
+  char *xterm_a[] = { "-title", Name, "-name", Name, "-e", NULL, NULL };
   int  clpid; 
+
+  /* Why is this not just put in the initializer of xterm_a?
+     Apparently, it is a non-standard extension to use a non-constant address (of client)
+     in an initializer (of xterm_a). */
+  xterm_a[5] = client;
 
   /* Save the program name - its used for error messages and option parsing */
   tmp = argv[0];

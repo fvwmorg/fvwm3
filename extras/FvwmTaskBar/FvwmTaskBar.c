@@ -149,7 +149,7 @@ Colormap PictureCMap;
 char *IconPath   = NULL,
      *PixmapPath = NULL;
 
-static void ParseConfigLine(unsigned char *tline); /* prototype */
+static void ParseConfigLine(char *tline);
 
 /******************************************************************************
   Main - Setup the XConnection,request the window list and loop forever
@@ -579,7 +579,7 @@ void ParseConfig() {
   } /* end config lines */
 } /* end function */
 
-static void ParseConfigLine(unsigned char *tline) {
+static void ParseConfigLine(char *tline) {
   char *str;
   int i, j;
 

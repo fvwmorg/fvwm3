@@ -1,3 +1,8 @@
+1999-01-13  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* fvwm/builtins.c (DirectionFunc): Made variable "dir" an int, to
+	match return type of GetTokenIndex().
+
 1999-01-12  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* configure: changed readline prototype (char -> char *)

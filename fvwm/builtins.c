@@ -4492,7 +4492,7 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   int best_score;
   FvwmWindow *window;
   FvwmWindow *best_window;
-  char dir;
+  int dir;
   char *flags;
   char *restofline;
   char *tmp;
