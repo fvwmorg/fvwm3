@@ -73,6 +73,7 @@ static int ListSize=0;
 struct Item* itemlistRoot = NULL;
 int max_col1, max_col2;
 char id[15], desktop[10], swidth[10], sheight[10], borderw[10], geometry[30];
+char mymin_aspect[11], max_aspect[11];
 
 /***********************************************************************
  *
@@ -607,7 +608,7 @@ void MakeList(void)
   AddToList("Height:",        sheight);
   AddToList("X (current page):",   xstr);
   AddToList("Y (current page):",   ystr);
-  AddToList("BoundaryWidth:", borderw);
+  AddToList("Boundary Width:", borderw);
   AddToList("Sticky:",        (target.flags & STICKY 	? YES : NO));
   AddToList("Ontop:",         (target.flags & ONTOP  	? YES : NO));
   AddToList("NoTitle:",       (target.flags & TITLE  	? NO : YES));
@@ -761,6 +762,25 @@ void MakeList(void)
     AddToList("Focus Policy:",focus_policy);
     AddToList("  - Input Field:",ifstr);
     AddToList("  - WM_TAKE_FOCUS:",tfstr);
+    {
+      long supplied_return;             /* flags, hints that were supplied */
+      int getrc;
+      XSizeHints *size_hints = XAllocSizeHints(); /* the size hints */
+      if (getrc = XGetWMSizeHints(dpy,target.id, /* get size hints */
+                          size_hints,    /* Hints */
+                          &supplied_return,
+                          XA_WM_ZOOM_HINTS)) {
+        if (supplied_return & PAspect) { /* if window has a aspect ratio */
+          sprintf(mymin_aspect, "%d/%d", size_hints->min_aspect.x,
+                  size_hints->min_aspect.y);
+          AddToList("Minimum aspect ratio:",mymin_aspect);
+          sprintf(max_aspect, "%d/%d", size_hints->max_aspect.x,
+                  size_hints->max_aspect.y);
+          AddToList("Maximum aspect ratio:",max_aspect);
+        } /* end aspect ratio */
+        XFree(size_hints);
+      } /* end getsizehints worked */
+    }
   }
 }
 
