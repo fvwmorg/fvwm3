@@ -1,5 +1,8 @@
 2002-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in:
+	fixed sys/time.h detection
+
 	* fvwm/events.c (HandleMappingNotify):
 	* libs/Bindings.c (AddBinding):
 	added MappingNotify event handler
