@@ -12,22 +12,22 @@ ButtonStyle 2 4 50x35@1 65x65@0 35x65@0 50x35@1
 ButtonStyle 4 4 50x65@1 35x35@1 65x35@1 50x65@0
 
 EdgeResistance 250 10
-WindowFont		-adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+Style * Font 		-adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
 IconFont		-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 EdgeScroll 100 100
 
-HilightColor black palevioletred
 DeskTopSize 2x2
 MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
 ClickTime 750
 
 ColormapFocus FollowsMouse
 
-Style "*"           BorderWidth 5, HandleWidth 5
-Style "*"           Icon unknown1.xpm, Color Black/#40a0c0
-Style "*"           ActivePlacement, SmartPlacement
-Style "*"           MWMFunctions,MWMDecor,HintOverride
-Style "*"           DecorateTransient,IconBox 0 -10 -280 -1
+Style *             HilightFore black, HilightBack palevioletred
+Style *             BorderWidth 5, HandleWidth 5
+Style *             Icon unknown1.xpm, Color Black/#40a0c0
+Style *             ActivePlacement, SmartPlacement
+Style *             MWMFunctions,MWMDecor,HintOverride
+Style *             DecorateTransient,IconBox 0 -10 -280 -1
 Style "Fvwm*"       NoTitle, NoHandles, Sticky, WindowListSkip,
 Style "Fvwm*"       BorderWidth 0,CirculateSkipIcon
 Style "Fvwm Pager"  StaysOnTop
@@ -101,8 +101,8 @@ Mouse 2	FST	A	Menu Window-Ops2 Nop
 Mouse 3	TSIF	A	RaiseLower
 
 ########################Initialization Functions ############################
-AddToFunc StartFunction   "I" Module FvwmButtons
-+			  "I" exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
+AddToFunc StartFunction   I Module FvwmButtons
++			  I exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
 
 ########################Menus ########################################
 AddToMenu Utilities	"Utilities"	Title
@@ -184,39 +184,39 @@ AddToMenu Quit-Verify 	"Really Quit Fvwm?" Title
 
 ########################Functions ########################################
 
-AddToFunc MailFunction	   "I" Next [$0] Iconify -1
-+		           "I" Next [$0] focus
-+			   "I" None [$0] Exec $0 $1
+AddToFunc MailFunction	   I Next [$0] Iconify -1
++		           I Next [$0] focus
++			   I None [$0] Exec $0 $1
 
-AddToFunc Move-or-Raise		"I" Raise
-+				"M" Move
-+  				"D" Lower
+AddToFunc Move-or-Raise		I Raise
++				M Move
++  				D Lower
 
-AddToFunc Move-or-Raise2	"M" Raise
-+				"M" Move
-+  				"D" Lower
+AddToFunc Move-or-Raise2	M Raise
++				M Move
++  				D Lower
 
-AddToFunc Maximize-Func		"M" Maximize	 0 100
-+				"C" Maximize	 0 80
-+				"D" Maximize	 100 100
+AddToFunc Maximize-Func		M Maximize	 0 100
++				C Maximize	 0 80
++				D Maximize	 100 100
 
-AddToFunc Move-or-Iconify	"I" Raise
-+				"M" Move
-+				"D" Iconify
+AddToFunc Move-or-Iconify	I Raise
++				M Move
++				D Iconify
 
-AddToFunc Resize-or-Raise	"I" Raise
-+				"M" Resize
-+				"D" Lower
+AddToFunc Resize-or-Raise	I Raise
++				M Resize
++				D Lower
 
-AddToFunc Resize-or-Raise2	"M" Raise
-+				"M" Resize
-+				"D" Lower
+AddToFunc Resize-or-Raise2	M Raise
++				M Resize
++				D Lower
 
-AddToFunc PrintFunction		"I" Raise
-+				"I" Exec xdpr -id $w
+AddToFunc PrintFunction		I Raise
++				I Exec xdpr -id $w
 
-AddToFunc Iconify-and-Raise     "I" Iconify
-+                               "I" Raise
+AddToFunc Iconify-and-Raise     I Iconify
++                               I Raise
 
 ################## FvwmButtons button-bar ################################
 # Colors
@@ -283,7 +283,7 @@ AddToFunc Iconify-and-Raise     "I" Iconify
 ############################################################
 # Note that icons are shown in the module
 #    only if NoIcon commnand is applied.
-#Style     "*"  NoIcon
+#Style     *  NoIcon
 
 ############################################################
 *FvwmIconBoxIconBack    #cfcfcf

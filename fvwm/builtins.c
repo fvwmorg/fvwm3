@@ -56,7 +56,6 @@
 #endif /* HAVE_STROKE */
 
 static void ApplyIconFont(void);
-static void ApplyWindowFont(FvwmDecor *decor);
 static char *ReadTitleButton(
     char *s, TitleButton *tb, Boolean append, int button);
 
@@ -846,97 +845,8 @@ void setModulePath(F_CMD_ARGS)
     need_to_free = 1;
 }
 
-#if 0
-static void ApplyHilightColors(FvwmDecor *decor)
-{
-  FvwmWindow *hilight;
-  XGCValues gcv;
-  unsigned long gcm;
-
-  gcm = GCFunction | GCLineWidth | GCForeground | GCBackground;
-  gcv.function = GXcopy;
-  gcv.line_width = 0;
-
-  if (decor->HiColorset >= 0)
-  {
-    gcv.foreground = Colorset[decor->HiColorset].hilite;
-    gcv.background = Colorset[decor->HiColorset].shadow;
-  }
-  else
-  {
-    gcv.foreground = decor->HiRelief.fore;
-    gcv.background = decor->HiRelief.back;
-  }
-  if (decor->HiReliefGC)
-    XChangeGC(dpy, decor->HiReliefGC, gcm, &gcv);
-  else
-    decor->HiReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-
-  if (decor->HiColorset >= 0)
-  {
-    gcv.foreground = Colorset[decor->HiColorset].shadow;
-    gcv.background = Colorset[decor->HiColorset].hilite;
-  }
-  else
-  {
-    gcv.foreground = decor->HiRelief.back;
-    gcv.background = decor->HiRelief.fore;
-  }
-  if(decor->HiShadowGC)
-    XChangeGC(dpy, decor->HiShadowGC, gcm, &gcv);
-  else
-    decor->HiShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-
-  if(Scr.flags.windows_captured && Scr.Hilite)
-  {
-    hilight = Scr.Hilite;
-    DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
-    DrawDecorations(hilight, DRAW_ALL, True, True, None);
-  }
-}
-#endif
-
 void SetHiColor(F_CMD_ARGS)
 {
-#if 0
-  char *hifore = NULL;
-  char  *hiback = NULL;
-#ifdef USEDECOR
-  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
-#else
-  FvwmDecor *decor = &Scr.DefaultDecor;
-#endif
-
-  action = GetNextToken(action,&hifore);
-  GetNextToken(action, &hiback);
-  if(Pdepth > 2)
-  {
-    if(hifore)
-    {
-	decor->HiColors.fore = GetColor(hifore);
-    }
-    if(hiback)
-    {
-	decor->HiColors.back = GetColor(hiback);
-    }
-    decor->HiRelief.back  = GetShadow(decor->HiColors.back);
-    decor->HiRelief.fore  = GetHilite(decor->HiColors.back);
-  }
-  else
-  {
-    decor->HiColors.back  = GetColor("white");
-    decor->HiColors.fore  = GetColor("black");
-    decor->HiRelief.back  = GetColor("black");
-    decor->HiRelief.fore  = GetColor("white");
-  }
-  if (hifore)
-      free(hifore);
-  if (hiback)
-      free(hiback);
-
-  decor->HiColorset = -1;
-  ApplyHilightColors(decor);
-#else
   char *fore;
   char *back;
 #ifdef USEDECOR
@@ -963,28 +873,11 @@ void SetHiColor(F_CMD_ARGS)
     free(fore);
   if (back)
     free(back);
-#endif
 }
 
 
 void SetHiColorset(F_CMD_ARGS)
 {
-#if 0
-  int cset;
-#ifdef USEDECOR
-  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
-#else
-  FvwmDecor *decor = &Scr.DefaultDecor;
-#endif
-
-  if (GetIntegerArguments(action, NULL, &cset, 1) != 1)
-    return;
-  decor->HiColorset = cset;
-  if (decor->HiColorset < 0)
-    decor->HiColorset = -1;
-  AllocColorset(cset);
-  ApplyHilightColors(decor);
-#else
   char *newaction;
 
 #ifdef USEDECOR
@@ -1005,7 +898,6 @@ void SetHiColorset(F_CMD_ARGS)
     action = newaction;
     ProcessNewStyle(F_PASS_ARGS);
   }
-#endif
 }
 
 
@@ -1040,6 +932,28 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
     }
     else if (!do_add && StrEquals(parm,"height"))
     {
+#if 1
+      int height = 0;
+      int next = 0;
+
+      if (!action || sscanf(action, "%d%n", &height, &next) <= 0 ||
+	  height < MIN_FONT_HEIGHT || height > MAX_FONT_HEIGHT)
+      {
+	if (height != 0)
+	{
+	  fvwm_msg(ERR, "SetTitleStyle",
+		   "bad height argument (height must be from 5 to 256)");
+	  height = 0;
+	}
+      }
+      if (decor->title_height != height)
+      {
+	decor->title_height = height;
+	decor->flags.has_title_height_changed = 1;
+      }
+      if (action)
+	action += next;
+#else
       int height, next;
       if ( sscanf(action, "%d%n", &height, &next) > 0
 	   && height > 4
@@ -1054,11 +968,12 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
 
 #ifdef I18N_MB
 	decor->WindowFont.y = decor->WindowFont.font->ascent
-	  + (height - (decor->WindowFont.height + 3)) / 2;
+	  + (height - (decor->WindowFont.height + EXTRA_TITLE_FONT_HEIGHT)) / 2;
 #else
 	decor->WindowFont.y = decor->WindowFont.font->ascent
 	  + (height - (decor->WindowFont.font->ascent
-		       + decor->WindowFont.font->descent + 3)) / 2;
+		       + decor->WindowFont.font->descent
+		       + EXTRA_TITLE_FONT_HEIGHT)) / 2;
 #endif
 	if (decor->WindowFont.y < decor->WindowFont.font->ascent)
 	  decor->WindowFont.y = decor->WindowFont.font->ascent;
@@ -1079,11 +994,7 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
 	  y = tmp->frame_g.y;
 	  w = tmp->frame_g.width;
 	  h = tmp->frame_g.height-extra_height;
-	  tmp->frame_g.x = 0;
-	  tmp->frame_g.y = 0;
-	  tmp->frame_g.height = 0;
-	  tmp->frame_g.width = 0;
-	  SetupFrame(tmp, x, y, w, h, True);
+	  ForceSetupFrame(tmp, x, y, w, h, True);
 	  DrawDecorations(tmp, DRAW_TITLE, True, True, None);
 	  DrawDecorations(tmp, DRAW_TITLE, False, True, None);
 	  tmp = tmp->next;
@@ -1094,6 +1005,7 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
 	fvwm_msg(ERR,"SetTitleStyle",
 		 "bad height argument (height must be from 5 to 256)");
       action += next;
+#endif
     }
     else
     {
@@ -1104,7 +1016,7 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
 
 void SetTitleStyle(F_CMD_ARGS)
 {
-  do_title_style(eventp, w, tmp_win, context, action, Module, False);
+  do_title_style(F_PASS_ARGS, False);
 } /* SetTitleStyle */
 
 #if defined(MULTISTYLE)
@@ -1115,7 +1027,7 @@ void SetTitleStyle(F_CMD_ARGS)
  ****************************************************************************/
 void AddTitleStyle(F_CMD_ARGS)
 {
-  do_title_style(eventp, w, tmp_win, context, action, Module, True);
+  do_title_style(F_PASS_ARGS, True);
 }
 #endif /* MULTISTYLE */
 
@@ -1127,15 +1039,10 @@ void ApplyDefaultFontAndColors(void)
   int hei;
   int cset = Scr.DefaultColorset;
 
-  Scr.StdFont.y = Scr.StdFont.font->ascent;
-#ifndef I18N_MB
-  Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
-#endif
-
   /* make GC's */
   gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
   gcv.function = GXcopy;
-  gcv.font = Scr.StdFont.font->fid;
+  gcv.font = Scr.DefaultFont.font->fid;
   gcv.line_width = 0;
   if (cset >= 0) {
     gcv.foreground = Colorset[cset].fg;
@@ -1171,45 +1078,41 @@ void ApplyDefaultFontAndColors(void)
   /* update the geometry window for move/resize */
   if(Scr.SizeWindow != None)
   {
-    Scr.SizeStringWidth = XTextWidth(Scr.StdFont.font, " +8888 x +8888 ", 15);
+    Scr.SizeStringWidth =
+      XTextWidth(Scr.DefaultFont.font, " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
-    hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
+    hei = Scr.DefaultFont.height + 2 * SIZE_VINDENT;
     if (cset >= 0)
-      SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Colorset[cset],
-			  Pdepth, Scr.StdGC, False);
-    else
-      XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdBack);
-
-    if(Scr.gs.EmulateMWM)
     {
-      XMoveResizeWindow(dpy,Scr.SizeWindow,
-			(Scr.MyDisplayWidth - wid)/2,
-			(Scr.MyDisplayHeight - hei)/2, wid, hei);
+      SetWindowBackground(
+	dpy, Scr.SizeWindow, wid, hei, &Colorset[cset], Pdepth, Scr.StdGC,
+	False);
     }
     else
     {
-      XMoveResizeWindow(dpy,Scr.SizeWindow,0, 0, wid,hei);
+      XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdBack);
+    }
+
+    if(Scr.gs.EmulateMWM)
+    {
+      XMoveResizeWindow(
+	dpy, Scr.SizeWindow, (Scr.MyDisplayWidth - wid) / 2,
+	(Scr.MyDisplayHeight - hei) / 2, wid, hei);
+    }
+    else
+    {
+      XMoveResizeWindow(dpy, Scr.SizeWindow, 0, 0, wid, hei);
     }
   }
 
   if (Scr.flags.has_icon_font == 0)
   {
 #ifdef I18N_MB
-    Scr.IconFont.fontset = Scr.StdFont.fontset;
-    Scr.IconFont.height = Scr.StdFont.height;
+    Scr.IconFont.fontset = Scr.DefaultFont.fontset;
+    Scr.IconFont.height = Scr.DefaultFont.height;
 #endif
-    Scr.IconFont.font = Scr.StdFont.font;
+    Scr.IconFont.font = Scr.DefaultFont.font;
     ApplyIconFont();
-  }
-
-  if (Scr.flags.has_window_font == 0)
-  {
-#ifdef I18N_MB
-    Scr.DefaultDecor.WindowFont.fontset = Scr.StdFont.fontset;
-    Scr.DefaultDecor.WindowFont.height = Scr.StdFont.height;
-#endif
-    Scr.DefaultDecor.WindowFont.font = Scr.StdFont.font;
-    ApplyWindowFont(&Scr.DefaultDecor);
   }
 
   UpdateAllMenuStyles();
@@ -1219,9 +1122,6 @@ void HandleColorset(F_CMD_ARGS)
 {
   int n = -1, ret;
   char *token;
-#if 0
-  FvwmDecor *decor;
-#endif
 
   token = PeekToken(action, NULL);
   if (token == NULL)
@@ -1239,17 +1139,6 @@ void HandleColorset(F_CMD_ARGS)
     Scr.flags.do_need_window_update = 1;
     Scr.flags.has_default_color_changed = 1;
   }
-
-#if 0
-  /* Update decors if necessary */
-  for (decor = &Scr.DefaultDecor; decor != NULL; decor = decor->next)
-  {
-    if (decor->HiColorset == n)
-    {
-      ApplyHilightColors(decor);
-    }
-  }
-#endif
 
   UpdateMenuColorset(n);
   update_style_colorset(n);
@@ -1291,17 +1180,17 @@ void SetDefaultColors(F_CMD_ARGS)
     fore = strdup("black");
 
   if (!StrEquals(fore, "-"))
-    {
-        XFreeColors(dpy, Pcmap, &Scr.StdFore, 1, 0);
-        Scr.StdFore = GetColor(fore);
-    }
+  {
+    XFreeColors(dpy, Pcmap, &Scr.StdFore, 1, 0);
+    Scr.StdFore = GetColor(fore);
+  }
   if (!StrEquals(back, "-"))
-    {
-        XFreeColors(dpy, Pcmap, &Scr.StdBack, 3, 0);
-        Scr.StdBack = GetColor(back);
-        Scr.StdHilite = GetHilite(Scr.StdBack);
-        Scr.StdShadow = GetShadow(Scr.StdBack);
-    }
+  {
+    XFreeColors(dpy, Pcmap, &Scr.StdBack, 3, 0);
+    Scr.StdBack = GetColor(back);
+    Scr.StdHilite = GetHilite(Scr.StdBack);
+    Scr.StdShadow = GetShadow(Scr.StdBack);
+  }
   free(fore);
   free(back);
 
@@ -1322,48 +1211,56 @@ void LoadDefaultFont(F_CMD_ARGS)
   XFontStruct *xfs = NULL;
 #endif
 
-  action = GetNextToken(action,&font);
+  font = PeekToken(action, &action);
   if (!font)
   {
     /* Try 'fixed' */
-    font = strdup("");
+    font = "";
   }
 
 #ifdef I18N_MB
   if ((xfset = GetFontSetOrFixed(dpy, font)) == NULL)
-#else
-  if ((xfs = GetFontOrFixed(dpy, font)) == NULL)
-#endif
   {
-    fvwm_msg(ERR,"SetDefaultFont","Couldn't load font '%s' or 'fixed'\n",
-	     font);
-    free(font);
-#ifdef I18N_MB
-    if (Scr.StdFont.fontset == NULL)
-#else
-    if (Scr.StdFont.font == NULL)
-#endif
+    fvwm_msg(
+      ERR, "SetDefaultFont", "Couldn't load font '%s' or 'fixed'\n", font);
+    if (Scr.DefaultFont.fontset == NULL)
       exit(1);
     else
       return;
   }
-  free(font);
+#else
+  if ((xfs = GetFontOrFixed(dpy, font)) == NULL)
+  {
+    fvwm_msg(
+      ERR, "SetDefaultFont", "Couldn't load font '%s' or 'fixed'\n", font);
+    if (Scr.DefaultFont.font == NULL)
+      exit(1);
+    else
+      return;
+  }
+#endif
+
+  /* update the font structure */
 #ifdef I18N_MB
-  if (Scr.StdFont.fontset != NULL)
-    XFreeFontSet(dpy, Scr.StdFont.fontset);
-  Scr.StdFont.fontset = xfset;
+  if (Scr.DefaultFont.fontset != NULL)
+    XFreeFontSet(dpy, Scr.DefaultFont.fontset);
+  Scr.DefaultFont.fontset = xfset;
 
   /* backward compatiblity setup */
   XFontsOfFontSet(xfset, &fs_list, &ml);
-  Scr.StdFont.font = fs_list[0];
+  Scr.DefaultFont.font = fs_list[0];
   fset_extents = XExtentsOfFontSet(xfset);
-  Scr.StdFont.height = fset_extents->max_logical_extent.height;
+  Scr.DefaultFont.height = fset_extents->max_logical_extent.height;
 #else
-  if (Scr.StdFont.font)
-    XFreeFont(dpy, Scr.StdFont.font);
-  Scr.StdFont.font = xfs;
+  if (Scr.DefaultFont.font)
+    XFreeFont(dpy, Scr.DefaultFont.font);
+  Scr.DefaultFont.font = xfs;
+  Scr.DefaultFont.height =
+    Scr.DefaultFont.font->ascent + Scr.DefaultFont.font->descent;
 #endif
+  Scr.DefaultFont.y = Scr.DefaultFont.font->ascent;
 
+  /* set flags to indicate that the font has changed */
   Scr.flags.do_need_window_update = 1;
   Scr.flags.has_default_font_changed = 1;
 }
@@ -1399,6 +1296,8 @@ void LoadIconFont(F_CMD_ARGS)
   XFontStruct *newfont;
 #endif
 
+flush_window_updates();
+
   action = GetNextToken(action,&font);
   if (!font)
   {
@@ -1409,10 +1308,10 @@ void LoadIconFont(F_CMD_ARGS)
       Scr.flags.has_icon_font = 0;
     }
 #ifdef I18N_MB
-    Scr.IconFont.fontset = Scr.StdFont.fontset;
-    Scr.IconFont.height = Scr.StdFont.height;
+    Scr.IconFont.fontset = Scr.DefaultFont.fontset;
+    Scr.IconFont.height = Scr.DefaultFont.height;
 #endif
-    Scr.IconFont.font = Scr.StdFont.font;
+    Scr.IconFont.font = Scr.DefaultFont.font;
     ApplyIconFont();
     return;
   }
@@ -1451,118 +1350,29 @@ void LoadIconFont(F_CMD_ARGS)
   free(font);
 }
 
-static void ApplyWindowFont(FvwmDecor *decor)
-{
-  FvwmWindow *tmp;
-  rectangle new_g;
-  int extra_height;
-
-#ifndef I18N_MB
-  decor->WindowFont.height =
-    decor->WindowFont.font->ascent+decor->WindowFont.font->descent;
-#endif
-  decor->WindowFont.y = decor->WindowFont.font->ascent;
-  extra_height = decor->TitleHeight;
-#ifdef I18N_MB
-  decor->TitleHeight = decor->WindowFont.height + 3;
-#else
-  decor->TitleHeight =
-    decor->WindowFont.font->ascent + decor->WindowFont.font->descent + 3;
-#endif
-  extra_height -= decor->TitleHeight;
-
-  tmp = Scr.FvwmRoot.next;
-  while(tmp)
-  {
-    if (!HAS_TITLE(tmp)
-#ifdef USEDECOR
-	|| (tmp->decor != decor)
-#endif
-      )
-    {
-      tmp = tmp->next;
-      continue;
-    }
-    new_g = tmp->frame_g;
-    gravity_resize(tmp->hints.win_gravity, &new_g, 0, extra_height);
-    SetupFrame(tmp, new_g.x, new_g.y, new_g.width, new_g.height, True);
-    DrawDecorations(tmp, DRAW_ALL, (tmp == Scr.Hilite), True, None);
-    tmp = tmp->next;
-  }
-}
 
 void LoadWindowFont(F_CMD_ARGS)
 {
-  char *font;
-#ifdef I18N_MB
-  XFontSet newfontset;
-#else
-  XFontStruct *newfont;
-#endif
+  char *newaction;
+
 #ifdef USEDECOR
-  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
-#else
-  FvwmDecor *decor = &Scr.DefaultDecor;
-#endif
-
-  decor->flags.has_changed = 1;
-  decor->flags.has_font_changed = 1;
-
-  action = GetNextToken(action,&font);
-  if (!font)
+  if (cur_decor && cur_decor != &Scr.DefaultDecor)
   {
-    /* reset to default font */
-    if (Scr.flags.has_window_font)
-    {
-      XFreeFont(dpy, Scr.DefaultDecor.WindowFont.font);
-      Scr.flags.has_window_font = 0;
-#ifdef I18N_MB
-      decor->WindowFont.fontset = Scr.StdFont.fontset;
-      decor->WindowFont.height = Scr.StdFont.height;
-#endif
-      decor->WindowFont.font = Scr.StdFont.font;
-      ApplyWindowFont(&Scr.DefaultDecor);
-    }
+    fvwm_msg(
+      ERR, "LoadWindowFont",
+      "Decors do not support the WindowFont command anymore.\n"
+      "    Please use 'Style <stylename> Font <fontname>' instead."
+      "    Sorry for the inconvenience.");
     return;
   }
-
-#ifdef I18N_MB
-  if ((newfontset = GetFontSetOrFixed(dpy, font))!=NULL)
-  {
-    XFontSetExtents *fset_extents;
-    XFontStruct **fs_list;
-    char **ml;
-
-    if (decor->WindowFont.fontset != NULL &&
-	(decor != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
-      XFreeFontSet(dpy, decor->WindowFont.fontset);
-    if (decor == &Scr.DefaultDecor)
-      Scr.flags.has_window_font = 1;
-    decor->WindowFont.fontset = newfontset;
-
-    /* backward compatiblity setup */
-    XFontsOfFontSet(newfontset, &fs_list, &ml);
-    decor->WindowFont.font = fs_list[0];
-    fset_extents = XExtentsOfFontSet(newfontset);
-    decor->WindowFont.height = fset_extents->max_logical_extent.height;
-#else
-  if ((newfont = GetFontOrFixed(dpy, font)))
-  {
-    if (decor->WindowFont.font &&
-	(decor != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
-      XFreeFont(dpy, decor->WindowFont.font);
-    if (decor == &Scr.DefaultDecor)
-      Scr.flags.has_window_font = 1;
-    decor->WindowFont.font = newfont;
 #endif
-    ApplyWindowFont(decor);
-  }
-  else
+  if (action)
   {
-    fvwm_msg(ERR,"LoadWindowFont","Couldn't load font '%s' or 'fixed'\n",font);
+    newaction = safemalloc(strlen(action) + 16);
+    sprintf(newaction, "* Font %s", action);
+    action = newaction;
+    ProcessNewStyle(F_PASS_ARGS);
   }
-
-  free(font);
 }
 
 void FreeDecorFace(Display *dpy, DecorFace *df)
@@ -2078,44 +1888,43 @@ void AddToDecor(FvwmDecor *decor, char *s)
  ****************************************************************************/
 void ChangeDecor(F_CMD_ARGS)
 {
-    char *item;
-    int x,y,width,height,old_height,extra_height;
-    FvwmDecor *decor = &Scr.DefaultDecor, *found = NULL;
-    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
-	return;
-    action = GetNextToken(action, &item);
-    if (!action || !item)
+  char *item;
+  int old_height;
+  int extra_height;
+  FvwmDecor *decor = &Scr.DefaultDecor;
+  FvwmDecor *found = NULL;
+
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+    return;
+  item = PeekToken(action, &action);
+  if (!action || !item)
+    return;
+  /* search for tag */
+  for (; decor; decor = decor->next)
+  {
+    if (decor->tag)
+    {
+      if (StrEquals(item, decor->tag))
       {
-	if (item)
-	  free(item);
-	return;
+	found = decor;
+	break;
       }
-    /* search for tag */
-    for (; decor; decor = decor->next)
-	if (decor->tag)
-	    if (StrEquals(item, decor->tag)) {
-		found = decor;
-		break;
-	    }
-    free(item);
-    if (!found) {
-	XBell(dpy, 0);
-	return;
     }
-    old_height = tmp_win->decor->TitleHeight;
-    tmp_win->decor = found;
-    extra_height = (HAS_TITLE(tmp_win)) ?
-      (old_height - tmp_win->decor->TitleHeight) : 0;
-    x = tmp_win->frame_g.x;
-    y = tmp_win->frame_g.y;
-    width = tmp_win->frame_g.width;
-    height = tmp_win->frame_g.height - extra_height;
-    tmp_win->frame_g.x = 0;
-    tmp_win->frame_g.y = 0;
-    tmp_win->frame_g.height = 0;
-    tmp_win->frame_g.width = 0;
-    SetupFrame(tmp_win, x, y, width, height, True);
-    DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None);
+  }
+  if (!found)
+  {
+    XBell(dpy, 0);
+    return;
+  }
+  apply_decor_change(tmp_win);
+  old_height = tmp_win->decor->title_height;
+  tmp_win->decor = found;
+  extra_height = (HAS_TITLE(tmp_win)) ?
+    (old_height - tmp_win->decor->title_height) : 0;
+  ForceSetupFrame(
+    tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width,
+    tmp_win->frame_g.height - extra_height, True);
+  DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None);
 }
 
 /*****************************************************************************
@@ -2173,13 +1982,7 @@ void InitFvwmDecor(FvwmDecor *decor)
     int i;
     DecorFace tmpdf;
 
-#if 0
-    decor->HiReliefGC = NULL;
-    decor->HiShadowGC = NULL;
-    decor->HiColorset = -1;
-#endif
-    decor->TitleHeight = 0;
-    decor->WindowFont.font = NULL;
+    decor->title_height = 0;
 
 #ifdef USEDECOR
     decor->tag = NULL;
@@ -2187,9 +1990,6 @@ void InitFvwmDecor(FvwmDecor *decor)
 
     if (decor != &Scr.DefaultDecor)
     {
-#if 0
-      AddToDecor(decor, "HilightColor black grey");
-#endif
       AddToDecor(decor, "WindowFont fixed");
     }
 #endif
@@ -2264,20 +2064,6 @@ void DestroyFvwmDecor(FvwmDecor *decor)
     decor->tag = NULL;
   }
 #endif
-#if 0
-  if (decor->HiReliefGC != NULL)
-  {
-    XFreeGC(dpy, decor->HiReliefGC);
-    decor->HiReliefGC = NULL;
-  }
-  if (decor->HiShadowGC != NULL)
-  {
-    XFreeGC(dpy, decor->HiShadowGC);
-    decor->HiShadowGC = NULL;
-  }
-#endif
-  if (decor->WindowFont.font != NULL)
-    XFreeFont(dpy, decor->WindowFont.font);
 }
 
 /*****************************************************************************
@@ -2388,12 +2174,13 @@ void reset_decor_changes(void)
 {
 #ifndef USEDECOR
   Scr.DefaultDecor.flags.has_changed = 0;
+  Scr.DefaultDecor.flags.has_title_height_changed = 0;
 #else
   FvwmDecor *decor;
   for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
   {
     decor->flags.has_changed = 0;
-    decor->flags.has_font_changed = 0;
+    decor->flags.has_title_height_changed = 0;
   }
   /*!!! must reset individual change flags too */
 #endif

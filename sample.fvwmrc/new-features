@@ -28,18 +28,17 @@ SnapAttraction 20 SameType
 
 # Font configuration
 #
-# WindowFont 		Sets the font to be used in window title-bars
+# Window font		Sets the font to be used in window title-bars
 #
 # IconFont		Sets the font that will be used for icon labels.
 #
-WindowFont	-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
+Style * Font	-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
 IconFont	-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 
-# HighlightColor
+# Highlight color
 #
 # This sets the textcolor and background color for the active window
-# Format: HilightColor textcolor backgroundcolor
-HilightColor #ffffff #1ea819
+Style * HilightFore #ffffff, HilightBack #1ea819
 
 
 # BorderStyle

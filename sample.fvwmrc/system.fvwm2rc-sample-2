@@ -21,10 +21,10 @@
 # COLORS and FONTS
 #
 # Set the fore and back border colors for the window that has focus
-HilightColor		linen SteelBlue4
+Style * HilightFore linen, HilightBack SteelBlue4
 
 # Set fore/back border colors for all other windows
-Style "*" Color linen/VioletRed4
+Style * Color linen/VioletRed4
 
 # Set colors/font for pop-up menus
 # Syntax: MenuStyle forecolor backcolor shadecolor font style(fvwm/mwm)
@@ -32,8 +32,8 @@ MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
 #MenuStyle black grey slategrey 7x13bold fvwm
 
 # Set fonts to use on title bar and icon label
-WindowFont              9x15
-# WindowFont              -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+Style * Font            9x15
+# Style * Font            -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
 IconFont                9x15
 # IconFont                -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 
@@ -41,13 +41,13 @@ IconFont                9x15
 # ICON Setup
 #
 # Auto Place Icons is a nice feature (Left Top Right Bottom)
-Style "*" IconBox -215 200 -1 -100
+Style * IconBox -215 200 -1 -100
 
 # If you don't want icons for some or all windows (or all of them!)
-# Style "*" NoIcon
+# Style * NoIcon
 
 # If you want ALL icons to follow you around the desktop (Sticky)
-#Style "*" StickyIcon
+#Style * StickyIcon
 
 ############################################################################
 # FOCUS Setup
@@ -57,10 +57,10 @@ Style "*" IconBox -215 200 -1 -100
 # ColormapFocus FollowsMouse
 
 # Uncomment this to force you to click in a window to give it focus
-#Style "*" ClickToFocus
+#Style * ClickToFocus
 
 # default: focus follows mouse
-#Style "*" MouseFocus
+#Style * MouseFocus
 
 # If you knock your mouse out of the xterm, it keeps focus while in root window
 Style "*term"		SloppyFocus
@@ -79,7 +79,7 @@ EdgeScroll 100 100
 EdgeResistance 500 20
 
 # MWM Emulation: Don't ignore hints for functions and transient decoration
-Style "*" MWMFunctions, MWMDecor
+Style * MWMFunctions, MWMDecor
 
 # Changes the look of the "rubberband" you see when moving windows (0 - 255)
 #XORvalue 100
@@ -94,10 +94,10 @@ DeskTopSize 3 3
 # WINDOW Placement
 #
 # SmartPlacement makes new windows pop-up in blank regions of screen
-Style "*" SmartPlacement
+Style * SmartPlacement
 
 # If SmartPlacement fails, this places it randomly instead of making you do it
-Style "*" RandomPlacement
+Style * RandomPlacement
 
 ############################################################################
 # STYLE Flag Setup
@@ -107,7 +107,7 @@ Style "*" RandomPlacement
 # together. If conflicting styles are set, the last one specified is used.
 
 # change the default width, set a global icon, and give borders to popups
-Style "*" BorderWidth 7, HandleWidth 7, Icon x.xpm, DecorateTransient
+Style * BorderWidth 7, HandleWidth 7, Icon x.xpm, DecorateTransient
 
 Style "Fvwm*"		NoTitle, Sticky, WindowListSkip
 Style "*lock"		NoTitle, Sticky, WindowListSkip
@@ -132,14 +132,14 @@ Style "xmh"		Icon mail2.xpm StartsOnDesk 2
 #############################################################################
 # START-UP Functions
 #
-AddToFunc "StartFunction" "I" Module FvwmButtons
-+		"I" Module FvwmPager 0 0
-+		"I" Module FvwmAudio
-+		"I" Next [!iconic CurrentScreen xterm] Focus
-+		"I" CursorMove 30 40
+AddToFunc "StartFunction" I Module FvwmButtons
++		I Module FvwmPager 0 0
++		I Module FvwmAudio
++		I Next [!iconic CurrentScreen xterm] Focus
++		I CursorMove 30 40
 
 # Uncomment this to make windows auto-raise after [x] milliseconds
-# AddToFunc "StartFunction" "I" Module FvwmAuto 0
+# AddToFunc "StartFunction" I Module FvwmAuto 0
 
 ############################################################################
 # BUTTON Setup
@@ -265,42 +265,42 @@ AddToMenu XlockMenu	"Choose one:" Title
 ############################################################################
 # COMPLEX FUNCTIONS
 #
-AddToFunc warp-or-run		"I" Next [$0 CirculateHit] Iconify -1
-+				"I" Next [$0 CirculateHit] Focus
-+				"I" None [$0] $1
+AddToFunc warp-or-run		I Next [$0 CirculateHit] Iconify -1
++				I Next [$0 CirculateHit] Focus
++				I None [$0] $1
 
-AddToFunc MailFunction		"I" Next [$0] Iconify -1
-+				"I" Next [$0] focus
-+				"I" None [$0] Exec $0 $1
+AddToFunc MailFunction		I Next [$0] Iconify -1
++				I Next [$0] focus
++				I None [$0] Exec $0 $1
 
-AddToFunc Move-or-Raise		"I" Raise
-+				"M" Move
-+				"D" Lower
+AddToFunc Move-or-Raise		I Raise
++				M Move
++				D Lower
 
-AddToFunc Move-or-Raise2        "M" Raise
-+				"M" Move
-+				"D" Lower
+AddToFunc Move-or-Raise2        M Raise
++				M Move
++				D Lower
 
-AddToFunc Maximize-Func         "C" Maximize     0 100
-+                               "D" Maximize     100 100
+AddToFunc Maximize-Func         C Maximize     0 100
++                               D Maximize     100 100
 
-AddToFunc Move-or-Iconify       "I" Raise
-+                               "M" Move
-+                               "D" Iconify
+AddToFunc Move-or-Iconify       I Raise
++                               M Move
++                               D Iconify
 
-AddToFunc Resize-or-Raise       "I" Raise
-+                               "M" Resize
-+                               "D" Lower
+AddToFunc Resize-or-Raise       I Raise
++                               M Resize
++                               D Lower
 
-AddToFunc Resize-or-Raise2      "M" Raise
-+                               "M" Resize
-+                               "D" Lower
+AddToFunc Resize-or-Raise2      M Raise
++                               M Resize
++                               D Lower
 
-AddToFunc PrintFunction         "I" Raise
-+                               "I" Exec xdpr -id $w
+AddToFunc PrintFunction         I Raise
++                               I Exec xdpr -id $w
 
-AddToFunc Iconify-and-Raise     "I" Iconify
-+                               "I" Raise
+AddToFunc Iconify-and-Raise     I Iconify
++                               I Raise
 
 ############################################################################
 # MOUSE Setup

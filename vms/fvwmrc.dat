@@ -44,9 +44,6 @@ AddToDecor AllWindowsDecor
   + ButtonStyle 6 Vector 13 35x33@1 35x25@1 65x25@1 65x33@0 55x33@0 55x67@0 65x67@1 65x75@0 35x75@0 35x67@1 45x67@1 45x33@1 40x33@0
   + ButtonStyle 8 Vector  5 25x25@1 25x45@1 75x45@0 75x25@0 25x25@1
 
-  + WindowFont lucidasans-bolditalic-12
-  + HilightColor White #606060
-
   + TitleStyle Inactive TiledPixmap concrete.xpm
   + BorderStyle Inactive TiledPixmap concrete.xpm
 
@@ -58,12 +55,15 @@ AddToDecor AllWindowsDecor
 Style AllWindowsStyle UseDecor AllWindowsDecor, Color Black/#bbbbbb, HandleWidth 10
 Style AllWindowsStyle ShowMapping, SloppyFocus, RandomPlacement, SmartPlacement, HintOverride, DecorateTransient
 
+Style AllWindowsStyle Font lucidasans-bolditalic-12, HilightFore white, HilightBack #606060
+
+
 # --- Style prédéfini pour les fenêtres creées par decWindow ---
 Style StyleDecWindow UseDecor AllWindowsDecor, Sticky, NoTitle, ClickToFocus, WindowListSkip
-  
+
 # --- Style prédéfini pour les fenêtres d'outils desktop ---
 Style StyleDesktop UseDecor AllWindowsDecor, Sticky, NoTitle, ClickToFocus, WindowListSkip, BorderWidth 20
-  
+
 # --- Style prédéfini discret ---
 Style StyleDiscret UseDecor AllWindowsDecor, Sticky, NoTitle, NoHandles, BorderWidth 6, ClickToFocus, WindowListSkip
 
@@ -178,7 +178,7 @@ AddToFunc MoveIconify
 
 DestroyMenu MenuDuJour
 AddToMenu MenuDuJour
- + "Machins courants"       Title    
+ + "Machins courants"       Title
  + ""                       Nop
  + "Netscape"               Exec Thor$outils:NETSCAPE-EXPORT-ALPHA-V303B1-JAV-092597
  + "BookReader"             Exec Sys$System:Decw$BookReader
@@ -203,7 +203,7 @@ ChangeMenuStyle MenuStyleDeBase MenuModules
 
 DestroyMenu MenuDesktop
 AddToMenu MenuDesktop
- + "Trucs desktop"        Title    
+ + "Trucs desktop"        Title
  + ""                       Nop
  + "XSetRoot"               Exec Decw$Utils:XSetRoot.Exe -solid "#60a0c0"
  + "Image de fond"          Exec Thor$Outils:Xv -root -quit -slow24 -ncols 100 -max DISK$Thor:[Thor_USR.VILLARD_F.Archives.IMG]FondCourant.Image
@@ -226,18 +226,18 @@ ChangeMenuStyle MenuStyleDeBase MenuGraphique
 
 DestroyMenu MenuActionsFenetres
 AddToMenu MenuActionsFenetres
- + "Iconify/Deiconify" Iconify  
- + "Stick/Unstick"     Stick    
+ + "Iconify/Deiconify" Iconify
+ + "Stick/Unstick"     Stick
  + "Maximize/Normal"   Maximize 100 100
  + "Shade"             WindowShade
  + "Resize"            Resize
- + "Raise"             Raise    
- + "Lower"             Lower    
+ + "Raise"             Raise
+ + "Lower"             Lower
  + "Move"              Move
- + ""                  Nop      
- + "Close"             Close    
- + "Delete"            Delete   
- + "Destroy"           Destroy  
+ + ""                  Nop
+ + "Close"             Close
+ + "Delete"            Delete
+ + "Destroy"           Destroy
 ChangeMenuStyle MenuStyleMenuFenetres MenuActionsFenetres
 
 #-----------------------------------------------------------------------------------------------------------------------------------

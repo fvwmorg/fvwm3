@@ -488,10 +488,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   else
     teventp = eventp;
 
-#if 0
   /* Use the WindowList menu style is there is one */
   change_mr_menu_style(mr, "WindowList");
-#endif
 
   mp.menu = mr;
   mp.parent_menu = NULL;

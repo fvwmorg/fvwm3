@@ -5248,7 +5248,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   }
   ST_IS_UPDATED(ms) = 1;
 
-  if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != &Scr.StdFont)
+  if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != &Scr.DefaultFont)
   {
     ST_PSTDFONT(ms)->y = ST_PSTDFONT(ms)->font->ascent;
 #ifndef I18N_MB
@@ -5516,7 +5516,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       /* some default configuration goes here for the new menu style */
       ST_MENU_COLORS(tmpms).back = GetColor("white");
       ST_MENU_COLORS(tmpms).fore = GetColor("black");
-      ST_PSTDFONT(tmpms) = &Scr.StdFont;
+      ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
       ST_FACE(tmpms).type = SimpleMenu;
       ST_HAS_ACTIVE_FORE(tmpms) = 0;
       ST_HAS_ACTIVE_BACK(tmpms) = 0;
@@ -5597,7 +5597,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
       FreeMenuFace(dpy, &ST_FACE(tmpms));
       ST_FACE(tmpms).type = SimpleMenu;
-      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.StdFont)
+      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.DefaultFont)
       {
 #ifdef I18N_MB
 	XFreeFontSet(dpy, ST_PSTDFONT(tmpms)->fontset);
@@ -5606,7 +5606,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 #endif
 	free(ST_PSTDFONT(tmpms));
       }
-      ST_PSTDFONT(tmpms) = &Scr.StdFont;
+      ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
       has_gc_changed = True;
       if (ST_HAS_SIDE_COLOR(tmpms) == 1)
       {
@@ -5733,7 +5733,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 		 "Couldn't load font '%s' or 'fixed'\n", arg1);
 	break;
       }
-      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.StdFont)
+      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.DefaultFont)
       {
 #ifdef I18N_MB
 	if (ST_PSTDFONT(tmpms)->fontset)
@@ -5747,7 +5747,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       if (arg1 == NULL)
       {
 	/* reset to screen font */
-	ST_PSTDFONT(tmpms) = &Scr.StdFont;
+	ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
       }
       else
       {

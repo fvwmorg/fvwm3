@@ -767,8 +767,8 @@ A: Start with a new one or convert your old one.  This can be done by
    EdgeScroll horizontal vertical             <-
    Font fontname                              MenuStyle (arg4)
    Function FunctionName                      AddToFunc (not compatible)
-   HiBackColor colorname                      HilightColor (arg1)
-   HiForeColor colorname                      HilightColor (arg2)
+   HiBackColor colorname                      Style (HilightFore color)
+   HiForeColor colorname                      Style (HilightFore color)
    Icon windowname bitmap-file                Style (Icon iconname-file)
    IconBox left top right bottom              Style (IconBox l t r b)
    IconFont fontname                          <-
@@ -817,7 +817,7 @@ A: Start with a new one or convert your old one.  This can be done by
    StubbornPlacement                          (obsoleted)
    Style windowname options                   <-
    SuppressIcons                              Style (NoIcon)
-   WindowFont fontname                        <-
+   WindowFont fontname                        Style (Font name)
    WindowListSkip windowname                  Style (WindowListSkip)
    XORvalue number                            <-
 

@@ -451,8 +451,8 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
  *
  **************************************************************************/
 /*  RBW - 11/02/1998  */
-int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
-		int PageY)
+Bool PlaceWindow(
+  FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX, int PageY)
 {
 /**/
   FvwmWindow *t;
@@ -461,7 +461,7 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
   int px = 0, py = 0, pdeltax = 0, pdeltay = 0;
   int PageRight = Scr.MyDisplayWidth, PageBottom = Scr.MyDisplayHeight;
   int is_smartly_placed       =  False;
-  int rc = 1;
+  Bool rc = False;
   Bool HonorStartsOnPage  =  False;
   extern Bool Restarting;
 /**/
@@ -664,15 +664,15 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       else
       {
         /* place window in a random location */
-        if ((Scr.randomx += GetDecor(tmp_win, TitleHeight)) >
+        if ((Scr.randomx += tmp_win->decor->title_height) >
 	    Scr.MyDisplayWidth / 2)
 	{
-          Scr.randomx = GetDecor(tmp_win, TitleHeight);
+          Scr.randomx = tmp_win->decor->title_height;
 	}
-        if ((Scr.randomy += 2 * GetDecor(tmp_win, TitleHeight)) >
+        if ((Scr.randomy += 2 * tmp_win->decor->title_height) >
 	    Scr.MyDisplayHeight / 2)
 	{
-          Scr.randomy = 2 * GetDecor(tmp_win, TitleHeight);
+          Scr.randomy = 2 * tmp_win->decor->title_height;
 	}
         tmp_win->attr.x = Scr.randomx - pdeltax;
         tmp_win->attr.y = Scr.randomy - pdeltay;
@@ -730,12 +730,12 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
 	    tmp_win, 0, 0, DragWidth, DragHeight, &xl, &yt, False, True))
 	  {
 	    /* resize too */
-	    rc = 2;
+	    rc = True;
 	  }
 	  else
 	  {
 	    /* ok */
-	    rc = 1;
+	    rc = False;
 	  }
           XUnmapWindow(dpy,Scr.SizeWindow);
           MyXUngrabServer(dpy);

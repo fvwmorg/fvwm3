@@ -278,46 +278,6 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   if(tmp_win->icon_pixmap_w != None)
     flush_expose (tmp_win->icon_pixmap_w);
 
-#if 0
-  if(Scr.Hilite == tmp_win)
-  {
-    if(Pdepth < 2)
-    {
-      Relief = Scr.DefaultDecor.HiShadowGC;
-      Shadow = Scr.DefaultDecor.HiShadowGC;
-      TextColor = Scr.DefaultDecor.HiColors.fore;
-      BackColor = Scr.DefaultDecor.HiColors.back;
-    }
-    else
-    {
-      Relief = GetDecor(tmp_win,HiReliefGC);
-      Shadow = GetDecor(tmp_win,HiShadowGC);
-      TextColor = GetDecor(tmp_win,HiColors.fore);
-      BackColor = GetDecor(tmp_win,HiColors.back);
-    }
-  }
-  else
-  {
-    if(Pdepth < 2)
-    {
-      Relief = Scr.StdReliefGC;
-      Shadow = Scr.StdShadowGC;
-    }
-    else
-    {
-      Globalgcv.foreground = tmp_win->colors.hilight;
-      Globalgcm = GCForeground;
-      XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
-      Relief = Scr.ScratchGC1;
-
-      Globalgcv.foreground = tmp_win->colors.shadow;
-      XChangeGC(dpy,Scr.ScratchGC2,Globalgcm,&Globalgcv);
-      Shadow = Scr.ScratchGC2;
-    }
-    TextColor = tmp_win->colors.fore;
-    BackColor = tmp_win->colors.back;
-  }
-#else
   if(Scr.Hilite == tmp_win)
     draw_colors = &(tmp_win->hicolors);
   else
@@ -344,7 +304,6 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   }
   TextColor = draw_colors->fore;
   BackColor = draw_colors->back;
-#endif
 
   if(tmp_win->icon_w != None)
   {

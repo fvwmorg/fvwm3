@@ -88,7 +88,8 @@ BEGIN   {
 
 	hiforecolor="";             dflt["hiforecolor"] = "black";
 	hibackcolor="";             dflt["hibackcolor"] = "CadetBlue";
-	hilightcolor = FALSE;
+	hilightfore = FALSE;
+	hilightback = FALSE;
 
 	stdforecolor="";            dflt["stdforecolor"] = "black";
 	stdbackcolor="";            dflt["stdbackcolor"] = "grey70";
@@ -122,25 +123,25 @@ BEGIN   {
 ################ Highlight Colors ##############
 /^[ \t]*HiBackColor[ \t]*/	{
         dflt["hibackcolor"]=hibackcolor=$2;
-	printf ("#!%s (new command=HilightColor)\n", $0);
-	if (hibackcolor != "" && hiforecolor != "" && !hilightcolor) {
-           printf ("\n#Set the foreground and background color for selected windows\n");
-	   printf ("HilightColor   %s %s\n", hiforecolor, hibackcolor);
-	   hilightcolor=TRUE;
+	printf ("#!%s (new command=Style * HilightBack)\n", $0);
+	if (hibackcolor != "" && hiforecolor != "" && !hilightback) {
+           printf ("\n#Set the background color for selected windows\n");
+	   printf ("Style * HilightBack %s\n", hibackcolor);
+	   hilightback=TRUE;
         } else
-	   hilightcolor=FALSE;
+	   hilightback=FALSE;
         next;
 }
 
 /^[ \t]*HiForeColor[ \t]*/	{
         dflt["hiforecolor"]=hiforecolor=$2;
-	printf ("#!%s (new command=HilightColor)\n", $0);
-	if (hibackcolor != "" && hiforecolor != "" && !hilightcolor) {
-           printf ("\n#Set the foreground and background color for selected windows\n");
-	   printf ("HilightColor   %s %s\n", hiforecolor, hibackcolor);
-	   hilightcolor=TRUE;
+	printf ("#!%s (new command=Style * HilightFore)\n", $0);
+	if (hibackcolor != "" && hiforecolor != "" && !hilightfore) {
+           printf ("\n#Set the foreground for selected windows\n");
+	   printf ("Style * HilightFore %s\n", hiforecolor);
+	   hilightfore=TRUE;
         } else
-	   hilightcolor=FALSE;
+	   hilightfore=FALSE;
         next;
 }
 
@@ -321,8 +322,8 @@ BEGIN   {
 # }
 
 /^[ \t]*WindowListSkip[ \t]*/	{ printf "Style %s WindowListSkip", $2; next; }
-/^[ \t]*WindowFont[ \t]*/	{ print $0; next; }
-/^[ \t]*ClickTime[ \t]*/		{ print $0; next; }
+/^[ \t]*WindowFont[ \t]*/	{ printf "Style * Font %s", $2; next; }
+/^[ \t]*ClickTime[ \t]*/	{ print $0; next; }
 /^[ \t]*OpaqueMove[ \t]*/	{ print "OpaqueMoveSize " $2; next; }
 /^[ \t]*EdgeScroll[ \t]*/	{ print $0; next; }
 /^[ \t]*EdgeResistance[ \t]*/	{ print $0; next; }
@@ -535,9 +536,13 @@ BEGIN   {
 }
 
 END {
-    if (!hilightcolor) {
-	printf ("\n#Set the foreground and background color for selected windows\n");
-	printf ("HilightColor   %s %s\n", dflt["hiforecolor"], dflt["hibackcolor"]);
+    if (!hilightfore) {
+	printf ("\n#Set the foreground color for selected windows\n");
+	printf ("Style * HilightFore %s\n", dflt["hiforecolor"]);
+    }
+    if (!hilightback) {
+	printf ("\n#Set the background color for selected windows\n");
+	printf ("Style * HilightBack %s\n", dflt["hibackcolor"]);
     }
     if (!placement) {
         printf "# overide default RandomPlacement and SmartPlacement Styles\n";

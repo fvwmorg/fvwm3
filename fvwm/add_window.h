@@ -21,6 +21,8 @@ extern char NoClass[];
 extern char NoResource[];
 
 void setup_focus_policy(FvwmWindow *tmp_win);
+void setup_window_font(
+  FvwmWindow *tmp_win, window_style *pstyle, Bool do_load, Bool do_reload);
 void setup_style_and_decor(
   FvwmWindow *tmp_win, window_style *pstyle, short *buttons);
 void setup_auxiliary_windows(

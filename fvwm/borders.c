@@ -838,11 +838,9 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
   if (t->name != (char *)NULL)
   {
 #ifdef I18N_MB /* cannot use macro here, rewriting... */
-    w = XmbTextEscapement(GetDecor(t,WindowFont.fontset),t->name,
-			  strlen(t->name));
+    w = XmbTextEscapement(t->title_font.fontset,t->name, strlen(t->name));
 #else
-    w = XTextWidth(GetDecor(t,WindowFont.font),t->name,
-		   strlen(t->name));
+    w = XTextWidth(t->title_font.font, t->name, strlen(t->name));
 #endif
     if (w > t->title_g.width - 12)
       w = t->title_g.width - 4;
@@ -871,7 +869,7 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
   }
 
   NewFontAndColor(
-    GetDecor(t, WindowFont.font->fid), cd->fore_color, cd->back_color);
+    t->title_font.font->fid, cd->fore_color, cd->back_color);
 
   /* the next bit tries to minimize redraw (veliaa@rpi.edu) */
   /* we need to check for UseBorderStyle for the titlebar */
@@ -911,10 +909,11 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
 #ifdef I18N_MB
       XmbDrawString(dpy, t->title_w, GetDecor(t,WindowFont.fontset),
 		    Scr.TitleGC, hor_off,
+		    t->title_font.y + 1, t->name, strlen(t->name));
 #else
       XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
+                  t->title_font.y + 1, t->name, strlen(t->name));
 #endif
-                   GetDecor(t, WindowFont.y) + 1, t->name, strlen(t->name));
   }
   else
   {
@@ -961,14 +960,16 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
       break;
     }
 
-    if(t->name != (char *)NULL)
 #ifdef I18N_MB
+    if(t->name != (char *)NULL)
       XmbDrawString(dpy, t->title_w, GetDecor(t, WindowFont.fontset),
 		    Scr.TitleGC, hor_off,
+		    t->title_font.y + 1, t->name, strlen(t->name));
 #else
+    if(t->name != (char *)NULL)
       XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
+		  t->title_font.y + 1, t->name, strlen(t->name));
 #endif
-		  GetDecor(t,WindowFont.y) + 1, t->name, strlen(t->name));
   }
 
   /*
@@ -1068,54 +1069,6 @@ static void get_common_decorations(
 {
   color_quad *draw_colors;
 
-#if 0
-  if (has_focus)
-  {
-    /* are we using textured borders? */
-    if (DFS_FACE_TYPE(
-      GetDecor(t, BorderStyle.active.style)) == TiledPixmapButton)
-    {
-      cd->texture_pixmap = GetDecor(t, BorderStyle.active.u.p->picture);
-    }
-    cd->back_pixmap= Scr.gray_pixmap;
-    cset = GetDecor(t, HiColorset);
-    if (cset >= 0)
-    {
-      cd->fore_color = Colorset[cset].fg;
-      cd->back_color = Colorset[cset].bg;
-    }
-    else
-    {
-      cd->fore_color = GetDecor(t, HiColors.fore);
-      cd->back_color = GetDecor(t, HiColors.back);
-    }
-    cd->relief_gc = GetDecor(t, HiReliefGC);
-    cd->shadow_gc = GetDecor(t, HiShadowGC);
-  }
-  else
-  {
-    if (DFS_FACE_TYPE(GetDecor(t, BorderStyle.inactive.style)) ==
-	TiledPixmapButton)
-    {
-      cd->texture_pixmap = GetDecor(t,BorderStyle.inactive.u.p->picture);
-    }
-
-    cd->back_pixmap = Scr.light_gray_pixmap;
-    if(IS_STICKY(t))
-      cd->back_pixmap = Scr.sticky_gray_pixmap;
-    cd->fore_color = t->colors.fore;
-    cd->back_color = t->colors.back;
-
-    Globalgcv.foreground = t->colors.hilight;
-    Globalgcm = GCForeground;
-    XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
-    cd->relief_gc = Scr.ScratchGC1;
-
-    Globalgcv.foreground = t->colors.shadow;
-    XChangeGC(dpy, Scr.ScratchGC2, Globalgcm, &Globalgcv);
-    cd->shadow_gc = Scr.ScratchGC2;
-  }
-#else
   if (has_focus)
   {
     /* are we using textured borders? */
@@ -1149,7 +1102,6 @@ static void get_common_decorations(
   Globalgcv.foreground = draw_colors->shadow;
   XChangeGC(dpy, Scr.ScratchGC2, Globalgcm, &Globalgcv);
   cd->shadow_gc = Scr.ScratchGC2;
-#endif
 
   /* MWMBorder style means thin 3d effects */
   cd->relief_width = (HAS_MWM_BORDER(t) ? 1 : 2);
@@ -1392,6 +1344,20 @@ void SetupFrame(
   }
 
   /*
+   * Set up the title geometry first
+   */
+
+  if (is_resized)
+  {
+    left = tmp_win->nr_left_buttons;
+    right = tmp_win->nr_right_buttons;
+    tmp_win->title_g.width = w - (left + right) * tmp_win->title_g.height
+                           - 2 * tmp_win->boundary_width;
+    if(tmp_win->title_g.width < 1)
+      tmp_win->title_g.width = 1;
+  }
+
+  /*
    * Now set up the client, the parent and the frame window
    */
 
@@ -1472,20 +1438,9 @@ void SetupFrame(
   /*
    * Set up the decoration windows
    */
+
   if (is_resized)
   {
-    left = tmp_win->nr_left_buttons;
-    right = tmp_win->nr_right_buttons;
-
-    if (HAS_TITLE(tmp_win))
-      tmp_win->title_g.height = GetDecor(tmp_win,TitleHeight);
-
-    tmp_win->title_g.width = w - (left + right) * tmp_win->title_g.height
-                           - 2 * tmp_win->boundary_width;
-
-    if(tmp_win->title_g.width < 1)
-      tmp_win->title_g.width = 1;
-
     if (HAS_TITLE(tmp_win))
     {
       SetupTitleBar(tmp_win, w, h);
@@ -1494,9 +1449,6 @@ void SetupFrame(
     if(HAS_BORDER(tmp_win))
     {
       int add;
-
-      tmp_win->corner_width = GetDecor(tmp_win,TitleHeight) +
-        tmp_win->boundary_width ;
 
       if(w < 2*tmp_win->corner_width)
         tmp_win->corner_width = w/3;

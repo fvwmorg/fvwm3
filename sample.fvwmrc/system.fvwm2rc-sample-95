@@ -29,7 +29,7 @@ ImagePath /usr/local/lib/X11/pixmaps:/usr/local/lib/X11/mini-icons:/home/avatar/
 # Fonts - one for window titles, another for icons, and another for the menus
 #------------------------------------------------------------------------------
 
-WindowFont	lucidasanstypewriter-14
+Style * Font	lucidasanstypewriter-14
 IconFont	fixed
 
 
@@ -55,7 +55,7 @@ Style * ForeColor #c3c3c3, BackColor #c3c3c3
 # Text and background color for the title bar of the active (selected) window
 #------------------------------------------------------------------------------
 
-HilightColor white #c3c3c3
+Style * HilightFore white, HilightBack #c3c3c3
 
 
 #------------------------------------------------------------------------------

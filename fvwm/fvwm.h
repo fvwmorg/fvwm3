@@ -194,11 +194,15 @@ typedef struct
     unsigned focus_mode : 2;
     unsigned has_bottom_title : 1;
     unsigned has_depressable_border : 1;
+#if 0
+    unsigned has_icon_font : 1;
+#endif
     unsigned has_mwm_border : 1;
     unsigned has_mwm_buttons : 1;
     unsigned has_mwm_override : 1;
     unsigned has_no_icon_title : 1;
     unsigned has_override_size : 1;
+    unsigned has_window_font : 1;
     unsigned is_fixed : 1;
     unsigned is_icon_sticky : 1;
     unsigned is_icon_suppressed : 1;
@@ -300,6 +304,10 @@ typedef struct window_style
 #ifdef USEDECOR
   char *decor_name;
 #endif
+#if 0
+  char *icon_font;
+#endif
+  char *window_font;
   char *fore_color_name;
   char *back_color_name;
   char *fore_color_name_hi;
@@ -346,16 +354,9 @@ typedef struct FvwmWindow
   Window corners[4];          /* Corner pieces */
   int nr_left_buttons;
   int nr_right_buttons;
-#if 0
-  Window left_w[NR_LEFT_BUTTONS];
-  Window right_w[NR_RIGHT_BUTTONS];
-#else
   Window button_w[NUMBER_OF_BUTTONS];
-#define LEFT_W(i) button_w(i)
-#define RIGHT_W(i) button_w((i) + NR_LEFT_BUTTONS)
 #define BUTTON_INDEX(i) (((i) == 0) ? (NUMBER_OF_BUTTONS - 1) : ((i) / 2 + ((!((i) & 1)) ? NR_LEFT_BUTTONS - 1 : 0)))
 #define HAS_BUTTON(t, i) ((t)->button_w[i] && (((i) < NR_LEFT_BUTTONS && (i) < Scr.nr_left_buttons)||((i) >= NR_LEFT_BUTTONS && (i) - NR_LEFT_BUTTONS < Scr.nr_right_buttons)))
-#endif
 #ifdef USEDECOR
   struct FvwmDecor *decor;
 #endif
@@ -369,14 +370,7 @@ typedef struct FvwmWindow
   int corner_width;
 
   rectangle title_g;
-#if 1
-  rectangle icon_g;
-#else
-  int icon_x_loc;             /* icon window x coordinate */
-  int icon_y_loc;             /* icon window y coordiante */
-  int icon_w_width;           /* width of the icon window */
-  int icon_w_height;          /* height of the icon window */
-#endif
+  rectangle icon_g;           /* geometry of the icon window */
   int icon_xl_loc;            /* icon label window x coordinate */
   int icon_t_width;           /* width of the icon title window */
   int icon_p_width;           /* width of the icon pixmap window */
@@ -389,6 +383,10 @@ typedef struct FvwmWindow
 #ifdef I18N_MB
   char **name_list;           /* window name list */
   char **icon_name_list;      /* icon name list */
+#endif
+  MyFont title_font;
+#if 0
+  MyFont icon_font;
 #endif
   XWindowAttributes attr;     /* the child window attributes */
   XSizeHints hints;           /* normal hints */

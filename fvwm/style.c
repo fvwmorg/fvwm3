@@ -216,6 +216,34 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
     }
   }
 #endif
+#if 0
+  if (SFHAS_ICON_FONT(*add_style))
+  {
+    if (do_free)
+    {
+      SAFEFREE(SGET_ICON_FONT(*merged_style));
+      SSET_ICON_FONT(*merged_style, (SGET_ICON_FONT(*add_style)) ?
+		     strdup(SGET_ICON_FONT(*add_style)) : NULL);
+    }
+    else
+    {
+      SSET_ICON_FONT(*merged_style, SGET_ICON_FONT(*add_style));
+    }
+  }
+#endif
+  if (SFHAS_WINDOW_FONT(*add_style))
+  {
+    if (do_free)
+    {
+      SAFEFREE(SGET_WINDOW_FONT(*merged_style));
+      SSET_WINDOW_FONT(*merged_style, (SGET_WINDOW_FONT(*add_style)) ?
+		       strdup(SGET_WINDOW_FONT(*add_style)) : NULL);
+    }
+    else
+    {
+      SSET_WINDOW_FONT(*merged_style, SGET_WINDOW_FONT(*add_style));
+    }
+  }
   if(add_style->flags.use_start_on_desk)
   /*  RBW - 11/02/1998  */
   {
@@ -351,6 +379,10 @@ static void free_style(window_style *style)
   SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
   SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
   SAFEFREE(SGET_DECOR_NAME(*style));
+#if 0
+  SAFEFREE(SGET_ICON_FONT(*style));
+#endif
+  SAFEFREE(SGET_WINDOW_FONT(*style));
   SAFEFREE(SGET_ICON_NAME(*style));
   SAFEFREE(SGET_MINI_ICON_NAME(*style));
   free_icon_boxes(SGET_ICON_BOXES(*style));
@@ -459,7 +491,7 @@ void ProcessDestroyStyle( XEvent *eventp, Window w, FvwmWindow *tmp_win,
   action = GetNextToken(action, &name);
 
   /* in case there was no argument! */
-  if(name == NULL)
+  if (name == NULL)
     return;
 
   /* Do it */
@@ -541,12 +573,12 @@ int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len)
   int i;
 
   for (i = 0; i < len; i++)
-    {
-      if ( (((char *)flags1)[i] & ((char *)mask)[i]) !=
-	   (((char *)flags2)[i] & ((char *)mask)[i]) )
-	/* flags are not the same, return 1 */
-	return 1;
-    }
+  {
+    if ( (((char *)flags1)[i] & ((char *)mask)[i]) !=
+	 (((char *)flags2)[i] & ((char *)mask)[i]) )
+      /* flags are not the same, return 1 */
+      return 1;
+  }
   return 0;
 }
 
@@ -920,28 +952,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'f':
-        if(StrEquals(token, "FirmBorder"))
+	if (StrEquals(token, "Font"))
 	{
 	  found = True;
-	  SFSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 0);
-	  SMSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
-	  SCSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
+	  SAFEFREE(SGET_WINDOW_FONT(*ptmpstyle));
+	  GetNextToken(rest, &token);
+	  SSET_WINDOW_FONT(*ptmpstyle, token);
+	  SFSET_HAS_WINDOW_FONT(*ptmpstyle, (token != NULL));
+	  SMSET_HAS_WINDOW_FONT(*ptmpstyle, 1);
+	  SCSET_HAS_WINDOW_FONT(*ptmpstyle, 1);
+
 	}
-        else if(StrEquals(token, "FixedPosition"))
-	{
-	  found = True;
-	  SFSET_IS_FIXED(*ptmpstyle, 1);
-	  SMSET_IS_FIXED(*ptmpstyle, 1);
-	  SCSET_IS_FIXED(*ptmpstyle, 1);
-	}
-        else if(StrEquals(token, "FlipTransient"))
-        {
-	  found = True;
-	  SFSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
-	  SMSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
-	  SCSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
-        }
-        else if(StrEquals(token, "FORECOLOR"))
+        else if (StrEquals(token, "FORECOLOR"))
         {
 	  found = True;
 	  GetNextToken(rest, &token);
@@ -979,6 +1001,27 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SFSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 0);
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
+        }
+        else if(StrEquals(token, "FirmBorder"))
+	{
+	  found = True;
+	  SFSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 0);
+	  SMSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
+	  SCSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
+	}
+        else if(StrEquals(token, "FixedPosition"))
+	{
+	  found = True;
+	  SFSET_IS_FIXED(*ptmpstyle, 1);
+	  SMSET_IS_FIXED(*ptmpstyle, 1);
+	  SCSET_IS_FIXED(*ptmpstyle, 1);
+	}
+        else if(StrEquals(token, "FlipTransient"))
+        {
+	  found = True;
+	  SFSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
+	  SMSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
+	  SCSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
         }
         break;
 
@@ -1083,6 +1126,33 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'i':
+        if(StrEquals(token, "ICON"))
+        {
+	  found = True;
+	  GetNextToken(rest, &token);
+
+          SSET_ICON_NAME(*ptmpstyle,token);
+          ptmpstyle->flags.has_icon = (token != NULL);
+          ptmpstyle->flag_mask.has_icon = 1;
+          ptmpstyle->change_mask.has_icon = 1;
+
+	  SFSET_IS_ICON_SUPPRESSED(*ptmpstyle, 0);
+	  SMSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
+	  SCSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
+        }
+#if 0
+	else if (StrEquals(token, "IconFont"))
+	{
+	  found = True;
+	  SAFEFREE(SGET_ICON_FONT(*ptmpstyle));
+	  GetNextToken(rest, &token);
+	  SSET_ICON_FONT(*ptmpstyle, token);
+	  SFSET_HAS_ICON_FONT(*ptmpstyle, (token != NULL));
+	  SMSET_HAS_ICON_FONT(*ptmpstyle, 1);
+	  SCSET_HAS_ICON_FONT(*ptmpstyle, 1);
+
+	}
+#endif
 	if(StrEquals(token, "IconOverride"))
 	{
 	  found = True;
@@ -1293,20 +1363,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             } /* end first word valid */
           } /* end have a place to fill */
         } /* end iconfill */
-        else if(StrEquals(token, "ICON"))
-        {
-	  found = True;
-	  GetNextToken(rest, &token);
-
-          SSET_ICON_NAME(*ptmpstyle,token);
-          ptmpstyle->flags.has_icon = (token != NULL);
-          ptmpstyle->flag_mask.has_icon = 1;
-          ptmpstyle->change_mask.has_icon = 1;
-
-	  SFSET_IS_ICON_SUPPRESSED(*ptmpstyle, 0);
-	  SMSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
-	  SCSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
-        }
         break;
 
       case 'j':
@@ -1900,8 +1956,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  GetNextToken(rest, &token);
 	  SSET_DECOR_NAME(*ptmpstyle, token);
           ptmpstyle->flags.has_decor = (token != NULL);
-          ptmpstyle->flag_mask.has_decor = (token != NULL);
-          ptmpstyle->change_mask.has_decor = (token != NULL);
+          ptmpstyle->flag_mask.has_decor = 1;
+          ptmpstyle->change_mask.has_decor = 1;
         }
 #endif
         else if(StrEquals(token, "UseStyle"))
@@ -2089,6 +2145,24 @@ void check_window_style_change(
     flags->do_redecorate = True;
   }
 
+#if 0
+  /*
+   * has_icon_font
+   */
+  if (SCHAS_ICON_FONT(*ret_style))
+  {
+    flags->do_update_icon_font = True;
+  }
+#endif
+
+  /*
+   * has_window_font
+   */
+  if (SCHAS_WINDOW_FONT(*ret_style))
+  {
+    flags->do_update_window_font = True;
+  }
+
   /*
    * has_no_icon_title
    * is_icon_suppressed
@@ -2184,25 +2258,31 @@ void check_window_style_change(
   }
 
   /*
+   * has_decor
+   */
+  if (ret_style->change_mask.has_decor ||
+      ret_style->change_mask.has_no_title)
+  {
+    flags->do_redecorate = True;
+    flags->do_update_window_font_height = True;
+  }
+
+  /*
    * do_decorate_transient
    * has_border_width
-   * has_decor
    * has_handle_width
    * has_mwm_decor
    * has_mwm_functions
    * has_no_border
-   * has_no_title
    * has_ol_decor
    * is_button_disabled
    */
   if (ret_style->change_mask.do_decorate_transient ||
       ret_style->change_mask.has_border_width ||
-      ret_style->change_mask.has_decor ||
       ret_style->change_mask.has_handle_width ||
       ret_style->change_mask.has_mwm_decor ||
       ret_style->change_mask.has_mwm_functions ||
       ret_style->change_mask.has_no_border ||
-      ret_style->change_mask.has_no_title ||
       ret_style->change_mask.has_ol_decor ||
       ret_style->change_mask.is_button_disabled)
   {

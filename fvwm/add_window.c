@@ -225,6 +225,119 @@ void setup_wm_hints(FvwmWindow *tmp_win)
   tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
 }
 
+static void destroy_window_font(FvwmWindow *tmp_win)
+{
+  if (HAS_WINDOW_FONT(tmp_win))
+  {
+#ifdef I18N_MB
+    XFreeFontSet(dpy, decor->WindowFont.fontset);
+#else
+    XFreeFont(dpy, tmp_win->title_font.font);
+#endif
+  }
+}
+
+void setup_window_font(
+  FvwmWindow *tmp_win, window_style *pstyle, Bool do_load, Bool do_reload)
+{
+  Bool has_font = SFHAS_WINDOW_FONT(*pstyle);
+  int height;
+  int old_height = 0;
+
+  if (!do_load)
+  {
+    old_height = tmp_win->title_g.height;
+  }
+
+  if (has_font)
+  {
+    if (do_reload)
+    {
+      destroy_window_font(tmp_win);
+    }
+
+    if (!SGET_WINDOW_FONT(*pstyle))
+    {
+      has_font = False;
+    }
+    else if (do_load || do_reload)
+    {
+#ifdef I18N_MB
+      XFontSet newfontset;
+
+      if ((newfontset = GetFontSetOrFixed(dpy, SGET_WINDOW_FONT(*pstyle))))
+      {
+	XFontSetExtents *fset_extents;
+	XFontStruct **fs_list;
+	char **ml;
+
+	tmp_win->window_font.fontset = newfontset;
+	/* backward compatiblity setup */
+	XFontsOfFontSet(newfontset, &fs_list, &ml);
+	tmp_win->window_font.font = fs_list[0];
+	fset_extents = XExtentsOfFontSet(newfontset);
+	tmp_win->window_font.height = fset_extents->max_logical_extent.height;
+      }
+#else
+      XFontStruct *newfont;
+
+      if ((newfont = GetFontOrFixed(dpy, SGET_WINDOW_FONT(*pstyle))))
+      {
+	SET_HAS_WINDOW_FONT(tmp_win, 1);
+	tmp_win->title_font.font = newfont;
+	tmp_win->title_font.height =
+	  tmp_win->title_font.font->ascent +
+	  tmp_win->title_font.font->descent;
+      }
+#endif
+      else
+      {
+	fvwm_msg(
+	  ERR, "LoadWindowFont", "Couldn't load font '%s' or 'fixed'\n",
+	  SGET_WINDOW_FONT(*pstyle));
+	has_font = False;
+      }
+      tmp_win->title_font.y = tmp_win->title_font.font->ascent;
+    } /* if (do_reload) */
+  } /* if (SFHAS_WINDOW_FONT(*pstyle)) */
+  if (!has_font)
+  {
+    /* no explicit font, use default font instead */
+    tmp_win->title_font = Scr.DefaultFont;
+  }
+  SET_HAS_WINDOW_FONT(tmp_win, has_font);
+
+  /* adjust font offset according to height specified in title style */
+  if (tmp_win->decor->title_height)
+  {
+    height = tmp_win->decor->title_height;
+    tmp_win->title_font.y =
+      tmp_win->title_font.font->ascent +
+      (height - (tmp_win->title_font.height + EXTRA_TITLE_FONT_HEIGHT)) / 2;
+    if (tmp_win->title_font.y < tmp_win->title_font.font->ascent)
+      tmp_win->title_font.y = tmp_win->title_font.font->ascent;
+    tmp_win->title_g.height = height;
+    tmp_win->corner_width =
+      height + tmp_win->boundary_width;
+  }
+  else
+  {
+    height = tmp_win->title_font.height;
+    tmp_win->title_font.y = tmp_win->title_font.font->ascent;
+    tmp_win->corner_width =
+      height + EXTRA_TITLE_FONT_HEIGHT + tmp_win->boundary_width;
+    tmp_win->title_g.height =
+      tmp_win->title_font.height + EXTRA_TITLE_FONT_HEIGHT;
+  }
+
+  if (!HAS_TITLE(tmp_win))
+  {
+    tmp_win->title_g.height = 0;
+  }
+
+  return;
+}
+
 void setup_style_and_decor(
   FvwmWindow *tmp_win, window_style *pstyle, short *buttons)
 {
@@ -256,7 +369,7 @@ void setup_style_and_decor(
 
     for (; decor; decor = decor->next)
     {
-      if (strcasecmp(SGET_DECOR_NAME(*pstyle), decor->tag) == 0)
+      if (StrEquals(SGET_DECOR_NAME(*pstyle), decor->tag))
       {
 	tmp_win->decor = decor;
 	break;
@@ -266,8 +379,6 @@ void setup_style_and_decor(
   if (tmp_win->decor == NULL)
     tmp_win->decor = &Scr.DefaultDecor;
 #endif
-
-  tmp_win->title_g.height = GetDecor(tmp_win, TitleHeight);
 
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
@@ -350,7 +461,7 @@ void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle)
     tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height, 0, 0, False);
 }
 
-int setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
+Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
 {
   int client_argc;
   char **client_argv = NULL;
@@ -1065,10 +1176,26 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /****** safety check ******/
   if(!PPosOverride &&
      XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
-		  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
+                  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
   {
     free((char *)tmp_win);
     fvwm_msg(ERR,"AddWindow","Can't get geometry");
+    return NULL;
+  }
+
+  /****** Make sure the client window still exists.  We don't want to leave an
+   * orphan frame window if it doesn't.  Since we now have the server
+   * grabbed, the window can't disappear later without having been
+   * reparented, so we'll get a DestroyNotify for it.  We won't have
+   * gotten one for anything up to here, however. ******/
+  MyXGrabServer(dpy);
+  if(XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
+                  &JunkWidth, &JunkHeight,
+                  &JunkBW,  &JunkDepth) == 0)
+  {
+    free((char *)tmp_win);
+    MyXUngrabServer(dpy);
+    fvwm_msg(ERR,"AddWindow","Can't get geometry a second time");
     return NULL;
   }
 
@@ -1086,24 +1213,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   sflags = SGET_FLAGS_POINTER(style);
   setup_style_and_decor(tmp_win, &style, &buttons);
   memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(sflags->common),
-	 sizeof(common_flags_type));
+         sizeof(common_flags_type));
 
-  /****** Make sure the client window still exists.  We don't want to leave an
-   * orphan frame window if it doesn't.  Since we now have the server
-   * grabbed, the window can't disappear later without having been
-   * reparented, so we'll get a DestroyNotify for it.  We won't have
-   * gotten one for anything up to here, however. ******/
-  MyXGrabServer(dpy);
-  if(XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
-		  &JunkWidth, &JunkHeight,
-		  &JunkBW,  &JunkDepth) == 0)
-  {
-    free((char *)tmp_win);
-    MyXUngrabServer(dpy);
-/*!!! this is a memory leak!!!*/
-    fvwm_msg(ERR,"AddWindow","Can't get geometry a second time");
-    return NULL;
-  }
+  /****** title font ******/
+  setup_window_font(tmp_win, &style, True, False);
 
   /****** state setup ******/
   SET_TRANSIENT(
@@ -1199,23 +1312,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     setup_frame_size_limits(tmp_win, &style);
 
     /****** window placement ******/
-    switch (setup_window_placement(tmp_win, &style))
-    {
-    case 0:
-      /* failed */
-/*!!! this is a memory leak!!!*/
-      fvwm_msg(ERR,"AddWindow","setup_window_placement failed");
-      return NULL;
-    case 1:
-      /* ok */
-      do_resize_too = False;
-      break;
-    case 2:
-    default:
-      /* resize window too */
-      do_resize_too = True;
-    break;
-    }
+    do_resize_too = setup_window_placement(tmp_win, &style);
 
     /* set up geometry */
     tmp_win->frame_g.x = tmp_win->attr.x;
@@ -1816,6 +1913,10 @@ void destroy_window(FvwmWindow *tmp_win)
     XFree ((char *)tmp_win->class.res_class);
   if(tmp_win->mwm_hints)
     XFree((char *)tmp_win->mwm_hints);
+
+  /****** free fonts ******/
+
+  destroy_window_font(tmp_win);
 
   /****** free wmhints ******/
 

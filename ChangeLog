@@ -1,3 +1,55 @@
+2000-01-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c:
+	* fvwm/fvwm.c:
+	* fvwm/move_resize.c:
+	* fvwm/builtins.c:
+	* fvwm/screen.h (ScreenInfo):
+	renamed StdFont to DefaultFont
+
+	* fvwm/placement.c:
+	* fvwm/decorations.c:
+	* fvwm/borders.c:
+	* fvwm/update.c:
+	* fvwm/style.c:
+	* fvwm/add_window.c:
+	* fvwm/style.c (ProcessNewStyle):
+	(free_style):
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	* fvwm/add_window.c (setup_window_font):
+	(setup_style_and_decor):
+	* fvwm/fvwm.h (FvwmWindow):
+	new Style 'Font' replaces old WindowFont command
+
+	* fvwm/style.c (ProcessNewStyle):
+	fixed 'UseDecor' style flag
+
+	* fvwm/windowlist.c:
+	reactivated WindowList menu style
+	* fvwm/move_resize.c:
+	* fvwm/module_interface.c (send_list_func):
+	* fvwm/icons.c:
+	* fvwm/fvwm.c (usage):
+	(Done):
+	* fvwm/events.c:
+	* fvwm/builtins.c:
+	* fvwm/borders.c (get_common_decorations):
+	removed some '#if 0's with the old HilightColor/HilightColorset code et
+	al.
+
+	* fvwm/builtins.c (ApplyWindowFont):
+	* fvwm/borders.c (SetupFrame):
+	fixed updating the window font
+
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/add_window.c (AddWindow):
+	(setup_window_placement):
+	signature of PlaceWindow() changed to return True or False only
+
+	* fvwm/add_window.c (AddWindow):
+	fixed memory leak when window disappears before AddWindow() completes
+
 1999-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: changed version to 2.3.12

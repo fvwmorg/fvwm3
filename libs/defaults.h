@@ -35,6 +35,11 @@
 #define DEFAULT_MENU_CLICKTIME           (3*DEFAULT_CLICKTIME)
 #define DEFAULT_MOVE_THRESHOLD            3
 
+/* fonts */
+#define EXTRA_TITLE_FONT_HEIGHT           3
+#define MIN_FONT_HEIGHT                   (EXTRA_TITLE_FONT_HEIGHT + 2)
+#define MAX_FONT_HEIGHT                 256
+
 /* window geometry */
 #define DEFAULT_MIN_MAX_WINDOW_WIDTH    100
 #define DEFAULT_MIN_MAX_WINDOW_HEIGHT   100

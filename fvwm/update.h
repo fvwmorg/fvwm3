@@ -18,23 +18,25 @@
 
 typedef struct
 {
-  unsigned do_redraw_decoration : 1;
   unsigned do_redecorate : 1;
-  unsigned do_update_icon : 1;
-  unsigned do_setup_focus_policy : 1;
+  unsigned do_redraw_decoration : 1;
   unsigned do_resize_window : 1;
+  unsigned do_setup_focus_policy : 1;
   unsigned do_setup_frame : 1;
   unsigned do_update_frame_attributes : 1;
-  unsigned do_update_window_color : 1;
-  unsigned do_update_window_color_hi : 1;
-  unsigned do_update_mini_icon : 1;
+  unsigned do_update_icon : 1;
   unsigned do_update_icon_boxes : 1;
+  unsigned do_update_icon_font : 1;
+  unsigned do_update_mini_icon : 1;
   unsigned do_update_stick : 1;
   unsigned do_update_stick_icon : 1;
-  unsigned do_update_icon_font : 1;
+  unsigned do_update_window_color : 1;
+  unsigned do_update_window_color_hi : 1;
   unsigned do_update_window_font : 1;
+  unsigned do_update_window_font_height : 1;
 } update_win;
 
+void apply_decor_change(FvwmWindow *tmp_win);
 void flush_window_updates(void);
 
 #endif /* _UPDATE_ */

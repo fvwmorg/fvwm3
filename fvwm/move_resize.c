@@ -427,9 +427,6 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
   if (tmp_win == NULL)
     return;
 
-#if 0
-fprintf(stderr,"move window '%s'\n", tmp_win->name);
-#endif
   if (IS_FIXED(tmp_win))
     return;
 
@@ -1232,24 +1229,24 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
     /* just clear indside the relief lines to reduce flicker */
     XClearArea(dpy,Scr.SizeWindow,2,2,
 	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
-	       Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
+	       Scr.DefaultFont.height + SIZE_VINDENT*2 - 3,False);
   }
 
   if(Pdepth >= 2)
     RelieveRectangle(dpy,Scr.SizeWindow,0,0,
                      Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
-                     Scr.StdFont.height + SIZE_VINDENT*2 - 1,
+                     Scr.DefaultFont.height + SIZE_VINDENT*2 - 1,
                      Scr.StdReliefGC,
                      Scr.StdShadowGC, 2);
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
-	    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
+	    - XTextWidth(Scr.DefaultFont.font,str,strlen(str)))/2;
 #ifdef I18N_MB
-  XmbDrawString (dpy, Scr.SizeWindow, Scr.StdFont.fontset, Scr.StdGC,
+  XmbDrawString (dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
 #else
   XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
 #endif
 	       offset,
-	       Scr.StdFont.font->ascent + SIZE_VINDENT,
+	       Scr.DefaultFont.font->ascent + SIZE_VINDENT,
 	       str, strlen(str));
 }
 
@@ -1554,9 +1551,6 @@ void resize_window(F_CMD_ARGS)
   if (tmp_win == NULL)
     return;
 
-#if 0
-fprintf(stderr,"resize window '%s'\n", tmp_win->name);
-#endif
   ResizeWindow = tmp_win->frame;
   XQueryPointer( dpy, ResizeWindow, &JunkRoot, &JunkChild,
 		 &JunkX, &JunkY, &px, &py, &button_mask);
@@ -2191,23 +2185,23 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
     /* just clear indside the relief lines to reduce flicker */
     XClearArea(dpy,Scr.SizeWindow,2,2,
 	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
-	       Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
+	       Scr.DefaultFont.height + SIZE_VINDENT*2 - 3,False);
   }
 
   if(Pdepth >= 2)
     RelieveRectangle(dpy,Scr.SizeWindow,0,0,
                      Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
-                     Scr.StdFont.height + SIZE_VINDENT*2 - 1,
+                     Scr.DefaultFont.height + SIZE_VINDENT*2 - 1,
                      Scr.StdReliefGC,
                      Scr.StdShadowGC, 2);
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
-    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
+    - XTextWidth(Scr.DefaultFont.font,str,strlen(str)))/2;
 #ifdef I18N_MB
-  XmbDrawString (dpy, Scr.SizeWindow, Scr.StdFont.fontset, Scr.StdGC,
-		 offset, Scr.StdFont.font->ascent + SIZE_VINDENT, str, 13);
+  XmbDrawString (dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
+		 offset, Scr.DefaultFont.font->ascent + SIZE_VINDENT, str, 13);
 #else
   XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
-	       offset, Scr.StdFont.font->ascent + SIZE_VINDENT, str, 13);
+	       offset, Scr.DefaultFont.font->ascent + SIZE_VINDENT, str, 13);
 #endif
 }
 
@@ -2564,9 +2558,6 @@ void Maximize(F_CMD_ARGS)
 
   if (IS_MAXIMIZED(tmp_win))
   {
-#if 0
-fprintf(stderr,"normalize window '%s'\n", tmp_win->name);
-#endif
     SET_MAXIMIZED(tmp_win, 0);
     get_relative_geometry(&tmp_win->frame_g, &tmp_win->normal_g);
     if (IS_SHADED(tmp_win))
@@ -2578,9 +2569,6 @@ fprintf(stderr,"normalize window '%s'\n", tmp_win->name);
   }
   else /* maximize */
   {
-#if 0
-fprintf(stderr,"maximize window '%s'\n", tmp_win->name);
-#endif
     /* find the new page and geometry */
     new_g.x = tmp_win->frame_g.x;
     new_g.y = tmp_win->frame_g.y;
@@ -2660,9 +2648,6 @@ void handle_stick(F_CMD_ARGS, int toggle)
 
   if(IS_STICKY(tmp_win))
   {
-#if 0
-fprintf(stderr,"unstick window '%s'\n", tmp_win->name);
-#endif
     SET_STICKY(tmp_win, 0);
     tmp_win->Desk = Scr.CurrentDesk;
     GNOME_SetDeskCount();
@@ -2670,9 +2655,6 @@ fprintf(stderr,"unstick window '%s'\n", tmp_win->name);
   }
   else
   {
-#if 0
-fprintf(stderr,"stick window '%s'\n", tmp_win->name);
-#endif
     if (tmp_win->Desk != Scr.CurrentDesk)
       do_move_window_to_desk(tmp_win, Scr.CurrentDesk);
     SET_STICKY(tmp_win, 1);

@@ -61,6 +61,10 @@
 static void apply_window_updates(
   FvwmWindow *t, update_win *flags, window_style *pstyle, FvwmWindow *focus_w)
 {
+  FvwmWindow old_t;
+  short buttons;
+  Bool is_style_initialised = False;
+
   /*
    * is_sticky
    * is_icon_sticky
@@ -83,18 +87,32 @@ static void apply_window_updates(
     change_mini_icon(t, pstyle);
   }
 #endif
+
+  if (flags->do_update_window_font || flags->do_update_window_font_height)
+  {
+    /* copy window structure because we still need some old values */
+    memcpy(&old_t, t, sizeof(FvwmWindow));
+    /* determine level of decoration */
+    setup_style_and_decor(t, pstyle, &buttons);
+    is_style_initialised = True;
+
+    setup_window_font(
+      t, pstyle, False, (flags->do_update_window_font && HAS_WINDOW_FONT(t)));
+    flags->do_redecorate = True;
+  }
   if (flags->do_redecorate)
   {
-    short buttons;
-    FvwmWindow old_t;
     rectangle naked_g;
     rectangle *new_g;
 
-    /* copy window structure because we still need some old values */
-    memcpy(&old_t, t, sizeof(FvwmWindow));
-
-    /* determine level of decoration */
-    setup_style_and_decor(t, pstyle, &buttons);
+    if (!is_style_initialised)
+    {
+      /* copy window structure because we still need some old values */
+      memcpy(&old_t, t, sizeof(FvwmWindow));
+      /* determine level of decoration */
+      setup_style_and_decor(t, pstyle, &buttons);
+      is_style_initialised = True;
+    }
 
     /* redecorate */
     change_auxiliary_windows(t, buttons);
@@ -204,6 +222,20 @@ static void apply_window_updates(
   return;
 }
 
+/* similar to the flush_window_updates() function, but does only the updates
+ * for a single window whose decor has been changed. */
+void apply_decor_change(FvwmWindow *tmp_win)
+{
+  window_style style;
+  update_win flags;
+
+  lookup_style(tmp_win, &style);
+  memset(&flags, 0, sizeof(flags));
+  flags.do_redecorate = True;
+  flags.do_update_window_font_height = True;
+  apply_window_updates(tmp_win, &flags, &style, Scr.Focus);
+}
+
 /* Check and apply new style to each window if the style has changed. */
 void flush_window_updates(void)
 {
@@ -231,7 +263,8 @@ void flush_window_updates(void)
   focus_w = (focus_fw) ? focus_fw->w : Scr.NoFocusWin;
   SetFocus(Scr.NoFocusWin, NULL, 1);
 
-  if (Scr.flags.has_default_font_changed || Scr.flags.has_default_color_changed)
+  /* Apply the new default font and colours first */
+  if (Scr.flags.has_default_color_changed || Scr.flags.has_default_font_changed)
     ApplyDefaultFontAndColors();
 
   /* update styles for all windows */
@@ -240,26 +273,29 @@ void flush_window_updates(void)
     check_window_style_change(t, &flags, &style);
     if (Scr.flags.has_nr_buttons_changed)
       flags.do_redecorate = True;
-    flags.do_update_window_font =
-      (Scr.flags.has_window_font) ?
-      t->decor->flags.has_font_changed : Scr.flags.has_default_font_changed;
-    flags.do_update_icon_font =
-      (Scr.flags.has_icon_font) ?
-      Scr.flags.has_icon_font_changed : Scr.flags.has_default_font_changed;
     /*!!!this is not optimised for minimal redrawing yet*/
     if (t->decor->flags.has_changed)
     {
-      flags.do_redecorate = 1;
+      flags.do_redecorate = True;
+      flags.do_update_window_font_height = True;
     }
-    if (t->decor->flags.has_font_changed)
+#if 0
+    if (Scr.flags.has_default_font_changed && !HAS_ICON_FONT(t))
     {
+      flags->do_update_icon_font = True;
+    }
+#endif
+    if (Scr.flags.has_default_font_changed && !HAS_WINDOW_FONT(t))
+    {
+      flags.do_update_window_font = True;
+    }
+    if (t->decor->flags.has_title_height_changed)
+    {
+      flags.do_update_window_font_height = True;
     }
     /* now apply the changes */
     apply_window_updates(t, &flags, &style, focus_fw);
   }
-
-  if (Scr.flags.has_default_font_changed || Scr.flags.has_default_color_changed)
-    ApplyDefaultFontAndColors();
 
   /* restore the focus; also handles the case that the previously focused
    * window is now NeverFocus */

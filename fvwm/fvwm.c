@@ -664,7 +664,7 @@ int main(int argc, char **argv)
   }
 
   /* create the move/resize feedback window */
-  Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
+  Scr.SizeStringWidth = XTextWidth (Scr.DefaultFont.font,
                                     " +8888 x +8888 ", 15);
   attributes.background_pixel = Scr.StdBack;
   attributes.colormap = Pcmap;
@@ -679,12 +679,12 @@ int main(int argc, char **argv)
   else
   {
     x = Scr.MyDisplayWidth/2 - (Scr.SizeStringWidth + SIZE_HINDENT*2)/2;
-    y = Scr.MyDisplayHeight/2 - (Scr.StdFont.height + SIZE_VINDENT*2)/2;
+    y = Scr.MyDisplayHeight/2 - (Scr.DefaultFont.height + SIZE_VINDENT*2)/2;
   }
   Scr.SizeWindow = XCreateWindow (dpy, Scr.Root, x, y,
 				  (unsigned int)(Scr.SizeStringWidth +
 						 SIZE_HINDENT*2),
-				  (unsigned int) (Scr.StdFont.height +
+				  (unsigned int) (Scr.DefaultFont.height +
 						  SIZE_VINDENT*2),
 				  (unsigned int) 0, Pdepth,
 				  InputOutput, Pvisual,
@@ -1514,7 +1514,7 @@ static void InitVariables(void)
   Scr.PreviousFocus = NULL;
   Scr.Ungrabbed = NULL;
 
-  Scr.StdFont.font = NULL;
+  Scr.DefaultFont.font = NULL;
   Scr.IconFont.font = NULL;
 
   Scr.VxMax = 2*Scr.MyDisplayWidth;
@@ -1723,10 +1723,8 @@ void Done(int restart, char *command)
     if (command)
     {
 #define MAX_ARG_SIZE 25
-#if 0
       /* This is not allowed by ANSI C! Must use a macro. */
-      const int MAX_ARG_SIZE = 25;
-#endif
+      /* const int MAX_ARG_SIZE = 25; */
       char *my_argv[MAX_ARG_SIZE];
       const char *errorMsg;
       int n = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);
@@ -1840,14 +1838,9 @@ int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 
 static void usage(void)
 {
-#if 0
-  fvwm_msg(INFO,"usage","\nFvwm Version %s Usage:\n\n",VERSION);
-  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n",g_argv[0]);
-#else
   fprintf(stderr,"\nFvwm Version %s Usage:\n\n",VERSION);
   fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
-#endif
-  exit( 1 );
+  exit(1);
 }
 
 /****************************************************************************

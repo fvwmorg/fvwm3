@@ -670,7 +670,7 @@ parameters.  They can be used wherever a module expects a
 color name.  Since the FvwmTheme module is not running when
 fvwm first passes through its configuration file, you may not
 get the desired results if you use this in commands
-like 'HilightColor $[fg.cs0] $[bg.cs0]'.
+like 'Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]'.
 .in -.3i
 .in -.5i
 
@@ -1961,7 +1961,7 @@ specified. To reset the default font to the built in default, omit
 the argument. The default font is used for menus, window titles,
 icon titles as well as the geometry feedback windows during a move
 or resize operation. To override the default font in a specific
-context, use the \fIWindowFont\fP, \fIIconFont\fP or \fIMenuStyle\fP
+context, use the \fIStyle * Font\fP, \fIIconFont\fP or \fIMenuStyle\fP
 commands.
 
 
@@ -2122,9 +2122,11 @@ This command is obsolete. Please use \fIImagePath\fP instead.
 
 .TP
 .B "WindowFont" "[\fIfontname\fP]"
-Makes fvwm use font \fIfontname\fP instead of "fixed" for window
-title-bars. To reset this font to the default font (see \fIDefaultFont\fP)
-you may omit \fIfontname\fP.
+This command is obsoleted by the style option 'Font'.  Please use
+.EX
+Style * Font fontname
+.EE
+instead.
 
 
 .TP
@@ -3045,9 +3047,10 @@ name given to the set of commands which affect button styles,
 title-bar styles, border styles and window fonts.  If
 \fIdecor\fP does not exist it is created; otherwise the existing
 \fIdecor\fP is modified.
-Note: Earlier versions allowed to use the HilightColor and
-HilightColorset commands in decors.  This is no longer possible.
-Please use the \fIStyle\fP command with the Hilight... options.
+Note: Earlier versions allowed to use the HilightColor,
+HilightColorset and WindowFont commands in decors.  This is no
+longer possible.  Please use the \fIStyle\fP command with the
+Hilight... and Font options.
 
 Created decors start out exactly like the default fvwm decor without
 any style definitions.  A given decor may be applied to a set of
@@ -3056,10 +3059,9 @@ existing decor will affect windows which are currently assigned to it.
 
 AddToDecor is similar in usage to the AddToMenu and AddToFunc
 commands, except that menus and functions are replaced by ButtonStyle,
-AddButtonStyle, TitleStyle, AddTitleStyle, BorderStyle, HilightColor,
-HilightColorset and WindowFont commands.  Decors created with AddToDecor
-can be manipulated with ChangeDecor, DestroyDecor, UpdateDecor, and the
-UseDecor Style option.
+AddButtonStyle, TitleStyle, AddTitleStyle and BorderStyle commands.
+Decors created with AddToDecor can be manipulated with ChangeDecor,
+DestroyDecor, UpdateDecor, and the UseDecor Style option.
 
 The following example creates a decor 'FlatDecor' and style
 'FlatStyle'.  They are distinct entities:
@@ -3069,7 +3071,6 @@ AddToDecor FlatDecor
    Inactive (-- flat)
  + TitleStyle -- flat
  + BorderStyle -- HiddenHandles NoInset
- + HilightColor white navy
  + Style FlatStyle UseDecor FlatDecor, \\
      Color white/grey40,HandleWidth 4
 
@@ -3462,6 +3463,7 @@ Sticky / Slippery,
 StartIconic / StartNormal,
 Color, ForeColor, BackColor, Colorset,
 HilightFore, HilightBack, HilightColorset,
+Font,
 StartsOnDesk / StartsOnPage / StartsAnyWhere,
 ActivePlacementHonorsStartsOnPage / ActivePlacementIgnoresStartsOnPage,
 CaptureHonorsStartsOnPage / CaptureIgnoresStartsOnPage,
@@ -3836,8 +3838,13 @@ other features of a colorset are unsupported yet.
 The \fIHilightFore\fP, \fIHilightBack\fP and \fIHilightColorset\fP
 styles work exactly like \fIForeColor\fP, \fIBackColor\fP and
 \fIColorset\fP but are used only if the window has the focus.
-Note that these styles replace the old commands HilightColor
-and HilightColorset.
+These styles replace the old commands HilightColor and HilightColorset.
+
+The \fIFont\fP option takes the name of a font as its sole argument.
+This font is used in the window title.  By default the font given in
+the \fIDefaultFont\fP command is used.  To revert back to the default,
+use the style without the name argument.  This style replaces the
+older WindowFont command.
 
 \fIUseDecor\fP accepts one argument: the name of a decor created with
 AddToDecor.  If UseDecor is not specified, the "Default" decor is
@@ -4005,13 +4012,12 @@ styles starting with "Application".
 
 
 .TP
-.B "TitleStyle" "[\fIjustification\fP] [\fIheight num\fP]"
+.B "TitleStyle" "[\fIjustification\fP] [\fIheight\fP [\fInum\fP]]"
 Sets attributes for the title bar.  Justifications can be "Centered",
 "RightJustified," or "LeftJustified."  \fIheight\fP sets the title
 bar's height to an amount in pixels.  Defaults are Centered and
-WindowFont height.  The \fIheight\fP parameter must be set after a
-WindowFont command since WindowFont resets the height to the default
-for the specified font.  Example:
+window's font height.  To reset the font height to the default value,
+omit the \fInum\fP argument after the 'height' keyword.  Example:
 .EX
 TitleStyle LeftJustified Height 24
 .EE

@@ -213,24 +213,9 @@ typedef struct FvwmDecor
 #ifdef USEDECOR
   char *tag;			/* general style tag */
 #endif
-#if 0
-  ColorPair HiColors;		/* standard fore/back colors */
-  int HiColorset;		/* standard fore/back colorset */
-  ColorPair HiRelief;
-  GC HiReliefGC;		/* GC for highlighted window relief */
-  GC HiShadowGC;		/* GC for highlighted window shadow */
-#endif
-
-  int TitleHeight;            /* height of the title bar window */
-  MyFont WindowFont;          /* font structure for window titles */
-
+  int title_height;           /* explicitly specified title bar height */
   /* titlebar buttons */
-#if 0
-  TitleButton left_buttons[5];
-  TitleButton right_buttons[5];
-#else
   TitleButton buttons[NUMBER_OF_BUTTONS];
-#endif
   TitleButton titlebar;
   struct BorderStyle
   {
@@ -242,7 +227,7 @@ typedef struct FvwmDecor
   struct
   {
     unsigned has_changed : 1;
-    unsigned has_font_changed : 1;
+    unsigned has_title_height_changed : 1;
   } flags;
 } FvwmDecor;
 
@@ -290,7 +275,7 @@ typedef struct ScreenInfo
 
   FvwmFunction *functions;
 
-  MyFont StdFont;     	/* font structure */
+  MyFont DefaultFont;     	/* font structure */
   MyFont IconFont;      /* for icon labels */
 
   GC TransMaskGC;               /* GC for transparency masks */
@@ -394,7 +379,6 @@ typedef struct ScreenInfo
   {
     Bool do_save_under : 1;
     unsigned do_need_window_update : 1;
-    unsigned has_icon_font_changed : 1;
     unsigned has_default_font_changed : 1;
     unsigned has_default_color_changed : 1;
     unsigned has_icon_font : 1;

@@ -8,23 +8,23 @@ EdgeScroll 100 100
 ClickTime 750
 
 # make sure these fonts exist on your system:
-WindowFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
 IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 
-HilightColor black palevioletred
 DeskTopSize 2x2
 MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
 
 ColormapFocus FollowsMouse
 
 # default Styles:
-Style "*"           BorderWidth 7, HandleWidth 7
-Style "*"           Icon unknown1.xpm, Color lightgrey/dimgrey
-Style "*"           MWMFunctions, MWMDecor, HintOverride
-Style "*"           DecorateTransient, NoPPosition
-Style "*"           IconBox 0 -10 -280 -1
-Style "*"           FocusFollowsMouse
-Style "*"           RandomPlacement, SmartPlacement
+Style *           Font -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+Style *           HilightFore black, HilightBack palevioletred
+Style *           BorderWidth 7, HandleWidth 7
+Style *           Icon unknown1.xpm, Color lightgrey/dimgrey
+Style *           MWMFunctions, MWMDecor, HintOverride
+Style *           DecorateTransient, NoPPosition
+Style *           IconBox 0 -10 -280 -1
+Style *           FocusFollowsMouse
+Style *           RandomPlacement, SmartPlacement
 
 # Styles for various Fvwm modules:
 Style "Fvwm*"       NoTitle,  Sticky, WindowListSkip
@@ -213,57 +213,57 @@ AddToMenu Quit-Verify 	"Really Quit Fvwm?" Title
 
 ######################## Sample Functions ##########################
 
-AddToFunc MailFunction	   "I" Next [$0] Iconify -1
-+		           "I" Next [$0] Focus
-+			   "I" None [$0] Exec $0 $1
+AddToFunc MailFunction	   I Next [$0] Iconify -1
++		           I Next [$0] Focus
++			   I None [$0] Exec $0 $1
 
-AddToFunc Move-or-Raise		"I" Raise
-+				"M" Move
-+  				"D" Lower
+AddToFunc Move-or-Raise		I Raise
++				M Move
++  				D Lower
 
-AddToFunc Move-or-Raise2	"M" Raise
-+				"M" Move
-+  				"D" Lower
+AddToFunc Move-or-Raise2	M Raise
++				M Move
++  				D Lower
 
-AddToFunc Maximize-Func		"M" Maximize	 0 100
-+				"C" Maximize	 0 80
-+				"D" Maximize	 100 100
+AddToFunc Maximize-Func		M Maximize	 0 100
++				C Maximize	 0 80
++				D Maximize	 100 100
 
-AddToFunc Move-or-Iconify	"I" Raise
-+				"M" Move
-+				"D" Iconify
+AddToFunc Move-or-Iconify	I Raise
++				M Move
++				D Iconify
 
-AddToFunc Resize-or-Raise	"I" Raise
-+				"M" Resize
-+				"D" Lower
+AddToFunc Resize-or-Raise	I Raise
++				M Resize
++				D Lower
 
-AddToFunc Resize-or-Raise2	"M" Raise
-+				"M" Resize
-+				"D" Lower
+AddToFunc Resize-or-Raise2	M Raise
++				M Resize
++				D Lower
 
-AddToFunc PrintFunction		"I" Raise
-+				"I" Exec xdpr -id $w
+AddToFunc PrintFunction		I Raise
++				I Exec xdpr -id $w
 
-AddToFunc PrintReverseFunction  "I" Raise
-+                               "I" Exec xdpr 1/2 -h -rv -id $w
+AddToFunc PrintReverseFunction  I Raise
++                               I Exec xdpr 1/2 -h -rv -id $w
 
-AddToFunc Iconify-and-Raise     "I" Iconify
-+                               "I" Raise
+AddToFunc Iconify-and-Raise     I Iconify
++                               I Raise
 
 # RLOGIN machine fg bg
-AddToFunc RLOGIN "I" Exec xterm -fg $1 -bg $2 -e rlogin $0 -8
+AddToFunc RLOGIN I Exec xterm -fg $1 -bg $2 -e rlogin $0 -8
 
 # TELNET machine fg bg
-AddToFunc TELNET "I" Exec xterm -fg $1 -bg $2 -e telnet $0
+AddToFunc TELNET I Exec xterm -fg $1 -bg $2 -e telnet $0
 
-AddToFunc FocusAndWarp "I" Focus
-+                      "I" WarpToWindow 2p 2p
+AddToFunc FocusAndWarp I Focus
++                      I WarpToWindow 2p 2p
 
-AddToFunc DeiconifyFocusAndWarp "I" Iconify -1
-+                               "I" FocusAndWarp
+AddToFunc DeiconifyFocusAndWarp I Iconify -1
++                               I FocusAndWarp
 
-AddToFunc ChangeDefaultFocus "I" Style "*" $0
-+                            "I" Recapture
+AddToFunc ChangeDefaultFocus I Style * $0
++                            I Recapture
 
 ################## FvwmButtons button-bar ################################
 *FvwmButtonsGeometry 520x100-1-1
@@ -349,7 +349,7 @@ AddToFunc ChangeDefaultFocus "I" Style "*" $0
 ############################################################
 # Note that icons are shown in the module
 #    only if NoIcon commnand is applied.
-#Style     "*"  NoIcon
+#Style     *  NoIcon
 
 ############################################################
 *FvwmIconBoxIconBack    #cfcfcf

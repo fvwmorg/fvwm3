@@ -1309,23 +1309,13 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                    Scr.Hilite->w,
                    Scr.Hilite->frame,
 		   (unsigned long)True,
-#if 0
-		   Scr.DefaultDecor.HiColors.fore,
-		   Scr.DefaultDecor.HiColors.back);
-#else
 		   Scr.Hilite->hicolors.fore,
 		   Scr.Hilite->hicolors.back);
-#endif
       else
 	SendPacket(*Module, M_FOCUS_CHANGE, 5,
                    0, 0, (unsigned long)True,
-#if 0
-                   Scr.DefaultDecor.HiColors.fore,
-                   Scr.DefaultDecor.HiColors.back);
-#else
                    GetColor("White"),
                    GetColor("Black"));
-#endif
       if (Scr.DefaultIcon != NULL)
 	SendName(*Module, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
 
@@ -1373,25 +1363,15 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
       if(Scr.Hilite == NULL)
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
                           0, 0, (unsigned long)True,
-#if 0
-                          Scr.DefaultDecor.HiColors.fore,
-                          Scr.DefaultDecor.HiColors.back);
-#else
 			  GetColor("White"),
 			  GetColor("Black"));
-#endif
       else
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
                           Scr.Hilite->w,
                           Scr.Hilite->frame,
                           (unsigned long)True,
-#if 0
-                          Scr.DefaultDecor.HiColors.fore,
-                          Scr.DefaultDecor.HiColors.back);
-#else
                           Scr.Hilite->hicolors.fore,
                           Scr.Hilite->hicolors.back);
-#endif
 
       SendPacket(*Module, M_END_WINDOWLIST, 0);
     }

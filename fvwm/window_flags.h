@@ -90,6 +90,14 @@
           ((fw)->flags.common.s.focus_mode == FOCUS_CLICK)
 #define HAS_MOUSE_FOCUS(fw)    \
           ((fw)->flags.common.s.focus_mode == FOCUS_MOUSE)
+#if 0
+#define HAS_ICON_FONT(fw)  \
+          ((fw)->flags.common.s.nas_icon_font)
+#define SET_HAS_ICON_FONT(fw,x) \
+          (fw)->flags.common.s.nas_icon_font = !!(x)
+#define SETM_HAS_ICON_FONT(fw,x) \
+          (fw)->flag_mask.common.s.nas_icon_font = !!(x)
+#endif
 #define HAS_SLOPPY_FOCUS(fw)   \
           ((fw)->flags.common.s.focus_mode == FOCUS_SLOPPY)
 #define HAS_NEVER_FOCUS(fw)   \
@@ -100,6 +108,12 @@
           (fw)->flags.common.s.has_no_icon_title = !!(x)
 #define SETM_HAS_NO_ICON_TITLE(fw,x) \
           (fw)->flag_mask.common.s.has_no_icon_title = !!(x)
+#define HAS_WINDOW_FONT(fw)  \
+          ((fw)->flags.common.s.has_window_font)
+#define SET_HAS_WINDOW_FONT(fw,x) \
+          (fw)->flags.common.s.has_window_font = !!(x)
+#define SETM_HAS_WINDOW_FONT(fw,x) \
+          (fw)->flag_mask.common.s.has_window_font = !!(x)
 #define HAS_MWM_BORDER(fw)     ((fw)->flags.common.s.has_mwm_border)
 #define HAS_MWM_BUTTONS(fw)    ((fw)->flags.common.s.has_mwm_buttons)
 #define HAS_MWM_OVERRIDE_HINTS(fw)  \

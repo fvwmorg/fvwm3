@@ -419,49 +419,18 @@ void HandleFocusIn(void)
       }
 
     }
-#if 0
-    if (Scr.DefaultDecor.HiColorset >= 0)
-    {
-      fc = Colorset[Scr.DefaultDecor.HiColorset].fg;
-      bc = Colorset[Scr.DefaultDecor.HiColorset].bg;
-    }
-    else
-    {
-      fc = Scr.DefaultDecor.HiColors.fore;
-      bc = Scr.DefaultDecor.HiColors.back;
-    }
-#else
     /* Not very useful if no window that fvwm and its modules know about has the
      * focus. */
     fc = GetColor("White");
     bc = GetColor("Black");
-#endif
   }
   else if (Tmp_win != Scr.Hilite)
   {
-#if 0
-    int colorset = GetDecor(Tmp_win, HiColorset);
-
-    DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
-    focus_w = Tmp_win->w;
-    focus_fw = Tmp_win->frame;
-    if (colorset >= 0)
-    {
-      fc = Colorset[colorset].fg;
-      bc = Colorset[colorset].bg;
-    }
-    else
-    {
-      fc = GetDecor(Tmp_win,HiColors.fore);
-      bc = GetDecor(Tmp_win,HiColors.back);
-    }
-#else
     DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
     focus_w = Tmp_win->w;
     focus_fw = Tmp_win->frame;
     fc = Tmp_win->hicolors.fore;
     bc = Tmp_win->hicolors.fore;
-#endif
     if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
     {
       if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -2206,11 +2175,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     for(i=0;i<npipes;i++)
       if (FD_ISSET(i, &init_fdset))
         break;
-#if 0
-    if (i == npipes)
-#else
     if (i == npipes || writePipes[i+1] == 0)
-#endif
     {
       DBUG("My_XNextEvent", "Starting up after command lines modules\n");
       StartupStuff();
