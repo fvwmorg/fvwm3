@@ -1,5 +1,9 @@
 2000-01-18  Brad Giaccio  <bgiaccio@psrw.com>
 
+	* FvwmIconMan/readconfig.c (trim): added function to remove extra
+	white space from a line (fixed problem with font 5x7 plus a trailing
+	space "font 5x7 "
+
 	* FvwmIconMan/readconfig.c (read_in_resources):
 	* FvwmPager/FvwmPager.c (ParseOptions):
 	can now have fontname with spaces
