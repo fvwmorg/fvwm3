@@ -1,5 +1,9 @@
 # fvwmmod.pl 1.1 - perl routines for implementing fvwm modules
 # (c)1996 Dan Astoorian <djast@utopia.csas.com>
+# Permission is hereby granted to freely distribute fvwmperl
+# without restriction as long as the copyright and this copyright
+# notice remain intact.
+
 
 ########################################################################
 # Global values:

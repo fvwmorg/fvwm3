@@ -1,3 +1,8 @@
+# (c)1996 Dan Astoorian <djast@utopia.csas.com>
+# Permission is hereby granted to freely distribute fvwmperl
+# without restriction as long as the copyright and this copyright
+# notice remain intact.
+
 ## Process this file with automake to create Makefile.in
 
 ## Notes: no Imakefile supplied; being a bit too lazy to figure out

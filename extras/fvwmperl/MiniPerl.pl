@@ -4,6 +4,9 @@
 # MiniPerl.pl - small, instructive example of a fvwm module implemented
 # in Perl.
 # (c)1996 Dan Astoorian <djast@utopia.csas.com>
+# Permission is hereby granted to freely distribute fvwmperl
+# without restriction as long as the copyright and this copyright
+# notice remain intact.
 
 # Note: This requires fvwmmod.pl installed in your @INC path:
 require 'fvwmmod.pl';

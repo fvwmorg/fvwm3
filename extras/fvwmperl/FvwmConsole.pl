@@ -1,5 +1,10 @@
 #!/usr/local/bin/tkperl
 # console.pl - combination FvwmTalk/FvwmDebug using fvwmmod.pl
+# (c)1996 Dan Astoorian <djast@utopia.csas.com>
+# Permission is hereby granted to freely distribute fvwmperl
+# without restriction as long as the copyright and this copyright
+# notice remain intact.
+
 
 require 'fvwmmod.pl';
 

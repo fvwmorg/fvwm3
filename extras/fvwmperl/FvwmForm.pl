@@ -1,4 +1,9 @@
 #!/usr/local/bin/tkperl
+# (c)1996 Dan Astoorian <djast@utopia.csas.com>
+# Permission is hereby granted to freely distribute fvwmperl
+# without restriction as long as the copyright and this copyright
+# notice remain intact.
+
 
 # This implements most of FvwmForm.
 # The good news: unlike FvwmForm, this version permits cut and paste.
