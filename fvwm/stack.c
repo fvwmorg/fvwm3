@@ -445,22 +445,23 @@ static Bool must_move_transients(
 	return False;
 }
 
-static Window __get_stacking_sibling(FvwmWindow *fw)
+static Window __get_stacking_sibling(FvwmWindow *fw, Bool do_stack_below)
 {
 	Window w;
 
-	if (IS_ICONIFIED(fw))
+	/* default to frame window */
+	w = FW_W_FRAME(fw);
+	if (IS_ICONIFIED(fw) && do_stack_below == True)
 	{
-		w = (FW_W_ICON_PIXMAP(fw) != None) ?
-			FW_W_ICON_PIXMAP(fw) : FW_W_ICON_TITLE(fw);
-	}
-	else
-	{
-		w = None;
-	}
-	if (w == None)
-	{
-		w = FW_W_FRAME(fw);
+		/* override with icon windows when stacking below */
+		if (FW_W_ICON_PIXMAP(fw) != None)
+		{
+			w = FW_W_ICON_PIXMAP(fw);
+		}
+		else if (FW_W_ICON_TITLE(fw) != None)
+		{
+			w = FW_W_ICON_TITLE(fw);
+		}
 	}
 
 	return w;
@@ -511,10 +512,10 @@ static void restack_windows(
 			}
 		}
 	}
-	changes.sibling = __get_stacking_sibling(r);
+	changes.sibling = __get_stacking_sibling(r, True);
 	if (changes.sibling == None)
 	{
-		changes.sibling = __get_stacking_sibling(s);
+		changes.sibling = __get_stacking_sibling(s, False);
 		is_reversed = 1;
 	}
 	else

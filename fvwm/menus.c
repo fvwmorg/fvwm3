@@ -2354,10 +2354,16 @@ static void make_menu_window(MenuRoot *mr)
 		h = 1;
 	}
 
+	attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
+		Colorset[MST_CSET_MENU(mr)].bg : MST_MENU_COLORS(mr).back;
 	if (MR_WINDOW(mr) != None)
 	{
 		/* just resize the existing window */
 		XResizeWindow(dpy, MR_WINDOW(mr), w, h);
+		/* and change the background color */
+		valuemask = CWBackPixel | CWCursor;
+		XChangeWindowAttributes(
+			dpy, MR_WINDOW(mr), valuemask, &attributes);
 	}
 	else
 	{
@@ -2366,9 +2372,6 @@ static void make_menu_window(MenuRoot *mr)
 			| CWBorderPixel | CWSaveUnder;
 		attributes.border_pixel = 0;
 		attributes.colormap = Pcmap;
-		attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
-			Colorset[MST_CSET_MENU(mr)].bg :
-			MST_MENU_COLORS(mr).back;
 		evmask = XEVMASK_MENUW;
 		attributes.event_mask = 0;
 		attributes.cursor = Scr.FvwmCursors[CRS_MENU];

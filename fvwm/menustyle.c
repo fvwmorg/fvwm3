@@ -1316,7 +1316,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 	if (has_gc_changed)
 	{
 		menustyle_update(tmpms);
-	} /* if (has_gc_changed) */
+	}
 
 	if (default_menu_style == NULL)
 	{
