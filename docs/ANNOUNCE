@@ -134,4 +134,11 @@ Bug fixes:
 ** Fixed several escaping errors in fvwm-menu-directory, so files and
    directories containing special chars and spaces should work.
 
-** Fixed PlacedByButton3 condition
+** Fixed PlacedByButton3 condition.
+
+** Fixed double updating of background with FvwmBacker sometimes leading
+   to the wrong background.
+
+** Fixed vanishing windows when mapping/unmapping too fast.
+
+** Fixed prev option of the GotoDeskAndPage command.

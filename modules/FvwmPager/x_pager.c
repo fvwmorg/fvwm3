@@ -1110,7 +1110,7 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	  SwitchToDeskAndPage(i,Event);
-	if(Event->xany.window == Desks[i].title_w)
+	else if(Event->xany.window == Desks[i].title_w)
 	  SwitchToDesk(i);
       }
       if(Event->xany.window == icon_win)

@@ -1,3 +1,13 @@
+2001-09-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (DispatchEvent):
+	small performance enhancement
+
+	* FvwmBacker/FvwmBacker.c (ExecuteMatchingCommands):
+	small performance enhancement
+	(ProcessMessage):
+	fixed unnecessary updating on desk change without page change
+
 2001-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmM4/FvwmM4.c (main):

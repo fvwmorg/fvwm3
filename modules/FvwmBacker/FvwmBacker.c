@@ -255,6 +255,9 @@ void ExecuteMatchingCommands(int colorset, int changed)
 {
   const Command *matching_command = NULL;
   const Command *command;
+
+  if (!changed)
+    return;
   for (command = commands->first; command; command = command->next)
   {
     if (!(changed & EXEC_ALWAYS) &&
@@ -317,7 +320,8 @@ void ProcessMessage(unsigned long type, unsigned long *body)
       current_desk = body[2];
       change |= EXEC_CHANGED_DESK;
     }
-    if (current_x != body[0] || current_y != body[1])
+    if (current_x != body[0] / MyDisplayWidth ||
+	current_y != body[1] / MyDisplayHeight)
     {
       current_x = body[0] / MyDisplayWidth;
       current_y = body[1] / MyDisplayHeight;
