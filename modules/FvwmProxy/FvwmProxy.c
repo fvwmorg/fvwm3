@@ -1429,8 +1429,6 @@ int main(int argc, char **argv)
 		fprintf(stderr,"can't open display\n");
 		exit (1);
 	}
-/*!!!*/XSynchronize(dpy, 1);
-/*!!!*/sleep(30);
 	titles[0]="FvwmProxy";
 	if (XStringListToTextProperty(titles,1,&windowName) == 0)
 	{
