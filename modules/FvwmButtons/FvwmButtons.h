@@ -55,10 +55,6 @@
 
 /* ------------------------------- structs --------------------------------- */
 
-#if 0
-#define OP 1
-#endif
-
 /* flags for b->flags */
 #define b_Container  0x00000001 /* Contains several buttons */
 #define b_Font       0x00000002 /* Has personal font data */
@@ -100,7 +96,6 @@
 #define b_TitleHoriz  0x03 /* Mask for title x positioning info */
 #define b_Horizontal  0x04 /* HACK: stack title and iconwin horizontally */
 
-typedef struct panel_info_struct panel_info;
 typedef struct button_info_struct button_info;
 typedef struct container_info_struct container_info;
 #define ushort unsigned int
@@ -201,18 +196,6 @@ struct button_info_struct
   int slide_delay_ms;          /* b_Panel */
 };
 
-struct panel_info_struct
-{
-  button_info  *uber;      /* panel */
-  panel_info   *next;
-  struct
-  {
-    /* we need two flags since both flags zero is a valid state as well */
-    unsigned close_on_select;
-    unsigned stay_up_on_select;
-  } flags;
-};
-
 #include "button.h"
 
 /* -------------------------------- prototypes ----------------------------- */
@@ -231,7 +214,6 @@ extern Window Root;
 extern Window MyWindow;
 extern char *MyName;
 extern button_info *UberButton,*CurrentButton;
-extern panel_info *MainPanel, *CurrentPanel;
 
 extern char *imagePath;
 extern int fd[];

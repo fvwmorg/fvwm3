@@ -647,9 +647,6 @@ static void ParseButton(button_info **uberb,char *s)
       "right",
       "center",
       "colorset",
-#if OP
-      "oldpanel",
-#endif
       NULL
     };
     s = trimleft(s);
@@ -986,41 +983,6 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	break;
 
-#if OP
-	/* ------------------------ oldpanel ------------------------ */
-
-      case 18: /* oldPanel */
-	s = trimleft(s);
-	if(*s=='(')
-	{
-	  s++;
-	  t = seekright(&s);
-	  if (terminator != ')')
-	    while(*s && *s!=')')
-	      s++;
-	  if(*s==')')
-	    s++;
-	  if      (strncasecmp(t,"right",5)==0)
-	    t = "panel-r";
-	  else if (strncasecmp(t,"left" ,4)==0)
-	    t = "panel-l";
-	  else if (strncasecmp(t,"down" ,4)==0)
-	    t = "panel-d";
-	  else if (strncasecmp(t,"geometry",8)==0)
-	    t = "panel-g";
-	  else
-	    t = "panel-u";
-	}
-	else
-	  t = "panel-u";
-	AddButtonAction(b, 0, t);
-
-	b->IconWin = None;
-	t = seekright(&s);
-	b->hangon = (t)? t : strdup("");  /* which panel to popup */
-	break;
-#endif
-
       default:
 	t=seekright(&s);
 	fprintf(stderr,"%s: Illegal button option \"%s\"\n",MyName,
@@ -1140,11 +1102,6 @@ static void ParseConfigLine(button_info **ubb,char *s)
     "pixmap",
     "boxsize",
     "colorset",
-#if OP
-    "closeonselect",
-    "stayuponselect",
-    "panel",
-#endif
     NULL
   };
   int i,j,k;
@@ -1255,32 +1212,6 @@ static void ParseConfigLine(button_info **ubb,char *s)
       ub->c->flags &= ~b_Colorset;
     }
     break;
-#if OP
-  case 13: /* CloseOnSelect */
-    CurrentPanel->flags.close_on_select = 1;
-    CurrentPanel->flags.stay_up_on_select = 0;
-    break;
-  case 14: /* StayUpOnSelect */
-    CurrentPanel->flags.close_on_select = 0;
-    CurrentPanel->flags.stay_up_on_select = 1;
-    break;
-  case 15:/* Panel */
-    s = trimleft(s);
-    CurrentPanel->next = (panel_info *) mymalloc(sizeof(panel_info));
-    CurrentPanel = CurrentPanel->next;
-    memset(CurrentPanel, 0, sizeof(panel_info));
-    CurrentPanel->uber = UberButton
-      = (button_info *) mymalloc(sizeof(button_info));
-    memset(CurrentPanel->uber, 0, sizeof(button_info));
-    UberButton->title = seekright(&s);
-    UberButton->BWidth = 1;
-    UberButton->BHeight = 1;
-    /*subpanel is hidden initially */
-    UberButton->swallow = 0;
-    MakeContainer(UberButton);
-    ub = *ubb = UberButton;
-    break;
-#endif
   default:
     s = trimleft(s);
     ParseButton(ubb,s);

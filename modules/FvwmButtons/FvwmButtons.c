@@ -120,10 +120,6 @@ static void change_colorset(int colorset);
 
 void DebugEvents(XEvent*);
 
-#ifdef OP
-panel_info *seekpanel(button_info *);
-void Slide(panel_info *, button_info *);
-#endif
 static void HandlePanelPress(button_info *b);
 
 /* -------------------------------- globals ---------------------------------*/
@@ -167,9 +163,6 @@ int fd[2];
 
 button_info *UberButton=NULL;
 
-#if OP
-panel_info *MainPanel = NULL, *CurrentPanel = NULL, *PanelIndex;
-#endif
 int dpw, dph;
 
 int save_color_limit;                   /* Color limit, if any */
@@ -590,9 +583,6 @@ int main(int argc, char **argv)
   Window root;
   int x,y,maxx,maxy,border_width,depth;
   button_info *b,*ub;
-#if OP
-  panel_info *LastPanel;
-#endif
   int geom_option_argc = 0;
 
 #ifdef I18N_MB
@@ -707,7 +697,6 @@ int main(int argc, char **argv)
 
   oldErrorHandler=XSetErrorHandler(myErrorHandler);
 
-sleep(15);
   UberButton=(button_info*)mymalloc(sizeof(button_info));
   memset(UberButton, 0, sizeof(button_info));
   UberButton->BWidth=1;
@@ -721,13 +710,6 @@ sleep(15);
   fprintf(stderr,"%s: Parsing...",MyName);
 #endif
 
-#if OP
-  CurrentPanel = MainPanel
-    = (panel_info *) mymalloc(sizeof(panel_info));
-  memset(CurrentPanel, 0, sizeof(panel_info));
-  MainPanel->next = NULL;
-  MainPanel->uber = UberButton;
-#endif
   UberButton->title   = MyName;
   UberButton->swallow = 1; /* the panel is shown */
 
@@ -742,32 +724,11 @@ sleep(15);
     has_button_geometry = 0;
   }
 
-#if OP
-  for (CurrentPanel = MainPanel, LastPanel = NULL;
-       CurrentPanel != NULL;
-       LastPanel = CurrentPanel, CurrentPanel = CurrentPanel->next)
-  {
-    UberButton = CurrentPanel->uber;
-#endif
-
     /* Don't quit if only a subpanel is empty */
     if(UberButton->c->num_buttons==0)
     {
-#if OP
-      if (LastPanel == NULL)
-      {
-#endif
-	fprintf(stderr,"%s: No buttons defined. Quitting\n", MyName);
-	exit(0);
-#if OP
-      }
-      else
-      {
-	/* Remove empty panel and leak any memory in the uber button */
-	LastPanel->next = CurrentPanel->next;
-	continue;
-      }
-#endif
+      fprintf(stderr,"%s: No buttons defined. Quitting\n", MyName);
+      exit(0);
     }
 
 #ifdef DEBUG_INIT
@@ -798,12 +759,6 @@ sleep(15);
 #endif
 
     CreateUberButtonWindow(UberButton,maxx,maxy);
-
-#if OP
-    CurrentPanel->uber->IconWinParent = MyWindow;
-    CurrentPanel->uber->icon_w = maxx;
-    CurrentPanel->uber->icon_h = maxy;
-#endif
 
 #ifdef DEBUG_INIT
     fprintf(stderr,"OK\n%s: Creating icon windows...",MyName);
@@ -843,12 +798,6 @@ sleep(15);
     ub=UberButton;
     while(NextButton(&ub,&b,&i,0))
       MakeButton(b);
-#if OP
-  }
-  CurrentPanel = MainPanel;
-  UberButton   = CurrentPanel->uber;
-  MyWindow     = UberButton->IconWinParent;
-#endif
 
 #ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Mapping windows...",MyName);
@@ -896,9 +845,6 @@ void Loop(void)
   char buffer[10],*tmp,*act;
   int i,i2,button;
   button_info *ub,*b;
-#if OP
-  panel_info *ppi;
-#endif
 #ifndef OLD_EXPOSE
   int ex=10000,ey=10000,ex2=0,ey2=0;
 #endif
@@ -910,20 +856,6 @@ void Loop(void)
       switch(Event.type)
       {
       case Expose:
-#if OP
-	PanelIndex = MainPanel;
-	while (PanelIndex &&
-	       (PanelIndex->uber->IconWinParent != Event.xany.window))
-	  PanelIndex = PanelIndex->next;
-	if (PanelIndex)
-	{
-	  UberButton = PanelIndex->uber;
-	  MyWindow   = UberButton->IconWinParent;
-	}
-	else
-	  break;
-#endif
-
 #ifdef OLD_EXPOSE
 	if(Event.xexpose.count == 0)
 	{
@@ -1003,26 +935,8 @@ void Loop(void)
 	  break;	                /* fall through to ButtonPress */
 
       case ButtonPress:
-#if OP
-	PanelIndex = MainPanel;
-	b = NULL;
-	do
-	{
-	  if (PanelIndex->uber->swallow) /* is the panel shown? */
-	  {
-	    UberButton = PanelIndex->uber;
-	    MyWindow   = UberButton->IconWinParent;
-	    if (Event.xany.window == MyWindow)
-	    {
-#endif
-	      CurrentButton = b =
-		select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
-#if OP
-	    }
-	  }
-	}
-	while (!b && PanelIndex->next && (PanelIndex = PanelIndex->next));
-#endif
+	CurrentButton = b =
+	  select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
 
 	if(!b || !(b->flags&b_Action) ||
 	   ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
@@ -1032,20 +946,9 @@ void Loop(void)
 	  break;
 	}
 
-#if OP
-	/* record the panel, the button pressed */
-	CurrentPanel = PanelIndex;
-	UberButton = CurrentPanel->uber;
-	MyWindow   = UberButton->IconWinParent;
-#endif
-
 	RedrawButton(b,0);
 	if(strncasecmp(act,"popup",5)!=0)
 	{
-#ifdef OP
-	  if (strncasecmp(act, "panel-", 6) == 0)
-	    Slide(seekpanel(b), b);
-#endif
 	  free(act);
 	  act = NULL;
 	  break;
@@ -1057,22 +960,7 @@ void Loop(void)
 
       case KeyRelease:
       case ButtonRelease:
-#if OP
-	PanelIndex = MainPanel;
-	b = NULL;
-	do
-	{
-	  if (PanelIndex->uber->swallow)
-	  {
-	    UberButton = PanelIndex->uber;
-	    MyWindow   = UberButton->IconWinParent;
-	    if (Event.xany.window == MyWindow)
-#endif
-	      b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
-#if OP
-	  }
-	} while (!b && (PanelIndex = PanelIndex->next));
-#endif
+	b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
 
 	if (b && (b->flags & b_Panel))
 	{
@@ -1086,12 +974,6 @@ void Loop(void)
 	  {
 	    if(strncasecmp(act,"Exec",4)==0)
 	    {
-#if OP
-	      /* close current subpanel */
-	      if (PanelIndex != MainPanel &&
-		  !PanelIndex->flags.stay_up_on_select)
-		Slide(PanelIndex, NULL);
-#endif
 
 	      /* Look for Exec "identifier", in which case the button
 		 stays down until window "identifier" materializes */
@@ -1128,14 +1010,6 @@ void Loop(void)
 	      DumpButtons(UberButton);
 	    else if(strncasecmp(act,"SaveButtons",11)==0)
 	      SaveButtons(UberButton);
-#if OP
-	    else if(strncasecmp(act,"panel",5) != 0)
-	      MySendText(fd,act,0);
-	    if(strncasecmp(act,"panel",5) != 0 &&
-	       PanelIndex != MainPanel &&
-	       PanelIndex->flags.close_on_select)
-	      Slide(PanelIndex, NULL);
-#endif
 	  } /* act */
 	  if (act != NULL)
 	  {
@@ -1144,13 +1018,6 @@ void Loop(void)
 	  }
 	}
 
-#if OP
-	/* recover the old record */
-	/* the panel, the button pressed */
-	UberButton = CurrentPanel->uber;
-	MyWindow   = UberButton->IconWinParent;
-#endif
-
 	b=CurrentButton;
 	CurrentButton=NULL;
 	if(b)
@@ -1158,24 +1025,6 @@ void Loop(void)
 	break;
 
       case ClientMessage:
-#if OP
-	if(Event.xclient.format==32 &&
-	   Event.xclient.data.l[0]==_XA_WM_DEL_WIN)
-	{
-	  for (ppi = MainPanel->next; ppi != NULL;
-	       ppi = ppi->next)
-	  {
-	    if (ppi->uber->IconWinParent == Event.xany.window)
-	    {
-	      /* Only close the panel */
-	      Slide(ppi, NULL);
-	      break;
-	    }
-	  }
-	  if (ppi == NULL)
-	    DeadPipe(1);
-	}
-#endif
 	break;
 
       case PropertyNotify:
@@ -1683,17 +1532,10 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   XClassHint myclasshints;
   XSetWindowAttributes xswa;
 
-#if OP
-  x = CurrentPanel->uber->x; /* Geometry x where to put the panel */
-  y = CurrentPanel->uber->y; /* Geometry y where to put the panel */
-  xneg = CurrentPanel->uber->w;
-  yneg = CurrentPanel->uber->h;
-#else
   x = UberButton->x; /* Geometry x where to put the panel */
   y = UberButton->y; /* Geometry y where to put the panel */
   xneg = UberButton->w;
   yneg = UberButton->h;
-#endif
 
   if(maxx<16)
     maxx=16;
@@ -1799,42 +1641,13 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
 #endif
   XSetWMProtocols(Dpy,MyWindow,&_XA_WM_DEL_WIN,1);
 
-#if 0
-#if OP
-  myclasshints.res_name=strdup((CurrentPanel == MainPanel)
-			       ? MyName : CurrentPanel->uber->title);
-#endif
-#else
-#if OP
-  if (CurrentPanel == MainPanel)
-  {
-#endif
-    myclasshints.res_name=strdup(MyName);
-#if OP
-  }
-  else
-  {
-    myclasshints.res_name=(char *)malloc(strlen(MyName)+6);
-    strcpy(myclasshints.res_name,MyName);
-    strcat(myclasshints.res_name,"Panel");
-  }
-#endif
-#endif
-#if OP
-  myclasshints.res_class=strdup((CurrentPanel == MainPanel)
-				? "FvwmButtons" : "FvwmButtonsPanel");
-#else
+  myclasshints.res_name=strdup(MyName);
   myclasshints.res_class=strdup("FvwmButtons");
-#endif
 
   {
     XTextProperty mynametext;
     char *list[]={NULL,NULL};
-#if OP
-    list[0]=(CurrentPanel == MainPanel) ? MyName : CurrentPanel->uber->title;
-#else
     list[0] = MyName;
-#endif
     if(!XStringListToTextProperty(list,1,&mynametext))
     {
       fprintf(stderr,"%s: Failed to convert name to XText\n",MyName);
@@ -2199,41 +2012,31 @@ void process_message(unsigned long type,unsigned long *body)
 #ifdef DEBUG_FVWM
   DebugFvwmEvents(type);
 #endif
-#if OP
-  panel_info *PanelIndex = MainPanel;
-  do
-  {
-    UberButton = PanelIndex->uber;
-    MyWindow   = UberButton->IconWinParent;
-#endif
 
-    switch(type)
-    {
-    case M_NEW_DESK:
-      new_desk = body[0];
-      RedrawWindow(NULL);
-      break;
-    case M_END_WINDOWLIST:
-      SpawnSome();
-      RedrawWindow(NULL);
-      break;
-    case M_MAP:
-      swallow(body);
-      break;
-    case M_RES_NAME:
-    case M_RES_CLASS:
-    case M_WINDOW_NAME:
-      CheckForHangon(body);
-      break;
-    case M_CONFIG_INFO:
-      handle_colorset_packet((unsigned long*)body);
-      break;
-    default:
-      break;
-    }
-#if OP
-  } while ((PanelIndex = PanelIndex->next));
-#endif
+  switch(type)
+  {
+  case M_NEW_DESK:
+    new_desk = body[0];
+    RedrawWindow(NULL);
+    break;
+  case M_END_WINDOWLIST:
+    SpawnSome();
+    RedrawWindow(NULL);
+    break;
+  case M_MAP:
+    swallow(body);
+    break;
+  case M_RES_NAME:
+  case M_RES_CLASS:
+  case M_WINDOW_NAME:
+    CheckForHangon(body);
+    break;
+  case M_CONFIG_INFO:
+    handle_colorset_packet((unsigned long*)body);
+    break;
+  default:
+    break;
+  }
 }
 
 
@@ -2483,197 +2286,3 @@ void swallow(unsigned long *body)
     }
   }
 }
-
-#ifdef OP
-/*
- * Button
- *   b->flags     |= b_Action (though b->hangon is ilegally used)
- *   b->action[0]  = "panel-u", "panel-l", "panel-d", or "panel-r"
- *   b->hangon     = panel title (case sensitive)
- * Panel
- *   uber->flags  |= b_Container (though the following fields are ilegally
- *                    used)
- *   uber->title   = the title of the panel
- *   uber->IconWinParent = the panel window, will be assigned to MyWindow
- *   uber->swallow = 0:hidden 1:shown
- *   uber->icon_w  = panel width
- *   uber->icon_h  = panel height
- *   uber->x       = x position to start the panel wrt the button b
- *   uber->y       = y position to start the panel wrt the button b
- *   uber->w       = xneg
- *   uber->h       = yneg
- *   uber->n       = cast to 'char' to record of the direction
- *
- *   CurrentPanel  = the panel where the button b was pressed to popup a new
- *                   panel
- */
-
-#define PanelPopUpStep 32
-
-panel_info *seekpanel(button_info *b)
-{
-  panel_info *PanelIndex = MainPanel->next; /* skip the main panel */
-
-  while (PanelIndex && strcmp(b->hangon, PanelIndex->uber->title))
-    PanelIndex = PanelIndex->next;
-
-  return PanelIndex;
-}
-
-void Slide(panel_info *p, button_info *b)
-{
-  Window PanelWin;
-  Window root;
-  int x, y, iw, ih, BW, depth;
-  char direction;
-  ushort i, c, xstep = 0, ystep = 0, wstep = 0, hstep = 0;
-
-  if (!p)
-    /* no such panel */
-    return;
-  /* PanelWin is found */
-  PanelWin = p->uber->IconWinParent;
-
-  direction = b ? b->action[0][6] : (char) p->uber->n;
-
-  if (p->uber->swallow)
-  {
-    /* shown ---> hidden */
-    root = GetRealGeometry(Dpy, PanelWin, &x, &y, &iw, &ih, &BW, &depth);
-
-    switch (direction)
-    {
-    case 'l':
-      c = iw / PanelPopUpStep;
-      xstep = wstep = PanelPopUpStep;
-      ystep = hstep = 0;
-      break;
-    case 'r':
-      c = iw / PanelPopUpStep;
-      wstep = PanelPopUpStep;
-      xstep = ystep = hstep = 0;
-      break;
-    case 'd':
-      c = ih / PanelPopUpStep;
-      hstep = PanelPopUpStep;
-      xstep = ystep = wstep = 0;
-      break;
-    case 'g':
-      /* just pop down without animation */
-      c = 0;
-      break;
-    case 'u':
-    default:
-      c = ih / PanelPopUpStep;
-      ystep = hstep = PanelPopUpStep;
-      xstep = wstep = 0;
-      break;
-    }
-
-    for (i = 1; i < c; i++)
-    {
-      iw -= wstep;
-      ih -= hstep;
-      x += xstep;
-      y += ystep;
-      XMoveResizeWindow(Dpy, PanelWin, x, y, iw, ih);
-    }
-
-    XUnmapWindow(Dpy, PanelWin);
-    p->uber->swallow = 0;
-  }
-  else if (b != NULL)
-  {
-    /* hidden ---> shown */
-    int ix = buttonXPos(b, b->n);  /* button in the CurrentPanel */
-    int iy = buttonYPos(b, b->n);  /* button in the CurrentPanel */
-
-    int mw = p->uber->icon_w;      /* panel menu width */
-    int mh = p->uber->icon_h;      /* panel menu height */
-    int w = mw;                    /* current width */
-    int h = mh % PanelPopUpStep;   /* current height */
-
-    root = GetRealGeometry(Dpy, CurrentPanel->uber->IconWinParent, &x, &y,
-                           &iw, &ih, &BW, &depth);
-
-    x += p->uber->x + ix;
-    y += p->uber->y + iy;
-    c = 0;
-
-    /* initial position and size */
-    switch (direction)
-    {
-    case 'g':
-      /* just pop up without animation */
-      c = 0;
-      break;
-    case 'l':
-    case 'r':
-      h = mh;
-      w = mw % PanelPopUpStep;
-      if (w == 0)
-      {
-	w = PanelPopUpStep;
-	c--;
-      }
-      if (direction == 'l')
-      {
-	x -= w;
-	c += mw / PanelPopUpStep;
-	xstep = wstep = PanelPopUpStep;
-	ystep = hstep = 0;
-      }
-      else
-      {
-	x += buttonWidth(b);
-	c += mw / PanelPopUpStep;
-	wstep = PanelPopUpStep;
-	xstep = ystep = hstep = 0;
-      }
-      break;
-    case 'd':
-    case 'u':
-    default:
-      w = mw;
-      h = mh % PanelPopUpStep;
-      if (h == 0)
-      {
-	h = PanelPopUpStep;
-	c--;
-      }
-      if (direction == 'd')
-      {
-	y += buttonHeight(b);
-	c += mh / PanelPopUpStep;
-	hstep = PanelPopUpStep;
-	xstep = ystep = wstep = 0;
-      }
-      else
-      {
-	y -= h;
-	c += mh / PanelPopUpStep;
-	ystep = hstep = PanelPopUpStep;
-	xstep = wstep = 0;
-      }
-      break;
-    }
-
-    if (c > 0)
-      XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
-    XMapSubwindows(Dpy, PanelWin);
-    XMapWindow(Dpy, PanelWin);
-
-    for (i = 0; i < c; i++)
-    {
-      x -= xstep;
-      w += wstep;
-      y -= ystep;
-      h += hstep;
-      XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
-    }
-
-    p->uber->n = (int) direction;
-    p->uber->swallow = 1;
-  }
-}
-#endif

@@ -20,10 +20,11 @@ manager. FvwmButtons only works when fvwm is used as the window manager.
 
 The buttonbox can be of any configuration or geometry, and can have
 monochrome or color icons to represent the actions which would be
-invoked.
+invoked.  Even other applications can be 'swallowed' by the button
+bar
 
-So called panels that are essentially button bars opened on a button
-press are available too. See \fICREATING PANELS\fP section for details.
+So called panels that are opened on a button press are available too.
+See \fICREATING PANELS\fP section for details.
 
 .SH INITIALIZATION
 During initialization, \fIFvwmButtons\fP will search for a configuration
@@ -68,12 +69,6 @@ all buttons have a chance to fit. The number of columns is increased to at
 least the width of the widest button and new rows are added until all buttons
 can be placed. For best tolerance of configuration of errors use the
 smart option.
-
-.IP "*FvwmButtonsCloseOnSelect"
-This option is only valid for panels.  Calling any action within a panel closes
-the panel.  With the opposite option \fIStayUpOnSelect\fP the panel never
-closes when pressing anything inside it.  The default is to close the panel
-if the action executed begins with 'Exec'.
 
 .IP "*FvwmButtonsColorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP for the window
@@ -126,11 +121,6 @@ given specific orders. This setting
 specifies the default horizontal padding to be \fIwidth\fP pixels, and the
 vertical padding to be \fIheight\fP pixels.
 
-.IP "*FvwmButtonsPanel \fItitle\fP"
-Specifies the title of a panel. All following *FvwmButtons
-configuration commands up to the next *FvwmButtonsPanel line
-refer to the panel.
-
 .IP "*FvwmButtonsPixmap \fIpixmapfile\fP"
 Specifies a background pixmap to use.  Specify "none" for a transparent
 background.
@@ -138,9 +128,6 @@ background.
 .IP "*FvwmButtonsRows \fIrows\fP"
 Specifies the number of rows of buttons to be created. If unspecified,
 2 rows will be used.
-
-.IP "*FvwmButtonsStayUpOnSelect"
-See \fI*FvwmButtonsCloseOnSelect\fP.
 
 .IP "*FvwmButtons(\fIoptions\fP) [\fItitle icon command\fP]"
 Specifies the contents of a button in the buttonbox.
@@ -305,6 +292,9 @@ The defaults are sliding up with a delay of five millisecond and
 twelve animation steps. To post the panel without any animation,
 set the number of steps to zero.
 
+Please refer to the \fICREATING PANELS\fP section for further
+information on panels.
+
 Example:
 .nf
 .sp
@@ -319,16 +309,6 @@ Example:
   ...
 .sp
 .fi
-
-.IP "  OldPanel [ (\fIdirection\fP) ] \fIname\fP"
-Pop up a panel in the specified \fIdirection\fP from the
-invoking button. A position set with *FvwmButtonsGeometry is taken
-as a relative offset to this position. \fIdirection\fP may be
-"up" (the default), "left", "down" od "right". The panel is a
-button bar itself. See \fIFvwmButtonsPanel\fP. To get the panel
-at a specific place on the screen use "geometry" in place of the
-direction. The *FvwmButtonsGeometry line will then be treated as
-a normal X geometry specification.
 
 .IP "  Right"
 The contents of the button will be aligned to the Right. The default is to
@@ -492,7 +472,119 @@ backslash '\'.
 
 .SH CREATING SUBPANELS
 
+Former versions of FvwmButtons (packaged with fvwm 2.0.46 to
+fvwm 2.3.6) had a different way of handling panels that the
+version you are using today.  This implies that you can not use
+your old panel configuration with the new panel feature.  Please
+read the next section to learn how to convert your old
+configuration.  New users of panels just read on and can safely
+ignore this section.
+
 [ this section still has to be written ]
+
+.SS CONVERTING OLD PANEL CONFIGURATIONS TO THE NEW STYLE
+
+With the old panel feature you first had one or more lines
+defining panels in your main FvwmButtons configuration:
+
+.nf
+.sp
+...
+*FvwmButtons(Title WinOps,Panel WinOps)
+*FvwmButtons(Title Tools ,Panel Tools)
+...
+.sp
+.fi
+
+After the last configuration line for the main panel the
+configuration of the first panel followed, introduced with
+a line beginning with *FvwmButtonsPanel:
+
+.nf
+.sp
+*FvwmButtonsPanel WinOps
+*FvwmButtonsBack bisque2
+...
+
+*FvwmButtonsPanel Tools
+*FvwmButtonsBack bisque2
+...
+.sp
+.fi
+
+And perhaps you had style commands for you panels:
+
+.nf
+.sp
+Style "FvwmButtonsPanel" Title, NoHandles, BorderWidth 0
+Style "FvwmButtonsPanel" NoButton 2, NoButton 4, Sticky
+.sp
+.fi
+
+The new configuration looks much the same, but now the
+configurations of the main panel is independent of the
+configurations of the sub panels.  The lines invoking the panels
+use the same syntax as the Swallow option today, so you simply
+add the name of the window to use as a panel and the command to
+execute instead of the panel name.  Note that you give the new
+instance of FvwmButtons a different name.
+
+.nf
+.sp
+*FvwmButtons(Title WinOps, Panel WinOps \\
+  "Module FvwmButtons FvwmButtonsWinOps")
+*FvwmButtons(Title Tools , Panel Tools \\
+  "Module FvwmButtons FvwmButtonsTools")
+.sp
+.fi
+
+If you used something like 'Panel-d' you now have to use 'Panel(down)'
+instead.  To make the new panel vanish as soon as a button was selected
+start FvwmButtons with the '-transient' option:
+
+.nf
+.sp
+*FvwmButtons(Title Tools , Panel(down) Tools \\
+  "Module FvwmButtons -transient FvwmButtonsTools")
+.sp
+.fi
+
+The rest of the configuration is very easy to change.  Delete
+the lines '*FvwmButtonsPanel <name>' and add <name> to all of
+the following configuration lines for the panel instead. Use
+the same name in your Style commands:
+
+.nf
+.sp
+*FvwmButtonsWinOpsBack bisque2
+...
+*FvwmButtonsToolsBack bisque2
+...
+Style "FvwmButtonsWinOps" Title, NoHandles, BorderWidth 0
+Style "FvwmButtonsWinOps" NoButton 2, NoButton 4, Sticky
+Style "FvwmButtonsTools" Title, NoHandles, BorderWidth 0
+Style "FvwmButtonsTools" NoButton 2, NoButton 4, Sticky
+.sp
+.fi
+
+That's it.  The new panels are much more flexible.  Please
+refer to other parts of this documentation for details.
+
+.SS WHY WAS THE PANEL FEATURE REWRITTEN?
+
+There are several reasons.  The most important one is that the
+program code implementing the panels was very disruptive and
+caused a lot of problems.  At the same time it made writing new
+features for FvwmButtons difficult at best.  The second reason is
+that most users were simply unable to make it work - it as way
+to complicated.  Even I (the author of the new code) had to spend
+several hours before I got it working the first time.  The third
+reason is that the new panels are more versatile.  Any application
+can be a panel in FvwmButtons, not just other instances of FvwmButtons
+itself.  So I sincerely hope that nobody is angry about the change.
+Yes - you have to change your configuration, but the new feature is
+much easier to configure, especially if you already know how the
+Swallow option works.
 
 .SH ARRANGEMENT ALGORITHM
 
@@ -588,8 +680,10 @@ AddToFunc RestartFunction  "I" Module FvwmButtons
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 
 # Make the menu/panel look like CDE
-Style "FvwmButtonsPanel" Title, NoHandles, BorderWidth 0
-Style "FvwmButtonsPanel" NoButton 2, NoButton 4, Sticky
+Style "FvwmButtonsWinOps" Title, NoHandles, BorderWidth 0
+Style "FvwmButtonsWinOps" NoButton 2, NoButton 4, Sticky
+Style "FvwmButtonsTools" Title, NoHandles, BorderWidth 0
+Style "FvwmButtonsTools" NoButton 2, NoButton 4, Sticky
 
 ##########################################################
 
@@ -601,8 +695,10 @@ Style "FvwmButtonsPanel" NoButton 2, NoButton 4, Sticky
 *FvwmButtonsFont -*-helvetica-medium-r-*-*-12-*
 *FvwmButtonsPadding 2 2
 
-*FvwmButtons(Title WinOps,Panel WinOps)
-*FvwmButtons(Title Tools ,Panel Tools)
+*FvwmButtons(Title WinOps, Panel WinOps \\
+  "Module FvwmButtons -transient FvwmButtonsWinOps")
+*FvwmButtons(Title Tools, Panel Tools \\
+  "Module FvwmButtons -transient FvwmButtonsTools")
 
 *FvwmButtons(Title Resize,Icon resize.xpm ,Action Resize)
 *FvwmButtons(Title Move  ,Icon arrows2.xpm,Action Move  )
@@ -645,24 +741,22 @@ The other panels are specified after the root panel:
 
 .nf
 .sp
-########## PANEL
-*FvwmButtonsPanel WinOps
-*FvwmButtonsBack bisque2
-*FvwmButtonsGeometry -3-3
-*FvwmButtonsColumns 1
+########## PANEL WinOps
+*FvwmButtonsWinOpsBack bisque2
+*FvwmButtonsWinOpsGeometry -3-3
+*FvwmButtonsWinOpsColumns 1
 
-*FvwmButtons(Title Resize,Icon resize.xpm ,Action Resize)
-*FvwmButtons(Title Move  ,Icon arrows2.xpm,Action Move  )
-*FvwmButtons(Title Lower ,Icon Down       ,Action Lower )
-*FvwmButtons(Title Raise ,Icon Up         ,Action Raise )
+*FvwmButtonsWinOps(Title Resize,Icon resize.xpm ,Action Resize)
+*FvwmButtonsWinOps(Title Move  ,Icon arrows2.xpm,Action Move  )
+*FvwmButtonsWinOps(Title Lower ,Icon Down       ,Action Lower )
+*FvwmButtonsWinOps(Title Raise ,Icon Up         ,Action Raise )
 
-########## PANEL
-*FvwmButtonsPanel Tools
-*FvwmButtonsBack bisque2
-*FvwmButtonsGeometry -1-1
-*FvwmButtonsColumns 1
+########## PANEL Tools
+*FvwmButtonsToolsBack bisque2
+*FvwmButtonsToolsGeometry -1-1
+*FvwmButtonsToolsColumns 1
 
-*FvwmButtons(Title Kill  ,Icon bomb.xpm   ,Action Destroy)
+*FvwmButtonsTools(Title Kill  ,Icon bomb.xpm   ,Action Destroy)
 .sp
 .fi
 
