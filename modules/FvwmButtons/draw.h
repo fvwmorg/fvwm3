@@ -27,7 +27,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-void RelieveButton(Window,int,int,int,int,int,Pixel,Pixel,int,Bool);
+void RelieveButton(Window,int,int,int,int,int,Pixel,Pixel,int);
 void MakeButton(button_info*);
 void RedrawButton(button_info*,int);
 void DrawTitle(button_info*,Window,GC);

@@ -79,7 +79,6 @@
 				 * altered */
 #define b_PosFixed   0x00080000 /* User provided button position */
 #define b_SizeSmart  0x00100000 /* Improved button box sizing */
-#define b_FvwmLook   0x00200000	/* use fvwm default colors and font */
 
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */

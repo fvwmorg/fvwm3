@@ -59,7 +59,7 @@
 *** Draws the relief pattern around a window.
 **/
 void RelieveButton(Window wn,int width,int x,int y,int w,int h,Pixel relief,
-		   Pixel shadow,int rev,Bool useFvwmLook)
+		   Pixel shadow,int rev)
 {
   unsigned long gcm=0;
   XGCValues gcv;
@@ -68,20 +68,15 @@ void RelieveButton(Window wn,int width,int x,int y,int w,int h,Pixel relief,
   if(!width)
     return;
 
-  if (!useFvwmLook) {
-    gcm=GCForeground;
-    gcv.foreground=relief;
-    XChangeGC(Dpy,NormalGC,gcm,&gcv);
-    reliefGC=NormalGC;
+  gcm=GCForeground;
+  gcv.foreground=relief;
+  XChangeGC(Dpy,NormalGC,gcm,&gcv);
+  reliefGC=NormalGC;
 
-    gcm=GCForeground;
-    gcv.foreground=shadow;
-    XChangeGC(Dpy,ShadowGC,gcm,&gcv);
-    shadowGC=ShadowGC;
-  } else {
-    reliefGC=G->reliefGC;
-    shadowGC=G->shadowGC;
-  }
+  gcm=GCForeground;
+  gcv.foreground=shadow;
+  XChangeGC(Dpy,ShadowGC,gcm,&gcv);
+  shadowGC=ShadowGC;
 
   if(width<0) {
     width=-width;
@@ -214,14 +209,13 @@ void RedrawButton(button_info *b,int clean)
 	}
     }
 
-  RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev,
-		b->flags&b_FvwmLook);
+  RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
 
   /* ----------------------------------------------------------------------- */
 
   f=abs(f);
 
-  if(clean && BW>2*f && BH>2*f && !(b->flags&b_FvwmLook))
+  if(clean && BW>2*f && BH>2*f)
     {
       gcm = GCForeground;
       gcv.foreground=buttonBack(b);
@@ -252,14 +246,12 @@ void RedrawButton(button_info *b,int clean)
   /* ----------------------------------------------------------------------- */
 
   if(b->flags&b_Title) {
-    if (!(b->flags&b_FvwmLook) && font) {
+    if (font) {
       gcm = GCForeground | GCFont;
       gcv.foreground=buttonFore(b);
       gcv.font = font->fid;
       XChangeGC(Dpy,NormalGC,gcm,&gcv);
       DrawTitle(b,MyWindow,NormalGC);
-    } else {
-      DrawTitle(b, MyWindow, G->foreGC);
     }
   }
 }

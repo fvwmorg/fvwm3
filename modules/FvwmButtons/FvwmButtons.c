@@ -581,11 +581,7 @@ int main(int argc, char **argv)
 	      XDisplayName(NULL));
       exit (1);
     }
-  G = CreateGraphics();
-  G->create_foreGC = True;
-  G->create_reliefGC = True;
-  G->create_shadowGC = True;
-  InitGraphics(Dpy, G);
+  G = CreateGraphics(Dpy);
 
   x_fd=XConnectionNumber(Dpy);
   fd_width=GetFdWidth();
@@ -1410,26 +1406,21 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 # ifdef DEBUG_INIT
   fprintf(stderr,"colors...");
 # endif
-  if (!(ub->c->flags&b_FvwmLook)) {
-    if(G->depth < 2) {
-      back_pix = GetColor("white");
-      fore_pix = GetColor("black");
-      hilite_pix = back_pix;
-      shadow_pix = fore_pix;
-    } else {
-      back_pix = GetColor(ub->c->back);
-      fore_pix = GetColor(ub->c->fore);
-      hilite_pix = GetHilite(back_pix);
-      shadow_pix = GetShadow(back_pix);
-    }
-    if(ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack)) {
-      XSetWindowBackgroundPixmap(Dpy,MyWindow,ub->c->backicon->picture);
-    } else {
-      XSetWindowBackground(Dpy,MyWindow,back_pix);
-    }
+  if(G->depth < 2) {
+    back_pix = GetColor("white");
+    fore_pix = GetColor("black");
+    hilite_pix = back_pix;
+    shadow_pix = fore_pix;
   } else {
-    SetWindowBackground(Dpy,MyWindow,mysizehints.width,mysizehints.height,
-			G->bg, G->depth, G->foreGC);
+    back_pix = GetColor(ub->c->back);
+    fore_pix = GetColor(ub->c->fore);
+    hilite_pix = GetHilite(back_pix);
+    shadow_pix = GetShadow(back_pix);
+  }
+  if(ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack)) {
+    XSetWindowBackgroundPixmap(Dpy,MyWindow,ub->c->backicon->picture);
+  } else {
+    XSetWindowBackground(Dpy,MyWindow,back_pix);
   }
 
 
@@ -1736,14 +1727,17 @@ void process_message(unsigned long type,unsigned long *body)
     case M_CONFIG_INFO:
       { /* there's only one config line of interest at this point */
 	char *line = (char *)&body[3];
-	if ((strncasecmp(line, DEFGRAPHSTR, DEFGRAPHLEN)==0)
-	    && (ParseGraphics(Dpy, line, G))
-	    && (UberButton->c->flags & b_FvwmLook))
+	if (strncasecmp(line, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+	  ParseGraphics(Dpy, line, G);
+/* this is where you put the stuff for FvwmButtons to follow colorsets
+   in real time
+   	  if (UberButton->c->flags & b_FvwmLook))
 	  SetWindowBackground(Dpy, MyWindow, UberButton->c->ButtonWidth
 			      * UberButton->c->num_columns,
 			      UberButton->c->ButtonHeight
 			      * UberButton->c->num_rows, G->bg, G->depth,
 			      G->foreGC);
+*/
       }
       break;
     default:

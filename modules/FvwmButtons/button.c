@@ -160,8 +160,6 @@ int buttonYPad(button_info *b)
 **/
 XFontStruct *buttonFont(button_info *b)
 {
-  if (b->flags&b_FvwmLook)
-    return G->font;
   if(b->flags&b_Font)
     return b->font;
   while((b=b->parent))
@@ -355,8 +353,6 @@ button_info *alloc_button(button_info *ub,int num)
   b->h=1;
   b->bw=1;
 
-  if (ub->c->flags & b_FvwmLook)
-    b->flags|=b_FvwmLook;
   return(b);
 }
 
@@ -381,8 +377,6 @@ void MakeContainer(button_info *b)
 	b->c->flags=b_IconParent;
       else
 	b->c->flags=0;
-      if (b->parent->c->flags&b_FvwmLook)
-        b->c->flags|=b_FvwmLook;
     }
   else /* This applies to the UberButton */
     {
@@ -393,8 +387,6 @@ void MakeContainer(button_info *b)
       b->c->back=strdup("#908090");
       b->c->fore=strdup("black");
       b->c->framew=2;
-      if (G->useFvwmLook)
-	b->c->flags|=b_FvwmLook;
     }
 
 }

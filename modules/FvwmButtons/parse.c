@@ -298,7 +298,6 @@ void ParseContainer(char **ss,button_info *b)
 	  b->c->font_string=seekright(&s);
 	  if(b->c->font_string) {
 	    b->c->flags|=b_Font;
-	    b->c->flags&=~b_FvwmLook;
 	  } else
 	    b->c->flags&=~b_Font;
 	  break;
@@ -316,7 +315,6 @@ void ParseContainer(char **ss,button_info *b)
 	  b->c->back=seekright(&s);
 	  if(b->c->back) {
 	    b->c->flags|=b_Back;
-	    b->c->flags&=~b_FvwmLook;
 	  } else
 	    b->c->flags&=~(b_IconBack|b_Back);
 	  break;
@@ -325,7 +323,6 @@ void ParseContainer(char **ss,button_info *b)
 	  b->c->fore=seekright(&s);
 	  if(b->c->fore) {
 	    b->c->flags|=b_Fore;
-	    b->c->flags&=~b_FvwmLook;
 	  } else
 	    b->c->flags&=~b_Fore;
 	  break;
@@ -489,7 +486,6 @@ void match_string(button_info **uberb,char *s)
 	      b->back=seekright(&s);
 	      if(b->back) {
 		b->flags|=b_Back;
-		b->flags&=~b_FvwmLook;
 	      } else
 		b->flags&=~(b_IconBack|b_Back);
 	      break;
@@ -499,7 +495,6 @@ void match_string(button_info **uberb,char *s)
 	      b->fore=seekright(&s);
 	      if(b->fore) {
 		b->flags|=b_Fore;
-		b->flags&=~b_FvwmLook;
 	      } else
 		b->flags&=~b_Fore;
 	      break;
@@ -509,7 +504,6 @@ void match_string(button_info **uberb,char *s)
 	      b->font_string=seekright(&s);
 	      if(b->font_string) {
 		b->flags|=b_Font;
-		b->flags&=~b_FvwmLook;
 	      } else
 		b->flags&=~b_Font;
 	      break;
@@ -900,7 +894,6 @@ void ParseConfigLine(button_info **ubb,char *s)
       }
     case 1:/* Font */
       CopyString(&ub->c->font_string,s);
-      ub->c->flags&=~b_FvwmLook;
       break;
     case 2:/* Padding */
       i=sscanf(s,"%d %d",&j,&k);
@@ -917,7 +910,6 @@ void ParseConfigLine(button_info **ubb,char *s)
       break;
     case 5:/* Back */
       CopyString(&(ub->c->back),s);
-      ub->c->flags&=~b_FvwmLook;
       break;
     case 6:/* Fore */
       CopyString(&(ub->c->fore),s);
@@ -939,7 +931,6 @@ void ParseConfigLine(button_info **ubb,char *s)
       else
         CopyString(&(ub->c->back_file),s);
       ub->c->flags|=b_IconBack;
-      ub->c->flags&=~b_FvwmLook;
       break;
     case 10:/* Panel */
       s = trimleft(s);
