@@ -71,7 +71,7 @@ void Free (void *p)
       return;
     }
     MemUsed -= head->len;
-    free(head);
+    Free(head);
   }
 }
 

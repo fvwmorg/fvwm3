@@ -1,3 +1,21 @@
+2001-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/FvwmIconMan.c (Free):
+	* FvwmIconMan/fvwm.c (new_window):
+	use Free
+
+	* FvwmIconMan/xmanager.c (clear_button):
+	fixed memory leak
+
+	* FvwmIconBox/FvwmIconBox.c (freeitem):
+	fixed memory leak
+
+	* FvwmButtons/FvwmButtons.c (HandlePanelPress):
+	fixed UMR
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	corrected typo
+
 2001-03-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmSaveDesk/example/fvwm2rc:

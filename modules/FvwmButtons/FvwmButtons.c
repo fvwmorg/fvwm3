@@ -1793,6 +1793,7 @@ static void HandlePanelPress(button_info *b)
     XWithdrawWindow(Dpy, b->PanelWin, screen);
 
     /* now request mapping in the void and wait until it gets mapped */
+    mysizehints.flags = 0;
     XGetWMNormalHints(Dpy, b->PanelWin, &mysizehints, &supplied);
     mysizehints.flags |= USPosition;
     mysizehints.x = 32767;

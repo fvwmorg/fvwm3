@@ -377,7 +377,7 @@ static void new_window (FvwmPacketBody *body)
   }
   else
   {
-    free(win);
+    Free(win);
   }
 }
 

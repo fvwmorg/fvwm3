@@ -560,6 +560,7 @@ static void set_num_buttons (ButtonArray *buttons, int n)
     for (i = buttons->num_buttons; i < n; i++) {
       buttons->buttons[i] = (Button *)safemalloc (sizeof (Button));
       memset(buttons->buttons[i], 0, sizeof(Button));
+buttons->buttons[i]->drawn_state.display_string = NULL;
       buttons->buttons[i]->index = i;
     }
 

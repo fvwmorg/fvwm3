@@ -2767,6 +2767,8 @@ void freeitem(struct icon_info *item, int d)
     free(item->res_name);
   if (item->res_class != NULL)
     free(item->res_class);
+  if (item->icon_file != NULL)
+    free(item->icon_file);
   if (item->iconPixmap != None)
     XFreePixmap(dpy, item->iconPixmap);
   if (item->icon_maskPixmap != None &&
@@ -2775,7 +2777,6 @@ void freeitem(struct icon_info *item, int d)
     XFreePixmap(dpy, item->icon_maskPixmap);
   if (item->wmhints != NULL)
     XFree(item->wmhints);
-
   free(item);
 }
 
