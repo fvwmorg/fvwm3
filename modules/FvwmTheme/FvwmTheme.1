@@ -41,95 +41,113 @@ alias name.
 .SH CONFIGURATION OPTIONS
 FvwmTheme supports some configuration options.
 
-.IP "*FvwmThemeColorset \fIn\fP \fIfg\fP \fIbg\fP [\fIshape option\fP] [\fIpixmap option\fP]"
-Will create or modify colorset \fIn\fP. Each colorset has a foreground and
-background color specified by \fIfg\fP and \fIbg\fP respectively.  If
-either \fIfg\fP or \fIbg\fP is specified as "-" it is not altered. If \fIbg\fP
-is specified as "average" it is calculated as the average color of the
-backround pixmap. If \fIfg\fP is specified as "contrast" one of white, cyan,
-magenta, yellow, red, green, blue or black is chosen depending on the
-background. Colors may be specified by name e.g. Liver or "Fava bean" or
-as an RGB hexadecimal triplet "#RRGGBB" e.g. "#551111" for a nice Chianti.
+.IP "*FvwmThemeColorset \fIn\fP \fIoptions\fP "
+Will create or modify colorset \fIn\fP. Each colorset has a four colors, an
+optional pixmap and an optional shape mask. The four colors are used by modules
+as the foreground. background, highlight and shadow colors.  When a colorset is 
+created the colors from colorset 0 are copied (these are also controlled by
+the DefaultColors fvwm command).
 
-Each colorset may also have a pixmap associated with it as an adjunct to the
-background color.  This may be used instead of the background color and should
-have roughly the same average color as the background so that any 3D bevels
-(which are calculated from the background color) don't look strange.
-The background color is used for the transparent parts of the pixmap.
+\fIoptions\fP is a coma separated list containing some of the keywords: fg,
+fore, foreground, bg, back, background, hi, hilite, hilight, sh, shade, shadow,
+pixmap, pixmap, tiledpixmap, aspectpixmap, shape, tiledshape and ?gradient.
 
-The optional pixmap may be specified as "TiledPixmap \fIxpm\fP",
-"Pixmap \fIxpm\fP", "AspectPixmap \fIxpm\fP" or "\fI?Gradient...\fP". \fIxpm\fP
-is the filename of an XPM format file. FvwmTheme will search the current
-\fIImagePath\fP for the file. \fITiledPixmap\fP causes the pixmap to be tiled
-onto the background, \fIPixmap\fP will stretch the pixmap to the size of the
-window and \fIAspectPixmap\fP will stretch the pixmap whilst preserving the
-aspect ratio.
+\fIfg\fP, \fIfore\fP and \fIforeground\fP take a color name as an argument and
+set the foreground color.  The special name \fIconstrast\fP may be used to
+select a color that contrasts well with the background color.
 
-An optional shape pixmap can be used to shape the background of the
-window it is applied to and thus the window itself. "Shape \fIpicture\fP",
-"TiledShape \fIpicture\fP" and "AspectShape \fIpicture\fP" do roughly
-the same as the pixmap options above. One difference is that only the
-mask of a xpm picture is used, i.e. all pixels that are transparent in
-the xpm will be transparent in the window. If the picture is a bitmap
-with only two colors, this bitmap is used as the mask. Note that the
-shape will create holes in the window it is applied to. The masked
-parts are not simply transparent.
+\fIbg\fP, \fIback\fP and \fIbackground\fP take a color name as an argument and
+set the background color.  It also sets the highlight and shadow colors to
+values that give a 3d effect. The special name \fIaverage\fP may be used to
+select a color that is the average color of the pixmap.
+
+\fIhi\fP, \fIhilite\fP and \fIhilight\fP take a color name as as argument and
+set the highlight color. This is overwritten whenever the background color is
+changed.
+
+\fIsh\fP, \fIshade\fP and \fIshadow\fP take a color name as as argument and
+set the shadow color. This is overwritten whenever the background color is
+changed.
+
+\fIpixmap\fP, \fItiledpixmap\fP and \fIaspectpixmap\fP take a file name as
+an argument, search the \fIImagePath\fP and use it as the background pixmap.
+Any transparent parts are filled with the background color. Not specifying a
+file name removes any existing one from the colorset. \fItiledpixmap\fP will
+produce repeated copies of the image with no scaling, \fIpixmap\fP will
+cause the image to be stretched to fit whatever object the colorset is applied
+to and \fIascpectpixmap\fP will stretch to fit but will retain the image
+aspect ratio. Bitmaps are not supported (why not? it could use the hi,sh colors)
+
+\fIshape\fP, \fItiledshape\fP and \fIaspectshape\fP take a file name as
+an argument, search the \fIImagePath\fP and use it as the shape bitmap.
+\fItiledshape\fP will produce repeated copies of the bitmap with no scaling,
+\fIshape\fP will cause the bitmap to be stretched to fit whatever object the
+colorset is applied to and \fIascpectshape\fP will stretch to fit but will
+retain the bitmap aspect ratio. Pixmaps are not supported (or are they?????)
 
 Warning: Due to the way X11 implements shapes and the implementation
 of the FvwmTheme module you cannot take back making windows shaped.
 You may have to restart fvwm or the shaped application.
 
-\fI?Gradient ...\fP will create a pixmap and stretch it to fit the window.
-\fI?Gradient\fP may be one of HGradient, VGradient, DGradient, BGradient,
-SGradient, CGradient, RGradient or YGradient.  The gradient types are as
+\fI?gradient ...\fP will create a pixmap and stretch it to fit the window.
+\fI?gradient\fP may be one of Hgradient, Vgradient, Dgradient, Bgradient,
+Sgradient, Cgradient, Rgradient or Ygradient.  The gradient types are as
 follows:  H is horizontal; V is vertical; D is diagonal from top left to
 bottom right; B is a backwards diagonal from bottom left to top right; S
 is concentric squares; C is con-centric circles; R is a radar like pattern
-and Y is a Yin Yang style (but without the dots).  Please refer to the
-\fICOLOR GRADIENTS\fP section in the \fIfvwm2\fP man page for the syntax
-of gradients.
-
+and Y is a Yin Yang style (but without the dots, we are not \fIthat\fP sad).
+Please refer to the \fICOLOR GRADIENTS\fP section in the \fIfvwm2\fP man page
+for the syntax of gradients.
 
 .IP "*FvwmThemeReadWriteColors"
 Tells FvwmTheme to use read/write color cells for the foreground and background
 pixels. This can make changing colorsets much faster but can only be used with
 PseudoColor displays. This option must be specified first and it cannot be
-turned off. Colorset changes can be made without requiring modules
-to redraw by specifying a colorset in the form
-"Colorset \fIn\fP \fIfg\fP \fIbg\fP -"
+turned off. If the pixmap and shape of a colorset are unchanged modules
+do not redraw when the colors are changed.
 
 .SH COMMANDS
 The following FVWM command may be executed at any time to alter the colorsets.
 It may be bound to a menu item or typed into a module such as FvwmTalk.
 
-.IP "SendToModule FvwmTheme Colorset \fIn\fP \fIfg\fP \fIbg\fP [ \fIoption\fP... ]"
+.IP "SendToModule FvwmTheme Colorset \fIoptions\fP"
 The syntax is the same as the configuration option.
 
 .SH EXAMPLES
 
-  *FvwmThemeColorset 3 black gray
+  *FvwmThemeColorset 3 fg wheat, bg navy
 
 If necessary this will create colorsets 0, 1, 2 and 3 and then change colorset
-3 to have a foreground of black, a background of gray and delete the optional
-pixmap.
+3 to have a foreground of wheat, a background of navy.
 
-  *FvwmThemeColorset 3 - "navy blue" -
+  *FvwmThemeColorset 3 bg "navy blue"
 
 Will change the background color of colorset 3 to navy blue. The foreground and
 pixmap will be unchanged.
 
-  *FvwmThemeColorset 3 - - YGradient 200 3 blue 1000 navy 1 blue 1000 navy
+  *FvwmThemeColorset 3 aspectpixmap large_murky_dungeon.xpm
 
-Will add a Yin Yang gradient background pixmap to colorset 3.
+Will cause depression
+
+  *FvwmThemeColorset 3 bg average
+
+Will set the backgriund color and the relief colors to match the background
+pixmap.
+
+  *FvwmThemeColorset 3 Ygradient 200 3 blue 1000 navy 1 blue 1000 navy
+
+Will add a Yin Yang gradient background pixmap to colorset 3.  If the
+background is set to average it will be recomputed as will the foreground
+if that is set to contrast.
 
   #!/bin/sh
-  FvwmCommand "SendToModule FvwmTheme Colorset 7 navy gray"
+  FvwmCommand "SendToModule FvwmTheme Colorset 7 fg navy, bg gray"
   while true
   do
-    FvwmCommand "SendToModule FvwmTheme Colorset 7 gray - -"
+    FvwmCommand "SendToModule FvwmTheme Colorset 7 fg gray"
     sleep 1
-    FvwmCommand "SendToModule FvwmTheme Colorset 7 navy - -"
+    FvwmCommand "SendToModule FvwmTheme Colorset 7 fg navy"
     sleep 1
   done
 
-will make colorset 7 blink if used with the *FvwmThemeReadWiriteColors option.
+will make colorset 7 blink if used with the *FvwmThemeReadWriteColors option.

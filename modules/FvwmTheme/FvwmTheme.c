@@ -38,6 +38,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
+#define FVWMTHEME_PRIVATE
 #include "libs/Colorset.h"
 
 /* Globals */
@@ -286,7 +287,7 @@ static void parse_colorset(char *line)
   char *hi = NULL;
   char *sh = NULL;
   Picture *picture;
-  Bool update = False;
+  Bool have_pixels_changed = False;
   Bool has_fg_changed = False;
   Bool has_bg_changed = False;
   Bool has_sh_changed = False;
@@ -310,7 +311,7 @@ static void parse_colorset(char *line)
   /* grab cells */
   if (privateCells) {
     while (nSets <= n) {
-      update = True;
+      have_pixels_changed = True;
       XAllocColorCells(dpy, Pcmap, False, NULL, 0, &Colorset[nSets].fg, 4);
       nSets++;
     }
@@ -560,7 +561,6 @@ static void parse_colorset(char *line)
   {
     Bool do_set_default_background = False;
 
-    update = True;
     has_bg_changed = 1;
     if ((cs->color_flags & BG_AVERAGE) && cs->pixmap != None)
     {
@@ -620,27 +620,11 @@ static void parse_colorset(char *line)
 	if (privateCells) {
 	  color.pixel = cs->bg;
 	  XStoreColor(dpy, Pcmap, &color);
-#if 0
-	  /* !!! domivogt: Tim, I'm not sure what this code is supposed to do.
-	   * Why can't we just call GetShadow and GetHilite? If this is not
-	   * necessary this paragraph can be deleted. If it is, this code
-	   * has to be duplicated below, where the shadow and hilite colours
-	   * are set. */
-	  color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
-	  color.pixel = cs->hilite;
-	  XStoreColor(dpy, Pcmap, &color);
-	  color.red = red / k;
-	  color.green = green / k;
-	  color.blue = blue / k;
-	  color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
-	  color.pixel = cs->shadow;
-	  XStoreColor(dpy, Pcmap, &color);
-#endif
 	} else {
 	  XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
 	  XAllocColor(dpy, Pcmap, &color);
 	  cs->bg = color.pixel;
-	  sharedCells = True;
+	  have_pixels_changed = True;
 	}
       }
     } /* average */
@@ -656,26 +640,10 @@ static void parse_colorset(char *line)
 	blue = color.blue;
 	color.pixel = cs->bg;
 	XStoreColor(dpy, Pcmap, &color);
-#if 0
-	  /* !!! domivogt: Tim, I'm not sure what this code is supposed to do.
-	   * Why can't we just call GetShadow and GetHilite? If this is not
-	   * necessary this paragraph can be deleted. If it is, this code
-	   * has to be duplicated below, where the shadow and hilite colours
-	   * are set. */
-	color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
-	color.pixel = cs->hilite;
-	XStoreColor(dpy, Pcmap, &color);
-	color.red = red;
-	color.green = green;
-	color.blue = blue;
-	color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
-	color.pixel = cs->shadow;
-	XStoreColor(dpy, Pcmap, &color);
-#endif
       } else {
 	XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
 	cs->bg = GetColor(bg);
-	sharedCells = True;
+	have_pixels_changed = True;
       }
     } /* user specified */
     else if (bg == NULL)
@@ -685,8 +653,19 @@ static void parse_colorset(char *line)
     } /* default */
     if (do_set_default_background)
     {
-      /* default */
-      /*!!! domivogt: we need some sensible default here */
+      /* Have to guess a default color. The only certainty is that colorset 0
+       * is set up by fvwm so copy its background */
+      if (privateCells) {
+        /* query it */
+        color.pixel = Colorset[0].bg;
+        XQueryColor(dpy, Pcmap, &color);
+        color.pixel = cs->bg;
+        XStoreColor(dpy, Pcmap, &color);
+      } else {
+        /* copy the pixel */
+        cs->bg = Colorset[0].bg;
+        have_pixels_changed = True;
+      }
     }
   } /* has_bg_changed */
 
@@ -695,7 +674,6 @@ static void parse_colorset(char *line)
    */
   if (has_fg_changed || (has_bg_changed && (cs->color_flags & FG_CONTRAST)))
   {
-    update = True;
     has_fg_changed = 1;
     if (cs->color_flags & FG_CONTRAST)
     {
@@ -712,7 +690,7 @@ static void parse_colorset(char *line)
 	XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 	XAllocColor(dpy, Pcmap, &color);
 	cs->fg = color.pixel;
-	sharedCells = True;
+	have_pixels_changed = True;
       }
     } /* contrast */
     else if ((cs->color_flags & FG_SUPPLIED) && fg != NULL)
@@ -725,13 +703,23 @@ static void parse_colorset(char *line)
       } else {
 	XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 	cs->fg = GetColor(fg);
-	sharedCells = True;
+	have_pixels_changed = True;
       }
     } /* user specified */
     else if (fg == NULL)
     {
-      /* default */
-      /*!!! domivogt: we need some sensible default here */
+      /* default, copy colorset 0 as it is the only thing guaranteed to exist */
+      if (privateCells) {
+        /* query it */
+        color.pixel = Colorset[0].fg;
+        XQueryColor(dpy, Pcmap, &color);
+        color.pixel = cs->fg;
+        XStoreColor(dpy, Pcmap, &color);
+      } else {
+        /* copy the pixel */
+        cs->fg = Colorset[0].fg;
+        have_pixels_changed = True;
+      }
     }
   } /* has_fg_changed */
 
@@ -740,7 +728,6 @@ static void parse_colorset(char *line)
    */
   if (has_hi_changed || has_bg_changed)
   {
-    update = True;
     has_hi_changed = 1;
     if ((cs->color_flags & HI_SUPPLIED) && hi != NULL)
     {
@@ -752,13 +739,23 @@ static void parse_colorset(char *line)
       } else {
 	XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
 	cs->hilite = GetColor(hi);
-	sharedCells = True;
+	have_pixels_changed = True;
       }
     } /* user specified */
     else if (hi == NULL)
     {
-      /* default */
-      cs->hilite = GetHilite(cs->bg);
+      if (privateCells) {
+        /* calculate from the background, Can't use GetHilite() because
+         * it uses XAllocColor */
+	color.pixel = cs->bg;
+	XQueryColor(dpy, Pcmap, &color);
+	color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
+	color.pixel = cs->hilite;
+	XStoreColor(dpy, Pcmap, &color);
+      } else {
+        cs->hilite = GetHilite(cs->bg);
+	have_pixels_changed = True;
+      }
     }
   } /* has_hi_changed */
 
@@ -767,7 +764,6 @@ static void parse_colorset(char *line)
    */
   if (has_sh_changed || has_bg_changed)
   {
-    update = True;
     has_sh_changed = 1;
     if ((cs->color_flags & HI_SUPPLIED) && sh != NULL)
     {
@@ -779,43 +775,38 @@ static void parse_colorset(char *line)
       } else {
 	XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
 	cs->shadow = GetColor(hi);
-	sharedCells = True;
+	have_pixels_changed = True;
       }
     } /* user specified */
     else if (sh == NULL)
     {
-      /* default */
-      cs->shadow = GetShadow(cs->bg);
+      if (privateCells) {
+	color.pixel = cs->bg;
+	XQueryColor(dpy, Pcmap, &color);
+	color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
+	color.pixel = cs->shadow;
+	XStoreColor(dpy, Pcmap, &color);
+      } else {
+        cs->shadow = GetShadow(cs->bg);
+	have_pixels_changed = True;
+      }
     }
   } /* has_sh_changed */
 
   /*
-   * ---------- change the background pixmap ----------
+   * ---------- change the transparent parts of the background pixmap ----------
    */
-  if (has_pixmap_changed || has_bg_changed)
+  if ((cs->mask != None) && (has_pixmap_changed || has_bg_changed))
   {
-    update = True;
-    has_pixmap_changed = True;
-
     /* Now that we know the background colour we can update the pixmap
      * background. */
-    if (cs->mask != None)
-    {
-      /* default to background colour where pixmap is transparent */
-      XSetForeground(dpy, gc, cs->bg);
-      XSetClipMask(dpy, gc, cs->mask);
-      XFillRectangle(dpy, cs->pixmap, gc, 0, 0, cs->width, cs->height);
-      XSetClipMask(dpy, gc, None);
-    }
+    /* default to background colour where pixmap is transparent */
+    XSetForeground(dpy, gc, cs->bg);
+    XSetClipMask(dpy, gc, cs->mask);
+    XFillRectangle(dpy, cs->pixmap, gc, 0, 0, cs->width, cs->height);
+    XSetClipMask(dpy, gc, None);
+    has_pixmap_changed = True;
   } /* has_pixmap_changed */
-
-  /*
-   * ---------- change the shape mask ----------
-   */
-  if (has_shape_changed)
-  {
-    update = True;
-  }
 
   /*
    * ---------- send new colorset to fvwm and clean up ----------
@@ -824,7 +815,7 @@ static void parse_colorset(char *line)
   XSync(dpy, False);
 
   /* inform fvwm of the change */
-  if (update)
+  if (have_pixels_changed || has_pixmap_changed || has_shape_changed)
     SendText(fd, DumpColorset(n), 0);
 
   if (fg)
@@ -835,6 +826,12 @@ static void parse_colorset(char *line)
     free(hi);
   if (sh)
     free(sh);
+
+  /* if privateCells are not being used and XAllocColor has been used
+   * we are stuck in sharedCells behaviour forever */
+  /* have_pixels_changed will be set if a new colorset has been made */
+  if (!privateCells && have_pixels_changed)
+    sharedCells = True;
 }
 
 /* SendToMessage options */
