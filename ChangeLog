@@ -1,3 +1,9 @@
+1999-02-16  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/bindings.c (ParseBindEntry): Specifying 'any' modifier and
+	specific modifiers together in a key binding made the whole binding
+	fail to work
+
 1999-02-15  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/functions.c (FindBuiltinFunction):

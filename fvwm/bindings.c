@@ -224,6 +224,7 @@ void ParseBindEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     fvwm_msg(WARN,"ParseBindEntry",
              "Binding specified AnyModifier and other modifers too. Excess modifiers will be ignored.");
+    mods &= AnyModifier;
   }
 
   if((!fKey)&&(contexts & C_WINDOW)&&(((mods==0)||mods == AnyModifier)))
