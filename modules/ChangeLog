@@ -1,3 +1,9 @@
+2002-10-18  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIconMan/x.c:
+	* FvwmIconMan/xmanager.c: 
+	Replaced (Pdepht < 2) test by (PictureUseBWOnly())
+	
 2002-10-17  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmBacker/FvwmBacker.1: 

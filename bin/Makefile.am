@@ -1,6 +1,10 @@
 ## Process this file with automake to create Makefile.in
 
 bin_PROGRAMS = fvwm-root
+
+fvwm_root_SOURCE= fvwm-root.c
+fvwm_root_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+
 bin_SCRIPTS = \
 	fvwm-config fvwm-bug fvwm-perllib \
 	fvwm-convert-2.4 fvwm-convert-2.6 \

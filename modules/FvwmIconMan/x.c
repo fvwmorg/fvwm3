@@ -21,6 +21,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/PictureUtils.h"
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
 
@@ -539,7 +540,7 @@ static int load_default_context_fore (WinManager *man, int i)
 {
   int j = 0;
 
-  if (Pdepth > 2)
+  if (!PictureUseBWOnly())
     j = 1;
 
   ConsoleDebug (X11, "Loading: %s\n", contextDefaults[i].backcolor[j]);
@@ -551,7 +552,7 @@ static int load_default_context_back (WinManager *man, int i)
 {
   int j = 0;
 
-  if (Pdepth > 2)
+  if (!PictureUseBWOnly())
     j = 1;
 
   ConsoleDebug (X11, "Loading: %s\n", contextDefaults[i].backcolor[j]);
@@ -651,7 +652,7 @@ void X_init_manager (int man_id)
 		      contextDefaults[i].name);
     }
 
-    if (Pdepth > 2) {
+    if (!PictureUseBWOnly()) {
       if (man->colorsets[i] >= 0) {
 	man->shadowcolor[i] = Colorset[man->colorsets[i]].shadow;
 	man->hicolor[i] = Colorset[man->colorsets[i]].hilite;
@@ -951,7 +952,7 @@ void create_manager_window (int man_id)
 	  gcval.background = man->forecolor[i];
 	  man->flatContext[i] = fvwmlib_XCreateGC(
 		  theDisplay, man->theWindow, gcmask, &gcval);
-	  if (Pdepth > 2)
+	  if (!PictureUseBWOnly())
 	  {
 		  gcmask = GCForeground | GCBackground;
 		  gcval.foreground = man->hicolor[i];
@@ -1026,9 +1027,6 @@ void init_display (void)
   x_fd = XConnectionNumber (theDisplay);
   theScreen = DefaultScreen (theDisplay);
   theRoot = RootWindow (theDisplay, theScreen);
-#ifdef TEST_MONO
-  Pdepth = 2;
-#endif
 
   ConsoleDebug (X11, "screen width: %d\n", globals.screen_g.width);
   ConsoleDebug (X11, "screen height: %d\n", globals.screen_g.height);
@@ -1131,7 +1129,7 @@ void change_colorset(int color)
 			XSetForeground (
 				theDisplay, man->flatContext[i],
 				man->backcolor[i]);
-			if (Pdepth > 2) {
+			if (!PictureUseBWOnly()) {
 				XSetBackground (
 					theDisplay, man->reliefContext[i],
 					man->backcolor[i]);

@@ -23,6 +23,7 @@
 #include "x.h"
 #include "xmanager.h"
 #include "libs/PictureGraphics.h"
+#include "libs/PictureUtils.h"
 
 extern FlocaleWinString *FwinString;
 
@@ -1310,7 +1311,7 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 	}
 	else
 	{
-		if (Pdepth > 2)
+		if (!PictureUseBWOnly())
 		{
 			draw_3d_icon (man, box, g, iconified, contextId);
 		}
@@ -1623,7 +1624,7 @@ static void draw_button(WinManager *man, int button, int force)
 			draw_button_background(man, bounding, g, button_state);
 			cleared_button = 1
 ;
-			if (Pdepth > 2)
+			if (!PictureUseBWOnly())
 			{
 				get_gcs(
 					man, button_state, win->iconified,
@@ -1757,7 +1758,7 @@ static void draw_empty_manager (WinManager *man)
 		r.height = g.button_h;
 		draw_button_background(man, r, g, state);
 	}
-	if (Pdepth > 2)
+	if (!PictureUseBWOnly())
 	{
 		get_gcs (man, state, 0, &context1, &context2);
 		draw_relief (man, state, &g, context1, context2);

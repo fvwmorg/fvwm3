@@ -59,11 +59,15 @@
 #define FAST_DIST(r1,g1,b1,r2,g2,b2) (long)\
                    (abs((long)(r1 - r2)) \
 		+   abs((long)(g1 - g2)) \
-                +   abs((double)(b1 - b2)))
+                +   abs((long)(b1 - b2)))
 
-#define USED_DIST(r1,g1,b1,r2,g2,b2) TRUE_DIST(r1,g1,b1,r2,g2,b2)
+#define FVWM_DIST(r1,g1,b1,r2,g2,b2) \
+                   (abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)) \
+                +   2*abs(abs(r1-g1) + abs(g1-b1) - abs(r2-g2) - abs(g2-b2))
 
-#define PICTURE_COLOR_CLOSENESS USED_DIST(3333,3333,3333,0,0,0)
+#define USED_DIST(r1,g1,b1,r2,g2,b2) FVWM_DIST(r1,g1,b1,r2,g2,b2)
+
+#define PICTURE_COLOR_CLOSENESS USED_DIST(3,3,3,0,0,0)
 
 #define PICTURE_PAllocTable         1000000
 #define PICTURE_PUseDynamicColors   100000
@@ -101,6 +105,7 @@ typedef struct
 	short nr;
 	short ng;
 	short nb;
+	short ngrey;
 	/* grey palette def, nbr of grey = 2^grey_bits */
 	short grey_bits;
 	/* color cube used for dithering with the named table */
@@ -151,7 +156,7 @@ static short *PDitherMappingTable = NULL;
 static Bool PStrictColorLimit = 0;
 static Bool PAllocTable = 0;
 static PColorsInfo Pcsi = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL,
 	NULL};
 
 /* ---------------------------- exported variables (globals) ---------------- */
@@ -465,19 +470,77 @@ int get_color_index(int r, int g, int b, int is_8)
 	else
 	{
 #if 1
-		/* exact computation (linear dist) */
+		/* "exact" computation (corrected linear dist) */
 		float fr,fg,fb;
 		int ir, ig, ib;
 
+		/* map to the cube */
 		fr = ((float)r * (Pcsi.nr-1))/255;
 		fg = ((float)g * (Pcsi.ng-1))/255;
 		fb = ((float)b * (Pcsi.nb-1))/255;
 
-		ir = (int)fr + (fr - (int)fr > 0.5);
-		ig = (int)fg + (fg - (int)fg > 0.5);
-		ib = (int)fb + (fb - (int)fb > 0.5);
+		if (PMappingTable != NULL)
+		{
+			ir = (int)fr + (fr - (int)fr > 0.5);
+			ig = (int)fg + (fg - (int)fg > 0.5);
+			ib = (int)fb + (fb - (int)fb > 0.5);
 
-		index = ir * Pcsi.ng*Pcsi.nb + ig * Pcsi.nb + ib;
+			index = ir * Pcsi.ng*Pcsi.nb + ig * Pcsi.nb + ib;
+		}
+		else
+		{
+			/* found the best of the 8 linear closest points */
+			int lr,lg,lb,tr,tg,tb,best_dist = -1,i,d;
+
+			index = 0;
+			lr = min((int)fr+1,Pcsi.nr-1);
+			lg = min((int)fg+1,Pcsi.ng-1);
+			lb = min((int)fb+1,Pcsi.nb-1);
+			for(tr =(int)fr; tr<=lr; tr++)
+			{
+				for(tg =(int)fg; tg<=lg; tg++)
+				{
+					for(tb =(int)fb; tb<=lb; tb++)
+					{
+						i = tr * Pcsi.ng*Pcsi.nb +
+							tg * Pcsi.nb +
+							tb;
+						d = USED_DIST(
+							r,g,b,
+							(Pct[i].color.red>>8),
+							(Pct[i].color.green>>8),
+							(Pct[i].color.blue>>8));
+						if (best_dist == -1 ||
+						    d < best_dist)
+						{
+							index = i;
+							best_dist = d;
+						}
+					}
+				}
+			}
+
+			/* now found the best grey */
+			if (Pcsi.ngrey - 2 > 0)
+			{
+				/* FIXME: speedup this with more than 8 grey */
+				int start = Pcsi.ng*Pcsi.nb*Pcsi.nb;
+				for(i=start; i < start+Pcsi.ngrey-2; i++)
+				{
+					d = USED_DIST(
+						r,g,b,
+						(Pct[i].color.red>>8),
+						(Pct[i].color.green>>8),
+						(Pct[i].color.blue>>8));
+					if (d < best_dist)
+					{
+						index = i;
+						best_dist = d;
+					}
+				}
+			}
+			return index;
+		}
 #else
 		/* approximation; faster */
 		index = ((r * Pcsi.nr)>>8) * Pcsi.ng*Pcsi.nb +
@@ -567,32 +630,25 @@ int alloc_color_in_table_dither(
 	return alloc_color_in_pct(c, index);
 }
 
-int alloc_color_in_table_no_limit(
+int alloc_color_dynamic_no_limit(
 	Display *dpy, Colormap cmap, XColor *c, Bool is_8)
 {
 	if (XAllocColor(dpy, cmap, c))
 	{
 		return 1;
 	}
-	if (Pvisual->class != DirectColor)
+	if (!alloc_color_in_cmap(c, False))
 	{
-		if (!alloc_color_in_cmap(c, False))
-		{
-			int status;
+		int status;
 
-			XGrabServer(dpy);
-			status = alloc_color_in_cmap(c, True);
-			XUngrabServer(dpy);
-			return status;
-		}
-		else
-		{
-			return 1;
-		}
+		XGrabServer(dpy);
+		status = alloc_color_in_cmap(c, True);
+		XUngrabServer(dpy);
+		return status;
 	}
 	else
 	{
-		return alloc_color_static(dpy, cmap, c, is_8);
+		return 1;
 	}
 	return 0;
 }
@@ -628,7 +684,7 @@ XColor *build_mapping_colors(int nr, int ng, int nb)
 	return colors;
 }
 
-short *build_mapping_table(int nr, int ng, int nb)
+short *build_mapping_table(int nr, int ng, int nb, Bool use_named)
 {
 	int size = nr*ng*nb;
 	XColor *colors_map;
@@ -644,12 +700,25 @@ short *build_mapping_table(int nr, int ng, int nb)
 		minind = 0;
 		for(j=0; j<PColorLimit; j++)
 		{
-			dst = USED_DIST(colors_map[i].red,
-					colors_map[i].green,
-					colors_map[i].blue,
-					Pct[j].color.red,
-					Pct[j].color.green,
-					Pct[j].color.blue);
+			if (use_named)
+			{
+				/* for back ward compatibility */
+				dst = TRUE_DIST(colors_map[i].red,
+						colors_map[i].green,
+						colors_map[i].blue,
+						Pct[j].color.red,
+						Pct[j].color.green,
+						Pct[j].color.blue);
+			}
+			else
+			{
+				dst = USED_DIST(colors_map[i].red,
+						colors_map[i].green,
+						colors_map[i].blue,
+						Pct[j].color.red,
+						Pct[j].color.green,
+						Pct[j].color.blue);
+			}
 			if (j == 0 || dst < mindst)
 			{
 				mindst=dst;
@@ -987,7 +1056,7 @@ void create_mapping_table(
 			Pcsi.d_nb = 4;
 		}
 		PDitherMappingTable = build_mapping_table(
-			Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb);
+			Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb, use_named);
 	}
 
 	/* initialize colors number fo index computation */
@@ -997,6 +1066,7 @@ void create_mapping_table(
 		Pcsi.nr = 0;
 		Pcsi.ng = 0;
 		Pcsi.nb = 0;
+		Pcsi.ngrey = 0;
 		Pcsi.grey_bits = 1;
 	}
 	else if (grey_bits > 0)
@@ -1004,29 +1074,38 @@ void create_mapping_table(
 		Pcsi.nr = 0;
 		Pcsi.ng = 0;
 		Pcsi.nb = 0;
+		Pcsi.ngrey = 0;
 		Pcsi.grey_bits = grey_bits;
 	}
-	else if (use_named || (ngrey > 0))
+	else if (use_named || (0&&ngrey>0))
 	{
+		/* note: using these table with !used_named && ngrey>0 will
+		 * probably leads to faster image loading. But I see nothing
+		 * of significative. On the others hands not using it gives
+		 * maybe better colors approximation. */
 		if (PColorLimit <= 9)
 		{
 			Pcsi.nr = 8;
 			Pcsi.ng = 8;
 			Pcsi.nb = 8;
+			Pcsi.ngrey = 0;
 		}
 		else
 		{
 			Pcsi.nr = 16;
 			Pcsi.ng = 16;
 			Pcsi.nb = 16;
+			Pcsi.ngrey = 0;
 		}
-		PMappingTable = build_mapping_table(Pcsi.nr, Pcsi.ng, Pcsi.nb);
+		PMappingTable = build_mapping_table(
+			Pcsi.nr, Pcsi.ng, Pcsi.nb, use_named);
 	}
 	else
 	{
 		Pcsi.nr = nr;
 		Pcsi.ng = ng;
 		Pcsi.nb = nb;
+		Pcsi.ngrey = ngrey;
 		Pcsi.grey_bits = 0;
 	}
 }
@@ -1085,7 +1164,7 @@ static
 int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 {
 	char *envp;
-	int free_colors, map_entries, limit, cc_nbr, i, size;
+	int free_colors, nbr_of_color, limit, cc_nbr, i, size;
 	int use_named_table = 0;
 	int do_allocate = 0;
 	int use_default = 1;
@@ -1226,9 +1305,8 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 		}
 	}
 
-	map_entries = (Pvisual->class == DirectColor)?
-		(1 << Pdepth) : Pvisual->map_entries;
-	color_limit = map_entries;
+	nbr_of_color = (1 << Pdepth);
+	color_limit = 0;
 
 	/* parse the color limit env variable */
 	if ((envp = opt) != NULL || (envp = getenv("FVWM_COLORLIMIT")) != NULL)
@@ -1294,7 +1372,7 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	if (color_limit == 0)
 	{
 		use_default = 1;
-		color_limit = map_entries;
+		color_limit = nbr_of_color;
 	}
 
 	/* first try to see if we have a "pre-allocated" color cube.
@@ -1312,19 +1390,18 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	 * imlib2 try to allocate the 666 cube if this fail it try more
 	 * exotic table (see rend.c and rgba.c) */
 	i = 0;
-	if (Pdepth <= 8 && !private_cmap && use_default && i < cc_nbr &&
-	    Pct == NULL)
-	{
-		free_colors = get_nbr_of_free_colors(map_entries);
-	}
 	while(Pdepth <= 8 && !private_cmap && use_default &&
-	      i < cc_nbr && Pct == NULL)
+	      i < cc_nbr && Pct == NULL && (Pvisual->class & 1))
 	{
-		free_colors = get_nbr_of_free_colors(map_entries);
 		size = cc[i][0]*cc[i][1]*cc[i][2] + cc[i][3] - 2*(cc[i][3] > 0) +
 			(1 << cc[i][4])*(cc[i][4] != 0);
-		if ((cc[i][5] & pa_type) && size <= map_entries &&
-		    free_colors < map_entries - size)
+		if (size > nbr_of_color || !(cc[i][5] & pa_type))
+		{
+			i++;
+			continue;
+		}
+		free_colors = get_nbr_of_free_colors(nbr_of_color);
+		if (free_colors <= nbr_of_color - size)
 		{
 			Pct = alloc_color_cube(
 				cc[i][0], cc[i][1], cc[i][2], cc[i][3], cc[i][4],
@@ -1333,7 +1410,7 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 		if (Pct != NULL)
 		{
 			if (free_colors <=
-			    get_nbr_of_free_colors(map_entries))
+			    get_nbr_of_free_colors(nbr_of_color))
 			{
 				/* done */
 			}
@@ -1367,16 +1444,16 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	 * now use "our" table
 	 */
 
-	limit = (color_limit >= map_entries)? map_entries:color_limit;
+	limit = (color_limit >= nbr_of_color)? nbr_of_color:color_limit;
 
 	if (use_default && !private_cmap)
 	{
 		/* XRender cvs default: */
 #if 0
 		if (limit > 100)
-			limit = map_entries/3;
+			limit = nbr_of_color/3;
 		else
-			limit = map_entries/2;
+			limit = nbr_of_color/2;
 		/* depth 8: 85 */
 		/* depth 4: 8 */
 #endif
@@ -1795,11 +1872,58 @@ void PictureReduceColorName(char **my_color)
 	return;
 }
 
+Bool PictureDitherByDefault(void)
+{
+	if (Pct != NULL)
+	{
+		return True;
+	}
+	return False;
+}
+
+Bool PictureUseBWOnly(void)
+{
+	if (Pdepth < 2 || (PStrictColorLimit && PColorLimit == 2))
+	{
+		return True;
+	}
+	return False;
+}
+
 int PictureInitColors(
 	int call_type, Bool init_color_limit, char *opt,
 	Bool use_my_color_limit, Bool init_dither)
 {
-	if (!(Pvisual->class & 1))
+	if (!use_my_color_limit && opt == NULL)
+	{
+		opt = getenv("FVWM_COLORTABLE_TYPE");
+	}
+
+	switch (Pvisual->class)
+	{
+	case TrueColor:
+	case StaticColor:
+	case DirectColor:
+		decompose_mask(
+			Pvisual->red_mask, &Pcsi.red_shift,
+			&Pcsi.red_prec);
+		decompose_mask(
+			Pvisual->green_mask, &Pcsi.green_shift,
+			&Pcsi.green_prec);
+		decompose_mask(
+			Pvisual->blue_mask, &Pcsi.blue_shift,
+			&Pcsi.blue_prec);
+		Pcsi.alloc_color_no_limit = alloc_color_static;
+		break;
+	case StaticGray:
+		Pcsi.alloc_color_no_limit = alloc_color_static_grey;
+		break;
+	default: /* PseudoColor, GrayScale */
+		Pcsi.alloc_color_no_limit = alloc_color_dynamic_no_limit;
+		break;
+	}
+
+	if (!(Pvisual->class & 1) && opt == NULL)
 	{
 		Bool dither_ok = False;
 
@@ -1808,23 +1932,11 @@ int PictureInitColors(
 		PUseDynamicColors = 0;
 		if (Pvisual->class != StaticGray)
 		{
-			/* for computing directly the pixel */
-			decompose_mask(
-				Pvisual->red_mask, &Pcsi.red_shift,
-				&Pcsi.red_prec);
-			decompose_mask(
-				Pvisual->green_mask, &Pcsi.green_shift,
-				&Pcsi.green_prec);
-			decompose_mask(
-				Pvisual->blue_mask, &Pcsi.blue_shift,
-				&Pcsi.blue_prec);
 			Pcsi.alloc_color = alloc_color_static;
-			Pcsi.alloc_color_no_limit = alloc_color_static;
 		}
 		else
 		{
 			Pcsi.alloc_color = alloc_color_static_grey;
-			Pcsi.alloc_color_no_limit = alloc_color_static_grey;
 		}
 		if (init_dither && (Pdepth == 15 || Pdepth == 16))
 		{
@@ -1846,7 +1958,7 @@ int PictureInitColors(
 		return 0;
 	}
 
-	/* dynamic classes */
+	/* dynamic classes or testing */
 	if (!Pdefault && Pvisual->class == DirectColor)
 	{
 		PColorLimit = 0;
@@ -1863,31 +1975,34 @@ int PictureInitColors(
 		return 0;
 	}
 
-	if (Pvisual->class == DirectColor)
-	{
-		/* for no limit */
-		decompose_mask(
-			Pvisual->red_mask, &Pcsi.red_shift,
-			&Pcsi.red_prec);
-		decompose_mask(
-			Pvisual->green_mask, &Pcsi.green_shift,
-			&Pcsi.green_prec);
-		decompose_mask(
-			Pvisual->blue_mask, &Pcsi.blue_shift,
-			&Pcsi.blue_prec);
-	}
+
 	if (init_color_limit)
 	{
 		Pcsi.alloc_color = alloc_color_in_table;
-		Pcsi.alloc_color_no_limit = alloc_color_in_table_no_limit;
 		Pcsi.alloc_color_dither = alloc_color_in_table_dither;
 		PictureAllocColorTable(opt, call_type, use_my_color_limit);
 	}
 	else
 	{
-		Pcsi.alloc_color = alloc_color_in_table_no_limit;
-		Pcsi.alloc_color_no_limit = alloc_color_in_table_no_limit;
+		if (!(Pvisual->class & 1))
+		{
+			Pcsi.alloc_color = alloc_color_static;
+		}
+		else
+		{
+			Pcsi.alloc_color = alloc_color_dynamic_no_limit;
+		}
 		Pcsi.alloc_color_dither = NULL;
+	}
+	if (!(Pvisual->class & 1))
+	{
+		PUseDynamicColors = 0;
+		if (call_type == PICTURE_CALLED_BY_FVWM)
+		{
+			fprintf(stderr,
+				"[FVWM] WARNING -- You should not use the "
+				"-color-limit option\n");
+		}
 	}
 	return PColorLimit;
 }
@@ -1927,10 +2042,17 @@ void PicturePrintColorInfo(int verbose)
 		Pdepth, (unsigned long)(1 << Pdepth));
 	if (Pct != NULL)
 	{
-		fprintf(stderr,"\n  Pallet with: %i colors, ", PColorLimit);
-		fprintf(stderr," Number of free colors: %i\n",
-			get_nbr_of_free_colors((1 << Pdepth)));
-		if (verbose && Pdepth <= 8)
+		fprintf(stderr,"\n  Pallet with %i colors", PColorLimit);
+		if (Pvisual->class & 1)
+		{
+			fprintf(stderr,", Number of free colors: %i\n",
+				get_nbr_of_free_colors((1 << Pdepth)));
+		}
+		else
+		{
+			fprintf(stderr," for testing propose\n");
+		}
+		if (verbose && PColorLimit <= 256)
 		{
 			int i;
 

@@ -385,7 +385,7 @@ static void parse_pixmap(
 
 	/* dither */
 	fpa.mask = 0;
-	if (cs->dither && Pdepth <= 16)
+	if (cs->dither)
 	{
 		fpa.mask = FPAM_DITHER;
 	}
@@ -1627,7 +1627,7 @@ void alloc_colorset(int n)
 	{
 		colorset_struct *ncs = &Colorset[nColorsets];
 
-		if (Pdepth < 2)
+		if (PictureUseBWOnly())
 		{
 			char g_bits[] = {0x0a, 0x05, 0x0a, 0x05,
 					 0x08, 0x02, 0x08, 0x02,
@@ -1670,7 +1670,7 @@ void alloc_colorset(int n)
 		ncs->tint_percent = 0;
 		ncs->icon_tint_percent = 0;
 		ncs->fg_tint_percent = ncs->bg_tint_percent = 0;
-		ncs->dither = (Pdepth <= 8)? True:False;
+		ncs->dither = (PictureDitherByDefault())? True:False;
 		nColorsets++;
 	}
 }
