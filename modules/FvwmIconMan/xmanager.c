@@ -643,8 +643,35 @@ void set_win_iconified (WinData *win, int iconified)
    * the background colour of the button (gradient background). Thus the button
    * has to be redrawn completely, we can not just draw the square in the
    * background colour. */
-  if (win->button && win->iconified != iconified)
+   char string[256];
+
+  if (win->button != NULL && (win->iconified != iconified) ) {
+    /* we check the win->button width and height because they will only
+     * be == zero on init, and if we didn't check we would get animations of
+     * all iconified windows to the far left of whereever thae manager would
+     * eventually be. */
+    if (win->manager->AnimCommand && (win->manager->AnimCommand[0] != 0)
+       && (win->button->w != 0) && (win->button->h !=0) ) {
+      if (iconified) {
+        sprintf(string, "%s %d %d %d %d %d %d %d %d",
+                win->manager->AnimCommand,
+                win->x, win->y, win->width, win->height,
+                win->manager->geometry.x + win->button->x,
+                win->manager->geometry.y + win->button->y,
+                win->button->w, win->button->h);
+      } else {
+        sprintf(string, "%s %d %d %d %d %d %d %d %d",
+                win->manager->AnimCommand,
+                win->manager->geometry.x + win->button->x,
+                win->manager->geometry.y + win->button->y,
+                win->button->w, win->button->h,
+                win->x, win->y, win->width, win->height);
+      }
+      SendText (Fvwm_fd, string, 0);
+  
+    }
     win->button->drawn_state.dirty_flags |= STATE_CHANGED;
+  }
 #endif
   win->iconified = iconified;
 }

@@ -302,6 +302,7 @@ typedef struct win_manager {
   Uchar followFocus;
   Uchar usewinlist;
   SortType sort;
+  char *AnimCommand;
 
   /* X11 state */
   Window theWindow, theFrame;

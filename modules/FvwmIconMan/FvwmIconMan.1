@@ -246,6 +246,13 @@ Same as the plainbutton option, but specifies the look of the title button
 (the button drawn when the manager is empty). The manager's title is drawn
 in the title button.
 
+.IP "*FvwmIconMan*[id*]NoIconAction  \fIaction\fP"
+Tells FvwmIconMan to do \fIaction\fP when a NoIcon style window is
+iconified or deiconified. Relevant coordinates are appended to \fIaction\fP so
+that the icon can be traced to an FvwmIconMan button. An example action
+is "*FvwwmIconMan*NoIconAction SendToModule FvwmAnimate animate". A blank or null
+action turns this feature off.
+
 .PP
 The two following options control which windows get handled by which
 managers. A manager can get two lists, one of windows to show, and one of
@@ -530,6 +537,7 @@ Key F9 A N SendToModule FvwmIconMan bif select Select, bif focus Focus, gotomana
 *FvwmIconMan*focusbutton          up white brown
 *FvwmIconMan*focusandselectButton down white brown
 *FvwmIconMan*titleButton          raisededge white steelblue
+*FvwmIconMan*NoIconAction         SendToModule FvwmAnimate animate
 
 *FvwmIconMan*1*title           "Emacs windows"
 *FvwmIconMan*1*iconname        "FvwmIconMan: Emacs"

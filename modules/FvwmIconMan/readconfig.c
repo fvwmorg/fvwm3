@@ -1560,6 +1560,24 @@ void read_in_resources (char *file)
 	ConsoleDebug (CONFIG, "Setting sort to: %d\n", i);
 	SET_MANAGER (manager, sort, i);
       }
+      else if (!strcasecmp (option1, "NoIconAction")) {
+	char *token;
+	p = read_next_cmd (READ_REST_OF_LINE);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	DoGetNextToken (p, &token, NULL, ",", NULL);
+	if (!token)
+	  {
+	    token = (char *)safemalloc(1);
+	    *token = 0;
+	  }
+
+	SET_MANAGER (manager, AnimCommand,
+		     copy_string (&globals.managers[id].AnimCommand, token));
+	Free (token);
+      }
       else if (!strcasecmp (option1, "title")) {
 	char *token;
 	p = read_next_cmd (READ_REST_OF_LINE);
