@@ -1342,7 +1342,7 @@ else
     else
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $XFT_CFLAGS"
+      CFLAGS="$XFT_CFLAGS $CFLAGS"
       LIBS="$XFT_LIBS $LIBS"
 dnl
 dnl Sanity checks for the results of xft-config to some extent

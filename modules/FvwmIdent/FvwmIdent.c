@@ -1087,8 +1087,8 @@ void MakeList(void)
       }
     }
     AddToList("Focus Policy:",focus_policy);
-    AddToList("	 - Input Field:",ifstr);
-    AddToList("	 - WM_TAKE_FOCUS:",tfstr);
+    AddToList("  - Input Field:",ifstr);
+    AddToList("  - WM_TAKE_FOCUS:",tfstr);
     {
       long supplied_return;		/* flags, hints that were supplied */
       int getrc;
