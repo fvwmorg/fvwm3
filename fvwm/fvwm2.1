@@ -36,7 +36,7 @@
 .\" (3/Feb/2001).
 .\"
 .\" A note to everyone who needs to write dates.  Don't use 2/3/01
-.\" notation, .\" a non-american person simply can't parse such
+.\" notation, a non-american person simply can't parse such
 .\" sequence of digits.  Please use 3-Feb-2001 or 2001-02-03 forms.
 .\" migo 16/May/2001.
 .\"
@@ -907,15 +907,13 @@ keyboard key.  It is left as an exercise for the user to decide
 which function make sense for initialization and which ones make
 sense for run-time.
 
-
 .SH SUPPLIED CONFIGURATION
 
 A sample configuration file,
 .IR .fvwm2rc ,
 is supplied with the fvwm distribution.  It is well commented and
 can be used as a source of examples for fvwm configuration.
-
-
+.\"
 .\" .SH INTERNATIONALIZATION
 .\" Internationalized fvwm enables to display not only LATIN-1
 .\" characters but also multi byte characters such as Japanese,
@@ -969,7 +967,7 @@ is a comma separated list of (simple) XLFD font names, for example:
 -adobe-courier-bold-r-normal--14-*,-*-courier-medium-r-normal--14-*
 .EE
 Without multibyte support each simple font name is tried until a
-matching font is found. With multibyte support each simple font
+matching font is found.  With multibyte support each simple font
 name is tried until a matching font with the locale charset is
 found and if this fails each simple font name is tried without
 constraint on the charset.
@@ -1038,6 +1036,25 @@ xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
 then, if either loading the Xft font fails or fvwm has no Xft support,
 fvwm loads the font "-adobe-courier-bold-r-normal--14-*". This
 allows for writting portable configuration files.
+
+.SH BI-DIRECTIONAL TEXTS
+
+Arabic and Hebrew texts require bi-directional text support to be
+displayed correctly, this means that logical strings should be
+converted before their visual presentation, so left-to-right and
+right-to-left sub-strings are determined and reshuffled.
+In fvwm this is done automatically in window titles, menus,
+module labels and other places if fonts used for displaying the
+text are of one of the charsets that require
+.I bidi
+support.
+For example, this includes iso8859-6, iso8859-8 and iso10646-1
+(unicode), but not other iso8859-* fonts.
+
+This bi-directional text support is done using
+.I fribidi
+library that should be linked to fvwm, see
+.IR INSTALL.fvwm .
 
 .SH KEYBOARD SHORTCUTS
 
