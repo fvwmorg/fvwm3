@@ -1,3 +1,9 @@
+1999-02-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* cvs.html: 
+	* DEVELOPERS: document "automake --add-missing" step upon initial
+	checkout. 
+
 Tue Feb 23 10:31:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* links.html: updated changed links, removed some dead links and

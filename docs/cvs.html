@@ -77,10 +77,15 @@ This creates a "fvwm" directory in your current directory.  Get in
 there and get to work.
 
 <pre><font color="yellow"> cd fvwm
+ automake --add-missing
  autoreconf
+ ./configure
 </font></pre>
 
 You <em>did</em> remember to install autoconf and automake, right?
+You will get some warning messages from the automake and autoreconf
+programs.  As long as you end up with a working configure script, you
+can ignore them.
 
 <p>Once you are inside the working directory, you no longer need the
 long "-d :pserver:..." argument when issuing cvs commands.

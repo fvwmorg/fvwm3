@@ -1,3 +1,10 @@
+1999-02-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* auto*: removed all generated files from repository.  To
+	regenerate the files, you will need to do "automake --add-missing"
+	then "autoreconf".  Added .cvsignore files to ignore them during
+	updates.
+
 1999-02-26  Hippo
 
 	* fvwm/placement.c: fixed wandering on restart/recapture caused by

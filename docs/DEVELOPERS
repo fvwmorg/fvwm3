@@ -14,6 +14,15 @@ To build from the CVS sources, you will need:
   * automake (version >= 1.4)
 
 
+After the *initial* checkout of the sources, you will need to execute
+the following command from the top of the source tree.
+
+    automake --add-missing
+
+Now, configure and build as per INSTALL.fvwm and INSTALL.
+
+
+
 Changing a Makefile
 -------------------
 
