@@ -1,3 +1,18 @@
+1999-01-19  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* cvs.html: Major overhaul, bringing it up-to-date with current
+	conventions.  Added links to the GNU tools needed for building the
+	CVS tree.
+
+	* DEVELOPERS: Fixed a bug in the recipe for building a
+	distribution (use "cvs tag", rather than "cvs rtag").  Also
+	updated to reflect the situation after the auto*-generated files
+	are removed.
+
+	* BUGS: Removed Xpm library v4.7 coredump note.  The configure
+	script now ensures up-to-date xpm is used.  Added note about
+	removing config.cache file before reconfiguring.
+
 1999-01-18  Paul D. Smith  <psmith@gnu.org>
 
 	* BUGS: Remove install-strip issue.

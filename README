@@ -1,6 +1,6 @@
-Welcome to FVWM version 2.xx.  FVWM is a multiple large virtual
-desktop window manager originally derived from twm.  FVWM is intended
-to have a small memory footprint and a rich feature set, be extremely
+Welcome to FVWM version 2.x.  FVWM is a multiple large virtual desktop
+window manager originally derived from twm.  FVWM is intended to have
+a small memory footprint and a rich feature set, be extremely
 customizable and extendable and have a high degree of Motif mwm
 compatibility.
 
@@ -9,9 +9,7 @@ For old users of FVWM 1.xx, version 2.xx has a lot of differences.
 FVWM's origninal author Rob Nation (THANKS ROB!) has "retired" from
 work on it, so please don't bother him with silly little things like
 bug reports or enhancement requests.  Care and feeding of FVWM is now
-done by Brady Montz in his spare time, with help from everyone who
-subscribes to the FVWM mailing lists and various other people all over
-the world.
+done by volunteer FVWM Workers.
 
 If you have any questions, concerns, bug reports, enhancement
 requests, etc, *PLEASE* read the FAQ, BUGS, TODO and man files first,
@@ -24,5 +22,6 @@ on the situation)
 
 For info on compiling, check out the INSTALL file.
 
-For known bugs, check out the BUGS, FAQ and TODO files.
+For known bugs, check out the BUGS, FAQ and TODO files (these are
+found in the docs directory).
 

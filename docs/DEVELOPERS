@@ -1,21 +1,17 @@
 			Living with CVS and Autoconf                 -*-text-*-
 			----------------------------
 
-These notes are intended for code developers.
+These notes are intended for code developers.  
 
-You will need GNU gcc and GNU make to use the sources from the CVS
-server.  If you do not have these tools available, build from the tar
+You will need to install several GNU tools to be able to use the cvs
+sources.  If you do not have these tools available, build from the tar
 file distribution instead, available from ftp.hpc.uh.edu.
 
-All the derived files (the configure script, config.h.in, and all the
-Makefile.in's) are checked into the repository.  Hence, you need to
-know NOTHING about autoconf/automake to check out the sources and
-build it.  NOR do you need to install these tools.  You can even hack
-on the sources without these tools.
-
-The ONLY time you need the tools is if you have to change a makefile or
-the configure script.  Or if you want to build a tar file for
-distribution.
+To build from the CVS sources, you will need:
+  * GNU gcc 
+  * GNU make
+  * autoconf (version >= 2.13)
+  * automake (version >= 1.4)
 
 
 Changing a Makefile
@@ -30,22 +26,6 @@ Steps: 1. edit foo/blah/Makefile.am
 
 Step 2 will take care of rebuilding the Makefile.in and Makefile from your
 changed Makefile.am.
-
-As above, you must have automake installed in order to modify makefiles.
-PLEASE NOTE!  Automake will squirrel away some values in the automake
-script itself when it is configured.  These values then find their way
-into the Makefile.in files that automake generates.  Since we check in
-these files, it's imperative that everyone running automake use the
-_same_ values for these variables, or we'll be flip-flopping the
-Makefile.in files back and forth in CVS.
-
-In particular, after installing automake please edit the automake script
-itself and look for this line:
-
-  $TAR = "tar";
-
-If the value of the $TAR variable is _anything_ other than "tar" (e.g.,
-"gtar", "gnutar", etc.) please change it to plain "tar" immediately.
 
 Makefile.am has a simple format, basically:
 
@@ -80,21 +60,22 @@ Building a distribution
 
 By this, I mean the file "fvwm-x.y.z.tar.gz".
 
-Steps: 1. make sure the TAR variable in your automake script is set to 'tar'
-          as described above.
-       2. make sure you have XPM and a C++ compiler
-       3. tag the CVS tree:
-          cvs rtag -R version-x_y_z fvwm
-       4. configure with the flag --enable-extras
-       5. make
-       6. make distcheck
-       7. ensure that you see the message
+Steps: 1. make sure you have XPM and a C++ compiler
+       2. configure with the flag --enable-extras
+       3. make
+       4. make distcheck
+       5. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
-          before uploading the tar file somewhere
-       8. increase the version number in configure.in (see above)
 
-Steps 1, 3 and 8 are not required if you are builing a distribution
-just for fun.
+If this is to be an "official" release, then do also the following:
+
+       6. tag the CVS tree:
+          cvs tag version-x_y_z
+       7. increase the version number in configure.in (see above)
+       8. upload the file fvwm-x.y.z.tar.gz to 
+	  ftp://ftp.hpc.uh.edu/pub/incoming/fvwm
+       9. notify fvwm-owner@hpc.uh.edu of the upload
+
 
 One thing I've learned the hard way:
 
@@ -102,18 +83,18 @@ One thing I've learned the hard way:
         in order to build a distribution!
 
 In short: this means you need Xpm, and a C++ compiler, AND you have to
-configure using the flag --enable-extras.  The reason for this is that a
-couple of subdirectories are only built when using Xpm (xpmroot, for
+configure using the flag --enable-extras.  The reason for this is that
+a couple of subdirectories are only built when using Xpm (xpmroot, for
 example) or C++ (extras/FvwmConfig).  It is fine for end users to not
 build these.  However, the distribution-maker has to have all the
-directories enabled, else the files don't make it into the distribution
-tar file.
+directories enabled, else the files don't make it into the
+distribution tar file.
 
-Similarly, you need to have actually built everything before packing the
-distribution, hence step #3.  Among other things, this puts into the
-Makefile.in's the proper dependency information.
+Similarly, you need to have actually built everything before packing
+the distribution, hence step #4.  Among other things, this puts into
+the Makefile.in's the proper dependency information.
 
-Step 4 will create the tar file, then unpack it and attempt a build &
+Step 5 will create the tar file, then unpack it and attempt a build &
 install (to a scratch directory, not /usr/local).  This makes sure
 that you really DID include all the files necessary to build the
 package into the tar file. It may be hard to appreciate how useful
@@ -124,25 +105,6 @@ some day!
 
 Modules and Extras
 ------------------
-
-The "extra" modules are normally neither built nor installed.  They
-are, however, autoconfigured like the regular modules.  If you just
-want to build one or two extra modules, you can do:
-
-    ./configure
-    make; make install
-    cd extras/foo
-    make; make install
-
-On the other hand, if you want to build & install everything, you can
-arrange to treat the "extra" modules on the same footing as the
-regular modules.  The configure flag "enable-extras" turns on this
-behaviour.  If you do:
-
-    ./configure --enable-extras make; make install
-
-then all the "extra" modules are built and installed alongside the regular
-ones.
 
 There are short notes at the top of all the extras/*/Makefile.am files
 about what may have differed vis-a-vis the old Imakefiles.  Some of

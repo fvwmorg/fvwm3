@@ -11,8 +11,9 @@ the `modules' directory.  These are always built and installed.
 
 The second class modules are categorized as `extras'.  These are only
 built and installed if you explicitly do `cd extras; make install'.
-(You must do a build from the top-level directory first, so that
-`libs' is built.)
+You can also install extra modules one-by-one, using `cd extras/foo;
+make install'.  (You must do a build from the top-level directory
+first, so that `libs' is built.)
 
 If you prefer to treat the extras as first-class modules, give
 --enable-extras option to configure.  Then `make' and `make install'
@@ -23,6 +24,7 @@ What gets installed, and Where
 ==============================
 
 * fvwm2 is installed into ${prefix}/bin
+* a couple of utilities (xpmroot, etc) are also installed in ${prefix}/bin
 * all the modules (and extra modules) are installed
   into ${libexecdir}/fvwm2/${VERSION}
 
@@ -65,18 +67,18 @@ written in C++, so configure probes for a C++ compiler by default, and
 will build these modules only if a C++ compiler exists.  If configure
 doesn't do the right thing, specify one or the other of these flags:
 
-    --without-cxx   to disable probing for a C++ compiler altogether
     --with-cxx=foo  to use "foo" for compiling C++ programs
+    --without-cxx   to disable probing for a C++ compiler altogether
 
 
 CPP
 ===
 
-One of FVWM's modules, FvwmCpp, requires a C preprocessor program.  The
-configuration will look in various common places for cpp.  If one is
-not found, FvwmCpp will still compile but you'll need to invoke it with
-the -cpppath option to tell it where to get it's cpp.  If neither is
-specified, FvwmCpp will exit with an error message.
+One of FVWM's modules, FvwmCpp, requires a C preprocessor program.
+The configuration will look in various common places for cpp.  If one
+is not found, FvwmCpp will still compile but you'll need to invoke it
+with the -cpppath option to tell it where to find cpp.  FvwmCpp will
+exit with an error message if no path to cpp is known.
 
 You can tell configure what cpp to use by setting the FVWM_CPP
 environment variable before invoking configure:
@@ -92,23 +94,25 @@ rplay, and readline.  By default, these are probed for, and used if
 found.  If you want to use any of them, install the library before
 configuring FVWM.
 
-Xpm allows the use of coloured icons.  You can get libXpm from
-sunsite.unc.edu (precompiled for Linux), or the source from ftp.x.org.
+Xpm allows the use of coloured icons.  See the Xpm web page at
+http://www.inria.fr/koala/lehors/xpm.html for all the latest info and
+links to source code.  You can also get the source code from
+ftp://ftp.x.org/contrib/libraries.
 
-Rplay is used in one module (FvwmAudio) for playing sounds without
-invoking an external program.  It can be obtained via anonymous ftp at
-ftp.sdsu.edu in the /pub/rplay directory and at ftp.x.org in the
-/contrib/audio/rplay directory.
+Rplay is used in a few modules (FvwmEvent, for one) for playing sounds
+without invoking an external program.  This library appears to have
+been orphaned in November, 1996.  The latest version we know about is
+rplay 3.2.0beta6, available at ftp://ftp.x.org/contrib/audio/rplay.
 
 Readline is used in one module (FvwmConsole) to allow fancy
 command-line editing, a history buffer, etc.  It is GNU software, and
-should be found on any GNU site.
+should be found on any GNU site, such as ftp://ftp.gnu.org/pub/gnu/readline.
 
 If configure doesn't do the right thing, try one or more of the
 following flags (examples assume library is named "foo"):
 
     --without-foo-library    to disable probing for libfoo
-    --with-foo-library=FILE  to specify the library name
+    --with-foo-library=FILE  to specify the library filename
     --with-foo-library=DIR   to specify directory containing libfoo
     --with-foo-includes=DIR  to specify include directory for libfoo's
 			     headers

@@ -24,13 +24,17 @@ from our home page.
    the current page.
  - A piperead command may hang if used in .fvwm2rc (if the pipe is never
    closed).
- - fvwm2 may coredump if the Xpm library 4.7 is used. No problem with 4.11.
-   This seems to be a bug of the Xpm library.
  - StartsOnPage does not work as expected? Please read the manpage carefully.
 
 
 ======================================================================
 ======================================================================
+
+Configure remembers too many things, particularly with respect to the
+optional libraries.  If you ever need to re-run configure, using
+different --with options, please remove "config.cache" file first.
+
+----------------------------------------------------------------------
 
 Binding a key to a window decoration but not to the window itself is
 discouraged because when the key-press event finally gets to the

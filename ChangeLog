@@ -1,5 +1,12 @@
 1999-01-19  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
+	* README: Changed "care and feeding" info from Brady Montz to the
+	Fvwm Workers.
+
+	* INSTALL.fvwm: Updated the info & verified the URLs for the three
+	optional libraries (xpm, rplay, and readline).  Other small
+	wording changes.
+
 	* configure.in: 
 	* */Makefile.am: Make sure xpm_CFLAGS preceeds X_CFLAGS, so that
 	the include directory for xpm-includes is searched ahead of the

@@ -6,194 +6,244 @@
     bgcolor="#000000" text="#ffffff"
     link="#FFFF88" vlink="#EEDDDD" alink="#ff0000">
 <center>
+
 <h1><font color="pink">The Official FVWM Homepage - CVS Procedures</font></h1>
 </center>
 
-<H2> <font color="turquoise">Overview</font></h2>
 Fvwm2 development uses a CVS server.
 
-To know  what is going in  with the source tree  you should be reading
-mail      on   the    Fvwm      Workers      List.    See   the     <a
-href"mailinglist.html">Mailing  List     Info</a>  page      for  more
+<p><b>Note:</b> the state of code in the CVS repository fluctuates
+wildly.  It will contain bugs, maybe ones that crash the program.  It
+may not even compile for you.  Consider it alpha-quality code.
+You have been warned.
+
+
+<H2> <font color="turquoise">Overview</font></h2>
+
+To know what is going in with the source tree you should be reading
+mail on the Fvwm Workers List.  See the <a
+href="mailinglist.html">Mailing List Info</a> page for more
 information.
 
-<H2> <font color="turquoise">Development Source Code Download</font></h2>
-To just download development source code, you can use the "anonymous" login.
-Of course, you need the cvs client software on your local machine.
-First you must login:
+<p>To build fvwm2 from the CVS sources, you need to have several <a
+href="http://www.gnu.org/">GNU</a> tools:
+<ul>
+<li>the <a href="http://www.gnu.org/software/cvs/cvs.html">CVS</a> client
+version 1.9 or better,
+<li><a href="http://www.gnu.org/software/gcc/gcc.html">GCC</a>,
+<li>GNU <a href="http://www.gnu.org/software/make/make.html">make</a>,
+<li><a
+href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a>,
+version 2.13 or better, and 
+<li><a
+href="http://www.gnu.org/software/automake/automake.html">automake</a>,
+version 1.4 or better.
+</ul>
 
-<pre><font color="yellow">
-cvs -z3 -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm login
-</pre></font>
-(The password is 'guest').  If you see no reaction to this command
-that indicates it worked.
 
-Then you can checkout the latest source code with:
-<pre><font color="yellow">
-cvs -z3 -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm checkout fvwm
-</pre></font>
+<H2> <font color="turquoise">The Initial Download</font></h2>
 
-This creates a "fvwm" directory in your current directory.  Under the
-"fvwm" directory you will find the current main branch source code.
-<b>Note:</b> the state of this code fluctuates wildly.  It will
-contain bugs, maybe ones that crash the program; it may not even
-compile for you.  Consider it alpha-quality code.
+To make life easier on yourself, create the file `~/.cvsrc', and
+insert the following lines.  These set useful default options for the
+three most used CVS commands.  Do this now before going any further.
 
-<H2> <font color="turquoise">Branches</font></h2>
-You can see branches off the main branch by using the "status -v" command:
-<pre><font color="yellow">
-cd fvwm
-cvs status -v README
-</pre></font>
+<pre><font color="yellow"> diff -u -b -B
+ checkout -P
+ update -d -P
+</font></pre>
 
-(Once you "cd" into the source directory, you no longer have to type in
-the whole "-d" argument, its stored inside the source tree.)
+Also, if you are on a slow net link (like a dialup), you'll also want
+a line saying `cvs -z3' in the file.  This turns on a useful
+compression level for all cvs commands.  Setting it higher will only
+waste your CPU time.
 
-The "status -v" command should be issued against a file that has been in the source
-tree from the very beginning.  The "README" file is always a good bet.
+<p>Before you can download development source code for the first time,
+you must login.
 
-To retrieve a branch, you can do the "checkout" shown above with the "-r branch_name"
-argument:
-<pre><font color="yellow">
-cvs -z3 -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm checkout -r branch_name fvwm
-</pre></font>
+<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm login 
+</font></pre>
 
-<H2> <font color="turquoise">Getting Updates</font></h2>
-If you have an existing tree, and you just want to update it:
+The password is `guest'.  The command outputs nothing if it works, and
+an error message if it failed.  You only need to log in once; all
+subsequent CVS commands read the password stored in the file
+`~/.cvspass'.
 
-<pre><font color="yellow">
-cd fvwm
-cvs update (-r branch_name)  (filename)
-</pre></font>
+<p>Next, you checkout the latest source code.
 
-The "update" command can be used  to go to any  branch in the tree, it
-doesn't matter whether  it is  an earlier or  later  branch.  "Update"
-without an argument makes the tree current based  on the branch it was
-last on.
+<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm checkout fvwm
+</font></pre>
 
-Without a filename argument, this updates the current directory down.
-With a filename, just one file is updated.
+This creates a "fvwm" directory in your current directory.  Get in
+there and get to work.
 
-If you have made changes you may see a conflict during an update:
+<pre><font color="yellow"> cd fvwm
+ autoreconf
+</font></pre>
 
-<pre><font color="yellow">
-RCS file: /home/cvs/fvwm/fvwm/fvwm/icons.c,v
-retrieving revision 1.5
-retrieving revision 1.6
-Merging differences between 1.5 and 1.6 into icons.c
-rcsmerge: warning: conflicts during merge
-cvs server: conflicts found in fvwm/icons.c
-C fvwm/icons.c
-</pre></font>
-In this case, you can resolve the conflict as follows:
-<pre><font color="yellow">
-&gt; mv icons.c icons.c.save
-&gt; cvs update icons.c
-&gt; diff icons.c*
-690a691,693
-&gt; %lt;%lt;%lt;%lt;%lt;%lt;%lt; icons.c
-&gt;   XpmImage    my_image = {0};  /* testing */
-&gt; =======
-691a695
-&gt; &gt;&gt;&gt;&gt;&gt;&gt;&gt; 1.6
-rm icons.c.save
-</pre></font>
+You <em>did</em> remember to install autoconf and automake, right?
 
-<H2> <font color="turquoise">Getting Update Access</font></h2>
+<p>Once you are inside the working directory, you no longer need the
+long "-d :pserver:..." argument when issuing cvs commands.  
+
+<p>CVS commands work from <em>anywhere</em> inside the source tree,
+and recurse downwards.  So if you happen to issue an update from
+inside the `docs' subdirectory, it will work fine, but only update the
+docs.  In all of the following command examples, we assume that you
+have <font color="yellow">cd</font>'d to the top of the fvwm source
+tree.
+
+
+<H2> <font color="turquoise">Code Updates</font></h2>
+
+From time to time, the dedicated FVWM Workers will make changes to the
+cvs repository.  Announcements of this are automatically sent to the
+fvwm-workers list.  You will want to be subscribed to this list!
+
+<p>You can update your copy of the sources to match the master
+repository with the update command.
+
+<pre><font color="yellow"> cvs update 
+</font></pre>
+
+
+<H2> <font color="turquoise">Hacking the Code</font></h2>
+
+So you've found a bug you want to fix?  Want to implement a feature
+from the TODO list?  Got a new feature to implement?  Hacking the code
+couldn't be easier.  Just edit your copy of the sources.  No need to copy
+files to `.orig' or anything.  CVS keeps track of the original files
+for you!
+
+<p>When you have the code in a working state, generate a patch against
+the <em>current</em> sources in the CVS repository.
+
+<pre><font color="yellow"> cvs update
+ cvs diff -u &gt; patchfile
+</font></pre>
+
+Mail the patch to the fvwm-workers list with a description of what you
+did.  But read the FAQ file about ChangeLog entries before doing so.
+
+
+<H2> <font color="turquoise">Conflicts</font></h2>
+
+If someone else has been working on the same files as you have, you may
+find that you have made conflicting modifications.  You'll discover this
+when you try to update your sources.
+
+<pre><font color="yellow"> cvs update
+ RCS file: /home/cvs/fvwm/fvwm/fvwm/icons.c,v
+ retrieving revision 1.5
+ retrieving revision 1.6
+ Merging differences between 1.5 and 1.6 into icons.c
+ rcsmerge: warning: conflicts during merge
+ cvs server: conflicts found in fvwm/icons.c
+ C fvwm/icons.c
+</font></pre>
+
+<font color="green">Don't Panic!</font> Your working file, as it
+existed before the update, is saved under the filename
+`.#icons.c.1.5'; hence you can always recover it, should things go
+horribly wrong.  The file named `icons.c' now contains <b>both</b> the
+old (i.e. your) version and new version of lines that conflicted.  You
+simply edit the file and resolve each conflict by deleting the
+unwanted version of the lines involved.
+
+<pre><font color="yellow"> &lt;&lt;&lt;&lt;&lt;&lt;&lt; icons.c
+    XpmImage    my_image = {0};  /* testing */
+ =======
+ &gt;&gt;&gt;&gt;&gt;&gt;&gt; 1.6
+</font></pre>
+
+Don't forget to delete the lines with all the "&lt;", "=", and "&gt;"
+symbols.
+
+
+<H2> <font color="turquoise">Getting Other Versions</font></h2>
+
+Sometimes you may want to get a specific version of the sources.  For
+example, let's say you want the sources as they existed for 2.1.5.
+
+<p>Since you'll want to check out a fresh copy of the sources, you'll
+need to <font color="yellow">cd</font> out of the fvwm source tree
+before issuing the following command.
+
+<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm checkout -r version-2_1_5 fvwm
+</font></pre>
+
+This creates a directory called `fvwm', with the sources as they
+existed for the version 2.1.5.  There may be other tags in the
+repository, and you can use them as parameters for the `-r' option.
+Do <font color="yellow">cvs status -v README</font> for a list.
+
+
+<H2> <font color="turquoise">Getting Commit Access</font></h2>
+
 Using the procedures described above, and being on the workers list
 are a pre-requisite to gaining update access.  We expect to have heard
 from you more than once on the fvwm-workers list so that we have some
 idea who you are.
 
-Doing some testing, submitting some patches, and getting involved
+<p>Doing some testing, submitting some patches, and getting involved
 in the discussions will help us know about you.
 
-After you have been involved for a while,
-if we don't suggest it, then ask.
-The fvwm2 development team is not a closed environment, we welcome new
-members.  There are no required duties, all work is strictly voluntary.
+<p>After you have been involved for a while, if we don't suggest it, then
+ask.  The fvwm2 development team is not a closed environment, we
+welcome new members.  There are no required duties, all work is
+strictly voluntary.
 
-If there is agreement on the list that you should be given update access,
-you will need to choose a CVS user ID and provide an encrypted password.
-The latter can be obtained with the following Perl snippet:
+<p>If there is agreement on the list that you should be given update
+access, you will need to choose a CVS user ID and provide an encrypted
+password.  The latter can be obtained with the following Perl snippet:
 
-<pre><font color="yellow">
-  perl -e 'print crypt("yourpass",join("",((a..z,A..Z,0..9)[rand(62),rand(62)]))), "\n"'
-</pre></font>
+<pre><font color="yellow"> perl -e 'print crypt("yourpass",join("",((a..z,A..Z,0..9)[rand(62),rand(62)]))), "\n"'
+</font></pre>
 
 Change 'yourpass' to whatever you want your password to be.
 
-Once you have update access, re-do the "login" command above using your
-CVS user ID in place of 'anonymous', and your password in place of
-'guest', and you are on your way.
+<p>Once you have update access, re-do the "login" command above using
+your CVS user ID in place of 'anonymous', and your password in place
+of 'guest', and you are on your way.
+
 
 <H2> <font color="turquoise">Starting a Project</font></h2>
-Discuss your ideas on the workers list before you start.
-Someone may be working on the same thing you have in mind.
 
-If you just have a small patch you want to make, you may just commit it
-to the main branch.  If the change is large, and lots of other work
-is going on, you may want to do your changes on a "side branch" which
-will get merged into the main branch later on.
+Discuss your ideas on the workers list before you start.  Someone may
+be working on the same thing you have in mind.  Or they may have good
+ideas about how to go about it.
 
-<H2> <font color="turquoise">Creating a Branch</font></h2>
-Branches are assigned names.  We prefer branch names consisting
-of 2 fully spelled out words connected by an underscore.
-The first branch was "animate_icons" which should set the pattern
-for future branch names.
+<p>If you just have a small patch you want to make, you may just
+commit it to the main branch.  If the change is large, and lots of
+other work is going on, you may want to do your changes on a "side
+branch" which will get merged into the main branch later on.  Before
+creating a branch, you discuss the matter with the other workers.  If
+you are new to CVS, you should read the CVS documentation several
+times, and ask for help.  The documentation is sufficiently large and
+confusing that it is rather difficult to get right the first few
+times.
 
-Assuming you have a checked out source tree, you create a branch
-called new_branch:
-
-<pre><font color="yellow">
-cd fvwm
-cvs rtag new_branch_start fvwm
-cvs rtag -b -r new_branch_start new_branch fvwm
-</pre></font>
-
-Every branch must have a start tag.  The "-r new_branch_start"
-puts the branch "new_branch" on the "new_branch_start"
-branch.
-
-The "-b" makes the branch a branch off the main branch.
 
 <H2> <font color="turquoise">Adding Directories and Files</font></h2>
-First create the new directories and modules.  Then, assuming
-the new directory is named "newdir" and the new module is
-"newmod.c":
 
-<pre><font color="yellow">
-cd fvwm
-cvs add -m  "New directory for ..." newdir
-cd newdir
-cvs add -m "New module for ..." newmod.c
-</pre></font>
+First create the new directories and files locally.  Then, assuming
+the new directory is named "newdir" and the new file is "newmod.c":
+
+<pre><font color="yellow"> cvs add -m  "New directory for ..." newdir
+ cd newdir
+ cvs add -m "File newmod.c is a module that ..." newmod.c
+</font></pre>
+
 
 <H2> <font color="turquoise">Deleting Directories and Files</font></h2>
-You don't directly delete directories, you delete all the files in
-a directory and the directory goes away during an "update -dP".
-To delete one or more files:
 
-<pre><font color="yellow">
-cd fvwm
-cvs tag before_delete filename...
-cvs remove -f filename...
-cvs commit -m 'deleted files because' filename...
-</pre></font>
+You don't directly delete directories, you delete all the files in a
+directory and the directory goes away during an "update -dP".  To
+delete one or more files:
 
-The tag "before_delete" is applied to make it easier to find the file
-if it ever needs to be recovered.
+<pre><font color="yellow"> cvs remove -f filename...
+ cvs commit -m 'deleted files because' filename...
+</font></pre>
 
-<H2> <font color="turquoise">Committing Changes</font></h2>
-When you commit, you can commit from a sub-directory, or from
-the top of the tree.  If you don't indicate the file to commit,
-everything you have added (with add), changed or deleted (with remove)
-is committed from the current directory down.
-
-<pre><font color="yellow">
-cd fvwm
-cvs commit (-r branch_name) (files)
-</pre></font>
 
 </body>
 </html>
