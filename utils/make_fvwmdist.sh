@@ -6,11 +6,13 @@
 #  -w   Disable -Werror in compiler flags.
 #  -R   Increase release number after building (2.3.29 -> 3.0.0).
 #  -M   Increase major number after building (2.3.29 -> 2.4.0).
+#  -N   Your name for the ChangeLog.
 #
 # environment variables:
 #
 #   FVWMRELNAME
 #     The name that will show up in the ChangeLog (only with -r).
+#     If omitted a your gcos name is used.  Can also be set with -N.
 #   FVWMRELEMAIL
 #     The email address that will show up in the ChangeLog (only with -r).
 #   FVWMRELPRECVSCOMMAND
@@ -37,27 +39,38 @@ IS_MAJOR=0
 while [ ! x$1 = x ] ; do
   case "$1" in
     -r)
-      IS_RELEASE=1
-      echo "Your name and email address will show up in the ChangeLog."
-      if [ -z "$FVWMRELNAME" ] ; then
-        echo "Please enter your name (or set FVWMRELNAME variable)"
-        read FVWMRELNAME
-      else
-        echo "Name: $FVWMRELNAME"
-      fi
-      if [ -z "$FVWMRELEMAIL" ] ; then
-        echo "Please enter your name (or set FVWMRELEMAIL variable)"
-        read FVWMRELEMAIL
-      else
-        echo "Email: $FVWMRELEMAIL"
-      fi
-      ;;
+      IS_RELEASE=1 ;;
     -R) IS_MINOR=0; IS_MAJOR=0 ;;
     -M) IS_MINOR=0; IS_MAJOR=1 ;;
     -w) CFLAGS="$CFLAGSW" ;;
+    -N) FVWMRELNAME=$2;shift;;
   esac
   shift
 done
+
+if [ $IS_RELEASE = 1 ] ; then
+  echo "Your name and email address will show up in the ChangeLog."
+  if [ -z "$FVWMRELNAME" ] ; then
+    FVWMRELNAME=`perl -e 'print ((split(/,/, ((getpwnam(((getpwuid($<))[0])))[6])))[0]);'`
+    echo "Please enter your name or press return to use \"$FVWMRELNAME\""
+    read ANSWER
+    if [ ! "$ANSWER" = "" ] ; then
+      FVWMRELNAME=$ANSWER
+    fi
+  else
+    echo "Name: $FVWMRELNAME"
+  fi
+  if [ -z "$FVWMRELEMAIL" ] ; then
+    echo "Please enter your emailaddress (or set FVWMRELEMAIL variable)"
+    read FVWMRELEMAIL
+  else
+    echo "Email: $FVWMRELEMAIL"
+  fi
+  echo "Your name will show up in the Changlog as $FVWMRELNAME"
+  echo "Your email address will show up in the Changlog as $FVWMRELEMAIL"
+fi
+exit
+
 
 wrong_dir=1
 if [ -r "$CHECK_FILE" ] ; then
