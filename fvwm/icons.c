@@ -157,7 +157,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   attributes.border_pixmap = None;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
 			   VisibilityChangeMask |
-			   ExposureMask | KeyPressMask|EnterWindowMask |
+			   ExposureMask | KeyPressMask| 
+			   EnterWindowMask | LeaveWindowMask |
 			   FocusChangeMask );
   if (!(HAS_NO_ICON_TITLE(tmp_win))||(tmp_win->icon_p_height == 0))
     tmp_win->icon_w =
@@ -259,37 +260,16 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
   if(Scr.Hilite == Tmp_win)
     {
       if(Scr.depth < 2) {
-	  Relief =
-	      Shadow = Scr.DefaultDecor.HiShadowGC;
-	  TextColor = Scr.DefaultDecor.HiColors.fore;
-	  BackColor = Scr.DefaultDecor.HiColors.back;
+	Relief = Scr.DefaultDecor.HiShadowGC;
+	Shadow = Scr.DefaultDecor.HiShadowGC;
+	TextColor = Scr.DefaultDecor.HiColors.fore;
+	BackColor = Scr.DefaultDecor.HiColors.back;
       } else {
 	Relief = GetDecor(Tmp_win,HiReliefGC);
 	Shadow = GetDecor(Tmp_win,HiShadowGC);
 	TextColor = GetDecor(Tmp_win,HiColors.fore);
 	BackColor = GetDecor(Tmp_win,HiColors.back);
       }
-      /* resize the icon name window */
-      if(Tmp_win->icon_w != None)
-        {
-          Tmp_win->icon_w_width = Tmp_win->icon_t_width+6;
-          if(Tmp_win->icon_w_width < Tmp_win->icon_p_width)
-            Tmp_win->icon_w_width = Tmp_win->icon_p_width;
-          Tmp_win->icon_xl_loc = Tmp_win->icon_x_loc -
-            (Tmp_win->icon_w_width - Tmp_win->icon_p_width)/2;
-          /* start keep label on screen. dje 8/7/97 */
-          if (Tmp_win->icon_xl_loc < 0) {  /* if new loc neg (off left edge) */
-            Tmp_win->icon_xl_loc = 0;      /* move to edge */
-          } else {                         /* if not on left edge */
-            /* if (new loc + width) > screen width (off edge on right) */
-            if ((Tmp_win->icon_xl_loc + Tmp_win->icon_w_width) >
-                Scr.MyDisplayWidth) {      /* off right */
-              /* position up against right edge */
-              Tmp_win->icon_xl_loc = Scr.MyDisplayWidth-Tmp_win->icon_w_width;
-            }
-            /* end keep label on screen. dje 8/7/97 */
-          }
-        }
     }
   else
     {
@@ -309,16 +289,41 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
 	  XChangeGC(dpy,Scr.ScratchGC2,Globalgcm,&Globalgcv);
 	  Shadow = Scr.ScratchGC2;
 	}
-      /* resize the icon name window */
-      if(Tmp_win->icon_w != None)
-        {
+      TextColor = Tmp_win->TextPixel;
+      BackColor = Tmp_win->BackPixel;
+    }
+
+  if(Tmp_win->icon_w != None)
+    {
+      if (IS_ICON_ENTERED(Tmp_win))
+	{
+	  /* resize the icon name window */
+          Tmp_win->icon_w_width = Tmp_win->icon_t_width+6;
+          if(Tmp_win->icon_w_width < Tmp_win->icon_p_width)
+            Tmp_win->icon_w_width = Tmp_win->icon_p_width;
+          Tmp_win->icon_xl_loc = Tmp_win->icon_x_loc -
+            (Tmp_win->icon_w_width - Tmp_win->icon_p_width)/2;
+          /* start keep label on screen. dje 8/7/97 */
+          if (Tmp_win->icon_xl_loc < 0) {  /* if new loc neg (off left edge) */
+            Tmp_win->icon_xl_loc = 0;      /* move to edge */
+          } else {                         /* if not on left edge */
+            /* if (new loc + width) > screen width (off edge on right) */
+            if ((Tmp_win->icon_xl_loc + Tmp_win->icon_w_width) >
+                Scr.MyDisplayWidth) {      /* off right */
+              /* position up against right edge */
+              Tmp_win->icon_xl_loc = Scr.MyDisplayWidth-Tmp_win->icon_w_width;
+            }
+            /* end keep label on screen. dje 8/7/97 */
+          }
+        }
+      else 
+	{
+	  /* resize the icon name window */
           Tmp_win->icon_w_width = Tmp_win->icon_p_width;
           Tmp_win->icon_xl_loc = Tmp_win->icon_x_loc;
         }
-      TextColor = Tmp_win->TextPixel;
-      BackColor = Tmp_win->BackPixel;
-
     }
+
   if((IS_ICON_OURS(Tmp_win))&&(Tmp_win->icon_pixmap_w != None))
     XSetWindowBackground(dpy,Tmp_win->icon_pixmap_w,
 			 BackColor);
@@ -374,9 +379,8 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       RelieveRectangle(dpy,Tmp_win->icon_w,0,0,Tmp_win->icon_w_width - 1,
                        ICON_HEIGHT - 1,Relief,Shadow,2);
     }
-  /* CDE-like behaviour of raising the icon title if the icon
-     gets the focus (in particular if the cursor is over the icon) */
-  if (Scr.Hilite == Tmp_win)
+
+  if (IS_ICON_ENTERED(Tmp_win))
     {
       if (Tmp_win->icon_w != None)
 	{
@@ -392,7 +396,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       xwc.stack_mode = Above;
       mask = CWSibling|CWStackMode;
       if (Tmp_win->icon_w != None)
-	{
+	{      
 	  XConfigureWindow(dpy, Tmp_win->icon_w, mask, &xwc);
 	}
       if (Tmp_win->icon_pixmap_w != None)
@@ -401,6 +405,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
 	}
     }
 }
+
 
 /***********************************************************************
  *

@@ -111,6 +111,9 @@
           (fw)->flags.is_iconified_by_parent = !!(x)
 #define SETM_ICONIFIED_BY_PARENT(fw,x) \
           (fw)->flag_mask.is_iconified_by_parent = !!(x)
+#define IS_ICON_ENTERED(fw)     ((fw)->flags.is_icon_entered)
+#define SET_ICON_ENTERED(fw,x)  (fw)->flags.is_icon_entered = !!(x)
+#define SETM_ICON_ENTERED(fw,x) (fw)->flag_mask.is_icon_entered = !!(x)
 #define IS_ICON_OURS(fw)       ((fw)->flags.is_icon_ours)
 #define SET_ICON_OURS(fw,x)    (fw)->flags.is_icon_ours = !!(x)
 #define SETM_ICON_OURS(fw,x)   (fw)->flag_mask.is_icon_ours = !!(x)

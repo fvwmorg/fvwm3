@@ -1352,6 +1352,13 @@ void HandleEnterNotify(void)
     else
       InstallWindowColormaps(NULL);
   }
+
+  if (IS_ICONIFIED(Tmp_win))
+    {
+      SET_ICON_ENTERED(Tmp_win,1);
+      DrawIconWindow (Tmp_win);
+    }
+
   return;
 }
 
@@ -1365,6 +1372,14 @@ void HandleEnterNotify(void)
 void HandleLeaveNotify(void)
 {
   DBUG("HandleLeaveNotify","Routine Entered");
+
+  /* CDE-like behaviour of raising the icon title if the icon
+     gets the focus (in particular if the cursor is over the icon) */
+  if (Tmp_win && IS_ICONIFIED(Tmp_win))
+    {
+      SET_ICON_ENTERED(Tmp_win,0);
+      DrawIconWindow (Tmp_win); 
+    }
 
   /* If we leave the root window, then we're really moving
    * another screen on a multiple screen display, and we

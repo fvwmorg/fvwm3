@@ -1,3 +1,17 @@
+1999-04-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.h (window_flags): new flags is_icon_entered 
+	for tracking enter and leave events on iconified windows.
+	* fvwm/gsfr.h (IS_ICON_ENTERED): 
+	(SET_ICON_ENTERED): 
+	(SETM_ICONIFIED_BY_PARENT): new macros to set is_icon_entered.
+	* fvwm/icons.c (DrawIconWindow): change the logic of
+	DrawIconWindow to show the full icon title and raise it iff
+	the pointer is over the icon.
+	* fvwm/events.c (HandleEnterNotify):  
+	(HandleLeaveNotify): maintain is_icon_entered and redraw the icon.
+	* NEWS: mention the new icon behaviour.
+	
 1999-04-18  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/vpacket.h: new file - this should contain structure descriptions

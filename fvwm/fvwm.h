@@ -170,6 +170,7 @@ typedef struct
   unsigned is_iconified : 1; /* is it an icon now? */
   unsigned is_iconified_by_parent : 1; /* To prevent iconified transients in a
 					* parent icon from counting for Next */
+  unsigned is_icon_entered : 1; /* is the pointer over the icon? */
   unsigned is_icon_ours : 1; /* is the icon window supplied by the app? */
   unsigned is_icon_shaped : 1; /* is the icon shaped? */
   unsigned is_icon_moved : 1; /* has the icon been moved by the user? */
