@@ -73,6 +73,7 @@ int SmartPlacement(FvwmWindow *t,
   int test_x = 0,test_y = 0;
   int loc_ok = False, tw,tx,ty,th;
   FvwmWindow *test_window;
+  int stickyx, stickyy;
 
   if (Scr.SmartPlacementIsClever) /* call clever placement instead? */
   {
@@ -99,8 +100,19 @@ test_y = PageTop;
       test_window = Scr.FvwmRoot.next;
       while((test_window != (FvwmWindow *)0)&&(loc_ok == True))
       {
-        if(test_window->Desk == t->Desk)
+        /*  RBW - account for sticky windows...  */
+        if(test_window->Desk == t->Desk || (test_window->flags & STICKY))
         {
+          if (test_window->flags & STICKY)
+            {
+              stickyx = pdeltax;
+	      stickyy = pdeltay;
+            }
+          else
+            {
+              stickyx = 0;
+	      stickyy = 0;
+            }
 #ifndef NO_STUBBORN_PLACEMENT
           if((test_window->flags & ICONIFIED)&&
              (!(test_window->flags & ICON_UNMAPPED))&&
@@ -110,8 +122,8 @@ test_y = PageTop;
             tw=test_window->icon_p_width;
             th=test_window->icon_p_height+
               test_window->icon_w_height;
-            tx = test_window->icon_x_loc;
-            ty = test_window->icon_y_loc;
+            tx = test_window->icon_x_loc - stickyx;
+            ty = test_window->icon_y_loc - stickyy;
 
             if((tx<(test_x+width))&&((tx + tw) > test_x)&&
                (ty<(test_y+height))&&((ty + th)>test_y))
@@ -125,8 +137,8 @@ test_y = PageTop;
           {
             tw=test_window->frame_width+2*test_window->bw;
             th=test_window->frame_height+2*test_window->bw;
-            tx = test_window->frame_x;
-            ty = test_window->frame_y;
+            tx = test_window->frame_x - stickyx;
+            ty = test_window->frame_y - stickyy;
             if((tx <= (test_x+width))&&((tx + tw) >= test_x)&&
                (ty <= (test_y+height))&&((ty + th)>= test_y))
             {
@@ -171,8 +183,8 @@ void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay)
   int PageTop       =  0 - pdeltay;
   int PageLeft      =  0 - pdeltax;
 
-  test_x -= PageLeft;
-  test_y -= PageTop;
+  test_x = PageLeft;
+  test_y = PageTop;
   aoi = aoimin = test_fit(t, test_x, test_y, -1, pdeltax, pdeltay);
 /**/
   xbest = test_x;
@@ -208,39 +220,53 @@ int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
   int xnew;
   int xtest;
   FvwmWindow *testw;
+  int PageRight     =  Scr.MyDisplayWidth - pdeltax;
+  int stickyx, stickyy;
 
   /* Test window at far right of screen */
 /*  RBW - 11/02/1998  */
-  xnew = (Scr.MyDisplayWidth - pdeltax);
-  xtest = (Scr.MyDisplayWidth - pdeltax) - (t->frame_width  + 2 * t->bw);
+  xnew = PageRight;
+  xtest = PageRight - (t->frame_width  + 2 * t->bw);
 /**/
   if(xtest > x)
     xnew = MIN(xnew, xtest);
   /* Test the values of the right edges of every window */
   for(testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if((testw->Desk != t->Desk) || (testw == t))
+    if((testw == t) || ((testw->Desk != t->Desk) && (! (testw->flags & STICKY))))
       continue;
+
+    if (testw->flags & STICKY)
+      {
+        stickyx = pdeltax;
+	stickyy = pdeltay;
+      }
+    else
+      {
+        stickyx = 0;
+	stickyy = 0;
+      }
+
     if(testw->flags & ICONIFIED)
     {
-      if((y < (testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc))&&
-         (testw->icon_y_loc < (t->frame_height+2*t->bw+y)))
+      if((y < (testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc - stickyy))&&
+         (testw->icon_y_loc - stickyy < (t->frame_height+2*t->bw+y)))
       {
-        xtest = testw->icon_p_width+testw->icon_x_loc;
+        xtest = testw->icon_p_width+testw->icon_x_loc - stickyx;
         if(xtest > x)
           xnew = MIN(xnew, xtest);
-        xtest = testw->icon_x_loc - (t->frame_width + 2 * t->bw);
+        xtest = testw->icon_x_loc - stickyx - (t->frame_width + 2 * t->bw);
         if(xtest > x)
           xnew = MIN(xnew, xtest);
       }
     }
-    else if((y < (testw->frame_height+2*testw->bw+testw->frame_y)) &&
-            (testw->frame_y < (t->frame_height+2*t->bw+y)))
+    else if((y < (testw->frame_height+2*testw->bw+testw->frame_y - stickyy)) &&
+            (testw->frame_y - stickyy < (t->frame_height+2*t->bw+y)))
     {
-      xtest = testw->frame_width+2*testw->bw+testw->frame_x;
+      xtest = testw->frame_width+2*testw->bw+testw->frame_x - stickyx;
       if(xtest > x)
         xnew = MIN(xnew, xtest);
-      xtest = testw->frame_x - (t->frame_width + 2 * t->bw);
+      xtest = testw->frame_x - stickyx - (t->frame_width + 2 * t->bw);
       if(xtest > x)
         xnew = MIN(xnew, xtest);
     }
@@ -255,6 +281,7 @@ int get_next_y(FvwmWindow *t, int y, int pdeltay)
   int ytest;
   FvwmWindow *testw;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
+  int stickyy;
 
   /* Test window at far bottom of screen */
 /*  RBW - 11/02/1998  */
@@ -266,23 +293,33 @@ int get_next_y(FvwmWindow *t, int y, int pdeltay)
   /* Test the values of the bottom edge of every window */
   for(testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if((testw->Desk != t->Desk) || (testw == t))
+    if((testw == t) || ((testw->Desk != t->Desk) && (! (testw->flags & STICKY))))
       continue;
+
+    if (testw->flags & STICKY)
+      {
+	stickyy = pdeltay;
+      }
+    else
+      {
+	stickyy = 0;
+      }
+
     if(testw->flags & ICONIFIED)
     {
-      ytest = testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc;
+      ytest = testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc - stickyy;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
-      ytest = testw->icon_y_loc - (t->frame_height + 2 * t->bw);
+      ytest = testw->icon_y_loc - stickyy - (t->frame_height + 2 * t->bw);
       if(ytest > y)
         ynew = MIN(ynew, ytest);
     }
     else
     {
-      ytest = testw->frame_height+2*testw->bw+testw->frame_y;
+      ytest = testw->frame_height+2*testw->bw+testw->frame_y - stickyy;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
-      ytest = testw->frame_y - (t->frame_height + 2 * t->bw);
+      ytest = testw->frame_y - stickyy - (t->frame_height + 2 * t->bw);
       if(ytest > y)
         ynew = MIN(ynew, ytest);
     }
@@ -304,6 +341,7 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
   int avoidance_factor;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
+  int stickyx, stickyy;
 
   x12 = x11 + t->frame_width  + 2 * t->bw;
   y12 = y11 + t->frame_height + 2 * t->bw;
@@ -314,21 +352,33 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
     return -2;
   for(testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if((testw == t) || (testw->Desk != t->Desk))
+    if ((testw == t) || ((testw->Desk != t->Desk) && (! (testw->flags & STICKY))))
        continue;
+
+    if (testw->flags & STICKY)
+      {
+        stickyx = pdeltax;
+	stickyy = pdeltay;
+      }
+    else
+      {
+        stickyx = 0;
+	stickyy = 0;
+      }
+
     if(testw->flags & ICONIFIED)
     {
        if(testw->icon_w == None || testw->flags & ICON_UNMAPPED)
 	  continue;
-       x21 = testw->icon_x_loc;
-       y21 = testw->icon_y_loc;
+       x21 = testw->icon_x_loc - stickyx;
+       y21 = testw->icon_y_loc - stickyy;
        x22 = x21 + testw->icon_p_width;
        y22 = y21 + testw->icon_p_height + testw->icon_w_height;
     }
     else
     {
-       x21 = testw->frame_x;
-       y21 = testw->frame_y;
+       x21 = testw->frame_x - stickyx;
+       y21 = testw->frame_y - stickyy;
        x22 = x21 + testw->frame_width  + 2 * testw->bw;
        y22 = y21 + testw->frame_height + 2 * testw->bw;
     }

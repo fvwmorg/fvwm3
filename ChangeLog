@@ -1,3 +1,10 @@
+1999-01-13  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/placement.c: Fixed SmartPlacement and CleverPlacemet failure
+	to avoid sticky windows when placing SkipMapping, StartsOnPage or
+	StartsOnDesk windows. Also fixed CleverPlacement bug that sometimes
+	caused windows to be placed entirely outside of the virtual desktop.
+
 1999-01-14  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/resize.c (ConstrainSize): fixed bug: moving a shaded window in
