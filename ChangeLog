@@ -1,5 +1,8 @@
 2001-07-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* NEWS, configure.in:
+	changed version to 2.4.0.1
+
 	* *: fvwm 2.4 has been released :-))
 
 2001-06-30  Dominik Vogt  <dominik.vogt@gmx.de>
