@@ -24,6 +24,7 @@ EXTRA_DIST = Jlock.xpm Jnews.xpm Jrecycle.xpm Jxlock.xpm Monitor.xpm \
 	   mini.resize2.xpm mini.stick.xpm mini.stick2.xpm \
 	   mini.stickpressed.xpm mini.winXX-close.xpm \
 	   mini.winXX-maximize.xpm mini.winXX-minimize.xpm \
+	   mini.winXX-normalize.xpm mini.winXX-sysmenu.xpm \
 	   mini.xarchie.xpm mini.xbiff.xpm mini.xboing.xpm \
 	   mini.xlock.xpm mini.xmag.xpm mini.xman.xpm mini.xpaint.xpm \
 	   mini.xpm mini.xterm.xpm mini.zircon.xpm ocode.icon page.xpm \

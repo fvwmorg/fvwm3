@@ -187,8 +187,8 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   w3p = XTextWidth(font, t3p, 3);
 
   if ((button->p.picture != 0) &&
-      (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)) {
-/*        (newx + button->p.width + w3p + 3 < w)) { */
+      (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE))
+  {
     gcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
     gcv.clip_mask = button->p.mask;
     gcv.clip_x_origin = x + 3;
@@ -197,7 +197,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
     XCopyArea(dpy, button->p.picture, win, hilite, 0, 0,
                    button->p.width, button->p.height,
                    gcv.clip_x_origin, gcv.clip_y_origin);
-   gcm = GCClipMask;
+    gcm = GCClipMask;
     gcv.clip_mask = None;
     XChangeGC(dpy, hilite, gcm, &gcv);
 
@@ -311,12 +311,18 @@ void UpdateArray(ButtonArray *array,int x,int y,int w, int h, int tw)
 {
    Button *temp;
 
-   if (x != -1) array->x = x;
-   if (y != -1) array->y = y;
-   if (w != -1) array->w = w;
-   if (h != -1) array->h = h;
-   if (tw != -1) array->tw = tw;
-   for(temp=array->head; temp!=NULL; temp=temp->next) temp->needsupdate = 1;
+   if (x != -1)
+     array->x = x;
+   if (y != -1)
+     array->y = y;
+   if (w != -1)
+     array->w = w;
+   if (h != -1)
+     array->h = h;
+   if (tw != -1)
+     array->tw = tw;
+   for(temp=array->head; temp!=NULL; temp=temp->next)
+     temp->needsupdate = 1;
 }
 
 /* -------------------------------------------------------------------------
@@ -327,15 +333,18 @@ void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
 {
   Button *new, *temp;
 
-  new = ButtonNew(title, p, state,count);
-  if (array->head == NULL) array->head = new;
-  else {
-    for (temp=array->head; temp->next; temp=temp->next);
+  new = ButtonNew(title, p, state, count);
+  if (array->head == NULL)
+    array->head = new;
+  else
+  {
+    for (temp = array->head; temp->next; temp = temp->next)
+      ;
     temp->next = new;
   }
   array->count++;
 
-  ArrangeButtonArray (array);
+  ArrangeButtonArray(array);
 }
 
 /* -------------------------------------------------------------------------
@@ -344,27 +353,29 @@ void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
    ------------------------------------------------------------------------- */
 
 void ArrangeButtonArray (ButtonArray *array)
-  {
+{
   int tw;
   Button *temp;
 
   if (!array->count)
     tw = array->w;
   else if (NRows == 1)
-         tw = array->w / array->count;
-       else
-         tw = array->w / ((array->count / NRows)+1);
+    tw = array->w / array->count;
+  else
+    tw = array->w / ((array->count / NRows)+1);
 
-  if (tw > button_width) tw = button_width;
-  if (tw < MIN_BUTTON_SIZE) tw = MIN_BUTTON_SIZE;
+  if (tw > button_width)
+    tw = button_width;
+  if (tw < MIN_BUTTON_SIZE)
+    tw = MIN_BUTTON_SIZE;
 
   if (tw != array->tw) /* update needed */
-    {
+  {
     array->tw = tw;
-    for(temp=array->head; temp!=NULL; temp=temp->next)
-      temp->needsupdate=1;
-    }
+    for(temp = array->head; temp != NULL; temp = temp->next)
+      temp->needsupdate = 1;
   }
+}
 
 /* -------------------------------------------------------------------------
    UpdateButton - Change the name/state of a button
@@ -373,8 +384,9 @@ int UpdateButton(ButtonArray *array, int butnum, const char *title, int state)
 {
   Button *temp;
 
-  for (temp=array->head; temp; temp=temp->next)
-    if (temp->count == butnum) break;
+  for (temp = array->head; temp; temp = temp->next)
+    if (temp->count == butnum)
+      break;
 
   return ButtonUpdate(temp, title, state);
 }
@@ -387,7 +399,8 @@ int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
   Button *temp;
 
   for (temp=array->head; temp; temp=temp->next)
-    if (temp->count == butnum) break;
+    if (temp->count == butnum)
+      break;
 
   if (temp == NULL) return -1;
   if (temp->p.picture != p->picture || temp->p.mask != p->mask) {
@@ -408,30 +421,32 @@ void RemoveButton(ButtonArray *array, int butnum)
 {
   Button *temp, *to_die;
 
-  if (array->head) {
-      if (array->head->count == butnum) {
-          to_die = array->head;
-          array->head = array->head->next;
-      } else {
-          for (temp=array->head, to_die=temp->next;
-               to_die;
-               to_die=to_die->next, temp=temp->next)
-              if (to_die->count == butnum) break;
-          if (to_die) temp->next = to_die->next;
-      }
-      if (to_die) temp->next = to_die->next;
-  } else {
-      to_die = NULL;
+  if (array->head == NULL)
+    return;
+
+  if (array->head->count == butnum)
+  {
+    to_die = array->head;
+    array->head = array->head->next;
   }
- 
-  if (to_die) {
-      ButtonDelete(to_die);
-      if (array->count > 0)
-        array->count--;
+  else
+  {
+    for (temp = array->head, to_die = array->head->next; to_die != NULL;
+	 to_die = to_die->next, temp = temp->next)
+    {
+      if (to_die->count == butnum)
+	break;
+    }
+    if (!to_die)
+      return;
+    temp->next = to_die->next;
   }
- 
-  for (temp=array->head; temp; temp=temp->next)
-      temp->needsupdate = 1;
+
+  ButtonDelete(to_die);
+  if (array->count > 0)
+    array->count--;
+  for (temp = array->head; temp; temp = temp->next)
+    temp->needsupdate = 1;
 
   ArrangeButtonArray(array);
 }
@@ -462,6 +477,8 @@ void FreeAllButtons(ButtonArray *array)
     temp  = temp->next;
     ButtonDelete(temp2);
   }
+  array->count = 0;
+  array->head = NULL;
 }
 
 /* ------------------------------------------------------------------------

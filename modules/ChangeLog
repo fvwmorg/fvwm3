@@ -1,3 +1,24 @@
+1999-08-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):
+	* FvwmTaskBar/ButtonArray.c (FreeAllButtons): some speed up
+
+	* FvwmTaskBar/List.c (AddItem): fixed coredump caused by uninitialized
+	Picture
+
+	* FvwmTaskBar/ButtonArray.c (RemoveButton): fixed coredump
+
+	* FvwmPager/FvwmPager.1: added description of '*' specification for
+	colour sets
+	* FvwmPager/FvwmPager.c (list_new_desk): fixed '*' desk specifier in
+	colour sets
+	(ParseOptions): fixed parsing of colour sets,
+	(ParseColorset): common function for colour set parsing
+	* FvwmPager/x_pager.c (MapBalloonWindow): fixed coredump
+
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	(ProcessMessage): removed '#ifdef FVWM95'
+
 1999-08-27  Hippo
 
 	* FvwmAnimate/FvwmAnimate.c: Frees the color it allocates as soon

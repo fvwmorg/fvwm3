@@ -30,19 +30,19 @@ Module FvwmPager *
 or from within an fvwm pop-up menu:
 .nf
 .sp
-AddToMenu Module-Popup "Modules"      Title
-+                      "Audio"        Module FvwmAudio
-+                      "Auto"         Module FvwmAuto 200
-+                      "Buttons"      Module FvwmButtons
-+                      "Ident"        Module FvwmIdent
-+                      "Banner"       Module FvwmBanner
-+                      "Pager"        Module FvwmPager 0 3
+AddToMenu Module-Popup Modules      Title
++                      Audio        Module FvwmAudio
++                      Auto         Module FvwmAuto 200
++                      Buttons      Module FvwmButtons
++                      Ident        Module FvwmIdent
++                      Banner       Module FvwmBanner
++                      Pager        Module FvwmPager 0 3
 .sp
 .fi
 or
 .nf
 .sp
-+                      "Pager"        Module FvwmPager *
++                      Pager        Module FvwmPager *
 .sp
 .fi
 
@@ -330,16 +330,24 @@ The same as \fI*FvwmPagerWindowLabelFormat\fP, it just specifies the string to
 display in the balloons. The default is "%i".
 
 .IP "*FvwmPagerColorset \fIdesk colorset\fP"
-Tells the module to use colorset \fIcolorset\fP for \fIdesk\fP. See FvwmTheme.
+Tells the module to use colorset \fIcolorset\fP for \fIdesk\fP.
+If you use an asterisk '*' in place of \fIdesk\fP, the colorset is
+used on all desks. Please refer to the man page of the FvwmTheme
+module for details about colorsets.
 .IP "*FvwmPagerBalloonColorset \fIdesk colorset\fP"
 Tells the module to use colorset \fIcolorset\fP for balloons on \fIdesk\fP.
-See FvwmTheme.
+If you use an asterisk '*' in place of \fIdesk\fP, the colorset is
+used on all desks. Please refer to the man page of the FvwmTheme
+module for details about colorsets.
 .IP "*FvwmPagerHilightColorset \fIdesk colorset\fP"
 Tells the module to use colorset \fIcolorset\fP for hilighting on \fIdesk\fP.
-See FvwmTheme.
+If you use an asterisk '*' in place of \fIdesk\fP, the colorset is
+used on all desks. Please refer to the man page of the FvwmTheme
+module for details about colorsets.
 .IP "*FvwmPagerWindowColorsets \fIcolorset activecolorset\fP"
 Uses colorsets in the same way as *FvwmPagerWindowColors.
-See FvwmTheme.
+Please refer to the man page of the FvwmTheme module for details
+about colorsets.
 .IP "*FvwmPagerWindowBorderWidth \fIn\fP"
 Specifies the width of the border drawn around the mini windows. This also sets
 the minimum size of the mini windows to (2 * \fIn\fP + 1).

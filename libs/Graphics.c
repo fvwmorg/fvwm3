@@ -76,10 +76,10 @@ Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, int src_width,
 {
   int i;
   Pixmap pixmap;
-  
+
   if (src_width < 0 || src_height < 0 || dest_width < 0)
   	return None;
-  
+
   pixmap = XCreatePixmap(dpy, src, dest_width, src_height, src_depth);
 
   if (pixmap)
@@ -103,7 +103,7 @@ Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, int src_width,
 
   if (src_height < 0 || src_depth < 0 || dest_height < 0)
   	return None;
-  
+
   pixmap = XCreatePixmap(dpy, src, src_width, dest_height, src_depth);
 
   if (pixmap)
@@ -125,9 +125,9 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, int src_width,
 {
   Pixmap pixmap = None;
   Pixmap temp_pixmap;
-  
+
   if (src_width < 0 || src_height < 0 || src_depth < 0 || dest_width < 0)
-  	return None;
+    return None;
 
   temp_pixmap = CreateStretchXPixmap(dpy, src, src_width, src_height,
 					    src_depth, dest_width, gc);
@@ -152,7 +152,7 @@ Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, int src_width,
   int x;
   int y;
   Pixmap pixmap;
-  
+
   if (src_width < 0 || src_height < 0 || dest_width < 0 || dest_height < 0)
   	return None;
 

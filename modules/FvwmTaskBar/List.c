@@ -54,7 +54,7 @@ void InitList(List *list)
 void AddItem(List *list,  long id, long flags, ConfigWinPacket *cfgpacket,
              long Desk, int count)
 {
-Item *new;
+  Item *new;
   new=(Item *)safemalloc(sizeof(Item));
   new->id=id;
   new->name=NULL;
@@ -63,10 +63,11 @@ Item *new;
   /* If this was M_ADD_WINDOW or M_CONFIGURE_WINDOW, we have real flags  */
   if (cfgpacket != NULL)  {
     memcpy(&new->flags, &cfgpacket->flags, sizeof(new->flags));
-    }
+  }
 
   new->Desk=Desk;
   new->count=count;
+  memset((void *)&(new->p), 0, sizeof(Picture));
   new->next=NULL;
   if (list->tail==NULL) list->head=list->tail=new;
   else {

@@ -4047,11 +4047,14 @@ static void size_menu_vertically(MenuRoot *mr)
       MR_ITEMS(mr) = cItems;
       MI_NEXT_ITEM(mi) = NULL;
 
+#if 0
       /* migo: propagate missing_submenu_func */
-      if (MR_MISSING_SUBMENU_FUNC(mr)) {
+      if (MR_MISSING_SUBMENU_FUNC(mr))
+      {
 	MR_MISSING_SUBMENU_FUNC(menuContinuation) =
 	  strdup(MR_MISSING_SUBMENU_FUNC(mr));
       }
+#endif
 
       /* And add the entry pointing to the new menu */
       AddToMenu(mr, "More&...", szMenuContinuationActionAndName,
@@ -4441,32 +4444,33 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
   end = item;
   for (i = 0; i < MAX_ITEM_LABELS; i++, start = end)
   {
-    int tab_in_label = 0;
     /* Read label up to next tab. */
     if (*end)
     {
-      while (*end && ( (*end != '\t')
-        || ((i == MAX_ITEM_LABELS - 1) && ((tab_in_label = 1) != 0))))
-	/* seek next tab or end of string */
-	end++;
+      if (i < MAX_ITEM_LABELS - 1)
+      {
+	while (*end && *end != '\t')
+	  /* seek next tab or end of string */
+	  end++;
+      }
+      else
+      {
+	/* remove all tabs in last label */
+	while (*end)
+	{
+	  if (*end == '\t')
+	    *end = ' ';
+	  end++;
+	}
+      }
       /* Copy the label. */
       MI_LABEL(tmp)[i] = safemalloc(end - start + 1);
       strncpy(MI_LABEL(tmp)[i], start, end - start);
       (MI_LABEL(tmp)[i])[end - start] = 0;
       if (*end == '\t')
+      {
 	/* skip the tab */
 	end++;
-      if (tab_in_label)
-      {
-	/* Last label, remove all tabs. */
-	char *s = MI_LABEL(tmp)[i];
-
-	while (*s)
-	{
-	  if (*s == '\t')
-	    *s = ' ';
-	  ++s;
-	}
       }
     }
     else

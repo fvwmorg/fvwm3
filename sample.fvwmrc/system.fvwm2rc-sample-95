@@ -55,8 +55,7 @@ Style * ForeColor #c3c3c3, BackColor #c3c3c3
 # Text and background color for the title bar of the active (selected) window
 #------------------------------------------------------------------------------
 
-#HilightColor   White DarkBlue
-HilightColor   white #c3c3c3
+HilightColor white #c3c3c3
 
 
 #------------------------------------------------------------------------------
@@ -69,12 +68,11 @@ TitleStyle ActiveUp (solid DarkBlue -- Flat)
 TitleStyle ActiveDown (solid DarkBlue -- Flat)
 TitleStyle Inactive (solid grey51 -- Flat)
 TitleStyle LeftJustified
-ButtonStyle 1 Solid DarkBlue -- Flat
-ButtonStyle 1 Inactive Solid grey51 -- Flat
+ButtonStyle all -- UseTitleStyle Flat
 AddButtonStyle 1 MiniIcon
-AddButtonStyle 2 Pixmap win_close.xpm
-AddButtonStyle 4 Pixmap win_maximize.xpm
-AddButtonStyle 6 Pixmap win_minimize.xpm
+AddButtonStyle 2 Pixmap mini.winXX-close.xpm
+AddButtonStyle 4 Pixmap mini.winXX-maximize.xpm
+AddButtonStyle 6 Pixmap mini.winXX-minimize.xpm
 
 
 #------------------------------------------------------------------------------

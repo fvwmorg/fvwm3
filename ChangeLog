@@ -1,3 +1,7 @@
+1999-08-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (AddToMenu): rewrote fix for label allocation bug
+
 1999-08-29 Chris Rankin
 
 	* fvwm/menus.c: Wall fixes (one unused variable, brackets around

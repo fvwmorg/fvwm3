@@ -278,9 +278,6 @@ int main(int argc, char **argv)
 		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY |
 		 M_ICONIFY | M_END_WINDOWLIST | M_FOCUS_CHANGE |
 		 M_CONFIG_INFO | M_END_CONFIG_INFO | M_NEW_DESK
-#ifdef FVWM95
-		 | M_FUNCTION_END | M_SCROLLREGION
-#endif
 #ifdef MINI_ICONS
 		 | M_MINI_ICON
 #endif
@@ -310,6 +307,7 @@ int main(int argc, char **argv)
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
 
+XSynchronize(dpy,1);
   /* Receive all messages from Fvwm */
   EndLessLoop();
 #ifdef FVWM_DEBUG_MSGS
@@ -431,7 +429,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (GetDeskNumber(&windows,i,&Desk) && DeskOnly) {
         if (DeskNumber != Desk && DeskNumber == cfgpacket->desk) {
           /* window moving to current desktop */
-          AddButton(&buttons, ItemName(&windows,i), 
+          AddButton(&buttons, ItemName(&windows,i),
                     GetItemPicture(&windows,i), BUTTON_UP, i);
           redraw = 1;
         }
@@ -443,7 +441,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       }
       /* NEED TO DETERMINE IF BODY[8] IS RIGHT HERE!!! */
       tb_flags = ItemFlags(&windows, cfgpacket->w);
-      UpdateItemFlagsDesk(&windows, cfgpacket->w, 
+      UpdateItemFlagsDesk(&windows, cfgpacket->w,
                           tb_flags, cfgpacket->desk);
       break;
     }
@@ -542,26 +540,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     XMapRaised(dpy, win);
     break;
 
-#ifdef FVWM95
-  case M_FUNCTION_END:
-    StartButtonUpdate(NULL, BUTTON_UP);
-
-    if (AutoHide && !BelayHide) /* We don't want the taskbar to hide */
-      SetAlarm(HIDE_TASK_BAR);  /* after a Focus or Iconify function */
-
-    redraw = 0;
-    break;
-
-  /* Added a new Fvwm Event because scrolling regions interfere
-     with EnterNotify event when taskbar is hidden. */
-  case M_SCROLLREGION:
-    if (AutoHide && ((win_y <  Midline && body[1] < 4) ||
-                     (win_y >= Midline && body[1] > ScreenHeight-4)))
-      RevealTaskBar();
-    break;
-
-#endif /*FVWM95*/
-
   case M_NEW_DESK:
     DeskNumber = body[0];
     if (!First && DeskOnly)
@@ -594,14 +572,7 @@ void redraw_buttons()
 
   fprintf(stderr,"Starting to remove old buttons...\n");
 #endif
-  while (buttons.head) {
-      RemoveButton(&buttons, buttons.head->count);
-#ifdef DEBUG_DESKONLY
-      /* print buttons.count, buttons.tw here */
-      fprintf(stderr,"buttons.count = %i \t ",buttons.count);
-      fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
-#endif
-  }
+  FreeAllButtons(&buttons);
 
 #ifdef DEBUG_DESKONLY
   /* print buttons.count, buttons.tw here */
@@ -610,8 +581,6 @@ void redraw_buttons()
 #endif
 
   for (item=windows.head; item; item=item->next) {
-/*        if (DeskNumber == item->Desk || (item->flags & STICKY)) { */
-      /* I'm not sure if this check for sticky makes sense.  */
       if (DeskNumber == item->Desk || (item->flags.common.is_sticky)) {
           AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count);
 #ifdef DEBUG_DESKONLY
@@ -626,7 +595,7 @@ void redraw_buttons()
   /* print buttons.count, buttons.tw here */
   fprintf(stderr,"\nBefore RedrawWindow()...\n");
 #endif
-    
+
   RedrawWindow(1);
 
 #ifdef DEBUG_DESKONLY
@@ -1712,7 +1681,7 @@ void RevealTaskBar() {
 
   win_y = new_win_y;
   XMoveWindow(dpy, win, win_x, win_y);
-  BelayHide = False; 
+  BelayHide = False;
 }
 
 /***********************************************************************
@@ -1732,7 +1701,7 @@ void HideTaskBar() {
     for (; win_y<=new_win_y; ++win_y)
       XMoveWindow(dpy, win, win_x, win_y);
   }
- 
+
   win_y = new_win_y;
 
 /*    XMoveWindow(dpy, win, win_x, win_y); */
