@@ -485,6 +485,7 @@ extern Atom _XA_WM_PROTOCOLS;
 extern Atom _XA_WM_TAKE_FOCUS;
 extern Atom _XA_WM_SAVE_YOURSELF;
 extern Atom _XA_WM_DELETE_WINDOW;
+extern Atom _XA_WM_DESKTOP;
 extern Atom _XA_FVWM_STICKS_TO_GLASS;
 extern Atom _XA_FVWM_CLIENT;
 extern Atom _XA_OL_WIN_ATTR;

@@ -1,6 +1,20 @@
+1999-06-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.h, fvwm/fvwm.c, fvwm/placement.c:
+	restored all removed code with _XA_WM_DESKTOP,
+	restored SaveDesktopState(),
+	implemented yet better logic for Restart command (Done),
+	no options added on a native Restart (-s, -restore) anymore,
+	completely removed -restore fvwm command argument.
+
+1999-06-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* utils/BuildXLockMenu.in: fixed bug: item titles were filled with
+	spaces to up to 9 bytes, screwed up titles with right justified text
+
 1999-06-15  Dan Espen  <dane@mk.bellcore.com>
 
-	* NEWS: 
+	* NEWS:
 	* fvwm/fvwm2.1 (BUILT IN KEY AND MOUSE BINDINGS): Describe the Help,
 	F1 and Meta-Tab builtin bindings.
 
@@ -13,7 +27,7 @@
 
 1999-06-14  Dominik Vogt  <domivotdomivogt@bvstp038.bbn.hp.com>
 
-	* fvwm/menus.c (pop_menu_up): 
+	* fvwm/menus.c (pop_menu_up):
 	(pop_menu_down): don't ungrab the pointer during dynamic actions
 
 1999-06-14  Dominik Vogt  <dominik_vogt@gmx.de>

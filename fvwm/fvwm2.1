@@ -381,9 +381,7 @@ hexadecimal.  See xdpyinfo for a list of supported visuals.
 Try to take over from a previously running wm. This will not work
 unless the other wm is ICCCM 2.0 compliant.
 .IP "\fB-clientId\fP"
-.IP "\fB-restore\fP"
-These options are used when fvwm2 is restarted by means of the 'Restart'
-command or by the session manager.
+This option is used when fvwm2 is restarted by means of the session manager.
 
 .SH CONFIGURATION FILES
 The configuration file is used to describe mouse and button bindings,
@@ -2782,25 +2780,22 @@ if \fIWindowManagerName\fP is other than "fvwm2".  If the window
 manager is not in your default search path, then you should use the
 full path name for \fIWindowManagerName\fP.
 
-This command should not have a trailing ampersand or any command line
-arguments and (currently) should not make use of any environmental variables.
-The command can have optional parameters with simple shell-like syntax.
-Of the following examples, the first two are sure losers, but the next three
+This command should not have a trailing ampersand and (currently) should not
+make use of any environmental variables. The command can have optional
+parameters with simple shell-like syntax. Of the following examples, the
+first two are sure losers, but the next three
 are OK:
 .EX
 Key F1 R N Restart fvwm2 &
 Key F1 R N Restart $(HOME)/bin/fvwm2
 Key F1 R N Restart /home/nation/bin/fvwm2
 Key F1 R N Restart fvwm1 -s -f .fvwm1rc
-Key F1 R N Restart xterm -n '"X console"' -T \"X\ console\" -e fvwm1 -s
+Key F1 R N Restart xterm -n '"X console"' \\
+  -T \\"X\\ console\\" -e fvwm1 -s
 .EE
 
-The command 'Restart fvwm2' preserves most per-window state by writing
-it to a file named .fvwm_restart in the user's home directory.
-
-Note, the said above supposes your executable name is "fvwm2", if your
-executable is, for instance, "my_wm", substitute all "fvwm2" tokens above
-with "my_wm".
+The command 'Restart' without parameters preserves most per-window state by
+writing it to a file named .fvwm_restart in the user's home directory.
 
 .IP "Scroll \fIhorizonal vertical\fP"
 Scrolls the virtual desktop's viewport by \fIhorizontal\fP pages in

@@ -209,12 +209,6 @@ int main(int argc, char **argv)
 	client_id = argv[i];
       }
 #endif
-    else if (strncasecmp(argv[i], "-restore", 8) == 0)
-      {
-	if (++i >= argc)
-	  usage();
-	restore_filename = argv[i];
-      }
     else if (strncasecmp(argv[i],"-s",2)==0)
     {
       single = True;
@@ -529,10 +523,7 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(FvwmErrorHandler);
 
-  if (restore_filename && strstr (restore_filename, ".fvwm_restart"))
-    {
-      Restarting = True;
-    }
+  restore_filename = strdup(CatString2(user_home_dir, "/.fvwm_restart"));
 
   /*
      This should be done early enough to have the window states loaded
@@ -740,6 +731,7 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
   int aformat;
   unsigned long nitems, bytes_remain;
   unsigned char *prop;
+  unsigned long data[1];
 
   if (fw == NULL)
     return;
@@ -757,6 +749,10 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
 	XFree(prop);
       }
     }
+    data[0] = (unsigned long) fw->Desk;
+    XChangeProperty (dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
+                     PropModeReplace, (unsigned char *) data, 1);
+
 
     XSelectInput(dpy, fw->w, 0);
     w = fw->w;
@@ -949,6 +945,7 @@ Atom _XA_WM_COLORMAP_WINDOWS;
 extern Atom _XA_WM_PROTOCOLS;
 Atom _XA_WM_TAKE_FOCUS;
 Atom _XA_WM_DELETE_WINDOW;
+Atom _XA_WM_DESKTOP;
 Atom _XA_MwmAtom;
 Atom _XA_MOTIF_WM;
 
@@ -981,6 +978,7 @@ static void InternUsefulAtoms (void)
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
   _XA_WM_TAKE_FOCUS = XInternAtom (dpy, "WM_TAKE_FOCUS", False);
   _XA_WM_DELETE_WINDOW = XInternAtom (dpy, "WM_DELETE_WINDOW", False);
+  _XA_WM_DESKTOP = XInternAtom (dpy, "WM_DESKTOP", False);
   _XA_MwmAtom=XInternAtom(dpy,"_MOTIF_WM_HINTS",False);
   _XA_MOTIF_WM=XInternAtom(dpy,"_MOTIF_WM_INFO",False);
 
@@ -1593,6 +1591,25 @@ static void InitVariables(void)
    * compilations */
   Scr.CurrentDesk = 0;
 
+  {
+    Atom atype;
+    int aformat;
+    unsigned long nitems, bytes_remain;
+    unsigned char *prop;
+
+    if (
+      XGetWindowProperty(
+        dpy, Scr.Root, _XA_WM_DESKTOP, 0L, 1L, True, _XA_WM_DESKTOP,
+        &atype, &aformat, &nitems, &bytes_remain, &prop
+      ) == Success
+    ) {
+      if (prop != NULL) {
+        Restarting = True;
+        /* single = True; */
+      }
+    }
+  }
+
   Scr.EdgeScrollX = Scr.EdgeScrollY = 100;
   Scr.ScrollResistance = Scr.MoveResistance = 0;
   Scr.SnapAttraction = -1;
@@ -1724,13 +1741,19 @@ void Done(int restart, char *command)
 
   CloseICCCM2();
 
-  if(restart)
+  if (restart)
   {
     char* filename = strdup( CatString2(user_home_dir, "/.fvwm_restart") );
-    int native = 1;  /* native restart of this executable */
+    int native = 0;  /* native restart of this executable */
 
-    if (command == NULL || command[0] == '\0') command = g_argv[0];
-    if (strcmp(getBasename(command), getBasename(g_argv[0])) != 0) native = 0;
+    SaveDesktopState();
+
+    if (command == NULL) command = "";
+    if (
+      command[0] == '\0' || strcmp(command, g_argv[0]) ||
+      (getBasename(command) == command || getBasename(g_argv[0]) == g_argv[0])
+      && strcmp(getBasename(command), getBasename(g_argv[0])) != 0
+    ) native = 1;
 
     if (native) {
       RestartInSession (filename); /* won't return under SM */
@@ -1755,59 +1778,22 @@ void Done(int restart, char *command)
     sleep(1);
     ReapChildren();
 
-    {
-      const int MAX_ARG_SIZE = 30;
+    if (command[0] != '\0') {
+      const int MAX_ARG_SIZE = 20;
       char *my_argv[MAX_ARG_SIZE];
-      int i,done,j;
-
-      if (!native) {
         const char *errorMsg;
-        i = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);
-        if (i <= 0) {
-          fvwm_msg(ERR, "Done", "Restart parsing error in (%s): [%s]",
+      int n = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);
+      if (n <= 0) {
+        fvwm_msg(ERR, "Done", "Restart command parsing error in (%s): [%s]",
             command, errorMsg);
         } else {
           command = my_argv[0];
-          execvp(command,my_argv);
+        execvp(command, my_argv);
           fvwm_msg(ERR, "Done", "Call of '%s' failed!!!! (restarting '%s' instead)",
             command, g_argv[0]);
           perror("  system error description");
         }
       }
-
-      /* Trying a native restart */
-      i=0;
-      j=0;
-      done = 0;
-      while((g_argv[j] != NULL) && (i < MAX_ARG_SIZE - 4))
-      {
-        if(strcmp(g_argv[j],"-s")!=0)
-        {
-          my_argv[i] = g_argv[j];
-          i++;
-          j++;
-        }
-        else
-          j++;
-      }
-      my_argv[i++] = "-s";
-
-      for (j = i - 1; j >= 0; j--) {
-        if (strcmp (my_argv[j], "-restore") == 0)
-          break;
-      }
-      if (j >= 0) {
-        my_argv[j + 1] = filename;
-      } else {
-        my_argv[i++] = "-restore";
-        my_argv[i++] = filename;
-      }
-      my_argv[i++] = NULL;
-
-      execvp(g_argv[0], my_argv);    /* that _should_ work */
-      fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (trying again)", g_argv[0]);
-      perror("  system error description");
-    }
 
     execvp(g_argv[0], g_argv);    /* that _should_ work */
     fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]);
@@ -1878,6 +1864,30 @@ void usage(void)
   fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
 #endif
   exit( 1 );
+}
+
+/****************************************************************************
+ *
+ * Save Desktop State
+ *
+ ****************************************************************************/
+void SaveDesktopState()
+{
+  FvwmWindow *t;
+  unsigned long data[1];
+
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    data[0] = (unsigned long) t->Desk;
+    XChangeProperty (dpy, t->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
+                     PropModeReplace, (unsigned char *) data, 1);
+  }
+
+  data[0] = (unsigned long) Scr.CurrentDesk;
+  XChangeProperty (dpy, Scr.Root, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
+                   PropModeReplace, (unsigned char *) data, 1);
+
+  XSync(dpy, 0);
 }
 
 

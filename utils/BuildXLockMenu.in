@@ -85,7 +85,7 @@ while (<XL>)
     @foo = split;
     $mode = shift @foo;
     $mode =~ /^-.*/ && next;
-    printf "+ \"%-9s\t%-${dscLen}s Exec xlock$params -mode $mode\n",$mode,
+    printf "+ \"%s\t%-${dscLen}s Exec xlock$params -mode $mode\n",$mode,
       "(@foo)$icon\"";
   }
 }

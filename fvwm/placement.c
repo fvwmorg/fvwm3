@@ -518,6 +518,11 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
     tmp_win->Desk = (Desk > -1) ? Desk - 1 : Desk;    /*  RBW - 11/20/1998  */
   else
     {
+    Atom atype;
+    int aformat;
+    unsigned long nitems, bytes_remain;
+    unsigned char *prop;
+
       if((tmp_win->wmhints)&&(tmp_win->wmhints->flags & WindowGroupHint)&&
          (tmp_win->wmhints->window_group != None)&&
          (tmp_win->wmhints->window_group != Scr.Root))
@@ -542,7 +547,19 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
             tmp_win->Desk = t->Desk;
         }
       }
+
+    if (
+		XGetWindowProperty(
+        dpy, tmp_win->w, _XA_WM_DESKTOP, 0L, 1L, True, _XA_WM_DESKTOP,
+        &atype, &aformat, &nitems, &bytes_remain, &prop
+      ) == Success
+    ) {
+      if (prop != NULL) {
+        tmp_win->Desk = *(unsigned long *)prop;
+        XFree(prop);
     }
+    }
+  }
 
   /* I think it would be good to switch to the selected desk
    * whenever a new window pops up, except during initialization */
