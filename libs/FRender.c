@@ -453,7 +453,7 @@ int FRenderRender(
 	}
 	else if (!pixmap_copy)
 	{
-		src_picture = XRenderCreatePicture(
+		src_picture = FRenderCreatePicture(
 			dpy, pixmap, PFrenderVisualFormat, pam, &pa);
 	}
 
