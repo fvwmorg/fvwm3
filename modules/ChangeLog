@@ -1,3 +1,11 @@
+1999-12-03  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmEvent/FvwmEvent.c (main):
+	(config):
+	* FvwmEvent/FvwmEvent.1:
+	New configuration option FvwmEventStartDelay: can be used to
+	fix "the" FvwmEvent bug.
+
 1999-12-02  Brad Giaccio  <bgiaccio@psrw.com>
 
 	* FvwmIconMan/xmanager.c (draw_button): Fix for iconbutton style if

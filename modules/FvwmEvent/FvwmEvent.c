@@ -124,7 +124,8 @@ int	fd[2];
 char   *cmd_line = NULL;
 time_t	audio_delay = 0,		/* seconds */
         last_time = 0,
-        now;
+        now,
+        start_audio_delay = 0;
 Bool	PassID = False;	/* don't tag on the windowID by default */
 Bool	audio_compat = False;
 char   *audio_play_dir = NULL;
@@ -269,7 +270,7 @@ int main(int argc, char **argv)
 
     config();				/* configure events */
     execute_event(BUILTIN_STARTUP, NULL);	/* Startup event */
-
+    if (start_audio_delay) last_time = time(0);
     /* tell fvwm we're running */
     SendFinishedStartupNotification(fd);
 
@@ -299,8 +300,10 @@ int main(int argc, char **argv)
 	total +=count;
       }
 
-      if (now < last_time + audio_delay)
+      if (now < last_time + audio_delay + start_audio_delay)
 	continue;			/* quash event */
+      else
+	start_audio_delay = 0;
 
       /*
        * event will equal the number of shifts in the
@@ -404,7 +407,8 @@ char *table[]=
   "PlayCmd",
   "RplayHost",
   "RplayPriority",
-  "RplayVolume"
+  "RplayVolume",
+  "StartDelay"
 }; /* define entries here, if this list becomes unsorted, use FindToken */
 
 
@@ -539,6 +543,12 @@ void config(void)
 	    volume = atoi(token);
 	  break; /* RplayVolume */
 #endif
+
+	case 8:
+	  if (token)
+	    start_audio_delay = atoi(token);
+	  break; /* StartDelay */
+
 	}
 	if (token)
 	  free(token);

@@ -193,6 +193,11 @@ the delay period are ignored.  This option is useful if you don't want
 several sounds playing at the same time.  The default delay is 0 which
 disables the Event delay.
 
+.IP "*FvwmEventStartDelay \fIdelay\fP"
+Specifies that an event-action will only be executed if it occurs at
+least \fIdelay\fP seconds after the startup event. Events that occur during
+the delay period are ignored.  This option is useful when \fIfvwm\fP 
+starts and restarts using an audio player.  The default delay is 0.
 
 .SH RPLAY OPTIONS
 The following options are only valid with builtin rplay support.
@@ -231,7 +236,7 @@ ignored when rplay is used.
 
 .SH BUGS
 It's REALLY noisy when \fIfvwm\fP starts and restarts using an audio player.
-FvwmEventDelay helps a little bit.
+You can use FvwmEventStartDelay to fix this bug.
 
 .SH COPYRIGHTS
 This module has evolved of \fIFvwmAudio\fP, which in term is heavily based
