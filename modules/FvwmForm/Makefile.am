@@ -12,6 +12,7 @@ module_SCRIPTS = FvwmTalk
 FvwmTalk:
 	echo "#!/bin/sh" > $@
 	echo exec ${moduledir}/FvwmTalk '$$@' FormFvwmTalk.>> $@
+	chmod +x $@
 
 ## NB: Neither _MANS nor _DATA are included by default in
 ## distributions! 
