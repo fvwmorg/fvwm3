@@ -610,7 +610,6 @@ typedef struct FvwmWindow
 		unsigned parts_drawn : 12;
 		unsigned parts_lit : 12;
 		unsigned parts_inverted : 12;
-		unsigned parts_toggled : 12;
 	} decor_state;
 	int nr_left_buttons;
 	int nr_right_buttons;

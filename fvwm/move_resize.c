@@ -690,7 +690,6 @@ static Bool resize_move_window(F_CMD_ARGS)
     fw->normal_g.y += dy;
   }
   has_focus = (fw == get_focus_window())? True : False;
-  DrawDecorations(fw, PART_ALL, has_focus, True, None, CLEAR_ALL);
   update_absolute_geometry(fw);
   maximize_adjust_offset(fw);
   XFlush(dpy);
@@ -2342,7 +2341,6 @@ static Bool resize_window(F_CMD_ARGS)
 	      fw, fw->frame_g.x, fw->frame_g.y, drag->width,
 	      drag->height, False);
     }
-    DrawDecorations(fw, PART_ALL, True, True, None, CLEAR_ALL);
     update_absolute_geometry(fw);
     maximize_adjust_offset(fw);
     GNOME_SetWinArea(fw);
@@ -2671,7 +2669,6 @@ static Bool resize_window(F_CMD_ARGS)
 	  DoResize(
 	    start_g.x, start_g.y, fw, &start_g, orig, &xmotion, &ymotion,
 	    do_resize_opaque);
-	  DrawDecorations(fw, PART_ALL, True, True, None, CLEAR_ALL);
 	}
       }
       is_done = True;
@@ -3250,7 +3247,6 @@ static void unmaximize_fvwm_window(
 	}
 	frame_setup_window(
 		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
-	DrawDecorations(fw, PART_ALL, True, True, None, CLEAR_ALL);
 
 	return;
 }

@@ -3741,6 +3741,7 @@ static void paint_menu_gradient_background(
 	XGCValues gcv;
 	unsigned long gcm = GCLineWidth;
 
+	gcv.line_width = 1;
 	bounds.x = bw;
 	bounds.y = bw;
 	bounds.width = MR_WIDTH(mr) - bw;

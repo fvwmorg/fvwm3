@@ -1361,6 +1361,7 @@ static void CreateGCs(void)
   Scr.ScratchGC3 = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.ScratchGC4 = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.TitleGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.TileGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.TransMaskGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   c.pixel = GetColor(DEFAULT_FORE_COLOR);
   Scr.ScratchMonoPixmap = XCreatePixmap(dpy, Scr.Root, 1, 1, 1);

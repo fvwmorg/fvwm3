@@ -122,11 +122,20 @@ Bool GrabEm(int cursor, int grab_context)
 
   if (grab_count[GRAB_ALL] > grab_count[GRAB_PASSIVE])
   {
+    /* already grabbed, just change the grab cursor */
     if (grab_context == GRAB_FREEZE_CURSOR)
     {
+      if (XGrabPointer(
+	    dpy, (PressedW != None) ? PressedW : Scr.Root , True, GRAB_EVMASK,
+	    GrabModeAsync, GrabModeAsync, None, None, CurrentTime) !=
+	  GrabSuccess)
+      {
+	return False;
+      }
+      grab_count[grab_context]++;
+      grab_count[GRAB_ALL]++;
       return True;
     }
-    /* already grabbed, just change the grab cursor */
     grab_count[grab_context]++;
     grab_count[GRAB_ALL]++;
     if (grab_context != GRAB_BUSY || grab_count[GRAB_STARTUP] == 0)

@@ -1020,11 +1020,11 @@ static void frame_hide_changing_window_parts(
 	XMoveResizeWindow(
 		dpy, hide_wins.w[2],
 		0, mra->current_g.height - mra->b_g.bottom_right.height - y_add,
-		mra->current_g.width, mra->b_g.top_left.height + y_add);
+		mra->current_g.width, mra->b_g.bottom_right.height + y_add);
 	XMoveResizeWindow(
 		dpy, hide_wins.w[3],
 		mra->current_g.width - mra->b_g.bottom_right.width - x_add, 0,
-		mra->b_g.top_left.width + x_add, mra->current_g.height);
+		mra->b_g.bottom_right.width + x_add, mra->current_g.height);
 	for (i = 0; i < 4; i++)
 	{
 		XMapWindow(dpy, hide_wins.w[i]);
@@ -1103,8 +1103,8 @@ static void frame_move_resize_step(
 	}
 	else if (flags.do_hide_parent)
 	{
-		/* When the parent gets hidden, unmap it automatically, lower it
-		 * while hidden, then remap it.  Necessary to eliminate
+		/* When the parent gets hidden, unmap it automatically, lower
+		 * it while hidden, then remap it.  Necessary to eliminate
 		 * flickering. */
 		xswa.win_gravity = UnmapGravity;
 		XChangeWindowAttributes(
@@ -1143,7 +1143,7 @@ static void frame_move_resize_step(
 	/* draw the border and the titlebar */
 	draw_decorations_with_geom(
 		fw, PART_ALL, (mra->w_with_focus != None) ? True : False,
-		do_force, CLEAR_BUTTONS, &mra->current_g, &mra->next_g);
+		do_force, CLEAR_ALL, &mra->current_g, &mra->next_g);
 	/* setup the client and the parent windows */
 	w = mra->next_g.width - mra->b_g.total_size.width;
 	if (w < 1)

@@ -2254,15 +2254,15 @@ FvwmWindow *AddWindow(
 	if (do_shade)
 	{
 		rectangle big_g;
+		rectangle new_g;
 
 		big_g = (IS_MAXIMIZED(fw)) ? fw->max_g : fw->frame_g;
-		get_shaded_geometry(fw, &fw->frame_g, &fw->frame_g);
+		get_shaded_geometry(fw, &new_g, &fw->frame_g);
 		XLowerWindow(dpy, FW_W_PARENT(fw));
 		SET_SHADED(fw, 1);
-		SET_SHADED_DIR(fw, do_shade);
+		SET_SHADED_DIR(fw, shade_dir);
 		frame_setup_window(
-			fw, fw->frame_g.x, fw->frame_g.y,
-			fw->frame_g.width, fw->frame_g.height, False);
+			fw, new_g.x, new_g.y, new_g.width, new_g.height, False);
 	}
 	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
 			  &JunkHeight, &JunkBW,  &JunkDepth))

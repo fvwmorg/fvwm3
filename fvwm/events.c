@@ -3287,10 +3287,18 @@ void WaitForButtonsUp(Bool do_handle_expose)
   long evmask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
     KeyPressMask|KeyReleaseMask;
 
+  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+		    &JunkX, &JunkY, &mask) == False)
+  {
+    /* pointer is on a different screen - that's okay here */
+  }
+  if ((mask & (DEFAULT_ALL_BUTTONS_MASK)) == 0)
+  {
+    return;
+  }
   if (do_handle_expose)
     evmask |= ExposureMask;
-  MyXGrabServer(dpy);
-  mask = DEFAULT_ALL_BUTTONS_MASK;
+  GrabEm(CRS_WAIT, GRAB_NORMAL);
   while (mask & (DEFAULT_ALL_BUTTONS_MASK))
   {
     /* handle expose events */
@@ -3312,8 +3320,6 @@ void WaitForButtonsUp(Bool do_handle_expose)
     }
     else
     {
-      /* although this should never happen, a bit of additional safety does not
-       * hurt. */
       if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 			&JunkX, &JunkY, &mask) == False)
       {
@@ -3321,7 +3327,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
       }
     }
   }
-  MyXUngrabServer(dpy);
+  UngrabEm(GRAB_NORMAL);
 
   return;
 }

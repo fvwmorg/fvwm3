@@ -1,3 +1,43 @@
+2002-03-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (WaitForButtonsUp):
+	don't grab the whole server but merely the pointer to allow applications
+	redrawing themselves
+
+	* fvwm/borders.c:
+	finished writing title drawing code
+
+	* fvwm/move_resize.c (resize_window):
+	(resize_move_window):
+	(unmaximize_fvwm_window):
+	removed now unnecessary calls to DrawDecorations()
+
+	* fvwm/frame.c (frame_hide_changing_window_parts):
+	fixed hiding bottom/right titles
+
+	* fvwm/add_window.c (AddWindow):
+	fixed recapturing shaded windows
+
+	* fvwm/misc.c (GrabEm):
+	fixed the cursor over the title window while resizing
+
+2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Graphics.c (CreateTiledPixmap):
+	improved efficience: let the X server tile a pixmap via the GC settings
+
+	* fvwm/fvwm.c (CreateGCs):
+	* fvwm/screen.h (ScreenInfo):
+	added new global GC Scr.TileGC
+
+	* fvwm/borders.c (border_fill_pixmap_background):
+	* fvwm/ewmh_icons.c (create_pixmap_from_ewmh_icon):
+	use already created gcs
+
+	* fvwm/ewmh_icons.c (create_pixmap_from_ewmh_icon):
+	* fvwm/menus.c (paint_menu_gradient_background):
+	fixed using a randow members in gcs
+
 2002-03-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

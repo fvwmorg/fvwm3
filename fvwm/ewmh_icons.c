@@ -597,10 +597,9 @@ int create_pixmap_from_ewmh_icon(unsigned char *list,
 				 int start, int width, int height,
 				 Pixmap pixmap, Pixmap mask)
 {
-  static GC gc = None;
-  static GC mono_gc = None;
   register int i,j,k;
   XImage *image, *m_image;
+  XGCValues xgcv;
   XColor c;
   int got_all = 1;
   Pixel back = WhitePixel(dpy, Scr.screen);
@@ -664,29 +663,12 @@ int create_pixmap_from_ewmh_icon(unsigned char *list,
     fvwm_msg(ERR, "create_pixmap_from_ewmh_icon","cannot allocate colors\n");
   }
 
-  if (gc == None)
-  {
-    XGCValues xgcv;
-
-    xgcv.function = GXcopy;
-    xgcv.plane_mask = AllPlanes;
-    xgcv.fill_style = FillSolid;
-    gc = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
-		GCFunction|GCPlaneMask|GCFillStyle|GCForeground|GCBackground,
-		&xgcv);
-  }
-  if (mono_gc == None)
-  {
-    XGCValues xgcv;
-
-    xgcv.foreground = fore;
-    xgcv.background = back;
-    mono_gc = fvwmlib_XCreateGC(dpy, mask, GCForeground | GCBackground,
-				&xgcv);
-  }
+  XChangeGC(dpy, Scr.ScratchGC1, 0, &xgcv);
+  XSetForeground(dpy, Scr.MonoGC, fore);
+  XSetBackground(dpy, Scr.MonoGC, back);
   /* copy the image to the server */
-  XPutImage(dpy, pixmap, gc, image, 0, 0, 0, 0, width, height);
-  XPutImage(dpy, mask, mono_gc, m_image, 0, 0, 0, 0, width, height);
+  XPutImage(dpy, pixmap, Scr.ScratchGC1, image, 0, 0, 0, 0, width, height);
+  XPutImage(dpy, mask, Scr.MonoGC, m_image, 0, 0, 0, 0, width, height);
   XDestroyImage(image);
   if (m_image != None)
     XDestroyImage(m_image);
