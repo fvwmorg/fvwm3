@@ -134,6 +134,8 @@ void InitEventHandlerJumpTable(void)
   if (ShapesSupported)
     EventHandlerJumpTable[ShapeEventBase+ShapeNotify] = HandleShapeNotify;
 #endif /* SHAPE */
+  EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
+  EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;  
 }
 
 /***********************************************************************
@@ -434,6 +436,7 @@ void HandlePropertyNotify()
 {
   XTextProperty text_prop;
   Boolean       OnThisPage    =  False;
+  int was_urgent;
 
   DBUG("HandlePropertyNotify","Routine Entered");
 
@@ -518,25 +521,30 @@ void HandlePropertyNotify()
       break;
 
     case XA_WM_HINTS:
-      if (Tmp_win->wmhints)
+      /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new - 
+	 the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. */
+      was_urgent = 0;
+      if (Tmp_win->wmhints) {
+	was_urgent = Tmp_win->wmhints->flags & XUrgencyHint;
 	XFree ((char *) Tmp_win->wmhints);
+      }
       Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
-
+      
       if(Tmp_win->wmhints == NULL)
 	return;
-
+      
       if((Tmp_win->wmhints->flags & IconPixmapHint)||
 	 (Tmp_win->wmhints->flags & IconWindowHint))
 	if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
 	  Tmp_win->icon_bitmap_file = (char *)0;
-
+      
       if((Tmp_win->wmhints->flags & IconPixmapHint)||
-         (Tmp_win->wmhints->flags & IconWindowHint))
+	 (Tmp_win->wmhints->flags & IconWindowHint))
 	{
 	  if (!(Tmp_win->flags & SUPPRESSICON))
 	    {
-              if (Tmp_win->icon_w)
-                XDestroyWindow(dpy,Tmp_win->icon_w);
+	      if (Tmp_win->icon_w)
+		XDestroyWindow(dpy,Tmp_win->icon_w);
 	      XDeleteContext(dpy, Tmp_win->icon_w, FvwmContext);
 	      if(Tmp_win->flags & ICON_OURS)
 		{
@@ -549,8 +557,8 @@ void HandlePropertyNotify()
 	      else
 		XUnmapWindow(dpy,Tmp_win->icon_pixmap_w);
 	    }
-          Tmp_win->icon_w = None;
-          Tmp_win->icon_pixmap_w = None;
+	  Tmp_win->icon_w = None;
+	  Tmp_win->icon_pixmap_w = None;
 	  Tmp_win->iconPixmap = (Window)NULL;
 	  if(Tmp_win->flags & ICONIFIED)
 	    {
@@ -559,20 +567,20 @@ void HandlePropertyNotify()
 	      CreateIconWindow(Tmp_win,
 			       Tmp_win->icon_x_loc,Tmp_win->icon_y_loc);
 	      BroadcastPacket(M_ICONIFY, 7,
-                              Tmp_win->w, Tmp_win->frame,
-                              (unsigned long)Tmp_win,
-                              Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
-                              Tmp_win->icon_w_width, Tmp_win->icon_w_height);
+			      Tmp_win->w, Tmp_win->frame,
+			      (unsigned long)Tmp_win,
+			      Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
+			      Tmp_win->icon_w_width, Tmp_win->icon_w_height);
 	      BroadcastConfig(M_CONFIGURE_WINDOW, Tmp_win);
-
+	      
 	      if (!(Tmp_win->flags & SUPPRESSICON))
 		{
 		  LowerWindow(Tmp_win);
 		  AutoPlace(Tmp_win);
 		  if(Tmp_win->Desk == Scr.CurrentDesk)
 		    {
-                      if(Tmp_win->icon_w)
-                        XMapWindow(dpy, Tmp_win->icon_w);
+		       if(Tmp_win->icon_w)
+			 XMapWindow(dpy, Tmp_win->icon_w);
 		      if(Tmp_win->icon_pixmap_w != None)
 			XMapWindow(dpy, Tmp_win->icon_pixmap_w);
 		    }
@@ -581,8 +589,24 @@ void HandlePropertyNotify()
 	      DrawIconWindow(Tmp_win);
 	    }
 	}
-      break;
 
+      /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new - 
+	 the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. 
+	 Treat urgency changes by calling user-settable functions.
+	 These could e.g. deiconify and raise the window or temporarily
+	 change the decor. */
+      if (!was_urgent && (Tmp_win->wmhints->flags & XUrgencyHint))
+	{
+	  ExecuteFunction("Function UrgencyFunc",
+			  Tmp_win,&Event,C_WINDOW,-1);
+	}
+      
+      if (was_urgent && !(Tmp_win->wmhints->flags & XUrgencyHint))
+	{
+	  ExecuteFunction("Function UrgencyDoneFunc",
+			  Tmp_win,&Event,C_WINDOW,-1);
+	}
+      break;
     case XA_WM_NORMAL_HINTS:
       GetWindowSizeHints (Tmp_win);
 #if 0
@@ -655,6 +679,18 @@ void HandleClientMessage()
     return;
   }
 
+  /* FIXME: Is this safe enough ? I guess if clients behave 
+     according to ICCCM and send these messages only if they
+     when grabbed the pointer, it is OK */
+  {
+    extern Bool client_controls_colormaps;
+    extern Atom _XA_WM_COLORMAP_NOTIFY;
+    if (Event.xclient.message_type == _XA_WM_COLORMAP_NOTIFY) {
+      client_controls_colormaps = Event.xclient.data.l[1];
+      return;
+    }  
+  }
+  
   /*
   ** CKH - if we get here, it was an unknown client message, so send
   ** it to the client if it was in a window we know about.  I'm not so

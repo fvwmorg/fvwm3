@@ -1,3 +1,21 @@
+1999-03-04  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.c (main): call SetupICCCM2 before selecting
+	for SubstructureRedirect on the root window.
+	(Done): call CloseICCCM2 after undecorating all windows.
+	* fvwm/colormaps.c: new global client_controls_colormaps
+	for client-side InstallColormap support.
+	(HandleColormapNotify): 
+	(InstallWindowColormaps): don't install colormaps if 
+	client_controls_colormaps is true.
+	* fvwm/events.c (HandleClientMessage): handle wm_colormap_notify
+	clientmessages by setting client_controls_colormaps.
+	(InitEventHandlerJumpTable): install HandleSelectionClear
+	and HandleSelectionRequest. 
+	* fvwm/icccm2.c: New file implementing SetupICCCM2,
+	CloseICCCM2, HandleSelectionRequest and HandleSelectionClear.
+	* fvwm/fvwm.h: add prototypes for these plus a couple of Atom's.
+
 1999-03-03  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/builtins.c (WindowShade): Enhanced WindowShade() to do

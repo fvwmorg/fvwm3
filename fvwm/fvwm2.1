@@ -264,7 +264,7 @@ information is also transmitted, as in the sample module FvwmButtons.
 The FvwmButtons module is documented in its own man page.
 
 .SH ICCCM COMPLIANCE
-\fIFvwm\fP attempts to be ICCCM 1.1 compliant.  In addition, ICCCM
+\fIFvwm\fP attempts to be ICCCM 2.0 compliant.  In addition, ICCCM
 states that it should be possible for applications to receive ANY
 keystroke, which is not consistent with the keyboard shortcut approach
 used in \fIfvwm\fP and most other window managers. In particular you
@@ -284,6 +284,28 @@ window-manager to give them the keyboard focus anyway, so fvwm
 provides a window-style, "Lenience", which will allow fvwm to overlook
 this ICCCM rule.
 
+The differences between ICCCM 1.1 and 2.0 include the ability to 
+"take over" from a running ICCCM 2.0 compliant window manager; thus
+.EX
+fvwm2; vi .fvwm2rc; fvwm2
+.EE
+will work in the same way as the Restart command. Further additions
+are support for client-side colormap installation (see the ICCCM 
+for details) and the urgency hint. Clients can set this hint in 
+the WM_HINTS property of their window and expect the window manager
+to attract the users attention to the window. Fvwm has two redefinable 
+functions for this purpose, UrgencyFunc and UrgencyDoneFunc, which 
+are executed when the flag is set/cleared. 
+Their default definitions are:
+.EX
+AddToFunc UrgencyFunc 
+ + "I" Iconify -1
+ + "I" FlipFocus
+ + "I" Raise
+ + "I" WarpToWindow 5p 5p
+AddToFunc UrgencyDoneFunc 
+ + "I" Nop
+.EE
 
 .SH M4 PREPROCESSING
 .PP

@@ -418,6 +418,7 @@ int main(int argc, char **argv)
   XChangeProperty (dpy, Scr.Root, _XA_MIT_PRIORITY_COLORS,
                    XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
+  SetupICCCM2 ();
 
   XSetErrorHandler(CatchRedirectError);
   XSetIOErrorHandler(CatchFatal);
@@ -425,6 +426,7 @@ int main(int argc, char **argv)
                LeaveWindowMask| EnterWindowMask | PropertyChangeMask |
                SubstructureRedirectMask | KeyPressMask |
                SubstructureNotifyMask|
+	       ColormapChangeMask| 
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
 
@@ -759,6 +761,11 @@ void SetRCDefaults()
     "+ \"I\" WindowId $0 FlipFocus",
     "+ \"I\" WindowId $0 Raise",
     "+ \"I\" WindowId $0 WarpToWindow 5p 5p",
+    "AddToFunc UrgencyFunc \"I\" Iconify -1",
+    "+ \"I\" FlipFocus",
+    "+ \"I\" Raise",
+    "+ \"I\" WarpToWindow 5p 5p",
+    "AddToFunc UrgencyDoneFunc \"I\" Nop",
     NULL
   };
   int i=0;
@@ -1517,6 +1524,8 @@ void Done(int restart, char *command)
   ClosePipes();
 
   Reborder ();
+
+  CloseICCCM2();
 
   if(restart)
   {

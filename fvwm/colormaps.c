@@ -20,6 +20,13 @@
 #include "screen.h"
 #include "module.h"
 
+
+/* clasen@mathematik.uni-freiburg.de - 03/01/1999 - new
+   boolean for handling of client-side InstallColormap 
+   as described in the ICCCM 2.0 */
+
+Bool client_controls_colormaps = False;
+
 FvwmWindow *colormap_win;
 Colormap last_cmap = None;
 extern FvwmWindow *Tmp_win;
@@ -90,7 +97,9 @@ void HandleColormapNotify(void)
   /* Reinstall the colormap that we think should be installed,
    * UNLESS and unrecognized window has the focus - it might be
    * an override-redirect window that has its own colormap. */
-  if((ReInstall)&&(Scr.UnknownWinFocused == None))
+  if((ReInstall)&&(Scr.UnknownWinFocused == None)
+     && !client_controls_colormaps
+     )
     {
       XInstallColormap(dpy,last_cmap);
     }
@@ -138,7 +147,9 @@ void InstallWindowColormaps (FvwmWindow *tmp)
   /* Don't load any new colormap if root colormap(s) has been
    * force loaded.
    */
-  if (Scr.root_pushes)
+  if (Scr.root_pushes
+      || client_controls_colormaps
+      )
     {
       return;
     }

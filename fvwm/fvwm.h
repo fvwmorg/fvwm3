@@ -373,6 +373,11 @@ extern void Done(int, char *) __attribute__((__noreturn__));
 extern void BlackoutScreen(void);
 extern void UnBlackoutScreen(void);
 
+extern void SetupICCCM2(void);
+extern void CloseICCCM2(void);
+extern void HandleSelectionRequest(void);
+extern void HandleSelectionClear(void);
+
 extern int master_pid;
 
 extern Display *dpy;
@@ -417,6 +422,10 @@ extern Atom _XA_WM_WINDOW_ROLE;
 extern Atom _XA_WM_CLIENT_LEADER;
 extern Atom _XA_SM_CLIENT_ID;
 #endif
+extern Atom _XA_WIN_SX;
+extern Atom _XA_MANAGER;
+extern Atom _XA_ATOM_PAIR;
+extern Atom _XA_WM_COLORMAP_NOTIFY;
 
 /* include this down here because FvwmWindows must be defined when including
  * this header file. */
