@@ -1,3 +1,11 @@
+2005-02-05  Bjoern Steinbrink <b.steinbrink@gmx.de>
+
+	* FvwmScript/FvwmScript.c (MainLoop):
+	Fixed periodic tasks being executed too often when there are pending
+	events.
+	* FvwmScript/FvwmScript.1.in: Typo, PeriodicTasks is one word with
+	ending s.
+
 2005-01-10  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/xmanager.c (set_win_displaystring):

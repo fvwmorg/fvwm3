@@ -1092,6 +1092,8 @@ void MainLoop (void)
   int i;
   struct timeval tv;
   struct timeval *ptv;
+  struct timeval now, last_periodic;
+  long delta;
   fd_set_size_t fd_width = fd[1];
   Bool fsm_pending = False;
 
@@ -1102,7 +1104,10 @@ void MainLoop (void)
   tv.tv_usec = 0;
   ptv = NULL;
   if (x11base->periodictasks != NULL)
+  {
+    gettimeofday(&last_periodic, NULL);
     ptv = &tv;
+  }
 
   while ( !isTerminated )
   {
@@ -1114,6 +1119,10 @@ void MainLoop (void)
     FD_SET(fd[1],&in_fdset);
     fsm_fdset(&in_fdset);
 
+    gettimeofday(&now, NULL);
+    delta = (now.tv_sec - last_periodic.tv_sec) * 1000000;
+    delta += now.tv_usec - last_periodic.tv_usec;
+
     if (fsm_pending)
     {
 	    tv.tv_sec  = 0;
@@ -1121,8 +1130,10 @@ void MainLoop (void)
     }
     else
     {
-	    tv.tv_sec = 1;
-	    tv.tv_usec = 0;
+	    tv.tv_usec = 1000000 - delta;
+	    if (tv.tv_usec < 0)
+	      tv.tv_usec = 0;
+	    tv.tv_sec = delta ? 0 : 1;
     }
 
     if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, ptv) > 0)
@@ -1245,11 +1256,13 @@ void MainLoop (void)
       fsm_pending = fsm_process(&in_fdset);
     }
 
-    if (!isTerminated && x11base->periodictasks!=NULL)
+    if (!isTerminated && x11base->periodictasks!=NULL && delta >= 1000000)
     {
       /* Execution des taches periodics */
+      last_periodic.tv_sec = now.tv_sec;
+      last_periodic.tv_usec = now.tv_usec;
       ExecBloc(x11base->periodictasks);
-      usleep(10000);
+      usleep(10000);		/* slight delay, not the whole second */
     }
   }
 }

@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Bjoern Steinbrink:
+Patch for FvwmScript tasks running too often.
+
 Arnaud Vrac:
 Patch which fixes maximize by growing vs EWMH working area
 
