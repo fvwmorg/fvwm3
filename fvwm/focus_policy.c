@@ -74,6 +74,10 @@ void fpol_init_default_fp(focus_policy_t *fp)
 	FPS_GRAB_FOCUS(*fp, DEF_FP_GRAB_FOCUS);
 	FPS_GRAB_FOCUS_TRANSIENT(*fp, DEF_FP_GRAB_FOCUS_TRANSIENT);
 	FPS_OVERRIDE_GRAB_FOCUS(*fp, DEF_FP_OVERRIDE_GRAB_FOCUS);
+	FPS_RELEASE_FOCUS(*fp, DEF_FP_RELEASE_FOCUS);
+	FPS_RELEASE_FOCUS_TRANSIENT(*fp, DEF_FP_RELEASE_FOCUS_TRANSIENT);
+	FPS_OVERRIDE_RELEASE_FOCUS(*fp, DEF_FP_OVERRIDE_RELEASE_FOCUS);
+	FPS_SORT_WINDOWLIST_BY(*fp, DEF_FP_SORT_WINDOWLIST_BY);
 
 	return;
 }
@@ -100,6 +104,11 @@ unsigned do_raise_unfocused_decor_click : 1;
 /*!!!*/unsigned do_ignore_raise_click_motion : 1;
 /*!!!*/unsigned do_allow_func_focus_click : 1;
 /*!!!*/unsigned do_allow_func_raise_click : 1;
-unsigned do_grab_focus : 1;
-unsigned do_grab_focus_transient : 1;
+unsigned do_open_grab_focus : 1;
+unsigned do_open_grab_focus_transient : 1;
+unsigned do_override_grab_focus : 1;
+/*!!!*/unsigned do_close_releases_focus : 1;
+/*!!!*/unsigned do_close_releases_focus_transient : 1;
+/*!!!*/unsigned do_override_release_focus : 1;
+/*!!!*/unsigned do_sort_windowlist_by : 1;
 #endif

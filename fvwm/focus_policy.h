@@ -104,19 +104,41 @@
 #define FPS_ALLOW_FUNC_RAISE_CLICK(fp,x) \
 	((fp).do_allow_func_raise_click = !!(x))
 #define FP_DO_GRAB_FOCUS(fp) \
-	((fp).do_grab_focus)
+	((fp).do_open_grabs_focus)
 #define FPS_GRAB_FOCUS(fp,x) \
-	((fp).do_grab_focus = !!(x))
+	((fp).do_open_grabs_focus = !!(x))
 #define FP_DO_GRAB_FOCUS_TRANSIENT(fp) \
-	((fp).do_grab_focus_transient)
+	((fp).do_open_grabs_focus_transient)
 #define FPS_GRAB_FOCUS_TRANSIENT(fp,x) \
-	((fp).do_grab_focus_transient = !!(x))
+	((fp).do_open_grabs_focus_transient = !!(x))
 #define FP_DO_OVERRIDE_GRAB_FOCUS(fp) \
 	((fp).do_override_grab_focus)
 #define FPS_OVERRIDE_GRAB_FOCUS(fp,x) \
 	((fp).do_override_grab_focus = !!(x))
+#define FP_DO_RELEASE_FOCUS(fp) \
+	((fp).do_close_releases_focus)
+#define FPS_RELEASE_FOCUS(fp,x) \
+	((fp).do_close_releases_focus = !!(x))
+#define FP_DO_RELEASE_FOCUS_TRANSIENT(fp) \
+	((fp).do_close_releases_focus_transient)
+#define FPS_RELEASE_FOCUS_TRANSIENT(fp,x) \
+	((fp).do_close_releases_focus_transient = !!(x))
+#define FP_DO_OVERRIDE_RELEASE_FOCUS(fp) \
+	((fp).do_override_release_focus)
+#define FPS_OVERRIDE_RELEASE_FOCUS(fp,x) \
+	((fp).do_override_release_focus = !!(x))
+#define FP_DO_SORT_WINDOWLIST_BY(fp) \
+	((fp).do_sort_windowlist_by)
+#define FPS_SORT_WINDOWLIST_BY(fp,x) \
+	((fp).do_sort_windowlist_by = !!(x))
 
 /* ---------------------------- type definitions ---------------------------- */
+
+typedef enum
+{
+	FPOL_SORT_WL_BY_FOCUS = 0,
+	FPOL_SORT_WL_BY_OPEN = 1
+} fpol_sort_windowlist_t;
 
 typedef struct
 {
@@ -144,10 +166,14 @@ typedef struct
 	unsigned do_ignore_raise_click_motion : 1;
 	unsigned do_allow_func_focus_click : 1;
 	unsigned do_allow_func_raise_click : 1;
-	/* initial focus */
-	unsigned do_grab_focus : 1;
-	unsigned do_grab_focus_transient : 1;
+	/* keeping track of the focus */
+	unsigned do_open_grabs_focus : 1;
+	unsigned do_open_grabs_focus_transient : 1;
 	unsigned do_override_grab_focus : 1;
+	unsigned do_close_releases_focus : 1;
+	unsigned do_close_releases_focus_transient : 1;
+	unsigned do_override_release_focus : 1;
+	unsigned do_sort_windowlist_by : 1;
 } focus_policy_t;
 
 /* ---------------------------- forward declarations ------------------------ */

@@ -18,9 +18,6 @@
  * Description:
  *      #defines for default values shall go into this file as well as tunable
  *      parameters.
- *
- * Created:
- *       23 Dec 1998 - Dominik Vogt <dominik_vogt@hp.com>
  */
 
 #ifndef _DEFAULTS_
@@ -328,5 +325,9 @@
 #define DEF_FP_GRAB_FOCUS			 0
 #define DEF_FP_GRAB_FOCUS_TRANSIENT		 1
 #define DEF_FP_OVERRIDE_GRAB_FOCUS		 0
+#define DEF_FP_RELEASE_FOCUS			 0
+#define DEF_FP_RELEASE_FOCUS_TRANSIENT		 1
+#define DEF_FP_OVERRIDE_RELEASE_FOCUS		 0
+#define DEF_FP_SORT_WINDOWLIST_BY		 1
 
 #endif /* _DEFAULTS_ */
