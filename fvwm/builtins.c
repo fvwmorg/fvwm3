@@ -700,6 +700,19 @@ void wait_func(F_CMD_ARGS)
   char *escape;
   Window nonewin = None;
   extern FvwmWindow *Tmp_win;
+  char *wait_string, *rest;
+
+  rest = GetNextToken(action, &wait_string);
+  if (!wait_string)
+    return;
+  while (*rest && isspace((unsigned char)*rest))
+    rest++;
+  if (*rest != '\0')
+  {
+    fvwm_msg(ERR, "wait_func", "Unexpected string after Wait %s", wait_string);
+    free(wait_string);
+    return;
+  }
 
   while(!done)
   {
@@ -715,13 +728,13 @@ void wait_func(F_CMD_ARGS)
       DispatchEvent(False);
       if(Event.type == MapNotify)
       {
-        if((Tmp_win)&&(matchWildcards(action,Tmp_win->name)==True))
+        if((Tmp_win)&&(matchWildcards(wait_string, Tmp_win->name)==True))
           done = True;
         if((Tmp_win)&&(Tmp_win->class.res_class)&&
-           (matchWildcards(action,Tmp_win->class.res_class)==True))
+           (matchWildcards(wait_string, Tmp_win->class.res_class)==True))
           done = True;
         if((Tmp_win)&&(Tmp_win->class.res_name)&&
-           (matchWildcards(action,Tmp_win->class.res_name)==True))
+           (matchWildcards(wait_string, Tmp_win->class.res_name)==True))
           done = True;
       }
       else if (Event.type == KeyPress)
@@ -744,6 +757,8 @@ void wait_func(F_CMD_ARGS)
   if (redefine_cursor)
     XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
 #endif
+
+  free(wait_string);
 }
 
 void quit_func(F_CMD_ARGS)

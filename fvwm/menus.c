@@ -3032,19 +3032,20 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
   else if(MI_IS_TITLE(mi))
   {
+    /* Separate the title. */
+    if (MST_TITLE_UNDERLINES(mr) > 0 && mi != MR_FIRST_ITEM(mr))
+    {
+      text_y += SEPARATOR_HEIGHT + relief_thickness;
+      y = y_offset + relief_thickness;
+      if (sx1 < sx2)
+        draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
+    }
     /* Underline the title. */
     switch (MST_TITLE_UNDERLINES(mr))
     {
     case 0:
       break;
     case 1:
-      if(mi != MR_FIRST_ITEM(mr))
-      {
-	text_y += SEPARATOR_TOTAL_HEIGHT;
-	y = y_offset + SEPARATOR_Y_OFFSET;
-	if (sx1 < sx2)
-	  draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
-      }
       if(MI_NEXT_ITEM(mi) != NULL)
       {
 	y = y_offset + y_height - SEPARATOR_HEIGHT;
