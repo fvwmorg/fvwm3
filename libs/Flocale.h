@@ -87,7 +87,7 @@ typedef enum
 {
 	TEXT_ROTATED_0    = 0,
 	TEXT_ROTATED_90   = 1,
-	TEXT_ROTATED_180  = 2, /* not used and not tested */
+	TEXT_ROTATED_180  = 2,
 	TEXT_ROTATED_270  = 3,
 	TEXT_ROTATED_MASK = 3,
 } text_rotation_type;

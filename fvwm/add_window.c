@@ -775,6 +775,8 @@ void setup_title_geometry(
 		fw, STITLE_DIR(pstyle->flags),
 		SIS_LEFT_TITLE_ROTATED_CW(pstyle->flags),
 		SIS_RIGHT_TITLE_ROTATED_CW(pstyle->flags),
+		SIS_TOP_TITLE_ROTATED(pstyle->flags),
+		SIS_BOTTOM_TITLE_ROTATED(pstyle->flags),
 		&width, &offset);
 	fw->title_thickness = width;
 	fw->title_text_offset = offset;

@@ -33,11 +33,14 @@
 
 /* ---------------------------- local macros -------------------------------- */
 
-#define FFT_SET_TOP_TO_BOTTOM_MATRIX(m) ((m)->xx = (m)->yy = 0, \
-				 (m)->xy = 1,  (m)->yx = -1)
+#define FFT_SET_ROTATED_90_MATRIX(m) \
+	((m)->xx = (m)->yy = 0, (m)->xy = 1, (m)->yx = -1)
 
-#define FFT_SET_BOTTOM_TO_TOP_MATRIX(m) ((m)->xx = (m)->yy = 0, \
-				 (m)->xy = -1, (m)->yx = 1)
+#define FFT_SET_ROTATED_270_MATRIX(m) \
+	((m)->xx = (m)->yy = 0, (m)->xy = -1, (m)->yx = 1)
+
+#define FFT_SET_ROTATED_180_MATRIX(m) \
+	((m)->xx = (m)->yy = -1, (m)->xy = (m)->yx = 0)
 
 /* ---------------------------- imports ------------------------------------- */
 
@@ -105,35 +108,39 @@ static
 FftFont *FftGetRotatedFont(
 	Display *dpy, FftFont *f, text_rotation_type text_rotation)
 {
-	FftPattern *vert_pat;
+	FftPattern *rotated_pat;
 	FftMatrix m;
 	int dummy;
 
 	if (f == NULL)
 		return NULL;
 
-	vert_pat = FftPatternDuplicate (f->pattern);
-	if (vert_pat == NULL)
+	rotated_pat = FftPatternDuplicate(f->pattern);
+	if (rotated_pat == NULL)
 		return NULL;
 
-	dummy = FftPatternDel(vert_pat, XFT_MATRIX);
+	dummy = FftPatternDel(rotated_pat, XFT_MATRIX);
 
 	if (text_rotation == TEXT_ROTATED_90)
 	{
-		FFT_SET_TOP_TO_BOTTOM_MATRIX(&m);
+		FFT_SET_ROTATED_90_MATRIX(&m);
+	}
+	else if (text_rotation == TEXT_ROTATED_180)
+	{
+		FFT_SET_ROTATED_180_MATRIX(&m);
 	}
 	else if (text_rotation == TEXT_ROTATED_270)
 	{
-		FFT_SET_BOTTOM_TO_TOP_MATRIX(&m);  
+		FFT_SET_ROTATED_270_MATRIX(&m);
 	}
 	else
 	{
 		return NULL;
 	}
 
-	if (!FftPatternAddMatrix (vert_pat, FFT_MATRIX, &m))
+	if (!FftPatternAddMatrix(rotated_pat, FFT_MATRIX, &m))
 		return NULL;
-	return FftFontOpenPattern (dpy, vert_pat);
+	return FftFontOpenPattern(dpy, rotated_pat);
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -195,8 +202,9 @@ FftFontType *FftGetFont(Display *dpy, char *fontname)
 	}
 	fftf = (FftFontType *)safemalloc(sizeof(FftFontType));
 	fftf->fftfont = fftfont;
-	fftf->tb_fftfont = NULL;
-	fftf->bt_fftfont = NULL;
+	fftf->fftfont_rotated_90 = NULL;
+	fftf->fftfont_rotated_180 = NULL;
+	fftf->fftfont_rotated_270 = NULL;
 	FftSetupEncoding(fftf);
 
 	return fftf;
@@ -218,21 +226,30 @@ void FftDrawString(
 	}
 	if (rotation == TEXT_ROTATED_90)
 	{
-		if (fftf->tb_fftfont == NULL)
+		if (fftf->fftfont_rotated_90 == NULL)
 		{
-			fftf->tb_fftfont =
+			fftf->fftfont_rotated_90 =
 				FftGetRotatedFont(dpy, fftf->fftfont, rotation);
 		}
-		uf = fftf->tb_fftfont;
+		uf = fftf->fftfont_rotated_90;
+	}
+	else if (rotation == TEXT_ROTATED_180)
+	{
+		if (fftf->fftfont_rotated_180 == NULL)
+		{
+			fftf->fftfont_rotated_180 =
+				FftGetRotatedFont(dpy, fftf->fftfont, rotation);
+		}
+		uf = fftf->fftfont_rotated_180;
 	}
 	else if (rotation == TEXT_ROTATED_270)
 	{
-		if (fftf->bt_fftfont == NULL)
+		if (fftf->fftfont_rotated_270 == NULL)
 		{
-			fftf->bt_fftfont =
+			fftf->fftfont_rotated_270 =
 				FftGetRotatedFont(dpy, fftf->fftfont, rotation);
 		}
-		uf = fftf->bt_fftfont;
+		uf = fftf->fftfont_rotated_270;
 	}
 	else
 	{

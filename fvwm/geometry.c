@@ -227,13 +227,14 @@ Bool get_title_button_geometry(
 void get_title_font_size_and_offset(
 	FvwmWindow *fw, direction_type title_dir,
 	Bool is_left_title_rotated_cw, Bool is_right_title_rotated_cw,
+	Bool is_top_title_rotated, Bool is_bottom_title_rotated,
 	int *size, int *offset)
 {
 	int decor_size;
 	int extra_size;
 	int font_size;
 	int min_offset;
-        Bool is_rotated_cw;
+	Bool is_rotated_cw, is_rotated;
 
 	/* adjust font offset according to height specified in title style */
 	decor_size = fw->decor->title_height;
@@ -243,8 +244,8 @@ void get_title_font_size_and_offset(
 	{
 	case DIR_W:
 	case DIR_E:
-                is_rotated_cw = (title_dir == DIR_W) ?
-                        is_left_title_rotated_cw : is_right_title_rotated_cw;
+		is_rotated_cw = (title_dir == DIR_W) ?
+			is_left_title_rotated_cw : is_right_title_rotated_cw;
 		if (is_rotated_cw)
 		{
 			fw->title_text_rotation = TEXT_ROTATED_90;
@@ -259,7 +260,18 @@ void get_title_font_size_and_offset(
 	case DIR_N:
 	case DIR_S:
 	default:
-		fw->title_text_rotation = TEXT_ROTATED_0;
+		is_rotated = (title_dir == DIR_N) ?
+			is_top_title_rotated : is_bottom_title_rotated;
+		if (is_rotated)
+		{
+			fw->title_text_rotation = TEXT_ROTATED_180;
+			min_offset = fw->title_font->height -
+				fw->title_font->ascent;
+		}
+		else
+		{
+			fw->title_text_rotation = TEXT_ROTATED_0;
+		}
 		break;
 	}
 	extra_size = (decor_size > 0) ? decor_size - font_size : 0;

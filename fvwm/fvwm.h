@@ -312,6 +312,7 @@ typedef struct
 #define ICON_OVERRIDE           1
 #define NO_ICON_OVERRIDE        2
 #define ICON_OVERRIDE_MASK    0x3
+		unsigned is_bottom_title_rotated : 1;
 		unsigned is_fixed : 1;
 		unsigned is_fixed_ppos : 1;
 		unsigned is_icon_sticky : 1;
@@ -321,6 +322,7 @@ typedef struct
 		unsigned is_size_fixed : 1;
 		unsigned is_psize_fixed : 1;
 		unsigned is_right_title_rotated_cw : 1;
+		unsigned is_top_title_rotated : 1;
 		unsigned use_icon_position_hint : 1;
 		unsigned use_indexed_window_name : 1;
 		unsigned use_indexed_icon_name : 1;

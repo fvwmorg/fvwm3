@@ -39,6 +39,7 @@ Bool get_title_button_geometry(
 void get_title_font_size_and_offset(
 	FvwmWindow *fw, direction_type title_dir,
 	Bool is_left_title_rotated_cw, Bool is_right_title_rotated_cw,
+	Bool is_top_title_rotated, Bool is_bottom_title_rotated,
 	int *size, int *offset);
 void get_icon_corner(
 	FvwmWindow *fw, rectangle *ret_g);

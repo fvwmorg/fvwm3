@@ -272,13 +272,14 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 }
 
 static
-void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
-			     FlocaleWinString *fws, int len)
+void FlocaleRotateDrawString(
+	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int len)
 {
 	static GC my_gc, font_gc;
 	int j, i, xp, yp;
-	unsigned char *vertdata, *bitdata;
-	int vert_w, vert_h, vert_len, bit_w, bit_h, bit_len;
+	unsigned char *normal_data, *rotated_data;
+	unsigned int normal_w, normal_h, normal_len;
+	unsigned int rotated_w, rotated_h, rotated_len;
 	char val;
 	int width, height;
 	XImage *image, *rotated_image;
@@ -299,12 +300,12 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	if (width < 1) width = 1;
 	if (height < 1) height = 1;
 
-	/* glyph width and height when vertical */
-	vert_w = width;
-	vert_h = height;
+	/* glyph width and height of the normal text */
+	normal_w = width;
+	normal_h = height;
 
 	/* width in bytes */
-	vert_len = (vert_w-1)/8+1;
+	normal_len = (normal_w - 1) / 8 + 1;
 
 	/* create and clear the canvas */
 	canvas_pix = XCreatePixmap(dpy, fws->win, width, height, 1);
@@ -313,103 +314,108 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	XSetForeground(dpy, font_gc, 0);
 	XFillRectangle(dpy, canvas_pix, font_gc, 0, 0, width, height);
 
-	/* draw the character centre top right on canvas .*/
+	/* draw the character center top right on canvas */
 	XSetForeground(dpy, font_gc, 1);
 	if (flf->font != NULL)
 	{
 		XSetFont(dpy, font_gc, flf->font->fid);
-		XDrawImageString(dpy, canvas_pix, font_gc,
-				 0, flf->height - flf->descent,
-				 fws->str, len);
+		XDrawImageString(
+			dpy, canvas_pix, font_gc, 0,
+			flf->height - flf->descent, fws->str, len);
 	}
 	else if (FlocaleMultibyteSupport && flf->fontset != None)
 	{
-		XmbDrawString(dpy, canvas_pix, flf->fontset, font_gc,
-			      0, flf->height - flf->descent,
-			      fws->str, len);
+		XmbDrawString(
+			dpy, canvas_pix, flf->fontset, font_gc, 0,
+			flf->height - flf->descent, fws->str, len);
 	}
 
-	/* reserve memory for first XImage */
-	vertdata = (unsigned char *) safemalloc((unsigned)(vert_len*vert_h));
+	/* reserve memory for the first XImage */
+	normal_data = (unsigned char *)safemalloc(normal_len * normal_h);
 
 	/* create depth 1 XImage */
 	if ((image = XCreateImage(dpy, Pvisual, 1, XYBitmap,
-		    0, (char *)vertdata, vert_w, vert_h, 8, 0)) == NULL)
+		0, (char *)normal_data, normal_w, normal_h, 8, 0)) == NULL)
 	{
 		return;
 	}
 	image->byte_order = image->bitmap_bit_order = MSBFirst;
 
-	/* extract character from canvas ... */
-	XGetSubImage(dpy, canvas_pix, 0, 0, vert_w, vert_h,
-		     1, XYPixmap, image, 0, 0);
+	/* extract character from canvas */
+	XGetSubImage(
+		dpy, canvas_pix, 0, 0, normal_w, normal_h,
+		1, XYPixmap, image, 0, 0);
 	image->format = XYBitmap;
 
-	/* width, height of rotated character ... */
+	/* width, height of the rotated text */
 	if (fws->flags.text_rotation == TEXT_ROTATED_180)
 	{
-		bit_w = vert_w;
-		bit_h = vert_h;
+		rotated_w = normal_w;
+		rotated_h = normal_h;
 	}
 	else /* vertical text */
 	{
-		bit_w = vert_h;
-		bit_h = vert_w;
+		rotated_w = normal_h;
+		rotated_h = normal_w;
 	}
 
-	/* width in bytes ... */
-	bit_len = (bit_w-1)/8 + 1;
+	/* width in bytes */
+	rotated_len = (rotated_w - 1) / 8 + 1;
 
-	/* reserve memory for the rotated image ... */
-	bitdata = (unsigned char *)safecalloc((unsigned)(bit_h*bit_len), 1);
+	/* reserve memory for the rotated image */
+	rotated_data = (unsigned char *)safecalloc(rotated_h * rotated_len, 1);
 
-	/* create the rotated X image ... */
-	if ((rotated_image = XCreateImage(dpy, Pvisual, 1, XYBitmap, 0,
-					  (char *)bitdata,
-					  bit_w, bit_h, 8, 0)) == NULL)
+	/* create the rotated X image */
+	if ((rotated_image = XCreateImage(
+		dpy, Pvisual, 1, XYBitmap, 0, (char *)rotated_data,
+		rotated_w, rotated_h, 8, 0)) == NULL)
 	{
 		return;
 	}
 
 	rotated_image->byte_order = rotated_image->bitmap_bit_order = MSBFirst;
 
-	/* map vertical data to rotated character ... */
-	for (j = 0; j < bit_h; j++)
+	/* map normal text data to rotated text data */
+	for (j = 0; j < rotated_h; j++)
 	{
-		for (i = 0; i < bit_w; i++)
+		for (i = 0; i < rotated_w; i++)
 		{
 			/* map bits ... */
 			if (fws->flags.text_rotation == TEXT_ROTATED_270)
-				val = vertdata[i*vert_len + (vert_w-j-1)/8] &
-					(128>>((vert_w-j-1)%8));
+				val = normal_data[
+					i * normal_len +
+					(normal_w - j - 1) / 8
+				] & (128 >> ((normal_w - j - 1) % 8));
 
 			else if (fws->flags.text_rotation == TEXT_ROTATED_180)
-				val = vertdata[
-					(vert_h-j-1)*vert_len +
-					(vert_w-i-1)/8] &
-					(128>>((vert_w-i-1)%8));
+				val = normal_data[
+					(normal_h - j - 1) * normal_len +
+					(normal_w - i - 1) / 8
+				] & (128 >> ((normal_w - i - 1) % 8));
 
 			else /* TEXT_ROTATED_90 */
-				val = vertdata[(vert_h-i-1)*vert_len + j/8] &
-					(128>>(j%8));
+				val = normal_data[
+					(normal_h - i - 1) * normal_len +
+					j / 8
+				] & (128 >> (j % 8));
 
 			if (val)
-				bitdata[j*bit_len + i/8] =
-					bitdata[j*bit_len + i/8] |
-					(128>>(i%8));
+				rotated_data[j * rotated_len + i / 8] |=
+					(128 >> (i % 8));
 		}
 	}
 
 	/* create the character's bitmap  and put the image on it */
-	rotated_pix = XCreatePixmap(dpy, fws->win, bit_w, bit_h, 1);
-	XPutImage(dpy, rotated_pix, font_gc, rotated_image,
-		  0, 0, 0, 0, bit_w, bit_h);
+	rotated_pix = XCreatePixmap(dpy, fws->win, rotated_w, rotated_h, 1);
+	XPutImage(
+		dpy, rotated_pix, font_gc, rotated_image, 0, 0, 0, 0,
+		rotated_w, rotated_h);
 
 	/* free the image and data  */
 	XDestroyImage(image);
 	XDestroyImage(rotated_image);
 
-	/* free pixmap and GC ... */
+	/* free pixmap and GC */
 	XFreePixmap(dpy, canvas_pix);
 	XFreeGC(dpy, font_gc);
 
@@ -421,8 +427,7 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	}
 	else if (fws->flags.text_rotation == TEXT_ROTATED_180)
 	{
-		/* not used and not tested */
-		xp = 0;
+		xp = fws->x;
 		yp = fws->y;
 	}
 	else /* fws->flags.text_rotation == TEXT_ROTATED_90 */
@@ -435,17 +440,15 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	XSetFillStyle(dpy, my_gc, FillStippled);
 	XSetStipple(dpy, my_gc, rotated_pix);
 	XSetTSOrigin(dpy, my_gc, xp, yp);
-	XFillRectangle(dpy, fws->win, my_gc, xp, yp, bit_w, bit_h);
+	XFillRectangle(dpy, fws->win, my_gc, xp, yp, rotated_w, rotated_h);
 
 	XFreePixmap(dpy, rotated_pix);
 	XFreeGC(dpy, my_gc);
 }
 
 static
-void FlocaleSetlocaleForX(int category,
-			  const char *locale,
-			  const char *module
-			  )
+void FlocaleSetlocaleForX(
+	int category, const char *locale, const char *module)
 {
 	FlocaleSeted = True;
 
@@ -472,8 +475,9 @@ void FlocaleSetlocaleForX(int category,
  * locale initialisation
  * ***************************************************************************/
 
-void FlocaleInit(int category, const char *locale, const char *modifiers,
-		 const char *module)
+void FlocaleInit(
+	int category, const char *locale, const char *modifiers,
+	const char *module)
 {
 	if (!FlocaleMultibyteSupport)
 	{
@@ -657,10 +661,12 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{
 		FftFontClose(dpy, flf->fftf.fftfont);
-		if (flf->fftf.tb_fftfont != NULL)
-			FftFontClose(dpy, flf->fftf.tb_fftfont);
-		if (flf->fftf.bt_fftfont != NULL)
-			FftFontClose(dpy, flf->fftf.bt_fftfont);
+		if (flf->fftf.fftfont_rotated_90 != NULL)
+			FftFontClose(dpy, flf->fftf.fftfont_rotated_90);
+		if (flf->fftf.fftfont_rotated_180 != NULL)
+			FftFontClose(dpy, flf->fftf.fftfont_rotated_180);
+		if (flf->fftf.fftfont_rotated_270 != NULL)
+			FftFontClose(dpy, flf->fftf.fftfont_rotated_270);
 	}
 	if (FlocaleMultibyteSupport && flf->fontset != NULL)
 	{
@@ -733,13 +739,18 @@ void FlocaleDrawString(
 	}
 	else if (FftSupport && flf->fftf.fftfont != NULL)
 	{
-		int x,y;
+		int x, y;
 		switch(fstring->flags.text_rotation)
 		{
 		case TEXT_ROTATED_270:
 			y = fstring->y +
 				FftTextWidth(&flf->fftf, fstring->str, len);
 			x = fstring->x;
+			break;
+		case TEXT_ROTATED_180:
+			y = fstring->y;
+			x = fstring->x +
+				FftTextWidth(&flf->fftf, fstring->str, len);
 			break;
 		case TEXT_ROTATED_90:
 		default:
@@ -753,14 +764,15 @@ void FlocaleDrawString(
 	}
 	else if (FlocaleMultibyteSupport && flf->fontset != None)
 	{
-		XmbDrawString(dpy, fstring->win, flf->fontset,
-			      fstring->gc, fstring->x, fstring->y,
-			      fstring->str, len);
+		XmbDrawString(
+			dpy, fstring->win, flf->fontset, fstring->gc,
+			fstring->x, fstring->y, fstring->str, len);
 	}
 	else if (flf->font != None)
 	{
-		XDrawString(dpy, fstring->win, fstring->gc, fstring->x,
-			    fstring->y, fstring->str, len);
+		XDrawString(
+			dpy, fstring->win, fstring->gc,
+			fstring->x, fstring->y, fstring->str, len);
 	}
 
 	if (str2)

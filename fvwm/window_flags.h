@@ -184,12 +184,6 @@
           (fw)->flags.common.s.is_icon_suppressed = !!(x)
 #define SETM_ICON_SUPPRESSED(fw,x) \
           (fw)->flag_mask.common.s.is_icon_suppressed = !!(x)
-#define IS_LEFT_TITLE_ROTATED_CW(fw)  \
-          ((fw)->flags.common.s.is_left_title_rotated_cw)
-#define SET_IS_LEFT_TITLE_ROTATED_CW(fw,x) \
-          (fw)->flags.common.s.is_left_title_rotated_cw = !!(x)
-#define SETM_IS_LEFT_TITLE_ROTATED_CW(fw,x) \
-          (fw)->flag_mask.common.s.is_left_title_rotated_cw = !!(x)
 #define IS_LENIENT(fw)         ((fw)->flags.common.s.is_lenient)
 #define SET_LENIENT(fw,x)      (fw)->flags.common.s.is_lenient = !!(x)
 #define SETM_LENIENT(fw,x)     (fw)->flag_mask.common.s.is_lenient = !!(x)
@@ -255,13 +249,32 @@
                                (fw)->flags.common.s.is_psize_fixed = !!(x)
 #define SETM_PSIZE_FIXED(fw,x) \
                             (fw)->flag_mask.common.s.is_psize_fixed = !!(x)
-#define IS_RIGHT_TITLE_ROTATED_CW(fw)  \
+#define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.s.has_depressable_border)
+
+#define IS_LEFT_TITLE_ROTATED_CW(fw) \
+          ((fw)->flags.common.s.is_left_title_rotated_cw)
+#define SET_IS_LEFT_TITLE_ROTATED_CW(fw,x) \
+          (fw)->flags.common.s.is_left_title_rotated_cw = !!(x)
+#define SETM_IS_LEFT_TITLE_ROTATED_CW(fw,x) \
+          (fw)->flag_mask.common.s.is_left_title_rotated_cw = !!(x)
+#define IS_RIGHT_TITLE_ROTATED_CW(fw) \
           ((fw)->flags.common.s.is_right_title_rotated_cw)
 #define SET_IS_RIGHT_TITLE_ROTATED_CW(fw,x) \
           (fw)->flags.common.s.is_right_title_rotated_cw = !!(x)
 #define SETM_IS_RIGHT_TITLE_ROTATED_CW(fw,x) \
           (fw)->flag_mask.common.s.is_right_title_rotated_cw = !!(x)
-#define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.s.has_depressable_border)
+#define IS_BOTTOM_TITLE_ROTATED(fw) \
+          ((fw)->flags.common.s.is_bottom_title_rotated)
+#define SET_IS_BOTTOM_TITLE_ROTATED(fw,x) \
+          (fw)->flags.common.s.is_bottom_title_rotated = !!(x)
+#define SETM_IS_BOTTOM_TITLE_ROTATED(fw,x) \
+          (fw)->flag_mask.common.s.is_bottom_title_rotated = !!(x)
+#define IS_BOTTOM_TITLE_ROTATED(fw) \
+          ((fw)->flags.common.s.is_bottom_title_rotated)
+#define SET_IS_BOTTOM_TITLE_ROTATED(fw,x) \
+          (fw)->flags.common.s.is_bottom_title_rotated = !!(x)
+#define SETM_IS_BOTTOM_TITLE_ROTATED(fw,x) \
+          (fw)->flag_mask.common.s.is_bottom_title_rotated = !!(x)
 
 /* access to the special flags of a window */
 #define DO_REUSE_DESTROYED(fw) ((fw)->flags.do_reuse_destroyed)

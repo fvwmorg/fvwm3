@@ -161,8 +161,9 @@ typedef void FftObjectSet;
 typedef struct
 {
 	FftFont *fftfont;
-	FftFont *tb_fftfont;
-	FftFont *bt_fftfont;
+	FftFont *fftfont_rotated_90;
+	FftFont *fftfont_rotated_180;
+	FftFont *fftfont_rotated_270;
 	char *encoding;
 	Bool utf8;
 } FftFontType;

@@ -618,36 +618,25 @@ the
 file that is generated during compilation.
 
 .SH ICONS AND IMAGES
-
-Fvwm can load
-.B .xbm,
-.B .xpm,
-and
-.B .png
-images.
-.B XBM
-images are monochrome.
-FVWM can always display
-.B XBM
-files.
+.\"needs_lang_check
+Fvwm can load image from files in various format depending on compile-time
+options.
+Fvwm can always uses monochrome bitmap image file (aka xbm image file).
+The other formats that Fvwm can support are
 .B XPM
 and
 .B PNG
-formats are color images.
-Compile-time
-options determine whether FVWM can use
-.B XPM
-or
-.B PNG
-icons and images.
-See the
+which allow to use colored icons and images.
+In order to use these formats you need the corresponding package,
+as described in the
 .I INSTALL.fvwm
-file for more information.
+file.
 
-The related
+Moreover, if
 .BR SHAPE
-compile-time option can make your colored icons shaped
-which is very spiffy.
+option is compiled in you get shaped color icons, which are very
+spiffy.
+.\"end
 
 .SH MODULES
 
@@ -5096,6 +5085,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR TitleAtBottom " / " TitleAtLeft " / " TitleAtRight " / " TitleAtTop ,
 .IR LeftTitleRotatedCW " / " LeftTitleRotatedCCW,
 .IR RightTitleRotatedCCW " / " RightTitleRotatedCW,
+.IR TopTitleRotated " / " TopTitleNotRotated,
+.IR BottomTitleRotated " / " BottomTitleNotRotated,
 .IR StippledTitle " / " StippledTitleOff ,
 .IR IndexedWindowName " / " ExactWindowName ,
 .IR IndexedIconName " / " ExactIconName ,
@@ -5308,10 +5299,16 @@ is used, and with
 .IR RightTitleRotatedCCW " if " TitleAtRight
 is used.  The defaults can be restored with
 .IR LeftTitleRotatedCCW " and " RightTitleRotatedCW .
+A normal horisontal text may be rotated as well with
+.IR TopTitleRotated " if " TitleAtTop
+is used, and with
+.IR BottomTitleRotated " if " TitleAtBottom
+is used.  The defaults can be restored with
+.IR TopTitleNotRotated " and " BottomTitleNotRotated .
 
 With the
 .I StippledTitle
-style, are drawn with the same effect that is usually reserved for
+style, titles are drawn with the same effect that is usually reserved for
 windows with the
 .I Sticky
 style.

@@ -996,6 +996,20 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  ptmpstyle->flag_mask.use_border_colorset = 1;
 	  ptmpstyle->change_mask.use_border_colorset = 1;
 	}
+	else if (StrEquals(token, "BottomTitleRotated"))
+	{
+	  found = True;
+	  SFSET_IS_BOTTOM_TITLE_ROTATED(*ptmpstyle, 1);
+	  SMSET_IS_BOTTOM_TITLE_ROTATED(*ptmpstyle, 1);
+	  SCSET_IS_BOTTOM_TITLE_ROTATED(*ptmpstyle, 1);
+	}
+	else if (StrEquals(token, "BottomTitleNotRotated"))
+	{
+	  found = True;
+	  SFSET_IS_BOTTOM_TITLE_ROTATED(*ptmpstyle, 0);
+	  SMSET_IS_BOTTOM_TITLE_ROTATED(*ptmpstyle, 1);
+	  SCSET_IS_BOTTOM_TITLE_ROTATED(*ptmpstyle, 1);
+	}
         break;
 
       case 'c':
@@ -2692,6 +2706,20 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_TITLE_DIR(*ptmpstyle, 1);
 	  SCSET_TITLE_DIR(*ptmpstyle, 1);
         }
+	else if (StrEquals(token, "TopTitleRotated"))
+	{
+	  found = True;
+	  SFSET_IS_TOP_TITLE_ROTATED(*ptmpstyle, 1);
+	  SMSET_IS_TOP_TITLE_ROTATED(*ptmpstyle, 1);
+	  SCSET_IS_TOP_TITLE_ROTATED(*ptmpstyle, 1);
+	}
+	else if (StrEquals(token, "TopTitleNotRotated"))
+	{
+	  found = True;
+	  SFSET_IS_TOP_TITLE_ROTATED(*ptmpstyle, 0);
+	  SMSET_IS_TOP_TITLE_ROTATED(*ptmpstyle, 1);
+	  SCSET_IS_TOP_TITLE_ROTATED(*ptmpstyle, 1);
+	}
         break;
 
       case 'u':
@@ -3070,9 +3098,13 @@ void check_window_style_change(
   /*
    * is_left_title_rotated_cw
    * is_right_title_rotated_cw
+   * is_top_title_rotated
+   * is_bottom_title_rotated
    */
   if (SCIS_LEFT_TITLE_ROTATED_CW(*ret_style) ||
-      SCIS_RIGHT_TITLE_ROTATED_CW(*ret_style))
+      SCIS_RIGHT_TITLE_ROTATED_CW(*ret_style) ||
+      SCIS_TOP_TITLE_ROTATED(*ret_style) ||
+      SCIS_BOTTOM_TITLE_ROTATED(*ret_style))
   {
     flags->do_update_title_text_dir = True;
   }
