@@ -2,8 +2,10 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.10  1999/09/06 12:36:22  domivogt
-''' * New command BugOpts to replace several configure options.
+''' Revision 1.11  1999/10/30 20:33:29  migo
+''' * BusyCursor+CursorStyle+EscapeFunc patch by Olivier with some minor changes
+''' * removed 'xsetroot -cursor_name' from init function examples
+''' * fvwm-menu-directory --reuse fixed; best used with BusyCursor DynamicMenu True
 '''
 '''
 .de Sh
@@ -96,7 +98,7 @@
 .nr % 0
 .rr F
 .\}
-.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 02" "6/Sep/99" "Fvwm Utility"
+.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 01" "30/Oct/99" "Fvwm Utility"
 .UC
 .if n .hy 0
 .if n .na
@@ -340,10 +342,12 @@ And put this in the menu from which you want to pop-up the directory menus:
 .Ve
 Note: please use absolute path names.
 .PP
-It is a good idea to set the menu pop-up delay to something positive:
+It is a good idea to set the menu pop-up delay to something positive
+and enable busy cursor
 .PP
-.Vb 1
+.Vb 2
 \&  MenuStyle * PopupDelayed, PopupDelay 100
+\&  BusyCursor DynamicMenu True
 .Ve
 in your configuration file when using this script for better results.
 .PP

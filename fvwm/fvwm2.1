@@ -313,8 +313,7 @@ DestroyFunc InitFunction
 AddToFunc InitFunction
  + I Module FvwmBanner
  + I Module FvwmTaskBar
- + I xsetroot -cursor_name left_ptr -fg red \\
-     -bg white -solid cyan
+ + I xsetroot -solid cyan
  + I Exec xterm
  + I Exec netscape
 
@@ -325,7 +324,6 @@ AddToFunc RestartFunction
 DestroyFunc SessionInitFunction
 AddToFunc SessionInitFunction
  + I Module FvwmBanner
- + I xsetroot -cursor_name left_ptr -fg red -bg white
 
 DestroyFunc SessionRestartFunction
 AddToFunc SessionRestartFunction
@@ -498,6 +496,7 @@ The following commands are built-in to fvwm:
 Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
 Key Tab A M WindowList Root c c NoDeskSort
+Key Escape A MC EscapeFunc
 Mouse 1 TS A FuncFvwmRaiseLowerX Move
 Mouse 1 F  A FuncFvwmRaiseLowerX Resize
 AddToFunc FuncFvwmRaiseLowerX I Raise
@@ -1691,6 +1690,30 @@ ill-mannered applications that use long-lived windows of this sort,
 contrary to ICCCM conventions.
 
 .TP
+.B "BusyCursor" "[\fIOption\fP \fIbool\fP\fP], ..."
+This command controls the cursor during the execution of certain
+commands. \fIOption\fP can be "DynamicMenu", "ModuleSynchronous", "Read",
+"Recapture", "Wait". An option must be followed by a boolean argument
+\fIbool\fP. You can use commas to separate individual options. If you
+set an option to True, then when the corresponding  command is run, fvwm
+displays the cursor of the WAIT context of the \fICursorStyle\fP command.
+False forces to not display the cursor. The Default is: DynamicMenu False,
+ModuleSynchronous False, Read False, Recapture True, Wait False.
+
+The Read option also concerns the \fIPipeRead\fP command.
+ 
+DynamicMenu concerns the \fIDynamicPopupAction\fP and 
+\fIMissingSubmenuFunc\fP commands. If this option is set to False, then
+the busy cursor is not displayed during a dynamic menu command even if this
+command is a \fI(Pipe)Read\fP command and the Read option is set to True. 
+
+Wait concerns only the root cursor. During the wait pause the root cursor
+is replaced by the busy cursor and fvwm is still fully functional (you can 
+escape from the pause, see the \fIEscapeFunc\fP command). If you want to 
+use this option and if you do not use the default root cursor, you must 
+set your root cursor with the \fICursorStyle\fP command.
+   
+.TP
 .B "ClickTime" "[\fIdelay\fP]"
 Specifies the maximum delay (in milliseconds) between a button press
 and a button release for the Function built-in to consider the action
@@ -1738,129 +1761,138 @@ keyboard focus.
 
 
 .TP
-.B "CursorStyle" "\fIcontext\fP \fInumber-or-xpm\fP [\fIfore\fP \fIback\fP]"
+.B "CursorStyle" "\fIcontext\fP \fInumber-or-name-or-xpm\fP [\fIfore\fP \fIback\fP]"
 Defines a new cursor for the specified context.  The various contexts
 are:
 
 .in +.5i
-POSITION (XC_top_left_corner)
+POSITION (top_left_corner)
 .in +.3i
 used when initially placing windows
 .in -.3i
 
-TITLE (XC_top_left_arrow)
+TITLE (top_left_arrow)
 .in +.3i
 used in a window title-bar
 .in -.3i
 
-DEFAULT (XC_top_left_arrow)
+DEFAULT (top_left_arrow)
 .in +.3i
 used in windows that don't set their cursor
 .in -.3i
 
-SYS (XC_hand2)
+SYS (hand2)
 .in +.3i
 used in one of the title-bar buttons
 .in -.3i
 
-MOVE (XC_fleur)
+MOVE (fleur)
 .in +.3i
 used when moving or resizing windows
 .in -.3i
 
-RESIZE (XC_sizing)
+RESIZE (sizing)
 .in +.3i
 used when moving or resizing windows
 .in -.3i
 
-WAIT (XC_watch)
+WAIT (watch)
 .in +.3i
-used during an EXEC builtin command
+used during certain fvwm commands (see BusyCursor for details).
 .in -.3i
 
-MENU (XC_top_left_arrow)
+MENU (top_left_arrow)
 .in +.3i
 used in menus
 .in -.3i
 
-SELECT (XC_crosshair)
+SELECT (crosshair)
 .in +.3i
 used when the user ir required to select a window
 .in -.3i
 
-DESTROY (XC_pirate)
+DESTROY (pirate)
 .in +.3i
 used for DESTROY, CLOSE, and DELETE built-ins
 .in -.3i
 
-TOP (XC_top_side)
+TOP (top_side)
 .in +.3i
 used in the top side-bar of a window
 .in -.3i
 
-RIGHT (XC_right_side)
+RIGHT (right_side)
 .in +.3i
 used in the right side-bar of a window
 .in -.3i
 
-BOTTOM (XC_bottom_side)
+BOTTOM (bottom_side)
 .in +.3i
 used in the bottom side-bar of a window
 .in -.3i
 
-LEFT (XC_left_side)
+LEFT (left_side)
 .in +.3i
 used in the left side-bar of a window
 .in -.3i
 
-TOP_LEFT (XC_top_left_corner)
+TOP_LEFT (top_left_corner)
 .in +.3i
 used in the top left corner of a window
 .in -.3i
 
-TOP_RIGHT (XC_top_right_corner)
+TOP_RIGHT (top_right_corner)
 .in +.3i
 used in the top right corner of a window
 .in -.3i
 
-BOTTOM_LEFT (XC_bottom_left_corner)
+BOTTOM_LEFT (bottom_left_corner)
 .in +.3i
 used in the bottom left corner of a window
 .in -.3i
 
-BOTTOM_RIGHT (XC_bottom_right_corner)
+BOTTOM_RIGHT (bottom_right_corner)
 .in +.3i
 used in the bottom right corner of a window
 .in -.3i
 
-TOP_EDGE (XC_top_side)
+TOP_EDGE (top_side)
 .in +.3i
 used at the top edge of the screen.
 .in -.3i
 
-RIGHT_EDGE (XC_right_side)
+RIGHT_EDGE (right_side)
 .in +.3i
 used at the right edge of the screen.
 .in -.3i
 
-BOTTOM_EDGE (XC_bottom_side)
+BOTTOM_EDGE (bottom_side)
 .in +.3i
 used at the bottom edge of the screen.
 .in -.3i
 
-LEFT_EDGE (XC_left_side)
+LEFT_EDGE (left_side)
 .in +.3i
 used at the left edge of the screen.
 .in -.3i
+
+ROOT (left_ptr)
+.in +.3i
+used as the root cursor.
+.in -.3i
 .in -.5i
 
-And the \fInumber-or-xpm\fP is either the numeric value of the cursor
-as defined in the include file X11/cursorfont.h or the name of an xpm
-file containing a pixmap of depth 1 with a mask and an hotspot.  An example:
+And the \fInumber-or-name-or-xpm\fP is either the numeric value of the
+cursor as defined in the include file X11/cursorfont.h or its name
+(without the XC_ prefix) or the name of an xpm file containing a pixmap
+of depth 1 with a mask and a hotspot.  For example:
 .EX
-# make the kill cursor be XC_gumby:
+# make the kill cursor be XC_gumby (both forms work):
 CursorStyle DESTROY 56
+CursorStyle DESTROY gumby
+
 CursorStyle TOP_LEFT topl.xpm
+CursorStyle ROOT hand1 yellow black
 .EE
 The defaults are shown in parenthesis above.
 
@@ -1919,6 +1951,19 @@ Emulate with "MWM" or "WIN" as its argument.  With "mwm" resize and
 move feedback windows are in the center of the screen, instead of
 the upper left corner.
 
+.TP
+.B "EscapeFunc"
+By default the key sequence Ctrl-Alt-Escape allows to escape from
+a \fIWait\fP pause and from a locked \fIModuleSynchronous\fP command.
+The \fIEscapeFunc\fP command used with the \fIKey\fP command allows
+to configure this key sequence. An example
+.EX
+Key Escape A MC -
+Key Escape A S EscapeFunc
+.EE
+replaces Ctrl-Alt-Escape key sequence with Shift-Escape for aborting
+a \fIWait\fP pause and \fIModuleSynchronous\fP command. \fIEscapeFunc\fP
+used without the \fIKey\fP command does nothing.
 
 .TP
 .B "GlobalOpts" "[\fIoptions\fP]"
@@ -4231,6 +4276,10 @@ The above function starts an xterm on the current desk, waits for it
 to map itself, then switches to desk 2 and starts an xmh.  After the
 xmh window appears control moves to desk 0.
 
+You can escape from a Wait pause by using Ctrl-Alt-Escape (where Alt is
+the first modifier). To redefine this key sequence see the \fIEscapeFunc\fP
+command.
+
 
 .TP
 .B "WindowId" "\fIid (\fIconditions\fP) func\fP"
@@ -4397,7 +4446,9 @@ Warning: It is quite easy to hang fvwm with this command, even if
 a timeout is given. Be extra careful to choose the string to wait.
 Although all modules in the fvwm distribution send back the
 "FINISHED_STARTUP" string once they have properly started up,
-this may not be the case for third party modules.
+this may not be the case for third party modules. Moreover,
+you can try to escape from a locked ModuleSynchronous command by using 
+the key sequence Ctrl-Alt-Escape (see the \fIEscapeFunc\fP).
 
 
 .TP

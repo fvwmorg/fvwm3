@@ -11,6 +11,8 @@
 # Set at least 2 root keys to bring up the builtin menu:
 Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
+# Ctrl-Alt-Escape for aboring Wait pause and ModuleSynchronous command
+Key Escape A MC EscapeFunc
 
 # Needed by the builtin WindowList command, this should match the manpage.
 AddToFunc WindowListFunc I WindowId $0 Iconify off

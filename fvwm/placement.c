@@ -715,7 +715,7 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
                                        &xl,&yt, pdeltax, pdeltay);
       if(! smartlyplaced)
       {
-        if(GrabEm(CRS_POSITION))
+        if(GrabEm(CRS_POSITION, GRAB_NORMAL))
         {
           /* Grabbed the pointer - continue */
           MyXGrabServer(dpy);
@@ -740,7 +740,7 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
 	    rc = 1;
           XUnmapWindow(dpy,Scr.SizeWindow);
           MyXUngrabServer(dpy);
-          UngrabEm();
+          UngrabEm(GRAB_NORMAL);
         }
         else
         {

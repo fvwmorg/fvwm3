@@ -154,6 +154,6 @@ DestroyModuleConfig FormFvwmRootCursor.*
 *FormFvwmRootCursor.Line	expand
 
 *FormFvwmRootCursor.Button	continue "   Set Root Cursor   "
-*FormFvwmRootCursor.Command	Exec exec xsetroot -cursor_name $(cursor_font!none) -fg $(cursor_fg) -bg $(cursor_bg)
+*FormFvwmRootCursor.Command	CursorStyle ROOT $(cursor_font!none) $(cursor_fg) $(cursor_bg)
 *FormFvwmRootCursor.Button	quit "   Finish   " ^[
 *FormFvwmRootCursor.Command	Nop

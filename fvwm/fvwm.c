@@ -91,6 +91,9 @@ Display *dpy;			/* which display are we talking to */
 Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
 
+/* Grab pointer state. Set by GrabEm, UngrabEm, menus.c and StartupStuff */
+Bool GrabPointerState = GRAB_STARTUP;
+
 #define MAX_CFG_CMDS 10
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
@@ -775,6 +778,7 @@ void StartupStuff(void)
   */
   if (Restarting) unlink(state_filename);
 
+  GrabPointerState = GRAB_NONE;
   XUngrabPointer(dpy, CurrentTime);
 
 } /* StartupStuff */
@@ -1614,6 +1618,8 @@ static void InitVariables(void)
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
+
+  Scr.BusyCursor = BUSY_RECAPTURE;
 
   Scr.NoBoundaryWidth = 1;
   Scr.BoundaryWidth = BOUNDARY_WIDTH;

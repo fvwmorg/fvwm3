@@ -47,7 +47,8 @@ static const unsigned int default_cursors[CRS_MAX] =
   XC_top_side,             /* CRS_TOP_EDGE */
   XC_right_side,           /* CRS_RIGHT_EDGE */
   XC_bottom_side,          /* CRS_BOTTOM_EDGE */
-  XC_left_side             /* CRS_LEFT_EDGE */
+  XC_left_side,            /* CRS_LEFT_EDGE */
+  XC_left_ptr,             /* CRS_ROOT */
 };
 
 /***********************************************************************
@@ -75,13 +76,258 @@ static void SafeDefineCursor(Window w, Cursor cursor)
     XDefineCursor(dpy,w,cursor);
 }
 
+
+/***********************************************************************
+ *
+ *  myCursorNameToIndex: return the number of a X11 cursor from its
+ *  name, if not found return -1.
+ *  Do not know if all the ifdef are useful, but since we do not use Xmu
+ *  for portability ...    
+ ***********************************************************************/
+static int myCursorNameToIndex (char *cursor_name)
+{
+  static const struct CursorNameIndex {
+    const char	*name;
+    unsigned int number;
+  } cursor_table[] = {
+#ifdef XC_arrow
+    {"arrow", XC_arrow},
+#endif
+#ifdef XC_based_arrow_down
+    {"based_arrow_down", XC_based_arrow_down},
+#endif
+#ifdef XC_based_arrow_up
+    {"based_arrow_up", XC_based_arrow_up},
+#endif
+#ifdef XC_boat
+    {"boat", XC_boat},
+#endif
+#ifdef XC_bogosity
+    {"bogosity", XC_bogosity},
+#endif
+    {"bottom_left_corner", XC_bottom_left_corner},
+    {"bottom_right_corner", XC_bottom_right_corner},
+    {"bottom_side", XC_bottom_side},
+#ifdef XC_bottom_tee
+    {"bottom_tee", XC_bottom_tee},
+#endif
+#ifdef XC_box_spiral
+    {"box_spiral", XC_box_spiral},
+#endif
+#ifdef XC_center_ptr
+    {"center_ptr", XC_center_ptr},
+#endif
+#ifdef XC_circle
+    {"circle", XC_circle},
+#endif
+#ifdef XC_clock
+    {"clock", XC_clock},
+#endif
+#ifdef XC_coffee_mug
+    {"coffee_mug", XC_coffee_mug},
+#endif
+#ifdef XC_cross
+    {"cross", XC_cross},
+#endif
+#ifdef XC_cross_reverse
+    {"cross_reverse", XC_cross_reverse},
+#endif
+    {"crosshair", XC_crosshair},
+#ifdef XC_diamond_cross
+    {"diamond_cross", XC_diamond_cross},
+#endif
+#ifdef XC_dot
+    {"dot", XC_dot},
+#endif
+#ifdef XC_dotbox
+    {"dotbox", XC_dotbox},
+#endif
+#ifdef XC_double_arrow
+    {"double_arrow", XC_double_arrow},
+#endif
+#ifdef XC_draft_large
+    {"draft_large", XC_draft_large},
+#endif
+#ifdef XC_draft_small
+    {"draft_small", XC_draft_small},
+#endif
+#ifdef XC_draped_box
+    {"draped_box", XC_draped_box},
+#endif
+#ifdef XC_exchange
+    {"exchange", XC_exchange},
+#endif
+    {"fleur", XC_fleur},
+#ifdef XC_gobbler
+    {"gobbler",	XC_gobbler},
+#endif
+#ifdef XC_gumby
+    {"gumby", XC_gumby},
+#endif
+#ifdef XC_hand1
+    {"hand1", XC_hand1},
+#endif
+    {"hand2", XC_hand2},
+#ifdef XC_heart
+    {"heart", XC_heart},
+#endif
+#ifdef XC_icon
+    {"icon", XC_icon},
+#endif
+#ifdef XC_iron_cross
+    {"iron_cross", XC_iron_cross},
+#endif
+    {"left_ptr", XC_left_ptr},
+    {"left_side", XC_left_side},
+#ifdef XC_left_tee
+    {"left_tee", XC_left_tee},
+#endif
+#ifdef XC_leftbutton
+    {"leftbutton", XC_leftbutton},
+#endif
+#ifdef XC_ll_angle
+    {"ll_angle", XC_ll_angle},
+#endif
+#ifdef XC_lr_angle
+    {"lr_angle", XC_lr_angle},
+#endif
+#ifdef XC_man
+    {"man", XC_man},
+#endif
+#ifdef XC_middlebutton
+    {"middlebutton", XC_middlebutton},
+#endif
+#ifdef XC_mouse
+    {"mouse", XC_mouse},
+#endif
+#ifdef XC_pencil
+    {"pencil", XC_pencil},
+#endif
+#ifdef XC_pirate
+    {"pirate", XC_pirate},
+#endif
+#ifdef XC_plus
+    {"plus", XC_plus},
+#endif
+#ifdef XC_question_arrow
+    {"question_arrow", XC_question_arrow},
+#endif
+#ifdef XC_right_ptr
+    {"right_ptr", XC_right_ptr},
+#endif
+    {"right_side", XC_right_side},
+#ifdef XC_right_tee
+    {"right_tee", XC_right_tee},
+#endif
+#ifdef XC_rightbutton
+    {"rightbutton", XC_rightbutton},
+#endif
+#ifdef XC_rtl_logo
+    {"rtl_logo", XC_rtl_logo},
+#endif
+#ifdef XC_sailboat
+    {"sailboat", XC_sailboat},
+#endif
+#ifdef XC_sb_down_arrow
+    {"sb_down_arrow", XC_sb_down_arrow},
+#endif
+#ifdef XC_sb_h_double_arrow
+    {"sb_h_double_arrow", XC_sb_h_double_arrow},
+#endif
+#ifdef XC_sb_left_arrow
+    {"sb_left_arrow", XC_sb_left_arrow},
+#endif
+#ifdef XC_sb_right_arrow
+    {"sb_right_arrow", XC_sb_right_arrow},
+#endif
+#ifdef XC_sb_up_arrow
+    {"sb_up_arrow", XC_sb_up_arrow},
+#endif
+#ifdef XC_sb_v_double_arrow
+    {"sb_v_double_arrow", XC_sb_v_double_arrow},
+#endif
+#ifdef XC_shuttle
+    {"shuttle",	XC_shuttle},
+#endif XC_sizing
+    {"sizing", XC_sizing},
+#ifdef XC_spider
+    {"spider", XC_spider},
+#endif
+#ifdef XC_spraycan
+    {"spraycan", XC_spraycan},
+#endif
+#ifdef XC_star
+    {"star", XC_star},
+#endif
+#ifdef XC_target
+    {"target", XC_target},
+#endif
+#ifdef XC_tcross
+    {"tcross", XC_tcross},
+#endif
+    {"top_left_arrow", XC_top_left_arrow},
+    {"top_left_corner", XC_top_left_corner},
+    {"top_right_corner", XC_top_right_corner},
+    {"top_side", XC_top_side},
+#ifdef XC_top_tee
+    {"top_tee",	XC_top_tee},
+#endif
+#ifdef XC_trek
+    {"trek", XC_trek},
+#endif
+#ifdef XC_ul_angle
+    {"ul_angle", XC_ul_angle},
+#endif
+#ifdef XC_umbrella
+    {"umbrella", XC_umbrella},
+#endif
+#ifdef XC_ur_angle
+    {"ur_angle", XC_ur_angle},
+#endif
+    {"watch", XC_watch},
+    {"x_cursor", XC_X_cursor},
+#ifdef XC_xterm
+    {"xterm", XC_xterm},
+#endif
+  };
+
+  int i,cond;
+  int down = 0;
+  int up = (sizeof cursor_table / sizeof cursor_table[0]) - 1;
+  int middle;
+  char temp[20];
+  char *s;
+
+  if (!cursor_name || cursor_name[0] == 0 || 
+      strlen(cursor_name) >= sizeof temp)
+    return -1;
+  strcpy(temp, cursor_name);
+
+  for (s = temp; *s != 0; s++)
+    if (isupper(*s))
+      *s = tolower(*s);
+
+  while (down <= up)
+  {
+    middle= (down + up) / 2;
+    if ((cond = strcmp(temp, cursor_table[middle].name)) < 0)
+      up = middle - 1;
+    else if (cond > 0)
+      down =  middle + 1;
+    else
+      return cursor_table[middle].number;
+  }
+  return -1;
+}
+
+
 void CursorStyle(F_CMD_ARGS)
 {
   char *cname=NULL, *newcursor=NULL;
   char *errpos = NULL, *path = NULL;
   char *fore = NULL, *back = NULL;
   XColor colors[2];
-  int index,nc,i;
+  int index,nc,i,my_nc;
   FvwmWindow *fw;
 
   action = GetNextToken(action,&cname);
@@ -118,6 +364,7 @@ void CursorStyle(F_CMD_ARGS)
   else if (StrEquals("RIGHT_EDGE",cname)) index = CRS_RIGHT_EDGE;
   else if (StrEquals("TOP_EDGE",cname)) index = CRS_TOP_EDGE;
   else if (StrEquals("BOTTOM_EDGE",cname)) index = CRS_BOTTOM_EDGE;
+  else if (StrEquals("ROOT",cname)) index = CRS_ROOT;
   else
   {
     fvwm_msg(ERR,"CursorStyle","Unknown cursor name %s",cname);
@@ -127,10 +374,21 @@ void CursorStyle(F_CMD_ARGS)
   }
   free(cname);
 
-  nc = strtol (newcursor, &errpos, 10);
-  if (errpos && *errpos == '\0')
+  /* check if the cursor is given by X11 name */
+  my_nc = myCursorNameToIndex(newcursor);
+
+  if (my_nc == -1)
+  {
+    nc = strtol (newcursor, &errpos, 10);
+    if (errpos && *errpos == '\0')
+      my_nc = 0;
+  }
+  else 
+    nc = my_nc;
+
+  if (my_nc > -1) 
     {
-      /* newcursor was a number */
+      /* newcursor was a number or the name of a X11 cursor */
       if ((nc < 0) || (nc >= XC_num_glyphs) || ((nc % 2) != 0))
 	{
 	  fvwm_msg(ERR, "CursorStyle", "Bad cursor number %s", newcursor);
@@ -146,7 +404,7 @@ void CursorStyle(F_CMD_ARGS)
     }
   else
     {
-      /* newcursor was not a number */
+      /* newcursor was not a number neither a X11 cursor name */
 #ifdef XPM
       XpmAttributes xpm_attributes;
       Pixmap source, mask;
@@ -154,7 +412,7 @@ void CursorStyle(F_CMD_ARGS)
       path = findImageFile (newcursor, NULL, R_OK);
       if (!path)
 	{
-	  fvwm_msg (ERR, "CursorStyle", "Cursor xpm not found %s", newcursor);
+	  fvwm_msg (ERR, "CursorStyle", "Cursor %s not found", newcursor);
 	  free (newcursor);
 	  return;
 	}
@@ -185,13 +443,13 @@ void CursorStyle(F_CMD_ARGS)
       free (newcursor);
       free (path);
 #else /* ! XPM */
-      fvwm_msg (ERR, "CursorStyle", "Bad cursor number %s", newcursor);
+      fvwm_msg (ERR, "CursorStyle", "Bad cursor name or number %s", newcursor);
       free (newcursor);
       return;
 #endif
     }
 
-   /* look for optional color arguments */
+  /* look for optional color arguments */
   action = GetNextToken(action, &fore);
   action = GetNextToken(action, &back);
   if (fore && back)
@@ -230,4 +488,76 @@ void CursorStyle(F_CMD_ARGS)
   SafeDefineCursor(Scr.PanFrameBottom.win, Scr.FvwmCursors[CRS_BOTTOM_EDGE]);
   SafeDefineCursor(Scr.PanFrameLeft.win, Scr.FvwmCursors[CRS_LEFT_EDGE]);
   SafeDefineCursor(Scr.PanFrameRight.win, Scr.FvwmCursors[CRS_RIGHT_EDGE]);
+  SafeDefineCursor(Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
 }
+
+/***********************************************************************
+ *
+ *  builtin function: (set)BusyCursor
+ *  Defines in which cases fvwm "grab" the cursor during execution of
+ *  certain functions.
+ * 
+ ***********************************************************************/
+void setBusyCursor(F_CMD_ARGS)
+{
+  char *option = NULL;
+  char *optstring = NULL;
+  char *args = NULL;
+  int arg1 = -1;
+  char *optlist[] = {"read", "recapture", "wait", "modulesynchronous", 
+		     "dynamicmenu", NULL};
+
+  while (action)
+  {
+    action = GetQuotedString(action, &optstring, ",", NULL, NULL, NULL);
+    if (!optstring)
+      break;
+
+    args = GetNextToken(optstring, &option);
+    if (!option)
+      {
+	free(optstring);
+	break;
+      }
+
+    arg1 = ParseToggleArgument(args, &args, -1, True); 
+
+    switch(GetTokenIndex(option, optlist, 0, NULL))
+    {
+    case 0: /* read */
+      if (arg1 == 1) Scr.BusyCursor |= BUSY_READ;
+      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_READ;
+      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      break;
+
+    case 1: /* recapture */
+      if (arg1 == 1) Scr.BusyCursor |= BUSY_RECAPTURE;
+      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_RECAPTURE;
+      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      break;
+
+    case 2: /* wait */
+      if (arg1 == 1) Scr.BusyCursor |= BUSY_WAIT;
+      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_WAIT;
+      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      break;
+
+    case 3: /* modulesynchronous */
+      if (arg1 == 1) Scr.BusyCursor |= BUSY_MODULESYNCHRONOUS;
+      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_MODULESYNCHRONOUS;
+      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      break;
+
+    case 4: /* dynamicmenu */
+      if (arg1 == 1) Scr.BusyCursor |= BUSY_DYNAMICMENU;
+      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_DYNAMICMENU;
+      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      break;
+
+    default:
+      fvwm_msg(ERR,"BusyCursor", "unknown context '%s'", option);
+      break;
+    }
+  }
+}
+

@@ -1,3 +1,7 @@
+1999-10-30  Mikhael Goikhman  migo@homemail.com
+
+	* fvwm-menu-directory.in: --reuse option works again
+
 1999-09-23  Paul D. Smith  <psmith@gnu.org>
 
 	* Makefile.am (LDADD): Move the $(X_LIBS) reference earlier in all
@@ -7,7 +11,7 @@
 
 1999-09-05  Mikhael Goikhman  <migo@homemail.com>
 
-	* utils/fvwmrc_convert:
+	* fvwmrc_convert:
 	Replaced several occurrences of InitFunction and/or RestartFunction
 	with StartFunction.
 

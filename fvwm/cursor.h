@@ -52,11 +52,19 @@ typedef enum
   CRS_RIGHT_EDGE,
   CRS_BOTTOM_EDGE,
   CRS_LEFT_EDGE,
+  CRS_ROOT,
   CRS_MAX
 } cursor_type;
 
+/* busy cursor bits */
+#define BUSY_READ (1<<0)
+#define BUSY_RECAPTURE (1<<1)
+#define BUSY_WAIT (1<<2)
+#define BUSY_MODULESYNCHRONOUS (1<<3)
+#define BUSY_DYNAMICMENU (1<<4)
 
 Cursor *CreateCursors(Display *dpy);
 void CursorStyle(F_CMD_ARGS);
+void setBusyCursor(F_CMD_ARGS);
 
 #endif /* _CURSOR_ */

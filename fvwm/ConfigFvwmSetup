@@ -76,14 +76,15 @@ Mouse 3 TSIF    A       RaiseLower
 
 ######################## Initialization Functions ############################
 AddToFunc StartFunction
+ + I Module FvwmBanner
  + I Module FvwmButtons
 
 AddToFunc InitFunction
- + I exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070 -cursor_name left_ptr
+ + I exec xsetroot -mod 2 2 -fg rgb:55/40/55 -bg rgb:70/50/70
 
 # For some SM-s (like gnome-session) there is an internal background setter.
 AddToFunc SessionInitFunction
- + I exec xsetroot -cursor_name left_ptr
+ + I Nop
 
 ######################## Menus ###################
 DestroyMenu MenuFvwmRoot

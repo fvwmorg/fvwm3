@@ -123,6 +123,7 @@ static const struct functions func_config[] =
   {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,         0},
 #endif /* BORDERSTYLE */
   {"bugopts",      SetBugOptions,    F_BUG_OPTS,            0},
+  {"busycursor",   setBusyCursor,    F_BUSY_CURSOR,         0},
   {"buttonstate",  cmd_button_state, F_BUTTON_STATE,        0},
   {"buttonstyle",  ButtonStyle,      F_BUTTON_STYLE,        0},
 #ifdef USEDECOR
@@ -160,6 +161,7 @@ static const struct functions func_config[] =
   {"edgescroll",   SetEdgeScroll,    F_EDGE_SCROLL,         0},
   {"edgethickness",setEdgeThickness, F_NOP,                 0},
   {"emulate",      Emulate,          F_EMULATE,             0},
+  {"escapefunc",   Nop_func,         F_ESCAPE_FUNC,         0},
   {"exec",         exec_function,    F_EXEC,                0},
   {"execuseshell", exec_setup,       F_EXEC_SETUP,          0},
   {"flipfocus",    flip_focus_func,  F_FLIP_FOCUS,          FUNC_NEEDS_WINDOW},
@@ -929,7 +931,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
   {
     return True;
   }
-  if(!GrabEm(cursor))
+  if(!GrabEm(cursor,GRAB_NORMAL))
   {
     XBell(dpy, 0);
     return True;
@@ -950,7 +952,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
       KeySym keysym = XLookupKeysym(&eventp->xkey,0);
       if (keysym == XK_Escape)
       {
-	UngrabEm();
+	UngrabEm(GRAB_NORMAL);
 	return True;
       }
       Keyboard_shortcuts(eventp, NULL, FinishEvent);
@@ -982,7 +984,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
 
   }
 
-  UngrabEm();
+  UngrabEm(GRAB_NORMAL);
   *w = eventp->xany.window;
   if(((*w == Scr.Root)||(*w == Scr.NoFocusWin))
      && (eventp->xbutton.subwindow != (Window)0))
@@ -1322,7 +1324,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	}
     }
 
-  if(!GrabEm(CRS_NONE))
+  if(!GrabEm(CRS_NONE, GRAB_NORMAL))
     {
       func->use_depth--;
       XBell(dpy, 0);
@@ -1386,6 +1388,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
     ev->type = ButtonRelease;
 
   fi = func->first_item;
+  UngrabEm(GRAB_NORMAL);
   while(fi != NULL)
     {
       /* make lower case */
@@ -1405,7 +1408,6 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
       fi = fi->next_item;
     }
   WaitForButtonsUp(False);
-  UngrabEm();
   for(i=0;i<10;i++)
     if(arguments[i] != NULL)
       free(arguments[i]);

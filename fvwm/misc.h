@@ -63,8 +63,18 @@ unsigned long context,char *action, int *Module
 void ReapChildren(void);
 void RestoreWithdrawnLocation(FvwmWindow *, Bool);
 void Destroy(FvwmWindow *);
-Bool GrabEm(int);
-void UngrabEm(void);
+
+/* bits for GrabPointerState */
+#define GRAB_NONE 0           /* the cursor is not grabed */
+#define GRAB_NORMAL (1<<0)    /* DeferExecution, Move, Resize, ... */
+#define GRAB_BUSY (1<<1)      /* BusyCursor stuff */
+#define GRAB_MENU (1<<2)      /* a menus.c grabing */
+#define GRAB_BUSYMENU (1<<3)  /* Allows menus.c to regrab the cursor */
+#define GRAB_STARTUP (1<<4)   /* Startup busy cursor */
+
+Bool GrabEm(int cursor, int grab_context);
+void UngrabEm(int ungrab_context);
+
 int flush_expose(Window w);
 void WaitForButtonsUp(Bool do_handle_expose);
 void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);

@@ -129,8 +129,9 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   extern char *fvwm_file;
   Window win;
 
-  if(eventp->type != KeyPress)
-    UngrabEm();
+  /* Olivier: Why ? */
+  /*   if(eventp->type != KeyPress) */
+  /*     UngrabEm(); */
 
   if(action == NULL)
     return -1;
@@ -347,7 +348,11 @@ void executeModuleSync(F_CMD_ARGS)
   Window targetWindow;
   extern fd_set_size_t fd_width;
   time_t start_time;
+  Bool done = False;
+  Bool need_ungrab = False;
+  char *escape = NULL;
   XEvent tmpevent;
+  extern FvwmWindow *Tmp_win;
 
   if (!action)
     return;
@@ -392,10 +397,17 @@ void executeModuleSync(F_CMD_ARGS)
     return;
   }
 
+  /* Busy cursor stuff */
+  if (Scr.BusyCursor & BUSY_MODULESYNCHRONOUS)
+  {
+    if (GrabEm(CRS_WAIT, GRAB_BUSY))
+      need_ungrab = True;
+  }
+ 
   /* wait for module input */
   start_time = time(NULL);
 
-  while (1)
+  while (!done)
   {
     FD_ZERO(&in_fdset);
     FD_ZERO(&out_fdset);
@@ -415,12 +427,13 @@ void executeModuleSync(F_CMD_ARGS)
 	  if (HandleModuleInput(targetWindow, pipe_slot, expect) == 77)
 	  {
 	    /* we got the message we were waiting for */
-	    return;
+	    done = True;
 	  }
 	}
 	else
 	{
 	  KillModule(pipe_slot);
+	  done = True;
 	}
       }
       if ((writePipes[pipe_slot] >= 0) &&
@@ -433,17 +446,27 @@ void executeModuleSync(F_CMD_ARGS)
     if (difftime(time(NULL), start_time) >= sec && sec)
     {
       /* timeout */
-      return;
+      done = True;
     }
-    /* Check for "Ctl-Alt-Escape" */
+    /* Check for "escape function" */
     if (XPending(dpy) && XCheckMaskEvent(dpy, KeyPressMask, &tmpevent))
     {
-      if (tmpevent.type == KeyPress &&
-	  XLookupKeysym(&(tmpevent.xkey),0) == XK_Escape &&
-	  tmpevent.xbutton.state & ControlMask)
-	return;
+      escape = CheckBinding(Scr.AllBindings,
+#ifdef HAVE_STROKE
+			    0,
+#endif /* HAVE_STROKE */
+			    tmpevent.xkey.keycode,
+			    tmpevent.xkey.state, GetUnusedModifiers(),
+			    GetContext(Tmp_win, &tmpevent, &targetWindow),
+			    KEY_BINDING);
+      if (escape != NULL)
+      {
+	if (!strcasecmp(escape,"escapefunc"))
+	  done = True;
+      }
     }
-  }
+  } /* while */
+  if (need_ungrab) UngrabEm(GRAB_BUSY);
 }
 
 
@@ -1085,8 +1108,8 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   int i;
 
   /* FIXME: Without this, popup menus can't be implemented properly in
-     modules */
-  UngrabEm();
+   *  modules.  Olivier: Why ? */
+  /* UngrabEm(); */
   if (!action)
     return;
   GetNextToken(action,&module);

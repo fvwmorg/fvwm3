@@ -176,8 +176,8 @@ foreach (@files) {
 }
 
 sub evalFolderLine ($$) {
-	my ($name, $dir) = @_;
-	my $itemStr = $dir && $itemF_eval? evalItem($name, $dir): $name;
+	my ($_name, $dir) = @_;
+	my $itemStr = $dir && $itemF_eval? evalItem($_name, $dir): $_name;
 	my $act = !$dir || $checkSubdir && !-x $dir? "Nop": !$reuse?
 		qq(Popup "$dir"$submenuPos):
 		qq(PipeRead 'echo "$dir" >$dirFile; echo Menu "$name" WarpTitle');
@@ -437,9 +437,11 @@ And put this in the menu from which you want to pop-up the directory menus:
 
 Note: please use absolute path names.
 
-It is a good idea to set the menu pop-up delay to something positive:
+It is a good idea to set the menu pop-up delay to something positive
+and enable busy cursor
 
   MenuStyle * PopupDelayed, PopupDelay 100
+  BusyCursor DynamicMenu True
 
 in your configuration file when using this script for better results.
 

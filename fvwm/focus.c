@@ -292,7 +292,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
     }
   }
 
-  UngrabEm();
+  UngrabEm(GRAB_NORMAL);
   DoSetFocus(t->w, t, FocusByMouse, NoWarp);
 }
 

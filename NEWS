@@ -1,5 +1,13 @@
 Changes in beta release 2.3.10
 
+* New command BusyCursor to control a busy cursor during execution of
+  certain commands.
+
+* CursorStyle can set the root cursor and use X11 cursor name.
+
+* New command EscapeFunc to configure an aborting key sequence
+  (default is Ctrl-Alt-Escape).
+
 * New command HideGeometryWindow to hide the size/position when moving or
   resizing windows.
 

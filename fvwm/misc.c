@@ -463,26 +463,47 @@ void WaitForButtonsUp(Bool do_handle_expose)
 
 /*****************************************************************************
  *
- * Grab the pointer and keyboard
- *
+ * Grab the pointer and keyboard.
+ * grab_context: GRAB_NORMAL, GRAB_BUSY, GRAB_MENU, GRAB_BUSYMENU.
+ * GRAB_STARTUP and GRAB_NONE are used at startup but are not made
+ * to be grab_context.
  ****************************************************************************/
-Bool GrabEm(int cursor)
+Bool GrabEm(int cursor, int grab_context)
 {
   int i=0,val=0;
+  Window grab_win;
   unsigned int mask;
+
+  /* menus.c control itself its busy stuff. No busy stuff at start up. 
+   * Only one busy grab */ 
+  if ( ((GrabPointerState & (GRAB_MENU | GRAB_STARTUP))
+	                 && (grab_context & GRAB_BUSY)) ||
+       ((GrabPointerState & GRAB_BUSY) && (grab_context & GRAB_BUSY)) )
+    return False;
 
   XSync(dpy,0);
   /* move the keyboard focus prior to grabbing the pointer to
    * eliminate the enterNotify and exitNotify events that go
-   * to the windows */
-  if(Scr.PreviousFocus == NULL)
-    Scr.PreviousFocus = Scr.Focus;
-  SetFocus(Scr.NoFocusWin,NULL,0);
+   * to the windows. But GRAB_BUSY. */
+  if (grab_context != GRAB_BUSY)
+  {
+    if(Scr.PreviousFocus == NULL)
+      Scr.PreviousFocus = Scr.Focus;
+    SetFocus(Scr.NoFocusWin,NULL,0);
+    grab_win = Scr.Root;
+  }
+  else
+  {
+    if ( Scr.Hilite != NULL )
+      grab_win = Scr.Hilite->w;
+    else
+      grab_win = Scr.Root;
+  }
   mask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask
     | EnterWindowMask | LeaveWindowMask;
   while((i<1000)&&
 	(val = XGrabPointer(
-	  dpy, Scr.Root, True, mask, GrabModeAsync, GrabModeAsync, Scr.Root,
+	  dpy, grab_win, True, mask, GrabModeAsync, GrabModeAsync, Scr.Root,
 	  Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
     {
       i++;
@@ -498,6 +519,7 @@ Bool GrabEm(int cursor)
     {
       return False;
     }
+  GrabPointerState |= grab_context;
   return True;
 }
 
@@ -507,14 +529,28 @@ Bool GrabEm(int cursor)
  * UnGrab the pointer and keyboard
  *
  ****************************************************************************/
-void UngrabEm(void)
+void UngrabEm(int ungrab_context)
 {
   Window w;
 
+  /* menus.c control itself regarbing */
+  if ((GrabPointerState & GRAB_MENU) && !(ungrab_context & GRAB_MENU))
+  {
+    GrabPointerState = (GrabPointerState & ~ungrab_context) | GRAB_BUSYMENU;
+    return;
+  }
+  /* see if we need to regrab */
+  if ((GrabPointerState & GRAB_BUSY) && !(ungrab_context & GRAB_BUSY))
+  {
+    GrabPointerState &= ~ungrab_context & ~GRAB_BUSY;
+    GrabEm(CRS_WAIT, GRAB_BUSY);
+    return;
+  }
+
   XSync(dpy,0);
   XUngrabPointer(dpy,CurrentTime);
-
-  if(Scr.PreviousFocus != NULL)
+  GrabPointerState &= ~ungrab_context;
+  if(Scr.PreviousFocus != NULL && !(GRAB_BUSY & ungrab_context))
     {
       w = Scr.PreviousFocus->w;
 

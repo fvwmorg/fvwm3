@@ -720,7 +720,7 @@ MenuStatus do_menu(MenuParameters *pmp)
     {
       /* we're a top level menu */
       has_mouse_moved = False;
-      if(!GrabEm(CRS_MENU))
+      if(!GrabEm(CRS_MENU, GRAB_MENU))
       {
 	/* GrabEm specifies the cursor to use */
 	XBell(dpy, 0);
@@ -739,7 +739,7 @@ MenuStatus do_menu(MenuParameters *pmp)
     {
       fFailedPopup = True;
       XBell(dpy, 0);
-      UngrabEm();
+      UngrabEm(GRAB_MENU);
       return MENU_ERROR;
     }
   }
@@ -793,7 +793,7 @@ MenuStatus do_menu(MenuParameters *pmp)
   dkp.timestamp = 0;
   if(!pmp->flags.is_submenu)
   {
-    UngrabEm();
+    UngrabEm(GRAB_MENU);
     WaitForButtonsUp(False);
     if (retval == MENU_DONE || retval == MENU_DONE_BUTTON)
     {
@@ -1569,12 +1569,27 @@ static MenuStatus MenuInteraction(
 	  {
 	    action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
 	  }
+	  /* Busy cursor stuff */
+	  if (Scr.BusyCursor & BUSY_DYNAMICMENU)
+	    GrabEm(CRS_WAIT, GRAB_BUSYMENU);
 	  /* Execute the action */
 	  ExecuteFunctionSaveTmpWin(
 	    action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
 	    DONT_EXPAND_COMMAND);
 	  if (is_complex_function)
 	    free(action);
+	  /* Busy cursor stuff  */
+	  if (GrabPointerState & GRAB_BUSYMENU) 
+	  {
+	    /* if we can't regrab then we can freeze fvwm */
+	    GrabPointerState &= ~GRAB_BUSYMENU;
+	    if (!GrabEm(CRS_MENU, GRAB_MENU))
+	    {
+	      XBell(dpy, 0);
+	      UngrabEm(GRAB_MENU);
+	      return MENU_ABORTED;
+	    }
+	  }
 	  /* restore the stuff we saved */
 	  lastTimestamp = t;
 	  *pdo_warp_to_title = f;
@@ -1965,9 +1980,21 @@ static Bool pop_menu_up(
     pos_hints = last_saved_pos_hints;
     f = *pdo_warp_to_title;
     t = lastTimestamp;
+    if (Scr.BusyCursor & BUSY_DYNAMICMENU)
+      GrabEm(CRS_WAIT, GRAB_BUSYMENU);
     /* Execute the action */
     ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(mr), *pfw, &Event,
 			      *pcontext, -2, DONT_EXPAND_COMMAND);
+    if (GrabPointerState & GRAB_BUSYMENU)
+    {
+      GrabPointerState &= ~GRAB_BUSYMENU;
+      if (!GrabEm(CRS_MENU, GRAB_MENU))
+      {
+	XBell(dpy, 0);
+	UngrabEm(GRAB_MENU);
+	return MENU_ABORTED;
+      }
+    }
     /* restore the stuff we saved */
     lastTimestamp = t;
     *pdo_warp_to_title = f;

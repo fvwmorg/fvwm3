@@ -180,7 +180,7 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
    * for ButtonRelease too since the event may be faked. */
   GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &DragX, &DragY);
 
-  if(!GrabEm(CRS_MOVE))
+  if(!GrabEm(CRS_MOVE, GRAB_NORMAL))
   {
     XBell(dpy, 0);
     return;
@@ -212,7 +212,7 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
 
   if(!do_move_opaque)
     MyXUngrabServer(dpy);
-  UngrabEm();
+  UngrabEm(GRAB_NORMAL);
 }
 
 
@@ -1559,7 +1559,7 @@ void resize_window(F_CMD_ARGS)
   else
     InstallFvwmColormap();
 
-  if(!GrabEm(CRS_RESIZE))
+  if(!GrabEm(CRS_RESIZE, GRAB_NORMAL))
   {
     XBell(dpy, 0);
     return;
@@ -1946,7 +1946,7 @@ void resize_window(F_CMD_ARGS)
   xmotion = 0;
   ymotion = 0;
   WaitForButtonsUp(True);
-  UngrabEm();
+  UngrabEm(GRAB_NORMAL);
   Scr.flags.edge_wrap_x = edge_wrap_x;
   Scr.flags.edge_wrap_y = edge_wrap_y;
 

@@ -610,13 +610,18 @@ void stick_function(F_CMD_ARGS)
 void wait_func(F_CMD_ARGS)
 {
   Bool done = False;
+  Bool redefine_cursor = False;
+  char *escape;
+  Window nonewin = None;
   extern FvwmWindow *Tmp_win;
 
   while(!done)
   {
-#if 0
-    GrabEm(WAIT);
-#endif
+    if (BUSY_WAIT & Scr.BusyCursor)
+    {
+      XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_WAIT]);
+      redefine_cursor = True;
+    }
     if(My_XNextEvent(dpy, &Event))
     {
       DispatchEvent(False);
@@ -631,17 +636,26 @@ void wait_func(F_CMD_ARGS)
            (matchWildcards(action,Tmp_win->class.res_name)==True))
           done = True;
       }
-      else if (Event.type == KeyPress &&
-	       XLookupKeysym(&(Event.xkey),0) == XK_Escape &&
-	       Event.xbutton.state & ControlMask)
+      else if (Event.type == KeyPress)
       {
-	done = 1;
+        escape = CheckBinding(Scr.AllBindings,
+#ifdef HAVE_STROKE
+                              0,
+#endif /* HAVE_STROKE */
+                              Event.xkey.keycode,
+                              Event.xkey.state, GetUnusedModifiers(),
+                              GetContext(Tmp_win,&Event,&nonewin),
+                              KEY_BINDING);
+        if (escape != NULL)
+        {
+	  if (!strcasecmp(escape,"escapefunc"))
+            done = True;
+        }
       }
     }
   }
-#if 0
-  UngrabEm();
-#endif
+  if (redefine_cursor)
+    XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
 }
 
 void quit_func(F_CMD_ARGS)
@@ -2446,6 +2460,7 @@ void SetEnv(F_CMD_ARGS)
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
   XEvent event;
+  Bool need_ungrab = False;
 
   if (fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
@@ -2454,7 +2469,8 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   /* Wow, this grabbing speeds up recapture tremendously! I think that is the
    * solution for this weird -blackout option. */
   MyXGrabServer(dpy);
-  GrabEm(CRS_WAIT);
+  if (BUSY_RECAPTURE & Scr.BusyCursor)
+    if (GrabEm(CRS_WAIT, GRAB_BUSY)) need_ungrab = True;
   XSync(dpy,0);
   if (fSingle)
     CaptureOneWindow(tmp_win, tmp_win->w);
@@ -2468,7 +2484,7 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 			 LeaveWindowMask|KeyPressMask|KeyReleaseMask,
 			 &event) != False)
     ;
-  UngrabEm();
+  if (need_ungrab) UngrabEm(GRAB_BUSY);
   MyXUngrabServer(dpy);
   XSync(dpy, 0);
 }

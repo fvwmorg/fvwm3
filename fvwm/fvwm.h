@@ -493,6 +493,8 @@ extern XContext FvwmContext;
 extern Bool fFvwmInStartup;
 extern Bool DoingCommandLine;
 
+extern int GrabPointerState;
+
 extern Boolean ShapesSupported;
 
 extern Window JunkRoot, JunkChild;

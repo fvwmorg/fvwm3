@@ -1,3 +1,42 @@
+1999-10-30  Olivier Chapuis  olivier.chapuis@free.fr
+
+	* NEWS: BusyCursor, EscapeFunc and CursorStyle.
+	* fvwm/ConfigFvwmDefaults: add the binding Key Escape A MC EscapeFunc
+	* fvwm/builtins.c (wait_func, recapture): Busy cursor stuff
+	* fvwm/cursor.{c,h} (cursor_type, default_cursors, CursorStyle,
+	  setBusyCursor, myCusorNameToIndex):
+	Add CRS_ROOT and ROOT context for CursorStyle. We can use X11 cursor
+	name in the CursorStyle command. Busy cursor stuff.
+	* fvwm/focus.c (FocusOn): update GrabEm and GrabEm.
+	* fvwm/function.{c,h} (func_config, execute_complex_function,
+	  DeferExecution):
+	New functions BusyCursor and EscapeFunc. Busy cursor stuff.
+	* fvwm/fvwm.{c,h} (StartupStuff, InitVariables):
+	Some Busy cursor stuff, the new external int GrabPointerState.
+	* fvwm/fvwm2.1: BusyCursor and EscapeFunc documentation.
+	Update CursorStyle documentation.
+	* fvwm/menus.c (MenuInteraction, pop_menu_up): Busy cursor stuff.
+	* fvwm/misc.{c,h} (GrabEm, UngrabEm):
+	Busy cursor stuff. Grab context bits for GrabPointerState.
+	* fvwm/module_interface.c (ExecuteModuleSync):
+	Busy cursor stuff and some logic fixes.
+	* fvwm/move_resize.c (InteractiveMove, resize_window):
+	update GrabEm and UngrabEm.
+	* fvwm/module_interface.c (do_execute_module, SendStrToModule,
+	  ExecuteModuleSync):
+	Comments some not useful (IMHO) UngarbEm for the Busy cursor stuff.
+	And ... Busy cursor stuff !
+	* fvwm/placement.c (PlaceWindow): update GrabEm and UngrabEm.
+	* fvwm/read.c (cursor_control, ReadFile, PipeRead): Busy cursor stuff.
+	* fvwm/screen.h (ScreenInfo): BusyCursor
+
+	(added by Mikhael Goikhman)
+	* fvwm/ConfigFvwmSetup:
+	* fvwm/fvwm2.1:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	Removed xsetroot -cursor_name in initialization functions.
+
 1999-10-25  Hippo
 
 	* libs/fvwmlib.h,fvwmlib.h: CreateGradientPixmapFromString returns

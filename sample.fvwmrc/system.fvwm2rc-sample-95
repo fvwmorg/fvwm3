@@ -150,6 +150,12 @@ GlobalOpts SmartPlacementIsReallySmart
 
 DeskTopSize 2x2
 
+#------------------------------------------------------------------------------
+# Set the root cursor
+#------------------------------------------------------------------------------
+
+CursorStyle ROOT top_left_arrow
+
 
 
 #=============================================================================#
@@ -259,17 +265,18 @@ Style *console*  	MiniIcon mini-display.xpm
 
 
 DestroyFunc StartFunction
-AddToFunc StartFunction I Module FvwmButtons
-+                       I Module FvwmTaskBar
-+		        I Read .fvwm2rc-settings
+AddToFunc StartFunction
+#+ I Module FvwmBanner
+#+ I Module FvwmAudio
+ + I Module FvwmButtons
+ + I Module FvwmTaskBar
+ + I Read .fvwm2rc-settings Quiet
 
 
 DestroyFunc InitFunction
-AddToFunc InitFunction  I Exec xsetroot -solid Cyan4 \
-                             -cursor_name top_left_arrow
-+                       I Module FvwmPager
-#+                      I Module FvwmBanner
-#+                      I Module FvwmAudio
+AddToFunc InitFunction
+ + I Exec xsetroot -solid Cyan4
+ + I Module FvwmPager
 
 
 #============================================================================#

@@ -154,6 +154,36 @@ int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win,
     return 1;
 }
 
+/**
+* Busy Cursor Stuff for Read 
+**/
+static void cursor_control(Bool grab)
+{
+  static unsigned int read_depth = 0;
+  static Bool need_ungrab = False;
+
+  if (!(Scr.BusyCursor & BUSY_READ) && !need_ungrab) 
+    return;
+
+  if (grab)
+  {
+    if (!read_depth && GrabEm(CRS_WAIT, GRAB_BUSY)) 
+      need_ungrab = True;
+    if (need_ungrab) read_depth++;
+  }
+  else if (need_ungrab)
+  {
+    read_depth--;
+    if (!read_depth || !(Scr.BusyCursor & BUSY_READ))
+    {
+      UngrabEm(GRAB_BUSY);
+      need_ungrab = False;
+      read_depth = 0;
+    }
+  }
+
+}
+
 
 void ReadFile(F_CMD_ARGS)
 {
@@ -162,18 +192,13 @@ void ReadFile(F_CMD_ARGS)
 
     DoingCommandLine = False;
     
-    if (fFvwmInStartup && *Module > -1)
-    {
-      Cursor cursor = XCreateFontCursor(dpy, XC_watch);
-      XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeSync, GrabModeSync,
-		   None, cursor, CurrentTime);
-    }
-
     if (debugging)
 	fvwm_msg(DBG,"ReadFile","about to attempt '%s'",action);
 
     if ( !parse_filename( "Read", action, &filename, &read_quietly ) )
 	return;
+
+    cursor_control(True);
 
     if ( !run_command_file( filename, eventp, tmp_win, context, *Module ) &&
 	 !read_quietly )
@@ -183,6 +208,7 @@ void ReadFile(F_CMD_ARGS)
 		  filename, user_home_dir );
     }
     free( filename );
+    cursor_control(False);
 }
 
 
@@ -206,17 +232,20 @@ void PipeRead(F_CMD_ARGS)
     if ( !parse_filename( "PipeRead", action, &command, &read_quietly ) )
 	return;
 
+    cursor_control(True);
+
     f = popen( command, "r" );
 
     if (f == NULL) {
 	if ( !read_quietly )
 	    fvwm_msg( ERR, "PipeRead", "command '%s' not run", command );
 	free( command );
+	cursor_control(False);
 	return;
     }
     free( command );
 
     run_command_stream( f, eventp, tmp_win, context, *Module );
     pclose( f );
-
+    cursor_control(False);
 }

@@ -292,6 +292,8 @@ typedef struct ScreenInfo
 				   to zero */
   Cursor *FvwmCursors;
 
+  int BusyCursor;               /* context where we display the busy cursor */
+
   char *DefaultIcon;            /* Icon to use when no other icons are found */
 
   int TopLayer;
