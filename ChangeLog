@@ -1,3 +1,9 @@
+1999-06-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/session.c (my_module): fixed
+	(MatchWinToSM): When evaluating x and y coordinates for sticky windows
+	add old_bw before evaluating my_module and then substract it.
+
 1999-06-27 Olivier Chapuis <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm2.1: Corrected misprints

@@ -577,7 +577,8 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 static int
 my_modulo (int x, int m)
 {
-  return (x < 0) ? (m + (x % m)) : (x % m);
+  int res = x % m;
+  return res < 0? m + res: res;
 }
 
 /*
@@ -643,8 +644,9 @@ MatchWinToSM(FvwmWindow *ewin,
 	  if (IS_STICKY(&(matches[i]))) {
 	    SET_STICKY(ewin, 1);
 	    /* force sticky windows on screen */
-	    ewin->attr.x = my_modulo (ewin->attr.x, Scr.MyDisplayWidth);
-	    ewin->attr.y = my_modulo (ewin->attr.y, Scr.MyDisplayHeight);
+	    /* migo - 28/Jun/1999 - ewin->old_bw will be added in AddWindow */
+	    ewin->attr.x = my_modulo (ewin->attr.x + ewin->old_bw, Scr.MyDisplayWidth)  - ewin->old_bw;
+	    ewin->attr.y = my_modulo (ewin->attr.y + ewin->old_bw, Scr.MyDisplayHeight) - ewin->old_bw;
 	    *x_max = my_modulo (*x_max, Scr.MyDisplayWidth);
 	    *y_max = my_modulo (*y_max, Scr.MyDisplayHeight);
 	  } else {
