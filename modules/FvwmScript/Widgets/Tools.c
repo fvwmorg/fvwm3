@@ -91,10 +91,10 @@ char* GetMenuTitle(char *str,int id)
 void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
 {
  XSegment segm[2];
- int i;
+ unsigned int i;
  char *str;
  int x,y;
- int width,height;
+ unsigned int width,height;
  Window Root;
  int asc,desc,dir;
  XCharStruct struc;
@@ -154,9 +154,9 @@ void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
 void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int newvalue,int Show)
 {
  XSegment segm[2];
- int i;
+ unsigned int i;
  int x,y;
- int width,height;
+ unsigned int width,height;
  Window Root;
 
  XGetGeometry(xobj->display,WinPop,&Root,&x,&y,&width,&height,&i,&i);

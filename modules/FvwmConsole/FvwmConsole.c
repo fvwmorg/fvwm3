@@ -49,8 +49,8 @@ int main(int argc, char *argv[]){
   int  clpid;
 
   /* Why is this not just put in the initializer of xterm_a?
-     Apparently, it is a non-standard extension to use a non-constant address (of client)
-     in an initializer (of xterm_a). */
+     Apparently, it is a non-standard extension to use a non-constant address
+     * (of client) in an initializer (of xterm_a). */
   xterm_post[1] = client;
 
   /* Save the program name - its used for error messages and option parsing */
@@ -71,8 +71,8 @@ int main(int argc, char *argv[]){
   strcat( client, "C" );
 
   if(argc < FARGS)    {
-	fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
-			MYVERSION);
+	fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",
+		MyName, MYVERSION);
 	exit(1);
   }
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]){
   }
 
   server();
-return (0);
+  return (0);
 }
 
 /***********************************************************************
@@ -157,7 +157,8 @@ void CloseSocket() {
 /*********************************************************/
 void server ( void ) {
   struct sockaddr_un sas, csas;
-  int  len, clen;     /* length of sockaddr */
+  int  len;
+  socklen_t clen;     /* length of sockaddr */
   char buf[MAX_COMMAND_SIZE];      /*  command line buffer */
   char *tline;
   char ver[40];

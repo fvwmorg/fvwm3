@@ -160,7 +160,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
  int ButPress=1;
  int format;
  unsigned long longueur,octets_restant;
- unsigned char *donnees="";
+ unsigned char *donnees=(unsigned char *)"";
  XRectangle rect;
 
  /* On deplace le curseur a la position de la souris */
@@ -257,7 +257,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
        if (longueur>0)
        {
         Scrapt=(char*)realloc((void*)Scrapt,(longueur+1)*sizeof(char));
-        Scrapt=strcpy(Scrapt,donnees);
+        Scrapt=strcpy(Scrapt,(char *)donnees);
         XDeleteProperty(xobj->display,event.xselection.requestor,event.xselection.property);
         XFree(donnees);
        }

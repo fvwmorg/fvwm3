@@ -562,20 +562,26 @@ void SendMsgToScript(XEvent event)
   if (event.xselectionrequest.target==Receiver)		/* On a trouve le recepteur */
   {
    evnt_sel.xselection.property=event.xselectionrequest.property;
-   XChangeProperty(x11base->display,evnt_sel.xselection.requestor,
- 	       evnt_sel.xselection.property,
-  	       evnt_sel.xselection.target,
-  	       8,PropModeReplace,BuffSend.TabMsg[i].Msg,strlen(BuffSend.TabMsg[i].Msg)+1);
+   XChangeProperty(x11base->display,
+		   evnt_sel.xselection.requestor,
+		   evnt_sel.xselection.property,
+		   evnt_sel.xselection.target,
+		   8,
+		   PropModeReplace,
+		   (unsigned char *)(BuffSend.TabMsg[i].Msg),
+		   strlen(BuffSend.TabMsg[i].Msg)+1);
    BuffSend.NbMsg--;
    free(BuffSend.TabMsg[i].Msg);
    if (BuffSend.NbMsg>0)
    {
-    memmove(&BuffSend.TabMsg[i],&BuffSend.TabMsg[i+1],(BuffSend.NbMsg-i)*sizeof(TypeName));
+    memmove(&BuffSend.TabMsg[i],
+	    &BuffSend.TabMsg[i+1],(BuffSend.NbMsg-i)*sizeof(TypeName));
    }
   }
   else
-  {		/* Cas ou le recepteur demande un message et qu'il n'y en a pas */
-   evnt_sel.xselection.property=None;
+  {
+    /* Cas ou le recepteur demande un message et qu'il n'y en a pas */
+    evnt_sel.xselection.property=None;
   }
   XSendEvent(x11base->display,evnt_sel.xselection.requestor,False,0,&evnt_sel);
  }
@@ -641,14 +647,19 @@ void ReadXServer (void)
             switch (event.xselectionrequest.target)
             {
              case XA_STRING:
-              XChangeProperty(x11base->display,evnt_sel.xselection.requestor,
-              				       evnt_sel.xselection.property,
-              				       evnt_sel.xselection.target,
-              				       8,PropModeReplace,Scrapt,strlen(Scrapt)+1);
+              XChangeProperty(x11base->display,
+			      evnt_sel.xselection.requestor,
+			      evnt_sel.xselection.property,
+			      evnt_sel.xselection.target,
+			      8,
+			      PropModeReplace,
+			      (unsigned char *)(Scrapt),
+			      strlen(Scrapt)+1);
              break;
              default:evnt_sel.xselection.property=None;
             }
-            XSendEvent(x11base->display,evnt_sel.xselection.requestor,False,0,&evnt_sel);
+            XSendEvent(x11base->display,evnt_sel.xselection.requestor,
+		       False,0,&evnt_sel);
            }
 	   else
 	    SendMsgToScript(event);
@@ -658,7 +669,8 @@ void ReadXServer (void)
 	     UnselectAllTextField(tabxobj);
             break;
       case ClientMessage:
-	   if ((event.xclient.format==32) && (event.xclient.data.l[0]==wm_del_win))
+	   if ((event.xclient.format==32) &&
+	       (event.xclient.data.l[0]==wm_del_win))
 	    DeadPipe(1);
 	  break;
       case PropertyNotify:

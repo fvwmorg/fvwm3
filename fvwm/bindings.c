@@ -30,7 +30,7 @@
 
 
 #define MODS_UNUSED_DEFAULT LockMask
-static unsigned int mods_unused = MODS_UNUSED_DEFAULT;
+static int mods_unused = MODS_UNUSED_DEFAULT;
 
 
 /****************************************************************************

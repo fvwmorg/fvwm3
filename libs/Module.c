@@ -27,7 +27,8 @@
  * Loop until count bytes are read, unless an error or end-of-file
  * condition occurs.
  */
-inline static int positive_read( int fd, void* buf, int count )
+inline
+static int positive_read(int fd, char* buf, int count )
 {
     while ( count > 0 ) {
 	int n_read = read( fd, buf, count );
@@ -57,16 +58,17 @@ FvwmPacket* ReadFvwmPacket( int fd )
        how would FVWM & the module become unsynchronized?
     */
     do {
-	if ( positive_read( fd, buffer, sizeof(unsigned long) ) < 0 )
+	if ( positive_read( fd, (char *)buffer, sizeof(unsigned long) ) < 0 )
 	    return NULL;
     } while (packet->start_pattern != START_FLAG);
 
     /* Now read the rest of the header */
-    if ( positive_read( fd, &buffer[1], 3 * sizeof(unsigned long) ) < 0 )
+    if ( positive_read( fd, (char *)(&buffer[1]),
+			3 * sizeof(unsigned long) ) < 0 )
 	return NULL;
 
     /* Finally, read the body, and we're done */
-    if ( positive_read( fd, &buffer[4],
+    if ( positive_read( fd, (char *)(&buffer[4]),
 			FvwmPacketBodySize(*packet)*sizeof(unsigned long)) < 0)
 	return NULL;
 

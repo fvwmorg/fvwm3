@@ -32,7 +32,7 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void animated_move_window(F_CMD_ARGS);
 void move_window_to_page(F_CMD_ARGS);
 void resize_window(F_CMD_ARGS);
-void ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
-				 int xmotion, int ymotion);
+void ConstrainSize(FvwmWindow *, unsigned int *width, unsigned int *height,
+		   Bool roundUp, int xmotion, int ymotion);
 
 #endif /* _MOVE_RESIZE_ */

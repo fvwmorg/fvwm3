@@ -403,12 +403,11 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
  *
  ****************************************************************************/
 static cfunc_action_type CheckActionType(
-  int x, int y, unsigned EndMask, XEvent *d, Bool may_time_out)
+  int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed)
 {
   int xcurrent,ycurrent,total = 0;
   Time t0;
   int dist;
-  Bool is_button_pressed = False;
   extern Time lastTimestamp;
 
   xcurrent = x;
@@ -427,21 +426,35 @@ static cfunc_action_type CheckActionType(
 
       usleep(20000);
       total+=20;
-      if(XCheckMaskEvent (dpy,EndMask, d))
+      if(XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
+			 PointerMotionMask|ButtonPressMask, d))
+      {
+	StashEventTime(d);
+	switch (d->xany.type)
 	{
-	  StashEventTime(d);
+	case ButtonRelease:
 	  return CF_CLICK;
+	case MotionNotify:
+	  if (d->xmotion.state &
+	      (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))
+	  {
+	    xcurrent = d->xmotion.x_root;
+	    ycurrent = d->xmotion.y_root;
+	  }
+	  else
+	  {
+	    return (is_button_pressed) ? CF_CLICK : CF_TIMEOUT;
+	  }
+	  break;
+	case ButtonPress:
+	  if (may_time_out)
+	    is_button_pressed = True;
+	  break;
+	default:
+	  /* can't happen */
+	  break;
 	}
-      if(XCheckMaskEvent (dpy,ButtonMotionMask|PointerMotionMask, d))
-	{
-	  xcurrent = d->xmotion.x_root;
-	  ycurrent = d->xmotion.y_root;
-	  StashEventTime(d);
-	}
-      else if (may_time_out && XCheckMaskEvent (dpy,ButtonPressMask, d))
-	{
-	  is_button_pressed = True;
-	}
+      }
     }
 
   return (is_button_pressed) ? CF_HOLD : CF_TIMEOUT;
@@ -1053,22 +1066,32 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	  free(arguments[i]);
       return;
     }
-  XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		&x,&y,&JunkX, &JunkY, &JunkMask);
-  /* Take the click which started this fuction off the
-   * Event queue.  -DDN- Dan D Niles dniles@iname.com */
-  XCheckMaskEvent(dpy, ButtonPressMask, &d);
+  switch (eventp->xany.type)
+  {
+  case ButtonPress:
+  case ButtonRelease:
+    x = eventp->xbutton.x_root;
+    y = eventp->xbutton.y_root;
+    /* Take the click which started this fuction off the
+     * Event queue.  -DDN- Dan D Niles dniles@iname.com */
+    XCheckMaskEvent(dpy, ButtonPressMask, &d);
+    break;
+  default:
+    XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
+		   &x,&y,&JunkX, &JunkY, &JunkMask);
+    break;
+  }
 
   /* Wait and see if we have a click, or a move */
   /* wait forever, see if the user releases the button */
-  type = CheckActionType(x, y, ButtonReleaseMask, &d, HaveHold);
+  type = CheckActionType(x, y, &d, HaveHold, True);
   if (type == CF_CLICK)
     {
       ev = &d;
       /* If it was a click, wait to see if its a double click */
       if(HaveDoubleClick)
 	{
-	  type = CheckActionType(x,y,ButtonReleaseMask,&d, True);
+	  type = CheckActionType(x, y, &d, True, False);
 	  switch (type)
 	  {
 	  case CF_CLICK:

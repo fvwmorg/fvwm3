@@ -1535,10 +1535,10 @@ void HandleEnterNotify(void)
      the grab held during iconification. We have to ignore this,
      or icon title will be initially raised. */
   if (IS_ICONIFIED(Tmp_win) && (ewp->mode == NotifyNormal))
-    {
-      SET_ICON_ENTERED(Tmp_win,1);
-      DrawIconWindow(Tmp_win);
-    }
+  {
+    SET_ICON_ENTERED(Tmp_win,1);
+    DrawIconWindow(Tmp_win);
+  }
 
   return;
 }
@@ -1593,7 +1593,8 @@ void HandleConfigureRequest(void)
 {
   XWindowChanges xwc;
   unsigned long xwcm;
-  int x, y, width, height;
+  int x, y;
+  unsigned int width, height;
   int h;
   XConfigureRequestEvent *cre = &Event.xconfigurerequest;
 
@@ -1617,7 +1618,6 @@ void HandleConfigureRequest(void)
   if (!Tmp_win || cre->window == Tmp_win->icon_w ||
       cre->window == Tmp_win->icon_pixmap_w)
   {
-
     xwcm = cre->value_mask &
       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
     xwc.x = cre->x;

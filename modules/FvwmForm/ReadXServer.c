@@ -56,8 +56,8 @@
 
 #include <FvwmForm.h>
 
-static void process_regular_char_input(char *buf);
-static int process_tabtypes(char * buf);
+static void process_regular_char_input(unsigned char *buf);
+static int process_tabtypes(unsigned char * buf);
 static void process_button_release(XEvent *event, Item *item);
 static void process_paste_request (XEvent *event, Item *item);
 static void ToggleChoice (Item *item);
@@ -104,7 +104,7 @@ void ReadXServer ()
 	}
 	break;
       case KeyPress:  /* we do text input here */
-	n = XLookupString(&event.xkey, buf, sizeof(buf), &ks, NULL);
+	n = XLookupString(&event.xkey, (char *)buf, sizeof(buf), &ks, NULL);
 	keypress = buf[0];
         shft = (event.xkey.state & ShiftMask);
 	myfprintf((stderr, "Keypress [%s], shift state %X\n", buf,shft));
@@ -391,7 +391,7 @@ void ReadXServer ()
    except when it comes to matching a command button hotkey.
 
    Return 1 to redraw, 0 for no redraw */
-static int process_tabtypes(char * buf) {
+static int process_tabtypes(unsigned char * buf) {
   Item *item, *old_item;
   /* Note: the input field ring used with ^P above
              could probably make this a lot simpler. dje 12/20/98 */
@@ -441,7 +441,7 @@ static int process_tabtypes(char * buf) {
   return (-1);
 }
 
-static void process_regular_char_input(char *buf) {
+static void process_regular_char_input(unsigned char *buf) {
   char *sp, *dp, *ep;
   if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
     CF.cur_input->input.buf += CF.cur_input->input.size;
@@ -512,7 +512,7 @@ static void process_paste_request (XEvent *event, Item *item) {
       switch (*c) {
       case '\t':                        /* TAB */
         if (CF.cur_input == CF.cur_input->input.next_input) { /* 1 ip field */
-          process_tabtypes(" ");        /* paste tab as space */
+          process_tabtypes((unsigned char *)" ");     /* paste tab as space */
         } else {
           process_tabtypes(c);          /* jump to the next field */
         }
@@ -521,7 +521,8 @@ static void process_paste_request (XEvent *event, Item *item) {
         process_tabtypes(c);            /* jump to the next field */
         break;
       case '\n':
-        process_tabtypes("\r");         /* change \n to \r for pasting */
+	/* change \n to \r for pasting */
+        process_tabtypes((unsigned char *)"\r");
         break;
       default:
         process_regular_char_input(c);

@@ -78,7 +78,7 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
   int XOffset, YOffset;
   Window w;
-
+  XEvent my_event;
   Bool opaque_move = False;
 
   w = *win;
@@ -92,13 +92,36 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   /* Although a move is usually done with a button depressed we have to check
    * for ButtonRelease too since the event may be faked. */
   if (eventp->type == ButtonPress || eventp->type == ButtonRelease)
-    {
-      DragX = eventp->xbutton.x_root;
-      DragY = eventp->xbutton.y_root;
-    }
+  {
+    DragX = eventp->xbutton.x_root;
+    DragY = eventp->xbutton.y_root;
+  }
+  else if (eventp->type == KeyPress || eventp->type == KeyRelease)
+  {
+    DragX = eventp->xkey.x_root;
+    DragY = eventp->xkey.y_root;
+  }
+  else if (eventp->type == MotionNotify)
+  {
+    DragX = eventp->xmotion.x_root;
+    DragY = eventp->xmotion.y_root;
+  }
   else
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY,
-                  &JunkX, &JunkY, &JunkMask);
+  {
+    fvwm_msg(WARN, "InteractiveMove",
+	     "BUG: move triggered by event type %d", eventp->type);
+    if (XCheckMaskEvent(dpy, PointerMotionMask|ButtonMotionMask, &my_event))
+    {
+      DragX = my_event.xmotion.x_root;
+      DragY = my_event.xmotion.y_root;
+    }
+    else
+    {
+      /* it's hopeless, just query the pointer position */
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY,
+		    &JunkX, &JunkY, &JunkMask);
+    }
+  }
 
   if(!GrabEm(CRS_MOVE))
     {
@@ -693,7 +716,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       /* discard any extra motion events before a logical release */
       if (Event.type == MotionNotify)
 	{
-	  while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask |
+	  while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
 				ButtonPressMask |ButtonRelease, &Event))
 	    {
 	      StashEventTime(&Event);
@@ -775,10 +798,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      break;
 	    }
 	case ButtonRelease:
+fprintf(stderr,"br: x=%d, y=%d\n", Event.xbutton.x_root, Event.xbutton.y_root);
 	  if(!opaque_move)
 	    MoveOutline(Scr.Root, 0, 0, 0, 0);
-	  xl2 = Event.xmotion.x_root + XOffset;
-	  yt2 = Event.xmotion.y_root + YOffset;
+	  xl2 = Event.xbutton.x_root + XOffset;
+	  yt2 = Event.xbutton.y_root + YOffset;
 	  /* ignore the position of the button release if it was on a
 	   * different page. */
 	  if (!((xl < 0 && xl2 >= 0) || (xl >= 0 && xl2 < 0) ||
@@ -810,6 +834,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  break;
 
 	case MotionNotify:
+fprintf(stderr,"mn: x=%d, y=%d\n", Event.xbutton.x_root, Event.xbutton.y_root);
 	  xl = Event.xmotion.x_root + XOffset;
 	  yt = Event.xmotion.y_root + YOffset;
 
@@ -1295,11 +1320,11 @@ void resize_window(F_CMD_ARGS)
 
       if (Event.type == MotionNotify)
 	/* discard any extra motion events before a release */
-	while(XCheckMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask |
-			      PointerMotionMask, &Event))
+	while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
+			      ButtonReleaseMask | ButtonPressMask, &Event))
 	  {
 	    StashEventTime(&Event);
-	    if (Event.type == ButtonRelease)
+	    if (Event.type == ButtonRelease || Event.type == ButtonPress)
 	      break;
 	  }
 
@@ -1393,16 +1418,16 @@ void resize_window(F_CMD_ARGS)
   if(!abort)
     {
       /* size will be >= to requested */
-      ConstrainSize (tmp_win, &drag->width, &drag->height, True, xmotion,
+      ConstrainSize(tmp_win, &drag->width, &drag->height, True, xmotion,
 		     ymotion);
        if (IS_SHADED(tmp_win))
        {
-         SetupFrame (tmp_win, drag->x, drag->y,
+         SetupFrame(tmp_win, drag->x, drag->y,
                      drag->width, tmp_win->frame_g.height, FALSE, False);
          tmp_win->orig_g.height = drag->height;
        }
       else
-	SetupFrame (tmp_win, drag->x, drag->y, drag->width, drag->height,
+	SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
 		    FALSE, False);
     }
   UninstallRootColormap();
@@ -1479,7 +1504,7 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
   if (action)
     {
       /* round up to nearest OK size to keep pointer inside rubberband */
-      ConstrainSize (tmp_win, &drag->width, &drag->height, True, *xmotionp,
+      ConstrainSize(tmp_win, &drag->width, &drag->height, True, *xmotionp,
 		     *ymotionp);
       if (*xmotionp == 1)
 	drag->x = orig->x + orig->width - drag->width;
@@ -1573,8 +1598,9 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
  *
  ***********************************************************************/
 
-void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
-		   Bool roundUp, int xmotion, int ymotion)
+void ConstrainSize(
+  FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
+  Bool roundUp, int xmotion, int ymotion)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 #define _min(a,b) (((a) < (b)) ? (a) : (b))

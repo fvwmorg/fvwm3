@@ -586,7 +586,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 */
 void
 MatchWinToSM(FvwmWindow *ewin,
-             int *x_max, int *y_max, int *w_max, int *h_max,
+             int *x_max, int *y_max, unsigned int *w_max, unsigned int *h_max,
              int *do_shade, int *do_max)
 {
   int                 i, j;

@@ -292,7 +292,7 @@ int main(int argc, char **argv)
 
   /* create a temporary window of the correct visual for the pixmaps */
   CreateVizWindow();
-  
+
   ParseOptions(argv[3]);
   if(num_buttons == 0)
     {
@@ -514,7 +514,7 @@ void Loop(void)
 			  Withdrawn=0;
 		      } else {
 			  Window junk;
-			  int junk2,junk3,junk4,junk5;
+			  unsigned int junk2,junk3,junk4,junk5;
 			  int CornerX, CornerY;
 
 #ifdef ENABLE_SOUND
@@ -631,7 +631,7 @@ void Loop(void)
 		}
 	      if (strncasecmp(Buttons[CurrentButton].action,"Folder",6)==0) {
                 Window junk;
-                int junk2,junk3,junk4,junk5;
+                unsigned int junk2,junk3,junk4,junk5;
                 XGetGeometry(dpy,main_win,&junk,&x,&y,
                           &junk2,&junk3,&junk4,&junk5);
                 XTranslateCoordinates(dpy,main_win,Root,
@@ -949,7 +949,8 @@ void CloseFolder(int folder)
 {
     int winc, hinc;
     int cx, cy, cw, ch;
-    int x,y,w,h, junk_depth, junk_bd;
+    int x,y;
+    unsigned int w,h, junk_depth, junk_bd;
     int fsize, direction;
     Window win, junk_win;
 

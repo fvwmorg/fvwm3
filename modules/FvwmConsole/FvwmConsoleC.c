@@ -45,7 +45,7 @@ void ErrMsg( char *msg ) {
 /*******************************************************/
 int main ( int argc, char *argv[]) {
   char *cmd;
-  unsigned char data[MAX_MESSAGE_SIZE];
+  char data[MAX_MESSAGE_SIZE];
   int  len;  /* length of socket address */
   struct sockaddr_un sas;
   int  clen; /* command length */

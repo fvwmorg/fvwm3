@@ -511,7 +511,7 @@ char *ReceivFromScript (int *NbArg,long *TabArg)
  Atom AReceiv,ASend,type;
  static XEvent event;
  unsigned long longueur,octets_restant;
- unsigned char *donnees="";
+ unsigned char *donnees=(unsigned char *)"";
  int format;
  int NbEssai=0;
 
@@ -558,7 +558,7 @@ char *ReceivFromScript (int *NbArg,long *TabArg)
    if (longueur>0)
    {
     msg=(char*)realloc((void*)msg,(longueur+1)*sizeof(char));
-    msg=strcpy(msg,donnees);
+    msg=strcpy(msg,(char *)donnees);
     XDeleteProperty(x11base->display,event.xselection.requestor,event.xselection.property);
     XFree(donnees);
    }
@@ -743,7 +743,7 @@ void ChangeFont (int NbArg,long *TabArg)
   }
  else
  {
-  XFontsOfFontSet(tabxobj[IdItem]->xfontset, &fs_list, &ml); 
+  XFontsOfFontSet(tabxobj[IdItem]->xfontset, &fs_list, &ml);
   tabxobj[IdItem]->xfont = fs_list[0];
   XSetFont(tabxobj[IdItem]->display,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
  }

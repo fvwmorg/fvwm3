@@ -260,11 +260,12 @@ static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
     {
       Window junk;
       Window *tops;
-      int i, num;
+      int i;
+      unsigned int num;
       Bool found = False;
 
       /* get *all* toplevels (even including override_redirects) */
-      XQueryTree (dpy, Scr.Root, &junk, &junk, &tops, &num);
+      XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num);
 
       /* raise from tmp_win upwards to get them above NT windows */
       for (i = 0; i < num; i++)

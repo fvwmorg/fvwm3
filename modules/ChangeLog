@@ -1,5 +1,19 @@
 1999-07-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmWharf/FvwmWharf.c (Loop):
+	(Loop):
+	(CloseFolder):
+	* FvwmScript/FvwmScript.c (SendMsgToScript):
+	(ReadXServer):
+	* FvwmScript/Widgets/Tools.c (DrawPMenu):
+	(SelectMenu):
+	* FvwmScript/Widgets/TextField.c (EvtMouseTextField):
+	* FvwmIconMan/fvwm.c (icon_name):
+	(sendtomodule):
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	* FvwmConsole/FvwmConsoleC.c (main):
+	* FvwmConsole/FvwmConsole.c: --pedantic fixes
+
 	* FvwmTaskBar/FvwmTaskBar.c:
 	* FvwmTaskBar/ButtonArray.c:
 	* FvwmTaskBar/ButtonArray.h: applied IconFore patch by Danny Dulai

@@ -39,7 +39,7 @@ void LoadWindowStates (char *filename);
 
 /*
 ** Save state to the named file, and if running under SM,
-** make the SM properly restart fvwm. 
+** make the SM properly restart fvwm.
 */
 void RestartInSession (char *filename, Bool really);
 
@@ -55,9 +55,9 @@ void RestartInSession (char *filename, Bool really);
 **  The dimensions returned in x, y, w, h should be used when the
 **  window is to be maximized.
  */
-void MatchWinToSM(FvwmWindow *t, int *x, int *y, int *w, int *h,
-                  int *shade, int *maximize);
-
+void MatchWinToSM(FvwmWindow *ewin,
+		  int *x, int *y, unsigned int *w, unsigned int *h,
+		  int *shade, int *maximize);
 
 /*
 **  Try to open a connection to the session manager. If non-NULL,

@@ -652,6 +652,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    /* bigger than =32767x32767+32767+32767 */
             int geom_flags;
 	    int l;
+	    unsigned int width;
+	    unsigned int height;
 	    /* read in 1 word w/o advancing */
 	    token = PeekToken(rest, NULL);
 	    if (!token)
@@ -663,11 +665,10 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                                         &IconBoxes->IconBox[0],
 					/* x/y */
                                         &IconBoxes->IconBox[1],
-                                        &IconBoxes->IconBox[2],
 					/* width/ht */
-                                        &IconBoxes->IconBox[3]);
-              if (IconBoxes->IconBox[2] == 0) {
-		/* zero width ind invalid */
+                                        &width, &height);
+              if (width == 0) {
+		/* zero width is invalid */
                 fvwm_msg(ERR,"ProcessNewStyle",
                 "IconBox requires 4 numbers or geometry! Invalid string <%s>.",
                          token);
@@ -685,8 +686,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 		    Scr.MyDisplayWidth
 		    /* neg x coord */
                     + IconBoxes->IconBox[0]
-		    /* width - 2 */
-                    - IconBoxes->IconBox[2] -2;
+                    - width -2;
                 }
                 if (geom_flags & YNegative) {
                   IconBoxes->IconBox[1] =
@@ -694,13 +694,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 		    Scr.MyDisplayHeight
 		    /* neg y coord */
                     + IconBoxes->IconBox[1]
-		    /* height - 2 */
-                    - IconBoxes->IconBox[3] -2;
+                    - height -2;
                 }
 		/* x + wid = right x */
-                IconBoxes->IconBox[2] += IconBoxes->IconBox[0];
+                IconBoxes->IconBox[2] = width + IconBoxes->IconBox[0];
 		/* y + height = bottom y */
-                IconBoxes->IconBox[3] += IconBoxes->IconBox[1];
+                IconBoxes->IconBox[3] = height + IconBoxes->IconBox[1];
               } /* end icon geom worked */
             } else {
 	      /* no word or too long */

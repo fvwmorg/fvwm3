@@ -798,8 +798,8 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
   int my;
   int menu_x;
   int menu_y;
-  int menu_width;
-  int menu_height;
+  unsigned int menu_width;
+  unsigned int menu_height;
   Bool is_up;
 
   /* handle double-keypress */

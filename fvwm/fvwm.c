@@ -102,6 +102,8 @@ void SetRCDefaults(void);
 void StartupStuff(void);
 static int parseCommandArgs(
   const char *command, char **argv, int maxArgc, const char **errorMsg);
+static void InternUsefulAtoms(void);
+static void InitVariables(void);
 
 XContext FvwmContext;		/* context for fvwm windows */
 XContext MenuContext;		/* context for fvwm menus */
@@ -161,8 +163,6 @@ int main(int argc, char **argv)
 {
   unsigned long valuemask;	/* mask for create windows */
   XSetWindowAttributes attributes;	/* attributes for create windows */
-  static void InternUsefulAtoms (void);
-  static void InitVariables(void);
   int i;
   extern int x_fd;
   int len;
@@ -1095,7 +1095,7 @@ InstallSignals(void)
   sigact.sa_flags = SA_RESTART;
 #else
   sigact.sa_flags = 0;
-#endif;
+#endif
   sigact.sa_handler = DeadPipe;
   sigaction(SIGPIPE, &sigact, NULL);
 
@@ -1803,7 +1803,11 @@ void Done(int restart, char *command)
     ReapChildren();
 
     if (command) {
+#define MAX_ARG_SIZE 25
+#if 0
+      /* This is not allowed by ANSI C! Must use a macro. */
       const int MAX_ARG_SIZE = 25;
+#endif
       char *my_argv[MAX_ARG_SIZE];
       const char *errorMsg;
       int n = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);

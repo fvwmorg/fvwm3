@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <ctype.h>
 #include <stdarg.h>
@@ -510,23 +511,25 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
   extern Time lastTimestamp;
   unsigned long arglen;
   unsigned long bodylen = 0;
-  void *bp = body;
-  void *bp1 = bp;
+  unsigned long *bp = (unsigned long *)body;
+  unsigned long *bp1 = bp;
   unsigned long plen = 0;
 
-  *(((unsigned long *)bp)++) = START_FLAG;
-  *(((unsigned long *)bp)++) = event_type;
+  *(bp++) = START_FLAG;
+  *(bp++) = event_type;
   /*  Skip length field, we don't know it yet. */
-  ((unsigned long *)bp)++;
-  *(((unsigned long *)bp)++) = lastTimestamp;
+  bp++;
+  *(bp++) = lastTimestamp;
 
   for (; num > 0; --num)  {
       arglen = va_arg(ap, unsigned long);
       bodylen += arglen;
       if (bodylen < FvwmPacketMaxSize_byte) {
-        memcpy((char *) bp, va_arg(ap, char *), arglen);
-        (char *) bp += arglen;
-        }
+	register char *tmp = (char *)bp;
+        memcpy(tmp, va_arg(ap, char *), arglen);
+        tmp += arglen;
+	bp = (unsigned long *)tmp;
+      }
     }
 
   /*
@@ -577,7 +580,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 static void SendNewPacket(int module, unsigned long event_type,
 			  unsigned long num_datum, ...)
 {
-  char body[FvwmPacketMaxSize_byte];
+  unsigned char body[FvwmPacketMaxSize_byte];
   va_list ap;
   unsigned long plen;
 
@@ -591,7 +594,7 @@ static void SendNewPacket(int module, unsigned long event_type,
 static void BroadcastNewPacket(unsigned long event_type,
 			       unsigned long num_datum, ...)
 {
-  char body[FvwmPacketMaxSize_byte];
+  unsigned char body[FvwmPacketMaxSize_byte];
   va_list ap;
   int i;
   unsigned long plen;

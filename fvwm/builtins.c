@@ -107,8 +107,8 @@ static void move_sticky_window_to_same_page(
 
 }
 
-static void MaximizeHeight(FvwmWindow *win, int win_width, int win_x,
-			   int *win_height, int *win_y)
+static void MaximizeHeight(FvwmWindow *win, unsigned int win_width, int win_x,
+			   unsigned int *win_height, int *win_y)
 {
   FvwmWindow *cwin;
   int x11, x12, x21, x22;
@@ -162,8 +162,8 @@ static void MaximizeHeight(FvwmWindow *win, int win_width, int win_x,
   *win_y = new_y1;
 }
 
-static void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x,
-			  int win_height, int win_y)
+static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
+			  unsigned int win_height, int win_y)
 {
   FvwmWindow *cwin;
   int x11, x12, x21, x22;
@@ -225,7 +225,8 @@ static void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x,
  ***********************************************************************/
 void Maximize(F_CMD_ARGS)
 {
-  int new_width, new_height,new_x,new_y;
+  unsigned int new_width, new_height;
+  int new_x,new_y;
   int page_x, page_y;
   int val1, val2, val1_unit, val2_unit;
   int toggle;

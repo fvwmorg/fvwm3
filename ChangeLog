@@ -1,5 +1,33 @@
 1999-07-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Module.c (positive_read):
+	(ReadFvwmPacket):
+	* fvwm/bindings.c:
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	* fvwm/module_interface.c:
+	(make_new_vpacket):
+	(BroadcastNewPacket):
+	(SendNewPacket):
+	* fvwm/session.c (MatchWinToSM):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/builtins.c (Maximize):
+	(MaximizeHeight):
+	(MaximizeWidth):
+	* fvwm/move_resize.c (ConstrainSize):
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/fvwm.h (struct):
+	* fvwm/fvwm.c (InstallSignals):
+	(Done):
+	* fvwm/menus.c (menuShortcuts): --pedantic fixes
+
+	* fvwm/move_resize.c (InteractiveMove): Tried to make starting a move
+	bullet proof; but you never know...
+
+	* fvwm/functions.c (CheckActionType):
+	* fvwm/functions.c (execute_complex_function): fixed some quirks with
+	button bindings
+
 	* sample.fvwmrc/Makefile.am: added a win95 like config file
 
 	* fvwm/stack.c (RaiseOrLowerWindow):

@@ -140,7 +140,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   int do_shade = 0;
   int do_maximize = 0;
-  int x_max, y_max, w_max, h_max;
+  int x_max, y_max;
+  unsigned int w_max, h_max;
   FvwmWindow  save_state;
   FvwmWindow  *savewin = NULL;
 

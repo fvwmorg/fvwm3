@@ -790,9 +790,9 @@ void ReapChildren(void)
 Bool IsRectangleOnThisPage(rectangle *rec, int desk)
 {
   return (desk == Scr.CurrentDesk &&
-	  rec->x > -rec->width &&
+	  rec->x + rec->width > 0 &&
 	  rec->x < Scr.MyDisplayWidth &&
-	  rec->y > -rec->height &&
+	  rec->y + rec->height > 0 &&
 	  rec->y < Scr.MyDisplayHeight) ?
     True : False;
 }
