@@ -1722,10 +1722,10 @@ A: This problem might occur on other applications besides the one
    There are 2 Mainsoft Knowledgebase pages that relate to UNIX
    window managers:
 
-   _+_A HREF="http://www.mainsoft.com/nbase/mainwin/kb/kbmw0027.htm"
-   _-_http://www.mainsoft.com/nbase/mainwin/kb/kbmw0027.htm_+_/A_-_
-   _+_A HREF="http://www.mainsoft.com/nbase/mainwin/kb/kbmw0034.htm"
-   _-_http://www.mainsoft.com/nbase/mainwin/kb/kbmw0034.htm_+_/A_-_
+   _+_A HREF="http://www.mainsoft.com/kb_mainwin/kbmw0027.html"
+   _-_http://www.mainsoft.com/kb_mainwin/kbmw0027.html_+_/A_-_
+   _+_A HREF="http://www.mainsoft.com/kb_mainwin/kbmw0034.html"
+   _-_http://www.mainsoft.com/kb_mainwin/kbmw0034.html_+_/A_-_
 
    These pages suggest that you export MWWM=allwm or MWWM=MWM before
    starting the application.
