@@ -1,5 +1,8 @@
 2000-05-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm2.1:
+	applied man page updates by brooke@jump.net (placement styles)
+
 	* fvwm/functions.c (ExecuteFunction):
 	fixed expansion of command names in '+' entries in a function or menu
 
