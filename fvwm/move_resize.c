@@ -380,7 +380,7 @@ void resize_move_window(F_CMD_ARGS)
     return;
   if (IS_FIXED(tmp_win))
     return;
-  if(check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
+  if (check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
   {
     XBell(dpy, 0);
     return;

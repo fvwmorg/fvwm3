@@ -403,24 +403,32 @@ int main(int argc, char **argv)
 #endif
 
   if (is_transient)
+  {
+    XSync(dpy,0);
+    while (i < 50 &&
+	   XGrabPointer(dpy, Scr.Root, True,
+			ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
+			PointerMotionMask|EnterWindowMask|LeaveWindowMask,
+			GrabModeAsync, GrabModeAsync, None,
+			None, CurrentTime) != GrabSuccess)
     {
-      XSync(dpy,0);
-      while (i < 1000 &&
-	     XGrabPointer(dpy, Scr.Root, True,
-			  ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
-			  PointerMotionMask|EnterWindowMask|LeaveWindowMask,
-			  GrabModeAsync, GrabModeAsync, None,
-			  None, CurrentTime) != GrabSuccess)
-	{
-	  i++;
-	  /* If you go too fast, other windows may not get a change to release
-	   * any grab that they have. */
-	  usleep(1000);
-	}
-      XGrabKeyboard(dpy, Scr.Root, True, GrabModeAsync,
-		    GrabModeAsync, CurrentTime);
-      XSync(dpy,0);
+      i++;
+      /* If you go too fast, other windows may not get a change to release
+       * any grab that they have. */
+      usleep(20000);
     }
+    if (i >= 50)
+    {
+      XBell(dpy, 0);
+      fprintf(stderr,
+	      "%s: could not grab pointer in transient mode. exiting.\n",
+	      MyName);
+      exit(1);
+    }
+    XGrabKeyboard(dpy, Scr.Root, True, GrabModeAsync,
+		  GrabModeAsync, CurrentTime);
+    XSync(dpy,0);
+  }
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);

@@ -569,7 +569,9 @@ void delete_function(F_CMD_ARGS)
     return;
   }
   else
+  {
     XBell (dpy, 0);
+  }
   XSync(dpy,0);
 }
 

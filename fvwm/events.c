@@ -1461,7 +1461,8 @@ void HandleButtonPress(void)
   DBUG("HandleButtonPress","Routine Entered");
 
   GrabEm(CRS_NONE, GRAB_PASSIVE);
-  if (!Tmp_win && Event.xany.window != Scr.Root)
+  if (!Tmp_win &&
+      (Event.xbutton.window != Scr.Root || Event.xbutton.subwindow != None))
   {
     /* event in unmanaged window or subwindow of a client */
     /* DV: of course we should never have got an event in this case since the
@@ -1526,7 +1527,7 @@ void HandleButtonPress(void)
       do_regrab_buttons = True;
     }
 
-    Context = GetContext(Tmp_win,&Event, &PressedW);
+    Context = GetContext(Tmp_win, &Event, &PressedW);
     if (!IS_ICONIFIED(Tmp_win) && Context == C_WINDOW)
     {
       if (Tmp_win && IS_SCHEDULED_FOR_RAISE(Tmp_win))
