@@ -4000,8 +4000,8 @@ void check_window_style_change(
 	 * has_mini_icon
 	 * do_ewmh_mini_icon_override
 	 */
-	if (FMiniIconsSupported && ret_style->change_mask.has_mini_icon ||
-	    S_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ret_style)))
+	if (FMiniIconsSupported && (ret_style->change_mask.has_mini_icon ||
+	    S_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ret_style))))
 	{
 		flags->do_update_mini_icon = True;
 		flags->do_update_ewmh_mini_icon = True;

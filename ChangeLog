@@ -1,3 +1,20 @@
+2002-10-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* fvwm/fvwm.1.in:
+	* fvwm/windowlist.c:
+	new WindowList option SortByResource
+
+	* fvwm/style.c (check_window_style_change):
+	* libs/FlocaleCharset.c:
+	fixed gcc warning
+
+	* AUTHORS:
+	place recent authors to the top, not bottom
+
+	* fvwm/builtins.c:
+	corrected typo in error message
+
 2002-10-23  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: Lang check done.
@@ -1619,7 +1636,7 @@
 	fixed TiledPixmap menu background drawing bug
 	sorted function in file and removed forward declarations
 
-q2002-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/Makefile.am (LDADD):
 	put -lfvwm at front of library list
@@ -1724,7 +1741,7 @@ q2002-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
 	* fvwm/windowlist.c (CMD_WindowList):
 	new option MaxLabelWidth for the WIndowList command based on patch by
 	Maxim F. Ischenko
-	new options NoLayer, ShowPage, ShowPageX, ShowPageY and SHowScreen to
+	new options NoLayer, ShowPage, ShowPageX, ShowPageY and ShowScreen to
 	WindowList command.
 
 	* fvwm/events.c (HandleConfigureRequest):

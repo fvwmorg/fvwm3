@@ -142,7 +142,7 @@ Contents
           happened to to rxvt and rclock which Rob Nation used to
           support?  Where can I find them now?
      6.6  How do I set the background with fvwm?
-     6.7  When I use Fvwm ... isn't the right color.  Whats wrong?
+     6.7  When I use Fvwm, my XYZ isn't the right color.  Whats wrong?
      6.8  I just got a mouse with 57 buttons.  How do I make Fvwm
           use them?
 
@@ -1590,6 +1590,17 @@ A: Because they are treated as modifiers.  You can use the
 
      IgnoreModifiers
 
+
+   Since we all occasionally press NumLock or ScrollLock, it makes
+   sense to redefine some main bindings to work with any modifiers.
+   I.e. consider to replace something like this in your configuration:
+
+     Mouse 1 R N Menu MenuFvwmRoot
+
+   with this:
+
+     Mouse 1 R A Menu MenuFvwmRoot
+
 ----------------------------------------------------------------------
 
 5.6  Menus with gradient backgrounds flicker or are very slow.
@@ -1949,9 +1960,9 @@ A: Setting the background image is not really part of the window
 
    There is a program shipped with fvwm (fvwm-root, previously known as
    xpmroot) that you can use to set the background to an XPM or PNG
-   image.  Other programs like "xv", "xli", "xloadimage", and "display"
-   may be used too, they support some image formats that fvwm-root does
-   not.
+   image.  Other programs like "xv", "xli", "xloadimage", "display" and
+   "Esetroot", may be used too, they support some image formats that
+   fvwm-root does not.
 
    If you just want a static image on your background, you might invoke
    one of these programs from your .xsession or .xinitrc file.  You can
@@ -1963,7 +1974,7 @@ A: Setting the background image is not really part of the window
 
 ----------------------------------------------------------------------
 
-6.7  When I use Fvwm ... isn't the right color.  Whats wrong?
+6.7  When I use Fvwm, my XYZ isn't the right color.  Whats wrong?
 
 A: Under this heading we've had questions about FvwmForm being all
    white, icons not displaying and messages about being unable to

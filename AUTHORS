@@ -2,6 +2,12 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Cameron Simpson:
+Documentation fixes.
+
+Ben Winslow:
+Fixed a core dump.
+
 Ben Mathews:
 Modified FvwmTaskBar to allow shortcut buttons in the taskbar
 
@@ -221,11 +227,6 @@ LEFT_MENUS option.  Added primitives: animated-moves, SetEnv, fix to
 Echo. Improve modules: Make FvwmM4 pass args on to m4, font-related
 seg-fault bug fix in FvwmButtons.
 
-Cameron Simpson:
-Documentation fixes.
-
-Ben Winslow:
-Fixed a core dump.
 
 Along with a cast of thousands (well, dozens) mentioned in old
 ChangeLog entries.  If you find your name below, please send an entry

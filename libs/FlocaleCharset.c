@@ -98,7 +98,7 @@ char *gb2312_1980_0[]     = {"EUC-CN",
 			     "IBM-eucCN", /* aix */
 			     "eucCN",     /* irix */
 			     NULL};
-char *gbk_0[0]            = {"GBK", NULL};
+char *gbk_0[]             = {"GBK", NULL};
 char *georgian_academy[]  = {"GEORGIAN-ACADEMY", NULL};
 char *georgian_ps[]       = {"GEORGIAN-PS", NULL};
 char *ibm_cp1133[]        = {"CP850" , NULL};

@@ -2248,21 +2248,21 @@ void CMD_Echo(F_CMD_ARGS)
 void CMD_PrintInfo(F_CMD_ARGS)
 {
 	int verbose;
-	char *rest,*subject;
+	char *rest, *subject;
 
 	rest = GetNextToken(action, &subject);
 	if (!rest || GetIntegerArguments(rest, NULL, &verbose, 1) != 1)
 	{
 		verbose = 0;
 	}
-	if (StrEquals(subject,"Colors"))
+	if (StrEquals(subject, "Colors"))
 	{
 		PicturePrintColorInfo(verbose);
 	}
 	else
 	{
 		fvwm_msg(ERR, "PrintInfo",
-			 "Unkonwn subject '%s'", action);
+			 "Unknown subject '%s'", action);
 	}
 
 	return;

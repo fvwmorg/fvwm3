@@ -4008,6 +4008,7 @@ passed to WindowList can be
 .IR UseIconName ,
 .IR Alphabetic " / " NotAlphabetic ,
 .IR SortClassName ,
+.IR SortByResource ,
 .IR NoHotkeys ,
 .IR SelectOnRelease .
 
@@ -4016,9 +4017,18 @@ passed to WindowList can be
 With the
 .I SortClassName
 option windows are alphabetically sorted first by class (WM_CLASS)
-and then by window name or icon name if
+and then by window name (or icon name if
 .I UseIconName
-is specified.
+is specified).
+.I ReverseOrder
+also works in the expected manner.
+
+With the
+.I SortByResource
+option windows are alphabetically sorted first by resource class,
+then by resource name and then by window name (or icon name if
+.I UseIconName
+is specified).
 .I ReverseOrder
 also works in the expected manner.
 

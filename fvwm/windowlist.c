@@ -54,16 +54,17 @@
 #define SHOW_ICONNAME		(1<<7)
 #define SHOW_ALPHABETIC		(1<<8)
 #define SORT_CLASSNAME		(1<<9)
-#define SORT_REVERSE		(1<<10)
-#define SHOW_INFONOTGEO		(1<<11)
-#define NO_DESK_NUM		(1<<12)
-#define NO_CURRENT_DESK_TITLE	(1<<13)
-#define TITLE_FOR_ALL_DESKS	(1<<14)
-#define NO_NUM_IN_DESK_TITLE	(1<<15)
-#define SHOW_PAGE_X		(1<<16)
-#define SHOW_PAGE_Y		(1<<17)
-#define NO_LAYER		(1<<18)
-#define SHOW_SCREEN		(1<<19)
+#define SORT_BYRESOURCE		(1<<10)
+#define SORT_REVERSE		(1<<11)
+#define SHOW_INFONOTGEO		(1<<12)
+#define NO_DESK_NUM		(1<<13)
+#define NO_CURRENT_DESK_TITLE	(1<<14)
+#define TITLE_FOR_ALL_DESKS	(1<<15)
+#define NO_NUM_IN_DESK_TITLE	(1<<16)
+#define SHOW_PAGE_X		(1<<17)
+#define SHOW_PAGE_Y		(1<<18)
+#define NO_LAYER		(1<<19)
+#define SHOW_SCREEN		(1<<20)
 #define SHOW_DEFAULT (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | \
 	SHOW_ICONIC | SHOW_STICKY)
 
@@ -124,7 +125,23 @@ static int (*compare)(const FvwmWindow **a, const FvwmWindow **b);
 static int classCompare(const FvwmWindow **a, const FvwmWindow **b)
 {
 	int result = strcasecmp((*a)->class.res_class, (*b)->class.res_class);
+	if (result)
+	{
+		return result;
+	}
 
+	return strcasecmp((*a)->visible_name, (*b)->visible_name);
+}
+
+static int resourceCompare(const FvwmWindow **a, const FvwmWindow **b)
+{
+	int result = strcasecmp((*a)->class.res_class, (*b)->class.res_class);
+	if (result)
+	{
+		return result;
+	}
+
+	result = strcasecmp((*a)->class.res_name, (*b)->class.res_name);
 	if (result)
 	{
 		return result;
@@ -135,8 +152,24 @@ static int classCompare(const FvwmWindow **a, const FvwmWindow **b)
 
 static int classIconCompare(const FvwmWindow **a, const FvwmWindow **b)
 {
-	int result = strcasecmp((*a)->class.res_class,
-				(*b)->class.res_class);
+	int result = strcasecmp((*a)->class.res_class, (*b)->class.res_class);
+	if (result)
+	{
+		return result;
+	}
+
+	return strcasecmp((*a)->visible_icon_name, (*b)->visible_icon_name);
+}
+
+static int resourceIconCompare(const FvwmWindow **a, const FvwmWindow **b)
+{
+	int result = strcasecmp((*a)->class.res_class, (*b)->class.res_class);
+	if (result)
+	{
+		return result;
+	}
+
+	result = strcasecmp((*a)->class.res_name, (*b)->class.res_name);
 	if (result)
 	{
 		return result;
@@ -277,6 +310,10 @@ void CMD_WindowList(F_CMD_ARGS)
 			else if (StrEquals(tok,"SortClassName"))
 			{
 				flags |= SORT_CLASSNAME;
+			}
+			else if (StrEquals(tok,"SortByResource"))
+			{
+				flags |= SORT_BYRESOURCE;
 			}
 			else if (StrEquals(tok,"ReverseOrder"))
 			{
@@ -572,33 +609,46 @@ void CMD_WindowList(F_CMD_ARGS)
 	}
 
 	/* Do alphabetic sort */
-	if (flags & (SHOW_ALPHABETIC | SORT_CLASSNAME))
+	if (flags & (SHOW_ALPHABETIC | SORT_CLASSNAME | SORT_BYRESOURCE))
 	{
 		/* This will be compare or compareReverse if a reverse order
 		 * is selected. */
 		int (*sort)(const FvwmWindow **a, const FvwmWindow **b);
 
-		switch(flags & (SHOW_ALPHABETIC|SHOW_ICONNAME|SORT_CLASSNAME))
+		switch (flags & (SHOW_ALPHABETIC | SHOW_ICONNAME | \
+			SORT_CLASSNAME | SORT_BYRESOURCE))
 		{
 		case SHOW_ALPHABETIC:
 			compare = visibleCompare;
 			break;
-		case SHOW_ALPHABETIC|SHOW_ICONNAME:
+		case SHOW_ALPHABETIC | SHOW_ICONNAME:
 			compare = iconCompare;
 			break;
-			/* Sorting based on class name produces an alphabetic
-			 * order so the keyword alphabetic is redundant. */
+		/* Sorting based on class name produces an alphabetic
+		 * order so the keyword alphabetic is redundant. */
 		case SORT_CLASSNAME:
-		case SORT_CLASSNAME|SHOW_ALPHABETIC:
+		case SORT_CLASSNAME | SHOW_ALPHABETIC:
 			compare = classCompare;
 			break;
-		case SORT_CLASSNAME|SHOW_ICONNAME:
-		case SORT_CLASSNAME|SHOW_ALPHABETIC|SHOW_ICONNAME:
+		case SORT_CLASSNAME | SHOW_ICONNAME:
+		case SORT_CLASSNAME | SHOW_ICONNAME | SHOW_ALPHABETIC:
 			compare = classIconCompare;
 			break;
-			/* All current cases are covered, but if something
-			 * changes in the future we leave compare valid even if
-			 * it isn't what is expected. */
+		case SORT_BYRESOURCE:
+		case SORT_BYRESOURCE | SORT_CLASSNAME:
+		case SORT_BYRESOURCE | SORT_CLASSNAME | SHOW_ALPHABETIC:
+			compare = resourceCompare;
+			break;
+		case SORT_BYRESOURCE | SHOW_ICONNAME:
+		case SORT_BYRESOURCE | SHOW_ICONNAME | SORT_CLASSNAME:
+		case SORT_BYRESOURCE | SHOW_ICONNAME | SORT_CLASSNAME | \
+		SHOW_ALPHABETIC:
+			compare = resourceIconCompare;
+			break;
+
+		/* All current cases are covered, but if something
+		 * changes in the future we leave compare valid even if
+		 * it isn't what is expected. */
 		default:
 			compare = visibleCompare;
 			break;

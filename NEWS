@@ -49,8 +49,10 @@ Changes in *experimental* release 2.5.4 (not released yet)
 
 * ImagePath now supports directories in form "/some/directory;.png"
   (where semicolon delimits a file extension that files in
-  /some/directory have.  This file extension replace the original
-  image extension (if any) or it is added if an image has no one.
+  /some/directory have.  This file extension replaces the original
+  image extension (if any) or it is added if there is no extension.
+  For example with: Style XTerm MiniIcon mini/xterm.xpm
+  the file /some/directory/mini/xterm.png is searched.
 
 * New graphical debugger module FvwmGtkDebug.
 
@@ -76,6 +78,10 @@ Changes in *experimental* release 2.5.4 (not released yet)
   hilight the item text.
 
 * New MenuStyle options HilightRelief and HilightReliefOff.
+
+* New WindowList option SortByResource.
+
+* New command PrintInfo for debugging.
 
 -------------------------------------------------------------------
 
