@@ -109,6 +109,7 @@ FvwmTaskBar: (->GPL ok?)
 
 !!!fvwmperl:
 	Dan Astoorian <djast@utopia.csas.com>
+	--> Dan gives us explicit permission to distribute
 
 !!!fvwmpython:
 	Barry A. Warsaw <bwarsaw@python.org>
