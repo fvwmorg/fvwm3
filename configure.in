@@ -963,13 +963,27 @@ fi
 
 dnl ********* GTK, IMLIB, GNOME
 dnl Check the availability of gtk
-AM_PATH_GTK(1.1.0,[FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)],)
-if test x"$no_gtk" = x; then
-  with_gtk=yes
-  problem_gtk=""
+AC_ARG_ENABLE(
+	gtk,
+	[  --disable-gtk           do not build modules using gtk library],
+	enable_gtktest="$enableval", enable_gtktest=yes)
+if test x"$enable_gtktest" = xyes; then
+	AM_PATH_GTK(1.1.0,[
+		FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)
+		MANFVWMGTK=FvwmGtk.1 AC_SUBST(MANFVWMGTK)
+		FVWMGTKDEBUG=FvwmGtkDebug AC_SUBST(FVWMGTKDEBUG)
+		MANFVWMGTKDEBUG=FvwmGtkDebug.1 AC_SUBST(MANFVWMGTKDEBUG)
+	],)
+	if test x"$no_gtk" = x; then
+		with_gtk=yes
+		problem_gtk=""
+	else
+		with_gtk=no
+		problem_gtk=": Failed to detect GTK, see config.log"
+	fi
 else
-  with_gtk=no
-  problem_gtk=": Failed to detect GTK, see config.log"
+	with_gtk=no
+	problem_gtk=": Explicitly disabled"
 fi
 
 dnl Check the availability of gdk-imlib

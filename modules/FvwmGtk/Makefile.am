@@ -3,11 +3,10 @@
 moduledir = @FVWM_MODULEDIR@
 
 module_PROGRAMS = @FVWMGTK@
-
 EXTRA_PROGRAMS = FvwmGtk
 
-man_MANS = FvwmGtk.1
-EXTRA_DIST = $(man_MANS)
+man_MANS = @MANFVWMGTK@
+EXTRA_DIST = FvwmGtk.1
 
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
@@ -27,8 +26,11 @@ FvwmGtk_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm \
-        $(GTK_LIBS) $(GDK_IMLIB_LIBS) \
+	$(GTK_LIBS) $(GDK_IMLIB_LIBS) \
 	$(GNOME_LIBDIR) $(GNOMEUI_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS) \
-    $(GTK_CFLAGS) $(GDK_IMLIB_CFLAGS) $(GNOME_INCLUDEDIR) 
+	$(GTK_CFLAGS) $(GDK_IMLIB_CFLAGS) $(GNOME_INCLUDEDIR)
+
+clean-local:
+	rm -f FvwmGtk
