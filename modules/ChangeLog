@@ -1,3 +1,8 @@
+2002-06-03  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmForm/FvwmForm.c:
+	Applied FlocaleInit YAMAGUCHI Shingo patch
+
 2002-06-02  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Widgets/List.c (EvtMouseList):

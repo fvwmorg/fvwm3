@@ -2398,7 +2398,7 @@ int main (int argc, char **argv)
   freopen(".FvwmFormDebug","w",stderr);
 #endif
 
-  FlocaleInit(LC_CTYPE, getenv("LC_CTYPE"), "", "FvwmForm");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmForm");
 
   /* From FvwmAnimate start */
   /* Save our program  name - for error events */
