@@ -1,5 +1,10 @@
 1999-06-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Bindings.c:
+	* fvwm/fvwm.c: Applied update to strokes patch
+
+1999-06-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
 	* fvwm/menus.c: Implemented a 'MissingSubmenuFunc' to allow better
 	dynamic configurability for dynamic menus. This makes it possible to
 	implement a file browser creating submenus on the fly.

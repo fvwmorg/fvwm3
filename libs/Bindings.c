@@ -405,7 +405,12 @@ static void GrabWindowButton(Display *dpy, Window w, Binding *binding,
   dead_modifiers &= ~(binding->Modifier & dead_modifiers); /* dje */
 #endif
 
+#ifdef HAVE_STROKE
+  if((binding->Context & contexts) && 
+	 ((binding->type == MOUSE_BINDING) || (binding->type == STROKE_BINDING)))
+#else /* NO STROKE */
   if((binding->Context & contexts) && (binding->type == MOUSE_BINDING))
+#endif /* HAVE_STROKE */
     {
       int bmin = 1;
       int bmax = 3;

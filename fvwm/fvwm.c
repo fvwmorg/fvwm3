@@ -521,9 +521,10 @@ int main(int argc, char **argv)
                SubstructureNotifyMask|
 	       ColormapChangeMask|
 #ifdef HAVE_STROKE
-	           PointerMotionMask |
-		       Button2MotionMask |
 		       ButtonMotionMask |
+		       Button1MotionMask |
+		       Button2MotionMask |
+		       Button3MotionMask |
 #endif /* HAVE_STROKE */
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
