@@ -560,9 +560,10 @@ int myErrorHandler(Display *dpy, XErrorEvent *event)
 {
   /* some errors are acceptable, mostly they're caused by
    * trying to update a lost  window */
-  if((event->error_code == BadWindow)||(event->request_code == X_GetGeometry)||
-     (event->error_code==BadDrawable)||(event->request_code==X_GrabButton))
-    return 0 ;
+  if((event->error_code == BadWindow) || (event->error_code == BadDrawable)
+     || (event->error_code == BadMatch) || (event->request_code==X_GrabButton)
+     || (event->request_code == X_GetGeometry))
+    return 0;
 
   PrintXErrorAndCoredump(dpy, event, MyName);
 
