@@ -1,5 +1,11 @@
 2003-07-16  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/session.c (MatchWinToSM):
+	Fixed restoring session state, if two window session entries have the
+	same identifier ignore these entries
+
+2003-07-16  olicha  <olivier.chapuis@free.fr>
+
 	* NEWS:
 	* fvwm/style.h (SID_GET_NAME):
 	(SID_SET_NAME):

@@ -1270,7 +1270,8 @@ MatchWinToSM(
 	FvwmWindow *ewin, mwtsm_state_args *ret_state_args,
 	initial_window_options_t *win_opts)
 {
-	int i;
+	int i,j;
+	Bool double_entries = False;
 
 	if (!does_file_version_match)
 	{
@@ -1281,6 +1282,18 @@ MatchWinToSM(
 		if (!matches[i].used && matchWin(ewin, &matches[i]))
 		{
 			matches[i].used = 1;
+			for (j = i+1; j < num_match; j++)
+			{
+				if (matchWin(ewin, &matches[j]))
+				{
+					double_entries = True;
+					matches[j].used = 1;
+				}
+			}
+			if (double_entries)
+			{
+				return False;
+			}
 			if (!Restarting)
 			{
 				/* We don't want to restore too much state if
