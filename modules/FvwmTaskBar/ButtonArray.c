@@ -131,7 +131,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 
   newx = 4;
 
-  w3p = XTextWidth(font, "...", 3);
+  w3p = XTextWidth(font, t3p, 3);
 
   if ((button->p.picture != 0) &&
       (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)) {
@@ -144,7 +144,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
     XCopyArea(dpy, button->p.picture, win, hilite, 0, 0,
                    button->p.width, button->p.height,
                    gcv.clip_x_origin, gcv.clip_y_origin);
-    gcm = GCClipMask;
+   gcm = GCClipMask;
     gcv.clip_mask = None;
     XChangeGC(dpy, hilite, gcm, &gcv);
 
@@ -155,20 +155,26 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 
   search_len = strlen(button->title);
 
+  button->truncate = False;
   if (XTextWidth(font, button->title, search_len) > w-newx-3) {
 
-    while ((x3p = XTextWidth(font, button->title, search_len) + newx) > w-w3p-3)
+    x3p = 0;
+    while (search_len > 0
+	   && ((x3p = newx + XTextWidth(font, button->title, search_len))
+	       > w-w3p-3))
       search_len--;
-    XDrawString(dpy, win, graph, x + x3p, y+ButtonFont->ascent+4, t3p, 3);
 
+    /* It seems a little bogus that we don't see if the "..." _itself_
+       will fit on the button; what if it won't?  Oh well.  */
+    XDrawString(dpy, win, graph, x + x3p, y+ButtonFont->ascent+4, t3p, 3);
     button->truncate = True;
-  } else {
-    button->truncate = False;
   }
 
-  XDrawString(dpy, win, graph,
-              x+newx, y+font->ascent+4,
-              button->title, search_len);
+  /* Only print as much of the title as will fit.  */
+  if (search_len)
+    XDrawString(dpy, win, graph,
+		x+newx, y+font->ascent+4,
+		button->title, search_len);
 }
 
 
@@ -351,7 +357,7 @@ void RemoveButton(ButtonArray *array, int butnum)
   array->count--;
   if (temp != array->head)
     temp = temp->next;
-  for(temp; temp!=NULL; temp=temp->next)
+  for (; temp!=NULL; temp=temp->next)
     temp->needsupdate = 1;
 
   ArrangeButtonArray(array);

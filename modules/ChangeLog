@@ -1,14 +1,13 @@
-Wed Mar 10 22:55:43 1999  DanEspen  <dje@blue>
+1999-03-12  Paul D. Smith  <psmith@gnu.org>
 
-	* FvwmForm/ReadXServer.c (ToggleChoice): You can now paste multiple
- 	lines into a form.  If the form contains buttons activated by
- 	the Return Key the paste can activate the button.
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw): If we didn't have enough
+	room to write _any_ of the title on the button (if there are
+	_lots_ of buttons) then we'd get into an infinite loop as
+	search_len is not checked to make sure it stays >0.  Make that
+	check.  Note we don't test to see if the "..." itself will fit; I
+	suspect you could get buttons small enough that the "..." will
+	overwrite some of the button.  Oh well, at least it doesn't freeze up.
 
-	* FvwmForm/.FormFvwmTalk.: Changed the built-in form to reset the
-	command field on Return key, necessary for pasting many lines to
- 	look right.  Not the best for typing a line at a time, there is
-	no feedback.  Pasting lots of config lines at once works well.	
-	
 1999-03-11  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (DispatchEvent):
@@ -20,6 +19,17 @@ Wed Mar 10 22:55:43 1999  DanEspen  <dje@blue>
 	* FvwmPager/FvwmPager.c (main): changed syntax of pager. May now be
 	called with 'FvwmPager *' and 'FvwmPager *' (treated like
 	'FvwmPager * *'
+
+Wed Mar 10 22:55:43 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/ReadXServer.c (ToggleChoice): You can now paste multiple
+ 	lines into a form.  If the form contains buttons activated by
+ 	the Return Key the paste can activate the button.
+
+	* FvwmForm/.FormFvwmTalk.: Changed the built-in form to reset the
+	command field on Return key, necessary for pasting many lines to
+ 	look right.  Not the best for typing a line at a time, there is
+	no feedback.  Pasting lots of config lines at once works well.
 
 1999-03-09  Andrew T. Veliath  <andrewtv@usa.net>
 

@@ -1,3 +1,9 @@
+1999-03-12  Paul D. Smith  <psmith@gnu.org>
+
+	* Makefile.am (HTML): Removed version.html.
+	* version.html: Removed; the information here is superceded by
+	that in download.html, and this file isn't referenced anywhere.
+
 Fri Mar 12 00:30:36 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* run_man2html.sh: change `#' to `#!' on first line.  Bug noted by
