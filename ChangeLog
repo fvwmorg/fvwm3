@@ -1,6 +1,14 @@
 2001-09-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Bindings.c (AddBinding):
 	* fvwm/bindings.c (ParseBinding):
+	print a warning if a key with the given name does not exist
+	if there is an upper and a lower case version of the same key name,
+	always bind to the lower case version; this is problematic if the upper
+	case version is tied to a key without a modifier and the lower case
+	version is tied to the same key, but with a modifier (or both are tied
+	to different keys). I hope this good enough.
+
 	* libs/Bindings.c (FreeBindingList):
 	(MatchBindingExactly):
 	(CollectBindingList):

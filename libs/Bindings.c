@@ -375,17 +375,19 @@ int AddBinding(
   }
   for (i = min; i <= max; i++)
   {
+    unsigned int bound_mask = 0;
+
     /* If this is a mouse binding we'll fall through the for loop (maxmods is
      * zero) and the if condition is always true (type is zero). Since min ==
      * max == button there is no loop at all is case of a mouse binding. */
     for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
     {
-
       if (type == MOUSE_BINDING ||
 	  STROKE_CODE(type == STROKE_BINDING ||)
 	  (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
       {
 	unsigned int add_modifiers = 0;
+	unsigned int bind_mask = 1;
 
 	switch (m)
 	{
@@ -394,21 +396,28 @@ int AddBinding(
 	  break;
 	case 1:
 	  /* key generates the key sym with shift depressed */
-	  if (modifiers != AnyModifier)
+	  if (modifiers != AnyModifier && !(modifiers & ShiftMask))
 	  {
 	    add_modifiers = ShiftMask;
+	    bind_mask = 2;
 	  }
 	  break;
 	case 2:
 	  /* key generates the key sym with caps-lock depressed */
-	  if (modifiers != AnyModifier)
+	  if (modifiers != AnyModifier && !(modifiers & LockMask))
 	  {
 	    add_modifiers = LockMask;
+	    bind_mask = 2;
 	  }
 	  break;
 	default:
 	  /* key generates the key sym with unknown modifiers depressed -
 	  * can't map that to specific modifiers - trat as no modifiers */
+	  break;
+	}
+	if (bind_mask & bound_mask)
+	{
+	  /* already bound, break out */
 	  break;
 	}
 	temp = *pblist;
@@ -437,9 +446,9 @@ int AddBinding(
                 (*pblist)->Action ? (*pblist)->Action : "",
                 (*pblist)->Action2 ? (*pblist)->Action2 : "");
 #endif
+	bound_mask |= bind_mask;
 	count++;
-	/* Add the binding only once for each KeySym value. */
-	break;
+match=1;
       }
     }
   }
@@ -776,21 +785,29 @@ KeySym FvwmStringToKeysym(Display *dpy, char *key)
   KeySym keysym;
   char *s;
 
-  keysym = XStringToKeysym(key);
-  if (keysym == NoSymbol)
+  if (!isalpha(*key))
   {
-    /* If the key name begins with a letter and does not match any key name
-     * supported by X, try the same name with the case switched for the first
-     * letter. */
-    if (*key && isalpha(*key))
+    keysym = XStringToKeysym(key);
+  }
+  else
+  {
+    KeySym lowerks;
+    KeySym upperks;
+
+    s = alloca(strlen(key) + 1);
+    strcpy(s, key);
+    *s = tolower(*s);
+    lowerks = XStringToKeysym(s);
+    *s = toupper(*s);
+    upperks = XStringToKeysym(s);
+    /* always prefer the lower case spelling if it exists */
+    if (lowerks == 0)
     {
-      s = alloca(strlen(key) + 1);
-      strcpy(s, key);
-      if (islower(s[0]))
-	s[0] = toupper(s[0]);
-      else
-	s[0] = tolower(s[0]);
-      keysym = XStringToKeysym(s);
+      keysym = upperks;
+    }
+    else
+    {
+      keysym = lowerks;
     }
   }
   if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)

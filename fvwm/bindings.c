@@ -100,6 +100,7 @@ int ParseBinding(
   int context;
   int modifier;
   Bool is_unbind_request = False;
+  int rc;
 
   /* tline points after the key word "Mouse" or "Key" */
   ptr = GetNextToken(tline, &token);
@@ -202,7 +203,10 @@ int ParseBinding(
      * XGrabKey call.
      */
     if (keysym == 0)
+    {
+      fvwm_msg(ERR, "ParseBinding", "No such key: %s", key_string);
       return 0;
+    }
   }
 
   /*
@@ -307,6 +311,8 @@ int ParseBinding(
   return AddBinding(
     dpy, pblist, type, STROKE_ARG((void *)stroke)
     button, keysym, key_string, modifier, context, (void *)action, NULL);
+
+  return rc;
 }
 
 static void activate_binding(
