@@ -426,35 +426,35 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
   dead_modifiers &= ~(binding->Modifier & dead_modifiers);
 
   if((binding->Context & contexts) && (binding->type == KEY_BINDING))
+  {
+    if (fGrab)
+      XGrabKey(dpy, binding->Button_Key, binding->Modifier, w, True,
+	       GrabModeAsync, GrabModeAsync);
+    else
+      XUngrabKey(dpy, binding->Button_Key, binding->Modifier, w);
+    if(binding->Modifier != AnyModifier && dead_modifiers != 0)
     {
-      if (fGrab)
-	XGrabKey(dpy, binding->Button_Key, binding->Modifier, w, True,
-		 GrabModeAsync, GrabModeAsync);
-      else
-	XUngrabKey(dpy, binding->Button_Key, binding->Modifier, w);
-      if(binding->Modifier != AnyModifier && dead_modifiers != 0)
-	{
-	  register unsigned int mods;
-	  register unsigned int max = dead_modifiers;
-	  register unsigned int living_modifiers = ~dead_modifiers;
+      register unsigned int mods;
+      register unsigned int max = dead_modifiers;
+      register unsigned int living_modifiers = ~dead_modifiers;
 
-	  /* handle all bindings for the dead modifiers */
-	  for (mods = 1; mods <= max; mods++)
-	    {
-	      /* Since mods starts with 1 we don't need to test if mods
-	       * contains a dead modifier. Otherwise both, dead and living
-	       * modifiers would be zero ==> mods == 0 */
-	      if (mods & living_modifiers)
-		continue;
-	      if (fGrab)
-		XGrabKey(dpy, binding->Button_Key, mods|binding->Modifier, w,
-			 True, GrabModeAsync, GrabModeAsync);
-	      else
-		XUngrabKey(dpy, binding->Button_Key, mods|binding->Modifier,
-			   w);
-	    }
-	}
+      /* handle all bindings for the dead modifiers */
+      for (mods = 1; mods <= max; mods++)
+      {
+	/* Since mods starts with 1 we don't need to test if mods
+	 * contains a dead modifier. Otherwise both, dead and living
+	 * modifiers would be zero ==> mods == 0 */
+	if (mods & living_modifiers)
+	  continue;
+	if (fGrab)
+	  XGrabKey(dpy, binding->Button_Key, mods|binding->Modifier, w,
+		   True, GrabModeAsync, GrabModeAsync);
+	else
+	  XUngrabKey(dpy, binding->Button_Key, mods|binding->Modifier,
+		     w);
+      }
     }
+  }
   return;
 }
 
@@ -483,46 +483,46 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
   if ((binding->Context & contexts) &&
       ((binding->type == MOUSE_BINDING)
        STROKE_CODE(|| (binding->type == STROKE_BINDING))))
+  {
+    int bmin = 1;
+    int bmax = 3;
+    int button;
+
+    if(binding->Button_Key >0)
+      bmin = bmax = binding->Button_Key;
+
+    for (button = bmin; button <= bmax; button++)
     {
-      int bmin = 1;
-      int bmax = 3;
-      int button;
+      if (fGrab)
+	XGrabButton(dpy, button, binding->Modifier, w,
+		    True, ButtonPressMask | ButtonReleaseMask,
+		    GrabModeAsync, GrabModeAsync, None, cursor);
+      else
+	XUngrabButton(dpy, button, binding->Modifier, w);
+      if(binding->Modifier != AnyModifier && dead_modifiers != 0)
+      {
+	register unsigned int mods;
+	register unsigned int max = dead_modifiers;
+	register unsigned int living_modifiers = ~dead_modifiers;
 
-      if(binding->Button_Key >0)
-	bmin = bmax = binding->Button_Key;
-
-      for (button = bmin; button <= bmax; button++)
+	/* handle all bindings for the dead modifiers */
+	for (mods = 1; mods <= max; mods++)
 	{
+	  /* Since mods starts with 1 we don't need to test if mods
+	   * contains a dead modifier. Otherwise both, dead and living
+	   * modifiers would be zero ==> mods == 0 */
+	  if (mods & living_modifiers)
+	    continue;
 	  if (fGrab)
-	    XGrabButton(dpy, button, binding->Modifier, w,
-			True, ButtonPressMask | ButtonReleaseMask,
+	    XGrabButton(dpy, button, mods|binding->Modifier, w, True,
+			ButtonPressMask | ButtonReleaseMask,
 			GrabModeAsync, GrabModeAsync, None, cursor);
 	  else
-	    XUngrabButton(dpy, button, binding->Modifier, w);
-	  if(binding->Modifier != AnyModifier && dead_modifiers != 0)
-	    {
-	      register unsigned int mods;
-	      register unsigned int max = dead_modifiers;
-	      register unsigned int living_modifiers = ~dead_modifiers;
-
-	      /* handle all bindings for the dead modifiers */
-	      for (mods = 1; mods <= max; mods++)
-		{
-		  /* Since mods starts with 1 we don't need to test if mods
-		   * contains a dead modifier. Otherwise both, dead and living
-		   * modifiers would be zero ==> mods == 0 */
-		  if (mods & living_modifiers)
-		    continue;
-		  if (fGrab)
-		    XGrabButton(dpy, button, mods|binding->Modifier, w, True,
-				ButtonPressMask | ButtonReleaseMask,
-				GrabModeAsync, GrabModeAsync, None, cursor);
-		  else
-		    XUngrabButton(dpy, button, mods|binding->Modifier, w);
-		}
-	    } /* if */
-	} /* for */
-    } /* if */
+	    XUngrabButton(dpy, button, mods|binding->Modifier, w);
+	}
+      } /* if */
+    } /* for */
+  } /* if */
   return;
 }
 

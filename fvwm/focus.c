@@ -494,24 +494,13 @@ Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       if (!(Scr.buttons2grab & (1<<i)))
 	continue;
 
-      if (do_grab)
-      {
-	XGrabButton(
-	  dpy, i + 1, 0, tmp_win->Parent, True, ButtonPressMask, GrabModeSync,
-	  GrabModeAsync, None, Scr.FvwmCursors[CRS_SYS]);
-      }
-      else
-      {
-	XUngrabButton(dpy, (i+1), 0, tmp_win->Parent);
-      }
-      if (GetUnusedModifiers())
       {
 	register unsigned int mods;
 	register unsigned int max = GetUnusedModifiers();
 	register unsigned int living_modifiers = ~max;
 
 	/* handle all bindings for the dead modifiers */
-	for (mods = 1; mods <= max; mods++)
+	for (mods = 0; mods <= max; mods++)
 	{
 	  /* Since mods starts with 1 we don't need to test if mods
 	   * contains a dead modifier. Otherwise both, dead and living
@@ -530,7 +519,7 @@ Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
 	    }
 	  }
 	} /* for */
-      } /* if */
+      }
     } /* for */
   }
 
