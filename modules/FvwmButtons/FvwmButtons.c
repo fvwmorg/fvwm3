@@ -646,7 +646,7 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  for (i = 6; i < argc && i < 10; i++)
+  for (i = 6; i < argc && i < 11; i++)
   {
     static Bool has_name = 0;
     static Bool has_file = 0;
@@ -661,7 +661,7 @@ int main(int argc, char **argv)
 	geom_option_argc = i;
       }
     }
-    else if (!has_geometry && strcmp(argv[i], "-transient") == 0)
+    else if (!is_transient && strcmp(argv[i], "-transient") == 0)
     {
       is_transient = 1;
     }
