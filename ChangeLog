@@ -1,3 +1,10 @@
+1999-03-27  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/move.c (moveLoop): don't send synthetic 
+	ConfigureNotify containing wrong size information when 
+	moving icons. This caused xterms to think they're 48x48
+	after moving their icon and deiconfying them.
+	
 1999-03-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* fvwm/builtins.c (SetXOR): added missing semicolon.
