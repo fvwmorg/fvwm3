@@ -60,13 +60,13 @@ pod2man: \
 ## Create compatibility symlinks if available
 
 install-exec-local:
-	@rm -f $(bindir)/xpmroot
-	@$(LN_S) fvwm-root $(bindir)/xpmroot || \
+	@rm -f $(DESTDIR)$(bindir)/xpmroot
+	@$(LN_S) fvwm-root $(DESTDIR)$(bindir)/xpmroot || \
 		echo "Minor warning: $(bindir)/xpmroot symlink was not created"
 
 install-data-local:
-	@rm -f $(mandir)/man1/xpmroot.1
-	@$(LN_S) fvwm-root.1 $(mandir)/man1/xpmroot.1 || \
+	@rm -f $(DESTDIR)$(mandir)/man1/xpmroot.1
+	@$(LN_S) fvwm-root.1 $(DESTDIR)$(mandir)/man1/xpmroot.1 || \
 		echo "Minor warning: $(mandir)/man1/xpmroot.1 symlink was not created"
 
 CLEANFILES = $(bin_SCRIPTS) $(bin_PROGRAMS)
