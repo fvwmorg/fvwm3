@@ -36,8 +36,10 @@
 #include <stdarg.h>
 
 #include "fvwm.h"
+#include "events.h"
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#include <X11/keysym.h>
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -778,4 +780,111 @@ Bool IsWindowOnThisPage(FvwmWindow *fw)
 	  fw->frame_y > -fw->frame_height &&
 	  fw->frame_y < Scr.MyDisplayHeight) ?
     True : False;
+}
+
+/****************************************************************************
+ *
+ * For menus, move, and resize operations, we can effect keyboard
+ * shortcuts by warping the pointer.
+ *
+ ****************************************************************************/
+void Keyboard_shortcuts(XEvent *Event, FvwmWindow *fw, int ReturnEvent)
+{
+  int x,y,x_root,y_root;
+  int x_move_size = 0, y_move_size = 0;
+  int x_move,y_move;
+
+  KeySym keysym;
+
+  if (fw)
+    {
+      x_move_size = fw->hints.width_inc;
+      y_move_size = fw->hints.height_inc;
+    }
+  if (y_move_size < 5)
+    y_move_size = 5;
+  if (x_move_size < 5)
+    x_move_size = 5;
+  if(Event->xkey.state & ControlMask)
+    x_move_size = y_move_size = 1;
+  if(Event->xkey.state & ShiftMask)
+    x_move_size = y_move_size = 100;
+
+  keysym = XLookupKeysym(&Event->xkey,0);
+
+  x_move = 0;
+  y_move = 0;
+  switch(keysym)
+    {
+    case XK_Up:
+    case XK_KP_8:
+    case XK_k:
+    case XK_p:
+      y_move = -y_move_size;
+      break;
+    case XK_Down:
+    case XK_KP_2:
+    case XK_n:
+    case XK_j:
+      y_move = y_move_size;
+      break;
+    case XK_Left:
+    case XK_KP_4:
+    case XK_b:
+    case XK_h:
+      x_move = -x_move_size;
+      break;
+    case XK_Right:
+    case XK_KP_6:
+    case XK_f:
+    case XK_l:
+      x_move = x_move_size;
+      break;
+    case XK_KP_1:
+      x_move = -x_move_size;
+      y_move = y_move_size;
+      break;
+    case XK_KP_3:
+      x_move = x_move_size;
+      y_move = y_move_size;
+      break;
+    case XK_KP_7:
+      x_move = -x_move_size;
+      y_move = -y_move_size;
+      break;
+    case XK_KP_9:
+      x_move = x_move_size;
+      y_move = -y_move_size;
+      break;
+    case XK_Return:
+    case XK_KP_Enter:
+    case XK_space:
+      /* beat up the event */
+      Event->type = ReturnEvent;
+      break;
+    case XK_Escape:
+      /* simple code to bag out of move - CKH */
+      /* return keypress event instead */
+      Event->type = KeyPress;
+      Event->xkey.keycode = XKeysymToKeycode(Event->xkey.display,keysym);
+      break;
+    default:
+      break;
+    }
+  XQueryPointer(dpy, Scr.Root, &JunkRoot, &Event->xany.window,
+		&x_root, &y_root, &x, &y, &JunkMask);
+
+  if((x_move != 0)||(y_move != 0))
+    {
+      /* beat up the event */
+      XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x_root+x_move,
+		   y_root+y_move);
+
+      /* beat up the event */
+      Event->type = MotionNotify;
+      Event->xkey.x += x_move;
+      Event->xkey.y += y_move;
+      Event->xkey.x_root += x_move;
+      Event->xkey.y_root += y_move;
+    }
 }

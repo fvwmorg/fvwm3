@@ -323,12 +323,16 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 	 dead_modifiers != 0)
 	{
 	  register unsigned int mods;
-	  register unsigned int max = dead_modifiers | binding->Modifier;
+	  register unsigned int max = dead_modifiers;
+	  register unsigned int living_modifiers = ~dead_modifiers;
 
 	  /* handle all bindings for the dead modifiers */
 	  for (mods = 1; mods <= max; mods++)
 	    {
-	      if ((mods & ~dead_modifiers) != binding->Modifier)
+	      /* Since mods starts with 1 we don't need to test if mods
+	       * contains a dead modifier. Otherwise both, dead and living
+	       * modifiers would be zero ==> mods == 0 */
+	      if (mods & living_modifiers)
 		continue;
 	      if (fGrab)
 		XGrabKey(dpy, binding->Button_Key, mods|binding->Modifier, w,
@@ -383,12 +387,16 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 	     dead_modifiers != 0)
 	    {
 	      register unsigned int mods;
-	      register unsigned int max = dead_modifiers | binding->Modifier;
+	      register unsigned int max = dead_modifiers;
+	      register unsigned int living_modifiers = ~dead_modifiers;
 
 	      /* handle all bindings for the dead modifiers */
 	      for (mods = 1; mods <= max; mods++)
 		{
-		  if ((mods & ~dead_modifiers) != binding->Modifier)
+		  /* Since mods starts with 1 we don't need to test if mods
+		   * contains a dead modifier. Otherwise both, dead and living
+		   * modifiers would be zero ==> mods == 0 */
+		  if (mods & living_modifiers)
 		    continue;
 		  if (fGrab)
 		    XGrabButton(dpy, button, mods|binding->Modifier, w, True,

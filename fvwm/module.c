@@ -39,6 +39,7 @@
 #include <sys/socket.h>
 
 #include "fvwm.h"
+#include "events.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"

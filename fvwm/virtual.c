@@ -28,6 +28,7 @@
 #include "screen.h"
 #include "module.h"
 #include "focus.h"
+#include "move_resize.h"
 
 /*
  * dje 12/19/98

@@ -69,6 +69,7 @@
 #endif
 
 #include "fvwm.h"
+#include "events.h"
 #include "icons.h"
 #include <X11/Xatom.h>
 #include "misc.h"
@@ -82,6 +83,7 @@
 #include "session.h"
 #include "focus.h"
 #include "stack.h"
+#include "move_resize.h"
 
 #ifndef XUrgencyHint
 #define XUrgencyHint            (1L << 8)

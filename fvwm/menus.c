@@ -65,9 +65,11 @@
 #include <sys/time.h>
 
 #include "fvwm.h"
+#include "events.h"
 #include "menus.h"
 #include "misc.h"
 #include "parse.h"
+#include "repeat.h"
 #include "screen.h"
 
 static void DrawTrianglePattern(Window,GC,GC,GC,GC,int,int,int,int,char);
@@ -88,7 +90,7 @@ static Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 static void GetPreferredPopupPosition(MenuRoot *mr, int *x, int *y);
 static int PopupPositionOffset(MenuRoot *mr);
 static void GetPopupOptions(MenuItem *mi, MenuOptions *pops);
-static void PaintEntry(MenuItem *mi);
+static void paint_menu_item(MenuItem *mi);
 static void PaintMenu(MenuRoot *, XEvent *);
 static void SetMenuItemSelected(MenuItem *mi, Bool f);
 static MenuRoot *MrPopupForMi(MenuItem *mi);
@@ -615,8 +617,6 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
   return MENU_NOP;
 }
 
-#define MICRO_S_FOR_10MS 10000
-
 /***********************************************************************
  *
  *  Procedure:
@@ -691,7 +691,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 				 ExposureMask|KeyPressMask|
 				 VisibilityChangeMask|ButtonMotionMask,
 				 &Event) == FALSE) {
-	    usleep(MICRO_S_FOR_10MS);
+	    usleep(10000 /* 10 ms*/);
 	    if (c10msDelays++ == Menus.PopupDelay10ms) {
 	      DBUG("MenuInteraction","Faking motion");
 	      /* fake a motion event, and set fDoPopupNow */
@@ -1470,7 +1470,7 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
 
   mi->state = f;
   mi->mr->selected = (f) ? mi : NULL;
-  PaintEntry(mi);
+  paint_menu_item(mi);
 }
 
 /* FindPopup expects a token as the input. Make sure you have used
@@ -1627,11 +1627,11 @@ void RelieveHalfRectangle(Window win,int x,int y,int w,int h,
 /***********************************************************************
  *
  *  Procedure:
- *      PaintEntry - draws a single entry in a popped up menu
+ *      paint_menu_item - draws a single entry in a popped up menu
  *
  ***********************************************************************/
 static
-void PaintEntry(MenuItem *mi)
+void paint_menu_item(MenuItem *mi)
 {
   int y_offset,text_y,d, y_height,y,x;
   GC ShadowGC, ReliefGC, currentGC;
@@ -2229,7 +2229,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	(pevent->xexpose.y < (mi->y_offset + mi->y_height) &&
 	 (pevent->xexpose.y + pevent->xexpose.height) > mi->y_offset))
     {
-      PaintEntry(mi);
+      paint_menu_item(mi);
     }
   }
 
@@ -2589,7 +2589,9 @@ char scanForHotkeys(MenuItem *it, int which)
 	    char ch = txt[1];
 	    /* It's a hot key marker - work out the offset value */
 	    it->hotkey = (1 + (txt - start)) * which;
-	    for (; *txt != '\0'; txt++) txt[0] = txt[1];/* Copy down..	*/
+	    for (; *txt != '\0'; txt++)
+	      /* Copy down.. */
+	      txt[0] = txt[1];
 	    return ch;			/* Only one hotkey per item...	*/
 	    }
 	}
@@ -3047,7 +3049,9 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
     }
     return;
   }
-  if(menu_name)
+  if (menu_name && set_repeat_data(menu_name,
+				   (fStaysUp) ? REPEAT_MENU : REPEAT_POPUP,
+				   NULL))
     free(menu_name);
   menuFromFrameOrWindowOrTitlebar = FALSE;
 

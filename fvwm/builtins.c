@@ -30,6 +30,7 @@
 #include <X11/keysym.h>
 
 #include "fvwm.h"
+#include "events.h"
 #include "style.h"
 #include "icons.h"
 #include "functions.h"
@@ -39,6 +40,7 @@
 #include "screen.h"
 #include "module.h"
 #include "stack.h"
+#include "move_resize.h"
 
 static int shade_anim_steps=0;
 
@@ -601,30 +603,6 @@ void movecursor(F_CMD_ARGS)
 }
 
 
-void PlaceAgain_func(F_CMD_ARGS)
-{
-  int x,y;
-  char *token;
-
-  if (DeferExecution(eventp, &w, &tmp_win, &context, SELECT, ButtonRelease))
-    return;
-
-  /* Find new position for window */
-  SmartPlacement(tmp_win,tmp_win->frame_width,tmp_win->frame_height, &x, &y,
-		 0,0);
-
-  /* Possibly animate the movement */
-  GetNextToken(action, &token);
-  if(token && StrEquals("ANIM", token))
-    AnimatedMoveOfWindow(tmp_win->frame, -1, -1, x, y, FALSE, -1, NULL);
-
-  SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE,
-	     False);
-
-  return;
-}
-
-
 void raise_function(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
@@ -858,7 +836,7 @@ void stick_function(F_CMD_ARGS)
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   SetTitleBar(tmp_win,(Scr.Hilite==tmp_win),True);
-  
+
 #ifdef GNOME
   GNOME_SetHints (tmp_win);
 #endif
@@ -4102,6 +4080,3 @@ void SetDefaultLayers(F_CMD_ARGS)
        free (top);
     }
 }
-
-
-

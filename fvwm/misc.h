@@ -64,86 +64,52 @@ extern char NoResource[];
 #define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
 
-extern void       MoveOutline(Window, int,int,int,int);
-extern void       AnimatedMoveOfWindow(Window w,int startX,int startY,int endX,
-				       int endY,Bool fWarpPointerToo,
-				       int cusDelay, float *ppctMovement);
-extern void       DisplaySize(FvwmWindow *, int, int, Bool, Bool);
-extern void       DisplayPosition(FvwmWindow *, int, int,Bool);
-extern void       SetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
-extern void       CreateGCs(void);
-extern void       InstallWindowColormaps(FvwmWindow *);
-extern void       InstallRootColormap(void);
-extern void       UninstallRootColormap(void);
-extern void       FetchWmProtocols(FvwmWindow *);
-extern void       FetchWmColormapWindows (FvwmWindow *tmp);
-extern void       InitEventHandlerJumpTable(void);
-extern void       DispatchEvent(void);
-extern void       HandleEvents(void);
-extern void       HandleExpose(void);
-extern void       HandleFocusIn(void);
-extern void       HandleFocusOut(void);
-extern void       HandleDestroyNotify(void);
-extern void       HandleMapRequest(void);
-extern void       HandleMapRequestKeepRaised(Window keepraised, FvwmWindow *ReuseWin);
-extern void       HandleMapNotify(void);
-extern void       HandleUnmapNotify(void);
-extern void       HandleMotionNotify(void);
-extern void       HandleButtonRelease(void);
-extern void       HandleButtonPress(void);
-extern void       HandleEnterNotify(void);
-extern void       HandleLeaveNotify(void);
-extern void       HandleConfigureRequest(void);
-extern void       HandleClientMessage(void);
-extern void       HandlePropertyNotify(void);
-extern void       HandleKeyPress(void);
-extern void       HandleVisibilityNotify(void);
-extern void       HandleColormapNotify(void);
-extern void       SetTitleBar(FvwmWindow *, Bool,Bool);
-extern void       RestoreWithdrawnLocation(FvwmWindow *, Bool);
-extern void       Destroy(FvwmWindow *);
-extern void       GetGravityOffsets (FvwmWindow *, int *, int *);
-extern FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
-extern int        MappedNotOverride(Window w);
-extern void       GrabButtons(FvwmWindow *);
-extern void       GrabKeys(FvwmWindow *);
-extern void       GetWindowSizeHints(FvwmWindow *);
-extern void       SwitchPages(Bool,Bool);
-extern void       NextPage(void);
-extern void       PrevPage(void);
-extern void       moveLoop(FvwmWindow *,int,int,int,int,int *,int *,Bool,Bool);
-
-extern void       Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
+void SetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
+void CreateGCs(void);
+void InstallWindowColormaps(FvwmWindow *);
+void InstallRootColormap(void);
+void UninstallRootColormap(void);
+void FetchWmProtocols(FvwmWindow *);
+void FetchWmColormapWindows (FvwmWindow *tmp);
+void SetTitleBar(FvwmWindow *, Bool,Bool);
+void RestoreWithdrawnLocation(FvwmWindow *, Bool);
+void Destroy(FvwmWindow *);
+void GetGravityOffsets (FvwmWindow *, int *, int *);
+FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
+int MappedNotOverride(Window w);
+void GrabButtons(FvwmWindow *);
+void GrabKeys(FvwmWindow *);
+void GetWindowSizeHints(FvwmWindow *);
+void SwitchPages(Bool,Bool);
+void NextPage(void);
+void PrevPage(void);
 
 void Maximize(F_CMD_ARGS);
 void WindowShade(F_CMD_ARGS);
 void setShadeAnim(F_CMD_ARGS);
 
-extern Bool       GrabEm(int);
-extern void       UngrabEm(void);
-extern void       CaptureOneWindow(FvwmWindow *fw, Window window);
-extern void       CaptureAllWindows(void);
-extern void       SetTimer(int);
-extern int        flush_expose(Window w);
+Bool GrabEm(int);
+void UngrabEm(void);
+void CaptureOneWindow(FvwmWindow *fw, Window window);
+void CaptureAllWindows(void);
+void SetTimer(int);
+int flush_expose(Window w);
 
 void do_windowList(F_CMD_ARGS);
-extern void       RaiseThisWindow(int);
-extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
-extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
-				 int xmotion, int ymotion);
-extern void       SetShape(FvwmWindow *, int);
+void RaiseThisWindow(int);
+void SetShape(FvwmWindow *, int);
 void executeModule(F_CMD_ARGS);
-extern void       initModules(void);
-extern int        HandleModuleInput(Window w, int channel);
-extern void       match_string(struct config *, char *, char *, FILE *);
-extern void       no_popup(char *ptr);
-extern void       KillModule(int channel, int place);
-extern void       ClosePipes(void);
+void initModules(void);
+int HandleModuleInput(Window w, int channel);
+void match_string(struct config *, char *, char *, FILE *);
+void no_popup(char *ptr);
+void KillModule(int channel, int place);
+void ClosePipes(void);
 /*  RBW - 11/02/1998  */
-extern int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y,
+int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y,
 			  int pdeltax, int pdeltay);
 /**/
-extern void usage(void);
+void usage(void);
 void BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...);
 void SendPacket(int channel, unsigned long event_type,
                 unsigned long num_datum, ...);
@@ -159,14 +125,7 @@ void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
 void SelectDecor(FvwmWindow *, style_flags *, int,int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
-void move_window(F_CMD_ARGS);
-void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int* Module,
-		      Bool fAnimated, Bool fMoveToPage);
-void animated_move_window(F_CMD_ARGS);
-void move_window_to_page(F_CMD_ARGS);
 void set_animation(F_CMD_ARGS);
-void resize_window(F_CMD_ARGS);
 void CreateIconWindow(FvwmWindow *, int, int);
 void SetStickyProp(FvwmWindow *, int, int, int);
 void SetClientProp(FvwmWindow *);
@@ -212,13 +171,9 @@ void MapIt(FvwmWindow *t);
 void UnmapIt(FvwmWindow *t);
 void do_save(void);
 Bool StashEventTime (XEvent *ev);
-int My_XNextEvent(Display *dpy, XEvent *event);
 void FlushQueue(int Module);
 void QuickRestart(void);
 char *GetNextPtr(char *ptr);
-
-void InteractiveMove(Window *w, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
-		     XEvent *eventp);
 
 void Bell(F_CMD_ARGS);
 void movecursor(F_CMD_ARGS);
@@ -397,5 +352,6 @@ void set_last_added_item(last_added_item_type type, void *item);
 void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
 Bool IsWindowOnThisPage(FvwmWindow *fw);
 
+void Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
 
 #endif /* MISC_H */

@@ -37,6 +37,7 @@
 
 #include <X11/keysym.h>
 #include "fvwm.h"
+#include "events.h"
 #include "style.h"
 #include "functions.h"
 #include "menus.h"
@@ -47,7 +48,7 @@
 #include "bindings.h"
 #include "repeat.h"
 #include "module.h"
-
+#include "move_resize.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;

@@ -39,6 +39,7 @@
 #endif
 
 #include "fvwm.h"
+#include "events.h"
 #include "functions.h"
 #include "menus.h"
 #include "misc.h"
@@ -186,7 +187,7 @@ int main(int argc, char **argv)
 
   /* Figure out where to read and write config files. */
   user_home_dir = getenv("FVWM_USERHOME");
-  if ( user_home_dir == NULL ) 
+  if ( user_home_dir == NULL )
     user_home_dir = getenv("HOME");
 #ifdef HAVE_GETPWUID
   if ( user_home_dir == NULL ) {
@@ -602,18 +603,18 @@ int main(int argc, char **argv)
       free(config_commands[i]);
     }
   } else {
-      /** Run startup commands in ~/.fvwm2rc or FVWM_CONFIGDIR/system.fvwm2rc. 
+      /** Run startup commands in ~/.fvwm2rc or FVWM_CONFIGDIR/system.fvwm2rc.
 	  If these fail, try FVWM_CONFIGDIR/.fvwm2rc for backwards compat. **/
       if ( !run_command_file( CatString3(user_home_dir, "/", FVWMRC),
 			      &Event, NULL, C_ROOT, -1 )
 	   && !run_command_file( CatString3(FVWM_CONFIGDIR, "/system", FVWMRC),
 				 &Event, NULL, C_ROOT, -1 )
 	   && !run_command_file( CatString3(FVWM_CONFIGDIR, "/", FVWMRC),
-				 &Event, NULL, C_ROOT, -1 ) ) 
+				 &Event, NULL, C_ROOT, -1 ) )
       {
 	  fvwm_msg( ERR, "main",
 	    "Cannot read startup file.  Tried %s/%s, %s/system%s, and %s/%s",
-		    user_home_dir, FVWMRC, 
+		    user_home_dir, FVWMRC,
 		    FVWM_CONFIGDIR, FVWMRC,
 		    FVWM_CONFIGDIR, FVWMRC );
       }

@@ -35,6 +35,7 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
+#include "move_resize.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))
@@ -809,6 +810,30 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
   return True;
 }
 
+
+void PlaceAgain_func(F_CMD_ARGS)
+{
+  int x,y;
+  char *token;
+
+  if (DeferExecution(eventp, &w, &tmp_win, &context, SELECT, ButtonRelease))
+    return;
+
+  /* Find new position for window */
+  SmartPlacement(tmp_win,tmp_win->frame_width,tmp_win->frame_height, &x, &y,
+		 0,0);
+
+  /* Possibly animate the movement */
+  token = PeekToken(action, NULL);
+  if(token && StrEquals("ANIM", token))
+    AnimatedMoveFvwmWindow(tmp_win, tmp_win->frame, -1, -1, x, y, FALSE, -1,
+			   NULL);
+
+  SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE,
+	     False);
+
+  return;
+}
 
 
 /************************************************************************

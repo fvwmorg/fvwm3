@@ -54,8 +54,9 @@ static struct
 
 static struct
 {
-  char *command;
-} last = { NULL };
+  char *command_line;
+  char *menu_name;
+} last = { NULL, NULL };
 
 /*
 char *repeat_last_function = NULL;
@@ -79,10 +80,7 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
  * from within this function have depth 2 and higher, this may be applicable
  * to future enhancements like menus).
  *
- *
- *
- *
- *
+ * !!! [finish and update description]
  */
 Bool set_repeat_data(void *data, repeat_type type,
 		     const struct functions *builtin)
@@ -94,7 +92,7 @@ Bool set_repeat_data(void *data, repeat_type type,
   switch(type)
   {
   case REPEAT_COMMAND:
-    if (last.command == (char *)data)
+    if (last.command_line == (char *)data)
       /* Already stored, no need to free the data pointer. */
       return False;
     if (data == NULL || repeat_depth != 0)
@@ -103,18 +101,25 @@ Bool set_repeat_data(void *data, repeat_type type,
     if (builtin && (builtin->flags & FUNC_DONT_REPEAT))
       /* Dont' record functions that have the FUNC_DONT_REPEAT flag set. */
       return True;
-    if (last.command)
-      free(last.command);
+    if (last.command_line)
+      free(last.command_line);
     /* Store a backup. */
-    last.command = (char *)data;
+    last.command_line = (char *)data;
     /* Since we stored the pointer the caller must not free it. */
     return False;
   case REPEAT_MENU:
   case REPEAT_POPUP:
+    if (last.menu_name)
+      free(last.menu_name);
+    last.menu_name = (char *)data;
+    /* Since we stored the pointer the caller must not free it. */
+    return False;
   case REPEAT_PAGE:
   case REPEAT_DESK:
   case REPEAT_DESK_AND_PAGE:
+    return True;
   case REPEAT_FVWM_WINDOW:
+    return True;
   case REPEAT_NONE:
   default:
     return True;
@@ -136,9 +141,9 @@ void repeat_function(F_CMD_ARGS)
   {
   case 0: /* command */
   default:
-      fprintf( stderr, "repeating 0x%lx, %s\n", 
-	       (unsigned long) last.command, last.command);
-      ExecuteFunction(last.command, tmp_win, eventp, context, *Module,
+      fprintf( stderr, "repeating 0x%lx, %s\n",
+	       (unsigned long) last.command_line, last.command_line);
+      ExecuteFunction(last.command_line, tmp_win, eventp, context, *Module,
 		      DONT_EXPAND_COMMAND);
     break;
   }

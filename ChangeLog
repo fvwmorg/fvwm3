@@ -1,3 +1,61 @@
+1999-04-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/module.c:
+	* fvwm/move_resize.c:
+	* fvwm/misc.c:
+	* fvwm/menus.c:
+	* fvwm/functions.c:
+	* fvwm/fvwm.c:
+	* fvwm/builtins.c: use events.h
+
+	* fvwm/misc.h: moved prototypes to events.h
+	* fvwm/events.h: new file
+
+	* fvwm/misc.c (Keyboard_shortcuts): moved function from move_resize.c
+	to misc.c
+
+	* fvwm/builtins.c:
+	* fvwm/add_window.c:
+	* fvwm/functions.c:
+	* fvwm/virtual.c:
+	* fvwm/placement.c:
+	* fvwm/events.c: include move_resize.h
+
+	* fvwm/move_resize.c (InteractiveMove):
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	* fvwm/move_resize.c (DisplayPosition):
+	* fvwm/move_resize.c (DisplaySize): now static
+
+	* fvwm/misc.h: moved all move/resize related prototypes to
+	move_resize.h
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): add new files, remove old ones
+	* fvwm/move_resize.h: new file for move_resize prototypes
+	* fvwm/move_resize.c: merged move.c and resize.c into this file
+	(resize_window): another try at resize-jump-to-border area
+
+	* fvwm/misc.h: removed 'extern' from prototypes
+
+	* fvwm/menus.c (menu_func): some work on repeat command for menus
+
+	* fvwm/menus.c (MenuInteraction): removed #define MICRO_S_FOR_10MS
+	(PaintEntry): function renamed to paint_menu_item
+
+	* fvwm/move.c (AnimatedMoveAnyWindow): check for NULL pointer tmp_win
+	(AnimatedMoveAnyWindow): speed up for short distances
+	(AnimatedMoveAnyWindow): animated move can be aborted with a key or
+	button press
+
+	* fvwm/placement.c (PlaceAgain_func): fixed coredump
+
+	* fvwm/placement.c (PlaceAgain_func):
+	* fvwm/builtins.c (PlaceAgain_func): moved function to placement.c
+
+	* fvwm/fvwm2.1: Removed previous patch (duplicate)
+
+	* libs/Bindings.c (GrabWindowKey):
+	(GrabWindowButton): don't grab buttons and keys multiple times
+
 1999-04-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* acinclude.m4: add AM_PATH_GDK_IMLIB from imlib.m4.
@@ -19,8 +77,8 @@ Mon Apr 26 13:02:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/read.h: new file.
 	* fvwm/read.c: split up ReadSubFunc() into smaller bits, removing
-	a lot of hair.  Created two new public interfaces, 
-	run_command_stream() and run_command_file(). 
+	a lot of hair.  Created two new public interfaces,
+	run_command_stream() and run_command_file().
 
 	* fvwm/fvwm.c (main): use run_command_file to read initialization
 	file.
@@ -63,8 +121,8 @@ Mon Apr 26 02:17:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Parse.c (GetModuleResource): fix memory leak.
 
-	* fvwm/read.c (ReadSubFunc): 
-	* fvwm/fvwm.c: 
+	* fvwm/read.c (ReadSubFunc):
+	* fvwm/fvwm.c:
 	* fvwm/fvwm.h: user_home_ptr -> user_home_dir.
 
 	* fvwm/fvwm.c (main): removed unused `output_file' variable.  Try
@@ -92,32 +150,32 @@ Mon Apr 26 02:17:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	(GNOME_SetDeskCount): find the maximal populated desk, then
 	use to set the number of workspaces to a reasonable value.
 
-	* fvwm/style.c (lookup_style): call GNOME_GetStyle to 
+	* fvwm/style.c (lookup_style): call GNOME_GetStyle to
 	initialize the window_style.
 	* fvwm/add_window.c (AddWindow): initialize do_shade,
 	do_max to 0. Don't call GNOME_GetHints before unconditionally
 	overwriting the flags. Instead rely on lookup_styles to take
-	GNOME hints into account.	
+	GNOME hints into account.
 	* fvwm/session.c (MatchWinToSM): don't modify do_shade,
 	do_max unless a match was found.
 
-	
-	* fvwm/builtins.c (stick_function): 
+
+	* fvwm/builtins.c (stick_function):
 	(WindowShade): update gnome hints.
 
-	* fvwm/fvwm.h (common_flags_type): new flag is_fixed. 
+	* fvwm/fvwm.h (common_flags_type): new flag is_fixed.
 	* fvwm/gsfr.h: and corresponding macros.
 	* fvwm/style.c (ProcessNewStyle): new style option
 	VariablePosition/FixedPosition to set the new flag.
 	* fvwm/gnome.c (GNOME_GetHintState):
 	(GNOME_SetHints): also use the is_fixed flag.
-	* fvwm/move.c (AnimatedMoveAnyWindow): 
+	* fvwm/move.c (AnimatedMoveAnyWindow):
 	(move_window_doit): refuse to move unless is_fixed is set.
 	* fvwm/fvwm2.1:
 	* NEWS: document the new style options.
-	
 
-	* fvwm/stack.c: 
+
+	* fvwm/stack.c:
 	* fvwm/stack.h: new files.
 	* fvwm/events.c: move HandleUnusualStackmodes, its helper
 	functions and ResyncFvwmStackRing to stack.c, include stack.h.
@@ -129,7 +187,7 @@ Mon Apr 26 02:17:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/focus.c:
 	* fvwm/gnome.c:
 	* fvwm/icons.c: include stack.h.
-	
+
 Fri Apr 23 17:32:45 1999  DanEspen  <dje@blue>
 
 	* libs/Bindings.c (AddBinding): Only add one entry to the binding
@@ -142,8 +200,8 @@ Fri Apr 23 14:26:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Fri Apr 23 12:29:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* fvwm/virtual.c: 
-	* fvwm/misc.c: 
+	* fvwm/virtual.c:
+	* fvwm/misc.c:
 	* fvwm/events.c: include focus.h for prototypes.
 
 	* fvwm/focus.c: include bindings.h for prototypes.
@@ -154,7 +212,7 @@ Fri Apr 23 12:29:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/focus.h (IsLastFocusSetByMouse): add prototype.  Also added
  	some missing documentation for other prototypes.
 
-	* fvwm/module.c (BroadcastNewPacket): 
+	* fvwm/module.c (BroadcastNewPacket):
 	* fvwm/events.c (HandleConfigureRequest):
 	* fvwm/builtins.c (new_layer): removed unused variable.
 
