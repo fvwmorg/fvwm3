@@ -731,24 +731,22 @@ static char *expand(
 	    {
 	      string = tmp_win->class.res_class;
 	    }
-	    is_string = True;
 	    break;
 	  case 'r':
 	    if (tmp_win->class.res_name && tmp_win->class.res_name[0])
 	    {
 	      string = tmp_win->class.res_name;
 	    }
-	    is_string = True;
 	    break;
 	  case 'n':
 	    if (tmp_win->name && tmp_win->name[0])
 	    {
 	      string = tmp_win->name;
 	    }
-	    is_string = True;
 	    break;
 	  }
 	}
+	is_string = True;
 	break;
       case 'v':
 	sprintf(&out[j], "%s", (Fvwm_VersionInfo) ? Fvwm_VersionInfo : "");
