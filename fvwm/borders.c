@@ -252,36 +252,44 @@ static enum ButtonState get_button_state(
   }
 }
 
+static const char ulgc[] = { 1, 0, 0, 2, 0, 2, 1, 1 };
+static const char brgc[] = { 1, 1, 2, 2, 0, 0, 0, 1 };
+
 /* called twice by RedrawBorder */
 static void draw_frame_relief(
-  FvwmWindow *t, GC rgc, GC sgc, int w_shout, int w_hi, int w_shin)
+  FvwmWindow *t, GC rgc, GC sgc, GC tgc, int w_dout, int w_hi, int w_trout,
+  int w_chi, int w_c, int w_trin, int w_shin, int w_din)
 {
-  if (w_shout > 0)
-  {
-    /* The lower/right outer shadow is actually not necessary since it is
-     * redrawn by w_hi anyway. Thus, simply draw it outside of the window to
-     * reduce drawing on the X server. */
-    RelieveRectangle(
-      dpy, t->decor_w, 0, 0, t->frame_g.width - 1 + w_shout,
-      t->frame_g.height - 1 + w_shout, sgc, sgc, w_shout);
-  }
-  if (w_hi > 0)
-  {
-    /* w_shout is subtracted with a factor or 1 here instead of 2 because
-     * otherwise the shadow on the bottom/right would be too wide otherwise! */
-    RelieveRectangle(
-      dpy, t->decor_w, w_shout, w_shout,
-      t->frame_g.width - 1 - 1 * w_shout,
-      t->frame_g.height - 1 - 1 * w_shout, rgc, sgc, w_hi);
-  }
-  if (w_shin > 0)
-  {
-    int height = t->frame_g.height - (t->boundary_width * 2 ) + 1;
+  int i;
+  int offset = 0;
+  int width = t->frame_g.width - 1;
+  int height = t->frame_g.height - 1;
+  int w[8];
+  GC gc[3];
 
-    RelieveRectangle(
-      dpy, t->decor_w, t->boundary_width - 1, t->boundary_width - 1,
-      t->frame_g.width - (t->boundary_width * 2 ) + 1, height, sgc, rgc,
-      w_shin);
+  w[0] = w_dout;
+  w[1] = w_hi;
+  w[2] = w_trout;
+  w[3] = w_chi;
+  w[4] = w_c;
+  w[5] = w_trin;
+  w[6] = w_shin;
+  w[7] = w_din;
+  gc[0] = rgc;
+  gc[1] = sgc;
+  gc[2] = tgc;
+
+  for (i = 0; i < 8; i++)
+  {
+    if (i != 4 && w[i] > 0)
+    {
+      RelieveRectangle(
+	dpy, t->decor_w, offset, offset, width, height, gc[(int)ulgc[i]],
+	gc[(int)brgc[i]], w[i]);
+    }
+    offset += w[i];
+    width -= 2 * w[i];
+    height -= 2 * w[i];
   }
 }
 
@@ -294,15 +302,30 @@ static void RedrawBorder(
   common_decorations_type *cd, FvwmWindow *t, Bool has_focus, int force,
   Window expose_win)
 {
+  static GC tgc = None;
   int i;
   GC rgc;
   GC sgc;
   DecorFaceStyle *borderstyle;
   Bool is_reversed = False;
-  int w_shout;
+  int w_dout;
   int w_hi;
+  int w_trout;
+  int w_c;
+  int w_chi;
+  int w_trin;
   int w_shin;
+  int w_din;
+  int sum;
 
+  if (tgc == None && !HAS_MWM_BORDER(t))
+  {
+    XGCValues xgcv;
+
+    xgcv.function = GXnoop;
+    xgcv.plane_mask = 0;
+    tgc = XCreateGC(dpy, t->frame, GCFunction | GCPlaneMask, &xgcv);
+  }
   /*
    * draw the border; resize handles are InputOnly so draw in the decor_w and
    * it will show through. The entire border is redrawn so flush all exposes
@@ -373,47 +396,56 @@ static void RedrawBorder(
 
   if (HAS_MWM_BORDER(t))
   {
-    w_shout = 0;
+    w_dout = 0;
     w_hi = 2;
+    w_trout = 0;
+    w_chi = 0;
+    w_trin = 0;
     w_shin = 1;
+    w_din = 0;
+    sum = 3;
   }
   else
   {
-    w_shout = 1;
-    w_hi = 2;
-    w_shin = 2;
+    w_dout = 1;
+    w_hi = 1;
+    w_trout = 1;
+    w_chi = 0;
+    w_trin = 1;
+    w_shin = 1;
+    w_din = 1;
+    sum = 6;
   }
   if (DFS_HAS_NO_INSET(*borderstyle))
   {
     w_shin = 0;
+    sum--;
   }
   /* reduce size of relief until at leas one pixel of the original colour is
    * visible. */
-  while (w_shout + w_hi + w_shin + (Scr.go.BorderColorPriority ? 1 : 0)
-	 > t->boundary_width)
+  while (sum + (Scr.go.BorderColorPriority ? 0 : 1) > t->boundary_width)
   {
-    if (w_shin > 1)
-    {
-      w_shin--;
-    }
-    else if (w_hi > 1)
-    {
+    if (w_hi > 1)
       w_hi--;
+    else if (w_trout > 0)
+    {
+      w_trout = 0;
+      w_trin = 0;
+      w_chi = 1;
     }
     else if (w_shin > 0)
-    {
       w_shin--;
-    }
-    else if (w_shout > 0)
-    {
-      w_shout--;
-    }
+    else if (w_chi > 0)
+      w_chi--;
+    else if (w_din > 0)
+      w_din--;
     else if (w_hi > 0)
-    {
       w_hi--;
-    }
+    sum--;
   }
-  draw_frame_relief(t, rgc, sgc, w_shout, w_hi, w_shin);
+  w_c = t->boundary_width - sum;
+  draw_frame_relief(
+    t, rgc, sgc, tgc, w_dout, w_hi, w_trout, w_chi, w_c, w_trin, w_shin, w_din);
 
   /*
    * draw the handle marks
@@ -626,7 +658,9 @@ static void RedrawBorder(
     {
       XSetClipRectangles(dpy, sgc, 0, 0, &r, 1, Unsorted);
       XSetClipRectangles(dpy, rgc, 0, 0, &r, 1, Unsorted);
-      draw_frame_relief(t, sgc, rgc, w_shout, w_hi, w_shin);
+      draw_frame_relief(
+	t, rgc, sgc, tgc, w_dout, w_hi, w_trout, w_chi, w_c, w_trin, w_shin,
+	w_din);
       XSetClipMask(dpy, sgc, None);
       XSetClipMask(dpy, rgc, None);
     }

@@ -1462,24 +1462,10 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if(tmp->hints.flags & PMinSize)
   {
-    if (tmp->hints.min_width <= 0)
-    {
-      if (tmp->hints.min_width < 0)
-      {
-	if (!*broken_cause)
-	  broken_cause = "min_width";
-      }
-      tmp->hints.min_width = 1;
-    }
-    if (tmp->hints.min_height <= 0)
-    {
-      if (tmp->hints.min_height < 0)
-      {
-	if (!*broken_cause)
-	  broken_cause = "min_height";
-      }
-      tmp->hints.min_height = 1;
-    }
+    if (tmp->hints.min_width < 0 && !*broken_cause)
+      broken_cause = "min_width";
+    if (tmp->hints.min_height < 0 && !*broken_cause)
+      broken_cause = "min_height";
   }
   else
   {
@@ -1494,6 +1480,10 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       tmp->hints.min_height = 1;
     }
   }
+  if (tmp->hints.min_width <= 0)
+    tmp->hints.min_width = 1;
+  if (tmp->hints.min_height <= 0)
+    tmp->hints.min_height = 1;
 
   if(tmp->hints.flags & PMaxSize)
   {
