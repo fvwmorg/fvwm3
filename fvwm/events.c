@@ -302,6 +302,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
  *	HandleFocusIn - handles focus in events
  *
  ************************************************************************/
+extern Bool lastFocusType;
 void HandleFocusIn()
 {
   XEvent d;
@@ -329,7 +330,7 @@ void HandleFocusIn()
 	{
 	  SetBorder(Scr.Hilite,False,True,True,None);
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
-                          0, 0, 0,
+                          0, 0, (unsigned long)lastFocusType,
                           Scr.DefaultDecor.HiColors.fore,
                           Scr.DefaultDecor.HiColors.back);
 	  if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
@@ -350,7 +351,7 @@ void HandleFocusIn()
     {
       SetBorder(Tmp_win,True,True,True,None);
       BroadcastPacket(M_FOCUS_CHANGE, 5,
-                      Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win,
+                      Tmp_win->w, Tmp_win->frame, (unsigned long)lastFocusType,
                       GetDecor(Tmp_win,HiColors.fore),
                       GetDecor(Tmp_win,HiColors.back));
       if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)

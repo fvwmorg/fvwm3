@@ -188,10 +188,12 @@ Format for Lower, Raise, and Focus Change Packets</TD></TR>
 These packets contain 5 values, all of the same size as an unsigned
 long. The first value is the ID of the affected application's (the
 application which now has the input focus) top level
-window, the next is the ID of the Fvwm frame window, and the final
-value is the pointer to Fvwm's internal database entry for that
-window. Although the pointer itself is of no use to a module, it can
-be used as a reference number when referring to the window. The fourth
+window, the next is the ID of the Fvwm frame window, and the third
+value is set to 0 when the focus change is from the Focus command and 1 for
+all other focus changes (FlipFocus, focusing with the mouse etc.). The third
+value can be used by the module to manage the windowlist in the same way as
+Fvwm i.e. ) means rotate the list around to the target, 1 means pluck the target
+from the list and insert at the beginning. The fourth
 and fifth values are the text focus color's pixel value and the window
 border's focus color's pixel value. In the
 event that the window which now has the focus is not a window which

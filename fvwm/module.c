@@ -785,12 +785,12 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	SendPacket(*Module, M_FOCUS_CHANGE, 5,
                    Scr.Hilite->w,
                    Scr.Hilite->frame,
-		   (unsigned long)Scr.Hilite,
+		   (unsigned long)True,
 		   Scr.DefaultDecor.HiColors.fore,
 		   Scr.DefaultDecor.HiColors.back);
       else
 	SendPacket(*Module, M_FOCUS_CHANGE, 5,
-                   0, 0, 0,
+                   0, 0, (unsigned long)True,
                    Scr.DefaultDecor.HiColors.fore,
                    Scr.DefaultDecor.HiColors.back);
       if (Scr.DefaultIcon != NULL)
@@ -839,14 +839,14 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 
       if(Scr.Hilite == NULL)
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
-                          0, 0, 0,
+                          0, 0, (unsigned long)True,
                           Scr.DefaultDecor.HiColors.fore,
                           Scr.DefaultDecor.HiColors.back);
       else
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
                           Scr.Hilite->w,
                           Scr.Hilite->frame,
-                          (unsigned long)Scr.Hilite,
+                          (unsigned long)True,
                           Scr.DefaultDecor.HiColors.fore,
                           Scr.DefaultDecor.HiColors.back);
 

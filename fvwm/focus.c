@@ -31,7 +31,7 @@
  * Sets the input focus to the indicated window.
  *
  **********************************************************************/
-
+Bool lastFocusType;
 void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 {
   int i;
@@ -83,7 +83,8 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
       }
     }
   }
-  
+  lastFocusType = FocusByMouse;
+    
   if(Scr.NumberOfScreens > 1)
     {
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
