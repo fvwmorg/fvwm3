@@ -234,11 +234,11 @@ main(int argc, char **argv)
     }
   }
 
-  SetMessageMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW);
+  SetMessageMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW|M_LOWER_WINDOW);
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
   /* tell fvwm that we want to be lock on send */
-  SetSyncMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW);
+  SetSyncMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW|M_LOWER_WINDOW);
 
   fd_width = fd[1] + 1;
   FD_ZERO(&in_fdset);
@@ -273,7 +273,7 @@ main(int argc, char **argv)
     {
       myfprintf((stderr, "select: error! (%s)\n", strerror(errno)));
       break;
-    } 
+    }
 
     raise_window_now = 0;
     if (FD_ISSET(fd[1], &in_fdset))
@@ -309,10 +309,19 @@ main(int argc, char **argv)
       case M_RAISE_WINDOW:
         myfprintf((stderr, "raise packet 0x%x\n", packet->body[0]));
         raised_win = packet->body[0];
-
         if (have_new_window && focus_win == raised_win)
         {
           myfprintf((stderr, "its the old window: don't raise\n"));
+          have_new_window = 0;
+        }
+        break;
+
+      case M_LOWER_WINDOW:
+        myfprintf((stderr, "lower packet 0x%x\n", packet->body[0]));
+        if (have_new_window && focus_win == packet->body[0])
+        {
+          myfprintf((stderr,
+                     "window was explicitly lowered, don't raise it again\n"));
           have_new_window = 0;
         }
         break;

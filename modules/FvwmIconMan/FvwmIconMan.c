@@ -218,7 +218,8 @@ main(int argc, char **argv)
   *Module = '*';
   strcpy (Module+1, MyName);
 
-  if((argc != 6) && (argc != 7)) {
+  if(argc < 6)
+  {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
       IM_VERSION);
     ShutMeDown(1);
