@@ -1,3 +1,27 @@
+2002-01-30  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c:
+	* libs/Flocale.h:
+	* libs/Makefile.am:
+	* fvwm/fvwm.c (main):
+	New libs files Flocale.{c,h} with a function to set the locale as
+	the Xlib prog man says to do it. Use it in fvwm.c. There is also a
+	function to get the charset (from ewmh_name.c) and which setlocale if
+	this has not been done with the above function. This function is also
+	call at fvwm2 init
+	
+	* fvwm/ewmh_names.c (charset_to_utf8): 
+	(utf8_to_charset): 
+	Use the Fcharset variable and remove get_charset
+
+	* fvwm/ewmh_names.c (EWMH_SetVisibleName):
+	A minor fix
+	
+	* libs/GetFont.c (GetFontSetOrFixed):
+	Free the missing charset list as suggested by Alexander Kotelnikov.
+	Report problems with missing charset only 5 times. Remove the
+	STRICTLY_FIXED code
+
 2002-01-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

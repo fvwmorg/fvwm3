@@ -180,9 +180,7 @@ main(int argc, char **argv)
   }
 #endif
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
+  FInitLocale(LC_CTYPE, "", "", "FvwmIconMan");
 
   OpenConsole(OUTPUT_FILE);
 

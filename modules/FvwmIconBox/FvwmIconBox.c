@@ -54,15 +54,13 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
 
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
+#include "libs/Flocale.h"
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 
@@ -210,9 +208,7 @@ int main(int argc, char **argv)
   char *temp, *s;
   XIconSize* size;
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
+  FInitLocale(LC_CTYPE, "", "", "FvwmIconBox");
 
   temp = argv[0];
   s=strrchr(argv[0], '/');

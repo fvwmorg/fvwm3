@@ -41,15 +41,13 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/keysym.h>
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
+#include "libs/Flocale.h"
 #ifdef DEBUG
 #  define FVWM_DEBUG_MSGS   /* Do we need this? */
 #endif
@@ -173,9 +171,8 @@ int main(int argc, char **argv)
   int JunkX, JunkY;
   unsigned JunkMask;
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
+  FInitLocale(LC_CTYPE, "", "", "FvwmPager");
+
   /* Save our program  name - for error messages */
   MyName = GetFileNameFromPath(argv[0]);
 

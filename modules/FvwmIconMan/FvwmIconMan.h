@@ -22,8 +22,8 @@
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#include <libs/Flocale.h>
 #ifdef I18N_MB
-#include <X11/Xlocale.h>
 #ifdef __STDC__
 #define XTextWidth(x,y,z)       XmbTextEscapement(x ## set,y,z)
 #else
@@ -33,7 +33,6 @@
 
 #include <libs/Picture.h>
 #include <libs/Colorset.h>
-
 #ifndef FVWM_VERSION
 #define FVWM_VERSION 2
 #endif

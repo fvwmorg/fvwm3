@@ -1135,9 +1135,7 @@ int main (int argc, char **argv)
   int IsFather;
   int i;
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
+  FInitLocale(LC_CTYPE, "", "", "FvwmScript");
 
   ModuleName = GetFileNameFromPath(argv[0]);
 

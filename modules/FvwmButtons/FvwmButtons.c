@@ -41,9 +41,6 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -64,6 +61,7 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
 #include "libs/vpacket.h"
+#include "libs/Flocale.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "parse.h" /* ParseConfiguration(), parse_window_geometry() */
@@ -696,9 +694,8 @@ int main(int argc, char **argv)
   button_info *b,*ub;
   int geom_option_argc = 0;
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
+  FInitLocale(LC_CTYPE, "", "", "FvwmButtons");
+
   MyName = GetFileNameFromPath(argv[0]);
 
 #ifdef HAVE_SIGACTION

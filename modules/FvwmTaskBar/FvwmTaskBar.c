@@ -65,10 +65,6 @@
 
 #include <stdlib.h>
 
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
-
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
 #include "libs/FScreen.h"
@@ -76,6 +72,7 @@
 #include "libs/safemalloc.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
+#include "libs/Flocale.h"
 
 #include "FvwmTaskBar.h"
 #include "ButtonArray.h"
@@ -256,7 +253,8 @@ int main(int argc, char **argv)
   char *s;
   int i;
 
-  setlocale(LC_ALL, "");
+  FInitLocale(LC_CTYPE, "", "", "FvwmTaskBar");
+  setlocale(LC_TIME, "");
 
   for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
   {
@@ -269,9 +267,6 @@ int main(int argc, char **argv)
   if (s != NULL)
     temp = s + 1;
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
 
   if((argc != 6)&&(argc != 7)) {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",temp,

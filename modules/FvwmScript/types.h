@@ -19,6 +19,7 @@
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
+#include "libs/Flocale.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -37,7 +38,6 @@
 #endif
 
 #ifdef I18N_MB
-#include <X11/Xlocale.h>
 #ifdef __STDC__
 #define XTextWidth(x,y,z)	XmbTextEscapement(x ## set,y,z)
 #define XFreeFont(x,y)		XFreeFontSet(x,y ## set)

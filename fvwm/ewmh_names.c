@@ -30,12 +30,9 @@
 
 #include <iconv.h>
 #include <errno.h>
-#ifdef HAVE_CODESET
-#include <locale.h>
-#include <langinfo.h>
-#endif
 
 #include "libs/fvwmlib.h"
+#include "libs/Flocale.h"
 #include "fvwm.h"
 #include "window_flags.h"
 #include "cursor.h"
@@ -60,55 +57,7 @@
 #define CONVERSION_MAX_NUMBER_OF_WARNING 10
 
 extern ScreenInfo Scr;
-
-static char *charset = NULL;
-static Bool need_to_get_charset = 1;
-
-/***********************************************************************
- * get the charset unsing nl_langinfo
- ***********************************************************************/
-static
-void get_charset(void)
-{
-  charset = getenv("CHARSET");
-
-  if (!charset)
-  {
-#ifdef HAVE_CODESET
-    /* Get the name of the current locale.  */
-    if ((setlocale(LC_CTYPE, getenv("LC_CTYPE"))) == NULL)
-      fprintf(stderr,
-	      "[FVWM]: Can't set locale. Check your $LC_CTYPE or $LANG.\n");
-
-    charset = nl_langinfo(CODESET);
-#endif
-  }
-
-  if (charset == NULL) 
-  {
-#ifdef HAVE_CODESET
-    fvwm_msg(WARN, "get_charset",
-	     "Cannot get charset with nl_langinfo neither with CHARSET env\n");
-#else
-    fvwm_msg(WARN, "get_charset",
-	     "Cannot get charset with CHARSET environment variable\n");
-#endif
-  }
-  else if (strlen(charset) < 3)
-  {
-#ifdef HAVE_CODESET
-    fvwm_msg(WARN, "get_charset",
-	     "Illegal charset (nl_langinfo and CHARSET env): %s\n",
-	     charset);
-#else
-    fvwm_msg(WARN, "get_charset",
-	     "Illegal charset (CHARSET env): %s\n",
-	     charset);
-#endif
-    charset = NULL;
-  }
-}
-
+extern char *Fcharset;
 
 /***********************************************************************
  * conversion between charsets
@@ -233,14 +182,9 @@ static
 char *utf8_to_charset(const char *in, unsigned int in_size)
 {
   char *out = NULL;
-  if (need_to_get_charset)
-  {
-    get_charset();
-  }
-  need_to_get_charset = False;
 
-  if (charset != NULL)
-    out = convert_charsets(UTF8_CHARSET_NAME, charset, in, in_size);
+  if (Fcharset != NULL)
+    out = convert_charsets(UTF8_CHARSET_NAME, Fcharset, in, in_size);
 
   return out;
 }
@@ -252,12 +196,9 @@ static
 char *charset_to_utf8(const char *in, unsigned int in_size)
 {
   char *out = NULL;
-  if (need_to_get_charset)
-    get_charset();
-  need_to_get_charset = False;
 
-  if (charset != NULL)
-    out = convert_charsets(charset,UTF8_CHARSET_NAME, in, in_size);
+  if (Fcharset != NULL)
+    out = convert_charsets(Fcharset,UTF8_CHARSET_NAME, in, in_size);
 
   return out;
 }
@@ -273,7 +214,8 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
   /* set the ewmh visible name only if it is != wm name */
   if (is_icon_name)
   {
-    if (fwin->icon_name_count == 0 || !USE_INDEXED_ICON_NAME(fwin))
+    if ((fwin->icon_name_count == 0 || !USE_INDEXED_ICON_NAME(fwin)) &&
+	!HAS_EWMH_WM_ICON_NAME(fwin) && !HAS_EWMH_WM_NAME(fwin))
     {
       ewmh_DeleteProperty(
 	fwin->w, "_NET_WM_ICON_VISIBLE_NAME", EWMH_ATOM_LIST_FVWM_WIN);
@@ -283,7 +225,8 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
   }
   else
   {
-    if (fwin->name_count == 0 || !USE_INDEXED_WINDOW_NAME(fwin))
+    if ((fwin->name_count == 0 || !USE_INDEXED_WINDOW_NAME(fwin)) &&
+	!HAS_EWMH_WM_NAME(fwin) && !HAS_EWMH_WM_ICON_NAME(fwin))
     {
       ewmh_DeleteProperty(
 	fwin->w, "_NET_WM_VISIBLE_NAME", EWMH_ATOM_LIST_FVWM_WIN);

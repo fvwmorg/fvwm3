@@ -46,9 +46,6 @@
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
@@ -57,6 +54,7 @@
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
 #include "libs/fvwmsignal.h"
+#include "libs/Flocale.h"
 #include "FvwmIdent.h"
 
 static RETSIGTYPE TerminateHandler(int);
@@ -119,9 +117,7 @@ int main(int argc, char **argv)
   int Clength;
   char *tline;
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
+  FInitLocale(LC_CTYPE, "", "", "FvwmIdent");
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];

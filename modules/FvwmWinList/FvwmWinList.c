@@ -62,6 +62,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/Flocale.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
@@ -70,7 +71,6 @@
 #include "libs/Colorset.h"
 
 #ifdef I18N_MB
-#include <X11/Xlocale.h>
 #ifdef __STDC__
 #define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
 #else
@@ -242,9 +242,7 @@ int main(int argc, char **argv)
     Clength = strlen(Module);
   }
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
+  FInitLocale(LC_CTYPE, "", "", "FvwmWinList");
 
   Fvwm_fd[0] = atoi(argv[1]);
   Fvwm_fd[1] = atoi(argv[2]);

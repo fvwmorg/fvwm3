@@ -1,3 +1,18 @@
+2002-01-30  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/types.h:
+	* FvwmScript/FvwmScript.c (main):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmForm/FvwmForm.c (main): 
+	* FvwmButtons/FvwmButtons.c (main):
+	Use FInitLocale in the place of setlocale
+
 2002-01-28  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmButtons/FvwmButtons.c (ProcessMessage):

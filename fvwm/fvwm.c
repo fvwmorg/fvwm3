@@ -41,6 +41,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/Flocale.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -75,10 +76,6 @@
 #include <X11/Xatom.h>
 /* need to get prototype for XrmUniqueQuark for XUniqueContext call */
 #include <X11/Xresource.h>
-
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
 
 #if HAVE_SYS_SYSTEMINFO_H
 /* Solaris has sysinfo instead of gethostname.  */
@@ -203,10 +200,8 @@ int main(int argc, char **argv)
 
   setVersionInfo();
 
-#ifdef I18N_MB
-  if (setlocale(LC_CTYPE, "") == NULL)
-    fvwm_msg(ERR, "main", "Can't set locale. Check your $LC_CTYPE or $LANG.\n");
-#endif
+  FInitLocale(LC_CTYPE, getenv("LC_CTYPE"), "", "FVWM");
+  FInitCharset("FVWM");
 
   /* Put the default module directory into the environment so it can be used
      later by the config file, etc.  */

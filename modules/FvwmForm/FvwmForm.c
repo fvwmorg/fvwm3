@@ -33,9 +33,6 @@
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <X11/Xutil.h>
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
 #include <X11/cursorfont.h>
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
@@ -48,6 +45,7 @@
 #include "libs/Colorset.h"               /* for InitPictureCMap */
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/Flocale.h"
 
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 
@@ -2066,9 +2064,7 @@ int main (int argc, char **argv)
   freopen(".FvwmFormDebug","w",stderr);
 #endif
 
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
+  FInitLocale(LC_CTYPE, getenv("LC_CTYPE"), "", "FvwmForm");
 
   /* From FvwmAnimate start */
   /* Save our program  name - for error events */

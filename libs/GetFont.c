@@ -58,17 +58,16 @@ XFontStruct *GetFontOrFixed(Display *disp, char *fontname)
 ** I'm not sure why this is done for I18N_MB only. dje Dec 2001.
 */
 
-#ifdef STRICTLY_FIXED
-#define FALLBACK_FONT "fixed"
-#else
 #define FALLBACK_FONT "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*"
-#endif
+
+#define NUMBER_OF_MISSING_CHARSET_ERR_MSG 5
 
 XFontSet GetFontSetOrFixed(Display *disp, char *fontname)
 {
+  static int mc_errors = 0;
   XFontSet fontset = NULL;
   char **ml;
-  int mc;
+  int mc,i;
   char *ds;
 
   if (fontname)
@@ -91,6 +90,25 @@ XFontSet GetFontSetOrFixed(Display *disp, char *fontname)
     {
       fprintf(stderr,"[FVWM][GetFontSetOrFixed]: "
 	      "ERROR -- can't get fontset '%s'\n",FALLBACK_FONT);
+    }
+  }
+  if (fontset)
+  {
+    if (mc > 0)
+    {
+      if (mc_errors <= NUMBER_OF_MISSING_CHARSET_ERR_MSG)
+      {
+	mc_errors++;
+	fprintf(stderr, 
+		"[FVWM][GetFontSetOrFixed][%s]:"
+		"The following charsets are missing:\n", fontname);
+	if (mc_errors == NUMBER_OF_MISSING_CHARSET_ERR_MSG)
+	  fprintf(stderr, "\tNo more such error will be reported");
+      }
+      for(i=0; i < mc; i++)
+	fprintf(stderr, " %s", ml[i]);
+      fprintf(stderr, "\n");
+      XFreeStringList(ml);
     }
   }
   return fontset;
