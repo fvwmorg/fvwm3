@@ -114,8 +114,15 @@ static void change_button_icon(button_info *b, const char *file)
 	b->icon = new_icon;
 	CopyString(&b->icon_file, file);
 	CreateIconWindow(b);
-	ConfigureIconWindow(b);
-	XMapWindow(Dpy, b->IconWin);
+	if (b->flags&b_IconAlpha)
+	{
+		RedrawButton(b, DRAW_FORCE, NULL);
+	}
+	else
+	{
+		ConfigureIconWindow(b, NULL);
+		XMapWindow(Dpy, b->IconWin);
+	}
 	return;
 }
 
@@ -332,7 +339,7 @@ void parse_message_line(char *line)
 			}
 		}
 
-		RedrawButton(b, 2, NULL);
+		RedrawButton(b, DRAW_FORCE, NULL);
 		if (FShapesSupported)
 		{
 			if (UberButton->c->flags & b_TransBack)

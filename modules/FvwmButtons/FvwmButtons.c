@@ -94,7 +94,7 @@ static RETSIGTYPE TerminateHandler(int sig);
 void SetButtonSize(button_info*,int,int);
 /* main */
 void Loop(void);
-void RedrawWindow(button_info*);
+void RedrawWindow();
 void RecursiveLoadData(button_info*,int*,int*);
 void CreateUberButtonWindow(button_info*,int,int);
 int My_FNextEvent(Display *dpy, XEvent *event);
@@ -858,7 +858,7 @@ int main(int argc, char **argv)
   i=-1;
   ub=UberButton;
   while(NextButton(&ub,&b,&i,0))
-    ConfigureIconWindow(b);
+    ConfigureIconWindow(b, NULL);
 
   if (FShapesSupported)
   {
@@ -920,10 +920,7 @@ void Loop(void)
   int x;
   int y;
   button_info *ub,*b;
-#ifndef OLD_EXPOSE
-  static int ex=10000,ey=10000,ex2=0,ey2=0;
   button_info *tmpb;
-#endif
   FlocaleNameString tmp;
 
   tmp.name = NULL;
@@ -950,70 +947,67 @@ void Loop(void)
       switch(Event.type)
       {
       case Expose:
-#ifdef OLD_EXPOSE
-	if(Event.xexpose.count == 0)
-	{
-	  if(Event.xexpose.window != MyWindow)
-	    break;
-	  button=-1;ub=UberButton;
-	  while(NextButton(&ub,&b,&button,1))
-	  {
-	    if(!ready && !(b->flags&b_Container))
-	      MakeButton(b);
-	    RedrawButton(b, 1, &Event);
-	  }
-	  if(!ready)
-	    ready++;
-	}
-#else
-	if(Event.xexpose.window != MyWindow)
-	  break;
-	ex=min(ex,Event.xexpose.x);
-	ey=min(ey,Event.xexpose.y);
-	ex2=max(ex2,Event.xexpose.x+Event.xexpose.width);
-	ey2=max(ey2,Event.xexpose.y+Event.xexpose.height);
+      {
+	      int ex,ey,ex2,ey2;
 
-	if(Event.xexpose.count==0)
-	{
-	  button=-1;ub=UberButton;
-	  while(NextButton(&ub,&b,&button,1))
-	  {
-	    Bool r = False;
+	      if(Event.xexpose.window != MyWindow)
+	      {
+		      break;
+	      }
+	      ex = Event.xexpose.x;
+	      ey = Event.xexpose.y;
+	      ex2= Event.xexpose.x+Event.xexpose.width;
+	      ey2= Event.xexpose.y+Event.xexpose.height;
+	      while (FCheckTypedWindowEvent(Dpy, MyWindow, Expose, &Event))
+	      {
+		      /* maybe we should not purge here, this may 
+		       * interfer with configure notify */
+		      ex = min(ex, Event.xexpose.x);
+		      ey = min(ey, Event.xexpose.y);
+		      ex2 = max(ex2, Event.xexpose.x + Event.xexpose.width);
+		      ey2= max(ey2, Event.xexpose.y + Event.xexpose.height);
+	      }
+	      Event.xexpose.x = ex;
+	      Event.xexpose.y = ey;
+	      Event.xexpose.width = ex2-ex;
+	      Event.xexpose.height = ey2-ey;
+	      button=-1;
+	      ub=UberButton;
+	      while(NextButton(&ub,&b,&button,1))
+	      {
+		      Bool r = False;
 
-	    tmpb = b;
-	    while(tmpb->parent != NULL)
-	    {
-	      if(tmpb->flags&b_Container)
-	      {
-		x=buttonXPos(tmpb,buttonNum(tmpb));
-		y=buttonYPos(tmpb,buttonNum(tmpb));
+		      tmpb = b;
+		      while(tmpb->parent != NULL)
+		      {
+			      if(tmpb->flags&b_Container)
+			      {
+				      x=buttonXPos(tmpb,buttonNum(tmpb));
+				      y=buttonYPos(tmpb,buttonNum(tmpb));
+			      }
+			      else
+			      {
+				      x=buttonXPos(tmpb,button);
+				      y=buttonYPos(tmpb,button);
+			      }
+			      if (!(ex > x + buttonWidth(tmpb) || ex2 < x ||
+				    ey > y + buttonHeight(tmpb) || ey2 < y))
+			      {
+				      r = True;
+			      }
+			      tmpb = tmpb->parent;
+		      }
+		      if(r)
+		      {
+			      if(ready<1 && !(b->flags&b_Container))
+				      MakeButton(b);
+			      RedrawButton(b, DRAW_ALL, &Event);
+		      }
 	      }
-	      else
-	      {
-		x=buttonXPos(tmpb,button);
-		y=buttonYPos(tmpb,button);
-	      }
-	      if (!(ex > x + buttonWidth(tmpb) || ex2 < x ||
-		 ey > y + buttonHeight(tmpb) || ey2 < y))
-	      {
-		r = True;
-	      }
-	      tmpb = tmpb->parent;
-	    }
-	    if(r)
-	    {
-	      if(ready<1 && !(b->flags&b_Container))
-		MakeButton(b);
-	      RedrawButton(b,1,&Event);
-	    }
-	  }
-	  if(ready<1)
-	    ready++;
-
-	  ex=ey=10000;ex2=ey2=0;
-	}
-#endif
-	break;
+	      if(ready<1)
+		      ready++;
+      }
+      break;
 
       case ConfigureNotify:
       {
@@ -1046,17 +1040,19 @@ void Loop(void)
 	  {
 	    SetTransparentBackground(UberButton, Width, Height);
 	  }
-	  for (i = 0; i < nColorsets; i++)
-	    change_colorset(i, &Event);
+	  /* what follow can be optimized */
 	  while(NextButton(&ub,&b,&button,0))
 	    MakeButton(b);
-	  XClearWindow(Dpy, MyWindow);
-	  RedrawWindow(NULL);
+	  for (i = 0; i < nColorsets; i++)
+		  change_colorset(i, &Event);
+	  if (!(UberButton->c->flags & b_Colorset))
+	  {
+		  XClearWindow(Dpy, MyWindow);
+		  RedrawWindow();
+	  }
 	}
 	else if (Event.xconfigure.window == MyWindow &&
-		 Event.xconfigure.send_event &&
-		 (UberButton->c->flags & b_Colorset) &&
-		 Colorset[UberButton->c->colorset].pixmap == ParentRelative)
+		 Event.xconfigure.send_event)
 	{
 	  update_root_transparency(&Event);
 	}
@@ -1072,7 +1068,7 @@ void Loop(void)
 	     select_button(UberButton, Event.xmotion.x, Event.xmotion.y));
 	  if (CurrentButton && is_pointer_in_current_button != f)
 	  {
-	    RedrawButton(b, 0, NULL);
+	    RedrawButton(b, DRAW_RELIEF, NULL);
 	  }
 	}
 	break;
@@ -1087,7 +1083,7 @@ void Loop(void)
 	{
 	  b = CurrentButton;
 	  CurrentButton = 0;
-	  RedrawButton(b, 0, NULL);
+	  RedrawButton(b, DRAW_RELIEF, NULL);
 	  break;
 	}
 	if (Event.xbutton.state & DEFAULT_ALL_BUTTONS_MASK)
@@ -1120,7 +1116,7 @@ void Loop(void)
 	  CurrentButton=NULL;
 	  break;
 	}
-	RedrawButton(b, 0, NULL);
+	RedrawButton(b, DRAW_RELIEF, NULL);
 	if (!act)
 	{
 	  break;
@@ -1271,7 +1267,7 @@ void Loop(void)
 	b = CurrentButton;
 	CurrentButton=NULL;
 	if (b)
-	  RedrawButton(b, 0, NULL);
+	  RedrawButton(b, DRAW_RELIEF, NULL);
 	break;
 
       case ClientMessage:
@@ -1325,7 +1321,7 @@ void Loop(void)
 		}
 	      }
 	    }
-	    RedrawButton(b, 1, NULL);
+	    RedrawButton(b, DRAW_FORCE, NULL);
 	  }
 	}
 	break;
@@ -1340,7 +1336,7 @@ void Loop(void)
 	  {
 	    /* A panel has been unmapped, update the button */
 	    b->newflags.panel_mapped = (Event.type == MapNotify);
-	    RedrawButton(b, 1, NULL);
+	    RedrawButton(b, DRAW_FORCE, NULL);
 	    break;
 	  }
 	}
@@ -1392,7 +1388,7 @@ void Loop(void)
 		SendText(fd, p, 0);
 		free(p);
 	      }
-	      RedrawButton(b, 1, NULL);
+	      RedrawButton(b, DRAW_CLEAN, NULL); /* ? */
 	      if (is_transient_panel)
 	      {
 		XWithdrawWindow(Dpy, MyWindow, screen);
@@ -1401,7 +1397,7 @@ void Loop(void)
 	    else
 	    {
 	      b->flags &= ~(b_Swallow | b_Panel);
-	      RedrawButton(b, 2, NULL);
+	      RedrawButton(b, DRAW_FORCE, NULL);
 #ifdef DEBUG_HANGON
 	      fprintf(stderr,"\n");
 #endif
@@ -1416,21 +1412,21 @@ void Loop(void)
 	fprintf(stderr,"%s: Event fell through unhandled\n",MyName);
 #endif
 	break;
-      }
-    }
-  }
+      } /* switch */
+    } /* event handling */
+  } /* while */
+  
 }
 
 /**
 *** RedrawWindow()
-*** Draws the window by traversing the button tree, draws all if NULL is given,
-*** otherwise only the given button.
+*** Draws the window by traversing the button tree
 **/
-void RedrawWindow(button_info *b)
+void RedrawWindow(void)
 {
   int button;
   XEvent dummy;
-  button_info *ub;
+  button_info *ub,*b;
   static Bool initial_redraw = True;
   Bool clear_buttons;
 
@@ -1440,12 +1436,6 @@ void RedrawWindow(button_info *b)
   /* Flush expose events */
   while (FCheckTypedWindowEvent(Dpy, MyWindow, Expose, &dummy))
     ;
-
-  if(b)
-  {
-    RedrawButton(b, 0, NULL);
-    return;
-  }
 
   /* Clean out the entire window first */
   if (initial_redraw == False)
@@ -1462,7 +1452,7 @@ void RedrawWindow(button_info *b)
   button=-1;
   ub=UberButton;
   while(NextButton(&ub,&b,&button,1))
-    RedrawButton(b, 1, NULL);
+    RedrawButton(b, DRAW_ALL, NULL);
 }
 
 /**
@@ -1477,6 +1467,10 @@ int LoadIconFile(const char *s, FvwmPicture **p, int cset)
 	{
 
 		fpa.mask |= FPAM_DITHER;
+	}
+	if (UberButton->c->flags&b_TransBack)
+	{
+		fpa.mask |= FPAM_NO_ALPHA;
 	}
 	*p = PCacheFvwmPicture(Dpy, Root, imagePath, s, fpa);
 	if (*p)
@@ -1779,7 +1773,7 @@ static void HandlePanelPress(button_info *b)
 	/* the window has been destroyed */
 	XUnmapWindow(Dpy, b->PanelWin);
 	XSync(Dpy, 0);
-	RedrawButton(b, 1, NULL);
+	RedrawButton(b, DRAW_CLEAN, NULL);
 	return;
       }
       if (xwa.map_state == IsViewable)
@@ -1796,7 +1790,7 @@ static void HandlePanelPress(button_info *b)
       /* give up after one second */
       XUnmapWindow(Dpy, b->PanelWin);
       XSync(Dpy, 0);
-      RedrawButton(b, 1, NULL);
+      RedrawButton(b, DRAW_FORCE, NULL);
       return;
     }
   }
@@ -1868,7 +1862,7 @@ static void HandlePanelPress(button_info *b)
   }
   tmp = CurrentButton;
   CurrentButton = NULL;
-  RedrawButton(b, 1, NULL);
+  RedrawButton(b, DRAW_FORCE, NULL);
   CurrentButton = tmp;
   XSync(Dpy, 0);
   /* Give fvwm a chance to update the window.  Otherwise the window may end up
@@ -2246,119 +2240,137 @@ static void send_bg_change_to_module(button_info *b, XEvent *Event)
 
 static void update_root_transparency(XEvent *Event)
 {
-  button_info *ub,*b;
-  int button;
+	button_info *ub,*b;
+	int button;
+	Bool bg_is_transparent = CSET_IS_TRANSPARENT(UberButton->c->colorset);
 
-  if (!(UberButton->c->flags & b_Colorset) ||
-      Colorset[UberButton->c->colorset].pixmap != ParentRelative)
-  {
-    return;
-  }
-
-  XClearWindow(Dpy, MyWindow);
-  RedrawWindow(NULL);
-  /* Handle the swallowed window */
-  ub = UberButton;
-  button=-1;
-  while(NextButton(&ub,&b,&button,0))
-  {
-    if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow))
-    {
-      /* should handle 2 cases: module or not */
-      if (b->swallow & b_FvwmModule)
-      {
-	send_bg_change_to_module(b, Event);
-      }
-      else if ((b->flags & b_Colorset) &&
-	       Colorset[buttonColorset(b)].pixmap == ParentRelative)
-      {
-	/* it is an X application */
-	change_swallowed_window_colorset(b, True);
-      }
-    }
-  }
-}
-
-static void recursive_change_colorset(container_info *c, int colorset,
-				      XEvent *Event)
-{
-	int i;
-	Bool bg_change = False;
-
-	for (i = c->num_buttons; --i >= 0; )
+	if (bg_is_transparent)
 	{
-		button_info *b = c->buttons[i];
+		SetWindowBackground(
+			Dpy, MyWindow, UberButton->c->width,
+			UberButton->c->height,
+			&Colorset[UberButton->c->colorset],
+			Pdepth, NormalGC, True);
+		/* the window is redraw by exposure. It is very difficult
+		 * the clear only the needed part and then redraw the
+		 * cleared buttons (pbs with containers which contain containers
+		 * ...) */
+	}
 
-		if (!b)
+	if (!bg_is_transparent)
+	{
+		/* update root transparent button (and its childs) */
+		ub = UberButton;
+		button=-1;
+		while(NextButton(&ub,&b,&button,1))
 		{
-			continue;
-		}
+			button_info *tmpb;
+			Bool redraw = False;
 
-		bg_change = False;
-		if (buttonColorset(b) == colorset)
-		{
-			bg_change = True;
-		}
-		else  if (buttonColorset(b) > -1 &&
-			  Colorset[buttonColorset(b)].pixmap == ParentRelative &&
-			  (UberButton->c->flags & b_Colorset &&
-			   colorset == UberButton->c->colorset))
-		{
-			bg_change = True;
-		}
-		else  if ((b->flags & b_Swallow) && (b->swallow & b_FvwmModule) &&
-			  (UberButton->c->flags & b_Colorset &&
-			   colorset == UberButton->c->colorset))
-		{
-			/* swallowed module */
-			bg_change = True;
-		}
-
-		if (b->flags & b_Container)
-		{
-			if (bg_change)
+			tmpb = b;
+			/* see if _a_ parent (!= UberButton) is root trans */
+			while(tmpb->parent != NULL && !redraw)
 			{
-				/* re-apply colorset to button */
-				RedrawButton(b, True, NULL);
+				if (CSET_IS_TRANSPARENT_ROOT(
+					buttonColorset(tmpb)))
+				{
+					redraw = True;
+				}
+				tmpb = tmpb->parent;
 			}
-			/* recursively update containers */
-			recursive_change_colorset(b->c, colorset, Event);
-		}
-		else if (b->flags & b_Swallow)
-		{
-			/* swallowed window */
-			if (buttonSwallowCount(b) == 3 && b->IconWin != None &&
-			    bg_change)
+			if (redraw)
 			{
-				RedrawButton(b, True, NULL);
-				if (Event == NULL && (b->swallow & b_FvwmModule))
+				RedrawButton(b,DRAW_ALL,NULL);
+			}
+		}
+	}
+
+
+	/* Handle the swallowed window */
+	ub = UberButton;
+	button=-1;
+	while(NextButton(&ub,&b,&button,0))
+	{
+		if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow))
+		{
+			/* should handle 2 cases: module or not */
+			if (b->swallow & b_FvwmModule)
+			{
+				if (bg_is_transparent)
 				{
 					XSync(Dpy, 0);
 					send_bg_change_to_module(b, Event);
 				}
-				else if (b->flags & b_Colorset)
+			}
+			else if ((b->flags & b_Colorset) &&
+				 CSET_IS_TRANSPARENT(b->colorset))
+			{
+				change_swallowed_window_colorset(b, True);
+			}
+		}
+	}
+}
+
+
+static void recursive_change_colorset(
+	container_info *c, int colorset, XEvent *Event)
+{
+	int button;
+	button_info *ub,*b;
+	button_info *tmpb;
+
+	button=-1;
+	ub=UberButton;
+	while(NextButton(&ub,&b,&button,1))
+	{
+		Bool redraw = False;
+
+		tmpb = b;
+		/* see if _a_ parent (!= UberButton) has colorset as cset */
+		while(tmpb->parent != NULL && !redraw)
+		{
+			if (buttonColorset(tmpb) == colorset)
+			{
+				redraw = True;
+			}
+			tmpb = tmpb->parent;
+		}
+		if(!redraw)
+		{
+			continue;
+		}
+		if (b->flags & b_Swallow)
+		{
+			/* swallowed window */
+			if (buttonSwallowCount(b) == 3 && b->IconWin != None)
+			{
+				RedrawButton(b, DRAW_ALL, NULL);
+				if (b->flags&b_Colorset &&
+				    !(b->swallow&b_FvwmModule))
 				{
-					change_swallowed_window_colorset(b, True);
+					change_swallowed_window_colorset(
+						b, True);
 				}
 			}
 		}
 		else
 		{
-			/* simple button */
-			if (bg_change)
+			if (Event == NULL && b->flags&b_Icon)
 			{
-				/* re-apply colorset to button */
-				RedrawButton(b, True, NULL);
-			}
-			if (Event == NULL && b->flags & b_Icon)
-			{
-				/* FIXME: do that only if an icon colorset
-				 * change */
+				/* FIXME do that only if we have an icon
+				 * colorset */
 				DestroyIconWindow(b);
 				CreateIconWindow(b);
-				ConfigureIconWindow(b);
-				XMapWindow(Dpy, b->IconWin);
+				if (b->flags&b_Icon)
+				{
+					if (!(b->flags&b_IconAlpha))
+					{
+						ConfigureIconWindow(b, NULL);
+						XMapWindow(Dpy,b->IconWin);
+					}
+				}
 			}
+			RedrawButton(b, DRAW_ALL, NULL);
 		}
 	}
 
@@ -2367,16 +2379,66 @@ static void recursive_change_colorset(container_info *c, int colorset,
 
 static void change_colorset(int colorset, XEvent *Event)
 {
-  if (UberButton->c->flags & b_Colorset && colorset == UberButton->c->colorset)
-  {
-    SetWindowBackground(
-      Dpy, MyWindow, UberButton->c->width, UberButton->c->height,
-      &Colorset[colorset], Pdepth, NormalGC, True);
-  }
+	if (UberButton->c->flags & b_Colorset &&
+	    colorset == UberButton->c->colorset)
+	{
+		button_info *ub,*b;
+		int button;
 
-  recursive_change_colorset(UberButton->c, colorset, Event);
+		SetWindowBackground(
+			Dpy, MyWindow, UberButton->c->width,
+			UberButton->c->height,
+			&Colorset[colorset], Pdepth, NormalGC, True);
 
-  return;
+		/* some change are done by exposing. Do the other one */
+		button=-1;
+		ub=UberButton;
+		while(NextButton(&ub,&b,&button,0))
+		{
+			if (b->flags&b_Swallow && buttonSwallowCount(b) == 3)
+			{
+				if (b->swallow&b_FvwmModule)
+				{
+					/* the bg has changed send the info to
+					 * modules */
+					XSync(Dpy, 0);
+					send_bg_change_to_module(b, Event);
+				}
+				else if (CSET_IS_TRANSPARENT_PR(b->colorset) &&
+					!buttonBackgroundButton(b->parent,NULL))
+				{
+					/* the swallowed app has a ParentRel bg
+					 * and the bg of the button is the bg */
+					change_swallowed_window_colorset(
+						b, True);
+				}
+			}
+			else if (Event == NULL && b->flags&b_Icon &&
+				 buttonColorset(b) == colorset)
+			{
+				/* FIXME do that only if we have an icon
+				 * colorset */
+				DestroyIconWindow(b);
+				CreateIconWindow(b);
+				if (b->flags&b_Icon)
+				{
+					if (!(b->flags&b_IconAlpha))
+					{
+						ConfigureIconWindow(b, NULL);
+						XMapWindow(Dpy,b->IconWin);
+					}
+				}
+			}
+		}
+
+		return;
+	}
+
+	recursive_change_colorset(
+		UberButton->c, colorset, Event);
+
+	
+	return;
 }
 
 static void handle_config_info_packet(unsigned long *body)
@@ -2411,7 +2473,16 @@ void process_message(unsigned long type,unsigned long *body)
   {
   case M_NEW_DESK:
     new_desk = body[0];
-    RedrawWindow(NULL);
+    {
+	    int button=-1;
+	    button_info *b, *ub;
+
+	    ub=UberButton;
+	    while(NextButton(&ub,&b,&button,1))
+	    {
+		    RedrawButton(b, DRAW_RELIEF, NULL);
+	    }
+    }
     break;
   case M_END_WINDOWLIST:
     SpawnSome();
@@ -2455,7 +2526,10 @@ void process_message(unsigned long type,unsigned long *body)
     if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND &&
 	((!swallowed && body[2] == 0) || (swallowed && body[2] == MyWindow)))
     {
-      update_root_transparency(NULL);
+	    if (CSET_IS_TRANSPARENT_PR(UberButton->c->colorset))
+	    {
+		update_root_transparency(NULL);
+	    }
     }
     else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == MyWindow)
     {
@@ -2527,7 +2601,7 @@ void CheckForHangon(unsigned long *body)
 	b->flags&=~b_Hangon;
 	free(b->hangon);
 	b->hangon=NULL;
-	RedrawButton(b, 0, NULL);
+	RedrawButton(b, DRAW_RELIEF, NULL);
       }
       break;
     }
@@ -2911,7 +2985,7 @@ void swallow(unsigned long *body)
 	}
 	/* Redraw and force cleaning the background to erase the old button
 	 * title. */
-	RedrawButton(b, 2, NULL);
+	RedrawButton(b, DRAW_FORCE, NULL);
       }
       else /* (b->flags & b_Panel) */
       {

@@ -299,12 +299,63 @@ int buttonColorset(button_info *b)
 {
   if (b->flags & b_Colorset)
     return b->colorset;
+  else if (b->flags & b_Container && b->c->flags & b_Colorset)
+    return b->c->colorset;
   while ((b = b->parent))
   {
     if (b->c->flags & b_Colorset)
       return b->c->colorset;
   }
   return -1;
+}
+
+int buttonBackgroundButton(button_info *b, button_info **r_b)
+{
+	button_info *tmpb, *pb;
+	Bool done = False;
+	
+	tmpb = pb = b;
+	while(tmpb->parent != NULL && !done)
+	{
+		pb = tmpb;
+		if (tmpb->flags&b_Container)
+		{
+			if(tmpb->c->flags & b_Colorset)
+			{
+				done = True;
+			}
+			else if (!(tmpb->c->flags&b_IconParent) &&
+				 !(tmpb->c->flags&b_ColorsetParent))
+			{
+				done = True;
+			}
+
+		}
+		else if (tmpb->flags&b_Swallow && buttonSwallowCount(b) == 3 &&
+			 tmpb->flags&b_Colorset)
+		{
+			done = True;
+		}
+		else if (tmpb->flags & b_Colorset)
+		{
+			done = True;
+		}
+		else if (!(tmpb->flags&b_IconBack) && !(tmpb->flags&b_IconParent)
+			 && !(tmpb->flags&b_Swallow) &&
+			 !(tmpb->flags&b_ColorsetParent))
+		{
+			done = True;
+		}
+		tmpb = tmpb->parent;
+	}
+	
+	if (done)
+	{
+		if (r_b != NULL)
+			*r_b = pb;
+		return True;
+	}
+	return False;
 }
 
 
@@ -427,11 +478,13 @@ button_info *alloc_button(button_info *ub,int num)
   b->h=1;
   b->bw=1;
 
+#if 0
   if(b->parent != NULL)
   {
     if (b->parent->c->flags & b_Colorset)
       b->flags |= b_ColorsetParent;
   }
+#endif
 
   return(b);
 }
@@ -449,7 +502,8 @@ void MakeContainer(button_info *b)
   {
     if (b->parent->c->flags & b_IconBack || b->parent->c->flags & b_IconParent)
       b->c->flags |= b_IconParent;
-    if (b->parent->c->flags & b_Colorset)
+    if (b->parent->c->flags & b_Colorset ||
+	b->parent->c->flags & b_ColorsetParent)
       b->c->flags |= b_ColorsetParent;
   }
   else /* This applies to the UberButton */

@@ -174,5 +174,8 @@ Bool UpdateBackgroundTransparency(
 void SetRectangleBackground(
   Display *dpy, Window win, int x, int y, int width, int height,
   colorset_struct *colorset, unsigned int depth, GC gc);
-
+void SetClippedRectangleBackground(
+  Display *dpy, Window win, int x, int y, int width, int height,
+  XRectangle *clip, colorset_struct *colorset,
+  unsigned int depth, GC gc);
 #endif

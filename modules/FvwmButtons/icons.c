@@ -55,6 +55,7 @@
 #include "FvwmButtons.h"
 #include "libs/PictureGraphics.h"
 #include "libs/Colorset.h"
+#include "libs/Rectangles.h"
 
 /****************************************************************************
  *
@@ -76,6 +77,30 @@ void CreateIconWindow(button_info *b)
 		return;
 	}
 
+	if(b->IconWin != None)
+	{
+		fprintf(stderr,"%s: BUG: Icon window already created "
+			"for 0x%lx!\n", MyName,(unsigned long)b);
+		return;
+	}
+	if(b->icon->width<1 || b->icon->height<1)
+	{
+		fprintf(stderr,"%s: BUG: Illegal iconwindow "
+			"tried created\n",MyName);
+		exit(2);
+	}
+
+	cset = buttonColorset(b);
+	if (b->icon->alpha != None ||
+	    (cset >= 0 && Colorset[cset].icon_alpha < 100 &&
+	     !(UberButton->c->flags&b_TransBack)))
+	{
+		/* in this case we drawn on the button, with a shaped
+		 * Buttons we do not load the alpha channel */
+		b->flags |= b_IconAlpha;
+		return;
+	}
+
 	cset = buttonColorset(b);
 	fra.mask = FRAM_DEST_IS_A_WINDOW;
 	if (cset >= 0)
@@ -84,6 +109,11 @@ void CreateIconWindow(button_info *b)
 		fc = Colorset[cset].fg;
 		fra.mask |= FRAM_HAVE_ICON_CSET;
 		fra.colorset = &Colorset[cset];
+		if (Colorset[cset].icon_alpha < 100)
+		{
+			fra.added_alpha_percent = 100;
+			fra.mask |= FRAM_HAVE_ADDED_ALPHA;
+		}
 	}
 	else
 	{
@@ -92,12 +122,6 @@ void CreateIconWindow(button_info *b)
 		fra.mask = 0;
 	}
 
-	if(b->IconWin != None)
-	{
-		fprintf(stderr,"%s: BUG: Icon window already created "
-			"for 0x%lx!\n", MyName,(unsigned long)b);
-		return;
-	}
 	valuemask = CWColormap | CWBorderPixel | CWBackPixel |
 		CWEventMask | CWBackPixmap;
 	attributes.colormap = Pcmap;
@@ -106,12 +130,6 @@ void CreateIconWindow(button_info *b)
 	attributes.background_pixmap = None;
 	attributes.event_mask = ExposureMask;
 
-	if(b->icon->width<1 || b->icon->height<1)
-	{
-		fprintf(stderr,"%s: BUG: Illegal iconwindow "
-			"tried created\n",MyName);
-		exit(2);
-	}
 	b->IconWin=XCreateWindow(
 		Dpy, MyWindow, 0, 0, b->icon->width, b->icon->height, 0,
 		Pdepth, InputOutput, Pvisual, valuemask, &attributes);
@@ -146,17 +164,7 @@ void CreateIconWindow(button_info *b)
 		}
 	}
 
-	if (b->icon->alpha != None ||
-	    (cset >= 0 && Colorset[cset].icon_alpha < 100))
-	{
-		XSetWindowBackgroundPixmap(Dpy, b->IconWin, ParentRelative);
-		PGraphicsRenderPicture(
-			Dpy, MyWindow, b->icon, &fra, b->IconWin,
-			NormalGC, None, None,
-			0, 0, b->icon->width, b->icon->height,
-			0, 0, 0, 0, False);
-	}
-	else if (cset >= 0 && Colorset[cset].icon_tint_percent > 0)
+	if (cset >= 0 && Colorset[cset].icon_tint_percent > 0)
 	{
 		temp = XCreatePixmap(
 			Dpy, MyWindow, b->icon->width, b->icon->height, Pdepth);
@@ -173,26 +181,7 @@ void CreateIconWindow(button_info *b)
 		/* pixmap icon */
 		XSetWindowBackgroundPixmap(Dpy, b->IconWin, b->icon->picture);
 	}
-#if 0
-		/* We won't use the icon pixmap anymore... but we still need
-		   it for width/height etc. so we can't destroy it. */
-	else if (b->icon->alpha != None)
-	{
-		/* pixmap icon with some alpha */
-		XSetWindowBackgroundPixmap(Dpy, b->IconWin, ParentRelative);
-		PGraphicsCopyPixmaps(Dpy, b->icon->picture,
-				     b->icon->mask,
-				     b->icon->alpha,
-				     Pdepth, b->IconWin, NormalGC,
-				     0, 0, b->icon->width, b->icon->height,
-				     0, 0);
-	}
-	else
-	{
-		/* pixmap icon */
-		XSetWindowBackgroundPixmap(Dpy, b->IconWin, b->icon->picture);
-	}
-#endif
+
 	return;
 #endif
 }
@@ -200,8 +189,9 @@ void CreateIconWindow(button_info *b)
 void DestroyIconWindow(button_info *b)
 {
 #ifndef NO_ICONS
-	if(!(b->flags&b_Icon))
+	if(!(b->flags&b_Icon) || (b->flags&b_IconAlpha))
 	{
+		b->flags &= ~b_IconAlpha;
 		return;
 	}
 	XDestroyWindow(Dpy, b->IconWin);
@@ -214,20 +204,22 @@ void DestroyIconWindow(button_info *b)
  * Combines icon shape masks after a resize
  *
  ****************************************************************************/
-void ConfigureIconWindow(button_info *b)
+Bool GetIconWindowPosition(
+	button_info *b, int *r_x, int *r_y, int *r_w, int *r_h)
 {
-#ifndef NO_ICONS
+#ifdef NO_ICONS
+	return 0;
+#else
 	int x,y,w,h;
 	int xoff,yoff;
 	int framew,xpad,ypad;
 	FlocaleFont *Ffont;
 	int BW,BH;
-	int cset;
 
 	if(!b || !(b->flags&b_Icon))
-		return;
+		return 0;
 
-	if(!b->IconWin)
+	if(!b->IconWin && !(b->flags&b_IconAlpha))
 	{
 		fprintf(stderr,"%s: DEBUG: Tried to configure erroneous "
 			"iconwindow\n", MyName);
@@ -236,9 +228,8 @@ void ConfigureIconWindow(button_info *b)
 
 	buttonInfo(b,&x,&y,&xpad,&ypad,&framew);
 	framew=abs(framew);
-	cset = buttonColorset(b);
-
 	Ffont = buttonFont(b);
+
 	w = b->icon->width;
 	h = b->icon->height;
 	BW = buttonWidth(b);
@@ -250,13 +241,6 @@ void ConfigureIconWindow(button_info *b)
 		h = min(h,BH-2*(ypad+framew)-Ffont->ascent-Ffont->descent);
 	else
 		h = min(h,BH-2*(ypad+framew));
-
-	if(w < 1 || h < 1)
-	{
-		if (b->IconWin)
-			XMoveResizeWindow(Dpy, b->IconWin, 2000,2000,1,1);
-		return; /* No need drawing to this */
-	}
 
 	if (b->flags & b_Right)
 		xoff = BW-framew-xpad-w;
@@ -283,29 +267,113 @@ void ConfigureIconWindow(button_info *b)
 	x += xoff;
 	y += yoff;
 
+	*r_x = x;
+	*r_y = y;
+	*r_w = w;
+	*r_h = h;
+	
+	return 1;
+#endif
+}
 
-	XMoveResizeWindow(Dpy, b->IconWin, x,y,w,h);
-	XClearWindow(Dpy, b->IconWin);
-	if (b->icon->alpha != None ||
-	    (cset >= 0 && Colorset[cset].icon_alpha < 100))
-	{ /* pixmap icon with alpha */
-		FvwmRenderAttributes fra;
+void DrawForegroundIcon(button_info *b, XEvent *pev)
+{
+#ifndef NO_ICONS
+	int x,y,w,h;
+	int cset;
+	XRectangle clip;
+	FvwmRenderAttributes fra;
 
-		fra.mask = FRAM_DEST_IS_A_WINDOW;
-		if (cset >= 0)
-		{
-			fra.mask |= FRAM_HAVE_ICON_CSET;
-			fra.colorset = &Colorset[cset];
-		}
-		else
-		{
-			fra.mask = 0;
-		}
-		PGraphicsRenderPicture(
-			Dpy, MyWindow, b->icon, &fra, b->IconWin,
-			NormalGC, None, None,
-			0, 0, b->icon->width, b->icon->height,
-			0, 0, 0, 0, False);
+	if (!GetIconWindowPosition(b,&x,&y,&w,&h))
+	{
+		return;
 	}
+
+	if(w < 1 || h < 1)
+	{
+		return; /* No need drawing to this */
+	}
+
+	if (!(b->flags & b_IconAlpha))
+	{
+		return;
+	}
+
+	clip.x = x;
+	clip.y = y;
+	clip.width = w;
+	clip.height = h;
+
+	if (pev)
+	{
+		if (!frect_get_intersection(
+			x, y, w, h,
+			pev->xexpose.x, pev->xexpose.y,
+			pev->xexpose.width, pev->xexpose.height,
+			&clip))
+		{
+			return;
+		}
+	}
+
+	if (0 && !pev)
+	{
+		XClearArea(
+			Dpy, MyWindow, clip.x, clip.y, clip.width, clip.height,
+			False);
+	}
+
+	cset = buttonColorset(b);
+	fra.mask = FRAM_DEST_IS_A_WINDOW;
+	if (cset >= 0)
+	{
+		fra.mask |= FRAM_HAVE_ICON_CSET;
+		fra.colorset = &Colorset[cset];
+	}
+	PGraphicsRenderPicture(
+		Dpy, MyWindow, b->icon, &fra, MyWindow,
+		NormalGC, None, None,
+		clip.x - x, clip.y - y, clip.width, clip.height,
+		clip.x, clip.y, clip.width, clip.height, False);
+#endif
+}
+
+void ConfigureIconWindow(button_info *b, XEvent *pev)
+{
+#ifndef NO_ICONS
+	int x,y,w,h;
+
+	if (!b->IconWin)
+	{
+		return;
+	}
+	if (!GetIconWindowPosition(b,&x,&y,&w,&h))
+	{
+		return;
+	}
+	if (!b->IconWin)
+	{
+		return;
+	}
+
+	if(w < 1 || h < 1)
+	{
+		if (b->IconWin)
+			XMoveResizeWindow(Dpy, b->IconWin, 2000,2000,1,1);
+		return; /* No need drawing to this */
+	}
+
+	if (!pev && b->IconWin)
+	{
+		XMoveResizeWindow(Dpy, b->IconWin, x,y,w,h);
+	}
+
+	return;
+
+	if (!(b->flags & b_IconAlpha))
+	{
+		return;
+	}
+
 #endif
 }

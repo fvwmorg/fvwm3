@@ -467,6 +467,7 @@ int FRenderRender(
 				  pixmap_copy, gc,
 				  src_x, src_y, src_w, src_h, 0, 0);
 		}
+		src_x = src_y = 0;
 	}
 	else if (tint_percent > 0 && !pixmap_copy)
 	{

@@ -1,3 +1,35 @@
+2002-10-01  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/parse.c (ParseButton):
+	* FvwmButtons/button.c (buttonColorset):
+	(buttonBackgroundButton):
+	* FvwmButtons/button.h:
+	* FvwmButtons/dynamic.c (change_button_icon):
+	(parse_message_line):
+	* FvwmButtons/icons.c (CreateIconWindow):
+	(DestroyIconWindow):
+	(GetIconWindowPosition):
+	(DrawForegroundIcon):
+	(ConfigureIconWindow):
+	* FvwmButtons/icons.h:
+	* FvwmButtons/draw.c (RedrawButton):
+	(DrawTitle):
+	* FvwmButtons/draw.h:
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(RedrawWindow):
+	(LoadIconFile):
+	(HandlePanelPress):
+	(update_root_transparency):
+	(recursive_change_colorset):
+	(change_colorset):
+	(process_message):
+	(CheckForHangon):
+	(swallow):
+	* FvwmButtons/FvwmButtons.h:
+	Clip and cleanup the drawing. Fixed some bugs related to containers
+	colorsets  (which should work not so bad now). Fixed alpha bugs.
+	Support the new transparent options.
+
 2002-09-25  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/x_pager.c (DrawGrid):

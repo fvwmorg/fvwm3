@@ -527,6 +527,17 @@ void SetRectangleBackground(
   Display *dpy, Window win, int x, int y, int width, int height,
   colorset_struct *colorset, unsigned int depth, GC gc)
 {
+	SetClippedRectangleBackground(
+		dpy, win, x, y, width, height, NULL, colorset, depth, gc);
+}
+
+/* Draws a colorset background into the specified rectangle in the target
+ * drawable. */
+void SetClippedRectangleBackground(
+  Display *dpy, Window win, int x, int y, int width, int height,
+  XRectangle *clip, colorset_struct *colorset,
+  unsigned int depth, GC gc)
+{
   GC draw_gc;
   Pixmap pixmap2;
   Pixmap pixmap = None;
@@ -540,21 +551,43 @@ void SetRectangleBackground(
 		   || (colorset->pixmap_type == PIXMAP_STRETCH);
   Bool stretch_y = (colorset->pixmap_type == PIXMAP_STRETCH_Y)
 		   || (colorset->pixmap_type == PIXMAP_STRETCH);
+  int dest_x, dest_y, dest_w, dest_h;
 
-  if (colorset->pixmap == ParentRelative && colorset->tint_percent > 0)
+  if (clip)
   {
-	  XClearArea(dpy, win, x, y, width, height, False);
+	  dest_x = clip->x;
+	  dest_y = clip->y;
+	  dest_w = clip->width;
+	  dest_h = clip->height;
+  }
+  else
+  {
+	  dest_x = x;
+	  dest_y = y;
+	  dest_w = width;
+	  dest_h = height;
+  }
+  if (CSETS_IS_TRANSPARENT_PR_TINT(colorset))
+  {
+	  XClearArea(dpy, win, dest_x, dest_y, dest_w, dest_h, False);
 	  PGraphicsTintRectangle(
 		  dpy, win, colorset->tint, colorset->tint_percent,
 		  win, True, gc, None, None,
-		  x, y, width, height);
+		  dest_x, dest_y, dest_w, dest_h);
 	  return;
   }
-  if (colorset->pixmap == ParentRelative)
+  if (CSETS_IS_TRANSPARENT_PR_PURE(colorset))
   {
-    XClearArea(dpy, win, x, y, width, height, False);
+    XClearArea(dpy, win, dest_x, dest_y, dest_w, dest_h, False);
     /* don't do anything */
     return;
+  }
+  if (CSETS_IS_TRANSPARENT_ROOT(colorset))
+  {
+	  /* FIXME: optimize this ! */
+	  x = y = 0;
+	  width = width + dest_x;
+	  height = height + dest_y;
   }
   /* minimize gc creation by remembering the last requested depth */
   if (last_gc != None && depth != last_depth)
@@ -589,7 +622,7 @@ void SetRectangleBackground(
   {
     /* use the bg pixel */
     XSetForeground(dpy, draw_gc, colorset->bg);
-    XFillRectangle(dpy, win, draw_gc, x, y, width, height);
+    XFillRectangle(dpy, win, draw_gc, dest_x, dest_y, dest_w, dest_h);
   }
   else
   {
@@ -611,7 +644,7 @@ void SetRectangleBackground(
       if (!stretch_y && colorset->height != height)
       {
 	pixmap2 = CreateStretchYPixmap(
-	  dpy, pixmap, width, colorset->height, depth, width, gc);
+	  dpy, pixmap, width, colorset->height, depth, height, gc);
 	XFreePixmap(dpy, pixmap);
 	pixmap = pixmap2;
       }
@@ -628,8 +661,11 @@ void SetRectangleBackground(
     if (pixmap)
     {
       /* Copy the pixmap into the rectangle. */
-      XCopyArea(dpy, pixmap, win, draw_gc, 0, 0, width, height, x, y);
-      XFreePixmap(dpy, pixmap);
+	    XCopyArea(
+		    dpy, pixmap, win, draw_gc,
+		    dest_x - x, dest_y - y, dest_w, dest_h,
+		    dest_x, dest_y);
+	    XFreePixmap(dpy, pixmap);
     }
   }
 

@@ -1201,50 +1201,55 @@ Pixmap PGraphicsCreateTransprency(
 		XClearArea(dpy, win, x, y, width, height, False);
 		XSync(dpy, False);
 	}
-	if (!XGetGeometry(
-		dpy, win, &root, (int *)&junk, (int *)&junk,
-		(unsigned int *)&sw, (unsigned int *)&sh,
-		(unsigned int *)&junk, (unsigned int *)&junk))
+
+	if (parent_relative)
 	{
-		goto bail;
-	}
-	XTranslateCoordinates(
-		dpy, win, DefaultRootWindow(dpy), x, y, &sx, &sy, &junk);
-	if (sx >= DisplayWidth(dpy, DefaultScreen(dpy)))
-	{
-		goto bail;
-	}
-	if (sy >= DisplayHeight(dpy, DefaultScreen(dpy)))
-	{
-		goto bail;
-	}
-	if (sx < 0)
-	{
-		gx = gx - sx;
-		gw = width + sx;
-		sx = 0;
-		if (gw <= 0)
+		/* this block is not usefull if backing store ... */
+		if (!XGetGeometry(
+			dpy, win, &root, (int *)&junk, (int *)&junk,
+			(unsigned int *)&sw, (unsigned int *)&sh,
+			(unsigned int *)&junk, (unsigned int *)&junk))
 		{
 			goto bail;
 		}
-	}
-	if (sy < 0)
-	{
-		gy = gy - sy;
-		gh = height + sy;
-		sy = 0;
-		if (gh <= 0)
+		XTranslateCoordinates(
+			dpy, win, DefaultRootWindow(dpy), x, y, &sx, &sy, &junk);
+		if (sx >= DisplayWidth(dpy, DefaultScreen(dpy)))
 		{
 			goto bail;
 		}
-	}
-	if (sx + gw > DisplayWidth(dpy, DefaultScreen(dpy)))
-	{
-		gw = DisplayWidth(dpy, DefaultScreen(dpy)) - sx;
-	}
-	if (sy + gh > DisplayHeight(dpy, DefaultScreen(dpy)))
-	{
-		gh = DisplayHeight(dpy, DefaultScreen(dpy)) - sy;
+		if (sy >= DisplayHeight(dpy, DefaultScreen(dpy)))
+		{
+			goto bail;
+		}
+		if (sx < 0)
+		{
+			gx = gx - sx;
+			gw = width + sx;
+			sx = 0;
+			if (gw <= 0)
+			{
+				goto bail;
+			}
+		}
+		if (sy < 0)
+		{
+			gy = gy - sy;
+			gh = height + sy;
+			sy = 0;
+			if (gh <= 0)
+			{
+				goto bail;
+			}
+		}
+		if (sx + gw > DisplayWidth(dpy, DefaultScreen(dpy)))
+		{
+			gw = DisplayWidth(dpy, DefaultScreen(dpy)) - sx;
+		}
+		if (sy + gh > DisplayHeight(dpy, DefaultScreen(dpy)))
+		{
+			gh = DisplayHeight(dpy, DefaultScreen(dpy)) - sy;
+		}
 	}
 #if 0
 	fprintf(
@@ -1286,12 +1291,26 @@ void PGraphicsTintRectangle(
 	Pixmap p;
 	FvwmRenderAttributes fra;
 
+#if 0
+	/* this does not work. why? */
 	if (FRenderTintRectangle(
 		dpy, win, None, tint, tint_percent, dest,
 		dest_x, dest_y, dest_w, dest_h))
 	{
 		return;
 	}
+#else
+
+	if (FRenderRender(
+		dpy, win, ParentRelative, None, None, Pdepth, 100,
+		tint, tint_percent, win, gc, None,
+		dest_x, dest_y, dest_w, dest_h,
+		dest_x, dest_y, dest_w, dest_h, False))
+	{
+
+		return;
+	}
+#endif
 
 	if (dest_is_a_window)
 	{
@@ -1311,6 +1330,7 @@ void PGraphicsTintRectangle(
 	}
 }
 
+#if 0 /* humm... maybe usefull one day with menus */
 Pixmap PGraphicsCreateTranslucent(
 	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
 	int x, int y, int width, int height)
@@ -1375,6 +1395,8 @@ Pixmap PGraphicsCreateTranslucent(
  bail:
 	return r;
 }
+#endif
+
 
 /* never tested and used ! */
 Pixmap PGraphicsCreateDitherPixmap(

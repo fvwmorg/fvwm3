@@ -1,3 +1,14 @@
+2002-10-01  olicha  <olivier.chapuis@free.fr>
+
+	* libs/FRender.c (FRenderRender):
+	* libs/PictureGraphics.c (PGraphicsTintRectangle):
+	Fixed
+
+	* libs/Colorset.c (SetRectangleBackground):
+	(SetClippedRectangleBackground):
+	* libs/Colorset.h:
+	New interface function for drawing a subset of a colorset rectangle
+	
 2002-09-26  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/update.c (apply_window_updates):

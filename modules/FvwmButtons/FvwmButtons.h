@@ -88,6 +88,7 @@
 #define b_ActionOnPress \
 		     0x02000000 /* By default this only done on Popup */
 #define b_Id         0x04000000 /* Has a user defined id for referencing */
+#define b_IconAlpha  0x08000000 /* Icon has an alpha chanel */
 
 /* Flags for b->swallow */
 #define b_Count       0x0003 /* Init counter for swallowing */

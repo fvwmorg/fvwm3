@@ -1107,6 +1107,15 @@ static void ParseButton(button_info **uberb,char *s)
 	  fprintf(stderr,"%s: Unmatched END in config file\n",MyName);
 	  exit(1);
 	}
+	if (ub->parent->c->flags&b_Colorset ||
+	    ub->parent->c->flags&b_ColorsetParent)
+	{
+		ub->c->flags |= b_ColorsetParent;
+	}
+	if (ub->parent->c->flags&b_IconBack || ub->parent->c->flags&b_IconParent)
+	{
+		ub->c->flags |= b_IconParent;
+	}
 	return;
 
       case 13: /* NoSize */

@@ -30,4 +30,5 @@
 /* ------------------------------ prototypes ------------------------------- */
 void CreateIconWindow(button_info*);
 void DestroyIconWindow(button_info *b);
-void ConfigureIconWindow(button_info*);
+void DrawForegroundIcon(button_info *b, XEvent *pev);
+void ConfigureIconWindow(button_info*, XEvent *pev);
