@@ -367,6 +367,7 @@ static int GetMoveArguments(
 	if (s1 && fPointer && StrEquals(s1, "pointer"))
 	{
 		*fPointer = True;
+		*paction = action;
 		free(s1);
 		return 0;
 	}
@@ -559,7 +560,6 @@ static int GetResizeArguments(
 			break;
 		}
 	}
-	s1 = NULL;
 	if (has_frame_option)
 	{
 		w_add = 0;
@@ -569,10 +569,11 @@ static int GetResizeArguments(
 	{
 		w_add = sb->total_size.width;
 		h_add = sb->total_size.height;
+	}
+	s1 = NULL;
 		if (token != NULL)
-		{
-			s1 = safestrdup(token);
-		}
+	{
+		s1 = safestrdup(token);
 	}
 	naction = GetNextToken(naction, &s2);
 	if (!s2)

@@ -1318,6 +1318,18 @@ void CMD_Next(F_CMD_ARGS)
 void CMD_None(F_CMD_ARGS)
 {
 	circulate_cmd(F_PASS_ARGS, C_ROOT, 1, False, False);
+	/* invert return code */
+	switch (cond_rc->rc)
+	{
+	case COND_RC_OK:
+		cond_rc->rc = COND_RC_NO_MATCH;
+		break;
+	case COND_RC_NO_MATCH:
+		cond_rc->rc = COND_RC_OK;
+		break;
+	default:
+		break;
+	}
 
 	return;
 }

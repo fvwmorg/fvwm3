@@ -2782,14 +2782,33 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
    the first time and closes it if used a second time.  Although it
    is not obvious how to do this, it is possible.  Let's assume you
    need a menu item that toggles an FvwmConsole window on and off.
-   Then put the following lines in your config:
+
+   Then put the following lines in your config (for fvwm-2.5.11 or
+   later):
 
      AddToFunc ToggleFvwmConsole
-     + I None (FvwmConsole, CirculateHit) Module FvwmConsole
-     + I Next (FvwmConsole, CirculateHit, CurrentPage, Visible) Close
-     + I Next (FvwmConsole, CirculateHit) MoveToDesk
-     + I Next (FvwmConsole, CirculateHit) MoveToPage
-     + I Next (FvwmConsole, CirculateHit) Raise
+     + I ToggleWindow FvwmConsole "Module FvwmConsole"
+
+     # Application toggling function
+     # First argument is the window name, second argument is the
+     # command to start the application.
+     AddToFunc ToggleWindow
+     + I None ($$0, CirculateHit) $$1
+     + I TestRc (Match) Break
+     + I Next (currentpage, visible, !iconic, $$0, CirculateHit) Close
+     + I TestRc (Match) Break
+     + I Next ($$0, CirculateHit) Function MakeVisible
+
+     # Helper function
+     AddToFunc MakeVisible
+     + I MoveToDesk
+     + I MoveToPage
+     + I MoveToScreen
+     + I Raise
+     + I Iconify off
+     + I WindowShade off
+
+   To invoke the function, you can add it to a menu
 
      AddToMenu <some menu>
      + "toggle FvwmConsole" Function ToggleFvwmConsole
@@ -2800,28 +2819,39 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
    The lines with MoveToDesk, MoveToPage and Raise will bring the
    window to the top of the current page if it is not visible
-   instead of closing it.
+   instead of closing it.  The generic function ToggleWindow can be
+   reused to toggle all kinds of windows.
 
    If you want to toggle one specific window, e.g. an xterm, but
    still want to have other xterms that are not toggled, you must
    give the window an unique name:
 
+
+     AddToFunc RunXMessages
+     + I Exec exec xterm -T XMessages -n XMessages \
+         -e tail -f /var/adm/?* ~/.X.err
+
      AddToFunc ToggleXMessages
-     + I None (XMessages, CirculateHit) Exec exec \
-       xterm -T XMessages -n XMessages -e tail -f /var/adm/?* ~/.X.err
-     + I Next (XMessages, CirculateHit) Close
-
-   (CirculateHit is needed for windows with Style CirculateSkip.)
-   Or for a toggling Netscape button:
-
-     AddToFunc ToggleNetscape
-     + I None (Navigator) Exec exec netscape
-     + I All (Navigator) Close
+     + I ToggleWindow XMessages "Function RunXMessages"
 
    Keep in mind that these functions simply check if a window with
    the specified name exists.  They will happily close manually
    opened windows or launch an application multiple times if the
    application is slow to start (e.g. like netscape).
+
+   For fvwm-2.5.10 or earlier, these functions should work too:
+
+     AddToFunc ToggleFvwmConsole
+     + I None (FvwmConsole, CirculateHit) Module FvwmConsole
+     + I Next (FvwmConsole, CirculateHit, CurrentPage, Visible) Close
+     + I Next (FvwmConsole, CirculateHit) MoveToDesk
+     + I Next (FvwmConsole, CirculateHit) MoveToPage
+     + I Next (FvwmConsole, CirculateHit) Raise
+
+     AddToFunc ToggleXMessages
+     + I None (XMessages, CirculateHit) Exec exec \
+       xterm -T XMessages -n XMessages -e tail -f /var/adm/?* ~/.X.err
+     + I Next (XMessages, CirculateHit) Close
 
 ----------------------------------------------------------------------
 

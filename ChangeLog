@@ -1,3 +1,13 @@
+2004-07-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (GetResizeArguments):
+	(GetMoveArguments):
+	fixed parsing of the frame option to the resize command and the pointer
+	option to the move command
+
+	* fvwm/conditional.c (CMD_None):
+	Fixed CMD_None return code
+
 2004-07-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c (is_above_unmanaged):
@@ -9978,7 +9988,7 @@
 	locale as the Xlib prog man says to do it. Use it in fvwm.c. There is
 	also a function to get the charset (from ewmh_name.c) and which
 	setlocale if this has not been done with the above function. This
-	function is also call at fvwm2 init
+	function is also called at fvwm2 startup
 
 	* fvwm/ewmh_names.c (charset_to_utf8):
 	(utf8_to_charset):

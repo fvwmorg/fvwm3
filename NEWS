@@ -572,6 +572,8 @@ Changes in alpha release 2.5.1 (26-Apr-2002)
 
 * New weighted sorting in FvwmIconMan.
 
+* New conditional command ThisWindow.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.0 (27-Jan-2002)

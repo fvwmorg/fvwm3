@@ -2354,7 +2354,7 @@ option when destroying the menu), do not forget to add the dynamic
 action again.
 
 Note: Do not trigger actions that require user interaction. They
-will probably fail and may screw up your menus.  See
+will probably fail and may screw up your menus.  See the
 .B Silent
 command.
 
