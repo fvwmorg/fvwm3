@@ -582,7 +582,7 @@ void SetTransparentBackground(button_info *ub,int w,int h)
       {
 	if (Ffont->font)
 	  XSetFont(Dpy,trans_gc,Ffont->font->fid);
-	DrawTitle(b,pmap_mask,trans_gc,NULL);
+	DrawTitle(b,pmap_mask,trans_gc,NULL,True);
       }
     }
     XSetRegion(Dpy, trans_gc, shape_r);
@@ -971,8 +971,8 @@ void Loop(void)
 	      ey2= Event.xexpose.y+Event.xexpose.height;
 	      while (FCheckTypedWindowEvent(Dpy, MyWindow, Expose, &Event))
 	      {
-		      /* maybe we should not purge here, this may 
-		       * interfer with configure notify */
+		      /* maybe we should not purge here, this may interfere
+		       * with configure notify */
 		      ex = min(ex, Event.xexpose.x);
 		      ey = min(ey, Event.xexpose.y);
 		      ex2 = max(ex2, Event.xexpose.x + Event.xexpose.width);
@@ -1426,7 +1426,7 @@ void Loop(void)
       } /* switch */
     } /* event handling */
   } /* while */
-  
+
 }
 
 /**
@@ -2445,7 +2445,7 @@ static void change_colorset(int colorset, XEvent *Event)
 	recursive_change_colorset(
 		UberButton->c, colorset, Event);
 
-	
+
 	return;
 }
 

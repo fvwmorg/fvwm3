@@ -242,7 +242,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	BH = buttonHeight(b);
 	buttonInfo(b,&x,&y,&px,&py,&f);
 	GetInternalSize(b,&ix,&iy,&iw,&ih);
-	
+
 	/* This probably isn't the place for this, but it seems to work here
 	 * and not elsewhere, so... */
 	if((b->flags & b_Swallow) && (buttonSwallowCount(b)==3) &&
@@ -306,7 +306,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 	if (b->flags&b_Action)
 	{
-		/* If this is a Desk button that takes you to here.. */ 
+		/* If this is a Desk button that takes you to here.. */
 		int n;
 
 		for (n = 0; n < 4; n++)
@@ -371,7 +371,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	if(clean && BW>2*f && BH>2*f)
 	{
 		Bool do_draw = True;
-			
+
 		gcv.foreground = bc;
 		XChangeGC(Dpy,NormalGC,GCForeground,&gcv);
 		clip.x = x+f;
@@ -387,7 +387,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				   &clip));
 
 		if(b->flags&b_Container)
-		{			
+		{
 			if (b->c->flags & b_Colorset)
 			{
 				if (do_draw)
@@ -427,7 +427,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 					lw = w2;
 					lh = h;
 				}
-				if(h1)	
+				if(h1)
 				{
 					lw = w;
 					lh = h1;
@@ -459,7 +459,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 		else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
 			 b->flags&b_Colorset)
 		{
-			/* Set the back color of the buttons for shaped apps 
+			/* Set the back color of the buttons for shaped apps
 			 * (olicha 00-03-09) and also for transparent modules */
 			if (do_draw)
 			{
@@ -485,7 +485,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				cleaned = True;
 				SetClippedRectangleBackground(
 					Dpy, MyWindow, x+f, y+f, BW-2*f, BH-2*f,
-					&clip, 
+					&clip,
 					&Colorset[b->colorset],
 					Pdepth,
 					NormalGC);
@@ -526,7 +526,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 	if(cleaned && (b->flags&b_Title))
 	{
-		DrawTitle(b,MyWindow,NormalGC,pev);
+		DrawTitle(b,MyWindow,NormalGC,pev,False);
 	}
 
 	if (!(b->flags&b_Title) && (b->flags & b_Panel) &&
@@ -538,7 +538,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 		/* draw the panel indicator, but not if there is a title */
 		/* FIXEME: and if we have an icon */
-		if (b->slide_direction != SLIDE_GEOMETRY && 
+		if (b->slide_direction != SLIDE_GEOMETRY &&
 		    b->indicator_size != 0 && (b->indicator_size & 1) == 0)
 		{
 			/* make sure we have an odd number */
@@ -622,10 +622,10 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 }
 
 /**
-*** DrawTitle()
 *** Writes out title.
 **/
-void DrawTitle(button_info *b,Window win,GC gc, XEvent *pev)
+void DrawTitle(
+	button_info *b,Window win,GC gc, XEvent *pev, Bool do_not_modify_fg)
 {
 	int BH;
 	int ix,iy,iw,ih;
@@ -652,14 +652,18 @@ void DrawTitle(button_info *b,Window win,GC gc, XEvent *pev)
 	}
 
 	cset = buttonColorset(b);
-	gcm = GCForeground;
-	if (cset >= 0)
+	gcm = 0;
+	if (do_not_modify_fg == False)
 	{
-		gcv.foreground = Colorset[cset].fg;
-	}
-	else
-	{
-		gcv.foreground = buttonFore(b);
+		gcm |= GCForeground;
+		if (cset >= 0)
+		{
+			gcv.foreground = Colorset[cset].fg;
+		}
+		else
+		{
+			gcv.foreground = buttonFore(b);
+		}
 	}
 	if (Ffont->font)
 	{
@@ -749,7 +753,7 @@ void DrawTitle(button_info *b,Window win,GC gc, XEvent *pev)
 			FwinString.y =
 				iy + (ih+ Ffont->ascent - Ffont->descent)/2;
 		}
-		
+
 		clip.x = FwinString.x;
 		clip.y = FwinString.y - Ffont->ascent;
 		clip.width = i;

@@ -28,7 +28,6 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Strings.h"
 #include "FvwmButtons.h"
@@ -340,11 +339,9 @@ void parse_message_line(char *line)
 		}
 
 		RedrawButton(b, DRAW_FORCE, NULL);
-		if (FShapesSupported)
+		if (UberButton->c->flags & b_TransBack)
 		{
-			if (UberButton->c->flags & b_TransBack)
-				SetTransparentBackground(
-					UberButton, Width, Height);
+			SetTransparentBackground(UberButton, Width, Height);
 		}
 		break;
 

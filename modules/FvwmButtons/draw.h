@@ -36,5 +36,6 @@
 void RelieveButton(Window,int,int,int,int,int,Pixel,Pixel,int);
 void MakeButton(button_info*);
 void RedrawButton(button_info*, int draw, XEvent *pev);
-void DrawTitle(button_info*, Window, GC gc ,XEvent *pev);
+void DrawTitle(
+	button_info *b,Window win,GC gc, XEvent *pev, Bool do_not_modify_fg);
 

@@ -1,3 +1,13 @@
+2002-11-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground):
+	* FvwmButtons/draw.c (RedrawButton):
+	(DrawTitle):
+	fixed FvwmButtons transparency with "Pixmap none"
+
+	* FvwmButtons/dynamic.c (parse_message_line):
+	removed FShape.h dependency
+
 2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmProxy/FvwmProxy.c:
