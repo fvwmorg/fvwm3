@@ -310,11 +310,13 @@ int parseFvwmMessage(char *msg) {
     strcpy(mg.dragTypeStr,"text/uri-list");
   }
 
-  if (dragData == NULL)
+  if (dragData == NULL || *dragData == 0) {
     mg.dragState = DRAGWELLMENU_NO_DRAG_ITEM;
-  else {
+    dragBut.state = DRAGWELL_BUTTON_NOT_PUSHED;
+  } else {
     mg.dragState = DRAGWELLMENU_HAVE_DRAG_ITEM;
     strcpy(mg.dragData, dragData);
+    dragBut.state = DRAGWELL_BUTTON_PUSHED;
   }
 
   /*setup a drag*/
