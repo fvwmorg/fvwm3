@@ -1,35 +1,33 @@
 New items
 
-  183, 184
+  none
 
 Closed recently:
 
-  92, 179
+  182, 183, 184
 
 ---------- Summary: ----------------------------------------------
 
  0 to be verified
  0 to be discussed
- 3 to do
- 5 distribution issues
+ 2 to do
+ 3 distribution issues
  1 testing
 ----------------------
-  9 open items
-175 items closed/postponed
+  6 open items
+178 items closed/postponed
 184 items in total
 
 ---------- To be verified: ---------------------------------------
 
 ---------- To be discussed ---------------------------------------
 
---------- To do: ------------------------------------------------
+--------- To do: -------------------------------------------------
 
 177) Investigate problem with FvwmButton panel animation with one
      step w/ exceed.
      [Dan]
 178) Fix incompatible function names in FvwmCommand perl module.
-183) Fix remaining session management bugs.
-     [in progress]
 
 ---------- Distribution issues: ----------------------------------
 
@@ -39,9 +37,6 @@ Closed recently:
      will, multiple copies have to be kept on the home page.
 181) Adapt fvwm24_convert script to handle new placement styles
      names.
-182) Update placement style names in sample configuration files.
-184) Adapt fvwm24_convert script to warn users about new
-     FvwmButtons panel syntax.
 
 ---------- Testing: ----------------------------------------------
 
@@ -50,28 +45,10 @@ Closed recently:
 
 ---------- Closed recently: --------------------------------------
 
- 33) Test the GNOME patches.
-     [skipped, patches are simple, fix problems when they show up]
- 35) Test the strokes patch.
-     [skipped, patches are simple, fix problems when they show up]
- 36) Test the new menu styles (ItemFormat and menu layout)
- 92) Test session management restart code.
- 94) Test colour set support in modules and fvwm.
-     [skipped, tested thoroughly in Fvwm-theme]
- 95) Test new panel implementation in FvwmButtons.
-105) Test binding code.
-106) Test window position code.
-     [skipped, code has been around for 2 years without problems]
-168) Fix SIGCHLD handling in Piperead which interrupts select().
-169) Clean up placement algorithm.
-170) Update man page for Restart command w/ multi head.
-171) With virtually any border config, when moving opaqually, the borders of
-     all underlying windows flick a lot. There is no any flicking in 2.2.x.
-     [reported by Mikhael]
-173) Reword panel description in FvwmButtons man page.
-174) Disable stack ring debugging code for release (stack.c).
-175) Fix busy wait in menus.
-176) Check if sample configuration files are up to date.
+182) Update placement style names in sample configuration files.
+183) Fix remaining session management bugs.
+184) Adapt fvwm24_convert script to warn users about new
+     FvwmButtons panel syntax.
 
 ---------- Postponed until after 2.4: ----------------------------
 
@@ -185,6 +162,11 @@ Closed recently:
  29) Fix the pager bugs I reported recently.
  30) Fix the broken size hints of FvwmWinList (in fvwm itself).
  31) 'Maximize grow grow' works only on the current page.
+ 33) Test the GNOME patches.
+     [skipped, patches are simple, fix problems when they show up]
+ 35) Test the strokes patch.
+     [skipped, patches are simple, fix problems when they show up]
+ 36) Test the new menu styles (ItemFormat and menu layout)
  37) Fix interaction of moving with autoraising icon titles.
  38) Investigate bug #389. (StartsOnDesk does not work)
      [configuration problem, added a warning to the code]
@@ -267,7 +249,11 @@ Closed recently:
  89) Make FvwmScript use the same visual as fvwm (prerequisite for 80)
  90) Icon distribution.
  91) Fix Xpm version problem (bug #463).
+ 92) Test session management restart code.
  93) Finish 'CREATING PANELS' section in FvwmButtons man page.
+ 94) Test colour set support in modules and fvwm.
+     [skipped, tested thoroughly in Fvwm-theme]
+ 95) Test new panel implementation in FvwmButtons.
  96) Make flat titlestyle work again.
  97) Rewrite FvwmTheme 'Colorset' syntax ala MenuStyle.
  98) Allow using colours from colour sets in fvwm commands.
@@ -283,6 +269,9 @@ Closed recently:
      [finished except UseStyle]
 103) Add recent bug reports to to-do list.
 104) Fix FvwmCommandS core dumps on X server shutdown.
+105) Test binding code.
+106) Test window position code.
+     [skipped, code has been around for 2 years without problems]
 107) "Recapture" while an icon is focused takes several seconds.
      [reported by Mikhael; confirmed by Dominik]
      [workaround implemented]
@@ -376,3 +365,12 @@ Closed recently:
 166) Update purify test scripts with fvwm24_convert
 167) Add a screenshot of Mikhael's new kitten to the fvwm-cats page.
      [obviously a show stopper] :)
+168) Fix SIGCHLD handling in Piperead which interrupts select().
+169) Clean up placement algorithm.
+170) Update man page for Restart command w/ multi head.
+171) With virtually any border config, when moving opaqually, the borders of
+     all underlying windows flick a lot. There is no any flicking in 2.2.x.
+173) Reword panel description in FvwmButtons man page.
+174) Disable stack ring debugging code for release (stack.c).
+175) Fix busy wait in menus.
+176) Check if sample configuration files are up to date.

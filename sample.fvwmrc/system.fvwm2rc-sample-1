@@ -26,7 +26,7 @@ ColormapFocus FollowsMouse
 Style *             HilightFore black, HilightBack palevioletred
 Style *             BorderWidth 5, HandleWidth 5
 Style *             Icon unknown1.xpm, Color Black/#40a0c0
-Style *             ActivePlacement, SmartPlacement
+Style *             TileManualPlacement
 Style *             MWMFunctions,MWMDecor,HintOverride
 Style *             DecorateTransient,IconBox 0 -10 -280 -1
 Style "Fvwm*"       NoTitle, NoHandles, Sticky, WindowListSkip,
@@ -38,27 +38,27 @@ Style "FvwmButtons" NoTitle, NoHandles, Sticky, WindowListSkip
 Style "FvwmButtons" BorderWidth 0, CirculateSkip
 Style "FvwmButtons" Icon toolbox.xpm,ClickToFocus
 Style "*lock"       NoTitle, NoHandles, Sticky, WindowListSkip
-Style "*lock"	    RandomPlacement
+Style "*lock"	    TileCascadePlacement
 Style "xbiff"       NoTitle, Sticky, WindowListSkip,ClickToFocus
-Style "Maker"       StartsOnDesk 1,RandomPlacement,ClickToFocus
+Style "Maker"       StartsOnDesk 1,TileCascadePlacement,ClickToFocus
 Style "matlab"      StartsOnDesk 3
 Style "signal"      StartsOnDesk 3
 Style "rxvt"        Icon  term.xpm,SloppyFocus,IconBox -70 1 -1 -140
 Style "XTerm"       Icon xterm.xpm,IconBox -70 1 -1 -140
 Style "XTerm"       Color black/#aa80aa,MWMBorder,MWMButtons
 Style "Appointment" Icon datebook.xpm, NoButton 2, NoButton 4,ClickToFocus
-Style "xcalc"       Icon xcalc.xpm, NoButton 2,RandomPlacement,ClickToFocus
+Style "xcalc"       Icon xcalc.xpm, NoButton 2,TileCascadePlacement,ClickToFocus
 Style "xmh"         Icon mail1.xpm, NoIconTitle,StickyIcon
-Style "xmh"	    RandomPlacement, StartsOnDesk 2, NoButton 2
-Style "xman"	    Icon xman.xpm,RandomPlacement,ClickToFocus
-Style "xvgr"	    Icon graphs.xpm,RandomPlacement,ClickToFocus
+Style "xmh"	    TileCascadePlacement, StartsOnDesk 2, NoButton 2
+Style "xman"	    Icon xman.xpm,TileCascadePlacement,ClickToFocus
+Style "xvgr"	    Icon graphs.xpm,TileCascadePlacement,ClickToFocus
 Style "matlab"	    Icon math4.xpm,ClickToFocus
-Style "xmag"	    Icon mag_glass.xpm,RandomPlacement, ClickToFocus
-Style "xgraph"      Icon graphs.xpm,RandomPlacement,ClickToFocus
+Style "xmag"	    Icon mag_glass.xpm,TileCascadePlacement, ClickToFocus
+Style "xgraph"      Icon graphs.xpm,TileCascadePlacement,ClickToFocus
 Style "sppeed6"     Icon math3.xpm,NoTitle,ClickToFocus
 Style "sppeed6_user" Icon math4.xpm,NoTitle
 Style "xmosaic"     NoPPosition, color Green/Yellow,ClickToFocus
-Style "MetaCard"    RandomPlacement, ClickToFocus
+Style "MetaCard"    TileCascadePlacement, ClickToFocus
 
 Key Left	A	C	Scroll -100 0
 Key Right	A	C	Scroll +100 +0

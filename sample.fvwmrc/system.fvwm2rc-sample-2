@@ -94,11 +94,9 @@ DeskTopSize 3 3
 ############################################################################
 # WINDOW Placement
 #
-# SmartPlacement makes new windows pop-up in blank regions of screen
-Style * SmartPlacement
-
-# If SmartPlacement fails, this places it randomly instead of making you do it
-Style * RandomPlacement
+# TileCascadePlacement makes new windows pop-up in blank regions of screen
+# If this fails, winows are placed randomly
+Style * TileCascadePlacement
 
 ############################################################################
 # STYLE Flag Setup

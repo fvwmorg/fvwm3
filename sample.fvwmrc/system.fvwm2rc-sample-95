@@ -326,13 +326,10 @@ Style * SloppyFocus
 Style * MouseFocusClickRaises
 
 #
-# RandomPlacement prevents user interaction while placing windows
-# SmartPlacement attempts to place windows 'intelligently'
-# Using both can be interesting. The CleverPlacement style option
-# tells FVWM to be  extra smart :-)
+# MinOverlapPlacement places window automatically in a way that attempts to be
+# place windows 'intelligent'.
 #
-Style * RandomPlacement, SmartPlacement
-Style * CleverPlacement
+Style * MinOverlapPlacement
 
 #
 # NoPPosition instructs FVWM to ignore the PPosition field in window

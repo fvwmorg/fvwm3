@@ -1,3 +1,13 @@
+2001-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/Scripts/FvwmScript-BaseConfig:
+	fixed typo
+
+	* FvwmScript/Scripts/FvwmScript-BaseConfig:
+	* FvwmScript/Scripts/system.fvwmrc:
+	* FvwmSaveDesk/example/fvwm2rc:
+	converted to new placement style names
+
 2001-03-22  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmButtons/FvwmButtons.1: When using delay, also use smooth.

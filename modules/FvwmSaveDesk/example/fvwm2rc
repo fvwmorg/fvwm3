@@ -15,8 +15,7 @@ Style "*" DecorateTransient
 #Style "*" IconBox -80 105 -1 -240
 # IconBox at the top of pager
 Style "*" IconBox -385 -240 -1 -140
-Style "*" RandomPlacement
-Style "*" SmartPlacement
+Style "*" TileCascadePlacement
 Style "*" BorderWidth 4, HandleWidth 7, Icon unknown1.xpm
 Style "*" ForeColor Black
 Style "*" BackColor grey

@@ -127,24 +127,79 @@ Init
 
    Set $pos=(Add $pos 1)
    Set $PLACEMENT=(GetOutput $CAT $pos -1)
-   If $PLACEMENT=={Style * SmartPlacement} Then
+   If $PLACEMENT=={Style * MinOverlapPlacement} Then
+    Begin
     ChangeValue 26 1
-   If $PLACEMENT=={Style * DumbPlacement} Then
+    Set $PLACEMENT={Style * MinOverlapPlacement}
+    End
+   If $PLACEMENT=={Style * MinOverlapPercentPlacement} Then
+    Begin
     ChangeValue 26 2
-
-   Set $pos=(Add $pos 1)
-   Set $INTERPLACE=(GetOutput $CAT $pos -1)
-   If $INTERPLACE=={Style * RandomPlacement} Then
-    ChangeValue 27 1
-   If $INTERPLACE=={Style * ActivePlacement} Then
-    ChangeValue 27 2
-  
-   Set $pos=(Add $pos 1)
-   Set $REALLYSMART=(GetOutput $CAT $pos -1)
-   If $REALLYSMART=={Style * CleverPlacement} Then
-    ChangeValue 28 1
-   Else
-    ChangeValue 28 0
+    Set $PLACEMENT={Style * MinOverlapPercentPlacement}
+    End
+   If $PLACEMENT=={Style * TileCascadePlacement} Then
+    Begin
+    ChangeValue 26 3
+    Set $PLACEMENT={Style * TileCascadePlacement}
+    End
+   If $PLACEMENT=={Style * CascadePlacement} Then
+    Begin
+    ChangeValue 26 4
+    Set $PLACEMENT={Style * CascadePlacement}
+    End
+   If $PLACEMENT=={Style * TileManualPlacement} Then
+    Begin
+    ChangeValue 26 5
+    Set $PLACEMENT={Style * TileManualPlacement}
+    End
+   If $PLACEMENT=={Style * ManualPlacement} Then
+    Begin
+    ChangeValue 26 6
+    Set $PLACEMENT={Style * ManualPlacement}
+    End
+   If $PLACEMENT=={Style * DumbPlacement} Then
+     Begin
+     Set $pos=(Add $pos 1)
+     Set $PLCMNTB=(GetOutput $CAT $pos -1)
+     Set $pos=(Add $pos 1)
+     Set $CLEVERNESS=(GetOutput $CAT $pos -1)
+     ChangeValue 26 6
+     Set $PLACEMENT={Style * ManualPlacement}
+     If $PLCMNTB=={Style * ActivePlacement} Then
+      Begin
+      ChangeValue 26 6
+      Set $PLACEMENT={Style * ManualPlacement}
+      End
+     If $PLCMNTB=={Style * RandomPlacement} Then
+      Begin
+      ChangeValue 26 4
+      Set $PLACEMENT={Style * CascadePlacement}
+      End
+     End
+   If $PLACEMENT=={Style * SmartPlacement} Then
+     Begin
+     Set $pos=(Add $pos 1)
+     Set $PLCMNTB=(GetOutput $CAT $pos -1)
+     Set $pos=(Add $pos 1)
+     Set $CLEVERNESS=(GetOutput $CAT $pos -1)
+     ChangeValue 26 5
+     Set $PLACEMENT={Style * TileManualPlacement}
+     If $PLCMNTB=={Style * ActivePlacement} Then
+      Begin
+      ChangeValue 26 5
+      Set $PLACEMENT={Style * TileManualPlacement}
+      End
+     If $PLCMNTB=={Style * RandomPlacement} Then
+      Begin
+      ChangeValue 26 3
+      Set $PLACEMENT={Style * TileCascadePlacement}
+      End
+     If $CLEVERNESS=={Style * CleverPlacement} Then
+      Begin
+      ChangeValue 26 1
+      Set $PLACEMENT={Style * MinOverlapPlacement}
+      End
+     End
 
    Set $pos=(Add $pos 1)
    Set $GRABFOCUS=(GetOutput $CAT $pos -1)
@@ -276,12 +331,12 @@ Init
 
    Set $pos=(Add $pos 1)
    Set $SHADESTEPS=(GetOutput $CAT $pos 4)
-   ChangeTitle 64 $SHADESTEPS
+   ChangeTitle 28 $SHADESTEPS
 
   End
-  
+
   ###########################################################################
-  #.FvwmBaseConfig does not exist or contains no "Base Style", 
+  #.FvwmBaseConfig does not exist or contains no "Base Style",
   # set the default!
   Else # .FvwmBaseConfig does not exist or , set the default!
    Begin
@@ -290,7 +345,7 @@ Init
    ChangeValue 11 1
 
    Set $MOUSERAISES={Style * MouseFocusClickRaises}
-   ChangeValue 12 1   
+   ChangeValue 12 1
    Set $CLICKRAISES={Style * ClickToFocusRaises}
    ChangeValue 13 1
    Set $PASSASCLICK={Style * ClickToFocusPassesClick}
@@ -307,12 +362,8 @@ Init
    Set $EDGETHICK={EdgeThickness 1}
    ChangeValue 24 2
 
-   Set $PLACEMENT={Style * SmartPlacement}
+   Set $PLACEMENT={Style * MinOverlapPlacement}
    ChangeValue 26 1
-   Set $INTERPLACE={Style * RandomPlacement}
-   ChangeValue 27 1
-   Set $REALLYSMART={Style * CleverPlacementOff}
-   ChangeValue 28 1
 
    Set $GRABFOCUS={Style * GrabFocusOff}
    ChangeValue 30 0
@@ -350,9 +401,9 @@ Init
    ChangeValue 62 0
 
    Set $SHADESTEPS=20
-   ChangeTitle 64 $SHADESTEPS
-
+   ChangeTitle 28 $SHADESTEPS
   End
+
  End
 
 Widget 1
@@ -397,12 +448,6 @@ Main
    Do $PLACEMENT
    WriteToFile $FILE $PLACEMENT
 
-   Do $INTERPLACE
-   WriteToFile $FILE $INTERPLACE
-
-   Do $REALLYSMART
-   WriteToFile $FILE $REALLYSMART
-
    Do $GRABFOCUS
    WriteToFile $FILE $GRABFOCUS
 
@@ -427,9 +472,9 @@ Main
    Do $EMULATE
    WriteToFile $FILE $EMULATE
 
-   Do {Style * WindowShadeSteps } (GetTitle 64)
-   WriteToFile $FILE {Style * WindowShadeSteps } (GetTitle 64)
-   
+   Do {Style * WindowShadeSteps } (GetTitle 28)
+   WriteToFile $FILE {Style * WindowShadeSteps } (GetTitle 28)
+
    Do BaseConfigOkFunc
    Quit
   End
@@ -448,14 +493,12 @@ Main
   Begin
    Do $FOCUS
    Do $MOUSERAISES
-   Do $CLICKRAISES   
+   Do $CLICKRAISES
    Do $PASSASCLICK
    Do {EdgeScroll } $HORPAGE { } $VERPAGE
    Do {EdgeResistance } (GetTitle 22) { } (GetTitle 45)
    Do $EDGETHICK
    Do $PLACEMENT
-   Do $INTERPLACE
-   Do $REALLYSMART
    Do $GRABFOCUS
    Do $PPOSITION
    Do {OpaqueMoveSize } (GetValue 41)
@@ -464,7 +507,7 @@ Main
    Do $HIDEGEO
    Do {SnapAttraction } (GetTitle 56) { }  $SNAPTYPE
    Do $EMULATE
-   Do {Style * WindowShadeSteps } (GetTitle 64)
+   Do {Style * WindowShadeSteps } (GetTitle 28)
    Do BaseConfigApplyFunc
   End
 End
@@ -500,7 +543,7 @@ Main
    ChangeValue 11 1
 
    Set $MOUSERAISES={Style * MouseFocusClickRaises}
-   ChangeValue 12 1   
+   ChangeValue 12 1
    Set $CLICKRAISES={Style * ClickToFocusRaises}
    ChangeValue 13 1
    Set $PASSASCLICK={Style * ClickToFocusPassesClick}
@@ -517,12 +560,8 @@ Main
    Set $EDGETHICK={EdgeThickness 1}
    ChangeValue 24 2
 
-   Set $PLACEMENT={Style * SmartPlacement}
+   Set $PLACEMENT={Style * MinOverlapPlacement}
    ChangeValue 26 1
-   Set $INTERPLACE={Style * RandomPlacement}
-   ChangeValue 27 1
-   Set $REALLYSMART={Style * CleverPlacementOff}
-   ChangeValue 28 1
 
    Set $GRABFOCUS={Style * GrabFocusOff}
    ChangeValue 30 0
@@ -560,8 +599,8 @@ Main
    ChangeValue 62 0
 
    Set $SHADESTEPS=20
-   ChangeTitle 64 $SHADESTEPS
-  
+   ChangeTitle 28 $SHADESTEPS
+
   End
 End
 
@@ -865,7 +904,7 @@ Property
  Position 20 235
  Flags NoReliefString
  Type ItemDraw
- Title {Windows Placement:}
+ Title {Window Placement:}
 Main
  Case message of
   SingleClic :
@@ -878,49 +917,53 @@ Property
  Position 40 255
  Flags NoReliefString
  Type PopupMenu
- Title {Smart|Dumb}
+ Title {MinOverlapPlacement|MinOverlapPercentPlacement|TileCascadePlacement|CascadePlacement|TileManualPlacement|ManualPlacement}
+
+
 Main
  Case message of
   SingleClic :
   Begin
    If (GetValue 26) == 1 Then
-    Set $PLACEMENT={Style * SmartPlacement}
+    Set $PLACEMENT={Style * MinOverlapPlacement}
    If (GetValue 26) == 2 Then
-    Set $PLACEMENT={Style * DumbPlacement}
+    Set $PLACEMENT={Style * MinOverlapPercentPlacement}
+   If (GetValue 26) == 3 Then
+    Set $PLACEMENT={Style * TileCascadePlacement}
+   If (GetValue 26) == 4 Then
+    Set $PLACEMENT={Style * CascadePlacement}
+   If (GetValue 26) == 5 Then
+    Set $PLACEMENT={Style * TileManualPlacement}
+   If (GetValue 26) == 6 Then
+    Set $PLACEMENT={Style * ManualPlacement}
   End
 End
 
 Widget 27
 Property
- Position 200 255
+ Position 340 323
  Flags NoReliefString
- Type PopupMenu
- Title {Random|Active}
+ Type ItemDraw
+ Title {Window shade animation steps:}
 Main
  Case message of
   SingleClic :
   Begin
-   If (GetValue 27) == 1 Then
-    Set $INTERPLACE={Style * RandomPlacement}
-   If (GetValue 27) == 2 Then
-    Set $INTERPLACE={Style * ActivePlacement}
   End
 End
 
+
 Widget 28
 Property
- Position 40 285
+ Position 550 320
  Flags NoReliefString
- Type CheckBox
- Title {Smart Placement is Clever}
+ Size 30 15
+ Type TextField
+ Title {}
 Main
  Case message of
   SingleClic :
   Begin
-   If (GetValue 28) == 1 Then
-    Set $REALLYSMART={Style * CleverPlacement}
-   Else
-    Set $REALLYSMART={Style * CleverPlacementOff}
   End
 End
 
@@ -1186,7 +1229,7 @@ End
 Widget 51
 Property
  Position 340 165
- Flags NoReliefStringe
+ Flags NoReliefString
  Type ItemDraw
  Title {Hide Geometry:}
 Main
@@ -1407,33 +1450,5 @@ Main
   ChangeValue 61 0
   ChangeValue 62 1
   Set $EMULATE={Emulate win}
-  End
-End
-
-Widget 63
-Property
- Position 340 323
- Flags NoReliefString
- Type ItemDraw
- Title {Window shade animation steps:}
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-
-Widget 64
-Property
- Position 550 320
- Flags NoReliefString
- Size 30 15
- Type TextField
- Title {}
-Main
- Case message of
-  SingleClic :
-  Begin
   End
 End

@@ -71,18 +71,18 @@ Style "FvwmButtons" BorderWidth 8, CirculateSkip
 Style "FvwmButtons" Icon toolbox.xpm
 Style "FvwmIdent"   Title
 Style "xbiff"       NoTitle, Sticky, WindowListSkip
-Style "Maker"       StartsOnDesk 1,RandomPlacement
+Style "Maker"       StartsOnDesk 1,CascadePlacement
 Style "rxvt"        Icon  term.xpm,SloppyFocus
 Style "XTerm"       Icon xterm.xpm
 Style "Appointment" Icon datebook.xpm, NoButton 2, NoButton 4
 Style "xcalc"       Icon xcalc.xpm, NoButton 2
 Style "xmh"         Icon mail1.xpm, NoIconTitle,StickyIcon
-Style "xmh"	    RandomPlacement, StartsOnDesk 2, NoButton 2
-Style "xman"	    Icon xman.xpm,RandomPlacement
-Style "xvgr"	    Icon graphs.xpm,RandomPlacement
+Style "xmh"	    CascadePlacement, StartsOnDesk 2, NoButton 2
+Style "xman"	    Icon xman.xpm,CascadePlacement
+Style "xvgr"	    Icon graphs.xpm,CascadePlacement
 Style "matlab"	    Icon math4.xpm
-Style "xmag"	    Icon mag_glass.xpm,RandomPlacement
-Style "xgraph"      Icon graphs.xpm,RandomPlacement
+Style "xmag"	    Icon mag_glass.xpm,CascadePlacement
+Style "xgraph"      Icon graphs.xpm,CascadePlacement
 Style "sppeed6"     Icon math3.xpm,NoTitle
 Style "sppeed6_user" Icon math4.xpm,NoTitle
 Style "xmosaic"     NoPPosition, color Green/Yellow

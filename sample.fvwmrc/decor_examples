@@ -175,7 +175,7 @@ AddToMenu Window-Ops2   "Move"%mov_mico.xpm%            Move-or-Raise
                   DecorateTransient, HintOverride, \
                   Icon fvwm2/default.xpm, MiniIcon fvwm2/jball.xpm, \
                   StickyIcon, IconBox 3 -20 -1 -1, \
-                  RandomPlacement, SmartPlacement, \
+                  TileCascadePlacement, \
                   MWMDecor, MWMFunctions, \
                   Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*, \
                   HilightFore Black, HilightBack DeepSkyBlue
@@ -193,6 +193,4 @@ AddToMenu Window-Ops2   "Move"%mov_mico.xpm%            Move-or-Raise
   Style "FvwmTalk"    WindowListHit,  Slippery, Title, BorderWidth 5
   Style "FvwmConsole" WindowListHit,  Slippery, Title, BorderWidth 5
 
-#---------------------------------------------------------------------
-#---------------------------------------------------------------------
 #---------------------------------------------------------------------

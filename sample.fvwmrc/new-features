@@ -185,8 +185,7 @@ OpaqueMoveSize 50
 #  We set up some global defaults here for all windows.
 Style "*" ForeColor grey40
 Style "*" BackColor #11236b
-Style "*" SmartPlacement
-Style "*" RandomPlacement
+Style "*" TileCascadePlacement
 Style "*" StickyIcon
 Style "*" IconBox	5 -50 -134 -5
 Style "*" BorderWidth 5, HandleWidth 5

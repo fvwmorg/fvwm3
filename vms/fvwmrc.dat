@@ -53,7 +53,7 @@ AddToDecor AllWindowsDecor
 
 #Style AllWindowsStyle UseDecor AllWindowsDecor, Color Black/#bbbbbb, HandleWidth 10, NoIcon
 Style AllWindowsStyle UseDecor AllWindowsDecor, Color Black/#bbbbbb, HandleWidth 10
-Style AllWindowsStyle ShowMapping, SloppyFocus, RandomPlacement, SmartPlacement, HintOverride, DecorateTransient
+Style AllWindowsStyle ShowMapping, SloppyFocus, TileCascadePlacement, HintOverride, DecorateTransient
 
 Style AllWindowsStyle Font lucidasans-bolditalic-12, HilightFore white, HilightBack #606060
 

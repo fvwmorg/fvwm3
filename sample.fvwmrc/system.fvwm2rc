@@ -24,7 +24,7 @@ Style *           MWMFunctions, MWMDecor, HintOverride
 Style *           DecorateTransient, NoPPosition
 Style *           IconBox 0 -10 -280 -1
 Style *           FocusFollowsMouse
-Style *           RandomPlacement, SmartPlacement
+Style *           TileCascadePlacement
 
 # Styles for various Fvwm modules:
 Style "Fvwm*"       NoTitle,  Sticky, WindowListSkip
@@ -41,12 +41,12 @@ Style "rxvt"        MWMBorder, MWMButtons
 # Styles for various common programs:
 Style "*lock"       NoTitle, NoHandles, Sticky, WindowListSkip, ClickToFocus
 Style "xbiff"       NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "xcalc"       Icon xcalc.xpm, NoButton 2,RandomPlacement,ClickToFocus
+Style "xcalc"       Icon xcalc.xpm, NoButton 2,ClickToFocus
 Style "xmh"         Icon mail1.xpm, NoIconTitle,StickyIcon
-Style "xmh"	    RandomPlacement, NoButton 2
-Style "xman"	    Icon xman.xpm, RandomPlacement, ClickToFocus
-Style "xmag"	    Icon mag_glass.xpm, RandomPlacement, ClickToFocus
-Style "xgraph"      Icon graphs.xpm, RandomPlacement, ClickToFocus
+Style "xmh"	    NoButton 2
+Style "xman"	    Icon xman.xpm, ClickToFocus
+Style "xmag"	    Icon mag_glass.xpm, ClickToFocus
+Style "xgraph"      Icon graphs.xpm, ClickToFocus
 Style "xmosaic"     Color Green/Yellow, ClickToFocus
 
 
