@@ -194,7 +194,7 @@ HandleSelectionRequest ()
 void
 HandleSelectionClear ()
 {
-  fvwm_msg(INFO, "HandleSelectionClear", "I lost my selection!");
+  DBUG("HandleSelectionClear", "I lost my selection!");
   Done(0, NULL);
 }
 

@@ -48,6 +48,11 @@ typedef struct name_list_struct
   unsigned long on_buttons;
   unsigned long off_buttons;
   int layer;
+  struct {
+    unsigned has_layer : 1; /* has layer been set explicitly ? */
+    unsigned starts_lowered : 1;
+    unsigned has_starts_lowered : 1; /* has starts_lowered been set ? */
+  } tmpflags;
 } name_list;
 
 /* used for parsing configuration */

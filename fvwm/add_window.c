@@ -698,11 +698,25 @@ FvwmWindow *AddWindow(Window w)
 	}
     }
 #ifndef SESSION
-  RaiseWindow(tmp_win);
+  if (styles.tmpflags.starts_lowered)
+    {
+      LowerWindow (tmp_win);
+    }
+  else 
+    {
+      RaiseWindow (tmp_win);
+    }
 #else
   if (tmp_win->stack_prev == &Scr.FvwmRoot) {
-    /* RaiseWindow will put the window in its layer */
-    RaiseWindow(tmp_win);
+    /* RaiseWindow/LowerWindow will put the window in its layer */
+    if (styles.tmpflags.starts_lowered)
+      {
+	LowerWindow (tmp_win);
+      }
+    else 
+      {
+	RaiseWindow (tmp_win);
+      }
   } else {
     XWindowChanges xwc;
     xwc.sibling = tmp_win->stack_next->frame;
@@ -1155,6 +1169,11 @@ static void merge_styles(name_list *styles, name_list *nptr) {
   if(nptr->IconBoxes != NULL) {         /* If style has iconboxes */
     styles->IconBoxes = nptr->IconBoxes; /* copy it */
   }
-  styles->layer = nptr->layer;
+  if (nptr->tmpflags.has_layer) {
+    styles->layer = nptr->layer;
+  }
+  if (nptr->tmpflags.has_starts_lowered) {
+    styles->tmpflags.starts_lowered = nptr->tmpflags.starts_lowered;
+  }
   return;                               /* return */
 }

@@ -1,3 +1,24 @@
+1999-03-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/module.c (KillModule): remove spurious debug message.
+
+1999-03-16  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/misc.h (name_list_struct): add starts_lowered and
+	has_starts_lowered to tmpflags bitfield.
+	* fvwm/add_window.c (AddWindow): 
+	* fvwm/style.c (ProcessNewStyle): implement
+	StartsLowered/StartRaised style flags.	
+	* NEWS: 
+	* fvwm/fvwm2.1: document StartsLowered/StartsRaised.
+	
+	* fvwm/icccm2.c (HandleSelectionClear): remove spurious fvwm_msg.
+
+	* fvwm/misc.h (name_list_struct): add flag has_layer in a new
+	tmpflags bitfield.
+	* fvwm/style.c (ProcessNewStyle): set has_layer.
+	* fvwm/add_window.c (merge_styles): use has_layer.
+
 1999-03-16  Tomas Ogren  <stric@ing.umu.se>
 
 	* modules/FvwmGtk/Makefile.am: Added GTK_CFLAGS and friends, the values

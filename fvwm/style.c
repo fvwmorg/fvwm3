@@ -497,6 +497,7 @@ void ProcessNewStyle(XEvent *eventp,
 	    GETWORD;
 	    restofline = tmp;
 	    SKIPSPACE;
+	    tname.tmpflags.has_layer = 1;
 	  }
         break;
       case 'm':
@@ -771,6 +772,18 @@ void ProcessNewStyle(XEvent *eventp,
           SKIP("STARTSANYWHERE");
           tname.on_flags |= STARTSONDESK_FLAG;
         }
+        else if (ITIS("STARTSLOWERED"))
+	{
+          SKIP("STARTSLOWERED");
+	  tname.tmpflags.has_starts_lowered = 1;
+	  tname.tmpflags.starts_lowered = 1;
+	}
+        else if (ITIS("STARTSRAISED"))
+	{
+          SKIP("STARTSRAISED");
+	  tname.tmpflags.has_starts_lowered = 1;
+	  tname.tmpflags.starts_lowered = 0;
+	}
         break;
       case 't':
         if(ITIS("TITLE"))

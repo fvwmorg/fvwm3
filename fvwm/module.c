@@ -312,9 +312,6 @@ int HandleModuleInput(Window w, int channel)
   n = read(readPipes[channel],text, size);
   if(n < size)
     {
-      if (n == -1)
-	perror ("while reading from module:");
-      fprintf(stderr, "Module read[%d] (%dy): `%s'", n, size, text); 
       KillModule(channel,2);
       return 0;
     }
@@ -388,7 +385,7 @@ RETSIGTYPE DeadPipe(int nonsense)
 
 void KillModule(int channel, int place)
 {
-  fprintf(stderr, "KillModule %i\n", place);
+  DBUG("KillModule %i\n", place);
   close(readPipes[channel]);
   close(writePipes[channel]);
 
@@ -703,8 +700,6 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
       }
     }
     if (e <= 0) {
-      if (e == -1)
-	perror ("while reading from module:");
       KillModule(module,10);
     }
     fcntl(readPipes[module],F_SETFL,O_NDELAY);

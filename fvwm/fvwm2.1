@@ -2482,7 +2482,8 @@ OLDecor/NoOLDecor, StickyIcon/SlipperyIcon,
 SmartPlacement/DumbPlacement, RandomPlacement/ActivePlacement,
 DecorateTransient/NakedTransient, SkipMapping/ShowMapping, UseDecor,
 UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
-ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse.
+ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse,
+StartsLowered/StartsRaised.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -2678,6 +2679,9 @@ such position can be found user placement or random placement (if
 specified) will be used as a fall-back method.  For the best of all
 possible worlds use both RandomPlacement and SmartPlacement.
 
+\fIStartsLowered\fP instructs fvwm to put the window initially at the 
+bottom of its layer rather than the default \fIStartsRaised\fP.
+ 
 An example:
 .EX
 # Change default fvwm2 behavior to no title-
