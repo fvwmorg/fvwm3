@@ -1,3 +1,11 @@
+1999-03-11  Hippo
+
+	* fvwm/borders.c (SetBorder): rewritten the frame drawing code to restore
+	FvwmBorder style look.  Resize handles are now InputOnly windows and all
+	border drawing happens in FvwmWindow->frame. Less code and makes
+	"BorderStyle DGradient" feasible.
+	* libs/Graphics.c: fixed memory leak
+
 Fri Mar 12 08:51:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Graphics.c (RelieveWindowGC): replaced dynamic array size

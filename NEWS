@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* NoInset is independent from HiddenHandles, it now works on NoHandles style
+  windows.
+  
 * Made FvwmPager a bit simpler. Added -transient options to bind a transient
   pager to mouse buttons (see FvwmPager man page for an example).
 
