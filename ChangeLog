@@ -2,6 +2,8 @@
 
 	* fvwm/menus.c (MenuInteraction):
 	fixed menus no longer popping up or down under certain circumstances
+	(MenuInteraction):
+	small performance enhancement for non animated menus
 
 2001-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
 

@@ -617,7 +617,8 @@ int main(int argc, char **argv)
   }
 
   restart_state_filename =
-    safestrdup(CatString3(fvwm_userdir, "/.fs-restart-", getenv("HOSTDISPLAY")));
+    safestrdup(
+      CatString3(fvwm_userdir, "/.fs-restart-", getenv("HOSTDISPLAY")));
   if (!state_filename && Restarting)
     state_filename = restart_state_filename;
 

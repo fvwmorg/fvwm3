@@ -1,4 +1,4 @@
-/* 
+/*
  * Fvwm command input interface.
  *
  * Copyright 1998, Toshi Isogai.

@@ -2233,8 +2233,8 @@ static void MenuInteraction(
       /* Now check whether we can animate the current popup menu back to the
        * original place to unobscure the current menu;	this happens only when
        * using animation */
-      tmi = find_entry(NULL, &tmrMi);
-      if (mrPopup && MR_XANIMATION(mrPopup) && tmi &&
+      if (mrPopup && MR_XANIMATION(mrPopup) &&
+	  (tmi = find_entry(NULL, &tmrMi))  &&
 	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
       {
 	DBUG("MenuInteraction","Moving the popup menu back over");
