@@ -1,5 +1,8 @@
 1999-10-02  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/events.c (HandlePropertyNotify): limits names of icons/windows
+	to 200 characters to prevent hanging X server
+
 	* fvwm/style.c (ProcessNewStyle): fixed multiple icon boxes broken with
 	latest style changes
 

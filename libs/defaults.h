@@ -64,4 +64,9 @@
  * two samples */
 #define MAX_PAGING_MOVE_DISTANCE          5
 
+/* Very long window names (600000 characters or more) seem to hang the X
+ * server. */
+#define MAX_WINDOW_NAME_LEN               200
+#define MAX_ICON_NAME_LEN                 200
+
 #endif /* _DEFAULTS_ */

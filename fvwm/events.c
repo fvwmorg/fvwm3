@@ -268,18 +268,6 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   /* Since key presses and button presses are grabbed in the frame
    * when we have re-parented windows, we need to find out the real
    * window where the event occured */
-#if 0
-  /* domivogt (2-Jan-1999): Causes a bug with ClickToFocus.
-   * keys and buttons are treated differently here because keys are bound to
-   * the frame window and buttons are bound to the client window (with
-   * XGrabKey/XGrabButton). */
-  if((e->type == KeyPress)&&(e->xkey.subwindow != None))
-    *w = e->xkey.subwindow;
-
-  if((e->type == ButtonPress)&&(e->xbutton.subwindow != None)&&
-     ((e->xbutton.subwindow == t->w)||(e->xbutton.subwindow == t->Parent)))
-    *w = e->xbutton.subwindow;
-#else
   if(e->xkey.subwindow != None)
     {
       if (e->type == KeyPress)
@@ -292,7 +280,6 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 	 * that no visible part of the FvwmWindow has. */
 	*w = e->xbutton.subwindow;
     }
-#endif
 
   if (*w == Scr.Root)
     Context = C_ROOT;
@@ -481,9 +468,6 @@ void HandleKeyPress(void)
  *	HandlePropertyNotify - property notify event handler
  *
  ***********************************************************************/
-#define MAX_NAME_LEN 200L		/* truncate to this many */
-#define MAX_ICON_NAME_LEN 200L		/* ditto */
-
 void HandlePropertyNotify(void)
 {
   XTextProperty text_prop;
@@ -535,8 +519,8 @@ void HandlePropertyNotify(void)
     case XA_WM_NAME:
 #ifdef I18N_MB
       if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
-			      MAX_NAME_LEN, False, AnyPropertyType, &actual,
-			      &actual_format, &nitems, &bytesafter,
+			      MAX_WINDOW_NAME_LEN, False, AnyPropertyType,
+			      &actual, &actual_format, &nitems, &bytesafter,
 			      (unsigned char **) &prop) != Success ||
 	  actual == None)
 	return;
@@ -583,6 +567,9 @@ void HandlePropertyNotify(void)
 	return;
       free_window_names (Tmp_win, True, False);
       Tmp_win->name = (char *)text_prop.value;
+      if (Tmp_win->name && strlen(Tmp_win->name) > MAX_WINDOW_NAME_LEN)
+	/* limit to prevent hanging X server */
+	Tmp_win->name[MAX_WINDOW_NAME_LEN] = 0;
 #endif
 
       SET_NAME_CHANGED(Tmp_win, 1);
@@ -612,8 +599,8 @@ void HandlePropertyNotify(void)
     case XA_WM_ICON_NAME:
 #ifdef I18N_MB
       if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
-			      MAX_NAME_LEN, False, AnyPropertyType, &actual,
-			      &actual_format, &nitems, &bytesafter,
+			      MAX_ICON_NAME_LEN, False, AnyPropertyType,
+			      &actual, &actual_format, &nitems, &bytesafter,
 			      (unsigned char **) &prop) != Success ||
 	  actual == None)
 	return;
@@ -659,6 +646,10 @@ void HandlePropertyNotify(void)
 	return;
       free_window_names (Tmp_win, False, True);
       Tmp_win->icon_name = (char *) text_prop.value;
+      if (Tmp_win->icon_name && strlen(Tmp_win->icon_name) >
+	  MAX_ICON_NAME_LEN)
+	/* limit to prevent hanging X server */
+	Tmp_win->icon_name[MAX_ICON_NAME_LEN] = 0;
 #endif
       if (Tmp_win->icon_name == NULL)
         Tmp_win->icon_name = NoName;
