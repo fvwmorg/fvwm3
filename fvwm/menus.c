@@ -1184,8 +1184,8 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
       Bool fDefaultLeft;
       Bool fEmergencyLeft;
 
-      x_offset = prev_width * menu->ms->feel.PopupOffsetPercent / 100 +
-	menu->ms->feel.PopupOffsetAdd;
+      x_offset = prev_width * menuPrior->ms->feel.PopupOffsetPercent / 100 +
+	menuPrior->ms->feel.PopupOffsetAdd;
       left_x = prev_x - menu->width + 2;
       right_x = prev_x + x_offset;
       if (x_offset > prev_width - 2)

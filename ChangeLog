@@ -1,3 +1,8 @@
+1999-02-18  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (FPopupMenu): use menu style of parent menu for popup
+	offset instead of own menu style.
+
 Wed Feb 17 08:24:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: Clear cache variables relating to
