@@ -1,3 +1,12 @@
+1999-04-30  Dan Espen  <dane@mk.bellcore.com>
+
+	* man-pages.html: This file is now obsolete, and removed.
+
+	* README: New instructions for using run_man2html.sh.
+
+	* run_man2html.sh: Do all the man pages using "find" and generate the
+ 	man page index.
+
 Mon Apr 26 13:13:02 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* links.html: add link to fvwm2gnome page.
