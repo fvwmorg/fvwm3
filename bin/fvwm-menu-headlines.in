@@ -954,9 +954,9 @@ B<--wm-icons> - define icon names suitable for use with wm-icons package.
 Currently this is equivalent to: --icon-title '' --icon-item
 menu/information.xpm --icon-home menu/home.xpm --icon-error menu/choice-no.xpm.
 
-B<--frontpage> [where] - show site fronpage item in the menu too. Optional
-value can be used to specify where this item will be placed in the menu -
-'top' or 't', 'bottom' or 'b'.
+B<--frontpage> [where] - add the site frontpage item to the menu.
+Optional value can be used to specify where this item will be placed in
+the menu - 'top' or 't', 'bottom' or 'b'.
 
 B<--proxy> host[:port] - define a proxy to use.
 Example: --proxy proxy.inter.net:3128

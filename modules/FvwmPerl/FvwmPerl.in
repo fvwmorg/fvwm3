@@ -421,7 +421,7 @@ B<-l>|B<--load> file - evaluate perl code in the given file
 
 B<-p>|B<--preprocess> file - preprocess the given fvwmrc file
 
-B<-c>|B<--command> line - an FVWM command to be preprocessed intead of file
+B<-c>|B<--command> line - an FVWM command to be preprocessed instead of file
 
 B<-q>|B<--quote> char - changes the default '%' quote
 
@@ -436,13 +436,13 @@ B<--preprocess> are processed.  By default, the module is not persistent
 in this case, i.e. B<--nostay> is assumed.
 
 B<--nolock> - when one of the 3 action options is given, this option causes
-unlocking I<fvwm> immediatelly. By default the requested action is executed
+unlocking I<fvwm> immediately. By default the requested action is executed
 synchronously; this only makes difference when invoked like:
 
   ModuleSynchronous FvwmPerl --preprocess someconfig.ppp
 
-If B<--nolock> is added here, B<ModuleSynchronous> returns immediatelly.
-Note that B<Module> returns immediatelly regardless of this option.
+If B<--nolock> is added here, B<ModuleSynchronous> returns immediately.
+Note that B<Module> returns immediately regardless of this option.
 
 =head1 ACTIONS
 
@@ -478,11 +478,11 @@ and prepended with the I<[FvwmPerl][load]:> header.
 Preprocess fvwmrc I<file> or (if --command is given) I<line>.
 This file contains lines that are not touched (usually FVWM commands)
 and specially preformatted perl code that is processed and replaced.
-Text enclosed in B<%{> ... B<}%> delimeters, that may start anywhere
+Text enclosed in B<%{> ... B<}%> delimiters, that may start anywhere
 on the line and end anywhere on the same or an other line, is perl code.
 
-The I<quote> parameter changes perl code delimeters.  If a single char
-is given, like '@', the delimeters are B<@{> ... B<}@>.
+The I<quote> parameter changes perl code delimiters.  If a single char
+is given, like '@', the delimiters are B<@{> ... B<}@>.
 If the given quote is 2 chars, like B<E<lt>E<gt>>, the quotes are
 B<E<lt>{> ... B<}E<gt>>
 
@@ -714,7 +714,7 @@ Here are more pairs of equivalent lines:
     SendToModule FvwmPerl preprocess --quote '@' my.ppp
     SendToModule FvwmPerl eval preprocess({quote => '@'}, "my.ppp");
 
-Warning, you may affect the way FvwmPerl works by evaluating approprite
+Warning, you may affect the way FvwmPerl works by evaluating appropriate
 perl code, this is considered a feature not a bug.  But please don't do this,
 write your own FVWM module in perl instead.
 

@@ -134,11 +134,11 @@ In this case you must pass an additional parameter to fvwm-menu-desktop:
 --fvwmgtk-alias MyGnomeMenu.
 
 Of course you can build FVWM (i.e., no FvwmGtk) GNOME menus.
-GNOME and KDE2 use PNG icons which are not suported by FVWM menu.
+GNOME and KDE2 use PNG icons which are not supported by FVWM menu.
 However, if you have XPM version of the GNOME or of the KDE2 (mini-)icons 
 you can build FVWM menus and style commands with these icons using the 
 option \-\-enable-tran-mini\-icons and \-\-enable\-tran\-style. The
-FVWM Themes package (http://fvwm-themes.sourceforge.net/) conatins
+FVWM Themes package (http://fvwm-themes.sourceforge.net/) contains
 an utility, fvwm-themes-images, which can convert automatically 
 (with the help of ImageMagick) all GNOME and KDE2 icons to XPM
 icons.
@@ -177,7 +177,7 @@ I PipeRead 'fvwm-menu-desktop \\
 + I AddToMenu "kde\-all" "Kde System%mini/mini\-k.xpm%" Popup kde\-sys
 .EE
 
-fvwm-menu-desktop takes into account your $LANG environement variable,
+fvwm-menu-desktop takes into account your $LANG environment variable,
 which may be overwritten using the --lang option.
 
 Hint, if you need a different menu font or item format from the ones used
@@ -334,7 +334,7 @@ Default for gtk menus: gnome\-default.png:dh
 
 .IP \fB--wm-icons\fR
 This is a shortcut, which can be used if you plan to use icons from the
-wm-icons package. Currently this is equavalent to:
+wm-icons package. Currently this is equivalent to:
 \-\-enable\-mini\-icons
 \-\-mini\-icons\-path ''
 \-\-icon\-toptitle menu/folder-open.xpm:ow

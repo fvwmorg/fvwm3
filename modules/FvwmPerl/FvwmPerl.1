@@ -153,7 +153,7 @@ construct fvwm commands.
 .SH "INVOCATION"
 .IX Header "INVOCATION"
 FvwmPerl may be invoked from a fvwmrc file.  If you want to invoke
-the unique and persistent instanse of FvwmPerl, it is suggested to
+the unique and persistent instance of FvwmPerl, it is suggested to
 do this from the \fIStartFunction\fR.  Calling it from the top is also
 possible, but has several issues not discussed here.
 .PP
@@ -178,7 +178,7 @@ Long switches may be abbreviated to short one-letter switches.
 .PP
 \&\fB\-p\fR|\fB\*(--preprocess\fR file \- preprocess the given fvwmrc file
 .PP
-\&\fB\-c\fR|\fB\*(--command\fR line \- an \s-1FVWM\s0 command to be preprocessed intead of file
+\&\fB\-c\fR|\fB\*(--command\fR line \- an \s-1FVWM\s0 command to be preprocessed instead of file
 .PP
 \&\fB\-q\fR|\fB\*(--quote\fR char \- changes the default '%' quote
 .PP
@@ -193,14 +193,14 @@ it to \fIfvwm\fR for \fBRead\fRing, the default is remove. Useful for debugging.
 in this case, i.e. \fB\*(--nostay\fR is assumed.
 .PP
 \&\fB\*(--nolock\fR \- when one of the 3 action options is given, this option causes
-unlocking \fIfvwm\fR immediatelly. By default the requested action is executed
+unlocking \fIfvwm\fR immediately. By default the requested action is executed
 synchronously; this only makes difference when invoked like:
 .PP
 .Vb 1
 \&  ModuleSynchronous FvwmPerl --preprocess someconfig.ppp
 .Ve
-If \fB\*(--nolock\fR is added here, \fBModuleSynchronous\fR returns immediatelly.
-Note that \fBModule\fR returns immediatelly regardless of this option.
+If \fB\*(--nolock\fR is added here, \fBModuleSynchronous\fR returns immediately.
+Note that \fBModule\fR returns immediately regardless of this option.
 .SH "ACTIONS"
 .IX Header "ACTIONS"
 There are several actions that FvwmPerl may perform:
@@ -230,11 +230,11 @@ and prepended with the \fI[FvwmPerl][load]:\fR header.
 Preprocess fvwmrc \fIfile\fR or (if \-\-command is given) \fIline\fR.
 This file contains lines that are not touched (usually \s-1FVWM\s0 commands)
 and specially preformatted perl code that is processed and replaced.
-Text enclosed in \fB%{\fR ... \fB}%\fR delimeters, that may start anywhere
+Text enclosed in \fB%{\fR ... \fB}%\fR delimiters, that may start anywhere
 on the line and end anywhere on the same or an other line, is perl code.
 .Sp
-The \fIquote\fR parameter changes perl code delimeters.  If a single char
-is given, like '@', the delimeters are \fB@{\fR ... \fB}@\fR.
+The \fIquote\fR parameter changes perl code delimiters.  If a single char
+is given, like '@', the delimiters are \fB@{\fR ... \fB}@\fR.
 If the given quote is 2 chars, like \fB<>\fR, the quotes are
 \&\fB<{\fR ... \fB}>\fR
 .Sp
@@ -465,7 +465,7 @@ Here are more pairs of equivalent lines:
 \&    SendToModule FvwmPerl preprocess --quote '@' my.ppp
 \&    SendToModule FvwmPerl eval preprocess({quote => '@'}, "my.ppp");
 .Ve
-Warning, you may affect the way FvwmPerl works by evaluating approprite
+Warning, you may affect the way FvwmPerl works by evaluating appropriate
 perl code, this is considered a feature not a bug.  But please don't do this,
 write your own \s-1FVWM\s0 module in perl instead.
 .SH "SEE ALSO"
