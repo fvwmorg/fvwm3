@@ -792,7 +792,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 		fwin->icon_g.picture_w_g.height = height;
 		fwin->iconDepth = Pdepth;
 		SET_PIXMAP_OURS(fwin, 1);
-		if (FShapesSupported && mask && !alpha)
+		if (FShapesSupported && mask)
 			SET_ICON_SHAPED(fwin, 1);
 	}
 	if (free_list)

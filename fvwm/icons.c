@@ -828,8 +828,7 @@ void DrawIconWindow(FvwmWindow *fw)
 
 	/* only relieve unshaped icons that share fvwm's visual */
 	if ((fw->iconPixmap != None) && !IS_ICON_SHAPED(fw)
-	    && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw))
-	    && !(fw->icon_alphaPixmap && FShapesSupported))
+	    && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
 	{
 		RelieveRectangle(dpy, FW_W_ICON_PIXMAP(fw), 0, 0,
 				 fw->icon_g.picture_w_g.width - 1,
