@@ -990,8 +990,8 @@ void list_new_desk(unsigned long *body)
   }
 
   MovePage(True);
-  DrawGrid(oldDesk - desk1,1);
-  DrawGrid(Scr.CurrentDesk - desk1,1);
+  DrawGrid(oldDesk - desk1, 1, None, NULL);
+  DrawGrid(Scr.CurrentDesk - desk1, 1, None, NULL);
   MoveStickyWindows();
 /*
   Hilight(FocusWin,False);
@@ -1395,7 +1395,7 @@ void list_config_info(unsigned long *body)
     {
       val = val - desk1;
     }
-    DrawGrid(val, True);
+    DrawGrid(val, True, None, NULL);
   }
 }
 

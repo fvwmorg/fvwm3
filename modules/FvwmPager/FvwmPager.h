@@ -189,7 +189,7 @@ void ReConfigure(void);
 void ReConfigureAll(void);
 void update_pr_transparent_windows(void);
 void MovePage(Bool is_new_desk);
-void DrawGrid(int desk,int erase);
+void DrawGrid(int desk,int erase,Window ew,XRectangle *r);
 void DrawIconGrid(int erase);
 void SwitchToDesk(int Desk);
 void SwitchToDeskAndPage(int Desk, XEvent *Event);

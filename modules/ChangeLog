@@ -1,3 +1,12 @@
+2002-09-16  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmPager/FvwmPager.c (list_new_desk):
+	(list_config_info):
+	* FvwmPager/x_pager.c (DrawGrid):
+	(get_expose_bound):
+	(HandleExpose):
+	Use clipping redrawing for the desk label
+
 2002-09-15  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/x_pager.c (update_pr_transparent_subwindows):

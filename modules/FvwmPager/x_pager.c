@@ -1197,46 +1197,73 @@ void HandleEnterNotify(XEvent *Event)
 
 }
 
+XRectangle get_expose_bound(XEvent *Event)
+{
+	XRectangle r;
+	int ex, ey, ex2, ey2;
+
+	ex = Event->xexpose.x;
+	ey = Event->xexpose.y;
+	ex2 = Event->xexpose.x + Event->xexpose.width;
+	ey2 = Event->xexpose.y + Event->xexpose.height;
+	while (FCheckTypedWindowEvent(dpy, Event->xany.window, Expose, Event))
+	{
+		ex = min(ex, Event->xexpose.x);
+		ey = min(ey, Event->xexpose.y);
+		ex2 = max(ex2, Event->xexpose.x + Event->xexpose.width);
+		ey2= max(ey2 , Event->xexpose.y + Event->xexpose.height);
+	}
+	r.x = ex;
+	r.y = ey;
+	r.width = ex2-ex;
+	r.height = ey2-ey;
+	return r;
+}
+
 void HandleExpose(XEvent *Event)
 {
-  int i;
-  PagerWindow *t;
+	int i;
+	PagerWindow *t;
+	XRectangle r;
 
-  for(i=0;i<ndesks;i++)
-  {
-    /* ric@giccs.georgetown.edu */
-    if (Event->xany.window == Desks[i].w ||
-	Event->xany.window == Desks[i].title_w)
-    {
-      DrawGrid(i, 0);
-      return;
-    }
-  }
-  if (Event->xany.window == Scr.balloon_w)
-  {
-    DrawInBalloonWindow(Scr.balloon_desk);
-    return;
-  }
-  if(Event->xany.window == icon_win)
-    DrawIconGrid(0);
+	/* it will be good to have full "clipping redraw". Do that for
+	 * desk label only for now */
+	for(i=0;i<ndesks;i++)
+	{
+		/* ric@giccs.georgetown.edu */
+		if (Event->xany.window == Desks[i].w ||
+		    Event->xany.window == Desks[i].title_w)
+		{
+			r = get_expose_bound(Event);
+			DrawGrid(i, 0, Event->xany.window, &r);
+			return;
+		}
+	}
+	if (Event->xany.window == Scr.balloon_w)
+	{
+		DrawInBalloonWindow(Scr.balloon_desk);
+		return;
+	}
+	if(Event->xany.window == icon_win)
+		DrawIconGrid(0);
 
-  for (t = Start; t != NULL; t = t->next)
-  {
-    if (t->PagerView == Event->xany.window)
-    {
-      LabelWindow(t);
-      PictureWindow(t);
-      BorderWindow(t);
-    }
-    else if(t->IconView == Event->xany.window)
-    {
-      LabelIconWindow(t);
-      PictureIconWindow(t);
-      BorderIconWindow(t);
-    }
-  }
+	for (t = Start; t != NULL; t = t->next)
+	{
+		if (t->PagerView == Event->xany.window)
+		{
+			LabelWindow(t);
+			PictureWindow(t);
+			BorderWindow(t);
+		}
+		else if(t->IconView == Event->xany.window)
+		{
+			LabelIconWindow(t);
+			PictureIconWindow(t);
+			BorderIconWindow(t);
+		}
+	}
 
-  discard_events(Expose, Event->xany.window, NULL);
+	discard_events(Expose, Event->xany.window, NULL);
 }
 
 /****************************************************************************
@@ -1565,90 +1592,149 @@ void ReConfigureIcons(Bool do_reconfigure_desk_only)
  * Draw grid lines for desk #i
  *
  ****************************************************************************/
-void DrawGrid(int desk, int erase)
+void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 {
-  int y, y1, y2, x, x1, x2,d,w;
-  char str[15], *ptr;
-  int cs;
+	int y, y1, y2, x, x1, x2,d,w;
+	char str[15], *ptr;
+	int cs;
+	XRectangle bound;
+	Region region = 0;
 
-  if((desk < 0 ) || (desk >= ndesks))
-    return;
+	if((desk < 0 ) || (desk >= ndesks))
+		return;
 
-  x = Scr.MyDisplayWidth;
-  y1 = 0;
-  y2 = desk_h;
-  while (x < Scr.VWidth)
-  {
-    x1 = (x * desk_w) / Scr.VWidth;
-    if (!use_no_separators)
-      XDrawLine(dpy,Desks[desk].w,Desks[desk].DashedGC,x1,y1,x1,y2);
-    x += Scr.MyDisplayWidth;
-  }
+	/* desk grid */
+	if (!ew || ew == Desks[desk].w)
+	{
+		x = Scr.MyDisplayWidth;
+		y1 = 0;
+		y2 = desk_h;
+		while (x < Scr.VWidth)
+		{
+			x1 = (x * desk_w) / Scr.VWidth;
+			if (!use_no_separators)
+			{
+				XDrawLine(
+					dpy,Desks[desk].w,Desks[desk].DashedGC,
+					x1,y1,x1,y2);
+				x += Scr.MyDisplayWidth;
+			}
+		}
+		y = Scr.MyDisplayHeight;
+		x1 = 0;
+		x2 = desk_w;
+		while(y < Scr.VHeight)
+		{
+			y1 = (y * desk_h) / Scr.VHeight;
+			if (!use_no_separators)
+				XDrawLine(
+					dpy,Desks[desk].w,Desks[desk].DashedGC,
+					x1,y1,x2,y1);
+			y += Scr.MyDisplayHeight;
+		}
+	}
 
-  y = Scr.MyDisplayHeight;
-  x1 = 0;
-  x2 = desk_w;
-  while(y < Scr.VHeight)
-  {
-    y1 = (y * desk_h) / Scr.VHeight;
-    if (!use_no_separators)
-      XDrawLine(dpy,Desks[desk].w,Desks[desk].DashedGC,x1,y1,x2,y1);
-    y += Scr.MyDisplayHeight;
-  }
-  if (FftSupport && Ffont->fftf.fftfont != NULL)
-    erase = True;
-  if(((Scr.CurrentDesk - desk1) == desk) && !ShapeLabels)
-  {
-    if(uselabel)
-      XFillRectangle(dpy,Desks[desk].title_w,Desks[desk].HiliteGC,
-		     0,(LabelsBelow ? desk_h : 0),desk_w,label_h);
-  }
-  else
-  {
-    if(uselabel && erase)
-      XClearArea(dpy,Desks[desk].title_w,
-		 0,(LabelsBelow ? desk_h : 0),desk_w,label_h,False);
-  }
+	if (ew && ew != Desks[desk].title_w)
+	{
+		return;
+	}
 
-  d = desk1+desk;
-  ptr = Desks[desk].label;
-  w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
-  if( w > desk_w)
-  {
-    sprintf(str,"%d",d);
-    ptr = str;
-    w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
-  }
-  if((w <= desk_w)&&(uselabel))
-  {
-    FwinString->str = ptr;
-    FwinString->win = Desks[desk].title_w;
-    if(desk == (Scr.CurrentDesk - desk1))
-    {
-      cs = Desks[desk].highcolorset;
-      FwinString->gc = Desks[desk].rvGC;
-    }
-    else
-    {
-      cs = Desks[desk].highcolorset;
-      FwinString->gc = Desks[desk].NormalGC;
-    }
+	/* desk label */
+	if (r)
+	{
+		bound.x = r->x;
+		bound.y = r->y;
+		bound.width = r->width;
+		bound.height = r->height;
+		region = XCreateRegion();
+		XUnionRectWithRegion (&bound, region, region);
+	}
+	else
+	{
+		bound.x = 0;
+		bound.y = (LabelsBelow ? desk_h : 0);
+		bound.width = desk_w;
+		bound.height = label_h;
+	}
 
-    FwinString->flags.has_colorset = False;
-    if (cs >= 0)
-    {
-      FwinString->colorset = &Colorset[cs];
-      FwinString->flags.has_colorset = True;
-    }
-    FwinString->x = (desk_w -w)/2;
-    FwinString->y = (LabelsBelow ?
-		     desk_h + Ffont->ascent + 1 : Ffont->ascent + 1);
-    FlocaleDrawString(dpy, Ffont, FwinString, 0);
-  }
-  if (FShapesSupported)
-  {
-    UpdateWindowShape ();
-  }
+	if (FftSupport && Ffont->fftf.fftfont != NULL)
+	{
+		erase = True;
+	}
+	if(((Scr.CurrentDesk - desk1) == desk) && !ShapeLabels)
+	{
+		if (uselabel && erase)
+		{
+			XFillRectangle(
+				dpy,Desks[desk].title_w,Desks[desk].HiliteGC,
+				bound.x, bound.y, bound.width, bound.height);
+		}
+	}
+	else
+	{
+		if(uselabel && erase)
+		{
+			XClearArea(dpy,Desks[desk].title_w,
+				   bound.x, bound.y, bound.width, bound.height,
+				   False);
+		}
+	}
+
+	d = desk1+desk;
+	ptr = Desks[desk].label;
+	w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
+	if( w > desk_w)
+	{
+		sprintf(str,"%d",d);
+		ptr = str;
+		w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
+	}
+	if((w <= desk_w)&&(uselabel))
+	{
+		FwinString->str = ptr;
+		FwinString->win = Desks[desk].title_w;
+		if(desk == (Scr.CurrentDesk - desk1))
+		{
+			cs = Desks[desk].highcolorset;
+			FwinString->gc = Desks[desk].rvGC;
+		}
+		else
+		{
+			cs = Desks[desk].highcolorset;
+			FwinString->gc = Desks[desk].NormalGC;
+		}
+
+		FwinString->flags.has_colorset = False;
+		if (cs >= 0)
+		{
+			FwinString->colorset = &Colorset[cs];
+			FwinString->flags.has_colorset = True;
+		}
+		FwinString->x = (desk_w - w)/2;
+		FwinString->y = (LabelsBelow ?
+				 desk_h + Ffont->ascent + 1 : Ffont->ascent + 1);
+		if (region)
+		{
+			FwinString->flags.has_clip_region = True;
+			FwinString->clip_region = region;
+		}
+		else
+		{
+			FwinString->flags.has_clip_region = False;
+		}
+		FlocaleDrawString(dpy, Ffont, FwinString, 0);
+	}
+	if (region)
+	{
+		XDestroyRegion(region);
+		FwinString->flags.has_clip_region = False;
+		FwinString->clip_region = None;
+	}
+	
+	if (FShapesSupported)
+	{
+		UpdateWindowShape ();
+	}
 }
 
 
