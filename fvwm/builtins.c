@@ -2492,6 +2492,10 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	{
 		FlocalePrintLocaleInfo(dpy, verbose);
 	}
+	else if (StrEquals(subject, "NLS"))
+	{
+		FGettextPrintLocalePath(verbose);
+	}
 	else
 	{
 		fvwm_msg(ERR, "PrintInfo",

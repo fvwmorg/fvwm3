@@ -23,6 +23,8 @@
 #ifndef _LIBGETTEXT_H
 #define _LIBGETTEXT_H 1
 
+#include "config.h"
+
 #define _(x) FGettext(x)
 
 /* NLS can be disabled through the configure --disable-nls option.  */
@@ -80,6 +82,7 @@
 
 void FGettextInit(const char *domain, const char *dir, const char *module);
 const char *FGettext(char *str);
-void FGettextSetLocalePath(char *path);
+void FGettextSetLocalePath(const char *path);
+void FGettextPrintLocalePath(int verbose);
 
 #endif /* _LIBGETTEXT_H */

@@ -1,3 +1,9 @@
+2002-12-03  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar.fr.po:
+	* FvwmTaskBar.fr.gmo:
+	Fixed translation, courrier -> message
+
 2002-12-02  olicha  <olivier.chapuis@free.fr>
 
 	* Makefile.am (uninstall-local-yes): 

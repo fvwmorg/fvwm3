@@ -18,15 +18,15 @@ msgstr ""
 
 #: ../modules/FvwmTaskBar/Goodies.c:462
 msgid "No new mail"
-msgstr "Pas de nouveaux courriers"
+msgstr "Pas de nouveaux messages"
 
 #: ../modules/FvwmTaskBar/Goodies.c:466
 msgid "You have new mail"
-msgstr "Vous avez du courrier"
+msgstr "Vous avez un nouveau message"
 
 #: ../modules/FvwmTaskBar/Goodies.c:470
 msgid "You have mail"
-msgstr "Vous avez du courier"
+msgstr "Vous avez un message"
 
 #: ../modules/FvwmTaskBar/FvwmTaskBar.c:1308
 msgid "Click here to start"
