@@ -253,9 +253,9 @@ static void parse_colorset(char *line)
 
   /* get the mandatory foreground and background color names */
   line = GetNextToken(line, &fg);
-  line = GetNextToken(line, &bg);
   if (!fg)
     return;
+  line = GetNextToken(line, &bg);
   if (!bg) {
     free(fg);
     return;
@@ -271,8 +271,8 @@ static void parse_colorset(char *line)
       XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
       cs->fg = GetColor(fg);
       update = sharedCells = True;
-    }   
-  }
+    }
+  } /* fg */
 
   if (!(StrEquals(bg, dash) || StrEquals(bg, average))) {
     if (privateCells) {
@@ -294,13 +294,15 @@ static void parse_colorset(char *line)
       color.pixel = cs->shadow;
       XStoreColor(dpy, Pcmap, &color);
     } else {
-      XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
+      XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
+      XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
+      XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
       cs->bg = GetColor(bg);
       cs->hilite = GetHilite(cs->bg);
       cs->shadow = GetShadow(cs->bg);
       update = sharedCells = True;
-    }   
-  }
+    }
+  } /* bg */
 
   /* look for a pixmap specifier, if not "-" remove the existing one */
   /* ret is guaranteed false at this point */
@@ -393,7 +395,7 @@ static void parse_colorset(char *line)
 #endif /* SHAPE */
     /* skip filename */
     token = PeekToken(line, &line);
-  }
+  } /* shape */
 
   /* if one was specified try to load it */
   if (token && !ret)
@@ -529,14 +531,16 @@ static void parse_colorset(char *line)
       color.pixel = cs->shadow;
       XStoreColor(dpy, Pcmap, &color);
     } else {
-      XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
+      XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
+      XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
+      XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
       XAllocColor(dpy, Pcmap, &color);
       cs->bg = color.pixel;
       cs->hilite = GetHilite(cs->bg);
       cs->shadow = GetShadow(cs->bg);
       update = sharedCells = True;
     }
-  }
+  } /* average */
 
   /* calculate contrasting foreground color */
   if (StrEquals(fg, contrast)) {
@@ -554,7 +558,7 @@ static void parse_colorset(char *line)
       cs->fg = color.pixel;
       update = sharedCells = True;
     }
-  }
+  } /* contrast */
 
   /* make sure the server has this to avoid races */
   XSync(dpy, False);
@@ -562,6 +566,9 @@ static void parse_colorset(char *line)
   /* inform fvwm of the change */
   if (update)
     SendText(fd, DumpColorset(n), 0);
+
+  free(fg);
+  free(bg);
 }
 
 /* SendToMessage options */

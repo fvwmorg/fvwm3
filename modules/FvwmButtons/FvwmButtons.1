@@ -5,7 +5,7 @@
 .SH NAME
 FvwmButtons \- the FVWM buttonbox module
 .SH SYNOPSIS
-\fBFvwmButtons\fP [\fI-g geometry\fP] [\fI-transient\fP] [\fIname\fP [\fIconfig file\fP]]
+\fBFvwmButtons\fP [\fI-g geometry\fP] [\fI-transient|-transientpanel\fP] [\fIname\fP [\fIconfig file\fP]]
 FvwmButtons is spawned by fvwm, so no command line invocation will work.
 
 With the \fI-g\fP option you can specify the geometry of the main window.
@@ -16,10 +16,16 @@ The \fI-transient\fP option tells FvwmButtons to terminate itself
 after the first key or button press has been received (presses to open
 a sub panel do not count) or a sub panel has been closed or respawned.
 This is especially useful for sub panels where you want to select
-a single button hand have it closed automatically.  It could be used
+a single button and have it closed automatically.  It could be used
 too to create two-dimensional graphical menus.  Since \fI-transient\fP
 is an option, not a configuration setting you can use the same
 configuration for transient and non transient button bars.
+
+The \fI-transientpanel\fP option does roughly the same as the -transient
+option, but instead of closing the whole button bar, the window is
+merely hidden.  This is very useful if the button bar is started as
+a subpanel of another button bar because it avoids that it must be
+started again when something is selected.
 
 .SH DESCRIPTION
 The FvwmButtons module provides a window of buttons which sits on the X
@@ -555,12 +561,12 @@ instance of FvwmButtons a different name.
 
 If you used something like 'Panel-d' you now have to use 'Panel(down)'
 instead.  To make the new panel vanish as soon as a button was selected
-start FvwmButtons with the '-transient' option:
+start FvwmButtons with the '-transientpanel' option:
 
 .nf
 .sp
 *FvwmButtons(Title Tools , Panel(down) Tools \\
-  "Module FvwmButtons -transient FvwmButtonsTools")
+  "Module FvwmButtons -transientpanel FvwmButtonsTools")
 .sp
 .fi
 
@@ -710,9 +716,9 @@ Style "FvwmButtonsTools" NoButton 2, NoButton 4, Sticky
 *FvwmButtonsPadding 2 2
 
 *FvwmButtons(Title WinOps, Panel WinOps \\
-  "Module FvwmButtons -transient FvwmButtonsWinOps")
+  "Module FvwmButtons -transientpanel FvwmButtonsWinOps")
 *FvwmButtons(Title Tools, Panel Tools \\
-  "Module FvwmButtons -transient FvwmButtonsTools")
+  "Module FvwmButtons -transientpanel FvwmButtonsTools")
 
 *FvwmButtons(Title Resize,Icon resize.xpm ,Action Resize)
 *FvwmButtons(Title Move  ,Icon arrows2.xpm,Action Move  )

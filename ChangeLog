@@ -1,3 +1,9 @@
+1999-09-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/WinMagic.c (GetTopAncestorWindow):
+
+	* libs/Slide.c: file renamed to WinMagic.c
+
 1999-09-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/session.c (SaveWindowStates):

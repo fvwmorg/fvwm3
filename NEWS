@@ -30,8 +30,7 @@ Changes in beta release 2.3.7 (August 1999)
 * FvwmButtons and FvwmIconBox support colorsets.
 
 * The old Panels feature of FvwmButtons has been removed. A
-  re-implementation has been written. The old code has not been
-  completely removed yet.
+  re-implementation has been written.
 
 * The *FvwmButtonsButtonGeometry option makes sizing the
   individual buttons very easy.

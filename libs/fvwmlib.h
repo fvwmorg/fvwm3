@@ -270,7 +270,7 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
 
 
 /***********************************************************************
- * Slide.c
+ * WinMagic.c
  ***********************************************************************/
 
 void SlideWindow(
@@ -278,6 +278,8 @@ void SlideWindow(
   int s_x, int s_y, unsigned int s_w, unsigned int s_h,
   int e_x, int e_y, unsigned int e_w, unsigned int e_h,
   int steps, int delay_ms, float *ppctMovement, Bool do_flush);
+
+Window GetTopAncestorWindow(Display *dpy, Window child);
 
 /***********************************************************************
  * Key and mouse bindings

@@ -112,7 +112,8 @@ static Window GetRealGeometry(
   Display*,Window,int*,int*,unsigned int*,unsigned int*, unsigned int*,
   unsigned int*);
 static void GetPanelGeometry(
-  Bool get_big, button_info *b, int *x, int *y, int *w, int *h);
+  Bool get_big, button_info *b, int lb, int tb, int rb, int bb,
+  int *x, int *y, int *w, int *h);
 void swallow(unsigned long*);
 void AddButtonAction(button_info*,int,char*);
 char *GetButtonAction(button_info*,int);
@@ -158,6 +159,7 @@ int button_width = 0;
 int button_height = 0;
 Bool has_button_geometry = 0;
 Bool is_transient = 0;
+Bool is_transient_panel = 0;
 
 button_info *CurrentButton = NULL;
 int fd[2];
@@ -668,9 +670,15 @@ int main(int argc, char **argv)
 	geom_option_argc = i;
       }
     }
-    else if (!is_transient && strcmp(argv[i], "-transient") == 0)
+    else if (!is_transient && !is_transient_panel &&
+	     strcmp(argv[i], "-transient") == 0)
     {
       is_transient = 1;
+    }
+    else if (!is_transient && !is_transient_panel &&
+	     strcmp(argv[i], "-transientpanel") == 0)
+    {
+      is_transient_panel = 1;
     }
     else if (!has_name) /* There is a naming argument here! */
     {
@@ -978,11 +986,18 @@ void Loop(void)
 	if (b && (b->flags & b_Panel))
 	{
 	  HandlePanelPress(b);
-	  if (b->newflags.panel_mapped == 0 && is_transient)
+	  if (b->newflags.panel_mapped == 0)
 	  {
-	    /* terminate if transient and panel has been unmapped */
-	    exit(0);
-	  };
+	    if(is_transient)
+	    {
+	      /* terminate if transient and panel has been unmapped */
+	      exit(0);
+	    }
+	    else if (is_transient_panel)
+	    {
+	      XWithdrawWindow(Dpy, MyWindow, screen);
+	    }
+	  }
 	}
 	else
 	{
@@ -1033,6 +1048,10 @@ void Loop(void)
 		/* and exit */
 		exit(0);
 	      }
+	      if (is_transient_panel)
+	      {
+		XWithdrawWindow(Dpy, MyWindow, screen);
+	      }
 	      free(tmp);
 	    } /* exec */
 	    else if(strncasecmp(act,"DumpButtons",11)==0)
@@ -1052,6 +1071,10 @@ void Loop(void)
 	      {
 		/* and exit */
 		exit(0);
+	      }
+	      if (is_transient_panel)
+	      {
+		XWithdrawWindow(Dpy, MyWindow, screen);
 	      }
 	    }
 	  } /* act */
@@ -1110,8 +1133,22 @@ void Loop(void)
 	}
 	break;
 
-	/* Not really sure if this is abandon all hope.. */
-	/* case UnmapNotify: */
+      case MapNotify:
+      case UnmapNotify:
+	ub=UberButton;
+	button=-1;
+	while(NextButton(&ub,&b,&button,0))
+	{
+	  if (b->flags & b_Panel && Event.xany.window == b->PanelWin)
+	  {
+	    /* A panel has been unmapped, update the button */
+	    b->newflags.panel_mapped = (Event.type == MapNotify);
+	    RedrawButton(b, 1);
+	    break;
+	  }
+	}
+	break;
+
       case DestroyNotify:
 	ub=UberButton;button=-1;
 	while(NextButton(&ub,&b,&button,0))
@@ -1158,6 +1195,10 @@ void Loop(void)
 		free(p);
 	      }
 	      RedrawButton(b,1);
+	      if (is_transient_panel)
+	      {
+		XWithdrawWindow(Dpy, MyWindow, screen);
+	      }
 	    }
 	    else
 	    {
@@ -1528,9 +1569,14 @@ static void HandlePanelPress(button_info *b)
 {
   int x1, y1, w1, h1;
   int x2, y2, w2, h2;
+  int px, py, pw, ph, pbw;
+  int ax, ay, aw, ah, abw;
+  int tb, bb, lb, rb;
   int steps = b->slide_steps;
+  int i;
   unsigned int d;
   Window JunkW;
+  Window ancestor;
   XSizeHints mysizehints;
   long supplied;
   Bool is_mapped;
@@ -1553,22 +1599,83 @@ static void HandlePanelPress(button_info *b)
     /* Make sure the icon is unmapped first. Needed to work properly with
      * shaded and iconified windows. */
     XWithdrawWindow(Dpy, b->PanelWin, screen);
+
+    /* now request mapping in the void and wait until it gets mapped */
+    XGetWMNormalHints(Dpy, b->PanelWin, &mysizehints, &supplied);
+    mysizehints.flags |= USPosition;
+    mysizehints.x = 32767;
+    mysizehints.y = 32767;
+    XSetWMNormalHints(Dpy, b->PanelWin, &mysizehints);
+
+    /* map the window in the void */
+    XMoveWindow(Dpy, b->PanelWin, 32767, 32767);
+    XMapWindow(Dpy, b->PanelWin);
+    XSync(Dpy, 0);
+
+    /* give the X server the CPU to do something */
+    usleep(1000);
+
+    /* wait until it appears or one second has passed */
+    for (i = 0; i < 10; i++)
+    {
+      if (!XGetWindowAttributes(Dpy, b->PanelWin, &xwa))
+      {
+	/* the window has been destroyed */
+	XUnmapWindow(Dpy, b->PanelWin);
+	XSync(Dpy, 0);
+	RedrawButton(b, 1);
+	return;
+      }
+      if (xwa.map_state == IsViewable)
+      {
+	/* okay, it's mapped */
+	break;
+      }
+      /* still unmapped wait 0.1 seconds and try again */
+      XSync(Dpy, 0);
+      usleep(100000);
+    }
+    if (xwa.map_state != IsViewable)
+    {
+      /* give up after one second */
+      XUnmapWindow(Dpy, b->PanelWin);
+      XSync(Dpy, 0);
+      RedrawButton(b, 1);
+      return;
+    }
   }
-  GetPanelGeometry(is_mapped, b, &x1, &y1, &w1, &h1);
-  GetPanelGeometry(!is_mapped, b, &x2, &y2, &w2, &h2);
+
+  /* We're sure that the window is mapped and decorated now. Find the top level
+   * ancestor now. */
+#if 0
+  XGrabServer(Dpy);
+#endif
+  ancestor = GetTopAncestorWindow(Dpy, b->PanelWin);
+  lb = 0;
+  tb = 0;
+  rb = 0;
+  bb = 0;
+  if (ancestor)
+  {
+    if (XGetGeometry(Dpy, ancestor, &JunkW, &ax, &ay, &aw, &ah, &abw, &d) &&
+	XGetGeometry(Dpy, b->PanelWin, &JunkW, &px, &py, &pw, &ph, &pbw, &d) &&
+	XTranslateCoordinates(
+	  Dpy, b->PanelWin, ancestor, 0, 0, &px, &py, &JunkW))
+    {
+      /* calculate the 'border' width in all four directions */
+      lb = max(px, 0) + abw;
+      tb = max(py, 0) + abw;
+      rb = max((aw + abw) - (px + pw), 0) + abw;
+      bb = max((ah + abw) - (py + ph), 0) + abw;
+    }
+  }
+  /* now find the source and destination positions for the slide operation */
+  GetPanelGeometry(is_mapped, b, lb, tb, rb, bb, &x1, &y1, &w1, &h1);
+  GetPanelGeometry(!is_mapped, b, lb, tb, rb, bb, &x2, &y2, &w2, &h2);
+  XUngrabServer(Dpy);
 
   /* to force fvwm to map the window where we want */
-  if (!is_mapped)
-  {
-    XGetWMNormalHints(Dpy, b->PanelWin, &mysizehints, &supplied);
-    mysizehints.flags |= USSize | USPosition;
-    mysizehints.x = x1;
-    mysizehints.y = y1;
-    mysizehints.width  = (w1) ? w1 : 1;
-    mysizehints.height = (h1) ? h1 : 1;
-    XSetWMNormalHints(Dpy, b->PanelWin, &mysizehints);
-  }
-  else
+  if (is_mapped)
   {
     /* don't slide the window if it has been moved or resized */
     if (b->x != x1 || b->y != y1 || b->w != w1 || b->h != h1)
@@ -1577,11 +1684,10 @@ static void HandlePanelPress(button_info *b)
     }
   }
 
-  if (w1 != 0 && h1 != 0)
-  {
-    XMoveResizeWindow(Dpy, b->PanelWin, x1, y1, w1, h1);
-    XMapWindow(Dpy, b->PanelWin);
-  }
+  /* redraw our button */
+  b->newflags.panel_mapped = !is_mapped;
+  RedrawButton(b, 1);
+
   /* make sure the window maps on the current desk */
   sprintf(cmd, "Silent WindowId 0x%08x MoveToDesk 0", (int)b->PanelWin);
   SendInfo(fd, cmd, b->PanelWin);
@@ -1594,7 +1700,6 @@ static void HandlePanelPress(button_info *b)
   {
     XUnmapWindow(Dpy, b->PanelWin);
   }
-  b->newflags.panel_mapped = ! is_mapped;
   RedrawButton(b, 1);
 
   return;
@@ -1655,7 +1760,7 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
 #endif
   mysizehints.x=0;
   mysizehints.y=0;
-  if(x > -30000)
+  if(x > -100000)
   {
     if (xneg)
     {
@@ -2193,7 +2298,7 @@ Window GetRealGeometry(
 {
   Window root;
   Window rp=None;
-  Window *children;
+  Window *children = None;
   unsigned int n;
 
   if(!XGetGeometry(dpy,win,&root,x,y,w,h,bw,d))
@@ -2211,7 +2316,8 @@ Window GetRealGeometry(
 }
 
 static void GetPanelGeometry(
-  Bool get_big, button_info *b, int *x, int *y, int *w, int *h)
+  Bool get_big, button_info *b, int lb, int tb, int rb, int bb,
+  int *x, int *y, int *w, int *h)
 {
   Window JunkChild;
   int bx = buttonXPos(b, b->n);
@@ -2223,22 +2329,22 @@ static void GetPanelGeometry(
   switch (b->slide_direction)
   {
   case SLIDE_UP:
-    *x = bx + (int)(bw - b->w) / 2;
+    *x = bx + (int)(bw - (b->w + (rb - lb))) / 2;
     *w = b->w;
     if (get_big)
     {
-      *y = by - (int)b->h - 2;
+      *y = by - (int)b->h - bb;
       *h = b->h;
     }
     else
     {
-      *y = by - 2;
+      *y = by - bb;
       *h = 0;
     }
     break;
   case SLIDE_DOWN:
-    *x = bx + (int)(bw - b->w) / 2;
-    *y = by + (int)bh + 2;
+    *x = bx + (int)(bw - (b->w + (rb - lb))) / 2;
+    *y = by + (int)bh + tb;
     *w = b->w;
     if (get_big)
     {
@@ -2250,22 +2356,22 @@ static void GetPanelGeometry(
     }
     break;
   case SLIDE_LEFT:
-    *y = by + (int)(bh - b->h) / 2;
+    *y = by + (int)(bh - b->h + (tb - bb)) / 2;
     *h = b->h;
     if (get_big)
     {
-      *x = bx - (int)b->w - 2;
+      *x = bx - (int)b->w - rb;
       *w = b->w;
     }
     else
     {
-      *x = bx - 2;
+      *x = bx - rb;
       *w = 0;
     }
     break;
   case SLIDE_RIGHT:
-    *y = by + (int)(bh - b->h) / 2;
-    *x = bx + (int)bw + 2;
+    *y = by + (int)(bh - b->h + (tb - bb)) / 2;
+    *x = bx + (int)bw + lb;
     *h = b->h;
     if (get_big)
     {

@@ -1,3 +1,16 @@
+1999-09-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (HandlePanelPress): reduce flickering when
+	panels are mapped
+	(GetPanelGeometry): borders and titles are considered before
+	calculating the panel geometry
+	(Loop):
+	(main): new command line option '-transientpanel'
+
+	* FvwmTheme/FvwmTheme.c (parse_colorset): fixed a memory leak
+	(parse_colorset): fixed potentially free'ing random colours when a
+	colour set changes
+
 1999-09-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmIconMan/x.c (xevent_loop): removed debug messages
