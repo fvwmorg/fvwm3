@@ -1,3 +1,9 @@
+2000-03-31  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in: replace the second smr_CHECK_LIB in readline check
+	with a less elegant equivalent, but which does not adds the
+	--with-readline-* usage for the second time.
+
 2000-03-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in: added --disable-sm to disable session management
