@@ -1,7 +1,9 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
-Changes in beta release 2.3.18 (not released yet)
+Changes in beta release 2.3.19 (not released yet)
+
+Changes in beta release 2.3.18 (May 2000)
 
 * Renamed the MovedButton3 contition to PlacedByButton3.
 
