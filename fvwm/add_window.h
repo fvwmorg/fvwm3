@@ -20,6 +20,9 @@ extern char NoName[];
 extern char NoClass[];
 extern char NoResource[];
 
+#define FRAME_EVENT_MASK (SubstructureRedirectMask | EnterWindowMask | \
+                          LeaveWindowMask)
+
 void setup_focus_policy(FvwmWindow *tmp_win);
 void setup_window_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy);

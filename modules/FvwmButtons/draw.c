@@ -140,8 +140,9 @@ void MakeButton(button_info *b)
 
   /* For now, use the old routine in icons.h for buttons with icons */
   if(b->flags&b_Icon)
+  {
     ConfigureIconWindow(b);
-
+  }
   /* For now, hardcoded window centered, title bottom centered, below window */
   else if(buttonSwallowCount(b)==3 && (b->flags & b_Swallow))
   {
@@ -174,7 +175,9 @@ void MakeButton(button_info *b)
 			b->icon_w,b->icon_h);
     }
     else
-      XMoveWindow(Dpy,b->IconWin,2000,2000);
+    {
+      XMoveWindow(Dpy,b->IconWin, -32768, -32768);
+    }
   }
 }
 

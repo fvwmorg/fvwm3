@@ -1,5 +1,10 @@
 2001-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleReparentNotify):
+	* fvwm/add_window.c (setup_frame_window):
+	* fvwm/add_window.h:
+	discard events after window was reparented
+
 	* fvwm/stack.c (mark_transient_subtree):
 	fixed core dump
 

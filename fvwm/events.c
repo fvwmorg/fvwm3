@@ -1434,6 +1434,7 @@ void HandleReparentNotify(void)
     SetMapStateProp(Tmp_win, WithdrawnState);
     XRemoveFromSaveSet(dpy, Event.xreparent.window);
     XSelectInput (dpy, Event.xreparent.window, NoEventMask);
+    discard_events(FRAME_EVENT_MASK);
     destroy_window(Tmp_win);
   }
 

@@ -645,8 +645,7 @@ void setup_frame_window(
 
   attributes.backing_store = NotUseful;
   attributes.background_pixmap = None;
-  attributes.event_mask = SubstructureRedirectMask | EnterWindowMask
-			  | LeaveWindowMask;
+  attributes.event_mask = FRAME_EVENT_MASK;
   attributes.save_under = False;
 
   /* create the frame window, child of root, grandparent of client */
