@@ -1,0 +1,29 @@
+# Capture Window - This example is a front-end to xwd, xwud, and xpr.
+DestroyModuleConfig        FormFvwmCapture*
+*FormFvwmCaptureLine       center
+*FormFvwmCaptureText       "Capture Window"
+*FormFvwmCaptureLine       left
+*FormFvwmCaptureText       "File: "
+*FormFvwmCaptureInput      file            25      "/tmp/Capture"
+*FormFvwmCaptureLine       left
+*FormFvwmCaptureText       "Printer: "
+*FormFvwmCaptureInput      printer         20      "$PRINTER"
+*FormFvwmCaptureLine       expand
+*FormFvwmCaptureSelection  PtrType single
+*FormFvwmCaptureChoice     PS      ps      on      "PostScript"
+*FormFvwmCaptureChoice     Ljet    ljet    off     "HP LaserJet"
+*FormFvwmCaptureLine       left
+*FormFvwmCaptureText       "xwd options:"
+*FormFvwmCaptureLine       expand
+*FormFvwmCaptureSelection  Options multiple
+*FormFvwmCaptureChoice     Brd     -nobdrs off     "No border"
+*FormFvwmCaptureChoice     Frm     -frame  on      "With frame"
+*FormFvwmCaptureChoice     XYZ     -xy     off     "XY format"
+*FormFvwmCaptureLine       expand
+*FormFvwmCaptureButton     continue        "Capture"       ^M
+*FormFvwmCaptureCommand    Exec exec xwd -out $(file) $(Options) &
+*FormFvwmCaptureButton     continue        "Preview"
+*FormFvwmCaptureCommand    Exec exec xwud -in $(file) &
+*FormFvwmCaptureButton     continue        "Print"
+*FormFvwmCaptureCommand    Exec exec xpr -device $(PtrType) $(file) | lpr -P $(printer) &
+*FormFvwmCaptureButton     quit            "Quit"

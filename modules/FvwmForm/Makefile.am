@@ -5,8 +5,10 @@ module_PROGRAMS = FvwmForm
 man_MANS = FvwmForm.1
 EXTRA_DIST = $(man_MANS) Changes
 
-FvwmForm_SOURCES = FvwmForm.c
+FvwmForm_SOURCES = FvwmForm.c FvwmForm.h DefineMe.c ReadXServer.c
 FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+
+sysconf_DATA = .FormFvwmCapture .FormFvwmRlogin .FormFvwmQuitVerify
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
@@ -14,5 +16,5 @@ FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir)/libs $(xpm_CFLAGS) $(X_CFLAGS)
+INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 

@@ -1,0 +1,416 @@
+#include "config.h"
+#include "../../libs/fvwmlib.h"
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#include <X11/Xlib.h>
+#include <X11/X.h>
+#include <X11/Xutil.h>
+#include <X11/cursorfont.h>
+#define XK_MISCELLANY
+#include <X11/keysymdef.h>
+
+#include <FvwmForm.h>
+
+static void ToggleChoice (Item *item);
+
+/* read an X event */
+void ReadXServer ()
+{
+  static XEvent event;
+  int old_cursor, keypress;
+  int shft;                             /* keyboard shift state */
+  Item *item, *old_item;
+  KeySym ks;
+  char *sp, *dp, *ep;
+  static char buf[10], n;
+
+  while (XEventsQueued(dpy, QueuedAfterReading)) {
+    XNextEvent(dpy, &event);
+    if (event.xany.window == CF.frame) {
+      switch (event.type) {
+      case Expose:
+	RedrawFrame();
+	if (CF.grab_server && !CF.server_grabbed) {
+	  if (GrabSuccess == 
+	      XGrabPointer(dpy, CF.frame, True, 0, GrabModeAsync, GrabModeAsync,
+			   None, None, CurrentTime))
+	    CF.server_grabbed = 1;
+	}
+	break;
+      case KeyPress:  /* we do text input here */
+	n = XLookupString(&event.xkey, buf, sizeof(buf), &ks, NULL);
+	keypress = buf[0];
+        shft = (event.xkey.state & ShiftMask);
+	myfprintf((stderr, "Keypress [%s], shift state %X\n", buf,shft));
+	if (n == 0) {  /* not a regular key, translate it into one */
+	  switch (ks) {
+	  case XK_Home:
+	  case XK_Begin:
+	    buf[0] = '\001';  /* ^A */
+	    break;
+	  case XK_End:
+	    buf[0] = '\005';  /* ^E */
+	    break;
+	  case XK_Left:
+	    buf[0] = '\002';  /* ^B */
+	    break;
+	  case XK_Right:
+	    buf[0] = '\006';  /* ^F */
+	    break;
+	  case XK_Up:
+	    buf[0] = '\020';            /* ^P */
+	    break;
+	  case XK_Down:
+	    buf[0] = '\016';  /* ^N */
+	    break;
+	  default:
+	    if (ks >= XK_F1 && ks <= XK_F35) {
+	      buf[0] = '\0';
+	      keypress = 257 + ks - XK_F1;
+	    } else
+	      goto no_redraw;  /* no action for this event */
+	  }
+	}
+        switch (ks) {                   /* regular key, may need adjustment */
+        case XK_Tab:
+          if (shft) {
+            buf[0] = '\020';          /* chg shift tab to ^P */
+          }
+          break;
+        }
+	if (!CF.cur_input) {  /* no text input fields */
+	  for (item = root_item_ptr; item != 0;
+               item = item->header.next) {/* all items */
+	    if (item->type == I_BUTTON && item->button.keypress == buf[0]) {
+	      RedrawItem(item, 1);
+	      usleep(MICRO_S_FOR_10MS);
+	      RedrawItem(item, 0);
+	      DoCommand(item);
+	      goto no_redraw;
+	    }
+	  }
+	  break;
+	}
+	switch (buf[0]) {
+	case '\001':  /* ^A */
+	  old_cursor = CF.abs_cursor;
+	  CF.rel_cursor = 0;
+	  CF.abs_cursor = 0;
+	  CF.cur_input->input.left = 0;
+	  goto redraw_newcursor;
+	  break;
+	case '\005':  /* ^E */
+	  old_cursor = CF.abs_cursor;
+	  CF.rel_cursor = CF.cur_input->input.n;
+	  if ((CF.cur_input->input.left =
+               CF.rel_cursor - CF.cur_input->input.size) < 0)
+	    CF.cur_input->input.left = 0;
+	  CF.abs_cursor = CF.rel_cursor - CF.cur_input->input.left;
+	  goto redraw_newcursor;
+	  break;
+	case '\002':  /* ^B */
+	  old_cursor = CF.abs_cursor;
+	  if (CF.rel_cursor > 0) {
+	    CF.rel_cursor--;
+	    CF.abs_cursor--;
+	    if (CF.abs_cursor <= 0 && CF.rel_cursor > 0) {
+	      CF.abs_cursor++;
+	      CF.cur_input->input.left--;
+	    }
+	  }
+	  goto redraw_newcursor;
+	  break;
+	case '\006':  /* ^F */
+	  old_cursor = CF.abs_cursor;
+	  if (CF.rel_cursor < CF.cur_input->input.n) {
+	    CF.rel_cursor++;
+	    CF.abs_cursor++;
+	    if (CF.abs_cursor >= CF.cur_input->input.size && 
+		CF.rel_cursor < CF.cur_input->input.n) {
+	      CF.abs_cursor--;
+	      CF.cur_input->input.left++;
+	    }
+	  }
+	  goto redraw_newcursor;
+	  break;
+	case '\010':  /* ^H */
+	  old_cursor = CF.abs_cursor;
+	  if (CF.rel_cursor > 0) {
+	    sp = CF.cur_input->input.value + CF.rel_cursor;
+	    dp = sp - 1;
+	    for (; *dp = *sp, *sp != '\0'; dp++, sp++);
+	    CF.cur_input->input.n--;
+	    CF.rel_cursor--;
+	    if (CF.rel_cursor < CF.abs_cursor) {
+	      CF.abs_cursor--;
+	      if (CF.abs_cursor <= 0 && CF.rel_cursor > 0) {
+		CF.abs_cursor++;
+		CF.cur_input->input.left--;
+	      }
+	    } else
+	      CF.cur_input->input.left--;
+	  }
+	  goto redraw_newcursor;
+	  break;
+	case '\177':  /* DEL */
+	case '\004':  /* ^D */
+	  if (CF.rel_cursor < CF.cur_input->input.n) {
+	    sp = CF.cur_input->input.value + CF.rel_cursor + 1;
+	    dp = sp - 1;
+	    for (; *dp = *sp, *sp != '\0'; dp++, sp++);
+	    CF.cur_input->input.n--;
+	    goto redraw;
+	  }
+	  break;
+	case '\013':  /* ^K */
+	  CF.cur_input->input.value[CF.rel_cursor] = '\0';
+	  CF.cur_input->input.n = CF.rel_cursor;
+	  goto redraw;
+	case '\025':  /* ^U */
+	  old_cursor = CF.abs_cursor;
+	  CF.cur_input->input.value[0] = '\0';
+	  CF.cur_input->input.n = CF.cur_input->input.left = 0;
+	  CF.rel_cursor = CF.abs_cursor = 0;
+	  goto redraw_newcursor;
+        case '\020':                    /* ^P previous field */
+          old_item = CF.cur_input;
+          old_item->input.o_cursor = CF.rel_cursor;
+          CF.cur_input = old_item->input.prev_input; /* new current input fld */
+          RedrawItem(old_item, 1);
+          CF.rel_cursor = old_item->input.o_cursor;
+          CF.abs_cursor = CF.rel_cursor - old_item->input.left;
+          goto redraw;
+	  break;
+	case '\t':
+	case '\n':
+	case '\015':
+	case '\016':  /* LINEFEED, TAB, RETURN, ^N, jump to the next field */
+          /* Note: the input field ring used with ^P above
+             could probably make this a lot simpler. dje 12/20/98 */
+          /* Code tracks cursor. */
+          item = root_item_ptr;         /* init item ptr */
+          if (CF.cur_input != 0) {          /* if in text */
+            item = CF.cur_input->header.next; /* move to next item */
+          }
+	  for ( ; item != 0;
+               item = item->header.next) {/* find next input item */
+	    if (item->type == I_INPUT) {
+	      old_item = CF.cur_input;
+	      old_item->input.o_cursor = CF.rel_cursor;
+	      CF.cur_input = item;
+	      RedrawItem(old_item, 1);
+	      CF.rel_cursor = item->input.o_cursor;
+	      CF.abs_cursor = CF.rel_cursor - item->input.left;
+	      goto redraw;
+	    }
+	  }
+	  /* end of all text input fields, check for buttons */
+	  for (item = root_item_ptr; item != 0;
+               item = item->header.next) {/* all items */
+	    myfprintf((stderr, "Button: keypress==%d\n",
+		    item->button.keypress));
+	    if (item->type == I_BUTTON && item->button.keypress == buf[0]) {
+	      RedrawItem(item, 1);
+	      usleep(MICRO_S_FOR_10MS);
+	      RedrawItem(item, 0);
+	      DoCommand(item);
+	      goto no_redraw;
+	    }
+	  }
+	  /* goto the first text input field */
+	  for (item = root_item_ptr; item != 0;
+               item = item->header.next) {/* all items */
+	    if (item->type == I_INPUT) {
+	      old_item = CF.cur_input;
+	      old_item->input.o_cursor = CF.rel_cursor;
+	      CF.cur_input = item;
+	      RedrawItem(old_item, 1);
+	      CF.rel_cursor = item->input.o_cursor;
+	      CF.abs_cursor = CF.rel_cursor - item->input.left;
+	      goto redraw;
+	    }
+	  }
+	  break;
+	default:
+	  old_cursor = CF.abs_cursor;
+	  if (buf[0] >= ' ' && buf[0] < '\177') {  /* regular char */
+	    if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
+	      CF.cur_input->input.buf += CF.cur_input->input.size;
+	      CF.cur_input->input.value = 
+		(char *)realloc(CF.cur_input->input.value,
+				CF.cur_input->input.buf);
+	    }
+	    dp = CF.cur_input->input.value + CF.cur_input->input.n;
+	    sp = dp - 1;
+	    ep = CF.cur_input->input.value + CF.rel_cursor;
+	    for (; *dp = *sp, sp != ep; sp--, dp--);
+	    *ep = buf[0];
+	    CF.rel_cursor++;
+	    CF.abs_cursor++;
+	    if (CF.abs_cursor >= CF.cur_input->input.size) {
+	      if (CF.rel_cursor < CF.cur_input->input.n)
+		CF.abs_cursor = CF.cur_input->input.size - 1;
+	      else
+		CF.abs_cursor = CF.cur_input->input.size;
+	      CF.cur_input->input.left = CF.rel_cursor - CF.abs_cursor;
+	    }
+	    goto redraw_newcursor;
+	  }
+	  /* unrecognized key press, check for buttons */
+	  for (item = root_item_ptr; item != 0;
+               item = item->header.next) {/* all items */
+	    myfprintf((stderr, "Button: keypress==%d\n",
+		    item->button.keypress));
+	    if (item->type == I_BUTTON && item->button.keypress == keypress) {
+	      RedrawItem(item, 1);
+	      usleep(MICRO_S_FOR_10MS);  /* .1 seconds */
+	      RedrawItem(item, 0);
+	      DoCommand(item);
+	      goto no_redraw;
+	    }
+	  }
+	  break;
+	}
+      redraw_newcursor:
+	{
+	  int x, dy;
+	  x = BOX_SPC + TEXT_SPC
+            + FontWidth(CF.cur_input->header.dt_ptr->dt_font_struct) *
+            old_cursor - 1;
+	  dy = CF.cur_input->header.size_y - 1;
+	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
+                         CF.cur_input->header.dt_ptr->dt_colors[c_item_bg]);
+	  XDrawLine(dpy, CF.cur_input->header.win,
+                    CF.cur_input->header.dt_ptr->dt_item_GC,
+		    x, BOX_SPC, x, dy - BOX_SPC);
+	}
+      redraw:
+	{
+	  int len, x, dy;
+	  len = CF.cur_input->input.n - CF.cur_input->input.left;
+	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
+                         CF.cur_input->header.dt_ptr->dt_colors[c_item_fg]);
+	  if (len > CF.cur_input->input.size)
+	    len = CF.cur_input->input.size;
+	  else
+	    XDrawImageString(dpy, CF.cur_input->header.win,
+                             CF.cur_input->header.dt_ptr->dt_item_GC,
+			     BOX_SPC + TEXT_SPC + 
+			     FontWidth(CF.cur_input->header.dt_ptr->
+                                       dt_font_struct)
+                             * len,
+			     BOX_SPC + TEXT_SPC +
+                             CF.cur_input->header.dt_ptr->dt_font_struct->
+                             ascent,
+			     CF.cur_input->input.blanks, 
+			     CF.cur_input->input.size - len);
+	  XDrawImageString(dpy, CF.cur_input->header.win,
+                           CF.cur_input->header.dt_ptr->dt_item_GC,
+			   BOX_SPC + TEXT_SPC, 
+			   BOX_SPC + TEXT_SPC +
+                           CF.cur_input->header.dt_ptr->dt_font_struct->ascent,
+			   CF.cur_input->input.value +
+                           CF.cur_input->input.left, len);
+	  x = BOX_SPC + TEXT_SPC +
+            FontWidth(CF.cur_input->header.dt_ptr->dt_font_struct) *
+            CF.abs_cursor - 1;
+	  dy = CF.cur_input->header.size_y - 1;
+	  XDrawLine(dpy, CF.cur_input->header.win,
+                    CF.cur_input->header.dt_ptr->dt_item_GC,
+		    x, BOX_SPC, x, dy - BOX_SPC);
+	}
+      no_redraw:
+	break;  /* end of case KeyPress */
+      }  /* end of switch (event.type) */
+      continue;
+    }  /* end of if (event.xany.window == CF.frame) */
+    for (item = root_item_ptr; item != 0;
+         item = item->header.next) {    /* all items */
+      if (event.xany.window == item->header.win) {
+	switch (event.type) {
+	case Expose:
+	  RedrawItem(item, 0);
+	  break;
+	case ButtonPress:
+	  if (item->type == I_INPUT) {
+	    old_item = CF.cur_input;
+	    old_item->input.o_cursor = CF.rel_cursor;
+	    CF.cur_input = item;
+	    RedrawItem(old_item, 1);
+	    CF.abs_cursor = (event.xbutton.x - BOX_SPC - 
+			  TEXT_SPC +
+                          FontWidth(item->header.dt_ptr->dt_font_struct) / 2)
+	      / FontWidth(item->header.dt_ptr->dt_font_struct);
+	    if (CF.abs_cursor < 0)
+	      CF.abs_cursor = 0;
+	    if (CF.abs_cursor > item->input.size)
+	      CF.abs_cursor = item->input.size;
+	    CF.rel_cursor = CF.abs_cursor + item->input.left;
+	    if (CF.rel_cursor < 0)
+	      CF.rel_cursor = 0;
+	    if (CF.rel_cursor > item->input.n)
+	      CF.rel_cursor = item->input.n;
+	    if (CF.rel_cursor > 0 && CF.rel_cursor == item->input.left)
+	      item->input.left--;
+	    if (CF.rel_cursor < item->input.n && 
+		CF.rel_cursor == item->input.left + item->input.size)
+	      item->input.left++;
+	    CF.abs_cursor = CF.rel_cursor - item->input.left;
+	    RedrawItem(item, 0);
+	  }
+	  if (item->type == I_CHOICE)
+	    ToggleChoice(item);
+	  if (item->type == I_BUTTON) {
+	    RedrawItem(item, 1);
+	    XGrabPointer(dpy, item->header.win, False, ButtonReleaseMask,
+			 GrabModeAsync, GrabModeAsync, 
+			 None, None, CurrentTime);
+	  }
+	  break;
+	case ButtonRelease:
+	  RedrawItem(item, 0);
+	  if (CF.grab_server && CF.server_grabbed) {
+	    XGrabPointer(dpy, CF.frame, True, 0, GrabModeAsync, GrabModeAsync,
+			 None, None, CurrentTime);
+	    XFlush(dpy);
+	  } else {
+	    XUngrabPointer(dpy, CurrentTime);
+	    XFlush(dpy);
+	  }
+	  if (event.xbutton.x >= 0 && 
+	      event.xbutton.x < item->header.size_x &&
+	      event.xbutton.y >= 0 &&
+	      event.xbutton.y < item->header.size_y) {
+	    DoCommand(item);
+	  }
+	  break;
+	}
+      }
+    }  /* end of for (i = 0 */
+  }  /* while loop */
+}
+
+static void ToggleChoice (Item *item)
+{
+  int i;
+  Item *sel = item->choice.sel;
+
+  if (sel->selection.key == IS_SINGLE) {
+    if (!item->choice.on) {
+      for (i = 0; i < sel->selection.n; i++) {
+	if (sel->selection.choices[i]->choice.on) {
+	  sel->selection.choices[i]->choice.on = 0;
+	  RedrawItem(sel->selection.choices[i], 0);
+	}
+      }
+      item->choice.on = 1;
+      RedrawItem(item, 0);
+    }
+  } else {  /* IS_MULTIPLE */
+    item->choice.on = !item->choice.on;
+    RedrawItem(item, 0);
+  }
+}

@@ -1,0 +1,18 @@
+DestroyModuleConfig         FormFvwmRlogin*
+*FormFvwmRloginWarpPointer
+*FormFvwmRloginLine         center
+*FormFvwmRloginText         "Login to Remote Host"
+*FormFvwmRloginLine         center
+*FormFvwmRloginText         "Host:"
+*FormFvwmRloginInput        HostName        20      ""
+*FormFvwmRloginLine         center
+*FormFvwmRloginSelection    UserSel single
+*FormFvwmRloginChoice       Default Default on      "same user"
+*FormFvwmRloginChoice       Custom  Custom  off     "user:"
+*FormFvwmRloginInput        UserName        10      ""
+*FormFvwmRloginLine         expand
+*FormFvwmRloginButton       quit    "Login"         ^M
+*FormFvwmRloginCommand      Exec exec rsh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
+*FormFvwmRloginButton       restart "Clear"
+*FormFvwmRloginButton       quit    "Cancel"        ^[
+*FormFvwmRloginCommand      Nop

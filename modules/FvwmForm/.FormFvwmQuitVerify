@@ -1,0 +1,11 @@
+DestroyModuleConfig               FormFvwmQuitVerify*
+*FormFvwmQuitVerifyGrabServer
+*FormFvwmQuitVerifyWarpPointer
+*FormFvwmQuitVerifyCommand     Beep
+*FormFvwmQuitVerifyLine        center
+*FormFvwmQuitVerifyText        "Do you really want to logout?"
+*FormFvwmQuitVerifyLine        expand
+*FormFvwmQuitVerifyButton      quit "Logout" ^M
+*FormFvwmQuitVerifyCommand     Quit 
+*FormFvwmQuitVerifyButton      quit "Cancel" ^[
+*FormFvwmQuitVerifyCommand     Nop

@@ -16,3 +16,22 @@ Thank you for using FvwmForm.  Please report bugs to me.
 
 Tom Feng
 ztfeng@math.princeton.edu
+
+------------------------------------------------------------------
+
+And now,  (January 1998),  we  have FvwmForm 2.0.   (Actually FvwmForm
+doesn't  have a version number,  it shares  the fvwm2 version number.)
+In addition to the files above, you will find:
+
+.FormFvwmCapture	Installed Window Capture from man page
+.FormFvwmQuitVerify	Installed MWM Quit/Verify from man page
+.FormFvwmRlogin		Installed Rlogin from man page
+
+The Makefile is  gone and  the comment about   changing it no   longer
+applies  as  FvwmForm is now  part  of  Fvwm.  Similarly,  bug reports
+should be reported  in the same  manner as any   other fvwm bug.   The
+"Changes" file is also out of  use.  Fvwm ChangeLog facilities are now
+being used.
+
+Dan Espen
+dane@mk.bellcore.com
