@@ -646,38 +646,43 @@ void FlocaleRotateDrawString(
 	}
 
 	/* here take care of superimposing chars */
-	i = 0;	
-	while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
+	i = 0;
+	if(comb_chars != NULL)
 	{
-	        /* draw composing character on top of corresponding 
-		   "real" character */
-	        FlocaleWinString tmp_fws = *fws;
-		int offset = pixel_pos[comb_chars[i].position];
-	        int curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c, 
-						      buf);
-		char *buf2 = FiconvUtf8ToCharset(
-						 dpy,
-						 flf->str_fc,
-						 (const char *)buf,curr_len);
-		if(flf->fontset != None)
+		while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
 		{
-		        XmbDrawString(dpy, canvas_pix, flf->fontset, fws->gc,
-				      offset,
-				      height - descent, buf2, strlen(buf2));
+		        /* draw composing character on top of corresponding 
+			   "real" character */
+		        FlocaleWinString tmp_fws = *fws;
+			int offset = pixel_pos[comb_chars[i].position];
+		        int curr_len = FlocaleChar2bOneCharToUtf8(
+							    comb_chars[i].c, 
+							    buf);
+			char *buf2 = FiconvUtf8ToCharset(
+						   dpy,
+						   flf->str_fc,
+						   (const char *)buf,curr_len);
+			if(flf->fontset != None)
+			{
+			        XmbDrawString(dpy, canvas_pix, flf->fontset, 
+					      fws->gc, offset,
+					      height - descent, buf2, 
+					      strlen(buf2));
+			}
+			else if(flf->font != None)
+			{
+			        tmp_fws.e_str = buf2;
+				XSetFont(dpy, font_gc, flf->font->fid);
+			        FlocaleFontStructDrawString(
+					    dpy, flf, canvas_pix, font_gc,
+					    offset, height - descent, 
+					    fg, fgsh, has_fg_pixels, &tmp_fws,
+					    strlen(buf2), True);
+			}
+							       
+			free(buf2);
+			i++;
 		}
-		else if(flf->font != None)
-		{
-		        tmp_fws.e_str = buf2;
-			XSetFont(dpy, font_gc, flf->font->fid);
-		        FlocaleFontStructDrawString(
-				    dpy, flf, canvas_pix, font_gc,
-				    offset, height - descent, 
-				    fg, fgsh, has_fg_pixels, &tmp_fws,
-				    strlen(buf2), True);
-		}
-						       
-		free(buf2);
-		i++;
 	}
 
 	/* reserve memory for the first XImage */
@@ -1703,7 +1708,7 @@ void FlocaleDrawString(
 	superimpose_char_t *comb_chars = NULL;
 	char *curr_str;
 	int char_len; /* length in number of chars */
-	int *pixel_pos;
+	int *pixel_pos = NULL;
 	int i;
 	int j;
 	char buf[4];
@@ -1728,29 +1733,32 @@ void FlocaleDrawString(
 	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars);
 
 	/* for superimposition calculate the character positions in pixels */
-	curr_str = fws->str;
-	char_len = 0;
-	i = 0;
-	while(fws->e_str[i] != 0 && i < len)
+	if(comb_chars != NULL)
 	{
-	        curr_len = FlocaleStringNumberOfBytes(flf, fws->str + i);
-		char_len++;
-		i += curr_len;
-	}
-	pixel_pos = (int *)safemalloc(char_len * sizeof(int));
-	curr_str = fws->e_str;
-	curr_pixel_pos = 0;
-	for(i = 0 ; i < char_len ; i++)
-	{
-	        curr_len = FlocaleStringNumberOfBytes(flf, curr_str);
-		for(j = 0 ; j < curr_len ; j++)
+		curr_str = fws->str;
+		char_len = 0;
+		i = 0;
+		while(fws->e_str[i] != 0 && i < len)
 		{
-		        buf[j] = curr_str[j];
+		        curr_len = FlocaleStringNumberOfBytes(flf, fws->str + i);
+			char_len++;
+			i += curr_len;
 		}
-		buf[j] = 0;
-		pixel_pos[i] = curr_pixel_pos;
-		curr_pixel_pos += FlocaleTextWidth(flf, buf, curr_len);
-		curr_str += curr_len;
+		pixel_pos = (int *)safemalloc(char_len * sizeof(int));
+		curr_str = fws->e_str;
+		curr_pixel_pos = 0;
+		for(i = 0 ; i < char_len ; i++)
+		{
+		        curr_len = FlocaleStringNumberOfBytes(flf, curr_str);
+			for(j = 0 ; j < curr_len ; j++)
+			{
+			        buf[j] = curr_str[j];
+			}
+			buf[j] = 0;
+			pixel_pos[i] = curr_pixel_pos;
+			curr_pixel_pos += FlocaleTextWidth(flf, buf, curr_len);
+			curr_str += curr_len;
+		}
 	}
 
 	/* get the pixels */
@@ -1822,49 +1830,52 @@ void FlocaleDrawString(
 
 	/* here take care of superimposing chars */
 	i = 0;
-	while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
+	if(comb_chars != NULL)
 	{
-	        /* draw composing character on top of corresponding 
-		   "real" character */
-	        FlocaleWinString tmp_fws = *fws;
-		int offset = pixel_pos[comb_chars[i].position];
-		char *buf2;
-	        curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c, 
-							  buf);
-		buf2 = FiconvUtf8ToCharset(
-					   dpy,
-					   flf->str_fc,
-					   (const char *)buf,curr_len);
-		if(FftSupport && flf->fftf.fftfont != NULL)
+		while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
 		{
-		        tmp_fws.x = fws->x + offset;
-			tmp_fws.e_str = buf2;
-			FftDrawString(
-				      dpy, flf, &tmp_fws, fg, fgsh, 
-				      has_fg_pixels, strlen(buf2), flags);
+		        /* draw composing character on top of corresponding 
+			   "real" character */
+		        FlocaleWinString tmp_fws = *fws;
+			int offset = pixel_pos[comb_chars[i].position];
+			char *buf2;
+		        curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c, 
+								  buf);
+			buf2 = FiconvUtf8ToCharset(
+						   dpy,
+						   flf->str_fc,
+						   (const char *)buf,curr_len);
+			if(FftSupport && flf->fftf.fftfont != NULL)
+			{
+			        tmp_fws.x = fws->x + offset;
+				tmp_fws.e_str = buf2;
+				FftDrawString(
+					      dpy, flf, &tmp_fws, fg, fgsh, 
+					      has_fg_pixels, strlen(buf2),
+					      flags);
+			}
+			else if(flf->fontset != None)
+			{
+			        int xt = fws->x;
+				int yt = fws->y;
+			        XmbDrawString(dpy, fws->win, flf->fontset, 
+					      fws->gc, xt + offset,
+					      yt, buf2, strlen(buf2));
+			}
+			else if(flf->font != None)
+			{
+			        tmp_fws.e_str = buf2;
+			        FlocaleFontStructDrawString(
+					    dpy, flf, fws->win, fws->gc,
+					    fws->x + offset,
+					    fws->y, fg, fgsh, has_fg_pixels, 
+					    &tmp_fws, strlen(buf2), False);
+			}
+							       
+			free(buf2);
+			i++;
 		}
-		else if(flf->fontset != None)
-		{
-		        int xt = fws->x;
-			int yt = fws->y;
-		        XmbDrawString(dpy, fws->win, flf->fontset, fws->gc,
-				      xt + offset,
-				      yt, buf2, strlen(buf2));
-		}
-		else if(flf->font != None)
-		{
-		        tmp_fws.e_str = buf2;
-		        FlocaleFontStructDrawString(
-				    dpy, flf, fws->win, fws->gc,
-				    fws->x + offset,
-				    fws->y, fg, fgsh, has_fg_pixels, &tmp_fws,
-				    strlen(buf2), False);
-		}
-						       
-		free(buf2);
-		i++;
 	}
-	
 
 	if (do_free)
 	{
@@ -1879,9 +1890,12 @@ void FlocaleDrawString(
 			fws->str2b = NULL;
 		}
 	}
-
-	free(comb_chars);
-	free(pixel_pos);
+	
+	if(comb_chars != NULL)
+	{
+	        free(comb_chars);
+		free(pixel_pos);
+	}
 	return;
 }
 
