@@ -1279,7 +1279,8 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   cx = tmp_win->boundary_width;
   cy = tmp_win->title_g.height + tmp_win->boundary_width;
 
-  if (!shaded) {
+  if (!shaded)
+  {
     XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width, tmp_win->attr.height);
     XMoveResizeWindow(dpy, tmp_win->Parent, cx,cy, tmp_win->attr.width,
 		      tmp_win->attr.height);
@@ -1313,7 +1314,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
 #endif /* SHAPE */
 
   XSync(dpy,0);
-  if (sendEvent && !shaded)
+  if (sendEvent /*&& !shaded*/)
   {
     client_event.type = ConfigureNotify;
     client_event.xconfigure.display = dpy;
@@ -1336,6 +1337,16 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
 #ifdef FVWM_DEBUG_MSGS
     fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
              client_event.xconfigure.width,client_event.xconfigure.height);
+#endif
+#if 1
+    /* This is for buggy tk, which waits for the real ConfigureNotify
+       on frame instead of the synthetic one on w. The geometry data
+       in the event will not be correct for the frame, but tk doesn't
+       look at that data anyway. */
+    client_event.xconfigure.event = tmp_win->frame;
+    client_event.xconfigure.window = tmp_win->frame;
+
+    XSendEvent(dpy, tmp_win->frame, False,StructureNotifyMask,&client_event);
 #endif
   }
 

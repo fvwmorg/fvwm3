@@ -1594,8 +1594,8 @@ void HandleConfigureRequest(void)
   XWindowChanges xwc;
   unsigned long xwcm;
   int x, y, width, height;
+  int h;
   XConfigureRequestEvent *cre = &Event.xconfigurerequest;
-  Bool sendEvent=True;
 
   DBUG("HandleConfigureRequest","Routine Entered");
 
@@ -1681,75 +1681,54 @@ void HandleConfigureRequest(void)
   }
 #endif /* SHAPE */
 
- if (cre->window == Tmp_win->w)
- {
-  /* Don't modify frame_XXX fields before calling SetupWindow! */
-  x = Tmp_win->frame_g.x;
-  y = Tmp_win->frame_g.y;
-  width = Tmp_win->frame_g.width;
-  if (IS_SHADED(Tmp_win))
+  if (cre->window == Tmp_win->w)
+  {
+    /* Don't modify frame_XXX fields before calling SetupWindow! */
+    x = Tmp_win->frame_g.x;
+    y = Tmp_win->frame_g.y;
+    width = Tmp_win->frame_g.width;
+    if (IS_SHADED(Tmp_win))
     {
       height = Tmp_win->orig_g.height;
     }
-  else
+    else
+      {
+	height = Tmp_win->frame_g.height;
+      }
+
+    /* for restoring */
+    if (cre->value_mask & CWBorderWidth)
     {
-      height = Tmp_win->frame_g.height;
+      Tmp_win->old_bw = cre->border_width;
     }
+    /* override even if border change */
 
-  /* for restoring */
-  if (cre->value_mask & CWBorderWidth)
-  {
-    Tmp_win->old_bw = cre->border_width;
-  }
-  /* override even if border change */
+    if (cre->value_mask & CWX)
+      x = cre->x - Tmp_win->boundary_width;
+    if (cre->value_mask & CWY)
+      y = cre->y - Tmp_win->boundary_width - Tmp_win->title_g.height;
+    if (cre->value_mask & CWWidth)
+      width = cre->width + 2*Tmp_win->boundary_width;
+    if (cre->value_mask & CWHeight)
+      height = cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
 
-  if (cre->value_mask & CWX)
-    x = cre->x - Tmp_win->boundary_width;
-  if (cre->value_mask & CWY)
-    y = cre->y - Tmp_win->boundary_width - Tmp_win->title_g.height;
-  if (cre->value_mask & CWWidth)
-    width = cre->width + 2*Tmp_win->boundary_width;
-  if (cre->value_mask & CWHeight)
-    height = cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
-
-  /*
-   * SetupWindow (x,y) are the location of the upper-left outer corner and
-   * are passed directly to XMoveResizeWindow (frame).  The (width,height)
-   * are the inner size of the frame.  The inner width is the same as the
-   * requested client window width; the inner height is the same as the
-   * requested client window height plus any title bar slop.
-   */
-  ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
-  if (IS_SHADED(Tmp_win))
+    /*
+     * SetupWindow (x,y) are the location of the upper-left outer corner and
+     * are passed directly to XMoveResizeWindow (frame).  The (width,height)
+     * are the inner size of the frame.  The inner width is the same as the
+     * requested client window width; the inner height is the same as the
+     * requested client window height plus any title bar slop.
+     */
+    ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
+    h = (IS_SHADED(Tmp_win)) ? Tmp_win->frame_g.height : height;
+    /* dont allow clients to resize maximized windows */
+    if (!IS_MAXIMIZED(Tmp_win) || (width == Tmp_win->frame_g.width &&
+				   height == Tmp_win->frame_g.height))
     {
-      if (width != Tmp_win->frame_g.width || height != Tmp_win->orig_g.height)
-	{
-	  /* resizing implies that the client will get a real ConfigureNotify,
-	     no need to send a synthetic one */
-	  sendEvent = False;
-	}
-      /* for shaded windows, allow resizing, but keep it shaded */
-      SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_g.height,sendEvent,
-		  False);
+      SetupFrame (Tmp_win, x, y, width, h, False, False);
+    }
+    if (IS_SHADED(Tmp_win))
       Tmp_win->orig_g.height = height;
-    }
-#if 0
-  /* domivogt (22-Jun-1999): And what about modules? Perhaps they want to move
-   * or resize maximized windows. We can't simply dump the event here. */
-  else if (!IS_MAXIMIZED(Tmp_win) || )
-#else
-  else
-#endif
-    {
-      if (width != Tmp_win->frame_g.width || height != Tmp_win->frame_g.height)
-	{
-	  /* resizing implies that the client will get a real ConfigureNotify,
-	     no need to send a synthetic one */
-	  sendEvent = False;
-	}
-      /* dont allow clients to resize maximized windows */
-      SetupFrame (Tmp_win, x, y, width, height, sendEvent, False);
-    }
   }
 
   /*  Stacking order change requested...  */
@@ -1845,6 +1824,9 @@ void HandleConfigureRequest(void)
 	}
     }
 
+#if 0
+  /* This causes some ddd windows not to be drawn properly. Reverted back to
+   * the old method in SetupFrame. */
   if (sendEvent)
     {
       XEvent client_event;
@@ -1863,8 +1845,8 @@ void HandleConfigureRequest(void)
       client_event.xconfigure.border_width = cre->border_width;
       /* Real ConfigureNotify events say we're above title window, so ...
          what if we don't have a title ?????
-         Doesn't really matter since the ICCCM demands that above field
-         of ConfigureNotify events be ignored by clients. */
+	 Doesn't really matter since the ICCCM demands that above field
+	 of ConfigureNotify events be ignored by clients. */
       client_event.xconfigure.above = Tmp_win->frame;
       client_event.xconfigure.override_redirect = False;
 
@@ -1883,6 +1865,7 @@ void HandleConfigureRequest(void)
 
       XSync(dpy,0);
     }
+#endif
 }
 
 /***********************************************************************

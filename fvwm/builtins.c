@@ -3731,12 +3731,11 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
    * solution for this weird -blackout option. */
   MyXGrabServer(dpy);
   GrabEm(CRS_WAIT);
-  BlackoutScreen(); /* if they want to hide the recapture */
+  XSync(dpy,0);
   if (fSingle)
     CaptureOneWindow(tmp_win, tmp_win->w);
   else
     CaptureAllWindows();
-  UnBlackoutScreen();
   /* Throw away queued up events. We don't want user input during a
    * recapture. The window the user clicks in might disapper at the very same
    * moment and the click goes through to the root window. Not goot */

@@ -439,8 +439,6 @@ extern void Reborder(void);
 RETSIGTYPE SigDone(int);
 RETSIGTYPE Restart(int nonsense);
 extern void Done(int, char *) __attribute__((__noreturn__));
-extern void BlackoutScreen(void);
-extern void UnBlackoutScreen(void);
 extern void setInitFunctionName(int n, const char *name);
 extern const char *getInitFunctionName(int n);
 
@@ -454,8 +452,6 @@ extern int master_pid;
 extern Display *dpy;
 
 extern XContext FvwmContext;
-
-extern Window BlackoutWin;
 
 extern Bool fFvwmInStartup;
 extern Bool DoingCommandLine;

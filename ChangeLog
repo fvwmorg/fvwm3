@@ -1,3 +1,20 @@
+1999-07-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/virtual.c (HandlePaging): fixed edge scrolling with the mouse
+
+	* fvwm/fvwm.h:
+	* fvwm/builtins.c (do_recapture):
+	* fvwm/fvwm.c: removed the 'blackout' code completely
+
+	* fvwm/move_resize.c (move_window_doit): send synthetic
+	ConfigureNotify events to client while moving without resizing
+
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/borders.c (SetupFrame): Cleaned up ConfigureRequest handling.
+	Fixed bug causing some ddd windows to not redraw properly. Send
+	synthetic configure notify events for shaded windows too (required
+	by ICCCM).
+
 1999-07-08  Hippo
 
 	* fvwm/stack.c: fixed RaiseLower of partially offscreen windows

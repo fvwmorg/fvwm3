@@ -84,7 +84,6 @@ ScreenInfo Scr;		        /* structures for the screen */
 MenuInfo Menus;                 /* structures for menus */
 Display *dpy;			/* which display are we talking to */
 
-Window BlackoutWin = None;      /* window to hide window captures */
 Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
 
@@ -111,7 +110,7 @@ int JunkX = 0, JunkY = 0;
 Window JunkRoot, JunkChild;		/* junk window */
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
-Boolean debugging = False,PPosOverride,Blackout = False;
+Boolean debugging = False,PPosOverride;
 
 char **g_argv;
 int g_argc;
@@ -272,12 +271,12 @@ int main(int argc, char **argv)
     }
     else if (strncasecmp(argv[i],"-blackout",9)==0)
     {
-      Blackout = True;
+      /* obsolete option */
     }
     else if (strncasecmp(argv[i], "-replace", 8) == 0)
-      {
-	replace_wm = True;
-      }
+    {
+      replace_wm = True;
+    }
     /* check for visualId before visual to remove ambiguity */
     else if (strncasecmp(argv[i],"-visualId",9)==0) {
       visualClass = -1;
@@ -577,8 +576,6 @@ int main(int argc, char **argv)
    */
   LoadWindowStates(restore_filename);
 
-  BlackoutScreen(); /* if they want to hide the capture/startup */
-
   Scr.FvwmCursors = CreateCursors(dpy);
   InitVariables();
   if (visualClass != -1 || visualId != -1) {
@@ -680,7 +677,6 @@ int main(int argc, char **argv)
   checkPanFrames();
   MyXUngrabServer(dpy);
 
-  UnBlackoutScreen(); /* if we need to remove blackout window */
   CoerceEnterNotifyOnCurrentWindow();
 
 #ifdef SESSION
@@ -827,7 +823,7 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
     Destroy(fw);
     Event.xmaprequest.window = w;
-    HandleMapRequestKeepRaised(BlackoutWin, fw);
+    HandleMapRequestKeepRaised(None, fw);
     PPosOverride = False;
     return;
   }
@@ -886,7 +882,7 @@ void CaptureAllWindows(void)
       {
         XUnmapWindow(dpy, children[i]);
         Event.xmaprequest.window = children[i];
-        HandleMapRequestKeepRaised (BlackoutWin, NULL);
+        HandleMapRequestKeepRaised (None, NULL);
       }
     }
     Scr.flags.windows_captured = 1;
@@ -1960,41 +1956,6 @@ void SetMWM_INFO(Window window)
 		  PropModeReplace,(char *)&motif_wm_info,2);
 #endif
 }
-
-void BlackoutScreen(void)
-{
-  XSetWindowAttributes attributes;
-  unsigned long valuemask;
-
-  if (Blackout && (BlackoutWin == None) && !debugging)
-  {
-    DBUG("BlackoutScreen","Blacking out screen during init...");
-    /* blackout screen */
-    attributes.background_pixel = BlackPixel(dpy,Scr.screen);
-    attributes.override_redirect = True; /* is override redirect needed? */
-    valuemask = CWBackPixel | CWOverrideRedirect;
-    BlackoutWin = XCreateWindow(dpy,Scr.Root,0,0,
-                                DisplayWidth(dpy, Scr.screen),
-                                DisplayHeight(dpy, Scr.screen),0,
-                                CopyFromParent,
-                                CopyFromParent, CopyFromParent,
-                                valuemask,&attributes);
-    XMapWindow(dpy,BlackoutWin);
-    XSync(dpy,0);
-  }
-} /* BlackoutScreen */
-
-void UnBlackoutScreen(void)
-{
-  if (Blackout && (BlackoutWin != None) && !debugging)
-  {
-    DBUG("UnBlackoutScreen","UnBlacking out screen");
-    XDestroyWindow(dpy,BlackoutWin); /* unblacken the screen */
-    XSync(dpy,0);
-    BlackoutWin = None;
-  }
-
-} /* UnBlackoutScreen */
 
 
 /*

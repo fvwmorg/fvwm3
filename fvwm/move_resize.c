@@ -338,7 +338,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
       AnimatedMoveFvwmWindow(tmp_win,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
     SetupFrame (tmp_win, FinalX, FinalY,
-		tmp_win->frame_g.width, tmp_win->frame_g.height,FALSE,False);
+		tmp_win->frame_g.width, tmp_win->frame_g.height,True,False);
     if (fWarp & !fAnimated)
       XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
   }

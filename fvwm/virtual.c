@@ -253,14 +253,15 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	  add_time = 0;
 	  return False;
 	}
-      if (is_last_position_valid &&
+      if (!fLoop && is_last_position_valid &&
 	  ((x - last_x) > MAX_PAGING_MOVE_DISTANCE ||
 	   (x - last_x) < -MAX_PAGING_MOVE_DISTANCE ||
 	   (y - last_y) > MAX_PAGING_MOVE_DISTANCE ||
 	   (y - last_y) < -MAX_PAGING_MOVE_DISTANCE))
 	{
 	  /* The pointer is moving too fast, prevent paging until it slows
-	   * down. */
+	   * down. Don't prevent paging when fLoop is set since we can't be
+	   * sure that HandlePaging will be called again. */
 	  is_timestamp_valid = True;
 	  my_timestamp = lastTimestamp;
 	  add_time = 0;
