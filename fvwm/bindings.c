@@ -94,7 +94,7 @@ int ParseBinding(
   STROKE_CODE(char stroke[MAX_SEQUENCE+1] = "";)
   int n1=0,n2=0,n3=0;
   STROKE_CODE(int n4=0;)
-  int i;
+  STROKE_CODE(int i;)
   KeySym keysym = NoSymbol;
   int contexts;
   int mods;

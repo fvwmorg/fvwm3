@@ -1,3 +1,9 @@
+2000-04-30  Michael Han  <mikehan@best.com>
+
+    * fvwm/bindings.c (ParseBinding):
+    * fvwm/session.c
+    -Wall fixes to hide variables if they're not going to be used
+
 2000-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (get_selectable_item_count):

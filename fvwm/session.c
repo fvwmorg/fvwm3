@@ -73,11 +73,11 @@ Match;
 int sm_fd = -1;
 static char *client_id = NULL;
 static char *sm_client_id = NULL;
+static Bool sent_save_done = 0;
 #endif
 
 static int num_match = 0;
 static Match *matches = NULL;
-static Bool sent_save_done = 0;
 
 extern Bool Restarting;
 
