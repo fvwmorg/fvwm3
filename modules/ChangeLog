@@ -1,3 +1,8 @@
+2000-04-26  olicha <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	Corrected miss print and document TipsColorset
+	
 2000-04-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (initialize_pager):
