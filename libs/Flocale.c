@@ -49,7 +49,7 @@ void FInitLocale(
   {
     fprintf(stderr,
       "[%s][%s]: WARNING -- X does not support locale %s\n",
-      Flocale, "FInitLocale",Flocale);
+      (module == NULL)? "":module, "FInitLocale",Flocale);
     Flocale = NULL;
   }
   if (modifiers != NULL && (Fmodifiers = XSetLocaleModifiers(modifiers)) == NULL)
