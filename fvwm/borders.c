@@ -1426,9 +1426,6 @@ void SetupFrame(
     switch(i)
     {
     case 0:
-      /*
-       * fix up frame and assign size/location values in tmp_win
-       */
       XMoveResizeWindow(dpy, tmp_win->frame, x, y, w, h);
       break;
     case 1:
@@ -1437,6 +1434,10 @@ void SetupFrame(
 	XMoveResizeWindow(
 	dpy, tmp_win->Parent, px, py, max(tmp_win->attr.width, 1),
 	max(tmp_win->attr.height, 1));
+      }
+      else
+      {
+        XMoveWindow(dpy, tmp_win->Parent, px, py);
       }
       break;
     case 2:
@@ -1456,7 +1457,6 @@ void SetupFrame(
   }
   set_decor_gravity(
     tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
-  XMoveWindow(dpy, tmp_win->Parent, px, py);
   XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
   tmp_win->frame_g.x = x;
   tmp_win->frame_g.y = y;

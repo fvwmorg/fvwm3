@@ -213,22 +213,15 @@ void WindowShade(F_CMD_ARGS)
 	frame_g.width += diff.width;
 	frame_g.height += diff.height;
 	if (move_parent_too)
-	{
 	  XMoveResizeWindow(
 	    dpy, tmp_win->Parent, parent_g.x, parent_g.y, parent_g.width,
 	    parent_g.height);
-	  XMoveResizeWindow(
-	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
-	    frame_g.height);
-	}
 	else
-	{
-
 	  XResizeWindow(dpy, tmp_win->Parent, parent_g.width, parent_g.height);
-	  XMoveResizeWindow(
-	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
-	    frame_g.height);
-	}
+	XMoveResizeWindow(
+	  dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
+	  frame_g.height);
+	XMoveResizeWindow(dpy, tmp_win->decor_w, 0, 0, frame_g.width, frame_g.height);
         FlushOutputQueues();
         XSync(dpy, 0);
       }
@@ -246,7 +239,6 @@ void WindowShade(F_CMD_ARGS)
       {
 	XMoveWindow(dpy, tmp_win->w, 0, 0);
       }
-      XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
     }
     else
     {
