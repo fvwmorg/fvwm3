@@ -2213,7 +2213,6 @@ void HandleMapRequestKeepRaised(
 		win_opts = &win_opts_bak;
 	}
 	ew = ea->exc->x.etrigger->xmaprequest.window;
-fprintf(stderr,"hmrkr: ew 0x%08x excw 0x%08x\n",(int)ew, (int)ea->exc->w.w);
 	if (ReuseWin == NULL)
 	{
 		if (XFindContext(dpy, ew, FvwmContext, (caddr_t *)&fw) ==
@@ -3100,7 +3099,6 @@ void dispatch_event(XEvent *e)
 			}
 		case MapRequest:
 			w = e->xmaprequest.window;
-fprintf(stderr,"de: xmr window 0x%08x\n",(int)w);
 			break;
 		default:
 			break;
