@@ -23,10 +23,6 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
@@ -36,6 +32,10 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#ifdef DEBUG
+#  define FVWM_DEBUG_MSGS   /* Do we need this? */
+#endif
+#include "libs/fvwmsignal.h"
 
 #include "fvwm/fvwm.h"
 #include "FvwmPager.h"
@@ -117,7 +117,6 @@ Bool is_transient = False;
 Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
 
-static volatile sig_atomic_t isTerminated = False;
 
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
@@ -160,6 +159,11 @@ int main(int argc, char **argv)
     struct sigaction  sigact;
 
     sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
 # ifdef SA_INTERRUPT
     sigact.sa_flags = SA_INTERRUPT;
 # else
@@ -175,11 +179,25 @@ int main(int argc, char **argv)
   }
 #else
   /* We don't have sigaction(), so fall back to less robust methods.  */
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) |
+                     sigmask(SIGTERM) |
+                     sigmask(SIGQUIT) |
+                     sigmask(SIGINT) |
+                     sigmask(SIGHUP) );
+#endif
   signal(SIGPIPE, TerminateHandler);
   signal(SIGTERM, TerminateHandler);
   signal(SIGQUIT, TerminateHandler);
   signal(SIGINT,  TerminateHandler);
   signal(SIGHUP,  TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGINT, 1);
+  siginterrupt(SIGHUP, 1);
+#endif
 #endif
 
   fd[0] = atoi(argv[1]);
@@ -337,8 +355,6 @@ int main(int argc, char **argv)
 
   if (is_transient)
     {
-      XEvent Event;
-
       XSync(dpy,0);
       while (i < 1000 &&
 	     XGrabPointer(dpy, Scr.Root, True,
@@ -357,6 +373,13 @@ int main(int argc, char **argv)
       XSync(dpy,0);
     }
   Loop(fd);
+#ifdef DEBUG
+  if (debug_term_signal)
+  {
+    fprintf(stderr,"[main]: Terminated due to signal %d\n",
+                   debug_term_signal);
+  }
+#endif
   return 0;
 }
 
@@ -468,9 +491,9 @@ void process_message( FvwmPacket* packet )
  *
  ***********************************************************************/
 static RETSIGTYPE
-TerminateHandler(int nonsense)
+TerminateHandler(int sig)
 {
-  isTerminated = True;
+  fvwmSetTerminate(sig);
 }
 
 void DeadPipe(int nonsense)
@@ -1172,7 +1195,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-  if (select(fd_width,SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL) > 0)
+  if (fvwmSelect(fd_width, &in_fdset, 0, 0, NULL) > 0)
   {
   if(FD_ISSET(x_fd, &in_fdset))
     {
@@ -1194,8 +1217,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       FvwmPacket* packet = ReadFvwmPacket(fd[1]);
       if ( packet == NULL )
 	  exit(0);
-      else
-	  process_message( packet );
+      process_message( packet );
     }
   }
   return 0;
