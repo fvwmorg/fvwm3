@@ -179,6 +179,7 @@ int save_color_limit = 0;                   /* color limit from config */
 static RETSIGTYPE TerminateHandler(int);
 static int myErrorHandler(Display *dpy, XErrorEvent *event);
 static void CleanUp(void);
+static void change_colorset(int color);
 
 #ifdef I18N_MB
 #ifdef __STDC__
@@ -282,9 +283,11 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(myErrorHandler);
 
-  SetMessageMask(fd, m_mask);
+  /* SetMessageMask(fd, m_mask); */
 
   ParseOptions();
+
+  SetMessageMask(fd, m_mask); /* it may have changed */
 
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
     size->max_width  = size->min_width  = max_icon_width + icon_relief;
@@ -397,8 +400,12 @@ void Loop(void)
 				  -icon_win_y, icon_win_width,
 				  icon_win_height);
 		AdjustIconWindows();
-		XClearWindow(dpy,main_win);
-		RedrawWindow();
+		if (colorset >= 0)
+		  change_colorset(colorset);
+		else {
+		  XClearWindow(dpy,main_win);
+		  RedrawWindow();
+		}
 	      }
 	      break;
 	    case KeyPress:
@@ -1193,6 +1200,7 @@ void CreateWindow(void)
 			     margin1 + 2 + Height - bar_width,
 			     bar_width, bar_width,
 			     0, CopyFromParent,
+
 			     InputOutput, CopyFromParent,
 			     mask, &attributes);
   XSelectInput(dpy,t_button,BUTTON_EVENTS);
@@ -1200,7 +1208,7 @@ void CreateWindow(void)
   }
 }
 
-void change_colorset(int color) {
+static void change_colorset(int color) {
   int x, y;
   unsigned int bw, w, h, depth;
   Window Junkroot;
@@ -1992,6 +2000,10 @@ void process_message(unsigned long type, unsigned long *body)
 		icon_win_y = icon_win_height - Height;
 	      XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
 				icon_win_width, icon_win_height);
+	      if ((diffx || diffy) && (colorset >= 0))
+		SetWindowBackground(dpy, icon_win, icon_win_width,
+				    icon_win_height, &Colorset[(colorset)],
+				    Pdepth, NormalGC, True);
 	      if (tmp->desk == CurrentDesk){
 		XMapWindow(dpy, tmp->IconWin);
 		if (max_icon_height != 0)
@@ -2019,7 +2031,6 @@ void process_message(unsigned long type, unsigned long *body)
       break;
     }
   case M_ADD_WINDOW:
-/*    if (AddItem(body[0], body[7], body[8]) == True && ready){ */
     if (AddItem(cfgpacket) == True && ready){
       GetIconwinSize(&diffx, &diffy);
       if (diffy && (primary == BOTTOM || secondary == BOTTOM))
@@ -2028,6 +2039,10 @@ void process_message(unsigned long type, unsigned long *body)
 	icon_win_x += diffx;
       XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
 			icon_win_width, icon_win_height);
+      if ((diffx || diffy) && (colorset >= 0))
+	SetWindowBackground(dpy, icon_win, icon_win_width,
+			    icon_win_height, &Colorset[(colorset)],
+			    Pdepth, NormalGC, True);
     }
     break;
   case M_DESTROY_WINDOW:
@@ -2047,6 +2062,10 @@ void process_message(unsigned long type, unsigned long *body)
 	icon_win_y = icon_win_height - Height;
       XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
 			icon_win_width, icon_win_height);
+      if ((diffx || diffy) && (colorset >= 0))
+	SetWindowBackground(dpy, icon_win, icon_win_width,
+			    icon_win_height, &Colorset[(colorset)],
+			    Pdepth, NormalGC, True);
       AdjustIconWindows();
       if (!(local_flags & HIDE_H) && diffx)
 	RedrawHScrollbar();
@@ -2136,6 +2155,10 @@ void process_message(unsigned long type, unsigned long *body)
 	XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
 			  icon_win_width, icon_win_height);
 	XUnmapSubwindows(dpy, icon_win);
+	if ((diffx || diffy) && (colorset >= 0))
+	  SetWindowBackground(dpy, icon_win, icon_win_width,
+			      icon_win_height, &Colorset[(colorset)],
+			      Pdepth, NormalGC, True);
 	mapicons();
 	if (!(local_flags & HIDE_H))
 	  RedrawHScrollbar();
@@ -2159,6 +2182,10 @@ void process_message(unsigned long type, unsigned long *body)
       icon_win_x = icon_win_width - Width;
     XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
 		      icon_win_width, icon_win_height);
+    if ((diffx || diffy) && (colorset >= 0))
+      SetWindowBackground(dpy, icon_win, icon_win_width,
+			  icon_win_height, &Colorset[(colorset)],
+			  Pdepth, NormalGC, True);
     AdjustIconWindows();
     XMapWindow(dpy,main_win);
     XMapSubwindows(dpy, main_win);

@@ -1,3 +1,7 @@
+1999-11-24  Hippo
+
+	* FvwmIconMan/*.c: fixed HilightFocusWin, fixed colorset stretching
+
 1999-11-23  Mikhael Goikhman  <migo@hoomemail.com>
 
 	Applied a FvwmBacker patch from Michael Han, fixed and modified.
