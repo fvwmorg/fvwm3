@@ -1,14 +1,27 @@
 .\" t
 .\" @(#)FvwmBanner.1	1/12/94
-.TH FvwmBanner 1 "7 May 1999"
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.TH FvwmBanner 1 "21 July 1999"
 .UC
 .SH NAME
 FvwmBanner \- the FVWM Banner
 .SH SYNOPSIS
-FvwmBanner is intended to be spawned by fvwm.
+FvwmBanner is intended to be spawned by fvwm2.
 
 .SH DESCRIPTION
-The FvwmInitBanner displays an Fvwm Logo in the center of the screen
+FvwmBanner displays an Fvwm Logo in the center of the screen
 for 3 seconds.
 
 .SH COPYRIGHTS
@@ -18,26 +31,33 @@ None.
 Nothing interesting.
 
 .SH INVOCATION
-FvwmBanner can be invoked by binding the action 'Module FvwmBanner' to
-a menu or key-stroke in the .fvwmrc file.  Fvwm will search directory
-specified in the ModulePath configuration option to attempt to locate
-FvwmBanner. Although nothing keeps you from launching FvwmBanner at
-start-up time, you probably don't want to.  You can also give it an
-optional file parameter, like 'FvwmBanner doomface.xpm' or spcify an
-alternate default pixmap via configuration options.
+FvwmBanner can be invoked by the command 'Module FvwmBanner'.
+This can be bound to
+a menu or key-stroke in the .fvwm2rc file,
+but more likely you would do this in the InitFunction or RestartFunction,
+for example:
+.EX
+AddToFunc InitFunction "I" Module FvwmBanner
+.EE
+
+You can also give it an
+optional file parameter, like 'FvwmBanner doomface.xpm' or specify an
+alternate default pixmap via configuration options
+(see "*FvwmBannerPixmap" below).
+Fvwm2 will search the ImagePath
+to find the image, or you can use the full path to the image.
 
 .SH CONFIGURATION OPTIONS
 
-.IP "*FvwmBannerNoDecor
-Tells the module to create a window that Fvwm will not manage and not decorate.
+.IP "*FvwmBannerNoDecor"
+Tells FvwmBanner to create a window that Fvwm2 will not manage and not decorate.
 
 .IP "*FvwmBannerPixmap \fIfile\fP"
-Tells the module to display \fIfile\fP instead of the built in pixmap.
+Tells FvwmBanner to display \fIfile\fP instead of the built in pixmap.
 
 .IP "*FvwmBannerTimeout \fIsec\fP"
-Tells the module to display for \fIsec\fP seconds instead of default of 3.
-
+Tells FvwmBanner to display for \fIsec\fP seconds instead of default
+of 3 seconds.
 
 .SH AUTHOR
 Robert Nation 
-
