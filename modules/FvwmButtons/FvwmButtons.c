@@ -122,7 +122,7 @@ void Slide(panel_info *, button_info *);
 Display *Dpy;
 Window Root;
 Graphics *G;
-GC trans_gc;
+GC trans_gc = NULL;
 Window MyWindow;
 char *MyName;
 XFontStruct *font;
@@ -416,6 +416,14 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   XFontStruct *font;
 
   pmap_mask = XCreatePixmap(Dpy,MyWindow,w,h,1);
+
+  if (trans_gc == NULL) {
+    XGCValues gcv;
+  
+    /* create a GC for doing transparency */
+    trans_gc = XCreateGC(Dpy,pmap_mask,(unsigned long)0,&gcv);
+  }
+
   XSetForeground(Dpy,trans_gc,0);
   XFillRectangle(Dpy,pmap_mask,trans_gc,0,0,w,h);
   XSetForeground(Dpy,trans_gc,1);
@@ -436,12 +444,13 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 		       &border_width_return,&depth_return);
 
 	  number=buttonNum(b);
-	  if (b->icon->mask == None)
+	  if (b->icon->mask == None) {
 	    XFillRectangle(Dpy,pmap_mask,trans_gc,x_return, y_return,
 			   b->icon->width,b->icon->height);
-	  else
+	  } else {
 	    XCopyArea(Dpy,b->icon->mask,pmap_mask,trans_gc,0,0,
 		      b->icon->width,b->icon->height,x_return,y_return);
+	  }
 	}
       else
 	{
@@ -1363,8 +1372,6 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 			   mysizehints.width,mysizehints.height,0,G->depth,
 			   InputOutput,G->viz,
 			   CWColormap|CWBackPixmap|CWBorderPixel,&xswa);
-  /* create a GC for doig transparency */
-  trans_gc = XCreateGC(Dpy,MyWindow,(unsigned long)0,&gcv);
 
 # ifdef DEBUG_INIT
   fprintf(stderr,"colors...");
