@@ -107,7 +107,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (action && *action)
   {
     /* parse postitioning args */
-    action = GetMenuOptions(action,w,tmp_win,NULL,&mops);
+    action = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
     line = action;
     /* parse options */
     while (line && *line)
@@ -386,16 +386,17 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     teventp = eventp;
 
   mp.menu = mr;
-  mp.menu_prior = NULL;
+  mp.parent_menu = NULL;
+  mp.parent_item = NULL;
   t = Tmp_win;
   mp.pTmp_win = &t;
   mp.button_window = ButtonWindow;
   tc = context;
   mp.pcontext = &tc;
-  mp.flags.is_menu_from_frame_or_window_or_titlebar = FALSE;
-  mp.flags.is_sticky = TRUE;
+  mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
+  mp.flags.is_sticky = True;
+  mp.flags.is_submenu = False;
   mp.eventp = teventp;
-  mp.cmenuDeep = 0;
   mp.pops = &mops;
   mp.ret_paction = &ret_action;
 

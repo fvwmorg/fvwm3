@@ -73,7 +73,8 @@
  *************************/
 
 
-typedef enum {
+typedef enum
+{
     /* menu types */
     SimpleMenu = 0,
 #ifdef GRADIENT_BUTTONS
@@ -90,27 +91,32 @@ typedef enum {
     /* max button is 8 (0x8) */
 } MenuFaceType;
 
-typedef struct MenuFeel {
+typedef struct MenuFeel
+{
     struct
     {
       unsigned is_animated : 1;
       unsigned do_popup_immediately : 1;
       unsigned do_title_warp : 1;
       unsigned do_popup_as_root_menu : 1;
+      unsigned do_unmap_submenu_on_popdown : 1;
     } flags;
     int PopupOffsetPercent;
     int PopupOffsetAdd;
 } MenuFeel;
 
 
-typedef struct MenuFace {
-    union {
+typedef struct MenuFace
+{
+    union
+    {
 #ifdef PIXMAP_BUTTONS
         Picture *p;
 #endif
         Pixel back;
 #ifdef GRADIENT_BUTTONS
-        struct {
+        struct
+	{
             int npixels;
             Pixel *pixels;
         } grad;
@@ -119,7 +125,8 @@ typedef struct MenuFace {
     MenuFaceType type;
 } MenuFace;
 
-typedef struct MenuLook {
+typedef struct MenuLook
+{
     MenuFace face;
     struct
     {
@@ -149,7 +156,8 @@ typedef struct MenuLook {
     int EntryHeight;              /* menu entry height */
 } MenuLook;
 
-typedef struct MenuStyle {
+typedef struct MenuStyle
+{
     char *name;
     struct MenuStyle *next;
     MenuLook look;
@@ -170,7 +178,6 @@ struct MenuRoot; /* forward declaration */
  * get implemented. */
 typedef struct MenuItem
 {
-    struct MenuRoot *mr;        /* the menu this item is in */
     struct MenuItem *next;	/* next menu item */
     struct MenuItem *prev;	/* prev menu item */
 
@@ -217,20 +224,20 @@ typedef struct MenuItem
  * copies of the menu */
 typedef struct MenuRootStatic
 {
-    MenuItem *first;	/* first item in menu */
-    MenuItem *last;	/* last item in menu */
+    MenuItem *first;            /* first item in menu */
+    MenuItem *last;             /* last item in menu */
 
-    int copies;         /* # of copies, 0 if none except this one */
-    int usage_count;    /* # of mapped instances */
-    char *name;			/* name of root */
-    short height;		/* height of the menu */
+    int copies;                 /* # of copies, 0 if none except this one */
+    int usage_count;            /* # of mapped instances */
+    char *name;                 /* name of root */
+    short height;               /* height of the menu */
     short width0;               /* width of the menu-left-picture col */
-    short width;		/* width of the menu for 1st col */
-    short width2;		/* width of the menu for 2nd col */
+    short width;                /* width of the menu for 1st col */
+    short width2;               /* width of the menu for 2nd col */
     short width3;               /* width of the submenu triangle col */
     short xoffset;              /* the distance between the left border and the
-				 * beginning of the menu items */
-    short items;		/* number of items in the menu */
+                                 * beginning of the menu items */
+    short items;                /* number of items in the menu */
     Picture *sidePic;
     Pixel sideColor;
     /* Menu Face    */
@@ -239,7 +246,6 @@ typedef struct MenuRootStatic
     struct
     {
       unsigned is_background_set : 1; /* is win background set? */
-      unsigned is_painted : 1;
       unsigned is_continuation_menu : 1;
       unsigned is_left : 1;   /* menu direction relative to parent menu */
       unsigned is_right : 1;
@@ -275,47 +281,64 @@ typedef struct MenuRootStatic
 #define MR_SIDECOLOR(m)     ((m)->s->sideColor)
 #define MR_STYLE(m)         ((m)->s->ms)
 #define MR_TEMP_FLAGS(m)    ((m)->s->temp_flags)
+/* flags */
 #define MR_FLAGS(m)         ((m)->s->flags)
 #define MR_DYNAMIC(m)       ((m)->s->dynamic)
+#define MR_IS_BACKGROUND_SET(m)     ((m)->s->temp_flags.is_background_set)
+#define MR_IS_CONTINUATION_MENU(m)  ((m)->s->temp_flags.is_continuation_menu)
+#define MR_IS_LEFT(m)               ((m)->s->temp_flags.is_left)
+#define MR_IS_RIGHT(m)              ((m)->s->temp_flags.is_right)
+#define MR_IS_UP(m)                 ((m)->s->temp_flags.is_up)
+#define MR_IS_DOWN(m)               ((m)->s->temp_flags.is_down)
+#define MR_HAS_SIDECOLOR(m)         ((m)->s->flags.has_side_color)
 
 
 /* This struct contains the parts of a root menu that differ in all copies of
  * the menu */
 typedef struct MenuRootDynamic
 {
-    struct MenuRoot *original;  /* the first copy of the current menu */
-    struct MenuRoot *next;	/* next in list of root menus */
-    struct MenuRoot *continuation; /* continuation of this menu
-				    * (too tall for screen) */
-    /* can get the menu that this popped up through selected->mr when
-       selected is a popup menu item */
-    struct MenuRoot *parent; /* the menu that popped this up, if any */
-    Window w;			/* the window of the menu */
-    MenuItem *selected;	        /* the selected item in menu */
-    int xanimation;             /* x distance window was moved by animation */
+  struct MenuRoot *original_menu;     /* the first copy of the current menu */
+  struct MenuRoot *next_menu;         /* next in list of root menus */
+  struct MenuRoot *continuation_menu; /* continuation of this menu
+				       * (too tall for screen) */
+  /* can get the menu that this popped up through selected->mr when
+   * selected is a popup menu item */
+  struct MenuRoot *parent_menu; /* the menu that popped this up, if any */
+  struct MenuItem *parent_item; /* the menu item that popped this up, if any */
+  Window window;                /* the window of the menu */
+  MenuItem *selected_item;      /* the selected item in menu */
+  int xanimation;               /* x distance window was moved by animation */
+  /* dynamic temp flags */
+  struct
+  {
+    unsigned is_painted : 1;
+  } dflags;
 #ifdef GRADIENT_BUTTONS
-    struct
-    {
-      Pixmap stored;
-      int width;
-      int height;
-      int y;
-    } stored_item;
+  struct
+  {
+    Pixmap stored;
+    int width;
+    int height;
+    int y;
+  } stored_item;
 #endif
 } MenuRootDynamic;
 
 /* access macros to static menu members */
-#define MR_ORIGINAL_MENU(m)         ((m)->d->original)
-#define MR_NEXT_MENU(m)             ((m)->d->next)
-#define MR_CONTINUATION_MENU(m)     ((m)->d->continuation)
-#define MR_PARENT_MENU(m)           ((m)->d->parent)
-#define MR_WINDOW(m)                ((m)->d->w)
-#define MR_SELECTED_ITEM(m)         ((m)->d->selected)
+#define MR_ORIGINAL_MENU(m)         ((m)->d->original_menu)
+#define MR_NEXT_MENU(m)             ((m)->d->next_menu)
+#define MR_CONTINUATION_MENU(m)     ((m)->d->continuation_menu)
+#define MR_PARENT_MENU(m)           ((m)->d->parent_menu)
+#define MR_PARENT_ITEM(m)           ((m)->d->parent_item)
+#define MR_WINDOW(m)                ((m)->d->window)
+#define MR_SELECTED_ITEM(m)         ((m)->d->selected_item)
 #define MR_XANIMATION(m)            ((m)->d->xanimation)
 #ifdef GRADIENT_BUTTONS
 #define MR_STORED_ITEM(m)           ((m)->d->stored_item)
 #endif
-
+/* flags */
+#define MR_DYNAMIC_FLAGS(m)         ((m)->d->dflags)
+#define MR_IS_PAINTED(m)            ((m)->d->dflags.is_painted)
 
 typedef struct MenuRoot
 {
@@ -366,18 +389,19 @@ extern Bool fLastMenuPosHintsValid;
 typedef struct
 {
   MenuRoot *menu;
-  MenuRoot *menu_prior;
+  MenuRoot *parent_menu;
+  MenuItem *parent_item;
   FvwmWindow **pTmp_win;
   FvwmWindow *button_window;
   int *pcontext;
   XEvent *eventp;
   char **ret_paction;
   MenuOptions *pops;
-  int cmenuDeep;
   struct
   {
     unsigned is_menu_from_frame_or_window_or_titlebar : 1;
     unsigned is_sticky : 1;
+    unsigned is_submenu : 1;
   } flags;
 } MenuParameters;
 
@@ -442,7 +466,7 @@ void MakeMenu(MenuRoot *);
 MenuStatus do_menu(MenuParameters *pmp);
 MenuRoot *FindPopup(char *popup_name);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
-		     MenuItem *mi, MenuOptions *pops);
+		     MenuRoot *mr, MenuItem *mi, MenuOptions *pops);
 void DestroyMenu(MenuRoot *mr, Bool recreate);
 void MakeMenus(void);
 void add_item_to_menu(F_CMD_ARGS);

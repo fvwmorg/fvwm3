@@ -1945,8 +1945,8 @@ PopupImmediately/PopupDelayed,
 DoubleClickTime,
 SidePic,
 SideColor,
-PopupAsRootMenu,
-PopupAsSubmenu.
+PopupAsRootMenu/PopupAsSubmenu,
+DeleteSubmenus/HoldSubmenus.
 
 In the above list some options are listed as option pairs or triples
 with a / in between. These options exclude each other.
@@ -1968,17 +1968,17 @@ MWM and WIN style menus never overlap the parent menu.
 \fIFVWM\fP style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
 TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed,
-PopupAsSubmenu.
+PopupAsSubmenu, HoldSubmenus.
 
 \fIMWM\fP style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
-PopupImmediately, PopupAsSubmenu.
+PopupImmediately, PopupAsSubmenu, HoldSubmenus.
 
 \fIWIN\fP style is equivalent to HilightBack, Hilight3DOff,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
 TitleWarpOff, TitleUnderlines1, SeparatorsShort, TrianglesSolid,
-PopupImmediately, PopupAsSubmenu.
+PopupImmediately, PopupAsSubmenu, DeleteSubmenus.
 
 \fIForeground\fP and \fIBackground\fP may have a color name as an
 argument. This color is used for menu text or the menu's background.
@@ -2122,6 +2122,11 @@ you click on a menu item that opens a sub menu. With \fIPopupAsRootMenu\fP
 the original menu is closed before the sub menu appears, with
 \fIPopupAsSubmenu\fP it is not, so you can navigate back into the
 parent menu. Note that \fIPopupAsSubmenu\fP is the default.
+
+\fIDeleteSubmenus\fP instructs fvwm to remove submenus when you move back
+into the parent menu. With \fIHoldSubmenus\fP the submenu remains visible.
+You will probably want to use \fIHoldSubmenus\fP if you are using the
+\fIPopupDelayed\fP style.
 
 Examples:
 

@@ -1,5 +1,8 @@
 1999-05-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/menus.c (NewMenuStyle): new options HoldSubmenus and
+	DeleteSubmenus
+
 	* fvwm/builtins.c (ReadButtonFace): removed stray fprintf
 
 	* fvwm/menus.c: more work on multiple menu instances and tear-off menus

@@ -1,5 +1,11 @@
 Changes in alpha release 2.3.3 (May 1999)
 
+* New menu styles HoldSubmenus/DeleteSubmenus. HoldSubmenus is the new default
+  for mwm and fvwm menus. When you move back from a submenu to its parent menu
+  the submenu remains visible.
+
+* Menus can be visible multiple times at once.
+
 * Restarting fvwm no longer moves the viewport to (0,0).
 
 * New style DepressableBorder/FirmBorder to influence the appearance
