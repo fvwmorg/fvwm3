@@ -3,6 +3,11 @@
 	* fvwm/builtins.c  (UpdateMenuStyle): Handle menu arrow reliefs on
  	black and white terminal.
 
+1999-02-11  Hippo
+
+	* modules/FvwmWinList/FvwmWinList.c: Added XFlush() to fix focus
+	following problem.
+
 1999-02-05  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm-2.xx.lsm: Removed.

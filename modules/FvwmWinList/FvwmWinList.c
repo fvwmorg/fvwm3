@@ -246,6 +246,7 @@ fd_set readset;
      * The biggest advantage over the original approach is
      * having one fewer select statements
      */
+    XFlush(dpy);
     if (select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,NULL) > 0) {
 
       if (FD_ISSET(x_fd,&readset) || XPending(dpy)) LoopOnEvents();
