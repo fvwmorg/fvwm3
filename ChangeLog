@@ -1,3 +1,12 @@
+Sun Mar 21 10:29:40 1999  DanEspen  <dje@blue>
+
+	* NEWS: Updates on form pasting, ImagePath adding, ColorLimit.
+
+	* libs/Picture.c (SetImagePath): Add to the existing image path.
+	
+	* fvwm/fvwm2.1 (ImagePath): Indicate that ImagePath adds to the front
+	of the image path.  Document that there is a builtin image path.
+
 1999-03-21  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/builtins.c: Fixed various compiler warnings.

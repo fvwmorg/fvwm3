@@ -75,10 +75,21 @@ static char* imagePath = FVWM_IMAGEPATH;
 
 void SetImagePath( char* newpath )
 {
-    if ( strcmp( imagePath, FVWM_IMAGEPATH ) != 0 )
-	free( imagePath );
-    
-    imagePath = newpath;
+  char *newImagePath;
+
+  newImagePath = (char *)safemalloc(strlen(imagePath)+strlen(newpath) + 3);
+  strcpy(newImagePath,newpath);         /* put new stuff at front */
+  strcat(newImagePath,":");             /* throw in a separator */
+  strcat(newImagePath,imagePath);       /* old stuff at end */
+
+  if ( strcmp( imagePath, FVWM_IMAGEPATH ) != 0 ) { /* if not initial */
+    free( imagePath );                  /* free old image path */
+  } /* end initial path */
+  free(newpath);                        /* done with stuff to add */
+  imagePath = newImagePath;             /* save new path */
+  /* It might be nice to parse thru the image path at this point,
+     and remove directories that don't exist, and any duplicate
+     directories.  dje 03/21/99. */
 }
 
 char* GetImagePath()
