@@ -142,10 +142,11 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
     XGetGeometry(dpy, win, &junk, (int *)&junk, (int *)&junk, &width, &height,
 		 (unsigned int *)&junk, (unsigned int *)&junk);
 
-  if (!colorset->pixmap)
+  if (!colorset->pixmap) {
     /* use the bg pixel */
     XSetWindowBackground(dpy, win, colorset->bg);
-  else {
+    XClearArea(dpy, win, 0, 0, width, height, True);
+  } else {
     pixmap = CreateBackgroundPixmap(dpy, win, width, height, colorset, depth, gc);
     if (pixmap) {
       XSetWindowBackgroundPixmap(dpy, win, pixmap);
