@@ -1,7 +1,11 @@
+2004-09-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/FScreen.c (XineramaQueryExtension):
+	fixed xinerama crash
+
 2004-09-04  Scott Smedley  <scottie7@tpg.com.au>
 
 	* configure.in:
-
 	Parse man pages with config.status so man pages have correct date.
 	Man pages also specify FVWM version that they relate to.
 

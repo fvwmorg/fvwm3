@@ -115,13 +115,12 @@ Status XineramaGetCenterHint(Display*, int, int*, int*);
 # if FScreenHaveSolarisXinerama
 #  define XineramaQueryExtension(d,b,c) 1 /* Lie, for now */
 #  define XineramaIsActive(d) XineramaGetState((d),0)
-# else
-#  define XineramaQueryScreens(d,s) NULL
+#  define XineramaQueryScreens(d,s) (*(s)) = 0, NULL
 # endif
 #else
 # define XineramaQueryExtension(da, b, c) 0
 # define XineramaIsActive(a) 0
-# define XineramaQueryScreens(d,s) NULL
+# define XineramaQueryScreens(d,s) (*(s)) = 0, NULL
 #endif
 
 #ifndef MAXFRAMEBUFFERS
@@ -244,6 +243,8 @@ static XineramaScreenInfo *FXineramaQueryScreens(Display *d, int *nscreens)
 {
 	if (FScreenHaveXinerama == 0)
 	{
+		*nscreens = 0;
+
 		return NULL;
 	}
 	if (FScreenHaveSolarisXinerama == 1)
