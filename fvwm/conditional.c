@@ -190,13 +190,23 @@ static void circulate_cmd(
 	{
 		const exec_context_t *exc2;
 		exec_context_changes_t ecc;
+		int flags;
 
 		ecc.w.fw = (do_use_found == True) ? found : NULL;
-		ecc.w.w = (found != NULL) ? FW_W(found) : None;
+		if (found != NULL)
+		{
+			ecc.w.w = FW_W(found);
+			flags = FUNC_DONT_DEFER;
+		}
+		else
+		{
+			ecc.w.w = None;
+			flags = 0;
+		}
 		ecc.w.wcontext = new_context;
 		exc2 = exc_clone_context(
 			exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
-		execute_function(cond_rc, exc2, restofline, 0);
+		execute_function(cond_rc, exc2, restofline, flags);
 		exc_destroy_context(exc2);
 	}
 
@@ -1273,7 +1283,9 @@ void CMD_Any(F_CMD_ARGS)
 
 void CMD_Current(F_CMD_ARGS)
 {
+/*!!!*/fprintf(stderr, "   +++CC\n");
 	circulate_cmd(F_PASS_ARGS, C_WINDOW, 0, True, True);
+/*!!!*/fprintf(stderr, "   ---CC\n");
 
 	return;
 }
@@ -1723,4 +1735,6 @@ void CMD_Test(F_CMD_ARGS)
 			cond_rc->rc = COND_RC_NO_MATCH;
 		}
 	}
+
+	return;
 }

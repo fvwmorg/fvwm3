@@ -644,6 +644,7 @@ static void ExecuteModuleCommand(Window w, int module, char *text)
 	XEvent e;
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
+	int flags;
 
 	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&ecc.w.fw) == XCNOENT)
 	{
@@ -685,6 +686,7 @@ static void ExecuteModuleCommand(Window w, int module, char *text)
 	fev_fake_event(&e);
 	ecc.type = EXCT_MODULE;
 	ecc.w.w = w;
+	flags = (w == None) ? 0 : FUNC_DONT_DEFER;
 	ecc.w.wcontext = GetContext(NULL, ecc.w.fw, &e, &w);
 	ecc.x.etrigger = &e;
 	ecc.m.modnum = module;
