@@ -1,6 +1,6 @@
 /*
-   Fvwmbuttons, copyright 1996, Jarl Totland
-
+ * Fvwmbuttons, copyright 1996, Jarl Totland
+ *
  * This module, and the entire GoodStuff program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -9,8 +9,8 @@
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.
-
-*/
+ *
+ */
 
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,14 +74,16 @@ void CreateIconWindow(button_info *b)
   XSetWindowAttributes attributes;	/* attributes for create windows */
 
   if(!(b->flags&b_Icon))
+  {
     return;
+  }
 
   if(b->IconWin != None)
-    {
-      fprintf(stderr,"%s: BUG: Iconwindow already created for 0x%lx!\n",
-	      MyName,(unsigned long)b);
-      exit(2);
-    }
+  {
+    fprintf(stderr,"%s: BUG: Iconwindow already created for 0x%lx!\n",
+	    MyName,(unsigned long)b);
+    exit(2);
+  }
 
   attributes.background_pixel = buttonBack(b);
   attributes.background_pixmap = None;
@@ -89,52 +91,58 @@ void CreateIconWindow(button_info *b)
   valuemask =  CWEventMask | CWBackPixmap;
 
   if(b->icon->width<1 || b->icon->height<1)
-    {
-      fprintf(stderr,"%s: BUG: Illegal iconwindow tried created\n",MyName);
-      exit(2);
-    }
-  b->IconWin=XCreateWindow(Dpy,MyWindow,0,0,b->icon->width,b->icon->height,
-			   0, CopyFromParent, CopyFromParent,CopyFromParent,
-			   valuemask,&attributes);
+  {
+    fprintf(stderr,"%s: BUG: Illegal iconwindow tried created\n",MyName);
+    exit(2);
+  }
+  b->IconWin=XCreateWindow(
+    Dpy, MyWindow, 0, 0, b->icon->width, b->icon->height, 0, CopyFromParent,
+    CopyFromParent,CopyFromParent, valuemask,&attributes);
   if (attributes.background_pixel != None)
+  {
     XSetWindowBackground(Dpy, b->IconWin, attributes.background_pixel);
-    
+  }
+
 #ifdef XPM
 #ifdef SHAPE
   if (b->icon->mask!=None)
-    XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-		      b->icon->mask,ShapeSet);
+  {
+    XShapeCombineMask(
+      Dpy, b->IconWin, ShapeBounding, 0, 0, b->icon->mask, ShapeSet);
+  }
 #endif
 #endif
 
   if(b->icon->depth==0)
-    {
-      XGCValues gcv;
-      unsigned long gcm=0;
-      Pixmap temp;
+  {
+    XGCValues gcv;
+    unsigned long gcm=0;
+    Pixmap temp;
 
-      gcm = GCForeground | GCBackground;
-      gcv.background=buttonBack(b);
-      gcv.foreground=buttonFore(b);
-      XChangeGC(Dpy,NormalGC,gcm,&gcv);
+    gcm = GCForeground | GCBackground;
+    gcv.background=buttonBack(b);
+    gcv.foreground=buttonFore(b);
+    XChangeGC(Dpy,NormalGC,gcm,&gcv);
 
 #ifdef SHAPE
-      XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-			b->icon->picture,ShapeSet);
+    XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
+		      b->icon->picture,ShapeSet);
 #endif
 
-      temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
-			   b->icon->height,Pdepth);
-      XCopyPlane(Dpy,b->icon->picture,temp,NormalGC,
-		 0,0,b->icon->width,b->icon->height,0,0,1);
+    temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
+			 b->icon->height,Pdepth);
+    XCopyPlane(Dpy,b->icon->picture,temp,NormalGC,
+	       0,0,b->icon->width,b->icon->height,0,0,1);
 
-      XSetWindowBackgroundPixmap(Dpy,b->IconWin,temp);
-      XFreePixmap(Dpy,temp);
-      /* We won't use the icon pixmap anymore... but we still need it for
-	 width/height etc. so we can't destroy it. */
-    }
+    XSetWindowBackgroundPixmap(Dpy,b->IconWin,temp);
+    XFreePixmap(Dpy,temp);
+    /* We won't use the icon pixmap anymore... but we still need it for
+       width/height etc. so we can't destroy it. */
+  }
   else
+  {
     XSetWindowBackgroundPixmap(Dpy,b->IconWin,b->icon->picture);
+  }
 
   return;
 #endif
@@ -159,11 +167,11 @@ void ConfigureIconWindow(button_info *b)
     return;
 
   if(!b->IconWin)
-    {
-      fprintf(stderr,"%s: DEBUG: Tried to configure erroneous iconwindow\n",
-	      MyName);
-      exit(2);
-    }
+  {
+    fprintf(stderr,"%s: DEBUG: Tried to configure erroneous iconwindow\n",
+	    MyName);
+    exit(2);
+  }
 
   buttonInfo(b,&x,&y,&xpad,&ypad,&framew);
   framew=abs(framew);
@@ -177,29 +185,29 @@ void ConfigureIconWindow(button_info *b)
   w=min(w,BW-2*(xpad+framew));
 
   if(b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
-    h=min(h,BH-2*(ypad+framew)-font->ascent-font->descent);
+    h = min(h,BH-2*(ypad+framew)-font->ascent-font->descent);
   else
-    h=min(h,BH-2*(ypad+framew));
+    h = min(h,BH-2*(ypad+framew));
 
   if(w < 1 || h < 1)
-    {
-      XMoveResizeWindow(Dpy, b->IconWin, 2000,2000,1,1);
-      return; /* No need drawing to this */
-    }
+  {
+    XMoveResizeWindow(Dpy, b->IconWin, 2000,2000,1,1);
+    return; /* No need drawing to this */
+  }
 
   if (b->flags & b_Right)
     xoff = BW-framew-xpad-w;
   else if (b->flags & b_Left)
     xoff = framew+xpad;
   else
-    {
-      if(buttonJustify(b)&b_Horizontal)
-	xoff=0;
-      else
-	xoff=(BW-w)>>1;
-      if(xoff < framew+xpad)
-	xoff = framew+xpad;
-    }
+  {
+    if(buttonJustify(b)&b_Horizontal)
+      xoff=0;
+    else
+      xoff=(BW-w)>>1;
+    if(xoff < framew+xpad)
+      xoff = framew+xpad;
+  }
 
   if(b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
     yoff=(BH-(h+font->ascent+font->descent))>>1;
@@ -214,22 +222,23 @@ void ConfigureIconWindow(button_info *b)
 
   XMoveResizeWindow(Dpy, b->IconWin, x,y,w,h);
 
-/* Doesn't this belong above?
+  /* Doesn't this belong above? */
+#if 0
 #ifdef XPM
 #ifdef SHAPE
   if (b->icon->mask!=None)
-    {
-      XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-			b->icon->mask,ShapeSet);
-    }
+  {
+    XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
+		      b->icon->mask,ShapeSet);
+  }
 #endif
 #endif
   if(b->icon->depth==0)
-    {
-      PixmapFromBitmap(b);
-    }
+  {
+    PixmapFromBitmap(b);
+  }
   XSetWindowBackgroundPixmap(Dpy,b->IconWin,b->icon->picture);
-*/
+#endif
 
 #endif
 }

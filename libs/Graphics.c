@@ -350,7 +350,14 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
 
   /* get the best tile size (once) */
   if (!best_width)
-    XQueryBestTile(dpy, d, 0, 0, &best_width, &best_height);
+  {
+    XQueryBestTile(dpy, d, 1, 1, &best_width, &best_height);
+    /* this is needed for buggy X servers like XFree 3.3.3.1 */
+    if (!best_width)
+      best_width = 1;
+    if (!best_height)
+      best_height = 1;
+  }
 
   /* translate the gradient string into an array of colors etc */
   if (!(ncolors = ParseGradient(action, &colors, &perc, &nsegs))) {

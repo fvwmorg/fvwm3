@@ -1,6 +1,6 @@
 /*
-   Fvwmbuttons, copyright 1996, Jarl Totland
-
+ * Fvwmbuttons, copyright 1996, Jarl Totland
+ *
  * This module, and the entire GoodStuff program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -9,8 +9,8 @@
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.
-
-*/
+ *
+ */
 
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,11 +81,13 @@ void RelieveButton(Window wn,int width,int x,int y,int w,int h,Pixel relief,
   XChangeGC(Dpy,ShadowGC,gcm,&gcv);
   shadowGC=ShadowGC;
 
-  if(width<0) {
+  if(width<0)
+  {
     width=-width;
     swapGC=reliefGC;reliefGC=shadowGC;shadowGC=swapGC;
   }
-  if(rev) {
+  if(rev)
+  {
     swapGC=reliefGC;reliefGC=shadowGC;shadowGC=swapGC;
   }
 
@@ -99,22 +101,22 @@ void RelieveButton(Window wn,int width,int x,int y,int w,int h,Pixel relief,
 void MakeButton(button_info *b)
 {
   /* This is resposible for drawing the contents of a button, placing the
-     icon and/or swallowed item in the correct position inside potential
-     padding or frame.
-  */
+   * icon and/or swallowed item in the correct position inside potential
+   * padding or frame.
+   */
   int ih,iw,ix,iy;
   XFontStruct *font;
 
   if(!b)
-    {
-      fprintf(stderr,"%s: BUG: MakeButton called with NULL pointer\n",MyName);
-      exit(2);
-    }
+  {
+    fprintf(stderr,"%s: BUG: MakeButton called with NULL pointer\n",MyName);
+    exit(2);
+  }
   if(b->flags&b_Container)
-    {
-      fprintf(stderr,"%s: BUG: MakeButton called with container\n",MyName);
-      exit(2);
-    }
+  {
+    fprintf(stderr,"%s: BUG: MakeButton called with container\n",MyName);
+    exit(2);
+  }
 
   if(!(b->flags&b_Icon) && (buttonSwallowCount(b)<3))
     return;
@@ -136,38 +138,38 @@ void MakeButton(button_info *b)
 
   /* For now, hardcoded window centered, title bottom centered, below window */
   else if(buttonSwallowCount(b)==3)
+  {
+    long supplied;
+    if(!b->IconWin)
     {
-      long supplied;
-      if(!b->IconWin)
-	{
-	  fprintf(stderr,"%s: BUG: Swallowed window has no IconWin\n",MyName);
-	  exit(2);
-	}
-
-      if(b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
-	ih -= font->ascent+font->descent;
-
-      b->icon_w=iw;
-      b->icon_h=ih;
-
-      if(iw>0 && ih>0)
-	{
-	  if(!(buttonSwallow(b)&b_NoHints))
-	    {
-	      if(!XGetWMNormalHints(Dpy,b->IconWin,b->hints,&supplied))
-		b->hints->flags=0;
-	      ConstrainSize(b->hints,&b->icon_w,&b->icon_h);
-	    }
-	  if (b->flags & b_Right)
-	    ix += iw-b->icon_w;
-	  else if (!(b->flags & b_Left))
-	    ix += (iw-b->icon_w)/2;
-	  XMoveResizeWindow(Dpy,b->IconWin,ix,iy+(ih-b->icon_h)/2,
-			    b->icon_w,b->icon_h);
-	}
-      else
-	XMoveWindow(Dpy,b->IconWin,2000,2000);
+      fprintf(stderr,"%s: BUG: Swallowed window has no IconWin\n",MyName);
+      exit(2);
     }
+
+    if(b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
+      ih -= font->ascent+font->descent;
+
+    b->icon_w=iw;
+    b->icon_h=ih;
+
+    if(iw>0 && ih>0)
+    {
+      if(!(buttonSwallow(b)&b_NoHints))
+      {
+	if(!XGetWMNormalHints(Dpy,b->IconWin,b->hints,&supplied))
+	  b->hints->flags=0;
+	ConstrainSize(b->hints,&b->icon_w,&b->icon_h);
+      }
+      if (b->flags & b_Right)
+	ix += iw-b->icon_w;
+      else if (!(b->flags & b_Left))
+	ix += (iw-b->icon_w)/2;
+      XMoveResizeWindow(Dpy,b->IconWin,ix,iy+(ih-b->icon_h)/2,
+			b->icon_w,b->icon_h);
+    }
+    else
+      XMoveWindow(Dpy,b->IconWin,2000,2000);
+  }
 }
 
 /**
@@ -203,17 +205,17 @@ void RedrawButton(button_info *b,int clean)
   if(b->flags&b_Hangon || b==CurrentButton)  /* Hanging or held down by user */
     rev=1;
   if(b->flags&b_Action) /* If this is a Desk button that takes you to here.. */
+  {
+    int n=0;
+    while(n<4 && (!b->action[n] || strncasecmp(b->action[n],"Desk",4)))
+      n++;
+    if(n<4)
     {
-      int n=0;
-      while(n<4 && (!b->action[n] || strncasecmp(b->action[n],"Desk",4)))
-	n++;
-      if(n<4)
-	{
-	  k=sscanf(&b->action[n][4],"%d%d",&i,&j);
-	  if(k==2 && i==0 && j==new_desk)
-	    rev=1;
-	}
+      k=sscanf(&b->action[n][4],"%d%d",&i,&j);
+      if(k==2 && i==0 && j==new_desk)
+	rev=1;
     }
+  }
 
   RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
 
@@ -222,37 +224,41 @@ void RedrawButton(button_info *b,int clean)
   f=abs(f);
 
   if(clean && BW>2*f && BH>2*f)
+  {
+    gcm = GCForeground;
+    gcv.foreground=buttonBack(b);
+    XChangeGC(Dpy,NormalGC,gcm,&gcv);
+
+    if(b->flags&b_Container)
     {
-      gcm = GCForeground;
-      gcv.foreground=buttonBack(b);
-      XChangeGC(Dpy,NormalGC,gcm,&gcv);
+      int x1=x+f,y1=y+f;
+      int w1=px,h1=py,w2=w1,h2=h1;
+      int w=BW-2*f,h=BH-2*f;
+      w2+=iw - b->c->num_columns*b->c->ButtonWidth;
+      h2+=ih - b->c->num_rows*b->c->ButtonHeight;
 
-      if(b->flags&b_Container)
-	{
-	  int x1=x+f,y1=y+f;
-	  int w1=px,h1=py,w2=w1,h2=h1;
-	  int w=BW-2*f,h=BH-2*f;
-	  w2+=iw - b->c->num_columns*b->c->ButtonWidth;
-	  h2+=ih - b->c->num_rows*b->c->ButtonHeight;
-
-	  if(w1)
-	    XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w1,h);
-	  if(w2)
-	    XFillRectangle(Dpy,MyWindow,NormalGC,x1+w-w2,y1,w2,h);
-	  if(h1)
-	    XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w,h1);
-	  if(h2)
-	    XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
-	}
-      else if(!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
-	      !(b->flags&b_Swallow))
-	XFillRectangle(Dpy,MyWindow,NormalGC,x+f,y+f,BW-2*f,BH-2*f);
+      if(w1)
+	XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w1,h);
+      if(w2)
+	XFillRectangle(Dpy,MyWindow,NormalGC,x1+w-w2,y1,w2,h);
+      if(h1)
+	XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w,h1);
+      if(h2)
+	XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
     }
+#if 0
+    else if(!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
+	    !(b->flags&b_Swallow))
+      XFillRectangle(Dpy,MyWindow,NormalGC,x+f,y+f,BW-2*f,BH-2*f);
+#endif
+  }
 
   /* ----------------------------------------------------------------------- */
 
-  if(b->flags&b_Title) {
-    if (font) {
+  if(b->flags&b_Title)
+  {
+    if (font)
+    {
       gcm = GCForeground | GCFont;
       gcv.foreground=buttonFore(b);
       gcv.font = font->fid;
@@ -290,36 +296,36 @@ void DrawTitle(button_info *b,Window win,GC gc)
 
   /* If a title is to be shown, truncate it until it fits */
   if(justify&b_Horizontal && !(b->flags & b_Right))
+  {
+    if(b->flags&b_Icon)
     {
-      if(b->flags&b_Icon)
-	{
-	  ix+=b->icon->width+buttonXPad(b);
-	  iw-=b->icon->width+buttonXPad(b);
-	}
-      else if (buttonSwallowCount(b)==3)
-	{
-	  ix+=b->icon_w+buttonXPad(b);
-	  iw-=b->icon_w+buttonXPad(b);
-	}
+      ix+=b->icon->width+buttonXPad(b);
+      iw-=b->icon->width+buttonXPad(b);
     }
+    else if (buttonSwallowCount(b)==3)
+    {
+      ix += b->icon_w+buttonXPad(b);
+      iw -= b->icon_w+buttonXPad(b);
+    }
+  }
 
-  s=b->title;
-  l=strlen(s);
-  i=XTextWidth(font,s,l);
+  s = b->title;
+  l = strlen(s);
+  i = XTextWidth(font,s,l);
 
   if(i>iw)
+  {
+    if(just==2)
     {
-      if(just==2)
-	{
-	  while(i>iw && *s)
-	    i=XTextWidth(font,++s,--l);
-	}
-      else /* Left or center - cut off its tail */
-	{
-	  while(i>iw && l>0)
-	    i=XTextWidth(font,s,--l);
-	}
+      while(i>iw && *s)
+	i=XTextWidth(font,++s,--l);
     }
+    else /* Left or center - cut off its tail */
+    {
+      while(i>iw && l>0)
+	i=XTextWidth(font,s,--l);
+    }
+  }
   if(just==0 || ((justify&b_Horizontal) && (b->flags&b_Right))) /* Left */
     xpos=ix;
   else if(just==2) /* Right */
@@ -328,22 +334,21 @@ void DrawTitle(button_info *b,Window win,GC gc)
     xpos=ix+(iw-i)/2;
 
   if(*s && l>0 && BH>=font->descent+font->ascent) /* Clip it somehow? */
+  {
+    /* If there is more than the title, put it at the bottom */
+    /* Unless stack flag is set, put it to the right of icon */
+    if((b->flags&b_Icon || (buttonSwallowCount(b)==3)) &&
+       !(justify&b_Horizontal))
     {
-      /* If there is more than the title, put it at the bottom */
-      /* Unless stack flag is set, put it to the right of icon */
-      if((b->flags&b_Icon || (buttonSwallowCount(b)==3)) &&
-	 !(justify&b_Horizontal))
-	{
-	  XDrawString(Dpy,win,gc,xpos,
-		      iy+ih-font->descent,s,l);
-	  /* Shrink the space available for icon/window */
-	  ih-=font->descent+font->ascent;
-	}
-      /* Or else center vertically */
-      else
-	{
-	  XDrawString(Dpy,win,gc,xpos,
-		      iy+(ih+font->ascent-font->descent)/2,s,l);
-	}
+      XDrawString(Dpy, win, gc, xpos, iy+ih-font->descent, s, l);
+      /* Shrink the space available for icon/window */
+      ih-=font->descent+font->ascent;
     }
+    /* Or else center vertically */
+    else
+    {
+      XDrawString(
+	Dpy, win, gc, xpos, iy+(ih+font->ascent-font->descent)/2, s, l);
+    }
+  }
 }

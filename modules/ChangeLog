@@ -1,5 +1,23 @@
 1999-08-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmTheme/FvwmTheme.c: some cleanup
+	fixed pixmap specifier parsing
+
+	* FvwmButtons/parse.c (ParseButton):
+	* FvwmButtons/FvwmButtons.c (DeadPipeCleanup):
+	(CreateWindow): renamed to CreateUberButtonWindow
+	* FvwmButtons/parse.c (match_string): renamed to ParseButton
+	(ParseConfiguration):
+	(ParseConfigLine):
+
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/parse.c:
+	* FvwmButtons/button.c:
+	* FvwmButtons/draw.c:
+	* FvwmButtons/misc.c:
+	* FvwmButtons/icons.c:
+	* FvwmButtons/output.c: reindented
+
 	* Chandelog:
 	* FvwmWharf/README:
 	* FvwmSaveDesk/FvwmSaveDesk.1:

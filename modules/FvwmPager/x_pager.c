@@ -503,7 +503,7 @@ void initialize_pager(void)
   XSetForeground(dpy, Scr.NormalGC, focus_fore_pix);
   if (windowFont != NULL)
     XSetFont(dpy, Scr.NormalGC, windowFont->fid);
-  
+
   /* create the 3d bevel GC's if necessary */
   if (windowcolorset >= 0) {
     gcv.foreground = Colorset[windowcolorset % nColorsets].hilite;
@@ -575,7 +575,8 @@ void initialize_pager(void)
       valuemask &= ~(CWBackPixel);
 
 
-      if (Desks[i].colorset > -1 && Colorset[Desks[i].colorset % nColorsets].pixmap)
+      if (Desks[i].colorset > -1 &&
+	  Colorset[Desks[i].colorset % nColorsets].pixmap)
 	{
 	  valuemask |= CWBackPixmap;
 	  attributes.background_pixmap = None; /* set later */
@@ -1043,7 +1044,7 @@ void HandleEnterNotify(XEvent *Event)
   {
     SendInfo(fd, "Silent FlipFocus NoWarp", t->w);
   }
-    
+
 }
 
 void HandleExpose(XEvent *Event, Bool redraw_subwindows)
@@ -1877,7 +1878,7 @@ void Hilight(PagerWindow *t, int on)
 	      XSetWindowBackground(dpy,t->PagerView,t->back);
 	      XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
 	    } else
-	      SetWindowBackground(dpy, t->PagerView, t->pager_view_width, 
+	      SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
 				  t->pager_view_height,
 				  &Colorset[windowcolorset % nColorsets],
 				  Pdepth, Scr.NormalGC);

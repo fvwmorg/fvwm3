@@ -171,7 +171,7 @@ void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 }
 
 void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	      unsigned long context, char *action, int *Module)
+		      unsigned long context, char *action, int *Module)
 {
   struct moduleInfoList *t;
   char *message, msg2[32];

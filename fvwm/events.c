@@ -437,19 +437,6 @@ void HandleKeyPress(void)
 
   DBUG("HandleKeyPress","Routine Entered");
 
-  if (Tmp_win && HAS_SLOPPY_FOCUS(Tmp_win))
-  {
-    /* A hack to make root key bindings work with SloppyFocus */
-    Window w;
-
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &w, &JunkX, &JunkY,
-		  &JunkX, &JunkY, &JunkMask);
-    if (w == None)
-    {
-      Tmp_win = NULL;
-      Event.xany.window = Scr.Root;
-    }
-  }
   Context = GetContext(Tmp_win,&Event, &PressedW);
   PressedW = None;
 

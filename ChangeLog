@@ -1,5 +1,19 @@
 1999-08-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Graphics.c: fixed problem occuring with XQueryBestTile and my
+	buggy XServer (XFree 3.3.3.1).
+
+	* libs/Colorset.c (LoadColorset): check for NULL pointer
+
+	* fvwm/events.c (HandleKeyPress):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/icons.c (CreateIconWindow):
+	* fvwm/bindings.c (activate_binding): removed hack for SloppyFocus and
+	ClickToFocus root key bindings.
+
+	* fvwm/fvwm2.1: Added a comment on root key bindings with SloppyFocus
+	and ClickToFocus
+
 	* vms/README:
 	* vms/config.h:
 	* tests/purify/README (Instructions):

@@ -1,6 +1,6 @@
 /*
-   FvwmButtons, copyright 1996, Jarl Totland
-
+ * FvwmButtons, copyright 1996, Jarl Totland
+ *
  * This module, and the entire GoodStuff program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -9,8 +9,8 @@
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.
-
-*/
+ *
+ */
 
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,64 +45,68 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
   int dwidth = *widthp, dheight = *heightp;
 
   if(hints->flags & PMinSize)
+  {
+    minWidth = hints->min_width;
+    minHeight = hints->min_height;
+    if(hints->flags & PBaseSize)
     {
-      minWidth = hints->min_width;
-      minHeight = hints->min_height;
-      if(hints->flags & PBaseSize)
-	{
-	  baseWidth = hints->base_width;
-	  baseHeight = hints->base_height;
-	}
-      else
-	{
-	  baseWidth = hints->min_width;
-	  baseHeight = hints->min_height;
-	}
-    }
-  else if(hints->flags & PBaseSize)
-    {
-      minWidth = hints->base_width;
-      minHeight = hints->base_height;
       baseWidth = hints->base_width;
       baseHeight = hints->base_height;
     }
-  else
+    else
     {
-      minWidth = 1;
-      minHeight = 1;
-      baseWidth = 1;
-      baseHeight = 1;
+      baseWidth = hints->min_width;
+      baseHeight = hints->min_height;
     }
+  }
+  else if(hints->flags & PBaseSize)
+  {
+    minWidth = hints->base_width;
+    minHeight = hints->base_height;
+    baseWidth = hints->base_width;
+    baseHeight = hints->base_height;
+  }
+  else
+  {
+    minWidth = 1;
+    minHeight = 1;
+    baseWidth = 1;
+    baseHeight = 1;
+  }
 
   if(hints->flags & PMaxSize)
-    {
-      maxWidth = hints->max_width;
-      maxHeight = hints->max_height;
-    }
+  {
+    maxWidth = hints->max_width;
+    maxHeight = hints->max_height;
+  }
   else
-    {
-      maxWidth = 10000;
-      maxHeight = 10000;
-    }
+  {
+    maxWidth = 10000;
+    maxHeight = 10000;
+  }
   if(hints->flags & PResizeInc)
-    {
-      xinc = hints->width_inc;
-      yinc = hints->height_inc;
-    }
+  {
+    xinc = hints->width_inc;
+    yinc = hints->height_inc;
+  }
   else
-    {
-      xinc = 1;
-      yinc = 1;
-    }
+  {
+    xinc = 1;
+    yinc = 1;
+  }
 
   /*
    * First, clamp to min and max values
    */
-  if (dwidth < minWidth) dwidth = minWidth;
-  if (dheight < minHeight) dheight = minHeight;
+  if (dwidth < minWidth)
+    dwidth = minWidth;
+  if (dheight < minHeight)
+    dheight = minHeight;
 
-  if (dwidth > maxWidth) dwidth = maxWidth;
-  if (dheight > maxHeight) dheight = maxHeight;
+  if (dwidth > maxWidth)
+    dwidth = maxWidth;
+  if (dheight > maxHeight)
+    dheight = maxHeight;
 
 
   /*
@@ -135,35 +139,33 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
    */
 
   if (hints->flags & PAspect)
+  {
+    if (minAspectX * dheight > minAspectY * dwidth)
     {
-      if (minAspectX * dheight > minAspectY * dwidth)
-	{
-	  delta = makemult(minAspectX * dheight / minAspectY - dwidth,
-			   xinc);
-	  if (dwidth + delta <= maxWidth)
-	    dwidth += delta;
-	  else
-	    {
-	      delta = makemult(dheight - dwidth*minAspectY/minAspectX,
-			       yinc);
-	      if (dheight - delta >= minHeight) dheight -= delta;
-	    }
-	}
-
-      if (maxAspectX * dheight < maxAspectY * dwidth)
-	{
-	  delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
-			   yinc);
-	  if (dheight + delta <= maxHeight)
-	    dheight += delta;
-	  else
-	    {
-	      delta = makemult(dwidth - maxAspectX*dheight/maxAspectY,
-			       xinc);
-	      if (dwidth - delta >= minWidth) dwidth -= delta;
-	    }
-	}
+      delta = makemult(minAspectX * dheight / minAspectY - dwidth, xinc);
+      if (dwidth + delta <= maxWidth)
+	dwidth += delta;
+      else
+      {
+	delta = makemult(dheight - dwidth*minAspectY/minAspectX, yinc);
+	if (dheight - delta >= minHeight)
+	  dheight -= delta;
+      }
     }
+
+    if (maxAspectX * dheight < maxAspectY * dwidth)
+    {
+      delta = makemult(dwidth * maxAspectY / maxAspectX - dheight, yinc);
+      if (dheight + delta <= maxHeight)
+	dheight += delta;
+      else
+      {
+	delta = makemult(dwidth - maxAspectX*dheight/maxAspectY, xinc);
+	if (dwidth - delta >= minWidth)
+	  dwidth -= delta;
+      }
+    }
+  }
 
   *widthp = dwidth;
   *heightp = dheight;

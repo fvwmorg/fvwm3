@@ -2367,7 +2367,8 @@ with a key name.  The \fIkeyname\fP is one of the entries from
 binding. However, when you press a key the context window is the
 window that has the keyboard focus. That is not necessarily the
 same as the window the pointer is over (with SloppyFocus or
-ClickToFocus).
+ClickToFocus). Note that key bindings with the R (root window)
+context do not work properly with SloppyFocus and ClickToFocus.
 
 The following example binds the built in window list to pop up when
 Alt-Ctrl-Shift-F11 is hit, no matter where the mouse pointer is:

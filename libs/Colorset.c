@@ -7,12 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.GPL.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -52,16 +52,16 @@ colorset_struct *AllocColorset(unsigned int n) {
     fprintf(stderr, "calloc() of Colorset %d failed. Exiting\n", n);
     exit(1);
   }
-  
+
   /* copy and discard the old array */
   if (Colorset) {
     memcpy(newColorset, Colorset, sizeof(colorset_struct) * nColorsets);
     free(Colorset);
   }
-  
+
   Colorset = newColorset;
   nColorsets = n + 1;
-  
+
   return &Colorset[n];
 }
 
@@ -69,7 +69,8 @@ colorset_struct *AllocColorset(unsigned int n) {
  * DumpColorset() returns a char * to the colorset contents in printable form
  *****************************************************************************/
 static char csetbuf[64];
-char *DumpColorset(unsigned int n) {
+char *DumpColorset(unsigned int n)
+{
   colorset_struct *cs = &Colorset[n];
 
   sprintf(csetbuf, "Colorset %x %lx %lx %lx %lx %lx %x %x %x %x %x", n, cs->fg,
@@ -81,13 +82,16 @@ char *DumpColorset(unsigned int n) {
 /*****************************************************************************
  * LoadColorset() takes a strings and stuffs it into the array
  *****************************************************************************/
-static int LoadColorsetConditional(char *line, Bool free) {
+static int LoadColorsetConditional(char *line, Bool free)
+{
   colorset_struct *cs;
   unsigned int n, chars;
   Pixel fg, bg, hilite, shadow;
   Pixmap pixmap;
   unsigned int width, height, stretch_x, stretch_y, keep_aspect;
 
+  if (line == NULL)
+    return -1;
   if (sscanf(line, "%d%n", &n, &chars) != 1)
     return -1;
   line += chars;
@@ -122,10 +126,12 @@ static int LoadColorsetConditional(char *line, Bool free) {
   cs->keep_aspect = keep_aspect;
   return n;
 }
-inline int LoadColorset(char *line) {
+inline int LoadColorset(char *line)
+{
   return LoadColorsetConditional(line, False);
 }
-inline int LoadColorsetAndFree(char *line) {
+inline int LoadColorsetAndFree(char *line)
+{
   return LoadColorsetConditional(line, True);
 }
 
@@ -147,7 +153,8 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
     XSetWindowBackground(dpy, win, colorset->bg);
     XClearArea(dpy, win, 0, 0, width, height, True);
   } else {
-    pixmap = CreateBackgroundPixmap(dpy, win, width, height, colorset, depth, gc);
+    pixmap = CreateBackgroundPixmap(dpy, win, width, height, colorset, depth,
+				    gc);
     if (pixmap) {
       XSetWindowBackgroundPixmap(dpy, win, pixmap);
       XClearArea(dpy, win, 0, 0, width, height, True);
@@ -155,8 +162,8 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
     }
   }
 }
-  
-/* create a pixmap suitable for plonking on the background of a window */  
+
+/* create a pixmap suitable for plonking on the background of a window */
 Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 			      colorset_struct *colorset, unsigned int depth,
 			      GC gc)

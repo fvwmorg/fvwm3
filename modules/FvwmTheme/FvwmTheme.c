@@ -53,7 +53,8 @@ static void parse_message_line(char *line);
 static void main_loop(void) __attribute__((__noreturn__));
 static void parse_colorset(char *line);
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   XSetWindowAttributes xswa;
   XGCValues xgcv;
 
@@ -101,12 +102,13 @@ int main(int argc, char **argv) {
 
   /* garbage collect */
   alloca(0);
-  
+
   /* sit around waiting for something to do */
   main_loop();
 }
 
-static void main_loop(void) {
+static void main_loop(void)
+{
   FvwmPacket *packet;
 
   while (True) {
@@ -134,7 +136,8 @@ static void main_loop(void) {
 /* the "Colorset" config option is what gets reflected by fvwm */
 static char *config_options[] = {"ImagePath", "ColorLimit", "Colorset", NULL, NULL};
 
-static void parse_config_line(char *line) {
+static void parse_config_line(char *line)
+{
   char *rest;
 
   switch(GetTokenIndex(line, config_options, -1, &rest)) {
@@ -151,27 +154,33 @@ static void parse_config_line(char *line) {
   case 3:
     parse_colorset(rest);
     break;
-  }    
+  }
 }
 
 /* background pixmap parsing */
-static char *pixmap_options[] = {"TiledPixmap", "Pixmap", "AspectPixmap", NULL};
+static char *pixmap_options[] =
+{
+  "TiledPixmap",
+  "Pixmap",
+  "AspectPixmap",
+  NULL
+};
 static char *dash = "-";
 
 /* translate a colorset spec into a colorset structure */
-static void parse_colorset(char *line) {
+static void parse_colorset(char *line)
+{
   int n, ret;
   colorset_struct *cs;
   char *token, *fg, *bg;
   Picture *picture;
 
   /* find out which colorset and make sure it exists */
-  line = GetNextToken(line, &token);
+  token = PeekToken(line, &line);
   if (!token) {
     return;
   }
   ret = !sscanf(token, "%d", &n);
-  free(token);
   if (ret)
     return;
   cs = AllocColorset(n);
@@ -199,10 +208,9 @@ static void parse_colorset(char *line) {
   }
 
   /* look for a pixmap specifier, if not "-" remove the existing one */
-  GetNextToken(line, &token);
+  token = PeekToken(line, &line);
   if (token) {
     ret = StrEquals(token, dash);
-    free(token);
   }
   if (!ret) {
     XFreePixmap(dpy, cs->pixmap);
@@ -211,23 +219,23 @@ static void parse_colorset(char *line) {
 
   /* if one was specified try to load it */
   if (token && !ret) {
-    int type = GetTokenIndex(line, pixmap_options, -1, &line);
+    int type = GetTokenIndex(token, pixmap_options, 0, NULL);
     char *end;
     unsigned int w, h;
 
-    switch(type) {
+    switch(type)
+    {
     case 0:
     case 1:
     case 2:
-      /* all three of these are pixmaps, the differ in size bits */
-      GetNextToken(line, &token);
+      /* all three of these are pixmaps, they differ in size bits */
+      token = PeekToken(line, NULL);
       if (!token)
 	break;
       /* load the file using the color reduction routines in Picture.c */
       picture = GetPicture(dpy, win, NULL, token, color_limit);
       if (!picture)
 	fprintf(stderr, "%s: can't load picture %s\n", name, token);
-      free (token);
       if (!picture)
 	break;
       /* don't try to be smart with bitmaps */
@@ -250,19 +258,18 @@ static void parse_colorset(char *line) {
       break;
     default:
       /* test for ?Gradient */
-      end = GetNextToken(line, &token);
       if (!token)
 	break;
       type = toupper(token[0]);
       if (token[1])
         ret = StrEquals(&token[1], "Gradient");
-      free(token);
       if (!ret) {
-	fprintf(stderr, "%s: bad colorset pixmap specifier %s\n", name, line);
+	fprintf(stderr, "%s: bad colorset pixmap specifier %s %s\n", name,
+		token, line);
 	break;
       }
       /* create a pixmap of the gradient type */
-      cs->pixmap = CreateGradientPixmap(dpy, win, gc, type, end, &w, &h);
+      cs->pixmap = CreateGradientPixmap(dpy, win, gc, type, line, &w, &h);
       cs->width = w;
       cs->height = h;
       cs->keep_aspect = False;
@@ -273,7 +280,7 @@ static void parse_colorset(char *line) {
 
   /* make sure the server has this to avoid races */
   XSync(dpy, False);
-  
+
   /* inform fvwm of the change */
   SendText(fd, DumpColorset(n), 0);
 }
@@ -288,7 +295,7 @@ static void parse_message_line(char *line) {
   case 0:
     parse_colorset(rest);
     break;
-  }    
+  }
 }
 
 static void parse_config(void) {
@@ -300,7 +307,7 @@ static void parse_config(void) {
 
   /* set a filter on the config lines sent */
   InitGetConfigLine(fd, config_options[3]);
-  
+
   /* tell fvwm what we want to receive */
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO
 		 | M_SENDCONFIG | M_STRING);
@@ -313,7 +320,7 @@ static void parse_config(void) {
 
 static int error_handler(Display *d, XErrorEvent *e) {
   char msg[256];
-  
+
   /* Attempting to free colors or pixmaps that were not allocated by this
    * module or were never allocated at all does not cause problems */
   if (((X_FreeColors == e->request_code) && (BadAccess == e->error_code))

@@ -1,6 +1,6 @@
 /*
-   FvwmButtons, copyright 1996, Jarl Totland
-
+ * FvwmButtons, copyright 1996, Jarl Totland
+ *
  * This module, and the entire GoodStuff program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -9,8 +9,8 @@
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.
-
-*/
+ *
+ */
 
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,7 @@
 				 * altered */
 #define b_PosFixed   0x00080000 /* User provided button position */
 #define b_SizeSmart  0x00100000 /* Improved button box sizing */
+#define b_Colorset   0x00200000 /* use colorset instead of fore/back colours */
 
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */
@@ -126,6 +127,7 @@ struct container_info_struct
   char *back;              /* b_Back && !b_IconBack */
   char *back_file;         /* b_Back && b_IconBack */
   char *fore;              /* b_Fore */
+  int colorset;            /* b_Colorset */
   Pixel fc;                /* b_Fore */
   Pixel bc,hc,sc;          /* b_Back && !b_IconBack */
   Picture *backicon;       /* b_Back && b_IconBack */
@@ -149,8 +151,9 @@ struct button_info_struct
   char *font_string;       /* b_Font */
   char *back;              /* b_Back */
   char *fore;              /* b_Fore */
+  int colorset;            /* b_Colorset */
   byte xpad,ypad;          /* b_Padding */
-  signed char framew;             /* b_Frame */
+  signed char framew;      /* b_Frame */
   byte justify;            /* b_Justify */
   byte justify_mask;       /* b_Justify */
   container_info *c;       /* b_Container */
