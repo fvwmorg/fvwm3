@@ -5,6 +5,7 @@
 	arguments instead of unsigned int)
 	(GetButtonAction): implemented $l, $r, $t, $b, $w, $h variables in
 	actions.
+	(GetButtonAction): removed debug fprintf
 
 	* FvwmButtons/parse.c (get_window_geometry): removed debug fprintf
 	sigh!

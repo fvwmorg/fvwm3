@@ -568,7 +568,6 @@ char *GetButtonAction(button_info *b,int n)
   }
   *dest = 0;
 
-fprintf(stderr,"%s\n", action);
   return action;
 }
 
