@@ -1,3 +1,9 @@
+1999-09-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am: removed use of $< on explicit rule;
+	more code to satisfy both pod2man and 'make -j'
+	* fvwm-menu-directory.in: removed @VERSION@ from the man page part
+
 1999-08-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-directory.in: new option --format to put the file size,

@@ -2,17 +2,9 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.8  1999/08/23 20:37:24  migo
-''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
-''' * fvwm-menu-directory: new option --format (%s, %d, %n etc.); extended --title
-''' * fvwm-menu-xlock: new options --format and --special-first
-''' * fvwm_make_browse_menu.sh: improved the simulation command line
-'''
-''' Revision 1.8  1999/08/23 20:37:24  migo
-''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
-''' * fvwm-menu-directory: new option --format (%s, %d, %n etc.); extended --title
-''' * fvwm-menu-xlock: new options --format and --special-first
-''' * fvwm_make_browse_menu.sh: improved the simulation command line
+''' Revision 1.9  1999/09/04 16:53:06  migo
+''' * some makefile fixes
+''' * config.status is now patched in configure time to enable parallel make
 '''
 '''
 .de Sh
@@ -105,7 +97,7 @@
 .nr % 0
 .rr F
 .\}
-.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 01" "23/Aug/99" "Fvwm Utility"
+.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 01" "4/Sep/99" "Fvwm Utility"
 .UC
 .if n .hy 0
 .if n .na
@@ -200,7 +192,7 @@
 .\}
 .rm #[ #] #H #V #F C
 .SH "NAME"
-fvwm-menu-directory 2.3.7 \- builds a directory browsing menu for FVWM
+fvwm-menu-directory \- builds a directory browsing menu for FVWM
 .SH "SYNOPSIS"
 \fBfvwm-menu-directory\fR
 [ \fB--help\fR|\fB\-h\fR ]
@@ -377,7 +369,7 @@ Report bugs to fvwm-bug@fvwm.org.
 
 .rn }` ''
 .IX Title "FVWM-MENU-DIRECTORY 1"
-.IX Name "fvwm-menu-directory 2.3.7 - builds a directory browsing menu for FVWM"
+.IX Name "fvwm-menu-directory - builds a directory browsing menu for FVWM"
 
 .IX Header "NAME"
 

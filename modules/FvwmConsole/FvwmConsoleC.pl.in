@@ -1,4 +1,4 @@
-#! xPERLx
+#! @PERL@
 #    $0 - Front end of FvwmConsole
 #    FvwmConsole server must be running
 
@@ -26,7 +26,8 @@ use Socket;
 $ESC = "\e";
 $HISTFILE = "$ENV{HOME}/.FvConHist0";
 $SOCKET_NAME = "$ENV{HOME}/.FvConSocket";
-$VERSION = '1.2';
+#$VERSION = '1.2';
+$VERSION = '@VERSION@';
 
 
 

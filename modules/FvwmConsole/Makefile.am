@@ -12,11 +12,6 @@ FvwmConsoleC_SOURCES = FvwmConsoleC.c FvwmConsole.h getline.c
 FvwmConsole_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 FvwmConsoleC_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
-FvwmConsoleC.pl: FvwmConsoleC.pl.in
-	@rm -f $@
-	sed -e 's,xPERLx,$(PERL),' $< > $@-t
-	mv $@-t $@
-
 man_MANS = FvwmConsole.1 FvwmConsoleC.pl.1
 EXTRA_DIST = FvwmConsoleC.pl.in $(man_MANS) Changes .fvwm2rc.sample
 

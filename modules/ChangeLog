@@ -1,3 +1,9 @@
+1999-09-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmConsole/Makefile.am: removed use of $< on explicit rule,
+	removed FvwmConsoleC.pl rule, it is now in configure.in
+	* FvwmConsole/FvwmConsoleC.pl.in: use @PERL@ and @VERSION@
+
 Thu Sep  2 19:28:55 1999  DanEspen  <dje@blue>
 
 	* FvwmForm/Makefile.am (INCLUDES): Remove use of $< on explicit rule,

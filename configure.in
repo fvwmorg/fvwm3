@@ -5,8 +5,8 @@ AC_INIT(fvwm/fvwm.c)
 AM_INIT_AUTOMAKE(fvwm, 2.3.8)
 AM_CONFIG_HEADER(config.h)
 
-FVWM_MODULEDIR='${libexecdir}/${PACKAGE}/${VERSION}'
-FVWM_CONFIGDIR='${sysconfdir}/${PACKAGE}'
+FVWM_MODULEDIR='@libexecdir@/${PACKAGE}/${VERSION}'
+FVWM_CONFIGDIR='@sysconfdir@/${PACKAGE}'
 
 AC_SUBST(FVWM_MODULEDIR)
 AC_SUBST(FVWM_CONFIGDIR)
@@ -342,7 +342,7 @@ modules/FvwmBanner/Makefile
 modules/FvwmButtons/Makefile
 modules/FvwmCommand/Makefile
 modules/FvwmCommand/scripts/Makefile
-modules/FvwmConsole/Makefile
+modules/FvwmConsole/Makefile modules/FvwmConsole/FvwmConsoleC.pl
 modules/FvwmCpp/Makefile
 modules/FvwmDebug/Makefile
 modules/FvwmEvent/Makefile
@@ -366,6 +366,18 @@ modules/FvwmWharf/Makefile
 modules/FvwmWinList/Makefile
 modules/FvwmGtk/Makefile
 )
+
+# ---------------------------------------------------------------------------
+cat >config.status-t <<EOF
+#! /bin/sh
+
+# Original config.status is patched to satisfy processing *.in with 'make -j'.
+UNIQUE_POSTFIX=\$\$
+
+EOF
+sed 's/conftest/conftest\$UNIQUE_POSTFIX/g' <config.status >>config.status-t && \
+mv config.status-t config.status
+# ---------------------------------------------------------------------------
 
 echo "
 Configuration:

@@ -4,8 +4,9 @@ bin_PROGRAMS = @XPMROOT@ xselection
 bin_SCRIPTS = fvwmbug
 noinst_SCRIPTS = fvwm-menu-xlock fvwm-menu-directory fvwm-menu-desktop
 
-# The logic must be to add fvwm-menu-* to bin_SCRIPTS if @PERL@ is not empty
-#bin_SCRIPTS = $(bin_SCRIPTS) fvwm-menu-xlock fvwm-menu-directory fvwm-menu-desktop
+## The logic must be to add fvwm-menu-* to bin_SCRIPTS if "@PERL@" is not empty
+##bin_SCRIPTS = $(bin_SCRIPTS) fvwm-menu-xlock fvwm-menu-directory fvwm-menu-desktop
+
 
 EXTRA_PROGRAMS = xpmroot
 
@@ -19,10 +20,23 @@ LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 
 
+## The long generation for *.1 is to make both pod2man and 'make -j' happy.
+
 fvwm-menu-xlock.1: fvwm-menu-xlock.in
-	pod2man --center "Fvwm Utility" fvwm-menu-xlock     > $@ 2>/dev/null
+	@TMP=tmp-$$$$ && (\
+	mkdir $$TMP && \
+	cp fvwm-menu-xlock.in $$TMP/fvwm-menu-xlock && \
+	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-xlock >$$TMP/$@ 2>/dev/null && \
+	mv $$TMP/$@ .; \
+	rm -rf $$TMP)
+
 fvwm-menu-directory.1: fvwm-menu-directory.in
-	pod2man --center "Fvwm Utility" fvwm-menu-directory > $@ 2>/dev/null
+	@TMP=tmp-$$$$ && (\
+	mkdir $$TMP && \
+	cp fvwm-menu-directory.in $$TMP/fvwm-menu-directory && \
+	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-directory >$$TMP/$@ 2>/dev/null && \
+	mv $$TMP/$@ .; \
+	rm -rf $$TMP)
 
 fvwmbug: fvwmbug.sh FORCE
 	@rm -f $@
@@ -30,7 +44,7 @@ fvwmbug: fvwmbug.sh FORCE
 	sed -e 's,xCCx,$(CC),'  -e 's,xCFLAGSx,$(CFLAGS),' \
 	    -e 's,xprefixx,$(prefix),' -e 's,xsysconfdirx,$(sysconfdir),' \
 	    -e 's,xlibexecdirx,$(libexecdir),' -e "s,xBUILDERx,$$BUILDER," \
-	    $< > $@
+	    fvwmbug.sh > $@
 
-# do nothing, just force the above rules that depend on it...
 FORCE:
+	
