@@ -27,7 +27,8 @@ Highlights:
 
  ** Mouse stroke support.
     You will need the libstroke library, found at
-    http://www.etla.net/~willey/projects/libstroke/
+
+      http://www.etla.net/~willey/projects/libstroke/
 
  ** Much more flexibility and control in menu definition and menu
     styles including dynamically generated menus and some menu
@@ -43,7 +44,9 @@ Highlights:
  ** Using Alt-Tab now works exactly like the other one.
 
  ** A derived package fvwm-themes standardises FVWM Themes issues.
-    More info in http://fvwm-themes.sourceforge.net/.
+    More info is available at
+
+      http://fvwm-themes.sourceforge.net/
 
  ** Improved multi head support.
 
