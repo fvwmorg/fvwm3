@@ -45,7 +45,7 @@ inplace:
 	echo "" >> debian/changelog
 	echo "  * new upstream release" >> debian/changelog
 	echo "" >> debian/changelog
-	echo " -- $(fullname) <$(email)>  $(datum)" >> debian/changelog
+	(LANG=en_UK && LC_ALL=en_UK && echo " -- $(fullname) <$(email)>  $(datum)" >> debian/changelog)
 	./configure --prefix=/usr --mandir=/usr/share/man --libexecdir=/usr/lib --sysconfdir=/etc/X11/fvwm $(cparams)
 	fakeroot dh_testdir -P$(fullinstdir)
 	fakeroot dh_testroot -P$(fullinstdir)
