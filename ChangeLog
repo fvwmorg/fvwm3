@@ -1,3 +1,8 @@
+2002-10-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* NEWS:
+	updated for 2.4.12
+
 2002-10-08  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureBase.c (*):
@@ -13,7 +18,7 @@
 	color limit table.
 	New interface PictureDefaultGC, analogue of Xlib DefaultGC function
 	but which respects the Pvisual
- 
+
 	* libs/PictureGraphics.c (*):
 	* libs/FScreen.c (FScreenInit):
 	* libs/FRender.c (FRenderRender):

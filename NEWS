@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.11"_-_2.4.11_+_/A_-_.
+_+_A HREF="#2.4.12"_-_2.4.12_+_/A_-_.
 
 -------------------------------------------------------------------
 
@@ -366,9 +366,29 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 -------------------------------------------------------------------
 
-_+_A NAME="2.4.11"_-_
-Changes in stable release 2.4.11 (20-Sep-2002)
+_+_A NAME="2.4.12"_-_
+Changes in stable release 2.4.12 (10-Oct-2002)
 _+_/A_-_
+
+* Fixed drawing problems with TiledPixmap and Solid MenuFaces which
+  appeared in 2.4.10, replacing the same problem with ?Gradient
+  MenuFaces in 2.4.9.
+
+* Fixed accidental menu animation with certain menu position hints.
+
+* Increased maximum allowed key symbol name length to 200
+  characters.
+
+* Allow quotes in conditional command conditions.
+
+* Fixed starting Move at random position when pointer is on a
+  different screen.
+
+* Transient windows do not appear in FvwmWinList after they have
+  been moved on the desktop.
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.11 (20-Sep-2002)
 
 * Allow the use of mouse buttons other than the first in
   FvwmWinList when invoked transient.
