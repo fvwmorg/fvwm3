@@ -1,3 +1,8 @@
+2001-02-18  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmButtons/FvwmButtons.1: Use ":" module syntax.
+	First pass cleanup.
+
 2001-02-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (MovePage):
