@@ -610,20 +610,12 @@ commands for details.
 .SH OPEN LOOK and XVIEW COMPATIBILITY
 Fvwm supports all the Open Look decoration hints (except pushpins).
 Most (perhaps all) Open Look applications have a strange notion of
-keyboard focus handling.  Should you use any such application, please
-add the following line to your .fvwm2rc:
+keyboard focus handling.  Although a lot of work went into fvwm
+to work well with these, you may still encounter problems.
+Should you use any such application, please add the following
+line to your .fvwm2rc:
 .EX
-Style * OLDecor, Lenience
-.EE
-Please refer to the
-.IR OLDecor " and " Lenience
-options of the
-.B Style
-command for details.  Certain Open Look applications (Textedit is
-an example) still do not work well with this settings.  Try to use
-these instead:
-.EX
-Style Textedit OLDecor, NoLenience, NeverFocus
+Style * OLDecor
 .EE
 
 .SH M4 PREPROCESSING
@@ -4896,18 +4888,6 @@ makes fvwm attempt to recognize and respect the olwm and olvwm
 hints that many older XView and OLIT applications use.  Switch
 this option off with
 .IR NoOLDecor .
-If you have such applications, be sure to try either the
-.I NeverFocus
-or the
-.I Lenience
-style for these windows too.  Example:
-.EX
-Style Textedit NeverFocus
-.EE
-or
-.EX
-Style * Lenience
-.EE
 
 With
 .I GNOMEIgnoreHints
