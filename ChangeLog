@@ -1,3 +1,47 @@
+2001-10-27  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	* acconfig.h:
+	* NEWS:
+	added --disable-multipixmap-titles for the Suzanne's patch,
+	the default is enable
+
+	* fvwm/fvwm2.1:
+	some formatting fixes in TitleStyle entry
+
+2001-10-27  Suzanne Britton  <tril@igs.net>
+
+	* config.h.in: Added FANCY_TITLEBARS option, off by default
+
+	* fvwm/fvwm2.1:
+	Added info on TitleStyle MultiPixmap
+
+	* fvwm/screen.h:
+	[All changes #ifdeffed FANCY_TITLEBARS]
+	Added TITLE_PADDING define for fancy titlebar rendering
+	Added tb_pixmap_enum
+	Added MultiPixmap to DecorFaceType enum
+	Added Picture **multi_pixmaps and short multi_stretch_flags
+	to DecorFace structure
+
+	* fvwm/borders.c:
+	[All changes #ifdeffed FANCY_TITLEBARS except the fix to RedrawButtons]
+	(DrawButton): Handle UseTitleStyle where TitleStyle is MultiPixmap
+	(RenderIntoWindow): [new]
+	(DrawMultiPixmapTitlebar): [new]
+	(RedrawButtons): Pass the left1right0 parameter properly to DrawButton,
+	instead of always sending 1
+	(RedrawTitle):
+	Call DrawFancyTitlebar for MultiPixmap style
+	Skip DrawString calls for MultiPixmap style (title is drawn inside
+	DrawMultiPixmapTitlebar)
+
+	* fvwm/builtins.c:
+	[All changes #ifdeffed FANCY_TITLEBARS]
+	(FreeDecorFace): Free up multi_pixmaps array for a MultiPixmap decor
+	(ReadDecorFace): Call ReadMultiPixmapDecor for a MultiPixmap TitleStyle
+	(ReadMultiPixmapDecor): [new]
+
 2001-10-26  Dan Espen  <dane@mk.telcordia.com>
 
 	* NEWS: FvwmForm: Customize pointers, support ISO_Tab key,

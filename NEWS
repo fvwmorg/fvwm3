@@ -3,6 +3,11 @@ _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
 Changes in beta 2.5.0 (not released yet)
 
+* Window titlebars may now be designed using a new powerful TitleStyle
+  option MultiPixmap, that enables to specify separate pixmaps for
+  different parts of the titlebar: Main, LeftEnd, LeftOfText, UnderText,
+  RightOfText, RightEnd and more.
+
 * FvwmForm: Customize pointers, support ISO_Tab key, buttons can activate
   on press or release, special pointer during grab, arrow keys useful in form
   with one input field.
@@ -24,7 +29,7 @@ Changes in beta 2.5.0 (not released yet)
 * Command "Silent" when precedes "Key", "Mouse" and "PointerKey"
   disables warning messages.
 
-* Restored the Alt-Tab behaviour from 2.4.0.
+* Restored the default Alt-Tab behaviour from 2.4.0.
 
 Changes in stable 2.4.3 (8-Oct-2001)
 

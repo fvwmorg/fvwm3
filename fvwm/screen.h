@@ -54,6 +54,13 @@
 #define COLORMAP_FOLLOWS_MOUSE 1 /* default */
 #define COLORMAP_FOLLOWS_FOCUS 2
 
+#ifdef FANCY_TITLEBARS
+#define TITLE_PADDING 5
+enum tb_pixmap_enum {TBP_MAIN, TBP_LEFT_MAIN, TBP_RIGHT_MAIN, TBP_UNDER_TEXT,
+                     TBP_LEFT_OF_TEXT, TBP_RIGHT_OF_TEXT, TBP_LEFT_END,
+                     TBP_RIGHT_END, TBP_BUTTONS, TBP_LEFT_BUTTONS,
+                     TBP_RIGHT_BUTTONS, NUM_TB_PIXMAPS};
+#endif
 
 typedef struct
 {
@@ -70,6 +77,9 @@ typedef enum
     GradientButton              ,
     PixmapButton                ,
     TiledPixmapButton           ,
+#ifdef FANCY_TITLEBARS
+    MultiPixmap                 ,
+#endif
 #ifdef MINI_ICONS
     MiniIconButton              ,
 #endif
@@ -123,6 +133,10 @@ typedef struct DecorFace
   struct
   {
     Picture *p;
+#ifdef FANCY_TITLEBARS
+    Picture **multi_pixmaps;
+    short multi_stretch_flags;
+#endif
     Pixel back;
     struct
     {
