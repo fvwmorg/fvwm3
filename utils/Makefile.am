@@ -5,15 +5,18 @@ PERL = @PERL@
 bin_PROGRAMS = @XPMROOT@ xselection
 bin_SCRIPTS = BuildXLockMenu fvwm_make_browse_menu.sh
 
+EXTRA_PROGRAMS = xpmroot
+
 BuildXLockMenu: BuildXLockMenu.in
 	@rm -f $@
 	sed -e 's,xPERLx,$(PERL),' $< > $@-t
 	mv $@-t $@
 	chmod +x $@
 
-EXTRA_PROGRAMS = xpmroot
+BuildXLockMenu.1: BuildXLockMenu.in
+	pod2man --center "FVWM Utils" $< > $@
 
-man_MANS = xpmroot.1
+man_MANS = xpmroot.1 BuildXLockMenu.1
 EXTRA_DIST = BuildXLockMenu.in fvwmrc_convert fvwm_make_browse_menu.sh \
 	quantize_pixmaps $(man_MANS)
 
