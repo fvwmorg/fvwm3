@@ -1,5 +1,8 @@
 2004-08-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in:
+	put -Wall -Wno-implicit-int before user specified flags
+
 	* libs/FScreen.c:
 	Applied below patch again.  It didn't make it to CVS (?)
 

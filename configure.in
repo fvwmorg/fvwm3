@@ -139,7 +139,7 @@ AC_PROG_CPP
 
 dnl added -Wall for gcc, what about for others?
 if test "x$GCC" = "xyes"; then
-  CFLAGS="$CFLAGS -Wall -Wno-implicit-int"
+  CFLAGS="-Wall -Wno-implicit-int $CFLAGS"
 fi
 
 dnl Help finding POSIX functions on some systems
