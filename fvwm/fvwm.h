@@ -66,8 +66,8 @@
 #include "window_flags.h"
 
 /* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS /*ARGSUSED*/XEvent *eventp, Window w, FvwmWindow *tmp_win,\
-unsigned long context, /*@-mustfree@*/char *action, int *Module
+#define F_CMD_ARGS XEvent *eventp, Window w, FvwmWindow *tmp_win,\
+unsigned long context,char *action, int *Module
 #define F_PASS_ARGS eventp, w, tmp_win, context, action, Module
 #define F_EXEC_ARGS char *action, FvwmWindow *tmp_win, XEvent *eventp,\
 unsigned long context, int Module
