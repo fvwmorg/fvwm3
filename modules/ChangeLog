@@ -1,3 +1,10 @@
+2000-01-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmGtk/expand.c (recursive_replace):
+	fixed FvwmGtk core dump caused by memory leak fixes
+
+	* ChangeLog: remove modules/ prefix in entries
+
 2001-01-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (initialize_pager):
@@ -75,38 +82,38 @@
 
 2000-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* modules/FvwmAnimate/FvwmAnimate.c:
-	* modules/FvwmButtons/FvwmButtons.c:
-	* modules/FvwmDragWell/fvwmDragWell.c:
-	* modules/FvwmForm/FvwmForm.c:
-	* modules/FvwmIconBox/FvwmIconBox.c:
-	* modules/FvwmIconBox/icons.c:
-	* modules/FvwmIconMan/x.c:
-	* modules/FvwmIdent/FvwmIdent.c:
-	* modules/FvwmPager/x_pager.c:
-	* modules/FvwmScript/FvwmScript.c:
-	* modules/FvwmScript/Widgets/CheckBox.c:
-	* modules/FvwmScript/Widgets/HDipstick.c:
-	* modules/FvwmScript/Widgets/HScrollBar.c:
-	* modules/FvwmScript/Widgets/ItemDraw.c:
-	* modules/FvwmScript/Widgets/List.c:
-	* modules/FvwmScript/Widgets/Menu.c:
-	* modules/FvwmScript/Widgets/MiniScroll.c:
-	* modules/FvwmScript/Widgets/PopupMenu.c:
-	* modules/FvwmScript/Widgets/PushButton.c:
-	* modules/FvwmScript/Widgets/RadioButton.c:
-	* modules/FvwmScript/Widgets/Rectangle.c:
-	* modules/FvwmScript/Widgets/TextField.c:
-	* modules/FvwmScript/Widgets/VDipstick.c:
-	* modules/FvwmScript/Widgets/VScrollBar.c:
-	* modules/FvwmScroll/GrabWindow.c:
-	* modules/FvwmTaskBar/FvwmTaskBar.c:
-	* modules/FvwmTaskBar/Goodies.c:
-	* modules/FvwmTheme/FvwmTheme.c:
-	* modules/FvwmWharf/FvwmWharf.c:
-	* modules/FvwmWharf/icons.c:
-	* modules/FvwmWharf/stepgfx.c:
-	* modules/FvwmWinList/FvwmWinList.c:
+	* FvwmAnimate/FvwmAnimate.c:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmDragWell/fvwmDragWell.c:
+	* FvwmForm/FvwmForm.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmIconBox/icons.c:
+	* FvwmIconMan/x.c:
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmPager/x_pager.c:
+	* FvwmScript/FvwmScript.c:
+	* FvwmScript/Widgets/CheckBox.c:
+	* FvwmScript/Widgets/HDipstick.c:
+	* FvwmScript/Widgets/HScrollBar.c:
+	* FvwmScript/Widgets/ItemDraw.c:
+	* FvwmScript/Widgets/List.c:
+	* FvwmScript/Widgets/Menu.c:
+	* FvwmScript/Widgets/MiniScroll.c:
+	* FvwmScript/Widgets/PopupMenu.c:
+	* FvwmScript/Widgets/PushButton.c:
+	* FvwmScript/Widgets/RadioButton.c:
+	* FvwmScript/Widgets/Rectangle.c:
+	* FvwmScript/Widgets/TextField.c:
+	* FvwmScript/Widgets/VDipstick.c:
+	* FvwmScript/Widgets/VScrollBar.c:
+	* FvwmScroll/GrabWindow.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmTheme/FvwmTheme.c:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmWharf/icons.c:
+	* FvwmWharf/stepgfx.c:
+	* FvwmWinList/FvwmWinList.c:
 	use fvwmlib_XCreateGC instead of XCreateGC
 
 2000-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -311,8 +318,8 @@
 
 2000-11-10  Mikhael Goikhman  <migo@homemail.com>
 
-	* modules/FvwmBacker/root_bits.c:
-	* modules/FvwmTaskBar/ButtonArray.c:
+	* FvwmBacker/root_bits.c:
+	* FvwmTaskBar/ButtonArray.c:
 	-Wall -Werror fixes
 
 2000-11-09  Mikhael Goikhman  <migo@homemail.com>
@@ -333,13 +340,13 @@
 	* FvwmWinList/FvwmWinList.1:
 	fixed obsolete Module "match" syntax
 
-	* modules/FvwmForm/FvwmForm.c:
+	* FvwmForm/FvwmForm.c:
 	fixed an "Active command unknown" noice when running the same 2 forms
 	by not printing an error if it is ct_table command
 
-	* modules/FvwmButtons/ConfigFvwmButtons:
-	* modules/FvwmTaskBar/ConfigFvwmTaskBar:
-	* modules/FvwmWinList/ConfigFvwmWinList:
+	* FvwmButtons/ConfigFvwmButtons:
+	* FvwmTaskBar/ConfigFvwmTaskBar:
+	* FvwmWinList/ConfigFvwmWinList:
 	fixed some obsolete syntax, like Iconify -1
 
 2000-11-08  Mikhael Goikhman  <migo@homemail.com>
@@ -513,7 +520,7 @@
 
 2000-10-04  Mikhael Goikhman  <migo@homemail.com>
 
-	* modules/FvwmPager/FvwmPager.1:
+	* FvwmPager/FvwmPager.1:
 	added a reference to BalloonStringFormat instead of "can't be changed"
 
 2000-10-01  olicha  <olivier.chapuis@free.fr>
@@ -538,10 +545,10 @@
 
 2000-08-19  Mikhael Goikhman  <migo@homemail.com>
 
-	* modules/FvwmEvent/FvwmEvent.c:
+	* FvwmEvent/FvwmEvent.c:
 	synchronize on M_DESTROY_WINDOW
 
-	* modules/FvwmForm/FvwmForm.1:
+	* FvwmForm/FvwmForm.1:
 	several corrections like s/FVWMUSER_HOME/FVWM_USERDIR/, s:etc:share:
 
 2000-07-04  Dominik Vogt  <dominik.vogt@gmx.de>

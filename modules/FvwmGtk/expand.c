@@ -115,7 +115,7 @@ recursive_replace (GtkWidget *d, char *val)
 
   head = (str *) safemalloc (sizeof (str));
   head->is_var = 0;
-  head->s = "";
+  head->s = strdup("");
   head->next = NULL;
 
   split_string (val, head);
