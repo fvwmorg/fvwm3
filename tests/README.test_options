@@ -10,7 +10,7 @@ Parameters:
       (182 builds)
 
 The default is 'test_options -0 -1' since '-2' can take *really* a long time
-(at 10 minutes per built it takes one and a half day).
+(at 10 minutes per build it takes one and a half day).
 
 A summary logfile test_options.log is generated as well as an additional log
 for every build (test_options.log.*). The names are self explaining.

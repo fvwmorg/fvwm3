@@ -1350,10 +1350,11 @@ void RedrawItem (Item *item, int click)
                   xsegs, 4);
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                    item->header.dt_ptr->dt_colors[c_item_fg]);
-    XDrawString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
-		     BOX_SPC + TEXT_SPC,
-		     BOX_SPC + TEXT_SPC + item->header.dt_ptr->dt_font_struct->ascent,
-		     item->button.text, item->button.len);
+    XDrawString(
+      dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
+      BOX_SPC + TEXT_SPC,
+      BOX_SPC + TEXT_SPC + item->header.dt_ptr->dt_font_struct->ascent,
+      item->button.text, item->button.len);
     myfprintf((stderr,"Just put %s into a button\n",
                item->button.text));
     break;
@@ -1414,7 +1415,7 @@ void DoCommand (Item *cmd)
        Should not be a problem, there shouldn't be any more commands
        coming into FvwmForm.  dje */
   }
-  if (cmd->button.key == IB_RESTART) {
+  else if (cmd->button.key == IB_RESTART) {
     Restart();
     for (item = root_item_ptr; item != 0;
          item = item->header.next) {    /* all items */

@@ -2317,7 +2317,8 @@
 
 1999-10-26  Michael Han
 
-	* FvwmIconMan/*.c: FvwmIconam can use an alias. New resolutions: !desk, !page
+	* FvwmIconMan/*.c:
+	FvwmIconam can use an alias. New resolutions: !desk, !page
 
 1999-10-25  Hippo
 
