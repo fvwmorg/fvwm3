@@ -1,3 +1,8 @@
+2002-01-19  olicha  <olivier.chapuis@free.fr>
+
+	* xpmroot.c:
+	Some reformating and fixed a miss print
+
 2002-01-18  olicha  <olivier.chapuis@free.fr>
 
 	* xpmroot.1:

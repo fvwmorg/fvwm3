@@ -196,6 +196,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
   int save_icon_depth = 0;
   Pixmap save_icon_pixmap = None;
   Pixmap save_icon_mask = None;
+  Window save_icon_pixmap_w = None;
   Bool is_pixmap_ours = False;
   Bool is_icon_ours = False;
   Bool is_icon_shaped = False;
@@ -218,11 +219,14 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
   }
   else
   {
+    /* should save and restore any iformation modified by
+     * a call to GetIconPicture */
     save_picture_w_g_width = fwin->icon_g.picture_w_g.width;
     save_picture_w_g_height = fwin->icon_g.picture_w_g.height;
     save_icon_depth = fwin->iconDepth;
     save_icon_pixmap = fwin->iconPixmap;
     save_icon_mask = fwin->icon_maskPixmap;
+    save_icon_pixmap_w =  fwin->icon_pixmap_w;
     is_pixmap_ours = IS_PIXMAP_OURS(fwin);
     is_icon_ours = IS_ICON_OURS(fwin);
     is_icon_shaped = IS_ICON_SHAPED(fwin);
@@ -239,6 +243,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
     fwin->iconDepth = save_icon_depth;
     fwin->iconPixmap = save_icon_pixmap;
     fwin->icon_maskPixmap = save_icon_mask;
+    fwin->icon_pixmap_w = save_icon_pixmap_w; 
     SET_ICON_OURS(fwin, is_icon_ours);
     SET_PIXMAP_OURS(fwin, is_pixmap_ours);
     SET_ICON_SHAPED(fwin, is_icon_shaped);
