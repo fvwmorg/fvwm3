@@ -1,16 +1,16 @@
 .\" t # I don't know this stuff, sorry. -Jarl
 .\" @(#)FvwmButtons.1	1/28/94
-.TH FvwmButtons 1 "25 April 2002" FVWM "FVWM Modules"
+.TH FvwmButtons 1 "23 September 2002" FVWM "FVWM Modules"
 .UC
 .SH NAME
 FvwmButtons \- the FVWM buttonbox module
 .SH SYNOPSIS
+.nf
+Module FvwmButtons [-g geometry] [-transient | -transientpanel] [name[configfile]]
+.fi
 
-.\" I Tried this with .BI like fvwm uses, but it made a mess. dje 2/28/01
-.B FvwmButtons [-g
-.I geometry
-.B ] [-transient | -transientpanel]
-.I [ name [ config file ] ]
+\fIFvwmButtons\fP can only be invoked by fvwm.
+Command line invocation of the \fIFvwmButtons\fP module will not work.
 
 .SH DESCRIPTION
 The FvwmButtons module provides a window of buttons which sits on

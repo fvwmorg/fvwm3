@@ -1,3 +1,10 @@
+2002-09-23  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmButtons/FvwmButtons.1: 
+	* FvwmBacker/FvwmBacker.1: 
+	* FvwmAuto/FvwmAuto.1:
+	* FvwmAnimate/FvwmAnimate.1: Rework synopsis.
+
 2002-09-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIdent/FvwmIdent.c (default_layer):

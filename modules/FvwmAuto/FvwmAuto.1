@@ -19,7 +19,17 @@
 .SH NAME
 \fIFvwmAuto\fP \- the FVWM auto-raise module
 .SH SYNOPSIS
-\fIFvwmAuto\fP is spawned by fvwm, so no command line invocation will work.
+.nf
+Module FvwmAuto Timeout [-passid] [-menter|-menterleave|-mfocus] [EnterCommand [LeaveCommand]]
+.fi
+\fIFvwmAuto\fP can only be invoked by fvwm.
+Command line invocation of the \fIFvwmAuto\fP will not work.
+
+.SH DESCRIPTION
+The \fIFvwmAuto\fP module is most often used to automatically raise
+focused windows.
+
+.SH INVOCATION
 The correct syntax is:
 .nf
 .EX
