@@ -1,5 +1,29 @@
 2002-09-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (InteractiveMove):
+	fixed offset between pointer and window when dragging
+
+	* fvwm/virtual.c (HandlePaging):
+	* fvwm/icons.c (CMD_Iconify):
+	* fvwm/move_resize.c (InteractiveMove):
+	* fvwm/menus.c (get_menu_options):
+	(get_menu_options):
+	* libs/FScreen.c (GetMouseXY):
+	use new function fev_get_evpos_or_query()
+
+	* libs/Makefile.am:
+	* libs/Pointer.c:
+	removed file
+
+	(GetLocationFromEventOrQuery):
+	moved to FEvent.c and renamed to fev_get_evpos_or_query()
+	* libs/FEvent.c (fev_set_evpos):
+	new function
+
+	* fvwm/functions.c (__execute_function):
+	(execute_complex_function):
+	fixed complex action clicking logic
+
 	* fvwm/add_window.c (CaptureOneWindow):
 	fixed RecaptureWindow
 	(CaptureAllWindows):

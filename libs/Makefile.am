@@ -17,7 +17,7 @@ libfvwm_a_SOURCES = \
 	ColorUtils.c Module.c FRender.c Ficonv.c envvar.c Fft.c gravity.c \
 	XResource.c FEvent.c WinMagic.c Target.c Picture.c XError.c queue.c \
 	fvwmsignal.c System.c PictureBase.c Cursor.c Strings.c fvwmrect.c \
-	FRenderInit.c debug.c safemalloc.c FBidi.c wild.c Pointer.c Grab.c \
+	FRenderInit.c debug.c safemalloc.c FBidi.c wild.c Grab.c \
 	Event.c ClientMsg.c setpgrp.c FShape.c
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@

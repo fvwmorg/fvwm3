@@ -41,6 +41,18 @@ XEvent *fev_get_last_event_address(void);
 /* get the latest event time */
 Time fev_get_evtime(void);
 
+/*
+ * This function determines the location of the mouse pointer from the event
+ * if possible, if not it queries the X server. Returns False if it had to
+ * query the server and the call failed because the pointer was on a
+ * different screen. */
+Bool fev_get_evpos_or_query(
+	Display *dpy, Window w, const XEvent *e, int *ret_x, int *ret_y);
+
+/* Sets the x_root/y_root position in the given event if it's of the proper
+ * type.  Returns True if the position was set. */
+Bool fev_set_evpos(XEvent *e, int x, int y);
+
 /* announce a faked event to the FEvent module */
 void fev_fake_event(XEvent *ev);
 

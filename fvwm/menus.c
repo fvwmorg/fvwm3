@@ -7518,7 +7518,7 @@ char *get_menu_options(
 				{
 					/* xinerama: use screen that contains
 					 * the window center as reference */
-					if (!GetLocationFromEventOrQuery(
+					if (!fev_get_evpos_or_query(
 						    dpy, context_window, e,
 						    &pops->pos_hints.
 						    screen_origin_x,
@@ -7601,7 +7601,7 @@ char *get_menu_options(
 		if (!pops->pos_hints.has_screen_origin)
 		{
 			pops->pos_hints.has_screen_origin = 1;
-			if (!GetLocationFromEventOrQuery(
+			if (!fev_get_evpos_or_query(
 				    dpy, None, e,
 				    &pops->pos_hints.screen_origin_x,
 				    &pops->pos_hints.screen_origin_y))

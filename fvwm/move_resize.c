@@ -946,8 +946,8 @@ static void InteractiveMove(
 		/* Although a move is usually done with a button depressed we
 		 * have to check for ButtonRelease too since the event may be
 		 * faked. */
-		GetLocationFromEventOrQuery(
-			dpy, Scr.Root, NULL, &DragX, &DragY);
+		fev_get_evpos_or_query(
+			dpy, Scr.Root, exc->x.etrigger, &DragX, &DragY);
 	}
 
 	MyXGrabServer(dpy);

@@ -181,6 +181,8 @@ static Bool DeferExecution(
 			KeySym keysym = XLookupKeysym(&e.xkey, 0);
 			if (keysym == XK_Escape)
 			{
+				ret_ecc->x.etrigger = &e;
+				*ret_mask |= ECC_ETRIGGER;
 				UngrabEm(GRAB_NORMAL);
 				MyXUngrabKeyboard(dpy);
 				return True;
@@ -418,10 +420,10 @@ static void __execute_function(
 	}
 	else
 	{
-		w = GetSubwindowFromEvent(dpy, exc->x.etrigger);
+		w = GetSubwindowFromEvent(dpy, exc->x.elast);
 		if (w == None)
 		{
-			w = exc->x.etrigger->xany.window;
+			w = exc->x.elast->xany.window;
 		}
 		if (w == None)
 		{
@@ -570,11 +572,12 @@ static void __execute_function(
 			Bool rc = False;
 
 			runaction = SkipNTokens(expaction, 1);
-			if (bif->flags & FUNC_NEEDS_WINDOW)
+			if ((bif->flags & FUNC_NEEDS_WINDOW) &&
+			    !(exec_flags & FUNC_DONT_DEFER))
 			{
 				rc = DeferExecution(
 					&ecc, &mask, bif->cursor,
-					exc->x.etrigger->type, bif->evtype,
+					exc->x.elast->type, bif->evtype,
 					(bif->flags & FUNC_ALLOW_UNMANAGED));
 			}
 			if (rc == False)
@@ -766,7 +769,8 @@ static void __run_complex_function_items(
 		if (c == cond)
 		{
 			__execute_function(
-				cond_func_rc, exc, fi->action, 0, args);
+				cond_func_rc, exc, fi->action, FUNC_DONT_DEFER,
+				args);
 		}
 		fi = fi->next_item;
 	}
@@ -878,7 +882,7 @@ static void execute_complex_function(
 	}
 	/* In case we want to perform an action on a button press, we
 	 * need to fool other routines */
-	te = exc->x.etrigger;
+	te = exc->x.elast;
 	if (te->type == ButtonPress)
 	{
 		trigger_evtype = ButtonRelease;
@@ -982,7 +986,7 @@ static void execute_complex_function(
 		}
 	}
 
-	te = (mask & ECC_ETRIGGER) ? ecc.x.etrigger : exc->x.etrigger;
+	te = (mask & ECC_ETRIGGER) ? ecc.x.etrigger : exc->x.elast;
 	switch (te->xany.type)
 	{
 	case ButtonPress:
@@ -1050,6 +1054,8 @@ static void execute_complex_function(
 	 * ButtonMotion as user input to select text. */
 	UngrabEm(GRAB_NORMAL);
 #endif
+	fev_set_evpos(&d, x, y);
+	fev_fake_event(&d);
 	ecc.x.etrigger = &d;
 	ecc.w.w = (ecc.w.fw) ? FW_W_FRAME(ecc.w.fw) : None;
 	mask |= ECC_ETRIGGER | ECC_W;

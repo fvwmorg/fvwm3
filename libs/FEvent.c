@@ -121,6 +121,84 @@ Time fev_get_evtime(void)
 	return fev_last_timestamp;
 }
 
+Bool fev_get_evpos_or_query(
+	Display *dpy, Window w, const XEvent *e, int *ret_x, int *ret_y)
+{
+	Window JunkW;
+	int JunkC;
+	unsigned int JunkM;
+	Bool rc;
+	int type;
+
+	type = (e != NULL) ? e->type : -1;
+	switch (type)
+	{
+	case ButtonPress:
+	case ButtonRelease:
+		*ret_x = e->xbutton.x_root;
+		*ret_y = e->xbutton.y_root;
+		return True;
+	case KeyPress:
+	case KeyRelease:
+		*ret_x = e->xkey.x_root;
+		*ret_y = e->xkey.y_root;
+		return True;
+	case MotionNotify:
+		if (e->xmotion.same_screen == True)
+		{
+			*ret_x = e->xmotion.x_root;
+			*ret_y = e->xmotion.y_root;
+		}
+		else
+		{
+			/* pointer is on different screen */
+			*ret_x = 0;
+			*ret_y = 0;
+		}
+		return True;
+	default:
+		rc = FQueryPointer(
+			dpy, w, &JunkW, &JunkW, ret_x, ret_y, &JunkC, &JunkC,
+			&JunkM);
+		if (rc == False)
+		{
+			/* pointer is on a different screen */
+			*ret_x = 0;
+			*ret_y = 0;
+		}
+		return rc;
+	}
+}
+
+Bool fev_set_evpos(XEvent *e, int x, int y)
+{
+	switch (e->type)
+	{
+	case ButtonPress:
+	case ButtonRelease:
+		e->xbutton.x_root = x;
+		e->xbutton.y_root = y;
+		return True;
+	case KeyPress:
+	case KeyRelease:
+		e->xkey.x_root = x;
+		e->xkey.y_root = y;
+		return True;
+	case MotionNotify:
+		if (e->xmotion.same_screen == True)
+		{
+			e->xmotion.x_root = x;
+			e->xmotion.y_root = y;
+			return True;
+		}
+		break;
+	default:
+		break;
+	} /* switch */
+
+	return False;
+}
+
 void fev_fake_event(XEvent *ev)
 {
 	fev_event = *ev;

@@ -554,7 +554,7 @@ int HandlePaging(
 			return 0;
 		}
 		/* get pointer location */
-		GetLocationFromEventOrQuery(dpy, Scr.Root, pev, &x, &y);
+		fev_get_evpos_or_query(dpy, Scr.Root, pev, &x, &y);
 		/* check actual pointer location since PanFrames can get buried
 		 * under window being moved or resized - mab */
 		if (x >= edge_thickness &&

@@ -2034,7 +2034,7 @@ void CMD_Iconify(F_CMD_ARGS)
 				return;
 			}
 			memset(&win_opts, 0, sizeof(win_opts));
-			GetLocationFromEventOrQuery(
+			fev_get_evpos_or_query(
 				dpy, Scr.Root, NULL, &win_opts.default_icon_x,
 				&win_opts.default_icon_y);
 			Iconify(fw, &win_opts);

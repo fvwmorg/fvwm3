@@ -168,7 +168,7 @@ static void GetMouseXY(XEvent *eventp, int *x, int *y)
 			eventp = &e;
 			e.type = 0;
 		}
-		GetLocationFromEventOrQuery(
+		fev_get_evpos_or_query(
 			disp, DefaultRootWindow(disp), eventp, x, y);
 	}
 
