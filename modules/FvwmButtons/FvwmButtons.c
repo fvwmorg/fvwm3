@@ -1240,7 +1240,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 
   MyWindow = XCreateSimpleWindow(Dpy,Root,mysizehints.x,mysizehints.y,
 				 mysizehints.width,mysizehints.height,
-				 1,fore_pix,back_pix);
+				 0,fore_pix,back_pix);
   if(ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack))
     XSetWindowBackgroundPixmap(Dpy,MyWindow,ub->c->backicon->picture);
 
