@@ -1,3 +1,16 @@
+1999-09-28  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/builtins.c
+	* fvwm/fvwm.h
+	* fvwm/fvwm2.1
+	* fvwm/placement.c
+	* fvwm/style.c
+	* fvwm/style.h:
+	Added StartsOnPageIncludesTransients/StartsOnPageIgnoresTransients
+	style.
+	Converted the 3 GlobalOpts related to StartsOnPage to styles. The
+	GlobalOpts are still honored, for the time being, with a warning.
+
 1999-09-29  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Colorset.c (SetRectangleBackground): fixed stretching of

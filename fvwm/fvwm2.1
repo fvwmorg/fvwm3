@@ -1789,12 +1789,16 @@ revert to, the StartsOnPage desk and page specification on Restart or
 Recapture. RecaptureIgnoresStartsOnPage causes fvwm to respect the current
 window position on Restart or Recapture. The default is
 RecaptureIgnoresStartsOnPage.
+\fINote: this option is obsolete: it has been replaced by the Style option
+of the same name, and will be removed in a future release.\fP
 
 CaptureHonorsStartsOnPage causes the initial capture (of an already
 existing window) at startup to place the window according to the
 StartsOnPage desk and page specification. CaptureIgnoresStartsOnPage
 causes fvwm to ignore these settings (including StartsOnDesk) on
 initial capture. The default is CaptureHonorsStartsOnPage.
+\fINote: this option is obsolete: it has been replaced by the Style option
+of the same name, and will be removed in a future release.\fP
 
 ActivePlacementIgnoresStartsOnPage suppresses StartsOnPage or StartsOnDesk
 placement in the event that both ActivePlacement and SkipMapping are in
@@ -1803,8 +1807,11 @@ placing a window and then wondering where it disappeared to, because it got
 placed on a different desk or page. ActivePlacementHonorsStartsOnPage
 allows this to happen anyway. The option has no effect if SkipMapping is
 not in effect, because fvwm will switch to the proper desk/page to perform
-interactive placement. The default is ActivePlacementHonorsStartsOnPage,
-which matches the way StartsOnDesk handled the situation.
+interactive placement. The default is ActivePlacementIgnoresStartsOnPage.
+ActivePlacementHonorsStartsOnPage matches the way the old StartsOnDesk style
+used to handle the situation.
+\fINote: this option is obsolete: it has been replaced by the Style option
+of the same name, and will be removed in a future release.\fP
 
 RaiseOverNativeWindows makes fvwm try to raise the windows it manages
 over native windows of the X servers host system. This is needed for
@@ -3050,6 +3057,10 @@ Sticky / Slippery,
 StartIconic / StartNormal,
 Color, ForeColor, BackColor,
 StartsOnDesk / StartsOnPage / StartsAnyWhere,
+ActivePlacementHonorsStartsOnPage / ActivePlacementIgnoresStartsOnPage,
+CaptureHonorsStartsOnPage / CaptureIgnoresStartsOnPage,
+RecaptureHonorsStartsOnPage / RecaptureIgnoresStartsOnPage,
+StartsOnPageIncludesTransients / StartsOnPageIgnoresTransients,
 IconTitle / NoIconTitle,
 MWMButtons / FvwmButtons,
 MWMBorder / FvwmBorder,
@@ -3290,6 +3301,35 @@ specified via a resource (e.g., "-xrm 'Fvwm.Page: 1 0 2'").
 StartsOnPage in conjunction with SkipMapping is a useful technique when you
 want to start an app on some other page and continue with what you were
 doing, rather than waiting for it to appear.
+
+\fIStartsOnPageIncludesTransients\fP will cause the StartsOnPage style to
+be applied even for transient windows. This is not usually useful, since
+transients are usually popups that you want to appear in your visible
+viewport; but occasionally an application will use a transient for something
+like a startup window that needs to be coerced into place.
+
+\fIActivePlacementIgnoresStartsOnPage\fP suppresses StartsOnPage or 
+StartsOnDesk placement in the event that both ActivePlacement and SkipMapping
+are in effect when a window is created. This prevents you from interactively
+placing a window and then wondering where it disappeared to, because it got
+placed on a different desk or page. ActivePlacementHonorsStartsOnPage
+allows this to happen anyway. The option has no effect if SkipMapping is
+not in effect, because fvwm will switch to the proper desk/page to perform
+interactive placement. The default is ActivePlacementIgnoresStartsOnPage;
+ActivePlacementHonorsStartsOnPage matches the way the old StartsOnDesk style
+used to handle the situation.
+
+\fICaptureHonorsStartsOnPage\fP causes the initial capture (of an already
+existing window) at startup to place the window according to the
+StartsOnPage desk and page specification. CaptureIgnoresStartsOnPage
+causes fvwm to ignore these settings (including StartsOnDesk) on
+initial capture. The default is CaptureHonorsStartsOnPage.
+
+\fIRecaptureHonorsStartsOnPage\fP causes a window to be placed according to,
+or revert to, the StartsOnPage desk and page specification on Restart or
+Recapture. RecaptureIgnoresStartsOnPage causes fvwm to respect the current
+window position on Restart or Recapture. The default is
+RecaptureIgnoresStartsOnPage.
 
 \fILayer\fP accepts one a argument: a non-negative integer. This is
 the layer the window is put in.

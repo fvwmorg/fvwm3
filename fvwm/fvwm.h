@@ -243,6 +243,10 @@ typedef struct
   unsigned has_no_title : 1;
   unsigned has_ol_decor : 1;
   unsigned use_start_on_desk : 1;
+  unsigned use_start_on_page_for_transient : 1;
+  unsigned active_placement_honors_starts_on_page : 1;
+  unsigned capture_honors_starts_on_page : 1;
+  unsigned recapture_honors_starts_on_page : 1;
   unsigned icon_override : 2;
 #define NO_ACTIVE_ICON_OVERRIDE 0
 #define ICON_OVERRIDE           1

@@ -2479,26 +2479,38 @@ void SetGlobalOptions(F_CMD_ARGS)
     else if (StrEquals(opt,"CAPTUREHONORSSTARTSONPAGE"))
     {
       Scr.go.CaptureHonorsStartsOnPage = True;
+      fvwm_msg(ERR,"SetGlobalOptions",
+        "Global Option '%s' is obsolete -\n     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"CAPTUREIGNORESSTARTSONPAGE"))
     {
       Scr.go.CaptureHonorsStartsOnPage = False;
+      fvwm_msg(ERR,"SetGlobalOptions",
+        "Global Option '%s' is obsolete -\n     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"RECAPTUREHONORSSTARTSONPAGE"))
     {
       Scr.go.RecaptureHonorsStartsOnPage = True;
+      fvwm_msg(ERR,"SetGlobalOptions",
+        "Global Option '%s' is obsolete -\n     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"RECAPTUREIGNORESSTARTSONPAGE"))
     {
       Scr.go.RecaptureHonorsStartsOnPage = False;
+      fvwm_msg(ERR,"SetGlobalOptions",
+        "Global Option '%s' is obsolete -\n     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
     {
       Scr.go.ActivePlacementHonorsStartsOnPage = True;
+      fvwm_msg(ERR,"SetGlobalOptions",
+        "Global Option '%s' is obsolete -\n     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
     {
       Scr.go.ActivePlacementHonorsStartsOnPage = False;
+      fvwm_msg(ERR,"SetGlobalOptions",
+        "Global Option '%s' is obsolete -\n     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"RAISEOVERNATIVEWINDOWS"))
     {

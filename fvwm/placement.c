@@ -483,7 +483,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           it's a restart or recapture, and that option's disallowed...
       */
       if (PPosOverride && (Restarting || (Scr.flags.windows_captured)) &&
-	  !Scr.go.RecaptureHonorsStartsOnPage)
+	  (!Scr.go.RecaptureHonorsStartsOnPage && !SRECAPTURE_HONORS_STARTS_ON_PAGE(sflags)))
         {
           HonorStartsOnPage  =  False;
         }
@@ -491,7 +491,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           it's a cold start window capture, and that's disallowed...
       */
       if (PPosOverride && (!Restarting && !(Scr.flags.windows_captured)) &&
-	  !Scr.go.CaptureHonorsStartsOnPage)
+	  (!Scr.go.CaptureHonorsStartsOnPage && !SCAPTURE_HONORS_STARTS_ON_PAGE(sflags)))
         {
           HonorStartsOnPage  =  False;
         }
@@ -507,7 +507,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       */
       if (!PPosOverride && (DO_NOT_SHOW_ON_MAP(tmp_win) &&
 			    !SDO_PLACE_RANDOM(sflags) &&
-			    !Scr.go.ActivePlacementHonorsStartsOnPage))
+			    (!Scr.go.ActivePlacementHonorsStartsOnPage && !SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags))))
         {
           HonorStartsOnPage  =  False;
 	  fvwm_msg(WARN, "PlaceWindow",
@@ -764,7 +764,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
 
       if ( ( DO_NOT_SHOW_ON_MAP(tmp_win) && HonorStartsOnPage )  &&
 
-           ( !(IS_TRANSIENT(tmp_win)) &&
+           ( (!(IS_TRANSIENT(tmp_win)) || SUSE_START_ON_PAGE_FOR_TRANSIENT(sflags)) &&
 
              ((SUSE_NO_PPOSITION(sflags)) ||
               !(tmp_win->hints.flags & PPosition)) &&

@@ -380,6 +380,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
   memset(&tmpstyle, 0, sizeof(window_style));
   /* default uninitialised layer */
   tmpstyle.layer = -9;
+  /* default StartsOnPage behavior for initial capture */
+  tmpstyle.flags.capture_honors_starts_on_page = 1;
 
   /* parse style name */
   action = GetNextToken(action, &tmpstyle.name);
@@ -415,17 +417,29 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
     switch (tolower(token[0]))
     {
       case 'a':
-        if(StrEquals(token, "AllowRestack"))
-        {
-          found = True;
-          tmpstyle.flags.common.ignore_restack = 0;
-          tmpstyle.flag_mask.common.ignore_restack = 1;
-        }
-        else if(StrEquals(token, "ACTIVEPLACEMENT"))
+        if(StrEquals(token, "ACTIVEPLACEMENT"))
         {
 	  found = True;
           tmpstyle.flags.do_place_random = 0;
           tmpstyle.flag_mask.do_place_random = 1;
+        }
+	else if(StrEquals(token, "ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
+	{
+	  found = True;
+	  tmpstyle.flags.active_placement_honors_starts_on_page = 1;
+	  tmpstyle.flag_mask.active_placement_honors_starts_on_page = 1;
+	}
+	else if(StrEquals(token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
+	{
+	  found = True;
+	  tmpstyle.flags.active_placement_honors_starts_on_page = 0;
+	  tmpstyle.flag_mask.active_placement_honors_starts_on_page = 1;
+	}
+        else if(StrEquals(token, "AllowRestack"))
+        {
+          found = True;
+          tmpstyle.flags.common.ignore_restack = 0;
+          tmpstyle.flag_mask.common.ignore_restack = 1;
         }
         break;
 
@@ -463,7 +477,19 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'c':
-        if(StrEquals(token, "COLOR"))
+	if(StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
+	{
+	  found = True;
+	  tmpstyle.flags.capture_honors_starts_on_page = 1;
+	  tmpstyle.flag_mask.capture_honors_starts_on_page = 1;
+	}
+	else if(StrEquals(token, "CAPTUREIGNORESSTARTSONPAGE"))
+	{
+	  found = True;
+	  tmpstyle.flags.capture_honors_starts_on_page = 0;
+	  tmpstyle.flag_mask.capture_honors_starts_on_page = 1;
+	}
+        else if(StrEquals(token, "COLOR"))
         {
 	  char c = 0;
 
@@ -1136,23 +1162,35 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'r':
-        if(StrEquals(token, "RANDOMPLACEMENT"))
+        if(StrEquals(token, "RAISETRANSIENT"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_raise_transient = 1;
+          tmpstyle.flag_mask.common.do_raise_transient = 1;
+        }
+        else if(StrEquals(token, "RANDOMPLACEMENT"))
         {
 	  found = True;
           tmpstyle.flags.do_place_random = 1;
           tmpstyle.flag_mask.do_place_random = 1;
         }
+	else if(StrEquals(token, "RECAPTUREHONORSSTARTSONPAGE"))
+	{
+	  found = True;
+	  tmpstyle.flags.recapture_honors_starts_on_page = 1;
+	  tmpstyle.flag_mask.recapture_honors_starts_on_page = 1;
+	}
+	else if(StrEquals(token, "RECAPTUREIGNORESSTARTSONPAGE"))
+	{
+	  found = True;
+	  tmpstyle.flags.recapture_honors_starts_on_page = 0;
+	  tmpstyle.flag_mask.recapture_honors_starts_on_page = 1;
+	}
         else if(StrEquals(token, "RESIZEHINTOVERRIDE"))
         {
 	  found = True;
           tmpstyle.flags.common.has_override_size = 1;
           tmpstyle.flag_mask.common.has_override_size = 1;
-        }
-        else if(StrEquals(token, "RAISETRANSIENT"))
-        {
-	  found = True;
-          tmpstyle.flags.common.do_raise_transient = 1;
-          tmpstyle.flag_mask.common.do_raise_transient = 1;
         }
         else if(StrEquals(token, "ResizeOpaque"))
         {
@@ -1313,6 +1351,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    tmpstyle.flags.use_start_on_desk = 1;
 	    tmpstyle.flag_mask.use_start_on_desk = 1;
 	  }
+	}
+	else if(StrEquals(token, "STARTSONPAGEINCLUDESTRANSIENTS"))
+	{
+	  found = True;
+	  tmpstyle.flags.use_start_on_page_for_transient = 1;
+	  tmpstyle.flag_mask.use_start_on_page_for_transient = 1;
+	}
+	else if(StrEquals(token, "STARTSONPAGEIGNORESTRANSIENTS"))
+	{
+	  found = True;
+	  tmpstyle.flags.use_start_on_page_for_transient = 0;
+	  tmpstyle.flag_mask.use_start_on_page_for_transient = 1;
 	}
 	/**/
 	else if(StrEquals(token, "STARTSANYWHERE"))

@@ -73,6 +73,14 @@
 #define SHAS_OL_DECOR(sf)             ((sf)->has_ol_decor)
 #define SUSE_NO_PPOSITION(sf)         ((sf)->use_no_pposition)
 #define SUSE_START_ON_DESK(sf)        ((sf)->use_start_on_desk)
+#define SUSE_START_ON_PAGE_FOR_TRANSIENT(sf) \
+  ((sf)->use_start_on_page_for_transient)
+#define SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
+  ((sf)->active_placement_honors_starts_on_page)
+#define SCAPTURE_HONORS_STARTS_ON_PAGE(sf) \
+  ((sf)->capture_honors_starts_on_page)
+#define SRECAPTURE_HONORS_STARTS_ON_PAGE(sf) \
+  ((sf)->recapture_honors_starts_on_page)
 #define SICON_OVERRIDE(sf)            ((sf)->icon_override)
 
 /* access to other parts of a style (call with the style itself) */
