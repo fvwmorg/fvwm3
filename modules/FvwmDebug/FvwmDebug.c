@@ -171,10 +171,10 @@ void process_message(unsigned long type, const unsigned long *body)
 {
   switch(type)
     {
-    case M_ADD_WINDOW:
-      list_add(body);
-    case M_CONFIGURE_WINDOW:
-      list_configure(body);
+    case M_OLD_ADD_WINDOW:
+      list_old_add(body);
+    case M_OLD_CONFIGURE_WINDOW:
+      list_old_configure(body);
       break;
     case M_DESTROY_WINDOW:
       list_destroy(body);
@@ -221,6 +221,12 @@ void process_message(unsigned long type, const unsigned long *body)
     case M_END_WINDOWLIST:
       list_end();
       break;
+    case M_ADD_WINDOW:
+      list_add(body);
+      break;
+    case M_CONFIGURE_WINDOW:
+      list_configure(body);
+      break;
     case M_DEFAULTICON:
     case M_ICON_FILE:
     default:
@@ -248,12 +254,12 @@ void DeadPipe(int nonsense)
 /***********************************************************************
  *
  *  Procedure:
- *	list_add - displays packet contents to stderr
+ *	list_old_add - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_add(const unsigned long *body)
+void list_old_add(const unsigned long *body)
 {
-  fprintf(stderr,"Add Window\n");
+  fprintf(stderr,"Old Add Window\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
   fprintf(stderr,"\t frame ID %lx\n",body[1]);
   fprintf(stderr,"\t fvwm ptr %lx\n",body[2]);
@@ -281,12 +287,12 @@ void list_add(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_configure - displays packet contents to stderr
+ *	list_old_configure - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_configure(const unsigned long *body)
+void list_old_configure(const unsigned long *body)
 {
-  fprintf(stderr,"Configure Window\n");
+  fprintf(stderr,"Old Configure Window\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
   fprintf(stderr,"\t frame ID %lx\n",body[1]);
   fprintf(stderr,"\t fvwm ptr %lx\n",body[2]);
@@ -554,3 +560,79 @@ void list_end(void)
   fprintf(stderr,"Send_WindowList End\n");
 }
 
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	list_add - displays packet contents to stderr
+ *
+ ***********************************************************************/
+void list_add(const unsigned long *body)
+{
+  fprintf(stderr,"Add Window\n");
+  fprintf(stderr,"\t ID %lx\n",body[0]);
+  fprintf(stderr,"\t frame ID %lx\n",body[1]);
+  fprintf(stderr,"\t fvwm ptr %lx\n",body[2]);
+  fprintf(stderr,"\t frame x %ld\n",(long)body[3]);
+  fprintf(stderr,"\t frame y %ld\n",(long)body[4]);
+  fprintf(stderr,"\t frame w %ld\n",(long)body[5]);
+  fprintf(stderr,"\t frame h %ld\n",(long)body[6]);
+  fprintf(stderr,"\t desk %ld\n",(long)body[7]);
+  /*
+  fprintf(stderr,"\t flags %lx\n",body[8]);
+  */
+  fprintf(stderr,"\t title height %ld\n",(long)body[9]);
+  fprintf(stderr,"\t border width %ld\n",(long)body[10]);
+  fprintf(stderr,"\t window base width %ld\n",(long)body[11]);
+  fprintf(stderr,"\t window base height %ld\n",(long)body[12]);
+  fprintf(stderr,"\t window resize width increment %ld\n",(long)body[13]);
+  fprintf(stderr,"\t window resize height increment %ld\n",(long)body[14]);
+  fprintf(stderr,"\t window min width %ld\n",(long)body[15]);
+  fprintf(stderr,"\t window min height %ld\n",(long)body[16]);
+  fprintf(stderr,"\t window max %ld\n",(long)body[17]);
+  fprintf(stderr,"\t window max %ld\n",(long)body[18]);
+  fprintf(stderr,"\t icon label window %lx\n",body[19]);
+  fprintf(stderr,"\t icon pixmap window %lx\n",body[20]);
+  fprintf(stderr,"\t window gravity %lx\n",body[21]);
+  fprintf(stderr,"\t forecolor %lx\n",body[22]);
+  fprintf(stderr,"\t backcolor %lx\n",body[23]);
+  fprintf(stderr,"\t flags %lx\n",body[24]);
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	list_configure - displays packet contents to stderr
+ *
+ ***********************************************************************/
+void list_configure(const unsigned long *body)
+{
+  fprintf(stderr,"Configure Window\n");
+  fprintf(stderr,"\t ID %lx\n",body[0]);
+  fprintf(stderr,"\t frame ID %lx\n",body[1]);
+  fprintf(stderr,"\t fvwm ptr %lx\n",body[2]);
+  fprintf(stderr,"\t frame x %ld\n",(long)body[3]);
+  fprintf(stderr,"\t frame y %ld\n",(long)body[4]);
+  fprintf(stderr,"\t frame w %ld\n",(long)body[5]);
+  fprintf(stderr,"\t frame h %ld\n",(long)body[6]);
+  fprintf(stderr,"\t desk %ld\n",(long)body[7]);
+  /*
+  fprintf(stderr,"\t flags %lx\n",body[8]);
+  */
+  fprintf(stderr,"\t title height %ld\n",(long)body[9]);
+  fprintf(stderr,"\t border width %ld\n",(long)body[10]);
+  fprintf(stderr,"\t window base width %ld\n",(long)body[11]);
+  fprintf(stderr,"\t window base height %ld\n",(long)body[12]);
+  fprintf(stderr,"\t window resize width increment %ld\n",(long)body[13]);
+  fprintf(stderr,"\t window resize height increment %ld\n",(long)body[14]);
+  fprintf(stderr,"\t window min width %ld\n",(long)body[15]);
+  fprintf(stderr,"\t window min height %ld\n",(long)body[16]);
+  fprintf(stderr,"\t window max %ld\n",(long)body[17]);
+  fprintf(stderr,"\t window max %ld\n",(long)body[18]);
+  fprintf(stderr,"\t icon label window %lx\n",body[19]);
+  fprintf(stderr,"\t icon pixmap window %lx\n",body[20]);
+  fprintf(stderr,"\t window gravity %lx\n",body[21]);
+  fprintf(stderr,"\t forecolor %lx\n",body[22]);
+  fprintf(stderr,"\t backcolor %lx\n",body[23]);
+  fprintf(stderr,"\t flags %lx\n",body[24]);
+}

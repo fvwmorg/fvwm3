@@ -1,3 +1,9 @@
+2000-04-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmDebug/FvwmDebug.c (list_old_add):
+	(list_end):
+	print out old window packets; patch by Mike Han
+
 2000-04-06  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/ReadXServer.c: Fix array bounds write error during

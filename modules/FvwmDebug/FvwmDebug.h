@@ -25,8 +25,8 @@ void Loop(const int *fd);
 void DeadPipe(int nonsense) __attribute__((noreturn));
 void process_message(unsigned long type, const unsigned long *body);
 
-void list_add(const unsigned long *body);
-void list_configure(const unsigned long *body);
+void list_old_add(const unsigned long *body);
+void list_old_configure(const unsigned long *body);
 void list_destroy(const unsigned long *body);
 void list_focus(const unsigned long *body);
 void list_toggle(const unsigned long *body);
@@ -45,6 +45,8 @@ void list_class(const unsigned long *body);
 void list_res_name(const unsigned long *body);
 void list_look(const unsigned long *body);
 void list_end(void);
+void list_add(const unsigned long *body);
+void list_configure(const unsigned long *body);
 
 
 #ifdef HAVE_WAITPID
