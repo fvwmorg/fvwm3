@@ -525,12 +525,15 @@ Pixel GetSimpleColor(char *name)
       is_illegal_rgb = True;
   }
 
-  if (is_illegal_rgb ||
-      !XParseColor (Pdpy, Pcmap, name, &color) ||
-      !XAllocColor (Pdpy, Pcmap, &color))
+  if (is_illegal_rgb)
+    fprintf(stderr, "Illegal RGB format %s\n", name);
+  else if (!XParseColor (Pdpy, Pcmap, name, &color))
     fprintf(stderr, "Cannot parse color %s\n", name);
+  else if (!XAllocColor (Pdpy, Pcmap, &color))
+    fprintf(stderr, "Cannot allocate color %s\n", name);
   return color.pixel;
 }
+
 static char *colorset_names[] =
 {
   "$[fg.cs",
