@@ -1,3 +1,9 @@
+2003-01-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menuitem.c (menuitem_get_item_size):
+	* fvwm/menus.c (_calculate_item_sizes):
+	functions renamed due to global name space collision with IRIX 6.5
+
 2003-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in:

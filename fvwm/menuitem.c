@@ -212,8 +212,11 @@ MenuItem *menuitem_clone(MenuItem *mi)
 }
 
 /* Calculate the size of the various parts of the item.  The sizes are returned
- * through mips. */
-void menuitem_get_size(
+ * through mips.
+ *
+ * Note: funtion was formerly named menuitem_get_size which collides with
+ * a global name on IRIX 6.5. */
+void menuitem_get_item_size(
 	MenuItem *mi, MenuItemPartSizes *mips, FlocaleFont *font,
 	Bool do_reverse_icon_order)
 {
