@@ -1,3 +1,8 @@
+1999-02-15  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/functions.c (FindBuiltinFunction):
+	(ExecuteFunction): NULL pointer coredump fixed
+
 1999-02-14  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/fvwm2.1:  Added a description of the DecorateTransient and

@@ -184,9 +184,13 @@ static int func_comp(const void *a, const void *b)
   char *f=((struct functions *)b)->keyword;
   return (strcasecmp(key,f));
 }
+
 static struct functions *FindBuiltinFunction(char *func)
 {
   static int func_config_size=0;
+
+  if (!func)
+    return NULL;
 
   if (!func_config_size)
   {
@@ -257,6 +261,8 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 
   taction = expand(Action,arguments,tmp_win);
   action = GetNextToken(taction,&function);
+  if (!function)
+    return;
   j=0;
   matched = FALSE;
 
