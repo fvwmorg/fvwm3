@@ -1,3 +1,50 @@
+2002-09-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menucmd.c (menu_func):
+	* fvwm/gnome.c (GNOME_ProxyButtonEvent):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/read.c (run_command_file):
+	(run_command_stream):
+	* fvwm/focus.c (warp_to_fvwm_window):
+	* libs/Event.c (GetSubwindowFromEvent):
+	* fvwm/events.c (GetContext):
+	* libs/Pointer.c (GetLocationFromEventOrQuery):
+	* fvwm/builtins.c (CMD_StrokeFunc):
+	(CMD_StrokeFunc):
+	* fvwm/events.c (StashEventTime):
+	* fvwm/move_resize.c (InteractiveMove):
+	* fvwm/functions.c (DeferExecution):
+	(old_execute_function):
+	* fvwm/fvwm.h (F_CMD_ARGS):
+	(F_EXEC_ARGS):
+	make eventp argument const to ease clean up work
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/move_resize.c (InteractiveMove):
+	* fvwm/menucmd.c (menu_func):
+	* fvwm/icons.c (CMD_Iconify):
+	always query pointer position in case a script modified the position
+	in the input event
+
+	* fvwm/focus.c (SetPointerEventPosition):
+	removed function since it modifies the global event variable
+
+	* fvwm/functable.c (func_table):
+	added cursor and event type members fo DeferExecution call
+	* fvwm/functions.c (DeferExecution):
+	made static, call from inside functions.c only
+	removed calls everywhere
+
+	* fvwm/builtins.c (CMD_StrokeFunc):
+	fixed memory leak
+
+	* fvwm/virtual.c (HandlePaging):
+	(MoveViewport):
+	don't use global "Event" anymore
+	(HandlePaging):
+	pass in event structure through arguments
+	changed all callers
+
 2002-09-02  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Colorset.c (*):
@@ -10,9 +57,9 @@
 	An experimental implementation of ParentalRelative tinted background
 
 	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
-	* libs/PictureImageLoader.c (PImageCreatePixmapFromArgbData): 
+	* libs/PictureImageLoader.c (PImageCreatePixmapFromArgbData):
 	(PImageLoadPng):
-	* libs/PictureGraphics.c (PGraphicsCreateStretchPicture): 
+	* libs/PictureGraphics.c (PGraphicsCreateStretchPicture):
 	* libs/FRenderInit.c (FRenderInit):
 	(FRenderGetAlphaDepth):
 	* libs/FRenderInit.h:
@@ -23,7 +70,7 @@
 	typo
 
 2002-09-01  olicha  <olivier.chapuis@free.fr>
-	
+
 	* NEWS:
 	Colorset and alpha blending news
 
@@ -41,14 +88,14 @@
 	* libs/PictureGraphics.c (PGraphicsCreateStretchPicture):
 	* libs/PictureGraphics.h:
 	* libs/Graphics.c (CreateStretchPixmap):
-	(CreateStretchYPixmap): 
+	(CreateStretchYPixmap):
 	(CreateStretchXPixmap):
 	Progress with masks in multipixmap title
 
 	* libs/PictureGraphics.c (PCopyArea):
 	(PTileRectangle):
 	(PCreateRenderPixmap):
-	* fvwm/borders.c (border_fill_pixmap_background): 
+	* fvwm/borders.c (border_fill_pixmap_background):
 	Some drawing fixes
 
 	* fvwm/icons.c (DrawIconWindow):
@@ -60,7 +107,7 @@
 	* libs/PictureGraphics.c (PCreateRenderPixmap):
 	(PGrabImageErrorHandler):
 	(PGraphicsCopyPixmaps):
-	(PGraphicsCopyFvwmPicture): 
+	(PGraphicsCopyFvwmPicture):
 	(PGraphicsTileRectangle):
 	(PGraphicsRenderPixmaps):
 	(PGraphicsRenderPicture):

@@ -1688,9 +1688,9 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			/* this was in the HandleMotionNotify before, HEDU */
 			Scr.flags.is_pointer_on_this_screen = 1;
 			HandlePaging(
-				Scr.EdgeScrollX,Scr.EdgeScrollY, &ewp->x_root,
-				&ewp->y_root, &delta_x, &delta_y, True, True,
-				False);
+				&Event, Scr.EdgeScrollX,Scr.EdgeScrollY,
+				&ewp->x_root, &ewp->y_root, &delta_x, &delta_y,
+				True, True, False);
 			return;
 		}
 	}
@@ -3667,60 +3667,58 @@ int My_XNextEvent(Display *dpy, XEvent *event)
  *      Find the Fvwm context for the Event.
  *
  ************************************************************************/
-int GetContext(FvwmWindow *t, XEvent *e, Window *w)
+int GetContext(FvwmWindow *t, const XEvent *e, Window *w)
 {
 	int context;
+	Window win;
+	Window subw;
+	int x;
+	int y;
 
+	win = e->xany.window;
+	subw = e->xkey.subwindow;
+	x = e->xkey.x;
+	y = e->xkey.y;
 	context = C_NO_CONTEXT;
-	if (e->type == KeyPress && e->xkey.window == Scr.Root &&
-	    e->xkey.subwindow != None)
+	if (e->type == KeyPress && win == Scr.Root && subw != None)
 	{
 		/* Translate root coordinates into subwindow coordinates.
 		 * Necessary for key bindings that work over unfocused windows.
 		 */
-		e->xkey.window = e->xkey.subwindow;
+		win = subw;
 		XTranslateCoordinates(
-			dpy, Scr.Root, e->xkey.subwindow, e->xkey.x, e->xkey.y,
-			&(e->xkey.x), &(e->xkey.y), &(e->xkey.subwindow));
-		XFindContext(dpy, e->xkey.window, FvwmContext, (caddr_t *) &t);
+			dpy, Scr.Root, subw, x, y, &x, &y, &subw);
+		XFindContext(dpy, win, FvwmContext, (caddr_t *) &t);
 		Fw = t;
 	}
 	if ((e->type == ButtonPress || e->type == KeyPress) && t &&
-	    e->xkey.window == FW_W_FRAME(t) && e->xkey.subwindow != None)
+	    win == FW_W_FRAME(t) && subw != None)
 	{
 		/* Translate frame coordinates into subwindow coordinates. */
-		e->xkey.window = e->xkey.subwindow;
+		win = subw;
 		XTranslateCoordinates(
-			dpy, FW_W_FRAME(t), e->xkey.subwindow, e->xkey.x,
-			e->xkey.y, &(e->xkey.x), &(e->xkey.y),
-			&(e->xkey.subwindow));
-		if (e->xkey.window == FW_W_PARENT(t))
+			dpy, FW_W_FRAME(t), subw, x, y, &x, &y, &subw);
+		if (win == FW_W_PARENT(t))
 		{
-			e->xkey.window = e->xkey.subwindow;
+			win = subw;
 			XTranslateCoordinates(
-				dpy, FW_W_PARENT(t), e->xkey.subwindow,
-				e->xkey.x, e->xkey.y, &(e->xkey.x),
-				&(e->xkey.y), &(e->xkey.subwindow));
+				dpy, FW_W_PARENT(t), subw, x, y, &x, &y, &subw);
 		}
 	}
 	if (!t)
 	{
 		return C_ROOT;
 	}
-	*w = e->xany.window;
+	*w = win;
 	if (*w == Scr.NoFocusWin)
 	{
 		return C_ROOT;
 	}
-	if (e->xkey.subwindow != None)
+	if (subw != None)
 	{
-		if (e->xkey.window == FW_W_PARENT(t))
+		if (win == FW_W_PARENT(t))
 		{
-			*w = e->xkey.subwindow;
-		}
-		else
-		{
-			e->xkey.subwindow = None;
+			*w = subw;
 		}
 	}
 	if (*w == Scr.Root)
@@ -3805,7 +3803,7 @@ void handle_all_expose(void)
  * Records the time of the last processed event. Used in XSetInputFocus
  *
  ****************************************************************************/
-Bool StashEventTime (XEvent *ev)
+Bool StashEventTime (const XEvent *ev)
 {
 	Time NewTimestamp = CurrentTime;
 

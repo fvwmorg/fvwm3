@@ -466,7 +466,7 @@ static void MapDesk(int desk, Bool grab)
  * -1: no need to call the function again before a new event arrives
  ***************************************************************************/
 int HandlePaging(
-	int HorWarpSize, int VertWarpSize, int *xl, int *yt,
+	XEvent *pev, int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
 	Bool do_continue_previous)
 {
@@ -487,10 +487,10 @@ int HandlePaging(
 		/* don't call me again until something has happened */
 		return -1;
 	}
-	if (!is_timestamp_valid && Event.type == MotionNotify)
+	if (!is_timestamp_valid && pev->type == MotionNotify)
 	{
-		x = Event.xmotion.x_root;
-		y = Event.xmotion.y_root;
+		x = pev->xmotion.x_root;
+		y = pev->xmotion.y_root;
 		/* need to move the viewport */
 		if ((Scr.VxMax == 0 ||
 		     (x >= edge_thickness &&
@@ -534,19 +534,16 @@ int HandlePaging(
 	{
 		if (XPending(dpy) > 0 &&
 		    (XCheckWindowEvent(
-			    dpy, Scr.PanFrameTop.win, LeaveWindowMask,
-			    &Event) ||
+			    dpy, Scr.PanFrameTop.win, LeaveWindowMask, pev) ||
 		     XCheckWindowEvent(
 			     dpy, Scr.PanFrameBottom.win, LeaveWindowMask,
-			     &Event) ||
+			     pev) ||
 		     XCheckWindowEvent(
-			     dpy, Scr.PanFrameLeft.win, LeaveWindowMask,
-			     &Event) ||
+			     dpy, Scr.PanFrameLeft.win, LeaveWindowMask, pev) ||
 		     XCheckWindowEvent(
-			     dpy, Scr.PanFrameRight.win, LeaveWindowMask,
-			     &Event)))
+			     dpy, Scr.PanFrameRight.win, LeaveWindowMask, pev)))
 		{
-			StashEventTime(&Event);
+			StashEventTime(pev);
 			is_timestamp_valid = False;
 			add_time = 0;
 			return 0;
@@ -560,7 +557,7 @@ int HandlePaging(
 			return 0;
 		}
 		/* get pointer location */
-		GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &x, &y);
+		GetLocationFromEventOrQuery(dpy, Scr.Root, pev, &x, &y);
 		/* check actual pointer location since PanFrames can get buried
 		 * under window being moved or resized - mab */
 		if (x >= edge_thickness &&
@@ -1055,6 +1052,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	int PageTop, PageLeft;
 	int PageBottom, PageRight;
 	int txl, txr, tyt, tyb;
+	XEvent e;
 
 	if (grab)
 	{
@@ -1233,9 +1231,9 @@ void MoveViewport(int newx, int newy, Bool grab)
 	focus_grab_buttons_all();
 
 	/* do this with PanFrames too ??? HEDU */
-	while (XCheckTypedEvent(dpy, MotionNotify, &Event))
+	while (XCheckTypedEvent(dpy, MotionNotify, &e))
 	{
-		StashEventTime(&Event);
+		StashEventTime(&e);
 	}
 	if (grab)
 	{
@@ -1882,11 +1880,6 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 {
 	int desk;
 
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
-	{
-		return;
-	}
 	desk = GetDeskNumber(action);
 	if (desk == fw->Desk)
 	{

@@ -26,14 +26,16 @@
  * query the server and the call failed.
  */
 Bool GetLocationFromEventOrQuery(
-	Display *dpy, Window w, XEvent *eventp, int *ret_x, int *ret_y)
+	Display *dpy, Window w, const XEvent *eventp, int *ret_x, int *ret_y)
 {
 	Window JunkW;
 	int JunkC;
 	unsigned int JunkM;
 	Bool rc;
+	int type;
 
-	switch (eventp->type)
+	type = (eventp != NULL) ? eventp->type : -1;
+	switch (type)
 	{
 	case ButtonPress:
 	case ButtonRelease:

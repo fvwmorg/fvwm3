@@ -1479,7 +1479,7 @@ Bool  ontop     = False;
 #define EXPERIMENTAL_ROU_HANDLING
 #ifdef EXPERIMENTAL_ROU_HANDLING
 /*
-    RBW - 2002/08/15 - 
+    RBW - 2002/08/15 -
           RaiseOverUnmanaged adds some overhead. The only way to let our
         caller know for sure whether we need to grab the mouse buttons
         because we may need to raise this window is to query the
@@ -1495,7 +1495,7 @@ Bool  ontop     = False;
 */
 	if (is_on_top_of_layer_ignore_rom(fw))
 		{
-                if (client_entered)  
+                if (client_entered)
                 /* FIXME! - perhaps we should only do if MFCR  */
                         {
 #ifdef ROUDEBUG
@@ -1506,7 +1506,7 @@ Bool  ontop     = False;
                         printf("         returning %d\n", (int) ontop);
 #endif
                         }
-                        else  
+                        else
                         {
 #ifdef ROUDEBUG
                         printf("RBW-iotol  - %8.8lx is on top, *** NOT checking server tree.\n", FW_W_CLIENT(fw));
@@ -1544,10 +1544,6 @@ Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
 
 void CMD_Raise(F_CMD_ARGS)
 {
-	if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
-	{
-		return;
-	}
 	RaiseWindow(fw);
 
 	return;
@@ -1555,10 +1551,6 @@ void CMD_Raise(F_CMD_ARGS)
 
 void CMD_Lower(F_CMD_ARGS)
 {
-	if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT, ButtonRelease))
-	{
-		return;
-	}
 	LowerWindow(fw);
 
 	return;
@@ -1568,13 +1560,6 @@ void CMD_RaiseLower(F_CMD_ARGS)
 {
 	Bool ontop;
 
-	if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
-	{
-#ifdef DEBUG_STACK_RING
-		dump_stack_ring();
-#endif
-		return;
-	}
 	ontop = is_on_top_of_layer_ignore_rom(fw);
 	if (ontop)
 	{
@@ -1592,16 +1577,6 @@ void CMD_Layer(F_CMD_ARGS)
 {
 	int n, layer, val[2];
 	char *token;
-
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
-	{
-		return;
-	}
-	if (fw == NULL)
-	{
-		return;
-	}
 
 	token = PeekToken(action, NULL);
 	if (StrEquals("default", token))

@@ -85,11 +85,11 @@
  */
 
 /* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS fvwm_cond_func_rc *cond_rc, XEvent *eventp, Window w, \
-	FvwmWindow *fw, unsigned long context,char *action, int *Module
+#define F_CMD_ARGS fvwm_cond_func_rc *cond_rc, const XEvent *eventp, Window w, \
+	FvwmWindow *fw, unsigned long context, char *action, int *Module
 #define F_PASS_ARGS cond_rc, eventp, w, fw, context, action, Module
 #define F_EXEC_ARGS fvwm_cond_func_rc *cond_rc, char *action, \
-	FvwmWindow *fw, XEvent *eventp, unsigned long context, int Module
+	FvwmWindow *fw, const XEvent *eventp, unsigned long context, int Module
 #define F_PASS_EXEC_ARGS cond_rc, action, fw, eventp, context, *Module
 #define FUNC_FLAGS_TYPE unsigned char
 
@@ -189,7 +189,7 @@ typedef struct
 	/* return code for conditional commands only */
 	fvwm_cond_func_rc *cond_rc;
 	/* pointer to the event that caused the function */
-	XEvent *eventp;
+	const XEvent *eventp;
 	/* the fvwm window structure */
 	struct FvwmWindow *fw;
 	/* the action to execute */

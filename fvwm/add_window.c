@@ -346,14 +346,6 @@ static int MappedNotOverride(
 
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
-	if (fSingle)
-	{
-		if (DeferExecution(eventp, &w, &fw, &context, CRS_SELECT,
-				   ButtonRelease))
-		{
-			return;
-		}
-	}
 	MyXGrabServer(dpy);
 	if (fSingle)
 	{

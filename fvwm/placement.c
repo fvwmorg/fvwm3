@@ -48,6 +48,7 @@
 #include "stack.h"
 #include "add_window.h"
 #include "ewmh.h"
+#include "icons.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))
@@ -1141,7 +1142,6 @@ Bool PlaceWindow(
   return rc;
 }
 
-#include "icons.h"
 void CMD_PlaceAgain(F_CMD_ARGS)
 {
 	char *token;
@@ -1153,11 +1153,6 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	Bool do_move_animated = False;
 	Bool do_place_icon = False;
 
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
-	{
-		return;
-	}
 	if (!XGetWindowAttributes(dpy, FW_W(fw), &attr))
 	{
 		return;

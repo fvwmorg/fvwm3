@@ -243,12 +243,12 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName);
  * if possible, if not it queries the X server. Returns False if it had to
  * query the server and the call failed.
  */
-Bool GetLocationFromEventOrQuery(Display *dpy, Window w, XEvent *eventp,
-				 int *ret_x, int *ret_y);
+Bool GetLocationFromEventOrQuery(
+	Display *dpy, Window w, const XEvent *eventp, int *ret_x, int *ret_y);
 /*
  * Return the subwindow member of an event if the event type has one.
  */
-Window GetSubwindowFromEvent(Display *dpy, XEvent *eventp);
+Window GetSubwindowFromEvent(Display *dpy, const XEvent *eventp);
 
 /***********************************************************************
  * Wrappers around Xrm routines (XResources.c)

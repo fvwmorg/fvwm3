@@ -78,7 +78,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	char *ret_action = NULL;
 	MenuOptions mops;
 	char *menu_name = NULL;
-	XEvent *teventp;
+	const XEvent *teventp;
 	MenuParameters mp;
 	MenuReturn mret;
 	FvwmWindow *fw2;
@@ -88,7 +88,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	memset(&mret, 0, sizeof(MenuReturn));
 	action = GetNextToken(action,&menu_name);
 	action = get_menu_options(
-		action, w, fw, eventp, NULL, NULL, &mops);
+		action, w, fw, NULL, NULL, NULL, &mops);
 	while (action && *action && isspace((unsigned char)*action))
 	{
 		action++;

@@ -81,16 +81,10 @@ void CMD_WindowShade(F_CMD_ARGS)
 	Bool do_force_shading;
 	Bool has_dir;
 
-	if (DeferExecution(
-		    eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
+	if (IS_ICONIFIED(fw))
 	{
 		return;
 	}
-	if (fw == NULL || IS_ICONIFIED(fw))
-	{
-		return;
-	}
-
 	token = PeekToken(action, &naction);
 	if (StrEquals("shadeagain", token))
 	{

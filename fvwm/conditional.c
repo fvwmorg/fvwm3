@@ -790,8 +790,6 @@ void CMD_ThisWindow(F_CMD_ARGS)
 
 void CMD_Pick(F_CMD_ARGS)
 {
-	DeferExecution(
-		eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease);
 	select_cmd(F_PASS_ARGS);
 
 	return;

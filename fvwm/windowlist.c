@@ -190,7 +190,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	char *tfunc = NULL;
 	char *default_action = NULL;
 	MenuReturn mret;
-	XEvent *teventp;
+	const XEvent *teventp;
 	MenuOptions mops;
 	int low_layer = 0;  /* show all layers by default */
 	int high_layer = INT_MAX;
@@ -236,7 +236,7 @@ void CMD_WindowList(F_CMD_ARGS)
 			free(cond_flags);
 		}
 		opts = get_menu_options(
-			action, w, fw, eventp, NULL, NULL, &mops);
+			action, w, fw, NULL, NULL, NULL, &mops);
 		was_get_menu_opts_called = True;
 
 		/* parse options */
@@ -494,7 +494,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	if (was_get_menu_opts_called == False)
 	{
 		opts = get_menu_options(
-			action, w, fw, eventp, NULL, NULL, &mops);
+			action, w, fw, NULL, NULL, NULL, &mops);
 	}
 
 	tlabel = get_desk_title(desk, flags, True);

@@ -90,12 +90,12 @@
 /* ---------------------------- interface functions ------------------------- */
 
 void DispatchEvent(Bool preserve_fw);
-int GetContext(FvwmWindow *, XEvent *, Window *dummy);
+int GetContext(FvwmWindow *, const XEvent *, Window *dummy);
 int My_XNextEvent(Display *dpy, XEvent *event);
 int flush_expose(Window w);
 int flush_accumulate_expose(Window w, XEvent *e);
 void handle_all_expose(void);
-Bool StashEventTime(XEvent *ev);
+Bool StashEventTime(const XEvent *ev);
 void CoerceEnterNotifyOnCurrentWindow(void);
 void InitEventHandlerJumpTable(void);
 void SendConfigureNotify(

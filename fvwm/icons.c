@@ -1981,12 +1981,6 @@ void CMD_Iconify(F_CMD_ARGS)
 {
 	int toggle;
 
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
-	{
-		return;
-	}
-
 	toggle = ParseToggleArgument(action, NULL, -1, 0);
 	if (toggle == -1)
 	{
@@ -2033,7 +2027,7 @@ void CMD_Iconify(F_CMD_ARGS)
 			}
 			memset(&win_opts, 0, sizeof(win_opts));
 			GetLocationFromEventOrQuery(
-				dpy, Scr.Root, eventp, &win_opts.default_icon_x,
+				dpy, Scr.Root, NULL, &win_opts.default_icon_x,
 				&win_opts.default_icon_y);
 			Iconify(fw, &win_opts);
 			EWMH_SetWMState(fw, False);

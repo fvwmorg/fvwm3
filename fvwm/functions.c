@@ -114,6 +114,169 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate);
 
 /* ---------------------------- local functions ----------------------------- */
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *      DeferExecution - defer the execution of a function to the
+ *          next button press if the context is C_ROOT
+ *
+ *  Inputs:
+ *      eventp  - pointer to XEvent to patch up
+ *      w       - pointer to Window to patch up
+ *      fw - pointer to FvwmWindow Structure to patch up
+ *      context - the context in which the mouse button was pressed
+ *      func    - the function to defer
+ *      cursor  - the cursor to display while waiting
+ *      finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
+ *                    terminate on.
+ *
+ ***********************************************************************/
+static int DeferExecution(
+	XEvent *eventp, Window *w, FvwmWindow **fw,
+	unsigned long *context, cursor_t cursor, int FinishEvent,
+	int do_allow_unmanaged)
+{
+	int done;
+	int finished = 0;
+	Window dummy;
+	Window original_w;
+
+if (FinishEvent == 0) { fprintf(stderr, "bug: DeferExecturion called without finish event!\n"); abort(); }
+	if (*context == C_UNMANAGED && do_allow_unmanaged)
+	{
+		return False;
+	}
+	original_w = *w;
+	if (*context != C_ROOT && *context != C_NO_CONTEXT && *fw != NULL &&
+	    *context != C_EWMH_DESKTOP)
+	{
+		if (FinishEvent == ButtonPress ||
+		    (FinishEvent == ButtonRelease &&
+		     eventp->type != ButtonPress))
+		{
+			return False;
+		}
+		else if (FinishEvent == ButtonRelease)
+		{
+			/* We are only waiting until the user releases the
+			 * button. Do not change the cursor. */
+			cursor = CRS_NONE;
+		}
+	}
+	if (Scr.flags.silent_functions)
+	{
+		return True;
+	}
+	if (!GrabEm(cursor, GRAB_NORMAL))
+	{
+		XBell(dpy, 0);
+		return True;
+	}
+
+	MyXGrabKeyboard(dpy);
+	while (!finished)
+	{
+		done = 0;
+		/* block until there is an event */
+		XMaskEvent(
+			dpy, ButtonPressMask | ButtonReleaseMask |
+			ExposureMask | KeyPressMask | VisibilityChangeMask |
+			ButtonMotionMask | PointerMotionMask
+			/* | EnterWindowMask | LeaveWindowMask*/, eventp);
+		StashEventTime(eventp);
+
+		if (eventp->type == KeyPress)
+		{
+			KeySym keysym = XLookupKeysym(&eventp->xkey,0);
+			if (keysym == XK_Escape)
+			{
+				UngrabEm(GRAB_NORMAL);
+				MyXUngrabKeyboard(dpy);
+				return True;
+			}
+			Keyboard_shortcuts(
+				eventp, NULL, NULL, NULL, FinishEvent);
+		}
+		if (eventp->type == FinishEvent)
+		{
+			finished = 1;
+		}
+		switch (eventp->type)
+		{
+		case KeyPress:
+		case ButtonPress:
+			if (eventp->type != FinishEvent)
+			{
+				original_w = eventp->xany.window;
+			}
+			done = 1;
+			break;
+		case ButtonRelease:
+			done = 1;
+			break;
+		default:
+			break;
+		}
+		if (!done)
+		{
+			DispatchEvent(False);
+		}
+	}
+
+	MyXUngrabKeyboard(dpy);
+	UngrabEm(GRAB_NORMAL);
+	*w = eventp->xany.window;
+	if ((*w == Scr.Root || *w == Scr.NoFocusWin) &&
+	    eventp->xbutton.subwindow != None)
+	{
+		*w = eventp->xbutton.subwindow;
+		eventp->xany.window = *w;
+	}
+	if (*w == Scr.Root || IS_EWMH_DESKTOP(*w))
+	{
+		*context = C_ROOT;
+		XBell(dpy, 0);
+		return True;
+	}
+	if (XFindContext(dpy, *w, FvwmContext, (caddr_t *)fw) == XCNOENT)
+	{
+		*fw = NULL;
+		XBell(dpy, 0);
+		return (True);
+	}
+	if (*w == FW_W_PARENT(*fw))
+	{
+		*w = FW_W(*fw);
+	}
+	if (original_w == FW_W_PARENT(*fw))
+	{
+		original_w = FW_W(*fw);
+	}
+	/* this ugly mess attempts to ensure that the release and press
+	 * are in the same window. */
+	if (*w != original_w && original_w != Scr.Root &&
+	    original_w != None && original_w != Scr.NoFocusWin &&
+	    !IS_EWMH_DESKTOP(original_w))
+	{
+		if (*w != FW_W_FRAME(*fw) || original_w != FW_W(*fw))
+		{
+			*context = C_ROOT;
+			XBell(dpy, 0);
+			return True;
+		}
+	}
+
+	if (IS_EWMH_DESKTOP(FW_W(*fw)))
+	{
+		*context = C_ROOT;
+		XBell(dpy, 0);
+		return True;
+	}
+	*context = GetContext(*fw, eventp, &dummy);
+
+	return False;
+}
+
 /* dummies */
 void CMD_Silent(F_CMD_ARGS)
 {
@@ -334,10 +497,13 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	Bool HaveHold = False;
 	Bool NeedsTarget = False;
 	Bool ImmediateNeedsTarget = False;
+	int do_allow_unmanaged = FUNC_ALLOW_UNMANAGED;
+	int do_allow_unmanaged_immediate = FUNC_ALLOW_UNMANAGED;
 	char *arguments[11], *taction;
 	char* func_name;
 	int x, y ,i;
-	XEvent d, *ev;
+	XEvent d;
+	XEvent ev;
 	FvwmFunction *func;
 	static unsigned int depth = 0;
 
@@ -393,12 +559,12 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	}
 	/* see functions.c to find out which functions need a window to operate
 	 * on */
-	ev = eventp;
+	ev = *eventp;
 	/* In case we want to perform an action on a button press, we
 	 * need to fool other routines */
-	if (eventp->type == ButtonPress)
+	if (ev.type == ButtonPress)
 	{
-		eventp->type = ButtonRelease;
+		ev.type = ButtonRelease;
 	}
 	func->use_depth++;
 
@@ -407,8 +573,10 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 		if (fi->flags & FUNC_NEEDS_WINDOW)
 		{
 			NeedsTarget = True;
+			do_allow_unmanaged &= fi->flags;
 			if (fi->condition == CF_IMMEDIATE)
 			{
+				do_allow_unmanaged_immediate &= fi->flags;
 				ImmediateNeedsTarget = True;
 				break;
 			}
@@ -418,7 +586,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	if (ImmediateNeedsTarget)
 	{
 		if (DeferExecution(
-			    eventp, &w, &fw, &context, CRS_SELECT, ButtonPress))
+			    &ev, &w, &fw, &context, CRS_SELECT, ButtonPress,
+			    do_allow_unmanaged_immediate))
 		{
 			func->use_depth--;
 			cf_cleanup(&depth, arguments);
@@ -454,7 +623,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 				w = None;
 			}
 			old_execute_function(
-				&cond_func_rc, fi->action, fw, eventp, context,
+				&cond_func_rc, fi->action, fw, &ev, context,
 				-1, 0, arguments);
 			break;
 		case CF_DOUBLE_CLICK:
@@ -484,7 +653,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	if (NeedsTarget)
 	{
 		if (DeferExecution(
-			    eventp, &w, &fw, &context, CRS_SELECT, ButtonPress))
+			    &ev, &w, &fw, &context, CRS_SELECT, ButtonPress,
+			    do_allow_unmanaged))
 		{
 			func->use_depth--;
 			cf_cleanup(&depth, arguments);
@@ -493,12 +663,12 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 		}
 	}
 
-	switch (eventp->xany.type)
+	switch (ev.xany.type)
 	{
 	case ButtonPress:
 	case ButtonRelease:
-		x = eventp->xbutton.x_root;
-		y = eventp->xbutton.y_root;
+		x = ev.xbutton.x_root;
+		y = ev.xbutton.y_root;
 		/* Take the click which started this fuction off the
 		 * Event queue.  -DDN- Dan D Niles dniles@iname.com */
 		XCheckMaskEvent(dpy, ButtonPressMask, &d);
@@ -520,7 +690,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	type = CheckActionType(x, y, &d, HaveHold, True);
 	if (type == CF_CLICK)
 	{
-		ev = &d;
+		ev = d;
 		/* If it was a click, wait to see if its a double click */
 		if (HaveDoubleClick)
 		{
@@ -531,7 +701,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 			case CF_HOLD:
 			case CF_MOTION:
 				type = CF_DOUBLE_CLICK;
-				ev = &d;
+				ev = d;
 				break;
 			case CF_TIMEOUT:
 				type = CF_CLICK;
@@ -549,9 +719,9 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 
 	/* some functions operate on button release instead of
 	 * presses. These gets really weird for complex functions ... */
-	if (ev->type == ButtonPress)
+	if (ev.type == ButtonPress)
 	{
-		ev->type = ButtonRelease;
+		ev.type = ButtonRelease;
 	}
 
 	fi = func->first_item;
@@ -582,7 +752,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 				w = None;
 			}
 			old_execute_function(
-				&cond_func_rc, fi->action, fw, ev, context, -1,
+				&cond_func_rc, fi->action, fw, &ev, context, -1,
 				0, arguments);
 		}
 		fi = fi->next_item;
@@ -910,11 +1080,24 @@ void execute_function(exec_func_args_type *efa)
 		if (bif && bif->func_type != F_FUNCTION)
 		{
 			char *runaction;
+			XEvent e;
+			Bool rc = False;
 
+			e = *efa->eventp;
 			runaction = SkipNTokens(expaction, 1);
-			bif->action(
-				efa->cond_rc, efa->eventp, w, efa->fw,
-				efa->context, runaction, &efa->module);
+			if (bif->flags & FUNC_NEEDS_WINDOW)
+			{
+				rc = DeferExecution(
+				    &e, &w, &(efa->fw), &(efa->context),
+				    bif->cursor, bif->evtype,
+				    (bif->flags & FUNC_ALLOW_UNMANAGED));
+			}
+			if (rc == False)
+			{
+				bif->action(
+					efa->cond_rc, efa->eventp, w, efa->fw,
+					efa->context, runaction, &efa->module);
+			}
 		}
 		else
 		{
@@ -983,7 +1166,7 @@ void execute_function(exec_func_args_type *efa)
 
 void old_execute_function(
 	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *fw,
-	XEvent *eventp, unsigned long context, int Module,
+	const XEvent *eventp, unsigned long context, int Module,
 	FUNC_FLAGS_TYPE exec_flags, char *args[])
 {
 	exec_func_args_type efa;
@@ -1001,167 +1184,6 @@ void old_execute_function(
 
 	return;
 }
-
-
-/***********************************************************************
- *
- *  Procedure:
- *      DeferExecution - defer the execution of a function to the
- *          next button press if the context is C_ROOT
- *
- *  Inputs:
- *      eventp  - pointer to XEvent to patch up
- *      w       - pointer to Window to patch up
- *      fw - pointer to FvwmWindow Structure to patch up
- *      context - the context in which the mouse button was pressed
- *      func    - the function to defer
- *      cursor  - the cursor to display while waiting
- *      finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
- *                    terminate on.
- *
- ***********************************************************************/
-int DeferExecution(
-	XEvent *eventp, Window *w, FvwmWindow **fw, unsigned long *context,
-	cursor_t cursor, int FinishEvent)
-{
-	int done;
-	int finished = 0;
-	Window dummy;
-	Window original_w;
-
-	original_w = *w;
-
-	if (*context != C_ROOT && *context != C_NO_CONTEXT && *fw != NULL &&
-	    *context != C_EWMH_DESKTOP)
-	{
-		if (FinishEvent == ButtonPress ||
-		    (FinishEvent == ButtonRelease &&
-		     eventp->type != ButtonPress))
-		{
-			return False;
-		}
-		else if (FinishEvent == ButtonRelease)
-		{
-			/* We are only waiting until the user releases the
-			 * button. Do not change the cursor. */
-			cursor = CRS_NONE;
-		}
-	}
-	if (Scr.flags.silent_functions)
-	{
-		return True;
-	}
-	if (!GrabEm(cursor, GRAB_NORMAL))
-	{
-		XBell(dpy, 0);
-		return True;
-	}
-
-	MyXGrabKeyboard(dpy);
-	while (!finished)
-	{
-		done = 0;
-		/* block until there is an event */
-		XMaskEvent(
-			dpy, ButtonPressMask | ButtonReleaseMask |
-			ExposureMask | KeyPressMask | VisibilityChangeMask |
-			ButtonMotionMask | PointerMotionMask
-			/* | EnterWindowMask | LeaveWindowMask*/, eventp);
-		StashEventTime(eventp);
-
-		if (eventp->type == KeyPress)
-		{
-			KeySym keysym = XLookupKeysym(&eventp->xkey,0);
-			if (keysym == XK_Escape)
-			{
-				UngrabEm(GRAB_NORMAL);
-				MyXUngrabKeyboard(dpy);
-				return True;
-			}
-			Keyboard_shortcuts(
-				eventp, NULL, NULL, NULL, FinishEvent);
-		}
-		if (eventp->type == FinishEvent)
-		{
-			finished = 1;
-		}
-		switch (eventp->type)
-		{
-		case KeyPress:
-		case ButtonPress:
-			if (eventp->type != FinishEvent)
-			{
-				original_w = eventp->xany.window;
-			}
-			done = 1;
-			break;
-		case ButtonRelease:
-			done = 1;
-			break;
-		default:
-			break;
-		}
-		if (!done)
-		{
-			DispatchEvent(False);
-		}
-	}
-
-	MyXUngrabKeyboard(dpy);
-	UngrabEm(GRAB_NORMAL);
-	*w = eventp->xany.window;
-	if ((*w == Scr.Root || *w == Scr.NoFocusWin) &&
-	    eventp->xbutton.subwindow != None)
-	{
-		*w = eventp->xbutton.subwindow;
-		eventp->xany.window = *w;
-	}
-	if (*w == Scr.Root || IS_EWMH_DESKTOP(*w))
-	{
-		*context = C_ROOT;
-		XBell(dpy, 0);
-		return True;
-	}
-	if (XFindContext(dpy, *w, FvwmContext, (caddr_t *)fw) == XCNOENT)
-	{
-		*fw = NULL;
-		XBell(dpy, 0);
-		return (True);
-	}
-	if (*w == FW_W_PARENT(*fw))
-	{
-		*w = FW_W(*fw);
-	}
-	if (original_w == FW_W_PARENT(*fw))
-	{
-		original_w = FW_W(*fw);
-	}
-	/* this ugly mess attempts to ensure that the release and press
-	 * are in the same window. */
-	if (*w != original_w && original_w != Scr.Root &&
-	    original_w != None && original_w != Scr.NoFocusWin &&
-	    !IS_EWMH_DESKTOP(original_w))
-	{
-		if (*w != FW_W_FRAME(*fw) || original_w != FW_W(*fw))
-		{
-			*context = C_ROOT;
-			XBell(dpy, 0);
-			return True;
-		}
-	}
-
-	if (IS_EWMH_DESKTOP(FW_W(*fw)))
-	{
-		*context = C_ROOT;
-		XBell(dpy, 0);
-		return True;
-	}
-
-	*context = GetContext(*fw,eventp,&dummy);
-
-	return False;
-}
-
 
 void find_func_type(char *action, short *func_type, unsigned char *flags)
 {

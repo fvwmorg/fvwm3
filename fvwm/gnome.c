@@ -1008,17 +1008,19 @@ void GNOME_HandlePropRequest(unsigned int propm,
 }
 
 void
-GNOME_ProxyButtonEvent(XEvent *ev)
+GNOME_ProxyButtonEvent(const XEvent *ev)
 {
   switch (ev->type)
   {
   case ButtonPress:
     XUngrabPointer(dpy, CurrentTime);
-    XSendEvent(dpy, __button_proxy, False, SubstructureNotifyMask, ev);
+    XSendEvent(
+      dpy, __button_proxy, False, SubstructureNotifyMask, (XEvent *)ev);
     break;
 
   case ButtonRelease:
-    XSendEvent(dpy, __button_proxy, False, SubstructureNotifyMask, ev);
+    XSendEvent(
+      dpy, __button_proxy, False, SubstructureNotifyMask, (XEvent *)ev);
     break;
   }
 }

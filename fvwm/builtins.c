@@ -1786,11 +1786,6 @@ void CMD_CursorMove(F_CMD_ARGS)
 
 void CMD_Delete(F_CMD_ARGS)
 {
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_DESTROY, ButtonRelease))
-	{
-		return;
-	}
 	if (!is_function_allowed(F_DELETE, NULL, fw, True, True))
 	{
 		XBell(dpy, 0);
@@ -1824,11 +1819,6 @@ void CMD_Delete(F_CMD_ARGS)
 
 void CMD_Destroy(F_CMD_ARGS)
 {
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_DESTROY, ButtonRelease))
-	{
-		return;
-	}
 	if (IS_TEAR_OFF_MENU(fw))
 	{
 		CMD_Delete(F_PASS_ARGS);
@@ -1855,11 +1845,6 @@ void CMD_Destroy(F_CMD_ARGS)
 
 void CMD_Close(F_CMD_ARGS)
 {
-	if (DeferExecution(eventp, &w, &fw, &context, CRS_DESTROY,
-			   ButtonRelease))
-	{
-		return;
-	}
 	if (IS_TEAR_OFF_MENU(fw))
 	{
 		CMD_Delete(F_PASS_ARGS);
@@ -1991,10 +1976,6 @@ void CMD_Refresh(F_CMD_ARGS)
 
 void CMD_RefreshWindow(F_CMD_ARGS)
 {
-	if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
-	{
-		return;
-	}
 	refresh_window(
 		(context == C_ICON) ? FW_W_ICON_TITLE(fw) : FW_W_FRAME(fw),
 		True);
@@ -2559,10 +2540,6 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 	FvwmDecor *decor = &Scr.DefaultDecor;
 	FvwmDecor *found = NULL;
 
-	if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
-	{
-		return;
-	}
 	item = PeekToken(action, &action);
 	if (!action || !item)
 	{
@@ -3423,30 +3400,28 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	Bool echo_sequence = False;
 	Bool draw_motion = False;
 	int i = 0;
-
-	int* x = (int*)0;
-	int* y = (int*)0;
+	int *x = NULL;
+	int *y = NULL;
 	const int STROKE_CHUNK_SIZE = 0xff;
 	int coords_size = STROKE_CHUNK_SIZE;
-
 	Window JunkRoot, JunkChild;
 	int JunkX, JunkY;
 	int tmpx, tmpy;
 	unsigned int JunkMask;
 	Bool feed_back = False;
 	int stroke_width = 1;
-
-	x = (int*)safemalloc(coords_size * sizeof(int));
-	y = (int*)safemalloc(coords_size * sizeof(int));
+	XEvent e;
 
 	if (!GrabEm(CRS_STROKE, GRAB_NORMAL))
 	{
 		XBell(dpy, 0);
 		return;
 	}
-
+	x = (int*)safemalloc(coords_size * sizeof(int));
+	y = (int*)safemalloc(coords_size * sizeof(int));
+	e = *eventp;
 	/* set the default option */
-	if (eventp->type == KeyPress || eventp->type == ButtonPress)
+	if (e.type == KeyPress || e.type == ButtonPress)
 	{
 		finish_on_release = True;
 	}
@@ -3557,18 +3532,18 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		XMaskEvent(
 			dpy,  ButtonPressMask | ButtonReleaseMask |
 			KeyPressMask | KeyReleaseMask | ButtonMotionMask |
-			PointerMotionMask, eventp);
+			PointerMotionMask, &e);
 		/* Records the time */
-		StashEventTime(eventp);
+		StashEventTime(&e);
 
-		switch (eventp->type)
+		switch (e.type)
 		{
 		case MotionNotify:
-			if (eventp->xmotion.same_screen == False)
+			if (e.xmotion.same_screen == False)
 			{
 				continue;
 			}
-			if (eventp->xany.window != Scr.Root)
+			if (e.xany.window != Scr.Root)
 			{
 				if (XQueryPointer(
 					    dpy, Scr.Root, &JunkRoot,
@@ -3582,8 +3557,8 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			}
 			else
 			{
-				tmpx = eventp->xmotion.x;
-				tmpy = eventp->xmotion.y;
+				tmpx = e.xmotion.x;
+				tmpy = e.xmotion.y;
 			}
 			stroke_record(tmpx,tmpy);
 			if (draw_motion)
@@ -3643,7 +3618,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			}
 			break;
 		case KeyPress:
-			keysym = XLookupKeysym(&eventp->xkey,0);
+			keysym = XLookupKeysym(&e.xkey, 0);
 			/* abort if Escape or Delete is pressed (as in menus.c)
 			 */
 			if (keysym == XK_Escape || keysym == XK_Delete ||
@@ -3741,7 +3716,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			UngrabEm(GRAB_BUSY);
 		}
 		old_execute_function(
-			NULL, stroke_action, fw, eventp, context, -1, 0, NULL);
+			NULL, stroke_action, fw, &e, context, -1, 0, NULL);
 	}
 
 	return;
@@ -3754,11 +3729,6 @@ void CMD_State(F_CMD_ARGS)
 	int toggle;
 	int n;
 
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
-	{
-		return;
-	}
 	n = GetIntegerArguments(action, &action, &state, 1);
 	if (n <= 0)
 	{

@@ -80,26 +80,6 @@ static FvwmWindow *LastScreenFocus = NULL;
 
 /* ---------------------------- local functions ----------------------------- */
 
-static void SetPointerEventPosition(XEvent *eventp, int x, int y)
-{
-	switch (eventp->type)
-	{
-	case ButtonPress:
-	case ButtonRelease:
-	case KeyPress:
-	case KeyRelease:
-	case MotionNotify:
-		eventp->xbutton.x_root = x;
-		eventp->xbutton.y_root = y;
-		eventp->xmotion.same_screen = True;
-		break;
-	default:
-		break;
-	}
-
-	return;
-}
-
 static Bool focus_get_fpol_context_flag(
 	fpol_context_t *fpol_context, int context)
 {
@@ -437,7 +417,7 @@ static void set_focus_to_fwin(
  *
  *************************************************************************/
 static void warp_to_fvwm_window(
-	XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit, int warp_y,
+	const XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit, int warp_y,
 	int y_unit)
 {
 	int dx,dy;
@@ -533,20 +513,20 @@ static void warp_to_fvwm_window(
 		}
 	}
 	XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
-	SetPointerEventPosition(eventp, x, y);
 	RaiseWindow(t);
 
 	/* If the window is still not visible, make it visible! */
 	if (t->frame_g.x + t->frame_g.width  < 0 ||
 	    t->frame_g.y + t->frame_g.height < 0 ||
-	    t->frame_g.x >= Scr.MyDisplayWidth	 ||
+	    t->frame_g.x >= Scr.MyDisplayWidth ||
 	    t->frame_g.y >= Scr.MyDisplayHeight)
 	{
 		frame_setup_window(
 			t, 0, 0, t->frame_g.width, t->frame_g.height, False);
-		XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
-		SetPointerEventPosition(eventp, 2, 2);
+		XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2, 2);
 	}
+
+	return;
 }
 
 static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
@@ -641,11 +621,6 @@ static void __activate_window_by_command(
 	Bool do_not_warp;
 	sftfwin_args_t sf_args;
 
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
-	{
-		return;
-	}
 	sf_args.do_allow_force_broadcast = 1;
 	sf_args.is_focus_by_focus_cmd = !!is_focus_by_focus_cmd;
 	sf_args.set_by = FOCUS_SET_BY_FUNCTION;
@@ -1237,12 +1212,6 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 	if (context != C_UNMANAGED)
 	{
-		if (DeferExecution(
-			    eventp, &w, &fw, &context, CRS_SELECT,
-			    ButtonRelease))
-		{
-			return;
-		}
 		if (n == 2)
 		{
 			warp_to_fvwm_window(

@@ -27,10 +27,11 @@
 /* Bits for the function flag byte. */
 enum
 {
-	FUNC_NEEDS_WINDOW = 0x01,
-	FUNC_DONT_REPEAT  = 0x02,
-	FUNC_ADD_TO       = 0x04,
-	FUNC_DECOR        = 0x08
+	FUNC_NEEDS_WINDOW    = 0x01,
+	FUNC_DONT_REPEAT     = 0x02,
+	FUNC_ADD_TO          = 0x04,
+	FUNC_DECOR           = 0x08,
+	FUNC_ALLOW_UNMANAGED = 0x10
 };
 
 /* ---------------------------- global macros ------------------------------- */
@@ -48,6 +49,8 @@ typedef struct
 #endif
 	short func_type;
 	FUNC_FLAGS_TYPE flags;
+	int cursor;
+	int evtype;
 } func_type;
 
 /* ---------------------------- exported variables (globals) ---------------- */
@@ -58,13 +61,11 @@ void find_func_type(
 	char *action, short *func_type, unsigned char *flags);
 Bool functions_is_complex_function(
 	const char *function_name);
-int DeferExecution(
-	XEvent *, Window *,FvwmWindow **, unsigned long *, cursor_t, int);
 void execute_function(
 	exec_func_args_type *efa);
 void old_execute_function(
 	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *fw,
-	XEvent *eventp, unsigned long context, int Module,
+	const XEvent *eventp, unsigned long context, int Module,
 	FUNC_FLAGS_TYPE exec_flags, char *args[]);
 
 #endif /* FUNCTIONS_H */

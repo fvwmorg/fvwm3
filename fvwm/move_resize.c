@@ -749,14 +749,6 @@ static Bool resize_move_window(F_CMD_ARGS)
 
 void CMD_ResizeMove(F_CMD_ARGS)
 {
-	if (DeferExecution(eventp,&w,&fw,&context, CRS_RESIZE, ButtonPress))
-	{
-		return;
-	}
-	if (fw == NULL)
-	{
-		return;
-	}
 	resize_move_window(F_PASS_ARGS);
 
 	return;
@@ -764,7 +756,7 @@ void CMD_ResizeMove(F_CMD_ARGS)
 
 static void InteractiveMove(
 	Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
-	XEvent *eventp, Bool do_start_at_pointer)
+	const XEvent *eventp, Bool do_start_at_pointer)
 {
 	int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
 	int XOffset, YOffset;
@@ -803,7 +795,7 @@ static void InteractiveMove(
 		 * have to check for ButtonRelease too since the event may be
 		 * faked. */
 		GetLocationFromEventOrQuery(
-			dpy, Scr.Root, &Event, &DragX, &DragY);
+			dpy, Scr.Root, NULL, &DragX, &DragY);
 	}
 
 	MyXGrabServer(dpy);
@@ -1146,16 +1138,6 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	int dx;
 	int dy;
 
-	if (DeferExecution(
-		    eventp, &w, &fw, &context,
-		    (mode == MOVE_NORMAL) ? CRS_MOVE : CRS_SELECT, ButtonPress))
-	{
-		return;
-	}
-	if (fw == NULL)
-	{
-		return;
-	}
 	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
 	{
 		return;
@@ -1837,8 +1819,8 @@ Bool moveLoop(
 					    &Event)))
 		{
 			rc = HandlePaging(
-				dx, dy, &xl, &yt, &delta_x, &delta_y, False,
-				False, True);
+				&Event, dx, dy, &xl, &yt, &delta_x, &delta_y,
+				False, False, True);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
@@ -2110,8 +2092,9 @@ Bool moveLoop(
 					xl = Event.xmotion.x_root;
 					yt = Event.xmotion.y_root;
 					HandlePaging(
-						dx, dy, &xl, &yt, &delta_x,
-						&delta_y, False, False, False);
+						&Event, dx, dy, &xl, &yt,
+						&delta_x, &delta_y, False,
+						False, False);
 					if (delta_x)
 					{
 						x_virtual_offset = 0;
@@ -2914,8 +2897,8 @@ static Bool resize_window(F_CMD_ARGS)
 		       (!XCheckMaskEvent(dpy, evmask, &Event)))
 		{
 			rc = HandlePaging(
-				Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
-				&delta_x, &delta_y, False, False, True);
+				&Event, Scr.EdgeScrollX, Scr.EdgeScrollY, &x,
+				&y, &delta_x, &delta_y, False, False, True);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
@@ -3030,9 +3013,9 @@ static Bool resize_window(F_CMD_ARGS)
 					&ymotion, do_resize_opaque);
 				/* need to move the viewport */
 				HandlePaging(
-					Scr.EdgeScrollX, Scr.EdgeScrollY, &x,
-					&y, &delta_x, &delta_y, False, False,
-					False);
+					&Event, Scr.EdgeScrollX,
+					Scr.EdgeScrollY, &x, &y, &delta_x,
+					&delta_y, False, False, False);
 			}
 			/* redraw outline if we paged - mab */
 			if (delta_x != 0 || delta_y != 0)
@@ -3179,15 +3162,6 @@ static Bool resize_window(F_CMD_ARGS)
 
 void CMD_Resize(F_CMD_ARGS)
 {
-	if (DeferExecution(
-		    eventp,&w,&fw,&context, CRS_RESIZE, ButtonPress))
-	{
-		return;
-	}
-	if (fw == NULL)
-	{
-		return;
-	}
 	resize_window(F_PASS_ARGS);
 
 	return;
@@ -3727,16 +3701,6 @@ void CMD_Maximize(F_CMD_ARGS)
 	int sx, sy, sw, sh;
 	rectangle new_g;
 
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
-	{
-		return;
-	}
-	if (fw == NULL)
-	{
-		return;
-	}
-
 	if (!is_function_allowed(F_MAXIMIZE, NULL, fw, True, False))
 	{
 		XBell(dpy, 0);
@@ -4006,15 +3970,6 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	rectangle max_g;
 	Bool was_resized;
 
-	if (DeferExecution(eventp, &w, &fw, &context, CRS_RESIZE,
-			   ButtonPress))
-	{
-		return;
-	}
-	if (fw == NULL)
-	{
-		return;
-	}
 	/* keep a copy of the old geometry */
 	normal_g = fw->normal_g;
 	/* resize the window normally */
@@ -4040,15 +3995,6 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 	rectangle max_g;
 	Bool was_resized;
 
-	if (DeferExecution(
-		    eventp, &w, &fw, &context, CRS_RESIZE, ButtonPress))
-	{
-		return;
-	}
-	if (fw == NULL)
-	{
-		return;
-	}
 	/* keep a copy of the old geometry */
 	normal_g = fw->normal_g;
 	/* resize the window normally */
@@ -4115,10 +4061,6 @@ void CMD_Stick(F_CMD_ARGS)
 {
 	int toggle;
 
-	if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
-	{
-		return;
-	}
 	toggle = ParseToggleArgument(action, &action, -1, 0);
 	handle_stick(F_PASS_ARGS, toggle);
 

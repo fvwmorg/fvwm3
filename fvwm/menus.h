@@ -275,7 +275,7 @@ typedef struct
 	FvwmWindow **pfw;
 	FvwmWindow *tear_off_root_menu_window;
 	int *pcontext;
-	XEvent *eventp;
+	const XEvent *eventp;
 	char **ret_paction;
 	XEvent *event_propagate_to_submenu;
 	MenuOptions *pops;

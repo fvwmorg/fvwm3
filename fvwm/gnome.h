@@ -31,7 +31,7 @@ void GNOME_ButtonFunc(
 	 char *action,
 	 int *Module);
 
-void GNOME_ProxyButtonEvent(XEvent *ev);
+void GNOME_ProxyButtonEvent(const XEvent *ev);
 
 void GNOME_ShowDesks(
 	 XEvent *eventp,
