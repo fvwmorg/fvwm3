@@ -163,7 +163,7 @@ Steps: 1. make sure you have XPM, the strokes library and a X server with
        6. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
 
-Note that you need to have actually build everything before packing
+Note that you need to have actually built everything before packing
 the distribution, hence step 2.  Among other things, this generates
 the proper dependency information for insertion into Makefile.in's
 generated in step 5.

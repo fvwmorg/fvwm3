@@ -55,6 +55,10 @@
 
 /* ------------------------------- structs --------------------------------- */
 
+#if 0
+#define OP 1
+#endif
+
 /* flags for b->flags */
 #define b_Container  0x00000001 /* Contains several buttons */
 #define b_Font       0x00000002 /* Has personal font data */

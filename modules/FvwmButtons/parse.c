@@ -647,7 +647,9 @@ static void ParseButton(button_info **uberb,char *s)
       "right",
       "center",
       "colorset",
+#if OP
       "oldpanel",
+#endif
       NULL
     };
     s = trimleft(s);
@@ -984,6 +986,7 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	break;
 
+#if OP
 	/* ------------------------ oldpanel ------------------------ */
 
       case 18: /* oldPanel */
@@ -1016,6 +1019,7 @@ static void ParseButton(button_info **uberb,char *s)
 	t = seekright(&s);
 	b->hangon = (t)? t : strdup("");  /* which panel to popup */
 	break;
+#endif
 
       default:
 	t=seekright(&s);
@@ -1135,10 +1139,12 @@ static void ParseConfigLine(button_info **ubb,char *s)
     "file",
     "pixmap",
     "boxsize",
+    "colorset",
+#if OP
     "closeonselect",
     "stayuponselect",
-    "colorset",
     "panel",
+#endif
     NULL
   };
   int i,j,k;
@@ -1237,15 +1243,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
   case 11: /* BoxSize */
     ParseBoxSize(&s, &ub->c->flags);
     break;
-  case 12: /* CloseOnSelect */
-    CurrentPanel->flags.close_on_select = 1;
-    CurrentPanel->flags.stay_up_on_select = 0;
-    break;
-  case 13: /* StayUpOnSelect */
-    CurrentPanel->flags.close_on_select = 0;
-    CurrentPanel->flags.stay_up_on_select = 1;
-    break;
-  case 14: /* Colorset */
+  case 12: /* Colorset */
     i = sscanf(s, "%d", &j);
     if (i > 0)
     {
@@ -1256,6 +1254,15 @@ static void ParseConfigLine(button_info **ubb,char *s)
     {
       ub->c->flags &= ~b_Colorset;
     }
+    break;
+#if OP
+  case 13: /* CloseOnSelect */
+    CurrentPanel->flags.close_on_select = 1;
+    CurrentPanel->flags.stay_up_on_select = 0;
+    break;
+  case 14: /* StayUpOnSelect */
+    CurrentPanel->flags.close_on_select = 0;
+    CurrentPanel->flags.stay_up_on_select = 1;
     break;
   case 15:/* Panel */
     s = trimleft(s);
@@ -1273,6 +1280,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
     MakeContainer(UberButton);
     ub = *ubb = UberButton;
     break;
+#endif
   default:
     s = trimleft(s);
     ParseButton(ubb,s);
