@@ -1,3 +1,10 @@
+2003-09-06  malu  <ml@update.uu.se>
+
+	* libs/FBidi.c (FBidiConvert):
+	* libs/CombineChars.c (CombineChars):
+	Fixed drawing combining characters on correct positions in
+	right-to-left context
+	
 2003-09-05  malu  <ml@update.uu.se>
 
 	* libs/Flocale.c (FlocaleDrawString):

@@ -97,6 +97,21 @@ char *FBidiConvert(
 		visual_unicode_str, pos_l_to_v, NULL, NULL);
 
 	/* remap mapping from logical to visual to "compensate" for BIDI */
+	if (comb_chars != NULL)
+	{
+		for(i = 0 ; 
+		    comb_chars[i].c.byte1 != 0 || 
+		    comb_chars[i].c.byte2 != 0 ;
+		    i++)
+		{
+			/* if input string is zero characters => only
+			   combining chars, set position to zero */
+			comb_chars[i].position =
+				str_len != 0 ? 
+				pos_l_to_v[comb_chars[i].position] : 0;
+		}
+	}
+	
 	if(l_to_v != NULL)
 	{
 		/* values in the previuos mapping gives the position of
@@ -120,18 +135,6 @@ char *FBidiConvert(
 			l_to_v[i] = l_to_v_temp[i];
 		}
 		free(l_to_v_temp);
-		/* re-order combining characters */
-		if (comb_chars != NULL)
-		{
-			for(i = 0 ; 
-			    comb_chars[i].c.byte1 != 0 || 
-			    comb_chars[i].c.byte2 != 0 ;
-			    i++)
-			{
-				comb_chars[i].position =
-					l_to_v[comb_chars[i].position];
-			}
-		}
 	}
 	free(pos_l_to_v);
 

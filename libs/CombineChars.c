@@ -2088,6 +2088,15 @@ CombineChars(
 		/* map the visual to logical mapping obtained above into
 		   a logical to visual mapping */
 		/* setup the final mapping from logical to visual positions */
+		/* if no base characters out, all positions map to zero,
+		   because there we have combining chars in that case */
+		if(out_str_len == 0)
+		{
+			for(i = 0 ; i < in_str_len ; i++)
+			{
+				(*l_to_v)[i] = 0;
+			}
+		}
 		for(i = 0, j = 0 ; i < out_str_len ; i++)
 		{
 			/* for each element in mapping from visual string
