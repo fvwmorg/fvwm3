@@ -1976,7 +1976,8 @@ items using the
 .B AddToMenu
 command and bound to a key or mouse button with the
 .BR Key ", " PointerKey " or " Mouse
-command.  This is usually done in the configuration file.
+command (there are many other ways to invoke a menu too).  This is
+usually done in the configuration file.
 
 Fvwm menus are extremely configurable in look and feel.  Even the
 slightest nuances can be changed to the user's liking, including
@@ -2053,7 +2054,7 @@ section for details.
 
 Moving the pointer over a menu selects the item below it.
 Normally this is indicated by a 3d border around the item, but not
-all parts of a menu can be selcted.  Pressing any mouse button
+all parts of a menu can be selected.  Pressing any mouse button
 while a menu is open activates the item below it.  Items of a
 popup menu are also activated by releasing a held mouse button.
 In case of an item that hides a sub menu, the sub menu is
@@ -2076,8 +2077,9 @@ open menus and replaces them with the sub menu or posts the menu
 Posting menus is meant to ease mouse navigation.  Once a sub menu
 is posted, only items from that sub menu can be selected.  This
 can be very useful to navigate the menu if the pointer tends to
-stray off the menu.  Clicking anywhere or pressing any key unposts
-the menu and reverts back to normal operation.
+stray off the menu.  To unpost the menu and revert back to normal
+operation, either click on the same sub menu item or press any
+key.
 
 .TP
 .B Keyboard Navigation
@@ -2112,36 +2114,42 @@ activate the current item.
 .SM \fICtrl-G\fP
 exit the current sequence of menus or destroy a tear off menu.
 
+.SM \fIJ\fP,
+.SM \fIN\fP,
+.SM \fICursor-Down\fP,
 .SM \fITab\fP,
 .SM \fIMeta-Tab\fP,
-.SM \fICursor-Down\fP,
 .SM \fICtrl-F\fP,
-.SM \fICtrl-N\fP,
-.SM \fICtrl-J\fP
 move to the next item.
 
+.SM \fIK\fP,
+.SM \fIP\fP,
+.SM \fICursor-Up\fP,
 .SM \fIShift-Tab\fP,
 .SM \fIShift-Meta-Tab\fP,
-.SM \fICursor-Up\fP,
 .SM \fICtrl-B\fP,
-.SM \fICtrl-P\fP,
-.SM \fICtrl-K\fP
 move to the prior item.
 
-.SM \fICursor-Left\fP,
-.SM \fICtrl-B\fP
-return to the prior menu.
-
+.SM \fIL\fP,
 .SM \fICursor-Right\fP,
-.SM \fICtrl-F\fP
+.SM \fIF\fP
 enter a sub menu.
 
+.SM \fIH\fP,
+.SM \fICursor-Left\fP,
+.SM \fIB\fP
+return to the prior menu.
+
 .SM \fICtrl-Cursor-Up\fP,
+.SM \fICtrl-K\fP
+.SM \fICtrl-P\fP,
 .SM \fIShift-Ctrl-Meta-Tab\fP,
 .SM \fIPage-Up\fP
 move up five items.
 
 .SM \fICtrl-Cursor-Down\fP,
+.SM \fICtrl-J\fP
+.SM \fICtrl-N\fP,
 .SM \fICtrl-Meta-Tab\,P,
 .SM \fIPage-Down\fP
 move down five items.
