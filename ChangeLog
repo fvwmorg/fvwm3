@@ -1,3 +1,11 @@
+2003-04-24  olicha  <olivier.chapuis@free.fr>
+
+	* AUTHORS:
+	Added David Fries. Updated my entries.
+
+	* todo-2.6:
+	One update
+
 2003-04-23  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/module_interface.c (CMD_KillModule):

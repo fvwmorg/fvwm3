@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+David Fries:
+Fixed the GNOME1 patch. WindowList class name sorting.
+
 Nadim Shaikli:
 Added joining and shaping in bi-directional languages that need
 this, arabic translations.
@@ -80,24 +83,55 @@ fvwm-logo-colorful.xpm, a prototype of a current default
 FvwmBanner logo.
 
 Olivier Chapuis:
-fvwm: Rewrote -version command line option to print out configure
-options; OnlySkipList option to WindowList; BusyCursor command,
-EscapeFunc command; StrokeFunc command and some works on the
-STROKE patch; some bug fixes. libs: setSyncMask to define the
+Rewrote fonts loading and text rendering with locale, Xft, rotation,
+encoding and shadow support.  Rewrote image loading and added PNG
+support with alpha blending.  Added XRender support with full
+emulation if not present.  Added XShm support for faster XImage
+manipulation.  Added EWMH support (with a lot of new styles and
+commands) for KDE and GNOME.  Added Gettext support and (LocalePath
+command and $[gt.str] variable).  Some French translation.  Rewrote
+the color limit code and added dithering for screen with a depth < 24.
+Colorset support in BorderStyle, TitleStyle and ButtonsStyle and
+MultiPixmap. Solid option of MultiPixmap. Merge MultiPixmap code and
+regular title bar drawing code.  AdjustedPixmap, StretchedPixmap and
+ShrunkPixmap options for the decorations commands. MinHeight option to
+TitleStyle. UseTitleDecorRotation Style.  Colorset Improvement: lot of
+works with the Transparent option, new options RootTransparent, Tint,
+fgTint, bgTint, Alpha, fgAlpha, Dither, NoDither, IconTint, IconAlpha,
+fgsh. Bitmap support in Colorset.  BorderColorset,
+HilightBorderColorset, IconBackgroundColorset, IconTitleColorset,
+HilightIconTitleColorset, IconTitleRelief, IconBackgroundRelief and
+IconBackgroundPadding Styles.  MinOverlapPercentPlacement,
+PlacementOverlapPenalties and PlacementOverlapPercentPenalties Styles.
+Indexed{Window,Icon}Name Styles.  Adjusted, Stretched, Shrunk option to
+IconSize style.  layer flags to the Maximize command.  DesktopName
+command with variables $[desk.name<n>] and dynamic update for
+FvwmPager.  layer flags to the Maximize command.  OnlySkipList,
+NoDeskNum, NoCurrentDeskTitle, TitleForAllDesks, NoNumInDeskTitle
+options to WindowList.  CopyMenuStyle, BusyCursor, EscapeFunc and
+PrintInfo commands.  StrokeFunc command and some works on the STROKE
+patch.  PlacedByFvwm condition. libs: setSyncMask to define the
 messages on which a module is lock on send (not my idea); put
-SendFvwmPipe in the library; amelioration of
-SlideWindow. FvwmButtons: position option for panel; some
-fixes. FvwmEvent: StartDelay option. FvwmIconBox: UseSkipList
-options. FvwmM4/Cpp: -lock and -noread options. FvwmPager: Aliases
-support; some fixes. FvwmScript: The Default configuration
-options; some fixes; rewrite some scripts examples and new script
-examples. FvwmPager: Aliases support; some fixes. FvwmScroll: p
-option for a percentage reduction. FvwmTaskBar: the Focus, Rows,
-3DFvwm, NoIconAction options, take in account the real border
-width for geometry computation, AutoHide ameliorations, A number
-of fixes. FvwmWinList: geometries fixes. utils: fvwm-menu-desktop
-script for GNOME and KDE desktop menus.
-
+SendFvwmPipe in the library; amelioration of SlideWindow.
+FvwmButtons: (No)FvwmModule Swallow option; Vastly improved redrawing
+with complex colorset configuration; position option for panel.
+FvwmBacker: RetainPixmap option.  FvwmEvent: StartDelay option.
+FvwmIconBox: UseSkipList options; aliases support.  FvwmIconMan: Full
+colorset support.  FvwmM4/Cpp: -lock and -noread options.  FvwmPager:
+Aliases support; some fixes.  FvwmPager: Aliases support.  FvwmScript:
+The Default configuration options; UseGettext and WindowLocaleTitle
+head instruction; LocaleTitle widget instruction; NoFocus and Left,
+Center, and Right flags option for text position; Key and
+ChangeLocaleTitle instructions; GetPid, Parse, SendMsgAndGet,
+LastString and Gettext functions; SendToModule ScriptName SendString
+command; rewrite some scripts examples and new script examples.
+FvwmScroll: p option for a percentage reduction.  FvwmTaskBar: Focus,
+Rows, 3DFvwm, NoIconAction options, take in account the real border
+width for geometry computation, AutoHide amelioration; aliases
+support.  FvwmWinList: geometries fixes; aliases support. utile:
+fvwm-menu-desktop script for GNOME and KDE desktop menus.  fvwm-root
+improvement (root properties).
+Bugfixes!
 
 Mikhael Goikhman:
 Parsing Restart command, Session*Function and StartFunction
