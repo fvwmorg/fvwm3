@@ -614,6 +614,7 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
   int sw;
   int sh;
   Bool has_screen_size_changed = False;
+  fscreen_scr_arg fscr;
 
   if (MST_IS_UPDATED(mr))
   {
@@ -630,8 +631,9 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
     }
     MST_IS_UPDATED(mr) = 0;
   }
-  FScreenGetScrRect(
-    pmp->screen_origin_x, pmp->screen_origin_y, &JunkX, &JunkY, &sw, &sh);
+  fscr.xypos.x = pmp->screen_origin_x;
+  fscr.xypos.y = pmp->screen_origin_y;
+  FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &JunkX, &JunkY, &sw, &sh);
   if (sw != MR_SCREEN_WIDTH(mr) || sh != MR_SCREEN_HEIGHT(mr))
   {
     has_screen_size_changed = True;
@@ -745,6 +747,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
     }
     else
     {
+      fscreen_scr_arg fscr;
+
       /* we're a top level menu */
       has_mouse_moved = False;
       if(!GrabEm(CRS_MENU, GRAB_MENU))
@@ -755,7 +759,9 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	return;
       }
       /* Make the menu appear under the pointer rather than warping */
-      FScreenGetScrRect(x, y, &scr_x, &scr_y, &scr_w, &scr_h);
+      fscr.xypos.x = x;
+      fscr.xypos.y = y;
+      FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
       x -= menu_middle_x_offset(pmp->menu);
       y -= item_middle_y_offset(pmp->menu, MR_FIRST_ITEM(pmp->menu));
       if (x < scr_x)
@@ -2750,9 +2756,13 @@ static int pop_menu_up(
     }
     if (has_context)
     {
+      fscreen_scr_arg fscr;
+
       pops->pos_hints.has_screen_origin = True;
+      fscr.xypos.x = cx;
+      fscr.xypos.y = cy;
       if (FScreenGetScrRect(
-	    cx, cy, &JunkX, &JunkY, &JunkWidth, &JunkHeight))
+	    &fscr, FSCREEN_XYPOS, &JunkX, &JunkY, &JunkWidth, &JunkHeight))
       {
 	/* use current cx/cy */
       }
@@ -2784,15 +2794,17 @@ static int pop_menu_up(
 		       bwp, bwp, bwp, True);
   }
 
-  /* clip to screen */
-  FScreenClipToScreen(
-    pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
-    &x, &y, MR_WIDTH(mr), MR_HEIGHT(mr));
+  {
+    fscreen_scr_arg fscr;
 
-  /* "this" screen is defined -- so get its coords for future reference */
-  FScreenGetScrRect(
-    pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
-    &scr_x, &scr_y, &scr_w, &scr_h);
+    fscr.xypos.x = pops->pos_hints.screen_origin_x;
+    fscr.xypos.y = pops->pos_hints.screen_origin_y;
+    /* clip to screen */
+    FScreenClipToScreen(
+      &fscr, FSCREEN_XYPOS, &x, &y, MR_WIDTH(mr), MR_HEIGHT(mr));
+    /* "this" screen is defined -- so get its coords for future reference */
+    FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
+  }
 
   /***************************************************************
    * Calculate position and animate menus
@@ -7599,9 +7611,11 @@ char *get_menu_options(
 	  }
 	  else
 	  {
-	    FScreenGetScrRect(
-	      pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
-	      &x, &y, &width, &height);
+	    fscreen_scr_arg fscr;
+
+	    fscr.xypos.x = pops->pos_hints.screen_origin_x;
+	    fscr.xypos.y = pops->pos_hints.screen_origin_y;
+	    FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &x, &y, &width, &height);
 	  }
 	}
 	else

@@ -1,9 +1,38 @@
 2001-08-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/conditional.c (MatchesConditionMask):
+	* fvwm/move_resize.c (position_geometry_window):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/menus.c (pop_menu_up):
+	* fvwm/move_resize.c (move_window_doit):
+	* fvwm/icons.c (do_all_iconboxes):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/menus.c (update_menu):
+	adapted to new FScreen... signatures
+
+	* libs/FScreen.c (FScreenClipToScreen):
+	(FScreenGetScrCenterCenter):
+	(FScreenCenterCurrent):
+	(FScreenCenterPrimary):
+	(FScreenGetCurrent00):
+	(FScreenGetGlobalScrRect):
+	(FScreenGetPrimaryScrRect):
+	(FScreenGetScrRect):
+	(FScreenIsRectangleOnScreen):
+	unified all the FSCreen... functions using a common signature, removed
+	most old functions
+
+	* fvwm/style.c (CMD_Style):
+	init icon box screen
+
+	* fvwm/move_resize.c (move_window_doit):
+	(CMD_Maximize):
 	* libs/Makefile.am:
 	* libs/XineramaSupport.c:
 	* libs/XineramaSupport.h:
 	* libs/FScreen.c:
+	exported and renamed screen defines
+
 	* libs/FScreen.h:
 	renamed files
 

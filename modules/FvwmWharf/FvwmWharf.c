@@ -533,6 +533,7 @@ void Loop(void)
 	      Window junk;
 	      unsigned int junk2,junk3,junk4,junk5;
 	      int CornerX, CornerY;
+	      fscreen_scr_arg fscr;
 
 #ifdef ENABLE_SOUND
 	      PlaySound(WHEV_CLOSE_MAIN);
@@ -548,7 +549,10 @@ void Loop(void)
               /*!!! Note: maybe it will be better to use (LastX+W/2,LastY+H/2)
                 in ScrRect query? That could help in pathological cases when
                 Wharf is not completely on a single screen. */
-              FScreenGetScrRect(LastX, LastY, &scr_x, &scr_y, &scr_w, &scr_h);
+    	      fscr.xypos.x = LastX;
+	      fscr.xypos.y = LastY;
+              FScreenGetScrRect(
+		&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
 	      if (num_rows<num_columns) { /* horizontal */
 		if (LastY > scr_y + scr_h / 2) {
 		  CornerY = scr_y+scr_h-BUTTONHEIGHT;
@@ -1051,8 +1055,11 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
   {
     int folderx, foldery, folderw, folderh;
     int scr_x, scr_y, scr_w, scr_h;
+    fscreen_scr_arg fscr;
 
-    FScreenGetScrRect(base_x, base_y, &scr_x, &scr_y, &scr_w, &scr_h);
+    fscr.xypos.x = base_x;
+    fscr.xypos.y = base_y;
+    FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
 
     if (*LastMapped != -1)
     {

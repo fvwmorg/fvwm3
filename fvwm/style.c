@@ -1539,6 +1539,7 @@ void CMD_Style(F_CMD_ARGS)
           IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
 	  /* clear it */
           memset(IconBoxes, 0, sizeof(icon_boxes));
+	  IconBoxes->IconScreen = FSCREEN_GLOBAL;
 	  /* init grid x */
           IconBoxes->IconGrid[0] = 3;
 	  /* init grid y */

@@ -574,22 +574,24 @@ Bool PlaceWindow(
     if (flags.do_honor_starts_on_screen)
     {
       /* use screen from style */
-      FScreenGetNumberedScrRect(
-	XineramaScreen,
+      FScreenGetScrRect(
+	NULL, XineramaScreen,
 	&screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     }
     else
     {
       /* use global screen */
-      FScreenGetGlobalScrRect(
+      FScreenGetScrRect(
+	NULL, FSCREEN_GLOBAL,
 	&screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     }
   }
   else
   {
     /* use current screen */
-    FScreenGetCurrentScrRect(
-      NULL, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
+    FScreenGetScrRect(
+      NULL, FSCREEN_CURRENT,
+      &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
   }
   PageLeft   = screen_g.x - pdeltax;
   PageTop    = screen_g.y - pdeltay;
@@ -808,7 +810,7 @@ Bool PlaceWindow(
 	DragHeight = tmp_win->frame_g.height;
 
 	XMapRaised(dpy, Scr.SizeWindow);
-	FScreenGetCurrent00(NULL, &mx, &my);
+	FScreenGetScrRect(NULL, FSCREEN_CURRENT, &mx, &my, NULL, NULL);
 	if (moveLoop(tmp_win, mx, my, DragWidth, DragHeight,
 		     &xl, &yt, False))
 	{

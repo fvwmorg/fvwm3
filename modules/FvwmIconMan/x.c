@@ -640,9 +640,8 @@ void X_init_manager (int man_id)
         man->geometry.boxheight = height;
     }
   }
-  FScreenGetPrimaryScrRect(
-    &man->managed_g.x, &man->managed_g.y,
-    &man->managed_g.width, &man->managed_g.height);
+  FScreenGetScrRect(NULL, FSCREEN_PRIMARY, &man->managed_g.x, &man->managed_g.y,
+		    &man->managed_g.width, &man->managed_g.height);
   man->geometry.x = man->managed_g.x;
   man->geometry.y = man->managed_g.y;
   if (man->geometry_str) {
@@ -651,8 +650,8 @@ void X_init_manager (int man_id)
     geometry_mask = FScreenParseGeometryWithScreen(
       man->geometry_str, &man->geometry.x, &man->geometry.y,
       &man->geometry.cols, &man->geometry.rows, &scr);
-    FScreenGetNumberedScrRect(
-      scr, &man->managed_g.x, &man->managed_g.y,
+    FScreenGetScrRect(
+      NULL, scr, &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
 
     if ((geometry_mask & XValue) || (geometry_mask & YValue)) {
@@ -702,11 +701,14 @@ void X_init_manager (int man_id)
     Window dummyroot, dummychild;
     int junk;
     unsigned int ujunk;
+    fscreen_scr_arg fscr;
 
     XQueryPointer(theDisplay, theRoot, &dummyroot, &dummychild,
 		  &man->geometry.x, &man->geometry.y, &junk, &junk, &ujunk);
+    fscr.xypos.x = man->geometry.x;
+    fscr.xypos.y = man->geometry.y;
     FScreenGetScrRect(
-      man->geometry.x, man->geometry.y,
+      &fscr, FSCREEN_XYPOS,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
     man->geometry.dir |= GROW_DOWN | GROW_RIGHT;
@@ -813,14 +815,19 @@ void create_manager_window (int man_id)
 
   if (man->res == SHOW_SCREEN || man->res == NO_SHOW_SCREEN)
   {
+    fscreen_scr_arg fscr;
+
+    fscr.xypos.x = sizehints.x;
+    fscr.xypos.y = sizehints.y;
     FScreenGetScrRect(
-      sizehints.x, sizehints.y,
+      &fscr, FSCREEN_XYPOS,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
   }
   else
   {
-    FScreenGetGlobalScrRect(
+    FScreenGetScrRect(
+      NULL, FSCREEN_GLOBAL,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
   }

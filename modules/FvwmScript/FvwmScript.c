@@ -497,7 +497,7 @@ void BuildGUI(int IsFather)
     int sx;
     int sy;
 
-    FScreenGetCurrent00(NULL, &sx, &sy);
+    FScreenGetScrRect(NULL, FSCREEN_CURRENT, &sx, &sy, NULL, NULL);
     x11base->size.x = scriptprop->x + sx;
     x11base->size.y = scriptprop->y + sy;
   }

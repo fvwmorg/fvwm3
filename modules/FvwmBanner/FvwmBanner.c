@@ -188,9 +188,9 @@ int main(int argc, char **argv)
   mysizehints.max_width = mysizehints.width;
   mysizehints.win_gravity = NorthWestGravity;
 
-  FScreenCenterPrimary(
-    &mysizehints.x, &mysizehints.y, view.attributes.width,
-    view.attributes.height);
+  FScreenCenterOnScreen(
+    NULL, FSCREEN_PRIMARY, &mysizehints.x, &mysizehints.y,
+    view.attributes.width, view.attributes.height);
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);

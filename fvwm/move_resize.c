@@ -385,15 +385,18 @@ static void position_geometry_window(XEvent *eventp)
 {
   int x;
   int y;
+  fscreen_scr_arg fscr;
 
+  fscr.mouse_ev = eventp;
   /* Probably should remove this positioning code from {builtins,fvwm}.c? */
   if (Scr.gs.EmulateMWM)
   {
-    FScreenCenterCurrent(eventp, &x, &y, sizew_g.width, sizew_g.height);
+    FScreenCenterOnScreen(
+      &fscr, FSCREEN_CURRENT, &x, &y, sizew_g.width, sizew_g.height);
   }
   else
   {
-    FScreenGetCurrent00(eventp, &x, &y);
+    FScreenGetScrRect(&fscr, FSCREEN_CURRENT, &x, &y, NULL, NULL);
   }
   if (x != sizew_g.x || y != sizew_g.y)
   {
@@ -980,14 +983,13 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     rectangle r;
     rectangle s;
     rectangle p;
-    int xi_screen;
+    int fscreen;
 
     do_animate = False;
     SET_STICKY(tmp_win, 0);
 
-    xi_screen = FScreenGetScreenArgument(action, 'c');
-    FScreenGetNumberedScrRect(
-      xi_screen, &s.x, &s.y, &s.width, &s.height);
+    fscreen = FScreenGetScreenArgument(action, FSCREEN_SPEC_CURRENT);
+    FScreenGetScrRect(NULL, fscreen, &s.x, &s.y, &s.width, &s.height);
     page_x = Scr.Vx;
     page_y = Scr.Vy;
     r.x = x;
@@ -3101,8 +3103,8 @@ void CMD_Maximize(F_CMD_ARGS)
 
       is_screen_given = True;
       token = PeekToken(taction, &action);
-      scr = FScreenGetScreenArgument(token, 'p');
-      FScreenGetNumberedScrRect(scr, &scr_x, &scr_y, &scr_w, &scr_h);
+      scr = FScreenGetScreenArgument(token, FSCREEN_SPEC_PRIMARY);
+      FScreenGetScrRect(NULL, scr, &scr_x, &scr_y, &scr_w, &scr_h);
     }
   }
   toggle = ParseToggleArgument(action, &action, -1, 0);
@@ -3143,10 +3145,11 @@ void CMD_Maximize(F_CMD_ARGS)
   /* Check if we should constrain rectangle to some Xinerama screen */
   if (!is_screen_given)
   {
-    FScreenGetScrRect(
-      tmp_win->frame_g.x + tmp_win->frame_g.width  / 2 - page_x,
-      tmp_win->frame_g.y + tmp_win->frame_g.height / 2 - page_y,
-      &scr_x, &scr_y, &scr_w, &scr_h);
+    fscreen_scr_arg fscr;
+
+    fscr.xypos.x = tmp_win->frame_g.x + tmp_win->frame_g.width  / 2 - page_x;
+    fscr.xypos.y = tmp_win->frame_g.y + tmp_win->frame_g.height / 2 - page_y;
+    FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
   }
 
 #if 0

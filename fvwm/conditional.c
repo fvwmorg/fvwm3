@@ -336,7 +336,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   {
     if (FScreenIsEnabled())
     {
-      if (!FScreenIsRectangleOnThisScreen(NULL, &(fw->frame_g), -1))
+      if (!FScreenIsRectangleOnScreen(NULL, FSCREEN_CURRENT, &(fw->frame_g)))
 	return 0;
     }
     else

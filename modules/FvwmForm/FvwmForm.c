@@ -1531,7 +1531,8 @@ static void OpenWindows ()
       gravity = SouthEastGravity;
     }
   } else {
-    FScreenCenterCurrent(NULL, &x, &y, CF.max_width, CF.total_height);
+    FScreenCenterOnScreen(
+      NULL, FSCREEN_CURRENT, &x, &y, CF.max_width, CF.total_height);
   }
   myfprintf((stderr,"going to create window w. bg %s\n",
              screen_background_color));

@@ -97,7 +97,7 @@ Window  win;
 int screen;
 XSizeHints g_hints;
 int g_hints_rc;
-int xi_screen;
+int fscreen;
 rectangle screen_g;
 Pixel back[MAX_COLOUR_SETS];
 Pixel fore[MAX_COLOUR_SETS];
@@ -1120,10 +1120,14 @@ void MakeMeWindow(void)
 
   if (Transient)
   {
+    fscreen_scr_arg fscr;
+
     XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,
 		  &dummy1);
+    fscr.xypos.x = hints.x;
+    fscr.xypos.y = hints.y;
     FScreenGetScrRect(
-      hints.x, hints.y,
+      &fscr, FSCREEN_XYPOS,
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     hints.x -= hints.width / 2;
     hints.y -= buttonheight / 2;
@@ -1379,9 +1383,9 @@ void StartMeUp_II(void)
   /* evaluate further down */
   g_hints_rc = FScreenParseGeometryWithScreen(
     geometry, &g_hints.x, &g_hints.y, (unsigned int *)&g_hints.width,
-    (unsigned int *)&g_hints.height, &xi_screen);
-  FScreenGetNumberedScrRect(
-    xi_screen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
+    (unsigned int *)&g_hints.height, &fscreen);
+  FScreenGetScrRect(
+    NULL, fscreen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
 
 #ifdef I18N_MB
   if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {

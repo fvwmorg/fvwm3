@@ -229,7 +229,7 @@ extern char *StartPopup;
 
 char *ImagePath = NULL;
 char *XineramaConfig = NULL;
-static int xi_screen = 0;
+static int fscreen = 0;
 
 static void ParseConfig( void );
 static void ParseConfigLine(char *tline);
@@ -1822,10 +1822,12 @@ void StartMeUp(void)
    /* evaluate further down */
    ret = FScreenParseGeometryWithScreen(
      geometry, &hints.x, &hints.y, (unsigned int *)&hints.width,
-     (unsigned int *)&hints.height, &xi_screen);
-   FScreenGetNumberedScrRect(
-     xi_screen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
-   FScreenGetGlobalScrRect(
+     (unsigned int *)&hints.height, &fscreen);
+   FScreenGetScrRect(
+     NULL, fscreen,
+     &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
+   FScreenGetScrRect(
+     NULL, FSCREEN_GLOBAL,
      &global_scr_g.x, &global_scr_g.y, &global_scr_g.width,
      &global_scr_g.height);
    Midline = (screen_g.height >> 1) + screen_g.y;

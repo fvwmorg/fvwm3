@@ -518,7 +518,7 @@ int main(int argc, char *argv[])
     }
     GetConfigLine(fd, &config_line);
   }
-  FScreenGetCurrentScrRect(NULL, &dx, &dy, &dwidth, &dheight);
+  FScreenGetScrRect(NULL, FSCREEN_CURRENT, &dx, &dy, &dwidth, &dheight);
 
   if (strcmp(argv0, "FvwmCascade") &&
       (!strcmp(argv0, "FvwmTile") ||

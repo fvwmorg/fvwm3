@@ -500,6 +500,7 @@ void list_end(void)
     Window JunkW;
     int JunkC;
     unsigned int JunkM;
+    fscreen_scr_arg fscr;
 
     if (!XQueryPointer(
 	  dpy, Root, &JunkW, &JunkW, &x, &y, &JunkC, &JunkC, &JunkM))
@@ -508,7 +509,9 @@ void list_end(void)
       y = 0;
     }
 
-    FScreenGetScrRect(x, y, &sx, &sy, &sw, &sh);
+    fscr.xypos.x = x;
+    fscr.xypos.y = y;
+    FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &sx, &sy, &sw, &sh);
     if (y + height + 100 > sy + sh)
     {
       y = sy + sh - height - 10;

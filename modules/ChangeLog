@@ -1,5 +1,18 @@
 2001-08-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmScript/FvwmScript.c (BuildGUI):
+	* FvwmForm/FvwmForm.c (OpenWindows):
+	* FvwmBanner/FvwmBanner.c (main):
+	* FvwmWinList/FvwmWinList.c (MakeMeWindow):
+	(StartMeUp_II):
+	* FvwmWharf/FvwmWharf.c (Loop):
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmRearrange/FvwmRearrange.c (main):
+	* FvwmPager/x_pager.c (initialize_pager):
+	* FvwmIdent/FvwmIdent.c (list_end):
+	* FvwmIconMan/x.c (X_init_manager):
+	adapted to new FScreen... signatures
+
 	* FvwmForm/FvwmForm.c:
 	* FvwmWinList/FvwmWinList.c:
 	* FvwmWharf/FvwmWharf.c:

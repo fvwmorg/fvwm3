@@ -451,8 +451,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 	tmp_win->icon_g.width = tmp_win->icon_p_width;
       tmp_win->icon_xl_loc = tmp_win->icon_g.x -
 	(tmp_win->icon_g.width - tmp_win->icon_p_width)/2;
-      FScreenGetCurrentScrRect(
-	NULL, &sx, &sy, &sw, &sh);
+      FScreenGetScrRect(NULL, FSCREEN_CURRENT, &sx, &sy, &sw, &sh);
       /* start keep label on screen. dje 8/7/97 */
       if (tmp_win->icon_xl_loc < sx) {  /* if new loc neg (off left edge) */
 	tmp_win->icon_xl_loc = sx;      /* move to edge */
@@ -1019,7 +1018,7 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
     int sh;
     /* Right now, the global box is hard-coded, fills the screen,
        uses an 80x80 grid, and fills top-bottom, left-right */
-    FScreenGetPrimaryScrRect(&sx, &sy, &sw, &sh);
+    FScreenGetScrRect(NULL, FSCREEN_PRIMARY, &sx, &sy, &sw, &sh);
     global_icon_box_ptr = calloc(1, sizeof(icon_boxes));
     global_icon_box_ptr->IconBox[0] = sx;
     global_icon_box_ptr->IconBox[1] = sy;

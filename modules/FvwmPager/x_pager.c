@@ -512,9 +512,12 @@ void initialize_pager(void)
   if (is_transient)
   {
     rectangle screen_g;
+    fscreen_scr_arg fscr;
 
+    fscr.xypos.x = window_x;
+    fscr.xypos.y = window_y;
     FScreenGetScrRect(
-      window_x, window_y,
+      &fscr, FSCREEN_XYPOS,
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     if (window_w + window_x > screen_g.x + screen_g.width)
     {
