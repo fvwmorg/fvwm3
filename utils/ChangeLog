@@ -1,3 +1,14 @@
+2000-01-20  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-menu-desktop.in:
+	* fvwm-menu-desktop.1:
+	New option --menu-style and fix check for perl >= 5.6
+	(the value of $] is 5.006).
+	
+	* fvwm-menu-directory.in:
+	* fvwm-menu-directory.1:
+	New option --menu-style
+	
 2000-01-01  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-desktop.in:

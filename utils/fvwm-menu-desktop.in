@@ -165,9 +165,8 @@ my $MENU_DESTROY = '';
 my $DESC_DIR = '';
 my $SUBMENUS_PREFIX = '';
 
-# Menu Style options: experimental and not documented ...
+# Menu Style option
 my $MENU_STYLE = "";
-my $FONT = "";
 my @menusForStyle = ();
 
 my $name = "";
@@ -220,7 +219,6 @@ GetOptions(
 	"uniconv=s"                => \$UNICONV,
 	"uniconv-exec=s"           => \$UNICONV_EXEC,
 	"menu-style=s"             => \$MENU_STYLE,
-	"font=s"                   => \$FONT,
 	"check-app!"               => \$CHECK,
 	"wm-icons"                 => \$wmIcons,
 	"time-limit=s"             => \$timelimit,
@@ -426,7 +424,7 @@ if ( $STYLE ) {
 # LANG init for UTF-8
 if ($UTF8) {
 	# check if we have perl >= 5.6
-	if ($] < 5.6) {
+	if ($] < 5.006) {
 		$UTF8_TR = "";
 	} else {
 		my $l = substr($LANG,0,2);
@@ -557,10 +555,8 @@ print "$STYLEOUTPUT" if ( $STYLE );
 
 # output the menu style
 if ($MENU_STYLE ne "") {
-	print "MenuStyle " . '"' . $MENU_STYLE . '"' . " font  $FONT\n"
-		if $FONT ne "";
 	foreach (@menusForStyle) {
-		print "ChangeMenuStyle " . '"' . $MENU_STYLE . '"' . " $_\n";
+		print qq(ChangeMenuStyle "$MENU_STYLE" "$_"\n);
 	}
 }
 
@@ -984,6 +980,7 @@ Options:
 	--utf8                    For desktop entries coded in UTF-8 (KDE2)
 	--uniconv                 Use (un)iconv for UTF-8 translation
 	--uniconv-exec            uniconv or iconv (default)
+	--menu-style name         use name for the menu style of FVWM menus
 	--[no]check-app           [do not] check that apps are in your path
 	--time-limit NUM          limit script running time to NUM seconds
 Short options are ok if not ambiguous: -h, -x, -icon-a.

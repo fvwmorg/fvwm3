@@ -14,7 +14,7 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH fvwm-menu-desktop 0.7 "13 Aug 1999"
+.TH fvwm-menu-desktop 0.8 "12 Dec 2000"
 .UC
 .SH NAME
 fvwm-menu-desktop \- builds Gnome and KDE menus and style commands for FVWM
@@ -55,6 +55,7 @@ fvwm-menu-desktop
 [ \fB\-\-utf8\fR ]
 [ \fB\-\-uniconv\fR \fIcharset\fR ]
 [ \fB\-\-uniconv-exec\fR \fIexec\fR ]
+[ \fB\-\-menu-style\fR \fIname\fR ]
 [ \fB\-\-no\-check\-app\fR ]
 [ \fB\-\-time\-limit\fR \fINUM\fR ]
 
@@ -152,7 +153,7 @@ If you think that fvwm-menu-desktop slows your startup too much do
 not use PipeRead.  Instead run  fvwm-menu-desktop
 and 
 redirect the menu to a file and Read that file in
-your .fvwm2rc file).
+your .fvwm2rc file.
 Another possibility is to use DynamicPopupAction
 (with fvwm menu), the menu (and the styles) will be built only if
 you pop up the menu. The
@@ -174,6 +175,11 @@ I PipeRead 'fvwm-menu-desktop \\
 + I AddToMenu "kde\-all" "" Nop
 + I AddToMenu "kde\-all" "Kde System%mini/mini\-k.xpm%" Popup kde\-sys
 .EE
+
+fvwm-menu-desktop take in account your $LANG environement variable
+(You can over read it by using the --lang option).
+You can use the --menus-style option to choose the appropriated font 
+if you need a different font from the font of your default menu style.
 
 .SH OPTIONS
 
@@ -400,7 +406,7 @@ Assume that the desktop entries used UTF-8 encoding. This is the case
 with KDE version 2 and will be probably the case with GNOME version 2.
 At the present time this option work only if you have perl version 5.6 
 or better and if your language use latin-1 font. If one of the above conditions
-is not satisfied, then this option is equivalent to \-\-lang en. For others,
+is not satisfied, then this option is equivalent to \-\-lang en. For others
 languages/charsets use the \-\-uniconv option. The avantage of this option
 against the next option is that it is fast.
 .IP "\fB\-\-uniconv\fR \fIcharset\fR"
@@ -416,6 +422,9 @@ the result into a file and read this file in your FVWM configuration.
 .IP "\fB\-\-uniconv-exec\fR \fIexec\fR"
 Where exec is either iconv or uniconv. Allows to choose the program which 
 perform the UTF8 translation in the case of the \-\-uniconv option.
+.IP "\fB\-\-menu-style\fR \fIname\fR"
+By default the FVWM menus generated used the default MenuStyle (i.e., the
+"*" MenuStyle). You can specify another MenuStyle by using this option.
 .IP "\fB\-\-[no]check-app\fR"
 Either check or don't check that applications to execute are in your path.
 Default is \-\-check-app.
