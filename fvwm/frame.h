@@ -37,6 +37,7 @@ typedef enum
 
 typedef struct
 {
+        rectangle titlebar_g;
         rectangle title_g;
         rectangle button_g[NUMBER_OF_BUTTONS];
 } frame_title_layout_type;
@@ -60,7 +61,7 @@ void frame_update_move_resize_args(
 	frame_move_resize_args mr_args, rectangle *end_g);
 void frame_free_move_resize_args(
 	FvwmWindow *fw, frame_move_resize_args mr_args);
-void frame_get_title_bar_dimensions(
+void frame_get_titlebar_dimensions(
 	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
         frame_title_layout_type *title_layout);
 void frame_get_sidebar_geometry(

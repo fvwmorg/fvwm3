@@ -1199,13 +1199,14 @@ void setup_frame_window(
 	valuemask = CWBackingStore | CWBackPixmap | CWEventMask | CWSaveUnder;
 	attributes.backing_store = NotUseful;
 	attributes.background_pixmap = None;
+	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
 	attributes.event_mask = XEVMASK_FRAMEW;
 	attributes.save_under = False;
 	/* create the frame window, child of root, grandparent of client */
 	FW_W_FRAME(fw) = XCreateWindow(
 		dpy, Scr.Root, fw->frame_g.x, fw->frame_g.y,
 		fw->frame_g.width, fw->frame_g.height, 0, CopyFromParent,
-		InputOutput, CopyFromParent, valuemask, &attributes);
+		InputOutput, CopyFromParent, valuemask | CWCursor, &attributes);
 	XSaveContext(dpy, FW_W(fw), FvwmContext, (caddr_t) fw);
 	XSaveContext(dpy, FW_W_FRAME(fw), FvwmContext, (caddr_t) fw);
 

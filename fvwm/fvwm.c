@@ -546,6 +546,7 @@ int main(int argc, char **argv)
   XChangeProperty(dpy, Scr.Root, _XA_MIT_PRIORITY_COLORS,
 		  XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
+  Scr.FvwmCursors = CreateCursors(dpy);
   /* create a window which will accept the keyboard focus when no other
      windows have it */
   /* do this before any RC parsing as some GC's are created from this window
@@ -553,12 +554,13 @@ int main(int argc, char **argv)
   attributes.event_mask = XEVMASK_NOFOCUSW;
   attributes.override_redirect = True;
   attributes.colormap = Pcmap;
+  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.background_pixmap = None;
   attributes.border_pixel = 0;
-  Scr.NoFocusWin=XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth,
-                               InputOutput, Pvisual,
-                               CWEventMask | CWOverrideRedirect | CWColormap
-                               | CWBackPixmap | CWBorderPixel, &attributes);
+  Scr.NoFocusWin=XCreateWindow(
+	  dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth, InputOutput, Pvisual,
+	  CWEventMask | CWOverrideRedirect | CWColormap | CWBackPixmap |
+	  CWBorderPixel | CWCursor, &attributes);
   XMapWindow(dpy, Scr.NoFocusWin);
   SetMWM_INFO(Scr.NoFocusWin);
   FOCUS_SET(Scr.NoFocusWin);
@@ -617,7 +619,6 @@ int main(int argc, char **argv)
    */
   LoadWindowStates(state_filename);
 
-  Scr.FvwmCursors = CreateCursors(dpy);
   InitVariables();
   if (visualClass != -1 || visualId != -1) {
     /* this is so that menus use the (non-default) fvwm colormap */

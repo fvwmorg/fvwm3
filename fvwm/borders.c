@@ -609,58 +609,6 @@ static void get_common_decorations(
 	return;
 }
 
-int border_context_to_parts(
-	int context)
-{
-	if (context == C_FRAME || context == C_SIDEBAR ||
-	    context == (C_FRAME | C_SIDEBAR))
-	{
-		return PART_FRAME;
-	}
-	else if (context == C_F_TOPLEFT)
-	{
-		return PART_BORDER_NW;
-	}
-	else if (context == C_F_TOPRIGHT)
-	{
-		return PART_BORDER_NE;
-	}
-	else if (context == C_F_BOTTOMLEFT)
-	{
-		return PART_BORDER_SW;
-	}
-	else if (context == C_F_BOTTOMRIGHT)
-	{
-		return PART_BORDER_SE;
-	}
-	else if (context == C_SB_LEFT)
-	{
-		return PART_BORDER_W;
-	}
-	else if (context == C_SB_RIGHT)
-	{
-		return PART_BORDER_E;
-	}
-	else if (context == C_SB_TOP)
-	{
-		return PART_BORDER_N;
-	}
-	else if (context == C_SB_BOTTOM)
-	{
-		return PART_BORDER_S;
-	}
-	else if (context == C_TITLE)
-	{
-		return PART_TITLE;
-	}
-	else if (context & (C_LALL | C_RALL))
-	{
-		return PART_BUTTONS;
-	}
-
-	return PART_NONE;
-}
-
 static window_parts border_get_changed_border_parts(
 	FvwmWindow *fw, rectangle *old_sidebar_g, rectangle *new_sidebar_g)
 {
@@ -1543,10 +1491,11 @@ static void border_draw_all_border_parts(
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 	draw_handles = (draw_parts & PART_HANDLES);
 #if 0
-{
-static int count = 0;
-fprintf(stderr, "drawing border parts 0x%04x %d\n", draw_parts, count++);
-}
+	{
+		static int count = 0;
+		fprintf(stderr, "drawing border parts 0x%04x %d\n", draw_parts,
+			count++);
+	}
 #endif
 	for (part = PART_BORDER_N; (part & PART_FRAME); part <<= 1)
 	{
@@ -2180,7 +2129,7 @@ static void border_draw_title(
 	p = border_create_decor_pixmap(td->cd, &(td->layout.title_g));
 	/* set the background tile */
 #if 0
-fprintf(stderr,"drawing title\n");
+	fprintf(stderr,"drawing title\n");
 #endif
 	border_set_title_pixmap(fw, td, p);
 	/* apply the pixmap and destroy it */
@@ -2201,7 +2150,7 @@ static void border_draw_buttons(
 
 	/* draw everything in a big loop */
 #if 0
-fprintf(stderr, "drawing buttons 0x%04x\n", td->tbstate.draw_bmask);
+	fprintf(stderr, "drawing buttons 0x%04x\n", td->tbstate.draw_bmask);
 #endif
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
@@ -2237,8 +2186,8 @@ static window_parts border_get_titlebar_descr(
 	{
 		old_g = &fw->frame_g;
 	}
-	frame_get_title_bar_dimensions(fw, old_g, NULL, &ret_td->old_layout);
-	frame_get_title_bar_dimensions(fw, new_g, NULL, &ret_td->layout);
+	frame_get_titlebar_dimensions(fw, old_g, NULL, &ret_td->old_layout);
+	frame_get_titlebar_dimensions(fw, new_g, NULL, &ret_td->layout);
 	/* initialise flags */
 	if ((pressed_parts & PART_BUTTONS) != PART_NONE && pressed_button >= 0)
 	{
@@ -2426,6 +2375,58 @@ static void border_draw_border_parts(
 }
 
 /* ---------------------------- interface functions ------------------------- */
+
+int border_context_to_parts(
+	int context)
+{
+	if (context == C_FRAME || context == C_SIDEBAR ||
+	    context == (C_FRAME | C_SIDEBAR))
+	{
+		return PART_FRAME;
+	}
+	else if (context == C_F_TOPLEFT)
+	{
+		return PART_BORDER_NW;
+	}
+	else if (context == C_F_TOPRIGHT)
+	{
+		return PART_BORDER_NE;
+	}
+	else if (context == C_F_BOTTOMLEFT)
+	{
+		return PART_BORDER_SW;
+	}
+	else if (context == C_F_BOTTOMRIGHT)
+	{
+		return PART_BORDER_SE;
+	}
+	else if (context == C_SB_LEFT)
+	{
+		return PART_BORDER_W;
+	}
+	else if (context == C_SB_RIGHT)
+	{
+		return PART_BORDER_E;
+	}
+	else if (context == C_SB_TOP)
+	{
+		return PART_BORDER_N;
+	}
+	else if (context == C_SB_BOTTOM)
+	{
+		return PART_BORDER_S;
+	}
+	else if (context == C_TITLE)
+	{
+		return PART_TITLE;
+	}
+	else if (context & (C_LALL | C_RALL))
+	{
+		return PART_BUTTONS;
+	}
+
+	return PART_NONE;
+}
 
 void border_get_part_geometry(
 	FvwmWindow *fw, window_parts part, rectangle *sidebar_g,
@@ -2692,7 +2693,6 @@ void CMD_BorderStyle(F_CMD_ARGS)
 
 	Scr.flags.do_need_window_update = 1;
 	decor->flags.has_changed = 1;
-
 	for (prev = action; (parm = PeekToken(action, &action)); prev = action)
 	{
 		if (StrEquals(parm, "active") || StrEquals(parm, "inactive"))
@@ -2700,6 +2700,7 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			int len;
 			char *end, *tmp;
 			DecorFace tmpdf, *df;
+
 			memset(&tmpdf.style, 0, sizeof(tmpdf.style));
 			DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 			tmpdf.next = NULL;
@@ -2717,7 +2718,9 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			}
 			df->flags.has_changed = 1;
 			while (isspace(*action))
+			{
 				++action;
+			}
 			if (*action != '(')
 			{
 				if (!*action)
@@ -2729,7 +2732,9 @@ void CMD_BorderStyle(F_CMD_ARGS)
 					return;
 				}
 				while (isspace(*action))
+				{
 					++action;
+				}
 				if (ReadDecorFace(action, &tmpdf,-1,True))
 				{
 					FreeDecorFace(dpy, df);
