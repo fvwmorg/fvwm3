@@ -1,3 +1,18 @@
+2002-04-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm2.1:
+	* NEWS:
+	* AUTHORS:
+	added new entry about CurrentAtEnd
+
+	* colorset.c:
+	minor reformatting and spell checking
+
+2002-04-23  Jochen Klenner  <jochen.klenner@gmx.net>
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	Added new Windowlist option CurrentAtEnd
+
 2002-04-22  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/colorset.c (parse_colorset):
@@ -7,7 +22,7 @@
 	* fvwm/Makefile.am:
 	* acconfig.h:
 	* configure.in:
-	Added Xrender detection and link fvwm2 if needed
+	Added Xrender detection and link fvwm if needed
 
 	* libs/PictureGraphics.{c,h}:
 	* libs/FRender.{c,h}:
@@ -98,7 +113,7 @@
 
 2002-04-21  Mikhael Goikhman  <migo@homemail.com>
 
-	* fvwm/fvwm2.1:
+	* fvwm/fvwm.1:
 	fixed two places
 
 2002-04-19  Hippo

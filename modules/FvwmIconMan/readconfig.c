@@ -24,9 +24,6 @@
 #include <libs/FShape.h>
 #include <libs/Module.h>
 
-static char const rcsid[] =
-  "$Id$";
-
 /************************************************************************
  *
  * Builtin functions:

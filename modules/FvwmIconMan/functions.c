@@ -18,9 +18,6 @@
 #include "xmanager.h"
 #include "libs/Module.h"
 
-static char const rcsid[] =
-  "$Id$";
-
 static Button *get_select_button (void);
 
 static struct {

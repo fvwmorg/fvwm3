@@ -20,9 +20,6 @@
 
 #include "debuglevels.h"
 
-static char const rcsid[] =
-  "$Id$";
-
 static FILE *console = NULL;
 
 void

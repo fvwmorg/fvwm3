@@ -1,3 +1,8 @@
+2002-04-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-root.c:
+	minor reformatting and spell checking
+
 2002-04-22  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-root.c (*):

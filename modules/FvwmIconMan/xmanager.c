@@ -24,9 +24,6 @@
 #include "xmanager.h"
 #include "libs/PictureGraphics.h"
 
-static char const rcsid[] =
-  "$Id$";
-
 extern char *MyName;
 extern FlocaleWinString *FwinString;
 

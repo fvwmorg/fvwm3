@@ -56,7 +56,6 @@ $HIST_SIZE = 100;
 $MAX_COMMAND_SIZE = 1000;
 
 main();
-print "Done\n";
 exit;
 
 

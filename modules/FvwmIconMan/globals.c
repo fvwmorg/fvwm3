@@ -20,9 +20,6 @@
 
 #define DEFAULT_MOUSE "0 N sendcommand \"Silent Iconify\""
 
-static char const rcsid[] =
-  "$Id$";
-
 GlobalData globals;
 ContextDefaults contextDefaults[] = {
   { "plain", BUTTON_UP, { "black", "black" }, { "white", "gray"} },

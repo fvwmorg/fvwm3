@@ -398,11 +398,13 @@ void parse_colorset(int n, char *line)
 
 			if (cs->picture->picture)
 			{
-				cs->pixmap = XCreatePixmap(dpy, win, cs->width,
-							   cs->height, Pdepth);
+				cs->pixmap = XCreatePixmap(
+					dpy, win, cs->width,
+					cs->height, Pdepth);
 				XSetClipMask(dpy, gc, cs->picture->mask);
-				XCopyArea(dpy, cs->picture->picture, cs->pixmap,
-					  gc, 0, 0, cs->width, cs->height, 0, 0);
+				XCopyArea(
+					dpy, cs->picture->picture, cs->pixmap,
+					gc, 0, 0, cs->width, cs->height, 0, 0);
 				XSetClipMask(dpy, gc, None);
 			}
 			if (cs->pixmap)
@@ -429,8 +431,8 @@ void parse_colorset(int n, char *line)
 							dpy, cs->mask,
 							monoGC, 0, 0,
 							cs->width, cs->height);
-						XSetFunction(dpy, monoGC,
-							     GXcopy);
+						XSetFunction(
+							dpy, monoGC, GXcopy);
 					}
 				}
 			}
@@ -475,8 +477,9 @@ void parse_colorset(int n, char *line)
 						 picture->mask == None)
 					{
 						fvwm_msg(
-						    ERR, name, "shape pixmap "
-						    " must be of depth 1");
+							ERR, name,
+							"shape pixmap must be "
+							"of depth 1");
 						SafeDestroyPicture(dpy, picture);
 					}
 					else
@@ -500,16 +503,16 @@ void parse_colorset(int n, char *line)
 								picture->width,
 								picture->height,
 								1);
-							if (cs->shape_mask != 
+							if (cs->shape_mask !=
 							    None)
 							{
 								XCopyPlane(
-								 dpy, mask,
-								 cs->shape_mask,
-								 monoGC, 0, 0,
-								 picture->width,
-								 picture->height,
-								 0, 0, 1);
+								dpy, mask,
+								cs->shape_mask,
+								monoGC, 0, 0,
+								picture->width,
+								picture->height,
+								0, 0, 1);
 							}
 						}
 					}
@@ -957,25 +960,23 @@ void parse_colorset(int n, char *line)
 		XSetForeground(dpy, gc, cs->bg);
 		if (XRenderSupport && cs->alpha_pixmap != None)
 		{
-			Pixmap temp = XCreatePixmap(dpy, win, cs->width,
-						    cs->height, Pdepth);
-			XFillRectangle(dpy, temp, gc, 0, 0, cs->width,
-				       cs->height);
-			PGraphicsTileRectangle(dpy, win,
-					       cs->pixmap, None,
-					       cs->alpha_pixmap,
-					       Pdepth,
-					       0, 0,
-					       temp, None, None,
-					       0, 0, cs->width, cs->height);
+			Pixmap temp = XCreatePixmap(
+				dpy, win, cs->width, cs->height, Pdepth);
+			XFillRectangle(
+				dpy, temp, gc, 0, 0, cs->width, cs->height);
+			PGraphicsTileRectangle(
+				dpy, win, cs->pixmap, None, cs->alpha_pixmap,
+				Pdepth, 0, 0, temp, None, None,
+				0, 0, cs->width, cs->height);
 			add_to_junk(cs->pixmap);
 			cs->pixmap = temp;
 		}
 		else
 		{
 			XSetClipMask(dpy, gc, cs->mask);
-			XFillRectangle(dpy, cs->pixmap, gc, 0, 0, cs->width,
-				       cs->height);
+			XFillRectangle(
+				dpy, cs->pixmap, gc, 0, 0, cs->width,
+				cs->height);
 		}
 		XSetClipMask(dpy, gc, None);
 		has_pixmap_changed = True;
@@ -1026,11 +1027,10 @@ void parse_colorset(int n, char *line)
 	if (XRenderSupport && cs->picture != None && cs->tint_percent > 0 &&
 	    (has_pixmap_changed || has_bg_changed || has_tint_changed))
 	{
-		PGraphicsTintRectangle(dpy, win, cs->tint_percent, cs->tint,
-				       (cs->do_tint_use_mask)?
-				       cs->picture->mask:None,
-				       cs->pixmap,
-				       0, 0, cs->width, cs->height);
+		PGraphicsTintRectangle(
+			dpy, win, cs->tint_percent, cs->tint,
+			(cs->do_tint_use_mask)? cs->picture->mask: None,
+			cs->pixmap, 0, 0, cs->width, cs->height);
 		has_pixmap_changed = True;
 	}
 

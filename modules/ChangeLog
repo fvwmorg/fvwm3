@@ -1,3 +1,16 @@
+2002-04-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* modules/FvwmPerl/FvwmPerl.1:
+	* modules/FvwmPerl/FvwmPerl.in:
+	renamed --continue to --stay, documented the planned preprocess action
+
+	* modules/FvwmIconMan/*.c:
+	* modules/FvwmCommand/FvwmCommandS.c:
+	remove $Id lines that only make patches harder
+
+	* modules/FvwmButtons/FvwmButtons.1:
+	make it clear there are 2 examples, added DestroyModuleConfig
+
 2002-04-22  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTheme/FvwmTheme.1:

@@ -26,95 +26,103 @@ Pixmap rootImage = None;
 
 int main(int argc, char **argv)
 {
-  Atom prop, type, e_prop;
-  int format;
-  unsigned long length, after;
-  unsigned char *data;
-  int i = 1;
-  Bool FreeEsetroot = False;
-  Bool Dummy = False;
+	Atom prop, type, e_prop;
+	int format;
+	unsigned long length, after;
+	unsigned char *data;
+	int i = 1;
+	Bool FreeEsetroot = False;
+	Bool Dummy = False;
 
-  if(argc < 2)
-  {
-    fprintf(stderr,"fvwm-root Version %s with support for: XBM "
+	if (argc < 2)
+	{
+		fprintf(
+			stderr, "fvwm-root version %s with support for: XBM "
 #ifdef XPM
-	    "XPM "
+			"XPM "
 #endif
 #ifdef HAVE_PNG
-	    "PNG"
+			"PNG"
 #endif
-	    "\n", VERSION);
-    fprintf(stderr,"Usage: fvwm-root [-fe -np -d] file\n");
-    fprintf(stderr,"Try Again\n");
-    exit(1);
-  }
-  dpy = XOpenDisplay(display_name);
-  if (!dpy)
-  {
-    fprintf(stderr, "fvwm-root:  unable to open display '%s'\n",
-	    XDisplayName (display_name));
-    exit (2);
-  }
-  screen = DefaultScreen(dpy);
-  root = RootWindow(dpy, screen);
+			"\n", VERSION);
+		fprintf(stderr, "Usage: fvwm-root [-fe -np -d] file\n");
+		fprintf(stderr, "Try Again\n");
+		exit(1);
+	}
+	dpy = XOpenDisplay(display_name);
+	if (!dpy)
+	{
+		fprintf(
+			stderr, "fvwm-root: unable to open display '%s'\n",
+			XDisplayName (display_name));
+		exit(2);
+	}
+	screen = DefaultScreen(dpy);
+	root = RootWindow(dpy, screen);
   
-  for(i=1;i<argc-1;i++)
-  {
-    if (strcasecmp(argv[i],"-fe") == 0)
-    {
-      FreeEsetroot = True;
-    }
-    else if (strcasecmp(argv[i],"-d") == 0)
-    {
-      Dummy = True;
-    }
-    else
-    {
-      fprintf(stderr, "fvwm-root:  unknow option '%s'\n", argv[i]);
-    }
-  }
+	for (i = 1; i < argc - 1; i++)
+	{
+		if (strcasecmp(argv[i], "-fe") == 0)
+		{
+			FreeEsetroot = True;
+		}
+		else if (strcasecmp(argv[i], "-d") == 0)
+		{
+			Dummy = True;
+		}
+		else
+		{
+			fprintf(
+				stderr, "fvwm-root: unknown option '%s'\n",
+				argv[i]);
+		}
+	}
 
-  if (Dummy || strcasecmp(argv[argc-1],"-d") == 0)
-  {
-    Dummy = True;
-  }
-  else
-  {
-    SetRootWindow(argv[argc-1]);
-  }
+	if (Dummy || strcasecmp(argv[argc-1], "-d") == 0)
+	{
+		Dummy = True;
+	}
+	else
+	{
+		SetRootWindow(argv[argc-1]);
+	}
 
-  prop = XInternAtom(dpy, "_XSETROOT_ID", False);
-  (void)XGetWindowProperty(dpy, root, prop, 0L, 1L, True, AnyPropertyType,
-			   &type, &format, &length, &after, &data);
-  if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0)
-  {
-    XKillClient(dpy, *((Pixmap *)data));
-  }
+	prop = XInternAtom(dpy, "_XSETROOT_ID", False);
+	(void)XGetWindowProperty(
+		dpy, root, prop, 0L, 1L, True, AnyPropertyType,
+		&type, &format, &length, &after, &data);
+	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0)
+	{
+		XKillClient(dpy, *((Pixmap *)data));
+	}
 
-  if (FreeEsetroot)
-  {
-    if (data != NULL)
-      XFree(data);
-    e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
-    (void)XGetWindowProperty(dpy, root, e_prop, 0L, 1L, True, AnyPropertyType,
-			     &type, &format, &length, &after, &data);
-    if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0)
-    {
-      XKillClient(dpy, *((Pixmap *)data));
-    }
-    XDeleteProperty(dpy, root, e_prop);
-  }
+	if (FreeEsetroot)
+	{
+		if (data != NULL)
+			XFree(data);
+		e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
+		(void)XGetWindowProperty(
+			dpy, root, e_prop, 0L, 1L, True, AnyPropertyType,
+			&type, &format, &length, &after, &data);
+		if (type == XA_PIXMAP && format == 32 &&
+			length == 1 && after == 0)
+		{
+			XKillClient(dpy, *((Pixmap *)data));
+		}
+		XDeleteProperty(dpy, root, e_prop);
+	}
 
-  if (!Dummy)
-  {
-    if (data != NULL)
-      XFree(data);
-    XSetCloseDownMode(dpy, RetainPermanent);
-  }
-  XChangeProperty(dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
-		  (unsigned char *) &rootImage, 1);
-  XCloseDisplay(dpy);
-  return 0;
+	if (!Dummy)
+	{
+		if (data != NULL)
+			XFree(data);
+		XSetCloseDownMode(dpy, RetainPermanent);
+	}
+	XChangeProperty(
+		dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
+		(unsigned char *) &rootImage, 1);
+	XCloseDisplay(dpy);
+	return 0;
 }
 
 
@@ -128,12 +136,12 @@ void SetRootWindow(char *tline)
 	fpf.alloc_pixels = 0;
 	fpf.alpha = 0;
 	PictureInitCMap(dpy);
-	if (!PImageLoadPixmapFromFile(dpy, root, tline, 0,
-				      &temp_pix, &shapeMask, NULL,
-				      &w, &h, &depth,
-				      0, NULL, fpf))
+	if (!PImageLoadPixmapFromFile(
+		dpy, root, tline, 0, &temp_pix, &shapeMask, NULL,
+		&w, &h, &depth, 0, NULL, fpf))
 	{
-		fprintf(stderr,"[fvwm-root] fail to load image file '%s'\n",
+		fprintf(
+			stderr,"[fvwm-root] failed to load image file '%s'\n",
 			tline);
 	}
 	if (depth == Pdepth)
@@ -147,14 +155,14 @@ void SetRootWindow(char *tline)
 
 		gcv.background= WhitePixel(dpy, screen);
 		gcv.foreground= BlackPixel(dpy, screen);
-		gc = fvwmlib_XCreateGC(dpy, root,
-				       GCForeground | GCBackground, &gcv);
+		gc = fvwmlib_XCreateGC(
+			dpy, root, GCForeground | GCBackground, &gcv);
 		rootImage = XCreatePixmap(dpy, root, w, h, Pdepth);
-		XCopyPlane(dpy, temp_pix, rootImage, gc, 0,0,w,h, 0,0,1);
+		XCopyPlane(dpy, temp_pix, rootImage, gc, 0, 0, w, h, 0, 0, 1);
 		XFreePixmap(dpy, temp_pix);
-		XFreeGC(dpy,gc);
+		XFreeGC(dpy, gc);
 	}
 	XSetWindowBackgroundPixmap(dpy, root, rootImage);
 	save_colors = 1;
-	XClearWindow(dpy,root);
+	XClearWindow(dpy, root);
 }

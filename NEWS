@@ -97,6 +97,8 @@ Changes in alpha release 2.5.1 (not released yet)
 
 * FvwmTheme is obsolete now, but still supported for some time.
 
+* New WindowList option CurrentAtEnd.
+
 ---------------------------------------------------------------------
 
 Changes in alpha release 2.5.0 (27-Jan-2002)

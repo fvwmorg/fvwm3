@@ -996,6 +996,7 @@ The other panels are specified after the root panel:
 .nf
 .sp
 ########## PANEL WinOps
+DestroyModuleConfig WinOps: *
 *WinOps: Back bisque2
 *WinOps: Geometry -3-3
 *WinOps: Columns 1
@@ -1006,6 +1007,7 @@ The other panels are specified after the root panel:
 *WinOps: (Title Raise,  Icon Up,          Action Raise )
 
 ########## PANEL Tools
+DestroyModuleConfig Tools: *
 *Tools: Back bisque2
 *Tools: Geometry -1-1
 *Tools: Columns 1
@@ -1027,10 +1029,13 @@ this without geometry specs for the buttons:
 .nf
 .sp
 ##########################################################
+# Another example
+##########################################################
 
 # Make it titlebar-less, sticky, and give it an icon
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 
+DestroyModuleConfig FvwmButtons: *
 *FvwmButtons: Font        5x7
 *FvwmButtons: Back rgb:90/80/90
 *FvwmButtons: Fore        black

@@ -1,6 +1,4 @@
-/* $Id$
- * $Source$
- *
+/*
  * Fvwm command input interface.
  *
  * Copyright 1997, Toshi Isogai. No guarantees or warantees or anything
