@@ -72,7 +72,6 @@ static int Channel[2];
 static XColor xcol;
 static unsigned long color;             /* color for animation */
 static Pixmap pixmap = None;		/* pixmap for weirdness */
-static Bool transmit_pixmap = False;	/* tell fvwm to use the pixmap */
 static XGCValues gcv;
 static int animate_none = 0;            /* count bypassed animations */
 static Bool stop_recvd = False;         /* got stop command */
@@ -896,12 +895,10 @@ static char *table[]= {
 #define Stop_arg 8
   "Time",
 #define Time_arg 9
-  "TransmitPixmap",
-#define TransmitPixmap_arg 10
   "Twist",
-#define Twist_arg 11
+#define Twist_arg 10
   "Width"
-#define Width_arg 12
+#define Width_arg 11
 };	/* Keep list in alphabetic order, using binary search! */
 static void ParseOptions() {
   char *buf;
@@ -935,7 +932,6 @@ void ParseConfigLine(char *buf) {
     if ((e = FindToken(p,table,char *))) { /* config option ? */
       if ((strcasecmp(*e,"Stop") != 0)
           && (strcasecmp(*e,"Custom") != 0)
-          && (strcasecmp(*e,"TransmitPixmap") != 0)
           && (strcasecmp(*e,"Save") != 0)) { /* no arg commands */
         p+=strlen(*e);		/* skip matched token */
 	p = GetNextSimpleOption( p, &q );
@@ -1024,9 +1020,6 @@ void ParseConfigLine(char *buf) {
       case Time_arg:                  /* Time in milliseconds */
         Animate.time = (clock_t)atoi(q);
         break;
-      case TransmitPixmap_arg:
-        transmit_pixmap = True;
-        break;
       case Twist_arg:                 /* Twist */
         Animate.twist = atof(q);
         break;
@@ -1061,7 +1054,7 @@ static void CreateDrawGC() {
   if (Animate.pixmap) {                 /* if pixmap called for */
     Picture *picture;
     
-    picture = GetPictureAndFree(dpy, RootWindow(dpy,scr), 0, Animate.pixmap, 0);
+    picture = GetPicture(dpy, RootWindow(dpy,scr), 0, Animate.pixmap, 0);
     if (!picture)
       fprintf(stderr, "%s: Could not load pixmap '%s'\n",
 	      MyName + 1, Animate.pixmap);
@@ -1071,7 +1064,6 @@ static void CreateDrawGC() {
 			       picture->height, picture->depth);
 	XCopyArea(dpy, picture->picture, pixmap, DefaultGC(dpy, scr), 0, 0,
 		  picture->width, picture->height, 0, 0);
-	XSync(dpy, False);
       }
       DestroyPicture(dpy, picture);
     }
@@ -1093,24 +1085,14 @@ static void CreateDrawGC() {
   }
   gcv.line_width = Animate.width;
   gcv.foreground = color;
-  gcv.background = color;
   myfprintf((stderr,"Color is %ld\n",gcv.foreground));
   gcv.subwindow_mode = IncludeInferiors;
   if (pixmap) {
     gcv.tile = pixmap;
     gcv.fill_style = FillTiled;
-  } else {
-    gcv.tile = None;
-    gcv.fill_style = FillSolid;
   }
-  gc=XCreateGC(dpy, root, GCFunction | GCForeground | GCLineWidth | GCBackground
-	       | GCSubwindowMode | GCFillStyle | (pixmap ? GCTile : 0), &gcv);
-  XSync(dpy, False);
-  if (pixmap && transmit_pixmap) {
-    char cmd[32];
-    sprintf(cmd, "XORPixmap %ld", pixmap);
-    SendText(Channel, cmd, 0);
-  }
+  gc=XCreateGC(dpy, root, GCFunction | GCForeground | GCLineWidth
+	       | GCSubwindowMode | (pixmap ? GCFillStyle | GCTile : 0), &gcv);
 }
 
 /*
