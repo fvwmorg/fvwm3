@@ -48,6 +48,8 @@ Changes in alpha release 2.5.11 (not released yet)
 
 * New menu option TearOffImmediately.
 
+* Added support for Solaris' Xinerama.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)

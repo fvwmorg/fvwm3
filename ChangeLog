@@ -1,8 +1,17 @@
+2004-08-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/FScreen.c:
+	cleaned up ifdef hell
+
+	* configure.in:
+	fixed solaris xinerama test
+
 2004-08-25  Dan Espen  <dane@mk.telcordia.com>
 
-	* configure.in: 
-	* acconfig.h: 
-	* libs/FScreen.c (solaris_XineramaQueryScreens): Solaris Xinerama support.
+	* configure.in:
+	* acconfig.h:
+	* libs/FScreen.c (solaris_XineramaQueryScreens):
+	Solaris Xinerama support.
 	* AUTHORS:  Update.
 	Patch by Chris Ross.
 

@@ -296,8 +296,12 @@ AC_ARG_ENABLE(xinerama,
 
 if test x"$with_xinerama" != xno; then
   $UNSET ac_cv_lib_Xinerama_XineramaIsActive
+  _check_solaris_xinerama=no
   AC_CHECK_LIB(Xinerama, XineramaIsActive,
     with_xinerama=yes; Xinerama_LIBS=-lXinerama; AC_DEFINE(HAVE_XINERAMA),
+    _check_solaris_xinerama=yes,
+    [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
+  if test x"$_check_solaris_xinerama" = xyes; then
     AC_CHECK_LIB(Xext, XineramaGetState,
       [ AC_DEFINE(HAVE_XINERAMA) AC_DEFINE(HAVE_SOLARIS_XINERAMA)
       with_xinerama=yes; Xinerama_LIBS=-lXext
@@ -309,8 +313,9 @@ if test x"$with_xinerama" != xno; then
       CPPFLAGS="$my_CPPFLAGS"],
     with_xinerama=no; Xinerama_LIBS=
     problem_xinerama=": Failed to detect libXinerama",
-    [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS]),
-    [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
+    [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+  fi
+  $UNSET _check_solaris_xinerama
 fi
 AC_SUBST(Xinerama_LIBS)
 AC_SUBST(Xinerama_CFLAGS)
