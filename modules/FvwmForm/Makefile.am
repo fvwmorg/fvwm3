@@ -48,7 +48,7 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS)  \
 	$(Xft_LIBS) -lm $(FT2_LIBS) $(Bidi_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS) \
-	$(FT2_CFLAGS) $(Bidi_LIBS)
+	$(FT2_CFLAGS) $(Bidi_CFLAGS)
 
 FvwmForm-Setup: FvwmForm-Setup.in Makefile
 	rm -f $@
