@@ -10,7 +10,7 @@ fvwm2_SOURCES = add_window.c bindings.c borders.c builtins.c colormaps.c   \
 	functions.h fvwm.c fvwm.h fvwmdebug.c fvwmdebug.h icccm2.c icons.c \
 	menus.c menus.h misc.c misc.h modconf.c module.c module.h move.c   \
 	parse.h placement.c read.c resize.c screen.h session.c style.c	   \
-	virtual.c windows.c
+	virtual.c windows.c gnome.c
 
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 

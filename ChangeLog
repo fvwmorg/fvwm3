@@ -1,3 +1,8 @@
+1999-03-30  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/gnome.c: Missing file from the Gnome patch...
+	* fvwm/Makefile.am: Added gnome.c
+
 1999-03-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	**/*: applied Gnome patch by Jay Painter
