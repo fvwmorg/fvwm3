@@ -820,7 +820,8 @@ void StartupStuff(void)
   ** migo (20-Jun-1999): Remove state file after usage.
   ** migo (09-Jul-1999): but only on restart, otherwise it can be reused.
   */
-  if (Restarting) unlink(state_filename);
+  if (Restarting)
+    unlink(state_filename);
 
 } /* StartupStuff */
 

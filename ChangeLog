@@ -1,5 +1,13 @@
 2000-12-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/session.c (LoadWindowStates):
+	(LoadGlobalState):
+	(MatchWinToSM):
+	(SaveVersionInfo):
+	(VerifyVersionInfo):
+	ignore state file if the version or build date changed between the
+	running fvwm and the one being restarted
+
 	* fvwm/session.c (DisableSM):
 	* fvwm/fvwm.c (StartupStuff):
 	turn off the SM stuff after the initial capture so that new windows will

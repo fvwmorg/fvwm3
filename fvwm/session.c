@@ -78,6 +78,7 @@ static Bool sent_save_done = 0;
 
 static int num_match = 0;
 static Match *matches = NULL;
+static Bool does_file_version_match = False;
 
 extern Bool Restarting;
 
@@ -165,8 +166,12 @@ LoadGlobalState(char *filename)
   /* char s2[256]; */
   int i1, i2, i3, i4, i5, i6;
 
-  if (!filename || !*filename) return;
-  if ((f = fopen(filename, "r")) == NULL) return;
+  if (!does_file_version_match)
+    return;
+  if (!filename || !*filename)
+    return;
+  if ((f = fopen(filename, "r")) == NULL)
+    return;
 
   while (fgets(s, sizeof(s), f))
   {
@@ -301,6 +306,56 @@ GetClientID(Window window)
   return client_id;
 }
 
+/*
+**  Verify the current fvwm version with the version that stroed the state file.
+**  No state will be restored if versions don't match.
+*/
+static Bool VerifyVersionInfo(char *filename)
+{
+  FILE               *f;
+  char                s[4096], s1[4096];
+
+  if (!filename || !*filename)
+    return False;
+  if ((f = fopen(filename, "r")) == NULL)
+    return False;
+
+  while (fgets(s, sizeof(s), f))
+  {
+    sscanf(s, "%4000s", s1);
+    if (!strcmp(s1, "[FVWM_VERSION]"))
+    {
+      char v[256];
+
+      sprintf(v, "%s,%s", VERSION, __DATE__);
+      sscanf(s, "%*s %[^\n]", s1);
+      if (strcmp(s1, v) == 0)
+      {
+	does_file_version_match = True;
+      }
+      else
+      {
+	fvwm_msg(
+	  ERR, "VerifyVersionInfo",
+	  "State file version (%s) does not match fvwm version (%s)\n"
+	  "State file will be ignored", s1, v);
+	break;
+      }
+    }
+  }
+  fclose(f);
+
+  return does_file_version_match;
+}
+
+static int
+SaveVersionInfo(FILE *f)
+{
+  fprintf(f, "[FVWM_VERSION] %s,%s,%s\n", VERSION, __DATE__);
+
+  return 1;
+}
+
 static int
 SaveWindowStates(FILE *f)
 {
@@ -394,7 +449,6 @@ void
 DisableSM(void)
 {
   num_match = 0;
-
   return;
 }
 
@@ -405,6 +459,9 @@ LoadWindowStates(char *filename)
   char                s[4096], s1[4096];
   int i, pos, pos1;
   unsigned long w;
+
+  if (!VerifyVersionInfo(filename))
+    return;
 
   if (!filename || !*filename)
     return;
@@ -654,6 +711,8 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 {
   int i;
 
+  if (!does_file_version_match)
+    return False;
   for (i = 0; i < num_match; i++)
   {
     if (!matches[i].used && matchWin(ewin, &matches[i]))
@@ -754,7 +813,7 @@ static int saveStateFile(char *filename)
 #endif
 
   success = doPreserveState?
-    SaveWindowStates(f) && SaveGlobalState(f):
+    SaveVersionInfo(f) && SaveWindowStates(f) && SaveGlobalState(f):
     1;
   doPreserveState = True;
   if (fclose(f) != 0)
@@ -779,6 +838,7 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
   {
     goingToRestart = True;
 
+fprintf(stderr,"1 state filename: '%s'\n", filename);
     saveStateFile(filename);
     setSmProperties(sm_conn, filename, SmRestartImmediately);
 
@@ -796,6 +856,7 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
     exit(0); /* let the SM restart us */
   }
 #endif
+fprintf(stderr,"2 state filename: '%s'\n", filename);
   saveStateFile(filename);
   /* return and let Done restart us */
 }
