@@ -5,8 +5,8 @@ AC_INIT(fvwm/fvwm.c)
 AM_INIT_AUTOMAKE(fvwm, 2.3.0)
 AM_CONFIG_HEADER(config.h)
 
-FVWM_MODULEDIR='${libexecdir}/${PACKAGE}/${VERSION}'
-FVWM_CONFIGDIR='${sysconfdir}'
+test -z "$FVWM_MODULEDIR" && FVWM_MODULEDIR='${libexecdir}/${PACKAGE}/${VERSION}'
+test -z "$FVWM_CONFIGDIR" && FVWM_CONFIGDIR='${sysconfdir}'
 
 AC_SUBST(FVWM_MODULEDIR)
 AC_SUBST(FVWM_CONFIGDIR)

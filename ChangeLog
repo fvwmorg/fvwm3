@@ -1,3 +1,8 @@
+Sat Feb 27 12:49:23 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* configure.in: allow FVWM_{MODULE,CONFIG}DIR to be overridden by
+	setting the corresponding environment variable before running configure.
+
 1999-02-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* auto*: removed all generated files from repository.  To
