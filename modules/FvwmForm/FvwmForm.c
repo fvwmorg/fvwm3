@@ -1838,7 +1838,6 @@ void DoCommand (Item *cmd)
     /* construct command */
     parsed_command = ParseCommand(0, cmd->button.commands[k], '\0', &dn, &sp);
     myfprintf((stderr, "Final command[%d]: [%s]\n", k, parsed_command));
-    fprintf(stderr, "Final command[%d]: [%s]\n", k, parsed_command);
 
     /* send command */
     if ( parsed_command[0] == '!') {    /* If command starts with ! */
