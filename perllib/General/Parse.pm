@@ -37,6 +37,9 @@ sub getToken ($) {
 	if ($line =~ /^(.*?)$quote\s*(.*)$/) {
 		$token = $1;
 		$line = $2;
+	} elsif ($line eq "") {
+		$token = undef;
+		$line = "";
 	} else {
 		$token = $line;
 		$line = "";
@@ -80,5 +83,162 @@ sub nei ($$) {
 	my ($a, $b) = @_;
 	return lc($a) ne lc($b);
 }
+
+# ---------------------------------------------------------------------------- 
+
+=head1 NAME
+
+General::Parse - parsing functions
+
+=head1 SYNOPSIS
+
+  use General::Parse;
+
+  my $string = q{Some "not very long" string of 6 tokens.};
+  my $token1 = cutToken(\$string);          # $token1 = "Some";
+  my ($token2, $token3) = cutTokens(\$string, 2);
+  my @subtokens = getTokens($token2);       # ("not", "very", "long")
+  my $subtoken1 = getToken($token2);        # the same as $subtokens[0]
+  my $endingArrayRef = getTokens($string);  # ["of", "6", "tokens."]
+
+=head1 DESCRIPTION
+
+This package may be used for parsing a string into tokens (quoted words).
+
+=head1 FUNCTIONS
+
+
+=head2 getToken
+
+=over 4
+
+=item description
+
+Returns the first token of the given string without changing the string itself.
+
+If the string is empty or consists of only spaces the returned token is undef.
+
+If the caller expects a scalar - the token is returned. If it expects an
+array - 2 values returned, the token and the rest of the string.
+
+=item parameters   
+
+String (scalar) to be parsed.
+
+=item returns
+
+Token (scalar).
+Or, in array context, array of 2 scalars: token and the rest of string.
+
+=back
+
+
+=head2 cutToken
+
+=over 4
+
+=item description
+
+Returns the first token of the given string, the input string is cut to
+contain tokens starting from the second one.
+
+If the string is empty or consists of only spaces the returned token is undef
+and the string is changed to an empty string.
+
+=item parameters   
+
+String (scalar) to be parsed.
+
+=item returns
+
+Token (scalar).
+
+=back
+
+
+=head2 getTokens
+
+=over 4
+
+=item description
+
+Returns all or the requested number of tokens of the given string without
+changing the string itself.
+
+The returned array may contain less tokens than requested if the string
+is too short. Particularly, the returned array is empty if the string is empty
+or consists of only spaces.
+
+If the caller expects a scalar - a reference to the token array is returned.
+If it expects an array - the token array is returned.
+
+=item parameters   
+
+String (scalar) to be parsed, and optional limit (integer) for number of
+returned tokens.
+
+=item returns
+
+Tokens (array of scalars or array ref of scalars depending on context).
+
+=back
+
+
+=head2 cutTokens
+
+=over 4
+
+=item description
+
+Returns the requested number of tokens of the given string, the string is cut
+to contain the tokens starting from the first non returned token.
+
+The returned array may contain less tokens than requested if the string
+is too short. Particularly, the returned array is empty if the string is empty
+or consists of only spaces.
+
+If the caller expects a scalar - a reference to the token array is returned.
+If it expects an array - the token array is returned.
+
+=item parameters   
+
+String (scalar) to be parsed, and limit (integer) for number of
+returned tokens.
+
+=item returns
+
+Tokens (array of scalars or array ref of scalars depending on context).
+
+=back
+
+
+=head2 eqi
+
+=over 4
+
+=item description
+
+Similar to B<eq>, but case-insensitive, gets 2 strings, returns boolean.
+
+=back
+
+
+=head2 nei
+
+=over 4
+
+=item description
+
+Similar to B<ne>, but case-insensitive, gets 2 strings, returns boolean.
+
+=back
+
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>
+
+=cut
+# ============================================================================
 
 1;

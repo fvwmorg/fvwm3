@@ -140,6 +140,27 @@ local $siteInfo = {
 		'func' => \&processPoorRdf,
 		'flds' => 'title, link',
 	},
+	'cnn' => {
+		'name' => "CNN",
+		'host' => "www.cnn.com",
+		'path' => "/desktop/content.html",
+		'func' => \&processCNN,
+		'flds' => 'headline, url',
+	},
+	'bbc-world' => {
+		'name' => "BBC-World",
+		'host' => "news.bbc.co.uk",
+		'path' => "/low/english/world/default.stm",
+		'func' => \&processBBC,
+		'flds' => 'headline, url, abstract',
+	},
+	'bbc-scitech' => {
+		'name' => "BBC-SciTech",
+		'host' => "news.bbc.co.uk",
+		'path' => "/low/english/sci/tech/default.stm",
+		'func' => \&processBBC,
+		'flds' => 'headline, url, abstract',
+	},
 };
 
 # Site specific parsers may use these constants to convert month to unix time.
@@ -147,6 +168,10 @@ local @smonths = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
 local @lmonths = qw(January February March April May June July August September October November December);
 local (%smonthHash, %lmonthHash) = ();
 foreach (0 .. 11) { $smonthHash{$smonths[$_]} = $_; $lmonthHash{$lmonths[$_]} = $_; }
+
+my $TIMEFIELDS_DATE_TIME = 1;
+my $TIMEFIELDS_ONLY_DATE = 2;
+my $TIMEFIELDS_NONE = 3;
 
 my $home  = $ENV{'HOME'} || '/tmp';
 my $fvwmUserDir = $ENV{'FVWM_USERDIR'} || "$home/.fvwm";
@@ -160,7 +185,7 @@ my $defaultSite = 'freshmeat';
 my $site  = undef;
 my $name  = undef;
 my $title = undef;
-my $itemF = '%h\t(%[%Y-%m-%d %H:%M])';
+my $itemF = '%h\t%[(%Y-%m-%d %H:%M)]';
 my $execF = q(netscape -remote 'openURL(%u, new-window)' || netscape '%u');
 my $commF = undef;
 my $iconT = '';
@@ -349,10 +374,9 @@ exit();
 # ---------------------------------------------------------------------------
 
 sub readLine {
-	my $line;
 	local $SIG{ALRM} = sub { die "timeout\n"; };
 	alarm($timeout);
-	$line = eval { <SOCK> };
+	my $line = eval { <SOCK> };
 	if ($@) {
 		dieNet("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
 		dieNet($@);
@@ -362,17 +386,45 @@ sub readLine {
 	return $line;
 }
 
+sub readAllLines {
+	local $SIG{ALRM} = sub { die "timeout\n"; };
+	alarm($timeout * 2);
+	my $lines = eval { join('', <SOCK>) };
+	if ($@) {
+		dieNet("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
+		dieNet($@);
+	}
+	alarm(0);
+	print STDERR $lines if $ENV{"DEBUG_DUMP_RESPONSE"};
+	return $lines;
+}
+
 # make unix time from year (2001 or 101), mon (0..11), day, hour, min, sec
 sub makeTime {  # ($$$$$$$)
-	my ($year, $mon, $day, $hour, $min, $sec, $hourD) = @_;
+	my ($hourD, $year, $mon, $day, $hour, $min, $sec) = @_;
+	$hourD ||= 0;
+	my $type = $TIMEFIELDS_DATE_TIME;
+
+	unless (defined $hour || defined $min) {
+		unless ($year || $day) {
+			$type = $TIMEFIELDS_NONE;
+			return [ 0, $type ];
+		} else {
+			$type = $TIMEFIELDS_ONLY_DATE;
+		}
+	}
+
 	$year = 1973 unless $year && $year > 0;  # it's my year :-)
 	$mon  = 0 unless $mon && $mon > 0 && $mon <= 11;
 	$day  = 1 unless $day && $day > 0 && $day <= 31;
-	$hour = 0 unless $hour && $hour >= 0 && $hour < 24;
+	$hour = 12 unless $hour && $hour >= 0 && $hour < 24;
 	$min  = 0 unless $min && $min >= 0 && $min < 60;
 	$sec  = 0 unless $sec && $sec >= 0 && $sec < 60;
 
-	return timegm($sec, $min, $hour, $day, $mon, $year) - $hourD * 60 * 60;
+	return [
+		timegm($sec, $min, $hour, $day, $mon, $year) - $hourD * 60 * 60,
+		$type
+	];
 }
 
 sub setEntryAliasesAndTime ($$$$) {
@@ -388,7 +440,7 @@ sub setEntryAliasesAndTime ($$$$) {
 		$entry->{$alias} = "" unless defined $entry->{$alias};
 	}
 
-	$entry->{'_'} = makeTime(&{$timeSub}($entry->{'d'}), $hOffset);
+	$entry->{'_'} = makeTime($hOffset, &{$timeSub}($entry->{'d'}));
 }
 
 BEGIN {
@@ -407,9 +459,7 @@ sub processXml ($$$$) {
 	my $hOffset = shift;
 	my @entries = ();
 
-	my $doc = "";
-	my $line;
-	while ($line = readLine()) { $doc .= $line; }
+	my $doc = readAllLines();
 
 	ENTRY:
 	foreach ($doc =~ m!<$entryTag\b[^>]*>(.*?)</$entryTag>!sg) {
@@ -519,7 +569,8 @@ sub processPoorRdf () {
 		{ 'h' => 'title', 'u' => 'link', 'd' => undef },
 		sub ($) {
 			# this site's rdf does not supply the time, how weird...
-			(gmtime())[5,4,3,2,1,0];
+			#(gmtime())[5,4,3,2,1,0];
+			()
 		}, +0,
 	);
 }
@@ -629,6 +680,62 @@ sub processLinuxFr_old () {
 		}, +0,
 	);
 }
+
+sub processCNN () {
+	my $contents = readAllLines();
+	my @entries = ();
+
+	my $linkToDate = sub ($) {
+		$_[0]->{'url'} =~ m|/(\d\d\d\d).*?(/\d\d/\d\d)/|; "$1$2";
+	};
+
+	$contents =~ s{<a href="(/.*?)".*?>(.*?)</a>}{
+		my $entry = {};
+		$entry->{'url'} = "http://www.cnn.com$1";
+      $entry->{'headline'} = $2;
+		setEntryAliasesAndTime(
+			$entry,
+			{ 'h' => 'headline', 'u' => 'url', 'd' => $linkToDate },
+			sub ($) {
+				$_[0] =~ m|(\d+)/(\d+)/(\d+)|?
+					($1, ($2 || 0) - 1, $3):
+					();
+			}, -5,
+		);
+		push @entries, $entry;
+		""
+	}sige;
+
+	return \@entries;
+}
+
+sub processBBC () {
+	my $contents = readAllLines();
+	$contents =~ s!\r\n...\r\n!!sg;  # they insert this randomly!
+	$contents =~ s!\s*<(br|/h3|h3|img [^>]+)>[ \t\r]*\n?!!sig;
+	my @entries = ();
+
+	$contents =~ s{\t<a href="(/[^"]+?)">\s*([^\s][^<]+?)\s*</a>\s*([^<]+?)\s*\n}{
+		my $entry = {};
+		my $path = $1;
+      $entry->{'headline'} = $2;
+      $entry->{'abstract'} = $3;
+		$path =~ s|^/low/|/hi/|;
+		$entry->{'url'} = "http://news.bbc.co.uk$path";
+		setEntryAliasesAndTime(
+			$entry,
+			{ 'h' => 'headline', 'u' => 'url', 'd' => undef },
+			sub ($) {
+				();  # no time...
+			}, +0,
+		);
+		push @entries, $entry;
+		""
+	}sige;
+
+	return \@entries;
+}
+
 # ---------------------------------------------------------------------------
 
 sub dieSys ($) {
@@ -654,9 +761,21 @@ sub dieNet ($;$) {
 
 # like strftime, but gets unix time, instead of sec/min/hour/day/mon/year.
 sub formatTime ($$) {
-	my ($fmt, $time) = @_;
+	my ($fmt, $timePair) = @_;
+
+	$timePair = [] unless ref($timePair) eq 'ARRAY';
+	my ($time, $type) = @$timePair;
 	$time ||= time();
-	strftime($fmt, localtime($time));
+	$type ||= $TIMEFIELDS_NONE;
+
+	if ($type == $TIMEFIELDS_NONE) {
+		return "";
+	} elsif ($type == $TIMEFIELDS_ONLY_DATE) {
+		$fmt =~ s/[:\. -]?%[HIklMprSTX][:\. -]?//g;
+		$fmt =~ s/%c/%a %b %d %Z %Y/g;
+	}
+
+	return strftime($fmt, localtime($time));
 }
 
 # Substitutes all %N1*N2x in $name by properly stripped and justified $values.
@@ -763,7 +882,7 @@ B<fvwm-menu-headlines>
 This configurable perl script builds an fvwm menu definition for headlines
 of popular news web sites: FreshMeat, Slashdot, LinuxToday, LinuxApps,
 DaemonNews, GNOME-News, KDE-News, RootPrompt,
-LinuxFr, ThinkGeek and more.
+LinuxFr, ThinkGeek, CNN, BBC-World, BBC-SciTech and more.
 
 It is possible to specify a customized menu item format, change a command
 (usually launching a browser) and add menu icons (there is a support for
@@ -788,18 +907,23 @@ title "Freshmeat Headlines".
 
 B<--item>, B<--exec> - define menu item or exec format in the following
 argument (what is shown and what is executed when the item is chosen),
-default is '%h\t(%[%Y-%m-%d %H:%M])'.
+default is '%h\t%[(%Y-%m-%d %H:%M)]'.
 TAB can be specified as '\t', but in .fvwm2rc you should specify a double
 backslash or a real TAB.
 
 Format specifiers for a headline entry:
   %h - headline
   %u - url
-  %d - date in native format
-  %[strftime-argument-string] - date, see strftime(3)
-    the date is represented accourding to the local time
-  %{name} - site-specific-named-value
-  %(text) - arbitrary text
+  %d - date in the native format (that site backend supplied)
+  %[strftime-argument-string] - date/time, see strftime(3)
+    the date/time is represented accourding to the local time;
+    date and/or time fields that can't be guessed are stripped
+
+    Example: %[|%d %B %Y| %H:%M %S]
+      If site supplied only date - this becomes %[|%d %B %Y|],
+      if site supplied no date - this becomes an empty string.
+  %{name} - site specific named value, like %{comments}
+  %(text) - arbitrary text, good for escaping or aligning
 
 These specifiers can receive an optional integer size, positive for right
 adjusted string or negative for left adjusted, example: %8x; and optional

@@ -1,0 +1,208 @@
+#!@PERL@
+
+# Filter this script to pod2man to get a man page:
+#   pod2man -c "FVWM Utilities" fvwm-perllib | nroff -man | less -e
+
+require 5.003;
+use strict;
+
+BEGIN {
+        use vars qw($prefix $datadir $perllibdir);
+        $prefix = "@prefix@";
+        $datadir = "@datadir@";
+	$perllibdir = "@FVWM_PERLLIBDIR@";
+
+	# try to do it fast
+	if ($ARGV[0] eq 'dir') {
+		print $perllibdir;
+		exit(0);
+	}
+}
+
+use Getopt::Long;
+use lib $perllibdir;
+use General::FileSystem '-die';
+
+my $version = "@VERSION@";
+
+my $doMan = 0;
+my $doCat = 0;
+
+GetOptions(
+	"help"     => \&showHelp,
+	"version"  => \&showVersion,
+	"man"      => \$doMan,
+	"cat"      => \$doCat,
+) || wrongUsage();
+
+if ($ARGV[0] eq 'man') {
+	$doMan = 1;
+	shift;
+} elsif ($ARGV[0] eq 'cat') {
+	$doCat = 1;
+	shift;
+}
+
+wrongUsage() if !$doMan && !$doCat || @ARGV > 1;
+
+my $manOrCatStr = $doMan? "man": "cat";
+my $internalPods = {};
+
+$internalPods->{contents} = qq{
+	:head1 NAME
+
+	contents - lists all available help topics
+
+	:head1 DESCRIPTION
+
+	You may run this script as:
+
+	  % fvwm-perllib $manOrCatStr <topic>
+
+	Available topics:
+
+	  contents
+	  examples
+	  {{CLASS_NAMES}}
+
+	For example:
+
+	  % fvwm-perllib $manOrCatStr FVWM::Module
+
+	:head1 AUTHORS
+
+	Mikhael Goikhman <migo\@homemail.com>.
+};
+
+$internalPods->{examples} = qq{
+	:head1 NAME
+
+	examples - shows some common techniques for writting FVWM modules
+
+	:head1 DESCRIPTION
+
+	Currently see C<ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/>
+	for examples.
+
+	:head1 AUTHORS
+
+	Mikhael Goikhman <migo\@homemail.com>.
+};
+
+my $topic = $ARGV[0] || "contents";
+my $file = "-";
+my $text = "";
+if (exists $internalPods->{$topic}) {
+	$text = $internalPods->{$topic};
+	$text =~ s/^\t//mg;
+	$text =~ s/^:/=/mg;
+	my @classNames = sort @{listFileNames($perllibdir, 1)};
+	@classNames = map { s!\.pm$!!; s!/!::!g; $_ } @classNames;
+	$text =~ s/{{CLASS_NAMES}}/join("\n  ", @classNames)/seg;
+} else {
+	$file = "$perllibdir/$topic.pm";
+	$file =~ s!::!/!g;
+	die "No $file found.\n" unless -f $file;
+}
+
+open(MANPIPE, $doCat? "| pod2text '$file'":
+	"| pod2man --section 3 --release 'FVWM $version'" .
+		" --center 'FVWM Perl library' '$file'" .
+		" | sed 's/<STANDARD INPUT>/perllib/ig' | nroff -man | less -e")
+	or die "Can't open pipe to pod/man viewer\n";
+print MANPIPE $text
+	or die "Can't write to pod/man viewer\n";
+close MANPIPE;
+
+# ---------------------------------------------------------------------------
+
+sub showHelp {
+	print "Shows documentation of the supplied FVWM Perl library.\n\n";
+	print "Usage: fvwm-perllib dir\n";
+	print "\tFor use in FVWM modules written in Perl\n\n";
+	print "Usage: fvwm-perllib man|cat\n";
+	print "\tAn introduction to the FVWM Perl library\n\n";
+	print "Usage: fvwm-perllib man|cat <Perl::Class>\n";
+	print "\tManual page for <Perl::Class>, try: man FVWM::Module\n\n";
+	print "Usage: fvwm-perllib [OPTIONS]\n";
+	print "Options:\n";
+	print "\t--help           show this help and exit\n";
+	print "\t--version        show the version and exit\n";
+	exit 0;
+}
+
+sub showVersion {
+	print "$version\n";
+	exit 0;
+}
+
+sub wrongUsage {
+	print STDERR "Try '$0 --help' for more information.\n";
+	exit -1;
+}
+
+__END__
+
+# ---------------------------------------------------------------------------
+
+=head1 NAME
+
+fvwm-perllib - shows the documentation of the FVWM Perl library
+
+=head1 SYNOPSIS
+
+B<fvwm-perllib>
+[ B<--help>|B<-h> ]
+[ B<--version>|B<-v> ]
+[ B<man> [ I<Perl::Class> ] ]
+[ B<cat> [ I<Perl::Class> ] ]
+[ B<dir> ]
+
+=head1 DESCRIPTION
+
+With fvwm-2.5.x versions it is possible to create FVWM modules in Perl.
+This B<fvwm-perllib> utility provides help topics for the FVWM Perl library.
+
+=head1 OPTIONS
+
+B<--help>    - show the help and exit
+
+B<--version> - show the version and exit
+
+=head1 USAGE
+
+Use this in the FVWM modules written in Perl:
+
+  use lib `fvwm-perllib dir`;
+
+Introduction to the FVWM Perl library:
+
+  % fvwm-perllib man
+
+Manual page for the C<FVWM::Module> class:
+
+  % fvwm-perllib man FVWM::Module
+
+Standard options:
+
+  % fvwm-perllib --help
+  % fvwm-perllib --version
+
+=head1 AUTHORS
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=head1 COPYING
+
+The script is distributed by the same terms as fvwm itself.
+See GNU General Public License for details.
+
+=head1 BUGS
+
+No known bugs.
+
+Report bugs to fvwm-bug@fvwm.org.
+
+=cut
+
+# ***************************************************************************

@@ -509,3 +509,57 @@ sub searchDirs ($) {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+FVWM::Module - the base class representing FVWM module
+
+=head1 SYNOPSIS
+
+  use FVWM::Module;
+
+  my $module = new FVWM::Module;
+
+  $module->send("Beep");
+
+  # auto-raise all windows
+  sub autoRaise { $_[0]->send("Raise", $_[2]) });
+  $module->addHandler(M_FOCUS_CHANGE, \&autoRaise);
+
+  $module->eventLoop;
+
+=head1 DESCRIPTION
+
+The documentation will be completed for fvwm-2.5.2.
+
+=head1 METHODS
+
+To be written.
+
+=head1 BUGS
+
+Awaiting for your reporting.
+
+=head1 CAVEATS
+
+In keeping with the UNIX philosophy, B<FVWM::Module> does not keep you from
+doing stupid things, as that would also keep you from doing clever things.
+What this means is that there are several areas with which you can hang your
+module or even royally confuse your running I<fvwm> process. This is due to
+flexibility, not bugs.
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=head1 THANKS TO
+
+Randy J. Ray <randy@byz.org>.
+
+=head1 SEE ALSO
+
+For more information, see L<fvwm>, L<FVWM::Module::Gtk> and L<FVWM::Module::Tk>.
+
+=cut

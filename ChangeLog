@@ -1,3 +1,8 @@
+2002-06-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	minor improvements in output, added bin/fvwm-perllib
+
 2002-06-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/menustyle.c (CMD_CopyMenuStyle):

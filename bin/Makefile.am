@@ -2,13 +2,13 @@
 
 bin_PROGRAMS = fvwm-root
 bin_SCRIPTS = \
-	fvwm-config fvwm-bug \
+	fvwm-config fvwm-bug fvwm-perllib \
 	fvwm-convert-2.4 fvwm-convert-2.6 \
 	fvwm-menu-xlock fvwm-menu-directory \
 	fvwm-menu-desktop fvwm-menu-headlines
 
 man_MANS = \
-	fvwm-root.1 fvwm-config.1 fvwm-bug.1 \
+	fvwm-root.1 fvwm-config.1 fvwm-bug.1 fvwm-perllib.1 \
 	fvwm-convert-2.2.1 fvwm-convert-2.4.1 fvwm-convert-2.6.1 \
 	fvwm-menu-xlock.1 fvwm-menu-directory.1 \
 	fvwm-menu-desktop.1 fvwm-menu-headlines.1
@@ -45,7 +45,17 @@ _fvwm-menu-headlines.1: fvwm-menu-headlines.in
 	mv $$TMP/fvwm-menu-headlines.1 .; \
 	rm -rf $$TMP)
 
-pod2man: _fvwm-menu-xlock.1 _fvwm-menu-directory.1 _fvwm-menu-headlines.1
+_fvwm-perllib.1: fvwm-perllib.in
+	@TMP=tmp-$$$$ && (\
+	mkdir $$TMP && \
+	cp fvwm-perllib.in $$TMP/fvwm-perllib && \
+	pod2man --center "FVWM Utilities" $$TMP/fvwm-perllib >$$TMP/fvwm-perllib.1 2>/dev/null && \
+	mv $$TMP/fvwm-perllib.1 .; \
+	rm -rf $$TMP)
+
+pod2man: \
+	_fvwm-menu-xlock.1 _fvwm-menu-directory.1 _fvwm-menu-headlines.1 \
+	_fvwm-perllib.1
 
 ## Create compatibility symlinks if available
 

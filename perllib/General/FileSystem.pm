@@ -52,7 +52,7 @@ BEGIN {
 
 =head1 NAME
 
-FileSystem - file system specific functions
+General::FileSystem - file system specific functions
 
 =head1 SYNOPSIS
 
@@ -88,20 +88,22 @@ or just:
 
 This package contains common file operation functions:
 
-  loadFile saveFile appendFile removeFile copyFile moveFile
-  makeDir makePath cleanDir removeDir copyDir moveDir
-  listFileNames findFile findExecutable
-  defaultDirPerm preserveStat parsePath getCwd
+B<loadFile>, B<saveFile>, B<appendFile>, B<removeFile>, B<copyFile>, B<moveFile>,
+B<makeDir>, B<makePath>, B<cleanDir>, B<removeDir>, B<copyDir>, B<moveDir>,
+B<listFileNames>, B<findFile>, B<findExecutable>,
+B<defaultDirPerm>, B<preserveStat>, B<parsePath>, B<getCwd>.
 
-On fatal file system errors all functions call the error handler
-(see C<$ERROR_HANDLER>), that may throw exeption (die), issue a warning
-or quietly return undef.
+On fatal file system errors all functions call the error handler, that may
+throw exception (die), issue a warning or quietly return undef.
+You may control this by passing one of the arguments I<-die>, I<-warn>
+or I<-quiet> in B<use> or by setting C<$ERROR_HANDLER> to one of these
+values (don't specify a dash in this case).
 
 =head1 REQUIREMENTS
 
 L<Cwd>, L<File::Basename>, L<File::Copy>.
 
-=head1 METHODS
+=head1 FUNCTIONS
 
 =cut
 # ============================================================================
@@ -750,14 +752,16 @@ Returns the file names in the given directory including all types of files
 =item usage
 
   # mini file lister
-  foreach my $file (@{listFileNames('/home/ftp')}) {
-    print "File $file\n" if -f $file;
-    print "Dir  $file\n" if -d $file;
+  $dir = '/home/ftp';
+  foreach my $file (@{listFileNames($dir)}) {
+    print "File $file\n" if -f "$dir/$file";
+    print "Dir  $file\n" if -d "$dir/$file";
   }
 
 =item parameters
 
- * directory to list (or array ref of directories)
+  * directory to list (or array ref of directories)
+  * optional flag, 1 means work recursively, the default is 0
 
 =item returns
 
@@ -769,8 +773,9 @@ Array ref of scalars (file names). Throws exception on error.
 # ============================================================================
 
 
-sub listFileNames ($) {
+sub listFileNames ($;$) {
 	my $dirName = shift;
+	my $recursive = shift || 0;
 	if (ref($dirName) eq "ARRAY") {
 		my @files = ();
 		foreach (@$dirName) { push @files, &listFileNames($_); }
@@ -781,6 +786,19 @@ sub listFileNames ($) {
 	opendir(DIR, $dirName) || return callErrorHandler("Can't opendir $dirName");
 	my @files = grep { $_ ne '.' && $_ ne '..' } readdir(DIR);
 	closedir(DIR) || return callErrorHandler("Can't closedir $dirName");
+
+	if ($recursive) {
+		my $i = 0;
+		for (; $i < @files; ) {
+			my $subdir = $files[$i];
+			if (-d "$dirName/$subdir") {
+				splice(@files, $i, 1, map { "$subdir/$_" }
+					@{&listFileNames("$dirName/$subdir")});
+			} else {
+				$i++;
+			}
+		}
+	}
 
 	return \@files;
 }

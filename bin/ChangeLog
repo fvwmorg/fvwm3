@@ -1,3 +1,15 @@
+2002-06-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-headlines.1:
+	* fvwm-menu-headlines.in:
+	added support for CNN, BBC-World, BBC-SciTech headlines;
+	do not show time or/and date fields that can't be guessed
+	instead of showing a fake time/date
+
+	* fvwm-perllib.1:
+	* fvwm-perllib.in:
+	added a new script for perllib documentation
+
 2002-06-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-headlines.1:

@@ -301,7 +301,7 @@ if test "$with_xft" = "check"; then
     AM_CHECK_XFT(2.0.0)
     if test "x$no_xft" = x; then
       with_xft=yes
-      problem_xft="  version 2 (experimental)"
+      problem_xft=" (experimental, version 2)"
       AC_DEFINE(HAVE_XFT2)
       AC_DEFINE(HAVE_XFT)
       AC_DEFINE(HAVE_XFT_UTF8)
@@ -327,7 +327,7 @@ if test "$with_xft" = "check"; then
       if test "x$is_xft1" = "xyes"; then
         Xft_LIBS="-lXft $FT2_LIBS"
 	Xft_CFLAGS="$Xft_CFLAGS $FT2_CFLAGS"
-        problem_xft="  version 1 (experimental)" 
+        problem_xft=" (experimental, version 1)"
         AC_DEFINE(HAVE_XFT)
       else
         with_xft=no
@@ -886,6 +886,7 @@ dnl
 	bin/Makefile
 	bin/fvwm-config
 	bin/fvwm-bug
+	bin/fvwm-perllib
 	bin/fvwm-menu-xlock
 	bin/fvwm-menu-directory
 	bin/fvwm-menu-desktop
