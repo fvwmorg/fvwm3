@@ -545,6 +545,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 
   taction = action;
   pops->flags.allflags = 0;
+  pops->flags.f.has_poshints = 0;
   while (action != NULL) {
     /* ^ just to be able to jump to end of loop without 'goto' */
     gflags = NoValue;

@@ -359,8 +359,7 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
   char *token;
   int suffixes;
 
-  if (suffixlist)
-    suffixes = (suffixlist != NULL) ? strlen(suffixlist) : 0;
+  suffixes = (suffixlist != NULL) ? strlen(suffixlist) : 0;
   for (i = 0; i < num && action; i++)
   {
     action = GetNextToken(action, &token);

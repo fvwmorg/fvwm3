@@ -1,5 +1,9 @@
 1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/misc.c (GetMenuOptions): another try to fix the UMR
+
+	* libs/Parse.c (GetSuffixedIntegerArguments): fixed UMR
+
 	* fvwm/builtins.c (Maximize):
 	(MaximizeHeight):
 	(MaximizeWidth): applied patch for maximize (maximize until another
