@@ -8,6 +8,40 @@ There are a number of them there as well.
 ======================================================================
 ======================================================================
 
+Known bugs section for the beta tests: (will be removed in 2.2)
+===============================================================
+
+Known bugs and problems as of fvwm-2.1.3:
+
+ - FvwmSave and FvwmSaveDesk are not up to date.
+ - Windows may grow a few pixels from time to time.
+ - SnapAttraction may place windows a pixel too close together.
+ - FvwmWinList creeps around the screen in some setups (this should have
+   been fixed, but if you see it again, please report it).
+ - Under obscure circumstances FvwmButtons cannot swallow FvwmPager
+   the offending line is: *FvwmButtons(2x6,Swallow "FvwmPager" "FvwmPager 3 0")
+   if you see this, please post your .fvwm2rc to fvwm-workers@hpc.uh.edu
+ - xscreensaver may not be able to allocate a private colormap
+ - FvwmIconMan may crash during a 'Recapture'
+ - FvwmButtons (and possibly other modules) may survive shutdown of the X
+   server.
+ - AutoHide in FvwmTaskBar does not work well. Should work if you set
+   'EdgeScroll 0 0' in .fvwm2rc.
+ - DestroyMenu/DestroyFunc causes a coredump if a function/menu destroys
+   itself. 
+ - Maximize does not work well when applied to wa window that is not on
+   the current page.
+ - A piperead command may hang if used in .fvwm2rc (if the pipe is never
+   closed).
+ - fvwm2 may coredump if the Xpm library 4.7 is used. No problem with 4.11.
+   If you have this problem. Please send a notification to
+   fvwm-workers@hpc.uh.edu.
+ - StartsOnPage does not work as expected? Please read the manpage carefully.
+
+   
+======================================================================
+======================================================================
+
 Binding a key to a window decoration but not to the window itself is
 discouraged because when the key-press event finally gets to the
 window it will be marked as SYNTHETIC and will be ignored by many
@@ -52,5 +86,4 @@ until a recapture, or the InitFunction not being run properly.  I know
 about this problem and am working on a solution.
 
 ----------------------------------------------------------------------
-
 
