@@ -1,5 +1,8 @@
 2002-08-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (style_parse_focus_policy_style):
+	fixed parsing of FPFocusClickButtons and FocusClickModifiers
+
 	* libs/Makefile.am:
 	added missing files
 

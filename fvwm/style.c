@@ -840,12 +840,11 @@ static Bool style_parse_focus_policy_style(
 	Bool found;
 	int val;
 	int index;
-	char *next;
 	char *token;
 
 	found = True;
 	val = !is_reversed;
-	next = GetNextTokenIndex(option, optlist, 0, &index);
+	GetNextTokenIndex(option, optlist, 0, &index);
 	switch (index)
 	{
 	case 0:
@@ -863,7 +862,7 @@ static Bool style_parse_focus_policy_style(
 			found = False;
 			break;
 		}
-		token = PeekToken(next, NULL);
+		token = PeekToken(rest, NULL);
 		val = 0;
 		for ( ; token != NULL && isdigit(*token); token++)
 		{
@@ -908,7 +907,7 @@ static Bool style_parse_focus_policy_style(
 			found = False;
 			break;
 		}
-		token = PeekToken(next, NULL);
+		token = PeekToken(rest, NULL);
 		if (token == NULL || ParseModifiers(token, &val) == True)
 		{
 			val = DEF_FP_MODIFIERS;
