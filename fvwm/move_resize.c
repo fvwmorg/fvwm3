@@ -591,7 +591,7 @@ static void position_geometry_window(const XEvent *eventp)
 	fscr.mouse_ev = (XEvent *)eventp;
 	/* Probably should remove this positioning code from {builtins,fvwm}.c?
 	 */
-	if (Scr.gs.EmulateMWM)
+	if (Scr.gs.do_emulate_mwm)
 	{
 		FScreenCenterOnScreen(
 			&fscr, FSCREEN_CURRENT, &x, &y, sizew_g.width,
@@ -927,7 +927,7 @@ static void InteractiveMove(
 
 	w = *win;
 
-	if (Scr.bo.InstallRootCmap)
+	if (Scr.bo.do_install_root_cmap)
 	{
 		InstallRootColormap();
 	}
@@ -1023,7 +1023,7 @@ static void InteractiveMove(
 	{
 		XUnmapWindow(dpy,Scr.SizeWindow);
 	}
-	if (Scr.bo.InstallRootCmap)
+	if (Scr.bo.do_install_root_cmap)
 	{
 		UninstallRootColormap();
 	}
@@ -1159,7 +1159,7 @@ static void AnimatedMoveAnyWindow(
 				dpy, None, Scr.Root, 0, 0, 0, 0, pointerX,
 				pointerY);
 		}
-		if (fw && !IS_SHADED(fw) && !Scr.bo.DisableConfigureNotify)
+		if (fw && !IS_SHADED(fw) && !Scr.bo.do_disable_configure_notify)
 		{
 			/* send configure notify event for windows that care
 			 * about their location */
@@ -1980,7 +1980,7 @@ Bool __move_loop(
 
 	/* draw initial outline */
 	if (!IS_ICONIFIED(fw) &&
-	    ((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(fw)))
+	    ((!do_move_opaque && !Scr.gs.do_emulate_mwm) || !IS_MAPPED(fw)))
 	{
 		draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
 	}
@@ -2132,8 +2132,8 @@ Bool __move_loop(
 				 * event */
 				break;
 			}
-			if ((e.xbutton.button == 2 && !Scr.gs.EmulateMWM) ||
-			    (e.xbutton.button == 1 && Scr.gs.EmulateMWM &&
+			if ((e.xbutton.button == 2 && !Scr.gs.do_emulate_mwm) ||
+			    (e.xbutton.button == 1 && Scr.gs.do_emulate_mwm &&
 			     (e.xbutton.state & ShiftMask)))
 			{
 				do_resize_too = True;
@@ -2340,7 +2340,7 @@ Bool __move_loop(
 		xl += x_virtual_offset;
 		yt += y_virtual_offset;
 		if (do_move_opaque && !IS_ICONIFIED(fw) &&
-		    !IS_SHADED(fw) && !Scr.bo.DisableConfigureNotify)
+		    !IS_SHADED(fw) && !Scr.bo.do_disable_configure_notify)
 		{
 			/* send configure notify event for windows that care
 			 * about their location; don't send anything if
@@ -2928,7 +2928,7 @@ static Bool __resize_window(F_CMD_ARGS)
 		return True;
 	}
 
-	if (Scr.bo.InstallRootCmap)
+	if (Scr.bo.do_install_root_cmap)
 	{
 		InstallRootColormap();
 	}
@@ -2943,10 +2943,10 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 
 	/* handle problems with edge-wrapping while resizing */
-	edge_wrap_x = Scr.flags.edge_wrap_x;
-	edge_wrap_y = Scr.flags.edge_wrap_y;
-	Scr.flags.edge_wrap_x = 0;
-	Scr.flags.edge_wrap_y = 0;
+	edge_wrap_x = Scr.flags.do_edge_wrap_x;
+	edge_wrap_y = Scr.flags.do_edge_wrap_y;
+	Scr.flags.do_edge_wrap_x = 0;
+	Scr.flags.do_edge_wrap_y = 0;
 
 	if (!do_resize_opaque)
 	{
@@ -3431,7 +3431,7 @@ static Bool __resize_window(F_CMD_ARGS)
 		border_undraw_decorations(fw);
 		XBell(dpy, 0);
 	}
-	if (Scr.bo.InstallRootCmap)
+	if (Scr.bo.do_install_root_cmap)
 	{
 		UninstallRootColormap();
 	}
@@ -3456,8 +3456,8 @@ static Bool __resize_window(F_CMD_ARGS)
 	ymotion = 0;
 	WaitForButtonsUp(True);
 	UngrabEm(GRAB_NORMAL);
-	Scr.flags.edge_wrap_x = edge_wrap_x;
-	Scr.flags.edge_wrap_y = edge_wrap_y;
+	Scr.flags.do_edge_wrap_x = edge_wrap_x;
+	Scr.flags.do_edge_wrap_y = edge_wrap_y;
 	update_absolute_geometry(fw);
 	maximize_adjust_offset(fw);
 	GNOME_SetWinArea(fw);

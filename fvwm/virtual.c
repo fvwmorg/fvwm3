@@ -238,7 +238,7 @@ static void unmap_window(FvwmWindow *t)
 		/* this is required by the ICCCM2 */
 		XUnmapWindow(dpy, FW_W(t));
 #endif
-		if (!Scr.bo.EWMHIconicStateWorkaround)
+		if (!Scr.bo.do_enable_ewmh_iconic_state_workaround)
 		{
 			SetMapStateProp(t, IconicState);
 		}
@@ -300,7 +300,7 @@ static void map_window(FvwmWindow *t)
 		/* this is required by the ICCCM2 */
 		XMapWindow(dpy, FW_W(t));
 #endif
-		if (!Scr.bo.EWMHIconicStateWorkaround)
+		if (!Scr.bo.do_enable_ewmh_iconic_state_workaround)
 		{
 			SetMapStateProp(t, NormalState);
 		}
@@ -647,7 +647,7 @@ int HandlePaging(
 	/* Ouch! lots of bounds checking */
 	if (Scr.Vx + *delta_x < 0)
 	{
-		if (!(Scr.flags.edge_wrap_x))
+		if (!(Scr.flags.do_edge_wrap_x))
 		{
 			*delta_x = -Scr.Vx;
 			*xl = x - *delta_x;
@@ -660,7 +660,7 @@ int HandlePaging(
 	}
 	else if (Scr.Vx + *delta_x > Scr.VxMax)
 	{
-		if (!(Scr.flags.edge_wrap_x))
+		if (!(Scr.flags.do_edge_wrap_x))
 		{
 			*delta_x = Scr.VxMax - Scr.Vx;
 			*xl = x - *delta_x;
@@ -678,7 +678,7 @@ int HandlePaging(
 
 	if (Scr.Vy + *delta_y < 0)
 	{
-		if (!(Scr.flags.edge_wrap_y))
+		if (!(Scr.flags.do_edge_wrap_y))
 		{
 			*delta_y = -Scr.Vy;
 			*yt = y - *delta_y;
@@ -691,7 +691,7 @@ int HandlePaging(
 	}
 	else if (Scr.Vy + *delta_y > Scr.VyMax)
 	{
-		if (!(Scr.flags.edge_wrap_y))
+		if (!(Scr.flags.do_edge_wrap_y))
 		{
 			*delta_y = Scr.VyMax - Scr.Vy;
 			*yt = y - *delta_y;
@@ -779,7 +779,7 @@ void checkPanFrames(void)
 	Bool do_unmap_t = False;
 	Bool do_unmap_b = False;
 
-	if (!Scr.flags.windows_captured)
+	if (!Scr.flags.are_windows_captured)
 		return;
 
 	/* thickness of 0 means remove the pan frames */
@@ -802,19 +802,19 @@ void checkPanFrames(void)
 		do_unmap_t = True;
 		do_unmap_b = True;
 	}
-	if (Scr.Vx == 0 && !Scr.flags.edge_wrap_x)
+	if (Scr.Vx == 0 && !Scr.flags.do_edge_wrap_x)
 	{
 		do_unmap_l = True;
 	}
-	if (Scr.Vx == Scr.VxMax && !Scr.flags.edge_wrap_x)
+	if (Scr.Vx == Scr.VxMax && !Scr.flags.do_edge_wrap_x)
 	{
 		do_unmap_r = True;
 	}
-	if (Scr.Vy == 0 && !Scr.flags.edge_wrap_y)
+	if (Scr.Vy == 0 && !Scr.flags.do_edge_wrap_y)
 	{
 		do_unmap_t = True;
 	}
-	if (Scr.Vy == Scr.VyMax && !Scr.flags.edge_wrap_y)
+	if (Scr.Vy == Scr.VyMax && !Scr.flags.do_edge_wrap_y)
 	{
 		do_unmap_b = True;
 	}
@@ -1606,20 +1606,20 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 	if (val1 >= 1000)
 	{
 		val1 /= 1000;
-		Scr.flags.edge_wrap_x = 1;
+		Scr.flags.do_edge_wrap_x = 1;
 	}
 	else
 	{
-		Scr.flags.edge_wrap_x = 0;
+		Scr.flags.do_edge_wrap_x = 0;
 	}
 	if (val2 >= 1000)
 	{
 		val2 /= 1000;
-		Scr.flags.edge_wrap_y = 1;
+		Scr.flags.do_edge_wrap_y = 1;
 	}
 	else
 	{
-		Scr.flags.edge_wrap_y = 0;
+		Scr.flags.do_edge_wrap_y = 0;
 	}
 
 	Scr.EdgeScrollX = val1 * val1_unit / 100;

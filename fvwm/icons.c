@@ -1205,14 +1205,14 @@ void DrawIconPixmapWindow(
 			 * border so copy to (0,0) install the root
 			 * colormap temporarily to help the Exceed
 			 * server */
-			if (Scr.bo.InstallRootCmap)
+			if (Scr.bo.do_install_root_cmap)
 				InstallRootColormap();
 			XCopyArea(
 				dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw),
 				DefaultGC(dpy, Scr.screen), 0, 0,
 				fw->icon_g.picture_w_g.width,
 				fw->icon_g.picture_w_g.height, 0, 0);
-			if (Scr.bo.InstallRootCmap)
+			if (Scr.bo.do_install_root_cmap)
 				UninstallRootColormap();
 		}
 	}

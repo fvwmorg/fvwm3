@@ -173,12 +173,12 @@ SaveGlobalState(FILE *f)
 	fprintf(f, "  [SCROLL] %i %i %i %i %i %i\n",
 		Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollResistance,
 		Scr.MoveResistance,
-		!!(Scr.flags.edge_wrap_x), !!(Scr.flags.edge_wrap_y));
+		!!(Scr.flags.do_edge_wrap_x), !!(Scr.flags.do_edge_wrap_y));
 	fprintf(f, "  [SNAP] %i %i %i %i\n",
 		Scr.SnapAttraction, Scr.SnapMode, Scr.SnapGridX, Scr.SnapGridY);
 	fprintf(f, "  [MISC] %i %i %i\n",
 		Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
-	fprintf(f, "  [STYLE] %i %i\n", Scr.gs.EmulateMWM, Scr.gs.EmulateWIN);
+	fprintf(f, "  [STYLE] %i %i\n", Scr.gs.do_emulate_mwm, Scr.gs.do_emulate_win);
 
 	return 1;
 }
@@ -282,7 +282,7 @@ GetClientID(FvwmWindow *fw)
 	unsigned long nitems;
 	unsigned long bytes_after;
 	unsigned char *prop = NULL;
-	
+
 	window = FW_W(fw);
 
 	if (XGetWindowProperty(
@@ -482,7 +482,7 @@ SaveWindowStates(FILE *f)
 				fprintf(f, "\n");
 			}
 		} /* !window_role */
-		
+
 		if (wm_command)
 		{
 			XFreeStringList(wm_command);
@@ -960,7 +960,7 @@ callback_save_yourself(FSmcConn sm_conn, FSmPointer client_data,
 		FSmcSaveYourselfDone (sm_conn, True);
 		sent_save_done = 1;
 		return;
-		
+
 	}
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
@@ -973,13 +973,13 @@ callback_save_yourself(FSmcConn sm_conn, FSmPointer client_data,
 		sent_save_done = 1;
 #ifdef FVWM_SM_DEBUG_PROTO
 		fprintf(stderr, " failed!\n");
-#endif	
+#endif
 	}
 	else
 	{
 #ifdef FVWM_SM_DEBUG_PROTO
 		fprintf(stderr, " OK\n");
-#endif	
+#endif
 		sent_save_done = 0;
 	}
 
@@ -1200,7 +1200,7 @@ LoadGlobalState(char *filename)
 #endif
 	}
 	fclose(f);
-	
+
 	return;
 }
 
@@ -1674,7 +1674,7 @@ SessionInit(void)
 		setInitFunctionName(1, "SessionRestartFunction");
 		setInitFunctionName(2, "SessionExitFunction");
 		/* basically to restet our restart style hint after a
-		 * restart */ 
+		 * restart */
 		setSmProperties(sm_conn, NULL, FSmRestartIfRunning);
 	}
 

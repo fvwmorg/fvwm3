@@ -52,7 +52,7 @@ void set_state_workaround(void)
 		    (!is_window_sticky_across_desks(t) &&
 		     !IS_ICON_UNMAPPED(t)))
 		{
-			if (Scr.bo.EWMHIconicStateWorkaround)
+			if (Scr.bo.do_enable_ewmh_iconic_state_workaround)
 			{
 				SetMapStateProp(t, NormalState);
 			}
@@ -66,24 +66,24 @@ void set_state_workaround(void)
 
 Bool EWMH_BugOpts(char *opt, Bool toggle)
 {
-	Bool save_isw = Scr.bo.EWMHIconicStateWorkaround;
+	Bool save_isw = Scr.bo.do_enable_ewmh_iconic_state_workaround;
 
 	if (StrEquals(opt,"EWMHIconicStateWorkaround"))
 	{
 		switch (toggle)
 		{
 		case -1:
-			Scr.bo.EWMHIconicStateWorkaround ^= 1;
+			Scr.bo.do_enable_ewmh_iconic_state_workaround ^= 1;
 			break;
 		case 0:
 		case 1:
-			Scr.bo.EWMHIconicStateWorkaround = toggle;
+			Scr.bo.do_enable_ewmh_iconic_state_workaround = toggle;
 			break;
 		default:
-			Scr.bo.EWMHIconicStateWorkaround = 0;
+			Scr.bo.do_enable_ewmh_iconic_state_workaround = 0;
 			break;
 		}
-		if (save_isw != Scr.bo.EWMHIconicStateWorkaround)
+		if (save_isw != Scr.bo.do_enable_ewmh_iconic_state_workaround)
 		{
 			set_state_workaround();
 		}

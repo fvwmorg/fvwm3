@@ -127,6 +127,7 @@ typedef struct
 		int py;
 		unsigned do_switch_page : 1;
 		unsigned do_honor_starts_on_page : 1;
+		unsigned do_ignore_starts_on_page : 1;
 	} page;
 	struct
 	{
@@ -1186,7 +1187,7 @@ static Bool __place_get_nowm_pos(
  *   0 = window lost
  *   1 = OK
  *   2 = OK, window must be resized too */
-Bool __place_window(
+static Bool __place_window(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
 	placement_start_style_t start_style, int mode,
 	initial_window_options_t *win_opts, placement_reason_t *reason)
@@ -1215,31 +1216,33 @@ Bool __place_window(
 	/* Let's get the StartsOnDesk/Page tests out of the way first. */
 	if (SUSE_START_ON_DESK(sflags) || SUSE_START_ON_SCREEN(sflags))
 	{
-		flags.do_honor_starts_on_page = True;
-		flags.do_honor_starts_on_screen = True;
+		flags.do_honor_starts_on_page = 1;
+		flags.do_honor_starts_on_screen = 1;
 		/*
 		 * Honor the flag unless...
 		 * it's a restart or recapture, and that option's disallowed...
 		 */
 		if (win_opts->flags.do_override_ppos &&
-		    (Restarting || (Scr.flags.windows_captured)) &&
+		    (Restarting || (Scr.flags.are_windows_captured)) &&
 		    !SRECAPTURE_HONORS_STARTS_ON_PAGE(sflags))
 		{
-			flags.do_honor_starts_on_page = False;
-			flags.do_honor_starts_on_screen = False;
+			flags.do_honor_starts_on_page = 0;
+			flags.do_honor_starts_on_screen = 0;
 			reason->page.reason = PR_PAGE_IGNORE_CAPTURE;
+			reason->page.do_ignore_starts_on_page = 1;
 			reason->screen.reason = PR_PAGE_IGNORE_CAPTURE;
 		}
 		/*
 		 * it's a cold start window capture, and that's disallowed...
 		 */
 		if (win_opts->flags.do_override_ppos &&
-		    (!Restarting && !(Scr.flags.windows_captured)) &&
+		    (!Restarting && !(Scr.flags.are_windows_captured)) &&
 		    !SCAPTURE_HONORS_STARTS_ON_PAGE(sflags))
 		{
-			flags.do_honor_starts_on_page = False;
-			flags.do_honor_starts_on_screen = False;
+			flags.do_honor_starts_on_page = 0;
+			flags.do_honor_starts_on_screen = 0;
 			reason->page.reason = PR_PAGE_IGNORE_CAPTURE;
+			reason->page.do_ignore_starts_on_page = 1;
 			reason->screen.reason = PR_PAGE_IGNORE_CAPTURE;
 		}
 		/*
@@ -1252,8 +1255,9 @@ Bool __place_window(
 		      SPLACEMENT_MODE(sflags) == PLACE_TILEMANUAL) &&
 		     !SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags)))
 		{
-			flags.do_honor_starts_on_page = False;
+			flags.do_honor_starts_on_page = 0;
 			reason->page.reason = PR_PAGE_IGNORE_INVALID;
+			reason->page.do_ignore_starts_on_page = 1;
 			fvwm_msg(
 				WARN, "__place_window",
 				"invalid style combination used: StartsOnPage"
@@ -1404,8 +1408,11 @@ Bool __place_window(
 	/*  RBW - 11/02/1998  --  I dont. */
 	if (!win_opts->flags.do_override_ppos && !DO_NOT_SHOW_ON_MAP(fw))
 	{
+		if (Scr.CurrentDesk != fw->Desk)
+		{
+			reason->desk.do_switch_desk = 1;
+		}
 		goto_desk(fw->Desk);
-		reason->desk.do_switch_desk = 1;
 	}
 	/* Don't move viewport if SkipMapping, or if recapturing the window,
 	 * adjust the coordinates later. Otherwise, just switch to the target
@@ -1457,7 +1464,7 @@ Bool __place_window(
 	return rc;
 }
 
-void __place_handle_x_resources(
+static void __place_handle_x_resources(
 	FvwmWindow *fw, window_style *pstyle, placement_reason_t *reason)
 {
 	int client_argc = 0;
@@ -1558,6 +1565,172 @@ void __place_handle_x_resources(
 	return;
 }
 
+static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
+{
+#if 0
+	typedef enum
+		{
+			PR_POS_ALGORITHM
+		} preason_pos_t;
+	typedef struct
+	{
+		struct
+		{
+			preason_pos_t reason;
+			int x;
+			int y;
+		} pos;
+	} placement_reason_t;
+#endif
+	char explanation[2048];
+	char *r;
+	char *s;
+	char t[32];
+	unsigned do_show_page;
+
+	*explanation = 0;
+	s = explanation;
+	strcat(s, "placed new window 0x%08x '%s':\n");
+	s += strlen(s);
+	/* desk */
+	switch (reason->desk.reason)
+	{
+	case PR_DESK_CURRENT:
+		r = "current desk";
+		break;
+	case PR_DESK_STYLE:
+		r = "specified by style";
+		break;
+	case PR_DESK_X_RESOURCE_DESK:
+		r = "specified by 'desk' X resource";
+		break;
+	case PR_DESK_X_RESOURCE_PAGE:
+		r = "specified by 'page' X resource";
+		break;
+	case PR_DESK_CAPTURE:
+		r = "window was (re)captured";
+		break;
+	case PR_DESK_STICKY:
+		r = "window is sticky";
+		break;
+	case PR_DESK_WINDOW_GROUP_LEADER:
+		r = "same desk as window group leader";
+		break;
+	case PR_DESK_WINDOW_GROUP_MEMBER:
+		r = "same desk as window group member";
+		break;
+	case PR_DESK_TRANSIENT:
+		r = "transient window placed on same desk as parent";
+		break;
+	case PR_DESK_XPROP_XA_WM_DESKTOP:
+		r = "specified by _XA_WM_DESKTOP property";
+		break;
+	default:
+		r = "bug";
+		break;
+	}
+	sprintf(s, "  desk %d (%s)\n", reason->desk.desk, r);
+	s += strlen(s);
+	if (reason->desk.do_switch_desk == 1)
+	{
+		sprintf(s, "    (switched to desk)\n");
+		s += strlen(s);
+	}
+	/* page */
+	do_show_page = 1;
+	switch (reason->page.reason)
+	{
+	case PR_PAGE_CURRENT:
+		do_show_page = 0;
+		r = "current page";
+		break;
+	case PR_PAGE_STYLE:
+		r = "specified by style";
+		break;
+	case PR_PAGE_X_RESOURCE_PAGE:
+		r = "specified by 'page' X resource";
+		break;
+	case PR_PAGE_IGNORE_CAPTURE:
+		r = "window was (re)captured";
+		break;
+	case PR_PAGE_IGNORE_INVALID:
+		r = "requested page ignored because of invalid style"
+			" combination";
+		break;
+	case PR_PAGE_STICKY:
+		do_show_page = 0;
+		r = "current page (window is sticky)";
+		break;
+	default:
+		r = "bug";
+		break;
+	}
+	if (do_show_page == 0)
+	{
+		sprintf(s, "  %s\n", r);
+	}
+	else
+	{
+		sprintf(
+			s, "  page %d %d (%s)\n", reason->page.px - 1,
+			reason->page.py - 1, r);
+	}
+	s += strlen(s);
+	if (reason->page.do_switch_page == 1)
+	{
+		sprintf(s, "    (switched to page)\n");
+		s += strlen(s);
+	}
+	if (reason->page.do_ignore_starts_on_page == 1)
+	{
+		sprintf(s, "    (possibly ignored StartsOnPage)\n");
+		s += strlen(s);
+	}
+	/* screen */
+	if (FScreenIsEnabled() == True || FScreenIsSLSEnabled() == True)
+	{
+		switch (reason->screen.reason)
+		{
+		case PR_SCREEN_CURRENT:
+			r = "current screen";
+			break;
+		case PR_SCREEN_STYLE:
+			r = "specified by style";
+			break;
+		case PR_SCREEN_X_RESOURCE_FVWMSCREEN:
+			r = "specified by 'fvwmscreen' X resource";
+			break;
+		case PR_SCREEN_IGNORE_CAPTURE:
+			r = "window was (re)captured";
+			break;
+		default:
+			r = "bug";
+			break;
+		}
+		FScreenSpecToString(t, 32, reason->screen.screen);
+		sprintf(
+			s, "  %s: %d %d %dx%d (%s)\n",
+			t, reason->screen.g.x, reason->screen.g.y,
+			reason->screen.g.width, reason->screen.g.height, r);
+		s += strlen(s);
+		if (reason->screen.was_modified_by_ewmh_workingarea == 1)
+		{
+			sprintf(
+				s, "    (screen area modified by EWMH working"
+				" area)\n");
+			s += strlen(s);
+		}
+	}
+	/* position */
+	sprintf(s, "  position !!! !!!");
+	/*!!!pos*/
+	fvwm_msg(
+		INFO, "__explain_placement", explanation, (int)FW_W(fw),
+		fw->name.name);
+
+	return;
+}
+
 /* ---------------------------- interface functions ------------------------ */
 
 Bool setup_window_placement(
@@ -1598,6 +1771,10 @@ Bool setup_window_placement(
 		exc, &pstyle->flags, attr_g, start_style, mode, win_opts,
 		&reason);
 	exc_destroy_context(exc);
+	if (Scr.bo.do_explain_window_placement == 1)
+	{
+		__explain_placement(fw, &reason);
+	}
 
 	return rc;
 }

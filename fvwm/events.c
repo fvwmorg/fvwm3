@@ -2237,7 +2237,7 @@ void HandleFocusIn(const evh_args_t *ea)
 	    focus_w != last_focus_w || focus_fw != last_focus_fw ||
 	    do_force_broadcast)
 	{
-		if (!Scr.bo.FlickeringQtDialogsWorkaround ||
+		if (!Scr.bo.do_enable_flickering_qt_dialogs_workaround ||
 		    !is_unmanaged_focused)
 		{
 			BroadcastPacket(

@@ -2046,7 +2046,7 @@ FvwmWindow *AddWindow(
 		    dpy, w, &JunkRoot, &JunkX, &JunkY, &JunkWidth, &JunkHeight,
 		    &JunkBW,  &JunkDepth) == 0)
 	{
-		if (Scr.bo.DisplayNewWindowNames)
+		if (Scr.bo.do_display_new_window_names)
 		{
 			fvwm_msg(INFO, "AddWindow", "new window disappeared");
 		}
@@ -2065,7 +2065,7 @@ FvwmWindow *AddWindow(
 	sflags = SGET_FLAGS_POINTER(style);
 	if (SIS_UNMANAGED(sflags))
 	{
-		if (Scr.bo.DisplayNewWindowNames)
+		if (Scr.bo.do_display_new_window_names)
 		{
 			fvwm_msg(
 				INFO, "AddWindow", "new window is unmanaged:\n"
@@ -2105,7 +2105,7 @@ FvwmWindow *AddWindow(
 	/***** visible window name ****/
 	setup_visible_name(fw, False);
 	EWMH_SetVisibleName(fw, False);
-	if (Scr.bo.DisplayNewWindowNames)
+	if (Scr.bo.do_display_new_window_names)
 	{
 		fvwm_msg(
 			INFO, "AddWindow", "new window:\n"
@@ -3295,7 +3295,7 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 	memset(&win_opts, 0, sizeof(win_opts));
 	win_opts.flags.do_override_ppos = 1;
 	win_opts.flags.is_recapture = 1;
-	if (!(Scr.flags.windows_captured)) /* initial capture? */
+	if (!(Scr.flags.are_windows_captured)) /* initial capture? */
 	{
 		evh_args_t ea;
 		exec_context_changes_t ecc;
@@ -3351,7 +3351,7 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 				exc_destroy_context(ea.exc);
 			}
 		}
-		Scr.flags.windows_captured = 1;
+		Scr.flags.are_windows_captured = 1;
 	}
 	else /* must be recapture */
 	{

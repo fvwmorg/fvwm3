@@ -3507,14 +3507,14 @@ void CMD_BugOpts(F_CMD_ARGS)
 			switch (toggle)
 			{
 			case -1:
-				Scr.bo.DisableConfigureNotify ^= 1;
+				Scr.bo.do_disable_configure_notify ^= 1;
 				break;
 			case 0:
 			case 1:
-				Scr.bo.DisableConfigureNotify = toggle;
+				Scr.bo.do_disable_configure_notify = toggle;
 				break;
 			default:
-				Scr.bo.DisableConfigureNotify = 0;
+				Scr.bo.do_disable_configure_notify = 0;
 				break;
 			}
 		}
@@ -3523,14 +3523,14 @@ void CMD_BugOpts(F_CMD_ARGS)
 			switch (toggle)
 			{
 			case -1:
-				Scr.bo.InstallRootCmap ^= 1;
+				Scr.bo.do_install_root_cmap ^= 1;
 				break;
 			case 0:
 			case 1:
-				Scr.bo.InstallRootCmap = toggle;
+				Scr.bo.do_install_root_cmap = toggle;
 				break;
 			default:
-				Scr.bo.InstallRootCmap = 0;
+				Scr.bo.do_install_root_cmap = 0;
 				break;
 			}
 		}
@@ -3539,17 +3539,17 @@ void CMD_BugOpts(F_CMD_ARGS)
 			switch (toggle)
 			{
 			case -1:
-				Scr.bo.ModalityIsEvil ^= 1;
+				Scr.bo.is_modality_evil ^= 1;
 				break;
 			case 0:
 			case 1:
-				Scr.bo.ModalityIsEvil = toggle;
+				Scr.bo.is_modality_evil = toggle;
 				break;
 			default:
-				Scr.bo.ModalityIsEvil = 0;
+				Scr.bo.is_modality_evil = 0;
 				break;
 			}
-			if (Scr.bo.ModalityIsEvil)
+			if (Scr.bo.is_modality_evil)
 			{
 				SetMWM_INFO(Scr.NoFocusWin);
 			}
@@ -3559,14 +3559,14 @@ void CMD_BugOpts(F_CMD_ARGS)
 			switch (toggle)
 			{
 			case -1:
-				Scr.bo.RaiseHackNeeded ^= 1;
+				Scr.bo.is_raise_hack_needed ^= 1;
 				break;
 			case 0:
 			case 1:
-				Scr.bo.RaiseHackNeeded = toggle;
+				Scr.bo.is_raise_hack_needed = toggle;
 				break;
 			default:
-				Scr.bo.RaiseHackNeeded = 0;
+				Scr.bo.is_raise_hack_needed = 0;
 				break;
 			}
 		}
@@ -3575,14 +3575,14 @@ void CMD_BugOpts(F_CMD_ARGS)
 			switch (toggle)
 			{
 			case -1:
-				Scr.bo.RaiseOverUnmanaged ^= 1;
+				Scr.bo.do_raise_over_unmanaged ^= 1;
 				break;
 			case 0:
 			case 1:
-				Scr.bo.RaiseOverUnmanaged = toggle;
+				Scr.bo.do_raise_over_unmanaged = toggle;
 				break;
 			default:
-				Scr.bo.RaiseOverUnmanaged = 0;
+				Scr.bo.do_raise_over_unmanaged = 0;
 				break;
 			}
 		}
@@ -3591,14 +3591,14 @@ void CMD_BugOpts(F_CMD_ARGS)
 			switch (toggle)
 			{
 			case -1:
-				Scr.bo.FlickeringQtDialogsWorkaround ^= 1;
+				Scr.bo.do_enable_flickering_qt_dialogs_workaround ^= 1;
 				break;
 			case 0:
 			case 1:
-				Scr.bo.FlickeringQtDialogsWorkaround = toggle;
+				Scr.bo.do_enable_flickering_qt_dialogs_workaround = toggle;
 				break;
 			default:
-				Scr.bo.FlickeringQtDialogsWorkaround = 0;
+				Scr.bo.do_enable_flickering_qt_dialogs_workaround = 0;
 				break;
 			}
 		}
@@ -3611,14 +3611,30 @@ void CMD_BugOpts(F_CMD_ARGS)
 			switch (toggle)
 			{
 			case -1:
-				Scr.bo.DisplayNewWindowNames ^= 1;
+				Scr.bo.do_display_new_window_names ^= 1;
 				break;
 			case 0:
 			case 1:
-				Scr.bo.DisplayNewWindowNames = toggle;
+				Scr.bo.do_display_new_window_names = toggle;
 				break;
 			default:
-				Scr.bo.DisplayNewWindowNames = 0;
+				Scr.bo.do_display_new_window_names = 0;
+				break;
+			}
+		}
+		else if (StrEquals(opt, "ExplainWindowPlacement"))
+		{
+			switch (toggle)
+			{
+			case -1:
+				Scr.bo.do_explain_window_placement ^= 1;
+				break;
+			case 0:
+			case 1:
+				Scr.bo.do_explain_window_placement = toggle;
+				break;
+			default:
+				Scr.bo.do_explain_window_placement = 0;
 				break;
 			}
 		}
@@ -3640,18 +3656,18 @@ void CMD_Emulate(F_CMD_ARGS)
 	style = PeekToken(action, NULL);
 	if (!style || StrEquals(style, "fvwm"))
 	{
-		Scr.gs.EmulateMWM = False;
-		Scr.gs.EmulateWIN = False;
+		Scr.gs.do_emulate_mwm = False;
+		Scr.gs.do_emulate_win = False;
 	}
 	else if (StrEquals(style, "mwm"))
 	{
-		Scr.gs.EmulateMWM = True;
-		Scr.gs.EmulateWIN = False;
+		Scr.gs.do_emulate_mwm = True;
+		Scr.gs.do_emulate_win = False;
 	}
 	else if (StrEquals(style, "win"))
 	{
-		Scr.gs.EmulateMWM = False;
-		Scr.gs.EmulateWIN = True;
+		Scr.gs.do_emulate_mwm = False;
+		Scr.gs.do_emulate_win = True;
 	}
 	else
 	{

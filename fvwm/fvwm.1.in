@@ -3547,6 +3547,16 @@ the correct strings to use in the
 .B Style
 command.
 
+When the
+.I ExplainWindowPlacement
+option is enabled, fvwm prints a message to the console whenever a
+new window is placed or one of the commands
+.BR PlaceAgain ", " Recapture " or " RecaptureWindow
+is used.  The message explains on which desk, page, Xinerama
+screen and position it was placed and why.  This option can be
+used to figure out why a specific window does not appear where you
+think it should.
+
 
 .TP
 .BI "BusyCursor [" "Option bool" "], " ...

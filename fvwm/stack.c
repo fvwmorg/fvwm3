@@ -784,7 +784,7 @@ static void __raise_or_lower_window(
 		 * any style grabfocusoff override_redirect windows that may be
 		 * above it. This is used to cope with ill-behaved applications
 		 * that insist on using long-lived override_redirects. */
-		if (Scr.bo.RaiseOverUnmanaged)
+		if (Scr.bo.do_raise_over_unmanaged)
 		{
 			raise_over_unmanaged(t);
 		}
@@ -793,7 +793,7 @@ static void __raise_or_lower_window(
 		 * The following is a hack to raise X windows over native
 		 * windows which is needed for some (all ?) X servers running
 		 * under Windows or Windows NT. */
-		if (Scr.bo.RaiseHackNeeded)
+		if (Scr.bo.is_raise_hack_needed)
 		{
 			/* RBW - 09/20/1999. I find that trying to raise
 			 * unmanaged windows causes problems with some apps. If
@@ -1239,7 +1239,7 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 		 * on top by checking if the window overlaps another one.  If
 		 * it was below unmanaged windows, but on top of its layer, it
 		 * would be considered on top. */
-		if (Scr.bo.RaiseOverUnmanaged || overlap(fw, t))
+		if (Scr.bo.do_raise_over_unmanaged || overlap(fw, t))
 		{
 			if (!DO_RAISE_TRANSIENT(fw) ||
 			    (!IS_IN_TRANSIENT_SUBTREE(t) && t != fw))
@@ -1257,7 +1257,7 @@ static Bool __is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
 {
 	Window	junk;
 	Bool  ontop	= False;
-	if (Scr.bo.RaiseOverUnmanaged)
+	if (Scr.bo.do_raise_over_unmanaged)
 	{
 
 #define EXPERIMENTAL_ROU_HANDLING

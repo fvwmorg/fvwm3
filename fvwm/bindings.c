@@ -515,7 +515,7 @@ static void binding_cmd(F_CMD_ARGS, binding_t type)
 
 	count = ParseBinding(
 		dpy, &Scr.AllBindings, action, type, &Scr.nr_left_buttons,
-		&Scr.nr_right_buttons, &btg, Scr.flags.silent_functions);
+		&Scr.nr_right_buttons, &btg, Scr.flags.are_functions_silent);
 	if (btg != Scr.buttons2grab)
 	{
 		Scr.flags.do_need_window_update = 1;

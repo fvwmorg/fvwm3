@@ -167,7 +167,7 @@ static Bool DeferExecution(
 			just_waiting_for_finish = 1;
 		}
 	}
-	if (Scr.flags.silent_functions)
+	if (Scr.flags.are_functions_silent)
 	{
 		return True;
 	}
@@ -465,10 +465,10 @@ static void __execute_function(
 	{
 		if (StrEquals(trash, PRE_SILENT))
 		{
-			if (Scr.flags.silent_functions == 0)
+			if (Scr.flags.are_functions_silent == 0)
 			{
 				set_silent = 1;
-				Scr.flags.silent_functions = 1;
+				Scr.flags.are_functions_silent = 1;
 			}
 			taction = trash2;
 			trash = PeekToken(taction, &trash2);
@@ -488,7 +488,7 @@ static void __execute_function(
 	{
 		if (set_silent)
 		{
-			Scr.flags.silent_functions = 0;
+			Scr.flags.are_functions_silent = 0;
 		}
 		func_depth--;
 		return;
@@ -666,7 +666,7 @@ static void __execute_function(
 
 	if (set_silent)
 	{
-		Scr.flags.silent_functions = 0;
+		Scr.flags.are_functions_silent = 0;
 	}
 	if (cond_rc != NULL)
 	{

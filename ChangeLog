@@ -1,3 +1,16 @@
+2004-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (__explain_placement):
+	new function
+
+	* libs/FScreen.c (FScreenIsRectangleOnScreen):
+	new function
+
+	* fvwm/builtins.c (CMD_BugOpts):
+	* fvwm/screen.h (ScreenInfo):
+	new BugOpts option ExplainWindowPlacement
+	renamed some members of Screen
+
 2004-03-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/placement.c (__place_get_wm_pos):

@@ -1217,7 +1217,7 @@ static void InitVariables(void)
 	   "WRQ, Inc."
 	   is the ServerVendor string of the Reflection X server under Windows.
 	*/
-	Scr.bo.RaiseHackNeeded =
+	Scr.bo.is_raise_hack_needed =
 		(strcmp (
 			ServerVendor (dpy),
 			"Hummingbird Communications Ltd.") == 0) ||
@@ -1226,14 +1226,14 @@ static void InitVariables(void)
 			"Network Computing Devices Inc.") == 0) ||
 		(strcmp (ServerVendor (dpy), "WRQ, Inc.") == 0);
 
-	Scr.bo.ModalityIsEvil = 0;
-	Scr.bo.DisableConfigureNotify = 0;
-	Scr.bo.InstallRootCmap = 0;
-	Scr.bo.FlickeringQtDialogsWorkaround = 1;
-	Scr.bo.EWMHIconicStateWorkaround = 0;
+	Scr.bo.is_modality_evil = 0;
+	Scr.bo.do_disable_configure_notify = 0;
+	Scr.bo.do_install_root_cmap = 0;
+	Scr.bo.do_enable_flickering_qt_dialogs_workaround = 1;
+	Scr.bo.do_enable_ewmh_iconic_state_workaround = 0;
 
-	Scr.gs.EmulateMWM = DEFAULT_EMULATE_MWM;
-	Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;
+	Scr.gs.do_emulate_mwm = DEFAULT_EMULATE_MWM;
+	Scr.gs.do_emulate_win = DEFAULT_EMULATE_WIN;
 	Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
 	Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
 	Scr.gs.use_inactive_down_buttons = DEFAULT_USE_INACTIVE_DOWN_BUTTONS;
@@ -1663,7 +1663,7 @@ void SetMWM_INFO(Window window)
 		return;
 	}
 
-	if (Scr.bo.ModalityIsEvil)
+	if (Scr.bo.is_modality_evil)
 	{
 		/* Set Motif WM_INFO atom to make motif relinquish
 		 * broken handling of modal dialogs */
@@ -1832,7 +1832,7 @@ int main(int argc, char **argv)
 				{
 					usage(0);
 					exit(1);
-				} 
+				}
 			}
 		}
 		else if (strcmp(argv[i], "-d") == 0 ||
@@ -2069,7 +2069,7 @@ int main(int argc, char **argv)
 		else
 		{
 			char *new_dn;
-			
+
 			new_dn = get_display_name(dn, single_screen_num);
 			if (dpy && strcmp(new_dn, dn) == 0)
 			{
