@@ -206,6 +206,8 @@ Compile tests:
 
   - Run
       make clean
+    even if you checked out from scratch.  It is a useful
+    additional check.
   - Double check that you get no warnings during the build:
       make CFLAGS="-g -O2 -Wall -Werror"
     On some systems, the system include files generate warnings.
