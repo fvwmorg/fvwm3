@@ -102,7 +102,7 @@ static XrmOptionDescRec table [] = {
 
 void FetchWmProtocols(FvwmWindow *);
 void GetWindowSizeHints(FvwmWindow *);
-
+static void regrab_focus_win();
 /***********************************************************************/
 
 Bool setup_window_structure(
@@ -990,6 +990,39 @@ void setup_focus_policy(FvwmWindow *tmp_win)
   } /* if */
 }
 
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	regrab_focus_win - special handling for MouseFocusClickRaises
+ *      *only*
+ *      If a MouseFocusClickRaises window was so raised, it is now un-
+ *      grabbed. If it's no longer on top of its layer because of the
+ *      new window we just added, we have to restore the grab so it can
+ *      be raised again.
+ *
+ ***********************************************************************/
+void regrab_focus_win()
+{
+int i;
+
+  if (Scr.go.MouseFocusClickRaises
+      && Scr.Ungrabbed != NULL
+      && Scr.Ungrabbed == Scr.Focus
+      && ! HAS_CLICK_FOCUS(Scr.Ungrabbed)
+      && ! is_on_top_of_layer(Scr.Ungrabbed))
+    {
+      XSync(dpy,0);
+      for(i=0;i<3;i++)
+	if(Scr.buttons2grab & (1<<i))
+	  XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
+		      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
+		      Scr.FvwmCursors[CRS_SYS]);
+      Scr.Ungrabbed = NULL;
+    }
+}
+
+
 void setup_key_and_button_grabs(FvwmWindow *tmp_win)
 {
   GrabAllWindowKeysAndButtons(dpy, tmp_win->Parent, Scr.AllBindings,
@@ -998,6 +1031,7 @@ void setup_key_and_button_grabs(FvwmWindow *tmp_win)
 		    C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
 		    GetUnusedModifiers(), True);
   setup_focus_policy(tmp_win);
+  regrab_focus_win();
 }
 
 
