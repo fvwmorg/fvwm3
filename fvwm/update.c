@@ -439,7 +439,7 @@ static void apply_window_updates(
 	}
 	if (flags->do_update_icon_title_cs_hi)
 	{
-		if (t == focus_w)
+		if (t == focus_w && IS_ICONIFIED(t))
 		{
 			flags->do_redraw_icon = True;
 		}
@@ -447,7 +447,7 @@ static void apply_window_updates(
 	}
 	if (flags->do_update_icon_title_cs)
 	{
-		if (t != focus_w)
+		if (t != focus_w && IS_ICONIFIED(t))
 		{
 			flags->do_redraw_icon = True;
 		}
@@ -499,11 +499,9 @@ static void apply_window_updates(
 	}
 	if (flags->do_redraw_icon)
 	{
-		if (IS_ICONIFIED(t))
-		{
-			DrawIconWindow(t, True, True, False, True, NULL);;
-			flags->do_redraw_decoration = False;
-		}
+		/* should not test if the window is iconified */
+		DrawIconWindow(t, True, True, False, True, NULL);;
+		flags->do_redraw_decoration = False;
 		flags->do_update_icon_title = False;
 	}
 	if (flags->do_update_icon_title)

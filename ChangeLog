@@ -1,8 +1,14 @@
 2002-12-31  olicha  <olivier.chapuis@free.fr>
 
+	* libs/PictureGraphics.c (PCopyArea):
+	Fixed rendering of depth 1 pixmap with a mask
+
+	* fvwm/update.c (apply_window_updates):
+	Fixed icon bg cset update
+
 	* fvwm/events.c (HandlePropertyNotify):
 	* fvwm/geometry.c (move_icon_to_position):
-	Fixed non shaped icons with bg relief without bg
+	Fixed non shaped icons with a bg padding but without cs bg
 
 	* NEWS:
 	* fvwm/style.c (style_parse_icon_size_style):

@@ -106,7 +106,7 @@ void PCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, int depth,
 	else
 	{
 		/* monochrome bitmap */
-		gcv.clip_mask = None;
+		gcv.clip_mask = mask;
 		if (my_gc != None)
 		{
 			gcv.foreground = PictureWhitePixel();
