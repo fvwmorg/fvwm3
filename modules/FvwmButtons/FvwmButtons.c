@@ -575,7 +575,7 @@ int main(int argc, char **argv)
   if(UberButton->c->flags&b_TransBack)
     SetTransparentBackground(UberButton,Width,Height);
 # endif
-  
+
     i=-1;ub=UberButton;
     while(NextButton(&ub,&b,&i,0))
       MakeButton(b);
@@ -767,7 +767,7 @@ void Loop(void)
 	      {
 		if(strncasecmp(act,"Exec",4)==0)
 		  {
-		    /* close current subpanel */  
+		    /* close current subpanel */
 		    if (PanelIndex != MainPanel) Slide(PanelIndex, NULL);
 
 		    /* Look for Exec "identifier", in which case the button
@@ -1001,6 +1001,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
       fprintf(stderr,", font \"%s\"",b->font_string);
 #     endif
 
+fprintf(stderr,"b=0x%x, font_string=%s\n",b,b?b->font_string:"(NULL)");
       if(strncasecmp(b->font_string,"none",4)==0)
 	b->font=NULL;
       else if(!(b->font=XLoadQueryFont(Dpy,b->font_string)))

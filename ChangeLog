@@ -1,5 +1,24 @@
 1998-12-13  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/read.c (ReadSubFunc): the piperead string was set as the last
+	read filename
+
+	* fvwm/module.c (executeModule): removed useless code:
+	  if(args[nargs] != NULL)
+	    free(args[nargs]);
+	when args[nargs] is guaranteed to be NULL
+
+	* fvwm/fvwm.c (SetRCDefaults): added missing comma after "SetMenuStyle"
+	default
+
+	* fvwm/builtins.c (SetMenuStyle):
+	* fvwm/fvwm2.1: removed SetMenuStyle ... next. The menuface option can
+	be applied to any menu style. I don't understand what this was good for
+	anyway since when you specified 'next', the menu style itself
+	(mwm/fvwm/win) was undefined.
+
+	* fvwm/builtins.c (SetMenuStyle1): removed unused code
+
 	* fvwm/misc.h: changed signature of DisplaySize
 
 	* fvwm/events.c (HandleConfigureRequest):

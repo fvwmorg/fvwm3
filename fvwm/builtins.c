@@ -1674,19 +1674,6 @@ void SetMenuStyle1(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification", action);
       goto etiqueta_final; /* ;-) */
-      if(fore != NULL)
-	free(fore);
-      if(back != NULL)
-	free(back);
-      if(stipple != NULL)
-	free(stipple);
-      if(font != NULL)
-	free(font);
-      if(style != NULL)
-	free(style);
-      if(animated != NULL)
-	free(animated);
-      return;
     }
   buffer = (char *)safemalloc(strlen(action) + strlen(fore) + 16);
   sprintf(buffer,"default %s %s %s %s %s %s %s", fore, back, stipple, fore,
@@ -1729,9 +1716,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   action = GetNextToken(action,&animated);
   action = GetNextToken(action,&style);
 
-  tmpmf = malloc(sizeof(MenuFace));
-  if(tmpmf == NULL)
-    exit(1);
+  tmpmf = (MenuFace *)safemalloc(sizeof(MenuFace));
 
   memset(tmpmf, 0, sizeof(MenuFace));
 
@@ -1744,47 +1729,56 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     tmpmf->style = MWMMenu;
   else if((style != NULL)&&(StrEquals(style,"WIN")))
     tmpmf->style = WINMenu;
-  else if((style != NULL)&&(StrEquals(style,"NEXT")))
+  else if((style != NULL)&&(StrEquals(style,"FVWM")))
+    tmpmf->style = FVWMMenu;
+  else
   {
-    char *end, *tmp;
-    int len;
+    fvwm_msg(ERR,"SetMenuStyle", "unknown menu style %s", style?style:"");
+    free(tmpmf);
+    goto etiqueta_final;
+  }
 
-    if (!action)
+  if (action)
+  {
+    while (*action != '\0' && isspace(*action))
+      action++;
+    if (*action != '\0')
+    {
+      if (*action != '(')
       {
 	fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification",action);
 	free(tmpmf);
 	goto etiqueta_final;
       }
-    while(isspace(*action)) ++action;
-    if( *action != '(' )
-    {
-      fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification",action);
-      free(tmpmf);
-      goto etiqueta_final;
-    }
-    end = strchr(++action, ')');
-    if (!end)
-    {
-      fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification", action);
-      free(tmpmf);
-      goto etiqueta_final;
-    }
+      else
+      {
+	char *end, *tmp;
+	int len;
 
-    len = end - action + 1;
-    tmp = safemalloc(len);
-    strncpy(tmp, action, len - 1);
-    tmp[len - 1] = 0;
-    if(!ReadMenuFace(tmp, tmpmf, True))
-    {
-      free(tmpmf);
-      free(tmp);
-      goto etiqueta_final;
+	end = strchr(++action, ')');
+	if (!end)
+	{
+	  fvwm_msg(ERR,"SetMenuStyle",
+		   "error in %s style specification", action);
+	  free(tmpmf);
+	  goto etiqueta_final;
+	}
+
+	len = end - action + 1;
+	tmp = safemalloc(len);
+	strncpy(tmp, action, len - 1);
+	tmp[len - 1] = 0;
+	if(!ReadMenuFace(tmp, tmpmf, True))
+	{
+	  free(tmpmf);
+	  free(tmp);
+	  goto etiqueta_final;
+	}
+	free(tmp);
+	action = end + 1;
+      }
     }
-    free(tmp);
-    action = end + 1;
   }
-  else
-    tmpmf->style = FVWMMenu;
 
   if(Scr.d_depth > 2)
   {

@@ -147,7 +147,7 @@ void MakeButton(button_info *b)
 
       if(b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
 	ih -= font->ascent+font->descent;
-	
+
       b->icon_w=iw;
       b->icon_h=ih;
 
@@ -167,13 +167,13 @@ void MakeButton(button_info *b)
 			    b->icon_w,b->icon_h);
 	}
       else
-	XMoveWindow(Dpy,b->IconWin,2000,2000);	
+	XMoveWindow(Dpy,b->IconWin,2000,2000);
     }
 }
 
 /**
 *** RedrawButton()
-*** Writes out title, if any, and displays the bevel right, by calling 
+*** Writes out title, if any, and displays the bevel right, by calling
 *** RelieveWindow. If clean is nonzero, also clears background.
 **/
 void RedrawButton(button_info *b,int clean)
@@ -185,10 +185,9 @@ void RedrawButton(button_info *b,int clean)
   XGCValues gcv;
   unsigned long gcm=0;
   int rev=0;
-  
+
   BW = buttonWidth(b);
   BH = buttonHeight(b);
-  
   buttonInfo(b,&x,&y,&px,&py,&f);
   GetInternalSize(b,&ix,&iy,&iw,&ih);
 
@@ -224,7 +223,7 @@ void RedrawButton(button_info *b,int clean)
       gcm = GCForeground;
       gcv.foreground=buttonBack(b);
       XChangeGC(Dpy,NormalGC,gcm,&gcv);
-      
+
       if(b->flags&b_Container)
 	{
 	  int x1=x+f,y1=y+f;
@@ -232,21 +231,22 @@ void RedrawButton(button_info *b,int clean)
 	  int w=BW-2*f,h=BH-2*f;
 	  w2+=iw - b->c->num_columns*b->c->ButtonWidth;
 	  h2+=ih - b->c->num_rows*b->c->ButtonHeight;
-	  
+
 	  if(w1)XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w1,h);
 	  if(w2)XFillRectangle(Dpy,MyWindow,NormalGC,x1+w-w2,y1,w2,h);
 	  if(h1)XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w,h1);
 	  if(h2)XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
 	}
-      else if(!(b->flags&b_IconBack) && !(b->flags&b_IconParent))
+      else if(!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
+	      !(b->flags&b_Swallow))
 	XFillRectangle(Dpy,MyWindow,NormalGC,x+f,y+f,BW-2*f,BH-2*f);
     }
-  
+
   /* ----------------------------------------------------------------------- */
-  
+
   if(b->flags&b_Title && font)
     {
-      gcm = GCForeground | GCFont; 
+      gcm = GCForeground | GCFont;
       gcv.foreground=buttonFore(b);
       gcv.font = font->fid;
       XChangeGC(Dpy,NormalGC,gcm,&gcv);
@@ -267,16 +267,16 @@ void DrawTitle(button_info *b,Window win,GC gc)
   int l,i,xpos;
   char *s;
   int just=justify&b_TitleHoriz; /* Left, center, right */
-  
+
   BH = buttonHeight(b);
-  
+
   GetInternalSize(b,&ix,&iy,&iw,&ih);
-  
+
   /* ----------------------------------------------------------------------- */
-  
+
   if(!(b->flags&b_Title) || !font)
     return;
-  
+
   /* If a title is to be shown, truncate it until it fits */
   if(justify&b_Horizontal)
     {
@@ -291,11 +291,11 @@ void DrawTitle(button_info *b,Window win,GC gc)
 	  iw-=b->icon_w+buttonXPad(b);
 	}
     }
-  
+
   s=b->title;
   l=strlen(s);
   i=XTextWidth(font,s,l);
-  
+
   if(i>iw)
     {
       if(just==2)
@@ -315,7 +315,7 @@ void DrawTitle(button_info *b,Window win,GC gc)
     xpos=max(ix,ix+iw-i);
   else /* Centered, I guess */
     xpos=ix+(iw-i)/2;
-  
+
   if(*s && l>0 && BH>=font->descent+font->ascent) /* Clip it somehow? */
     {
       /* If there is more than the title, put it at the bottom */

@@ -194,11 +194,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       nargs++;
     }
   if(args[nargs-1] == NULL)
-    {
-      nargs--;
-      if(args[nargs] != NULL)
-	free(args[nargs]);
-    }
+    nargs--;
   args[nargs] = 0;
 
   /* Try vfork instead of fork. The man page says that vfork is better! */

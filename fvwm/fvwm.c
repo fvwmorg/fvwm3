@@ -654,7 +654,7 @@ void SetRCDefaults()
   char *defaults[] = {
     "HilightColor black grey",
     "XORValue 0",
-    "SetMenuStyle default black grey slategrey white fixed fvwm"
+    "SetMenuStyle default black grey slategrey white fixed noanim fvwm",
     "TitleStyle Centered -- Raised",
     "IconFont fixed",
     "WindowFont fixed",

@@ -283,7 +283,10 @@ void ParseContainer(char **ss,button_info *b)
 	case 2: /* Font */
 	  if (b->c->font_string) free(b->c->font_string);
 	  b->c->font_string=seekright(&s);
-	  b->c->flags|=b_Font;
+	  if(b->c->font_string)
+	    b->c->flags|=b_Font;
+	  else
+	    b->c->flags&=~b_Font;
 	  break;
 	case 3: /* Frame */
 	  b->c->framew=strtol(s,&t,10);
@@ -473,7 +476,7 @@ void match_string(button_info **uberb,char *s)
 	    case 2: /* Font */
 	      if(b->flags&b_Font && b->font_string) free(b->font_string);
 	      b->font_string=seekright(&s);
-	      if(b->font)
+	      if(b->font_string)
 		b->flags|=b_Font;
 	      else
 		b->flags&=~b_Font;

@@ -138,9 +138,12 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   if((ofilename != NULL)&&(filename!= ofilename))
     free(ofilename);
   fcntl(fileno(fd), F_SETFD, 1);
-  if(fvwm_file != NULL)
-    free(fvwm_file);
-  fvwm_file = filename;
+  if (!piperead)
+  {
+    if(fvwm_file != NULL)
+      free(fvwm_file);
+    fvwm_file = filename;
+  }
 
   tline = fgets(line,(sizeof line)-1,fd);
   while(tline)

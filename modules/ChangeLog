@@ -1,3 +1,16 @@
+1998-12-13  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/draw.c (RedrawButton): fixed background pixmap for
+	swallowed windows. Is it ok to never draw a background for swallowed
+	applications?
+
+	* FvwmIconMan/fvwm.c (destroy_window): coredump fixed: IconMan died
+	when the window with the focus was deleted and the focus was changed
+
+	* FvwmButtons/parse.c (ParseContainer):
+	(match_string): fixed possible coredump (font_string == NULL but
+	b_Font was still set).
+
 1998-12-12  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmPager/x_pager.c (initialize_pager): fixed bug: balloons were
