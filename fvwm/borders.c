@@ -1058,8 +1058,6 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   unsigned long xwcm;
   int i;
   int buttons = 0;
-  int lbuttons = 0;
-  int rbuttons = 0;
   int ww = tmp_win->frame_g.width - 2 * tmp_win->boundary_width;
   int rest = 0;
   int bw;
@@ -1082,14 +1080,8 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
     if (tmp_win->button_w[i])
-    {
-      if (i & 0)
-        lbuttons++;
-      else
-        rbuttons++;
-    }
+      buttons++;
   }
-  buttons = lbuttons + rbuttons;
   ww = tmp_win->frame_g.width - 2 * tmp_win->boundary_width -
     tmp_win->title_g.width;
   if (ww < buttons * xwc.width)
