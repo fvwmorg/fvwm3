@@ -1,3 +1,9 @@
+2002-07-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/FvwmPager.c (list_add):
+	(list_configure):
+	fixed access to CONFIGURE_WINDOW and ADD_WINDOW packets
+
 2002-07-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (draw_desk_background):

@@ -180,6 +180,13 @@ e.g. for audio-events:
 	*FvwmEvent: dewindowshade beep.au
 .sp
 .fi
+Note: The enter_window event is generated when the pointer enters
+a window.  With the -passid option, that window's id is passed to
+fvwm.  An enter_window event is generated too when the pointer
+leaves a window and moves into the root window.  In this case, the
+id passed is 0.
+.sp
+.fi
 Provided \fIfvwm\fP supports it (not yet), there's an additional event to
 replace all \fIfvwm\fP beeps with a sound:
 .nf

@@ -636,8 +636,8 @@ void list_add(unsigned long *body)
   }
   else
   {
-    (*prev)->text = body[22];
-    (*prev)->back = body[23];
+    (*prev)->text = cfgpacket->TextPixel;
+    (*prev)->back = cfgpacket->BackPixel;
   }
   AddNewWindow(*prev);
 }
@@ -685,8 +685,8 @@ void list_configure(unsigned long *body)
   }
   else
   {
-    t->text = body[22];
-    t->back = body[23];
+    t->text = cfgpacket->TextPixel;
+    t->back = cfgpacket->BackPixel;
   }
   if (IS_ICONIFIED(t))
   {

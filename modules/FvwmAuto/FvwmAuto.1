@@ -50,7 +50,10 @@ mode, FvwmAuto raises the window under the pointer when the
 pointer enters a window.  The
 .I LeaveCommand
 is executed on the window that was below the pointer before it
-entered the new window.  In
+entered the new window.  When the pointer leaves a window and
+enters the root window, the
+.I EnterCommand
+is executed too, but without a window to operate on.  In
 .I -menterleave
 mode, FvwmAuto works just like in
 .I -menter
@@ -89,14 +92,14 @@ An example for auto raising windows with ClickToFocus:
 .nf
 .EX
 Style * ClickToFocus
-FvwmAuto 0 -enter "Silent Raise"
+FvwmAuto 0 -menter "Silent Raise"
 .EE
 
 An example for auto raising and lowering only some windows:
 .nf
 To start FvwmAuto:
 .EX
-FvwmAuto 0 -passid -enterleave \\
+FvwmAuto 0 -passid -menter \\
 "Silent selective_raiselower raise" \\
 "Silent selective_raiselower lower"
 .EE
