@@ -6198,13 +6198,21 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		pmp->screen_origin_x = pmp->pops->pos_hints.screen_origin_x;
 		pmp->screen_origin_y = pmp->pops->pos_hints.screen_origin_y;
 	}
-	if (!pmp->pops->flags.do_warp_title)
+	if (pmp->pops->flags.do_warp_title)
+	{
+		do_warp = True;
+	}
+	else if (pmp->pops->flags.do_not_warp)
 	{
 		do_warp = False;
 	}
-	else
+	else if (key_press)
 	{
 		do_warp = True;
+	}
+	else
+	{
+		do_warp = False;
 	}
 	/* Figure out where we should popup, if possible */
 	if (!pmp->flags.is_already_mapped)
