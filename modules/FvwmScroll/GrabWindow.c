@@ -7,11 +7,8 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#define TRUE 1
-#define FALSE 0
 #define MAX_ICON_NAME_LEN 255
 
-#define XLIB_ILLEGAL_ACCESS
 #include "config.h"
 
 #ifdef HAVE_SYS_BSDTYPES_H
@@ -27,16 +24,15 @@
 #include <sys/select.h>
 #endif
 #include <ctype.h>
-#include <fvwm/module.h>
-
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
 #include <X11/Xatom.h>
-#include <X11/Intrinsic.h>
+
+#include "fvwm/module.h"
+#include "libs/fvwmlib.h"
+#include "libs/Picture.h"
+#include "libs/ModGraph.h"
 
 #include "FvwmScroll.h"
-#include "libs/Picture.h"
 
 int Width = 300, Height = 300;
 int target_width, target_height;
@@ -52,9 +48,7 @@ int Reduction_V = 2;
 #define PAD_WIDTH3 5
 
 Window main_win,holder_win;
-Pixel back_pix, hilite_pix,shadow_pix;
-GC ReliefGC, ShadowGC;
-GContext rgcontext, sgcontext;
+Pixel hilite_pix,shadow_pix;
 extern char *BackColor;
 
 #define MW_EVENTS   (ExposureMask | StructureNotifyMask| ButtonReleaseMask |\
@@ -100,18 +94,25 @@ void CreateWindow(int x,int y, int w, int h)
 
   mysizehints.win_gravity = NorthWestGravity;	
 
-  if (!UseFvwmLook) {
-    back_pix = GetColor(BackColor);
-    hilite_pix = GetHilite(back_pix);
-    shadow_pix = GetShadow(back_pix);
+  attributes.colormap = G->cmap;
+  attributes.background_pixmap = None;
+  attributes.border_pixel = 0;
+  main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
+			   mysizehints.width, mysizehints.height, 0, G->depth,
+			   InputOutput, G->viz,
+			   CWColormap | CWBackPixmap | CWBorderPixel,
+			   &attributes);
+
+  if (!G->useFvwmLook) {
+    InitPictureCMap(dpy, main_win);
+    G->bgtype.bits.is_pixmap = False;
+    G->bg.pixel = GetColor(BackColor);
+    hilite_pix = GetHilite(G->bg.pixel);
+    shadow_pix = GetShadow(G->bg.pixel);
   }
 
-  attributes.colormap = cmap;
-  attributes.background_pixel = back_pix;
-  main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
-			   mysizehints.width, mysizehints.height, 0, depth,
-			   InputOutput, viz, CWColormap | CWBackPixel,
-			   &attributes);
+  SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
+		      &(G->bg), &(G->bgtype));
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
@@ -121,19 +122,17 @@ void CreateWindow(int x,int y, int w, int h)
   holder_win = XCreateWindow(dpy, main_win, PAD_WIDTH3, PAD_WIDTH3,
 			     mysizehints.width - BAR_WIDTH - PAD_WIDTH3,
 			     mysizehints.height - BAR_WIDTH - PAD_WIDTH3,
-			     0, depth, InputOutput, viz,
-			     CWColormap | CWBackPixel, &attributes);
+			     0, G->depth, InputOutput, G->viz,
+			     CWColormap | CWBackPixmap | CWBorderPixel,
+			     &attributes);
   XMapWindow(dpy,holder_win);
-  gcm = GCForeground;
-  gcv.foreground = hilite_pix;
-  ReliefGC = XCreateGC(dpy, Root, gcm, &gcv);  
 
-  gcv.foreground = shadow_pix;
-  ShadowGC = XCreateGC(dpy, Root, gcm, &gcv);  
-  
-  if (UseFvwmLook) {
-    ReliefGC->gid = rgcontext;
-    ShadowGC->gid = sgcontext;
+  if (!G->useFvwmLook) {
+    gcm = GCForeground;
+    gcv.foreground = hilite_pix;
+    G->reliefGC = XCreateGC(dpy, holder_win, gcm, &gcv);
+    gcv.foreground = shadow_pix;
+    G->shadowGC = XCreateGC(dpy, holder_win, gcm, &gcv);
   }
 
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
@@ -147,15 +146,12 @@ void CreateWindow(int x,int y, int w, int h)
 Pixel GetColor(char *name)
 {
   XColor color;
-  XWindowAttributes attributes;
-
-  XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color)) 
+   if (!XParseColor (dpy, G->cmap, name, &color)) 
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color)) 
+   else if(!XAllocColor (dpy, G->cmap, &color)) 
      {
        nocolor("alloc",name);
      }
@@ -181,7 +177,7 @@ int motion = NONE;
 void Loop(Window target)
 {
   Window root;
-  int x,y,border_width,depth;
+  int x,y,depth,border_width;
   XEvent Event;
   int tw,th;
   char *temp;
@@ -190,8 +186,15 @@ void Loop(Window target)
   int actual_format;
   unsigned long nitems, bytesafter;
 
-  while(1)
-    {
+  while(1) {
+    fd_set fdset;
+
+    FD_ZERO(&fdset);
+    FD_SET(fd[1], &fdset);
+    FD_SET(x_fd, &fdset);
+
+    /* process all X events first */
+    while (XPending(dpy)) {
       XNextEvent(dpy,&Event);
       switch(Event.type)
 	{
@@ -474,6 +477,8 @@ void Loop(Window target)
 	    }
 	  else if (Event.xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
 	    {
+	      /* ignore colormap stuff. The FvwmScroll window may have a
+	       * different visual to the client and so cannot pass this on */
 	    }
 	  break;
 	  
@@ -491,6 +496,8 @@ void Loop(Window target)
 	  XSetInputFocus(dpy,target,RevertToParent,CurrentTime);
 	  break;
 	case ColormapNotify:
+	/* FvwmScroll may not have the same visual as the captured window
+	 * and so cannot share its colormap
 	  {
 	    XWindowAttributes xwa;
 	    if(XGetWindowAttributes(dpy,target, &xwa) != 0)
@@ -498,11 +505,35 @@ void Loop(Window target)
 		XSetWindowColormap(dpy,main_win,xwa.colormap);
 	      }
 	  }
+	*/
 	  break;
 	default:
 	  break;
 	}
     }
+
+    /* no more events to process */
+    /* wait for X-event or config line */
+    select((SELECT_TYPE_ARG1)fd_width, SELECT_TYPE_ARG234 &fdset,
+           SELECT_TYPE_ARG234 0, SELECT_TYPE_ARG234 0, SELECT_TYPE_ARG5 NULL);
+
+    /* parse any config lines (only the fvwm_look) */
+    if (FD_ISSET(fd[1], &fdset)) {
+      char *tline;
+
+      GetConfigLine(fd, &tline);
+      if (tline != NULL && (strlen(tline) > 1)) {
+        if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
+          if (ParseGraphics(dpy, tline, G)) {
+            SetWindowBackground(dpy, main_win, tw, th, &(G->bg), &(G->bgtype));
+          }
+        }
+      }
+
+      /* free up line malloc'd by GetConfigLine */
+      if (tline) free(tline);
+    }
+  }
   return;
 }
 
@@ -525,9 +556,10 @@ void RedrawWindow(Window target)
   
   XSetWindowBorderWidth(dpy,target,0);
 
-  RelieveRectangle(dpy,main_win,PAD_WIDTH3-2,PAD_WIDTH3-2,
-		   Width-BAR_WIDTH-PAD_WIDTH3+3,
-		   Height-BAR_WIDTH-PAD_WIDTH3+3,ShadowGC,ReliefGC,2);
+  RelieveRectangle(dpy, main_win, PAD_WIDTH3 - 2, PAD_WIDTH3 - 2,
+		   Width-BAR_WIDTH - PAD_WIDTH3 + 3,
+		   Height-BAR_WIDTH - PAD_WIDTH3 + 3,
+		   G->shadowGC, G->reliefGC, 2);
 
   y = (Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH)*
     target_y_offset/target_height
@@ -546,22 +578,24 @@ void RedrawWindow(Window target)
       XClearArea(dpy,main_win,x,PAD_WIDTH3+SCROLL_BAR_WIDTH,
 		 w,Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH,False);
 
-      RelieveRectangle(dpy,main_win,x,y,w-1,h-1,ReliefGC,ShadowGC,2);
+      RelieveRectangle(dpy, main_win, x, y, w - 1, h - 1,
+		       G->reliefGC, G->shadowGC, 2);
     }
   if(exposed & 1)
-      RelieveRectangle(dpy,main_win,x-2,PAD_WIDTH2,
-		       w+3,Height-BAR_WIDTH-PAD_WIDTH2+1,ShadowGC,ReliefGC,2);
+      RelieveRectangle(dpy, main_win, x - 2, PAD_WIDTH2, w + 3,
+		       Height - BAR_WIDTH - PAD_WIDTH2 + 1,
+		       G->shadowGC, G->reliefGC, 2);
   if(exposed)
     {
       if(motion == TOP)
-	RedrawTopButton(ShadowGC,ReliefGC,x,PAD_WIDTH3);
+	RedrawTopButton(G->shadowGC,G->reliefGC,x,PAD_WIDTH3);
       else
-	RedrawTopButton(ReliefGC,ShadowGC,x,PAD_WIDTH3);
+	RedrawTopButton(G->reliefGC,G->shadowGC,x,PAD_WIDTH3);
       if(motion == BOTTOM)
-	RedrawBottomButton(ShadowGC,ReliefGC,x,
+	RedrawBottomButton(G->shadowGC,G->reliefGC,x,
 			   Height-BAR_WIDTH-SCROLL_BAR_WIDTH);
       else
-	RedrawBottomButton(ReliefGC,ShadowGC,x,
+	RedrawBottomButton(G->reliefGC,G->shadowGC,x,
 			   Height-BAR_WIDTH-SCROLL_BAR_WIDTH);
     }
 
@@ -579,24 +613,26 @@ void RedrawWindow(Window target)
       hh = h;
       XClearArea(dpy,main_win,PAD_WIDTH3+SCROLL_BAR_WIDTH,y,
 		 Width-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH,h,False);
-      RelieveRectangle(dpy,main_win,x,y,w-1,h-1,ReliefGC,ShadowGC,2);
+      RelieveRectangle(dpy, main_win, x, y, w - 1, h - 1,
+		       G->reliefGC, G->shadowGC, 2);
     }
   if(exposed& 1)
     {
-      RelieveRectangle(dpy,main_win,PAD_WIDTH2,y-2,Width-BAR_WIDTH-PAD_WIDTH2+1,h+2,
-		       ShadowGC,ReliefGC,2);
+      RelieveRectangle(dpy, main_win, PAD_WIDTH2, y - 2,
+		       Width - BAR_WIDTH - PAD_WIDTH2 + 1, h + 2,
+		       G->shadowGC, G->reliefGC, 2);
     }
   if(exposed)
     {
       if(motion == LEFT)
-	RedrawLeftButton(ShadowGC,ReliefGC,PAD_WIDTH3,y);
+	RedrawLeftButton(G->shadowGC,G->reliefGC,PAD_WIDTH3,y);
       else
-	RedrawLeftButton(ReliefGC,ShadowGC,PAD_WIDTH3,y);
+	RedrawLeftButton(G->reliefGC,G->shadowGC,PAD_WIDTH3,y);
       if(motion ==RIGHT)
-	RedrawRightButton(ShadowGC,ReliefGC,
+	RedrawRightButton(G->shadowGC,G->reliefGC,
 			  Width-BAR_WIDTH-SCROLL_BAR_WIDTH,y);
       else
-	RedrawRightButton(ReliefGC,ShadowGC,
+	RedrawRightButton(G->reliefGC,G->shadowGC,
 			  Width-BAR_WIDTH-SCROLL_BAR_WIDTH,y);
     }
 
@@ -605,15 +641,15 @@ void RedrawWindow(Window target)
       XClearArea(dpy,main_win,Width-BAR_WIDTH+2,
 		     Height-BAR_WIDTH+2,BAR_WIDTH-3,BAR_WIDTH-3,False);
       if(motion == QUIT)
-      RelieveRectangle(dpy,main_win,Width-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
-		       Height-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
-		       SCROLL_BAR_WIDTH+3,SCROLL_BAR_WIDTH+3,
-		       ShadowGC,ReliefGC,2);
+      RelieveRectangle(dpy, main_win, Width - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
+		       Height - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
+		       SCROLL_BAR_WIDTH + 3, SCROLL_BAR_WIDTH + 3,
+		       G->shadowGC, G->reliefGC, 2);
       else
-	RelieveRectangle(dpy,main_win,Width-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
-		         Height-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
-		         SCROLL_BAR_WIDTH+3,SCROLL_BAR_WIDTH+3,
-		         ReliefGC,ShadowGC,2);
+	RelieveRectangle(dpy, main_win, Width - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
+		         Height - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
+		         SCROLL_BAR_WIDTH + 3,SCROLL_BAR_WIDTH + 3,
+		         G->reliefGC, G->shadowGC, 2);
     }
   exposed = 0;
 }
@@ -678,14 +714,11 @@ void GrabWindow(Window target)
 
   XTranslateCoordinates(dpy, target, Root, 0, 0, &x,&y, &Junk);
 
-  InitPictureCMap(dpy,Root); /* store the window cmap for GetShadow */
-
   CreateWindow(x,y,tw,th);
   XSetWindowBorderWidth(dpy,target,0);
   XReparentWindow(dpy,target, holder_win,0,0);
   XMapWindow(dpy,target);
-  XSelectInput(dpy,target, PropertyChangeMask|StructureNotifyMask|
-	       ColormapChangeMask);
+  XSelectInput(dpy,target, PropertyChangeMask|StructureNotifyMask);
   if(XFetchName(dpy, target, &temp)==0)
     temp = NULL;
   if (XGetWindowProperty (dpy,
@@ -709,14 +742,15 @@ void GrabWindow(Window target)
 	XFree(wmhints);
       }
   }
-  {
+/* FvwmScroll may not share the same visual as the target window
+ * and so cannot share its colormap  {
     XWindowAttributes xwa;
     if(XGetWindowAttributes(dpy,target, &xwa) != 0)
       {
 	XSetWindowColormap(dpy,main_win,xwa.colormap);
       }
   }
-    
+*/    
   XMapWindow(dpy,main_win);
   RedrawWindow(target);
   XFree(temp);

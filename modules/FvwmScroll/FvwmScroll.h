@@ -1,15 +1,11 @@
-#include <libs/fvwmlib.h>
-
 extern char* MyName;
 extern Display* dpy;
 extern Window Root;
 extern int screen;
-extern Visual *viz;
-extern Colormap cmap;
-extern int depth;
-extern Bool UseFvwmLook;
+extern Graphics *G;
 
 extern int fd_width;
+extern int fd[2];
 extern int x_fd;
 
 

@@ -8,31 +8,17 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#define TRUE 1
-#define FALSE 0
-
 #include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
-#include <sys/wait.h>
-#include <sys/time.h>
-
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
-#include <ctype.h>
 
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-#include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
-#include <X11/Xmu/WinUtil.h>
 
-#include <fvwm/module.h>
+#include "fvwm/module.h"
+#include "libs/fvwmlib.h"
+#include "libs/ModGraph.h"
 #include "FvwmScroll.h"
 
 char *MyName;
@@ -42,22 +28,13 @@ int fd[2];
 Display *dpy;			/* which display are we talking to */
 Window Root;
 int screen;
+Graphics *G;
 int x_fd;
-Visual *viz;
-Colormap cmap;
-int depth;
-extern Pixel back_pix;
-extern GC ReliefGC, ShadowGC;
-extern GContext rgcontext, sgcontext;
 int ScreenWidth, ScreenHeight;
 
 char *BackColor = "black";
-Bool UseFvwmLook = True;
 
 Window app_win;
-
-#define MW_EVENTS   (ExposureMask | ButtonReleaseMask | KeyReleaseMask)
-
 
 /***********************************************************************
  *
@@ -68,7 +45,6 @@ Window app_win;
 int main(int argc, char **argv)
 {
   char *temp, *s;
-  char *display_name = NULL;
   int Clength;
   char *tline;
 
@@ -112,19 +88,24 @@ int main(int argc, char **argv)
   sscanf(argv[4],"%x",(unsigned int *)&app_win);
 
   /* Open the Display */
-  if (!(dpy = XOpenDisplay(display_name)))
+  if (!(dpy = XOpenDisplay(NULL)))
     {
-      fprintf(stderr,"%s: can't open display %s", MyName,
-	      XDisplayName(display_name));
+      fprintf(stderr,"%s: can't open display\n", MyName);
       exit (1);
     }
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  depth = DefaultDepth(dpy, screen);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
+  
+  SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
+  G = (Graphics *)safemalloc(sizeof(Graphics));
+  memset(G, 0, sizeof(Graphics));
+  G->create_reliefGC = True;
+  G->create_shadowGC = True;
+  InitGraphics(dpy, G);
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */
@@ -134,23 +115,18 @@ int main(int argc, char **argv)
     {
       if(strlen(tline)>1)
 	{
-	  if(strncasecmp(tline, "Default_graphics ", 17)==0)
-	    {
-	      if (UseFvwmLook) get_graphics(tline + 17);
-	    }
-	  if(strncasecmp(tline,CatString3(MyName, "Back",""),
+	  if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+	    ParseGraphics(dpy, tline, G);
+	  else if(strncasecmp(tline,CatString3(MyName, "Back",""),
 			   Clength+4)==0)
 	    {
 	      CopyString(&BackColor,&tline[Clength+4]);
-	      UseFvwmLook = False;
+	      G->useFvwmLook = False;
 	    }
 	}
       GetConfigLine(fd,&tline);
     }
 
-  /* sever our connection with fvwm */
-  close(fd[0]);
-  close(fd[1]);
   if(app_win == 0)
     GetTargetWindow(&app_win);
 
@@ -162,32 +138,6 @@ int main(int argc, char **argv)
   GrabWindow(app_win);
   Loop(app_win);
   return 0;
-}
-
-
-
-/*************************************************************************
- *
- * Default_graphics config line received, change builtin defaults
- *
- ************************************************************************/
-void get_graphics(char *line) {
-XVisualInfo vizinfo, *xvi;
-int count;
-long junk;
-
-  if (10 != sscanf(line, "%lx %lx %x %lx %lx %lx %lx %lx %lx %lx\n",
-                   &vizinfo.visualid, &cmap, &depth, &junk, &junk,
-                   &back_pix, &junk, &rgcontext, &sgcontext, &junk)) {
-    fprintf(stderr, "badly formed Default_graphics line\n");
-    exit(1);
-  }
-
-  /* fvwm passes the VisualID over, have to get a Visual pointer from this */
-  if ((xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &count)) == NULL)
-    return;
-  viz = xvi->visual;
-  XFree(xvi);
 }
 
 /***********************************************************************

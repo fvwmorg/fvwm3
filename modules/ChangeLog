@@ -1,3 +1,7 @@
+1999-04-28  Hippo
+
+	* FvwmScroll/*.c: uses ModGraph.c, does dynamic color changing.
+
 1999-04-27  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* FvwmWharf/FvwmWharf.c (ParseOptions): 
