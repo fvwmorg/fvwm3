@@ -1,3 +1,8 @@
+2000-03-09  olicha	<olivier.chapuis@free.fr>
+
+	* FvwmButtons/draw.c (RedrawButton):
+	Fixed individual button Colorset for shaped swallowed apps
+
 2000-03-08  olicha	<olivier.chapuis@free.fr>
 
 	* FvwmButtons/draw.c (RedrawButton):
