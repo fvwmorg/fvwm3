@@ -36,32 +36,29 @@ local $siteInfo = {
 		'func' => \&processLinuxToday,
 		'flds' => 'headline, url, date',
 	},
-	# Segfault is empty now
 	'old-segfault' => {
-		'name' => "Old-Segfault",
+		'name' => "Old-Segfault (empty now)",
 		'host' => "segfault.org",
 		'path' => "/stories.txt",
 		'func' => \&processSegfault,
 		'flds' => 'headline, url, date, author_name, author_email, type',
 	},
-	# AppWatch was closed by ZDNet
 	'old-appwatch' => {
-		'name' => "Old-AppWatch",
+		'name' => "Old-AppWatch (closed by ZDNet)",
 		'host' => "www.appwatch.com",
 		'path' => "/appwatch.rdf",
 		'func' => \&processPoorRdf,
 		'flds' => 'title, link, description',
 	},
-	'linuxapps' => {
-		'name' => "LinuxApps",
-		'host' => "www.linuxapps.com",
+	'old-linuxapps' => {
+		'name' => "Old-LinuxApps (moved/closed)",
+		'host' => "www.linuxapps.com-closed",
 		'path' => "/backend/linux_basic.txt",
-		'func' => \&processLinuxApps,
+		'func' => undef,
 		'flds' => 'headline, date, url',
 	},
-	# JustLinux does not seem to exist any more
 	'old-justlinux' => {
-		'name' => "Old-JustLinux",
+		'name' => "Old-JustLinux (no headlines?)",
 		'host' => "www.justlinux.com",
 		'path' => "/backend/discussion.rdf",
 		'func' => \&processPoorRdf,
@@ -74,23 +71,23 @@ local $siteInfo = {
 		'func' => \&processPoorRdf,
 		'flds' => 'title, link',
 	},
+	# this is now called FootNotes or GNOME Desktop News, was news.gnome.org
 	'gnome-news' => {
 		'name' => "GNOME-News",
-		'host' => "news.gnome.org",
-		'path' => "/rdf",
-		'func' => \&process_GNOME_KDE_News,
+		'host' => "www.gnomedesktop.org",
+		'path' => "/backend.php",
+		'func' => \&processPoorRdf,
 		'flds' => 'title, link',
 	},
 	'kde-news' => {
 		'name' => "KDE-News",
 		'host' => "news.kde.org",
 		'path' => "/rdf",
-		'func' => \&process_GNOME_KDE_News,
+		'func' => \&processKDENews,
 		'flds' => 'title, link',
 	},
-	# FreeKDE is temporarily (?) off
 	'old-freekde' => {
-		'name' => "Old-FreeKDE",
+		'name' => "Old-FreeKDE (taken off?)",
 		'host' => "freekde.org",
 		'path' => "/freekdeorg.rdf",
 		'func' => \&processFreeKDE,
@@ -105,7 +102,7 @@ local $siteInfo = {
 	},
 	'newsforge' => {
 		'name' => "NewsForge",
-		'host' => "newsforge.com",
+		'host' => "www.newsforge.com",
 		'path' => "/newsforge.xml",
 		'func' => \&processSlashdot,
 		'flds' => 'title, url, time, author, department, topic, comments, section, image',
@@ -319,16 +316,16 @@ if (defined $frontpage && $frontpage !~ /^b/) {
 }
 
 unless (defined $fakeFile) {
-	# network connection portion is pretty much stolen from 'man perlipc'
 	$siteHost = $siteInfo->{$site}->{'host0'}
 		if defined $siteInfo->{$site}->{'host0'};
+	my $redirectDepth = 0;
+
+HTTP_CONNECTION:
 	my $host = $proxy || $siteHost;
 	my $iaddr = inet_aton($host) || &dieNet("Can't resolve host $host");
 	my $paddr = sockaddr_in($port, $iaddr);
 	my $proto = getprotobyname('tcp');
-	my $redirectDepth = 0;
 
-HTTP_CONNECTION:
 	local $SIG{ALRM} = sub { die "timeout\n"; };
 	alarm($timeout);
 	eval {
@@ -340,9 +337,11 @@ HTTP_CONNECTION:
 
 	# do http request
 	my $httpHeaders = "$endl" .
-			"Host: $siteHost$endl" .
-			"Connection: close$endl" .
-			"User-Agent: fvwm-menu-headlines/$version$endl$endl";
+		"Host: $siteHost$endl" .
+		"Connection: close$endl" .
+		"User-Agent: fvwm-menu-headlines/$version$endl" .
+		"Pragma: no-cache$endl" .
+		"$endl";
 	if (defined $proxy) {
 		print SOCK "GET http://$siteHost$sitePath HTTP/1.1$httpHeaders";
 	} else {
@@ -353,14 +352,15 @@ HTTP_CONNECTION:
 		&dieNet("Invalid HTTP response from http://$siteHost$sitePath", 0);
 	}
 	my $status = $1;
-	if ($status eq "302" && ++$redirectDepth < 5) {
+	if ($status =~ /^301|302$/ && ++$redirectDepth < 5) {
 		# redirection
 		while (1) {
 			my $line = readLine();
 			$line =~ s/[\n\r]+$//s;
 			last unless $line;
-			if ($line =~ m{Location: http://\Q$siteHost\E(/.*)}i) {
-				$sitePath = $1;
+			if ($line =~ m{Location: http://([^/]+)(/.*)}i) {
+				$siteHost = $1;
+				$sitePath = $2;
 				goto HTTP_CONNECTION;
 			}
 		}
@@ -499,6 +499,7 @@ sub processXml ($$$$) {
 
 	ENTRY:
 	foreach ($doc =~ m!<$entryTag\b[^>]*>(.*?)</$entryTag>!sg) {
+		s/&amp;quot;/"/g;  # fix buggy html in some backends
 		# replace &#039; with single quote and &quot; with double quote
 		s/&(?:(\w+)|#(\d+));/ $1? $entityMap->{$1} || "{$1}": chr($2) /ge;
 
@@ -611,7 +612,7 @@ sub processPoorRdf () {
 	);
 }
 
-sub processLinuxApps () {
+sub processLinuxApps_old () {
 	return processText(
 		[ qw( headline date url ) ],
 		{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
@@ -622,7 +623,7 @@ sub processLinuxApps () {
 	);
 }
 
-sub process_GNOME_KDE_News () {
+sub processKDENews () {
 	my $linkToTime = sub ($) { $_[0]->{'link'} =~ m|/(\d+)/?$|; $1; };
 	return processXml(
 		'item',
@@ -663,7 +664,7 @@ sub processRootPrompt () {
 
 sub processKuro5hin () {
 	my $linkToDate = sub ($) {
-		$_[0]->{'link'} =~ m|sid=(\d\d\d\d/\d{1,2}/\d{1,2})/|; $1;
+		$_[0]->{'link'} =~ m|/(\d\d\d\d/\d{1,2}/\d{1,2})/|; $1;
 	};
 	return processXml(
 		'item',
@@ -953,9 +954,9 @@ B<fvwm-menu-headlines>
 =head1 DESCRIPTION
 
 This configurable perl script builds an fvwm menu definition for headlines
-of popular news web sites: FreshMeat, Slashdot, LinuxToday, LinuxApps,
-DaemonNews, GNOME-News, KDE-News, RootPrompt,
-LinuxFr, ThinkGeek, CNN, BBC and more.
+of popular news web sites: FreshMeat, Slashdot, LinuxToday,
+DaemonNews, GNOME-News, KDE-News, RootPrompt, LinuxFr, ThinkGeek,
+CNN, BBC and more.
 
 It is possible to specify a customized menu item format, change a command
 (usually launching a browser) and add menu icons (there is a support for
@@ -1121,6 +1122,7 @@ In this case your fvwm configuration lines could be:
   DestroyFunc FuncFvwmMenuHeadlines
   AddToFunc   FuncFvwmMenuHeadlines
   + I PipeRead "fvwm-menu-headlines --site $0"
+  #+ I Schedule 900000 DestroyMenu $0  # reset generated menu in 15 minutes
 
   DestroyMenu MenuHeadlines
   AddToMenu   MenuHeadlines "Headlines" Title
@@ -1197,6 +1199,15 @@ The script is distributed by the same terms as fvwm itself.
 See GNU General Public License for details.
 
 =head1 BUGS
+
+I try to keep all supported site info up to date, but sites often go down,
+change their backend formats, change their httpd responses, just stop to
+post news and so on; the script in the latest cvs may be more up to date.
+
+The headline times may be off by one hour or more, since the time is
+displayed for your local time zone, and the time zone of the original time
+in the site backend output is often guessed (sometimes incorrectly);
+similarly it is guessed whether to apply the daylight saving correction.
 
 Report bugs to fvwm-bug@fvwm.org.
 

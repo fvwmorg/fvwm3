@@ -1,3 +1,8 @@
+2003-11-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm.menu:
+	removed modules, it was probably a bad idea to do it this way
+
 2003-11-14  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

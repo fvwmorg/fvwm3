@@ -1419,9 +1419,6 @@ Key Tab	A CM	WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, OnlyL
 #--------- Taskbar's start menu
 #------------------------------------------------------------------------------
 
-# Enabled only on Debian systems
-Read /etc/X11/fvwm/DebianMenu  #!e /etc/X11/fvwm/DebianMenu
-
 DestroyMenu StartMenu
 AddToMenu   StartMenu@side.fvwm2.xpm@^black^
 + "&Shells%shells.xpm%"		Popup Shells
@@ -1429,7 +1426,7 @@ AddToMenu   StartMenu@side.fvwm2.xpm@^black^
 + "&Documents%documents.xpm%"	Popup Documents
 + "&Settings%settings.xpm%"	Popup Settings
 + "" Nop
-+ "&Debian%programs.xpm%"	Popup /Debian  #!e /etc/X11/fvwm/DebianMenu
+Test (f /etc/X11/fvwm/DebianMenu) + "&Debian Menu%programs.xpm%" Popup /Debian
 + "&Module%modules.xpm"		Popup Module-Popup
 + "&Find%find1.xpm%"		FvwmScript FvwmScript-Find
 + "&Help%help.xpm%"		Exec exec  xman
@@ -1443,8 +1440,8 @@ AddToMenu   StartMenu@side.fvwm2.xpm@^black^
 # Root Menu: This menu will fire up some very common utilities
 #------------------------------------------------------------------------------
 
-DestroyMenu  Utilities
-AddToMenu    Utilities "FVWM Root Menu" Title
+DestroyMenu Utilities
+AddToMenu   Utilities "Root Menu" Title
 #PREF 3
 + "&Terminal%mini.term.xpm%"		Exec exec xterm
 + "&Editor%mini.edit.xpm"		Exec exec emacs
@@ -1454,14 +1451,39 @@ AddToMenu    Utilities "FVWM Root Menu" Title
 + "&Shells%mini.term.xpm"		Popup Shells
 + "&Programs%mini.start.xpm%"		Popup Programs
 + ""					Nop
-+ "&Modules%mini.modules.xpm%"		Popup Module-Popup
++ "FVWM &Modules%mini.modules.xpm%"	Popup Module-Popup
 + "&Settings%mini.desktop.xpm%"		Popup Settings
 + "&Documents%mini.books.xpm%"		Popup Documents
 + "&Screen Saver%mini.display.xpm%"	Popup Screen
 + ""					Nop
 + "&Restart%mini.turn.xpm%"		Popup Restart
-+ "&Exit FVWM%mini.stop.xpm%"		FvwmForm FvwmForm-QuitVerify
++ "&Quit FVWM%mini.stop.xpm%"		FvwmForm FvwmForm-QuitVerify
 
+DestroyFunc SetDebianMenu
+AddToFunc   SetDebianMenu
++ I Read /etc/X11/fvwm/DebianMenu
++ I DestroyMenu Utilities
++ I AddToMenu   Utilities "Root Menu" Title
+#PREF 3
++ I + "&Terminal%mini.term.xpm%"	Exec exec x-terminal-emulator
++ I + "&Editor%mini.edit.xpm"		Exec exec emacs
++ I + "&File Manager%mini.filemgr.xpm%"	Exec exec xfm
++ I + "&Top%mini.run.xpm%"		Exec exec xterm -geometry 80x40	-T Top -n Top -e top
++ I + ""				Nop
++ I + "&Shells%mini.term.xpm"		Popup /Debian/XShells
++ I + "&Programs%mini.start.xpm%"	Popup /Debian/Apps
++ I + ""				Nop
++ I + "&FVWM Modules%mini.modules.xpm%"	Popup Module-Popup
++ I + "&Settings%mini.desktop.xpm%"	Popup Settings
++ I + "&Documents%mini.books.xpm%"	Popup Documents
++ I + "&Help%mini.book1.xpm%"		Popup /Debian/Help
++ I + "&Screen Saver%mini.display.xpm%"	Popup /Debian/Screen
++ I + ""				Nop
++ I + "&Window Managers%mini.x2.xpm%"	Popup /Debian/WindowManagers
++ I + "&Restart%mini.turn.xpm%"		Restart
++ I + "&Quit FVWM%mini.stop.xpm%"	FvwmForm FvwmForm-QuitVerify
+
+Test (f /etc/X11/fvwm/DebianMenu) SetDebianMenu
 
 #------------------------------------------------------------------------------
 #--------- SHELLS
