@@ -495,7 +495,7 @@ void match_string(button_info **uberb,char *s)
 		    b->flags|=b_Justify;
 		}
 	      t=seekright(&s);
-	      if(t && (t[0]!='-' || t[1]!=0))
+	      if(t && *t && (t[0]!='-' || t[1]!=0))
 		{
 		  if (b->title)
 		    free(b->title);
@@ -516,7 +516,7 @@ void match_string(button_info **uberb,char *s)
 
 	    case 4: /* Icon */
 	      t=seekright(&s);
-	      if(t && (t[0]!='-' && t[1]!=0))
+	      if(t && *t && (t[0] != '-' || t[1] != 0))
 		{
 		  if (b->icon_file)
 		    free(b->icon_file);
@@ -728,7 +728,7 @@ void match_string(button_info **uberb,char *s)
   if(!(b->flags&b_Title))
     {
       b->title=seekright(&s);
-      if(b->title && ((b->title)[0]!='-'||(b->title)[1]!=0))
+      if(b->title && *b->title && ((b->title)[0]!='-'||(b->title)[1]!=0))
 	b->flags |= b_Title;
       else
 	if(b->title)free(b->title);
@@ -744,7 +744,8 @@ void match_string(button_info **uberb,char *s)
   if(!(b->flags&b_Icon))
     {
       b->icon_file=seekright(&s);
-      if(b->icon_file && ((b->icon_file)[0]!='-'||(b->icon_file)[1]!=0))
+      if(b->icon_file && b->icon_file &&
+	 ((b->icon_file)[0]!='-'||(b->icon_file)[1]!=0))
 	{
 	  b->flags|=b_Icon;
 	  b->IconWin=None;

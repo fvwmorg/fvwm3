@@ -905,10 +905,11 @@ than one menu in each \fIChangeMenuStyle\fP.
 ChangeMenuStyle  pixmap1 Screensavers ScreenLock
 .EE
 
-.IP "ClickTime \fIdelay\fP"
+.IP "ClickTime [ \fIdelay\fP ]"
 Specifies the maximum delay (in milliseconds) between a button press
 and a button release for the Function built-in to consider the action
-a mouse click.  The default delay is 150 milliseconds.
+a mouse click.  The default delay is 150 milliseconds.  Omitting the
+delay value resets the ClickTime to the default.
 
 
 .IP "Close"
@@ -1472,7 +1473,7 @@ If the letter "p" is appended to each coordinate (horizontal and/or
 vertical), then the scroll amount will be measured in pixels.
 
 
-.IP "Menu [ \fIposition\fP ] \fImenu-name\fP [ \fIdouble-click-action\fP ]"
+.IP "Menu \fImenu-name\fP [ \fIposition\fP ] [ \fIdouble-click-action\fP ]"
 Causes a previously defined menu to be popped up in a "sticky" manner.
 That is, if the user invokes the menu with a click action instead of a
 drag action, the menu will stay up.  The command
@@ -1829,11 +1830,14 @@ a slash.  Environment variables can be used here as well (i.e.  $HOME
 or ${HOME}).
 
 
-.IP "Popup \fIPopupName\fP [ \fIposition\fP ]"
+.IP "Popup \fIPopupName\fP [ \fIposition\fP ] [ \fIdouble-click-action\fP ]"
 This built-in has two purposes: to bind a menu to a key or mouse
 button, and to bind a sub-menu into a menu.  The formats for the two
 purposes differ slightly.  The \fIposition\fP arguments are the same
-as for \fIMenu\fP.
+as for \fIMenu\fP.  The command \fIdefault-action\fP will be invoked
+if the user clicks a button to invoke the menu and releases it
+immediately again (or hits the key rapidly twice if the menu is bound
+to a key).
 
 To bind a previously defined pop-up menu to a key or mouse button:
 .sp
@@ -2039,7 +2043,7 @@ ActiveFore/ActiveForeOff, Hilight3DThick/Hilight3DThin/Hilight3DOff,
 Animation/AnimationOff, Font, MenuFace, PopupDelay, PopupOffset,
 TitleWarp/TitleWarpOff, TitleUnderlines0/TitleUnderlines1/TitleUnderlines2,
 SeparatorsLong/SeparatorsShort, TrianglesSolid/TrianglesRelief,
-PrepopMenus/PrepopMenusOff.
+PrepopMenus/PrepopMenusOff and DoubleClickTime.
 
 In the above list some options are listed as option pairs or triples
 with a / in between. These options exclude each other.
@@ -2127,9 +2131,10 @@ hilighting off you should set the HilightOff and Hilight3DOff options.
 \fIPopupDelay\fP requires one numeric argument. This value is the
 delay in milliseconds before a sub-menu is popped up when the
 pointer moves over a menu item that has a sub-menu. If the value
-is zero not automatical pop up is done. If the argument is omitted
+is zero no automatical pop up is done. If the argument is omitted
 the built in default is used. Note that the popup delay has no
-effect if the \fIPrepopMenusOff\fP option is used too.
+effect if the \fIPrepopMenus\fP option is used since sub-menus pop
+up immediately then.
 
 \fIPrepopMenus\fP and \fIPrepopMenusOff\fP turn prepop menus on and
 off (see PopupDelay)
@@ -2159,6 +2164,11 @@ the edges of the menu.
 small triangles for sub-menus is drawn. Solid triangles are
 filled with a color while relief triangles are hollow.
 
+\fIDoubleClickTime\fP requires one numeric argument. This value is the
+time in milliseconds between two mouse clicks in a menu to be
+considered as a double click. The default is 450 milliseconds.
+If the argument is omitted the doucle click time is reset to this
+default.
 
 .IP "SnapAttraction \fIproximity behavior\fP"
 If during an interactive move the window (or icon) comes within \fIproximity\fP

@@ -208,6 +208,7 @@ typedef struct MenuGlobals {
     struct MenuStyle *DefaultStyle;
     struct MenuStyle *LastStyle;
     int PopupDelay10ms;
+    int DoubleClickTime;
 } MenuGlobals;
 
 typedef struct Binding

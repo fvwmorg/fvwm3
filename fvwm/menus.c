@@ -123,7 +123,6 @@ Time dkp_timestamp;
 #define IS_RIGHT_MENU(menu) ((menu)->flags & MENU_IS_RIGHT)
 #define IS_UP_MENU(menu) ((menu)->flags & MENU_IS_UP)
 #define IS_DOWN_MENU(menu) ((menu)->flags & MENU_IS_DOWN)
-#define DOUBLECLICK_TIMEOUT (3*Scr.ClickTime)
 
 /****************************************************************************
  *
@@ -259,7 +258,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
 		 Scr.MyDisplayWidth, Scr.MyDisplayHeight,x_start, y_start);
   }
 
-  if (lastTimestamp-t0 < DOUBLECLICK_TIMEOUT && !mouse_moved &&
+  if (lastTimestamp-t0 < Scr.menus.DoubleClickTime && !mouse_moved &&
       (!key_press || dkp_timestamp != 0)) {
     /* dkp_timestamp is non-zero if a double-keypress occured! */
     fDoubleClick = TRUE;
@@ -425,7 +424,8 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
   int index;
 
   /* handle double-keypress */
-  if (dkp_timestamp && lastTimestamp-dkp_timestamp < DOUBLECLICK_TIMEOUT &&
+  if (dkp_timestamp &&
+      lastTimestamp-dkp_timestamp < Scr.menus.DoubleClickTime &&
       Event->xkey.state == dkp_keystate && Event->xkey.keycode == dkp_keycode){
     *pmiCurrent = NULL;
     return MENU_SELECTED;

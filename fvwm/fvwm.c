@@ -698,7 +698,7 @@ void SetRCDefaults()
     "XORValue 0",
     "DefaultFont fixed",
     "DefaultColors black grey",
-    "SetMenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey, PopupDelay 150",
+    "SetMenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey",
     "TitleStyle Centered -- Raised",
     "Style \"*\" Color lightgrey/dimgrey, Title",
     "Style \"*\" RandomPlacement, SmartPlacement",
@@ -1258,6 +1258,8 @@ void InitVariables(void)
   Scr.menus.all = NULL;
   Scr.menus.DefaultStyle = NULL;
   Scr.menus.LastStyle = NULL;
+  Scr.menus.PopupDelay10ms = DEFAULT_POPUP_DELAY;
+  Scr.menus.DoubleClickTime = DEFAULT_MENU_CLICKTIME;
 
   Scr.DefaultIcon = NULL;
 
@@ -1344,7 +1346,7 @@ void InitVariables(void)
   Scr.SnapGridY = 1;
   Scr.OpaqueSize = 5;
   /* ClickTime is set to the positive value upon entering the event loop. */
-  Scr.ClickTime = -150;
+  Scr.ClickTime = -DEFAULT_CLICKTIME;
   Scr.ColormapFocus = COLORMAP_FOLLOWS_MOUSE;
 
   /* set major operating modes */

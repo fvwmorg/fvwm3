@@ -10,6 +10,8 @@ Changes in beta release 2.1.6 (December 1998)
 
 * Removed SetMenuDelay command.
 
+* Popup menus can have a default action too.
+
 Changes in beta release 2.1.5 (December 1998)
 
 * SnapAttraction works for windows and/or icons. New command SnapGrid.

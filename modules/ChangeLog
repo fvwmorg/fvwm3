@@ -1,3 +1,15 @@
+1998-12-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.c: coredump fixed: if an action was defined
+	only for a specific button but another button was pressed a NULL
+	pointer was referenced.
+
+	* FvwmButtons/parse.c (match_string): possible coredumps fixed:
+	accessed t[1] if t[0] == 0 (char *t).
+	(match_string): fixed parsing bug in Icon
+	(match_string): fixed possible coredump with b->title[1],
+	b->icon_file[1]
+
 1998-12-17  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmPager/FvwmEvent.c:

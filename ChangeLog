@@ -1,8 +1,45 @@
+1998-12-23  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (do_menu):
+	(menuShortcuts): replaced DOUBLECLICK_TIMEOUT with
+	Scr.menus.DoubleClickTime.
+
+	* fvwm/fvwm2.1: added description of DoubleClickTime option
+
+	* fvwm/fvwm.c (InitVariables): added DEFAULT_POPUP_DELAY,
+	DEFAULT_MENU_CLICKTIME and DEFAULT_CLICKTIME
+	(InitVariables):
+
+	* fvwm/builtins.c (SetClick): use DEFAULT_CLICKTIME if called without
+	a parameter
+	(SetMenuStyle): use DEFAULT_POPUP_DELAY
+	(SetMenuStyle): introduced option 'DuobleClickTime'
+
+	* fvwm/defaults.h: new file for default values that may be set
+	throughout the code.
+
 1998-12-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (menu_func): default-action does not need to be
+	quoted anymore. Another few lines of code saved :)
+
+	* fvwm/fvwm2.1: updated Popup syntax, corrected Menu syntax
+
+	* fvwm/builtins.c (staysup_func):
+	(popup_func):
+	(menu_func): merged popup_func and staysup_func to menu_func. Popup
+	menus have a default action now too. It is invoked if the user presses
+	the button to invoke the popup menu but releases it before
+	DOUBLECLICK_TIMEOUT expired. With keys it works the same way as with
+	Menu. And it is less code too :-)
+
+	* fvwm/fvwm2.1: corrected PopupDelay menu style documentation
 
 	* ------ end of my changes for MenuStyle rework ------
 
 	* fvwm/fvwm2.1: a little cleanup on 'Style'
+	documented new commands DefaultFont, DefaultColors, Emulate
+	documented new SetMenuStyle syntax
 
 1998-12-21  Dominik Vogt  <dominik_vogt@hp.com>
 

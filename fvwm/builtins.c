@@ -1030,80 +1030,64 @@ void warp_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
      WarpOn (tmp_win, 0, 0, 0, 0);
 }
 
-/* the function for the "Popup" command */
-void popup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int *Module)
+
+static void menu_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		      unsigned long context, char *action,int *Module,
+		      Bool fStaysUp)
 {
-  MenuRoot *menu;
   extern int menuFromFrameOrWindowOrTitlebar;
-  MenuItem *miExecuteAction;
-  char *menu_name = NULL;
+  MenuRoot *menu;
+  MenuItem *miExecuteAction = NULL;
   MenuOptions mops;
+  char *dummy = NULL;
+  char *menu_name = NULL;
+  XEvent *teventp;
+  Bool fHasDefaultAction = False;
 
   mops.flags = 0;
   action = GetNextToken(action,&menu_name);
-  GetMenuOptions(action,w,tmp_win,NULL,&mops);
+  action = GetMenuOptions(action,w,tmp_win,NULL,&mops);
+  while (action && *action && isspace(*action))
+    action++;
+  if (action && *action == 0)
+    action = NULL;
   menu = FindPopup(menu_name);
   if(menu == NULL)
   {
     if(menu_name != NULL)
     {
-      fvwm_msg(ERR,"popup_func","No such menu %s",menu_name);
+      fvwm_msg(ERR,"menu_func","No such menu %s",menu_name);
       free(menu_name);
     }
     return;
   }
-
   if(menu_name != NULL)
     free(menu_name);
-
   menuFromFrameOrWindowOrTitlebar = FALSE;
-  do_menu(menu, NULL, &miExecuteAction, 0, FALSE,
-	  (eventp->type == KeyPress) ? (XEvent *)1 : NULL, &mops);
+
+  if (!action && eventp && eventp->type == KeyPress)
+    teventp = (XEvent *)1;
+  else
+    teventp = eventp;
+  if ((do_menu(menu, NULL, &miExecuteAction, 0, fStaysUp, teventp, &mops) ==
+       MENU_DOUBLE_CLICKED) && action)
+  {
+    ExecuteFunction(action,tmp_win,eventp,context,*Module);
+  }
+}
+
+/* the function for the "Popup" command */
+void popup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		unsigned long context, char *action,int *Module)
+{
+  menu_func(eventp, w, tmp_win, context, action, Module, False);
 }
 
 /* the function for the "Menu" command */
 void staysup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                   unsigned long context, char *action,int *Module)
 {
-  MenuRoot *menu;
-  extern int menuFromFrameOrWindowOrTitlebar;
-  char *default_action = NULL, *menu_name = NULL;
-  MenuStatus menu_retval;
-  MenuItem *miExecuteAction = NULL;
-  MenuOptions mops;
-  XEvent *teventp;
-
-  mops.flags = 0;
-  action = GetNextToken(action,&menu_name);
-  action = GetMenuOptions(action,w,tmp_win,NULL,&mops);
-  GetNextToken(action,&default_action);
-  menu = FindPopup(menu_name);
-  if(menu == NULL)
-  {
-    if(menu_name != NULL)
-    {
-      fvwm_msg(ERR,"staysup_func","No such menu %s",menu_name);
-      free(menu_name);
-    }
-    if(default_action != NULL)
-      free(default_action);
-    return;
-  }
-  if(menu_name != NULL)
-    free(menu_name);
-  menuFromFrameOrWindowOrTitlebar = FALSE;
-
-  if (!default_action && eventp && eventp->type == KeyPress)
-    teventp = (XEvent *)1;
-  else
-    teventp = eventp;
-  menu_retval = do_menu(menu, NULL, &miExecuteAction, 0, TRUE, teventp, &mops);
-
-  if (menu_retval == MENU_DOUBLE_CLICKED && default_action && *default_action)
-    ExecuteFunction(default_action,tmp_win,eventp,context,*Module);
-  if(default_action != NULL)
-    free(default_action);
+  menu_func(eventp, w, tmp_win, context, action, Module, True);
 }
 
 
@@ -1246,11 +1230,13 @@ void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
-    fvwm_msg(ERR,"SetClick","ClickTime requires 1 argument");
-    return;
+    Scr.ClickTime = DEFAULT_CLICKTIME;
+  }
+  else
+  {
+    Scr.ClickTime = (val < 0)? 0 : val;
   }
 
-  Scr.ClickTime = (val < 0)? 0 : val;
   /* Use a negative value during startup and change sign afterwards. This
    * speeds things up quite a bit. */
   if (fFvwmInStartup)
@@ -1836,6 +1822,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     "SeparatorsLong", "SeparatorsShort",
     "TrianglesSolid", "TrianglesRelief",
     "PrepopMenus", "PrepopMenusOff",
+    "DoubleClickTime",
     NULL
   };
   char *name;
@@ -1870,7 +1857,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       /* copy the structure over our temporary menu face. */
       memcpy(tmpms, ms, sizeof(MenuStyle));
-      if (StrEquals("*", name))
+      if (ms == Scr.menus.DefaultStyle)
 	is_default_style = True;
       free(name);
     }
@@ -2111,7 +2098,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
       case 17: /* PopupDelay */
 	if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
-	  Scr.menus.PopupDelay10ms = 15;
+	  Scr.menus.PopupDelay10ms = DEFAULT_POPUP_DELAY;
 	else
 	  Scr.menus.PopupDelay10ms = (*val+9)/10;
 	if (!is_default_style)
@@ -2183,8 +2170,21 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	tmpms->feel.f.PrepopMenus = 0;
 	break;
 
+      case 30: /* DoubleClickTime */
+	if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
+	  Scr.menus.DoubleClickTime = DEFAULT_MENU_CLICKTIME;
+	else
+	  Scr.menus.DoubleClickTime = *val;
+	if (!is_default_style)
+	{
+	  fvwm_msg(WARN, "SetMenuStyle",
+		   "DoubleClickTime applied to style '%s' will affect all menus",
+		   tmpms->name);
+	}
+	break;
+
 #if 0
-      case 30: /* PositionHints */
+      case 31: /* PositionHints */
 	break;
 #endif
 

@@ -206,7 +206,7 @@ static void DeadPipeHandler(int sig)
 /**
 *** DeadPipeCleanup()
 *** Remove all the windows from the Button-Bar, and close them as necessary
-**/ 
+**/
 static void DeadPipeCleanup(void)
 {
   button_info *b,*ub=UberButton;
@@ -778,9 +778,12 @@ void Loop(void)
 		  CurrentButton = b =
 		    select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
               }
-            while (!b && PanelIndex->next && (PanelIndex = PanelIndex->next));
+            while (!b && PanelIndex->next && (PanelIndex = PanelIndex->next))
+	      ;
 
-	    if(!b || !(b->flags&b_Action))
+	    if(!b || !(b->flags&b_Action) ||
+	       ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
+		(act=GetButtonAction(b,0)) == NULL))
 	      {
 		CurrentButton=NULL;
 		break;
@@ -792,10 +795,9 @@ void Loop(void)
             MyWindow   = UberButton->IconWinParent;
 
 	    RedrawButton(b,0);
-	    if(!(act=GetButtonAction(b,Event.xbutton.button)))
-	      act=GetButtonAction(b,0);
 	    if(strncasecmp(act,"popup",5)!=0)
-	    { if (strncasecmp(act, "panel", 5) == 0)
+	    {
+	      if (strncasecmp(act, "panel", 5) == 0)
                 Slide(seekpanel(b), b);
 	      break;
             }
@@ -808,7 +810,8 @@ void Loop(void)
             b = NULL;
             do
             { if (PanelIndex->uber->swallow)
-              { UberButton = PanelIndex->uber;
+              {
+		UberButton = PanelIndex->uber;
                 MyWindow   = UberButton->IconWinParent;
                 if (Event.xany.window == MyWindow)
 		  b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);

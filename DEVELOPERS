@@ -80,19 +80,21 @@ Building a distribution
 
 By this, I mean the file "fvwm-x.y.z.tar.gz".
 
-Steps: 1. make sure you have XPM and a C++ compiler
-       2. Write an email that the sources will be tagged now
-       3. tag the CVS tree:
+Steps: 1. make sure the TAR variable in your automake script is set to 'tar'
+          as described above.
+       2. make sure you have XPM and a C++ compiler
+       3. write an email that the sources will be tagged now
+       4. tag the CVS tree:
           cvs rtag -R version-x_y_z fvwm
-       4. configure with the flag --enable-extras
-       5. make
-       6. make distcheck
-       7. ensure that you see the message
+       5. configure with the flag --enable-extras
+       6. make
+       7. make distcheck
+       8. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
           before uploading the tar file somewhere
-       8. Increase the version number in configure.in (see above)
+       9. increase the version number in configure.in (see above)
 
-Steps 2, 3 and 8 are not required if you are builing a distribution
+Steps 1, 3, 4 and 9 are not required if you are builing a distribution
 just for fun.
 
 One thing I've learned the hard way:

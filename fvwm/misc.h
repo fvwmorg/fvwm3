@@ -2,6 +2,7 @@
 #define MISC_H
 
 #include <ctype.h>
+#include "defaults.h"
 #include "menus.h"
 #include "../libs/fvwmlib.h"
 
