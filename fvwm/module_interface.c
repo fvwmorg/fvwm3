@@ -385,7 +385,6 @@ int HandleModuleInput(Window w, int channel)
 	  }
 	  else
 	  {
-fprintf(stderr,"message = %s, fx=%d, fy=%d\n",text,tmp_win->frame_g.x,tmp_win->frame_g.y);
 	    Event.xbutton.x_root = tmp_win->icon_x_loc;
 	    Event.xbutton.y_root = tmp_win->icon_y_loc;
 	  }

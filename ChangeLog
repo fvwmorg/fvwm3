@@ -1,3 +1,13 @@
+1999-06-24  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move_resize.c (move_window):
+	* fvwm/module_interface.c (HandleModuleInput): removed stray fprintfs
+
+	* configure.in: changed version to 2.3.5
+
+	* fvwm/fvwm2.1 (Stroke): corrected instructions on unbinding default
+	menus
+
 1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/misc.c:
