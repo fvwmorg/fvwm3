@@ -350,11 +350,12 @@ sub send ($$;$$) {
 		next if $line =~ /^\s*$/;
 
 		unless ($self->{ostream}->opened) {
-			$self->debug("Can't send [$line]\n", 1);
+			$self->debug("Closed send [$line]\n", 1);
 			next;
 		}
 		$self->debug("sent [$line]" . (!$continue && " FINISH"), 2);
 		my $len = length $line;
+		$SIG{PIPE} = sub { $self->debug("Failed send [$line]\n", 1); };
 		$self->{ostream}->print(
 			pack("lla${len}l", $winId, $len, $line, $continue)
 		);

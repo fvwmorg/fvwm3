@@ -1,3 +1,14 @@
+2003-11-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	define $SIG{PIPE}, so it doesn't just exit, this is experimental
+
+	* FVWM/Module/Makefile.am:
+	add Terminal.pm
+
+	* FVWM/Module/Tk.pm:
+	hopefully fixed ON_EXIT manipulating Tk widgets
+
 2003-10-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Tracker/Colorsets.pm:

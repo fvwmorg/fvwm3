@@ -51,6 +51,14 @@ sub eventLoop ($) {
 	$top->fileevent($self->{istream},
 		readable => sub {
 			unless ($self->processPacket($self->readPacket)) {
+				if ($self->{disconnected}) {
+					# Seems like something does not want to exit - force it.
+					# For example, a new Tk window is launched on ON_EXIT.
+					$top->destroy if defined $top && defined $top->{Configure};
+					$self->debug("Forced to exit to escape eventLoop, fix the module", 0);
+					exit 1;
+				}
+				$self->eventLoopFinished(@params);
 				$top->destroy;
 			} else {
 				$self->eventLoopPrepared(@params);
@@ -58,7 +66,6 @@ sub eventLoop ($) {
 		}
 	);
 	MainLoop;
-	$self->eventLoopFinished(@params);
 }
 
 sub showError ($$;$) {
@@ -73,7 +80,7 @@ sub showError ($$;$) {
 		-bitmap => 'error',
 		-default_button => 'Close',
 		-text => $error,
-		-buttons => ['Close', 'Close All Errors', 'Exit Module']
+		-buttons => ['Close', 'Close All Errors', 'Exit Module'],
 	);
 	my $btn = $dialog->Show;
 
@@ -90,7 +97,7 @@ sub showMessage ($$;$) {
 		-icon => 'info',
 		-type => 'ok',
 		-title => $title,
-		-message => $msg
+		-message => $msg,
 	);
 }
 

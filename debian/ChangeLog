@@ -7,6 +7,10 @@
 	* fvwm.menu:
 	small typo
 
+	* Makefile.am:
+	* docs:
+	lintian fixes
+
 2003-10-31  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:
