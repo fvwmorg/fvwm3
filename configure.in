@@ -9,9 +9,9 @@ RELDATESHORT="not released yet"
 RELDATENUM="not released yet"
 RELISDEVEL="-devel"
 dnl for released versions
-dnl RELDATELONG="24 June 2002"
-dnl RELDATESHORT="24-Jun-2002"
-dnl RELDATENUM="2002-06-24"
+dnl RELDATELONG="3 August 2002"
+dnl RELDATESHORT="03-Aug-2002"
+dnl RELDATENUM="2002-08-03"
 dnl RELISDEVEL=""
 
 AM_INIT_AUTOMAKE(fvwm, 2.5.3${RELISDEVEL})
@@ -20,12 +20,12 @@ AM_CONFIG_HEADER(config.h)
 dnl constant variable settings
 FVWMNAMEUCASE="FVWM"
 FVWMNAMELONG="F? Virtual Window Manager"
-FVWMHOMEPAGE="fvwm.org"
+FVWMHOMEPAGE="http://fvwm.org/"
 FVWMFTP="ftp.fvwm.org"
 FVWMFTPDIR="/pub/ftp"
 FVWMALTFTP="metalab.unc.edu"
 FVWMALTFTPDIR="/pub/Linux/X11/window-managers/"
-FVWMLIST="fvwmfvwm.org"
+FVWMLIST="fvwm@fvwm.org"
 FVWMWORKERSLIST="fvwm-workers@fvwm.org"
 FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
 
@@ -92,7 +92,7 @@ AC_ARG_WITH(imagepath,
 [  --with-imagepath=PATH   colon-delimited search path for images],
 [ case "$withval" in
   no)
-    AC_MSG_ERROR(Can not disable image path.)
+    AC_MSG_ERROR([Can not disable image path.])
     ;;
   yes)
     ;;
@@ -386,7 +386,7 @@ AC_SUBST(Xft_LIBS)
 AC_SUBST(Xft_CFLAGS)
 
 dnl ********* xpm
-problem_xpm=": Xpm library or header not found!"
+problem_xpm=": Xpm library or header not found"
 
 $UNSET ac_cv_header_X11_xpm_h
 $UNSET ac_cv_lib_Xpm_XpmReadFileToXpmImage
@@ -396,7 +396,7 @@ smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
 
 if test "$xpm_LIBS"; then
   dnl Check for proper version of Xpm -- from XEmacs 21.x configure.in
-  AC_MSG_CHECKING(for Xpm 3.4g or better)
+  AC_MSG_CHECKING([for Xpm 3.4g or better])
   my_CPPFLAGS="$CPPFLAGS"
   my_LIBS="$LIBS"
   CPPFLAGS="$CPPFLAGS $xpm_CFLAGS $X_CFLAGS"
@@ -408,18 +408,19 @@ if test "$xpm_LIBS"; then
      XpmIncludeVersion < 30407 ? 2 : 0 ;}],
     [./conftest dummy_arg; xpm_status=$?;
      if test "$xpm_status" = "0"; then
-       with_xpm=yes;
+       with_xpm=yes
+       problem_xpm=""
      else
        with_xpm=no;
        if test "$xpm_status" = "1"; then
-	 problem_xpm=": Xpm library and header versions don't match!"
+	 problem_xpm=": Xpm library and header versions don't match"
        elif test "$xpm_status" = "2"; then
-	 problem_xpm=": Xpm library version is too old!"
+	 problem_xpm=": Xpm library version is too old"
        else
-	 problem_xpm=": Internal xpm detection logic error!"
+	 problem_xpm=": Internal xpm detection logic error"
        fi
      fi],
-   [with_xpm="no"; problem_xpm=": Xpm library or header not found!"])
+   [with_xpm=no; problem_xpm=": Xpm test error, see config.log"])
   AC_MSG_RESULT($with_xpm)
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
@@ -438,7 +439,7 @@ AC_SUBST(xpm_LIBS)
 AC_SUBST(xpm_CFLAGS)
 
 dnl ********* png
-problem_png=": png library or header not found!"
+problem_png=": png library or header not found"
 
 $UNSET ac_cv_header_png_h
 $UNSET ac_cv_lib_png_png_read_info
@@ -446,8 +447,8 @@ smr_CHECK_LIB(png, png, for coloured or shaped icons,
     png_read_info, png.h, -lz -lm,)
 
 if test "$png_LIBS"; then
-  dnl Check for proper version of Png
-  AC_MSG_CHECKING(for libpng 1.0.4a or better)
+  dnl Check for proper version of png
+  AC_MSG_CHECKING([for libpng 1.0.4a or better])
   my_CPPFLAGS="$CPPFLAGS"
   my_LIBS="$LIBS"
   CPPFLAGS="$CPPFLAGS $png_CFLAGS"
@@ -461,12 +462,12 @@ if test "$png_LIBS"; then
      else
        with_png=no;
        if test "$png_status" = "2"; then
-	 problem_png=": png library version is too old!"
+	 problem_png=": png library version is too old"
        else
-	 problem_png=": Internal png detection logic error!"
+	 problem_png=": Internal png detection logic error"
        fi
      fi],
-   [with_png="no"; problem_png=": png library or header not found!"])
+   [with_png="no"; problem_png=": png test error, see config.log"])
   AC_MSG_RESULT($with_png)
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
@@ -639,7 +640,7 @@ if test "$with_bidi" != "no"; then
 	AC_ARG_WITH(fribidi-bindir,
 		[  --with-fribidi-bindir=DIR  directory of fribidi-config if not in PATH],
 		FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
-	AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, "${FRIBIDI_BINDIR}:$PATH")
+	AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, [$FRIBIDI_BINDIR:$PATH])
 
 	if test -z "$FRIBIDI_CONFIG"; then
 		with_bidi=no
@@ -706,7 +707,7 @@ AC_CHECK_HEADERS(stdarg.h)
 AC_CHECK_FUNCS(vfprintf)
 if test $ac_cv_header_stdarg_h = no -o \
         $ac_cv_func_vfprintf = no; then
-     AC_MSG_ERROR(stdarg.h and vfprintf required.)
+     AC_MSG_ERROR([stdarg.h and vfprintf required])
 fi
 
 dnl For reaping children, fvwm needs either waitpid() or wait3()
@@ -715,7 +716,7 @@ AC_CHECK_FUNCS(waitpid)
 if test $ac_cv_func_waitpid = no; then
     AC_CHECK_FUNCS(wait3 wait4)
     if test $ac_cv_func_wait3 = no; then
-        AC_MSG_ERROR(Either waitpid or wait3 function is required)
+        AC_MSG_ERROR([Either waitpid or wait3 function is required])
     fi
 fi
 
@@ -737,7 +738,7 @@ dnl # disable the cached value before probing
 dnl         $UNSET ac_cv_prog_CXX
 dnl         AC_CHECK_PROGS(CXX, $CCC)
 dnl         test "$CXX" ||
-dnl             AC_MSG_ERROR(C++ compiler given by --with-cxx not found)
+dnl             AC_MSG_ERROR([C++ compiler given by --with-cxx not found])
 dnl     else
 dnl         AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++)
 dnl     fi
@@ -770,18 +771,18 @@ if test -z "$PERL"; then
 fi
 dnl We need at least perl 5.002 for FvwmConsoleC.pl and fvwm-menu-headlines.
 if test ! -z "$PERL"; then
-	AC_MSG_CHECKING(for perl 5.002 or better)
+	AC_MSG_CHECKING([for perl 5.002 or better])
 	if ("$PERL" -e "require 5.002;") 2>/dev/null; then
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_RESULT(no)
-		AC_MSG_WARN($PERL not found or too old)
+		AC_MSG_WARN([$PERL not found or too old])
 	fi
 else
-	AC_MSG_WARN(perl not found; you can't run some extra scripts)
+	AC_MSG_WARN([perl not found; you can't run some extra scripts])
 	PERL=/usr/bin/perl
 fi
-AC_MSG_RESULT(assuming $PERL as perl location)
+AC_MSG_RESULT([assuming $PERL as perl location])
 AC_SUBST(PERL)
 
 dnl Checks for header files.
@@ -819,7 +820,7 @@ fi
 
 AC_FUNC_SELECT
 if test $ac_cv_func_select != yes; then
-  AC_MSG_ERROR(select required.)
+  AC_MSG_ERROR([select required])
 fi
 
 dnl Check for standard functions that we have replacements for.

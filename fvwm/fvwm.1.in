@@ -22,7 +22,7 @@
 .\"  style names and strings:           double quotes   "stylename", "x"
 .\"  single characters:                 single quotes   '@'
 .\"  module names:                      bold (.B)       .B FvwmPager
-.\"  links to web pages:                bold (.B)       .B http://@FVWMHOMEPAGE@
+.\"  links to web pages:                bold (.B)       .B @FVWMHOMEPAGE@
 .\"  acronyms:                          small (.SM)     .SM ICCCM
 .\"
 .\"
@@ -9423,7 +9423,7 @@ Bug reports can be sent to the fvwm-workers mailing list at
 or reported through the bug tracking system.
 
 The official fvwm homepage is
-.BR http://@FVWMHOMEPAGE@ .
+.BR @FVWMHOMEPAGE@ .
 
 \" LocalWords:  XTerm xterm rc fvwm Linux ICCCM CDE XView XINERAMA Xinerama
 \" LocalWords:  EdgeResistance fvwm's IconBox MoveToScreen FvwmConsole

@@ -3,9 +3,8 @@
 configdir = @FVWM_DATADIR@
 bin_PROGRAMS = fvwm
 
-fvwm_man = fvwm.1
-EXTRA_DIST = $(fvwm_man).in $(config_DATA)
-man_MANS = $(fvwm_man)
+EXTRA_DIST = $(config_DATA)
+man_MANS = fvwm.1
 
 config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 
