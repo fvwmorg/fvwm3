@@ -140,29 +140,29 @@ static int get_outline_rects(
 
 	for (i = 0; i < n; i++)
 	{
-		rects[i+i].x = x + i;
-		rects[i+i].y = y + i;
-		rects[i+i].width = width - (i << 1);
-		rects[i+i].height = height - (i << 1);
+		rects[i].x = x + i;
+		rects[i].y = y + i;
+		rects[i].width = width - (i << 1);
+		rects[i].height = height - (i << 1);
 	}
 	if (width - (n << 1) >= 5 && height - (n << 1) >= 5)
 	{
 		if (width - (n << 1) >= 10)
 		{
 			int off = (width - (n << 1)) / 3 + n;
-			rects[i+i].x = x + off;
-			rects[i+i].y = y + n;
-			rects[i+i].width = width - (off << 1);
-			rects[i+i].height = height - (n << 1);
+			rects[i].x = x + off;
+			rects[i].y = y + n;
+			rects[i].width = width - (off << 1);
+			rects[i].height = height - (n << 1);
 			i++;
 		}
 		if (height - (n << 1) >= 10)
 		{
 			int off = (height - (n << 1)) / 3 + n;
-			rects[i+i].x = x + n;
-			rects[i+i].y = y + off;
-			rects[i+i].width = width - (n << 1);
-			rects[i+i].height = height - (off << 1);
+			rects[i].x = x + n;
+			rects[i].y = y + off;
+			rects[i].width = width - (n << 1);
+			rects[i].height = height - (off << 1);
 			i++;
 		}
 	}
@@ -207,7 +207,7 @@ static void draw_move_resize_grid(int x, int  y, int  width, int height)
 		move_resize_grid.flags.is_enabled = 0;
 		nrects +=
 			get_outline_rects(
-				&(rects[1]), move_resize_grid.geom.x,
+				&(rects[0]), move_resize_grid.geom.x,
 				move_resize_grid.geom.y,
 				move_resize_grid.geom.width,
 				move_resize_grid.geom.height);
@@ -219,11 +219,12 @@ static void draw_move_resize_grid(int x, int  y, int  width, int height)
 		move_resize_grid.geom.y = y;
 		move_resize_grid.geom.width = width;
 		move_resize_grid.geom.height = height;
-		nrects += get_outline_rects(&(rects[0]), x, y, width, height);
+		nrects += get_outline_rects(
+			&(rects[nrects]), x, y, width, height);
 	}
 	if (nrects > 0)
 	{
-		XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, 10);
+		XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, nrects);
 		XFlush(dpy);
 	}
 
