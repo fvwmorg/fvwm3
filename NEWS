@@ -535,6 +535,79 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 -------------------------------------------------------------------
 
+Changes in stable release 2.4.16 (30-May-2003)
+
+* Fixed a transparency problem in FvwmButtons.
+
+* The PageOnly option in FvwmTaskBar now works after a desk change
+  too.
+
+* Fixed a possible core dump when more than 256 windows are on
+  the desktop.
+
+* Initial drawing and final undrawing of wire frame no longer
+  toggles the pixel in the top left corner of the screen.
+
+* Fixed parsing of button geometries in FvwmButtons when the
+  geometry specificaiton appeared after another option with a comma
+  at the end.
+
+* FvwmCommand works too when invoked without the DISPLAY variable
+  set.
+
+* Fixed displaying iconified windows without an icon in
+  FvwmIconMan.
+
+* All single letter variables are deprecated now; new variables:
+
+    $[w.id], $[w.name], $[w.iconname], $[w.class], $[w.resource],
+    $[desk.n], $[version.num], $[version.info], $[version.line],
+    $[desk.pagesx], $[desk.pagesy]
+
+* Fixed a bug with aspect pixmaps in colorsets.
+
+* Iconified windows without an icon do not receive focus.
+
+* Fixed a bug in FvwmPager that displayed iconified windows without
+  icon title or picture as not iconified.
+
+* Fixed parsing of '@<screen>' Xinerama specification in the
+  ButtonGeometry option of FvwmButtons.
+
+* The NoWarp menu position hint option works with root menus too.
+
+* Fixed a problem with styles not being properly applied after a
+  DestroyStyle command.
+
+* Fixed a bug introduced in 2.4.14.  The pointer was sometimes
+  warped to another screen during a restart and command execution.
+
+* Fixed a crash when a window was destroyed twice in a complex
+  function.
+
+* Fixed corruption of the window list when windows died at the
+  wrong time.
+
+* Fixed problem with empty frame windows if X recycled the window
+  id of a window that died recently.
+
+* Fixed loading of application supplied pixmap on 8/24 depth screen.
+
+* WindowListFunc is executed now within a window context, so
+  a prefix "WindowId $0" is not needed in its definition anymore
+  and it is advised to remove it in user configs.
+
+* FvwmEvent now executes all window related events within a window
+  context, so PassId is not needed anymore, and all prefixes
+  "WindowId $0" may be removed in user event handlers.
+
+* Fixed "GotoDeskAndPage prev" on desks larger than 2x2.
+
+* Expansion of variables like $[w.name] or $[EMPTY_STRING] that are
+  empty works.
+
+-------------------------------------------------------------------
+
 Changes in stable release 2.4.15 (24-Jan-2003)
 
 * Fix for gmplayer launched by fvwm.  Close stdin on Exec so the
