@@ -1149,234 +1149,241 @@ void LoopOnEvents(void)
   XEvent Event2;
   int x, y, redraw;
   static unsigned long lasttime = 0L;
+  Time NewTimestamp = lasttime;
 
-  while(XPending(dpy)) {
+  while(XPending(dpy))
+  {
     redraw = -1;
     XNextEvent(dpy, &Event);
     if (Event.xany.type == ConfigureNotify)
     {
       /* Purge all but the last configure events */
-      while(XCheckTypedEvent(dpy, ConfigureNotify, &Event))
+      while (XCheckTypedEvent(dpy, ConfigureNotify, &Event))
 	;
     }
 
+    NewTimestamp = lasttime;
     switch(Event.type)
     {
-      case ButtonRelease:
-        num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
-        if (num == -1) {
-	  if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y))
-	    StartButtonUpdate(NULL, BUTTON_UP);
-	} else {
-          ButReleased = ButPressed; /* Avoid race fvwm pipe */
-	  if (Event.xbutton.button >= 1 &&
-	      Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
-	  {
-	    SendFvwmPipe(Fvwm_fd, ClickAction[Event.xbutton.button-1],
-			 ItemID(&windows, num));
-	  }
-        }
-
-        if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y)) {
-          StartButtonUpdate(NULL, BUTTON_UP);
-          redraw = 0;
-          usleep(50000);
-        }
-        if (HighlightFocus) {
-          if (num == ButPressed)
-	    RadioButton(&buttons, num, BUTTON_DOWN);
-          if (num != -1)
-	    SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
-        }
-        ButPressed = -1;
-	redraw = 0;
-        break;
-
-      case ButtonPress:
-        RadioButton(&buttons, -1, BUTTON_UP); /* no windows focused anymore */
-	if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y)) {
-	  StartButtonUpdate(NULL, BUTTON_DOWN);
-          x = win_x;
-          if (win_y < Midline) {
-            /* bar in top half of the screen */
-            y = win_y + RowHeight;
-          } else {
-            /* bar in bottom of the screen */
-            y = win_y - ScreenHeight;
-          }
-          sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
-          SendFvwmPipe(Fvwm_fd, tmp, None);
-        } else {
+    case ButtonRelease:
+      NewTimestamp = Event.xbutton.time;
+      num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
+      if (num == -1) {
+	if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y))
 	  StartButtonUpdate(NULL, BUTTON_UP);
-	  if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
-	    HandleMailClick(Event);
-	  } else {
-	    num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
-	    UpdateButton(&buttons, num, NULL, (ButPressed == num) ?
-			 BUTTON_BRIGHT : BUTTON_DOWN);
-
-	    ButPressed = num;
-	  }
-	}
-        redraw = 0;
-        break;
-
-      case Expose:
-        if (Event.xexpose.count == 0)
+      } else {
+	ButReleased = ButPressed; /* Avoid race fvwm pipe */
+	if (Event.xbutton.button >= 1 &&
+	    Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
 	{
-          if (Event.xexpose.window == Tip.win)
-            redraw = 0;
-          else
-	    redraw = 1;
+	  SendFvwmPipe(Fvwm_fd, ClickAction[Event.xbutton.button-1],
+		       ItemID(&windows, num));
 	}
-        break;
+      }
 
-      case ClientMessage:
-        if ((Event.xclient.format==32) && (Event.xclient.data.l[0]==wm_del_win))
-          exit(0);
-        break;
-
-      case EnterNotify:
-        if (AutoHide)
-	  RevealTaskBar();
-
-        if (Event.xcrossing.mode != NotifyNormal)
-	  break;
-        num = WhichButton(&buttons, Event.xcrossing.x, Event.xcrossing.y);
-        if (!HighlightFocus) {
-          if (SomeButtonDown(Event.xcrossing.state)) {
-            if (num != -1) {
-              RadioButton(&buttons, num, BUTTON_DOWN);
-              ButPressed = num;
-              redraw = 0;
-            } else {
-              ButPressed = -1;
-            }
-          }
-        } else {
-          if (num != -1 && num != ButPressed)
-            SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
-        }
-
-	CheckForTip(Event.xmotion.x, Event.xmotion.y);
-        break;
-
-      case LeaveNotify:
-        ClearAlarm();
-        if (Tip.open)
-	  ShowTipWindow(0);
-
-        if (AutoHide)
-	  SetAlarm(HIDE_TASK_BAR);
-
-        if (Event.xcrossing.mode != NotifyNormal)
-	  break;
-
-        if (!HighlightFocus) {
-          if (SomeButtonDown(Event.xcrossing.state)) {
-            if (ButPressed != -1) {
-              RadioButton(&buttons, -1, BUTTON_UP);
-              ButPressed = -1;
-              redraw = 0;
-            }
-          } else {
-            if (ButReleased != -1) {
-              RadioButton(&buttons, -1, BUTTON_UP);
-              ButReleased = -1;
-              redraw = 0;
-            }
-          }
-        }
-        break;
-
-      case MotionNotify:
-	if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y)) {
-	  if (SomeButtonDown(Event.xmotion.state))
-	    redraw = StartButtonUpdate(NULL, BUTTON_DOWN) ? 0 : -1;
-	  CheckForTip(Event.xmotion.x, Event.xmotion.y);
-	  break;
-	}
-	redraw = StartButtonUpdate(NULL, BUTTON_UP) ? 0 : -1;
-        num = WhichButton(&buttons, Event.xmotion.x, Event.xmotion.y);
-        if (!HighlightFocus) {
-          if (SomeButtonDown(Event.xmotion.state) && num != ButPressed) {
-            if (num != -1) {
-              RadioButton(&buttons, num, BUTTON_DOWN);
-              ButPressed = num;
-            } else {
-              RadioButton(&buttons, num, BUTTON_UP);
-              ButPressed = -1;
-            }
-            redraw = 0;
-          }
-        } else if (num != -1 && num != ButPressed)
+      if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y)) {
+	StartButtonUpdate(NULL, BUTTON_UP);
+	redraw = 0;
+	usleep(50000);
+      }
+      if (HighlightFocus) {
+	if (num == ButPressed)
+	  RadioButton(&buttons, num, BUTTON_DOWN);
+	if (num != -1)
 	  SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
+      }
+      ButPressed = -1;
+      redraw = 0;
+      break;
 
-	CheckForTip(Event.xmotion.x, Event.xmotion.y);
-        break;
-
-      case ConfigureNotify:
-	memcpy(&Event2, &Event, sizeof(Event));
-	/* eat up excess ConfigureNotify events. */
-	while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event2))
-	{
-	  memcpy(&Event, &Event2, sizeof(Event));
+    case ButtonPress:
+      NewTimestamp = Event.xbutton.time;
+      RadioButton(&buttons, -1, BUTTON_UP); /* no windows focused anymore */
+      if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y)) {
+	StartButtonUpdate(NULL, BUTTON_DOWN);
+	x = win_x;
+	if (win_y < Midline) {
+	  /* bar in top half of the screen */
+	  y = win_y + RowHeight;
+	} else {
+	  /* bar in bottom of the screen */
+	  y = win_y - ScreenHeight;
 	}
-        if (Event.xconfigure.height != win_height) {
-	  AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
-	  if (AutoHide && !win_is_shaded)
-	  {
-	    if (win_y > Midline)
-	      win_y = ScreenHeight - 2 +
-		win_title_height*win_has_bottom_title;
-	    else
-	      win_y = 2 + win_title_height*win_has_bottom_title
-		- win_height;
-	    XSync(dpy,0);
-	    XMoveWindow(dpy, win, win_x, win_y);
-	    XSync(dpy,0);
-	    hide_taskbar_alarm = False;
-	    WindowState = -1;
-	  }
-	  else if (AutoStick)
-	    WarpTaskBar(win_y, 1);
+	sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
+	SendFvwmPipe(Fvwm_fd, tmp, None);
+      } else {
+	StartButtonUpdate(NULL, BUTTON_UP);
+	if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
+	  HandleMailClick(Event);
+	} else {
+	  num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
+	  UpdateButton(&buttons, num, NULL, (ButPressed == num) ?
+		       BUTTON_BRIGHT : BUTTON_DOWN);
+
+	  ButPressed = num;
+	}
+      }
+      redraw = 0;
+      break;
+
+    case Expose:
+      if (Event.xexpose.count == 0)
+      {
+	if (Event.xexpose.window == Tip.win)
+	  redraw = 0;
+	else
 	  redraw = 1;
-        }
-	/* useful because of dynamic style change */
-	if (!Event.xconfigure.send_event)
-	{
-	  PurgeConfigEvents();
-	  break;
+      }
+      break;
+
+    case ClientMessage:
+      if ((Event.xclient.format==32) && (Event.xclient.data.l[0]==wm_del_win))
+	exit(0);
+      break;
+
+    case EnterNotify:
+      NewTimestamp = Event.xcrossing.time;
+      if (AutoHide)
+	RevealTaskBar();
+
+      if (Event.xcrossing.mode != NotifyNormal)
+	break;
+      num = WhichButton(&buttons, Event.xcrossing.x, Event.xcrossing.y);
+      if (!HighlightFocus) {
+	if (SomeButtonDown(Event.xcrossing.state)) {
+	  if (num != -1) {
+	    RadioButton(&buttons, num, BUTTON_DOWN);
+	    ButPressed = num;
+	    redraw = 0;
+	  } else {
+	    ButPressed = -1;
+	  }
 	}
-        else if (AutoHide)
-	  break;
-	else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
+      } else {
+	if (num != -1 && num != ButPressed)
+	  SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
+      }
+
+      CheckForTip(Event.xmotion.x, Event.xmotion.y);
+      break;
+
+    case LeaveNotify:
+      NewTimestamp = Event.xcrossing.time;
+      ClearAlarm();
+      if (Tip.open)
+	ShowTipWindow(0);
+
+      if (AutoHide)
+	SetAlarm(HIDE_TASK_BAR);
+
+      if (Event.xcrossing.mode != NotifyNormal)
+	break;
+
+      if (!HighlightFocus) {
+	if (SomeButtonDown(Event.xcrossing.state)) {
+	  if (ButPressed != -1) {
+	    RadioButton(&buttons, -1, BUTTON_UP);
+	    ButPressed = -1;
+	    redraw = 0;
+	  }
+	} else {
+	  if (ButReleased != -1) {
+	    RadioButton(&buttons, -1, BUTTON_UP);
+	    ButReleased = -1;
+	    redraw = 0;
+	  }
+	}
+      }
+      break;
+
+    case MotionNotify:
+      NewTimestamp = Event.xmotion.time;
+      if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y)) {
+	if (SomeButtonDown(Event.xmotion.state))
+	  redraw = StartButtonUpdate(NULL, BUTTON_DOWN) ? 0 : -1;
+	CheckForTip(Event.xmotion.x, Event.xmotion.y);
+	break;
+      }
+      redraw = StartButtonUpdate(NULL, BUTTON_UP) ? 0 : -1;
+      num = WhichButton(&buttons, Event.xmotion.x, Event.xmotion.y);
+      if (!HighlightFocus) {
+	if (SomeButtonDown(Event.xmotion.state) && num != ButPressed) {
+	  if (num != -1) {
+	    RadioButton(&buttons, num, BUTTON_DOWN);
+	    ButPressed = num;
+	  } else {
+	    RadioButton(&buttons, num, BUTTON_UP);
+	    ButPressed = -1;
+	  }
+	  redraw = 0;
+	}
+      } else if (num != -1 && num != ButPressed)
+	SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
+
+      CheckForTip(Event.xmotion.x, Event.xmotion.y);
+      break;
+
+    case ConfigureNotify:
+      memcpy(&Event2, &Event, sizeof(Event));
+      /* eat up excess ConfigureNotify events. */
+      while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event2))
+      {
+	memcpy(&Event, &Event2, sizeof(Event));
+      }
+      if (Event.xconfigure.height != win_height) {
+	AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
+	if (AutoHide && !win_is_shaded)
 	{
-          if (AutoStick)
-	  {
-            WarpTaskBar(Event.xconfigure.y, 0);
-          }
+	  if (win_y > Midline)
+	    win_y = ScreenHeight - 2 +
+	      win_title_height*win_has_bottom_title;
 	  else
-	  {
-            win_x = Event.xconfigure.x;
-            win_y = Event.xconfigure.y;
-          }
-        }
-        break;
-    }
+	    win_y = 2 + win_title_height*win_has_bottom_title
+	      - win_height;
+	  XSync(dpy,0);
+	  XMoveWindow(dpy, win, win_x, win_y);
+	  XSync(dpy,0);
+	  hide_taskbar_alarm = False;
+	  WindowState = -1;
+	}
+	else if (AutoStick)
+	  WarpTaskBar(win_y, 1);
+	redraw = 1;
+      }
+      /* useful because of dynamic style change */
+      if (!Event.xconfigure.send_event)
+      {
+	PurgeConfigEvents();
+	break;
+      }
+      else if (AutoHide)
+	break;
+      else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
+      {
+	if (AutoStick)
+	{
+	  WarpTaskBar(Event.xconfigure.y, 0);
+	}
+	else
+	{
+	  win_x = Event.xconfigure.x;
+	  win_y = Event.xconfigure.y;
+	}
+      }
+      break;
+    } /* switch (Event.type) */
 
     if (redraw >= 0)
       RedrawWindow(redraw);
-
     DoAlarmAction();
-
-    if (Event.xkey.time - lasttime > UpdateInterval*1000L) {
+    if (NewTimestamp - lasttime > UpdateInterval*1000L)
+    {
       DrawGoodies();
-      lasttime = Event.xkey.time;
+      lasttime = NewTimestamp;
     }
-
   }
 
+  return;
 }
 
 /***********************************

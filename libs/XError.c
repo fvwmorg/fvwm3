@@ -27,30 +27,41 @@
 static char *error_name(unsigned char code);
 static char *request_name(unsigned char code);
 
+#define USE_GET_ERROT_TEXT 1
 void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 {
-#if 0
-  /* can't call this from within an error handler! */
-  XGetErrorText(dpy, error->error_code, msg, sizeof(msg));
-#endif
+#ifdef USE_GET_ERROR_TEXT
+  char msg[256];
 
+  msg[255] = 0;
+  /* can't call this from within an error handler! */
+  /* DV (21-Nov-2000): Well, actually we *can* call it in an error handler
+   * since it does not trigger a protocol request. */
+  XGetErrorText(dpy, error->error_code, msg, sizeof(msg));
+  fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
+  fprintf(stderr, "   Error: %d (%s)\n", error->error_code, msg);
+#else
   fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
   fprintf(stderr, "   Error: %d (%s)\n",
 	  error->error_code, error_name(error->error_code));
+#endif
   fprintf(stderr, "   Major opcode of failed request:  %d (%s)\n",
 	  error->request_code, request_name(error->request_code));
   fprintf(stderr, "   Minor opcode of failed request:  %d \n",
 	  error->minor_code);
+  /* error->resourceid may be uninitialised. This is no proble since we are
+   * dumping core anyway. */
   fprintf(stderr, "   Resource id of failed request:  0x%lx \n",
 	  error->resourceid);
-  fprintf(stderr, " Leaving a core dump now\n");
 
   /* leave a coredump */
+  fprintf(stderr, " Leaving a core dump now\n");
   abort();
   /* exit if this fails */
   exit(99);
 }
 
+#ifndef USE_GET_ERROR_TEXT
 /* this comes out of X.h */
 static char *error_names[] = {
   "BadRequest",
@@ -79,6 +90,7 @@ static char *error_name(unsigned char code)
     return "Unknown";
   return error_names[code - 1];
 }
+#endif
 
 /* this comes out of Xproto.h */
 static char *code_names[] = {

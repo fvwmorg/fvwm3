@@ -1,3 +1,23 @@
+2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/winlist.c (new_windata):
+	* FvwmIconMan/readconfig.c (ParseMouseEntry):
+	(ParseKeyEntry):
+	(ParseSimpleEntry):
+	* FvwmIconMan/globals.c (init_win_manager):
+	simplified init code and safety patches
+
+	* FvwmIconMan/xmanager.c (init_button_array):
+	(set_num_buttons):
+	fixed UMRs
+
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	fixed uninitialised memory read
+
+	* FvwmButtons/parse.c (ParseButton):
+	(ParseConfigLine):
+	fixed memory leaks
+
 2000-11-20  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/FvwmScript.c:

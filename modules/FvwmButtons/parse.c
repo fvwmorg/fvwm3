@@ -756,7 +756,8 @@ static void ParseButton(button_info **uberb,char *s)
   button_info *b,*ub=*uberb;
   int i,j;
   char *t,*o;
-  b=alloc_button(ub,(ub->c->num_buttons)++);
+
+  b = alloc_button(ub, (ub->c->num_buttons)++);
   s = trimleft(s);
 
   if(*s=='(' && s++)
@@ -1088,6 +1089,7 @@ static void ParseButton(button_info **uberb,char *s)
       case 11: /* End */
 	*uberb=ub->parent;
 	ub->c->buttons[--(ub->c->num_buttons)]=NULL;
+	free(b);
 	if(!ub->parent)
 	{
 	  fprintf(stderr,"%s: Unmatched END in config file\n",MyName);
@@ -1314,6 +1316,8 @@ static void ParseConfigLine(button_info **ubb,char *s)
     break;
   }
   case 2:/* Font */
+    if (ub->c->font_string)
+      free(ub->c->font_string);
     CopyString(&ub->c->font_string, s);
     break;
   case 3:/* Padding */
@@ -1334,9 +1338,13 @@ static void ParseConfigLine(button_info **ubb,char *s)
       ub->c->num_rows=j;
     break;
   case 6:/* Back */
+    if (ub->c->back)
+      free(ub->c->back);
     CopyString(&(ub->c->back),s);
     break;
   case 7:/* Fore */
+    if (ub->c->fore)
+      free(ub->c->fore);
     CopyString(&(ub->c->fore),s);
     break;
   case 8:/* Frame */
@@ -1354,7 +1362,11 @@ static void ParseConfigLine(button_info **ubb,char *s)
     if (strncasecmp(s,"none",4)==0)
       ub->c->flags|=b_TransBack;
     else
+    {
+      if (ub->c->back_file)
+	free(ub->c->back_file);
       CopyString(&(ub->c->back_file),s);
+    }
     ub->c->flags|=b_IconBack;
     break;
   case 11: /* BoxSize */
