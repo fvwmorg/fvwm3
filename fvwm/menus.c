@@ -70,6 +70,9 @@
 #include "misc.h"
 #include "repeat.h"
 #include "screen.h"
+#include "colors.h"
+#include "colormaps.h"
+#include "decorations.h"
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
  * have to be #defined in the section below to ensure full control over the
@@ -5236,9 +5239,10 @@ static void NewMenuStyle(F_CMD_ARGS)
   Bool is_default_style = False;
   int val[2];
   int n;
-  XFontStruct *xfs = NULL;
 #ifdef I18N_MB
-  XFontSet xfset;
+  XFontSet xfset = NULL;
+#else
+  XFontStruct *xfs = NULL;
 #endif
   int i;
 

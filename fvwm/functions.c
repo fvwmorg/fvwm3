@@ -53,6 +53,14 @@
 #include "gnome.h"
 #include "borders.h"
 #include "module_interface.h"
+#include "conditional.h"
+#include "placement.h"
+#include "windowlist.h"
+#include "modconf.h"
+#include "session.h"
+#include "icons.h"
+#include "read.h"
+#include "builtins.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -174,6 +182,7 @@ static const struct functions func_config[] =
   {"modulepath",   setModulePath,    F_MODULE_PATH,         0},
   {"mouse",        mouse_binding,    F_MOUSE,               0},
   {"move",         move_window,      F_MOVE,                FUNC_NEEDS_WINDOW},
+  {"movesmoothness",SetMoveSmoothness,F_MOVE_SMOOTHNESS,      0},
   {"movethreshold",SetMoveThreshold, F_MOVE_THRESHOLD,      0},
   {"movetodesk",   move_window_to_desk,F_MOVE_TO_DESK,      FUNC_NEEDS_WINDOW},
   {"movetopage",   move_window_to_page,F_MOVE_TO_PAGE,      FUNC_NEEDS_WINDOW},

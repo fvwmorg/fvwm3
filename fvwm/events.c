@@ -83,6 +83,8 @@
 #include "gnome.h"
 #include "borders.h"
 #include "colormaps.h"
+#include "add_window.h"
+#include "icccm2.h"
 #ifdef HAVE_STROKE
 #include <errno.h>
 #include "stroke.h"
@@ -1533,7 +1535,7 @@ void HandleEnterNotify(void)
   if (!Tmp_win) {
   /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA */
 /* handle a subwindow cmap */
-    EnterSubWindowColormap(Event.xany.window);  
+    EnterSubWindowColormap(Event.xany.window);
   /* END PATCH */
     return;
   }
@@ -1600,7 +1602,7 @@ void HandleLeaveNotify(void)
   /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA */
     } else {
       /* handle a subwindow cmap */
-        LeaveSubWindowColormap(Event.xany.window); 
+        LeaveSubWindowColormap(Event.xany.window);
    }
   /* END PATCH */
 }

@@ -38,6 +38,7 @@
 #include <X11/Intrinsic.h>
 
 #include "libs/Module.h"
+#include "libs/Colorset.h"
 #include "FvwmButtons.h"
 #include "button.h"
 #include "parse.h"
@@ -1144,18 +1145,18 @@ char *expand_action(char *in_action, button_info *b)
   char *action = NULL;
   char *src;
   char *dest;
-  char *string;
+  char *string = NULL;
   char *rest;
   int px;
   int py;
-  int val;
+  int val = 0;
   int offset;
   int x;
   int y;
   int f;
   int i;
-  unsigned int w;
-  unsigned int h;
+  unsigned int w = 0;
+  unsigned int h = 0;
   Window win;
   extern int dpw;
   extern int dph;
@@ -1186,7 +1187,6 @@ char *expand_action(char *in_action, button_info *b)
     }
     else
     {
-      char *src_org = src;
       char *dest_org = dest;
       Bool is_string = False;
       Bool is_value = False;
@@ -1250,7 +1250,7 @@ char *expand_action(char *in_action, button_info *b)
 	val = h;
 	is_value = True;
 	break;
-      deafult: /* unknown */
+      default: /* unknown */
 	src--;
 	continue;
       } /* switch */

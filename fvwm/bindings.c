@@ -117,7 +117,7 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
     {
       /*
        * Don't let a 0 keycode go through, since that means AnyKey to the
-       * XGrabKey call in GrabKeys().
+       * XGrabKey call.
        */
       keysym = XStringToKeysym(key);
       if (keysym == NoSymbol)

@@ -2,12 +2,10 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.3  1999/08/17 00:32:44  domivogt
-''' * Pager balloons are updated whenever the name changes.
-''' * Fixed some small problems with in IconMan.
-''' * Documented FvwmButtons action variables.
-''' * Implemented and documented Shape, AspectShape and TiledShape for colour sets.
-''' * Applied patch: private colormaps for subwindows.
+''' Revision 1.4  1999/08/17 19:57:04  domivogt
+''' * New MoveSmoothness command.
+''' * General cleanup and -Wall fixes; every .c file has a header.
+''' * Minor bugfixes.
 '''
 ''' Revision 1.8  1999/08/23 20:37:24  migo
 ''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
@@ -100,7 +98,7 @@
 .\"	Of course, you have to process the output yourself
 .\"	in some meaninful fashion.
 .if \nF \{
-.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 02" "16/Aug/99" "Fvwm Utility"
+.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 02" "17/Aug/99" "Fvwm Utility"
 .tm Index:\\$1\t\\n%\t"\\$2"
 ..
 .nr % 0
@@ -195,7 +193,7 @@
 .	ds th \o'bp'
 .	ds Th \o'LP'
 .	ds ae ae
-fvwm-menu-directory \- builds a directory browsing menu for Feline Virtual Window Manager
+fvwm-menu-directory \- builds a directory browsing menu for FVWM
 .	ds oe oe
 .	ds Oe OE
 .\}
@@ -343,7 +341,7 @@ Created   on 06-07-1999 by Dominik Vogt     <domivogt@fvwm.org>.
 Rewritten on 05-08-1999 by Mikhael Goikhman <migo@homemail.com>.
 .SH "COPYING"
 The script is distributed by the same terms as fvwm itself.
-.IX Name "fvwm-menu-directory - builds a directory browsing menu for Feline Virtual Window Manager"
+.IX Name "fvwm-menu-directory - builds a directory browsing menu for FVWM"
 .SH "BUGS"
 Report bugs to fvwm-bug@fvwm.org.
 

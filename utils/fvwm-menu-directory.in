@@ -198,7 +198,7 @@ sub makeFolderItem ($$) {
 
 =head1 NAME
 
-fvwm-menu-directory - builds a directory browsing menu for Feline Virtual Window Manager
+fvwm-menu-directory - builds a directory browsing menu for FVWM
 
 =head1 SYNOPSIS
 

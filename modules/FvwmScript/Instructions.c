@@ -719,12 +719,13 @@ void ChangeFont (int NbArg,long *TabArg)
  int i=0;
  char *arg[2];
  int IdItem;
- XFontStruct *xfont;
 #ifdef I18N_MB
  char **ml;
  int mc;
  char *ds;
  XFontStruct **fs_list;
+#else
+ XFontStruct *xfont;
 #endif
 
  arg[0]=CalcArg(TabArg,&i);

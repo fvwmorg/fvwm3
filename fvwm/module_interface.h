@@ -74,7 +74,10 @@ void initModules(void);
 int HandleModuleInput(Window w, int channel);
 void KillModule(int channel, int place);
 void ClosePipes(void);
-void AddToModList(char *tline);
+void BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...);
+void BroadcastConfig(unsigned long event_type, const FvwmWindow *t);
+void BroadcastName(unsigned long event_type, unsigned long data1,
+		   unsigned long data2, unsigned long data3, const char *name);
 void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data1, unsigned long data2,
 		       unsigned long data3, unsigned long data4,
@@ -82,6 +85,17 @@ void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data7, unsigned long data8,
 		       const char *name);
 void BroadcastColorset(int n);
+void SendPacket(int channel, unsigned long event_type,
+                unsigned long num_datum, ...);
+void SendConfig(int Module, unsigned long event_type, const FvwmWindow *t);
+void SendName(int channel, unsigned long event_type, unsigned long data1,
+	      unsigned long data2, unsigned long data3, const char *name);
+void SendStrToModule(F_CMD_ARGS);
+void send_list_func(F_CMD_ARGS);
 void FlushOutputQueues(void);
+void FlushQueue(int Module);
 int PositiveWrite(int module, unsigned long *ptr, int size);
+RETSIGTYPE DeadPipe(int nonsense);
+void set_mask_function(F_CMD_ARGS);
+
 #endif /* MODULE_H */

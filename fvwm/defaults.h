@@ -55,6 +55,8 @@
 #define DEFAULT_SNAP_GRID_X               1
 #define DEFAULT_SNAP_GRID_Y               1
 
+#define DEFAULT_MOVE_SMOOTHNESS           10
+
 /* Tunable parameters. */
 #define MAX_GRADIENT_SEGMENTS          1000
 /* Don't page if the pointer has moved for more than this many pixels between

@@ -1,5 +1,11 @@
 1999-08-17  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmScript/Instructions.c (ChangeFont):
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmTheme/FvwmTheme.c (parse_colorset):
+	* FvwmButtons/parse.c (expand_action): -Wall fixes
+
 	* FvwmPager/FvwmPager.c (list_window_name):
 	* FvwmPager/x_pager.c (MapBalloonWindow):
 	(UnmapBalloonWindow):

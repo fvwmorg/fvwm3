@@ -29,6 +29,7 @@
 #include "virtual.h"
 #include "gnome.h"
 #include "borders.h"
+#include "module_interface.h"
 
 static void UnmapDesk(int desk, Bool grab);
 static void MapDesk(int desk, Bool grab);
@@ -149,6 +150,58 @@ static int GetDeskNumber(char *action)
 }
 
 
+/**************************************************************************
+ *
+ * Unmaps a window on transition to a new desktop
+ *
+ *************************************************************************/
+static void UnmapIt(FvwmWindow *t)
+{
+  XWindowAttributes winattrs;
+  unsigned long eventMask;
+  /*
+   * Prevent the receipt of an UnmapNotify, since that would
+   * cause a transition to the Withdrawn state.
+   */
+  XGetWindowAttributes(dpy, t->w, &winattrs);
+  eventMask = winattrs.your_event_mask;
+  XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
+  if(IS_ICONIFIED(t))
+    {
+      if(t->icon_pixmap_w != None)
+	XUnmapWindow(dpy,t->icon_pixmap_w);
+      if(t->icon_w != None)
+	XUnmapWindow(dpy,t->icon_w);
+    }
+  else if(IS_MAPPED(t) || IS_MAP_PENDING(t))
+    {
+      XUnmapWindow(dpy,t->frame);
+    }
+  XSelectInput(dpy, t->w, eventMask);
+}
+
+/**************************************************************************
+ *
+ * Maps a window on transition to a new desktop
+ *
+ *************************************************************************/
+static void MapIt(FvwmWindow *t)
+{
+  if(IS_ICONIFIED(t))
+    {
+      if(t->icon_pixmap_w != None)
+	XMapWindow(dpy,t->icon_pixmap_w);
+      if(t->icon_w != None)
+	XMapWindow(dpy,t->icon_w);
+    }
+  else if(IS_MAPPED(t))
+    {
+      XMapWindow(dpy,t->frame);
+      SET_MAP_PENDING(t, 1);
+      XMapWindow(dpy, t->Parent);
+   }
+}
+
 
 void setEdgeThickness(F_CMD_ARGS)
 {
@@ -168,6 +221,86 @@ void setEdgeThickness(F_CMD_ARGS)
   edge_thickness = val;
   checkPanFrames();
 }
+
+void SetEdgeScroll(F_CMD_ARGS)
+{
+  int val1, val2, val1_unit,val2_unit,n;
+
+  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
+  if(n != 2)
+  {
+    fvwm_msg(ERR,"SetEdgeScroll","EdgeScroll requires two arguments");
+    return;
+  }
+
+  /*
+   * if edgescroll >1000 and < 100000m
+   * wrap at edges of desktop (a "spherical" desktop)
+   */
+  if (val1 >= 1000)
+  {
+    val1 /= 1000;
+    Scr.flags.edge_wrap_x = 1;
+  }
+  else
+  {
+    Scr.flags.edge_wrap_x = 0;
+  }
+  if (val2 >= 1000)
+  {
+    val2 /= 1000;
+    Scr.flags.edge_wrap_y = 1;
+  }
+  else
+  {
+    Scr.flags.edge_wrap_y = 0;
+  }
+
+  Scr.EdgeScrollX = val1*val1_unit/100;
+  Scr.EdgeScrollY = val2*val2_unit/100;
+
+  checkPanFrames();
+}
+
+void SetEdgeResistance(F_CMD_ARGS)
+{
+  int val[2];
+
+  if (GetIntegerArguments(action, NULL, val, 2) != 2)
+  {
+    fvwm_msg(ERR,"SetEdgeResistance","EdgeResistance requires two arguments");
+    return;
+  }
+
+  Scr.ScrollResistance = val[0];
+  Scr.MoveResistance = val[1];
+}
+
+
+void SetDeskSize(F_CMD_ARGS)
+{
+  int val[2];
+
+  if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
+      GetRectangleArguments(action, &val[0], &val[1]) != 2)
+  {
+    fvwm_msg(ERR,"SetDeskSize","DesktopSize requires two arguments");
+    return;
+  }
+
+  Scr.VxMax = (val[0] <= 0)? 0: val[0]*Scr.MyDisplayWidth-Scr.MyDisplayWidth;
+  Scr.VyMax = (val[1] <= 0)? 0: val[1]*Scr.MyDisplayHeight-Scr.MyDisplayHeight;
+  BroadcastPacket(M_NEW_PAGE, 5,
+                  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
+
+  checkPanFrames();
+
+#ifdef GNOME
+  /* update GNOME pager */
+  GNOME_SetAreaCount();
+#endif
+}
+
 
 /***************************************************************************
  *

@@ -106,3 +106,12 @@ void FetchWmColormapWindows (FvwmWindow *tmp);
    as described in the ICCCM 2.0 */
 
 void set_client_controls_colormaps(Bool flag);
+
+/*****************************************************************************
+ *
+ * Looks through the window list for any matching COLORMAP_WINDOWS
+ *   windows and installs the colormap if one exists.
+ *
+ ****************************************************************************/
+void EnterSubWindowColormap(Window win);
+void LeaveSubWindowColormap(Window win);

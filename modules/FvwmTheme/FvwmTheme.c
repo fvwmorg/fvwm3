@@ -317,7 +317,6 @@ static void parse_colorset(char *line)
   if (token && !ret)
   {
     int type = GetTokenIndex(token, pixmap_options, 0, NULL);
-    char *end;
     unsigned int w, h;
 
     switch(type)

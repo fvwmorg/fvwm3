@@ -47,11 +47,14 @@
 #endif
 
 /*  RBW - 11/02/1998  */
-int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay);
-int get_next_y(FvwmWindow *t, int y, int pdeltay);
-int test_fit(FvwmWindow *t, int test_x, int test_y, int aoimin, int pdeltax,
-	     int pdeltay);
-void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay);
+static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay);
+static int get_next_y(FvwmWindow *t, int y, int pdeltay);
+static int test_fit(
+  FvwmWindow *t, int test_x, int test_y, int aoimin, int pdeltax, int pdeltay);
+static void CleverPlacement(
+  FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay);
+static void GetGravityOffsets (FvwmWindow *tmp,int *xp,int *yp);
+
 /**/
 
 /* With the advent of layers, the meaning of ONTOP in the following
@@ -192,7 +195,8 @@ test_y = PageTop;
  * interference, fine.  Otherwise, it places it so that the area of of
  * interference between the new window and the other windows is minimized */
 /*  RBW - 11/02/1998  */
-void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay)
+static void CleverPlacement(
+  FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay)
 {
 /**/
   int test_x = 0,test_y = 0;
@@ -234,7 +238,7 @@ void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay)
 }
 
 /*  RBW - 11/02/1998  */
-int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
+static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
 {
 /**/
   int xnew;
@@ -295,7 +299,7 @@ int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
   return xnew;
 }
 /*  RBW - 11/02/1998  */
-int get_next_y(FvwmWindow *t, int y, int pdeltay)
+static int get_next_y(FvwmWindow *t, int y, int pdeltay)
 {
 /**/
   int ynew;
@@ -350,8 +354,8 @@ int get_next_y(FvwmWindow *t, int y, int pdeltay)
 }
 
 /*  RBW - 11/02/1998  */
-int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
-	     int pdeltay)
+static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
+		    int pdeltay)
 {
 /**/
   FvwmWindow *testw;
@@ -866,7 +870,7 @@ struct _gravity_offset
   int x, y;
 };
 
-void GetGravityOffsets (FvwmWindow *tmp,int *xp,int *yp)
+static void GetGravityOffsets (FvwmWindow *tmp,int *xp,int *yp)
 {
   static struct _gravity_offset gravity_offsets[11] =
   {

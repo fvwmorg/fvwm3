@@ -42,6 +42,8 @@
 #include "move_resize.h"
 #include "virtual.h"
 #include "borders.h"
+#include "colormaps.h"
+#include "decorations.h"
 
 /* ----- move globals ----- */
 extern XEvent Event;
@@ -71,6 +73,90 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
 		     int *ymotionp);
 static void DisplaySize(FvwmWindow *, int, int, Bool, Bool);
 /* ----- end of resize globals ----- */
+
+/* The vars are named for the x-direction, but this is used for both x and y */
+static int GetOnePositionArgument(
+  char *s1,int x,int w,int *pFinalX,float factor, int max)
+{
+  int val;
+  int cch = strlen(s1);
+
+  if (cch == 0)
+    return 0;
+  if (s1[cch-1] == 'p') {
+    factor = 1;  /* Use pixels, so don't multiply by factor */
+    s1[cch-1] = '\0';
+  }
+  if (strcmp(s1,"w") == 0) {
+    *pFinalX = x;
+  } else if (sscanf(s1,"w-%d",&val) == 1) {
+    *pFinalX = x-(val*factor);
+  } else if (sscanf(s1,"w+%d",&val) == 1) {
+    *pFinalX = x+(val*factor);
+  } else if (sscanf(s1,"-%d",&val) == 1) {
+    *pFinalX = max-w - val*factor;
+  } else if (sscanf(s1,"%d",&val) == 1) {
+    *pFinalX = val*factor;
+  } else {
+    return 0;
+  }
+  /* DEBUG_FPRINTF((stderr,"Got %d\n",*pFinalX)); */
+  return 1;
+}
+
+/* GetMoveArguments is used for Move & AnimatedMove
+ * It lets you specify in all the following ways
+ *   20  30          Absolute percent position, from left edge and top
+ *  -50  50          Absolute percent position, from right edge and top
+ *   10p 5p          Absolute pixel position
+ *   10p -0p         Absolute pixel position, from bottom
+ *  w+5  w-10p       Relative position, right 5%, up ten pixels
+ * Returns 2 when x & y have parsed without error, 0 otherwise
+ */
+static int GetMoveArguments(char *action, int x, int y, int w, int h,
+			    int *pFinalX, int *pFinalY, Bool *fWarp)
+{
+  char *s1, *s2, *warp;
+  int scrWidth = Scr.MyDisplayWidth;
+  int scrHeight = Scr.MyDisplayHeight;
+  int retval = 0;
+
+  action = GetNextToken(action, &s1);
+  action = GetNextToken(action, &s2);
+  GetNextToken(action, &warp);
+  *fWarp = StrEquals(warp, "Warp");
+
+  if (s1 != NULL && s2 != NULL)
+  {
+    if (GetOnePositionArgument(s1,x,w,pFinalX,(float)scrWidth/100,scrWidth) &&
+        GetOnePositionArgument(s2,y,h,pFinalY,(float)scrHeight/100,scrHeight))
+      retval = 2;
+    else
+      *fWarp = FALSE; /* make sure warping is off for interactive moves */
+  }
+  /* Begine code ---cpatil*/
+  else
+  {
+    /* not enough arguments, switch to current page. */
+    while (*pFinalX < 0)
+    {
+      *pFinalX = Scr.MyDisplayWidth + *pFinalX;
+    }
+    while (*pFinalY < 0)
+    {
+      *pFinalY = Scr.MyDisplayHeight + *pFinalY;
+    }
+  }
+
+  if (s1)
+    free(s1);
+  if (s2)
+    free(s2);
+  if (warp)
+    free(warp);
+
+  return retval;
+}
 
 static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
 			    int *FinalY, XEvent *eventp)
@@ -751,8 +837,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     /* discard any extra motion events before a logical release */
     if (Event.type == MotionNotify)
     {
-      while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
-			    ButtonPressMask |ButtonRelease, &Event))
+      int count = Scr.MoveSmoothness;
+      /* if count is zero, loop 'infinitely'; this test is not a bug */
+      while (--count != 0 &&
+	     XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
+			     ButtonPressMask |ButtonRelease, &Event))
       {
 	StashEventTime(&Event);
 	if(Event.type == ButtonRelease || Event.type == ButtonPress)
@@ -1037,6 +1126,216 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
 	       offset,
 	       Scr.StdFont.font->ascent + SIZE_VINDENT,
 	       str, strlen(str));
+}
+
+
+void SetMoveSmoothness(F_CMD_ARGS)
+{
+  int val = 0;
+
+  if (GetIntegerArguments(action, NULL, &val, 1) < 1 || val < 0)
+    Scr.MoveSmoothness = DEFAULT_MOVE_SMOOTHNESS;
+  else
+    Scr.MoveSmoothness = val;
+}
+
+
+void SetMoveThreshold(F_CMD_ARGS)
+{
+  int val = 0;
+
+  if (GetIntegerArguments(action, NULL, &val, 1) < 1 || val < 0)
+    Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
+  else
+    Scr.MoveThreshold = val;
+}
+
+
+void SetOpaque(F_CMD_ARGS)
+{
+  int val;
+
+  if(GetIntegerArguments(action, NULL, &val, 1) < 1 || val < 0)
+    Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
+  else
+    Scr.OpaqueSize = val;
+}
+
+
+void SetSnapAttraction(F_CMD_ARGS)
+{
+  int val;
+  char *token;
+
+  if(GetIntegerArguments(action, &action, &val, 1) != 1)
+  {
+    Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
+    Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
+    return;
+  }
+  Scr.SnapAttraction = val;
+  if (val < 0)
+  {
+    Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
+  }
+
+  action = GetNextToken(action, &token);
+  if(token == NULL)
+  {
+    return;
+  }
+
+  Scr.SnapMode = -1;
+  if(StrEquals(token,"All"))
+  {
+    Scr.SnapMode = 0;
+  }
+  else if(StrEquals(token,"SameType"))
+  {
+    Scr.SnapMode = 1;
+  }
+  else if(StrEquals(token,"Icons"))
+  {
+    Scr.SnapMode = 2;
+  }
+  else if(StrEquals(token,"Windows"))
+  {
+    Scr.SnapMode = 3;
+  }
+
+  if (Scr.SnapMode != -1)
+  {
+    free(token);
+    action = GetNextToken(action, &token);
+    if(token == NULL)
+    {
+      return;
+    }
+  }
+  else
+  {
+    Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
+  }
+
+  if(StrEquals(token,"Screen"))
+  {
+    Scr.SnapMode += 8;
+  }
+  else
+  {
+    fvwm_msg(ERR,"SetSnapAttraction", "Invalid argument: %s", token);
+  }
+
+  free(token);
+}
+
+void SetSnapGrid(F_CMD_ARGS)
+{
+  int val[2];
+
+  if(GetIntegerArguments(action, NULL, &val[0], 2) != 2)
+  {
+    Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
+    Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
+    return;
+  }
+
+  Scr.SnapGridX = val[0];
+  if(Scr.SnapGridX < 1)
+  {
+    Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
+  }
+  Scr.SnapGridY = val[1];
+  if(Scr.SnapGridY < 1)
+  {
+    Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
+  }
+}
+
+
+void SetXOR(F_CMD_ARGS)
+{
+  int val;
+  XGCValues gcv;
+  unsigned long gcm;
+
+  if(GetIntegerArguments(action, NULL, &val, 1) != 1)
+  {
+    val = 0;
+  }
+
+  gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
+  gcv.subwindow_mode = IncludeInferiors;
+  gcv.function = GXxor;
+  gcv.line_width = 0;
+  /* use passed in value, or try to calculate appropriate value if 0 */
+  /* ctwm method: */
+  /*
+    gcv.foreground = (val1)?(val1):((((unsigned long) 1) << Scr.d_depth) - 1);
+  */
+  /* Xlib programming manual suggestion: */
+  gcv.foreground = (val)?
+    (val):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
+  gcv.fill_style = FillSolid;
+  gcv.subwindow_mode = IncludeInferiors;
+
+  /* modify DrawGC, only create once */
+  if (Scr.DrawGC)
+    XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
+  else
+    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+
+  /* free up XORPixmap if possible */
+  if (Scr.DrawPicture) {
+    DestroyPicture(dpy, Scr.DrawPicture);
+    Scr.DrawPicture = NULL;
+  }
+}
+
+
+void SetXORPixmap(F_CMD_ARGS)
+{
+  char *PixmapName;
+  Picture *GCPicture;
+  XGCValues gcv;
+  unsigned long gcm;
+
+  action = GetNextToken(action, &PixmapName);
+  if(PixmapName == NULL)
+  {
+    /* return to default value. */
+    SetXOR(eventp, w, tmp_win, context, "0", Module);
+    return;
+  }
+
+  /* search for pixmap */
+  GCPicture = CachePicture(dpy, Scr.NoFocusWin, NULL, PixmapName,
+			   Scr.ColorLimit);
+  if (GCPicture == NULL) {
+    fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
+    free(PixmapName);
+    return;
+  }
+  free(PixmapName);
+
+  /* free up old one */
+  if (Scr.DrawPicture)
+    DestroyPicture(dpy, Scr.DrawPicture);
+  Scr.DrawPicture = GCPicture;
+
+  /* create Graphics context */
+  gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
+  gcv.subwindow_mode = IncludeInferiors;
+  gcv.function = GXxor;
+  gcv.line_width = 0;
+  gcv.tile = GCPicture->picture;
+  gcv.fill_style = FillTiled;
+  gcv.subwindow_mode = IncludeInferiors;
+  /* modify DrawGC, only create once */
+  if (Scr.DrawGC)
+    XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
+  else
+    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 }
 
 
@@ -1656,7 +1955,8 @@ void ConstrainSize(
   int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
   int baseWidth, baseHeight;
   int dwidth = *widthp, dheight = *heightp;
-  int roundUpX, roundUpY;
+  int roundUpX = 0;
+  int roundUpY = 0;
 
   dwidth -= 2 *tmp_win->boundary_width;
   dheight -= (tmp_win->title_g.height + 2 * tmp_win->boundary_width);

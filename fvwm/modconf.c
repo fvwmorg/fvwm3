@@ -65,7 +65,7 @@ struct moduleInfoList
 
 struct moduleInfoList *modlistroot = NULL;
 
-void AddToModList(char *tline);         /* prototypes */
+static void AddToModList(char *tline);         /* prototypes */
 
 
 /*
@@ -89,7 +89,7 @@ void  ModuleConfig(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 }
 
-void AddToModList(char *tline)
+static void AddToModList(char *tline)
 {
   struct moduleInfoList *t, *prev, *this;
 
@@ -179,7 +179,6 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int match_len = 0;                    /* get length once for efficiency */
   int n = nColorsets;
   char *ImagePath = GetImagePath();
-  char *buf;
 
   GetNextToken(action, &match);
   if (match) {

@@ -19,6 +19,9 @@
 #include "fvwm.h"
 
 void setEdgeThickness(F_CMD_ARGS);
+void SetEdgeScroll(F_CMD_ARGS);
+void SetEdgeResistance(F_CMD_ARGS);
+void SetDeskSize(F_CMD_ARGS);
 Bool HandlePaging(int, int, int *, int *, int *, int *, Bool, Bool, Bool);
 void checkPanFrames(void);
 void raisePanFrames(void);

@@ -51,7 +51,10 @@
 #include "virtual.h"
 #include "stack.h"
 #include "gnome.h"
+#include "colors.h"
+#include "colormaps.h"
 #include "module_interface.h"
+#include "icccm2.h"
 #include "libs/Colorset.h"
 
 #include <X11/Xproto.h>
@@ -105,6 +108,8 @@ static int parseCommandArgs(
   const char *command, char **argv, int maxArgc, const char **errorMsg);
 static void InternUsefulAtoms(void);
 static void InitVariables(void);
+static void usage(void);
+static int MappedNotOverride(Window w);
 
 XContext FvwmContext;		/* context for fvwm windows */
 XContext MenuContext;		/* context for fvwm menus */
@@ -940,7 +945,7 @@ void SetRCDefaults(void)
  *
  ***********************************************************************/
 
-int MappedNotOverride(Window w)
+static int MappedNotOverride(Window w)
 {
   XWindowAttributes wa;
   Atom atype;
@@ -1590,6 +1595,7 @@ static void InitVariables(void)
   Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
   Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
   Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
+  Scr.MoveSmoothness = DEFAULT_MOVE_SMOOTHNESS;
   Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
   /* ClickTime is set to the positive value upon entering the event loop. */
   Scr.ClickTime = -DEFAULT_CLICKTIME;
@@ -1873,7 +1879,7 @@ int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
   return 0;
 }
 
-void usage(void)
+static void usage(void)
 {
 #if 0
   fvwm_msg(INFO,"usage","\nFvwm Version %s Usage:\n\n",VERSION);

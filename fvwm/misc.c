@@ -44,6 +44,7 @@
 #include "screen.h"
 #include "Module.h"
 #include "focus.h"
+#include "module_interface.h"
 
 char NoName[] = "Untitled"; /* name if no name in XA_WM_NAME */
 char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
@@ -414,111 +415,12 @@ Bool StashEventTime (XEvent *ev)
   return True;
 }
 
-/*** This function is nowhere used.
-     Is it historical cruft or a future direction?  ***/
-
-/* void ComputeActualPosition(int x,int y,int x_unit,int y_unit, */
-/* 			   int width,int height,int *pfinalX, int *pfinalY) */
-/* { */
-/*   *pfinalX = x*x_unit/100; */
-/*   *pfinalY = y*y_unit/100; */
-/*   if (*pfinalX < 0) */
-/*     *pfinalX += Scr.MyDisplayWidth - width; */
-/*   if (*pfinalY < 0) */
-/*     *pfinalY += Scr.MyDisplayHeight - height; */
-/* } */
-
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit)
 {
   *val1_unit = Scr.MyDisplayWidth;
   *val2_unit = Scr.MyDisplayHeight;
   return GetTwoPercentArguments(action, val1, val2, val1_unit, val2_unit);
-}
-
-/* The vars are named for the x-direction, but this is used for both x and y */
-static
-int GetOnePositionArgument(char *s1,int x,int w,int *pFinalX,float factor,
-			   int max)
-{
-  int val;
-  int cch = strlen(s1);
-
-  if (cch == 0)
-    return 0;
-  if (s1[cch-1] == 'p') {
-    factor = 1;  /* Use pixels, so don't multiply by factor */
-    s1[cch-1] = '\0';
-  }
-  if (strcmp(s1,"w") == 0) {
-    *pFinalX = x;
-  } else if (sscanf(s1,"w-%d",&val) == 1) {
-    *pFinalX = x-(val*factor);
-  } else if (sscanf(s1,"w+%d",&val) == 1) {
-    *pFinalX = x+(val*factor);
-  } else if (sscanf(s1,"-%d",&val) == 1) {
-    *pFinalX = max-w - val*factor;
-  } else if (sscanf(s1,"%d",&val) == 1) {
-    *pFinalX = val*factor;
-  } else {
-    return 0;
-  }
-  /* DEBUG_FPRINTF((stderr,"Got %d\n",*pFinalX)); */
-  return 1;
-}
-
-/* GetMoveArguments is used for Move & AnimatedMove
- * It lets you specify in all the following ways
- *   20  30          Absolute percent position, from left edge and top
- *  -50  50          Absolute percent position, from right edge and top
- *   10p 5p          Absolute pixel position
- *   10p -0p         Absolute pixel position, from bottom
- *  w+5  w-10p       Relative position, right 5%, up ten pixels
- * Returns 2 when x & y have parsed without error, 0 otherwise
- */
-int GetMoveArguments(char *action, int x, int y, int w, int h,
-                     int *pFinalX, int *pFinalY, Bool *fWarp)
-{
-  char *s1, *s2, *warp;
-  int scrWidth = Scr.MyDisplayWidth;
-  int scrHeight = Scr.MyDisplayHeight;
-  int retval = 0;
-
-  action = GetNextToken(action, &s1);
-  action = GetNextToken(action, &s2);
-  GetNextToken(action, &warp);
-  *fWarp = StrEquals(warp, "Warp");
-
-  if (s1 != NULL && s2 != NULL)
-  {
-    if (GetOnePositionArgument(s1,x,w,pFinalX,(float)scrWidth/100,scrWidth) &&
-        GetOnePositionArgument(s2,y,h,pFinalY,(float)scrHeight/100,scrHeight))
-      retval = 2;
-    else
-      *fWarp = FALSE; /* make sure warping is off for interactive moves */
-  }
-  /* Begine code ---cpatil*/
-  else
-  {
-    /* not enough arguments, switch to current page. */
-    while (*pFinalX < 0)
-    {
-      *pFinalX = Scr.MyDisplayWidth + *pFinalX;
-    }
-    while (*pFinalY < 0)
-    {
-      *pFinalY = Scr.MyDisplayHeight + *pFinalY;
-    }
-  }
-
-  if (s1)
-    free(s1);
-  if (s2)
-    free(s2);
-  if (warp)
-    free(warp);
-
-  return retval;
 }
 
 /***************************************************************************
@@ -621,59 +523,6 @@ void UngrabEm(void)
       Scr.PreviousFocus = NULL;
     }
   XSync(dpy,0);
-}
-
-
-/**************************************************************************
- *
- * Unmaps a window on transition to a new desktop
- *
- *************************************************************************/
-void UnmapIt(FvwmWindow *t)
-{
-  XWindowAttributes winattrs;
-  unsigned long eventMask;
-  /*
-   * Prevent the receipt of an UnmapNotify, since that would
-   * cause a transition to the Withdrawn state.
-   */
-  XGetWindowAttributes(dpy, t->w, &winattrs);
-  eventMask = winattrs.your_event_mask;
-  XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
-  if(IS_ICONIFIED(t))
-    {
-      if(t->icon_pixmap_w != None)
-	XUnmapWindow(dpy,t->icon_pixmap_w);
-      if(t->icon_w != None)
-	XUnmapWindow(dpy,t->icon_w);
-    }
-  else if(IS_MAPPED(t) || IS_MAP_PENDING(t))
-    {
-      XUnmapWindow(dpy,t->frame);
-    }
-  XSelectInput(dpy, t->w, eventMask);
-}
-
-/**************************************************************************
- *
- * Maps a window on transition to a new desktop
- *
- *************************************************************************/
-void MapIt(FvwmWindow *t)
-{
-  if(IS_ICONIFIED(t))
-    {
-      if(t->icon_pixmap_w != None)
-	XMapWindow(dpy,t->icon_pixmap_w);
-      if(t->icon_w != None)
-	XMapWindow(dpy,t->icon_w);
-    }
-  else if(IS_MAPPED(t))
-    {
-      XMapWindow(dpy,t->frame);
-      SET_MAP_PENDING(t, 1);
-      XMapWindow(dpy, t->Parent);
-   }
 }
 
 

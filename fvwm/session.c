@@ -1265,3 +1265,18 @@ Bool saveQuitSession(void)
   return False;
 #endif
 }
+
+void quitSession_func(F_CMD_ARGS)
+{
+  quitSession();
+}
+
+void saveSession_func(F_CMD_ARGS)
+{
+  saveSession();
+}
+
+void saveQuitSession_func(F_CMD_ARGS)
+{
+  saveQuitSession();
+}

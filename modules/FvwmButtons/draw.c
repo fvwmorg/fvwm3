@@ -182,9 +182,12 @@ void RedrawButton(button_info *b,int clean)
   int i,j,k,BH,BW;
   int f,x,y,px,py;
   int ix,iy,iw,ih;
-  XFontStruct *font=buttonFont(b);
+  XFontStruct *font = buttonFont(b);
 #ifdef I18N_MB
+  /*
+    there seems to be no I18N patch here
   XFontSet fontset = buttonFontSet(b);
+  */
 #endif
   XGCValues gcv;
   unsigned long gcm=0;

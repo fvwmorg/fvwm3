@@ -60,8 +60,8 @@ struct queue_buff_struct **pipeQueue;
 
 extern fd_set init_fdset;
 
-void DeleteQueueBuff(int module);
-void AddToQueue(int module, unsigned long *ptr, int size, int done);
+static void DeleteQueueBuff(int module);
+static void AddToQueue(int module, unsigned long *ptr, int size, int done);
 
 void initModules(void)
 {
@@ -1028,7 +1028,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
 }
 
 
-void AddToQueue(int module, unsigned long *ptr, int size, int done)
+static void AddToQueue(int module, unsigned long *ptr, int size, int done)
 {
   struct queue_buff_struct *c,*e;
   unsigned long *d;
@@ -1052,7 +1052,7 @@ void AddToQueue(int module, unsigned long *ptr, int size, int done)
   e->next = c;
 }
 
-void DeleteQueueBuff(int module)
+static void DeleteQueueBuff(int module)
 {
   struct queue_buff_struct *a;
 

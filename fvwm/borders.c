@@ -40,6 +40,7 @@
 #include "misc.h"
 #include "Module.h"
 #include "borders.h"
+#include "module_interface.h"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -1402,8 +1403,8 @@ void SetShape(FvwmWindow *tmp_win, int w)
 	  rect.y = tmp_win->title_g.y;
 	  rect.width = w - 2*tmp_win->boundary_width;
 	  rect.height = tmp_win->title_g.height;
-	  
-	  
+
+
 	  XShapeCombineRectangles(dpy,tmp_win->frame,ShapeBounding,
 				  0,0,&rect,1,ShapeUnion,Unsorted);
 	}

@@ -1,5 +1,9 @@
 Changes in beta release 2.3.7 (August 1999)
 
+* MoveSmoothness command allows to tune smoothness of window
+  moves. Use lower values on fast machines, higher values on
+  slow machines.
+
 * Subwindows can have a private colormap too.
 
 * FvwmButtons uses variables in actions and when swallowing

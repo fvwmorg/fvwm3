@@ -1,3 +1,113 @@
+1999-08-17  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.h: moved headers from misc.h
+
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/builtins.c:
+	* fvwm/menus.c (NewMenuStyle): -Wall fixes fo I18N
+
+	* fvwm/read.h (PipeRead): moved prototypes from misc.h
+
+	(saveSession_func):
+	(saveQuitSession_func): moved to session.c
+
+	* fvwm/builtins.c (SetEdgeScroll):
+	(SetEdgeResistance):
+	(SetDeskSize):
+	* fvwm/misc.c (MapIt):
+	(UnmapIt): functions moved to virtual.c
+
+	* fvwm/bindings.c (ParseBinding): corrected a comment
+
+	* fvwm/misc.c:
+	* fvwm/virtual.c:
+	* fvwm/icons.c:
+	* fvwm/borders.c: include module_interface.h
+
+	* fvwm/modconf.c (SendDataToModule):
+	* fvwm/move_resize.c (ConstrainSize): -Wall fixes
+
+	* fvwm/colormaps.h: added missing prototypes for
+	EnterSubWindowColormap and LeveSubWindowColormap
+
+	* fvwm/add_window.c:
+	* fvwm/move_resize.c:
+	* fvwm/fvwm.c:
+	* fvwm/menus.c: include colormaps.h
+
+	* fvwm/fvwm.c:
+	* fvwm/icons.c:
+	* fvwm/add_window.c:
+	* fvwm/move_resize.c:
+	* fvwm/builtins.c:
+	* fvwm/fvwm.c:
+	* fvwm/menus.c:
+	* fvwm/events.c:
+	* fvwm/functions.c:
+	include new headers
+
+	* fvwm/misc.c (GetOnePositionArgument):
+	* fvwm/misc.c (GetMoveArguments): functions moved to move_resize.c
+
+	* fvwm/icccm2.h:
+	* fvwm/decorations.h:
+	* fvwm/builtins.h:
+	* fvwm/colors.h:
+	* fvwm/add_window.h:
+	* fvwm/windowlist.h:
+	* fvwm/modconf.h:
+	* fvwm/placement.h: new files
+
+	* fvwm/fvwm.c (MappedNotOverride): static now
+	* fvwm/fvwm.c (usage): static now
+
+	* fvwm/module_interface.h: moved some prototypes from misc.h
+
+	* fvwm/misc.h: removed some unused prototypes
+
+	* fvwm/conditional.c (CreateFlagString):
+	(FreeConditionMask):
+	(DefaultConditionMask):
+	(CreateConditionMask):
+	(MatchesConditionMask):
+	(Circulate):
+	(PrevFunc):
+	(NextFunc):
+	(NoneFunc):
+	(CurrentFunc):
+	(AllFunc):
+	(GetDirectionReference):
+	(DirectionFunc):
+	(PickFunc):
+	(WindowIdFunc): functions moved from builtins.c to new file
+	contidional.c
+
+	* fvwm/misc.h:
+	* fvwm/builtins.c (SetSnapAttraction):
+	(SetSnapGrid):
+	(SetXOR):
+	(SetXORPixmap): moved to move_resize.c
+
+	* fvwm/menus.h: moved prototypes from misc.h
+
+	* fvwm/fvwm2.1 (MoveSmoothness):
+	* fvwm/move_resize.c (moveLoop):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/defaults.h:
+	* fvwm/move_resize.h:
+	* fvwm/move_resize.c (SetMoveSmoothness):
+	* fvwm/functions.h:
+	* fvwm/functions.c (func_config): Implemented MoveSmoothness command
+
+	* fvwm/move_resize.h:
+	* fvwm/misc.h:
+	* fvwm/move_resize.c (SetOpaque):
+	* fvwm/move_resize.c (SetMoveThreshold): fixed setting default value
+
+	* fvwm/builtins.c (SetOpaque):
+	(SetMoveThreshold): functions moved to move_resize.c
+
 1999-08-17  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* fvwm/fvwm.c (main): feedback window 'saves under' to improve

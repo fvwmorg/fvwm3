@@ -77,7 +77,7 @@ close XL;
 
 =head1 NAME
 
-fvwm-menu-xlock - builds xlock menu definition for Fine Virtual Window Manager
+fvwm-menu-xlock - builds xlock menu definition for FVWM
 
 =head1 SYNOPSIS
 

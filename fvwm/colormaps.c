@@ -285,11 +285,13 @@ void FetchWmColormapWindows (FvwmWindow *tmp)
       tmp->cmap_windows = NULL;
     }
 /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA
- * we need to be notified of Enter events into these subwindows 
- * so we can set their colormaps 
+ * we need to be notified of Enter events into these subwindows
+ * so we can set their colormaps
  */
-  if (tmp->number_cmap_windows != 0) {
-    for(i=0;i<tmp->number_cmap_windows;i++) {
+  if (tmp->number_cmap_windows != 0)
+  {
+    for(i=0;i<tmp->number_cmap_windows;i++)
+    {
       XGetWindowAttributes(dpy, tmp->cmap_windows[i], &getattribs);
       valuemask = CWEventMask;
       setattribs.event_mask = getattribs.your_event_mask | EnterWindowMask
@@ -302,58 +304,70 @@ void FetchWmColormapWindows (FvwmWindow *tmp)
 }
 
 /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA*/
- /*****************************************************************************
-  *
-  * Looks through the window list for any matching COLORMAP_WINDOWS
-  *   windows and installs the colormap if one exists.
-  *
-  ****************************************************************************/
- 
- void EnterSubWindowColormap(Window win)
- {
-   FvwmWindow         *t;
-   long int            i;
-   XWindowAttributes   attribs;
- 
-   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
-     if (t->number_cmap_windows != 0) {
-       for(i=0;i<t->number_cmap_windows;i++) {
-         if (t->cmap_windows[i] == win) {
-           XGetWindowAttributes(dpy,win,&attribs);
-           XInstallColormap(dpy,attribs.colormap);
-           last_cmap = attribs.colormap;
-           return;
-         }
-       }
-     }
-   }
-   return;
- }
- 
- void LeaveSubWindowColormap(Window win)
- {
-   FvwmWindow         *t;
-   long int            i;
-   int               bWinInList,bParentInList;
- 
-   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
-     if (t->number_cmap_windows != 0) {
-       bWinInList = 0;
-       bParentInList = 0;
-       for(i=0;i<t->number_cmap_windows;i++) {
-         if (t->cmap_windows[i] == win)  bWinInList = 1;
-         if (t->cmap_windows[i] == t->w)  bParentInList = 1;
-       }
-       if (bWinInList) {
-         if (bParentInList) {
-         InstallWindowColormaps(t);
-        } else {
-         InstallWindowColormaps(NULL);
-         }
-         return;
-       }
-     }
-   }
-   return;
-  /* END PATCH */
- }
+/*****************************************************************************
+ *
+ * Looks through the window list for any matching COLORMAP_WINDOWS
+ *   windows and installs the colormap if one exists.
+ *
+ ****************************************************************************/
+void EnterSubWindowColormap(Window win)
+{
+  FvwmWindow         *t;
+  long int            i;
+  XWindowAttributes   attribs;
+
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    if (t->number_cmap_windows != 0)
+    {
+      for(i=0;i<t->number_cmap_windows;i++)
+      {
+	if (t->cmap_windows[i] == win)
+	{
+	  XGetWindowAttributes(dpy,win,&attribs);
+	  XInstallColormap(dpy,attribs.colormap);
+	  last_cmap = attribs.colormap;
+	  return;
+	}
+      }
+    }
+  }
+  return;
+}
+
+void LeaveSubWindowColormap(Window win)
+{
+  FvwmWindow         *t;
+  long int            i;
+  int               bWinInList,bParentInList;
+
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    if (t->number_cmap_windows != 0)
+    {
+      bWinInList = 0;
+      bParentInList = 0;
+      for(i=0;i<t->number_cmap_windows;i++)
+      {
+	if (t->cmap_windows[i] == win)
+	  bWinInList = 1;
+	if (t->cmap_windows[i] == t->w)
+	  bParentInList = 1;
+      }
+      if (bWinInList)
+      {
+	if (bParentInList)
+	{
+	  InstallWindowColormaps(t);
+        }
+	else
+	{
+	  InstallWindowColormaps(NULL);
+	}
+	return;
+      }
+    }
+  }
+  return;
+}
+/* END PATCH */

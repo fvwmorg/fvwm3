@@ -633,6 +633,8 @@ void DestroyMenu(MenuRoot *mr, Bool recreate);
 void add_item_to_menu(F_CMD_ARGS);
 void add_another_menu_item(char *action);
 void destroy_menu(F_CMD_ARGS);
+void popup_func(F_CMD_ARGS);
+void staysup_func(F_CMD_ARGS);
 void ChangeMenuStyle(F_CMD_ARGS);
 void DestroyMenuStyle(F_CMD_ARGS);
 void SetMenuStyle(F_CMD_ARGS);

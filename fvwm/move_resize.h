@@ -1,4 +1,4 @@
-/* This program is free software; you can redistribute it and/or modify
+#/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -31,6 +31,13 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      Bool fAnimated, Bool fMoveToPage);
 void animated_move_window(F_CMD_ARGS);
 void move_window_to_page(F_CMD_ARGS);
+void SetMoveSmoothness(F_CMD_ARGS);
+void SetMoveThreshold(F_CMD_ARGS);
+void SetOpaque(F_CMD_ARGS);
+void SetSnapAttraction(F_CMD_ARGS);
+void SetSnapGrid(F_CMD_ARGS);
+void SetXOR(F_CMD_ARGS);
+void SetXORPixmap(F_CMD_ARGS);
 void resize_window(F_CMD_ARGS);
 void ConstrainSize(FvwmWindow *, unsigned int *width, unsigned int *height,
 		   int xmotion, int ymotion, Bool roundUp);

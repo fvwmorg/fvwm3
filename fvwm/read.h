@@ -14,8 +14,8 @@ extern char* fvwm_file;
  * Parameters eventp, tmp_win, context, and Module supply the context
  * for executing the commands.
  **/
-extern void run_command_stream( FILE* f, 
-				XEvent *eventp, FvwmWindow *tmp_win, 
+extern void run_command_stream( FILE* f,
+				XEvent *eventp, FvwmWindow *tmp_win,
 				unsigned long context, int Module );
 
 
@@ -26,9 +26,11 @@ extern void run_command_stream( FILE* f,
  * user_home_dir (set in main()) or in FVWM_CONFIGDIR.  Return TRUE
  * if the file was found and executed.
  **/
-extern int run_command_file( char* filename, 
-			     XEvent *eventp, FvwmWindow *tmp_win, 
+extern int run_command_file( char* filename,
+			     XEvent *eventp, FvwmWindow *tmp_win,
 			     unsigned long context, int Module );
 
+void ReadFile(F_CMD_ARGS);
+void PipeRead(F_CMD_ARGS);
 
 #endif

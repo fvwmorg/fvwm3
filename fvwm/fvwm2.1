@@ -1950,6 +1950,22 @@ be used.
 
 
 .TP
+.B "MoveSmoothness" "[\fIvalue\fP]"
+When you move an opaque window with the mouse it has to be redrawn
+quite often.  Too much drawing may slow down your machine and the
+window will lag behind the mouse, but if the window is drawn too
+infrequently the movement looks jerky.  The \fIvalue\fP given
+determines how often the window is drawn.  With a value of one,
+every update is made on the screen, with two, three, ... the window
+is updated every second, third, ... time.  On a fast machine you can
+safely use one, on slower machines use higher values.  With zero
+windows are redrawn only if the X Server does not generate mouse
+movement events for a moment (which is equivalent to a very high
+positive number).  The default value is ten.  To reset the
+MoveSmoothness to the default value you can omit the parameter.
+
+
+.TP
 .B "MoveThreshold" "[\fIpixels\fP]"
 When the user presses a mouse button upon an object fvwm
 waits to see if the action is a click or a drag.  If the mouse

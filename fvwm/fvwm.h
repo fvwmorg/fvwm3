@@ -62,7 +62,6 @@ unsigned long context,char *action, int *Module
 #include <libs/Picture.h>
 #include "window_flags.h"
 
-
 #ifndef WithdrawnState
 #define WithdrawnState 0
 #endif
@@ -451,10 +450,8 @@ extern void Done(int, char *) __attribute__((__noreturn__));
 extern void setInitFunctionName(int n, const char *name);
 extern const char *getInitFunctionName(int n);
 
-extern void SetupICCCM2(Bool replace_wm);
-extern void CloseICCCM2(void);
-extern void HandleSelectionRequest(void);
-extern void HandleSelectionClear(void);
+extern void CaptureOneWindow(FvwmWindow *fw, Window window);
+extern void CaptureAllWindows(void);
 
 extern int master_pid;
 

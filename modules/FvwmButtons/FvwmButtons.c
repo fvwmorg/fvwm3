@@ -178,7 +178,7 @@ char *mymalloc(int length)
  * fake XFetchName() function
  */
 static char **XFetchName_islist = NULL; /* XXX */
-static Status MyXFetchName(Display *dpy, Window win, char **winname);
+static Status MyXFetchName(Display *dpy, Window win, char **winname)
 {
   XTextProperty text;
   char **list;
@@ -1238,7 +1238,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   int mc;
   char *ds;
   XFontStruct **fs_list;
-  XFontSet fontset;
+  XFontSet fontset = None;
 #endif
 
   if (!b)
@@ -2135,7 +2135,7 @@ void swallow(unsigned long *body)
       MakeButton(b);
 if (b->flags&b_Colorset)
 {
-fprintf(stderr,"applying cs %d to window 0x%x and 0x%x\n", b->colorset % nColorsets, b->IconWin, b->IconWinParent);
+fprintf(stderr,"applying cs %d to window 0x%x and 0x%x\n", b->colorset % nColorsets, (int)b->IconWin, (int)b->IconWinParent);
   SetWindowBackground(
     Dpy, b->IconWin, buttonWidth(b), buttonHeight(b),
     &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);

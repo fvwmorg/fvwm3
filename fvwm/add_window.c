@@ -71,7 +71,11 @@
 #include "session.h"
 #include "stack.h"
 #include "move_resize.h"
+#include "colormaps.h"
 #include "gnome.h"
+#include "placement.h"
+#include "builtins.h"
+#include "decorations.h"
 #include "libs/Colorset.h"
 
 /* Used to parse command line of clients for specific desk requests. */
@@ -87,6 +91,10 @@ static XrmOptionDescRec table [] = {
     {"-xrn",		NULL,		XrmoptionResArg, (caddr_t) NULL},
     {"-xrm",		NULL,		XrmoptionResArg, (caddr_t) NULL},
 };
+
+void FetchWmProtocols(FvwmWindow *);
+FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
+void GetWindowSizeHints(FvwmWindow *);
 
 
 /***********************************************************************
@@ -132,9 +140,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   XTextProperty text_prop;
   extern Boolean PPosOverride;
 #ifdef I18N_MB
-  Atom actual_type;
-  int actual_format;
-  unsigned long nitems, bytesafter;
   char **list;
   int num;
 #endif
