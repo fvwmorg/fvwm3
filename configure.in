@@ -697,7 +697,7 @@ fi
 if test x"$with_bidi" != xno; then
 	fribidi_in_path=yes
 	ac_save_LIBS="$LIBS"
-	LIBS="$LIBS -lfiribidi"
+	LIBS="$LIBS $Bidi_LIBS"
 	AC_TRY_RUN([#include <stdlib.h>
 #include <fribidi/fribidi.h>
 int main()
