@@ -1,5 +1,7 @@
-Sun May 16 11:26:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+1999-05-17  Hippo
 
+	* FvwmBanner/FvwmBanner.{c,1}: New config option NoDecor makes
+	the FvwmBanner window be override_redirect.
 
 Sun May 16 10:56:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 

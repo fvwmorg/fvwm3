@@ -78,6 +78,7 @@ Pixel back_pix, fore_pix;
 GC NormalGC,FGC;
 static Atom wm_del_win;
 Colormap colormap;
+Bool no_wm = False;
 
 #define MW_EVENTS   (ExposureMask | ButtonReleaseMask)
 
@@ -183,8 +184,10 @@ int main(int argc, char **argv)
 
 
   /* Set assorted info for the window */
-  attr.override_redirect = True;
-  XChangeWindowAttributes(dpy, win, CWOverrideRedirect, &attr);
+  if (no_wm) {
+    attr.override_redirect = True;
+    XChangeWindowAttributes(dpy, win, CWOverrideRedirect, &attr);
+  }
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
 
@@ -321,6 +324,13 @@ static void parseOptions (int fd[2])
 	    imageName = (char *) 0;
 	  }
 	}
+        continue;
+      }
+      if (strncasecmp (tline,
+			 CatString3 ("*", myName, "NoDecor"),
+			 clength + 8) ==0)
+      {
+        no_wm = True;
         continue;
       }
       if (strncasecmp (tline,
