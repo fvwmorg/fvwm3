@@ -31,13 +31,13 @@ trap 'rm -f $TEMP $TEMP.x' 0
 if test $# -eq 1 ; then
     BUGADDR=$1
 elif test $# -eq 0 ; then
-    LOCAL=xBUILDERx
+    LOCAL=@LOCAL_BUGADDR@
     WORKERS=fvwm-workers@fvwm.org
 
     if test "$LOCAL"; then
 	echo "Do you want to send the report to the local maintainer <$LOCAL>,"
 	echo "the FVWM workers <$WORKERS>, or both?"
-	echo $n "Send report to local, workers, both? " $c
+	echo $n "Send report to (l)ocal, (w)orkers, (b)oth? " $c
 	read ans
 	case "$ans" in
 	l*|L*) BUGADDR=$LOCAL;;
@@ -65,9 +65,13 @@ else
 fi
 
 
-: ${FVWM_DATADIR=xdatadirx/fvwm}
-: ${FVWM_MODULEDIR=xlibexecdirx/fvwm}
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+datadir=@datadir@
+libexecdir=@libexecdir@
 : ${FVWM_USERDIR=unset}
+FVWM_DATADIR=@FVWM_DATADIR@
+FVWM_MODULEDIR=@FVWM_MODULEDIR@
 
 
 cat > $TEMP <<EOF
@@ -76,10 +80,8 @@ To: ${BUGADDR}
 Subject: [50 character or so descriptive subject here (for reference)]
 
 Configuration Information [Automatically generated, do not change]:
-uname output: $UN
-Compiler: xCCx
-Compilation CFLAGS: xCFLAGSx
-prefix: xprefixx
+uname: $UN
+compiler flags: @CC@ @CFLAGS@
 
 FVWM Version:	@VERSION@
 FVWM_MODULEDIR:	$FVWM_MODULEDIR
