@@ -229,8 +229,9 @@ multi-screen display.
 Prints the version of fvwm to
 .IR stderr .
 Also prints an information about the compiled in support for
-readline, rplay, stroke, xpm, gnome hints, session management and
-multibyte characters.
+readline, rplay, stroke, xpm, png, gnome hints, EWMH hints,
+session management, bidirectional text, multibyte characters,
+xinerama and Xft aa font rendering.
 .TP
 .BI "-visual " visual_class
 Causes fvwm to use
@@ -616,19 +617,26 @@ the
 .I config.h
 file that is generated during compilation.
 
-.SH ICONS
-
-The basic fvwm configuration uses monochrome bitmap icons.  If
+.SH ICONS AND IMAGES
+.\"needs_lang_check
+Fvwm can load image from files in various format depending on compile-time
+options.
+Fvwm can always uses monochrome bitmap image file (aka xbm image file).
+The other formats that Fvwm can support are
 .B XPM
-extensions are compiled in, then color icons can be used. In order
-to use these options you need the XPM package, as described in the
+and
+.B PNG
+which allow to use colored icons and images.
+In order to use these formats you need the corresponding package,
+as described in the
 .I INSTALL.fvwm
 file.
 
-If both the
-.BR SHAPE " and " XPM
-options are compiled in you get shaped color icons, which are very
+Moreover, if
+.BR SHAPE
+option is compiled in you get shaped color icons, which are very
 spiffy.
+.\"end
 
 .SH MODULES
 
@@ -1735,7 +1743,7 @@ selects an item that is the only one with this hot-key.
 
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
-xpm-icon or bitmap-file to insert in the menu.  To get a literal
+image file to insert in the menu.  To get a literal
 '*', insert "**".  For example
 .EX
  + Calculator*xcalc.xpm* Exec exec xcalc
@@ -1749,7 +1757,7 @@ Omits the "Calculator" label, but leaves the picture.
 
 If the menu-label contains a sub-string which is set off by
 percent signs, then the text between the percent signs is expected
-to be the name of an xpm-icon or bitmap-file (a so called mini
+to be the name of image file (a so called mini
 icon to insert to the left of the menu label.  A second mini icon
 that is drawn at the right side of the menu can be given in the
 same way.  To get a literal '%', insert "%%". For example
@@ -1765,7 +1773,7 @@ Omits the "Calculator" label, but leaves the picture.  The
 pictures used with this feature should be small (perhaps 16x16).
 If the menu-name (not the label) contains a sub-string which is
 set off by at signs ('@'), then the text between them is expected
-to be the name of an xpm or bitmap file to draw along the left
+to be the name of an image file to draw along the left
 side of the menu (a side pixmap).  You may want to use the
 .I SidePic
 option of the
@@ -2449,7 +2457,7 @@ argument is omitted the double click time is reset to this
 default.
 
 .I SidePic
-takes the name of an xpm or bitmap file as an argument. The
+takes the name of an image file as an argument. The
 picture is drawn along the left side of the menu.  The
 .I SidePic
 option can be overridden by a menu specific side pixmap (see
@@ -8443,7 +8451,7 @@ de-iconifed),
 .B FvwmBacker
 (to change the background when you change desktops),
 .B FvwmBanner
-(to display a spiffy XPM),
+(to display a spiffy XPM, XBM or PNG),
 .B FvwmButtons
 (brings up a customizable tool bar),
 .B FvwmCommandS

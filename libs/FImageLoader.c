@@ -690,7 +690,7 @@ Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 				    Pixmap pixmap, Pixmap mask)
 {
 	static GC my_gc = None;
-	GC mono_gc = None;
+	GC mono_gc;
 	XGCValues xgcv;
 	register int i,j,k;
 	XImage *image, *m_image;
@@ -760,6 +760,7 @@ Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 	XPutImage(dpy, pixmap, my_gc, image, 0, 0, 0, 0, width, height);
 	XPutImage(dpy, mask, mono_gc, m_image, 0, 0, 0, 0, width, height);
 	XDestroyImage(image);
+	XFreeGC(dpy, mono_gc);
 	if (m_image != None)
 		XDestroyImage(m_image);
 	return True;

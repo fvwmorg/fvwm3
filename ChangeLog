@@ -1,3 +1,22 @@
+2002-04-06  olicha  <olivier.chapuis@free.fr>
+
+	* libs/FImageLoader.c (FImageCreatePixmapFromArgbData): 
+	Fixed a GC memory leaks.
+
+	* fvwm/fvwm.c (setVersionInfo):
+	* fvwm/fvwm2.1:
+	Updated -version for png, bidi and xft
+
+	* fvwm/fvwm2.1:
+	Modified the ICONS section. Rename it ICONS AND IMAGES and
+	document PNG file format. Replace "xpm or bitmap file" by
+	"image file" in a few place.
+
+	* INSTALL.fvwm:
+	* NEWS:
+	PNG news and documented libpng in the "Optional libraries used by FVWM"
+	section
+
 2002-04-05  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FImageLoader.c (c100_init_base_table):

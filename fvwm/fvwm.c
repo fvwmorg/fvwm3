@@ -1965,8 +1965,14 @@ static void setVersionInfo(void)
 #ifdef XPM
   strcat(support_str, " XPM,");
 #endif
+#ifdef HAVE_PNG
+  strcat(support_str, " PNG,");
+#endif
 #ifdef GNOME
   strcat(support_str, " GNOME WM hints,");
+#endif
+#ifdef HAVE_EWMH
+  strcat(support_str, " EWMH hints,");
 #endif
   if (FHaveShapeExtension)
     strcat(support_str, " Shape,");
@@ -1976,8 +1982,14 @@ static void setVersionInfo(void)
 #ifdef MULTIBYTE
   strcat(support_str, " Multibyte,");
 #endif
+#ifdef HAVE_BIDI
+  strcat(support_str, " bidi text,");
+#endif
 #ifdef HAVE_XINERAMA
   strcat(support_str, " Xinerama,");
+#endif
+#ifdef HAVE_XFT
+  strcat(support_str, " XFT,");
 #endif
 
   support_len = strlen(support_str);
