@@ -1,3 +1,8 @@
+2003-06-03  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/Goodies.c (ShowTipWindow):
+	Fixed drawing Tips under certains circonstance
+
 2003-06-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScript/Makefile.am (LDADD):

@@ -515,6 +515,7 @@ void RedrawTipWindow(void)
     FwinString->str = Tip.text;
     FwinString->x = 3;
     FwinString->y = 2 + FStatusFont->ascent;
+    FwinString->flags.has_clip_region = False;
     if (tipscolorset >= 0)
     {
        FwinString->colorset = &Colorset[tipscolorset];
@@ -526,7 +527,7 @@ void RedrawTipWindow(void)
     }
     if (FftSupport && FStatusFont->fftf.fftfont != NULL)
     {
-       XClearArea(dpy, Tip.win, 0, 0, Tip.w, Tip.h, False);
+	    XClearArea(dpy, Tip.win, 0, 0, Tip.w, Tip.h, False);
     }
     FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
     XRaiseWindow(dpy, Tip.win);
@@ -577,6 +578,7 @@ void ShowTipWindow(int open)
     if (Tip.win != None)
     {
       XMapRaised(dpy, Tip.win);
+      RedrawTipWindow();
     }
   }
   else
