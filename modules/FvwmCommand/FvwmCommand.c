@@ -26,6 +26,7 @@
  */
 
 #include "FvwmCommand.h"
+#include "../../libs/fvwmsignal.h"
 #include "../../libs/fvwmlib.h"
 
 #define MYNAME "FvwmCommand"
@@ -45,22 +46,22 @@ int  Opt_info;
 int  Opt_Serv;
 int  Opt_flags;
 FILE *Fp;
-int  Rc;  /* return code */
-int  Bg;  /* FvwmCommand in background */
+
+volatile sig_atomic_t  Bg;  /* FvwmCommand in background */
 
 char client[MAXHOSTNAME];
 char hostname[32];
 
-void err_msg( char *msg );
-void err_quit( char *msg );
+void err_msg( const char *msg );
+void err_quit( const char *msg );
 void sendit( char *cmd );
 void receive( void );
-void sig_ttin ( int );
-void sig_pipe ( int );
-void sig_quit ( int );
+static RETSIGTYPE sig_ttin(int);
+/* void sig_pipe( int ); */
+static RETSIGTYPE sig_quit(int);
 void usage(void);
-int  read_f (int fd, char *p, int len);
-void close_fifos (void);
+int  read_f(int fd, char *p, int len);
+void close_fifos(void);
 
 void process_message( void ) ;
 void list( unsigned long *body, char *) ;
@@ -90,16 +91,61 @@ int main ( int argc, char *argv[]) {
   int  opt;
   int  ncnt;
   int  count;
+  int  Rc;
   struct timeval tv2;
   extern char *optarg;
   extern int  optind, opterr, optopt;
 
-  signal (SIGINT, sig_quit);
-  signal (SIGHUP, sig_quit);
-  signal (SIGQUIT, sig_quit);
-  signal (SIGTERM, sig_quit);
-  signal (SIGTTIN, sig_ttin);
-  signal (SIGTTOU, sig_ttin);
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction sigact;
+
+    sigemptyset(&sigact.sa_mask);
+#ifdef SA_RESTART
+    sigact.sa_flags = SA_RESTART;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = sig_ttin;
+    sigaction(SIGTTIN, &sigact, NULL);
+    sigaction(SIGTTOU, &sigact, NULL);
+
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = sig_quit;
+    sigaction(SIGINT, &sigact, NULL);
+    sigaction(SIGHUP, &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+  }
+#else
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGINT) | sigmask(SIGHUP) |
+                     sigmask(SIGQUIT) | sigmask(SIGTERM) );
+#endif
+  signal(SIGINT, sig_quit);
+  signal(SIGHUP, sig_quit);
+  signal(SIGQUIT, sig_quit);
+  signal(SIGTERM, sig_quit);
+  signal(SIGTTIN, sig_ttin);
+  signal(SIGTTOU, sig_ttin);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGINT, 1);
+  siginterrupt(SIGHUP, 1);
+  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGTTIN, 0);
+  siginterrupt(SIGTTOU, 0);
+#endif
+#endif
 
   Opt_reply = 0;
   Opt_info = -1;
@@ -241,7 +287,7 @@ int main ( int argc, char *argv[]) {
     tv2.tv_usec = 5;
     FD_ZERO(&fdset);
     FD_SET(STDIN_FILENO, &fdset);
-    ncnt = select(FD_SETSIZE,SELECT_FD_SET_CAST &fdset, 0, 0, &tv2);
+    ncnt = fvwmSelect(FD_SETSIZE, &fdset, 0, 0, &tv2);
     if( ncnt && (fgets( cmd, 1, stdin )==0 || cmd[0] == 0)) {
       Bg = 1;
     }
@@ -256,32 +302,31 @@ int main ( int argc, char *argv[]) {
     }
 
 
-    while(1) {
+    while( !isTerminated ) {
       FD_ZERO(&fdset);
       FD_SET(Fdr, &fdset);
       if( Bg == 0 ) {
-	FD_SET(STDIN_FILENO, &fdset);
+        FD_SET(STDIN_FILENO, &fdset);
       }
-      ncnt = select(FD_SETSIZE,SELECT_FD_SET_CAST &fdset, 0, 0, NULL);
+      ncnt = fvwmSelect(FD_SETSIZE, &fdset, 0, 0, NULL);
 
       /* message from fvwm */
       if (FD_ISSET(Fdr, &fdset)){
-	process_message();
+        process_message();
       }
 
       if( Bg == 0 ) {
-      /* command input */
-	if( FD_ISSET(STDIN_FILENO, &fdset) ) {
-	  if( fgets( cmd, MAX_COMMAND_SIZE-2, stdin ) == 0 ) {
-	    if( Bg == 0 ) {
-	      /* other than SIGTTIN */
-	      break;
-	    }else{
-	      continue;
-	    }
-	  }
-	  sendit( cmd );
-	}
+        /* command input */
+        if( FD_ISSET(STDIN_FILENO, &fdset) ) {
+          if( fgets( cmd, MAX_COMMAND_SIZE-2, stdin ) == 0 ) {
+            if( Bg == 0 ) {
+              /* other than SIGTTIN */
+              break;
+            }
+            continue;
+          }
+          sendit( cmd );
+        }
       }
     }
   }else {
@@ -289,11 +334,11 @@ int main ( int argc, char *argv[]) {
       strncpy( cmd, argv[i], MAX_COMMAND_SIZE-2 );
       sendit( cmd );
       if (Opt_info >= 0)
-	receive();
+        receive();
     }
   }
   close_fifos();
-  exit( Rc );
+  return Rc;
 }
 
 /*
@@ -314,28 +359,33 @@ void close_fifos (void) {
 /******************************************
  *  signal handlers
  ******************************************/
-void sig_quit (int dummy) {
+static RETSIGTYPE
+sig_quit(int sig)
+{
   close_fifos();
-  err_msg("receiving signal\n" );
-  exit(1);
+  fvwmSetTerminate(sig);
 }
 
-void sig_ttin( int  dummy ) {
+static RETSIGTYPE
+sig_ttin(int dummy)
+{
+  (void)dummy;
+
   Bg = 1;
-  signal( SIGTTIN, SIG_IGN );
+  signal(SIGTTIN, SIG_IGN);
 }
 
 /************************************/
 /* print error message on stderr */
 /************************************/
-void err_quit( char *msg ) {
+void err_quit( const char *msg ) {
   fprintf (stderr, "%s ", strerror(errno));
   err_msg(msg);
   close_fifos();
   exit(1);
 }
 
-void err_msg( char *msg ) {
+void err_msg( const char *msg ) {
   fprintf( stderr, "%s error in %s\n", MYNAME , msg );
 }
 
@@ -359,7 +409,7 @@ void sendit( char *cmd ) {
   }
 }
 
-void receive () {
+void receive(void) {
   int  ncnt;
   struct timeval tv;
 
@@ -438,17 +488,17 @@ void usage(void) {
 /*
  * read fifo
  */
-int read_f (int fd, char *p, int len) {
+int read_f(int fd, char *p, int len) {
   int i, n;
   for (i=0; i<len; )  {
-    n = read (fd, &p[i], len-i);
+    n = read(fd, &p[i], len-i);
     if (n<0 && errno!=EAGAIN) {
       err_quit("reading message");
     }
     if (n==0) {
       /* eof */
       close_fifos();
-      exit( Rc );
+      exit(0);
     }
     i += n;
   }
@@ -467,7 +517,6 @@ void process_message( void ) {
 
   if( type==M_ERROR ) {
     fprintf( stderr,"%s", (char *)&body[3] );
-    Rc = 1;
   }else if( Opt_info >= 1 ) {
 
     switch( type ) {

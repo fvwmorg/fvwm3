@@ -1,3 +1,9 @@
+1999-10-02  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* FvwmCommand/FvwmCommand.c : first attempt at cleaning up the signal handling
+	* FvwmCommand/FvwmCommand.h : removed redundant headers
+	* FvwmCommand/FvwmCommandS.c : first attempt at cleaning up the signal handling
+
 1999-10-02  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTheme/FvwmTheme.1: reviewed new FvwmTheme man page

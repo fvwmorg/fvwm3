@@ -14,11 +14,6 @@
  */
 
 #include "config.h"
-#include <libs/fvwmlib.h>
-
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -33,7 +28,6 @@
 #include <getopt.h>
 #endif
 
-#include <signal.h>
 #include <errno.h>
 #include <string.h>
 

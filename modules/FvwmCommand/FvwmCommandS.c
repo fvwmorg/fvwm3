@@ -27,6 +27,7 @@
 
 #include "FvwmCommand.h"
 #include "../../libs/fvwmlib.h"
+#include "../../libs/fvwmsignal.h"
 
 #define MYNAME   "FvwmCommandS"
 #define MAXHOSTNAME 255
@@ -41,17 +42,17 @@ char Connect;    /* client is connected */
 char client[MAXHOSTNAME];
 char hostname[32];
 
-int  open_fifos (char *f_stem);
-void close_fifos();
-void close_pipes();
-void DeadPipe( int );
-void err_msg( char *msg );
-void err_quit( char *msg );
+int  open_fifos(const char *f_stem);
+void close_fifos(void);
+void close_pipes(void);
+void DeadPipe( int ) __attribute__((noreturn));
+void err_msg(const char *msg);
+void err_quit(const char *msg) __attribute__((noreturn));
 void process_message(unsigned long type,unsigned long *body);
 void relay_packet( unsigned long, unsigned long, unsigned long *);
 void server( char * );
-void sig_handler( int );
-int  write_f (int fd, char *p, int len);
+static RETSIGTYPE sig_handler( int );
+int  write_f(int fd, char *p, int len);
 
 int main(int argc, char *argv[])
 {
@@ -69,11 +70,48 @@ int main(int argc, char *argv[])
     fifoname = NULL;
   }
 
-  signal (SIGPIPE, DeadPipe);
-  signal (SIGINT, sig_handler);
-  signal (SIGQUIT, sig_handler);
-  signal (SIGHUP, sig_handler);
-  signal (SIGTERM, sig_handler);
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction sigact;
+
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = sig_handler;
+    sigaction(SIGINT, &sigact, NULL);
+    sigaction(SIGHUP, &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGPIPE, &sigact, NULL);
+  }
+#else
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGINT) | sigmask(SIGHUP) |
+                     sigmask(SIGQUIT) | sigmask(SIGTERM) |
+                     sigmask(SIGPIPE) );
+#endif
+  signal(SIGPIPE, sig_handler);
+  signal(SIGINT, sig_handler);
+  signal(SIGQUIT, sig_handler);
+  signal(SIGHUP, sig_handler);
+  signal(SIGTERM, sig_handler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGINT, 1);
+  siginterrupt(SIGHUP, 1);
+  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGPIPE, 1);
+#endif
+#endif
 
   Fd[0] = atoi(argv[1]);
   Fd[1] = atoi(argv[2]);
@@ -84,22 +122,28 @@ int main(int argc, char *argv[])
   SendFinishedStartupNotification(Fd);
 
   server( fifoname );
-  exit(1);
+  return 1;
 }
 
 /*
- *	signal handler
+ * NOT a signal handler (can't call fprintf in a signal handler)
  */
 void DeadPipe( int dummy ) {
+  (void)dummy;
+
   fprintf(stderr,"%s: dead pipe\n", MYNAME);
   close_pipes();
   exit(0);
-
 }
 
-void sig_handler(int signo) {
+/*
+ * Signal handler
+ */
+static RETSIGTYPE
+sig_handler(int signo)
+{
   close_pipes();
-  exit(1);
+  fvwmSetTerminate(signo);
 }
 
 /*
@@ -139,71 +183,71 @@ void server ( char *name ) {
     f_stem = name;
   }
 
-  if (open_fifos (f_stem) < 0) {
+  if (open_fifos(f_stem) < 0) {
     exit (-1);
   }
   SendText(Fd," ",0); /* tell fvwm that we are here */
 
   cix = 0;
 
-  while (1){
+  while ( !isTerminated ){
     FD_ZERO(&fdset);
     FD_SET(Ffdr, &fdset);
     FD_SET(Fd[1], &fdset);
 
-    if (select(FD_SETSIZE, SELECT_FD_SET_CAST &fdset, 0, 0, NULL) < 0) {
+    if (fvwmSelect(FD_SETSIZE, &fdset, 0, 0, NULL) < 0) {
       if (errno == EINTR) {
-	continue;
+        continue;
       }
     }
 
     if (FD_ISSET(Fd[1], &fdset)){
       FvwmPacket* packet = ReadFvwmPacket(Fd[1]);
       if ( packet == NULL ) {
-	  close_pipes();
-	  exit( 0 );
-      } else
+        close_pipes();
+        exit( 0 );
+      }
 	  process_message( packet->type, packet->body );
     }
 
     if (FD_ISSET(Ffdr, &fdset)){
       len = read( Ffdr, buf, MAX_COMMAND_SIZE-1 );
       if (len == 0) {
-	continue;
+        continue;
       }
       if (len < 0) {
-	if (errno != EAGAIN && errno != EINTR) {
-	err_quit("reading fifo");
-	}
+        if (errno != EAGAIN && errno != EINTR) {
+          err_quit("reading fifo");
+        }
       }
 
       Connect = 1;
       /* in case of multiple long lines */
       for (ix=0; ix<len; ix++) {
-	cmd[cix] = buf[ix];
-	if (cmd[cix] == '\n') {
-	  cmd[cix+1] = '\0';
-	  cix = 0;
-	  if (!strncmp (cmd, CMD_CONNECT, strlen(CMD_CONNECT))) {
-	    /* do nothing */
-	  } else if (!strcmp (cmd, CMD_EXIT)) {
-	    Connect = 0;
-	    break;
-	  } else {
-	    if (!strcmp (cmd, CMD_KILL_NOUNLINK)) {
-	      Nounlink = 1;
-	      strcpy (cmd, "killme" );
-	    }
-	    SendText (Fd,cmd,0);
-	  }
-	}else{
-	  if (cix >= MAX_COMMAND_SIZE-1) {
-	    err_msg ("command too long");
-	    cix = 0;
-	  } else {
-	    cix++;
-	  }
-	}
+        cmd[cix] = buf[ix];
+        if (cmd[cix] == '\n') {
+          cmd[cix+1] = '\0';
+          cix = 0;
+          if (!strncmp (cmd, CMD_CONNECT, strlen(CMD_CONNECT))) {
+            /* do nothing */
+          } else if (!strcmp (cmd, CMD_EXIT)) {
+            Connect = 0;
+            break;
+          } else {
+            if (!strcmp (cmd, CMD_KILL_NOUNLINK)) {
+              Nounlink = 1;
+              strcpy (cmd, "killme" );
+            }
+            SendText (Fd,cmd,0);
+          }
+        }else{
+          if (cix >= MAX_COMMAND_SIZE-1) {
+            err_msg ("command too long");
+            cix = 0;
+          } else {
+            cix++;
+          }
+        }
       }
     }
   }
@@ -212,13 +256,13 @@ void server ( char *name ) {
 /*
  * close  fifos and pipes
  */
-void close_pipes() {
+void close_pipes(void) {
   close (Fd[0]);
   close (Fd[1]);
   close_fifos();
 }
 
-void close_fifos () {
+void close_fifos(void) {
   close (Ffdw);
   close (Ffdr);
   if (!Nounlink) {
@@ -237,7 +281,7 @@ void close_fifos () {
 /*
  * open fifos
  */
-int open_fifos (char *f_stem) {
+int open_fifos (const char *f_stem) {
   char *fc_name, *fm_name;
 
   /* create 2 fifos */
@@ -381,13 +425,13 @@ void process_message(unsigned long type,unsigned long *body){
  * print error message on stderr and exit
  */
 
-void err_msg( char *msg ) {
+void err_msg( const char *msg ) {
   fprintf( stderr, "%s server error in %s, %s\n",
 	   MYNAME, msg, strerror(errno) );
 }
 
-void err_quit( char *msg ) {
-  err_msg (msg);
+void err_quit( const char *msg ) {
+  err_msg(msg);
   close_pipes();
   exit(1);
 }
