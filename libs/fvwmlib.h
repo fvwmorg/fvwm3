@@ -319,10 +319,13 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 void GrabAllWindowKeys(Display *dpy, Window w, Binding *blist,
 		       unsigned int contexts, unsigned int dead_modifiers,
 		       Bool fGrab);
-
 void GrabAllWindowButtons(Display *dpy, Window w, Binding *blist,
                           unsigned int contexts, unsigned int dead_modifiers,
                           Cursor cursor, Bool fGrab);
+void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
+				 unsigned int contexts,
+				 unsigned int dead_modifiers,
+				 Cursor cursor, Bool fGrab);
 
 
 #endif

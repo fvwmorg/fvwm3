@@ -66,7 +66,7 @@ FvwmButtons, FvwmPager and FvwmTaskBar, split function and menu code, FAQ
 rewrite, rewrite of toggling function syntax (with hints from Matthias
 Claasen), IgnoreModifiers command, enhancements of GotoPage and MoveToPage
 syntax, Repeat command, menu code clean up, panel enhancements (FvwmButtons),
-transient FvwmPager.
+transient FvwmPager, GSFR for the main module.
 
 A.J. Weber:
 SnapAttraction patch.

@@ -203,11 +203,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     {
       XSaveContext(dpy, tmp_win->icon_w, FvwmContext, (caddr_t)tmp_win);
       XDefineCursor(dpy, tmp_win->icon_w, Scr.FvwmCursors[DEFAULT]);
-      GrabAllWindowButtons(dpy, tmp_win->icon_w, Scr.AllBindings, C_ICON,
-			   GetUnusedModifiers(), Scr.FvwmCursors[DEFAULT],
-			   True);
-      GrabAllWindowKeys(dpy, tmp_win->icon_w, Scr.AllBindings, C_ICON,
-			GetUnusedModifiers(), True);
+      GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_w, Scr.AllBindings,
+				  C_ICON, GetUnusedModifiers(),
+				  Scr.FvwmCursors[DEFAULT], True);
 
 #ifdef SESSION
       {
@@ -222,11 +220,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     {
       XSaveContext(dpy, tmp_win->icon_pixmap_w, FvwmContext, (caddr_t)tmp_win);
       XDefineCursor(dpy, tmp_win->icon_pixmap_w, Scr.FvwmCursors[DEFAULT]);
-      GrabAllWindowButtons(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings,
-			   C_ICON, GetUnusedModifiers(),
-			   Scr.FvwmCursors[DEFAULT], True);
-      GrabAllWindowKeys(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings, C_ICON,
-			GetUnusedModifiers(), True);
+      GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings,
+				  C_ICON, GetUnusedModifiers(),
+				  Scr.FvwmCursors[DEFAULT], True);
 
 #ifdef SESSION
       {

@@ -4,9 +4,9 @@
  * Fvwm command input interface.
  *
  * Copyright 1997, Toshi Isogai. No guarantees or warantees or anything
- * are provided. Use this program at your own risk. Permission to use 
+ * are provided. Use this program at your own risk. Permission to use
  * this program for any purpose is given,
- * as long as the copyright is kept intact. 
+ * as long as the copyright is kept intact.
  *
  */
 
@@ -49,16 +49,16 @@ int main(int argc, char *argv[]) {
   }
 
   signal (SIGPIPE, DeadPipe);
-  signal (SIGINT, sig_handler);  
-  signal (SIGQUIT, sig_handler);  
-  signal (SIGHUP, sig_handler);  
-  signal (SIGTERM, sig_handler);  
-  
+  signal (SIGINT, sig_handler);
+  signal (SIGQUIT, sig_handler);
+  signal (SIGHUP, sig_handler);
+  signal (SIGTERM, sig_handler);
+
   Fd[0] = atoi(argv[1]);
   Fd[1] = atoi(argv[2]);
 
   Nounlink = 0;
-  
+
   server( fifoname );
   exit(1);
 }
@@ -79,7 +79,7 @@ void sig_handler(int signo) {
 }
 
 /*
- * setup server and communicate with fvwm and the client 
+ * setup server and communicate with fvwm and the client
  */
 void server ( char *name ) {
   char *home;
@@ -122,7 +122,7 @@ void server ( char *name ) {
 	continue;
       }
     }
-    
+
     if (FD_ISSET(Fd[1], &fdset)){
       if( ReadFvwmPacket(Fd[1],header,&body) > 0)	 {
 	if (Connect) {
@@ -131,7 +131,7 @@ void server ( char *name ) {
 	free(body);
       }
     }
-    
+
     if (FD_ISSET(Ffdr, &fdset)){
       len = read( Ffdr, buf, MAX_COMMAND_SIZE-1 );
       if (len == 0) {
@@ -205,7 +205,7 @@ void close_fifos () {
  */
 int open_fifos (char *f_stem) {
   char *fc_name, *fm_name;
-  
+
   /* create 2 fifos */
   fc_name = malloc( strlen(f_stem) + 2 );
   if (fc_name == NULL) {
@@ -221,15 +221,15 @@ int open_fifos (char *f_stem) {
   strcpy(fm_name,f_stem);
   strcat(fc_name, "C");
   strcat(fm_name, "M");
-  
+
   if( (Ffdw = open(fc_name, O_RDWR | O_NONBLOCK ) ) > 0) {
-    write_f( Ffdw, CMD_KILL_NOUNLINK, strlen(CMD_KILL_NOUNLINK) );  
+    write_f( Ffdw, CMD_KILL_NOUNLINK, strlen(CMD_KILL_NOUNLINK) );
     close( Ffdw );
   }
 
-  unlink( fm_name ); 
-  unlink( fc_name ); 
-  
+  unlink( fm_name );
+  unlink( fc_name );
+
   if( mkfifo( fm_name, S_IRUSR | S_IWUSR ) < 0 ) {
     err_msg( fm_name );
     return -1;
@@ -238,7 +238,7 @@ int open_fifos (char *f_stem) {
     err_msg( fc_name );
     return -1;
   }
-  
+
   Ffdr = open(fc_name, O_RDWR | O_NONBLOCK | O_TRUNC);
   if (Ffdr < 0) {
     err_msg( "opening command fifo" );
@@ -251,31 +251,31 @@ int open_fifos (char *f_stem) {
     return -1;
   }
   free(fm_name);
-  
+
   F_name = malloc (strlen (f_stem) + 2);
   if (F_name == NULL) {
     err_msg( "allocating name string" );
     return -1;
   }
   strcpy (F_name, f_stem);
-  
+
   return 0;
 }
 
 
 /*
- * Process window list messages 
+ * Process window list messages
  */
 
 void process_message(unsigned long type,unsigned long *body){
   int  msglen;
-  
+
   switch(type) {
-    
+
   case M_CONFIGURE_WINDOW:
     relay_packet( type, 24*SOL, body );
     break;
-    
+
   case M_WINDOW_NAME:
   case M_ICON_NAME:
   case M_RES_CLASS:
@@ -285,33 +285,33 @@ void process_message(unsigned long type,unsigned long *body){
     msglen = strlen( (char *)&body[3] );
     relay_packet( type, msglen+1+3*SOL, body );
     break;
-    
+
   case M_END_WINDOWLIST:
   case M_END_CONFIG_INFO:
     relay_packet( type, 0*SOL, body );
     break;
-    
+
   case M_ICON_LOCATION:
     relay_packet( type, 7*SOL, body );
     break;
-    
+
   case M_ERROR:
   case M_STRING:
   case M_CONFIG_INFO:
     msglen = strlen( (char *)&body[3] );
     relay_packet( type, msglen+1+3*SOL, body );
     break;
-    
+
 
   case M_MINI_ICON:
     relay_packet( type, 6*SOL, body );
     break;
-		
+
 
   case M_NEW_PAGE:
     relay_packet( type, 5*SOL, body );
     break;
-		
+
   case M_NEW_DESK:
     relay_packet( type, 1*SOL, body );
     break;
@@ -319,7 +319,7 @@ void process_message(unsigned long type,unsigned long *body){
   case M_ADD_WINDOW:
     relay_packet( type, 24*SOL, body );
     break;
-				
+
   case M_RAISE_WINDOW:
   case M_LOWER_WINDOW:
   case M_FOCUS_CHANGE:
@@ -330,12 +330,12 @@ void process_message(unsigned long type,unsigned long *body){
   case M_DEWINDOWSHADE:
     relay_packet( type, 4*SOL, body );
     break;
-		
+
   case M_ICONIFY:
     relay_packet( type, 7*SOL, body );
 
     break;
-		
+
   default:
     relay_packet( type, 4*SOL, body );
   }
@@ -344,11 +344,11 @@ void process_message(unsigned long type,unsigned long *body){
 
 
 /*
- * print error message on stderr and exit 
+ * print error message on stderr and exit
  */
 
 void err_msg( char *msg ) {
-  fprintf( stderr, "%s server error in %s, %s\n", 
+  fprintf( stderr, "%s server error in %s, %s\n",
 	   MYNAME, msg, strerror(errno) );
 }
 
@@ -361,7 +361,7 @@ void err_quit( char *msg ) {
 /*
  * relay packet to front-end
  */
-void relay_packet( unsigned long type, 
+void relay_packet( unsigned long type,
 		   unsigned long length, unsigned long *body) {
   write_f( Ffdw, (char*)&type, SOL );
   write_f( Ffdw, (char*)&length, SOL );
