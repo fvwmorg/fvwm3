@@ -301,8 +301,6 @@ void initialize_pager(void)
   XClassHint class1;
 #ifdef I18N_MB
   char **ml;
-  int mc;
-  char *ds;
   XFontStruct **fs_list;
 #endif
 
@@ -329,33 +327,36 @@ void initialize_pager(void)
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
 
   /* load the font */
-#ifdef I18N_MB
-  if (!uselabel || ((fontset =
-		     XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL))
-  {
+  /* Note: "font" is always created, whether labels are used or not
+     because a GC below is set to use a font. dje Dec 2001.
+     OK, I fixed the GC below, but now something else is blowing up.
+     Right now, I've got to do some Real Life stuff, so this kludge is
+     in place, its still better than I found it.
+  */
+  if (!uselabel) {
 #ifdef STRICTLY_FIXED
-    if ((fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL)
+#define FALLBACK_FONT "fixed"
 #else
-    if ((fontset =
-	 XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",
-			&ml, &mc, &ds)) == NULL)
+#define FALLBACK_FONT "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*"
 #endif
-    {
-      fprintf(stderr,"%s: No fonts available\n",MyName);
-      exit(1);
-    }
+    font_string = safestrdup(FALLBACK_FONT);
+  }    
+#ifdef I18N_MB
+  fontset = GetFontSetOrFixed(dpy, font_string);
+  if (fontset == NULL)
+  {
+    fprintf(stderr,"%s: No I18N fonts available, giving up\n",MyName);
+    exit(1);
   }
   XFontsOfFontSet(fontset, &fs_list, &ml);
   font = fs_list[0];
 #else
-  if (!uselabel || ((font = XLoadQueryFont(dpy, font_string)) == NULL))
+  font = GetFontOrFixed(dpy, font_string);
+  if (font == NULL)
   {
-    if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
-    {
-      fprintf(stderr,"%s: No fonts available\n",MyName);
-      exit(1);
-    }
-  };
+    fprintf(stderr,"%s: No fonts available, giving up\n",MyName);
+    exit(1);
+  }
 #endif
   label_h = (uselabel) ? font->ascent + font->descent + 2 : 0;
 
@@ -366,30 +367,22 @@ void initialize_pager(void)
   }
 
 #ifdef I18N_MB
+  windowFontset = NULL;
+  windowFont = NULL;
   if(smallFont != NULL)
   {
-    windowFontset = XCreateFontSet(dpy, smallFont, &ml, &mc, &ds);
+    windowFontset = GetFontSetOrFixed(dpy,smallFont);
     if (windowFontset != NULL)
     {
       XFontsOfFontSet(windowFontset, &fs_list, &ml);
       windowFont = fs_list[0];
-    } else {
-      windowFontset = NULL;
-      windowFont = NULL;
     }
-  }
-  else
-  {
-    windowFontset = NULL;
-    windowFont = NULL;
   }
 #else
   if(smallFont!= NULL)
   {
-    windowFont= XLoadQueryFont(dpy, smallFont);
+    windowFont= GetFontOrFixed(dpy, smallFont);
   }
-  else
-    windowFont= NULL;
 #endif
 
   /* Load the colors */
@@ -674,10 +667,14 @@ void initialize_pager(void)
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
-    gcv.font = font->fid;
-    Desks[i].NormalGC =
-      fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
-
+    if (uselabel) {
+      gcv.font = font->fid;
+      Desks[i].NormalGC =
+        fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
+    } else {
+      Desks[i].NormalGC =
+        fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
+    }
     /* create the active desk hilite GC */
     if(Pdepth < 2)
       gcv.foreground = fore_pix;
@@ -693,9 +690,13 @@ void initialize_pager(void)
     else
       gcv.foreground = (Desks[i].highcolorset < 0) ? fore_pix
 	: Colorset[Desks[i].highcolorset].fg;
-    Desks[i].rvGC =
-      fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
-
+    if (uselabel) {
+      Desks[i].rvGC =
+        fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
+    } else {
+      Desks[i].rvGC =
+        fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
+    }
     /* create the virtual page boundary GC */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
@@ -852,23 +853,12 @@ void initialize_pager(void)
 
       /* get font for balloon */
 #ifdef I18N_MB
-      if ( (Desks[i].balloon.fontset = XCreateFontSet(dpy, BalloonFont, &ml,
-						      &mc, &ds)) == NULL ) {
-#ifdef STRICTLY_FIXED
-	if ( (Desks[i].balloon.fontset = XCreateFontSet(dpy, "fixed", &ml, &mc,
-							&ds)) == NULL )
-#else
-	if ( (Desks[i].balloon.fontset =
-	      XCreateFontSet(dpy,
-			     "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",
-			     &ml, &mc, &ds)) == NULL )
-#endif
+      if ( (Desks[i].balloon.fontset = GetFontSetOrFixed(dpy, BalloonFont))
+           == NULL ) {
 	{
-	  fprintf(stderr,"%s: No fonts available.\n", MyName);
+	  fprintf(stderr,"%s: No fonts available, giving up!.\n", MyName);
 	  exit(1);
 	}
-	fprintf(stderr, "%s: Can't find font '%s', using fixed.\n",
-		MyName, BalloonFont);
       }
       XFontsOfFontSet(Desks[i].balloon.fontset, &fs_list, &ml);
       Desks[i].balloon.font = fs_list[0];

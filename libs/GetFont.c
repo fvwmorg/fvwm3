@@ -53,7 +53,17 @@ XFontStruct *GetFontOrFixed(Display *disp, char *fontname)
 #ifdef I18N_MB
 /*
 ** loads fontset or "fixed" on failure
+** Note, STRICTLY_FIXED does not seem to be defined on a standard compile.
+** The fallback is to a font that does not use a font alias.
+** I'm not sure why this is done for I18N_MB only. dje Dec 2001.
 */
+
+#ifdef STRICTLY_FIXED
+#define FALLBACK_FONT "fixed"
+#else
+#define FALLBACK_FONT "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*"
+#endif
+
 XFontSet GetFontSetOrFixed(Display *disp, char *fontname)
 {
   XFontSet fontset = NULL;
@@ -67,32 +77,22 @@ XFontSet GetFontSetOrFixed(Display *disp, char *fontname)
   {
     fprintf(stderr,
             "[FVWM][GetFontSetOrFixed]: "
-	    "WARNING -- can't get fontset %s, trying 'fixed'\n",
-            fontname);
+	    "WARNING -- can't get fontset %s, trying '%s'\n",
+            fontname,FALLBACK_FONT);
   }
   if (!fontset)
   {
     /* fixed should always be avail, so try that */
-#ifdef STRICTLY_FIXED
-    if ((fontset = XCreateFontSet(disp,"fixed",&ml,&mc,&ds))==NULL)
-    {
-      fprintf(stderr,
-	      "[FVWM][GetFontSetOrFixed]: "
-	      "ERROR -- can't get fontset 'fixed'\n");
-    }
-#else
     /* Yes, you say it's not a *FIXED* font, but it helps you. */
     if ((fontset =
 	 XCreateFontSet(disp,
-			"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",
+			FALLBACK_FONT,
 			&ml, &mc, &ds)) == NULL)
     {
       fprintf(stderr,"[FVWM][GetFontSetOrFixed]: "
-	      "ERROR -- can't get fontset 'fixed'\n");
+	      "ERROR -- can't get fontset '%s'\n",FALLBACK_FONT);
     }
-#endif
   }
-
   return fontset;
 }
 #endif
