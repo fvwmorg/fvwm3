@@ -1241,8 +1241,8 @@ parse_arguments (char **line, int *argc, char ***argv)
 
   for (i = 0; i < 100 ; i++) 
     {
-//      tmp[i] = GetArgument (line);
-	*line = GetNextOption( *line, &tmp[i] );
+/*      tmp[i] = GetArgument (line);*/
+	*line = GetNextSimpleOption( *line, &tmp[i] );
       if (!tmp[i]) break;
     }
   *argc = i;

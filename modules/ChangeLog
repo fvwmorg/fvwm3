@@ -1,3 +1,9 @@
+1999-04-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmGtk/FvwmGtk.c (parse_argument): use new function
+	GetNextSimpleOption instead of old name GetNextOption.
+	Removed C++ comment.
+
 1999-04-22  Bob Woodside  <proteus@pcnet.com>
 
 	* modules/FvwmPager/x_pager.c: Changed "Desk" command (which we've
