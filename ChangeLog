@@ -1,13 +1,18 @@
+2003-06-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.1.in:
+	cleaned up of CirculateHit... conditions
+
 2003-06-15  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm/style.c (__simplify_style_list): 
+	* fvwm/style.c (__simplify_style_list):
 	Fixed is_merged_allowed: rest it to True when cur change
 	Added "upward" simplification
 
 2003-06-14  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/style.c (__simplify_style_list):
-	(blocksintersect): 
+	(blocksintersect):
 	(blockand):
 	Fixed blockand which always returned True. Added blocksintersect which
 	return the same value than blockand but faster.

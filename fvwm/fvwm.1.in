@@ -9432,7 +9432,10 @@ commas or whitespace.  Conditions include
 "CurrentScreen","!CurrentScreen",
 "CurrentGlobalPage", "!CurrentGlobalPage",
 "CurrentPageAnyDesk", "!CurrentPageAnyDesk",
-and "CurrentGlobalPageAnyDesk", "!CurrentGlobalPageAnyDesk".
+"CurrentGlobalPageAnyDesk", "!CurrentGlobalPageAnyDesk",
+"CirculateHit", "!CirculateHit",
+"CirculateHitIcon", "!CirculateHitIcon",
+"CirculateHitShaded", and "!CirculateHitShaded".
 In addition, the
 .I condition
 may include one window name to match to.  The window name may
@@ -9532,11 +9535,14 @@ Note that earlier versions of fvwm required the conditions to be
 enclosed in brackets instead of parentheses (this is still
 supported for backward compatibility).
 
-The
+The "CirculateHit" and "CirculateHitIcon" option override the
+.IB "CirculateSkip " Style
+attribute for normal or iconic windows.
+The "CirculateHitShaded" option overrides the
+.IB "CirculateSkipShaded " Style.  All three options are turned on
+by default for the
 .B Current
-command implies the conditions
-.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
-They can be turned off by specifying "!CirculateHit"
+command.  They can be turned off by specifying "!CirculateHit"
 etc. explicitly.
 
 .TP
@@ -9577,13 +9583,7 @@ on the next window which satisfies all
 If the command is running in a window context, it starts looking
 for a matching window from there.  Otherwise it starts at the
 focused window.  Conditions are the same as for
-.B Current
-with the addition of "CirculateHit" which overrides the
-.IB "CirculateSkip " Style
-attribute, "CirculateHitIcon" which overrides the
-.IB "CirculateSkipIcon " Style
-attribute for iconified windows and "CirculateHitShaded" which
-does the same for shaded windows.
+.BI Current .
 
 .TP
 .BI "None [(" conditions ")] " command
