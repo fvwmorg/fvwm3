@@ -1,3 +1,8 @@
+2002-06-06  olicha  <olivier.chapuis@free.fr>
+
+	* acinclude.m4:
+	Fixed some options names
+
 2002-06-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/module_interface.c (CMD_SendToModule):
