@@ -149,7 +149,7 @@ Bool GrabEm(int cursor, int grab_context)
 				    dpy, (PressedW != None) ?
 				    PressedW : Scr.NoFocusWin, True,
 				    GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
-				    Scr.Root, Scr.FvwmCursors[CRS_DEFAULT],
+				    None, Scr.FvwmCursors[CRS_DEFAULT],
 				    CurrentTime) != GrabSuccess)
 			{
 				return False;
@@ -199,7 +199,7 @@ Bool GrabEm(int cursor, int grab_context)
 	while (i < rep &&
 	       (val = XGrabPointer(
 		      dpy, grab_win, True, GRAB_EVMASK, GrabModeAsync,
-		      GrabModeAsync, Scr.Root,
+		      GrabModeAsync, None,
 		      (grab_context == GRAB_FREEZE_CURSOR) ?
 		      None : Scr.FvwmCursors[cursor], CurrentTime) !=
 		GrabSuccess))
