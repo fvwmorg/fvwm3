@@ -1,3 +1,9 @@
+2000-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (free_style_mask):
+	fixed coredump when overriding styles that were not set in any previous
+	style
+
 2000-03-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/defaults.h (DEFAULT_MODULE_TIMEOUT):

@@ -481,32 +481,40 @@ static void free_style(window_style *style)
  * change_mask appropriately. */
 static void free_style_mask(window_style *style, style_flags *mask)
 {
+  style_flags local_mask;
+  style_flags *pmask;
+
+  /* mask out all bits that are not set in the target style */
+  pmask =&local_mask;
+  blockand((char *)pmask, (char *)&style->flag_mask, (char *)mask,
+           sizeof(style_flags));
+
   /* Free contents of style */
-  if (mask->has_color_back)
+  if (pmask->has_color_back)
     SAFEFREE(SGET_BACK_COLOR_NAME(*style));
-  if (mask->has_color_fore)
+  if (pmask->has_color_fore)
     SAFEFREE(SGET_FORE_COLOR_NAME(*style));
-  if (mask->has_color_back_hi)
+  if (pmask->has_color_back_hi)
     SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
-  if (mask->has_color_fore_hi)
+  if (pmask->has_color_fore_hi)
     SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
-  if (mask->has_decor)
+  if (pmask->has_decor)
     SAFEFREE(SGET_DECOR_NAME(*style));
-  if (mask->common.has_icon_font)
+  if (pmask->common.has_icon_font)
     SAFEFREE(SGET_ICON_FONT(*style));
-  if (mask->common.has_window_font)
+  if (pmask->common.has_window_font)
     SAFEFREE(SGET_WINDOW_FONT(*style));
-  if (mask->has_icon)
+  if (pmask->has_icon)
     SAFEFREE(SGET_ICON_NAME(*style));
-  if (mask->has_mini_icon)
+  if (pmask->has_mini_icon)
     SAFEFREE(SGET_MINI_ICON_NAME(*style));
-  if (mask->has_icon_boxes)
+  if (pmask->has_icon_boxes)
     free_icon_boxes(SGET_ICON_BOXES(*style));
   /* remove styles from definitiion */
   blockunmask((char *)&style->flag_mask, (char *)&style->flag_mask,
-              (char *)mask, sizeof(style_flags));
+              (char *)pmask, sizeof(style_flags));
   blockunmask((char *)&style->change_mask, (char *)&style->change_mask,
-              (char *)mask, sizeof(style_flags));
+              (char *)pmask, sizeof(style_flags));
 
   return;
 }
