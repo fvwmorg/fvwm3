@@ -1,3 +1,12 @@
+2003-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functable.c (func_table):
+	* fvwm/functions.h (func_type):
+	* fvwm/functions.c (__execute_function):
+	(execute_complex_function):
+	(DeferExecution):
+	fixed a new and and old window selection bug
+
 2003-03-09  Dan Espen  <dane@mk.telcordia.com>
 
 	* todo-2.6 (todo): Close C.13 (861): cant reproduce, no problems

@@ -114,14 +114,11 @@ static void execute_complex_function(
  *
  *  Inputs:
  *      cursor  - the cursor to display while waiting
- *      finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
- *                    terminate on.
  *
  ***********************************************************************/
 static Bool DeferExecution(
 	exec_context_changes_t *ret_ecc, exec_context_change_mask_t *ret_mask,
-	cursor_t cursor, int trigger_evtype, int FinishEvent,
-	int do_allow_unmanaged)
+	cursor_t cursor, int trigger_evtype, int do_allow_unmanaged)
 {
 	int done;
 	int finished = 0;
@@ -131,11 +128,13 @@ static Bool DeferExecution(
 	Window w;
 	int wcontext;
 	FvwmWindow *fw;
+	int FinishEvent;
 
 	fw = ret_ecc->w.fw;
 	w = ret_ecc->w.w;
 	original_w = w;
 	wcontext = ret_ecc->w.wcontext;
+	FinishEvent = ((fw != NULL) ? ButtonRelease : ButtonPress);
 	if (wcontext == C_UNMANAGED && do_allow_unmanaged)
 	{
 		return False;
@@ -584,13 +583,12 @@ static void __execute_function(
 			Bool rc = False;
 
 			runaction = SkipNTokens(expaction, 1);
-			if (ecc.w.fw == NULL &&
-			    (bif->flags & FUNC_NEEDS_WINDOW) &&
+			if ((bif->flags & FUNC_NEEDS_WINDOW) &&
 			    !(exec_flags & FUNC_DONT_DEFER))
 			{
 				rc = DeferExecution(
 					&ecc, &mask, bif->cursor,
-					exc->x.elast->type, bif->evtype,
+					exc->x.elast->type,
 					(bif->flags & FUNC_ALLOW_UNMANAGED));
 			}
 			if (rc == False)
@@ -925,7 +923,7 @@ static void execute_complex_function(
 	{
 		if (DeferExecution(
 			    &ecc, &mask, CRS_SELECT, trigger_evtype,
-			    ButtonPress, do_allow_unmanaged_immediate))
+			    do_allow_unmanaged_immediate))
 		{
 			func->use_depth--;
 			cf_cleanup(&depth, arguments);
@@ -990,7 +988,7 @@ static void execute_complex_function(
 	{
 		if (DeferExecution(
 			    &ecc, &mask, CRS_SELECT, trigger_evtype,
-			    ButtonPress, do_allow_unmanaged))
+			    do_allow_unmanaged))
 		{
 			func->use_depth--;
 			cf_cleanup(&depth, arguments);

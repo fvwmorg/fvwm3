@@ -53,7 +53,6 @@ typedef struct
 	short func_type;
 	FUNC_FLAGS_TYPE flags;
 	int cursor;
-	int evtype;
 } func_type;
 
 /* ---------------------------- exported variables (globals) ---------------- */
