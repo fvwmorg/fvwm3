@@ -1,3 +1,8 @@
+2001-07-23  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	Added alias support to be able to get one TaskBar by Xinerama screens
+	
 2001-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScroll/GrabWindow.c:

@@ -276,9 +276,25 @@ int main(int argc, char **argv)
 #endif
 
   if((argc != 6)&&(argc != 7)) {
-    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
+    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",temp,
 	    VERSION);
     exit(1);
+  }
+
+  /* alise support */
+  if (argc == 7 && argv[6] != NULL)
+  {
+    Module = safemalloc(strlen(argv[6])+2);
+    strcpy(Module,"*");
+    strcat(Module, argv[6]);
+    Clength = strlen(Module);
+  }
+  else
+  {
+    Module = safemalloc(strlen(temp)+2);
+    strcpy(Module,"*");
+    strcat(Module, temp);
+    Clength = strlen(Module);
   }
 
   /* setup fvwm pipes */
@@ -1778,6 +1794,7 @@ static Bool change_colorset(int cset, Bool force)
 void StartMeUp(void)
 {
    XSizeHints hints;
+   XClassHint classhints;
    int ret;
    int i;
    XSetWindowAttributes attr;
@@ -1960,7 +1977,23 @@ void StartMeUp(void)
    wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
    XSetWMProtocols(dpy,win,&wm_del_win,1);
 
-   XSetWMNormalHints(dpy,win,&hints);
+  {
+    XTextProperty nametext;
+    char *list[]={NULL,NULL};
+    list[0] = Module+1;
+
+    classhints.res_name=safestrdup(Module+1);
+    classhints.res_class=safestrdup("FvwmTaskBar");
+
+    if(!XStringListToTextProperty(list,1,&nametext))
+    {
+      fprintf(stderr,"%s: Failed to convert name to XText\n",Module);
+      exit(1);
+    }
+    XSetWMProperties(dpy,win,&nametext,&nametext,
+		     NULL,0,&hints,NULL,&classhints);
+    XFree(nametext.value);
+  }
 
    for (i = 1; i <= NUMBER_OF_MOUSE_BUTTONS; i++)
    {
@@ -1984,8 +2017,6 @@ void StartMeUp(void)
    XSelectInput(dpy,win,(ExposureMask | KeyPressMask | PointerMotionMask |
                          EnterWindowMask | LeaveWindowMask |
                          StructureNotifyMask));
-
-   ChangeWindowName(&Module[1]);
 
    InitGoodies();
    atexit(ShutMeDown);
