@@ -755,10 +755,10 @@ GNOME_SetWinArea(FvwmWindow *w)
     {
       val[0] = (w->frame_g.x + Scr.Vx) / Scr.MyDisplayWidth;
       if (val[0] < 0 && w->frame_g.x + Scr.Vx + w->frame_g.width > 0)
-	val[0] = 0;
+        val[0] = 0;
       val[1] = (w->frame_g.y + Scr.Vy) / Scr.MyDisplayHeight;
       if (val[1] < 0 && w->frame_g.y + Scr.Vy + w->frame_g.height > 0)
-	val[1] = 0;
+        val[1] = 0;
     }
     XChangeProperty(dpy, w->w, atom_set, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *)val, 2);
@@ -774,7 +774,7 @@ GNOME_Init(void)
 
   atom_set = XInternAtom(dpy, XA_WIN_PROTOCOLS, False);
 
-  /* these indicate what GNOME compliance properties have been implimented */
+  /* these indicate what GNOME compliance properties have been implemented */
   i = 0;
   list[i++] = XInternAtom(dpy, XA_WIN_LAYER, False);
   list[i++] = XInternAtom(dpy, XA_WIN_STATE, False);

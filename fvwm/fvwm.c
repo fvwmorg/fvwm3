@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <sys/wait.h>
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
@@ -109,11 +110,13 @@ int FvwmErrorHandler(Display *, XErrorEvent *);
 int CatchFatal(Display *);
 int CatchRedirectError(Display *, XErrorEvent *);
 void InstallSignals(void);
-void ChildDied(int nonsense);
 void SaveDesktopState(void);
 void SetMWM_INFO(Window window);
 void SetRCDefaults(void);
 void StartupStuff(void);
+static RETSIGTYPE SigDone(int);
+static RETSIGTYPE Restart(int);
+static RETSIGTYPE ReapChildren(int);
 static int parseCommandArgs(
   const char *command, char **argv, int maxArgc, const char **errorMsg);
 static void InternUsefulAtoms(void);
@@ -364,8 +367,6 @@ int main(int argc, char **argv)
 
   DBUG("main","Installing signal handlers");
   InstallSignals();
-
-  ReapChildren();
 
   if (!(Pdpy = dpy = XOpenDisplay(display_name)))
   {
@@ -1139,6 +1140,19 @@ InstallSignals(void)
   sigaction(SIGHUP,  &sigact, NULL);
   sigaction(SIGQUIT, &sigact, NULL);
   sigaction(SIGTERM, &sigact, NULL);
+
+  /*
+   * Reap all zombies automatically! This signal handler will
+   * only be called if a child process dies, not if someone
+   * sends a child a STOP signal. Note that none of our "terminate"
+   * signals can be delivered until the SIGCHLD handler completes,
+   * and this is a Good Thing because the terminate handlers
+   * might exit abruptly via "siglongjmp". This could potentially
+   * leave SIGCHLD handler with unfinished business ...  
+   */
+  sigact.sa_flags |= SA_NOCLDSTOP;
+  sigact.sa_handler = ReapChildren;
+  sigaction(SIGCHLD, &sigact, NULL);
 #else
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGUSR1) |
@@ -1174,14 +1188,52 @@ InstallSignals(void)
 #ifdef HAVE_SIGINTERRUPT
   siginterrupt(SIGTERM, 0);
 #endif
+  signal(SIGCHLD, ReapChildren);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGCHLD, 0);
 #endif
+#endif
+}
+
+
+/*************************************************************************
+ * Reap child processes, preventing them from becoming zombies.
+ * We do this asynchronously within the SIGCHLD handler so that
+ * "it just happens".
+ ************************************************************************/
+static RETSIGTYPE
+ReapChildren(int sig)
+{
+  (void)sig;
+
+  BSD_BLOCK_SIGNALS;
+
+  /*
+   * This is a signal handler, AND SO MUST BE REENTRANT!
+   * Now the wait() functions are safe here, but please don't
+   * add anything unless you're SURE that the new functions
+   * (plus EVERYTHING they call) are also reentrant. There
+   * are very few functions which are truly safe.
+   */
+#if HAVE_WAITPID
+  while (waitpid(-1, NULL, WNOHANG) > 0)
+    ;
+#elif HAVE_WAIT3
+  while (wait3(NULL, WNOHANG, NULL) > 0)
+    ;
+#else
+# error One of waitpid or wait3 is needed.
+#endif
+
+  BSD_UNBLOCK_SIGNALS;
 }
 
 
 /*************************************************************************
  * Restart on a signal
  ************************************************************************/
-RETSIGTYPE Restart(int sig)
+static RETSIGTYPE
+Restart(int sig)
 {
   fvwmRunState = FVWM_RESTART;
 
@@ -1199,7 +1251,6 @@ RETSIGTYPE Restart(int sig)
  *		assumes associated button memory is already free
  *
  ************************************************************************/
-
 static void LoadDefaultLeftButton(DecorFace *df, int i)
 {
   struct vector_coords *v = &df->u.vector;
@@ -1420,6 +1471,7 @@ void DestroyAllButtons(FvwmDecor *decor)
 
   return;
 }
+
 void ResetAllButtons(FvwmDecor *decor)
 {
   TitleButton *tbp;
@@ -1658,7 +1710,8 @@ static void Reborder(void)
  *
  ***********************************************************************
  */
-RETSIGTYPE SigDone(int sig)
+static RETSIGTYPE
+SigDone(int sig)
 {
   fvwmRunState = FVWM_DONE;
 
@@ -1731,7 +1784,6 @@ void Done(int restart, char *command)
     /* really need to destroy all windows, explicitly,
      * not sleep, but this is adequate for now */
     sleep(1);
-    ReapChildren();
 
     if (command)
     {
@@ -1798,7 +1850,6 @@ void Done(int restart, char *command)
    * SubstructureRedirect selected on the root window ==> windows end up in
    * nirvana. This explicitly happened with windows unswallowed by FvwmButtons.
    */
-
   ClosePipes();
 
   exit(0);

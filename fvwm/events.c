@@ -2255,11 +2255,16 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     return 1;
   }
 
+/* The SIGCHLD signal is sent every time one of our child processes
+ * dies, and the SIGCHLD handler now reaps them automatically. We
+ * should therefore never see a zombie */
+#if 0
   DBUG("My_XNextEvent","no X events waiting - about to reap children");
   /* Zap all those zombies! */
   /* If we get to here, then there are no X events waiting to be processed.
    * Just take a moment to check for dead children. */
   ReapChildren();
+#endif
 
   /* check for termination of all startup modules */
   if (fFvwmInStartup) {

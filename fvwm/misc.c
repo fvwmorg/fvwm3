@@ -31,7 +31,6 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <sys/wait.h>
 
 /* To add timing info to debug output, #define this: */
 #ifdef FVWM_DEBUG_TIME
@@ -394,18 +393,6 @@ void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor)
   XChangeGC(dpy,Scr.TitleGC,Globalgcm,&Globalgcv);
 }
 
-void ReapChildren(void)
-{
-#if HAVE_WAITPID
-  while ((waitpid(-1, NULL, WNOHANG)) > 0)
-    ;
-#elif HAVE_WAIT3
-  while ((wait3(NULL, WNOHANG, NULL)) > 0)
-    ;
-#else
-# error One of waitpid or wait3 is needed.
-#endif
-}
 
 /****************************************************************************
  *

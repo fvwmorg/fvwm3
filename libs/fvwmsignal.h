@@ -29,6 +29,14 @@
 #  define USE_BSD_SIGNALS
 #endif
 
+#ifdef USE_BSD_SIGNALS
+#  define BSD_BLOCK_SIGNALS    int old_mask = sigblock( fvwmGetSignalMask() )
+#  define BSD_UNBLOCK_SIGNALS  sigsetmask( old_mask )
+#else
+#  define BSD_BLOCK_SIGNALS
+#  define BSD_UNBLOCK_SIGNALS
+#endif
+
 #include <signal.h>
 #include <sys/time.h>
 #if HAVE_SYS_SELECT_H
@@ -51,6 +59,7 @@ extern void fvwmSetTerminate(int sig);
 
 #ifdef USE_BSD_SIGNALS
 extern void fvwmSetSignalMask(int);
+extern int fvwmGetSignalMask(void);
 #endif
 
 #ifdef 	HAVE_SELECT

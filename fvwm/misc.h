@@ -16,11 +16,6 @@
 #ifndef MISC_H
 #define MISC_H
 
-
-/************************************************************************
- * ReapChildren - wait() for all dead child processes
- ************************************************************************/
-
 /* MB stuff: rename XmbTextEscapement() and XFreeFont() */
 #ifdef I18N_MB
 #ifdef __STDC__
@@ -32,10 +27,6 @@
 #endif
 #endif
 
-/* Start of function prototype area. */
-
-void ReapChildren(void);
-
 #define GRAB_ALL      0       /* sum of all grabs */
 #define GRAB_STARTUP  1       /* Startup busy cursor */
 #define GRAB_NORMAL   2       /* DeferExecution, Move, Resize, ... */
@@ -44,6 +35,8 @@ void ReapChildren(void);
 #define GRAB_BUSYMENU 5       /* Allows menus.c to regrab the cursor */
 #define GRAB_MAXVAL   6       /* last GRAB macro + 1 */
 
+
+/* Start of function prototype area. */
 
 Bool GrabEm(int cursor, int grab_context);
 void UngrabEm(int ungrab_context);

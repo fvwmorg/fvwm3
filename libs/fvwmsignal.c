@@ -41,6 +41,20 @@ fvwmSetSignalMask(int sigmask)
 {
   term_sigs = sigmask;
 }
+
+
+/************************************************************************
+ * fvwmGetSignalMask - get the set of signals that will terminate FVWM
+ *
+ * NOTE: We don't need this if we have POSIX.1 since we can install
+ *       a signal mask automatically using sigaction()
+ */
+int
+fvwmGetSignalMask(void)
+{
+  return term_sigs;
+}
+
 #endif
 
 
@@ -56,9 +70,8 @@ fvwmSetSignalMask(int sigmask)
 void
 fvwmSetTerminate(int sig)
 {
-#ifdef USE_BSD_SIGNALS
-  int old_mask = sigblock(term_sigs);
-#endif
+  BSD_BLOCK_SIGNALS;
+
   isTerminated = true;
 #ifdef DEBUG
   debug_term_signal = sig;
@@ -78,9 +91,8 @@ fvwmSetTerminate(int sig)
      */
     siglongjmp(deadJump, SIG_DONE);
   }
-#ifdef USE_BSD_SIGNALS
-  sigsetmask(old_mask);
-#endif
+
+  BSD_UNBLOCK_SIGNALS;
 }
 
 

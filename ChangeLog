@@ -1,3 +1,16 @@
+2000-11-25  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* fvwm/fvwm.c
+	* fvwm/events.c
+	* fvwm/misc.c
+	* fvwm/misc.h
+	* fvwm/externs.h
+	* libs/fvwmsignal.h
+	* libs/fvwmsignal.c
+	Explicit SIGCHLD handling, so that dead child processes are
+	reaped automatically and asynchronously. Also some extra
+	macros to make non-sigaction signals less ugly.
+
 2000-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS, configure.in:
