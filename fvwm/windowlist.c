@@ -539,7 +539,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   DestroyMenu(mr, False);
   if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
     ExecuteFunction(default_action,tmp_win,eventp,context,*Module,
-		    EXPAND_COMMAND);
+		    EXPAND_COMMAND, NULL);
   if (default_action != NULL)
     free(default_action);
   if (use_condition)

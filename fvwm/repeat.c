@@ -148,7 +148,7 @@ void repeat_function(F_CMD_ARGS)
       fprintf( stderr, "repeating 0x%lx, %s\n",
 	       (unsigned long) last.command_line, last.command_line);
       ExecuteFunction(last.command_line, tmp_win, eventp, context, *Module,
-		      DONT_EXPAND_COMMAND);
+		      DONT_EXPAND_COMMAND,NULL);
     break;
   }
   repeat_depth--;

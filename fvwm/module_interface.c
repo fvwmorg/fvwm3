@@ -613,7 +613,7 @@ int HandleModuleInput(Window w, int channel, char *expect)
       Event.xbutton.subwindow = None;
       Context = GetContext(tmp_win,&Event,&w);
       ButtonWindow = tmp_win;
-      ExecuteFunction(text,tmp_win,&Event,Context,channel,EXPAND_COMMAND);
+      ExecuteFunction(text,tmp_win,&Event,Context,channel,EXPAND_COMMAND,NULL);
       ButtonWindow = NULL;
     }
   return 0;

@@ -70,8 +70,8 @@ extern char const * const Fvwm_VersionInfo;
 
 /* forward declarations */
 static void ComplexFunction(F_CMD_ARGS);
-static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
-				     expand_command_type expand_cmd);
+static void execute_complex_function(
+  F_CMD_ARGS, Bool *desperate, expand_command_type expand_cmd);
 
 /*
  * be sure to keep this list properly ordered for bsearch routine!
@@ -712,9 +712,9 @@ static cfunc_action_type CheckActionType(
  *	context - the context in which the button was pressed
  *
  ***********************************************************************/
-void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
-		     unsigned long context, int Module,
-		     expand_command_type expand_cmd)
+void ExecuteFunction(
+  char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
+  int Module, expand_command_type expand_cmd, char *args[])
 {
   static unsigned int func_depth = 0;
   Window w;
@@ -760,8 +760,16 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     return;                             /* done */
   }
   func_depth++;
-  for(j=0;j<10;j++)
-    arguments[j] = NULL;
+  if (args)
+  {
+    for(j=0;j<10;j++)
+      arguments[j] = args[j];
+  }
+  else
+  {
+    for(j=0;j<10;j++)
+      arguments[j] = NULL;
+  }
 
   if(tmp_win == NULL)
   {
@@ -895,13 +903,13 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 }
 
 
-void ExecuteFunctionSaveTmpWin(char *Action, FvwmWindow *tmp_win,
-			       XEvent *eventp, unsigned long context,
-			       int Module, expand_command_type expand_cmd)
+void ExecuteFunctionSaveTmpWin(
+  char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
+  int Module, expand_command_type expand_cmd, char *args[])
 {
   FvwmWindow *s_Tmp_win = Tmp_win;
 
-  ExecuteFunction(Action, tmp_win, eventp, context, Module, expand_cmd);
+  ExecuteFunction(Action, tmp_win, eventp, context, Module, expand_cmd, args);
   Tmp_win = s_Tmp_win;
 }
 
@@ -1249,8 +1257,8 @@ static void ComplexFunction(F_CMD_ARGS)
 			   &desperate, EXPAND_COMMAND);
 }
 
-static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
-				     expand_command_type expand_cmd)
+static void execute_complex_function(
+  F_CMD_ARGS, Bool *desperate, expand_command_type expand_cmd)
 {
   cfunc_action_type type = CF_MOTION;
   char c;
@@ -1332,9 +1340,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	w = tmp_win->frame;
       else
 	w = None;
-      taction = expand(fi->action,arguments,tmp_win,False);
-      ExecuteFunction(taction,tmp_win,eventp,context,-2,EXPAND_COMMAND);
-      free(taction);
+      ExecuteFunction(
+	fi->action,tmp_win,eventp,context,-2,EXPAND_COMMAND,arguments);
       break;
     case CF_DOUBLE_CLICK:
       HaveDoubleClick = True;
@@ -1437,7 +1444,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
     ev->type = ButtonRelease;
 
   fi = func->first_item;
-#if 0
+#ifdef BUGGY_CODE
   /* domivogt (11-Apr-2000): The pointer ***must not*** be ungrabbed here.  If
    * it is, any window that the mouse enters during the function will receive
    * MotionNotify events with a button held down!  The results are
@@ -1457,9 +1464,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	    w = tmp_win->frame;
 	  else
 	    w = None;
-	  taction = expand(fi->action,arguments,tmp_win,False);
-	  ExecuteFunction(taction,tmp_win,ev,context,-2,expand_cmd);
-	  free(taction);
+	  ExecuteFunction(
+	    fi->action, tmp_win, ev, context, -2, expand_cmd, arguments);
 	}
       fi = fi->next_item;
     }

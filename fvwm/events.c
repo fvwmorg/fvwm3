@@ -505,7 +505,7 @@ void HandleKeyPress(void)
   if (action != NULL)
   {
     ButtonWindow = Tmp_win;
-    ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
+    ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND, NULL);
     ButtonWindow = NULL;
     return;
   }
@@ -820,14 +820,14 @@ void HandlePropertyNotify(void)
 	  (Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyFunc",
-			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND);
+			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND, NULL);
 	}
 
       if ((old_wmhints_flags & XUrgencyHint) &&
 	  !(Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyDoneFunc",
-			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND);
+			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND, NULL);
 	}
       break;
     case XA_WM_NORMAL_HINTS:
@@ -986,7 +986,8 @@ void HandleClientMessage(void)
                    &(button.xmotion.y_root),
                    &JunkX, &JunkY, &JunkMask);
     button.type = 0;
-    ExecuteFunction("Iconify",Tmp_win, &button,C_FRAME,-1, EXPAND_COMMAND);
+    ExecuteFunction(
+      "Iconify",Tmp_win, &button,C_FRAME,-1, EXPAND_COMMAND, NULL);
     return;
   }
 
@@ -1618,7 +1619,7 @@ void HandleButtonPress(void)
 			MOUSE_BINDING);
   if (action != NULL && (action[0] != 0))
   {
-    ExecuteFunction(action, Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
+    ExecuteFunction(action, Tmp_win, &Event, Context, -1, EXPAND_COMMAND, NULL);
   }
   else
   {
@@ -1684,7 +1685,7 @@ void HandleButtonRelease()
    /* got a match, now process it */
    if (action != NULL && (action[0] != 0))
    {
-     ExecuteFunction(action,Tmp_win, &Event,Context,-1, EXPAND_COMMAND);
+     ExecuteFunction(action,Tmp_win, &Event,Context,-1, EXPAND_COMMAND, NULL);
    }
    else
    {
@@ -1898,6 +1899,68 @@ void HandleConfigureRequest(void)
   if (XFindContext (dpy, cre->window, FvwmContext, (caddr_t *) &Tmp_win) ==
       XCNOENT)
     Tmp_win = NULL;
+
+#ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
+  /* merge all pending ConfigureRequests for the window into a single event */
+  if (Tmp_win)
+  {
+    XEvent e;
+    XConfigureRequestEvent *ecre;
+
+    /* free some CPU */
+    usleep(1);
+    while (XCheckTypedWindowEvent(dpy, cre->window, ConfigureRequest, &e))
+    {
+      unsigned long vma;
+      unsigned long vmo;
+      unsigned long xm = CWX | CWWidth;
+      unsigned long ym = CWY | CWHeight;
+
+      ecre = &e.xconfigurerequest;
+      vma = cre->value_mask & ecre->value_mask;
+      vmo = cre->value_mask | ecre->value_mask;
+      if (((vma & xm) == 0 && (vmo & xm) == xm) ||
+	  ((vma & ym) == 0 && (vmo & ym) == ym))
+      {
+	/* can't merge events since location of window might get screwed up */
+	XPutBackEvent(dpy, &e);
+	break;
+      }
+      if (ecre->value_mask & CWX)
+      {
+	cre->value_mask |= CWX;
+	cre->x = ecre->x;
+      }
+      if (ecre->value_mask & CWY)
+      {
+	cre->value_mask |= CWY;
+	cre->y = ecre->y;
+      }
+      if (ecre->value_mask & CWWidth)
+      {
+	cre->value_mask |= CWWidth;
+	cre->width = ecre->width;
+      }
+      if (ecre->value_mask & CWHeight)
+      {
+	cre->value_mask |= CWHeight;
+	cre->height = ecre->height;
+      }
+      if (ecre->value_mask & CWBorderWidth)
+      {
+	cre->value_mask |= CWBorderWidth;
+	cre->border_width = ecre->border_width;
+      }
+      if (ecre->value_mask & CWStackMode)
+      {
+	cre->value_mask &= !CWStackMode;
+	cre->value_mask |= (ecre->value_mask & CWStackMode);
+	cre->above = ecre->above;
+	cre->detail = ecre->detail;
+      }
+    } /* while */
+  } /* if */
+#endif
 
   /*
    * According to the July 27, 1988 ICCCM draft, we should ignore size and

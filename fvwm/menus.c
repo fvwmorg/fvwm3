@@ -826,7 +826,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	indirect_depth++;
 	ExecuteFunctionSaveTmpWin(
 	  *(pmp->ret_paction), pmp->button_window,
-	  &Event, *(pmp->pcontext), -1, EXPAND_COMMAND);
+	  &Event, *(pmp->pcontext), -1, EXPAND_COMMAND, NULL);
 	indirect_depth--;
 	free(*(pmp->ret_paction));
 	*(pmp->ret_paction) = NULL;
@@ -1842,7 +1842,7 @@ static void MenuInteraction(
 	  /* Execute the action */
 	  ExecuteFunctionSaveTmpWin(
 	    action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
-	    DONT_EXPAND_COMMAND);
+	    DONT_EXPAND_COMMAND, NULL);
 	  if (is_complex_function)
 	    free(action);
 	  /* Busy cursor stuff	*/
@@ -2273,7 +2273,7 @@ static int pop_menu_up(
 #endif
     /* Execute the action */
     ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(mr), *pfw, &Event,
-			      *pcontext, -2, DONT_EXPAND_COMMAND);
+			      *pcontext, -2, DONT_EXPAND_COMMAND, NULL);
 #ifdef BUSYCURSOR
     if (GrabPointerState & GRAB_BUSYMENU)
     {
@@ -2816,9 +2816,9 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     pos_hints = last_saved_pos_hints;
     t = lastTimestamp;
     /* Execute the action */
-    ExecuteFunctionSaveTmpWin(MR_POPDOWN_ACTION(*pmr), (*pmp->pTmp_win),
-			      &Event, *(pmp->pcontext), -2,
-			      DONT_EXPAND_COMMAND);
+    ExecuteFunctionSaveTmpWin(
+      MR_POPDOWN_ACTION(*pmr), (*pmp->pTmp_win), &Event, *(pmp->pcontext), -2,
+      DONT_EXPAND_COMMAND, NULL);
     /* restore the stuff we saved */
     last_saved_pos_hints = pos_hints;
     lastTimestamp = t;
@@ -5054,7 +5054,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   do_menu(&mp, &mret);
   if (mret.rc == MENU_DOUBLE_CLICKED && action)
   {
-    ExecuteFunction(action,tmp_win,eventp,context,*Module,EXPAND_COMMAND);
+    ExecuteFunction(action,tmp_win,eventp,context,*Module,EXPAND_COMMAND, NULL);
   }
 }
 

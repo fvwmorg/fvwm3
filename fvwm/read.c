@@ -78,7 +78,7 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
     if (debugging)
       fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
 
-    ExecuteFunction(tline,tmp_win,eventp,context,Module,EXPAND_COMMAND);
+    ExecuteFunction(tline,tmp_win,eventp,context,Module,EXPAND_COMMAND,NULL);
     tline = fgets(line,(sizeof line)-1,f);
   }
 }

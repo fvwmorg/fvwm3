@@ -80,12 +80,12 @@ extern FvwmFunction *NewFvwmFunction(const char *name);
 void DestroyFunction(FvwmFunction *func);
 extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
 			  cursor_type, int);
-void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
-		     unsigned long context, int Module,
-		     expand_command_type expand_cmd);
-void ExecuteFunctionSaveTmpWin(char *Action, FvwmWindow *tmp_win,
-			       XEvent *eventp, unsigned long context,
-			       int Module, expand_command_type expand_cmd);
+void ExecuteFunction(
+  char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
+  int Module, expand_command_type expand_cmd, char *args[]);
+void ExecuteFunctionSaveTmpWin(
+  char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
+  int Module, expand_command_type expand_cmd, char *args[]);
 void AddToFunction(FvwmFunction *func, char *action);
 
 enum

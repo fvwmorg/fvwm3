@@ -1,26 +1,28 @@
 .\" Formating instructions for the fvwm man page:
 .\"
-.\" - Do not use \f... formatting instructions.
-.\" - Avoid single and double quotes wherever possible.
+.\"  - Do not use \f... formatting instructions.
+.\"  - Avoid single and double quotes wherever possible.
 .\"
 .\" For further details, please refer to the Linux Man-Page howto.
 .\"
 .\"  context                                typeface       example
-.\"  -------------------------------------- -------------  -----------------
-.\"  filenames:                             italics (.I)   .I .fvwm2rc
-.\"  command line options of fvwm2 command: bold (.B)      .B \-cmd
-.\"  arguments of command line options:     italics (.I)   .BI \-cmd command
-.\"  built in commands:                     bold (.B)      .B Move
-.\"  references to built in commands:       bold (.B)      .RB See Move
-.\"  references to man page sections:       bold (.B)      .RB See SYNOPSIS
-.\"  built in command options:              italics (.I)   .BI "Move " "0 0"
-.\"  environment variables:                 italics (.I)   .I $DISPLAY
-.\"  key names:                             small (.SM)    .SM Tab
-.\"  style names and strings:               double quotes  "stylename"
-.\"  single characters:                     single quotes  '@'
-.\"  module names:                          bold (.B)      .B FvwmTheme
-.\"  links to web pages:                    bold (.B)      .B http://fvwm.org
-.\"  acronyms:                              small (.SM)    .SM ICCCM
+.\"  ---------------------------------- --------------  -----------------
+.\"  filenames:                         italics (.I)    .I .fvwm2rc
+.\"  command line options of fvwm2 cmd: bold (.B)       .B \-cmd
+.\"  arguments of command line options: italics (.I)    .BI \-cmd command
+.\"  built in commands:                 bold (.B)       .B Move
+.\"  references to built in commands:   bold (.B)       .RB See Move
+.\"  references to man page sections:   bold (.B)       .RB See SYNOPSIS
+.\"  references to style options:       italics (.I)    .RI See Lenience
+.\"  built in command options:          italics (.I)    .BI "Move " "0 0"
+.\"  command syntax:                    bold/ita. (.BI) .BI "Move [" "x y" "]"
+.\"  environment variables:             italics (.I)    .I $DISPLAY
+.\"  key names:                         small (.SM)     .SM Tab
+.\"  style names and strings:           double quotes   "stylename", "x"
+.\"  single characters:                 single quotes   '@'
+.\"  module names:                      bold (.B)       .B FvwmTheme
+.\"  links to web pages:                bold (.B)       .B http://fvwm.org
+.\"  acronyms:                          small (.SM)     .SM ICCCM
 .\"
 .\"
 .\" @(#)fvwm2.3 8/14/1999
@@ -593,6 +595,28 @@ for what that may mean.
 .SM GNOME
 support is a compile time option.
 
+.SH MWM COMPATIBILITY
+Fvwm provides options to emulate Motif Window Manager (Mwm) as
+good as possible.  Please refer to the
+.B Emulate
+command as well as to the Mwm specific options of the
+.BR Style " and " MenuStyle
+commands for details.
+
+.SH OPEN LOOK and XVIEW COMPATIBILITY
+Fvwm supports all the Open Look decoration hints (except pushpins).
+Most (perhaps all) Open Look applications have a strange notion of
+keyboard focus handling.  Should you use any such application, please
+add the following line to your .fvwm2rc:
+.EX
+Style * OLDecor, Lenience
+.EE
+Please refer to the
+.IR OLDecor " and " Lenience
+options of the
+.B Style
+command for details.
+
 .SH M4 PREPROCESSING
 
 .PP
@@ -867,7 +891,7 @@ other kinds of quotes.
 
 Whenever a fvwm command line is executed, fvwm performs parameter
 expansion.  A parameter is a '$' followed by a single letter or
-a word enclosed in braces (${...}).  If fvwm encounters an unquoted
+a word enclosed in braces ($[...]).  If fvwm encounters an unquoted
 parameter on the command line it expands it to a string indicated
 by the parameter name.  Unknown parameters are left untouched.
 Parameter expansion is performed before quoting.  To quote a
@@ -4810,6 +4834,9 @@ makes fvwm attempt to recognize and respect the olwm and olvwm
 hints that many older XView and OLIT applications use.  Switch
 this option off with
 .IR NoOLDecor .
+If you have such applications, be sure to use the
+.I Lenience
+style too.
 
 .I UseDecor
 accepts one argument: the name of a decor created with

@@ -781,6 +781,7 @@ void echo_func(F_CMD_ARGS)
 {
   unsigned int len;
 
+fprintf(stderr,"echo action='%s'\n",action);
   if (!action)
     action = "";
   len = strlen(action);
@@ -1772,7 +1773,7 @@ void AddToDecor(FvwmDecor *decor, char *s)
   if (!*s)
     return;
   Scr.cur_decor = decor;
-  ExecuteFunction(s,NULL,&Event,C_ROOT,-1,EXPAND_COMMAND);
+  ExecuteFunction(s,NULL,&Event,C_ROOT,-1,EXPAND_COMMAND,NULL);
   Scr.cur_decor = NULL;
 }
 
@@ -1857,8 +1858,9 @@ void DestroyDecor(F_CMD_ARGS)
 	while(fw)
 	{
 	    if (fw->decor == found)
-	      ExecuteFunction("ChangeDecor Default",fw,eventp,
-			      C_WINDOW,*Module,EXPAND_COMMAND);
+	      ExecuteFunction(
+		"ChangeDecor Default", fw, eventp, C_WINDOW, *Module,
+		EXPAND_COMMAND, NULL);
 	    fw = fw->next;
 	}
 	prev->next = found->next;
@@ -2932,8 +2934,8 @@ void strokeFunc(F_CMD_ARGS)
       usleep(200000);
       UngrabEm(GRAB_BUSY);
     }
-    ExecuteFunction(stroke_action, tmp_win, eventp, context, -1,
-		    EXPAND_COMMAND);
+    ExecuteFunction(
+      stroke_action, tmp_win, eventp, context, -1, EXPAND_COMMAND, NULL);
   }
 
 }
