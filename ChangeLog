@@ -1,5 +1,9 @@
 2002-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in:
+	* NEWS:
+	updated for 2.5.3
+
 	* fvwm/menuitem.h (struct):
 	* fvwm/menus.c (paint_menu_gradient_background):
 	(paint_menu_pixmap_background):
