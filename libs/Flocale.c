@@ -73,7 +73,6 @@
 static FlocaleFont *FlocaleFontList = NULL;
 static char *Flocale = NULL;
 static Bool FlocaleSeted = False;
-static char *Fmodifiers = NULL;
 static FlocaleCharset UnsetCharset = {"Unset", NULL, -2, NULL};
 
 
@@ -475,6 +474,10 @@ void FlocaleSetlocaleForX(
  * locale initialisation
  * ***************************************************************************/
 
+#if FlocaleMultibyteSupport
+
+static char *Fmodifiers = NULL;
+
 void FlocaleInit(
 	int category, const char *locale, const char *modifiers,
 	const char *module)
@@ -500,6 +503,8 @@ void FlocaleInit(
 		module, Flocale, Fmodifiers);
 #endif
 }
+
+#endif /* FlocaleMultibyteSupport */
 
 /* ***************************************************************************
  * fonts loading

@@ -1,3 +1,8 @@
+2002-04-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/Flocale.c:
+	fixed --disable-multibyte
+
 2002-04-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (border_draw_title_deep):
@@ -7,7 +12,7 @@
 
 2002-04-23  Mikhael Goikhman  <migo@homemail.com>
 
-	* fvwm/fvwm2.1:
+	* fvwm/fvwm.1:
 	* NEWS:
 	* AUTHORS:
 	added new entry about CurrentAtEnd
