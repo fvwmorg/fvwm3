@@ -1,3 +1,8 @@
+2000-04-17  olicha <olivier.chapuis@free.fr>
+	
+	* modules/FvwmScript/Scripts/Widget/PopupMenu.c (EvtMousePopupMenu)
+	Fixed ChangeTitle for PopupMenu
+	
 2000-04-16  olicha <olivier.chapuis@free.fr>
 	
 	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:

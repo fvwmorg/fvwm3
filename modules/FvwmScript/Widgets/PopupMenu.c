@@ -161,6 +161,7 @@ void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton)
 
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  hOpt=asc+desc+10;
+ xobj->value3=CountOption(xobj->title);
  yMenu=xobj->y-((xobj->value-1)*hOpt);
  hMenu=xobj->value3*hOpt;
 
