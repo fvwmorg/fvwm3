@@ -27,6 +27,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <unistd.h>                     /* for STDIN_FILENO */
 #include <errno.h>
 #include <X11/keysym.h>
 
@@ -2487,7 +2488,7 @@ void CMD_Exec(F_CMD_ARGS)
 	{
 		/* close stdin so the exec'd process knows its not
 		   interactive */
-	  	close(0);
+	  	close(STDIN_FILENO);
 		if (fvwm_setpgrp() == -1)
 		{
 			fvwm_msg(ERR, "exec_function", "setpgrp failed (%s)",
