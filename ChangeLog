@@ -1,3 +1,8 @@
+2002-03-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/FBidi.{c,h}:
+	new files
+
 2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.c (LoadDefaultLeftButton):
