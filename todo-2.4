@@ -1,9 +1,5 @@
-Okay folks, we have a number of unconfirmed open issues whose
-reporters did not respond to any question.  I am willing to
-ignore these to get 2.4 out the door.  Others are simply
-unreproducible or not worth the time spent:
-
-  122, 127, 129, 130, 156, 158, 162
+Please look over the "to be discussed" section so we can decide
+which of these will not be done.
 
 Items with highest priority / most severe problems:
 
@@ -11,32 +7,28 @@ Items with highest priority / most severe problems:
 
 New since last update:
 
-
+163 (former 9 + 12)
 
 Closed since last update:
 
-123, 127
+9, 12, 123, 127, 148
 
 ---------- Summary: ----------------------------------------------
 
- 2 to be verified
- 9 to be discussed
- 6 to do
- 3 distribution issues
+ 1 to be verified
+10 to be discussed
+ 5 to do
+ 2 distribution issues
  9 testing
 ----------------------
-29 open items
-133 items closed
-162 items in total
+27 open items
+136 items closed
+163 items in total
 
 ---------- To be verified: ---------------------------------------
 
 118) Investigate "FvwmPager & StaysOnTop" bug (#543).
      [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
-148) Losing focus when entering root window bug.
-     [reported by Elliot Sowadsky on 29-Dec-1999]
-     [confirmed by Dominik]
-     [hopefully fixed]
 
 ---------- To be discussed ---------------------------------------
 
@@ -48,6 +40,11 @@ Closed since last update:
      (Datek's "Streamer", CodeWarrior).
      [optional]
      -> [unreproducible]
+116) Fix problem that can cause long icon titles to be expanded
+     although the pointer is not over it.
+     [reported by Mikhael]
+     -> [Dominik: I know the problem is there, but it is difficult to debug and
+     perhaps not worth to delay the release]
 122) Investigate FvwmButtons panel problem.
      [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
      -> [no usable feedback]
@@ -62,6 +59,7 @@ Closed since last update:
      [not reproduced yet]
      [purify may bring it up when we run the test script again]
      -> [unreproducible]
+143) Bug #603 (TaskBar bugs): investigate and possibly fix.
 156) xterm client window cursor corrupted.
      [reported by Nagi Aboulenein on 2-Nov-1999]
      -> [unreproducible]
@@ -74,26 +72,19 @@ Closed since last update:
 
 --------- To do: ------------------------------------------------
 
-116) Fix problem that can cause long icon titles to be expanded
-     although the pointer is not over it.
-     [reported by Mikhael]
 117) Investigate icons disappearing if icon changes while on a
      different desk.
      [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
 125) Bug #479 (windows migrating to page 0 0 during restart w/ xsession)
 134) Investigate DecWindows ConfigureRequest/Notify race condition.
      [reported by Fabien Viallard on 19-Apr-2000]
-143) Bug #603 (TaskBar bugs): investigate and possibly fix.
 146) Bug #542 (Winch signals).
 
 ---------- Distribution issues: ----------------------------------
 
- 9)  Set up RPM packages.
-     [???; Jason?]
- 12) Set up bzip2 tarballs.
-     [optional]
  62) Write a new announcement.
      [in progress]
+163) Make bzip2 and rpm packages available from our downloads page.
 
 ---------- Testing: ----------------------------------------------
 
@@ -113,6 +104,10 @@ Closed since last update:
      [unreproducible, seems to be fixed]
 127) Bug #511 (xpp subwindows not drawn properly)
      [not a bug, xpp is broken]
+148) Losing focus when entering root window bug.
+     [reported by Elliot Sowadsky on 29-Dec-1999]
+     [confirmed by Dominik]
+     [fixed]
 
 ========== Closed: ===============================================
 
@@ -127,10 +122,12 @@ Closed since last update:
  8)  Add an explanation about the various packages and where to
      discuss them to the web page.
      (stable, unstable (alpha), snapshots, ftp source tree, CVS).
+ 9)  Set up RPM packages.
  10) Remove 'PopupAsRootMenu' menu style (?).
      [rejected]
  11) Add FvwmKb module?
      [delayed until after 2.4]
+ 12) Set up bzip2 tarballs.
  13) Use a 'busy' pointer during startup.
  14) Figure out what the problem with Amaya is.
      [reported on 3-Jun-1999 by Rob Urban <urban@spielwiese.de>]
