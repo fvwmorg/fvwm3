@@ -1,3 +1,8 @@
+2003-04-23  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw): 
+	Fixed a Region leaks when a buttons has no title
+
 2003-04-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPerl/FvwmPerl.in:

@@ -374,7 +374,10 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 			t3p = ".\0";
 			w3p = FlocaleTextWidth(Ffont, t3p, 1);
 			if ((newx + w3p + 2) >= w)
+			{
+				XDestroyRegion(t_region);
 				return;
+			}
 		}
 	}
 
