@@ -1,5 +1,8 @@
 1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* modules/FvwmRearrange: new module added (merged FvwmTile and
+	FvwmCascade).
+
 	* fvwm/fvwm2.1: updated and cleaned up the manpage, reformatted
 	examples to a consistent style
 
