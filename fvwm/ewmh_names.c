@@ -329,7 +329,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
   }
 
   if (fwin->name && strlen(fwin->name) > MAX_WINDOW_NAME_LEN)
-      fwin->icon_name[MAX_ICON_NAME_LEN] = 0;
+      fwin->icon_name[MAX_WINDOW_NAME_LEN] = 0;
   SET_NAME_CHANGED(fwin, 1);
 
   EWMH_SetVisibleName(fwin, False);

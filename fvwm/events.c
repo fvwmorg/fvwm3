@@ -453,6 +453,7 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
       DrawDecorations(
 	Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
 
+    EWMH_SetVisibleName(Tmp_win,False);
     /*
      * if the icon name is NoName, set the name of the icon to be
      * the same as the window
@@ -464,6 +465,7 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
 		    (unsigned long)Tmp_win,Tmp_win->icon_name);
       RedoIconName(Tmp_win);
     }
+    
     break;
 
   case XA_WM_ICON_NAME:
@@ -533,6 +535,7 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
     BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,
 		  (unsigned long)Tmp_win,Tmp_win->icon_name);
     RedoIconName(Tmp_win);
+    EWMH_SetVisibleName(Tmp_win, True);
     break;
 
   case XA_WM_HINTS:
