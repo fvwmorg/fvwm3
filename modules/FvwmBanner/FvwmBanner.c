@@ -69,7 +69,6 @@ void RedrawWindow(void);
 void GetXPMData(char **);
 void GetXPMFile(char *,char *);
 void change_window_name(char *str);
-int flush_expose (Window w);
 static void parseOptions (int fd[2]);
 
 XpmIcon view;
