@@ -43,6 +43,9 @@ Changes in alpha release 2.5.11 (not released yet)
 
 * New conditions AnyScreen and Overlapped.
 
+* The Read and PipeRead commands return 1 if the file or command
+  could be read or executed and -1 otherwise.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)

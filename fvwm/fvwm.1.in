@@ -9773,6 +9773,11 @@ PipeRead 'command 1>&2'
 .EE
 The redirection causes any output from the program to go to stderr
 instead of being read as a sequence of commands by fvwm.
+.B PipeRead
+returns 1 if the given command could be executed or -1 if not
+(see the section
+.B CONDITIONAL COMMANDS
+for the meaning of return codes).
 
 .TP
 .BI "Read " filename " [" quiet "]"
@@ -9787,7 +9792,13 @@ directory.  The user's data directory is by default
 .IR $HOME/.fvwm .
 It can be overridden by exporting
 .I FVWM_USERDIR
-set to any other directory.
+set to any other directory.  The
+.B Read
+command returns 1 if the given file could be read or -1 if not
+(see the section
+.B CONDITIONAL COMMANDS
+for the meaning of return codes).
+
 
 .TP
 .BI "SetEnv " "variable value"

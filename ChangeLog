@@ -1,3 +1,15 @@
+2004-07-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.1.in (Note):
+	* fvwm/read.c (CMD_Read):
+	(CMD_PipeRead):
+	the Read and PipeRead commands have a return code
+
+	* fvwm/read.c (run_command_stream):
+	(CMD_Read):
+	(CMD_PipeRead):
+	removed debug code
+
 2004-07-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (GetResizeArguments):

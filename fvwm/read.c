@@ -150,13 +150,6 @@ void run_command_stream(
 		{
 			tline[l - 1] = '\0';
 		}
-		if (debugging)
-		{
-			fvwm_msg(
-				DBG, "ReadSubFunc",
-				"Module switch %d, about to exec: '%s'",
-			exc->m.modnum, tline);
-		}
 		execute_function(cond_rc, exc, tline, 0);
 		tline = fgets(line, (sizeof line) - 1, f);
 	}
@@ -286,30 +279,40 @@ void CMD_Read(F_CMD_ARGS)
 
 	DoingCommandLine = False;
 
-	if (debugging)
+	if (cond_rc != NULL)
 	{
-		fvwm_msg(
-			DBG, "ReadFile", "Module flag %d, about to attempt %s",
-			exc->m.modnum, action);
+		cond_rc->rc = COND_RC_OK;
 	}
-
 	if (!parse_filename("Read", action, &filename, &read_quietly))
 	{
+		if (cond_rc != NULL)
+		{
+			cond_rc->rc = COND_RC_ERROR;
+		}
 		return;
 	}
 	cursor_control(True);
-	if (!run_command_file(filename, exc) && !read_quietly)
+	if (!run_command_file(filename, exc))
 	{
-		if (filename[0] == '/')
+		if (!read_quietly)
 		{
-			fvwm_msg(ERR, "Read",
-				  "file '%s' not found",filename);
+			if (filename[0] == '/')
+			{
+				fvwm_msg(
+					ERR, "Read",
+					"file '%s' not found", filename);
+			}
+			else
+			{
+				fvwm_msg(
+					ERR, "Read",
+					"file '%s' not found in %s or "
+					FVWM_DATADIR, filename, fvwm_userdir);
+			}
 		}
-		else
+		if (cond_rc != NULL)
 		{
-			fvwm_msg(ERR, "Read",
-				 "file '%s' not found in %s or "FVWM_DATADIR,
-				 filename, fvwm_userdir);
+			cond_rc->rc = COND_RC_ERROR;
 		}
 	}
 	free(filename);
@@ -326,18 +329,26 @@ void CMD_PipeRead(F_CMD_ARGS)
 
 	DoingCommandLine = False;
 
-	if (debugging)
+	if (cond_rc != NULL)
 	{
-		fvwm_msg(DBG,"PipeRead","about to attempt '%s'", action);
+		cond_rc->rc = COND_RC_OK;
 	}
 	if (!parse_filename("PipeRead", action, &command, &read_quietly))
 	{
+		if (cond_rc != NULL)
+		{
+			cond_rc->rc = COND_RC_ERROR;
+		}
 		return;
 	}
 	cursor_control(True);
 	f = popen(command, "r");
 	if (f == NULL)
 	{
+		if (cond_rc != NULL)
+		{
+			cond_rc->rc = COND_RC_ERROR;
+		}
 		if (!read_quietly)
 		{
 			fvwm_msg(
