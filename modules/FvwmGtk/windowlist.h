@@ -11,6 +11,10 @@ typedef struct {
   unsigned int omit_iconified : 1;
   unsigned int omit_sticky : 1;
   unsigned int omit_normal : 1;
+  unsigned int sorting : 2;
+#define NO_DESK_SORT    1
+#define SORT_ALPHABETIC 2
+  char *pattern;
   int desk;
 } window_list_options;
 

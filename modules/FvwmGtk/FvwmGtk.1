@@ -115,10 +115,14 @@ also used by fvwm for its builtin window-list.
 
 .IP "*FvwmGtkWindowList \fBname\fP [ \fBoption\fP... ]"
 Creates a window-list bound to \fBname\fP. The window-list will be 
-formatted according to the given options. Currently supported options are
+formatted according to the given options. Currently supported are
+the following options which have the same meaning as for the fvwm's 
+builtin window list:
 "NoGeometry", "NoMiniIcon", "UseIconName", "Desk n", "CurrentDesk", 
 "Icons/NoIcons/OnlyIcons", "Sticky/NoSticky/OnlySticky", 
-"Normal/NoNormal/OnlyNormal".
+"Normal/NoNormal/OnlyNormal", "NoDeskSort", "Alphabetic".
+Additionally, you can specify a name pattern to match the name or
+icon name of the listed windows.
 
 
 .SH DIALOGS

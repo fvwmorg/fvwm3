@@ -1,5 +1,7 @@
 #include "config.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <X11/Xlib.h>
 
 #include <glib.h>
@@ -17,32 +19,12 @@ extern long current_desk;
 
 
 static void
-window_list_item (gpointer key, gpointer value, gpointer data)
+window_list_item (window_list_entry *wle, window_list_options *opts)
 {
-  unsigned long win = *(unsigned long *) key;
-  window_list_entry *wle = (window_list_entry *) value;
-  window_list_options *opts;
   char *argv[4];
   char cmd[200], geo[200];
-  
-  if (wle->skip)
-    {
-      return;
-    }
 
-  opts = (window_list_options *) 
-    gtk_object_get_data (GTK_OBJECT (current), "window_list");
-
-  if ((opts->one_desk && (opts->desk != wle->desk)) ||
-      (opts->current_desk && (current_desk != wle->desk)) ||
-      (opts->omit_iconified && wle->iconified) ||
-      (opts->omit_sticky && wle->sticky) ||
-      (opts->omit_normal && !wle->iconified && !wle->sticky))
-    {
-      return;
-    }
-
-  g_snprintf (cmd, sizeof (cmd), "WindowListFunc %#lx", win);
+  g_snprintf (cmd, sizeof (cmd), "WindowListFunc %#lx", wle->w);
   g_snprintf (geo, sizeof (geo), "  %s%d:%dx%d%s%d%s%d%s%s",
 	      wle->iconified ? "(" : "",
 	      wle->desk, wle->width, wle->height, 
@@ -75,7 +57,15 @@ window_list (int argc, char **argv)
 
   for (i = 1; i < argc; i++) 
     {
-      if (strcasecmp (argv[i], "NoGeometry") == 0)
+      if (strcasecmp (argv[i], "NoDeskSort") == 0)
+	{
+	  opts->sorting |= NO_DESK_SORT;
+	}
+      else if (strcasecmp (argv[i], "Alphabetic") == 0)
+	{
+	  opts->sorting |= SORT_ALPHABETIC;
+	}
+      else if (strcasecmp (argv[i], "NoGeometry") == 0)
 	{
 	  opts->no_geometry = 1;
 	}
@@ -85,11 +75,14 @@ window_list (int argc, char **argv)
 	    {
 	      opts->one_desk = 1;
 	      opts->desk = atoi (argv[++i]);
+	      opts->sorting |= NO_DESK_SORT;
 	    }
 	}
       else if (strcasecmp (argv[i], "CurrentDesk") == 0)
 	{
+	  opts->one_desk = 1;
 	  opts->current_desk = 1;
+	  opts->sorting |= NO_DESK_SORT;
 	}
       else if (strcasecmp (argv[i], "UseIconName") == 0)
 	{
@@ -141,8 +134,16 @@ window_list (int argc, char **argv)
 	  opts->omit_iconified = 1;
 	  opts->omit_sticky = 1;
 	}
-	
+      else 
+	{
+	  if (opts->pattern) 
+	    {
+	      free (opts->pattern);
+	    }
+	  opts->pattern = strdup (argv[i]);
+	}
     }
+  
   gtk_object_set_data (GTK_OBJECT (item), "window_list", opts);
 }
 
@@ -176,11 +177,98 @@ lookup_window_list_entry (unsigned long w)
   return wle;
 }
 
+static window_list_entry **unsorted_window_list = NULL;
+static int unsorted_window_list_entries = 0;
+
+void 
+append_unsorted (gpointer key, gpointer value, gpointer data)
+{
+  window_list_entry *wle = (window_list_entry *) value;
+  window_list_options *opts = (window_list_options *) data;
+  
+  if ( !(wle->skip ||
+	 (opts->one_desk && (opts->desk != wle->desk)) ||
+	 (opts->current_desk && (current_desk != wle->desk)) ||
+	 (opts->omit_iconified && wle->iconified) ||
+	 (opts->omit_sticky && wle->sticky) ||
+	 (opts->omit_normal && !wle->iconified && !wle->sticky) ||
+	 (opts->pattern && 
+	  !matchWildcards (opts->pattern, wle->icon_name) &&
+	  !matchWildcards (opts->pattern, wle->name))) )
+    {
+      unsorted_window_list[unsorted_window_list_entries++] = wle;
+    }
+}
+
+static int 
+compare_desk (const window_list_entry **u1, const window_list_entry **u2)
+{
+  int r = (*u1)->desk - (*u2)->desk;
+  return ((r != 0) ? r : (int) u1 - (int) u2);
+}
+
+static int 
+compare_name (const window_list_entry **u1, const window_list_entry **u2)
+{
+  return strcasecmp((*u1)->name, (*u2)->name);
+}
+
+static int 
+compare_icon_name (const window_list_entry **u1, const window_list_entry **u2)
+{
+  return strcasecmp((*u1)->icon_name, (*u2)->icon_name);
+}
 
 void
 construct_window_list (void)
 {
-  g_hash_table_foreach (window_list_entries, window_list_item, NULL);
+  window_list_options *opts;
+  int i;
+
+  unsorted_window_list = (window_list_entry **) 
+    realloc (unsorted_window_list, 
+	     g_hash_table_size (window_list_entries) * 
+	     sizeof (window_list_entry *));
+  
+  unsorted_window_list_entries = 0;
+
+  opts = (window_list_options *) 
+    gtk_object_get_data (GTK_OBJECT (current), "window_list");
+
+  g_hash_table_foreach (window_list_entries, append_unsorted, opts);
+
+  if (opts->sorting & SORT_ALPHABETIC)
+    {
+      if (opts->use_icon_name)
+	{
+	  qsort (unsorted_window_list, unsorted_window_list_entries, 
+		 sizeof(window_list_entry*), 
+		 (int(*)(const void*,const void*))compare_icon_name);
+	}
+      else
+	{
+	  qsort (unsorted_window_list, unsorted_window_list_entries, 
+		 sizeof(window_list_entry*), 
+		 (int(*)(const void*,const void*))compare_name);
+	}
+    }
+  if (!(opts->sorting & NO_DESK_SORT)) 
+    {
+      qsort (unsorted_window_list, unsorted_window_list_entries, 
+	     sizeof(window_list_entry*), 
+	     (int(*)(const void*,const void*))compare_desk);      
+    }
+  
+  for (i = 0; i < unsorted_window_list_entries; i++)
+    {
+      if (!(opts->sorting & NO_DESK_SORT) &&
+	  (i > 0) && 
+	  (unsorted_window_list[i-1]->desk != unsorted_window_list[i]->desk))
+	{
+	  menu_separator (0, NULL);
+	}
+      window_list_item (unsorted_window_list[i], opts);
+    }
 }
 
 
