@@ -4735,6 +4735,8 @@ EOF
 
 
 
+unset ac_cv_header_readline_readline
+unset ac_cv_lib_readline_readline
 
 smr_lib=readline
 smr_header=readline/readline.h
@@ -4772,7 +4774,7 @@ fi
 
 if test "$with_readline" != no; then
     echo $ac_n "checking for readline in -l$smr_lib""... $ac_c" 1>&6
-echo "configure:4776: checking for readline in -l$smr_lib" >&5
+echo "configure:4778: checking for readline in -l$smr_lib" >&5
 ac_lib_var=`echo $smr_lib'_'readline | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4780,7 +4782,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-l$smr_lib ${readline_LIBS} -ltermcap $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4784 "configure"
+#line 4786 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -4791,7 +4793,7 @@ int main() {
 readline()
 ; return 0; }
 EOF
-if { (eval echo configure:4795: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:4797: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -4836,17 +4838,17 @@ CPPFLAGS="$CPPFLAGS ${readline_CFLAGS}"
 do
 ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-echo "configure:4840: checking for $ac_hdr" >&5
+echo "configure:4842: checking for $ac_hdr" >&5
 if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 4845 "configure"
+#line 4847 "configure"
 #include "confdefs.h"
 #include <$ac_hdr>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:4850: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:4852: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -4939,7 +4941,7 @@ fi
 
 if test "$with_readline" != no; then
     echo $ac_n "checking for readline in -l$smr_lib""... $ac_c" 1>&6
-echo "configure:4943: checking for readline in -l$smr_lib" >&5
+echo "configure:4945: checking for readline in -l$smr_lib" >&5
 ac_lib_var=`echo $smr_lib'_'readline | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -4947,7 +4949,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-l$smr_lib ${readline_LIBS} -lncurses $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 4951 "configure"
+#line 4953 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -4958,7 +4960,7 @@ int main() {
 readline()
 ; return 0; }
 EOF
-if { (eval echo configure:4962: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:4964: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -5003,17 +5005,17 @@ CPPFLAGS="$CPPFLAGS ${readline_CFLAGS}"
 do
 ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-echo "configure:5007: checking for $ac_hdr" >&5
+echo "configure:5009: checking for $ac_hdr" >&5
 if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 5012 "configure"
+#line 5014 "configure"
 #include "confdefs.h"
 #include <$ac_hdr>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:5017: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:5019: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*

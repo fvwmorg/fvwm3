@@ -1,3 +1,8 @@
+1999-01-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmConfig/WinBase.C: Removed include of strings.h, moved
+	include of config.h to top.
+
 1999-01-13  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine): Made argument just

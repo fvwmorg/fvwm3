@@ -1,3 +1,4 @@
+#include "config.h"
 
 #include <iostream.h>
 #include <stdlib.h>
@@ -9,10 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <strings.h>
 #include <sys/types.h>
 #include <sys/time.h>
-#include "config.h"
 #include "WinBase.h"
 
 char *def_geom_string = NULL;

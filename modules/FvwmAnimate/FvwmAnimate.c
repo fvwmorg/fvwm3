@@ -40,6 +40,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <X11/Xlib.h>
@@ -47,12 +49,10 @@
 #include <math.h>
 #include <unistd.h>
 #include <string.h>
-#include <strings.h>                    /* for rindex */
 #include <ctype.h>
 #include <fcntl.h>                      /* for O_WRONLY */
 #include <sys/times.h>                  /* For timing things time() */
 #include <limits.h>                     /* For time() */
-#include "config.h"
 #include "../../fvwm/module.h"
 #include "../../libs/fvwmlib.h"
 #include "FvwmAnimate.h"

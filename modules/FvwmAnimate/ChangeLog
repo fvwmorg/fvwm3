@@ -1,3 +1,8 @@
+1999-01-25  Steven Michael ROBBINS  <stever@bongo.cs.mcgill.ca>
+
+	* FvwmAnimate.c: Include config.h first.  Remove include of
+	<strings.h> as not all systems have this.
+
 1998-11-11  Dan Espen  <dane@mk.bellcore.com>
 
 	* FvwmAnimate.c:  Fix bug that stopped  zoom3d from  being picked.

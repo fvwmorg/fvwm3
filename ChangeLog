@@ -1,3 +1,8 @@
+1999-01-25  Steven Michael ROBBINS  <stever@bongo.cs.mcgill.ca>
+
+	* configure.in: Forget values cached for libreadline; it messes up
+	detecting whether termcap or ncurses is needed.
+
 1999-01-25  Dan Espen  <dane@mk.bellcore.com>
 
 	* libs/Grab.c: Make the grab count externally visible.

@@ -242,6 +242,9 @@ AC_SUBST(rplay_LIBS)
 AC_SUBST(rplay_CFLAGS)
 
 dnl FIXME: should compute availability of termcap
+dnl Forget cached values, so user can re-run configure
+unset ac_cv_header_readline_readline
+unset ac_cv_lib_readline_readline
 smr_CHECK_LIB(readline, , , readline, readline/readline.h, -ltermcap)
 if test "$readline_LIBS"; then
   readline_LIBS="$readline_LIBS -ltermcap"
