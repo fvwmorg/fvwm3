@@ -222,11 +222,13 @@ static void ParseDefaults(char *buf) {
   if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
-
+  /* grok the global config lines sent from fvwm */
+  if (strncasecmp(buf, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+    ParseGraphics(dpy, buf, G);
   /* Accept commands beginning with "*FvwmFormDefault".
      This is to make sure defaults are read first.
      Note the hack w. bg_state. */
-  if (strncasecmp(buf, "*FvwmFormDefault", 16) == 0) {
+  else if (strncasecmp(buf, "*FvwmFormDefault", 16) == 0) {
     p=buf+16;
     e = FindToken(p,def_table,struct CommandTable);/* find cmd in table */
     if (e != 0) {                       /* if its valid */
@@ -417,7 +419,7 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
   xgcv.background = dt->dt_colors[c_item_bg];
   xgcv.font = dt->dt_font;
   dt->dt_item_GC = XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
-  if (scr_depth < 2) {
+  if (G->depth < 2) {
     dt->dt_colors[c_itemlo] = BlackPixel(dpy, screen);
     dt->dt_colors[c_itemhi] = WhitePixel(dpy, screen);
   } else {
@@ -1262,8 +1264,12 @@ static void OpenWindows ()
   }
   myfprintf((stderr,"going to create window w. bg %s\n",
              screen_background_color));
-  CF.frame = XCreateSimpleWindow(dpy, root, x, y, CF.max_width, CF.total_height,
-			      0, BlackPixel(dpy, screen), CF.screen_background);
+  xswa.background_pixel = CF.screen_background;
+  xswa.border_pixel = 0;
+  xswa.colormap = G->cmap;
+  CF.frame = XCreateWindow(dpy, root, x, y, CF.max_width, CF.total_height, 0,
+			   G->depth, InputOutput, G->viz,
+			   CWColormap | CWBackPixel | CWBorderPixel, &xswa);
   XSelectInput(dpy, CF.frame,
                KeyPressMask | ExposureMask | StructureNotifyMask);
   XStoreName(dpy, CF.frame, MyName+1);
@@ -1511,21 +1517,23 @@ int main (int argc, char **argv)
   if (ref == 0) ref = None;
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
+  G = CreateGraphics(dpy);
+
   fd_x = XConnectionNumber(dpy);
 
   screen = DefaultScreen(dpy);
   root = RootWindow(dpy, screen);
-  scr_depth = DefaultDepth(dpy, screen);
 
-  InitPictureCMap(dpy,root);            /* for shadow routines */
-                                        /* also creates PictureCMap */
   ReadDefaults();                       /* get config from fvwm */
+
   if (strcasecmp(MyName+1,"FvwmForm") != 0) { /* if not already read */
     sprintf(cmd,"read %s Quiet",MyName+1); /* read quiet modules config */
     SendText(Channel,cmd,0);
   }
 
   ReadConfig();                         /* get config from fvwm */
+
+  SavePictureCMap(dpy, G->viz, G->cmap, G->depth); /* for shadow routines */
 
   MassageConfig();                      /* add data, calc window x/y */
 
@@ -1556,16 +1564,14 @@ void DeadPipe(int nonsense) {
 static Pixel MyGetColor(char *name, char *ModName, int bw)
 {
   XColor color;
-  XWindowAttributes attributes;
 
-  if (scr_depth < 2) {
+  if (G->depth < 2) {
     return (bw ? WhitePixel(dpy, screen) : BlackPixel(dpy, screen));
   }
-  XGetWindowAttributes(dpy,root,&attributes);
   color.pixel = 0;
-  if (!XParseColor (dpy, attributes.colormap, name, &color))
+  if (!XParseColor (dpy, G->cmap, name, &color))
     nocolor("parse",name,ModName);
-  else if(!XAllocColor (dpy, attributes.colormap, &color))
+  else if(!XAllocColor (dpy, G->cmap, &color))
     nocolor("alloc",name,ModName);
   return color.pixel;
 }
