@@ -2070,14 +2070,19 @@ void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
 
 void scanForPixmap(char *instring, Picture **p, char identifier)
 {
-  char *tstart, *txt;
+  char *tstart, *txt, *save_instring, *name;
   int i;
   Picture *pp;
-  char name[100];
   extern char *IconPath;
 #ifdef XPM
   extern char *PixmapPath;
 #endif
+
+  if (!instring)
+    {
+      *p = NULL;
+      return;
+    }
 
 #ifdef UGLY_WHEN_PIXMAPS_MISSING
   char *save_instring;
@@ -2086,6 +2091,7 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
   save_instring = (char *)safemalloc(strlen(instring)+1);
   strcpy(save_instring,instring);
 #endif
+  name = (char *)safemalloc(strlen(instring)+1);
 
   /* Scan whole string	*/
   for (txt = instring; *txt != '\0'; txt++)
@@ -2104,7 +2110,7 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	  tstart = txt;
 	  txt++;
 	  i=0;
-	  while((*txt != identifier)&&(*txt != '\0')&&(i<99))
+	  while((*txt != identifier)&&(*txt != '\0'))
 	    {
 	      name[i] = *txt;
 	      txt++;
@@ -2140,6 +2146,7 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	}
     }
 
+  free(name);
 #ifdef UGLY_WHEN_PIXMAPS_MISSING
   free(save_instring);
 #endif
