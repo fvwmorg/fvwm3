@@ -450,6 +450,76 @@ sub switchMonitoring () {
 	$inSwitchMonitoring = 0;
 }
 
+# ---- tools page ----
+my $toolsPage = new Gtk::VBox(0, 0);
+$toolsPage->border_width(10);
+$notebook->append_page($toolsPage, new Gtk::Label(" Tools "));
+
+my $requestButtonBox = new Gtk::HButtonBox();
+$requestButtonBox->set_child_size(190, 0);
+$requestButtonBox->set_child_ipadding(0, 2);
+$requestButtonBox->set_layout('edge');
+
+my $requestButtonBoxFrame = new Gtk::Frame(" Request module info ");
+$tmp = new Gtk::VBox(0, 0); $tmp->add($requestButtonBox); $tmp->border_width(5);
+$requestButtonBoxFrame->add($tmp);
+$toolsPage->pack_start($requestButtonBoxFrame, 0, 0, 0);
+
+my $sendConfigInfoButton = new Gtk::Button(" Send_ConfigInfo ");
+$requestButtonBox->pack_end($sendConfigInfoButton, 1, 1, 6);
+$sendConfigInfoButton->signal_connect("clicked", sub {
+	$module->send("Send_ConfigInfo");
+});
+
+my $sendWindowListButton = new Gtk::Button(" Send_WindowList ");
+$requestButtonBox->pack_end($sendWindowListButton, 1, 1, 6);
+$sendWindowListButton->signal_connect("clicked", sub {
+	$module->send("Send_WindowList");
+});
+
+my $commandToSend = new Gtk::Entry();
+$commandToSend->signal_connect("activate", sub {
+	$module->send($commandToSend->get_text);
+	$commandToSend->set_text("");
+});
+
+my $commandToSendFrame = new Gtk::Frame(" Command console ");
+$tmp = new Gtk::VBox(0, 0); $tmp->add($commandToSend); $tmp->border_width(5);
+$commandToSendFrame->add($tmp);
+$toolsPage->pack_start($commandToSendFrame, 0, 0, 10);
+
+my $quitButtonBox = new Gtk::HButtonBox();
+$quitButtonBox->set_child_size(190, 0);
+$quitButtonBox->set_child_ipadding(0, 2);
+$quitButtonBox->set_layout('edge');
+$toolsPage->pack_end($quitButtonBox, 0, 0, 0);
+
+my $helpButton = new Gtk::Button(" Help ");
+$quitButtonBox->pack_end($helpButton, 1, 1, 6);
+$helpButton->signal_connect("clicked", sub {
+	$module->openMessageDialog(<<ENDMSG, "FvwmGtkDebug Help");
+This module captures the event information received from fvwm and shows it.
+You should configure events you want to receive and then activate the
+monitoring mode. The activation may be done either from the "Setup" or
+"Stored events" pages. The received-event mask may be changed at any time.
+
+You may then browse the stored event data, compare it or remove it.
+
+Any module may request fvwm to send its config info or window list info.
+The module then receives the requested information using events.
+
+Finally, you may send commands to fvwm, just like FvwmTalk does.
+
+The best way to learn how this application works is to try all options,
+it is safe. Good luck.
+ENDMSG
+});
+
+my $quitButton = new Gtk::Button(" Quit ");
+$quitButtonBox->pack_end($quitButton, 1, 1, 6);
+$quitButton->signal_connect("clicked", sub { Gtk->main_quit; });
+
+# ---- last GUI preparations ----
 updateCheckButtonsFromNewMask();
 updateCurrentEventWidgets();
 
