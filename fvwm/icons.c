@@ -27,7 +27,6 @@
 #include <X11/xpm.h>
 #endif /* XPM */
 #include "fvwm.h"
-#include "menus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -127,9 +126,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   tmp_win->icon_y_loc = final_y;
 
   /* clip to fit on screen */
-  attributes.background_pixel = Scr.DefaultMenuFace->MenuColors.back;
+  attributes.background_pixel = Scr.StdColors.back;
   valuemask =  CWBorderPixel | CWCursor | CWEventMask | CWBackPixel;
-  attributes.border_pixel = Scr.DefaultMenuFace->MenuColors.fore;
+  attributes.border_pixel = Scr.StdColors.fore;
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
 			   VisibilityChangeMask |
@@ -248,8 +247,8 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
     {
       if(Scr.d_depth < 2)
 	{
-	  Relief = Scr.DefaultMenuFace->MenuGC;
-	  Shadow = Scr.DefaultMenuFace->MenuGC;
+	  Relief = Scr.StdReliefGC;
+	  Shadow = Scr.StdShadowGC;
 	}
       else
 	{

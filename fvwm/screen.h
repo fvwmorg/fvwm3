@@ -1,5 +1,5 @@
 /****************************************************************************
- * This module is based on Twm, but has been siginificantly modified 
+ * This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
  ****************************************************************************/
 /*
@@ -19,7 +19,7 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL M.I.T.
  * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
@@ -73,7 +73,7 @@
 
 
 #ifndef NON_VIRTUAL
-typedef struct 
+typedef struct
 {
   Window win;
   int isMapped;
@@ -81,7 +81,7 @@ typedef struct
 #endif
 
 
-typedef enum { 
+typedef enum {
     /* button types */
 #ifdef VECTOR_BUTTONS
     VectorButton                ,
@@ -106,7 +106,7 @@ typedef enum {
 
 /* button style flags (per-state) */
 enum {
-    
+
     /* specific style flags */
     /* justification bits (3.17 -> 4 bits) */
     HOffCenter                  = (1<<4),
@@ -170,7 +170,7 @@ enum {
   MWMDecorMaximize            = (1<<2)
 };
 
-enum ButtonState { 
+enum ButtonState {
     ActiveUp,
 #ifdef ACTIVEDOWN_BTNS
     ActiveDown,
@@ -178,7 +178,7 @@ enum ButtonState {
 #ifdef INACTIVE_BTNS
     Inactive,
 #endif
-    MaxButtonState 
+    MaxButtonState
 };
 
 typedef struct {
@@ -201,7 +201,7 @@ typedef struct FvwmDecor {
     /* titlebar buttons */
     TitleButton left_buttons[5];
     TitleButton right_buttons[5];
-    TitleButton titlebar;	
+    TitleButton titlebar;
 #ifdef BORDERSTYLE
     struct BorderStyle
     {
@@ -222,7 +222,7 @@ typedef struct ScreenInfo
   int NumberOfScreens;          /* number of screens on display */
   int MyDisplayWidth;		/* my copy of DisplayWidth(dpy, screen) */
   int MyDisplayHeight;	        /* my copy of DisplayHeight(dpy, screen) */
-  
+
   FvwmWindow FvwmRoot;		/* the head of the fvwm window list */
   Window Root;		        /* the root window */
   Window SizeWindow;		/* the resize dimensions window */
@@ -230,7 +230,7 @@ typedef struct ScreenInfo
 				 * windows have it */
 #ifndef NON_VIRTUAL
   PanFrame PanFrameTop,PanFrameLeft,PanFrameRight,PanFrameBottom;
-#endif  
+#endif
 
   Pixmap gray_bitmap;           /*dark gray pattern for shaded out menu items*/
   Pixmap gray_pixmap;           /* dark gray pattern for inactive borders */
@@ -238,7 +238,6 @@ typedef struct ScreenInfo
   Pixmap sticky_gray_pixmap;     /* light gray pattern for sticky borders */
 
   Binding *AllBindings;
-  MenuRoot *AllMenus;
 
   int root_pushes;		/* current push level to install root
 				   colormap windows */
@@ -252,8 +251,7 @@ typedef struct ScreenInfo
   ColorPair StdColors; 	/* standard fore/back colors */
   ColorPair StdRelief;
 
-  struct MenuFace *DefaultMenuFace;
-  struct MenuFace *LastMenuFace;
+  MenuGlobals menus;
 
   MyFont StdFont;     	/* font structure */
   MyFont IconFont;      /* for icon labels */
@@ -261,6 +259,9 @@ typedef struct ScreenInfo
 #if defined(PIXMAP_BUTTONS) || defined(GRADIENT_BUTTONS)
   GC TransMaskGC;               /* GC for transparency masks */
 #endif
+  GC StdGC;
+  GC StdReliefGC;
+  GC StdShadowGC;
   GC DrawGC;			/* GC to draw lines for move and resize */
   GC ScratchGC1;
   GC ScratchGC2;
@@ -275,18 +276,17 @@ typedef struct ScreenInfo
   int nr_left_buttons;		/* number of left-side title-bar buttons */
   int nr_right_buttons;		/* number of right-side title-bar buttons */
 
-  FvwmWindow *Hilite;		/* the fvwm window that is highlighted 
+  FvwmWindow *Hilite;		/* the fvwm window that is highlighted
 				 * except for networking delays, this is the
 				 * window which REALLY has the focus */
-  FvwmWindow *Focus;            /* Last window which Fvwm gave the focus to 
+  FvwmWindow *Focus;            /* Last window which Fvwm gave the focus to
                                  * NOT the window that really has the focus */
   Window UnknownWinFocused;      /* None, if the focus is nowhere or on an fvwm
-				 * managed window. Set to id of otherwindow 
+				 * managed window. Set to id of otherwindow
 				 * with focus otherwise */
   FvwmWindow *Ungrabbed;
   FvwmWindow *PreviousFocus;    /* Window which had focus before fvwm stole it
 				 * to do moves/menus/etc. */
-  int EntryHeight;              /* menu entry height */
   int EdgeScrollX;              /* #pixels to scroll on screen edge */
   int EdgeScrollY;              /* #pixels to scroll on screen edge */
   unsigned char buttons2grab;   /* buttons to grab in click to focus mode */
@@ -322,14 +322,23 @@ typedef struct ScreenInfo
   int ClickToFocusRaises;
   int MouseFocusClickRaises;
   int StipledTitles;
-  Bool ModifyUSP;                          /* - RBW - 11/02/1998  */
-  Bool CaptureHonorsStartsOnPage;          /* - RBW - 11/02/1998  */
-  Bool RecaptureHonorsStartsOnPage;        /* - RBW - 11/02/1998  */
-  Bool ActivePlacementHonorsStartsOnPage;  /* - RBW - 11/02/1998  */
-
+  struct
+  {
+    Bool ModifyUSP : 1;                          /* - RBW - 11/02/1998  */
+    Bool CaptureHonorsStartsOnPage : 1;          /* - RBW - 11/02/1998  */
+    Bool RecaptureHonorsStartsOnPage : 1;        /* - RBW - 11/02/1998  */
+    Bool ActivePlacementHonorsStartsOnPage : 1;  /* - RBW - 11/02/1998  */
+  } go; /* global options */
+  struct
+  {
+    Bool EmulateMWM : 1;
+    Bool EmulateWIN : 1;
+  } gs; /* global style structure */
+  Bool hasIconFont;
+  Bool hasWindowFont;
 } ScreenInfo;
 
-/* 
+/*
    Macro which gets specific decor or default decor.
    This saves an indirection in case you don't want
    the UseDecor mechanism.
@@ -353,6 +362,11 @@ extern ScreenInfo Scr;
 /* for the flags value - these used to be seperate Bool's */
 #define WindowsCaptured            (1)
 #define EdgeWrapX                 (64) /* Should EdgeScroll wrap around? */
-#define EdgeWrapY                (128) 
+#define EdgeWrapY                (128)
 #define AnimatedMenus           (1024)
+
+/* Have to declare this here because FvwmDecor isn't declared in misc.h when
+ * this gets parsed :( */
+void ApplyWindowFont(FvwmDecor *fl);
+
 #endif /* _SCREEN_ */

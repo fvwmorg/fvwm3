@@ -60,31 +60,34 @@
 
 typedef enum {
     /* menu types */
-    MWMMenu                   ,
-    FVWMMenu                  ,
-    WINMenu                   ,
+    SimpleMenu = 0,
 #ifdef GRADIENT_BUTTONS
-    HGradMenu                 ,
-    VGradMenu                 ,
-    DGradMenu                 ,
-    BGradMenu                 ,
+    HGradMenu,
+    VGradMenu,
+    DGradMenu,
+    BGradMenu,
 #endif
 #ifdef PIXMAP_BUTTONS
-    PixmapMenu                ,
-    TiledPixmapMenu           ,
+    PixmapMenu,
+    TiledPixmapMenu,
 #endif
     SolidMenu
     /* max button is 8 (0x8) */
-} MenuFaceStyle;
+} MenuFaceType;
 
+typedef struct MenuFeel {
+    struct
+    {
+      unsigned char Animated : 1;
+      unsigned char PrepopMenus : 1;
+      unsigned char TitleWarp : 1;
+    } f;
+    int PopupOffsetPercent;
+    int PopupOffsetAdd;
+} MenuFeel;
 
-#define MenuFaceTypeMask        0x0008
 
 typedef struct MenuFace {
-    char *name;
-    struct MenuFace *next;
-    MenuFaceStyle style;
-    MenuFaceStyle visual_style;
     union {
 #ifdef PIXMAP_BUTTONS
         Picture *p;
@@ -97,8 +100,26 @@ typedef struct MenuFace {
         } grad;
 #endif
     } u;
+    MenuFaceType type;
+} MenuFace;
+
+typedef struct MenuLook {
+    MenuFace face;
+    struct
+    {
+      unsigned char Hilight : 1;
+      unsigned char hasActiveFore : 1;
+      unsigned char hasActiveBack : 1;
+      unsigned char hasStippleFore : 1;
+      unsigned char hasFont : 1;
+      unsigned char LongSeparators : 1;
+      unsigned char TriangleRelief : 1;
+    } f;
+    char ReliefThickness;
+    char TitleUnderlines;
     GC MenuGC;
     GC MenuActiveGC;
+    GC MenuActiveBackGC;
     GC MenuStippleGC;
     GC MenuReliefGC;
     GC MenuShadowGC;
@@ -106,10 +127,16 @@ typedef struct MenuFace {
     ColorPair MenuActiveColors;
     ColorPair MenuStippleColors;
     ColorPair MenuRelief;
-    MyFont StdFont;
-    int EntryHeight;
-    char animated;
-} MenuFace;
+    MyFont *pStdFont;
+    int EntryHeight;              /* menu entry height */
+} MenuLook;
+
+typedef struct MenuStyle {
+    char *name;
+    struct MenuStyle *next;
+    MenuLook look;
+    MenuFeel feel;
+} MenuStyle;
 
 struct MenuRoot; /* forward declaration */
 
@@ -170,11 +197,18 @@ typedef struct MenuRoot
     Pixel sideColor;
     Bool colorize;
     short xoffset;
-    MenuFace        *mf;        /* Menu Face    */
+    MenuStyle *ms;        /* Menu Face    */
     unsigned char flags; /* internal flags, deleted when menu pops down! */
     int xanimation;      /* x distance window was moved by animation     */
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
+
+typedef struct MenuGlobals {
+    MenuRoot *all;
+    struct MenuStyle *DefaultStyle;
+    struct MenuStyle *LastStyle;
+    int PopupDelay10ms;
+} MenuGlobals;
 
 typedef struct Binding
 {
@@ -238,18 +272,6 @@ typedef enum {
 #define IS_MENU_BUTTON(x) ((x)==MENU_DONE_BUTTON || (x)==MENU_ABORTED_BUTTON)
 #define MENU_ADD_BUTTON(x) ((x)==MENU_DONE || (x)==MENU_ABORTED?(x)+1:(x))
 #define MENU_ADD_BUTTON_IF(y,x) (y?MENU_ADD_BUTTON((x)):(x))
-
-#define USING_MWM_MENUS(menu)	((menu)->MenuFace->style == MWMMenu)
-#define USING_FVWM_MENUS(menu)	((menu)->MenuFace->style == FVWMMenu)
-#define USING_WIN_MENUS(menu)	((menu)->MenuFace->style == WINMenu)
-
-/*
-#define USING_MWM_MENUS (Scr.menu_type == MWM)
-#define USING_WIN_MENUS (Scr.menu_type == WIN)
-#define USING_FVWM_MENUS (Scr.menu_type == FVWM)
-#define USING_PREPOP_MENUS (Scr.menu_type == MWM || Scr.menu_type == WIN)
-#define USING_ANIMATED_MENUS (Scr.flags & AnimatedMenus)
-*/
 
 /* Types of events for the FUNCTION builtin */
 #define MOTION 'm'

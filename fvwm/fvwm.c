@@ -143,6 +143,7 @@ int main(int argc, char **argv)
   char message[255];
   Bool single = False;
   Bool option_error = FALSE;
+  int x, y;
 
   g_argv = argv;
   g_argc = argc;
@@ -286,9 +287,6 @@ int main(int argc, char **argv)
   }
   Scr.screen= DefaultScreen(dpy);
   Scr.NumberOfScreens = ScreenCount(dpy);
-  Scr.DrawGC = 0;
-
-  Scr.DefaultMenuFace = NULL;
 
   master_pid = getpid();
 
@@ -436,13 +434,13 @@ int main(int argc, char **argv)
   {
     Scr.gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,g_bits, g_width,g_height,
-                                  Scr.DefaultMenuFace->MenuColors.fore,
-				  Scr.DefaultMenuFace->MenuColors.back,
+                                  Scr.StdColors.fore,
+				  Scr.StdColors.back,
                                   Scr.d_depth);
     Scr.light_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,l_g_bits,l_g_width,l_g_height,
-                                  Scr.DefaultMenuFace->MenuColors.fore,
-				  Scr.DefaultMenuFace->MenuColors.back,
+                                  Scr.StdColors.fore,
+				  Scr.StdColors.back,
                                   Scr.d_depth);
   }
 
@@ -466,41 +464,32 @@ int main(int argc, char **argv)
 
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
-  attributes.border_pixel = Scr.DefaultMenuFace->MenuColors.fore;
-  attributes.background_pixel = Scr.DefaultMenuFace->MenuColors.back;
+  attributes.border_pixel = Scr.StdColors.fore;
+  attributes.background_pixel = Scr.StdColors.back;
   attributes.bit_gravity = NorthWestGravity;
   valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
-  if(Scr.DefaultMenuFace->style != MWMMenu)
+  if(!Scr.gs.EmulateMWM)
   {
-    Scr.SizeWindow = XCreateWindow (dpy, Scr.Root,
-                                    0, 0,
-                                    (unsigned int)(Scr.SizeStringWidth +
-                                                   SIZE_HINDENT*2),
-                                    (unsigned int) (Scr.StdFont.height +
-                                                    SIZE_VINDENT*2),
-                                    (unsigned int) 0, 0,
-                                    (unsigned int) CopyFromParent,
-                                    (Visual *) CopyFromParent,
-                                    valuemask, &attributes);
+    x = 0;
+    y = 0;
   }
   else
   {
-    Scr.SizeWindow = XCreateWindow (dpy, Scr.Root,
-                                    Scr.MyDisplayWidth/2 -
-                                    (Scr.SizeStringWidth +
-                                     SIZE_HINDENT*2)/2,
-                                    Scr.MyDisplayHeight/2 -
-                                    (Scr.StdFont.height +
-                                     SIZE_VINDENT*2)/2,
-                                    (unsigned int)(Scr.SizeStringWidth +
-                                                   SIZE_HINDENT*2),
-                                    (unsigned int) (Scr.StdFont.height +
-                                                    SIZE_VINDENT*2),
-                                    (unsigned int) 0, 0,
-                                    (unsigned int) CopyFromParent,
-                                    (Visual *) CopyFromParent,
-                                    valuemask, &attributes);
+    x = Scr.MyDisplayWidth/2 - (Scr.SizeStringWidth + SIZE_HINDENT*2)/2;
+    y = Scr.MyDisplayHeight/2 - (Scr.StdFont.height + SIZE_VINDENT*2)/2;
   }
+  Scr.SizeWindow = XCreateWindow (dpy, Scr.Root, x, y,
+				  (unsigned int)(Scr.SizeStringWidth +
+						 SIZE_HINDENT*2),
+				  (unsigned int) (Scr.StdFont.height +
+						  SIZE_VINDENT*2),
+				  (unsigned int) 0, 0,
+				  (unsigned int) CopyFromParent,
+				  (Visual *) CopyFromParent,
+				  valuemask, &attributes);
+  if(Scr.SizeWindow != None)
+    XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdColors.back);
+
 #ifndef NON_VIRTUAL
   initPanFrames();
 #endif
@@ -707,10 +696,10 @@ void SetRCDefaults()
   char *defaults[] = {
     "HilightColor black grey",
     "XORValue 0",
-    "SetMenuStyle default black grey slategrey white fixed noanim fvwm",
+    "DefaultFont fixed",
+    "DefaultColors black grey",
+    "SetMenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey, PopupDelay 150",
     "TitleStyle Centered -- Raised",
-    "IconFont fixed",
-    "WindowFont fixed",
     "Style \"*\" Color lightgrey/dimgrey, Title",
     "Style \"*\" RandomPlacement, SmartPlacement",
     "AddToMenu builtin_menu \"Builtin Menu\" Title",
@@ -1264,11 +1253,24 @@ void InitVariables(void)
 
   /* initialize some lists */
   Scr.AllBindings = NULL;
-  Scr.AllMenus = NULL;
   Scr.TheList = NULL;
+
+  Scr.menus.all = NULL;
+  Scr.menus.DefaultStyle = NULL;
+  Scr.menus.LastStyle = NULL;
 
   Scr.DefaultIcon = NULL;
 
+  Scr.StdColors.fore = 0;
+  Scr.StdColors.back = 0;
+  Scr.StdRelief.fore = 0;
+  Scr.StdRelief.back = 0;
+  Scr.StdGC = 0;
+  Scr.StdReliefGC = 0;
+  Scr.StdShadowGC = 0;
+  Scr.DrawGC = 0;
+  Scr.hasIconFont = False;
+  Scr.hasWindowFont = False;
 
   /* create graphics contexts */
   CreateGCs();
@@ -1363,11 +1365,13 @@ void InitVariables(void)
   Scr.StipledTitles = False;
 
   /*  RBW - 11/02/1998    */
-  Scr.ModifyUSP                          =  True;
-  Scr.CaptureHonorsStartsOnPage          =  True;
-  Scr.RecaptureHonorsStartsOnPage        =  False;
-  Scr.ActivePlacementHonorsStartsOnPage  =  True;
+  Scr.go.ModifyUSP                          =  True;
+  Scr.go.CaptureHonorsStartsOnPage          =  True;
+  Scr.go.RecaptureHonorsStartsOnPage        =  False;
+  Scr.go.ActivePlacementHonorsStartsOnPage  =  True;
 
+  Scr.gs.EmulateMWM = False;
+  Scr.gs.EmulateWIN = False;
   /* Not the right place for this, should only be called once somewhere .. */
   InitPictureCMap(dpy,Scr.Root);
 
@@ -1419,7 +1423,7 @@ RETSIGTYPE SigDone(int nonsense)
     canJump = False;
     siglongjmp(deadjump,FVWM_DONE);
   }
-  
+
   _exit(0);  /* Does NOT call the chain of exit-procedures */
 }
 

@@ -43,8 +43,8 @@
 #include <stdlib.h>
 #include "fvwm.h"
 #include <X11/Xatom.h>
-#include "misc.h"
 #include "screen.h"
+#include "misc.h"
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #include <X11/Xresource.h>
@@ -350,11 +350,10 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->flags &= ~ICON_UNMAPPED;
   tmp_win->flags &= ~MAXIMIZED;
 
-
-  tmp_win->TextPixel = Scr.DefaultMenuFace->MenuColors.fore;
-  tmp_win->ReliefPixel = Scr.DefaultMenuFace->MenuRelief.fore;
-  tmp_win->ShadowPixel = Scr.DefaultMenuFace->MenuRelief.back;
-  tmp_win->BackPixel = Scr.DefaultMenuFace->MenuColors.back;
+  tmp_win->TextPixel = Scr.StdColors.fore;
+  tmp_win->ReliefPixel = Scr.StdRelief.fore;
+  tmp_win->ShadowPixel = Scr.StdRelief.back;
+  tmp_win->BackPixel = Scr.StdColors.back;
 
   if(styles.ForeColor != NULL) {
     XColor color;

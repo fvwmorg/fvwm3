@@ -82,6 +82,23 @@ Pixel GetColor(char *name)
   return color.pixel;
 }
 
+/****************************************************************************
+ *
+ * Free an array of colours (n colours), never free black
+ *
+ ****************************************************************************/
+void FreeColors(Pixel *pixels, int n)
+{
+  int i;
+
+  /* We don't ever free "black" - dirty hack to allow freeing colours at all */
+  for (i = 0; i < n; i++)
+  {
+    if (pixels[i] != 0)
+      XFreeColors(dpy, Scr.FvwmRoot.attr.colormap, pixels + i, 1, 0);
+  }
+}
+
 #ifdef GRADIENT_BUTTONS
 /****************************************************************************
  *
@@ -140,7 +157,8 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
                npixels);
       return NULL;
     }
-    if (!s_from || !XParseColor(dpy, Scr.FvwmRoot.attr.colormap, s_from, &from)) {
+    if (!s_from || !XParseColor(dpy, Scr.FvwmRoot.attr.colormap, s_from,
+				&from)) {
 	nocolor("parse", s_from);
 	return NULL;
     }

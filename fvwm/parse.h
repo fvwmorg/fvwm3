@@ -1,16 +1,16 @@
 /****************************************************************************
- * This module was originally based on the twm module of the same name. 
+ * This module was originally based on the twm module of the same name.
  * Since its use and contents have changed so dramatically, I have removed
  * the original twm copyright, and inserted my own.
  *
- * by Rob Nation 
+ * by Rob Nation
  * Copyright 1993 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved
  ****************************************************************************/
 
 /**********************************************************************
  *
- * Codes for fvwm builtins 
+ * Codes for fvwm builtins
  *
  **********************************************************************/
 
@@ -80,12 +80,15 @@ enum {
     F_CURRENT,
     F_SETENV,
     F_SET_ANIMATION,
-    F_SET_MENUDELAY,
     F_SET_MENUSTYLE,
     F_CHANGE_MENUSTYLE,
     F_DESTROY_MENUSTYLE,
-    F_SNAP_ATT, 
-    F_SNAP_GRID, /* 66 */
+    F_SNAP_ATT,
+    F_SNAP_GRID,
+    F_DFLT_FONT,
+    F_DFLT_COLORS,
+    F_GLOBAL_OPTS,
+    F_EMULATE, /* 69 */
 /* Functions which require a target window */
     F_RESIZE = 100,
     F_RAISE,
@@ -106,7 +109,6 @@ enum {
     F_FLIP_FOCUS,
     F_ECHO,
     F_BORDERSTYLE,
-    F_GLOBAL_OPTS,
     F_WINDOWID,
     F_ADD_BUTTON_STYLE,
     F_ADD_TITLE_STYLE,

@@ -406,21 +406,23 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
           Honor the flag unless...
           it's a restart or recapture, and that option's disallowed...
       */
-      if (PPosOverride && (Restarting || (Scr.flags & WindowsCaptured)) && !Scr.RecaptureHonorsStartsOnPage)
+      if (PPosOverride && (Restarting || (Scr.flags & WindowsCaptured)) &&
+	  !Scr.go.RecaptureHonorsStartsOnPage)
         {
           HonorStartsOnPage  =  False;
         }
      /*
           it's a cold start window capture, and that's disallowed...
       */
-      if (PPosOverride && (!Restarting && !(Scr.flags & WindowsCaptured)) && !Scr.CaptureHonorsStartsOnPage)
+      if (PPosOverride && (!Restarting && !(Scr.flags & WindowsCaptured)) &&
+	  !Scr.go.CaptureHonorsStartsOnPage)
         {
           HonorStartsOnPage  =  False;
         }
       /*
           we have a USPosition, and overriding it is disallowed...
       */
-      if (!PPosOverride && (USPosition && !Scr.ModifyUSP))
+      if (!PPosOverride && (USPosition && !Scr.go.ModifyUSP))
         {
           HonorStartsOnPage  =  False;
         }
@@ -428,7 +430,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
           it's ActivePlacement and SkipMapping, and that's disallowed.
       */
       if (!PPosOverride && ((tmp_win->flags & SHOW_ON_MAP) &&
-          (!(tflag & RANDOM_PLACE_FLAG)) && !Scr.ActivePlacementHonorsStartsOnPage))
+          (!(tflag & RANDOM_PLACE_FLAG)) &&
+			    !Scr.go.ActivePlacementHonorsStartsOnPage))
         {
           HonorStartsOnPage  =  False;
         }

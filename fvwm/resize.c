@@ -433,8 +433,8 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
 	RelieveWindow(tmp_win,
 		      Scr.SizeWindow,0,0,Scr.SizeStringWidth+ SIZE_HINDENT*2,
 		      Scr.StdFont.height + SIZE_VINDENT*2,
-		      Scr.DefaultMenuFace->MenuReliefGC,
-		      Scr.DefaultMenuFace->MenuShadowGC,FULL_HILITE);
+		      Scr.StdReliefGC,
+		      Scr.StdShadowGC,FULL_HILITE);
     }
   else
     {
@@ -442,9 +442,8 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
 		 Scr.SizeStringWidth, Scr.StdFont.height,False);
     }
 
-  XDrawString (dpy, Scr.SizeWindow, Scr.DefaultMenuFace->MenuGC,
+  XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
 	       offset, Scr.StdFont.font->ascent + SIZE_VINDENT, str, 13);
-
 }
 
 /***********************************************************************

@@ -287,7 +287,6 @@ void move_window(F_CMD_ARGS);
 void animated_move_window(F_CMD_ARGS);
 void move_window_to_page(F_CMD_ARGS);
 void set_animation(F_CMD_ARGS);
-void set_menudelay(F_CMD_ARGS);
 void resize_window(F_CMD_ARGS);
 void CreateIconWindow(FvwmWindow *, int, int);
 void SetMapStateProp(FvwmWindow *, int);
@@ -351,8 +350,8 @@ Bool StashEventTime (XEvent *ev);
 int My_XNextEvent(Display *dpy, XEvent *event);
 void FlushQueue(int Module);
 void QuickRestart(void);
-void     AddFuncKey (char *, int, int, int, char *, int, int, MenuRoot *,
-		     char , char);
+void AddFuncKey (char *, int, int, int, char *, int, int, MenuRoot *,
+		 char , char);
 char *GetNextPtr(char *ptr);
 
 void InteractiveMove(Window *w, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
@@ -404,20 +403,22 @@ void echo_func(F_CMD_ARGS);
 void raiselower_func(F_CMD_ARGS);
 void Nop_func(F_CMD_ARGS);
 void SetGlobalOptions(F_CMD_ARGS);
+void Emulate(F_CMD_ARGS);
 void set_mask_function(F_CMD_ARGS);
 void DestroyMenu(MenuRoot *mr);
-void     GetColors(void);
-Pixel    GetColor(char *);
+Pixel GetColor(char *);
+void FreeColors(Pixel *pixels, int n);
 #ifdef GRADIENT_BUTTONS
 Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels);
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 			      int nsegs, int npixels);
 #endif
-void     bad_binding(int num);
-void     nocolor(char *note, char *name);
-void     MakeMenus(void);
+void bad_binding(int num);
+void nocolor(char *note, char *name);
+void MakeMenus(void);
 void GetMenuXPMFile(char *name, MenuItem *it);
 void GetMenuBitmapFile(char *name, MenuItem *it);
+
 void add_item_to_menu(F_CMD_ARGS);
 void destroy_menu(F_CMD_ARGS);
 void ModuleConfig(F_CMD_ARGS);
@@ -426,18 +427,20 @@ void add_item_to_func(F_CMD_ARGS);
 void setModulePath(F_CMD_ARGS);
 void setIconPath(F_CMD_ARGS);
 void setPixmapPath(F_CMD_ARGS);
-
 void ProcessNewStyle(F_CMD_ARGS);
 void SetHiColor(F_CMD_ARGS);
 void SetMenuColor(F_CMD_ARGS);
 void ChangeMenuStyle(F_CMD_ARGS);
 void DestroyMenuStyle(F_CMD_ARGS);
+void SetDefaultColors(F_CMD_ARGS);
+void LoadDefaultFont(F_CMD_ARGS);
+void ApplyIconFont(void);
 void LoadIconFont(F_CMD_ARGS);
 void LoadWindowFont(F_CMD_ARGS);
 #ifdef BORDERSTYLE
 void SetBorderStyle(F_CMD_ARGS);
 #endif
-void SetMenuStyle1(F_CMD_ARGS);
+void OldMenuStyle(F_CMD_ARGS);
 void SetMenuStyle(F_CMD_ARGS);
 void SetTitleStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE

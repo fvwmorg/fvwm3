@@ -424,7 +424,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   xl += XOffset;
   yt += YOffset;
 
-  if(((!opaque_move)&&(Scr.DefaultMenuFace->style!=MWMMenu))||(AddWindow))
+  if(((!opaque_move)&&(!Scr.gs.EmulateMWM))||(AddWindow))
     MoveOutline(Scr.Root, xl, yt, Width - 1 + 2 * bw, Height - 1 + 2 * bw);
 
   DisplayPosition(tmp_win,xl+Scr.Vx,yt+Scr.Vy,True);
@@ -478,8 +478,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      done = 1;
 	      break;
 	    }
-	  if(((Event.xbutton.button == 2)&&(Scr.DefaultMenuFace != MWMMenu))||
-	     ((Event.xbutton.button == 1)&&(Scr.DefaultMenuFace == MWMMenu)&&
+	  if(((Event.xbutton.button == 2)&&(!Scr.gs.EmulateMWM))||
+	     ((Event.xbutton.button == 1)&&(Scr.gs.EmulateMWM)&&
 	      (Event.xbutton.state & ShiftMask)))
 	    {
 	      NeedToResizeToo = True;
@@ -646,8 +646,8 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 	RelieveWindow(tmp_win,Scr.SizeWindow,0,0,
 		      Scr.SizeStringWidth+ SIZE_HINDENT*2,
 		      Scr.StdFont.height + SIZE_VINDENT*2,
-		      Scr.DefaultMenuFace->MenuReliefGC,
-		      Scr.DefaultMenuFace->MenuShadowGC, FULL_HILITE);
+		      Scr.StdReliefGC,
+		      Scr.StdShadowGC, FULL_HILITE);
 
     }
   else
@@ -658,7 +658,7 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
 	    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
-  XDrawString (dpy, Scr.SizeWindow, Scr.DefaultMenuFace->MenuGC,
+  XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
 	       offset,
 	       Scr.StdFont.font->ascent + SIZE_VINDENT,
 	       str, strlen(str));
