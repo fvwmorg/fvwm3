@@ -273,12 +273,11 @@ void StartButtonInit(int height)
     tempPtr->width = FlocaleTextWidth(FButtonFont, tempPtr->buttonCaption, strlen(tempPtr->buttonCaption)) + pw; 
     tempPtr->height = height;
     StartAndLaunchButtonsWidth += tempPtr->width;
-    StartAndLaunchButtonsWidth += StartButtonRightMargin;
     tempPtr=tempPtr->tail;
   }
-
-    First_Start_Button->height = height;
-    StartAndLaunchButtonsHeight = First_Start_Button->height;
+  StartAndLaunchButtonsWidth += StartButtonRightMargin;
+  First_Start_Button->height = height;
+  StartAndLaunchButtonsHeight = First_Start_Button->height;
 }
 
 int StartButtonUpdate(const char *title, int index, int state)
@@ -405,7 +404,7 @@ void getButtonCommand(int whichButton, char *tmp)
       else if (tempPtr->buttonStartCommand != NULL)
 	sprintf(tmp,"%s", tempPtr->buttonStartCommand);
       else
-	sprintf(tmp,"Popup StarMenu");
+	sprintf(tmp,"Popup StartMenu");
   else
     sprintf(tmp,"%s", tempPtr->buttonCommand);
 }

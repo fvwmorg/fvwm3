@@ -1355,8 +1355,6 @@ void LoopOnEvents(void)
       {
 	if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed))
 	{
-	  StartButtonUpdate(NULL, whichButton, BUTTON_UP);
-
 	  if (whichButton == ButtonPressed)
 	  {
 	    if ((First_Start_Button->buttonStartCommand != NULL) && (startButtonPressed))
@@ -1419,7 +1417,6 @@ void LoopOnEvents(void)
       }
 
       if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed)) {
-	StartButtonUpdate(NULL, whichButton, BUTTON_UP);
 	redraw = 0;
 	usleep(50000);
       }
@@ -1542,12 +1539,9 @@ void LoopOnEvents(void)
     case MotionNotify:
       NewTimestamp = Event.xmotion.time;
       if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y, &whichButton, &startButtonPressed)) {
-	//if (SomeButtonDown(Event.xmotion.state))
-	//redraw = StartButtonUpdate(NULL, -1, BUTTON_DOWN) ? 0 : -1;
 	CheckForTip(Event.xmotion.x, Event.xmotion.y);
 	break;
       }
-      //redraw = StartButtonUpdate(NULL, buttonPressed, BUTTON_UP) ? 0 : -1;
       num = WhichButton(&buttons, Event.xmotion.x, Event.xmotion.y);
       if (!HighlightFocus) {
 	if (SomeButtonDown(Event.xmotion.state) && num != ButPressed) {

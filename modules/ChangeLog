@@ -1,3 +1,11 @@
+2002-09-29  Ben Mathews  <benmathews@adelphia.net>
+
+	* FvwmTaskBar/Start.c (StartButtonInit):
+	Fixed spacing problem that occured when using StartButtonRightMargin
+	option
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	Removed redundant StartButtonUpdate calls
+
 2002-10-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmNewDebug.in:
