@@ -563,6 +563,12 @@ ICON_DBG((stderr,"hpn: icon override '%s'\n", Tmp_win->name));
 ICON_DBG((stderr,"hpn: using further iph '%s'\n", Tmp_win->name));
 	    has_icon_changed = True;
 	  }
+	  else  if (Tmp_win->icon_bitmap_file == NULL ||
+		    Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
+	  {
+ICON_DBG((stderr,"hpn: using first iph '%s'\n", Tmp_win->name));
+	    has_icon_changed = True;
+	  }
 	  else
 	  {
 	    /* ignore the first icon pixmap hint if the application did not

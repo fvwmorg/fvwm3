@@ -4545,12 +4545,9 @@ static void size_menu_horizontally(MenuRoot *mr)
       format++;
       first = False;
     } /* while (*format) */
-#if 1
     /* stored for vertical sizing */
     MR_ITEM_LABELS_USED(mr) = columns_placed;
     MR_MINI_ICONS_USED(mr) = icons_placed;
-fprintf(stderr,"using %d labels and %d icons\n", columns_placed, icons_placed);
-#endif
 
     /* Hide unplaced parts of the menu. */
     if (!sidepic_placed)
