@@ -44,11 +44,11 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
 		 int *nr_right_buttons, unsigned char *buttons_grabbed)
 {
   char *action, context[20], modifiers[20], *ptr, *token;
-  char key[20] = { '\0' };
+  char key[20] = "";
   int button = 0;
-  STROKE_CODE(char stroke[MAX_SEQUENCE+1] = {'\0'});
+  STROKE_CODE(char stroke[MAX_SEQUENCE+1] = "";)
   int n1=0,n2=0,n3=0;
-  STROKE_CODE(int n4=0);
+  STROKE_CODE(int n4=0;)
   int i;
   KeySym keysym = NoSymbol;
   int contexts;
@@ -69,30 +69,30 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
       n1 = 1;
       i = 0;
       if (token[0] == 'N' && token[1] != '\0')
-	num = 1;
+        num = 1;
       j=i+num;
       while(n1 && token[j] != '\0' && i < MAX_SEQUENCE)
       {
-	if (!isdigit(token[j]))
-	    n1 = 0;
-	if (num)
-	{
-	  /* Numeric pad to Telephone  */
-	  if ('7' <= token[j] && token[j] <= '9')
-	    token[j] -= 6;
-	  else if ('1' <= token[j] && token[j] <= '3')
-	    token[j] += 6;
-	}
-	stroke[i] = token[j];
-	i++;
-	j=i+num;
+        if (!isdigit(token[j]))
+          n1 = 0;
+        if (num)
+        {
+          /* Numeric pad to Telephone  */
+          if ('7' <= token[j] && token[j] <= '9')
+            token[j] -= 6;
+          else if ('1' <= token[j] && token[j] <= '3')
+            token[j] += 6;
+        }
+        stroke[i] = token[j];
+        i++;
+        j=i+num;
       }
       stroke[i] = '\0';
       if (strlen(token) > MAX_SEQUENCE+num)
       {
-	fvwm_msg(WARN,"ParseBinding","To long stroke sequence in line %s"
-		 "Only %i elements will be taken in account",
-		 tline, MAX_SEQUENCE);
+        fvwm_msg(WARN,"ParseBinding","To long stroke sequence in line %s"
+                      "Only %i elements will be taken in account",
+                       tline, MAX_SEQUENCE);
       }
     }
 #endif /* HAVE_STROKE */
@@ -107,8 +107,8 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
     ptr = GetNextToken(ptr,&token);
     if(token != NULL)
     {
-	  n4 = sscanf(token,"%d",&button);
-	  free(token);
+      n4 = sscanf(token,"%d",&button);
+      free(token);
     }
   }
 #endif /* HAVE_STROKE */
@@ -147,22 +147,22 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
        */
       keysym = XStringToKeysym(key);
       if (keysym == NoSymbol)
-	{
-	  char c = 'X';
-	  char d = 'X';
+      {
+        char c = 'X';
+        char d = 'X';
 
-	  /* If the key name is in the form '<letter><digits>...' it's probably
-	   * something like 'f10'. Convert the letter to upper case and try
-	   * again. */
-	  sscanf(key, "%c%c", &c, &d);
-	  if (islower(c) && isdigit(d))
-	    {
-	      key[0] = toupper(key[0]);
-	      keysym = XStringToKeysym(key);
-	    }
-	}
+        /* If the key name is in the form '<letter><digits>...' it's probably
+         * something like 'f10'. Convert the letter to upper case and try
+         * again. */
+        sscanf(key, "%c%c", &c, &d);
+        if (islower(c) && isdigit(d))
+        {
+          key[0] = toupper(key[0]);
+          keysym = XStringToKeysym(key);
+        }
+      }
       if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)
-	return 0;
+        return 0;
     }
 
   /*
@@ -185,10 +185,10 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
 		       type))
       {
         /* we found it, unbind it */
-	activate_binding(b, type, False);
-	RemoveBinding(dpy, pblist, type,
-		      STROKE_ARG(stroke)
-		      button, keysym, mods, contexts);
+          activate_binding(b, type, False);
+          RemoveBinding(dpy, pblist, type,
+                        STROKE_ARG(stroke)
+                        button, keysym, mods, contexts);
       }
     }
 
@@ -207,11 +207,11 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
       j=(contexts &C_LALL)/C_L1;
       while(j>0)
       {
-	i++;
-	j=j>>1;
+        i++;
+        j=j>>1;
       }
       if(*nr_left_buttons < i)
-	*nr_left_buttons = i;
+        *nr_left_buttons = i;
     }
     if((contexts != C_ALL) && (contexts & C_RALL) &&
        (nr_right_buttons != NULL))
@@ -221,11 +221,11 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
       j=(contexts&C_RALL)/C_R1;
       while(j>0)
       {
-	i++;
-	j=j>>1;
+        i++;
+        j=j>>1;
       }
       if(*nr_right_buttons < i)
-	*nr_right_buttons = i;
+        *nr_right_buttons = i;
     }
   }
 
@@ -266,11 +266,11 @@ static void activate_binding(Binding *binding, BindingType type, Bool do_grab)
     if (binding->Context & C_ICON)
     {
       if(t->icon_w != None)
-	GrabWindowKey(dpy, t->icon_w, binding, C_ICON,
-		      GetUnusedModifiers(), do_grab);
+        GrabWindowKey(dpy, t->icon_w, binding, C_ICON,
+                      GetUnusedModifiers(), do_grab);
       if(t->icon_pixmap_w != None)
-	GrabWindowKey(dpy, t->icon_pixmap_w, binding, C_ICON,
-		      GetUnusedModifiers(), do_grab);
+         GrabWindowKey(dpy, t->icon_pixmap_w, binding, C_ICON,
+                       GetUnusedModifiers(), do_grab);
     }
   }
 }
