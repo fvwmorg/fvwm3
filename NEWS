@@ -12,7 +12,7 @@ Changes in development release 2.5.7 (not released yet)
   ids.
 
 * In FvwmIconMan, windows can move from one manager to another
-  acoording to the managers' Resolution options.
+  according to the managers' Resolution options.
 
 * In order to fix a problem with StartsOnScreen and applications
   that set a user specified position hint, the StartsOnScreen style
@@ -31,7 +31,7 @@ Changes in development release 2.5.7 (not released yet)
   Gettext.
 
 * WindowListFunc is executed now within a window context, so
-  a prefix "WindowId $0" is not needed in its definition anymore
+  a prefix "WindowId $0" is not needed in its definition anymore,
   and it is advised to remove it in user configs.
 
 * FvwmEvent now executes all window related events within a window
@@ -45,7 +45,7 @@ Changes in development release 2.5.6 (28-Feb-2003)
 * Fix button 3 drag in FvwmPager so that drag follows the mouse.
 
 * Fix for gmplayer launched by fvwm.  Close stdin on Exec so the
-  exec'd process knows its not running interactively.
+  exec'd process knows it's not running interactively.
 
 * Improvement in MultiPixmap.  In particular Colorset and Solid
   color can be specified.
@@ -132,7 +132,7 @@ Changes in development release 2.5.5 (2-Dec-2002)
 
 * Fixed flickering in FvwmTaskBar, FvwmWinList, FvwmIconBox,
   FvwmForm, FvwmScript and FvwmScroll when xft fonts or icons with
-  an alpha channel is used.
+  an alpha channel are used.
 
 * New Colorset option RootTransparent
 
@@ -236,8 +236,8 @@ Changes in alpha release 2.5.3 (25-Aug-2002)
   packets. External modules relying on this interface no longer
   work.
 
-* Fixed interaction bug between CascadePlacement and StartsOnPage
-  - if the target page was at a negative x or y page displacement
+* Fixed interaction bug between CascadePlacement and StartsOnPage:
+  if the target page was at a negative x or y page displacement
   from the current view port, the window would be placed on the
   wrong page.
 
