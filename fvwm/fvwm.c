@@ -316,8 +316,32 @@ int main(int argc, char **argv)
     }
     else if (strncasecmp(argv[i], "-version", 8) == 0)
     {
-      fvwm_msg(INFO,"main", "Fvwm Version %s compiled on %s at %s\n",
+      char configinfo[128] = "";
+
+      fvwm_msg(INFO,"main", "Fvwm Version %s compiled on %s at %s",
               VERSION,__DATE__,__TIME__);
+#ifdef HAVE_READLINE
+      strcat(configinfo ," ReadLine");
+#endif
+#ifdef HAVE_RPLAY
+      strcat(configinfo ," RPlay");
+#endif
+#ifdef HAVE_STROKE
+      strcat(configinfo ," Stroke");
+#endif
+#ifdef XPM
+      strcat(configinfo, " XPM");
+#endif
+#ifdef IMLIB
+      strcat(configinfo, " IMLIB");
+#endif
+#ifdef GNOME
+      strcat(configinfo, " Gnome");
+#endif
+      if (strlen(configinfo))
+	fvwm_msg(INFO,"main", "with support for:%s\n", configinfo);
+      else
+	fprintf(stderr, "\n");
       exit(0);
     }
     else

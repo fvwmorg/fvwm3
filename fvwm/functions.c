@@ -332,13 +332,15 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 	      i++;
 	      break;
 	    case 'c':
-	      if (tmp_win && tmp_win->class.res_class && tmp_win->class.res_class[0])
+	      if (tmp_win && tmp_win->class.res_class &&
+		  tmp_win->class.res_class[0])
 		{
 		  l2 += strlen(tmp_win->class.res_class) + 2;
 		}
 	      break;
 	    case 'r':
-	      if (tmp_win && tmp_win->class.res_name && tmp_win->class.res_name[0])
+	      if (tmp_win && tmp_win->class.res_name &&
+		  tmp_win->class.res_name[0])
 		{
 		  l2 += strlen(tmp_win->class.res_name) + 2;
 		}
@@ -415,7 +417,8 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 	      i++;
 	      break;
 	    case 'c':
-	      if (tmp_win && tmp_win->class.res_class && tmp_win->class.res_class[0])
+	      if (tmp_win && tmp_win->class.res_class &&
+		  tmp_win->class.res_class[0])
 		{
 		  out[j++] = '\'';
 		  for(k=0;tmp_win->class.res_class[k];k++)
@@ -429,7 +432,8 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 		}
 	      break;
 	    case 'r':
-	      if (tmp_win && tmp_win->class.res_name && tmp_win->class.res_name[0])
+	      if (tmp_win && tmp_win->class.res_name &&
+		  tmp_win->class.res_name[0])
 		{
 		  out[j++] = '\'';
 		  for(k=0;tmp_win->class.res_name[k];k++)
