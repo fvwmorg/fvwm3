@@ -707,6 +707,14 @@ void FlocaleRotateDrawString(
 				dpy,
 				flf->str_fc,
 				(const char *)buf,curr_len);
+			if(buf2 == NULL)
+			{
+				/* if conversion failed, combinational char
+				   is not representable in current charset */
+				/* just replace with empty string */
+				buf2 = (char *)safemalloc(sizeof(char));
+				buf2[0] = 0;
+			}
 			if(flf->fontset != None)
 			{
 				XmbDrawString(dpy, canvas_pix, flf->fontset, 
@@ -1926,6 +1934,14 @@ void FlocaleDrawString(
 							      buf);
 			buf2 = FiconvUtf8ToCharset(
 				dpy, flf->str_fc, (const char *)buf, curr_len);
+			if(buf2 == NULL)
+			{
+				/* if conversion failed, combinational char
+				   is not representable in current charset */
+				/* just replace with empty string */
+				buf2 = (char *)safemalloc(sizeof(char));
+				buf2[0] = 0;
+			}
 			if(FftSupport && flf->fftf.fftfont != NULL)
 			{
 			        tmp_fws.x = fws->x + offset;

@@ -1,5 +1,12 @@
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
+	* libs/Flocale.c (FlocaleRotateDrawString): 
+	(FlocaleDrawString)
+	fixed core dump when composing characters can't be converted to
+	locale charset
+
+2003-07-09  Marcus Lundblad  <ml@update.uu.se>
+
 	* AUTHORS: 
 	updated
 	
