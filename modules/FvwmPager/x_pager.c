@@ -1037,7 +1037,7 @@ void HandleEnterNotify(XEvent *Event)
 
   if (do_focus_on_enter)
   {
-    SendInfo(fd, "Silent Focus NoWarp", t->w);
+    SendInfo(fd, "Silent FlipFocus NoWarp", t->w);
   }
     
 }
@@ -2105,7 +2105,7 @@ void MoveWindow(XEvent *Event)
           usleep(5000);
           XSync(dpy,0);
 
-	  SendInfo(fd, "Silent Focus NoWarp", t->w);
+	  SendInfo(fd, "Silent FlipFocus NoWarp", t->w);
 	}
     }
   if (is_transient)
@@ -2532,7 +2532,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
       else
 	MoveResizePagerView(t);
       SendInfo(fd, "Silent Raise", t->w);
-      SendInfo(fd, "Silent Focus NoWarp", t->w);
+      SendInfo(fd, "Silent FlipFocus NoWarp", t->w);
     }
   if (is_transient)
     {
