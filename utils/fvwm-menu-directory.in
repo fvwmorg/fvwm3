@@ -183,10 +183,13 @@ my $absOrder = abs($order);
 @files = reverse @files if $order < 0;
 
 # dump all menu items and start adding new items
-print qq(DestroyMenu recreate "$name"\nAddToMenu "$name"\n);
+my $menuName  = escapeFvwmName($name);
+my $menuName2 = escapeMenuName($name);
+print qq(DestroyMenu recreate "$menuName"\nAddToMenu "$menuName2"\n);
 
 # destroy the menu after it is popped down
-print qq(+ DynamicPopDownAction DestroyMenu "$name"\n) unless $memoryForSpeed || $reuse;
+print qq(+ DynamicPopDownAction DestroyMenu "$menuName"\n)
+	unless $memoryForSpeed || $reuse;
 
 # set the 'missing submenu function'
 print qq(+ MissingSubmenuFunction FuncFvwmMenuDirectory\n) unless $reuse;
@@ -226,39 +229,42 @@ print qq(+ "" Nop\n$specialDirLines) if $specialDirPos < 0;
 
 # add style:
 if ($changeMenuStyle ne "") {
-	print qq(ChangeMenuStyle "$changeMenuStyle" $name\n);
+	print qq(ChangeMenuStyle "$changeMenuStyle" "$menuName"\n);
 }
 exit(0);
 
 # ---------------------------------------------------------------------------
 
-sub escapeMenuName ($) {
+sub escapeFvwmName ($) {
 	my $name = shift;
-   $name =~ s/\\/\\\\/g;
-   $name =~ s/"/\\"/g;
-   $name =~ s/\$/\\\$/g;
-   $name =~ s/\^/^^/g;
-   $name =~ s/@/@@/g;
-   $name;
+	$name =~ s/\\/\\\\/g;
+	$name =~ s/"/\\"/g;
+	$name =~ s/\$/\$\$/g;
+	$name;
+}
+
+sub escapeMenuName ($) {
+	my $name = escapeFvwmName(shift());
+	# fvwm is really inconsistent here
+	$name =~ s/\^/^^/g;
+	$name =~ s/@/@@/g;
+	$name;
 }
 
 sub escapeItemName ($) {
-	my $name = shift;
-   $name =~ s/\\/\\\\/g;
-   $name =~ s/"/\\"/g;
-   $name =~ s/\$/\\\$/g;
-   $name =~ s/%/%%/g;
-   $name =~ s/&/&&/g;
-   $name =~ s/\*/**/g;
-   $name;
+	my $name = escapeFvwmName(shift());
+	$name =~ s/%/%%/g;
+	$name =~ s/&/&&/g;
+	$name =~ s/\*/**/g;
+	$name;
 }
 
 sub escapeFileName ($) {
 	my $name = shift;
-   $name =~ s/\\/\\\\/g;
-   $name =~ s/"/\\"/g;
-   $name =~ s/\$/\\\$/g;
-   $name;
+	$name =~ s/\\/\\\\/g;
+	$name =~ s/"/\\"/g;
+	$name =~ s/\$/\\\$\$/g;
+	$name;
 }
 
 sub evalFolderLine ($$) {
@@ -266,9 +272,9 @@ sub evalFolderLine ($$) {
 	my $itemStr = $dir && $itemF_eval? evalItem($_name, $dir): $_name;
 	$itemStr = escapeItemName($itemStr);
 	my $act = !$dir || $checkSubdirs && !-x $dir? "Nop": !$reuse?
-		qq(Popup ") . escapeMenuName($dir) . qq("$submenuPos):
+		qq(Popup ") . escapeFvwmName($dir) . qq("$submenuPos):
 		qq(PipeRead 'echo ") . escapeFileName($dir) . qq(" >$dirFile; )
-		. qq(echo Menu ") . escapeMenuName($name) . qq(" WarpTitle');
+		. qq(echo Menu ") . escapeFvwmName($name) . qq(" WarpTitle');
 	return qq(+ "$iconDStr$itemStr" $act\n);
 }
 
