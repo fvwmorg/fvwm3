@@ -179,9 +179,56 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
 		       const char *prefix, char **val);
 
 
-/* things in Graphics.c */
+/***********************************************************************
+ * Stuff for Graphics.c and ModGraph.c
+ ***********************************************************************/
+
+/* stuff to enable modules to use fvwm visual/colormap/GCs */
+#define DEFGRAPHSTR "Default_Graphics"
+#define DEFGRAPHLEN 16 /* length of above string */
+#define DEFGRAPHNUM 9 /* number of items sent */
+
+typedef struct _Background {
+  union {
+    unsigned long word;
+    struct {
+      Bool is_pixmap : 1;
+      Bool stretch_h : 1;
+      Bool stretch_v : 1;
+      unsigned int w : 12;
+      unsigned int h : 12;
+    } bits;
+  } type;
+  Pixmap pixmap;
+} Background;
+
+typedef struct GraphicsThing {
+  Bool create_drawGC : 1;
+  Bool create_foreGC : 1;
+  Bool create_reliefGC : 1;
+  Bool create_shadowGC : 1;
+  Bool initialised : 1;
+  Bool useFvwmLook : 1;
+  Visual *viz;
+  unsigned int depth;
+  Colormap cmap;
+  GC drawGC;
+  Background *bg;
+  GC foreGC;
+  GC reliefGC;
+  GC shadowGC;
+  XFontStruct *font;
+} Graphics;
+
+Graphics *CreateGraphics(void);
+void InitGraphics(Display *dpy, Graphics *graphics);
+Bool ParseGraphics(Display *dpy, char *line, Graphics *graphics);
+
 void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width);
+
+void SetWindowBackground(Display *dpy, Window win, int width, int height,
+			 Background *background, unsigned int depth, GC gc);
 
 Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			    unsigned int src_height, unsigned int src_depth,

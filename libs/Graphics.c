@@ -64,6 +64,45 @@ void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
   free(seg);
 }
 
+/***************************************************************************
+ * sets a window background according to the back_bits flags
+ **************************************************************************/
+void SetWindowBackground(Display *dpy, Window win, int width, int height,
+			 Background *bg, unsigned int depth, GC gc)
+{
+  Pixmap pixmap;
+
+  /* only does pixel type backgrounds as yet */
+  if (!bg->type.bits.is_pixmap)
+    XSetWindowBackground(dpy, win, (Pixel)bg->pixmap);
+  else if (!bg->type.bits.stretch_h && !bg->type.bits.stretch_v)
+    XSetWindowBackgroundPixmap(dpy, win, bg->pixmap);
+  else if (!bg->type.bits.stretch_h) {
+    pixmap = CreateStretchYPixmap(dpy, bg->pixmap, bg->type.bits.w,
+				  bg->type.bits.h, depth, height, gc);
+    if (pixmap) {
+      XSetWindowBackgroundPixmap(dpy, win, pixmap);
+      XFreePixmap(dpy, pixmap);
+    }
+  } else if (!bg->type.bits.stretch_v) {
+    pixmap = CreateStretchXPixmap(dpy, bg->pixmap, bg->type.bits.w,
+				 bg->type.bits.h, depth, width, gc);
+    if (pixmap) {
+      XSetWindowBackgroundPixmap(dpy, win, pixmap);
+      XFreePixmap(dpy, pixmap);
+    }
+  } else {
+    pixmap = CreateStretchPixmap(dpy, bg->pixmap, bg->type.bits.w,
+				 bg->type.bits.h, depth, width, height, gc);
+    if (pixmap) {
+      XSetWindowBackgroundPixmap(dpy, win, pixmap);
+      XFreePixmap(dpy, pixmap);
+    }
+  }
+
+  XClearArea(dpy, win, 0, 0, width, height, True);
+}
+
 /****************************************************************************
  *
  * Creates a pixmap that is a horizontally stretched version of the input

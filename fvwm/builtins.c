@@ -1305,7 +1305,7 @@ void SetHiColor(F_CMD_ARGS)
 
   action = GetNextToken(action,&hifore);
   GetNextToken(action,&hiback);
-  if(Scr.bg->depth > 2)
+  if(Scr.depth > 2)
   {
     if(hifore)
     {
@@ -1781,7 +1781,8 @@ static void ApplyDefaultFontAndColors(void)
     Scr.SizeStringWidth = XTextWidth(Scr.StdFont.font, " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
-    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, Scr.bg, Scr.StdGC);
+    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei,
+			Scr.bg, Scr.depth, Scr.StdGC);
     if(Scr.gs.EmulateMWM)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,
@@ -1847,9 +1848,9 @@ void SetDefaultBackground(F_CMD_ARGS)
     if (StrEquals(type, "TiledPixmap") || StrEquals(type, "Pixmap")) {
       Picture *pic = CachePicture(dpy, Scr.NoFocusWin, NULL, rest, Scr.ColorLimit);
 
-      if (pic && pic->depth == Scr.bg->depth) {
+      if (pic && pic->depth == Scr.depth) {
 	Pixmap newpixmap = XCreatePixmap(dpy, Scr.NoFocusWin, pic->width,
-					 pic->height, Scr.bg->depth);
+					 pic->height, Scr.depth);
 
 	XCopyArea(dpy, pic->picture, newpixmap, Scr.StdGC, 0, 0, pic->width,
 		  pic->height, 0, 0);
@@ -3971,7 +3972,7 @@ void SetColorLimit(F_CMD_ARGS)
    * dynamically changeable ones are odd numbered */
   if (!(Scr.viz->class & 1))
     return;
-  if (Scr.bg->depth > 20) {               /* if more than 20 bit color */
+  if (Scr.depth > 20) {               /* if more than 20 bit color */
     return;                             /* ignore the limit */
   }
   if (GetIntegerArguments(action, NULL, &val, 1) != 1)

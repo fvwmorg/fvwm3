@@ -1474,7 +1474,7 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
 	ih = mh - iy;
       /* grab image */
       mi->mr->stored_item.stored = XCreatePixmap(dpy, Scr.NoFocusWin, mw, ih,
-						 Scr.bg->depth);
+						 Scr.depth);
       XCopyArea(dpy, mi->mr->w, mi->mr->stored_item.stored,
 		mi->mr->ms->look.MenuGC, 0, iy, mw, ih, 0, 0);
       mi->mr->stored_item.y = iy;
@@ -1735,7 +1735,7 @@ void paint_menu_item(MenuItem *mi)
   }
 
   ShadowGC = mr->ms->look.MenuShadowGC;
-  if(Scr.bg->depth<2)
+  if(Scr.depth<2)
     ReliefGC = mr->ms->look.MenuShadowGC;
   else
     ReliefGC = mr->ms->look.MenuReliefGC;
@@ -1980,7 +1980,7 @@ void PaintSidePic(MenuRoot *mr)
   else
     return;
 
-  if(Scr.bg->depth<2)
+  if(Scr.depth<2)
     ReliefGC = mr->ms->look.MenuShadowGC;
   else
     ReliefGC = mr->ms->look.MenuReliefGC;
@@ -2155,7 +2155,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  register int i = 0;
 	  register int dw;
 
-             pmap = XCreatePixmap(dpy, mr->w, mr->width, 5, Scr.bg->depth);
+             pmap = XCreatePixmap(dpy, mr->w, mr->width, 5, Scr.depth);
 	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 
 	     bounds.width = mr->width;
@@ -2183,7 +2183,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  register int i = 0;
 	  register int dh = bounds.height / ms->look.face.u.grad.npixels + 1;
 
-             pmap = XCreatePixmap(dpy, mr->w, 5, mr->height, Scr.bg->depth);
+             pmap = XCreatePixmap(dpy, mr->w, 5, mr->height, Scr.depth);
 	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 
 	  while (i < ms->look.face.u.grad.npixels)
@@ -2682,7 +2682,7 @@ void MakeMenu(MenuRoot *mr)
 
   mr->w = XCreateWindow (dpy, Scr.Root, 0, 0, (unsigned int) (mr->width),
 			 (unsigned int) mr->height, (unsigned int) 0,
-			 Scr.bg->depth, InputOutput, Scr.viz, valuemask,
+			 Scr.depth, InputOutput, Scr.viz, valuemask,
 			 &attributes);
   XSaveContext(dpy,mr->w,MenuContext,(caddr_t)mr);
 
@@ -3591,7 +3591,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
     ms->look.MenuActiveColors.back = ms->look.MenuColors.back;
   if (!ms->look.f.hasStippleFore)
     ms->look.MenuStippleColors.fore = ms->look.MenuColors.back;
-  if(Scr.bg->depth > 2) {                 /* if not black and white */
+  if(Scr.depth > 2) {                 /* if not black and white */
     ms->look.MenuRelief.back = GetShadow(ms->look.MenuColors.back);
     ms->look.MenuRelief.fore = GetHilite(ms->look.MenuColors.back);
   } else {                              /* black and white */
@@ -3643,7 +3643,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   else
     ms->look.MenuActiveGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  if(Scr.bg->depth < 2)
+  if(Scr.depth < 2)
   {
     gcv.fill_style = FillStippled;
     gcv.stipple = Scr.gray_bitmap;

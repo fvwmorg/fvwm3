@@ -475,16 +475,16 @@ int main(int argc, char **argv)
     XVisualInfo template, *vizinfo;
     int total, i;
 
-    Scr.bg->depth = 0;
+    Scr.depth = 0;
     template.screen = Scr.screen;
     template.class = visualClass;
     vizinfo = XGetVisualInfo(dpy, VisualScreenMask | VisualClassMask, &template,
                              &total);
     if (total) {
       for (i = 0; i < total; i++) {
-        if (vizinfo[i].depth > Scr.bg->depth) {
+        if (vizinfo[i].depth > Scr.depth) {
           Scr.viz = vizinfo[i].visual;
-          Scr.bg->depth = vizinfo[i].depth;
+          Scr.depth = vizinfo[i].depth;
         }
       }
       XFree(vizinfo);
@@ -499,7 +499,7 @@ int main(int argc, char **argv)
     XVisualInfo template, *vizinfo;
     int total;
 
-    Scr.bg->depth = 0;
+    Scr.depth = 0;
     template.screen = Scr.screen;
     template.visualid = visualId;
     vizinfo = XGetVisualInfo(dpy, VisualScreenMask | VisualIDMask, &template,
@@ -507,7 +507,7 @@ int main(int argc, char **argv)
     if (total) {
       /* visualID's are unique so there will only be one */
       Scr.viz = vizinfo[0].visual;
-      Scr.bg->depth = vizinfo[0].depth;
+      Scr.depth = vizinfo[0].depth;
       XFree(vizinfo);
       /* have to have a colormap for non-default visual windows */
       Scr.cmap = XCreateColormap(dpy, Scr.Root, Scr.viz, AllocNone);
@@ -520,7 +520,7 @@ int main(int argc, char **argv)
   /* use default visuals if none found so far */
   if (visualClass == -1 && visualId == -1) {
     Scr.viz = DefaultVisual(dpy, Scr.screen);
-    Scr.bg->depth = DefaultDepth(dpy, Scr.screen);
+    Scr.depth = DefaultDepth(dpy, Scr.screen);
     Scr.cmap = DefaultColormap(dpy, Scr.screen);
     Scr.usingDefaultVisual = True;
   } else
@@ -545,7 +545,7 @@ int main(int argc, char **argv)
   attributes.colormap = Scr.cmap;
   attributes.background_pixmap = None;
   attributes.border_pixel = 0;
-  Scr.NoFocusWin=XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Scr.bg->depth,
+  Scr.NoFocusWin=XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Scr.depth,
                                InputOutput, Scr.viz,
                                CWEventMask | CWOverrideRedirect | CWColormap
                                | CWBackPixmap | CWBorderPixel, &attributes);
@@ -628,23 +628,23 @@ int main(int argc, char **argv)
   DoingCommandLine = False;
   DBUG("main","Done running config_commands");
 
-  if(Scr.bg->depth<2)
+  if(Scr.depth<2)
   {
     Scr.gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,g_bits, g_width,g_height,
                                   Scr.StdColors.fore,
 				  Scr.StdColors.back,
-                                  Scr.bg->depth);
+                                  Scr.depth);
     Scr.light_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,l_g_bits,l_g_width,
                                   l_g_height,Scr.StdColors.fore,
 				  Scr.StdColors.back,
-                                  Scr.bg->depth);
+                                  Scr.depth);
     Scr.sticky_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,s_g_bits,s_g_width,
                                   s_g_height,Scr.StdColors.fore,
 				  Scr.StdColors.back,
-                                  Scr.bg->depth);
+                                  Scr.depth);
   }
 
   /* create the move/resize feedback window */
@@ -670,7 +670,7 @@ int main(int argc, char **argv)
 						 SIZE_HINDENT*2),
 				  (unsigned int) (Scr.StdFont.height +
 						  SIZE_VINDENT*2),
-				  (unsigned int) 0, Scr.bg->depth,
+				  (unsigned int) 0, Scr.depth,
 				  InputOutput, Scr.viz,
 				  valuemask, &attributes);
   initPanFrames();
@@ -1515,7 +1515,7 @@ void InitVariables(void)
   /* create graphics contexts */
   CreateGCs();
 
-  if (Scr.bg->depth <= 8) {               /* if the color is limited */
+  if (Scr.depth <= 8) {               /* if the color is limited */
     /* a number > than the builtin table! */
     Scr.ColorLimit = 255;
   }

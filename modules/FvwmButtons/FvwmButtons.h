@@ -50,7 +50,6 @@
 /* -------------------------------- more  ---------------------------------- */
 
 #include "libs/fvwmlib.h"
-#include "libs/ModGraph.h"
 #include "libs/Picture.h"
 
 

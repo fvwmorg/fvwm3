@@ -37,7 +37,6 @@
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
-#include "libs/ModGraph.h"
 #include "libs/Module.h"
 #include "FvwmButtons.h"
 #include "button.h"

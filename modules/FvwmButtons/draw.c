@@ -51,7 +51,6 @@
 #include "icons.h" /* ConfigureIconWindow() */
 #include "button.h"
 #include "draw.h"
-#include "libs/ModGraph.h"
 
 /* ---------------- Functions that design and draw buttons ----------------- */
 

@@ -55,7 +55,6 @@
 #include <limits.h>                     /* For time() */
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
-#include "libs/ModGraph.h"
 #include "FvwmAnimate.h"
 
 #define AS_PI 3.14159265358979323846

@@ -18,7 +18,6 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
-#include "libs/ModGraph.h"
 #include "FvwmScroll.h"
 
 char *MyName;

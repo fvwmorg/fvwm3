@@ -52,7 +52,6 @@
 #include "screen.h"
 #include "module_interface.h"
 #include "libs/Picture.h"
-#include "libs/ModGraph.h"
 
 extern unsigned long *PipeMask;                /* in module.c */
 

@@ -35,7 +35,6 @@
 #include <X11/cursorfont.h>
 
 #include "libs/Module.h"
-#include "libs/ModGraph.h"
 #include "FvwmIdent.h"
 
 char *MyName;
@@ -407,7 +406,7 @@ void list_end(void)
 
   if (!G->useFvwmLook) {
     G->bg->type.bits.is_pixmap = False;
-    if(G->bg->depth < 2) {
+    if(G->depth < 2) {
       G->bg->pixmap = (Pixmap)GetColor("white");
       fore_pix = GetColor("black");
     } else {
@@ -420,12 +419,12 @@ void list_end(void)
   attributes.background_pixmap = None;
   attributes.border_pixel = 0;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
-			   mysizehints.width, mysizehints.height, 0, G->bg->depth,
+			   mysizehints.width, mysizehints.height, 0, G->depth,
 			   InputOutput, G->viz,
 			   CWColormap | CWBackPixmap | CWBorderPixel,
 			   &attributes);
   SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-		      G->bg, G->foreGC);
+		      G->bg, G->depth, G->foreGC);
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
@@ -483,7 +482,7 @@ void list_end(void)
 	if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
 	  if (ParseGraphics(dpy, tline, G)) {
 	    SetWindowBackground(dpy, main_win, mysizehints.width,
-				mysizehints.height, G->bg, G->foreGC);
+				mysizehints.height, G->bg, G->depth, G->foreGC);
 	  }
 	}
       }

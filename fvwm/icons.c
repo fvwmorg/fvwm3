@@ -164,7 +164,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     tmp_win->icon_w = XCreateWindow(dpy, Scr.Root, final_x,
 				    final_y + tmp_win->icon_p_height,
 				    tmp_win->icon_w_width,
-				    tmp_win->icon_w_height, 0, Scr.bg->depth,
+				    tmp_win->icon_w_height, 0, Scr.depth,
 				    InputOutput, Scr.viz, valuemask,
 				    &attributes);
 
@@ -175,7 +175,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, final_x, final_y,
 					       tmp_win->icon_p_width,
 					       tmp_win->icon_p_height, 0,
-					       Scr.bg->depth, InputOutput,
+					       Scr.depth, InputOutput,
 					       Scr.viz, valuemask, &attributes);
       else {
         /* must use root visuals not fvwm's */
@@ -272,7 +272,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 
   if(Scr.Hilite == tmp_win)
     {
-      if(Scr.bg->depth < 2) {
+      if(Scr.depth < 2) {
 	Relief = Scr.DefaultDecor.HiShadowGC;
 	Shadow = Scr.DefaultDecor.HiShadowGC;
 	TextColor = Scr.DefaultDecor.HiColors.fore;
@@ -286,7 +286,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     }
   else
     {
-      if(Scr.bg->depth < 2)
+      if(Scr.depth < 2)
 	{
 	  Relief = Scr.StdReliefGC;
 	  Shadow = Scr.StdShadowGC;
@@ -376,7 +376,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   /* need to locate the icon pixmap */
   if(tmp_win->iconPixmap != None) {
     if (Scr.usingDefaultVisual || IS_PIXMAP_OURS(tmp_win)) {
-      if (tmp_win->iconDepth == Scr.bg->depth) {
+      if (tmp_win->iconDepth == Scr.depth) {
 	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
 		  Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
 		tmp_win->icon_p_height - 4, 2, 2);
@@ -824,7 +824,7 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   tmp_win->icon_p_width = my_image.width;
   tmp_win->icon_p_height = my_image.height;
   SET_PIXMAP_OURS(tmp_win, 1);
-  tmp_win->iconDepth = Scr.bg->depth;
+  tmp_win->iconDepth = Scr.depth;
 
 #ifdef SHAPE
   if (ShapesSupported && tmp_win->icon_maskPixmap)

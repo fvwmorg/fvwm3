@@ -52,7 +52,6 @@
 #include <X11/cursorfont.h>
 #include "functions.h"
 #include "misc.h"
-#include "libs/ModGraph.h"
 
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3
@@ -286,6 +285,7 @@ typedef struct ScreenInfo
   GC StdShadowGC;
   Bool usingDefaultVisual;
   Visual *viz;
+  unsigned int depth;
   Colormap cmap;
   unsigned int bestTileWidth;
   unsigned int bestTileHeight;

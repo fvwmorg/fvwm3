@@ -124,7 +124,7 @@ void CreateIconWindow(button_info *b)
 #endif
 
       temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
-			   b->icon->height,G->bg->depth);
+			   b->icon->height,G->depth);
       XCopyPlane(Dpy,b->icon->picture,temp,NormalGC,
 		 0,0,b->icon->width,b->icon->height,0,0,1);
 

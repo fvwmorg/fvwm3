@@ -17,7 +17,6 @@
 #define XLIB_ILLEGAL_ACCESS
 #include "config.h"
 #include "libs/fvwmlib.h"
-#include "libs/ModGraph.h"
 
 /***************************************************************************
  * create and initialize the structure used to stash graphics things
@@ -44,7 +43,7 @@ void InitGraphics(Display *dpy, Graphics *G) {
   G->cmap = DefaultColormap(dpy, screen);
   G->bg->type.word = 0; /* it's a pixel */
   G->bg->pixmap = (Pixmap)BlackPixel(dpy, screen);
-  G->bg->depth = DefaultDepth(dpy, screen);
+  G->depth = DefaultDepth(dpy, screen);
 
   /* create a gc for rubber band lines */
   values.function = GXxor;
@@ -110,7 +109,7 @@ Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
     }
     G->initialised = True;
     G->viz = xvi->visual;
-    G->bg->depth = xvi->depth;
+    G->depth = xvi->depth;
     G->cmap = cmap;
     XFree(xvi);
   }
@@ -137,43 +136,4 @@ Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
   G->font = XQueryFont(dpy, fid);
 
   return True;
-}
-
-/***************************************************************************
- * sets a window background according to the back_bits flags
- **************************************************************************/
-void SetWindowBackground(Display *dpy, Window win, int width, int height,
-			 Background *bg, GC gc)
-{
-  Pixmap pixmap;
-
-  /* only does pixel type backgrounds as yet */
-  if (!bg->type.bits.is_pixmap)
-    XSetWindowBackground(dpy, win, (Pixel)bg->pixmap);
-  else if (!bg->type.bits.stretch_h && !bg->type.bits.stretch_v)
-    XSetWindowBackgroundPixmap(dpy, win, bg->pixmap);
-  else if (!bg->type.bits.stretch_h) {
-    pixmap = CreateStretchYPixmap(dpy, bg->pixmap, bg->type.bits.w,
-				  bg->type.bits.h, bg->depth, height, gc);
-    if (pixmap) {
-      XSetWindowBackgroundPixmap(dpy, win, pixmap);
-      XFreePixmap(dpy, pixmap);
-    }
-  } else if (!bg->type.bits.stretch_v) {
-    pixmap = CreateStretchXPixmap(dpy, bg->pixmap, bg->type.bits.w,
-				 bg->type.bits.h, bg->depth, width, gc);
-    if (pixmap) {
-      XSetWindowBackgroundPixmap(dpy, win, pixmap);
-      XFreePixmap(dpy, pixmap);
-    }
-  } else {
-    pixmap = CreateStretchPixmap(dpy, bg->pixmap, bg->type.bits.w,
-				 bg->type.bits.h, bg->depth, width, height, gc);
-    if (pixmap) {
-      XSetWindowBackgroundPixmap(dpy, win, pixmap);
-      XFreePixmap(dpy, pixmap);
-    }
-  }
-
-  XClearArea(dpy, win, 0, 0, width, height, True);
 }

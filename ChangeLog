@@ -9,7 +9,8 @@
 
 1999-05-17 Hippo
 
-	* libs/ModGraph.{h,c}: new structure Background: contains useful stuff
+	* removed libs/ModGraph.h
+	* libs/ModGraph.c: new structure Background: contains useful stuff
 	* libs/Graphics.c: new functions CreateStretch{X,Y,}Pixmap()
 	* fvwm/{{lots.c},screen.h} use Background struct.
 	* modules/Fvwm{Ident,Scroll,Buttons}: use Background Struct
