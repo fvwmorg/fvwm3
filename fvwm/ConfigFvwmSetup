@@ -6,11 +6,6 @@ EdgeResistance 250 10
 EdgeScroll 100 100
 ClickTime 750
 
-# make sure these fonts exist on your system:
-WindowFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
-IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-
-HilightColor black palevioletred
 DeskTopSize 2x2
 MenuStyle * fvwm, Foreground maroon, Background grey60, Greyed grey40
 MenuStyle * Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
@@ -18,6 +13,10 @@ MenuStyle * Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
 ColormapFocus FollowsMouse
 
 # default Styles:
+# make sure these fonts exist on your system:
+Style *           Font -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+Style *           IconFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+Style *           HilightFore black, HilightBack palevioletred
 Style *           BorderWidth 7, HandleWidth 7
 Style *           Icon unknown1.xpm, Color lightgrey/dimgrey
 Style *           MWMFunctions, MWMDecor, HintOverride

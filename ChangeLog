@@ -1,3 +1,7 @@
+2000-02-20  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/ConfigFvwmSetup: use new styles Font, IconFont and Hilight...
+
 2000-02-19  Chris Rankin  <rankinc@zipworld.com.au>
 
     * fvwm/builtins.c
