@@ -1,3 +1,9 @@
+2003-06-15  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/style.c (__simplify_style_list): 
+	Fixed is_merged_allowed: rest it to True when cur change
+	Added "upward" simplification
+
 2003-06-14  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/style.c (__simplify_style_list):

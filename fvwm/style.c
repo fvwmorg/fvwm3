@@ -763,7 +763,7 @@ static Bool remove_all_of_style_from_list(char *style_ref)
 static Bool __simplify_style_list(void)
 {
 	window_style *cur;
-	Bool has_modified;
+	Bool has_modified = False;
 	Bool is_merge_allowed;
 
 	/* Step 1:
@@ -772,8 +772,7 @@ static Bool __simplify_style_list(void)
 	 * Step 2:
 	 *   Merge styles with the same name if there are no
 	 *   conflicting styles with other names set in between. */
-	for (cur = last_style_in_list, has_modified = False,
-		     is_merge_allowed = True; cur; cur = SGET_PREV_STYLE(*cur))
+	for (cur = last_style_in_list; cur; cur = SGET_PREV_STYLE(*cur))
 	{
 		style_flags dummyflags;
 		/* incremental flags set in styles with the same name */
@@ -783,6 +782,7 @@ static Bool __simplify_style_list(void)
 		style_flags interflags;
 		window_style *cmp;
 
+		is_merge_allowed = True;
 		memset(&interflags, 0, sizeof(style_flags));
 		memcpy(&sumflags, &cur->flag_mask, sizeof(style_flags));
 		memcpy(&sumdflags, &cur->flag_default, sizeof(style_flags));
@@ -873,6 +873,43 @@ static Bool __simplify_style_list(void)
 					free(cmp);
 					cmp = tmp;
 					has_modified = True;
+				}
+				else if (is_merge_allowed &&
+					 !blocksintersect(
+					    (char *)&cur->flag_mask,
+					    (char *)&interflags,
+					    sizeof(style_flags)) &&
+					 !blocksintersect(
+					    (char *)&cur->flag_default,
+					    (char *)&interflags,
+					    sizeof(style_flags)))
+				{
+					window_style *tmp =
+						SGET_PREV_STYLE(*cmp);
+					window_style *prev =
+						SGET_PREV_STYLE(*cmp);
+					window_style *next =
+						SGET_NEXT_STYLE(*cmp);
+
+					/* merge cur into cmp and delete it
+					 * afterwards */
+					merge_styles(cur, cmp, True);
+					memcpy(cmp, cur, sizeof(window_style));
+					/* restore fields overwritten by
+					 * memcpy */
+					SSET_PREV_STYLE(*cmp, prev);
+					SSET_NEXT_STYLE(*cmp, next);
+					/* remove the style without freeing the
+					 * memory */
+					remove_style_from_list(cur, False);
+					/* release the style structure */
+					free(cur);
+					cur = cmp;
+					cmp = tmp;
+					has_modified = True;
+					memset(
+						&interflags, 0,
+						sizeof(style_flags));
 				}
 				else
 				{
@@ -4023,8 +4060,7 @@ void simplify_style_list(void)
 	{
 		/* repeat until nothing has been done for a complete pass */
 	}
-	__simplify_style_list();
-
+	
 	return;
 }
 
