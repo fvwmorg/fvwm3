@@ -467,6 +467,12 @@ main (int argc, char **argv)
   *my_name = '*';
   strcpy (my_name + 1, s);
 
+  if ((argc != 6) && (argc != 7)) /* Now MyName is defined */
+  {
+    fprintf(stderr,"%s should only be executed by fvwm!\n", my_name + 1);
+    exit(1);
+  }
+ 
   fvwm_fd[0] = atoi (argv[1]);
   fvwm_fd[1] = atoi (argv[2]);
 

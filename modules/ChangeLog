@@ -1,3 +1,8 @@
+1999-06-25  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk/FvwmGtk.c (main): exit properly when called with the
+	wrong number of arguments.
+
 1999-06-25  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmIdent/FvwmIdent.c (list_end): fixed several bugs:
