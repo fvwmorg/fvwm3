@@ -220,8 +220,12 @@ following:
           fvwm-web/download.html.
       16. For a stable release, copy the NEWS from the stable branch
           to the development branch and update the link.
-      17. Use fvwm-web generated/txt2html.sh to update the NEWS file
-            cd fvwm-web/generated && ./txt2html.sh ../../fvwm/NEWS
+      17. Use fvwm-web generated/txt2html.sh to update the NEWS, FAQ and
+          AUTHORS file
+            cd fvwm-web/generated && \
+              ./txt2html.sh ../../fvwm/NEWS && \
+              ./txt2html.sh ../../fvwm/AUTHORS && \
+              ./txt2html.sh ../../fvwm/docs/FAQ
           in the development branch.
       18. Make sure the web pages in fvwm-web point to the new release.
 
