@@ -5,6 +5,9 @@
 #undef PACKAGE
 #undef VERSION
 
+/* Does select() take int* arguments (instead of fd_set*)?  */
+#undef SELECT_WANTS_INTP
+
 /* Where to search for the fvwm icons.  */
 #undef FVWM_ICONDIR
 

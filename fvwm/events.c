@@ -1536,10 +1536,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   DBUG("My_XNextEvent","waiting for module input/output");
   XFlush(dpy);
-#ifdef __hpux
-  if (select(fd_width,(int *)&in_fdset, (int *)&out_fdset,0, NULL) > 0)
+#ifdef SELECT_WANTS_INTP
+  if (select(fd_width, (int *)&in_fdset, (int *)&out_fdset, 0, NULL) > 0)
 #else
-  if (select(fd_width,&in_fdset, &out_fdset, 0, NULL) > 0)
+  if (select(fd_width, &in_fdset, &out_fdset, 0, NULL) > 0)
 #endif
   {
 

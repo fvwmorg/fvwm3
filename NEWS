@@ -1,7 +1,18 @@
+Changes in beta release 2.1.8 (January 1999)
+
+* Configure generates a summary at the end of processing.  In particular
+  this is useful to see if any of XPM, Readline, or RPlay are missing.
+
+* Configure now looks in more places to find cpp.  You can also specify a
+  specific cpp program via the --with-cpp option to configure.  If cpp
+  can't be found, configure will abort.
+
+* Configure now tries harder to ensure that XPM is the right version.
+
 Changes in beta release 2.1.7 (December 1998)
 
-* The SetMenuStyle command does not exist anymore. Its functionality has been
-  merged with MenuStyle. MenuStyle supports the old and the new syntax.
+* The SetMenuStyle command does not exist anymore. Its functionality has
+  been merged with MenuStyle. MenuStyle supports the old and the new syntax.
 
 Changes in beta release 2.1.6 (December 1998)
 

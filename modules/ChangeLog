@@ -1,3 +1,8 @@
+1999-01-05  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCpp/Makefile.am (INCLUDES): FVWM_CPP might contain
+	whitespace now, so use an alternate shell quoting scheme.
+
 1999-01-05  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/parse.c (ParseOptions): fixed memory leak (item[3] not

@@ -11,9 +11,14 @@ FVWM_CONFIGDIR='${sysconfdir}'
 AC_SUBST(FVWM_MODULEDIR)
 AC_SUBST(FVWM_CONFIGDIR)
 
+AC_ARG_WITH(cpp,
+[  --with-cpp              specify a path to cpp, for the FvwmCpp module])
+test -z "$with_cpp" && with_cpp=no
+
 AC_ARG_ENABLE(extras,
 [  --enable-extras         build the extra modules by default])
-test "${enable_extras}" = "yes" && EXTRA_MODULES=extras
+test "$enable_extras" = "yes" && EXTRA_MODULES=extras
+test -z "$enable_extras" && enable_extras=no
 AC_SUBST(EXTRA_MODULES)
 
 dnl Various configure-time options
@@ -73,7 +78,7 @@ dnl The module interface uses variadic functions for message passing.
 AC_CHECK_HEADERS(stdarg.h)
 AC_CHECK_FUNCS(vfprintf)
 if test $ac_cv_header_stdarg_h = no -o \
-	$ac_cv_func_vfprintf = no; then
+        $ac_cv_func_vfprintf = no; then
      AC_MSG_ERROR(stdarg.h and vfprintf required.)
 fi
 
@@ -94,19 +99,19 @@ AC_ARG_WITH(cxx,
 
 if test "$with_cxx" != no; then
     if test "$with_cxx" -a "$with_cxx" != yes; then
-	CCC=$with_cxx
+        CCC=$with_cxx
 # disable the cached value before probing
-	unset ac_cv_prog_CXX
-	AC_CHECK_PROGS(CXX, $CCC)
-	test "$CXX" ||
-	    AC_MSG_ERROR(C++ compiler given by --with-cxx not found)
+        unset ac_cv_prog_CXX
+        AC_CHECK_PROGS(CXX, $CCC)
+        test "$CXX" ||
+            AC_MSG_ERROR(C++ compiler given by --with-cxx not found)
     else
-	AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++)
+        AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++)
     fi
     if test "$CXX"; then
-	AC_MSG_RESULT(Using $CXX to compile C++ programs)
-	with_cxx=yes
-	AC_PROG_CXX
+        AC_MSG_RESULT(Using $CXX to compile C++ programs)
+        with_cxx=yes
+        AC_PROG_CXX
     fi
 fi
 
@@ -119,16 +124,54 @@ dnl Default is to use them if found; can be disable using --without
 smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
     XpmReadFileToXpmImage, X11/xpm.h,
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS], $X_CFLAGS)
+
+xpm_problem=": Xpm library or header not found!"
+
 if test "$xpm_LIBS"; then
+  dnl Check for proper version of Xpm -- from XEmacs 21.x configure.in
+  xpm_problem=""
+  AC_MSG_CHECKING(for Xpm 3.4f or better)
+  my_CPPFLAGS="$CPPFLAGS"
+  my_LIBS="$LIBS"
+  CPPFLAGS="$CPPFLAGS $xpm_CFLAGS"
+  LIBS="$LIBS $xpm_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+  AC_TRY_RUN([#include <X11/xpm.h>
+   int main(int c, char **v) {
+   return c == 1 ? 0 :
+     XpmIncludeVersion != XpmLibraryVersion() ? 1 :
+     XpmIncludeVersion < 30406 ? 2 : 0 ;}],
+    [./conftest dummy_arg; xpm_status=$?;
+     if test "$xpm_status" = "0"; then
+       with_xpm=yes;
+     else
+       with_xpm=no;
+       if test "$xpm_status" = "1"; then
+	 xpm_problem=": Xpm library version and header file version don't match!"
+       elif test "$xpm_status" = "2"; then
+	 xpm_problem=": Xpm library version is too old!"
+       else
+	 xpm_problem=": Internal xpm detection logic error!"
+       fi
+     fi],
+   [with_xpm=no])
+  AC_MSG_RESULT($with_xpm)
+  CPPFLAGS="$my_CPPFLAGS"
+  LIBS="$my_LIBS"
+
+  if test "$with_xpm" = yes; then
     AC_DEFINE(XPM)
     FVWMBANNER=FvwmBanner AC_SUBST(FVWMBANNER)
     XPMROOT=xpmroot AC_SUBST(XPMROOT)
     FVWMSCRIPT=FvwmScript AC_SUBST(FVWMSCRIPT)
-dnl
+
     # This one needs BOTH C++ and Xpm
     if test "$with_cxx" = yes; then
 	FVWMCONFIG=FvwmConfig AC_SUBST(FVWMCONFIG)
     fi
+  else
+    xpm_LIBS=
+    xpm_CFLAGS=
+  fi
 fi
 AC_SUBST(xpm_LIBS)
 AC_SUBST(xpm_CFLAGS)
@@ -148,7 +191,19 @@ AC_SUBST(readline_LIBS)
 AC_SUBST(readline_CFLAGS)
 
 dnl The FvwmCpp module needs the exact pathname for CPP.
-AC_PATH_PROG(FVWM_CPP, cpp, /lib/cpp, $PATH:/lib:/usr/lib)
+test "$with_cpp" = yes && with_cpp=no
+if test "$with_cpp" = no; then
+  AC_PATH_PROG(FVWM_CPP, cpp, no, $PATH:/lib:/usr/lib:/usr/ccs/lib)
+  if test "$FVWM_CPP" = no; then
+    # Clear the cached value
+    unset ac_cv_path_FVWM_CPP
+    AC_MSG_ERROR([cannot locate a C preprocessor: try using --with-cpp])
+  fi
+else
+  FVWM_CPP="$with_cpp"
+  AC_SUBST(FVWM_CPP)
+fi
+dnl FIXME: make sure the cpp we found actually works...
 
 dnl Finish checking for programs.
 AM_PROG_INSTALL
@@ -182,6 +237,24 @@ AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
 
 if test $ac_cv_func_setvbuf = yes; then
    AC_FUNC_SETVBUF_REVERSED
+fi
+
+if test $ac_cv_func_select = yes; then
+  # See whether select wants fd_set* or int* args.
+  test "$ac_cv_header_sys_select_h" && my_include="#include <sys/select.h>"
+  AC_MSG_CHECKING(whether select wants fd_set*)
+  want_fd_set=no
+  AC_TRY_COMPILE([#include <stdio.h>
+    #include <sys/types.h>
+    #include <sys/time.h>
+    $my_include],
+   [fd_set in[1], out[1];
+    select(1, in, out, 0, NULL);],
+   [want_fd_set=yes])
+  AC_MSG_RESULT($want_fd_set)
+  if test "$want_fd_set" = no; then
+    AC_DEFINE(SELECT_WANTS_INTP)
+  fi
 fi
 
 dnl Check for standard functions that we have replacements for.
@@ -235,3 +308,14 @@ extras/FvwmScript/Widgets/Makefile
 extras/FvwmTaskBar/Makefile
 extras/FvwmWharf/Makefile
 )
+
+echo "
+Configuration:
+
+  FVWM Version:             $VERSION
+
+  Build extra modules?      $enable_extras
+  Have ReadLine support?    $with_readline
+  Have RPlay support?	    $with_rplay
+  Have XPM support? 	    $with_xpm$xpm_problem
+"

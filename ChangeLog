@@ -1,3 +1,24 @@
+1999-01-05  Paul D. Smith  <psmith@gnu.org>
+
+	* NEWS: Updated with new configure options.
+
+	* acinclude.m4 (smr_CHECK_LIB): A few tweaks: don't print out
+	extra lines; make sure $with_xxx is set properly.
+
+	* configure.in: Added output section to the end, mainly to make a
+	missing XPM lib more obvious.
+	Added a new XPM check grabbed from XEmacs, which verifies we have
+	a "new enough" version of XPM.
+	Add a new check for the type of arguments to select(); whether we
+	like fd_set* or require int*.
+	Allow the user to specify a location for cpp with --with-cpp.
+	If cpp can't be found, stop immediately.
+
+	* fvwm/events.c (My_XNextEvent): Replace __hpux check with select
+	arg check from configure.
+
+	* BUGS: Documented install-strip problem.
+
 1998-01-05  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* configure.in: Changed version to 2.1.8.
