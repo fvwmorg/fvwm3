@@ -46,6 +46,7 @@
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
+#include "commands.h"
 #include "bindings.h"
 #include "events.h"
 #include "misc.h"

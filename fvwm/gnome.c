@@ -26,6 +26,7 @@
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
+#include "commands.h"
 #include "misc.h"
 #include "screen.h"
 #include "gnome.h"

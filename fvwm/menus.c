@@ -42,6 +42,7 @@
 #include "menus.h"
 #include "cursor.h"
 #include "functions.h"
+#include "commands.h"
 #include "repeat.h"
 #include "misc.h"
 #include "move_resize.h"
@@ -2142,7 +2143,7 @@ static void MenuInteraction(
 	  {
 	    menu_name = "";
 	  }
-	  is_complex_function = (FindFunction(missing_action) != NULL);
+	  is_complex_function = functions_is_complex_function(missing_action);
 	  if (is_complex_function)
 	  {
 	    char *action_ptr;

@@ -788,14 +788,14 @@ void StartupStuff(void)
   XUngrabPointer(dpy, CurrentTime);
 
   /* migo (04-Sep-1999): execute StartFunction */
-  if (FindFunction(startFuncName)) {
+  if (functions_is_complex_function(startFuncName)) {
     char *action = "Function " startFuncName;
     old_execute_function(NULL, action, NULL, &Event, C_ROOT, 1, 0, NULL);
   }
 
   /* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
   initFuncName = getInitFunctionName(Restarting == True);
-  if (FindFunction(initFuncName)) {
+  if (functions_is_complex_function(initFuncName)) {
     char *action = safestrdup(CatString2("Function ", initFuncName));
     old_execute_function(NULL, action, NULL, &Event, C_ROOT, 1, 0, NULL);
     free(action);
@@ -1569,7 +1569,7 @@ void Done(int restart, char *command)
 
   /* migo (03/Jul/1999): execute [Session]ExitFunction */
   exitFuncName = getInitFunctionName(2);
-  if (FindFunction(exitFuncName))
+  if (functions_is_complex_function(exitFuncName))
   {
     char *action = safestrdup(CatString2("Function ", exitFuncName));
     old_execute_function(NULL, action, NULL, &Event, C_ROOT, 1, 0, NULL);

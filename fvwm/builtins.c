@@ -1530,68 +1530,6 @@ void CMD_Beep(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Plus(F_CMD_ARGS)
-{
-	if (Scr.last_added_item.type == ADDED_MENU)
-		add_another_menu_item(action);
-	else if (Scr.last_added_item.type == ADDED_FUNCTION)
-		AddToFunction(Scr.last_added_item.item, action);
-#ifdef USEDECOR
-	else if (Scr.last_added_item.type == ADDED_DECOR) {
-		FvwmDecor *tmp = &Scr.DefaultDecor;
-		for (; tmp; tmp = tmp->next)
-			if (tmp == Scr.last_added_item.item)
-				break;
-		if (!tmp)
-			return;
-		AddToDecor(tmp, action);
-	}
-#endif /* USEDECOR */
-
-	return;
-}
-
-void CMD_DestroyFunc(F_CMD_ARGS)
-{
-	FvwmFunction *func;
-	char *token;
-
-	GetNextToken(action,&token);
-	if (!token)
-		return;
-	func = FindFunction(token);
-	free(token);
-	if (!func)
-		return;
-	if (Scr.last_added_item.type == ADDED_FUNCTION)
-		set_last_added_item(ADDED_NONE, NULL);
-	DestroyFunction(func);
-
-	return;
-}
-
-void CMD_AddToFunc(F_CMD_ARGS)
-{
-	FvwmFunction *func;
-	char *token;
-
-	action = GetNextToken(action,&token);
-	if (!token)
-		return;
-	func = FindFunction(token);
-	if (func == NULL)
-		func = NewFvwmFunction(token);
-
-	/* Set + state to last function */
-	set_last_added_item(ADDED_FUNCTION, func);
-
-	free(token);
-	AddToFunction(func, action);
-
-	return;
-}
-
-
 void CMD_Nop(F_CMD_ARGS)
 {
 	return;

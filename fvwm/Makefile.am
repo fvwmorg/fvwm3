@@ -12,7 +12,8 @@ config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 fvwm_SOURCES = \
 	add_window.h bindings.h borders.h builtins.h colormaps.h colors.h \
 	commands.h conditional.h cursor.h decorations.h events.h ewmh.h \
-	ewmh_intern.h externs.h focus.h functions.h fvwm.h geometry.h \
+	ewmh_intern.h expand.h externs.h focus.h functable.h functions.h \
+	fvwm.h geometry.h \
 	gnome.h icccm2.h icons.h menuitem.h menus.h menustyle.h menudim.h \
 	misc.h modconf.h module_interface.h move_resize.h placement.h \
 	read.h repeat.h schedule.h screen.h session.h stack.h style.h \
@@ -23,7 +24,8 @@ fvwm_SOURCES = \
 	conditional.c colormaps.c repeat.c decorations.c bindings.c colors.c \
 	cursor.c update.c windowlist.c modconf.c gnome.c geometry.c icccm2.c \
 	ewmh.c ewmh_events.c ewmh_icons.c ewmh_names.c ewmh_conf.c schedule.c \
-	menuitem.c menustyle.c menudim.c menucmd.c windowshade.c frame.c
+	menuitem.c menustyle.c menudim.c menucmd.c windowshade.c frame.c \
+	expand.c functable.c
 
 fvwm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 

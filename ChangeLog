@@ -1,5 +1,26 @@
 2002-06-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.c (Done):
+	(StartupStuff):
+	* fvwm/functions.c (functions_is_complex_function):
+	* fvwm/builtins.c (CMD_DestroyFunc):
+	(CMD_AddToFunc):
+	(CMD_Plus):
+	moved functions to functions.c
+	general cleanup
+
+	* fvwm/functable.c:
+	* fvwm/functable.h:
+	* fvwm/functions.h:
+	* fvwm/commands.h:
+	* fvwm/functions.c:
+	moved some types and functions to other/new files
+
+	* fvwm/functions.c:
+	* fvwm/expand.c (expand_vars_extended):
+	(expand_vars):
+	functions moved to new file
+
 	* fvwm/functions.c:
 	reindented file
 

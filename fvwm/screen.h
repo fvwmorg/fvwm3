@@ -310,7 +310,7 @@ typedef struct ScreenInfo
   int DefaultLayer;
   int BottomLayer;
 
-  FvwmFunction *functions;
+  struct FvwmFunction *functions;
 
   FlocaleFont *DefaultFont;		/* font structure */
 

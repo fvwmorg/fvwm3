@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +17,187 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+/* ---------------------------- included header files ----------------------- */
+
+/* ---------------------------- global definitions -------------------------- */
+
+/* ---------------------------- global macros ------------------------------- */
+
+/* ---------------------------- type definitions ---------------------------- */
+
+enum
+{
+	F_UNDEFINED = -1,
+
+	/* functions that need no window */
+	F_NOP = 0,
+	F_ADDFUNC,
+	F_ADDMENU,
+	F_ADDMENU2,
+	F_ALL,
+	F_ANY,
+	F_BEEP,
+	F_BREAK,
+	F_BUG_OPTS,
+	F_BUSY_CURSOR,
+	F_BUTTON_STATE,
+	F_BUTTON_STYLE,
+	F_CHANGE_MENUSTYLE,
+	F_CIRCULATE_DOWN,
+	F_CIRCULATE_UP,
+	F_CLICK,
+	F_CLOSE,
+	F_COLORMAP_FOCUS,
+	F_COND,
+	F_CONDCASE,
+	F_CONFIG_LIST,
+	F_COPY_MENU_STYLE,
+	F_CURRENT,
+	F_CURSOR_STYLE,
+	F_DESCHEDULE,
+	F_DESKTOP_NAME,
+	F_DESTROY_FUNCTION,
+	F_DESTROY_MENU,
+	F_DESTROY_MENUSTYLE,
+	F_DESTROY_STYLE,
+	F_DFLT_COLORS,
+	F_DFLT_COLORSET,
+	F_DFLT_FONT,
+	F_DFLT_ICON,
+	F_DFLT_LAYERS,
+	F_DIRECTION,
+	F_EDGE_COMMAND,
+	F_EDGE_RES,
+	F_EDGE_SCROLL,
+	F_EMULATE,
+	F_ESCAPE_FUNC,
+	F_EWMH_BASE_STRUT,
+	F_EWMH_NUMBER_OF_DESKTOPS,
+	F_EXEC,
+	F_EXEC_SETUP,
+	F_FAKE_CLICK,
+	F_FUNCTION,
+	F_GLOBAL_OPTS,
+	F_GOTO_DESK,
+	F_GOTO_PAGE,
+	F_HICOLOR,
+	F_HICOLORSET,
+	F_HIDEGEOMWINDOW,
+	F_ICONFONT,
+	F_ICON_PATH,
+	F_IGNORE_MODIFIERS,
+	F_IMAGE_PATH,
+	F_KEY,
+	F_KILL_MODULE,
+	F_LAYER,
+	F_MENUSTYLE,
+	F_MODULE,
+	F_MODULE_PATH,
+	F_MODULE_SYNC,
+	F_MOUSE,
+	F_MOVECURSOR,
+	F_MOVE_TO_DESK,
+	F_NEXT,
+	F_NONE,
+	F_OPAQUE,
+	F_PICK,
+	F_PIXMAP_PATH,
+	F_POINTERKEY,
+	F_POINTERWINDOW,
+	F_POPUP,
+	F_PREV,
+	F_QUIT,
+	F_QUIT_SESSION,
+	F_QUIT_SCREEN,
+	F_READ,
+	F_RECAPTURE,
+	F_RECAPTURE_WINDOW,
+	F_REFRESH,
+	F_REPEAT,
+	F_RESTART,
+	F_SAVE_SESSION,
+	F_SAVE_QUIT_SESSION,
+	F_SCHEDULE,
+	F_SCROLL,
+	F_SETDESK,
+	F_SETENV,
+	F_SET_ANIMATION,
+	F_SET_MASK,
+	F_SET_NOGRAB_MASK,
+	F_SET_SYNC_MASK,
+	F_SHADE_ANIMATE,
+	F_SILENT,
+	F_SNAP_ATT,
+	F_SNAP_GRID,
+	F_STAYSUP,
+	STROKE_ARG(F_STROKE)
+	STROKE_ARG(F_STROKE_FUNC)
+	F_STYLE,
+	F_TEARMENUOFF,
+	F_THISWINDOW,
+	F_TITLE,
+	F_TITLESTYLE,
+	F_TOGGLE_PAGE,
+	F_UPDATE_STYLES,
+	F_WAIT,
+	F_WINDOWFONT,
+	F_WINDOWLIST,
+	F_XINERAMA,
+	F_XINERAMAPRIMARYSCREEN,
+	F_XINERAMASLS,
+	F_XINERAMASLSSCREENS,
+	F_XINERAMASLSSIZE,
+	F_XOR,
+	F_XSYNC,
+	F_XSYNCHRONIZE,
+
+	/* functions that need a window to operate on */
+	F_ADD_BUTTON_STYLE,
+	F_ADD_DECOR,
+	F_ADD_TITLE_STYLE,
+	F_ANIMATED_MOVE,
+	F_BORDERSTYLE,
+	F_CHANGE_DECOR,
+	F_COLOR_LIMIT,
+	F_DELETE,
+	F_DESTROY,
+	F_DESTROY_DECOR,
+	F_DESTROY_MOD,
+	F_ECHO,
+	F_FLIP_FOCUS,
+	F_FOCUS,
+	F_ICONIFY,
+	F_LOWER,
+	F_MAXIMIZE,
+	F_MOVE,
+	F_MOVE_THRESHOLD,
+	F_MOVE_TO_PAGE,
+	F_MOVE_TO_SCREEN,
+	F_PLACEAGAIN,
+	F_RAISE,
+	F_RAISELOWER,
+	F_RESIZE,
+	F_RESIZE_MAXIMIZE,
+	F_RESIZEMOVE,
+	F_RESIZEMOVE_MAXIMIZE,
+	F_SEND_STRING,
+	F_STATE,
+	F_STICK,
+	F_UPDATE_DECOR,
+	F_WARP,
+	F_WINDOWID,
+	F_WINDOW_SHADE,
+
+	F_END_OF_LIST = 999,
+
+	/* Functions for use by modules only! */
+	F_SEND_WINDOW_LIST = 1000
+};
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- interface functions ------------------------- */
+
 /* This file contains all command prototypes. */
 void CMD_Plus(F_CMD_ARGS);
 void CMD_AddButtonStyle(F_CMD_ARGS);
@@ -25,6 +207,7 @@ void CMD_AddToDecor(F_CMD_ARGS);
 #endif /* USEDECOR */
 void CMD_AddToFunc(F_CMD_ARGS);
 void CMD_AddToMenu(F_CMD_ARGS);
+void CMD_Alias(F_CMD_ARGS);
 void CMD_All(F_CMD_ARGS);
 void CMD_AnimatedMove(F_CMD_ARGS);
 void CMD_Any(F_CMD_ARGS);
@@ -78,6 +261,8 @@ void CMD_EdgeScroll(F_CMD_ARGS);
 void CMD_EdgeThickness(F_CMD_ARGS);
 void CMD_Emulate(F_CMD_ARGS);
 void CMD_EscapeFunc(F_CMD_ARGS);
+void CMD_EwmhBaseStrut(F_CMD_ARGS);
+void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
 void CMD_Exec(F_CMD_ARGS);
 void CMD_ExecUseShell(F_CMD_ARGS);
 void CMD_FakeClick(F_CMD_ARGS);
@@ -173,6 +358,7 @@ void CMD_TearMenuOff(F_CMD_ARGS);
 void CMD_ThisWindow(F_CMD_ARGS);
 void CMD_Title(F_CMD_ARGS);
 void CMD_TitleStyle(F_CMD_ARGS);
+void CMD_Unalias(F_CMD_ARGS);
 void CMD_UnsetEnv(F_CMD_ARGS);
 void CMD_UpdateDecor(F_CMD_ARGS);
 void CMD_UpdateStyles(F_CMD_ARGS);

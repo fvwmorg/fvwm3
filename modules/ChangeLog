@@ -1,3 +1,8 @@
+2002-06-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmCommand/Makefile.am:
+	use functable.c instead of functions.c
+
 2002-06-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPager/FvwmPager.c (ParseOptions):
