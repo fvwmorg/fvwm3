@@ -759,7 +759,6 @@ static cfunc_action_t CheckActionType(
 			switch (d->xany.type)
 			{
 			case ButtonRelease:
-/*!!!*/fprintf(stderr, "rel %d\n", d->xbutton.button);
 				*ret_button = d->xbutton.button;
 				return CF_CLICK;
 			case MotionNotify:
@@ -780,7 +779,6 @@ static cfunc_action_t CheckActionType(
 				}
 				break;
 			case ButtonPress:
-/*!!!*/fprintf(stderr, "prs %d\n", d->xbutton.button);
 				*ret_button = d->xbutton.button;
 				if (may_time_out)
 				{
@@ -1078,7 +1076,6 @@ static void execute_complex_function(
 	/* Wait and see if we have a click, or a move */
 	/* wait forever, see if the user releases the button */
 	type = CheckActionType(x, y, &d, HaveHold, True, &button);
-/*!!!*/fprintf(stderr,"cat1: %d %c\n", type, type);
 	if (type == CF_CLICK)
 	{
 		int button2;
@@ -1088,7 +1085,6 @@ static void execute_complex_function(
 		{
 			type = CheckActionType(
 				x, y, &d, True, False, &button2);
-/*!!!*/fprintf(stderr,"cat2: %d %c\n", type, type);
 			switch (type)
 			{
 			case CF_HOLD:
@@ -1111,7 +1107,6 @@ static void execute_complex_function(
 				break;
 			}
 		}
-/*!!!*/fprintf(stderr,"cat3: %d %c\n", type, type);
 	}
 	else if (type == CF_TIMEOUT)
 	{
