@@ -87,11 +87,18 @@ static void apply_window_updates(
    *
    * These are a bit complicated because they can move windows to a different
    * page or desk. */
-  if (flags->do_update_stick_icon)
+  if (flags->do_update_stick_icon && IS_ICONIFIED(t) && !IS_STICKY(t))
   {
-    /* stick and unstick the window to force the icon on the current page */
-    handle_stick(&Event, t->frame, t, C_FRAME, "", 0, 1);
-    handle_stick(&Event, t->frame, t, C_FRAME, "", 0, 0);
+    if (IS_ICON_STICKY(pstyle))
+    {
+      /* stick and unstick the window to force the icon on the current page */
+      handle_stick(&Event, t->frame, t, C_FRAME, "", 0, 1);
+      handle_stick(&Event, t->frame, t, C_FRAME, "", 0, 0);
+    }
+    else
+    {
+      flags->do_update_icon_title = True;
+    }
   }
   else if (flags->do_update_stick)
   {
