@@ -1,3 +1,15 @@
+2004-07-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/Goodies.c (CreateTipWindow):
+	removed dead code
+
+	* FvwmProxy/FvwmProxy.c:
+	compilation fixes
+
+	* FvwmTaskBar/Goodies.c (change_goody_colorset):
+	(PopupTipWindow):
+	fixd colour set updating code
+
 2004-07-12  Jason Weber  <baboon@imonk.com>
 
 	* FvwmProxy/FvwmProxy.c:
@@ -27,8 +39,8 @@
 	* FvwmButtons/draw.c:
 	* FvwmButtons/icons.c:
 	* FvwmButtons/parse.c:
-	More FvwmButtons eye candy: PressColorset, PressIcon & PressTitle options.
-	Don't utilise Hover options when button is selected.
+	More FvwmButtons eye candy: PressColorset, PressIcon & PressTitle
+	options. Don't utilise Hover options when button is selected.
 
 2004-07-10  Scott Smedley  <scottie7@tpg.com.au>
 
@@ -42,8 +54,8 @@
 	* FvwmButtons/icons.h:
 	* FvwmButtons/parse.c:
 	FvwmButtons eye candy: HoverColorset, HoverIcon & HoverTitle options.
-	Now also possible to ChangeButton Icon/Title if originally no icon/title
-	specified.
+	Now also possible to ChangeButton Icon/Title if originally no
+	icon/title specified.
 
 2004-07-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
@@ -95,8 +107,8 @@
 2004-06-27  Scott Smedley <ss@aao.gov.au>
 
 	* FvwmWindowMenu/FvwmWindowMenu.in:
-	bugfix: (report #1146) Some special characters require a double-sequence
-	to get a literal character in menus.
+	bugfix: (report #1146) Some special characters require a
+	double-sequence to get a literal character in menus.
 
 2004-06-25  Dominik Vogt  <dominik.vogt@gmx.de>
 

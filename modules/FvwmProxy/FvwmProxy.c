@@ -34,6 +34,8 @@
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
 #include "libs/safemalloc.h"
+#include "libs/charmap.h"
+#include "libs/modifiers.h"
 
 #include "FvwmProxy.h"
 

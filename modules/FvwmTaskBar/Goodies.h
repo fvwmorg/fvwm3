@@ -21,6 +21,7 @@
 
 typedef struct {
   int  x, y, w, h, tw, th, open, type;
+  int px, py;
   char *text;
   Window win;
 } TipStruct;

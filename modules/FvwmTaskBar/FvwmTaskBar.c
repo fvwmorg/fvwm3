@@ -1387,7 +1387,10 @@ void CheckForTip(int x, int y)
   }
   else {
     ClearAlarm(SHOW_TIP);
-    if (Tip.open) ShowTipWindow(0);
+    if (Tip.open)
+    {
+      ShowTipWindow(0);
+    }
   }
 }
 
@@ -1641,14 +1644,16 @@ void HandleEvents(
 					ItemID(&windows, num));
 		}
 
-		CheckForTip(evp->xmotion.x, evp->xmotion.y);
+		CheckForTip(evp->xcrossing.x, evp->xcrossing.y);
 		break;
 
 	case LeaveNotify:
 		*NewTimestamp = evp->xcrossing.time;
 		ClearAlarm(SHOW_TIP);
 		if (Tip.open)
+		{
 			ShowTipWindow(0);
+		}
 
 		if (AutoHide)
 			SetAlarm(HIDE_TASK_BAR);

@@ -90,8 +90,8 @@ void cool_get_inboxstatus(void);
 #define gray_height 8
 extern unsigned char gray_bits[];
 
-/*                x  y  w  h  tw th open type *text   win */
-TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, NULL, None };
+/*                x  y  w  h  tw th open type px  py *text   win */
+TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, 0, 0,  NULL, None };
 
 
 static void CreateOrUpdateGoodyGC(void)
@@ -152,11 +152,35 @@ static void CreateOrUpdateGoodyGC(void)
 
 Bool change_goody_colorset(int cset, Bool force)
 {
-  if (cset < 0 || (cset != tipscolorset && !force))
-    return False;
-  CreateOrUpdateGoodyGC();
+	if (cset < 0)
+	{
+		return False;
+	}
+	if (cset == tipscolorset && Tip.win != None)
+	{
+		char *s;
 
-  return True;
+		if (Tip.text != NULL)
+		{
+			s = safestrdup(Tip.text);
+		}
+		else
+		{
+			s = NULL;
+		}
+		PopupTipWindow(Tip.px, Tip.py, s);
+		if (s != NULL)
+		{
+			free(s);
+		}
+	}
+	if (!force && cset != colorset)
+	{
+		return False;
+	}
+	CreateOrUpdateGoodyGC();
+
+	return True;
 }
 
 static char *goodyopts[] =
@@ -509,7 +533,7 @@ void CreateMailTipWindow()
 
 void RedrawTipWindow(void)
 {
-  /* FIXME: I am sure that we redraw to often */
+  /* FIXME: I am sure that we redraw too often */
   if (Tip.text) {
     FwinString->win = Tip.win;
     FwinString->gc = tipsgc;
@@ -540,6 +564,8 @@ void PopupTipWindow(int px, int py, const char *text)
   int newx, newy;
   Window child;
 
+  Tip.px = px;
+  Tip.py = py;
   if (!ShowTips)
     return;
   if (Tip.win != None)
@@ -651,27 +677,18 @@ void CreateTipWindow(int x, int y, int w, int h)
     pchk = XCreatePixmapFromBitmapData(dpy, Tip.win, (char *)gray_bits,
 				       gray_width, gray_height, 1, 0, 1);
   gcval.stipple = pchk;
-  if (cgc)
-    XChangeGC(dpy, cgc, gcmask, &gcval);
-  else
-    cgc = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
+  cgc = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
 
   gcmask = GCForeground | GCBackground | GCGraphicsExposures | GCFillStyle;
   gcval.graphics_exposures = False;
   gcval.fill_style = FillSolid;
   gcval.foreground = 0;
   gcval.background = 0;
-  if (gc0)
-    XChangeGC(dpy, gc0, gcmask, &gcval);
-  else
-    gc0 = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
+  gc0 = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
 
   gcval.foreground = 1;
   gcval.background = 1;
-  if (gc1)
-    XChangeGC(dpy, gc1, gcmask, &gcval);
-  else
-    gc1 = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
+  gc1 = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
 
   XFillRectangle(dpy, pmask, gc0, 0, 0, w+4, h+4);
   XFillRectangle(dpy, pmask, cgc, 3, 3, w+4, h+4);
