@@ -935,17 +935,23 @@ void GNOME_HandlePropRequest(unsigned int propm,
     First change the props on the window so the gnome app knows we did
     somthing.
  -----------------------------------------------------------------------*/
+#ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG, "HandleGnomePropRequest", "window is %d", fwin->w);
+#endif
   if (fwin == (FvwmWindow*) 0)
     return;
 
+#ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG, "HandleGnomePropRequest", "prop req is %d", prop);
   fvwm_msg(DBG, "HandleGnomePropRequest", "propm req is %d", propm);
+#endif
   XGetWindowProperty(dpy, fwin->w, a, 0L, 3L, False, a,
 		     &atype, &aformat, &nitems, &bytes_remain, &indi);
   oldprop &= ~(propm);
   oldprop |= (propm & prop);
+#ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG, "HandleGnomePropRequest", "oldprop req is %d", oldprop);
+#endif
   XChangeProperty(dpy, fwin->w, a, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&oldprop, 1);
 

@@ -1,5 +1,8 @@
 2000-09-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/gnome.c (GNOME_HandlePropRequest):
+	removed debug messages
+
 	* libs/GetFont.c (GetFontSetOrFixed):
 	* libs/fvwmlib.h:
 	function is only compiled in with I18N_MB defined
@@ -12,6 +15,7 @@
 	DestroyModuleConfig now supports a non conflicting syntax too,
 	no globing in alias is allowed. DestroyModuleConfig FvwmPager: Geomet*
 
+>>>>>>> 1.999
 2000-09-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c (raise_over_unmanaged):
