@@ -254,7 +254,7 @@ static void map_window(FvwmWindow *t)
 }
 
 
-void setEdgeThickness(F_CMD_ARGS)
+void CMD_EdgeThickness(F_CMD_ARGS)
 {
   int val, n;
 
@@ -273,7 +273,7 @@ void setEdgeThickness(F_CMD_ARGS)
   checkPanFrames();
 }
 
-void SetEdgeScroll(F_CMD_ARGS)
+void CMD_EdgeScroll(F_CMD_ARGS)
 {
   int val1, val2, val1_unit,val2_unit,n;
 
@@ -313,7 +313,7 @@ void SetEdgeScroll(F_CMD_ARGS)
   checkPanFrames();
 }
 
-void SetEdgeResistance(F_CMD_ARGS)
+void CMD_EdgeResistance(F_CMD_ARGS)
 {
   int val[2];
 
@@ -328,7 +328,7 @@ void SetEdgeResistance(F_CMD_ARGS)
 }
 
 
-void SetDeskSize(F_CMD_ARGS)
+void CMD_DesktopSize(F_CMD_ARGS)
 {
   int val[2];
 
@@ -1126,9 +1126,14 @@ static void MapDesk(int desk, Bool grab)
  * Move to a new desktop
  *
  *************************************************************************/
-void goto_desk_func(F_CMD_ARGS)
+void CMD_GotoDesk(F_CMD_ARGS)
 {
   goto_desk(GetDeskNumber(action));
+}
+
+void CMD_Desk(F_CMD_ARGS)
+{
+  CMD_GotoDesk(F_PASS_ARGS);
 }
 
 void goto_desk(int desk)
@@ -1172,7 +1177,7 @@ void goto_desk(int desk)
  *     viewport is moved, then switch the viewport, then the desk.
  *
  *************************************************************************/
-void gotoDeskAndPage_func(F_CMD_ARGS)
+void CMD_GotoDeskAndPage(F_CMD_ARGS)
 {
   int val[3];
   Bool is_new_desk;
@@ -1220,7 +1225,7 @@ void gotoDeskAndPage_func(F_CMD_ARGS)
 }
 
 
-void goto_page_func(F_CMD_ARGS)
+void CMD_GotoPage(F_CMD_ARGS)
 {
   int x;
   int y;
@@ -1275,7 +1280,7 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
 }
 
 /* function with parsing of command line */
-void move_window_to_desk(F_CMD_ARGS)
+void CMD_MoveToDesk(F_CMD_ARGS)
 {
   int desk;
 
@@ -1288,7 +1293,7 @@ void move_window_to_desk(F_CMD_ARGS)
 }
 
 
-void scroll(F_CMD_ARGS)
+void CMD_Scroll(F_CMD_ARGS)
 {
   int x,y;
   int val1, val2, val1_unit, val2_unit;

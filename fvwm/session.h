@@ -98,8 +98,5 @@ void ProcessICEMsgs(void);
 Bool quitSession(void);
 Bool saveSession(void);
 Bool saveQuitSession(void);
-void quitSession_func(F_CMD_ARGS);
-void saveSession_func(F_CMD_ARGS);
-void saveQuitSession_func(F_CMD_ARGS);
 
 #endif

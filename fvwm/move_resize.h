@@ -25,23 +25,9 @@ void AnimatedMoveFvwmWindow(
   Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
 Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque);
-void move_window(F_CMD_ARGS);
-void resize_move_window(F_CMD_ARGS);
 void move_window_doit(
   XEvent *eventp,Window w,FvwmWindow *tmp_win, unsigned long context,
   char *action,int* Module, Bool do_animate, Bool do_move_to_page);
-void animated_move_window(F_CMD_ARGS);
-void move_window_to_page(F_CMD_ARGS);
-void SetMoveThreshold(F_CMD_ARGS);
-void SetOpaque(F_CMD_ARGS);
-void HideGeometryWindow(F_CMD_ARGS);
-void SetSnapAttraction(F_CMD_ARGS);
-void SetSnapGrid(F_CMD_ARGS);
-void SetXOR(F_CMD_ARGS);
-void SetXORPixmap(F_CMD_ARGS);
-void resize_window(F_CMD_ARGS);
-void Maximize(F_CMD_ARGS);
 void handle_stick(F_CMD_ARGS, int toggle);
-void stick_function(F_CMD_ARGS);
 
 #endif /* _MOVE_RESIZE_ */

@@ -61,6 +61,4 @@ typedef enum
 #define BUSY_DYNAMICMENU (1<<3)
 #define BUSY_ALL (BUSY_READ|BUSY_WAIT|BUSY_MODULESYNCHRONOUS|BUSY_DYNAMICMENU)
 Cursor *CreateCursors(Display *dpy);
-void CursorStyle(F_CMD_ARGS);
-void setBusyCursor(F_CMD_ARGS);
 #endif /* _CURSOR_ */

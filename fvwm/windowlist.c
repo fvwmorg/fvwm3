@@ -75,8 +75,7 @@ static int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
  * specifier to each item in the list.  This means allocating the
  * memory for each item (& freeing it) rather than just using the window
  * title directly. */
-void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int *Module)
+void CMD_WindowList(F_CMD_ARGS)
 {
   MenuRoot *mr;
   MenuParameters mp;

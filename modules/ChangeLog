@@ -4,6 +4,8 @@
 	* FvwmCommand/findcmd (create_pm):
 	* FvwmCommand/Makefile.am:
 	removed findcmd shell script; use fvwmcmd.pl instead
+	(FvwmCommand.pm):
+	fixed dependencies
 
 	* FvwmCommand/findcmd.pl (listcmd):
 	adapted to new command table syntax

@@ -134,11 +134,11 @@ line: while ( <IN> ) {
 
   # collect continuation lines
   $line = $_;
-  $silngle_lines = "";
+  $single_lines = $_;
   while (substr($line, length($line), 1) eq "\\") { # backslashed lines
     $old_line = substr($line, 1, length($line) - 1);
     $new_line = &Getline1();
-    $single_lines = "$old_line\n$new_line";
+    $single_lines = "$single_lines\n$new_line";
     $line = "$old_line$new_line";
   }
   $_ = $line;
@@ -149,7 +149,7 @@ line: while ( <IN> ) {
       $colors[1] = $Fld[2];
       $colors[2] = $Fld[3];
     }
-    print "Style \"*\" Hilightfore " . $colors[1] . ', HilightBack ' .
+    print "Style \"*\" HilightFore " . $colors[1] . ', HilightBack ' .
       $colors[2];
     next line;
   }

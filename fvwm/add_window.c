@@ -60,6 +60,7 @@
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
+#include "commands.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -1498,7 +1499,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     Event.xbutton.y = (tmp_win->frame_g.height>>1);
     Event.xbutton.subwindow = None;
     Event.xany.window = tmp_win->w;
-    resize_window(&Event , tmp_win->w, tmp_win, C_WINDOW, "", 0);
+    CMD_Resize(&Event , tmp_win->w, tmp_win, C_WINDOW, "", 0);
   }
 
   /****** window colormap ******/
@@ -2516,12 +2517,12 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   MyXUngrabServer(dpy);
 }
 
-void Recapture(F_CMD_ARGS)
+void CMD_Recapture(F_CMD_ARGS)
 {
   do_recapture(F_PASS_ARGS, False);
 }
 
-void RecaptureWindow(F_CMD_ARGS)
+void CMD_RecaptureWindow(F_CMD_ARGS)
 {
   do_recapture(F_PASS_ARGS, True);
 }

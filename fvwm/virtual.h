@@ -16,22 +16,13 @@
 #ifndef _VIRTUAL_
 #define _VIRTUAL_
 
-void setEdgeThickness(F_CMD_ARGS);
-void SetEdgeScroll(F_CMD_ARGS);
-void SetEdgeResistance(F_CMD_ARGS);
-void SetDeskSize(F_CMD_ARGS);
 Bool HandlePaging(int, int, int *, int *, int *, int *, Bool, Bool, Bool);
 void checkPanFrames(void);
 void raisePanFrames(void);
 void initPanFrames(void);
 void MoveViewport(int newx, int newy,Bool);
-void goto_desk_func(F_CMD_ARGS);
 void goto_desk(int desk);
 void do_move_window_to_desk(FvwmWindow *tmp_win, int desk);
-void move_window_to_desk(F_CMD_ARGS);
-void scroll(F_CMD_ARGS);
 Bool get_page_arguments(char *action, int *page_x, int *page_y);
-void goto_page_func(F_CMD_ARGS);
-void gotoDeskAndPage_func(F_CMD_ARGS);
 
 #endif /* _VIRTUAL_ */

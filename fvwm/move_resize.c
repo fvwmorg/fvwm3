@@ -361,7 +361,7 @@ static int GetResizeMoveArguments(
   return 4;
 }
 
-void resize_move_window(F_CMD_ARGS)
+void CMD_ResizeMove(F_CMD_ARGS)
 {
   int FinalX = 0;
   int FinalY = 0;
@@ -844,17 +844,17 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
   return;
 }
 
-void move_window(F_CMD_ARGS)
+void CMD_Move(F_CMD_ARGS)
 {
   move_window_doit(F_PASS_ARGS, False, False);
 }
 
-void animated_move_window(F_CMD_ARGS)
+void CMD_AnimatedMove(F_CMD_ARGS)
 {
   move_window_doit(F_PASS_ARGS, True, False);
 }
 
-void move_window_to_page(F_CMD_ARGS)
+void CMD_MoveToPage(F_CMD_ARGS)
 {
   move_window_doit(F_PASS_ARGS, False, True);
 }
@@ -1574,7 +1574,7 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
 }
 
 
-void SetMoveThreshold(F_CMD_ARGS)
+void CMD_MoveThreshold(F_CMD_ARGS)
 {
   int val = 0;
 
@@ -1585,7 +1585,7 @@ void SetMoveThreshold(F_CMD_ARGS)
 }
 
 
-void SetOpaque(F_CMD_ARGS)
+void CMD_OpaqueMoveSize(F_CMD_ARGS)
 {
   int val;
 
@@ -1604,7 +1604,7 @@ static char *hide_options[] =
   NULL
 };
 
-void HideGeometryWindow(F_CMD_ARGS)
+void CMD_HideGeometryWindow(F_CMD_ARGS)
 {
   char *token = PeekToken(action, NULL);
 
@@ -1629,7 +1629,7 @@ void HideGeometryWindow(F_CMD_ARGS)
 }
 
 
-void SetSnapAttraction(F_CMD_ARGS)
+void CMD_SnapAttraction(F_CMD_ARGS)
 {
   int val;
   char *token;
@@ -1698,7 +1698,7 @@ void SetSnapAttraction(F_CMD_ARGS)
   return;
 }
 
-void SetSnapGrid(F_CMD_ARGS)
+void CMD_SnapGrid(F_CMD_ARGS)
 {
   int val[2];
 
@@ -1723,7 +1723,7 @@ void SetSnapGrid(F_CMD_ARGS)
 
 static Pixmap XorPixmap = None;
 
-void SetXOR(F_CMD_ARGS)
+void CMD_XorValue(F_CMD_ARGS)
 {
   int val;
   XGCValues gcv;
@@ -1763,7 +1763,7 @@ void SetXOR(F_CMD_ARGS)
 }
 
 
-void SetXORPixmap(F_CMD_ARGS)
+void CMD_XorPixmap(F_CMD_ARGS)
 {
   char *PixmapName;
   Picture *xp;
@@ -1775,7 +1775,7 @@ void SetXORPixmap(F_CMD_ARGS)
   {
     /* return to default value. */
     action = "0";
-    SetXOR(F_PASS_ARGS);
+    CMD_XorValue(F_PASS_ARGS);
     return;
   }
   /* get the picture in the root visual, colorlimit is ignored because the
@@ -1831,7 +1831,7 @@ void SetXORPixmap(F_CMD_ARGS)
  * Starts a window resize operation
  *
  ****************************************************************************/
-void resize_window(F_CMD_ARGS)
+void CMD_Resize(F_CMD_ARGS)
 {
   extern Window bad_window;
   Bool finished = False, done = False, abort = False;
@@ -2815,7 +2815,7 @@ static void MaximizeWidth(
  *	(Un)Maximize a window.
  *
  ***********************************************************************/
-void Maximize(F_CMD_ARGS)
+void CMD_Maximize(F_CMD_ARGS)
 {
   int page_x, page_y;
   int val1, val2, val1_unit, val2_unit;
@@ -3067,7 +3067,7 @@ void handle_stick(F_CMD_ARGS, int toggle)
   GNOME_SetHints(tmp_win);
 }
 
-void stick_function(F_CMD_ARGS)
+void CMD_Stick(F_CMD_ARGS)
 {
   int toggle;
 

@@ -16,70 +16,11 @@
 #ifndef BUILTINS_H
 #define BUILTINS_H
 
-void HandleColorset(F_CMD_ARGS);
-void WindowShade(F_CMD_ARGS);
-void setShadeAnim(F_CMD_ARGS);
-void set_animation(F_CMD_ARGS);
-void ButtonStyle(F_CMD_ARGS);
-#ifdef MULTISTYLE
-void AddButtonStyle(F_CMD_ARGS);
-#endif
-#ifdef USEDECOR
-void add_item_to_decor(F_CMD_ARGS);
-void ChangeDecor(F_CMD_ARGS);
-void DestroyDecor(F_CMD_ARGS);
-#endif
-void UpdateDecor(F_CMD_ARGS);
-void SetColormapFocus(F_CMD_ARGS);
-void SetColorLimit(F_CMD_ARGS);
-void Bell(F_CMD_ARGS);
-void movecursor(F_CMD_ARGS);
-void destroy_function(F_CMD_ARGS);
-void delete_function(F_CMD_ARGS);
-void close_function(F_CMD_ARGS);
-void restart_function(F_CMD_ARGS);
-void exec_function(F_CMD_ARGS);
-void exec_setup(F_CMD_ARGS);
-void refresh_function(F_CMD_ARGS);
-void refresh_win_function(F_CMD_ARGS);
-void wait_func(F_CMD_ARGS);
-void quit_func(F_CMD_ARGS);
-void quit_screen_func(F_CMD_ARGS);
-void echo_func(F_CMD_ARGS);
-void Nop_func(F_CMD_ARGS);
-void SetGlobalOptions(F_CMD_ARGS);
-void SetBugOptions(F_CMD_ARGS);
-void Emulate(F_CMD_ARGS);
-void destroy_fvwmfunc(F_CMD_ARGS);
-void add_another_item(F_CMD_ARGS);
-void add_item_to_func(F_CMD_ARGS);
-void setModulePath(F_CMD_ARGS);
-void setModuleTimeout(F_CMD_ARGS);
-void imagePath_function(F_CMD_ARGS);
-void iconPath_function(F_CMD_ARGS);
-void pixmapPath_function(F_CMD_ARGS);
-void SetHiColor(F_CMD_ARGS);
-void SetHiColorset(F_CMD_ARGS);
-void SetDefaultColorset(F_CMD_ARGS);
-void SetDefaultColors(F_CMD_ARGS);
-void SetDefaultIcon(F_CMD_ARGS);
-void LoadDefaultFont(F_CMD_ARGS);
-void LoadIconFont(F_CMD_ARGS);
-void LoadWindowFont(F_CMD_ARGS);
-void SetTitleStyle(F_CMD_ARGS);
-#ifdef MULTISTYLE
-void AddTitleStyle(F_CMD_ARGS);
-#endif
 void ApplyDefaultFontAndColors(void);
-void SetClick(F_CMD_ARGS);
-void SetEnv(F_CMD_ARGS);
-void UnsetEnv(F_CMD_ARGS);
-STROKE_CODE(void strokeFunc(F_CMD_ARGS);)
 void InitFvwmDecor(FvwmDecor *decor);
 void DestroyFvwmDecor(FvwmDecor *decor);
 void reset_decor_changes(void);
 Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose);
 void FreeDecorFace(Display *dpy, DecorFace *df);
-void fake_click(F_CMD_ARGS);
 
 #endif /* BUILTINS_H */

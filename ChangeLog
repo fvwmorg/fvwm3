@@ -1,5 +1,148 @@
 2001-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/modconf.c (CMD_Send_ConfigInfo):
+	* fvwm/module_interface.c (CMD_SendToModule):
+	* fvwm/builtins.c (CMD_Beep):
+	(CMD_EscapeFunc):
+	* fvwm/gnome.c (CMD_GnomeShowDesks):
+	(CMD_GnomeButton):
+	* fvwm/modconf.c (CMD_DestroyModuleConfig):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/virtual.c (CMD_EdgeThickness):
+	(CMD_EdgeScroll):
+	(CMD_EdgeResistance):
+	(CMD_DesktopSize):
+	(CMD_GotoDesk):
+	(CMD_GotoDeskAndPage):
+	(CMD_GotoPage):
+	(CMD_MoveToDesk):
+	(CMD_Scroll):
+	* fvwm/update.c (CMD_UpdateStyles):
+	* fvwm/style.c (CMD_DestroyStyle):
+	(CMD_StyleStyle):
+	* fvwm/stack.c (CMD_Raise):
+	(CMD_Lower):
+	(CMD_RaiseLower):
+	(CMD_Layer):
+	(CMD_DefaultLayers):
+	* fvwm/session.c (CMD_QuitSession):
+	(CMD_SaveSession):
+	(CMD_SaveQuitSession):
+	* fvwm/repeat.c (CMD_Repeat):
+	* fvwm/read.c (CMD_Read):
+	(CMD_PipeRead):
+	* fvwm/placement.c (CMD_PlaceAgain):
+	* fvwm/move_resize.c (CMD_ResizeMove):
+	(CMD_Move):
+	(CMD_AnimatedMove):
+	(CMD_MoveToPage):
+	(CMD_MoveThreshold):
+	(CMD_OpaqueMoveSize):
+	(CMD_HideGeometryWindow):
+	(CMD_SnapAttraction):
+	(CMD_SnapGrid):
+	(CMD_XorValue):
+	(CMD_XorPixmap):
+	(CMD_Resize):
+	(CMD_Maximize):
+	(CMD_Stick):
+	* fvwm/module_interface.c (CMD_Module):
+	(CMD_ExecuteModuleSynchronous):
+	(CMD_KillModule):
+	(CMD_set_mask):
+	(CMD_set_sync_mask):
+	(CMD_set_nograb_mask):
+	* fvwm/menus.c (CMD_DestroyMenu):
+	(CMD_Popup):
+	(CMD_DestroyMenuStyle):
+	(CMD_CopyMenuStyle):
+	(CMD_MenuStyle):
+	(CMD_ChangeMenuStyle):
+	(CMD_AddToMenu):
+	* fvwm/icons.c (CMD_Iconify):
+	* fvwm/focus.c (CMD_FlipFocus):
+	(CMD_Focus):
+	(CMD_WarpToWindow):
+	* fvwm/cursor.c (CMD_CursorStyle):
+	(CMD_BusyCursor):
+	* fvwm/conditional.c (CMD_Prev):
+	(CMD_Next):
+	(CMD_None):
+	(CMD_Current):
+	(CMD_All):
+	(CMD_Direction):
+	(CMD_Pick):
+	(CMD_WindowId):
+	* fvwm/builtins.c (CMD_WindowShade):
+	(CMD_Bell):
+	(CMD_Plus):
+	(CMD_DestroyFunc):
+	(CMD_AddToFunc):
+	(CMD_Nop):
+	(CMD_CursorMove):
+	(CMD_Destroy):
+	(CMD_Delete):
+	(CMD_AddToDecor):
+	(CMD_Close):
+	(CMD_Restart):
+	(CMD_ExecUseShell):
+	(CMD_Exec):
+	(CMD_RefreshWindow):
+	(CMD_Refresh):
+	(CMD_RefreshWindow):
+	(CMD_Wait):
+	(CMD_Quit):
+	(CMD_QuitScreen):
+	(CMD_Echo):
+	(CMD_ColormapFocus):
+	(CMD_SetClick):
+	(CMD_ImagePath):
+	(CMD_IconPath):
+	(CMD_PixmapPath):
+	(CMD_ModulePath):
+	(CMD_ModuleTimeout):
+	(CMD_HilightColor):
+	(CMD_HilightColorset):
+	(CMD_TitleStyle):
+	(CMD_AddTitleStyle):
+	(CMD_Colorset):
+	(CMD_DefaultIcon):
+	(CMD_DefaultColorset):
+	(CMD_DefaultColors):
+	(CMD_DefaultFont):
+	(CMD_IconFont):
+	(CMD_WindowFont):
+	(CMD_ChangeDecor):
+	(CMD_DestroyDecor):
+	(CMD_AddToDecor):
+	(CMD_UpdateDecor):
+	(CMD_ButtonStyle):
+	(CMD_AddButtonStyle):
+	(CMD_SetEnv):
+	(CMD_UnsetEnv):
+	(CMD_GlobalOpts):
+	(CMD_BugOpts):
+	(CMD_Emulate):
+	(CMD_ColorLimit):
+	(CMD_SetAnimation):
+	(CMD_WindowShadeAnimate):
+	(CMD_FakeClick):
+	(CMD_StrokeFunc):
+	(CMD_ClickTime):
+	* fvwm/borders.c (CMD_ButtonState):
+	(CMD_BorderStyle):
+	* fvwm/bindings.c (CMD_Stroke):
+	(CMD_Mouse):
+	(CMD_PointerKey):
+	(CMD_Key):
+	(CMD_IgnoreModifiers):
+	* fvwm/add_window.c (CMD_RecaptureWindow):
+	(CMD_Recapture):
+	* fvwm/functions.c (CMD_Silent):
+	* fvwm/functions.c (func_config):
+	* fvwm/commands.h:
+	renamed all functions for external commands to "CMD_commandname"
+
 	* fvwm/functions.c (func_config):
 	introduced a command table macro and added a column that hold the old
 	spelling of the command names

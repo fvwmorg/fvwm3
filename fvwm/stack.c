@@ -1326,7 +1326,7 @@ Bool is_on_top_of_layer(FvwmWindow *fw)
 
 /* ----------------------------- built in functions ------------------------ */
 
-void raise_function(F_CMD_ARGS)
+void CMD_Raise(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
@@ -1334,7 +1334,7 @@ void raise_function(F_CMD_ARGS)
   RaiseWindow(tmp_win);
 }
 
-void lower_function(F_CMD_ARGS)
+void CMD_Lower(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT, ButtonRelease))
     return;
@@ -1342,7 +1342,7 @@ void lower_function(F_CMD_ARGS)
   LowerWindow(tmp_win);
 }
 
-void raiselower_func(F_CMD_ARGS)
+void CMD_RaiseLower(F_CMD_ARGS)
 {
   Bool ontop;
 
@@ -1364,7 +1364,7 @@ void raiselower_func(F_CMD_ARGS)
   return;
 }
 
-void change_layer(F_CMD_ARGS)
+void CMD_Layer(F_CMD_ARGS)
 {
   int n, layer, val[2];
   char *token;
@@ -1410,7 +1410,7 @@ void change_layer(F_CMD_ARGS)
 #endif
 }
 
-void SetDefaultLayers(F_CMD_ARGS)
+void CMD_DefaultLayers(F_CMD_ARGS)
 {
   char *bot = NULL;
   char *def = NULL;

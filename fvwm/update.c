@@ -417,7 +417,7 @@ void flush_window_updates(void)
   return;
 }
 
-void update_styles_func(F_CMD_ARGS)
+void CMD_UpdateStyles(F_CMD_ARGS)
 {
   if (Scr.flags.do_need_window_update)
   {

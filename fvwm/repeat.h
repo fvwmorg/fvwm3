@@ -46,7 +46,6 @@ extern char *repeat_last_menu;
 extern FvwmWindow *repeat_last_fvwm_window;
 */
 
-void repeat_function(F_CMD_ARGS);
 Bool set_repeat_data(void *data, repeat_type type, const func_type *builtin);
 
 #endif /* _REPEAT_ */

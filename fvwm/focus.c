@@ -481,7 +481,7 @@ static void warp_to_fvwm_window(
 }
 
 
-void flip_focus_func(F_CMD_ARGS)
+void CMD_FlipFocus(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
@@ -490,7 +490,7 @@ void flip_focus_func(F_CMD_ARGS)
   FocusOn(tmp_win, TRUE, action);
 }
 
-void focus_func(F_CMD_ARGS)
+void CMD_Focus(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
@@ -498,7 +498,7 @@ void focus_func(F_CMD_ARGS)
   FocusOn(tmp_win, FALSE, action);
 }
 
-void warp_func(F_CMD_ARGS)
+void CMD_WarpToWindow(F_CMD_ARGS)
 {
   int val1_unit, val2_unit, n;
   int val1, val2;

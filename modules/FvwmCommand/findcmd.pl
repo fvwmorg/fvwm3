@@ -33,7 +33,7 @@ sub listcmd {
 
   while (/CMD_ENTRY/) {
     $old = $_;
-    s/.*CMD_ENTRY[^,]*,\s*([^,]+).*/\1/s;
+    s/.*CMD_ENTRY[^,]*,\s*CMD_([^,]+).*/\1/s;
     s/\s*$//;
     if (!/^\+\s*$/) {
       push @cmd, $_;

@@ -6,6 +6,8 @@
 	print warnings about FvwmConfig and FvwmPipe
 	improved comment detection
 	detect continuation lines
+	fixed typo
+	fixed line continuations
 
 2001-03-23  olicha  <olivier.chapuis@free.fr>
 

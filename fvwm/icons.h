@@ -31,7 +31,6 @@ void GetIconBitmap(FvwmWindow *tmp_win);
 void Iconify(FvwmWindow *, int, int);
 void DeIconify(FvwmWindow *);
 void SetMapStateProp(FvwmWindow *, int);
-void iconify_function(F_CMD_ARGS);
 
 
 #endif /* _ICONS_ */

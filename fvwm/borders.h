@@ -33,8 +33,6 @@ void ForceSetupFrame(
 void set_decor_gravity(
   FvwmWindow *tmp_win, int gravity, int parent_gravity, int client_gravity);
 void SetShape(FvwmWindow *, int);
-void cmd_button_state(F_CMD_ARGS);
-void SetBorderStyle(F_CMD_ARGS);
 void draw_clipped_decorations(
   FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
   Window expose_win, XRectangle *rclip);

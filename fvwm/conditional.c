@@ -426,7 +426,7 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   return found;
 }
 
-void PrevFunc(F_CMD_ARGS)
+void CMD_Prev(F_CMD_ARGS)
 {
   FvwmWindow *found;
   char *restofline;
@@ -440,7 +440,7 @@ void PrevFunc(F_CMD_ARGS)
 
 }
 
-void NextFunc(F_CMD_ARGS)
+void CMD_Next(F_CMD_ARGS)
 {
   FvwmWindow *found;
   char *restofline;
@@ -454,7 +454,7 @@ void NextFunc(F_CMD_ARGS)
 
 }
 
-void NoneFunc(F_CMD_ARGS)
+void CMD_None(F_CMD_ARGS)
 {
   FvwmWindow *found;
   char *restofline;
@@ -467,7 +467,7 @@ void NoneFunc(F_CMD_ARGS)
   }
 }
 
-void CurrentFunc(F_CMD_ARGS)
+void CMD_Current(F_CMD_ARGS)
 {
   FvwmWindow *found;
   char *restofline;
@@ -480,7 +480,7 @@ void CurrentFunc(F_CMD_ARGS)
   }
 }
 
-void AllFunc(F_CMD_ARGS)
+void CMD_All(F_CMD_ARGS)
 {
   FvwmWindow *t, **g;
   char *restofline;
@@ -537,7 +537,7 @@ static void GetDirectionReference(FvwmWindow *w, rectangle *r)
  * Execute a function to the closest window in the given
  * direction.
  **********************************************************************/
-void DirectionFunc(F_CMD_ARGS)
+void CMD_Direction(F_CMD_ARGS)
 {
   static char *directions[] =
   {
@@ -697,7 +697,7 @@ void DirectionFunc(F_CMD_ARGS)
 /* A very simple function, but handy if you want to call
  * complex functions from root context without selecting a window
  * for every single function in it. */
-void PickFunc(F_CMD_ARGS)
+void CMD_Pick(F_CMD_ARGS)
 {
   char *restofline;
   char *flags;
@@ -718,7 +718,7 @@ void PickFunc(F_CMD_ARGS)
   }
 }
 
-void WindowIdFunc(F_CMD_ARGS)
+void CMD_WindowId(F_CMD_ARGS)
 {
   FvwmWindow *t;
   char *token;

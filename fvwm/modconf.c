@@ -153,8 +153,7 @@ static struct moduleInfoList *AddToModList(char *tline)
 /**************************************************************/
 /* delete from module configuration                           */
 /**************************************************************/
-void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                      unsigned long context, char *action,int* Module)
+void CMD_DestroyModuleConfig(F_CMD_ARGS)
 {
   struct moduleInfoList *current, *next, *prev;
   char *info;   /* info to be deleted - may contain wildcards */
@@ -218,8 +217,7 @@ void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   free(info);
 }
 
-void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module)
+void CMD_Send_ConfigInfo(F_CMD_ARGS)
 {
   struct moduleInfoList *t;
   char *message, msg2[32];

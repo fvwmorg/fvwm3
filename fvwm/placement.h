@@ -23,6 +23,5 @@
 int PlaceWindow(
   FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,	int PageY,
   int mode);
-void PlaceAgain_func(F_CMD_ARGS);
 
 #endif /* PLACEMENT_H */

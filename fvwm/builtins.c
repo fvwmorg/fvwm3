@@ -37,6 +37,7 @@
 #include "misc.h"
 #include "cursor.h"
 #include "functions.h"
+#include "commands.h"
 #include "screen.h"
 #include "defaults.h"
 #include "builtins.h"
@@ -98,7 +99,7 @@ static char *button_states[BS_MaxButtonState + 1] =
  *
  *  Builtin function: WindowShade
  ***********************************************************************/
-void WindowShade(F_CMD_ARGS)
+void CMD_WindowShade(F_CMD_ARGS)
 {
   int bwl;
   int bwr;
@@ -386,12 +387,12 @@ void WindowShade(F_CMD_ARGS)
   GNOME_SetWinArea(tmp_win);
 }
 
-void Bell(F_CMD_ARGS)
+void CMD_Beep(F_CMD_ARGS)
 {
   XBell(dpy, 0);
 }
 
-void add_another_item(F_CMD_ARGS)
+void CMD_Plus(F_CMD_ARGS)
 {
   if (Scr.last_added_item.type == ADDED_MENU)
     add_another_menu_item(action);
@@ -410,7 +411,7 @@ void add_another_item(F_CMD_ARGS)
 #endif /* USEDECOR */
 }
 
-void destroy_fvwmfunc(F_CMD_ARGS)
+void CMD_DestroyFunc(F_CMD_ARGS)
 {
   FvwmFunction *func;
   char *token;
@@ -429,7 +430,7 @@ void destroy_fvwmfunc(F_CMD_ARGS)
   return;
 }
 
-void add_item_to_func(F_CMD_ARGS)
+void CMD_AddToFunc(F_CMD_ARGS)
 {
   FvwmFunction *func;
   char *token;
@@ -451,13 +452,16 @@ void add_item_to_func(F_CMD_ARGS)
 }
 
 
-void Nop_func(F_CMD_ARGS)
+void CMD_Nop(F_CMD_ARGS)
 {
+}
 
+void CMD_EscapeFunc(F_CMD_ARGS)
+{
 }
 
 
-void movecursor(F_CMD_ARGS)
+void CMD_CursorMove(F_CMD_ARGS)
 {
   int x = 0, y = 0;
   int val1, val2, val1_unit, val2_unit;
@@ -532,7 +536,7 @@ void movecursor(F_CMD_ARGS)
 }
 
 
-void destroy_function(F_CMD_ARGS)
+void CMD_Destroy(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY, ButtonRelease))
     return;
@@ -553,7 +557,7 @@ void destroy_function(F_CMD_ARGS)
   XSync(dpy,0);
 }
 
-void delete_function(F_CMD_ARGS)
+void CMD_Delete(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY,ButtonRelease))
     return;
@@ -576,7 +580,7 @@ void delete_function(F_CMD_ARGS)
   XSync(dpy,0);
 }
 
-void close_function(F_CMD_ARGS)
+void CMD_Close(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY,ButtonRelease))
     return;
@@ -604,12 +608,12 @@ void close_function(F_CMD_ARGS)
   XSync(dpy,0);
 }
 
-void restart_function(F_CMD_ARGS)
+void CMD_Restart(F_CMD_ARGS)
 {
   Done(1, action);
 }
 
-void exec_setup(F_CMD_ARGS)
+void CMD_ExecUseShell(F_CMD_ARGS)
 {
   char *arg=NULL;
   static char shell_set = 0;
@@ -632,7 +636,7 @@ void exec_setup(F_CMD_ARGS)
   }
 }
 
-void exec_function(F_CMD_ARGS)
+void CMD_Exec(F_CMD_ARGS)
 {
   char *cmd=NULL;
 
@@ -706,12 +710,12 @@ static void refresh_window(Window w)
   return;
 }
 
-void refresh_function(F_CMD_ARGS)
+void CMD_Refresh(F_CMD_ARGS)
 {
   refresh_window(Scr.Root);
 }
 
-void refresh_win_function(F_CMD_ARGS)
+void CMD_RefreshWindow(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
@@ -719,7 +723,7 @@ void refresh_win_function(F_CMD_ARGS)
 }
 
 
-void wait_func(F_CMD_ARGS)
+void CMD_Wait(F_CMD_ARGS)
 {
   Bool done = False;
   Bool redefine_cursor = False;
@@ -805,19 +809,19 @@ void wait_func(F_CMD_ARGS)
   return;
 }
 
-void quit_func(F_CMD_ARGS)
+void CMD_Quit(F_CMD_ARGS)
 {
   if (master_pid != getpid())
     kill(master_pid, SIGTERM);
   Done(0,NULL);
 }
 
-void quit_screen_func(F_CMD_ARGS)
+void CMD_QuitScreen(F_CMD_ARGS)
 {
   Done(0,NULL);
 }
 
-void echo_func(F_CMD_ARGS)
+void CMD_Echo(F_CMD_ARGS)
 {
   unsigned int len;
 
@@ -832,7 +836,7 @@ void echo_func(F_CMD_ARGS)
   fvwm_msg(ECHO,"Echo",action);
 }
 
-void SetColormapFocus(F_CMD_ARGS)
+void CMD_ColormapFocus(F_CMD_ARGS)
 {
   if (MatchToken(action,"FollowsFocus"))
   {
@@ -850,7 +854,7 @@ void SetColormapFocus(F_CMD_ARGS)
   }
 }
 
-void SetClick(F_CMD_ARGS)
+void CMD_ClickTime(F_CMD_ARGS)
 {
   int val;
 
@@ -870,7 +874,7 @@ void SetClick(F_CMD_ARGS)
 }
 
 
-void imagePath_function(F_CMD_ARGS)
+void CMD_ImagePath(F_CMD_ARGS)
 {
     SetImagePath( action );
 }
@@ -892,14 +896,14 @@ static void obsolete_imagepaths( const char* pre_path )
 }
 
 
-void iconPath_function(F_CMD_ARGS)
+void CMD_IconPath(F_CMD_ARGS)
 {
     fvwm_msg(ERR, "iconPath_function",
 	     "IconPath is deprecated since 2.3.0; use ImagePath instead." );
     obsolete_imagepaths( action );
 }
 
-void pixmapPath_function(F_CMD_ARGS)
+void CMD_PixmapPath(F_CMD_ARGS)
 {
     fvwm_msg(ERR, "pixmapPath_function",
 	     "PixmapPath is deprecated since 2.3.0; use ImagePath instead." );
@@ -907,7 +911,7 @@ void pixmapPath_function(F_CMD_ARGS)
 }
 
 
-void setModulePath(F_CMD_ARGS)
+void CMD_ModulePath(F_CMD_ARGS)
 {
     static int need_to_free = 0;
     setPath( &ModulePath, action, need_to_free );
@@ -915,7 +919,7 @@ void setModulePath(F_CMD_ARGS)
 }
 
 
-void setModuleTimeout(F_CMD_ARGS)
+void CMD_ModuleTimeout(F_CMD_ARGS)
 {
   int timeout;
 
@@ -930,7 +934,7 @@ void setModuleTimeout(F_CMD_ARGS)
 }
 
 
-void SetHiColor(F_CMD_ARGS)
+void CMD_HilightColor(F_CMD_ARGS)
 {
   char *fore;
   char *back;
@@ -952,7 +956,7 @@ void SetHiColor(F_CMD_ARGS)
   {
     action = safemalloc(strlen(fore) + strlen(back) + 29);
     sprintf(action, "* HilightFore %s, HilightBack %s", fore, back);
-    ProcessNewStyle(F_PASS_ARGS);
+    CMD_Style(F_PASS_ARGS);
   }
   if (fore)
     free(fore);
@@ -961,7 +965,7 @@ void SetHiColor(F_CMD_ARGS)
 }
 
 
-void SetHiColorset(F_CMD_ARGS)
+void CMD_HilightColorset(F_CMD_ARGS)
 {
   char *newaction;
 
@@ -981,7 +985,7 @@ void SetHiColorset(F_CMD_ARGS)
     newaction = safemalloc(strlen(action) + 32);
     sprintf(newaction, "* HilightColorset %s", action);
     action = newaction;
-    ProcessNewStyle(F_PASS_ARGS);
+    CMD_Style(F_PASS_ARGS);
     free(newaction);
   }
 }
@@ -1046,7 +1050,7 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
   }
 }
 
-void SetTitleStyle(F_CMD_ARGS)
+void CMD_TitleStyle(F_CMD_ARGS)
 {
   do_title_style(F_PASS_ARGS, False);
 } /* SetTitleStyle */
@@ -1057,7 +1061,7 @@ void SetTitleStyle(F_CMD_ARGS)
  * Appends a titlestyle (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void AddTitleStyle(F_CMD_ARGS)
+void CMD_AddTitleStyle(F_CMD_ARGS)
 {
   do_title_style(F_PASS_ARGS, True);
 }
@@ -1140,7 +1144,7 @@ void ApplyDefaultFontAndColors(void)
   UpdateAllMenuStyles();
 }
 
-void HandleColorset(F_CMD_ARGS)
+void CMD_Colorset(F_CMD_ARGS)
 {
   int n = -1, ret;
   char *token;
@@ -1167,14 +1171,14 @@ void HandleColorset(F_CMD_ARGS)
 }
 
 
-void SetDefaultIcon(F_CMD_ARGS)
+void CMD_DefaultIcon(F_CMD_ARGS)
 {
   if (Scr.DefaultIcon)
     free(Scr.DefaultIcon);
   GetNextToken(action, &Scr.DefaultIcon);
 }
 
-void SetDefaultColorset(F_CMD_ARGS)
+void CMD_DefaultColorset(F_CMD_ARGS)
 {
   int cset;
 
@@ -1189,7 +1193,7 @@ void SetDefaultColorset(F_CMD_ARGS)
   Scr.flags.has_default_color_changed = 1;
 }
 
-void SetDefaultColors(F_CMD_ARGS)
+void CMD_DefaultColors(F_CMD_ARGS)
 {
   char *fore = NULL;
   char *back = NULL;
@@ -1222,7 +1226,7 @@ void SetDefaultColors(F_CMD_ARGS)
   Scr.flags.has_default_color_changed = 1;
 }
 
-void LoadDefaultFont(F_CMD_ARGS)
+void CMD_DefaultFont(F_CMD_ARGS)
 {
   char *font;
   FvwmFont new_font;
@@ -1250,7 +1254,7 @@ void LoadDefaultFont(F_CMD_ARGS)
   return;
 }
 
-void LoadIconFont(F_CMD_ARGS)
+void CMD_IconFont(F_CMD_ARGS)
 {
   char *newaction;
 
@@ -1270,12 +1274,12 @@ void LoadIconFont(F_CMD_ARGS)
     newaction = safemalloc(strlen(action) + 16);
     sprintf(newaction, "* IconFont %s", action);
     action = newaction;
-    ProcessNewStyle(F_PASS_ARGS);
+    CMD_Style(F_PASS_ARGS);
     free(newaction);
   }
 }
 
-void LoadWindowFont(F_CMD_ARGS)
+void CMD_WindowFont(F_CMD_ARGS)
 {
   char *newaction;
 
@@ -1295,7 +1299,7 @@ void LoadWindowFont(F_CMD_ARGS)
     newaction = safemalloc(strlen(action) + 16);
     sprintf(newaction, "* Font %s", action);
     action = newaction;
-    ProcessNewStyle(F_PASS_ARGS);
+    CMD_Style(F_PASS_ARGS);
     free(newaction);
   }
 }
@@ -1877,7 +1881,7 @@ void AddToDecor(FvwmDecor *decor, char *s)
  * Changes the window's FvwmDecor pointer (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void ChangeDecor(F_CMD_ARGS)
+void CMD_ChangeDecor(F_CMD_ARGS)
 {
   char *item;
   int old_height;
@@ -1923,7 +1927,7 @@ void ChangeDecor(F_CMD_ARGS)
  * Destroys an FvwmDecor (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void DestroyDecor(F_CMD_ARGS)
+void CMD_DestroyDecor(F_CMD_ARGS)
 {
   char *item;
   FvwmDecor *decor = Scr.DefaultDecor.next;
@@ -2046,7 +2050,7 @@ void DestroyFvwmDecor(FvwmDecor *decor)
  * Initiates an AddToDecor (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void add_item_to_decor(F_CMD_ARGS)
+void CMD_AddToDecor(F_CMD_ARGS)
 {
   FvwmDecor *decor, *found = NULL;
   char *item = NULL, *s = action;
@@ -2104,7 +2108,7 @@ void add_item_to_decor(F_CMD_ARGS)
  * Updates window decoration styles (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void UpdateDecor(F_CMD_ARGS)
+void CMD_UpdateDecor(F_CMD_ARGS)
 {
   FvwmWindow *fw;
 #ifdef USEDECOR
@@ -2372,7 +2376,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
   }
 }
 
-void ButtonStyle(F_CMD_ARGS)
+void CMD_ButtonStyle(F_CMD_ARGS)
 {
   do_button_style(F_PASS_ARGS, False);
 }
@@ -2383,7 +2387,7 @@ void ButtonStyle(F_CMD_ARGS)
  * Appends a button decoration style (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void AddButtonStyle(F_CMD_ARGS)
+void CMD_AddButtonStyle(F_CMD_ARGS)
 {
   do_button_style(F_PASS_ARGS, True);
 }
@@ -2441,7 +2445,7 @@ static void add_to_env_list(char *var, char *env)
   return;
 }
 
-void SetEnv(F_CMD_ARGS)
+void CMD_SetEnv(F_CMD_ARGS)
 {
   char *szVar = NULL;
   char *szValue = NULL;
@@ -2465,7 +2469,7 @@ void SetEnv(F_CMD_ARGS)
   free(szValue);
 }
 
-void UnsetEnv(F_CMD_ARGS)
+void CMD_UnsetEnv(F_CMD_ARGS)
 {
   char *szVar = NULL;
   char *szPutenv = NULL;
@@ -2482,7 +2486,7 @@ void UnsetEnv(F_CMD_ARGS)
   /*free(szVar);*/
 }
 
-void SetGlobalOptions(F_CMD_ARGS)
+void CMD_GlobalOpts(F_CMD_ARGS)
 {
   char *opt;
   char *replace;
@@ -2564,12 +2568,12 @@ void SetGlobalOptions(F_CMD_ARGS)
       action = replace;
       if (!is_bugopt)
       {
-        ProcessNewStyle(F_PASS_ARGS);
+        CMD_Style(F_PASS_ARGS);
         cmd = "Style";
       }
       else
       {
-        SetBugOptions(F_PASS_ARGS);
+        CMD_BugOpts(F_PASS_ARGS);
         cmd = "BugOpts";
       }
       action = tmp;
@@ -2589,7 +2593,7 @@ void SetGlobalOptions(F_CMD_ARGS)
     free(opt);
 }
 
-void SetBugOptions(F_CMD_ARGS)
+void CMD_BugOpts(F_CMD_ARGS)
 {
   char *opt;
   char delim;
@@ -2730,7 +2734,7 @@ void SetBugOptions(F_CMD_ARGS)
   }
 }
 
-void Emulate(F_CMD_ARGS)
+void CMD_Emulate(F_CMD_ARGS)
 {
   char *style;
 
@@ -2775,7 +2779,7 @@ void Emulate(F_CMD_ARGS)
  * dje 03/22/99
  */
  /* It is also ignored if the colormap is static i.e you can't run out */
-void SetColorLimit(F_CMD_ARGS)
+void CMD_ColorLimit(F_CMD_ARGS)
 {
   int val;
 
@@ -2798,7 +2802,7 @@ void SetColorLimit(F_CMD_ARGS)
 
 
 /* set animation parameters */
-void set_animation(F_CMD_ARGS)
+void CMD_SetAnimation(F_CMD_ARGS)
 {
   char *opt;
   int delay;
@@ -2841,7 +2845,7 @@ void set_animation(F_CMD_ARGS)
 }
 
 /* set the number or size of shade animation steps, N => steps, Np => pixels */
-void setShadeAnim(F_CMD_ARGS)
+void CMD_WindowShadeAnimate(F_CMD_ARGS)
 {
   char *buf;
 
@@ -2853,12 +2857,12 @@ void setShadeAnim(F_CMD_ARGS)
   buf = safemalloc(strlen(action) + 32);
   sprintf(buf, "* WindowShadeSteps %s", action);
   action = buf;
-  ProcessNewStyle(F_PASS_ARGS);
+  CMD_Style(F_PASS_ARGS);
   free(buf);
   return;
 }
 
-void fake_click(F_CMD_ARGS)
+void CMD_FakeClick(F_CMD_ARGS)
 {
   char *token;
   char *optlist[] =
@@ -3013,7 +3017,7 @@ void fake_click(F_CMD_ARGS)
 
 /* A function to handle stroke (olicha Nov 11, 1999) */
 #ifdef HAVE_STROKE
-void strokeFunc(F_CMD_ARGS)
+void CMD_StrokeFunc(F_CMD_ARGS)
 {
   int finished = 0;
   int abort = 0;

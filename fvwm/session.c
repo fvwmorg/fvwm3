@@ -1338,17 +1338,17 @@ Bool saveQuitSession(void)
 #endif
 }
 
-void quitSession_func(F_CMD_ARGS)
+void CMD_QuitSession(F_CMD_ARGS)
 {
   quitSession();
 }
 
-void saveSession_func(F_CMD_ARGS)
+void CMD_SaveSession(F_CMD_ARGS)
 {
   saveSession();
 }
 
-void saveQuitSession_func(F_CMD_ARGS)
+void CMD_SaveQuitSession(F_CMD_ARGS)
 {
   saveQuitSession();
 }

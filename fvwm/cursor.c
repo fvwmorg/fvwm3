@@ -328,7 +328,7 @@ static int myCursorNameToIndex (char *cursor_name)
 }
 
 
-void CursorStyle(F_CMD_ARGS)
+void CMD_CursorStyle(F_CMD_ARGS)
 {
   char *cname=NULL, *newcursor=NULL;
   char *errpos = NULL, *path = NULL;
@@ -554,7 +554,7 @@ void CursorStyle(F_CMD_ARGS)
  *  certain functions.
  *
  ***********************************************************************/
-void setBusyCursor(F_CMD_ARGS)
+void CMD_BusyCursor(F_CMD_ARGS)
 {
   char *option = NULL;
   char *optstring = NULL;

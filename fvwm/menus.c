@@ -4105,7 +4105,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
   return True;
 }
 
-void destroy_menu(F_CMD_ARGS)
+void CMD_DestroyMenu(F_CMD_ARGS)
 {
   MenuRoot *mr;
   MenuRoot *mrContinuation;
@@ -5504,13 +5504,13 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 }
 
 /* the function for the "Popup" command */
-void popup_func(F_CMD_ARGS)
+void CMD_Popup(F_CMD_ARGS)
 {
   menu_func(F_PASS_ARGS, False);
 }
 
 /* the function for the "Menu" command */
-void staysup_func(F_CMD_ARGS)
+void CMD_Menu(F_CMD_ARGS)
 {
   menu_func(F_PASS_ARGS, True);
 }
@@ -5720,7 +5720,7 @@ static void FreeMenuStyle(MenuStyle *ms)
   free(ms);
 }
 
-void DestroyMenuStyle(F_CMD_ARGS)
+void CMD_DestroyMenuStyle(F_CMD_ARGS)
 {
   MenuStyle *ms = NULL;
   char *name = NULL;
@@ -6607,7 +6607,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   return;
 }
 
-void CopyMenuStyle(F_CMD_ARGS)
+void CMD_CopyMenuStyle(F_CMD_ARGS)
 {
   char *origname = NULL;
   char *destname = NULL;
@@ -6918,7 +6918,7 @@ static void OldMenuStyle(F_CMD_ARGS)
     free(animated);
 }
 
-void SetMenuStyle(F_CMD_ARGS)
+void CMD_MenuStyle(F_CMD_ARGS)
 {
   char *option;
 
@@ -6951,7 +6951,7 @@ void change_mr_menu_style(MenuRoot *mr, char *stylename)
   }
 }
 
-void ChangeMenuStyle(F_CMD_ARGS)
+void CMD_ChangeMenuStyle(F_CMD_ARGS)
 {
   char *name = NULL;
   char *menuname = NULL;
@@ -6994,7 +6994,7 @@ void ChangeMenuStyle(F_CMD_ARGS)
   }
 }
 
-void add_item_to_menu(F_CMD_ARGS)
+void CMD_AddToMenu(F_CMD_ARGS)
 {
   MenuRoot *mr;
   MenuRoot *mrPrior;

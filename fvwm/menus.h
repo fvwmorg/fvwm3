@@ -690,18 +690,10 @@ void do_menu(MenuParameters *pmp, MenuReturn *pret);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuRoot *mr, MenuItem *mi, MenuOptions *pops);
 Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request);
-void add_item_to_menu(F_CMD_ARGS);
 void add_another_menu_item(char *action);
-void destroy_menu(F_CMD_ARGS);
-void popup_func(F_CMD_ARGS);
-void staysup_func(F_CMD_ARGS);
 void change_mr_menu_style(MenuRoot *mr, char *stylename);
-void ChangeMenuStyle(F_CMD_ARGS);
-void DestroyMenuStyle(F_CMD_ARGS);
-void SetMenuStyle(F_CMD_ARGS);
 void UpdateAllMenuStyles(void);
 void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
-void CopyMenuStyle(F_CMD_ARGS);
 
 #endif /* _MENUS_ */

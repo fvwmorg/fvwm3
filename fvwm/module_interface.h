@@ -68,10 +68,6 @@ extern struct queue_buff_struct **pipeQueue;
  * send a copy of the command in an M_CONFIG_INFO command.
  */
 
-void module_zapper(F_CMD_ARGS);
-void executeModule(F_CMD_ARGS);
-int executeModuleDesperate(F_CMD_ARGS);
-void executeModuleSync(F_CMD_ARGS);
 void initModules(void);
 void ExecuteModuleCommand(Window w, int channel, char *command);
 Bool HandleModuleInput(Window w, int channel, char *expect, Bool queue);
@@ -93,16 +89,12 @@ void SendPacket(int channel, unsigned long event_type,
 void SendConfig(int Module, unsigned long event_type, const FvwmWindow *t);
 void SendName(int channel, unsigned long event_type, unsigned long data1,
 	      unsigned long data2, unsigned long data3, const char *name);
-void SendStrToModule(F_CMD_ARGS);
-void send_list_func(F_CMD_ARGS);
 void FlushAllMessageQueues(void);
 void FlushMessageQueue(int Module);
 void ExecuteCommandQueue(void);
 void PositiveWrite(int module, unsigned long *ptr, int size);
 RETSIGTYPE DeadPipe(int nonsense);
-void set_mask_function(F_CMD_ARGS);
-void setSyncMaskFunc(F_CMD_ARGS);
-void setNoGrabMaskFunc(F_CMD_ARGS);
 char *skipModuleAliasToken(const char *string);
+int executeModuleDesperate(F_CMD_ARGS);
 
 #endif /* MODULE_H */

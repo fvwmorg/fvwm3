@@ -1529,7 +1529,7 @@ void SetMapStateProp(FvwmWindow *tmp_win, int state)
 }
 
 
-void iconify_function(F_CMD_ARGS)
+void CMD_Iconify(F_CMD_ARGS)
 {
   int toggle;
   int x;

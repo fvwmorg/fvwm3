@@ -377,23 +377,23 @@ static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
   return;
 }
 
-void key_binding(F_CMD_ARGS)
+void CMD_Key(F_CMD_ARGS)
 {
   binding_cmd(F_PASS_ARGS, KEY_BINDING, False);
 }
 
-void pointerkey_binding(F_CMD_ARGS)
+void CMD_PointerKey(F_CMD_ARGS)
 {
   binding_cmd(F_PASS_ARGS, KEY_BINDING, True);
 }
 
-void mouse_binding(F_CMD_ARGS)
+void CMD_Mouse(F_CMD_ARGS)
 {
   binding_cmd(F_PASS_ARGS, MOUSE_BINDING, False);
 }
 
 #ifdef HAVE_STROKE
-void stroke_binding(F_CMD_ARGS)
+void CMD_Stroke(F_CMD_ARGS)
 {
   binding_cmd(F_PASS_ARGS, STROKE_BINDING, False);
 }
@@ -427,7 +427,7 @@ unsigned int GetUnusedModifiers(void)
  *
  *	Benoit TRIQUET <benoit@adsl-216-100-248-201.dsl.pacbell.net> 2/21/99
  ***********************************************************************/
-void ignore_modifiers(F_CMD_ARGS)
+void CMD_IgnoreModifiers(F_CMD_ARGS)
 {
   char *token;
 

@@ -952,7 +952,7 @@ Bool PlaceWindow(
 }
 
 
-void PlaceAgain_func(F_CMD_ARGS)
+void CMD_PlaceAgain(F_CMD_ARGS)
 {
   int x;
   int y;

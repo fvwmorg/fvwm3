@@ -16,16 +16,6 @@
 #ifndef CONDITIONAL_H
 #define CONDITIONAL_H
 
-void NextFunc(F_CMD_ARGS);
-void PrevFunc(F_CMD_ARGS);
-void NoneFunc(F_CMD_ARGS);
-void CurrentFunc(F_CMD_ARGS);
-void DirectionFunc(F_CMD_ARGS);
-void WindowIdFunc(F_CMD_ARGS);
-void PickFunc(F_CMD_ARGS);
-void AllFunc(F_CMD_ARGS);
-
-
 /* Condition matching routines
  * Originally exported for WindowList - N.Bird 24/08/99
  */

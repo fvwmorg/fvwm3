@@ -840,8 +840,7 @@ GNOME_Init(void)
     tell gnome how many desks to show
  -----------------------------------------------------------------------*/
 void
-GNOME_ShowDesks(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context,char *action, int *Module)
+CMD_GnomeShowDesks(F_CMD_ARGS)
 {
   int n;
   Atom atom_set;
@@ -1021,8 +1020,7 @@ GNOME_ProxyButtonEvent(XEvent *ev)
 
 /* this is the function entered into FVWM's functions table */
 void
-GNOME_ButtonFunc(XEvent *eventp, Window w, FvwmWindow *fwin,
-		 unsigned long context, char *action, int *Module)
+CMD_GnomeButton(F_CMD_ARGS)
 {
   /* send off the button press event */
   GNOME_ProxyButtonEvent(eventp);

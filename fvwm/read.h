@@ -31,7 +31,4 @@ extern int run_command_file( char* filename,
 			     XEvent *eventp, FvwmWindow *tmp_win,
 			     unsigned long context, int Module );
 
-void ReadFile(F_CMD_ARGS);
-void PipeRead(F_CMD_ARGS);
-
 #endif

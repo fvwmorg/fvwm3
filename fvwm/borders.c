@@ -2090,7 +2090,7 @@ void SetShape(FvwmWindow *tmp_win, int w)
  *  Sets the allowed button states
  *
  ****************************************************************************/
-void cmd_button_state(F_CMD_ARGS)
+void CMD_ButtonState(F_CMD_ARGS)
 {
   char *token;
 
@@ -2133,7 +2133,7 @@ void cmd_button_state(F_CMD_ARGS)
  *  Sets the border style (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void SetBorderStyle(F_CMD_ARGS)
+void CMD_BorderStyle(F_CMD_ARGS)
 {
   char *parm;
   char *prev;

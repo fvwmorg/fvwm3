@@ -130,7 +130,7 @@ Bool set_repeat_data(void *data, repeat_type type, const func_type *builtin)
   }
 }
 
-void repeat_function(F_CMD_ARGS)
+void CMD_Repeat(F_CMD_ARGS)
 {
   int index;
   char *optlist[] = {

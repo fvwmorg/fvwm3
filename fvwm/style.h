@@ -420,8 +420,6 @@
 
 
 /* function prototypes */
-void ProcessNewStyle(F_CMD_ARGS);
-void ProcessDestroyStyle(F_CMD_ARGS);
 void lookup_style(FvwmWindow *tmp_win, window_style *styles);
 Bool blockcmpmask(char *blk1, char *blk2, char *mask, int length);
 void check_window_style_change(

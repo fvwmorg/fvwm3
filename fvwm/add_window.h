@@ -52,7 +52,5 @@ void destroy_window(FvwmWindow *);
 void RestoreWithdrawnLocation(
   FvwmWindow *tmp, Bool is_restart_or_recapture, Window parent);
 void Reborder(void);
-void Recapture(F_CMD_ARGS);
-void RecaptureWindow(F_CMD_ARGS);
 
 #endif /* ADD_WINDOW_H */

@@ -721,7 +721,7 @@ static Bool remove_all_of_style_from_list(char *style_ref)
 
 
 /* Remove a style. */
-void ProcessDestroyStyle(F_CMD_ARGS)
+void CMD_DestroyStyle(F_CMD_ARGS)
 {
   char *name;
 
@@ -814,7 +814,7 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
  * must be freed in ProcessDestroyStyle().
  *
  */
-void ProcessNewStyle(F_CMD_ARGS)
+void CMD_Style(F_CMD_ARGS)
 {
   char *line;
   char *option;
@@ -932,7 +932,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "Style BackColor requires color argument");
 	  }
         }
@@ -950,7 +950,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "Invalid Button Style Index given");
 	  }
 
@@ -967,7 +967,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "Style BorderWidth requires width argument");
 	  }
         }
@@ -1056,7 +1056,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  next = GetNextToken(rest, &token);
 	  if (token == NULL)
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "Color Style requires a color argument");
 	    break;
 	  }
@@ -1112,7 +1112,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  GetNextToken(rest, &token);
 	  if (!token)
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "Color Style called with incomplete color argument.");
 	    break;
 	  }
@@ -1282,7 +1282,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "ForeColor Style needs color argument");
 	  }
         }
@@ -1398,7 +1398,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "HandleWidth Style needs width argument");
  	  }
         }
@@ -1419,7 +1419,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "HilightFore Style needs color argument");
 	  }
         }
@@ -1440,7 +1440,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "HilightBack Style needs color argument");
 	  }
         }
@@ -1604,7 +1604,7 @@ void ProcessNewStyle(F_CMD_ARGS)
                                         &width, &height);
               if (width == 0) {
 		/* zero width is invalid */
-                fvwm_msg(ERR,"ProcessNewStyle",
+                fvwm_msg(ERR,"CMD_Style",
                 "IconBox requires 4 numbers or geometry! Invalid string <%s>.",
                          token);
 		/* Drop the box */
@@ -1666,7 +1666,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           /* The grid always affects the prior iconbox */
           if (which == 0) {
 	    /* If no current box */
-            fvwm_msg(ERR,"ProcessNewStyle",
+            fvwm_msg(ERR,"CMD_Style",
                      "IconGrid must follow an IconBox in same Style command");
           } else {
 	    /* have a place to grid */
@@ -1674,7 +1674,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 
 	    num = GetIntegerArguments(rest, NULL, val, 2);
             if (num != 2 || val[0] < 1 || val[1] < 1) {
-              fvwm_msg(ERR,"ProcessNewStyle",
+              fvwm_msg(ERR,"CMD_Style",
                 "IconGrid needs 2 numbers > 0. Got %d numbers. x=%d y=%d!",
                        num, val[0], val[1]);
 	      /* reset grid */
@@ -1698,7 +1698,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           /* The fill always affects the prior iconbox */
           if (which == 0) {
             /* If no current box */
-            fvwm_msg(ERR,"ProcessNewStyle",
+            fvwm_msg(ERR,"CMD_Style",
                      "IconFill must follow an IconBox in same Style command");
           } else {
 	    /* have a place to fill */
@@ -1712,7 +1712,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	      /* its wrong */
               if (!token)
                 token = "(none)";
-              fvwm_msg(ERR,"ProcessNewStyle",
+              fvwm_msg(ERR,"CMD_Style",
 		       "IconFill must be followed by T|B|R|L, found %s.",
                        token);
             } else {
@@ -1724,11 +1724,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 		/* its wrong */
                 if (!token)
                   token = "(none)";
-                fvwm_msg(ERR,"ProcessNewStyle",
+                fvwm_msg(ERR,"CMD_Style",
                          "IconFill must be followed by T|B|R|L, found %s.",
                          token);
               } else if ((IconFill_1&ICONFILLHRZ)==(IconFill_2&ICONFILLHRZ)) {
-                fvwm_msg(ERR,"ProcessNewStyle",
+                fvwm_msg(ERR,"CMD_Style",
                  "IconFill must specify a horizontal and vertical direction.");
               } else {
 		/* Its valid! */
@@ -1786,7 +1786,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  GetIntegerArguments(rest, NULL, val, 1);
 	  if(*val < 0)
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "Layer must be positive or zero." );
 	    SSET_LAYER(*ptmpstyle, -9);
 	    /* mark layer unset */
@@ -1869,7 +1869,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "MiniIcon Style requires an Argument");
 	  }
         }
@@ -2075,7 +2075,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "NoButton Style requires an argument");
 	  }
         }
@@ -2301,7 +2301,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  }
           else
 	  {
-	    fvwm_msg(ERR,"ProcessNewStyle",
+	    fvwm_msg(ERR,"CMD_Style",
 		     "bad StartsOnDesk arg: %s", rest);
 	  }
           /**/
@@ -2341,7 +2341,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  }
 	  if (spargs < 1 || spargs > 3)
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "bad StartsOnPage args: %s", rest);
 	  }
 	  else
@@ -2510,13 +2510,13 @@ void ProcessNewStyle(F_CMD_ARGS)
 
 	    /* move forward one word */
             if (!hit) {
-              fvwm_msg(ERR,"ProcessNewStyle", "UseStyle: %s style not found",
+              fvwm_msg(ERR,"CMD_Style", "UseStyle: %s style not found",
 		       token);
             }
           }
 	  else
 	  {
-	    fvwm_msg(ERR, "ProcessNewStyle",
+	    fvwm_msg(ERR, "CMD_Style",
 		     "UseStyle needs an argument");
    	  }
         }
@@ -2598,7 +2598,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 
     if (found == False)
     {
-      fvwm_msg(ERR,"ProcessNewStyle", "bad style command: %s", option);
+      fvwm_msg(ERR,"CMD_Style", "bad style command: %s", option);
       /* Can't return here since all malloced memory will be lost. Ignore rest
        * of line instead. */
 

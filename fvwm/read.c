@@ -251,7 +251,7 @@ static void cursor_control(Bool grab)
 
 }
 
-void ReadFile(F_CMD_ARGS)
+void CMD_Read(F_CMD_ARGS)
 {
   char* filename;
   int read_quietly;
@@ -278,7 +278,7 @@ void ReadFile(F_CMD_ARGS)
 
 
 
-void PipeRead(F_CMD_ARGS)
+void CMD_PipeRead(F_CMD_ARGS)
 {
   char* command;
   int read_quietly;

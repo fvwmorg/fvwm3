@@ -371,13 +371,13 @@ int executeModuleDesperate(F_CMD_ARGS)
   return do_execute_module(F_PASS_ARGS, True);
 }
 
-void executeModule(F_CMD_ARGS)
+void CMD_Module(F_CMD_ARGS)
 {
   do_execute_module(F_PASS_ARGS, False);
   return;
 }
 
-void executeModuleSync(F_CMD_ARGS)
+void CMD_ModuleSynchronous(F_CMD_ARGS)
 {
   extern char *ModuleFinished;		/* defined in libs/Module.c */
   int sec = 0;
@@ -706,7 +706,7 @@ static void KillModuleByName(char *name
   return;
 }
 
-void module_zapper(F_CMD_ARGS)
+void CMD_KillModule(F_CMD_ARGS)
 {
   char *module;
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
@@ -1195,8 +1195,7 @@ void BroadcastColorset(int n)
 /*
 ** send an arbitrary string to all instances of a module
 */
-void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                     unsigned long context, char *action,int* Module)
+void CMD_SendToModule(F_CMD_ARGS)
 {
   char *module,*str;
   unsigned long data0, data1, data2;
@@ -1507,8 +1506,7 @@ void ExecuteCommandQueue(void)
   }
 }
 
-void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
-                    unsigned long context, char *action, int *Module)
+void CMD_Send_WindowList(F_CMD_ARGS)
 {
   FvwmWindow *t;
 
@@ -1599,7 +1597,7 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
     }
 }
 
-void set_mask_function(F_CMD_ARGS)
+void CMD_set_mask(F_CMD_ARGS)
 {
   int val = 0;
 
@@ -1607,7 +1605,7 @@ void set_mask_function(F_CMD_ARGS)
   PipeMask[*Module] = (unsigned long)val;
 }
 
-void setSyncMaskFunc(F_CMD_ARGS)
+void CMD_set_sync_mask(F_CMD_ARGS)
 {
   int val = 0;
 
@@ -1615,7 +1613,7 @@ void setSyncMaskFunc(F_CMD_ARGS)
   SyncMask[*Module] = (unsigned long)val;
 }
 
-void setNoGrabMaskFunc(F_CMD_ARGS)
+void CMD_set_nograb_mask(F_CMD_ARGS)
 {
   int val = 0;
 
