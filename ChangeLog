@@ -1,4 +1,14 @@
+1999-08-06  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* fvwm/add_window.c (AddWindow): fixed grabbing of buttons for
+	ClickToFocus and MouseFocusClickRaises
+
+	* libs/fvwmlib.h: 
+	* libs/Bindings.c (GrabWindowButton): made function global again
+
 1999-08-05  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* configure.in: changed version to 2.3.7
 
 	* libs/Makefile.am: ColorSets.h -> Colorset.h
 

@@ -392,7 +392,7 @@ void GrabAllWindowKeys(Display *dpy, Window w, Binding *blist,
 }
 
 
-static void GrabWindowButton(Display *dpy, Window w, Binding *binding,
+void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 		      unsigned int contexts, unsigned int dead_modifiers,
 		      Cursor cursor, Bool fGrab)
 {

@@ -123,11 +123,13 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
     }
   }
 
+fprintf(stderr,"move grabbing...\n");
   if(!GrabEm(CRS_MOVE))
     {
       XBell(dpy, 0);
       return;
     }
+fprintf(stderr,"move grab done\n");
 
   XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
 	       (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,

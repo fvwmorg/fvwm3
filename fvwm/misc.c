@@ -566,6 +566,7 @@ Bool GrabEm(int cursor)
   int i=0,val=0;
   unsigned int mask;
 
+fprintf(stderr,"trying to grab cursor %d\n", cursor);
   XSync(dpy,0);
   /* move the keyboard focus prior to grabbing the pointer to
    * eliminate the enterNotify and exitNotify events that go
@@ -591,8 +592,10 @@ Bool GrabEm(int cursor)
   XSync(dpy,0);
   if(val!=GrabSuccess)
     {
+fprintf(stderr,"GrabEm failed\n");
       return False;
     }
+fprintf(stderr,"GrabEm success\n");
   return True;
 }
 

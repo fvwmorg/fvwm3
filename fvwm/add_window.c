@@ -813,30 +813,36 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->xdiff -= a;
   tmp_win->ydiff -= b;
   if(HAS_CLICK_FOCUS(tmp_win) || Scr.go.MouseFocusClickRaises)
+  {
+    int button;
+    /* need to grab all buttons for window that we are about to
+     * unhighlight */
+    for(button = 1; button <= 3; button++)
     {
-     /* need to grab all buttons for window that we are about to
-      * unhighlight */
-      for(i=1;i<=3;i++)
-	if(Scr.buttons2grab & (1<<i))
-	  {
-#if 0
-	    XGrabButton(dpy,(i),0,tmp_win->frame,True,
-			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-			Scr.FvwmCursors[CRS_SYS]);
-	    XGrabButton(dpy,(i),GetUnusedModifiers(),tmp_win->frame,True,
-			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-			Scr.FvwmCursors[CRS_SYS]);
-#else
-            /* should we accept any modifier on this button? */
-	    /* domivogt (2-Jan-1999): No. Or at least not like this. In the
-	     * present form no button presses go through to the title bar
-	     * anymore. They are all swallowed by the frame window. */
-	    XGrabButton(dpy,(i),AnyModifier,tmp_win->frame,True,
-  			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-  			Scr.FvwmCursors[CRS_SYS]);
-#endif
-	  }
-    }
+      XGrabButton(dpy, button, 0, tmp_win->frame, True, ButtonPressMask,
+		  GrabModeSync, GrabModeAsync, None,
+		  Scr.FvwmCursors[CRS_SYS]);
+      if(GetUnusedModifiers() != 0)
+      {
+	register unsigned int mods;
+	register unsigned int max = GetUnusedModifiers();
+	register unsigned int living_modifiers = ~max;
+	
+	/* handle all bindings for the dead modifiers */
+	for (mods = 1; mods <= max; mods++)
+	{
+	  /* Since mods starts with 1 we don't need to test if mods
+	   * contains a dead modifier. Otherwise both, dead and living
+	   * modifiers would be zero ==> mods == 0 */
+	  if (mods & living_modifiers)
+	    continue;
+	  XGrabButton(dpy, button, mods, tmp_win->frame, True,
+		      ButtonPressMask, GrabModeSync, GrabModeAsync, None,
+		      Scr.FvwmCursors[CRS_SYS]);
+	}
+      } /* if */
+    } /* for */
+  } /* if */
   BroadcastConfig(M_ADD_WINDOW,tmp_win);
 
   BroadcastName(M_WINDOW_NAME,tmp_win->w,tmp_win->frame,
