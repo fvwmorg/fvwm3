@@ -470,7 +470,7 @@ that can be entered in an FvwmConsole window or with FvwmCommand.
 
 For multi-screen implementations other than Xinerama, such as
 Single Logical Screen, it is possible to simulate a Xinerama
-configuration if the total screen seen by FVWM is made up of
+configuration if the total screen seen by fvwm is made up of
 equal sized monitors in a rectangular grid.  The commands
 .BR XineramaSls ", " XineramaSlsSize " and " XineramaSlsScreens
 are used to configure this feature.
@@ -624,8 +624,7 @@ and
 .B .png
 images.
 .B XBM
-images are monochrome.
-FVWM can always display
+images are monochrome.  Fvwm can always display
 .B XBM
 files.
 .B XPM
@@ -633,7 +632,7 @@ and
 .B PNG
 formats are color images.
 Compile-time
-options determine whether FVWM can display
+options determine whether fvwm can display
 .B XPM
 or
 .B PNG
@@ -644,7 +643,7 @@ file for more information.
 
 The related
 .BR SHAPE
-compile-time option can make FVWM display spiffy
+compile-time option can make fvwm display spiffy
 shaped icons.
 
 .SH MODULES
@@ -1033,19 +1032,19 @@ allows for writing portable configuration files.
 
 .SH FONT AND STRING ENCODING
 
-Once a font is loaded, FVWM finds its encoding (or charset) using its
-name (the last two fields of the name). FVWM assumes that the strings
+Once a font is loaded, fvwm finds its encoding (or charset) using its
+name (the last two fields of the name). fvwm assumes that the strings
 which are displayed with this font use this encoding (an exception is
 that if an iso10646-1 font is loaded, then UTF-8 is assumed for string
 encoding).
 In a normal situation,
 (i) a font is loaded by giving a font name without specifying the encoding,
 (ii) the encoding of the loaded font is the locale encoding, and then
-(iii) the strings in the FVWM configuration files should use the locale
+(iii) the strings in the fvwm configuration files should use the locale
 encoding as well as the window and icon name.
 With Xft the situation is bit different as Xft supports only iso10646-1
 and iso8859-1. If you do not specify one of these encodings in the Xft font
-name, then FVWM does strings conversion using (iii).
+name, then fvwm does strings conversion using (iii).
 Note that with multibyte fonts (and in particular with "CJK" fonts) for
 good text rendering, the locale encoding should be the charset of the font.
 
@@ -1056,7 +1055,7 @@ StringEncoding=enc:_full_font_name_
 .EE
 where
 .B enc
-is an encoding supported by FVWM (usually font name charset plus some
+is an encoding supported by fvwm (usually font name charset plus some
 unicode encodings: UTF-8, USC-2, USC-4 and UTF-16).
 
 For example,
@@ -1102,7 +1101,7 @@ in the locale charset:
 StringEncoding=UTF-8:-*-pretty_font-*-12-*
 .EE
 
-In most cases, FVWM correctly determines the encoding of the font. However,
+In most cases, fvwm correctly determines the encoding of the font. However,
 some fonts don't end with valid encoding names. When the font name isn't
 normal, for example:
 .EX
@@ -1113,12 +1112,12 @@ For example:
 .EX
 MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
 .EE
-If FVWM finds an encoding, FVWM uses the iconv system functions to do
+If fvwm finds an encoding, fvwm uses the iconv system functions to do
 conversion between encodings.
 Unfortunately, there are no standards. For conversion between
 iso8859-1 and UTF-8: a GNU system uses "ISO-8859-1" and other
 systems use "iso881" to define the converters (these two names are
-supported by FVWM). Moreover, in some cases it may be necessary
+supported by fvwm). Moreover, in some cases it may be necessary
 to use machine specific converters. So, if you experience problems
 you can try to get information on your iconv implementation ("man iconv"
 may help) and put the name which defines the converter between the font
@@ -1129,12 +1128,12 @@ For example use:
 Style * Font -misc-fixed-*--14-*-iso8859-1/*/latin1
 .EE
 to use latin1 for defining the converter for the iso8859-1 encoding.
-The "*" in between the "/" says to FVWM to determine the
+The "*" in between the "/" says to fvwm to determine the
 encoding from the end of the font name. Use:
 .EX
 Style * Font -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
 .EE
-to force FVWM to use the font with iso8859-6 as the encoding
+to force fvwm to use the font with iso8859-6 as the encoding
 (this is useful for bi-directionality)
 and to use local_iso8859_6_iconv for defining the converters.
 
@@ -1157,23 +1156,23 @@ is an optional set of directions the shadow
 emanates from the character.
 The
 .I directions
-are a space separated list of FVWM directions:
+are a space separated list of fvwm directions:
 
-.IR N ,   North ,      Top ,          t ,   Up ,         u
+.IR N ", "  North ", "     Top ", "         t ", "  Up ", "        u
 
-.IR E ,   East ,       Right ,        r ,   Right ,      r
+.IR E ", "  East ", "      Right ", "       r ", "  Right ", "     r
 
-.IR S ,   South ,      Bottom ,       b ,   Down ,       d
+.IR S ", "  South ", "     Bottom ", "      b ", "  Down ", "      d
 
-.IR W ,   West ,       Left ,         l ,   Left ,       l
+.IR W ", "  West ", "      Left ", "        l ", "  Left ", "      l
 
-.IR NE ,  NorthEast ,  TopRight ,     tr ,  UpRight ,    ur
+.IR NE ", " NorthEast ", " TopRight ", "    tr ", " UpRight ", "   ur
 
-.IR SE ,  SouthEast ,  BottomRight ,  br ,  DownRight ,  dr
+.IR SE ", " SouthEast ", " BottomRight ", " br ", " DownRight ", " dr
 
-.IR SW ,  SouthWest ,  BottomLeft ,   bl ,  DownLeft ,   dl
+.IR SW ", " SouthWest ", " BottomLeft ", "  bl ", " DownLeft ", "  dl
 
-.IR NW ,  NorthWest ,  TopLeft ,      tl ,  UpLeft ,     ul
+.IR NW ", " NorthWest ", " TopLeft ", "     tl ", " UpLeft ", "    ul
 
 a shadow is displayed in each given direction.
 .I All
@@ -1207,7 +1206,7 @@ Arabic and Hebrew text require bi-directional text support to be
 displayed correctly, this means that logical strings should be
 converted before their visual presentation, so left-to-right and
 right-to-left sub-strings are determined and reshuffled.
-In FVWM this is done automatically in window titles, menus,
+In fvwm this is done automatically in window titles, menus,
 module labels and other places if the fonts used for displaying the
 text are of one of the charsets that require
 .I bidi
@@ -6359,7 +6358,7 @@ global screen or the screen number itself (counting from zero).  A
 new window is placed on the specified Xinerama screen.  The
 default is to place windows on the screen that contains the mouse
 pointer at the time the window is created.  However, those windows
-which are not placed by FVWM (i.e., those with a USPosition hint
+which are not placed by fvwm (i.e., those with a USPosition hint
 from a user specified geometry) are normally placed in a position
 relative to the global screen.  The
 .I StartsOnScreen
@@ -7982,7 +7981,7 @@ other argument (including none) resets the primary screen to 0.
 .BI "XineramaSls [" bool "]"
 For multi-screen implementations other than Xinerama, such as
 Single Logical Screen, it is possible to simulate a Xinerama
-configuration if the total screen seen by FVWM is made up of
+configuration if the total screen seen by fvwm is made up of
 equal sized monitors in a rectangular grid.  The
 .B XineramaSls
 command turns SLS support on or off or toggles it to the opposite

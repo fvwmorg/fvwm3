@@ -1305,7 +1305,7 @@ void HandleDestroyNotify(void)
  *      HandleEnterNotify - EnterNotify event handler
  *
  ************************************************************************/
-#define DEBUG_ENTERNOTIFY 1
+#define DEBUG_ENTERNOTIFY 0
 #if DEBUG_ENTERNOTIFY
 static int ecount=0;
 #define ENTER_DBG(x) fprintf x;
