@@ -683,7 +683,6 @@ FlocaleFont *FlocaleGetFontSet(
 	Display *dpy, char *fontname, char *encoding, char *module)
 {
 	static int mc_errors = 0;
-	static XOM om = NULL;
 	FlocaleFont *flf = NULL;
 	XFontSet fontset = NULL;
 	char **ml = NULL;
@@ -693,28 +692,11 @@ FlocaleFont *FlocaleGetFontSet(
 	char *fn, *hints = NULL;
 
 	hints = GetQuotedString(fontname, &fn, "/", NULL, NULL, NULL);
-	if (om == NULL)
-	{
-		om = XOpenOM(dpy, NULL, NULL, NULL);
-	}
-	if (om)
-	{
-		if (!(fontset = 
-		      (XFontSet) XCreateOC(om, XNBaseFontName, fn, NULL)))
-		{
-			
-			if (fn != NULL)
-				free(fn);
-			return NULL;
-		}
-	} else
 	if (!(fontset = XCreateFontSet(dpy, fn, &ml, &mc, &ds)))
 	{
 		if (fn != NULL)
 			free(fn);
 		return NULL;
-		if (mc > 0 && ml)
-			XFreeStringList(ml);
 	}
 
 	if (mc > 0)
