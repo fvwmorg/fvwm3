@@ -776,6 +776,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    xl = xl2;
 	    yt = yt2;
 	  }
+	  else
+	  {
+	    xl += XOffset;
+	    yt += YOffset;
+	  }
 
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
@@ -841,35 +846,26 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 		    }
 		  else
 		    {
-fprintf(stderr,"xl=%d, yt=%d\n",xl,yt);
 		      XMoveWindow(dpy,tmp_win->frame,xl,yt);
 		    }
 		}
 	      DisplayPosition(tmp_win,xl,yt,False);
-fprintf(stderr,"display position: xl=%d, yt=%d\n",xl,yt);
 
 	      /* prevent window from lagging behind mouse when paging - mab */
 	      if(paged==0)
 		{
-fprintf(stderr,"2\n");
 		  xl = Event.xmotion.x_root;
 		  yt = Event.xmotion.y_root;
   		  HandlePaging(dx, dy, &xl, &yt, &delta_x, &delta_y, False,
 			       False);
 		  xl += XOffset;
 		  yt += YOffset;
-fprintf(stderr,"2 xl=%d, yt=%d\n",xl,yt);
 		  if ( (delta_x==0) && (delta_y==0))
-{
-XFlush(dpy);
 		    /* break from while paged */
 		    break;
-}
-fprintf(stderr,"2b\n");
 		}
 	      paged++;
 	    }  /* end while paged */
-fprintf(stderr,"end of loop\n");
 
 	  done = TRUE;
 	  break;

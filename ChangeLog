@@ -1,3 +1,9 @@
+1999-05-05  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* utils/BuildXLockMenu: applied patch by Mikhael Goikhman
+
+	* fvwm/move_resize.c (moveLoop): fixed move/page fix
+
 1999-05-04  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/placement.c (GetGravityOffsets): remove unnecessary
@@ -27,6 +33,12 @@
 	not changed. The override_size style is now handled here as well.
 
 1999-05-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (XORpixmap): comment how to turn XORpixmap off
+
+	* fvwm/move_resize.c: removed debugging code
+
+	* fvwm/builtins.c (SetXORPixmap): access of freed pointer fixed
 
 	* fvwm/move_resize.c (moveLoop): fixed move/page bug when the button
 	was released while the windows were being unmapped

@@ -1153,12 +1153,14 @@ void SetXORPixmap(F_CMD_ARGS)
   }
 
   /* search for pixmap */
-  GCPicture = CachePicture(dpy, Scr.NoFocusWin, NULL, PixmapName, Scr.ColorLimit);
-  free(PixmapName);
+  GCPicture = CachePicture(dpy, Scr.NoFocusWin, NULL, PixmapName,
+			   Scr.ColorLimit);
   if (GCPicture == NULL) {
     fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
+    free(PixmapName);
     return;
   }
+  free(PixmapName);
 
   /* free up old one */
   if (Scr.DrawPicture)
@@ -1178,7 +1180,7 @@ void SetXORPixmap(F_CMD_ARGS)
     XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
   else
     Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-  XFlushGC(dpy, Scr.DrawGC);
+
   BroadcastLook();
 }
 
