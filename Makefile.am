@@ -13,6 +13,7 @@ SUBDIRS = \
 	$(FVWM_PERLLIB) \
 	docs \
 	rpm \
+	debian \
 	sample.fvwmrc \
 	$(POSUB) \
 	tests
@@ -51,6 +52,7 @@ distclean2: distclean
 
 ## ---------------------------------------------------------------------------
 ## Produce an rpm package using dist or from the given tarball
+## (requires rpmbuild in your system)
 #  Usage:
 #    make rpm-dist
 #    make release=1 rpm-dist
@@ -66,3 +68,25 @@ rpm-dist: dist rpm-this
 
 rpm-this: rpm-regenerate
 	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) this) || exit 1
+
+## -----------------------------------------------------------------
+## Produce a deb package using dist or from the given tarball
+## (requires fakeroot, dpkg and debhelper in your system)
+#  Usage:
+#    make deb-dist
+#    make release=1 deb-dist
+#    make deb-this
+#    make version=2.3.22 release=2 deb-this 
+#    make deb-dist cparams='--enable-gnome --quiet' mparams='CFLAGS="-O2 -g"'
+#    make deb-inplace release=1.mg fullname=migo # works on sources directly
+
+deb-regenerate:
+	(cd debian && $(MAKE) $(AM_MAKEFLAGS) Makefile) || exit 1
+
+deb-dist: dist deb-this
+
+deb-this: deb-regenerate
+	$(MAKE) -f debian/Makefile $(AM_MAKEFLAGS) this || exit 1
+
+deb-inplace: deb-regenerate
+	$(MAKE) -f debian/Makefile $(AM_MAKEFLAGS) inplace || exit 1

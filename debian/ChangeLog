@@ -1,0 +1,15 @@
+2003-10-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am:
+	* README.Debian:
+	* control.in:
+	* copyright:
+	* dirs:
+	* docs:
+	* files:
+	* fvwm.menu:
+	* fvwm.menu-method:
+	* postinst:
+	* postrm:
+	* .cvsignore:
+	initially added files for deb package auto-creating procedure

@@ -1,0 +1,21 @@
+Source: fvwm
+Section: x11
+Priority: optional
+Maintainer: FVWM Workers <@FVWMWORKERSLIST@>
+Build-Depends: debhelper (>>4.0.0), xlibs-dev, libreadline4-dev, libgtk1.2-dev || libgtk1.4-dev, libstroke0-dev, libncurses5-dev, file, autotools-dev
+Standards-Version: 3.5.8
+
+Package: fvwm
+Architecture: any
+Depends: ${shlibs:Depends}, perl (>= @REQUIRED_PERL_VERSION@)
+Suggests: fvwm-themes, m4, cpp, menu (>=1.5)
+Provides: x-window-manager
+Description: F(?) Virtual Window Manager
+ FVWM is a powerful ICCCM-compliant multiple virtual desktop window manager
+ for the X Window System.
+ .
+ This 2.5 version includes new features like full support of the EWMH
+ (Enhanced Window Manager Hints) specification, internationalization,
+ improved window decoration code (no flickering anymore), bi-directional
+ asian text support, FreeType font support (antialiasing), image rendering,
+ Perl based module library, support for PNG images, side titles and much more.
