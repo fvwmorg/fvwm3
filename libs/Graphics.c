@@ -208,7 +208,7 @@ Pixmap CreateStretchPixmap(
 	}
 	pixmap = CreateStretchYPixmap(
 		dpy, temp_pixmap, dest_width, src_height, src_depth,
-		dest_height, gc);
+		dest_height, (gc == None)? my_gc:gc);
 	XFreePixmap(dpy, temp_pixmap);
 	if (my_gc)
 	{
@@ -238,7 +238,11 @@ Pixmap CreateTiledPixmap(
 	}
 	xgcv.fill_style = FillTiled;
 	xgcv.tile = src;
-	XChangeGC(dpy, gc, GCFillStyle | GCTile, &xgcv);
+	xgcv.ts_x_origin = 0;
+	xgcv.ts_y_origin = 0;
+	XChangeGC(
+		dpy, gc, GCFillStyle | GCTile | GCTileStipXOrigin |
+		GCTileStipYOrigin, &xgcv);
 	XFillRectangle(dpy, pixmap, gc, 0, 0, dest_width, dest_height);
 	xgcv.fill_style = FillSolid;
 	XChangeGC(dpy, gc, GCFillStyle, &xgcv);

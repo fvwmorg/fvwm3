@@ -42,6 +42,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/FRenderInit.h"
 #include "fvwm.h"
 #include "execcontext.h"
 #include "externs.h"
@@ -85,6 +86,7 @@ typedef struct
 		struct
 		{
 			unsigned is_tiled : 1;
+			unsigned is_stretched : 1;
 		} flags;
 	} pixmap;
 } pixmap_background_type;
@@ -92,7 +94,10 @@ typedef struct
 typedef struct
 {
 	Pixmap p;
+	FvwmPicture *mp_created_pic;
 	int cs;
+	FvwmPicture *mp_pic;
+	int mp_part;
 	Bool created;
 } bar_pixmap;
 
@@ -184,25 +189,37 @@ typedef struct
 typedef struct
 {
 	rectangle *title_g;
-	int length;
-	int offset;
 	GC rgc;
 	GC sgc;
 	FlocaleWinString fstr;
 	DecorFaceStyle *tstyle;
 	DecorFace *df;
 	unsigned is_toggled : 1;
-	unsigned has_vt : 1;
 } title_draw_descr;
 
 typedef struct
 {
 	common_decorations_type *cd;
 	rectangle frame_g;
-	rectangle bar_g;
+	rectangle bar_g;             /* titlebar geo vs the frame */
+	rectangle left_buttons_g;    /* vs the frame */
+	rectangle right_buttons_g;   /* vs the frame */
 	frame_title_layout_type layout;
 	frame_title_layout_type old_layout;
 	border_titlebar_state tbstate;
+	int length;                   /* text */
+	int offset;                   /* text offset */
+	unsigned has_vt : 1;          /* vertical title ? */
+	/* MultiPixmap Geometries */
+	rectangle under_text_g;      /* vs the titlebar */
+	rectangle left_main_g;       /* vs the titlebar */
+	rectangle right_main_g;      /* vs the titlebar */
+	rectangle full_left_main_g;  /* vs the frame */
+	rectangle full_right_main_g; /* vs the frame */
+	int left_end_length;
+	int left_of_text_length;
+	int right_end_length;
+	int right_of_text_length;
 } titlebar_descr;
 
 /* ---------------------------- forward declarations ------------------------ */
@@ -218,260 +235,6 @@ XGCValues Globalgcv;
 unsigned long Globalgcm;
 
 /* ---------------------------- local functions ----------------------------- */
-
-#ifdef FANCY_TITLEBARS
-/****************************************************************************
- *
- *  Tile or stretch src into dest, starting at the given location and
- *  continuing for the given width and height. This is a utility function used
- *  by border_draw_multi_pixmap_titlebar. (tril@igs.net)
- *
- ****************************************************************************/
-static void border_render_into_pixmap(
-	GC gc, FvwmPicture *src, Pixmap dest, int x_start, int y_start,
-	int width, int height, Bool stretch)
-{
-	FvwmPicture *pm = NULL;
-	Bool do_repeat = False;
-
-	if (stretch)
-	{
-		pm = PGraphicsCreateStretchPicture(
-			dpy, Scr.NoFocusWin, src, width, height,
-			gc, Scr.MonoGC, None);
-	}
-	else
-	{
-		pm = src;
-		do_repeat = True;
-	}
-	PGraphicsRenderPicture(
-		dpy, Scr.NoFocusWin, pm, 0, dest, gc, Scr.MonoGC, None,
-		0, 0, pm->width, pm->height,
-		x_start, y_start, width, height, do_repeat);
-	if (pm != src)
-	{
-		PDestroyFvwmPicture(dpy, pm);
-	}
-
-	return;
-}
-
-static int get_multipm_length(
-	FvwmWindow *fw, FvwmPicture **pm, int part)
-{
-	if (pm[part] == NULL)
-	{
-		return 0;
-	}
-	else if (HAS_VERTICAL_TITLE(fw))
-	{
-		return pm[part]->height;
-	}
-	else
-	{
-		return pm[part]->width;
-	}
-}
-
-/****************************************************************************
- *
- *  Redraws multi-pixmap titlebar (tril@igs.net)
- *
- ****************************************************************************/
-static void border_draw_multi_pixmap_titlebar(
-	FvwmWindow *fw, titlebar_descr *td, DecorFace *df, Pixmap dest_pix)
-{
-	GC gc;
-	char *title;
-	FvwmPicture **pm;
-	short stretch_flags;
-	int text_length, text_pos, text_offset;
-	int before_space, after_space, under_offset, under_width;
-	int size;
-	FlocaleWinString fstr;
-	rectangle tmp_g;
-	Bool has_vt = HAS_VERTICAL_TITLE(fw);
-
-	pm = df->u.multi_pixmaps;
-	stretch_flags = df->u.multi_stretch_flags;
-	gc = Scr.TitleGC;
-	XSetClipMask(dpy, gc, None);
-	title = fw->visible_name;
-	tmp_g.width = td->layout.title_g.width;
-	tmp_g.height = td->layout.title_g.height;
-	if (pm[TBP_MAIN])
-	{
-		border_render_into_pixmap(
-			gc, pm[TBP_MAIN], dest_pix, 0, 0,
-			td->layout.title_g.width, td->layout.title_g.height,
-			(stretch_flags & (1 << TBP_MAIN)));
-	}
-	else if (!title)
-	{
-		border_render_into_pixmap(
-			gc, pm[TBP_LEFT_MAIN], dest_pix, 0, 0,
-			td->layout.title_g.width, td->layout.title_g.height,
-			(stretch_flags & (1 << TBP_LEFT_MAIN)));
-	}
-
-	if (title)
-	{
-		int len = strlen(title);
-
-		if (has_vt)
-		{
-			len = -len;
-		}
-		text_length = FlocaleTextWidth(fw->title_font, title, len);
-		if (text_length > fw->title_length)
-		{
-			text_length = fw->title_length;
-		}
-		switch (TB_JUSTIFICATION(GetDecor(fw, titlebar)))
-		{
-		case JUST_LEFT:
-			text_pos = TITLE_PADDING;
-			text_pos += get_multipm_length(
-				fw, pm, TBP_LEFT_OF_TEXT);
-			text_pos += get_multipm_length(
-				fw, pm, TBP_LEFT_END);
-			if (text_pos > fw->title_length - text_length)
-			{
-				text_pos = fw->title_length - text_length;
-			}
-			break;
-		case JUST_RIGHT:
-			text_pos = fw->title_length - text_length -
-				TITLE_PADDING;
-			text_pos -= get_multipm_length(
-				fw, pm, TBP_RIGHT_OF_TEXT);
-			text_pos -= get_multipm_length(
-				fw, pm, TBP_RIGHT_END);
-			if (text_pos < 0)
-			{
-				text_pos = 0;
-			}
-			break;
-		default:
-			text_pos = (fw->title_length - text_length) / 2;
-			break;
-		}
-
-		under_offset = text_pos;
-		under_width = text_length;
-		/* If there's title padding, put it *inside* the undertext
-		 * area: */
-		if (under_offset >= TITLE_PADDING)
-		{
-			under_offset -= TITLE_PADDING;
-			under_width += TITLE_PADDING;
-		}
-		if (under_offset + under_width + TITLE_PADDING <=
-		    fw->title_length)
-		{
-			under_width += TITLE_PADDING;
-		}
-		before_space = under_offset;
-		after_space = fw->title_length - before_space -
-			under_width;
-
-		if (pm[TBP_LEFT_MAIN] && before_space > 0)
-		{
-			border_render_into_pixmap(
-				gc, pm[TBP_LEFT_MAIN], dest_pix, 0, 0,
-				SWAP_ARGS(has_vt, before_space,
-					  fw->title_thickness),
-				(stretch_flags & (1 << TBP_LEFT_MAIN)));
-		}
-		if (pm[TBP_RIGHT_MAIN] && after_space > 0)
-		{
-			border_render_into_pixmap(
-				gc, pm[TBP_RIGHT_MAIN], dest_pix,
-				SWAP_ARGS(has_vt, under_offset + under_width,
-					  0),
-				SWAP_ARGS(has_vt, after_space,
-					  fw->title_thickness),
-				(stretch_flags & (1 << TBP_RIGHT_MAIN)));
-		}
-		if (pm[TBP_UNDER_TEXT] && under_width > 0)
-		{
-			border_render_into_pixmap(
-				gc, pm[TBP_UNDER_TEXT], dest_pix,
-				SWAP_ARGS(has_vt, under_offset, 0),
-				SWAP_ARGS(has_vt, under_width,
-					  fw->title_thickness),
-				(stretch_flags & (1 << TBP_UNDER_TEXT)));
-		}
-		size = get_multipm_length(fw, pm, TBP_LEFT_OF_TEXT);
-		if (size > 0 && size <= before_space)
-		{
-
-			XCopyArea(
-				dpy, pm[TBP_LEFT_OF_TEXT]->picture, dest_pix,
-				gc, 0, 0,
-				SWAP_ARGS(has_vt, size,
-					  fw->title_thickness),
-				SWAP_ARGS(has_vt, under_offset - size, 0));
-			before_space -= size;
-		}
-		size = get_multipm_length(fw, pm, TBP_RIGHT_OF_TEXT);
-		if (size > 0 && size <= after_space)
-		{
-			XCopyArea(
-				dpy, pm[TBP_RIGHT_OF_TEXT]->picture, dest_pix,
-				gc, 0, 0,
-				SWAP_ARGS(has_vt, size,
-					  fw->title_thickness),
-				SWAP_ARGS(has_vt, under_offset + under_width,
-					  0));
-			after_space -= size;
-		}
-
-		text_offset = fw->title_text_offset + 2;
-		memset(&fstr, 0, sizeof(fstr));
-		fstr.str = fw->visible_name;
-		fstr.win = dest_pix;
-		if (has_vt)
-		{
-			fstr.x = text_offset;
-			fstr.y = text_pos;
-		}
-		else
-		{
-			fstr.y = text_offset;
-			fstr.x = text_pos;
-		}
-		fstr.gc = gc;
-		fstr.flags.text_rotation = fw->title_text_rotation;
-		FlocaleDrawString(dpy, fw->title_font, &fstr, 0);
-	}
-	else
-	{
-		before_space = fw->title_length / 2;
-		after_space = fw->title_length / 2;
-	}
-
-	size = get_multipm_length(fw, pm, TBP_LEFT_END);
-	if (size > 0 && size <= before_space)
-	{
-		XCopyArea(
-			dpy, pm[TBP_LEFT_END]->picture, dest_pix, gc, 0, 0,
-			SWAP_ARGS(has_vt, size, fw->title_thickness),
-			0, 0);
-	}
-	size = get_multipm_length(fw, pm, TBP_RIGHT_END);
-	if (size > 0 && size <= after_space)
-	{
-		XCopyArea(
-			dpy, pm[TBP_RIGHT_END]->picture, dest_pix, gc, 0, 0,
-			SWAP_ARGS(has_vt, size, fw->title_thickness),
-			fw->title_length - size, 0);
-	}
-
-	return;
-}
-#endif /* FANCY_TITLEBARS */
 
 static Bool is_button_toggled(
 	FvwmWindow *fw, int button)
@@ -916,6 +679,12 @@ static window_parts border_get_tb_parts_to_draw(
 			for(tdf = df; tdf != NULL; tdf = tdf->next)
 			{
 				int cs;
+				if (DFS_FACE_TYPE(tdf->style) == MultiPixmap)
+				{
+					/* can be improved */
+					td->tbstate.draw_bmask |= mask;
+					break;
+				}
 				if (DFS_FACE_TYPE(tdf->style) != ColorsetButton
 				    || !CSET_HAS_PIXMAP(tdf->u.acs.cs))
 				{
@@ -1465,14 +1234,19 @@ inline static void border_set_part_background(
 
 /* render the an image into the pixmap */
 static void border_fill_pixmap_background(
-	Pixmap dest_pix, rectangle *pixmap_g, pixmap_background_type *bg,
+	Pixmap dest_pix, rectangle *dest_g, pixmap_background_type *bg,
 	common_decorations_type *cd)
 {
 	Bool do_tile;
+	Bool do_stretch;
 	XGCValues xgcv;
 	unsigned long valuemask;
+	Pixmap p = None, shape = None, alpha = None;
+	int src_width, src_height;
 
 	do_tile = (bg->flags.use_pixmap && bg->pixmap.flags.is_tiled) ?
+		True : False;
+	do_stretch = (bg->flags.use_pixmap && bg->pixmap.flags.is_stretched) ?
 		True : False;
 	xgcv.fill_style = FillSolid;
 	valuemask = GCFillStyle;
@@ -1487,24 +1261,69 @@ static void border_fill_pixmap_background(
 			GCClipYOrigin;
 		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
 		XFillRectangle(
-			dpy, dest_pix, Scr.BordersGC, 0, 0, pixmap_g->width,
-			pixmap_g->height);
+			dpy, dest_pix, Scr.BordersGC, dest_g->x, dest_g->y,
+			dest_g->width - dest_g->x, dest_g->height - dest_g->y);
+		return;
 	}
-	else if (do_tile == False)
+
+	if (do_stretch)
 	{
-		/* pixmap, offset stored in pixmap_g->x/y */
+		if (bg->pixmap.p)
+		{
+			p = CreateStretchPixmap(
+				dpy, bg->pixmap.p,
+				bg->pixmap.g.width, bg->pixmap.g.height,
+				bg->pixmap.depth,
+				dest_g->width - dest_g->x,
+				dest_g->height - dest_g->y,
+				Scr.BordersGC);
+		}
+		if (bg->pixmap.shape)
+		{
+			shape = CreateStretchPixmap(
+				dpy, bg->pixmap.shape,
+				bg->pixmap.g.width, bg->pixmap.g.height, 1,
+				dest_g->width - dest_g->x,
+				dest_g->height - dest_g->y,
+				Scr.MonoGC);
+		}
+		if (bg->pixmap.alpha)
+		{
+			alpha = CreateStretchPixmap(
+				dpy, bg->pixmap.alpha,
+				bg->pixmap.g.width, bg->pixmap.g.height,
+				FRenderGetAlphaDepth(),
+				dest_g->width - dest_g->x,
+				dest_g->height - dest_g->y,
+				Scr.AlphaGC);
+		}
+		src_width = dest_g->width - dest_g->x;
+		src_height = dest_g->height - dest_g->y;
+	}
+	else
+	{
+		p = bg->pixmap.p;
+		shape = bg->pixmap.shape;
+		alpha =	bg->pixmap.alpha; 
+		src_width = bg->pixmap.g.width;
+		src_height = bg->pixmap.g.height;
+	}
+
+	if (do_tile == False)
+	{
+		/* pixmap, offset stored in dest_g->x/y */
 		xgcv.foreground = cd->fore_color;
 		xgcv.background = cd->back_color;
 		valuemask |= GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
 		PGraphicsRenderPixmaps(
-			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
-			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
-			dest_pix, Scr.BordersGC, Scr.MonoGC, None,
+			dpy, Scr.NoFocusWin, p, shape, alpha,
+			bg->pixmap.depth, &(bg->pixmap.fra),
+			dest_pix, Scr.BordersGC, Scr.MonoGC, Scr.AlphaGC,
 			bg->pixmap.g.x, bg->pixmap.g.y,
-			bg->pixmap.g.width, bg->pixmap.g.height,
-			pixmap_g->x, pixmap_g->y, pixmap_g->width - pixmap_g->x,
-			pixmap_g->height - pixmap_g->y, False);
+			src_width, src_height,
+			dest_g->x, dest_g->y, dest_g->width - dest_g->x,
+			dest_g->height - dest_g->y, False);
 	}
 	else
 	{
@@ -1514,16 +1333,27 @@ static void border_fill_pixmap_background(
 		valuemask |= GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
 		PGraphicsRenderPixmaps(
-			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
-			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
-			dest_pix, Scr.BordersGC, Scr.MonoGC, None,
+			dpy, Scr.NoFocusWin, p, shape, alpha,
+			bg->pixmap.depth, &(bg->pixmap.fra),
+			dest_pix, Scr.BordersGC, Scr.MonoGC, Scr.AlphaGC,
 			bg->pixmap.g.x, bg->pixmap.g.y,
-			bg->pixmap.g.width, bg->pixmap.g.height,
-			pixmap_g->x, pixmap_g->y,
-			pixmap_g->width - pixmap_g->x,
-			pixmap_g->height - pixmap_g->y, True);
+			src_width, src_height,
+			dest_g->x, dest_g->y,
+			dest_g->width - dest_g->x,
+			dest_g->height - dest_g->y, True);
 	}
-
+	if (p && p != bg->pixmap.p)
+	{
+		XFreePixmap(dpy, p);
+	}
+	if (shape && shape != bg->pixmap.shape)
+	{
+		XFreePixmap(dpy, shape);
+	}
+	if (alpha && alpha != bg->pixmap.alpha)
+	{
+		XFreePixmap(dpy, alpha);
+	}
 	return;
 }
 
@@ -1566,6 +1396,7 @@ static void border_get_border_background(
 		bg->pixmap.alpha = None;
 		bg->pixmap.depth = Pdepth;
 		bg->pixmap.flags.is_tiled = 1;
+		bg->pixmap.flags.is_stretched = 0;
 		bg->pixmap.fra.mask = 0;
 	}
 	else if (cd->bg_border_cs >= 0 &&
@@ -1582,6 +1413,7 @@ static void border_get_border_background(
 		}
 		else
 		{
+			/* FIXME */
 			if (cd->dynamic_cd.frame_pixmap == None)
 			{
 				border_get_frame_pixmap(cd, relative_g);
@@ -1607,6 +1439,7 @@ static void border_get_border_background(
 		bg->pixmap.alpha = None;
 		bg->pixmap.depth = Pdepth;
 		bg->pixmap.flags.is_tiled = 1;
+		bg->pixmap.flags.is_stretched = 0;
 		bg->pixmap.fra.mask = 0;
 		*free_bg_pixmap = True;
 	}
@@ -1773,12 +1606,22 @@ static void border_draw_vector_to_pixmap(
 	return;
 }
 
+/****************************************************************************
+ *
+ *  Handle Title pixmaps used for UseTitleStyle
+ *
+ ****************************************************************************/
+static Bool border_mp_get_use_title_style_parts_and_geometry(
+	titlebar_descr *td, FvwmPicture **pm, FvwmAcs *acs,
+	unsigned short sf, int is_left, rectangle *g, int *part);
+
 static void border_setup_bar_pixmaps(
-	dynamic_common_decorations *dcd, DecorFace *df, ButtonState bs)
+	titlebar_descr *td, dynamic_common_decorations *dcd, DecorFace *df,
+	ButtonState bs)
 {
 	int count = dcd->bar_pixmaps[bs].count;
 	DecorFace *tsdf;
-	int i;
+	int i, j, mp_part_left, mp_part_right;
 
 	if (count != 0)
 	{
@@ -1791,6 +1634,29 @@ static void border_setup_bar_pixmaps(
 		if (DFS_FACE_TYPE(tsdf->style) == ColorsetButton)
 		{
 			count++;
+		}
+		else if (DFS_FACE_TYPE(tsdf->style) == MultiPixmap)
+		{
+			border_mp_get_use_title_style_parts_and_geometry(
+				td, tsdf->u.mp.pixmaps, tsdf->u.mp.acs,
+				tsdf->u.mp.solid_flags, True, NULL,
+				&mp_part_left);
+			border_mp_get_use_title_style_parts_and_geometry(
+				td, tsdf->u.mp.pixmaps, tsdf->u.mp.acs,
+				tsdf->u.mp.solid_flags, False, NULL,
+				&mp_part_right);
+			for (j = 0; j < UTS_TBMP_NUM_PIXMAPS; j++)
+			{ 
+				if (j != mp_part_left && j != mp_part_right)
+				{
+					continue;
+				}
+				if (tsdf->u.mp.acs[j].cs >= 0 ||
+				    tsdf->u.mp.pixmaps[j])
+				{
+					count++;
+				}
+			}
 		}
 	}
 	if (count == 0)
@@ -1810,28 +1676,67 @@ static void border_setup_bar_pixmaps(
 		if (DFS_FACE_TYPE(df->style) == ColorsetButton)
 		{
 			dcd->bar_pixmaps[bs].bps[i].p = None;
+			dcd->bar_pixmaps[bs].bps[i].mp_created_pic = NULL;
 			dcd->bar_pixmaps[bs].bps[i].cs = tsdf->u.acs.cs;
+			dcd->bar_pixmaps[bs].bps[i].mp_pic = NULL;
 			dcd->bar_pixmaps[bs].bps[i].created = 0;
+			dcd->bar_pixmaps[bs].bps[i].mp_part = TBMP_NONE;
 			i++;
+		}
+		else if (DFS_FACE_TYPE(tsdf->style) == MultiPixmap)
+		{
+			border_mp_get_use_title_style_parts_and_geometry(
+				td, tsdf->u.mp.pixmaps, tsdf->u.mp.acs,
+				tsdf->u.mp.solid_flags, True, NULL,
+				&mp_part_left);
+			border_mp_get_use_title_style_parts_and_geometry(
+				td, tsdf->u.mp.pixmaps, tsdf->u.mp.acs,
+				tsdf->u.mp.solid_flags, False, NULL,
+				&mp_part_right);
+			for (j = 0; j < UTS_TBMP_NUM_PIXMAPS; j++)
+			{
+				if (j != mp_part_left && j != mp_part_right)
+				{
+					continue;
+				} 
+				if (tsdf->u.mp.acs[j].cs >= 0 ||
+				    tsdf->u.mp.pixmaps[j])
+				{
+					dcd->bar_pixmaps[bs].bps[i].p = None;
+					dcd->bar_pixmaps[bs].bps[i].
+						mp_created_pic = NULL;
+					dcd->bar_pixmaps[bs].bps[i].cs =
+						tsdf->u.mp.acs[j].cs;
+					dcd->bar_pixmaps[bs].bps[i].mp_pic =
+						tsdf->u.mp.pixmaps[j];
+					dcd->bar_pixmaps[bs].bps[i].created = 0;
+					dcd->bar_pixmaps[bs].bps[i].mp_part = j;
+					i++;
+				}
+			}
 		}
 	}
 }
 
 static Pixmap border_get_bar_pixmaps(
 	dynamic_common_decorations *dcd, rectangle *bar_g, ButtonState bs,
-	int cset)
+	int cset, FvwmPicture *mp_pic, int mp_part, int stretch,
+	FvwmPicture **mp_ret_pic)
 {
 	ButtonState b;
 	int i,j;
 	int count = dcd->bar_pixmaps[bs].count;
 
-	if (count == 0)
+	if (count <= 0)
 	{
 		return None;
 	}
 
 	i = 0;
-	while(i < count &&  dcd->bar_pixmaps[bs].bps[i].cs != cset)
+	while(i < count &&
+	(dcd->bar_pixmaps[bs].bps[i].cs != cset ||
+	      dcd->bar_pixmaps[bs].bps[i].mp_part != mp_part ||
+	      dcd->bar_pixmaps[bs].bps[i].mp_pic != mp_pic))
 	{
 		i++;
 	}
@@ -1839,33 +1744,82 @@ static Pixmap border_get_bar_pixmaps(
 	{
 		return None;
 	}
+	if (mp_ret_pic)
+	{
+		*mp_ret_pic = dcd->bar_pixmaps[bs].bps[i].mp_created_pic;
+	}
 	if (dcd->bar_pixmaps[bs].bps[i].p == None)
 	{
 		/* see if we have it */
 		b = 0;
-		while (b < BS_MaxButtonState &&
-		       dcd->bar_pixmaps[bs].bps[i].p == None)
+		while (b < BS_MaxButtonState)
 		{
 			int c = dcd->bar_pixmaps[b].count;
 			j = 0;
-			while(j < c &&  dcd->bar_pixmaps[b].bps[j].cs != cset)
+			while(j < c &&
+			      (dcd->bar_pixmaps[b].bps[j].cs != cset ||
+			       dcd->bar_pixmaps[b].bps[j].mp_part != mp_part ||
+			       dcd->bar_pixmaps[b].bps[j].mp_pic != mp_pic))
 			{
 				j++;
 			}
-			if (j < c)
+			if (j < c && dcd->bar_pixmaps[b].bps[j].p)
 			{
 				dcd->bar_pixmaps[bs].bps[i].p =
 					dcd->bar_pixmaps[b].bps[j].p;
+				if (mp_pic && mp_ret_pic)
+				{
+					*mp_ret_pic =
+						dcd->bar_pixmaps[bs].bps[i].
+						mp_created_pic =
+						dcd->bar_pixmaps[b].bps[j].
+						mp_created_pic;
+				}
+				break;
 			}
 			b++;
 		}
 	}
 	if (dcd->bar_pixmaps[bs].bps[i].p == None)
 	{
-		dcd->bar_pixmaps[bs].bps[i].p = CreateBackgroundPixmap(
-			dpy, Scr.NoFocusWin, bar_g->width, bar_g->height,
-			&Colorset[cset], Pdepth, Scr.BordersGC, False);
-		dcd->bar_pixmaps[bs].bps[i].created = True;
+		if (cset >= 0)
+		{
+			dcd->bar_pixmaps[bs].bps[i].p = CreateBackgroundPixmap(
+				dpy, Scr.NoFocusWin, bar_g->width, bar_g->height,
+				&Colorset[cset], Pdepth, Scr.BordersGC, False);
+			dcd->bar_pixmaps[bs].bps[i].created = True;
+		}
+		else if (mp_pic && mp_ret_pic)
+		{
+			if (stretch)
+			{
+				dcd->bar_pixmaps[bs].bps[i].mp_created_pic =
+					PGraphicsCreateStretchPicture(
+						dpy, Scr.NoFocusWin, mp_pic,
+						bar_g->width, bar_g->height,
+						Scr.BordersGC, Scr.MonoGC,
+						Scr.AlphaGC);
+			}
+			else
+			{
+				dcd->bar_pixmaps[bs].bps[i].mp_created_pic =
+					PGraphicsCreateTiledPicture(
+						dpy, Scr.NoFocusWin, mp_pic,
+						bar_g->width, bar_g->height,
+						Scr.BordersGC, Scr.MonoGC,
+						Scr.AlphaGC);
+			}
+			if (dcd->bar_pixmaps[bs].bps[i].mp_created_pic)
+			{
+				dcd->bar_pixmaps[bs].bps[i].created = True;
+				*mp_ret_pic =
+					dcd->bar_pixmaps[bs].bps[i].
+					mp_created_pic;
+				dcd->bar_pixmaps[bs].bps[i].p =
+					dcd->bar_pixmaps[bs].bps[i].
+					mp_created_pic->picture;
+			}
+		}
 	}
 	return dcd->bar_pixmaps[bs].bps[i].p;
 }
@@ -1884,8 +1838,16 @@ static void border_free_bar_pixmaps(
 		}
 		for (i = 0; i < dcd->bar_pixmaps[bs].count; i++)
 		{
-			if (dcd->bar_pixmaps[bs].bps[i].p != None &&
+			if (dcd->bar_pixmaps[bs].bps[i].mp_created_pic &&
 			    dcd->bar_pixmaps[bs].bps[i].created)
+			{
+				PDestroyFvwmPicture(
+					dpy,
+					dcd->bar_pixmaps[bs].bps[i].
+					mp_created_pic);
+			}
+			else if (dcd->bar_pixmaps[bs].bps[i].p != None &&
+				 dcd->bar_pixmaps[bs].bps[i].created)
 			{
 				XFreePixmap(
 					dpy, dcd->bar_pixmaps[bs].bps[i].p);
@@ -1895,21 +1857,728 @@ static void border_free_bar_pixmaps(
 	}
 }
 
+/****************************************************************************
+ *
+ *  MultiPixmap (aka, fancy title bar) (tril@igs.net)
+ *
+ ****************************************************************************/
+#define TBMP_HAS_PART(p, pm, acs, sf) \
+       (pm[p] || acs[p].cs >= 0 || (sf & (1 << p)))
+
+/*  Tile or stretch src into dest, starting at the given location and
+ *  continuing for the given width and height. This is a utility function used
+ *  by border_mp_draw_mp_titlebar. (tril@igs.net) */
+static void border_mp_render_into_pixmap(
+	common_decorations_type *cd, FvwmPicture **src, FvwmAcs *acs,
+	Pixel *pixels, unsigned short solid_flags, unsigned short stretch_flags,
+	int part, Pixmap dest, Window w, rectangle *full_g, rectangle *title_g,
+	ButtonState bs, rectangle *g)
+{
+	int x = 0;
+	int y = 0;
+	Pixmap bp = None;
+	pixmap_background_type bg;
+	rectangle dest_g;
+	dynamic_common_decorations *dcd;
+
+	dcd = &cd->dynamic_cd;
+	/* setup some default */
+	bg.pixmap.fra.mask = 0;
+	bg.pixmap.flags.is_stretched = 0;
+	bg.pixmap.flags.is_tiled = 0;
+	bg.flags.use_pixmap = 1;
+	bg.pixmap.p = bg.pixmap.alpha = bg.pixmap.shape = None;
+	bg.pixmap.g.x = 0;
+	bg.pixmap.g.y = 0;
+	dest_g.width = g->width + g->x;
+	dest_g.height = g->height + g->y;
+	dest_g.x = g->x;
+	dest_g.y = g->y;
+
+	if (solid_flags & (1 << part))
+	{
+		bg.flags.use_pixmap = 0;
+		bg.pixel = pixels[part];
+		border_fill_pixmap_background(dest, &dest_g, &bg, cd);
+		return;
+	}
+	else if (acs[part].cs >= 0)
+	{
+		Pixmap p = None;
+
+		bg.pixmap.fra.mask = FRAM_HAVE_ADDED_ALPHA;
+		bg.pixmap.fra.added_alpha_percent = acs[part].alpha_percent;
+		if (CSET_IS_TRANSPARENT_PR(acs[part].cs))
+		{
+			return;
+		}
+		if (CSET_IS_TRANSPARENT_ROOT(acs[part].cs))
+		{
+			p = CreateBackgroundPixmap(
+				dpy, w, g->width + g->x, g->height + g->y,
+				&Colorset[acs[part].cs], Pdepth, Scr.BordersGC,
+				False);
+			bg.pixmap.p = p;
+			bg.pixmap.depth = Pdepth;
+			bg.pixmap.g.width = g->width;
+			bg.pixmap.g.height = g->height;
+			bg.pixmap.g.x = g->x;
+			bg.pixmap.g.y = g->y;
+		}
+		else if (full_g != NULL)
+		{
+			bg.pixmap.p = border_get_bar_pixmaps(
+				dcd, full_g, bs, acs[part].cs, NULL, part,
+				(stretch_flags & (1 << part)), NULL);
+			if (bg.pixmap.p)
+			{
+				if (part != TBMP_RIGHT_MAIN)
+				{
+					/* left buttons offset */
+					x = title_g->x - full_g->x;
+					y = title_g->y - full_g->y;
+				}
+				bg.pixmap.g.width = full_g->width;
+				bg.pixmap.g.height = full_g->height;
+				bg.pixmap.flags.is_tiled = 1;
+				bg.pixmap.g.x = x;
+				bg.pixmap.g.y = y;
+				bg.pixmap.depth = Pdepth;
+			}
+			
+		}
+		if (!bg.pixmap.p)
+		{
+			int bg_w, bg_h;
+
+			p = CreateBackgroundPixmap(
+				dpy, w, g->width, g->height,
+				&Colorset[acs[part].cs], Pdepth, Scr.BordersGC,
+				False);
+			bg.pixmap.p = p;
+			GetWindowBackgroundPixmapSize(
+				&Colorset[acs[part].cs], g->width, g->height,
+				&bg_w, &bg_h);
+			bg.pixmap.g.width = bg_w;
+			bg.pixmap.g.height = bg_h;
+			bg.pixmap.depth = Pdepth;
+			bg.pixmap.flags.is_tiled = 1;
+		}
+		if (bg.pixmap.p)
+		{
+			border_fill_pixmap_background(dest, &dest_g, &bg, cd);	
+		}
+		if (p != bp)
+		{
+			XFreePixmap(dpy, p);
+		}
+	}
+	else if (src[part])
+	{
+		FvwmPicture *full_pic = NULL;
+		Pixmap p;
+
+		if (full_g != NULL)
+		{
+			p = border_get_bar_pixmaps(
+				dcd, full_g, bs, -1, src[part], part,
+				(stretch_flags & (1 << part)), &full_pic);
+			if (p && full_pic)
+			{
+				if (part != TBMP_RIGHT_MAIN)
+				{
+					/* left buttons offset */
+					x = title_g->x - full_g->x;
+					y = title_g->y - full_g->y;
+				}
+				bg.pixmap.p = full_pic->picture;
+				bg.pixmap.shape = full_pic->mask;
+				bg.pixmap.alpha = full_pic->alpha;
+				bg.pixmap.depth = full_pic->depth;
+				bg.pixmap.g.width = full_pic->width;
+				bg.pixmap.g.height = full_pic->height;
+				bg.pixmap.g.x = x;
+				bg.pixmap.g.y = y;
+			}
+		}
+		if (!bg.pixmap.p)
+		{
+			if (stretch_flags & (1 << part))
+			{
+				bg.pixmap.flags.is_stretched = 1;
+			}
+			else
+			{
+				bg.pixmap.flags.is_tiled = 1;
+			}
+			bg.pixmap.p = src[part]->picture;
+			bg.pixmap.shape = src[part]->mask;
+			bg.pixmap.alpha = src[part]->alpha;
+			bg.pixmap.depth = src[part]->depth;
+			bg.pixmap.g.width = src[part]->width;
+			bg.pixmap.g.height = src[part]->height;
+		}
+		if (bg.pixmap.p)
+		{
+			border_fill_pixmap_background(dest, &dest_g, &bg, cd);	
+		}
+	}
+
+	return;
+}
+
+static int border_mp_get_length(
+	titlebar_descr *td, FvwmPicture **pm, FvwmAcs *acs,
+	unsigned int solid_flags, int part)
+{
+	if (acs[part].cs >= 0 || (solid_flags & (1 << part)))
+	{
+		/* arbitrary */
+		if (td->has_vt)
+		{
+			return td->bar_g.width/2;
+		}
+		else
+		{
+			return td->bar_g.height/2;
+		}
+	}
+	if (pm[part] == NULL)
+	{
+		return 0;
+	}
+	else if (td->has_vt)
+	{
+		return pm[part]->height;
+	}
+	else
+	{
+		return pm[part]->width;
+	}
+}
+
+/* geometries relatively to the frame */
+static void border_mp_get_titlebar_descr(
+	FvwmWindow *fw, titlebar_descr *td, DecorFace *df)
+{
+	DecorFace *tsdf;
+	FvwmPicture **pm;
+	FvwmAcs *acs;
+	int add;
+	int left_of_text = 0;
+	int right_of_text = 0;
+	int left_end = 0;
+	int right_end = 0;
+	int before_space, after_space, under_offset, under_width;
+	Bool has_mp = False;
+	JustificationType just;
+	unsigned short sf;
+	int is_start = 0;
+
+	just = TB_JUSTIFICATION(GetDecor(fw, titlebar));
+	/* first compute under text width */
+	if (td->length > 0)
+	{
+		under_width = td->length + 2*TBMP_TITLE_PADDING;
+	}
+	else
+	{
+		under_width = 0;
+	}
+	if (under_width > fw->title_length)
+	{
+		under_width = fw->title_length;
+		td->offset = (fw->title_length - td->length) / 2;
+		just = JUST_CENTER;
+	}
+	for (tsdf = df; tsdf != NULL; tsdf = tsdf->next)
+	{
+		if (tsdf->style.face_type != MultiPixmap)
+		{
+			continue;
+		}
+		has_mp = True;
+		acs = tsdf->u.mp.acs;
+		pm = tsdf->u.mp.pixmaps;
+		sf = tsdf->u.mp.solid_flags;
+		add = border_mp_get_length(
+			td, pm, acs, sf, TBMP_LEFT_OF_TEXT);
+		if (add > left_of_text &&
+		    add + left_end + right_of_text + right_end + under_width +
+		    2*TBMP_MIN_RL_TITLE_LENGTH <= fw->title_length)
+		{
+			left_of_text = add;
+		}
+		add = border_mp_get_length(
+			td, pm, acs, sf, TBMP_RIGHT_OF_TEXT);
+		if (add > right_of_text &&
+		    add + left_end + left_of_text + right_end + under_width +
+		    2*TBMP_MIN_RL_TITLE_LENGTH <= fw->title_length)
+		{
+			right_of_text = add;
+		}
+		add = border_mp_get_length(
+			td, pm, acs, sf, TBMP_LEFT_END);
+		if (add > left_end &&
+		    add + right_of_text + left_of_text + right_end +
+		    under_width + 2*TBMP_MIN_RL_TITLE_LENGTH <= fw->title_length)
+		{
+			left_end = add;
+		}
+		add = border_mp_get_length(
+			td, pm, acs, sf, TBMP_RIGHT_END);
+		if (add > right_end &&
+		    add + right_of_text + left_of_text + left_end +
+		    under_width + 2*TBMP_MIN_RL_TITLE_LENGTH <= fw->title_length)
+		{
+			right_end = add;
+		}
+	}
+
+	if (!has_mp)
+	{
+		return;
+	}
+
+	switch (just)
+	{
+	case JUST_LEFT:
+		is_start = 1;
+		/* fall through */
+	case JUST_RIGHT:
+		if (td->has_vt &&
+		    fw->title_text_rotation == ROTATION_270)
+		{
+			is_start = !is_start;
+		}
+		if (is_start)
+		{
+			td->offset = max(
+				td->offset, left_of_text + left_end +
+				TBMP_MIN_RL_TITLE_LENGTH + TBMP_TITLE_PADDING);
+		}
+		else
+		{
+			td->offset = min(
+				td->offset, fw->title_length - (td->length +
+				right_of_text +
+				right_end + TBMP_MIN_RL_TITLE_LENGTH +
+				TBMP_TITLE_PADDING));
+		}
+		break;
+	case JUST_CENTER:
+	default:
+		break;
+	}
+
+	td->left_end_length = left_end;
+	td->left_of_text_length = left_of_text;
+	td->right_of_text_length = right_of_text;
+	td->right_end_length = right_end;
+
+	under_offset = td->offset - (under_width - td->length)/2;
+	before_space = under_offset;
+	if (td->has_vt)
+	{
+		after_space =
+			td->layout.title_g.height - before_space - under_width;
+	}
+	else
+	{
+		after_space =
+			td->layout.title_g.width - before_space - under_width;
+	}
+
+	if (td->has_vt)
+	{
+		td->under_text_g.width = td->bar_g.width;
+		td->under_text_g.height = under_width;
+		td->under_text_g.x = 0;
+		td->under_text_g.y = under_offset;
+	}
+	else
+	{
+		td->under_text_g.height = td->bar_g.height;
+		td->under_text_g.width = under_width;
+		td->under_text_g.x = under_offset;
+		td->under_text_g.y = 0;
+	}
+
+	td->full_left_main_g.x = td->bar_g.x;
+	td->full_left_main_g.y = td->bar_g.y;
+	td->left_main_g.x = 0;
+	td->left_main_g.y = 0;
+	if (td->has_vt)
+	{
+		td->full_left_main_g.width = td->bar_g.width;
+		td->full_left_main_g.height =
+			before_space + td->left_buttons_g.height;
+		td->left_main_g.width = td->bar_g.width;
+		td->left_main_g.height = before_space;
+	}
+	else
+	{
+		td->full_left_main_g.height = td->bar_g.height;
+		td->full_left_main_g.width =
+			before_space + td->left_buttons_g.width;
+		td->left_main_g.height = td->bar_g.height;
+		td->left_main_g.width = before_space;
+	}
+
+	if (td->has_vt)
+	{
+		td->full_right_main_g.x = td->bar_g.x;
+		td->full_right_main_g.y =
+			td->full_left_main_g.height + td->bar_g.y +
+			td->under_text_g.height;
+		td->full_right_main_g.width = td->bar_g.width;
+		td->full_right_main_g.height = after_space +
+			td->right_buttons_g.height;
+		td->right_main_g.width = td->bar_g.width;
+		td->right_main_g.height = after_space;
+		td->right_main_g.y =
+			td->under_text_g.y + td->under_text_g.height;
+		td->right_main_g.x = 0;
+	}
+	else
+	{
+		td->full_right_main_g.x =
+			td->full_left_main_g.width + td->bar_g.x +
+			td->under_text_g.width;
+		td->full_right_main_g.y = td->bar_g.y;
+		td->full_right_main_g.height = td->bar_g.height;
+		td->full_right_main_g.width = after_space +
+			td->right_buttons_g.width;
+		td->right_main_g.height = td->bar_g.height;
+		td->right_main_g.width = after_space;
+		td->right_main_g.x =
+			td->under_text_g.x + td->under_text_g.width;
+		td->right_main_g.y = 0;
+		
+	}
+}
+
+/* the returned geometries are relative to the titlebar (not the frame) */
+static void border_mp_get_extreme_geometry(
+	titlebar_descr *td, FvwmPicture **pm, FvwmAcs *acs, unsigned short sf,
+	rectangle *left_of_text_g, rectangle *right_of_text_g,
+	rectangle *left_end_g, rectangle *right_end_g)
+{
+	int left_of_text = 0;
+	int right_of_text = 0;
+	int left_end = 0;
+	int right_end = 0;
+
+	left_of_text = border_mp_get_length(
+		td, pm, acs, sf, TBMP_LEFT_OF_TEXT);
+	left_end = border_mp_get_length(
+		td, pm, acs, sf, TBMP_LEFT_END);
+	right_of_text = border_mp_get_length(
+		td, pm, acs, sf, TBMP_RIGHT_OF_TEXT);
+	right_end = border_mp_get_length(
+		td, pm, acs, sf, TBMP_RIGHT_END);
+
+	if (left_of_text > 0 && left_of_text <= td->left_of_text_length)
+	{
+		if (td->has_vt)
+		{
+			left_of_text_g->y = td->under_text_g.y - left_of_text;
+			left_of_text_g->x = 0;
+			left_of_text_g->height = left_of_text;
+			left_of_text_g->width = td->bar_g.width;
+		}
+		else
+		{
+			left_of_text_g->x = td->under_text_g.x - left_of_text;
+			left_of_text_g->y = 0;
+			left_of_text_g->width = left_of_text;
+			left_of_text_g->height = td->bar_g.height;
+		}
+	}
+	else
+	{
+		left_of_text_g->x = 0;
+		left_of_text_g->y = 0;
+		left_of_text_g->width = 0;
+		left_of_text_g->height = 0;
+	}
+
+	if (right_of_text > 0 && right_of_text <= td->right_of_text_length)
+	{
+		if (td->has_vt)
+		{
+			right_of_text_g->y =
+				td->under_text_g.y + td->under_text_g.height;
+			right_of_text_g->x = 0;
+			right_of_text_g->height = right_of_text;
+			right_of_text_g->width = td->bar_g.width;
+		}
+		else
+		{
+			right_of_text_g->x =
+				td->under_text_g.x + td->under_text_g.width;
+			right_of_text_g->y = 0;
+			right_of_text_g->width = right_of_text;
+			right_of_text_g->height = td->bar_g.height;
+		}
+	}
+	else
+	{
+		right_of_text_g->x = 0;
+		right_of_text_g->y = 0;
+		right_of_text_g->width = 0;
+		right_of_text_g->height = 0;
+	}
+
+	if (left_end > 0 && left_end <= td->left_end_length)
+	{
+		if (td->has_vt)
+		{
+			left_end_g->y = 0;
+			left_end_g->x = 0;
+			left_end_g->height = left_end;
+			left_end_g->width = td->bar_g.width;
+		}
+		else
+		{
+			left_end_g->x = 0;
+			left_end_g->y = 0;
+			left_end_g->width = left_end;
+			left_end_g->height = td->bar_g.height;
+		}
+	}
+	else
+	{
+		left_end_g->x = 0;
+		left_end_g->y = 0;
+		left_end_g->width = 0;
+		left_end_g->height = 0;
+	}
+
+	if (right_end > 0 && right_end <= td->right_end_length)
+	{
+		if (td->has_vt)
+		{
+			right_end_g->y =
+				td->layout.title_g.height - right_end;
+			right_end_g->x = 0;
+			right_end_g->height = right_end;
+			right_end_g->width = td->bar_g.width;
+		}
+		else
+		{
+			right_end_g->x =
+				td->layout.title_g.width - right_end;
+			right_end_g->y = 0;
+			right_end_g->width = right_end;
+			right_end_g->height = td->bar_g.height;
+		}
+	}
+	else
+	{
+		right_end_g->x = 0;
+		right_end_g->y = 0;
+		right_end_g->width = 0;
+		right_end_g->height = 0;
+	}
+
+	return;
+}
+
+static Bool border_mp_get_use_title_style_parts_and_geometry(
+	titlebar_descr *td, FvwmPicture **pm, FvwmAcs *acs,
+	unsigned short sf, int is_left, rectangle *g, int *part)
+{
+	rectangle *tmp_g = NULL;
+	Bool g_ok = True;
+
+	if (is_left && TBMP_HAS_PART(TBMP_LEFT_BUTTONS, pm, acs, sf))
+	{
+		*part = TBMP_LEFT_BUTTONS;
+		tmp_g = &td->left_buttons_g;
+	}
+	else if (!is_left && TBMP_HAS_PART(TBMP_RIGHT_BUTTONS, pm, acs, sf))
+	{
+		*part = TBMP_RIGHT_BUTTONS;
+		tmp_g = &td->right_buttons_g;
+	}
+	else if (is_left && TBMP_HAS_PART(TBMP_LEFT_MAIN, pm, acs, sf))
+	{
+		*part = TBMP_LEFT_MAIN;
+		tmp_g = &td->full_left_main_g;
+	}
+	else if (!is_left && TBMP_HAS_PART(TBMP_RIGHT_MAIN, pm, acs, sf))
+	{
+		*part = TBMP_RIGHT_MAIN;
+		tmp_g = &td->full_right_main_g;
+	}
+	else if (TBMP_HAS_PART(TBMP_MAIN, pm, acs, sf))
+	{
+		*part = TBMP_MAIN;
+		tmp_g = &(td->bar_g);
+	}
+	else
+	{
+		*part = TBMP_NONE;
+	}
+	if (g && tmp_g)
+	{
+		g->x = tmp_g->x;
+		g->y = tmp_g->y;
+		g->width = tmp_g->width;
+		g->height = tmp_g->height;
+		g_ok = True;
+	}
+
+	return g_ok;
+}
+
+/*  Redraws multi-pixmap titlebar (tril@igs.net) */
+static void border_mp_draw_mp_titlebar(
+	FvwmWindow *fw, titlebar_descr *td, DecorFace *df, Pixmap dest_pix,
+	Window w)
+{
+	FvwmPicture **pm;
+	FvwmAcs *acs;
+	Pixel *pixels;
+	unsigned short solid_flags;
+	unsigned short stretch_flags;
+	rectangle tmp_g, left_of_text_g,left_end_g,right_of_text_g,right_end_g;
+	dynamic_common_decorations *dcd;
+	ButtonState bs;
+
+	dcd = &(td->cd->dynamic_cd);
+	bs = td->tbstate.tstate;
+	pm = df->u.mp.pixmaps;
+	acs = df->u.mp.acs;
+	pixels = df->u.mp.pixels;
+	stretch_flags = df->u.mp.stretch_flags;
+	solid_flags = df->u.mp.solid_flags;
+	tmp_g.x = 0;
+	tmp_g.y = 0;
+	tmp_g.width = td->layout.title_g.width;
+	tmp_g.height = td->layout.title_g.height;
+
+	if (TBMP_HAS_PART(TBMP_MAIN, pm, acs, solid_flags))
+	{
+		border_mp_render_into_pixmap(
+			td->cd, pm, acs, pixels, solid_flags, stretch_flags,
+			TBMP_MAIN, dest_pix, w, &td->bar_g, &td->layout.title_g,
+			bs, &tmp_g);
+	}
+	else if (td->length <= 0)
+	{
+		border_mp_render_into_pixmap(
+			td->cd, pm, acs, pixels, solid_flags, stretch_flags,
+			TBMP_LEFT_MAIN, dest_pix, w, NULL, &td->layout.title_g,
+			bs, &tmp_g);
+	}
+
+	border_mp_get_extreme_geometry(
+		td, pm, acs, solid_flags, &left_of_text_g, &right_of_text_g,
+		&left_end_g, &right_end_g);
+
+	if (td->length > 0)
+	{
+		if (TBMP_HAS_PART(TBMP_LEFT_MAIN, pm, acs, solid_flags) &&
+		    td->left_main_g.width > 0 && td->left_main_g.height > 0)
+		{
+			border_mp_render_into_pixmap(
+				td->cd, pm, acs, pixels, solid_flags,
+				stretch_flags, TBMP_LEFT_MAIN, dest_pix, w,
+				&td->full_left_main_g, &td->layout.title_g, bs,
+				&td->left_main_g);
+		}
+		if (TBMP_HAS_PART(TBMP_RIGHT_MAIN, pm, acs, solid_flags) &&
+		    td->right_main_g.width > 0 && td->right_main_g.height > 0)
+		{
+			border_mp_render_into_pixmap(
+				td->cd, pm, acs, pixels, solid_flags,
+				stretch_flags, TBMP_RIGHT_MAIN, dest_pix, w,
+				&td->full_right_main_g, &td->layout.title_g, bs,
+				&td->right_main_g);
+		}
+		if (TBMP_HAS_PART(TBMP_UNDER_TEXT, pm, acs, solid_flags)  &&
+		    td->under_text_g.width > 0 && td->under_text_g.height > 0)
+		{
+			border_mp_render_into_pixmap(
+				td->cd, pm, acs, pixels, solid_flags,
+				stretch_flags, TBMP_UNDER_TEXT, dest_pix, w,
+				NULL, &td->layout.title_g, bs,
+				&td->under_text_g);
+		}
+		if (left_of_text_g.width > 0 && left_of_text_g.height > 0)
+		{
+			border_mp_render_into_pixmap(
+				td->cd, pm, acs, pixels, solid_flags,
+				stretch_flags, TBMP_LEFT_OF_TEXT, dest_pix, w,
+				NULL, &td->layout.title_g, bs,&left_of_text_g);
+		}
+		if (right_of_text_g.width > 0 && right_of_text_g.height > 0)
+		{
+			border_mp_render_into_pixmap(
+				td->cd, pm, acs, pixels, solid_flags,
+				stretch_flags, TBMP_RIGHT_OF_TEXT, dest_pix, w,
+				NULL, &td->layout.title_g, bs, &right_of_text_g);
+		}
+	}
+	if (left_end_g.width > 0 && left_end_g.height > 0)
+	{
+		border_mp_render_into_pixmap(
+			td->cd, pm, acs, pixels, solid_flags, stretch_flags,
+			TBMP_LEFT_END, dest_pix, w, NULL, &td->layout.title_g,
+			bs, &left_end_g);
+	}
+	if (right_end_g.width > 0 && right_end_g.height > 0)
+	{
+		border_mp_render_into_pixmap(
+			td->cd, pm, acs, pixels, solid_flags, stretch_flags,
+			TBMP_RIGHT_END, dest_pix, w, NULL, &td->layout.title_g,
+			bs, &right_end_g);
+	}
+
+	return;
+}
+
+/****************************************************************************
+ *
+ *  draw title bar and buttons
+ *
+ ****************************************************************************/
 static void border_draw_decor_to_pixmap(
 	FvwmWindow *fw, Pixmap dest_pix, Window w,
-	pixmap_background_type *solid_bg, rectangle *pixmap_g,
+	pixmap_background_type *solid_bg, rectangle *w_g,
 	DecorFace *df, titlebar_descr *td, ButtonState bs,
 	int use_title_style, int is_toggled, int left1right0)
 {
 	register DecorFaceType type = DFS_FACE_TYPE(df->style);
 	pixmap_background_type bg;
-	rectangle r;
+	rectangle dest_g;
 	FvwmPicture *p;
 	int border;
 	common_decorations_type *cd;
 
-	bg.pixmap.fra.mask = 0;
 	cd = td->cd;
+	/* setup some default */
+	bg.pixmap.fra.mask = 0;
+	bg.pixmap.flags.is_stretched = 0;
+	bg.pixmap.flags.is_tiled = 0;
+	bg.flags.use_pixmap = 0;
+	bg.pixmap.g.x = 0;
+	bg.pixmap.g.y = 0;
+
+	if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
+	{
+		border = 0;
+	}
+	else
+	{
+		border = HAS_MWM_BORDER(fw) ? 1 : 2;
+	}
+	dest_g.width = w_g->width;
+	dest_g.height = w_g->height;
+	dest_g.x = border;
+	dest_g.y = border;
 
 	switch (type)
 	{
@@ -1918,12 +2587,12 @@ static void border_draw_decor_to_pixmap(
 		break;
 	case SolidButton:
 		/* overwrite with the default background */
-		border_fill_pixmap_background(dest_pix, pixmap_g, solid_bg, cd);
+		border_fill_pixmap_background(dest_pix, w_g, solid_bg, cd);
 		break;
 	case VectorButton:
 	case DefaultVectorButton:
 		border_draw_vector_to_pixmap(
-			dest_pix, cd, is_toggled, &df->u.vector, pixmap_g);
+			dest_pix, cd, is_toggled, &df->u.vector, w_g);
 		break;
 	case MiniIconButton:
 	case PixmapButton:
@@ -1944,53 +2613,41 @@ static void border_draw_decor_to_pixmap(
 		{
 			p = df->u.p;
 		}
-		if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
-		{
-			border = 0;
-		}
-		else
-		{
-			border = HAS_MWM_BORDER(fw) ? 1 : 2;
-		}
-		r.width = pixmap_g->width;
-		r.height = pixmap_g->height;
-		r.x = border;
-		r.y = border;
 		switch (DFS_H_JUSTIFICATION(df->style))
 		{
 		case JUST_LEFT:
-			r.x = border;
+			dest_g.x = border;
 			break;
 		case JUST_RIGHT:
-			r.x = (int)(pixmap_g->width - p->width - border);
+			dest_g.x = (int)(w_g->width - p->width - border);
 			break;
 		case JUST_CENTER:
 		default:
 			/* round down */
-			r.x = (int)(pixmap_g->width - p->width) / 2;
+			dest_g.x = (int)(w_g->width - p->width) / 2;
 			break;
 		}
 		switch (DFS_V_JUSTIFICATION(df->style))
 		{
 		case JUST_TOP:
-			r.y = border;
+			dest_g.y = border;
 			break;
 		case JUST_BOTTOM:
-			r.y = (int)(pixmap_g->height - p->height - border);
+			dest_g.y = (int)(w_g->height - p->height - border);
 			break;
 		case JUST_CENTER:
 		default:
 			/* round down */
-			r.y = (int)(pixmap_g->height - p->height) / 2;
+			dest_g.y = (int)(w_g->height - p->height) / 2;
 			break;
 		}
-		if (r.x < border)
+		if (dest_g.x < border)
 		{
-			r.x = border;
+			dest_g.x = border;
 		}
-		if (r.y < border)
+		if (dest_g.y < border)
 		{
-			r.y = border;
+			dest_g.y = border;
 		}
 		bg.flags.use_pixmap = 1;
 		bg.pixmap.p = p->picture;
@@ -1999,69 +2656,20 @@ static void border_draw_decor_to_pixmap(
 		bg.pixmap.depth = p->depth;
 		bg.pixmap.g.width = p->width;
 		bg.pixmap.g.height = p->height;
-		bg.pixmap.g.x = 0;
-		bg.pixmap.g.y = 0;
-		bg.pixmap.flags.is_tiled = 0;
-		border_fill_pixmap_background(dest_pix, &r, &bg, cd);
+		border_fill_pixmap_background(dest_pix, &dest_g, &bg, cd);
 		break;
 	case TiledPixmapButton:
-#ifdef FANCY_TITLEBARS
-	case MultiPixmap: /* in case of UseTitleStyle */
-#endif
+	case StretchedPixmapButton:
 		if (type == TiledPixmapButton)
 		{
 			p = df->u.p;
-		}
-#ifdef FANCY_TITLEBARS
-		else
-		{
-			int is_left = left1right0;
-
-			if (HAS_VERTICAL_TITLE(fw) &&
-			    fw->title_text_rotation == ROTATION_270)
-			{
-				is_left = !is_left;
-			}
-			if (is_left && df->u.multi_pixmaps[TBP_LEFT_BUTTONS])
-			{
-				p = df->u.multi_pixmaps[TBP_LEFT_BUTTONS];
-			}
-			else if (!is_left &&
-				 df->u.multi_pixmaps[TBP_RIGHT_BUTTONS])
-			{
-				p = df->u.multi_pixmaps[TBP_RIGHT_BUTTONS];
-			}
-			else if (df->u.multi_pixmaps[TBP_BUTTONS])
-			{
-				p = df->u.multi_pixmaps[TBP_BUTTONS];
-			}
-			else if (is_left && df->u.multi_pixmaps[TBP_LEFT_MAIN])
-			{
-				p = df->u.multi_pixmaps[TBP_LEFT_MAIN];
-			}
-			else if (!is_left &&
-				 df->u.multi_pixmaps[TBP_RIGHT_MAIN])
-			{
-				p = df->u.multi_pixmaps[TBP_RIGHT_MAIN];
-			}
-			else
-			{
-				p = df->u.multi_pixmaps[TBP_MAIN];
-			}
-		}
-#endif
-		if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
-		{
-			border = 0;
+			bg.pixmap.flags.is_tiled = 1;
 		}
 		else
 		{
-			border = HAS_MWM_BORDER(fw) ? 1 : 2;
+			p = df->u.p;
+			bg.pixmap.flags.is_stretched = 1;
 		}
-		r.width = pixmap_g->width;
-		r.height = pixmap_g->height;
-		r.x = border;
-		r.y = border;
 		bg.flags.use_pixmap = 1;
 		bg.pixmap.p = p->picture;
 		bg.pixmap.shape = p->mask;
@@ -2069,11 +2677,147 @@ static void border_draw_decor_to_pixmap(
 		bg.pixmap.depth = p->depth;
 		bg.pixmap.g.width = p->width;
 		bg.pixmap.g.height = p->height;
-		bg.pixmap.g.x = 0;
-		bg.pixmap.g.y = 0;
-		bg.pixmap.flags.is_tiled = 1;
-		border_fill_pixmap_background(dest_pix, &r, &bg, cd);
+		border_fill_pixmap_background(dest_pix, &dest_g, &bg, cd);
 		break;
+	case MultiPixmap: /* for UseTitleStyle only */
+	{
+		int is_left = left1right0;
+		int part = TBMP_NONE;
+		int ap, cs;
+		unsigned int stretch;
+		Pixmap tmp = None;
+		FvwmPicture *tmp_pic = NULL;
+		FvwmPicture *full_pic = NULL;
+		rectangle g;
+		dynamic_common_decorations *dcd = &(cd->dynamic_cd);
+		FvwmPicture **pm;
+		FvwmAcs *acs;
+		Pixel *pixels;
+		unsigned short sf;
+
+		pm = df->u.mp.pixmaps;
+		acs = df->u.mp.acs;
+		pixels = df->u.mp.pixels;
+		sf = df->u.mp.solid_flags;
+		if (!border_mp_get_use_title_style_parts_and_geometry(
+			td, pm, acs, sf, is_left, &g, &part))
+		{
+			g.width = 0;
+			g.height = 0;
+			g.x = 0;
+			g.y = 0;
+		}
+		
+		if (part == TBMP_NONE)
+		{
+			break;
+		}
+		
+		if (sf & (1 << part))
+		{
+			bg.flags.use_pixmap = 0;
+			bg.pixel = pixels[part];
+			border_fill_pixmap_background(
+				dest_pix, &dest_g, &bg, cd);
+			break;
+		}
+		cs = acs[part].cs;
+		ap =  acs[part].alpha_percent;
+		if (CSET_IS_TRANSPARENT_PR(cs))
+		{
+			break;
+		}
+		if (cs >= 0)
+		{
+			bg.pixmap.fra.mask = FRAM_HAVE_ADDED_ALPHA;
+			bg.pixmap.fra.added_alpha_percent = ap;
+		}
+		stretch = !!(df->u.mp.stretch_flags & (1 << part));
+		bg.flags.use_pixmap = 1;
+		dest_g.x = 0;
+		dest_g.y = 0;
+
+		if (cs >= 0 && use_title_style && g.width > 0 && g.height > 0 &&
+		    !CSET_IS_TRANSPARENT_ROOT(cs) &&
+		    (bg.pixmap.p = border_get_bar_pixmaps(
+			    dcd, &g, bs, cs, NULL, part, stretch, NULL)) != None)
+		{
+			bg.pixmap.g.width = g.width;
+			bg.pixmap.g.height = g.height;
+			bg.pixmap.flags.is_tiled = 1;
+			bg.pixmap.g.x = w_g->x - g.x;
+			bg.pixmap.g.y = w_g->y - g.y;
+			bg.pixmap.shape = None;
+			bg.pixmap.alpha = None;
+			bg.pixmap.depth = Pdepth;
+		}
+		else if (cs >= 0)
+		{
+			int bg_w, bg_h;
+
+			tmp = CreateBackgroundPixmap(
+				dpy, w, w_g->width,
+				w_g->height, &Colorset[cs],
+				Pdepth, Scr.BordersGC, False);
+			bg.pixmap.p = tmp;
+			GetWindowBackgroundPixmapSize(
+				&Colorset[cs], w_g->width,
+				w_g->height, &bg_w, &bg_h);
+			bg.pixmap.g.width = bg_w;
+			bg.pixmap.g.height = bg_h;
+			bg.pixmap.shape = None;
+			bg.pixmap.alpha = None;
+			bg.pixmap.depth = Pdepth;
+			bg.pixmap.flags.is_tiled = 1;
+		}
+		else if (pm[part] && g.width > 0 && g.height > 0 &&
+			 border_get_bar_pixmaps(
+				 dcd, &g, bs, -1, pm[part], part, stretch,
+				 &full_pic) != None && full_pic)
+		{
+			bg.pixmap.p = full_pic->picture;
+			bg.pixmap.shape = full_pic->mask;
+			bg.pixmap.alpha = full_pic->alpha;
+			bg.pixmap.depth = full_pic->depth;
+			bg.pixmap.g.width = full_pic->width;
+			bg.pixmap.g.height = full_pic->height;
+			bg.pixmap.g.x = w_g->x - g.x;
+			bg.pixmap.g.y = w_g->y - g.y;
+		}
+		else if (pm[part])
+		{
+			p = pm[part];
+			if (df->u.mp.stretch_flags & (1 << part))
+			{
+				bg.pixmap.flags.is_stretched = 1;
+			}
+			else
+			{
+				bg.pixmap.flags.is_tiled = 1;
+			}
+			bg.pixmap.p = p->picture;
+			bg.pixmap.shape = p->mask;
+			bg.pixmap.alpha = p->alpha;
+			bg.pixmap.depth = p->depth;
+			bg.pixmap.g.width = p->width;
+			bg.pixmap.g.height = p->height;
+		}
+		else
+		{
+			/* should not happen */
+			return;
+		}
+		border_fill_pixmap_background(dest_pix, &dest_g, &bg, cd);
+		if (tmp != None)
+		{
+			XFreePixmap(dpy, tmp);
+		}
+		if (tmp_pic)
+		{
+			PDestroyFvwmPicture(dpy, tmp_pic);
+		}
+		break;
+	}
 	case ColorsetButton:
 	{
 		colorset_t *cs_t = &Colorset[df->u.acs.cs];
@@ -2085,69 +2829,28 @@ static void border_draw_decor_to_pixmap(
 		{
 			break;
 		}
-		if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
-		{
-			border = 0;
-		}
-		else
-		{
-			border = HAS_MWM_BORDER(fw) ? 1 : 2;
-		}
-		r.width = pixmap_g->width;
-		r.height = pixmap_g->height;
-		/* FIXME: needs this for some gradients */
-		r.x = 0;
-		r.y = 0;
+		dest_g.x = 0;
+		dest_g.y = 0;
 		if (use_title_style &&
 		    !CSET_IS_TRANSPARENT_ROOT(cs) &&
 		    (bg.pixmap.p = border_get_bar_pixmaps(
-			    &(cd->dynamic_cd), &(td->bar_g), bs, cs)) != None)
+			    &(cd->dynamic_cd), &(td->bar_g), bs, cs, NULL,
+			    TBMP_NONE, 0, NULL))
+		    != None)
 		{
-			/* FIXME: alpha not applied "PGraphicsRenderPixmap"
-			 * is broken!! */
-#if 0
-			GetWindowBackgroundPixmapSize(
-				cs_t, td->bar_g.width, td->bar_g.height,
-				&bg_w, &bg_h);
-			bg.pixmap.g.width = bg_w;
-			bg.pixmap.g.height = bg_h;
-			bg.pixmap.g.x = (pixmap_g->x <= bg_w)?
-				pixmap_g->x - td->bar_g.x : 0;
-			bg.pixmap.g.y = (pixmap_g->y <= bg_h)?
-				pixmap_g->y - td->bar_g.y : 0;
-#else
-			XGCValues xgcv;
-
-			tmp = XCreatePixmap(
-				dpy, w, pixmap_g->width, pixmap_g->height,
-				Pdepth);
-			xgcv.fill_style = FillTiled;
-			xgcv.tile = bg.pixmap.p;
-			xgcv.ts_x_origin = - pixmap_g->x + td->bar_g.x;
-			xgcv.ts_y_origin = -pixmap_g->y + td->bar_g.y;
-			XChangeGC(
-				dpy, Scr.BordersGC, GCTile | GCTileStipXOrigin |
-				GCTileStipYOrigin | GCFillStyle, &xgcv);
-			XFillRectangle(
-				dpy, tmp, Scr.BordersGC, 0, 0,
-				pixmap_g->width, pixmap_g->height);
-			xgcv.fill_style = FillSolid;
-			XChangeGC(dpy, Scr.BordersGC, GCFillStyle, &xgcv);
-			bg.pixmap.p = tmp;
-			bg.pixmap.g.width = pixmap_g->width;
-			bg.pixmap.g.height = pixmap_g->height;
-			bg.pixmap.g.x = 0;
-			bg.pixmap.g.y = 0;
-#endif
+			bg.pixmap.g.width = td->bar_g.width;
+			bg.pixmap.g.height = td->bar_g.height;
+			bg.pixmap.g.x = w_g->x - td->bar_g.x;
+			bg.pixmap.g.y = w_g->y - td->bar_g.y;
 		}
 		else
 		{
 			tmp = CreateBackgroundPixmap(
-				dpy, w, pixmap_g->width, pixmap_g->height,
+				dpy, w, w_g->width, w_g->height,
 				cs_t, Pdepth, Scr.BordersGC, False);
 			bg.pixmap.p = tmp;
 			GetWindowBackgroundPixmapSize(
-				cs_t, pixmap_g->width, pixmap_g->height,
+				cs_t, w_g->width, w_g->height,
 				&bg_w, &bg_h);
 			bg.pixmap.g.width = bg_w;
 			bg.pixmap.g.height = bg_h;
@@ -2161,7 +2864,7 @@ static void border_draw_decor_to_pixmap(
 		bg.pixmap.flags.is_tiled = 1;
 		bg.pixmap.fra.mask = FRAM_HAVE_ADDED_ALPHA;
 		bg.pixmap.fra.added_alpha_percent = df->u.acs.alpha_percent;
-		border_fill_pixmap_background(dest_pix, &r, &bg, cd);
+		border_fill_pixmap_background(dest_pix, &dest_g, &bg, cd);
 		if (tmp)
 		{
 			XFreePixmap(dpy, tmp);
@@ -2175,7 +2878,7 @@ static void border_draw_decor_to_pixmap(
 			df->u.grad.gradient_type, 0, 0, df->u.grad.npixels,
 			df->u.grad.xcs, df->u.grad.do_dither,
 			&df->u.grad.d_pixels, &df->u.grad.d_npixels,
-			dest_pix, 0, 0, pixmap_g->width, pixmap_g->height, NULL);
+			dest_pix, 0, 0, w_g->width, w_g->height, NULL);
 
 		break;
 
@@ -2201,6 +2904,7 @@ static void border_set_button_pixmap(
 	GC rgc;
 	GC sgc;
 	Bool free_bg_pixmap = False;
+	rectangle pix_g;
 
 	/* prepare variables */
 	mask = (1 << button);
@@ -2217,14 +2921,16 @@ static void border_set_button_pixmap(
 		/* fill with the button background colour */
 		bg.flags.use_pixmap = 0;
 		bg.pixel = td->cd->back_color;
-		/* FIXME: geometry ?? */
-		border_fill_pixmap_background(dest_pix, button_g, &bg, td->cd);
+		pix_g.x = 0;
+		pix_g.y = 0;
+		pix_g.width = button_g->width;
+		pix_g.height = button_g->height;
+		border_fill_pixmap_background(dest_pix,&pix_g, &bg, td->cd);
 	}
 	else
 	{
 		/* draw pixmap background inherited from border style */
 		rectangle relative_g;
-		rectangle pix_g;
 
 		relative_g.width = td->frame_g.width;
 		relative_g.height = td->frame_g.height;
@@ -2322,10 +3028,10 @@ static void border_draw_one_button(
 }
 
 static void border_draw_title_stick_lines(
-	FvwmWindow *fw, title_draw_descr *tdd, Pixmap dest_pix)
+	FvwmWindow *fw, titlebar_descr *td, title_draw_descr *tdd,
+	Pixmap dest_pix)
 {
 	int i;
-	int has_vt;
 	int num;
 	int min;
 	int max;
@@ -2333,32 +3039,65 @@ static void border_draw_title_stick_lines(
 	int left_w;
 	int right_x;
 	int right_w;
+	int under_text_length = 0;
+	int under_text_offset = 0;
+	int right_length = 0;
+	int left_length = 0;
 
 	if (!IS_STICKY_ACROSS_PAGES(fw) && !IS_STICKY_ACROSS_DESKS(fw) &&
 	    !HAS_STIPPLED_TITLE(fw))
 	{
 		return;
 	}
-	has_vt = HAS_VERTICAL_TITLE(fw);
+	if (td->has_vt && td->under_text_g.height > 0)
+	{
+		under_text_length = td->under_text_g.height;
+		under_text_offset = td->under_text_g.y;
+		left_length = td->left_main_g.height - td->left_of_text_length
+			- td->left_end_length;
+		right_length = td->right_main_g.height - td->right_of_text_length
+			- td->right_end_length;
+		
+	}
+	else if (!td->has_vt && td->under_text_g.width > 0)
+	{
+		under_text_length = td->under_text_g.width;
+		under_text_offset = td->under_text_g.x;
+		left_length = td->left_main_g.width - td->left_of_text_length
+			- td->left_end_length;
+		right_length = td->right_main_g.width - td->right_of_text_length
+			- td->right_end_length;
+	}
 	num = (int)(fw->title_thickness / WINDOW_TITLE_STICK_VERT_DIST / 2) *
 		2 - 1;
 	min = fw->title_thickness / 2 - num * 2 + 1;
 	max = fw->title_thickness / 2 + num * 2 -
 		WINDOW_TITLE_STICK_VERT_DIST + 1;
-	left_x = WINDOW_TITLE_STICK_OFFSET;
-	left_w = tdd->offset - left_x - WINDOW_TITLE_TO_STICK_GAP;
-	right_x = tdd->offset + tdd->length + WINDOW_TITLE_TO_STICK_GAP - 1;
-	right_w = fw->title_length - right_x - WINDOW_TITLE_STICK_OFFSET;
+	left_x = WINDOW_TITLE_STICK_OFFSET + td->left_end_length;
+	left_w = ((under_text_length == 0)? td->offset:under_text_offset)
+		- left_x - WINDOW_TITLE_TO_STICK_GAP - td->left_of_text_length;
+	right_x = ((under_text_length == 0)?
+		   td->offset + td->length :
+		   under_text_offset + under_text_length)
+		+ td->right_of_text_length + WINDOW_TITLE_TO_STICK_GAP - 1;
+	right_w = fw->title_length - right_x - WINDOW_TITLE_STICK_OFFSET
+		- td->right_end_length;
 	/* an odd number of lines every WINDOW_TITLE_STICK_VERT_DIST pixels */
 	if (left_w < WINDOW_TITLE_STICK_MIN_WIDTH)
 	{
-		left_x = 0;
+		left_x = td->left_end_length +
+			((left_length > WINDOW_TITLE_STICK_MIN_WIDTH)?
+			 (left_length - WINDOW_TITLE_STICK_MIN_WIDTH)/2 : 0);
 		left_w = WINDOW_TITLE_STICK_MIN_WIDTH;
 	}
 	if (right_w < WINDOW_TITLE_STICK_MIN_WIDTH)
 	{
 		right_w = WINDOW_TITLE_STICK_MIN_WIDTH;
-		right_x = fw->title_length - WINDOW_TITLE_STICK_MIN_WIDTH - 1;
+		right_x = fw->title_length - WINDOW_TITLE_STICK_MIN_WIDTH - 1
+			- td->right_end_length -
+			((right_length > WINDOW_TITLE_STICK_MIN_WIDTH)?
+			 (right_length -
+			  WINDOW_TITLE_STICK_MIN_WIDTH)/2 : 0);
 	}
 	for (i = min; i <= max; i += WINDOW_TITLE_STICK_VERT_DIST)
 	{
@@ -2366,16 +3105,16 @@ static void border_draw_title_stick_lines(
 		{
 			do_relieve_rectangle(
 				dpy, dest_pix,
-				SWAP_ARGS(has_vt, left_x, i),
-				SWAP_ARGS(has_vt, left_w, 1),
+				SWAP_ARGS(td->has_vt, left_x, i),
+				SWAP_ARGS(td->has_vt, left_w, 1),
 				tdd->sgc, tdd->rgc, 1, False);
 		}
 		if (right_w > 0)
 		{
 			do_relieve_rectangle(
 				dpy, dest_pix,
-				SWAP_ARGS(has_vt, right_x, i),
-				SWAP_ARGS(has_vt, right_w, 1),
+				SWAP_ARGS(td->has_vt, right_x, i),
+				SWAP_ARGS(td->has_vt, right_w, 1),
 				tdd->sgc, tdd->rgc, 1, False);
 		}
 	}
@@ -2392,7 +3131,7 @@ static void border_draw_title_mono(
 	has_vt = HAS_VERTICAL_TITLE(fw);
 	XFillRectangle(
 		dpy, dest_pix, td->cd->relief_gc,
-		tdd->offset - 2, 0, tdd->length+4, fw->title_thickness);
+		td->offset - 2, 0, td->length+4, fw->title_thickness);
 	if (fw->visible_name != (char *)NULL)
 	{
 		FlocaleDrawString(dpy, fw->title_font, fstr, 0);
@@ -2401,19 +3140,19 @@ static void border_draw_title_mono(
 	 * title goes, so that its more legible. For color, no need */
 	do_relieve_rectangle(
 		dpy, dest_pix, 0, 0,
-		SWAP_ARGS(has_vt, tdd->offset - 3,
+		SWAP_ARGS(has_vt, td->offset - 3,
 			  fw->title_thickness - 1),
 		tdd->rgc, tdd->sgc, td->cd->relief_width, False);
 	do_relieve_rectangle(
 		dpy, dest_pix,
-		SWAP_ARGS(has_vt, tdd->offset + tdd->length + 2, 0),
-		SWAP_ARGS(has_vt, fw->title_length - tdd->length -
-			  tdd->offset - 3, fw->title_thickness - 1),
+		SWAP_ARGS(has_vt, td->offset + td->length + 2, 0),
+		SWAP_ARGS(has_vt, fw->title_length - td->length -
+			  td->offset - 3, fw->title_thickness - 1),
 		tdd->rgc, tdd->sgc, td->cd->relief_width, False);
 	XDrawLine(
 		dpy, dest_pix, tdd->sgc,
-		SWAP_ARGS(has_vt, 0, tdd->offset + tdd->length + 1),
-		SWAP_ARGS(has_vt, tdd->offset + tdd->length + 1,
+		SWAP_ARGS(has_vt, 0, td->offset + td->length + 1),
+		SWAP_ARGS(has_vt, td->offset + td->length + 1,
 			  fw->title_thickness));
 
 	return;
@@ -2434,7 +3173,7 @@ static void border_draw_title_relief(
 		do_relieve_rectangle(
 			dpy, dest_pix, 0, 0,
 			SWAP_ARGS(
-				tdd->has_vt, fw->title_length - 1,
+				td->has_vt, fw->title_length - 1,
 				fw->title_thickness - 1),
 			(reverse) ? tdd->sgc : tdd->rgc,
 			(reverse) ? tdd->rgc : tdd->sgc, td->cd->relief_width,
@@ -2449,9 +3188,8 @@ static void border_draw_title_relief(
 }
 
 static void border_draw_title_deep(
-	FvwmWindow *fw, titlebar_descr *td,
-	title_draw_descr *tdd, FlocaleWinString *fstr, Pixmap dest_pix,
-	Window w)
+	FvwmWindow *fw, titlebar_descr *td, title_draw_descr *tdd,
+	FlocaleWinString *fstr, Pixmap dest_pix, Window w)
 {
 	DecorFace *df;
 	pixmap_background_type bg;
@@ -2459,10 +3197,19 @@ static void border_draw_title_deep(
 	bg.flags.use_pixmap = 0;
 	for (df = tdd->df; df != NULL; df = df->next)
 	{
-		bg.pixel = df->u.back;
-		border_draw_decor_to_pixmap(
-			fw, dest_pix, w, &bg, &td->layout.title_g, df, td,
-			td->tbstate.tstate, True, tdd->is_toggled, 1);
+		if (df->style.face_type == MultiPixmap)
+		{
+			border_mp_draw_mp_titlebar(
+				fw, td, df, dest_pix, w);
+		}
+		else
+		{
+			bg.pixel = df->u.back;
+			border_draw_decor_to_pixmap(
+				fw, dest_pix, w, &bg, &td->layout.title_g, df,
+				td, td->tbstate.tstate, True, tdd->is_toggled,
+				1);
+		}
 	}
 	FlocaleDrawString(dpy, fw->title_font, &tdd->fstr, 0);
 
@@ -2474,10 +3221,8 @@ static void border_get_titlebar_draw_descr(
 	Pixmap dest_pix)
 {
 	rectangle *title_g;
-	int is_start = 0;
 
 	memset(tdd, 0, sizeof(*tdd));
-	tdd->has_vt = HAS_VERTICAL_TITLE(fw);
 	/* prepare the gcs and variables */
 	if (td->tbstate.is_title_pressed)
 	{
@@ -2491,66 +3236,22 @@ static void border_get_titlebar_draw_descr(
 	}
 	NewFontAndColor(fw->title_font, td->cd->fore_color, td->cd->back_color);
 	title_g = &td->layout.title_g;
-	/* get the title string length and position */
-	if (fw->visible_name != (char *)NULL)
-	{
-		tdd->length = FlocaleTextWidth(
-			fw->title_font, fw->visible_name,
-			(tdd->has_vt) ? -strlen(fw->visible_name) :
-			strlen(fw->visible_name));
-		if (tdd->length > fw->title_length - 4)
-		{
-			tdd->length = fw->title_length - 4;
-		}
-		if (tdd->length < 0)
-		{
-			tdd->length = 0;
-		}
-	}
-	else
-	{
-		tdd->length = 0;
-	}
 	tdd->tstyle = &TB_STATE(
 		GetDecor(fw, titlebar))[td->tbstate.tstate].style;
 	tdd->df = &TB_STATE(GetDecor(fw, titlebar))[td->tbstate.tstate];
-	switch (TB_JUSTIFICATION(GetDecor(fw, titlebar)))
-	{
-	case JUST_LEFT:
-		is_start = 1;
-		/* fall through */
-	case JUST_RIGHT:
-		if (tdd->has_vt && fw->title_text_rotation == ROTATION_270)
-		{
-			is_start = !is_start;
-		}
-		if (is_start)
-		{
-			tdd->offset = WINDOW_TITLE_TEXT_OFFSET;
-		}
-		else
-		{
-			tdd->offset = fw->title_length - tdd->length -
-				WINDOW_TITLE_TEXT_OFFSET;
-		}
-		break;
-	case JUST_CENTER:
-	default:
-		tdd->offset = (fw->title_length - tdd->length) / 2;
-		break;
-	}
+
 	/* fetch the title string */
 	tdd->fstr.str = fw->visible_name;
 	tdd->fstr.win = dest_pix;
 	tdd->fstr.flags.text_rotation = fw->title_text_rotation;
-	if (tdd->has_vt)
+	if (td->has_vt)
 	{
-		tdd->fstr.y = tdd->offset;
+		tdd->fstr.y = td->offset;
 		tdd->fstr.x = fw->title_text_offset + 1;
 	}
 	else
 	{
-		tdd->fstr.x = tdd->offset;
+		tdd->fstr.x = td->offset;
 		tdd->fstr.y = fw->title_text_offset + 1;
 	}
 	if (td->cd->cs >= 0)
@@ -2570,6 +3271,7 @@ static void border_set_title_pixmap(
 	title_draw_descr tdd;
 	FlocaleWinString fstr;
 	Bool free_bg_pixmap = False;
+	rectangle pix_g;
 
 	border_get_titlebar_draw_descr(fw, td, &tdd, dest_pix);
 	/* prepare background, either from the window colour or from the
@@ -2579,15 +3281,17 @@ static void border_set_title_pixmap(
 		/* fill with the button background colour */
 		bg.flags.use_pixmap = 0;
 		bg.pixel = td->cd->back_color;
-		/* FIXME: geometry ?? */
+		pix_g.x = 0;
+		pix_g.y = 0;
+		pix_g.width = td->layout.title_g.width;
+		pix_g.height = td->layout.title_g.height;
 		border_fill_pixmap_background(
-			dest_pix, &td->layout.title_g, &bg, td->cd);
+			dest_pix, &pix_g, &bg, td->cd);
 	}
 	else
 	{
 		/* draw pixmap background inherited from border style */
 		rectangle relative_g;
-		rectangle pix_g;
 
 		relative_g.width = td->frame_g.width;
 		relative_g.height = td->frame_g.height;
@@ -2616,18 +3320,12 @@ static void border_set_title_pixmap(
 	{
 		border_draw_title_mono(fw, td, &tdd, &fstr, dest_pix);
 	}
-#ifdef FANCY_TITLEBARS
-	else if (tdd.df->style.face_type == MultiPixmap)
-	{
-		border_draw_multi_pixmap_titlebar(fw, td, tdd.df, dest_pix);
-	}
-#endif
 	else
 	{
 		border_draw_title_deep(fw, td, &tdd, &fstr, dest_pix, w);
 	}
 	border_draw_title_relief(fw, td, &tdd, dest_pix);
-	border_draw_title_stick_lines(fw, &tdd, dest_pix);
+	border_draw_title_stick_lines(fw, td, &tdd, dest_pix);
 
 	return;
 }
@@ -2693,14 +3391,15 @@ static void border_setup_use_title_style(
 	DecorFace *df, *tsdf;
 	ButtonState bs, tsbs;
 
-	/* use a full bar pixmap (for Colorset) under certain condition:
-	 * - for the buttons with use title style
+	/* use a full bar pixmap (for Colorset) or non window size pixmaps
+	 * (for MultiPixmap) under certain condition:
+	 * - for the buttons which use title style
 	 * - for title which have a button with UseTitle style
 	 */
+	tsbs = td->tbstate.tstate;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
 		bs = td->tbstate.bstate[i];
-		tsbs = td->tbstate.tstate;
 		df = &TB_STATE(GetDecor(fw, buttons[i]))[bs];
 		tsdf = &TB_STATE(GetDecor(fw, buttons[i]))[tsbs];
 		if (FW_W_BUTTON(fw, i) != None)
@@ -2708,14 +3407,14 @@ static void border_setup_use_title_style(
 			if (DFS_USE_TITLE_STYLE(df->style))
 			{
 				border_setup_bar_pixmaps(
-					&(td->cd->dynamic_cd),
+					td, &(td->cd->dynamic_cd),
 					&TB_STATE(GetDecor(fw, titlebar))[bs],
 					bs);
 			}
 			if (DFS_USE_TITLE_STYLE(tsdf->style))
 			{
 				border_setup_bar_pixmaps(
-					&(td->cd->dynamic_cd),
+					td, &(td->cd->dynamic_cd),
 					&TB_STATE(GetDecor(fw, titlebar))[tsbs],
 					tsbs);
 			}
@@ -2791,7 +3490,10 @@ static window_parts border_get_titlebar_descr(
 	titlebar_descr *ret_td)
 {
 	window_parts draw_parts;
-
+	int i;
+	DecorFace *df;
+	int is_start = 0;
+	JustificationType just;
 	ret_td->cd = cd;
 	ret_td->frame_g = *new_g;
 	if (old_g == NULL)
@@ -2801,8 +3503,10 @@ static window_parts border_get_titlebar_descr(
 	frame_get_titlebar_dimensions(fw, old_g, NULL, &ret_td->old_layout);
 	frame_get_titlebar_dimensions(fw, new_g, NULL, &ret_td->layout);
 
+	ret_td->has_vt = HAS_VERTICAL_TITLE(fw);
+
 	/* geometry of the title bar title + buttons */
-	if (!HAS_VERTICAL_TITLE(fw))
+	if (!ret_td->has_vt)
 	{
 		ret_td->bar_g.width = new_g->width - 2 * fw->boundary_width;
 		ret_td->bar_g.height = ret_td->layout.title_g.height;
@@ -2814,11 +3518,139 @@ static window_parts border_get_titlebar_descr(
 	}
 	ret_td->bar_g.y = fw->boundary_width;
 	ret_td->bar_g.x = fw->boundary_width;
+	
+	/* left buttons geometry */
+	if (ret_td->has_vt)
+	{
+		ret_td->left_buttons_g.height = 0;
+		ret_td->left_buttons_g.width = ret_td->bar_g.width;
+	}
+	else
+	{
+		ret_td->left_buttons_g.height = ret_td->bar_g.height;
+		ret_td->left_buttons_g.width = 0;
+	}
+	ret_td->left_buttons_g.y = fw->boundary_width;
+	ret_td->left_buttons_g.x = fw->boundary_width;
+
+	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+	{
+		if (FW_W_BUTTON(fw, i) == None)
+		{
+			continue;
+		}
+		if (ret_td->has_vt)
+		{
+			ret_td->left_buttons_g.height +=
+				ret_td->layout.button_g[i].height;
+		}
+		else
+		{
+			ret_td->left_buttons_g.width += 
+				ret_td->layout.button_g[i].width;
+		}
+	}
+
+	/* right buttons geometry */
+	if (ret_td->has_vt)
+	{
+		ret_td->right_buttons_g.height =
+			ret_td->bar_g.height - ret_td->left_buttons_g.height
+			- ret_td->layout.title_g.height;
+		ret_td->right_buttons_g.width = ret_td->bar_g.width;
+		ret_td->right_buttons_g.y = ret_td->layout.title_g.y +
+			ret_td->layout.title_g.height;
+		ret_td->right_buttons_g.x = fw->boundary_width;
+	}
+	else
+	{
+		ret_td->right_buttons_g.height = ret_td->bar_g.height;
+		ret_td->right_buttons_g.width =
+			ret_td->bar_g.width - ret_td->left_buttons_g.width
+			- ret_td->layout.title_g.width;
+		ret_td->right_buttons_g.y = fw->boundary_width;
+		ret_td->right_buttons_g.x = ret_td->layout.title_g.x +
+			ret_td->layout.title_g.width;
+	}
 
 	/* initialise flags */
 	border_get_titlebar_descr_state(
 		fw, pressed_parts, pressed_button, clear_parts, do_hilight,
 		&(ret_td->tbstate));
+
+	/* get the title string length and position 
+	 * This is not in "tdd" (titlebar_draw_descr), because these are needed
+	 * to draw the buttons with UseTitleStyle */
+	just = TB_JUSTIFICATION(GetDecor(fw, titlebar));
+	if (fw->visible_name != (char *)NULL)
+	{
+		ret_td->length = FlocaleTextWidth(
+			fw->title_font, fw->visible_name,
+			(ret_td->has_vt) ? -strlen(fw->visible_name) :
+			strlen(fw->visible_name));
+		if (ret_td->length > fw->title_length -
+		    2*MIN_WINDOW_TITLE_TEXT_OFFSET)
+		{
+			ret_td->length = fw->title_length -
+				2*MIN_WINDOW_TITLE_TEXT_OFFSET;
+			just = JUST_CENTER;
+		}
+		if (ret_td->length < 0)
+		{
+			ret_td->length = 0;
+		}
+	}
+	else
+	{
+		ret_td->length = 0;
+	}
+	if (ret_td->length == 0)
+	{
+		just = JUST_CENTER;
+	}
+	df = &TB_STATE(GetDecor(fw, titlebar))[ret_td->tbstate.tstate];
+	switch (just)
+	{
+	case JUST_LEFT:
+		is_start = 1;
+		/* fall through */
+	case JUST_RIGHT:
+		if (ret_td->has_vt && fw->title_text_rotation == ROTATION_270)
+		{
+			is_start = !is_start;
+		}
+		if (is_start)
+		{
+			if (WINDOW_TITLE_TEXT_OFFSET + ret_td->length <=
+			    fw->title_length)
+			{
+				ret_td->offset = WINDOW_TITLE_TEXT_OFFSET;
+			}
+			else
+			{
+				ret_td->offset =
+					fw->title_length - ret_td->length;
+			}
+		}
+		else
+		{
+			ret_td->offset = fw->title_length - ret_td->length -
+				WINDOW_TITLE_TEXT_OFFSET;
+		}
+		break;
+	case JUST_CENTER:
+	default:
+		ret_td->offset = (fw->title_length - ret_td->length) / 2;
+		break;
+	}
+
+	if (ret_td->offset < MIN_WINDOW_TITLE_TEXT_OFFSET)
+	{
+		ret_td->offset = MIN_WINDOW_TITLE_TEXT_OFFSET;
+	}
+
+	/* setup MultiPixmap */
+	border_mp_get_titlebar_descr(fw, ret_td, df);
 
 	/* determine the parts to draw */
 	draw_parts = border_get_tb_parts_to_draw(
@@ -3365,6 +4197,20 @@ unsigned int border_get_transparent_decorations_part(FvwmWindow *fw)
 		{
 			draw_parts |= PART_TITLE;
 			break;
+		}
+		else if (DFS_FACE_TYPE(tdf->style) == MultiPixmap)
+		{
+			int i;
+
+			for (i = 0; i < TBMP_NUM_PIXMAPS; i++)
+			{
+				if (CSET_IS_TRANSPARENT_ROOT(
+					tdf->u.mp.acs[i].cs))
+				{
+					draw_parts |= PART_TITLE;
+					break;
+				}
+			}
 		}
 	}
 

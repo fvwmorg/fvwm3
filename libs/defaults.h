@@ -187,6 +187,12 @@
 #define WINDOW_TITLE_TO_STICK_GAP     4 /* pixels */
 /* gap between border of title window and text */
 #define WINDOW_TITLE_TEXT_OFFSET     10 /* pixels */
+/* minimal gap between border of title window and text */
+#define MIN_WINDOW_TITLE_TEXT_OFFSET  2 /* pixels */
+/* left and right padding for the text into under text area (MultiPixmap)*/
+#define TBMP_TITLE_PADDING            5
+/* minimal left and right area vs left/right of text/end (MultiPixmap) */
+#define TBMP_MIN_RL_TITLE_LENGTH      7
 /* maximum number of segemnts in a vector button */
 #define MAX_TITLE_BUTTON_VECTOR_LINES 10000
 

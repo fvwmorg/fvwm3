@@ -54,13 +54,40 @@
 #define COLORMAP_FOLLOWS_MOUSE 1 /* default */
 #define COLORMAP_FOLLOWS_FOCUS 2
 
-#ifdef FANCY_TITLEBARS
-#define TITLE_PADDING 5
-enum tb_pixmap_enum {TBP_MAIN, TBP_LEFT_MAIN, TBP_RIGHT_MAIN, TBP_UNDER_TEXT,
-		     TBP_LEFT_OF_TEXT, TBP_RIGHT_OF_TEXT, TBP_LEFT_END,
-		     TBP_RIGHT_END, TBP_BUTTONS, TBP_LEFT_BUTTONS,
-		     TBP_RIGHT_BUTTONS, NUM_TB_PIXMAPS};
-#endif
+/* title bar multi pixmap parts */
+/* those which can be used as UseTitleStyle should be enum first */
+typedef enum {
+	TBMP_NONE  = -1,
+	TBMP_MAIN,
+	TBMP_LEFT_MAIN,
+	TBMP_RIGHT_MAIN,
+	TBMP_LEFT_BUTTONS,
+	TBMP_RIGHT_BUTTONS,
+	TBMP_UNDER_TEXT,
+	TBMP_LEFT_OF_TEXT,
+	TBMP_RIGHT_OF_TEXT,
+	TBMP_LEFT_END,
+	TBMP_RIGHT_END,
+	TBMP_BUTTONS,
+	TBMP_NUM_PIXMAPS
+} TbmpParts;
+
+/* title bar multi pixmap parts which can be use for UseTitleStyle */
+typedef enum {
+	UTS_TBMP_NONE  = -1,
+	UTS_TBMP_MAIN,
+	UTS_TBMP_LEFT_MAIN,
+	UTS_TBMP_RIGHT_MAIN,
+	UTS_TBMP_LEFT_BUTTONS,
+	UTS_TBMP_RIGHT_BUTTONS,
+	UTS_TBMP_NUM_PIXMAPS
+} UtsTbmpParts;
+
+typedef struct
+{
+	int cs;
+	unsigned short alpha_percent;
+} FvwmAcs;
 
 typedef struct
 {
@@ -78,9 +105,8 @@ typedef enum
     GradientButton            ,
     PixmapButton              ,
     TiledPixmapButton         ,
-#ifdef FANCY_TITLEBARS
+    StretchedPixmapButton     ,
     MultiPixmap               ,
-#endif
     MiniIconButton            ,
     SolidButton               ,
     ColorsetButton
@@ -133,10 +159,13 @@ typedef struct DecorFace
 	struct
 	{
 		FvwmPicture *p;
-#ifdef FANCY_TITLEBARS
-		FvwmPicture **multi_pixmaps;
-		short multi_stretch_flags;
-#endif
+		struct {
+			FvwmPicture **pixmaps;
+			unsigned short stretch_flags;
+			FvwmAcs *acs;
+			Pixel *pixels;
+			unsigned short solid_flags;
+		} mp;
 		struct
 		{
 			int cs;
@@ -352,6 +381,9 @@ typedef struct ScreenInfo
 
   Pixmap ScratchMonoPixmap;     /* A scratch 1x1x1 pixmap */
   GC MonoGC;                    /* GC for drawing into depth 1 drawables */
+  Pixmap ScratchAlphaPixmap;    /* A scratch 1x1xalpha_depth pixmap */
+  GC AlphaGC;                   /* GC for drawing into depth alpha_depth 
+				 * drawables */
 
   GC XorGC;                     /* GC to draw lines for move and resize */
   GC ScratchGC1;

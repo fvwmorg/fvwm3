@@ -1076,7 +1076,9 @@ static void CreateGCs(void)
 	c.pixel = GetColor(DEFAULT_FORE_COLOR);
 	Scr.ScratchMonoPixmap = XCreatePixmap(dpy, Scr.Root, 1, 1, 1);
 	Scr.MonoGC = fvwmlib_XCreateGC(dpy, Scr.ScratchMonoPixmap, gcm, &gcv);
-
+	Scr.ScratchAlphaPixmap = XCreatePixmap(
+		dpy, Scr.Root, 1, 1, FRenderGetAlphaDepth());
+	Scr.AlphaGC = fvwmlib_XCreateGC(dpy, Scr.ScratchAlphaPixmap, gcm, &gcv);
 	return;
 }
 

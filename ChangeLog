@@ -1,3 +1,45 @@
+2002-12-16  olicha  <olivier.chapuis@free.fr>
+
+	* libs/PictureGraphics.h:
+	* libs/PictureGraphics.c (PTileRectangle):
+	(PGraphicsCreateTiledPicture):
+	* libs/Graphics.c (CreateTiledPixmap):
+	New interface function: PGraphicsCreateTiledPicture
+
+	* fvwm/screen.h:
+	* fvwm/fvwm.c (CreateGCs):
+	Added a global (Scr) alpha GC
+
+	* configure.in:
+	* fvwm/screen.h:
+	* fvwm/builtins.c (ReadMultiPixmapDecor):
+	(update_decorface_colorset):
+	(FreeDecorFace):
+	* fvwm/borders.c (border_get_tb_parts_to_draw):
+	(border_fill_pixmap_background):
+	(border_setup_bar_pixmaps):
+	(border_get_bar_pixmaps):
+	(border_free_bar_pixmaps):
+	(border_mp_render_into_pixmap):
+	(border_mp_get_length):
+	(border_mp_get_titlebar_descr):
+	(border_mp_get_geometry):
+	(border_mp_get_use_title_style_parts_and_geometry):
+	(border_mp_draw_mp_titlebar):
+	(border_draw_decor_to_pixmap):
+	(border_draw_title_deep):
+	(border_get_titlebar_draw_descr):
+	(border_setup_use_title_style):
+	(border_get_titlebar_descr_state):
+	(border_get_titlebar_descr):
+	(border_get_transparent_decorations_part):
+	(border_draw_title_stick_lines):
+	MultiPixmap can use Colorset and Solid color. Various others minor
+	improvement in MultiPixmap. "Merge" the MultiPixmap code into the
+	"main" drawing code and remove the #ifdef.
+	New option to {Button,Title}Style  StretchedPixmap.
+	Use the new Scr.AlphaGC.
+
 2002-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (validate_transientfor):

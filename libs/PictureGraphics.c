@@ -84,8 +84,8 @@ void PCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, int depth,
 		my_gc = fvwmlib_XCreateGC(dpy, d, 0, NULL);
 	}
 	gcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-	gcv.clip_x_origin = dest_x - src_x;
-	gcv.clip_y_origin = dest_y - src_y;
+	gcv.clip_x_origin = dest_x - src_x; /* */
+	gcv.clip_y_origin = dest_y - src_y; /* */
 	if (depth == Pdepth)
 	{
 		gcv.clip_mask = mask;
@@ -192,8 +192,8 @@ void PTileRectangle(Display *dpy, Window win, Pixmap pixmap, Pixmap mask,
 	}
 
 	gcv.tile = pixmap;
-	gcv.ts_x_origin = dest_x;
-	gcv.ts_y_origin = dest_y;
+	gcv.ts_x_origin = dest_x - src_x;
+	gcv.ts_y_origin = dest_y - src_y;
 	gcv.fill_style = FillTiled;
 	gcm = GCFillStyle | GCTile | GCTileStipXOrigin | GCTileStipYOrigin;
 	gcv.clip_mask = tile_mask;
@@ -1120,6 +1120,55 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 			dpy, src->alpha, src->width, src->height,
 			FRenderGetAlphaDepth(),
 			dest_width, dest_height, alpha_gc);
+	}
+
+	q = (FvwmPicture*)safemalloc(sizeof(FvwmPicture));
+	memset(q, 0, sizeof(FvwmPicture));
+	q->count = 1;
+	q->name = NULL;
+	q->next = NULL;
+	q->stamp = pixmap;
+	q->picture = pixmap;
+	q->mask = mask;
+	q->alpha = alpha;
+	q->width = dest_width;
+	q->height = dest_height;
+	q->depth = src->depth;
+	q->alloc_pixels = 0;
+	q->nalloc_pixels = 0;
+
+	return q;
+}
+
+FvwmPicture *PGraphicsCreateTiledPicture(
+	Display *dpy, Window win, FvwmPicture *src,
+	int dest_width, int dest_height, GC gc, GC mono_gc, GC alpha_gc)
+{
+	Pixmap pixmap = None, mask = None, alpha = None;
+	FvwmPicture *q;
+
+	if (src == NULL || src->picture == None)
+	{
+		return NULL;
+	}
+	pixmap = CreateTiledPixmap(
+		dpy, src->picture, src->width, src->height, dest_width,
+		dest_height, src->depth, gc);
+	if (!pixmap)
+	{
+		return NULL;
+	}
+	if (src->mask)
+	{
+		mask = CreateTiledPixmap(
+			dpy, src->mask, src->width, src->height, dest_width,
+			dest_height, 1, mono_gc);
+	}
+	if (src->alpha)
+	{
+		alpha = CreateTiledPixmap(
+			dpy, src->alpha, src->width, src->height, dest_width,
+			dest_height, FRenderGetAlphaDepth(), alpha_gc);
 	}
 
 	q = (FvwmPicture*)safemalloc(sizeof(FvwmPicture));

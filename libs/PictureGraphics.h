@@ -125,6 +125,10 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 	Display *dpy, Window win, FvwmPicture *src,
 	int dest_width, int dest_height, GC gc, GC mono_gc, GC alpha_gc);
 
+FvwmPicture *PGraphicsCreateTiledPicture(
+	Display *dpy, Window win, FvwmPicture *src,
+	int dest_width, int dest_height, GC gc, GC mono_gc, GC alpha_gc);
+
 Pixmap PGraphicsCreateTransprency(
 	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
 	int x, int y, int width, int height, Bool parent_relative);

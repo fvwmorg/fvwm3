@@ -543,7 +543,6 @@ static void do_title_style(F_CMD_ARGS, Bool do_add)
 	return;
 }
 
-#ifdef FANCY_TITLEBARS
 /*****************************************************************************
  *
  * Reads a multi-pixmap titlebar config. (tril@igs.net)
@@ -551,36 +550,49 @@ static void do_title_style(F_CMD_ARGS, Bool do_add)
  ****************************************************************************/
 static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 {
-	static char *pm_names[NUM_TB_PIXMAPS+1] =
+	static char *pm_names[TBMP_NUM_PIXMAPS+1] =
 		{
 			"Main",
 			"LeftMain",
 			"RightMain",
+			"LeftButtons",
+			"RightButtons",
 			"UnderText",
 			"LeftOfText",
 			"RightOfText",
 			"LeftEnd",
 			"RightEnd",
 			"Buttons",
-			"LeftButtons",
-			"RightButtons",
 			NULL
 		};
 	FvwmPicture **pm;
+	FvwmAcs *acs;
+	Pixel *pixels;
 	char *token;
 	Bool stretched;
+	Bool load_pixmap = False;
 	int pm_id, i = 0;
 	FvwmPictureAttributes fpa;
 
 	df->style.face_type = MultiPixmap;
-	df->u.multi_pixmaps = pm =
-		(FvwmPicture**)safecalloc(NUM_TB_PIXMAPS, sizeof(FvwmPicture*));
-
+	df->u.mp.pixmaps = pm =
+		(FvwmPicture**)safecalloc(
+			TBMP_NUM_PIXMAPS, sizeof(FvwmPicture*));
+	df->u.mp.acs = acs =
+		(FvwmAcs *)safemalloc(TBMP_NUM_PIXMAPS * sizeof(FvwmAcs));
+	df->u.mp.pixels = pixels =
+		(Pixel *)safemalloc(TBMP_NUM_PIXMAPS * sizeof(Pixel));
+	for(i=0; i < TBMP_NUM_PIXMAPS; i++)
+	{
+		acs[i].cs = -1;
+		acs[i].alpha_percent = 100;
+	}
 	s = GetNextTokenIndex(s, pm_names, 0, &pm_id);
 	while (pm_id >= 0)
 	{
-		s = DoPeekToken(s, &token, ",()", NULL, NULL);
 		stretched = False;
+		load_pixmap = False;
+		s = DoPeekToken(s, &token, ",()", NULL, NULL);
 		if (StrEquals(token, "stretched"))
 		{
 			stretched = True;
@@ -594,49 +606,179 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 		{
 			break;
 		}
-		if (pm[pm_id])
+		if (pm[pm_id] || acs[pm_id].cs >= 0 ||
+		    (df->u.mp.solid_flags & (1 << pm_id)))
 		{
 			fvwm_msg(WARN, "ReadMultiPixmapDecor",
-				 "Ignoring already-specified %s pixmap",
+				 "Ignoring: already-specified %s",
 				 pm_names[i]);
 			continue;
 		}
 		if (stretched)
 		{
-			df->u.multi_stretch_flags |= (1 << pm_id);
+			df->u.mp.stretch_flags |= (1 << pm_id);
 		}
-		fpa.mask = (Pdepth <= 8)? FPAM_DITHER:0; /* ? */
-		pm[pm_id] = PCacheFvwmPicture(
-			dpy, Scr.NoFocusWin, NULL, token, fpa);
-		if (!pm[pm_id])
+		if (strncasecmp (token, "Colorset", 8) == 0)
 		{
-			fvwm_msg(ERR, "ReadMultiPixmapDecor",
-				 "Pixmap '%s' could not be loaded",
-				 token);
+			int val;
+			char *tmp;
+
+			tmp = DoPeekToken(s, &token, ",", NULL, NULL);
+			if (!GetIntegerArguments(token, NULL, &val, 1) ||
+			    val < 0)
+			{
+				fvwm_msg(
+					ERR, "ReadMultiPixmapDecor",
+					"Colorset shoule take one or two "
+					"positive integers as argument");
+			}
+			else
+			{
+				acs[pm_id].cs = val;
+				alloc_colorset(val);
+				s = tmp;
+				tmp = DoPeekToken(s, &token, ",", NULL, NULL);
+				if (GetIntegerArguments(token, NULL, &val, 1))
+				{
+					acs[pm_id].alpha_percent =
+						max(0, min(100,val));
+					s = tmp;
+				}
+			}
 		}
+		else if (strncasecmp(token, "TiledPixmap", 11) == 0)
+		{
+			s = DoPeekToken(s, &token, ",", NULL, NULL);
+			load_pixmap = True;
+		}
+		else if (strncasecmp(token, "StretchedPixmap", 14) == 0)
+		{
+			s = DoPeekToken(s, &token, ",", NULL, NULL);
+			load_pixmap = True;
+			df->u.mp.stretch_flags |= (1 << pm_id);
+		}
+		else if (strncasecmp(token, "Solid", 5) == 0)
+		{
+			s = DoPeekToken(s, &token, ",", NULL, NULL);
+			if (token)
+			{
+				df->u.mp.pixels[pm_id] = GetColor(token);
+				df->u.mp.solid_flags |= (1 << pm_id);
+			}
+		}
+		else
+		{
+			load_pixmap = True;
+		}
+		if (load_pixmap && token)
+		{
+			fpa.mask = (Pdepth <= 8)? FPAM_DITHER:0; /* ? */
+			pm[pm_id] = PCacheFvwmPicture(
+				dpy, Scr.NoFocusWin, NULL, token, fpa);
+			if (!pm[pm_id])
+			{
+				fvwm_msg(ERR, "ReadMultiPixmapDecor",
+					 "Pixmap '%s' could not be loaded",
+					 token);
+			}
+		}
+		if (pm_id == TBMP_BUTTONS)
+		{
+			if (pm[TBMP_LEFT_BUTTONS])
+			{
+				PDestroyFvwmPicture(dpy, pm[TBMP_LEFT_BUTTONS]);
+			}
+			if (pm[TBMP_RIGHT_BUTTONS])
+			{
+				PDestroyFvwmPicture(dpy, pm[TBMP_RIGHT_BUTTONS]);
+			}
+			df->u.mp.stretch_flags &= ~(1 << TBMP_LEFT_BUTTONS);
+			df->u.mp.stretch_flags &= ~(1 << TBMP_RIGHT_BUTTONS);
+			df->u.mp.solid_flags &= ~(1 << TBMP_LEFT_BUTTONS);
+			df->u.mp.solid_flags &= ~(1 << TBMP_RIGHT_BUTTONS);
+			if (pm[TBMP_BUTTONS])
+			{
+				pm[TBMP_LEFT_BUTTONS] =
+					PCloneFvwmPicture(pm[TBMP_BUTTONS]);
+				acs[TBMP_LEFT_BUTTONS].cs = -1;
+				pm[TBMP_RIGHT_BUTTONS] =
+					PCloneFvwmPicture(pm[TBMP_BUTTONS]);
+				acs[TBMP_RIGHT_BUTTONS].cs = -1;
+			}
+			else
+			{
+				pm[TBMP_RIGHT_BUTTONS] =
+					pm[TBMP_LEFT_BUTTONS] = NULL;
+				acs[TBMP_RIGHT_BUTTONS].cs =
+					acs[TBMP_LEFT_BUTTONS].cs =
+					acs[TBMP_BUTTONS].cs;
+				acs[TBMP_RIGHT_BUTTONS].alpha_percent =
+					acs[TBMP_LEFT_BUTTONS].alpha_percent =
+					acs[TBMP_BUTTONS].alpha_percent;
+				pixels[TBMP_LEFT_BUTTONS] =
+					pixels[TBMP_RIGHT_BUTTONS] =
+					pixels[TBMP_BUTTONS];
+			}
+			if (stretched)
+			{
+				df->u.mp.stretch_flags |=
+					(1 << TBMP_LEFT_BUTTONS) |
+					(1 << TBMP_RIGHT_BUTTONS);
+			}
+			if (df->u.mp.solid_flags & (1 << TBMP_BUTTONS))
+			{
+				df->u.mp.solid_flags |=
+					(1 << TBMP_LEFT_BUTTONS);
+				df->u.mp.solid_flags |=
+					(1 << TBMP_RIGHT_BUTTONS);
+			}
+			if (pm[TBMP_BUTTONS])
+			{
+				PDestroyFvwmPicture(dpy, pm[TBMP_BUTTONS]);
+				pm[TBMP_BUTTONS] = NULL;
+			}
+			acs[TBMP_BUTTONS].cs = -1;
+			df->u.mp.solid_flags &= ~(1 << TBMP_BUTTONS);
+			
+		}
+		s = SkipSpaces(s, NULL, 0);
 		s = GetNextTokenIndex(s, pm_names, 0, &pm_id);
 	}
 
-	if (!pm[TBP_MAIN] && !(pm[TBP_LEFT_MAIN] && pm[TBP_RIGHT_MAIN]))
+	if (!(pm[TBMP_MAIN] || acs[TBMP_MAIN].cs >= 0 ||
+	      (df->u.mp.solid_flags & TBMP_MAIN))
+	    &&
+	    !(pm[TBMP_LEFT_MAIN] || acs[TBMP_LEFT_MAIN].cs >= 0 ||
+	      (df->u.mp.solid_flags & TBMP_LEFT_MAIN))
+	      &&
+	    !(pm[TBMP_RIGHT_MAIN] || acs[TBMP_RIGHT_MAIN].cs >= 0 ||
+	      (df->u.mp.solid_flags & TBMP_RIGHT_MAIN)))
 	{
 		fvwm_msg(ERR, "ReadMultiPixmapDecor",
-			 "No Main pixmap found for TitleStyle MultiPixmap "
-			 "(you must specify either Main, or both LeftMain"
-			 " and RightMain)");
-		for (i=0; i < NUM_TB_PIXMAPS; i++)
+			 "No Main pixmap/colorset/solid found for TitleStyle "
+			 "MultiPixmap  (you must specify either Main, "
+			 "or both LeftMain and RightMain)");
+		for (i=0; i < TBMP_NUM_PIXMAPS; i++)
 		{
 			if (pm[i])
 			{
 				PDestroyFvwmPicture(dpy, pm[i]);
 			}
+			else if (!!(df->u.mp.solid_flags & i))
+			{
+				PictureFreeColors(
+					dpy, Pcmap, &df->u.mp.pixels[i], 1, 0,
+					False); 
+			}
 		}
 		free(pm);
+		free(acs);
+		free(pixels);
 		return NULL;
 	}
 
 	return s;
 }
-#endif /* FANCY_TITLEBARS */
 
 /***********************************************************************
  *
@@ -1018,7 +1160,20 @@ int update_decorface_colorset(DecorFace *df, int cset)
 			tdf->flags.has_changed = 1;
 			has_changed = 1;
 		}
-	}
+		else if (DFS_FACE_TYPE(tdf->style) == MultiPixmap)
+		{
+			int i;
+
+			for (i = 0; i < TBMP_NUM_PIXMAPS; i++)
+			{
+				if (tdf->u.mp.acs[i].cs == cset)
+				{
+					tdf->flags.has_changed = 1;
+					has_changed = 1;
+				}
+			}
+		}
+}
 	
 	return has_changed;
 }
@@ -1257,9 +1412,7 @@ void ApplyDefaultFontAndColors(void)
 
 void FreeDecorFace(Display *dpy, DecorFace *df)
 {
-#ifdef FANCY_TITLEBARS
 	int i;
-#endif
 
 	switch (DFS_FACE_TYPE(df->style))
 	{
@@ -1295,29 +1448,41 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 
 	case PixmapButton:
 	case TiledPixmapButton:
+	case StretchedPixmapButton:
 		if (df->u.p)
 		{
 			PDestroyFvwmPicture(dpy, df->u.p);
 		}
 		break;
 
-#ifdef FANCY_TITLEBARS
 	case MultiPixmap:
-		if (df->u.multi_pixmaps)
+		if (df->u.mp.pixmaps)
 		{
-			for (i = 0; i < NUM_TB_PIXMAPS; i++)
+			for (i = 0; i < TBMP_NUM_PIXMAPS; i++)
 			{
-				if (df->u.multi_pixmaps[i])
+				if (df->u.mp.pixmaps[i])
 				{
 					PDestroyFvwmPicture(
-						dpy, df->u.multi_pixmaps[i]);
+						dpy, df->u.mp.pixmaps[i]);
+				}
+				else if (!!(df->u.mp.solid_flags & i))
+				{
+					PictureFreeColors(
+						dpy, Pcmap, &df->u.mp.pixels[i],
+						1, 0, False);
 				}
 			}
-			free(df->u.multi_pixmaps);
+			free(df->u.mp.pixmaps);
+		}
+		if (df->u.mp.acs)
+		{
+			free(df->u.mp.acs);
+		}
+		if (df->u.mp.pixels)
+		{
+			free(df->u.mp.pixels);
 		}
 		break;
-#endif
-
 	case VectorButton:
 	case DefaultVectorButton:
 		if (df->u.vector.x)
@@ -1606,7 +1771,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			df->u.grad.gradient_type = toupper(style[0]);
 		}
 		else if (strncasecmp(style,"Pixmap",6)==0
-			 || strncasecmp(style,"TiledPixmap",11)==0)
+			 || strncasecmp(style,"TiledPixmap",11)==0
+			 || strncasecmp(style,"StretchedPixmap",15)==0)
 		{
 			FvwmPictureAttributes fpa;
 
@@ -1640,12 +1806,16 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				DFS_FACE_TYPE(df->style) = TiledPixmapButton;
 			}
+			else if (strncasecmp(style,"Stretched",9)==0)
+			{
+				DFS_FACE_TYPE(df->style) =
+					StretchedPixmapButton;
+			}
 			else
 			{
 				DFS_FACE_TYPE(df->style) = PixmapButton;
 			}
 		}
-#ifdef FANCY_TITLEBARS
 		else if (strncasecmp(style,"MultiPixmap",11)==0)
 		{
 			if (button != -1)
@@ -1665,7 +1835,6 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				return False;
 			}
 		}
-#endif
 		else if (FMiniIconsSupported &&
 			 strncasecmp (style, "MiniIcon", 8) == 0)
 		{
@@ -1684,7 +1853,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			/* pixmap read in when the window is created */
 			df->u.p = NULL;
 		}
-		else if (strncasecmp (style, "Colorset", 12) == 0)
+		else if (strncasecmp (style, "Colorset", 8) == 0)
 		{
 			int val[2];
 			int n;
