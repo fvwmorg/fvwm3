@@ -2239,20 +2239,20 @@ static Bool pop_menu_up(
     int old_y = y;
 
     if (HAS_BOTTOM_TITLE(fw))
-      y = fw->frame_g.y - fw->boundary_width - fw->title_g.height - 1 +
+      y = fw->frame_g.y - fw->boundary_width - fw->title_g.height +
 	fw->frame_g.height - MR_HEIGHT(mr);
     else
-      y = fw->frame_g.y + fw->boundary_width + fw->title_g.height + 1;
+      y = fw->frame_g.y + fw->boundary_width + fw->title_g.height;
     if(context&C_LALL)
     {
       x = fw->frame_g.x + fw->boundary_width +
-	ButtonPosition(context, fw) * fw->title_g.height + 1;
+	ButtonPosition(context, fw) * fw->title_g.height;
     }
     else if(context&C_RALL)
     {
       x = fw->frame_g.x + fw->frame_g.width -
 	fw->boundary_width - ButtonPosition(context, fw) *
-	fw->title_g.height-MR_WIDTH(mr) + 1;
+	fw->title_g.height-MR_WIDTH(mr);
     }
     else if(context&C_TITLE)
     {
@@ -2261,7 +2261,7 @@ static Bool pop_menu_up(
       if((x + MR_WIDTH(mr)) >
 	 (fw->frame_g.x + fw->title_g.x + fw->title_g.width))
 	x = fw->frame_g.x + fw->title_g.x + fw->title_g.width-
-	  MR_WIDTH(mr) +1;
+	  MR_WIDTH(mr);
     }
     else
       y = old_y;
