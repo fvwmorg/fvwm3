@@ -447,6 +447,7 @@ UNIQUE_POSTFIX=\$\$
 EOF
 sed 's/conftest/conftest\${UNIQUE_POSTFIX}/g' <config.status >>config.status-t && \
 mv config.status-t config.status
+chmod +x config.status
 # ---------------------------------------------------------------------------
 
 echo "
