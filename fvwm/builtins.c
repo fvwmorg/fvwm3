@@ -999,6 +999,7 @@ void SetHiColorset(F_CMD_ARGS)
   {
     newaction = safemalloc(strlen(action) + 32);
     sprintf(newaction, "* HilightColorset %s", action);
+    action = newaction;
     ProcessNewStyle(F_PASS_ARGS);
   }
 #endif
