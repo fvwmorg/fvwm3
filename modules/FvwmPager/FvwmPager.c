@@ -123,6 +123,8 @@ int ShapeLabels = 0;
 int Rows = -1, Columns = -1;
 int desk1=0, desk2 =0;
 int ndesks = 0;
+int windowcolorset = -1;
+int activecolorset = -1;
 Pixel win_back_pix = -1;
 Pixel win_fore_pix = -1;
 Pixel win_hi_back_pix = -1;
@@ -334,6 +336,9 @@ int main(int argc, char **argv)
 
   if (PagerBack == NULL)
     PagerBack = strdup("white");
+
+  if (HilightC == NULL)
+    HilightC = strdup(PagerFore);
 
   if (WindowLabelFormat == NULL)
     WindowLabelFormat = strdup("%i");
@@ -1198,13 +1203,13 @@ void list_colorset(unsigned long *body)
   char *tline, *token;
   int color;
 
-	tline = (char*)&(body[3]);
-	tline = GetNextToken(tline, &token);
-	if (StrEquals(token, "Colorset")) {
+  tline = (char*)&(body[3]);
+  tline = GetNextToken(tline, &token);
+  if (StrEquals(token, "Colorset")) {
     color = LoadColorset(tline);
     change_colorset(color);
   }
-	free(token);
+  free(token);
 }
 
 
@@ -1816,6 +1821,11 @@ void ParseOptions(void)
 	      tline2 = GetNextToken(tline2, &WindowHiFore);
 	      GetNextToken(tline2, &WindowHiBack);
 	    }
+	}
+      else if (StrEquals(resource,"WindowColorsets"))
+	{
+	  sscanf(arg1,"%d",&windowcolorset);
+	  sscanf(arg2,"%d",&activecolorset);
 	}
       else if (StrEquals(resource,"WindowLabelFormat"))
 	{

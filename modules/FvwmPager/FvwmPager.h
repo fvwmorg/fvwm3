@@ -193,6 +193,8 @@ void MoveStickyWindow(void);
 void Hilight(PagerWindow *, int);
 void Scroll(int window_w, int window_h, int x, int y, int Desk);
 void MoveWindow(XEvent *Event);
+void BorderWindow(PagerWindow *t);
+void BorderIconWindow(PagerWindow *t);
 void LabelWindow(PagerWindow *t);
 void LabelIconWindow(PagerWindow *t);
 void PictureWindow(PagerWindow *t);
