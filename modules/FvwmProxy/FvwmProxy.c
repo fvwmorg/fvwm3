@@ -1199,11 +1199,13 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		else if(StrEquals(token, "Circulate"))
 		{
+			Window w;
+
 			/* auto-show if not already shown */
 			if (!are_windows_shown)
 				StartProxies();
 
-			Window w=(selectProxy)? selectProxy->window:focusWindow;
+			w = (selectProxy) ? selectProxy->window : focusWindow;
 
 			strcpy(commandBuffer,next);
 			strcat(commandBuffer," SendToModule FvwmProxy Mark");
@@ -1227,7 +1229,7 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		else if(StrEquals(token, "Mark"))
 		{
-/*
+#if 0
 			Window w;
 
 			if (next == NULL)
@@ -1239,7 +1241,7 @@ static void ProcessMessage(FvwmPacket* packet)
 				proxy = NULL;
 			}
 			else
-*/
+#endif
 			{
 				focusWindow=bh->w;
 				proxy = FindProxy(bh->w);

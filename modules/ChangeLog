@@ -1,3 +1,8 @@
+2002-12-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmProxy/FvwmProxy.c (ProcessMessage):
+	fixed compile error
+
 2002-12-11  Jason Weber  <baboon@imonk.com>
 
 	* FvwmProxy/FvwmProxy.c:
@@ -41,11 +46,12 @@
 	Fixed drawing icon background
 
 2002-12-01  Marcus Lundblad <ml@update.uu.se>
+
 	* FvwmIconBox/FvwmIconBox.c (RedrawIcon, CreateWindow, ParseOptions):
 	* FvwmIconBox/icons.c (AdjustIconWindow):
 	implemented options for turning off parenthesisation of iconified
 	window title and options for defining relief width and look for titles
-					    
+
 	* FvwmIconBox/FvwmIconBox.1:
 	documented options for turning off parenthesisation of iconified
 	window title and options for defining relief width and look for titles
