@@ -93,7 +93,7 @@ sub storeEvent ($$) {
 	for ($i = 0; $i < @$argNames; $i++) {
 		my $name  = $argNames->[$i];
 		my $type  = $argTypes->[$i];
-		my $value = $argValues->[$i];
+		my $value = $argValues->[$i] || 0;
 
 		my $text;
 		if ($type == FVWM::EventNames::number) {
@@ -573,15 +573,31 @@ To run this module, place this command somewhere in the configuration:
 
   Module FvwmGtkDebug
 
-To stop this module, just exit the GUI window, the usual KillModule works too.
+To stop this module, just close the GUI window, the usual KillModule works too.
 
 You may also run this application in the dummy mode from the command line,
-but this only shows GUI without the actual functionality.
+but this only shows the GUI with dummy event data and not the real data.
 
 =head1 DESCRIPTION
 
 This module monitors all fvwm event information and shows it nicely in the
 interactive gtk+ application. Good for debugging purposes.
+
+=head1 INVOCATION
+
+There are several command line switches:
+
+B<FvwmGtkDebug>
+[ B<--mask> I<mask> ]
+[ B<--xmask> I<mask> ]
+
+Long switches may be abbreviated to shorter switches.
+
+B<-m>|B<--mask> I<mask> - set the initial module mask,
+this mask may be changed interactivelly at any time
+
+B<-x>|B<--xmask> I<mask> - set the initial module extended mask,
+this mask may be changed interactivelly at any time
 
 =head1 SEE ALSO
 

@@ -30,13 +30,21 @@ use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module;
 
 my $dumpArgs = 1;
+my $logFile = undef;
+my $logStream = \*STDERR;
 my $mask = MAX_MSG_MASK;
-my $xmask = MAX_XMSG_MASK & ~(MX_ENTER_WINDOW | MX_LEAVE_WINDOW);
+my $xmask = MAX_XMSG_MASK;
+my $sendConfigInfo = 0;
+my $sendWindowList = 0;
+my @moduleArgs = @ARGV;
 
 my $options = {
 	'args!'     => \$dumpArgs,
+	'log=s'     => \$logFile,
 	'm|mask=i'  => \$mask,
 	'x|xmask=i' => \$xmask,
+	'sc|send-configinfo' => \$sendConfigInfo,
+	'sw|semd-windowlist' => \$sendWindowList,
 };
 
 my $module = new FVWM::Module(
@@ -44,12 +52,21 @@ my $module = new FVWM::Module(
 	EnableOptions => $options,
 #	Debug => 1,
 );
-$xmask |= M_EXTENDED_MSG;
 $module->mask($mask);
 $module->xmask($xmask);
 
 $module->addHandler($mask, \&dumpEvent);
-$module->addHandler($xmask, \&dumpEvent);
+$module->addHandler($xmask | M_EXTENDED_MSG, \&dumpEvent);
+
+if ($logFile) {
+	# let's hope the system will close it automatically on exit
+	open $logStream, ">$logFile";
+}
+
+$module->debug("argv = '" . join("', '", @moduleArgs) . "'\n");
+
+$module->send("Send_ConfigInfo") if $sendConfigInfo;
+$module->send("Send_WindowList") if $sendWindowList;
 
 $module->eventLoop;
 
@@ -60,14 +77,14 @@ sub dumpEvent ($$) {
 	my $argTypes  = $event->argTypes;
 	my $argValues = $event->argValues;
 
-	print STDERR $event->name, "\n";
+	print $logStream $event->name, "\n";
 	return unless $dumpArgs;
 
 	my $i;
 	for ($i = 0; $i < @$argNames; $i++) {
 		my $name  = $argNames->[$i];
 		my $type  = $argTypes->[$i];
-		my $value = $argValues->[$i];
+		my $value = $argValues->[$i] || 0;
 
 		my $text;
 		if ($type == FVWM::EventNames::number) {
@@ -119,6 +136,37 @@ To stop this module, execute:
 
 This module dumps all fvwm event information into standard error stream for
 debugging purposes.
+
+=head1 INVOCATION
+
+There are several command line switches:
+
+B<FvwmDebug>
+[ B<--noargs> ]
+[ B<--log> I<file> ]
+[ B<--mask> I<mask> ]
+[ B<--xmask> I<mask> ]
+[ B<--send-configinfo> ]
+[ B<--send-windowlist> ]
+
+Long switches may be abbreviated to shorter switches.
+
+B<-n>|B<--noargs> - do not print all event arguments, just event name.
+B<--args> is the default.
+
+B<-l>|B<--log> I<file> - specify the log file name instead of the standard
+error stream. If the log file can't be open for writting, the default
+standard error stream is used.
+
+B<-m>|B<--mask> I<mask> - set the module mask
+
+B<-x>|B<--xmask> I<mask> - set the module extended mask
+
+B<-sc>|B<--send-configinfo> - send B<Send_ConfigInfo> command to I<fvwm>
+on startup, this results in a lot of events received.
+
+B<-sw>|B<--send-windowlist> - send B<Send_WindowList> command to I<fvwm>
+on startup, this results in a lot of events received.
 
 =head1 SEE ALSO
 

@@ -3,13 +3,15 @@
 ## Notes: Imakefile also linked with -ldnet_stub, on AlphaArchitecture
 
 moduledir = @FVWM_MODULEDIR@
-module_SCRIPTS = FvwmNewDebug FvwmGtkDebug
-module_PROGRAMS = FvwmDebug
-FvwmDebug_SOURCES = FvwmDebug.c FvwmDebug.h
-FvwmDebug_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+module_SCRIPTS = FvwmDebug FvwmGtkDebug
 
-man_MANS = FvwmDebug.1
+man_MANS = FvwmDebug.1 FvwmGtkDebug.1
 EXTRA_DIST = $(man_MANS)
+
+# all the following lines may be removed one day
+EXTRA_PROGRAMS = FvwmOldDebug
+FvwmOldDebug_SOURCES = FvwmOldDebug.c FvwmOldDebug.h
+FvwmOldDebug_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs -lfvwm
 

@@ -1,3 +1,17 @@
+2002-10-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/FvwmDebug.in:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmDebug/FvwmGtkDebug.in:
+	* FvwmDebug/FvwmGtkDebug.1:
+	* FvwmDebug/FvwmOldDebug.c:
+	* FvwmDebug/FvwmOldDebug.h:
+	* FvwmDebug/FvwmOldDebug.1:
+	* FvwmDebug/Makefile.am:
+	the old debug module renamed to FvwmOldDebug and not installed now,
+	the new debug module renamed to FvwmDebug;
+	added several command line options and documentation
+
 2002-10-06  Suzanne Skinner  <tril@igs.net>
 
 	* FvwmTaskBar/Start.c (StartButtonParseConfig):
@@ -15,7 +29,7 @@
 
 2002-10-06  Mikhael Goikhman  <migo@homemail.com>
 
-	* FvwmGtkDebug.in:
+	* FvwmDebug/FvwmGtkDebug.in:
 	added Tools page with Send_ConfigInfo, Send_WindowList, command prompt,
 	Help and Quit buttons
 

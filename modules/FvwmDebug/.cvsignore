@@ -1,6 +1,7 @@
 Makefile
 Makefile.in
 FvwmDebug
+FvwmOldDebug
 FvwmNewDebug
 FvwmGtkDebug
 .deps

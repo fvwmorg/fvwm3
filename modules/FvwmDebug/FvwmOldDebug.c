@@ -34,7 +34,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include "FvwmDebug.h"
+#include "FvwmOldDebug.h"
 
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
