@@ -1,3 +1,7 @@
+1999-01-14  Tim Phipps <tim@quadrics.com>
+
+	* Added alt-tab explanation to FAQ
+
 1999-01-13  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/placement.c: Fixed SmartPlacement and CleverPlacemet failure

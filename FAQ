@@ -99,6 +99,8 @@ INDEX
        45) Is it possible to raise a window when I click into the
            window itself, not just the border?
        46) Menus with gradient backgrounds flicker or are very slow.
+       47) How do I get Alt-Tab behaviour like another GUI?
+       48) What's the difference between the Focus and FlipFocus commands?
 
 ======================================================================
 
@@ -1010,7 +1012,7 @@ A: Any version later than 2.0.46 (i.e. 2.1.x or later) has this
 46) Menus with gradient backgrounds flicker or are very slow.
 
 A: The flickering is caused by fvwm constantly redrawing the menus
-   when a submenu pops up or down. One way to do this is to use a
+   when a submenu pops up or down. One way to help this is to use a
    X server with backing storage (XFree86 has backing storage
    support, I don't know about other servers but I guess that any
    decent X server has it). If your Xserver is started with the
@@ -1040,3 +1042,91 @@ A: The flickering is caused by fvwm constantly redrawing the menus
 
 ----------------------------------------------------------------------
 
+47) How do I get Alt-Tab behaviour like another GUI?
+
+A: The built in command WindowList provides a very close approximation
+   to the Alt-Tab feature found in another GUI.  It doesn't look the
+   same but the following .fvwm2rc sample will provide a similar
+   interface:
+   
+      Key Tab A M WindowList Root c c NoDeskSort
+   
+   Hitting Alt-Tab will pop up the WindowList menu. Unlike another GUI
+   you should not keep the Alt key held down, the menu will stay up
+   until you hit Return/Enter or Escape.  You can change focus to a
+   window on the menu by using the up and down arrow keys to move the
+   menu selection and then hitting Return or Enter. Hitting Escape will
+   close the menu without doing anything. The WindowList menu has hot
+   keys assigned for the first 26 windows and you can use the hot key to
+   go directly to the window.
+   
+   The menu invoked with the above line will show all windows in
+   most-recently-focused (MRF) order unless you have used the Focus
+   command (see the next question). It shows each windows name and
+   geometry with some extra flags to indicate Sticky, OnTop and
+   iconified windows.
+   
+   A simpler style can be used with the following:
+   
+      Key Tab A M WindowList Root c c CurrentDesk NoGeometry
+
+   This will just list the windows on the current desk (titles only).
+   
+   The other GUI has the feature of selecting the previous window if
+   Alt-TAB is hit and released quickly. This behaviour cannot be exactly
+   duplicated but similar functionality can be assigned to hitting
+   Alt-TAB twice in quick succession (like a double click for keys):
+
+      DestroyFunc my_dbltab2
+      AddToFunc my_dbltab2 WindowListFunc $w
+      DestroyFunc my_dbltab
+      AddToFunc my_dbltab "I" Prev (CurrentDesk) my_dbltab2
+      Key TAB A M WindowList Root c c CurrentDesk NoGeometry my_dbltab
+   
+   There are a lot of options to the WindowList command to control which
+   windows are listed in which order and it may not be possible to set
+   conditions for the Prev command to reliably select the second item
+   when double keying. The WindowList command has no parallel for
+   CurrentPage, Transient, Visible, Maximised, Raised, and pattern
+   matching. The Prev conditions have no parallel for OnTop, Alphabetic
+   and desk sorting.  The WindowList menu respects the WindowListSkip
+   style attribute whereas Prev respects the CirculateSkip and
+   CirculateSkipIcon style attributes.
+
+----------------------------------------------------------------------
+
+48) What's the difference between the Focus and FlipFocus commands?
+
+A: Both of these commands change the keyboard focus to the target
+   window. They differ only in the way they affect the internally held
+   list of windows. This list is used by the Next, Prev and WindowList
+   commands. The list is normally sorted in MRF order with new windows
+   being added to the end. The FlipFocus command plucks the target
+   window from the list and inserts it at the beginning, The Focus
+   command rotates the list around until the target window is at the
+   beginning. The behaviour of FlipFocus is also used when changing
+   focus with the mouse and the automatic focus changing when using
+   ClickToFocus style.
+   
+   If you never use the Focus command the list will remain in MRF order.
+   If you do use the Focus command the list will gradually get back to
+   MRF order as you use FlipFocus.
+   
+   The Focus command is very useful in conjunction with the Next and Prev
+   commands. e.g.
+
+      Key KP_Add A M Next (CurrentDesk !Iconic) Focus
+      Key KP_Subtract A M Prev (CurrentDesk !Iconic) Focus
+
+   These bindings allow you to circulate the focus around the windows on
+   the current desk in both directions. If Prev FlipFocus were used the
+   focus would toggle between the top two windows on the window list.
+   
+   If you have several windows on a desk and you want to set the
+   circulation order for the Next and Prev commands you should focus on
+   the windows using the mouse or FlipFocus in the order you want. Fvwm2
+   will learn the order and use it for the Next and Prev commands.  If
+   you subsequently use the mouse to focus or FlipFocus the order will
+   be lost.
+
+----------------------------------------------------------------------
