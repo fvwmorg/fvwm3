@@ -211,18 +211,47 @@ Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			     unsigned int src_height, unsigned int dest_width,
 			     unsigned int dest_height, GC gc);
 
+
+/**** gradient stuff ****/
+
+/* gradient types */
+#define H_GRADIENT 'H'
+#define V_GRADIENT 'V'
+#define D_GRADIENT 'D'
+#define B_GRADIENT 'B'
+#define S_GRADIENT 'S'
+#define C_GRADIENT 'C'
+#define R_GRADIENT 'R'
+#define Y_GRADIENT 'Y'
+
+Bool IsGradientTypeSupported(char type);
+
 Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
 			   int skip_first_color);
 
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 			      int nsegs, int npixels);
 
+/* Convenience function. Calls AllocNonLinearGradient to fetch all colors and
+ * then frees the color names and the perc and color_name arrays. */
+Pixel *AllocAllGradientColors(char *color_names[], int perc[],
+			      int nsegs, int ncolors);
+
 unsigned int ParseGradient(char *gradient, char ***colors_return,
 			   int **perc_return, int *nsegs_return);
 
-Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
-			    char *action, unsigned int *width_return,
-			    unsigned int *height_return);
+Bool CalculateGradientDimensions(Display *dpy, Drawable d, int ncolors,
+				 char type, unsigned int *width_ret,
+				 unsigned int *height_ret);
+
+Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
+			    int type, unsigned width, unsigned height,
+			    int ncolors, Pixel *pixels);
+
+Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
+				      int type, char *action,
+				      unsigned int *width_return,
+				      unsigned int *height_return);
 
 
 /***********************************************************************

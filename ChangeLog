@@ -1,4 +1,41 @@
+1999-08-20  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Graphics.c (IsGradientTypeSupported): new convenience function
+
+	* fvwm/builtins.c (ReadButtonFace):
+	* fvwm/borders.c (DrawButton): experimental implementation of
+	[DBSCRY]-Gradients in the title/border/button style. Very inefficient,
+	but looks nice.
+
+	* libs/Graphics.c (CreateGradientPixmapFromString):
+	(CreateGradientPixmap): function split into two separate functions
+
+	* libs/Graphics.c (CalculateGradientDimensions): new function from code
+	originally in CreateGradientPixmap
+
+	* fvwm/borders.c (DrawButton):
+	* fvwm/builtins.c (FreeButtonFace):
+	(ReadButtonFace):
+	* fvwm/menus.c (select_menu_item):
+	(paint_menu):
+	(paint_item):
+	(FreeMenuFace):
+	* libs/Graphics.c (CreateGradientPixmap): use new macros for gradient
+	types
+
+	* libs/fvwmlib.h (B_GRADIENT): added macros for gradient types
+
+	* fvwm/menus.c (ReadMenuFace): simplified gradient type code
+
 1999-08-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (ReadMenuFace):
+	* fvwm/builtins.c (ReadButtonFace): use library functions to parse
+	gradients
+
+	* libs/Graphics.c (AllocAllGradientColors): new convenience function
+
+	* fvwm/fvwm2.1: Updated gradient syntax
 
 	* libs/Module.c (SendFinishedStartupNotification): new service function
 	for modules

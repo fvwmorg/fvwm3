@@ -153,6 +153,32 @@ Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 }
 
 
+
+/****************************************************************************
+ *
+ * Returns True if the given type of gradient is supported.
+ *
+ ****************************************************************************/
+Bool IsGradientTypeSupported(char type)
+{
+  switch (toupper(type))
+  {
+  case V_GRADIENT:
+  case H_GRADIENT:
+  case B_GRADIENT:
+  case D_GRADIENT:
+  case R_GRADIENT:
+  case Y_GRADIENT:
+  case S_GRADIENT:
+  case C_GRADIENT:
+    return True;
+  default:
+    fprintf(stderr, "%cGradient type is not supported\n", toupper(type));
+    return False;
+  }
+
+}
+
 /****************************************************************************
  *
  * Allocates a linear color gradient (veliaa@rpi.edu)
@@ -318,6 +344,32 @@ Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
   return pixels;
 }
 
+/* Convenience function. Calls AllocNonLinearGradient to fetch all colors and
+ * then frees the color names and the perc and color_name arrays. */
+Pixel *AllocAllGradientColors(char *color_names[], int perc[],
+			      int nsegs, int ncolors)
+{
+  Pixel *pixels = None;
+  int i;
+
+  /* grab the colors */
+  pixels = AllocNonlinearGradient(color_names, perc, nsegs, ncolors);
+  for (i = 0; i <= nsegs; i++)
+  {
+    if (color_names[i])
+      free(color_names[i]);
+  }
+  free(color_names);
+  free(perc);
+  if (!pixels)
+  {
+    fprintf(stderr, "couldn't create gradient\n");
+    return None;
+  }
+
+  return pixels;
+}
+
 /* groks a gradient string and creates arrays of colors and percentages
  * returns the number of colors asked for (No. allocated may be less due
  * to the ColorLimit command).  A return of 0 indicates an error
@@ -417,26 +469,14 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
   return npixels;
 }
 
-
-
-/* Create a pixmap from a gradient specifier, width and height are hints
- * that are only used for gradients that can be tiled e.g. H or V types
- * types are HVDBSCRY for Horizontal, Vertical, Diagonal, Back-diagonal, Square,
- * Circular, Radar and Yin/Yang respectively (in order of bloatiness)
- */
-Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
-			    char *action, unsigned int *width_return,
-			    unsigned int *height_return) {
+/* Calculate the prefered dimensions of a gradient, based on the number of
+ * colors and the gradient type. Returns False if the gradient type is not
+ * supported. */
+Bool CalculateGradientDimensions(
+  Display *dpy, Drawable d, int ncolors, char type,
+  unsigned int *width_ret, unsigned int *height_ret)
+{
   static unsigned int best_width = 0, best_height = 0;
-  unsigned int width, height;
-  Pixmap pixmap;
-  Pixel *pixels;
-  unsigned int ncolors = 0;
-  char **colors;
-  int *perc, nsegs;
-  XGCValues xgcv;
-  XImage *image;
-  register int i, j;
 
   /* get the best tile size (once) */
   if (!best_width)
@@ -449,61 +489,58 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
       best_height = 1;
   }
 
-  /* translate the gradient string into an array of colors etc */
-  if (!(ncolors = ParseGradient(action, &colors, &perc, &nsegs))) {
-    fprintf(stderr, "Can't parse gradient: %s\n", action);
-    return None;
-  }
-  /* grab the colors */
-  pixels = AllocNonlinearGradient(colors, perc, nsegs, ncolors);
-  for (i = 0; i <= nsegs; i++)
-    if (colors[i])
-      free(colors[i]);
-  free(colors);
-  free(perc);
-  if (!pixels) {
-    fprintf(stderr, "couldn't create gradient\n");
-    return None;
-  }
-  /* grok the size to create from the type */
-  type = toupper(type);
   switch (type) {
-    case 'H':
-      width = ncolors;
-      height = best_height;
+    case H_GRADIENT:
+      *width_ret = ncolors;
+      *height_ret = best_height;
       break;
-    case 'V':
-      width = best_width;
-      height = ncolors;
+    case V_GRADIENT:
+      *width_ret = best_width;
+      *height_ret = ncolors;
       break;
-    case 'D':
-    case 'B':
+    case D_GRADIENT:
+    case B_GRADIENT:
       /* diagonal gradients are rendered into a rectangle for which the
        * width plus the height is equal to ncolors + 1. The rectangle is square
        * when ncolors is odd and one pixel taller than wide with even numbers */
-      width = (ncolors + 1) / 2;
-      height = ncolors + 1 - width;
+      *width_ret = (ncolors + 1) / 2;
+      *height_ret = ncolors + 1 - *width_ret;
       break;
-    case 'S':
+    case S_GRADIENT:
       /* square gradients have the last color as a single pixel in the centre */
-      width = height = 2 * ncolors - 1;
+      *width_ret = *height_ret = 2 * ncolors - 1;
       break;
-    case 'C':
+    case C_GRADIENT:
       /* circular gradients have the first color as a pixel in each corner */
-      width = height = 2 * ncolors - 1;
+      *width_ret = *height_ret = 2 * ncolors - 1;
       break;
-    case 'R':
-    case 'Y':
+    case R_GRADIENT:
+    case Y_GRADIENT:
       /* swept types need each color to occupy at least one pixel at the edge */
       /* get the smallest odd number that will provide enough */
-      for (width = 1; (double)(width - 1) * M_PI < (double)ncolors; width += 2)
+      for (*width_ret = 1;
+	   (double)(*width_ret - 1) * M_PI < (double)ncolors;
+	   *width_ret += 2)
 	;
-      height = width;
+      *height_ret = *width_ret;
       break;
     default:
       fprintf(stderr, "%cGradient not supported\n", type);
-      return None;
+      return False;
   }
+  return True;
+}
+
+
+Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
+			    int type, unsigned width, unsigned height,
+			    int ncolors, Pixel *pixels)
+{
+  Pixmap pixmap;
+  XImage *image;
+  register int i, j;
+  XGCValues xgcv;
+
   /* create a pixmap to use */
   pixmap = XCreatePixmap(dpy, d, width, height, Pdepth);
   if (pixmap == None)
@@ -521,33 +558,33 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
   /* now do the fancy drawing */
   /* draw one pixel further than expected in case line style is CapNotLast */
   switch (type) {
-    case 'H':
+    case H_GRADIENT:
       for (i = 0; i < width; i++) {
         register Pixel p = pixels[i];
         for (j = 0; j < height; j++)
           XPutPixel(image, i, j, p);
       }
       break;
-    case 'V':
+    case V_GRADIENT:
       for (j = 0; j < height; j++) {
         register Pixel p = pixels[j];
         for (i = 0; i < width; i++)
           XPutPixel(image, i, j, p);
       }
       break;
-    case 'D':
+    case D_GRADIENT:
       for (i = 0; i < width; i++) {
         for (j = 0; j < height; j++)
           XPutPixel(image, i, j, pixels[i + j]);
       }
       break;
-    case 'B':
+    case B_GRADIENT:
       for (i = 0; i < width; i++) {
         for (j = 0; j < height; j++)
           XPutPixel(image, i, j, pixels[i + ncolors / 2 - j]);
       }
       break;
-    case 'S':
+    case S_GRADIENT:
       {
         /* width == height so only reference one */
         register int w = width - 1;
@@ -560,7 +597,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
         }
       }
       break;
-    case 'C':
+    case C_GRADIENT:
       /* width == height */
       for (i = 0; i < width; i++)
         for (j = 0; j < width; j++) {
@@ -569,7 +606,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
           XPutPixel(image, i, j, pixels[pixel]);
         }
       break;
-    case 'R':
+    case R_GRADIENT:
       {
         register int r = (width - 1) / 2;
         /* width == height, both are odd, therefore x can be 0.0 */
@@ -602,7 +639,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
  * No restrictions are placed on this code,
  * as long as the copyright notice is preserved.
  * ************************************************************************/
-    case 'Y':
+    case Y_GRADIENT:
       {
         register int r = (width - 1) / 2;
         /* width == height, both are odd, therefore x can be 0.0 */
@@ -649,8 +686,42 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
   /* copy the image to the server */
   XPutImage(dpy, pixmap, gc, image, 0, 0, 0, 0, width, height);
   XDestroyImage(image);
-  /* pass back info */
-  *width_return = width;
-  *height_return = height;
   return pixmap;
+}
+
+
+/* Create a pixmap from a gradient specifier, width and height are hints
+ * that are only used for gradients that can be tiled e.g. H or V types
+ * types are HVDBSCRY for Horizontal, Vertical, Diagonal, Back-diagonal, Square,
+ * Circular, Radar and Yin/Yang respectively (in order of bloatiness)
+ */
+Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
+				      int type, char *action,
+				      unsigned int *width_return,
+				      unsigned int *height_return)
+{
+  Pixel *pixels;
+  unsigned int ncolors = 0;
+  char **colors;
+  int *perc, nsegs;
+
+  /* translate the gradient string into an array of colors etc */
+  if (!(ncolors = ParseGradient(action, &colors, &perc, &nsegs))) {
+    fprintf(stderr, "Can't parse gradient: %s\n", action);
+    return None;
+  }
+  /* grab the colors */
+  pixels = AllocAllGradientColors(colors, perc, nsegs, ncolors);
+  if (pixels == None)
+    return None;
+
+  /* grok the size to create from the type */
+  type = toupper(type);
+
+  if (!CalculateGradientDimensions(dpy, d, ncolors, type, width_return,
+				   height_return))
+    return None;
+
+  return CreateGradientPixmap(dpy, d, gc, type, *width_return, *height_return,
+			      ncolors, pixels);
 }

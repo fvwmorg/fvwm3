@@ -79,10 +79,7 @@ typedef enum
     /* menu types */
     SimpleMenu = 0,
 #ifdef GRADIENT_BUTTONS
-    HGradMenu,
-    VGradMenu,
-    DGradMenu,
-    BGradMenu,
+    GradientMenu,
 #endif
 #ifdef PIXMAP_BUTTONS
     PixmapMenu,
@@ -127,6 +124,7 @@ typedef struct MenuFace
 #endif
     } u;
     MenuFaceType type;
+    char gradient_type;
 } MenuFace;
 
 typedef struct MenuLook

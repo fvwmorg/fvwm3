@@ -186,8 +186,7 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 #endif /* PIXMAP_BUTTONS */
 
 #ifdef GRADIENT_BUTTONS
-    case HGradButton:
-    case VGradButton:
+    case GradientButton:
     {
       XRectangle bounds;
       bounds.x = bounds.y = 0;
@@ -198,10 +197,14 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 #ifdef PIXMAP_BUTTONS
       XSetClipMask(dpy, Scr.TransMaskGC, None);
 #endif
-      if (type == HGradButton) {
-	register int i = 0, dw = bounds.width
-	  / bf->u.grad.npixels + 1;
-	while (i < bf->u.grad.npixels)
+
+      switch (bf->u.grad.gradient_type)
+      {
+      case H_GRADIENT:
+        {
+	  register int i = 0, dw = bounds.width
+	    / bf->u.grad.npixels + 1;
+	  while (i < bf->u.grad.npixels)
 	  {
 	    unsigned short x = i * bounds.width / bf->u.grad.npixels;
 	    XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
@@ -209,10 +212,13 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 			   bounds.x + x, bounds.y,
 			   dw, bounds.height);
 	  }
-      } else {
-	register int i = 0, dh = bounds.height
-	  / bf->u.grad.npixels + 1;
-	while (i < bf->u.grad.npixels)
+	}
+	break;
+      case V_GRADIENT:
+        {
+	  register int i = 0, dh = bounds.height
+	    / bf->u.grad.npixels + 1;
+	  while (i < bf->u.grad.npixels)
 	  {
 	    unsigned short y = i * bounds.height / bf->u.grad.npixels;
 	    XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
@@ -220,7 +226,53 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 			   bounds.x, bounds.y + y,
 			   bounds.width, dh);
 	  }
+	}
+	break;
+      case B_GRADIENT:
+      case D_GRADIENT:
+      case R_GRADIENT:
+      case Y_GRADIENT:
+      case S_GRADIENT:
+      case C_GRADIENT:
+      default:
+        {
+	  unsigned int width;
+	  unsigned int height;
+	  Pixmap pixmap;
+	  Pixmap stretched_pixmap;
+
+	  /***
+	   *** This stuff is experimental and *very* inefficient. For every
+	   *** redraw it creates and destroys three pixmaps
+	   ***/
+
+	  /* find out the size the pixmap should be */
+	  CalculateGradientDimensions(
+	    dpy, win, bf->u.grad.npixels, bf->u.grad.gradient_type,
+	    &width, &height);
+	  /* create a pixmap with the gradient */
+	  pixmap = CreateGradientPixmap(
+	    dpy, win, Scr.TransMaskGC, bf->u.grad.gradient_type, width, height,
+	    bf->u.grad.npixels, bf->u.grad.pixels);
+	  if (pixmap != None)
+	  {
+	    /* scale the pixmap to the proper dimensions */
+	    stretched_pixmap = CreateStretchPixmap(
+	      dpy, pixmap, width, height, /*!!!*/Pdepth, bounds.width,
+	      bounds.height, Scr.TransMaskGC);
+	    XFreePixmap(dpy, pixmap);
+	    /* copy the pixmap into the window */
+	    if (stretched_pixmap)
+	    {
+	      XCopyArea(dpy, stretched_pixmap, win, Scr.TransMaskGC, 0, 0,
+			bounds.width, bounds.height, bounds.x, bounds.y);
+	      XFreePixmap(dpy, pixmap);
+	    }
+	  }
+        }
+	break;
       }
+      break;
     }
     break;
 #endif /* GRADIENT_BUTTONS */

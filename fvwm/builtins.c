@@ -1346,8 +1346,7 @@ void FreeButtonFace(Display *dpy, ButtonFace *bf)
     switch (bf->style)
     {
 #ifdef GRADIENT_BUTTONS
-    case HGradButton:
-    case VGradButton:
+    case GradientButton:
 	/* - should we check visual is not TrueColor before doing this?
 
 	   XFreeColors(dpy, PictureCMap,
@@ -1403,397 +1402,351 @@ void FreeButtonFace(Display *dpy, ButtonFace *bf)
  ****************************************************************************/
 Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 {
-    int offset;
-    char style[256], *file;
-    char *action = s;
+  int offset;
+  char style[256], *file;
+  char *action = s;
 
-    /* some variants of scanf do not increase the assign count when %n is used,
-     * so a return value of 1 is no error. */
-    if (sscanf(s, "%256s%n", style, &offset) < 1) {
-	if (verbose)
-          fvwm_msg(ERR, "ReadButtonFace", "error in face `%s'", s);
-	return False;
+  /* some variants of scanf do not increase the assign count when %n is used,
+   * so a return value of 1 is no error. */
+  if (sscanf(s, "%256s%n", style, &offset) < 1)
+  {
+    if (verbose)
+      fvwm_msg(ERR, "ReadButtonFace", "error in face `%s'", s);
+    return False;
+  }
+
+  if (strncasecmp(style, "--", 2) != 0)
+  {
+    s += offset;
+
+    FreeButtonFace(dpy, bf);
+
+    /* determine button style */
+    if (strncasecmp(style,"Simple",6)==0)
+    {
+      bf->style = SimpleButton;
     }
+    else if (strncasecmp(style,"Default",7)==0)
+    {
+      int b = -1, n = sscanf(s, "%d%n", &b, &offset);
 
-    if (strncasecmp(style, "--", 2) != 0) {
-	s += offset;
-
-	FreeButtonFace(dpy, bf);
-
-	/* determine button style */
-	if (strncasecmp(style,"Simple",6)==0)
+      if (n < 1)
+      {
+	if (button == -1)
 	{
-	    bf->style = SimpleButton;
+	  if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+			      "need default button number to load");
+	  return False;
 	}
-	else if (strncasecmp(style,"Default",7)==0) {
-	    int b = -1, n = sscanf(s, "%d%n", &b, &offset);
-
-	    if (n < 1) {
-		if (button == -1) {
-		    if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-					"need default button number to load");
-		    return False;
-		}
-		b = button;
-	    }
-	    s += offset;
-	    if ((b > 0) && (b <= 10))
-		LoadDefaultButton(bf, b);
-	    else {
-		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				    "button number out of range: %d", b);
-		return False;
-	    }
-	}
+	b = button;
+      }
+      s += offset;
+      if ((b > 0) && (b <= 10))
+	LoadDefaultButton(bf, b);
+      else
+      {
+	if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+			    "button number out of range: %d", b);
+	return False;
+      }
+    }
 #ifdef VECTOR_BUTTONS
-	else if (strncasecmp(style,"Vector",6)==0 ||
-		 (strlen(style)<=2 && isdigit(*style)))
+    else if (strncasecmp(style,"Vector",6)==0 ||
+	     (strlen(style)<=2 && isdigit(*style)))
+    {
+      /* normal coordinate list button style */
+      int i, num_coords, num, line_style;
+      struct vector_coords *vc = &bf->u.vector;
+
+      /* get number of points */
+      if (strncasecmp(style,"Vector",6)==0)
+      {
+	num = sscanf(s,"%d%n",&num_coords,&offset);
+	s += offset;
+      } else
+	num = sscanf(style,"%d",&num_coords);
+
+      if((num != 1)||(num_coords>32)||(num_coords<2))
+      {
+	if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+			    "Bad button style (2) in line: %s",action);
+	return False;
+      }
+
+      vc->num = num_coords;
+      vc->line_style = 0;
+      vc->x = (int *) safemalloc (sizeof (int) * num_coords);
+      vc->y = (int *) safemalloc (sizeof (int) * num_coords);
+
+      /* get the points */
+      for(i = 0; i < vc->num; ++i)
+      {
+	/* X x Y @ line_style */
+	num = sscanf(s,"%dx%d@%d%n",&vc->x[i],&vc->y[i],
+		     &line_style, &offset);
+	if(num != 3)
 	{
-	    /* normal coordinate list button style */
-	    int i, num_coords, num, line_style;
-	    struct vector_coords *vc = &bf->u.vector;
-
-	    /* get number of points */
-	    if (strncasecmp(style,"Vector",6)==0) {
-		num = sscanf(s,"%d%n",&num_coords,&offset);
-		s += offset;
-	    } else
-		num = sscanf(style,"%d",&num_coords);
-
-	    if((num != 1)||(num_coords>32)||(num_coords<2))
-	    {
-		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				    "Bad button style (2) in line: %s",action);
-		return False;
-	    }
-
-	    vc->num = num_coords;
-	    vc->line_style = 0;
-	    vc->x = (int *) safemalloc (sizeof (int) * num_coords);
-	    vc->y = (int *) safemalloc (sizeof (int) * num_coords);
-
-	    /* get the points */
-	    for(i = 0; i < vc->num; ++i)
-	    {
-		/* X x Y @ line_style */
-		num = sscanf(s,"%dx%d@%d%n",&vc->x[i],&vc->y[i],
-			     &line_style, &offset);
-		if(num != 3)
-		{
-		    if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-					"Bad button style (3) in line %s",
-					action);
-		    return False;
-		}
-		if (line_style)
-		  {
-		    vc->line_style |= (1 << i);
-		  }
-		s += offset;
-	    }
-	    bf->style = VectorButton;
+	  if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+			      "Bad button style (3) in line %s",
+			      action);
+	  return False;
 	}
+	if (line_style)
+	{
+	  vc->line_style |= (1 << i);
+	}
+	s += offset;
+      }
+      bf->style = VectorButton;
+    }
 #endif
-	else if (strncasecmp(style,"Solid",5)==0)
-	{
-	    s = GetNextToken(s, &file);
-	    if (file) {
-		bf->style = SolidButton;
-		bf->u.back = GetColor(file);
-		free(file);
-	    } else {
-		if(verbose)
-		  fvwm_msg(ERR,"ReadButtonFace",
-			   "no color given for Solid face type: %s", action);
-		return False;
-	    }
-	}
+    else if (strncasecmp(style,"Solid",5)==0)
+    {
+      s = GetNextToken(s, &file);
+      if (file)
+      {
+	bf->style = SolidButton;
+	bf->u.back = GetColor(file);
+	free(file);
+      }
+      else
+      {
+	if(verbose)
+	  fvwm_msg(ERR,"ReadButtonFace",
+		   "no color given for Solid face type: %s", action);
+	return False;
+      }
+    }
 #ifdef GRADIENT_BUTTONS
-	else if (strncasecmp(style,"HGradient",9)==0
-		 || strncasecmp(style,"VGradient",9)==0)
-	{
-	    char *item, **s_colors;
-	    int npixels, nsegs, i, sum, *perc;
-	    Pixel *pixels;
+    else if (strncasecmp(style+1, "Gradient", 8)==0)
+    {
+      char **s_colors;
+      int npixels, nsegs, *perc;
+      Pixel *pixels;
 
-	    if (!(s = GetNextToken(s, &item)) || (item == NULL)) {
-		if(verbose)
-		  fvwm_msg(ERR,"ReadButtonFace",
-			 "expected number of colors to allocate in gradient");
-		if (item)
-		  free(item);
-		return False;
-	    }
-	    npixels = atoi(item);
-	    free(item);
+      if (!IsGradientTypeSupported(style[0]))
+	return False;
 
-	    if (!(s = GetNextToken(s, &item)) || (item == NULL)) {
-		if(verbose)
-		  fvwm_msg(ERR,"ReadButtonFace", "incomplete gradient style");
-		if (item)
-		  free(item);
-		return False;
-	    }
+      /* translate the gradient string into an array of colors etc */
+      npixels = ParseGradient(s, &s_colors, &perc, &nsegs);
+      if (npixels <= 0)
+	return False;
+      /* grab the colors */
+      pixels = AllocAllGradientColors(s_colors, perc, nsegs, npixels);
+      if (pixels == None)
+	return False;
 
-	    if (!(isdigit(*item))) {
-		s_colors = (char **)safemalloc(sizeof(char *) * 2);
-		perc = (int *)safemalloc(sizeof(int));
-		nsegs = 1;
-		s_colors[0] = item;
-		s = GetNextToken(s, &s_colors[1]);
-		perc[0] = 100;
-	    } else {
-		nsegs = atoi(item);
-		free(item);
-		if (nsegs < 1)
-		  nsegs = 1;
-		if (nsegs > MAX_GRADIENT_SEGMENTS)
-		  nsegs = MAX_GRADIENT_SEGMENTS;
-		s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
-		perc = (int *)safemalloc(sizeof(int) * nsegs);
-		for (i = 0; i <= nsegs; ++i) {
-		    s =GetNextToken(s, &s_colors[i]);
-		    if (i < nsegs) {
-			s = GetNextToken(s, &item);
-			if (item)
-			  {
-			    perc[i] = atoi(item);
-			    free(item);
-			  }
-			else
-			  perc[i] = 0;
-		    }
-		}
-	    }
-
-	    for (i = 0, sum = 0; i < nsegs; ++i)
-		sum += perc[i];
-
-	    if (sum != 100) {
-		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				    "multi gradient lengths must sum to 100");
-		for (i = 0; i <= nsegs; ++i)
-                  if (s_colors[i])
-		    free(s_colors[i]);
-		free(s_colors);
-		free(perc);
-		return False;
-	    }
-
-	    if (npixels < 2)
-	      npixels = 2;
-	    if (npixels > MAX_GRADIENT_SEGMENTS)
-	      npixels = MAX_GRADIENT_SEGMENTS;
-
-	    pixels = AllocNonlinearGradient(s_colors, perc, nsegs, npixels);
-	    for (i = 0; i <= nsegs; ++i)
-              if (s_colors[i])
-		free(s_colors[i]);
-	    free(s_colors);
-            free(perc);
-
-	    if (!pixels) {
-		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				    "couldn't create gradient");
-		return False;
-	    }
-
-	    bf->u.grad.pixels = pixels;
-	    bf->u.grad.npixels = npixels;
-
-	    if (strncasecmp(style,"H",1)==0)
-		bf->style = HGradButton;
-	    else
-		bf->style = VGradButton;
-	}
+      bf->u.grad.pixels = pixels;
+      bf->u.grad.npixels = npixels;
+      bf->style = GradientButton;
+      bf->u.grad.gradient_type = toupper(style[0]);
+    }
 #endif /* GRADIENT_BUTTONS */
 #ifdef PIXMAP_BUTTONS
-	else if (strncasecmp(style,"Pixmap",6)==0
-		 || strncasecmp(style,"TiledPixmap",11)==0)
+    else if (strncasecmp(style,"Pixmap",6)==0
+	     || strncasecmp(style,"TiledPixmap",11)==0)
+    {
+      s = GetNextToken(s, &file);
+      bf->u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
+			     file,Scr.ColorLimit);
+      if (bf->u.p == NULL)
+      {
+	if (file)
 	{
-	    s = GetNextToken(s, &file);
-	    bf->u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
-				   file,Scr.ColorLimit);
-	    if (bf->u.p == NULL)
-	    {
-	      if (file)
-		{
-		  if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				      "couldn't load pixmap %s", file);
-		  free(file);
-		}
-	      return False;
-	    }
-	    if (file)
-	      {
-		free(file);
-		file = NULL;
-	      }
-
-	    if (strncasecmp(style,"Tiled",5)==0)
-		bf->style = TiledPixmapButton;
-	    else
-		bf->style = PixmapButton;
+	  if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+			      "couldn't load pixmap %s", file);
+	  free(file);
 	}
+	return False;
+      }
+      if (file)
+      {
+	free(file);
+	file = NULL;
+      }
+
+      if (strncasecmp(style,"Tiled",5)==0)
+	bf->style = TiledPixmapButton;
+      else
+	bf->style = PixmapButton;
+    }
 #ifdef MINI_ICONS
-	else if (strncasecmp (style, "MiniIcon", 8) == 0) {
-	    bf->style = MiniIconButton;
+    else if (strncasecmp (style, "MiniIcon", 8) == 0) {
+      bf->style = MiniIconButton;
 #if 0
 /* Have to remove this again. This is all so badly written there is no chance
  * to prevent a coredump and a memory leak the same time without a rewrite of
  * large parts of the code. */
-	    if (bf->u.p)
-	      DestroyPicture(dpy, bf->u.p);
+      if (bf->u.p)
+	DestroyPicture(dpy, bf->u.p);
 #endif
-	    bf->u.p = NULL; /* pixmap read in when the window is created */
-  	}
+      bf->u.p = NULL; /* pixmap read in when the window is created */
+    }
 #endif
 #endif /* PIXMAP_BUTTONS */
-	else {
-	    if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				"unknown style %s: %s", style, action);
-	    return False;
-	}
+    else
+    {
+      if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+			  "unknown style %s: %s", style, action);
+      return False;
     }
+  }
 
-    /* Process button flags ("--" signals start of flags,
-       it is also checked for above) */
-    s = GetNextToken(s, &file);
-    if (file && (strcmp(file,"--")==0)) {
-	char *tok;
-	s = GetNextToken(s, &tok);
-	while (tok&&*tok)
+  /* Process button flags ("--" signals start of flags,
+     it is also checked for above) */
+  s = GetNextToken(s, &file);
+  if (file && (strcmp(file,"--")==0))
+  {
+    char *tok;
+    s = GetNextToken(s, &tok);
+    while (tok&&*tok)
+    {
+      int set = 1;
+
+      if (*tok == '!') { /* flag negate */
+	set = 0;
+	++tok;
+      }
+      if (StrEquals(tok,"Clear"))
+      {
+	if (set)
+	  bf->style &= ButtonFaceTypeMask;
+	else
+	  bf->style |= ~ButtonFaceTypeMask; /* ? */
+      }
+      else if (StrEquals(tok,"Left"))
+      {
+	if (set)
 	{
-	    int set = 1;
-
-	    if (*tok == '!') { /* flag negate */
-		set = 0;
-		++tok;
-	    }
-	    if (StrEquals(tok,"Clear")) {
-		if (set)
-		    bf->style &= ButtonFaceTypeMask;
-		else
-		    bf->style |= ~ButtonFaceTypeMask; /* ? */
-	    }
-	    else if (StrEquals(tok,"Left"))
-	    {
-		if (set) {
-		    bf->style |= HOffCenter;
-		    bf->style &= ~HRight;
-		} else
-		    bf->style |= HOffCenter | HRight;
-	    }
-	    else if (StrEquals(tok,"Right"))
-	    {
-		if (set)
-		    bf->style |= HOffCenter | HRight;
-		else {
-		    bf->style |= HOffCenter;
-		    bf->style &= ~HRight;
-		}
-	    }
-	    else if (StrEquals(tok,"Centered")) {
-		bf->style &= ~HOffCenter;
-		bf->style &= ~VOffCenter;
-	    }
-	    else if (StrEquals(tok,"Top"))
-	    {
-		if (set) {
-		    bf->style |= VOffCenter;
-		    bf->style &= ~VBottom;
-		} else
-		    bf->style |= VOffCenter | VBottom;
-
-	    }
-	    else if (StrEquals(tok,"Bottom"))
-	    {
-		if (set)
-		    bf->style |= VOffCenter | VBottom;
-		else {
-		    bf->style |= VOffCenter;
-		    bf->style &= ~VBottom;
-		}
-	    }
-	    else if (StrEquals(tok,"Flat"))
-	    {
-		if (set) {
-		    bf->style &= ~SunkButton;
-		    bf->style |= FlatButton;
-		} else
-		    bf->style &= ~FlatButton;
-	    }
-	    else if (StrEquals(tok,"Sunk"))
-	    {
-		if (set) {
-		    bf->style &= ~FlatButton;
-		    bf->style |= SunkButton;
-		} else
-		    bf->style &= ~SunkButton;
-	    }
-	    else if (StrEquals(tok,"Raised"))
-	    {
-		if (set) {
-		    bf->style &= ~FlatButton;
-		    bf->style &= ~SunkButton;
-		} else {
-		    bf->style |= SunkButton;
-		    bf->style &= ~FlatButton;
-		}
-	    }
-#ifdef EXTENDED_TITLESTYLE
-	    else if (StrEquals(tok,"UseTitleStyle"))
-	    {
-		if (set) {
-		    bf->style |= UseTitleStyle;
-#ifdef BORDERSTYLE
-		    bf->style &= ~UseBorderStyle;
-#endif
-		} else
-		    bf->style &= ~UseTitleStyle;
-	    }
-#endif
-#ifdef BORDERSTYLE
-	    else if (StrEquals(tok,"HiddenHandles"))
-	    {
-		if (set)
-		    bf->style |= HiddenHandles;
-		else
-		    bf->style &= ~HiddenHandles;
-	    }
-	    else if (StrEquals(tok,"NoInset"))
-	    {
-		if (set)
-		    bf->style |= NoInset;
-		else
-		    bf->style &= ~NoInset;
-	    }
-	    else if (StrEquals(tok,"UseBorderStyle"))
-	    {
-		if (set) {
-		    bf->style |= UseBorderStyle;
-#ifdef EXTENDED_TITLESTYLE
-		    bf->style &= ~UseTitleStyle;
-#endif
-		} else
-		    bf->style &= ~UseBorderStyle;
-	    }
-#endif
-	    else
-		if(verbose)
-		  fvwm_msg(ERR,"ReadButtonFace",
-			   "unknown button face flag %s -- line: %s",
-			   tok, action);
-	    if (set)
-	      free(tok);
-	    else
-	      free(tok - 1);
-	    s = GetNextToken(s, &tok);
+	  bf->style |= HOffCenter;
+	  bf->style &= ~HRight;
+	} else
+	  bf->style |= HOffCenter | HRight;
+      }
+      else if (StrEquals(tok,"Right"))
+      {
+	if (set)
+	  bf->style |= HOffCenter | HRight;
+	else {
+	  bf->style |= HOffCenter;
+	  bf->style &= ~HRight;
 	}
+      }
+      else if (StrEquals(tok,"Centered"))
+      {
+	bf->style &= ~HOffCenter;
+	bf->style &= ~VOffCenter;
+      }
+      else if (StrEquals(tok,"Top"))
+      {
+	if (set)
+	{
+	  bf->style |= VOffCenter;
+	  bf->style &= ~VBottom;
+	}
+	else
+	  bf->style |= VOffCenter | VBottom;
+      }
+      else if (StrEquals(tok,"Bottom"))
+      {
+	if (set)
+	  bf->style |= VOffCenter | VBottom;
+	else
+	{
+	  bf->style |= VOffCenter;
+	  bf->style &= ~VBottom;
+	}
+      }
+      else if (StrEquals(tok,"Flat"))
+      {
+	if (set)
+	{
+	  bf->style &= ~SunkButton;
+	  bf->style |= FlatButton;
+	}
+	else
+	  bf->style &= ~FlatButton;
+      }
+      else if (StrEquals(tok,"Sunk"))
+      {
+	if (set)
+	{
+	  bf->style &= ~FlatButton;
+	  bf->style |= SunkButton;
+	}
+	else
+	  bf->style &= ~SunkButton;
+      }
+      else if (StrEquals(tok,"Raised"))
+      {
+	if (set)
+	{
+	  bf->style &= ~FlatButton;
+	  bf->style &= ~SunkButton;
+	}
+	else
+	{
+	  bf->style |= SunkButton;
+	  bf->style &= ~FlatButton;
+	}
+      }
+#ifdef EXTENDED_TITLESTYLE
+      else if (StrEquals(tok,"UseTitleStyle"))
+      {
+	if (set)
+	{
+	  bf->style |= UseTitleStyle;
+#ifdef BORDERSTYLE
+	  bf->style &= ~UseBorderStyle;
+#endif
+	}
+	else
+	  bf->style &= ~UseTitleStyle;
+      }
+#endif
+#ifdef BORDERSTYLE
+      else if (StrEquals(tok,"HiddenHandles"))
+      {
+	if (set)
+	  bf->style |= HiddenHandles;
+	else
+	  bf->style &= ~HiddenHandles;
+      }
+      else if (StrEquals(tok,"NoInset"))
+      {
+	if (set)
+	  bf->style |= NoInset;
+	else
+	  bf->style &= ~NoInset;
+      }
+      else if (StrEquals(tok,"UseBorderStyle"))
+      {
+	if (set)
+	{
+	  bf->style |= UseBorderStyle;
+#ifdef EXTENDED_TITLESTYLE
+	  bf->style &= ~UseTitleStyle;
+#endif
+	}
+	else
+	  bf->style &= ~UseBorderStyle;
+      }
+#endif
+      else
+	if(verbose)
+	  fvwm_msg(ERR,"ReadButtonFace",
+		   "unknown button face flag %s -- line: %s",
+		   tok, action);
+      if (set)
+	free(tok);
+      else
+	free(tok - 1);
+      s = GetNextToken(s, &tok);
     }
-    if (file)
-      free(file);
-    return True;
+  }
+  if (file)
+    free(file);
+  return True;
 }
 
 

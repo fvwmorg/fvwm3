@@ -76,8 +76,7 @@ typedef enum {
 #endif
     SimpleButton                ,
 #ifdef GRADIENT_BUTTONS
-    HGradButton                 ,
-    VGradButton                 ,
+    GradientButton              ,
 #endif
 #ifdef PIXMAP_BUTTONS
     PixmapButton                ,
@@ -133,6 +132,7 @@ typedef struct ButtonFace {
 	struct {
 	    int npixels;
 	    Pixel *pixels;
+	    char gradient_type;
 	} grad;
 #endif
 #ifdef VECTOR_BUTTONS

@@ -92,7 +92,7 @@
 
 /* This is the tile width or height for V and H gradients. I guess this should
  * better be a power of two. A value of 5 definitely causes XFree 3.3.3.1 to
- * screw up the VGradient on an 8 bit display, but 4, 6, 7 etc. work well. */
+ * screw up the V_GRADIENT on an 8 bit display, but 4, 6, 7 etc. work well. */
 #define GRADIENT_PIXMAP_THICKNESS    4
 
 #define DEFAULT_MENU_BORDER_WIDTH    2
@@ -2287,10 +2287,7 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 #ifdef GRADIENT_BUTTONS
   switch (MST_FACE(mr).type)
   {
-  case HGradMenu:
-  case VGradMenu:
-  case DGradMenu:
-  case BGradMenu:
+  case GradientMenu:
     if (select == True)
     {
       int iy;
@@ -2527,10 +2524,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 #ifdef GRADIENT_BUTTONS
   switch (MST_FACE(mr).type)
   {
-  case HGradMenu:
-  case VGradMenu:
-  case DGradMenu:
-  case BGradMenu:
+  case GradientMenu:
     is_gradient_menu = True;
     break;
   default:
@@ -3077,16 +3071,13 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
       XClearWindow(dpy,MR_WINDOW(mr));
       break;
 #ifdef GRADIENT_BUTTONS
-    case HGradMenu:
-    case VGradMenu:
-    case DGradMenu:
-    case BGradMenu:
+    case GradientMenu:
       bounds.x = bw;
       bounds.y = bw;
       bounds.width = MR_WIDTH(mr) - bw;
       bounds.height = MR_HEIGHT(mr) - bw;
 
-      if (type == HGradMenu)
+      if (ST_FACE(ms).gradient_type == H_GRADIENT)
       {
 	if (MR_IS_BACKGROUND_SET(mr) == False)
 	{
@@ -3111,7 +3102,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	}
 	XClearWindow(dpy, MR_WINDOW(mr));
       }
-      else if (type == VGradMenu)
+      else if (ST_FACE(ms).gradient_type == V_GRADIENT)
       {
 	if (MR_IS_BACKGROUND_SET(mr) == False)
 	{
@@ -3147,7 +3138,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	}
 	XClearWindow(dpy, MR_WINDOW(mr));
       }
-      else /* D or BGradient */
+      else /* D or B_GRADIENT */
       {
 	register int i = 0, numLines;
 	int cindex = -1;
@@ -3163,9 +3154,9 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	    XSetForeground(dpy, Scr.TransMaskGC,
 			   ST_FACE(ms).u.grad.pixels[cindex]);
 	  }
-	  if (type == DGradMenu)
+	  if (ST_FACE(ms).gradient_type == D_GRADIENT)
 	    XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC, 0, i, i, 0);
-	  else /* BGradient */
+	  else /* B_GRADIENT */
 	    XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC,
 		      0, MR_HEIGHT(mr) - 1 - i, i, MR_HEIGHT(mr) - 1);
 	}
@@ -4719,9 +4710,7 @@ static void FreeMenuFace(Display *dpy, MenuFace *mf)
   switch (mf->type)
   {
 #ifdef GRADIENT_BUTTONS
-  case HGradMenu:
-  case VGradMenu:
-  case DGradMenu:
+  case GradientMenu:
     /* - should we check visual is not TrueColor before doing this?
      *
      *            XFreeColors(dpy, PictureCMap,
@@ -4792,130 +4781,26 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
   }
 
 #ifdef GRADIENT_BUTTONS
-  else if (StrEquals(style,"HGradient") || StrEquals(style, "VGradient") ||
-	   StrEquals(style,"DGradient") || StrEquals(style, "BGradient"))
+  else if (StrEquals(style+1, "Gradient"))
   {
-    char *item, **s_colors;
-    int npixels, nsegs, i, sum, perc[MAX_GRADIENT_SEGMENTS];
+    char **s_colors;
+    int npixels, nsegs, *perc;
     Pixel *pixels;
     char gtype = style[0];
 
-    s = GetNextToken(s, &item);
-    if (!item)
-    {
-      if(verbose)
-	fvwm_msg(ERR, "ReadMenuFace",
-		 "expected number of colors to allocate in gradient");
-      free(style);
+    /* translate the gradient string into an array of colors etc */
+    npixels = ParseGradient(s, &s_colors, &perc, &nsegs);
+    if (npixels <= 0)
       return False;
-    }
-    npixels = 0;
-    npixels = atoi(item);
-    free(item);
-
-    s = GetNextToken(s, &item);
-    if (!item)
-    {
-      if(verbose)
-	fvwm_msg(ERR, "ReadMenuFace", "incomplete gradient style");
-      free(style);
+    /* grab the colors */
+    pixels = AllocAllGradientColors(s_colors, perc, nsegs, npixels);
+    if (pixels == None)
       return False;
-    }
-
-    if (!(isdigit(*item)))
-    {
-      s_colors = (char **)safemalloc(sizeof(char *) * 2);
-      nsegs = 1;
-      s_colors[0] = item;
-      s = GetNextToken(s, &s_colors[1]);
-      if (!s_colors[1])
-      {
-	if(verbose)
-	  fvwm_msg(ERR, "ReadMenuFace", "incomplete gradient style");
-	free(s_colors);
-	free(item);
-	free(style);
-	return False;
-      }
-      perc[0] = 100;
-    }
-    else
-    {
-      nsegs = atoi(item);
-      free(item);
-      if (nsegs < 1)
-	nsegs = 1;
-      if (nsegs > MAX_GRADIENT_SEGMENTS)
-	nsegs = MAX_GRADIENT_SEGMENTS;
-      s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
-      for (i = 0; i <= nsegs; ++i)
-      {
-	s = GetNextToken(s, &s_colors[i]);
-	if (i < nsegs)
-	{
-	  s = GetNextToken(s, &item);
-	  perc[i] = (item) ? atoi(item) : 0;
-	  if (item)
-	    free(item);
-	}
-      }
-    }
-
-    for (i = 0, sum = 0; i < nsegs; ++i)
-      sum += perc[i];
-
-    if (sum != 100)
-    {
-      if(verbose)
-	fvwm_msg(ERR,"ReadMenuFace", "multi gradient lenghts must sum to 100");
-      for (i = 0; i <= nsegs; ++i)
-	if (s_colors[i])
-	  free(s_colors[i]);
-      free(style);
-      free(s_colors);
-      return False;
-    }
-
-    if (npixels < 2)
-      npixels = 2;
-    if (npixels > MAX_GRADIENT_SEGMENTS)
-      npixels = MAX_GRADIENT_SEGMENTS;
-
-    pixels = AllocNonlinearGradient(s_colors, perc, nsegs, npixels);
-    for (i = 0; i <= nsegs; ++i)
-      if (s_colors[i])
-	free(s_colors[i]);
-    free(s_colors);
-
-    if (!pixels)
-    {
-      if(verbose)
-	fvwm_msg(ERR, "ReadMenuFace", "couldn't create gradient");
-      free(style);
-      return False;
-    }
 
     mf->u.grad.pixels = pixels;
     mf->u.grad.npixels = npixels;
-
-    switch (gtype)
-    {
-    case 'h':
-    case 'H':
-      mf->type = HGradMenu;
-      break;
-    case 'v':
-    case 'V':
-      mf->type = VGradMenu;
-      break;
-    case 'd':
-    case 'D':
-      mf->type = DGradMenu;
-      break;
-    default:
-      mf->type = BGradMenu;
-      break;
-    }
+    mf->type = GradientMenu;
+    mf->gradient_type = toupper(gtype);
   }
 #endif /* GRADIENT_BUTTONS */
 

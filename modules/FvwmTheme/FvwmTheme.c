@@ -392,13 +392,17 @@ static void parse_colorset(char *line)
 		token, line);
 	break;
       }
+      if (!IsGradientTypeSupported(type))
+	break;
+
       /* create a pixmap of the gradient type */
-      cs->pixmap = CreateGradientPixmap(dpy, win, gc, type, line, &w, &h);
+      cs->pixmap =
+	CreateGradientPixmapFromString(dpy, win, gc, type, line, &w, &h);
       cs->width = w;
       cs->height = h;
       cs->keep_aspect = False;
-      cs->stretch_x = !(type == 'V');
-      cs->stretch_y = !(type == 'H');
+      cs->stretch_x = !(type == V_GRADIENT);
+      cs->stretch_y = !(type == H_GRADIENT);
     }
   }
 
