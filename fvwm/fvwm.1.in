@@ -9415,10 +9415,7 @@ years.  I guess we better plan on passing this thing on to our
 children...
 
 Known bugs can be found in the fvwm bug tracking system
-(accessible from the fvwm home page) and in the
-.IR BUGS " or " TODO
-files in the distribution.  These files are no longer maintained
-and may be out of date.
+(accessible from the fvwm home page).
 
 Bug reports can be sent to the fvwm-workers mailing list at
 @FVWMWORKERSLIST@ (see the

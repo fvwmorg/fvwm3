@@ -1,6 +1,8 @@
 2002-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in:
+	removed reference to BUGS and TODO
+
 	* configure.in:
 	moved a lot of constant definitions to configure.in; the fvwm.lsm and
 	fvwm.1 files don't have to be updated for a release anymore; the release
