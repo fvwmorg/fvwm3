@@ -97,6 +97,7 @@ int usleep( unsigned long usec );
 
 int matchWildcards(char *pattern, char *string);
 
+#define MAX_MODULE_INPUT_TEXT_LEN 1000
 
 
 /***********************************************************************

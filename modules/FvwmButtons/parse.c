@@ -701,18 +701,27 @@ static void ParseButton(button_info **uberb,char *s)
 	    b->hints=(XSizeHints*)mymalloc(sizeof(XSizeHints));
 	  if(o)
 	  {
-	    if(!(buttonSwallow(b)&b_UseOld))
-	      SendText(fd,o,0);
-	    if (b->spawn)
-	      free(b->spawn);
-	    b->spawn=o;  /* Might be needed if respawning sometime */
+	    char *p;
+
+	    p = expand_action(o, NULL);
+	    if (p)
+	    {
+	      if(!(buttonSwallow(b)&b_UseOld))
+		SendText(fd,p,0);
+	      if (b->spawn)
+		free(b->spawn);
+	      b->spawn=o;  /* Might be needed if respawning sometime */
+	      free(p);
+	    }
 	  }
 	}
 	else
 	{
 	  fprintf(stderr,"%s: Missing swallow argument\n",MyName);
-	  if(t)free(t);
-	  if(o)free(o);
+	  if(t)
+	    free(t);
+	  if(o)
+	    free(o);
 	}
 	break;
 
@@ -1110,6 +1119,173 @@ static void ParseConfigFile(button_info *ub)
   }
 
   fclose(f);
+}
+
+char *expand_action(char *in_action, button_info *b)
+{
+  char *variables[] =
+  {
+    "$",
+    "fg",
+    "bg",
+    "left",
+    "-left",
+    "right",
+    "-right",
+    "top",
+    "-top",
+    "bottom",
+    "-bottom",
+    "width",
+    "height",
+    NULL
+  };
+  char *action = NULL;
+  char *src;
+  char *dest;
+  char *string;
+  char *rest;
+  int px;
+  int py;
+  int val;
+  int offset;
+  int x;
+  int y;
+  int f;
+  int i;
+  unsigned int w;
+  unsigned int h;
+  Window win;
+  extern int dpw;
+  extern int dph;
+
+
+  /* create a temporary storage for expanding */
+  action = (char *)malloc(MAX_MODULE_INPUT_TEXT_LEN);
+  if (!action)
+  {
+    /* could not alloc memory */
+    return NULL;
+  }
+
+  /* calculate geometry */
+  if (b)
+  {
+    w = buttonWidth(b);
+    h = buttonHeight(b);
+    buttonInfo(b, &x, &y, &px, &py, &f);
+    XTranslateCoordinates(Dpy, MyWindow, Root, x, y, &x, &y, &win);
+  }
+
+  for (src = in_action, dest = action; *src != 0; src++)
+  {
+    if (*src != '$')
+    {
+      *(dest++) = *src;
+    }
+    else
+    {
+      char *src_org = src;
+      char *dest_org = dest;
+      Bool is_string = False;
+      Bool is_value = False;
+
+      *(dest++) = *(src++);
+      i = GetTokenIndex(src, variables, -1, &rest);
+      if (i == -1)
+      {
+	src--;
+	continue;
+      }
+      switch (i)
+      {
+      case 0: /* $ */
+	continue;
+      case 1: /* fg */
+	string = UberButton->c->fore;
+	is_string = True;
+	break;
+      case 2: /* bg */
+	string = UberButton->c->back;
+	is_string = True;
+	break;
+      case 3: /* left */
+	val = x;
+	is_value = True; 
+	break;
+      case 4: /* -left */
+	val = dpw - x - 1;
+	is_value = True; 
+	break;
+      case 5: /* right */
+	val = x + w;
+	is_value = True; 
+	break;
+      case 6: /* -right */
+	val = dpw - x - w - 1;
+	is_value = True; 
+	break;
+      case 7: /* top */
+	val = y;
+	is_value = True; 
+	break;
+      case 8: /* -top */
+	val = dph - y - 1;
+	is_value = True; 
+	break;
+      case 9: /* bottom */
+	val = y + h;
+	is_value = True; 
+	break;
+      case 10: /* -bottom */
+	val = dph - y - h - 1;
+	is_value = True; 
+	break;
+      case 11: /* width */
+	val = w;
+	is_value = True; 
+	break;
+      case 12: /* height */
+	val = h;
+	is_value = True; 
+	break;
+      deafult: /* unknown */
+	src--;
+	continue;
+      } /* switch */
+      dest = dest_org;
+      src = --rest;
+      if (is_value)
+      {
+	if (MAX_MODULE_INPUT_TEXT_LEN - (dest - action) <= 16)
+	{
+	  /* out of space */
+	  free(action);
+	  return NULL;
+	}
+	/* print the number into the string */
+	sprintf(dest, "%d%n", val, &offset);
+	dest += offset;
+      }
+      else if (is_string)
+      {
+	if (MAX_MODULE_INPUT_TEXT_LEN - (dest - action) <= strlen(string))
+	{
+	  /* out of space */
+	  free(action);
+	  return NULL;
+	}
+	/* print the colour name into the string */
+	if (string)
+	{
+	  sprintf(dest, "%s%n", string, &offset);
+	  dest += offset;
+	}
+      }
+    } /* if */
+  } /* for */
+  *dest = 0;
+  return action;
 }
 
 void parse_window_geometry(char *geom)

@@ -447,137 +447,20 @@ void AddButtonAction(button_info *b,int n,char *action)
   memmove(t, action, l);
   t[l] = 0;
   b->action[n] = t;
-
 }
+
 
 /**
 *** GetButtonAction()
 **/
 char *GetButtonAction(button_info *b,int n)
 {
-  char *action = NULL;
-  char *src;
-  char *dest;
-  int i = 16;
-  int val;
-  int number;
-  int offset;
-  int x;
-  int y;
-  int px;
-  int py;
-  int f;
-  unsigned int w;
-  unsigned int h;
-  Window win;
-
   if(!b || !(b->flags&b_Action) || !(b->action) || n<0 || n>3)
     return NULL;
   if (!b->action[n])
     return NULL;
 
-  /* create a temporary storage for expanding */
-  action = (char *)malloc(strlen(b->action[n]) + 256);
-  if (!action)
-  {
-    /* could not alloc memory */
-    return NULL;
-  }
-
-  /* calculate geometry */
-  w = buttonWidth(b);
-  h = buttonHeight(b);
-  buttonInfo(b, &x, &y, &px, &py, &f);
-  XTranslateCoordinates(Dpy, MyWindow, Root, x, y, &x, &y, &win);
-
-  number = buttonNum(b);
-  /* expand the action */
-  for (src = b->action[n], dest = action; *src != 0; src++)
-  {
-    if (*src == '$')
-    {
-      char *src_org = src;
-      char *dest_org = dest;
-      Bool is_negative = False;
-
-      *(dest++) = *(src++);
-      if (*src == '-')
-      {
-	/* offset from the righ/bottom */
-	*(dest++) = *(src++);
-	is_negative = True;
-      }
-      switch (*src)
-      {
-      case 0:
-	continue;
-      case 'l':
-	/* left border */
-	val = x;
-	if (is_negative)
-	{
-	  val = dpw - x - 1;
-	}
-	break;
-      case 'r':
-	/* right border */
-	val = x + w;
-	if (is_negative)
-	{
-	  val = dpw - x - w - 1;
-	}
-	break;
-      case 't':
-	/* top border */
-	val = y;
-	if (is_negative)
-	{
-	  val = dph - y - 1;
-	}
-	break;
-      case 'b':
-	/* bottom border */
-	val = y + h;
-	if (is_negative)
-	{
-	  val = dph - y - h - 1;
-	}
-	break;
-      case 'w':
-	/* width */
-	val = w;
-	break;
-      case 'h':
-	/* height */
-	val = h;
-	break;
-      default:
-      case '$':
-	/* literal $ */
-	/* copy the character into temp area */
-	*(dest++) = *src;
-	continue;
-      }
-      if (i-- == 0)
-      {
-	/* max. 16 variables to expand */
-	free(action);
-	return NULL;
-      }
-      dest = dest_org;
-      /* print the number into the string */
-      sprintf(dest, "%d%n", val, &offset);
-      dest += offset;
-    }
-    else
-    {
-      /* copy the character into temp area */
-      *(dest++) = *src;
-    }
-  }
-  *dest = 0;
-
-  return action;
+  return expand_action(b->action[n], b);
 }
 
 #ifdef SHAPE

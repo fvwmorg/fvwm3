@@ -29,3 +29,4 @@
 
 void ParseConfiguration(button_info *ub);
 void parse_window_geometry(char *geom);
+char *expand_action(char *in_action, button_info *b);

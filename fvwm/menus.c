@@ -919,17 +919,19 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
 	  /* enter the submenu */
 	  return MENU_POPUP;
       }
+      /* do nothing */
+      *pmiCurrent = miCurrent;
     }
-    /* do nothing */
-    *pmiCurrent = miCurrent;
+    else if (miCurrent && MI_IS_POPUP(miCurrent))
+    {
+      return MENU_POPUP;
+    }
     return MENU_NOP;
 
   case XK_Right:
   case XK_KP_6:
     if (!MST_USE_LEFT_SUBMENUS(mr))
     {
-      if (miCurrent && MI_IS_POPUP(miCurrent))
-	return MENU_POPUP;
     }
     else
       return MENU_POPDOWN;

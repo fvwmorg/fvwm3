@@ -1,3 +1,11 @@
+1999-08-16  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* fvwm/module_interface.c (HandleModuleInput): 
+	* libs/fvwmlib.h: constant for max. module input text length
+
+	* fvwm/menus.c (menuShortcuts): insert enters current submenu if no
+	continuation is defined
+
 1999-08-16  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Colorset.c (LoadColorset): fixed reading shape_mask into mask

@@ -315,7 +315,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 /* Changed message from module from 255 to 1000. dje */
 int HandleModuleInput(Window w, int channel)
 {
-  char text[1000];
+  char text[MAX_MODULE_INPUT_TEXT_LEN];
   int size;
   int cont,n;
   extern FvwmWindow *ButtonWindow;
