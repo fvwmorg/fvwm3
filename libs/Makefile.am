@@ -4,7 +4,7 @@ noinst_LIBRARIES = libfvwm.a
 
 ## please keep .c files in largest first order to speed up parallel makes
 libfvwm_a_SOURCES = \
-	ClientMsg.h Colorset.h FBidi.h FBidiJoin.h FEvent.h \
+	Bindings.h ClientMsg.h Colorset.h FBidi.h FBidiJoin.h FEvent.h \
 	FRender.h FRenderInit.h FRenderInterface.h \
 	FScreen.h FShape.h Fft.h FftInterface.h Ficonv.h \
 	Flocale.h FlocaleCharset.h Fpng.h Fxpm.h Grab.h Module.h Parse.h \

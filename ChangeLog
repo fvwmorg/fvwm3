@@ -1,3 +1,7 @@
+2002-11-18  Dan Espen  <dane@mk.telcordia.com>
+
+	* libs/Makefile.am: Add missing Bindings.h.
+
 2002-11-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (__move_loop):
