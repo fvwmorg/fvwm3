@@ -174,18 +174,14 @@ static void __update_windowlist(
 	{
 		return;
 	}
-	/* ClickToFocus focus queue manipulation - only performed for
-	 * Focus-by-mouse type focus events */
 	/* Watch out: fw may not be on the windowlist and the windowlist may be
 	 * empty */
-
-	/* pluck window from list and deposit at top */
-
-	if (FP_DO_SORT_WINDOWLIST_BY(FW_FOCUS_POLICY(fw)) ==
-	    FPOL_SORT_WL_BY_OPEN && !is_focus_by_flip_focus_cmd)
+	if (!is_focus_by_flip_focus_cmd &&
+	    (FP_DO_SORT_WINDOWLIST_BY(FW_FOCUS_POLICY(fw)) ==
+	     FPOL_SORT_WL_BY_OPEN ||
+	     set_by == FOCUS_SET_BY_FUNCTION))
 	{
-		/* move the windowlist around so that fw is at the top
-		 */
+		/* move the windowlist around so that fw is at the top */
 		FvwmWindow *fw2;
 
 		/* find the window on the windowlist */
@@ -197,10 +193,8 @@ static void __update_windowlist(
 
 		if (fw2)
 		{
-			/* the window is on the (non-zero length)
-			 * windowlist */
-			/* make fw2 point to the last window on the
-			 * list */
+			/* the window is on the (non-zero length) windowlist */
+			/* make fw2 point to the last window on the list */
 			while (fw2->next)
 			{
 				fw2 = fw2->next;
@@ -219,6 +213,7 @@ static void __update_windowlist(
 	}
 	else
 	{
+		/* pluck window from list and deposit at top */
 		/* remove fw from list */
 		if (fw->prev)
 		{
@@ -228,7 +223,6 @@ static void __update_windowlist(
 		{
 			fw->next->prev = fw->prev;
 		}
-
 		/* insert fw at start */
 		fw->next = Scr.FvwmRoot.next;
 		if (Scr.FvwmRoot.next)
@@ -386,13 +380,13 @@ static void set_focus_to_fwin(
 	/* Make sure the button grabs on the new and the old focused windows
 	 * are up to date. */
         if (args->client_entered)
-                {
-                        focus_grab_buttons_client_entered(fw);
-                }
-                else
-                {
-                        focus_grab_buttons(fw);
-                }
+	{
+		focus_grab_buttons_client_entered(fw);
+	}
+	else
+	{
+		focus_grab_buttons(fw);
+	}
         /* RBW -- don't call this twice for the same window!  */
         if (fw != get_focus_window())
         {
