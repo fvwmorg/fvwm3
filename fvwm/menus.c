@@ -2837,7 +2837,6 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 			MR_SIDEPIC_X_OFFSET(mr), yt, sidePic->width, h, False);
 	}
 
-
 	PGraphicsRenderPicture(
 		dpy, MR_WINDOW(mr), sidePic, 0, MR_WINDOW(mr),
 		gc, Scr.MonoGC, None,
@@ -3135,8 +3134,9 @@ static void paint_menu(
 	MenuPaintItemParameters mpip;
 	int bw = MST_BORDER_WIDTH(mr);
 	XGCValues gcv;
-	gcv.line_width = 3;
+	short relief_thickness = ST_RELIEF_THICKNESS(MR_STYLE(mr));
 
+	gcv.line_width = 3;
 	if (fw && !check_if_fvwm_window_exists(fw))
 	{
 		fw = NULL;
@@ -3211,14 +3211,31 @@ static void paint_menu(
 	get_menu_paint_item_parameters(&mpip, mr, NULL, fw, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
+		int do_draw = 0;
+
 		/* be smart about handling the expose, redraw only the entries
 		 * that we need to */
-		if (pevent == NULL ||
-		    (pevent->xexpose.y <
-		     (MI_Y_OFFSET(mi) + MI_HEIGHT(mi) +
-		      ST_RELIEF_THICKNESS(MR_STYLE(mr))) &&
-		     (pevent->xexpose.y + pevent->xexpose.height) >
-		     MI_Y_OFFSET(mi)))
+		if (pevent == NULL)
+		{
+			do_draw = True;
+		}
+		else
+		{
+			register int b_offset;
+
+			b_offset = MI_Y_OFFSET(mi) + MI_HEIGHT(mi);
+			if (MR_SELECTED_ITEM(mr) == mi)
+			{
+				b_offset += relief_thickness;
+			}
+			if (pevent->xexpose.y < b_offset &&
+			    (pevent->xexpose.y + pevent->xexpose.height) >
+			    MI_Y_OFFSET(mi))
+			{
+				do_draw = True;
+			}
+		}
+		if (do_draw)
 		{
 			mpip.flags.is_first_item = (MR_FIRST_ITEM(mr) == mi);
 			menuitem_paint(mi, &mpip);

@@ -394,8 +394,7 @@ void menuitem_paint(
 		  (ST_FACE(ms).type != GradientMenu || ST_HAS_MENU_CSET(ms))))
 	{
 		int d = 0;
-		if (MI_PREV_ITEM(mi) &&
-		    mpip->selected_item == MI_PREV_ITEM(mi))
+		if (MI_PREV_ITEM(mi) && mpip->selected_item == MI_PREV_ITEM(mi))
 		{
 			/* Don't paint over the hilight relief. */
 			d = relief_thickness;
@@ -713,7 +712,7 @@ void menuitem_paint(
 			fra.mask |= FRAM_HAVE_ICON_CSET;
 			fra.colorset = &Colorset[tmp_cs];
 		}
-		if (alpha_redraw && 
+		if (alpha_redraw &&
 		    (MI_PICTURE(mi)->alpha != None ||
 		     (tmp_cs >=0 && Colorset[tmp_cs].icon_alpha < 100)))
 		{
