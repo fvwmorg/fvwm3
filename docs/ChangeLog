@@ -1,3 +1,8 @@
+1998-11-05  Dan Espen  <dane@mk.bellcore.com>
+
+	* txt2html.sh (outfile): Replaced txt2html.ksh with txt2html.sh.
+	Added logic to handle '<>&' special characters in text.
+
 1998-11-04  Dan Espen  <dane@mk.bellcore.com>
 
 	*   Added  README,     black-stone1.jpg, index.html,     fvwm.gif,
