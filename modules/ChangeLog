@@ -1,3 +1,11 @@
+1999-12-14  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	(RevealTaskBar):
+	(HideTaskBar):
+	Tried to fix user resizing with AutoHide. Fixed Hide/Reveal with
+ 	a lot of rows
+	
 1999-12-13  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.{c,h} (WarpTaskBar):

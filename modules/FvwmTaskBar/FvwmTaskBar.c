@@ -1404,7 +1404,20 @@ void LoopOnEvents(void)
 	}
         if (Event.xconfigure.height != win_height) {
 	  AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
-          if (AutoStick && !AutoHide)
+	  if (AutoHide)
+	  {
+	    /* the less bad solution I found to limit crazy evens I see
+	     * when resizing (olicha dec 14, 1999) */
+	    if (win_y > Midline)
+	      win_y = ScreenHeight - 2;
+	    else
+	      win_y = 2 - win_height;
+	    XSync(dpy,0);
+	    XMoveWindow(dpy, win, win_x, win_y);
+	    XSync(dpy,0);
+	    WindowState = -1;
+	  } 
+	  else if (AutoStick)
 	    WarpTaskBar(win_y, 1);
 	  redraw = 1;
         }
@@ -1414,13 +1427,15 @@ void LoopOnEvents(void)
 	  PurgeConfigEvents();
 	  break;
 	}
-        else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
+        else if (AutoHide)
+	  break;
+	else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
 	{
-          if (AutoStick && !AutoHide)
+          if (AutoStick)
 	  {
             WarpTaskBar(Event.xconfigure.y, 0);
           }
-	  else if (!AutoHide)
+	  else
 	  {
             win_x = Event.xconfigure.x;
             win_y = Event.xconfigure.y;
@@ -2146,22 +2161,29 @@ void WarpTaskBar(int y, Bool force)
 void RevealTaskBar()
 {
   int new_win_y;
+  int inc_y = 2;
 
   ClearAlarm();
+   /* do not reveal if the taskbar is already revealed */
+  if (WindowState >= 0)
+    return;
+
+  /* Go faster with the number of rows */
+  inc_y += (NRows >= 3 ? 3 : 0) + (NRows >= 5 ? 3 : 0);
 
   if (win_y < Midline) {
     new_win_y = win_border;
-    for (; win_y<=new_win_y; win_y+=2)
+    for (; win_y<=new_win_y; win_y +=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);
   } else {
     new_win_y = (int)ScreenHeight - win_height - win_border;
-    for (; win_y>=new_win_y; win_y-=2)
+    for (; win_y>=new_win_y; win_y -=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);
   }
 
   win_y = new_win_y;
   XMoveWindow(dpy, win, win_x, win_y);
-  WindowState = (WindowState <= 0) ? 0 : 1;
+  WindowState = 0;
 }
 
 /***********************************************************************
@@ -2170,11 +2192,15 @@ void RevealTaskBar()
 void HideTaskBar()
 {
   int new_win_y;
+  int inc_y = 1;
   Window d_rt, d_ch;
   int d_x, d_y, wx, wy;
   unsigned int mask;
 
   ClearAlarm();
+  /* do not hide if the taskbar is already hiden */
+  if (WindowState == -1)
+    return;
 
   if (FocusInWin)
   {
@@ -2188,16 +2214,20 @@ void HideTaskBar()
     }
   }
 
+  /* Go faster with the number of rows */
+  inc_y += (NRows >= 3 ? 2 : 0) + (NRows >= 5 ? 2 : 0);
+
   if (win_y < Midline) {
     new_win_y = 1 - win_height;
-    for (; win_y>=new_win_y; --win_y)
+    for (; win_y>=new_win_y; win_y -=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);
   } else {
     new_win_y = (int)ScreenHeight - 1;
-    for (; win_y<=new_win_y; ++win_y)
+    for (; win_y<=new_win_y; win_y +=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);
   }
   win_y = new_win_y;
+  XMoveWindow(dpy, win, win_x, win_y);
   WindowState = -1;
 }
 
