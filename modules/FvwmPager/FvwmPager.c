@@ -93,6 +93,8 @@ char *WindowHiBack = NULL;
 char *WindowHiFore = NULL;
 char *WindowLabelFormat = NULL;
 
+int WindowBorderWidth = 1;
+
 Picture *PixmapBack = NULL;
 
 char *ImagePath = NULL;
@@ -1832,6 +1834,10 @@ void ParseOptions(void)
 	      tline2 = GetNextToken(tline2, &WindowHiFore);
 	      GetNextToken(tline2, &WindowHiBack);
 	    }
+	}
+      else if (StrEquals(resource, "WindowBorderWidth"))
+	{
+	  sscanf(arg1, "%d", &WindowBorderWidth);
 	}
       else if (StrEquals(resource,"WindowColorsets"))
 	{

@@ -69,7 +69,7 @@ extern char *BalloonFormatString;
 extern char *WindowLabelFormat;
 extern char *PagerFore, *PagerBack, *HilightC;
 extern char *BalloonFore, *BalloonBack, *BalloonBorderColor;
-
+extern int WindowBorderWidth;
 extern Picture *PixmapBack;
 extern Picture *HilightPixmap;
 extern int HilightDesks;
@@ -2211,46 +2211,36 @@ XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 void BorderWindow(PagerWindow *t)
 {
   if (t->PagerView != None) {
-    if (t == FocusWin) {
-      if (activecolorset < 0) {
-	XDrawRectangle(dpy, t->PagerView, Scr.NormalGC, 0, 0,
-		       t->pager_view_width - 1, t->pager_view_height - 1);
-      } else {
-        RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
-        		 t->pager_view_height - 1, Scr.ahGC, Scr.asGC, 1);
-      }
-    } else {
-      if (windowcolorset < 0) {
-	XDrawRectangle(dpy, t->PagerView, Scr.NormalGC, 0, 0,
-		       t->pager_view_width - 1, t->pager_view_height - 1);
-      } else {
-        RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
-        		 t->pager_view_height - 1, Scr.whGC, Scr.wsGC, 1);
-      }
-    }
+    if ((WindowBorderWidth > 0) || (windowcolorset < 0) || (activecolorset < 0))
+      RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
+        	       t->pager_view_height - 1, Scr.NormalGC, Scr.NormalGC,
+        	       abs(WindowBorderWidth));
+    else if (t == FocusWin)
+      RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
+		       t->pager_view_height - 1, Scr.ahGC, Scr.asGC,
+		       -WindowBorderWidth);
+    else
+      RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
+		       t->pager_view_height - 1, Scr.whGC, Scr.wsGC,
+		       -WindowBorderWidth);
   }
 }
 
 void BorderIconWindow(PagerWindow *t)
 {
   if (t->IconView != None) {
-    if (t == FocusWin) {
-      if (activecolorset < 0) {
-	XDrawRectangle(dpy, t->IconView, Scr.NormalGC, 0, 0,
-		       t->icon_view_width - 1, t->icon_view_height - 1);
-      } else {
-        RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
-        		 t->icon_view_height - 1, Scr.ahGC, Scr.asGC, 1);
-      }
-    } else {
-      if (windowcolorset < 0) {
-	XDrawRectangle(dpy, t->IconView, Scr.NormalGC, 0, 0,
-		       t->icon_view_width - 1, t->icon_view_height - 1);
-      } else {
-        RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
-        		 t->icon_view_height - 1, Scr.whGC, Scr.wsGC, 1);
-      }
-    }
+    if ((WindowBorderWidth > 0) || (windowcolorset < 0) || (activecolorset < 0))
+      RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
+        	       t->icon_view_height - 1, Scr.NormalGC, Scr.NormalGC,
+        	       abs(WindowBorderWidth));
+    else if (t == FocusWin)
+      RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
+		       t->icon_view_height - 1, Scr.ahGC, Scr.asGC,
+		       -WindowBorderWidth);
+    else
+      RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
+		       t->icon_view_height - 1, Scr.whGC, Scr.wsGC,
+		       -WindowBorderWidth);
   }
 }
 
