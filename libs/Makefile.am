@@ -9,7 +9,7 @@ libfvwm_a_SOURCES = ClientMsg.h Colorset.h Grab.h Module.h Parse.h Picture.h \
 	Graphics.c Parse.c Picture.c Bindings.c Colorset.c envvar.c \
 	ColorUtils.c XResource.c Module.c WinMagic.c Target.c System.c \
 	XError.c fvwmsignal.c GetFont.c Strings.c wild.c safemalloc.c \
-	GetFontSet.c Pointer.c debug.c Grab.c ClientMsg.c
+	Pointer.c debug.c Grab.c ClientMsg.c
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 
