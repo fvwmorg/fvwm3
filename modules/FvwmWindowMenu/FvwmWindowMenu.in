@@ -405,6 +405,19 @@ __END__
 
 # ----------------------------------------------------------------------------
 
+=head1 NAME
+
+FvwmWindowMenu - open configurable fvwm menu listing current windows
+
+=head1 SYNOPSIS
+
+FvwmWindowMenu should be spawned by fvwm(1) for normal functionality.
+
+Run this module from your StartFunction:
+
+    AddToFunc StartFunction
+    + I Module FvwmWindowMenu
+
 =head1 DESCRIPTION
 
 A substitute for I<fvwm> builtin B<WindowList>, but written in Perl
@@ -423,7 +436,7 @@ be placed in the last section of the menu.
 
 =head1 USAGE
 
-Place this line in e.g. your StartFunction in I<.fvwm2rc>:
+Run the module, supposedly from StartFunction in I<.fvwm2rc>:
 
     Module FvwmWindowMenu
 

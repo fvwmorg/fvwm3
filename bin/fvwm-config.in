@@ -70,6 +70,7 @@ with_gettext=@with_gettext@
 with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
+with_iconv=@with_iconv@
 with_perllib=@with_perllib@
 with_png=@with_png@
 with_readline=@with_readline@
@@ -142,6 +143,7 @@ while test $# -gt 0; do
 			test "$with_gtk"        = "yes" && echo "gtk"
 			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
 			test "$with_gnomelibs"  = "yes" && echo "gnome-libs"
+			test "$with_iconv"      = "yes" && echo "iconv"
 			test "$with_perllib"    = "yes" && echo "perllib"
 			test "$with_png"        = "yes" && echo "png"
 			test "$with_readline"   = "yes" && echo "readline"
@@ -194,6 +196,7 @@ while test $# -gt 0; do
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
 			echo "	perllib (Perl library installed): $with_perllib"
+			echo "	iconv (i18n conversions): $with_iconv"
 			echo "	png: $with_png"
 			echo "	readline: $with_readline"
 			echo "	rplay: $with_rplay"

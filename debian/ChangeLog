@@ -11,6 +11,9 @@
 	* docs:
 	lintian fixes
 
+	* control.in:
+	more Build-Depends
+
 2003-10-31  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:
