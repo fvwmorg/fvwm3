@@ -1,5 +1,7 @@
 1999-05-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.3
+
 	* fvwm/menus.h: more preparations for tear-off menus
 
 	* fvwm/menus.c (MenuInteraction): fixed coredump with double key press
@@ -17,7 +19,7 @@
 	* fvwm/fvwm.h (common_flags_type): new member has_depressable_border.
 
 	* fvwm/window_flags.h (HAS_DEPRESSABLE_BORDER): accessor macro.
-	
+
 	* fvwm/style.c (ProcessNewStyle): new styles
 	DepressableBorder/FirmBorder to set has_depressable_border.
 
