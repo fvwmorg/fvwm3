@@ -747,8 +747,6 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			fn = (FlocaleMultibyteSupport) ?
 				FLOCALE_MB_FALLBACK_FONT : FLOCALE_FALLBACK_FONT;
 		}
-		fprintf(stderr,"SHADOW: %i, fn: '%s', rest: '%s'\n",
-			shadow_size, fn, str);
 	}
 	else
 	{

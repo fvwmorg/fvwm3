@@ -1052,7 +1052,7 @@ void parse_colorset(int n, char *line)
 			{
 				XColor *colorp;
 
-				colorp = GetForeShadowColor(cs->fg);
+				colorp = GetForeShadowColor(cs->fg, cs->bg);
 				colorp->pixel = cs->fgsh;
 				XStoreColor(dpy, Pcmap, colorp);
 			}
@@ -1061,7 +1061,7 @@ void parse_colorset(int n, char *line)
 				Pixel old_fgsh = cs->fgsh;
 
 				XFreeColors(dpy, Pcmap, &cs->fgsh, 1, 0);
-				cs->fgsh = GetForeShadow(cs->fg);
+				cs->fgsh = GetForeShadow(cs->fg, cs->bg);
 				if (old_fgsh != cs->fgsh)
 					have_pixels_changed = True;
 			}
@@ -1272,7 +1272,7 @@ void alloc_colorset(int n)
 			colorp->pixel = ncs->shadow;
 			XStoreColor(dpy, Pcmap, colorp);
 			/* calculate and set the fg shadow */
-			colorp = GetForeShadowColor(ncs->fg);
+			colorp = GetForeShadowColor(ncs->fg, ncs->bg);
 			colorp->pixel = ncs->fgsh;
 			XStoreColor(dpy, Pcmap, colorp);
 			/* set the tint color */
@@ -1312,7 +1312,7 @@ void alloc_colorset(int n)
 				ncs->bg = GetColor(gray);
 				ncs->hilite = GetHilite(ncs->bg);
 				ncs->shadow = GetShadow(ncs->bg);
-				ncs->fgsh = GetForeShadow(ncs->fg);
+				ncs->fgsh = GetForeShadow(ncs->fg, ncs->bg);
 				ncs->tint = GetColor(black);
 			}
 			/* set flags for fg contrast, bg average */

@@ -288,18 +288,53 @@ Pixel GetHilite(Pixel background)
   return colorp->pixel;
 }
 
-/* FIXME: As GetShadow{Color} at the prsent time */
-XColor *GetForeShadowColor(Pixel background)
+XColor *GetForeShadowColor(Pixel foreground, Pixel background)
 {
-  return GetShadowOrHiliteColor(
-    background, PCT_LIGHT_BOTTOM, PCT_DARK_BOTTOM, DARKNESS_FACTOR);
+	XColor bg_color;
+	float fg[3], bg[3];
+	int result[3];
+	int i;
+
+	memset(&color, 0, sizeof(color));
+	memset(&bg_color, 0, sizeof(bg_color));
+	color.pixel = foreground;
+	bg_color.pixel = background;
+	XQueryColor(Pdpy, Pcmap, &color);
+	XQueryColor(Pdpy, Pcmap, &bg_color);
+	fg[0] = color.red;
+	fg[1] = color.green;
+	fg[2] = color.blue;
+	bg[0] = bg_color.red;
+	bg[1]=  bg_color.green;
+        bg[2] = bg_color.blue;
+
+	for (i=0; i<3; i++)
+	{
+		if (fg[i] - bg[i] < 8192 && fg[i] - bg[i] > -8192)
+		{
+			result[i] = 0;
+		}
+		else
+		{
+			result[i] = (int)((5 * bg[i] - fg[i]) / 4);
+			if (fg[i] < bg[i] || result[i] < 0)
+			{
+				result[i] = (int)((3 * bg[i] + fg[i]) / 4);
+			}
+		}
+	}
+	color.red = result[0];
+	color.green = result[1];
+	color.blue = result[2];
+
+	return &color;
 }
 
-Pixel GetForeShadow(Pixel background)
+Pixel GetForeShadow(Pixel foreground, Pixel background)
 {
   XColor *colorp;
 
-  colorp = GetShadowColor(background);
+  colorp = GetForeShadowColor(foreground, background);
   XAllocColor (Pdpy, Pcmap, colorp);
   return colorp->pixel;
 }

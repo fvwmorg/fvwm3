@@ -1,3 +1,13 @@
+2002-05-20  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c (FlocaleLoadFont):
+	Removed some debug code
+
+	* fvwm/colorset.c (parse_colorset):
+	* libs/fvwmlib.h:
+	* libs/ColorUtils.c (GetForeShadowColor):
+	Added Mikhael algo to compute the default fgsh
+
 2002-05-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/functions.c (expand_extended_var):
