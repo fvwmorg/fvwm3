@@ -5,7 +5,7 @@ configdir = @FVWM_CONFIGDIR@
 
 module_PROGRAMS = FvwmIconMan
 man_MANS = FvwmIconMan.1
-EXTRA_DIST = $(man_MANS) CHANGES ConfigFvwmIconMan
+EXTRA_DIST = $(man_MANS) ConfigFvwmIconMan
 
 config_DATA = \
   ConfigFvwmIconMan
