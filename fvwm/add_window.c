@@ -1488,7 +1488,15 @@ void setup_frame_stacking(FvwmWindow *fw)
 	n++;
 	if (HAS_TITLE(fw))
 	{
-		for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+		for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+		{
+			if (FW_W_BUTTON(fw, i) != None)
+			{
+				w[n] = FW_W_BUTTON(fw, i);
+				n++;
+			}
+		}
+		for (i = 2 * (NUMBER_OF_BUTTONS / 2); i >= 0; i -= 2)
 		{
 			if (FW_W_BUTTON(fw, i) != None)
 			{

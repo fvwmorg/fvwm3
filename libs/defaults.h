@@ -164,6 +164,11 @@
 /*
  * window title layout
  */
+/* the title buttons are shrunk if the title would become smaller than this
+ * number of pixels */
+#define MIN_WINDOW_TITLE_LENGTH      10 /* pixels */
+/* title bar buttons that get smaller than this size are hidden */
+#define MIN_WINDOW_TITLEBUTTON_LENGTH 2 /* pixels */
 /* height of stick lines */
 #define WINDOW_TITLE_STICK_HEIGHT     1 /* pixels */
 /* vertical distance between stick lines */

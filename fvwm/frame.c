@@ -84,6 +84,12 @@ typedef struct
 	} flags;
 } mr_args_internal;
 
+typedef struct
+{
+        rectangle title_g;
+        rectangle button_g[NUMBER_OF_BUTTONS];
+} frame_title_layout_type;
+
 /* ---------------------------- forward declarations ------------------------ */
 
 /* ---------------------------- local variables ----------------------------- */
@@ -176,6 +182,7 @@ static void get_resize_decor_gravities_one_axis(
 		break;
 	case FRAME_MR_SHRINK:
 	case FRAME_MR_OPAQUE:
+	case FRAME_MR_FORCE_SETUP:
 	case FRAME_MR_SETUP:
 		ret_grav->client_grav = neg_grav;
 		break;
@@ -228,203 +235,231 @@ static void frame_setup_border(
 	return;
 }
 
-static void frame_setup_title_bar(
-	FvwmWindow *fw, rectangle *frame_g, window_parts setup_parts,
-	rectangle *diff_g)
+static void frame_get_title_bar_dimensions(
+	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
+        frame_title_layout_type *title_layout)
 {
-	XWindowChanges xwc;
-	unsigned long xwcm;
-	int i;
-	int buttons = 0;
-	int bsize;
-	int wsize;
-	int rest = 0;
-	int bw;
-	int title_off;
-	int *px;
-	int *py;
-	int *pwidth;
-	int *pheight;
-	int space;
-	int dx;
-	int dy;
-	int dxbr;
-	int dybr;
-	int *pdx;
-	int *pdy;
-	int *pdxbr;
-	int *pdybr;
-	rectangle tmp_g;
-	size_borders b;
+        size_borders b;
+        int i;
+	int tb_length;
+	int tb_thick;
+        int tb_x;
+        int tb_y;
+	int b_length;
+        int b_w;
+        int b_h;
+	int t_length;
+        int t_w;
+        int t_h;
+        int br_sub;
+        int nbuttons;
+        int nbuttons_big;
+        int *padd_coord;
 
 	if (!HAS_TITLE(fw))
 	{
 		return;
 	}
-	dx = 0;
-	dy = 0;
-	dxbr = 0;
-	dybr = 0;
-	if (diff_g != NULL)
-	{
-		switch (GET_TITLE_DIR(fw))
-		{
-		case DIR_S:
-                        dxbr = diff_g->width;
-                        dy = diff_g->height;
-			break;
-		case DIR_E:
-                        dx = diff_g->width;
-                        dybr = diff_g->height;
-			break;
-		case DIR_W:
-                        dybr = diff_g->height;
-			break;
-		case DIR_N:
-		default:
-                        dxbr = diff_g->width;
-			break;
-		}
-	}
-	get_window_borders(fw, &b);
+        get_window_borders_no_title(fw, &b);
 	if (HAS_VERTICAL_TITLE(fw))
 	{
-		space = frame_g->height;
-		px = &xwc.y;
-		py = &xwc.x;
-		pwidth = &xwc.height;
-		pheight = &xwc.width;
-		bsize = b.total_size.height;
-		wsize = fw->frame_g.height - bsize;
-		pdx = &dy;
-		pdy = &dx;
-		pdxbr = &dybr;
-		pdybr = &dxbr;
+                tb_length = frame_g->height - b.total_size.height;
+        }
+        else
+        {
+		tb_length = frame_g->width - b.total_size.width;
+                fprintf(stderr, "tbl %d, fw %d, bw %d\n",
+                        tb_length, frame_g->width, b.total_size.width);
+        }
+        /* find out the length of the title and the buttons */
+        tb_thick = fw->title_thickness;
+        nbuttons = fw->nr_left_buttons + fw->nr_right_buttons;
+        nbuttons_big = 0;
+        b_length = tb_thick;
+        t_length = tb_length - nbuttons * b_length;
+        if (nbuttons > 0 && t_length < MIN_WINDOW_TITLE_LENGTH)
+        {
+                int diff = MIN_WINDOW_TITLE_LENGTH - t_length;
+                int pixels = diff / nbuttons;
+
+                b_length -= pixels;
+                t_length += nbuttons * pixels;
+                nbuttons_big = nbuttons - (MIN_WINDOW_TITLE_LENGTH - t_length);
+                t_length = MIN_WINDOW_TITLE_LENGTH;
+        }
+        if (b_length < MIN_WINDOW_TITLEBUTTON_LENGTH)
+        {
+                /* don't draw the buttons */
+                nbuttons = 0;
+                nbuttons_big = 0;
+                b_length = 0;
+                t_length = tb_length;
+        }
+        if (t_length < 0)
+        {
+                t_length = 0;
+        }
+        fw->title_length = t_length;
+        /* prepare variables */
+	if (HAS_VERTICAL_TITLE(fw))
+	{
+                tb_length = frame_g->height - b.total_size.height;
+                tb_y = b.top_left.height;
+                br_sub = (diff_g != NULL) ? diff_g->height : 0;
+                if (GET_TITLE_DIR(fw) == DIR_W)
+                {
+                        tb_x = b.top_left.width;
+                }
+                else
+                {
+                        tb_x = frame_g->width - b.bottom_right.width -
+                                tb_thick;
+                        if (diff_g != NULL)
+                        {
+                                tb_x -= diff_g->width;
+                        }
+                }
+                padd_coord = &tb_y;
+                b_w = tb_thick;
+                b_h = b_length;
+                t_w = tb_thick;
+                t_h = t_length;
 	}
 	else
 	{
-		space = frame_g->width;
-		px = &xwc.x;
-		py = &xwc.y;
-		pwidth = &xwc.width;
-		pheight = &xwc.height;
-		bsize = b.total_size.width;
-		wsize = fw->frame_g.width - bsize;
-		pdx = &dx;
-		pdy = &dy;
-		pdxbr = &dxbr;
-		pdybr = &dybr;
+		tb_length = frame_g->width - b.total_size.width;
+                tb_x = b.top_left.width;
+                br_sub = (diff_g != NULL) ? diff_g->width : 0;
+                if (GET_TITLE_DIR(fw) == DIR_N)
+                {
+                        tb_y = b.top_left.height;
+                }
+                else
+                {
+                        tb_y = frame_g->height - b.bottom_right.height -
+                                tb_thick;
+                        if (diff_g != NULL)
+                        {
+                                tb_y -= diff_g->height;
+                        }
+                }
+                padd_coord = &tb_x;
+                b_w = b_length;
+                b_h = tb_thick;
+                t_w = t_length;
+                t_h = tb_thick;
 	}
-	fw->title_length = space -
-		(fw->nr_left_buttons + fw->nr_right_buttons) *
-		fw->title_thickness - bsize;
-	if (fw->title_length < 1)
-	{
-		fw->title_length = 1;
-	}
-	tmp_g.width = frame_g->width;
-	tmp_g.height = frame_g->height;
-	get_title_geometry(fw, &tmp_g);
-	xwcm = CWX | CWY | CWHeight | CWWidth;
-	xwc.x = tmp_g.x;
-	xwc.y = tmp_g.y;
-	xwc.width = fw->title_thickness;
-	xwc.height = fw->title_thickness;
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
-	{
-		if (FW_W_BUTTON(fw, i))
-		{
-			buttons++;
-		}
-	}
-	if (wsize < buttons * *pwidth)
-	{
-		*pwidth = wsize / buttons;
-		if (*pwidth < 1)
-		{
-			*pwidth = 1;
-		}
-		if (*pwidth > fw->title_thickness)
-		{
-			*pwidth = fw->title_thickness;
-		}
-		rest = wsize - buttons * *pwidth;
-		if (rest > 0)
-		{
-			(*pwidth)++;
-		}
-	}
-	/* left */
-	title_off = *px;
-	*px -= *pdx;
-	*py -= *pdy;
+        /* configure left buttons */
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
 			continue;
 		}
-		if (*px + *pwidth < space - fw->boundary_width)
-		{
-			XConfigureWindow(
-				dpy, FW_W_BUTTON(fw, i), xwcm, &xwc);
-			*px += *pwidth;
-			title_off += *pwidth;
-		}
-		else
-		{
-			*px = -fw->title_thickness;
-			XConfigureWindow(
-				dpy, FW_W_BUTTON(fw, i), xwcm, &xwc);
-		}
-		rest--;
-		if (rest == 0)
-		{
-			(*pwidth)--;
-		}
+                if (b_length <= 0)
+                {
+                        title_layout->button_g[i].x = -1;
+                        title_layout->button_g[i].y = -1;
+                        title_layout->button_g[i].width = 1;
+                        title_layout->button_g[i].height = 1;
+                }
+                else
+                {
+                        title_layout->button_g[i].x = tb_x;
+                        title_layout->button_g[i].y = tb_y;
+                        title_layout->button_g[i].width = b_w;
+                        title_layout->button_g[i].height = b_h;
+                }
+                *padd_coord += b_length;
+                nbuttons_big--;
+                if (nbuttons_big == 0)
+                {
+                        b_length--;
+                }
 	}
-	bw = *pwidth;
-
-	/* title */
-	if (fw->title_length <= 0 || wsize < 0)
-	{
-		title_off = -10;
-	}
-	*px = title_off - *pdx;
-	*pwidth = fw->title_length;
-	XConfigureWindow(dpy, FW_W_TITLE(fw), xwcm, &xwc);
-
-	/* right */
-	*pwidth = bw;
-	*px = space - fw->boundary_width - *pwidth;
-	*px -= *pdxbr;
-	*px -= *pdx;
-	*py -= *pdy;
-	for (i = 1 ; i < NUMBER_OF_BUTTONS; i += 2)
+        /* configure title */
+        if (t_length == 0)
+        {
+                title_layout->title_g.x = -1;
+                title_layout->title_g.y = -1;
+                title_layout->title_g.width = 1;
+                title_layout->title_g.height = 1;
+        }
+        else
+        {
+                title_layout->title_g.x = tb_x;
+                title_layout->title_g.y = tb_y;
+                title_layout->title_g.width = t_w;
+                title_layout->title_g.height = t_h;
+        }
+        *padd_coord += t_length;
+        /* configure right buttons */
+        *padd_coord -= br_sub;
+	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
 			continue;
 		}
-		if (*px > fw->boundary_width)
+                if (b_length <= 0)
+                {
+                        title_layout->button_g[i].x = -1;
+                        title_layout->button_g[i].y = -1;
+                        title_layout->button_g[i].width = 1;
+                        title_layout->button_g[i].height = 1;
+                }
+                else
+                {
+                        title_layout->button_g[i].x = tb_x;
+                        title_layout->button_g[i].y = tb_y;
+                        title_layout->button_g[i].width = b_w;
+                        title_layout->button_g[i].height = b_h;
+                }
+                *padd_coord += b_length;
+                nbuttons_big--;
+                if (nbuttons_big == 0)
+                {
+                        b_length--;
+                }
+	}
+
+        return;
+}
+
+static void frame_setup_title_bar(
+	FvwmWindow *fw, rectangle *frame_g, window_parts setup_parts,
+	rectangle *diff_g)
+{
+        frame_title_layout_type title_layout;
+        int i;
+
+	if (!HAS_TITLE(fw))
+	{
+		return;
+	}
+        frame_get_title_bar_dimensions(fw, frame_g, diff_g, &title_layout);
+        /* configure buttons */
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		if (FW_W_BUTTON(fw, i) != None && (setup_parts & PART_BUTTONS))
 		{
-			XConfigureWindow(
-				dpy, FW_W_BUTTON(fw, i), xwcm, &xwc);
-			*px -= *pwidth;
-		}
-		else
-		{
-			*px = -fw->title_thickness;
-			XConfigureWindow(
-				dpy, FW_W_BUTTON(fw, i), xwcm, &xwc);
-		}
-		rest--;
-		if (rest == 0)
-		{
-			(*pwidth)--;
-			(*px)++;
+                        XMoveResizeWindow(
+                                dpy, FW_W_BUTTON(fw, i),
+                                title_layout.button_g[i].x,
+                                title_layout.button_g[i].y,
+                                title_layout.button_g[i].width,
+                                title_layout.button_g[i].height);
 		}
 	}
+        /* configure title */
+        if (setup_parts & PART_TITLE)
+        {
+                XMoveResizeWindow(
+                        dpy, FW_W_TITLE(fw),
+                        title_layout.title_g.x, title_layout.title_g.y,
+                        title_layout.title_g.width,
+                        title_layout.title_g.height);
+        }
 
 	return;
 }
@@ -449,20 +484,21 @@ static void frame_setup_window_internal(
 		new_g.height = 1;
 	}
 	/* set some flags */
-	if (do_force || new_g.width != fw->frame_g.width ||
+	if (new_g.width != fw->frame_g.width ||
 	    new_g.height != fw->frame_g.height)
 	{
 		is_resized = True;
 	}
-	if (do_force || new_g.x != fw->frame_g.x || new_g.y != fw->frame_g.y)
+	if (new_g.x != fw->frame_g.x || new_g.y != fw->frame_g.y)
 	{
 		is_moved = True;
 	}
 	/* setup the window */
-	if (is_resized)
+	if (is_resized || do_force)
 	{
 		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_SETUP, NULL, &new_g, 0);
+			fw, (do_force) ? FRAME_MR_FORCE_SETUP : FRAME_MR_SETUP,
+                        NULL, &new_g, 0);
 		frame_move_resize(fw, mr_args);
 		frame_free_move_resize_args(mr_args);
 		fw->frame_g = *frame_g;
@@ -800,7 +836,7 @@ static int frame_get_titlebar_compression(
 		space = frame_g->width - b.total_size.width;
 	}
 	need_space = (fw->nr_left_buttons + fw->nr_right_buttons) *
-		fw->title_thickness + 1;
+		fw->title_thickness + MIN_WINDOW_TITLE_LENGTH;
 	if (space < need_space)
 	{
 		return need_space - space;
@@ -819,7 +855,8 @@ static int frame_get_titlebar_compression(
  *     The window to move or resize.
  *   mr_mode
  *     The mode of operation:
- *       FRAME_MR_SETUP:  setup the frame or move without resizing
+ *       FRAME_MR_SETUP: setup the frame
+ *       FRAME_MR_FORCE_SETUP: same, but forces all updates
  *       FRAME_MR_OPAQUE: resize the frame in an opaque fashion
  *       FRAME_MR_SHRINK: shrink the client window (useful for shading only)
  *       FRAME_MR_SCROLL: scroll the client window (useful for shading only)
@@ -884,6 +921,7 @@ frame_move_resize_args frame_create_move_resize_args(
 			mra->anim_steps = whdiff - 1;
 		}
 		break;
+	case FRAME_MR_FORCE_SETUP:
 	case FRAME_MR_SETUP:
 	case FRAME_MR_OPAQUE:
 	default:
@@ -1054,7 +1092,7 @@ static void frame_move_resize_step(
 	draw_clipped_decorations_with_geom(
 		fw, PART_FRAME, (mra->w_with_focus != None) ? True : False,
 		False, None, NULL, CLEAR_NONE, &mra->current_g, &mra->next_g);
-	if (mra->mode == FRAME_MR_SETUP)
+	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP)
 	{
 		setup_parts = PART_FRAME;
 	}
@@ -1066,7 +1104,8 @@ static void frame_move_resize_step(
 	frame_setup_border(fw, &mra->next_g, setup_parts, &mra->dstep_g);
 	/* setup the title bar */
 	setup_parts = PART_TITLE;
-	if (mra->curr_titlebar_compression != mra->next_titlebar_compression)
+	if (mra->curr_titlebar_compression != mra->next_titlebar_compression ||
+            mra->mode == FRAME_MR_FORCE_SETUP)
 	{
 		setup_parts |= PART_BUTTONS;
 	}
@@ -1082,7 +1121,8 @@ static void frame_move_resize_step(
 	{
 		h = 1;
 	}
-	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_OPAQUE)
+	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP ||
+            mra->mode == FRAME_MR_OPAQUE)
 	{
 		XResizeWindow(dpy, FW_W(fw), w, h);
 	}
