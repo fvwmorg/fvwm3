@@ -181,8 +181,8 @@ Init
 
 
    Set $pos=(Add $pos 1)
-   Set $SMOOTHOPAQ=(GetOutput $CAT $pos 2)
-   ChangeTitle 47 $SMOOTHOPAQ
+   Set $MOVETHRESHOLD=(GetOutput $CAT $pos 2)
+   ChangeTitle 47 $MOVETHRESHOLD
 
    Set $pos=(Add $pos 1)
    Set $RESIZEOPAQ=(GetOutput $CAT $pos -1)
@@ -326,8 +326,8 @@ Init
    ChangeValue 41 $OPAQ
    ChangeTitle 43 $OPAQ
 
-   Set $SMOOTHOPAQ=5
-   ChangeTitle 47 $SMOOTHOPAQ
+   Set $MOVETHRESHOLD=5
+   ChangeTitle 47 $MOVETHRESHOLD
 
    ChangeValue 49 0
    ChangeValue 50 1
@@ -411,8 +411,8 @@ Main
    Do {OpaqueMoveSize } (GetValue 41)
    WriteToFile $FILE {OpaqueMoveSize } (GetValue 41)
 
-   Do {MoveSmoothness } (GetTitle 47)
-   WriteToFile $FILE {MoveSmoothness } (GetTitle 47)
+   Do {MoveThreshold } (GetTitle 47)
+   WriteToFile $FILE {MoveThreshold } (GetTitle 47)
 
    Do $RESIZEOPAQ
    WriteToFile $FILE $RESIZEOPAQ
@@ -457,7 +457,7 @@ Main
    Do $GRABFOCUS
    Do $PPOSITION
    Do {OpaqueMoveSize } (GetValue 41)
-   Do {MoveSmoothness } (GetTitle 47)
+   Do {MoveThreshold } (GetTitle 47)
    Do $RESIZEOPAQ
    Do $HIDEGEO
    Do {SnapAttraction } (GetTitle 56) { }  $SNAPTYPE
@@ -532,8 +532,8 @@ Main
    ChangeValue 41 $OPAQ
    ChangeTitle 43 $OPAQ
 
-   Set $SMOOTHOPAQ=5
-   ChangeTitle 47 $SMOOTHOPAQ
+   Set $MOVETHRESHOLD=3
+   ChangeTitle 47 $MOVETHRESHOLD
 
    ChangeValue 49 0
    ChangeValue 50 1
@@ -1078,7 +1078,7 @@ Widget 46
 Property
  Position 340 103
  Type ItemDraw
- Title {Opaque move smoothness:}
+ Title {Move Threshold:}
 Main
  Case message of
   SingleClic :
@@ -1088,7 +1088,7 @@ End
 
 Widget 47
 Property
- Position 520 98
+ Position 480 98
  Size 30 15
  Type TextField
  Title {}

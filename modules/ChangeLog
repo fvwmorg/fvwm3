@@ -2,8 +2,10 @@
 
 	* FvwmScript/Scripts/ScriptFvwmBaseConfig
 	Replace MoveSmoothness by MoveThreshold
+	
+2000-05-17  olicha <olivier.chapuis@free.fr>
 
-	* FvwmScript/Scripts/ScriptFvwmBaseConfig
+	* FvwmScript/Scripts/ScriptFileBrowser
 	A Clean up
 
 	* FvwmScript/Scripts/ScriptFvwmSetup95.in
