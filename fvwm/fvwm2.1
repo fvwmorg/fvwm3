@@ -2640,7 +2640,8 @@ SmartPlacement/DumbPlacement, RandomPlacement/ActivePlacement,
 DecorateTransient/NakedTransient, SkipMapping/ShowMapping, UseDecor,
 UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
 ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse,
-StartsLowered/StartsRaised, GrabFocus/GrabFocusOff.
+StartsLowered/StartsRaised, GrabFocus/GrabFocusOff,
+GrabFocusTransient/GrabFocusTransientOff.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -2847,6 +2848,10 @@ for ClickToFocus windows and \fIGrabFocusOff\fP is the deafult for
 MouseFocus and SloppyFocus windows. Note that this option is switched
 back to the deafult every time you change the focus policy. You
 have to use it after the initial ClickToFocus/MouseFocus/SloppyFocus.
+This style does not apply to transient windows. The
+\fIGrabFocusTransient\fP and \fIGrabFocusTransientOff\fP styles
+are responsible for this behaviour. By default, \fIGrabFocusTransient\fP
+is turned on.
 
 An example:
 .EX

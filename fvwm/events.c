@@ -895,7 +895,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 	      if((Tmp_win->flags & ClickToFocus)&&
 		 ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
 #else
-	      if((DO_GRAB_FOCUS(Tmp_win))||(!Scr.Focus))
+	      if((!Scr.Focus) ||
+		 (!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
+		 (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)))
 #endif
 		{
                   if (OnThisPage)
@@ -1021,7 +1023,9 @@ void HandleMapNotify(void)
   if((Tmp_win->flags & ClickToFocus)&&
      ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
 #else
-  if((DO_GRAB_FOCUS(Tmp_win))||(!Scr.Focus))
+  if((!Scr.Focus) ||
+     (!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
+     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)))
 #endif
     {
       if (OnThisPage)
@@ -1099,7 +1103,9 @@ void HandleUnmapNotify(void)
   if(Scr.PreviousFocus == Tmp_win)
     Scr.PreviousFocus = NULL;
 
-  focus_grabbed = (Tmp_win == Scr.Focus) && DO_GRAB_FOCUS(Tmp_win);
+  focus_grabbed = (Tmp_win == Scr.Focus) &&
+    ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
+     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
 
   if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
     {
@@ -1131,7 +1137,7 @@ void HandleUnmapNotify(void)
     {
       Destroy(Tmp_win);
     }
-  else 
+  else
   /*
    * The program may have unmapped the client window, from either
    * NormalState or IconicState.  Handle the transition to WithdrawnState.

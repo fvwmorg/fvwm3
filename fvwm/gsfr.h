@@ -17,8 +17,10 @@
 #define _GSFR_
 
 /* access to the common flags of a window */
-#define DO_GRAB_FOCUS(fw)      \
+#define DO_GRAB_FOCUS(fw) \
           ((fw)->gsfr_flags.common.do_grab_focus_when_created)
+#define DO_GRAB_FOCUS_TRANSIENT(fw) \
+          ((fw)->gsfr_flags.common.do_grab_focus_when_transient_created)
 #define DO_SKIP_CIRCULATE(fw)  \
           ((fw)->gsfr_flags.common.do_circulate_skip)
 #define SET_DO_SKIP_CIRCULATE(fw,x) \

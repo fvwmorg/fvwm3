@@ -96,6 +96,8 @@ typedef PropMotifWmHints        PropMwmHints;
 #define MWM_DECOR_MENU                (1L << 4)
 #define MWM_DECOR_MINIMIZE            (1L << 5)
 #define MWM_DECOR_MAXIMIZE            (1L << 6)
+/* has nothing to do with MWM, but we need it here */
+#define DECOR_BORDER                  (1L << 7)
 
 #define PROP_MOTIF_WM_HINTS_ELEMENTS  4
 #define PROP_MWM_HINTS_ELEMENTS       PROP_MOTIF_WM_HINTS_ELEMENTS
@@ -360,7 +362,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
   if (ShapesSupported)
   {
     if(t->wShaped)
-      decor &= ~(BORDER|MWM_DECOR_RESIZEH);
+      decor &= ~(DECOR_BORDER|MWM_DECOR_RESIZEH);
   }
 #endif
   /* Assume no decorations, and build up */

@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* GrabFocusTransient is a new style that does the same as GrabFocus, but only
+  for transient windows.
+
 * New command: RecaptureWindow captures a single window.
 
 * 'GotoDesk' command replaces former command 'Desk' (the old name is still

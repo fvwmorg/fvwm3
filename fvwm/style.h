@@ -20,6 +20,9 @@
 
 /* access to the common flags of a window */
 /* call these with a pointer to a style_flags struct */
+#define SDO_GRAB_FOCUS(sf)            ((sf)->common.do_grab_focus_when_created)
+#define SDO_GRAB_FOCUS_TRANSIENT(sf)  \
+          ((sf)->common.do_grab_focus_when_transient_created)
 #define SDO_SKIP_CIRCULATE(sf)        ((sf)->common.do_circulate_skip)
 #define SDO_SKIP_CIRCULATE_ICON(sf)   ((sf)->common.circulate_skip_icon)
 #define SDO_NOT_SHOW_ON_MAP(sf)       ((sf)->common.do_not_show_on_map)

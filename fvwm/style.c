@@ -334,7 +334,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
      * case, and use strcmp, but there aren't many caseless compares
      * because of this "switch" on the first letter. */
     found = False;
-    found = True;
     switch (tolower(token[0]))
     {
       case 'a':
@@ -507,6 +506,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           tmpstyle.flags.common.do_grab_focus_when_created = 1;
           tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+        }
+        else if(StrEquals(token, "GrabFocusTransientOff"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_grab_focus_when_transient_created = 0;
+          tmpstyle.flag_mask.common.do_grab_focus_when_transient_created = 1;
+        }
+        else if(StrEquals(token, "GrabFocusTransient"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_grab_focus_when_transient_created = 1;
+          tmpstyle.flag_mask.common.do_grab_focus_when_transient_created = 1;
         }
         break;
 
