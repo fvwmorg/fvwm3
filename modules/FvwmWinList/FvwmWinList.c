@@ -67,7 +67,7 @@
 #include "libs/Colorset.h"
 
 #ifdef I18N_MB
-#include <X 11/Xlocale.h>
+#include <X11/Xlocale.h>
 #ifdef __STDC__
 #define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
 #else
@@ -373,12 +373,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if ((i = FindItem(&windows,cfgpacket->w))!=-1)
       {
 	flagitem=ItemFlags(&windows,cfgpacket->w);
-	if(UpdateItemDesk(&windows, cfgpacket) > 0 || 
+	if(UpdateItemDesk(&windows, cfgpacket) > 0 ||
 	   IS_STICKY(cfgpacket) != IS_STICKY(flagitem) ||
 	   DO_SKIP_WINDOW_LIST(cfgpacket) != DO_SKIP_WINDOW_LIST(flagitem))
         {
 	  UpdateItemGSFRFlags(&windows, cfgpacket);
-          UpdateButtonDeskFlags(&buttons, i, cfgpacket->desk, 
+          UpdateButtonDeskFlags(&buttons, i, cfgpacket->desk,
 				IS_STICKY(cfgpacket),
 				DO_SKIP_WINDOW_LIST(cfgpacket));
           AdjustWindow(False);
@@ -449,7 +449,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	flagitem = ItemFlags(&windows, body[0]);
 	if ((type == M_DEICONIFY && IS_ICONIFIED(flagitem))
 	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem))) {
-	  if (IS_ICON_SUPPRESSED(flagitem) && 
+	  if (IS_ICON_SUPPRESSED(flagitem) &&
 	      AnimCommand && WindowState && AnimCommand[0] != 0) {
 	    char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	    Window child;
