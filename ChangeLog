@@ -1,3 +1,8 @@
+2003-06-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Graphics.c:
+	define M_PI and M_PI_2 if they are not defined by math.h
+
 2003-06-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/Colorset.c (LoadColorset):
@@ -15,7 +20,7 @@
 
 2003-06-04  olicha  <olivier.chapuis@free.fr>
 
-	* libs/Flocale.c (FlocaleEncodeString): 
+	* libs/Flocale.c (FlocaleEncodeString):
 	Fixed memroy leaks
 
 2003-06-03  Mikhael Goikhman  <migo@homemail.com>
@@ -31,7 +36,7 @@
 
 	* libs/Flocale.c (FlocaleEncodeString)
 	fixed problem regarding combining-characters when BIDI is used
-	
+
 2003-05-31  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/Makefile.am:
@@ -39,7 +44,7 @@
 	* libs/FCombineChars.c:
 	* libs/FCombineChars.h:
 	implemeted support for combining characters
-	
+
 2003-05-31  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

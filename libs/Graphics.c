@@ -34,6 +34,14 @@
 
 /* ---------------------------- local definitions --------------------------- */
 
+/* Define some standard constants that are not defined on QNX 4.25 */
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#ifndef M_PI_2
+#define M_PI_2 1.57079632679489661923
+#endif
+
 /* ---------------------------- local macros -------------------------------- */
 
 /* ---------------------------- imports ------------------------------------- */
@@ -60,7 +68,7 @@
  * Top and bottom lines come out full length, the sides come out 1 pixel less
  * This is so FvwmBorder windows have a correct bottom edge and the sticky lines
  * look like just lines
- * rotation rotate the relief and shadow part 
+ * rotation rotate the relief and shadow part
  */
 void do_relieve_rectangle_with_rotation(
 	Display *dpy, Drawable d, int x, int y, int w, int h,
@@ -908,7 +916,7 @@ Drawable CreateGradientPixmap(
 	int t_width;
 	int t_height;
 	int ps;
-	
+
 	if (d_pixels != NULL && *d_pixels != NULL)
 	{
 		if (d_npixels != NULL && *d_npixels > 0)
