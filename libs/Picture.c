@@ -174,6 +174,9 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
   XpmAttributes xpm_attributes;
   int rc;
   XpmImage	my_image = {0};
+
+  sigset_t old_set;
+  sigset_t block_set;
 #endif
 
   p = (Picture*)safemalloc(sizeof(Picture));
@@ -191,13 +194,18 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
   xpm_attributes.valuemask = XpmSize | XpmReturnAllocPixels | XpmCloseness
 			     | XpmVisual | XpmColormap | XpmDepth;
 
+  /* DEBUG CODE FOR OSF PROBLEM - DON'T RECEIVE SIGCHLD SIGNALS HERE */
+  sigemptyset(&block_set);
+  sigaddset(&block_set, SIGCHLD);
+  sigprocmask(SIG_BLOCK, &block_set, &old_set);
   rc = XpmReadFileToXpmImage(path, &my_image, NULL);
-  fprintf(stderr, "LoadPicture: XpmReadFileToXpmImage(%s) = %d\n", path, rc);
+  sigprocmask(SIG_SETMASK, &old_set, NULL);
+  /**/
+
   if (rc == XpmSuccess) {
     color_reduce_pixmap(&my_image, color_limit);
     rc = XpmCreatePixmapFromXpmImage(dpy, Root, &my_image, &p->picture,
 				     &p->mask, &xpm_attributes);
-    fprintf(stderr, "LoadPicture: XpmCreatePixmapFromXpmImage(%s) = %d\n", path, rc);
     if (rc == XpmSuccess) {
       p->width = my_image.width;
       p->height = my_image.height;

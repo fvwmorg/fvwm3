@@ -1,3 +1,10 @@
+2000-11-29  Chris Rankin  <rankinc@zipworld.com.au>
+
+	libs/Picture.c (LoadPicture)
+	Replace DEBUG code, now that we know that OSF gets XpmFileInvalid
+	error from XpmReadFileToXpmImage(). Try blocking receipt of SIGCHLD
+	signal around this XPM function.
+
 2000-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (CheckActionType):
