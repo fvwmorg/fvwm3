@@ -1036,42 +1036,99 @@ then, if either loading the Xft font fails or fvwm has no Xft support,
 fvwm loads the font "-adobe-courier-bold-r-normal--14-*". This
 allows for writting portable configuration files.
 
-.SH FONT ENCODINGS
+.SH FONT AND STRING ENCODINGS
 
-The font name is used by FVWM, (and X), to determine the font encoding.
+Once a font is loaded, FVWM finds its encoding (or charset) using its
+name (the last two fields of the name). Then, FVWM assumes that the strings
+which are displayed with this font use this encoding (an exception is
+that if an iso10646-1 font is loaded, then UTF-8 is assumed for string
+encoding).
+In a normal situation,
+(i) a font is loaded by giving a font name without specifying the encoding,
+(ii) the encoding of the loaded font is the locale encoding, and then
+(iii) the strings in the FVWM configuration files should use the locale
+encoding as well as the window and icon name.
+With xft the situation is bit different as Xft supports only iso10646-1
+and iso8859-1. If you do not specify one of these encodings in the xft font
+name, then FVWM ensure itself strings conversion for respecting (iii). 
+Note that with a multibyte font (and in particular with "CJK" fonts) for
+good text rendering, the locale encoding should be the charset of the font.
 
-For example,
-if you use an iso10646-1 (Unicode) font for menus you should use
-UTF-8 encoding in your configuration file for the menu labels.
+To override the previous logics, it is possible to specify the string encoding
+in the beginning of a font description as follow:
+.EX
+StringEncoding=enc:_full_font_name_
+.EE
+where
+.B enc
+is an encoding supported by FVWM (usual font name charset plus some
+unicode encodings: UTF-8, USC-2, USC-4 and UTF-16).
 
-Windows with EWMH hints have their names treated as UTF-8.
-FVWM has to know the font encoding to display
-the UTF-8 fonts correctly. One example is ISO10646-1 and encodings
-for right to left languages. (See BI-DIRECTIONAL TEXT.)
-In most cases, FVWM correctly determines the
-encoding.  Some fonts don't end with valid encoding names.
-When the font name isn't normal, for example:
+Let us give some examples.
+You may use an iso8859-1 locale charset and have an FvwmForm in Russian using
+koi8-r encoding. In this case, you just have to ask FvwmForm to load
+a koi8-r font by specifying the encoding in the font name.
+With a multibyte language,
+as multibyte font works well only if the locale encoding is the
+charset of the font you should use an iso10646-1 font:
+.EX
+StringEncoding=jisx0208.1983-0:-*-fixed-medium-r-*-ja-*-iso10646-1
+.EE
+or
+.EX
+"StringEncoding=jisx0208.1983-0:xft:Bitstream Cyberbit"
+.EE
+if your FvwmForm configuration use jisx0208.1983-0 encoding. Another
+possibility is to use UTF-8 encoding for your FvwmForm configuration and use
+an iso10646-1 font:
+.EX
+-*-fixed-medium-r-*-ja-*-iso10646-1
+.EE
+or
+.EX
+"StringEncoding=UTF-8:xft:Bitstream Cyberbit"
+.EE
+or equivalently
+.EX
+"xft:Bitstream Cyberbit:encoding=iso10646-1"
+.EE
+In general iso10646-1 fonts together with UTF-8 string encoding allows to
+display any characters in a given menu, FvwmForm ...etc.
+
+More and more, unicode is used and text files use UTF-8 encoding.
+However, in practice the characters used range over your locale charset
+(this is the case when you generate a menu with fvwm-menu-desktop with
+recent versions of KDE and GNOME).
+For saving memory (an iso10646-1 font may have a very large number
+of characters) or because you have a pretty font without an iso10646-1
+charset, you can specify the string encoding to be UTF-8 and use a font
+in the locale charset:
+.EX
+StringEncoding=UTF-8:-*-pretty_font-*-12-*
+.EE
+
+In most cases, FVWM correctly determines the encoding of the font. However,
+some fonts don't end with valid encoding names. When the font name isn't
+normal, for example:
 .EX
 -misc-fixed-*--20-*-my_utf8-36
 .EE
-you need to add the encoding after the font name
-using a slash as a delimiter.
+you need to add the encoding after the font name using a slash as a delimiter.
 For example:
 .EX
 MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
 .EE
-With UTF-8 conversions the problem is a bit different.
-If FVWM finds an encoding, FVWM uses system functions to do the conversion.
-Unfortunately, there are no standards: for conversion between
-iso8859-1 and UTF-8. A GNU system uses "ISO-8859-1" and other
+If FVWM finds an encoding, FVWM uses the iconv system functions to do
+conversion between encoding.
+Unfortunately, there are no standards. For conversion between
+iso8859-1 and UTF-8: a GNU system uses "ISO-8859-1" and other
 systems use "iso881" to define the converters (these two names are
-supported by FVWM).  In some cases it may be necessary
+supported by FVWM). Moreover, in some cases it may be necessary
 to use machine specific converters. So, if you experience problems
-with some windows names (e.g., with the KDE or GNOME
-pager or task bar) you can try to get information on your iconv
-implementation ("man iconv" may help) and put the name which
-defines the converter at the end of the font name after the encoding
-and a / (another possible other solution is to use GNU libiconv).
+you can try to get information on your iconv implementation ("man iconv"
+may help) and put the name which defines the converter between the font
+encoding and UTF-8 at the end of the font name after the encoding hint
+and a / (another possible solution is to use GNU libiconv).
 For example use:
 .EX
 Style * Font -misc-fixed-*--14-*-iso8859-1/*/latin1
@@ -1088,7 +1145,8 @@ bi-directionality) and to use local_iso8859_6_iconv for defining the converters.
 .SH FONT SHADOW EFFECTS
 
 Fonts can be given 3d effects.
-At the beginning of the font name add
+At the beginning of the font name (or just after a possible StringEncoding
+specification) add
 .EX
 Shadow=size [offset] [directions]:
 .EE

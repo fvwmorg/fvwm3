@@ -363,21 +363,6 @@ is run under a session manager like xsm or gnome-session.
 This option disables session management support completely.
 
 
-  --disable-compound-text       disable compound text conversion
-  ~~~~~~~~~~~~~~~~~~~~~~~
-
-International application may encode its window and icon name using a
-special encoding (COMPOUND_TEXT) even with a non multibyte charset.
-Basically, this happen if the window title contains non ASCII characters
-(or only non ISO-8859-1 characters, this depends on the locale). By default,
-FVWM converts these names into STRING encoded in the current locale. In the
-pure ISO-8859-1 environment such conversion is rarely needed. Some shared
-libraries are loaded at the FVWM startup when compound text is enabled.
-This option disable this conversion. Note that --enable-multibyte causes to
-ignore this option and you should try to use --enable-multibyte if you have
-problems with the window titles.
-
-
   --disable-xft                 disable anti-aliased text rendering
   ~~~~~~~~~~~~~
 

@@ -1,3 +1,12 @@
+2002-06-21  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm.1: 
+	* NEWS:
+	Documented StringEncoding= in font name
+
+	* INSTALL.fvwm
+	Removed --disable-compound-text doc
+
 2002-06-20  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FBidi.h (FBidiConvert):
