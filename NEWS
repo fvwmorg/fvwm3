@@ -44,7 +44,7 @@ Changes in *experimental* release 2.5.4 (not released yet)
 * Perl library API regarding event handlers is changed, so personal
   modules in Perl should be adjusted.
 
-* Allow the use of mousr buttons other than the first in
+* Allow the use of mouse buttons other than the first in
   FvwmWinList when invoked transient.
 
 * ImagePath now supports directories in form "/some/directory;.png"
