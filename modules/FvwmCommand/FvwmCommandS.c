@@ -64,6 +64,8 @@ typedef struct Q
 /* head and tail of the queue */
 static Q *Qstart = NULL;
 static Q *Qlast = NULL;
+/* flag to indicate new queue items available */
+static Bool queueing = False;
 
 int main(int argc, char *argv[])
 {
@@ -158,10 +160,6 @@ void server (char *name)
   int  ix,cix;
   struct timeval tv;
 
-  /* timeout for sending messages to FvwmCommand */
-  tv.tv_sec = 10;
-  tv.tv_usec = 0;
-
   if (name == NULL)
   {
     char *dpy_name;
@@ -217,8 +215,10 @@ void server (char *name)
     FD_ZERO(&fdwset);
     FD_SET(FfdC, &fdrset);
     FD_SET(Fd[1], &fdrset);
-    if (Qstart) {
+    if (queueing) {
       FD_SET(FfdM, &fdwset);
+      tv.tv_sec = 10;
+      tv.tv_usec = 0;
       timeout = &tv;
     }
 
@@ -227,15 +227,17 @@ void server (char *name)
     if (ret < 0 && errno == EINTR)
       continue;
 
-    if (ret == 0) {
+    if (timeout && ret == 0) {
       /* a timeout has occurred, this means the pipe to FvwmCommand is full
        * dump any messages in the queue that have not been partially sent */
       Q *q1, *q2;
 
 #ifdef PARANOMIA
       /* do nothing if there are no messages (should never happen) */
-      if (!Qstart)
+      if (!Qstart) {
+        queueing = False;
         continue;
+      }
 #endif
       q1 = Qstart->next;
 
@@ -244,7 +246,8 @@ void server (char *name)
         free(Qstart->body);
         free(Qstart);
         Qstart = NULL;
-      }
+      } else
+        fprintf(stderr, "FvwmCommandS: leaving a partially sent message in the queue\n");
 
       /* now remove the rest of the message queue */
       while ((q2 = q1) != NULL) {
@@ -255,6 +258,7 @@ void server (char *name)
 
       /* there is either one message left (partially complete) or none */
       Qlast = Qstart;
+      queueing = False;
       continue;
     }
 
@@ -308,7 +312,7 @@ void server (char *name)
       } /* for */
     } /* FD_ISSET */
 
-    if (FD_ISSET(FfdM, &fdwset))
+    if (queueing && FD_ISSET(FfdM, &fdwset))
     {
       int sent;
       Q *q = Qstart;
@@ -320,8 +324,10 @@ void server (char *name)
         Qstart = q->next;
         free(q->body);
         free(q);
-        if (Qstart == NULL)
+        if (Qstart == NULL) {
           Qlast = NULL;
+          queueing = False;
+        }
       } else if (sent >= 0)
         q->sent += sent;
     }
@@ -553,4 +559,5 @@ void relay_packet(unsigned long type, unsigned long length,
   Qlast = new;
   if (!Qstart)
     Qstart = Qlast;
+  queueing = True;
 }
