@@ -2110,7 +2110,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SMSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
 	  SCSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
 	}
-	else if(StrEquals(token, "WindowScadeShrinks"))
+	else if(StrEquals(token, "WindowShadeShrinks"))
 	{
 	  found = True;
 	  SFSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
