@@ -684,7 +684,7 @@ void RedrawIcons(void)
 
   tmp = Head;
   while(tmp != NULL){
-    if (desk_cond(tmp))
+    if (window_cond(tmp))
       RedrawIcon(tmp, redraw_flag);
     tmp = tmp->next;
   }
@@ -807,7 +807,7 @@ void RedrawIcon(struct icon_info *item, int f)
 
 void animate(struct icon_info *item, unsigned long *body)
 {
-  if(item && AnimCommand && (AnimCommand[0] != 0) )
+  if(item && AnimCommand && (AnimCommand[0] != 0))
   {
     char string[256];
     int abs_x, abs_y;
@@ -2035,15 +2035,32 @@ void process_message(unsigned long type, unsigned long *body)
   case M_CONFIGURE_WINDOW:
     if (ready)
     {
-      if (!(local_flags & CURRENT_ONLY)
-	  || (DO_SKIP_WINDOW_LIST(cfgpacket) && UseSkipList))
-	break;
       tmp = Head;
       while(tmp != NULL)
       {
 	if (tmp->id == cfgpacket->w)
         {
-	  if ((tmp->desk != cfgpacket->desk) && !(IS_STICKY(tmp)))
+	  int remove=0,add=0;
+
+	  if (IS_ICON_SUPPRESSED(cfgpacket) != IS_ICON_SUPPRESSED(tmp))
+	  {
+	    if (IS_ICON_SUPPRESSED(cfgpacket))
+	      add = 1;
+	    else 
+	      remove = 1;
+	    SET_ICON_SUPPRESSED(tmp,IS_ICON_SUPPRESSED(cfgpacket));
+	  }
+	  if (UseSkipList && 
+	      DO_SKIP_WINDOW_LIST(cfgpacket) != DO_SKIP_WINDOW_LIST(tmp))
+	  {
+	    if (!DO_SKIP_WINDOW_LIST(cfgpacket))
+	      add = 1;
+	    else
+	      remove = 1;
+	    SET_DO_SKIP_WINDOW_LIST(tmp,DO_SKIP_WINDOW_LIST(cfgpacket)); 
+	  }
+	  if ((local_flags & CURRENT_ONLY) &&
+	      tmp->desk != cfgpacket->desk && !IS_STICKY(tmp))
           {
 	    olddesk = tmp->desk;
 	    tmp->desk = cfgpacket->desk;
@@ -2051,6 +2068,18 @@ void process_message(unsigned long type, unsigned long *body)
             {
 	      if (tmp->desk == CurrentDesk && sortby != UNSORT)
 		SortItem(NULL);
+	      if (tmp->desk == CurrentDesk)
+		add = 1;
+	      else
+		remove = 1;
+	    }
+	  }else if ((IS_STICKY(cfgpacket)) && !(IS_STICKY(tmp))) /* stick */
+            SET_STICKY(tmp, True);
+	  else if (!(IS_STICKY(cfgpacket)) && (IS_STICKY(tmp))){ /* unstick */
+            SET_STICKY(tmp, False);
+	    tmp->desk = cfgpacket->desk;
+	  }
+	  if ((add && window_cond(tmp)) || remove) {
 	      num_icons = AdjustIconWindows();
 	      GetIconwinSize(&diffx, &diffy);
 	      if (diffy && (primary == BOTTOM || secondary == BOTTOM))
@@ -2071,30 +2100,24 @@ void process_message(unsigned long type, unsigned long *body)
 		SetWindowBackground(dpy, icon_win, icon_win_width,
 				    icon_win_height, &Colorset[(colorset)],
 				    Pdepth, NormalGC, True);
-	      if (tmp->desk == CurrentDesk){
-		XMapWindow(dpy, tmp->IconWin);
-		if (max_icon_height != 0)
-		  XMapWindow(dpy, tmp->icon_pixmap_w);
-	      }else{
+	      if (remove){
 		XUnmapWindow(dpy, tmp->IconWin);
 		if (max_icon_height != 0)
 		  XUnmapWindow(dpy, tmp->icon_pixmap_w);
+	      }else{
+		XMapWindow(dpy, tmp->IconWin);
+		if (max_icon_height != 0)
+		  XMapWindow(dpy, tmp->icon_pixmap_w);
 	      }
 	      if (!(local_flags & HIDE_H) && diffx)
 		RedrawHScrollbar();
 	      if (!(local_flags & HIDE_V) && diffy)
 		RedrawVScrollbar();
-	    }
-	  }else if ((IS_STICKY(cfgpacket)) && !(IS_STICKY(tmp))) /* stick */
-            SET_STICKY(tmp, True);
-	  else if (!(IS_STICKY(cfgpacket)) && (IS_STICKY(tmp))){ /* unstick */
-            SET_STICKY(tmp, False);
-	    tmp->desk = cfgpacket->desk;
 	  }
 	  return;
 	}
 	tmp = tmp->next;
-      }
+      } /* while */
       break;
     }
   case M_ADD_WINDOW:
@@ -2149,7 +2172,7 @@ void process_message(unsigned long type, unsigned long *body)
     if (!ready || tmp == NULL)
       break;
     if (sortby == WINDOWNAME && tmp->IconWin != None
-	&& desk_cond(tmp) && SortItem(tmp) == True)
+	&& window_cond(tmp) && SortItem(tmp) == True)
       AdjustIconWindows();
     break;
   case M_RES_NAME:
@@ -2160,7 +2183,7 @@ void process_message(unsigned long type, unsigned long *body)
 	SortItem(tmp);
       CreateIconWindow(tmp);
       AdjustIconWindows();
-      if (desk_cond(tmp)){
+      if (window_cond(tmp)){
 	if (max_icon_height != 0)
       XMapWindow(dpy, tmp->icon_pixmap_w);
       XMapWindow(dpy, tmp->IconWin);
@@ -2176,9 +2199,9 @@ void process_message(unsigned long type, unsigned long *body)
     if (!ready || tmp == NULL)
     break;
     if (sortby != UNSORT && tmp->IconWin != None
-	&& desk_cond(tmp) && SortItem(tmp) == True)
+	&& window_cond(tmp) && SortItem(tmp) == True)
       AdjustIconWindows();
-    if (tmp->IconWin != None && desk_cond(tmp))
+    if (tmp->IconWin != None && window_cond(tmp))
       RedrawIcon(tmp, 2);
     break;
   case M_DEFAULTICON:
@@ -2190,7 +2213,7 @@ void process_message(unsigned long type, unsigned long *body)
   case M_DEICONIFY:
     if (ready && (tmp = SetFlag(body[0], type)) != NULL)
       RedrawIcon(tmp, 2);
-    animate(tmp,body);
+    if (tmp && window_cond(tmp)) animate(tmp,body);
     SendUnlockNotification(fd);
     break;
   case M_FOCUS_CHANGE:
@@ -2306,7 +2329,7 @@ void mapicons(void)
   tmp = Head;
 
   while(tmp != NULL){
-    if (desk_cond(tmp)){
+    if (window_cond(tmp)){
       XMapWindow(dpy, tmp->IconWin);
       if (max_icon_height != 0)
 	XMapWindow(dpy, tmp->icon_pixmap_w);
@@ -2322,17 +2345,19 @@ int AdjustIconWindows(void)
   tmp = Head;
 
   while(tmp != NULL){
-    if (desk_cond(tmp) && tmp->IconWin != None)
+    if (window_cond(tmp) && tmp->IconWin != None)
       AdjustIconWindow(tmp, i++);
     tmp = tmp->next;
   }
   return i;
 }
 
-int desk_cond(struct icon_info *item)
+int window_cond(struct icon_info *item)
 {
-  if (!(local_flags & CURRENT_ONLY) ||
-      (IS_STICKY(item)) || (item->desk == CurrentDesk))
+  if ((!(local_flags & CURRENT_ONLY) ||
+      (IS_STICKY(item)) || (item->desk == CurrentDesk)) &&
+      IS_ICON_SUPPRESSED(item) && 
+      (!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
     return 1;
 
   return 0;
@@ -2349,9 +2374,7 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
   struct icon_info *new, *tmp;
   tmp = Head;
 
-  if (cfgpacket->w == main_win || (IS_TRANSIENT(cfgpacket))
-      || !(IS_ICON_SUPPRESSED(cfgpacket))
-      || (DO_SKIP_WINDOW_LIST(cfgpacket) && UseSkipList))
+  if (cfgpacket->w == main_win || IS_TRANSIENT(cfgpacket))
     return False;
 
   while (tmp != NULL){
@@ -2403,9 +2426,12 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
   Head = new;
   Tail = new;
 
-  if (desk_cond(new)) num_icons++;
+  if (window_cond(new)) { 
+    num_icons++;
+    return True;
+  }
 
-  return True;
+  return False;
 }
 
 /************************************************************************
@@ -2419,7 +2445,7 @@ Bool DeleteItem(unsigned long id)
 
   while(tmp != NULL){
   if (tmp->id == id){
-      if (desk_cond(tmp))
+      if (window_cond(tmp))
 	num_icons--;
     if (Hilite == tmp)
       Hilite = NULL;
@@ -2597,8 +2623,8 @@ int itemcmp(struct icon_info *item1, struct icon_info *item2)
     return 1;
 
   /* skip items not on the current desk */
-  ret1 = desk_cond(item1);
-  ret2 = desk_cond(item2);
+  ret1 = window_cond(item1);
+  ret2 = window_cond(item2);
   if (!ret1 || !ret2)
     return (ret1 - ret2);
 

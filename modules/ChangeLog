@@ -1,9 +1,12 @@
+2000-05-27  olicha <olivier.chapuis@free.fr>
+
+	* FvwmIconBox/FvwmIconBox.{c,h}:
+	Fixed NoIcon/Icon and WindowListSkip/Hit style Change
+	
 2000-05-26  olicha <olivier.chapuis@free.fr>
 	
 	* FvwmIconMan/xmanager.c (check_in_window, set_win_iconified):
 	Fixed NoIconAction and WindowListSkip/Hit style Change
-
-2000-05-26  olicha <olivier.chapuis@free.fr>
 
 	* FvwmWinList/*:
 	Fixed Sticky window and WinList width for ShowCurrentDesk
@@ -39,13 +42,9 @@
 	* FvwmScript/Scripts/ScriptFvwmSetup95.in
 	Corrected a miss print (thanks to sa)
 
-2000-05-20  olicha <olivier.chapuis@free.fr>
-
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage, LoopOnEvents,
 	HideTaskBar):
 	Fixed AutoStick and AutoHide for a TaskBar with a title
-
-2000-05-20  olicha <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/*:
 	Complete GSFR conversion. Fixed WindowListSkip/Hit style change.
@@ -56,12 +55,8 @@
 	* FvwmScript/Widgets/TextField.c (*):
 	Fixed long text input
 
-2000-05-17  olicha <olivier.chapuis@free.fr>
-
 	* FvwmScript/Scripts/ScriptFvwmBaseConfig:
 	Replace MoveSmoothness by MoveThreshold
-
-2000-05-17  olicha <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFileBrowser: A Clean up
 
