@@ -1024,6 +1024,52 @@ static void Restart ()
     case I_INPUT:
       if (!CF.cur_input)
 	CF.cur_input = item;
+
+      /* save old input values in a recall ring. */
+      if (item->input.value && item->input.value[0] != 0) { /* ? to save */
+        if (item->input.value_history_ptr == 0) {  /* no history yet */
+          item->input.value_history_ptr = calloc(sizeof(char *), 50);
+          item->input.value_history_ptr[0] = strdup(item->input.value);
+          item->input.value_history_count = 1; /* next insertion point */
+          myfprintf((stderr,"Initial save of %s in slot 0\n",
+                     item->input.value_history_ptr[0]));
+        } else {                        /* we have a history */
+          int prior;
+          prior = item->input.value_history_count - 1;
+          if (prior < 0) {
+            for (prior = VH_SIZE - 1;
+                 CF.cur_input->input.value_history_ptr[prior] == 0;
+                 --prior);              /* find last used slot */
+          }
+          myfprintf((stderr,"Prior is %d, compare %s to %s\n",
+                     prior, item->input.value,
+                     item->input.value_history_ptr[prior]));
+
+          if ( strcmp(item->input.value, item->input.value_history_ptr[prior])
+               != 0) {                  /* different value */
+            if (item->input.value_history_ptr[item->input.value_history_count]) {
+              free(item->input.value_history_ptr[item->input.value_history_count]);
+              myfprintf((stderr,"Freeing old item in slot %d\n",
+                         item->input.value_history_count));
+            }
+            item->input.value_history_ptr[item->input.value_history_count] =
+              strdup(item->input.value); /* save value ptr in array */
+            myfprintf((stderr,"Save of %s in slot %d\n",
+                       item->input.value,
+                       item->input.value_history_count));
+
+            /* leave count pointing at the next insertion point. */
+            if (item->input.value_history_count < VH_SIZE - 1) { /* not full */
+              ++item->input.value_history_count;    /* next slot */
+            } else {
+              item->input.value_history_count = 0;  /* wrap around */
+            }
+          } /* end something different */
+        } /* end have a history */
+        myfprintf((stderr,"New history yankat %d\n",
+                   item->input.value_history_yankat));
+      } /* end something to save */
+      item->input.value_history_yankat = item->input.value_history_count;
       item->input.n = strlen(item->input.init_value);
       strcpy(item->input.value, item->input.init_value);
       item->input.left = 0;

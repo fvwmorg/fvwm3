@@ -115,6 +115,9 @@ typedef union _item {
     int o_cursor;          /* store relative cursor position */
     union _item *next_input;            /* a ring of input fields */
     union _item *prev_input;            /* for tabbing */
+    int value_history_count;            /* count of input history */
+    int value_history_yankat;           /* yank point between restarts */
+    char **value_history_ptr;           /* curr insertion point */
   } input;
   struct {                 /* I_SELECT */
     struct _head head;
@@ -149,6 +152,7 @@ typedef union _item {
 #define L_CENTER      3
 #define L_LEFTRIGHT   4
 #define MICRO_S_FOR_10MS 10000
+#define VH_SIZE 50                      /* size of value history */
 
 /* There is one "line" structure for each line in the form.
    "Lines" point at an array of "items". */

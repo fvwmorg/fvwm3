@@ -1,3 +1,14 @@
+Mon Sep  6 10:32:54 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/ReadXServer.c (ReadXServer): Fix ^U not erasing.
+
+	* FvwmForm/FvwmForm.1: Document how all the keys work.
+
+	* FvwmForm/FvwmForm.c (Restart),
+ 	FvwmForm/ReadXServer.c (process_history),
+	FvwmForm/FvwmForm.h: Be able to recall input history with
+	Meta (mod2) "<" and ">".
+
 1999-09-07  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/Makefile.am (FormFvwmSetup.): This time remove $< in such a way

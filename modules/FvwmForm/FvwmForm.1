@@ -39,7 +39,8 @@ It cannot accept any input.
 
 A text input field can be used to edit a single-line string.
 FvwmForm accepts Emacs-style cursor movement keys.
-No copying and pasting functions exist.
+See FvwmFormInput for details.
+Mouse copy is not supported, but you can paste.
 
 A selection consists of several choices.
 
@@ -325,6 +326,31 @@ A subwindow of \fIsize\fP characters in width is used for editting.
 If \fIinit_string\fP is present, it is the initial string when
 FvwmForm starts or resets itself.
 The default initial string is "".
+
+You can mouse paste into an input field using button 2.
+Buttons 1 and 3 move the cursor in an input field.
+
+Input fields are always in insert mode, overtyping is not supported.
+
+Emacs type keystrokes are supported.
+
+Control-a, Home and Begin move to the front of an input field.
+Control-e and End move to the end of an input field.
+Control-b and Left move left in an input field.
+Control-f and Right move right in an input field.
+Control-p, Up, and Shift-Tab move to a previous input field if any.
+Control-n, Down, Return, Line-feed and Tab move to the next input field if any.
+Control-h moves backward in an input field erasing a character.
+Control-d and Delete delete the next character in an input field.
+Control-k erases for the cursor to the end of an input field.
+Control-U erases the entire input field.
+
+When a form executes a command, all the input values are saved in
+a ring of input history 50 items deep.
+
+Meta(mod2)-"<" retrieves the previous value of an input field.
+Meta(mod2)-">" retrieves the next value of an input field.
+
 .TP 4
 .B *FvwmFormSelection \fIname\fP \fItype\fP
 This option starts a selection item with name \fIname\fP.

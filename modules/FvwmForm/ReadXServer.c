@@ -58,6 +58,7 @@
 
 static void process_regular_char_input(unsigned char *buf);
 static int process_tabtypes(unsigned char * buf);
+static void process_history(int direction);
 static void process_button_release(XEvent *event, Item *item);
 static void process_paste_request (XEvent *event, Item *item);
 static void ToggleChoice (Item *item);
@@ -68,7 +69,6 @@ void ReadXServer ()
 {
   static XEvent event;
   int old_cursor = 0, keypress;
-  int shft;                             /* keyboard shift state */
   Item *item, *old_item;
   KeySym ks;
   char *sp, *dp;
@@ -106,8 +106,7 @@ void ReadXServer ()
       case KeyPress:  /* we do text input here */
 	n = XLookupString(&event.xkey, (char *)buf, sizeof(buf), &ks, NULL);
 	keypress = buf[0];
-        shft = (event.xkey.state & ShiftMask);
-	myfprintf((stderr, "Keypress [%s], shift state %X\n", buf,shft));
+	myfprintf((stderr, "Keypress [%s]\n", buf));
 	if (n == 0) {  /* not a regular key, translate it into one */
 	  switch (ks) {
 	  case XK_Home:
@@ -139,8 +138,20 @@ void ReadXServer ()
 	}
         switch (ks) {                   /* regular key, may need adjustment */
         case XK_Tab:
-          if (shft) {
+          if (event.xkey.state & ShiftMask) { /* shifted key */
             buf[0] = '\020';          /* chg shift tab to ^P */
+          }
+          break;
+        case '>':
+          if (event.xkey.state & Mod1Mask) { /* Meta, shift > */
+            process_history(1);
+            goto redraw_newcursor;
+          }
+          break;
+        case '<':
+          if (event.xkey.state & Mod1Mask) { /* Meta, shift < */
+            process_history(-1);
+            goto redraw_newcursor;
           }
           break;
         }
@@ -233,7 +244,6 @@ void ReadXServer ()
 	  CF.cur_input->input.n = CF.rel_cursor;
 	  goto redraw_newcursor;
 	case '\025':  /* ^U */
-	  old_cursor = CF.abs_cursor;
 	  CF.cur_input->input.value[0] = '\0';
 	  CF.cur_input->input.n = CF.cur_input->input.left = 0;
 	  CF.rel_cursor = CF.abs_cursor = 0;
@@ -393,8 +403,43 @@ void ReadXServer ()
 	  break;
 	}
       }
-    }  /* end of for (i = 0 */
+    }  /* end of for (i = 0) */
   }  /* while loop */
+}
+
+/* Each input field has a history, depending on the passed
+   direction, get the desired history item into the input field.
+   After "Restart" the yank point is one entry beyond the last
+   inserted item.
+   Normal yanks, going backward, go down the array decrementing
+   yank count before extracting.
+   Forward yanks increment before extracting. */
+static void process_history(int direction) {
+  int count;
+  if (!CF.cur_input                     /* no input fields */
+      || !CF.cur_input->input.value_history_ptr) { /* or no history */
+    return;                             /* bail out */
+  }
+  /* yankat is always one beyond slot to yank from. */
+  count = CF.cur_input->input.value_history_yankat + direction;
+  if (count < 0 || count >= VH_SIZE ||
+             CF.cur_input->input.value_history_ptr[count] == 0 ) {
+    if (direction <= 0) {               /* going down */
+      for (count = VH_SIZE - 1;
+           CF.cur_input->input.value_history_ptr[count] == 0;
+           --count);                    /* find last used slot */
+    } else {                            /* going up */
+      count = 0;                        /* up is the bottom */
+    }
+  }
+  CF.cur_input->input.value =
+    strdup(CF.cur_input->input.value_history_ptr[count]);
+  CF.cur_input->input.n = strlen(CF.cur_input->input.value);
+  CF.cur_input->input.value_history_yankat = count; /* new yank point */
+  CF.rel_cursor = 0;
+  CF.abs_cursor = 0;
+  CF.cur_input->input.left = 0;
+  return;
 }
 
 /* Note that tab, return, linefeed, ^n, all do the same thing
