@@ -1303,7 +1303,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   /* initialise button colours and background */
   if(b->flags & b_Colorset)
   {
-    int cset = b->colorset % nColorsets;
+    int cset = b->colorset;
 
     /* override normal icon options */
     if (b->flags & b_IconBack && !(b->flags & b_TransBack))
@@ -1349,7 +1349,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   {
     if(b->c->flags & b_Colorset)
     {
-      int cset = b->c->colorset % nColorsets;
+      int cset = b->c->colorset;
 
       /* override normal icon options */
       if (b->c->flags & b_IconBack && !(b->c->flags & b_TransBack))
@@ -1867,7 +1867,7 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   {
     SetWindowBackground(
       Dpy, MyWindow, mysizehints.width, mysizehints.height,
-      &Colorset[ub->c->colorset % nColorsets], Pdepth, NormalGC, True);
+      &Colorset[ub->c->colorset], Pdepth, NormalGC, True);
   }
   else if (ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack))
   {
@@ -2112,12 +2112,12 @@ void change_swallowed_window_colorset(button_info *b, Bool do_clear)
     Dpy, w, Pdepth, XVisualIDFromVisual(Pvisual), Pcmap, &children);
   SetWindowBackground(
     Dpy, w, buttonWidth(b), buttonHeight(b),
-    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC, do_clear);
+    &Colorset[b->colorset], Pdepth, NormalGC, do_clear);
   while (nchildren-- > 0)
   {
     SetWindowBackground(
       Dpy, children[nchildren], buttonWidth(b), buttonHeight(b),
-      &Colorset[b->colorset % nColorsets], Pdepth, NormalGC, do_clear);
+      &Colorset[b->colorset], Pdepth, NormalGC, do_clear);
   }
   if (children)
     XFree(children);
@@ -2176,7 +2176,7 @@ static void change_colorset(int colorset)
   {
     SetWindowBackground(
       Dpy, MyWindow, UberButton->c->width, UberButton->c->height,
-      &Colorset[colorset % nColorsets], Pdepth, NormalGC, True);
+      &Colorset[colorset], Pdepth, NormalGC, True);
   }
 
   recursive_change_colorset(UberButton->c, colorset);

@@ -164,6 +164,7 @@ int main(int argc, char **argv)
     else if(strncasecmp(tline,CatString3(MyName,"Colorset",""),Clength+8)==0)
       {
         sscanf(&tline[Clength+8], "%d", &colorset);
+        AllocColorset(colorset);
       }
     else if(strncasecmp(tline, "Colorset", 8) == 0)
       {

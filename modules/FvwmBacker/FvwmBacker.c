@@ -207,7 +207,7 @@ void set_desk_background(int desk)
   case 2:
     SetWindowBackground(
       dpy, root, DisplayWidth(dpy, screen), DisplayHeight(dpy, screen),
-      &Colorset[commands[desk].colorset % nColorsets],
+      &Colorset[commands[desk].colorset],
       DefaultDepth(dpy, screen), DefaultGC(dpy, screen), True);
     XFlush(dpy);
     break;
@@ -416,6 +416,7 @@ void AddCommand(char *string)
     {
       commands[num].colorset = 0;
     }
+    AllocColorset(commands[num].colorset);
     commands[num].type = 2;
   }
   else

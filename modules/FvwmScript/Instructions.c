@@ -993,7 +993,7 @@ static void ChangeMainColorset (int i)
    XFreeColors(dpy,Pcmap,&x11base->TabColor[shad],1,0);
  }
  x11base->colorset = i;
- i = i % nColorsets;
+ AllocColorset(i);
  x11base->TabColor[fore] = Colorset[i].fg;
  x11base->TabColor[back] = Colorset[i].bg;
  x11base->TabColor[hili] = Colorset[i].hilite;
@@ -1026,7 +1026,7 @@ static void ChangeColorset (int NbArg,long *TabArg)
  }
  sscanf(arg[1], "%d", &i);
  tabxobj[IdItem]->colorset = i;
- i = i % nColorsets;
+ AllocColorset(i);
  tabxobj[IdItem]->TabColor[fore] = Colorset[i].fg;
  tabxobj[IdItem]->TabColor[back] = Colorset[i].bg;
  tabxobj[IdItem]->TabColor[hili] = Colorset[i].hilite;

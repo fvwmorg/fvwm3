@@ -292,8 +292,8 @@ void initialize_pager(void)
   hi_pix = GetColor(HilightC);
 
   if (windowcolorset >= 0) {
-    win_back_pix = Colorset[windowcolorset % nColorsets].bg;
-    win_fore_pix = Colorset[windowcolorset % nColorsets].fg;
+    win_back_pix = Colorset[windowcolorset].bg;
+    win_fore_pix = Colorset[windowcolorset].fg;
   } else if (WindowBack && WindowFore)
   {
     win_back_pix	= GetColor(WindowBack);
@@ -301,8 +301,8 @@ void initialize_pager(void)
   }
 
   if (activecolorset >= 0) {
-    win_hi_back_pix = Colorset[activecolorset % nColorsets].bg;
-    win_hi_fore_pix = Colorset[activecolorset % nColorsets].fg;
+    win_hi_back_pix = Colorset[activecolorset].bg;
+    win_hi_fore_pix = Colorset[activecolorset].fg;
   } else if (WindowHiBack && WindowHiFore)
   {
     win_hi_back_pix	= GetColor(WindowHiBack);
@@ -516,15 +516,15 @@ void initialize_pager(void)
 
   /* create the 3d bevel GC's if necessary */
   if (windowcolorset >= 0) {
-    gcv.foreground = Colorset[windowcolorset % nColorsets].hilite;
+    gcv.foreground = Colorset[windowcolorset].hilite;
     Scr.whGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
-    gcv.foreground = Colorset[windowcolorset % nColorsets].shadow;
+    gcv.foreground = Colorset[windowcolorset].shadow;
     Scr.wsGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
   }
   if (activecolorset >= 0) {
-    gcv.foreground = Colorset[activecolorset % nColorsets].hilite;
+    gcv.foreground = Colorset[activecolorset].hilite;
     Scr.ahGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
-    gcv.foreground = Colorset[activecolorset % nColorsets].shadow;
+    gcv.foreground = Colorset[activecolorset].shadow;
     Scr.asGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
   }
 
@@ -537,7 +537,7 @@ void initialize_pager(void)
 
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
-      : Colorset[Desks[i].colorset % nColorsets].fg;
+      : Colorset[Desks[i].colorset].fg;
     gcv.font = font->fid;
     Desks[i].NormalGC = XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont,
 				  &gcv);
@@ -547,21 +547,21 @@ void initialize_pager(void)
       gcv.foreground = fore_pix;
     else
       gcv.foreground = (Desks[i].highcolorset < 0) ? hi_pix
-	: Colorset[Desks[i].highcolorset % nColorsets].bg;
+	: Colorset[Desks[i].highcolorset].bg;
     Desks[i].HiliteGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
 
     /* create the hilight desk title drawing GC */
     if ((Pdepth < 2) || (fore_pix == hi_pix))
       gcv.foreground = (Desks[i].colorset < 0) ? back_pix
-	: Colorset[Desks[i].colorset % nColorsets].bg;
+	: Colorset[Desks[i].colorset].bg;
     else
       gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
-	: Colorset[Desks[i].colorset % nColorsets].fg;
+	: Colorset[Desks[i].colorset].fg;
     Desks[i].rvGC = XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
 
     /* create the vrtual page boundary GC */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
-      : Colorset[Desks[i].colorset % nColorsets].fg;
+      : Colorset[Desks[i].colorset].fg;
     gcv.line_style = (use_dashed_separators) ? LineOnOffDash : LineSolid;
     Desks[i].DashedGC = XCreateGC(dpy, Scr.Pager_w,
 				  GCForeground | GCLineStyle, &gcv);
@@ -570,10 +570,10 @@ void initialize_pager(void)
 
     attributes.background_pixel = (Desks[i].colorset < 0) ?
       (Desks[i].Dcolor ? GetColor(Desks[i].Dcolor) : back_pix)
-      : Colorset[Desks[i].colorset % nColorsets].bg;
+      : Colorset[Desks[i].colorset].bg;
 
     attributes.border_pixel = (Desks[i].colorset < 0) ? fore_pix
-      : Colorset[Desks[i].colorset % nColorsets].fg;
+      : Colorset[Desks[i].colorset].fg;
     attributes.event_mask = (ExposureMask | ButtonReleaseMask);
     Desks[i].title_w = XCreateWindow(dpy, Scr.Pager_w, x, y, w, h, 1,
 				     CopyFromParent, InputOutput,
@@ -586,7 +586,7 @@ void initialize_pager(void)
 
 
     if (Desks[i].colorset > -1 &&
-	Colorset[Desks[i].colorset % nColorsets].pixmap)
+	Colorset[Desks[i].colorset].pixmap)
     {
       valuemask |= CWBackPixmap;
       attributes.background_pixmap = None; /* set later */
@@ -610,7 +610,7 @@ void initialize_pager(void)
     {
       valuemask |= CWBackPixel;
       attributes.background_pixel = (Desks[i].colorset < 0) ? back_pix
-	: Colorset[Desks[i].colorset % nColorsets].bg;
+	: Colorset[Desks[i].colorset].bg;
     }
 
 
@@ -618,10 +618,10 @@ void initialize_pager(void)
 			       CopyFromParent, InputOutput, CopyFromParent,
 			       valuemask, &attributes);
     if (Desks[i].colorset > -1 &&
-	Colorset[Desks[i].colorset % nColorsets].pixmap)
+	Colorset[Desks[i].colorset].pixmap)
     {
       SetWindowBackground(dpy, Desks[i].w, w, desk_h,
-			  &Colorset[Desks[i].colorset % nColorsets],
+			  &Colorset[Desks[i].colorset],
 			  Pdepth, Scr.NormalGC, True);
     }
 
@@ -633,7 +633,7 @@ void initialize_pager(void)
       attributes.event_mask = 0;
 
       if (Desks[i].highcolorset > -1 &&
-	  Colorset[Desks[i].highcolorset % nColorsets].pixmap)
+	  Colorset[Desks[i].highcolorset].pixmap)
       {
 	valuemask |= CWBackPixmap;
 	attributes.background_pixmap = None; /* set later */
@@ -647,7 +647,7 @@ void initialize_pager(void)
       {
 	valuemask |= CWBackPixel;
 	attributes.background_pixel = (Desks[i].highcolorset < 0) ? hi_pix
-	  : Colorset[Desks[i].highcolorset % nColorsets].bg;
+	  : Colorset[Desks[i].highcolorset].bg;
       }
 
       w = (window_w - n)/(n+1);
@@ -657,10 +657,10 @@ void initialize_pager(void)
 				       CopyFromParent, valuemask,
 				       &attributes);
       if (Desks[i].highcolorset > -1 &&
-	  Colorset[Desks[i].highcolorset % nColorsets].pixmap)
+	  Colorset[Desks[i].highcolorset].pixmap)
       {
 	SetWindowBackground(dpy, Desks[i].CPagerWin, w, h,
-			    &Colorset[Desks[i].highcolorset % nColorsets],
+			    &Colorset[Desks[i].highcolorset],
 			    Pdepth, Scr.NormalGC, True);
       }
       XMapRaised(dpy,Desks[i].CPagerWin);
@@ -681,15 +681,15 @@ void initialize_pager(void)
       attributes.event_mask = ExposureMask;
       attributes.border_pixel = (Desks[i].ballooncolorset < 0)
 	? balloon_border_pix
-	: Colorset[Desks[i].ballooncolorset % nColorsets].fg;
+	: Colorset[Desks[i].ballooncolorset].fg;
 
       /* if given in config set this now, otherwise it'll be set for each
 	 pager window when drawn later */
       attributes.background_pixel = (Desks[i].ballooncolorset < 0)
 	? balloon_back_pix
-	: Colorset[Desks[i].ballooncolorset % nColorsets].bg;
+	: Colorset[Desks[i].ballooncolorset].bg;
       if (Desks[i].ballooncolorset > -1 &&
-          Colorset[Desks[i].ballooncolorset % nColorsets].pixmap)
+          Colorset[Desks[i].ballooncolorset].pixmap)
       {
         valuemask |= CWBackPixmap;
         valuemask &= ~CWBackPixel;
@@ -764,17 +764,17 @@ void initialize_pager(void)
       /* if fore given in config set now, otherwise it'll be set later */
       gcv.foreground = (Desks[i].ballooncolorset < 0)
 	? balloon_fore_pix
-	: Colorset[Desks[i].ballooncolorset % nColorsets].fg;
+	: Colorset[Desks[i].ballooncolorset].fg;
 
       Desks[i].BalloonGC = XCreateGC(dpy, Desks[i].balloon.w,
 				     GCFont | GCForeground, &gcv);
 /* don't do this yet, wait for map since size will change
       if (Desks[i].ballooncolorset > -1 &&
-          Colorset[Desks[i].ballooncolorset % nColorsets].pixmap)
+          Colorset[Desks[i].ballooncolorset].pixmap)
       {
 	SetWindowBackground(dpy, Desks[i].balloon.w, 100,
 			    Desks[i].balloon.height,
-			    &Colorset[Desks[i].ballooncolorset % nColorsets],
+			    &Colorset[Desks[i].ballooncolorset],
 			    Pdepth, Desks[i].BalloonGC, True);
       }
 */
@@ -1163,10 +1163,10 @@ void ReConfigure(void)
 	XMoveResizeWindow(dpy,Desks[i].w,-1, y_pos,
 			  desk_w,desk_h);
         if (Desks[i].colorset > -1 &&
-            Colorset[Desks[i].colorset % nColorsets].pixmap)
+            Colorset[Desks[i].colorset].pixmap)
         {
           SetWindowBackground(dpy, Desks[i].w, desk_w, desk_h,
-			      &Colorset[Desks[i].colorset % nColorsets],
+			      &Colorset[Desks[i].colorset],
 			      Pdepth, Scr.NormalGC, True);
 	}
 	if (HilightDesks)
@@ -1176,10 +1176,10 @@ void ReConfigure(void)
 	  else
 	    XMoveResizeWindow(dpy, Desks[i].CPagerWin, -1000,-100,w,h);
 	  if (Desks[i].highcolorset > -1 &&
-	      Colorset[Desks[i].highcolorset % nColorsets].pixmap)
+	      Colorset[Desks[i].highcolorset].pixmap)
 	  {
 	    SetWindowBackground(dpy, Desks[i].CPagerWin, w, h,
-				&Colorset[Desks[i].highcolorset % nColorsets],
+				&Colorset[Desks[i].highcolorset],
 				Pdepth, Scr.NormalGC, True);
 	  }
 	}
@@ -1571,7 +1571,7 @@ void AddNewWindow(PagerWindow *t)
 				 valuemask, &attributes);
     if (windowcolorset > -1)
       SetWindowBackground(dpy, t->PagerView, w, h,
-			  &Colorset[windowcolorset % nColorsets], Pdepth,
+			  &Colorset[windowcolorset], Pdepth,
 			  Scr.NormalGC, True);
     XMapRaised(dpy, t->PagerView);
   }
@@ -1600,7 +1600,7 @@ void AddNewWindow(PagerWindow *t)
 				&attributes);
     if (windowcolorset > -1)
       SetWindowBackground(dpy, t->IconView, w, h,
-			  &Colorset[windowcolorset % nColorsets], Pdepth,
+			  &Colorset[windowcolorset], Pdepth,
 			  Scr.NormalGC, True);
     XGrabButton(dpy, 2, AnyModifier, t->IconView,
 		True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
@@ -1615,7 +1615,7 @@ void AddNewWindow(PagerWindow *t)
 				valuemask, &attributes);
     if (windowcolorset > -1)
       SetWindowBackground(dpy, t->IconView, w, h,
-			  &Colorset[windowcolorset % nColorsets], Pdepth,
+			  &Colorset[windowcolorset], Pdepth,
 			  Scr.NormalGC, True);
     XMapRaised(dpy,t->IconView);
   }
@@ -1666,12 +1666,12 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
       if ((t != FocusWin) && (windowcolorset > -1)) {
 	SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
 			    t->pager_view_height,
-			    &Colorset[windowcolorset % nColorsets],
+			    &Colorset[windowcolorset],
 			    Pdepth, Scr.NormalGC, True);
       } else if ((t == FocusWin) && (activecolorset > -1)) {
 	SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
 			    t->pager_view_height,
-			    &Colorset[activecolorset % nColorsets],
+			    &Colorset[activecolorset],
 			    Pdepth, Scr.NormalGC, True);
       }
     }
@@ -1707,12 +1707,12 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
       if ((t != FocusWin) && (windowcolorset > -1)) {
 	SetWindowBackground(dpy, t->IconView, t->icon_view_width,
 			    t->icon_view_height,
-			    &Colorset[windowcolorset % nColorsets],
+			    &Colorset[windowcolorset],
 			    Pdepth, Scr.NormalGC, True);
       } else if ((t == FocusWin) && (activecolorset > -1)) {
 	SetWindowBackground(dpy, t->IconView, t->icon_view_width,
 			    t->icon_view_height,
-			    &Colorset[activecolorset % nColorsets],
+			    &Colorset[activecolorset],
 			    Pdepth, Scr.NormalGC, True);
       }
     }
@@ -1750,12 +1750,12 @@ void MoveResizePagerView(PagerWindow *t)
       if ((t != FocusWin) && (windowcolorset > -1)) {
 	SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
 			    t->pager_view_height,
-			    &Colorset[windowcolorset % nColorsets],
+			    &Colorset[windowcolorset],
 			    Pdepth, Scr.NormalGC, True);
       } else if ((t == FocusWin) && (activecolorset > -1)) {
 	SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
 			    t->pager_view_height,
-			    &Colorset[activecolorset % nColorsets],
+			    &Colorset[activecolorset],
 			    Pdepth, Scr.NormalGC, True);
       }
     }
@@ -1790,12 +1790,12 @@ void MoveResizePagerView(PagerWindow *t)
       if ((t != FocusWin) && (windowcolorset > -1)) {
 	SetWindowBackground(dpy, t->IconView, t->icon_view_width,
 			    t->icon_view_height,
-			    &Colorset[windowcolorset % nColorsets],
+			    &Colorset[windowcolorset],
 			    Pdepth, Scr.NormalGC, True);
       } else if ((t == FocusWin) && (activecolorset > -1)) {
 	SetWindowBackground(dpy, t->IconView, t->icon_view_width,
 			    t->icon_view_height,
-			    &Colorset[activecolorset % nColorsets],
+			    &Colorset[activecolorset],
 			    Pdepth, Scr.NormalGC, True);
       }
     }
@@ -1877,7 +1877,7 @@ void Hilight(PagerWindow *t, int on)
 	    } else
 	      SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
 				  t->pager_view_height,
-				  &Colorset[activecolorset % nColorsets],
+				  &Colorset[activecolorset],
 				  Pdepth, Scr.NormalGC, True);
 	  }
 	  if (activecolorset < 0) {
@@ -1886,7 +1886,7 @@ void Hilight(PagerWindow *t, int on)
 	  } else
 	    SetWindowBackground(dpy, t->IconView, t->icon_view_width,
 				t->icon_view_height,
-			        &Colorset[activecolorset % nColorsets], Pdepth,
+			        &Colorset[activecolorset], Pdepth,
 			        Scr.NormalGC, True);
 	}
       else
@@ -1898,7 +1898,7 @@ void Hilight(PagerWindow *t, int on)
 	    } else
 	      SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
 				  t->pager_view_height,
-				  &Colorset[windowcolorset % nColorsets],
+				  &Colorset[windowcolorset],
 				  Pdepth, Scr.NormalGC, True);
 	  }
 	  if (windowcolorset < 0) {
@@ -1907,7 +1907,7 @@ void Hilight(PagerWindow *t, int on)
 	  } else
 	    SetWindowBackground(dpy, t->IconView, t->icon_view_width,
 				t->icon_view_height,
-				&Colorset[windowcolorset % nColorsets], Pdepth,
+				&Colorset[windowcolorset], Pdepth,
 				Scr.NormalGC, True);
 	}
     }
@@ -2651,10 +2651,10 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
   if (Desks[i].ballooncolorset > -1) {
     SetWindowBackground(dpy, Desks[i].balloon.w, window_changes.width,
 			Desks[i].balloon.height,
-			&Colorset[Desks[i].ballooncolorset % nColorsets],
+			&Colorset[Desks[i].ballooncolorset],
 			Pdepth, Scr.NormalGC, True);
     XSetWindowBorder(dpy, Desks[i].balloon.w,
-		     Colorset[Desks[i].ballooncolorset % nColorsets].fg);
+		     Colorset[Desks[i].ballooncolorset].fg);
   }
 
   XMapRaised(dpy, Desks[i].balloon.w);
@@ -2764,13 +2764,13 @@ void change_colorset(int colorset)
   {
     if (Desks[i].highcolorset == colorset)
     {
-      XSetForeground(dpy, Desks[i].HiliteGC,Colorset[colorset % nColorsets].bg);
-      XSetForeground(dpy, Desks[i].rvGC, Colorset[colorset % nColorsets].fg);
+      XSetForeground(dpy, Desks[i].HiliteGC,Colorset[colorset].bg);
+      XSetForeground(dpy, Desks[i].rvGC, Colorset[colorset].fg);
 
       if (HilightDesks)
       {
         SetWindowBackground(dpy, Desks[i].CPagerWin, 0, 0,
-			    &Colorset[colorset % nColorsets], Pdepth,
+			    &Colorset[colorset], Pdepth,
 			    Scr.NormalGC, True);
         XLowerWindow(dpy,Desks[i].CPagerWin);
       }
@@ -2779,41 +2779,41 @@ void change_colorset(int colorset)
 
     if (Desks[i].colorset == colorset)
     {
-      attributes.background_pixel = Colorset[colorset % nColorsets].bg;
-      attributes.border_pixel = Colorset[colorset % nColorsets].fg;
+      attributes.background_pixel = Colorset[colorset].bg;
+      attributes.border_pixel = Colorset[colorset].fg;
       XChangeWindowAttributes(dpy,Desks[i].title_w, CWBackPixel | CWBorderPixel,
 			      &attributes);
       XClearArea(dpy, Desks[i].title_w, 0, 0, 0, 0, True);
       XChangeWindowAttributes(dpy,Desks[i].w, CWBorderPixel, &attributes);
       SetWindowBackground(dpy, Desks[i].w, 0, 0,
-			  &Colorset[colorset % nColorsets], Pdepth,
+			  &Colorset[colorset], Pdepth,
 			  Scr.NormalGC, True);
 
-      XSetForeground(dpy, Desks[i].NormalGC,Colorset[colorset % nColorsets].fg);
-      XSetForeground(dpy, Desks[i].DashedGC,Colorset[colorset % nColorsets].fg);
+      XSetForeground(dpy, Desks[i].NormalGC,Colorset[colorset].fg);
+      XSetForeground(dpy, Desks[i].DashedGC,Colorset[colorset].fg);
 
     }
 
     if (ShowBalloons && Desks[i].ballooncolorset == colorset)
     {
-      attributes.border_pixel = Colorset[colorset % nColorsets].fg;
+      attributes.border_pixel = Colorset[colorset].fg;
       XChangeWindowAttributes(dpy, Desks[i].balloon.w, CWBorderPixel,
 			      &attributes);
       XClearArea(dpy, Desks[i].balloon.w, 0, 0, 0, 0, True);
-      XSetForeground(dpy,Desks[i].BalloonGC,Colorset[colorset % nColorsets].fg);
+      XSetForeground(dpy,Desks[i].BalloonGC,Colorset[colorset].fg);
     }
 
   }
 
   if (windowcolorset == colorset)
   {
-    colorset_struct *wcsetp = &Colorset[colorset % nColorsets];
+    colorset_struct *wcsetp = &Colorset[colorset];
 
     XSetForeground(dpy, Scr.whGC, wcsetp->hilite);
     XSetForeground(dpy, Scr.wsGC, wcsetp->shadow);
     for (t = Start; t != NULL; t = t->next)
     {
-      t->text = Colorset[colorset % nColorsets].fg;
+      t->text = Colorset[colorset].fg;
       if(t != FocusWin) {
         if(t->PagerView != None)
           SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
@@ -2828,7 +2828,7 @@ void change_colorset(int colorset)
 
   if (activecolorset == colorset)
   {
-    colorset_struct *acsetp = &Colorset[colorset % nColorsets];
+    colorset_struct *acsetp = &Colorset[colorset];
 
     focus_fore_pix = acsetp->fg;
     XSetForeground(dpy, Scr.ahGC, acsetp->hilite);

@@ -134,7 +134,7 @@ void CreateWindow(int x,int y, int w, int h)
 
   attributes.backing_store = NotUseful;
   attributes.background_pixel = (colorset < 0) ? GetColor(BackColor)
-				: Colorset[colorset % nColorsets].bg;
+				: Colorset[colorset].bg;
   attributes.border_pixel = 0;
   attributes.colormap = Pcmap;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
@@ -143,9 +143,9 @@ void CreateWindow(int x,int y, int w, int h)
 			   | CWBorderPixel | CWColormap, &attributes);
 
   hilite_pix = (colorset < 0) ? GetHilite(attributes.background_pixel)
-			      : Colorset[colorset % nColorsets].hilite;
+			      : Colorset[colorset].hilite;
   shadow_pix = (colorset < 0) ? GetShadow(attributes.background_pixel)
-			      : Colorset[colorset % nColorsets].shadow;
+			      : Colorset[colorset].shadow;
 
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
@@ -170,7 +170,7 @@ void CreateWindow(int x,int y, int w, int h)
 
   if (colorset >= 0)
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-			&Colorset[(colorset % nColorsets)], Pdepth, shadowGC,
+			&Colorset[(colorset)], Pdepth, shadowGC,
 			True);
 
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
@@ -228,7 +228,7 @@ void Loop(Window target)
 	  if ((tw != Width) || (th != Height)) {
 	    if (colorset >= 0)
 	      SetWindowBackground(dpy, main_win, tw, th,
-				  &Colorset[(colorset % nColorsets)], Pdepth,
+				  &Colorset[(colorset)], Pdepth,
 				  shadowGC, True);
 	    XResizeWindow(dpy, holder_win, tw - BAR_WIDTH - PAD_WIDTH3,
 			  th - BAR_WIDTH - PAD_WIDTH3);
@@ -553,11 +553,11 @@ void Loop(Window target)
 	  /* track all colorset changes and update display if necessary */
 	  if (LoadColorset(tline) == colorset) {
 	    XSetForeground(dpy, hiliteGC,
-			   Colorset[colorset % nColorsets].hilite);
+			   Colorset[colorset].hilite);
 	    XSetForeground(dpy, shadowGC,
-			   Colorset[colorset % nColorsets].shadow);
+			   Colorset[colorset].shadow);
 	    SetWindowBackground(dpy, main_win, Width, Height,
-				&Colorset[colorset % nColorsets], Pdepth,
+				&Colorset[colorset], Pdepth,
 				shadowGC, True);
 	  }
 	}

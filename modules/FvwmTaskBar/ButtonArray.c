@@ -85,7 +85,7 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
     colorset_struct *cset;
 
     if (iconcolorset >= 0)
-      cset = &Colorset[iconcolorset % nColorsets];
+      cset = &Colorset[iconcolorset];
     if (iconcolorset >= 0 && (cset->pixmap || cset->shape_mask))
     {
       /* we have a colorset background */

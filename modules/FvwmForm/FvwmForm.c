@@ -360,6 +360,7 @@ static void ct_Back(char *cp) {
 }
 static void ct_Colorset(char *cp) {
   sscanf(cp, "%d", &colorset);
+  AllocColorset(colorset);
 }
 static void ct_ItemFore(char *cp) {
   color_names[c_item_fg] = strdup(cp);
@@ -373,6 +374,7 @@ static void ct_ItemBack(char *cp) {
 }
 static void ct_ItemColorset(char *cp) {
   sscanf(cp, "%d", &itemcolorset);
+  AllocColorset(itemcolorset);
 }
 static void ct_Font(char *cp) {
   font_names[f_text] = strdup(cp);
@@ -446,10 +448,10 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
   if (dt->dt_used == 0) {               /* if nothing allocated */
     dt->dt_colors[c_fg] = (colorset < 0)
       ? GetColor(dt->dt_color_names[c_fg])
-      : Colorset[colorset % nColorsets].fg;
+      : Colorset[colorset].fg;
     dt->dt_colors[c_bg] = (colorset < 0)
       ? GetColor(dt->dt_color_names[c_bg])
-      : Colorset[colorset % nColorsets].bg;
+      : Colorset[colorset].bg;
 
     xgcv.foreground = dt->dt_colors[c_fg];
     xgcv.background = dt->dt_colors[c_bg];
@@ -463,10 +465,10 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
   }
   dt->dt_colors[c_item_fg] = (itemcolorset < 0)
     ? GetColor(dt->dt_color_names[c_item_fg])
-    : Colorset[itemcolorset % nColorsets].fg;
+    : Colorset[itemcolorset].fg;
   dt->dt_colors[c_item_bg] = (itemcolorset < 0)
     ? GetColor(dt->dt_color_names[c_item_bg])
-    : Colorset[itemcolorset % nColorsets].bg;
+    : Colorset[itemcolorset].bg;
   xgcv.foreground = dt->dt_colors[c_item_fg];
   xgcv.background = dt->dt_colors[c_item_bg];
   xgcv.font = dt->dt_font;
@@ -477,10 +479,10 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
   } else {
     dt->dt_colors[c_itemlo] = (itemcolorset < 0)
       ? GetShadow(dt->dt_colors[c_item_bg])
-      : Colorset[itemcolorset % nColorsets].shadow;
+      : Colorset[itemcolorset].shadow;
     dt->dt_colors[c_itemhi] = (itemcolorset < 0)
       ? GetHilite(dt->dt_colors[c_item_bg])
-      : Colorset[itemcolorset % nColorsets].hilite;
+      : Colorset[itemcolorset].hilite;
   }
   dt->dt_used = 2;                     /* fully allocated */
 }
@@ -1362,7 +1364,7 @@ static void OpenWindows ()
   XQueryColor(dpy, Pcmap, &xcf);
   xcb.pixel = CF.screen_background = (colorset < 0)
     ? GetColor(screen_background_color)
-    : Colorset[colorset % nColorsets].bg;
+    : Colorset[colorset].bg;
   XQueryColor(dpy, Pcmap, &xcb);
   XRecolorCursor(dpy, xc_ibeam, &xcf, &xcb);
 
@@ -1417,7 +1419,7 @@ static void OpenWindows ()
       {
         SetWindowBackground(dpy, item->header.win,
                             item->header.size_x, item->header.size_y,
-                            &Colorset[(itemcolorset % nColorsets)], Pdepth,
+                            &Colorset[(itemcolorset)], Pdepth,
                             item->header.dt_ptr->dt_GC, True);
       }
       break;
@@ -1436,7 +1438,7 @@ static void OpenWindows ()
       {
         SetWindowBackground(dpy, item->header.win,
                             item->header.size_x, item->header.size_y,
-                            &Colorset[(itemcolorset % nColorsets)], Pdepth,
+                            &Colorset[(itemcolorset)], Pdepth,
                             item->header.dt_ptr->dt_GC, True);
       }
       break;
@@ -1457,7 +1459,7 @@ static void OpenWindows ()
       {
         SetWindowBackground(dpy, item->header.win,
                             item->header.size_x, item->header.size_y,
-                            &Colorset[(itemcolorset % nColorsets)], Pdepth,
+                            &Colorset[(itemcolorset)], Pdepth,
                             item->header.dt_ptr->dt_GC, True);
       }
       break;
@@ -1467,7 +1469,7 @@ static void OpenWindows ()
   if (colorset >= 0)
   {
     SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
-                        &Colorset[(colorset % nColorsets)], Pdepth,
+                        &Colorset[(colorset)], Pdepth,
                         root_item_ptr->header.dt_ptr->dt_GC, True);
   }
   if (preload_yorn == 'n') {            /* if not a preload */
@@ -1574,12 +1576,12 @@ static void ParseActiveMessage(char *buf) {
         if (itemcolorset >= 0 && item->header.win != 0) {
           SetWindowBackground(dpy, item->header.win,
                               item->header.size_x, item->header.size_y,
-                              &Colorset[(itemcolorset % nColorsets)], Pdepth,
+                              &Colorset[(itemcolorset)], Pdepth,
                               item->header.dt_ptr->dt_GC, True);
         }
       }
       SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
-                          &Colorset[(colorset % nColorsets)], Pdepth,
+                          &Colorset[(colorset)], Pdepth,
                           root_item_ptr->header.dt_ptr->dt_GC, True);
     }
     return;

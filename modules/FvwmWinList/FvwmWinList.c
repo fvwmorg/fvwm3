@@ -230,6 +230,7 @@ int main(int argc, char **argv)
   /* set default colorsets */
   colorset[0] = colorset[1] = 0;
   colorset[2] = colorset[3] = 1;
+  AllocColorset(1);
 
   /* Parse the config file */
   ParseConfig();
@@ -716,18 +717,21 @@ ParseConfigLine(char *tline)
       if (strlen(AnimCommand) > MAX_NO_ICON_ACTION_LENGTH)
 	AnimCommand[MAX_NO_ICON_ACTION_LENGTH] = 0;
     } else if (strncasecmp(tline, CatString3(Module, "Colorset", ""),
-			 Clength + 8) == 0)
+			 Clength + 8) == 0) {
       colorset[0] = atoi(&tline[Clength + 8]);
-    else if (strncasecmp(tline, CatString3(Module, "IconColorset", ""),
+      AllocColorset(colorset[0]);
+    } else if (strncasecmp(tline, CatString3(Module, "IconColorset", ""),
 			 Clength + 12) == 0)
     {
       colorset[1] = atoi(&tline[Clength + 12]);
+      AllocColorset(colorset[1]);
       has_icon_cset = True;
     }
     else if (strncasecmp(tline, CatString3(Module, "FocusColorset", ""),
 			 Clength + 13) == 0)
     {
       colorset[2] = colorset[3] = atoi(&tline[Clength + 13]);
+      AllocColorset(colorset[3]);
       has_icon_cset = True;
     }
     else if (strncasecmp(tline, "Colorset", 8) == 0) {
@@ -916,7 +920,6 @@ void AdjustWindow(Bool force)
       int cset = colorset[i];
 
       if (cset >= 0) {
-        cset = cset % nColorsets;
 	fore[i] = Colorset[cset].fg;
 	back[i] = Colorset[cset].bg;
 	XSetForeground(dpy, graph[i], fore[i]);
@@ -1068,8 +1071,8 @@ void MakeMeWindow(void)
     else
     {
       if (colorset[i] >= 0) {
-        back[i] = Colorset[colorset[i] % nColorsets].bg;
-        fore[i] = Colorset[colorset[i] % nColorsets].fg;
+        back[i] = Colorset[colorset[i]].bg;
+        fore[i] = Colorset[colorset[i]].fg;
       } else {
 	back[i] = GetColor(BackColor[i] == NULL ? BackColor[0] : BackColor[i]);
 	fore[i] = GetColor(ForeColor[i] == NULL ? ForeColor[0] : ForeColor[i]);
@@ -1122,7 +1125,7 @@ void MakeMeWindow(void)
       if (colorset[i] < 0)
 	gcval.foreground=GetShadow(back[i]);
       else
-	gcval.foreground=Colorset[colorset[i] % nColorsets].shadow;
+	gcval.foreground=Colorset[colorset[i]].shadow;
     gcval.background=back[i];
     gcmask=GCForeground|GCBackground;
     shadow[i]=XCreateGC(dpy,win,gcmask,&gcval);
@@ -1130,7 +1133,7 @@ void MakeMeWindow(void)
     if (colorset[i] < 0)
       gcval.foreground=GetHilite(back[i]);
     else
-      gcval.foreground=Colorset[colorset[i] % nColorsets].hilite;
+      gcval.foreground=Colorset[colorset[i]].hilite;
     gcval.background=back[i];
     gcmask=GCForeground|GCBackground;
     hilite[i]=XCreateGC(dpy,win,gcmask,&gcval);

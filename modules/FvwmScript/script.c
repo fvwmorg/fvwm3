@@ -1,97 +1,96 @@
 
 /*  A Bison parser, made from script.y
- by  GNU Bison version 1.25
-  */
+    by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
-#define	STR	258
-#define	GSTR	259
-#define	VAR	260
-#define	NUMBER	261
-#define	WINDOWTITLE	262
-#define	WINDOWSIZE	263
-#define	WINDOWPOSITION	264
-#define	FONT	265
-#define	FORECOLOR	266
-#define	BACKCOLOR	267
-#define	SHADCOLOR	268
-#define	LICOLOR	269
-#define	COLORSET	270
-#define	OBJECT	271
-#define	INIT	272
-#define	PERIODICTASK	273
-#define	MAIN	274
-#define	END	275
-#define	PROP	276
-#define	TYPE	277
-#define	SIZE	278
-#define	POSITION	279
-#define	VALUE	280
-#define	VALUEMIN	281
-#define	VALUEMAX	282
-#define	TITLE	283
-#define	SWALLOWEXEC	284
-#define	ICON	285
-#define	FLAGS	286
-#define	WARP	287
-#define	WRITETOFILE	288
-#define	HIDDEN	289
-#define	CANBESELECTED	290
-#define	NORELIEFSTRING	291
-#define	CASE	292
-#define	SINGLECLIC	293
-#define	DOUBLECLIC	294
-#define	BEG	295
-#define	POINT	296
-#define	EXEC	297
-#define	HIDE	298
-#define	SHOW	299
-#define	CHFORECOLOR	300
-#define	CHBACKCOLOR	301
-#define	CHCOLORSET	302
-#define	GETVALUE	303
-#define	GETFORE	304
-#define	GETBACK	305
-#define	GETHILIGHT	306
-#define	GETSHADOW	307
-#define	CHVALUE	308
-#define	CHVALUEMAX	309
-#define	CHVALUEMIN	310
-#define	ADD	311
-#define	DIV	312
-#define	MULT	313
-#define	GETTITLE	314
-#define	GETOUTPUT	315
-#define	STRCOPY	316
-#define	NUMTOHEX	317
-#define	HEXTONUM	318
-#define	QUIT	319
-#define	LAUNCHSCRIPT	320
-#define	GETSCRIPTFATHER	321
-#define	SENDTOSCRIPT	322
-#define	RECEIVFROMSCRIPT	323
-#define	GET	324
-#define	SET	325
-#define	SENDSIGN	326
-#define	REMAINDEROFDIV	327
-#define	GETTIME	328
-#define	GETSCRIPTARG	329
-#define	IF	330
-#define	THEN	331
-#define	ELSE	332
-#define	FOR	333
-#define	TO	334
-#define	DO	335
-#define	WHILE	336
-#define	BEGF	337
-#define	ENDF	338
-#define	EQUAL	339
-#define	INFEQ	340
-#define	SUPEQ	341
-#define	INF	342
-#define	SUP	343
-#define	DIFF	344
+#define	STR	257
+#define	GSTR	258
+#define	VAR	259
+#define	NUMBER	260
+#define	WINDOWTITLE	261
+#define	WINDOWSIZE	262
+#define	WINDOWPOSITION	263
+#define	FONT	264
+#define	FORECOLOR	265
+#define	BACKCOLOR	266
+#define	SHADCOLOR	267
+#define	LICOLOR	268
+#define	COLORSET	269
+#define	OBJECT	270
+#define	INIT	271
+#define	PERIODICTASK	272
+#define	MAIN	273
+#define	END	274
+#define	PROP	275
+#define	TYPE	276
+#define	SIZE	277
+#define	POSITION	278
+#define	VALUE	279
+#define	VALUEMIN	280
+#define	VALUEMAX	281
+#define	TITLE	282
+#define	SWALLOWEXEC	283
+#define	ICON	284
+#define	FLAGS	285
+#define	WARP	286
+#define	WRITETOFILE	287
+#define	HIDDEN	288
+#define	CANBESELECTED	289
+#define	NORELIEFSTRING	290
+#define	CASE	291
+#define	SINGLECLIC	292
+#define	DOUBLECLIC	293
+#define	BEG	294
+#define	POINT	295
+#define	EXEC	296
+#define	HIDE	297
+#define	SHOW	298
+#define	CHFORECOLOR	299
+#define	CHBACKCOLOR	300
+#define	CHCOLORSET	301
+#define	GETVALUE	302
+#define	GETFORE	303
+#define	GETBACK	304
+#define	GETHILIGHT	305
+#define	GETSHADOW	306
+#define	CHVALUE	307
+#define	CHVALUEMAX	308
+#define	CHVALUEMIN	309
+#define	ADD	310
+#define	DIV	311
+#define	MULT	312
+#define	GETTITLE	313
+#define	GETOUTPUT	314
+#define	STRCOPY	315
+#define	NUMTOHEX	316
+#define	HEXTONUM	317
+#define	QUIT	318
+#define	LAUNCHSCRIPT	319
+#define	GETSCRIPTFATHER	320
+#define	SENDTOSCRIPT	321
+#define	RECEIVFROMSCRIPT	322
+#define	GET	323
+#define	SET	324
+#define	SENDSIGN	325
+#define	REMAINDEROFDIV	326
+#define	GETTIME	327
+#define	GETSCRIPTARG	328
+#define	IF	329
+#define	THEN	330
+#define	ELSE	331
+#define	FOR	332
+#define	TO	333
+#define	DO	334
+#define	WHILE	335
+#define	BEGF	336
+#define	ENDF	337
+#define	EQUAL	338
+#define	INFEQ	339
+#define	SUPEQ	340
+#define	INF	341
+#define	SUP	342
+#define	DIFF	343
 
 #line 1 "script.y"
 
@@ -455,7 +454,7 @@ typedef union {  char *str;
 #define	YYFLAG		-32768
 #define	YYNTBASE	90
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 344 ? yytranslate[x] : 153)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 343 ? yytranslate[x] : 153)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -483,16 +482,16 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-    36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-    46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-    56,    57,    58,    59,    60,    61,    62,    63,    64,    65,
-    66,    67,    68,    69,    70,    71,    72,    73,    74,    75,
-    76,    77,    78,    79,    80,    81,    82,    83,    84,    85,
-    86,    87,    88,    89
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+    37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+    47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+    57,    58,    59,    60,    61,    62,    63,    64,    65,    66,
+    67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+    77,    78,    79,    80,    81,    82,    83,    84,    85,    86,
+    87,    88,    89
 };
 
 #if YYDEBUG != 0
@@ -592,24 +591,24 @@ static const short yyrhs[] = {    91,
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
    372,   375,   379,   380,   383,   386,   391,   396,   400,   404,
-   408,   412,   415,   421,   422,   427,   428,   437,   438,   441,
-   457,   458,   462,   466,   471,   474,   477,   480,   483,   486,
-   489,   493,   497,   501,   505,   508,   511,   513,   514,   517,
-   520,   526,   537,   538,   541,   543,   544,   545,   548,   549,
-   552,   555,   560,   561,   562,   563,   564,   565,   566,   567,
-   568,   569,   570,   571,   572,   573,   574,   575,   576,   577,
-   578,   579,   580,   581,   582,   583,   587,   588,   589,   590,
-   591,   592,   593,   594,   595,   596,   597,   598,   599,   600,
-   601,   602,   603,   604,   605,   606,   607,   608,   611,   613,
-   615,   617,   619,   621,   623,   625,   627,   629,   631,   633,
-   635,   637,   639,   641,   643,   645,   647,   649,   651,   653,
-   655,   659,   661,   662,   664,   666,   667,   670,   671,   675,
-   679,   684,   686,   688,   690,   692,   694,   696,   698,   699,
-   700,   701,   702,   703,   704,   705,   706,   707,   708,   709,
-   710,   711,   712,   713,   714,   715,   716,   721,   722,   723,
-   724,   725,   726,   727,   728,   733,   734,   735,   736,   737,
-   738,   739,   743,   744,   745,   746,   747,   751,   752,   753,
-   757,   758,   759,   763,   767,   768,   769,   770,   771,   772
+   408,   412,   416,   422,   423,   428,   429,   438,   439,   442,
+   458,   459,   463,   467,   472,   475,   478,   481,   484,   487,
+   490,   494,   498,   502,   506,   510,   513,   515,   516,   519,
+   522,   528,   539,   540,   543,   545,   546,   547,   550,   551,
+   554,   557,   562,   563,   564,   565,   566,   567,   568,   569,
+   570,   571,   572,   573,   574,   575,   576,   577,   578,   579,
+   580,   581,   582,   583,   584,   585,   589,   590,   591,   592,
+   593,   594,   595,   596,   597,   598,   599,   600,   601,   602,
+   603,   604,   605,   606,   607,   608,   609,   610,   613,   615,
+   617,   619,   621,   623,   625,   627,   629,   631,   633,   635,
+   637,   639,   641,   643,   645,   647,   649,   651,   653,   655,
+   657,   661,   663,   664,   666,   668,   669,   672,   673,   677,
+   681,   686,   688,   690,   692,   694,   696,   698,   700,   701,
+   702,   703,   704,   705,   706,   707,   708,   709,   710,   711,
+   712,   713,   714,   715,   716,   717,   718,   723,   724,   725,
+   726,   727,   728,   729,   730,   735,   736,   737,   738,   739,
+   740,   741,   745,   746,   747,   748,   749,   753,   754,   755,
+   759,   760,   761,   765,   769,   770,   771,   772,   773,   774
 };
 #endif
 
@@ -994,7 +993,8 @@ static const short yycheck[] = {    34,
     -1,    -1,    -1,    -1,    78,    -1,    -1,    81
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/share/bison.simple"
+#line 3 "/home/tim/share/bison.simple"
+/* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -1011,46 +1011,66 @@ static const short yycheck[] = {    34,
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef alloca
-#ifdef __GNUC__
-#define alloca __builtin_alloca
-#else /* not GNU C.  */
-#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
-#include <alloca.h>
-#else /* not sparc */
-#if defined (MSDOS) && !defined (__TURBOC__)
-#include <malloc.h>
-#else /* not MSDOS, or __TURBOC__ */
-#if defined(_AIX)
-#include <malloc.h>
- #pragma alloca
-#else /* not MSDOS, __TURBOC__, or _AIX */
-#ifdef __hpux
-#ifdef __cplusplus
-extern "C" {
-void *alloca (unsigned int);
-};
-#else /* not __cplusplus */
-void *alloca ();
-#endif /* not __cplusplus */
-#endif /* __hpux */
-#endif /* not _AIX */
-#endif /* not MSDOS, or __TURBOC__ */
-#endif /* not sparc.  */
-#endif /* not GNU C.  */
-#endif /* alloca not defined.  */
-
 /* This is the parser code that is written into each bison parser
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYSTACK_USE_ALLOCA
+#ifdef alloca
+#define YYSTACK_USE_ALLOCA
+#else /* alloca not defined */
+#ifdef __GNUC__
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi) || (defined (__sun) && defined (__i386))
+#define YYSTACK_USE_ALLOCA
+#include <alloca.h>
+#else /* not sparc */
+/* We think this test detects Watcom and Microsoft C.  */
+/* This used to test MSDOS, but that is a bad idea
+   since that symbol is in the user namespace.  */
+#if (defined (_MSDOS) || defined (_MSDOS_)) && !defined (__TURBOC__)
+#if 0 /* No need for malloc.h, which pollutes the namespace;
+	 instead, just don't use alloca.  */
+#include <malloc.h>
+#endif
+#else /* not MSDOS, or __TURBOC__ */
+#if defined(_AIX)
+/* I don't know what this was needed for, but it pollutes the namespace.
+   So I turned it off.   rms, 2 May 1997.  */
+/* #include <malloc.h>  */
+ #pragma alloca
+#define YYSTACK_USE_ALLOCA
+#else /* not MSDOS, or __TURBOC__, or _AIX */
+#if 0
+#ifdef __hpux /* haible@ilog.fr says this works for HPUX 9.05 and up,
+		 and on HPUX 10.  Eventually we can turn this on.  */
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#endif /* __hpux */
+#endif
+#endif /* not _AIX */
+#endif /* not MSDOS, or __TURBOC__ */
+#endif /* not sparc */
+#endif /* not GNU C */
+#endif /* alloca not defined */
+#endif /* YYSTACK_USE_ALLOCA not defined */
+
+#ifdef YYSTACK_USE_ALLOCA
+#define YYSTACK_ALLOC alloca
+#else
+#define YYSTACK_ALLOC malloc
+#endif
 
 /* Note: there must be only one dollar sign in this file.
    It is replaced by the list of actions, each action
@@ -1060,8 +1080,8 @@ void *alloca ();
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		-2
 #define YYEOF		0
-#define YYACCEPT	return(0)
-#define YYABORT 	return(1)
+#define YYACCEPT	goto yyacceptlab
+#define YYABORT 	goto yyabortlab
 #define YYERROR		goto yyerrlab1
 /* Like YYERROR except do call yyerror.
    This remains here temporarily to ease the
@@ -1142,16 +1162,12 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
-#ifndef YYPARSE_RETURN_TYPE
-#define YYPARSE_RETURN_TYPE int
-#endif
-
-/* Prevent warning if -Wstrict-prototypes.  */
-#ifdef __GNUC__
-YYPARSE_RETURN_TYPE yyparse (void);
-#endif
 
+/* Define __yy_memcpy.  Note that the size argument
+   should be passed with type unsigned int, because that is what the non-GCC
+   definitions require.  With GCC, __builtin_memcpy takes an arg
+   of type size_t, but it can handle unsigned int.  */
+
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
 #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
@@ -1163,7 +1179,7 @@ static void
 __yy_memcpy (to, from, count)
      char *to;
      char *from;
-     int count;
+     unsigned int count;
 {
   register char *f = from;
   register char *t = to;
@@ -1178,10 +1194,10 @@ __yy_memcpy (to, from, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *to, char *from, int count)
+__yy_memcpy (char *to, char *from, unsigned int count)
 {
-  register char *f = from;
   register char *t = to;
+  register char *f = from;
   register int i = count;
 
   while (i-- > 0)
@@ -1191,7 +1207,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/share/bison.simple"
+#line 217 "/home/tim/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1212,7 +1228,16 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
 
-YYPARSE_RETURN_TYPE
+/* Prevent warning if -Wstrict-prototypes.  */
+#ifdef __GNUC__
+#ifdef YYPARSE_PARAM
+int yyparse (void *);
+#else
+int yyparse (void);
+#endif
+#endif
+
+int
 yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
@@ -1240,6 +1265,7 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+  int yyfree_stacks = 0;
 
 #ifdef YYPURE
   int yychar;
@@ -1324,18 +1350,32 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+	  if (yyfree_stacks)
+	    {
+	      free (yyss);
+	      free (yyvs);
+#ifdef YYLSP_NEEDED
+	      free (yyls);
+#endif
+	    }
 	  return 2;
 	}
       yystacksize *= 2;
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
-      yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-      yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+#ifndef YYSTACK_USE_ALLOCA
+      yyfree_stacks = 1;
+#endif
+      yyss = (short *) YYSTACK_ALLOC (yystacksize * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1,
+		   size * (unsigned int) sizeof (*yyssp));
+      yyvs = (YYSTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
+		   size * (unsigned int) sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
-      yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
+      yyls = (YYLTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1,
+		   size * (unsigned int) sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -1557,30 +1597,31 @@ case 12:
 #line 412 "script.y"
 {
 				 scriptprop->colorset = yyvsp[0].number;
+				 AllocColorset(yyvsp[0].number);
 				;
     break;}
 case 13:
-#line 415 "script.y"
+#line 416 "script.y"
 {
 				 scriptprop->font=yyvsp[0].str;
 				;
     break;}
 case 15:
-#line 422 "script.y"
+#line 423 "script.y"
 {
 				 scriptprop->initbloc=PileBloc[TopPileB];
 				 TopPileB--; 
 				;
     break;}
 case 17:
-#line 428 "script.y"
+#line 429 "script.y"
 {
 				 scriptprop->periodictasks=PileBloc[TopPileB];
 				 TopPileB--; 
 				;
     break;}
 case 20:
-#line 441 "script.y"
+#line 442 "script.y"
 { nbobj++;
 				  if (nbobj>100)
 				  { yyerror("Too many items\n");
@@ -1597,21 +1638,21 @@ case 20:
 				;
     break;}
 case 22:
-#line 458 "script.y"
+#line 459 "script.y"
 {
 				 (*tabobj)[nbobj].type=yyvsp[0].str;
 				 HasType=1;
 				;
     break;}
 case 23:
-#line 462 "script.y"
+#line 463 "script.y"
 {
 				 (*tabobj)[nbobj].width=yyvsp[-1].number;
 				 (*tabobj)[nbobj].height=yyvsp[0].number;
 				;
     break;}
 case 24:
-#line 466 "script.y"
+#line 467 "script.y"
 {
 				 (*tabobj)[nbobj].x=yyvsp[-1].number;
 				 (*tabobj)[nbobj].y=yyvsp[0].number;
@@ -1619,101 +1660,102 @@ case 24:
 				;
     break;}
 case 25:
-#line 471 "script.y"
+#line 472 "script.y"
 {
 				 (*tabobj)[nbobj].value=yyvsp[0].number;
 				;
     break;}
 case 26:
-#line 474 "script.y"
+#line 475 "script.y"
 {
 				 (*tabobj)[nbobj].value2=yyvsp[0].number;
 				;
     break;}
 case 27:
-#line 477 "script.y"
+#line 478 "script.y"
 {
 				 (*tabobj)[nbobj].value3=yyvsp[0].number;
 				;
     break;}
 case 28:
-#line 480 "script.y"
+#line 481 "script.y"
 {
 				 (*tabobj)[nbobj].title=yyvsp[0].str;
 				;
     break;}
 case 29:
-#line 483 "script.y"
+#line 484 "script.y"
 {
 				 (*tabobj)[nbobj].swallow=yyvsp[0].str;
 				;
     break;}
 case 30:
-#line 486 "script.y"
+#line 487 "script.y"
 {
 				 (*tabobj)[nbobj].icon=yyvsp[0].str;
 				;
     break;}
 case 31:
-#line 489 "script.y"
+#line 490 "script.y"
 {
 				 (*tabobj)[nbobj].backcolor=yyvsp[0].str;
 				 (*tabobj)[nbobj].colorset = -1;
 				;
     break;}
 case 32:
-#line 493 "script.y"
+#line 494 "script.y"
 {
 				 (*tabobj)[nbobj].forecolor=yyvsp[0].str;
 				 (*tabobj)[nbobj].colorset = -1;
 				;
     break;}
 case 33:
-#line 497 "script.y"
+#line 498 "script.y"
 {
 				 (*tabobj)[nbobj].shadcolor=yyvsp[0].str;
 				 (*tabobj)[nbobj].colorset = -1;
 				;
     break;}
 case 34:
-#line 501 "script.y"
+#line 502 "script.y"
 {
 				 (*tabobj)[nbobj].hilicolor=yyvsp[0].str;
 				 (*tabobj)[nbobj].colorset = -1;
 				;
     break;}
 case 35:
-#line 505 "script.y"
+#line 506 "script.y"
 {
 				 (*tabobj)[nbobj].colorset = yyvsp[0].number;
+				 AllocColorset(yyvsp[0].number);
 				;
     break;}
 case 36:
-#line 508 "script.y"
+#line 510 "script.y"
 {
 				 (*tabobj)[nbobj].font=yyvsp[0].str;
 				;
     break;}
 case 39:
-#line 514 "script.y"
+#line 516 "script.y"
 {
 				 (*tabobj)[nbobj].flags[0]=True;
 				;
     break;}
 case 40:
-#line 517 "script.y"
+#line 519 "script.y"
 {
 				 (*tabobj)[nbobj].flags[1]=True;
 				;
     break;}
 case 41:
-#line 520 "script.y"
+#line 522 "script.y"
 {
 				 (*tabobj)[nbobj].flags[2]=True;
 				;
     break;}
 case 42:
-#line 526 "script.y"
+#line 528 "script.y"
 { 
 				  if (!HasPosition)
 				   { yyerror("No position for object");
@@ -1726,272 +1768,272 @@ case 42:
 				 ;
     break;}
 case 43:
-#line 537 "script.y"
+#line 539 "script.y"
 { InitObjTabCase(0); ;
     break;}
 case 45:
-#line 541 "script.y"
+#line 543 "script.y"
 { InitObjTabCase(1); ;
     break;}
 case 49:
-#line 548 "script.y"
+#line 550 "script.y"
 { InitCase(-1); ;
     break;}
 case 50:
-#line 549 "script.y"
+#line 551 "script.y"
 { InitCase(-2); ;
     break;}
 case 51:
-#line 552 "script.y"
+#line 554 "script.y"
 { InitCase(yyvsp[0].number); ;
     break;}
 case 99:
-#line 611 "script.y"
+#line 613 "script.y"
 { AddCom(1,1); ;
     break;}
 case 100:
-#line 613 "script.y"
+#line 615 "script.y"
 { AddCom(2,1);;
     break;}
 case 101:
-#line 615 "script.y"
+#line 617 "script.y"
 { AddCom(3,1);;
     break;}
 case 102:
-#line 617 "script.y"
+#line 619 "script.y"
 { AddCom(4,2);;
     break;}
 case 103:
-#line 619 "script.y"
+#line 621 "script.y"
 { AddCom(21,2);;
     break;}
 case 104:
-#line 621 "script.y"
+#line 623 "script.y"
 { AddCom(22,2);;
     break;}
 case 105:
-#line 623 "script.y"
+#line 625 "script.y"
 { AddCom(5,3);;
     break;}
 case 106:
-#line 625 "script.y"
+#line 627 "script.y"
 { AddCom(6,3);;
     break;}
 case 107:
-#line 627 "script.y"
+#line 629 "script.y"
 { AddCom(7,2);;
     break;}
 case 108:
-#line 629 "script.y"
+#line 631 "script.y"
 { AddCom(8,2);;
     break;}
 case 109:
-#line 631 "script.y"
+#line 633 "script.y"
 { AddCom(9,2);;
     break;}
 case 110:
-#line 633 "script.y"
+#line 635 "script.y"
 { AddCom(10,2);;
     break;}
 case 111:
-#line 635 "script.y"
+#line 637 "script.y"
 { AddCom(19,2);;
     break;}
 case 112:
-#line 637 "script.y"
+#line 639 "script.y"
 { AddCom(24,2);;
     break;}
 case 113:
-#line 639 "script.y"
+#line 641 "script.y"
 { AddCom(11,2);;
     break;}
 case 114:
-#line 641 "script.y"
+#line 643 "script.y"
 { AddCom(12,2);;
     break;}
 case 115:
-#line 643 "script.y"
+#line 645 "script.y"
 { AddCom(13,0);;
     break;}
 case 116:
-#line 645 "script.y"
+#line 647 "script.y"
 { AddCom(17,1);;
     break;}
 case 117:
-#line 647 "script.y"
+#line 649 "script.y"
 { AddCom(23,2);;
     break;}
 case 118:
-#line 649 "script.y"
+#line 651 "script.y"
 { AddCom(18,2);;
     break;}
 case 122:
-#line 659 "script.y"
+#line 661 "script.y"
 { AddComBloc(14,3,2); ;
     break;}
 case 125:
-#line 664 "script.y"
+#line 666 "script.y"
 { EmpilerBloc(); ;
     break;}
 case 126:
-#line 666 "script.y"
+#line 668 "script.y"
 { DepilerBloc(2); ;
     break;}
 case 127:
-#line 667 "script.y"
+#line 669 "script.y"
 { DepilerBloc(2); ;
     break;}
 case 128:
-#line 670 "script.y"
+#line 672 "script.y"
 { DepilerBloc(1); ;
     break;}
 case 129:
-#line 671 "script.y"
+#line 673 "script.y"
 { DepilerBloc(1); ;
     break;}
 case 130:
-#line 675 "script.y"
+#line 677 "script.y"
 { AddComBloc(15,3,1); ;
     break;}
 case 131:
-#line 679 "script.y"
+#line 681 "script.y"
 { AddComBloc(16,3,1); ;
     break;}
 case 132:
-#line 684 "script.y"
+#line 686 "script.y"
 { AddVar(yyvsp[0].str); ;
     break;}
 case 133:
-#line 686 "script.y"
-{ AddConstStr(yyvsp[0].str); ;
-    break;}
-case 134:
 #line 688 "script.y"
 { AddConstStr(yyvsp[0].str); ;
     break;}
-case 135:
+case 134:
 #line 690 "script.y"
+{ AddConstStr(yyvsp[0].str); ;
+    break;}
+case 135:
+#line 692 "script.y"
 { AddConstNum(yyvsp[0].number); ;
     break;}
 case 136:
-#line 692 "script.y"
+#line 694 "script.y"
 { AddConstNum(-1); ;
     break;}
 case 137:
-#line 694 "script.y"
+#line 696 "script.y"
 { AddConstNum(-2); ;
     break;}
 case 138:
-#line 696 "script.y"
+#line 698 "script.y"
 { AddLevelBufArg(); ;
     break;}
 case 139:
-#line 698 "script.y"
+#line 700 "script.y"
 { AddFunct(1,1); ;
     break;}
 case 140:
-#line 699 "script.y"
+#line 701 "script.y"
 { AddFunct(2,1); ;
     break;}
 case 141:
-#line 700 "script.y"
+#line 702 "script.y"
 { AddFunct(3,1); ;
     break;}
 case 142:
-#line 701 "script.y"
+#line 703 "script.y"
 { AddFunct(4,1); ;
     break;}
 case 143:
-#line 702 "script.y"
+#line 704 "script.y"
 { AddFunct(5,1); ;
     break;}
 case 144:
-#line 703 "script.y"
+#line 705 "script.y"
 { AddFunct(6,1); ;
     break;}
 case 145:
-#line 704 "script.y"
+#line 706 "script.y"
 { AddFunct(7,1); ;
     break;}
 case 146:
-#line 705 "script.y"
+#line 707 "script.y"
 { AddFunct(8,1); ;
     break;}
 case 147:
-#line 706 "script.y"
+#line 708 "script.y"
 { AddFunct(9,1); ;
     break;}
 case 148:
-#line 707 "script.y"
+#line 709 "script.y"
 { AddFunct(10,1); ;
     break;}
 case 149:
-#line 708 "script.y"
+#line 710 "script.y"
 { AddFunct(11,1); ;
     break;}
 case 150:
-#line 709 "script.y"
+#line 711 "script.y"
 { AddFunct(12,1); ;
     break;}
 case 151:
-#line 710 "script.y"
+#line 712 "script.y"
 { AddFunct(13,1); ;
     break;}
 case 152:
-#line 711 "script.y"
+#line 713 "script.y"
 { AddFunct(14,1); ;
     break;}
 case 153:
-#line 712 "script.y"
+#line 714 "script.y"
 { AddFunct(15,1); ;
     break;}
 case 154:
-#line 713 "script.y"
+#line 715 "script.y"
 { AddFunct(16,1); ;
     break;}
 case 155:
-#line 714 "script.y"
+#line 716 "script.y"
 { AddFunct(17,1); ;
     break;}
 case 156:
-#line 715 "script.y"
+#line 717 "script.y"
 { AddFunct(18,1); ;
     break;}
 case 157:
-#line 716 "script.y"
+#line 718 "script.y"
 { AddFunct(19,1); ;
     break;}
 case 158:
-#line 721 "script.y"
+#line 723 "script.y"
 { ;
     break;}
 case 185:
-#line 767 "script.y"
+#line 769 "script.y"
 { l=1-250000; AddBufArg(&l,1); ;
     break;}
 case 186:
-#line 768 "script.y"
+#line 770 "script.y"
 { l=2-250000; AddBufArg(&l,1); ;
     break;}
 case 187:
-#line 769 "script.y"
+#line 771 "script.y"
 { l=3-250000; AddBufArg(&l,1); ;
     break;}
 case 188:
-#line 770 "script.y"
+#line 772 "script.y"
 { l=4-250000; AddBufArg(&l,1); ;
     break;}
 case 189:
-#line 771 "script.y"
+#line 773 "script.y"
 { l=5-250000; AddBufArg(&l,1); ;
     break;}
 case 190:
-#line 772 "script.y"
+#line 774 "script.y"
 { l=6-250000; AddBufArg(&l,1); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/share/bison.simple"
+#line 543 "/home/tim/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2186,6 +2228,30 @@ yyerrhandle:
 
   yystate = yyn;
   goto yynewstate;
+
+ yyacceptlab:
+  /* YYACCEPT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 0;
+
+ yyabortlab:
+  /* YYABORT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 1;
 }
-#line 775 "script.y"
+#line 777 "script.y"
 

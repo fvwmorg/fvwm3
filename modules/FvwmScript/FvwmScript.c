@@ -294,10 +294,10 @@ void OpenWindow (void)
 
  /* Allocation des couleurs */
  if (x11base->colorset >= 0) {
-  x11base->TabColor[fore] = Colorset[x11base->colorset % nColorsets].fg;
-  x11base->TabColor[back] = Colorset[x11base->colorset % nColorsets].bg;
-  x11base->TabColor[shad] = Colorset[x11base->colorset % nColorsets].shadow;
-  x11base->TabColor[hili] = Colorset[x11base->colorset % nColorsets].hilite;
+  x11base->TabColor[fore] = Colorset[x11base->colorset].fg;
+  x11base->TabColor[back] = Colorset[x11base->colorset].bg;
+  x11base->TabColor[shad] = Colorset[x11base->colorset].shadow;
+  x11base->TabColor[hili] = Colorset[x11base->colorset].hilite;
  } else {
   x11base->TabColor[fore] = GetColor(x11base->forecolor);
   x11base->TabColor[back] = GetColor(x11base->backcolor);
@@ -317,7 +317,7 @@ void OpenWindow (void)
  x11base->gc=XCreateGC(dpy,x11base->win,0,NULL);
  if (x11base->colorset >= 0)
    SetWindowBackground(dpy, x11base->win, x11base->size.width, x11base->size.height,
-		       &Colorset[x11base->colorset % nColorsets], Pdepth,
+		       &Colorset[x11base->colorset], Pdepth,
 		       x11base->gc, True);
 
  /* Choix des evts recus par la fenetre */

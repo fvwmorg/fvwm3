@@ -611,6 +611,7 @@ static void ParseContainer(char **ss,button_info *b)
       {
 	b->c->colorset = i;
 	b->c->flags |= b_Colorset;
+	AllocColorset(i);
       }
       else
       {
@@ -998,6 +999,7 @@ static void ParseButton(button_info **uberb,char *s)
 	  b->colorset = i;
 	  b->flags |= b_Colorset;
 	  s=t;
+	  AllocColorset(i);
 	}
 	else
 	{
@@ -1228,6 +1230,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
     {
       ub->c->colorset = j;
       ub->c->flags |= b_Colorset;
+      AllocColorset(j);
     }
     else
     {

@@ -381,7 +381,7 @@ void GetXPMColorset(int button, int colorset)
 
   SetRectangleBackground(
     dpy, Buttons[button].icons[0].icon, 0, 0, 64, 64,
-    &(Colorset[colorset % nColorsets]), Pdepth, NormalGC);
+    &(Colorset[colorset]), Pdepth, NormalGC);
 
   DrawOutline(Buttons[button].icons[0].icon,64,64);
 

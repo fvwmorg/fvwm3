@@ -185,6 +185,7 @@ int main(int argc, char **argv)
       }
       else if(strncasecmp(tline,CatString3(MyName,"Colorset",""),Clength+8)==0){
         sscanf(&tline[Clength+8], "%d", &colorset);
+        AllocColorset(colorset);
       }
       else if(strncasecmp(tline, "Colorset", 8) == 0){
         LoadColorset(&tline[8]);
@@ -463,9 +464,9 @@ void list_end(void)
   } else {
     attributes.background_pixel = (colorset < 0)
 				  ? GetColor(BackColor)
-    				  : Colorset[colorset % nColorsets].bg;
+    				  : Colorset[colorset].bg;
     fore_pix = (colorset < 0) ? GetColor(ForeColor)
-			      : Colorset[colorset % nColorsets].fg;
+			      : Colorset[colorset].fg;
   }
 
   attributes.colormap = Pcmap;
@@ -489,7 +490,7 @@ void list_end(void)
 
   if (colorset >= 0)
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-			&Colorset[(colorset % nColorsets)], Pdepth, gc, True);
+			&Colorset[(colorset)], Pdepth, gc, True);
 
   XMapWindow(dpy,main_win);
 
@@ -538,10 +539,10 @@ void list_end(void)
 	if (StrEquals(token, "Colorset")) {
 	  /* track all colorset changes and update display if necessary */
 	  if (LoadColorset(tline) == colorset) {
-	    XSetForeground(dpy, gc, Colorset[colorset % nColorsets].fg);
+	    XSetForeground(dpy, gc, Colorset[colorset].fg);
 	    SetWindowBackground(dpy, main_win, mysizehints.width,
 				mysizehints.height,
-				&Colorset[colorset % nColorsets], Pdepth, gc,
+				&Colorset[colorset], Pdepth, gc,
 				True);
 	  }
 	}

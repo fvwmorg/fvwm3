@@ -411,6 +411,7 @@ head:				/* vide: dans ce cas on utilise les valeurs par défaut */
 				}
     | head COLORSET NUMBER	{
 				 scriptprop->colorset = $3;
+				 AllocColorset($3);
 				}
     | head FONT STR		{
 				 scriptprop->font=$3;
@@ -504,6 +505,7 @@ init:				/* vide */
 				}
     | init COLORSET NUMBER	{
 				 (*tabobj)[nbobj].colorset = $3;
+				 AllocColorset($3);
 				}
     | init FONT STR		{
 				 (*tabobj)[nbobj].font=$3;

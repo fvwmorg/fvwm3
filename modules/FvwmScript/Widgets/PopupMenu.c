@@ -34,10 +34,10 @@ void InitPopupMenu(struct XObj *xobj)
 
  /* Enregistrement des couleurs et de la police */
  if (xobj->colorset >= 0) {
-  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
-  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
-  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
-  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+  xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset].shadow;
  } else {
   xobj->TabColor[fore] = GetColor(xobj->forecolor);
   xobj->TabColor[back] = GetColor(xobj->backcolor);
@@ -84,7 +84,7 @@ void InitPopupMenu(struct XObj *xobj)
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
  if (xobj->colorset >= 0)
    SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
-		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       &Colorset[xobj->colorset], Pdepth,
 		       xobj->gc, True);
  XSelectInput(dpy, xobj->win, ExposureMask);
 }
@@ -189,7 +189,7 @@ void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton)
 		      Pdepth,InputOutput,Pvisual,mask,&Attr);
  if (xobj->colorset >= 0)
    SetWindowBackground(dpy, WinPop, xobj->width, hMenu,
-		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       &Colorset[xobj->colorset], Pdepth,
 		       xobj->gc, True);
  XMapRaised(dpy,WinPop);
 

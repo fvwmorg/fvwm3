@@ -1,5 +1,8 @@
 1999-10-20  Hippo
 
+	* modules/*/*.c: replaced Colorset[x % nColorsets] with
+	Colorset[x] and made sure AllocColorset(x) is called before
+	reference.
 	* modules/*/*: moved saferealloc into libfvwm.a
 	* FvwmTheme/FvwmTheme.c: has a simpler version of AllocColorset
 

@@ -388,7 +388,7 @@ int main(int argc, char **argv)
       goto Solid;
 
   case TEXTURE_COLORSET:
-    BgColor = Colorset[global_colorset % nColorsets].bg;
+    BgColor = Colorset[global_colorset].bg;
     /* use a colorset */
     GetXPMColorset(BACK_BUTTON, global_colorset);
     break;
@@ -1319,8 +1319,8 @@ void CreateShadowGC(void)
   else if (global_colorset >= 0)
   {
     /*!!! ??? right?*/
-    fore_pix = Colorset[global_colorset % nColorsets].shadow;
-    light_grey = Colorset[global_colorset % nColorsets].hilite;
+    fore_pix = Colorset[global_colorset].shadow;
+    light_grey = Colorset[global_colorset].hilite;
   }
   else
   {
@@ -1693,6 +1693,7 @@ void ParseOptions(char *filename)
     {
       global_colorset = -1;
       sscanf(&(tline[Clength + 9]), "%d", &global_colorset);
+      AllocColorset(global_colorset);
       if (global_colorset < 0)
       {
 	global_colorset = -1;
@@ -2184,7 +2185,7 @@ static void change_colorset(int colorset)
 {
   if (colorset == global_colorset && colorset >= 0)
   {
-    BgColor = Colorset[global_colorset % nColorsets].bg;
+    BgColor = Colorset[global_colorset].bg;
 
     /* update GCs */
     XFreeGC(dpy, NormalGC);

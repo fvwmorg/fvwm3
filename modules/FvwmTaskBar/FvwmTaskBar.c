@@ -901,6 +901,7 @@ static void ParseConfigLine(char *tline)
     case 5: /* Colorset */
       colorset = -1;
       colorset = atoi(rest);
+      AllocColorset(colorset);
       break;
     case 6: /* IconFore */
       CopyString(&IconForeColor, rest);
@@ -913,6 +914,7 @@ static void ParseConfigLine(char *tline)
     case 8: /* IconColorset */
       iconcolorset = -1;
       iconcolorset = atoi(rest);
+      AllocColorset(iconcolorset);
       break;
     case 9: /* Action */
       LinkAction(rest);
@@ -1420,10 +1422,10 @@ static void CreateOrUpdateGCs(void)
 
    if (colorset >= 0)
    {
-     pfore = Colorset[colorset % nColorsets].fg;
-     pback = Colorset[colorset % nColorsets].bg;
-     philite = Colorset[colorset % nColorsets].hilite;
-     pshadow = Colorset[colorset % nColorsets].shadow;
+     pfore = Colorset[colorset].fg;
+     pback = Colorset[colorset].bg;
+     philite = Colorset[colorset].hilite;
+     pshadow = Colorset[colorset].shadow;
    }
    else
    {
@@ -1437,8 +1439,8 @@ static void CreateOrUpdateGCs(void)
    }
    if (iconcolorset >= 0)
    {
-     piconfore = Colorset[iconcolorset % nColorsets].fg;
-     piconback = Colorset[iconcolorset % nColorsets].bg;
+     piconfore = Colorset[iconcolorset].fg;
+     piconback = Colorset[iconcolorset].bg;
    }
    else
    {
@@ -1521,7 +1523,7 @@ static Bool change_colorset(int cset)
     if (cset == colorset || cset == nColorsets)
     {
       SetWindowBackground(
-	dpy, win, win_width, win_height, &Colorset[colorset % nColorsets],
+	dpy, win, win_width, win_height, &Colorset[colorset],
 	Pdepth,	graph, True);
     }
     do_redraw = True;
@@ -1653,7 +1655,7 @@ void StartMeUp(void)
    }
 
    attr.background_pixel =
-     (colorset >= 0) ? Colorset[colorset % nColorsets].bg : back;
+     (colorset >= 0) ? Colorset[colorset].bg : back;
    attr.border_pixel = 0;
    attr.colormap = Pcmap;
    win=XCreateWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,0,Pdepth,
@@ -1681,7 +1683,7 @@ void StartMeUp(void)
    if (colorset >= 0)
    {
      SetWindowBackground(
-       dpy, win, win_width, win_height, &Colorset[colorset % nColorsets],
+       dpy, win, win_width, win_height, &Colorset[colorset],
        Pdepth, graph, False);
    }
 

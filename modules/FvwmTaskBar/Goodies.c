@@ -103,8 +103,8 @@ static void CreateOrUpdateGoodyGC(void)
 
   if (colorset >= 0)
   {
-    pfore = Colorset[colorset % nColorsets].fg;
-    pback = Colorset[colorset % nColorsets].bg;
+    pfore = Colorset[colorset].fg;
+    pback = Colorset[colorset].bg;
   }
   else
   {
@@ -217,6 +217,7 @@ Bool GoodiesParseConfig(char *tline)
   case 7: /* TipsColorset */
     tipscolorset = -1;
     tipscolorset = atoi(rest);
+    AllocColorset(tipscolorset);
     break;
   case 8: /* MailCommand */
     CopyString(&MailCmd, rest);
@@ -474,7 +475,7 @@ void CreateTipWindow(int x, int y, int w, int h)
 
   if (tipscolorset >= 0)
   {
-    cset = &Colorset[tipscolorset % nColorsets];
+    cset = &Colorset[tipscolorset];
     tip_fore = cset->fg;
     tip_back = cset->bg;
   }

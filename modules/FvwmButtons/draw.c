@@ -251,7 +251,7 @@ void RedrawButton(button_info *b,int clean)
       {
 	SetRectangleBackground(
 	  Dpy, MyWindow, ix, iy, iw, ih,
-	  &Colorset[b->c->colorset % nColorsets], Pdepth, NormalGC);
+	  &Colorset[b->c->colorset], Pdepth, NormalGC);
       }
       else
       {
@@ -285,7 +285,7 @@ void RedrawButton(button_info *b,int clean)
     else if (b->flags & b_Colorset)
     {
       SetRectangleBackground(
-	Dpy, MyWindow, ix, iy, iw, ih, &Colorset[b->colorset % nColorsets],
+	Dpy, MyWindow, ix, iy, iw, ih, &Colorset[b->colorset],
 	Pdepth, NormalGC);
 
     }

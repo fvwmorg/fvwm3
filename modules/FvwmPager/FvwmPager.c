@@ -1363,6 +1363,7 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
   unsigned int item_colorset_offset = (unsigned int)offset_item;
 
   sscanf(arg2, "%d", &colorset);
+  AllocColorset(colorset);
   if (StrEquals(arg1, "*"))
   {
     all_desks = True;
@@ -1898,7 +1899,9 @@ void ParseOptions(void)
     else if (StrEquals(resource,"WindowColorsets"))
     {
       sscanf(arg1,"%d",&windowcolorset);
+      AllocColorset(windowcolorset);
       sscanf(arg2,"%d",&activecolorset);
+      AllocColorset(activecolorset);
     }
     else if (StrEquals(resource,"WindowLabelFormat"))
     {
