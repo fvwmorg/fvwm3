@@ -915,8 +915,10 @@ char *expand_vars(
 			case 'w':
 				if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 				{
+#if 0
 					fvwm_msg(OLD, "expand_vars",
 						"Use $[w.id] instead of $w");
+#endif
 					sprintf(&out[j], "0x%x",
 						(unsigned int)FW_W(fw));
 				}
@@ -928,22 +930,28 @@ char *expand_vars(
 				i++;
 				break;
 			case 'd':
+#if 0
 				fvwm_msg(OLD, "expand_vars",
 					"Use $[desk.n] instead of $d");
+#endif
 				sprintf(&out[j], "%d", Scr.CurrentDesk);
 				j += strlen(&out[j]);
 				i++;
 				break;
 			case 'x':
+#if 0
 				fvwm_msg(OLD, "expand_vars",
 					"Use $[vp.x] instead of $x");
+#endif
 				sprintf(&out[j], "%d", Scr.Vx);
 				j += strlen(&out[j]);
 				i++;
 				break;
 			case 'y':
+#if 0
 				fvwm_msg(OLD, "expand_vars",
 					"Use $[vp.y] instead of $y");
+#endif
 				sprintf(&out[j], "%d", Scr.Vy);
 				j += strlen(&out[j]);
 				i++;
@@ -957,9 +965,11 @@ char *expand_vars(
 					switch(input[i+1])
 					{
 					case 'c':
+#if 0
 						fvwm_msg(OLD, "expand_vars",
 							"Use $[w.class] "
 							"instead of $c");
+#endif
 						if (fw->class.res_class &&
 						    fw->class.res_class[0])
 						{
@@ -968,9 +978,11 @@ char *expand_vars(
 						}
 						break;
 					case 'r':
+#if 0
 						fvwm_msg(OLD, "expand_vars",
 							"Use $[w.resource] "
 							"instead of $r");
+#endif
 						if (fw->class.res_name &&
 						    fw->class.res_name[0])
 						{
@@ -979,9 +991,11 @@ char *expand_vars(
 						}
 						break;
 					case 'n':
+#if 0
 						fvwm_msg(OLD, "expand_vars",
 							"Use $[w.name] "
 							"instead of $n");
+#endif
 						if (fw->name.name &&
 						    fw->name.name[0])
 						{
