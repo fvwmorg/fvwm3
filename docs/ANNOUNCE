@@ -1,10 +1,10 @@
 Fvwm is a powerful window manager.  Version 2.5.4 is an
 experimental unstable release that includes new features and
 improvements over unstable 2.5.3 and stable 2.4.12 versions.  You
-are welcome to upgrade and test new features.  Please be aware
-that any features introduced in the 2.5.x development versions may
-be renamed, changed or removed without notice before the next
-stable release.
+are welcome to upgrade and test the new features or help
+stabilizing the code.  Please be aware that any features
+introduced in the 2.5.x development versions may be renamed,
+changed or removed without notice before the next stable release.
 
 The release is available at the fvwm home page: http://www.fvwm.org/
 
