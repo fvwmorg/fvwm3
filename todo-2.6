@@ -4,10 +4,10 @@ Issues opened recently: 6 (E.11 - E.16)
 Issues closed recently: 0
                              open / closed
 A. Release stopping bugs:       0 / 1
-B. Normal bugs:                 4 / 4
-C. To be verified:             17 / 9
+B. Normal bugs:                 3 / 5
+C. To be verified:             14 / 12
 D. To be discussed:             1 / 0
-E. To do:                      14 / 2
+E. To do:                      13 / 3
 F. Distribution issues:         3 / 2
 G. Testing:                     5 / 0
 
@@ -30,9 +30,6 @@ A. Release stopping bugs
 B. Normal Bugs
 --------------
 
-  B.1 emacs and maximize [bug #991]
-      Ref.: 2003-02-21 "fvwm-bug@fvwm.org" Notification: incoming/991
-
   B.4 Fvwm doesn't seem to render what Unicode terms as "combining" or
       "composing" characters/marks/ligatures (eg. U+0308 or U+064E) correctly.
       Ref.: 2003-02-12  "Nadim Shaikli" Composing characters within fvwm
@@ -42,6 +39,7 @@ B. Normal Bugs
       [Olivier]
 
   B.7 strange xawtv fullscreen handling [#973,2002-12-23]. Not a bug? Dominik?
+      [dv: if (contains_string("xawtv", report) { move_to_dev_null(report); }]
 
 C. To be verified
 -----------------
@@ -81,28 +79,20 @@ C. To be verified
 
   C.20 Erratic EdgeScroll behavior [#766,2.4,2001-08-21]. Fixed?
 
-  C.22 Strange bug with the menus [#759,2.4,2001-08-12]. Similar to
-       C.7? Fixed?
-
   C.23 Strange behavior with XForms "sliderall" demo [#758,2.4,2001-08-12].
        Fixed?
 
   C.24 window appear/disappear in the Pager [#731,2.4,2001-07-04]. Fixed?
-
-  C.26 ClickToFocus broken? [#993,2.5.5,2003-02-26].
-       [dv: added on 02-Mar-2003; asked for a config file but go no reply]
 
 
 D. To be discussed
 ------------------
 
   D.1 Make the distinction between FVWM (project) and fvwm (core executable)?
-
+      [dv: Huh?]
 
 E. To do
 --------
-
-  E.1 Complete this document
 
   E.2 Add locale support to FvwmScript
       [Olivier]
@@ -178,8 +168,22 @@ G. Testing
 
 ---- Closed recently ----------------------------------------------------------
 
+  E.1 Complete this document
+
+  B.1 emacs and maximize [bug #991]
+      Ref.: 2003-02-21 "fvwm-bug@fvwm.org" Notification: incoming/991
+      [dv: 28-Mar-2003: not reproducible, said to happen only with gnuserv]
+
   B.8 Menu double-click action not working? [#955,2002-11-06]
       [dv: fixed on 28-Mar-2003]
+
+  C.22 Strange bug with the menus [#759,2.4,2001-08-12]. Similar to
+       C.7? Fixed?
+       [dv: 28-Mar-2003: unreproducible, may have been the same as C.7]
+
+  C.26 ClickToFocus broken? [#993,2.5.5,2003-02-26].
+       [dv: added on 02-Mar-2003; asked for a config file but go no reply]
+       [no reply, probably FAQ 0.1]
 
 ---- Postponed until after 2.6 ------------------------------------------------
 
