@@ -90,6 +90,11 @@
 #define MENU_SEPARATOR_HEIGHT		   2 /* pixels */
 #define MENU_SEPARATOR_TOTAL_HEIGHT    \
 	  (MENU_SEPARATOR_HEIGHT + MENU_SEPARATOR_Y_OFFSET)
+/*   menu tear off bar parameters */
+#define MENU_TEAR_OFF_BAR_X_OFFSET         1 /* pixels */
+#define MENU_TEAR_OFF_BAR_Y_OFFSET         1 /* pixels */
+#define MENU_TEAR_OFF_BAR_HEIGHT           4 /* pixels */
+#define MENU_TEAR_OFF_BAR_DASH_WIDTH       5 /* pixels */
 /*   gap above item text */
 #define DEFAULT_MENU_ITEM_TEXT_Y_OFFSET	   1 /* pixels */
 /*   gap below item text */

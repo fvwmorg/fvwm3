@@ -1,5 +1,31 @@
 2002-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (MenuInteraction):
+	fixed menus not popping down sometimes
+
+	* fvwm/functions.c (CMD_TearMenuOff):
+	* fvwm/menus.c (AddToMenu):
+	(MenuInteraction):
+	(warp_pointer_to_item):
+	(get_selectable_item_index):
+	(get_selectable_item_from_index):
+	(get_selectable_item_from_section):
+	(menuShortcuts):
+	(paint_item):
+	(draw_tear_off_bar):
+	* fvwm/menus.h (MI_IS_TEAR_OFF_BAR):
+	New command "TearMenuOff" in menus.  In a normal item, this tears off
+	the menu when selected.  If the item has no title, it is drawn as a
+	dashed line too.  Pressing button 2 over a title tears out the menu too.
+	some clean up
+
+	* fvwm/menus.c (make_menu_window):
+	fixed problem w/ mapping menus, performance enhancement
+
+	* fvwm/builtins.c (CMD_Destroy):
+	(CMD_Close):
+	fixed core dump
+
 	* fvwm/functions.c (execute_function):
 	(expand_extended_var):
 	(expand):

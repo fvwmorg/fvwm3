@@ -712,14 +712,14 @@ void CMD_Delete(F_CMD_ARGS)
 
 void CMD_Destroy(F_CMD_ARGS)
 {
-	if (IS_TEAR_OFF_MENU(tmp_win))
-	{
-		CMD_Delete(F_PASS_ARGS);
-		return;
-	}
 	if (DeferExecution(
 		    eventp, &w, &tmp_win, &context, CRS_DESTROY, ButtonRelease))
 	{
+		return;
+	}
+	if (IS_TEAR_OFF_MENU(tmp_win))
+	{
+		CMD_Delete(F_PASS_ARGS);
 		return;
 	}
 	if (!is_function_allowed(F_DESTROY, NULL, tmp_win, True, True))
@@ -743,14 +743,14 @@ void CMD_Destroy(F_CMD_ARGS)
 
 void CMD_Close(F_CMD_ARGS)
 {
-	if (IS_TEAR_OFF_MENU(tmp_win))
-	{
-		CMD_Delete(F_PASS_ARGS);
-		return;
-	}
 	if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_DESTROY,
 			   ButtonRelease))
 	{
+		return;
+	}
+	if (IS_TEAR_OFF_MENU(tmp_win))
+	{
+		CMD_Delete(F_PASS_ARGS);
 		return;
 	}
 	if (!is_function_allowed(F_CLOSE, NULL, tmp_win, True, True))

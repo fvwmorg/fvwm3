@@ -74,6 +74,10 @@ void CMD_Title(F_CMD_ARGS)
 {
   return;
 }
+void CMD_TearMenuOff(F_CMD_ARGS)
+{
+  return;
+}
 
 /*
  * be sure to keep this list properly ordered for bsearch routine!
@@ -253,6 +257,7 @@ static const func_type func_config[] =
   CMD_ENTRY("strokefunc", CMD_StrokeFunc, F_STROKE_FUNC, 0),
 #endif /* HAVE_STROKE */
   CMD_ENTRY("style", CMD_Style, F_STYLE, 0),
+  CMD_ENTRY("tearmenuoff", CMD_TearMenuOff, F_TEARMENUOFF, 0),
   CMD_ENTRY("this", CMD_This, F_THIS, 0),
   CMD_ENTRY("title", CMD_Title, F_TITLE, 0),
   CMD_ENTRY("titlestyle", CMD_TitleStyle, F_TITLESTYLE, FUNC_DECOR),

@@ -347,6 +347,7 @@ typedef struct MenuItem
   struct
   {
     unsigned is_separator : 1;
+    unsigned is_tear_off_bar : 1;
     unsigned is_title : 1;
     unsigned is_title_centered : 1;
     unsigned is_popup : 1;
@@ -376,6 +377,7 @@ typedef struct MenuItem
 #define MI_HOTKEY_COLUMN(i)     ((i)->hotkey_column)
 /* flags */
 #define MI_IS_SEPARATOR(i)      ((i)->flags.is_separator)
+#define MI_IS_TEAR_OFF_BAR(i)   ((i)->flags.is_tear_off_bar)
 #define MI_IS_TITLE(i)          ((i)->flags.is_title)
 #define MI_IS_TITLE_CENTERED(i) ((i)->flags.is_title_centered)
 #define MI_IS_POPUP(i)          ((i)->flags.is_popup)

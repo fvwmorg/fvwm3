@@ -119,7 +119,8 @@ extern Time lastTimestamp;
  * forward declarations
  ***************************************************************/
 
-static void draw_separator(Window, GC,GC,int, int,int,int,int);
+static void draw_separator(Window, GC,GC,int, int,int);
+static void draw_tear_off_bar(Window, GC,GC,int, int,int);
 static void draw_underline(MenuRoot *mr, GC gc, int x, int y, char *txt,
 			   int coffset);
 static void MenuInteraction(
@@ -354,10 +355,10 @@ static MenuItem *warp_pointer_to_item(
 	if (do_skip_title)
 	{
 		while (MI_NEXT_ITEM(mi) != NULL &&
-		       (MI_IS_SEPARATOR(mi) || MI_IS_TITLE(mi)))
+		       (!MI_IS_SELECTABLE(mi) || MI_IS_TEAR_OFF_BAR(mi)))
 		{
-			/* skip separators and titles until the first 'real'
-			 * item is found */
+			/* skip separators, titles and tear off bars until the
+			 * first 'real' item is found */
 			mi = MI_NEXT_ITEM(mi);
 		}
 	}
@@ -549,7 +550,7 @@ static int get_selectable_item_index(
 
   for (mi = MR_FIRST_ITEM(mr); mi && mi != miTarget; mi = MI_NEXT_ITEM(mi))
   {
-    if (!MI_IS_SEPARATOR(mi) && !MI_IS_TITLE(mi))
+    if (MI_IS_SELECTABLE(mi))
     {
       i++;
       last_selectable = True;
@@ -580,7 +581,7 @@ static MenuItem *get_selectable_item_from_index(MenuRoot *mr, int index)
   for (mi = MR_FIRST_ITEM(mr); mi && (i < index || miLastOk == NULL);
        mi=MI_NEXT_ITEM(mi))
   {
-    if (!MI_IS_SEPARATOR(mi) && !MI_IS_TITLE(mi))
+    if (MI_IS_SELECTABLE(mi))
     {
       miLastOk = mi;
       i++;
@@ -599,7 +600,7 @@ static MenuItem *get_selectable_item_from_section(MenuRoot *mr, int section)
   for (mi = MR_FIRST_ITEM(mr); mi && (i <= section || miLastOk == NULL);
        mi=MI_NEXT_ITEM(mi))
   {
-    if (!MI_IS_SEPARATOR(mi) && !MI_IS_TITLE(mi))
+    if (MI_IS_SELECTABLE(mi))
     {
       if (!last_selectable)
       {
@@ -1679,7 +1680,7 @@ static void menuShortcuts(
     {
       index = get_selectable_item_index(mr, miCurrent, NULL) + items_to_move;
       /* correct for the case that we're between items */
-      if (MI_IS_SEPARATOR(miCurrent) || MI_IS_TITLE(miCurrent))
+      if (!MI_IS_SELECTABLE(miCurrent))
 	index--;
     }
     if (fSkipSection)
@@ -2062,6 +2063,15 @@ static void MenuInteraction(
 	pmp->flags.is_sticky = False;
 	continue;
 	/* break; */
+      }
+      if (mi != NULL)
+      {
+	if (MI_FUNC_TYPE(mi) == F_TEARMENUOFF ||
+	    (Event.xbutton.button == 2 && MI_IS_TITLE(mi)))
+	{
+	  pmret->rc = MENU_TEAR_OFF;
+	  goto DO_RETURN;
+	}
       }
       flags.was_item_unposted = 0;
       if (pmret->flags.is_menu_posted && mrMi != NULL)
@@ -2668,7 +2678,10 @@ static void MenuInteraction(
 	    {
 	      pop_menu_down_and_repaint_parent(
 		&mrPopdown, &does_popdown_submenu_overlap, pmp);
-	      mi_with_popup = NULL;
+	      if (mi_with_popup == MR_PARENT_ITEM(mrPopdown))
+	      {
+		mi_with_popup = NULL;
+	      }
 	    }
 	    mrPopdown = NULL;
 	  }
@@ -3163,20 +3176,12 @@ static int pop_menu_up(
 	free(menu_name);
       }
       mr = *pmenu;
-#if 0
-      if (mr)
-      {
-	make_menu(mr, pmp);
-      }
-#endif
     }
   }
-#if 1
   if (mr)
   {
     update_menu(mr, pmp);
   }
-#endif
   if (mr == NULL || MR_FIRST_ITEM(mr) == NULL || MR_ITEMS(mr) == 0)
   {
     /* The menu deleted itself or all its items or it has been empty from the
@@ -4086,14 +4091,33 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     if (sx1 < sx2)
     {
       /* It's a separator. */
-      draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC,
-		     sx1, y_offset + y_height - MENU_SEPARATOR_HEIGHT,
-		     sx2, y_offset + y_height - MENU_SEPARATOR_HEIGHT, 1);
+      draw_separator(
+	      MR_WINDOW(mr), ShadowGC, ReliefGC, sx1,
+	      y_offset + y_height - MENU_SEPARATOR_HEIGHT, sx2);
       /* Nothing else to do. */
     }
     return;
   }
-  else if(MI_IS_TITLE(mi))
+  else if (MI_IS_TEAR_OFF_BAR(mi))
+  {
+    int tx1;
+    int tx2;
+
+    tx1 = MR_ITEM_X_OFFSET(mr) + relief_thickness + MENU_TEAR_OFF_BAR_X_OFFSET;
+    tx2 = MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) - 1 - relief_thickness -
+	    MENU_TEAR_OFF_BAR_X_OFFSET;
+    if (tx1 < tx2)
+    {
+
+      /* It's a tear off bar. */
+      draw_tear_off_bar(
+	MR_WINDOW(mr), ShadowGC, ReliefGC, tx1,
+	y_offset + relief_thickness + MENU_TEAR_OFF_BAR_Y_OFFSET, tx2);
+      /* Nothing else to do. */
+    }
+    return;
+  }
+  else if (MI_IS_TITLE(mi))
   {
     /* Separate the title. */
     if (MST_TITLE_UNDERLINES(mr) > 0 && mi != MR_FIRST_ITEM(mr))
@@ -4103,7 +4127,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       text_y += MENU_SEPARATOR_HEIGHT + add;
       y = y_offset + add;
       if (sx1 < sx2)
-	draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
+	draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2);
     }
     /* Underline the title. */
     switch (MST_TITLE_UNDERLINES(mr))
@@ -4114,7 +4138,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       if(MI_NEXT_ITEM(mi) != NULL)
       {
 	y = y_offset + y_height - MENU_SEPARATOR_HEIGHT;
-	draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
+	draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2);
       }
       break;
     default:
@@ -4382,11 +4406,42 @@ static void draw_underline(MenuRoot *mr, GC gc, int x, int y, char *txt,
  *  Draws two horizontal lines to form a separator
  *
  ****************************************************************************/
-static void draw_separator(Window w, GC TopGC, GC BottomGC, int x1, int y1,
-			   int x2, int y2, int extra_off)
+static void draw_separator(
+	Window w, GC TopGC, GC BottomGC, int x1, int y, int x2)
 {
-  XDrawLine(dpy, w, TopGC   , x1,	    y1,	 x2,	      y2);
-  XDrawLine(dpy, w, BottomGC, x1-extra_off, y1+1,x2+extra_off,y2+1);
+  XDrawLine(dpy, w, TopGC   , x1,   y,   x2,   y);
+  XDrawLine(dpy, w, BottomGC, x1-1, y+1, x2+1, y+1);
+}
+
+/****************************************************************************
+ *
+ *  Draws a tear off bar.  Similar to a separator, but with a dashed line.
+ *
+ ****************************************************************************/
+static void draw_tear_off_bar(
+	Window w, GC TopGC, GC BottomGC, int x1, int y, int x2)
+{
+	XGCValues xgcv;
+	int width;
+	int offset;
+
+	xgcv.line_style = LineOnOffDash;
+	xgcv.dashes = MENU_TEAR_OFF_BAR_DASH_WIDTH;
+	XChangeGC(dpy, TopGC, GCLineStyle | GCDashList, &xgcv);
+	XChangeGC(dpy, BottomGC, GCLineStyle | GCDashList, &xgcv);
+	width = (x2 - x1 + 1);
+	offset = (width / MENU_TEAR_OFF_BAR_DASH_WIDTH) *
+		MENU_TEAR_OFF_BAR_DASH_WIDTH;
+	offset = (width - offset) / 2;
+	x1 += offset;
+	x2 += offset;
+	XDrawLine(dpy, w, TopGC,    x1, y,     x2, y);
+	XDrawLine(dpy, w, BottomGC, x1, y + 1, x2, y + 1);
+	xgcv.line_style = LineSolid;
+	XChangeGC(dpy, TopGC, GCLineStyle, &xgcv);
+	XChangeGC(dpy, BottomGC, GCLineStyle, &xgcv);
+
+	return;
 }
 
 void menu_expose(XEvent *event, FvwmWindow *fw)
@@ -4893,14 +4948,17 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
   else
     MR_NEXT_MENU(prev) = MR_NEXT_MENU(mr);
   /* destroy the window and the display */
-  if (mr->d->create_dpy != NULL &&mr->d->create_dpy != dpy)
-  {
-    XCloseDisplay(mr->d->create_dpy);
-  }
   if (MR_WINDOW(mr) != None)
   {
-    XDestroyWindow(dpy, MR_WINDOW(mr));
+    XDestroyWindow(MR_CREATE_DPY(mr), MR_WINDOW(mr));
+    MR_WINDOW(mr) = None;
     XDeleteContext(dpy, MR_WINDOW(mr), MenuContext);
+    XSync(MR_CREATE_DPY(mr), 0);
+  }
+  if (MR_CREATE_DPY(mr) != NULL && MR_CREATE_DPY(mr) != dpy)
+  {
+    XCloseDisplay(MR_CREATE_DPY(mr));
+    MR_CREATE_DPY(mr) = NULL;
   }
 
   if (MR_COPIES(mr) == 0)
@@ -5372,15 +5430,9 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	  }
 	  else
 	  {
-#if 0
-	    /* Neither left nor right aligned item. */
-	    *(item_order[i]) += d / 2;
-#else
 	    /* Neither left nor right aligned item. Divide the overhead gap
 	     * evenly between the items. */
-
 	    *(item_order[i]) += d * (m + i) / n;
-#endif
 	  }
 	}
       }
@@ -5497,6 +5549,11 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
     {
       /* Separator */
       MI_HEIGHT(mi) = separator_height;
+    }
+    else if (MI_IS_TEAR_OFF_BAR(mi))
+    {
+      /* Tear off bar */
+      MI_HEIGHT(mi) = relief_thickness + MENU_TEAR_OFF_BAR_HEIGHT;
     }
     else
     {
@@ -5662,57 +5719,74 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
  ****************************************************************************/
 static void make_menu_window(MenuRoot *mr)
 {
-  unsigned long valuemask;
-  XSetWindowAttributes attributes;
-  unsigned int w;
-  unsigned int h;
-  unsigned int evmask;
+	unsigned long valuemask;
+	XSetWindowAttributes attributes;
+	unsigned int w;
+	unsigned int h;
+	unsigned int evmask;
 
-  valuemask = CWBackPixel | CWEventMask | CWCursor | CWColormap
-    | CWBorderPixel | CWSaveUnder;
-  attributes.border_pixel = 0;
-  attributes.colormap = Pcmap;
-  attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
-    Colorset[MST_CSET_MENU(mr)].bg : MST_MENU_COLORS(mr).back;
-  evmask = XEVMASK_MENUW;
-  attributes.event_mask = 0;
-  attributes.cursor = Scr.FvwmCursors[CRS_MENU];
-  attributes.save_under = True;
+	w = MR_WIDTH(mr);
+	if (w == 0)
+	{
+		w = 1;
+	}
+	h = MR_HEIGHT(mr);
+	if (h == 0)
+	{
+		h = 1;
+	}
 
-  if (MR_WINDOW(mr) != None)
-    XDestroyWindow(dpy,MR_WINDOW(mr));
-  w = MR_WIDTH(mr);
-  if (w == 0)
-    w = 1;
-  h = MR_HEIGHT(mr);
-  if (h == 0)
-    h = 1;
+	if (MR_WINDOW(mr) != None)
+	{
+		/* just resize the existing window */
+		XResizeWindow(dpy, MR_WINDOW(mr), w, h);
+	}
+	else
+	{
+		/* create a new window */
+		valuemask = CWBackPixel | CWEventMask | CWCursor | CWColormap
+			| CWBorderPixel | CWSaveUnder;
+		attributes.border_pixel = 0;
+		attributes.colormap = Pcmap;
+		attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
+			Colorset[MST_CSET_MENU(mr)].bg :
+			MST_MENU_COLORS(mr).back;
+		evmask = XEVMASK_MENUW;
+		attributes.event_mask = 0;
+		attributes.cursor = Scr.FvwmCursors[CRS_MENU];
+		attributes.save_under = True;
 
-  /* Create a display used to create the window.  Can't use the normal display
-   * because 'xkill' would  kill the window manager if used on a tear off menu.
-   * The display can't be deleted right now because that would either destroy
-   * the new window or leave it as an orphan if fvwm dies or is restarted. */
-  MR_CREATE_DPY(mr) = XOpenDisplay(display_name);
-  if (MR_CREATE_DPY(mr) == NULL)
-  {
-    /* Doh.  Use the standard display instead. */
-    MR_CREATE_DPY(mr) = dpy;
-  }
-  MR_WINDOW(mr) = XCreateWindow(
-    MR_CREATE_DPY(mr), Scr.Root, 0, 0, w, h, (unsigned int) 0, Pdepth,
-    InputOutput, Pvisual, valuemask, &attributes);
-  if (MR_CREATE_DPY(mr) != dpy)
-  {
-    /* We *must* synchronize the display here.  Otherwise the request will
-     * never be processed. */
-    XSync(MR_CREATE_DPY(mr), 1);
-  }
-  if (MR_WINDOW(mr) != None)
-  {
-    /* select events for the window from the standard display */
-    XSelectInput(dpy, MR_WINDOW(mr), evmask);
-  }
-  XSaveContext(dpy, MR_WINDOW(mr), MenuContext,(caddr_t)mr);
+		/* Create a display used to create the window.  Can't use the
+		 * normal display because 'xkill' would  kill the window
+		 * manager if used on a tear off menu.  The display can't be
+		 * deleted right now because that would either destroy the new
+		 * window or leave it as an orphan if fvwm dies or is
+		 * restarted. */
+		MR_CREATE_DPY(mr) = XOpenDisplay(display_name);
+		if (MR_CREATE_DPY(mr) == NULL)
+		{
+			/* Doh.  Use the standard display instead. */
+			MR_CREATE_DPY(mr) = dpy;
+		}
+		MR_WINDOW(mr) = XCreateWindow(
+			MR_CREATE_DPY(mr), Scr.Root, 0, 0, w, h,
+			(unsigned int)0, Pdepth, InputOutput, Pvisual,
+			valuemask, &attributes);
+		if (MR_CREATE_DPY(mr) != dpy)
+		{
+			/* We *must* synchronize the display here.  Otherwise
+			 * the request will never be processed. */
+			XSync(MR_CREATE_DPY(mr), 1);
+		}
+		if (MR_WINDOW(mr) != None)
+		{
+			/* select events for the window from the standard
+			 * display */
+			XSelectInput(dpy, MR_WINDOW(mr), evmask);
+		}
+		XSaveContext(dpy, MR_WINDOW(mr), MenuContext,(caddr_t)mr);
+
+	}
 
   return;
 }
@@ -5728,12 +5802,6 @@ static void make_menu(MenuRoot *mr, MenuParameters *pmp)
   MenuSizingParameters msp;
   Bool has_continuation_menu = False;
 
-#if 0
-  if (!Scr.flags.windows_captured)
-  {
-    return;
-  }
-#endif
   if (MR_MAPPED_COPIES(mr) > 0)
   {
     return;
@@ -5959,238 +6027,296 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
  *	 so built in window list can handle windows w/ * and % in title.
  *
  ***********************************************************************/
-void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
-	       Bool fNoPlus)
+void AddToMenu(
+	MenuRoot *mr, char *item, char *action, Bool fPixmapsOk, Bool fNoPlus)
 {
-  MenuItem *tmp;
-  char *start;
-  char *end;
-  char *token = NULL;
-  char *option = NULL;
-  int i;
-  short current_mini_icon = 0;
+	MenuItem *tmp;
+	char *start;
+	char *end;
+	char *token = NULL;
+	char *option = NULL;
+	int i;
+	short current_mini_icon = 0;
+	int is_empty;
 
-  if (MR_MAPPED_COPIES(mr) > 0)
-  {
-    /* whoa, we can't handle *everything* */
-    return;
-  }
-  if ((item == NULL || *item == 0) && (action == NULL || *action == 0) &&
-      fNoPlus)
-    return;
-  /* empty items screw up our menu when painted, so we replace them with a
-   * separator */
-  if (item == NULL)
-    item = "";
-
-  /***************************************************************
-   * Handle dynamic actions
-   ***************************************************************/
-
-  if (StrEquals(item, "DynamicPopupAction"))
-  {
-    if (MR_POPUP_ACTION(mr))
-      free(MR_POPUP_ACTION(mr));
-    if (!action || *action == 0)
-      MR_POPUP_ACTION(mr) = NULL;
-    else
-      MR_POPUP_ACTION(mr) = stripcpy(action);
-    return;
-  }
-  else if (StrEquals(item, "DynamicPopdownAction"))
-  {
-    if (MR_POPDOWN_ACTION(mr))
-      free(MR_POPDOWN_ACTION(mr));
-    if (!action || *action == 0)
-      MR_POPDOWN_ACTION(mr) = NULL;
-    else
-      MR_POPDOWN_ACTION(mr) = stripcpy(action);
-    return;
-  }
-  else if (StrEquals(item, "MissingSubmenuFunction"))
-  {
-    if (MR_MISSING_SUBMENU_FUNC(mr))
-      free(MR_MISSING_SUBMENU_FUNC(mr));
-    if (!action || *action == 0)
-      MR_MISSING_SUBMENU_FUNC(mr) = NULL;
-    else
-      MR_MISSING_SUBMENU_FUNC(mr) = stripcpy(action);
-    return;
-  }
-
-  /***************************************************************
-   * Parse the action
-   ***************************************************************/
-
-  if (action == NULL || *action == 0)
-    action = "Nop";
-  GetNextToken(GetNextToken(action, &token), &option);
-  tmp = (MenuItem *)safemalloc(sizeof(MenuItem));
-  memset(tmp, 0, sizeof(MenuItem));
-  if (MR_FIRST_ITEM(mr) == NULL)
-  {
-    MR_FIRST_ITEM(mr) = tmp;
-    MR_LAST_ITEM(mr) = tmp;
-    MI_NEXT_ITEM(tmp) = NULL;
-    MI_PREV_ITEM(tmp) = NULL;
-  }
-  else if (StrEquals(token, "title") && option && StrEquals(option, "top"))
-  {
-    if (MI_IS_TITLE(MR_FIRST_ITEM(mr)))
-    {
-      if (MR_FIRST_ITEM(mr) == MR_LAST_ITEM(mr))
-	MR_LAST_ITEM(mr) = tmp;
-      MI_PREV_ITEM(MI_NEXT_ITEM(MR_FIRST_ITEM(mr))) = tmp;
-      MI_NEXT_ITEM(tmp) = MI_NEXT_ITEM(MR_FIRST_ITEM(mr));
-      FreeMenuItem(MR_FIRST_ITEM(mr));
-    }
-    else
-    {
-      MI_PREV_ITEM(MR_FIRST_ITEM(mr)) = tmp;
-      MI_NEXT_ITEM(tmp) = MR_FIRST_ITEM(mr);
-    }
-    MI_PREV_ITEM(tmp) = NULL;
-    MR_FIRST_ITEM(mr) = tmp;
-  }
-  else
-  {
-    MI_NEXT_ITEM(MR_LAST_ITEM(mr)) = tmp;
-    MI_PREV_ITEM(tmp) = MR_LAST_ITEM(mr);
-    MR_LAST_ITEM(mr) = tmp;
-  }
-  if (token)
-    free(token);
-  if (option)
-    free(option);
-
-  MI_ACTION(tmp) = stripcpy(action);
-
-  /***************************************************************
-   * Parse the labels
-   ***************************************************************/
-
-  start = item;
-  end = item;
-  for (i = 0; i < MAX_MENU_ITEM_LABELS; i++, start = end)
-  {
-    /* Read label up to next tab. */
-    if (*end)
-    {
-      if (i < MAX_MENU_ITEM_LABELS - 1)
-      {
-	while (*end && *end != '\t')
-	  /* seek next tab or end of string */
-	  end++;
-      }
-      else
-      {
-	/* remove all tabs in last label */
-	while (*end)
+	if (MR_MAPPED_COPIES(mr) > 0)
 	{
-	  if (*end == '\t')
-	    *end = ' ';
-	  end++;
+		/* whoa, we can't handle *everything* */
+		return;
 	}
-      }
-      /* Copy the label. */
-      MI_LABEL(tmp)[i] = safemalloc(end - start + 1);
-      strncpy(MI_LABEL(tmp)[i], start, end - start);
-      (MI_LABEL(tmp)[i])[end - start] = 0;
-      if (*end == '\t')
-      {
-	/* skip the tab */
-	end++;
-      }
-    }
-    else
-    {
-      MI_LABEL(tmp)[i] = NULL;
-    }
+	if ((item == NULL || *item == 0) && (action == NULL || *action == 0) &&
+	    fNoPlus)
+		return;
+	/* empty items screw up our menu when painted, so we replace them with a
+	 * separator */
+	if (item == NULL)
+		item = "";
 
-    /* Parse the label. */
-    if (MI_LABEL(tmp)[i] != NULL)
-    {
-      if (fPixmapsOk)
-      {
-	if(!MI_PICTURE(tmp))
+	/***************************************************************
+	 * Handle dynamic actions
+	 ***************************************************************/
+
+	if (StrEquals(item, "DynamicPopupAction"))
 	{
-	  if (scanForPixmap(MI_LABEL(tmp)[i], &MI_PICTURE(tmp), '*'))
-	    MI_HAS_PICTURE(tmp) = True;
+		if (MR_POPUP_ACTION(mr))
+		{
+			free(MR_POPUP_ACTION(mr));
+		}
+		if (!action || *action == 0)
+		{
+			MR_POPUP_ACTION(mr) = NULL;
+		}
+		else
+		{
+			MR_POPUP_ACTION(mr) = stripcpy(action);
+		}
+		return;
 	}
-	while (current_mini_icon < MAX_MENU_ITEM_MINI_ICONS)
+	else if (StrEquals(item, "DynamicPopdownAction"))
 	{
-	  if (scanForPixmap(
-	    MI_LABEL(tmp)[i], &(MI_MINI_ICON(tmp)[current_mini_icon]), '%'))
-	  {
-	    current_mini_icon++;
-	    MI_HAS_PICTURE(tmp) = True;
-	  }
-	  else
-	    break;
+		if (MR_POPDOWN_ACTION(mr))
+		{
+			free(MR_POPDOWN_ACTION(mr));
+		}
+		if (!action || *action == 0)
+		{
+			MR_POPDOWN_ACTION(mr) = NULL;
+		}
+		else
+		{
+			MR_POPDOWN_ACTION(mr) = stripcpy(action);
+		}
+		return;
 	}
-      }
-      if (!MI_HAS_HOTKEY(tmp))
-      {
-	/* pete@tecc.co.uk */
-	scanForHotkeys(tmp, i);
-
-	if (!MI_HAS_HOTKEY(tmp) && *MI_LABEL(tmp)[i] != 0)
+	else if (StrEquals(item, "MissingSubmenuFunction"))
 	{
-	  MI_HOTKEY_COFFSET(tmp) = 0;
-	  MI_HOTKEY_COLUMN(tmp) = i;
-	  MI_HAS_HOTKEY(tmp) = 1;
-	  MI_IS_HOTKEY_AUTOMATIC(tmp) = 1;
+		if (MR_MISSING_SUBMENU_FUNC(mr))
+		{
+			free(MR_MISSING_SUBMENU_FUNC(mr));
+		}
+		if (!action || *action == 0)
+		{
+			MR_MISSING_SUBMENU_FUNC(mr) = NULL;
+		}
+		else
+		{
+			MR_MISSING_SUBMENU_FUNC(mr) = stripcpy(action);
+		}
+		return;
 	}
-      }
-      if (*(MI_LABEL(tmp)[i]))
-      {
-	MI_HAS_TEXT(tmp) = True;
-      }
-      else
-      {
-	free(MI_LABEL(tmp)[i]);
-	MI_LABEL(tmp)[i] = NULL;
-      }
-    }
-    MI_LABEL_STRLEN(tmp)[i] =
-      (MI_LABEL(tmp)[i]) ? strlen(MI_LABEL(tmp)[i]) : 0;
-  } /* for */
 
-  /***************************************************************
-   * Set the type flags
-   ***************************************************************/
+	/***************************************************************
+	 * Parse the action
+	 ***************************************************************/
 
-  find_func_type(MI_ACTION(tmp), &(MI_FUNC_TYPE(tmp)), NULL);
-  switch (MI_FUNC_TYPE(tmp))
-  {
-  case F_POPUP:
-    MI_IS_POPUP(tmp) = True;
-  case F_WINDOWLIST:
-  case F_STAYSUP:
-    MI_IS_MENU(tmp) = True;
-    break;
-  case F_TITLE:
-    MI_IS_TITLE(tmp) = True;
-    break;
-  default:
-    break;
-  }
-  MI_IS_SEPARATOR(tmp) = (!MI_HAS_TEXT(tmp) && !MI_HAS_PICTURE(tmp));
-  if (MI_IS_SEPARATOR(tmp))
-  {
-    /* An empty title is handled like a separator. */
-    MI_IS_TITLE(tmp) = False;
-  }
-  MI_IS_SELECTABLE(tmp) =
-    ((MI_HAS_TEXT(tmp) || MI_HAS_PICTURE(tmp)) && !MI_IS_TITLE(tmp));
+	if (action == NULL || *action == 0)
+	{
+		action = "Nop";
+	}
+	GetNextToken(GetNextToken(action, &token), &option);
+	tmp = (MenuItem *)safemalloc(sizeof(MenuItem));
+	memset(tmp, 0, sizeof(MenuItem));
+	if (MR_FIRST_ITEM(mr) == NULL)
+	{
+		MR_FIRST_ITEM(mr) = tmp;
+		MR_LAST_ITEM(mr) = tmp;
+		MI_NEXT_ITEM(tmp) = NULL;
+		MI_PREV_ITEM(tmp) = NULL;
+	}
+	else if (StrEquals(token, "title") && option &&
+		 StrEquals(option, "top"))
+	{
+		if (MI_IS_TITLE(MR_FIRST_ITEM(mr)))
+		{
+			if (MR_FIRST_ITEM(mr) == MR_LAST_ITEM(mr))
+			{
+				MR_LAST_ITEM(mr) = tmp;
+			}
+			MI_PREV_ITEM(MI_NEXT_ITEM(MR_FIRST_ITEM(mr))) = tmp;
+			MI_NEXT_ITEM(tmp) = MI_NEXT_ITEM(MR_FIRST_ITEM(mr));
+			FreeMenuItem(MR_FIRST_ITEM(mr));
+		}
+		else
+		{
+			MI_PREV_ITEM(MR_FIRST_ITEM(mr)) = tmp;
+			MI_NEXT_ITEM(tmp) = MR_FIRST_ITEM(mr);
+		}
+		MI_PREV_ITEM(tmp) = NULL;
+		MR_FIRST_ITEM(mr) = tmp;
+	}
+	else
+	{
+		MI_NEXT_ITEM(MR_LAST_ITEM(mr)) = tmp;
+		MI_PREV_ITEM(tmp) = MR_LAST_ITEM(mr);
+		MR_LAST_ITEM(mr) = tmp;
+	}
+	if (token)
+	{
+		free(token);
+	}
+	if (option)
+	{
+		free(option);
+	}
 
+	MI_ACTION(tmp) = stripcpy(action);
 
-  /***************************************************************
-   * misc stuff
-   ***************************************************************/
+	/***************************************************************
+	 * Parse the labels
+	 ***************************************************************/
 
-  MR_ITEMS(mr)++;
-  MR_IS_UPDATED(mr) = 1;
+	start = item;
+	end = item;
+	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++, start = end)
+	{
+		/* Read label up to next tab. */
+		if (*end)
+		{
+			if (i < MAX_MENU_ITEM_LABELS - 1)
+			{
+				while (*end && *end != '\t')
+				{
+					/* seek next tab or end of string */
+					end++;
+				}
+			}
+			else
+			{
+				/* remove all tabs in last label */
+				while (*end)
+				{
+					if (*end == '\t')
+					{
+						*end = ' ';
+					}
+					end++;
+				}
+			}
+			/* Copy the label. */
+			MI_LABEL(tmp)[i] = safemalloc(end - start + 1);
+			strncpy(MI_LABEL(tmp)[i], start, end - start);
+			(MI_LABEL(tmp)[i])[end - start] = 0;
+			if (*end == '\t')
+			{
+				/* skip the tab */
+				end++;
+			}
+		}
+		else
+		{
+			MI_LABEL(tmp)[i] = NULL;
+		}
+
+		/* Parse the label. */
+		if (MI_LABEL(tmp)[i] != NULL)
+		{
+			if (fPixmapsOk)
+			{
+				if(!MI_PICTURE(tmp))
+				{
+					if (scanForPixmap(
+						    MI_LABEL(tmp)[i],
+						    &MI_PICTURE(tmp), '*'))
+					{
+						MI_HAS_PICTURE(tmp) = True;
+					}
+				}
+				while (current_mini_icon <
+				       MAX_MENU_ITEM_MINI_ICONS)
+				{
+					if (scanForPixmap(
+						    MI_LABEL(tmp)[i],
+						    &(MI_MINI_ICON(tmp)
+						      [current_mini_icon]),
+						    '%'))
+					{
+						current_mini_icon++;
+						MI_HAS_PICTURE(tmp) = True;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			if (!MI_HAS_HOTKEY(tmp))
+			{
+				/* pete@tecc.co.uk */
+				scanForHotkeys(tmp, i);
+
+				if (!MI_HAS_HOTKEY(tmp) &&
+				    *MI_LABEL(tmp)[i] != 0)
+				{
+					MI_HOTKEY_COFFSET(tmp) = 0;
+					MI_HOTKEY_COLUMN(tmp) = i;
+					MI_HAS_HOTKEY(tmp) = 1;
+					MI_IS_HOTKEY_AUTOMATIC(tmp) = 1;
+				}
+			}
+			if (*(MI_LABEL(tmp)[i]))
+			{
+				MI_HAS_TEXT(tmp) = True;
+			}
+			else
+			{
+				free(MI_LABEL(tmp)[i]);
+				MI_LABEL(tmp)[i] = NULL;
+			}
+		}
+		MI_LABEL_STRLEN(tmp)[i] =
+			(MI_LABEL(tmp)[i]) ? strlen(MI_LABEL(tmp)[i]) : 0;
+	} /* for */
+
+	/***************************************************************
+	 * Set the type flags
+	 ***************************************************************/
+
+	find_func_type(MI_ACTION(tmp), &(MI_FUNC_TYPE(tmp)), NULL);
+	switch (MI_FUNC_TYPE(tmp))
+	{
+	case F_POPUP:
+		MI_IS_POPUP(tmp) = True;
+	case F_WINDOWLIST:
+	case F_STAYSUP:
+		MI_IS_MENU(tmp) = True;
+		break;
+	case F_TITLE:
+		MI_IS_TITLE(tmp) = True;
+		break;
+	default:
+		break;
+	}
+	is_empty = (!MI_HAS_TEXT(tmp) && !MI_HAS_PICTURE(tmp));
+	if (is_empty)
+	{
+		if (MI_FUNC_TYPE(tmp) == F_TEARMENUOFF)
+		{
+			MI_IS_TEAR_OFF_BAR(tmp) = 1;
+			MI_IS_SEPARATOR(tmp) = 0;
+		}
+		else
+		{
+			MI_IS_TEAR_OFF_BAR(tmp) = 0;
+			MI_IS_SEPARATOR(tmp) = 1;
+		}
+	}
+	if (MI_IS_SEPARATOR(tmp))
+	{
+		/* An empty title is handled like a separator. */
+		MI_IS_TITLE(tmp) = False;
+	}
+	MI_IS_SELECTABLE(tmp) =
+		((MI_HAS_TEXT(tmp) || MI_HAS_PICTURE(tmp) ||
+		  MI_IS_TEAR_OFF_BAR(tmp)) && !MI_IS_TITLE(tmp));
+
+	/***************************************************************
+	 * misc stuff
+	 ***************************************************************/
+
+	MR_ITEMS(mr)++;
+	MR_IS_UPDATED(mr) = 1;
+
+	return;
 }
 
 /***********************************************************************
@@ -6207,28 +6333,28 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
  ***********************************************************************/
 MenuRoot *NewMenuRoot(char *name)
 {
-  MenuRoot *mr;
-  Bool flag;
+	MenuRoot *mr;
+	Bool flag;
 
-  mr = (MenuRoot *)safemalloc(sizeof(MenuRoot));
-  mr->s = (MenuRootStatic *)safemalloc(sizeof(MenuRootStatic));
-  mr->d = (MenuRootDynamic *)safemalloc(sizeof(MenuRootDynamic));
+	mr = (MenuRoot *)safemalloc(sizeof(MenuRoot));
+	mr->s = (MenuRootStatic *)safemalloc(sizeof(MenuRootStatic));
+	mr->d = (MenuRootDynamic *)safemalloc(sizeof(MenuRootDynamic));
 
-  memset(mr->s, 0, sizeof(MenuRootStatic));
-  memset(mr->d, 0, sizeof(MenuRootDynamic));
-  MR_NEXT_MENU(mr) = Menus.all;
-  MR_NAME(mr) = stripcpy(name);
-  MR_WINDOW(mr) = None;
-  scanForPixmap(MR_NAME(mr), &MR_SIDEPIC(mr), '@');
-  scanForColor(MR_NAME(mr), &MR_SIDECOLOR(mr), &flag,'^');
-  MR_HAS_SIDECOLOR(mr) = flag;
-  MR_STYLE(mr) = Menus.DefaultStyle;
-  MR_ORIGINAL_MENU(mr) = mr;
-  MR_COPIES(mr) = 1;
-  MR_IS_UPDATED(mr) = 1;
+	memset(mr->s, 0, sizeof(MenuRootStatic));
+	memset(mr->d, 0, sizeof(MenuRootDynamic));
+	MR_NEXT_MENU(mr) = Menus.all;
+	MR_NAME(mr) = stripcpy(name);
+	MR_WINDOW(mr) = None;
+	scanForPixmap(MR_NAME(mr), &MR_SIDEPIC(mr), '@');
+	scanForColor(MR_NAME(mr), &MR_SIDECOLOR(mr), &flag,'^');
+	MR_HAS_SIDECOLOR(mr) = flag;
+	MR_STYLE(mr) = Menus.DefaultStyle;
+	MR_ORIGINAL_MENU(mr) = mr;
+	MR_COPIES(mr) = 1;
+	MR_IS_UPDATED(mr) = 1;
 
-  Menus.all = mr;
-  return mr;
+	Menus.all = mr;
+	return mr;
 }
 
 /***********************************************************************
@@ -6245,35 +6371,41 @@ MenuRoot *NewMenuRoot(char *name)
  ***********************************************************************/
 static MenuRoot *copy_menu_root(MenuRoot *mr)
 {
-  MenuRoot *tmp;
+	MenuRoot *tmp;
 
-  if (!mr || MR_COPIES(mr) >= MAX_MENU_COPIES)
-    return NULL;
-  tmp = (MenuRoot *)safemalloc(sizeof(MenuRoot));
-  tmp->d = (MenuRootDynamic *)safemalloc(sizeof(MenuRootDynamic));
-  memset(tmp->d, 0, sizeof(MenuRootDynamic));
-  tmp->s = mr->s;
+	if (!mr || MR_COPIES(mr) >= MAX_MENU_COPIES)
+		return NULL;
+	tmp = (MenuRoot *)safemalloc(sizeof(MenuRoot));
+	tmp->d = (MenuRootDynamic *)safemalloc(sizeof(MenuRootDynamic));
+	memset(tmp->d, 0, sizeof(MenuRootDynamic));
+	tmp->s = mr->s;
 
-  MR_COPIES(mr)++;
-  MR_ORIGINAL_MENU(tmp) = MR_ORIGINAL_MENU(mr);
-  MR_CONTINUATION_MENU(tmp) = MR_CONTINUATION_MENU(mr);
-  MR_NEXT_MENU(tmp) = MR_NEXT_MENU(mr);
-  MR_NEXT_MENU(mr) = tmp;
-  MR_WINDOW(tmp) = None;
-  memset(&(MR_DYNAMIC_FLAGS(tmp)), 0, sizeof(MR_DYNAMIC_FLAGS(tmp)));
+	MR_COPIES(mr)++;
+	MR_ORIGINAL_MENU(tmp) = MR_ORIGINAL_MENU(mr);
+	MR_CONTINUATION_MENU(tmp) = MR_CONTINUATION_MENU(mr);
+	MR_NEXT_MENU(tmp) = MR_NEXT_MENU(mr);
+	MR_NEXT_MENU(mr) = tmp;
+	MR_WINDOW(tmp) = None;
+	memset(&(MR_DYNAMIC_FLAGS(tmp)), 0, sizeof(MR_DYNAMIC_FLAGS(tmp)));
 
-  return tmp;
+	return tmp;
 }
 
 
 void SetMenuCursor(Cursor cursor)
 {
-  MenuRoot *mr;
+	MenuRoot *mr;
 
-  mr = Menus.all;
-  for (mr = Menus.all; mr; mr = MR_NEXT_MENU(mr))
-    if (MR_WINDOW(mr))
-      XDefineCursor(dpy, MR_WINDOW(mr), cursor);
+	mr = Menus.all;
+	for (mr = Menus.all; mr; mr = MR_NEXT_MENU(mr))
+	{
+		if (MR_WINDOW(mr))
+		{
+			XDefineCursor(dpy, MR_WINDOW(mr), cursor);
+		}
+	}
+
+	return;
 }
 
 /*
