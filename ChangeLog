@@ -1,3 +1,8 @@
+2001-05-27  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/functions.c (execute_function):
+	print log commands after expansion rather than before
+
 2001-05-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:

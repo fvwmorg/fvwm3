@@ -940,10 +940,6 @@ void execute_function(exec_func_args_type *efa)
     return;
   }
 
-#ifdef FVWM_COMMAND_LOG
-  fvwm_msg(INFO, "LOG", "%s", efa->action);
-#endif
-
   func_depth++;
   if (efa->args)
   {
@@ -1065,6 +1061,10 @@ void execute_function(exec_func_args_type *efa)
   {
     expaction = taction;
   }
+
+#ifdef FVWM_COMMAND_LOG
+  fvwm_msg(INFO, "LOG", "%s", expaction);
+#endif
 
   /* Note: the module config command, "*" can not be handled by the
    * regular command table because there is no required white space after
