@@ -16,6 +16,15 @@
 	* FvwmWinList/FvwmWinList.1:
 	fixed obsolete Module "match" syntax
 
+	* modules/FvwmForm/FvwmForm.c:
+	fixed an "Active command unknown" noice when running the same 2 forms
+	by not printing an error if it is ct_table command
+
+	* modules/FvwmButtons/ConfigFvwmButtons:
+	* modules/FvwmTaskBar/ConfigFvwmTaskBar:
+	* modules/FvwmWinList/ConfigFvwmWinList:
+	fixed some obsolete syntax, like Iconify -1
+
 2000-11-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmForm/FormFvwm-*:

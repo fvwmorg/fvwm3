@@ -6,6 +6,9 @@
 	use new script alias names FvwmScript-Flavor;
 	updated fvwm man pages menu in config, some more
 
+	* fvwm/ConfigFvwmSetup:
+	small clean up, replaced Iconify -1 with Iconify false
+
 2000-11-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* docs/FAQ:

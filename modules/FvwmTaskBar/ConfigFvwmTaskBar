@@ -1,5 +1,5 @@
-Style "FvwmTaskBar" NoTitle,BorderWidth 4, HandleWidth 4, Sticky
-Style "FvwmTaskBar" StaysOnTop,WindowListSkip,CirculateSkip
+Style "FvwmTaskBar" NoTitle, BorderWidth 4, HandleWidth 4, Sticky
+Style "FvwmTaskBar" StaysOnTop, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmTaskBar: *
 *FvwmTaskBar: Back #c3c3c3
@@ -11,9 +11,9 @@ DestroyModuleConfig FvwmTaskBar: *
 *FvwmTaskBar: SelFont -adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
 *FvwmTaskBar: StatusFont fixed
 
-*FvwmTaskBar: Action Click1 Iconify -1, Raise
-*FvwmTaskBar: Action Click2 Iconify +1, Lower
-*FvwmTaskBar: Action Click3 Iconify -1, Raise
+*FvwmTaskBar: Action Click1 Iconify false, Raise
+*FvwmTaskBar: Action Click2 Iconify true,  Lower
+*FvwmTaskBar: Action Click3 Iconify false, Raise
 
 *FvwmTaskBar: UseSkipList
 *FvwmTaskBar: UseIconNames
@@ -24,7 +24,7 @@ DestroyModuleConfig FvwmTaskBar: *
 *FvwmTaskBar: BellVolume 20
 *FvwmTaskBar: MailBox /var/spool/mail/
 #*FvwmTaskBar: MailCommand Exec xterm -e mail
-*FvwmTaskBar: ClockFormat %I:%M %p
+*FvwmTaskBar: ClockFormat %H:%M
 
 *FvwmTaskBar: StartName Start
 *FvwmTaskBar: StartMenu MenuFvwmRoot

@@ -75,15 +75,16 @@ Mouse 3 TSIF    A       RaiseLower
 
 ######################## Initialization Functions ############################
 AddToFunc StartFunction
- + I Module FvwmBanner
- + I Module FvwmButtons
++ I Module FvwmAnimate
++ I Module FvwmBanner
++ I Module FvwmButtons
 
 AddToFunc InitFunction
- + I exec xsetroot -mod 2 2 -fg rgb:55/40/55 -bg rgb:70/50/70
++ I exec xsetroot -mod 2 2 -fg rgb:55/40/55 -bg rgb:70/50/70
 
 # For some SM-s (like gnome-session) there is an internal background setter.
 AddToFunc SessionInitFunction
- + I Nop
++ I Nop
 
 ######################## Menus ###################
 DestroyMenu MenuFvwmRoot
@@ -159,7 +160,7 @@ AddToFunc FuncFvwmWindowCommon
 DestroyMenu MenuFvwmWindowOps
 AddToMenu MenuFvwmWindowOps     "Window Ops"    Title
 FuncFvwmWindowCommon MenuFvwmWindowOps
-+                       "Re&fresh Window" RefreshWindow
++ "Re&fresh Window" RefreshWindow
 
 # Second windowops menu, bound to:
 # any mouse on titlebar button 1
@@ -167,9 +168,9 @@ FuncFvwmWindowCommon MenuFvwmWindowOps
 DestroyMenu MenuFvwmWindowOps2
 AddToMenu MenuFvwmWindowOps2
 FuncFvwmWindowCommon MenuFvwmWindowOps2
-+                       Scroll&Bar       Module FvwmScroll 2 2
-+                       &Print           FuncFvwmPrint
-+                       "Print Re&verse" FuncFvwmPrintReverse
++ Scroll&Bar       Module FvwmScroll 2 2
++ &Print           FuncFvwmPrint
++ "Print Re&verse" FuncFvwmPrintReverse
 
 # 3 different ways to log on, take your pick:
 DestroyFunc FuncFvwmRloginXterm
@@ -184,9 +185,10 @@ AddToFunc FuncFvwmRloginRshRxvt \
 
 # be sure to fill these in with your correct machine names:
 DestroyMenu MenuFvwmLogins
-AddToMenu MenuFvwmLogins &dopey FuncFvwmRloginXterm dopey
-+                       &snoopy FuncFvwmRloginXterm snoopy
-+                       s&ignal Exec rxterm signal
+AddToMenu MenuFvwmLogins
++ &dopey  FuncFvwmRloginXterm dopey
++ &snoopy FuncFvwmRloginXterm snoopy
++ s&ignal Exec rxterm signal
 
 DestroyMenu MenuFvwmModules
 AddToMenu MenuFvwmModules "Fvwm Modules"        Title
@@ -220,13 +222,14 @@ AddToMenu MenuFvwmStopModule "Stop Fvwm Modules" Title
 + "&W. Stop WinList"     KillModule FvwmWinList
 
 DestroyMenu MenuFvwmForms
-AddToMenu MenuFvwmForms "&C. Capture"       Module FvwmForm FvwmForm-Capture
-AddToMenu MenuFvwmForms "&D. Form Defaults" Module FvwmForm FvwmForm-Form
-AddToMenu MenuFvwmForms "&R. Rlogin"        Module FvwmForm FvwmForm-Rlogin
-AddToMenu MenuFvwmForms "&P. RootCursor"    Module FvwmForm FvwmForm-RootCursor
-AddToMenu MenuFvwmForms "&S. Setup"         Module FvwmForm FvwmForm-Setup
-AddToMenu MenuFvwmForms "&T. Talk Form"     Module FvwmForm FvwmForm-Talk
-AddToMenu MenuFvwmForms "&Q. QuitVerify"    Module FvwmForm FvwmForm-QuitVerify
+AddToMenu MenuFvwmForms
++ "&C. Capture"       Module FvwmForm FvwmForm-Capture
++ "&D. Form Defaults" Module FvwmForm FvwmForm-Form
++ "&R. Rlogin"        Module FvwmForm FvwmForm-Rlogin
++ "&P. RootCursor"    Module FvwmForm FvwmForm-RootCursor
++ "&S. Setup"         Module FvwmForm FvwmForm-Setup
++ "&T. Talk Form"     Module FvwmForm FvwmForm-Talk
++ "&Q. QuitVerify"    Module FvwmForm FvwmForm-QuitVerify
 
 # Configure and start using an iconbox on the fly
 DestroyFunc FuncFvwmConfigureIconBox
@@ -254,41 +257,50 @@ AddToMenu MenuFvwmQuitVerify "Really Quit Fvwm?" Title
 ######################## Sample Functions ##########################
 
 DestroyFunc FuncFvwmMailXmh
-AddToFunc FuncFvwmMailXmh  I Next [$0] Iconify -1
-+                          I Next [$0] Focus
-+                          I None [$0] Exec $0 $1
+AddToFunc FuncFvwmMailXmh
++ I Next [$0] Iconify false
++ I Next [$0] Focus
++ I None [$0] Exec $0 $1
 
 DestroyFunc FuncFvwmMoveOrRaise
-AddToFunc FuncFvwmMoveOrRaise   I Raise
-+                               M Move
-+                               D Lower
+AddToFunc FuncFvwmMoveOrRaise
++ I Raise
++ M Move
++ D Lower
 
 DestroyFunc FuncFvwmMaximize
-AddToFunc FuncFvwmMaximize      M Maximize     0 100
-+                               C Maximize     0 80
-+                               D Maximize     100 100
+AddToFunc FuncFvwmMaximize
++ M Maximize   0 100
++ H Maximize   0 100
++ C Maximize   0  80
++ D Maximize 100 100
 
 DestroyFunc FuncFvwmMoveOrIconify
-AddToFunc FuncFvwmMoveOrIconify I Raise
-+                               M Move
-+                               D Iconify
+AddToFunc FuncFvwmMoveOrIconify
++ I Raise
++ M Move
++ D Iconify
 
 DestroyFunc FuncFvwmResizeOrRaise
-AddToFunc FuncFvwmResizeOrRaise I Raise
-+                               M Resize
-+                               D Lower
+AddToFunc FuncFvwmResizeOrRaise
++ I Raise
++ M Resize
++ D Lower
 
 DestroyFunc FuncFvwmPrint
-AddToFunc FuncFvwmPrint         I Raise
-+                               I Exec xdpr -id $w
+AddToFunc FuncFvwmPrint
++ I Raise
++ I Exec xdpr -id $w
 
 DestroyFunc FuncFvwmPrintReverse
-AddToFunc FuncFvwmPrintReverse  I Raise
-+                               I Exec xdpr 1/2 -h -rv -id $w
+AddToFunc FuncFvwmPrintReverse
++ I Raise
++ I Exec xdpr 1/2 -h -rv -id $w
 
 DestroyFunc FuncFvwmFocusPolicyChange
-AddToFunc FuncFvwmFocusPolicyChange I Style * $0
-+                            I Recapture
+AddToFunc FuncFvwmFocusPolicyChange
++ I Style * $0
++ I Recapture
 
 # Read config files for modules:
 read ConfigFvwmBacker
@@ -300,4 +312,3 @@ read ConfigFvwmPager
 read ConfigFvwmScroll
 read ConfigFvwmTaskBar
 read ConfigFvwmWinList
-AddToFunc "StartFunction" I Module FvwmAnimate

@@ -1652,7 +1652,9 @@ static void ParseActiveMessage(char *buf) {
   /* at this point we have recognized "*FvwmForm" */
   e = FindToken(p,am_table,struct CommandTable);/* find cmd in table */
   if (e == 0) {                       /* if no match */
-    fprintf(stderr,"%s: Active command unknown: %s\n",MyName+1,buf);
+    /* this may be a configuration command of another same form */
+    if (FindToken(p, ct_table, struct CommandTable) == 0)
+      fprintf(stderr,"%s: Active command unknown: %s\n",MyName+1,buf);
     return;                             /* ignore it */
   }
 
