@@ -1873,11 +1873,13 @@ void HandleConfigureRequest(void)
 
   if (cre->window == Tmp_win->w)
   {
+#if 0
 fprintf(stderr, "cre: x=%d(%d), y=%d(%d), w=%d(%d), h=%d(%d)\n",
         cre->x, (cre->value_mask & CWX),
         cre->y, (cre->value_mask & CWY),
         cre->width, (cre->value_mask & CWWidth),
         cre->height, (cre->value_mask & CWHeight));
+#endif
     /* Don't modify frame_XXX fields before calling SetupWindow! */
     new_g.x = Tmp_win->frame_g.x;
     new_g.y = Tmp_win->frame_g.y;
