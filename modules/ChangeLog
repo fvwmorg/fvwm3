@@ -1,3 +1,8 @@
+1999-09-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmBanner/fvwm-logo-{current,colorful,old}.xpm: reduce size of
+	banners by removing empty lines/columns
+
 1999-09-16  Hippo
 
 	* FvwmScroll/*: Fixed man page formatting, removed generated files
