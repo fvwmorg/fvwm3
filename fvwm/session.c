@@ -658,8 +658,8 @@ MatchWinToSM(FvwmWindow *ewin,
 	      SET_ICON_STICKY(ewin, IS_ICON_STICKY(&(matches[i])));
 	      SET_DO_SKIP_ICON_CIRCULATE(ewin,
 					 DO_SKIP_ICON_CIRCULATE(&(matches[i])));
-	      SET_DO_SKIP_SHADED_CIRCULATE(ewin,
-					   DO_SKIP_SHADED_CIRCULATE(&(matches[i])));
+	      SET_DO_SKIP_SHADED_CIRCULATE(
+		ewin, DO_SKIP_SHADED_CIRCULATE(&(matches[i])));
 	      SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
 	      SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
 	      ewin->name = matches[i].wm_name;

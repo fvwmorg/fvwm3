@@ -53,6 +53,8 @@
 #include "libs/Colorset.h"
 #include "borders.h"
 #include "add_window.h"
+/*!!!*/
+#include "bindings.h"
 
 /* list of window names with attributes */
 static window_style *all_styles = NULL;
@@ -1893,12 +1895,15 @@ static void handle_window_style_change(FvwmWindow *t)
 {
   window_style style;
   int i;
+  int width;
+  int height;
   char *wf;
   char *sf;
   char *sc;
   Bool do_redraw_decoration = False;
   Bool do_redecorate = False;
   Bool do_update_icon = False;
+  Bool do_setup_focus_policy = False;
 
   lookup_style(t, &style);
   if (style.has_style_changed == 0)
@@ -1946,7 +1951,7 @@ static void handle_window_style_change(FvwmWindow *t)
    */
   if (SCFOCUS_MODE(style))
   {
-    setup_focus_policy(t);
+    do_setup_focus_policy = True;
   }
 
   /*
@@ -2042,9 +2047,65 @@ static void handle_window_style_change(FvwmWindow *t)
 
   /****** clean up, redraw, etc. ******/
 
-  if (do_redecorate)
+  if (do_redecorate && 0)
   {
+    /* destroy old decorations */
+    destroy_auxiliary_windows(t, False);
+
+    /* determine level of decoration */
+    setup_style_and_decor(t, &style);
+
+    /* redecorate */
+    setup_auxiliary_windows(t, False);
+
+    /* grab keys and buttons */
+    setup_key_and_button_grabs(t);
+    do_setup_focus_policy = False;
+
+    {
     /*!!!*/
+    int a,b;
+    unsigned int mask;
+    XWindowChanges xwc;
+
+    if (XGetGeometry(dpy, t->w, &JunkRoot, &(t->attr.x), &(t->attr.y),
+		     &width, &height, &JunkBW, &JunkDepth))
+    {
+      XTranslateCoordinates(dpy, t->frame, Scr.Root, t->attr.x, t->attr.y,
+			    &a,&b,&JunkChild);
+      xwc.x = a + t->xdiff;
+      xwc.y = b + t->ydiff;
+      xwc.border_width = t->old_bw;
+      mask = (CWX | CWY| CWBorderWidth);
+      /*
+      XConfigureWindow (dpy, t->w, mask, &xwc);
+      */
+    }
+    else
+    {
+      xwc.x = t->attr.x;
+      xwc.y = t->attr.y;
+    }
+    }
+
+
+
+
+
+
+
+
+    setup_frame_geometry(t);
+    width = t->frame_g.width;
+    t->frame_g.width = 0;
+    height = t->frame_g.height;
+    t->frame_g.height = 0;
+fprintf(stderr,"x=%d, y=%d, w=%d, h=%d\n", t->frame_g.x, t->frame_g.y, width, height);
+    SetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width, t->frame_g.height, True, False);
+
+
+
+    do_redraw_decoration = True;
   }
   if (do_redraw_decoration)
   {
@@ -2056,6 +2117,10 @@ static void handle_window_style_change(FvwmWindow *t)
   if (do_update_icon)
   {
     /*!!!*/
+  }
+  if (do_setup_focus_policy)
+  {
+    setup_focus_policy(t);
   }
 fprintf(stderr,"updated style for window %s\n", t->name);
 

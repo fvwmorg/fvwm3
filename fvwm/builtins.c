@@ -50,6 +50,7 @@
 #include "colors.h"
 #include "decorations.h"
 #include "libs/Colorset.h"
+#include "add_window.h"
 
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *fl);
@@ -383,7 +384,7 @@ void destroy_function(F_CMD_ARGS)
 
   if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
 		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
-    Destroy(tmp_win);
+    destroy_window(tmp_win);
   else
     XKillClient(dpy, tmp_win->w);
   XSync(dpy,0);
@@ -429,7 +430,7 @@ void close_function(F_CMD_ARGS)
   else if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
 			&JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
   {
-    Destroy(tmp_win);
+    destroy_window(tmp_win);
   }
   else
   {

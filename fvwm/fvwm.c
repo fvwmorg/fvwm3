@@ -56,6 +56,7 @@
 #include "module_interface.h"
 #include "icccm2.h"
 #include "libs/Colorset.h"
+#include "add_window.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -835,9 +836,9 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     w = fw->w;
     XUnmapWindow(dpy,fw->frame);
     XUnmapWindow(dpy,w);
-    RestoreWithdrawnLocation (fw,True);
+    RestoreWithdrawnLocation(fw,True);
     SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
-    Destroy(fw);
+    destroy_window(fw);
     Event.xmaprequest.window = w;
     HandleMapRequestKeepRaised(None, fw);
     PPosOverride = False;

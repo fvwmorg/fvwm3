@@ -929,7 +929,7 @@ void HandleDestroyNotify(void)
 {
   DBUG("HandleDestroyNotify","Routine Entered");
 
-  Destroy(Tmp_win);
+  destroy_window(Tmp_win);
 
 #ifdef GNOME
   GNOME_SetClientList();
@@ -1275,7 +1275,7 @@ void HandleUnmapNotify(void)
 
   if(XCheckTypedWindowEvent (dpy, Event.xunmap.window, DestroyNotify,&dummy))
     {
-      Destroy(Tmp_win);
+      destroy_window(Tmp_win);
     }
   else
   /*
@@ -1309,7 +1309,7 @@ void HandleUnmapNotify(void)
 	}
       XRemoveFromSaveSet (dpy, Event.xunmap.window);
       XSelectInput (dpy, Event.xunmap.window, NoEventMask);
-      Destroy(Tmp_win);		/* do not need to mash event before */
+      destroy_window(Tmp_win);		/* do not need to mash event before */
       /*
        * Flush any pending events for the window.
        */

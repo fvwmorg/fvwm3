@@ -16,9 +16,23 @@
 #ifndef ADD_WINDOW_H
 #define ADD_WINDOW_H
 
+extern char NoName[];
+extern char NoClass[];
+extern char NoResource[];
+
 void setup_focus_policy(FvwmWindow *tmp_win);
+void setup_style_and_decor(FvwmWindow *tmp_win, window_style *pstyle);
+void setup_auxiliary_windows(FvwmWindow *tmp_win, Bool setup_frame_and_parent);
+void setup_key_and_button_grabs(FvwmWindow *tmp_win);
+void setup_frame_geometry(FvwmWindow *tmp_win);
+void destroy_auxiliary_windows(
+  FvwmWindow *Tmp_win, Bool destroy_frame_and_parent);
+
 void FetchWmProtocols(FvwmWindow *);
 FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
 void GetWindowSizeHints(FvwmWindow *);
+void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
+void destroy_window(FvwmWindow *);
+void RestoreWithdrawnLocation(FvwmWindow *, Bool);
 
 #endif /* ADD_WINDOW_H */

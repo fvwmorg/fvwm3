@@ -44,10 +44,6 @@ extern unsigned long Globalgcm;
 extern Time lastTimestamp;
 extern XEvent Event;
 
-extern char NoName[];
-extern char NoClass[];
-extern char NoResource[];
-
 /* Start of function prototype area.
    I wonder if there is any sequence to this stuff.
 
@@ -61,8 +57,6 @@ extern char NoResource[];
 unsigned long context,char *action, int *Module
 
 void ReapChildren(void);
-void RestoreWithdrawnLocation(FvwmWindow *, Bool);
-void Destroy(FvwmWindow *);
 
 /* bits for GrabPointerState */
 #define GRAB_NONE 0           /* the cursor is not grabed */
@@ -77,7 +71,6 @@ void UngrabEm(int ungrab_context);
 
 int flush_expose(Window w);
 void WaitForButtonsUp(Bool do_handle_expose);
-void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 Bool StashEventTime (XEvent *ev);
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);

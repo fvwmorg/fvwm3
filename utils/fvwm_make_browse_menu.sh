@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 ###
-#  This script demonstates the fvwm menu DynamicPopupAction functionality.
+#  This script demonstrates the fvwm menu DynamicPopupAction functionality.
 #  You can use a more configurable fvwm-menu-directory instead.
 #  The line below almost exactly simulates this script:
 #    fvwm-menu-directory --reuse --links --order 4 --name <menu name> \
@@ -65,7 +65,7 @@ echo AddToMenu \"$MENU\" \"`cat "$DIRFILE"`\" Title
 
 # add '..' entry
 cd "$DIR"/..
-echo AddToMenu \"$MENU\" \"..\" PipeRead \'echo \""$PWD"\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
+echo AddToMenu \"$MENU\" \"..\" PipeRead \'echo \""`/bin/pwd`"\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
 
 # add separator
 echo AddToMenu \"$MENU\" \"\" Nop
@@ -82,7 +82,7 @@ for i in `"$LS" "$DIR"` ; do
         # it's a directory
         cd "$DIR/$i"
         # put new path in $DIRFILE and invoke the menu again
-        echo AddToMenu \"$MENU\" \""$i/"\" PipeRead \'echo \"`echo $PWD|$SED -e s://:/:g`\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
+        echo AddToMenu \"$MENU\" \""$i/"\" PipeRead \'echo \"`echo $DIR/$i|$SED -e s://:/:g`\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
     else
         # something else, apply $ACTION to it
         echo AddToMenu \"$MENU\" \""$i"\" Exec $TERMINAL $ACTION \""$DIR/$i"\"
