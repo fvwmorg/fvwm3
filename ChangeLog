@@ -1,3 +1,8 @@
+1999-03-23  Dan Espen  <dane@mk.bellcore.com>
+
+	* libs/Parse.c (GetSuffixedIntegerArguments): Correctly initialize
+	suffixes variable to correct a UMR detected by Purify.
+
 1999-03-23  Tomas Ogren  <stric@ing.umu.se>
 
 	* libs/Parse.c (GetIntegerArguments): When chaining functions, please

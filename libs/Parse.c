@@ -273,11 +273,77 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
 
   end = DoPeekToken(indata, &tmptok, spaces, delims, out_delim);
 
+<<<<<<< Parse.c
+	  t++;
+	  while((*t != c)&&(*t != 0))
+	    {
+	      /* Skip over escaped text, ie \quote */
+	      if((*t == '\\')&&(*(t+1) != 0))
+		t++;
+	      t++;
+	    }
+	  if(*t == c)
+	    t++;
+	}
+      else
+	{
+	  /* Skip over escaped text, ie \" or \space */
+	  if((*t == '\\')&&(*(t+1) != 0))
+	    t++;
+	  t++;
+	}
+    }
+  end = t;
+  if (out_delim)
+    *out_delim = *end;
+
+  text = safemalloc(end-start+1);
+  *token = text;
+=======
   if (tmptok == NULL)
     *token = NULL;
   else
     *token = strdup(tmptok);
+>>>>>>> 1.17
 
+<<<<<<< Parse.c
+  /* copy token */
+  while(start < end)
+    {
+      /* Check for qouted text */
+      if(IsQuote(*start))
+	{
+	  char c = *start;
+	  start++;
+	  while((*start != c)&&(*start != 0))
+	    {
+	      /* Skip over escaped text, ie \" or \space */
+	      if((*start == '\\')&&(*(start+1) != 0))
+		start++;
+	      *text++ = *start++;
+	    }
+	  if(*start == c)
+	    start++;
+	}
+      else
+	{
+	  /* Skip over escaped text, ie \" or \space */
+	  if((*start == '\\')&&(*(start+1) != 0))
+	    start++;
+	  *text++ = *start++;
+	}
+    }
+  *text = 0;
+  if(*end != 0)
+    end++;
+
+  if (**token == 0)
+    {
+      free(*token);
+      *token = NULL;
+    }
+=======
+>>>>>>> 1.17
   return end;
 }
 
@@ -359,7 +425,10 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
   char *token;
   int suffixes;
 
-  suffixes = (suffixlist != NULL) ? strlen(suffixlist) : 0;
+  suffixes = 0;
+  if (suffixlist != 0) {
+    suffixes = strlen(suffixlist);
+  }
   for (i = 0; i < num && action; i++)
   {
     action = GetNextToken(action, &token);
