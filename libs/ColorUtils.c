@@ -254,7 +254,7 @@ static XColor *GetShadowOrHiliteColor(
 XColor *GetShadowColor(Pixel background)
 {
   return GetShadowOrHiliteColor(
-    background, PCT_DARK_BOTTOM, PCT_LIGHT_BOTTOM, DARKNESS_FACTOR);
+    background, PCT_LIGHT_BOTTOM, PCT_DARK_BOTTOM, DARKNESS_FACTOR);
 }
 
 Pixel GetShadow(Pixel background)
@@ -269,7 +269,7 @@ Pixel GetShadow(Pixel background)
 XColor *GetHiliteColor(Pixel background)
 {
   return GetShadowOrHiliteColor(
-    background, PCT_DARK_TOP, PCT_LIGHT_TOP, BRIGHTNESS_FACTOR);
+    background, PCT_LIGHT_TOP, PCT_DARK_TOP, BRIGHTNESS_FACTOR);
 }
 
 Pixel GetHilite(Pixel background)

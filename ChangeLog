@@ -1,5 +1,9 @@
 2001-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/ColorUtils.c (GetShadowColor):
+	(GetHiliteColor):
+	finished reverting back to 2.3.22 colour calculations
+
 	* fvwm/menus.c (MenuInteraction):
 	fixed busy wait with PopupDelay menu style
 
