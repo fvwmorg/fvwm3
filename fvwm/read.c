@@ -197,7 +197,7 @@ void ReadFile(F_CMD_ARGS)
 
   ReadSubFunc(eventp,w,tmp_win,context,action,Module,0);
 
-  if (last_read_failed && this_read == 0)
+  if (fFvwmInStartup && last_read_failed && this_read == 0)
   {
     fvwm_msg(INFO,"Read","trying to read system rc file");
     ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
@@ -215,7 +215,7 @@ void PipeRead(F_CMD_ARGS)
 
   ReadSubFunc(eventp,w,tmp_win,context,action,Module,1);
 
-  if (last_read_failed && this_read == 0)
+  if (fFvwmInStartup && last_read_failed && this_read == 0)
   {
     fvwm_msg(INFO,"PipeRead","trying to read system rc file");
     ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
