@@ -46,7 +46,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <X11/Xlib.h>
-#include <signal.h>
 #include <math.h>
 #include <unistd.h>
 #include <string.h>
@@ -55,6 +54,7 @@
 #include <sys/times.h>                  /* For timing things time() */
 #include <time.h>                       /* For time() */
 #include <limits.h>                     /* For time() */
+#include "libs/fvwmsignal.h"
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
@@ -129,6 +129,8 @@ static void AnimateResizeNone(int, int, int, int, int, int, int, int);
 static void AnimateResizeTwist(int, int, int, int, int, int, int, int);
 static void DefineForm(void);
 
+static RETSIGTYPE HandleTerminate(int sig);
+
 struct ASAnimate Animate = { NULL, NULL, ANIM_ITERATIONS, ANIM_DELAY,
                              ANIM_TWIST, ANIM_WIDTH,
                              AnimateResizeTwist, ANIM_TIME };
@@ -142,14 +144,14 @@ typedef struct AnimateEffects {
 } ae;
 /* Note None and Random must be the first 2 entries. */
 struct AnimateEffects effects[] = {
-  {"None",0,AnimateResizeNone},
-  {"Random",0,AnimateResizeRandom},
-  {"Flip",0,AnimateResizeFlip},
-  {"Frame","Zoom",AnimateResizeZoom},
-  {"Frame3D","Zoom3D",AnimateResizeZoom3D},
-  {"Lines",0,AnimateResizeLines},
-  {"Turn",0,AnimateResizeTurn},
-  {"Twist",0,AnimateResizeTwist}
+  {"None", 0, AnimateResizeNone, NULL},
+  {"Random", 0, AnimateResizeRandom, NULL},
+  {"Flip", 0, AnimateResizeFlip, NULL},
+  {"Frame", "Zoom", AnimateResizeZoom, NULL},
+  {"Frame3D", "Zoom3D", AnimateResizeZoom3D, NULL},
+  {"Lines", 0, AnimateResizeLines, NULL},
+  {"Turn", 0, AnimateResizeTurn, NULL},
+  {"Twist", 0, AnimateResizeTwist, NULL}
 };
 #define NUM_EFFECTS sizeof(effects) / sizeof(struct AnimateEffects)
 
@@ -616,7 +618,16 @@ ant_ctr %d\n",
  * on.)
  */
 static void AnimateResizeNone(int x, int y, int w, int h,
-                         int fx, int fy, int fw, int fh) {
+                              int fx, int fy, int fw, int fh) {
+  (void)x;
+  (void)y;
+  (void)w;
+  (void)h;
+  (void)fx;
+  (void)fy;
+  (void)fw;
+  (void)fh;
+
   ++animate_none;
   return;
 }
@@ -662,10 +673,18 @@ static void AnimateClose(int x, int y, int w, int h)
 }
 #endif
 
-void DeadPipe(int foo) {
-  myfprintf((stderr,"Dead Pipe, errno %d\n",foo));
+void
+DeadPipe(int arg) {
+  myfprintf((stderr,"Dead Pipe, arg %d\n",arg));
   exit(0);
 }
+
+
+static RETSIGTYPE
+HandleTerminate(int sig) {
+  fvwmSetTerminate(sig);
+}
+
 
 int main(int argc, char **argv) {
   char *s;
@@ -692,7 +711,41 @@ int main(int argc, char **argv) {
             MyName+1);
     exit(1);
   }
-  signal (SIGPIPE, DeadPipe);		/* Dead pipe == Fvwm died */
+
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT; /* to interrupt ReadFvwmPacket() */
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = HandleTerminate;
+
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGPIPE, &sigact, NULL);
+  }
+#else
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGTERM) |
+                     sigmask(SIGINT) |
+                     sigmask(SIGPIPE) );
+#endif
+  signal(SIGTERM, HandleTerminate);
+  signal(SIGINT,  HandleTerminate);
+  signal(SIGPIPE, HandleTerminate);     /* Dead pipe == Fvwm died */
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGTERM, True);
+  siginterrupt(SIGINT,  True);
+  siginterrupt(SIGPIPE, True);
+#endif
+#endif
 
   Channel[0] = atoi(argv[1]);
   Channel[1] = atoi(argv[2]);
@@ -722,24 +775,24 @@ int main(int argc, char **argv) {
   running = True;                       /* out of initialization phase */
   SendFinishedStartupNotification(Channel); /* tell fvwm we're running */
   Loop();                               /* start running */
-  exit (0);                             /* Never gets here! */
+  return 0;
 }
 
 /*
  * Wait for some event like iconify, deiconify and stuff.
  */
-static void Loop() {
+static void Loop(void) {
   FvwmPacket* packet;
-  clock_t time_start;                     /* for time() */
-  clock_t time_end;                     /* for time() */
+  clock_t time_start;                  /* for time() */
+  clock_t time_end;                    /* for time() */
   clock_t time_accum;
   struct tms time_buffer;              /* for time() */
   char cmd[200];
 
   myfprintf((stderr,"Starting event loop\n"));
-  while (1) {
+  while ( !isTerminated ) {
     if ( (packet = ReadFvwmPacket(Channel[1])) == NULL )
-	exit( 0 );                    /* FVWM is gone */
+	break;                    /* FVWM is gone */
 
       switch (packet->type) {
       case M_DEICONIFY:
@@ -859,7 +912,7 @@ static void Loop() {
       StopCmd();                        /* update menu */
       myfprintf((stderr,"Exiting, animate none count %d, stop recvd %c\n",
                  animate_none, stop_recvd ? 'y' : 'n'));
-      exit (0);                         /* and stop */
+      break;                            /* and stop */
     } /* end stopping */
     /* The execution of the custom command has to be delayed,
        because we first had to send the UNLOCK response.
@@ -869,7 +922,7 @@ static void Loop() {
       DefineForm();
       CMD1X("Module FvwmForm Form%s");
     }
-  } /* end while forever */
+  } /* end while */
 }
 
 /*****************************************************************************
@@ -879,7 +932,7 @@ static void Loop() {
  *
  ****************************************************************************/
 
-static char *table[]= {
+static const char *table[]= {
   "Color",
 #define Color_arg 0
   "Custom",
@@ -905,7 +958,7 @@ static char *table[]= {
   "Width"
 #define Width_arg 11
 };	/* Keep list in alphabetic order, using binary search! */
-static void ParseOptions() {
+static void ParseOptions(void) {
   char *buf;
 
   myfprintf((stderr,"Reading options\n"));
@@ -920,7 +973,7 @@ void ParseConfigLine(char *buf) {
   char **e, *p, *q;
   unsigned seed;
   long curtime;
-  int i;
+  unsigned i;
 
   if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
@@ -1047,7 +1100,7 @@ void ParseConfigLine(char *buf) {
 
 /* create GC for drawing the various animations */
 /* Called during start-up, and whenever the color or line width changes. */
-static void CreateDrawGC() {
+static void CreateDrawGC(void) {
 
   myfprintf((stderr,"Creating GC\n"));
   if (gc != NULL) {
@@ -1111,7 +1164,7 @@ static void CreateDrawGC() {
  * generated menu is  called  "MenuFvwmAnimate", or  "Menu<ModuleAlias>".
  * dje, 10/11/98.
  */
-static void DefineMe() {
+static void DefineMe(void) {
   char cmd[200];                        /* really big area for a command */
   myfprintf((stderr,"defining menu\n"));
 
@@ -1202,9 +1255,9 @@ static void DefineMe() {
 }
 
 /* Write the current config into a file. */
-static void SaveConfig() {
+static void SaveConfig(void) {
   FILE *config_file;
-  int i;
+  unsigned i;
   char filename[100];                   /* more than enough room */
   char msg[200];                        /* even more room for msg */
   /* Need to use logic to create fully qualified file name same as in
@@ -1242,7 +1295,7 @@ Save not done! Error\n",
 /* Stop is different than KillModule in that it gives this module a chance to
    alter the builtin menu before it exits.
 */
-static void StopCmd() {
+static void StopCmd(void) {
   char cmd[200];
   myfprintf((stderr,"%s: Defining startup menu in preparation for stop\n",
              MyName+1));
@@ -1250,8 +1303,9 @@ static void StopCmd() {
   CMD11("AddToMenu Menu%s \"%s\" Title");
   CMD11("AddToMenu Menu%s \"&0. Start FvwmAnimate\" Module %s");
 }
-static void DefineForm() {
-  int i;
+
+static void DefineForm(void) {
+  unsigned i;
   char cmd[200];
   myfprintf((stderr,"Defining form Form%s\n", MyName+1));
   CMD1X("DestroyModuleConfig Form%s*");
