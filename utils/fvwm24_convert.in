@@ -10,6 +10,7 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
 
 
 ($source,$dest) = @ARGV;
+$dest2 = "$dest.pass1";
 if ( $source eq "") {
   $source = "$$HOME/.fvwm2rc";
 }
@@ -23,13 +24,11 @@ if ($dest eq "") {
 if ( -e $dest ) {
   die "Output file $dest already exists, exiting.\n";
 }
+if ( -e $dest2 ) {
+  die "Output file $dest2 already exists, exiting.\n";
+}
 system "cp -p $source $dest 2>/dev/null"; # try to preserve permissions
-
-print "Input from $source, output to $dest\n";
-
-open(IN, $source) || die "Can't open $source";
-open(STDOUT, ">$dest") || die "Can't redirect stdout to $dest";
-
+system "cp -p $source $dest2 2>/dev/null"; # try to preserve permissions
 
 $[ = 1;				# set array base to 1
 $, = ' ';			# set output field separator
@@ -52,188 +51,241 @@ $\ = "\n";			# set output record separator
 %BUGOPTS= ('RAISEOVERNATIVEWINDOWS','RaiseOverNativeWindows on',
 	   'IGNORENATIVEWINDOWS','RaiseOverNativeWindows off');
 
-print '# This file changed by the .fvwm2rc to .fvwm/.fvwm2rc converter';
-# create assoc array by imagepath:
-$imagepath = 'FVWM_IMAGEPATH';
-$isize = (@iarray = split(/:/, $imagepath, 9999));
-for ($i = 1; $i <= $isize; ++$i) {
-  $iassoc{$iarray[$i]} = '1';
-}
+print "Input from $source, output to $dest\n";
 
-$commchar="#";			# help un-confuse emacs.
-line: while ( <IN> ) {
-  chomp;			# strip record separator
-  @Fld = split(' ', $_, 9999);
-  if (/^\s*[$commchar]/) {	# Comment, pass it thru
-    print $_;
-    $line = $_;
-    while (substr($line, length($line), 1) eq "\\") { # backslashed lines
-      $line = &Getline1();
-      print $line;
-    }
-    next line;
+open(IN, $source) || die "Can't open $source";
+open(STDOUT, ">$dest2") || die "Can't redirect stdout to $dest2";
+$pass = "1";
+parse_pass();
+close(IN);
+close(STDOUT);
+
+open(IN, $dest2) || die "Can't open $source";
+open(STDOUT, ">$dest") || die "Can't redirect stdout to $dest2";
+$pass = "2";
+parse_pass();
+close(IN);
+system "rm $dest2 2>/dev/null";
+
+exit 0;
+
+
+sub parse_pass {
+  if ($pass eq "2") {
+    print '# This file changed by the .fvwm2rc to .fvwm/.fvwm2rc converter';
+  }
+  # create assoc array by imagepath:
+  $imagepath = 'FVWM_IMAGEPATH';
+  $isize = (@iarray = split(/:/, $imagepath, 9999));
+  for ($i = 1; $i <= $isize; ++$i) {
+    $iassoc{$iarray[$i]} = '1';
   }
 
-  if (/^\s*$/) {		# Empty line, pass it thru
-    print $_;
-    next line;
-  }
+  $newwarn = "";
+  $commchar="#";			# help un-confuse emacs.
+ line: while ( <IN> ) {
+    chomp;			# strip record separator
+    @Fld = split(' ', $_, 9999);
+    if (/^\s*[$commchar]/) {	# Comment, pass it thru
+      print $_;
+      $line = $_;
+      while (substr($line, length($line), 1) eq "\\") { # backslashed lines
+	$line = &Getline1();
+	print $line;
+      }
+      next line;
+    }
 
-  # Adds "path" to "newpath":
-  if (/^\s*ICONPATH|^\s*PIXMAPPATH/i) { # Fix up IconPath/PixmapPath:
-    $newpath = '';
-    &add_to_path($Fld[2]);
-    $line = $_;
-    # prime possible loop
-    while (substr($line, length($line), 1) eq "\\") {
-      $line = &Getline1();
-      &add_to_path($line);
+    if (/^\s*$/) {		# Empty line, pass it thru
+      print $_;
+      next line;
     }
-    if ($newpath eq '') {
-      print
-	'# To use your own icons, uncomment and change the next line';
-      print "#ImagePath \$HOME/icons:+";
-    }
-    else {
-      print 'ImagePath ' . $newpath . ':+';
-    }
-    next line;
-  }
 
-  # Change GlobOpts to "Style * xxx, ..." commands
-  if (/^\s*globalopts/i) { # Fix up GlobalOpts:
-    $newopts = '';
-    @rest=@Fld;			# copy the whole line
-    shift @rest;		# remove first element
-    &add_to_opts(join($",@rest)); # pass rest of line
-    $line = $_;			# prime possible loop
-    while (substr($line, length($line), 1) eq "\\") { # backslashed lines
-      $line = &Getline1();
-      &add_to_opts($line);	# build up newopts
-    }
-    if ($newopts eq '') {
-      next line;		# GlobalOpts without argument, drop silently
-    }
-    else {
-      print 'Style "*"  ' . $newopts;	# print as style command
-    }
-    next line;
-  }
+    $lastwarn = $newwarn;
+    $newwarn = "";
 
-  if (/^\s*MODULEPATH/i) {
-    # Deletes continuation lines too, although if there are
-    # continuation lines, there might be some part of the path we want to
-    # Delete them anyway.
-    print '# Removed by fvwm24_convert: ' . $_;
-    while (substr($_, length($_), 1) eq "\\") {
-      $_ = &Getline1();
+    # Adds "path" to "newpath":
+    if (/^\s*ICONPATH|^\s*PIXMAPPATH/i) { # Fix up IconPath/PixmapPath:
+      $newpath = '';
+      &add_to_path($Fld[2]);
+      $line = $_;
+      # prime possible loop
+      while (substr($line, length($line), 1) eq "\\") {
+	$line = &Getline1();
+	&add_to_path($line);
+      }
+      if ($newpath eq '') {
+	print
+	  '# To use your own icons, uncomment and change the next line';
+	print "#ImagePath \$HOME/icons:+";
+      }
+      else {
+	print 'ImagePath ' . $newpath . ':+';
+      }
+      next line;
+    }
+
+    # Change GlobOpts to "Style * xxx, ..." commands
+    if (/^\s*globalopts/i) { # Fix up GlobalOpts:
+      $newopts = '';
+      @rest=@Fld;			# copy the whole line
+      shift @rest;		# remove first element
+      &add_to_opts(join($",@rest)); # pass rest of line
+      $line = $_;			# prime possible loop
+      while (substr($line, length($line), 1) eq "\\") { # backslashed lines
+	$line = &Getline1();
+	&add_to_opts($line);	# build up newopts
+      }
+      if ($newopts eq '') {
+	next line;		# GlobalOpts without argument, drop silently
+      }
+      else {
+	print 'Style "*"  ' . $newopts;	# print as style command
+      }
+      next line;
+    }
+
+    if (/^\s*MODULEPATH/i) {
+      # Deletes continuation lines too, although if there are
+      # continuation lines, there might be some part of the path we want to
+      # Delete them anyway.
       print '# Removed by fvwm24_convert: ' . $_;
+      while (substr($_, length($_), 1) eq "\\") {
+	$_ = &Getline1();
+	print '# Removed by fvwm24_convert: ' . $_;
+      }
+      next line;
     }
-    next line;
-  }
 
-  # collect continuation lines
-  $line = $_;
-  $single_lines = $_;
-  while (substr($line, length($line), 1) eq "\\") { # backslashed lines
-    $old_line = substr($line, 1, length($line) - 1);
-    $new_line = &Getline1();
-    $single_lines = "$single_lines\n$new_line";
-    $line = "$old_line$new_line";
-  }
-  $_ = $line;
-
-  if (/^\s*HILIGHTCOLOR\s/i) {
-    @colors = split("/", $Fld[2], 9999);
-    if ($colors[2] eq '') {
-      $colors[1] = $Fld[2];
-      $colors[2] = $Fld[3];
+    $single_lines = $_;
+    if ($pass eq "2") {
+      $line = $_;
+      # collect continuation lines
+      while (substr($line, length($line), 1) eq "\\") { # backslashed lines
+	$old_line = substr($line, 1, length($line) - 1);
+	$new_line = &Getline1();
+	$single_lines = "$single_lines\n$new_line";
+	$line = "$old_line$new_line";
+      }
+      $_ = $line;
     }
-    print "Style \"*\" HilightFore " . $colors[1] . ', HilightBack ' .
-      $colors[2];
-    next line;
-  }
 
-  if (/^\s*HILIGHTCOLORSET/i) {
-    print "Style \"*\" HilightColorset " . $Fld[2];
-    next line;
-  }
+    if (/^\s*HILIGHTCOLOR\s/i) {
+      @colors = split("/", $Fld[2], 9999);
+      if ($colors[2] eq '') {
+	$colors[1] = $Fld[2];
+	$colors[2] = $Fld[3];
+      }
+      print "Style \"*\" HilightFore " . $colors[1] . ', HilightBack ' .
+	$colors[2];
+      next line;
+    }
 
-  if (/^\s*WINDOWSHADEANIMATE/i) {
-    print "Style \"*\" WindowShadeSteps " . $Fld[2];
-    next line;
-  }
+    if (/^\s*HILIGHTCOLORSET/i) {
+      print "Style \"*\" HilightColorset " . $Fld[2];
+      next line;
+    }
 
-  if (/^\s*WINDOWFONT/i) {
-    print "Style \"*\" Font " . $Fld[2];
-    next line;
-  }
+    if (/^\s*WINDOWSHADEANIMATE/i) {
+      print "Style \"*\" WindowShadeSteps " . $Fld[2];
+      next line;
+    }
 
-  if (/^\s*ICONFONT/i) {
-    print "Style \"*\" IconFont " . $Fld[2];
-    next line;
-  }
+    if (/^\s*WINDOWFONT/i) {
+      print "Style \"*\" Font " . $Fld[2];
+      next line;
+    }
 
-  if (/^\s*COLORLIMIT/i) {
-    print '# Removed by fvwm24_convert: ' . $_;
-    next line;
-  }
+    if (/^\s*ICONFONT/i) {
+      print "Style \"*\" IconFont " . $Fld[2];
+      next line;
+    }
 
-  if (/^\s*[*]\S+PANEL/i) {
-    print STDERR "Possible old style FvwmButtons Panel definition found";
-    print STDERR "  $_";
-    print STDERR
-      "  See FvwmButtons(1), \"CONVERTING OLD PANEL CONFIGURATIONS\"";
-    print $_;
-    next line;
-  }
-
-  if (/^\s*READ/i) {
-    print STDERR "Read command found, check file for conversion issues:";
-    print STDERR "  $_";
-    print $_;
-    next line;
-  }
-
-  if (/FvwmConfig/i) {
-    print STDERR "The FvwmConfig module is no longer part of fvwm:";
-    print STDERR "  $_";
-    if (/^\s*[*]?\s*FvwmConfig/i) {
-      print STDERR "  Line commented out.";
+    if (/^\s*COLORLIMIT/i) {
       print '# Removed by fvwm24_convert: ' . $_;
       next line;
     }
-    else {
-      print $_;
-    }
-    next line;
-  }
 
-  if (/FvwmPipe/i) {
-    print STDERR "The FvwmPipe module is no longer part of fvwm:";
-    print STDERR "  $_";
-    if (/^\s*[*]?\s*FvwmPipe/i) {
-      print STDERR "  Line commented out.";
-      print '# Removed by fvwm24_convert: ' . $_;
-    }
-    else {
-      print $_;
-    }
-    next line;
-  }
-  if (/RANDOMPLACEMENT|ACTIVEPLACEMENT|SMARTPLACEMENT/i ||
-      /DUMBPLACEMENT|CLEVERPLACEMENT/i) {
-    print STDERR "Placement style names can not be converted automatically:";
-    print STDERR "  $_";
-    print STDERR
-      "  See fvwm2(1), \"Window manager placement\" for instructions.";
-    print $_;
-    next line;
-  }
+    # generate warnings in pass 2 only
+    if ($pass eq "2") {
+      if (/^\s*[*].+PANEL/i) {
+	if ($lastwarn ne "panel") {
+	  print STDERR "Possible old style FvwmButtons Panel definition found";
+	  print STDERR
+	    "  See FvwmButtons(1), \"CONVERTING OLD PANEL CONFIGURATIONS\"";
+	}
+	print STDERR "  $_";
+	print $_;
+	$newwarn = "panel";
+	next line;
+      }
 
-  print $single_lines;			# pass everything else thru
+      if (/^\s*READ/i) {
+	if ($lastwarn ne "read") {
+	  print STDERR
+	    "Read command found, file(s) must be converted in a separate run:";
+	}
+	print STDERR "  $_";
+	print $_;
+	$newwarn = "read";
+	next line;
+      }
+
+      if (/FvwmConfig/i) {
+	print STDERR "The FvwmConfig module is no longer part of fvwm:";
+	print STDERR "  $_";
+	if (/^\s*[*]?\s*FvwmConfig/i) {
+	  print STDERR "  Line commented out.";
+	  print '# Removed by fvwm24_convert: ' . $_;
+	  next line;
+	}
+	else {
+	  print $_;
+	}
+	next line;
+      }
+
+      if (/FvwmPipe/i) {
+	print STDERR "The FvwmPipe module is no longer part of fvwm:";
+	print STDERR "  $_";
+	if (/^\s*[*]?\s*FvwmPipe/i) {
+	  print STDERR "  Line commented out.";
+	  print '# Removed by fvwm24_convert: ' . $_;
+	}
+	else {
+	  print $_;
+	}
+	next line;
+      }
+      if (/RANDOMPLACEMENT|ACTIVEPLACEMENT|SMARTPLACEMENT/i ||
+	  /DUMBPLACEMENT|CLEVERPLACEMENT/i) {
+	$newwarn = "placement";
+	if ($lastwarn ne $newwarn) {
+	  print STDERR
+	    "Placement style names can not be converted automatically:";
+	  print STDERR
+	    "  See fvwm2(1), \"Window manager placement\" for instructions.";
+	}
+	print STDERR "  $_";
+	print $_;
+	$newwarn = "placement";
+	next line;
+      }
+    }
+    $lastwarn = "";
+    print $single_lines;			# pass everything else thru
+  }
 }
-exit 0;
+
+
+
+
+
+
+
+
+
+
 
 sub add_to_path {
   local($path) = @_;

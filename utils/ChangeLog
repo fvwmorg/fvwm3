@@ -8,6 +8,7 @@
 	detect continuation lines
 	fixed typo
 	fixed line continuations
+	do not merge continuation lines if possible
 
 2001-03-23  olicha  <olivier.chapuis@free.fr>
 
