@@ -1345,6 +1345,25 @@ Pixmap PGraphicsCreateTranslucent(
 {
 	Pixmap r = None;
 	int gx = x, gy = y, gh = height, gw = width;
+	FvwmRenderAttributes t_fra;
+	Pixmap root_pix = None;
+	Pixmap dp = None;
+	int dummy;
+
+	t_fra.added_alpha_percent = 100;
+	t_fra.tint_percent = 0;
+	t_fra.tint = 0;
+	t_fra.mask = 0;
+
+	if (fra)
+	{
+		if (fra->mask & FRAM_HAVE_TINT)
+		{
+			t_fra.tint_percent = fra->tint_percent;
+			t_fra.tint = fra->tint;
+			t_fra.mask = FRAM_HAVE_TINT;
+		}
+	}
 
 	if (x >= DisplayWidth(dpy, DefaultScreen(dpy)))
 	{
@@ -1380,27 +1399,52 @@ Pixmap PGraphicsCreateTranslucent(
 	{
 		gh = DisplayHeight(dpy, DefaultScreen(dpy)) - gy;
 	}
-	if (XRenderSupport && FRenderGetExtensionSupported())
 	{
-		r = XCreatePixmap(dpy, win, width, height, Pdepth);
+		/* make a screen shoot */
+		GC my_gc;
+		unsigned long valuemask = GCSubwindowMode;
+		XGCValues values;
+
+		values.subwindow_mode = IncludeInferiors;
+		root_pix = XCreatePixmap(dpy, win, gw, gh, Pdepth);
+		my_gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
+		XChangeGC(dpy, my_gc, valuemask, &values);
+		XGrabServer(dpy);
+		XCopyArea(
+			dpy, DefaultRootWindow(dpy), root_pix, my_gc,
+			gx, gy, gw, gh, 0, 0);
+		XUngrabServer(dpy);
+		XFreeGC(dpy,my_gc);
+	}
+	if (0 && XRenderSupport && FRenderGetExtensionSupported())
+	{
+		r = XCreatePixmap(dpy, win, gw, gh, Pdepth);
 		if (FRenderRender(
-			dpy, win, DefaultRootWindow(dpy), None, None, Pdepth,
-			100, 0, 50, r, gc, None,
-			gx, gy, gw, gh, 0, 0, gw, gh, False))
+			dpy, win, root_pix, None, None, Pdepth,
+			t_fra.added_alpha_percent, t_fra.tint,
+			t_fra.tint_percent, r, gc, None,
+			0, 0, gw, gh, 0, 0, gw, gh, False))
 		{
 			goto bail;
 		}
 		XFreePixmap(dpy, r);
+		r = None;
 	}
-#if 0
 	r = PCreateRenderPixmap(
-		dpy, win, ParentRelative, None, None, Pdepth, 100, fra->tint,
-		fra->tint_percent,
-		True, win,
-		gc, None, None, gx, gy, gw, gh, gx, gy, gw, gh,
+		dpy, win, root_pix, None, None, Pdepth, 100,
+		fra->tint, fra->tint_percent, True, win,
+		gc, None, None, 0, 0, gw, gh, gx, gy, gw, gh,
 		False, &dummy, &dummy, &dummy, &dp);
-#endif
+
  bail:
+	if (root_pix)
+	{
+		XFreePixmap(dpy, root_pix);
+	}
+	if (dp)
+	{
+		XFreePixmap(dpy, dp);
+	}
 	return r;
 }
 #endif

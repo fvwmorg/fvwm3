@@ -395,32 +395,7 @@ int FRenderRender(
 	/*
 	 * build the src_picture
 	 */
-	if (pixmap == DefaultRootWindow(dpy))
-	{
-		if (Pdepth != DefaultDepth(dpy,DefaultScreen(dpy)))
-		{
-			goto bail;
-		}
-		pam |= FRenderCPSubwindowMode;
-		pa.subwindow_mode = IncludeInferiors;
-		pixmap_copy = XCreatePixmap(dpy, win, src_w, src_h, Pdepth);
-		src_picture = FRenderCreatePicture(
-				dpy, pixmap_copy, PFrenderVisualFormat,
-				pam, &pa);
-		root_picture = FRenderCreatePicture(
-				dpy, DefaultRootWindow(dpy),
-				PFrenderVisualFormat, pam, &pa);
-		if (!FRenderCompositeAndCheck(
-			dpy, FRenderPictOpOver,
-			root_picture, None, src_picture,
-			src_x, src_y, 0, 0, 0, 0, src_w, src_h))
-		{
-			goto bail;
-		}
-		src_x = src_y = 0;
-		pam &= ~FRenderCPSubwindowMode;
-	}
-	else if (pixmap == ParentRelative)
+	if (pixmap == ParentRelative)
 	{
 		/* need backing store and good preparation of the win */
 		if (gc == None)
