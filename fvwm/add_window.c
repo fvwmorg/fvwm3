@@ -357,6 +357,9 @@ static void destroy_icon_font(FvwmWindow *tmp_win)
 void setup_icon_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
 {
+  int height;
+
+  height = (IS_ICON_FONT_LOADED(tmp_win)) ? tmp_win->icon_font.height : 0;
   if (IS_ICON_SUPPRESSED(tmp_win) || HAS_NO_ICON_TITLE(tmp_win))
   {
     if (IS_ICON_FONT_LOADED(tmp_win))
@@ -387,6 +390,13 @@ void setup_icon_font(
       SET_USING_DEFAULT_ICON_FONT(tmp_win, 1);
     }
     SET_ICON_FONT_LOADED(tmp_win, 1);
+  }
+  /* adjust y position of existing icons */
+  if (height)
+  {
+    tmp_win->icon_g.y += height - tmp_win->icon_font.height;
+    /* this repositions the icon even if the window is not iconified */
+    DrawIconWindow(tmp_win);
   }
 
   return;

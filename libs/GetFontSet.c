@@ -38,18 +38,20 @@ XFontSet GetFontSetOrFixed(Display *disp, char *fontname)
 
   if ((fontset = XCreateFontSet(disp,fontname,&ml,&mc,&ds))==NULL)
   {
-    fprintf(stderr,
-            "[FVWM][GetFontSetOrFixed]: WARNING -- can't get fontset %s, trying 'fixed'\n",
-            fontname);
+    fprintf(stderr, "[FVWM][GetFontSetOrFixed]: WARNING "
+	    "-- can't get fontset '%s', trying 'fixed'\n", fontname);
     /* fixed should always be avail, so try that */
 #ifdef STRICTLY_FIXED
     if ((fontset = XCreateFontSet(disp,"fixed",&ml,&mc,&ds))==NULL)
 #else
     /* Yes, you say it's not a *FIXED* font, but it helps you. */
-    if ((fontset = XCreateFontSet(disp,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds))==NULL)
+    if ((fontset = XCreateFontSet(
+	   disp, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",
+	   &ml, &mc, &ds)) == NULL)
 #endif
     {
-      fprintf(stderr,"[FVWM][GetFontSetOrFixed]: ERROR -- can't get fontset 'fixed'\n");
+      fprintf(stderr, "[FVWM][GetFontSetOrFixed]: ERROR "
+	      "-- can't get fontset 'fixed'\n");
     }
   }
   return fontset;
