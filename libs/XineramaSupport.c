@@ -84,6 +84,9 @@ static int                 num_screens        = 0;
 static int                 total_screens     = 0;
 static int                 first_to_check    = 0;
 static int                 last_to_check     = 0;
+#ifdef USE_XINERAMA_EMULATION
+static Window blank_w, vert_w;
+#endif
 
 
 static void XineramaSupportSetState(Bool onoff)
@@ -118,6 +121,12 @@ void XineramaSupportInit(Display *dpy)
     int w;
     int h;
     int ws;
+    unsigned long scr;
+    Window root; 
+    XSetWindowAttributes attributes;
+
+    scr = DefaultScreen(disp);
+    root = RootWindow(disp, scr);
 
     /* xinerama emulation simulates xinerama on a single screen:
      *
@@ -144,9 +153,9 @@ void XineramaSupportInit(Display *dpy)
     screens = (XineramaScreenInfo *)
       safemalloc(sizeof(XineramaScreenInfo) * (1 + count));
     /* calculate the faked sub screen dimensions */
-    w = DisplayWidth(disp, DefaultScreen(disp));
+    w = DisplayWidth(disp, scr);
     ws = 3 * w / 5;
-    h = DisplayHeight(disp, DefaultScreen(disp));
+    h = DisplayHeight(disp, scr);
     screens[1].screen_number = 0;
     screens[1].x_org         = 0;
     screens[1].y_org         = 0;
@@ -157,6 +166,19 @@ void XineramaSupportInit(Display *dpy)
     screens[2].y_org         = 0;
     screens[2].width         = w - ws;
     screens[2].height        = h;
+    /* add delimiter */
+    attributes.background_pixel = WhitePixel(disp, scr);
+    attributes.override_redirect = True;
+    blank_w = XCreateWindow(disp, root, 0, 7 * h / 8, ws, h/8, 0, CopyFromParent,
+			    CopyFromParent, CopyFromParent,
+			    CWBackPixel|CWOverrideRedirect,
+			    &attributes);
+    vert_w = XCreateWindow(disp, root, ws, 0, 2, h, 0, CopyFromParent,
+			    CopyFromParent, CopyFromParent,
+			    CWBackPixel|CWOverrideRedirect,
+			    &attributes);
+    XMapRaised(disp,blank_w);
+    XMapRaised(disp,vert_w);
   }
   else
 #endif
@@ -202,6 +224,10 @@ void XineramaSupportDisable(void)
   num_screens = 0;
   /* Fill in the screen range */
   XineramaSupportSetState(1);
+#ifdef USE_XINERAMA_EMULATION
+  XUnmapWindow(disp,blank_w);
+  XUnmapWindow(disp,vert_w);
+#endif
 }
 
 void XineramaSupportEnable(void)
@@ -210,6 +236,10 @@ void XineramaSupportEnable(void)
   num_screens = total_screens;
   /* Fill in the screen range */
   XineramaSupportSetState(1);
+#ifdef USE_XINERAMA_EMULATION
+  XMapRaised(disp,blank_w);
+  XMapRaised(disp,vert_w);
+#endif
 }
 
 static int FindScreenOfXY(int x, int y)
