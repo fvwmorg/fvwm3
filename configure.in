@@ -333,7 +333,7 @@ AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(IMLIB),)
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile utils/fvwmbug.sh
 utils/fvwm-menu-xlock utils/fvwm-menu-directory utils/fvwm-menu-desktop
-docs/Makefile icons/Makefile sample.fvwmrc/Makefile tests/Makefile
+docs/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl
 modules/FvwmAnimate/Makefile
 modules/FvwmAuto/Makefile
@@ -357,7 +357,6 @@ modules/FvwmSave/Makefile
 modules/FvwmSaveDesk/Makefile
 modules/FvwmScript/Makefile
 modules/FvwmScript/Scripts/Makefile
-modules/FvwmScript/Scripts/some_nice_icons/Makefile
 modules/FvwmScript/Widgets/Makefile
 modules/FvwmScroll/Makefile
 modules/FvwmTaskBar/Makefile
