@@ -100,21 +100,23 @@ ShutdownX(void)
   XSync(dpy,0);
 #endif
 
-  /* On cache la fenetre */
-  XUnmapWindow(dpy,x11base->win);
-  XFlush(dpy);
-
   /* execute the QuitFunc */
   if (x11base->quitfunc != NULL)
     ExecBloc(x11base->quitfunc);
+  
+  if (is_dead_pipe)
+    return;
+
+  /* On cache la fenetre */
+  XUnmapWindow(dpy,x11base->win);
+  XFlush(dpy);
 
   /* Le script ne possede plus la propriete */
   MyAtom = XInternAtom(dpy, x11base->TabScriptId[1], False);
   XSetSelectionOwner(dpy, MyAtom, x11base->root, CurrentTime);
 
   /* On verifie si tous les messages ont ete envoyes */
-  while(!is_dead_pipe && !isTerminated && (BuffSend.NbMsg > 0)
-	&& (NbEssai < 10000) )
+  while(!isTerminated && (BuffSend.NbMsg > 0) && (NbEssai < 10000) )
   {
     tv.tv_sec = 1;
     tv.tv_usec = 0;
