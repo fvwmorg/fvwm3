@@ -196,6 +196,7 @@ int get_window(void)
       break;
 
     default:
+fprintf(stderr,"0x%08x\n", (int)packet->type);
       fprintf(console,
 	      "%s: internal inconsistency: unknown message\n",
 	      argv0);
@@ -536,6 +537,8 @@ int main(int argc, char *argv[])
   SetMessageMask(fd,
 		 M_CONFIGURE_WINDOW |
 		 M_END_WINDOWLIST);
+  SetMessageMask(fd,
+                 M_EXTENDED_MSG);
 
   if (FvwmTile) {
     if (maxx == dx)
