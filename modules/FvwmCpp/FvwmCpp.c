@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 	      MyName, user_dir);
   }
 
-  sprintf(cpp_options, "-I '%s' ", FVWM_DATADIR);
+  sprintf(cpp_options, "-I'%s' ", FVWM_DATADIR);
 
   /* Record the program name for error messages */
   temp = argv[0];
