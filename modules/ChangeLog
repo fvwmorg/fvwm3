@@ -1,3 +1,20 @@
+Sat May 22 08:42:24 1999  DanEspen  <dje@blue>
+
+	* FvwmWinList/FvwmWinList.c (ParseConfig):
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfig):
+	* FvwmScroll/FvwmScroll.c (main):
+	* FvwmScript/FvwmScript.c (ParseOptions):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmGtk/FvwmGtk.c (parse_options):
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmEvent/FvwmEvent.c (config):
+	* FvwmBanner/FvwmBanner.c (parseOptions):
+	* FvwmButtons/parse.c (ParseOptions): Use InitGetConfigLine to
+	reduce pipe traffic.
+
+	* FvwmPager/FvwmPager.c (ParseOptions): Use InitGetConfigLine to
+	reduce pipe traffic.  Remove unused var, and strlen for "CLength".
+
 Sat May 22 18:04:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmForm/FvwmForm.c (ReadConfig): removed unused variable

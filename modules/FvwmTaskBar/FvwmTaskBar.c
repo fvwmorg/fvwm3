@@ -585,6 +585,7 @@ int OpenConsole(void)
 void ParseConfig( void )
 {
     char* buf;
+    InitGetConfigLine(Fvwm_fd,Module);
     while (GetConfigLine(Fvwm_fd,&buf), buf != NULL) {
 	ParseConfigLine(buf);
     } /* end config lines */

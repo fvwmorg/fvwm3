@@ -122,7 +122,7 @@ int main(int argc, char **argv)
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  
+
   G = CreateGraphics();
   G->create_foreGC = True;
   InitGraphics(dpy, G);
@@ -136,6 +136,7 @@ int main(int argc, char **argv)
   /* scan config file for set-up parameters */
   /* Colors and fonts */
 
+  InitGetConfigLine(fd,MyName);
   GetConfigLine(fd,&tline);
 
   while(tline != (char *)0) {
@@ -438,7 +439,7 @@ void list_end(void)
     gcv.font =  G->font->fid;
     G->foreGC = XCreateGC(dpy, main_win, gcm, &gcv);
   }
-  
+
   XMapWindow(dpy,main_win);
 
   /* Window is created. Display it until the user clicks or deletes it. */

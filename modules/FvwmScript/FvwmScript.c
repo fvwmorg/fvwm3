@@ -106,6 +106,7 @@ void ParseOptions(void)
 {
   char *tline;
 
+  InitGetConfigLine(fd,"*FvwmScript");
   GetConfigLine(fd,&tline);
   while(tline != (char *)0)
     {

@@ -432,6 +432,7 @@ void config(void)
 #endif
   }
 
+  InitGetConfigLine(fd,MyName);         /* get config lines with my name */
   while (GetConfigLine(fd,&buf), buf != NULL)
   {
     if (buf[strlen(buf)-1] == '\n')

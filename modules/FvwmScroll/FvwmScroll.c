@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
-  
+
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
   G = CreateGraphics();
   G->create_reliefGC = True;
@@ -107,6 +107,7 @@ int main(int argc, char **argv)
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */
+  InitGetConfigLine(fd,MyName);
   GetConfigLine(fd,&tline);
 
   while(tline != (char *)0)

@@ -1217,7 +1217,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 void ParseOptions(void)
 {
   char *tline= NULL;
-  int Clength,desk;
+  int desk;
 
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
@@ -1235,8 +1235,7 @@ void ParseOptions(void)
   Scr.Vx = 0;
   Scr.Vy = 0;
 
-  Clength = strlen(MyName);
-
+  InitGetConfigLine(fd,CatString3("*",MyName,0));
   for (GetConfigLine(fd,&tline); tline != NULL; GetConfigLine(fd,&tline))
     {
       int g_x, g_y, flags;

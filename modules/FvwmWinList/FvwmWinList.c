@@ -531,6 +531,7 @@ void ParseConfig(void)
 {
   char *tline;
 
+  InitGetConfigLine(Fvwm_fd,Module);
   GetConfigLine(Fvwm_fd,&tline);
   while(tline != (char *)0)
     {

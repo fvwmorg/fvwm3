@@ -37,10 +37,6 @@
 
 
 #include "icons/fvwm2_big.xpm"
-#if 0
-#include "icons/k2.xpm"
-#endif /* 0 */
-
 
 typedef struct _XpmIcon {
     Pixmap pixmap;
@@ -63,7 +59,8 @@ Window win;
 
 char *imagePath = NULL;
 char *imageName = NULL;
-char *myName = NULL;
+static char *MyName = NULL;
+static int MyNameLen;
 
 int timeout = 3000000; /* default time of 3 seconds */
 
@@ -102,26 +99,22 @@ int main(int argc, char **argv)
   string = strrchr (argv[0], '/');
   if (string != (char *) 0) string++;
 
-  myName = safemalloc (strlen (string) + 1);
-  strcpy (myName, string);
+  MyNameLen=strlen(string)+1;		/* account for '*' */
+  MyName = safemalloc(MyNameLen+1);	/* account for \0 */
+  *MyName='*';
+  strcpy (MyName+1, string);
 
   if(argc>=3)
   {
       /* sever our connection with fvwm, if we have one. */
       fd[0] = atoi(argv[1]);
       fd[1] = atoi(argv[2]);
-
-#if 0
-      if(fd[0]>0)close(fd[0]);
-      if(fd[1]>0)close(fd[1]);
-#endif /* 0 */
   }
   else
   {
     fprintf (stderr,
-	     "%s version %s should only be executed by fvwm!\n",
-	     myName,
-	     VERSION);
+	     "%s: Version "VERSION" should only be executed by fvwm!\n",
+	     MyName+1);
     exit(1);
   }
 
@@ -152,12 +145,7 @@ int main(int argc, char **argv)
   if (imageName)
     GetXPMFile(imageName,imagePath);
   else
-#if 0
-    if(d_depth > 4)
-      GetXPMData(k2_xpm);
-    else
-#endif /* 0 */
-      GetXPMData(fvwm2_big_xpm);
+    GetXPMData(fvwm2_big_xpm);
 
   /* Create a window to hold the banner */
   mysizehints.flags=
@@ -201,9 +189,6 @@ int main(int argc, char **argv)
 #endif
   XMapWindow(dpy,win);
   XSync(dpy,0);
-#if 0
-  usleep(timeout);
-#else
   XSelectInput(dpy,win,ButtonReleaseMask);
   /* Display the window */
   value.tv_usec = timeout % 1000000;
@@ -246,7 +231,6 @@ int main(int argc, char **argv)
       }
     }
   }
-#endif /* 0 */
   return 0;
 }
 
@@ -303,51 +287,39 @@ void nocolor(char *a, char *b)
 static void parseOptions (int fd[2])
 {
   char *tline= NULL;
-  int   clength;
+  char *p;
 
-  clength = strlen (myName);
-
-  while (GetConfigLine (fd, &tline),tline != NULL)
-  {
-    if (strlen (tline) > 1)
-    {
-      if (strncasecmp (tline,
-			 CatString3 ("*", myName, "Pixmap"),
-			 clength + 7) ==0)
-      {
-	if (imageName == (char *) 0)
-        {
-	  CopyString (&imageName, &tline[clength+7]);
-	  if (imageName[0] == 0)
-          {
+  InitGetConfigLine(fd,MyName);
+  while (GetConfigLine (fd, &tline),tline != NULL) {
+    if (strlen (tline) > 1) {
+      if (strncasecmp(tline, "ImagePath",9)==0) {
+        CopyString (&imagePath, &tline[9]);
+        if (imagePath[0] == 0) {
+          free (imagePath);
+          imagePath = (char *) 0;
+        }
+        continue;
+      }
+      if (strncasecmp(tline,MyName,MyNameLen)) { /* if not for me */
+        continue;                       /* ignore it */
+      }
+      p = tline+MyNameLen;              /* start of interesting part */
+      if (strncasecmp (p, "Pixmap", 6) == 0) {
+	if (imageName == (char *) 0) {
+	  CopyString (&imageName, p+7);
+	  if (imageName[0] == 0) {
 	    free (imageName);
 	    imageName = (char *) 0;
 	  }
 	}
         continue;
       }
-      if (strncasecmp (tline,
-			 CatString3 ("*", myName, "NoDecor"),
-			 clength + 8) ==0)
-      {
+      if (strncasecmp (p, "NoDecor", 7) == 0) {
         no_wm = True;
         continue;
       }
-      if (strncasecmp (tline,
-			 CatString3 ("*", myName, "Timeout"),
-			 clength + 8) ==0)
-      {
-        timeout = atoi(&tline[clength+8]) * 1000000;
-        continue;
-      }
-      if (strncasecmp(tline, "ImagePath",9)==0)
-      {
-        CopyString (&imagePath, &tline[9]);
-        if (imagePath[0] == 0)
-        {
-          free (imagePath);
-          imagePath = (char *) 0;
-        }
+      if (strncasecmp (p, "Timeout", 7) == 0) {
+        timeout = atoi(p+8) * 1000000;
         continue;
       }
     }

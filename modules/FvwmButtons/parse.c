@@ -1028,6 +1028,7 @@ void ParseOptions(button_info *ub)
   items[0]=mymalloc(strlen(MyName)+2);
   sprintf(items[0],"*%s",MyName);
 
+  InitGetConfigLine(fd,items[0]);       /* send config lines with MyName */
   GetConfigLine(fd,&s);
   while(s && s[0])
     {

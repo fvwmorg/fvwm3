@@ -1348,6 +1348,7 @@ void ParseOptions(void)
 
   Clength = strlen(MyName);
 
+  InitGetConfigLine(fd,CatString3("*",MyName,0));
   GetConfigLine(fd,&tline);
 
   while(tline != NULL)

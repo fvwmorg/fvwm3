@@ -326,6 +326,7 @@ parse_options (void)
 {
   char *buf;
 
+  InitGetConfigLine(fvwm_fd,my_name);   /* only my config lines needed */
   while (GetConfigLine (fvwm_fd, &buf), buf != NULL)
     {
       parse_config_line (buf);
