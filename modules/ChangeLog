@@ -1,6 +1,7 @@
 1999-08-05  Brad Giaccio
 
-	* FvwmPager/*: added colorset support
+	* FvwmPager/*: added new config option *FvwmPagerWindowColorsets
+	* FvwmIconMan/*: added colorset support
 
 1999-08-05  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 

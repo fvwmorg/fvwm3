@@ -283,6 +283,7 @@ int main (int argc, char **argv)
                  M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME |
                  M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST |
                  M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_WINDOW_NAME |
+                 M_CONFIG_INFO |
 #ifdef MINI_ICONS
 		 M_MINI_ICON |
 #endif

@@ -135,6 +135,9 @@ is 1.
 Binds an FvwmIconMan command to an event. \fIType\fP may be one of the values:
 Key, Mouse, or Select. Actions are described in the following section ACTIONS.
 
+.IP "*FvwmIconMan*[id*]colorset \fIcolorset\fP"
+The default colorset used. Overides backgroung and foreground. See FvwmTheme.
+
 .IP "*FvwmIconMan*[id*]background \fIbackground\fP"
 Specifies the default background color.
 
@@ -150,9 +153,17 @@ an error message.  "true" means that MiniIcons are shown for iconified
 windows, "false" that MiniIcons are never shown, and "always" that MiniIcons
 are shown for all windows.
 
+.IP "*FvwmIconMan*[id*]focuscolorset \fIcolorset\fP"
+Works like focusbutton but uses colorsets instead.  The style setting can still
+only be applied with focusbutton.  See FvwmTheme.
+
 .IP "*FvwmIconMan*[id*]focusbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of buttons whose
 windows have the keyboard focus.
+
+.IP "*FvwmIconMan*[id*]focusandselectcolorset \fIcolorset\fP"
+Works like focusandselectbutton but uses colorsets instead.  The style setting can
+still only be applied with focusandselectbutton.  See FvwmTheme.
 
 .IP "*FvwmIconMan*[id*]focusandselectbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of buttons which are
@@ -186,6 +197,10 @@ that way. As columns are created, the buttons will narrow to accommodate.  If
 the geometry is specified with a negative y coordinate, then the window
 manager will grow upwards. Otherwise, it will grow downwards.
 
+.IP "*FvwmIconMan*[id*]plaincolorset \fIcolorset\fP"
+Works like plainbutton but uses colorsets instead.  The style setting can
+still only be applied with plainbutton.  See FvwmTheme.
+
 .IP "*FvwmIconMan*[id*]plainbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Specifies how normal buttons look. \fIstyle\fP may be one of \fIflat\fP,
 \fIup\fP, \fIdown\fP, \fIraisededge\fP, or \fIsunkedge\fP, and describes how
@@ -200,6 +215,10 @@ or page. If global, then all windows of the appropriate type (see the show and
 dontshow options below) will be shown. If desk, then only those windows on the
 current desk will be down. And if page, then only those windows on the current
 page will be shown. The default is global.
+
+.IP "*FvwmIconMan*[id*]selectcolorset \fIcolorset\fP"
+Works like selectbutton but uses colorsets instead.  The style setting can
+still only be applied with selectbutton.  See FvwmTheme.
 
 .IP "*FvwmIconMan*[id*]selectbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of buttons when the

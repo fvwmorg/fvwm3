@@ -217,6 +217,19 @@ static void set_win_configuration (WinData *win, FvwmPacketBody *body)
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
 }
 
+static void configure_colorsets (unsigned long *body)
+{
+  char *tline, *token;
+  int color;
+
+	tline = (char*)&(body[3]);
+	tline = GetNextToken(tline, &token);
+	if (StrEquals(token, "Colorset")) {
+    color = LoadColorset(tline);
+    change_colorset(color);
+  }
+}
+
 static void configure_window (FvwmPacketBody *body)
 {
   Ulong app_id = body->add_config_data.app_id;
@@ -453,6 +466,11 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
   ConsoleDebug (FVWM, "FVWM Message type: %ld\n", type);
 
   switch(type) {
+  case M_CONFIG_INFO:
+    ConsoleDebug (FVWM, "DEBUG::M_CONFIG_INFO\n");
+    configure_colorsets ((unsigned long*)body);
+    break;
+
   case M_CONFIGURE_WINDOW:
     ConsoleDebug (FVWM, "DEBUG::M_CONFIGURE_WINDOW\n");
     configure_window (body);

@@ -78,6 +78,7 @@ static void init_win_manager (int id)
     globals.managers[id].backColorName[i] = NULL;
     globals.managers[id].foreColorName[i] = NULL;
     globals.managers[id].buttonState[i] = contextDefaults[i].state;
+    globals.managers[id].colorsets[i] = -1;
   }
   globals.managers[id].geometry_str = NULL;
   globals.managers[id].button_geometry_str = NULL;

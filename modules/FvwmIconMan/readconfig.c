@@ -865,7 +865,7 @@ static int GetConfigLineWrapper (int *fd, char **tline)
       *temp = '\0';
     }
     else {
-      ConsoleMessage (stderr, "line too long\n");
+      ConsoleMessage ("line too long\n");
       exit (1);
     }
     return 1;
@@ -877,6 +877,9 @@ static int GetConfigLineWrapper (int *fd, char **tline)
 
   GetConfigLine (fd, tline);
   if (*tline) {
+    if (strncasecmp(*tline, "Colorset", 8) == 0) {
+         LoadColorset(&(*tline)[8]);
+    }
     temp = strchr (*tline, '\n');
     if (temp) {
       *temp = '\0';
@@ -1247,6 +1250,20 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("There's no manager %d\n", manager);
 	}
       }
+      else if (!strcasecmp (option1, "colorset")) {
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int (p, &n) == 0) {
+	  ConsoleMessage ("This is not a number: %s\n", p);
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+        for ( i = 0; i < NUM_CONTEXTS; i++ )
+   SET_MANAGER(manager, colorsets[i], n);
+      }
       else if (!strcasecmp (option1, "background")) {
 	p = read_next_cmd (READ_ARG);
 	if (!p) {
@@ -1571,6 +1588,71 @@ void read_in_resources (char *file)
       }
       else if (!strcasecmp (option1, "titlebutton")) {
 	handle_button_config (manager, TITLE_CONTEXT, option1);
+      }
+      else if (!strcasecmp (option1, "titlecolorset")) {
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int (p, &n) == 0) {
+	  ConsoleMessage ("This is not a number: %s\n", p);
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+  SET_MANAGER(manager, colorsets[TITLE_CONTEXT], n);
+      }
+      else if (!strcasecmp (option1, "focusandselectcolorset")) {
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int (p, &n) == 0) {
+	  ConsoleMessage ("This is not a number: %s\n", p);
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+  SET_MANAGER(manager, colorsets[FOCUS_SELECT_CONTEXT], n);
+      }
+      else if (!strcasecmp (option1, "focuscolorset")) {
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int (p, &n) == 0) {
+	  ConsoleMessage ("This is not a number: %s\n", p);
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+  SET_MANAGER(manager, colorsets[FOCUS_CONTEXT], n);
+      }
+      else if (!strcasecmp (option1, "selectcolorset")) {
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int (p, &n) == 0) {
+	  ConsoleMessage ("This is not a number: %s\n", p);
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+  SET_MANAGER(manager, colorsets[SELECT_CONTEXT], n);
+      }
+      else if (!strcasecmp (option1, "plaincolorset")) {
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int (p, &n) == 0) {
+	  ConsoleMessage ("This is not a number: %s\n", p);
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+  SET_MANAGER(manager, colorsets[PLAIN_CONTEXT], n);
       }
       else if (!strcasecmp (option1, "usewinlist")) {
 	p = read_next_cmd (READ_ARG);

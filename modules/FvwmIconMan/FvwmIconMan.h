@@ -32,6 +32,7 @@
 #endif
 
 #include <libs/Picture.h>
+#include <libs/Colorset.h>
 
 #ifndef FVWM_VERSION
 #define FVWM_VERSION 2
@@ -286,6 +287,8 @@ typedef struct win_manager {
   StringList dontshow;
   Binding *bindings[NUM_ACTIONS];
   char *fontname;
+  int colorsets[NUM_CONTEXTS];
+  Pixmap pixmap[NUM_CONTEXTS];
   char *backColorName[NUM_CONTEXTS];
   char *foreColorName[NUM_CONTEXTS];
   ButtonState buttonState[NUM_CONTEXTS];

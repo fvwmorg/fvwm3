@@ -33,5 +33,6 @@ extern void init_display (void);
 extern void xevent_loop (void);
 extern void create_manager_window (int man_id);
 extern void X_init_manager (int man_id);
+extern void change_colorset(int color);
 
 #endif

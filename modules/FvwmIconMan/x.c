@@ -537,7 +537,10 @@ void X_init_manager (int man_id)
   }
 
   for ( i = 0; i < NUM_CONTEXTS; i++ ) {
-    if (man->backColorName[i]) {
+    if (man->colorsets[i] > -1) {
+      man->backcolor[i] = Colorset[man->colorsets[i] % nColorsets].bg;
+    }
+    else if (man->backColorName[i]) {
       if (!lookup_color (man->backColorName[i], &man->backcolor[i])) {
         if (!load_default_context_back (man, i)) {
 	  ConsoleMessage ("Can't load %s background color\n",
@@ -550,7 +553,10 @@ void X_init_manager (int man_id)
 		      contextDefaults[i].name);
     }
 
-    if (man->foreColorName[i]) {
+    if (man->colorsets[i] > -1) {
+      man->forecolor[i] = Colorset[man->colorsets[i] % nColorsets].fg;
+    }
+    else if (man->foreColorName[i]) {
       if (!lookup_color (man->foreColorName[i], &man->forecolor[i])) {
         if (!load_default_context_fore (man, i)) {
     	ConsoleMessage ("Can't load %s foreground color\n",
@@ -564,8 +570,15 @@ void X_init_manager (int man_id)
     }
 
     if (Pdepth > 2) {
+      if (man->colorsets[i] > -1) {
+        man->shadowcolor[i] = Colorset[man->colorsets[i] % nColorsets].shadow;
+        man->hicolor[i] = Colorset[man->colorsets[i] % nColorsets].hilite;
+      }
+      else
+      {
       man->shadowcolor[i] = GetShadow(man->backcolor[i]);
       man->hicolor[i] = GetHilite(man->backcolor[i]);
+      }
 #if 0
       /* thing about message id bg vs fg */
       if (!lookup_shadow_color (man->backcolor[i], &man->shadowcolor[i])) {
@@ -804,6 +817,19 @@ void create_manager_window (int man_id)
       man->shadowContext[i] = XCreateGC (theDisplay, man->theWindow,
 						     gcmask, &gcval);
     }
+    if (man->pixmap[i])
+      XFreePixmap(theDisplay, man->pixmap[i]);
+    if (Colorset[man->colorsets[i] % nColorsets].pixmap) {
+      man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
+                       man->geometry.width, man->geometry.height,
+                       &Colorset[man->colorsets[i] % nColorsets],
+                       Pdepth, man->backContext[i]);
+      XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
+      XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
+    } else {
+      man->pixmap[i] = None;
+      XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
+    }
   }
 
   set_window_properties (man->theWindow, man->titlename,
@@ -832,6 +858,7 @@ void init_display (void)
   }
   XSetErrorHandler (handle_error);
   InitPictureCMap (theDisplay);
+  AllocColorset(0);
   x_fd = XConnectionNumber (theDisplay);
   theScreen = DefaultScreen (theDisplay);
   theRoot = RootWindow (theDisplay, theScreen);
@@ -848,4 +875,55 @@ void init_display (void)
 
   ConsoleDebug (X11, "screen width: %ld\n", globals.screenx);
   ConsoleDebug (X11, "screen height: %ld\n", globals.screeny);
+}
+
+void change_colorset(int color) {
+  WinManager *man;
+  int i,j;
+
+  for (j = 0; j < globals.num_managers; j++) {
+    man = &globals.managers[j];
+    for ( i = 0; i < NUM_CONTEXTS; i++ ) {
+      if(man->colorsets[i] == color) {
+        man->backcolor[i] = Colorset[man->colorsets[i] % nColorsets].bg;
+        man->forecolor[i] = Colorset[man->colorsets[i] % nColorsets].fg;
+        man->shadowcolor[i] = Colorset[man->colorsets[i] % nColorsets].shadow;
+        man->hicolor[i] = Colorset[man->colorsets[i] % nColorsets].hilite;
+
+        if (i == PLAIN_CONTEXT)
+        {
+          XSetWindowBackground(theDisplay, man->theWindow,
+                               man->backcolor[PLAIN_CONTEXT]);
+          XSetWindowBorder(theDisplay, man->theWindow,
+                           man->forecolor[PLAIN_CONTEXT]);
+        }
+        XSetForeground (theDisplay, man->backContext[i], man->backcolor[i]);
+        XSetForeground (theDisplay, man->hiContext[i], man->forecolor[i]);
+        XSetBackground (theDisplay, man->flatContext[i], man->forecolor[i]);
+        XSetForeground (theDisplay, man->flatContext[i], man->backcolor[i]);
+        if (Pdepth > 2) {
+          XSetBackground (theDisplay, man->reliefContext[i], man->backcolor[i]);
+          XSetForeground (theDisplay, man->reliefContext[i], man->hicolor[i]);
+          XSetBackground (theDisplay, man->shadowContext[i], man->backcolor[i]);
+          XSetForeground (theDisplay, man->shadowContext[i], man->shadowcolor[i]);
+        }
+
+        if (man->pixmap[i])
+          XFreePixmap(theDisplay, man->pixmap[i]);
+        if (Colorset[man->colorsets[i] % nColorsets].pixmap) {
+          man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
+                                   man->geometry.width, man->geometry.height,
+                                   &Colorset[man->colorsets[i] % nColorsets],
+                                   Pdepth, man->backContext[i]);
+          XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
+          XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
+        } else {
+          man->pixmap[i] = None;
+          XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
+        }
+
+        force_manager_redraw (man);
+      }
+    }
+  }
 }
