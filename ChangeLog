@@ -1,3 +1,15 @@
+2003-11-02  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/bindings.c (ParseBinding): Hand off menu bindings to menu code.
+	* fvwm/menus.h: Add menu_binding function.
+	* fvwm/fvwm.1.in: Document the menu context in the mouse command for
+	tear off menus.
+	* fvwm/menus.c (__mloop_handle_event): Really crude ability to disable button
+	2 tearoff.
+	* libs/wcontext.h (enum): Add MENU context.
+	* libs/wcontext.c (win_contexts): More common binding contexts first in table.
+	* libs/charmap.c (charmap_string_to_mask): Space before char in error message.
+
 2003-11-01  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:

@@ -1272,6 +1272,11 @@ AddToFunc Mouse-Func
  + I Mouse 2 t a -
  + I Mouse 2 t a -
  + I Mouse 2 a a -
+ + I Mouse 1 M N Not allowed
+ + I Mouse 1 M N TearOff
+ + I Mouse 1 M N -
+ + I Mouse 1 M A TearOff
+ + I Mouse 1 M 2 TearOff
 
 AddTest "Test PointerKey" PointerKey-Func
 AddToFunc PointerKey-Func

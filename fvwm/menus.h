@@ -352,5 +352,5 @@ void repaint_transparent_menu(
 	MenuRepaintTransparentParameters *prtmp,
 	Bool first, int x, int y, int end_x, int end_y);
 void menu_expose(XEvent *event, FvwmWindow *fw);
-
+int menu_binding(int button,KeySym keysym,int modifier,char *action);
 #endif /* _MENUS_ */

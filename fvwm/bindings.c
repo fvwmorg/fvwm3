@@ -34,6 +34,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "focus.h"
+#include "menus.h"		/* for menu_binding */
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -425,6 +426,11 @@ static int ParseBinding(
 		is_unbind_request = True;
 	}
 
+	/* short circuit menu bindings for now. */
+	if (context == C_MENU)
+	{
+		return(menu_binding(button,keysym,modifier,action));
+	}
 	/*
 	** Remove the "old" bindings if any
 	*/

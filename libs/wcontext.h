@@ -19,7 +19,7 @@ typedef enum
 	C_TITLE = 0x02,
 	C_ICON = 0x04,
 	C_ROOT = 0x08,
-	/* C_ = 0x10, */
+	C_MENU = 0x10,
 	/* C_ = 0x20, */
 	C_L1 = 0x40,
 	C_R1 = 0x80,

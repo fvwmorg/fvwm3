@@ -75,6 +75,7 @@ int charmap_string_to_mask(
 			{
 				fputs(errstring, stderr);
 			}
+			fputc(' ', stderr);
 			fputc(c, stderr);
 			fputc('\n', stderr);
 			error = 1;

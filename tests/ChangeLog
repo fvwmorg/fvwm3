@@ -1,3 +1,7 @@
+2003-11-02  Dan Espen  <dane@mk.telcordia.com>
+
+	* purify/purify.fvwm2rc: Add some mouse bindings for TearOff to tests.
+
 2003-07-16  olicha  <olivier.chapuis@free.fr>
 
 	* purify/purify.fvwm2rc:

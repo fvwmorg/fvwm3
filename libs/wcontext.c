@@ -38,24 +38,16 @@
 
 /* ---------------------------- exported variables (globals) --------------- */
 
-/* The keys must be in lower case! */
+/* The keys must be in lower case!
+   Put more common contexts toward the front. */
 charmap_t win_contexts[] =
 {
-	{'d', C_EWMH_DESKTOP},
-	{'f', C_FRAME},
-	{'<', C_F_TOPLEFT},
-	{'^', C_F_TOPRIGHT},
-	{'>', C_F_BOTTOMRIGHT},
-	{'v', C_F_BOTTOMLEFT},
-	{'i', C_ICON},
 	{'r', C_ROOT},
-	{'s', C_SIDEBAR},
-	{'[', C_SB_LEFT},
-	{']', C_SB_RIGHT},
-	{'-', C_SB_TOP},
-	{'_', C_SB_BOTTOM},
 	{'t', C_TITLE},
 	{'w', C_WINDOW},
+	{'f', C_FRAME},
+	{'i', C_ICON},
+	{'a', C_ALL},
 	{'1', C_L1},
 	{'2', C_R1},
 	{'3', C_L2},
@@ -66,7 +58,17 @@ charmap_t win_contexts[] =
 	{'8', C_R4},
 	{'9', C_L5},
 	{'0', C_R5},
-	{'a', C_ALL},
+	{'d', C_EWMH_DESKTOP},
+	{'<', C_F_TOPLEFT},
+	{'^', C_F_TOPRIGHT},
+	{'>', C_F_BOTTOMRIGHT},
+	{'v', C_F_BOTTOMLEFT},
+	{'s', C_SIDEBAR},
+	{'[', C_SB_LEFT},
+	{']', C_SB_RIGHT},
+	{'-', C_SB_TOP},
+	{'_', C_SB_BOTTOM},
+	{'m', C_MENU},
 	{0, 0}
 };
 

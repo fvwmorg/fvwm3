@@ -210,6 +210,8 @@ static saved_pos_hints last_saved_pos_hints =
 	{ 0, 0, 0.0, 0.0, 0, 0, False, False, False, False }
 };
 
+static int menu_tear_button = 2;
+
 /* structures for menus */
 static MenuInfo Menus;
 
@@ -4656,7 +4658,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		}
 		if (med->mi != NULL)
 		{
-			if ((*pmp->pexc)->x.elast->xbutton.button == 2 &&
+			if ((*pmp->pexc)->x.elast->xbutton.button == menu_tear_button &&
 			    MI_IS_TITLE(med->mi))
 			{
 				pmret->rc = MENU_TEAR_OFF;
@@ -7983,3 +7985,41 @@ void __menu_loop_new(
 	return;
 }
 #endif
+
+int menu_binding(int button,KeySym keysym,int modifier,char *action)
+{
+	fprintf(stderr,"Entered menu_binding, button %d, keysym %X,"
+		" modifier %X, action %s\n",button,(int)keysym,modifier,action);
+	if (keysym != 0)
+	{
+		/* fixme */
+		fvwm_msg(ERR, "menu_binding",
+			 "sorry, menu keybindings not allowed. yet.");
+		return 1;
+	}
+	if (modifier != 0)
+	{
+		/* fixme */
+		fvwm_msg(ERR, "menu_binding",
+			 "sorry, menu binding modifiers not allowed. yet.");
+		return 1;
+	}
+	if (strcmp(action,"-") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			menu_tear_button=-1;
+		}
+	} else if (strcasecmp(action,"tearoff") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			menu_tear_button=button;
+		}
+	} else {
+		fvwm_msg(ERR, "menu_binding",
+			 "invalid action, only tearoff or - allowed");
+	}
+	
+	return 0;
+}

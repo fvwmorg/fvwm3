@@ -2189,6 +2189,22 @@ in the menu or activate its tear off bar (a horizontal bar with a
 broken line).  Tear off bars must be added to the menu as any
 other item by assigning them the command
 .BR TearMenuOff .
+
+The action taken with the backspace key cannot be overridden
+but the action of mouse button 2 on the title can.
+To remove the builtin mouse button 2 binding, use:
+
+Mouse 2 M N -
+
+("M" is for "Menu" context)
+
+To assign some other button for tearoff, use:
+
+Mouse 1 M N TearOff
+
+Note that the Modifier, must be "N" (none) and that the
+notation "Mouse 9" (for any mouse button cannot be used.)
+
 The window containing the menu is placed as any other window would
 be.  If you find it confusing to have your tear off menus appear
 at random positions on the screen, put this line in your
@@ -5692,6 +5708,10 @@ combination of these letters.  'A' is for any context.  For
 instance, a context of "FST" applies when the mouse is anywhere in
 a window's border except the title-bar buttons.  Only 'S' and 'W'
 are valid for an undecorated window.
+
+The special context 'M' for menus can only be used to control
+which mouse button is used to tear off menus.  See the section
+"Tear Off Menus" for details.
 
 .I Modifiers
 is any combination of 'N' for no modifiers, 'C' for control, 'S'
