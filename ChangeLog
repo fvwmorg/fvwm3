@@ -1,3 +1,8 @@
+2002-04-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	fixed $PERL detection again
+
 2002-04-18  Hippo
 
 	* configure.in:
