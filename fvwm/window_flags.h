@@ -251,6 +251,12 @@
           (fw)->flags.is_partially_visible = !!(x)
 #define SETM_PARTIALLY_VISIBLE(fw,x) \
           (fw)->flag_mask.is_partially_visible = !!(x)
+#define IS_WINDOW_DRAWN_ONCE(fw) \
+          ((fw)->flags.is_window_drawn_once)
+#define SET_WINDOW_DRAWN_ONCE(fw,x) \
+	  (fw)->flags.is_window_drawn_once = !!(x)
+#define SETM_WINDOW_DRAWN_ONCE(fw,x) \
+	  (fw)->flag_mask.is_window_drawn_once = !!(x)
 #define IS_WINDOW_BEING_MOVED_OPAQUE(fw) \
           ((fw)->flags.is_window_being_moved_opaque)
 #define SET_WINDOW_BEING_MOVED_OPAQUE(fw,x) \
