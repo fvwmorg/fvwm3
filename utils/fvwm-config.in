@@ -125,7 +125,7 @@ while test $# -gt 0; do
 
 		--supports-*)
 			feature=`echo "$1" | sed 's/^--supports-//'`
-			feature=`echo "feature" | sed 's/[-_]//g'`
+			feature=`echo "$feature" | sed 's/[-_]//g'`
 			with=`eval echo '$'with_"$feature"`
 			test "$with" = "yes" && exit 0
 			test "$with" = "no"  && exit 100

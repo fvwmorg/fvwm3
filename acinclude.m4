@@ -681,9 +681,8 @@ dnl
 #include <Imlib.h>
 #include <gdk_imlib.h>
 
-/* migo: GdkImlibColor is not used and its spelling here is incorrect anyway
-GdkImLibColor testcolor;
-*/
+/* migo: originally it was GdkImLibColor with incorrect spelling */
+GdkImlibImage testimage;
 
 int main ()
 {

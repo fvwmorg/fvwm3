@@ -30,7 +30,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkprivate.h>
 #include "gtkpixmapmenuitem.h"
-#ifdef IMLIB
+#ifdef GDK_IMLIB
 #include <gdk_imlib.h>
 #endif
 
@@ -162,7 +162,7 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
   char *path;
   gint accel_key = 0, underbar_pos = -1;
   gchar *pattern, *converted_label;
-#ifdef IMLIB
+#ifdef GDK_IMLIB
   GdkImlibImage *im;
   int w, h;
 #endif
@@ -175,7 +175,7 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
     }
   else
     {
-#ifdef IMLIB
+#ifdef GDK_IMLIB
       im = gdk_imlib_load_image (path);
       if (im)
 	{

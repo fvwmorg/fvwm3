@@ -2,7 +2,7 @@
 #define FVWMRC ".fvwm2rc"
 
 /* Define if gdk-imlib is used */
-#undef IMLIB
+#undef GDK_IMLIB
 
 /* define if GNOME WM hints are enabled */
 #undef GNOME

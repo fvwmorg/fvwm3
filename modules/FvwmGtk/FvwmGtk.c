@@ -32,7 +32,7 @@
 #include <gtk/gtk.h>
 #endif
 
-#ifdef IMLIB
+#ifdef GDK_IMLIB
 #include <gdk_imlib.h>
 #endif
 
@@ -474,7 +474,7 @@ main (int argc, char **argv)
   fvwm_fd[0] = atoi (argv[1]);
   fvwm_fd[1] = atoi (argv[2]);
 
-#ifdef IMLIB
+#ifdef GDK_IMLIB
   gdk_init (&argc, &argv);
   gdk_imlib_init ();
   gtk_widget_push_visual (gdk_imlib_get_visual ());

@@ -422,7 +422,7 @@ else
 fi
 
 dnl Check the availability of gdk-imlib
-AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(IMLIB),)
+AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(GDK_IMLIB),)
 if test "x$no_imlib" = x; then
   with_gdkimlib=yes
   problem_gdkimlib=""
@@ -534,7 +534,7 @@ eval my_datdir="`eval echo ${FVWM_DATADIR}`"
 
 case "$with_gtk" in
   yes) fvwmgtk_msg="
-  Have Imlib support in FvwmGtk?     $with_gdkimlib$problem_gdkimlib
+  Have GDK Imlib support in FvwmGtk? $with_gdkimlib$problem_gdkimlib
   Have GNOME support in FvwmGtk?     $with_gnomelibs$problem_gnomelibs" ;;
   no) fvwmgtk_msg="" ;;
 esac

@@ -1,3 +1,9 @@
+2001-05-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmGtk/FvwmGtk.c:
+	* FvwmGtk/menu.c:
+	s/IMLIB/GDK_IMLIB/
+
 2001-04-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmButtons/parse.c (ParseContainer):

@@ -1960,11 +1960,6 @@ static void setVersionInfo(void)
 #ifdef XPM
   strcat(support_str, " XPM,");
 #endif
-/* no sense to report Imlib and not report GTK; both are used in FvwmGtk only
-#ifdef IMLIB
-  strcat(support_str, " Imlib,");
-#endif
-*/
 #ifdef GNOME
   strcat(support_str, " GNOME WM hints,");
 #endif
