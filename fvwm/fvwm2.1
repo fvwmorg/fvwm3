@@ -946,6 +946,16 @@ AddToFunc PrintDeskNumber
 + I Echo $$d $[page.nx] $c
 .EE
 
+Note: If this funtion is called outside a window context, it
+will print "$c" instead of the class name.  It is usually not
+enough to have the pointer over a window to have a context
+window.  To force using the window with the focus, the
+.B Current
+command can be used:
+.EX
+Current Echo $d $[page.nx] $c
+.EE
+
 The parameters known by fvwm are:
 
 .in +.5i
