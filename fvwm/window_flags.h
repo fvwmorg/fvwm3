@@ -250,6 +250,9 @@
 #define IS_PLACED_WB3(fw)      ((fw)->flags.is_placed_wb3)
 #define SET_PLACED_WB3(fw,x)   (fw)->flags.is_placed_wb3 = !!(x)
 #define SETM_PLACED_WB3(fw,x)  (fw)->flag_mask.is_placed_wb3 = !!(x)
+#define IS_PLACED_BY_FVWM(fw)      ((fw)->flags.is_placed_by_fvwm)
+#define SET_PLACED_BY_FVWM(fw,x)   (fw)->flags.is_placed_by_fvwm = (x)
+#define SETM_PLACED_BY_FVWM(fw,x)  (fw)->flag_mask.is_placed_by_fvwm = (x)
 #define IS_SCHEDULED_FOR_DESTROY(fw)    ((fw)->flags.is_scheduled_for_destroy)
 #define SET_SCHEDULED_FOR_DESTROY(fw,x) \
           (fw)->flags.is_scheduled_for_destroy = !!(x)

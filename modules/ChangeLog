@@ -1,3 +1,8 @@
+2001-09-04  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmDebug/FvwmDebug.c (list_add)
+	New windows_ flags is_placed_by_fvwm
+	
 2001-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (BorderIconWindow):

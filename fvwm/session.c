@@ -314,7 +314,7 @@ char *get_version_string()
    * in the stable branch, othervise saving sessions becomes useless */
   /*return CatString3(VERSION, ", ",__DATE__);*/
 
-  return "2.4-3";
+  return "2.4-4";
 }
 
 /*
@@ -779,6 +779,7 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	  ewin->name = matches[i].wm_name;
 	}
       }
+      SET_PLACED_BY_FVWM(ewin,IS_PLACED_BY_FVWM(&(matches[i])));
       *do_shade = IS_SHADED(&(matches[i]));
       *do_max = IS_MAXIMIZED(&(matches[i]));
       SET_ICON_MOVED(ewin, IS_ICON_MOVED(&(matches[i])));

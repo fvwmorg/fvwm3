@@ -6945,6 +6945,7 @@ commas or whitespace.  Conditions include
 "Shaded", "!Shaded",
 "Transient", "!Transient",
 "PlacedByButton3", "!PlacedByButton3",
+"PlacedByFvwm", "PlacedByFvwm",
 "CurrentDesk", "CurrentPage", "CurrentScreen"
 "CurrentGlobalPage", "CurrentPageAnyDesk" and "CurrentGlobalPageAnyDesk".
 In addition, the
@@ -7003,6 +7004,9 @@ useful with the
 option of the
 .B Style
 command.
+
+The "PlacedByFvwm" condition exclude all window that have been placed
+manually or by using the user or program position hint.
 
 Note that earlier versions of fvwm required the conditions to be
 enclosed in brackets instead of parentheses (this is still

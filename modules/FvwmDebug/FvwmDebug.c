@@ -613,6 +613,7 @@ void list_configure(const unsigned long *body)
     fprintf(output,"\t\tis_partially_visible: %d\n", IS_PARTIALLY_VISIBLE(p));
     fprintf(output,"\t\tis_pixmap_ours: %d\n", IS_PIXMAP_OURS(p));
     fprintf(output,"\t\tis_placed_wb3: %d\n", IS_PLACED_WB3(p));
+    fprintf(output,"\t\tis_placed_by_fvwm: %d\n", IS_PLACED_BY_FVWM(p));
     fprintf(output,"\t\tis_size_inc_set: %d\n", IS_SIZE_INC_SET(p));
     fprintf(output,"\t\tis_transient: %d\n", IS_TRANSIENT(p));
     fprintf(output,"\t\tis_window_drawn_once: %d\n", IS_WINDOW_DRAWN_ONCE(p));

@@ -229,6 +229,16 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       SET_TRANSIENT(mask, 0);
       SETM_TRANSIENT(mask, 1);
     }
+    else if (StrEquals(condition,"PlacedByFvwm"))
+    {
+      SET_PLACED_BY_FVWM(mask, 1);
+      SETM_PLACED_BY_FVWM(mask, 1);
+    }
+    else if (StrEquals(condition,"!PlacedByFvwm"))
+    {
+      SET_PLACED_BY_FVWM(mask, 0);
+      SETM_PLACED_BY_FVWM(mask, 1);
+    }
     else if (StrEquals(condition,"CurrentDesk"))
       mask->my_flags.needs_current_desk = 1;
     else if (StrEquals(condition,"CurrentPage"))

@@ -758,6 +758,9 @@ Bool PlaceWindow(
   {
     unsigned int placement_mode = SPLACEMENT_MODE(sflags);
 
+    /* override if Manual placement happen */
+    SET_PLACED_BY_FVWM(tmp_win,True);
+
     if (flags.do_forbid_manual_placement)
     {
       switch (placement_mode)
@@ -810,6 +813,7 @@ Bool PlaceWindow(
           UngrabEm(GRAB_NORMAL);
 	  return False;
 	}
+	SET_PLACED_BY_FVWM(tmp_win,False);
 	MyXGrabKeyboard(dpy);
 	DragWidth = tmp_win->frame_g.width;
 	DragHeight = tmp_win->frame_g.height;
@@ -913,6 +917,8 @@ Bool PlaceWindow(
   } /* !flags.do_not_use_wm_placement */
   else
   {
+    if (!PPosOverride)
+      SET_PLACED_BY_FVWM(tmp_win,False);
     /* the USPosition was specified, or the window is a transient,
      * or it starts iconic so place it automatically */
 

@@ -150,6 +150,7 @@ Bool setup_window_structure(
   {
     (*ptmp_win)->Desk = savewin->Desk;
     SET_SHADED(*ptmp_win, IS_SHADED(savewin));
+    SET_PLACED_BY_FVWM(*ptmp_win, IS_PLACED_BY_FVWM(savewin));
   }
 
   (*ptmp_win)->cmap_windows = (Window *)NULL;
