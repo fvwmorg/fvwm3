@@ -193,7 +193,9 @@ typedef struct FvwmFont
 } FvwmFont;
 
 XFontStruct *GetFontOrFixed(Display *disp, char *fontname);
+#ifdef I18N_MB
 XFontSet GetFontSetOrFixed(Display *disp, char *fontname);
+#endif
 Bool LoadFvwmFont(Display *dpy, char *fontname, FvwmFont *ret_font);
 void FreeFvwmFont(Display *dpy, FvwmFont *font);
 

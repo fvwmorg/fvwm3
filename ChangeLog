@@ -1,3 +1,9 @@
+2000-09-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/GetFont.c (GetFontSetOrFixed):
+	* libs/fvwmlib.h:
+	function is only compiled in with I18N_MB defined
+
 2000-09-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/modconf.c (AddToModList, ModuleConfig, DestroyModConfig):

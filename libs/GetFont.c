@@ -45,6 +45,7 @@ XFontStruct *GetFontOrFixed(Display *disp, char *fontname)
   return fnt;
 }
 
+#ifdef I18N_MB
 /*
 ** loads fontset or "fixed" on failure
 */
@@ -84,6 +85,7 @@ XFontSet GetFontSetOrFixed(Display *disp, char *fontname)
 
   return fontset;
 }
+#endif
 
 
 Bool LoadFvwmFont(Display *dpy, char *fontname, FvwmFont *ret_font)

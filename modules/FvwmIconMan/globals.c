@@ -101,6 +101,7 @@ static void init_win_manager (int id)
   globals.managers[id].bindings[SELECT]   = NULL;
   globals.managers[id].we_are_drawing = 1;
   globals.managers[id].configures_expected = 0;
+  globals.managers[id].AnimCommand = NULL;
 }
 
 void print_managers (void)

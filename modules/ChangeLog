@@ -3,6 +3,11 @@
 	* FvwmAuto/FvwmAuto.c:
 	-Wall fixes
 
+2000-09-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/globals.c (init_win_manager):
+	coredump fix by Yuuki Harano
+
 2000-08-19  Mikhael Goikhman  <migo@homemail.com>
 
 	* modules/FvwmEvent/FvwmEvent.c:
