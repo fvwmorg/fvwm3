@@ -1,0 +1,12 @@
+Changes in release 2.1.1
+
+
+Changes in release 2.1.0
+* basic autoconfiguration support; see INSTALL.fvwm and INSTALL
+* modules installed into ${libexecdir}/fvwm/${VERSION}
+  - since the version string is encoded into the module directory, it
+    is safer to rely on the compiled-in ModulePath, rather than
+    setting it yourself in .fvwm2rc
+* system configure (system.fvwm2rc) searched for in ${sysconfdir}
+* FvwmCpp and FvwmM4 no longer define FVWMDIR variable; instead they
+  define FVWM_MODULEDIR and FVWM_CONFIGDIR

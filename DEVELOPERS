@@ -1,10 +1,106 @@
-Here are some notes on the conversion to GNU autoconf, of interest
-mainly to hackers and code maintainers.  For installation info, see
-INSTALL and INSTALL.fvwm.
+			Living with CVS and Autoconf
+			----------------------------
+
+These notes are intended for code developers.
+
+All the derived files (the configure script, config.h.in, and all the
+Makefile.in's) are checked into the repository.  Hence, you need to
+know NOTHING about autoconf/automake to check out the sources and
+build it.  NOR do you need to install these tools.  You can even hack
+on the sources without these tools.
+
+The ONLY time you need the tools is if you have to change a makefile or
+the configure script.  Or if you want to build a tar file for
+distribution.
+
+
+Changing a Makefile
+-------------------
+
+First of all, NEVER edit anything named Makefile, or Makefile.in.  These
+are both derived from the corresponding Makefile.am.  The most common
+reason for editing is to change the list of sources. 
+
+Steps: 1. edit foo/blah/Makefile.am
+       2. re-run "make" from the top of the build directory
+
+Step 2 will take care of rebuilding the Makefile.in and Makefile from your
+changed Makefile.am.
+
+Makefile.am has a simple format, basically:
+
+        bin_PROGRAMS = fvwm2
+
+        fvmw2_SOURCES = blah.c blah.h foo.c foo.h ...
+
+Notice that you have to add all files, C-code *and* headers, to the
+_SOURCES line.  This is vital, because this is the list of files that are
+packed into the distribution.  If you leave one out, nobody will be able
+to build the distributed tar file!
+
+Changing configure.in
+---------------------
+
+The most common reason to do this is to change the version string.  If
+you're editing it for any other reason, I will assume you know what you're
+doing.
+
+Steps: 1. edit configure.in, and find the line containing
+          AM_INIT_AUTOMAKE(fvwm, x.y.z) at the top of the file
+       2. change x.y.z to the new version string
+       3. re-run "make" from the top of the build directory
+
+Step 3 will take care of rebuilding the configure script, and usually all
+the other Makefiles.
+
+
+Building a distribution
+-----------------------
+
+By this, I mean the file "fvwm-x.y.z.tar.gz".
+
+Steps: 1. make sure you have XPM and a C++ compiler
+       2. configure with the flag --enable-extras
+       3. make
+       4. make distcheck
+       5. ensure that you see the message 
+          "fvwm-x.y.z.tar.gz ready for distribution"
+          before uploading the tar file somewhere
+
+One thing I've learned the hard way: 
+
+        You have to configure with ALL THE OPTIONAL SUBDIRECTORIES
+        in order to build a distribution!
+
+In short: this means you need Xpm, and a C++ compiler, AND you have to
+configure using the flag --enable-extras.  The reason for this is that a
+couple of subdirectories are only built when using Xpm (xpmroot, for
+example) or C++ (extras/FvwmConfig).  It is fine for end users to not
+build these.  However, the distribution-maker has to have all the
+directories enabled, else the files don't make it into the distribution
+tar file. 
+
+Similarly, you need to have actually built everything before packing the
+distribution, hence step #3.  Among other things, this puts into the
+Makefile.in's the proper dependency information. 
+
+Step 4 will create the tar file, then unpack it and attempt a build &
+install (to a scratch directory, not /usr/local).  This makes sure
+that you really DID include all the files necessary to build the
+package into the tar file. It may be hard to appreciate how useful
+this is, until it has reminded you that you forgot file "foo.h" in
+some _SOURCES line.  But trust me, it will save your bacon in this way
+some day!
+
+
 
 
 			Changes and Rearranges
 			----------------------
+
+Of historical interest only, here are some notes on the conversion to
+GNU autoconf.  Some of this is outdated now, so don't rely too heavily
+upon it.  For installation info, see INSTALL and INSTALL.fvwm.
 
 The biggest change, of course, is that all traces of Imakefile stuff
 is removed, replaced by all kinds of autoconf detrius.
