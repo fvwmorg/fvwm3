@@ -63,13 +63,41 @@ If you have an existing tree, and you just want to update it:
 
 <pre><font color="yellow">
 cd fvwm
-cvs update (-r branch_name)
+cvs update (-r branch_name)  (filename)
 </pre></font>
 
 The "update" command can be used  to go to any  branch in the tree, it
 doesn't matter whether  it is  an earlier or  later  branch.  "Update"
 without an argument makes the tree current based  on the branch it was
 last on.
+
+Without a filename argument, this updates the current directory down.
+With a filename, just one file is updated.
+
+If you have made changes you may see a conflict during an update:
+
+<pre><font color="yellow">
+RCS file: /home/cvs/fvwm/fvwm/fvwm/icons.c,v
+retrieving revision 1.5
+retrieving revision 1.6
+Merging differences between 1.5 and 1.6 into icons.c
+rcsmerge: warning: conflicts during merge
+cvs server: conflicts found in fvwm/icons.c
+C fvwm/icons.c
+</pre></font>
+In this case, you can resolve the conflict as follows:
+<pre><font color="yellow">
+&gt; mv icons.c icons.c.save
+&gt; cvs update icons.c
+&gt; diff icons.c*
+690a691,693
+&gt; %lt;%lt;%lt;%lt;%lt;%lt;%lt; icons.c
+&gt;   XpmImage    my_image = {0};  /* testing */
+&gt; =======
+691a695
+&gt; &gt;&gt;&gt;&gt;&gt;&gt;&gt; 1.6
+rm icons.c.save
+</pre></font>
 
 <H2> <font color="turquoise">Getting Update Access</font></h2>
 Using the procedures described above, and being on the workers list

@@ -1,3 +1,8 @@
+1998-11-12  Dan Espen  <dane@mk.bellcore.com>
+
+	*  cvs.html (Getting_Updates): Added example of  how  to resolve a
+ 	conflict during an update.
+
 Tue Nov 10 07:11:44 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* Makefile.am: Fixed up the list of files *again*.
