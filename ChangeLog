@@ -1,5 +1,10 @@
 2000-09-24  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/gnome.c (GNOME_ProcessClientMessage):
+	fixed a gnome hints core dump
+	
+2000-09-24  olicha  <olivier.chapuis@free.fr>
+
 	* utils/fvwm-menu-desktop.in:
 	fixed a problem with directory with a space in its name
 	

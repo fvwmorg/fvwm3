@@ -131,7 +131,7 @@
 #define WIN_STATE_HIDDEN	  (1<<4)	/* not on taskbar but window visible */
 #define WIN_STATE_SHADED	  (1<<5)	/* shaded (NeXT style) */
 #define WIN_STATE_HID_WORKSPACE	  (1<<6)	/* not on current desktop */
-#define WIN_STATE_HID_TRANSIENT	  (1<<7)	/* owner of transient is hidden */
+#define WIN_STATE_HID_TRANSIENT	  (1<<7)	/* Owner of transient is hidden */
 #define WIN_STATE_FIXED_POSITION  (1<<8)	/* window is fixed in position even */
 #define WIN_STATE_ARRANGE_IGNORE  (1<<9)	/* ignore for auto arranging */
 					 /* when scrolling about large */
@@ -868,7 +868,7 @@ GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
   int x, y;
   Atom a;
 
-  if (DO_IGNORE_GNOME_HINTS(fwin))
+  if (fwin == NULL || DO_IGNORE_GNOME_HINTS(fwin))
     return 0;
   a = XInternAtom(dpy, XA_WIN_AREA, False);
   if (ev->xclient.message_type == a)
