@@ -98,7 +98,7 @@ fvwm \- @FVWMNAMELONG@ for X11
 .RB [ \-L ]
 .RB [ \-A ]
 .RB [ \-S ]
-.RB [ \-N ]]
+.RB [ \-P ]]
 .RB [ \-D ]
 .RB [ \-h ]
 .RB [ \-i
@@ -373,7 +373,7 @@ If the screens display 256 colors (or less) and has a dynamic visual,
 causes fvwm to use its palette for all the colors. By default, the
 palette is used only for images and gradients.
 .TP
-.BR "-N" " | " "--named-palette"
+.BR "-P" " | " "--visual-palette"
 If the screen displays 256 colors (or less) and has a dynamic
 visual, this option causes fvwm to use a palette designed for
 limiting the "visual" color distance between the points of the

@@ -1,5 +1,6 @@
 2002-11-11  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/fvwm.1.in:
 	* fvwm/fvwm.c (main):
 	(usage):
 	named-palette -> visual-palette, -N -> -P 
