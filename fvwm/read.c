@@ -153,7 +153,8 @@ int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win,
     run_command_stream( f, eventp, tmp_win, context, Module );
     fclose( f );
 
-    free( fvwm_file );
+    if (fvwm_file)
+      free( fvwm_file );
     fvwm_file = NULL;
     return 1;
 }

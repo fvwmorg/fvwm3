@@ -360,7 +360,8 @@ Bool MatchBinding(Display *dpy, Binding *b,
     if (kc_ksym != keysym)
     {
       kc_len = 0;
-      free(kc_list);
+      if (kc_list != NULL)
+	free(kc_list);
       kc_list = (int *)safemalloc(sizeof(int) * 8);
       for (i = min; i <= max; i++)
       {
@@ -490,7 +491,6 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 
     if(binding->Button_Key >0)
       bmin = bmax = binding->Button_Key;
-
     for (button = bmin; button <= bmax; button++)
     {
       if (fGrab)

@@ -1,3 +1,10 @@
+2000-09-30  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Bindings.c (MatchBinding):
+	* fvwm/read.c (run_command_file):
+	* fvwm/module_interface.c (DeleteMessageQueueBuff):
+	Applied dmalloc suggestions
+	
 2000-09-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/gnome.c (GNOME_ProcessClientMessage):

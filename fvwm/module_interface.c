@@ -1339,7 +1339,8 @@ static void DeleteMessageQueueBuff(int module)
      return;
   a = pipeQueue[module];
   pipeQueue[module] = a->next;
-  free(a->data);
+  if (a->data != NULL)
+    free(a->data);
   free(a);
   return;
 }
