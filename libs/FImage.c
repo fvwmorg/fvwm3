@@ -51,6 +51,12 @@ Bool FShmImagesSupported = False;
 
 /* ---------------------------- local functions ---------------------------- */
 
+static int FShmErrorHandler(Display *dpy, XErrorEvent *ev)
+{
+	FShmImagesSupported = False;
+	return 0;
+}
+
 static void FShmInit(Display *dpy)
 {
 	if (FShmInitialized)
@@ -74,6 +80,7 @@ static void FShmSafeCreateImage(
 	int format, unsigned int width, unsigned int height)
 {
 	Bool error = False;
+	XErrorHandler save_handler;
 
 	if (!XShmSupport)
 	{
@@ -105,12 +112,16 @@ static void FShmSafeCreateImage(
 		goto bail;
 	}
 	fim->shminfo->readOnly = False;
-	if (!FShmAttach (dpy, fim->shminfo))
+
+	/* use the error handler for a definitive error */
+	save_handler = XSetErrorHandler(FShmErrorHandler);
+	if (!FShmAttach(dpy, fim->shminfo))
 	{
 		error = True;
-		goto bail;;
+		goto bail;
 	}
 	XSync(dpy, False);
+	XSetErrorHandler(save_handler);
 
  bail:
 	if (error)

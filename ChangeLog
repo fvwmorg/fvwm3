@@ -1,3 +1,8 @@
+2004-04-29  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* libs/FImage.c (FShmSafeCreateImage):
+	Fixed when we are a remote client
+
 2004-04-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* INSTALL.fvwm:
