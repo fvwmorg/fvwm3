@@ -1086,12 +1086,12 @@ A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
 5.1  I'd really like to see neat feature XYZ in FVWM.  Wouldn't
      that be cool? I even have a patch.  When can it be added?
 
-A: People are always requesting or suggestion new features (many of
+A: People are always requesting or suggesting new features (many of
    which are great ideas and where a lot of the current features came
    from).  One of the more common ones for example is Windows 95 look
    and feel (although since this was first written, that particular
    feature has actually been indirectly implemented via several
-   appearance effecting features).
+   appearance-affecting features).
 
    I'd like to make a statement about this.  FVWM is supposed to be
    small, fast, powerful, and flexible, and sometimes tradeoffs have
@@ -1190,7 +1190,7 @@ A: Please enter a DETAILED description of your problem in our web-based
           server under SunOS)
         - What exact version of FVWM you are running.
         - How was FVWM compiled (compiler & version, options, etc)
-        - What settings to you have in your .fvwm2rc that may be
+        - What settings do you have in your .fvwm2rc that may be
           pertinent
 
 ----------------------------------------------------------------------
@@ -1606,7 +1606,7 @@ A: This has come up a few times, so I thought I'd put it here too.
      MenuStyle mwm
      MenuStyle PopupDelayed, PopupDelay 80
 
-   The sub menu will we shown 80 milliseconds after the pointer enters
+   The sub menu will be shown 80 milliseconds after the pointer enters
    the menu item.  You will hardly notice the delay.  Note that 80 ms
    is just long enough to move through the menu with auto repeat on my
    cursor keys.  You may have to experiment with this number to get it
