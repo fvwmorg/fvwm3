@@ -1716,14 +1716,15 @@ Recapture True, Wait False.
 
 The special option "*" refers to all available options.
 
-The "Read" option also concerns the \fIPipeRead\fP command.
+The "Read" option also controls the \fIPipeRead\fP command.
 
-The "DynamicMenu" concerns the \fIDynamicPopupAction\fP and
+The "DynamicMenu" option affects the \fIDynamicPopupAction\fP and
 \fIMissingSubmenuFunc\fP commands. If this option is set to False, then
 the busy cursor is not displayed during a dynamic menu command even if this
 command is a \fI(Pipe)Read\fP command and the Read option is set to True.
 
-The "Wait" affects only the root cursor. During a wait pause the root cursor
+The "Wait" option affects only the root cursor.
+During a wait pause the root cursor
 is replaced by the busy cursor and fvwm is still fully functional (you can
 escape from the pause, see the \fIEscapeFunc\fP command). If you want to
 use this option and if you do not use the default root cursor, you must
@@ -1824,7 +1825,7 @@ used in menus
 
 SELECT (crosshair)
 .in +.3i
-used when the user ir required to select a window
+used when the user is required to select a window
 .in -.3i
 
 DESTROY (pirate)
@@ -1903,7 +1904,9 @@ used during a StrokeFunc command.
 .in -.3i
 .in -.5i
 
-And the \fInumber-or-name-or-xpm\fP is either the numeric value of the
+The defaults are shown in parenthesis above.
+
+The \fInumber-or-name-or-xpm\fP is either the numeric value of the
 cursor as defined in the include file X11/cursorfont.h or its name
 (without the XC_ prefix) or the name of an xpm file containing a pixmap
 of depth 1 with a mask and a hotspot.  For example:
@@ -1915,7 +1918,6 @@ CursorStyle DESTROY gumby
 CursorStyle TOP_LEFT topl.xpm
 CursorStyle ROOT hand1 yellow black
 .EE
-The defaults are shown in parenthesis above.
 
 The optional \fIfg\fP and \fIbg\fP arguments specify the foreground
 and background colors for the cursor, defaulting to black and white.
@@ -2843,12 +2845,12 @@ http://www.etla.net/~willey/projects/libstroke/
 Causes fvwm to record a mouse stroke sequence and to execute
 the corresponding action as defined in a Stroke command. The cursor
 is modified to the STROKE context of the CursorStyle command during
-recording. When the stroke is "finished" StrokeFunc looks to a Stroke 
+recording. When the stroke is "finished" StrokeFunc looks for a Stroke 
 binding of the form
 .EX
 Stroke sequence 0 Context Modifiers action
 .EE
-and execute the action accordingly (Note the 0). Normal use of this
+and executes the corresponding action (Note the 0). Normal use of this
 function is via a Mouse or Key command. Examples:
 .EX
 Mouse 3 A M StrokeFunc
@@ -2857,22 +2859,22 @@ Key x R N StrokeFunc
 If you press mouse button 3 and Alt anywhere (respectively, press the key
 x when the cursor is on the root window), then fvwm will record the
 mouse motions until the mouse button 3 (respectively, the x key) is 
-released and then check if the recorded \fIsequence\fP correspond
+released and then check if the recorded \fIsequence\fP corresponds
 to a Stroke binding of the form  "Stroke \fIsequence\fP 0 A M action"
 (respectively, "Stroke \fIsequence\fP 0 R N action"). Note that the 
 \fIContext\fP and \fIModifiers\fP are taken at the beginning of the 
 execution of the StrokeFunc command (so you can release the modifiers 
 before the end of the stroke recording in the case of a mouse binding 
 and if you used, say, a TitleBar context the mouse motion can go through an 
-application window). The keys Escape and Delete allow to abort the command.
+application window). The keys Escape and Delete allow you to abort the command.
 
 The StrokeFunc command has two options \fINotStayPressed\fP and 
 \fIEchoSequence\fP. These options are disabled by default. 
 \fIEchoSequence\fP causes fvwm to Echo the recorded stroke sequence.
 
-\fINotStayPressed\fP has effect only if StrokeFunc is used via a Mouse 
-or a Key command. This option causes that we do not need to have the 
-button or the key pressed during the stroke, but we have to do a 
+\fINotStayPressed\fP works only if StrokeFunc is used via a Mouse 
+or a Key command. This option removes the need to have a
+button or the key pressed during the stroke, but you have to do a 
 mouse click or press the Return or Space key to finish the mouse motion 
 recording (these keys also work without the \fINotStayPressed\fP option).
 
@@ -2881,7 +2883,7 @@ with the \fINotStayPressed\fP option enabled. However, \fIModifiers\fP
 will, in general, does not work as expected (i.e., in this case use A or 
 N as \fIModifiers\fP in the Stroke bindings).
 
-Note that some computers do not support key release events. If it is the
+Note that some computers do not support key release events. If that is the
 case the StrokeFunc used via a Key command will work as if the 
 \fINotStayPressed\fP option is enabled (I hope).
 
