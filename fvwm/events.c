@@ -1306,7 +1306,7 @@ DB(("HandleConfigureRequest: cre->x=%d, cre->y=%d, cre->width=%d, cre->height=%d
   if (XFindContext (dpy, cre->window, FvwmContext, (caddr_t *) &Tmp_win) ==
       XCNOENT)
     Tmp_win = NULL;
-if (Tmp_win != NULL) DB_WI_ALL("HandleConfigureRequest",Tmp_win);
+  if (Tmp_win != NULL) DB_WI_ALL("HandleConfigureRequest",Tmp_win);
 else DB(("HandleConfigureRequest: Tmp_win=0x%x",Tmp_win));
 
   /*

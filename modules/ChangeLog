@@ -1,3 +1,20 @@
+1999-01-08  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmPager/FvwmPager.c (main): Remove USE_POSIX/USE_BSD stuff;
+	use HAVE_SIGACTION etc. to choose between new- and old-style
+	signal handling.
+	(TerminateHandler): Use autoconf'ed return type for signal handlers.
+
+	* FvwmButtons/FvwmButtons.c (main): Remove USE_POSIX/USE_BSD
+	stuff; use HAVE_SIGACTION etc. to choose between new- and
+	old-style signal handling.
+	(TerminateHandler): Use autoconf'ed return type for signal handlers.
+
+	* FvwmIconMan/FvwmIconMan.c (main): Remove USE_POSIX/USE_BSD
+	stuff; use HAVE_SIGACTION etc. to choose between new- and
+	old-style signal handling.
+	(TerminateHandler): Use autoconf'ed return type for signal handlers.
+
 1999-01-06  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmCpp/FvwmCpp.c (main): If there's no default cpp and the user

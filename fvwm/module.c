@@ -361,7 +361,7 @@ int HandleModuleInput(Window w, int channel)
 }
 
 
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
 }
 

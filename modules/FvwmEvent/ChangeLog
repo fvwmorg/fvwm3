@@ -1,3 +1,11 @@
+1999-01-08  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmEvent.c (main): Remove USE_POSIX/USE_BSD stuff and rely on
+	HAVE_SIGACTION to choose between new- and old-style signal
+	handling.
+	(TerminateHandler): Use the autoconf'd return type for signal
+	handlers.
+
 1998-12-17  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* Parse.c (PeekArgument): malloc -> safemalloc

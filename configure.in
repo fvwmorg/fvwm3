@@ -151,6 +151,9 @@ AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket waitpid)
 AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
+AC_CHECK_FUNCS(sigaction)
+
+pds_CHECK_TYPE(sig_atomic_t, int, [#include <signal.h>])
 
 if test $ac_cv_func_setvbuf = yes; then
   AC_FUNC_SETVBUF_REVERSED
@@ -164,8 +167,13 @@ if test $ac_cv_func_select = yes; then
 fi
 
 dnl Check for standard functions that we have replacements for.
-AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strerror usleep)
+AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strerror usleep atexit)
 AC_SUBST(LIBOBJS)
+
+dnl If we do not have atexit(), then check for on_exit()
+if test $ac_cv_func_atexit = no; then
+  AC_CHECK_FUNCS(on_exit)
+fi
 
 dnl Checking for optional libraries
 dnl Default is to use them if found; can be disable using --without

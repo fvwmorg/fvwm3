@@ -117,8 +117,8 @@ AR = ar
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LINK = $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-DIST_COMMON =  Makefile.am Makefile.in gethostname.c strcasecmp.c \
-strerror.c strncasecmp.c usleep.c
+DIST_COMMON =  Makefile.am Makefile.in atexit.c gethostname.c \
+strcasecmp.c strerror.c strncasecmp.c usleep.c
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -128,9 +128,9 @@ GZIP = --best
 DEP_FILES =  .deps/ClientMsg.P .deps/ColorUtils.P .deps/GetFont.P \
 .deps/Grab.P .deps/ModParse.P .deps/Module.P .deps/Parse.P \
 .deps/Picture.P .deps/Strings.P .deps/System.P .deps/XResource.P \
-.deps/debug.P .deps/envvar.P .deps/gethostname.P .deps/safemalloc.P \
-.deps/strcasecmp.P .deps/strerror.P .deps/strncasecmp.P .deps/usleep.P \
-.deps/wild.P
+.deps/atexit.P .deps/debug.P .deps/envvar.P .deps/gethostname.P \
+.deps/safemalloc.P .deps/strcasecmp.P .deps/strerror.P \
+.deps/strncasecmp.P .deps/usleep.P .deps/wild.P
 SOURCES = $(libfvwm_a_SOURCES)
 OBJECTS = $(libfvwm_a_OBJECTS)
 

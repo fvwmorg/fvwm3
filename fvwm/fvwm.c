@@ -12,15 +12,6 @@
  ***********************************************************************/
 
 #include "config.h"
-#ifdef USE_BSD
-#  define _BSD_SOURCE
-#else
-#  define USE_POSIX
-#endif
-
-#if defined(USE_POSIX) && defined(USE_BSD)
-#  error EITHER POSIX.1 or BSD signal semantics - not both!
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -254,7 +245,7 @@ int main(int argc, char **argv)
 
   DBUG("main","Installing signal handlers");
 
-#if defined USE_POSIX
+#ifdef HAVE_SIGACTION
   {
     struct sigaction  sigact;
 
@@ -286,9 +277,10 @@ int main(int argc, char **argv)
     sigact.sa_handler = Restart;
     sigaction(SIGUSR1, &sigact, NULL);
   }
-#elif defined USE_BSD
-  signal(SIGPIPE,DeadPipe);
-  signal(SIGUSR1,Restart);
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
+  signal(SIGPIPE, DeadPipe);
+  signal(SIGUSR1, Restart);
 #endif
 
   newhandler(SIGINT);
@@ -850,9 +842,10 @@ void InternUsefulAtoms (void)
  *	newhandler: Installs new signal handler (reliable semantics)
  *
  ************************************************************************/
-void newhandler(int sig)
+void
+newhandler(int sig)
 {
-#if defined USE_POSIX
+#ifdef HAVE_SIGACTION
   struct sigaction  sigact;
 
   sigaction(sig,NULL,&sigact);
@@ -869,13 +862,12 @@ void newhandler(int sig)
     sigact.sa_flags = 0;
 #endif
     sigact.sa_handler = SigDone;
-    sigaction(sig,&sigact,NULL);
+    sigaction(sig, &sigact, NULL);
   }
-#elif defined USE_BSD
+#else
+  /* We don't have sigaction(), so use less robust methods.  */
   if (signal(sig,SIG_IGN) == SIG_IGN)
-  {
     signal(sig,SigDone);
-  }
 #endif
 }
 

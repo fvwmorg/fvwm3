@@ -1,3 +1,22 @@
+1999-01-08  Paul D. Smith  <psmith@gnu.org>
+
+	* configure.in: Check to see if we have sigaction() or not.
+	Test for atexit() and include atexit.c if it's not there.  If it's
+	not there, test for on_exit() instead.
+
+	* fvwm/fvwm.c (main): Remove USE_POSIX/USE_BSD stuff; they're not
+	autoconf-y.  Instead, use check for sigaction(); if it doesn't
+	exist we'll fall back to the "traditional" signal().
+
+	* fvwm/misc.h: Use autoconf to find the proper return type for
+	signal handler function DeadPipe().
+	* fvwm/module.c (DeadPipe): Define proper return type for DeadPipe()
+	* libs/Module.c (ReadFvwmPacket): Use proper return type for DeadPipe()
+
+	* libs/atexit.c: New file.  Add for systems which don't have
+	atexit() (SunOS has on_exit(); if any others use different things
+	they'll have to be handled too).
+
 Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: Add checks for system headers that are required

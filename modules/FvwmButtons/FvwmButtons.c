@@ -13,16 +13,6 @@
 */
 
 /* ------------------------------- includes -------------------------------- */
-#ifdef USE_BSD
-#  define _BSD_SOURCE
-#else
-#  define USE_POSIX
-#endif
-
-#if defined(USE_POSIX) && defined(USE_BSD)
-#  error EITHER POSIX.1 or BSD signal semantics - not both!
-#endif
-
 #include "config.h"
 
 #ifdef ISC
@@ -89,7 +79,7 @@ extern void SaveButtons(button_info*);
 
 void DeadPipe(int nonsense) __attribute__((__noreturn__));
 static void DeadPipeCleanup(void);
-static void TerminateHandler(int sig);
+static RETSIGTYPE TerminateHandler(int sig);
 void SetButtonSize(button_info*,int,int);
 /* main */
 void Loop(void);
@@ -200,7 +190,8 @@ void DeadPipe(int whatever)
 *** TerminateHandler()
 *** Signal handler that will make the event-loop terminate
 **/
-static void TerminateHandler(int sig)
+static RETSIGTYPE
+TerminateHandler(int sig)
 {
   isTerminated = True;
 }
@@ -489,9 +480,6 @@ int main(int argc, char **argv)
   int x,y,maxx,maxy,border_width,depth;
   char *temp, *s;
   button_info *b,*ub;
-#ifdef USE_POSIX
-  struct sigaction  sigact;
-#endif
 
   temp=argv[0];
   s=strrchr(argv[0],'/');
@@ -499,21 +487,26 @@ int main(int argc, char **argv)
   MyName=mymalloc(strlen(temp)+1);
   strcpy(MyName,temp);
 
-#if defined USE_POSIX
-  sigemptyset(&sigact.sa_mask);
-#ifdef SA_INTERRUPT
-  sigact.sa_flags = SA_INTERRUPT;
-#else
-  sigact.sa_flags = 0;
-#endif
-  sigact.sa_handler = TerminateHandler;
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
 
-  sigaction(SIGPIPE, &sigact, NULL);
-  sigaction(SIGINT,  &sigact, NULL);
-  sigaction(SIGHUP,  &sigact, NULL);
-  sigaction(SIGQUIT, &sigact, NULL);
-  sigaction(SIGTERM, &sigact, NULL);
-#elif defined USE_BSD
+    sigemptyset(&sigact.sa_mask);
+# ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+# else
+    sigact.sa_flags = 0;
+# endif
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGHUP,  &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
   signal(SIGPIPE, TerminateHandler);
   signal(SIGINT,  TerminateHandler);
   signal(SIGHUP,  TerminateHandler);

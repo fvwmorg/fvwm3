@@ -13,11 +13,11 @@
 #include <sys/wait.h>
 
 #if HAVE_WAITPID
-#define ReapChildren()  while ((waitpid(-1, NULL, WNOHANG)) > 0);
+# define ReapChildren()  while ((waitpid(-1, NULL, WNOHANG)) > 0);
 #elif HAVE_WAIT3
-#define ReapChildren()  while ((wait3(NULL, WNOHANG, NULL)) > 0);
+# define ReapChildren()  while ((wait3(NULL, WNOHANG, NULL)) > 0);
 #else
-#error One of waitpid or wait3 is needed.
+# error One of waitpid or wait3 is needed.
 #endif
 
 typedef struct name_list_struct
@@ -276,7 +276,7 @@ void BroadcastName(unsigned long event_type, unsigned long data1,
 void SendName(int channel, unsigned long event_type, unsigned long data1,
 	      unsigned long data2, unsigned long data3, const char *name);
 void SendStrToModule(F_CMD_ARGS);
-void DeadPipe(int nonsense);
+RETSIGTYPE DeadPipe(int nonsense);
 void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
 void SelectDecor(FvwmWindow *, unsigned long, int,int);

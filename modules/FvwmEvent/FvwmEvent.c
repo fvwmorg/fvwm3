@@ -1,5 +1,5 @@
 /*#define DEBUG
- * 
+ *
  * Copyright (C) 1994 Mark Boyns (boyns@sdsu.edu) and
  *                    Mark Scott (mscott@mcd.mot.com)
  *		 1996-1998 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
@@ -23,8 +23,8 @@
 
 /* ChangeLog
 
- * renamed & cleaned up so that FvwmEvent (TaDa !!) is a general event 
-   handler module. 
+ * renamed & cleaned up so that FvwmEvent (TaDa !!) is a general event
+   handler module.
                -- 21.04.98 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
 
  * changed parsing to use new library functions
@@ -35,17 +35,17 @@
      - keep time stamp even if no sound is played
      - minimize malloc/free
 
-   mark boyns ok-ed this patch, I reviewed it and put out those ugly 
+   mark boyns ok-ed this patch, I reviewed it and put out those ugly
    #defines for RESYNC and READ_BODY by reordering the control structures
                -- Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
 
  * made FvwmAudio insensitive to its name -> can be symlinked.
-   corrected some error message deficiencies, code for quoted 'sound' 
+   corrected some error message deficiencies, code for quoted 'sound'
    parameters shamelessly stolen from FvwmButtons/parse.c (with minimal
    adjustments)
    FvwmAudio now supports rsynth's say command:
    *FvwmAudioPlayCmd say
-   *FvwmAudio add_window	   "add window"      
+   *FvwmAudio add_window	   "add window"
    *FvwmAudio raise_window	   'raise window'
                -- 08/07/96 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
 
@@ -81,15 +81,6 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.
  */
-#ifdef USE_BSD
-#  define _BSD_SOURCE
-#else
-#  define USE_POSIX
-#endif
-
-#if defined(USE_POSIX) && defined(USE_BSD)
-#  error EITHER POSIX.1 or BSD signal semantics - not both!
-#endif
 
 #include "config.h"
 #include "../../fvwm/module.h"
@@ -145,11 +136,11 @@ int	rplay_fd = -1;
 #endif
 
 /* prototypes */
-int     execute_event(short); 
+int     execute_event(short);
 void	config(void);
 void	DeadPipe(int) __attribute__((__noreturn__));
 
-static void TerminateHandler(int);
+static RETSIGTYPE TerminateHandler(int);
 
 /* define the event table */
 char	*events[MAX_MESSAGES+MAX_BUILTIN] =
@@ -207,9 +198,6 @@ int main(int argc, char **argv)
     char *s;
     unsigned long	header[HEADER_SIZE], body[MAX_BODY_SIZE];
     int			total, remaining, count, event;
-#ifdef USE_POSIX
-    struct sigaction    sigact;
-#endif
 
 INFO("--- started ----\n");
 
@@ -232,19 +220,25 @@ INFO("--- started ----\n");
 	exit(1);
     }
 
-INFO("--- installing signal server\n");
+  INFO("--- installing signal server\n");
 
-#if defined USE_POSIX
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction    sigact;
+
     sigemptyset(&sigact.sa_mask);
-#ifdef SA_INTERRUPT
+# ifdef SA_INTERRUPT
     sigact.sa_flags = SA_INTERRUPT;
-#else
+# else
     sigact.sa_flags = 0;
-#endif
+# endif
     sigact.sa_handler = TerminateHandler;
+
     sigaction(SIGPIPE,&sigact,NULL);    /* Dead pipe == Fvwm died */
     sigaction(SIGTERM,&sigact,NULL);    /* "polite" termination signal */
-#elif defined USE_BSD
+  }
+#else
+    /* We don't have sigaction(), so fall back to less robust methods.  */
     signal(SIGPIPE, TerminateHandler);
     signal(SIGTERM, TerminateHandler);
 #endif
@@ -259,11 +253,11 @@ INFO("--- configuring\n");
 
     SendText(fd,"Nop",0);		/* what for ? */
 
-    
+
     /* main loop */
 
 INFO("--- waiting\n");
-    while ( !isTerminated )				
+    while ( !isTerminated )
     {
 	if ((count = read(fd[1],header,
 			  HEADER_SIZE*sizeof(unsigned long))) <= 0)
@@ -286,7 +280,7 @@ INFO("--- waiting\n");
 	    remaining -= count;
 	    total +=count;
 	}
-		
+
 	if (now < last_time + audio_delay)
 	    continue;			/* quash event */
 
@@ -319,7 +313,7 @@ INFO("--- waiting\n");
  *    execute_event - actually executes the actions from lookup table
  *
  **********************************************************************/
-int execute_event(short event) 
+int execute_event(short event)
 {
     static char buf[BUFSIZE];
 
@@ -348,7 +342,7 @@ INFO("\n");
 	    last_time = now;
 	return ret;
 #endif
-    }  
+    }
     return 1;
 }
 
@@ -421,7 +415,7 @@ INFO("\n");
 		switch (e - (char**)table)
 		{
 		case 0: if (q) strcpy(cmd_line, q);	       /* Cmd */
-		        else *cmd_line='\0';	
+		        else *cmd_line='\0';
 INFO("cmd_line = ->");
 INFO(cmd_line);
 INFO("<-\n");
@@ -463,7 +457,7 @@ INFO("\n");
 INFO(events[i]);
 INFO("\n");
 
-		    if (MatchToken(event, events[i])) 
+		    if (MatchToken(event, events[i]))
 		    {
 #ifdef HAVE_RPLAY
 			rplay_table[i] = rplay_create(RPLAY_PLAY);
@@ -504,7 +498,8 @@ INFO("found\n");
  *	SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
-static void TerminateHandler(int nonsense)
+static RETSIGTYPE
+TerminateHandler(int nonsense)
 {
   isTerminated = True;
 }

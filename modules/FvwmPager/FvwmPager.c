@@ -12,16 +12,6 @@
 
 #include "config.h"
 
-#ifdef USE_BSD
-#  define _BSD_SOURCE
-#else
-#  define USE_POSIX
-#endif
-
-#if defined(USE_POSIX) && defined(USE_BSD)
-#  error EITHER POSIX.1 or BSD signal semantics - not both!
-#endif
-
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
@@ -108,7 +98,7 @@ PagerStringList string_list = { NULL, 0, NULL, NULL };
 
 static volatile sig_atomic_t isTerminated = False;
 
-static void TerminateHandler(int);
+static RETSIGTYPE TerminateHandler(int);
 
 /***********************************************************************
  *
@@ -122,9 +112,6 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   int itemp,i;
   char line[100];
-#if defined USE_POSIX
-  struct sigaction  sigact;
-#endif
 
   /* Save our program  name - for error messages */
   temp = argv[0];
@@ -151,21 +138,26 @@ int main(int argc, char **argv)
       exit(1);
     }
 
-#if defined USE_POSIX
-  sigemptyset(&sigact.sa_mask);
-#ifdef SA_INTERRUPT
-  sigact.sa_flags = SA_INTERRUPT;
-#else
-  sigact.sa_flags = 0;
-#endif
-  sigact.sa_handler = TerminateHandler;
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
 
-  sigaction(SIGPIPE, &sigact, NULL);
-  sigaction(SIGTERM, &sigact, NULL);
-  sigaction(SIGQUIT, &sigact, NULL);
-  sigaction(SIGINT,  &sigact, NULL);
-  sigaction(SIGHUP,  &sigact, NULL);
-#elif defined USE_BSD
+    sigemptyset(&sigact.sa_mask);
+# ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+# else
+    sigact.sa_flags = 0;
+# endif
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGHUP,  &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
   signal(SIGPIPE, TerminateHandler);
   signal(SIGTERM, TerminateHandler);
   signal(SIGQUIT, TerminateHandler);
@@ -355,7 +347,8 @@ void process_message(unsigned long type,unsigned long *body)
  *	SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
-static void TerminateHandler(int nonsense)
+static RETSIGTYPE
+TerminateHandler(int nonsense)
 {
   isTerminated = True;
 }

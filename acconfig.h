@@ -110,6 +110,9 @@
  * "WindowShade" for more information.  */
 #undef WINDOWSHADE
 
+/* Specify a type for sig_atomic_t if it's not available.  */
+#undef sig_atomic_t
+
 
 @TOP@
 /*
