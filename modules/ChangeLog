@@ -1,3 +1,8 @@
+1999-04-20  Bob Woodside  <proteus@pcnet.com>
+
+	* modules/FvwmIconMan/fvwm.c: Corrected a misplacement of the flags in
+	my previous commit.
+
 1999-04-20  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (myErrorHandler): suppress some error

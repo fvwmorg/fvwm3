@@ -26,7 +26,7 @@ typedef struct {
   Ulong width;
   Ulong height;
   Ulong desknum;
-  window_flags flags;
+  Ulong dummy;
   Ulong window_title_height;
   Ulong window_border_width;
   Ulong window_base_width;
@@ -40,6 +40,9 @@ typedef struct {
   Ulong icon_label_id;
   Ulong icon_pixmap_id;
   Ulong window_gravity;
+  Ulong text_pixel;
+  Ulong back_pixel;
+  window_flags flags;
 } m_add_config_data;
 
 typedef struct {
