@@ -140,6 +140,7 @@ Bool setup_window_structure(
   if (savewin != NULL)
   {
     (*ptmp_win)->Desk = savewin->Desk;
+    SET_SHADED(*ptmp_win, IS_SHADED(savewin));
   }
 
   (*ptmp_win)->cmap_windows = (Window *)NULL;
@@ -1155,6 +1156,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
   else
   {
+    if (IS_SHADED(tmp_win))
+    {
+      do_shade = 1;
+      SET_SHADED(tmp_win, 0);
+    }
     /* Tentative size estimate */
     tmp_win->frame_g.width = tmp_win->attr.width + 2 * tmp_win->boundary_width;
     tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height +
@@ -1214,16 +1220,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
 		  tmp_win->frame_g.width, tmp_win->frame_g.height,
 		  True);
-
-  /****** windowshade ******/
-  if (do_shade)
-  {
-    int t = Scr.shade_anim_steps;
-
-    Scr.shade_anim_steps= 0;
-    WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
-    Scr.shade_anim_steps = t;
-  }
 
   /****** grab keys and buttons ******/
   setup_key_and_button_grabs(tmp_win);
@@ -1298,6 +1294,20 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   GNOME_SetLayer(tmp_win);
   GNOME_SetDesk(tmp_win);
 #endif
+
+  /****** windowshade ******/
+  if (do_shade)
+  {
+    rectangle big_g;
+
+    big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->frame_g;
+    get_shaded_geometry(tmp_win, &tmp_win->frame_g, &tmp_win->frame_g);
+    XLowerWindow(dpy, tmp_win->Parent);
+    SetupFrame(
+      tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+      tmp_win->frame_g.width, tmp_win->frame_g.height, False);
+    SET_SHADED(tmp_win ,1);
+  }
 
   return tmp_win;
 }
@@ -1825,6 +1835,7 @@ void destroy_window(FvwmWindow *tmp_win)
  *  Puts windows back where they were before fvwm took over
  *
  ************************************************************************/
+#include "icons.h"
 void RestoreWithdrawnLocation (FvwmWindow *tmp, Bool restart)
 {
   int w2,h2;

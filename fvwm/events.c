@@ -1002,13 +1002,6 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   if(!Tmp_win || (Tmp_win && DO_REUSE_DESTROYED(Tmp_win)))
     {
       /* Add decorations. */
-      if (!Tmp_win)
-	{
-	  /* We must clean out isIconicState here. When we are recapturing a
-	   * window isIconicState is set but never reset. Thus all new windows
-	   * might start iconic. */
-	  isIconicState = DontCareState;
-	}
       Tmp_win = AddWindow(Event.xany.window, ReuseWin);
       if (Tmp_win == NULL)
 	return;

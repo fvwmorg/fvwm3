@@ -464,6 +464,7 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
   /* initialize with GNOME hints */
   GNOME_GetStyle (tmp_win, styles);
 #endif
+
   /* look thru all styles in order defined. */
   for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
   {
@@ -471,6 +472,7 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
     if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_class) == TRUE)
     {
       merge_styles(styles, nptr, False);
+
     }
     else if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_name) == TRUE)
     {

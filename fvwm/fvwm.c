@@ -801,7 +801,7 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
   Atom atype;
   int aformat;
   unsigned long nitems, bytes_remain;
-  unsigned char *prop;
+  unsigned char *prop = NULL;
   unsigned long data[1];
 
   if (fw == NULL)
@@ -841,6 +841,9 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     destroy_window(fw);
     Event.xmaprequest.window = w;
     HandleMapRequestKeepRaised(None, fw);
+    /* Clean out isIconicState here, otherwise all new windos may start
+     * iconified. */
+    isIconicState = DontCareState;
     PPosOverride = False;
     return;
   }
@@ -1736,7 +1739,6 @@ static void Reborder(void)
   MyXUngrabServer (dpy);
   XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
   XSync(dpy,0);
-
 }
 
 /***********************************************************************
