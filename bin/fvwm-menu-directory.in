@@ -630,10 +630,12 @@ Put this into your fvwm configuration file to invoke the script:
   AddToFunc FuncFvwmMenuDirectory
   + I PipeRead "fvwm-menu-directory -d '$0'"
 
-More complex example (the plus line is a one long line):
+More complex example:
 
   # AddToFunc FuncFvwmMenuDirectory
-  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons"
+  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' -a -l \\
+    -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' \\
+    -t 'Go to: %d' --wm-icons"
 
 And put this in the menu from which you want to pop-up the directory menus:
 
@@ -653,9 +655,9 @@ in your configuration file when using this script for better results.
 
 Another interesting usage (C<--reuse> or C<-r> is mandatary for this):
 
-  AddToMenu MenuBrowser
-  + DynamicPopupAction Piperead "fvwm-menu-directory -r -na MenuBrowser -d / -s"
-  AddToMenu SomeMenu "My Browser" Menu MenuBrowser
+  AddToMenu Browser
+  + DynamicPopupAction Piperead "fvwm-menu-directory -r -na Browser -d / -s"
+  AddToMenu SomeMenu "My Browser" Menu Browser
 
 Here C<--dir> starting parameter is ignored if there is
 ~/.fvwm/.fvwm-menu-directory.dir file, you can delete it.

@@ -530,14 +530,16 @@ not the last button, go to the next button. Otherwise, do nothing. Basically,
 this action cycles through all buttons in the current manager.
 
 .EX
-bif select 7, bif focus 3, gotomanager 0, select, ret, gotobutton focus, select, ret, gotobutton down, select
+bif select 7, bif focus 3, gotomanager 0, select, ret, gotobutton focus, \\
+  select, ret, gotobutton down, select
 .EE
 This is good for sending to FvwmIconMan with a SendToModule command. If there
 is a selected button, it moves down. Otherwise, if there is a focused button,
 it is selected. Otherwise, button 0 of manager 0 gets selected.
 
 .EX
-bif select Select, bif focus Focus, gotomanager 0, select, ret, label Focus, gotobutton focus, select, ret, label Select, gotobutton down, select
+bif select Select, bif focus Focus, gotomanager 0, select, ret, label Focus, \\
+  gotobutton focus, select, ret, label Select, gotobutton down, select
 .EE
 Same as previous, but using the label instruction.
 
@@ -591,8 +593,14 @@ Style "FvwmIconMan"  NoTitle, Sticky, WindowListSkip, BorderWidth 0
 Style "FvwmIconMan"  HandleWidth 0
 
 
-Key F8 A N SendToModule FvwmIconMan bif select Select, bif focus Focus, gotomanager 0, select, sendcommand WarpToWindow, ret, label Focus, gotobutton focus, select, sendcommand WarpToWindow, ret, label Select, gotobutton prev, select, sendcommand WarpToWindow
-Key F9 A N SendToModule FvwmIconMan bif select Select, bif focus Focus, gotomanager 0, select, sendcommand WarpToWindow, ret, label Focus, gotobutton focus, select, sendcommand WarpToWindow, ret, label Select, gotobutton next, select, sendcommand WarpToWindow
+Key F8 A N SendToModule FvwmIconMan bif select Select, bif focus Focus, \\
+  gotomanager 0, select, sendcommand WarpToWindow, ret, label Focus, \\
+  gotobutton focus, select, sendcommand WarpToWindow, ret, label Select, \\
+  gotobutton prev, select, sendcommand WarpToWindow
+Key F9 A N SendToModule FvwmIconMan bif select Select, bif focus Focus, \\
+  gotomanager 0, select, sendcommand WarpToWindow, ret, label Focus, \\
+  gotobutton focus, select, sendcommand WarpToWindow, ret, label Select, \\
+  gotobutton next, select, sendcommand WarpToWindow
 
 *FvwmIconMan: NumManagers 2
 *FvwmIconMan: Resolution  page

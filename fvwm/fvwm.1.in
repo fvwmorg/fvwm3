@@ -1483,7 +1483,8 @@ Key Escape A MC EscapeFunc
 Mouse 0 R N Menu MenuFvwmRoot
 Mouse 1 TS A FuncFvwmRaiseLowerX Move
 Mouse 1 F  A FuncFvwmRaiseLowerX Resize
-AddToFunc FuncFvwmRaiseLowerX I Raise
+AddToFunc FuncFvwmRaiseLowerX
++ I Raise
 + M $0
 + D Lower
 .EE
@@ -1559,7 +1560,7 @@ To force that all pending changes are applied immediately, use the
 .BR UpdateStyles ", " Refresh " or " RefreshWindow
 commands.
 
-.SS QUOTING
+.SH QUOTING
 
 Quotes are required only when needed to make fvwm consider two or
 more words to be a single argument.  Unnecessary quoting is
@@ -1581,7 +1582,7 @@ in the same way.  Single characters can be quoted with a preceding
 backslash.  Quoting single characters works even inside other
 kinds of quotes.
 
-.SS COMMAND EXPANSION
+.SH COMMAND EXPANSION
 
 Whenever a fvwm command line is executed, fvwm performs parameter
 expansion.  A parameter is a '$' followed by a word enclosed in
@@ -1928,7 +1929,7 @@ achieve the same functionality you can use the.
 .BR Read " or " PipeRead
 command instead.
 
-.SS THE LIST OF FVWM COMMANDS
+.SH THE LIST OF FVWM COMMANDS
 
 The command descriptions below are grouped together in the
 following sections.  The sections are hopefully sorted in order of

@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "FVWM-MENU-DIRECTORY 1"
-.TH FVWM-MENU-DIRECTORY 1 "2003-03-15" "perl v5.8.0" "FVWM Utilities"
+.TH FVWM-MENU-DIRECTORY 1 "2003-04-19" "perl v5.8.0" "FVWM Utilities"
 .SH "NAME"
 fvwm\-menu\-directory \- builds a directory browsing menu for FVWM
 .SH "SYNOPSIS"
@@ -351,11 +351,13 @@ Put this into your fvwm configuration file to invoke the script:
 \&  + I PipeRead "fvwm-menu-directory -d '$0'"
 .Ve
 .PP
-More complex example (the plus line is a one long line):
+More complex example:
 .PP
-.Vb 2
+.Vb 4
 \&  # AddToFunc FuncFvwmMenuDirectory
-\&  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons"
+\&  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' -a -l \e\e
+\&    -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' \e\e
+\&    -t 'Go to: %d' --wm-icons"
 .Ve
 .PP
 And put this in the menu from which you want to pop-up the directory menus:
