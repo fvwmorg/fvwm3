@@ -583,7 +583,7 @@ Widget 39
 Property
  Position 155 185
  Type PopupMenu
- Title {xfm|Midnight-Commender|File Runner|dfm|kfm|gmc|dtfile|kexplorer}
+ Title {xfm|Midnight-Commander|File Runner|dfm|kfm|gmc|dtfile|kexplorer}
 Main
  Case message of
   SingleClic :

@@ -1132,7 +1132,7 @@ AddToFunc ReloadIconStylesAndMenus
 + I Read iconstyles
 + I Read menus
 # Need to reload the NoIcon style
-+ I PipeRead 'if grep -e AddToStart $FVWM_USERDIR/.start-apps-man; then echo Style * NoIcon; fi'
++ I PipeRead 'if grep -qe AddToFunc $FVWM_USERDIR/.start-apps-man; then echo "Style * NoIcon"; fi'
 
 #------------------------------------------------------------------------------
 # Functions for Loading/Saving/Showing Settings
@@ -1903,7 +1903,7 @@ AddToFunc SetBackFromDirectories
 
 
 # Replace $FVWM_USERDIR/images/backgrounds/ by your backgrounds directory
-# and comment the next line
+# and uncomment the next line
 #AddToMenu Back-Personal DynamicPopupAction SetBackFromDirectory 'Back-Personal' '$FVWM_USERDIR/images/backgrounds/*' 'Exec exec xv -root -quit'
 
 AddToMenu Back-Site DynamicPopupAction SetBackFromDirectories 'Back-Site' '/usr/share/pixmaps/backgrounds/*' 'Exec exec xv -root -quit'
@@ -2254,7 +2254,7 @@ AddToMenu   FvwmManPage
 + "Fvwm&WinList%mini.book1.xpm%"  Exec exec xterm -g 80x40 -e man FvwmWinList
 + "fvwm-menu-&desktop%mini.book1.xpm%"	Exec exec xterm -g 80x40 -e man fvwm-menu-desktop
 + "fvwm-menu-&directory%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man fvwm-menu-directory
-+ "fvwm-menu-&headline%mini.book1.xpm%"	Exec exec xterm -g 80x40 -e man fvwm-menu-headline
++ "fvwm-menu-&headlines%mini.book1.xpm%"	Exec exec xterm -g 80x40 -e man fvwm-menu-headlines
 + "fvwm-menu-&xlock%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man fvwm-menu-xlock
 + "xpmroot%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man xpmroot
 
@@ -2353,10 +2353,9 @@ AddToMenu "Window-Ops2"
 + "&Close%mini.cross.xpm"			Close
 + "&Kill%mini.bomb.xpm%"			Destroy
 + ""			Nop
-# The menu position is broken in fvwm2, but if we remove the mini-icons of
-# this menu this work !!
-+ "&Window Style%mini.window.xpm%"		Menu WindowStyle  
-+ "&Group Ops%mini.windows.xpm%"		Menu WindowGroupOps
+# The menu position is broken in fvwm2 or I am missing somthing ...
++ "&Window Style%mini.window.xpm%"		Menu WindowStyle Menu  
++ "&Group Ops%mini.windows.xpm%"		Menu WindowGroupOps Menu
 
 #------------------------------------------------------------------------------
 # A trimmed down version of "Window Ops", good for binding to TaskBar, 
@@ -2436,8 +2435,8 @@ AddToMenu   WindowStyle
 + "%mini.window.xpm%&NoHandles"		Pick (CirculateHit) Style $n NoHandles
 + "%mini.window.xpm%BorderWidth &0" Pick (CirculateHit) Style $n BorderWidth 0
 + "%mini.window.xpm%BorderWidth &5" Pick (CirculateHit) Style $n BorderWidth 5
-+ "%mini.window.xpm%HandleWi&dth &0" Pick (CirculateHit) Style $n HandleWidth 0
-+ "%mini.window.xpm%HandleWid&th &7" Pick (CirculateHit) Style $n HandleWidth 7
++ "%mini.window.xpm%HandleWidth &0" Pick (CirculateHit) Style $n HandleWidth 0
++ "%mini.window.xpm%HandleWidth &7" Pick (CirculateHit) Style $n HandleWidth 7
 + "" Nop
 + "%mini.resize3.xpm%&ResizeOpaque"  Pick (CirculateHit) Style $n ResizeOpaque
 + "%mini.resize3.xpm%Resize&Outline" Pick (CirculateHit) Style $n ResizeOutline
@@ -2997,7 +2996,7 @@ DestroyModuleConfig FvwmWinList*
 # Shift-Alt-Mouse 3 inside a window: Raise or Lower
 
 # If you have built the config for gnome-session:
-# Mouse x on the root window gives the corresponding "GNOME button"
+# Shift-Mouse x on the root window gives the corresponding "GNOME button"
 
 # Mouse 1 on the title: Raise, Move for a drag, shade for a double click
 # Mouse 1 on the borders: Raise, Resize for a drag, shade for a double click
@@ -3095,16 +3094,17 @@ DestroyModuleConfig FvwmWinList*
 #
 # No. But, it is possible to hack the configuration to have an "elementary" 
 # themes engine. The basic idea is to use FvwmTheme to propagate the colors 
-# and to replace section 2 by Read .current-theme where .current-theme is a 
-# symbolic link to a theme. A theme will be a file which look like section 2 
-# plus the FvwmTheme configuration commands. Other technical functions are 
-# needed as a function for switching between themes. This is left to your own 
-# pleasure! Doing elaborated FVWM configurations is one of the better games 
-# under UNIX.
+# and to replace "Read decorations" by "Read theme" in .fvwm2rc where theme 
+# is a symbolic link to a theme. A theme will be a file which look like 
+# decorations plus the FvwmTheme configuration commands. Other technical 
+# functions are needed as a function for switching between themes. This is 
+# left to your own pleasure! Doing elaborated FVWM configurations is one of 
+# the better games under UNIX.
 #
 # If you want a powerful themes engine do not use Sample-95, it is not the
 # aim of this configuration. There are a powerful themes engine which is 
 # under fast development: fvwm-themes (http://fvwm-themes.sourceforge.net/).
+#
 #
 #                  ----------------------------------------
 #
@@ -3121,15 +3121,13 @@ DestroyModuleConfig FvwmWinList*
 # Note that under session, Sample-95 does not load your "X settings" by 
 # default (GNOME has its own method). Moreover, read the next question for 
 # using a different setting when you use GNOME (you may also use the 
-# Session(Init/Restart)Function functionality, see section 5).
+# Session(Init/Restart)Function functionality, see the startup file).
 # One thing that you can add to your configuration file is:
 #	GnomeShowDesk x
 # where x is the number of desks you want to see in the GNOME pager at
 # start (if not the GNOME pager is dynamic).
-# Also, for leaving GNOME you must use GNOME or you must use the one of the
-# following command: 
-# "QuitSession" for just exiting or "Exec exec save-session --kill" for
-# saving and exiting.
+# Also, for leaving GNOME you must use GNOME or you must "QuitSession" for 
+# just exiting or "Exec exec save-session --kill" for saving and exiting.
 #
 #                  ----------------------------------------
 #

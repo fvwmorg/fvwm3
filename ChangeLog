@@ -1,5 +1,10 @@
 2000-05-20  olicha <olivier.chapuis@free.fr>
 
+	* sample/system.fvwm2rc-sample-95
+	Corrected some miss prints (thanks to sa)
+	
+2000-05-20  olicha <olivier.chapuis@free.fr>
+
 	* fvwm/update{c,h} (apply_window_updates):
 	* fvwm/styles.c (check_window_style_change):
 	Send a CONFIGURE_WINDOW message to module in the case of a
