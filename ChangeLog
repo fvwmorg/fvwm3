@@ -1,3 +1,8 @@
+2000-02-08  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* fvwm/module_interface.c (PositiveWrite)
+	Increased the "dead module" timeout to 5 seconds to save FvwmAnimate
+
 2000-02-07  olicha	<olivier.chapuis@free.fr>
 
 	* fvwm/virtual.c (checkPanFrames):

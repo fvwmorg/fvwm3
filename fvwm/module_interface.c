@@ -1214,8 +1214,9 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
        * 
        * NOTE: I initially tried a smaller timeout, but FvwmAnimate
        *       kept dying on me (CJR 30/01/00)
+       *     : One second is still not enough - try five (CJR 08/02/00)
        */
-      timeout.tv_sec = 1;
+      timeout.tv_sec = 5;
       timeout.tv_usec = 0;
       FD_SET(readPipes[module], &readSet);
 
