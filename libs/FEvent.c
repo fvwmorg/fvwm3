@@ -121,11 +121,6 @@ Time fev_get_evtime(void)
 	return fev_last_timestamp;
 }
 
-int fev_get_evtype__remove_me(void)
-{
-	return fev_event.type;
-}
-
 void fev_fake_event(XEvent *ev)
 {
 	fev_event = *ev;

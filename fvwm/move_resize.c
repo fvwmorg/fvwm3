@@ -3104,7 +3104,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	/* kick off resizing without requiring any motion if invoked with a key
 	 * press */
-	if (fev_get_evtype__remove_me() == KeyPress)
+	if (exc->x.elast->type == KeyPress)
 	{
 		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed_x,

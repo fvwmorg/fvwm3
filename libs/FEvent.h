@@ -41,9 +41,6 @@ XEvent *fev_get_last_event_address(void);
 /* get the latest event time */
 Time fev_get_evtime(void);
 
-/*!!!remove this function once the exec context manager is there */
-int fev_get_evtype__remove_me(void);
-
 /* announce a faked event to the FEvent module */
 void fev_fake_event(XEvent *ev);
 
