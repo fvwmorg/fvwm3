@@ -488,7 +488,9 @@ void CursorStyle(F_CMD_ARGS)
   SafeDefineCursor(Scr.PanFrameBottom.win, Scr.FvwmCursors[CRS_BOTTOM_EDGE]);
   SafeDefineCursor(Scr.PanFrameLeft.win, Scr.FvwmCursors[CRS_LEFT_EDGE]);
   SafeDefineCursor(Scr.PanFrameRight.win, Scr.FvwmCursors[CRS_RIGHT_EDGE]);
-  SafeDefineCursor(Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
+  /* migo (04/Nov/1999): don't annoy users which use xsetroot */
+  if (index == CRS_ROOT)
+    SafeDefineCursor(Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
 }
 
 /***********************************************************************
