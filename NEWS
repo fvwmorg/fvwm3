@@ -1,4 +1,7 @@
-Changes in alpha release 2.3.1 (February 1999)
+Changes in alpha release 2.3.0 (February 1999)
+
+* The 'extras' directory has been merged into 'modules'; the
+  --enable-extras configure flag is obsolete.
 
 * New command: Silent. Suppresses user interaction when a window is needed but
   none is selected.

@@ -1247,8 +1247,8 @@ A: This has come up a few times, so I thought I'd put it here too.
 7.1  An easy way to test new configurations.
 
    Did you know that you do not need to restart X or fvwm2 to see what
-   most configuration commands do? There are several modules and
-   extras that allow you to issue fvwm2 commands at any time.  Among
+   most configuration commands do? There are several modules
+   that allow you to issue fvwm2 commands at any time.  Among
    these are FvwmCommand, FvwmTalk and FvwmConsole.  Personally I use
    FvwmCommand and FvwmConsole.
 

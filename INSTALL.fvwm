@@ -23,24 +23,6 @@ Or you may feel more comfortable with a complete cleaning:
   $ make distclean
 
 
-Extra Modules
-=============
-
-All modules are equal, but some are more equal than others.  The
-favoured and generally better supported modules are distributed under
-the `modules' directory.  These are always built and installed.
-
-The second class modules are categorized as `extras'.  These are only
-built and installed if you explicitly do `cd extras; make install'.
-You can also install extra modules one-by-one, using `cd extras/foo;
-make install'.  (You must do a build from the top-level directory
-first, so that `libs' is built.)
-
-If you prefer to treat the extras as first-class modules, give
-`--enable-extras' option to configure.  Then `make' and `make install'
-will recurse into the `extras' directory.
-
-
 What gets installed, and Where
 ==============================
 

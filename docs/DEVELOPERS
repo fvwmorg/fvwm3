@@ -22,9 +22,10 @@ tree.
     autoreconf
 
 There will be some warnings, which are ignorable as long as you get a
-working configure script.  
+working configure script.
 
-Now, configure and build as per INSTALL.fvwm and INSTALL.
+Now, configure and build as per INSTALL.fvwm and INSTALL.  If
+configure fails, please look through `config.log' for clues.
 
 
 Rules of the Road
@@ -112,20 +113,19 @@ Building a distribution
 By this, I mean the file "fvwm-x.y.z.tar.gz".
 
 Steps: 1. make sure you have XPM and a C++ compiler
-       2. configure with the flag --enable-extras
-       3. make
-       4. make distcheck
-       5. ensure that you see the message
+       2. make
+       3. make distcheck
+       4. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
 
 If this is to be an "official" release, then do also the following:
 
-       6. tag the CVS tree:
+       5. tag the CVS tree:
           cvs tag version-x_y_z
-       7. increase the version number in configure.in (see above)
-       8. upload the file fvwm-x.y.z.tar.gz to
+       6. increase the version number in configure.in (see above)
+       7. upload the file fvwm-x.y.z.tar.gz to
 	  ftp://ftp.fvwm.org/pub/incoming/fvwm
-       9. notify fvwm-owner@fvwm.org of the upload
+       8. notify fvwm-owner@fvwm.org of the upload
 
 
 One thing I've learned the hard way:
@@ -133,19 +133,17 @@ One thing I've learned the hard way:
         You have to configure with ALL THE OPTIONAL SUBDIRECTORIES
         in order to build a distribution!
 
-In short: this means you need Xpm, and a C++ compiler, AND you have to
-configure using the flag --enable-extras.  The reason for this is that
-a couple of subdirectories are only built when using Xpm (xpmroot, for
-example) or C++ (extras/FvwmConfig).  It is fine for end users to not
-build these.  However, the distribution-maker has to have all the
-directories enabled, else the files don't make it into the
+In short, this means you need Xpm, as a couple of subdirectories are
+only built when using Xpm (xpmroot, for example).  It is fine for end
+users to not build these.  However, the distribution-maker has to have
+all the directories enabled, else the files don't make it into the
 distribution tar file.
 
 Similarly, you need to have actually built everything before packing
-the distribution, hence step #4.  Among other things, this puts into
+the distribution, hence step #2.  Among other things, this puts into
 the Makefile.in's the proper dependency information.
 
-Step 5 will create the tar file, then unpack it and attempt a build &
+Step 3 will create the tar file, then unpack it and attempt a build &
 install (to a scratch directory, not /usr/local).  This makes sure
 that you really DID include all the files necessary to build the
 package into the tar file. It may be hard to appreciate how useful
