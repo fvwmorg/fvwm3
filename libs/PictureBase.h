@@ -76,20 +76,21 @@ void PictureUseFvwmVisual(void);
 void PictureSaveFvwmVisual(void);
 
 /** Returns current setting of the image path **/
-char* PictureGetImagePath( void );
+char* PictureGetImagePath(void);
 
 
 /** Sets image path to newpath.  Environment variables are expanded, and '+'
     is expanded to previous value of imagepath.  The new path is in
     newly-allocated memory, so newpath may be freed or re-used.  **/
-void PictureSetImagePath( const char* newpath );
+void PictureSetImagePath(const char* newpath);
 
 
 /** Search for file along pathlist.  If pathlist is NULL, will use the current
     imagepath setting.  If filename is not found, but filename.gz is found,
     will return the latter.  Mode is typically R_OK.  See searchPath() for
     more details.  **/
-char* PictureFindImageFile(const char* filename, const char* pathlist, int mode);
+char* PictureFindImageFile(
+	const char* filename, const char* pathlist, int mode);
 
 typedef struct FvwmPictureThing
 {
@@ -148,10 +149,10 @@ typedef struct
 	Pixel tint;
 	short tint_percent;
 	Pixel uniform_pixel;
-	colorset_struct *colorset;;
+	colorset_t *colorset;;
 } FvwmRenderAttributes;
 
-/* alpha limit if we cannot use the alpha channel */ 
+/* alpha limit if we cannot use the alpha channel */
 #define PICTURE_ALPHA_LIMIT 130
 
 #endif /* Picture_Base_H */

@@ -493,7 +493,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   Pixmap pchk = None;
   Pixel tip_fore;
   Pixel tip_back;
-  colorset_struct *cset = NULL;
+  colorset_t *cset = NULL;
 
   if (tipscolorset >= 0)
   {

@@ -468,9 +468,9 @@ void menustyle_update(MenuStyle *ms)
 	color_quad c_inactive;
 	color_quad c_active;
 	color_quad c_stipple;
-	colorset_struct *menu_cs = &Colorset[ST_CSET_MENU(ms)];
-	colorset_struct *active_cs = &Colorset[ST_CSET_ACTIVE(ms)];
-	colorset_struct *greyed_cs = &Colorset[ST_CSET_GREYED(ms)];
+	colorset_t *menu_cs = &Colorset[ST_CSET_MENU(ms)];
+	colorset_t *active_cs = &Colorset[ST_CSET_ACTIVE(ms)];
+	colorset_t *greyed_cs = &Colorset[ST_CSET_GREYED(ms)];
 
 	if (ST_USAGE_COUNT(ms) != 0)
 	{

@@ -65,7 +65,7 @@ typedef struct
 	Bool allows_buffered_transparency;
 	Bool is_maybe_root_transparent;
 #endif
-} colorset_struct;
+} colorset_t;
 
 #define PIXMAP_TILED 0
 #define PIXMAP_STRETCH_X 1
@@ -94,7 +94,7 @@ typedef struct
 #endif
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */
-extern colorset_struct *Colorset;
+extern colorset_t *Colorset;
 
 
 /* some macro for transparency */
@@ -153,30 +153,32 @@ void AllocColorset(int n);
 #endif
 
 /* dump one */
-char *DumpColorset(int n, colorset_struct *colorset);
+char *DumpColorset(int n, colorset_t *colorset);
 /* load one */
 int LoadColorset(char *line);
 
-Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
-			      colorset_struct *colorset, unsigned int depth,
-			      GC gc, Bool is_mask);
+Pixmap CreateBackgroundPixmap(
+	Display *dpy, Window win, int width, int height,
+	colorset_t *colorset, unsigned int depth,
+	GC gc, Bool is_mask);
 Pixmap ScrollPixmap(
 	Display *dpy, Pixmap p, GC gc, int x_off, int y_off, int width,
 	int height, unsigned int depth);
 void SetWindowBackgroundWithOffset(
 	Display *dpy, Window win, int x_off, int y_off, int width, int height,
-	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area);
-void SetWindowBackground(Display *dpy, Window win, int width, int height,
-			 colorset_struct *colorset, unsigned int depth, GC gc,
-			 Bool clear_area);
+	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area);
+void SetWindowBackground(
+	Display *dpy, Window win, int width, int height,
+	colorset_t *colorset, unsigned int depth, GC gc,
+	Bool clear_area);
 Bool UpdateBackgroundTransparency(
 	Display *dpy, Window win, int width, int height,
-	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area);
+	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area);
 void SetRectangleBackground(
-  Display *dpy, Window win, int x, int y, int width, int height,
-  colorset_struct *colorset, unsigned int depth, GC gc);
+	Display *dpy, Window win, int x, int y, int width, int height,
+	colorset_t *colorset, unsigned int depth, GC gc);
 void SetClippedRectangleBackground(
-  Display *dpy, Window win, int x, int y, int width, int height,
-  XRectangle *clip, colorset_struct *colorset,
-  unsigned int depth, GC gc);
+	Display *dpy, Window win, int x, int y, int width, int height,
+	XRectangle *clip, colorset_t *colorset,
+	unsigned int depth, GC gc);
 #endif

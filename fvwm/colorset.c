@@ -245,7 +245,7 @@ static void add_to_junk(Pixmap pixmap)
 }
 
 static char *get_simple_color(
-	char *string, char **color, colorset_struct *cs, int supplied_color,
+	char *string, char **color, colorset_t *cs, int supplied_color,
 	int special_flag, char *special_string)
 {
 	char *rest;
@@ -307,7 +307,7 @@ static void SafeDestroyPicture(Display *dpy, FvwmPicture *picture)
 	return;
 }
 
-static void free_colorset_background(colorset_struct *cs, Bool do_free_args)
+static void free_colorset_background(colorset_t *cs, Bool do_free_args)
 {
 	if (cs->picture != NULL)
 	{
@@ -361,7 +361,7 @@ static void free_colorset_background(colorset_struct *cs, Bool do_free_args)
 	}
 }
 
-static void reset_cs_pixmap(colorset_struct *cs, GC gc)
+static void reset_cs_pixmap(colorset_t *cs, GC gc)
 {
 	if (Pdepth == cs->picture->depth)
 	{
@@ -378,7 +378,7 @@ static void reset_cs_pixmap(colorset_struct *cs, GC gc)
 }
 
 static void parse_pixmap(
-	Window win, GC gc, colorset_struct *cs, Bool *pixmap_is_a_bitmap)
+	Window win, GC gc, colorset_t *cs, Bool *pixmap_is_a_bitmap)
 {
 	static char *name = "parse_colorset(pixmap)";
 	FvwmPictureAttributes fpa;
@@ -446,7 +446,7 @@ static void parse_pixmap(
 	}
 }
 
-static void parse_shape(Window win, colorset_struct *cs, int i, char *args,
+static void parse_shape(Window win, colorset_t *cs, int i, char *args,
 			int *has_shape_changed)
 {
 	char *token;
@@ -538,7 +538,7 @@ static void parse_shape(Window win, colorset_struct *cs, int i, char *args,
 }
 
 static void parse_simple_tint(
-	colorset_struct *cs, char *args, char **tint, int supplied_color,
+	colorset_t *cs, char *args, char **tint, int supplied_color,
 	int *changed, int *percent, char *cmd)
 {
 	char *rest;
@@ -595,7 +595,7 @@ void parse_colorset(int n, char *line)
 	int h;
 	int tmp;
 	int percent;
-	colorset_struct *cs;
+	colorset_t *cs;
 	char *optstring;
 	char *args;
 	char *option;
@@ -1599,7 +1599,7 @@ void parse_colorset(int n, char *line)
 
 /*****************************************************************************
  * alloc_colorset() grows the size of the Colorset array to include set n
- * Colorset_struct *Colorset will be altered
+ * colorset_t *Colorset will be altered
  * returns the address of the member
  *****************************************************************************/
 void alloc_colorset(int n)
@@ -1611,11 +1611,11 @@ void alloc_colorset(int n)
 	}
 	else
 	{
-		Colorset = (colorset_struct *)saferealloc(
-			(char *)Colorset, (n + 1) * sizeof(colorset_struct));
+		Colorset = (colorset_t *)saferealloc(
+			(char *)Colorset, (n + 1) * sizeof(colorset_t));
 		memset(
 			&Colorset[nColorsets], 0,
-			(n + 1 - nColorsets) * sizeof(colorset_struct));
+			(n + 1 - nColorsets) * sizeof(colorset_t));
 	}
 	if (n == 0)
 	{
@@ -1625,7 +1625,7 @@ void alloc_colorset(int n)
 	/* initialize new colorsets to black on gray */
 	while (nColorsets <= n)
 	{
-		colorset_struct *ncs = &Colorset[nColorsets];
+		colorset_t *ncs = &Colorset[nColorsets];
 
 		if (PictureUseBWOnly())
 		{
@@ -1678,7 +1678,7 @@ void alloc_colorset(int n)
 void update_root_transparent_colorset(Atom prop)
 {
 	int i;
-	colorset_struct *cs;
+	colorset_t *cs;
 
 	root_pic.old_pixmap = root_pic.pixmap;
 	update_root_pixmap(prop);

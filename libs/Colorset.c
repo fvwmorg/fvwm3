@@ -34,12 +34,12 @@
 #include "libs/PictureGraphics.h"
 
 /* globals */
-colorset_struct *Colorset = NULL;
+colorset_t *Colorset = NULL;
 int nColorsets = 0;
 
 /*****************************************************************************
  * AllocColorset() grows the size of the Colorset array to include set n
- * Colorset_struct *Colorset will be altered
+ * colorset_t *Colorset will be altered
  * returns the address of the member
  *****************************************************************************/
 void AllocColorset(int n)
@@ -51,8 +51,8 @@ void AllocColorset(int n)
 	}
 
 	/* increment n to get the required array size, get a new array */
-	Colorset = (colorset_struct *)saferealloc(
-		(char *)Colorset, ++n * sizeof(colorset_struct));
+	Colorset = (colorset_t *)saferealloc(
+		(char *)Colorset, ++n * sizeof(colorset_t));
 
 	/* zero out colorset 0
 	   it's always defined so will be filled in during module startup */
@@ -60,7 +60,7 @@ void AllocColorset(int n)
 	{
 		memset(
 			&Colorset[nColorsets], 0,
-			(n - nColorsets) * sizeof(colorset_struct));
+			(n - nColorsets) * sizeof(colorset_t));
 	}
 	else
 	{
@@ -70,7 +70,7 @@ void AllocColorset(int n)
 		{
 			memcpy(
 				&Colorset[nColorsets], Colorset,
-				sizeof(colorset_struct));
+				sizeof(colorset_t));
 		}
 	}
 	nColorsets = n;
@@ -82,7 +82,7 @@ void AllocColorset(int n)
  * DumpColorset() returns a char * to the colorset contents in printable form
  *****************************************************************************/
 static char csetbuf[256];
-char *DumpColorset(int n, colorset_struct *cs)
+char *DumpColorset(int n, colorset_t *cs)
 {
 	sprintf(csetbuf,
 		"Colorset "
@@ -102,7 +102,7 @@ char *DumpColorset(int n, colorset_struct *cs)
  *****************************************************************************/
 int LoadColorset(char *line)
 {
-	colorset_struct *cs;
+	colorset_t *cs;
 	unsigned int n, chars;
 	Pixel fg, bg, hilite, shadow, fgsh, tint, icon_tint;
 	Pixmap pixmap;
@@ -200,7 +200,7 @@ Pixmap ScrollPixmap(
  */
 void SetWindowBackgroundWithOffset(
 	Display *dpy, Window win, int x_off, int y_off, int width, int height,
-	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area)
+	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area)
 {
 	Pixmap pixmap = None;
 	Pixmap mask = None;
@@ -275,7 +275,7 @@ void SetWindowBackgroundWithOffset(
 
 Bool UpdateBackgroundTransparency(
 	Display *dpy, Window win, int width, int height,
-	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area)
+	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area)
 {
 	if (!CSETS_IS_TRANSPARENT(colorset))
 	{
@@ -297,7 +297,7 @@ Bool UpdateBackgroundTransparency(
 
 void SetWindowBackground(
 	Display *dpy, Window win, int width, int height,
-	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area)
+	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area)
 {
 	SetWindowBackgroundWithOffset(
 		dpy, win, 0, 0, width, height, colorset, depth, gc, clear_area);
@@ -307,7 +307,7 @@ void SetWindowBackground(
 
 /* create a pixmap suitable for plonking on the background of a window */
 Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
-			      colorset_struct *colorset, unsigned int depth,
+			      colorset_t *colorset, unsigned int depth,
 			      GC gc, Bool is_shape_mask)
 {
 	Pixmap pixmap = None;
@@ -551,7 +551,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
  * drawable. */
 void SetRectangleBackground(
 	Display *dpy, Window win, int x, int y, int width, int height,
-	colorset_struct *colorset, unsigned int depth, GC gc)
+	colorset_t *colorset, unsigned int depth, GC gc)
 {
 	SetClippedRectangleBackground(
 		dpy, win, x, y, width, height, NULL, colorset, depth, gc);
@@ -563,7 +563,7 @@ void SetRectangleBackground(
  * drawable. */
 void SetClippedRectangleBackground(
 	Display *dpy, Window win, int x, int y, int width, int height,
-	XRectangle *clip, colorset_struct *colorset,
+	XRectangle *clip, colorset_t *colorset,
 	unsigned int depth, GC gc)
 {
 	GC draw_gc;

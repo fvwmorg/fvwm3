@@ -1,14 +1,22 @@
+2002-10-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Colorset.c:
+	* fvwm/menustyle.c:
+	* libs/Colorset.h:
+	* libs/Flocale.h:
+	* libs/PictureBase.h:
+	* fvwm/menuitem.c:
+	* fvwm/geometry.c:
+	* fvwm/colorset.c:
+	renamed colorset_struct to colorset_t
+
 2002-10-22  olicha  <olivier.chapuis@free.fr>
 
-	* libs/PictureUtils.c: 
+	* libs/PictureUtils.c:
 	Minor fixes and add #if O experimental code
 
 2002-10-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* fvwm/menuitem.c (menuitem_paint):
-	* fvwm/geometry.c (move_icon_to_position):
-	* fvwm/colorset.c (parse_colorset):
-	(alloc_colorset):
 	* fvwm/icons.c (DrawIconPixmapWindow):
 	(DrawIconWindow):
 	* fvwm/events.c (HandlePropertyNotify):

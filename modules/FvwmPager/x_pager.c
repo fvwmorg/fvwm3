@@ -242,31 +242,41 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
  ***********************************************************************/
 void initialize_viz_pager(void)
 {
-  XSetWindowAttributes attr;
-  XGCValues xgcv;
+	XSetWindowAttributes attr;
+	XGCValues xgcv;
 
-  /* FIXME: I think that we only need that Pdepth ==
-   * DefaultDepth(dpy, Scr.screen) to use the Scr.Root for Scr.Pager_w */
-  if (Pdefault) {
-    Scr.Pager_w = Scr.Root;
-  } else {
-    attr.background_pixmap = None;
-    attr.border_pixel = 0;
-    attr.colormap = Pcmap;
-    Scr.Pager_w = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth,
-				InputOutput, Pvisual,
-				CWBackPixmap|CWBorderPixel|CWColormap, &attr);
-    Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, &xgcv);
-  }
-  Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, NULL);
+	/* FIXME: I think that we only need that Pdepth ==
+	 * DefaultDepth(dpy, Scr.screen) to use the Scr.Root for Scr.Pager_w */
+	if (Pdefault)
+	{
+		Scr.Pager_w = Scr.Root;
+	}
+	else
+	{
+		attr.background_pixmap = None;
+		attr.border_pixel = 0;
+		attr.colormap = Pcmap;
+		Scr.Pager_w = XCreateWindow(
+			dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth,
+			InputOutput, Pvisual,
+			CWBackPixmap|CWBorderPixel|CWColormap, &attr);
+		Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, &xgcv);
+	}
+	Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, NULL);
 
-  xgcv.plane_mask = AllPlanes;
-  Scr.MiniIconGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCPlaneMask, &xgcv);
-  Scr.black = GetColor("Black");
+	xgcv.plane_mask = AllPlanes;
+	Scr.MiniIconGC = fvwmlib_XCreateGC(
+		dpy, Scr.Pager_w, GCPlaneMask, &xgcv);
+	Scr.black = GetColor("Black");
 
-  /* Transparent background are only allowed when the depth matched the root */
-  if (Pdepth == DefaultDepth(dpy, Scr.screen))
-    default_pixmap = ParentRelative;
+	/* Transparent background are only allowed when the depth matched the
+	 * root */
+	if (Pdepth == DefaultDepth(dpy, Scr.screen))
+	{
+		default_pixmap = ParentRelative;
+	}
+
+	return;
 }
 
 /* see also change colorset */
@@ -3175,7 +3185,7 @@ void DrawInBalloonWindow (int i)
 }
 
 static void set_window_colorset_background(
-  PagerWindow *t, colorset_struct *csetp)
+  PagerWindow *t, colorset_t *csetp)
 {
   if (t->PagerView != None)
   {
@@ -3265,7 +3275,7 @@ void change_colorset(int colorset)
 
   if (windowcolorset == colorset)
   {
-    colorset_struct *csetp = &Colorset[colorset];
+    colorset_t *csetp = &Colorset[colorset];
 
     XSetForeground(dpy, Scr.whGC, csetp->hilite);
     XSetForeground(dpy, Scr.wsGC, csetp->shadow);
@@ -3283,7 +3293,7 @@ void change_colorset(int colorset)
   }
   if (activecolorset == colorset)
   {
-    colorset_struct *csetp = &Colorset[colorset];
+    colorset_t *csetp = &Colorset[colorset];
 
     focus_fore_pix = csetp->fg;
     XSetForeground(dpy, Scr.ahGC, csetp->hilite);

@@ -169,7 +169,7 @@ typedef struct
 	char *e_str;    /* tmp */
 	XChar2b *str2b; /* tmp */
 	GC gc;
-	colorset_struct *colorset;
+	colorset_t *colorset;
 	Window win;
 	int x;
 	int y;
