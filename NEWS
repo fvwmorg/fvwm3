@@ -16,6 +16,8 @@ Changes in alpha release 2.5.3 (not released yet)
 * Fixed wrong warp coordinates when WarpToWindow was used with two
   arguments on an unmanaged window.
 
+* Vastly improved FvwmEvent performance.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

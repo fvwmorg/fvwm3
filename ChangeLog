@@ -1,5 +1,9 @@
 2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleLeaveNotify):
+	(HandleEnterNotify):
+	reduced the number of MX_LEAVE/ENTER_WINDOW messages
+
 	* fvwm/events.c (CMD_XSync):
 	very experimental patch to cycle through subwindows accepting keyboard
 	input; call Xsync command repeatedly to test; crashes fvwm if more than

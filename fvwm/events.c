@@ -1528,9 +1528,14 @@ void HandleEnterNotify(void)
 	{
 		return;
 	}
-	BroadcastPacket(
-		MX_ENTER_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw),
-		(unsigned long)Fw);
+	if (Event.xcrossing.window == FW_W_FRAME(Fw) ||
+	    Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
+	    Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw))
+	{
+		BroadcastPacket(
+			MX_ENTER_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw),
+			(unsigned long)Fw);
+	}
 	sf = get_focus_window();
 	if (sf && Fw != sf && HAS_MOUSE_FOCUS(sf))
 	{
@@ -1916,7 +1921,10 @@ void HandleLeaveNotify(void)
 		/* handle a subwindow cmap */
 		LeaveSubWindowColormap(Event.xany.window);
 	}
-	if (Fw != NULL)
+	if (Fw != NULL &&
+	    (Event.xcrossing.window == FW_W_FRAME(Fw) ||
+	     Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
+	     Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw)))
 	{
 		BroadcastPacket(
 			MX_LEAVE_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw),

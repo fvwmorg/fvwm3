@@ -31,14 +31,14 @@
 
 typedef struct
 {
-  int id;
-  Time time_to_execute;
-  Window window;
-  char *command;
-  struct
-  {
-    unsigned is_scheduled_for_destruction : 1;
-  } flags;
+	int id;
+	Time time_to_execute;
+	Window window;
+	char *command;
+	struct
+	{
+		unsigned is_scheduled_for_destruction : 1;
+	} flags;
 } sq_object_type;
 
 static int last_schedule_id = 0;

@@ -4969,7 +4969,6 @@ static void make_menu_window(MenuRoot *mr)
 			XSelectInput(dpy, MR_WINDOW(mr), evmask);
 		}
 		XSaveContext(dpy, MR_WINDOW(mr), MenuContext,(caddr_t)mr);
-
 	}
 
 	return;
@@ -5695,8 +5694,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	initial_window_options_type win_opts;
 
 	/* keep the menu open */
-	discard_window_events(
-		MR_WINDOW(mr_to_copy), SubstructureNotifyMask);
+	discard_window_events(MR_WINDOW(mr_to_copy), SubstructureNotifyMask);
 	mr = clone_menu(mr_to_copy);
 	name = menu_strip_tear_off_title(mr);
 	/* create the menu window and size the menu */

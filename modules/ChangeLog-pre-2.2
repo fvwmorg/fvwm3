@@ -1459,3 +1459,52 @@ Mon Nov  9 18:56:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmAnimate/FvwmAnimate.c: Fixed bug where AnimateResizeLine was
 	drawing 5 segments when it only wanted 4.
+
+Ancient past:
+
+ * Fvwm Event ChangeLog
+
+ * added *FvwmEventPassID config option
+
+ * renamed & cleaned up so that FvwmEvent (TaDa !!) is a general event
+   handler module.
+	       -- 21.04.98 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
+
+ * changed parsing to use new library functions
+
+ * merged bug fix from Christophe MARTIN <cmartin@ipnl.in2p3.fr>
+     - FvwmAudio doesn't read messages it is not interrested in,
+       thus desynchronize,
+     - keep time stamp even if no sound is played
+     - minimize malloc/free
+
+   mark boyns ok-ed this patch, I reviewed it and put out those ugly
+   #defines for RESYNC and READ_BODY by reordering the control structures
+	       -- Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
+
+ * made FvwmAudio insensitive to its name -> can be symlinked.
+   corrected some error message deficiencies, code for quoted 'sound'
+   parameters shamelessly stolen from FvwmButtons/parse.c (with minimal
+   adjustments)
+   FvwmAudio now supports rsynth's say command:
+   *FvwmAudioPlayCmd say
+   *FvwmAudio add_window           "add window"
+   *FvwmAudio raise_window         'raise window'
+	       -- 08/07/96 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
+
+ * Fixed FvwmAudio to reflect the changes made to the module protocol.
+
+ * Szijarto Szabolcs <saby@sch.bme.hu> provided FvwmSound code that used
+   $HOSTDISPLAY for the rplay host.  The code has been added to FvwmAudio.
+
+ * Fixed bugs reported by beta testers, thanks!
+
+ * Builtin rplay support has been added to FvwmAudio.  This support is
+   enabled when FvwmAudio is compiled with HAVE_RPLAY defined and when
+   FvwmAudioPlayCmd is set to builtin-rplay.  I guess it's safe to say
+   that FvwmSound is now obsolete. -- Mark Boyns 5/7/94
+
+ * FvwmAudio is based heavily on an Fvwm module "FvwmSound" by Mark Boyns
+   and the real credit for this really goes to him for the concept.
+   I just stripped out the "rplay" library dependencies to allow generic
+   audio play command support.

@@ -79,15 +79,6 @@
 /* PA_EVENTS are for swallowed panels... */
 #define PA_EVENTS   (StructureNotifyMask)
 
-
-#ifdef DEBUG_FVWM
-#define MySendText(a,b,c) {\
-  fprintf(stderr,"%s: Sending text to fvwm: \"%s\"\n",MyName,(b));\
-  SendText((a),(b),(c));}
-#else
-#define MySendText(a,b,c) SendText((a),(b),(c));
-#endif
-
 extern int nColorsets;  /* in libs/Colorsets.c */
 
 /* --------------------------- external functions -------------------------- */
@@ -890,7 +881,7 @@ int main(int argc, char **argv)
   /* request a window list, since this triggers a response which
    * will tell us the current desktop and paging status, needed to
    * indent buttons correctly */
-  MySendText(fd,"Send_WindowList",0);
+  SendText(fd,"Send_WindowList",0);
 
 #ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Startup complete\n",MyName);
@@ -1229,7 +1220,7 @@ void Loop(void)
 		XDestroyWindow(Dpy, MyWindow);
 		XSync(Dpy, 0);
 	      }
-	      MySendText(fd,tmp.name,0);
+	      SendText(fd,tmp.name,0);
 	      if (is_transient)
 	      {
 		/* and exit */
@@ -1253,7 +1244,7 @@ void Loop(void)
 		XDestroyWindow(Dpy, MyWindow);
 		XSync(Dpy, 0);
 	      }
-	      MySendText(fd,act,0);
+	      SendText(fd,act,0);
 	      if (is_transient)
 	      {
 		/* and exit */
@@ -1393,7 +1384,7 @@ void Loop(void)
 		      UberButton->c->back);
 	      if (p)
 	      {
-		MySendText(fd, p, 0);
+		SendText(fd, p, 0);
 		free(p);
 	      }
 	      RedrawButton(b,1);
@@ -2097,45 +2088,6 @@ void DebugEvents(XEvent *event)
 }
 #endif
 
-#ifdef DEBUG_FVWM
-void DebugFvwmEvents(unsigned long type)
-{
-  char *events[] =
-  {
-    "M_NEW_PAGE",
-    "M_NEW_DESK",
-    "M_ADD_WINDOW",
-    "M_RAISE_WINDOW",
-    "M_LOWER_WINDOW",
-    "M_CONFIGURE_WINDOW",
-    "M_FOCUS_CHANGE",
-    "M_DESTROY_WINDOW",
-    "M_ICONIFY",
-    "M_DEICONIFY",
-    "M_WINDOW_NAME",
-    "M_ICON_NAME",
-    "M_RES_CLASS",
-    "M_RES_NAME",
-    "M_END_WINDOWLIST",
-    "M_ICON_LOCATION",
-    "M_MAP",
-    "M_ERROR",
-    "M_CONFIG_INFO",
-    "M_END_CONFIG_INFO",
-    "M_ICON_FILE",
-    "M_DEFAULTICON",
-    "M_ADD_WINDOW",
-    "M_CONFIGURE_WINDOW",NULL};
-  int i=0;
-  while(events[i])
-  {
-    if(type&1<<i)
-      fprintf(stderr,"%s: Received %s message from fvwm\n",MyName,events[i]);
-    i++;
-  }
-}
-#endif
-
 /**
 *** My_XNextEvent()
 *** Waits for next X event, or for an auto-raise timeout.
@@ -2220,7 +2172,7 @@ void SpawnSome(void)
 		UberButton->c->back);
 	if (p)
 	{
-	  MySendText(fd, p, 0);
+	  SendText(fd, p, 0);
 	  free(p);
 	}
       }
@@ -2424,9 +2376,6 @@ static void handle_config_info_packet(unsigned long *body)
 void process_message(unsigned long type,unsigned long *body)
 {
   struct ConfigWinPacket  *cfgpacket;
-#ifdef DEBUG_FVWM
-  DebugFvwmEvents(type);
-#endif
 
   switch(type)
   {

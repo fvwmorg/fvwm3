@@ -1,3 +1,18 @@
+2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmEvent/FvwmEvent.c (main):
+	select only events that are handled
+
+	* FvwmButtons/FvwmButtons.c:
+	removed old debug code
+
+	* FvwmEvent/FvwmEvent.c:
+	moved old ChangeLog entries to ../ChangeLog
+	re-indented file
+	(config):
+	(handle_config_line):
+	general cleanup
+
 2002-07-05  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmScript/Widgets/Swallow.c (CheckForHangon):
