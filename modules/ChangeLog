@@ -1,3 +1,7 @@
+1999-10-22  Douglas Straub
+
+	* FvwmDragWell/*: new module
+
 1999-10-22  Olivier Chapuis
 
 	* FvwmWinlist/FvwmWinlist.c: Fixed wandering when remapping window,

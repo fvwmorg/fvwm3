@@ -357,6 +357,7 @@ modules/FvwmCommand/scripts/Makefile
 modules/FvwmConsole/Makefile modules/FvwmConsole/FvwmConsoleC.pl
 modules/FvwmCpp/Makefile
 modules/FvwmDebug/Makefile
+modules/FvwmDragWell/Makefile
 modules/FvwmEvent/Makefile
 modules/FvwmForm/Makefile
 modules/FvwmIconBox/Makefile
