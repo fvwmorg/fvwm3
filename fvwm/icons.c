@@ -124,6 +124,16 @@ ICON_DBG((stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", tmp_win->name));
       icon_order[3] = 1;
 ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name));
     }
+    else if (Scr.DefaultIcon && tmp_win->icon_bitmap_file == Scr.DefaultIcon)
+    {
+      /* use application provided icon window/pixmap first, then fvwm provided
+       * default icon */
+      icon_order[0] = 2;
+      icon_order[1] = 3;
+      icon_order[2] = 0;
+      icon_order[3] = 1;
+ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name));
+    }
     else
     {
       /* use application provided icon window first, then fvwm provided icons
