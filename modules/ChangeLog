@@ -1,5 +1,11 @@
 1999-09-14  Dan Espen  <dane@mk.telcordia.com>
 
+	* FvwmBanner/Makefile.am (EXTRA_DIST): Add fvwm2_big.xpm as an
+	EXTRA_DIST.
+
+	* FvwmBanner/FvwmBanner.c: Have FvwmBanner get its built in icon
+	from the FvwmBanner directory.
+
 	* FvwmScript/Scripts/README (FvwmScript): New location for icons.
 
 	* FvwmScript/Scripts/Makefile.am (EXTRA_DIST): Removed some_nice_icons

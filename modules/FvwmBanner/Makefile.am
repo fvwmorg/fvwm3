@@ -6,7 +6,7 @@ module_PROGRAMS = @FVWMBANNER@
 EXTRA_PROGRAMS = FvwmBanner
 
 man_MANS = FvwmBanner.1
-EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = $(man_MANS) fvwm2_big.xpm
 
 FvwmBanner_SOURCES = FvwmBanner.c
 FvwmBanner_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a

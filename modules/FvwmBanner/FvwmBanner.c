@@ -51,7 +51,7 @@
 #include <libs/Module.h>
 
 
-#include "icons/fvwm2_big.xpm"
+#include "fvwm2_big.xpm"
 
 typedef struct _XpmIcon {
     Pixmap pixmap;
