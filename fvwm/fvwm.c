@@ -73,6 +73,7 @@ Display *dpy;			/* which display are we talking to */
 
 Window BlackoutWin=None;        /* window to hide window captures */
 Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
+Bool DoingCommandLine = True;	/* False after starting all cmd line modules */
 
 char *default_config_command = "Read "FVWMRC;
 
@@ -630,6 +631,7 @@ int main(int argc, char **argv)
 		    EXPAND_COMMAND);
   }
 
+  DoingCommandLine = False;
   DBUG("main","Done running config_commands");
 
   if(Scr.depth<2)

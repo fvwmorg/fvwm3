@@ -240,7 +240,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       PipeMask[i] = MAX_MASK;
       free(arg1);
       pipeQueue[i] = NULL;
-      if (fFvwmInStartup) {
+      if (DoingCommandLine) {
         /* add to the list of command line modules */
         DBUG("executeModule", "starting commandline module\n");
         FD_SET(i, &init_fdset);

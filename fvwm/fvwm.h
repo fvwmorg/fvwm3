@@ -443,6 +443,7 @@ extern XContext FvwmContext;
 extern Window BlackoutWin;
 
 extern Bool fFvwmInStartup;
+extern Bool DoingCommandLine;
 
 extern Boolean ShapesSupported;
 

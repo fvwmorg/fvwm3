@@ -74,6 +74,7 @@ Contents
      4.4  I heard about this FvwmFileMgr module.  Where can I find it?
      4.5  I used to use GoodStuff in FVWM 1.xx, but it's not in the 2.xx
           distribution.  What do I use now?
+     4.6  Version 2.2 takes ages to start and some modules don't start.
 
 5. Development, Known Problems & Bug Reports
 
@@ -898,6 +899,8 @@ A: You can do this, but it's not obvious how.  The button presses
 4.3  I'm seeing odd things when trying to preprocess files with the
      FvwmM4/Cpp module...
 
+(A: This is fixed in versions 2.2 onwards)
+
 A: Yup, I imagine that you might be.  Things like the InitFunction not
    being called or windows that were running before FVWM started not
    getting their Borders & Style options set, etc.
@@ -946,6 +949,24 @@ A: The FvwmFileMgr module disappeared because a file manager doesn't
 
 A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
    fits in with the other modules naming convention).
+
+----------------------------------------------------------------------
+
+4.6  Version 2.2 takes ages to start and some modules don't start.
+
+A: Version 2.2 has a fix for a long standing problem with getting
+   configurations from FvwmCpp. What 2.2 does is to wait for all modules
+   that get started during start up to finish before it runs the
+   InitFunction. This was intended to make fvwm wait for FvwmCpp or
+   FvwmM4 to finish sending back configuration commands before fvwm tries
+   to decorate any windows.  Since most modules don't finish there is a
+   danger of deadlocking so a timeout was inserted.  The timeout is 42
+   seconds.
+   
+   Version 2.4 onwards uses a less stringent way of deciding when to run
+   the InitFunctions and decorate all windows.  It waits for all modules
+   specified on the command line to finish but doesn't wait for any modules
+   that are started from within start-up files.
 
 
 ======================================================================

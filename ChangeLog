@@ -1,3 +1,9 @@
+1999-04-15  Hippo
+
+	* docs/FAQ: added stuff about start-up delays
+	* fvwm/fvwm.c,modules.c: Changed startup processing to only count
+	command line modules.
+
 1999-04-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/add_window.c: fix for broken size hints
