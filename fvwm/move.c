@@ -43,7 +43,8 @@ int cmsDelayDefault = 10; /* milliseconds */
  * somewhere in ins list of floats, and movement will stop when it hits a 1.0
  * entry */
 void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
-			  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement )
+			  Bool fWarpPointerToo, int cmsDelay,
+			  float *ppctMovement )
 {
   int pointerX, pointerY;
   int currentX, currentY;
@@ -87,8 +88,7 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
        we warn the user when they use > .5 seconds as a between-frame delay
        time */
     if (XCheckMaskEvent(dpy,
-			ButtonPressMask|ButtonReleaseMask|
-			KeyPressMask,
+			ButtonPressMask|ButtonReleaseMask|KeyPressMask,
 			&Event)) {
       /* finish the move immediately */
       XMoveWindow(dpy,w,endX,endY);
@@ -119,6 +119,7 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int width, height;
   int page_x, page_y;
   int unit_x, unit_y;
+  Bool fWarp = FALSE;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE,ButtonPress))
     return;
@@ -165,8 +166,8 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     }
   else
     {
-      n = GetPositionArguments(action,x,y,width+tmp_win->bw,
-			       height+tmp_win->bw,&FinalX,&FinalY);
+      n = GetMoveArguments(action,x,y,width+tmp_win->bw,height+tmp_win->bw,
+                           &FinalX,&FinalY,&fWarp);
       if (n != 2)
 	InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);
     }
@@ -174,10 +175,12 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (w == tmp_win->frame)
   {
     if (fAnimated) {
-      AnimatedMoveOfWindow(w,-1,-1,FinalX,FinalY,TRUE,-1,NULL);
+      AnimatedMoveOfWindow(w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
     SetupFrame (tmp_win, FinalX, FinalY,
 		tmp_win->frame_width, tmp_win->frame_height,FALSE);
+    if (fWarp & !fAnimated)
+      XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
   }
   else /* icon window */
     {
@@ -193,20 +196,26 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                       tmp_win->icon_w_width,
                       tmp_win->icon_w_height + tmp_win->icon_p_height);
       if (fAnimated) {
-        AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,FinalY+tmp_win->icon_p_height,
-			     TRUE,-1,NULL);
+        AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,
+			     FinalY+tmp_win->icon_p_height, fWarp,-1,NULL);
       } else {
-        XMoveWindow(dpy,tmp_win->icon_w,
-		    tmp_win->icon_xl_loc, FinalY+tmp_win->icon_p_height);
+        XMoveWindow(dpy,tmp_win->icon_w, tmp_win->icon_xl_loc,
+		    FinalY+tmp_win->icon_p_height);
+        if (fWarp)
+	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
       }
       if(tmp_win->icon_pixmap_w != None)
 	{
 	  XMapWindow(dpy,tmp_win->icon_w);
 	  if (fAnimated) {
    	    AnimatedMoveOfWindow(tmp_win->icon_pixmap_w, -1,-1,
-				 tmp_win->icon_x_loc,FinalY,TRUE,-1,NULL);
+				 tmp_win->icon_x_loc,FinalY,fWarp,-1,NULL);
 	  } else {
-	    XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_x_loc,FinalY);
+	    XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_x_loc,
+			FinalY);
+            if (fWarp)
+	      XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x,
+			   FinalY - y);
 	  }
 	  XMapWindow(dpy,w);
 	}

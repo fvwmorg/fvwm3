@@ -1,3 +1,28 @@
+1998-11-11  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/bindings.c (ParseKeyEntry): Speedup for Key binding parsing
+	(ParseBindEntry): Merged ParseMouseEntry and ParseKeyEntry.
+
+	* fvwm/menus.c (FreeMenuItem): function added
+
+1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (MakeMenu): Border size fix by Ryomi Murai
+	(PaintEntry): Drawing fixes by Ryomi Murai
+
+	* fvwm/move.c (move_window_doit):
+	* fvwm/misc.c:
+	* fvwm/misc.h:
+	* fvwm/fvwm2.1:
+	Applied Warp option patch for Move by Tim Phipps (see below).
+	
+	* fvwm/misc.{c,h}: changed GetPositionArguments to GetMoveArguments
+	and added parsing for optional Warp flag for Move/AnimatedMove
+
+	* fvwm/move.c: Added optional Warp flag for Move/AnimatedMove
+
+	* fvwm/fvwm2.1: Documented optional Warp flag for Move/AnimatedMove
+
 1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c (SetMenuStyle): fixed memory leak.

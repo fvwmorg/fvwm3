@@ -45,6 +45,11 @@ to locate FvwmButtons.
 
 .SH CONFIGURATION OPTIONS
 The following options int the .fvwmrc file are understood by FvwmButtons:
+.IP "*FvwmButtonsAutoHide \fIoptions\fP"
+The default value for the option is bottom. When the button bar is dragged
+to the bottom of the desktop, it hides itself after the pointer leaves. When
+the pointer enters the FvwmButtons window, the button bar will pop out.
+The othter options are top, left and right.
 .IP "*FvwmButtonsBack \fIcolor\fP"
 Specifies the background color for the buttons. A relief and a shadow color
 will also be calculated from this.
@@ -93,6 +98,12 @@ swallowed windows and containers, which are not padded at all, unless
 given specific orders. This setting
 specifies the default horizontal padding to be \fIwidth\fP pixels, and the
 vertical padding to be \fIheight\fP pixels.
+.IP "*FvwmButtonsPanel \fItitle\fP"
+Specifies the title of a panel. This statement acts as a separator.
+The panel will pop up at the position specified by "*FvwmButtonsGeometry"
+with respect to the upper left corner of the invoking button window for
+upwards and leftwards panels, lower right corner for downwards and rightwards
+panels.
 .IP "*FvwmButtonsPixmap \fIpixmapfile\fP"
 Specifies a background pixmap to use.  Specify "none" for a transparent
 background.
@@ -183,6 +194,11 @@ is normally 2 pixels to the sides and 4 pixels above and below, except
 for swallowed windows and containers, which are by default not padded at all. 
 This option sets the horizontal padding to \fIwidth\fP and the vertical
 padding to \fIheight\fP.
+.IP "  Panel (\fIdirection\fP) \fItitle\fP"
+Pop up a menu at the position specified by *FvwmButtonsGeometry with respect
+to the upperleft corner of the button if direction is up (default) or left,
+lowerright corner if down or right. The panel is a button bar itself. Its
+style is specified by "FvwmButtonsPanel".
 .IP "  Right"
 The contents of the button will be aligned to the Right. The default is to
 center the contents on the button.
@@ -411,6 +427,10 @@ AddToFunc RestartFunction  "I" Module FvwmButtons
 # Make it titlebar-less, sticky, and give it an icon	
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 
+# Make the menu/panel look like CDE
+Style "FvwmButtonsPanel" Title, NoHandles, BorderWidth 0
+Style "FvwmButtonsPanel" NoButton 2, NoButton 4, Sticky
+
 ##########################################################
 
 *FvwmButtonsFore Black
@@ -421,6 +441,9 @@ Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 *FvwmButtonsFont -*-helvetica-medium-r-*-*-12-*
 *FvwmButtonsPadding 2 2
 
+*FvwmButtons(Title Menu  ,Title WinOps    ,Panel  WinOps)
+*FvwmButtons(Title Menu  ,Title Tools     ,Panel  Tools)
+
 *FvwmButtons(Title Resize,Icon resize.xpm ,Action Resize)
 *FvwmButtons(Title Move  ,Icon arrows2.xpm,Action Move  )
 *FvwmButtons(Title Lower ,Icon Down       ,Action Lower )
@@ -428,23 +451,23 @@ Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 *FvwmButtons(Title Kill  ,Icon bomb.xpm   ,Action Destroy)
 
 *FvwmButtons(1x1,Container(Rows 3,Frame 1))
-*FvwmButtons(Title Dopey ,Action \\
+*FvwmButtons(Title Dopey ,Action                          \\
     `Exec "big_win" xterm -T big_win -geometry 80x50 &`)
-*FvwmButtons(Title Snoopy, Font fixed, Action \\
+*FvwmButtons(Title Snoopy, Font fixed, Action             \\
     `Exec "small_win" xterm -T small_win &`)
 *FvwmButtons(Title Smokin')
 *FvwmButtons(End)
 
-*FvwmButtons(Title Xcalc, Icon rcalc.xpm,\\
+*FvwmButtons(Title Xcalc, Icon rcalc.xpm,                 \\
              Action `Exec "Calculator" xcalc &`)
-*FvwmButtons(Title XMag, Icon magnifying_glass2.xpm,\\
+*FvwmButtons(Title XMag, Icon magnifying_glass2.xpm,      \\
              Action `Exec "xmag" xmag &`)
-*FvwmButtons(Title Mail, Icon mail2.xpm,\\
+*FvwmButtons(Title Mail, Icon mail2.xpm,                  \\
              Action `Exec "xmh" xmh &`)
-*FvwmButtons(4x1, Swallow "FvwmPager" `FvwmPager 0 3`\\
+*FvwmButtons(4x1, Swallow "FvwmPager" `FvwmPager 0 3`     \\
              Frame 3)
 
-*FvwmButtons(Swallow(UseOld,NoKill) "xload15" `Exec xload\\
+*FvwmButtons(Swallow(UseOld,NoKill) "xload15" `Exec xload \\
      -title xload15 -nolabel -bg rgb:90/80/90 -update 15 &`)
 .sp
 .fi
@@ -458,6 +481,33 @@ and \fINoKill\fP, which will try to swallow an existing window with the
 name "xload15" when starting up (if failing: starting one with the 
 specified command), which is unswallowed when ending FvwmButtons. 
 
+The other panels are specified after the root panel:
+
+.nf
+.sp
+########## PANEL
+*FvwmButtonsPanel WinOps
+*FvwmButtonsBack bisque2
+*FvwmButtonsGeometry -3-3
+*FvwmButtonsColumns 1
+ 
+*FvwmButtons(Title Resize,Icon resize.xpm ,Action Resize)
+*FvwmButtons(Title Move  ,Icon arrows2.xpm,Action Move  )
+*FvwmButtons(Title Lower ,Icon Down       ,Action Lower )
+*FvwmButtons(Title Raise ,Icon Up         ,Action Raise )
+
+########## PANEL
+*FvwmButtonsPanel Tools
+*FvwmButtonsBack bisque2
+*FvwmButtonsGeometry -1-1
+*FvwmButtonsColumns 1
+ 
+*FvwmButtons(Title Kill  ,Icon bomb.xpm   ,Action Destroy)
+.sp
+.fi
+
+The color specification \fIrgb:90/80/90\fP is actually the most
+correct way of specifying independent colors in X, and should be
 The color specification \fIrgb:90/80/90\fP is actually the most
 correct way of specifying independent colors in X, and should be
 used instead of the older \fI#908090\fP. If the latter specification

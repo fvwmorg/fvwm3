@@ -1373,10 +1373,19 @@ void PaintEntry(MenuItem *mi)
 	(((*mi->item)!=0) || mi->picture || mi->lpicture))
       {
 	/* thicker shadow border for selected button for motif */
-	RelieveRectangle(mr->w, mr->xoffset+3, y_offset, mr->width-5,
-			 mi->y_height, ReliefGC,ShadowGC);
-	RelieveRectangle(mr->w, mr->xoffset+2, y_offset-1, mr->width-3,
-			 mi->y_height+2, ReliefGC,ShadowGC);
+	if (mr->sidePic == NULL) {
+	  RelieveRectangle(mr->w, mr->xoffset+3, y_offset, mr->width-6,
+			   mi->y_height, ReliefGC,ShadowGC);
+	  RelieveRectangle(mr->w, mr->xoffset+2, y_offset-1, mr->width-4,
+			   mi->y_height+2, ReliefGC,ShadowGC);
+	} else {
+	  RelieveRectangle(mr->w, mr->xoffset+3, y_offset,
+			   mr->width-6 - mr->sidePic->width-5, mi->y_height,
+			   ReliefGC,ShadowGC);
+	  RelieveRectangle(mr->w, mr->xoffset+2, y_offset-1,
+			   mr->width-4 - mr->sidePic->width-5, mi->y_height+2,
+			   ReliefGC,ShadowGC);
+	}
       }
     RelieveHalfRectangle(mr->w, 0, y_offset-1, mr->width,
 			 y_height+2, ReliefGC, ShadowGC);
@@ -1396,8 +1405,15 @@ void PaintEntry(MenuItem *mi)
     XClearArea(dpy, mr->w, mr->xoffset,y_offset,mr->width,y_height,0);
     if ((mi->state)&&(!mi->fIsSeparator)&&
 	(((*mi->item)!=0)|| mi->picture || mi->lpicture ))
-      RelieveRectangle(mr->w, mr->xoffset+2, y_offset, mr->width-4,
-		       mi->y_height, ReliefGC,ShadowGC);
+      {
+	if (mr->sidePic == NULL)
+	  RelieveRectangle(mr->w, mr->xoffset+2, y_offset, mr->width-4,
+			   mi->y_height, ReliefGC,ShadowGC);
+	else
+	  RelieveRectangle(mr->w, mr->xoffset+2, y_offset,
+			   mr->width-4 - mr->sidePic->width-5, mi->y_height,
+			   ReliefGC,ShadowGC);
+      }
     RelieveHalfRectangle(mr->w, 0, y_offset, mr->width,
 			 y_height, ReliefGC, ShadowGC);
   }
@@ -1701,6 +1717,24 @@ void PaintMenu(MenuRoot *mr, XEvent *e)
 }
 
 
+void FreeMenuItem(MenuItem *mi)
+{
+  if (!mi)
+    return;
+  if (mi->item != NULL)
+    free(mi->item);
+  if (mi->item2 != NULL)
+    free(mi->item2);
+  if (mi->action != NULL)
+    free(mi->action);
+  if(mi->picture)
+    DestroyPicture(dpy,mi->picture);
+  if(mi->lpicture)
+    DestroyPicture(dpy,mi->lpicture);
+  free(mi);
+}
+
+
 void DestroyMenu(MenuRoot *mr)
 {
   MenuItem *mi,*tmp2;
@@ -1735,14 +1769,7 @@ void DestroyMenu(MenuRoot *mr)
   while(mi != NULL)
     {
       tmp2 = mi->next;
-      if (mi->item != NULL) free(mi->item);
-      if (mi->item2 != NULL) free(mi->item2);
-      if (mi->action != NULL) free(mi->action);
-      if(mi->picture)
-	DestroyPicture(dpy,mi->picture);
-      if(mi->lpicture)
-	DestroyPicture(dpy,mi->lpicture);
-      free(mi);
+      FreeMenuItem(mi);
       mi = tmp2;
     }
   free(mr);
@@ -1930,7 +1957,7 @@ void MakeMenu(MenuRoot *mr)
     } /* for */
   mr->in_use = 0;
   /* allow two pixels for top border */
-  mr->height = y+2;
+  mr->height = y + ((USING_FVWM_MENUS)? 2 : 3);
   mr->flags = 0;
   mr->xanimation = 0;
 
@@ -2180,7 +2207,6 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
     }
   return mr;
 }
-
 
 /***********************************************************************
  *

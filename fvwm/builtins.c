@@ -817,21 +817,26 @@ void exec_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   unsigned long context,char *action, int *Module)
 {
   char *cmd=NULL;
+  char *tok;
 
   /* if it doesn't already have an 'exec' as the first word, add that
    * to keep down number of procs started */
   /* need to parse string better to do this right though, so not doing this
      for now... */
-  if (0 && strncasecmp(action,"exec",4)!=0)
+#if 0
+  if (strncasecmp(action,"exec",4)!=0)
   {
     cmd = (char *)safemalloc(strlen(action)+6);
     strcpy(cmd,"exec ");
     strcat(cmd,action);
   }
   else
+#endif
   {
     cmd = strdup(action);
   }
+  if (!cmd)
+    return;
   /* Use to grab the pointer here, but the fork guarantees that
    * we wont be held up waiting for the function to finish,
    * so the pointer-gram just caused needless delay and flashing

@@ -1,3 +1,8 @@
+1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.1: Updated manpage for AutoHide and Panels
+	patches by Jui-Hsuan Joshua Feng <fengj@percy.engr.wisc.edu>
+
 Tue Nov 10 07:14:40 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmRearrange/Makefile.am: Arranged the makefile to build

@@ -610,11 +610,12 @@ In all the above cases, the name of the resulting menu is name specified,
 stripped of the substrings between the various delimiters.
 
   
-.IP "AnimatedMove [ \fIx y\fP ]"
+.IP "AnimatedMove \fIx y\fP [ \fIWarp\fP ]"
 
 Move a window in an animated way. Similar to Move command, below.
 Options are the same, except they are required, since it doesn't make
-sense to have a user move the window interactively and animatedly.
+sense to have a user move the window interactively and animatedly. If the optional
+argument \fIWarp\fP is specified the pointer is warped with the window.
   
 
 .IP "Beep"
@@ -1266,7 +1267,7 @@ command.  The GotoPage function should not be used in a pop-up menu.
 
 
 .IP "HilightColor \fItextcolor backgroundcolor\fP"
-Specified the text and background colors for the decorations on the
+Specifies the text and background colors for the decorations on the
 window which currently has the keyboard focus.
 
 
@@ -1596,11 +1597,12 @@ buttons which are drawn.  Actions can be bound to either mouse buttons
 or keyboard keys.
 
 
-.IP "Move [ \fIx y\fP ]"
+.IP "Move [ \fIx y\fP [ \fIWarp\fP ] ]"
 Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window will be moved.  If called from
 the root window then the user will be allowed to select the target
-window.
+window. If the optional argument \fIWarp\fP is specified the pointer is warped
+with the window.
 
 The operation can be aborted with Escape or by pressing any mouse button
 (except button 1 which confirms the move).

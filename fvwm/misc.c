@@ -457,35 +457,40 @@ int GetOnePositionArgument(char *s1,int x,int w,int *pFinalX,float factor,int ma
   return 1;
 }
 
-/* GetPositionArguments is used for Move, AnimatedMove, maybe more
+/* GetMoveArguments is used for Move & AnimatedMove
  * It lets you specify in all the following ways
  *   20  30          Absolute percent position, from left edge and top
  *  -50  50          Absolute percent position, from right edge and top
  *   10p 5p          Absolute pixel position
  *   10p -0p         Absolute pixel position, from bottom
  *  w+5  w-10p       Relative position, right 5%, up ten pixels
+ * Returns 2 when x & y have parsed without error, 0 otherwise
  */
-int GetPositionArguments(char *action, int x, int y, int w, int h, int *pFinalX, int *pFinalY)
+int GetMoveArguments(char *action, int x, int y, int w, int h,
+                     int *pFinalX, int *pFinalY, Bool *fWarp)
 {
-  char *s1, *s2;
+  char *s1, *s2, *warp;
   int scrWidth = Scr.MyDisplayWidth;
   int scrHeight = Scr.MyDisplayHeight;
+  int retval = 0;
 
-  if( strlen(action) <= 0 )
-    return 0;
+  action = GetNextToken(action, &s1);
+  action = GetNextToken(action, &s2);
+  GetNextToken(action, &warp);
+  *fWarp = StrEquals(warp, "Warp");
 
-  s1 = strtok(action," \t\n");
-  s2 = strtok(NULL," \t\n");
-  /* DEBUG_FPRINTF((stderr,"GPA: 1=\"%s\", 2=\"%s\"\n",s1,s2)); */
-
-  if (s1 == NULL || s2 == NULL)
-    return 0;
-
-  if (GetOnePositionArgument(s1,x,w,pFinalX,(float)scrWidth/100,scrWidth) &&
-      GetOnePositionArgument(s2,y,h,pFinalY,(float)scrHeight/100,scrHeight))
-    return 2;
-  else
-    return 0;
+  if (s1 != NULL && s2 != NULL)
+    if (GetOnePositionArgument(s1,x,w,pFinalX,(float)scrWidth/100,scrWidth) &&
+        GetOnePositionArgument(s2,y,h,pFinalY,(float)scrHeight/100,scrHeight))
+      retval = 2;
+    else
+      *fWarp = FALSE; /* make sure warping is off for interactive moves */
+  
+  if (s1) free(s1);
+  if (s2) free(s2);
+  if (warp) free(warp);
+  
+  return retval;
 }
 
 /*****************************************************************************

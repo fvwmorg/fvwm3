@@ -408,9 +408,9 @@ void match_string(button_info **uberb,char *s)
   if(*s=='(' && s++)
     {
       char *opts[]={"back","fore","font","title","icon","frame","padding",
-		      "swallow","action","container","end","nosize","size",
-                      "panel", "left", "right", "center",
-		      NULL};
+		    "swallow","action","container","end","nosize","size",
+		    "panel", "left", "right", "center",
+		    NULL};
       trimleft(s);
       while(*s && *s!=')')
 	{
