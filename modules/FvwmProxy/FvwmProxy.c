@@ -1079,15 +1079,22 @@ static void ProcessMessage(FvwmPacket* packet)
 			}
 			MarkProxy(proxy);
 		}
-		else if(StrEquals(token, "Colorset"))
+		break;
+	}
+	case M_CONFIG_INFO:
+	{
+		char *tline, *token;
+
+		tline = (char*)&(body[3]);
+		token = PeekToken(tline, &tline);
+		if (StrEquals(token, "Colorset"))
 		{
 			int cset;
-
-			cset = LoadColorset(next);
+			cset = LoadColorset(tline);
 			change_cset(cset);
 		}
+		break;
 	}
-	break;
 	}
 
 	fflush(errorFile);
