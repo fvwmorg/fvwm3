@@ -17,17 +17,19 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
  15) Remove FvwmTaskBar (It's an AutoHiding FvwmButtons with FvwmIconMan).
  15.5) Remove FvwmWinList (It's just FvwmIconMan).
  15.5.5) Remove FvwmIconBox (It's just FvwmIconMan with some enhancements ???).
- 14) Expand Style command to support name=pattern syntax.
- 15) Add id=pattern to Style command.
- 16) Split style lists into 5 (resource, class, icon, name, id).
- 17) Styles get applied in the above order.
- 18) Split each style list into two (one with wildcards, one without).
- 19) The un-wildcard type of list can be a hash list as only one will apply.
- 20) Split Style into run time control (Style) and startup style (InitialStyle).
- 21) Move Stick/Iconify/Maximize/Shade/Desk to Style and InitialStyle.
- 22) New Style: DecoratedByModule/DecoratedByFvwm
- 23) Remove {Border,Title,Button}Style and decors, just one simple look in fvwm.
- 24) New module FvwmDecor to do fancy per window decoration.
- 25) Figure out how resizing works with FvwmDecor.
- 26) Put side title and shaped borders into FvwmDecor.
- 27) Have a nice cup of tea.
+ 16) Expand Style command to support name=pattern syntax.
+ 17) Add id-pattern to Style command.
+ 18) Split style lists into 5 (resource, class, icon, name, id).
+ 19) Styles get applied in the above order.
+ 20) Split each style list into two (one with wildcards, one without).
+ 21) The un-wildcard type of list can be a hash list as only one will apply.
+ 22) Split Style into run time control (Style) and startup style (InitialStyle).
+ 23) Move Stick/Iconify/Maximize/Shade/Desk to Style and InitialStyle.
+ 24) New Style: DecoratedByModule/DecoratedByFvwm
+ 25) Remove {Border,Title,Button}Style and decors, just one simple look in fvwm.
+ 26) New module FvwmDecor to do fancy per window decoration.
+ 27) Figure out how resizing works with FvwmDecor.
+ 28) Put side title and shaped borders into FvwmDecor.
+ 29) Tear off menus.
+ 30) New placement code.
+ 31) Pie menus?

@@ -511,6 +511,7 @@ Bool PlaceWindow(
   Bool rc = False;
   Bool HonorStartsOnPage  =  False;
   Bool use_wm_placement = True;
+  Bool do_allow_active_placement = True;
   extern Bool Restarting;
 /**/
   extern Bool PPosOverride;
@@ -704,22 +705,24 @@ Bool PlaceWindow(
   {
     use_wm_placement = False;
   }
-#if 0
-  /* DV (30-Dec-2000): Why? With this code, new windows that are started iconic
-   * will always be created where the application wishes.  Instead we should
-   * use the normal placement algorithm. Right? */
   else if (!((!(tmp_win->wmhints && (tmp_win->wmhints->flags & StateHint) &&
                 tmp_win->wmhints->initial_state == IconicState))
              || HonorStartsOnPage))
   {
+    do_allow_active_placement = False;
+#if 0
+    /* DV (30-Dec-2000): Why? With this code, new windows that are started
+     * iconic  will always be created where the application wishes.  Instead we
+     * should use the normal placement algorithm. Right? */
     use_wm_placement = False;
-  }
 #endif
+  }
 
   if (use_wm_placement)
   {
     /* Get user's window placement, unless RandomPlacement is specified */
-    if (SPLACEMENT_MODE(sflags) & PLACE_RANDOM)
+    if ((SPLACEMENT_MODE(sflags) & PLACE_RANDOM) ||
+	!do_allow_active_placement)
     {
       if (SPLACEMENT_MODE(sflags) & PLACE_SMART)
       {

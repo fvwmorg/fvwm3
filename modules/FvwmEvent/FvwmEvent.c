@@ -287,8 +287,11 @@ int main(int argc, char **argv)
     {
       unsigned long msg_bit;
       if ((count = read(fd[1],header, FvwmPacketHeaderSize_byte)) <= 0)
-	exit(0);
-      /* if this read is interrrupted  EINTR, the wrong event is triggered !!! */
+      {
+	isTerminated = 1;
+	continue;
+      }
+      /* if this read is interrrupted EINTR, the wrong event is triggered! */
 
       if( header[0] != START_FLAG )
 	goto CONTINUE;  /* should find something better for resyncing */
@@ -302,7 +305,10 @@ int main(int argc, char **argv)
       while (remaining)
       {
 	if((count=read(fd[1],&body[total],remaining)) < 0)
-	  exit(0);
+	{
+	  isTerminated = 1;
+	  continue;
+	}
 	remaining -= count;
 	total +=count;
       }
