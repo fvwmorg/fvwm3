@@ -816,7 +816,6 @@ void CMD_WindowList(F_CMD_ARGS)
 					if (IS_ICONIFIED(t))
 					{
 						strcpy(tname, "(");
-						strcat(tname, loc);
 					}
 					if (!(flags & NO_DESK_NUM))
 					{
