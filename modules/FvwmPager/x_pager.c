@@ -159,7 +159,7 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 
   /* scale the width of the big window to find the mini-window's width   */
   /* - this way, the width isn't vulnerable to integer arithmetic errors */
-  size = (t->width * win_w) / Scr.VWidth;
+  size = ((t->width - 1) * win_w) / Scr.VWidth;
 
   /* Make size big enough to be visible */
   if (size < MinSize) {
@@ -194,7 +194,7 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   virt = Scr.Vy + t->y;
   edge = (virt * win_h) / Scr.VHeight;
   virt += t->height - 1;
-  size = (t->height * win_h) / Scr.VHeight;
+  size = ((t->height - 1) * win_h) / Scr.VHeight;
   if (size < MinSize)
   {
     size = MinSize;
