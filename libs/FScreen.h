@@ -30,15 +30,17 @@ typedef union
 
 /* Control */
 Bool FScreenIsEnabled(void);
+Bool FScreenIsSLSEnabled(void);
 void FScreenInit(Display *dpy);
-void FScreenDisable(void);
-void FScreenEnable(void);
+void FScreenOnOff(Bool do_enable);
+Bool FScreenConfigureSLS(int width, int height);
+void FScreenSLSOnOff(Bool do_enable);
 /* Intended to be called by modules.  Simply pass in the parameter from the
  * config string sent by fvwm. */
 void FScreenConfigureModule(char *args);
+const char* FScreenGetConfiguration(void); /* For use by FVWM */
 void FScreenDisableRandR(void);
 
-int FScreenGetPrimaryScreen(void);
 void FScreenSetPrimaryScreen(int scr);
 
 /* Screen info */

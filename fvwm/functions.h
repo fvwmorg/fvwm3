@@ -186,6 +186,9 @@ enum
   F_WINDOWFONT,
   F_WINDOWLIST,
   F_XINERAMA,
+  F_XINERAMAPRIMARYSCREEN,
+  F_XINERAMASLS,
+  F_XINERAMASLSSIZE,
   F_XOR,
 
   /* functions that need a window to operate on */

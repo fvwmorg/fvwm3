@@ -452,7 +452,7 @@ Xinerama support can be configured to use a primary screen.  New
 windows and icons are usually placed on this screen - unless fvwm
 is told otherwise.  The primary screen is screen 0 by default but
 can be changed with the
-.B Xinerama
+.B XineramaPrimaryScreen
 command.
 
 Xinerama support was designed to work out of the box with the same
@@ -468,6 +468,13 @@ All MoveToScreen
 .EE
 
 that can be entered in an FvwmConsole window or with FvwmCommand.
+
+For multi-screen implementations other than Xinerama, such as
+Single Logical Screen, it is possible to simulate a Xinerama
+configuration if the total screen seen by FVWM is made up of
+equal sized monitors in a rectangular grid.  The commands
+.BR XineramaSls " and " XineramaSlsSize
+are used to configure this feature.
 
 
 .SH INITIALIZATION
@@ -6573,17 +6580,64 @@ is appended to each coordinate
 then the scroll amount is measured in pixels.
 
 .TP
-.BI "Xinerama [ " bool " | " primary-screen " ]"
+.BI "Xinerama " bool
 Enables Xinerama support if the boolean argument is true and
-disables it if the argument is false.  If instead an integer
-argument is given as
-.IR primary-screen ,
-this is taken as the number of the Xinerama screen that is to be
-used as the primary screen.  The primary screen is the preferred
-screen to place windows.  Any number that is zero or more is taken
-as the primary screen's number.  Any negative value disables the
-primary screen feature.  Calling this command without arguments
-turns on Xinerama support with the primary screen 0 if it was disabled before and turns it off if it was enabled.
+disables it if the argument is false.  Calling this command
+without arguments turns on Xinerama support it was disabled before
+and turns it off if it was enabled.  For example:
+.EX
+# Turn Xinerama support on, use primary screen 2
+XineramaPrimaryScreen 2
+Xinerama on
+#Turn it off again
+Xinerama off
+.EE
+
+.TP
+.BI "XineramaPrimaryScreen [" primary-screen "]"
+Takes an integer number or 'g' or 'c' as its argument.  A number
+is taken as the number of the Xinerama screen that is to be used
+as the primary screen.  The primary screen is the preferred screen
+to place windows.  Any number that is zero or more is taken as the
+primary screen's number.  Instead, the letter 'c' indicates to use
+the curent screen (containing the pointer) whenaver the primary
+screen is used.  This may be very confusing under some
+circumstances.  With 'g', the global screen is used as the primary
+screen, effectively disabling the primary screen.  Calling this
+function with any other argument (including none) resets the
+primary screen to 0.  For Example
+
+.TP
+.BI "XineramaSls [" bool "]"
+For multi-screen implementations other than Xinerama, such as
+Single Logical Screen, it is possible to simulate a Xinerama
+configuration if the total screen seen by FVWM is made up of
+equal sized monitors in a rectangular grid.  The
+.B XineramaSls
+command turns SLS support on or off or toggles it to the opposite
+state, depending on if the boolean argument is "True", "False" or
+"toggle".  If no argument is given, this is treated like "toggle".
+The default layout uses 1 by one screens.  To configure the
+layout, use the
+.B XineramaSlsSize
+command.
+
+.TP
+.BI "XineramaSlsSize " Horizontal x Vertical
+This command configures the layout of the Single Logical screen
+feature.  It takes two arguments,
+.IR Horizontal " and " Vertical
+which must be an integer value dividing evenly into the total
+desktop width, and height height.  For an example with two
+monitors side by side which appear as one screen through the
+X-Server with the right screen as the primary screen, use:
+.EX
+XineramaSlsSize 2x1
+XineramaSlsOn
+XineramPrimaryScreen 1
+XineramaOn
+.EE
+
 
 .SS COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS
 

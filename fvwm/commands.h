@@ -169,6 +169,9 @@ void CMD_WindowList(F_CMD_ARGS);
 void CMD_WindowShade(F_CMD_ARGS);
 void CMD_WindowShadeAnimate(F_CMD_ARGS);
 void CMD_Xinerama(F_CMD_ARGS);
+void CMD_XineramaPrimaryScreen(F_CMD_ARGS);
+void CMD_XineramaSls(F_CMD_ARGS);
+void CMD_XineramaSlsSize(F_CMD_ARGS);
 void CMD_XorPixmap(F_CMD_ARGS);
 void CMD_XorValue(F_CMD_ARGS);
 

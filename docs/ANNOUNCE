@@ -4,9 +4,10 @@ introduces full Xinerama support and a few other new features.
 New features and improvements:
 ------------------------------
 
-** Added Xinerama support.
+** Added Xinerama and SingleLogicalScreen support.
 
-** New commands Xinerama and MoveToScreen.
+** New commands Xinerama, XineramaPrimaryScreen, XineramaSls,
+   XineramaSlsSize and MoveToScreen.
 
 ** New context rectangle option XineramaRoot for the menu commands.
 

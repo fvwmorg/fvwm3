@@ -337,32 +337,77 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 
 void CMD_Xinerama(F_CMD_ARGS)
 {
-  int val;
   int toggle;
 
-  Scr.flags.do_need_window_update = True;
-  Scr.flags.has_xinerama_state_changed = True;
-  if (GetIntegerArguments(action, NULL, &val, 1) == 1)
-  {
-    FScreenEnable();
-    FScreenSetPrimaryScreen(val);
-    return;
-  }
   toggle = ParseToggleArgument(action, NULL, -1, 0);
   if (toggle == -1)
   {
     toggle = !FScreenIsEnabled();
   }
-  if (toggle)
+  if (!toggle != !FScreenIsEnabled())
   {
-    FScreenEnable();
-  }
-  else
-  {
-    FScreenDisable();
+    Scr.flags.do_need_window_update = True;
+    Scr.flags.has_xinerama_state_changed = True;
+    FScreenOnOff(toggle);
     broadcast_xinerama_state();
   }
+
+  return;
+}
+
+void CMD_XineramaPrimaryScreen(F_CMD_ARGS)
+{
+  int val;
+
+  val = FScreenGetScreenArgument(action, 0);
+  FScreenSetPrimaryScreen(val);
+  if (FScreenIsEnabled())
+  {
+    Scr.flags.do_need_window_update = True;
+    Scr.flags.has_xinerama_state_changed = True;
+  }
   broadcast_xinerama_state();
+
+  return;
+}
+
+void CMD_XineramaSls(F_CMD_ARGS)
+{
+  int toggle;
+
+  toggle = ParseToggleArgument(action, NULL, -1, 0);
+  if (toggle == -1)
+  {
+    toggle = !FScreenIsSLSEnabled();
+  }
+  if (!toggle != !FScreenIsSLSEnabled())
+  {
+    if (FScreenIsEnabled())
+    {
+      Scr.flags.do_need_window_update = True;
+      Scr.flags.has_xinerama_state_changed = True;
+    }
+    FScreenSLSOnOff(toggle);
+    broadcast_xinerama_state();
+  }
+
+  return;
+}
+
+void CMD_XineramaSlsSize(F_CMD_ARGS)
+{
+  int val[2];
+
+  if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
+      GetRectangleArguments(action, &val[0], &val[1]) != 2)
+  {
+    val[1] = 1;
+    val[2] = 1;
+  }
+  if (FScreenConfigureSLS(val[0], val[1]))
+  {
+    broadcast_xinerama_state();
+  }
 
   return;
 }
@@ -375,7 +420,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
   if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
       GetRectangleArguments(action, &val[0], &val[1]) != 2)
   {
-    fvwm_msg(ERR,"SetDeskSize","DesktopSize requires two arguments");
+    fvwm_msg(ERR,"CMD_DesktopSize","DesktopSize requires two arguments");
     return;
   }
 

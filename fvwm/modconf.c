@@ -220,13 +220,7 @@ void CMD_DestroyModuleConfig(F_CMD_ARGS)
 
 static void send_xinerama_state(int modnum)
 {
-  char msg[100];
-  int scr;
-
-  scr = (FScreenIsEnabled()) ? FScreenGetPrimaryScreen() : -1;
-  sprintf(msg, "%s %d", XINERAMA_CONFIG_STRING, scr);
-  SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
-
+  SendName(modnum, M_CONFIG_INFO, 0, 0, 0, FScreenGetConfiguration());
   return;
 }
 

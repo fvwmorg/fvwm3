@@ -219,7 +219,7 @@
 #define MAX_GRADIENT_COLORS	       10000
 
 /*** Xinerama ***/
-#define DEFAULT_XINERAMA_DISABLED      False /* Xinerama on by default */
+#define DEFAULT_XINERAMA_ENABLED        True /* Xinerama on by default */
 #define XINERAMA_CONFIG_STRING             "XineramaConfig"
 /* Replace with -1 to switch off "primary screen" concept by default */
 #define DEFAULT_PRIMARY_SCREEN             0

@@ -3,9 +3,10 @@ _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
 Changes in beta release 2.4.1 (not released yet)
 
-* Added Xinerama support.
+* Added Xinerama and SingleLogicalScreen support.
 
-* New commands Xinerama and MoveToScreen.
+* New commands Xinerama, XineramaPrimaryScreen, XineramaSls,
+  XineramaSlsSize and MoveToScreen.
 
 * New context rectangle option XineramaRoot for the menu commands.
 

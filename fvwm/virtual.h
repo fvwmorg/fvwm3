@@ -16,8 +16,6 @@
 #ifndef _VIRTUAL_
 #define _VIRTUAL_
 
-void CMD_XineramaDisable(F_CMD_ARGS);
-void CMD_XineramaEnable(F_CMD_ARGS);
 Bool HandlePaging(int, int, int *, int *, int *, int *, Bool, Bool, Bool);
 void checkPanFrames(void);
 void raisePanFrames(void);

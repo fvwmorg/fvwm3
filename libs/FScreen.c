@@ -108,16 +108,24 @@ static int grav_matrix[3][3] =
 
 
 static Display            *disp              = NULL;
-static Bool                is_xinerama_disabled = DEFAULT_XINERAMA_DISABLED;
+static Bool                is_xinerama_enabled = DEFAULT_XINERAMA_ENABLED;
+static Bool                is_sls_enabled    = False;
 static XineramaScreenInfo *screens;
-/* # of Xinerama screens, *not* counting the [0]global, 0 if disabled */
-static int                 num_screens        = 0;
-/* # of Xinerama screens, *not* counting the [0]global */
+static XineramaScreenInfo *screens_xi;
+static XineramaScreenInfo *screens_sls       = NULL;
+/* # of Xinerama screens, *not* counting the global, 0 if disabled */
+static int                 num_screens       = 0;
+/* # of Xinerama screens, *not* counting the global */
 static int                 total_screens     = 0;
+static int                 total_screens_xi  = 0;
+static int                 total_screens_sls = 1;
+static int                 total_sls_width   = 1;
+static int                 total_sls_height  = 1;
 static int                 first_to_check    = 0;
 static int                 last_to_check     = 0;
-static int                 primary_scr       = DEFAULT_PRIMARY_SCREEN + 1;
 static int                 default_geometry_scr = FSCREEN_PRIMARY;
+/* only to be accessed vie the set/get functions! */
+static int                 primary_scr       = DEFAULT_PRIMARY_SCREEN;
 
 #if 0
 #ifdef HAVE_RANDR
@@ -133,25 +141,88 @@ static Window blank_w, vert_w;
 #endif
 
 static int FScreenParseScreenBit(char *arg, char default_screen);
+static int FindScreenOfXY(int x, int y);
 
-Bool FScreenIsEnabled(void)
+static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
-  return (is_xinerama_disabled || num_screens == 0) ? False : True;
-}
-
-static void FScreenSetState(Bool onoff)
-{
-  if (onoff && total_screens > 0)
+  if (!is_xinerama_enabled || last_to_check == first_to_check)
   {
-    first_to_check = 1;
-    last_to_check  = num_screens;
+    /* We use .x_org,.y_org because nothing prevents a screen to be not at
+     * (0,0) */
+    *x = screens[first_to_check].x_org;
+    *y = screens[first_to_check].y_org;
   }
   else
   {
+    XEvent e;
+
+    if (eventp == NULL)
+    {
+      eventp = &e;
+      e.type = 0;
+    }
+    GetLocationFromEventOrQuery(disp, DefaultRootWindow(disp), eventp, x, y);
+  }
+
+  return;
+}
+
+Bool FScreenIsEnabled(void)
+{
+  return (!is_xinerama_enabled || num_screens == 0) ? False : True;
+}
+
+Bool FScreenIsSLSEnabled(void)
+{
+  return is_sls_enabled;
+}
+
+#ifdef USE_XINERAMA_EMULATION
+static void FScreenUpdateEmulationMapState(void)
+{
+  static Bool is_mapped = False;
+
+  if (is_xinerama_enabled && !is_sls_enabled)
+  {
+    if (!is_mapped)
+    {
+      XMapRaised(disp, blank_w);
+      XMapRaised(disp, vert_w);
+      is_mapped = True;
+    }
+  }
+  else
+  {
+    if (is_mapped)
+    {
+      XUnmapWindow(disp, blank_w);
+      XUnmapWindow(disp, vert_w);
+      is_mapped = False;
+    }
+  }
+}
+#endif
+
+static void FScreenSetState(Bool do_enable)
+{
+  is_xinerama_enabled = do_enable;
+  if (do_enable && total_screens > 0)
+  {
+    num_screens = total_screens;
+    first_to_check = 1;
+    last_to_check  = total_screens;
+  }
+  else
+  {
+    num_screens = 0;
     first_to_check = 0;
     last_to_check = 0;
   }
+#ifdef USE_XINERAMA_EMULATION
+  FScreenUpdateEmulationMapState();
+#endif
 }
+
 
 void FScreenInit(Display *dpy)
 {
@@ -198,37 +269,32 @@ void FScreenInit(Display *dpy)
      * +---------------------+--------------+
      */
     count = 2;
-    total_screens = count;
-    num_screens = (is_xinerama_disabled) ? 0 : count;
-    screens = (XineramaScreenInfo *)
+    total_screens_xi = count;
+    screens_xi = (XineramaScreenInfo *)
       safemalloc(sizeof(XineramaScreenInfo) * (1 + count));
     /* calculate the faked sub screen dimensions */
     w = DisplayWidth(disp, scr);
     ws = 3 * w / 5;
     h = DisplayHeight(disp, scr);
-    screens[1].screen_number = 0;
-    screens[1].x_org         = 0;
-    screens[1].y_org         = 0;
-    screens[1].width         = ws;
-    screens[1].height        = 7 * h / 8;
-    screens[2].screen_number = 1;
-    screens[2].x_org         = ws;
-    screens[2].y_org         = 0;
-    screens[2].width         = w - ws;
-    screens[2].height        = h;
+    screens_xi[1].screen_number = 0;
+    screens_xi[1].x_org         = 0;
+    screens_xi[1].y_org         = 0;
+    screens_xi[1].width         = ws;
+    screens_xi[1].height        = 7 * h / 8;
+    screens_xi[2].screen_number = 1;
+    screens_xi[2].x_org         = ws;
+    screens_xi[2].y_org         = 0;
+    screens_xi[2].width         = w - ws;
+    screens_xi[2].height        = h;
     /* add delimiter */
     attributes.background_pixel = WhitePixel(disp, scr);
     attributes.override_redirect = True;
-    blank_w = XCreateWindow(disp, root, 0, 7 * h / 8 - 1, ws, 2, 0, CopyFromParent,
-			    CopyFromParent, CopyFromParent,
-			    CWBackPixel|CWOverrideRedirect,
-			    &attributes);
-    vert_w = XCreateWindow(disp, root, ws - 1, 0, 2, h, 0, CopyFromParent,
-			   CopyFromParent, CopyFromParent,
-			   CWBackPixel|CWOverrideRedirect,
-			   &attributes);
-    XMapRaised(disp,blank_w);
-    XMapRaised(disp,vert_w);
+    blank_w = XCreateWindow(
+      disp, root, 0, 7 * h / 8 - 1, ws, 2, 0, CopyFromParent, CopyFromParent,
+      CopyFromParent, CWBackPixel|CWOverrideRedirect, &attributes);
+    vert_w = XCreateWindow(
+      disp, root, ws - 1, 0, 2, h, 0, CopyFromParent, CopyFromParent,
+      CopyFromParent, CWBackPixel|CWOverrideRedirect, &attributes);
   }
   else
 #endif
@@ -240,9 +306,8 @@ void FScreenInit(Display *dpy)
       XineramaScreenInfo *info;
 
       info = XineramaQueryScreens(disp, &count);
-      total_screens = count;
-      num_screens = (is_xinerama_disabled) ? 0 : count;
-      screens = (XineramaScreenInfo *)
+      total_screens_xi = count;
+      screens_xi = (XineramaScreenInfo *)
 	safemalloc(sizeof(XineramaScreenInfo) * (1 + count));
       memcpy(screens + 1, info, sizeof(XineramaScreenInfo) * count);
       XFree(info);
@@ -250,46 +315,109 @@ void FScreenInit(Display *dpy)
     else
 #endif
     {
-      num_screens = 0;
-      total_screens = 0;
+      total_screens_xi = 0;
       screens = (XineramaScreenInfo *)safemalloc(sizeof(XineramaScreenInfo)*1);
     }
+  total_screens = total_screens_xi;
+  screens = screens_xi;
 
   /* Now, fill screens[0] with global screen parameters */
-  screens[0].screen_number = -1;
-  screens[0].x_org         = 0;
-  screens[0].y_org         = 0;
-  screens[0].width         = DisplayWidth (disp, DefaultScreen(disp));
-  screens[0].height        = DisplayHeight(disp, DefaultScreen(disp));
+  screens_xi[0].screen_number = -1;
+  screens_xi[0].x_org         = 0;
+  screens_xi[0].y_org         = 0;
+  screens_xi[0].width         = DisplayWidth (disp, DefaultScreen(disp));
+  screens_xi[0].height        = DisplayHeight(disp, DefaultScreen(disp));
 
   /* Fill in the screen range */
-  FScreenSetState(1);
+  FScreenSetState(is_xinerama_enabled);
 
   return;
 }
 
-void FScreenDisable(void)
+void FScreenOnOff(Bool do_enable)
 {
-  is_xinerama_disabled = 1;
-  num_screens = 0;
-  /* Fill in the screen range */
-  FScreenSetState(1);
-#ifdef USE_XINERAMA_EMULATION
-  XUnmapWindow(disp,blank_w);
-  XUnmapWindow(disp,vert_w);
-#endif
+  FScreenSetState(do_enable);
 }
 
-void FScreenEnable(void)
+void FScreenSLSOnOff(Bool do_enable)
 {
-  is_xinerama_disabled = 0;
-  num_screens = total_screens;
-  /* Fill in the screen range */
-  FScreenSetState(1);
-#ifdef USE_XINERAMA_EMULATION
-  XMapRaised(disp,blank_w);
-  XMapRaised(disp,vert_w);
-#endif
+  is_sls_enabled = do_enable;
+  if (do_enable)
+  {
+    total_screens = total_screens_sls;
+    screens = screens_sls;
+  }
+  else
+  {
+    total_screens = total_screens_xi;
+    screens = screens_xi;
+  }
+  FScreenSetState(is_xinerama_enabled);
+}
+
+Bool FScreenConfigureSLS(int width, int height)
+{
+  unsigned long scr = DefaultScreen(disp);
+  int w = DisplayWidth(disp, scr);
+  int h = DisplayHeight(disp, scr);
+
+  if (width <= 1)
+  {
+    width = 1;
+  }
+  else if (width > w)
+  {
+    width = w;
+  }
+  if (height <= 1)
+  {
+    height = 1;
+  }
+  else if (height > h)
+  {
+    height = h;
+  }
+  if (total_sls_width == width && total_sls_height == height && screens_sls)
+  {
+    return False;
+  }
+  if (screens_sls)
+  {
+    free(screens_sls);
+    screens_sls = NULL;
+  }
+  /* calculate the screens */
+  {
+    int row, col, sn;
+    int ws;
+    int hs;
+
+    total_screens_sls = width * height;
+    total_sls_width = width;
+    total_sls_height = height;
+    ws = w / total_sls_width;
+    hs = h / total_sls_height;
+    screens_sls = (XineramaScreenInfo *)
+      safemalloc(sizeof(XineramaScreenInfo) * (1 + total_screens_sls));
+    /* calculate the faked sub screen dimensions */
+    screens_sls[0] = screens_xi[0];
+    sn = 1;
+    for (row = 0; row < total_sls_height; row++)
+    {
+      for (col = 0; col < total_sls_width; col++)
+      {
+	screens_sls[sn].screen_number = sn - 1;
+	screens_sls[sn].x_org         = col * ws;
+	screens_sls[sn].y_org         = row * hs;
+	screens_sls[sn].width         = ws;
+	screens_sls[sn].height        = hs;
+	sn++;
+      }
+    }
+  }
+  FScreenSLSOnOff(is_sls_enabled);
+
+  return True;
 }
 
 #if 0
@@ -304,47 +432,73 @@ void FScreenDisableRandR(void)
 }
 #endif
 
-int FScreenGetPrimaryScreen(void)
+static int FScreenGetPrimaryScreen(XEvent *ev)
 {
-  return (is_xinerama_disabled) ? 0 : primary_scr;
+  if (!is_xinerama_enabled)
+  {
+    return 0;
+  }
+  if (primary_scr == FSCREEN_GLOBAL)
+  {
+    return 0;
+  }
+  else if (primary_scr == FSCREEN_CURRENT)
+  {
+    int mx;
+    int my;
+
+    /* use current screen as primary screen */
+    GetMouseXY(ev, &mx, &my);
+    return FindScreenOfXY(mx, my);
+  }
+  else if (primary_scr < 0 || primary_scr >= last_to_check)
+  {
+    /* out of range */
+    return 0;
+  }
+
+  return primary_scr + 1;
 }
 
 void FScreenSetPrimaryScreen(int scr)
 {
-  if (scr >= 0 && scr < num_screens)
-  {
-    primary_scr = scr + 1;
-  }
-  else
-  {
-    primary_scr = 0;
-  }
-
-  return;
+  primary_scr = scr;
 }
 
 /* Intended to be called by modules.  Simply pass in the parameter from the
  * config string sent by fvwm. */
 void FScreenConfigureModule(char *args)
 {
-  int screen = 0;
+  int val[5];
+  int n;
 
-  GetIntegerArguments(args, NULL, &screen, 1);
-  if (screen < 0)
+  n = GetIntegerArguments(args, NULL, val, 5);
+  if (n != 5)
   {
-    screen = -1;
+    /* ignore broken line */
+    return;
   }
-  FScreenSetPrimaryScreen(screen - 1);
-  if (screen == -1)
-  {
-    FScreenDisable();
-  }
-  else
-  {
-    FScreenEnable();
-  }
+  FScreenSetPrimaryScreen(val[1]);
+  FScreenConfigureSLS(val[3], val[4]);
+  FScreenSLSOnOff(val[2]);
+  FScreenOnOff(val[0]);
 
   return;
+}
+
+/* Here's the function used by FVWM to generate the string which
+ * FScreenConfigureModule expects to receive back as its argument.
+ */
+const char *FScreenGetConfiguration(void)
+{
+  static char msg[200];
+
+  sprintf(
+    msg, XINERAMA_CONFIG_STRING" %d %d %d %d %d",
+    FScreenIsEnabled(), primary_scr,
+    FScreenIsSLSEnabled(), total_sls_width, total_sls_height);
+
+  return msg;
 }
 
 /* Sets the default screen for ...ParseGeometry if no screen spec is given.
@@ -371,30 +525,6 @@ static int FindScreenOfXY(int x, int y)
 
   /* Ouch!  A "black hole" coords?  As for now, return global screen */
   return 0;
-}
-
-static void GetMouseXY(XEvent *eventp, int *x, int *y)
-{
-  if (is_xinerama_disabled || last_to_check == first_to_check)
-  {
-    /* We use .x_org,.y_org because nothing prevents a screen to be not at
-     * (0,0) */
-    *x = screens[first_to_check].x_org;
-    *y = screens[first_to_check].y_org;
-  }
-  else
-  {
-    XEvent e;
-
-    if (eventp == NULL)
-    {
-      eventp = &e;
-      e.type = 0;
-    }
-    GetLocationFromEventOrQuery(disp, DefaultRootWindow(disp), eventp, x, y);
-  }
-
-  return;
 }
 
 /* Returns the specified screens geometry rectangle.  screen can be a screen
@@ -431,7 +561,8 @@ Bool FScreenGetScrRect(
     screen = 0;
     break;
   case FSCREEN_PRIMARY:
-    screen = primary_scr;
+    screen =
+      FScreenGetPrimaryScreen((arg && arg->mouse_ev) ? arg->mouse_ev : NULL);
     break;
   case FSCREEN_CURRENT:
     /* translate to xypos format */
@@ -734,7 +865,7 @@ int FScreenParseGeometry(
     scr = FindScreenOfXY(mx, my);
     break;
   case FSCREEN_PRIMARY:
-    scr = primary_scr;
+    scr = FScreenGetPrimaryScreen(NULL);
     break;
   default:
     scr++;

@@ -9,6 +9,8 @@
 	(X_init_manager):
 	(create_manager_window):
 	IconMan listens to the WM_DELETE protocol
+	(xevent_loop):
+	fixed an event handling bug
 
 	* FvwmIconMan/x.c (create_manager_window):
 	* FvwmWinList/FvwmWinList.c (MakeMeWindow):

@@ -248,6 +248,10 @@ static const func_type func_config[] =
   CMD_ENTRY("windowshade", CMD_WindowShade, F_WINDOW_SHADE, FUNC_NEEDS_WINDOW),
   CMD_ENTRY("windowshadeanimate", CMD_WindowShadeAnimate, F_SHADE_ANIMATE, 0),
   CMD_ENTRY("xinerama", CMD_Xinerama, F_XINERAMA, 0),
+  CMD_ENTRY("xineramaprimaryscreen", CMD_XineramaPrimaryScreen,
+	    F_XINERAMAPRIMARYSCREEN, 0),
+  CMD_ENTRY("xineramasls", CMD_XineramaSls, F_XINERAMASLS, 0),
+  CMD_ENTRY("xineramaslssize", CMD_XineramaSlsSize, F_XINERAMASLSSIZE, 0),
   CMD_ENTRY("xorpixmap", CMD_XorPixmap, F_XOR, 0),
   CMD_ENTRY("xorvalue", CMD_XorValue, F_XOR, 0),
   {"",0,0,0}

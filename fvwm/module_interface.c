@@ -1225,13 +1225,7 @@ void BroadcastConfigInfoString(char *string)
  **********************************************************************/
 void broadcast_xinerama_state(void)
 {
-  char buf[100];
-  int scr;
-
-  scr = (FScreenIsEnabled()) ? FScreenGetPrimaryScreen() : -1;
-  sprintf(buf, "%s %d", XINERAMA_CONFIG_STRING, scr);
-  BroadcastConfigInfoString(buf);
-
+  BroadcastConfigInfoString((char *)FScreenGetConfiguration());
   return;
 }
 
