@@ -62,8 +62,9 @@
                 +   abs((long)(b1 - b2)))
 
 #define FVWM_DIST(r1,g1,b1,r2,g2,b2) \
-                   (abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)) \
-                +   2*abs(abs(r1-g1) + abs(g1-b1) - abs(r2-g2) - abs(g2-b2))
+                   (abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2) \
+                    + 2*abs(abs(r1-g1) + abs(g1-b1) + abs(r1-b1) \
+                            - abs(r2-g2) - abs(g2-b2) - abs(r2-b2)))
 
 #define USED_DIST(r1,g1,b1,r2,g2,b2) FVWM_DIST(r1,g1,b1,r2,g2,b2)
 
@@ -112,6 +113,7 @@ typedef struct
 	short d_nr;
 	short d_ng;
 	short d_nb;
+	short d_ngrey_bits;
        /* info for depth > 8 */
 	int red_shift;
 	int green_shift;
@@ -156,8 +158,8 @@ static short *PDitherMappingTable = NULL;
 static Bool PStrictColorLimit = 0;
 static Bool PAllocTable = 0;
 static PColorsInfo Pcsi = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL,
-	NULL};
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL,
+	NULL, NULL};
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -300,29 +302,44 @@ int my_dither(int x, int y, XColor *c)
 	{
 		/* color cube */
 		int dith, rs, gs, bs, gb, b;
+		int tr,tb,tg;
+		
+		rs = Pcsi.d_nr - 1;
+		gs = Pcsi.d_ng - 1;
+		bs = Pcsi.d_nb - 1;
+		gb = Pcsi.d_ng*Pcsi.d_nb;
+		b = Pcsi.d_nb;
 
-		if (Pcsi.d_nr > 0)
-		{
-			rs = Pcsi.d_nr - 1;
-			gs = Pcsi.d_ng - 1;
-			bs = Pcsi.d_nb - 1;
-			gb = Pcsi.d_ng*Pcsi.d_nb;
-			b = Pcsi.d_nb;
-		}
-		else
-		{
-			rs = Pcsi.nr - 1;
-			gs = Pcsi.ng - 1;
-			bs = Pcsi.nb - 1;
-			gb = Pcsi.ng*Pcsi.nb;
-			b = Pcsi.nb;
-		}
 		dmp = DM[(0 + y) & (DM_HEIGHT - 1)];
 		dith = (dmp[(0 + x) & (DM_WIDTH - 1)] << 2) | 7;
-		c->red = ((c->red * rs) + dith) >> 8;
-		c->green = ((c->green * gs) + (262 - dith)) >> 8;
-		c->blue = ((c->blue * bs) + dith) >> 8;
-		index = c->red * gb + c->green * b + c->blue;
+		tr = ((c->red * rs) + dith) >> 8;
+		tg = ((c->green * gs) + (262 - dith)) >> 8;
+		tb = ((c->blue * bs) + dith) >> 8;
+		index = tr * gb + tg * b + tb;
+#if 0
+		/* try to use the additonal grey. Not easy, good for
+		 * certain image/gradient bad for others */
+		if (Pcsi.d_ngrey_bits)
+		{
+			int g_index;
+
+			/* dither in the Pcsi.ngrey^3 cc */
+			tr = ((c->red * (Pcsi.ngrey-1)) + dith) >> 8;
+			tg = ((c->green * (Pcsi.ngrey-1)) + (262 - dith)) >> 8;
+			tb = ((c->blue * (Pcsi.ngrey-1)) + dith) >> 8;
+			/* get the grey */
+			fprintf(stderr, "%i,%i,%i(%i/%i) ", tr,tg,tb,
+				abs(tr-tg) + abs(tb-tg) + abs(tb-tr),Pcsi.ngrey);
+			g_index = ((tr + tg + tb)/3);
+			if (g_index != 0 && g_index != Pcsi.ngrey-1 &&
+			    abs(tr-tg) + abs(tb-tg) + abs(tb-tr) <=
+			    Pcsi.d_ngrey_bits)
+			{
+				g_index =  g_index + Pcsi.ng*Pcsi.nb*Pcsi.ng -1;
+				index = g_index;
+			}
+		}
+#endif
 		if (PDitherMappingTable != NULL)
 		{
 			index = PDitherMappingTable[index];
@@ -358,7 +375,7 @@ int my_dither_depth_15_16_init(void)
 	}
 	else
 	{
-		return 2; /* fail */
+		return 0; /* fail */
 	}
 
 	Pcsi.red_dither =
@@ -524,7 +541,7 @@ int get_color_index(int r, int g, int b, int is_8)
 			if (Pcsi.ngrey - 2 > 0)
 			{
 				/* FIXME: speedup this with more than 8 grey */
-				int start = Pcsi.ng*Pcsi.nb*Pcsi.nb;
+				int start = Pcsi.nr*Pcsi.ng*Pcsi.nb;
 				for(i=start; i < start+Pcsi.ngrey-2; i++)
 				{
 					d = USED_DIST(
@@ -1037,6 +1054,15 @@ void create_mapping_table(
 		Pcsi.d_nr = nr;
 		Pcsi.d_ng = ng;
 		Pcsi.d_nb = nb;
+		Pcsi.d_ngrey_bits = 2;
+		while((1<<Pcsi.d_ngrey_bits) < ngrey)
+		{
+			Pcsi.d_ngrey_bits++;
+		}
+		if (1<<Pcsi.d_ngrey_bits != ngrey)
+		{
+			Pcsi.d_ngrey_bits = 0;
+		}
 		Pcsi.grey_bits = grey_bits;
 	}
 	else
@@ -1048,12 +1074,14 @@ void create_mapping_table(
 			Pcsi.d_nr = 3;
 			Pcsi.d_ng = 3;
 			Pcsi.d_nb = 3;
+			Pcsi.d_ngrey_bits = 0;
 		}
 		else
 		{
 			Pcsi.d_nr = 4;
 			Pcsi.d_ng = 4;
 			Pcsi.d_nb = 4;
+			Pcsi.d_ngrey_bits = 0;
 		}
 		PDitherMappingTable = build_mapping_table(
 			Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb, use_named);
@@ -1210,6 +1238,8 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 		{4, 4, 4, 23, 0, ANY_COLOR_CUBE},
 		/* 78 (in fact 76)  a good default ??*/
 		{4, 4, 4, 16, 0, FVWM_COLOR_CUBE},
+		/* 70  a good default ?? */
+		{4, 4, 4, 8, 0, ANY_COLOR_CUBE},
 		/* 68  a good default ?? */
 		{4, 4, 4, 6, 0, ANY_COLOR_CUBE},
 		/* 64 Xrender XFree-4.3 (GTK wcl) */
