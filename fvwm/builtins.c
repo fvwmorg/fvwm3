@@ -2491,11 +2491,11 @@ void SetGlobalOptions(F_CMD_ARGS)
     }
     else if (StrEquals(opt,"SMARTPLACEMENTISREALLYSMART"))
     {
-      replace = "* CleverPlacement";
+      replace = "* MinOverlapPlacement";
     }
     else if (StrEquals(opt,"SMARTPLACEMENTISNORMAL"))
     {
-      replace = "* SmartPlacement";
+      replace = "* TileCascadePlacement";
     }
     else if (StrEquals(opt,"CLICKTOFOCUSDOESNTPASSCLICK"))
     {
@@ -2547,11 +2547,11 @@ void SetGlobalOptions(F_CMD_ARGS)
     }
     else if (StrEquals(opt,"ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
     {
-      replace = "* ActivePlacementHonorsStartsOnPage";
+      replace = "* ManualPlacementHonorsStartsOnPage";
     }
     else if (StrEquals(opt,"ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
     {
-      replace = "* ActivePlacementIgnoresStartsOnPage";
+      replace = "* ManualPlacementIgnoresStartsOnPage";
     }
     else if (StrEquals(opt,"RAISEOVERNATIVEWINDOWS"))
     {

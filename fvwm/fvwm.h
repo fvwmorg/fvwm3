@@ -327,19 +327,21 @@ typedef struct
 #define PLACE_CLEVERNESS_MASK 0x3
 #define PLACE_RANDOM          0x4
   /* new placements value, try to get a minimal backward compatibility with
-  *  the old flags: Dumb+Active=Manual, Dumb+Random=Cascade, Smart+Random=
-  *  TileCascade, Smart+Active=TileManual, Random+Smart+Clever=MINOVERLAP
-  *  which is the original Clevre placement code, Active+Smart+Clever=
-  *  MINOVERLAPPERCENT which is the "new" Clever placement code and was
-  *  the original Clever placement code. Now the original placement code
-  *  said: Active/Random+Dumb+Clever=Active/Random+Dumb (with Dump Clever
-  *  is ignored); These represent the not use value: 0x2=Active+Dumb+Clever,
-  *  0x6=Random+Dumb+Clever */
+   *  the old flags: Dumb+Active=Manual, Dumb+Random=Cascade, Smart+Random=
+   *  TileCascade, Smart+Active=TileManual, Random+Smart+Clever=MINOVERLAP
+   *  which is the original Clever placement code, Active+Smart+Clever=
+   *  MINOVERLAPPERCENT which is the "new" Clever placement code and was
+   *  the original Clever placement code. Now the original placement code
+   *  said: Active/Random+Dumb+Clever=Active/Random+Dumb (with Dumb Clever
+   *  is ignored); These represent the not use value: 0x2=Active+Dumb+Clever,
+   *  0x6=Random+Dumb+Clever */
 #define PLACE_MANUAL            0x0
 #define PLACE_TILEMANUAL        0x1
+#define PLACE_MANUAL_B          0x2
 #define PLACE_MINOVERLAPPERCENT 0x3
 #define PLACE_CASCADE           0x4
 #define PLACE_TILECASCADE       0x5
+#define PLACE_CASCADE_B         0x6
 #define PLACE_MINOVERLAP        0x7
 #define PLACE_MASK              0x7
   unsigned placement_mode : 3;
@@ -378,7 +380,7 @@ typedef struct
   unsigned use_no_pposition : 1;
   unsigned use_start_on_desk : 1;
   unsigned use_start_on_page_for_transient : 1;
-  unsigned active_placement_honors_starts_on_page : 1;
+  unsigned manual_placement_honors_starts_on_page : 1;
   unsigned capture_honors_starts_on_page : 1;
   unsigned recapture_honors_starts_on_page : 1;
 } style_flags;

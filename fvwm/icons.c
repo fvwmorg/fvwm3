@@ -111,7 +111,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     icon_order[2] = 2;
     icon_order[3] = 3;
   }
-#if 0
+#if 1
   else if (ICON_OVERRIDE_MODE(tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
   {
     /* use application provided icon window first, then fvwm provided icons

@@ -1342,7 +1342,7 @@ Copy
 .IR orig-menustyle " to " dest-menustyle ,
 where
 .IR orig-menustyle
-is an existing menu style different from the default menu style "*". 
+is an existing menu style different from the default menu style "*".
 If the menu style
 .IR dest_menustyle
 does not exist, then it is created.
@@ -2773,46 +2773,86 @@ As announced in the past, this command has been removed.  Please replace
 the global options in your configuration file according to thi
 following table:
 .EX
-WindowShadeShrinks
-  --> Style * WindowShadeShrinks
-WindowShadeScrolls
-  --> Style * WindowShadeScrolls
-SmartPlacementIsReallySmart
-  --> Style * CleverPlacement
-SmartPlacementIsNormal
-  --> Style * SmartPlacement
-ClickToFocusDoesntPassClick
-  --> Style * ClickToFocusPassesClickOff
-ClickToFocusPassesClick
-  --> Style * ClickToFocusPassesClick
-ClickToFocusDoesntRaise
-  --> Style * ClickToFocusRaisesOff
-ClickToFocusRaises
-  --> Style * ClickToFocusRaises
-MouseFocusClickDoesntRaise
-  --> Style * MouseFocusClickRaisesOff
-MouseFocusClickRaises
-  --> Style * MouseFocusClickRaises
-NoStipledTitles
-  --> Style * StippledTitleOff
-StipledTitles
-  --> Style * StippledTitle
-CaptureHonorsStartsOnPage
-  --> Style * CaptureHonorsStartsOnPage
-CaptureIgnoresStartsOnPage
-  --> Style * CaptureIgnoresStartsOnPage
-RecaptureHonorsStartsOnPage
-  --> Style * RecaptureHonorsStartsOnPage
-RecaptureIgnoresStartsOnPage
-  --> Style * RecaptureIgnoresStartsOnPage
-ActivePlacementHonorsStartsOnPage
-  --> Style * ActivePlacementHonorsStartsOnPage
-ActivePlacementIgnoresStartsOnPage
-  --> Style * ActivePlacementIgnoresStartsOnPage
-RaiseOverNativeWindows
-  --> BugOpts RaiseOverNativeWindows on
-IgnoreNativeWindows
-  --> BugOpts RaiseOverNativeWindows off
+GlobalOpts WindowShadeShrinks
+  -->
+Style * WindowShadeShrinks
+
+GlobalOpts WindowShadeScrolls
+  -->
+Style * WindowShadeScrolls
+
+GlobalOpts SmartPlacementIsReallySmart
+  -->
+Style * MinOverlapPlacement
+
+GlobalOpts SmartPlacementIsNormal
+  -->
+Style * TileCascadePlacement
+
+GlobalOpts ClickToFocusDoesntPassClick
+  -->
+Style * ClickToFocusPassesClickOff
+
+GlobalOpts ClickToFocusPassesClick
+  -->
+Style * ClickToFocusPassesClick
+
+GlobalOpts ClickToFocusDoesntRaise
+  -->
+Style * ClickToFocusRaisesOff
+
+GlobalOpts ClickToFocusRaises
+  -->
+Style * ClickToFocusRaises
+
+GlobalOpts MouseFocusClickDoesntRaise
+  -->
+Style * MouseFocusClickRaisesOff
+
+GlobalOpts MouseFocusClickRaises
+  -->
+Style * MouseFocusClickRaises
+
+GlobalOpts NoStipledTitles
+  -->
+Style * StippledTitleOff
+
+GlobalOpts StipledTitles
+  -->
+Style * StippledTitle
+
+GlobalOpts CaptureHonorsStartsOnPage
+  -->
+Style * CaptureHonorsStartsOnPage
+
+GlobalOpts CaptureIgnoresStartsOnPage
+  -->
+Style * CaptureIgnoresStartsOnPage
+
+GlobalOpts RecaptureHonorsStartsOnPage
+  -->
+Style * RecaptureHonorsStartsOnPage
+
+GlobalOpts RecaptureIgnoresStartsOnPage
+  -->
+Style * RecaptureIgnoresStartsOnPage
+
+GlobalOpts ActivePlacementHonorsStartsOnPage
+  -->
+Style * ManualPlacementHonorsStartsOnPage
+
+GlobalOpts ActivePlacementIgnoresStartsOnPage
+  -->
+Style * ManualPlacementIgnoresStartsOnPage
+
+GlobalOpts RaiseOverNativeWindows
+  -->
+BugOpts RaiseOverNativeWindows on
+
+GlobalOpts IgnoreNativeWindows
+  -->
+BugOpts RaiseOverNativeWindows off
+
 .EE
 
 .TP
@@ -4193,7 +4233,7 @@ is a comma separated list containing one or more of the keywords
 .IR Font ,
 .IR IconFont ,
 .IR StartsOnDesk " / " StartsOnPage " / " StartsAnyWhere ,
-.IR ActivePlacementHonorsStartsOnPage " / " ActivePlacementIgnoresStartsOnPage ,
+.IR ManualPlacementHonorsStartsOnPage " / " ManualPlacementIgnoresStartsOnPage ,
 .IR CaptureHonorsStartsOnPage " / " CaptureIgnoresStartsOnPage ,
 .IR RecaptureHonorsStartsOnPage " / " RecaptureIgnoresStartsOnPage ,
 .IR StartsOnPageIncludesTransients " / " StartsOnPageIgnoresTransients ,
@@ -4680,48 +4720,46 @@ their values are invalid, both limits are set to 32767 pixels
 .\" +++++++++++++++ Window Manager placement
 .TP
 .B Window Manager placement
-Applications can place windows at a particular spot on-screen
+Applications can place windows at a particular spot on the screen
 either by window manager hints or a geometry specification.  When
 they do neither, then the window manager steps in to find a place
-for the window. Fvwm knows six ways to deal with this situation.
+for the window.  Fvwm knows six ways to deal with this situation.
 The default is
-.IR TileCascadePlacement.
+.IR TileCascadePlacement .
+
+.I CascadePlacement
+automatically place new windows in a cascading fashion.
 
 .I TileCascadePlacement
 tries to automatically place new windows in a smart
 location - a location in which they do not overlap any other
-windows on the screen.  If no such position can be found 
-.IR CascadePlacement
-will be used as a fall-back method (see below).
- 
+windows on the screen.  If no such position can be found
+.I CascadePlacement
+will be used as a fall-back method.
+
 .I TileManualPlacement
-tries to automatically place new windows in a smart
-location - a location in which they do not overlap any other
-windows on the screen.  If no such position can be found 
+This is the same as
+.IR TileCascadePlacement ,
+but uses
 .IR ManualPlacement
-will be used as a fall-back method (see below).
+as the fall-back method.
 
 .I MinOverlapPlacement
-automatically place new windows in a location in which they overlap other
-windows on the screen in a minimal way. Moreover, this placement policy
-especially try to avoid overlapping icons and windows on higher layers.
+automatically place new windows in a location in which the overlapping
+area in pixels of other windows is minimal.  Moreover, this placement policy
+especially tries to avoid overlapping icons and windows on higher layers.
 
 .I MinOverlapPercentPlacement
 is similar to
 .IR MinOverlapPlacement
-but use a different method. First, percent is used in place of pixels
-size in the algorithm. Moreover, the algorithm try more positions and try
-to avoid complete covering of the old windows. The main difference with
-.IR MinOverlapPlacement
-is that this placement policy will strongly tries to do not completely
-cover small old windows by the new window.
-
-.I CascadePlacement
-automatically place new windows in ever-so-slightly random locations.
+but tries to minimize the overlapped percentages of other windows
+instead of the overlapped area in pixels.  Moreover, the algorithm
+tries to avoid to cover other windows completely and try even harder
+not to cover small windows.
 
 .I ManualPlacement
 (aka active placement).
-the user is required to place every new window manually.  The window
+The user is required to place every new window manually.  The window
 will only show as a rubber band until a place is selected manually.
 The window is placed when a mouse button or any key except
 .SM Escape
@@ -4758,32 +4796,55 @@ window is automatically enlarged until it hits the bottom screen
 border.
 
 .I Old placement styles
-DumpPlacement / SmartPlacement, ActivePlacement / RandomPlacement,
-SmartPlacement / SmartPlacementOff, GlobalOpts SmartPlacementIsReallySmart /
-Global SmartPlacementIsNormal are still supported but will be removed
-in the future (so does not use these style options).
-We have the following correspondance:
+DumbPlacement / SmartPlacement / SmartPlacementOff,
+ActivePlacement / RandomPlacement,
+ActivePlacementsHonorsStartsOnPage / ActivePlacementsHonorsStartsOnPageOff,
+GlobalOpts SmartPlacementIsReallySmart / GlobalOpts SmartPlacementIsNormal
+are still supported but will be removed in the future.
+The old and new styles can be translated according to the following
+table:
 .EX
-GlobalOpts SmartPlacementIsReallySmart 
-  <--> Style "*" SmartPlacement
+GlobalOpts SmartPlacementIsReallySmart
+Style * SmartPlacement
+  -->
+Style * SmartPlacement, CleverPlacement
+
 Global SmartPlacementIsNormal
-  <--> Style "*" SmartPlacementOff
-DumbPlacement, RandomPlacement, CleverPlacement
-  <--> CascadePlacement
-DumbPlacement, RandomPlacement, CleverPlacementOff
-  <--> CascadePlacement
-DumbPlacement, ActivePlacement, Clever Placement
-  <--> CascadePlacement
-DumbPlacement, ActivePlacement, CleverPlacementOff
-  <--> ManualPlacement
-SmartPlacement, RandomPlacement, CleverPlacementOff
-  <--> TileCascadePlacement
-SmartPlacement, ActivePlacement, CleverPlacementOff
-  <--> TileManualPlacement
-SmartPlacement, RandomPlacement, CleverPlacement
-  <--> MinOverlapPlacement
-SmartPlacement, ActivePlacement, CleverPlacement
-  <--> MinOverlapPercentPlacement
+Style * SmartPlacement
+  -->
+Style * SmartPlacement, CleverPlacementOff
+
+Style * DumbPlacement, RandomPlacement
+  -->
+Style * CascadePlacement
+
+Style * DumbPlacement, ActivePlacement
+  -->
+Style * ManualPlacement
+
+Style * SmartPlacement + RandomPlacement + CleverPlacementOff
+  -->
+Style * TileCascadePlacement
+
+Style * SmartPlacement + ActivePlacement + CleverPlacementOff
+  -->
+Style * TileManualPlacement
+
+Style * SmartPlacement + CleverPlacement
+  -->
+Style * MinOverlapPlacement
+
+Style * SmartPlacement, ActivePlacement, CleverPlacement
+  -->
+Style * MinOverlapPercentPlacement
+Style * ActivePlacementsHonorsStartsOnPage
+  -->
+Style * ManualPlacementsHonorsStartsOnPage
+
+Style * ActivePlacementsHonorsStartsOnPageOff
+  -->
+Style * ManualPlacementsHonorsStartsOnPageOff
+
 .EE
 
 .\" +++++++++++++++ placement options and stacking policy
@@ -4834,22 +4895,22 @@ want to appear in your visible viewport; but occasionally an
 application will use a transient for something like a startup
 window that needs to be coerced into place.
 
-.I ActivePlacementIgnoresStartsOnPage
+.I ManualPlacementIgnoresStartsOnPage
 suppresses
 .IR StartsOnPage " or " StartsOnDesk
 placement in the event that both
-.IR ActivePlacement " and " SkipMapping
+.IR ManualPlacement " and " SkipMapping
 are in effect when a window is created.  This prevents you from
 interactively placing a window and then wondering where it
 disappeared to, because it got placed on a different desk or
 page.
-.I ActivePlacementHonorsStartsOnPage
+.I ManualPlacementHonorsStartsOnPage
 allows this to happen anyway.  The option has no effect if
 .I SkipMapping
 is not in effect, because fvwm will switch to the proper
 desk/page to perform interactive placement.  The default is
-.IR ActivePlacementIgnoresStartsOnPage "; "
-.I ActivePlacementHonorsStartsOnPage
+.IR ManualPlacementIgnoresStartsOnPage "; "
+.I ManualPlacementHonorsStartsOnPage
 matches the way the old
 .I StartsOnDesk
 style used to handle the situation.
@@ -6422,7 +6483,7 @@ motion of the window (with the
 .B Move
 command) was ended by pressing mouse button 3.  This is especially
 useful with the
-.I ActivePlacement
+.I ManualPlacement
 option of the
 .B Style
 command.

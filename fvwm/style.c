@@ -894,16 +894,16 @@ void ProcessNewStyle(F_CMD_ARGS)
 	else if (StrEquals(token, "ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
 	{
 	  found = True;
-	  ptmpstyle->flags.active_placement_honors_starts_on_page = 1;
-	  ptmpstyle->flag_mask.active_placement_honors_starts_on_page = 1;
-	  ptmpstyle->change_mask.active_placement_honors_starts_on_page = 1;
+	  ptmpstyle->flags.manual_placement_honors_starts_on_page = 1;
+	  ptmpstyle->flag_mask.manual_placement_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.manual_placement_honors_starts_on_page = 1;
 	}
 	else if (StrEquals(token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
-	  ptmpstyle->flags.active_placement_honors_starts_on_page = 0;
-	  ptmpstyle->flag_mask.active_placement_honors_starts_on_page = 1;
-	  ptmpstyle->change_mask.active_placement_honors_starts_on_page = 1;
+	  ptmpstyle->flags.manual_placement_honors_starts_on_page = 0;
+	  ptmpstyle->flag_mask.manual_placement_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.manual_placement_honors_starts_on_page = 1;
 	}
         else if (StrEquals(token, "AllowRestack"))
         {
@@ -1718,6 +1718,20 @@ void ProcessNewStyle(F_CMD_ARGS)
           ptmpstyle->flag_mask.placement_mode = PLACE_MASK;
           ptmpstyle->change_mask.placement_mode = PLACE_MASK;
         }
+	else if (StrEquals(token, "MANUALPLACEMENTHONORSSTARTSONPAGE"))
+	{
+	  found = True;
+	  ptmpstyle->flags.manual_placement_honors_starts_on_page = 1;
+	  ptmpstyle->flag_mask.manual_placement_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.manual_placement_honors_starts_on_page = 1;
+	}
+	else if (StrEquals(token, "MANUALPLACEMENTIGNORESSTARTSONPAGE"))
+	{
+	  found = True;
+	  ptmpstyle->flags.manual_placement_honors_starts_on_page = 0;
+	  ptmpstyle->flag_mask.manual_placement_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.manual_placement_honors_starts_on_page = 1;
+	}
 	else if (StrEquals(token, "MinOverlapPlacement"))
         {
 	  found = True;
@@ -2616,7 +2630,7 @@ void check_window_style_change(
    *   use_no_pposition
    *   use_start_on_desk
    *   use_start_on_page_for_transient
-   *   active_placement_honors_starts_on_page
+   *   manual_placement_honors_starts_on_page
    *   capture_honors_starts_on_page
    *   recapture_honors_starts_on_page
    *   use_layer

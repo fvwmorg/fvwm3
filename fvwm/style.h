@@ -50,8 +50,8 @@
 #define SUSE_START_ON_DESK(sf)        ((sf)->use_start_on_desk)
 #define SUSE_START_ON_PAGE_FOR_TRANSIENT(sf) \
   ((sf)->use_start_on_page_for_transient)
-#define SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
-  ((sf)->active_placement_honors_starts_on_page)
+#define SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
+  ((sf)->manual_placement_honors_starts_on_page)
 #define SCAPTURE_HONORS_STARTS_ON_PAGE(sf) \
   ((sf)->capture_honors_starts_on_page)
 #define SRECAPTURE_HONORS_STARTS_ON_PAGE(sf) \

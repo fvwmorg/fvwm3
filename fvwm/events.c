@@ -549,7 +549,7 @@ void HandlePropertyNotify(void)
       }
       else if (ICON_OVERRIDE_MODE(Tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
       {
-#if 1
+#if 0
 	has_icon_changed = True;
 #else
 	if (has_icon_window_hint_changed)

@@ -59,7 +59,7 @@ static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay,
 static int get_next_y(FvwmWindow *t, int y, int pdeltay, int use_percent);
 static float test_fit(FvwmWindow *t, int x11, int y11, float aoimin,
 		      int pdeltax, int pdeltay, int use_percent);
-static void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, 
+static void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax,
 			    int pdeltay, int use_percent);
 
 /*  RBW - 11/02/1998  */
@@ -343,7 +343,7 @@ static int get_next_y(FvwmWindow *t, int y, int pdeltay, int use_percent)
 }
 
 /*  RBW - 11/02/1998  */
-static float test_fit( FvwmWindow *t, int x11, int y11, float aoimin, 
+static float test_fit( FvwmWindow *t, int x11, int y11, float aoimin,
 		       int pdeltax, int pdeltay, int use_percent)
 {
 /**/
@@ -421,7 +421,7 @@ static float test_fit( FvwmWindow *t, int x11, int y11, float aoimin,
 	/* normalisation */
 	if ((x22-x21)*(y22-y21) != 0 && (x12-x11)*(y12-y11) != 0)
 	{
-	  anew = 
+	  anew =
 	    MAX(anew/((x22-x21)*(y22-y21)),anew/((x12-x11)*(y12-y11)))*100;
 	  if (anew >= 99)
 	    cover_factor = PLACEMENT_AVOID_COVER_99;
@@ -473,7 +473,7 @@ Bool PlaceWindow(
   Bool rc = False;
   Bool HonorStartsOnPage  =  False;
   Bool use_wm_placement = True;
-  Bool do_allow_active_placement = True;
+  Bool do_allow_manual_placement = True;
   extern Bool Restarting;
 /**/
   extern Bool PPosOverride;
@@ -528,8 +528,9 @@ Bool PlaceWindow(
     if (!PPosOverride &&
 	(DO_NOT_SHOW_ON_MAP(tmp_win) &&
 	 (SPLACEMENT_MODE(sflags) == PLACE_MANUAL ||
+	  SPLACEMENT_MODE(sflags) == PLACE_MANUAL_B ||
 	  SPLACEMENT_MODE(sflags) == PLACE_TILEMANUAL) &&
-         !SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags)))
+         !SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags)))
     {
       HonorStartsOnPage  =  False;
       fvwm_msg(WARN, "PlaceWindow",
@@ -672,7 +673,7 @@ Bool PlaceWindow(
                 tmp_win->wmhints->initial_state == IconicState))
              || HonorStartsOnPage))
   {
-    do_allow_active_placement = False;
+    do_allow_manual_placement = False;
 #if 0
     /* DV (30-Dec-2000): Why? With this code, new windows that are started
      * iconic  will always be created where the application wishes.  Instead we
@@ -683,35 +684,37 @@ Bool PlaceWindow(
 
   if (use_wm_placement)
   {
+    unsigned int placement_mode = SPLACEMENT_MODE(sflags);
+
+    if (!do_allow_manual_placement)
+    {
+      switch (placement_mode)
+      {
+      case PLACE_MANUAL:
+      case PLACE_MANUAL_B:
+	placement_mode = PLACE_CASCADE;
+	break;
+      case PLACE_TILEMANUAL:
+	placement_mode = PLACE_TILECASCADE;
+	break;
+      default:
+	break;
+      }
+    }
+
     /* first, try various "smart" placement */
-    if (SPLACEMENT_MODE(sflags) ==  PLACE_MINOVERLAP) 
+    switch (placement_mode)
     {
-      CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay, 0);
-      is_smartly_placed = True;
-    }
-    else if (SPLACEMENT_MODE(sflags) == PLACE_MINOVERLAPPERCENT)
-    {
-      CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay, 1);
-      is_smartly_placed = True;
-    }
-    else if (SPLACEMENT_MODE(sflags) == PLACE_TILEMANUAL || 
-	     SPLACEMENT_MODE(sflags) == PLACE_TILECASCADE)
-    {
-      is_smartly_placed = SmartPlacement(tmp_win, tmp_win->frame_g.width,
-					 tmp_win->frame_g.height,
-					 &xl, &yt, pdeltax, pdeltay);
-    }
- 
-    if (is_smartly_placed)
-    {
-      /* "smart" placement succed, we have done ... */
-      tmp_win->attr.x = xl;
-      tmp_win->attr.y = yt;
-    }
-    else if (do_allow_active_placement && 
-	     (SPLACEMENT_MODE(sflags) == PLACE_MANUAL || 
-	      SPLACEMENT_MODE(sflags) == PLACE_TILEMANUAL))
-    {
+
+    case PLACE_TILEMANUAL:
+      is_smartly_placed =
+	SmartPlacement(tmp_win, tmp_win->frame_g.width, tmp_win->frame_g.height,
+		       &xl, &yt, pdeltax, pdeltay);
+      if (is_smartly_placed)
+	break;
+      /* fall through to manual placement */
+    case PLACE_MANUAL:
+    case PLACE_MANUAL_B:
       /*  either "smart" placement fail and the second choice is a manual
 	  placement (TileManual) or we have a manual placement in any case
 	  (Manual)
@@ -734,7 +737,7 @@ Bool PlaceWindow(
 	}
 	DragWidth = tmp_win->frame_g.width;
 	DragHeight = tmp_win->frame_g.height;
-	
+
 	XMapRaised(dpy,Scr.SizeWindow);
 	if (moveLoop(tmp_win, 0, 0, DragWidth, DragHeight, &xl, &yt, False))
 	{
@@ -766,12 +769,23 @@ Bool PlaceWindow(
       /**/
       tmp_win->attr.y = yt;
       tmp_win->attr.x = xl;
-    } /* Manual */
-    else
-    {
+      break;
+    case PLACE_MINOVERLAPPERCENT:
+      CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay, 1);
+      is_smartly_placed = True;
+      break;
+    case PLACE_TILECASCADE:
+      is_smartly_placed =
+	SmartPlacement(tmp_win, tmp_win->frame_g.width, tmp_win->frame_g.height,
+		       &xl, &yt, pdeltax, pdeltay);
+      if (is_smartly_placed)
+	break;
+      /* fall through to cascade placement */
+    case PLACE_CASCADE:
+    case PLACE_CASCADE_B:
       /*  either "smart" placement fail and the second choice is "random"
-	  placement (TileCascade) or we have a "random" placement in any case 
-	  (Cascade) or we have a crazy SPLACEMENT_MODE(sflags) value set with 
+	  placement (TileCascade) or we have a "random" placement in any case
+	  (Cascade) or we have a crazy SPLACEMENT_MODE(sflags) value set with
 	  the old Style Dumb/Smart, Random/Active, Smart/SmartOff (i.e.:
 	  Dumb+Random+Smart or Dumb+Active+Smart)
       */
@@ -791,7 +805,7 @@ Bool PlaceWindow(
        * screen */
       tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw + 10;
       tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw + 10;
-      
+
       if(tmp_win->attr.x + tmp_win->frame_g.width >= PageRight)
       {
 	tmp_win->attr.x = PageRight -tmp_win->attr.width
@@ -805,7 +819,22 @@ Bool PlaceWindow(
 	  2*tmp_win->boundary_width;
 	Scr.randomy = 0;
       }
-    } /* random placement */
+      break;
+    case PLACE_MINOVERLAP:
+      CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay, 0);
+      is_smartly_placed = True;
+      break;
+    default:
+      /* can't happen */
+      break;
+    }
+
+    if (is_smartly_placed)
+    {
+      /* "smart" placement succed, we have done ... */
+      tmp_win->attr.x = xl;
+      tmp_win->attr.y = yt;
+    }
   } /* use_wm_placement */
   else
   {
@@ -933,7 +962,7 @@ void PlaceAgain_func(F_CMD_ARGS)
   if(token && StrEquals("ANIM", token))
     ppctMovement = NULL;
 
-  AnimatedMoveFvwmWindow(tmp_win, tmp_win->frame, -1, -1, x, y, False, -1, 
+  AnimatedMoveFvwmWindow(tmp_win, tmp_win->frame, -1, -1, x, y, False, -1,
 			 ppctMovement);
 
   return;
