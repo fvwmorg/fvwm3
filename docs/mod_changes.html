@@ -15,11 +15,11 @@ of an extra value to the header. This value is a timestamp. Most
 modules contained the line:
 <FONT COLOR="YELLOW"><PRE>
 	unsigned long header[3];
-</FONT></PRE>
+</PRE></FONT>
 This must be changed to:
 <FONT COLOR="YELLOW"><PRE>
 	unsigned long header[HEADER_SIZE];
-</FONT></PRE>
+</PRE></FONT>
 The rest of the changes are handled in the library function
 ReadFvwmPacket.
 <P>
@@ -33,7 +33,7 @@ file themselves. They can request the appropriate lines from fvwm:
       ParseConfigLine(buf);
     } /* end config lines */
   } /* end function */
-</FONT></PRE>
+</PRE></FONT>
 This is the preferred method of getting module-specific
 configuration lines.
 <P>

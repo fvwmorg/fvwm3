@@ -59,7 +59,7 @@ For example, some modules during start up want to know the state of
 all current windows.  The would ask fvwm for this information like this:
 <font color="yellow"><pre>
 SendText(Channel,"Send_WindowList",0);
-</font></pre>
+</pre></font>
 Send_ConfigInfo causes fvwm to send the module a list of all
 commands it has received which start with a ``*'', as well as the
 PixmapPath, IconPath, ColorLimit, and ClickTime commands that fvwm is
@@ -80,7 +80,7 @@ static void ParseOptions() {
     ParseConfigLine(buf);
   } /* end config lines */
 } /* end function */
-</font></pre>
+</pre></font>
 
 <H2>   <font  color="turquoise">Controlling   information  sent     to
 modules</font></h2>
@@ -96,7 +96,7 @@ M_SENDCONFIG.  A  library function, SetMessageMask,  makes it
 easy to set  this mask. Here  is an  example from FvwmBacker.c:  <font
 color="yellow"><pre>
 SetMessageMask(Fvwm_fd,M_NEW_DESK|M_CONFIG_INFO|M_END_CONFIG_INFO);
-</font></pre> This mask is used to reduce  the amount of communication
+</pre></font> This mask is used to reduce  the amount of communication
 between fvwm and its modules so that a module only gets the messages it
 needs.
 

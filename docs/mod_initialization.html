@@ -57,13 +57,13 @@ was launched. Contexts are listed below:
 #define C_R2          4096 - launched from right button #2
 #define C_R3          8192 - launched from right button #3
 #define C_R4         16384 - launched from right button #4
-#define C_R5         32768 - launched from right button #5</FONT></PRE>
+#define C_R5         32768 - launched from right button #5</PRE></FONT>
 <h3>Arg 6 and above</h3>
 A number of user specified command line arguments may be present
 (optional). Up to 35 arguments may be passed. For example, in:
 <FONT COLOR="YELLOW"><PRE>
 	Module	&quot;FvwmIdentify&quot;	FvwmIdentify Hello rob! ``-fg purple''
-</FONT></PRE>
+</PRE></FONT>
 we would get argv[6] = ``Hello'', argv[7] = ``rob!'', argv[8] = ``-fg purple''.
 <P>
 <H2> <font color="turquoise">Module Aliases</font></h2>
@@ -88,7 +88,7 @@ void main(int argc, char **argv) {
     exit(1);
   }
   fd[0] = atoi(argv[1]);
-  fd[1] = atoi(argv[2]);</FONT></PRE>
+  fd[1] = atoi(argv[2]);</PRE></FONT>
 <P>
 The descriptor fd[0] is available for the module to send messages to
 fvwm, while the descriptor fd[1] is available to read messages from
