@@ -367,6 +367,12 @@ char *SkipNTokens(char *indata, unsigned int n)
   return tmp;
 }
 
+/*
+ *
+ * convenience functions
+ *
+ */
+
 /****************************************************************************
  *
  * Works like GetNextToken, but with the following differences:
@@ -551,7 +557,7 @@ int GetOnePercentArgument(char *action, int *value, int *unit_io)
 
 
 int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
-		    int *val2_unit)
+			   int *val2_unit)
 {
   char *tok1, *tok2;
   int n = 0;
@@ -577,4 +583,54 @@ int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
   if (tok2)
     free(tok2);
   return n;
+}
+
+/* Parses the next token in action and returns 1 if it is "yes", "true", "y",
+ * "t" or "on", zero if it is "no", "false", "n", "f" or "off" and -1 if it is
+ * "toggle". A pointer to the first character in action behind the token is
+ * returned through ret_action in this case. ret_action may be NULL. If the
+ * token matches none of these strings the default_ret value is returned and
+ * the action itself is passed back in ret_action. If the no_toggle flag is
+ * non-zero, the "toggle" string is handled as no match. */
+int ParseToggleArgument(char *action, char **ret_action, int default_ret,
+			char no_toggle)
+{
+  int index;
+  int rc;
+  char *token;
+  char *next;
+  char *optlist[] = {
+    "toggle",
+    "yes", "no",
+    "true", "false",
+    "on", "off",
+    "t", "f",
+    "y", "n",
+    NULL
+  };
+
+  next = GetNextToken(action, &token);
+  index = GetTokenIndex(token, optlist, 0, NULL);
+  if (index == 0 && no_toggle == 0)
+  {
+    /* toggle requested explicitly */
+    rc = -1;
+  }
+  else if (index == -1 || (index == 0 && no_toggle))
+  {
+    /* nothing selected, use default and don't modify action */
+    rc = default_ret;
+    next = action;
+  }
+  else
+  {
+    /* odd numbers denote True, even numbers denote False */
+    rc = (index & 1);
+  }
+
+  if (ret_action)
+    *ret_action = next;
+  if (token)
+    free(token);
+  return rc;
 }

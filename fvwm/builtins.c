@@ -321,6 +321,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   int new_width, new_height,new_x,new_y;
   int val1, val2, val1_unit,val2_unit,n;
+  int toggle;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
@@ -333,6 +334,10 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     XBell(dpy, 0);
     return;
   }
+  toggle = ParseToggleArgument(action, &action, -1, 0);
+  if (((toggle == 1) && (tmp_win->flags & MAXIMIZED)) ||
+      ((toggle == 0) && !(tmp_win->flags & MAXIMIZED)))
+    return;
   n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
   if(n != 2)
   {
@@ -354,7 +359,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #ifdef WINDOWSHADE
     if (tmp_win->buttons & WSHADE)
       {
-	new_height = tmp_win->title_height + tmp_win->boundary_width; 
+	new_height = tmp_win->title_height + tmp_win->boundary_width;
       }
     else
 #endif
@@ -366,7 +371,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     new_width = tmp_win->frame_width;
 #ifdef WINDOWSHADE
-    if (tmp_win->buttons & WSHADE) 
+    if (tmp_win->buttons & WSHADE)
 	new_height = tmp_win->orig_ht;
     else
 #endif
@@ -408,10 +413,10 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  *  WindowShade -- shades or unshades a window (veliaa@rpi.edu)
  *
  *  Args: 1 -- force shade, 2 -- force unshade  No Arg: toggle
- * 
+ *
  ***********************************************************************
  *
- *  Animation added. 
+ *  Animation added.
  *     Based on code from AfterStep-1.0 (CT: ctibirna@gch.ulaval.ca)
  *     Additional fixes by Tomas Ogren <stric@ing.umu.se>
  *
@@ -423,31 +428,42 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 unsigned long context, char *action, int *Module)
 {
-    int oper = 0;
     int h, y, step, old_h;
     int new_x, new_y, new_width, new_height;
-    char *token;
+    int toggle;
 
     if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
 	return;
     if (tmp_win == NULL)
 	return;
 
-    if (!(tmp_win->flags & TITLE)) {
-	XBell(dpy, 0);
-	return;
+    if (!(tmp_win->flags & TITLE) || (tmp_win->flags & MAXIMIZED)) {
+      XBell(dpy, 0);
+      return;
     }
 
-    action = GetNextToken(action, &token);
-    if (token)
-	sscanf(token,"%d",&oper);
+    toggle = ParseToggleArgument(action, NULL, -1, 0);
+    if (toggle == -1)
+    {
+      if (GetIntegerArguments(action, NULL, &toggle, 1) > 0)
+      {
+ 	if (toggle == 1)
+ 	  toggle = 1;
+ 	else if (toggle == 2)
+ 	  toggle = 0;
+ 	else
+ 	  toggle = -1;
+      }
+    }
+    if (toggle == -1)
+      toggle = (tmp_win->buttons & WSHADE) ? 0 : 1;
 
     if (shade_anim_steps)
 	step = tmp_win->orig_ht/shade_anim_steps;
     if (step <= 0)  /* We don't want an endless loop, do we? */
 	step = 1;
 
-    if (((tmp_win->buttons & WSHADE)||(oper==2))&&(oper!=1))
+    if ((tmp_win->buttons & WSHADE) && toggle == 0)
     {
 	tmp_win->buttons &= ~WSHADE;
 	new_x = tmp_win->frame_x;
@@ -485,7 +501,7 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	BroadcastPacket(M_DEWINDOWSHADE, 3,
 			tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
     }
-    else
+    else if (!(tmp_win->buttons & WSHADE) && toggle == 1)
     {
 	tmp_win->buttons |= WSHADE;
 
@@ -774,27 +790,43 @@ void iconify_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context,char *action, int *Module)
 
 {
-  int val = 0;
+  int toggle;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT, ButtonRelease))
     return;
 
-  GetIntegerArguments(action, NULL, &val, 1);
+  toggle = ParseToggleArgument(action, NULL, -1, 0);
+  if (toggle == -1)
+  {
+    if (GetIntegerArguments(action, NULL, &toggle, 1) > 0)
+      {
+	if (toggle > 0)
+	  toggle = 1;
+	else if (toggle < 0)
+	  toggle = 0;
+	else
+	  toggle = -1;
+      }
+  }
+  if (toggle == -1)
+    toggle = (tmp_win->flags & ICONIFIED) ? 0 : 1;
 
   if (tmp_win->flags & ICONIFIED)
   {
-    if(val <=0)
+    if (toggle == 0)
       DeIconify(tmp_win);
   }
   else
   {
-    if(check_allowed_function2(F_ICONIFY,tmp_win) == 0)
+    if (toggle == 1)
     {
-      XBell(dpy, 0);
-      return;
-    }
-    if(val >=0)
+      if(check_allowed_function2(F_ICONIFY,tmp_win) == 0)
+      {
+	XBell(dpy, 0);
+	return;
+      }
       Iconify(tmp_win,eventp->xbutton.x_root-5,eventp->xbutton.y_root-5);
+    }
   }
 }
 
@@ -1018,7 +1050,14 @@ void refresh_win_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void stick_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		    unsigned long context, char *action, int *Module)
 {
+  int toggle;
+
   if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
+    return;
+
+  toggle = ParseToggleArgument(action, &action, -1, 0);
+  if ((toggle == 1 && (tmp_win->flags & STICKY)) ||
+      (toggle == 0 && !(tmp_win->flags & STICKY)))
     return;
 
   if(tmp_win->flags & STICKY)
@@ -1334,14 +1373,46 @@ void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   }
 
+  Scr.SnapMode = -1;
   if(StrEquals(token,"All"))
-    { Scr.SnapMode = 0; }
-  if(StrEquals(token,"SameType"))
-    { Scr.SnapMode = 1; }
-  if(StrEquals(token,"Icons"))
-    { Scr.SnapMode = 2; }
-  if(StrEquals(token,"Windows"))
-    { Scr.SnapMode = 3; }
+  {
+    Scr.SnapMode = 0;
+  }
+  else if(StrEquals(token,"SameType"))
+  {
+    Scr.SnapMode = 1;
+  }
+  else if(StrEquals(token,"Icons"))
+  {
+    Scr.SnapMode = 2;
+  }
+  else if(StrEquals(token,"Windows"))
+  {
+    Scr.SnapMode = 3;
+  }
+
+  if (Scr.SnapMode != -1)
+  {
+    free(token);
+    action = GetNextToken(action, &token);
+    if(token == NULL)
+    {
+      return;
+    }
+  }
+  else
+  {
+    Scr.SnapMode = 0;
+  }
+
+  if(StrEquals(token,"Screen"))
+  {
+    Scr.SnapMode += 8;
+  }
+  else
+  {
+    fvwm_msg(ERR,"SetSnapAttraction", "Invalid argument: %s", token);
+  }
 
   free(token);
 }
@@ -1418,7 +1489,7 @@ void SetXORPixmap(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     fvwm_msg(ERR,"SetXORPixmap","XORPixmap requires 1 argument");
     return;
   }
-  
+
   /* search for pixmap */
   GCPicture = CachePicture(dpy, Scr.Root, IconPath, PixmapPath, PixmapName, Scr.ColorLimit);
   free(PixmapName);
@@ -1426,12 +1497,12 @@ void SetXORPixmap(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
     return;
   }
-  
+
   /* free up old one */
   if (Scr.DrawPicture)
     DestroyPicture(dpy, Scr.DrawPicture);
   Scr.DrawPicture = GCPicture;
-  
+
   /* create Graphics context */
   gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
   gcv.function = GXxor;
@@ -4306,7 +4377,7 @@ void DefaultConditionMask(WindowConditionMask *mask)
   mask->useCirculateHitIcon = 0;
   mask->onFlags = 0;
   mask->offFlags = 0;
-  mask->layer = -2; /* -2  means no layer condition, -1 means current */ 
+  mask->layer = -2; /* -2  means no layer condition, -1 means current */
 }
 
 /**********************************************************************
@@ -4362,17 +4433,17 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       mask->useCirculateHit = 1;
     else if(StrEquals(condition,"CirculateHitIcon"))
       mask->useCirculateHitIcon = 1;
-    else if (StrEquals(condition, "Layer")) 
-    {  
-       if (sscanf(tmp,"%d",&mask->layer)) 
+    else if (StrEquals(condition, "Layer"))
+    {
+       if (sscanf(tmp,"%d",&mask->layer))
        {
 	  tmp = GetNextToken (tmp, &condition);
-          if (mask->layer < 0) 
+          if (mask->layer < 0)
             mask->layer = -2; /* silently ignore invalid layers */
        }
        else
        {
-          mask->layer = -1; /* needs current layer */ 
+          mask->layer = -1; /* needs current layer */
        }
     }
     else if(!mask->needsName && !mask->needsNotName)
@@ -4456,10 +4527,10 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   if (mask->needsNotName && fMatches)
     return 0;
 
-  if ((mask->layer == -1) && (fw->layer != Scr.Focus->layer)) 
+  if ((mask->layer == -1) && (fw->layer != Scr.Focus->layer))
     return 0;
 
-  if ((mask->layer >= 0) && (fw->layer != mask->layer))  
+  if ((mask->layer >= 0) && (fw->layer != mask->layer))
     return 0;
 
   return 1;
@@ -4618,22 +4689,22 @@ void AllFunc(XEvent *eventp, Window junk, FvwmWindow *tmp_win,
   mask.useCirculateHitIcon = 1;
 
   num = 0;
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) 
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
        num++;
     }
 
   g = (FvwmWindow **) malloc (num * sizeof(FvwmWindow *));
- 
+
   num = 0;
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) 
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
-      if (MatchesConditionMask(t, &mask)) 
+      if (MatchesConditionMask(t, &mask))
 	{
           g[num++] = t;
         }
     }
-  
+
   for (i = 0; i < num; i++)
     {
        ExecuteFunction(restofline,g[i],eventp,C_WINDOW,*Module);
@@ -4784,7 +4855,7 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   FreeConditionMask(&mask);
 }
 
-/* A very simple function, but handy if you want to call 
+/* A very simple function, but handy if you want to call
   complex functions from root context without selecting a window
   for every single function in it. */
 void PickFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -4792,7 +4863,7 @@ void PickFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
- 
+
   ExecuteFunction(action, tmp_win, eventp, C_WINDOW, *Module);
 }
 
@@ -5058,7 +5129,7 @@ void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
 #ifdef WINDOWSHADE
 void setShadeAnim (XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int* Module) 
+		   unsigned long context, char *action,int* Module)
 {
     int val_unit,n = 0;
     int val;
@@ -5082,22 +5153,22 @@ void change_layer(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int n, layer, val[2];
   FvwmWindow *t2, *next;
   name_list styles;
-  
+
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
-  
+
   if(tmp_win == NULL)
     return;
 
   n = GetIntegerArguments(action, NULL, val, 2);
 
   layer = tmp_win->layer;
-  if ((n == 1) || 
-      ((n == 2) && (val[0] != 0))) 
+  if ((n == 1) ||
+      ((n == 2) && (val[0] != 0)))
     {
       layer += val[0];
     }
-  else if ((n == 2) && (val[1] >= 0)) 
+  else if ((n == 2) && (val[1] >= 0))
     {
       layer = val[1];
     }
@@ -5108,16 +5179,16 @@ void change_layer(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       layer = styles.layer;
     }
 
-  if (layer < 0) 
+  if (layer < 0)
     {
       layer = 0;
-    } 
+    }
 
   if (layer < tmp_win->layer)
     {
       tmp_win->layer = layer;
       RaiseWindow(tmp_win);
-    } 
+    }
   else if (layer > tmp_win->layer)
     {
 #ifndef DONT_RAISE_TRANSIENTS
@@ -5132,13 +5203,13 @@ void change_layer(XEvent *eventp,Window w,FvwmWindow *tmp_win,
               (t2->layer < layer))
 	    {
 	      t2->layer = layer;
-	      LowerWindow(t2);  
+	      LowerWindow(t2);
 	    }
 	}
 #endif
       tmp_win->layer = layer;
       LowerWindow(tmp_win);
-    } 
+    }
 }
 
 void SetDefaultLayers(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -5146,37 +5217,37 @@ void SetDefaultLayers(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   char *tok = NULL;
   int i;
-  
+
   action = GetNextToken(action, &tok);
 
-  if (tok) 
+  if (tok)
     {
        i = atoi (tok);
-       if (i < 0) 
-         {          
+       if (i < 0)
+         {
            fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
          }
-       else 
+       else
          {
            Scr.OnTopLayer = i;
-         } 
+         }
        free (tok);
        tok = NULL;
     }
 
   action = GetNextToken(action, &tok);
 
-  if (tok) 
+  if (tok)
     {
        i = atoi (tok);
-       if (i < 0) 
-         {          
+       if (i < 0)
+         {
             fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
          }
-       else 
+       else
          {
             Scr.StaysPutLayer = i;
-         } 
+         }
        free (tok);
        tok = NULL;
     }

@@ -1,3 +1,9 @@
+1999-03-04  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	(RedrawWindow): applied AutoFocus patch
+
 1999-02-15  Bob Woodside <proteus@pcnet.com>
 
 	* FvwmConsole/FvwmConsole.h: Switched the order of the includes for

@@ -89,6 +89,8 @@ int GetRectangleArguments(char *action, int *width, int *height);
 int GetOnePercentArgument(char *action, int *value, int *unit_io);
 int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 			   int *val2_unit);
+int ParseToggleArgument(char *action, char **ret_action, int default_ret,
+			char no_toggle);
 
 
 /***********************************************************************

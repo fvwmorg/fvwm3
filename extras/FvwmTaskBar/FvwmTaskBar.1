@@ -14,20 +14,20 @@ Clicking on first button gives focus to the corresponding toplevel window;
 clicking on the middle button will hide a toplevel window; third mouse button
 is reserved for a future extension (context menu).
 Like the other modules, FvwmTaskBar only works when fvwm is used as the
-window manager. 
+window manager.
 
 When started, the taskbar shows up as a single row of buttons filling the
 full width of the screen, but during the work can be resized to accomodate
 up to 8 rows. In adition, if the AutoStick option is used, the taskbar
 will autoposition itself at the top or bottom of the screen, and can be
-dragged from one position to another with a normal move operation. 
+dragged from one position to another with a normal move operation.
 
 The first button of the taskbar, labelled "Start" sends a "Popup
 StartMenu" command to the FVWM, which can be used to pop-up a
-general-purpose menu when the button is pressed. 
+general-purpose menu when the button is pressed.
 
 The FvwmTaskBar also displays at the right side a window showing the
-current time and the built-in incoming mail indicator. 
+current time and the built-in incoming mail indicator.
 
 .SH COPYRIGHTS
 The FvwmTaskBar module is derivated from Mike Finger's FvwmWinList.
@@ -35,18 +35,18 @@ The FvwmTaskBar module is derivated from Mike Finger's FvwmWinList.
 Copyright 1994, Mike Finger. The author makes no guarantees or warranties of
 any kind about the use of this module.  Use this modules at your own risk.
 You may freely use this module or any portion of it for any purpose as long
-as the copyright is kept intact. 
+as the copyright is kept intact.
 
 .SH INITIALIZATION
 During initialization, \fIFvwmTaskBar\fP gets configuration information
-from FVWM to find the options that pertain to it. 
-These options are discussed in a later section. 
+from FVWM to find the options that pertain to it.
+These options are discussed in a later section.
 
 .SH INVOCATION
 FvwmTaskBar can be invoked by fvwm during initialization by inserting the
-line 'Module FvwmTaskBar' in the .fvwm2rc file. 
+line 'Module FvwmTaskBar' in the .fvwm2rc file.
 
-FvwmTaskBar must reside in a directory that is listed in the ModulePath 
+FvwmTaskBar must reside in a directory that is listed in the ModulePath
 option of FVWM for it to be executed by FVWM.
 
 .SH CONFIGURATION OPTIONS
@@ -57,19 +57,19 @@ Specifies the location and gravity of the FvwmTaskBar window.  At the
 current version, size is not supported and the taskbar will resize itself
 to fill the full witdh of the screen. If the AutoStick option is also
 specified, the module will automatically "stick" to the top or the bottom
-of the screen, whichever is closest to the geometry specification. 
+of the screen, whichever is closest to the geometry specification.
 
 .IP "*FvwmTaskBarFont \fIfont\fP"
-Specifies the default font to be used for labeling the buttons, when they 
+Specifies the default font to be used for labeling the buttons, when they
 are not depressed. If not specified, fixed font is assumed.
 
 .IP "*FvwmTaskBarSelFont \fIfont\fP"
-Specifies the font to be used for the depressed buttons. Note that the 
-Start button will use always this font even if is not pressed. If this 
+Specifies the font to be used for the depressed buttons. Note that the
+Start button will use always this font even if is not pressed. If this
 option is not specified, the default font is used instead.
 
 .IP "*FvwmTaskBarStatusFont \fIfont\fP"
-Specifies the font to be used for the clock and tip windows. If this 
+Specifies the font to be used for the clock and tip windows. If this
 option is not specified, fixed font is used.
 
 .IP "*FvwmTaskBarFore \fIcolor\fP"
@@ -89,9 +89,13 @@ This option specifies the geometry of the window (only the Y coordinate is
 useful)
 
 .IP "*FvwmTaskBarAutoStick"
-This option causes the taskbar to "stick" either to the top or bottom 
-of the screen, whichever is closest to the initial window placement. Any 
+This option causes the taskbar to "stick" either to the top or bottom
+of the screen, whichever is closest to the initial window placement. Any
 further move operation is also subject to that behaviour.
+
+.IP "*FvwmTaskBarAutoFocus"
+This option causes the taskbar to raise a window if the cursor stays on a
+button in taskbar and its tip is open.
 
 .IP "*FvwmTaskBarAutoHide"
 This option causes the taskbar to disappear leaving a narrow strip at the
@@ -103,7 +107,7 @@ Tells FvwmTaskBar to not show the windows that are listed on a WindowListSkip
 line in the configuration file.
 
 .IP "*FvwmTaskBarUseIconNames"
-Tells FvwmTaskBar to use the icon name of the window instead of the full 
+Tells FvwmTaskBar to use the icon name of the window instead of the full
 window name.  This is useful to keep the width of the buttons small.
 
 .IP "*FvwmTaskBarShowTransients"
@@ -122,9 +126,9 @@ Indicates the maximum width that window buttons should reach.
 (the minimum is hardcoded at 32).
 
 .IP "*FvwmTaskBarHighlightFocus"
-If the mouse pointer is over the taskbar, the window under the current 
-button is active. This behavior is like the TVTWM Icon Manager or 
-FvwmIconMan. \fINote:\fP If you use this option combined with FollowMouse 
+If the mouse pointer is over the taskbar, the window under the current
+button is active. This behavior is like the TVTWM Icon Manager or
+FvwmIconMan. \fINote:\fP If you use this option combined with FollowMouse
 focus style, you'll want the taskbar to be ClickToFocus.
 
 .IP "*FvwmTaskBarShowTips"
@@ -132,7 +136,7 @@ Enables the tips windows (by default disabled).
 
 .SH ""
 
-The following options deal more specifically with the status indicators 
+The following options deal more specifically with the status indicators
 displayed at the rigth of the taskbar.
 
 .IP "*FvwmTaskBarClockFormat \fIformat-string\fP"
@@ -141,7 +145,7 @@ It is a \fIstfrtime(3)\fP compatible format string.
 By default it is "%R".
 
 .IP "*FvwmTaskBarUpdateInterval \fIseconds\fP"
-Specifies how often the clock display should be refreshed, so that times of 
+Specifies how often the clock display should be refreshed, so that times of
 the form HH:MM:SS can be used. By default 60 seconds.
 
 .IP "*FvwmTaskBarBellVolume \fIvolume\fP"

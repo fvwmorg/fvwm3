@@ -378,17 +378,16 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 	       (other.y) > (*py + self.h) ))
 	    {
 	      dist = abs(other.x - (*px + self.w));
-	      if(dist < closestRight)
+              if(dist < closestRight)
 		{
 		  closestRight = dist;
 		  if(((*px + self.w) >= other.x)&&
 		     ((*px + self.w) < other.x+Scr.SnapAttraction))
 		    nxl = other.x - self.w;
-
 		  if(((*px + self.w) >= other.x - Scr.SnapAttraction)&&
 		     ((*px + self.w) < other.x))
 		    nxl = other.x - self.w;
-		}
+                }
 	      dist = abs(other.x + other.w - *px);
 	      if(dist < closestLeft)
 		{
@@ -401,7 +400,43 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 		    nxl = other.x + other.w;
 		}
 	    }
-	  if(!((other.x + other.w) < (*px) || (other.x) > (*px + self.w) ))
+          /* ScreenEdges - SJL */
+          if(!(Scr.MyDisplayHeight < (*py) ||
+               (*py + self.h) < 0) && (Scr.SnapMode & 8))
+            {
+              dist = abs(Scr.MyDisplayWidth - (*px + self.w));
+              
+              if(dist < closestRight)
+		{
+		  closestRight = dist;
+
+		  if(((*px + self.w) >= Scr.MyDisplayWidth)&&
+		     ((*px + self.w) < Scr.MyDisplayWidth +
+                      Scr.SnapAttraction))
+		    nxl = Scr.MyDisplayWidth - self.w;
+                  
+		  if(((*px + self.w) >= Scr.MyDisplayWidth -
+                      Scr.SnapAttraction)&&
+		     ((*px + self.w) < Scr.MyDisplayWidth))
+		    nxl = Scr.MyDisplayWidth - self.w;
+                }
+              
+              dist = abs(*px);
+
+	      if(dist < closestLeft)
+		{
+		  closestLeft = dist;
+
+                  if((*px <= 0)&&
+		     (*px > - Scr.SnapAttraction))
+		    nxl = 0;
+		  if((*px <= Scr.SnapAttraction)&&
+		     (*px > 0))
+		    nxl = 0;
+                }
+            }
+          
+	  if(!((other.x + other.w) < (*px) || (other.x) > (*px + self.w)))
 	    {
 	      dist = abs(other.y - (*py + self.h));
 	      if(dist < closestBottom)
@@ -426,6 +461,38 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 		    nyt = other.y + other.h;
 		}
 	    }
+          /* ScreenEdges - SJL */
+          if (!(Scr.MyDisplayWidth < (*px) || (*px + self.w) < 0 )
+              && (Scr.SnapMode & 8))
+            {
+              dist = abs(Scr.MyDisplayHeight - (*py + self.h));
+              
+	      if(dist < closestBottom)
+		{
+		  closestBottom = dist;
+                  if(((*py + self.h) >= Scr.MyDisplayHeight)&&
+                     ((*py + self.h) < Scr.MyDisplayHeight+Scr.SnapAttraction))
+                    nyt = Scr.MyDisplayHeight - self.h;
+                  if(((*py + self.h) >= Scr.MyDisplayHeight -
+                      Scr.SnapAttraction)&&
+                     ((*py + self.h) < Scr.MyDisplayHeight))
+                    nyt = Scr.MyDisplayHeight - self.h;
+                }
+              
+              dist = abs(- *py);
+              
+              if(dist < closestTop)
+		{
+                  closestTop = dist;
+		  if((*py <= 0)&&
+		     (*py > - Scr.SnapAttraction))
+		    nyt = 0;
+		  if((*py <=  Scr.SnapAttraction)&&
+		     (*py > 0))
+		    nyt = 0;
+                  
+                }
+            }
 	}
       tmp = tmp->next;
     }

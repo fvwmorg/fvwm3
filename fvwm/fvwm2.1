@@ -284,26 +284,26 @@ window-manager to give them the keyboard focus anyway, so fvwm2
 provides a window-style, "Lenience", which will allow fvwm2 to overlook
 this ICCCM rule.
 
-The differences between ICCCM 1.1 and 2.0 include the ability to 
+The differences between ICCCM 1.1 and 2.0 include the ability to
 "take over" from a running ICCCM 2.0 compliant window manager; thus
 .EX
 fvwm2; vi .fvwm2rc; fvwm2
 .EE
 will work in the same way as the Restart command. Further additions
-are support for client-side colormap installation (see the ICCCM 
-for details) and the urgency hint. Clients can set this hint in 
+are support for client-side colormap installation (see the ICCCM
+for details) and the urgency hint. Clients can set this hint in
 the WM_HINTS property of their window and expect the window manager
-to attract the users attention to the window. Fvwm has two redefinable 
-functions for this purpose, UrgencyFunc and UrgencyDoneFunc, which 
-are executed when the flag is set/cleared. 
+to attract the users attention to the window. Fvwm has two redefinable
+functions for this purpose, UrgencyFunc and UrgencyDoneFunc, which
+are executed when the flag is set/cleared.
 Their default definitions are:
 .EX
-AddToFunc UrgencyFunc 
+AddToFunc UrgencyFunc
  + "I" Iconify -1
  + "I" FlipFocus
  + "I" Raise
  + "I" WarpToWindow 5p 5p
-AddToFunc UrgencyDoneFunc 
+AddToFunc UrgencyDoneFunc
  + "I" Nop
 .EE
 
@@ -664,7 +664,7 @@ stripped of the substrings between the various delimiters.
 
 
 .IP "All (\fIconditions\fP) \fIcommand\fP"
-Execute \fIcommand\fP on all windows meeting the conditions. 
+Execute \fIcommand\fP on all windows meeting the conditions.
 Conditions are used exactly as with the Current command.
 
 
@@ -987,8 +987,8 @@ keyboard focus.
 .IP "Current (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
-"!Visible", "Layer [ n ]", "Sticky", "!Sticky", "Maximized", 
-"!Maximized", "Transient", "!Transient", "CurrentDesk", "CurrentPage", 
+"!Visible", "Layer [ n ]", "Sticky", "!Sticky", "Maximized",
+"!Maximized", "Transient", "!Transient", "CurrentDesk", "CurrentPage",
 and "CurrentPageAnyDesk".  In addition, the condition
 may include a window name to match to.  The window name may include
 the wildcards * and ?.  The window name, icon name, class, and
@@ -1445,11 +1445,17 @@ this font to the default font (see \fIDefaultFont\fP) you may omit
 \fIfontname\fP.
 
 
-.IP "Iconify [ \fIvalue\fP ]"
+.IP "Iconify [ \fImode\fP ]"
 Iconifies a window if it is not already iconified or de-iconifies it
-if it is already iconified.  If the optional argument \fIvalue\fP is
+if it is already iconified.  If the optional argument \fImode\fP is
 positive only iconification will be allowed.  If the optional
 argument is negative only de-iconification will be allowed.
+
+Note that this syntax is obsolete. You can use 'y', 'yes', 'on',
+'true' or 't' instead of a positive argument and 'n', 'no', 'off',
+'false' or 'f' instead of a negative argument and 'toggle' to switch
+between iconified and de-iconified state. Numeric arguments may be
+removed in the future.
 
 
 .IP "IconPath \fIpath\fP"
@@ -1497,7 +1503,7 @@ Causes the module which was invoked with name \fIname\fP to be killed.
 puts the current window in a new layer. The arguments are interpreted
 in the same way as the arguments to the Desk command. As a special case,
 Layer 0 -1 puts the window in its "default" layer, ie the layer it was
-initially in. 
+initially in.
 
 
 .IP "Lower"
@@ -1505,13 +1511,16 @@ Allows the user to lower a window. Note that this lowers a window
 only in its layer. To bring a window to the absolute bottom, use
 .EX
 AddToFunc lower-to-bottom
- + "I" Layer 0 0 
+ + "I" Layer 0 0
  + "I" Lower
 .EE
 
-.IP "Maximize [ \fI horizontal vertical\fP ]"
-Without its optional arguments Maximize causes the window to
-alternately switch from a full-screen size to its normal size.
+.IP "Maximize [ \fImode\fP ] [ \fI horizontal vertical\fP ]"
+Without its optional arguments (or if the \fImode\fP bit has the
+value 'toggle') Maximize causes the window to alternately switch
+from a full-screen size to its normal size. To force a window into
+maximized (unmaximized) state you can use 'y', 'yes', 'on', 'true'
+or 't' ('n', 'no', 'off', 'false' or 'f') as the \fImode\fP.
 
 With the optional arguments horizontal and vertical, which are
 expressed as percentage of a full screen, the user can control the new
@@ -1751,16 +1760,16 @@ MWM and WIN style menus never overlap the parent menu.
 
 \fIFVWM\fP style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
-TitleUnderlines1, SeparatorsShort, TriangleRelief, PopupDelayed.
+TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed.
 
 \fIMWM\fP style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
-TitleWarpOff, TitleUnderlines2, SeparatorsLong, TriangleRelief,
+TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately.
 
 \fIWIN\fP style is equivalent to HilightBack, Hilight3DOff,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
-TitleWarpOff, TitleUnderlines1, SeparatorsShort, TriangleSolid,
+TitleWarpOff, TitleUnderlines1, SeparatorsShort, TrianglesSolid,
 PopupImmediately.
 
 \fIForeground\fP and \fIBackground\fP may have a color name as an
@@ -2117,9 +2126,9 @@ are moved as rubber-bands.
 
 
 .IP "Pick \fIcommand\fP"
-Pick works like Function if invoked in the context of a window. If 
+Pick works like Function if invoked in the context of a window. If
 invoked in root context, it first asks the user to pick a window and
-then executes the command in the context of that window. This avoids 
+then executes the command in the context of that window. This avoids
 annoying multiple selections with complex functions.
 
 
@@ -2225,7 +2234,7 @@ Causes fvwm2 to stop managing the screen on which the command was issued.
 
 .IP "Raise"
 Allows the user to raise a window. Note that this raises a window
-only in its layer. To bring a window to the absolute top, use 
+only in its layer. To bring a window to the absolute top, use
 .EX
 AddToFunc raise-to-top
  + "I" Layer 0 ontop
@@ -2344,7 +2353,7 @@ variable "$height".  If \fIstringvalue\fP includes whitespace, you should
 enclose it in quotes.
 
 
-.IP "SnapAttraction \fIproximity\fP [ \fIbehavior\fP ]"
+.IP "SnapAttraction \fIproximity\fP [ \fIbehavior\fP ] [ \fIScreen\fP ]"
 If during an interactive move the window (or icon) comes within \fIproximity\fP
 pixels of another the window (or icon) will be moved to make the borders
 adjoin. The default of -1 means that no snapping will happen.  A setting of
@@ -2366,6 +2375,9 @@ snap.
 Similarly with \fIIcons\fP icons snap to only other icons and
 windows do not snap.
 
+If the \fIScreen\fP option is present windows and or icons are snapped
+to the screen edges too.
+
 The default SnapAttraction setting for behavior is "All".
 
 .IP "SnapGrid \fIx-grid-size y-grid-size\fP"
@@ -2380,9 +2392,14 @@ to satisfy both \fISnapGrid\fP and \fISnapAttraction\fP.  Note that the X and
 Y coordinates are not coupled.  For example, a window may snap to another window
 on the X axis while snapping to a grid point on the Y axis.
 
-.IP "Stick"
-Makes a window sticky if it is not already sticky, or non-sticky if it
-is already sticky.
+.IP "Stick [ \fImode\fP ]"
+If the \fImode\fP argument is empty or 'toggle', the Stick command makes
+a window sticky if it is not already sticky, or non-sticky if it
+is already sticky. To make a window sticky regardless of its current
+state the \fImode\fP argument can be one of 'y', 'yes', 'on',
+'true' or 't'. To make it non-sticky use 'n', 'no', 'off',
+'false' or 'f'.
+
 
 .IP "Style \fIwindowname options\fP"
 This command is intended to replace the old fvwm 1.xx global commands
@@ -2523,13 +2540,13 @@ StartsOnPage in conjunction with SkipMapping is a useful technique when you
 want to start an app on some other page and continue with what you were
 doing, rather than waiting for it to appear.
 
-\fILayer\fP accepts one argument: a nonnegative integer. This is 
-the layer the window is put in. 
+\fILayer\fP accepts one argument: a nonnegative integer. This is
+the layer the window is put in.
 
 \fIStaysOnTop\fP puts the window in the ontop layer. This layer can
 be changed by the built-in command DefaultLayers; the default is 6.
 
-\fIStaysPut\fP puts the window in the put layer. This layer can   
+\fIStaysPut\fP puts the window in the put layer. This layer can
 be changed by the built-in command DefaultLayers; the default is 4.
 
 \fIBorderWidth\fP takes a numeric argument which is the width of the border
@@ -2789,10 +2806,10 @@ Mostly this is useful for functions used with the WindowList builtin.
 .IP "WindowList [ \fIposition\fP ] [ \fIoptions\fP ] [ \fIdouble-click-action\fP ]"
 Generates a pop-up menu (and pops it up) in which the title and
 geometry of each of the windows currently on the desk top are shown.
-The format of the geometry part is: 
+The format of the geometry part is:
 "\fIdesk\fP(\fIlayer\fP): \fIx-geometry\fP \fIsticky\fP", where
 \fIdesk\fP and \fIlayer\fP are the corresponding numbers and \fIsticky\fP
-is empty or a capital S.  
+is empty or a capital S.
 The geometry of iconified windows is shown in parenthesis.  Selecting
 an item from the window list pop-up menu will by default cause the
 interpreted function WindowListFunc to be run with the window id of
@@ -2826,7 +2843,7 @@ window.
 The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
 <funcname>", "Desk <desknum>", "CurrentDesk", "NoIcons", "Icons",
 "OnlyIcons", "NoNormal", "Normal", "OnlyNormal", "NoSticky", "Sticky",
-"OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "Layer m [ n ]", 
+"OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "Layer m [ n ]",
 "NoDeskSort", "UseIconName", "Alphabetic", "NotAlphabetic".
 
 (Note - normal means not iconic, sticky, or ontop)
@@ -2860,13 +2877,17 @@ syntax has changed. If you used "WindowsDesk n" to move a window to
 desk n, you will have to change it to "MoveToDesk 0 n".
 
 
-.IP "WindowShade [ \fIopt\fP ]"
+.IP "WindowShade [ \fImode\fP ]"
 Toggles the window shade feature for titled windows.  Windows in the
-shaded state only display a title bar.  If \fIopt\fP is not given, the
-window shade state is toggled.  If \fIopt\fP is 1, the window is
-forced to the shaded state.  If \fIopt\fP is 2, then the window is
+shaded state only display a title bar.  If \fImode\fP is not given, the
+window shade state is toggled.  If \fImode\fP is 1, the window is
+forced to the shaded state.  If \fImode\fP is 2, then the window is
 forced to the non-shaded state.  Windows without titles cannot be shaded.
 See also \fIWindowShadeAnimate\fP.
+
+Note that this syntax is obsolete. You can use 'y', 'yes', 'on',
+'true' or 't' instead of 1 and 'n', 'no', 'off', 'false' or 'f' instead
+2. The value 'toggle' is allowed too.
 
 
 .IP "WindowShadeAnimate \fIsteps\fP"
@@ -2926,15 +2947,15 @@ You may need to quit on each screen to quit from the X session
 completely.
 
 .SH SESSION MANAGEMENT
-Fvwm2 supports session management according to the X Session Management
-Protocol. It saves and restores window position, size, stacking order, 
+Fvwm supports session management according to the X Session Management
+Protocol. It saves and restores window position, size, stacking order,
 desk, stickyness, shadedness, maximizedness, iconifiedness for all windows.
 Furthermore, some global state is saved.
 
-Note that fvwm2 doesn't save any information regarding styles, decors, 
-functions or menus. If you change anything wrt. to these resources during 
-a session (eg by issuing Style commands via the FvwmTalk module), these 
-changes will be lost after saving and restarting the session. To 
+Note that fvwm doesn't save any information regarding styles, decors,
+functions or menus. If you change anything wrt. to these resources during
+a session (eg by issuing Style commands via the FvwmTalk module), these
+changes will be lost after saving and restarting the session. To
 become permanent, such changes have to be added to the config file.
 
 Note further that the current implementation has the following

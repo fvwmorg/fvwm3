@@ -1,3 +1,20 @@
+1999-03-04  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (WindowShade):
+	(Maximize):
+	(iconify_function):
+	(stick_function): added patch for consistent toggling function syntax
+
+	* libs/fvwmlib.h:
+	* libs/Parse.c (ParseToggleArgument): New parsing function for toggling
+	commands
+
+	* fvwm/move.c (DoSnapAttract):
+	* fvwm/builtins.c (SetSnapAttraction): applied patch to snap to screen
+	edges too.
+
+	* fvwm/fvwm2.1: TriangleRelief -> TrianglesRelief
+
 1999-03-04  Dan Espen  <dane@mk.bellcore.com>
 
 	* fvwm/fvwm2.1: Re-applied "Changed   fvwm to fvwm2 everywhere  I
@@ -20,13 +37,13 @@
 	(Done): call CloseICCCM2 after undecorating all windows.
 	* fvwm/colormaps.c: new global client_controls_colormaps
 	for client-side InstallColormap support.
-	(HandleColormapNotify): 
-	(InstallWindowColormaps): don't install colormaps if 
+	(HandleColormapNotify):
+	(InstallWindowColormaps): don't install colormaps if
 	client_controls_colormaps is true.
 	* fvwm/events.c (HandleClientMessage): handle wm_colormap_notify
 	clientmessages by setting client_controls_colormaps.
 	(InitEventHandlerJumpTable): install HandleSelectionClear
-	and HandleSelectionRequest. 
+	and HandleSelectionRequest.
 	* fvwm/icccm2.c: New file implementing SetupICCCM2,
 	CloseICCCM2, HandleSelectionRequest and HandleSelectionClear.
 	* fvwm/fvwm.h: add prototypes for these plus a couple of Atom's.
@@ -63,7 +80,7 @@
 
 	* fvwm/windows.c (do_windowList): show layer in window list.
 
-	* fvwm/builtins.c (Maximize): 
+	* fvwm/builtins.c (Maximize):
 	(WindowShade): allow shading maximized/maximizing shaded windows.
         * fvwm/fvwm.h (FvwmWindow): new field maximized_ht.
 	* fvwm/add_window.c (AddWindow): initialize maximized_ht.
@@ -75,16 +92,16 @@
 	if shaded.
 	* fvwm/fvwm2.1: adjust documentation of WindowShade.
 
-	* fvwm/builtins.c (PickFunc): 
+	* fvwm/builtins.c (PickFunc):
 	(AllFunc): new functions.
 
-	* fvwm/parse.h: 
-	* fvwm/misc.h: 
+	* fvwm/parse.h:
+	* fvwm/misc.h:
 	* fvwm/functions.c (func_config): add entries for Pick and All.
-	
-	* fvwm/session.c (SaveWindowStates): 
-	* fvwm/add_window.c (AddWindow): 
-	* fvwm/move.c (AnimatedMoveAnyWindow): 
+
+	* fvwm/session.c (SaveWindowStates):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/move.c (AnimatedMoveAnyWindow):
 	(moveLoop): insert #ifdef WINDOWSHADE ... #endif to
 	make configure --disable-windowshade work.
 
@@ -98,15 +115,15 @@
 	for StaysOnTop and StaysPut from 1 and 0 to 6 and 4.
 
 	* fvwm/fvwm2.1: Adjust the documentation of DefaultLayers.
-	
+
 	* fvwm/add_window.c (AddWindow): Put windows at the top of
-	their layer initially. 
+	their layer initially.
 
 1999-03-01 Hippo
 
 	* fvwm/*: Removed ->bw. FvwmBorder windows will look funny until I fix
 	them.
-	
+
 	* fvwm/move.c: Fixed opaque/animated moves to not crash shaded windows,
 	removed	#ifndef NO_ETERM_SUPPORT, might want to make it a configure option.
 
@@ -126,16 +143,16 @@
 
 1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* AUTHORS: fix the spelling of my name. 
+	* AUTHORS: fix the spelling of my name.
 
-	* libs/ModParse.c (GetArgument): fix GetArgument for quoted args. 
-	(DoPeekArgument): new function needed in GetArgument. 
-	Use safemalloc instead of malloc ( change copied from  
+	* libs/ModParse.c (GetArgument): fix GetArgument for quoted args.
+	(DoPeekArgument): new function needed in GetArgument.
+	Use safemalloc instead of malloc ( change copied from
 	modules/FvwmEvent/Parse.c ).
 	(PeekArgument): now call DoPeekArgument.
 
-	* fvwm/move.c (InteractiveMove): fix behaviour of 
-	InteractiveMove when called from a context other than a 
+	* fvwm/move.c (InteractiveMove): fix behaviour of
+	InteractiveMove when called from a context other than a
 	ButtonPress or KeyPress.
 
 	* fvwm/builtins.c (WindowShade): fix an off-by-one error
@@ -147,15 +164,15 @@
 	   placement,session,style,windows}.c:
 	* fvwm/{fvwm,misc}.h:
 	* fvwm/fvwm2.1:
-	implement a layered stacking order.	
+	implement a layered stacking order.
 
 	* configure.in, acconfig.h:
 	* fvwm/{session,add_window,events,fvwm,icons}.c:
-	* fvwm/{fvwm,misc}.h: 
+	* fvwm/{fvwm,misc}.h:
 	* NEWS, fvwm/fvwm2.1:
-	add session management functionality ( make fvwm a client 
+	add session management functionality ( make fvwm a client
 	of a X SMP compliant session manager).
-	
+
 Sat Feb 27 12:49:23 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: allow FVWM_{MODULE,CONFIG}DIR to be overridden by
@@ -223,7 +240,7 @@ Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	of rubberband lines in PsuedoColor displays (use Colorlimit first) but it
 	looks great on TrueColor.  It plays nicely with XORValue and I don't think
 	it leaks pixmaps.
-	
+
 1999-02-23  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* AUTHORS: updated

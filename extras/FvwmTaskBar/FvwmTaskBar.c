@@ -130,6 +130,7 @@ int UseSkipList    = False,
     adjust_flag    = False,
     AutoStick      = False,
     AutoHide       = False,
+    AutoFocus      = False,      // mosh
     HighlightFocus = False;
 
 unsigned int ScreenWidth, ScreenHeight;
@@ -528,7 +529,16 @@ void WaitForExpose(void)
 ******************************************************************************/
 void RedrawWindow(int force)
 {
-  if (Tip.open) RedrawTipWindow();
+    if (Tip.open){
+      RedrawTipWindow();
+
+      // 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com.
+      if( Tip.type >= 0 && AutoFocus ){
+          SendFvwmPipe( "Iconify -1, Raise, Focus",
+                        ItemID( &windows, Tip.type ) );
+      }
+    }
+
   if (force) {
     XClearArea (dpy, win, 0, 0, win_width, win_height, False);
     DrawGoodies();
@@ -590,17 +600,21 @@ static void ParseConfigLine(char *tline) {
     CopyString(&selfont_string,&tline[Clength+7]);
   else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0) {
     CopyString(&ForeColor,&tline[Clength+4]);
-  } else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
+  }
+  else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
     str = &tline[Clength+9];
     while(((isspace(*str))&&(*str != '\n'))&&(*str != 0))	str++;
     str[strlen(str)-1] = 0;
     UpdateString(&geometry,str);
-  } else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
+  }
+  else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
     CopyString(&BackColor,&tline[Clength+4]);
   else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
     LinkAction(&tline[Clength+6]);
   else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
                       Clength+11)==0) UseSkipList=True;
+  else if(strncasecmp(tline,CatString3(Module, "AutoFocus",""),
+			Clength+9)==0) AutoFocus=True;
   else if(strncasecmp(tline,CatString3(Module, "AutoStick",""),
                       Clength+9)==0) AutoStick=True;
   else if(strncasecmp(tline,CatString3(Module, "AutoHide",""),
