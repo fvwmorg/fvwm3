@@ -2201,6 +2201,8 @@ void SpawnSome(void)
   static char first=1;
   button_info *b,*ub=UberButton;
   int button=-1;
+  char *p;
+
   if(!first)
     return;
   first=0;
@@ -2213,7 +2215,14 @@ void SpawnSome(void)
 	fprintf(stderr,"%s: Button 0x%06x did not find a \"%s\" window, %s",
 		MyName,(ushort)b,b->hangon,"spawning own\n");
 #endif
-	SendText(fd,b->spawn,0);
+	p = module_expand_action(
+		Dpy, screen, b->spawn, NULL, UberButton->c->fore,
+		UberButton->c->back);
+	if (p)
+	{
+	  MySendText(fd, p, 0);
+	  free(p);
+	}
       }
 }
 

@@ -9,6 +9,9 @@ Changes in alpha release 2.5.3 (not released yet)
 
 * New WindowList option SortClassName.
 
+* Fixed problems with $fg and $bg variables in FvwmButtons when the
+  UseOld option was used.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)
@@ -52,7 +55,7 @@ Changes in alpha release 2.5.2 (24-Jun-2002)
 
 * It is possible to specify a string encoding in a font name, see
   the FONT AND STRING ENCODINGS section of fvwm manual page.
- 
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)

@@ -127,7 +127,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = menu;
-	if (Module >= 0)
+	if (*Module >= 0)
 	{
 		fw2 = NULL;
 		tc = C_ROOT;

@@ -2,6 +2,8 @@
 
 	* fvwm/menucmd.c (menu_func):
 	fixed context window of menus invoked by a module
+	(menu_func):
+	fixed context menus on windows
 
 	* libs/vpacket.h (ConfigWinPacket):
 	* fvwm/module_interface.c (CONFIGARGSNEW):
