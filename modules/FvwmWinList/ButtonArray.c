@@ -20,6 +20,7 @@
 
 #include "libs/fvwmlib.h"
 
+#include "FvwmWinList.h"
 #include "ButtonArray.h"
 #include "Mallocs.h"
 
@@ -322,7 +323,7 @@ Button *temp,*temp2;
 ******************************************************************************/
 void DoButton(Button *button, int x, int y, int w, int h)
 {
-  int up,Fontheight,newx,set,length,adjust;
+  int up,Fontheight,newx,set;
   GC topgc;
   GC bottomgc;
   char *string;

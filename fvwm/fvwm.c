@@ -20,6 +20,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <pwd.h>
+
 #include "fvwm.h"
 #include "functions.h"
 #include "menus.h"
@@ -27,6 +28,7 @@
 #include "screen.h"
 #include "parse.h"
 #include "module.h"
+#include "session.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>

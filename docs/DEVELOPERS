@@ -18,6 +18,8 @@ tree.
 
     automake --add-missing
     autoreconf
+        ^^
+Be careful!  The second command is autoREconf, not simply autoconf.
 
 There will be some warnings, which are ignorable as long as you get a
 working configure script: the configure script will fix all those
@@ -30,7 +32,7 @@ configure fails, please look through `config.log' for clues.
 Development Rules of the Road
 -----------------------------
 
- 1) _Every_ change must be properly ChangeLog'd.  If you use Emacs, you
+ 1) _Every_ change must be properly ChangeLogged.  If you use Emacs, you
     can do this oh-so-trivially with the C-x 4 a command; it will add a
     header (if it's a new day), the name of the file, and even the name
     of the function you're currently in.
@@ -78,8 +80,8 @@ Development Rules of the Road
 Dealing with CVS
 ----------------
 
-All details about dealing with CVS should be found in cvs.html.  Go look
-there!
+All details about dealing with CVS should be found in cvs.html.  
+Go look there!
 
 
 Doing the JitterBug

@@ -29,24 +29,24 @@ typedef struct
 } List;
 
 /* Function Prototypes */
-void InitList(List *list);
-void ReorderList(List *list, long id, long FlipFocus);
-void AddItem(List *list, long id, long flags, long desk);
-int FindItem(List *list, long id);
-int FindItemDesk(List *list, long id, long desk);
-
-int UpdateItemName(List *list, long id, char *string);
-int UpdateItemDesk(List *list, long id, long desk);
-int UpdateItemFlags(List *list, long id, long flags);
-void FreeItem(Item *ptr);
-int DeleteItem(List *list,long id);
-void FreeList(List *list);
-void PrintList(List *list);
-char *ItemName(List *list, int n);
-long ItemFlags(List *list, long id );
-long ItemFlags(List *list, long id );
-long XorFlags(List *list, int n, long value);
-int ItemCount(List *list);
-int ItemCountDesk(List *list, long desk);
-long ItemID(List *list, int n);
-void CopyItem(List *dest,List *source,int n);
+extern void InitList(List *list);
+extern void ReorderList(List *list, long id, long FlipFocus);
+extern void AddItem(List *list, long id, long flags, long desk);
+extern int FindItem(List *list, long id);
+extern int FindItemDesk(List *list, long id, long desk);
+extern long ItemDesk(List *list, long id);
+extern int UpdateItemName(List *list, long id, char *string);
+extern int UpdateItemDesk(List *list, long id, long desk);
+extern int UpdateItemFlags(List *list, long id, long flags);
+extern void FreeItem(Item *ptr);
+extern int DeleteItem(List *list,long id);
+extern void FreeList(List *list);
+extern void PrintList(List *list);
+extern char *ItemName(List *list, int n);
+extern long ItemFlags(List *list, long id );
+extern long ItemFlags(List *list, long id );
+extern long XorFlags(List *list, int n, long value);
+extern int ItemCount(List *list);
+extern int ItemCountDesk(List *list, long desk);
+extern long ItemID(List *list, int n);
+extern void CopyItem(List *dest,List *source,int n);

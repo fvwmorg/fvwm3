@@ -1,3 +1,13 @@
+#ifndef FVWMWINLIST_H
+#define FVWMWINLIST_H
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xproto.h>
+#include <X11/Xatom.h>
+#include <X11/Intrinsic.h>
+#include <X11/cursorfont.h>
+
 #include <libs/fvwmlib.h>
 #include <fvwm/fvwm.h>
 
@@ -95,3 +105,5 @@ void FvwmNameMessage(long *body);
 void SetMwmHints(unsigned int value,unsigned int funcs,unsigned int input);
 
 int ErrorHandler(Display *d, XErrorEvent *event);
+
+#endif

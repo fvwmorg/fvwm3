@@ -1,3 +1,28 @@
+Sun Apr  4 03:42:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/FvwmWinList.c: removed some includes.
+
+	* FvwmWinList/FvwmWinList.h: move X11 includes from FvwmWinList.c
+	into this file; protect against multiple inclusion.
+
+	* FvwmWinList/List.c: 
+	* FvwmWinList/ButtonArray.c: include FvwmWinList.h for
+	ConsoleMessage() prototype.
+
+	* FvwmWinList/List.h: add prototype for ItemDesk.
+
+	* FvwmWinList/ButtonArray.h: add prototype for UpdateButtonDesk
+	and RadioButton.
+
+	* FvwmWinList/List.c (PrintList): 
+	* FvwmWinList/FvwmWinList.c (ErrorHandler): make string format
+	agree with argument.
+
+	* FvwmTaskBar/Start.h: add prototype for StartButtonParseConfig.
+
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents): add braces to avoid
+	ambiguous `else'.
+
 Sat Apr  3 15:32:40 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmButtons/output.c (SaveButtons): added braces to avoid

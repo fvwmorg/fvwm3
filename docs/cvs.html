@@ -35,7 +35,7 @@ You have been warned.
 </ul>
 
 <hr>
-<H2><a name="before"> <font color="turquoise">Before You Begin</font></h2> </a>
+<H2><a name="before"> <font color="turquoise">Before You Begin</font></a></h2>
 
 To know what is going in with the source tree you should be reading
 mail on the Fvwm Workers List.  See the <a
@@ -57,13 +57,12 @@ version 1.4 or better.
 </ul>
 
 <p> Without these tools, you won't be able to build out of the CVS
-source tree.  We're thinking about trying to get daily (or bi-weekly, or
-something) snapshots for people who cannot get CVS access or don't have
-access to these tools.  If you fall into this category, notify the
-<code>fvwm-workers</code> so we'll know there's an audience.
+source tree.  But don't despair: download one of the <a
+href="ftp://ftp.fvwm.org/pub/fvwm/devel/snapshots/">daily
+snapshots</a> instead!
 
 
-<H2><a name="initial">  <font color="turquoise">Initial Setup</font></h2></a>
+<H2><a name="initial">  <font color="turquoise">Initial Setup</font></a></h2>
 
 <p> To make life easier on yourself, create the file
 `<code>~/.cvsrc</code>', and insert the following lines.  These set
@@ -75,6 +74,10 @@ now before going any further.
  update -d -P
 </font></pre>
 
+<p>I also recommend a `<code>cvs -q</code>' line which makes cvs
+operations a little quieter.
+
+<p>
 Also, if you are on a slow net link (like a dialup), you'll also want a
 line containing `<code>cvs -z3</code>' in this file.  This turns on a
 useful compression level for all cvs commands.  Setting it higher will
@@ -91,7 +94,7 @@ works, and an error message if it failed.  You only need to log in once;
 all subsequent CVS commands read the password stored in the file
 `<code>~/.cvspass</code>'.
 
-<H2><a name="checkout">  <font color="turquoise">Checking Out Source Code</font></h2></a>
+<H2><a name="checkout">  <font color="turquoise">Checking Out Source Code</font></a></h2>
 
 <p>Next, you checkout the source code.  First you must decide what
 version you're interested in.  The structure of the CVS tree is as
@@ -144,7 +147,8 @@ CVS to use a different name for the directory with the <code>checkout
 <p> Now the code will be checked out into a directory
 <code>fvwm-2.2.x</code> rather than <code>fvwm</code>.  In this way you
 can keep multiple copies of the source around and "active"
-simultaneously.
+simultaneously.  (It is also permissible to just checkout into
+<code>fvwm</code> and rename the directory yourself.)
 
 <p> Finally, if you want to see a particular version of the sources you
 can use a version label instead of a branch label on the checkout
@@ -173,7 +177,7 @@ recurse downwards.  So if you happen to issue an update from inside the
 docs.  In all of the following command examples, we assume that you have
 <font color="yellow">cd</font>'d to the top of the source tree.
 
-<H2><a name="build"> <font color="turquoise">Building the Tree</font></h2></a>
+<H2><a name="build"> <font color="turquoise">Building the Tree</font></a></h2>
 
 <p> So, you now have a copy of the code.  Get in there and get to work!
 
@@ -192,7 +196,9 @@ do is:
  autoreconf
 </font></pre>
 
-<p>You will get some warning messages from <code>automake</code> and
+<p>Be careful: the second command is <code>auto<font
+color="violet">re</font>conf</code>, not <code>autoconf</code>!
+You will get some warning messages from <code>automake</code> and
 <code>autoreconf</code>.  As long as you end up with a working configure
 script, you should ignore them.
 
@@ -207,7 +213,7 @@ the <code>INSTALL.fvwm</code> and <code>INSTALL</code> scripts:
 <p> with appropriate options and arguments, as you like.
 
 
-<H2><a name="update"> <font color="turquoise">Code Updates</font></h2></a>
+<H2><a name="update"> <font color="turquoise">Code Updates</font></a></h2>
 
 From time to time, the dedicated FVWM Workers will make changes to the
 CVS repository.  Announcements of this are automatically sent to the
@@ -231,7 +237,7 @@ tag, it will update to the latest version on that branch.  If you used a
 version tag, it won't do anything (see above).
 
 
-<H2><a name="newproj"> <font color="turquoise">Starting a Project</font></h2></a>
+<H2><a name="newproj"> <font color="turquoise">Starting a Project</font></a></h2>
 
 Discuss your ideas on the workers list before you start.  Someone may
 be working on the same thing you have in mind.  Or they may have good
@@ -248,7 +254,7 @@ confusing that it is rather difficult to get right the first few
 times.
 
 
-<H2><a name="hacking"> <font color="turquoise">Hacking the Code</font></h2></a>
+<H2><a name="hacking"> <font color="turquoise">Hacking the Code</font></a></h2>
 
 So you've found a bug you want to fix?  Want to implement a feature
 from the TODO list?  Got a new feature to implement?  Hacking the code
@@ -266,7 +272,7 @@ Mail the patch to the fvwm-workers list with a description of what you
 did.  But read the FAQ file about ChangeLog entries before doing so.
 
 
-<H2><a name="conflicts"> <font color="turquoise">Conflicts</font></h2></a>
+<H2><a name="conflicts"> <font color="turquoise">Conflicts</font></a></h2>
 
 If someone else has been working on the same files as you have, you may
 find that you have made conflicting modifications.  You'll discover this
@@ -300,7 +306,7 @@ Don't forget to delete the lines with all the "&lt;", "=", and "&gt;"
 symbols.
 
 
-<H2><a name="access"> <font color="turquoise">Getting Commit Access</font></h2></a>
+<H2><a name="access"> <font color="turquoise">Getting Commit Access</font></a></h2>
 
 Using the procedures described above, and being on the workers list
 are a prerequisite to gaining update access.  We expect to have heard
@@ -329,7 +335,7 @@ above using your CVS user ID in place of <code>anonymous</code> and your
 password in place of <code>guest</code>, and you are on your way.
 
 
-<H2><a name="commits"> <font color="turquoise">Committing Changes</font></h2></a>
+<H2><a name="commits"> <font color="turquoise">Committing Changes</font></a></h2>
 
 <p>Now that you have write permissions and have logged in with your
 CVS username, you can commit changes.  This is done (surprise!) with the
@@ -365,7 +371,7 @@ certain files to be committed:
 <p>Again, please sanity-check the list to be sure you have everything.
 
 
-<H2><a name="adding"> <font color="turquoise">Adding Directories and Files</font></h2></a>
+<H2><a name="adding"> <font color="turquoise">Adding Directories and Files</font></a></h2>
 
 First create the new directories and files locally.  Then, assuming
 the new directory is named `<code>newdir</code>' and the new file is
@@ -382,7 +388,7 @@ appropriate!  See the <code>DEVELOPERS</code> file for more details on
 this.
 
 
-<H2><a name="removing"> <font color="turquoise">Deleting Directories and Files</font></h2></a>
+<H2><a name="removing"> <font color="turquoise">Deleting Directories and Files</font></a></h2>
 
 You don't directly delete directories, you delete all the files in a
 directory and the directory goes away during an `<code>update
@@ -396,7 +402,7 @@ directory and the directory goes away during an `<code>update
 the appropriate <code>Makefile.am</code> files.  See <code>DEVELOPERS</code>.
 
 
-<H2><a name="renaming"> <font color="turquoise">Renaming/Moving Files</font></h2></a>
+<H2><a name="renaming"> <font color="turquoise">Renaming/Moving Files</font></a></h2>
 
 There is no perfect way to rename or move files in CVS.  There are a few
 different methods, each with good and bad points.  For FVWM, we've
@@ -409,7 +415,7 @@ versa).
 the appropriate <code>Makefile.am</code> files.  See <code>DEVELOPERS</code>.
 
 
-<H2><a name="branching"> <font color="turquoise">Creating New Branches</font></h2></a>
+<H2><a name="branching"> <font color="turquoise">Creating New Branches</font></a></h2>
 
 <p>Please contact the <code>fvwm-workers</code> list and discuss any new
 branch you'd like to create, just so we have an idea about what and why.

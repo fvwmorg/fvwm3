@@ -1,3 +1,13 @@
+Sun Apr  4 03:03:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* DEVELOPERS: a couple of rewordings, especially about autoreconf
+	vs. autoconf.
+
+	* cvs.html: add link to daily snapshots, a note about `cvs -q', a
+	note about autoREconf, and that you can rename checked-out
+	directories.  Also fixed HTML coding bugs: <h2> and <a> tags were
+	interdigitized. 
+
 1999-03-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FAQ (5.5): added a warning about IgnoreModifiers performace, added
@@ -5,8 +15,8 @@
 
 1999-03-19  Fred Maciel  <fred-m@crl.hitachi.co.jp>
 
-	* docs/FAQ: spell corrections and better explanation for
-	FvwmM4/Cpp odd behavior.
+	* FAQ: spell corrections and better explanation for FvwmM4/Cpp odd
+	behavior.
 
 Sat Mar 20 15:19:37 1999  DanEspen  <dje@blue>
 

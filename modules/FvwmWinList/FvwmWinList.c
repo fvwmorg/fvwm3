@@ -43,29 +43,17 @@
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <string.h>
-#include <sys/wait.h>
 #include <sys/time.h>
-#include <stdarg.h>
 
 #if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-
-#include <unistd.h>
-#include <ctype.h>
 
 #ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
 #include <stdlib.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-#include <X11/Intrinsic.h>
-#include <X11/cursorfont.h>
 
 #include "fvwm/module.h"
 
@@ -1080,8 +1068,8 @@ int ErrorHandler(Display *d, XErrorEvent *event)
 
     XGetErrorText(d, event->error_code, errmsg, sizeof(errmsg));
     ConsoleMessage("%s failed request: %s\n", Module, errmsg);
-    ConsoleMessage("Major opcode: 0x%x, resource id: 0x%x\n",
-		   event->request_code, event->resourceid);
+    ConsoleMessage("Major opcode: 0x%x, resource id: 0x%lx\n",
+		   event->request_code, (unsigned long)event->resourceid);
     return 0;
 }
 

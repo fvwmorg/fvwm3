@@ -2,12 +2,14 @@
  * Start.c exported functions
  */
 
-#ifndef _H_Start
-#define _H_Start
+#ifndef START_H
+#define START_H
 
-void StartButtonInit(int height);
-int StartButtonUpdate(char *title, int state);
-void StartButtonDraw(int force);
-int  MouseInStartButton(int x, int y);
+extern void StartButtonParseConfig(char *tline, char *Module);
+
+extern void StartButtonInit(int height);
+extern int StartButtonUpdate(char *title, int state);
+extern void StartButtonDraw(int force);
+extern int  MouseInStartButton(int x, int y);
 
 #endif

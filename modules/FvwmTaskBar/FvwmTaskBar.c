@@ -863,10 +863,12 @@ void LoopOnEvents()
 
       case Expose:
         if (Event.xexpose.count == 0)
+	{
           if (Event.xexpose.window == Tip.win)
             redraw = 0;
           else
-            redraw = 1;
+	      redraw = 1;
+	}
         break;
 
       case ClientMessage:
