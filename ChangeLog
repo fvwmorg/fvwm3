@@ -1,3 +1,8 @@
+2002-09-21  olicha  <olivier.chapuis@free.fr>
+
+	* libs/FRender.c (FRenderCompositeAndCheck):
+	Temporally take GraphicsExposure in account
+
 2002-09-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/vpacket.h:

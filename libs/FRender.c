@@ -166,10 +166,34 @@ void FRenderVisualInit(Display *dpy)
 }
 
 static
+Bool
+FRenderCompositeAndCheck(
+	Display *dpy, int op, FRenderPicture src, FRenderPicture alpha,
+	FRenderPicture dest, int x, int y, int a_x, int a_y,
+	int d_x, int d_y, int d_w, int d_h)
+{
+	XEvent e;
+
+	/* purge */
+	while (FCheckTypedEvent(dpy, GraphicsExpose, &e));
+
+	FRenderComposite(
+		dpy, op, src, alpha, dest, x, y, a_x, a_y, d_x, d_y, d_w, d_h);
+
+	if (FCheckTypedEvent(dpy, GraphicsExpose, &e))
+	{
+		fprintf(stderr, "Get a FRenderComposite GraphicsExpose\n");
+		return False;
+	}
+	return True;
+	
+}
+
+static
 Bool FRenderTintPicture(
 	Display *dpy, Window win, Pixel tint, int tint_percent,
-	FRenderPicture dest_picture, int dest_x, int dest_y, int dest_w,
-	int dest_h)
+	FRenderPicture dest_picture,
+	int dest_x, int dest_y, int dest_w, int dest_h)
 {
 	static FRenderColor frc_tint;
 	static Pixel saved_tint;
@@ -323,13 +347,9 @@ Bool FRenderTintPicture(
 	}
 #endif
 
-	FRenderComposite(dpy,
-			 FRenderPictOpOver,
-			 tint_picture,
-			 shade_picture,
-			 dest_picture,
-			 0, 0, 0, 0, dest_x, dest_y, dest_w, dest_h);
-	rv = 1;
+	rv = FRenderCompositeAndCheck(
+		dpy, FRenderPictOpOver, tint_picture, shade_picture,
+		dest_picture, 0, 0, 0, 0, dest_x, dest_y, dest_w, dest_h);
 
  bail:
 	return rv;
@@ -339,25 +359,41 @@ Bool FRenderTintPicture(
 
 
 Bool FRenderTintRectangle(
-	Display *dpy, Window win, Pixmap mask, Pixel tint, int shade_percent,
+	Display *dpy, Window win, Pixmap mask, Pixel tint, int tint_percent,
 	Drawable d, int dest_x, int dest_y, int dest_w, int dest_h)
 {
 	FRenderPicture dest_picture = None;
 	FRenderPictureAttributes  pa;
+	unsigned int val = 0;
+	Bool rv = True;
 
-	pa.clip_mask = mask;
-	if (!(dest_picture = FRenderCreatePicture(
-		dpy, d, PFrenderVisualFormat, FRenderCPClipMask, &pa)))
+	
+	if (!XRenderSupport || !FRenderGetExtensionSupported())
 	{
 		return 0;
 	}
 
-	FRenderTintPicture(
-		dpy, win, shade_percent, tint, dest_picture, dest_x, dest_y,
+	if (!FRenderVisualInitialized)
+	{
+		FRenderVisualInitialized = True;
+		FRenderVisualInit(dpy);
+	}
+
+	pa.clip_mask = mask;
+	val = FRenderCPClipMask;
+
+	if (!(dest_picture = FRenderCreatePicture(
+		dpy, d, PFrenderVisualFormat, val, &pa)))
+	{
+		return 0;
+	}
+
+	rv = FRenderTintPicture(
+		dpy, win, tint_percent, tint, dest_picture, dest_x, dest_y,
 		dest_w, dest_h);
 
 	FRenderFreePicture(dpy, dest_picture);
-	return 1;
+	return rv;
 }
 
 int FRenderRender(
@@ -432,13 +468,13 @@ int FRenderRender(
 		root_picture = FRenderCreatePicture(
 				dpy, DefaultRootWindow(dpy),
 				PFrenderVisualFormat, pam, &pa);
-		FRenderComposite(dpy,
-				 FRenderPictOpOver,
-				 root_picture,
-				 0,
-				 src_picture,
-				 src_x, src_y, 0, 0,
-				 0, 0, src_w, src_h);
+		if (!FRenderCompositeAndCheck(
+			dpy, FRenderPictOpOver,
+			root_picture, None, src_picture,
+			src_x, src_y, 0, 0, 0, 0, src_w, src_h))
+		{
+			goto bail;
+		}
 		src_x = src_y = 0;
 		pam &= ~FRenderCPSubwindowMode;
 	}
@@ -609,18 +645,24 @@ int FRenderRender(
 
 		if (alpha != None && alpha_picture && shade_picture)
 		{
-			FRenderComposite(
+			if (!FRenderCompositeAndCheck(
 				dpy, PictOpAtopReverse, shade_picture,
 				alpha_picture, alpha_picture,
-				0, 0, alpha_x, alpha_y, 0, 0, src_w, src_h);
+				0, 0, alpha_x, alpha_y, 0, 0, src_w, src_h))
+			{
+				goto bail;
+			}
 			alpha_x = alpha_y = 0;
 		}
 		else if (mask != None && alpha_picture && shade_picture)
 		{
-			FRenderComposite(
+			if (!FRenderCompositeAndCheck(
 				dpy, PictOpAtopReverse, shade_picture,
 				mask_picture, alpha_picture,
-				0, 0, src_x, src_y, 0, 0, src_w, src_h);
+				0, 0, src_x, src_y, 0, 0, src_w, src_h))
+			{
+				goto bail;
+			}
 			alpha_x = alpha_y = 0;
 		}
 		else
@@ -635,13 +677,10 @@ int FRenderRender(
 	if (dest_picture)
 	{
 		rv = 1;
-		FRenderComposite(dpy,
-				 FRenderPictOpOver,
-				 src_picture,
-				 alpha_picture,
-				 dest_picture,
-				 src_x, src_y, alpha_x, alpha_y,
-				 dest_x, dest_y, dest_w, dest_h);
+		rv = FRenderCompositeAndCheck(
+			dpy, FRenderPictOpOver, src_picture, alpha_picture,
+			dest_picture, src_x, src_y, alpha_x, alpha_y,
+			dest_x, dest_y, dest_w, dest_h);
 	}
 
  bail:
