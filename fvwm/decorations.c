@@ -617,15 +617,21 @@ Bool is_function_allowed(
         {
         case F_DELETE:
                 if (!WM_DELETES_WINDOW(t))
+		{
                         return False;
+		}
                 /* fall through to close clause */
         case F_CLOSE:
                 if (!(functions & MWM_FUNC_CLOSE))
+		{
                         return False;
+		}
                 break;
         case F_DESTROY: /* shouldn't destroy always be allowed??? */
                 if (!(functions & MWM_FUNC_CLOSE))
+		{
                         return False;
+		}
                 break;
         case F_RESIZE:
                 if (!HAS_OVERRIDE_SIZE_HINTS(t) &&
@@ -648,9 +654,10 @@ Bool is_function_allowed(
                 }
                 break;
         case F_ICONIFY:
-                if ((!IS_ICONIFIED(t))&&
-                    (!(functions & MWM_FUNC_MINIMIZE)))
+                if (!IS_ICONIFIED(t) && !(functions & MWM_FUNC_MINIMIZE))
+		{
                         return False;
+		}
                 break;
         case F_MAXIMIZE:
                 if (is_user_request && !(functions & MWM_FUNC_MAXIMIZE))
@@ -661,7 +668,6 @@ Bool is_function_allowed(
         case F_MOVE:
                 /* Move is a funny hint. Keeps it out of the menu, but you're
                  * still allowed to move. */
-
                 if (is_user_request && IS_FIXED(t))
                 {
                         return False;

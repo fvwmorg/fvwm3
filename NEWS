@@ -3,6 +3,13 @@ _+_A HREF="#2.4.4"_-_2.4.4_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
+* New commands ResizeMaximize and ResizeMoveMaximize that modifiy
+  the maximized geometry of windows and maximize them as
+  necessary.  Very usefull to make a window larger manually and
+  then get back the old geometry with a click.
+
+* New command ResizeMoveMaximize similary
+
 * New styles FixedPPosition, FixedUSPosition, FixedSize, FixedUSSize,
   FixedPSize, VariablePPosition, VariableUSPosition, VariableSize,
   VariableUSSize, and VariablePSize.

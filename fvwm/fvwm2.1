@@ -3819,6 +3819,21 @@ arguments of the
 command.
 
 .TP
+.BI "ResizeMaximize [ " "resize-arguments" " ]"
+Combines the effects of
+.BR Resize " and " Maximize
+in a single command.  When used on a maximized window, the window
+is resized and is still in the maximized state afterwards.  When
+used on an unmaximized window, the window is resized and put into
+the maximized state afterwards.  This is useful if the user wants
+to resize the window temporarily and then return to the original
+geometry.  The
+.I resize-arguments
+are the same as for the
+.B Resize
+command.
+
+.TP
 .BI "ResizeMove " "resize-arguments move-arguments"
 This command does the same as the
 .BR Resize " and " Move
@@ -3842,6 +3857,21 @@ Example:
 # Move the window to the top left corner
 ResizeMove w+0 -10p 0 -20p
 .EE
+
+.TP
+.BI "ResizeMoveMaximize " "resize-arguments move-arguments"
+Combines the effects of
+.BR ResizeMove " and " Maximize
+in a single command.  When used on a maximized window, the window
+is resized and moved  and is still in the maximized state
+afterwards.  When used on an unmaximized window, the window is
+resized and put into the maximized state afterwards.  This is
+useful if the user wants to resize the window temporarily and then
+return to the original geometry.  The
+.IR resize-arguments " and " move-arguments
+are the same as for the
+.B ResizeMove
+command.
 
 .TP
 .BI "SetAnimation " milliseconds-delay " [" fractions-to-move-list "]"
