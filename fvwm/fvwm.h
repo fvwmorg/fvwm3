@@ -243,9 +243,9 @@ typedef struct FvwmWindow
       unsigned ViewportMoved : 1; /* To prevent double move in MoveViewport. */
       unsigned IconifiedByParent : 1; /* To prevent iconified transients in a
 				       * parent icon from counting for Next */
-      unsigned ReuseDestroyed : 1;     /* Reuse this struct, don't free it, when
+      unsigned ReuseDestroyed : 1;    /* Reuse this struct, don't free it, when
                                            destroying/recapturing window. */
-      unsigned window_being_moved : 1;
+      unsigned window_being_moved_opaque : 1;
 #ifdef SESSION
       unsigned NameChanged : 1; /* Set if the client changes its WM_NAME.
 				   The source of twm contains an explanation

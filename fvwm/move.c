@@ -783,7 +783,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */
     WaitForButtonsUp();
-  tmp_win->tmpflags.window_being_moved = 0;
+  tmp_win->tmpflags.window_being_moved_opaque = 0;
 }
 
 /***********************************************************************

@@ -397,12 +397,13 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
     {
       /* title-bar + iconify button, no menu button.
        * window gets 1 pixel wide black border */
-      /* disable any buttons with the MWMDecorMinimize flag */
+      /* disable any buttons with the MWMDecorMinimize/MWMDecorShaded flag */
       int i;
       for (i = 0; i < 5; ++i) {
-        if (GetDecor(t,left_buttons[i].flags)&MWMDecorMinimize)
+        if (GetDecor(t,left_buttons[i].flags)&(MWMDecorMinimize|MWMDecorShade))
           t->left_w[i] = None;
-        if (GetDecor(t,right_buttons[i].flags)&MWMDecorMinimize)
+        if (GetDecor(t,right_buttons[i].flags)&(MWMDecorMinimize|
+						MWMDecorShade))
           t->right_w[i] = None;
       }
     }

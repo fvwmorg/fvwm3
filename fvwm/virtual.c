@@ -504,7 +504,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    if ((txr >= PageLeft && txl <= PageRight
 	        && tyb >= PageTop && tyt <= PageBottom)
 	        && ! t->tmpflags.ViewportMoved
-		&& t->tmpflags.window_being_moved == 0)
+		&& ! t->tmpflags.window_being_moved_opaque)
 	      {
                 t->tmpflags.ViewportMoved = True;    /*  Block double move.  */
 	        /* If the window is iconified, and sticky Icons is set,
@@ -552,7 +552,7 @@ void MoveViewport(int newx, int newy, Bool grab)
             if (! (txr >= PageLeft && txl <= PageRight
                 && tyb >= PageTop && tyt <= PageBottom)
                 && ! t1->tmpflags.ViewportMoved
-		&& t1->tmpflags.window_being_moved == 0)
+		&& ! t1->tmpflags.window_being_moved_opaque)
 	      {
 		t1->tmpflags.ViewportMoved = True; /* Block double move.*/
 		/* If the window is iconified, and sticky Icons is set,

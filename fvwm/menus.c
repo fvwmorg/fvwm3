@@ -435,6 +435,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     /* allow any printable character to be a keysym, but be sure control
        isn't pressed */
     MenuItem *mi;
+    MenuItem *mi1;
     char key;
     int countHotkey = 0;      // Added by MMH mikehan@best.com 2/7/99
 
@@ -446,9 +447,10 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
      * Multiple hotkeys per menu
      * Search menu for matching hotkey;
      * remember how many we found and where we found it */
-    for ( mi = ( miCurrent == menu->last ) ? menu->first : miCurrent->next;
-	  mi != miCurrent;
-	  mi = ( mi == menu->last ) ? menu->first : mi->next )
+    mi = ( miCurrent == NULL || miCurrent == menu->last) ?
+      menu->first : miCurrent->next;
+    mi1 = mi;
+    do
     {
       key = tolower( mi->chHotkey );
       if ( keychar == key )
@@ -457,7 +459,10 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 	  newItem = mi;
 
       }
+      mi = (mi == menu->last) ? menu->first : mi->next;
     }
+    while (mi != mi1);
+
     /* For multiple instances of a single hotkey, just move the selection */
     if ( countHotkey > 1 )
     {

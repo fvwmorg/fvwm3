@@ -168,7 +168,8 @@ enum {
   /* MWM function hint button assignments */
   MWMDecorMenu                = (1<<0),
   MWMDecorMinimize            = (1<<1),
-  MWMDecorMaximize            = (1<<2)
+  MWMDecorMaximize            = (1<<2),
+  MWMDecorShade               = (1<<3)
 };
 
 enum ButtonState {

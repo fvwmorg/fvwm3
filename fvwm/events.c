@@ -1182,8 +1182,7 @@ void HandleButtonPress()
   DBUG("HandleButtonPress","Routine Entered");
 
   /* click to focus stuff goes here */
-  if((Tmp_win)&&(Tmp_win->flags & ClickToFocus)&&(Tmp_win != Scr.Ungrabbed) &&
-     (!MaskUsedModifiers(Event.xbutton.state)))
+  if((Tmp_win)&&(Tmp_win->flags & ClickToFocus)&&(Tmp_win != Scr.Ungrabbed))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
     if (Scr.go.ClickToFocusRaises ||

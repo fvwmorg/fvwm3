@@ -1,3 +1,30 @@
+1999-04-01  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandleButtonPress): any modifier works with
+	ClickToFocus
+
+	* fvwm/menus.c (menuShortcuts): fixed coredump in multiple hotkeys and
+	fixed problem with exactly two identical hotkeys where one was the
+	first or last item of the menu
+
+1999-03-31  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (ButtonStyle): documented MWMDecorShade
+
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/borders.c (DrawButton):
+	* fvwm/screen.h: added a MWMDecorShade button style (looks like max but
+	is shown when the mwm hints would show a minimize button)
+
+	* fvwm/builtins.c (Maximize): Unmaximizing a window on the current page
+	always maps the window on the current page.
+	(ButtonStyle):
+
+	* fvwm/virtual.c (MoveViewport):
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/move.c (moveLoop): fixed window moving with the outline over
+	page borders.
+
 1999-03-31  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.h: 

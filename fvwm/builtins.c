@@ -262,9 +262,13 @@ void Maximize(F_CMD_ARGS)
   {
     tmp_win->flags &= ~MAXIMIZED;
     /* Unmaximizing is slightly tricky since we want the window to
-       stay on the same page, even if we have move to a different page
-       in the meantime. the orig values are absolute! */
-    if (tmp_win->flags & STICKY)
+     * stay on the same page, even if we have moved to a different page
+     * in the meantime. the orig values are absolute! */
+    if (/*tmp_win->flags & STICKY ||*/
+	(tmp_win->frame_x > -tmp_win->frame_width &&
+	 tmp_win->frame_x < Scr.MyDisplayWidth &&
+	 tmp_win->frame_y > -tmp_win->frame_height &&
+	 tmp_win->frame_y < Scr.MyDisplayHeight))
       {
 	/* make sure we keep it on screen while unmaximizing */
 	new_x = tmp_win->orig_x -
@@ -4206,6 +4210,8 @@ void ButtonStyle(F_CMD_ARGS)
 		  SetButtonFlag(MWMDecorMinimize);
                 } else if (strncasecmp(tok,"MWMDecorMax",11)==0) {
 		  SetButtonFlag(MWMDecorMaximize);
+                } else if (strncasecmp(tok,"MWMDecorShade",13)==0) {
+		  SetButtonFlag(MWMDecorShade);
 		} else {
 		  fvwm_msg(ERR, "ButtonStyle",
 			   "unknown title button flag %s -- line: %s",

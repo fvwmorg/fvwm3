@@ -663,9 +663,9 @@ void DrawButton(FvwmWindow *t, Window win, int w, int h,
 
 #ifdef VECTOR_BUTTONS
     case VectorButton:
-	if((t->flags & MWMButtons)
-           && (stateflags & MWMDecorMaximize)
-	   && (t->flags & MAXIMIZED))
+	if((t->flags & MWMButtons) &&
+	   ((stateflags & MWMDecorMaximize && t->flags & MAXIMIZED) ||
+	    (stateflags & MWMDecorShade && t->buttons & WSHADE)))
 	    DrawLinePattern(win,
 			    ShadowGC, ReliefGC,
 			    &bf->vector,
