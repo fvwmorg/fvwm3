@@ -1,4 +1,15 @@
+2002-06-06  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm.c (main):
+	* fvwm/ewmh.c (EWMH_Init):
+	Init the EWMH before reading the config. Always setup the working
+	area.
+
 2002-06-05  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/update.c (apply_window_updates):
+	Fixed the position of a shaded window during a style update
+	(do_redecorate)
 
 	* libs/Flocale.c (FlocaleRotateDrawString):
 	(FlocaleGetShadowTextPosition):

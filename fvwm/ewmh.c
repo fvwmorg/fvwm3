@@ -1362,6 +1362,7 @@ void EWMH_Init(void)
   EWMH_SetNumberOfDesktops();
   EWMH_SetClientList();
   EWMH_SetClientListStacking();
+  ewmh_ComputeAndSetWorkArea();
 }
 
 /* ************************************************************************* *

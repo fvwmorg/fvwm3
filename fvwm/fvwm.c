@@ -632,6 +632,7 @@ int main(int argc, char **argv)
   Scr.gray_bitmap =
     XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
 
+  EWMH_Init();
 
   DBUG("main","Setting up rc file defaults...");
   SetRCDefaults();
@@ -712,7 +713,6 @@ int main(int argc, char **argv)
 
   SessionInit();
 
-  EWMH_Init();
   GNOME_Init();
 
   DBUG("main","Entering HandleEvents loop...");
