@@ -50,6 +50,7 @@ extern int __bounds_debug_no_checking;
 
 /* Variables globales */
 char *ScriptName;		/* Nom du fichier contenat le script decrivant le GUI */
+char *ScriptBaseName;
 char *ScriptPath = "";
 char *ModuleName;
 int fd[2]; 			/* pipe pair */
@@ -322,6 +323,7 @@ void OpenWindow (void)
  XWMHints *IndicWM;
  XSizeHints *IndicNorm;
  unsigned long mask;
+ XClassHint classHints;
  XSetWindowAttributes Attr;
 
  /* Allocation des couleurs */
@@ -379,8 +381,12 @@ void OpenWindow (void)
  IndicWM->input=True;
  IndicWM->initial_state=NormalState;
  IndicWM->flags=InputHint|StateHint;
+
+ classHints.res_name = strdup(ScriptBaseName);
+ classHints.res_class = strdup(ModuleName);
+
  XSetWMProperties(dpy,x11base->win,&Name,
-       &Name,NULL,0,IndicNorm,IndicWM,NULL);
+       &Name,NULL,0,IndicNorm,IndicWM,&classHints);
  Scrapt=(char*)calloc(sizeof(char),1);
 
  /* Construction des atomes pour la communication inter-application */
@@ -388,6 +394,8 @@ void OpenWindow (void)
  wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
  XSetWMProtocols(dpy,x11base->win,&wm_del_win,1);
 
+ free(classHints.res_class);
+ free(classHints.res_name);
 }
 
 /***********************************************/
@@ -883,7 +891,7 @@ int main (int argc, char **argv)
 
   if (argc == 6)
   {
-    fprintf(stderr,"%s requires only the path of the script.\n", ModuleName);
+    fprintf(stderr,"%s requires the script's name or path.\n", ModuleName);
     exit(1);
   }
 
@@ -894,6 +902,7 @@ int main (int argc, char **argv)
    IsFather=1;
 
   ScriptName = argv[6];
+  ScriptBaseName = GetFileNameFromPath(ScriptName);
   ref = strtol(argv[4], NULL, 16);
   if (ref == 0) ref = None;
   fd[0] = atoi(argv[1]);

@@ -1,4 +1,9 @@
-1999-12-27  olicha   <olivier.chapuis@free.fr>
+1999-12-27  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmScript/FvwmScript.c (OpenWindow): set class & resource
+	(main): minor rewording in the missing parameter error message
+
+1999-12-27  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/FvwmScript.c (MainLoop): Fixed CPU for perodic Task
 
@@ -33,7 +38,7 @@
 	* FvwmIconMan/globals.c: Fix for defaults styles I forgot to add
 	one for iconbutton
 
-1999-12-18  olicha   <olivier.chapuis@free.fr>
+1999-12-18  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (EndLessLoop):
 	(Alarm):
@@ -56,7 +61,7 @@
 	* FvwmPager/FvwmPager.c (ParseOptions):
 	pager handles DesktopSize correctly; DeskTopScale option finally works
 
-1999-12-14  olicha   <olivier.chapuis@free.fr>
+1999-12-14  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
 	(RevealTaskBar):
@@ -64,7 +69,7 @@
 	Tried to fix user resizing with AutoHide. Fixed Hide/Reveal with
  	a lot of rows
 
-1999-12-13  olicha   <olivier.chapuis@free.fr>
+1999-12-13  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.{c,h} (WarpTaskBar):
 	(LoopOnEvents):
@@ -74,7 +79,7 @@
 	(StartMeUp):
 	Some hints clean up
 
-1999-12-12  olicha   <olivier.chapuis@free.fr>
+1999-12-12  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	(redraw_buttons):
@@ -84,7 +89,7 @@
 
 	* FvwmIconBox/FvwmIconBox.c: fixed loss of shaped Netscape Mail icon.
 
-1999-12-09  olicha   <olivier.chapuis@free.fr>
+1999-12-09  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmButtons/FvwmButtons.c (HandlePanelPress):
 	* FvwmButtons/FvwmButtons.1:
@@ -118,7 +123,7 @@
 	* Makefile.am:
 	removed GFvwmDebug
 
-1999-12-06  olicha   <olivier.chapuis@free.fr>
+1999-12-06  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/FvwmPager.c (list_new_page):
 	Fixed a problem if you switch of desk via clicking on a page
@@ -126,7 +131,7 @@
 	* FvwmButtons/parse.c (ParsePanel):
 	Fixed typo in comments
 
-1999-12-06  olicha   <olivier.chapuis@free.fr>
+1999-12-06  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmWinList/FvwmWinList.c (ProcessMessage):
 	Take in account bottom title and update the border width and title
@@ -140,7 +145,7 @@
 
 	* FvwmButtons/FvwmButtons.1 (panel): Corrections to wording.
 
-1999-12-06  olicha   <olivier.chapuis@free.fr>
+1999-12-06  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmButtons/FvwmButons.c (GetPanelGeometry):
 	(process_message):
@@ -157,7 +162,7 @@
 	*  FvwmForm/FvwmForm.c (DoCommand): Fixed  overprinting in  output
  	message area.  Theres still an overprinting problem in pasting.
 
-1999-12-03  olicha   <olivier.chapuis@free.fr>
+1999-12-03  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProsseMessage):
 	Resize the buttons array when border width change
@@ -167,7 +172,7 @@
 	* FvwmIconBox/FvwmIconBox.c (process_message):
 	-Wall fix
 
-1999-12-03  olicha   <olivier.chapuis@free.fr>
+1999-12-03  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmEvent/FvwmEvent.c (main):
 	(config):
@@ -186,7 +191,7 @@
 	Forgot to check if manager actually changed size before resizing
 	pixmap, caused window additions to be very slow
 
-1999-11-30  olicha   <olivier.chapuis@free.fr>
+1999-11-30  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (AdjustWindow):
 	Fixed a core dump if FvwmTaskBarColorset is not used
@@ -223,7 +228,7 @@
 	(CreateTipWindow):
 	added #ifdef SHAPE
 
-1999-11-30  olicha   <olivier.chapuis@free.fr>
+1999-11-30  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Goodies.c (ShowTipWindow):
 	Fixed core dump if FvwmTaskBarShowTips is not enabled
@@ -243,7 +248,7 @@
 	* FvwmCommand/findcmd.pl (getcmd):
 	use new name of 'functions' array
 
-1999-11-27  olicha   <olivier.chapuis@free.fr>
+1999-11-27  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProssesMessage):
 	(LoopOnEvent):
