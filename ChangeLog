@@ -1,5 +1,7 @@
 1999-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.12
+
 	* fvwm/borders.c (SetupFrame):
 	corner and side windows are placed properly on shaded windows
 
