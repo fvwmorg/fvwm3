@@ -1,7 +1,12 @@
 2001-01-13  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/placement.c (PlaceAgain_func):
+	Fixed geometry state if PlaceAgain is used without anim
+	
+2001-01-13  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/menus.c (CopyMenuStle):
-	finish to fix a -Wall fix
+	finished a -Wall fix
 
 2001-01-13  olicha  <olivier.chapuis@free.fr>
 

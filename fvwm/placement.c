@@ -914,6 +914,8 @@ void PlaceAgain_func(F_CMD_ARGS)
   int x;
   int y;
   char *token;
+  float noMovement[1] = {1.0};
+  float *ppctMovement = noMovement;
   window_style style;
 
   if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_SELECT,
@@ -929,11 +931,10 @@ void PlaceAgain_func(F_CMD_ARGS)
   /* Possibly animate the movement */
   token = PeekToken(action, NULL);
   if(token && StrEquals("ANIM", token))
-    AnimatedMoveFvwmWindow(
-      tmp_win, tmp_win->frame, -1, -1, x, y, False, -1, NULL);
+    ppctMovement = NULL;
 
-  SetupFrame(
-    tmp_win, x, y, tmp_win->frame_g.width, tmp_win->frame_g.height, False);
+  AnimatedMoveFvwmWindow(tmp_win, tmp_win->frame, -1, -1, x, y, False, -1, 
+			 ppctMovement);
 
   return;
 }
