@@ -86,7 +86,7 @@
 #define FLF_MULTIDIR_HAS_RIGHT(x) \
               ((flf->flags.shadow_dir & MULTI_DIR_SE) || \
                (flf->flags.shadow_dir & MULTI_DIR_E) || \
-               (flf->flags.shadow_dir & MULTI_DIR_SE))
+               (flf->flags.shadow_dir & MULTI_DIR_NE))
 
 #define FLF_SHADOW_FULL_SIZE(flf) (flf->shadow_size + flf->shadow_offset)
 #define FLF_SHADOW_HEIGHT(flf) \

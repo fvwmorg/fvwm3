@@ -1135,50 +1135,50 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 			switch(direction)
 			{
 			case MULTI_DIR_W:
-				*x = NORMAL_ORIG_X + 1 + flf->shadow_offset;
-				*y = NORMAL_ORIG_Y;
+				*x = REVERSE_ORIG_X + 1 + flf->shadow_offset;
+				*y = REVERSE_ORIG_Y;
 				x_sign = 1;
 				y_sign = 0;
 				break;
 			case MULTI_DIR_NW:
-				*x = NORMAL_ORIG_X + 1 + flf->shadow_offset;
-				*y = NORMAL_ORIG_Y + 1 + flf->shadow_offset;
+				*x = REVERSE_ORIG_X + 1 + flf->shadow_offset;
+				*y = REVERSE_ORIG_Y + 1 + flf->shadow_offset;
 				x_sign = 1;
 				y_sign = 1;
 				break;
 			case MULTI_DIR_N:
-				*x = NORMAL_ORIG_X;
-				*y = NORMAL_ORIG_Y + 1 + flf->shadow_offset;
+				*x = REVERSE_ORIG_X;
+				*y = REVERSE_ORIG_Y + 1 + flf->shadow_offset;
 				x_sign = 0;
 				y_sign = 1;
 				break;
 			case MULTI_DIR_NE:
-				*x = NORMAL_ORIG_X - 1 - flf->shadow_offset;
-				*y = NORMAL_ORIG_Y + 1 + flf->shadow_offset;
+				*x = REVERSE_ORIG_X - 1 - flf->shadow_offset;
+				*y = REVERSE_ORIG_Y + 1 + flf->shadow_offset;
 				x_sign = -1;
 				y_sign = 1;
 				break;
 			case MULTI_DIR_E:
-				*x = NORMAL_ORIG_X - 1 - flf->shadow_offset;
-				*y = NORMAL_ORIG_Y;
+				*x = REVERSE_ORIG_X - 1 - flf->shadow_offset;
+				*y = REVERSE_ORIG_Y;
 				x_sign = -1;
 				y_sign = 0;
 				break;
 			case MULTI_DIR_SE:
-				*x = NORMAL_ORIG_X - 1 - flf->shadow_offset;
-				*y = NORMAL_ORIG_Y - 1 - flf->shadow_offset;
+				*x = REVERSE_ORIG_X - 1 - flf->shadow_offset;
+				*y = REVERSE_ORIG_Y - 1 - flf->shadow_offset;
 				x_sign = -1;
 				y_sign = -1;
 				break;
 			case MULTI_DIR_S:
-				*x = NORMAL_ORIG_X;
-				*y = NORMAL_ORIG_Y - 1 - flf->shadow_offset;
+				*x = REVERSE_ORIG_X;
+				*y = REVERSE_ORIG_Y - 1 - flf->shadow_offset;
 				x_sign = 0;
 				y_sign = -1;
 				break;
 			case MULTI_DIR_SW:
-				*x = NORMAL_ORIG_X + 1 + flf->shadow_offset;
-				*y = NORMAL_ORIG_Y - 1 - flf->shadow_offset;
+				*x = REVERSE_ORIG_X + 1 + flf->shadow_offset;
+				*y = REVERSE_ORIG_Y - 1 - flf->shadow_offset;
 				x_sign = 1;
 				y_sign = -1;
 				break;
@@ -1190,50 +1190,50 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 			switch(direction)
 			{
 			case MULTI_DIR_W:
-				*x = TR_CCW_ORIG_X;
-				*y = TR_CCW_ORIG_Y - 1 - flf->shadow_offset;
+				*x = TR_CW_ORIG_X;
+				*y = TR_CW_ORIG_Y - 1 - flf->shadow_offset;
 				x_sign = 0;
 				y_sign = -1;
 				break;
 			case MULTI_DIR_NW:
-				*x = TR_CCW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y - 1 - flf->shadow_offset;
+				*x = TR_CW_ORIG_X + 1 + flf->shadow_offset;
+				*y = TR_CW_ORIG_Y - 1 - flf->shadow_offset;
 				x_sign = 1;
 				y_sign = -1;
 				break;
 			case MULTI_DIR_N:
-				*x = TR_CCW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y;
+				*x = TR_CW_ORIG_X + 1 + flf->shadow_offset;
+				*y = TR_CW_ORIG_Y;
 				x_sign = 1;
 				y_sign = 0;
 				break;
 			case MULTI_DIR_NE:
-				*x = TR_CCW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y + 1 + flf->shadow_offset;
+				*x = TR_CW_ORIG_X + 1 + flf->shadow_offset;
+				*y = TR_CW_ORIG_Y + 1 + flf->shadow_offset;
 				x_sign = 1;
 				y_sign = 1;
 				break;
 			case MULTI_DIR_E:
-				*x = TR_CCW_ORIG_X;
-				*y = TR_CCW_ORIG_Y + 1 + flf->shadow_offset;
+				*x = TR_CW_ORIG_X;
+				*y = TR_CW_ORIG_Y + 1 + flf->shadow_offset;
 				x_sign = 0;
 				y_sign = 1;
 				break;
 			case MULTI_DIR_SE:
-				*x = TR_CCW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y + 1 + flf->shadow_offset;
+				*x = TR_CW_ORIG_X - 1 - flf->shadow_offset;
+				*y = TR_CW_ORIG_Y + 1 + flf->shadow_offset;
 				x_sign = -1;
 				y_sign = 1;
 				break;
 			case MULTI_DIR_S:
-				*x = TR_CCW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y;
+				*x = TR_CW_ORIG_X - 1 - flf->shadow_offset;
+				*y = TR_CW_ORIG_Y;
 				x_sign = -1;
 				y_sign = 0;
 				break;
 			case MULTI_DIR_SW:
-				*x = TR_CCW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y - 1 - flf->shadow_offset;
+				*x = TR_CW_ORIG_X - 1 - flf->shadow_offset;
+				*y = TR_CW_ORIG_Y - 1 - flf->shadow_offset;
 				x_sign = -1;
 				y_sign = -1;
 				break;
@@ -1296,6 +1296,7 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 			default: /* never happen */
 				break;
 			}
+			break;
 		}
 	}
 	inter_step++;

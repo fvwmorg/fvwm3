@@ -1,3 +1,9 @@
+2002-06-07  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.h:
+	* libs/Flocale.c (FlocaleGetShadowTextPosition):
+	Some shadow text position fixes
+
 2002-06-06  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/update.c (apply_window_updates):
