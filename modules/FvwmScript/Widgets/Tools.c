@@ -368,15 +368,67 @@ void DrawIconStr(
 	}
 	else
 	{
-		
 		/* Si l'icone existe */
 		FvwmRenderAttributes fra;
+		Bool do_draw_icon = True;
+		XRectangle ir;
+		int iy = (xobj->height - xobj->icon_h)/2+offset;
+		int ix = (xobj->width - xobj->icon_w)/2+offset;
+
+		if (evp && icon_clip)
+		{
+			if (!frect_get_intersection(
+				icon_clip->x, icon_clip->y,
+				icon_clip->width, icon_clip->height,
+				evp->xexpose.x, evp->xexpose.y, 
+				evp->xexpose.width, evp->xexpose.height,
+				&inter))
+			{
+				do_draw_icon = False;
+			}
+			else if (!frect_get_intersection(
+				inter.x, inter.y,
+				inter.width, inter.height,
+				ix, iy, xobj->icon_w, xobj->icon_h,
+				&ir))
+			{
+				do_draw_icon = False;
+			}
+		}
+		else if (icon_clip)
+		{
+			if (!frect_get_intersection(
+				icon_clip->x, icon_clip->y,
+				icon_clip->width, icon_clip->height,
+				ix, iy, xobj->icon_w, xobj->icon_h,
+				&ir))
+			{
+				do_draw_icon = False;
+			}
+		}
+		else if (evp)
+		{
+			if (!frect_get_intersection(
+				evp->xexpose.x, evp->xexpose.y, 
+				evp->xexpose.width, evp->xexpose.height,
+				ix, iy, xobj->icon_w, xobj->icon_h,
+				&ir))
+			{
+				do_draw_icon = False;
+			}
+		}
+		else
+		{
+			ir.x = ix;
+			ir.y = iy;
+			ir.width = xobj->icon_w;
+			ir.height = xobj->icon_h;
+		}
 
 		if (len > 0)
 		{
 			j = ((xobj->height - xobj->icon_h)/4)*3 +
 				xobj->icon_h + offset + xobj->Ffont->ascent; 
-				/* + (xobj->Ffont->height)/2*/;
 			MyDrawString(
 				dpy,xobj,xobj->win,i,j,str,fore,hili,
 				back,!xobj->flags[1], str_clip, evp);
@@ -388,13 +440,15 @@ void DrawIconStr(
 			fra.mask |= FRAM_HAVE_ICON_CSET;
 			fra.colorset = &Colorset[xobj->colorset];
 		}
-		j=(xobj->height - xobj->icon_h)/2+offset;
-		i=(xobj->width - xobj->icon_w)/2+offset;
-		PGraphicsRenderPixmaps(
-			dpy, xobj->win, xobj->iconPixmap, xobj->icon_maskPixmap,
-			xobj->icon_alphaPixmap, Pdepth, &fra, 
-			xobj->win, xobj->gc, None, None,
-			0, 0, xobj->icon_w, xobj->icon_h, i, j, 0, 0, False);
+		if (do_draw_icon)
+		{
+			PGraphicsRenderPixmaps(
+				dpy, xobj->win, xobj->iconPixmap,
+				xobj->icon_maskPixmap, xobj->icon_alphaPixmap,
+				Pdepth, &fra, xobj->win, xobj->gc, None, None,
+				ir.x - ix, ir.y - iy, ir.width, ir.height,
+				ir.x, ir.y, ir.width, ir.height, False);
+		}
 	}
 	free(str);
 }
