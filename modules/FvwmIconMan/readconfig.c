@@ -866,6 +866,12 @@ static int GetConfigLineWrapper (int *fd, char **tline)
     if (temp) {
       *temp = '\0';
     }
+    /* grok the global config lines */
+    if (strncasecmp(*tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
+      ParseGraphics(theDisplay, *tline, G);
+      SavePictureCMap (theDisplay, G->viz, G->cmap, G->depth);
+    }
+    /* add colorlimit in here */
     return 1;
   }
 

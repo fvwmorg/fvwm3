@@ -1065,7 +1065,7 @@ static void iconify_box (WinManager *man, WinData *win, int box,
   }
   else {
 #endif
-    if (theDepth > 2) {
+    if (G->depth > 2) {
       draw_3d_icon (man, box, g, iconified, 1, contextId);
     }
     else {
@@ -1265,7 +1265,7 @@ static void draw_button (WinManager *man, int button, int force)
 		      g.button_y, g.button_w, g.button_h);
       cleared_button = 1;
 
-      if (theDepth > 2) {
+      if (G->depth > 2) {
 	get_gcs (man, button_state, &context1, &context2);
 	draw_relief (man, button_state, &g, context1, context2);
       }
@@ -1334,7 +1334,7 @@ static void draw_empty_manager (WinManager *man)
 
   XFillRectangle (theDisplay, man->theWindow, man->backContext[state],
 		  g.button_x, g.button_y, g.button_w, g.button_h);
-  if (theDepth > 2) {
+  if (G->depth > 2) {
     get_gcs (man, state, &context1, &context2);
     draw_relief (man, state, &g, context1, context2);
   }

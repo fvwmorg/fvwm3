@@ -6,8 +6,9 @@
 #endif
 
 extern Display *theDisplay;
+extern Graphics *G;
 extern Window theRoot;
-extern int theDepth, theScreen;
+extern int theScreen;
 
 extern void unmap_manager (WinManager *man);
 extern void map_manager (WinManager *man);
