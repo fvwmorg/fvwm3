@@ -1,3 +1,12 @@
+2003-05-26  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/icons.c (GetIconBitmap):
+	(set_icon_pixmap_background):
+	(CreateIconWindow):
+	(DrawIconPixmapWindow):
+	(DrawIconWindow):
+	Fixed loading of application supplied pixmap on 8/24 depth screen
+
 2003-05-25  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/builtins.c (CMD_Exec): Another attempt to fix problem with
