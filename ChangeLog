@@ -1,3 +1,8 @@
+2000-09-24  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/gnome.c (GNOME_ProcessClientMessage):
+	fixed my previous commit
+
 2000-09-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/session.c (SetClientID):

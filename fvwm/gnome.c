@@ -868,7 +868,7 @@ GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
   int x, y;
   Atom a;
 
-  if (fwin == NULL || DO_IGNORE_GNOME_HINTS(fwin))
+  if (fwin != NULL  && DO_IGNORE_GNOME_HINTS(fwin))
     return 0;
   a = XInternAtom(dpy, XA_WIN_AREA, False);
   if (ev->xclient.message_type == a)
