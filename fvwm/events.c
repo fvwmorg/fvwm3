@@ -163,9 +163,6 @@ static void fake_map_unmap_notify(FvwmWindow *fw, int event_type)
 	XEvent client_event;
 	XWindowAttributes winattrs = {0};
 
-#if 0
-if (event_type == UnmapNotify)return;
-#endif
 	if (!XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
 	{
 		return;
@@ -1318,6 +1315,11 @@ void HandleEnterNotify(void)
 
 	DBUG("HandleEnterNotify","Routine Entered");
 
+	if (ewp->window == Scr.Root && ewp->subwindow == None &&
+	    ewp->detail == NotifyInferior && ewp->mode == NotifyNormal)
+	{
+		 BroadcastPacket(MX_ENTER_WINDOW, 3, Scr.Root, NULL, NULL);
+	}
 	if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
 	{
 		if (Fw && !IS_ICONIFIED(Fw) && Event.xany.window == FW_W(Fw))
@@ -1530,9 +1532,14 @@ void HandleEnterNotify(void)
 	{
 		return;
 	}
+	if (IS_EWMH_DESKTOP(FW_W(Fw)))
+	{
+		BroadcastPacket(MX_ENTER_WINDOW, 3, Scr.Root, NULL, NULL);
+		return;
+	}
 	if (Event.xcrossing.window == FW_W_FRAME(Fw) ||
-	    Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
-	    Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw))
+	     Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
+	     Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw))
 	{
 		BroadcastPacket(
 			MX_ENTER_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw),
@@ -1931,8 +1938,7 @@ void HandleLeaveNotify(void)
 		BroadcastPacket(
 			MX_LEAVE_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw),
 			(unsigned long)Fw);
-		BroadcastPacket(MX_ENTER_WINDOW, 3, Scr.Root, NULL, NULL);
-	}
+}
 
 	return;
 }
