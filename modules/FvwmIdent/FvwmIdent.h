@@ -14,12 +14,9 @@
  */
 
 #include "libs/fvwmlib.h"
-#define STICKY         (1<<2) /* Does window stick to glass? */
-#define ONTOP          (1<<1) /* does window stay on top */
-#define BORDER         (1<<13) /* Is this decorated with border*/
-#define TITLE          (1<<14) /* Is this decorated with title */
-#define ICONIFIED      (1<<16) /* is it an icon now? */
-#define TRANSIENT      (1<<17) /* is it a transient window? */
+#include <fvwm/fvwm.h>
+#include <libs/vpacket.h>
+
 struct target_struct
 {
   char res[256];
@@ -38,7 +35,7 @@ struct target_struct
   long height_inc;
   long desktop;
   unsigned long gravity;
-  unsigned long flags;
+  window_flags flags;
   long title_h;
   long border_w;
 };

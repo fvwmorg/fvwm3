@@ -1,3 +1,11 @@
+1999/10/30  Bob Woodside  <proteus@pcnet.com>
+
+	* FvwmIdent/FvwmIdent.h:
+	* FvwmIdent/FvwmIdent.c:  Belated GSFR. This was overlooked in
+	the original GSFR because it had the old flag values coded inline
+	instead of relying on the header, so it never got any build
+	errors when the flags were changed. (Bug Rept #499)
+
 1999-10-30  Olivier Chapuis  olivier.chapuis@free.fr
 
 	* modules/FvwmForm/FvwmRootCursor.:

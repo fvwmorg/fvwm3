@@ -285,6 +285,8 @@ void DeadPipe(int nonsense)
  ***********************************************************************/
 void list_configure(unsigned long *body)
 {
+struct ConfigWinPacket  *cfgpacket = (void *) body;
+
   if((app_win == (Window)body[1])||(app_win == (Window)body[0])
      ||((body[19] != 0)&&(app_win == (Window)body[19]))
      ||((body[19] != 0)&&(app_win == (Window)body[20])))
@@ -297,7 +299,8 @@ void list_configure(unsigned long *body)
       target.frame_w = body[5];
       target.frame_h = body[6];
       target.desktop = body[7];
-      target.flags = body[8];
+/*      target.flags = body[8];  */
+      memcpy(&target.flags, &(cfgpacket->flags), sizeof(cfgpacket->flags));
       target.title_h = body[9];
       target.border_w = body[10];
       target.base_w = body[11];
@@ -647,6 +650,8 @@ void MakeList(void)
   int bw,width,height,x1,y1,x2,y2;
   char loc[20];
   static char xstr[6],ystr[6];
+  /* GSFR - quick hack because the new macros depend on a prt reference  */
+  struct target_struct  *targ  =  &target;
 
   ListSize = 0;
 
@@ -673,11 +678,19 @@ void MakeList(void)
   AddToList("X (current page):",   xstr);
   AddToList("Y (current page):",   ystr);
   AddToList("Boundary Width:", borderw);
-  AddToList("Sticky:",        (target.flags & STICKY 	? yes : no));
-  AddToList("Ontop:",         (target.flags & ONTOP  	? yes : no));
-  AddToList("NoTitle:",       (target.flags & TITLE  	? no : yes));
-  AddToList("Iconified:",     (target.flags & ICONIFIED ? yes : no));
-  AddToList("Transient:",     (target.flags & TRANSIENT ? yes : no));
+
+  AddToList("Sticky:",        (IS_STICKY(targ)    ? yes : no));
+/*
+    RBW - not sure how to translate ONTOP into layer terms yet...
+    I think we'd need to see the default_layer field from the FvwmWindow,
+    and that's not broadcast currently.
+    But, then, it's been removed from the display...I suppose for the same
+    reason.
+*/
+/*  AddToList("Ontop:",         (target.flags & ONTOP  	? yes : no));  */
+  AddToList("NoTitle:",       (HAS_TITLE(targ)    ? no : yes));
+  AddToList("Iconified:",     (IS_ICONIFIED(targ) ? yes : no));
+  AddToList("Transient:",     (IS_TRANSIENT(targ) ? yes : no));
 
   switch(target.gravity)
     {
