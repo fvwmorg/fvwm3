@@ -273,7 +273,7 @@ Update the release dates and numbers:
     commit this change.
   - Create an entry in the ChangeLog file indicating the release.
     Commit this change.
-  - Create a new entry for future changes in the NEWS file.
+  - Create a new section for future changes in the NEWS file.
     Commit this change.
 
 Update the development branch:
@@ -285,7 +285,8 @@ Update the development branch:
 Update fvwm-web:
 
   - Update the release numbers in fvwm-web/index.html and
-    fvwm-web/download.html.  Commit this change.
+    fvwm-web/download.html.  Generate ChangeLog entries for the
+    changes and commit them to cvs.
   - Use fvwm-web generated/txt2html.sh to update the NEWS, FAQ and
     AUTHORS file.  This assumes the fvwm-web module is located in
     a directory fvwm-web and the development sources are in a
@@ -294,7 +295,7 @@ Update fvwm-web:
         ./txt2html.sh ../../fvwm/NEWS && \
         ./txt2html.sh ../../fvwm/AUTHORS && \
         ./txt2html.sh ../../fvwm/docs/FAQ
-    in the development branch.  Commit these changes.
+    Commit these changes.
 
 Upload the release:
 

@@ -1,7 +1,7 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.5"_-_2.4.5_+_/A_-_.
+_+_A HREF="#2.4.6"_-_2.4.6_+_/A_-_.
 
-Changes in beta release 2.5.1 (not released yet)
+Changes in alpha release 2.5.1 (not released yet)
 
 * New commands Schedule and Deschedule.
 
@@ -54,7 +54,7 @@ Changes in beta release 2.5.1 (not released yet)
 * The Current command does not select a random window when no
   window has the focus.
 
-Changes in beta release 2.5.0 (27-Jan-2002)
+Changes in alpha release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify
   the maximized geometry of windows and maximize them as
@@ -130,9 +130,58 @@ Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
 
-_+_A NAME="2.4.5"_-_
-Changes in stable release 2.4.5 (27-Jan-2002)
+_+_A NAME="2.4.6"_-_
+Changes in stable release 2.4.6 (10-Mar-2002)
 _+_/A_-_
+
+* Better support of non ISO-8859-1 window and icon titles. See the
+  --disable-compound-text option in INSTALL.fvwm for more details.
+
+* Improved speed of opaque window movement/resizing.
+
+* Fixed a bug that caused windows not being raised and lowered
+  properly.
+
+* Suppress error message when using XBM icons.
+
+* Fixed a read descriptor problem in FvwmTaskBar
+
+* Fixed a minor colour update bug in the pager.
+
+* Fixed an fvwm crash when a module died at the wrong moment;
+  specifically a transient FvwmPager or FvwmIconMan.
+
+* Fixed placement of WindowList on wrong Xinerama screen when
+  called without any options on a screen other than the primary
+  screen.
+
+* Fixed a problem with root bindings and xfishtank.
+
+* Fixed moving windows with the keyboard over the edge of the
+  screen when the pointer remained of the previous page.
+
+* Do not hilight windows after ResizeMove.
+
+* New conditional command ThisWindow.
+
+* Some fixes in the configure script that caused some rare
+  problems detecting gnome and ncurses.
+
+* Fixed a memory leak in the Pick command.
+
+* Allow to choose windows with CirculateSkip with the Pick command.
+
+* Fixed an FvwmScript compile problem on dec-osf5.
+
+* The window handles are now resizes as they should when the
+  HandleWidth style changes.
+
+* The Current command does not select a random window when no
+  window has the focus.
+
+* Fixed a rare menu placement problem with Xinerama.
+
+Changes in stable release 2.4.5 (27-Jan-2002)
 
 * Fixed minor problems in popping sub menus up and down.
 
