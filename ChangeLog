@@ -1,5 +1,8 @@
 2002-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.1.in (Examples):
+	added documentation of Icon option for PlaceAgain command
+
 	* fvwm/events.c (__handle_key_event):
 	fixed global key binding problem
 

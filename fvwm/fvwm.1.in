@@ -4551,16 +4551,18 @@ style.  See
 command.
 
 .TP
-.BI "PlaceAgain [" Anim "]"
+.BI "PlaceAgain [" Anim "] [" "Icon" "]"
 Causes the current window's position to be re-computed using the
 initial window placement logic.  The window is moved to where it
 would have been if it were a new window that had just appeared.
 Most useful with
 .IR Smart " or " Clever " (" ReallySmart ")"
-placement.  If the optional argument
+placement.  With the optional argument
 .I Anim
-is specified, an animated move is used to place the window in its
-new position.
+an animated move is used to place the window in its new position.
+With the additional option
+.IR Icon ,
+the icon is placed again instead.
 
 .TP
 .BI "Raise"
@@ -8076,7 +8078,7 @@ sets the title bar's height to an amount in pixels.
 sets the minimal height in pixels of the title bar's.
 Defaults are
 .IR Centered ,
-the window's font height and no minimal height. 
+the window's font height and no minimal height.
 To reset the font height to the
 default value, omit the
 .I num

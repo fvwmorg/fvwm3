@@ -224,18 +224,18 @@ option.
 creates a root transparent background. So that this option works, you
 must use an Esetroot compatible program, fvwm-root with the
 --retain-pixmap option or FvwmBacker with the RetainPixmap option (and
-colorset or solid backgrounds).
+colorset or solid backgrounds).  The
 .I buffer
-is useful only if you
-.IR Tint .
-This speed up creation of windows which use such colorset (useful for
-fvwm menus).
-This also speed up opaque move and resize which can be unacceptably slow
+keyword is useful only when the
+.I Tint
+option is uesd too. This speeds up creation of windows which use such
+colorset (useful for fvwm menus) at the cost of memory usage.
+It also speeds up opaque move and resize which can be unacceptably slow
 without
 .IR buffer .
 However, this option may add a lot of memory to your X server (depending
-on the size of the image used to set your background). Again using
-out line move and resize for modules which use such colorset may be
+on the size of the image used to set hte background). Again, using
+outline move and resize for modules which use such a colorset may be
 a good idea.
 .\"end
 
