@@ -1,3 +1,4 @@
+# -*-perl-*-
 'true' || eval 'exec perl -S $0 $argv:q';
 eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
   & eval 'exec perl -S $0 $argv:q'
@@ -35,9 +36,12 @@ $, = ' ';			# set output field separator
 $\ = "\n";			# set output record separator
 
 # GlobalOpts that became Styles:
-%OPTS = (
-'ACTIVEPLACEMENTHONORSSTARTSONPAGE','ManualPlacementHonorsStartsOnPage',
-'ACTIVEPLACEMENTIGNORESSTARTSONPAGE', 'ManualPlacementIgnoresStartsOnPage',
+%OPTS = ('SMARTPLACEMENTISREALLYSMART','MinOverlapPlacement',
+	 'SMARTPLACEMENTISNORMAL','TileCascadePlacement',
+	 'ACTIVEPLACEMENTHONORSSTARTSONPAGE',
+	   'ManualPlacementHonorsStartsOnPage',
+	 'ACTIVEPLACEMENTIGNORESSTARTSONPAGE',
+	   'ManualPlacementIgnoresStartsOnPage',
 	 'CLICKTOFOCUSDOESNTPASSCLICK', 'ClickToFocusPassesClickOff',
 	 'CLICKTOFOCUSDOESNTRAISE', 'ClickToFocusRaisesOff',
 	 'MOUSEFOCUSCLICKDOESNTRAISE', 'MouseFocusClickRaisesOff',
@@ -56,11 +60,11 @@ for ($i = 1; $i <= $isize; ++$i) {
   $iassoc{$iarray[$i]} = '1';
 }
 
-$commchar="#";			  # help un-confuse emacs.
+$commchar="#";			# help un-confuse emacs.
 line: while ( <IN> ) {
   chomp;			# strip record separator
   @Fld = split(' ', $_, 9999);
-  if (/^[$commchar]/) {		# Comment, pass it thru
+  if (/^\s*[$commchar]/) {	# Comment, pass it thru
     print $_;
     next line;
   }
@@ -97,7 +101,7 @@ line: while ( <IN> ) {
     @rest=@Fld;			# copy the whole line
     shift @rest;		# remove first element
     &add_to_opts(join($",@rest)); # pass rest of line
-    $line = $_;    # prime possible loop
+    $line = $_;			# prime possible loop
     while (substr($line, length($line), 1) eq "\\") { # backslashed lines
       $line = &Getline1();
       &add_to_opts($line);	# build up newopts
@@ -110,6 +114,27 @@ line: while ( <IN> ) {
     }
     next line;
   }
+
+  if (/^\s*MODULEPATH/i) {
+    # Deletes continuation lines too, although if there are
+    # continuation lines, there might be some part of the path we want to
+    # Delete them anyway.
+    print '# Removed by fvwm24_convert: ' . $_;
+    while (substr($_, length($_), 1) eq "\\") {
+      $_ = &Getline1();
+      print '# Removed by fvwm24_convert: ' . $_;
+    }
+    next line;
+  }
+
+  # collect continuation lines
+  $line = $_;
+  while (substr($line, length($line), 1) eq "\\") { # backslashed lines
+    $old_line = substr($line, 1, length($line) - 1);
+    $new_line = &Getline1();
+    $line = "$old_line$new_line";
+  }
+  $_ = $line;
 
   if (/^\s*HILIGHTCOLOR\s/i) {
     @colors = split("/", $Fld[2], 9999);
@@ -147,31 +172,46 @@ line: while ( <IN> ) {
     next line;
   }
 
-  if (/^\s*MODULEPATH/i) {
-    # Deletes continuation lines too, although if there are
-    # continuation lines, there might be some part of the path we want to
-    # Delete them anyway.
-    print '# Removed by fvwm24_convert: ' . $_;
-    while (substr($_, length($_), 1) eq "\\") {
-      $_ = &Getline1();
-      print '# Removed by fvwm24_convert: ' . $_;
-    }
-    next line;
-  }
   if (/^\s*[*]\S+PANEL/i) {
     print STDERR "Possible old style FvwmButtons Panel definition found";
     print STDERR "  $_";
     print STDERR "  See FvwmButtons(1), \"CONVERTING OLD PANEL CONFIGURATIONS\"";
+    print $_;
+    next line;
   }
   if (/^\s*READ/i) {
     print STDERR "Read command found, check file for conversion issues:";
     print STDERR "  $_";
+    print $_;
+    next line;
   }
-
+  if (/FvwmConfig/i) {
+    print STDERR "The FvwmConfig module is no longer part of fvwm:";
+    print STDERR "  $_";
+    if (/^\s*[*]?\s*FvwmConfig/i) {
+      print STDERR "  Line commented out.";
+      print '# Removed by fvwm24_convert: ' . $_;
+      next line;
+    }
+  }
+  if (/FvwmPipe/i) {
+    print STDERR "The FvwmPipe module is no longer part of fvwm:";
+    print STDERR "  $_";
+    if (/^\s*[*]?\s*FvwmPipe/i) {
+      print STDERR "  Line commented out.";
+      print '# Removed by fvwm24_convert: ' . $_;
+    }
+    else {
+      print $_;
+    }
+    next line;
+  }
   if (/RANDOMPLACEMENT|ACTIVEPLACEMENT|SMARTPLACEMENT|DUMBPLACEMENT|CLEVERPLACEMENT/i) {
     print STDERR "Placement style names can not be converted automatically:";
     print STDERR "  $_";
     print STDERR "  See fvwm2(1), \"Window manager placement\" for instructions.";
+    print $_;
+    next line;
   }
 
   print $_;			# pass everything else thru

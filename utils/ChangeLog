@@ -3,6 +3,9 @@
 	* fvwm24_convert.in:
 	use \s instead of [ \t]
 	removed conversion of placement names, print a message instead
+	print warnings about FvwmConfig and FvwmPipe
+	improved comment detection
+	detect continuation lines
 
 2001-03-23  olicha  <olivier.chapuis@free.fr>
 
