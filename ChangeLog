@@ -1,5 +1,8 @@
 2002-12-02  olicha  <olivier.chapuis@free.fr>
 
+	* libs/FRenderInit.c (FRenderInit):
+	Fixed alpha depth if !XRenderSupport
+
 	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
 	* libs/PictureImageLoader.c (PImageCreatePixmapFromArgbData):
 	(PImageLoadPng):

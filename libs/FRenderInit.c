@@ -55,35 +55,37 @@ void FRenderInit(Display *dpy)
 	int event_basep;
 
 	FRenderAlphaDepth = 8;
-	if (!(FRenderExtensionSupported = XQueryExtension(
+	if (!XRenderSupport || !(FRenderExtensionSupported = XQueryExtension(
 		dpy, "RENDER", &FRenderMajorOpCode, &event_basep,
 		&FRenderErrorBase)))
 	{
-		XPixmapFormatValues *pmf;
+		int *pmf = NULL;
 		int i,n;
 		int alpha_depth = 0;
 
 		FRenderErrorBase = -10000;
 		FRenderMajorOpCode = -10000;
-		pmf = XListPixmapFormats (dpy, &n);
+		FRenderExtensionSupported = 0;
+		pmf = XListDepths(dpy, DefaultScreen(dpy), &n);
 		if (pmf)
 		{
 			i = 0;
 			while(i < n)
 			{
-				if (pmf[i].depth == 8)
+				if (pmf[i] == 8)
 				{
 					alpha_depth = 8;
 					i = n-1;
 				}
-				else if (pmf[i].depth >= 8 &&
-					 (pmf[i].depth < alpha_depth ||
+				else if (pmf[i] >= 8 &&
+					 (pmf[i] < alpha_depth ||
 					  alpha_depth == 0))
 				{
-					alpha_depth = pmf[i].depth;
+					alpha_depth = pmf[i];
 				}
 				i++;
 			}
+			XFree(pmf);
 		}
 		FRenderAlphaDepth = alpha_depth;
 	}
