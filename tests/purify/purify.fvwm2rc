@@ -13,18 +13,11 @@ ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/hom
 ImagePath /usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
 ImagePath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
 
-Echo "Test ModulePath"
-
-ModulePath
-ModulePath
-ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
-ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
-ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
-ModulePath $HOME/bin/fvwm2
-ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
-ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
-ModulePath
-ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
+ImagePath +
+ImagePath /usr/local/share/icons/wm-icons:/usr/share/icons/wm-icons:+:/usr/include/X11/bitmaps:/usr/include/X11/pixmaps
+ImagePath $HOME/.wm-icons:+
+ImagePath +:/usr/share/icons/mini
+ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
 
 Echo "Test CONFIG, DESTROY MODULE CONFIG"
 
@@ -74,6 +67,19 @@ Module FvwmBanner
 Module    FvwmBanner
 Module		FvwmBanner
 
+Echo "Test ModulePath"
+# the proper config does not have ModulePath, this overwrites a good default
+
+ModulePath
+ModulePath
+ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
+ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
+ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
+ModulePath $HOME/bin/fvwm2
+ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
+ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
+ModulePath
+ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
 
 ################# GLOBAL COMMANDS ###################
 
@@ -83,17 +89,15 @@ AddToFunc
 AddToFunc   foo
 AddToFunc		bar
 
-### coredump!!
-
-#AddToFunc   suicide
-#AddToFunc		suicide
-#AddToFunc suicide
-# + "I" DestroyFunc suicide
-# + "I" DestroyFunc suicide
-# + "I" DestroyFunc suicide
-#AddToFunc suicide
-# + "I" DestroyFunc suicide
-#function suicide
+AddToFunc   suicide
+AddToFunc		suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+function suicide
 
 ### coredump!!
 
@@ -710,15 +714,15 @@ GotoPage 1 1
 
 Echo "Test old HilightColor commands, the conversion utility changed them."
 
-Style "*" Hilightfore , HilightBack 
-Style "*" Hilightfore blue, HilightBack 
-Style "*" Hilightfore green, HilightBack 
-Style "*" Hilightfore black, HilightBack yellow
-Style "*" Hilightfore black, HilightBack yellow
-Style "*" Hilightfore gold2, HilightBack SteelBlue
-Style "*" Hilightfore gold2, HilightBack SteelBlue
-Style "*" Hilightfore , HilightBack 
-Style "*" Hilightfore gold2, HilightBack SteelBlue
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore blue, HilightBack 
+Style "*" HilightFore green, HilightBack 
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore gold2, HilightBack SteelBlue
 
 Echo "Test ICON FONT"
 
@@ -821,15 +825,11 @@ SetEnv "	FOO	" x
 SetEnv FOO "   ""ölwäökkü"''
 SetEnv FOO "   ""ölwäökkü"''
 
-Echo "Test SET MENU DELAY"
+Echo "Test UNSET ENV"
 
-SetMenuDelay
-SetMenuDelay
-SetMenuDelay 50
-SetMenuDelay 	  50
-SetMenuDelay 0
-SetMenuDelay -120
-SetMenuDelay -120
+UnsetEnv FOO         BAR
+UnsetEnv       FOO
+UnSetEnv "   ""ölwäökkü"''
 
 Echo "Test TITLE"
 
@@ -968,8 +968,8 @@ Style "foo*" NoFuncHint
 Style "foo*" NoFuncHint
 Style "foo*" HintOverride
 Style "foo*" HintOverride
-Style "foo*" style "*" NoOverride
-Style "foo*" style "*" NoOverride
+Style "foo*" NoOverride
+Style "foo*" NoOverride
 Style "foo*" NoButton
 Style "foo*" NoButton  1
 Style "foo*" NoButton		2
@@ -1103,8 +1103,8 @@ Style "*" NoFuncHint
 Style "*" NoFuncHint
 Style "*" HintOverride
 Style "*" HintOverride
-Style "*" style "*" NoOverride
-Style "*" style "*" NoOverride
+Style "*" NoOverride
+Style "*" NoOverride
 Style "*" NoButton
 Style "*" NoButton  1
 Style "*" NoButton		2
@@ -1238,8 +1238,8 @@ Style "*" NoFuncHint
 Style "*" NoFuncHint
 Style "*" HintOverride
 Style "*" HintOverride
-Style "*" style "*" NoOverride
-Style "*" style "*" NoOverride
+Style "*" NoOverride
+Style "*" NoOverride
 Style "*" NoButton
 Style "*" NoButton  1
 Style "*" NoButton		2
@@ -1301,7 +1301,7 @@ read /nonexistent/foo/bar
 read 	  /tmp/purify.read
 
 piperead
-piperead
+piperead `sleep 2`
 ## hangs !!
 #piperead cat
 piperead "cat /nonexistent/foo/bar"
@@ -1418,16 +1418,16 @@ Echo "Test WARP TO WINDOW"
 
  + "I" CursorMove -100 -100
  + "I" CursorMove 0 100
- + WarpToWindow
+ + "I" WarpToWindow
  + "I" CursorMove -100 -100
  + "I" CursorMove 0 100
- + WarpToWindow    10     10
+ + "I" WarpToWindow    10     10
  + "I" CursorMove -100 -100
  + "I" CursorMove 0 100
- + WarpToWindow		50p		75
+ + "I" WarpToWindow		50p		75
  + "I" CursorMove -100 -100
  + "I" CursorMove 0 100
- + WarpToWindow 50 50
+ + "I" WarpToWindow 50 50
 
 Echo "Test DECOR COMMANDS"
 
@@ -1504,8 +1504,8 @@ Echo "Test WINDOW LIST"
 
  + "I" WindowList
  + "I" WindowList
- + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, Unsorted, UseIconName, Alphabetic, NotAlphabetic Nop
- + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, Unsorted, UseIconName, Alphabetic, NotAlphabetic Nop
+ + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, UseIconName, Alphabetic, NotAlphabetic Nop
+ + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, UseIconName, Alphabetic, NotAlphabetic Nop
 
 Echo "Test CLOSE, DELETE, DESTROY"
 
@@ -1683,8 +1683,8 @@ Echo "Test hang"
 #Wait
 
 AddToFunc test_func
- + "I" echo WindowsDesk
- + "I" WindowsDesk
+ + "I" echo MoveToDesk
+ + "I" MoveToDesk
  + "I" echo WindowFont
  + "I" WindowFont
  + "I" echo WindowId
