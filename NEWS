@@ -38,8 +38,6 @@ Changes in alpha release 2.5.3 (not released yet)
 * New option "FromPointer" and direction "Center" to the Direction
   command.
 
-* New styles OverrideGrabFocus and AllowGrabFocus.
-
 * The styles ClickToFocusRaises(Off) and MouseFocusClickRaises(Off)
   are now different names for the same style.  Configurations that
   used

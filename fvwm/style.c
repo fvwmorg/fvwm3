@@ -801,21 +801,284 @@ static Bool __simplify_style_list(void)
 }
 
 static Bool style_parse_focus_policy_style(
-	char *option, char *rest, focus_policy_t *f, focus_policy_t *m,
-	focus_policy_t *c)
+	char *option, char *rest, Bool is_reversed, focus_policy_t *f,
+	focus_policy_t *m, focus_policy_t *c)
 {
 	char *optlist[] = {
+		"SortWindowlistByFocus",
+		"FocusClickButtons",
+		"FocusClickModifiers",
+		"ClickRaisesFocused",
+		"ClickDecorRaisesFocused",
+		"ClickIconRaisesFocused",
+		"ClickRaisesUnfocused",
+		"ClickDecorRaisesUnfocused",
+		"ClickIconRaisesUnfocused",
+		"ClickToFocus",
+		"ClickDecorToFocus",
+		"ClickIconToFocus",
+		"EnterToFocus",
+		"LeaveToUnfocus",
+		"FocusByProgram",
+		"FocusByFunction",
+		"FocusByFunctionWarpPointer",
+		"Lenient",
+		"PassFocusClick",
+		"PassRaiseClick",
+		"IgnoreFocusClickMotion",
+		"IgnoreRaiseClickMotion",
+		"AllowFocusClickFunction",
+		"AllowRaiseClickFunction",
+		"GrabFocus",
+		"GrabFocusTransient",
+		"OverrideGrabFocus",
+		"ReleaseFocus",
+		"ReleaseFocusTransient",
+		"OverrideReleaseFocus",
 		NULL
 	};
 	Bool found;
+	int val;
 	int index;
+	char *next;
+	char *token;
 
 	found = True;
-	GetNextTokenIndex(option, optlist, 0, &index);
+	val = !is_reversed;
+	next = GetNextTokenIndex(option, optlist, 0, &index);
 	switch (index)
 	{
 	case 0:
+		/* SortWindowlistByFocus */
+		FPS_SORT_WINDOWLIST_BY(
+			*f, (val) ?
+			FPOL_SORT_WL_BY_FOCUS : FPOL_SORT_WL_BY_OPEN);
+		FPS_SORT_WINDOWLIST_BY(*m, 1);
+		FPS_SORT_WINDOWLIST_BY(*c, 1);
+		break;
+	case 1:
+		/* FocusClickButtons */
+		if (is_reversed)
+		{
+			found = False;
+			break;
+		}
+		token = PeekToken(next, NULL);
+		val = 0;
+		for ( ; token != NULL && isdigit(*token); token++)
+		{
+			int button;
+			char s[2];
+
+			s[0] = *token;
+			s[1] = 0;
+			button = atoi(s);
+			if (button == 0)
+			{
+				val = 0xffffffff;
+			}
+			else if (button > NUMBER_OF_MOUSE_BUTTONS)
+			{
+				break;
+			}
+			else
+			{
+				val |= (1 << (button - 1));
+			}
+		}
+		if (token != NULL && *token != 0)
+		{
+			fvwm_msg(
+				ERR, "style_parse_focus_policy_style",
+				"illegal mouse button '%c'", *token);
+			val = DEF_FP_MOUSE_BUTTONS;
+		}
+		if (token == NULL)
+		{
+			val = DEF_FP_MOUSE_BUTTONS;
+		}
+		FPS_MOUSE_BUTTONS(*f, val);
+		FPS_MOUSE_BUTTONS(*m, 0xffffffff);
+		FPS_MOUSE_BUTTONS(*c, 0xffffffff);
+		break;
+	case 2:
+		/* FocusClickModifiers */
+		if (is_reversed)
+		{
+			found = False;
+			break;
+		}
+		token = PeekToken(next, NULL);
+		if (token == NULL || ParseModifiers(token, &val) == True)
+		{
+			val = DEF_FP_MODIFIERS;
+		}
+		FPS_MODIFIERS(*f, val);
+		FPS_MODIFIERS(*m, 0xffffffff);
+		FPS_MODIFIERS(*c, 0xffffffff);
 		/*!!!*/
+		break;
+	case 3:
+		/* ClickRaisesFocused */
+		FPS_RAISE_FOCUSED_CLIENT_CLICK(*f, val);
+		FPS_RAISE_FOCUSED_CLIENT_CLICK(*m, 1);
+		FPS_RAISE_FOCUSED_CLIENT_CLICK(*c, 1);
+		break;
+	case 4:
+		/* ClickDecorRaisesFocused */
+		FPS_RAISE_FOCUSED_DECOR_CLICK(*f, val);
+		FPS_RAISE_FOCUSED_DECOR_CLICK(*m, 1);
+		FPS_RAISE_FOCUSED_DECOR_CLICK(*c, 1);
+		break;
+	case 5:
+		/* ClickIconRaisesFocused */
+		FPS_RAISE_FOCUSED_ICON_CLICK(*f, val);
+		FPS_RAISE_FOCUSED_ICON_CLICK(*m, 1);
+		FPS_RAISE_FOCUSED_ICON_CLICK(*c, 1);
+		break;
+	case 6:
+		/* ClickRaisesUnfocused */
+		FPS_RAISE_UNFOCUSED_CLIENT_CLICK(*f, val);
+		FPS_RAISE_UNFOCUSED_CLIENT_CLICK(*m, 1);
+		FPS_RAISE_UNFOCUSED_CLIENT_CLICK(*c, 1);
+		break;
+	case 7:
+		/* ClickDecorRaisesUnfocused */
+		FPS_RAISE_UNFOCUSED_DECOR_CLICK(*f, val);
+		FPS_RAISE_UNFOCUSED_DECOR_CLICK(*m, 1);
+		FPS_RAISE_UNFOCUSED_DECOR_CLICK(*c, 1);
+		break;
+	case 8:
+		/* ClickIconRaisesUnfocused */
+		FPS_RAISE_UNFOCUSED_ICON_CLICK(*f, val);
+		FPS_RAISE_UNFOCUSED_ICON_CLICK(*m, 1);
+		FPS_RAISE_UNFOCUSED_ICON_CLICK(*c, 1);
+		break;
+	case 9:
+		/* ClickToFocus */
+		FPS_FOCUS_CLICK_CLIENT(*f, val);
+		FPS_FOCUS_CLICK_CLIENT(*m, 1);
+		FPS_FOCUS_CLICK_CLIENT(*c, 1);
+		break;
+	case 10:
+		/* ClickDecorToFocus */
+		FPS_FOCUS_CLICK_DECOR(*f, val);
+		FPS_FOCUS_CLICK_DECOR(*m, 1);
+		FPS_FOCUS_CLICK_DECOR(*c, 1);
+		break;
+	case 11:
+		/* ClickIconToFocus */
+		FPS_FOCUS_CLICK_ICON(*f, val);
+		FPS_FOCUS_CLICK_ICON(*m, 1);
+		FPS_FOCUS_CLICK_ICON(*c, 1);
+		break;
+	case 12:
+		/* EnterToFocus */
+		FPS_FOCUS_ENTER(*f, val);
+		FPS_FOCUS_ENTER(*m, 1);
+		FPS_FOCUS_ENTER(*c, 1);
+		break;
+	case 13:
+		/* LeaveToUnfocus */
+		FPS_UNFOCUS_LEAVE(*f, val);
+		FPS_UNFOCUS_LEAVE(*m, 1);
+		FPS_UNFOCUS_LEAVE(*c, 1);
+		break;
+	case 14:
+		/* FocusByProgram */
+		FPS_FOCUS_BY_PROGRAM(*f, val);
+		FPS_FOCUS_BY_PROGRAM(*m, 1);
+		FPS_FOCUS_BY_PROGRAM(*c, 1);
+		break;
+	case 15:
+		/* FocusByFunction */
+		FPS_FOCUS_BY_FUNCTION(*f, val);
+		FPS_FOCUS_BY_FUNCTION(*m, 1);
+		FPS_FOCUS_BY_FUNCTION(*c, 1);
+		break;
+	case 16:
+		/* FocusByFunctionWarpPointer */
+		FPS_WARP_POINTER_ON_FOCUS_FUNC(*f, val);
+		FPS_WARP_POINTER_ON_FOCUS_FUNC(*m, 1);
+		FPS_WARP_POINTER_ON_FOCUS_FUNC(*c, 1);
+		break;
+	case 17:
+		/* Lenient */
+		FPS_LENIENT(*f, val);
+		FPS_LENIENT(*m, 1);
+		FPS_LENIENT(*c, 1);
+		break;
+	case 18:
+		/* PassFocusClick */
+		FPS_PASS_FOCUS_CLICK(*f, val);
+		FPS_PASS_FOCUS_CLICK(*m, 1);
+		FPS_PASS_FOCUS_CLICK(*c, 1);
+		break;
+	case 19:
+		/* PassRaiseClick */
+		FPS_PASS_RAISE_CLICK(*f, val);
+		FPS_PASS_RAISE_CLICK(*m, 1);
+		FPS_PASS_RAISE_CLICK(*c, 1);
+		break;
+	case 20:
+		/* IgnoreFocusClickMotion */
+		FPS_IGNORE_FOCUS_CLICK_MOTION(*f, val);
+		FPS_IGNORE_FOCUS_CLICK_MOTION(*m, 1);
+		FPS_IGNORE_FOCUS_CLICK_MOTION(*c, 1);
+		break;
+	case 21:
+		/* IgnoreRaiseClickMotion */
+		FPS_IGNORE_RAISE_CLICK_MOTION(*f, val);
+		FPS_IGNORE_RAISE_CLICK_MOTION(*m, 1);
+		FPS_IGNORE_RAISE_CLICK_MOTION(*c, 1);
+		break;
+	case 22:
+		/* AllowFocusClickFunction */
+		FPS_ALLOW_FUNC_FOCUS_CLICK(*f, val);
+		FPS_ALLOW_FUNC_FOCUS_CLICK(*m, 1);
+		FPS_ALLOW_FUNC_FOCUS_CLICK(*c, 1);
+		break;
+	case 23:
+		/* AllowRaiseClickFunction */
+		FPS_ALLOW_FUNC_RAISE_CLICK(*f, val);
+		FPS_ALLOW_FUNC_RAISE_CLICK(*m, 1);
+		FPS_ALLOW_FUNC_RAISE_CLICK(*c, 1);
+		break;
+	case 24:
+		/* GrabFocus */
+		FPS_GRAB_FOCUS(*f, val);
+		FPS_GRAB_FOCUS(*m, 1);
+		FPS_GRAB_FOCUS(*c, 1);
+		break;
+	case 25:
+		/* GrabFocusTransient */
+		FPS_GRAB_FOCUS_TRANSIENT(*f, val);
+		FPS_GRAB_FOCUS_TRANSIENT(*m, 1);
+		FPS_GRAB_FOCUS_TRANSIENT(*c, 1);
+		break;
+	case 26:
+		/* OverrideGrabFocus */
+		FPS_OVERRIDE_GRAB_FOCUS(*f, val);
+		FPS_OVERRIDE_GRAB_FOCUS(*m, 1);
+		FPS_OVERRIDE_GRAB_FOCUS(*c, 1);
+		break;
+	case 27:
+		/* ReleaseFocus */
+		FPS_RELEASE_FOCUS(*f, val);
+		FPS_RELEASE_FOCUS(*m, 1);
+		FPS_RELEASE_FOCUS(*c, 1);
+		break;
+	case 28:
+		/* ReleaseFocusTransient */
+		FPS_RELEASE_FOCUS_TRANSIENT(*f, val);
+		FPS_RELEASE_FOCUS_TRANSIENT(*m, 1);
+		FPS_RELEASE_FOCUS_TRANSIENT(*c, 1);
+		break;
+	case 29:
+		/* OverrideReleaseFocus */
+		FPS_OVERRIDE_RELEASE_FOCUS(*f, val);
+		FPS_OVERRIDE_RELEASE_FOCUS(*m, 1);
+		FPS_OVERRIDE_RELEASE_FOCUS(*c, 1);
 		break;
 	default:
 		found = False;
@@ -1230,6 +1493,21 @@ static Bool style_parse_one_style_option(
 	found = True;
 	switch (tolower(token[0]))
 	{
+	case '!':
+		if (StrEquals(token, "!fp"))
+		{
+			/* parse focus policy options */
+			found = style_parse_focus_policy_style(
+				token, rest, True,
+				&SF_FOCUS_POLICY(*ps),
+				&SM_FOCUS_POLICY(*ps),
+				&SC_FOCUS_POLICY(*ps));
+		}
+		else
+		{
+			found = False;
+		}
+		break;
 	case 'a':
 		if (StrEquals(token, "ACTIVEPLACEMENT"))
 		{
@@ -1258,12 +1536,6 @@ static Bool style_parse_one_style_option(
 			SFSET_DO_IGNORE_RESTACK(*ps, 0);
 			SMSET_DO_IGNORE_RESTACK(*ps, 1);
 			SCSET_DO_IGNORE_RESTACK(*ps, 1);
-		}
-		else if (StrEquals(token, "AllowGrabFocus"))
-		{
-			FPS_OVERRIDE_GRAB_FOCUS(SF_FOCUS_POLICY(*ps), 0);
-			FPS_OVERRIDE_GRAB_FOCUS(SM_FOCUS_POLICY(*ps), 1);
-			FPS_OVERRIDE_GRAB_FOCUS(SC_FOCUS_POLICY(*ps), 1);
 		}
 		else
 		{
@@ -1747,7 +2019,16 @@ static Bool style_parse_one_style_option(
 		break;
 
 	case 'f':
-		if (StrEquals(token, "Font"))
+		if (StrEquals(token, "fp"))
+		{
+			/* parse focus policy options */
+			found = style_parse_focus_policy_style(
+				token, rest, False,
+				&SF_FOCUS_POLICY(*ps),
+				&SM_FOCUS_POLICY(*ps),
+				&SC_FOCUS_POLICY(*ps));
+		}
+		else if (StrEquals(token, "Font"))
 		{
 			SAFEFREE(SGET_WINDOW_FONT(*ps));
 			GetNextToken(rest, &token);
@@ -1827,15 +2108,6 @@ static Bool style_parse_one_style_option(
 			SFSET_IS_PSIZE_FIXED(*ps, 1);
 			SMSET_IS_PSIZE_FIXED(*ps, 1);
 			SCSET_IS_PSIZE_FIXED(*ps, 1);
-		}
-		else if (strncasecmp(token, "fp", 2) == 0)
-		{
-			/* parse focus policy options */
-			found = style_parse_focus_policy_style(
-				token, rest,
-				&SF_FOCUS_POLICY(*ps),
-				&SM_FOCUS_POLICY(*ps),
-				&SC_FOCUS_POLICY(*ps));
 		}
 		else
 		{
@@ -2601,12 +2873,6 @@ static Bool style_parse_one_style_option(
 			ps->flags.use_parent_relative = 0;
 			ps->flag_mask.use_parent_relative = 1;
 			ps->change_mask.use_parent_relative = 1;
-		}
-		else if (StrEquals(token, "OverrideGrabFocus"))
-		{
-			FPS_OVERRIDE_GRAB_FOCUS(SF_FOCUS_POLICY(*ps), 1);
-			FPS_OVERRIDE_GRAB_FOCUS(SM_FOCUS_POLICY(*ps), 1);
-			FPS_OVERRIDE_GRAB_FOCUS(SC_FOCUS_POLICY(*ps), 1);
 		}
 		else
 		{
