@@ -4,11 +4,11 @@ Issues opened recently: many
 Issues closed recently: some
                              open / closed
 A. Release stopping bugs:       0 / 1
-B. Normal bugs:                 8 / 2
-C. To be verified:             21 / 5
+B. Normal bugs:                 5 / 3
+C. To be verified:             20 / 5
 D. To be discussed:             1 / 0
 E. To do:                      10 / 0
-F. Distribution issues:         4 / 1
+F. Distribution issues:         3 / 2
 G. Testing:                     5 / 0
 
 Total:                         44 / 4
@@ -41,11 +41,6 @@ B. Normal Bugs (8)
       FvwmIconMan
       [Olivier]
 
-  B.6 Edge scrolling breaks on non-rectangular Xinerama display [#987,2003-02-11]
-      Maybe not a bug: a miss-feature
-
-      [dv: Would not do anything about it]
-
   B.7 strange xawtv fullscreen handling [#973,2002-12-23]. Not a bug? Dominik?
 
   B.8 Menu double-click action not working? [#955,2002-11-06]
@@ -73,8 +68,6 @@ C. To be verified (25)
 
   C.9 Moving operation delayed together with XFree86 4.2.0 xtt module
       [#903,2002-07-07] Not an fvwm bug?
-
-  C.11 problem when resizing Aviplay movie window [#870,2002-04-05]
 
   C.12 FvwmScript swallowexec doesn't work [#867,2.4,2002-04-01]
 
@@ -198,6 +191,13 @@ G. Testing (5)
       [dv: fixed on 02-Mar-2003, 2.5.7; Note:  it is still utterly broken when
       the window becomes too small]
 
+  B.6 Edge scrolling breaks on non-rectangular Xinerama display
+      [#987,2003-02-11]
+      Maybe not a bug: a miss-feature
+
+      [dv: Would not do anything about it]
+      [dv: --> enhancement request]
+
   C.1 FvwmIconMan "Resolution" option doesn't work correctly with
       NumManagers > 1
       Ref.: 2003-01-17 "Grzegorz Nieweglows" Bug in FvwmIconMan
@@ -205,6 +205,9 @@ G. Testing (5)
 
   C.10 moving XMMS window is too slow [#?,]
        [dv: cat bug_report | grep "xmms" && mv bug_report trash]
+
+  C.11 problem when resizing Aviplay movie window [#870,2002-04-05]
+       [aviplay bug]
 
   C.13 Pager too small about half the time [#861,2.4,2002-03-10]. Fixed?
        [Dan not reproducible. 2003-03-09]

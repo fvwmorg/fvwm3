@@ -1,5 +1,8 @@
 2003-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* todo-2.6 (todo):
+	closed C.11
+
 	* fvwm/functable.c (func_table):
 	* fvwm/functions.h (func_type):
 	* fvwm/functions.c (__execute_function):

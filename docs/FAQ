@@ -1506,7 +1506,11 @@ A: First of all, please read the first section of the answer to Q5.1!
 
 5.3  How do I submit a bug report?
 
-A: Please enter a DETAILED description of your problem in our web-based
+A: Please do not report any 'bugs' related to XMMS in the fvwm bug
+   tracking system or the fvwm mailing lists but send them to the XMMS
+   bevelopers instead.
+
+   Please enter a DETAILED description of your problem in our web-based
    bug-tracking system.  You can find a link on our web page (see Q1.3).
    By detailed we mean more than just "my window isn't behaving right" or
    "I found a bug":
