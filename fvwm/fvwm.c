@@ -1185,89 +1185,89 @@ RETSIGTYPE Restart(int sig)
 
 static void LoadDefaultLeftButton(DecorFace *df, int i)
 {
-    struct vector_coords *v = &df->u.vector;
+  struct vector_coords *v = &df->u.vector;
 
-    memset(&df->style, 0, sizeof(df->style));
-    DFS_FACE_TYPE(df->style) = VectorButton;
-    switch (i % 5)
-    {
-    case 0:
-    case 4:
-	v->num = 5;
-	v->line_style = 0;
-	v->x = (int *) safemalloc (sizeof(int) * v->num);
-	v->y = (int *) safemalloc (sizeof(int) * v->num);
-	v->x[0] = 22;
-	v->y[0] = 39;
-	v->line_style |= (1 << 0);
-	v->x[1] = 78;
-	v->y[1] = 39;
-	v->line_style |= (1 << 1);
-	v->x[2] = 78;
-	v->y[2] = 61;
-	v->x[3] = 22;
-	v->y[3] = 61;
-	v->x[4] = 22;
-	v->y[4] = 39;
-	v->line_style |= (1 << 4);
-	break;
-    case 1:
-	v->num = 5;
-	v->line_style = 0;
-	v->x = (int *) safemalloc (sizeof(int) * v->num);
-	v->y = (int *) safemalloc (sizeof(int) * v->num);
-	v->x[0] = 32;
-	v->y[0] = 45;
-	v->x[1] = 68;
-	v->y[1] = 45;
-	v->x[2] = 68;
-	v->y[2] = 55;
-	v->line_style |= (1 << 2);
-	v->x[3] = 32;
-	v->y[3] = 55;
-	v->line_style |= (1 << 3);
-	v->x[4] = 32;
-	v->y[4] = 45;
-	break;
-    case 2:
-	v->num = 5;
-	v->line_style = 0;
-	v->x = (int *) safemalloc (sizeof(int) * v->num);
-	v->y = (int *) safemalloc (sizeof(int) * v->num);
-	v->x[0] = 49;
-	v->y[0] = 49;
-	v->line_style |= (1 << 0);
-	v->x[1] = 51;
-	v->y[1] = 49;
-	v->line_style |= (1 << 1);
-	v->x[2] = 51;
-	v->y[2] = 51;
-	v->x[3] = 49;
-	v->y[3] = 51;
-	v->x[4] = 49;
-	v->y[4] = 49;
-	v->line_style |= (1 << 4);
-	break;
-    case 3:
-	v->num = 5;
-	v->line_style = 0;
-	v->x = (int *) safemalloc (sizeof(int) * v->num);
-	v->y = (int *) safemalloc (sizeof(int) * v->num);
-	v->x[0] = 32;
-	v->y[0] = 45;
-	v->line_style |= (1 << 0);
-	v->x[1] = 68;
-	v->y[1] = 45;
-	v->line_style |= (1 << 1);
-	v->x[2] = 68;
-	v->y[2] = 55;
-	v->x[3] = 32;
-	v->y[3] = 55;
-	v->x[4] = 32;
-	v->y[4] = 45;
-	v->line_style |= (1 << 4);
-	break;
-    }
+  memset(&df->style, 0, sizeof(df->style));
+  DFS_FACE_TYPE(df->style) = VectorButton;
+  switch (i % 5)
+  {
+  case 0:
+  case 4:
+    v->num = 5;
+    v->line_style = 0;
+    v->x = (int *) safemalloc (sizeof(int) * v->num);
+    v->y = (int *) safemalloc (sizeof(int) * v->num);
+    v->x[0] = 22;
+    v->y[0] = 39;
+    v->line_style |= (1 << 0);
+    v->x[1] = 78;
+    v->y[1] = 39;
+    v->line_style |= (1 << 1);
+    v->x[2] = 78;
+    v->y[2] = 61;
+    v->x[3] = 22;
+    v->y[3] = 61;
+    v->x[4] = 22;
+    v->y[4] = 39;
+    v->line_style |= (1 << 4);
+    break;
+  case 1:
+    v->num = 5;
+    v->line_style = 0;
+    v->x = (int *) safemalloc (sizeof(int) * v->num);
+    v->y = (int *) safemalloc (sizeof(int) * v->num);
+    v->x[0] = 32;
+    v->y[0] = 45;
+    v->x[1] = 68;
+    v->y[1] = 45;
+    v->x[2] = 68;
+    v->y[2] = 55;
+    v->line_style |= (1 << 2);
+    v->x[3] = 32;
+    v->y[3] = 55;
+    v->line_style |= (1 << 3);
+    v->x[4] = 32;
+    v->y[4] = 45;
+    break;
+  case 2:
+    v->num = 5;
+    v->line_style = 0;
+    v->x = (int *) safemalloc (sizeof(int) * v->num);
+    v->y = (int *) safemalloc (sizeof(int) * v->num);
+    v->x[0] = 49;
+    v->y[0] = 49;
+    v->line_style |= (1 << 0);
+    v->x[1] = 51;
+    v->y[1] = 49;
+    v->line_style |= (1 << 1);
+    v->x[2] = 51;
+    v->y[2] = 51;
+    v->x[3] = 49;
+    v->y[3] = 51;
+    v->x[4] = 49;
+    v->y[4] = 49;
+    v->line_style |= (1 << 4);
+    break;
+  case 3:
+    v->num = 5;
+    v->line_style = 0;
+    v->x = (int *) safemalloc (sizeof(int) * v->num);
+    v->y = (int *) safemalloc (sizeof(int) * v->num);
+    v->x[0] = 32;
+    v->y[0] = 45;
+    v->line_style |= (1 << 0);
+    v->x[1] = 68;
+    v->y[1] = 45;
+    v->line_style |= (1 << 1);
+    v->x[2] = 68;
+    v->y[2] = 55;
+    v->x[3] = 32;
+    v->y[3] = 55;
+    v->x[4] = 32;
+    v->y[4] = 45;
+    v->line_style |= (1 << 4);
+    break;
+  }
 }
 
 /***********************************************************************
@@ -1278,90 +1278,90 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
  ************************************************************************/
 static void LoadDefaultRightButton(DecorFace *df, int i)
 {
-    struct vector_coords *v = &df->u.vector;
+  struct vector_coords *v = &df->u.vector;
 
-    memset(&df->style, 0, sizeof(df->style));
-    DFS_FACE_TYPE(df->style) = VectorButton;
-    switch (i % 5)
-    {
-    case 0:
-    case 3:
-	v->num = 5;
-	v->line_style = 0;
-	v->x = (int *) safemalloc (sizeof(int) * v->num);
-	v->y = (int *) safemalloc (sizeof(int) * v->num);
-	v->x[0] = 25;
-	v->y[0] = 25;
-	v->line_style |= (1 << 0);
-	v->x[1] = 75;
-	v->y[1] = 25;
-	v->line_style |= (1 << 1);
-	v->x[2] = 75;
-	v->y[2] = 75;
-	v->x[3] = 25;
-	v->y[3] = 75;
-	v->x[4] = 25;
-	v->y[4] = 25;
-	v->line_style |= (1 << 4);
-	break;
-    case 1:
-	v->num = 5;
-	v->line_style = 0;
-	v->x = (int *) safemalloc (sizeof(int) * v->num);
-	v->y = (int *) safemalloc (sizeof(int) * v->num);
-	v->x[0] = 39;
-	v->y[0] = 39;
-	v->line_style |= (1 << 0);
-	v->x[1] = 61;
-	v->y[1] = 39;
-	v->line_style |= (1 << 1);
-	v->x[2] = 61;
-	v->y[2] = 61;
-	v->x[3] = 39;
-	v->y[3] = 61;
-	v->x[4] = 39;
-	v->y[4] = 39;
-	v->line_style |= (1 << 4);
-	break;
-    case 2:
-	v->num = 5;
-	v->line_style = 0;
-	v->x = (int *) safemalloc (sizeof(int) * v->num);
-	v->y = (int *) safemalloc (sizeof(int) * v->num);
-	v->x[0] = 49;
-	v->y[0] = 49;
-	v->line_style |= (1 << 0);
-	v->x[1] = 51;
-	v->y[1] = 49;
-	v->line_style |= (1 << 1);
-	v->x[2] = 51;
-	v->y[2] = 51;
-	v->x[3] = 49;
-	v->y[3] = 51;
-	v->x[4] = 49;
-	v->y[4] = 49;
-	v->line_style |= (1 << 4);
-	break;
-    case 4:
-	v->num = 5;
-	v->line_style = 0;
-	v->x = (int *) safemalloc (sizeof(int) * v->num);
-	v->y = (int *) safemalloc (sizeof(int) * v->num);
-	v->x[0] = 36;
-	v->y[0] = 36;
-	v->line_style |= (1 << 0);
-	v->x[1] = 64;
-	v->y[1] = 36;
-	v->line_style |= (1 << 1);
-	v->x[2] = 64;
-	v->y[2] = 64;
-	v->x[3] = 36;
-	v->y[3] = 64;
-	v->x[4] = 36;
-	v->y[4] = 36;
-	v->line_style |= (1 << 4);
-	break;
-    }
+  memset(&df->style, 0, sizeof(df->style));
+  DFS_FACE_TYPE(df->style) = VectorButton;
+  switch (i % 5)
+  {
+  case 0:
+  case 3:
+    v->num = 5;
+    v->line_style = 0;
+    v->x = (int *) safemalloc (sizeof(int) * v->num);
+    v->y = (int *) safemalloc (sizeof(int) * v->num);
+    v->x[0] = 25;
+    v->y[0] = 25;
+    v->line_style |= (1 << 0);
+    v->x[1] = 75;
+    v->y[1] = 25;
+    v->line_style |= (1 << 1);
+    v->x[2] = 75;
+    v->y[2] = 75;
+    v->x[3] = 25;
+    v->y[3] = 75;
+    v->x[4] = 25;
+    v->y[4] = 25;
+    v->line_style |= (1 << 4);
+    break;
+  case 1:
+    v->num = 5;
+    v->line_style = 0;
+    v->x = (int *) safemalloc (sizeof(int) * v->num);
+    v->y = (int *) safemalloc (sizeof(int) * v->num);
+    v->x[0] = 39;
+    v->y[0] = 39;
+    v->line_style |= (1 << 0);
+    v->x[1] = 61;
+    v->y[1] = 39;
+    v->line_style |= (1 << 1);
+    v->x[2] = 61;
+    v->y[2] = 61;
+    v->x[3] = 39;
+    v->y[3] = 61;
+    v->x[4] = 39;
+    v->y[4] = 39;
+    v->line_style |= (1 << 4);
+    break;
+  case 2:
+    v->num = 5;
+    v->line_style = 0;
+    v->x = (int *) safemalloc (sizeof(int) * v->num);
+    v->y = (int *) safemalloc (sizeof(int) * v->num);
+    v->x[0] = 49;
+    v->y[0] = 49;
+    v->line_style |= (1 << 0);
+    v->x[1] = 51;
+    v->y[1] = 49;
+    v->line_style |= (1 << 1);
+    v->x[2] = 51;
+    v->y[2] = 51;
+    v->x[3] = 49;
+    v->y[3] = 51;
+    v->x[4] = 49;
+    v->y[4] = 49;
+    v->line_style |= (1 << 4);
+    break;
+  case 4:
+    v->num = 5;
+    v->line_style = 0;
+    v->x = (int *) safemalloc (sizeof(int) * v->num);
+    v->y = (int *) safemalloc (sizeof(int) * v->num);
+    v->x[0] = 36;
+    v->y[0] = 36;
+    v->line_style |= (1 << 0);
+    v->x[1] = 64;
+    v->y[1] = 36;
+    v->line_style |= (1 << 1);
+    v->x[2] = 64;
+    v->y[2] = 64;
+    v->x[3] = 36;
+    v->y[3] = 64;
+    v->x[4] = 36;
+    v->y[4] = 36;
+    v->line_style |= (1 << 4);
+    break;
+  }
 }
 
 /***********************************************************************
@@ -1409,9 +1409,9 @@ void ResetAllButtons(FvwmDecor *decor)
 
   /* standard MWM decoration hint assignments (veliaa@rpi.edu)
      [Menu]  - Title Bar - [Minimize] [Maximize] */
-  TB_MWM_DECOR_FLAGS(decor->buttons[0]) |= MWMDecorMenu;
-  TB_MWM_DECOR_FLAGS(decor->buttons[3]) |= MWMDecorMinimize;
-  TB_MWM_DECOR_FLAGS(decor->buttons[1]) |= MWMDecorMaximize;
+  TB_MWM_DECOR_FLAGS(decor->buttons[0]) |= MWM_DECOR_MENU;
+  TB_MWM_DECOR_FLAGS(decor->buttons[1]) |= MWM_DECOR_MAXIMIZE;
+  TB_MWM_DECOR_FLAGS(decor->buttons[3]) |= MWM_DECOR_MINIMIZE;
 }
 
 /***********************************************************************

@@ -92,13 +92,15 @@ typedef PropMotifWmHints        PropMwmHints;
 #define MWM_FUNC_CLOSE          (1L << 5)
 
 /* bit definitions for MwmHints.decorations */
+#if 0
 #define MWM_DECOR_ALL                 (1L << 0)
 #define MWM_DECOR_BORDER              (1L << 1)
 #define MWM_DECOR_RESIZEH             (1L << 2)
 #define MWM_DECOR_TITLE               (1L << 3)
-#define MWM_DECOR_MENU                (1L << 4)
-#define MWM_DECOR_MINIMIZE            (1L << 5)
-#define MWM_DECOR_MAXIMIZE            (1L << 6)
+ #define MWM_DECOR_MENU                (1L << 4)
+ #define MWM_DECOR_MINIMIZE            (1L << 5)
+ #define MWM_DECOR_MAXIMIZE            (1L << 6)
+#endif
 /* has nothing to do with MWM, but we need it here */
 #define DECOR_BORDER                  (1L << 7)
 
@@ -270,7 +272,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
   if(!SHAS_HANDLE_WIDTH(sflags))
     handle_width = Scr.BoundaryWidth;
 
-  *buttons = 0x3ff;
+  *buttons = (1 << NUMBER_OF_BUTTONS) - 1;
 
   decor = MWM_DECOR_ALL;
   t->functions = MWM_FUNC_ALL;
@@ -279,7 +281,23 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       prop = (PropMwmHints *)t->mwm_hints;
       if(SHAS_MWM_DECOR(sflags))
 	if(prop->flags & MWM_HINTS_DECORATIONS)
-	  decor = prop->decorations;
+	{
+	  decor = 0;
+	  if (prop->decorations & 0x1)
+	    decor |= MWM_DECOR_ALL;
+	  if (prop->decorations & 0x2)
+	    decor |= MWM_DECOR_BORDER;
+	  if (prop->decorations & 0x4)
+	    decor |= MWM_DECOR_RESIZEH;
+	  if (prop->decorations & 0x8)
+	    decor |= MWM_DECOR_TITLE;
+	  if (prop->decorations & 0x10)
+	    decor |= MWM_DECOR_MENU;
+	  if (prop->decorations & 0x20)
+	    decor |= MWM_DECOR_MINIMIZE;
+	  if (prop->decorations & 0x40)
+	    decor |= MWM_DECOR_MAXIMIZE;
+	}
       if(SHAS_MWM_FUNCTIONS(sflags))
 	if(prop->flags & MWM_HINTS_FUNCTIONS)
 	  t->functions = prop->functions;
@@ -306,9 +324,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       /* If we get ALL + some other things, that means to use
        * ALL except the other things... */
       decor &= ~MWM_DECOR_ALL;
-      decor = (MWM_DECOR_BORDER | MWM_DECOR_RESIZEH | MWM_DECOR_TITLE |
-	       MWM_DECOR_MENU | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE)
-	& (~decor);
+      decor = MWM_DECOR_EVERYTHING & (~decor);
     }
 
   /* now add/remove any functions specified in the OL hints */
@@ -431,7 +447,9 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
       {
 	if (TB_HAS_MWM_DECOR_MENU(GetDecor(t, buttons[i])))
+	{
           *buttons &= ~(1 << i);
+	}
       }
     }
   if(!(decor & MWM_DECOR_MINIMIZE))
@@ -442,9 +460,10 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       int i;
       for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
       {
-	if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t, buttons[i])) ||
-	    TB_HAS_MWM_DECOR_SHADE(GetDecor(t, buttons[i])))
+	if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t, buttons[i])))
+	{
           *buttons &= ~(1 << i);
+	}
       }
     }
   if(!(decor & MWM_DECOR_MAXIMIZE))
@@ -456,7 +475,9 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
       {
 	if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t, buttons[i])))
+	{
           *buttons &= ~(1 << i);
+	}
       }
     }
   for (i = (1 << (NUMBER_OF_BUTTONS - 1)); i; i >>= 1)

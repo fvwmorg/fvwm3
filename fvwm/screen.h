@@ -149,17 +149,6 @@ typedef struct DecorFace
   } flags;
 } DecorFace;
 
-/* button style flags (per title button) */
-enum
-{
-  /* MWM function hint button assignments */
-  MWMDecorMenu                = (1<<0),
-  MWMDecorMinimize            = (1<<1),
-  MWMDecorMaximize            = (1<<2),
-  MWMDecorShade               = (1<<3),
-  MWMDecorStick               = (1<<4)
-};
-
 enum ButtonState
 {
   ActiveUp,
@@ -173,11 +162,20 @@ enum ButtonState
 
 typedef enum
 {
+  /* The first five are used in title buttons.  These can't be renumbered
+   * without extending the mwm_decor_flags member below and adapting the style
+   * structure. */
   MWM_DECOR_MENU     = 0x1,
   MWM_DECOR_MINIMIZE = 0x2,
   MWM_DECOR_MAXIMIZE = 0x4,
   MWM_DECOR_SHADE    = 0x8,
-  MWM_DECOR_STICK    = 0x10
+  MWM_DECOR_STICK    = 0x10,
+  /* --- */
+  MWM_DECOR_BORDER   = 0x20,
+  MWM_DECOR_RESIZEH  = 0x40,
+  MWM_DECOR_TITLE    = 0x80,
+  MWM_DECOR_ALL      = 0x100,
+  MWM_DECOR_EVERYTHING = 0xff
 } mwm_flags;
 
 typedef struct
