@@ -133,10 +133,6 @@ static Bool DeferExecution(
 	FvwmWindow *fw;
 
 	fw = ret_ecc->w.fw;
-	if (fw != NULL)
-	{
-		return False;
-	}
 	w = ret_ecc->w.w;
 	original_w = w;
 	wcontext = ret_ecc->w.wcontext;

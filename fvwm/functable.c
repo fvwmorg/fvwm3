@@ -207,7 +207,7 @@ const func_type func_table[] =
 	CMD_ENT("readwritecolors", CMD_ReadWriteColors, F_NOP, 0, 0, 0),
 	CMD_ENT("recapture", CMD_Recapture, F_RECAPTURE, 0, 0, 0),
 	CMD_ENT("recapturewindow", CMD_RecaptureWindow, F_RECAPTURE_WINDOW,
-		0, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
 	CMD_ENT("refresh", CMD_Refresh, F_REFRESH, 0, 0, 0),
 	CMD_ENT("refreshwindow", CMD_RefreshWindow, F_REFRESH,
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),

@@ -197,8 +197,14 @@ static void CaptureOneWindow(
 
 		fev_make_null_event(&e, dpy);
 		e.xmaprequest.window = w;
+		e.xmaprequest.parent = Scr.Root;
 		ecc.x.etrigger = &e;
-		ea.exc = exc_clone_context(exc, &ecc, ECC_ETRIGGER);
+		ecc.w.fw = NULL;
+		ecc.w.w = w;
+		ecc.w.wcontext = C_ROOT;
+		ea.exc = exc_clone_context(
+			exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_W |
+			ECC_WCONTEXT);
 		HandleMapRequestKeepRaised(&ea, keep_on_top_win, fw, &win_opts);
 		exc_destroy_context(ea.exc);
 
