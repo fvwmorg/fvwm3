@@ -793,6 +793,7 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
   unsigned int ncolors = 0;
   char **colors;
   int *perc, nsegs;
+  Pixmap pixmap = None;
 
   /* translate the gradient string into an array of colors etc */
   if (!(ncolors = ParseGradient(action, NULL, &colors, &perc, &nsegs))) {
@@ -807,12 +808,13 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
   /* grok the size to create from the type */
   type = toupper(type);
 
-  if (!CalculateGradientDimensions(dpy, d, ncolors, type, width_return,
-				   height_return))
-    return None;
-
-  return CreateGradientPixmap(dpy, d, gc, type, *width_return, *height_return,
-			      ncolors, pixels, None, 0, 0, 0, 0);
+  if (CalculateGradientDimensions(dpy, d, ncolors, type, width_return,
+				  height_return))
+    pixmap = CreateGradientPixmap(dpy, d, gc, type, *width_return,
+				  *height_return, ncolors, pixels, None, 0, 0,
+				  0, 0);
+  free(pixels);
+  return pixmap;
 }
 
 /****************************************************************************
