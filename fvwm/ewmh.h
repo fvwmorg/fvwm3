@@ -77,11 +77,15 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
 #ifdef HAVE_ICONV
 void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name);
 int EWMH_WMName(FvwmWindow *fwin, XEvent *ev, window_style *style);
+#define EWMH_WMName_func EWMH_WMName
 int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
+#define EWMH_WMIconName_func EWMH_WMIconName
 #else
 #define EWMH_SetVisibleName(x,y)
 #define EWMH_WMName(x,y,z)     0
+#define EWMH_WMName_func       0
 #define EWMH_WMIconName(x,y,z) 0
+#define EWMH_WMIconName_func   0
 #endif /* HAVE_ICONV */
 
 #else /* HAVE_EWMH */

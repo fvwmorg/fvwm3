@@ -151,8 +151,8 @@ ewmh_atom ewmh_atom_property_notify[] =
 {
   ENTRY("_NET_WM_ICON",          XA_CARDINAL, ewmh_WMIcon),
   ENTRY("_NET_WM_ICON_GEOMETRY", XA_CARDINAL, ewmh_WMIconGeometry),
-  ENTRY("_NET_WM_ICON_NAME",     None,        EWMH_WMIconName),
-  ENTRY("_NET_WM_NAME",          None,        EWMH_WMName),
+  ENTRY("_NET_WM_ICON_NAME",     None,        EWMH_WMIconName_func),
+  ENTRY("_NET_WM_NAME",          None,        EWMH_WMName_func),
   ENTRY("_NET_WM_STRUT",         XA_CARDINAL, ewmh_WMStrut),
   {NULL,0,0,0}
 };

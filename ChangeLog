@@ -1,5 +1,11 @@
+2001-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/ewmh.h:
+	* fvwm/ewmh.c:
+	EWMH without iconv compile fix by Hippo
+
 2001-12-05  olicha  <olivier.chapuis@free.fr>
-	
+
 	* fvwm/add_window.c:
 	* fvwm/ewmh.{c,h} (*):
 	* fvwm/ewmh_conf.c (EWMH_CMD_Styles):
