@@ -262,14 +262,16 @@ extern int Channel[2];
 /* From FvwmAnimate end */
 
 /* prototypes */
-void ReadXServer();                     /* ReadXServer.c */
-void RedrawText(Item *item);            /* FvwmForm.c */
-void RedrawTimeout(Item *item);         /* FvwmForm.c */
-void RedrawItem (Item *item, int click); /* FvwmForm.c */
-void UpdateRootTransapency(void);        /* FvwmForm.c */
-void DoCommand (Item *cmd);             /* FvwmForm.c */
-int FontWidth (XFontStruct *xfs);       /* FvwmForm.c */
-void RedrawFrame ();                    /* FvwmForm.c */
+void ReadXServer();                      /* ReadXServer.c */
+void RedrawText(Item *item);             /* FvwmForm.c */
+void RedrawTimeout(Item *item);          /* FvwmForm.c */
+void RedrawItem (
+	Item *item, int click, XEvent *pev); /* FvwmForm.c */
+void UpdateRootTransapency(
+	Bool pr_only, Bool do_draw);     /* FvwmForm.c */
+void DoCommand (Item *cmd);              /* FvwmForm.c */
+int FontWidth (XFontStruct *xfs);        /* FvwmForm.c */
+void RedrawFrame (XEvent *pev);          /* FvwmForm.c */
 char * ParseCommand (int, char *, char, int *, char **s); /* ParseCommand.c */
 
 void DeadPipe(int nonsense);            /* FvwmForm.c */

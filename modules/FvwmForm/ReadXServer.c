@@ -79,17 +79,37 @@ void ReadXServer ()
     if (event.xany.window == CF.frame) {
       switch (event.type) {
       case ConfigureNotify:             /* has window be reconfigured */
-	if (colorset > -1 && Colorset[colorset].pixmap == ParentRelative &&
-	    event.xconfigure.send_event)
-	{
-	  UpdateRootTransapency();
-	}
-	else
-	{
-	  /* adjust yourself... */
-	  ResizeFrame();
-	}
-	break;
+      {
+	      XEvent tmpe;
+
+	      while (FCheckTypedWindowEvent(
+		      dpy, CF.frame, ConfigureNotify, &tmpe))
+	      {
+		      if (!tmpe.xconfigure.send_event)
+			      continue;
+		      event.xconfigure.x = tmpe.xconfigure.x;
+		      event.xconfigure.y = tmpe.xconfigure.y;
+		      event.xconfigure.send_event = True;
+	      }
+	      if (CF.max_width != event.xconfigure.width ||
+		  CF.total_height != event.xconfigure.height)
+	      {
+		      /* adjust yourself... do noting */
+		      ResizeFrame();
+		      CF.max_width = event.xconfigure.width;
+		      CF.total_height = event.xconfigure.height;
+		      UpdateRootTransapency(False, True);
+		      if (!CSET_IS_TRANSPARENT(colorset))
+		      {
+			  RedrawFrame(NULL);
+		      }
+	      }
+	      else if (event.xconfigure.send_event)
+	      {
+		      UpdateRootTransapency(False, True);
+	      }
+      }
+      break;
 #if 0
       case SelectionClear:
 	 selection_clear ();
@@ -102,18 +122,33 @@ void ReadXServer ()
 	break;
 #endif
       case Expose:
-	while (FCheckTypedWindowEvent(dpy, CF.frame, Expose, &event));
-	if (event.xexpose.count != 0)
-	  break;
-	RedrawFrame();
-	if (CF.grab_server && !CF.server_grabbed) {
-	  if (GrabSuccess ==
-	      XGrabPointer(dpy, CF.frame, True, 0,
-			   GrabModeAsync, GrabModeAsync,
-			   None, None, CurrentTime))
-	    CF.server_grabbed = 1;
-	}
-	break;
+      {
+	      int ex = event.xexpose.x;
+	      int ey = event.xexpose.y;
+	      int ex2 = event.xexpose.x + event.xexpose.width;
+	      int ey2 = event.xexpose.y + event.xexpose.height;
+	      while (FCheckTypedWindowEvent(dpy, CF.frame, Expose, &event))
+	      {
+		      ex = min(ex, event.xexpose.x);
+		      ey = min(ey, event.xexpose.y);
+		      ex2 = max(ex2, event.xexpose.x + event.xexpose.width);
+		      ey2 = max(ey2 , event.xexpose.y + event.xexpose.height);
+	      }
+	      event.xexpose.x = ex;
+	      event.xexpose.y = ey;
+	      event.xexpose.width = ex2 - ex;
+	      event.xexpose.height = ey2 - ey;
+	      RedrawFrame(&event);
+	      if (CF.grab_server && !CF.server_grabbed)
+	      {
+		      if (GrabSuccess ==
+			  XGrabPointer(dpy, CF.frame, True, 0,
+				       GrabModeAsync, GrabModeAsync,
+				       None, None, CurrentTime))
+			      CF.server_grabbed = 1;
+	      }
+      }
+      break;
       case VisibilityNotify:
 	if (CF.server_grabbed &&
 	    event.xvisibility.state != VisibilityUnobscured)
@@ -182,9 +217,9 @@ void ReadXServer ()
 	  for (item = root_item_ptr; item != 0;
 	       item = item->header.next) {/* all items */
 	    if (item->type == I_BUTTON && item->button.keypress == keypress) {
-	      RedrawItem(item, 1);
+	      RedrawItem(item, 1, NULL);
 	      usleep(MICRO_S_FOR_10MS);
-	      RedrawItem(item, 0);
+	      RedrawItem(item, 0, NULL);
 	      DoCommand(item);
 	      goto no_redraw;
 	    }
@@ -287,7 +322,7 @@ void ReadXServer ()
 	  old_item = CF.cur_input;
 	  old_item->input.o_cursor = CF.rel_cursor;
 	  CF.cur_input = old_item->input.prev_input; /* new current input fld */
-	  RedrawItem(old_item, 1);
+	  RedrawItem(old_item, 1, NULL);
 	  CF.rel_cursor = old_item->input.o_cursor;
 	  CF.abs_cursor = CF.rel_cursor - old_item->input.left;
 	  goto redraw;
@@ -316,9 +351,9 @@ void ReadXServer ()
 	    myfprintf((stderr, "Button: keypress==%d\n",
 		    item->button.keypress));
 	    if (item->type == I_BUTTON && item->button.keypress == keypress) {
-	      RedrawItem(item, 1);
+	      RedrawItem(item, 1, NULL);
 	      usleep(MICRO_S_FOR_10MS);  /* .1 seconds */
-	      RedrawItem(item, 0);
+	      RedrawItem(item, 0, NULL);
 	      DoCommand(item);
 	      goto no_redraw;
 	    }
@@ -365,16 +400,10 @@ void ReadXServer ()
 			    CF.cur_input->header.dt_ptr->dt_Ffont,
 			    CF.cur_input->header.dt_ptr->dt_Fstr,
 			    FWS_HAVE_LENGTH);
-#ifdef ONLY_FIXED_FONT_FOR_INPUT
-	  x = BOX_SPC + TEXT_SPC +
-	    CF.cur_input->header.dt_ptr->dt_Ffont->max_char_width
-	    * CF.abs_cursor - 1;
-#else
 	  x = BOX_SPC + TEXT_SPC +
 		  FlocaleTextWidth(CF.cur_input->header.dt_ptr->dt_Ffont,
 				   CF.cur_input->input.value,CF.abs_cursor)
 		  - 1;
-#endif
 	  dy = CF.cur_input->header.size_y - 1;
 	  XDrawLine(dpy, CF.cur_input->header.win,
 		    CF.cur_input->header.dt_ptr->dt_item_GC,
@@ -392,21 +421,32 @@ void ReadXServer ()
       if (event.xany.window == item->header.win) {
 	switch (event.type) {
 	case Expose:
-	  if (event.xexpose.count == 0)
-	    RedrawItem(item, 0);
-	  break;
+	{
+		int ex = event.xexpose.x;
+		int ey = event.xexpose.y;
+		int ex2 = event.xexpose.x + event.xexpose.width;
+		int ey2 = event.xexpose.y + event.xexpose.height;
+		while (FCheckTypedWindowEvent(
+			dpy, item->header.win, Expose, &event))
+		{
+			ex = min(ex, event.xexpose.x);
+			ey = min(ey, event.xexpose.y);
+			ex2 = max(ex2, event.xexpose.x + event.xexpose.width);
+			ey2 = max(ey2 , event.xexpose.y + event.xexpose.height);
+		}
+		event.xexpose.x = ex;
+		event.xexpose.y = ey;
+		event.xexpose.width = ex2 - ex;
+		event.xexpose.height = ey2 - ey;
+		RedrawItem(item, 0, &event);
+	}
+	break;
 	case ButtonPress:
 	  if (item->type == I_INPUT) {
 	    old_item = CF.cur_input;
 	    old_item->input.o_cursor = CF.rel_cursor;
 	    CF.cur_input = item;
-	    RedrawItem(old_item, 1);
-#ifdef ONLY_FIXED_FONT_FOR_INPUT
-	    CF.abs_cursor = (event.xbutton.x - BOX_SPC -
-			     TEXT_SPC +
-			     item->header.dt_ptr->dt_Ffont->max_char_width / 2)
-	      / item->header.dt_ptr->dt_Ffont->max_char_width;
-#else
+	    RedrawItem(old_item, 1, NULL);
 	    {
 	      Bool done = False;
 
@@ -427,7 +467,6 @@ void ReadXServer ()
 		}
 	      }
 	    }
-#endif
 	    if (CF.abs_cursor < 0)
 	      CF.abs_cursor = 0;
 	    if (CF.abs_cursor > item->input.size)
@@ -446,15 +485,15 @@ void ReadXServer ()
 	    if (event.xbutton.button == Button2) { /* if paste request */
 	      process_paste_request (&event, item);
 	    }
-	    RedrawItem(item, 0);
+	    RedrawItem(item, 0, NULL);
 	  }
 	  if (item->type == I_CHOICE)
 	    ToggleChoice(item);
 	  if (item->type == I_BUTTON) {
-	    RedrawItem(item, 1);        /* push button in */
+	    RedrawItem(item, 1, NULL);    /* push button in */
 	    if (CF.activate_on_press) {
 	      usleep(MICRO_S_FOR_10MS);   /* make sure its visible */
-	      RedrawItem(item, 0);        /* pop button out */
+	      RedrawItem(item, 0, NULL);  /* pop button out */
 	      DoCommand(item);            /* execute the button command */
 	    } else {
 	      XGrabPointer(dpy, item->header.win,
@@ -475,7 +514,7 @@ void ReadXServer ()
 	  break;
 	case ButtonRelease:
 	  if (!CF.activate_on_press) {
-	    RedrawItem(item, 0);
+	    RedrawItem(item, 0, NULL);
 	    if (CF.grab_server && CF.server_grabbed) {
 	      /* You have to regrab the pointer, or focus
 		 can go to another window.
@@ -557,7 +596,7 @@ static int process_tabtypes(unsigned char * buf) {
       old_item = CF.cur_input;
       old_item->input.o_cursor = CF.rel_cursor;
       CF.cur_input = item;
-      RedrawItem(old_item, 1);
+      RedrawItem(old_item, 1, NULL);
       CF.rel_cursor = item->input.o_cursor;
       CF.abs_cursor = CF.rel_cursor - item->input.left;
       return (1);                       /* cause redraw */
@@ -569,9 +608,9 @@ static int process_tabtypes(unsigned char * buf) {
     myfprintf((stderr, "Button: keypress==%d vs buf %d\n",
 	       item->button.keypress, buf[0]));
     if (item->type == I_BUTTON && item->button.keypress == buf[0]) {
-      RedrawItem(item, 1);
+      RedrawItem(item, 1, NULL);
       usleep(MICRO_S_FOR_10MS);
-      RedrawItem(item, 0);
+      RedrawItem(item, 0, NULL);
       DoCommand(item);
       return (0);                       /* cause no_redraw */
     }
@@ -583,7 +622,7 @@ static int process_tabtypes(unsigned char * buf) {
       old_item = CF.cur_input;
       old_item->input.o_cursor = CF.rel_cursor;
       CF.cur_input = item;
-      RedrawItem(old_item, 1);
+      RedrawItem(old_item, 1, NULL);
       CF.rel_cursor = item->input.o_cursor;
       CF.abs_cursor = CF.rel_cursor - item->input.left;
       return (1);                       /* goto redraw */
@@ -684,15 +723,15 @@ static void ToggleChoice (Item *item)
       for (i = 0; i < sel->selection.n; i++) {
 	if (sel->selection.choices[i]->choice.on) {
 	  sel->selection.choices[i]->choice.on = 0;
-	  RedrawItem(sel->selection.choices[i], 0);
+	  RedrawItem(sel->selection.choices[i], 0, NULL);
 	}
       }
       item->choice.on = 1;
-      RedrawItem(item, 0);
+      RedrawItem(item, 0, NULL);
     }
   } else {  /* IS_MULTIPLE */
     item->choice.on = !item->choice.on;
-    RedrawItem(item, 0);
+    RedrawItem(item, 0, NULL);
   }
 }
 static void ResizeFrame (void) {

@@ -1,5 +1,22 @@
 2002-11-13  olicha  <olivier.chapuis@free.fr>
-	
+
+	* FvwmForm/FvwmForm.c (ParseActiveMessage):
+	Fixed colorset changes
+
+	*  FvwmForm/FvwmForm.c (UpdateRootTransapency):
+	(process_message):
+	(DoCommand):
+	(RedrawFrame): 
+	(RedrawItem):
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	(process_tabtypes):
+	(ToggleChoice):
+	Clip drawing and new transparent stuff
+
+	* FvwmForm/FvwmForm.c (ErrorHandler):
+	(main):
+	Install an X error handler
+
 	* FvwmWinList/FvwmWinList.c (RedrawWindow):
 	(ParseConfigLine):
 	(LoopOnEvents):

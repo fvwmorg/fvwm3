@@ -46,6 +46,7 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/FRenderInit.h"
+#include "libs/Rectangles.h"
 
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 
@@ -97,7 +98,7 @@ static void PutDataInForm(char *);
 static void ReadFormData();
 static void FormVarsCheck(char **);
 static RETSIGTYPE TimerHandler(int);
-
+static int ErrorHandler(Display *dpy, XErrorEvent *error_event);
 static void SetupTimer()
 {
 #ifdef HAVE_SIGACTION
@@ -1465,55 +1466,101 @@ static void Restart ()
 }
 
 /* redraw the frame */
-void RedrawFrame ()
+void RedrawFrame(XEvent *pev)
 {
-  Item *item;
+	Item *item;
+	Region region = None;
 
-  Bool clear = False;
-  if (FftSupport)
-  {
-    item = root_item_ptr;
-    while(item != 0 && !clear)
-    {
-      if ((item->type == I_TEXT || item->type == I_CHOICE) &&
-	  item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
-	clear = True;
-      item = item->header.next;
-    }
-    if (clear)
-      XClearWindow(dpy, CF.frame);
-  }
+	Bool clear = False;
+	if (FftSupport)
+	{
+		item = root_item_ptr;
+		while(item != 0 && !clear)
+		{
+			if ((item->type == I_TEXT || item->type == I_CHOICE) &&
+			    item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
+				clear = True;
+			item = item->header.next;
+		}
+		if (clear && pev)
+		{
+			XClearArea(
+				dpy, CF.frame,
+				pev->xexpose.x, pev->xexpose.y,
+				pev->xexpose.width, pev->xexpose.height,
+				False);
+		}
+		else
+		{
+			XClearWindow(dpy, CF.frame);
+		}
+	}
+	if (pev)
+	{
+		XRectangle r;
+	
+		r.x = pev->xexpose.x;
+		r.y =  pev->xexpose.y;
+		r.width = pev->xexpose.width;
+		r.height = pev->xexpose.height;
+		region = XCreateRegion();
+		XUnionRectWithRegion (&r, region, region);
+	}
+	for (item = root_item_ptr; item != 0;
+	     item = item->header.next) {      /* all items */
+		DrawTable *dt_ptr = item->header.dt_ptr;
 
-  for (item = root_item_ptr; item != 0;
-       item = item->header.next) {      /* all items */
-    switch (item->type) {
-    case I_TEXT:
-      RedrawText(item);
-      break;
-    case I_TIMEOUT:
-      RedrawTimeout(item);
-      break;
-    case I_CHOICE:
-      item->header.dt_ptr->dt_Fstr->win = CF.frame;
-      item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_GC;
-      item->header.dt_ptr->dt_Fstr->str = item->choice.text;
-      item->header.dt_ptr->dt_Fstr->x   = item->header.pos_x
-	+ TEXT_SPC + item->header.size_y;
-      item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + TEXT_SPC
-	+ item->header.dt_ptr->dt_Ffont->ascent;
-      item->header.dt_ptr->dt_Fstr->len = item->choice.n;
-      item->header.dt_ptr->dt_Fstr->flags.has_colorset = False;
-      if (itemcolorset >= 0)
-      {
-	item->header.dt_ptr->dt_Fstr->colorset = &Colorset[itemcolorset];
-	item->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
-      }
-      FlocaleDrawString(dpy,
-			item->header.dt_ptr->dt_Ffont,
-			item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
-      break;
-    }
-  }
+		if (dt_ptr && dt_ptr->dt_Fstr)
+		{
+			if (region)
+			{
+				dt_ptr->dt_Fstr->flags.has_clip_region = True;
+				dt_ptr->dt_Fstr->clip_region = region;
+			}
+			else
+			{
+				dt_ptr->dt_Fstr->flags.has_clip_region = False;
+			}
+		}
+		switch (item->type) {
+		case I_TEXT:
+			RedrawText(item);
+			break;
+		case I_TIMEOUT:
+			RedrawTimeout(item);
+			break;
+		case I_CHOICE:
+			dt_ptr->dt_Fstr->win = CF.frame;
+			dt_ptr->dt_Fstr->gc  = dt_ptr->dt_GC;
+			dt_ptr->dt_Fstr->str = item->choice.text;
+			dt_ptr->dt_Fstr->x   = item->header.pos_x
+				+ TEXT_SPC + item->header.size_y;
+			dt_ptr->dt_Fstr->y   = item->header.pos_y
+				+ TEXT_SPC + dt_ptr->dt_Ffont->ascent;
+			dt_ptr->dt_Fstr->len = item->choice.n;
+			dt_ptr->dt_Fstr->flags.has_colorset = False;
+			if (itemcolorset >= 0)
+			{
+				dt_ptr->dt_Fstr->colorset =
+					&Colorset[itemcolorset];
+				dt_ptr->dt_Fstr->flags.has_colorset
+					= True;
+			}
+			FlocaleDrawString(dpy,
+					  dt_ptr->dt_Ffont,
+					  dt_ptr->dt_Fstr,
+					  FWS_HAVE_LENGTH);
+			break;
+		}
+		if (dt_ptr && dt_ptr->dt_Fstr)
+		{
+			dt_ptr->dt_Fstr->flags.has_clip_region = False;
+		}
+	}
+	if (region)
+	{
+		XDestroyRegion(region);
+	}
 }
 
 void RedrawText(Item *item)
@@ -1604,28 +1651,78 @@ void RedrawTimeout(Item *item)
 }
 
 /* redraw an item */
-void RedrawItem (Item *item, int click)
+void RedrawItem (Item *item, int click, XEvent *pev)
 {
   int dx, dy, len, x;
   static XSegment xsegs[4];
+  XRectangle r,inter;
+  Region region = None;
+  Bool text_inter = True;
+  DrawTable *dt_ptr = item->header.dt_ptr;
+
+  if (pev)
+  {
+	  r.x = pev->xexpose.x;
+	  r.y =  pev->xexpose.y;
+	  r.width = pev->xexpose.width;
+	  r.height = pev->xexpose.height;
+	  text_inter = frect_get_intersection(
+		  r.x, r.y, r.width, r.height,
+		  BOX_SPC + TEXT_SPC - 1, BOX_SPC,
+		  item->header.size_x - (2 * BOX_SPC) - 2 - TEXT_SPC,
+		  (item->header.size_y - 1) - 2 * BOX_SPC + 1,
+		  &inter);
+  }
+  else
+  {
+	  inter.x = BOX_SPC + TEXT_SPC - 1;
+	  inter.y = BOX_SPC;
+	  inter.width = item->header.size_x - (2 * BOX_SPC) - 2 - TEXT_SPC;
+	  inter.height = (item->header.size_y - 1) - 2 * BOX_SPC + 1;
+  }
+
+  if (pev && text_inter && dt_ptr && dt_ptr->dt_Fstr)
+  {
+	  region = XCreateRegion();
+	  XUnionRectWithRegion (&r, region, region);
+	  if (region)
+	  {
+		  dt_ptr->dt_Fstr->flags.has_clip_region = True;
+		  dt_ptr->dt_Fstr->clip_region = region;
+	  }
+	  else
+	  {
+		  dt_ptr->dt_Fstr->flags.has_clip_region = False;
+	  }
+  }
 
   switch (item->type) {
   case I_INPUT:
+    if (!text_inter)
+    {
+	    return;
+    }
     /* Create frame (pressed in): */
     dx = item->header.size_x - 1;
     dy = item->header.size_y - 1;
+    /*fprintf(stderr,"GC: %lu\n", item->header.dt_ptr->dt_item_GC);*/
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
 		   item->header.dt_ptr->dt_colors[c_itemlo]);
 
     /* around 12/26/99, added XClearArea to this function.
        this was done to deal with display corruption during
        multifield paste.  dje */
-    XClearArea(dpy, item->header.win,
-	       BOX_SPC + TEXT_SPC - 1, BOX_SPC,
-	       item->header.size_x
-	       - (2 * BOX_SPC) - 2 - TEXT_SPC,
-	       (item->header.size_y - 1)
-	       - 2 * BOX_SPC + 1, False);
+    if (frect_get_intersection(
+	    r.x, r.y, r.width, r.height,
+	    BOX_SPC + TEXT_SPC - 1, BOX_SPC,
+	    item->header.size_x - (2 * BOX_SPC) - 2 - TEXT_SPC,
+	    (item->header.size_y - 1) - 2 * BOX_SPC + 1,
+	    &inter))
+    {
+	    XClearArea(
+		    dpy, item->header.win,
+		    inter.x, inter.y, inter.width, inter.height, False);
+    }
 
     xsegs[0].x1 = 0, xsegs[0].y1 = 0;
     xsegs[0].x2 = 0, xsegs[0].y2 = dy;
@@ -1651,15 +1748,9 @@ void RedrawItem (Item *item, int click)
 		  xsegs, 4);
 
     if (click) {
-#ifdef ONLY_FIXED_FONT_FOR_INPUT
-      x = BOX_SPC + TEXT_SPC +
-	item->header.dt_ptr->dt_Ffont->max_char_width
-	* CF.abs_cursor - 1;
-#else
       x = BOX_SPC + TEXT_SPC +
 	      FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
 			       item->input.value, CF.abs_cursor) - 1;
-#endif
       XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
 		     item->header.dt_ptr->dt_colors[c_item_bg]);
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
@@ -1683,15 +1774,9 @@ void RedrawItem (Item *item, int click)
     else
     {
       item->header.dt_ptr->dt_Fstr->str = item->input.blanks;
-#ifdef ONLY_FIXED_FONT_FOR_INPUT
-      item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC
-		  + item->header.dt_ptr->dt_Ffont->max_char_width
-		  * len;
-#else
       item->header.dt_ptr->dt_Fstr->x  = BOX_SPC + TEXT_SPC +
 	      FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
 			       item->input.blanks, len);
-#endif
       item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
 		  + item->header.dt_ptr->dt_Ffont->ascent;
       item->header.dt_ptr->dt_Fstr->len = item->input.size - len;
@@ -1708,16 +1793,10 @@ void RedrawItem (Item *item, int click)
 		      item->header.dt_ptr->dt_Ffont,
 		      item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
     if (item == CF.cur_input && !click) {
-#ifdef ONLY_FIXED_FONT_FOR_INPUT
-      x = BOX_SPC + TEXT_SPC +
-	item->header.dt_ptr->dt_Ffont->max_char_width
-	* CF.abs_cursor - 1;
-#else
       x = BOX_SPC + TEXT_SPC +
 	FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
 			 item->input.value,CF.abs_cursor)
 	- 1;
-#endif
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		x, BOX_SPC, x, dy - BOX_SPC);
       myfprintf((stderr,"Line %d/%d - %d/%d\n",
@@ -1777,6 +1856,10 @@ void RedrawItem (Item *item, int click)
 		  xsegs, 4);
     break;
   case I_BUTTON:
+    if (!text_inter)
+    {
+	    return;
+    }
     dx = item->header.size_x - 1;
     dy = item->header.size_y - 1;
     if (click)
@@ -1830,11 +1913,7 @@ void RedrawItem (Item *item, int click)
     {
       if (item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
 	XClearArea(dpy, item->header.win,
-		   BOX_SPC + TEXT_SPC - 1, BOX_SPC,
-		   item->header.size_x
-		   - (2 * BOX_SPC) - 2 - TEXT_SPC,
-		   (item->header.size_y - 1)
-		   - 2 * BOX_SPC + 1, False);
+		   inter.x, inter.y, inter.width, inter.height, False);
     }
     FlocaleDrawString(dpy,
 		      item->header.dt_ptr->dt_Ffont,
@@ -1843,28 +1922,86 @@ void RedrawItem (Item *item, int click)
 	       item->button.text));
     break;
   }
+  if (dt_ptr && dt_ptr->dt_Fstr)
+  {
+	  dt_ptr->dt_Fstr->flags.has_clip_region = False;
+  }
+  if (region)
+  {
+	  XDestroyRegion(region);
+  }
   XFlush(dpy);
 }
 
-/* update transparency if backgroude colorset is transparent */
-void UpdateRootTransapency(void)
+/* update transparency if background colorset is transparent */
+/* window has moved redraw the background if it is transparent */
+void UpdateRootTransapency(Bool pr_only, Bool do_draw)
 {
-  Item *item;
+	Item *item;
 
-  if (colorset > -1 && Colorset[colorset].pixmap == ParentRelative)
-  {
-    /* window has moved redraw the background if it is transparent */
-    XClearArea(dpy, CF.frame, 0,0,0,0, True);
-    if (itemcolorset > -1 &&
-	Colorset[itemcolorset].pixmap == ParentRelative)
-    {
-      for (item = root_item_ptr; item != 0; item = item->header.next)
-      {
-	if (item->header.win != None)
-	  XClearArea(dpy, item->header.win, 0,0,0,0, True);
-      }
-    }
-  }
+	if (CSET_IS_TRANSPARENT(colorset))
+	{
+		if (CSET_IS_TRANSPARENT_PR_PURE(colorset))
+		{
+			XClearArea(dpy, CF.frame, 0,0,0,0, False);
+			if (do_draw)
+			{
+				RedrawFrame(NULL);
+			}
+		}
+		else if (!pr_only || CSET_IS_TRANSPARENT_PR(colorset))
+		{
+			SetWindowBackground(
+				dpy, CF.frame, CF.max_width, CF.total_height,
+				&Colorset[(colorset)], Pdepth,
+				root_item_ptr->header.dt_ptr->dt_GC, False);
+			if (do_draw)
+			{
+				XClearArea(dpy, CF.frame, 0,0,0,0, False);
+				RedrawFrame(NULL);
+			}
+		}
+	}
+	if (!root_item_ptr->header.next || !CSET_IS_TRANSPARENT(itemcolorset))
+	{
+		return;
+	}
+	for (item = root_item_ptr->header.next; item != NULL;
+	     item = item->header.next)
+	{
+		if (item->header.win != None)
+		{
+			if (CSET_IS_TRANSPARENT_PR(itemcolorset) &&
+			    !CSET_IS_TRANSPARENT(colorset))
+			{
+				continue;
+			}
+			if (CSET_IS_TRANSPARENT_PR_PURE(itemcolorset))
+			{
+				XClearArea(
+					dpy, item->header.win, 0,0,0,0, False);
+				if (do_draw)
+				{
+					RedrawItem(item, 0, NULL);
+				}
+			}
+			else if (!pr_only ||
+				 CSET_IS_TRANSPARENT_PR(itemcolorset))
+			{
+				SetWindowBackground(
+					dpy, item->header.win,
+					item->header.size_x, item->header.size_y,
+					&Colorset[(itemcolorset)], Pdepth,
+					item->header.dt_ptr->dt_GC, False);
+				XClearArea(
+					dpy, item->header.win, 0,0,0,0, False);
+				if (do_draw)
+				{
+					RedrawItem(item, 0, NULL);
+				}
+			}
+		}
+	}
 }
 
 /* execute a command */
@@ -1926,10 +2063,10 @@ void DoCommand (Item *cmd)
 	 item = item->header.next) {    /* all items */
       if (item->type == I_INPUT) {
 	XClearWindow(dpy, item->header.win);
-	RedrawItem(item, 0);
+	RedrawItem(item, 0, NULL);
       }
       if (item->type == I_CHOICE)
-	RedrawItem(item, 0);
+	RedrawItem(item, 0, NULL);
     }
   }
 }
@@ -2160,7 +2297,7 @@ static void process_message(unsigned long type, unsigned long *body)
     if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND &&
 	((!Swallowed && body[2] == 0) || (Swallowed && body[2] == CF.frame)))
     {
-      UpdateRootTransapency();
+      UpdateRootTransapency(True, True);
     }
     else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == CF.frame)
     {
@@ -2213,71 +2350,105 @@ static struct CommandTable am_table[] =
 /* This is similar to the other 2 "Parse" functions. */
 static void ParseActiveMessage(char *buf)
 {
-  char *p;
-  struct CommandTable *e;
-  if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
-    buf[strlen(buf)-1] = '\0';  /* strip off \n */
-  }
+	char *p;
+	struct CommandTable *e;
+	if (buf[strlen(buf)-1] == '\n')
+	{     /* if line ends with newline */
+		buf[strlen(buf)-1] = '\0';  /* strip off \n */
+	}
 
-  if (strncasecmp(buf, "Colorset", 8) == 0) {
-    Item *item;
-    int n = LoadColorset(&buf[8]);
-    if(n == colorset || n == itemcolorset) {
-      for (item = root_item_ptr; item != 0;
-	   item = item->header.next) {
-	if (item->header.dt_ptr) {      /* if item has a drawtable */
-	  item->header.dt_ptr->dt_used = 0;
-	  if(item->header.dt_ptr->dt_GC) {
-	    XFreeGC(dpy,item->header.dt_ptr->dt_GC);
-	    item->header.dt_ptr->dt_GC = NULL;
-	  }
-	  if(item->header.dt_ptr->dt_item_GC) {
-	    XFreeGC(dpy,item->header.dt_ptr->dt_item_GC);
-	    item->header.dt_ptr->dt_item_GC = NULL;
-	  }
-	  CheckAlloc(item,item->header.dt_ptr); /* alloc colors/fonts needed */
-	  RedrawItem(item, 0);
-	  if (itemcolorset >= 0 && item->header.win != 0) {
-	    SetWindowBackground(dpy, item->header.win,
-				item->header.size_x, item->header.size_y,
-				&Colorset[(itemcolorset)], Pdepth,
-				item->header.dt_ptr->dt_GC, True);
-	  }
-	} /* end item has a drawtable */
-	if (colorset >= 0)
-	  {
-	    SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
-				&Colorset[(colorset)], Pdepth,
-				root_item_ptr->header.dt_ptr->dt_GC, True);
-	  }
-      } /* end all items */
-    }
-    return;
-  } /* end colorset command */
-  if (strncasecmp(buf, XINERAMA_CONFIG_STRING, sizeof(XINERAMA_CONFIG_STRING)-1)
-      == 0) {
-    FScreenConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
-    return;
-  }
-  if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
-    return;
-  } /* Now I know its for me. */
-  p = buf+MyNameLen;                  /* jump to end of my name */
-  /* at this point we have recognized "*FvwmForm" */
-  e = FindToken(p,am_table,struct CommandTable);/* find cmd in table */
-  if (e == 0) {                       /* if no match */
-    /* this may be a configuration command of another same form */
-    if (FindToken(p, ct_table, struct CommandTable) == 0)
-      fprintf(stderr,"%s: Active command unknown: %s\n",MyName+1,buf);
-    return;                             /* ignore it */
-  }
+	if (strncasecmp(buf, "Colorset", 8) == 0)
+	{
+		Item *item;
+		int n = LoadColorset(&buf[8]);
+		if(n == colorset || n == itemcolorset)
+		{
+			for (item = root_item_ptr; item != 0;
+			     item = item->header.next)
+			{
+				DrawTable *dt_ptr = item->header.dt_ptr;
+				if (dt_ptr)
+				{
+					dt_ptr->dt_used = 0;
+					if(dt_ptr->dt_GC)
+					{
+						XFreeGC(dpy, dt_ptr->dt_GC);
+						dt_ptr->dt_GC = None;
+					}
+					if(dt_ptr->dt_item_GC)
+					{
+						XFreeGC(dpy, dt_ptr->dt_item_GC);
+						dt_ptr->dt_item_GC = None;
+					}
+				}
+			}
+			for (item = root_item_ptr->header.next; item != 0;
+			     item = item->header.next)
+			{
+				DrawTable *dt_ptr = item->header.dt_ptr;
+				if (dt_ptr)
+				{
+					CheckAlloc(item, dt_ptr);
+					if (itemcolorset >= 0 &&
+					    item->header.win != 0)
+					{
+						SetWindowBackground(
+							dpy, item->header.win,
+							item->header.size_x,
+							item->header.size_y,
+							&Colorset
+							[(itemcolorset)],
+							Pdepth, dt_ptr->dt_GC,
+							True);
+					}
+				} /* end item has a drawtable */
+				RedrawItem(item, 0, NULL);
+			} /* end all items */
+			if (colorset >= 0)
+			{
+				SetWindowBackground(
+					dpy, CF.frame, CF.max_width,
+					CF.total_height,
+					&Colorset[(colorset)], Pdepth,
+					root_item_ptr->header.dt_ptr->dt_GC,
+					False);
+				RedrawFrame(NULL);
+			}
+		}
+		return;
+	} /* end colorset command */
+	if (strncasecmp(
+		buf, XINERAMA_CONFIG_STRING, sizeof(XINERAMA_CONFIG_STRING)-1)
+	    == 0)
+	{
+		FScreenConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
+		return;
+	}
+	if (strncasecmp(buf, MyName, MyNameLen) != 0)
+	{
+		/* If its not for me */
+		return;
+	} /* Now I know its for me. */
+	p = buf+MyNameLen;                  /* jump to end of my name */
+	/* at this point we have recognized "*FvwmForm" */
+	e = FindToken(p,am_table,struct CommandTable);/* find cmd in table */
+	if (e == 0)
+	{
+		/* if no match */
+		/* this may be a configuration command of another same form */
+		if (FindToken(p, ct_table, struct CommandTable) == 0)
+			fprintf(
+				stderr,"%s: Active command unknown: %s\n",
+				MyName+1,buf);
+		return;                             /* ignore it */
+	}
 
-  p=p+strlen(e->name);                  /* skip over name */
-  while (isspace((unsigned char)*p)) p++;              /* skip whitespace */
+	p=p+strlen(e->name);                    /* skip over name */
+	while (isspace((unsigned char)*p)) p++; /* skip whitespace */
 
-  FormVarsCheck(&p);
-  e->function(p);                       /* call cmd processor */
-  return;
+	FormVarsCheck(&p);
+	e->function(p);                       /* call cmd processor */
+	return;
 } /* end function */
 
 static void am_Map(char *cp)
@@ -2510,6 +2681,7 @@ int main (int argc, char **argv)
   /* tell fvwm about our mask */
   SetMessageMask(Channel, M_SENDCONFIG|M_CONFIG_INFO|M_ERROR|M_STRING);
   SetMessageMask(Channel, MX_PROPERTY_CHANGE);
+  XSetErrorHandler(ErrorHandler);
   OpenWindows();                        /* create initial window */
   SendFinishedStartupNotification(Channel);/* tell fvwm we're running */
   if (timer != NULL) {
@@ -2526,3 +2698,20 @@ void DeadPipe(int nonsense)
   exit(0);
 }
 
+/************************************************************************
+  X Error Handler
+************************************************************************/
+static int
+ErrorHandler(Display *dpy, XErrorEvent *event)
+{
+  /* some errors are OK=ish */
+  if (event->error_code == BadPixmap)
+    return 0;
+  if (event->error_code == BadDrawable)
+    return 0;
+  if (FRenderGetErrorCodeBase() + FRenderBadPicture == event->error_code)
+    return 0;
+
+  PrintXErrorAndCoredump(dpy, event, MyName+1);
+  return 0;
+}
