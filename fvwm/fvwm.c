@@ -1223,7 +1223,7 @@ static void usage(void)
 static void setVersionInfo(void)
 {
 	char version_str[256];
-	char copyright_str[512];
+	char license_str[512];
 	char support_str[512] = "";
 	int support_len;
 
@@ -1232,13 +1232,13 @@ static void setVersionInfo(void)
 		VERSION, __DATE__, __TIME__);
 	Fvwm_VersionInfo = safestrdup(version_str);
 
-	sprintf(copyright_str,
-		"fvwm comes with NO WARRANTY, to the extent permitted by law.\n"
-		"You may redistribute copies of fvwm under the terms of the GNU"
-		" General Public License.\n"
-		"For more information about these matters, see the file named"
-		" COPYING.");
-	Fvwm_LicenseInfo = safestrdup(version_str);
+	sprintf(license_str,
+		"fvwm comes with NO WARRANTY, to the extent permitted\n"
+		"by law.  You may redistribute copies of fvwm under\n"
+		"the terms of the GNU General Public License.  For\n"
+		"more information about these matters, see the file\n"
+		"named COPYING.");
+	Fvwm_LicenseInfo = safestrdup(license_str);
 
 #ifdef HAVE_READLINE
 	strcat(support_str, " ReadLine,");
@@ -1814,7 +1814,7 @@ int main(int argc, char **argv)
 			{
 				usage();
 			}
-			CopyString(&opt_color_limit,argv[i]); 
+			CopyString(&opt_color_limit,argv[i]);
 		}
 		else if (StrEquals(argv[i], "-version") ||
 			 StrEquals(argv[i], "--version"))
@@ -1829,7 +1829,7 @@ int main(int argc, char **argv)
 			{
 				usage();
 			}
-			CopyString(&opt_color_limit,argv[i]); 
+			CopyString(&opt_color_limit,argv[i]);
 		}
 		else
 		{

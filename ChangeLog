@@ -1,3 +1,14 @@
+2002-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.1.in:
+	* configure.in:
+	moved a lot of constant definitions to configure.in; the fvwm.lsm and
+	fvwm.1 files don't have to be updated for a release anymore; the release
+	number and date are set by configure
+
+	* fvwm/fvwm.c (setVersionInfo):
+	fixed output of "fvwm -version"
+
 2002-08-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (style_parse_one_style_option):

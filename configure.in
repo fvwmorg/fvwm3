@@ -5,6 +5,43 @@ AC_INIT(fvwm/fvwm.c)
 AM_INIT_AUTOMAKE(fvwm, 2.5.3)
 AM_CONFIG_HEADER(config.h)
 
+dnl fvwm varaiable settings
+
+dnl for development versions
+RELDATELONG="not released yet"
+RELDATESHORT="not released yet"
+RELDATENUM="not released yet"
+dnl for released versions
+dnl RELDATELONG="24 June 2002"
+dnl RELDATESHORT="24-Jun-2002"
+dnl RELDATENUM="2002-06-24"
+AC_SUBST(RELDATELONG)
+AC_SUBST(RELDATESHORT)
+AC_SUBST(RELDATENUM)
+
+dnl constant settings
+FVWMNAMEUCASE="FVWM"
+FVWMNAMELONG="F? Virtual Window Manager"
+FVWMHOMEPAGE="fvwm.org"
+FVWMFTP="ftp.fvwm.org"
+FVWMFTPDIR="/pub/ftp"
+FVWMALTFTP="metalab.unc.edu"
+FVWMALTFTPDIR="/pub/Linux/X11/window-managers/"
+FVWMLIST="fvwmfvwm.org"
+FVWMWORKERSLIST="fvwm-workers@fvwm.org"
+FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
+AC_SUBST(FVWMNAMEUCASE)
+AC_SUBST(FVWMNAMELONG)
+AC_SUBST(FVWMHOMEPAGE)
+AC_SUBST(FVWMFTP)
+AC_SUBST(FVWMFTPDIR)
+AC_SUBST(FVWMALTFTP)
+AC_SUBST(FVWMALTFTPDIR)
+AC_SUBST(FVWMLIST)
+AC_SUBST(FVWMWORKERSLIST)
+AC_SUBST(FVWMWORKERSLISTLONG)
+
+dnl installation paths
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
 FVWM_DATASUBDIR=/${PACKAGE}
 
@@ -883,6 +920,8 @@ AC_OUTPUT(
 	libs/Makefile
 	fvwm/Makefile
 	modules/Makefile
+dnl
+	fvwm/fvwm.1
 dnl
 	bin/Makefile
 	bin/fvwm-config
