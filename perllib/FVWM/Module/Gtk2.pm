@@ -12,29 +12,29 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-package FVWM::Module::Gtk;
+package FVWM::Module::Gtk2;
 
 use 5.004;
 use strict;
 
-use FVWM::Module::Toolkit qw(base Gtk);
+use FVWM::Module::Toolkit qw(base Gtk2);
 
 sub eventLoop ($) {
 	my $self = shift;
 
-	Gtk::Gdk->input_add(
+	Gtk2::Gdk->input_add(
 		$self->{istream}->fileno, ['read'],
 		sub ($$$) {
 			#my ($socket, $fd, $flags) = @_;
 			#return 0 unless $flags->{'read'};
 			unless ($self->processPacket($self->readPacket)) {
-				Gtk->main_quit;
+				Gtk2->main_quit;
 			}
 			return 1;
 		}
 	);
-	Gtk->main;
-	$self->debug("exited gtk event loop", 2);
+	Gtk2->main;
+	$self->debug("exited gtk2 event loop", 2);
 	$self->disconnect;
 }
 
@@ -43,25 +43,25 @@ sub showError ($$;$) {
 	my $error = shift;
 	my $title = shift || ($self->name . " Error");
 
-	my $dialog = new Gtk::Dialog;
+	my $dialog = new Gtk2::Dialog;
 	$dialog->set_title($title);
 	$dialog->set_border_width(4);
 
-	my $label = new Gtk::Label $error;
+	my $label = new Gtk2::Label $error;
 	$dialog->vbox->pack_start($label, 0, 1, 10);
 
-	my $button = new Gtk::Button "Close";
+	my $button = new Gtk2::Button "Close";
 	$dialog->action_area->pack_start($button, 1, 1, 0);
 	$button->signal_connect("clicked", sub { $dialog->destroy; });
 
-	$button = new Gtk::Button "Close All Errors";
+	$button = new Gtk2::Button "Close All Errors";
 	$dialog->action_area->pack_start($button, 1, 1, 0);
 	$button->signal_connect("clicked",
 		sub { $self->send("All ('$title') Close"); });
 
-	$button = new Gtk::Button "Exit Module";
+	$button = new Gtk2::Button "Exit Module";
 	$dialog->action_area->pack_start($button, 1, 1, 0);
-	$button->signal_connect("clicked", sub { Gtk->main_quit; });
+	$button->signal_connect("clicked", sub { Gtk2->main_quit; });
 
 	$dialog->show_all;
 }
@@ -71,14 +71,14 @@ sub showMessage ($$;$) {
 	my $message = shift;
 	my $title = shift || ($self->name . " Message");
 
-	my $dialog = new Gtk::Dialog;
+	my $dialog = new Gtk2::Dialog;
 	$dialog->set_title($title);
 	$dialog->set_border_width(4);
 
-	my $label = new Gtk::Label $message;
+	my $label = new Gtk2::Label $message;
 	$dialog->vbox->pack_start($label, 0, 1, 10);
 
-	my $button = new Gtk::Button "Close";
+	my $button = new Gtk2::Button "Close";
 	$dialog->action_area->pack_start($button, 1, 1, 0);
 	$button->signal_connect("clicked", sub { $dialog->destroy; });
 
@@ -91,19 +91,19 @@ __END__
 
 =head1 NAME
 
-FVWM::Module::Gtk - FVWM::Module with the GTK+ v1 widget library attached
+FVWM::Module::Gtk2 - FVWM::Module with the GTK+ v2 widget library attached
 
 =head1 SYNOPSIS
 
   use lib `fvwm-perllib dir`;
-  use FVWM::Module::Gtk;
-  use Gtk;
+  use FVWM::Module::Gtk2;
+  use Gtk2;
 
-  my $module = new FVWM::Module::Gtk;
+  my $module = new FVWM::Module::Gtk2;
 
-  init Gtk;
-  my $window = new Gtk::Window -toplevel;;
-  my $label = new Gtk::Label "Hello, world";
+  init Gtk2;
+  my $window = new Gtk2::Window -toplevel;;
+  my $label = new Gtk2::Label "Hello, world";
   $window->add($label);
   $window->show_all;
 
@@ -114,9 +114,9 @@ FVWM::Module::Gtk - FVWM::Module with the GTK+ v1 widget library attached
 
 =head1 DESCRIPTION
 
-The B<FVWM::Module::Gtk> package is a sub-class of B<FVWM::Module> that
+The B<FVWM::Module::Gtk2> package is a sub-class of B<FVWM::Module> that
 overloads the methods B<eventLoop>, B<showError> and B<showMessage>
-to manage GTK+ version 1 objects as well.
+to manage GTK+ version 2 objects as well.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
@@ -132,7 +132,7 @@ are covered here:
 
 From outward appearances, this methods operates just as the parent
 B<eventLoop> does. It is worth mentioning, however, that this version
-enters into the B<Gtk>->B<main> subroutine, ostensibly not to return.
+enters into the B<Gtk2>->B<main> subroutine, ostensibly not to return.
 
 =item B<showError> I<msg> [I<title>]
 
@@ -160,14 +160,12 @@ Mikhael Goikhman <migo@homemail.com>.
 
 =head1 THANKS TO
 
-Randy J. Ray <randy@byz.org>.
-
-Kenneth Albanowski, Paolo Molaro for Gtk/Perl extension.
+gtk2-perl.sf.net team for Gtk2-Perl extension.
 
 =head1 SEE ALSO
 
-For more information, see L<fvwm>, L<FVWM::Module> and L<Gtk>.
+For more information, see L<fvwm>, L<FVWM::Module> and L<Gtk2>.
 
-See also L<FVWM::Module::Gtk2> for use with GTK+ version 2.
+See also L<FVWM::Module::Gtk> for use with GTK+ version 1.
 
 =cut

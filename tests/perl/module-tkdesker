@@ -20,10 +20,10 @@
 use 5.003;
 use strict;
 use vars qw($TOP $desker %opts $current_desk $frame @buttons @desk_focus);
-use Tk;
 
 use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
+use Tk;
 
 my $TOP = new MainWindow;
 my $desker = new FVWM::Module::Tk($TOP,
@@ -72,8 +72,11 @@ sub ReadDeskerOptions ($$) {
 
 	my @args = $mod->argv;
 
-	die "Usage: $0 #start #end [ -name name_string ]\n"
-		if (@args < 2);
+	if (@args < 2) {
+		my $name = $mod->name;
+		$mod->showError("$name requires start and end params");
+		die "Usage: $0 #start #end [ -name name_string ]\n";
+	}
 
 	my $START = shift(@args);
 	my $END   = shift(@args);
@@ -130,7 +133,7 @@ sub makeButtons ($$) {
 				$mod->send("Desk 0 $pos");
 			});
 			$text = $labels[$pos] || "Desk $pos";
-			$button->configure('text' => "$text")
+			$button->configure(-text => "$text")
 				unless (exists $opts{NoLabels} and $opts{NoLabels} !~ /no/oi);
 
 			$button->pack(-side => 'top', -expand => 1, -fill => 'both');
@@ -176,18 +179,7 @@ sub unhilite ($) {
 sub currentDesk ($) {
 	my $mod = shift;
 
-	my ($len, $packet, $type, @args);
-	my $current = 0;
+	# not implemented
 
-#	my $old_mask = $mod->mask(M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
-#	$mod->send("Send_WindowList");
-#	while (1) {
-#		($len, $packet, $type) = $mod->readPacket;
-#		last if ($type & M_END_WINDOWLIST);
-#		last if ($len < 0);
-#
-#		@args = unpack($self->{packetTypes}->{$type}, $packet);
-#	if ($args[2] == $self->{
-
-	return $current;
+	return 0;
 }

@@ -50,13 +50,26 @@ sub internalDie ($$) {
 	die $self->name . ": $msg Exiting.\n";
 }
 
+sub showError ($$) {
+	my $self = shift;
+	my $msg = shift;
+	print STDERR $self->name . ": $msg\n";
+}
+
+sub showMessage ($$) {
+	my $self = shift;
+	my $msg = shift;
+	print STDERR "[" . $self->name . "]: $msg\n";
+}
+
 sub debug ($$;$) {
 	my $self = shift;
 	my $msg = shift;
-	my $level = shift || 0;
+	my $level = shift;
+	$level = 1 unless defined $level;
 	return if $self->{debug} < $level;
 	$msg =~ s/\n$//s;
-	print STDERR $self->name . ": $msg\n";
+	$self->showMessage($msg);
 }
 
 sub isEventExtended ($$) {
@@ -136,7 +149,6 @@ sub new ($@) {
 	$self->syncMask($syncMask);
 	$self->syncXMask($syncXMask) if $syncXMask;
 	$self->resetHandlers;
-	$self->readConfigInfo unless $params{'NoConfigInfo'};
 	return $self;
 }
 
@@ -489,12 +501,6 @@ sub addDefaultErrorHandler ($) {
 	});
 }
 
-sub readConfigInfo ($@) {
-	my $self = shift;
-
-	# not implemented yet
-}
-
 sub userDataDir ($) {
 	return $ENV{FVWM_USERDIR} || (($ENV{HOME} || "") . "/.fvwm");
 }
@@ -564,6 +570,8 @@ B<addHandler>,
 B<deleteHandler>,
 B<addDefaultErrorHandler>,
 B<debug>
+B<showError>
+B<showMessage>
 B<isDummy>
 
 The following methods are called from other methods above, but may be useful
@@ -582,7 +590,6 @@ B<getHandlerCategory>,
 B<readPacket>,
 B<invokeHandler>,
 B<processPacket>,
-B<readConfigInfo>
 
 These methods deal with a received packet (event):
 
@@ -612,8 +619,7 @@ The following parameters may be given in the constractor:
     SyncXMask     - the same for extended events
     EnableAlias   - a module accepts an alias in command line
     EnableOptions - a module accepts options in command line
-    Debug         - if set to 1, print sent and received data
-    NoConfigInfo  - don't read module configuration on startup
+    Debug         - 0 is disable debug, 1 - user, 2+ - perllib
 
 Example:
 
@@ -621,10 +627,13 @@ Example:
         Name => "FvwmPerlBasedWindowRearranger",
         Mask => M_CONFIGURE_WINDOW | M_END_WINDOWLIST,
         EnableOptions => { "animate" => \$a, "cascade" => \$c },
-        Debug => 1,
+        Debug => 2,
     );
 
 Event types needed for the 4 mask parameters are defined in B<FVWM::Constants>.
+
+Set I<Debug> to 2 to nicely dump all module sent and and received data,
+Setting it to 3 makes it even more verbose.
 
 =item B<version>
 
@@ -742,14 +751,30 @@ another default handler by overwriting this method.
 
 Prints I<msg> to the standard error stream if I<level> is greater or equal to
 the module debug level defined using I<Debug> in the constructor. The default
-I<level> for this method is 0, the default module level is 0 as well, so
-just calling this method with only one parameter normally results in printing
-the message. Subclasses may overwrite this method and, for example, show
-all debugging messages in a separate window.
+I<level> for this method is 1 that makes it possible to add user debugging
+output without specifying a level. The default module level is 0, so no
+debugging output of positive levels is shown.
 
-This method is automatically called (with I<level> 1) to dump all incoming
-and outgoing communication data in B<send> and B<processPacket>. Apparently
-this data is only seen if I<Debug> is set to something positive.
+This module uses B<debug> internally (with I<level> 2) to dump all
+incoming and outgoing communication data in B<send> and B<processPacket>.
+Apparently this output is only seen if I<Debug> is set to 2 or greater.
+
+=item B<showError> I<msg>
+
+Writes I<msg> to the error stream (stderr). It is supposed that the argument
+has no traling end of line. May be used to signal non fatal error.
+
+Subclasses may overwrite this method and, for example, show all error
+messages in separate windows or in the common error window.
+
+=item B<showMessage> I<msg>
+
+Unconditionally writes I<msg> to the debug stream (stderr). It is supposed
+that the argument has no traling end of line. Used in B<debug> to actually
+show the message when the level is matched.
+
+Subclasses may overwrite this method and, for example, show all debugging
+messages in separate windows or in the common message window.
 
 =item B<isDummy>
 
@@ -764,7 +789,7 @@ effort they may be emulated:
 =item B<internalDie> I<msg>
 
 This may be used to end the module with the corresponding I<msg>.
-For a clean module exit use B<debug> and B<terminate> instead.
+For a clean module exit use B<showError> and B<terminate> instead.
 
 =item B<name> [I<name>]
 

@@ -1,3 +1,19 @@
+2002-12-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	new API methods and other small changes
+
+	* FVWM/Module/Makefile.am:
+	* FVWM/Module/Toolkit.pm:
+	added new superclass of all widget attached module subclasses
+
+	* FVWM/Module/Gtk2.pm:
+	added support for a future Gtk2-Perl
+
+	* FVWM/Module/Gtk.pm:
+	* FVWM/Module/Tk.pm:
+	updated to the new Toolkit superclass, small API changes involved
+
 2002-11-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

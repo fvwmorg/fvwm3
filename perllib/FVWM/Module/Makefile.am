@@ -2,6 +2,6 @@
 
 configdir = @FVWM_PERLLIBDIR@/FVWM/Module
 
-config_DATA = Gtk.pm Tk.pm
+config_DATA = Toolkit.pm Gtk.pm Gtk2.pm Tk.pm
 
 EXTRA_DIST = $(config_DATA)
