@@ -2347,7 +2347,8 @@ void swallow(unsigned long *body)
 	XMapWindow(Dpy,b->IconWin);
 	MakeButton(b);
 
-	change_swallowed_window_colorset(b);
+	if (b->flags & b_Colorset)
+	  change_swallowed_window_colorset(b);
 	RedrawButton(b,1);
       }
       else /* (b->flags & b_Panel) */

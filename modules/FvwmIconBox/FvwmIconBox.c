@@ -62,6 +62,7 @@
 #endif /* SHAPE */
 
 #include "fvwm/fvwm.h"
+#include "libs/Colorset.h"
 #include "FvwmIconBox.h"
 
 
@@ -86,6 +87,9 @@ char *IconFore = "black";
 char *ActIconBack = "white";
 char *ActIconFore = "black";
 char *font_string = "fixed";
+int colorset = -1;
+int Iconcolorset = -1;
+int IconHicolorset = -1;
 
 /* same strings as in misc.c */
 char NoClass[] = "NoClass";
@@ -263,6 +267,7 @@ int main(int argc, char **argv)
       exit (1);
     }
   InitPictureCMap(dpy);
+  AllocColorset(0);
   x_fd = XConnectionNumber(dpy);
 
   fd_width = GetFdWidth();
@@ -277,9 +282,9 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(myErrorHandler);
 
-  ParseOptions();
-
   SetMessageMask(fd, m_mask);
+
+  ParseOptions();
 
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
     size->max_width  = size->min_width  = max_icon_width + icon_relief;
@@ -1029,18 +1034,30 @@ void CreateWindow(void)
     }
   else
     {
-      fore_pix = GetColor(Fore);
-      back_pix = GetColor(Back);
-      icon_back_pix = GetColor(IconBack);
-      icon_fore_pix = GetColor(IconFore);
-      icon_hilite_pix = GetHilite(icon_back_pix);
-      icon_shadow_pix = GetShadow(icon_back_pix);
-      act_icon_back_pix = GetColor(ActIconBack);
-      act_icon_fore_pix = GetColor(ActIconFore);
-      act_icon_hilite_pix = GetHilite(act_icon_back_pix);
-      act_icon_shadow_pix = GetShadow(act_icon_back_pix);
-      hilite_pix = GetHilite(back_pix);
-      shadow_pix = GetShadow(back_pix);
+      fore_pix = (colorset < 0) ? GetColor(Fore)
+			      : Colorset[colorset % nColorsets].fg;
+      back_pix = (colorset < 0) ? GetColor(Back)
+			      : Colorset[colorset % nColorsets].bg;
+      icon_back_pix = (Iconcolorset < 0) ? GetColor(IconBack)
+			      : Colorset[Iconcolorset % nColorsets].bg;
+      icon_fore_pix = (Iconcolorset < 0) ? GetColor(IconFore)
+			      : Colorset[Iconcolorset % nColorsets].fg;
+      icon_hilite_pix = (Iconcolorset < 0) ? GetHilite(icon_back_pix)
+			      : Colorset[Iconcolorset % nColorsets].hilite;
+      icon_shadow_pix = (Iconcolorset < 0) ? GetShadow(icon_back_pix)
+			      : Colorset[Iconcolorset % nColorsets].shadow;
+      act_icon_back_pix = (IconHicolorset < 0) ? GetColor(ActIconBack)
+			      : Colorset[IconHicolorset % nColorsets].bg;
+      act_icon_fore_pix = (IconHicolorset < 0) ? GetColor(ActIconFore)
+			      : Colorset[IconHicolorset % nColorsets].fg;
+      act_icon_hilite_pix = (IconHicolorset < 0) ? GetHilite(act_icon_back_pix)
+			      : Colorset[IconHicolorset % nColorsets].hilite;
+      act_icon_shadow_pix = (IconHicolorset < 0) ? GetShadow(act_icon_back_pix)
+			      : Colorset[IconHicolorset % nColorsets].shadow;
+      hilite_pix = (colorset < 0) ? GetHilite(back_pix)
+			      : Colorset[colorset % nColorsets].hilite;
+      shadow_pix = (colorset < 0) ? GetShadow(back_pix)
+			      : Colorset[colorset % nColorsets].shadow;
     }
 
   attributes.background_pixel = back_pix;
@@ -1103,7 +1120,12 @@ void CreateWindow(void)
 
 
   /* icon_win's background */
-  if (GetBackPixmap() == True){
+  if (colorset >= 0) {
+    SetWindowBackground(dpy, icon_win, icon_win_width, icon_win_height,
+                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC);
+    SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
+                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC);
+  } else if (GetBackPixmap() == True){
     XSetWindowBackgroundPixmap(dpy, icon_win, IconwinPixmap);
     /*  special thanks to Dave Goldberg <dsg@mitre.org>
 	for his helpful information */
@@ -1174,6 +1196,86 @@ void CreateWindow(void)
 			     mask, &attributes);
   XSelectInput(dpy,t_button,BUTTON_EVENTS);
   XSelectInput(dpy,b_button,BUTTON_EVENTS);
+  }
+}
+
+void change_colorset(int color) {
+  int x, y;
+  unsigned int bw, w, h, depth;
+  Window Junkroot;
+
+  if (color == colorset) {
+    XGetGeometry(dpy, main_win, &Junkroot,
+                 &x, &y, &w, &h, &bw, &depth);
+    fore_pix = (colorset < 0) ? GetColor(Fore)
+      : Colorset[colorset % nColorsets].fg;
+    back_pix = (colorset < 0) ? GetColor(Back)
+      : Colorset[colorset % nColorsets].bg;
+    hilite_pix = (colorset < 0) ? GetHilite(back_pix)
+      : Colorset[colorset % nColorsets].hilite;
+    shadow_pix = (colorset < 0) ? GetShadow(back_pix)
+      : Colorset[colorset % nColorsets].shadow;
+    SetWindowBackground(dpy, main_win, w, h,
+                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC);
+    SetWindowBackground(dpy, icon_win, icon_win_width, icon_win_height,
+                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC);
+    XSetWindowBackground(dpy, holder_win, back_pix);
+    XSetWindowBackground(dpy, h_scroll_bar, back_pix);
+    XSetWindowBackground(dpy, v_scroll_bar, back_pix);
+    XSetWindowBackground(dpy, l_button, back_pix);
+    XSetWindowBackground(dpy, r_button, back_pix);
+    XSetWindowBackground(dpy, t_button, back_pix);
+    XSetWindowBackground(dpy, b_button, back_pix);
+    XSetForeground(dpy, ReliefGC, hilite_pix);
+    XSetBackground(dpy, ReliefGC, back_pix);
+    XSetForeground(dpy, ShadowGC, shadow_pix);
+    XSetBackground(dpy, ShadowGC, back_pix);
+    XClearWindow(dpy, main_win);
+    XClearWindow(dpy, holder_win);
+    XClearWindow(dpy, icon_win);
+    XClearWindow(dpy, h_scroll_bar);
+    XClearWindow(dpy, v_scroll_bar);
+    XClearWindow(dpy, l_button);
+    XClearWindow(dpy, r_button);
+    XClearWindow(dpy, t_button);
+    XClearWindow(dpy, b_button);
+  }
+  if (color == Iconcolorset) {
+    struct icon_info *tmp;
+    icon_back_pix = (Iconcolorset < 0) ? GetColor(IconBack)
+      : Colorset[Iconcolorset % nColorsets].bg;
+    icon_fore_pix = (Iconcolorset < 0) ? GetColor(IconFore)
+      : Colorset[Iconcolorset % nColorsets].fg;
+    icon_hilite_pix = (Iconcolorset < 0) ? GetHilite(icon_back_pix)
+      : Colorset[Iconcolorset % nColorsets].hilite;
+    icon_shadow_pix = (Iconcolorset < 0) ? GetShadow(icon_back_pix)
+      : Colorset[Iconcolorset % nColorsets].shadow;
+    XSetForeground(dpy, IconReliefGC, icon_hilite_pix);
+    XSetBackground(dpy, IconReliefGC, icon_back_pix);
+    XSetForeground(dpy, IconShadowGC, icon_shadow_pix);
+    XSetBackground(dpy, IconShadowGC, icon_back_pix);
+    XSetForeground(dpy, NormalGC, icon_fore_pix);
+    XSetBackground(dpy, NormalGC, icon_back_pix);
+
+    tmp = Head;
+    while(tmp != NULL){
+      if (max_icon_height != 0 && (IS_ICON_OURS(tmp)))
+        XSetWindowBackground(dpy, tmp->icon_pixmap_w, icon_back_pix);
+      XSetWindowBackground(dpy, tmp->IconWin, icon_back_pix);
+      XClearArea(dpy, tmp->icon_pixmap_w, 0, 0, 0, 0, True);
+      XClearArea(dpy, tmp->IconWin, 0, 0, 0, 0, True);
+      tmp = tmp->next;
+    }
+  }
+  if (color == IconHicolorset) {
+    act_icon_back_pix = (IconHicolorset < 0) ? GetColor(ActIconBack)
+      : Colorset[IconHicolorset % nColorsets].bg;
+    act_icon_fore_pix = (IconHicolorset < 0) ? GetColor(ActIconFore)
+      : Colorset[IconHicolorset % nColorsets].fg;
+    act_icon_hilite_pix = (IconHicolorset < 0) ? GetHilite(act_icon_back_pix)
+      : Colorset[IconHicolorset % nColorsets].hilite;
+    act_icon_shadow_pix = (IconHicolorset < 0) ? GetShadow(act_icon_back_pix)
+      : Colorset[IconHicolorset % nColorsets].shadow;
   }
 }
 
@@ -1493,6 +1595,18 @@ void ParseOptions(void)
 	    max_icon_width += 4;
 	  }
 	}else if
+    (strncasecmp(tline, "Colorset", 8) == 0)
+    LoadColorset(&tline[8]);
+  else if
+	  (strncasecmp(tline,CatString3("*",MyName,"Colorset"),Clength+9)==0)
+	  colorset = atoi(&tline[Clength+9]);
+  else if
+	  (strncasecmp(tline,CatString3("*",MyName,"IconColorset"),Clength+13)==0)
+	  Iconcolorset = atoi(&tline[Clength+13]);
+  else if
+	  (strncasecmp(tline,CatString3("*",MyName,"IconHiColorset"),Clength+15)==0)
+	  IconHicolorset = atoi(&tline[Clength+15]);
+	else if
 	  (strncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0)
 	  CopyString(&font_string,&tline[Clength+5]);
 	else if
@@ -2086,6 +2200,18 @@ void process_message(unsigned long type, unsigned long *body)
     XMapWindow(dpy, icon_win);
     mapicons();
     ready = 1;
+    break;
+  case M_CONFIG_INFO:
+  {
+    char *tline, *token;
+    int color;
+    tline = (char*)&(body[3]);
+    token = PeekToken(tline, &tline);
+    if (StrEquals(token, "Colorset")) {
+      color = LoadColorset(tline);
+      change_colorset(color);
+    }
+  }
     break;
   default:
     break;
