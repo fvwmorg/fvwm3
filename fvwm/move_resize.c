@@ -755,6 +755,10 @@ static void InteractiveMove(
   }
   moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
 	   do_move_opaque);
+  if (!Scr.gs.do_hide_position_window)
+  {
+    XUnmapWindow(dpy,Scr.SizeWindow);
+  }
   if (Scr.bo.InstallRootCmap)
     UninstallRootColormap();
   else
@@ -1516,7 +1520,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int orig_icon_x = 0;
   int orig_icon_y = 0;
 
-  if(!GrabEm(CRS_MOVE, GRAB_NORMAL))
+  if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
   {
     XBell(dpy, 0);
     return False;

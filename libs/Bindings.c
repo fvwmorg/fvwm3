@@ -388,6 +388,7 @@ int AddBinding(
       {
 	unsigned int add_modifiers = 0;
 	unsigned int bind_mask = 1;
+	unsigned int check_bound_mask = 0;
 
 	switch (m)
 	{
@@ -400,6 +401,8 @@ int AddBinding(
 	  {
 	    add_modifiers = ShiftMask;
 	    bind_mask = 2;
+	    /* but don't bind it again if already bound without modifiers */
+	    check_bound_mask = 1;
 	  }
 	  break;
 	case 2:
@@ -407,7 +410,9 @@ int AddBinding(
 	  if (modifiers != AnyModifier && !(modifiers & LockMask))
 	  {
 	    add_modifiers = LockMask;
-	    bind_mask = 2;
+	    bind_mask = 4;
+	    /* but don't bind it again if already bound without modifiers */
+	    check_bound_mask = 1;
 	  }
 	  break;
 	default:
@@ -415,7 +420,7 @@ int AddBinding(
 	  * can't map that to specific modifiers - trat as no modifiers */
 	  break;
 	}
-	if (bind_mask & bound_mask)
+	if ((bind_mask & bound_mask) || (check_bound_mask & bound_mask))
 	{
 	  /* already bound, break out */
 	  break;
@@ -692,11 +697,15 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
     for (button = bmin; button <= bmax; button++)
     {
       if (fGrab)
+      {
 	XGrabButton(dpy, button, binding->Modifier, w,
 		    True, ButtonPressMask | ButtonReleaseMask,
 		    GrabModeSync, GrabModeAsync, None, cursor);
+      }
       else
+      {
 	XUngrabButton(dpy, button, binding->Modifier, w);
+      }
       if(binding->Modifier != AnyModifier && dead_modifiers != 0)
       {
 	register unsigned int mods;
@@ -767,6 +776,27 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
   }
   is_grabbing_everything = False;
   MyXUngrabServer(dpy);
+  return;
+}
+
+void GrabWindowKeyOrButton(
+  Display *dpy, Window w, Binding *binding, unsigned int contexts,
+  unsigned int dead_modifiers, Cursor cursor, Bool fGrab)
+{
+  switch (binding->type)
+  {
+  case MOUSE_BINDING:
+  STROKE_CODE(case STROKE_BINDING:)
+    GrabWindowButton(
+      dpy, w, binding, contexts, dead_modifiers, cursor, fGrab);
+    break;
+  case KEY_BINDING:
+    GrabWindowKey(dpy, w, binding, contexts, dead_modifiers, fGrab);
+    break;
+  default:
+    break;
+  }
+
   return;
 }
 

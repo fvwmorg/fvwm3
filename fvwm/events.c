@@ -1564,20 +1564,19 @@ void HandleButtonPress(void)
       if (do_regrab_buttons)
 	focus_grab_buttons(Tmp_win, (Tmp_win == get_focus_window()));
       XSync(dpy,0);
+      UngrabEm(GRAB_PASSIVE);
       /* Pass click event to just clicked to focus window? Do not swallow the
        * click if the window didn't accept the focus. */
       if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Tmp_win) ||
 	  get_focus_window() != Tmp_win)
       {
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
+	/*	return;*/
       }
       else /* don't pass click to just focused window */
       {
 	XAllowEvents(dpy,AsyncPointer,CurrentTime);
       }
-      XSync(dpy,0);
-      UngrabEm(GRAB_PASSIVE);
-      return;
     }
     if (!IS_ICONIFIED(Tmp_win))
     {

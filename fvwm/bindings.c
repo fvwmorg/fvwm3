@@ -320,15 +320,15 @@ static void activate_binding(
 {
   FvwmWindow *t;
 
-  if (binding == NULL || binding->type != KEY_BINDING)
+  if (binding == NULL)
     return;
   if (do_grab_root)
   {
     /* necessary for key bindings that work over unfocused windows */
-    GrabWindowKey(
+    GrabWindowKeyOrButton(
       dpy, Scr.Root, binding,
       C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT|C_ICON,
-      GetUnusedModifiers(), do_grab);
+      GetUnusedModifiers(), None, do_grab);
   }
   if (fFvwmInStartup == True)
     return;
@@ -338,18 +338,23 @@ static void activate_binding(
   {
     if (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
     {
-      GrabWindowKey(dpy, t->frame, binding,
-		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
-		    GetUnusedModifiers(), do_grab);
+      GrabWindowKeyOrButton(
+	dpy, t->frame, binding, C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+	GetUnusedModifiers(), None, do_grab);
     }
     if (binding->Context & C_ICON)
     {
       if(t->icon_w != None)
-        GrabWindowKey(dpy, t->icon_w, binding, C_ICON,
-                      GetUnusedModifiers(), do_grab);
+      {
+        GrabWindowKeyOrButton(
+	  dpy, t->icon_w, binding, C_ICON, GetUnusedModifiers(), None, do_grab);
+      }
       if(t->icon_pixmap_w != None)
-         GrabWindowKey(dpy, t->icon_pixmap_w, binding, C_ICON,
-                       GetUnusedModifiers(), do_grab);
+      {
+	GrabWindowKeyOrButton(
+	  dpy, t->icon_pixmap_w, binding, C_ICON, GetUnusedModifiers(),
+	  None, do_grab);
+      }
     }
   }
 

@@ -683,9 +683,8 @@ void ReadXServer (void)
   char *octet;
   KeySym ks;
   static unsigned char buf[10];         /* unsigned for international */
-  static int n;
   Bool find = False;
-  
+
   while (XEventsQueued(dpy, QueuedAfterReading))
   {
     XNextEvent(dpy, &event);
@@ -743,7 +742,7 @@ void ReadXServer (void)
 	  }
 	}
       }
-      if (isTab > 0) { 
+      if (isTab > 0) {
 	Bool loop = False;
 	if (!find)
 	  i = (isTab == 1)? -1:nbobj;

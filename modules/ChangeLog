@@ -1,11 +1,16 @@
+2001-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/FvwmScript.c (ReadXServer):
+	-Wall fix
+
 2001-10-14  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmScript/FvwmScript.1: Fixups.
 
-	* FvwmForm/FvwmForm.1: 
-	* FvwmForm/ReadXServer.c: 
-	* FvwmForm/FvwmForm-Form: 
-	* FvwmForm/FvwmForm.h: 
+	* FvwmForm/FvwmForm.1:
+	* FvwmForm/ReadXServer.c:
+	* FvwmForm/FvwmForm-Form:
+	* FvwmForm/FvwmForm.h:
 	* FvwmForm/FvwmForm.c: Allow for color control on the 3 pointers.
 
 2001-10-13  olicha  <olivier.chapuis@free.fr>
@@ -19,13 +24,13 @@
 	Did so that a FvwmScript script is fully controllable by using the
 	keyboard. Menu and PopupMenu ameliorations. Some code aeration.
 	New flag NoFocus.
-	
+
 2001-10-08  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/ParseCommand.c (ParseCommand): Fix extra spaces being
 	added to selection variable values.
 
-	* FvwmForm/FvwmForm.h: 
+	* FvwmForm/FvwmForm.h:
 	* FvwmForm/FvwmForm.c: New commands ActivateOnPress, ButtonInPointer,
 	ButtonPointer, InputPointer.
 

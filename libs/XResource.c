@@ -165,6 +165,8 @@ void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
 			   int num_opts, char *name, int *pargc, char **argv,
 			   Bool fNoDefaults)
 {
+  if (!name)
+    return;
   if (opts && num_opts > 0)
     XrmParseCommand(pdb, opts, num_opts, name, pargc, argv);
   if (!fNoDefaults)

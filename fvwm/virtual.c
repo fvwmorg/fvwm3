@@ -515,8 +515,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
       add_time = 0;
       return False;
     }
-    else if (XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-			     KeyPressMask | KeyReleaseMask, &e))
+    else if (XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask, &e))
     {
       XPutBackEvent(dpy, &e);
       is_timestamp_valid = False;

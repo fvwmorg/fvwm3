@@ -548,7 +548,7 @@ void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle)
 
 Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
 {
-  int client_argc;
+  int client_argc = 0;
   char **client_argv = NULL;
   XrmValue rm_value;
   int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
@@ -569,7 +569,8 @@ Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
 
-  if (XGetCommand (dpy, tmp_win->w, &client_argv, &client_argc))
+  if (XGetCommand(dpy, tmp_win->w, &client_argv, &client_argc) &&
+      client_argc > 0 && client_argv != NULL)
   {
     /* Get global X resources */
     MergeXResources(dpy, &db, False);
