@@ -231,9 +231,10 @@ void UngrabEm(int ungrab_context)
 ** type -> DBG == Debug, ERR == Error, INFO == Information, WARN == Warning
 ** id -> name of function, or other identifier
 */
-void fvwm_msg(int type,char *id,char *msg,...)
+static char *fvwm_msg_strings[] =
+{ "<<DEBUG>>", "", "", "<<WARING>>", "<<ERROR>>" };
+void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 {
-  char *typestr;
   va_list args;
 #ifdef FVWM_DEBUG_TIME
   clock_t time_val, time_taken;
@@ -245,27 +246,6 @@ void fvwm_msg(int type,char *id,char *msg,...)
   struct tm *t_ptr;
   static int counter = 0;
 #endif
-
-  switch(type)
-  {
-    case DBG:
-#if 0
-      if (!debugging)
-        return;
-#endif /* 0 */
-      typestr="<<DEBUG>>";
-      break;
-    case ERR:
-      typestr="<<ERROR>>";
-      break;
-    case WARN:
-      typestr="<<WARNING>>";
-      break;
-    case INFO:
-    default:
-      typestr="";
-      break;
-  }
 
 #ifdef FVWM_DEBUG_TIME
   time(&mytime);
@@ -291,7 +271,7 @@ void fvwm_msg(int type,char *id,char *msg,...)
 #ifdef FVWM_DEBUG_TIME
             buffer,
 #endif
-            typestr);
+	    fvwm_msg_strings[(int)type]);
   }
   else
   {
@@ -303,19 +283,27 @@ void fvwm_msg(int type,char *id,char *msg,...)
 #ifdef FVWM_DEBUG_TIME
             buffer,
 #endif
-            typestr);
+	    fvwm_msg_strings[(int)type]);
   }
 
-  va_start(args,msg);
-  vfprintf(stderr, msg, args);
-  va_end(args);
-
+  if (type == ECHO)
+  {
+    /* user echos must be printed as a literal string */
+    fprintf(stderr, "%s", msg);
+  }
+  else
+  {
+    va_start(args,msg);
+    vfprintf(stderr, msg, args);
+    va_end(args);
+  }
   fprintf(stderr,"\n");
+
   if (type == ERR)
   {
     /* I hate to use a fixed length but this will do for now */
     char tmp[2 * MAX_TOKEN_LENGTH];
-    sprintf(tmp,"[FVWM][%s]: %s ",id,typestr);
+    sprintf(tmp,"[FVWM][%s]: %s ",id, fvwm_msg_strings[(int)type]);
     va_start(args,msg);
     vsprintf(tmp+strlen(tmp), msg, args);
     va_end(args);

@@ -61,11 +61,15 @@ Bool IntersectsInterval(int x1, int width1, int x2, int width2);
 /*
 ** message levels for fvwm_msg:
 */
-#define DBG  -1
-#define INFO 0
-#define WARN 1
-#define ERR  2
-void fvwm_msg(int type,char *id,char *msg,...);
+typedef enum
+{
+  DBG = 0,
+  ECHO,
+  INFO,
+  WARN,
+  ERR
+} fvwm_msg_type;
+void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...);
 
 /* needed in misc.h */
 typedef enum {

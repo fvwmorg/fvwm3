@@ -803,7 +803,7 @@ void echo_func(F_CMD_ARGS)
     if (action[len-1]=='\n')
       action[len-1]='\0';
   }
-  fvwm_msg(INFO,"Echo",action);
+  fvwm_msg(ECHO,"Echo",action);
 }
 
 void SetColormapFocus(F_CMD_ARGS)
@@ -2635,30 +2635,31 @@ void Emulate(F_CMD_ARGS)
 {
   char *style;
 
-  GetNextToken(action, &style);
+  style = PeekToken(action, NULL);
   if (!style || StrEquals(style, "fvwm"))
-    {
-      Scr.gs.EmulateMWM = False;
-      Scr.gs.EmulateWIN = False;
-    }
+  {
+    Scr.gs.EmulateMWM = False;
+    Scr.gs.EmulateWIN = False;
+  }
   else if (StrEquals(style, "mwm"))
-    {
-      Scr.gs.EmulateMWM = True;
-      Scr.gs.EmulateWIN = False;
-    }
+  {
+    Scr.gs.EmulateMWM = True;
+    Scr.gs.EmulateWIN = False;
+  }
   else if (StrEquals(style, "win"))
-    {
-      Scr.gs.EmulateMWM = False;
-      Scr.gs.EmulateWIN = True;
-    }
+  {
+    Scr.gs.EmulateMWM = False;
+    Scr.gs.EmulateWIN = True;
+  }
   else
-    {
-      fvwm_msg(ERR, "Emulate", "Unknown style '%s'", style);
-    }
-  free(style);
+  {
+    fvwm_msg(ERR, "Emulate", "Unknown style '%s'", style);
+    return;
+  }
   Scr.flags.do_need_window_update = 1;
   Scr.flags.has_default_font_changed = 1;
   Scr.flags.has_default_color_changed = 1;
+
   return;
 }
 /*

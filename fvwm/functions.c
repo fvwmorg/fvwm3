@@ -72,6 +72,11 @@ extern char const * const Fvwm_VersionInfo;
 /* forward declarations */
 static void execute_complex_function(F_CMD_ARGS, Bool *desperate);
 
+static void dummy_func(F_CMD_ARGS)
+{
+  return;
+}
+
 /*
  * be sure to keep this list properly ordered for bsearch routine!
  *
@@ -226,7 +231,7 @@ static const func_type func_config[] =
   {"set_sync_mask",setSyncMaskFunc,  F_SET_SYNC_MASK,        FUNC_DONT_REPEAT},
   {"setanimation", set_animation,    F_SET_ANIMATION,	     0},
   {"setenv",       SetEnv,           F_SETENV,               0},
-  {PRE_SILENT,     NULL,             F_SILENT,               0},
+  {PRE_SILENT,     dummy_func,       F_SILENT,               0},
   {"snapattraction",SetSnapAttraction,F_SNAP_ATT,            0},
   {"snapgrid",     SetSnapGrid,      F_SNAP_GRID,            0},
   {"stick",        stick_function,   F_STICK,                FUNC_NEEDS_WINDOW},
@@ -957,11 +962,16 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
     function = expand(function, arguments, tmp_win, False);
   if (function)
   {
+#if 0
+    /* dv: with this piece of code it is impossible to have a complex function
+     * with embedded whitespace that begins with a builtin function name, e.g. a
+     * function "echo hello". */
     char *tmp = function;
 
     while (*tmp && !isspace(*tmp))
       tmp++;
     *tmp = 0;
+#endif
     bif = FindBuiltinFunction(function);
     must_free_function = True;
   }
@@ -973,7 +983,7 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
 
 #ifdef USEDECOR
   if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor &&
-      !(bif->flags & FUNC_DECOR))
+      (!bif || !(bif->flags & FUNC_DECOR)))
   {
     fvwm_msg(
       ERR, "ExecuteFunction",

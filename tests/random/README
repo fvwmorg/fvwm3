@@ -1,0 +1,15 @@
+To run this test you need zsh installed on your system (the script was written
+using zsh-3.0.6 but will most likely run with any other version).
+
+The script needs to find fvwm2 in the search path.  It then generates a list of
+strings from the executable using "strings".  With this list of strings it
+generates semi random config lines that are written to stdout.  It also throws
+in random whitespace, punctuation and quoting characters between the words.
+
+This output can be redirected into a file that can be used to run as the config
+file for fvwm2.  While the config file is processed you may have to press a
+mouse button repeatedly.
+
+This test is meant to find coredumps and to run in conjunction with a malloc
+debugger.
+

@@ -148,15 +148,18 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   int i,val,nargs = 0;
   int ret_pipe;
   char *cptr;
-  char *args[20];
+  char **args;
   char *arg1 = NULL;
   char arg2[20];
   char arg3[20];
   char arg5[20];
   char arg6[20];
+  char *token;
   extern char *ModulePath;
   extern char *fvwm_file;
   Window win;
+
+  args = (char **)safemalloc(7 * sizeof(char *));
 
   /* Olivier: Why ? */
   /*   if(eventp->type != KeyPress) */
@@ -251,24 +254,20 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     args[3]="none";
   args[4]=arg5;
   args[5]=arg6;
-  nargs = 6;
-  while((action != NULL)&&(nargs < 20)&&(args[nargs-1] != NULL))
+  for (nargs = 6; action = GetNextToken(action, &token), token; nargs++)
   {
-    args[nargs] = 0;
-    action = GetNextToken(action,&args[nargs]);
+    args = (char **)saferealloc((void *)args, (nargs + 2) * sizeof(char *));
+    args[nargs] = token;
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
-    if (pipeAlias[i] == NULL && args[nargs])
+    if (pipeAlias[i] == NULL)
     {
       const char *ptr = skipModuleAliasToken(args[nargs]);
       if (ptr && *ptr == '\0')
 	pipeAlias[i] = stripcpy(args[nargs]);
     }
 #endif
-    nargs++;
   }
-  if(args[nargs-1] == NULL)
-    nargs--;
-  args[nargs] = 0;
+  args[nargs] = NULL;
 
   /* Try vfork instead of fork. The man page says that vfork is better! */
   /* Also, had to change exit to _exit() */

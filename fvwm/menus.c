@@ -5657,9 +5657,9 @@ static void NewMenuStyle(F_CMD_ARGS)
   ST_IS_UPDATED(tmpms) = 1;
 
   /* Parse the options. */
-  while (action && *action)
+  while (!is_initialised || (action && *action))
   {
-    if (is_initialised == False)
+    if (!is_initialised)
     {
       /* some default configuration goes here for the new menu style */
       ST_MENU_COLORS(tmpms).back = GetColor("white");
