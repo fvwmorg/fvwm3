@@ -1,5 +1,13 @@
 2002-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.c (usage):
+	(main):
+	cleaned up usage and error messages
+	use short option names in usage message an man page synopsis
+	all options are case sensitive
+	do not mention the "-" style long options in the man page; instead use
+	the "--" style
+
 	* fvwm/add_window.c (setup_frame_window):
 	* fvwm/events.c (HandleMapNotify):
 	* fvwm/eventmask.h (XEVMASK_FRAMEW_RECAPTURE):

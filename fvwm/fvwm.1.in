@@ -80,33 +80,33 @@ fvwm \- @FVWMNAMELONG@ for X11
 .SH SYNOPSIS
 
 .B fvwm
-.RB [ \-blackout ]
-.RB [ \-clientId
-.IR       id ]
-.RB [ \-cmd
-.IR       config_command ]
+.RB [ \-c
+.IR       config-command ]
 .RB [ \-d
 .IR       displayname ]
-.RB [ \-debug ]
-.RB [ \-debug_stack_ring ]
 .RB [ \-f
-.IR       config_file ]
-.RB [ \-h ]
-.RB [ \-replace ]
-.RB [ \-restore
-.IR       state_file ]
+.IR       config-file ]
+.RB [ \-r ]
 .RB [ \-s ]
-.RB [ \-version ]
-.RB [ \-visual
-.IR       visual_class ]
-.RB [ \-visualId
-.IR       id ]
-.RB [ \-color\-limit
-.IR       cl ]
-.RB [ \-strict-color-limit ]
-.RB [ \-visual-palette ]
-.RB [ \-allocate-palette ]
-.RB [ \-static-palette ]
+.RB [ \-V ]
+.RB [ \-C
+.IR       visual-class
+.RB "| " \-I
+.IR       visual-id ]
+.RB [ \-l
+.IR       colors
+.RB [ \-L ]
+.RB [ \-A ]
+.RB [ \-S ]
+.RB [ \-N ]]
+.RB [ \-D ]
+.RB [ \-h ]
+.RB [ \-i
+.IR       client-id ]
+.RB [ \-F
+.IR       state-file ]
+.RB [ \-\-debug-stack-ring ]
+.RB [ \-blackout ]
 .SH DESCRIPTION
 
 Fvwm is a window manager for X11.  It is designed to minimize
@@ -170,23 +170,20 @@ decoration window won't deprive the terminal of focus.
 
 These are the command line options that are recognized by fvwm:
 .TP
-.BI "-blackout"
-This option is provided for backward compatibility only.  Blacking
-out the screen during startup is not necessary anymore.
-.TP
-.BI "-clientId " id
+.BR "-i" " | " "--clientid"
+.I id
 This option is used when fvwm is started by a session
 manager. Should not be used by a user.
-
 .TP
-.BI "-cmd " config_command
+.BR "-c" " | " "--cmd "
+.I config-command
 Causes fvwm to use
-.I config_command
+.I config-command
 instead of
 .RB "'" "Read"
 .IR ".fvwm2rc" "'"
 as its initialization command.  (Note that up to 10
-.BR \-f " and " \-cmd
+.BR \-f " and " \-c
 parameters can be given, and they are executed in the order
 specified.)
 
@@ -200,50 +197,46 @@ so fvwm will eventually get going.
 As an example,
 starting the pager this way hangs fvwm until the timeout, but this works:
 .EX
-  fvwm -cmd "AddToFunc StartFunction I Module FvwmPager"
+  fvwm -c "AddToFunc StartFunction I Module FvwmPager"
 .EE
-
 .TP
-.BI "-d " displayname
+.BR "-d" " | " "--display "
+.I displayname
 Manage the display called
 .I displayname
 instead of the name obtained from the environment variable
 .IR "$DISPLAY" .
 .TP
-.BI "-debug"
+.BR "-D" " | " "--debug"
 Puts X transactions in synchronous mode, which dramatically slows
 things down, but guarantees that fvwm's internal error messages
 are correct. Also causes fvwm to output debug messages while
 running.
 .TP
-.BI "-debug_stack_ring"
-Enables stack ring debugging.  This option is only intended for
-internal debugging and should only be used by developers.
-.TP
-.BI "-f " config_file
+.BI "-f " config-file
 Causes fvwm to read
-.I config_file
+.I config-file
 instead of
 .I .fvwm2rc
 as its initialization file.  This is equivalent to
-.RB "-cmd 'Read"
-.IR "config_file'."
-.
+.RB "-c 'Read"
+.IR "config-file'."
 .TP
-.BI "-h"
+.BR "-h" " | " "--help"
 A short usage description is printed.
 .TP
-.BI "-replace"
+.BR "-r" " | " "-replace"
 Try to take over from a previously running wm.  This does not work
 unless the other wm is
 .SM ICCCM
 2.0 compliant.
 .TP
-.BI "-restore " state_file
+.BR "-F" " | " "-restore "
+.I state-file
 This option is used when fvwm is started by a session manager.
 Should not be used by a user.
 .TP
-.BI "-s"
+.BR "-s" " | " "--single-screen"
 On a multi-screen display, run fvwm only on the screen named in
 the
 .I $DISPLAY
@@ -252,7 +245,7 @@ environment variable or provided through the
 option. Normally, fvwm attempts to start up on all screens of a
 multi-screen display.
 .TP
-.BI "-version"
+.BR "-V" " | " "--version"
 Prints the version of fvwm to
 .IR stderr .
 Also prints an information about the compiled in support for
@@ -260,23 +253,26 @@ readline, rplay, stroke, xpm, png, gnome hints, EWMH hints,
 session management, bidirectional text, multibyte characters,
 xinerama and Xft aa font rendering.
 .TP
-.BI "-visual " visual_class
+.BR "-C" " | " "--visual "
+.I visual-class
 Causes fvwm to use
-.I visual_class
+.I visual-class
 for the window borders and menus.
-.I visual_class
+.I visual-class
 can be "StaticGray", "GrayScale", "StaticColor", "PseudoColor",
 "TrueColor" or "DirectColor".
 .TP
-.BI "-visualId " id
+.BR "-I" " | " "-visualid "
+.I id
 Causes fvwm to use
 .I id
-as the visualId for the window borders and menus.
+as the visual id for the window borders and menus.
 .I id
 can be specified as N for decimal or 0xN for hexadecimal. See man
 page of xdpyinfo for a list of supported visuals.
 .TP
-.BI "-color-limit " limit
+.BR "-l" " | " "--color-limit "
+.I limit
 Specifies a
 .I limit
 on the colors used in image, gradient and possibly simple colors
@@ -287,13 +283,13 @@ colors. This option is only useful with screens that display 256
 colors (or less) with a dynamic visual (PseudoColor, GrayScale or
 DirectColor). The default depends on your X server and how you run
 fvwm. In most case this default is reasonable. The
-.B -color-limit
+.B "-l"
 option should be used only if you encounter problems with colors.  By
 default, fvwm tries to detect "large" pre-allocated palettes. If such a
 palette is detected fvwm uses it and a priori the
-.B -color-limit
+.B "-l"
 must not be used. Moreover, in this case the
-.BR "-allocate-palette " and " -static-palette"
+.BR "-A" " and " "-S"
 options are forced. Note that XFree-4.2 pre-allocate 244 colors (if
 you use a driver with Render support) leaving only a few free
 colors. This may leads to some colors problems (and nothing can be
@@ -312,7 +308,7 @@ where "I cc" means a "IxIxI color cube"
 .EE
 These defaults may change before version 2.6. Note that if you use a
 private color map (i.e., fvwm is started with the
-.BR "-visual " or " " the " -visualID"
+.BR "-C" " or the " "-I"
 options), then others defaults are used.
 
 Now what to do if you encounter problems with colors? The first thing
@@ -321,7 +317,7 @@ to do is to check if you really cannot run your X server with depth
 hardware can support two different depths on the same screen
 (typically depth 8 and depth 24). If depth 8 is the default, you can
 force fvwm to use the best depth by using the
-.B -visual
+.B C
 option with
 .I TrueColor
 as argument.  So now we assume that you are forced to run in depth 8
@@ -339,7 +335,7 @@ applications are concerned). The first is to run the applications
 which waste your (default) color map with a private color map. For
 example, run netscape with the -install option, run KDE/QT
 applications with the --cmap option, use the
-.B -visual
+.B "-C"
 option for fvwm. The disadvantage of this method is that it is
 visually disturbing (see the
 .B ColormapFocus
@@ -349,7 +345,7 @@ Again, some applications have options to specify a given color limit.
 With fvwm you may try various values, 61 (a special "visual" palette),
 56 (a 4x4x3 color cubes plus 6 grey), 29 (a 3x3x3 color cube plus 2
 grey), 10 or 9. Also, you may use the
-.B -strict-color-limit
+.B "-L"
 option.  However, limiting the number of colors is not the definitive
 solution. The definitive solution is to try cause applications
 which use a lot of colors use the same colors. This is a
@@ -362,7 +358,7 @@ as arguments to colors options.
 fvwm can use any color cube of the form RxGxB with 2 <= R <= 6, R = G,
 R-1 =< B <= R and B >= 2. To get an RxGxB color cube give an argument
 to
-.B -color-limit
+.B "-l"
 an integer c >= R*G*B and < (R+1)*(G+1)*B if B=R and < R*G*(B+1)
 if B < R (and different from 61). If c > R*G*B, then some grey may be added
 to the color cube.
@@ -372,38 +368,47 @@ command to get information on your fvwm colors setting. In particular,
 this command prints the palette used by fvwm in rgb format (the last integer
 gives the number of times fvwm has allocated the colors).
 .TP
-.B -strict-color-limit
+.BR "-L" " | " "--strict-color-limit"
 If the screens display 256 colors (or less) and has a dynamic visual,
 causes fvwm to use its palette for all the colors. By default, the
 palette is used only for images and gradients.
 .TP
-.B -visual-palette
-If the screen displays 256 colors (or less) and has a dynamic visual,
-this option causes fvwm to use a palette designed for limiting the "visual" color distance
-between the points of the palette. Moreover, for better color sharing,
-if possible colors with a name in the X rgb data base are used
-for defining the colors (with the hope that applications and images will
-prefer to use named colors). If the
-.B -color-limit
-option is not used this palette has 61 colors. This palette is also
-automatically selected if  61 or 9 is used as argument to the
-.B -color-limit
+.BR "-N" " | " "--named-palette"
+If the screen displays 256 colors (or less) and has a dynamic
+visual, this option causes fvwm to use a palette designed for
+limiting the "visual" color distance between the points of the
+palette. Moreover, for better color sharing, if possible colors
+with a name in the X rgb data base are used for defining the
+colors (with the hope that applications and images will prefer to
+use named colors). If the
+.B "-l"
+option is not used this palette has 61 colors. This palette is
+also automatically selected if  61 or 9 is used as argument to the
+.B "-l"
 option.
 .TP
-.B -allocate-palette
-If the screen displays 256 colors (or less) and has a dynamic visual
-this option causes fvwm to allocate all the colors of its palette at start up
-for reserving these colors for future use. This option forces the
-.B -static-palette
-option. By default, fvwm allocates (reserves) a color in its palette only
-if it needs this color.
+.BR "-A" " | " "--allocate-palette"
+If the screen displays 256 colors (or less) and has a dynamic
+visual this option causes fvwm to allocate all the colors of its
+palette at start up for reserving these colors for future
+use. This option forces the .B -static-palette option. By default,
+fvwm allocates (reserves) a color in its palette only if it needs
+this color.
 .TP
-.B -static-palette
-If the screen displays 256 colors (or less) and has a dynamic visual
-this option causes fvwm to never free the colors in its palette. By default, when fvwm does
-not need a color any more it frees this color so that a new color
-can be used. This option may speed up image loading and save a few
-bits of memory.
+.BR "-S" " | " "--static-palette"
+If the screen displays 256 colors (or less) and has a dynamic
+visual this option causes fvwm to never free the colors in its
+palette. By default, when fvwm does not need a color any more it
+frees this color so that a new color can be used. This option may
+speed up image loading and save a few bits of memory.
+.TP
+.BI "-blackout"
+This option is provided for backward compatibility only.  Blacking
+out the screen during startup is not necessary anymore.
+.TP
+.BI "--debug-stack-ring"
+Enables stack ring debugging.  This option is only intended for
+internal debugging and should only be used by developers.
 
 .SH ANATOMY OF A WINDOW
 

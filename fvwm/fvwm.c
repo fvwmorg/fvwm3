@@ -590,7 +590,7 @@ void Done(int restart, char *command)
 					"Restart command parsing error in"
 					" (%s): [%s]", command, errorMsg);
 			}
-			else if (StrEquals(my_argv[0], "--pass-args"))
+			else if (strcmp(my_argv[0], "--pass-args") == 0)
 			{
 				if (n != 2)
 				{
@@ -1224,29 +1224,50 @@ static void InitVariables(void)
 	return;
 }
 
-static void usage(void)
+static void usage(int is_verbose)
 {
-	fprintf(stderr, "\nfvwm %s Usage:\n\n", VERSION);
-	fprintf(stderr, "  %s"
-		" [-d dpy]"
-		" [--debug]"
-		" [-f config_file]"
-		" [-cmd config_cmd]"
+	fprintf(stderr, "%s (%s): usage: %s", PACKAGE, VERSION, g_argv[0]);
+	fprintf(stderr,
+		" [-d display]"
+		" [-D]"
+		" [-f cfgfile]"
+		" [-c cmd]"
 		" [-s]"
-		" [--version]"
-		" [-h]"
-		" [--replace]"
-		" [--clientId id]"
-		" [--restore file]"
-		" [--visualId id]"
-		" [--visual class]"
-		" [--color-limit num]"
-		" [--strict-color-limit]"
-		" [--allocate-palette]"
-		" [--static-palette]"
-		" [--named-palette]"
-		"\n\n",g_argv[0]);
-	exit(1);
+		" [-V]"
+		" [-h | -?]"
+		" [-r]"
+		" [-i client-id]"
+		" [-F sm_file]"
+		" [-I vis-id | -C vis-class]"
+		" [-l colors"
+		" [-L]"
+		" [-A]"
+		" [-S]"
+		" [-N]]"
+		"\n");
+	if (!is_verbose)
+	{
+		return;
+	}
+	fprintf(stderr,
+		" -d display:   run fvwm on <display>\n"
+		" -D:           enable debug oputput\n"
+		" -f cfgfile:   read configuration from <cfgfile>\n"
+		" -c cmd:       preprocess configuration file with <cmd>\n"
+		" -s:           manage a single screen\n"
+		" -V:           print version info\n"
+		" -h, -?:       print this help message\n"
+		" -r:           replace running window manager\n"
+		" -i client-id: used internally for session management\n"
+		" -F file:      used internally for session management\n"
+		" -I vis-id:    use visual <vis-id>\n"
+		" -C vis-class: use visual class <vis-class>\n"
+		" -l colors:    try to use no more than <colors> colors\n"
+		" -L:           strict color limit\n"
+		" -A:           allocate palette\n"
+		" -S:           static palette\n"
+		" -N:           named palette\n"
+		);
 }
 
 static void setVersionInfo(void)
@@ -1630,7 +1651,6 @@ int main(int argc, char **argv)
 	char message[255];
 	Bool do_force_single_screen = False;
 	Bool replace_wm = False;
-	Bool option_error = False;
 	int visualClass = -1;
 	int visualId = -1;
 	PictureColorLimitOption colorLimitop = {-1, -1, -1, -1, -1};
@@ -1696,51 +1716,64 @@ int main(int argc, char **argv)
 
 	for (i = 1; i < argc; i++)
 	{
-		if (StrEquals(argv[i], "-debug_stack_ring") ||
-		    StrEquals(argv[i], "--debug_stack_ring"))
+		if (strcmp(argv[i], "-debug_stack_ring") == 0 ||
+		    strcmp(argv[i], "--debug-stack-ring") == 0)
 		{
 			debugging_stack_ring = True;
 		}
-		else if (StrEquals(argv[i], "-debug") ||
-			 StrEquals(argv[i], "--debug"))
+		else if (strcmp(argv[i], "-D") == 0 ||
+			 strcmp(argv[i], "-debug") == 0 ||
+			 strcmp(argv[i], "--debug") == 0)
 		{
 			debugging = True;
 		}
-		else if (StrEquals(argv[i], "-clientId") ||
-			 StrEquals(argv[i], "--clientId"))
+		else if (strcmp(argv[i], "-i") == 0 ||
+			 strcmp(argv[i], "-clientid") == 0 ||
+			 strcmp(argv[i], "--clientid") == 0 ||
+			 strcmp(argv[i], "-clientId") == 0 ||
+			 strcmp(argv[i], "--clientId") == 0)
 		{
 			if (++i >= argc)
 			{
-				usage();
+				usage(0);
+				exit(1);
 			}
 			SetClientID(argv[i]);
 		}
-		else if (StrEquals(argv[i], "-restore") ||
-			 StrEquals(argv[i], "--restore"))
+		else if (strcmp(argv[i], "-F") == 0 ||
+			 strcmp(argv[i], "-restore") == 0 ||
+			 strcmp(argv[i], "--restore") == 0)
 		{
 			if (++i >= argc)
 			{
-				usage();
+				usage(0);
+				exit(1);
 			}
 			state_filename = argv[i];
 		}
-		else if (StrEquals(argv[i], "-s"))
+		else if (strcmp(argv[i], "-s") == 0 ||
+			 strcmp(argv[i], "-single-screen") == 0 ||
+			 strcmp(argv[i], "--single-screen") == 0)
 		{
 			do_force_single_screen = True;
 		}
-		else if (StrEquals(argv[i], "-d"))
+		else if (strcmp(argv[i], "-d") == 0 ||
+			 strcmp(argv[i], "-display") == 0 ||
+			 strcmp(argv[i], "--display") == 0)
 		{
 			if (++i >= argc)
 			{
-				usage();
+				usage(0);
+				exit(1);
 			}
 			display_name = argv[i];
 		}
-		else if (StrEquals(argv[i], "-f"))
+		else if (strcmp(argv[i], "-f") == 0)
 		{
 			if (++i >= argc)
 			{
-				usage();
+				usage(0);
+				exit(1);
 			}
 			if (num_config_commands < MAX_CFG_CMDS)
 			{
@@ -1760,11 +1793,15 @@ int main(int argc, char **argv)
 					MAX_CFG_CMDS);
 			}
 		}
-		else if (StrEquals(argv[i], "-cmd") ||
-			 StrEquals(argv[i], "--cmd"))
+		else if (strcmp(argv[i], "-c") == 0 ||
+			 strcmp(argv[i], "-cmd") == 0 ||
+			 strcmp(argv[i], "--cmd") == 0)
 		{
 			if (++i >= argc)
-				usage();
+			{
+				usage(0);
+				exit(1);
+			}
 			if (num_config_commands < MAX_CFG_CMDS)
 			{
 				config_commands[num_config_commands] =
@@ -1779,12 +1816,14 @@ int main(int argc, char **argv)
 					MAX_CFG_CMDS);
 			}
 		}
-		else if (StrEquals(argv[i], "-h"))
+		else if (strcmp(argv[i], "-h") == 0 ||
+			 strcmp(argv[i], "-?") == 0 ||
+			 strcmp(argv[i], "--help") == 0)
 		{
-			usage();
+			usage(1);
 			exit(0);
 		}
-		else if (StrEquals(argv[i], "-blackout"))
+		else if (strcmp(argv[i], "-blackout") == 0)
 		{
 			/* obsolete option */
 			fvwm_msg(
@@ -1792,35 +1831,43 @@ int main(int argc, char **argv)
 				"The -blackout option is obsolete, it may be "
 				"removed in the future.");
 		}
-		else if (StrEquals(argv[i], "-replace") ||
-			 StrEquals(argv[i], "--replace"))
+		else if (strcmp(argv[i], "-r") == 0 ||
+			 strcmp(argv[i], "-replace") == 0 ||
+			 strcmp(argv[i], "--replace") == 0)
 		{
 			replace_wm = True;
 		}
 		/* check for visualId before visual to remove ambiguity */
-		else if (StrEquals(argv[i], "-visualId") ||
-			 StrEquals(argv[i], "--visualId"))
+		else if (strcmp(argv[i], "-I") == 0 ||
+			 strcmp(argv[i], "-visualid") == 0 ||
+			 strcmp(argv[i], "--visualid") == 0 ||
+			 strcmp(argv[i], "-visualId") == 0 ||
+			 strcmp(argv[i], "--visualId") == 0)
 		{
 			visualClass = -1;
 			if (++i >= argc)
 			{
-				usage();
+				usage(0);
+				exit(1);
 			}
 			if (sscanf(argv[i], "0x%x", &visualId) == 0)
 			{
 				if (sscanf(argv[i], "%d", &visualId) == 0)
 				{
-					usage();
+					usage(0);
+					exit(1);
 				}
 			}
 		}
-		else if (StrEquals(argv[i], "-visual") ||
-			 StrEquals(argv[i], "--visual"))
+		else if (strcmp(argv[i], "-C") == 0 ||
+			 strcmp(argv[i], "-visual") == 0 ||
+			 strcmp(argv[i], "--visual") == 0)
 		{
 			visualId = None;
 			if (++i >= argc)
 			{
-				usage();
+				usage(0);
+				exit(1);
 			}
 			if (strncasecmp(argv[i], "staticg", 7) == 0)
 			{
@@ -1848,40 +1895,48 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				usage();
+				usage(0);
+				exit(1);
 			}
 		}
-		else if (StrEquals(argv[i], "-color-limit") ||
-			 StrEquals(argv[i], "--color-limit"))
+		else if (strcmp(argv[i], "-l") == 0 ||
+			 strcmp(argv[i], "-color-limit") == 0 ||
+			 strcmp(argv[i], "--color-limit") == 0)
 		{
 			if (++i >= argc)
 			{
-				usage();
+				usage(0);
+				exit(1);
 			}
 			colorLimitop.color_limit = atoi(argv[i]);
 		}
-		else if (StrEquals(argv[i], "-strict-color-limit") ||
-			 StrEquals(argv[i], "--strict-color-limit"))
+		else if (strcmp(argv[i], "-L") == 0 ||
+			 strcmp(argv[i], "-strict-color-limit") == 0 ||
+			 strcmp(argv[i], "--strict-color-limit") == 0)
 		{
 			colorLimitop.strict = True;
 		}
-		else if (StrEquals(argv[i], "-allocate-palette") ||
-			 StrEquals(argv[i], "--allocate-palette"))
+		else if (strcmp(argv[i], "-A") == 0 ||
+			 strcmp(argv[i], "-allocate-palette") == 0 ||
+			 strcmp(argv[i], "--allocate-palette") == 0)
 		{
 			colorLimitop.allocate = True;
 		}
-		else if (StrEquals(argv[i], "-static-palette") ||
-			 StrEquals(argv[i], "--static-palette"))
+		else if (strcmp(argv[i], "-S") == 0 ||
+			 strcmp(argv[i], "-static-palette") == 0 ||
+			 strcmp(argv[i], "--static-palette") == 0)
 		{
 			colorLimitop.not_dynamic = True;
 		}
-		else if (StrEquals(argv[i], "-named-palette") ||
-			 StrEquals(argv[i], "--named-palette"))
+		else if (strcmp(argv[i], "-N") == 0 ||
+			 strcmp(argv[i], "-named-palette") == 0 ||
+			 strcmp(argv[i], "--named-palette") == 0)
 		{
 			colorLimitop.use_named_table = True;
 		}
-		else if (StrEquals(argv[i], "-version") ||
-			 StrEquals(argv[i], "--version"))
+		else if (strcmp(argv[i], "-V") == 0 ||
+			 strcmp(argv[i], "-version") == 0 ||
+			 strcmp(argv[i], "--version") == 0)
 		{
 			printf("%s\n%s\n\n%s\n", Fvwm_VersionInfo,
 			       Fvwm_SupportInfo, Fvwm_LicenseInfo);
@@ -1889,17 +1944,13 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			fvwm_msg(ERR, "main", "Unknown option: `%s'", argv[i]);
-			option_error = TRUE;
+			usage(0);
+			fprintf(stderr, "unknown option '%s'\n", argv[i]);
+			exit(1);
 		}
 	}
 
 	DBUG("main", "Done parsing args");
-
-	if (option_error)
-	{
-		usage();
-	}
 
 	DBUG("main", "Installing signal handlers");
 	InstallSignals();
