@@ -1003,6 +1003,70 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 	return;
 }
 
+static
+int update_decorface_colorset(DecorFace *df, int cset)
+{
+	DecorFace *tdf;
+	int has_changed = 0;
+
+	for(tdf = df; tdf != NULL; tdf = tdf->next)
+	{
+		if (DFS_FACE_TYPE(tdf->style) == ColorsetButton &&
+		    tdf->u.acs.cs == cset)
+		{
+			tdf->flags.has_changed = 1;
+			has_changed = 1;
+		}
+	}
+	
+	return has_changed;
+}
+
+static
+int update_titlebutton_colorset(TitleButton *tb, int cset)
+{
+	int i;
+	int has_changed = 0;
+
+	for(i = 0; i < BS_MaxButtonState; i++)
+	{
+		tb->state[i].flags.has_changed =
+			update_decorface_colorset(&(tb->state[i]), cset);
+		has_changed |= tb->state[i].flags.has_changed;
+	}
+	return has_changed;
+}
+
+static
+void update_decors_colorset(int cset)
+{
+	int i;
+	int has_changed;
+	FvwmDecor *decor = &Scr.DefaultDecor;
+
+#ifdef USEDECOR
+	for(decor = &Scr.DefaultDecor; decor != NULL; decor = decor->next)
+#endif
+	{
+		has_changed = 0;
+		for(i = 0; i < NUMBER_OF_BUTTONS; i++)
+		{
+			decor->flags.has_changed |= update_titlebutton_colorset(
+				&(decor->buttons[i]), cset);
+		}
+		decor->flags.has_changed |= update_titlebutton_colorset(
+			&(decor->titlebar), cset);
+		decor->flags.has_changed |= update_decorface_colorset(
+			&(decor->BorderStyle.active), cset);
+		decor->flags.has_changed |= update_decorface_colorset(
+			&(decor->BorderStyle.inactive), cset);
+		if (decor->flags.has_changed)
+		{
+			Scr.flags.do_need_window_update = 1;
+		}
+	}
+}
+
 static Bool __parse_vector_line_one_coord(
 	char **ret_action, int *pcoord, int *poff, char *action)
 {
@@ -1619,6 +1683,31 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			/* pixmap read in when the window is created */
 			df->u.p = NULL;
 		}
+		else if (strncasecmp (style, "Colorset", 12) == 0)
+		{
+			int val[2];
+			int n;
+
+			n = GetIntegerArguments(s, NULL, val, 2);
+			if (n == 0)
+			{
+			}
+			memset(&df->style, 0, sizeof(df->style));
+			if (n > 0 && val[0] >= 0)
+			{
+				
+				df->u.acs.cs = val[0];
+				alloc_colorset(val[0]);
+				DFS_FACE_TYPE(df->style) = ColorsetButton;
+			}
+			df->u.acs.alpha_percent = 100;
+			if (n > 1)
+			{
+				df->u.acs.alpha_percent =
+					max(0, min(100,val[1]));
+			}
+			s = SkipNTokens(s, n);
+		}
 		else
 		{
 			if (verbose)
@@ -1903,6 +1992,7 @@ void update_fvwm_colorset(int cset)
 	}
 	UpdateMenuColorset(cset);
 	update_style_colorset(cset);
+	update_decors_colorset(cset);
 
 	return;
 }

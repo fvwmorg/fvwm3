@@ -84,5 +84,6 @@ void border_undraw_decorations(
 	FvwmWindow *fw);
 void border_redraw_decorations(
 	FvwmWindow *fw);
-
+unsigned int border_get_transparent_decorations_part(
+	FvwmWindow *fw);
 #endif /* _BORDERS_H */

@@ -121,7 +121,27 @@ extern colorset_t *Colorset;
 #define CSET_IS_TRANSPARENT_PR_TINT(cset) \
     (cset >= 0 && Colorset[cset].pixmap == ParentRelative && \
      Colorset[cset].tint_percent > 0)
-
+#define CSET_HAS_PIXMAP(cset) \
+    (cset >= 0 && Colorset[cset].pixmap)
+#define CSET_HAS_PIXMAP_TILED(cset) \
+    (CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_TILED))
+#define CSET_HAS_PIXMAP_STRETCH_X(cset) \
+    (CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_STRETCH_X))
+#define CSET_HAS_PIXMAP_STRETCH_Y(cset) \
+    (CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_STRETCH_Y))
+#define CSET_HAS_PIXMAP_STRETCH(cset) \
+    (CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_STRETCH))
+#define CSET_HAS_PIXMAP_STRETCH_ASPECT(cset) \
+    (CSET_HAS_PIXMAP(cset) && \
+     (Colorset[cset].pixmap_type & PIXMAP_STRETCH_ASPECT))
+#define CSET_PIXMAP_IS_XY_STRETCHED(cset) \
+    (CSET_HAS_PIXMAP_STRETCH(cset) || CSET_HAS_PIXMAP_STRETCH_ASPECT(cset))
+#define CSET_PIXMAP_IS_X_STRETCHED(cset) \
+    (CSET_PIXMAP_IS_XY_STRETCHED(cset) || CSET_HAS_PIXMAP_STRETCH_X(cset))
+#define CSET_PIXMAP_IS_Y_STRETCHED(cset) \
+    (CSET_PIXMAP_IS_XY_STRETCHED(cset) || CSET_HAS_PIXMAP_STRETCH_Y(cset))
+#define CSET_PIXMAP_IS_TILED(cset) \
+    (CSET_HAS_PIXMAP_TILED(cset))
 
 /* some macro for transparency */
 #define CSETS_IS_TRANSPARENT(cset) \
@@ -171,6 +191,8 @@ void SetWindowBackground(
 	Display *dpy, Window win, int width, int height,
 	colorset_t *colorset, unsigned int depth, GC gc,
 	Bool clear_area);
+void GetWindowBackgroundPixmapSize(
+	colorset_t *cs_t, int width, int height, int *w, int *h);
 Bool UpdateBackgroundTransparency(
 	Display *dpy, Window win, int width, int height,
 	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area);

@@ -305,6 +305,30 @@ void SetWindowBackground(
 	return;
 }
 
+void GetWindowBackgroundPixmapSize(
+	colorset_t *cs_t, int width, int height, int *w, int *h)
+{
+	if (cs_t->pixmap == None)
+	{
+		*w = *h = 1;
+	}
+	else
+	{
+		*w = cs_t->width;
+		*h = cs_t->height;
+		if (cs_t->pixmap_type == PIXMAP_STRETCH_ASPECT ||
+		    cs_t->pixmap_type == PIXMAP_STRETCH_X)
+		{
+			*w = width;
+		}
+		if (cs_t->pixmap_type == PIXMAP_STRETCH_ASPECT ||
+		    cs_t->pixmap_type == PIXMAP_STRETCH_Y)
+		{
+			*h = height;
+		}
+	}
+}
+
 /* create a pixmap suitable for plonking on the background of a window */
 Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 			      colorset_t *colorset, unsigned int depth,

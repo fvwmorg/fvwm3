@@ -1048,6 +1048,7 @@ static void AnimatedMoveAnyWindow(
 	int deltaX, deltaY;
 	Bool first = True;
 	XEvent evdummy;
+	unsigned int draw_parts = PART_NONE;
 
 	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
 	{
@@ -1093,6 +1094,11 @@ static void AnimatedMoveAnyWindow(
 		return;
 	}
 
+	if (fw && w == FW_W_FRAME(fw))
+	{
+		draw_parts = border_get_transparent_decorations_part(fw);
+	}
+
 	/* Needed for aborting */
 	MyXGrabKeyboard(dpy);
 	do
@@ -1110,6 +1116,14 @@ static void AnimatedMoveAnyWindow(
 			repaint_transparent_menu(
 				pmrtp, first,
 				currentX, currentY, endX, endY);
+		}
+		else if (draw_parts != PART_NONE)
+		{
+			border_draw_decorations(
+				fw, draw_parts,
+				((fw == get_focus_window())) ?
+				True : False,
+				True, CLEAR_ALL, NULL, NULL);
 		}
 		if (fWarpPointerToo == True)
 		{
@@ -1322,15 +1336,17 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		return;
 	}
 
+	
+	if (mode == MOVE_PAGE && IS_STICKY_ON_PAGE(fw))
+	{
+		return;
+	}
+
 	if (mode == MOVE_PAGE)
 	{
 		rectangle r;
 		rectangle s;
 
-		if (IS_STICKY_ON_PAGE(fw))
-		{
-			return;
-		}
 		do_animate = False;
 		if (!get_page_arguments(action, &page_x, &page_y))
 		{
@@ -1385,7 +1401,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		n = GetMoveArguments(
 			&action, width, height, &FinalX, &FinalY, &fWarp,
 			&fPointer);
-
+		
 		if (n != 2 || fPointer)
 		{
 			InteractiveMove(&w, exc, &FinalX, &FinalY, fPointer);
@@ -1885,6 +1901,7 @@ Bool __move_loop(
 	 * released */
 	Bool nosnap_enabled = False;
 	FvwmWindow *fw = exc->w.fw;
+	unsigned int draw_parts = PART_NONE;
 
 	if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
 	{
@@ -1956,6 +1973,10 @@ Bool __move_loop(
 		draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
 	}
 
+	if (move_w == FW_W_FRAME(fw) && do_move_opaque)
+	{
+		draw_parts = border_get_transparent_decorations_part(fw);
+	}
 	DisplayPosition(fw, exc->x.elast, xl, yt, True);
 
 	while (!finished && bad_window != FW_W(fw))
@@ -2338,6 +2359,14 @@ Bool __move_loop(
 			{
 				/* only do this with opaque moves, (i.e. the
 				 * server is not grabbed) */
+				if (draw_parts != PART_NONE)
+				{
+					border_draw_decorations(
+						fw, draw_parts,
+						((fw == get_focus_window())) ?
+						True : False,
+						True, CLEAR_ALL, NULL, NULL);	
+				}
 				BroadcastConfig(M_CONFIGURE_WINDOW, &fw_copy);
 				FlushAllMessageQueues();
 			}

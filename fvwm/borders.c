@@ -81,7 +81,7 @@ typedef struct
 		Pixmap alpha;
 		int depth;
 		FvwmRenderAttributes fra;
-		size_rect size;
+		rectangle g;
 		struct
 		{
 			unsigned is_tiled : 1;
@@ -91,18 +91,42 @@ typedef struct
 
 typedef struct
 {
+	Pixmap p;
+	int cs;
+	Bool created;
+} bar_pixmap;
+
+typedef struct
+{
+	int count;
+	bar_pixmap *bps;
+} bar_bs_pixmaps;    /* for UseTitleStyle & Colorset */
+
+typedef struct
+{
+	Pixmap frame_pixmap;
+	bar_bs_pixmaps bar_pixmaps[BS_MaxButtonState];
+} dynamic_common_decorations;
+
+typedef struct
+{
 	int relief_width;
 	GC relief_gc;
 	GC shadow_gc;
 	Pixel fore_color;
 	Pixel back_color;
+	Pixel border_fore_color; /* for UseBorderStyle */
+	Pixel border_back_color; /* for UseBorderStyle */
 	int cs;
+	int border_cs;           /* for UseBorderStyle */
+	int bg_border_cs;        /* for UseBorderStyle */
 	Pixmap back_pixmap;
 	XSetWindowAttributes attributes;
 	unsigned long valuemask;
 	Pixmap texture_pixmap;
 	XSetWindowAttributes notex_attributes;
 	unsigned long notex_valuemask;
+	dynamic_common_decorations dynamic_cd;
 } common_decorations_type;
 
 typedef struct
@@ -177,6 +201,7 @@ typedef struct
 {
 	common_decorations_type *cd;
 	rectangle frame_g;
+	rectangle bar_g;
 	frame_title_layout_type layout;
 	frame_title_layout_type old_layout;
 	border_titlebar_state tbstate;
@@ -521,10 +546,12 @@ static void get_common_decorations(
 	Bool do_change_gcs)
 {
 	DecorFace *df;
-	color_quad *draw_colors;
-	int cs = -1;
+	color_quad *draw_colors, *border_draw_colors;
 
 	df = border_get_border_style(t, has_focus);
+	cd->border_cs = -1;
+	cd->bg_border_cs = -1;
+	cd->cs = -1;
 	if (has_focus)
 	{
 		/* are we using textured borders? */
@@ -534,16 +561,23 @@ static void get_common_decorations(
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.active.u.p->picture);
 		}
+		else if (DFS_FACE_TYPE(df->style) == ColorsetButton)
+		{
+			cd->bg_border_cs = GetDecor(
+				t, BorderStyle.active.u.acs.cs);
+		}
 		cd->back_pixmap = Scr.gray_pixmap;
+		cd->border_cs = t->border_cs_hi;
+		border_draw_colors = &(t->border_hicolors);
 		if (is_border)
 		{
 			draw_colors = &(t->border_hicolors);
-			cs = t->border_cs_hi;
+			cd->cs = t->border_cs_hi;
 		}
 		else
 		{
 			draw_colors = &(t->hicolors);
-			cs = t->cs_hi;
+			cd->cs = t->cs_hi;
 		}
 	}
 	else
@@ -554,6 +588,11 @@ static void get_common_decorations(
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.inactive.u.p->picture);
 		}
+		else if (DFS_FACE_TYPE(df->style) == ColorsetButton)
+		{
+			cd->bg_border_cs = GetDecor(
+				t, BorderStyle.inactive.u.acs.cs);
+		}
 		if (IS_STICKY_ON_PAGE(t) || IS_STICKY_ON_DESK(t))
 		{
 			cd->back_pixmap = Scr.sticky_gray_pixmap;
@@ -562,20 +601,23 @@ static void get_common_decorations(
 		{
 			cd->back_pixmap = Scr.light_gray_pixmap;
 		}
+		cd->border_cs = t->border_cs;
+		border_draw_colors = &(t->border_colors);
 		if (is_border)
 		{
 			draw_colors = &(t->border_colors);
-			cs = t->border_cs;
+			cd->cs = t->border_cs;
 		}
 		else
 		{
 			draw_colors = &(t->colors);
-			cs = t->cs;
+			cd->cs = t->cs;
 		}
 	}
 	cd->fore_color = draw_colors->fore;
 	cd->back_color = draw_colors->back;
-	cd->cs = cs;
+	cd->border_fore_color = draw_colors->fore;
+	cd->border_back_color = draw_colors->back;
 	if (do_change_gcs)
 	{
 		Globalgcv.foreground = draw_colors->hilight;
@@ -623,11 +665,22 @@ static void get_common_decorations(
 }
 
 static window_parts border_get_changed_border_parts(
-	FvwmWindow *fw, rectangle *old_sidebar_g, rectangle *new_sidebar_g)
+	FvwmWindow *fw, rectangle *old_sidebar_g, rectangle *new_sidebar_g,
+	int cs)
 {
 	window_parts changed_parts;
 
 	changed_parts = PART_NONE;
+	if (!CSET_IS_TRANSPARENT_PR(cs) && CSET_HAS_PIXMAP(cs) &&
+	    (old_sidebar_g->x != new_sidebar_g->x ||
+	     old_sidebar_g->y != new_sidebar_g->y ||
+	     old_sidebar_g->width != new_sidebar_g->width ||
+	     old_sidebar_g->height != new_sidebar_g->height))
+	{
+		/* optimizable? */
+		changed_parts |= PART_FRAME;
+		return changed_parts;
+	}
 	if (old_sidebar_g->x != new_sidebar_g->x)
 	{
 		changed_parts |= (PART_FRAME & (~PART_BORDER_W));
@@ -676,6 +729,7 @@ static int border_get_parts_and_pos_to_draw(
 	Bool has_x_marks_old;
 	Bool has_y_marks;
 	Bool has_y_marks_old;
+	int cs = cd->bg_border_cs;
 
 	draw_parts = 0;
 	borderstyle = (do_hilight) ?
@@ -728,18 +782,20 @@ static int border_get_parts_and_pos_to_draw(
 		draw_parts |= (PART_FRAME & (~(PART_BORDER_W | PART_BORDER_E)));
 	}
 	draw_parts |= border_get_changed_border_parts(
-		fw, &sidebar_g_old, &br->sidebar_g);
+		fw, &sidebar_g_old, &br->sidebar_g, cs);
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 
 	return draw_parts;
 }
 
 static window_parts border_get_tb_parts_to_draw(
-	FvwmWindow *fw, titlebar_descr *td, window_parts force_draw_parts)
+	FvwmWindow *fw, titlebar_descr *td, rectangle *old_g, rectangle *new_g,
+	window_parts force_draw_parts)
 {
 	window_parts draw_parts;
 	ButtonState old_state;
 	int i;
+	DecorFace *df,*tdf;
 
 	td->tbstate.draw_bmask = 0;
 	draw_parts = PART_NONE;
@@ -789,23 +845,46 @@ static window_parts border_get_tb_parts_to_draw(
 		    td->layout.button_g[i].x >= 0 &&
 		    td->layout.button_g[i].y >= 0)
 		{
-			td->tbstate.draw_bmask |= (1 << i);
+			draw_parts |= PART_BUTTONS;
+			td->tbstate.draw_bmask |= mask;
 		}
 	}
-	/* position changed and background is tiled? */
+	/* position changed and background is tiled or a cset? */
 	if ((draw_parts & PART_TITLE) == PART_NONE &&
-	    (td->old_layout.title_g.x != td->layout.title_g.x ||
-	     td->old_layout.title_g.y != td->layout.title_g.y) &&
-	    td->layout.title_g.x >= 0 && td->layout.title_g.y >= 0 &&
-	    (td->cd->valuemask & CWBackPixmap))
+	    td->layout.title_g.x >= 0 &&
+	    td->layout.title_g.y >= 0)
 	{
-		DecorFaceStyle *ts;
-
-		ts = &TB_STATE(
-			GetDecor(fw, titlebar))[td->tbstate.tstate].style;
-		if (DFS_USE_BORDER_STYLE(*ts))
+		df = &TB_STATE(GetDecor(fw, titlebar))[td->tbstate.tstate];
+		if (DFS_USE_BORDER_STYLE(df->style) &&
+		    (((td->old_layout.title_g.x != td->layout.title_g.x ||
+		       td->old_layout.title_g.y != td->layout.title_g.y) &&
+		      ((td->cd->valuemask & CWBackPixmap) ||
+		       CSET_PIXMAP_IS_TILED(td->cd->bg_border_cs)))
+		     ||
+		     (old_g->width != new_g->width &&
+		      CSET_PIXMAP_IS_X_STRETCHED(td->cd->bg_border_cs))
+		     ||
+		     (old_g->height != new_g->height
+		      && CSET_PIXMAP_IS_Y_STRETCHED(td->cd->bg_border_cs))
+		     ||
+		     ((old_g->x != new_g->x || old_g->y != new_g->y)
+		      && CSET_IS_TRANSPARENT_ROOT(td->cd->bg_border_cs))))
 		{
-			draw_parts |= PART_TITLE;
+				draw_parts |= PART_TITLE;
+		}
+		if ((draw_parts & PART_TITLE) == PART_NONE &&
+		    (old_g->x != new_g->x || old_g->y != new_g->y))
+		{
+			for(tdf = df; tdf != NULL; tdf = tdf->next)
+			{
+				if (DFS_FACE_TYPE(tdf->style) ==
+				    ColorsetButton &&
+				    CSET_IS_TRANSPARENT_ROOT(tdf->u.acs.cs))
+				{
+					draw_parts |= PART_TITLE;
+					break;
+				}
+			}
 		}
 	}
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
@@ -814,23 +893,83 @@ static window_parts border_get_tb_parts_to_draw(
 		DecorFaceStyle *bs;
 
 		mask = (1 << i);
+		bs = &TB_STATE(
+			GetDecor(fw, buttons[i]))[td->tbstate.bstate[i]].style;
 		if ((td->tbstate.draw_bmask & mask) ||
-		    !(td->cd->valuemask & CWBackPixmap))
-		{
-			continue;
-		}
-		if ((td->old_layout.button_g[i].x == td->layout.button_g[i].x &&
-		     td->old_layout.button_g[i].y == td->layout.button_g[i].y)
-		    || td->layout.button_g[i].x < 0 ||
+		    td->layout.button_g[i].x < 0 ||
 		    td->layout.button_g[i].y < 0)
 		{
 			continue;
 		}
-		bs = &TB_STATE(
-			GetDecor(fw, buttons[i]))[td->tbstate.bstate[i]].style;
-		if (DFS_USE_BORDER_STYLE(*bs))
+		if (DFS_USE_BORDER_STYLE(*bs) &&
+		    (((td->old_layout.button_g[i].x != td->layout.button_g[i].x||
+		       td->old_layout.button_g[i].y != td->layout.button_g[i].y)
+		      && ((td->cd->valuemask & CWBackPixmap) ||
+			  CSET_PIXMAP_IS_TILED(td->cd->bg_border_cs)))
+		     ||
+		     (old_g->width != new_g->width &&
+		      CSET_PIXMAP_IS_X_STRETCHED(td->cd->bg_border_cs))
+		     ||
+		     (old_g->height != new_g->height
+		      && CSET_PIXMAP_IS_Y_STRETCHED(td->cd->bg_border_cs))
+		     ||
+		     ((old_g->x != new_g->x || old_g->y != new_g->y)
+		      && CSET_IS_TRANSPARENT_ROOT(td->cd->bg_border_cs))))
 		{
 			td->tbstate.draw_bmask |= mask;
+		}
+		else if (DFS_USE_TITLE_STYLE(*bs))
+		{
+			df = &TB_STATE(GetDecor(
+				fw, titlebar))[td->tbstate.bstate[i]];
+			for(tdf = df; tdf != NULL; tdf = tdf->next)
+			{
+				int cs;
+				if (DFS_FACE_TYPE(tdf->style) != ColorsetButton
+				    || !CSET_HAS_PIXMAP(tdf->u.acs.cs))
+				{
+					continue;
+				}
+				cs = tdf->u.acs.cs;
+				if(((td->old_layout.button_g[i].x !=
+				     td->layout.button_g[i].x ||
+				     td->old_layout.button_g[i].y !=
+				     td->layout.button_g[i].y) ||
+				    CSET_PIXMAP_IS_TILED(cs))
+				   ||
+				   (old_g->width != new_g->width &&
+				    CSET_PIXMAP_IS_X_STRETCHED(cs))
+				   ||
+				   (old_g->height != new_g->height &&
+				    CSET_PIXMAP_IS_Y_STRETCHED(cs))
+					||
+				   ((old_g->x != new_g->x ||
+				     old_g->y != new_g->y)
+				    && CSET_IS_TRANSPARENT_ROOT(cs)))
+				{
+					td->tbstate.draw_bmask |= mask;
+					break;
+				}
+			}
+		}
+		if (td->tbstate.draw_bmask & mask)
+		{
+			continue;
+		}
+		if (old_g->x != new_g->x || old_g->y != new_g->y)
+		{
+			df = &TB_STATE(GetDecor(
+				fw, buttons[i]))[td->tbstate.bstate[i]];
+			for(tdf = df; tdf != NULL; tdf = tdf->next)
+			{
+				if (DFS_FACE_TYPE(tdf->style) ==
+				    ColorsetButton &&
+				    CSET_IS_TRANSPARENT_ROOT(tdf->u.acs.cs))
+				{
+					td->tbstate.draw_bmask |= mask;
+					break;
+				}
+			}
 		}
 	}
 	td->tbstate.max_bmask = 0;
@@ -1333,6 +1472,7 @@ inline static void border_set_part_background(
 	return;
 }
 
+/* render the an image into the pixmap */
 static void border_fill_pixmap_background(
 	Pixmap dest_pix, rectangle *pixmap_g, pixmap_background_type *bg,
 	common_decorations_type *cd)
@@ -1369,7 +1509,8 @@ static void border_fill_pixmap_background(
 			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
 			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
 			dest_pix, Scr.TileGC, Scr.MonoGC, None,
-			0, 0, bg->pixmap.size.width, bg->pixmap.size.height,
+			bg->pixmap.g.x, bg->pixmap.g.y,
+			bg->pixmap.g.width, bg->pixmap.g.height,
 			pixmap_g->x, pixmap_g->y, pixmap_g->width - pixmap_g->x,
 			pixmap_g->height - pixmap_g->y, False);
 	}
@@ -1384,7 +1525,8 @@ static void border_fill_pixmap_background(
 			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
 			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
 			dest_pix, Scr.TileGC, Scr.MonoGC, None,
-			0, 0, bg->pixmap.size.width, bg->pixmap.size.height,
+			bg->pixmap.g.x, bg->pixmap.g.y,
+			bg->pixmap.g.width, bg->pixmap.g.height,
 			pixmap_g->x, pixmap_g->y,
 			pixmap_g->width - pixmap_g->x,
 			pixmap_g->height - pixmap_g->y, True);
@@ -1393,9 +1535,37 @@ static void border_fill_pixmap_background(
 	return;
 }
 
-static void border_get_border_background(
-	pixmap_background_type *bg, common_decorations_type *cd)
+static void border_get_frame_pixmap(
+	common_decorations_type *cd, rectangle *frame_g)
 {
+	dynamic_common_decorations *dcd = &(cd->dynamic_cd);
+
+	if (dcd->frame_pixmap != None)
+	{
+		/* should not happen */
+		fprintf(stderr, "Bad use of border_get_frame_pixmap!!\n");
+		dcd->frame_pixmap = None;
+	}
+
+	if (cd->bg_border_cs < 0 || CSET_IS_TRANSPARENT(cd->bg_border_cs))
+	{
+		/* should not happen */
+	}
+	else
+	{
+		dcd->frame_pixmap= CreateBackgroundPixmap(
+			dpy, Scr.NoFocusWin, frame_g->width, frame_g->height,
+			&Colorset[cd->bg_border_cs], Pdepth, Scr.TileGC, False);
+	}
+	return;
+}
+
+static void border_get_border_background(
+	pixmap_background_type *bg, common_decorations_type *cd,
+	rectangle *part_g, rectangle *relative_g, int *free_bg_pixmap, Window w)
+{
+	*free_bg_pixmap = False;
+
 	if (cd->texture_pixmap)
 	{
 		bg->flags.use_pixmap = 1;
@@ -1405,6 +1575,46 @@ static void border_get_border_background(
 		bg->pixmap.depth = Pdepth;
 		bg->pixmap.flags.is_tiled = 1;
 		bg->pixmap.fra.mask = 0;
+	}
+	else if (cd->bg_border_cs >= 0 &&
+		 !CSET_IS_TRANSPARENT_PR(cd->bg_border_cs))
+	{
+		colorset_t *cs_t = &Colorset[cd->bg_border_cs];
+		XGCValues xgcv;
+
+		if (CSET_IS_TRANSPARENT_ROOT(cd->bg_border_cs))
+		{
+			bg->pixmap.p = CreateBackgroundPixmap(
+				dpy, w, part_g->width, part_g->height, cs_t,
+				Pdepth, Scr.TileGC, False);
+		}
+		else
+		{
+			if (cd->dynamic_cd.frame_pixmap == None)
+			{
+				border_get_frame_pixmap(cd, relative_g);
+			}
+			bg->pixmap.p = XCreatePixmap(
+				dpy, cd->dynamic_cd.frame_pixmap, part_g->width,
+				part_g->height, Pdepth);
+			xgcv.fill_style = FillTiled;
+			xgcv.tile = cd->dynamic_cd.frame_pixmap;
+			xgcv.ts_x_origin = - relative_g->x;
+			xgcv.ts_y_origin = - relative_g->y;
+			XChangeGC(
+				dpy, Scr.TitleGC, GCTile | GCTileStipXOrigin |
+				GCTileStipYOrigin | GCFillStyle, &xgcv);
+			XFillRectangle(
+				dpy, bg->pixmap.p, Scr.TitleGC, 0, 0,
+				part_g->width, part_g->height);
+		}
+		bg->flags.use_pixmap = 1;
+		bg->pixmap.shape = None;
+		bg->pixmap.alpha = None;
+		bg->pixmap.depth = Pdepth;
+		bg->pixmap.flags.is_tiled = 1;
+		bg->pixmap.fra.mask = 0;
+		*free_bg_pixmap = True;
 	}
 	else
 	{
@@ -1424,8 +1634,10 @@ static void border_draw_one_border_part(
 	pixmap_background_type bg;
 	rectangle part_g;
 	rectangle pix_g;
+	rectangle relative_g;
 	Pixmap p;
 	Window w;
+	Bool free_bg_pixmap = False;
 
 	/* make a pixmap */
 	border_get_part_geometry(fw, part, sidebar_g, &part_g, &w);
@@ -1435,7 +1647,14 @@ static void border_draw_one_border_part(
 	}
 	p = border_create_decor_pixmap(cd, &part_g);
 	/* set the background tile */
-	border_get_border_background(&bg, cd);
+	relative_g.width = fw->frame_g.width;
+	relative_g.height = fw->frame_g.height;
+	relative_g.x = part_g.x;
+	relative_g.y = part_g.y;
+	border_get_border_background(
+		&bg, cd, &part_g, &relative_g, &free_bg_pixmap, w);
+	bg.pixmap.g.x = 0;
+	bg.pixmap.g.y = 0;
 	/* set the geometry for drawing the Tiled pixmap; maybe add the relief
 	 * as offset? */
 	pix_g.x = 0;
@@ -1443,6 +1662,10 @@ static void border_draw_one_border_part(
 	pix_g.width = part_g.width;
 	pix_g.height = part_g.height;
 	border_fill_pixmap_background(p, &pix_g, &bg, cd);
+	if (free_bg_pixmap && bg.pixmap.p)
+	{
+		XFreePixmap(dpy, bg.pixmap.p);
+	}
 	/* draw the relief over the background */
 	if (!br->relief.is_flat)
 	{
@@ -1556,19 +1779,144 @@ static void border_draw_vector_to_pixmap(
 	return;
 }
 
+static void border_setup_bar_pixmaps(
+	dynamic_common_decorations *dcd, DecorFace *df, ButtonState bs)
+{
+	int count = dcd->bar_pixmaps[bs].count;
+	DecorFace *tsdf;
+	int i;
+
+	if (count != 0)
+	{
+		/* ok */
+		return;
+	}
+
+	for (tsdf = df; tsdf != NULL; tsdf = tsdf->next)
+	{
+		if (DFS_FACE_TYPE(tsdf->style) == ColorsetButton)
+		{
+			count++;
+		}
+	}
+	if (count == 0)
+	{
+		dcd->bar_pixmaps[bs].count = -1;
+		return;
+	}
+	else
+	{
+		dcd->bar_pixmaps[bs].bps =
+			(bar_pixmap *)safemalloc(count*sizeof(bar_pixmap));
+	}
+	dcd->bar_pixmaps[bs].count = count;
+	i = 0;
+	for (tsdf = df; tsdf != NULL; tsdf = tsdf->next)
+	{
+		if (DFS_FACE_TYPE(df->style) == ColorsetButton)
+		{
+			dcd->bar_pixmaps[bs].bps[i].p = None;
+			dcd->bar_pixmaps[bs].bps[i].cs = tsdf->u.acs.cs;
+			dcd->bar_pixmaps[bs].bps[i].created = 0;
+			i++;
+		}
+	}
+}
+
+static Pixmap border_get_bar_pixmaps(
+	dynamic_common_decorations *dcd, rectangle *bar_g, ButtonState bs,
+	int cset)
+{
+	ButtonState b;
+	int i,j;
+	int count = dcd->bar_pixmaps[bs].count;
+
+	if (count == 0)
+	{
+		return None;
+	}
+
+	i = 0;
+	while(i < count &&  dcd->bar_pixmaps[bs].bps[i].cs != cset)
+	{
+		i++;
+	}
+	if (i == count)
+	{
+		return None;
+	}
+	if (dcd->bar_pixmaps[bs].bps[i].p == None)
+	{
+		/* see if we have it */
+		b = 0;
+		while (b < BS_MaxButtonState &&
+		       dcd->bar_pixmaps[bs].bps[i].p == None)
+		{
+			int c = dcd->bar_pixmaps[b].count;
+			j = 0;
+			while(j < c &&  dcd->bar_pixmaps[b].bps[j].cs != cset)
+			{
+				j++;
+			}
+			if (j < c)
+			{
+				dcd->bar_pixmaps[bs].bps[i].p =
+					dcd->bar_pixmaps[b].bps[j].p;
+			}
+			b++;
+		}
+	}
+	if (dcd->bar_pixmaps[bs].bps[i].p == None)
+	{
+		dcd->bar_pixmaps[bs].bps[i].p = CreateBackgroundPixmap(
+			dpy, Scr.NoFocusWin, bar_g->width, bar_g->height,
+			&Colorset[cset], Pdepth, Scr.TileGC, False);
+		dcd->bar_pixmaps[bs].bps[i].created = True;
+	}
+	return dcd->bar_pixmaps[bs].bps[i].p;
+}
+
+static void border_free_bar_pixmaps(
+	dynamic_common_decorations *dcd)
+{
+	ButtonState bs;
+	int i;
+
+	for (bs = 0; bs < BS_MaxButtonState; bs++)
+	{
+		if (dcd->bar_pixmaps[bs].count < 1)
+		{
+			continue;
+		}
+		for (i = 0; i < dcd->bar_pixmaps[bs].count; i++)
+		{
+			if (dcd->bar_pixmaps[bs].bps[i].p != None &&
+			    dcd->bar_pixmaps[bs].bps[i].created)
+			{
+				XFreePixmap(
+					dpy, dcd->bar_pixmaps[bs].bps[i].p);
+			}
+		}
+		free(dcd->bar_pixmaps[bs].bps);
+	}
+}
 
 static void border_draw_decor_to_pixmap(
-	FvwmWindow *fw, Pixmap dest_pix, pixmap_background_type *solid_bg,
-	rectangle *pixmap_g, DecorFace *df, common_decorations_type *cd,
-	int is_toggled, int left1right0)
+	FvwmWindow *fw, Pixmap dest_pix, Window w,
+	pixmap_background_type *solid_bg, rectangle *pixmap_g,
+	DecorFace *df, titlebar_descr *td, ButtonState bs,
+	int use_title_style, int is_toggled, int left1right0)
 {
 	register DecorFaceType type = DFS_FACE_TYPE(df->style);
 	pixmap_background_type bg;
 	rectangle r;
 	FvwmPicture *p;
 	int border;
+	common_decorations_type *cd;
 
 	bg.pixmap.fra.mask = 0;
+	cd = td->cd;
+
 	switch (type)
 	{
 	case SimpleButton:
@@ -1610,7 +1958,8 @@ static void border_draw_decor_to_pixmap(
 		{
 			border = HAS_MWM_BORDER(fw) ? 1 : 2;
 		}
-		r = *pixmap_g;
+		r.width = pixmap_g->width;
+		r.height = pixmap_g->height;
 		r.x = border;
 		r.y = border;
 		switch (DFS_H_JUSTIFICATION(df->style))
@@ -1654,8 +2003,10 @@ static void border_draw_decor_to_pixmap(
 		bg.pixmap.shape = p->mask;
 		bg.pixmap.alpha = p->alpha;
 		bg.pixmap.depth = p->depth;
-		bg.pixmap.size.width = p->width;
-		bg.pixmap.size.height = p->height;
+		bg.pixmap.g.width = p->width;
+		bg.pixmap.g.height = p->height;
+		bg.pixmap.g.x = 0;
+		bg.pixmap.g.y = 0;
 		bg.pixmap.flags.is_tiled = 0;
 		border_fill_pixmap_background(dest_pix, &r, &bg, cd);
 		break;
@@ -1713,7 +2064,8 @@ static void border_draw_decor_to_pixmap(
 		{
 			border = HAS_MWM_BORDER(fw) ? 1 : 2;
 		}
-		r = *pixmap_g;
+		r.width = pixmap_g->width;
+		r.height = pixmap_g->height;
 		r.x = border;
 		r.y = border;
 		bg.flags.use_pixmap = 1;
@@ -1721,11 +2073,105 @@ static void border_draw_decor_to_pixmap(
 		bg.pixmap.shape = p->mask;
 		bg.pixmap.alpha = p->alpha;
 		bg.pixmap.depth = p->depth;
-		bg.pixmap.size.width = p->width;
-		bg.pixmap.size.height = p->height;
+		bg.pixmap.g.width = p->width;
+		bg.pixmap.g.height = p->height;
+		bg.pixmap.g.x = 0;
+		bg.pixmap.g.y = 0;
 		bg.pixmap.flags.is_tiled = 1;
 		border_fill_pixmap_background(dest_pix, &r, &bg, cd);
 		break;
+	case ColorsetButton:
+	{
+		colorset_t *cs_t = &Colorset[df->u.acs.cs];
+		int cs = df->u.acs.cs;
+		Pixmap tmp = None;
+		int bg_w, bg_h;
+
+		if (CSET_IS_TRANSPARENT_PR(cs))
+		{
+			break;
+		}
+		if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
+		{
+			border = 0;
+		}
+		else
+		{
+			border = HAS_MWM_BORDER(fw) ? 1 : 2;
+		}
+		r.width = pixmap_g->width;
+		r.height = pixmap_g->height;
+		/* FIXME: needs this for some gradients */
+		r.x = 0;
+		r.y = 0;
+		if (use_title_style &&
+		    !CSET_IS_TRANSPARENT_ROOT(cs) &&
+		    (bg.pixmap.p = border_get_bar_pixmaps(
+			    &(cd->dynamic_cd), &(td->bar_g), bs, cs)) != None)
+		{
+			/* FIXME: alpha not applied "PGraphicsRenderPixmap"
+			 * is broken!! */
+#if 0
+			GetWindowBackgroundPixmapSize(
+				cs_t, td->bar_g.width, td->bar_g.height,
+				&bg_w, &bg_h);
+			bg.pixmap.g.width = bg_w;
+			bg.pixmap.g.height = bg_h;
+			bg.pixmap.g.x = (pixmap_g->x <= bg_w)?
+				pixmap_g->x - td->bar_g.x : 0;
+			bg.pixmap.g.y = (pixmap_g->y <= bg_h)?
+				pixmap_g->y - td->bar_g.y : 0;
+#else
+			XGCValues xgcv;
+
+			tmp = XCreatePixmap(
+				dpy, w, pixmap_g->width, pixmap_g->height,
+				Pdepth);
+			xgcv.fill_style = FillTiled;
+			xgcv.tile = bg.pixmap.p;
+			xgcv.ts_x_origin = - pixmap_g->x + td->bar_g.x;
+			xgcv.ts_y_origin = -pixmap_g->y + td->bar_g.y;
+			XChangeGC(
+				dpy, Scr.TitleGC, GCTile | GCTileStipXOrigin |
+				GCTileStipYOrigin | GCFillStyle, &xgcv);
+			XFillRectangle(
+				dpy, tmp, Scr.TitleGC, 0, 0,
+				pixmap_g->width, pixmap_g->height);
+			bg.pixmap.p = tmp;
+			bg.pixmap.g.width = pixmap_g->width;
+			bg.pixmap.g.height = pixmap_g->height;
+			bg.pixmap.g.x = 0;
+			bg.pixmap.g.y = 0;
+#endif
+		}
+		else
+		{
+			tmp = CreateBackgroundPixmap(
+				dpy, w, pixmap_g->width, pixmap_g->height,
+				cs_t, Pdepth, Scr.TileGC, False);
+			bg.pixmap.p = tmp;
+			GetWindowBackgroundPixmapSize(
+				cs_t, pixmap_g->width, pixmap_g->height,
+				&bg_w, &bg_h);
+			bg.pixmap.g.width = bg_w;
+			bg.pixmap.g.height = bg_h;
+			bg.pixmap.g.x = 0;
+			bg.pixmap.g.y = 0;
+		}
+		bg.flags.use_pixmap = 1;
+		bg.pixmap.shape = None;
+		bg.pixmap.alpha = None;
+		bg.pixmap.depth = Pdepth;
+		bg.pixmap.flags.is_tiled = 1;
+		bg.pixmap.fra.mask = FRAM_HAVE_ADDED_ALPHA;
+		bg.pixmap.fra.added_alpha_percent = df->u.acs.alpha_percent;
+		border_fill_pixmap_background(dest_pix, &r, &bg, cd);
+		if (tmp)
+		{
+			XFreePixmap(dpy, tmp);
+		}
+		break;
+	}
 	case GradientButton:
 		/* draw the gradient into the pixmap */
 		CreateGradientPixmap(
@@ -1736,6 +2182,7 @@ static void border_draw_decor_to_pixmap(
 			dest_pix, 0, 0, pixmap_g->width, pixmap_g->height, NULL);
 
 		break;
+
 	default:
 		fvwm_msg(ERR, "DrawButton", "unknown button type");
 		break;
@@ -1745,7 +2192,8 @@ static void border_draw_decor_to_pixmap(
 }
 
 static void border_set_button_pixmap(
-	FvwmWindow *fw, titlebar_descr *td, int button, Pixmap dest_pix)
+	FvwmWindow *fw, titlebar_descr *td, int button, Pixmap dest_pix,
+	Window w)
 {
 	pixmap_background_type bg;
 	unsigned int mask;
@@ -1756,6 +2204,7 @@ static void border_set_button_pixmap(
 	rectangle *button_g;
 	GC rgc;
 	GC sgc;
+	Bool free_bg_pixmap = False;
 
 	/* prepare variables */
 	mask = (1 << button);
@@ -1772,26 +2221,49 @@ static void border_set_button_pixmap(
 		/* fill with the button background colour */
 		bg.flags.use_pixmap = 0;
 		bg.pixel = td->cd->back_color;
+		/* FIXME: geometry ?? */
+		border_fill_pixmap_background(dest_pix, button_g, &bg, td->cd);
 	}
 	else
 	{
 		/* draw pixmap background inherited from border style */
-		border_get_border_background(&bg, td->cd);
+		rectangle relative_g;
+		rectangle pix_g;
+
+		relative_g.width = td->frame_g.width;
+		relative_g.height = td->frame_g.height;
+		relative_g.x = button_g->x;
+		relative_g.y = button_g->y;
+		border_get_border_background(
+			&bg, td->cd, button_g, &relative_g, &free_bg_pixmap, w);
+		bg.pixmap.g.x = 0;
+		bg.pixmap.g.y = 0;
+		/* set the geometry for drawing the Tiled pixmap; 
+		 * FIXME: maybe add the relief as offset? */
+		pix_g.x = 0;
+		pix_g.y = 0;
+		pix_g.width = button_g->width;
+		pix_g.height = button_g->height;
+		border_fill_pixmap_background(dest_pix, &pix_g, &bg, td->cd);
+		if (free_bg_pixmap && bg.pixmap.p)
+		{
+			XFreePixmap(dpy, bg.pixmap.p);
+		}
 	}
-	border_fill_pixmap_background(dest_pix, button_g, &bg, td->cd);
+
 	/* handle title style */
 	if (DFS_USE_TITLE_STYLE(df->style))
 	{
 		/* draw background inherited from title style */
 		DecorFace *tsdf;
-
-		for (tsdf = &TB_STATE(GetDecor(fw, titlebar))[bs];
-		     tsdf != NULL; tsdf = tsdf->next)
+		
+		for (tsdf = &TB_STATE(GetDecor(fw, titlebar))[bs]; tsdf != NULL;
+		     tsdf = tsdf->next)
 		{
 			bg.pixel = tsdf->u.back;
 			border_draw_decor_to_pixmap(
-				fw, dest_pix, &bg, button_g, tsdf, td->cd,
-				(td->tbstate.toggled_bmask & mask),
+				fw, dest_pix, w, &bg, button_g, tsdf, td,
+				bs, True, (td->tbstate.toggled_bmask & mask),
 				is_left_button);
 		}
 	}
@@ -1801,7 +2273,7 @@ static void border_set_button_pixmap(
 		/* draw background from button style */
 		bg.pixel = df->u.back;
 		border_draw_decor_to_pixmap(
-			fw, dest_pix, &bg, button_g, df, td->cd,
+			fw, dest_pix, w, &bg, button_g, df, td, bs, False,
 			(td->tbstate.toggled_bmask & mask), is_left_button);
 	}
 	/* draw the button relief */
@@ -1841,7 +2313,7 @@ static void border_draw_one_button(
 	}
 	p = border_create_decor_pixmap(td->cd, &(td->layout.button_g[button]));
 	/* set the background tile */
-	border_set_button_pixmap(fw, td, button, p);
+	border_set_button_pixmap(fw, td, button, p, FW_W_BUTTON(fw, button));
 	/* apply the pixmap and destroy it */
 	border_set_part_background(FW_W_BUTTON(fw, button), p);
 	XFreePixmap(dpy, p);
@@ -1982,7 +2454,8 @@ static void border_draw_title_relief(
 
 static void border_draw_title_deep(
 	FvwmWindow *fw, titlebar_descr *td,
-	title_draw_descr *tdd, FlocaleWinString *fstr, Pixmap dest_pix)
+	title_draw_descr *tdd, FlocaleWinString *fstr, Pixmap dest_pix,
+	Window w)
 {
 	DecorFace *df;
 	pixmap_background_type bg;
@@ -1992,8 +2465,8 @@ static void border_draw_title_deep(
 	{
 		bg.pixel = df->u.back;
 		border_draw_decor_to_pixmap(
-			fw, dest_pix, &bg, &td->layout.title_g, df, td->cd,
-			tdd->is_toggled, 1);
+			fw, dest_pix, w, &bg, &td->layout.title_g, df, td,
+			td->tbstate.tstate, True, tdd->is_toggled, 1);
 	}
 	FlocaleDrawString(dpy, fw->title_font, &tdd->fstr, 0);
 
@@ -2095,11 +2568,12 @@ static void border_get_titlebar_draw_descr(
 }
 
 static void border_set_title_pixmap(
-	FvwmWindow *fw, titlebar_descr *td, Pixmap dest_pix)
+	FvwmWindow *fw, titlebar_descr *td, Pixmap dest_pix, Window w)
 {
 	pixmap_background_type bg;
 	title_draw_descr tdd;
 	FlocaleWinString fstr;
+	Bool free_bg_pixmap = False;
 
 	border_get_titlebar_draw_descr(fw, td, &tdd, dest_pix);
 	/* prepare background, either from the window colour or from the
@@ -2109,14 +2583,39 @@ static void border_set_title_pixmap(
 		/* fill with the button background colour */
 		bg.flags.use_pixmap = 0;
 		bg.pixel = td->cd->back_color;
+		/* FIXME: geometry ?? */
+		border_fill_pixmap_background(
+			dest_pix, &td->layout.title_g, &bg, td->cd);
 	}
 	else
 	{
 		/* draw pixmap background inherited from border style */
-		border_get_border_background(&bg, td->cd);
+		rectangle relative_g;
+		rectangle pix_g;
+
+		relative_g.width = td->frame_g.width;
+		relative_g.height = td->frame_g.height;
+		relative_g.x = td->layout.title_g.x;
+		relative_g.y = td->layout.title_g.y;
+		border_get_border_background(
+			&bg, td->cd, &td->layout.title_g, &relative_g,
+			&free_bg_pixmap, w);
+		bg.pixmap.g.x = 0;
+		bg.pixmap.g.y = 0;
+		/* set the geometry for drawing the Tiled pixmap; 
+		 * FIXME: maybe add the relief as offset? */
+		pix_g.x = 0;
+		pix_g.y = 0;
+		pix_g.width = td->layout.title_g.width;
+		pix_g.height = td->layout.title_g.height;
+		border_fill_pixmap_background(
+			dest_pix, &pix_g, &bg, td->cd);
+		if (free_bg_pixmap && bg.pixmap.p)
+		{
+			XFreePixmap(dpy, bg.pixmap.p);
+		}
 	}
-	border_fill_pixmap_background(
-		dest_pix, &td->layout.title_g, &bg, td->cd);
+
 	if (Pdepth < 2)
 	{
 		border_draw_title_mono(fw, td, &tdd, &fstr, dest_pix);
@@ -2129,7 +2628,7 @@ static void border_set_title_pixmap(
 #endif
 	else
 	{
-		border_draw_title_deep(fw, td, &tdd, &fstr, dest_pix);
+		border_draw_title_deep(fw, td, &tdd, &fstr, dest_pix, w);
 	}
 	border_draw_title_relief(fw, td, &tdd, dest_pix);
 	border_draw_title_stick_lines(fw, &tdd, dest_pix);
@@ -2152,7 +2651,7 @@ static void border_draw_title(
 #if 0
 	fprintf(stderr,"drawing title\n");
 #endif
-	border_set_title_pixmap(fw, td, p);
+	border_set_title_pixmap(fw, td, p, FW_W_TITLE(fw));
 	/* apply the pixmap and destroy it */
 	border_set_part_background(FW_W_TITLE(fw), p);
 	XFreePixmap(dpy, p);
@@ -2191,6 +2690,103 @@ static void border_draw_buttons(
 	return;
 }
 
+static void border_setup_use_title_style(
+	FvwmWindow *fw, titlebar_descr *td)
+{
+	int i;
+	DecorFace *df, *tsdf;
+	ButtonState bs, tsbs;
+
+	/* use a full bar pixmap (for Colorset) under certain condition:
+	 * - for the buttons with use title style
+	 * - for title which have a button with UseTitle style
+	 */
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		bs = td->tbstate.bstate[i];
+		tsbs = td->tbstate.tstate;
+		df = &TB_STATE(GetDecor(fw, buttons[i]))[bs];
+		tsdf = &TB_STATE(GetDecor(fw, buttons[i]))[tsbs];
+		if (FW_W_BUTTON(fw, i) != None)
+		{
+			if (DFS_USE_TITLE_STYLE(df->style))
+			{
+				border_setup_bar_pixmaps(
+					&(td->cd->dynamic_cd),
+					&TB_STATE(GetDecor(fw, titlebar))[bs],
+					bs);
+			}
+			if (DFS_USE_TITLE_STYLE(tsdf->style))
+			{
+				border_setup_bar_pixmaps(
+					&(td->cd->dynamic_cd),
+					&TB_STATE(GetDecor(fw, titlebar))[tsbs],
+					tsbs);
+			}
+		}
+	}
+	return;
+}
+
+static void border_get_titlebar_descr_state(
+	FvwmWindow *fw, window_parts pressed_parts, int pressed_button,
+	clear_window_parts clear_parts, Bool do_hilight,
+	border_titlebar_state *tbstate)
+{
+	int i;
+
+	if ((pressed_parts & PART_BUTTONS) != PART_NONE && pressed_button >= 0)
+	{
+		tbstate->pressed_bmask = (1 << pressed_button);
+	}
+	else
+	{
+		tbstate->pressed_bmask = 0;
+	}
+	if ((clear_parts & CLEAR_BUTTONS) != CLEAR_NONE)
+	{
+		tbstate->clear_bmask = ~0;
+	}
+	else
+	{
+		tbstate->clear_bmask = 0;
+	}
+	tbstate->lit_bmask = (do_hilight == True) ? ~0 : 0;
+	if ((pressed_parts & PART_TITLE) != PART_NONE)
+	{
+		tbstate->is_title_pressed = 1;
+	}
+	else
+	{
+		tbstate->is_title_pressed = 0;
+	}
+	if ((clear_parts & CLEAR_TITLE) != CLEAR_NONE)
+	{
+		tbstate->do_clear_title = 1;
+	}
+	else
+	{
+		tbstate->do_clear_title = 0;
+	}
+	tbstate->is_title_lit = (do_hilight == True) ? 1 : 0;
+	tbstate->toggled_bmask = 0;
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		unsigned int mask = (1 << i);
+
+		if (is_button_toggled(fw, i))
+		{
+			tbstate->toggled_bmask |= mask;
+		}
+		tbstate->bstate[i] = border_flags_to_button_state(
+			tbstate->pressed_bmask & mask,
+			tbstate->lit_bmask & mask,
+			tbstate->toggled_bmask & mask);
+	}
+	tbstate->tstate = border_flags_to_button_state(
+		tbstate->is_title_pressed, tbstate->is_title_lit, 0);
+}
+
 static window_parts border_get_titlebar_descr(
 	common_decorations_type *cd, FvwmWindow *fw,
 	window_parts pressed_parts, int pressed_button,
@@ -2199,7 +2795,6 @@ static window_parts border_get_titlebar_descr(
 	titlebar_descr *ret_td)
 {
 	window_parts draw_parts;
-	int i;
 
 	ret_td->cd = cd;
 	ret_td->frame_g = *new_g;
@@ -2209,60 +2804,29 @@ static window_parts border_get_titlebar_descr(
 	}
 	frame_get_titlebar_dimensions(fw, old_g, NULL, &ret_td->old_layout);
 	frame_get_titlebar_dimensions(fw, new_g, NULL, &ret_td->layout);
-	/* initialise flags */
-	if ((pressed_parts & PART_BUTTONS) != PART_NONE && pressed_button >= 0)
-	{
-		ret_td->tbstate.pressed_bmask = (1 << pressed_button);
-	}
-	else
-	{
-		ret_td->tbstate.pressed_bmask = 0;
-	}
-	if ((clear_parts & CLEAR_BUTTONS) != CLEAR_NONE)
-	{
-		ret_td->tbstate.clear_bmask = ~0;
-	}
-	else
-	{
-		ret_td->tbstate.clear_bmask = 0;
-	}
-	ret_td->tbstate.lit_bmask = (do_hilight == True) ? ~0 : 0;
-	if ((pressed_parts & PART_TITLE) != PART_NONE)
-	{
-		ret_td->tbstate.is_title_pressed = 1;
-	}
-	else
-	{
-		ret_td->tbstate.is_title_pressed = 0;
-	}
-	if ((clear_parts & CLEAR_TITLE) != CLEAR_NONE)
-	{
-		ret_td->tbstate.do_clear_title = 1;
-	}
-	else
-	{
-		ret_td->tbstate.do_clear_title = 0;
-	}
-	ret_td->tbstate.is_title_lit = (do_hilight == True) ? 1 : 0;
-	ret_td->tbstate.toggled_bmask = 0;
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
-	{
-		unsigned int mask = (1 << i);
 
-		if (is_button_toggled(fw, i))
-		{
-			ret_td->tbstate.toggled_bmask |= mask;
-		}
-		ret_td->tbstate.bstate[i] = border_flags_to_button_state(
-			ret_td->tbstate.pressed_bmask & mask,
-			ret_td->tbstate.lit_bmask & mask,
-			ret_td->tbstate.toggled_bmask & mask);
+	/* geometry of the title bar title + buttons */
+	if (!HAS_VERTICAL_TITLE(fw))
+	{
+		ret_td->bar_g.width = new_g->width - 2 * fw->boundary_width;
+		ret_td->bar_g.height = ret_td->layout.title_g.height;
 	}
-	ret_td->tbstate.tstate = border_flags_to_button_state(
-		ret_td->tbstate.is_title_pressed, ret_td->tbstate.is_title_lit,
-		0);
+	else
+	{
+		ret_td->bar_g.width = ret_td->layout.title_g.width;
+		ret_td->bar_g.height = new_g->height - 2 * fw->boundary_width;
+	}
+	ret_td->bar_g.y = fw->boundary_width;
+	ret_td->bar_g.x = fw->boundary_width;
+ 
+	/* initialise flags */
+	border_get_titlebar_descr_state(
+		fw, pressed_parts, pressed_button, clear_parts, do_hilight,
+		&(ret_td->tbstate));
+
 	/* determine the parts to draw */
-	draw_parts = border_get_tb_parts_to_draw(fw, ret_td, force_draw_parts);
+	draw_parts = border_get_tb_parts_to_draw(
+		fw, ret_td, old_g, new_g, force_draw_parts);
 
 	return draw_parts;
 }
@@ -2293,6 +2857,12 @@ static void border_draw_titlebar(
 	draw_parts = border_get_titlebar_descr(
 		cd, fw, pressed_parts, pressed_button, force_draw_parts,
 		clear_parts, old_g, new_g, do_hilight, &td);
+	if ((draw_parts & PART_TITLE) != PART_NONE ||
+	    (draw_parts & PART_BUTTONS) != PART_NONE)
+	{
+		/* set up UseTitleStyle Colorset */
+		border_setup_use_title_style(fw, &td);
+	}
 	if ((draw_parts & PART_TITLE) != PART_NONE)
 	{
 		border_draw_title(fw, &td);
@@ -2301,6 +2871,8 @@ static void border_draw_titlebar(
 	{
 		border_draw_buttons(fw, &td);
 	}
+	border_free_bar_pixmaps(&(td.cd->dynamic_cd));
+
 	/* update the decor states */
 	fw->decor_state.parts_drawn |= draw_parts;
 	if (do_hilight)
@@ -2685,16 +3257,22 @@ void border_draw_decorations(
 	}
 	if (draw_parts & PART_FRAME)
 	{
+		Pixmap save_pix = cd.dynamic_cd.frame_pixmap;
+
 		memset(&cd, 0, sizeof(cd));
 		get_common_decorations(
 			&cd, fw, draw_parts, has_focus, True, True);
+		cd.dynamic_cd.frame_pixmap = save_pix;
 		border_draw_border_parts(
 			&cd, fw,
 			(pressed_parts & (PART_FRAME | PART_HANDLES)),
 			(force_parts & (PART_FRAME | PART_HANDLES)),
 			clear_parts, old_g, new_g, has_focus);
 	}
-
+	if (cd.dynamic_cd.frame_pixmap != None)
+	{
+		XFreePixmap(dpy, cd.dynamic_cd.frame_pixmap);
+	}
 	return;
 }
 
@@ -2724,6 +3302,101 @@ void border_redraw_decorations(
 	Scr.Hilite = u;
 
 	return;
+}
+
+/****************************************************************************
+ *
+ *  get the the root transparent parts of the decoration
+ *
+ ****************************************************************************/
+unsigned int border_get_transparent_decorations_part(FvwmWindow *fw)
+{
+	DecorFace *df,*tdf;
+	unsigned int draw_parts = PART_NONE;
+	int i;
+	window_parts pressed_parts;
+	int context;
+	int item;
+	border_titlebar_state tbstate;
+	Bool title_use_borderstyle = False;
+	Bool buttons_use_borderstyle = False;
+	Bool buttons_use_titlestyle = False;
+
+	context = frame_window_id_to_context(fw, PressedW, &item);
+	if ((context & (C_LALL | C_RALL)) == 0)
+	{
+		item = -1;
+	}
+	pressed_parts = border_context_to_parts(context);
+
+	memset(&tbstate, 0, sizeof(tbstate));
+	border_get_titlebar_descr_state(
+		fw, pressed_parts & PART_TITLEBAR, item,
+		CLEAR_ALL, (Scr.Hilite == fw), &tbstate);
+
+	for(i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		df = &TB_STATE(GetDecor(fw, buttons[i]))[tbstate.bstate[i]];
+
+		if (DFS_USE_TITLE_STYLE(df->style))
+		{
+			buttons_use_titlestyle = True;
+		}
+		if (DFS_USE_BORDER_STYLE(df->style))
+		{
+			buttons_use_borderstyle = True;
+		}
+		for(tdf = df; tdf != NULL; tdf = tdf->next)
+		{
+			if (DFS_FACE_TYPE(tdf->style) == ColorsetButton &&
+			    CSET_IS_TRANSPARENT_ROOT(tdf->u.acs.cs))
+			{
+				draw_parts |= PART_BUTTONS;
+				break;
+			}
+		}
+	}
+
+	df = &TB_STATE(GetDecor(fw, titlebar))[tbstate.tstate];
+	if (DFS_USE_BORDER_STYLE(df->style))
+	{
+		title_use_borderstyle = True;
+	}
+	for(tdf = df; tdf != NULL; tdf = tdf->next)
+	{
+		if (DFS_FACE_TYPE(tdf->style) == ColorsetButton &&
+		    CSET_IS_TRANSPARENT_ROOT(tdf->u.acs.cs))
+		{
+			draw_parts |= PART_TITLE;
+			break;
+		}
+	}
+
+	df = border_get_border_style(fw, (Scr.Hilite == fw));
+	if (DFS_FACE_TYPE(df->style) == ColorsetButton &&
+	    CSET_IS_TRANSPARENT_ROOT(df->u.acs.cs))
+	{
+		draw_parts |= PART_FRAME|PART_HANDLES;
+	}
+	if (draw_parts & PART_FRAME)
+	{
+		if (title_use_borderstyle)
+		{
+			draw_parts |= PART_TITLE;
+		}
+		if (buttons_use_borderstyle)
+		{
+			draw_parts |= PART_BUTTONS;
+		}
+	}
+	if ((draw_parts & PART_TITLE) && buttons_use_titlestyle)
+	{
+		draw_parts |= PART_BUTTONS;
+	}
+#if 0
+	fprintf(stderr,"Transparant Part: %u\n", draw_parts);
+#endif
+	return draw_parts;
 }
 
 /* ---------------------------- builtin commands ---------------------------- */

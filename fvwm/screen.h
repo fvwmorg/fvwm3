@@ -82,7 +82,8 @@ typedef enum
     MultiPixmap               ,
 #endif
     MiniIconButton            ,
-    SolidButton
+    SolidButton               ,
+    ColorsetButton
 } DecorFaceType;
 
 typedef enum
@@ -136,6 +137,11 @@ typedef struct DecorFace
 		FvwmPicture **multi_pixmaps;
 		short multi_stretch_flags;
 #endif
+		struct
+		{
+			int cs;
+			unsigned short alpha_percent;
+		} acs;
 		Pixel back;
 		struct
 		{

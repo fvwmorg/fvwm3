@@ -73,6 +73,7 @@ typedef struct
 	int current_step;
 	int curr_titlebar_compression;
 	direction_type shade_dir;
+	window_parts trans_parts;
 	struct
 	{
 		unsigned do_force : 1;
@@ -399,12 +400,23 @@ static void __frame_setup_window(
 	}
 	else if (is_moved)
 	{
+		unsigned int draw_parts = PART_NONE;
+
 		/* inform the application of the change
 		 *
 		 * According to the July 27, 1988 ICCCM draft, we should send a
 		 * synthetic ConfigureNotify event to the client if the window
 		 * was moved but not resized. */
 		XMoveWindow(dpy, FW_W_FRAME(fw), frame_g->x, frame_g->y);
+		fw->frame_g = *frame_g;
+		if ((draw_parts = border_get_transparent_decorations_part(fw))
+		    != PART_NONE)
+		{
+			border_draw_decorations(
+				fw, draw_parts,
+				((fw == get_focus_window())) ? True : False,
+				True, CLEAR_ALL, NULL, NULL);	
+		}
 		fw->frame_g = *frame_g;
 		do_send_configure_notify = True;
 	}
@@ -1071,8 +1083,12 @@ static void frame_has_handles_and_tiled_border(
 	{
 		*ret_has_handles = 0;
 	}
-	*ret_has_tiled_border = (DFS_FACE_TYPE(df->style) == TiledPixmapButton);
-
+	*ret_has_tiled_border = 
+		(DFS_FACE_TYPE(df->style) == TiledPixmapButton) ||
+		(DFS_FACE_TYPE(df->style) == ColorsetButton &&
+		 !CSET_IS_TRANSPARENT_PR(df->u.acs.cs) &&
+		 CSET_HAS_PIXMAP(df->u.acs.cs));
+	
 	return;
 }
 
@@ -1684,6 +1700,7 @@ frame_move_resize_args frame_create_move_resize_args(
 	 * if either the border uses a tiled pixmap background. */
 	mra->flags.had_handles = HAS_HANDLES(fw);
 	mra->flags.is_lazy_shading = frame_get_shading_laziness(fw, mra);
+	mra->trans_parts = border_get_transparent_decorations_part(fw);
 	if (mra->flags.is_lazy_shading)
 	{
 		SET_HAS_HANDLES(fw, 0);
@@ -1756,6 +1773,13 @@ void frame_free_move_resize_args(
 	{
 		border_draw_decorations(
 			fw, PART_ALL,
+			(mra->w_with_focus != None) ? True : False, True,
+			CLEAR_ALL, &mra->current_g, &mra->next_g);
+	}
+	else if (mra->trans_parts != PART_NONE)
+	{
+		border_draw_decorations(
+			fw, mra->trans_parts,
 			(mra->w_with_focus != None) ? True : False, True,
 			CLEAR_ALL, &mra->current_g, &mra->next_g);
 	}
