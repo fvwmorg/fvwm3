@@ -1,3 +1,8 @@
+2001-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (DispatchEvent):
+	allow other buttons/modifiers when dragging the viewport with button 3
+
 2001-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/xmanager.c (set_shape):

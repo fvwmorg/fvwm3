@@ -1157,7 +1157,7 @@ void DispatchEvent(XEvent *Event)
     while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event))
       ;
 
-    if(Event->xmotion.state == Button3MotionMask)
+    if(Event->xmotion.state & Button3MotionMask)
     {
       for(i=0;i<ndesks;i++)
       {
