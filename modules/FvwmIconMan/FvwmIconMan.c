@@ -191,6 +191,10 @@ int main (int argc, char **argv)
   }
 #endif
 
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
+
   OpenConsole(OUTPUT_FILE);
 
 #if 0

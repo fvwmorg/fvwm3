@@ -171,7 +171,7 @@ void GetConfigLine(int *fd, char **tline)
     *tline = (char*)&(packet->body[3]);
     body_count = FvwmPacketBodySize(*packet) * sizeof(unsigned long);
 
-    while ( body_count > 0 && isspace(**tline) ) {
+    while ( body_count > 0 && isspace((unsigned char)**tline) ) {
         (*tline)++;
         --body_count;
     }

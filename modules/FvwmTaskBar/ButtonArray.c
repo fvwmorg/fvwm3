@@ -29,6 +29,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <X11/Xlib.h>
@@ -39,7 +41,18 @@
 #include "ButtonArray.h"
 #include "Mallocs.h"
 
+#ifdef I18N_MB
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif
+
 extern XFontStruct *ButtonFont, *SelButtonFont;
+#ifdef I18N_MB
+extern XFontSet ButtonFontset, SelButtonFontset;
+#endif
 extern Display *dpy;
 extern Window win;
 extern GC shadow, hilite, graph, whitegc, blackgc, checkered;
@@ -126,6 +139,9 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   int state, x3p, newx;
   int search_len;
   XFontStruct *font;
+#ifdef I18N_MB
+  XFontSet fontset;
+#endif
   XGCValues gcv;
   unsigned long gcm;
 
@@ -137,9 +153,23 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   if (state != BUTTON_UP) { x++; y++; }
 
   if (state == BUTTON_BRIGHT || button == StartButton)
+#ifdef I18N_MB
+  {
     font = SelButtonFont;
+    fontset = SelButtonFontset;
+  }
+#else
+    font = SelButtonFont;
+#endif
   else
+#ifdef I18N_MB
+  {
     font = ButtonFont;
+    fontset = ButtonFontset;
+  }
+#else
+    font = ButtonFont;
+#endif
 
   gcm = GCFont;
   gcv.font = font->fid;
@@ -182,14 +212,23 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 
     /* It seems a little bogus that we don't see if the "..." _itself_
        will fit on the button; what if it won't?  Oh well.  */
-    XDrawString(dpy, win, graph, x + x3p, y+ButtonFont->ascent+4, t3p, 3);
+#ifdef I18N_MB
+    XmbDrawString(dpy, win, fontset,
+#else
+    XDrawString(dpy, win,
+#endif
+		graph, x + x3p, y+ButtonFont->ascent+4, t3p, 3);
     button->truncate = True;
   }
 
   /* Only print as much of the title as will fit.  */
   if (search_len)
-    XDrawString(dpy, win, graph,
-		x+newx, y+font->ascent+4,
+#ifdef I18N_MB
+    XmbDrawString(dpy, win, fontset,
+#else
+    XDrawString(dpy, win,
+#endif
+		graph, x+newx, y+font->ascent+4,
 		button->title, search_len);
 }
 

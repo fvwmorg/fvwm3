@@ -921,7 +921,13 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
   if(t->name != (char *)NULL)
   {
-    w=XTextWidth(GetDecor(t,WindowFont.font),t->name,strlen(t->name));
+#ifdef I18N_MB /* cannot use macro here, rewriting... */
+    w=XmbTextEscapement(GetDecor(t,WindowFont.fontset),t->name,
+			strlen(t->name));
+#else
+    w=XTextWidth(GetDecor(t,WindowFont.font),t->name,
+		 strlen(t->name));
+#endif
     if(w > t->title_g.width-12)
       w = t->title_g.width-4;
     if(w < 0)
@@ -988,7 +994,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
     XDrawLine(dpy,t->title_w,ShadowGC,hor_off+w+1,0,hor_off+w+1,
               t->title_g.height);
     if(t->name != (char *)NULL)
+#ifdef I18N_MB
+      XmbDrawString (dpy, t->title_w, GetDecor(t,WindowFont.fontset), Scr.ScratchGC3,hor_off,
+#else
       XDrawString (dpy, t->title_w,Scr.ScratchGC3,hor_off,
+#endif
                    GetDecor(t,WindowFont.y)+1,
                    t->name, strlen(t->name));
   }
@@ -1024,7 +1034,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
       }
 
       if(t->name != (char *)NULL)
+#ifdef I18N_MB
+        XmbDrawString (dpy, t->title_w, GetDecor(t,WindowFont.fontset), Scr.ScratchGC3,hor_off,
+#else
         XDrawString (dpy, t->title_w,Scr.ScratchGC3,hor_off,
+#endif
                      GetDecor(t,WindowFont.y)+1,
                      t->name, strlen(t->name));
   }

@@ -64,13 +64,27 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
   if (nukename && tmp->name)
     {
       if (tmp->name != tmp->icon_name && tmp->name != NoName)
+#ifdef I18N_MB
+	if (tmp->name_list != NULL)
+	  XFreeStringList(tmp->name_list);
+	else
+	  XFree(tmp->name);
+#else
 	XFree(tmp->name);
+#endif
       tmp->name = NULL;
     }
   if (nukeicon && tmp->icon_name)
     {
       if (tmp->name != tmp->icon_name && tmp->icon_name != NoName)
+#ifdef I18N_MB
+	if (tmp->icon_name_list != NULL)
+	  XFreeStringList(tmp->icon_name_list);
+	else
+	  XFree(tmp->icon_name); 
+#else
 	XFree(tmp->icon_name);
+#endif
       tmp->icon_name = NULL;
     }
 

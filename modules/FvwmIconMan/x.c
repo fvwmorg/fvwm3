@@ -478,6 +478,12 @@ void X_init_manager (int man_id)
   WinManager *man;
   unsigned int width, height;
   int i, x, y, geometry_mask;
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
   ConsoleDebug (X11, "In X_init_manager\n");
 
   man = &globals.managers[man_id];
@@ -495,6 +501,17 @@ void X_init_manager (int man_id)
   ConsoleDebug (X11, "boxwidth = %d\n", man->geometry.boxwidth);
 
   if (man->fontname) {
+#ifdef I18N_MB
+    man->ButtonFontset = XCreateFontSet (theDisplay, man->fontname, &ml, &mc, &ds);
+    if (!man->ButtonFontset) {
+      if (!(man->ButtonFontset = XCreateFontSet (theDisplay, FONT_STRING, &ml, &mc, &ds))) {
+        ConsoleMessage ("Can't get fontset\n");
+        ShutMeDown (1);
+      }
+    }
+    XFontsOfFontSet(man->ButtonFontset,&fs_list,&ml);
+    man->ButtonFont = fs_list[0];
+#else
     man->ButtonFont = XLoadQueryFont (theDisplay, man->fontname);
     if (!man->ButtonFont) {
       if (!(man->ButtonFont = XLoadQueryFont (theDisplay, FONT_STRING))) {
@@ -502,12 +519,22 @@ void X_init_manager (int man_id)
 	ShutMeDown (1);
       }
     }
+#endif
   }
   else {
+#ifdef I18N_MB
+    if (!(man->ButtonFontset = XCreateFontSet (theDisplay, FONT_STRING, &ml, &mc, &ds))) {
+      ConsoleMessage ("Can't get fontset\n");
+      ShutMeDown (1);
+    }
+    XFontsOfFontSet(man->ButtonFontset,&fs_list,&ml);
+    man->ButtonFont = fs_list[0];
+#else
     if (!(man->ButtonFont = XLoadQueryFont (theDisplay, FONT_STRING))) {
       ConsoleMessage ("Can't get font\n");
       ShutMeDown (1);
     }
+#endif
   }
 
   for ( i = 0; i < NUM_CONTEXTS; i++ ) {

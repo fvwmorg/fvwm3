@@ -38,6 +38,18 @@
 #include <sys/select.h>
 #endif
 
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#ifdef __STDC__
+#define XTextWidth(x,y,z)	XmbTextEscapement(x ## set,y,z)
+#define XFreeFont(x,y)		XFreeFontSet(x,y ## set)
+#else
+#define XTextWidth(x,y,z)	XmbTextEscapement(x/**/set,y,z)
+#define XFreeFont(x,y)		XFreeFontSet(x,y/**/set)
+#endif
+#define DrawString(a,b,c,d,e,f,g,h,i,j,k) FakeDrawString(xobj->xfontset,a,b,c,d,e,f,g,h,i,j,k)
+#endif /* I18N_MB */
+
 #include <X11/keysymdef.h>
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
@@ -215,6 +227,9 @@ struct XObj
   Pixmap icon_maskPixmap;	/* Icone masque */
   int icon_w,icon_h;		/* Largeur et hauteur de l'icone */
   XFontStruct *xfont;
+#ifdef I18N_MB
+  XFontSet xfontset;
+#endif
   int value;			/* Valeur courante */
   int value2;			/* Valeur minimale */
   int value3;			/* Valeur maximale */

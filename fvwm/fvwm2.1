@@ -413,6 +413,13 @@ menu or bound to a mouse button or a keyboard key.  It is left as an
 exercise for the user to decide which function make sense for
 initialization and which ones make sense for run-time.
 
+.SH INTERNATIONALIZATION
+Internationalized fvwm enables to display not only LATIN-1 characters
+but also multibyte characters such as Japanese, Korean, etc. You should
+setup your environment variable LC_TYPE (or LANG), to enable this feature.
+Also, you should specify proper FONTSET instead of FONT. Note that no
+catalog-file or input-methods are implemented.
+
 .SH BUILT IN FUNCTIONS
 \fIFvwm2\fP supports a set of built-in functions which can be bound to
 keyboard or mouse buttons.  If fvwm2 expects to find a built-in function

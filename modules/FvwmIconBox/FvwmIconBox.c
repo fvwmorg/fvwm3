@@ -56,6 +56,9 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#endif
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -74,6 +77,9 @@
 char *MyName;
 
 XFontStruct *font;
+#ifdef I18N_MB
+XFontSet fontset;
+#endif
 
 Display *dpy;			/* which display are we talking to */
 int x_fd;
@@ -180,6 +186,14 @@ static RETSIGTYPE TerminateHandler(int);
 static int myErrorHandler(Display *dpy, XErrorEvent *event);
 static void CleanUp(void);
 
+#ifdef I18N_MB
+#ifdef __STDC__
+#define XTextWidth(x,y,z)       XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z)       XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif
+
 /************************************************************************
   Main
   Based on main() from GoodStuff:
@@ -190,6 +204,10 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   char *temp, *s;
   XIconSize* size;
+
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
 
   temp = argv[0];
 
@@ -723,7 +741,11 @@ void RedrawIcon(struct icon_info *item, int f)
 			max(tw + 8, w), 6 + font->ascent +
 			font->descent);
       XClearWindow(dpy, item->IconWin);
+#ifdef I18N_MB
+      XmbDrawString(dpy, item->IconWin, fontset, NormalGC, lm, 3 + font->ascent,
+#else
       XDrawString(dpy, item->IconWin, NormalGC, lm, 3 + font->ascent,
+#endif
 		  label, len);
       RelieveRectangle(dpy, item->IconWin, 0, 0,
 		       max(tw + 8, w) - 1, 6 + font->ascent +
@@ -732,7 +754,11 @@ void RedrawIcon(struct icon_info *item, int f)
       XMoveResizeWindow(dpy, item->IconWin, item->x, item->y + h,
 			w, 6 + font->ascent + font->descent);
       XClearWindow(dpy, item->IconWin);
+#ifdef I18N_MB
+      XmbDrawString(dpy, item->IconWin, fontset, NormalGC, lm, 3 + font->ascent,
+#else
       XDrawString(dpy, item->IconWin, NormalGC, lm, 3 + font->ascent,
+#endif
 		  label, len);
       RelieveRectangle(dpy, item->IconWin, 0, 0,
 		       w - 1, 5 + font->ascent + font->descent,
@@ -908,6 +934,12 @@ void CreateWindow(void)
   XSizeHints mysizehints;
   XTextProperty name;
   XClassHint class_hints;
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
 
   h_margin = margin1*2 + bar_width + margin2 + 8;
   v_margin = margin1*2 + bar_width + margin2 + 8;
@@ -916,6 +948,22 @@ void CreateWindow(void)
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
 
   /* load the font */
+#ifdef I18N_MB
+  if ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL)
+    {
+#ifdef STRICTLY_FIXED
+      if ((fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL)
+#else
+      if ((fontset = XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*", &ml, &mc, &ds)) == NULL)
+#endif
+      {
+	fprintf(stderr,"%s: No fonts available\n",MyName);
+	exit(1);
+      }
+    }
+  XFontsOfFontSet(fontset, &fs_list, &ml);
+  font = fs_list[0];
+#else
   if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
     {
       if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
@@ -924,6 +972,7 @@ void CreateWindow(void)
 	  exit(1);
 	}
     };
+#endif
 
   if ((local_flags & HIDE_H))
     v_margin -= bar_width + margin2 + 4;
@@ -1437,7 +1486,7 @@ void ParseOptions(void)
 	if (strncasecmp(tline,CatString3("*", MyName,
 					  "Geometry"),Clength+9)==0){
 	  tmp = &tline[Clength+9];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
 	  tmp[strlen(tmp)-1] = 0;
 	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
@@ -1456,7 +1505,7 @@ void ParseOptions(void)
 	} else if (strncasecmp(tline,CatString3("*", MyName,
 						"MaxIconSize"),Clength+12)==0){
 	  tmp = &tline[Clength+12];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
 	  tmp[strlen(tmp)-1] = 0;
 
@@ -1520,7 +1569,7 @@ void ParseOptions(void)
 	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Resolution"),Clength+11)==0){
 	  tmp = &tline[Clength+11];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
 	  if (strncasecmp(tmp, "Desk", 4) == 0){
 	    m_mask |= M_NEW_DESK;
@@ -1535,7 +1584,7 @@ void ParseOptions(void)
 	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "SortIcons"),Clength+10)==0){
 	  tmp = &tline[Clength+10];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
 	  if (strlen(tmp) == 0){ /* the case where no argument is given */
 	    sortby = ICONNAME;
@@ -1552,7 +1601,7 @@ void ParseOptions(void)
 	}else if (strncasecmp(tline,CatString3("*",MyName,
 					      "HideSC"),Clength+7)==0){
 	  tmp = &tline[Clength+7];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
 	  if (strncasecmp(tmp, "Horizontal", 10) == 0)
 	    local_flags |= HIDE_H;
@@ -1606,11 +1655,11 @@ void parseicon(char *tline)
 
    /* file */
    /* skip spaces */
-   while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+   while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
      tline++;
    start = tline;
    end = tline;
-   while(!isspace(*end)&&(*end != '\n')&&(*end != 0))
+   while(!isspace((unsigned char)*end)&&(*end != '\n')&&(*end != 0))
      end++;
    len = end - start;
    ptr = safemalloc(len+1);
@@ -1667,11 +1716,11 @@ void parsemouse(char *tline)
   f->mouse = 0;
 
   /* skip spaces */
-  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
   start = tline;
   end = tline;
-  while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
+  while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
     end++;
   if (strncasecmp(start, "1", 1) == 0)
     f->mouse = Button1;
@@ -1682,11 +1731,11 @@ void parsemouse(char *tline)
   /* click or doubleclick */
   tline = end;
   /* skip spaces */
-  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
   start = tline;
   end = tline;
-  while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
+  while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
     end++;
   if (strncasecmp(start, "Click", 5) == 0)
     f->type = CLICK;
@@ -1696,13 +1745,13 @@ void parsemouse(char *tline)
   /* actions */
   tline = end;
   /* skip spaces */
-  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
   start = tline;
   end = tline;
   tmp = tline;
   while((*tmp!='\n')&&(*tmp!=0)){
-    if (!isspace(*tmp))
+    if (!isspace((unsigned char)*tmp))
       end = tmp;
     tmp++;
   }
@@ -1732,11 +1781,11 @@ void parsekey(char *tline)
   KeySym keysym;
 
   /* skip spaces */
-  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
   start = tline;
   end = tline;
-  while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
+  while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
     end++;
   nlen = end - start;
   nptr = safemalloc(nlen+1);
@@ -1746,13 +1795,13 @@ void parsekey(char *tline)
   /* actions */
   tline = end;
   /* skip spaces */
-  while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
+  while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
   start = tline;
   end = tline;
   tmp = tline;
   while((*tmp!='\n')&&(*tmp!=0)){
-    if (!isspace(*tmp))
+    if (!isspace((unsigned char)*tmp))
       end = tmp;
     tmp++;
   }

@@ -252,7 +252,7 @@ void write_string(FILE *out, char *line)
 
   for(i=0;i<len;i++)
     {
-      if(isspace(line[i]))
+      if(isspace((unsigned char)(line[i])))
 	space = 1;
       if(line[i]=='\"')
 	qoute = 1;

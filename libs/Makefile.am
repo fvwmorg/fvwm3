@@ -3,7 +3,7 @@
 noinst_LIBRARIES = libfvwm.a
 
 libfvwm_a_SOURCES = Bindings.c ClientMsg.c ClientMsg.h ColorUtils.c \
-	GetFont.c \
+	GetFont.c GetFontSet.c \
 	Grab.c Grab.h Graphics.c ModGraph.c Module.c Module.h \
 	Parse.c Parse.h Picture.c Picture.h Strings.c Strings.h \
 	System.c XResource.c debug.c envvar.c envvar.h \

@@ -215,12 +215,12 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
 
   line += len;
   end = line;
-  while (*end && !isspace(*end))
+  while (*end && !isspace((unsigned char)*end))
     end++;
   if (line == end)
     return False;
   value = end;
-  while (*value && isspace(*value))
+  while (*value && isspace((unsigned char)*value))
     value++;
 
   /* prefix*suffix: value */
@@ -232,7 +232,7 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
   len = strlen(value);
   myvalue = (char *)safemalloc(len + 1);
   strcpy(myvalue, value);
-  for (len--; len >= 0 && isspace(myvalue[len]); len--)
+  for (len--; len >= 0 && isspace((unsigned char)myvalue[len]); len--)
     myvalue[len] = 0;
 
   /* merge string into database */

@@ -128,6 +128,18 @@
 /* Enables session management functionality. */
 #undef SESSION
 
+/* Enables X11 multibyte character support */
+#undef I18N_MB
+
+/* Enables to use setlocale() provided by X */
+#undef X_LOCALE
+
+/* Enables X11 multibyte character support */
+#undef I18N_MB
+
+/* Enables to use setlocale() provided by X */
+#undef X_LOCALE
+
 /* Specify a type for sig_atomic_t if it's not available.  */
 #undef sig_atomic_t
 

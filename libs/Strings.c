@@ -40,7 +40,7 @@ char* CatString3( char* a, char* b, char* c )
     /* Expand buffer to fit string, to a multiple of CHUNK_SIZE */
     if (len > buffer_len) {
 	if ( buffer ) free( buffer );
-	
+
 	buffer_len = CHUNK_SIZE * (1 + len / CHUNK_SIZE);
 	buffer = safemalloc( buffer_len );
     }
@@ -67,10 +67,10 @@ void CopyString(char **dest, const char *source)
     }
 
     /* set 'start' to the first character of the string,
-       skipping over spaces, but not newlines 
+       skipping over spaces, but not newlines
        (newline terminates the string) */
 
-    while ( isspace(*source) && (*source != '\n') )
+    while ( isspace((unsigned char)*source) && (*source != '\n') )
 	source++;
     start = source;
 
@@ -79,13 +79,13 @@ void CopyString(char **dest, const char *source)
 
     len = 0;
     while ( (*source != '\n') && (*source != 0) )
-    { 
+    {
 	len++;
 	source++;
     }
     source--;
 
-    while( len > 0 && isspace(*source) )
+    while( len > 0 && isspace((unsigned char)*source) )
     {
 	len--;
 	source--;
@@ -111,12 +111,13 @@ char *stripcpy( const char *source )
     if(source == NULL)
 	return NULL;
 
-    while(isspace(*source))
+    while(isspace((unsigned char)*source))
 	source++;
     len = strlen(source);
     tmp = source + len -1;
 
-    while( (tmp >= source) && ((isspace(*tmp)) || (*tmp == '\n')) )
+    while( (tmp >= source) && ((isspace((unsigned char)*tmp)) ||
+			       (*tmp == '\n')) )
     {
 	tmp--;
 	len--;

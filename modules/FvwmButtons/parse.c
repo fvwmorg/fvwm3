@@ -51,7 +51,7 @@ static char terminator = '\0';
 
 char *trimleft(char *s)
 {
-  while (s && isspace(*s))
+  while (s && isspace((unsigned char)*s))
     s++;
   return s;
 }

@@ -2708,8 +2708,15 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   {
     if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
     {
-      XDrawString(dpy, MR_WINDOW(mr), currentGC, MI_LABEL_OFFSET(mi)[i],
+#ifdef I18N_MB
+      XmbDrawString(dpy, MR_WINDOW(mr), MST_PSTDFONT(mr)->fontset,
+		    currentGC, MI_LABEL_OFFSET(mi)[i],
+		    text_y, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
+#else
+      XDrawString(dpy, MR_WINDOW(mr),
+		  currentGC, MI_LABEL_OFFSET(mi)[i],
 		  text_y, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
+#endif
     }
     if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
 	(!MI_IS_HOTKEY_AUTOMATIC(mi) || MST_USE_AUTOMATIC_HOTKEYS(mr)) &&
@@ -4615,7 +4622,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   memset(&(mops.flags), 0, sizeof(mops.flags));
   action = GetNextToken(action,&menu_name);
   action = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
-  while (action && *action && isspace(*action))
+  while (action && *action && isspace((unsigned char)*action))
     action++;
   if (action && *action == 0)
     action = NULL;
@@ -5035,8 +5042,10 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != &Scr.StdFont)
   {
     ST_PSTDFONT(ms)->y = ST_PSTDFONT(ms)->font->ascent;
+#ifndef I18N_MB
     ST_PSTDFONT(ms)->height =
       ST_PSTDFONT(ms)->font->ascent + ST_PSTDFONT(ms)->font->descent;
+#endif
   }
 
   /* calculate colors based on foreground */
@@ -5177,6 +5186,9 @@ static void NewMenuStyle(F_CMD_ARGS)
   int val[2];
   int n;
   XFontStruct *xfs = NULL;
+#ifdef I18N_MB
+  XFontSet xfset;
+#endif
   int i;
 
   action = GetNextToken(action, &name);
@@ -5296,7 +5308,11 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_FACE(tmpms).type = SimpleMenu;
       if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.StdFont)
       {
+#ifdef I18N_MB
+	XFreeFontSet(dpy, ST_PSTDFONT(tmpms)->fontset);
+#else
 	XFreeFont(dpy, ST_PSTDFONT(tmpms)->font);
+#endif
 	free(ST_PSTDFONT(tmpms));
       }
       ST_PSTDFONT(tmpms) = &Scr.StdFont;
@@ -5416,7 +5432,11 @@ static void NewMenuStyle(F_CMD_ARGS)
       break;
 
     case 15: /* Font */
+#ifdef I18N_MB
+      if (arg1 && (xfset = GetFontSetOrFixed(dpy, arg1)) == NULL)
+#else
       if (arg1 && (xfs = GetFontOrFixed(dpy, arg1)) == NULL)
+#endif
       {
 	fvwm_msg(ERR,"NewMenuStyle",
 		 "Couldn't load font '%s' or 'fixed'\n", arg1);
@@ -5424,8 +5444,13 @@ static void NewMenuStyle(F_CMD_ARGS)
       }
       if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.StdFont)
       {
+#ifdef I18N_MB
+	if (ST_PSTDFONT(tmpms)->fontset)
+	  XFreeFontSet(dpy, ST_PSTDFONT(tmpms)->fontset);
+#else
 	if (ST_PSTDFONT(tmpms)->font)
 	  XFreeFont(dpy, ST_PSTDFONT(tmpms)->font);
+#endif
 	free(ST_PSTDFONT(tmpms));
       }
       if (arg1 == NULL)
@@ -5435,14 +5460,29 @@ static void NewMenuStyle(F_CMD_ARGS)
       }
       else
       {
+#ifdef I18N_MB
+	XFontSetExtents *fset_extents;
+	XFontStruct **fs_list;
+	char **ml;
+
+	ST_PSTDFONT(tmpms) = (MyFont *)safemalloc(sizeof(MyFont));
+	ST_PSTDFONT(tmpms)->fontset = xfset;
+
+	/* backward compatiblity setup */
+	XFontsOfFontSet(xfset, &fs_list, &ml);
+	ST_PSTDFONT(tmpms)->font = fs_list[0];
+	fset_extents = XExtentsOfFontSet(xfset);
+	ST_PSTDFONT(tmpms)->height = fset_extents->max_logical_extent.height;
+#else
 	ST_PSTDFONT(tmpms) = (MyFont *)safemalloc(sizeof(MyFont));
 	ST_PSTDFONT(tmpms)->font = xfs;
+#endif
       }
       gc_changed = True;
       break;
 
     case 16: /* MenuFace */
-      while (args && *args != '\0' && isspace(*args))
+      while (args && *args != '\0' && isspace((unsigned char)*args))
 	args++;
       ReadMenuFace(args, &ST_FACE(tmpms), True);
       break;
@@ -5694,7 +5734,12 @@ static void OldMenuStyle(F_CMD_ARGS)
   {
     buffer = (char *)safemalloc(strlen(action) + 100);
     sprintf(buffer,
+#ifdef I18N_MB
+	    /* looks funny, but font will be a,b,c; should be quoted */
+	    "* %s, Foreground %s, Background %s, Greyed %s, Font \"%s\", %s",
+#else
 	    "* %s, Foreground %s, Background %s, Greyed %s, Font %s, %s",
+#endif
 	    style, fore, back, stipple, font,
 	    (animated && StrEquals(animated, "anim")) ?
 	    "Animation" : "AnimationOff");

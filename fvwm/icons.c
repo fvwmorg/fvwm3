@@ -336,7 +336,12 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     x = (tmp_win->icon_w_width - tmp_win->icon_t_width) / 2;
     if(x < 3)
       x = 3;
-    XDrawString (dpy, tmp_win->icon_w, Scr.ScratchGC3, x,
+#ifdef I18N_MB
+    XmbDrawString (dpy, tmp_win->icon_w, Scr.IconFont.fontset,
+#else
+    XDrawString (dpy, tmp_win->icon_w,
+#endif
+		 Scr.ScratchGC3, x,
 		 tmp_win->icon_w_height - Scr.IconFont.height + Scr.IconFont.y
 		 - 3, tmp_win->icon_name, strlen(tmp_win->icon_name));
     RelieveRectangle(dpy, tmp_win->icon_w, 0, 0, tmp_win->icon_w_width - 1,

@@ -120,7 +120,11 @@ void DrawTextField(struct XObj *xobj)
  XFillRectangle(xobj->display,xobj->win,xobj->gc,3,3,xobj->width-6,xobj->height-6);
  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&y1,&desc,&struc);
+#ifdef I18N_MB
+ XmbDrawImageString(xobj->display,xobj->win,xobj->xfontset,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
+#else
  XDrawImageString(xobj->display,xobj->win,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
+#endif
 
  /* Dessin de la zone selectionnee */
  XSetFunction(xobj->display,xobj->gc,GXinvert);

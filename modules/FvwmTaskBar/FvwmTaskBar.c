@@ -69,6 +69,10 @@
 
 #include <stdlib.h>
 
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#endif
+
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
 #include "libs/safemalloc.h"
@@ -110,6 +114,9 @@ int     screen, d_depth;
 Pixel   back, fore;
 GC      graph, shadow, hilite, blackgc, whitegc;
 XFontStruct *ButtonFont, *SelButtonFont;
+#ifdef I18N_MB
+XFontSet ButtonFontset, SelButtonFontset;
+#endif
 int fontheight;
 static Atom wm_del_win;
 Atom MwmAtom = None;
@@ -200,6 +207,9 @@ int main(int argc, char **argv)
   strcat(Module, temp);
   Clength = strlen(Module);
 
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
   /* Open the console for messages */
   OpenConsole();
 
@@ -656,7 +666,7 @@ static void ParseConfigLine(char *tline) {
   char *str;
   int i, j;
 
-  while (isspace(*tline))tline++;
+  while (isspace((unsigned char)*tline))tline++;
   if(strncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
     CopyString(&font_string,&tline[Clength+4]);
   else if(strncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
@@ -666,7 +676,7 @@ static void ParseConfigLine(char *tline) {
   }
   else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
     str = &tline[Clength+9];
-    while(((isspace(*str))&&(*str != '\n'))&&(*str != 0))	str++;
+    while(((isspace((unsigned char)*str))&&(*str != '\n'))&&(*str != 0))	str++;
     str[strlen(str)-1] = 0;
     UpdateString(&geometry,str);
   }
@@ -1118,7 +1128,7 @@ void LinkAction(char *string)
 {
 char *temp;
   temp=string;
-  while(isspace(*temp)) temp++;
+  while(isspace((unsigned char)*temp)) temp++;
   if(strncasecmp(temp, "Click1", 6)==0)
     CopyString(&ClickAction[0],&temp[6]);
   else if(strncasecmp(temp, "Click2", 6)==0)
@@ -1138,6 +1148,12 @@ void StartMeUp()
    XGCValues gcval;
    unsigned long gcmask;
    int ret;
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
 
    if (!(dpy = XOpenDisplay(""))) {
       fprintf(stderr,"%s: can't open display %s", Module,
@@ -1156,6 +1172,30 @@ void StartMeUp()
 
    if (selfont_string == NULL) selfont_string = font_string;
 
+#ifdef I18N_MB
+   if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
+#ifdef STRICTLY_FIXED
+     if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL)
+#else
+     if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL)
+#endif
+       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+       exit(1);
+   }
+   XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
+   ButtonFont = fs_list[0];
+   if ((SelButtonFontset=XCreateFontSet(dpy,selfont_string,&ml,&mc,&ds)) == NULL) {
+#ifdef STRICTLY_FIXED
+     if ((SelButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL)
+#else
+     if ((SelButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL)
+#endif
+       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+       exit(1);
+   }
+   XFontsOfFontSet(SelButtonFontset,&fs_list,&ml);
+   SelButtonFont = fs_list[0];
+#else
    if ((ButtonFont = XLoadQueryFont(dpy, font_string)) == NULL) {
      if ((ButtonFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
        ConsoleMessage("Couldn't load fixed font. Exiting!\n");
@@ -1168,6 +1208,7 @@ void StartMeUp()
        exit(1);
      }
    }
+#endif
 
    fontheight = SelButtonFont->ascent + SelButtonFont->descent;
 

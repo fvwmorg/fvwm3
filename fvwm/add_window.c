@@ -130,6 +130,13 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   XrmValue rm_value;
   XTextProperty text_prop;
   extern Boolean PPosOverride;
+#ifdef I18N_MB
+  Atom actual_type;
+  int actual_format;
+  unsigned long nitems, bytesafter;
+  char **list;
+  int num;
+#endif
 
   int do_shade = 0;
   int do_maximize = 0;
@@ -185,7 +192,36 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	return(NULL);
       }
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
+#ifdef I18N_MB
+  {
+    if (text_prop.value) {
+      if (text_prop.encoding == XA_STRING) {
+        /* STRING encoding, use this as it is */
+        tmp_win->name = (char *)text_prop.value;
+        tmp_win->name_list = NULL;
+      } else {
+        /* not STRING encoding, try to convert */
+        if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
+            && num > 0 && *list) {
+          /* XXX: does not consider the conversion is REALLY succeeded */
+          XFree(text_prop.value); /* return of XGetWMName() */
+          tmp_win->name = *list;
+          tmp_win->name_list = list;
+        } else {
+          if (list) XFreeStringList(list);
+          XFree(text_prop.value); /* return of XGetWMName() */
+          XGetWMName(dpy, tmp_win->w, &text_prop); /* XXX: read again ? */
+          tmp_win->name = (char *)text_prop.value;
+          tmp_win->name_list = NULL;
+        }
+      }
+    } else {
+      tmp_win->name = NoName;
+    }
+  }
+#else
     tmp_win->name = (char *)text_prop.value;
+#endif
   else
     tmp_win->name = NoName;
 

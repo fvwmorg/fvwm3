@@ -1398,9 +1398,14 @@ void SetTitleStyle(F_CMD_ARGS)
 	    fl->TitleHeight = height;
 	    extra_height -= fl->TitleHeight;
 
+#ifdef I18N_MB
+	    fl->WindowFont.y = fl->WindowFont.font->ascent
+		+ (height - (fl->WindowFont.height + 3)) / 2;
+#else
 	    fl->WindowFont.y = fl->WindowFont.font->ascent
 		+ (height - (fl->WindowFont.font->ascent
 			     + fl->WindowFont.font->descent + 3)) / 2;
+#endif
 	    if (fl->WindowFont.y < fl->WindowFont.font->ascent)
 		fl->WindowFont.y = fl->WindowFont.font->ascent;
 
@@ -1465,7 +1470,9 @@ static void ApplyDefaultFontAndColors(void)
   int hei;
 
   Scr.StdFont.y = Scr.StdFont.font->ascent;
+#ifdef I18N_MB /* ??? */
   Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
+#endif
 
   /* make GC's */
   gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
@@ -1514,12 +1521,20 @@ static void ApplyDefaultFontAndColors(void)
 
   if (Scr.flags.has_icon_font == 0)
   {
+#ifdef I18N_MB
+    Scr.IconFont.fontset = Scr.StdFont.fontset;
+    Scr.IconFont.height = Scr.StdFont.height;
+#endif
     Scr.IconFont.font = Scr.StdFont.font;
     ApplyIconFont();
   }
 
   if (Scr.flags.has_window_font == 0)
   {
+#ifdef I18N_MB
+    Scr.DefaultDecor.WindowFont.fontset = Scr.StdFont.fontset;
+    Scr.DefaultDecor.WindowFont.height = Scr.StdFont.height;
+#endif
     Scr.DefaultDecor.WindowFont.font = Scr.StdFont.font;
     ApplyWindowFont(&Scr.DefaultDecor);
   }
@@ -1663,6 +1678,12 @@ void LoadDefaultFont(F_CMD_ARGS)
 {
   char *font;
   XFontStruct *xfs = NULL;
+#ifdef I18N_MB
+  XFontSet xfset;
+  XFontSetExtents *fset_extents;
+  XFontStruct **fs_list;
+  char **ml;
+#endif
 
   action = GetNextToken(action,&font);
   if (!font)
@@ -1671,20 +1692,40 @@ void LoadDefaultFont(F_CMD_ARGS)
     font = strdup("");
   }
 
+#ifdef I18N_MB
+  if ((xfset = GetFontSetOrFixed(dpy, font)) == NULL)
+#else
   if ((xfs = GetFontOrFixed(dpy, font)) == NULL)
+#endif
   {
     fvwm_msg(ERR,"SetDefaultFont","Couldn't load font '%s' or 'fixed'\n",
 	     font);
     free(font);
+#ifdef I18N_MB
+    if (Scr.StdFont.fontset == NULL)
+#else
     if (Scr.StdFont.font == NULL)
+#endif
       exit(1);
     else
       return;
   }
   free(font);
+#ifdef I18N_MB
+  if (Scr.StdFont.fontset != NULL)
+    XFreeFontSet(dpy, Scr.StdFont.fontset);
+  Scr.StdFont.fontset = xfset;
+
+  /* backward compatiblity setup */
+  XFontsOfFontSet(xfset, &fs_list, &ml);
+  Scr.StdFont.font = fs_list[0];
+  fset_extents = XExtentsOfFontSet(xfset);
+  Scr.StdFont.height = fset_extents->max_logical_extent.height;
+#else
   if (Scr.StdFont.font)
     XFreeFont(dpy, Scr.StdFont.font);
   Scr.StdFont.font = xfs;
+#endif
 
   ApplyDefaultFontAndColors();
 }
@@ -1693,7 +1734,9 @@ static void ApplyIconFont(void)
 {
   FvwmWindow *tmp;
 
+#ifndef I18N_MB
   Scr.IconFont.height = Scr.IconFont.font->ascent+Scr.IconFont.font->descent;
+#endif
   Scr.IconFont.y = Scr.IconFont.font->ascent;
 
   tmp = Scr.FvwmRoot.next;
@@ -1713,6 +1756,9 @@ void LoadIconFont(F_CMD_ARGS)
 {
   char *font;
   XFontStruct *newfont;
+#ifdef I18N_MB
+  XFontSet newfontset;
+#endif
 
   action = GetNextToken(action,&font);
   if (!font)
@@ -1723,17 +1769,40 @@ void LoadIconFont(F_CMD_ARGS)
       XFreeFont(dpy, Scr.IconFont.font);
       Scr.flags.has_icon_font = 0;
     }
+#ifdef I18N_MB
+    Scr.IconFont.fontset = Scr.StdFont.fontset;
+    Scr.IconFont.height = Scr.StdFont.height;
+#endif
     Scr.IconFont.font = Scr.StdFont.font;
     ApplyIconFont();
     return;
   }
 
+#ifdef I18N_MB
+  if ((newfontset = GetFontSetOrFixed(dpy, font))!=NULL)
+  {
+    XFontSetExtents *fset_extents;
+    XFontStruct **fs_list;
+    char **ml;
+
+    if (Scr.IconFont.fontset != NULL && Scr.flags.has_icon_font == 1)
+      XFreeFontSet(dpy, Scr.IconFont.fontset);
+    Scr.flags.has_icon_font = 1;
+    Scr.IconFont.fontset = newfontset;
+
+    /* backward compatiblity setup */
+    XFontsOfFontSet(newfontset, &fs_list, &ml);
+    Scr.IconFont.font = fs_list[0];
+    fset_extents = XExtentsOfFontSet(newfontset);
+    Scr.IconFont.height = fset_extents->max_logical_extent.height;
+#else
   if ((newfont = GetFontOrFixed(dpy, font)))
   {
     if (Scr.IconFont.font && Scr.flags.has_icon_font == 1)
       XFreeFont(dpy, Scr.IconFont.font);
     Scr.flags.has_icon_font = 1;
     Scr.IconFont.font = newfont;
+#endif
     ApplyIconFont();
   }
   else
@@ -1749,11 +1818,17 @@ static void ApplyWindowFont(FvwmDecor *fl)
   FvwmWindow *hi;
   int x,y,w,h,extra_height;
 
+#ifndef I18N_MB
   fl->WindowFont.height =
     fl->WindowFont.font->ascent+fl->WindowFont.font->descent;
+#endif
   fl->WindowFont.y = fl->WindowFont.font->ascent;
   extra_height = fl->TitleHeight;
+#ifdef I18N_MB
+  fl->TitleHeight=fl->WindowFont.height+3;
+#else
   fl->TitleHeight=fl->WindowFont.font->ascent+fl->WindowFont.font->descent+3;
+#endif
   extra_height -= fl->TitleHeight;
 
   tmp = Scr.FvwmRoot.next;
@@ -1789,6 +1864,9 @@ void LoadWindowFont(F_CMD_ARGS)
 {
   char *font;
   XFontStruct *newfont;
+#ifdef I18N_MB
+  XFontSet newfontset;
+#endif
 #ifdef USEDECOR
   FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
@@ -1803,12 +1881,36 @@ void LoadWindowFont(F_CMD_ARGS)
     {
       XFreeFont(dpy, Scr.DefaultDecor.WindowFont.font);
       Scr.flags.has_window_font = 0;
+#ifdef I18N_MB
+      fl->WindowFont.fontset = Scr.StdFont.fontset;
+      fl->WindowFont.height = Scr.StdFont.height;
+#endif
       fl->WindowFont.font = Scr.StdFont.font;
       ApplyWindowFont(&Scr.DefaultDecor);
     }
     return;
   }
 
+#ifdef I18N_MB
+  if ((newfontset = GetFontSetOrFixed(dpy, font))!=NULL)
+  {
+    XFontSetExtents *fset_extents;
+    XFontStruct **fs_list;
+    char **ml;
+
+    if (fl->WindowFont.fontset != NULL &&
+	(fl != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
+      XFreeFontSet(dpy, fl->WindowFont.fontset);
+    if (fl == &Scr.DefaultDecor)
+      Scr.flags.has_window_font = 1;
+    fl->WindowFont.fontset = newfontset;
+
+    /* backward compatiblity setup */
+    XFontsOfFontSet(newfontset, &fs_list, &ml);
+    fl->WindowFont.font = fs_list[0];
+    fset_extents = XExtentsOfFontSet(newfontset);
+    fl->WindowFont.height = fset_extents->max_logical_extent.height;
+#else
   if ((newfont = GetFontOrFixed(dpy, font)))
   {
     if (fl->WindowFont.font &&
@@ -1817,6 +1919,7 @@ void LoadWindowFont(F_CMD_ARGS)
     if (fl == &Scr.DefaultDecor)
       Scr.flags.has_window_font = 1;
     fl->WindowFont.font = newfont;
+#endif
     ApplyWindowFont(fl);
   }
   else
@@ -2295,7 +2398,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     enum ButtonState bs = MaxButtonState;
     int i = 0, all = 0, pstyle = 0;
 
-    while(isspace(*s))++s;
+    while(isspace((unsigned char)*s))++s;
     for (; i < MaxButtonState; ++i)
 	if (strncasecmp(button_states[i],s,
 			  strlen(button_states[i]))==0) {
@@ -2306,7 +2409,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 	s += strlen(button_states[bs]);
     else
 	all = 1;
-    while(isspace(*s))++s;
+    while(isspace((unsigned char)*s))++s;
     if ('(' == *s) {
 	int len;
 	pstyle = 1;
@@ -2315,7 +2418,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 		     "missing parenthesis: %s", s);
 	    return NULL;
 	}
-	while (isspace(*s)) ++s;
+	while (isspace((unsigned char)*s)) ++s;
 	len = end - s + 1;
 	spec = safemalloc(len);
 	strncpy(spec, s, len - 1);
@@ -2323,7 +2426,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     } else
 	spec = s;
 
-    while(isspace(*spec))++spec;
+    while(isspace((unsigned char)*spec))++spec;
     /* setup temporary in case button read fails */
     tmpbf.style = SimpleButton;
 #ifdef MULTISTYLE
@@ -2375,7 +2478,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     if (pstyle) {
 	free(spec);
 	++end;
-	while(isspace(*end))++end;
+	while(isspace((unsigned char)*end))++end;
     }
     return end;
 }
@@ -2391,7 +2494,7 @@ void AddToDecor(FvwmDecor *fl, char *s)
 {
   if (!s)
     return;
-  while (*s&&isspace(*s))
+  while (*s&&isspace((unsigned char)*s))
     ++s;
   if (!*s)
     return;
@@ -2896,7 +2999,7 @@ static char *CreateFlagString(char *string, char **restptr)
   int length;
 
   c = string;
-  while (isspace(*c) && (*c != 0))
+  while (isspace((unsigned char)*c) && (*c != 0))
     c++;
 
   if (*c == '[' || *c == '(')

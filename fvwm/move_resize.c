@@ -967,7 +967,11 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
                      Scr.StdShadowGC, 2);
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
 	    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
+#ifdef I18N_MB
+  XmbDrawString (dpy, Scr.SizeWindow, Scr.StdFont.fontset, Scr.StdGC,
+#else
   XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
+#endif
 	       offset,
 	       Scr.StdFont.font->ascent + SIZE_VINDENT,
 	       str, strlen(str));
@@ -1527,8 +1531,13 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
                      Scr.StdShadowGC, 2);
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
     - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
+#ifdef I18N_MB
+  XmbDrawString (dpy, Scr.SizeWindow, Scr.StdFont.fontset, Scr.StdGC,
+		 offset, Scr.StdFont.font->ascent + SIZE_VINDENT, str, 13);
+#else
   XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
 	       offset, Scr.StdFont.font->ascent + SIZE_VINDENT, str, 13);
+#endif
 }
 
 /***********************************************************************

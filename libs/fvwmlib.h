@@ -163,6 +163,7 @@ Pixel    GetHilite(Pixel);              /* 3d.c */
  ***********************************************************************/
 
 XFontStruct *GetFontOrFixed(Display *disp, char *fontname);
+XFontSet GetFontSetOrFixed(Display *disp, char *fontname);
 
 void MyXGrabServer(Display *disp);
 void MyXUngrabServer(Display *disp);

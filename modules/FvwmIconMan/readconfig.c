@@ -256,7 +256,7 @@ static int extract_int (char *p, int *n)
   char *s;
   int sign = 1;
 
-  while (isspace (*p) && *p)
+  while (isspace ((unsigned char)*p) && *p)
     p++;
 
   if (*p == '-') {

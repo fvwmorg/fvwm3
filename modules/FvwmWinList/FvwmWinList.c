@@ -66,6 +66,16 @@
 
 #include <stdlib.h>
 
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,ButtonFontset,v,w,x,y,z)
+#endif
+
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
 
@@ -93,6 +103,9 @@ Pixel back[MAX_COLOUR_SETS], fore[MAX_COLOUR_SETS];
 GC  graph[MAX_COLOUR_SETS],shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 GC  background[MAX_COLOUR_SETS];
 XFontStruct *ButtonFont;
+#ifdef I18N_MB
+XFontSet ButtonFontset;
+#endif
 int fontheight;
 static Atom wm_del_win;
 Atom MwmAtom = None;
@@ -165,6 +178,9 @@ int main(int argc, char **argv)
   strcat(Module, temp);
   Clength = strlen(Module);
 
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
   /* Open the console for messages */
   OpenConsole();
 
@@ -842,7 +858,7 @@ void LinkAction(char *string)
 {
 char *temp;
   temp=string;
-  while(isspace(*temp)) temp++;
+  while(isspace((unsigned char)*temp)) temp++;
   if(strncasecmp(temp, "Click1", 6)==0)
     CopyString(&ClickAction[0],&temp[6]);
   else if(strncasecmp(temp, "Click2", 6)==0)
@@ -1007,6 +1023,13 @@ void MakeMeWindow(void)
 ******************************************************************************/
 void StartMeUp(void)
 {
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
+
   if (!(dpy = XOpenDisplay("")))
   {
     fprintf(stderr,"%s: can't open display %s", Module,
@@ -1021,10 +1044,22 @@ void StartMeUp(void)
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
 
+#ifdef I18N_MB
+  if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
+#ifdef STRICTLY_FIXED
+    if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL) exit(1);
+#else
+    if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL) exit(1);
+#endif
+  }
+  XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
+  ButtonFont = fs_list[0];
+#else
   if ((ButtonFont=XLoadQueryFont(dpy,font_string))==NULL)
   {
     if ((ButtonFont=XLoadQueryFont(dpy,"fixed"))==NULL) exit(1);
   }
+#endif
 
   fontheight = ButtonFont->ascent+ButtonFont->descent;
 

@@ -61,6 +61,10 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#endif
+
 #if HAVE_SYS_SYSTEMINFO_H
 /* Solaris has sysinfo instead of gethostname.  */
 #include <sys/systeminfo.h>
@@ -176,6 +180,11 @@ int main(int argc, char **argv)
   g_argc = argc;
 
   DBUG("main","Entered, about to parse args");
+
+#ifdef I18N_MB
+  if (setlocale(LC_CTYPE, "") == NULL)
+    fvwm_msg(ERR, "main", "Can't set locale. Check your $LC_CTYPE or $LANG.\n");
+#endif
 
   /* Put the default module directory into the environment so it can be used
      later by the config file, etc.  */

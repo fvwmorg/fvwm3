@@ -47,6 +47,14 @@ extern GC blackgc, hilite, shadow, checkered;
 
 GC statusgc, dategc;
 XFontStruct *StatusFont;
+#ifdef I18N_MB
+XFontSet StatusFontset;
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif
 int stwin_width = 100, goodies_width = 0;
 int anymail, unreadmail, newmail, mailcleared = 0;
 int fontheight, clock_width;
@@ -126,6 +134,12 @@ void InitGoodies() {
   char tmp[1024];
   XGCValues gcval;
   unsigned long gcmask;
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
 
   if (mailpath == NULL) {
     strcpy(tmp, DEFAULT_MAIL_PATH);
@@ -134,12 +148,27 @@ void InitGoodies() {
     UpdateString(&mailpath, tmp);
   }
 
+#ifdef I18N_MB
+  if ((StatusFontset=XCreateFontSet(dpy,statusfont_string,&ml,&mc,&ds))==NULL) {
+#ifdef STRICTLY_FIXED
+    if ((StatusFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds))==NULL) {
+#else
+    if ((StatusFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds))==NULL) {
+#endif
+      ConsoleMessage("Couldn't load fixed fontset...exiting !\n");
+      exit(1);
+    }
+  }
+  XFontsOfFontSet(StatusFontset,&fs_list,&ml);
+  StatusFont = fs_list[0];
+#else
   if ((StatusFont = XLoadQueryFont(dpy, statusfont_string)) == NULL) {
     if ((StatusFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
       exit(1);
     }
   }
+#endif
 
   fontheight = StatusFont->ascent + StatusFont->descent;
 
@@ -201,7 +230,11 @@ void DrawGoodies() {
   }
 
   Draw3dBox(win, win_width - stwin_width, 0, stwin_width, RowHeight);
+#ifdef I18N_MB
+  XmbDrawString(dpy,win,StatusFontset,statusgc,
+#else
   XDrawString(dpy,win,statusgc,
+#endif
 	      win_width - stwin_width + 4,
 	      ((RowHeight - fontheight) >> 1) +StatusFont->ascent,
 	      str, strlen(str));
@@ -271,7 +304,11 @@ void CreateMailTipWindow() {
 
 void RedrawTipWindow() {
   if (Tip.text) {
+#ifdef I18N_MB
+    XmbDrawString(dpy, Tip.win, StatusFontset, dategc, 3, Tip.th-4,
+#else
     XDrawString(dpy, Tip.win, dategc, 3, Tip.th-4,
+#endif
                      Tip.text, strlen(Tip.text));
     XRaiseWindow(dpy, Tip.win);  /*****************/
   }

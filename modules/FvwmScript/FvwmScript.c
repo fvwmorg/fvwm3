@@ -708,6 +708,10 @@ int main (int argc, char **argv)
   int IsFather;
   int i;
 
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
+
   ModuleName = GetFileNameFromPath(argv[0]);
 
   /* On determine si le script a un pere */

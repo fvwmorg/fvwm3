@@ -18,23 +18,42 @@
 /***********************************************/
 /* Fonction d'ecriture en relief               */
 /***********************************************/
+#ifdef I18N_MB
+void FakeDrawString(XFontSet FONTSET,
+		Display *dpy,GC gc,Window win,int x,int y,char *str,
+		int strl,unsigned long ForeC,unsigned long HiC,
+		unsigned long BackC,int WithRelief)
+#else
 void DrawString(Display *dpy,GC gc,Window win,int x,int y,char *str,
 		int strl,unsigned long ForeC,unsigned long HiC,
 		unsigned long BackC,int WithRelief)
+#endif
 {
  if (WithRelief)
  {
   XSetBackground(dpy,gc,BackC);
   XSetForeground(dpy,gc,HiC);
+#ifdef I18N_MB
+  XmbDrawImageString(dpy,win,FONTSET,gc,x+1,y+1,str,strl);
+#else
   XDrawImageString(dpy,win,gc,x+1,y+1,str,strl);
+#endif
   XSetForeground(dpy,gc,ForeC);
+#ifdef I18N_MB
+  XmbDrawString(dpy,win,FONTSET,gc,x,y,str,strl);
+#else
   XDrawString(dpy,win,gc,x,y,str,strl);
+#endif
  }
  else
  {
   XSetBackground(dpy,gc,BackC);
   XSetForeground(dpy,gc,ForeC);
+#ifdef I18N_MB
+  XmbDrawImageString(dpy,win,FONTSET,gc,x,y+1,str,strl);
+#else
   XDrawImageString(dpy,win,gc,x,y+1,str,strl);
+#endif
  }
 }
 

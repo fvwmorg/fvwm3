@@ -24,6 +24,14 @@
 extern Display *dpy;
 extern Window Root, win;
 extern XFontStruct *ButtonFont;
+#ifdef I18N_MB
+extern XFontSet ButtonFontset;
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif
 extern int Clength;
 extern char *ImagePath;
 Button *StartButton;

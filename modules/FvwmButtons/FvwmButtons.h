@@ -119,6 +119,9 @@ struct container_info_struct
   byte xpad,ypad;          /* b_Padding */
   signed char framew;             /* b_Frame */
   XFontStruct *font;       /* b_Font */
+#ifdef I18N_MB
+  XFontSet fontset;        /* b_Font */
+#endif
   char *font_string;       /* b_Font */
   char *back;              /* b_Back && !b_IconBack */
   char *back_file;         /* b_Back && b_IconBack */
@@ -140,6 +143,9 @@ struct button_info_struct
 
   /* conditional fields */ /* applicable if these flags are set */
   XFontStruct *font;       /* b_Font */
+#ifdef I18N_MB
+  XFontSet fontset;        /* b_Font */
+#endif
   char *font_string;       /* b_Font */
   char *back;              /* b_Back */
   char *fore;              /* b_Fore */
@@ -210,6 +216,15 @@ extern int new_desk;
 extern GC  NormalGC;
 extern GC  ShadowGC;
 extern int x,y,xneg,yneg,w,h; /* Dirty... */
+
+/* ------------------------------ I18N_MB stuff ---------------------------- */
+#ifdef I18N_MB
+#ifdef __STDC__
+#define XTextWidth(x,y,z)       XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z)       XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif
 
 /* ---------------------------------- misc --------------------------------- */
 

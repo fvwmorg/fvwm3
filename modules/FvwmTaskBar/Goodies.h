@@ -20,7 +20,11 @@
 #ifndef _H_Goodies
 #define _H_Goodies
 
+#ifdef __FreeBSD__
+#define DEFAULT_MAIL_PATH  "/var/mail/"
+#else
 #define DEFAULT_MAIL_PATH  "/var/spool/mail/"
+#endif
 #define DEFAULT_BELL_VOLUME 20
 
 /* Tip window types */

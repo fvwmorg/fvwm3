@@ -93,6 +93,9 @@
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <X11/Xutil.h>
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#endif
 #include <X11/cursorfont.h>
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
@@ -148,7 +151,7 @@ static char *CopySolidString (char *cp)
     if (c == '\\') {
       *(dp++) = '\\';
       *(dp++) = *(cp++);
-    } else if (isspace(c) || c == '\0') {
+    } else if (isspace((unsigned char)c) || c == '\0') {
       *dp = '\0';
       return bp;
     } else
@@ -249,7 +252,7 @@ static void ParseDefaults(char *buf) {
     e = FindToken(p,def_table,struct CommandTable);/* find cmd in table */
     if (e != 0) {                       /* if its valid */
       p=p+strlen(e->name);              /* skip over name */
-      while (isspace(*p)) p++;          /* skip whitespace */
+      while (isspace((unsigned char)*p)) p++;          /* skip whitespace */
       e->function(p);                   /* call cmd processor */
       bg_state = 'd';                   /* stay in default state */
     }
@@ -276,7 +279,7 @@ static void ParseConfigLine(char *buf) {
   }
 
   p=p+strlen(e->name);                  /* skip over name */
-  while (isspace(*p)) p++;              /* skip whitespace */
+  while (isspace((unsigned char)*p)) p++;              /* skip whitespace */
   e->function(p);                       /* call cmd processor */
   return;
 } /* end function */
@@ -318,8 +321,8 @@ static void ct_WarpPointer(char *cp) {
 static void ct_Position(char *cp) {
   CF.have_geom = 1;
   CF.gx = atoi(cp);
-  while (!isspace(*cp)) cp++;
-  while (isspace(*cp)) cp++;
+  while (!isspace((unsigned char)*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   CF.gy = atoi(cp);
   myfprintf((stderr, "Position @ (%d, %d)\n", CF.gx, CF.gy));
 }
@@ -568,10 +571,10 @@ static void ct_Input(char *cp) {
   AssignDrawTable(item);
   item->header.name = CopySolidString(cp);
   cp += strlen(item->header.name);
-  while (isspace(*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   item->input.size = atoi(cp);
-  while (!isspace(*cp)) cp++;
-  while (isspace(*cp)) cp++;
+  while (!isspace((unsigned char)*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   item->input.init_value = "";          /* init */
   if (*cp == '\"') {
     item->input.init_value = CopyQuotedString(++cp);
@@ -627,7 +630,7 @@ static void ct_UseData(char *cp) {
     return;
   }
   cp += strlen(CF.file_to_read);
-  while (isspace(*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   CF.leading = CopySolidString(cp);
   if (*CF.leading == 0) {
     fprintf(stderr,"UseData command missing second arg, Leading\n");
@@ -674,7 +677,7 @@ static void PutDataInForm(char *cp) {
     return;
   }
   cp += strlen(var_name);
-  while (isspace(*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   var_value = cp;
   item = CF.cur_input;
   do {
@@ -697,7 +700,7 @@ static void ct_Selection(char *cp) {
   cur_sel->type = I_SELECT;
   cur_sel->header.name = CopySolidString(cp);
   cp += strlen(cur_sel->header.name);
-  while (isspace(*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   if (strncasecmp(cp, "multiple", 8) == 0)
     cur_sel->selection.key = IS_MULTIPLE;
   else
@@ -718,16 +721,16 @@ static void ct_Choice(char *cp) {
   AssignDrawTable(item);
   item->header.name = CopySolidString(cp);
   cp += strlen(item->header.name);
-  while (isspace(*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   item->choice.value = CopySolidString(cp);
   cp += strlen(item->choice.value);
-  while (isspace(*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   if (strncasecmp(cp, "on", 2) == 0)
     item->choice.init_on = 1;
   else
     item->choice.init_on = 0;
-  while (!isspace(*cp)) cp++;
-  while (isspace(*cp)) cp++;
+  while (!isspace((unsigned char)*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   if (*cp == '\"')
     item->choice.text = CopyQuotedString(++cp);
   else
@@ -768,12 +771,12 @@ static void ct_Button(char *cp) {
     item->button.key = IB_QUIT;
   else
     item->button.key = IB_CONTINUE;
-  while (!isspace(*cp)) cp++;
-  while (isspace(*cp)) cp++;
+  while (!isspace((unsigned char)*cp)) cp++;
+  while (isspace((unsigned char)*cp)) cp++;
   if (*cp == '\"') {
     item->button.text = CopyQuotedString(++cp);
     cp += strlen(item->button.text) + 1;
-    while (isspace(*cp)) cp++;
+    while (isspace((unsigned char)*cp)) cp++;
   } else
     item->button.text = "";
   if (*cp == '^')
@@ -1434,7 +1437,7 @@ static void ParseActiveMessage(char *buf) {
   }
 
   p=p+strlen(e->name);                  /* skip over name */
-  while (isspace(*p)) p++;              /* skip whitespace */
+  while (isspace((unsigned char)*p)) p++;              /* skip whitespace */
   e->function(p);                       /* call cmd processor */
   return;
 } /* end function */
@@ -1497,6 +1500,10 @@ int main (int argc, char **argv)
 
 #ifdef DEBUGTOFILE
   freopen(".FvwmFormDebug","w",stderr);
+#endif
+
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
 #endif
 
   /* From FvwmAnimate start */

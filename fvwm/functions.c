@@ -748,7 +748,7 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 
   if (action)
   {
-    while (*endtok&&!isspace(*endtok))++endtok;
+    while (*endtok&&!isspace((unsigned char)*endtok))++endtok;
     len = endtok - action;
     j=0;
     matched = FALSE;

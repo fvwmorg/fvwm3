@@ -27,6 +27,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -170,6 +172,25 @@ XFontStruct *buttonFont(button_info *b)
 #endif
   return None;
 }
+
+#ifdef I18N_MB
+/**
+*** buttonFontSet()
+*** Give the font pointer for this button
+**/
+XFontSet buttonFontSet(button_info *b)
+{
+  if(b->flags&b_Font)
+    return b->fontset;
+  while((b=b->parent))
+    if(b->c->flags&b_Font)
+      return b->c->fontset;
+#ifdef DEBUG
+  fprintf(stderr,"%s: BUG: No fontset definition?\n",MyName);
+#endif
+  return None;
+}
+#endif
 
 /**
 *** buttonFore()

@@ -316,7 +316,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 #endif
       return;
     }
-  while (isspace(*action))
+  while (isspace((unsigned char)*action))
     action++;
   line = action;
 
@@ -404,8 +404,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  if (c != '/')
 	  {
 	    /* skip over '/' */
-	    while (rest && *rest && isspace(*rest) && *rest != ',' &&
-		   *rest != '/')
+	    while (rest && *rest && isspace((unsigned char)*rest) &&
+		   *rest != ',' && *rest != '/')
 	      rest++;
 	    if (*rest == '/')
 	      rest++;

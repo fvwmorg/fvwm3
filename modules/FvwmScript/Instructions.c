@@ -719,6 +719,12 @@ void ChangeFont (int NbArg,long *TabArg)
  char *arg[2];
  int IdItem;
  XFontStruct *xfont;
+#ifdef I18N_MB
+ char **ml;
+ int mc;
+ char *ds;
+ XFontStruct **fs_list;
+#endif
 
  arg[0]=CalcArg(TabArg,&i);
  i++;
@@ -726,6 +732,21 @@ void ChangeFont (int NbArg,long *TabArg)
  IdItem= TabIdObj[atoi(arg[0])];
 
  tabxobj[IdItem]->font=strdup(arg[1]);
+#ifdef I18N_MB
+ /* Hmm.. Fontset is not freed. However, original alogrithm does not consider
+  * the situation of font-loading-falure.
+  */
+ if ((tabxobj[IdItem]->xfontset = XCreateFontSet(tabxobj[IdItem]->display, tabxobj[IdItem]->font, &ml, &mc, &ds)) == NULL)
+  {
+   fprintf(stderr,"Can't load fontset %s\n",tabxobj[IdItem]->font);
+  }
+ else
+ {
+  XFontsOfFontSet(tabxobj[IdItem]->xfontset, &fs_list, &ml); 
+  tabxobj[IdItem]->xfont = fs_list[0];
+  XSetFont(tabxobj[IdItem]->display,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
+ }
+#else
  if ((xfont=XLoadQueryFont(tabxobj[IdItem]->display,tabxobj[IdItem]->font))==NULL)
   {
    fprintf(stderr,"Can't load font %s\n",tabxobj[IdItem]->font);
@@ -736,6 +757,7 @@ void ChangeFont (int NbArg,long *TabArg)
   tabxobj[IdItem]->xfont=xfont;
   XSetFont(tabxobj[IdItem]->display,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
  }
+#endif
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
  free(arg[0]);
  free(arg[1]);

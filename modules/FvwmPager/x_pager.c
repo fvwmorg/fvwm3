@@ -74,6 +74,14 @@ extern int MoveThreshold;
 
 extern int icon_w, icon_h, icon_x, icon_y;
 XFontStruct *font, *windowFont;
+#ifdef I18N_MB
+XFontSet fontset, windowFontset;
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif
 
 GC NormalGC,DashedGC,HiliteGC,rvGC;
 GC StdGC;
@@ -147,6 +155,12 @@ void initialize_pager(void)
 {
   XWMHints wmhints;
   XClassHint class1;
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
 
   XTextProperty name;
   unsigned long valuemask;
@@ -172,6 +186,22 @@ void initialize_pager(void)
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
 
   /* load the font */
+#ifdef I18N_MB
+  if (!uselabel || ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL))
+    {
+#ifdef STRICTLY_FIXED
+      if ((fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL)
+#else
+      if ((fontset = XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*", &ml, &mc, &ds)) == NULL)
+#endif
+      {
+	fprintf(stderr,"%s: No fonts available\n",MyName);
+	exit(1);
+      }
+    }
+  XFontsOfFontSet(fontset, &fs_list, &ml);
+  font = fs_list[0];
+#else
   if (!uselabel || ((font = XLoadQueryFont(dpy, font_string)) == NULL))
     {
       if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
@@ -184,7 +214,7 @@ void initialize_pager(void)
     label_h = font->ascent + font->descent+2;
   else
     label_h = 0;
-
+#endif
 
 #ifdef SHAPE
   /* Check that shape extension exists. */
@@ -195,12 +225,32 @@ void initialize_pager(void)
      }
 #endif
 
+#ifdef I18N_MB
+  if(smallFont != NULL)
+    {
+      windowFontset = XCreateFontSet(dpy, smallFont, &ml, &mc, &ds);
+      if (windowFontset != NULL)
+      {
+        XFontsOfFontSet(windowFontset, &fs_list, &ml);
+	windowFont = fs_list[0];
+      } else {
+        windowFontset = NULL;
+        windowFont = NULL;
+      }
+    }
+  else
+    {
+      windowFontset = NULL;
+      windowFont = NULL;
+    }
+#else
   if(smallFont!= NULL)
     {
       windowFont= XLoadQueryFont(dpy, smallFont);
     }
   else
     windowFont= NULL;
+#endif
 
   /* Load the colors */
   fore_pix = GetColor(PagerFore);
@@ -337,10 +387,17 @@ void initialize_pager(void)
   XSetWMProtocols(dpy,Scr.Pager_w,&wm_del_win,1);
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
+#ifdef I18N_MB
+  if((desk1==desk2)&&(Desks[0].label != NULL))
+    XmbTextListToTextProperty(dpy,&Desks[0].label,1,XStdICCTextStyle,&name);
+  else
+    XmbTextListToTextProperty(dpy,&pager_name,1,XStdICCTextStyle,&name);
+#else
   if((desk1==desk2)&&(Desks[0].label != NULL))
     XStringListToTextProperty(&Desks[0].label,1,&name);
   else
     XStringListToTextProperty(&pager_name,1,&name);
+#endif
 
   attributes.event_mask = (StructureNotifyMask| ExposureMask);
   if(icon_w < 1)
@@ -545,6 +602,23 @@ void initialize_pager(void)
       (BalloonBack == NULL) ? 0 : GetColor(BalloonBack);
 
     /* get font for balloon */
+#ifdef I18N_MB
+    if ( (balloon.fontset = XCreateFontSet(dpy, BalloonFont, &ml, &mc, &ds)) == NULL ) {
+#ifdef STRICTLY_FIXED
+      if ( (balloon.fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL )
+#else
+      if ( (balloon.fontset = XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*", &ml, &mc, &ds)) == NULL )
+#endif
+      {
+        fprintf(stderr,"%s: No fonts available.\n", MyName);
+        exit(1);
+      }
+      fprintf(stderr, "%s: Can't find font '%s', using fixed.\n",
+              MyName, BalloonFont);
+    }
+    XFontsOfFontSet(balloon.fontset, &fs_list, &ml);
+    balloon.font = fs_list[0];
+#else
     if ( (balloon.font = XLoadQueryFont(dpy, BalloonFont)) == NULL ) {
       if ( (balloon.font = XLoadQueryFont(dpy, "fixed")) == NULL ) {
         fprintf(stderr,"%s: No fonts available.\n", MyName);
@@ -553,6 +627,7 @@ void initialize_pager(void)
       fprintf(stderr, "%s: Can't find font '%s', using fixed.\n",
               MyName, BalloonFont);
     }
+#endif
 
     balloon.height = balloon.font->ascent + balloon.font->descent + 1;
 
@@ -987,6 +1062,9 @@ void MovePage(void)
 {
   int n1,m1,x,y,n,m,i;
   XTextProperty name;
+#ifdef I18N_MB
+  int ret;
+#endif
   char str[100],*sptr;
   static int icon_desk_shown = -1000;
 
@@ -1026,11 +1104,22 @@ void MovePage(void)
 	  sprintf(str,"GoToDesk %d",Scr.CurrentDesk);
 	  sptr = &str[0];
 	}
+#ifdef I18N_MB
+      if ((ret = XmbTextListToTextProperty(dpy,&sptr,1,XStdICCTextStyle,&name))
+        == XNoMemory)
+      {
+        fprintf(stderr,"%s: cannot allocate window name",MyName);
+        return;
+      }
+      else if (ret != Success)
+        return;
+#else
       if (XStringListToTextProperty(&sptr,1,&name) == 0)
 	{
 	  fprintf(stderr,"%s: cannot allocate window name",MyName);
 	  return;
 	}
+#endif
       XSetWMIconName(dpy,Scr.Pager_w,&name);
     }
 }
@@ -1145,11 +1234,21 @@ void DrawGrid(int i, int erase)
       hor_off = (desk_w -w)/2;
       ver_off = (LabelsBelow ? desk_h + font->ascent + 1 : font->ascent + 1);
       if(i == (Scr.CurrentDesk - desk1))
+#ifdef I18N_MB
+	XmbDrawString (dpy, Desks[i].title_w, fontset, rvGC, hor_off, ver_off,
+		     ptr, strlen (ptr));
+#else
 	XDrawString (dpy, Desks[i].title_w, rvGC, hor_off, ver_off,
 		     ptr, strlen (ptr));
+#endif
       else
-	XDrawString (dpy, Desks[i].title_w, NormalGC, hor_off, ver_off,
-		     ptr, strlen (ptr));
+#ifdef I18N_MB
+	XmbDrawString (dpy, Desks[i].title_w, fontset, NormalGC, hor_off,
+		     ver_off, ptr, strlen (ptr));
+#else
+	XDrawString (dpy, Desks[i].title_w, NormalGC, hor_off,
+		     ver_off, ptr, strlen (ptr));
+#endif
     }
 #ifdef SHAPE
   UpdateWindowShape ();
@@ -1915,8 +2014,15 @@ void LabelWindow(PagerWindow *t)
   if(t->PagerView != None)
     {
       XClearWindow(dpy, t->PagerView);
-      XDrawString (dpy, t->PagerView,StdGC,2,windowFont->ascent+2 ,
-		        t->window_label, strlen(t->window_label));
+#ifdef I18N_MB
+      XmbDrawString (dpy, t->PagerView, windowFontset, StdGC, 2,
+		   windowFont->ascent+2, t->window_label,
+		   strlen(t->window_label));
+#else
+      XDrawString (dpy, t->PagerView, StdGC, 2,
+		   windowFont->ascent+2, t->window_label,
+		   strlen(t->window_label));
+#endif
     }
 }
 
@@ -1960,8 +2066,16 @@ void LabelIconWindow(PagerWindow *t)
     t->window_label = GetBalloonLabel(t,WindowLabelFormat);
   }
   XClearWindow(dpy, t->IconView);
-  XDrawString (dpy, t->IconView,StdGC,2,windowFont->ascent+2 ,
-	       t->window_label, strlen(t->window_label));
+
+#ifdef I18N_MB
+  XmbDrawString (dpy, t->IconView, windowFontset, StdGC, 2,
+		 windowFont->ascent+2, t->window_label,
+		 strlen(t->window_label));
+#else
+  XDrawString (dpy, t->IconView, StdGC, 2,
+		 windowFont->ascent+2, t->window_label,
+		 strlen(t->window_label));
+#endif
 }
 
 void PictureWindow (PagerWindow *t)
@@ -2361,7 +2475,11 @@ void DrawInBalloonWindow (void)
   if ( BalloonFore == NULL )
     XSetForeground(dpy, BalloonGC, balloon.pw->text);
 
+#ifdef I18N_MB
+  XmbDrawString(dpy, balloon.w, balloon.fontset, BalloonGC,
+#else
   XDrawString(dpy, balloon.w, BalloonGC,
+#endif
               2, balloon.font->ascent,
               balloon.label,strlen(balloon.label));
 }

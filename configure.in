@@ -22,6 +22,7 @@ smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
 dnl smr_SWITCH(extended-titlestyle, styled title-bars, on, EXTENDED_TITLESTYLE)
 dnl smr_SWITCH(gradient-buttons, gradient button style, on, GRADIENT_BUTTONS)
 dnl smr_SWITCH(inactive-button, Inactive button state, on, INACTIVE_BTNS)
+smr_SWITCH(kanji, multibyte character support, off, I18N_MB)
 dnl smr_SWITCH(mini-icons, MiniIcon style option, on, MINI_ICONS)
 smr_SWITCH(modality, modal dialogs for applications, on, , MODALITY_IS_EVIL)
 dnl smr_SWITCH(multistyle, stacked button styles, on, MULTISTYLE)
@@ -172,6 +173,32 @@ else
 fi
 AC_SUBST(readline_LIBS)
 AC_SUBST(readline_CFLAGS)
+
+dnl FreeBSD has libxpg4, check this and use if found.
+if test "$enable_kanji" = yes; then
+  AC_CANONICAL_HOST
+  case $host_os in
+    freebsd*)
+      AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"]);;
+    *) ;;
+  esac
+fi
+
+dnl Check if Xsetlocale() is available or not.
+AC_CHECK_LIB(X11, _Xsetlocale, AC_DEFINE(X_LOCALE),, $X_LIBS -lX11)
+
+dnl FreeBSD has libxpg4, check this and use if found.
+if test "$enable_kanji" = yes; then
+  AC_CANONICAL_HOST
+  case $host_os in
+    freebsd*)
+      AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"]);;
+    *) ;;
+  esac
+fi
+
+dnl Check if Xsetlocale() is available or not.
+AC_CHECK_LIB(X11, _Xsetlocale, AC_DEFINE(X_LOCALE),, $X_LIBS -lX11)
 
 
 dnl Check for REQUIRED headers and functions before going any

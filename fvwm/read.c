@@ -34,6 +34,9 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#endif
 
 #include "fvwm.h"
 #include "read.h"
@@ -67,7 +70,7 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
 	    tline = fgets(line+l-2,sizeof(line)-l+1,f);
 	}
 	tline=line;
-	while(isspace(*tline))
+	while(isspace((unsigned char)*tline))
 	    tline++;
 	if (debugging)
 	    fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);

@@ -44,6 +44,9 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/keysym.h>
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#endif
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
@@ -153,6 +156,9 @@ int main(int argc, char **argv)
   int JunkX, JunkY;
   unsigned JunkMask;
 
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
   /* Save our program  name - for error messages */
   temp = argv[0];
   s=strrchr(argv[0], '/');

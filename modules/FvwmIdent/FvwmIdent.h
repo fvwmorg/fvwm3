@@ -76,3 +76,11 @@ void list_class(unsigned long *body);
 void list_res_name(unsigned long *body);
 void list_end(void);
 
+/* I18N_MB stuff */
+#ifdef I18N_MB
+#ifdef __STDC__
+#define XTextWidth(x,y,z)       XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z)       XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif

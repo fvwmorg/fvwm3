@@ -22,6 +22,14 @@
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#ifdef __STDC__
+#define XTextWidth(x,y,z)       XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z)       XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif
 
 #include <libs/Picture.h>
 
@@ -267,6 +275,9 @@ typedef struct win_manager {
     reliefContext[NUM_CONTEXTS];
   GC shadowContext[NUM_CONTEXTS], flatContext[NUM_CONTEXTS];
   XFontStruct *ButtonFont;
+#ifdef I18N_MB
+  XFontSet ButtonFontset;
+#endif
 #ifdef MINI_ICONS
   int draw_icons;
 #endif

@@ -28,6 +28,17 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+/* MB stuff: rename XmbTextEscapement() and XFreeFont() */
+#ifdef I18N_MB
+#ifdef __STDC__
+#define XTextWidth(x,y,z)	XmbTextEscapement(x ## set,y,z)
+#define XFreeFont(x,y)		XFreeFontSet(x,y ## set)
+#else
+#define XTextWidth(x,y,z)	XmbTextEscapement(x/**/set,y,z)
+#define XFreeFont(x,y)		XFreeFontSet(x,y/**/set)
+#endif
+#endif
+
 void ReapChildren(void);
 
 /* used for parsing configuration */

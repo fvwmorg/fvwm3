@@ -48,6 +48,9 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#endif
 
 #include "libs/Module.h"
 #include "FvwmIdent.h"
@@ -61,6 +64,9 @@ Window Root;
 Graphics *G;
 GC gc;
 XFontStruct *font;
+#ifdef I18N_MB
+XFontSet fontset;
+#endif
 
 int screen;
 int x_fd;
@@ -102,6 +108,10 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   int Clength;
   char *tline;
+
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
@@ -355,6 +365,12 @@ void list_end(void)
   unsigned int JunkMask;
   int x,y;
   XSetWindowAttributes attributes;
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
 
   if(!found)
     {
@@ -365,10 +381,23 @@ void list_end(void)
   /* tell fvwm to only send config messages */
   SetMessageMask(fd, M_CONFIG_INFO | M_SENDCONFIG);
 
+#ifdef I18N_MB
+  if ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL) {
+#ifdef STRICTLY_FIXED
+      if ((fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL)
+#else
+      if ((fontset = XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*", &ml, &mc, &ds)) == NULL)
+#endif
+	  exit(1);
+  }
+  XFontsOfFontSet(fontset, &fs_list, &ml);
+  font = fs_list[0];
+#else
   /* load the font */
   if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
     if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
       exit(1);
+#endif
 
   /* make window infomation list */
   MakeList();
@@ -562,13 +591,25 @@ void RedrawWindow(void)
   while(cur != NULL)
     {
       /* first column */
+#ifdef I18N_MB
+      XmbDrawString(dpy, main_win, fontset, gc, 5,
+		  5 + font->ascent + i * fontheight, cur->col1,
+		  strlen(cur->col1));
+#else
       XDrawString(dpy, main_win, gc, 5,
 		  5 + font->ascent + i * fontheight, cur->col1,
 		  strlen(cur->col1));
+#endif
       /* second column */
+#ifdef I18N_MB
+      XmbDrawString(dpy, main_win, fontset, gc, 10 + max_col1,
+		  5 + font->ascent + i * fontheight, cur->col2,
+		  strlen(cur->col2));
+#else
       XDrawString(dpy, main_win, gc, 10 + max_col1,
 		  5 + font->ascent + i * fontheight, cur->col2,
 		  strlen(cur->col2));
+#endif
       ++i;
       cur = cur->next;
     }

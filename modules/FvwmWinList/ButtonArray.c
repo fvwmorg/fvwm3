@@ -54,8 +54,18 @@
 #include "ButtonArray.h"
 #include "Mallocs.h"
 
+#ifdef I18gN_MB
+#ifdef __STDC__
+#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
+#else
+#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
+#endif
+#endif
 
 extern XFontStruct *ButtonFont;
+#ifdef I18N_MB
+extern XFontSet ButtonFontset;
+#endif
 extern Display *dpy;
 extern Window win;
 extern GC shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
@@ -422,9 +432,15 @@ void DoButton(Button *button, int x, int y, int w, int h)
       button->truncate_title=string;
     }
   }
+#ifdef I18N_MB
+  XmbDrawString(dpy,win,ButtonFontset,graph[set],x+newx+button->reliefwidth,
+              y+1+button->reliefwidth+ButtonFont->ascent,
+              string,strlen(string));
+#else
   XDrawString(dpy,win,graph[set],x+newx+button->reliefwidth,
               y+1+button->reliefwidth+ButtonFont->ascent,
               string,strlen(string));
+#endif
 
   /* Draw relief last, don't forget that XDrawLine doesn't do the last pixel */
   RelieveRectangle(dpy,win,x,y,w,h,topgc,bottomgc,button->reliefwidth);

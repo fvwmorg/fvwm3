@@ -41,6 +41,9 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 
+#ifdef I18N_MB
+#include <X11/Xlocale.h>
+#endif
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -168,6 +171,60 @@ char *mymalloc(int length)
     p[--i]=255;
   return p;
 }
+#endif
+
+#ifdef I18N_MB
+/*
+ * fake XFetchName() function
+ */
+static char **XFetchName_islist = NULL; /* XXX */
+static Status MyXFetchName(dpy, win, winname)
+Display *dpy;
+Window win;
+char **winname;
+{
+  XTextProperty text;
+  char **list;
+  int nitems;
+
+  if (XGetWMName(dpy, win, &text)) {
+    if (text.value) {
+      text.nitems = strlen(text.value);
+      if (text.encoding == XA_STRING) {
+        /* STRING encoding, use this as it is */
+        *winname = (char *)text.value;
+        return 0;
+      } else {
+        /* not STRING encoding, try to convert */
+        if (XmbTextPropertyToTextList(dpy, &text, &list, &nitems) >= Success
+            && nitems > 0 && *list) {
+          XFree(text.value);
+          *winname = *list;
+          XFetchName_islist = list; /* XXX */
+        } else {
+          if (list) XFreeStringList(list);
+          XFree(text.value); /* return of XGetWMName() */
+          XGetWMName(dpy, win, &text); /* XXX: read again ? */
+          *winname = (char *)text.value;
+        }
+      }
+      return 0;
+    }
+  }
+  return 1;
+}
+static int MyXFree(data)
+void *data;
+{
+  if (XFetchName_islist != NULL) {
+    XFreeStringList(XFetchName_islist);
+    XFetchName_islist = NULL;
+    return 0;
+  }
+  return XFree(data);
+}
+#define XFetchName(x,y,z) MyXFetchName(x,y,z)
+#define XFree(x) MyXFree(x)
 #endif
 
 /**
@@ -356,7 +413,7 @@ void AddButtonAction(button_info *b,int n,char *action)
       b->flags|=b_Action;
     }
 
-  while (*action && isspace(*action))
+  while (*action && isspace((unsigned char)*action))
     action++;
   l = strlen(action);
   if (l > 1)
@@ -501,6 +558,9 @@ int main(int argc, char **argv)
   button_info *b,*ub;
   panel_info *LastPanel;
 
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
   MyName = GetFileNameFromPath(argv[0]);
 
 #ifdef HAVE_SIGACTION
@@ -908,7 +968,7 @@ void Loop(void)
 		    /* Look for Exec "identifier", in which case the button
 		       stays down until window "identifier" materializes */
 		    i=4;
-		    while(isspace(act[i]))
+		    while(isspace((unsigned char)act[i]))
 		      i++;
 		    if(act[i] == '"')
 		      {
@@ -930,7 +990,7 @@ void Loop(void)
 
 		    tmp=mymalloc(strlen(act)+1);
 		    strcpy(tmp,"Exec ");
-		    while(act[i2]!=0 && isspace(act[i2]))
+		    while(act[i2]!=0 && isspace((unsigned char)act[i2]))
 		      i2++;
 		    strcat(tmp,&act[i2]);
 		    MySendText(fd,tmp,0);
@@ -1115,6 +1175,13 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 {
   int i,j,x=0,y=0;
   XFontStruct *font;
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+  XFontSet fontset;
+#endif
 
   if(!b) return;
 
@@ -1173,12 +1240,28 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
               (unsigned long)b, b? b->font_string : "(NULL)");
       if(strncasecmp(b->font_string,"none",4)==0)
 	b->font=NULL;
+#ifdef I18N_MB
+      else if(!(b->fontset=XCreateFontSet(Dpy,b->font_string,&ml,&mc,&ds)))
+	{
+	  b->font = NULL;
+	  b->flags&=~b_Font;
+	  fprintf(stderr,"%s: Couldn't load fontset %s\n",MyName,
+		  b->font_string);
+	}
+      else
+	{
+	  /* fontset found */
+	  XFontsOfFontSet(fontset, &fs_list, &ml);
+	  b->font = fs_list[0];
+	}
+#else
       else if(!(b->font=XLoadQueryFont(Dpy,b->font_string)))
 	{
 	  b->flags&=~b_Font;
 	  fprintf(stderr,"%s: Couldn't load font %s\n",MyName,
 		  b->font_string);
 	}
+#endif
     }
 
   if(b->flags&b_Container && b->c->flags&b_Font)
@@ -1188,6 +1271,34 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 #     endif
       if(strncasecmp(b->c->font_string,"none",4)==0)
 	b->c->font=NULL;
+#ifdef I18N_MB
+      else if(!(b->c->fontset=XCreateFontSet(Dpy,b->c->font_string,&ml,&mc,&ds)))
+	{
+	  fprintf(stderr,"%s: Couldn't load fontset %s\n",MyName,
+		  b->c->font_string);
+	  if(b==UberButton)
+	    {
+#ifdef STRICTLY_FIXED
+	      if(!(b->c->fontset=XCreateFontSet(Dpy,"fixed",&ml,&mc,&ds))) {
+#else
+	      if(!(b->c->fontset=XCreateFontSet(Dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds))) {
+#endif
+		fprintf(stderr,"%s: Couldn't load fontset fixed\n",MyName);
+		b->c->font = NULL;
+	      }
+	    }
+	  else {
+	    b->c->font = NULL;
+	    b->c->flags&=~b_Font;
+	  }
+	}
+      else
+	{
+	  /* fontset found */
+	  XFontsOfFontSet(b->c->fontset, &fs_list, &ml);
+	  b->c->font = fs_list[0];
+	}
+#else
       else if(!(b->c->font=XLoadQueryFont(Dpy,b->c->font_string)))
 	{
 	  fprintf(stderr,"%s: Couldn't load font %s\n",MyName,
@@ -1200,6 +1311,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 	  else
 	    b->c->flags&=~b_Font;
 	}
+#endif
     }
 
 
@@ -1245,7 +1357,11 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   else
     b->flags&=~b_Icon;
 
+#ifdef I18N_MB
+  if(b->flags&b_Title && (fontset = buttonFontSet(b)) && (font=buttonFont(b)))
+#else
   if(b->flags&b_Title && (font=buttonFont(b)))
+#endif
     {
 #     ifdef DEBUG_LOADDATA
       fprintf(stderr,", title \"%s\"",b->title);

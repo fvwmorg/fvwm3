@@ -411,6 +411,9 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
 #ifdef	XPM
   strcat(options, "XPM ");
 #endif
+#ifdef  I18N_MB
+    strcat(options, "I18N_MB ");
+#endif
 
   strcat(options, "M4 ");
 

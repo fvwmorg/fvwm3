@@ -115,6 +115,9 @@ typedef struct icon_boxes_struct
 typedef struct MyFont
 {
   XFontStruct *font;		/* font structure */
+#ifdef I18N_MB
+  XFontSet fontset;		/* font set */
+#endif
   int height;			/* height of the font */
   int y;			/* Y coordinate to draw characters */
 } MyFont;
@@ -305,6 +308,10 @@ typedef struct FvwmWindow
     Pixmap icon_maskPixmap;	/* pixmap for the icon mask */
     char *name;			/* name of the window */
     char *icon_name;		/* name of the icon */
+#ifdef I18N_MB
+    char **name_list;		/* window name list */
+    char **icon_name_list;	/* icon name list */
+#endif
     XWindowAttributes attr;	/* the child window attributes */
     XSizeHints hints;		/* normal hints */
     XWMHints *wmhints;		/* WM hints */
