@@ -17,9 +17,10 @@ Changes in alpha release 2.5.4 (not released yet)
     ExpandButtonVars <button-id> <command-to-expand>
 
 * New Colorset options bgTint, fgTint (which complete Tint), Alpha,
-  IconTint and IconAlpha
+  IconTint and IconAlpha.
 
-* Alpha blending rendering is supported even without XRender support
+* Alpha blending rendering is supported even without XRender
+  support.
 
 * Enhanced commands [Add]ButtonStyle, [Add]TitleStyle. ButtonState.
   Titles and buttons now have 4 main states instead of 3: ActiveUp,

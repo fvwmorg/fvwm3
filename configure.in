@@ -825,7 +825,7 @@ fi
 
 dnl Check for standard functions that we have replacements for.
 AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strdup strerror usleep atexit)
-dnl dv: this is done automatically and is harmful with autoconf 2.53
+dnl dv: this is harmful with autoconf 2.53 and is done automatically anyway
 dnl AC_SUBST(LIBOBJS)
 
 dnl If we do not have atexit(), then check for on_exit()
