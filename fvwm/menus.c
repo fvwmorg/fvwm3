@@ -844,7 +844,7 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   int fShiftedKey = event->xkey.state & ShiftMask? True: False;
   int fMetaKey = event->xkey.state & Mod1Mask? True: False;
   KeySym keysym;
-  char ckeychar;
+  char ckeychar = 0;
   int ikeychar;
   MenuItem *newItem = NULL;
   MenuItem *miCurrent = pmiCurrent ? *pmiCurrent : NULL;

@@ -1315,8 +1315,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       else
       {
 	b = BUTTON_INDEX(b);
+	s += offset;
       }
-      s += offset;
       if (b >= 0 && b < NUMBER_OF_BUTTONS)
 	LoadDefaultButton(df, b);
       else
