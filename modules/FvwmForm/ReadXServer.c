@@ -350,6 +350,13 @@ void ReadXServer ()
           CF.cur_input->header.dt_ptr->dt_Fstr->win = CF.cur_input->header.win;
           CF.cur_input->header.dt_ptr->dt_Fstr->gc  =
             CF.cur_input->header.dt_ptr->dt_item_GC;
+	  CF.cur_input->header.dt_ptr->dt_Fstr->flags.has_colorset = False;
+	  if (itemcolorset >= 0)
+	  {
+	    CF.cur_input->header.dt_ptr->dt_Fstr->colorset =
+		    &Colorset[itemcolorset];
+	    CF.cur_input->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
+	  }
           CF.cur_input->header.dt_ptr->dt_Fstr->str = CF.cur_input->input.value;
           CF.cur_input->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC;
           CF.cur_input->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
@@ -359,9 +366,16 @@ void ReadXServer ()
                             CF.cur_input->header.dt_ptr->dt_Ffont,
                             CF.cur_input->header.dt_ptr->dt_Fstr,
                             FWS_HAVE_LENGTH);
+#ifdef ONLY_FIXED_FONT_FOR_INPUT
 	  x = BOX_SPC + TEXT_SPC +
             CF.cur_input->header.dt_ptr->dt_Ffont->max_char_width
             * CF.abs_cursor - 1;
+#else
+	  x = BOX_SPC + TEXT_SPC +
+		  FlocaleTextWidth(CF.cur_input->header.dt_ptr->dt_Ffont,
+				   CF.cur_input->input.value,CF.abs_cursor)
+		  - 1;
+#endif
 	  dy = CF.cur_input->header.size_y - 1;
 	  XDrawLine(dpy, CF.cur_input->header.win,
                     CF.cur_input->header.dt_ptr->dt_item_GC,

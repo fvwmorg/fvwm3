@@ -302,8 +302,9 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 
 	search_len = strlen(button->title);
 	FwinString->win = win;
-	FwinString->y = y + FButtonFont->ascent + 4;
+	FwinString->y = y + Ffont->ascent + (RowHeight - Ffont->height)/2;
 	FwinString->gc = *drawgc;
+	FwinString->flags.has_colorset = False;
 	if (cs >= 0)
 	{
 		FwinString->colorset = &Colorset[cs];

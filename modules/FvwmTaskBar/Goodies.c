@@ -61,7 +61,7 @@ GC tipsgc = 0;
 FlocaleFont *FStatusFont;
 int stwin_width = 100, goodies_width = 0;
 int anymail, unreadmail, newmail, mailcleared = 0;
-int fontheight, clock_width;
+int goodies_fontheight, clock_width;
 char *mailpath = NULL;
 char *clockfmt = NULL;
 char *datefmt = NULL;
@@ -244,6 +244,17 @@ Bool GoodiesParseConfig(char *tline)
   return True;
 }
 
+void LoadGoodiesFont(void)
+{
+	if ((FStatusFont =
+	     FlocaleLoadFont(dpy, statusfont_string, Module)) == NULL)
+	{
+		fprintf(stderr, "%s: Couldn't load font. Exiting!\n",Module);
+		exit(1);
+	}
+	goodies_fontheight = FStatusFont->height;
+}
+
 void InitGoodies(void)
 {
   struct passwd *pwent;
@@ -256,13 +267,6 @@ void InitGoodies(void)
     UpdateString(&mailpath, tmp);
   }
 
-  if ((FStatusFont = FlocaleLoadFont(dpy, statusfont_string, Module)) == NULL)
-  {
-    fprintf(stderr, "%s: Couldn't load font. Exiting!\n",Module);
-    exit(1);
-  }
-
-  fontheight = FStatusFont->height;
   CreateOrUpdateGoodyGC();
   if (clockfmt)
   {
@@ -312,11 +316,15 @@ void DrawGoodies(void)
   FwinString->gc = statusgc;
   FwinString->str = str;
   FwinString->x = win_width - stwin_width + 4;
-  FwinString->y = ((RowHeight - fontheight) >> 1) + FStatusFont->ascent;
+  FwinString->y = ((RowHeight - goodies_fontheight) >> 1) + FStatusFont->ascent;
   if (colorset >= 0)
   {
     FwinString->colorset = &Colorset[colorset];
     FwinString->flags.has_colorset = True;
+  }
+  else
+  {
+    FwinString->flags.has_colorset = False;
   }
   FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
 
@@ -401,11 +409,15 @@ void RedrawTipWindow(void)
     FwinString->gc = tipsgc;
     FwinString->str = Tip.text;
     FwinString->x = 3;
-    FwinString->y = Tip.th-4;
+    FwinString->y = 2 + FStatusFont->ascent;
     if (tipscolorset >= 0)
     {
        FwinString->colorset = &Colorset[tipscolorset];
        FwinString->flags.has_colorset = True;
+    }
+    else
+    {
+       FwinString->flags.has_colorset = False;
     }
     if (FftSupport && FStatusFont->fftf.fftfont != NULL)
     {

@@ -1421,6 +1421,7 @@ void DrawGrid(int desk, int erase)
 {
   int y, y1, y2, x, x1, x2,d,w;
   char str[15], *ptr;
+  int cs;
 
   if((desk < 0 ) || (desk >= ndesks))
     return;
@@ -1475,17 +1476,25 @@ void DrawGrid(int desk, int erase)
     FwinString->str = ptr;
     FwinString->win = Desks[desk].title_w;
     if(desk == (Scr.CurrentDesk - desk1))
+    {
+      cs = Desks[desk].highcolorset;
       FwinString->gc = Desks[desk].rvGC;
+    }
     else
+    {
+      cs = Desks[desk].highcolorset;
       FwinString->gc = Desks[desk].NormalGC;
+    }
+
+    FwinString->flags.has_colorset = False;
+    if (cs >= 0)
+    {
+      FwinString->colorset = &Colorset[cs];
+      FwinString->flags.has_colorset = True;
+    }
     FwinString->x = (desk_w -w)/2;
     FwinString->y = (LabelsBelow ?
 		     desk_h + Ffont->ascent + 1 : Ffont->ascent + 1);
-    if(desk == (Scr.CurrentDesk - desk1))
-      FwinString->gc = Desks[desk].rvGC;
-    else
-      FwinString->gc = Desks[desk].NormalGC;
-
     FlocaleDrawString(dpy, Ffont, FwinString, 0);
   }
   if (FShapesSupported)
@@ -2361,10 +2370,18 @@ void BorderIconWindow(PagerWindow *t)
 
 static void do_label_window(PagerWindow *t, Window w)
 {
+  int cs;
+
   if (t == FocusWin)
+  {
     XSetForeground(dpy, Scr.NormalGC, focus_fore_pix);
+    cs =  activecolorset;
+  }
   else
+  {
     XSetForeground(dpy, Scr.NormalGC, t->text);
+    cs = windowcolorset;
+  }
 
   if (FwindowFont == NULL)
   {
@@ -2391,6 +2408,12 @@ static void do_label_window(PagerWindow *t, Window w)
     FwinString->str = t->window_label;
     FwinString->win = w;
     FwinString->gc = Scr.NormalGC;
+    FwinString->flags.has_colorset = False;
+    if (cs >= 0)
+    {
+	    FwinString->colorset = &Colorset[cs];
+	    FwinString->flags.has_colorset = True;
+    }
     FwinString->x = 2;
     FwinString->y = FwindowFont->ascent+2;
     FlocaleDrawString(dpy, FwindowFont, FwinString, 0);
@@ -2791,6 +2814,15 @@ void DrawInBalloonWindow (int i)
   FwinString->str = Desks[i].balloon.label;
   FwinString->win = Desks[i].balloon.w;
   FwinString->gc = Desks[i].BalloonGC;
+  if (Desks[i].ballooncolorset >= 0)
+  {
+    FwinString->colorset = &Colorset[Desks[i].ballooncolorset];
+    FwinString->flags.has_colorset = True;
+  }
+  else
+  {
+    FwinString->flags.has_colorset = False;
+  }
   FwinString->x = 2;
   FwinString->y = Desks[i].balloon.Ffont->ascent;
   FlocaleDrawString(dpy, Desks[i].balloon.Ffont, FwinString, 0);

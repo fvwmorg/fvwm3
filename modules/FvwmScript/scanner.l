@@ -39,7 +39,15 @@ get		=
 ^{bl}+Property		{ return PROP; }
 ^{bl}+Main		{ return MAIN; }
 ^{bl}+End		{ return END; }
-^{bl}+Font		{ return FONT; }
+^{bl}+Font.* {
+  char *tmp,*rest;
+
+  rest = GetNextToken(yytext, &tmp); /* skip Font */
+  GetNextToken(rest, &yylval.str); /* get the font */
+  if (tmp != NULL)
+    free(tmp);
+  return FONT;
+}
 
 ^{bl}+Type		{ return TYPE; }
 ^{bl}+Size		{ return SIZE; }
@@ -93,7 +101,7 @@ LastString		{ return LASTSTRING; }
 ^{bl}+ChangeSize	{ return SIZE; }
 ^{bl}+ChangeTitle	{ return TITLE; }
 ^{bl}+ChangeIcon	{ return ICON; }
-^{bl}+ChangeFont	{ return FONT; }
+^{bl}+ChangeFont	{ return CHFONT; }
 ^{bl}+ChangeForeColor	{ return CHFORECOLOR; }
 ^{bl}+ChangeBackColor	{ return CHBACKCOLOR; }
 ^{bl}+ChangeColorset	{ return CHCOLORSET; }
@@ -141,6 +149,7 @@ Else			{ return ELSE; }
 		  yylval.str[yyleng-1]='\0';
                   return VAR;
 		}
+
 {gstr}		{ /* Str entre "" */
 		  yylval.str=(char*) safestrdup(yytext+1);
 		  yylval.str[yyleng-2]='\0';
@@ -151,6 +160,5 @@ Else			{ return ELSE; }
 		  yylval.str[yyleng]='\0';
                   return STR;
 		}
-
 
 {nl}		{ numligne++; }

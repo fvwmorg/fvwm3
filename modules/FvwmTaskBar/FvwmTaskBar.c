@@ -220,7 +220,7 @@ int  First = 1;
 int  Count = 0;
 
 /* Imported from Goodies */
-extern int stwin_width, goodies_width;
+extern int stwin_width, goodies_width, goodies_fontheight;
 extern TipStruct Tip;
 
 /* Imported from Start */
@@ -1902,9 +1902,12 @@ void StartMeUp(void)
      fprintf(stderr, "%s: Couldn't load font. Exiting!\n",Module);
      exit(1);
    }
+   LoadGoodiesFont();
 
    fontheight = (FButtonFont->height > FSelButtonFont->height)?
      FButtonFont->height : FSelButtonFont->height;
+   if (goodies_fontheight > fontheight)
+	   fontheight = goodies_fontheight;
 
    NRows = 1;
    RowHeight = fontheight + 8;

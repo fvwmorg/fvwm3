@@ -1,3 +1,38 @@
+2002-05-24  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmWinList/ButtonArray.c (DoButton):
+	* FvwmScript/Widgets/Tools.c (MyDrawString):
+	* FvwmPager/x_pager.c (DrawGrid):
+	(do_label_window):
+	(DrawInBalloonWindow):
+	* FvwmIconMan/xmanager.c (draw_button): 
+	(draw_empty_manager): 
+	* FvwmIconBox/FvwmIconBox.c (RedrawIcon):
+	* FvwmButtons/draw.c (DrawTitle):
+	Pass the colorset to FlocaleDrawString
+
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	* FvwmForm/FvwmForm.c (RedrawFrame):
+	(RedrawItem): 
+	(RedrawText): 
+	(RedrawTimeout):
+	Added support for variable fonts for input item (ifdefed).
+	Pass the colorset to FlocaleDrawString
+	
+	* FvwmTaskBar/Goodies.c (LoadGoodiesFont): 
+	* FvwmTaskBar/Goodies.h:
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw):
+	* FvwmTaskBar/Goodies.c (InitGoodies):
+	(RedrawTipWindow):
+	* FvwmTaskBar/FvwmTaskBar.c (StartMeUp):
+	Fixed some old (but minor) bugs related to text position
+	
+	* FvwmScript/script.y:
+	* FvwmScript/scanner.l:
+	* FvwmScript/script.c:
+	* FvwmScript/scanner.c:
+	Allowed to pass arbitray font names
+
 2002-05-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmIconMan/functions.c (builtin_sendcommand):

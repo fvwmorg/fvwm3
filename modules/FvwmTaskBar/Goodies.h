@@ -40,6 +40,7 @@ typedef struct {
 } TipStruct;
 
 Bool GoodiesParseConfig(char *tline);
+void LoadGoodiesFont(void);
 void InitGoodies(void);
 void DrawGoodies(void);
 int MouseInClock(int x, int y);

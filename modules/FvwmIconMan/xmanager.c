@@ -1414,6 +1414,15 @@ static void draw_button (WinManager *man, int button, int force)
       FwinString->str =  b->drawn_state.display_string;
       FwinString->win = man->theWindow;
       FwinString->gc = man->hiContext[button_state];
+      if (man->colorsets[button_state] >= 0)
+      {
+	      FwinString->colorset = &Colorset[man->colorsets[button_state]];
+	      FwinString->flags.has_colorset = True;
+      }
+      else
+      {
+	      FwinString->flags.has_colorset = False;
+      }
       FwinString->x = g.text_x;
       FwinString->y = g.text_base;
       FwinString->len = strlen(b->drawn_state.display_string);
@@ -1481,6 +1490,15 @@ static void draw_empty_manager (WinManager *man)
   FwinString->str = man->titlename;
   FwinString->win = man->theWindow;
   FwinString->gc = man->hiContext[state];
+  if (man->colorsets[state] >= 0)
+  {
+	  FwinString->colorset = &Colorset[man->colorsets[state]];
+	  FwinString->flags.has_colorset = True;
+  }
+  else
+  {
+	  FwinString->flags.has_colorset = False;
+  }
   FwinString->x = g.text_x;
   FwinString->y = g.text_base;
   FlocaleDrawString (theDisplay, man->FButtonFont, FwinString, 0);

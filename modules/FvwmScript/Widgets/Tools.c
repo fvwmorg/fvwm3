@@ -25,7 +25,13 @@ void MyDrawString(Display *dpy, struct XObj *xobj, Window win, int x, int y,
   FwinString->win = win;
   FwinString->str = str;
   FwinString->gc = xobj->gc;
-  if (WithRelief)
+  FwinString->flags.has_colorset = False;
+  if (xobj->colorset >= 0)
+  {
+    FwinString->colorset = &Colorset[xobj->colorset];
+    FwinString->flags.has_colorset = True;	  
+  }
+  if (WithRelief && xobj->Ffont->shadow_size == 0)
   {
     XSetBackground(dpy, xobj->gc, xobj->TabColor[BackC]);
     XSetForeground(dpy, xobj->gc, xobj->TabColor[HiC]);

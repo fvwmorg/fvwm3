@@ -1501,6 +1501,12 @@ void RedrawFrame ()
       item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + TEXT_SPC
         + item->header.dt_ptr->dt_Ffont->ascent;
       item->header.dt_ptr->dt_Fstr->len = item->choice.n;
+      item->header.dt_ptr->dt_Fstr->flags.has_colorset = False;
+      if (itemcolorset >= 0)
+      {
+	item->header.dt_ptr->dt_Fstr->colorset = &Colorset[itemcolorset];
+	item->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
+      }
       FlocaleDrawString(dpy,
                         item->header.dt_ptr->dt_Ffont,
                         item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
@@ -1524,6 +1530,12 @@ void RedrawText(Item *item)
   item->header.dt_ptr->dt_Fstr->x   = item->header.pos_x + TEXT_SPC;
   item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + ( CF.padVText / 2 ) +
     item->header.dt_ptr->dt_Ffont->ascent;
+  item->header.dt_ptr->dt_Fstr->flags.has_colorset = False;
+  if (colorset >= 0)
+  {
+    item->header.dt_ptr->dt_Fstr->colorset = &Colorset[colorset];
+    item->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
+  }
   FlocaleDrawString(dpy,
                     item->header.dt_ptr->dt_Ffont,
                     item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
@@ -1571,6 +1583,12 @@ void RedrawTimeout(Item *item)
     item->header.dt_ptr->dt_Fstr->len = p - tmpbuf;
   item->header.dt_ptr->dt_Fstr->win = CF.frame;
   item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_GC;
+  item->header.dt_ptr->dt_Fstr->flags.has_colorset = False;
+  if (colorset >= 0)
+  {
+    item->header.dt_ptr->dt_Fstr->colorset = &Colorset[colorset];
+    item->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
+  }  
   if (item->header.dt_ptr->dt_Fstr->str != NULL)
     free(item->header.dt_ptr->dt_Fstr->str);
   item->header.dt_ptr->dt_Fstr->str = safestrdup(tmpbuf);
@@ -1632,9 +1650,15 @@ void RedrawItem (Item *item, int click)
                   xsegs, 4);
 
     if (click) {
+#ifdef ONLY_FIXED_FONT_FOR_INPUT
       x = BOX_SPC + TEXT_SPC +
         item->header.dt_ptr->dt_Ffont->max_char_width
         * CF.abs_cursor - 1;
+#else
+      x = BOX_SPC + TEXT_SPC +
+	      FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+			       item->input.value, CF.abs_cursor) - 1;
+#endif
       XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                      item->header.dt_ptr->dt_colors[c_item_bg]);
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
@@ -1647,14 +1671,26 @@ void RedrawItem (Item *item, int click)
                    item->header.dt_ptr->dt_colors[c_item_fg]);
     item->header.dt_ptr->dt_Fstr->win = item->header.win;
     item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
+    item->header.dt_ptr->dt_Fstr->flags.has_colorset = False;
+    if (itemcolorset >= 0)
+    {
+      item->header.dt_ptr->dt_Fstr->colorset = &Colorset[itemcolorset];
+      item->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
+    }
     if (len > item->input.size)
       len = item->input.size;
     else
     {
       item->header.dt_ptr->dt_Fstr->str = item->input.blanks;
+#ifdef ONLY_FIXED_FONT_FOR_INPUT
       item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC
                   + item->header.dt_ptr->dt_Ffont->max_char_width
                   * len;
+#else
+      item->header.dt_ptr->dt_Fstr->x  = BOX_SPC + TEXT_SPC +
+	      FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+			       item->input.blanks, len);
+#endif
       item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
                   + item->header.dt_ptr->dt_Ffont->ascent;
       item->header.dt_ptr->dt_Fstr->len = item->input.size - len;
@@ -1671,9 +1707,16 @@ void RedrawItem (Item *item, int click)
                       item->header.dt_ptr->dt_Ffont,
                       item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
     if (item == CF.cur_input && !click) {
+#ifdef ONLY_FIXED_FONT_FOR_INPUT
       x = BOX_SPC + TEXT_SPC +
-        item->header.dt_ptr->dt_Ffont->max_char_width
+	item->header.dt_ptr->dt_Ffont->max_char_width
         * CF.abs_cursor - 1;
+#else
+      x = BOX_SPC + TEXT_SPC +
+	FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+			 item->input.value,CF.abs_cursor)
+	- 1;
+#endif
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		x, BOX_SPC, x, dy - BOX_SPC);
       myfprintf((stderr,"Line %d/%d - %d/%d\n",
@@ -1771,6 +1814,12 @@ void RedrawItem (Item *item, int click)
                    item->header.dt_ptr->dt_colors[c_item_fg]);
     item->header.dt_ptr->dt_Fstr->win = item->header.win;
     item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
+    item->header.dt_ptr->dt_Fstr->flags.has_colorset = False;
+    if (itemcolorset >= 0)
+    {
+      item->header.dt_ptr->dt_Fstr->colorset = &Colorset[itemcolorset];
+      item->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
+    }
     item->header.dt_ptr->dt_Fstr->str = item->button.text;
     item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC;
     item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC

@@ -484,6 +484,12 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
   FwinString->x = x+newx+button->reliefwidth;
   FwinString->y = y+1+button->reliefwidth+FButtonFont->ascent;
   FwinString->gc = graph[set];
+  FwinString->flags.has_colorset = False;
+  if (colorset[set] >= 0)
+  {
+    FwinString->colorset = &Colorset[colorset[set]] ;
+    FwinString->flags.has_colorset = True;
+  }
   FlocaleDrawString(dpy, FButtonFont, FwinString, FWS_HAVE_LENGTH);
 
   /* Draw relief last */

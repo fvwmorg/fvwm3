@@ -844,6 +844,15 @@ void RedrawIcon(struct icon_info *item, int f)
 
 		if (Hilite == item)
 		{
+			if (IconHicolorset >= 0)
+			{
+				FwinString->colorset = &Colorset[IconHicolorset];
+				FwinString->flags.has_colorset = True;
+			}
+			else
+			{
+				FwinString->flags.has_colorset = False;
+			}
 			XRaiseWindow(dpy, item->IconWin);
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x + min(0, (diff - 8))/2,
@@ -858,6 +867,15 @@ void RedrawIcon(struct icon_info *item, int f)
 		}
 		else
 		{
+			if (Iconcolorset >= 0)
+			{
+				FwinString->colorset = &Colorset[Iconcolorset];
+				FwinString->flags.has_colorset = True;
+			}
+			else
+			{
+				FwinString->flags.has_colorset = False;
+			}
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x, item->y + h,
 					  w, 6 + Ffont->height);

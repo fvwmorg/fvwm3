@@ -532,28 +532,35 @@ void DrawTitle(button_info *b,Window win,GC gc)
 
   if(*s && l>0 && BH>=Ffont->height) /* Clip it somehow? */
   {
-    FlocaleWinString *FwinString;
+    FlocaleWinString FwinString;
+    int cset;
 
-    FlocaleAllocateWinString(&FwinString);
-    FwinString->str = s;
-    FwinString->win = win;
-    FwinString->gc = gc;
-    FwinString->x = xpos;
+    memset(&FwinString, 0, sizeof(FwinString));
+    FwinString.str = s;
+    FwinString.win = win;
+    FwinString.gc = gc;
+    cset = buttonColorset(b);
+    if (cset >= 0)
+    {
+	    FwinString.colorset = &Colorset[cset];
+	    FwinString.flags.has_colorset = 1;
+    }
+    FwinString.x = xpos;
     /* If there is more than the title, put it at the bottom */
     /* Unless stack flag is set, put it to the right of icon */
     if((b->flags&b_Icon ||
 	((buttonSwallowCount(b)==3) && (b->flags&b_Swallow))) &&
        !(justify&b_Horizontal))
     {
-      FwinString->y = iy+ih-Ffont->descent;
+      FwinString.y = iy+ih-Ffont->descent;
       /* Shrink the space available for icon/window */
       ih-=Ffont->height;
     }
     /* Or else center vertically */
     else
     {
-      FwinString->y = iy + (ih+ Ffont->ascent - Ffont->descent)/2;
+      FwinString.y = iy + (ih+ Ffont->ascent - Ffont->descent)/2;
     }
-    FlocaleDrawString(Dpy, Ffont, FwinString, 0);
+    FlocaleDrawString(Dpy, Ffont, &FwinString, 0);
   }
 }

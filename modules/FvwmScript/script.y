@@ -353,7 +353,7 @@ int yyerror(char *errmsg)
        }
 
 /* Declaration des symboles terminaux */
-%token <str> STR GSTR VAR
+%token <str> STR GSTR VAR FONT
 %token <number> NUMBER	/* Nombre pour communiquer les dimensions */
 
 %token WINDOWTITLE WINDOWSIZE WINDOWPOSITION FONT
@@ -362,7 +362,7 @@ int yyerror(char *errmsg)
 %token TYPE SIZE POSITION VALUE VALUEMIN VALUEMAX TITLE SWALLOWEXEC ICON FLAGS WARP WRITETOFILE
 %token HIDDEN NOFOCUS NORELIEFSTRING CENTER LEFT RIGHT
 %token CASE SINGLECLIC DOUBLECLIC BEG POINT
-%token EXEC HIDE SHOW FONT CHFORECOLOR CHBACKCOLOR CHCOLORSET KEY
+%token EXEC HIDE SHOW CHFONT CHFORECOLOR CHBACKCOLOR CHCOLORSET KEY
 %token GETVALUE GETMINVALUE GETMAXVALUE GETFORE GETBACK GETHILIGHT GETSHADOW CHVALUE CHVALUEMAX CHVALUEMIN
 %token ADD DIV MULT GETTITLE GETOUTPUT STRCOPY NUMTOHEX HEXTONUM QUIT
 %token LAUNCHSCRIPT GETSCRIPTFATHER SENDTOSCRIPT RECEIVFROMSCRIPT
@@ -380,47 +380,62 @@ initvar: 			{ InitVarGlob(); }
        ;
 
 /* Entete du scripte decrivant les options par defaut */
-head:				/* vide: dans ce cas on utilise les valeurs par défaut */	
-    | head WINDOWTITLE GSTR	{		/* Titre de la fenetre */
-				 scriptprop->titlewin=$3;
-				}
-    | head ICON STR		{
-				 scriptprop->icon=$3;
-				}
-    | head WINDOWPOSITION NUMBER NUMBER
-				{		/* Position et taille de la fenetre */
-				 scriptprop->x=$3;
-				 scriptprop->y=$4;
-				}
-    | head WINDOWSIZE NUMBER NUMBER
-				{		/* Position et taille de la fenetre */
-				 scriptprop->width=$3;
-				 scriptprop->height=$4;
-				}
-    | head BACKCOLOR GSTR	{ 		/* Couleur de fond */
-				 scriptprop->backcolor=$3;
-				 scriptprop->colorset = -1;
-				}
-    | head FORECOLOR GSTR	{ 		/* Couleur des lignes */
-				 scriptprop->forecolor=$3;
-				 scriptprop->colorset = -1;
-				}
-    | head SHADCOLOR GSTR	{ 		/* Couleur des lignes */
-				 scriptprop->shadcolor=$3;
-				 scriptprop->colorset = -1;
-				}
-    | head LICOLOR GSTR		{ 		/* Couleur des lignes */
-				 scriptprop->hilicolor=$3;
-				 scriptprop->colorset = -1;
-				}
-    | head COLORSET NUMBER	{
-				 scriptprop->colorset = $3;
-				 AllocColorset($3);
-				}
-    | head FONT STR		{
-				 scriptprop->font=$3;
-				}
-   ;
+head:
+/* vide: dans ce cas on utilise les valeurs par défaut */	
+| head WINDOWTITLE GSTR
+{
+	/* Titre de la fenetre */
+	scriptprop->titlewin=$3;
+}
+| head ICON STR
+{
+	scriptprop->icon=$3;
+}
+| head WINDOWPOSITION NUMBER NUMBER
+{
+	/* Position et taille de la fenetre */
+	scriptprop->x=$3;
+	scriptprop->y=$4;
+}
+| head WINDOWSIZE NUMBER NUMBER
+{
+	/* Position et taille de la fenetre */
+	scriptprop->width=$3;
+	scriptprop->height=$4;
+}
+| head BACKCOLOR GSTR
+{
+	/* Couleur de fond */
+	scriptprop->backcolor=$3;
+	scriptprop->colorset = -1;
+}
+| head FORECOLOR GSTR
+{
+	/* Couleur des lignes */
+	scriptprop->forecolor=$3;
+	scriptprop->colorset = -1;
+}
+| head SHADCOLOR GSTR
+{
+	/* Couleur des lignes */
+	scriptprop->shadcolor=$3;
+	scriptprop->colorset = -1;
+}
+| head LICOLOR GSTR
+{
+	/* Couleur des lignes */
+	scriptprop->hilicolor=$3;
+	scriptprop->colorset = -1;
+}
+| head COLORSET NUMBER
+{
+	scriptprop->colorset = $3;
+	AllocColorset($3);
+}
+| head FONT
+{
+	scriptprop->font=$2;
+}
 
 /* Bloc d'initialisation du script */
 initbloc:		/* cas ou il n'y pas de bloc d'initialisation du script */
@@ -517,8 +532,8 @@ init:				/* vide */
 				 (*tabobj)[nbobj].colorset = $3;
 				 AllocColorset($3);
 				}
-    | init FONT STR		{
-				 (*tabobj)[nbobj].font=$3;
+    | init FONT			{
+				 (*tabobj)[nbobj].font=$2;
 				}
     | init FLAGS flags		
     ;
@@ -591,7 +606,7 @@ instr:
     | instr SIZE size
     | instr TITLE title
     | instr ICON icon
-    | instr FONT font
+    | instr CHFONT font
     | instr CHFORECOLOR chforecolor
     | instr CHBACKCOLOR chbackcolor
     | instr CHCOLORSET chcolorset
@@ -618,7 +633,7 @@ oneinstr: EXEC exec
 	| SIZE size
 	| TITLE title
 	| ICON icon
-	| FONT font
+	| CHFONT font
 	| CHFORECOLOR chforecolor
 	| CHBACKCOLOR chbackcolor
 	| CHCOLORSET chcolorset
@@ -651,7 +666,7 @@ icon: addlbuff numarg addlbuff strarg	{ AddCom(7,2);}
     ;
 title: addlbuff numarg addlbuff gstrarg	{ AddCom(8,2);}
      ;
-font: addlbuff numarg addlbuff strarg	{ AddCom(9,2);}
+font: addlbuff numarg addlbuff args { AddCom(9,2);}
     ;
 chforecolor: addlbuff numarg addlbuff gstrarg	{ AddCom(10,2);}
            ;
@@ -758,7 +773,6 @@ args	:			{ }
 	| num args
 	| BEGF addlbuff function ENDF args
 	;
-
 
 /* Argument unique de n'importe quel type */
 arg	: var
