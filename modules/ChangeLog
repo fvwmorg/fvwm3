@@ -1,3 +1,10 @@
+2000-01-21  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* FvwmAuto/FvwmAuto.c
+	Changed default signal disposition to SA_RESTART instead of
+    SA_INTERRUPT. Hopefully non-Linux OSs also interrupt select()
+    regardless of this setting.
+
 2000-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/parse.c (my_get_font):

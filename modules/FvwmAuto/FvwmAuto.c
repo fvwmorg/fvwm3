@@ -146,8 +146,8 @@ main(int argc, char **argv)
     sigaddset(&sigact.sa_mask, SIGHUP);
     sigaddset(&sigact.sa_mask, SIGQUIT);
     sigaddset(&sigact.sa_mask, SIGTERM);
-#ifdef SA_INTERRUPT
-    sigact.sa_flags = SA_INTERRUPT;
+#ifdef SA_RESTART
+    sigact.sa_flags = SA_RESTART;
 # else
     sigact.sa_flags = 0;
 #endif
@@ -175,11 +175,11 @@ main(int argc, char **argv)
   signal(SIGQUIT, TerminateHandler);
   signal(SIGTERM, TerminateHandler);
 #ifdef HAVE_SIGINTERRUPT
-  siginterrupt(SIGPIPE, 1);
-  siginterrupt(SIGINT, 1);
-  siginterrupt(SIGHUP, 1);
-  siginterrupt(SIGQUIT, 1);
-  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGPIPE, 0);
+  siginterrupt(SIGINT, 0);
+  siginterrupt(SIGHUP, 0);
+  siginterrupt(SIGQUIT, 0);
+  siginterrupt(SIGTERM, 0);
 #endif
 #endif
 
