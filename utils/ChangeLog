@@ -1,5 +1,6 @@
 2000-10-11  Dan Espen  <dane@mk.telcordia.com>
 
+	* fvwm24_convert.1:
 	* fvwm24_convert.in: Convert to perl, print warning on read commands,
 	do caseless matching on commands.
 
