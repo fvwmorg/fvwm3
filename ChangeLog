@@ -1,3 +1,10 @@
+1998-01-05  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/misc.c (RaiseWindow):  Added Matthias Clasen's patch to keep
+	from raising StaysOnTop windows above override_redirect windows; fixed
+	the stacking order chain reorg to keep StaysOnTop windows at the
+	beginning of the chain.
+
 1998-01-05  Dominik Vogt  <dominik_vogt@hp.com>
 	
 	* BUGS: Removed some fixed bugs.

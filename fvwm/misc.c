@@ -886,12 +886,18 @@ void RaiseWindow(FvwmWindow *t)
   FvwmWindow *t2;
   int count, i;
   Window *wins;
+  XWindowChanges changes;
+  FvwmWindow *t1;
+  FvwmWindow **FvwmTopwins = NULL;
+  int j, count2;
 
+
+  memset((void *) &changes, '\0', sizeof(changes));
   /* raise the target, at least */
   count = 1;
   BroadcastPacket(M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
 
-  for (t2 = Scr.FvwmRoot.next; t2 != NULL; t2 = t2->next)
+  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
     {
       if(t2->flags & ONTOP)
 	count++;
@@ -913,23 +919,27 @@ void RaiseWindow(FvwmWindow *t)
     }
 
   wins = (Window *)safemalloc(count*sizeof(Window));
+  FvwmTopwins = (FvwmWindow **)safemalloc(count*sizeof(FvwmWindow));
 
   i=0;
+  j = 0;
+  count2 = 0;
 
   /* ONTOP windows on top */
-  for (t2 = Scr.FvwmRoot.next; t2 != NULL; t2 = t2->next)
+  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
     {
       if(t2->flags & ONTOP)
 	{
 	  BroadcastPacket(M_RAISE_WINDOW, 3,
                           t2->w, t2->frame, (unsigned long) t2);
 	  wins[i++] = t2->frame;
+          FvwmTopwins[j++] = t2;
 	}
     }
 
   /* now raise transients */
 #ifndef DONT_RAISE_TRANSIENTS
-  for (t2 = Scr.FvwmRoot.next; t2 != NULL; t2 = t2->next)
+  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
   {
     if((t2->flags & TRANSIENT) &&
        (t2->transientfor == t->w) &&
@@ -937,6 +947,7 @@ void RaiseWindow(FvwmWindow *t)
        (!(t2->flags & ONTOP)))
     {
       wins[i++] = t2->frame;
+      FvwmTopwins[j++] = t2;
       if ((t2->flags & ICONIFIED)&&(!(t2->flags & SUPPRESSICON)))
       {
         if(!(t2->flags & NOICON_TITLE))
@@ -955,26 +966,61 @@ void RaiseWindow(FvwmWindow *t)
       wins[i++] = t->icon_pixmap_w;
   }
   if(!(t->flags & ONTOP))
-    wins[i++] = t->frame;
-  if(!(t->flags & ONTOP))
-    Scr.LastWindowRaised = t;
+    {
+      wins[i++] = t->frame;
+      FvwmTopwins[j++] = t;
+      Scr.LastWindowRaised = t;
+    }
+  count2 = j;
 
   if(i > 0)
     {
-      XRaiseWindow(dpy,wins[0]);
+/*      XRaiseWindow(dpy,wins[0]);  */
       /*
-          RBW - 11/13/1998 - new: maintain the stacking order chain.
+           clasen@mathematik.uni-freiburg.de - 01/01/1999 - 
+         simply calling XRaiseWindow(dpy,wins[0]); here will put StaysOnTop
+         windows over override_redirect windows like FvwmPager ballon_win or
+         Motif menus. Instead raise wins[0] only above the topmost window
+	 which is managed by us. 
       */
-      t->stack_prev->stack_next = t->stack_next;  /* Pluck from chain.       */
-      t->stack_next->stack_prev = t->stack_prev;
-      t->stack_next = Scr.FvwmRoot.stack_next;    /* Set new pointers.       */
-      t->stack_prev = Scr.FvwmRoot.stack_next->stack_prev;
-      Scr.FvwmRoot.stack_next->stack_prev = t;    /* Insert at top of chain. */
-      Scr.FvwmRoot.stack_next = t;
+     if (wins[0] != Scr.FvwmRoot.stack_next->frame) 
+      { 
+        changes.sibling = Scr.FvwmRoot.stack_next->frame;
+        changes.stack_mode = Above;
+        XConfigureWindow(dpy, wins[0], (CWSibling|CWStackMode), &changes);
+      }
+
+
+      /*
+          RBW  - 01/05/1998 - move all raised windows to front of stacking
+          order chain.
+      */
+      j = 0;
+      t2 = &Scr.FvwmRoot;
+      while (j < count2)
+        {
+          t1 = FvwmTopwins[j];
+	  if (t1 != t2->stack_next)
+            {
+              t1->stack_prev->stack_next = t1->stack_next;  /* Pluck from chain.       */
+              t1->stack_next->stack_prev = t1->stack_prev;
+              t1->stack_next = t2->stack_next;    /* Set new pointers.       */
+              t1->stack_prev = t2->stack_next->stack_prev;
+              t2->stack_next->stack_prev = t1;    /* Insert in new position in chain. */
+              t2->stack_next = t1;
+            }
+          j++;
+          if (t2->stack_next != &Scr.FvwmRoot)
+          {
+	    t2 = t2->stack_next;
+          }
+        }
+
     }
 
   XRestackWindows(dpy,wins,i);
   free(wins);
+  if (FvwmTopwins) free(FvwmTopwins);
   raisePanFrames();
 }
 
