@@ -48,6 +48,6 @@ install-exec-local:
 		echo "Minor warning: $(bindir)/fvwm2 symlink was not created"
 
 install-data-local:
-	@rm -f $(mandir)/fvwm2.1
-	@$(LN_S) fvwm.1 $(mandir)/fvwm2.1 || \
-		echo "Minor warning: $(mandir)/fvwm2.1 symlink was not created"
+	@rm -f $(mandir)/man1/fvwm2.1
+	@$(LN_S) fvwm.1 $(mandir)/man1/fvwm2.1 || \
+		echo "Minor warning: $(mandir)/man1/fvwm2.1 symlink was not created"
