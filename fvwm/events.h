@@ -37,7 +37,9 @@
                          VisibilityChangeMask | ButtonMotionMask)
 #define XEVMASK_MENUW   (ExposureMask | EnterWindowMask | \
                          KeyPressMask | KeyReleaseMask)
-#define XEVMASK_PANFW   (EnterWindowMask | LeaveWindowMask | \
+#define XEVMASK_PANFW   (ButtonPressMask | ButtonReleaseMask | \
+ 		         KeyReleaseMask | KeyPressMask | \
+                         EnterWindowMask | LeaveWindowMask | \
                          VisibilityChangeMask)
 #define XEVMASK_NOFOCUSW (KeyPressMask|FocusChangeMask)
 #define XEVMASK_MENUNFW  (KeyPressMask|KeyReleaseMask|FocusChangeMask)

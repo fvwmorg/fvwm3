@@ -1482,6 +1482,10 @@ void HandleButtonPress(void)
 
   GrabEm(CRS_NONE, GRAB_PASSIVE);
   if (!Tmp_win &&
+      (Event.xbutton.window != Scr.PanFrameTop.win &&
+       Event.xbutton.window != Scr.PanFrameBottom.win &&
+       Event.xbutton.window != Scr.PanFrameLeft.win &&
+       Event.xbutton.window != Scr.PanFrameRight.win) &&
       (Event.xbutton.window != Scr.Root || Event.xbutton.subwindow != None))
   {
     /* event in unmanaged window or subwindow of a client */
@@ -2872,8 +2876,10 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 	&(e->xkey.y), &(e->xkey.subwindow));
     }
   }
-  if(!t)
+  if (!t)
+  {
     return C_ROOT;
+  }
 
   if (e->type == KeyPress && e->xkey.window == t->frame &&
       e->xkey.subwindow == t->decor_w)
@@ -2889,7 +2895,9 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   *w= e->xany.window;
 
   if (*w == Scr.NoFocusWin)
+  {
     return C_ROOT;
+  }
   if (e->type == KeyPress && e->xkey.window == t->frame &&
       e->xkey.subwindow == t->decor_w)
   {
@@ -2904,7 +2912,9 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   *w= e->xany.window;
 
   if (*w == Scr.NoFocusWin)
+  {
     return C_ROOT;
+  }
   if (e->xkey.subwindow != None &&
       (e->xkey.window == t->decor_w || e->xkey.window == t->Parent))
   {
@@ -2915,52 +2925,54 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     e->xkey.subwindow = None;
   }
   if (*w == Scr.Root)
+  {
     return C_ROOT;
+  }
   if (t)
+  {
+    if (*w == t->title_w)
+      Context = C_TITLE;
+    else if (*w == t->w || *w == t->Parent || *w == t->frame)
+      Context = C_WINDOW;
+    else if (*w == t->icon_w || *w == t->icon_pixmap_w)
+      Context = C_ICON;
+    else if (*w == t->decor_w)
+      Context = C_SIDEBAR;
+    else
     {
-      if (*w == t->title_w)
-	Context = C_TITLE;
-      else if (*w == t->w || *w == t->Parent || *w == t->frame)
-	Context = C_WINDOW;
-      else if (*w == t->icon_w || *w == t->icon_pixmap_w)
-	Context = C_ICON;
-      else if (*w == t->decor_w)
-	Context = C_SIDEBAR;
+      for(i=0;i<4;i++)
+      {
+	if(*w == t->corners[i])
+	{
+	  Context = C_FRAME;
+	  break;
+	}
+	if(*w == t->sides[i])
+	{
+	  Context = C_SIDEBAR;
+	  break;
+	}
+      }
+      if (i < 4)
+	Button = i;
       else
       {
-	for(i=0;i<4;i++)
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+	  if (*w == t->button_w[i])
 	  {
-	    if(*w == t->corners[i])
-	      {
-		Context = C_FRAME;
-		break;
-	      }
-	    if(*w == t->sides[i])
-	      {
-		Context = C_SIDEBAR;
-		break;
-	      }
-	  }
-	if (i < 4)
-	  Button = i;
-	else
-	  {
-	    for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	    if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
+		( (i & 1) && i / 2 < Scr.nr_right_buttons))
 	    {
-	      if (*w == t->button_w[i])
-	      {
-		if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
-		    ( (i & 1) && i / 2 < Scr.nr_right_buttons))
-		{
-		  Context = (1 << i) * C_L1;
-		  Button = i;
-		  break;
-		}
-	      }
+	      Context = (1 << i) * C_L1;
+	      Button = i;
+	      break;
 	    }
 	  }
-      } /* else */
-    } /* if (t) */
+	}
+      }
+    } /* else */
+  } /* if (t) */
   return Context;
 }
 

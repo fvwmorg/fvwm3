@@ -381,6 +381,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 {
   static unsigned int add_time = 0;
   int x,y;
+  XEvent e;
   static Time my_timestamp = 0;
   static Time my_last_timestamp = 0;
   static Bool is_timestamp_valid = False;
@@ -442,6 +443,14 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	  dpy, Scr.PanFrameRight.win, LeaveWindowMask, &Event)))
     {
       StashEventTime(&Event);
+      is_timestamp_valid = False;
+      add_time = 0;
+      return False;
+    }
+    else if (XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+			     KeyPressMask | KeyReleaseMask, &e))
+    {
+      XPutBackEvent(dpy, &e);
       is_timestamp_valid = False;
       add_time = 0;
       return False;
@@ -797,7 +806,8 @@ void initPanFrames(void)
   /* TKP. This is bad, it will cause an XMap request on a null window later*/
   /* if (edge_thickness == 0) return; */
   saved_thickness = edge_thickness;
-  if (edge_thickness == 0) edge_thickness = 2;
+  if (edge_thickness == 0)
+    edge_thickness = 2;
 
   attributes.event_mask = XEVMASK_PANFW;
   valuemask=  (CWEventMask | CWCursor);

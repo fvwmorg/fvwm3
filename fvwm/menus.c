@@ -7341,7 +7341,7 @@ char *get_menu_options(
   taction = action;
   memset(&(pops->flags), 0, sizeof(pops->flags));
   pops->flags.has_poshints = 0;
-  if (!action)
+  if (!action || *action == 0)
   {
     if (!pops->pos_hints.has_screen_origin)
     {
@@ -7354,7 +7354,7 @@ char *get_menu_options(
       }
     }
   }
-  while (action != NULL)
+  while (action != NULL && *action != 0)
   {
     /* ^ just to be able to jump to end of loop without 'goto' */
     gflags = NoValue;
