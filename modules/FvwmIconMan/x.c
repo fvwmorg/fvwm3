@@ -415,7 +415,7 @@ static void set_window_properties (Window win, char *name, char *icon,
   XTextProperty win_name;
   XTextProperty win_icon;
   XClassHint class;
-  XWMHints wmhints = {0};
+  XWMHints wmhints = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   wmhints.initial_state = NormalState;
   wmhints.flags = StateHint;

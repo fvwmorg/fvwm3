@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include <errno.h>
 #include "FvwmIconMan.h"
 #include "readconfig.h"
@@ -33,22 +34,22 @@ static char *IM_VERSION = "1.3";
 static char const rcsid[] =
   "$Id$";
 
-char *MyName;
+const char *MyName;
 
 static RETSIGTYPE TerminateHandler(int);
 
-char *copy_string (char **target, char *src)
+char *copy_string(char **target, const char *src)
 {
-  int len = strlen (src);
-  ConsoleDebug (CORE, "copy_string: 1: 0x%lx\n", (unsigned long)*target);
+  int len = strlen(src);
+  ConsoleDebug(CORE, "copy_string: 1: 0x%lx\n", (unsigned long)*target);
 
   if (*target)
-    Free (*target);
+    Free(*target);
 
-  ConsoleDebug (CORE, "copy_string: 2\n");
-  *target = (char *)safemalloc ((len + 1) * sizeof (char));
-  strcpy (*target, src);
-  ConsoleDebug (CORE, "copy_string: 3\n");
+  ConsoleDebug(CORE, "copy_string: 2\n");
+  *target = (char *)safemalloc((len + 1) * sizeof(char));
+  strcpy(*target, src);
+  ConsoleDebug(CORE, "copy_string: 3\n");
   return *target;
 }
 
@@ -63,33 +64,33 @@ void Free (void *p)
   if (p != NULL) {
     head--;
     if (head->magic != MALLOC_MAGIC) {
-      fprintf (stderr, "Corrupted memory found in Free\n");
+      fprintf(stderr, "Corrupted memory found in Free\n");
       abort();
       return;
     }
     if (head->len > MemUsed) {
-      fprintf (stderr, "Free block too big\n");
+      fprintf(stderr, "Free block too big\n");
       return;
     }
     MemUsed -= head->len;
-    free (head);
+    free(head);
   }
 }
 
-void PrintMemuse (void)
+void PrintMemuse(void)
 {
-  ConsoleDebug (CORE, "Memory used: %d\n", MemUsed);
+  ConsoleDebug(CORE, "Memory used: %d\n", MemUsed);
 }
 
 #else
 
-void Free (void *p)
+void Free(void *p)
 {
   if (p != NULL)
-    free (p);
+    free(p);
 }
 
-void PrintMemuse (void)
+void PrintMemuse(void)
 {
 }
 
@@ -103,60 +104,80 @@ TerminateHandler(int sig)
 }
 
 
-void ShutMeDown (int flag)
+void
+ShutMeDown(int flag)
 {
-  ConsoleDebug (CORE, "Bye Bye\n");
-  exit (flag);
+  ConsoleDebug(CORE, "Bye Bye\n");
+  exit(flag);
 }
 
-void DeadPipe (int nothing)
+void
+DeadPipe(int nothing)
 {
+  (void)nothing;
   ShutMeDown(0);
 }
 
-void SendFvwmPipe (char *message,unsigned long window)
+void
+SendFvwmPipe(const char *message, unsigned long window)
 {
-  char *hold,*temp,*temp_msg;
-  hold=message;
+  const char *hold = message;
+  const char *temp;
 
-  while(1) {
-    temp=strchr(hold,',');
-    if (temp!=NULL) {
-      temp_msg= (char *)safemalloc(temp-hold+1);
-      strncpy(temp_msg,hold,(temp-hold));
-      temp_msg[(temp-hold)]='\0';
-      hold=temp+1;
-    } else temp_msg=hold;
+  /*
+   * The message is a comma-delimited string :
+   * separate it into its component sections and
+   * send them one by one ...
+   */
+  while ( (temp = strchr(hold, ',')) != NULL )
+  {
+    char *temp_msg = (char*)safemalloc(temp - hold + 1);
+
+    strncpy(temp_msg, hold, (temp - hold));
+    temp_msg[(temp - hold)] = '\0';
+    hold = temp + 1;
 
     SendText(Fvwm_fd, temp_msg, window);
+    Free(temp_msg);
+  } /* while */
 
-    if(temp_msg!=hold) Free(temp_msg);
-    else break;
-  }
+  /*
+   * Send the last part of the string :
+   * we don't need to copy this into separate
+   * storage because we don't need to modify it ...
+   *
+   * NOTE: this makes this second call to SendText()
+   *       distinct from the first call. Two calls is
+   *       cleaner than hacking the loop to make only
+   *       one call. 
+   */
+  SendText(Fvwm_fd, hold, window);
 }
 
-static void main_loop (void)
+static void
+main_loop (void)
 {
   fd_set readset, saveset;
 
-  FD_ZERO (&saveset);
-  FD_SET (Fvwm_fd[1], &saveset);
-  FD_SET (x_fd, &saveset);
+  FD_ZERO(&saveset);
+  FD_SET(Fvwm_fd[1], &saveset);
+  FD_SET(x_fd, &saveset);
 
   while( !isTerminated ) {
     /* Check the pipes for anything to read, and block if
      * there is nothing there yet ...
      */
     readset = saveset;
-    if (fvwmSelect(fd_width, &readset,NULL,NULL,NULL) < 0) {
-      ConsoleMessage ("Internal error with select: errno=%d\n",errno);
+    if (fvwmSelect(fd_width, &readset, NULL, NULL, NULL) < 0) {
+      ConsoleMessage("Internal error with select: errno=%s\n",
+                     strerror(errno));
     }
     else {
 
-      if (FD_ISSET (x_fd, &readset) || XPending (theDisplay)) {
+      if (FD_ISSET(x_fd, &readset) || XPending(theDisplay)) {
         xevent_loop();
       }
-      if (FD_ISSET(Fvwm_fd[1],&readset)) {
+      if (FD_ISSET(Fvwm_fd[1], &readset)) {
         ReadFvwmPipe();
       }
 
@@ -164,9 +185,10 @@ static void main_loop (void)
   } /* while */
 }
 
-int main (int argc, char **argv)
+int
+main(int argc, char **argv)
 {
-  char *s;
+  const char *s;
   int i;
 
 #ifdef ELECTRIC_FENCE
@@ -179,10 +201,10 @@ int main (int argc, char **argv)
 #ifdef DEBUG_ATTACH
   {
     char buf[256];
-    sprintf (buf, "%d", getpid());
+    sprintf(buf, "%d", getpid());
     if (fork() == 0) {
-      chdir ("/home/bradym/src/FvwmIconMan");
-      execl ("/usr/local/bin/ddd", "/usr/local/bin/ddd", "FvwmIconMan",
+      chdir("/home/bradym/src/FvwmIconMan");
+      execl("/usr/local/bin/ddd", "/usr/local/bin/ddd", "FvwmIconMan",
 	     buf, NULL);
     }
     else {
@@ -199,25 +221,25 @@ int main (int argc, char **argv)
   OpenConsole(OUTPUT_FILE);
 
 #if 0
-  ConsoleMessage ("PID = %d\n", getpid());
-  ConsoleMessage ("Waiting for GDB to attach\n");
-  sleep (10);
+  ConsoleMessage("PID = %d\n", getpid());
+  ConsoleMessage("Waiting for GDB to attach\n");
+  sleep(10);
 #endif
 
   init_globals();
   init_winlists();
 
   MyName = argv[0];
-  s = strrchr (argv[0], '/');
+  s = strrchr(argv[0], '/');
   if (s != NULL)
     MyName = s + 1;
 
   if((argc != 6) && (argc != 7)) {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
       IM_VERSION);
-    ShutMeDown (1);
+    ShutMeDown(1);
   }
-  if (argc == 7 && !strcasecmp (argv[6], "Transient"))
+  if (argc == 7 && !strcasecmp(argv[6], "Transient"))
     globals.transient = 1;
 
   Fvwm_fd[0] = atoi(argv[1]);
@@ -271,13 +293,13 @@ int main (int argc, char **argv)
 #endif
 #endif
 
-  read_in_resources (argv[3]);
+  read_in_resources(argv[3]);
 
   for (i = 0; i < globals.num_managers; i++) {
-    X_init_manager (i);
+    X_init_manager(i);
   }
 
-  assert (globals.managers);
+  assert(globals.managers);
   fd_width = GetFdWidth();
 
   SetMessageMask(Fvwm_fd,M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME |
@@ -290,7 +312,7 @@ int main (int argc, char **argv)
 #endif
 		 M_STRING);
 
-  SendInfo (Fvwm_fd, "Send_WindowList", 0);
+  SendInfo(Fvwm_fd, "Send_WindowList", 0);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
@@ -306,3 +328,4 @@ int main (int argc, char **argv)
 
   return 0;
 }
+

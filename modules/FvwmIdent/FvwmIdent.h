@@ -56,10 +56,8 @@ struct Item
  *
  *************************************************************************/
 void Loop(int *fd);
-void SendInfo(int *fd,char *message,unsigned long window);
-char *safemalloc(int length);
-void DeadPipe(int nonsense);
-void process_message(unsigned long type,unsigned long *body);
+void DeadPipe(int nonsense) __attribute__((noreturn));
+void process_message(unsigned long type, unsigned long *body);
 void RedrawWindow(void);
 void change_window_name(char *str);
 Pixel GetColor(char *name);

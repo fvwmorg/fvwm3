@@ -121,7 +121,7 @@ void SendFinishedStartupNotification(int *fd);
  * SendText - Sends arbitrary text/command back to fvwm
  *
  ***********************************************************************/
-void SendText(int *fd,char *message,unsigned long window);
+void SendText(int *fd, const char *message, unsigned long window);
 
 
 /** Compatibility **/

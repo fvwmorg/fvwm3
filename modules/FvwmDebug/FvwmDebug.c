@@ -96,7 +96,7 @@ pid_t spawn_xtee(void)
  ***********************************************************************/
 int main(int argc, char **argv)
 {
-  char *temp, *s;
+  const char *temp, *s;
 
   /* Save our program  name - for error messages */
   temp = argv[0];
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     temp = s + 1;
 
   MyName = safemalloc(strlen(temp)+2);
-  strcpy(MyName,"*");
+  strcpy(MyName, "*");
   strcat(MyName, temp);
 
   if((argc != 6)&&(argc != 7))
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
     }
 
   /* Dead pipe == Fvwm died */
-  signal (SIGPIPE, DeadPipe);
+  signal(SIGPIPE, DeadPipe);
 
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
@@ -150,14 +150,13 @@ int main(int argc, char **argv)
  *	Loop - wait for data to process
  *
  ***********************************************************************/
-void Loop(int *fd)
+void Loop(const int *fd)
 {
     while (1) {
-	FvwmPacket* packet = ReadFvwmPacket(fd[1]);
-	if ( packet == NULL )
-	    exit(0);
-	else
-	    process_message( packet->type, packet->body );
+      FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+      if ( packet == NULL )
+        exit(0);
+      process_message( packet->type, packet->body );
     }
 }
 
@@ -168,7 +167,7 @@ void Loop(int *fd)
  *	Process message - examines packet types, and takes appropriate action
  *
  ***********************************************************************/
-void process_message(unsigned long type,unsigned long *body)
+void process_message(unsigned long type, const unsigned long *body)
 {
   switch(type)
     {
@@ -240,6 +239,7 @@ void process_message(unsigned long type,unsigned long *body)
  ***********************************************************************/
 void DeadPipe(int nonsense)
 {
+  (void)nonsense;
   fprintf(stderr,"FvwmDebug: DeadPipe\n");
   exit(0);
 }
@@ -250,7 +250,7 @@ void DeadPipe(int nonsense)
  *	list_add - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_add(unsigned long *body)
+void list_add(const unsigned long *body)
 {
   fprintf(stderr,"Add Window\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -283,7 +283,7 @@ void list_add(unsigned long *body)
  *	list_configure - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_configure(unsigned long *body)
+void list_configure(const unsigned long *body)
 {
   fprintf(stderr,"Configure Window\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -316,7 +316,7 @@ void list_configure(unsigned long *body)
  *	list_destroy - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_destroy(unsigned long *body)
+void list_destroy(const unsigned long *body)
 {
   fprintf(stderr,"destroy\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -330,7 +330,7 @@ void list_destroy(unsigned long *body)
  *	list_focus - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_focus(unsigned long *body)
+void list_focus(const unsigned long *body)
 {
   fprintf(stderr,"focus\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -345,7 +345,7 @@ void list_focus(unsigned long *body)
  *	list_new_page - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_new_page(unsigned long *body)
+void list_new_page(const unsigned long *body)
 {
   fprintf(stderr,"new page\n");
   fprintf(stderr,"\t x %ld\n",(long)body[0]);
@@ -359,7 +359,7 @@ void list_new_page(unsigned long *body)
  *	list_new_desk - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_new_desk(unsigned long *body)
+void list_new_desk(const unsigned long *body)
 {
   fprintf(stderr,"new desk\n");
   fprintf(stderr,"\t desk %ld\n",(long)body[0]);
@@ -371,7 +371,7 @@ void list_new_desk(unsigned long *body)
  *	list_raise - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_raise(unsigned long *body)
+void list_raise(const unsigned long *body)
 {
   fprintf(stderr,"raise\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -386,7 +386,7 @@ void list_raise(unsigned long *body)
  *	list_lower - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_lower(unsigned long *body)
+void list_lower(const unsigned long *body)
 {
   fprintf(stderr,"lower\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -401,8 +401,9 @@ void list_lower(unsigned long *body)
  *	list_unknow - handles an unrecognized packet.
  *
  ***********************************************************************/
-void list_unknown(unsigned long *body)
+void list_unknown(const unsigned long *body)
 {
+  (void)body;
   fprintf(stderr,"Unknown packet type\n");
 }
 
@@ -412,7 +413,7 @@ void list_unknown(unsigned long *body)
  *	list_iconify - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_iconify(unsigned long *body)
+void list_iconify(const unsigned long *body)
 {
   fprintf(stderr,"iconify\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -431,7 +432,7 @@ void list_iconify(unsigned long *body)
  *	list_map - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_map(unsigned long *body)
+void list_map(const unsigned long *body)
 {
   fprintf(stderr,"map\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -446,7 +447,7 @@ void list_map(unsigned long *body)
  *	list_icon_loc - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_icon_loc(unsigned long *body)
+void list_icon_loc(const unsigned long *body)
 {
   fprintf(stderr,"icon location\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -467,7 +468,7 @@ void list_icon_loc(unsigned long *body)
  *
  ***********************************************************************/
 
-void list_deiconify(unsigned long *body)
+void list_deiconify(const unsigned long *body)
 {
   fprintf(stderr,"de-iconify\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
@@ -482,13 +483,13 @@ void list_deiconify(unsigned long *body)
  *
  ***********************************************************************/
 
-void list_window_name(unsigned long *body)
+void list_window_name(const unsigned long *body)
 {
   fprintf(stderr,"window name\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
   fprintf(stderr,"\t frame ID %lx\n",body[1]);
   fprintf(stderr,"\t fvwm ptr %lx\n",body[2]);
-  fprintf(stderr,"\t window name %s\n",(char *)(&body[3]));
+  fprintf(stderr,"\t window name %s\n",(const char *)(&body[3]));
 
 }
 
@@ -499,13 +500,13 @@ void list_window_name(unsigned long *body)
  *	list_icon_name - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_icon_name(unsigned long *body)
+void list_icon_name(const unsigned long *body)
 {
   fprintf(stderr,"icon name\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
   fprintf(stderr,"\t frame ID %lx\n",body[1]);
   fprintf(stderr,"\t fvwm ptr %lx\n",body[2]);
-  fprintf(stderr,"\t icon name %s\n",(char *)(&body[3]));
+  fprintf(stderr,"\t icon name %s\n",(const char *)(&body[3]));
 }
 
 
@@ -516,13 +517,13 @@ void list_icon_name(unsigned long *body)
  *	list_class - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_class(unsigned long *body)
+void list_class(const unsigned long *body)
 {
   fprintf(stderr,"window class\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);
   fprintf(stderr,"\t frame ID %lx\n",body[1]);
   fprintf(stderr,"\t fvwm ptr %lx\n",body[2]);
-  fprintf(stderr,"\t window class %s\n",(char *)(&body[3]));
+  fprintf(stderr,"\t window class %s\n",(const char *)(&body[3]));
 }
 
 
@@ -532,7 +533,7 @@ void list_class(unsigned long *body)
  *	list_res_name - displays packet contents to stderr
  *
  ***********************************************************************/
-void list_res_name(unsigned long *body)
+void list_res_name(const unsigned long *body)
 {
   fprintf(stderr,"class resource name\n");
   fprintf(stderr,"\t ID %lx\n",body[0]);

@@ -21,31 +21,29 @@
  * Subroutine Prototypes
  *
  *************************************************************************/
-void Loop(int *fd);
-void SendInfo(int *fd,char *message,unsigned long window);
-char *safemalloc(int length);
-void DeadPipe(int nonsense);
-void process_message(unsigned long type,unsigned long *body);
+void Loop(const int *fd);
+void DeadPipe(int nonsense) __attribute__((noreturn));
+void process_message(unsigned long type, const unsigned long *body);
 
-void list_add(unsigned long *body);
-void list_configure(unsigned long *body);
-void list_destroy(unsigned long *body);
-void list_focus(unsigned long *body);
-void list_toggle(unsigned long *body);
-void list_new_page(unsigned long *body);
-void list_new_desk(unsigned long *body);
-void list_raise(unsigned long *body);
-void list_lower(unsigned long *body);
-void list_unknown(unsigned long *body);
-void list_iconify(unsigned long *body);
-void list_icon_loc(unsigned long *body);
-void list_deiconify(unsigned long *body);
-void list_map(unsigned long *body);
-void list_window_name(unsigned long *body);
-void list_icon_name(unsigned long *body);
-void list_class(unsigned long *body);
-void list_res_name(unsigned long *body);
-void list_look(unsigned long *body);
+void list_add(const unsigned long *body);
+void list_configure(const unsigned long *body);
+void list_destroy(const unsigned long *body);
+void list_focus(const unsigned long *body);
+void list_toggle(const unsigned long *body);
+void list_new_page(const unsigned long *body);
+void list_new_desk(const unsigned long *body);
+void list_raise(const unsigned long *body);
+void list_lower(const unsigned long *body);
+void list_unknown(const unsigned long *body);
+void list_iconify(const unsigned long *body);
+void list_icon_loc(const unsigned long *body);
+void list_deiconify(const unsigned long *body);
+void list_map(const unsigned long *body);
+void list_window_name(const unsigned long *body);
+void list_icon_name(const unsigned long *body);
+void list_class(const unsigned long *body);
+void list_res_name(const unsigned long *body);
+void list_look(const unsigned long *body);
 void list_end(void);
 
 
@@ -64,3 +62,4 @@ void list_end(void);
 #else
 #  define setvbuf(a,b,c,d) setlinebuf(a)
 #endif
+

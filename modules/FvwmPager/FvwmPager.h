@@ -144,9 +144,7 @@ typedef struct pager_string_list
  *************************************************************************/
 char *GetNextToken(char *indata,char **token);
 void Loop(int *fd);
-void SendInfo(int *fd,char *message,unsigned long window);
-char *safemalloc(int length);
-void DeadPipe(int nonsense);
+void DeadPipe(int nonsense) __attribute__((noreturn));
 void process_message(FvwmPacket*);
 void ParseOptions(void);
 
