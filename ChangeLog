@@ -3,6 +3,8 @@
 	* fvwm/menus.c (AddToMenu):
 	fixed core dump in labels containing only a pixmap
 	removed some pretty stupid redundant cut-n-paste code
+	(AddToMenu):
+	fixed automatic hotkey overriding user specified hotkeys
 
 2000-02-03  Darren Stuart Embry  <dsembr01@slug.louisville.edu>
 

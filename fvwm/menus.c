@@ -4805,7 +4805,7 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
 	/* pete@tecc.co.uk */
 	scanForHotkeys(tmp, i);
 
-        if (*MI_LABEL(tmp)[i] != 0)
+        if (!MI_HAS_HOTKEY(tmp) && *MI_LABEL(tmp)[i] != 0)
         {
           MI_HOTKEY_COFFSET(tmp) = 0;
           MI_HOTKEY_COLUMN(tmp) = i;
