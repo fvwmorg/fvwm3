@@ -1,7 +1,5 @@
 Items with highest priority / most severe problems:
 
- - Is #48 finished? (win95-like config file)
- - Verify if #150 is really fixed.
  - #158 (IS_NAME_CHANGED flag) Mikhael?
  - What should we do with #128 (bug #564)?  Can fvwm do anything
    about the window that receives the selection?
@@ -10,38 +8,42 @@ Items with highest priority / most severe problems:
    space (compressed with bzip2 -9):
      fvwm-2.3.16.tar.gz:  1533662 bytes
      fvwm-2.3.16.tar.bz2: 1188684 bytes
- - #157
- - #138/#145
 
 New since last update:
 
-150 (from 'closed' to 'to be verified')
+160, 161
 
 Closed since last update:
 
-14, 16, 90, 110, 119, 140, 141, 142, 153
+48, 139, 145, 148, 157, 160, 161
 
 ---------- Summary: ----------------------------------------------
 
- 1 to be verified
+ 2 to be verified
  1 to be discussed
-29 to do
- 5 distribution issues
+24 to do
+ 3 distribution issues
  9 testing
 ----------------------
-45 open items
-114 items closed
-159 items in total
+39 open items
+122 items closed
+161 items in total
 
 ---------- To be verified: ---------------------------------------
 
-150) Mini windows in pager can reach into adjacent pages
-     because of the min size of 3x3 pixels.
+118) Investigate "FvwmPager & StaysOnTop" bug (#543).
+     [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
+138) Bug #593 (key bindings w/ Motif)
+     [confirmed by Dominik]
 
 ---------- To be discussed ---------------------------------------
 
 128) Bug #564 (pasting text goes to window with the mouse, not
      the focused window).
+121) Investigate FvwmPager core dump.
+     [reported by Wing Tung Leung <tg@skynet.be> on 20-Feb-2000]
+     [Dominik: Didn't get any reply, stack trace, ...]
+     [Dominik: I suggest to close it as unreproducible]
 
 --------- To do: ------------------------------------------------
 
@@ -59,15 +61,10 @@ Closed since last update:
 117) Investigate icons disappearing if icon changes while on a
      different desk.
      [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
-118) Investigate "FvwmPager & StaysOnTop" bug (#543).
-     [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
-     [in progress, reproduced by Mike Han]
 120) Icons are not always sorted properly; there may be
      gaps after page switching (with IconBox).
      [reported by Joerg Klemenz on 26-Feb-2000]
      [confirmed by Dominik (hard to reproduce)]
-121) Investigate FvwmPager core dump.
-     [reported by Wing Tung Leung <tg@skynet.be> on 20-Feb-2000]
 122) Investigate FvwmButtons panel problem.
      [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
 123) Bug #378 (FvwmPager interferes with xscreensaver)
@@ -80,33 +77,20 @@ Closed since last update:
      update_window_color_hi_style().
      [reported by Ben Winslow <rain@insane.loonybin.net>]
      [not reproduced yet]
+     [purify may bring it up when we run the test script again]
 133) Bug #602 (window placement w/ 2.3.15): investigate and
      fix or close.
-134) Investigate DecWindows ConfigureRequest/Notify race
-     condition.
+134) Investigate DecWindows ConfigureRequest/Notify race condition.
      [reported by Fabien Viallard on 19-Apr-2000]
-138) Bug #593 (key bindings w/ Motif)
-     [confirmed by Dominik]
-     [Brad?]
-139) Fix TaskBar tips drawing.
-     [reported by gregory@mcst.ru (Gregory A. Shimansky) on
-     14-Apr-2000]
 143) Bug #603 (TaskBar bugs): investigate and possibly fix.
-145) Modules lose focus when a Netscape transient is opened
-     (ClickToFocus).  Probably the same as (138).
-     [reported by gregory@mcst.ru (Gregory A. Shimansky) on
-     1-May-2000]
-     [confirmed by Dominik]
 146) Bug #542 (Winch signals).
-148) Losing focus when entering root window bug.
-     [reported by Elliot Sowadsky on 29-Dec-1999]
-     [suggested fix: Lenience style... does not help]
+150) Mini windows in pager can reach into adjacent pages
+     because of the min size of 3x3 pixels.
+     [Tim]
 152) Investigate/fix fvwm freeze on Exceed.
      [various reporters, but no usable feedback yet]
 156) xterm client window cursor corrupted.
      [reported by Nagi Aboulenein on 2-Nov-1999]
-157) Stack ring still broken sometimes.
-     [Mike Han/Dominik]
 158) IS_NAME_CHANGED flag still broken?
      [Mikhael?]
 159) configure check for gnome.h
@@ -117,8 +101,6 @@ Closed since last update:
      [???; Jason?]
  12) Set up bzip2 tarballs.
      [optional]
- 48) Finish Windoze 95 like config file.
-     [Olivier]
  62) Write a new announcement.
      [in progress]
 
@@ -142,12 +124,16 @@ Closed since last update:
  16) Try to fix the 'netscape stuck on page' problem.
      [reported on 17-May-1999 by <jason@sdf.lonestar.org>]
      [still unreproducible; not relevant for 2.4]
+ 48) Finish Windoze 95 like config file.
  90) Icon distribution.
 110) Running two FvwmAuto modules at one freezes fvwm.
 119) MaxSwallow does not work in FvwmWharf e.g. with
      'xload -g 50x50'.
      [reported by Dominik]
      [not reproducible anymore]
+139) Fix TaskBar tips drawing.
+     [reported by gregory@mcst.ru (Gregory A. Shimansky) on
+     14-Apr-2000]
 140) Remove "Layer" command?  Instead, the "Layer" styles
      can be applied immediately w/o Recapture.
      [3 votes against vs 1 vote for removing]
@@ -158,10 +144,19 @@ Closed since last update:
 142) Remove copyright disclaimers from individual files
      (smaller tarball).
      [saves only 15k tarball size; not worth the effort]
+145) Modules lose focus when a Netscape transient is opened
+     (ClickToFocus).
+148) Losing focus when entering root window bug.
+     [reported by Elliot Sowadsky on 29-Dec-1999]
+     [suggested fix: Lenience style... does not help]
+     [implemented a workaround that cures the symptom]
 153) Investigate/reduce excessive colour allocation traffic
      on startup.
      [reported by Dan]
      [perhaps after 2.4]
+157) Stack ring still broken sometimes.
+160) Remove FlipTransient style.
+161) Rename MovedButton3 condition to PlacedByButton3.
 
 ========== Closed: ===============================================
 
@@ -186,7 +181,6 @@ Closed since last update:
      [bug #184 reported by Michael Hughes <mhughes@bridge.com>]
      [no bug; doesn't happen for 2.2 and up]
  19) Fix: KFM windows stay on top of normal fvwm windows.
-     [done]
  20) Check why no icon can be set for Eterm.
      [reported on 8-May-1999 by Amir Chossrow Akhavan <amir@phy.ucsf.EDU>]
      [no fix? or should we rather break 'xterm +ai'?]
@@ -287,7 +281,6 @@ Closed since last update:
      colour sets.
  87) Describe what to do for colour set support in the module docs.
  88) Investigate 'pager out of sync' problem
-     [fixed]
  89) Make FvwmScript use the same visual as fvwm (prerequisite for 80)
  91) Fix Xpm version problem (bug #463).
  93) Finish 'CREATING PANELS' section in FvwmButtons man page.
