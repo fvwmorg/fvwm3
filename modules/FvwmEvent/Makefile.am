@@ -17,10 +17,7 @@ install-exec-local: ../../config.h Makefile
 	 echo "  $(LN_S) $$_fe $(DESTDIR)$(moduleexecdir)/$$_fa"; \
 	 $(LN_S) "$$_fe" $(DESTDIR)$(moduleexecdir)/"$$_fa" || true
 
-## Xpm note: while this module may not depend on Xpm explicitly,
-## there are sometimes dependencies through functions in libfvwm
-## so we might as well link against libXpm, if present.
-LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(rplay_LIBS) \
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(rplay_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(rplay_CFLAGS) $(X_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(rplay_CFLAGS) $(X_CFLAGS)

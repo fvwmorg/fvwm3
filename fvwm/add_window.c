@@ -54,6 +54,7 @@
 #include "libs/FShape.h"
 #include "libs/FScreen.h"
 #include <libs/gravity.h>
+#include "libs/Picture.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

@@ -12,8 +12,8 @@ FvwmDragWell_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 EXTRA_DIST = $(man_MANS)
 
 
-LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
+LDADD = -L$(top_builddir)/libs -lfvwm \
 	$(X_LIBS) $(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
 	-lm
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(X_CFLAGS)
 

@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <X11/Xproto.h>                 /* for X functions in general */
 #include "fvwmlib.h"                    /* prototype GetShadow GetHilit */
+#include "Colorset.h"
 
 #define	PCT_BRIGHTNESS			(6 * 0xffff / 100)
 
@@ -320,3 +321,134 @@ int pixel_to_color_string(
 
   return n;
 }
+
+static char *colorset_names[] =
+{
+	"$[fg.cs",
+	"$[bg.cs",
+	"$[hilight.cs",
+	"$[shadow.cs",
+	NULL
+};
+
+Pixel GetSimpleColor(char *name)
+{
+	XColor color;
+	Bool is_illegal_rgb = False;
+
+	memset(&color, 0, sizeof(color));
+	/* This is necessary because some X servers coredump when presented a
+	 * malformed rgb colour name. */
+	if (name && strncasecmp(name, "rgb:", 4) == 0)
+	{
+		int i;
+		char *s;
+
+		for (i = 0, s = name + 4; *s; s++)
+		{
+			if (*s == '/')
+				i++;
+		}
+		if (i != 2)
+			is_illegal_rgb = True;
+	}
+
+	if (is_illegal_rgb)
+	{
+		fprintf(stderr, "Illegal RGB format \"%s\"\n", name);
+	}
+	else if (!XParseColor (Pdpy, Pcmap, name, &color))
+	{
+		fprintf(stderr, "Cannot parse color \"%s\"\n",
+			name ? name : "<blank>");
+	}
+	else if (!XAllocColor (Pdpy, Pcmap, &color))
+	{
+		fprintf(stderr, "Cannot allocate color \"%s\"\n", name);
+	}
+	return color.pixel;
+}
+
+Pixel GetColor(char *name)
+{
+	int i;
+	int n;
+	int cs;
+	char *rest;
+	XColor color;
+
+	switch ((i = GetTokenIndex(name, colorset_names, -1, &rest)))
+	{
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+		if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
+		{
+			/* not a non-negative integer without leading zeros */
+			fprintf(stderr,
+				"Invalid colorset number in color '%s'\n",
+				name);
+			return 0;
+		}
+		sscanf(rest, "%d%n", &cs, &n);
+		if (*(rest + n) != ']')
+		{
+			fprintf(stderr,
+				"No closing brace after '%d' in color '%s'\n",
+				cs, name);
+			return 0;
+		}
+		if (*(rest + n + 1) != 0)
+		{
+			fprintf(stderr, "Trailing characters after brace in"
+				" color '%s'\n", name);
+			return 0;
+		}
+		AllocColorset(cs);
+		switch (i)
+		{
+		case 0:
+			color.pixel = Colorset[cs].fg;
+			break;
+		case 1:
+			color.pixel = Colorset[cs].bg;
+			break;
+		case 2:
+			color.pixel = Colorset[cs].hilite;
+			break;
+		case 3:
+			color.pixel = Colorset[cs].shadow;
+			break;
+		}
+		if (!XAllocColor(Pdpy, Pcmap, &color))
+		{
+			fprintf(stderr, "Cannot allocate color %d from"
+				" colorset %d\n", i, cs);
+			return 0;
+		}
+		return color.pixel;
+
+	default:
+		break;
+	}
+
+	return GetSimpleColor(name);
+}
+
+/* Allocates the color from the input Pixel again */
+Pixel fvwmlib_clone_color(Pixel p)
+{
+	XColor c;
+
+	c.pixel = p;
+	XQueryColor(Pdpy, Pcmap, &c);
+	if (!XAllocColor(Pdpy, Pcmap, &c))
+	{
+		fprintf(stderr, "Cannot allocate clone Pixel %d\n", (int)p);
+		return 0;
+	}
+
+	return c.pixel;
+}
+

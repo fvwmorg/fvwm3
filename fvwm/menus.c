@@ -54,6 +54,7 @@
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
+#include "libs/Picture.h"
 #include "geometry.h"
 #include "borders.h"
 #include "frame.h"

@@ -13,6 +13,8 @@
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <libs/fvwmlib.h>
+#include <libs/Picture.h>
+#include <libs/FImageLoader.h>
 #include <X11/xpm.h> /* Has to be after Intrinsic.h gets included */
 
 int save_colors = 0;
@@ -21,7 +23,7 @@ int screen;
 Window root;
 char *display_name = NULL;
 void SetRootWindow(char *tline);
-Pixmap rootXpm = None;
+Pixmap rootImage = None;
 
 int main(int argc, char **argv)
 {
@@ -35,8 +37,15 @@ int main(int argc, char **argv)
 
   if(argc < 2)
   {
-    fprintf(stderr,"Xpmroot Version %s\n",VERSION);
-    fprintf(stderr,"Usage: xpmroot [-fe -np -d] xpmfile\n");
+    fprintf(stderr,"Xpmroot Version %s with support for: XBM "
+#ifdef XPM
+	    "XPM "
+#endif
+#ifdef HAVE_PNG
+	    "PNG"
+#endif
+	    "\n", VERSION);
+    fprintf(stderr,"Usage: xpmroot [-fe -np -d] file\n");
     fprintf(stderr,"Try Again\n");
     exit(1);
   }
@@ -104,7 +113,7 @@ int main(int argc, char **argv)
     XSetCloseDownMode(dpy, RetainPermanent);
   }
   XChangeProperty(dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
-		  (unsigned char *) &rootXpm, 1);
+		  (unsigned char *) &rootImage, 1);
   XCloseDisplay(dpy);
   return 0;
 }
@@ -112,36 +121,39 @@ int main(int argc, char **argv)
 
 void SetRootWindow(char *tline)
 {
-  XWindowAttributes root_attr;
-  XpmAttributes xpm_attributes;
-  Pixmap shapeMask;
-  int val;
 
-  if (!XGetWindowAttributes(dpy,root,&root_attr))
-  {
-    fprintf(stderr, "error: failed to get root window attributes\n");
-    exit(0);
-  }
-  xpm_attributes.colormap = root_attr.colormap;
-  xpm_attributes.valuemask = XpmSize | XpmReturnPixels|XpmColormap;
-  if((val = XpmReadFileToPixmap(dpy,root, tline,
-			 &rootXpm, &shapeMask,
-			 &xpm_attributes))!= XpmSuccess)
-  {
-    if(val == XpmOpenFailed)
-      fprintf(stderr, "Couldn't open pixmap file\n");
-    else if(val == XpmColorFailed)
-      fprintf(stderr, "Couldn't allocate required colors\n");
-    else if(val == XpmFileInvalid)
-      fprintf(stderr, "Invalid Format for an Xpm File\n");
-    else if(val == XpmColorError)
-      fprintf(stderr, "Invalid Color specified in Xpm FIle\n");
-    else if(val == XpmNoMemory)
-      fprintf(stderr, "Insufficient Memory\n");
-    exit(1);
-  }
+	Pixmap shapeMask, temp_pix;
+	int w, h, depth, nalloc_pixels = -1;
+	Pixel *alloc_pixels = NULL;
+	
+	InitPictureCMap(dpy);
+	if (!FImageLoadPixmapFromFile(dpy, root, tline, 0,
+				      &temp_pix, &shapeMask,
+				      &w, &h, &depth,
+				      &nalloc_pixels, alloc_pixels))
+	{
+		fprintf(stderr,"[xpmroot] fail to load image file '%s'\n",
+			tline);
+	}
+	if (depth == Pdepth)
+	{
+		rootImage = temp_pix;
+	}
+	else
+	{
+		XGCValues gcv;
+		GC gc;
 
-  XSetWindowBackgroundPixmap(dpy, root, rootXpm);
-  save_colors = 1;
-  XClearWindow(dpy,root);
+		gcv.background= WhitePixel(dpy, screen);
+		gcv.foreground= BlackPixel(dpy, screen);
+		gc = fvwmlib_XCreateGC(dpy, root,
+				       GCForeground | GCBackground, &gcv);
+		rootImage = XCreatePixmap(dpy, root, w, h, Pdepth);
+		XCopyPlane(dpy, temp_pix, rootImage, gc, 0,0,w,h, 0,0,1);
+		XFreePixmap(dpy, temp_pix);
+		XFreeGC(dpy,gc);
+	}
+	XSetWindowBackgroundPixmap(dpy, root, rootImage);
+	save_colors = 1;
+	XClearWindow(dpy,root);
 }

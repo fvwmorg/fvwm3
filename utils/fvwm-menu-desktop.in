@@ -922,8 +922,7 @@ sub get_info {
 	close(DESC);
 	# kde2 give just the name of the icons and use png icons
 	# try a more general fix.
-	my $tmp = "xpm";
-	$tmp = "png" if $TRAN || $MENU_TYPE eq "gtk";
+	my $tmp = "png";
 	$icon = "$icon.$tmp" if $icon !~ /\....$/ && $icon ne '';
 	$mini_icon = "$mini_icon.$tmp" 
 	  if $mini_icon !~ /\....$/ && $mini_icon ne '';
@@ -990,7 +989,7 @@ sub get_info {
 
 
 	# no .png icons with fvwm menu
-	$mini_icon = '' if ( $flag eq 'fvwm_' && $mini_icon =~ /\.png$/ );
+	#$mini_icon = '' if ( $flag eq 'fvwm_' && $mini_icon =~ /\.png$/ );
 
 	if ($checkMiniIcons ne "" && $mini_icon ne "") {
 		my $ok = 0;
@@ -1017,14 +1016,12 @@ sub get_info {
 			$style_mini_icon = $tran_mini_icon;
 		} else {
 			$style_mini_icon = $mini_icon;
-			$style_mini_icon = '' if ( $mini_icon =~ /\.png$/ );
 		}
 		if ( $tran_icon ne '' ) {
 			$style_icon = $tran_icon
 		}
 		else {
 			$style_icon = $icon;
-			$style_icon = '' if ( $icon =~ /\.png$/ );
 		}
 		update_style($style_mini_icon, $style_icon, $exec_exec)
 	}
@@ -1033,6 +1030,7 @@ sub get_info {
 	if ( $TRAN && $tran_mini_icon ne '' ) {
 		$mini_icon = "$TRAN_MINI_ICONS$tran_mini_icon";
 	} elsif ( $mini_icon ne '' ) {
+	  $mini_icon =  "$MINI_ICONS_DIR$mini_icon";
 		if ( $mini_icon =~ /\.png$/ ) { $mini_icon =  "$PNG_ICONS$mini_icon" }
 		else { $mini_icon =  "$MINI_ICONS_DIR$mini_icon" }
 	}

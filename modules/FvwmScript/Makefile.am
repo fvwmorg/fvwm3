@@ -5,8 +5,7 @@ SUBDIRS = Scripts Widgets
 
 moduledir = @FVWM_MODULEDIR@
 
-module_PROGRAMS = @FVWMSCRIPT@
-EXTRA_PROGRAMS = FvwmScript
+module_PROGRAMS = FvwmScript
 
 FvwmScript_SOURCES = FvwmScript.c Instructions.c libyywrap.c \
 	types.h scanner.c script.c script.h
@@ -19,9 +18,9 @@ EXTRA_DIST = $(man_MANS) scanner.l script.y TODO
 
 LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
 	$(xpm_LIBS) $(Xinerama_LIBS) $(X_PRE_LIBS) -lXext -lX11 \
-	$(X_EXTRA_LIBS) -lm $(Xft_LIBS) $(FT2_LIBS) $(Bidi_LIBS)
+	$(X_EXTRA_LIBS) -lm $(Xft_LIBS) $(FT2_LIBS) $(Bidi_LIBS) $(png_LIBS)
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) \
-	$(FT2_CFLAGS) $(Bidi_CFLAGS)
+	$(FT2_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS)
 
 # Need this to get datadir into FvwmScript.c:
 AM_CFLAGS = -DFVWM_DATADIR=\"$(FVWM_DATADIR)\"

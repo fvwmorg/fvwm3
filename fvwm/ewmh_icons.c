@@ -23,6 +23,8 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/Picture.h"
+#include "libs/FImageLoader.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "window_flags.h"
@@ -592,89 +594,6 @@ void extract_wm_icon(CARD32 *list, unsigned int size, int wanted_w, int wanted_h
   return;
 }
 
-static
-int create_pixmap_from_ewmh_icon(unsigned char *list,
-				 int start, int width, int height,
-				 Pixmap pixmap, Pixmap mask)
-{
-  register int i,j,k;
-  XImage *image, *m_image;
-  XGCValues xgcv;
-  XColor c;
-  int got_all = 1;
-  Pixel back = WhitePixel(dpy, Scr.screen);
-  Pixel fore = BlackPixel(dpy, Scr.screen);
-  int r,g,b;
-  int red_mask = Pvisual->red_mask;
-  int green_mask = Pvisual->green_mask;
-  int blue_mask = Pvisual->blue_mask;
-
-  /* create an XImage structure */
-  image = XCreateImage(dpy, Pvisual, Pdepth, ZPixmap, 0, 0, width, height,
-                       Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-  if (!image)
-  {
-    fvwm_msg(ERR, "create_pixmap_from_ewmh_icon","cannot create XImage\n");
-    return 0;
-  }
-  m_image = XCreateImage(dpy, Pvisual, 1, ZPixmap, 0, 0, width, height,
-			 Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-
-  /* create space for drawing the image locally */
-  image->data = safemalloc(image->bytes_per_line * height);
-  m_image->data = safemalloc(m_image->bytes_per_line * height);
-
-  /* The DirectColor or TrueColor case is really fast I hope it is ok.
-   * The XAllocColor case is dramatically slow ... but universal */
-  k = 4*start;
-  c.flags = DoRed | DoGreen | DoBlue;
-  for (j = 0; j < height; j++)
-    for (i = 0; i < width; i++)
-    {
-      if (Pvisual->class == DirectColor || Pvisual->class == TrueColor)
-      {
-	b = list[k++];
-	g = list[k++];
-	r = list[k++];
-	b = b * (blue_mask + 1) / 256;
-	g = g * (1 + (green_mask / (blue_mask + 1) )) / 256 ;
-	g = g * (blue_mask + 1);
-	r = r * (1 + (red_mask / (green_mask + blue_mask + 1)))  / 256 ;
-	r = r * (green_mask + blue_mask + 1);
-	c.pixel = r + g + b;
-      }
-      else
-      {
-	c.blue = list[k++] * 257;
-	c.green = list[k++] * 257;
-	c.red = list[k++] * 257;
-
-	if (!XAllocColor(Pdpy, Pcmap, &c))
-	{
-	  got_all = 0;
-	}
-      }
-      XPutPixel(image, i, j, c.pixel);
-      XPutPixel(m_image, i, j,(list[k++] == 255)? back:fore);
-    }
-
-  if (!got_all)
-  {
-    fvwm_msg(ERR, "create_pixmap_from_ewmh_icon","cannot allocate colors\n");
-  }
-
-  XChangeGC(dpy, Scr.ScratchGC1, 0, &xgcv);
-  XSetForeground(dpy, Scr.MonoGC, fore);
-  XSetBackground(dpy, Scr.MonoGC, back);
-  /* copy the image to the server */
-  XPutImage(dpy, pixmap, Scr.ScratchGC1, image, 0, 0, 0, 0, width, height);
-  XPutImage(dpy, mask, Scr.MonoGC, m_image, 0, 0, 0, 0, width, height);
-  XDestroyImage(image);
-  if (m_image != None)
-    XDestroyImage(m_image);
-  return 1;
-}
-
 #define MINI_ICON_WANTED_WIDTH  16
 #define MINI_ICON_WANTED_HEIGHT 16
 #define MINI_ICON_MAX_WIDTH 22
@@ -729,8 +648,10 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 
   pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, Pdepth);
   mask = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 1);
-  if (!create_pixmap_from_ewmh_icon((unsigned char *)list, start, width, height,
-				   pixmap, mask) || pixmap == None)
+  if (!FImageCreatePixmapFromArgbData(dpy, Scr.Root, Scr.ColorLimit,
+				      (unsigned char *)list,
+				      start, width, height,
+				      pixmap, mask) || pixmap == None)
   {
     fvwm_msg(ERR, "EWMH_SetIconFromWMIcon","fail to create a pixmap\n");
     if (pixmap != None)

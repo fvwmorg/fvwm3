@@ -20,6 +20,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Flocale.h"
 #include "ButtonArray.h"
+#include "libs/FImageLoader.h"
 #include "Mallocs.h"
 
 extern Display *dpy;

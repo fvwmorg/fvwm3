@@ -36,7 +36,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
-#include "libs/Picture.h"
+#include "libs/InitPicture.h"
 
 
 extern int fvwm_fd[2];

@@ -19,6 +19,7 @@
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
+#include "libs/FImageLoader.h"
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
@@ -88,9 +89,6 @@ void CMD_CursorStyle(F_CMD_ARGS)
 {
 	char *cname=NULL, *newcursor=NULL;
 	char *errpos = NULL;
-#ifdef XPM
-	char *path = NULL;
-#endif
 	char *fore = NULL, *back = NULL;
 	XColor colors[2];
 	int index,nc,i,my_nc;
@@ -286,9 +284,8 @@ void CMD_CursorStyle(F_CMD_ARGS)
 		}
 		else
 		{
-#ifdef XPM
-			XpmAttributes xpm_attributes;
 			Pixmap source, mask;
+			char *path;
 			unsigned int x;
 			unsigned int y;
 
@@ -300,52 +297,29 @@ void CMD_CursorStyle(F_CMD_ARGS)
 				free(newcursor);
 				return;
 			}
-
-			/* we need source to be a bitmap */
-			xpm_attributes.depth = 1;
-			xpm_attributes.valuemask = XpmSize | XpmDepth |
-				XpmHotspot;
-			if (XpmReadFileToPixmap(
-				    dpy, Scr.Root, path, &source, &mask,
-				    &xpm_attributes) != XpmSuccess)
+			
+			if (!FImageLoadCursorPixmapFromFile(dpy, Scr.Root,
+							    path, &source,
+							    &mask, &x, &y))
 			{
-				fvwm_msg (ERR, "CursorStyle",
-					  "Error reading cursor xpm %s",
-					  newcursor);
+				free(path);
 				free (newcursor);
 				return;
 			}
-
-			colors[0].pixel = GetColor(DEFAULT_CURSOR_FORE_COLOR);
-			colors[1].pixel = GetColor(DEFAULT_CURSOR_BACK_COLOR);
-			XQueryColors (dpy, Pcmap, colors, 2);
-
 			if (Scr.FvwmCursors[index])
 			{
 				XFreeCursor (dpy, Scr.FvwmCursors[index]);
 			}
-			x = xpm_attributes.x_hotspot;
-			if (x >= xpm_attributes.width)
-			{
-				x = xpm_attributes.width / 2;
-			}
-			y = xpm_attributes.y_hotspot;
-			if (y >= xpm_attributes.height)
-			{
-				y = xpm_attributes.height / 2;
-			}
+			
+			colors[0].pixel = GetColor(DEFAULT_CURSOR_FORE_COLOR);
+			colors[1].pixel = GetColor(DEFAULT_CURSOR_BACK_COLOR);
+			XQueryColors (dpy, Pcmap, colors, 2);
 			Scr.FvwmCursors[index] = XCreatePixmapCursor(
 				dpy, source, mask, &(colors[0]), &(colors[1]),
 				x, y);
 
 			free (newcursor);
 			free (path);
-#else /* ! XPM */
-			fvwm_msg(ERR, "CursorStyle",
-				 "Bad cursor name or number %s", newcursor);
-			free (newcursor);
-			return;
-#endif
 		}
 	}
 

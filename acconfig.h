@@ -16,6 +16,13 @@
 /* Define if Xpm library is used.  */
 #undef XPM
 
+/* Define if ppm library is used.  */
+#undef HAVE_PNG
+
+/* Define if your processor stores words with the most significant
+   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+#undef WORDS_BIGENDIAN
+
 /* Define if rplay library is used.  */
 #undef HAVE_RPLAY
 

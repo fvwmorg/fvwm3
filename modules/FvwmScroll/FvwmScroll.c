@@ -34,8 +34,8 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
-#include "libs/Picture.h"
 #include "libs/Colorset.h"
+#include "libs/InitPicture.h"
 #include "FvwmScroll.h"
 
 char *MyName;

@@ -74,7 +74,7 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Module.h"
-#include "libs/Picture.h"
+#include "libs/InitPicture.h"
 #include "libs/Colorset.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -377,7 +377,7 @@ int main(int argc, char **argv)
       goto Builtin;
     }
     Buttons[BACK_BUTTON].icons[0].file=BgPixmapFile;
-    if (GetXPMFile(BACK_BUTTON,0))
+    if (LoadIconFile(BACK_BUTTON,0))
       break;
     else
       goto Solid;
@@ -400,10 +400,7 @@ int main(int argc, char **argv)
   case TEXTURE_BUILTIN:
     Builtin:
     TextureType=TEXTURE_BUILTIN;
-    /* if (GetXPMData( BACK_BUTTON, button_xpm))
-       break;
-       pdg */
-  default:
+   default:
     Solid:
     TextureType=TEXTURE_SOLID;
     if (GetSolidXPM(BACK_BUTTON, BgColor))

@@ -50,6 +50,7 @@
 /* -------------------------------- more  ---------------------------------- */
 
 #include "libs/fvwmlib.h"
+#include "libs/InitPicture.h"
 #include "libs/Picture.h"
 #include "libs/Flocale.h"
 

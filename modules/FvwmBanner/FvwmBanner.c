@@ -43,10 +43,10 @@
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 
-#include <X11/xpm.h>
-
 #include <libs/fvwmlib.h>
+#include <libs/InitPicture.h>
 #include <libs/Picture.h>
+#include <libs/FImageLoader.h>
 #include <libs/Module.h>
 #include <libs/FScreen.h>
 #include <libs/FShape.h>
@@ -56,23 +56,27 @@
 /*#include "fvwm-logo-old.xpm"*/
 /*#include "fvwm-logo-colorful.xpm"*/
 #include "fvwm-logo-current.xpm"
+#include "fvwm-logo-current.xbm"
 
-typedef struct _XpmIcon {
-    Pixmap pixmap;
-    Pixmap mask;
-    XpmAttributes attributes;
-}        XpmIcon;
+typedef struct _FImageIcon {
+	Pixmap pixmap;
+	Pixmap mask;
+	int width;
+	int height;
+	int depth;
+}        FImageIcon;
 
 /**************************************************************************
  * A few function prototypes
  **************************************************************************/
 void RedrawWindow(void);
 void GetXPMData(char **);
-void GetXPMFile(char *,char *);
+void GetXBMData(void);
+void GetImageFile(char *,char *);
 void change_window_name(char *str);
 static void parseOptions (int fd[2]);
 
-XpmIcon view;
+FImageIcon view;
 Window win;
 
 char *imagePath = NULL;
@@ -169,16 +173,34 @@ int main(int argc, char **argv)
 
   /* Get the xpm banner */
   if (imageName)
-    GetXPMFile(imageName,imagePath);
+    GetImageFile(imageName,imagePath);
   else
     GetXPMData(fvwm_logo_xpm);
+
+  if (view.depth != Pdepth)
+  {
+	  XGCValues gcv;
+	  GC gc;
+	  Pixmap temp;
+
+	  gcv.background= WhitePixel(dpy, screen);
+	  gcv.foreground= BlackPixel(dpy, screen);
+	  gc = fvwmlib_XCreateGC(dpy, win,
+				 GCForeground | GCBackground, &gcv);
+	  temp = XCreatePixmap(dpy, win, view.width, view.height, Pdepth);
+	  XCopyPlane(dpy, view.pixmap, temp, gc,
+		     0,0,view.width,view.height, 0,0,1);
+	  XFreePixmap(dpy, view.pixmap);
+	  XFreeGC(dpy,gc);
+	  view.pixmap = temp;
+  }
   XSetWindowBackgroundPixmap(dpy, win, view.pixmap);
 
   /* Create a window to hold the banner */
   mysizehints.flags = USSize | USPosition | PWinGravity | PResizeInc
 		     | PBaseSize | PMinSize | PMaxSize;
-  mysizehints.width = view.attributes.width;
-  mysizehints.height = view.attributes.height;
+  mysizehints.width = view.width;
+  mysizehints.height = view.height;
   mysizehints.width_inc = 1;
   mysizehints.height_inc = 1;
   mysizehints.base_height = mysizehints.height;
@@ -191,7 +213,7 @@ int main(int argc, char **argv)
 
   FScreenCenterOnScreen(
     NULL, FSCREEN_PRIMARY, &mysizehints.x, &mysizehints.y,
-    view.attributes.width, view.attributes.height);
+    view.width, view.height);
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
@@ -261,44 +283,55 @@ int main(int argc, char **argv)
  * Looks for a color XPM icon file
  *
  ****************************************************************************/
-void GetXPMData(char **data)
+void GetXBMData(void)
 {
-  view.attributes.valuemask = XpmReturnPixels | XpmCloseness | XpmExtensions
-			      | XpmVisual | XpmColormap | XpmDepth;
-  view.attributes.closeness = 40000 /* Allow for "similar" colors */;
-  view.attributes.visual = Pvisual;
-  view.attributes.colormap = Pcmap;
-  view.attributes.depth = Pdepth;
-  if(XpmCreatePixmapFromData(dpy, win, data, &view.pixmap, &view.mask,
-			     &view.attributes)!=XpmSuccess)
+  if ((view.pixmap =
+       XCreatePixmapFromBitmapData(dpy, win, (char *)fvwm_logo_xbm_bits,
+				   fvwm_logo_xbm_width, fvwm_logo_xbm_height,
+				   BlackPixel(dpy,screen),
+				   WhitePixel(dpy,screen),
+				   Pdepth)) == None)
   {
     fprintf(stderr,"FvwmBanner: ERROR couldn't convert data to pixmap\n");
     exit(1);
   }
+  view.width = fvwm_logo_xbm_width;
+  view.height = fvwm_logo_xbm_height;
+  view.depth = Pdepth;
+  view.mask = None;
 }
-void GetXPMFile(char *file, char *path)
+
+void GetXPMData(char **data)
+{
+  if(!FImageLoadPixmapFromXpmData(dpy, win, 0, data,
+				  &view.pixmap, &view.mask,
+				  &view.width, &view.height,
+				  &view.depth))
+  {
+    GetXBMData();
+  }
+}
+
+void GetImageFile(char *file, char *path)
 {
   char *full_file = NULL;
-
-  view.attributes.valuemask = XpmReturnPixels | XpmCloseness | XpmExtensions
-			      | XpmVisual | XpmColormap | XpmDepth;
-  view.attributes.closeness = 40000 /* Allow for "similar" colors */;
-  view.attributes.visual = Pvisual;
-  view.attributes.colormap = Pcmap;
-  view.attributes.depth = Pdepth;
+  int nap = -1;
+  Pixel *dummy = NULL;
 
   if (file)
     full_file = findImageFile(file,path,R_OK);
 
   if (full_file)
   {
-    if(XpmReadFileToPixmap(dpy, Root, full_file, &view.pixmap, &view.mask,
-			   &view.attributes) == XpmSuccess)
+    if(FImageLoadPixmapFromFile(dpy, Root, full_file, 0, 
+				&view.pixmap, &view.mask,
+				&view.width, &view.height,
+				&view.depth, &nap, dummy))
       return;
-    fprintf(stderr,"FvwmBanner: ERROR reading pixmap file\n");
+    fprintf(stderr,"FvwmBanner: ERROR loading image file\n");
   }
   else
-    fprintf(stderr,"FvwmBanner: ERROR finding pixmap file in ImagePath\n");
+    fprintf(stderr,"FvwmBanner: ERROR finding image file in ImagePath\n");
   GetXPMData(fvwm_logo_xpm);
 }
 

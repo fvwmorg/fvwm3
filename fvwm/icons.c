@@ -33,9 +33,6 @@
 #endif
 
 #include <X11/Intrinsic.h>
-#ifdef XPM
-#include <X11/xpm.h>
-#endif /* XPM */
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
@@ -61,15 +58,13 @@
 #include "decorations.h"
 #include "module_interface.h"
 #include "libs/Colorset.h"
+#include "libs/FImageLoader.h"
 #include "gnome.h"
 #include "ewmh.h"
 #include "geometry.h"
 
 static int do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr);
-static void GetBitmapFile(FvwmWindow *fw);
-#ifdef XPM
-static void GetXPMFile(FvwmWindow *fw);
-#endif
+static void GetIconFromFile(FvwmWindow *fw);
 static void GetIconWindow(FvwmWindow *fw);
 static void GetIconBitmap(FvwmWindow *fw);
 
@@ -147,7 +142,7 @@ static void setup_icon_title_size(FvwmWindow *fw)
  ****************************************************************************/
 void GetIconPicture(FvwmWindow *fw, Bool no_icon_window)
 {
-  char icon_order[5];
+  char icon_order[4];
   int i;
 
   /* First, see if it was specified in the .fvwmrc */
@@ -158,8 +153,7 @@ void GetIconPicture(FvwmWindow *fw, Bool no_icon_window)
     icon_order[1] = 1;
     icon_order[2] = 2;
     icon_order[3] = 3;
-    icon_order[4] = 4;
-ICON_DBG((stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: file iwh iph '%s'\n", fw->name));
   }
   else if (ICON_OVERRIDE_MODE(fw) == NO_ACTIVE_ICON_OVERRIDE)
   {
@@ -168,45 +162,41 @@ ICON_DBG((stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", fw->name));
     {
       /* use application provided icon window or pixmap first, then fvwm
        * provided icons. */
-      icon_order[0] = 2;
-      icon_order[1] = 3;
-      icon_order[2] = 4;
+      icon_order[0] = 1;
+      icon_order[1] = 2;
+      icon_order[2] = 3;
       icon_order[3] = 0;
-      icon_order[4] = 1;
-ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
     }
     else if (Scr.DefaultIcon && fw->icon_bitmap_file == Scr.DefaultIcon)
     {
       /* use application provided icon window/pixmap first, then fvwm provided
        * default icon */
-      icon_order[0] = 2;
-      icon_order[1] = 3;
-      icon_order[2] = 4;
+      icon_order[0] = 1;
+      icon_order[1] = 2;
+      icon_order[2] = 3;
       icon_order[3] = 0;
-      icon_order[4] = 1;
-ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
     }
     else
     {
       /* use application provided icon window or ewmh icon first, then fvwm
        * provided icons and then application provided icon pixmap */
-      icon_order[0] = 2;
-      icon_order[1] = 3;
+      icon_order[0] = 1;
+      icon_order[1] = 2;
       icon_order[2] = 0;
-      icon_order[3] = 1;
-      icon_order[4] = 4;
-ICON_DBG((stderr,"ciw: hint order: iwh xpm bmp iph '%s'\n", fw->name));
+      icon_order[3] = 3;
+ICON_DBG((stderr,"ciw: hint order: iwh file iph '%s'\n", fw->name));
     }
   }
   else
   {
     /* use application provided icon rather than fvwm provided icon */
-    icon_order[0] = 2;
-    icon_order[1] = 3;
-    icon_order[2] = 4;
+    icon_order[0] = 1;
+    icon_order[1] = 2;
+    icon_order[2] = 3;
     icon_order[3] = 0;
-    icon_order[4] = 1;
-ICON_DBG((stderr,"ciw: hint order: iwh iph bmp xpm '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
   }
 
   fw->icon_g.picture_w_g.width = 0;
@@ -214,30 +204,20 @@ ICON_DBG((stderr,"ciw: hint order: iwh iph bmp xpm '%s'\n", fw->name));
   fw->iconPixmap = None;
   fw->icon_maskPixmap = None;
   FW_W_ICON_PIXMAP(fw) = None;
-  for (i = 0; i < 5 && fw->icon_g.picture_w_g.width == 0 &&
+  for (i = 0; i < 4 && fw->icon_g.picture_w_g.width == 0 &&
 	 fw->icon_g.picture_w_g.height == 0; i++)
   {
     switch (icon_order[i])
     {
     case 0:
-#ifdef XPM
       /* Next, check for a color pixmap */
       if (fw->icon_bitmap_file)
       {
-	GetXPMFile(fw);
+	GetIconFromFile(fw);
       }
-ICON_DBG((stderr,"ciw: xpm%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not", fw->name));
-#endif /* XPM */
+ICON_DBG((stderr,"ciw: file%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not", fw->name));
       break;
     case 1:
-      /* First, check for a monochrome bitmap */
-      if (fw->icon_bitmap_file)
-      {
-	GetBitmapFile(fw);
-      }
-ICON_DBG((stderr,"ciw: bmp%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
-      break;
-    case 2:
       /* Next, See if the app supplies its own icon window */
       if (no_icon_window)
 	break;
@@ -247,7 +227,7 @@ ICON_DBG((stderr,"ciw: bmp%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
       }
 ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
       break;
-    case 3:
+    case 2:
       /* try an ewmh icon */
       if (HAS_EWMH_WM_ICON_HINT(fw) == EWMH_TRUE_ICON)
       {
@@ -256,7 +236,7 @@ ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
       }
 ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
       break;
-    case 4:
+    case 3:
       /* Finally, try to get icon bitmap from the application */
       if (fw->wmhints && (fw->wmhints->flags & IconPixmapHint))
       {
@@ -1297,99 +1277,40 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 
 /****************************************************************************
  *
- * Looks for a monochrome icon bitmap file
+ * Looks for icon from a file
  *
  ****************************************************************************/
-static void GetBitmapFile(FvwmWindow *fw)
+static void GetIconFromFile(FvwmWindow *fw)
 {
-  char *path = NULL;
-  int HotX,HotY;
+	char *path = NULL;
+	Pixel *dummy = NULL;
+	int nalloc_pixels = -1; /* do not care of allocated pixel ...? */
 
-  fw->icon_g.picture_w_g.width = 0;
-  fw->icon_g.picture_w_g.height = 0;
-  path = findImageFile(fw->icon_bitmap_file, NULL, R_OK);
-  if (path == NULL)
-  {
-    return;
-  }
-  if (XReadBitmapFile(
-	dpy, Scr.Root, path,
-	(unsigned int *)&fw->icon_g.picture_w_g.width,
-	(unsigned int *)&fw->icon_g.picture_w_g.height,
-	&fw->iconPixmap, &HotX, &HotY) == BitmapSuccess)
-  {
-    fw->iconDepth = 1;
-    SET_PIXMAP_OURS(fw, 1);
-  }
+	fw->icon_g.picture_w_g.width = 0;
+	fw->icon_g.picture_w_g.height = 0;
+	path = findImageFile(fw->icon_bitmap_file, NULL, R_OK);
+	if (path == NULL)
+	{
+		return;
+	}
+	if (!FImageLoadPixmapFromFile(dpy, Scr.Root, path, Scr.ColorLimit,
+				      &fw->iconPixmap, &fw->icon_maskPixmap,
+				      &fw->icon_g.picture_w_g.width ,
+				      &fw->icon_g.picture_w_g.height,
+				      &fw->iconDepth,
+				      &nalloc_pixels, dummy))
+	{
+		fvwm_msg(ERR, "GetIconFromFile", "Failed to load %s", path);
+		free(path);
+		return;
+	}
+	SET_PIXMAP_OURS(fw, 1);
+	free(path);
+	if (FShapesSupported && fw->icon_maskPixmap)
+		SET_ICON_SHAPED(fw, 1);
 
-  free(path);
+	return;
 }
-
-/****************************************************************************
- *
- * Looks for a color XPM icon file
- *
- ****************************************************************************/
-#ifdef XPM
-static void GetXPMFile(FvwmWindow *fw)
-{
-  XpmAttributes xpm_attributes;
-  char *path = NULL;
-  XpmImage my_image;
-  int rc;
-
-  fw->icon_g.picture_w_g.width = 0;
-  fw->icon_g.picture_w_g.height = 0;
-  path = findImageFile(fw->icon_bitmap_file, NULL, R_OK);
-  if (path == NULL)
-  {
-    return;
-  }
-  xpm_attributes.visual = Pvisual;
-  xpm_attributes.colormap = Pcmap;
-  xpm_attributes.depth = Pdepth;
-  xpm_attributes.closeness = 40000; /* Allow for "similar" colors */
-  xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmCloseness
-    | XpmVisual | XpmColormap | XpmDepth;
-  rc = XpmReadFileToXpmImage(path, &my_image, NULL);
-  if (rc != XpmSuccess)
-  {
-    int len = strlen(path);
-
-    /* no message for files that don't have an 'xpm' suffix */
-    if (len >= 3 && StrEquals(path + len - 3, "xpm"))
-    {
-      fvwm_msg(ERR, "GetXPMFile",
-         "XpmReadFileToXpmImage failed, pixmap %s, rc %d", path, rc);
-    }
-    free(path);
-    return;
-  }
-  free(path);
-  color_reduce_pixmap(&my_image,Scr.ColorLimit);
-  rc = XpmCreatePixmapFromXpmImage(
-    dpy,Scr.NoFocusWin, &my_image, &fw->iconPixmap,
-    &fw->icon_maskPixmap, &xpm_attributes);
-  if (rc != XpmSuccess)
-  {
-    fvwm_msg(ERR,"GetXPMFile",
-             "XpmCreatePixmapFromXpmImage failed, rc %d\n", rc);
-    XpmFreeXpmImage(&my_image);
-    return;
-  }
-  fw->icon_g.picture_w_g.width = my_image.width;
-  fw->icon_g.picture_w_g.height = my_image.height;
-  SET_PIXMAP_OURS(fw, 1);
-  fw->iconDepth = Pdepth;
-
-  if (FShapesSupported && fw->icon_maskPixmap)
-    SET_ICON_SHAPED(fw, 1);
-
-  XpmFreeXpmImage(&my_image);
-
-  return;
-}
-#endif /* XPM */
 
 /****************************************************************************
  *

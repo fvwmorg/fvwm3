@@ -333,9 +333,9 @@ if test "$xpm_LIBS"; then
 
   if test "$with_xpm" = yes; then
     AC_DEFINE(XPM)
-    FVWMBANNER=FvwmBanner AC_SUBST(FVWMBANNER)
-    XPMROOT=xpmroot AC_SUBST(XPMROOT)
-    FVWMSCRIPT=FvwmScript AC_SUBST(FVWMSCRIPT)
+    # FVWMBANNER=FvwmBanner AC_SUBST(FVWMBANNER)
+    # XPMROOT=xpmroot AC_SUBST(XPMROOT)
+    # FVWMSCRIPT=FvwmScript AC_SUBST(FVWMSCRIPT)
   else
     xpm_LIBS=
     xpm_CFLAGS=
@@ -344,6 +344,27 @@ fi
 AC_SUBST(xpm_LIBS)
 AC_SUBST(xpm_CFLAGS)
 
+dnl ********* png
+problem_png=": png library or header not found!"
+
+$UNSET ac_cv_header_png_h
+$UNSET ac_cv_lib_png_png_read_info
+smr_CHECK_LIB(png, png, for coloured or shaped icons,
+    png_read_info, png.h, , -lz -lm)
+
+if test "$png_LIBS"; then
+  AC_DEFINE(HAVE_PNG)
+  png_LIBS="-lpng -lz"
+  with_png=yes
+  problem_png=""
+else
+  with_png=no
+fi
+AC_SUBST(png_LIBS)
+AC_SUBST(png_CFLAGS)
+
+dnl ** needed by the png support
+AC_C_BIGENDIAN
 
 dnl ********* rplay
 $UNSET ac_cv_header_rplay_h
@@ -756,6 +777,7 @@ AC_SUBST(with_gdkimlib)
 AC_SUBST(with_gnomelibs)
 AC_SUBST(with_multibyte)
 AC_SUBST(with_perllib)
+AC_SUBST(with_png)
 AC_SUBST(with_readline)
 AC_SUBST(with_rplay)
 AC_SUBST(with_shape)
@@ -867,6 +889,7 @@ FVWM Configuration:
   With GNOME Window Manager Hints?    $with_gnomehints$problem_gnomehints
   With GTK support for FvwmGtk?       $with_gtk$problem_gtk$fvwmgtk_msg
   With Multibyte support?             $with_multibyte$problem_multibyte
+  With PNG support?                   $with_png$problem_png
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
   With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
   With Shaped window support?         $with_shape$problem_shape

@@ -55,10 +55,6 @@
 #include "libs/FShape.h"
 #include "FvwmButtons.h"
 
-#ifdef XPM
-#include <X11/xpm.h>
-#endif /* XPM */
-
 /****************************************************************************
  *
  * Creates an Icon Window
@@ -100,7 +96,6 @@ void CreateIconWindow(button_info *b)
     XSetWindowBackground(Dpy, b->IconWin, attributes.background_pixel);
   }
 
-#ifdef XPM
   if (FShapesSupported)
   {
     if (b->icon->mask!=None)
@@ -109,9 +104,8 @@ void CreateIconWindow(button_info *b)
 	Dpy, b->IconWin, FShapeBounding, 0, 0, b->icon->mask, FShapeSet);
     }
   }
-#endif
 
-  if(b->icon->depth==0)
+  if(b->icon->depth != Pdepth)
   {
     /* bitmap icon */
     XGCValues gcv;
@@ -184,7 +178,6 @@ void CreateBackIconWindow(button_info *b)
     XSetWindowBackground(Dpy, b->IconWin, attributes.background_pixel);
   }
 
-#ifdef XPM
   if (FShapesSupported)
   {
     if (b->icon->mask!=None)
@@ -193,9 +186,8 @@ void CreateBackIconWindow(button_info *b)
 	Dpy, b->IconWin, FShapeBounding, 0, 0, b->icon->mask, FShapeSet);
     }
   }
-#endif
 
-  if(b->icon->depth==0)
+  if(b->icon->depth != Pdepth)
   {
     XGCValues gcv;
     Pixmap temp;
@@ -305,7 +297,6 @@ void ConfigureIconWindow(button_info *b)
 
   /* Doesn't this belong above? */
 #if 0
-#ifdef XPM
   if (FShapesSupported)
   {
     if (b->icon->mask!=None)
@@ -314,8 +305,7 @@ void ConfigureIconWindow(button_info *b)
 	Dpy, b->IconWin, FShapeBounding, 0, 0, b->icon->mask, FShapeSet);
     }
   }
-#endif
-  if(b->icon->depth==0)
+  if(b->icon->depth <= 1)
   {
     PixmapFromBitmap(b);
   }

@@ -37,12 +37,9 @@ extern char   *safemalloc(int length);
 extern void   change_window_name(char *str);
 extern int    My_XNextEvent(Display *dpy, XEvent *event);
 extern void   DeadPipe(int nonsense);
-extern void   LoadIconFile(int button,int ico);
+extern Bool   LoadIconFile(int button,int ico);
 extern void   CreateIconWindow(int button, Window *win);
 extern void   ConfigureIconWindow(int button,int row, int column);
-extern void   GetBitmapFile(int button,int ico);
-extern int    GetXPMFile(int button,int ico);
-extern int    GetXPMData(int button, char **data);
 extern int    GetXPMGradient(int button, int from[3], int to[3], int maxcols,
 		   int type);
 extern void   GetXPMColorset(int button, int colorset);
@@ -87,9 +84,9 @@ extern XFontStruct *font;
 
 typedef struct icon_info {
     char *file;
-    short w, h;
+    int w, h;
     Pixmap icon, mask;
-    signed char depth;
+    int depth;
 } icon_info;
 
 struct button_info

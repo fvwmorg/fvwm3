@@ -35,8 +35,10 @@
 
 #include "config.h"
 #include "libs/fvwmlib.h"
+#include "libs/InitPicture.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
+#include "libs/FImageLoader.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -55,10 +57,6 @@
 #endif
 
 #include "Wharf.h"
-
-#ifdef XPM
-#include <X11/xpm.h>
-#endif /* XPM */
 #include "stepgfx.h"
 
 
@@ -67,16 +65,66 @@
  * Loads an icon file into a pixmap
  *
  ****************************************************************************/
-void LoadIconFile(int button, int ico)
+Bool LoadIconFile(int button, int ico)
 {
 #ifndef NO_ICONS
-  /* First, check for a monochrome bitmap */
-  if(Buttons[button].icons[ico].file != NULL)
-    GetBitmapFile(button,ico);
-  /* Next, check for a color pixmap */
-  if((Buttons[button].icons[ico].file != NULL)&&
-     (Buttons[button].icons[ico].w == 0)&&(Buttons[button].icons[ico].h == 0))
-    GetXPMFile(button,ico);
+	char *path = NULL;
+	Pixel *dummy = NULL;
+	int nalloc_pixels = -1;
+
+	path = findImageFile(Buttons[button].icons[ico].file, imagePath,R_OK);
+ 	if (path == NULL)
+	{
+		return False;
+	}
+	if (!FImageLoadPixmapFromFile(dpy, main_win, path, 0,
+				      &Buttons[button].icons[ico].icon,
+				      &Buttons[button].icons[ico].mask,
+				      &Buttons[button].icons[ico].w,
+				      &Buttons[button].icons[ico].h,
+				      &Buttons[button].icons[ico].depth,
+				      &nalloc_pixels, dummy))
+	{
+		fprintf(stderr, "[FvwmWharf] cannot load pixmap from " 
+			"file '%s'\n",path);
+		free(path);
+		Buttons[button].icons[ico].w = 0;
+		Buttons[button].icons[ico].h = 0;
+		Buttons[button].icons[ico].icon = None;
+		Buttons[button].icons[ico].depth = 0;
+		return False;
+	}
+	free(path);
+	if (Buttons[button].icons[ico].depth == Pdepth && button==BACK_BUTTON)
+	{
+		BUTTONWIDTH = Buttons[button].icons[ico].w;
+		BUTTONHEIGHT = Buttons[button].icons[ico].h;
+		if (ForceSize && (BUTTONWIDTH > 64 || BUTTONHEIGHT > 64)) {
+			Pixmap resized;
+
+			BUTTONWIDTH = 64;
+			BUTTONHEIGHT = 64;
+			resized = XCreatePixmap(dpy, main_win, 64, 64, Pdepth);
+			XCopyArea(dpy, Buttons[button].icons[ico].icon,
+				  resized, NormalGC, 0, 0, 64, 64, 0, 0);
+			XFreePixmap(dpy, Buttons[button].icons[ico].icon);
+			Buttons[button].icons[ico].icon = resized;
+		}
+		DrawOutline(Buttons[button].icons[ico].icon,
+			    BUTTONWIDTH,BUTTONHEIGHT);
+		return True;
+	}
+	else if (button == BACK_BUTTON)
+	{
+		Buttons[button].icons[ico].w = 0;
+		Buttons[button].icons[ico].h = 0;
+		Buttons[button].icons[ico].depth = 0;
+		XFreePixmap(dpy, Buttons[button].icons[ico].icon);
+		Buttons[button].icons[ico].icon = None;
+	}
+	return False;
+#else
+	return False;
 #endif
 }
 
@@ -118,9 +166,7 @@ void ConfigureIconWindow(int button,int row, int column)
 {
 #ifndef NO_ICONS
   int x,y, w, h;
-#ifdef XPM
   int xoff,yoff;
-#endif
   int i;
 
   if (Buttons[button].completeIcon != None)
@@ -153,173 +199,37 @@ void ConfigureIconWindow(int button,int row, int column)
     if(h > BUTTONHEIGHT) h = BUTTONHEIGHT;
     if (w < 1) w = 1;
     if (h < 1) h = 1;
-#ifdef XPM
-    xoff = (BUTTONWIDTH - w)/2;
-    yoff = (BUTTONHEIGHT - h)/2;
-    if (xoff<0) xoff=0;
-    if (yoff<0) yoff=0;
-    if (Buttons[button].icons[i].mask != None) {
-      XSetClipOrigin(dpy, MaskGC, xoff, yoff);
-      XSetClipMask(dpy, MaskGC, Buttons[button].icons[i].mask);
-    } else {
-      XRectangle rect[1];
-      rect[0].x=0; rect[0].y=0;
-      rect[0].width=w; rect[0].height=h;
+    if (Buttons[button].icons[i].depth == Pdepth &&
+	Buttons[button].icons[i].depth != 1)
+    {
+      xoff = (BUTTONWIDTH - w)/2;
+      yoff = (BUTTONHEIGHT - h)/2;
+      if (xoff<0) xoff=0;
+      if (yoff<0) yoff=0;
+      if (Buttons[button].icons[i].mask != None) {
+	XSetClipOrigin(dpy, MaskGC, xoff, yoff);
+	XSetClipMask(dpy, MaskGC, Buttons[button].icons[i].mask);
+      } else {
+	XRectangle rect[1];
+	rect[0].x=0; rect[0].y=0;
+	rect[0].width=w; rect[0].height=h;
 
-      XSetClipRectangles(dpy,MaskGC,xoff,yoff, rect, 1, YSorted);
+	XSetClipRectangles(dpy,MaskGC,xoff,yoff, rect, 1, YSorted);
+      }
+      XCopyArea(dpy, Buttons[button].icons[i].icon,
+		Buttons[button].completeIcon, MaskGC, 0,0,
+		w, h, xoff,yoff);
     }
-    XCopyArea(dpy, Buttons[button].icons[i].icon,
-	      Buttons[button].completeIcon, MaskGC, 0,0,
-	      w, h, xoff,yoff);
-#endif
-    if(Buttons[button].icons[i].depth == -1) {
-      XCopyPlane(dpy,Buttons[button].icons[i].icon,
-		 Buttons[button].completeIcon,NormalGC,
-		 0,0,w,h, 0,0,1);
-      XFreePixmap(dpy, Buttons[button].icons[i].icon);
+    else if(Buttons[button].icons[i].depth != Pdepth) {
+       XCopyPlane(dpy,Buttons[button].icons[i].icon,
+		  Buttons[button].completeIcon,NormalGC,
+		  0,0,w,h, 0,0,1);
+       XFreePixmap(dpy, Buttons[button].icons[i].icon);
     }
   }
   XSetWindowBackgroundPixmap(dpy, Buttons[button].IconWin,
 			     Buttons[button].completeIcon);
   XClearWindow(dpy,Buttons[button].IconWin);
-#endif
-}
-
-/***************************************************************************
- *
- * Looks for a monochrome icon bitmap file
- *
- **************************************************************************/
-void GetBitmapFile(int button, int ico)
-{
-#ifndef NO_ICONS
-  char *path = NULL;
-  int HotX,HotY;
-
-  path = findImageFile(Buttons[button].icons[ico].file, imagePath,R_OK);
-  if(path == NULL)return;
-
-  if(XReadBitmapFile (dpy, main_win,path,(unsigned int *)&Buttons[button].icons[ico].w,
-		      (unsigned int *)&Buttons[button].icons[ico].h,
-		      &Buttons[button].icons[ico].icon,
-		      (int *)&HotX,
-		      (int *)&HotY) != BitmapSuccess)
-    {
-      Buttons[button].icons[ico].w = 0;
-      Buttons[button].icons[ico].h = 0;
-    }
-  else
-    {
-      Buttons[button].icons[ico].depth = -1;
-    }
-  Buttons[button].icons[ico].mask = None;
-  free(path);
-#endif
-}
-
-
-/****************************************************************************
- *
- * Looks for a color XPM icon file
- *
- ****************************************************************************/
-int GetXPMFile(int button,int ico)
-{
-#ifndef NO_ICONS
-#ifdef XPM
-  XpmAttributes xpm_attributes;
-  char *path = NULL;
-
-  path = findImageFile(Buttons[button].icons[ico].file, imagePath,R_OK);
-  if(path == NULL)
-    return 0;
-  xpm_attributes.colormap = Pcmap;
-  xpm_attributes.visual = Pvisual;
-  xpm_attributes.depth = Pdepth;
-  xpm_attributes.closeness = 40000;
-  xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmColormap
-    | XpmVisual | XpmDepth |XpmCloseness;
-  if(XpmReadFileToPixmap(dpy, main_win, path,
-			 &Buttons[button].icons[ico].icon,
-			 &Buttons[button].icons[ico].mask,
-			 &xpm_attributes) == XpmSuccess)
-  {
-    Buttons[button].icons[ico].w = xpm_attributes.width;
-    Buttons[button].icons[ico].h = xpm_attributes.height;
-    Buttons[button].icons[ico].depth = Pdepth;
-    free(path);
-  }
-  else
-  {
-    free(path);
-    Buttons[button].icons[ico].icon=None;
-    return 0;
-  }
-  if (button==BACK_BUTTON)
-  {
-    BUTTONWIDTH = xpm_attributes.width;
-    BUTTONHEIGHT = xpm_attributes.height;
-    if (ForceSize && (BUTTONWIDTH > 64 || BUTTONHEIGHT > 64)) {
-      Pixmap resized;
-
-      BUTTONWIDTH = 64;
-      BUTTONHEIGHT = 64;
-      resized = XCreatePixmap(dpy, main_win, 64, 64, Pdepth);
-      XCopyArea(dpy, Buttons[button].icons[ico].icon,
-		resized, NormalGC, 0, 0, 64, 64, 0, 0);
-      XFreePixmap(dpy, Buttons[button].icons[ico].icon);
-      Buttons[button].icons[ico].icon = resized;
-    }
-    DrawOutline(Buttons[button].icons[ico].icon,BUTTONWIDTH,BUTTONHEIGHT);
-  }
-  return 1;
-#else
-  return 0;
-#endif /* XPM */
-#else
-  return 0;
-#endif
-}
-
-/****************************************************************************
- *
- * read background icons from data
- *
- ****************************************************************************/
-int GetXPMData(int button, char **data)
-{
-#ifndef NO_ICONS
-#ifdef XPM
-  XpmAttributes xpm_attributes;
-
-  if( button != BACK_BUTTON )
-	return 0;
-  xpm_attributes.colormap = Pcmap;
-  xpm_attributes.visual = Pvisual;
-  xpm_attributes.depth = Pdepth;
-  xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmColormap
-			     | XpmVisual | XpmDepth;
-  if(XpmCreatePixmapFromData(dpy, main_win, data,
-			     &Buttons[button].icons[0].icon,
-			     &Buttons[button].icons[0].mask,
-			     &xpm_attributes) == XpmSuccess)
-  {
-    BUTTONWIDTH = Buttons[button].icons[0].w = xpm_attributes.width;
-    BUTTONHEIGHT = Buttons[button].icons[0].h = xpm_attributes.height;
-    Buttons[button].icons[0].depth = Pdepth;
-  }
-  else
-  {
-    return 0;
-  }
-  DrawOutline(Buttons[button].icons[0].icon,BUTTONWIDTH,BUTTONHEIGHT);
-
-  return 1;
-#else
-  return 0;
-#endif /* XPM */
-#else
-  return 0;
 #endif
 }
 

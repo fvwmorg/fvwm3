@@ -46,6 +46,7 @@
 #include "defaults.h"
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
+#include "libs/Picture.h"
 
 #include "menustyle.h"
 

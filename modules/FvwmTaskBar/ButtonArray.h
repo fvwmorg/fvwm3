@@ -25,6 +25,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <libs/InitPicture.h>
 #include <libs/Picture.h>
 
 #define DEFAULT_BTN_WIDTH 180

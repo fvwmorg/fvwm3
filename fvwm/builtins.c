@@ -37,6 +37,7 @@
 #include "libs/FShape.h"
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
+#include "libs/Picture.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "libs/Colorset.h"

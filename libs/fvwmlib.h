@@ -201,6 +201,14 @@ Pixel GetHilite(Pixel);
  * future extensions and multibyte characters).*/
 int pixel_to_color_string(
   Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash);
+
+Pixel GetSimpleColor(char *name);
+/* handles colorset color names too */
+Pixel GetColor(char *name);
+
+/* duplicate an already allocated color */
+Pixel fvwmlib_clone_color(Pixel p);
+
 /***********************************************************************
  * Wrappers around various X11 routines
  ***********************************************************************/

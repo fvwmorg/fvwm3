@@ -49,7 +49,7 @@
 #include "libs/Module.h"
 
 #include "FvwmM4.h"
-#include "libs/Picture.h"
+#include "libs/InitPicture.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include <X11/StringDefs.h>

@@ -46,15 +46,12 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
-#ifdef XPM
-#include <X11/xpm.h>
-#endif /* XPM */
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"
-#include "libs/Picture.h"
+#include "libs/InitPicture.h"
 #include "libs/fvwmsignal.h"
 #include "libs/FScreen.h"
 

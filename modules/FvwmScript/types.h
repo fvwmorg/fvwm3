@@ -17,6 +17,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
+#include "libs/InitPicture.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
@@ -58,10 +59,6 @@
 #include <X11/Xproto.h>
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
-
-#ifdef XPM
-#include <X11/xpm.h>
-#endif
 
 /* Prototype for yylex().  There must be a way to get this automatically from
    yacc/bison.  */

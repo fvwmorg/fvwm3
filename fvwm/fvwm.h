@@ -53,7 +53,8 @@
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
 #include <X11/Intrinsic.h>
-#include <libs/Picture.h>
+#include <libs/InitPicture.h>
+/*#include <libs/Picture.h>*/
 #include <libs/Flocale.h>
 #include "window_flags.h"
 

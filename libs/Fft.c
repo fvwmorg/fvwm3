@@ -21,10 +21,13 @@
 #include <stdio.h>
 
 #include <X11/Xlib.h>
+
+#include "fvwmlib.h"
 #include "safemalloc.h"
 #include "Strings.h"
 #include "Flocale.h"
 #include "Fft.h"
+#include "InitPicture.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -37,10 +40,6 @@
 				 (m)->xy = -1, (m)->yx = 1)
 
 /* ---------------------------- imports ------------------------------------- */
-
-/* we cannot include Picture.h */
-extern Colormap Pcmap;
-extern Visual *Pvisual;
 
 /* ---------------------------- included code files ------------------------- */
 

@@ -1,3 +1,14 @@
+2002-04-05  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-menu-desktop.in (get_info):
+	Allows png icons in fvwm menu
+
+	* xpmroot.c (SetRootWindow):
+	(main):
+	* Makefile.am:
+	xpmroot can load xbm and png image file. It is enabled even without
+	xpm support
+
 2002-03-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in:

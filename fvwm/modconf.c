@@ -270,10 +270,8 @@ static void send_color_limit(int modnum)
 {
   char msg[32];
 
-#ifdef XPM
   sprintf(msg, "ColorLimit %d\n", Scr.ColorLimit);
   SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
-#endif
 
   return;
 }

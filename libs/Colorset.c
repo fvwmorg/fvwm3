@@ -29,7 +29,6 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
-#include "libs/Picture.h"
 #include "libs/safemalloc.h"
 
 /* globals */

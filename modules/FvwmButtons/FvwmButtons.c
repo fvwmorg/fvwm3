@@ -47,9 +47,6 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
-#ifdef XPM
-#include <X11/xpm.h>
-#endif
 
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
@@ -105,7 +102,6 @@ void Loop(void);
 void RedrawWindow(button_info*);
 void RecursiveLoadData(button_info*,int*,int*);
 void CreateUberButtonWindow(button_info*,int,int);
-void nocolor(const char *a, const char *b) __attribute__((__noreturn__));
 int My_XNextEvent(Display *dpy, XEvent *event);
 void process_message(unsigned long type,unsigned long *body);
 extern void send_clientmessage (Display *disp, Window w, Atom a,
@@ -2045,58 +2041,6 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   free(myclasshints.res_class);
   free(myclasshints.res_name);
 }
-
-/* ----------------------------- color functions --------------------------- */
-
-#ifdef XPM
-#  define MyAllocColor(a,b,c) PleaseAllocColor(c)
-#else
-#  define MyAllocColor(a,b,c) XAllocColor(a,b,c)
-#endif
-
-/**
-*** PleaseAllocColor()
-*** Allocs a color through XPM, which does it's closeness thing if out of
-*** space.
-**/
-#ifdef XPM
-int PleaseAllocColor(XColor *color)
-{
-  char *xpm[] = {"1 1 1 1",NULL,"x"};
-  XpmAttributes attr;
-  XImage *dummy1=None,*dummy2=None;
-  static char buf[20];
-
-  sprintf(buf,"x c #%04x%04x%04x",color->red,color->green,color->blue);
-  xpm[1]=buf;
-  attr.valuemask=XpmCloseness|XpmVisual|XpmColormap|XpmDepth;
-  attr.closeness=40000; /* value used by fvwm and fvwmlib */
-  attr.visual = Pvisual;
-  attr.colormap = Pcmap;
-  attr.depth = Pdepth;
-
-  if(XpmCreateImageFromData(Dpy,xpm,&dummy1,&dummy2,&attr)!=XpmSuccess)
-  {
-    fprintf(stderr,"%s: Unable to get similar color\n",MyName);
-    exit(1);
-  }
-  color->pixel=XGetPixel(dummy1,0,0);
-  if(dummy1!=None)XDestroyImage(dummy1);
-  if(dummy2!=None)XDestroyImage(dummy2);
-  return 1;
-}
-#endif
-
-/**
-*** nocolor()
-*** Complain
-**/
-void nocolor(const char *a, const char *b)
-{
-  fprintf(stderr,"%s: Can't %s %s, quitting, sorry...\n", MyName, a,b);
-  exit(1);
-}
-
 
 /* --------------------------------------------------------------------------*/
 

@@ -35,6 +35,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/Module.h"
+#include "libs/InitPicture.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
 #include "libs/fvwmsignal.h"

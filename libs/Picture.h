@@ -16,54 +16,7 @@
 #ifndef Picture_H
 #define Picture_H
 
-
-typedef struct PictureThing
-{
-    struct PictureThing *next;
-    char *name;
-    unsigned long stamp;  /* should be FileStamp */
-    Pixmap picture;
-    Pixmap mask;
-    unsigned int depth;
-    unsigned int width;
-    unsigned int height;
-    unsigned int count;
-    Pixel *alloc_pixels;
-    int nalloc_pixels;
-} Picture;
-
-extern Bool Pdefault;
-extern Visual *Pvisual;
-extern Colormap Pcmap;
-extern unsigned int Pdepth;
-extern Display *Pdpy;     /* Save area for display pointer */
-
-
-/* This routine called during fvwm and some modules initialization */
-void InitPictureCMap(Display *dpy);
-
-/* these can be used to switch visuals before calling GetPicture */
-/* do NOT use with CachePicture */
-void UseDefaultVisual(void);
-void UseFvwmVisual(void);
-void SaveFvwmVisual(void);
-
-/** Returns current setting of the image path **/
-char* GetImagePath( void );
-
-
-/** Sets image path to newpath.  Environment variables are expanded, and '+'
-    is expanded to previous value of imagepath.  The new path is in
-    newly-allocated memory, so newpath may be freed or re-used.  **/
-void SetImagePath( const char* newpath );
-
-
-/** Search for file along pathlist.  If pathlist is NULL, will use the current
-    imagepath setting.  If filename is not found, but filename.gz is found,
-    will return the latter.  Mode is typically R_OK.  See searchPath() for
-    more details.  **/
-char* findImageFile( const char* filename, const char* pathlist, int mode );
-
+#include "InitPicture.h"
 
 /** Manipulating Pictures **/
 
@@ -93,17 +46,7 @@ Picture *CachePictureFromPixmap(Display *dpy, Window Root,char *name,
 
 void DestroyPicture(Display* dpy, Picture* p);
 
-#ifdef XPM
-#include <X11/xpm.h>
-void color_reduce_pixmap(XpmImage* image, int colourLimit);
-#endif
-
-#endif
-
-Pixel GetSimpleColor(char *name);
-/* handles colorset color names too */
-Pixel GetColor(char *name);
-
-/* duplicate an already allocated color/picture */
-Pixel fvwmlib_clone_color(Pixel p);
+/* duplicate an already allocated picture */
 Picture *fvwmlib_clone_picture(Picture *pic);
+
+#endif

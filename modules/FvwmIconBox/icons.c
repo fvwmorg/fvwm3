@@ -52,12 +52,11 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/InitPicture.h"
+#include "libs/Picture.h"
+#include "libs/FImageLoader.h"
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
-
-#ifdef XPM
-#include <X11/xpm.h>
-#endif /* XPM */
 
 extern int save_color_limit;
 
@@ -98,12 +97,7 @@ void CreateIconWindow(struct icon_info *item)
 
   /* config specified icons have priority */
   if ((item->icon_file != NULL) && !(item->extra_flags & DEFAULTICON)) {
-    /* monochrome bitmap */
-    GetBitmapFile(item);
-
-    /* color pixmap */
-    if((item->icon_w == 0) && (item->icon_h == 0))
-      GetXPMFile(item);
+    GetIconFromFile(item);
   }
   /* next come program specified icon windows and pixmaps*/
   if((item->icon_h == 0) && (item->icon_w == 0) && item->wmhints)
@@ -116,12 +110,7 @@ void CreateIconWindow(struct icon_info *item)
 
   /* if that all fails get the default */
   if ((item->icon_file != NULL) && (item->icon_h == 0) && (item->icon_w == 0)) {
-    /* monochrome bitmap */
-    GetBitmapFile(item);
-
-    /* color pixmap */
-    if((item->icon_w == 0) && (item->icon_h == 0))
-      GetXPMFile(item);
+     GetIconFromFile(item);
   }
 
   /* create the window to hold the pixmap */
@@ -149,7 +138,6 @@ void CreateIconWindow(struct icon_info *item)
     XSelectInput(dpy, item->icon_pixmap_w, ICON_EVENTS);
   }
 
-#ifdef XPM
   if (FShapesSupported && item->icon_maskPixmap != None) {
      int hr;
      hr = (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item)) ?
@@ -158,7 +146,6 @@ void CreateIconWindow(struct icon_info *item)
        dpy, item->icon_pixmap_w, FShapeBounding, hr, hr, item->icon_maskPixmap,
        FShapeSet);
   }
-#endif
 
   if(item->icon_depth == -1 ) {
     Pixmap temp = item->iconPixmap;
@@ -230,90 +217,46 @@ void AdjustIconWindow(struct icon_info *item, int n)
   XMoveResizeWindow(dpy, item->IconWin, x,y + h2,w,h - h2);
 }
 
-/***************************************************************************
+/****************************************************************************
  *
- * Looks for a monochrome icon bitmap file
+ * Looks for icon from a file
  *
- **************************************************************************/
-void GetBitmapFile(struct icon_info *item)
+ ****************************************************************************/
+void GetIconFromFile(struct icon_info *item)
 {
-  char *path = NULL;
-  int HotX,HotY;
+	char *path = NULL;
+	Pixel *dummy = NULL;
+	int nalloc_pixels = -1;
 
-  path = findImageFile(item->icon_file, imagePath,R_OK);
-  if(path == NULL)return;
-
-  if(XReadBitmapFile (dpy, Root,path,(unsigned int *)&item->icon_w,
-		      (unsigned int *)&item->icon_h,
-		      &item->iconPixmap,
-		      (int *)&HotX,
-		      (int *)&HotY) != BitmapSuccess)
-    {
-      item->icon_w = 0;
-      item->icon_h = 0;
-    }
-  else
-      item->icon_depth = 1;
-
-  item->icon_w = min(max_icon_width, item->icon_w);
-  item->icon_h = min(max_icon_height, item->icon_h);
-  item->icon_maskPixmap = None;
-  free(path);
+	path = findImageFile(item->icon_file, imagePath, R_OK);
+	if (path == NULL)
+	{
+		return;
+	}
+	if (!FImageLoadPixmapFromFile(dpy, Root, path, save_color_limit,
+				      &item->iconPixmap,
+				      &item->icon_maskPixmap,
+				      &item->icon_w,
+				      &item->icon_h,
+				      &item->icon_depth,
+				      &nalloc_pixels, dummy))
+	{
+		fprintf(stderr, "[FvwmIconBox] cannot load pixmap from " 
+			"file '%s'\n",path);
+		item->icon_w = 0;
+		item->icon_h = 0;
+	}
+	item->icon_w = min(max_icon_width, item->icon_w);
+	item->icon_h = min(max_icon_height, item->icon_h);
+	free(path);
+	return;
 }
-
 
 /****************************************************************************
  *
- * Looks for a color XPM icon file
- *
- ****************************************************************************/
-void GetXPMFile(struct icon_info *item)
-{
-#ifdef XPM
-  XpmAttributes xpm_attributes;
-  char *path = NULL;
-  int rc;
-  XpmImage	my_image;
-
-  path = findImageFile(item->icon_file, imagePath,R_OK);
-  if(path == NULL)return;
-
-  rc = XpmReadFileToXpmImage(path, &my_image, NULL);
-  if (rc != XpmSuccess) {
-    fprintf(stderr, "Problem reading pixmap %s, rc %d\n", path, rc);
-    free(path);
-    return;
-  }
-  color_reduce_pixmap(&my_image,save_color_limit);
-  xpm_attributes.visual = Pvisual;
-  xpm_attributes.colormap = Pcmap;
-  xpm_attributes.depth = Pdepth;
-  xpm_attributes.closeness = 40000;    /* same closeness used elsewhere */
-  xpm_attributes.valuemask = XpmVisual | XpmColormap | XpmDepth | XpmCloseness
-			     | XpmReturnPixels;
-  rc = XpmCreatePixmapFromXpmImage(dpy,main_win, &my_image,
-                                    &item->iconPixmap,
-                                    &item->icon_maskPixmap,
-                                    &xpm_attributes);
-  if (rc != XpmSuccess) {
-    fprintf(stderr, "Problem creating pixmap from image, rc %d\n", rc);
-    free(path);
-    return;
-  }
-  item->icon_w = min(max_icon_width, my_image.width);
-  item->icon_h = min(max_icon_height, my_image.height);
-  item->icon_depth = Pdepth;
-  free(path);
-#endif /* XPM */
-}
-
-/***************************************************************************
-*
- *
  * Looks for an application supplied icon window
  *
- ***************************************************************************
-*/
+ *************************************************************************** */
 void GetIconWindow(struct icon_info *item)
 {
   int x, y;
@@ -412,65 +355,49 @@ void GetIconBitmap(struct icon_info *item)
 
 Bool GetBackPixmap(void)
 {
-#ifdef XPM
-  XpmAttributes xpm_attributes;
-  XpmImage my_image;
-  Pixmap maskPixmap;
-  int rc;
-#endif
-  char *path = NULL;
-  Pixmap tmp_bitmap;
-  int x, y, w=0, h=0;
+	Pixmap maskPixmap;
+	char *path = NULL;
+	Pixmap tmp_pixmap;
+	Pixel *dummy = NULL;
+	int nalloc_pixels = -1;
+	int w=0, h=0, icon_depth = 0;
 
-  if (IconwinPixmapFile == NULL)
-    return False;
+	if (IconwinPixmapFile == NULL)
+		return False;
 
-  if ((path = findImageFile(IconwinPixmapFile, imagePath,R_OK)) != NULL){
-    if (XReadBitmapFile(dpy, main_win ,path,(unsigned int *)&w,
-			(unsigned int *)&h, &tmp_bitmap,
-			(int *)&x, (int *)&y)!= BitmapSuccess)
-      w = h = 0;
-    else{
-      IconwinPixmap = XCreatePixmap(dpy, main_win, w, h, Pdepth);
-      XCopyPlane(dpy, tmp_bitmap, IconwinPixmap, NormalGC, 0, 0, w, h,
-		 0, 0, 1);
-      XFreePixmap(dpy, tmp_bitmap);
-    }
-    free(path);
-  }
-
-#ifdef XPM
-  if ( w == 0 && h == 0 && (path = findImageFile(IconwinPixmapFile,
-						imagePath,R_OK)) != NULL)
-    {
-      rc = XpmReadFileToXpmImage(path, &my_image, NULL);
-      if (rc != XpmSuccess) {
-        fprintf(stderr, "Problem reading pixmap %s, rc %d\n", path, rc);
-        free(path);
-        return False;
-      }
-      color_reduce_pixmap(&my_image,save_color_limit);
-      xpm_attributes.visual = Pvisual;
-      xpm_attributes.colormap = Pcmap;
-      xpm_attributes.depth = Pdepth;
-      xpm_attributes.closeness = 40000;    /* same closeness used elsewhere */
-      xpm_attributes.valuemask =
-	XpmVisual | XpmColormap | XpmDepth | XpmCloseness | XpmReturnPixels;
-      rc = XpmCreatePixmapFromXpmImage(dpy, main_win, &my_image,
-                                       &IconwinPixmap,
-                                       &maskPixmap,
-                                       &xpm_attributes);
-      if (rc != XpmSuccess) {
-        fprintf(stderr, "Problem creating pixmap from image, rc %d\n", rc);
-        free(path);
-        return False;
-      }
-      w = my_image.width;
-      h = my_image.height;
-      free(path);
-    }
-#endif
-  if (w != 0 && h != 0)
-    return True;
-  return False;
+	path = findImageFile(IconwinPixmapFile, imagePath, R_OK);
+	if (path == NULL)
+	{
+		return False;
+	}
+	if (!FImageLoadPixmapFromFile(dpy, main_win, path, save_color_limit,
+				      &tmp_pixmap,
+				      &maskPixmap,
+				      &w,
+				      &h,
+				      &icon_depth,
+				      &nalloc_pixels, dummy))
+	{
+		w = 0;
+		h = 0;
+		fprintf(stderr, "[FvwmIconBox] Problem creating pixmap from "
+			"file: %s\n", path);
+		free(path);
+		return False;
+	}
+	if (icon_depth == 1)
+	{
+		IconwinPixmap = XCreatePixmap(dpy, main_win, w, h, Pdepth);
+		XCopyPlane(dpy, tmp_pixmap, IconwinPixmap, NormalGC,
+			   0, 0, w, h, 0, 0, 1);
+		XFreePixmap(dpy, tmp_pixmap);
+	}
+	else
+	{
+		IconwinPixmap = tmp_pixmap;
+	}
+	free(path);
+	if (w != 0 && h != 0)
+		return True;
+	return False;
 }

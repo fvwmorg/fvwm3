@@ -1,11 +1,11 @@
 ## Process this file with automake to create Makefile.in
 
-bin_PROGRAMS = @XPMROOT@
+bin_PROGRAMS = xpmroot
 bin_SCRIPTS = fvwm-config fvwmbug fvwm-menu-xlock fvwm-menu-directory \
 	fvwm-menu-desktop fvwm-menu-headlines fvwm24_convert
 
 ## Don't build and install xselection, there is a better xselection package.
-EXTRA_PROGRAMS = xpmroot xselection
+EXTRA_PROGRAMS = xselection
 
 man_MANS = xpmroot.1 fvwm-config.1 fvwmbug.1 fvwmrc_convert.1 fvwm24_convert.1 \
 	fvwm-menu-xlock.1 fvwm-menu-directory.1 \
@@ -13,8 +13,8 @@ man_MANS = xpmroot.1 fvwm-config.1 fvwmbug.1 fvwmrc_convert.1 fvwm24_convert.1 \
 EXTRA_DIST = fvwmrc_convert quantize_pixmaps $(man_MANS)
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
-	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
+	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) $(png_LIBS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS)
 
 
 ## The long generation for *.1 is to make both pod2man and 'make -j' happy.

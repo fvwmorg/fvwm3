@@ -25,6 +25,7 @@
 #include "libs/FShape.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
+#include "libs/FImageLoader.h"
 
 #ifdef MEMDEBUG			/* For debugging */
 #include <unchecked.h>
@@ -350,24 +351,57 @@ void Xinit(int IsFather)
 /***********************/
 void LoadIcon(struct XObj *xobj)
 {
-  Picture *pic;
+	char *path;
+	int depth, nap;
+	Pixel *dummy = NULL;
 
-  if ((xobj->icon) != NULL)
-  {
-    pic = CachePicture(dpy,x11base->win,imagePath,xobj->icon,save_color_limit);
-    if (!pic)
-    {
-      fprintf(stderr,"[%s][LoadIcon]: <<WARNING>> Unable to load pixmap %s\n",
-	      ScriptName,xobj->icon);
-      xobj->iconPixmap = None;
-      xobj->icon_maskPixmap = None;
-      return;
-    }
-    xobj->iconPixmap = pic->picture;
-    xobj->icon_maskPixmap = pic->mask;
-    xobj->icon_w = pic->width;
-    xobj->icon_h = pic->height;
-  }
+	if (xobj->iconPixmap != None)
+	{
+		XFreePixmap(dpy, xobj->iconPixmap);
+		xobj->iconPixmap = None;
+	}
+	if (xobj->icon_maskPixmap != None)
+	{
+		XFreePixmap(dpy, xobj->icon_maskPixmap);
+		xobj->icon_maskPixmap = None;
+	}
+	
+	if ((xobj->icon) == NULL)
+		return;
+	if ((path = findImageFile(xobj->icon,imagePath,R_OK)) == NULL)
+	{
+		return;
+	}
+	if (!FImageLoadPixmapFromFile(dpy, x11base->root, path, save_color_limit,
+				      &xobj->iconPixmap, &xobj->icon_maskPixmap,
+				      &xobj->icon_w, &xobj->icon_h, &depth,
+				      &nap, dummy))
+	{
+		fprintf(stderr,"[%s][LoadIcon]: <<WARNING>> Unable to "
+			"load pixmap %s\n",
+			ScriptName,xobj->icon);
+		free(path);
+		return;
+	}
+	if (depth <= 1)
+	{
+		XGCValues gcv;
+		GC m_gc;
+		Pixmap temp;
+
+		gcv.background= WhitePixel(dpy, screen);
+		gcv.foreground= BlackPixel(dpy, screen);
+		m_gc = fvwmlib_XCreateGC(dpy, x11base->win,
+				       GCForeground | GCBackground, &gcv);
+		temp = XCreatePixmap(dpy, x11base->win,
+				     xobj->icon_w, xobj->icon_h, Pdepth);
+		XCopyPlane(dpy, xobj->iconPixmap, temp, m_gc,
+			   0,0,xobj->icon_w, xobj->icon_h, 0,0,1);
+		XFreePixmap(dpy, xobj->iconPixmap);
+		XFreeGC(dpy,m_gc);
+		xobj->iconPixmap = temp;
+	}
+	free(path);
 }
 
 

@@ -57,6 +57,7 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/InitPicture.h"
 #include "libs/Picture.h"
 #include "FvwmAnimate.h"
 

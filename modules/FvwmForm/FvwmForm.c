@@ -41,7 +41,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 
-#include <libs/Picture.h>               /* for InitPictureCMap */
+#include <libs/InitPicture.h>               /* for InitPictureCMap */
 #include "libs/Colorset.h"               /* for InitPictureCMap */
 #include "libs/FScreen.h"
 #include "libs/FShape.h"

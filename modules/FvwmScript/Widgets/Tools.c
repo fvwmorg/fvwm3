@@ -277,6 +277,7 @@ void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
     i=(xobj->width - xobj->icon_w)/2+offset;
     XSetClipOrigin(dpy, xobj->gc, i, j);
     XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
+    
     XCopyArea(dpy, xobj->iconPixmap, xobj->win, xobj->gc, 0, 0,
 	      xobj->icon_w, xobj->icon_h, i, j);
     XSetClipMask(dpy, xobj->gc, None);

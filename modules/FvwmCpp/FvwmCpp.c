@@ -51,7 +51,7 @@
 #include "FvwmCpp.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
-#include "libs/Picture.h"
+#include "libs/InitPicture.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #define Resolution(pixels, mm) ((((pixels) * 2000 / (mm)) + 1) / 2)
