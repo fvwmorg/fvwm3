@@ -55,6 +55,7 @@ FvwmPacket *ReadFvwmPacket(int fd)
 {
 	static unsigned long buffer[FvwmPacketMaxSize];
 	FvwmPacket *packet = (FvwmPacket *)buffer;
+	unsigned long length;
 
 	/* The `start flag' value supposedly exists to synchronize the
 	 * FVWM -> module communication.  However, the communication goes
@@ -76,10 +77,14 @@ FvwmPacket *ReadFvwmPacket(int fd)
 	{
 		return NULL;
 	}
-
+	length = FvwmPacketBodySize_byte(*packet);
+	if (length > FvwmPacketMaxSize_byte - FvwmPacketHeaderSize_byte)
+	{
+		/* packet too long */
+		return NULL;
+	}
 	/* Finally, read the body, and we're done */
-	if (positive_read(fd, (char *)(&buffer[4]),
-		FvwmPacketBodySize(*packet)*sizeof(unsigned long)) < 0)
+	if (positive_read(fd, (char *)(&buffer[4]), length) < 0)
 	{
 		return NULL;
 	}

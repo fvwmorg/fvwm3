@@ -997,9 +997,12 @@ static void ResyncXStackingOrder(void)
 /* send RESTACK packets for all windows between s1 and s2 */
 static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 {
-	FvwmWindow *t, *t2;
-	int num, i;
+	FvwmWindow *fw;
+	int num;
+	int i;
+	int n;
 	unsigned long *body, *bp, length;
+	unsigned long max_wins_per_packet;
 
 	if (s2 == &Scr.FvwmRoot)
 	{
@@ -1011,24 +1014,20 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 	}
 	if (s1 == &Scr.FvwmRoot)
 	{
-		t = s1->stack_next;
-		if (t == &Scr.FvwmRoot)
+		s1 = s1->stack_next;
+		if (s1 == &Scr.FvwmRoot)
 		{
 			return;
 		}
-		/* t has been moved to the top of stack */
+		/* s1 has been moved to the top of stack */
 		BroadcastPacket(
-			M_RAISE_WINDOW, 3, FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t);
-		if (t->stack_next == s2)
+			M_RAISE_WINDOW, 3, FW_W(s1), FW_W_FRAME(s1),
+			(unsigned long)s1);
+		if (s1->stack_next == s2)
 		{
 			/* avoid sending empty RESTACK packet */
 			return;
 		}
-	}
-	else
-	{
-		t = s1;
 	}
 	if (s1 == s2)
 	{
@@ -1036,28 +1035,36 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 		 */
 		return;
 	}
-	for (t2 = t, num = 1 ; t2 != s2 && t != &Scr.FvwmRoot;
-	     t2 = t2->stack_next, num++)
+	for (fw = s1, num = 1; fw != s2 && fw != &Scr.FvwmRoot;
+	     fw = fw->stack_next, num++)
 	{
-		;
+		/* nothing */
 	}
-	length = FvwmPacketHeaderSize + 3*num;
-	body = (unsigned long *)safemalloc(length*sizeof(unsigned long));
-
-	bp = body;
-	*(bp++) = START_FLAG;
-	*(bp++) = M_RESTACK;
-	*(bp++) = length;
-	*(bp++) = fev_get_evtime();
-	for (t2 = t; num != 0; num--, t2 = t2->stack_next)
+	max_wins_per_packet = (FvwmPacketMaxSize - FvwmPacketHeaderSize) / 3;
+	/* split packet if it is too long */
+	for ( ; num > 1; s1 = fw, num -= n)
 	{
-		*(bp++) = FW_W(t2);
-		*(bp++) = FW_W_FRAME(t2);
-		*(bp++) = (unsigned long)t2;
+		n = min(num, max_wins_per_packet) - 1;
+		length = FvwmPacketHeaderSize + 3 * (n + 1);
+		body = (unsigned long *)safemalloc(
+			length * sizeof(unsigned long));
+		bp = body;
+		*(bp++) = START_FLAG;
+		*(bp++) = M_RESTACK;
+		*(bp++) = length;
+		*(bp++) = fev_get_evtime();
+		for (fw = s1, i = 0; i <= n; i++, fw = fw->stack_next)
+		{
+			*(bp++) = FW_W(fw);
+			*(bp++) = FW_W_FRAME(fw);
+			*(bp++) = (unsigned long)fw;
+		}
+		for (i = 0; i < npipes; i++)
+		{
+			PositiveWrite(i, body, length*sizeof(unsigned long));
+		}
+		free(body);
 	}
-	for (i = 0; i < npipes; i++)
-		PositiveWrite(i, body, length*sizeof(unsigned long));
-	free(body);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
 #endif

@@ -2550,7 +2550,8 @@ style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, ActiveBackOff,
 AnimationOff, Font, MenuFace, PopupOffset 0 67,
 TitleWarp, TitleUnderlines1, SeparatorsShort, TrianglesRelief,
-PopupDelayed, PopdownDelayed, PopupAsSubmenu, HoldSubmenus,
+PopupDelayed, PopdownDelayed, PopupDelay 150, PopdownDelay 150,
+PopupAsSubmenu, HoldSubmenus,
 SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
 PopupActiveArea 75.
 
@@ -2559,18 +2560,18 @@ style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, ActiveBackOff,
 AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
-PopupImmediately, PopdownDelayed, PopupAsSubmenu, HoldSubmenus,
-SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
-PopupActiveArea 75.
+PopupImmediately, PopdownDelayed, PopdownDelay 150,
+PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2,
+AutomaticHotkeysOff, PopupActiveArea 75.
 
 .I Win
 style is equivalent to HilightBack, Hilight3DOff, ActiveFore,
 ActiveBack,
 AnimationOff, Font, MenuFace, PopupOffset -5 100, TitleWarpOff,
 TitleUnderlines1, SeparatorsShort, TrianglesSolid,
-PopupImmediately, PopdownDelayed, PopupAsSubmenu, RemoveSubmenus,
-SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
-PopupActiveArea 75.
+PopupImmediately, PopdownDelayed, PopdownDelay 150,
+PopupAsSubmenu, RemoveSubmenus, SubmenusRight, BorderWidth 2,
+AutomaticHotkeysOff, PopupActiveArea 75.
 
 .I BorderWidth
 takes the thickness of the border around the menus in pixels. It
