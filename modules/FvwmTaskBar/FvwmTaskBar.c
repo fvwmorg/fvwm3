@@ -1403,7 +1403,7 @@ void LoopOnEvents(void)
 	}
 	if (StartPopup != NULL)
 	{
-	  tmp = (char *)safemalloc(strlen(StartPopup + 7));
+	  tmp = (char *)safemalloc(strlen(StartPopup) + 7);
 	  sprintf(tmp,"Popup %s", StartPopup);
 	  SendText(Fvwm_fd, tmp, win);
 	  free(tmp);
