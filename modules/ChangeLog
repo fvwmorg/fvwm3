@@ -1,5 +1,14 @@
 1999-11-30  Brad Giaccio  <bgiaccio@psrw.com>
 
+	* FvwmIconMan/ConfigFvwmIconMan:
+	* FvwmIconMan/FvwmIconMan.1:
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	* FvwmIconMan/xmanager.c:
+	(draw_button):
+	(set_win_iconified): added new option iconColorset and iconstyle
+
+1999-11-30  Brad Giaccio  <bgiaccio@psrw.com>
+
 	* FvwmIconBox/FvwmIconBox.c (process_message): let a print stament in
 
 1999-11-30  Brad Giaccio  <bgiaccio@psrw.com>

@@ -1619,6 +1619,9 @@ void read_in_resources (char *file)
 		     copy_string (&globals.managers[id].titlename, token));
 	Free (token);
       }
+      else if (!strcasecmp (option1, "iconButton")) {
+	handle_button_config (manager, ICON_CONTEXT, option1);
+      }
       else if (!strcasecmp (option1, "plainButton")) {
 	handle_button_config (manager, PLAIN_CONTEXT, option1);
       }
@@ -1702,6 +1705,20 @@ void read_in_resources (char *file)
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[PLAIN_CONTEXT], n);
+	AllocColorset(n);
+      }
+      else if (!strcasecmp (option1, "iconcolorset")) {
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int (p, &n) == 0) {
+	  ConsoleMessage ("This is not a number: %s\n", p);
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	SET_MANAGER(manager, colorsets[ICON_CONTEXT], n);
 	AllocColorset(n);
       }
       else if (!strcasecmp (option1, "usewinlist")) {

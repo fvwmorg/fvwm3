@@ -120,7 +120,8 @@ typedef enum {
   SELECT_CONTEXT = 2,
   FOCUS_SELECT_CONTEXT = 3, /* had better be FOCUS_CONTEXT | SELECT_CONTEXT */
   TITLE_CONTEXT = 4,
-  DEFAULT = 5,
+  ICON_CONTEXT = 5,
+  DEFAULT = 6,
   NUM_CONTEXTS
 } Contexts;
 

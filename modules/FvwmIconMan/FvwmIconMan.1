@@ -96,6 +96,8 @@ font                                       8x13
 foreground      default text color         white
 format          describes button label     "%c: %i"
 iconname        manger icon name           FvwmIconMan
+iconbutton      style for icon buttons     up black grey
+iconcolorset
 managergeometry size of manager in buttons 0x1
 noiconaction    animate iconification      NOP
 plainbutton     style for normal buttons   up black grey
@@ -198,6 +200,14 @@ so if you use m4, take appropriate action.
 Specifies the window icon name for that manager window. \fIIconstring\fP
 may either be a single word, or a string enclosed in quotes. The default is
 "FvwmIconMan".
+
+.IP "*FvwmIconMan*[id*]iconbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
+Same as the plainbutton option, but specifies the look of buttons whose
+windows are iconified.
+
+.IP "*FvwmIconMan*[id*]iconcolorset \fIcolorset\fP"
+Works like iconbutton but uses colorsets instead.  The style setting can still
+only be applied with iconbutton.  See FvwmTheme.
 
 .IP "*FvwmIconMan*[id*]managergeometry \fIgeometry\fP"
 Specifies the initial geometry of the manager, in units of buttons. If

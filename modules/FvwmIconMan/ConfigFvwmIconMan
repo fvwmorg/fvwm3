@@ -12,6 +12,7 @@ DestroyModuleConfig FvwmIconMan*
 *FvwmIconMan*action      Mouse   3 N sendcommand "FvwmIdent"
 *FvwmIconMan*followfocus true
 *FvwmIconMan*sort        none
+*FvwmIconMan*iconbutton          up black maroon
 *FvwmIconMan*plainbutton          up black bisque3
 *FvwmIconMan*selectbutton         down black bisque3
 *FvwmIconMan*focusbutton          up yellow firebrick

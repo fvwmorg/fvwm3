@@ -676,7 +676,7 @@ void set_win_iconified (WinData *win, int iconified)
       SendText(Fvwm_fd, string, 0);
 
     }
-    win->button->drawn_state.dirty_flags |= STATE_CHANGED;
+    win->button->drawn_state.dirty_flags |= ICON_STATE_CHANGED;
   }
 #endif
   win->iconified = iconified;
@@ -986,14 +986,14 @@ static void resize_manager (WinManager *man, int force)
       XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
       XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
       if (i == DEFAULT)
-      { 
+      {
     XSetWindowBackgroundPixmap(theDisplay, man->theWindow,
-                   man->pixmap[i]); 
-      } 
+                   man->pixmap[i]);
+      }
     } else {
       man->pixmap[i] = None;
       XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
-    }  
+    }
   }
 
 }
@@ -1335,6 +1335,9 @@ static void draw_button (WinManager *man, int button, int force)
     ConsoleDebug (X11, "\tgeometry: %d %d %d %d\n", g.button_x, g.button_y,
 		  g.button_w, g.button_h);
     button_state = b->drawn_state.state;
+    if (b->drawn_state.iconified && button_state == PLAIN_CONTEXT) {
+      button_state = ICON_CONTEXT;
+    }
     if (draw_background) {
       ConsoleDebug (X11, "\tDrawing background\n");
       XFillRectangle (theDisplay, man->theWindow,

@@ -1,5 +1,8 @@
 Changes in beta release 2.3.10
 
+* New FvwmIconMan options: iconbutton and iconcolorset to control colors for
+  iconified windows.
+
 * Fixed build problem without shape extension.
 
 * New FvwmIconBox option: FvwmIconBoxUseSkipList.
