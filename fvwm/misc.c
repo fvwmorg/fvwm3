@@ -456,7 +456,7 @@ int GetMoveArguments(char *action, int x, int y, int w, int h,
     else
 	*fWarp = FALSE; /* make sure warping is off for interactive moves */
   }
-  
+
   if (s1) free(s1);
   if (s2) free(s2);
   if (warp) free(warp);
@@ -473,38 +473,49 @@ static
 char *GetOneMenuPositionArgument(char *action,int x,int w,int *pFinalX,
 				 float *width_factor)
 {
-  char *token, *naction;
+  char *token, *orgtoken, *naction;
+  char c;
   int val;
-  int length;
+  int chars;
   float factor = (float)w/100;
 
   naction = GetNextToken(action, &token);
   if (token == NULL)
     return action;
-  length = strlen(token);
-  if (token[length-1] == 'p') {
-    factor = 1;  /* Use pixels, so don't multiply by factor */
-    token[length-1] = '\0';
+  orgtoken = token;
+  *pFinalX = x;
+  *width_factor = 0;
+  if (sscanf(token,"o%d%n", &val, &chars) >= 1) {
+    token += chars;
+    *pFinalX += val*factor;
+    *width_factor -= val/100;
+  } else if (token[0] == 'c') {
+    token++;
+    *pFinalX += w/2;
+    *width_factor -= 0.5;
   }
-  if (strcmp(token,"c") == 0) {
-    *pFinalX = x + ((float)w)/2;
-    *width_factor = -0.5;
-  } else if (sscanf(token,"c-%d",&val) == 1) {
-    *pFinalX = x + ((float)w)/2 - val*factor;
-    *width_factor = -0.5;
-  } else if (sscanf(token,"c+%d",&val) == 1) {
-    *pFinalX = x + ((float)w)/2 + val*factor;
-    *width_factor = -0.5;
-  } else if (sscanf(token,"-%d",&val) == 1) {
-    *pFinalX = x + w - val*factor;
-    *width_factor = -1;
-  } else if (sscanf(token,"%d",&val) == 1) {
-    *pFinalX = x + val*factor;
-    *width_factor = 0;
-  } else {
-    naction = action;
+  while (*token != 0) {
+    if (sscanf(token,"%d%n", &val, &chars) >= 1) {
+      token += chars;
+      if (sscanf(token,"%c", &c) == 1) {
+	if (c == 'm') {
+	  token++;
+	  *width_factor += val/100;
+	} else if (c == 'p') {
+	  token++;
+	  *pFinalX += val;
+	} else {
+	  *pFinalX += val*factor;
+	}
+      } else {
+	*pFinalX += val*factor;
+      }
+    } else {
+      naction = action;
+      break;
+    }
   }
-  free(token);
+  free(orgtoken);
   return naction;
 }
 
@@ -978,14 +989,14 @@ void RaiseWindow(FvwmWindow *t)
     {
 /*      XRaiseWindow(dpy,wins[0]);  */
       /*
-           clasen@mathematik.uni-freiburg.de - 01/01/1999 - 
+           clasen@mathematik.uni-freiburg.de - 01/01/1999 -
          simply calling XRaiseWindow(dpy,wins[0]); here will put StaysOnTop
          windows over override_redirect windows like FvwmPager ballon_win or
          Motif menus. Instead raise wins[0] only above the topmost window
-	 which is managed by us. 
+	 which is managed by us.
       */
-     if (wins[0] != Scr.FvwmRoot.stack_next->frame && wins[0] != Scr.FvwmRoot.stack_next->icon_w) 
-      { 
+     if (wins[0] != Scr.FvwmRoot.stack_next->frame && wins[0] != Scr.FvwmRoot.stack_next->icon_w)
+      {
         if (Scr.FvwmRoot.stack_next->flags & ICONIFIED)
           {
             changes.sibling = Scr.FvwmRoot.stack_next->icon_w;

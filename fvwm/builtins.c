@@ -4137,6 +4137,7 @@ char *CreateFlagString(char *string, char **restptr)
       if (*c == 0) {
 	fvwm_msg(ERR, "CreateConditionMask",
 		 "Conditionals require closing parenthesis");
+	*restptr = NULL;
 	return NULL;
       }
       c++;
@@ -4417,7 +4418,7 @@ void PrevFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *restofline;
 
   found = Circulate(action, -1, &restofline);
-  if(found != NULL)
+  if(found != NULL && restofline != NULL)
   {
     ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
   }
@@ -4431,7 +4432,7 @@ void NextFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *restofline;
 
   found = Circulate(action, 1, &restofline);
-  if(found != NULL)
+  if(found != NULL && restofline != NULL)
   {
     ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
   }
@@ -4445,7 +4446,7 @@ void NoneFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *restofline;
 
   found = Circulate(action, 1, &restofline);
-  if(found == NULL)
+  if(found == NULL && restofline != NULL)
   {
     ExecuteFunction(restofline,NULL,eventp,C_ROOT,*Module);
   }
@@ -4458,7 +4459,7 @@ void CurrentFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *restofline;
 
   found = Circulate(action, 0, &restofline);
-  if(found != NULL)
+  if(found != NULL && restofline != NULL)
   {
     ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
   }
@@ -4518,6 +4519,12 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
   /* Create the mask for flags */
   flags = CreateFlagString(action, &restofline);
+  if (!restofline)
+  {
+    if (flags)
+      free(flags);
+    return;
+  }
   DefaultConditionMask(&mask);
   CreateConditionMask(flags, &mask);
   if (flags)

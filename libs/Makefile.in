@@ -122,7 +122,7 @@ strcasecmp.c strerror.c strncasecmp.c usleep.c
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/ClientMsg.P .deps/ColorUtils.P .deps/GetFont.P \
 .deps/Grab.P .deps/ModParse.P .deps/Module.P .deps/Parse.P \

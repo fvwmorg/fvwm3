@@ -126,7 +126,7 @@ DIST_COMMON =  README Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/FvwmIconMan.P .deps/debug.P .deps/functions.P \
 .deps/fvwm.P .deps/globals.P .deps/readconfig.P .deps/winlist.P \

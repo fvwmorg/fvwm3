@@ -580,7 +580,8 @@ the label. To get a literal '&', insert '&&'.
 
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
-xpm-icon or bitmap-file to insert in the menu.  For example
+xpm-icon or bitmap-file to insert in the menu.  To get a literal '*',
+insert '**'.For example
 .EX
  + "Calculator*xcalc.xpm*" Exec exec xcalc
 .EE
@@ -593,7 +594,8 @@ Omits the "Calculator" label, but leaves the picture.
 
 If the menu-label contains a sub-string which is set off by percent signs,
 then the text between the percent signs is expected to be the name of an
-xpm-icon or bitmap-file to insert to the left of the menu label.  For example
+xpm-icon or bitmap-file to insert to the left of the menu label.
+To get a literal '%', insert '%%'. For example
 .EX
  + "Calculator%xcalc.xpm%" Exec exec xcalc
 .EE
@@ -609,8 +611,8 @@ If the menu-name (not the label) contains a sub-string which is set
 off by at signs ("@"), then the text between them is expected to be
 the name of an xpm or bitmap file to draw along the left side of the
 menu (a "side pixmap"). You will probably want to use the SidePic
-option of the \fIMenuStyle\fP command instead.
-For example
+option of the \fIMenuStyle\fP command instead.  To get a literal '@',
+insert '@@'.  For example
 .EX
 AddToMenu "StartMenu@linux-menu.xpm@"
 .EE
@@ -620,7 +622,8 @@ If the menu-name contains also a sub-string set of by '^'s, then the
 text between '^'s is expected to be the name a of X11 color and the
 column containing the side picture will be colorized with that
 color. You can set this color for a menu style using the SideColor
-option of the \fIMenuStyle\fP command. Example:
+option of the \fIMenuStyle\fP command.  To get a literal '^', insert
+'^^'.  Example:
 .EX
 AddToMenu "StartMenu@linux-menu.xpm@^blue^"
 .EE
@@ -1569,27 +1572,40 @@ Note that not all of these make sense under all circumstances
 (e.g. "Icon" if the pointer is on a menu).
 
 The offset values \fIx\fP and \fIy\fP specify how far the menu is
-moved from it's default position. A positive value means move the
-left (upper) edge of the menu right (down) from the left (upper)
-edge of the rectangle, a negative value means move the right (lower)
-edge of the menu left (up) from the right (lower) edge of the
-rectangle. By default, the numeric value given is interpreted as a
-percentage of the context rectangle's width (height), but a trailing
-"p" changes the interpretation to mean "pixels".  If x or y are
-prefixed with "c" the menu and the rectangle are centered above each
-other before the offset is applied.  Examples:
+moved from it's default position. By default, the numeric value given
+is interpreted as a percentage of the context rectangle's width (height),
+but with a trailing "m" the menu's width (height) is used instead.
+Furthermore a trailing "p" changes the interpretation to mean "pixels".
+
+Instead of a single value you can use a list of values. All additional
+numbers after the first one are separated from threir predecessor but
+their sign. Do not use any other separators.
+
+If x or y are prefixed with 'o<number>' where <number> is an integer, the
+menu and the rectangle will be moved to overlap at the specified position
+before any other offsets are applied. The menu and the rectangle will be
+placed so that the pixel at <number> percent of the rectangle's width/height
+is right over the pixel at <number> percent of the menu's width/height.
+So 'o0' means that the top/left borders of the menu and the rectangle
+overlap, with 'o100' it's the bottom/right borders and if you use 'o50'
+they are centered upon each other (try it and you will see it is much
+simpler than this description). The default is 'o0'. The prefix
+'o<number>' is an abbreviation for '+<number>-<number>m'.
+
+A prefix of 'c' is equivalent of 'o50'.  Examples:
+
 .EX
 # window list in the middle of the screen
 WindowList Root c c
 
-# popup menu 8 pixels above the mouse pointer
-Popup name mouse c -8p
-
 # menu to the left of a window
-Menu name window -100 c+0
+Menu name window -100m c+0
+
+# popup menu 8 pixels above the mouse pointer
+Popup name mouse c -100m-8p
 
 # somewhere on the screen
-Menu name rectangle 512x384+1+1 -0 -0
+Menu name rectangle 512x384+1+1 +0 +0
 
 # centered vertially around a menu item
 AddToMenu foobar-menu
@@ -1600,12 +1616,12 @@ AddToMenu foobar-menu
 
 # above the first menu item
 AddToMenu foobar-menu
- + "first item" Popup "another menu" +0 -100
+ + "first item" Popup "another menu" item +0 -100m
 .EE
 Note that you can put a submenu far off the current menu so you could
-not reach it with the mouse without popping it down (fvwm menu style
-only).  But if the pointer leaves the current menu in the general
-direction of the submenu it will stay up.
+not reach it with the mouse without leaving the menu. If the pointer
+leaves the current menu in the general direction of the submenu the
+menu will stay up.
 
 The \fIspecial-options\fP:
 

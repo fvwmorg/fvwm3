@@ -1,5 +1,8 @@
 Changes in beta release 2.1.12 (February 1999)
 
+* Enhanced and changed the syntax for menu position hints. If you use negative
+  offsets you will have to change your configuration now.
+
 Changes in beta release 2.1.11 (January 1999)
 
 * Renamed MenuStyle options: PrepopMenus to PopupImmediately and

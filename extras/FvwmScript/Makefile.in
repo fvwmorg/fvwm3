@@ -133,7 +133,7 @@ DIST_COMMON =  INSTALL Makefile.am Makefile.in TODO scanner.c script.c
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/FvwmScript.P .deps/Instructions.P .deps/libyywrap.P \
 .deps/scanner.P .deps/script.P

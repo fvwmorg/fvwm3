@@ -126,7 +126,7 @@ DIST_COMMON =  README INSTALL Makefile.am Makefile.in TODO
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/FvwmButtons.P .deps/button.P .deps/draw.P \
 .deps/icons.P .deps/misc.P .deps/output.P .deps/parse.P

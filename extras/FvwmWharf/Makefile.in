@@ -125,7 +125,7 @@ DIST_COMMON =  README Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/FvwmWharf.P .deps/icons.P .deps/stepgfx.P
 SOURCES = $(FvwmWharf_SOURCES)

@@ -225,7 +225,9 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   char *arguments[10];
   struct functions *bif;
 
-  if (Action[0] == 0 || Action[1] == 0){/* impossibly short command */
+  if (!Action || Action[0] == 0 || Action[1] == 0)
+  {
+    /* impossibly short command */
     return;                             /* done */
   }
   if (Action[0] == '#') {               /* a comment */
@@ -294,24 +296,28 @@ void find_func_type(char *action, short *func_type, Bool *func_needs_window)
   Bool matched;
   int mlen;
 
-  while (*endtok&&!isspace(*endtok))++endtok;
-  len = endtok - action;
-  j=0;
-  matched = FALSE;
-  while((!matched)&&((mlen = strlen(func_config[j].keyword))>0))
-    {
-      if((mlen == len) && (strncasecmp(action,func_config[j].keyword,mlen)==0))
+  if (action)
+  {
+    while (*endtok&&!isspace(*endtok))++endtok;
+    len = endtok - action;
+    j=0;
+    matched = FALSE;
+    while((!matched)&&((mlen = strlen(func_config[j].keyword))>0))
       {
-	  matched=TRUE;
-	  /* found key word */
-	  *func_type = func_config[j].func_type;
-	  *func_needs_window = func_config[j].func_needs_window;
-	  return;
+	if((mlen == len) &&
+	   (strncasecmp(action,func_config[j].keyword,mlen)==0))
+	  {
+	    matched=TRUE;
+	    /* found key word */
+	    *func_type = func_config[j].func_type;
+	    *func_needs_window = func_config[j].func_needs_window;
+	    return;
+	  }
+	else
+	  j++;
       }
-      else
-	j++;
-    }
-  /* No clue what the function is. Just return "BEEP" */
+    /* No clue what the function is. Just return "BEEP" */
+  }
   *func_type = F_BEEP;
   *func_needs_window = False;
   return;

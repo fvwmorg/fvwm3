@@ -1,3 +1,23 @@
+1999-02-11  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/misc.c (GetOneMenuPositionArgument): rewrote syntax of menu
+	position hints.
+
+	* fvwm/fvwm2.1: quoting ^, @, * and % added to 'Menu' entry
+
+1999-02-11  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (CreateFlagString): corrected restptr to return NULL
+	on error
+	(PrevFunc): check for NULL pointer added
+	(NextFunc): check for NULL pointer added
+	(NoneFunc): check for NULL pointer added
+	(CurrentFunc): check for NULL pointer added
+	(DirectionFunc): check for NULL pointer added
+
+	* fvwm/functions.c (ExecuteFunction): check for NULL pointer added
+	(find_func_type): check for NULL pointer added
+
 1999-02-11  Dan Espen  <dane@mk.bellcore.com>
 
 	* fvwm/builtins.c  (UpdateMenuStyle): Handle menu arrow reliefs on
@@ -132,6 +152,19 @@
 Wed Jan 20 01:13:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* INSTALL.fvwm: Removed doubled paragraph.
+
+1999-02-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (CreateFlagString): corrected restptr to return NULL
+	on error
+	(PrevFunc): check for NULL pointer added
+	(NextFunc): check for NULL pointer added
+	(NoneFunc): check for NULL pointer added
+	(CurrentFunc): check for NULL pointer added
+	(DirectionFunc): check for NULL pointer added
+
+	* fvwm/functions.c (ExecuteFunction): check for NULL pointer added
+	(find_func_type): check for NULL pointer added
 
 1999-01-19  Paul D. Smith  <psmith@gnu.org>
 

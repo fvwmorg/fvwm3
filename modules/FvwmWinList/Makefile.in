@@ -127,7 +127,7 @@ DIST_COMMON =  README Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/ButtonArray.P .deps/Colors.P .deps/FvwmWinList.P \
 .deps/List.P .deps/Mallocs.P

@@ -141,7 +141,7 @@ DIST_COMMON =  README INSTALL Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/FvwmCommand.P .deps/FvwmCommandS.P
 SOURCES = $(FvwmCommand_SOURCES) $(FvwmCommandS_SOURCES)
