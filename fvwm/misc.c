@@ -1043,7 +1043,7 @@ void RaiseWindow(FvwmWindow *t)
    * "The XFree86 Project, Inc" by the proper string identifying
    * the Exceed X Server (you can find this with xdpyinfo).
    */
-  if (strcmp (ServerVendor (dpy), "The XFree86 Project, Inc") == 0)
+  if (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0)
     {
       Window tmp;
       Window *tops;
