@@ -1,3 +1,9 @@
+2003-12-12  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):
+	Fixed ewmh FullScreen when an application start fullscreen and
+	desactivate this state
+
 2003-12-04  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/placement.c (test_fit):

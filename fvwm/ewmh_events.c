@@ -40,6 +40,7 @@
 #include "ewmh_intern.h"
 #include "decorations.h"
 #include "geometry.h"
+#include "borders.h"
 
 extern ewmh_atom ewmh_atom_wm_state[];
 
@@ -447,10 +448,11 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 	if (ev != NULL)
 	{
 		/* client message */
-		char cmd[128];
+		char cmd[128] = "\0";
 		int bool_arg = ev->xclient.data.l[0];
 		int is_full_screen;
 
+		cmd[0] = '\0';
 		is_full_screen = IS_EWMH_FULLSCREEN(fwin);
 		if ((bool_arg == NET_WM_STATE_TOGGLE && !is_full_screen) ||
 		    bool_arg == NET_WM_STATE_ADD)
@@ -519,11 +521,30 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 		}
 		else
 		{
-			/* unmaximize will restore is_ewmh_fullscreen, layer
-			 * and apply_decor_change */
-			sprintf(cmd, "Maximize off");
+			if (HAS_EWMH_INIT_FULLSCREEN_STATE(fwin) !=
+			    EWMH_STATE_HAS_HINT)
+			{
+				/* unmaximize will restore is_ewmh_fullscreen,
+				 * layer and apply_decor_change */
+				sprintf(cmd, "Maximize off");
+			}
+			else
+			{
+				/* the application started fullscreen */
+				SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
+					fwin, EWMH_STATE_NO_HINT);
+				SET_EWMH_FULLSCREEN(fwin, False);
+				border_draw_decorations(
+					fwin, PART_ALL, (fwin == Scr.Hilite),
+					True, CLEAR_ALL, NULL, NULL);
+				/* the client should resize itself */
+			}
 		}
-		execute_function_override_window(NULL, NULL, cmd, 0, fwin);
+		if (cmd[0] != '\0')
+		{
+			execute_function_override_window(
+				NULL, NULL, cmd, 0, fwin);
+		}
 		if ((IS_EWMH_FULLSCREEN(fwin) &&
 		     !DO_EWMH_USE_STACKING_HINTS(fwin)) ||
 		    (!IS_EWMH_FULLSCREEN(fwin) &&
