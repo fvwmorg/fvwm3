@@ -225,6 +225,7 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 	is_finished = 0;
 	break;
       }
+#ifdef EILSEQ
       case EILSEQ:
 	    /* Something went wrong.  */
 	if (error_count <= FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
@@ -236,6 +237,7 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 	}
 	have_error = 1;
 	break;
+#endif
       default:
 	if (error_count <= FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
 	{
