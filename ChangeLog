@@ -1,5 +1,23 @@
 2004-07-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (GetResizeArguments):
+	(GetResizeMoveArguments):
+	(__resize_window):
+	(__resize_step):
+	(__resize_get_refpos):
+	(__resize_get_dir_proximity):
+	(__resize_get_dir_from_window):
+	implemented fluxbox-like Alt-Button3 resizing
+
+	* fvwm/virtual.c (HandlePaging):
+	* fvwm/events.c (__merge_cr_moveresize):
+	(__test_for_motion):
+	(flush_property_notify):
+	do not use XPutBackEvent as it shuffles events on the queue
+	(test_button_event):
+	(test_typed_window_event):
+	new functions
+
 	* libs/FEvent.c (fev_get_evpos_or_query):
 	take pointer position from EnterNotify and LeaveNotify events
 

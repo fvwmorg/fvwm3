@@ -4979,7 +4979,7 @@ static mloop_ret_code_t __mloop_handle_event(
 			/* handle deletion of tear out menus */
 			pmret->rc = MENU_KILL_TEAR_OFF_MENU;
 			/* extra safety: pass event back to main event loop to
-			 * make sure the is destroyed */
+			 * make sure the window is destroyed */
 			FPutBackEvent(dpy, (*pmp->pexc)->x.elast);
 			return MENU_MLOOP_RET_END;
 		}

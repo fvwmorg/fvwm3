@@ -5041,7 +5041,9 @@ style is used; see
 command) otherwise it is lowered.
 
 .TP
-.B "Resize [[\fIframe] \fIwidth\fP \
+.B "Resize [[\fIframe\fP] [direction \fIdir\fP [\fIwarptoborder\fP]] \
+[\fIfixeddirection\fP] \
+\fIwidth\fP \
 [\fIp\fP \
 | \fIc\fP\
 ] \fIheight\fP \
@@ -5087,7 +5089,27 @@ Resize 100 100
 may make the window bigger than the screen.  To base the new size
 on the size of the whole fvwm window, add the
 .I frame
-option after the command.
+option after the command.  The options
+.IR fixeddirection ", " direction " and " warptoborder
+are only used in interactive move operations.  With
+.I fixeddirection
+the same border is moved even if the pointer moves past the
+opposite border.  The
+.I direction
+option must be followed by a direction name such as "NorthWest",
+"South" or "East" (you get the idea).  Resizing is started
+immediately, even if the pointer is not on a border.  The
+.I warptoborder
+option changes the behaviour of the
+.I direction
+option so that the pointer is automatically warped to the border
+in the given direction before starting to resize.  Also, if
+resizing is started by clicking on the window border, the pointer
+is warped to the outer edge of the border.
+.EX
+AddToFunc ResizeSE I Resize Direction SE
+Mouse 3 A M ResizeSE
+.EE
 
 An alternate syntax is used if the keyword
 .IR bottomright " or in short " br

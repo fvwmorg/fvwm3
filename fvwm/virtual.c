@@ -547,10 +547,8 @@ int HandlePaging(
 			add_time = 0;
 			return 0;
 		}
-		else if (FCheckMaskEvent(
-				 dpy, ButtonPressMask | ButtonReleaseMask, &e))
+		else if (FPeekIfEvent(dpy, &e, test_button_event, NULL))
 		{
-			FPutBackEvent(dpy, &e);
 			is_timestamp_valid = False;
 			add_time = 0;
 			return 0;

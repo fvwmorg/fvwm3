@@ -29,6 +29,9 @@ Changes in alpha release 2.5.11 (not released yet)
 
 * Improved FvwmWindowMenu module.
 
+* Fluxbox-like Alt-Button3 resizing with the new Resize options
+  Direction, WarpToBorder and FixedDirection
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)

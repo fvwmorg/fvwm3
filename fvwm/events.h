@@ -11,6 +11,12 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
+typedef struct
+{
+	Window w;
+	int event_type;
+} test_typed_window_event_args;
+
 /* ---------------------------- forward declarations ----------------------- */
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -37,4 +43,7 @@ void sync_server(int toggle);
 Bool is_resizing_event_pending(FvwmWindow *fw);
 void events_handle_configure_request(
 	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force_use_grav);
+Bool test_button_event(Display *display, XEvent *event, char *arg);
+Bool test_typed_window_event(Display *display, XEvent *event, char *arg);
+
 #endif /* EVENTS_H */

@@ -222,6 +222,31 @@ static Bool test_map_request(
 	return rc;
 }
 
+Bool test_button_event(
+	Display *display, XEvent *event, char *arg)
+{
+	if (event->type == ButtonPress || event->type == ButtonRelease)
+	{
+		return True;
+	}
+
+	return False;
+}
+
+Bool test_typed_window_event(
+	Display *display, XEvent *event, char *arg)
+{
+	test_typed_window_event_args *ta = (test_typed_window_event_args *)arg;
+
+	if (event->xany.window == ta->w &&
+	    event->xany.type == ta->event_type)
+	{
+		return True;
+	}
+
+	return False;
+}
+
 static Bool test_resizing_event(
 	Display *display, XEvent *event, char *arg)
 {
@@ -257,7 +282,7 @@ static Bool test_resizing_event(
 		break;
 	}
 
-	/* Yes, it is correct that this function always returns False. */
+	/* Yes, it is correct that this function may always returns False. */
 	return rc;
 }
 
@@ -765,7 +790,7 @@ static inline int __merge_cr_moveresize(
 		evh_args_t ea2;
 		exec_context_changes_t ecc;
 
-		FCheckIfEvent(dpy, &e, test_resizing_event, (char *)&args);
+		FPeekIfEvent(dpy, &e, test_resizing_event, (char *)&args);
 		ecre = &e.xconfigurerequest;
 		if (args.ret_does_match == False)
 		{
@@ -782,7 +807,7 @@ static inline int __merge_cr_moveresize(
 			/* not good. unselected event type! */
 			continue;
 		}
-		/* Event was removed from the queue and stored in e. */
+		/* Event was not yet removed from the queue but stored in e. */
 		xm = CWX | CWWidth;
 		ym = CWY | CWHeight;
 		vma = cre->value_mask & ecre->value_mask;
@@ -792,9 +817,10 @@ static inline int __merge_cr_moveresize(
 		{
 			/* can't merge events since location of window might
 			 * get screwed up. */
-			FPutBackEvent(dpy, &e);
 			break;
 		}
+		/* Finally remove the event from the queue */
+		FCheckIfEvent(dpy, &e, test_resizing_event, (char *)&args);
 		/* partially handle the event */
 		ecre->value_mask &= ~args.cr_value_mask;
 		ea2.exc = exc_clone_context(ea->exc, &ecc, ECC_ETRIGGER);
@@ -1209,10 +1235,9 @@ static Bool __test_for_motion(int x0, int y0)
 			/* the pointer has moved */
 			return True;
 		}
-		if (FCheckIfEvent(dpy, &e, __predicate_button_click, args))
+		if (FPeekIfEvent(dpy, &e, __predicate_button_click, args))
 		{
 			/* click in the future */
-			FPutBackEvent(dpy, &e);
 			return False;
 		}
 		else
@@ -4211,16 +4236,22 @@ int flush_property_notify(Atom atom, Window w)
 {
 	XEvent e;
 	int count;
+	test_typed_window_event_args args;
 
 	XSync(dpy, 0);
-	for (count = 0; FCheckTypedWindowEvent(dpy, w, PropertyNotify, &e);
-	     count++)
+	args.w = w;
+	args.event_type = PropertyNotify;
+	for (count = 0;
+	     FPeekIfEvent(
+		     dpy, &e, test_typed_window_event, (char *)&args); count++)
 	{
 		if (e.xproperty.atom != atom)
 		{
-			FPutBackEvent(dpy, &e);
 			break;
 		}
+		/* remove the event from the queue */
+		FCheckIfEvent(
+			dpy, &e, test_typed_window_event, (char *)&args);
 	}
 
 	return count;

@@ -485,7 +485,9 @@ static int ParseOneResizeArgument(
 
 static int GetResizeArguments(
 	char **paction, int x, int y, int w_base, int h_base, int w_inc,
-	int h_inc, size_borders *sb, int *pFinalW, int *pFinalH)
+	int h_inc, size_borders *sb, int *pFinalW, int *pFinalH,
+	direction_t *ret_dir, Bool *is_direction_fixed,
+	Bool *do_warp_to_border)
 {
 	int n;
 	char *naction;
@@ -494,7 +496,11 @@ static int GetResizeArguments(
 	char *s2;
 	int w_add;
 	int h_add;
+	int has_frame_option;
 
+	*ret_dir = DIR_NONE;
+	*is_direction_fixed = False;
+	*do_warp_to_border = False;
 	if (!paction)
 	{
 		return 0;
@@ -511,29 +517,70 @@ static int GetResizeArguments(
 
 		n = GetMoveArguments(&naction, 0, 0, &nx, &ny, NULL, NULL);
 		if (n < 2)
+		{
 			return 0;
+		}
 		*pFinalW = nx - x + 1;
 		*pFinalH = ny - y + 1;
 		*paction = naction;
 
 		return n;
 	}
-	if (StrEquals(token, "frame"))
+	has_frame_option = 0;
+	for ( ; ; token = PeekToken(naction, &naction))
+	{
+		if (StrEquals(token, "frame"))
+		{
+			has_frame_option = 1;
+		}
+		else if (StrEquals(token, "direction"))
+		{
+			if (token == NULL)
+			{
+				return 0;
+			}
+			*ret_dir = gravity_parse_dir_argument(
+				naction, &naction, DIR_NONE);
+			if (*ret_dir != DIR_NONE)
+			{
+				*is_direction_fixed = True;
+			}
+		}
+		else if (StrEquals(token, "fixeddirection"))
+		{
+			*is_direction_fixed = True;
+		}
+		else if (StrEquals(token, "warptoborder"))
+		{
+			*do_warp_to_border = True;
+		}
+		else
+		{
+			break;
+		}
+	}
+	s1 = NULL;
+	if (has_frame_option)
 	{
 		w_add = 0;
 		h_add = 0;
-		naction = GetNextToken(naction, &s1);
 	}
 	else
 	{
 		w_add = sb->total_size.width;
 		h_add = sb->total_size.height;
-		s1 = safestrdup(token);
+		if (token != NULL)
+		{
+			s1 = safestrdup(token);
+		}
 	}
 	naction = GetNextToken(naction, &s2);
 	if (!s2)
 	{
-		free(s1);
+		if (s1 != NULL)
+		{
+			free(s1);
+		}
 		return 0;
 	}
 	*paction = naction;
@@ -543,8 +590,14 @@ static int GetResizeArguments(
 		s1, Scr.MyDisplayWidth, w_base, w_inc, w_add, pFinalW);
 	n += ParseOneResizeArgument(
 		s2, Scr.MyDisplayHeight, h_base, h_inc, h_add, pFinalH);
-	free(s1);
-	free(s2);
+	if (s1 != NULL)
+	{
+		free(s1);
+	}
+	if (s2 != NULL)
+	{
+		free(s2);
+	}
 	if (n < 2)
 	{
 		n = 0;
@@ -559,6 +612,8 @@ static int GetResizeMoveArguments(
 	int *pFinalH, Bool *fWarp, Bool *fPointer)
 {
 	char *action = *paction;
+	direction_t dir;
+	Bool dummy;
 
 	if (!paction)
 	{
@@ -566,7 +621,7 @@ static int GetResizeMoveArguments(
 	}
 	if (GetResizeArguments(
 		    &action, *pFinalX, *pFinalY, w_base, h_base, w_inc, h_inc,
-		    sb, pFinalW, pFinalH) < 2)
+		    sb, pFinalW, pFinalH, &dir, &dummy, &dummy) < 2)
 	{
 		return 0;
 	}
@@ -2727,15 +2782,135 @@ void CMD_XorPixmap(F_CMD_ARGS)
 
 /* ----------------------------- resizing code ----------------------------- */
 
-/*
- *
- *  Procedure:
+static void __resize_get_dir_from_window(
+	int *ret_xmotion, int *ret_ymotion, FvwmWindow *fw, Window context_w)
+{
+	if (context_w != Scr.Root && context_w != None)
+	{
+		if (context_w == FW_W_SIDE(fw, 0))   /* top */
+		{
+			*ret_ymotion = 1;
+		}
+		else if (context_w == FW_W_SIDE(fw, 1))  /* right */
+		{
+			*ret_xmotion = -1;
+		}
+		else if (context_w == FW_W_SIDE(fw, 2))  /* bottom */
+		{
+			*ret_ymotion = -1;
+		}
+		else if (context_w == FW_W_SIDE(fw, 3))  /* left */
+		{
+			*ret_xmotion = 1;
+		}
+		else if (context_w == FW_W_CORNER(fw, 0))  /* upper-left */
+		{
+			*ret_xmotion = 1;
+			*ret_ymotion = 1;
+		}
+		else if (context_w == FW_W_CORNER(fw, 1))  /* upper-right */
+		{
+			*ret_xmotion = -1;
+			*ret_ymotion = 1;
+		}
+		else if (context_w == FW_W_CORNER(fw, 2)) /* lower left */
+		{
+			*ret_xmotion = 1;
+			*ret_ymotion = -1;
+		}
+		else if (context_w == FW_W_CORNER(fw, 3))  /* lower right */
+		{
+			*ret_xmotion = -1;
+			*ret_ymotion = -1;
+		}
+	}
+
+	return;
+}
+
+static void __resize_get_dir_proximity(
+	int *ret_xmotion, int *ret_ymotion, FvwmWindow *fw, int x_off,
+	int y_off, int px, int py)
+{
+	int tx;
+	int ty;
+
+	if (px < 0 || x_off < 0 || py < 0 || y_off < 0)
+	{
+		return;
+	}
+	/* Now find the place to warp to. We simply use the sectors
+	 * drawn when we start resizing the window. */
+#if 0
+	tx = orig->width / 10 - 1;
+	ty = orig->height / 10 - 1;
+#else
+	tx = 0;
+	ty = 0;
+#endif
+	tx = max(fw->boundary_width, tx);
+	ty = max(fw->boundary_width, ty);
+	if (px < tx)
+	{
+		*ret_xmotion = 1;
+	}
+	else if (x_off < tx)
+	{
+		*ret_xmotion = -1;
+	}
+	if (py < ty)
+	{
+		*ret_ymotion = 1;
+	}
+	else if (y_off < ty)
+	{
+		*ret_ymotion = -1;
+	}
+
+	return;
+}
+
+static void __resize_get_refpos(
+	int *ret_x, int *ret_y, int xmotion, int ymotion, int w, int h,
+	FvwmWindow *fw)
+{
+	if (xmotion == 1)
+	{
+		*ret_x = 0;
+	}
+	else if (xmotion == -1)
+	{
+		*ret_x = w - 1;
+	}
+	else
+	{
+		*ret_x = w / 2;
+	}
+	if (ymotion == 1)
+	{
+		*ret_y = 0;
+	}
+	else if (ymotion == -1)
+	{
+		*ret_y = h - 1;
+	}
+	else
+	{
+		*ret_y = h / 2;
+	}
+
+	return;
+}
+
+/* Procedure:
  *      __resize_step - move the rubberband around.  This is called for
  *                 each motion event when we are resizing
  *
  *  Inputs:
  *      x_root   - the X corrdinate in the root window
  *      y_root   - the Y corrdinate in the root window
+ *      x_off    - x offset of pointer from border (input/output)
+ *      y_off    - y offset of pointer from border (input/output)
  *      fw       - the current fvwm window
  *      drag     - resize internal structure
  *      orig     - resize internal structure
@@ -2744,44 +2919,110 @@ void CMD_XorPixmap(F_CMD_ARGS)
  *
  */
 static void __resize_step(
-	const exec_context_t *exc, int x_root, int y_root, rectangle *drag,
-	rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque)
+	const exec_context_t *exc, int x_root, int y_root, int *x_off,
+	int *y_off, rectangle *drag, rectangle *orig, int *xmotionp,
+	int *ymotionp, Bool do_resize_opaque, Bool is_direction_fixed)
 {
 	int action = 0;
 	XEvent e;
+	int x2;
+	int y2;
+	int xdir;
+	int ydir;
 
-	if ((y_root <= orig->y) ||
-	    ((*ymotionp == 1)&&(y_root < orig->y+orig->height-1)))
+	x2 = x_root - *x_off;
+	x_root += *x_off;
+	if (is_direction_fixed == True && (*xmotionp != 0 || *ymotionp != 0))
 	{
-		drag->y = y_root;
-		drag->height = orig->y + orig->height - y_root;
-		action = 1;
-		*ymotionp = 1;
+		xdir = *xmotionp;
 	}
-	else if ((y_root >= orig->y + orig->height - 1)||
-		 ((*ymotionp == -1)&&(y_root > orig->y)))
+	else if (x2 <= orig->x ||
+		 (*xmotionp == 1 && x2 < orig->x + orig->width - 1))
 	{
-		drag->y = orig->y;
-		drag->height = 1 + y_root - drag->y;
-		action = 1;
-		*ymotionp = -1;
+		xdir = 1;
 	}
-
-	if ((x_root <= orig->x)||
-	    ((*xmotionp == 1)&&(x_root < orig->x + orig->width - 1)))
+	else if (x2 >= orig->x + orig->width - 1 ||
+		 (*xmotionp == -1 && x2 > orig->x))
 	{
+		xdir = -1;
+	}
+	else
+	{
+		xdir = 0;
+	}
+	switch (xdir)
+	{
+	case 1:
+		if (*xmotionp != 1)
+		{
+			*x_off = -*x_off;
+			x_root = x2;
+			*xmotionp = 1;
+		}
 		drag->x = x_root;
 		drag->width = orig->x + orig->width - x_root;
 		action = 1;
-		*xmotionp = 1;
-	}
-	if ((x_root >= orig->x + orig->width - 1)||
-	    ((*xmotionp == -1)&&(x_root > orig->x)))
-	{
+		break;
+	case -1:
+		if (*xmotionp != -1)
+		{
+			*x_off = -*x_off;
+			x_root = x2;
+			*xmotionp = -1;
+		}
 		drag->x = orig->x;
-		drag->width = 1 + x_root - orig->x;
+		drag->width = 1 + x_root - drag->x;
 		action = 1;
-		*xmotionp = -1;
+		break;
+	default:
+		break;
+	}
+	y2 = y_root - *y_off;
+	y_root += *y_off;
+	if (is_direction_fixed == True && (*xmotionp != 0 || *ymotionp != 0))
+	{
+		ydir = *ymotionp;
+	}
+	else if (y2 <= orig->y ||
+		 (*ymotionp == 1 && y2 < orig->y + orig->height - 1))
+	{
+		ydir = 1;
+	}
+	else if (y2 >= orig->y + orig->height - 1 ||
+		 (*ymotionp == -1 && y2 > orig->y))
+	{
+		ydir = -1;
+	}
+	else
+	{
+		ydir = 0;
+	}
+	switch (ydir)
+	{
+	case 1:
+		if (*ymotionp != 1)
+		{
+			*y_off = -*y_off;
+			y_root = y2;
+			*ymotionp = 1;
+		}
+		drag->y = y_root;
+		drag->height = orig->y + orig->height - y_root;
+		action = 1;
+		break;
+	case -1:
+		if (*ymotionp != -1)
+		{
+			*y_off = -*y_off;
+			y_root = y2;
+			*ymotionp = -1;
+		}
+		drag->y = orig->y;
+		drag->height = 1 + y_root - drag->y;
+		action = 1;
+		break;
+	default:
+		break;
 	}
 
 	if (action)
@@ -2816,7 +3057,7 @@ static void __resize_step(
 	e.type = MotionNotify;
 	e.xbutton.x_root = x_root;
 	e.xbutton.y_root = y_root;
-	DisplaySize(exc->w.fw, &e, drag->width, drag->height,False,False);
+	DisplaySize(exc->w.fw, &e, drag->width, drag->height, False, False);
 
 	return;
 }
@@ -2827,10 +3068,13 @@ static Bool __resize_window(F_CMD_ARGS)
 	extern Window bad_window;
 	Bool finished = False, is_done = False, is_aborted = False;
 	Bool do_resize_opaque;
-	int x,y,delta_x,delta_y,stashed_x,stashed_y;
-	Window ResizeWindow;
+	Bool do_warp_to_border;
+	Bool is_direction_fixed;
 	Bool fButtonAbort = False;
 	Bool fForceRedraw = False;
+	Bool called_from_title = False;
+	int x,y,delta_x,delta_y,stashed_x,stashed_y;
+	Window ResizeWindow;
 	int n;
 	unsigned int button_mask = 0;
 	rectangle sdrag;
@@ -2847,19 +3091,27 @@ static Bool __resize_window(F_CMD_ARGS)
 	int py;
 	int i;
 	size_borders b;
-	Bool called_from_title = False;
 	frame_move_resize_args mr_args = NULL;
 	long evmask;
 	FvwmWindow *fw = exc->w.fw;
 	XEvent ev;
+	int ref_x;
+	int ref_y;
+	int x_off;
+	int y_off;
+	direction_t dir;
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
-	if (FQueryPointer(
-		    dpy, ResizeWindow, &JunkRoot, &JunkChild, &JunkX, &JunkY,
-		    &px, &py, &button_mask) == False)
+	if (fev_get_evpos_or_query(dpy, Scr.Root, exc->x.etrigger, &px, &py) ==
+	    False ||
+	    XTranslateCoordinates(
+		    dpy, Scr.Root, ResizeWindow, px, py, &px, &py,
+		    &JunkChild) == False)
 	{
 		/* pointer is on a different screen - that's okay here */
+		px = 0;
+		py = 0;
 	}
 	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 
@@ -2899,7 +3151,8 @@ static Bool __resize_window(F_CMD_ARGS)
 		&action, fw->frame_g.x, fw->frame_g.y,
 		fw->hints.base_width, fw->hints.base_height,
 		fw->hints.width_inc, fw->hints.height_inc,
-		&b, &(drag->width), &(drag->height));
+		&b, &(drag->width), &(drag->height),
+		&dir, &is_direction_fixed, &do_warp_to_border);
 
 	if (n == 2)
 	{
@@ -2999,53 +3252,22 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	DisplaySize(fw, exc->x.elast, orig->width, orig->height,True,True);
 
-	if ((PressedW != Scr.Root)&&(PressedW != None))
+	if (dir != DIR_NONE)
 	{
-		/* Get the current position to determine which border to resize
-		 */
-		if (PressedW == FW_W_SIDE(fw, 0))   /* top */
-		{
-			ymotion = 1;
-		}
-		else if (PressedW == FW_W_SIDE(fw, 1))  /* right */
-		{
-			xmotion = -1;
-		}
-		else if (PressedW == FW_W_SIDE(fw, 2))  /* bottom */
-		{
-			ymotion = -1;
-		}
-		else if (PressedW == FW_W_SIDE(fw, 3))  /* left */
-		{
-			xmotion = 1;
-		}
-		else if (PressedW == FW_W_CORNER(fw, 0))  /* upper-left */
-		{
-			ymotion = 1;
-			xmotion = 1;
-		}
-		else if (PressedW == FW_W_CORNER(fw, 1))  /* upper-right */
-		{
-			xmotion = -1;
-			ymotion = 1;
-		}
-		else if (PressedW == FW_W_CORNER(fw, 2)) /* lower left */
-		{
-			ymotion = -1;
-			xmotion = 1;
-		}
-		else if (PressedW == FW_W_CORNER(fw, 3))  /* lower right */
-		{
-			ymotion = -1;
-			xmotion = -1;
-		}
-	}
+		int grav;
 
-	/* begin of code responsible for warping the pointer to the border when
-	 * starting a resize. */
+		grav = gravity_dir_to_grav(dir);
+		gravity_get_offsets(grav, &xmotion, &ymotion);
+		xmotion = -xmotion;
+		ymotion = -ymotion;
+	}
+	if (xmotion == 0 && ymotion == 0)
+	{
+		__resize_get_dir_from_window(&xmotion, &ymotion, fw, PressedW);
+	}
 	if (FW_W_TITLE(fw) != None && PressedW == FW_W_TITLE(fw))
 	{
-		/* title was pressed to thart the resize */
+		/* title was pressed to start the resize */
 		called_from_title = True;
 	}
 	else
@@ -3067,103 +3289,42 @@ static Bool __resize_window(F_CMD_ARGS)
 	if (PressedW != Scr.Root && xmotion == 0 && ymotion == 0 &&
 	    !called_from_title)
 	{
-		int dx = orig->width - px;
-		int dy = orig->height - py;
-		int wx = -1;
-		int wy = -1;
-		int tx;
-		int ty;
-
-		/* Now find the place to warp to. We simply use the sectors
-		 * drawn when we start resizing the window. */
-#if 0
-		tx = orig->width / 10 - 1;
-		ty = orig->height / 10 - 1;
-#else
-		tx = 0;
-		ty = 0;
-#endif
-		tx = max(fw->boundary_width, tx);
-		ty = max(fw->boundary_width, ty);
-		if (px >= 0 && dx >= 0 && py >= 0 && dy >= 0)
+		__resize_get_dir_proximity(
+			&xmotion, &ymotion, fw, orig->width - px,
+			orig->width - py, px, py);
+		if (xmotion != 0 || ymotion != 0)
 		{
-			if (px < tx)
-			{
-				if (py < ty)
-				{
-					xmotion = 1;
-					ymotion = 1;
-					wx = 0;
-					wy = 0;
-				}
-				else if (dy < ty)
-				{
-					xmotion = 1;
-					ymotion = -1;
-					wx = 0;
-					wy = orig->height -1;
-				}
-				else
-				{
-					xmotion = 1;
-					wx = 0;
-					wy = orig->height/2;
-					wy = py;
-				}
-			}
-			else if (dx < tx)
-			{
-				if (py < ty)
-				{
-					xmotion = -1;
-					ymotion = 1;
-					wx = orig->width - 1;
-					wy = 0;
-				}
-				else if (dy < ty)
-				{
-					xmotion = -1;
-					ymotion = -1;
-					wx = orig->width - 1;
-					wy = orig->height -1;
-				}
-				else
-				{
-					xmotion = -1;
-					wx = orig->width - 1;
-					wy = orig->height/2;
-					wy = py;
-				}
-			}
-			else
-			{
-				if (py < ty)
-				{
-					ymotion = 1;
-					wx = orig->width/2;
-					wy = 0;
-					wx = px;
-				}
-				else if (dy < ty)
-				{
-					ymotion = -1;
-					wx = orig->width/2;
-					wy = orig->height -1;
-					wx = px;
-				}
-			}
-		}
-
-		if (wx != -1)
-		{
-			/* now warp the pointer to the border */
-			FWarpPointer(
-				dpy, None, ResizeWindow, 0, 0, 1, 1, wx, wy);
-			XFlush(dpy);
+			do_warp_to_border = True;
 		}
 	}
-	/* end of code responsible for warping the pointer to the border when
-	 * starting a resize. */
+	__resize_get_refpos(
+		&ref_x, &ref_y, xmotion, ymotion, orig->width, orig->height,
+		fw);
+	x_off = 0;
+	y_off = 0;
+	if (do_warp_to_border == True)
+	{
+		int dx;
+		int dy;
+
+		dx = (xmotion == 0) ? px : ref_x;
+		dy = (ymotion == 0) ? py : ref_y;
+		/* warp the pointer to the border */
+		FWarpPointer(
+			dpy, None, ResizeWindow, 0, 0, 1, 1, dx, dy);
+		XFlush(dpy);
+	}
+	else if (xmotion != 0 || ymotion != 0)
+	{
+		/* keep the distance between pointer and border */
+		x_off = (xmotion == 0) ? 0 : ref_x - px;
+		y_off = (ymotion == 0) ? 0 : ref_y - py;
+	}
+	else
+	{
+		/* wait until the pointer hits a border before making a
+		 * decision about the resize direction */
+	}
 
 	/* draw the rubber-band window */
 	if (!do_resize_opaque)
@@ -3175,6 +3336,9 @@ static Bool __resize_window(F_CMD_ARGS)
 	 * press */
 	if (exc->x.elast->type == KeyPress)
 	{
+		int xo;
+		int yo;
+
 		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed_x,
 			    &stashed_y, &JunkX, &JunkY, &JunkMask) == False)
@@ -3183,9 +3347,11 @@ static Bool __resize_window(F_CMD_ARGS)
 			stashed_x = 0;
 			stashed_y = 0;
 		}
+		xo = 0;
+		yo = 0;
 		__resize_step(
-			exc, stashed_x, stashed_y, drag, orig, &xmotion,
-			&ymotion, do_resize_opaque);
+			exc, stashed_x, stashed_y, &xo, &yo, drag, orig,
+			&xmotion, &ymotion, do_resize_opaque, True);
 	}
 	else
 	{
@@ -3311,10 +3477,18 @@ static Bool __resize_window(F_CMD_ARGS)
 				}
 				if (do_resize_opaque)
 				{
+					int xo;
+					int yo;
+
+					xo = 0;
+					yo = 0;
+					xmotion = 1;
+					ymotion = 1;
 					__resize_step(
 						exc, start_g.x, start_g.y,
-						&start_g, orig, &xmotion,
-						&ymotion, do_resize_opaque);
+						&xo, &yo, &start_g, orig,
+						&xmotion, &ymotion,
+						do_resize_opaque, True);
 				}
 			}
 			is_done = True;
@@ -3337,8 +3511,9 @@ static Bool __resize_window(F_CMD_ARGS)
 				/* resize before paging request to prevent
 				 * resize from lagging * mouse - mab */
 				__resize_step(
-					exc, x, y, drag, orig, &xmotion,
-					&ymotion, do_resize_opaque);
+					exc, x, y, &x_off, &y_off, drag, orig,
+					&xmotion, &ymotion, do_resize_opaque,
+					is_direction_fixed);
 				/* need to move the viewport */
 				HandlePaging(
 					&ev, Scr.EdgeScrollX, Scr.EdgeScrollY,
@@ -3354,8 +3529,9 @@ static Bool __resize_window(F_CMD_ARGS)
 				drag->y -= delta_y;
 
 				__resize_step(
-					exc, x, y, drag, orig, &xmotion,
-					&ymotion, do_resize_opaque);
+					exc, x, y, &x_off, &y_off, drag, orig,
+					&xmotion, &ymotion, do_resize_opaque,
+					is_direction_fixed);
 			}
 			fForceRedraw = False;
 			is_done = True;
@@ -3482,8 +3658,6 @@ static Bool __resize_window(F_CMD_ARGS)
 		frame_free_move_resize_args(fw, mr_args);
 	}
 	MyXUngrabKeyboard(dpy);
-	xmotion = 0;
-	ymotion = 0;
 	WaitForButtonsUp(True);
 	UngrabEm(GRAB_NORMAL);
 	Scr.flags.do_edge_wrap_x = edge_wrap_x;
