@@ -1,3 +1,16 @@
+2000-05-02  Michael Han  <mikehan@best.com>
+
+	* FvwmSave.h:
+	* FvwmSave.c (add_window):
+	Converted to ConfigWinPacket when parsing packet bodies
+	(do_save):
+	Convert some bitwise tests to use the standard flag macros instead
+	* FvwmSaveDesk.h:
+	* FvwmSaveDesk.c (add_window):
+	Converted to ConfigWinPacket when parsing packet bodies
+	(do_save):
+	Convert some bitwise tests to use the standard flag macros instead
+
 2000-05-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (refresh_window):

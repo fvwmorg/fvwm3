@@ -14,9 +14,8 @@
  */
 
 #include <libs/fvwmlib.h>
-
-#define STICKY 1
-#define ICONIFIED     32 /* is it an icon now? */
+#include <fvwm/fvwm.h>
+#include <libs/vpacket.h>
 
 struct list
 {
@@ -31,7 +30,7 @@ struct list
   int frame_y;
   int title_height;
   int boundary_width;
-  unsigned long flags;
+  window_flags flags;
   unsigned long gravity;
   long desk;
   struct list *next;

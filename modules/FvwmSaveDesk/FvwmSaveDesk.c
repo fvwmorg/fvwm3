@@ -220,6 +220,7 @@ struct list *find_window(unsigned long id)
 void add_window(unsigned long new_win, unsigned long *body)
 {
   struct list *t;
+  struct ConfigWinPacket *cfgpacket = (void *)body;
 
   if(new_win == 0)
     return;
@@ -227,19 +228,19 @@ void add_window(unsigned long new_win, unsigned long *body)
   t = (struct list *)safemalloc(sizeof(struct list));
   t->id = new_win;
   t->next = list_root;
-  t->frame_height = (int)body[6];
-  t->frame_width = (int)body[5];
-  t->base_width = (int)body[11];
-  t->base_height = (int)body[12];
-  t->width_inc  = (int)body[13];
-  t->height_inc  = (int)body[14];
-  t->frame_x  = (int)body[3];
-  t->frame_y  = (int)body[4];;
-  t->title_height  = (int)body[9];;
-  t->boundary_width  = (int)body[10];
-  t->flags = (unsigned long)body[8];
-  t->gravity = body[21];
-  t->desk = body[7];
+  t->frame_height = cfgpacket->frame_height;
+  t->frame_width = cfgpacket->frame_width;
+  t->base_width = cfgpacket->hints_base_width;
+  t->base_height = cfgpacket->hints_base_height;
+  t->width_inc  = cfgpacket->hints_width_inc;
+  t->height_inc  = cfgpacket->hints_height_inc;
+  t->frame_x  = cfgpacket->frame_x;
+  t->frame_y  = cfgpacket->frame_y;
+  t->title_height  = cfgpacket->title_height;
+  t->boundary_width  = cfgpacket->border_width;
+  memcpy(&(t->flags), &(cfgpacket->flags), sizeof(t->flags));
+  t->gravity = cfgpacket->hints_win_gravity;
+  t->desk = cfgpacket->desk;
   t->name = 0;
   list_root = t;
 }
@@ -335,7 +336,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
    dwidth /= t->width_inc;
    dheight /= t->height_inc;
 
-   if ( t->flags & STICKY )
+   if (IS_STICKY(t))
      {
        tVx = 0;
        tVy = 0;
@@ -394,7 +395,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
 	   if(strstr(command_list[i], "xterm"))
 	     {
 	       fprintf( out, "-geometry %s ", tname );
-	       if ( t->flags & ICONIFIED )
+	       if (IS_ICONIFIED(t))
 		 fprintf(out, "-ic ");
 	       xtermline = 1;
 	       fflush ( out );
@@ -404,7 +405,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
 	 {
 	  if ( xtermline == 0 )
 	    {
-	      if ( t->flags & ICONIFIED )
+	      if (IS_ICONIFIED(t))
 		fprintf(out, "-ic ");
 	      fprintf( out, "-geometry %s &\n", tname);
 	    }
