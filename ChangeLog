@@ -2,6 +2,13 @@
 
 	* configure.in:
 	* NEWS:
+	updated for 2.5.4-devel
+
+	* configure.in:
+	2.5.3 was released
+
+	* configure.in:
+	* NEWS:
 	updated for 2.5.3
 
 	* fvwm/menuitem.h (struct):

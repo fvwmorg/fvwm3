@@ -4,17 +4,17 @@ AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
 
 dnl for development versions
-dnl RELDATELONG="not released yet"
-dnl RELDATESHORT="not released yet"
-dnl RELDATENUM="not released yet"
-dnl RELISDEVEL="-devel"
+RELDATELONG="not released yet"
+RELDATESHORT="not released yet"
+RELDATENUM="not released yet"
+RELISDEVEL="-devel"
 dnl for released versions
-RELDATELONG="25 August 2002"
-RELDATESHORT="25-Aug-2002"
-RELDATENUM="2002-08-25"
-RELISDEVEL=""
+dnl RELDATELONG="25 August 2002"
+dnl RELDATESHORT="25-Aug-2002"
+dnl RELDATENUM="2002-08-25"
+dnl RELISDEVEL=""
 
-AM_INIT_AUTOMAKE(fvwm, 2.5.3${RELISDEVEL})
+AM_INIT_AUTOMAKE(fvwm, 2.5.4${RELISDEVEL})
 AM_CONFIG_HEADER(config.h)
 
 dnl constant variable settings

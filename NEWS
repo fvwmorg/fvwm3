@@ -3,6 +3,10 @@ _+_A HREF="#2.4.9"_-_2.4.9_+_/A_-_.
 
 -------------------------------------------------------------------
 
+Changes in alpha release 2.5.4 (not released yet)
+
+-------------------------------------------------------------------
+
 Changes in alpha release 2.5.3 (25-Aug-2002)
 
 * Removed the old module interface for ConfigureWindow
