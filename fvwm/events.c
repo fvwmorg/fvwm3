@@ -1121,8 +1121,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       }
       else
       {
-#if 0
-	/* nope, this is forbidden by the ICCCM */
+#ifndef ICCCM2_UNMAP_WINDOW_PATCH
+	/* nope, this is forbidden by the ICCCM2 */
 	XMapWindow(dpy, Tmp_win->w);
 	SetMapStateProp(Tmp_win, NormalState);
 #else

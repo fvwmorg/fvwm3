@@ -1,5 +1,12 @@
 2001-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	* fvwm/virtual.c (unmap_window):
+	(map_window):
+	disabled ICCCM2 patch that unmaps the client window whenever the frame
+	is unmapped since it causes way too mouch trouble. #define
+	ICCCM2_UNMAP_WINDOW_PATCH to enable it
+
 	* libs/Graphics.c (ParseGradient):
 	added an error message if number of gradient segments does not match
 	the given number of colours and percentages

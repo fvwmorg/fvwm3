@@ -191,8 +191,10 @@ static void unmap_window(FvwmWindow *t)
   else
   {
     XUnmapWindow(dpy,t->frame);
+#ifdef ICCCM2_UNMAP_WINDOW_PATCH
     /* this is required by the ICCCM2 */
     XUnmapWindow(dpy, t->w);
+#endif
     SetMapStateProp(t, IconicState);
   }
   if (ret)
@@ -237,8 +239,10 @@ static void map_window(FvwmWindow *t)
     XMapWindow(dpy, t->frame);
     XMapWindow(dpy, t->Parent);
     XMapWindow(dpy, t->decor_w);
+#ifdef ICCCM2_UNMAP_WINDOW_PATCH
     /* this is required by the ICCCM2 */
     XMapWindow(dpy, t->w);
+#endif
     SetMapStateProp(t, NormalState);
   }
   if (ret)
