@@ -1,3 +1,8 @@
+1999-04-10  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/session.c (LoadWindowStates): 
+	(SaveWindowStates): Fix loading and saving of window flags.
+
 1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Parse.c (GetNextSimpleOption):

@@ -304,7 +304,7 @@ SaveWindowStates(FILE *f)
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
       fprintf(f, "  [FLAGS] ");
       for (i = 0; i < sizeof(window_flags); i++)
-	fprintf(f, "%02x", ((char *)&(ewin->gsfr_flags))[i]);
+	fprintf(f, "%02x ", ((unsigned char *)&(ewin->gsfr_flags))[i]);
       fprintf(f, "\n");
     }
   return 1;
@@ -380,14 +380,17 @@ LoadWindowStates(char *filename)
 	    {
 	      char *ts = s;
 
-	      while (*ts != ' ')
+	      /* skip [FLAGS] */
+	      while (*ts != ']')
 		ts++;
+	      ts++;
+
 	      for (i = 0; i < sizeof(window_flags); i++)
 		{
-		    unsigned int f;
-		    sscanf(ts, "%02x", &f );
-		    ((char *)&(matches[num_match - 1]))[i] = f;
-		    ts += 2;
+		    unsigned char f;
+		    sscanf(ts, "%02x ", &f );
+		    ((unsigned char *)&(matches[num_match-1].gsfr_flags))[i] = f;
+		    ts += 3;
 		}
 	    }
 	  else if (!strcmp(s1, "[CLIENT_ID]"))
@@ -562,7 +565,7 @@ MatchWinToSM(FvwmWindow *ewin,
 	    SET_DO_START_ICONIC(ewin, 1);
 	    SET_ICON_MOVED(ewin, 1);
 	  } else {
-	    SET_DO_START_ICONIC(ewin, 1);
+	    SET_DO_START_ICONIC(ewin, 0);
 	  }
 	  SET_DO_SKIP_WINDOW_LIST(ewin, DO_SKIP_WINDOW_LIST(&(matches[i])));
 	  SET_ICON_SUPPRESSED(ewin, IS_ICON_SUPPRESSED(&(matches[i])));
