@@ -1,5 +1,7 @@
 1999-06-04  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/menus.c (paint_menu): for drawing the selected item.
+
 	* fvwm/menus.c: major rewrite to allow a lot more freedom in menu
 	layouts. See documentation of MenuStyle options BorderWidth,
 	SubmenusLeft, Hilight3DThickness and ItemFormat. This fixes the
@@ -25,10 +27,10 @@
 	ConfigureNotify on its toplevel window (as the ICCCM demands).
 	As a hack to support buggy tk, duplicate the ConfigureNotify on
 	the frame window.
-	
+
 	* fvwm/borders.c (SetupFrame): ifdef out the code for sending
 	synthetic ConfigureNotify events. This should only be done in
-	response to ConfigureRequests, thus it is better done in 
+	response to ConfigureRequests, thus it is better done in
 	HandleConfigureRequest. This was old twm heritage. The sendEvent
 	parameter is now defunct.
 
