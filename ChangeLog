@@ -1,5 +1,10 @@
 2001-11-26  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/Makefile.am:
+	Fixed (?) iconv_LIBS
+	
+2001-11-26  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/functions.c (expand):
 	Fixed n, c, r expansion
 	
