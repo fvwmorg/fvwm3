@@ -10181,13 +10181,13 @@ given.
 .BI "Test [(" test-conditions ")] " command
 Performs
 .I command
-if the all
+if all
 .I test-conditions
 are satisfied.  The
 .I test-conditions
 are keywords with possible arguments from the list below
 and are separated by commas or whitespace.  They include
-.IR "Version pattern" ,
+.IR "Version operator x.y.z" ,
 .IR Start ,
 .IR Init ,
 .IR Restart ,
@@ -10204,11 +10204,24 @@ and are separated by commas or whitespace.  They include
 A test-condition prefixed with "!" is reverted.
 
 The
-.I "Version pattern"
-test-condition is fulfilled if the pattern matches the version
-number of the fvwm executable.  The wildcards '*' (any number of
-random characters) and '?' (one random character) may be used in
-the pattern.  The
+.I "Version operator x.y.z"
+test-condition is fulfilled if the logical condition of the expression is
+true. Valid
+.I operator
+values are:
+.IR >= ,
+.IR > ,
+.IR <= ,
+.IR < ,
+.I ==
+and
+.IR != .
+
+Example:
+.EX
+Test (Version >= 2.5.11) Echo 2.5.11 or later.
+.EE
+The
 .I Start
 test-condition is the same as either
 .IR Init " or " Restart .
@@ -10239,7 +10252,7 @@ The
 .IR "X file" " and"
 .IR "I file"
 test-conditions test for existance of the given [F]ile (possibly
-with [R]ead/[W]rite permissions), or the e[X]ecutable (in $PATH),
+with [R]ead/[W]rite permissions), e[X]ecutable (in $PATH),
 or the [I]mage (in ImagePath).
 
 Example:

@@ -1580,6 +1580,71 @@ void CMD_NoWindow(F_CMD_ARGS)
 	return;
 }
 
+// ver() - convert a version string to a floating-point number that
+// can be used to compare different versions.
+// ie. converts "2.5.11" to 2.005011
+static double ver (char *str)
+{
+	char *n;
+	double v;
+
+	str = DoPeekToken(str, &n, NULL, ".", NULL);
+	if (!n)
+		return -1.0;
+	v = atof(n);
+	str = DoPeekToken(str, &n, NULL, ".", NULL);
+	if (!n)
+		return -1.0;
+	v += atof(n) / 1000.0;
+	str = DoPeekToken(str, &n, NULL, ".", NULL);
+	if (!n)
+		return -1.0;
+	v += atof(n) / 1000000.0;
+
+	return v;
+}
+
+// matchVersion() - compare $version against this version of FVWM
+// using the operator specified by $operator.
+static Bool matchVersion(char *version, char *operator)
+{
+	static double fvwmVersion = -1.0;
+	if (fvwmVersion < 0.0)
+	{
+		char *tmp = safestrdup(VERSION);
+		fvwmVersion = ver(tmp);
+		free(tmp);
+	}
+
+	const double v = ver(version);
+	if (v < 0.0)
+	{
+		fprintf(stderr, "matchVersion: Invalid version: %s\n", version);
+		return False;
+	}
+
+	if (strcmp(operator, ">=") == 0)
+		return fvwmVersion >= v;
+	else if (strcmp(operator, ">") == 0)
+		return fvwmVersion > v;
+	else if (strcmp(operator, "<=") == 0)
+		return fvwmVersion <= v;
+	else if (strcmp(operator, "<") == 0)
+		return fvwmVersion < v;
+	else if (strcmp(operator, "==") == 0)
+	{
+		// It is dangerous to check equality of floating-point variables,
+		// hence why just check whether values are _almost_ equal.
+		return (fabs(fvwmVersion - v) < 1e-7);
+	}
+	else if (strcmp(operator, "!=") == 0)
+		return (fabs(fvwmVersion - v) > 1e-7);
+	else
+		fprintf(stderr, "matchVersion: Invalid operator: %s\n", operator);
+
+	return False;
+}
+
 void CMD_Test(F_CMD_ARGS)
 {
 	char *restofline;
@@ -1622,7 +1687,18 @@ void CMD_Test(F_CMD_ARGS)
 			tmp = GetNextSimpleOption(tmp, &pattern);
 			if (pattern)
 			{
-				match = matchWildcards(pattern, VERSION);
+				char *ver;
+				tmp = GetNextSimpleOption(tmp, &ver);
+				if (ver == NULL)
+				{
+					match = matchWildcards(pattern, VERSION);
+					// fprintf(stderr, "This syntax for \"Version\" is deprecated.\nPlease specify an operator. eg \"Test (Version >= %s) ...\"\n", VERSION);
+				}
+				else
+				{
+					match = matchVersion(ver, pattern);
+					free(ver);
+				}
 				free(pattern);
 			}
 			else
