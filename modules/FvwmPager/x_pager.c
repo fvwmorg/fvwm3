@@ -482,9 +482,7 @@ void initialize_pager(void)
     /* if fore given in config set now, otherwise it'll be set later */
     gcv.foreground = (BalloonFore == NULL) ? 0 : GetColor(BalloonFore);
 
-    BalloonGC = XCreateGC(dpy, balloon.w,
-                          GCFont | GCForeground,
-                          &gcv);
+    BalloonGC = XCreateGC(dpy, balloon.w, GCFont | GCForeground, &gcv);
   } /* ShowBalloons */
 }
 
@@ -1912,7 +1910,10 @@ void MapBalloonWindow (XEvent *event)
   t = Start;
 
   while ( ! matched_window ) {
-    if ( t->PagerView == event->xcrossing.window ) {
+    if (t == NULL) {
+      return;
+    }
+    else if ( t->PagerView == event->xcrossing.window ) {
       view = t->PagerView;
       view_width = t->pager_view_width;
       view_height = t->pager_view_height;
@@ -1923,9 +1924,6 @@ void MapBalloonWindow (XEvent *event)
       view_width = t->icon_view_width;
       view_height = t->icon_view_height;
       matched_window = 1;
-    }
-    else if ( t == NULL ) {
-      return;
     }
     else {
       t = t->next;
@@ -1950,11 +1948,16 @@ void MapBalloonWindow (XEvent *event)
 
   /* balloon is a top-level window, therefore need to
      translate pager window coords to root window coords */
-  XTranslateCoordinates(dpy, view, Scr.Root,
-                        x, y,
-                        &window_changes.x, &window_changes.y,
-                        &dummy);
+  XTranslateCoordinates(dpy, view, Scr.Root, x, y,
+                        &window_changes.x, &window_changes.y, &dummy);
 
+  if ( window_changes.y + balloon.height >
+       Scr.MyDisplayHeight - (2 * balloon.border) - 2 )
+  {
+    y = -balloon.yoffset - balloon.height - (2 * balloon.border);
+    XTranslateCoordinates(dpy, view, Scr.Root, x, y,
+			  &window_changes.x, &window_changes.y, &dummy);
+  }
   /* make sure balloon doesn't go off screen
      (actually 2 pixels from edge rather than 0 just to be pretty :-) */
   if ( window_changes.x < 2 )
@@ -1963,13 +1966,8 @@ void MapBalloonWindow (XEvent *event)
             Scr.MyDisplayWidth - (2 * balloon.border) - 2 )
     window_changes.x = Scr.MyDisplayWidth - window_changes.width -
       (2 * balloon.border) - 2;
-  if ( window_changes.y + window_changes.height >
-       Scr.MyDisplayHeight - (2 * balloon.border) - 2 )
-  window_changes.y = Scr.MyDisplayHeight - balloon.height - 2*balloon.border;
 
-  XConfigureWindow(dpy, balloon.w,
-                   CWX | CWY | CWWidth,
-                   &window_changes);
+  XConfigureWindow(dpy, balloon.w, CWX | CWY | CWWidth, &window_changes);
 
   /* if background not set in config make it match pager window */
   if ( BalloonBack == NULL )
