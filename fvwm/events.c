@@ -430,7 +430,7 @@ void HandleFocusIn(void)
     focus_w = Tmp_win->w;
     focus_fw = Tmp_win->frame;
     fc = Tmp_win->hicolors.fore;
-    bc = Tmp_win->hicolors.fore;
+    bc = Tmp_win->hicolors.back;
     if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
     {
       if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -449,7 +449,7 @@ void HandleFocusIn(void)
   }
   if (is_never_focused || focus_w != last_focus_w || focus_fw != last_focus_fw)
   {
-    BroadcastPacket(M_FOCUS_CHANGE, 5, focus_w, focus_fw,
+    BroadcastPacket(M_FOCUS_CHANGE, 6, focus_w, focus_fw,
                     (unsigned long)IsLastFocusSetByMouse(), fc, bc);
     last_focus_w = focus_w;
     last_focus_fw = focus_fw;

@@ -1,3 +1,12 @@
+2000-01-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleFocusIn):
+	* fvwm/module_interface.c (send_list_func):
+	added hilight colour set to M_FOCUS_CHANGE packet
+
+	* fvwm/events.c (HandleFocusIn):
+	fixed hilight colour in M_FOCUS_CHANGE packets
+
 2000-01-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (InitFvwmDecor):
