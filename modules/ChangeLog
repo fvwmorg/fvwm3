@@ -1,3 +1,7 @@
+1999-11-03  Hippo
+
+	* FvwmIconMan/*: New config options *FvwmIconMan*Reverse
+
 1999-11-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/xmanager.c (set_win_iconified):

@@ -1468,6 +1468,27 @@ void read_in_resources (char *file)
 
 	SET_MANAGER (manager, res, r);
       }
+      else if (!strcasecmp (option1, "reverse")) {
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	ConsoleDebug (CONFIG, "reverse: %s\n", p);
+	if (!strcasecmp (p, "none"))
+	  r = REVERSE_NONE;
+	else if (!strcasecmp (p, "icon"))
+	  r = REVERSE_ICON;
+	else if (!strcasecmp (p, "normal"))
+	  r = REVERSE_NORMAL;
+	else {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage ("What kind of reverse is this?\n");
+	  continue;
+	}
+
+	SET_MANAGER (manager, rev, r);
+      }
       else if (!strcasecmp (option1, "shape")) {
 	p = read_next_cmd (READ_ARG);
 	if (!p) {

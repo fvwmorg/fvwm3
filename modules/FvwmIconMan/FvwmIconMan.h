@@ -92,6 +92,12 @@ typedef enum {
 } Resolution;
 
 typedef enum {
+  REVERSE_NONE,
+  REVERSE_ICON,
+  REVERSE_NORMAL
+} Reverse;
+
+typedef enum {
   BUTTON_FLAT,
   BUTTON_UP,
   BUTTON_DOWN,
@@ -273,6 +279,7 @@ typedef struct win_manager {
 
   /* .fvwm2rc options or things set as a result of options */
   Resolution res;
+  Reverse rev;
   Pixel backcolor[NUM_CONTEXTS], forecolor[NUM_CONTEXTS];
   Pixel hicolor[NUM_CONTEXTS], shadowcolor[NUM_CONTEXTS];
   GC hiContext[NUM_CONTEXTS], backContext[NUM_CONTEXTS],

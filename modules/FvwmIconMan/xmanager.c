@@ -1027,65 +1027,16 @@ static void get_button_geometry (WinManager *man, Button *button,
   g->text_base = g->text_y + man->ButtonFont->ascent;
 }
 
-static void draw_3d_square (WinManager *man, int x, int y, int w, int h,
-			    GC rgc, GC sgc)
-{
-  int i;
-  XSegment seg[4];
-
-  i=0;
-  seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = w+x-1;    seg[i++].y2 = y;
-
-  seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = x;        seg[i++].y2 = h+y-1;
-
-  seg[i].x1 = x+1;      seg[i].y1   = y+1;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+1;
-
-  seg[i].x1 = x+1;      seg[i].y1   = y+1;
-  seg[i].x2 = x+1;      seg[i++].y2 = y+h-2;
-  XDrawSegments(theDisplay, man->theWindow, rgc, seg, i);
-
-  i=0;
-  seg[i].x1 = x;        seg[i].y1   = y+h-1;
-  seg[i].x2 = w+x-1;    seg[i++].y2 = y+h-1;
-
-  seg[i].x1 = x+w-1;    seg[i].y1   = y;
-  seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-1;
-  XDrawSegments(theDisplay, man->theWindow, sgc, seg, i);
-
-  i=0;
-  seg[i].x1 = x+1;      seg[i].y1   = y+h-2;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-2;
-
-  seg[i].x1 = x+w-2;    seg[i].y1   = y+1;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-2;
-
-  XDrawSegments(theDisplay, man->theWindow, sgc, seg, i);
-}
-
 static void draw_3d_icon (WinManager *man, int box, ButtonGeometry *g,
-			  int iconified, int dir, Contexts contextId)
+			  int iconified, Contexts contextId)
 {
-  if (iconified == 0) {
+  if (iconified == 0)
     return;
-    draw_3d_square (man, g->icon_x, g->icon_y, g->icon_w, g->icon_h,
-		    man->flatContext[contextId],
-		    man->flatContext[contextId]);
-  }
-  else {
-    if (dir == 1) {
-      draw_3d_square (man, g->icon_x, g->icon_y, g->icon_w, g->icon_h,
+  else
+    RelieveRectangle (theDisplay, man->theWindow, g->icon_x, g->icon_y,
+		      g->icon_w - 1, g->icon_h - 1,
 		      man->reliefContext[contextId],
-		      man->shadowContext[contextId]);
-    }
-    else {
-      draw_3d_square (man, g->icon_x, g->icon_y, g->icon_w, g->icon_h,
-		      man->shadowContext[contextId],
-		      man->reliefContext[contextId]);
-    }
-  }
+		      man->shadowContext[contextId], 2);
 }
 
 
@@ -1130,7 +1081,7 @@ static void iconify_box (WinManager *man, WinData *win, int box,
   else {
 #endif
     if (Pdepth > 2) {
-      draw_3d_icon (man, box, g, iconified, 1, contextId);
+      draw_3d_icon (man, box, g, iconified, contextId);
     }
     else {
       if (iconified == 0) {
@@ -1187,30 +1138,43 @@ void check_in_window (WinData *win)
   }
 }
 
-static void get_gcs (WinManager *man, int state, GC *context1, GC *context2)
+static void get_gcs (WinManager *man, int state, int iconified,
+		     GC *context1, GC *context2)
 {
+  GC gc1, gc2;
+
   switch (man->buttonState[state]) {
   case BUTTON_FLAT:
-    *context1 = man->flatContext[state];
-    *context2 = man->flatContext[state];
+    gc1 = man->flatContext[state];
+    gc2 = man->flatContext[state];
     break;
 
   case BUTTON_UP:
   case BUTTON_EDGEUP:
-    *context1 = man->reliefContext[state];
-    *context2 = man->shadowContext[state];
+    gc1 = man->reliefContext[state];
+    gc2 = man->shadowContext[state];
     break;
 
   case BUTTON_DOWN:
   case BUTTON_EDGEDOWN:
-    *context1 = man->shadowContext[state];
-    *context2 = man->reliefContext[state];
+    gc1 = man->shadowContext[state];
+    gc2 = man->reliefContext[state];
     break;
 
   default:
     ConsoleMessage ("Internal error in draw_button\n");
     break;
   }
+
+  if (((man->rev == REVERSE_ICON) && iconified)
+      || ((man->rev == REVERSE_NORMAL) && !iconified)) {
+    *context1 = gc2;
+    *context2 = gc1;
+  } else {
+    *context1 = gc1;
+    *context2 = gc2;
+  }
+  return;
 }
 
 static void draw_relief (WinManager *man, int button_state, ButtonGeometry *g,
@@ -1222,14 +1186,14 @@ static void draw_relief (WinManager *man, int button_state, ButtonGeometry *g,
   if (state == BUTTON_FLAT)
     return;
   if (state == BUTTON_EDGEUP || state == BUTTON_EDGEDOWN) {
-    draw_3d_square (man, g->button_x, g->button_y, g->button_w, g->button_h,
-		    context1, context2);
-    draw_3d_square (man, g->button_x + 2, g->button_y + 2, g->button_w - 4,
-		    g->button_h - 4, context2, context1);
+    RelieveRectangle (theDisplay, man->theWindow, g->button_x, g->button_y,
+		      g->button_w - 1, g->button_h - 1, context1, context2, 2);
+    RelieveRectangle (theDisplay, man->theWindow, g->button_x+2, g->button_y+2,
+		      g->button_w - 5, g->button_h - 5, context2, context1, 2);
   }
   else {
-    draw_3d_square (man, g->button_x, g->button_y, g->button_w, g->button_h,
-		    context1, context2);
+    RelieveRectangle (theDisplay, man->theWindow, g->button_x, g->button_y,
+		      g->button_w - 1, g->button_h - 1, context1, context2, 2);
   }
 }
 
@@ -1332,7 +1296,7 @@ static void draw_button (WinManager *man, int button, int force)
       cleared_button = 1;
 
       if (Pdepth > 2) {
-	get_gcs (man, button_state, &context1, &context2);
+	get_gcs (man, button_state, win->iconified, &context1, &context2);
 	draw_relief (man, button_state, &g, context1, context2);
       }
       else if (button_state & SELECT_CONTEXT) {
@@ -1405,7 +1369,7 @@ static void draw_empty_manager (WinManager *man)
   XFillRectangle (theDisplay, man->theWindow, man->backContext[state],
 		  g.button_x, g.button_y, g.button_w, g.button_h);
   if (Pdepth > 2) {
-    get_gcs (man, state, &context1, &context2);
+    get_gcs (man, state, 0, &context1, &context2);
     draw_relief (man, state, &g, context1, context2);
   }
   else {

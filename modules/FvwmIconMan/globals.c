@@ -61,6 +61,7 @@ static void init_win_manager (int id)
   globals.managers[id].draw_icons = 0;
 #endif
   globals.managers[id].res = SHOW_PAGE;
+  globals.managers[id].rev = REVERSE_NONE;
   globals.managers[id].window_up = 0;
   globals.managers[id].can_draw = 0;
   globals.managers[id].window_mapped = 0;
