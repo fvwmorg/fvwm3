@@ -6500,7 +6500,7 @@ static void FreeMenuStyle(MenuStyle *ms)
     DestroyPicture(dpy, ST_SIDEPIC(ms));
   if (ST_HAS_SIDE_COLOR(ms) == 1)
     FreeColors(&ST_SIDE_COLOR(ms), 1);
-  if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != Scr.DefaultFont)
+  if (ST_PSTDFONT(ms) && !ST_USING_DEFAULT_FONT(ms))
   {
     FlocaleUnloadFont(dpy, ST_PSTDFONT(ms));
   }
@@ -6640,10 +6640,14 @@ static void UpdateMenuStyle(MenuStyle *ms)
     active_back = (ST_HAS_ACTIVE_BACK(ms)) ?
       ST_MENU_ACTIVE_COLORS(ms).back : menu_back;
   }
+  if (ST_USING_DEFAULT_FONT(ms))
+  {
+    ST_PSTDFONT(ms) = Scr.DefaultFont;
+  }
 
   /* make GC's */
   gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
-  if (ST_PSTDFONT(ms)->font)
+  if (ST_PSTDFONT(ms)->font != NULL)
   {
     gcm |= GCFont;
     gcv.font = ST_PSTDFONT(ms)->font->fid;
@@ -6874,6 +6878,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_MENU_COLORS(tmpms).back = GetColor(DEFAULT_BACK_COLOR);
       ST_MENU_COLORS(tmpms).fore = GetColor(DEFAULT_FORE_COLOR);
       ST_PSTDFONT(tmpms) = Scr.DefaultFont;
+      ST_USING_DEFAULT_FONT(tmpms) = True;
       ST_FACE(tmpms).type = SimpleMenu;
       ST_HAS_ACTIVE_FORE(tmpms) = 0;
       ST_HAS_ACTIVE_BACK(tmpms) = 0;
@@ -6958,11 +6963,12 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
       FreeMenuFace(dpy, &ST_FACE(tmpms));
       ST_FACE(tmpms).type = SimpleMenu;
-      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != Scr.DefaultFont)
+      if (ST_PSTDFONT(tmpms) && !ST_USING_DEFAULT_FONT(tmpms))
       {
 	FlocaleUnloadFont(dpy, ST_PSTDFONT(tmpms));
       }
       ST_PSTDFONT(tmpms) = Scr.DefaultFont;
+      ST_USING_DEFAULT_FONT(tmpms) = True;
       has_gc_changed = True;
       if (ST_HAS_SIDE_COLOR(tmpms) == 1)
       {
@@ -7085,7 +7091,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 		 "Couldn't load font '%s'\n", arg1);
 	break;
       }
-      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != Scr.DefaultFont)
+      if (ST_PSTDFONT(tmpms) && !ST_USING_DEFAULT_FONT(tmpms))
       {
 	FlocaleUnloadFont(dpy, ST_PSTDFONT(tmpms));
       }
@@ -7093,10 +7099,12 @@ static void NewMenuStyle(F_CMD_ARGS)
       {
 	/* reset to screen font */
 	ST_PSTDFONT(tmpms) = Scr.DefaultFont;
+	ST_USING_DEFAULT_FONT(tmpms) = True;
       }
       else
       {
 	ST_PSTDFONT(tmpms) = new_font;
+	ST_USING_DEFAULT_FONT(tmpms) = False;
       }
       has_gc_changed = True;
       break;
@@ -7531,24 +7539,31 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
   ST_IS_ANIMATED(destms) = ST_IS_ANIMATED(origms);
 
   /* font */
-  if (ST_PSTDFONT(destms) && ST_PSTDFONT(destms) != Scr.DefaultFont)
+  if (ST_PSTDFONT(destms) &&  !ST_USING_DEFAULT_FONT(destms))
   {
     FlocaleUnloadFont(dpy, ST_PSTDFONT(destms));
   }
-  if (ST_PSTDFONT(origms) && ST_PSTDFONT(origms) != Scr.DefaultFont)
+  if (ST_PSTDFONT(origms) && !ST_USING_DEFAULT_FONT(origms))
   {
     if (!(ST_PSTDFONT(destms) =
 	  FlocaleLoadFont(dpy, ST_PSTDFONT(origms)->name, "FVWM")))
     {
       ST_PSTDFONT(destms) = Scr.DefaultFont;
+      ST_USING_DEFAULT_FONT(destms) = True;
       fvwm_msg(ERR, "CopyMenuStyle",
 	       "Couldn't load font '%s' use Default Font\n",
 	       ST_PSTDFONT(origms)->name);
     }
+    else
+    {
+      ST_USING_DEFAULT_FONT(destms) = False;
+    }
   }
   else
+  {
+    ST_USING_DEFAULT_FONT(destms) = True;
     ST_PSTDFONT(destms) = Scr.DefaultFont;
-
+  }
   /* MenuFace */
   FreeMenuFace(dpy, &ST_FACE(destms));
   ST_FACE(destms).type = SimpleMenu;

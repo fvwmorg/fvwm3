@@ -821,7 +821,7 @@ void SetRCDefaults(void)
   /* set up default colors, fonts, etc */
   char *defaults[] = {
     "XORValue 0",
-    "DefaultFont fixed",
+    "DefaultFont",
     "DefaultColors black grey",
     DEFAULT_MENU_STYLE,
     "TitleStyle Centered -- Raised",
@@ -1440,7 +1440,7 @@ static void InitVariables(void)
   Scr.Ungrabbed = NULL;
 
   
-  Scr.DefaultFont = FlocaleLoadFont(dpy, NULL, "FVWM");
+  Scr.DefaultFont = NULL;
 
   Scr.VxMax = 2*Scr.MyDisplayWidth;
   Scr.VyMax = 2*Scr.MyDisplayHeight;

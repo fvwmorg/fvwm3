@@ -1,3 +1,21 @@
+2002-02-12  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/menus.c (FreeMenuStyle):
+	(UpdateMenuStyle):
+	(NewMenuStyle):
+	(CMD_CopyMenuStyle):
+	* fvwm/menus.h (MenuLook):
+	Fixed default font handling font by using a new MenuLook flags
+	USING_DEFAULT_FONT
+
+	* fvwm/menus.c (UpdateMenuStyle):
+	Fixed default font update
+
+	* fvwm/fvwm.c (SetRCDefaults):
+	(InitVariables):
+	Load the real default font FALLBACK_FONT or MB_FALLBACK_FONT at
+	fvwm initialization
+
 2002-02-11  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
