@@ -428,6 +428,21 @@ static void merge_styles(
 		SSET_MAX_WINDOW_HEIGHT(
 			*merged_style, SGET_MAX_WINDOW_HEIGHT(*add_style));
 	}
+	if (add_style->flags.has_icon_background_relief)
+	{
+		SSET_ICON_BACKGROUND_RELIEF(
+			*merged_style, SGET_ICON_BACKGROUND_RELIEF(*add_style));
+	}
+	if (add_style->flags.has_icon_background_padding)
+	{
+		SSET_ICON_BACKGROUND_PADDING(
+			*merged_style, SGET_ICON_BACKGROUND_PADDING(*add_style));
+	}
+	if (add_style->flags.has_icon_title_relief)
+	{
+		SSET_ICON_TITLE_RELIEF(
+			*merged_style, SGET_ICON_TITLE_RELIEF(*add_style));
+	}
 	if (add_style->flags.has_window_shade_steps)
 	{
 		SSET_WINDOW_SHADE_STEPS(
@@ -474,6 +489,21 @@ static void merge_styles(
 	{
 		SSET_BORDER_COLORSET_HI(
 			*merged_style,SGET_BORDER_COLORSET_HI(*add_style));
+	}
+	if (add_style->flags.use_icon_title_colorset)
+	{
+		SSET_ICON_TITLE_COLORSET(
+			*merged_style,SGET_ICON_TITLE_COLORSET(*add_style));
+	}
+	if (add_style->flags.use_icon_title_colorset_hi)
+	{
+		SSET_ICON_TITLE_COLORSET_HI(
+			*merged_style,SGET_ICON_TITLE_COLORSET_HI(*add_style));
+	}
+	if (add_style->flags.use_icon_background_colorset)
+	{
+		SSET_ICON_BACKGROUND_COLORSET(
+			*merged_style,SGET_ICON_BACKGROUND_COLORSET(*add_style));
 	}
 	if (add_style->flags.has_placement_penalty)
 	{
@@ -2470,6 +2500,16 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.use_border_colorset_hi = 1;
 			ps->change_mask.use_border_colorset_hi = 1;
 		}
+		else if (StrEquals(token, "HilightIconTitleColorset"))
+		{
+			*val = -1;
+			GetIntegerArguments(rest, NULL, val, 1);
+			SSET_ICON_TITLE_COLORSET_HI(*ps, *val);
+			alloc_colorset(*val);
+			ps->flags.use_icon_title_colorset_hi = (*val >= 0);
+			ps->flag_mask.use_icon_title_colorset_hi = 1;
+			ps->change_mask.use_icon_title_colorset_hi = 1;
+		}
 		else
 		{
 			found = False;
@@ -2490,6 +2530,50 @@ static Bool style_parse_one_style_option(
 			S_SET_IS_ICON_SUPPRESSED(SCF(*ps), 0);
 			S_SET_IS_ICON_SUPPRESSED(SCM(*ps), 1);
 			S_SET_IS_ICON_SUPPRESSED(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "IconBackgroundColorset"))
+		{
+			*val = -1;
+			GetIntegerArguments(rest, NULL, val, 1);
+			SSET_ICON_BACKGROUND_COLORSET(*ps, *val);
+			alloc_colorset(*val);
+			ps->flags.use_icon_background_colorset = (*val >= 0);
+			ps->flag_mask.use_icon_background_colorset = 1;
+			ps->change_mask.use_icon_background_colorset = 1;
+		}
+		else if (StrEquals(token, "IconBackgroundPadding"))
+		{
+			*val = ICON_BACKGROUND_PADDING;
+			GetIntegerArguments(rest, NULL, val, 1);
+			if (*val < 0)
+			{
+				*val = 0;
+			}
+			else if (*val > 255)
+			{
+				*val = 255;
+			}
+			SSET_ICON_BACKGROUND_PADDING(*ps, (unsigned char)*val);
+			ps->flags.has_icon_background_padding = 1;
+			ps->flag_mask.has_icon_background_padding = 1;
+			ps->change_mask.has_icon_background_padding = 1;
+		}
+		else if (StrEquals(token, "IconBackgroundRelief"))
+		{
+			*val = ICON_RELIEF_WIDTH;
+			GetIntegerArguments(rest, NULL, val, 1);
+			if (*val < 0)
+			{
+				*val = 0;
+			}
+			else if (*val > 255)
+			{
+				*val = 255;
+			}
+			SSET_ICON_BACKGROUND_RELIEF(*ps, (unsigned char)*val);
+			ps->flags.has_icon_background_relief = 1;
+			ps->flag_mask.has_icon_background_relief = 1;
+			ps->change_mask.has_icon_background_relief = 1;
 		}
 		else if (StrEquals(token, "IconFont"))
 		{
@@ -2518,6 +2602,33 @@ static Bool style_parse_one_style_option(
 			S_SET_HAS_NO_ICON_TITLE(SCF(*ps), !on);
 			S_SET_HAS_NO_ICON_TITLE(SCM(*ps), 1);
 			S_SET_HAS_NO_ICON_TITLE(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "IconTitleColorset"))
+		{
+			*val = -1;
+			GetIntegerArguments(rest, NULL, val, 1);
+			SSET_ICON_TITLE_COLORSET(*ps, *val);
+			alloc_colorset(*val);
+			ps->flags.use_icon_title_colorset = (*val >= 0);
+			ps->flag_mask.use_icon_title_colorset = 1;
+			ps->change_mask.use_icon_title_colorset = 1;
+		}
+		else if (StrEquals(token, "IconTitleRelief"))
+		{
+			*val = ICON_RELIEF_WIDTH;
+			GetIntegerArguments(rest, NULL, val, 1);
+			if (*val < 0)
+			{
+				*val = 0;
+			}
+			else if (*val > 255)
+			{
+				*val = 255;
+			}
+			SSET_ICON_TITLE_RELIEF(*ps, (unsigned char)*val);
+			ps->flags.has_icon_title_relief = 1;
+			ps->flag_mask.has_icon_title_relief = 1;
+			ps->change_mask.has_icon_title_relief = 1;
 		}
 		else if (StrEquals(token, "IconSize"))
 		{
@@ -4142,6 +4253,7 @@ void check_window_style_change(
 		flags->do_update_modules_flags = True;
 		flags->do_update_ewmh_state_hints = True;
 	}
+
 	/*
 	 * has_icon
 	 * icon_override
@@ -4150,6 +4262,18 @@ void check_window_style_change(
 	    S_ICON_OVERRIDE(SCC(*ret_style)))
 	{
 		flags->do_update_icon_font = True;
+		flags->do_update_icon = True;
+	}
+
+	/*
+	 * has_icon_background_padding
+	 * has_icon_background_relief
+	 * has_icon_title_relief
+	 */
+	if (ret_style->change_mask.has_icon_background_padding ||
+	    ret_style->change_mask.has_icon_background_relief ||
+	    ret_style->change_mask.has_icon_title_relief)
+	{
 		flags->do_update_icon = True;
 	}
 
@@ -4246,6 +4370,38 @@ void check_window_style_change(
 	    ret_style->change_mask.use_border_colorset_hi)
 	{
 		flags->do_update_window_color_hi = True;
+	}
+
+	/*
+	 * use_icon_title_colorset
+	 */
+	if (ret_style->change_mask.use_icon_title_colorset)
+	{
+		flags->do_update_icon_title_cs = True;
+	}
+
+	/*
+	 * use_icon_title_colorset_hi
+	 */
+	if (ret_style->change_mask.use_icon_title_colorset_hi)
+	{
+		flags->do_update_icon_title_cs_hi = True;
+	}
+
+	/*
+	 * use_icon_title_colorset
+	 */
+	if (ret_style->change_mask.use_icon_title_colorset)
+	{
+		flags->do_update_icon_title_cs = True;
+	}
+
+	/*
+	 * use_icon_background_colorset
+	 */
+	if (ret_style->change_mask.use_icon_background_colorset)
+	{
+		flags->do_update_icon_background_cs = True;
 	}
 
 	/*
@@ -4439,6 +4595,28 @@ void update_style_colorset(int colorset)
 			temp->change_mask.use_border_colorset_hi = 1;
 			Scr.flags.do_need_window_update = 1;
 		}
+		if (SUSE_ICON_TITLE_COLORSET(&temp->flags) &&
+		    SGET_ICON_TITLE_COLORSET(*temp) == colorset)
+		{
+			temp->has_style_changed = 1;
+			temp->change_mask.use_icon_title_colorset = 1;
+			Scr.flags.do_need_window_update = 1;
+		}
+		if (SUSE_ICON_TITLE_COLORSET_HI(&temp->flags) &&
+		    SGET_ICON_TITLE_COLORSET_HI(*temp) == colorset)
+		{
+			temp->has_style_changed = 1;
+			temp->change_mask.use_icon_title_colorset_hi = 1;
+			Scr.flags.do_need_window_update = 1;
+		}
+		if (SUSE_ICON_BACKGROUND_COLORSET(&temp->flags) &&
+		    SGET_ICON_BACKGROUND_COLORSET(*temp) == colorset)
+		{
+			temp->has_style_changed = 1;
+			temp->change_mask.use_icon_background_colorset = 1;
+			Scr.flags.do_need_window_update = 1;
+		}
+		
 	}
 
 	return;
@@ -4546,6 +4724,42 @@ void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 		fw->border_hicolors.hilight = fw->hicolors.hilight;
 		fw->border_hicolors.shadow = fw->hicolors.shadow;
 		fw->border_hicolors.back = fw->hicolors.back;
+	}
+}
+
+void update_icon_title_cs_style(FvwmWindow *fw, window_style *pstyle)
+{
+	if (SUSE_ICON_TITLE_COLORSET(&pstyle->flags))
+	{
+		fw->icon_title_cs = SGET_ICON_TITLE_COLORSET(*pstyle);
+	}
+	else
+	{
+		fw->icon_title_cs = -1;
+	}
+}
+
+void update_icon_title_cs_hi_style(FvwmWindow *fw, window_style *pstyle)
+{
+	if (SUSE_ICON_TITLE_COLORSET_HI(&pstyle->flags))
+	{
+		fw->icon_title_cs_hi = SGET_ICON_TITLE_COLORSET_HI(*pstyle);
+	}
+	else
+	{
+		fw->icon_title_cs_hi = -1;
+	}
+}
+
+void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle)
+{
+	if (SUSE_ICON_BACKGROUND_COLORSET(&pstyle->flags))
+	{
+		fw->icon_background_cs = SGET_ICON_BACKGROUND_COLORSET(*pstyle);
+	}
+	else
+	{
+		fw->icon_background_cs = -1;
 	}
 }
 

@@ -718,6 +718,43 @@ void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
+void setup_icon_background_parameters(FvwmWindow *fw, window_style *pstyle)
+{
+	if (SHAS_ICON_BACKGROUND_PADDING(&pstyle->flags))
+	{
+		fw->icon_background_padding =
+			SGET_ICON_BACKGROUND_PADDING(*pstyle);
+	}
+	else
+	{
+		fw->icon_background_padding = ICON_BACKGROUND_PADDING;
+	}
+	if (SHAS_ICON_BACKGROUND_RELIEF(&pstyle->flags))
+	{
+		fw->icon_background_relief =
+			SGET_ICON_BACKGROUND_RELIEF(*pstyle);
+	}
+	else
+	{
+		fw->icon_background_relief = ICON_RELIEF_WIDTH;
+	}
+	return;
+}
+
+void setup_icon_title_parameters(FvwmWindow *fw, window_style *pstyle)
+{
+	if (SHAS_ICON_TITLE_RELIEF(&pstyle->flags))
+	{
+		fw->icon_title_relief =
+			SGET_ICON_TITLE_RELIEF(*pstyle);
+	}
+	else
+	{
+		fw->icon_title_relief = ICON_RELIEF_WIDTH;
+	}
+	return;
+}
+
 static void setup_frame_window(
 	FvwmWindow *fw)
 {
@@ -1713,7 +1750,7 @@ void setup_icon_font(
 		resize_icon_title_height(fw, height - fw->icon_font->height);
 		/* this repositions the icon even if the window is not
 		 * iconified */
-		DrawIconWindow(fw, True, True, False, NULL);
+		DrawIconWindow(fw, True, True, False, False, NULL);
 	}
 
 	return;
@@ -1793,6 +1830,15 @@ void setup_style_and_decor(
 	/****** window colors ******/
 	update_window_color_style(fw, pstyle);
 	update_window_color_hi_style(fw, pstyle);
+
+	/***** icons colorsets *****/
+	update_icon_title_cs_style(fw, pstyle);
+	update_icon_title_cs_hi_style(fw, pstyle);
+	update_icon_background_cs_style(fw, pstyle);
+
+	/***** icons title/background parameters ****/
+	setup_icon_background_parameters(fw, pstyle);
+	setup_icon_title_parameters(fw, pstyle);
 
 	/****** window shading ******/
 	fw->shade_anim_steps = pstyle->shade_anim_steps;

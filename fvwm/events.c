@@ -1730,7 +1730,7 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 	    FW_W_ICON_PIXMAP(fw) != None)
 	{
 		SET_ICON_ENTERED(fw, 1);
-		DrawIconWindow(fw, True, False, False, NULL);
+		DrawIconWindow(fw, True, False, False, False, NULL);
 	}
 	/* Check for tear off menus */
 	if (is_tear_off_menu)
@@ -1766,7 +1766,7 @@ void HandleExpose(const evh_args_t *ea)
 	if (e.xany.window == FW_W_ICON_TITLE(fw) ||
 	    e.xany.window == FW_W_ICON_PIXMAP(fw))
 	{
-		DrawIconWindow(fw, True, True, False, &e);
+		DrawIconWindow(fw, True, True, False, False, &e);
 		return;
 	}
 	else if (IS_TEAR_OFF_MENU(fw) && e.xany.window == FW_W(fw))
@@ -2090,7 +2090,8 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)fw));
 		if (fw && IS_ICONIFIED(fw))
 		{
 			SET_ICON_ENTERED(fw, 0);
-			DrawIconWindow(fw, True, False, False, NULL);
+			DrawIconWindow(
+				fw, True, False, False, False, NULL);
 		}
 #endif
 		return;
@@ -2100,7 +2101,7 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)fw));
 	if (fw && IS_ICONIFIED(fw))
 	{
 		SET_ICON_ENTERED(fw,0);
-		DrawIconWindow(fw, True, False, False, NULL);
+		DrawIconWindow(fw, True, False, False, False, NULL);
 	}
 
 	/* If we leave the root window, then we're really moving
@@ -2539,24 +2540,56 @@ void HandlePropertyNotify(const evh_args_t *ea)
 
 		/* update icon window with some alpha */
 		FvwmWindow *t;
-		int cs;
 
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
+			int cs;
+			int t_cs = -1;
+			int b_cs = t->icon_background_cs;
+			Bool draw_picture = False;
+			Bool draw_title = False;
+
+			if (!IS_ICONIFIED(t) || IS_ICON_SUPPRESSED(t))
+			{
+				continue;
+			}
 			if (Scr.Hilite == t)
 			{
-				cs = t->cs_hi;
+				if (t->icon_title_cs_hi >= 0)
+				{
+					t_cs = cs = t->icon_title_cs_hi;
+				}
+				else
+				{
+					cs = t->cs_hi;
+				}
 			}
 			else
 			{
-				cs = t->cs;
+				if (t->icon_title_cs >= 0)
+				{
+					t_cs = cs = t->icon_title_cs;
+				}
+				else
+				{
+					cs = t->cs;
+				}
 			}
-			if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t) &&
-			    (t->icon_alphaPixmap != None ||
-			     (cs >= 0 &&
-			      Colorset[cs].icon_alpha_percent < 100)))
+			if (t->icon_alphaPixmap != None ||
+			    (cs >= 0 && Colorset[cs].icon_alpha_percent < 100) ||
+			    CSET_IS_TRANSPARENT_PR(b_cs))
 			{
-				DrawIconWindow(t, False, True, False, NULL);
+				draw_picture = True;
+			}
+			if (CSET_IS_TRANSPARENT_PR(t_cs))
+			{
+				draw_title = True;
+			}
+			if (draw_title || draw_picture)
+			{
+				DrawIconWindow(
+					t, draw_title, draw_picture, False,
+					draw_picture, NULL);
 			}
 		}
 		if (te->xproperty.atom == _XA_XROOTPMAP_ID)

@@ -22,6 +22,7 @@ typedef struct
 	unsigned do_redecorate : 1;
 	unsigned do_redecorate_transient : 1;
 	unsigned do_redraw_decoration : 1;
+	unsigned do_redraw_icon : 1;
 	unsigned do_resize_window : 1;
 	unsigned do_refresh : 1;
 	unsigned do_setup_focus_policy : 1;
@@ -35,6 +36,9 @@ typedef struct
 	unsigned do_update_icon_placement : 1;
 	unsigned do_update_icon_size_limits : 1;
 	unsigned do_update_icon_title : 1;
+	unsigned do_update_icon_title_cs : 1;
+	unsigned do_update_icon_title_cs_hi : 1;
+	unsigned do_update_icon_background_cs : 1;
 	unsigned do_update_visible_icon_name : 1;
 	unsigned do_update_mini_icon : 1;
 	unsigned do_update_ewmh_mini_icon : 1;

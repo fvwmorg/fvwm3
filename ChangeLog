@@ -1,3 +1,36 @@
+2002-12-30  olicha  <olivier.chapuis@free.fr>
+
+	* NEWS: 
+	* fvwm/icons.c (setup_icon_title_size):
+	(set_icon_pixmap_background):
+	(CreateIconWindow):
+	(DrawIconTitleWindow):
+	(DrawIconPixmapWindow):
+	(DrawIconWindow):
+	(ChangeIconPixmap):
+	(RedoIconName):
+	* fvwm/events.c (HandleEnterNotify):
+	(HandleExpose):
+	(HandleLeaveNotify):
+	(HandlePropertyNotify):
+	* fvwm/borders.c (border_draw_decorations):
+	* fvwm/default.h:
+	* fvwm/fvwm.h:
+	* fvwm/add_window.c (setup_icon_background_parameters):
+	(setup_icon_title_parameters):
+	(setup_style_and_decor):
+	(setup_icon_font):
+	* fvwm/geometry.c (move_icon_to_position): 
+	* fvwm/style.h:
+	* fvwm/style.c (check_window_style_change):
+	(update_style_colorset):
+	(update_icon_title_cs_style):
+	(update_icon_title_cs_hi_style):
+	(update_icon_background_cs_style):
+	(merge_styles):
+	* fvwm/update.h:
+	* fvwm/update.c (apply_window_updates):
+
 2002-12-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/FShm.h:

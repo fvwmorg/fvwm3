@@ -1095,6 +1095,9 @@ Bool get_visible_window_or_icon_geometry(
 void move_icon_to_position(
 	FvwmWindow *fw)
 {
+	Bool draw_picture_w = False;
+	Bool draw_title_w = False;
+
 	if (fw->icon_g.picture_w_g.width > 0)
 	{
 		int cs;
@@ -1112,17 +1115,42 @@ void move_icon_to_position(
 			fw->icon_g.picture_w_g.x,
 			fw->icon_g.picture_w_g.y);
 		if (fw->icon_alphaPixmap ||
-		    (cs >= 0 && Colorset[cs].icon_alpha_percent < 100))
+		    (cs >= 0 && Colorset[cs].icon_alpha_percent < 100) ||
+		    CSET_IS_TRANSPARENT(fw->icon_background_cs))
 		{
-			DrawIconWindow(fw, False, True, False, NULL);
+			draw_picture_w = True;
 		}
 	}
 	if (!HAS_NO_ICON_TITLE(fw))
 	{
+		int cs;
+		rectangle dummy;
+
+		if (Scr.Hilite == fw)
+		{
+			cs = fw->icon_title_cs_hi;
+		}
+		else
+		{
+			cs = fw->icon_title_cs;
+		}
 		XMoveWindow(
 			dpy, FW_W_ICON_TITLE(fw),
 			fw->icon_g.title_w_g.x,
 			fw->icon_g.title_w_g.y);
+		if (CSET_IS_TRANSPARENT(cs) &&
+		    !get_visible_icon_picture_geometry(fw, &dummy) &&
+		    get_visible_icon_title_geometry(fw, &dummy))
+		{
+			draw_title_w = True;
+		}
+	}
+
+	if (draw_title_w || draw_picture_w)
+	{
+		DrawIconWindow(
+			fw, draw_title_w, draw_picture_w, False, draw_picture_w,
+			NULL);
 	}
 
 	return;

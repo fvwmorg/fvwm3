@@ -41,6 +41,7 @@
 #include "module_interface.h"
 #include "focus.h"
 #include "stack.h"
+#include "icons.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -436,23 +437,36 @@ static void apply_window_updates(
 			flags->do_broadcast_focus = True;
 		}
 	}
-	if (flags->do_redraw_decoration)
+	if (flags->do_update_icon_title_cs_hi)
 	{
-		FvwmWindow *tmp;
-
-		/* frame_redraw_decorations needs to know if the window is
-		 * hilighted */
-		tmp = get_focus_window();
-		set_focus_window(focus_w);
-		if (IS_ICONIFIED(t))
+		if (t == focus_w)
 		{
-			DrawIconWindow(t, True, True, False, NULL);
+			flags->do_redraw_icon = True;
+		}
+		update_icon_title_cs_hi_style(t, pstyle);
+	}
+	if (flags->do_update_icon_title_cs)
+	{
+		if (t != focus_w)
+		{
+			flags->do_redraw_icon = True;
+		}
+		update_icon_title_cs_style(t, pstyle);
+	}
+	if (flags->do_update_icon_background_cs)
+	{
+		int old_cs = t->icon_background_cs;
+		
+		update_icon_background_cs_style(t, pstyle);
+		if ((old_cs < 0 && t->icon_background_cs >= 0) ||
+		    (old_cs >= 0 && t->icon_background_cs < 0))
+		{
+			flags->do_update_icon = True;
 		}
 		else
 		{
-			border_redraw_decorations(t);
+			flags->do_redraw_icon = True;
 		}
-		set_focus_window(tmp);
 	}
 	if (flags->do_update_icon_size_limits)
 	{
@@ -475,20 +489,26 @@ static void apply_window_updates(
 	}
 	if (flags->do_update_icon)
 	{
+		setup_icon_background_parameters(t, pstyle);
+		setup_icon_title_parameters(t, pstyle);
 		change_icon(t, pstyle);
 		flags->do_update_icon_placement = True;
 		flags->do_update_icon_title = False;
+		flags->do_redraw_icon = False;
 		flags->do_update_ewmh_icon = True;
+	}
+	if (flags->do_redraw_icon)
+	{
+		if (IS_ICONIFIED(t))
+		{
+			DrawIconWindow(t, True, True, False, True, NULL);;
+			flags->do_redraw_decoration = False;
+		}
+		flags->do_update_icon_title = False;
 	}
 	if (flags->do_update_icon_title)
 	{
 		RedoIconName(t);
-#if 0
-		if (IS_ICONIFIED(t))
-		{
-			DrawIconWindow(t, True, True, False, NULL);
-		}
-#endif
 	}
 	if (flags->do_update_icon_placement)
 	{
@@ -499,7 +519,26 @@ static void apply_window_updates(
 			memset(&win_opts, 0, sizeof(win_opts));
 			SET_ICONIFIED(t, 0);
 			Iconify(t, &win_opts);
+			flags->do_redraw_decoration = False;
 		}
+	}
+	if (flags->do_redraw_decoration)
+	{
+		FvwmWindow *tmp;
+
+		/* frame_redraw_decorations needs to know if the window is
+		 * hilighted */
+		tmp = get_focus_window();
+		set_focus_window(focus_w);
+		if (IS_ICONIFIED(t))
+		{
+			DrawIconWindow(t, True, True, False, False, NULL);
+		}
+		else
+		{
+			border_redraw_decorations(t);
+		}
+		set_focus_window(tmp);
 	}
 	if (flags->do_update_frame_attributes)
 	{

@@ -19,20 +19,21 @@
 #ifdef NO_ICONS
 #define ICON_HEIGHT(t) 1
 #else
-#define ICON_HEIGHT(t) ((t)->icon_font->height + 6)
+#define ICON_HEIGHT(t) ((t)->icon_font->height + 2*(t)->icon_title_relief + 2)
 #endif
 
 int get_visible_icon_window_count(FvwmWindow *fw);
 void clear_icon(FvwmWindow *fw);
+void setup_icon_title_size(FvwmWindow *fw);
 void GetIconPicture(FvwmWindow *fw, Bool no_icon_window);
 void AutoPlaceIcon(
 	FvwmWindow *t, initial_window_options_type *win_opts,
 	Bool do_move_immediately);
 void ChangeIconPixmap(FvwmWindow *fw);
-void RedoIconName(FvwmWindow *);
+void RedoIconName(FvwmWindow *fw);
 void DrawIconWindow(
 	FvwmWindow *fw, Bool draw_title, Bool draw_pixmap, Bool focus_change,
-	XEvent *pev);
+	Bool reset_bg, XEvent *pev);
 void SetIconPixmapSize(
 	Pixmap *icon, unsigned int width, unsigned int height,
 	unsigned int depth, unsigned int newWidth, unsigned int newHeight,

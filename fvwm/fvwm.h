@@ -499,6 +499,9 @@ typedef struct
 	unsigned has_icon_boxes : 1;
 	unsigned has_icon_size_limits : 1;
 	unsigned has_max_window_size : 1;
+	unsigned has_icon_background_padding : 1;
+	unsigned has_icon_background_relief : 1;
+	unsigned has_icon_title_relief : 1;
 	unsigned has_window_shade_steps : 1;
 	unsigned has_mini_icon : 1;
 	unsigned has_mwm_decor : 1;
@@ -520,6 +523,9 @@ typedef struct
 	unsigned use_colorset_hi : 1;
 	unsigned use_border_colorset : 1;
 	unsigned use_border_colorset_hi : 1;
+	unsigned use_icon_title_colorset : 1;
+	unsigned use_icon_title_colorset_hi : 1;
+	unsigned use_icon_background_colorset : 1;
 	unsigned use_layer : 1;
 	unsigned use_no_pposition : 1;
 	unsigned use_no_usposition : 1;
@@ -553,6 +559,9 @@ typedef struct window_style
 	unsigned char max_icon_width;
 	unsigned char min_icon_height;
 	unsigned char max_icon_height;
+	unsigned char icon_background_padding;
+	unsigned char icon_background_relief;
+	unsigned char icon_title_relief;
 	char *icon_font;
 	char *window_font;
 	char *fore_color_name;
@@ -563,6 +572,9 @@ typedef struct window_style
 	int colorset_hi;
 	int border_colorset;
 	int border_colorset_hi;
+	int icon_title_colorset;
+	int icon_title_colorset_hi;
+	int icon_background_colorset;
 	short border_width;
 	/* resize handle width */
 	short handle_width;
@@ -744,6 +756,9 @@ typedef struct FvwmWindow
 	int cs_hi;
 	int border_cs;
 	int border_cs_hi;
+	int icon_title_cs;
+	int icon_title_cs_hi;
+	int icon_background_cs;
 
 	unsigned long buttons;
 	/* zero or more iconboxes */
@@ -757,6 +772,10 @@ typedef struct FvwmWindow
 	unsigned char max_icon_width;
 	unsigned char min_icon_height;
 	unsigned char max_icon_height;
+	unsigned char icon_background_padding;
+	unsigned char icon_background_relief;
+	unsigned char icon_title_relief;
+
 	int max_window_width;
 	int max_window_height;
 	int shade_anim_steps;

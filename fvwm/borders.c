@@ -4671,7 +4671,7 @@ void border_draw_decorations(
 	}
 	if (IS_ICONIFIED(fw))
 	{
-		DrawIconWindow(fw, True, True, True, NULL);
+		DrawIconWindow(fw, True, True, True, False, NULL);
 		return;
 	}
 	/* calculate some values and flags */

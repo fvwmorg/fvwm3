@@ -38,6 +38,12 @@
 	((sf)->has_icon_boxes)
 #define SHAS_ICON_SIZE_LIMITS(sf) \
 	((sf)->has_icon_size_limits)
+#define SHAS_ICON_BACKGROUND_PADDING(sf) \
+	((sf)->has_icon_background_padding)
+#define SHAS_ICON_BACKGROUND_RELIEF(sf) \
+	((sf)->has_icon_background_relief)
+#define SHAS_ICON_TITLE_RELIEF(sf) \
+	((sf)->has_icon_title_relief)
 #define SHAS_MAX_WINDOW_SIZE(sf) \
 	((sf)->has_max_window_size)
 #define SHAS_WINDOW_SHADE_STEPS(sf) \
@@ -72,6 +78,12 @@
 	((sf)->use_border_colorset)
 #define SUSE_BORDER_COLORSET_HI(sf) \
 	((sf)->use_border_colorset_hi)
+#define SUSE_ICON_TITLE_COLORSET(sf) \
+	((sf)->use_icon_title_colorset)
+#define SUSE_ICON_TITLE_COLORSET_HI(sf) \
+	((sf)->use_icon_title_colorset_hi)
+#define SUSE_ICON_BACKGROUND_COLORSET(sf) \
+	((sf)->use_icon_background_colorset)
 #define SUSE_LAYER(sf) \
 	((sf)->use_layer)
 #define SUSE_NO_PPOSITION(sf) \
@@ -406,6 +418,18 @@
 	((s).border_colorset_hi)
 #define SSET_BORDER_COLORSET_HI(s,x) \
 	((s).border_colorset_hi = (x))
+#define SSET_ICON_TITLE_COLORSET(s,x) \
+	((s).icon_title_colorset = (x))
+#define SGET_ICON_TITLE_COLORSET(s) \
+	((s).icon_title_colorset)
+#define SSET_ICON_TITLE_COLORSET_HI(s,x) \
+	((s).icon_title_colorset_hi = (x))
+#define SGET_ICON_TITLE_COLORSET_HI(s) \
+	((s).icon_title_colorset_hi)
+#define SSET_ICON_BACKGROUND_COLORSET(s,x) \
+	((s).icon_background_colorset = (x))
+#define SGET_ICON_BACKGROUND_COLORSET(s) \
+	((s).icon_background_colorset)
 #define SGET_FLAGS_POINTER(s) \
 	(&((s).flags))
 #define SGET_BORDER_WIDTH(s) \
@@ -452,6 +476,18 @@
 	((s).max_icon_height)
 #define SSET_MAX_ICON_HEIGHT(s,x) \
 	((s).max_icon_height = (x))
+#define SGET_ICON_BACKGROUND_RELIEF(s) \
+	((s).icon_background_relief)
+#define SSET_ICON_BACKGROUND_RELIEF(s,x) \
+	((s).icon_background_relief = (x))
+#define SGET_ICON_BACKGROUND_PADDING(s) \
+	((s).icon_background_padding)
+#define SSET_ICON_BACKGROUND_PADDING(s,x) \
+	((s).icon_background_padding = (x))
+#define SGET_ICON_TITLE_RELIEF(s) \
+	((s).icon_title_relief)
+#define SSET_ICON_TITLE_RELIEF(s,x) \
+	((s).icon_title_relief = (x))
 #define SGET_MAX_WINDOW_WIDTH(s) \
 	((s).max_window_width)
 #define SSET_MAX_WINDOW_WIDTH(s,x) \
@@ -518,6 +554,9 @@ void reset_style_changes(void);
 void update_style_colorset(int colorset);
 void update_window_color_style(FvwmWindow *fw, window_style *style);
 void update_window_color_hi_style(FvwmWindow *fw, window_style *style);
+void update_icon_title_cs_style(FvwmWindow *fw, window_style *pstyle);
+void update_icon_title_cs_hi_style(FvwmWindow *fw, window_style *pstyle);
+void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle);
 void free_icon_boxes(icon_boxes *ib);
 
 #endif /* _STYLE_ */

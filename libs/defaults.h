@@ -240,6 +240,8 @@
 #define ICON_TITLE_TO_STICK_EXTRA_GAP	   1 /* pixels */
 /* minimum distance of icons in icon box */
 #define MIN_ICON_BOX_DIST		   3 /* pixels */
+/* padding for the icon into its background */
+#define ICON_BACKGROUND_PADDING            0 /* pixels */
 
 /*** general keyboard shortcuts used in move, resize, ... ***/
 #define DEFAULT_KDB_SHORTCUT_MOVE_DISTANCE 5 /* pixels */

@@ -19,6 +19,13 @@ Changes in developement release 2.5.6 (not released yet)
 
 * Use the MIT Shared Memory Extension for XImage 
 
+* The TitleStyle decor of a vertical window Title is rotated. This is
+  controlable with the new style option:
+         !UseTitleDecorRotation / UseTitleDecorRotation
+
+* New style options IconBackgroundColorset, IconTitleColorset,
+  HilightIconTitleColorset, IconTitleRelief and IconBackgroundRelief
+
 -------------------------------------------------------------------
 
 Changes in developement release 2.5.5 (2-Dec-2002)
