@@ -60,6 +60,7 @@ void MyDrawString(
 	{
 		region = XCreateRegion();
 		XUnionRectWithRegion (&inter, region, region);
+		XSetClipRectangles(dpy, xobj->gc, 0, 0, &inter, 1, Unsorted);
 		FwinString->flags.has_clip_region = True;
 		FwinString->clip_region = region;
 	}
@@ -100,6 +101,7 @@ void MyDrawString(
 	if (region)
 	{
 		XDestroyRegion(region);
+		XSetClipMask(dpy, xobj->gc, None);
 	}
 	FwinString->flags.has_clip_region = False;
 }
