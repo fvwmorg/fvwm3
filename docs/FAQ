@@ -80,6 +80,7 @@ Contents
           switch desks/wrap to my app X/popup a menu/start app X...  How?
     3.20  I have a multi head setup (multiple screens used under X).  How
           can I tell fvwm to use different configurations for the screens?
+    3.21  How do I maximize a window but not cover up FvwmTaskBar?
 
 4. Modules
 
@@ -162,8 +163,9 @@ Contents
     7.10  The cat safe desktop :-)
     7.11  Lowering and moving windows.
     7.12  Toggling windows on and off.
-    7.13  How do I start applications by clicking on an icon.
-    7.14  How do I define the hot-spot in an XPM cursor.
+    7.13  Starting applications by clicking on an icon.
+    7.14  Positioning a window using arithmetic.
+    
 
 
 ======================================================================
@@ -1276,6 +1278,15 @@ A: FVWM spawns itself into all found screens unless -s command line
    If you wish, .fvwm2rc-* files may all include line
    "Read .fvwm2rc-common".
 
+----------------------------------------------------------------------
+
+    3.21  How do I maximize a window but not cover up FvwmTaskBar?
+
+
+A: Instead of Maximize use "Maximize 100 -30p" where 30 is the width of
+   your FvwmTaskBar.
+
+   Or use EWMHBaseStrut in Fvwm 2.5.x or later.
 
 ======================================================================
                              4 - Modules
@@ -2371,7 +2382,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
 ----------------------------------------------------------------------
 
-7.13  How do I start applications by clicking on an icon.
+7.13  Starting applications by clicking on an icon.
 
    Normally an icon represents a minimized application.
    If you want to turn that around, and launch applications by clicking
@@ -2401,32 +2412,22 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
 ----------------------------------------------------------------------
 
-    7.14  How do I define the hot-spot in an XPM cursor.
+    7.14  Positioning a window using arithmetic.
 
-   Fvwm allows you to use a pixmap as a mouse cursor.  For example,
-   the command:
+    This example shows how to center a window on the screen.
+    Notice how is uses PipeRead and the shell construct
+    $(()) in order to perform arithmetic.
 
-     CursorStyle ROOT xterm.xpm
+    DestroyFunc CenterWindow
+    AddToFunc   CenterWindow
+    + I ThisWindow Piperead "echo Move \
+      $(( $[vp.width]/2-$[w.width]/2 ))p \
+      $(( $[vp.height]/2-$[w.height]/2 ))p"
 
-   Sets the root mouse cursor to the image of a terminal.
-   Normally the actual pixel the mouse cursor points to is the center
-   of the pixmap.  This pixel in the mouse cursor is called the
-   hot-spot.  If you want the hot-spot to be somewhere other than
-   the center of the image, you can use a GUI that supports setting
-   the hot-spot, or you can edit the XPM file with an editor.
+    If you had a window named "MyWindow" you would center it using
+    the command:
 
-   If the XPM image is in version 3 format, there's a line that contains
-   the width, height, number of colors and the characters per color
-   in the image:
+    Next (MyWindow) CenterWindow
 
-     static char * image_name [] = {
-     "64 38 8 1",
-
-   To put the hot-spot in the upper left, change this to:
-
-     static char * image_name [] = {
-     "64 38 8 1 0 0 XPMEXT",
-
-   Notice that the hot-spot is an offset, relative to zero.
-
-
+    ThisWindow may be removed, it is only needed to avoid errors when
+    CenterWindow is called without a window context.

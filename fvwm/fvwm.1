@@ -3383,7 +3383,7 @@ Here is an example pixmap file
 .EX
 /* XPM */
 static char *nice_arrow_xpm[] = {
-/* width height num_colors chars_per_pixel hotspot */
+/* width height num_colors chars_per_pixel hot-spot */
 "    14    14        3            1          1 1",
 /* colors */
 "  c None",
@@ -3406,6 +3406,8 @@ static char *nice_arrow_xpm[] = {
 "      .    .  ",
 };
 .EE
+The hot-spot coordinates are relative to zero, in the above
+example, the hot-spot is in the second row, and second column.
 
 .TP
 .BI "DefaultColors [" "foreground background" "]"

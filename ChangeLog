@@ -1,3 +1,9 @@
+2002-08-14  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm.1: Add hot-spot is an offset information,
+	fix spelling, "hot-spot", not "hotspot" (too bad its wrong in
+	the xpm docs).
+
 2002-08-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (style_parse_focus_policy_style):

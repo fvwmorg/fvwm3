@@ -1,3 +1,9 @@
+2002-08-14  Dan Espen  <dane@mk.telcordia.com>
+
+	* FAQ: Added Maximize but don't cover (3.21),
+	and Positioning a window using arithmetic (7.15).
+	Remove hot-spot information since its in the man page.
+
 2002-08-12  Dan Espen  <dane@mk.telcordia.com>
 
 	* FAQ: Add hot-spot information.
