@@ -848,30 +848,21 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   /* now, draw lines in title bar if it's a sticky window */
   if(t->flags & STICKY || Scr.StipledTitles)
   {
-    for(i=0 ;i< t->title_height/2-3;i+=4)
+    /* an odd number of lines every 4 pixels */
+    int num = (int)(t->title_height/8) * 2 - 1;
+    int min = t->title_height/2 - num*2 + 1;
+    int max = t->title_height/2 + num*2 - 3;
+    for(i=min; i <= max; i+=3)
     {
-      XDrawLine(dpy,t->title_w,ShadowGC,4,t->title_height/2 - i-1,
-                hor_off-6,t->title_height/2-i-1);
-      XDrawLine(dpy,t->title_w,ShadowGC,6+hor_off+w,t->title_height/2 -i-1,
-                t->title_width-5,t->title_height/2- i-1);
-      XDrawLine(dpy,t->title_w,ReliefGC,4,t->title_height/2 - i,
-                hor_off-6,t->title_height/2 - i);
-      XDrawLine(dpy,t->title_w,ReliefGC,6+hor_off+w,t->title_height/2-i,
-                t->title_width-5,t->title_height/2 - i);
-
-      XDrawLine(dpy,t->title_w,ShadowGC,4,t->title_height/2 + i-1,
-                hor_off-6,t->title_height/2+i-1);
-      XDrawLine(dpy,t->title_w,ShadowGC,6+hor_off+w,t->title_height/2+i-1,
-                t->title_width-5,t->title_height/2 + i-1);
-      XDrawLine(dpy,t->title_w,ReliefGC,4,t->title_height/2 + i,
-                hor_off-6,t->title_height/2 + i);
-      XDrawLine(dpy,t->title_w,ReliefGC,6+hor_off+w,t->title_height/2+i,
-                t->title_width-5,t->title_height/2 + i);
+      XDrawLine(dpy,t->title_w,ShadowGC,4,i,hor_off-5,i);
+      XDrawLine(dpy,t->title_w,ShadowGC,6+hor_off+w,i,t->title_width-4,i);
+      i+=1;
+      /* draw backwards to expose XServer bug */
+      XDrawLine(dpy,t->title_w,ReliefGC,hor_off-6,i,3,i);
+      XDrawLine(dpy,t->title_w,ReliefGC,t->title_width-5,i,5+hor_off+w,i);
     }
   }
 
-
-  XFlush(dpy);
 }
 
 
