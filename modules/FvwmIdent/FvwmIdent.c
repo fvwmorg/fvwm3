@@ -145,7 +145,7 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
                  | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
-                 | M_NEW_LOOK | M_END_CONFIG_INFO);
+                 | M_END_CONFIG_INFO);
   /* scan config file for set-up parameters */
   /* Colors and fonts */
 
@@ -155,6 +155,9 @@ int main(int argc, char **argv)
     {
       if(strlen(tline)>1)
 	{
+	  if(strncasecmp(tline, "Default_graphics ", 16)==0)  {
+            change_defaults(tline + 17);
+          }
 	  if(strncasecmp(tline, CatString3(MyName,"Font",""),Clength+4)==0)
 	    {
 	      CopyString(&font_string,&tline[Clength+4]);
@@ -190,6 +193,31 @@ int main(int argc, char **argv)
   return 0;
 }
 
+/*************************************************************************
+ *
+ * Default_graphics config line received, change builtin defaults
+ *
+ ************************************************************************/
+void change_defaults(char *line) {
+XVisualInfo vizinfo, *xvi;
+int count;
+long junk;
+
+  if (10 != sscanf(line, "%lx %lx %x %lx %lx %lx %lx %lx %lx %lx\n",
+		   &vizinfo.visualid, &cmap, &depth, &junk, &junk,
+		   &back_pix, &gcontext, &junk, &junk, &fid)) {
+    fprintf(stderr, "badly formed DefaultGraphics line\n");
+    exit(1);
+  }
+
+  /* fvwm passes the VisualID over, have to get a Visual pointer from this */
+  if ((xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &count)) == NULL)
+    return;
+  viz = xvi->visual;
+  XFree(xvi);
+}
+
+
 /**************************************************************************
  *
  * Read the entire window list from fvwm
@@ -221,9 +249,6 @@ void process_message(unsigned long type,unsigned long *body)
     {
     /* should turn off this packet but it comes after config_list so have to
        accept at least one */
-    case M_NEW_LOOK:
-      if (UseFvwmLook) change_defaults(body);
-      break;
     case M_CONFIGURE_WINDOW:
       list_configure(body);
       break;
@@ -347,38 +372,6 @@ void list_res_name(unsigned long *body)
       strncat(target.res,(char *)&body[3],255);
     }
 }
-
-/*************************************************************************
- *
- * M_NEW_LOOK packet received, change builtin defaults
- *
- ************************************************************************/
-void change_defaults(unsigned long *body) {
-XVisualInfo vizinfo, *xvi;
-int count;
-
-#if 0
-  fprintf(stderr, "got look packet\n");
-  fprintf(stderr, "VisualID 0x%lx\n", body[0]);
-  fprintf(stderr, "Colormap 0x%lx\n", body[1]);
-  fprintf(stderr, "Depth %d\n", body[2]);
-#endif
-
-/* fvwm passes the VisualID over, have to get a Visual pointer from this */
-  vizinfo.visualid = body[0];
-  if ((xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &count)) == NULL)
-    return;
-  viz = xvi->visual;
-  XFree(xvi);
-
-  cmap = body[1];
-  depth = body[2];
-  back_pix = body[5];
-  gcontext = body[6];
-  fid = body[9];
- 
-}
-
 
 /*************************************************************************
  *
