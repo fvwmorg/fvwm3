@@ -1,3 +1,12 @@
+1999--5-21  Hippo
+
+	* libs/Graphics.c: CreateStretch*Pixmap: small adjustments
+	* fvmw/colors.c: New function ParseGradient used for turning a string
+	into something suitable for AllocNonLinerGradient()
+	* fvwm/colors.c: New function CreateGradientPixmap understands H, V & D
+	gradients
+	* fvwm/builtins.c: SetDefaultBackground() understands gradients
+	
 Mon May 17 21:38:18 1999  DanEspen  <dje@blue>
 
 	* libs/Module.c (GetConfigLine): New function "InitGetConfigLine"
