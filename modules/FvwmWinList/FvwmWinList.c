@@ -190,6 +190,7 @@ int main(int argc, char **argv)
   struct sigaction  sigact;
 #endif
   int i;
+  short opt_num;
 
   for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
   {
@@ -202,31 +203,43 @@ int main(int argc, char **argv)
   if (s != NULL)
     temp = s + 1;
 
-  /* Setup my name */
-  Module = safemalloc(strlen(temp)+2);
-  strcpy(Module,"*");
-  strcat(Module, temp);
-  Clength = strlen(Module);
-
-#ifdef I18N_MB
-  setlocale(LC_CTYPE, "");
-#endif
   /* Open the console for messages */
   OpenConsole();
 
-  if((argc != 6)&&(argc != 7)) {
-    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
+  if((argc != 6)&&(argc != 7)&&(argc != 8)) {
+    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",temp,
       VERSION);
-    ConsoleMessage("%s Version %s should only be executed by fvwm!\n",Module,
+    ConsoleMessage("%s Version %s should only be executed by fvwm!\n",temp,
       VERSION);
    exit(1);
   }
 
-
+  opt_num = 6;
   if ((argc==7)&&(!strcasecmp(argv[6],"Transient")))
   {
     Transient=1;
+    opt_num++;
   }
+
+  /* Check for an alias */
+  if (argc >= opt_num + 1 && argv[opt_num] != NULL)
+  {
+    Module = safemalloc(strlen(argv[opt_num])+2);
+    strcpy(Module,"*");
+    strcat(Module, argv[opt_num]);
+    Clength = strlen(Module);
+  }
+  else
+  {
+    Module = safemalloc(strlen(temp)+2);
+    strcpy(Module,"*");
+    strcat(Module, temp);
+    Clength = strlen(Module);
+  }
+
+#ifdef I18N_MB
+  setlocale(LC_CTYPE, "");
+#endif
 
   Fvwm_fd[0] = atoi(argv[1]);
   Fvwm_fd[1] = atoi(argv[2]);
@@ -1077,6 +1090,7 @@ char *temp;
 void MakeMeWindow(void)
 {
   XSizeHints hints;
+  XClassHint classhints;
   XGCValues gcval;
   unsigned long gcmask;
   unsigned int dummy1, dummy2;
@@ -1208,7 +1222,23 @@ void MakeMeWindow(void)
   wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
 
-  XSetWMNormalHints(dpy,win,&hints);
+  {
+    XTextProperty nametext;
+    char *list[]={NULL,NULL};
+    list[0] = Module+1;
+ 
+    classhints.res_name=safestrdup(Module+1);
+    classhints.res_class=safestrdup("FvwmWinList");
+
+    if(!XStringListToTextProperty(list,1,&nametext))
+    {
+      fprintf(stderr,"%s: Failed to convert name to XText\n",Module);
+      exit(1);
+    }
+    XSetWMProperties(dpy,win,&nametext,&nametext,
+                    NULL,0,&hints,NULL,&classhints);
+    XFree(nametext.value);
+  }
 
   if (!Transient)
   {
@@ -1270,8 +1300,6 @@ void MakeMeWindow(void)
   }
   AdjustWindow(True);
   XSelectInput(dpy,win,(StructureNotifyMask | ExposureMask | KeyPressMask));
-
-  ChangeWindowName(&Module[1]);
 
   if (ItemCountVisible(&windows) > 0)
   {

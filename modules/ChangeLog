@@ -1,7 +1,12 @@
-2001-07-23  olicha  <olivier.chapuis@free.fr>
+2001-08-07  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c:
-	Added alias support to be able to get one TaskBar by Xinerama screens
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmWinList/FvwmWinList.c:
+	* FvwmWinList/FvwmWinList.1:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	Added alias support to be able to get one module by Xinerama screens
 	
 2001-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 

@@ -27,6 +27,7 @@
 
 #define NONE 0
 #define VERTICAL 1
+
 #define HORIZONTAL 2
 
 #include "config.h"
@@ -214,14 +215,27 @@ int main(int argc, char **argv)
 #endif
 
   temp = argv[0];
-
   s=strrchr(argv[0], '/');
   if (s != NULL)
     temp = s + 1;
 
+  if((argc != 6)&&(argc != 7)) {
+    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",temp,
+	    VERSION);
+    exit(1);
+  }
 
-  MyName = safemalloc(strlen(temp)+1);
-  strcpy(MyName, temp);
+  /* alise support */
+  if (argc == 7 && argv[6] != NULL)
+  {
+    MyName = safemalloc(strlen(argv[6])+1);
+    strcpy(MyName, argv[6]);
+  }
+  else
+  {
+    MyName = safemalloc(strlen(temp)+1);
+    strcpy(MyName, temp);
+  }
 
 #ifdef HAVE_SIGACTION
   {
@@ -259,13 +273,6 @@ int main(int argc, char **argv)
   siginterrupt(SIGINT, 1);
 #endif
 #endif
-
-  if((argc != 6)&&(argc != 7))
-    {
-      fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
-	      VERSION);
-      exit(1);
-    }
 
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);

@@ -265,12 +265,6 @@ int main(int argc, char **argv)
   if (s != NULL)
     temp = s + 1;
 
-  /* Setup my name */
-  Module = safemalloc(strlen(temp)+2);
-  strcpy(Module,"*");
-  strcat(Module, temp);
-  Clength = strlen(Module);
-
 #ifdef I18N_MB
   setlocale(LC_CTYPE, "");
 #endif

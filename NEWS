@@ -16,6 +16,8 @@ Changes in beta release 2.4.1 (not released yet)
 
 * New options PageOnly and ScreenOnly for FvwmTaskBar.
 
+* FvwmIconBox, FvwmTaskBar and FvwmWinList support aliases.
+
 * Enhancements in fvwm-menu-headlines and support for 10 more sites.
 
 * Color enhancements in button vectors: @2 is bg color, @3 is fg color.
