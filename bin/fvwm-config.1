@@ -18,26 +18,29 @@
 .SH NAME
 fvwm-config \- query an existing FVWM installation
 .SH SYNOPSIS
-\fBfvwm-config\fP
-[\fI--help\fP]
-[\fI--version\fP]
-[\fI--info\fP]
-[\fI--prefix\fP]
-[\fI--exec-prefix\fP]
-[\fI--bindir\fP]
-[\fI--datadir\fP]
-[\fI--libexecdir\fP]
-[\fI--sysconfdir\fP]
-[\fI--mandir\fP]
-[\fI--localedir\fP]
-[\fI--fvwm-moduledir\fP]
-[\fI--fvwm-datadir\fP]
-[\fI--fvwm-perllibdir\fP]
-[\fI--default-imagepath\fP]
-[\fI--default-userdir\fP]
-[\fI--fvwm-exe\fP]
-[\fI--supports\fP]
-[\fI--supports-<feature>\fP]
+.B fvwm-config
+.RI [ --help ]
+.RI [ --version ]
+.RI [ --info ]
+.RI [ --prefix ]
+.RI [ --exec-prefix ]
+.RI [ --bindir ]
+.RI [ --datadir ]
+.RI [ --libexecdir ]
+.RI [ --sysconfdir ]
+.RI [ --mandir ]
+.RI [ --localedir ]
+.RI [ --fvwm-moduledir ]
+.RI [ --fvwm-datadir ]
+.RI [ --fvwm-perllibdir ]
+.RI [ --default-imagepath ]
+.RI [ --default-userdir ]
+.RI [ --fvwm-exe ]
+.RI [ --supports ]
+.RI [ --supports-<feature> ]
+.RI [ --is-final ]
+.RI [ --is-stable ]
+.RI [ --release-date ]
 .SH DESCRIPTION
 .B fvwm-config
 is a shell script that provides an information about the FVWM version,
@@ -101,12 +104,22 @@ prints the fvwm executable name (in bindir)
 .B -s --supports
 lists all supported features, one per line
 .TP
-.B --supports-\fI<feature>\fP
+.BI --supports- <feature>
 prints nothing, returns: 0 if the
 .I <feature>
 is supported, 100 if not, 200 if unknown.
 All or supported feature names may be found using
-.IR --info " or " --supports .
+.IR --info " or " --supports
+respectivelly.
+.TP
+.B --is-final
+prints "yes" for final releases and "no" for cvs snapshots
+.TP
+.B --is-stable
+prints "yes" for the stable branch and "no" otherwise
+.TP
+.B --release-date
+prints the release date if the release is final
 .SH USAGE
 Here are some real life usages.
 

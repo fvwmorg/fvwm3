@@ -53,7 +53,7 @@ datadir="@datadir@"
 libexecdir="@libexecdir@"
 sysconfdir="@sysconfdir@"
 mandir="@mandir@"
-localedire="@LOCALEDIR"
+localedir="@LOCALEDIR@"
 
 fvwm_moduledir="@FVWM_MODULEDIR@"
 fvwm_datadir="@FVWM_DATADIR@"
