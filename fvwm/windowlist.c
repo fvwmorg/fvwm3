@@ -338,7 +338,7 @@ void CMD_WindowList(F_CMD_ARGS)
   if (!(flags & NO_CURRENT_DESK_TITLE))
   {
     AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
-    empty_menu = False; 
+    empty_menu = False;
   }
   free(tlabel);
 
@@ -436,7 +436,7 @@ void CMD_WindowList(F_CMD_ARGS)
         {
           if (last_desk_displayed != INT_MIN)
 	  {
-            if (((flags & SHOW_GEOMETRY) || (flags & SHOW_INFONOTGEO)) && 
+            if (((flags & SHOW_GEOMETRY) || (flags & SHOW_INFONOTGEO)) &&
 		!(flags & TITLE_FOR_ALL_DESKS))
 	      AddToMenu(mr, NULL, NULL, FALSE, FALSE);
 	    if (flags & TITLE_FOR_ALL_DESKS)
@@ -452,7 +452,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	{
 	  tlabel = get_desk_title(t->Desk, flags, False);
 	  AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
-	  free(tlabel); 
+	  free(tlabel);
 	}
 	first_desk = False;
 
@@ -605,8 +605,6 @@ void CMD_WindowList(F_CMD_ARGS)
 
   memset(&mp, 0, sizeof(mp));
   mp.menu = mr;
-  mp.parent_menu = NULL;
-  mp.parent_item = NULL;
   t = Tmp_win;
   mp.pTmp_win = &t;
   mp.button_window = ButtonWindow;
@@ -620,7 +618,6 @@ void CMD_WindowList(F_CMD_ARGS)
   mp.eventp = teventp;
   mp.pops = &mops;
   mp.ret_paction = &ret_action;
-  mp.event_propagate_to_submenu = NULL;
 
   do_menu(&mp, &mret);
   /* Restore old menu style */

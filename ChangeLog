@@ -1,4 +1,22 @@
+2002-02-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.h (XEVMASK_TEAR_OFF_MENU):
+	* fvwm/menus.c (menu_enter_tear_off_menu):
+	(find_entry):
+	(menuShortcuts):
+	(MenuInteraction):
+	(pop_menu_up):
+	properly calculate pointer position in tear off menus
+	(MenuInteraction):
+	fixed active wait w/ poopup/popdown delays
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	don't initialise some variables twice
+
 2002-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (CaptureOneWindow):
+	properly recapture tear off menus
 
 	(IS_MESSAGE_IN_MASK):
 	(is_message_selected):

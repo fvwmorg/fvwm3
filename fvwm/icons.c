@@ -847,7 +847,6 @@ void RedoIconName(FvwmWindow *tmp_win)
   if (IS_ICONIFIED(tmp_win))
   {
     DrawIconWindow(tmp_win);
-	  /*!!!*/
     XClearArea(dpy, tmp_win->icon_title_w, 0, 0, 0, 0, True);
   }
 
@@ -1579,7 +1578,6 @@ void DeIconify(FvwmWindow *tmp_win)
        * if the window has an icon, but neither a pixmap nor a title. */
       if (HAS_NO_ICON_TITLE(t) && t->icon_pixmap_w == None)
       {
-	/*!!!*/
 	memset(&tmp_win->icon_g, 0, sizeof(tmp_win->icon_g));
       }
       get_icon_geometry(t, &icon_rect);
@@ -1772,7 +1770,6 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
    * window has an icon, but neither a pixmap nor a title. */
   if (HAS_NO_ICON_TITLE(tmp_win) && tmp_win->icon_pixmap_w == None)
   {
-    /*!!!*/
     memset(&tmp_win->icon_g, 0, sizeof(tmp_win->icon_g));
   }
   SET_ICONIFIED(tmp_win, 1);

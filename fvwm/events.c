@@ -240,6 +240,10 @@ void HandleFocusIn(void)
 	InstallWindowColormaps(NULL);
       }
     }
+    if (Tmp_win && IS_TEAR_OFF_MENU(Tmp_win))
+    {
+      menu_enter_tear_off_menu(Tmp_win);
+    }
   }
   else
   {

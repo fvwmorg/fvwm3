@@ -2549,155 +2549,180 @@ void Reborder(void)
  *
  ***********************************************************************/
 
-void CaptureOneWindow(
-  FvwmWindow *fw, Window window, Window keep_on_top_win, Window parent_win,
-  Bool is_recapture)
+static void CaptureOneWindow(
+	FvwmWindow *fw, Window window, Window keep_on_top_win,
+	Window parent_win, Bool is_recapture)
 {
-  Window w;
-  unsigned long data[1];
+	Window w;
+	unsigned long data[1];
 
-  isIconicState = DontCareState;
-  if (fw == NULL)
-  {
-    return;
-  }
-  if (IS_SCHEDULED_FOR_DESTROY(fw))
-  {
-    /* Fvwm might crash in complex functions if we really try to the dying
-     * window here because AddWindow() may fail and leave a destroyed window
-     * in Tmp_win.  Any, by the way, it is pretty useless to recapture a
-     * window that will vanish in a moment. */
-    return;
-  }
-  /* Grab the server to make sure the window does not die during the recapture.
-   */
-  MyXGrabServer(dpy);
-  if (!XGetGeometry(dpy, fw->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-		   &JunkHeight, &JunkBW,  &JunkDepth))
-  {
-    /* The window has already died, do not recapture it! */
-    MyXUngrabServer(dpy);
-    return;
-  }
-  if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT)
-  {
-    Bool f = PPosOverride;
-    Bool is_mapped = IS_MAPPED(fw);
+	isIconicState = DontCareState;
+	if (fw == NULL)
+	{
+		return;
+	}
+	if (IS_SCHEDULED_FOR_DESTROY(fw))
+	{
+		/* Fvwm might crash in complex functions if we really try to
+		 * the dying window here because AddWindow() may fail and leave
+		 * a destroyed window in Tmp_win.  Any, by the way, it is
+		 * pretty useless to recapture a * window that will vanish in a
+		 * moment. */
+		return;
+	}
+	/* Grab the server to make sure the window does not die during the
+	 * recapture. */
+	MyXGrabServer(dpy);
+	if (!XGetGeometry(dpy, fw->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+			  &JunkHeight, &JunkBW,  &JunkDepth))
+	{
+		/* The window has already died, do not recapture it! */
+		MyXUngrabServer(dpy);
+		return;
+	}
+	if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT)
+	{
+		Bool f = PPosOverride;
+		Bool is_mapped = IS_MAPPED(fw);
+		Bool is_menu;
 
-    PPosOverride = True;
-    if (IS_ICONIFIED(fw))
-    {
-      isIconicState = IconicState;
-      isIconifiedByParent = IS_ICONIFIED_BY_PARENT(fw);
-    }
-    else
-    {
-      isIconicState = NormalState;
-      isIconifiedByParent = 0;
-      if (Scr.CurrentDesk != fw->Desk)
-	SetMapStateProp(fw, NormalState);
-    }
-    data[0] = (unsigned long) fw->Desk;
-    XChangeProperty (dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-                     PropModeReplace, (unsigned char *) data, 1);
+		PPosOverride = True;
+		if (IS_ICONIFIED(fw))
+		{
+			isIconicState = IconicState;
+			isIconifiedByParent = IS_ICONIFIED_BY_PARENT(fw);
+		}
+		else
+		{
+			isIconicState = NormalState;
+			isIconifiedByParent = 0;
+			if (Scr.CurrentDesk != fw->Desk)
+				SetMapStateProp(fw, NormalState);
+		}
+		data[0] = (unsigned long) fw->Desk;
+		XChangeProperty (dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
+				 PropModeReplace, (unsigned char *) data, 1);
 
-    /* are all these really needed ? */
-    /* EWMH_SetWMDesktop(fw); */
-    GNOME_SetHints(fw);
-    GNOME_SetDesk(fw);
-    GNOME_SetLayer(fw);
-    GNOME_SetWinArea(fw);
+		/* are all these really needed ? */
+		/* EWMH_SetWMDesktop(fw); */
+		GNOME_SetHints(fw);
+		GNOME_SetDesk(fw);
+		GNOME_SetLayer(fw);
+		GNOME_SetWinArea(fw);
 
-    XSelectInput(dpy, fw->w, NoEventMask);
-    w = fw->w;
-    XUnmapWindow(dpy, fw->frame);
-    RestoreWithdrawnLocation(fw, is_recapture, parent_win);
-    SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
-    destroy_window(fw);
-    Event.xmaprequest.window = w;
-    HandleMapRequestKeepRaised(keep_on_top_win, fw, False);
-    if (!fFvwmInStartup)
-    {
-      SET_MAP_PENDING(fw, 0);
-      SET_MAPPED(fw, is_mapped);
-    }
-    /* Clean out isIconicState here, otherwise all new windos may start
-     * iconified. */
-    isIconicState = DontCareState;
-    /* restore previous value */
-    PPosOverride = f;
-  }
-  MyXUngrabServer(dpy);
+		XSelectInput(dpy, fw->w, NoEventMask);
+		w = fw->w;
+		XUnmapWindow(dpy, fw->frame);
+		RestoreWithdrawnLocation(fw, is_recapture, parent_win);
+		SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
+		destroy_window(fw);
+		Event.xmaprequest.window = w;
+		if (is_recapture && fw != NULL && IS_TEAR_OFF_MENU(fw))
+		{
+			is_menu = True;
+		}
+		else
+		{
+			is_menu = False;
+		}
+		HandleMapRequestKeepRaised(keep_on_top_win, fw, is_menu);
+		if (!fFvwmInStartup)
+		{
+			SET_MAP_PENDING(fw, 0);
+			SET_MAPPED(fw, is_mapped);
+		}
+		/* Clean out isIconicState here, otherwise all new windos may
+		 * start iconified. */
+		isIconicState = DontCareState;
+		/* restore previous value */
+		PPosOverride = f;
+	}
+	MyXUngrabServer(dpy);
 
-  return;
+	return;
 }
 
 /* Put a transparent window all over the screen to hide what happens below. */
 static void hide_screen(
-  Bool do_hide, Window *ret_hide_win, Window *ret_parent_win)
+	Bool do_hide, Window *ret_hide_win, Window *ret_parent_win)
 {
-  static Bool is_hidden = False;
-  static Window hide_win = None;
-  static Window parent_win = None;
-  XSetWindowAttributes xswa;
-  unsigned long valuemask;
+	static Bool is_hidden = False;
+	static Window hide_win = None;
+	static Window parent_win = None;
+	XSetWindowAttributes xswa;
+	unsigned long valuemask;
 
-  if (do_hide == is_hidden)
-  {
-    /* nothing to do */
-    if (ret_hide_win)
-      *ret_hide_win = hide_win;
-    if (ret_parent_win)
-      *ret_parent_win = parent_win;
+	if (do_hide == is_hidden)
+	{
+		/* nothing to do */
+		if (ret_hide_win)
+		{
+			*ret_hide_win = hide_win;
+		}
+		if (ret_parent_win)
+		{
+			*ret_parent_win = parent_win;
+		}
 
-    return;
-  }
-  is_hidden = do_hide;
-  if (do_hide)
-  {
-    xswa.override_redirect = True;
-    xswa.cursor = Scr.FvwmCursors[CRS_WAIT];
-    valuemask = CWOverrideRedirect|CWCursor;
-    hide_win = XCreateWindow(
-      dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth, Scr.MyDisplayHeight, 0,
-      CopyFromParent, InputOutput, CopyFromParent, valuemask, &xswa);
-    if (hide_win)
-    {
-      /* When recapturing, all windows are reparented to this window. If they
-       * are reparented to the root window, they will flash over the hide_win
-       * with XFree.  So reparent them to an unmapped window that looks like
-       * the root window. */
-      parent_win = XCreateWindow(
-	dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth, Scr.MyDisplayHeight, 0,
-	CopyFromParent, InputOutput, CopyFromParent, valuemask, &xswa);
-      if (!parent_win)
-      {
-	XDestroyWindow(dpy, hide_win);
-	hide_win = None;
-      }
-      else
-      {
-	XMapWindow(dpy, hide_win);
-	XSync(dpy, 0);
-      }
-    }
-  }
-  else
-  {
-    if (hide_win != None)
-      XDestroyWindow(dpy, hide_win);
-    if (parent_win != None)
-      XDestroyWindow(dpy, parent_win);
-    XSync(dpy,0);
-    hide_win = None;
-    parent_win = None;
-  }
-  if (ret_hide_win)
-    *ret_hide_win = hide_win;
-  if (ret_parent_win)
-    *ret_parent_win = parent_win;
+		return;
+	}
+	is_hidden = do_hide;
+	if (do_hide)
+	{
+		xswa.override_redirect = True;
+		xswa.cursor = Scr.FvwmCursors[CRS_WAIT];
+		valuemask = CWOverrideRedirect|CWCursor;
+		hide_win = XCreateWindow(
+			dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+			Scr.MyDisplayHeight, 0, CopyFromParent, InputOutput,
+			CopyFromParent, valuemask, &xswa);
+		if (hide_win)
+		{
+			/* When recapturing, all windows are reparented to this
+			 * window. If they are reparented to the root window,
+			 * they will flash over the hide_win with XFree.  So
+			 * reparent them to an unmapped window that looks like
+			 * the root window. */
+			parent_win = XCreateWindow(
+				dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+				Scr.MyDisplayHeight, 0, CopyFromParent,
+				InputOutput, CopyFromParent, valuemask, &xswa);
+			if (!parent_win)
+			{
+				XDestroyWindow(dpy, hide_win);
+				hide_win = None;
+			}
+			else
+			{
+				XMapWindow(dpy, hide_win);
+				XSync(dpy, 0);
+			}
+		}
+	}
+	else
+	{
+		if (hide_win != None)
+		{
+			XDestroyWindow(dpy, hide_win);
+		}
+		if (parent_win != None)
+		{
+			XDestroyWindow(dpy, parent_win);
+		}
+		XSync(dpy,0);
+		hide_win = None;
+		parent_win = None;
+	}
+	if (ret_hide_win)
+	{
+		*ret_hide_win = hide_win;
+	}
+	if (ret_parent_win)
+	{
+		*ret_parent_win = parent_win;
+	}
 
-  return;
+	return;
 }
 
 /***********************************************************************
@@ -2717,32 +2742,34 @@ static void hide_screen(
 
 static int MappedNotOverride(Window w)
 {
-  XWindowAttributes wa;
-  Atom atype;
-  int aformat;
-  unsigned long nitems, bytes_remain;
-  unsigned char *prop;
+	XWindowAttributes wa;
+        Atom atype;
+	int aformat;
+	unsigned long nitems, bytes_remain;
+	unsigned char *prop;
 
-  isIconicState = DontCareState;
+	isIconicState = DontCareState;
 
-  if((w==Scr.NoFocusWin)||(!XGetWindowAttributes(dpy, w, &wa)))
-    return False;
+	if((w==Scr.NoFocusWin)||(!XGetWindowAttributes(dpy, w, &wa)))
+		return False;
 
-  if(XGetWindowProperty(dpy,w,_XA_WM_STATE,0L,3L,False,_XA_WM_STATE,
-			&atype,&aformat,&nitems,&bytes_remain,&prop)==Success)
-  {
-    if(prop != NULL)
-    {
-      isIconicState = *(long *)prop;
-      XFree(prop);
-    }
-  }
-  if (wa.override_redirect == True)
-  {
-    XSelectInput(dpy, w, XEVMASK_ORW);
-  }
-  return (((isIconicState == IconicState)||(wa.map_state != IsUnmapped)) &&
-	  (wa.override_redirect != True));
+	if(XGetWindowProperty(
+		   dpy,w,_XA_WM_STATE,0L,3L,False,_XA_WM_STATE,
+		   &atype,&aformat,&nitems,&bytes_remain,&prop)==Success)
+	{
+		if(prop != NULL)
+		{
+			isIconicState = *(long *)prop;
+			XFree(prop);
+		}
+	}
+	if (wa.override_redirect == True)
+	{
+		XSelectInput(dpy, w, XEVMASK_ORW);
+	}
+	return (((isIconicState == IconicState) ||
+		 (wa.map_state != IsUnmapped)) &&
+		(wa.override_redirect != True));
 }
 
 void CaptureAllWindows(Bool is_recapture)
@@ -2847,35 +2874,45 @@ void CaptureAllWindows(Bool is_recapture)
 
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
-  if (fSingle)
-  {
-    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
-      return;
-  }
-  MyXGrabServer(dpy);
-  if (fSingle)
-    CaptureOneWindow(tmp_win, tmp_win->w, None, None, True);
-  else
-    CaptureAllWindows(True);
-  /* Throw away queued up events. We don't want user input during a
-   * recapture. The window the user clicks in might disapper at the very same
-   * moment and the click goes through to the root window. Not good */
-  XAllowEvents(dpy, AsyncPointer, CurrentTime);
-  discard_events(
-    ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask|
-    EnterWindowMask|LeaveWindowMask|KeyPressMask|KeyReleaseMask);
+	if (fSingle)
+	{
+		if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_SELECT,
+				   ButtonRelease))
+		{
+			return;
+		}
+	}
+	MyXGrabServer(dpy);
+	if (fSingle)
+	{
+		CaptureOneWindow(
+			tmp_win, tmp_win->w, None, None, True);
+	}
+	else
+	{
+		CaptureAllWindows(True);
+	}
+	/* Throw away queued up events. We don't want user input during a
+	 * recapture.  The window the user clicks in might disapper at the very
+	 * same moment and the click goes through to the root window. Not good
+	 */
+	XAllowEvents(dpy, AsyncPointer, CurrentTime);
+	discard_events(
+		ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|\
+		PointerMotionMask|EnterWindowMask|LeaveWindowMask|\
+		KeyPressMask|KeyReleaseMask);
 #ifdef DEBUG_STACK_RING
-  verify_stack_ring_consistency();
+	verify_stack_ring_consistency();
 #endif
-  MyXUngrabServer(dpy);
+	MyXUngrabServer(dpy);
 }
 
 void CMD_Recapture(F_CMD_ARGS)
 {
-  do_recapture(F_PASS_ARGS, False);
+	do_recapture(F_PASS_ARGS, False);
 }
 
 void CMD_RecaptureWindow(F_CMD_ARGS)
 {
-  do_recapture(F_PASS_ARGS, True);
+	do_recapture(F_PASS_ARGS, True);
 }

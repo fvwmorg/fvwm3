@@ -599,6 +599,7 @@ typedef struct
   MenuItem *parent_item;
   FvwmWindow **pTmp_win;
   FvwmWindow *button_window;
+  FvwmWindow *tear_off_root_menu_window;
   int *pcontext;
   XEvent *eventp;
   char **ret_paction;
@@ -699,6 +700,7 @@ extern MenuInfo Menus;
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
+void menu_enter_tear_off_menu(FvwmWindow *tmp_win);
 void menu_close_tear_off_menu(FvwmWindow *tmp_win);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
 char *get_menu_options(
