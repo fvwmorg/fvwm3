@@ -1558,9 +1558,9 @@ void MoveWindow(XEvent *Event)
           usleep(5000);
           XSync(dpy,0);
 	  if(t->flags & ICONIFIED)
-	    XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time);
+            SendInfo(fd, "Focus", t->icon_w);
 	  else
-	    XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
+	    SendInfo(fd, "Focus", t->w);
 	}
     }
 }
@@ -1889,9 +1889,9 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
       SendInfo(fd,"Raise",t->w);
 
       if(t->flags & ICONIFIED)
-	XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time);
+        SendInfo(fd, "Focus", t->icon_w);
       else
-	XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
+        SendInfo(fd, "Focus", t->w);
     }
 
 }

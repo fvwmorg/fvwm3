@@ -18,7 +18,6 @@
 #define _PARSE_
 
 enum {
-/* Functions which do not require a target window */
     F_NOP = 0,
     F_BEEP,
     F_QUIT,
@@ -33,7 +32,6 @@ enum {
     F_WINDOWLIST,
     F_MOVECURSOR,
     F_FUNCTION,
-/*  F_WARP = 14 */    /* Does this need to be commented out? */
     F_MODULE = 15,
     F_DESK,
     F_CHANGE_WINDOWS_DESK,
@@ -87,8 +85,8 @@ enum {
     F_DFLT_FONT,
     F_DFLT_COLORS,
     F_GLOBAL_OPTS,
-    F_EMULATE, /* 69 */
-/* Functions which require a target window */
+    F_EMULATE,
+
     F_RESIZE = 100,
     F_RAISE,
     F_LOWER,
@@ -118,6 +116,8 @@ enum {
     F_WINDOW_SHADE,
     F_COLOR_LIMIT,
     F_ANIMATED_MOVE,
+
+    F_END_OF_LIST = 999,
 
 /* Functions for use by modules only! */
     F_SEND_WINDOW_LIST = 1000

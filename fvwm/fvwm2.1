@@ -603,10 +603,11 @@ calculator to the left.  The following:
 Omits the "Calculator" label, but leaves the picture.  The pictures
 used with this feature should be small (perhaps 16x16).
 
-If the menu-name (not the label)  contains a sub-string which is set
+If the menu-name (not the label) contains a sub-string which is set
 off by at signs ("@"), then the text between them is expected to be
 the name of an xpm or bitmap file to draw along the left side of the
-menu (a "side pixmap").
+menu (a "side pixmap"). You will probably want to use the SidePic
+option of the \fIMenuStyle\fP command instead.
 For example
 .EX
 AddToMenu "StartMenu@linux-menu.xpm@"
@@ -616,7 +617,8 @@ creates a menu with a picture in its bottom left corner.
 If the menu-name contains also a sub-string set of by '^'s, then the
 text between '^'s is expected to be the name a of X11 color and the
 column containing the side picture will be colorized with that
-color. For example
+color. You can set this color for a menu style using the SideColor
+option of the \fIMenuStyle\fP command. Example:
 .EX
 AddToMenu "StartMenu@linux-menu.xpm@^blue^"
 .EE
@@ -1654,7 +1656,9 @@ TitleUnderlines0/TitleUnderlines1/TitleUnderlines2,
 SeparatorsLong/SeparatorsShort,
 TrianglesSolid/TrianglesRelief,
 PrepopMenus/PrepopMenusOff,
-DoubleClickTime.
+DoubleClickTime,
+SidePic,
+SideColor.
 
 In the above list some options are listed as option pairs or triples
 with a / in between. These options exclude each other.
@@ -1805,6 +1809,18 @@ time in milliseconds between two mouse clicks in a menu to be
 considered as a double click. The default is 450 milliseconds.
 If the argument is omitted the doucle click time is reset to this
 default.
+
+\fISidePic\fP takes the name of an xpm or bitmap file as an argument.
+The picture is drawn along the left side of the menu. The SidePic
+option can be overridden by a menu specific side pixmap (see
+\fIAddToMenu\fP). If the file name is omitted an existing side
+pixmap is remove from the menu style.
+
+\fISideColor\fP takes the name of an X11 color as an argument. This
+color is used to colorize the column containing the side picture
+(see above). The SideColor option can be overridden by a menu
+specific side color (see \fIAddToMenu\fP). If the color name is
+omitted the side color option is switched off.
 
 Examples:
 

@@ -604,7 +604,6 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   MenuStatus retval = MENU_NOP;
   int c10msDelays = 0;
   MenuOptions mops;
-  short f_type;
   Bool fOffMenuAllowed = FALSE;
   Bool fPopdown = FALSE;
   Bool fPopup   = FALSE;
@@ -991,8 +990,11 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   }
   if ((retval == MENU_DONE || retval == MENU_DONE_BUTTON) &&
       pmiExecuteAction && *pmiExecuteAction && (*pmiExecuteAction)->action) {
-    f_type = find_func_type((*pmiExecuteAction)->action);
-    if (f_type == F_POPUP || f_type == F_STAYSUP || f_type == F_WINDOWLIST) {
+    switch ((*pmiExecuteAction)->func_type)
+    {
+    case F_POPUP:
+    case F_STAYSUP:
+    case F_WINDOWLIST:
       GetPopupOptions(mi, &mops);
       if (!(mops.flags.f.select_in_place)) {
 	fIgnorePosHints = TRUE;
@@ -1011,7 +1013,10 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  fWarpPointerToTitle = TRUE;
 	}
       } /* else (mops.flags.f.select_in_place) */
-    } /* if (f_type == F_POPUP ||... */
+      break;
+    default:
+      break;
+    }
   } /* ((retval == MENU_DONE ||... */
   return MENU_ADD_BUTTON_IF(fKeyPress,retval);
 }
@@ -1648,6 +1653,8 @@ void PaintEntry(MenuItem *mi)
 
     if (mr->sidePic != NULL)
       sw = mr->sidePic->width + 5;
+    else if (mr->ms->look.sidePic != NULL)
+      sw = mr->ms->look.sidePic->width + 5;
 
     if ((mi->state)&&(!mi->fIsSeparator)&&
 	(((*mi->item)!=0) || mi->picture || mi->lpicture)) {
@@ -1836,7 +1843,13 @@ void PaintEntry(MenuItem *mi)
 void PaintSidePic(MenuRoot *mr)
 {
   GC ReliefGC, TextGC;
-  if (mr->sidePic == NULL)
+  Picture *sidePic;
+
+  if (mr->sidePic)
+    sidePic = mr->sidePic;
+  else if (mr->ms->look.sidePic)
+    sidePic = mr->ms->look.sidePic;
+  else
     return;
 
   if(Scr.d_depth<2)
@@ -1845,34 +1858,37 @@ void PaintSidePic(MenuRoot *mr)
     ReliefGC = mr->ms->look.MenuReliefGC;
   TextGC = mr->ms->look.MenuGC;
 
-  if(mr->colorize) {
+  if(mr->colorize)
     Globalgcv.foreground = mr->sideColor;
+  else if (mr->ms->look.f.hasSideColor)
+    Globalgcv.foreground = mr->ms->look.sideColor;
+  if (mr->colorize || mr->ms->look.f.hasSideColor) {
     Globalgcm = GCForeground;
     XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
     XFillRectangle(dpy, mr->w, Scr.ScratchGC1, 3, 3,
-                   mr->sidePic->width, mr->height - 6);
+                   sidePic->width, mr->height - 6);
   }
 
-  if(mr->sidePic->depth > 0) /* pixmap? */
+  if(sidePic->depth > 0) /* pixmap? */
     {
       Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-      Globalgcv.clip_mask = mr->sidePic->mask;
+      Globalgcv.clip_mask = sidePic->mask;
       Globalgcv.clip_x_origin = 3;
-      Globalgcv.clip_y_origin = mr->height - mr->sidePic->height -3;
+      Globalgcv.clip_y_origin = mr->height - sidePic->height -3;
 
       XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);
-      XCopyArea(dpy, mr->sidePic->picture, mr->w,
+      XCopyArea(dpy, sidePic->picture, mr->w,
                 ReliefGC, 0, 0,
-                mr->sidePic->width, mr->sidePic->height,
+                sidePic->width, sidePic->height,
                 Globalgcv.clip_x_origin, Globalgcv.clip_y_origin);
       Globalgcm = GCClipMask;
       Globalgcv.clip_mask = None;
       XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);
     } else {
-      XCopyPlane(dpy, mr->sidePic->picture, mr->w,
+      XCopyPlane(dpy, sidePic->picture, mr->w,
                  TextGC, 0, 0,
-                 mr->sidePic->width, mr->sidePic->height,
-                 1, mr->height - mr->sidePic->height, 1);
+                 sidePic->width, sidePic->height,
+                 1, mr->height - sidePic->height, 1);
     }
 }
 
@@ -2254,7 +2270,7 @@ void DestroyMenu(MenuRoot *mr)
   XDeleteContext(dpy, mr->w, MenuContext);
 
   if (mr->sidePic)
-      DestroyPicture(dpy, mr->sidePic);
+    DestroyPicture(dpy, mr->sidePic);
 
 #if 0
   /* Hey, we can't just destroy the menu face here. Another menu may need it */
@@ -2508,6 +2524,9 @@ void MakeMenu(MenuRoot *mr)
   if(mr->sidePic) {
     mr->xoffset = mr->sidePic->width + 5;
   }
+  else if (mr->ms->look.sidePic) {
+    mr->xoffset = mr->ms->look.sidePic->width + 5;
+  }
 
   mr->width = mr->width0 + mr->width + mr->width2 + mr->xoffset;
   mr->backgroundset = False;
@@ -2646,9 +2665,7 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
   int i;
   Picture *pp;
   extern char *IconPath;
-#ifdef XPM
   extern char *PixmapPath;
-#endif
 #ifdef UGLY_WHEN_PIXMAPS_MISSING
   char *save_instring;
 #endif
@@ -2693,12 +2710,8 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	  name[i] = 0;
 
 	  /* Next, check for a color pixmap */
-#ifdef XPM
 	  pp=CachePicture(dpy,Scr.Root,IconPath,PixmapPath,name,
 			  Scr.ColorLimit);
-#else
-	  pp=CachePicture(dpy,Scr.Root,IconPath,IconPath,name,Scr.ColorLimit);
-#endif
 	  if(*txt != '\0')
 	    txt++;
 	  while(*txt != '\0')
@@ -2921,7 +2934,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 
   tmp->action = stripcpy(action);
   tmp->state = 0;
-  tmp->func_type = find_func_type(tmp->action);
+  find_func_type(tmp->action, &(tmp->func_type), &(tmp->func_needs_window));
   tmp->item_num = menu->items++;
 }
 

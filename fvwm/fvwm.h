@@ -249,7 +249,6 @@ typedef struct FvwmWindow
       unsigned ViewportMoved : 1; /* To prevent double move in MoveViewport. */
       unsigned IconifiedByParent : 1; /* To prevent iconified transients in a
 				       * parent icon from counting for Next */
-      unsigned  : 1;
     } tmpflags;
 #endif /* GSFR */
 

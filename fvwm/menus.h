@@ -45,11 +45,8 @@
 
 /* Function types used for formatting menus */
 
-#define FUNC_NO_WINDOW 0
-#define FUNC_NEEDS_WINDOW 0
-#define FUNC_POPUP 1
-#define FUNC_TITLE 2
-#define FUNC_NOP 3
+#define FUNC_NO_WINDOW False
+#define FUNC_NEEDS_WINDOW True
 
 #define MENU_IS_LEFT  0x01
 #define MENU_IS_RIGHT 0x02
@@ -113,9 +110,12 @@ typedef struct MenuLook {
       unsigned char hasStippleFore : 1;
       unsigned char LongSeparators : 1;
       unsigned char TriangleRelief : 1;
+      unsigned char hasSideColor : 1;
     } f;
     char ReliefThickness;
     char TitleUnderlines;
+    Picture *sidePic;
+    Pixel sideColor;
     GC MenuGC;
     GC MenuActiveGC;
     GC MenuActiveBackGC;
@@ -156,6 +156,7 @@ typedef struct MenuItem
     short y_offset;		/* y coordinate for item */
     short y_height;		/* y height for item */
     short func_type;		/* type of built in function */
+    Bool func_needs_window;
     short state;		/* video state, 0 = normal, 1 = reversed */
     short strlen;		/* strlen(item) */
     short strlen2;		/* strlen(item2) */

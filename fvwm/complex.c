@@ -93,43 +93,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     free(junk);
   for(i=0;i<10;i++)
     action = GetNextToken(action,&arguments[i]);
-  /* These built-ins require a selected window
-   * The function code is >= 100 and < 1000
-   * F_RESIZE
-   * F_MOVE
-   * F_ICONIFY
-   * F_RAISE
-   * F_LOWER
-   * F_DESTROY
-   * F_DELETE
-   * F_STICK
-   * F_RAISELOWER
-   * F_MAXIMIZE
-   * F_FOCUS
-   *
-   * These do not:
-   * The function code is < 100
-   * F_NOP
-   * F_TITLE
-   * F_BEEP
-   * F_SCROLL
-   * F_MOVECURSOR
-   * F_RESTART
-   * F_EXEC
-   * F_REFRESH
-   * F_GOTO_PAGE
-   * F_TOGGLE_PAGE
-   * F_CIRCULATE_UP
-   * F_CIRCULATE_DOWN
-   * F_WARP
-   * F_DESK
-   * F_MODULE
-   * F_POPUP
-   * F_QUIT
-   * F_WINDOWLIST
-   * F_FUNCTION
-   * F_SEND_WINDOW_LIST
-   */
+  /* see functions.c to find out which functions need a window to operate on */
   ev = eventp;
   /* In case we want to perform an action on a button press, we
    * need to fool other routines */
@@ -140,8 +104,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       /* make lower case */
       c = *(mi->item);
-      if((mi->func_type  >= 100)&&(mi->func_type < 1000))
-	NeedsTarget = True;
+      NeedsTarget = mi->func_needs_window;
       if(isupper(c))
 	c=tolower(c);
       if(c==DOUBLE_CLICK)

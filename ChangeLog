@@ -1,5 +1,57 @@
 1999-01-12  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* configure: changed readline prototype (char -> char *)
+
+	* fvwm/fvwm2.1: updated MenuStyle for SideColor
+
+	* fvwm/menus.c (scanForColor):
+	* fvwm/builtins.c (NewMenuStyle): added SideColor option to MenuStyle
+
+	* fvwm/modconf.c (SendDataToModule):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/menus.c (scanForPixmap):
+	* fvwm/builtins.c (setPixmapPath):
+	(ReadButtonFace):
+	removed ifdefs around char *PixmapPath
+
+	* libs/Picture.c (CachePicture): introduced ifdef to handle XPM
+	scanning in a central place. Should enable me to remove lots of other
+	ifdefs.
+
+	* fvwm/fvwm2.1: updated MenuStyle for SidePixmap
+
+	* fvwm/builtins.c (FreeMenuStyle):
+	(NewMenuStyle):
+	* fvwm/menus.c (PaintEntry):
+	added support for MenuStyle sidePic
+
+	* fvwm/builtins.c (ChangeMenuStyle): MakeMenu called only for menus
+	that changed
+
+	* fvwm/menus.c (MenuInteraction): removed f_type temporary variable
+
+	* fvwm/misc.h (struct functions): changed 'int type' to
+	'Bool func_needs_window' and 'int code' to 'short func_type'
+
+	* fvwm/complex.c (ComplexFunction): removed reference to function code
+	to determine if a window is needed. The logic uses the F_NO_WINDOW and
+	F_NEEDS_WINDOW entries from functions.c now.
+
+	* fvwm/parse.h: removed references to 'need window' logic
+
+	* fvwm/menus.h:
+	* fvwm/functions.c (func_config): removed FUNC_POPUP, FUNC_NOP,
+	FUNC_TITLE
+
+	* fvwm/menus.c (MenuInteraction): removed unnecessary call of
+	find_func_type
+	(AddToMenu): adapted new interface of find_func_type
+
+	* fvwm/functions.c (find_func_type): changed interface to return both,
+	type and code
+
+	* fvwm/menus.h (MenuItem): added func_needs_window flag.
+
 	* fvwm/menus.c (FPopupMenu): made painted flag independent of gradients
 	(PaintMenu): dito
 	(MenuInteraction): cleaned up redrawing

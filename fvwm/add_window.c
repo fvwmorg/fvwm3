@@ -66,9 +66,7 @@ static XrmOptionDescRec table [] = {
 };
 
 extern char *IconPath;
-#ifdef XPM
 extern char *PixmapPath;
-#endif
 
 static void merge_styles(name_list *, name_list *); /* prototype */
 
@@ -632,11 +630,7 @@ FvwmWindow *AddWindow(Window w)
   if (tmp_win->mini_pixmap_file) {
     tmp_win->mini_icon = CachePicture (dpy, Scr.Root,
                                        IconPath,
-#ifdef XPM
                                        PixmapPath,
-#else
-                                       NULL,
-#endif
                                        tmp_win->mini_pixmap_file,
 				       Scr.ColorLimit);
   }

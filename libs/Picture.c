@@ -145,9 +145,15 @@ Picture *CachePicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
   Picture *p=PictureList;
 
   /* First find the full pathname */
+#ifdef XPM
   if(!(path=findIconFile(name,PixmapPath,R_OK)))
     if(!(path=findIconFile(name,IconPath,R_OK)))
       return NULL;
+#else
+  /* Ignore the given pixmap path when compiled without XPM support */
+  if(!(path=findIconFile(name,IconPath,R_OK)))
+    return NULL;
+#endif
 
   /* See if the picture is already cached */
   while(p)

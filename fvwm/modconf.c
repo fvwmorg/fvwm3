@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -92,11 +92,11 @@ void AddToModList(char *tline)
     prev = t;
     t = t->next;
   }
-  
+
   this = (struct moduleInfoList *)safemalloc(sizeof(struct moduleInfoList));
   this->data = (char *)safemalloc(strlen(tline)+1);
   this->next = NULL;
-  strcpy(this->data, tline);  
+  strcpy(this->data, tline);
   if(prev == NULL)
   {
     modlistroot = this;
@@ -104,7 +104,7 @@ void AddToModList(char *tline)
   else
     prev->next = this;
 }
-      
+
 /* interface function for AddToModList */
 /* dje, this doesn't seem to be used? */
 void AddModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
@@ -123,7 +123,7 @@ void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *info;   /* info to be deleted - may contain wildcards */
   char *mi;
 
-  GetNextToken(action, &info); 
+  GetNextToken(action, &info);
   if( info == NULL )
   {
     return;
@@ -166,9 +166,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   struct moduleInfoList *t;
   char *message,msg2[32];
   extern char *IconPath;
-#ifdef XPM
   extern char *PixmapPath;
-#endif
 
   if (IconPath && strlen(IconPath))
   {
@@ -199,6 +197,6 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     SendName(*Module,M_CONFIG_INFO,0,0,0,t->data);
     t = t->next;
-  }  
+  }
   SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
 }

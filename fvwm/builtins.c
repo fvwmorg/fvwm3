@@ -1360,6 +1360,8 @@ void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
 #ifdef XPM
 char *PixmapPath = FVWM_ICONDIR;
+#else
+char *PixmapPath = "";
 #endif
 void setPixmapPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                    unsigned long context, char *action,int* Module)
@@ -1617,6 +1619,10 @@ static void FreeMenuStyle(MenuStyle *ms)
     XFreeGC(dpy, ms->look.MenuStippleGC);
   if(ms->look.MenuShadowGC)
     XFreeGC(dpy, ms->look.MenuShadowGC);
+  if (ms->look.sidePic)
+    DestroyPicture(dpy, ms->look.sidePic);
+  if (ms->look.f.hasSideColor == 1)
+    FreeColors(&ms->look.sideColor, 1);
 
   while(before->next != ms)
     /* Not too many checks, may segfaults in race conditions */
@@ -1772,6 +1778,7 @@ static int GetMenuStyleIndex(char *option)
     "TrianglesSolid", "TrianglesRelief",
     "PrepopMenus", "PrepopMenusOff",
     "DoubleClickTime",
+    "SidePic", "SideColor",
     NULL
   };
   return GetTokenIndex(option, optlist, 0, NULL);
@@ -1900,13 +1907,24 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	}
 	tmpms->look.pStdFont = &Scr.StdFont;
 	gc_changed = True;
+	if (tmpms->look.f.hasSideColor == 1)
+	{
+	  FreeColors(&tmpms->look.sideColor, 1);
+	  tmpms->look.f.hasSideColor = 0;
+	}
+	tmpms->look.f.hasSideColor = 0;
+	if (tmpms->look.sidePic)
+	{
+	  DestroyPicture(dpy, tmpms->look.sidePic);
+	  tmpms->look.sidePic = NULL;
+	}
 
 	if (is_initialised == False)
-	  {
-	    /* now begin the real work */
-	    is_initialised = True;
-	    continue;
-	  }
+	{
+	  /* now begin the real work */
+	  is_initialised = True;
+	  continue;
+	}
 	break;
 
       case 3: /* Foreground */
@@ -1931,14 +1949,14 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	if (tmpms->look.f.hasStippleFore)
 	  FreeColors(&tmpms->look.MenuStippleColors.fore, 1);
 	if (arg1 == NULL)
-	  {
-	    tmpms->look.f.hasStippleFore = 0;
-	  }
+	{
+	  tmpms->look.f.hasStippleFore = 0;
+	}
 	else
-	  {
-	    tmpms->look.MenuStippleColors.fore = GetColor(arg1);
-	    tmpms->look.f.hasStippleFore = 1;
-	  }
+	{
+	  tmpms->look.MenuStippleColors.fore = GetColor(arg1);
+	  tmpms->look.f.hasStippleFore = 1;
+	}
 	gc_changed = True;
 	break;
 
@@ -1946,14 +1964,14 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	if (tmpms->look.f.hasActiveBack)
 	  FreeColors(&tmpms->look.MenuActiveColors.back, 1);
 	if (arg1 == NULL)
-	  {
-	    tmpms->look.f.hasActiveBack = 0;
-	  }
+	{
+	  tmpms->look.f.hasActiveBack = 0;
+	}
 	else
-	  {
-	    tmpms->look.MenuActiveColors.back = GetColor(arg1);
-	    tmpms->look.f.hasActiveBack = 1;
-	  }
+	{
+	  tmpms->look.MenuActiveColors.back = GetColor(arg1);
+	  tmpms->look.f.hasActiveBack = 1;
+	}
 	tmpms->look.f.Hilight = 1;
 	gc_changed = True;
 	break;
@@ -1967,14 +1985,14 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	if (tmpms->look.f.hasActiveFore)
 	  FreeColors(&tmpms->look.MenuActiveColors.fore, 1);
 	if (arg1 == NULL)
-	  {
-	    tmpms->look.f.hasActiveFore = 0;
-	  }
+	{
+	  tmpms->look.f.hasActiveFore = 0;
+	}
 	else
-	  {
-	    tmpms->look.MenuActiveColors.fore = GetColor(arg1);
-	    tmpms->look.f.hasActiveFore = 1;
-	  }
+	{
+	  tmpms->look.MenuActiveColors.fore = GetColor(arg1);
+	  tmpms->look.f.hasActiveFore = 1;
+	}
 	gc_changed = True;
 	break;
 
@@ -2005,27 +2023,27 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
       case 15: /* Font */
 	if (arg1 != NULL && (xfs = GetFontOrFixed(dpy, arg1)) == NULL)
-	  {
-	    fvwm_msg(ERR,"NewMenuStyle",
-		     "Couldn't load font '%s' or 'fixed'\n", arg1);
-	    break;
-	  }
+	{
+	  fvwm_msg(ERR,"NewMenuStyle",
+		   "Couldn't load font '%s' or 'fixed'\n", arg1);
+	  break;
+	}
 	if (tmpms->look.pStdFont && tmpms->look.pStdFont != &Scr.StdFont)
-	  {
-	    if (tmpms->look.pStdFont->font != NULL)
-	      XFreeFont(dpy, tmpms->look.pStdFont->font);
-	    free(tmpms->look.pStdFont);
-	  }
+	{
+	  if (tmpms->look.pStdFont->font != NULL)
+	    XFreeFont(dpy, tmpms->look.pStdFont->font);
+	  free(tmpms->look.pStdFont);
+	}
 	if (arg1 == NULL)
-	  {
-	    /* reset to screen font */
-	    tmpms->look.pStdFont = &Scr.StdFont;
-	  }
+	{
+	  /* reset to screen font */
+	  tmpms->look.pStdFont = &Scr.StdFont;
+	}
 	else
-	  {
-	    tmpms->look.pStdFont = (MyFont *)safemalloc(sizeof(MyFont));
-	    tmpms->look.pStdFont->font = xfs;
-	  }
+	{
+	  tmpms->look.pStdFont = (MyFont *)safemalloc(sizeof(MyFont));
+	  tmpms->look.pStdFont->font = xfs;
+	}
 	gc_changed = True;
 	break;
 
@@ -2050,18 +2068,18 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
       case 18: /* PopupOffset */
 	if ((n = GetIntegerArguments(args, NULL, val, 2)) == 0)
-	  {
-	    fvwm_msg(ERR,"NewMenuStyle",
-		     "PopupOffset requires one or two arguments");
-	  }
+	{
+	  fvwm_msg(ERR,"NewMenuStyle",
+		   "PopupOffset requires one or two arguments");
+	}
 	else
-	  {
-	    tmpms->feel.PopupOffsetAdd = val[0];
-	    if (n == 2 && val[1] <= 100 && val[1] >= 0)
-	      tmpms->feel.PopupOffsetPercent = val[1];
-	    else
-	      tmpms->feel.PopupOffsetPercent = 100;
-	  }
+	{
+	  tmpms->feel.PopupOffsetAdd = val[0];
+	  if (n == 2 && val[1] <= 100 && val[1] >= 0)
+	    tmpms->feel.PopupOffsetPercent = val[1];
+	  else
+	    tmpms->feel.PopupOffsetPercent = 100;
+	}
 	break;
 
       case 19: /* TitleWarp */
@@ -2121,8 +2139,36 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	}
 	break;
 
+      case 31: /* SidePic */
+	if (tmpms->look.sidePic)
+	{
+	  DestroyPicture(dpy, tmpms->look.sidePic);
+	  tmpms->look.sidePic = NULL;
+	}
+	if (arg1 != NULL)
+	{
+	  tmpms->look.sidePic = CachePicture(dpy, Scr.Root, IconPath,
+					     PixmapPath, arg1, Scr.ColorLimit);
+	  if (!tmpms->look.sidePic)
+	    fvwm_msg(WARN, "NewMenuStyle", "Couldn't find pixmap %s", arg1);
+	}
+	break;
+
+      case 32: /* SideColor */
+	if (tmpms->look.f.hasSideColor == 1)
+	{
+	  FreeColors(&tmpms->look.sideColor, 1);
+	  tmpms->look.f.hasSideColor = 0;
+	}
+	if (arg1 != NULL)
+	{
+	  tmpms->look.sideColor = GetColor(arg1);
+	  tmpms->look.f.hasSideColor = 1;
+	}
+	break;
+
 #if 0
-      case 31: /* PositionHints */
+      case 33: /* PositionHints */
 	break;
 #endif
 
@@ -2273,11 +2319,10 @@ void ChangeMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       break;
     }
     mr->ms = ms;
+    MakeMenu(mr);
     free(menuname);
     action = GetNextToken(action,&menuname);
   }
-
-  MakeMenus();
 }
 
 
@@ -3036,11 +3081,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    s = GetNextToken(s, &file);
 	    bf->u.p = CachePicture(dpy, Scr.Root,
 				   IconPath,
-#ifdef XPM
 				   PixmapPath,
-#else
-				   NULL,
-#endif
 				   file,Scr.ColorLimit);
 	    if (bf->u.p == NULL)
 	    {
@@ -3530,11 +3571,7 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
     if (token)
     {
       mf->u.p = CachePicture(dpy, Scr.Root, IconPath,
-#ifdef XPM
 			     PixmapPath,
-#else
-			     NULL,
-#endif
 			     token, Scr.ColorLimit);
       if (mf->u.p == NULL)
       {
@@ -3911,11 +3948,11 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 		    SetButtonFlag(MWMDecorMaximize);
 		} else {
 		    fvwm_msg(ERR, "ButtonStyle",
-			     "unknown title button flag %s -- line: %s", 
+			     "unknown title button flag %s -- line: %s",
 			     tok, text);
-		    if (set) 
+		    if (set)
 			free(tok);
-		    else 
+		    else
 			free(tok - 1);
 		    text = GetNextToken(text, &tok);
 		}
@@ -3927,11 +3964,11 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 		int i;
 		if (multi&1)
 		    for (i=0;i<5;++i)
-			text = ReadTitleButton(prev, &fl->left_buttons[i], 
+			text = ReadTitleButton(prev, &fl->left_buttons[i],
 					       False, i*2+1);
 		if (multi&2)
 		    for (i=0;i<5;++i)
-			text = ReadTitleButton(prev, &fl->right_buttons[i], 
+			text = ReadTitleButton(prev, &fl->right_buttons[i],
 					       False, i*2);
 	    }
 	    else if (!(text = ReadTitleButton(prev, tb, False, button))) {

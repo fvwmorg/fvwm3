@@ -70,8 +70,8 @@ struct functions
 #else
   void (*action)();
 #endif
-  int code;
-  int type;
+  short func_type;
+  Bool func_needs_window;
 };
 
 /* values for name_list flags */
@@ -256,7 +256,7 @@ extern void       no_popup(char *ptr);
 extern void       KillModule(int channel, int place);
 extern void       ClosePipes(void);
 extern char       *findIconFile(char *icon, char *pathlist, int mode);
-int find_func_type(char *action);
+void find_func_type(char *action, short *func_type, Bool *func_needs_window);
 extern void       GetBitmapFile(FvwmWindow *tmp_win);
 extern void       GetXPMFile(FvwmWindow *tmp_win);
 extern void       GetIconWindow(FvwmWindow *tmp_win);

@@ -96,7 +96,7 @@ static struct functions func_config[] =
 #endif /* USEDECOR */
   {"DestroyFunc",  destroy_menu,     F_DESTROY_MENU,        FUNC_NO_WINDOW},
   {"DestroyMenu",  destroy_menu,     F_DESTROY_MENU,        FUNC_NO_WINDOW},
-  {"DestroyMenuStyle", DestroyMenuStyle, F_DESTROY_MENUSTYLE,  FUNC_NO_WINDOW},
+  {"DestroyMenuStyle", DestroyMenuStyle, F_DESTROY_MENUSTYLE,FUNC_NO_WINDOW},
   {"DestroyModuleConfig", DestroyModConfig, F_DESTROY_MOD,  FUNC_NO_WINDOW},
   {"Direction",    DirectionFunc,    F_DIRECTION,           FUNC_NO_WINDOW},
   {"Echo",         echo_func,        F_ECHO,                FUNC_NO_WINDOW},
@@ -119,7 +119,7 @@ static struct functions func_config[] =
   {"KillModule",   module_zapper,    F_ZAP,                 FUNC_NO_WINDOW},
   {"Lower",        lower_function,   F_LOWER,               FUNC_NEEDS_WINDOW},
   {"Maximize",     Maximize,         F_MAXIMIZE,            FUNC_NEEDS_WINDOW},
-  {"Menu",         staysup_func,     F_STAYSUP,             FUNC_POPUP},
+  {"Menu",         staysup_func,     F_STAYSUP,             FUNC_NO_WINDOW},
   {"MenuStyle",    SetMenuStyle,     F_MENUSTYLE,           FUNC_NO_WINDOW},
   {"Module",       executeModule,    F_MODULE,              FUNC_NO_WINDOW},
   {"ModulePath",   setModulePath,    F_MODULE_PATH,         FUNC_NO_WINDOW},
@@ -129,11 +129,11 @@ static struct functions func_config[] =
   {"MoveToPage",   move_window_to_page,F_MOVE_TO_PAGE,      FUNC_NEEDS_WINDOW},
   {"Next",         NextFunc,         F_NEXT,                FUNC_NO_WINDOW},
   {"None",         NoneFunc,         F_NONE,                FUNC_NO_WINDOW},
-  {"Nop",          Nop_func,         F_NOP,                 FUNC_NOP},
+  {"Nop",          Nop_func,         F_NOP,                 FUNC_NO_WINDOW},
   {"OpaqueMoveSize", SetOpaque,      F_OPAQUE,              FUNC_NO_WINDOW},
   {"PipeRead",     PipeRead,         F_READ,                FUNC_NO_WINDOW},
   {"PixmapPath",   setPixmapPath,    F_PIXMAP_PATH,         FUNC_NO_WINDOW},
-  {"PopUp",        popup_func,       F_POPUP,               FUNC_POPUP},
+  {"PopUp",        popup_func,       F_POPUP,               FUNC_NO_WINDOW},
   {"Prev",         PrevFunc,         F_PREV,                FUNC_NO_WINDOW},
   {"Quit",         quit_func,        F_QUIT,                FUNC_NO_WINDOW},
   {"QuitScreen",   quit_screen_func, F_QUIT_SCREEN,         FUNC_NO_WINDOW},
@@ -156,7 +156,7 @@ static struct functions func_config[] =
   {"SnapGrid",     SetSnapGrid,      F_SNAP_GRID,           FUNC_NO_WINDOW},
   {"Stick",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
   {"Style",        ProcessNewStyle,  F_STYLE,               FUNC_NO_WINDOW},
-  {"Title",        Nop_func,         F_TITLE,               FUNC_TITLE},
+  {"Title",        Nop_func,         F_TITLE,               FUNC_NO_WINDOW},
   {"TitleStyle",   SetTitleStyle,    F_TITLESTYLE,          FUNC_NO_WINDOW},
   {"UpdateDecor",  UpdateDecor,      F_UPDATE_DECOR,        FUNC_NO_WINDOW},
   {"Wait",         wait_func,        F_WAIT,                FUNC_NO_WINDOW},
@@ -209,13 +209,10 @@ static struct functions *FindBuiltinFunction(char *func)
  *	ExecuteFunction - execute a fvwm built in function
  *
  *  Inputs:
- *	func	- the function to execute
- *	action	- the menu action to execute
- *	w	- the window to execute this function on
+ *	Action	- the menu action to execute
  *	tmp_win	- the fvwm window structure
- *	event	- the event that caused the function
+ *	eventp	- pointer to the event that caused the function
  *	context - the context in which the button was pressed
- *      val1,val2 - the distances to move in a scroll operation
  *
  ***********************************************************************/
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
@@ -290,9 +287,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 }
 
 
-
-
-int find_func_type(char *action)
+void find_func_type(char *action, short *func_type, Bool *func_needs_window)
 {
   int j, len = 0;
   char *endtok = action;
@@ -309,11 +304,15 @@ int find_func_type(char *action)
       {
 	  matched=TRUE;
 	  /* found key word */
-	  return (int)func_config[j].code;
-	}
+	  *func_type = func_config[j].func_type;
+	  *func_needs_window = func_config[j].func_needs_window;
+	  return;
+      }
       else
 	j++;
     }
   /* No clue what the function is. Just return "BEEP" */
-  return F_BEEP;
+  *func_type = F_BEEP;
+  *func_needs_window = False;
+  return;
 }
