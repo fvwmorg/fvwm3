@@ -3033,7 +3033,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
   int abort = 0;
   int modifiers = eventp->xbutton.state;
   int start_event_type = eventp->type;
-  char sequence[MAX_SEQUENCE+1];
+  char sequence[STROKE_MAX_SEQUENCE + 1];
   char *stroke_action;
   char *opt = NULL;
   Bool finish_on_release = True;
@@ -3235,7 +3235,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 
   if (echo_sequence)
   {
-    char num_seq[MAX_SEQUENCE+1];
+    char num_seq[STROKE_MAX_SEQUENCE + 1];
 
     for(i=0;sequence[i] != '\0';i++)
     {

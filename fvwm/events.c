@@ -117,7 +117,7 @@ static FvwmWindow *xcrossing_last_grab_window = NULL;
 
 
 STROKE_CODE(static int send_motion;)
-STROKE_CODE(static char sequence[MAX_SEQUENCE+1];)
+STROKE_CODE(static char sequence[STROKE_MAX_SEQUENCE + 1];)
 
 #ifdef SHAPE
 extern int ShapeEventBase;
