@@ -13,6 +13,9 @@ Changes in alpha release 2.5.3 (not released yet)
   and ClickToFocusPassesClickOff.  This fixes a problem with
   click+drag in an unfocused rxvt or aterm window.
 
+* Fixed wrong warp coordinates when WarpToWindow was used with two
+  arguments on an unmanaged window.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)
