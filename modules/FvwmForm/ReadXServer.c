@@ -418,6 +418,7 @@ static void process_history(int direction) {
     strdup(CF.cur_input->input.value_history_ptr[count]);
   CF.cur_input->input.n = strlen(CF.cur_input->input.value);
   CF.cur_input->input.value_history_yankat = count; /* new yank point */
+  CF.cur_input->input.buf = CF.cur_input->input.n;
   CF.rel_cursor = 0;
   CF.abs_cursor = 0;
   CF.cur_input->input.left = 0;
