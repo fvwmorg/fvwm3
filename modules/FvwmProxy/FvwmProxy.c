@@ -288,6 +288,10 @@ static void ConfigureWindow(FvwmPacket *packet)
 	ProxyWindow *proxy;
 	int is_new_window = 0;
 
+	if (DO_SKIP_WINDOW_LIST(cfgpacket))
+	{
+		return;
+	}
 	proxy = FindProxy(target);
 	if (proxy == NULL)
 	{
@@ -365,6 +369,7 @@ static void IconifyWindow(Window w, int is_iconified)
 	{
 		return;
 	}
+	proxy->flags.is_iconified = !!is_iconified;
 	if (is_iconified)
 	{
 		if (proxy->flags.is_shown)
@@ -377,6 +382,7 @@ static void IconifyWindow(Window w, int is_iconified)
 		if (are_windows_shown)
 		{
 			ReshuffleWindows();
+			OpenOneWindow(proxy);
 		}
 	}
 

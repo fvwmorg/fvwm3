@@ -254,7 +254,7 @@ void SetRootWindow(char *tline)
 		PictureColorLimitOption colorLimitop = {-1, -1, -1, -1, -1};
 		colorLimitop.color_limit = opt_color_limit;
 		PictureInitCMapRoot(
-			dpy, !NoColorLimit, opt_color_limit, True, True);
+			dpy, !NoColorLimit, &colorLimitop, True, True);
 	}
 	else
 	{

@@ -1,5 +1,10 @@
 2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmProxy/FvwmProxy.c (ConfigureWindow):
+	fixed WindowlistSkip style in FvwmProxy
+	(IconifyWindow):
+	fixed displaying proxies when deiconifying windows
+
 	* Makefile.am:
 	build and install FvwmProxy
 
