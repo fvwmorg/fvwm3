@@ -5,7 +5,10 @@ configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmProxy
 man_MANS = FvwmProxy.1
-EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = $(man_MANS) ConfigFvwmProxyDefaults
+
+config_DATA = \
+	ConfigFvwmProxyDefaults
 
 FvwmProxy_SOURCES = FvwmProxy.c FvwmProxy.h
 FvwmProxy_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a

@@ -1,5 +1,8 @@
 2002-11-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/ConfigFvwmDefaults:
+	include ConfigFvwmProxyDefaults
+
 	* fvwm/fvwm.c (usage):
 	polished usage message
 

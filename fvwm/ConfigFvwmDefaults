@@ -22,6 +22,9 @@ AddToFunc WindowListFunc
 + I WindowId $0 Raise
 + I WindowId $0 WarpToWindow 5p 5p
 
+# defaults for FvwmProxy
+Read ConfigFvwmProxyDefaults
+
 # Needed by the ewmh support
 AddToFunc EWMHActivateWindowFunc
 + I Iconify off
@@ -55,4 +58,3 @@ AddToFunc FuncFvwmRaiseLowerX
 + I Raise
 + M $0
 + D Lower
-

@@ -33,6 +33,7 @@
 #include "libs/FScreen.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/safemalloc.h"
 
 #include "FvwmProxy.h"
 
@@ -53,6 +54,12 @@
 #define PROXY_WIDTH		180
 #define PROXY_HEIGHT		60
 #define PROXY_SEPARATE		10
+
+#define CMD_SHOW                "Function FvwmProxyShowFunc"
+#define CMD_HIDE                "Function FvwmProxyHideFunc"
+#define CMD_ABORT               "Function FvwmProxyAbortFunc"
+#define CMD_SELECT              "Function FvwmProxySelectFunc"
+#define CMD_MARK                "Function FvwmProxyMarkFunc"
 
 /* ---------------------------- local macros -------------------------------- */
 
@@ -78,7 +85,6 @@ static GC sh_gc;
 static GC miniIconGC;
 static Window rootWindow;
 static FILE *errorFile;
-static char command[256];
 static XTextProperty windowName;
 static int altState=0;
 static int deskNumber=0;
@@ -91,8 +97,14 @@ static FlocaleWinString *FwinString;
 
 static int cset_normal = 0;
 static int cset_select = 0;
-char *font_name = NULL;
-FlocaleFont *Ffont;
+static char *font_name = NULL;
+static FlocaleFont *Ffont;
+
+static char *show_command;
+static char *hide_command;
+static char *mark_command;
+static char *select_command;
+static char *abort_command;
 
 static int (*originalXErrorHandler)(Display *,XErrorEvent *);
 static int (*originalXIOErrorHandler)(Display *);
@@ -101,10 +113,30 @@ static int (*originalXIOErrorHandler)(Display *);
 
 /* ---------------------------- local functions (options) ------------------- */
 
+static void parse_cmd(char **ret_cmd, char *cmd)
+{
+	if (*ret_cmd != NULL)
+	{
+		free(*ret_cmd);
+		*ret_cmd = NULL;
+	}
+	if (cmd != NULL)
+	{
+		*ret_cmd = safestrdup(cmd);
+	}
+
+	return;
+}
+
 static Bool parse_options(void)
 {
 	char *tline;
 
+	show_command = safestrdup(CMD_SHOW);
+	hide_command = safestrdup(CMD_HIDE);
+	abort_command = safestrdup(CMD_ABORT);
+	mark_command = safestrdup(CMD_MARK);
+	select_command = safestrdup(CMD_SELECT);
 	InitGetConfigLine(fd, CatString3("*", MyName, 0));
 	for (GetConfigLine(fd, &tline); tline != NULL;
 	     GetConfigLine(fd, &tline))
@@ -143,6 +175,27 @@ static Bool parse_options(void)
 		{
 			CopyStringWithQuotes(&font_name, tline);
 		}
+		else if (StrEquals(resource, "ShowCommand"))
+		{
+			parse_cmd(&show_command, next);
+		}
+		else if (StrEquals(resource, "HideCommand"))
+		{
+			parse_cmd(&hide_command, next);
+		}
+		else if (StrEquals(resource, "AbortCommand"))
+		{
+			parse_cmd(&abort_command, next);
+		}
+		else if (StrEquals(resource, "MarkCommand"))
+		{
+			parse_cmd(&mark_command, next);
+		}
+		else if (StrEquals(resource, "SelectCommand"))
+		{
+			parse_cmd(&select_command, next);
+		}
+
 #if 0
 		else if (StrEquals(resource, "ProxyGeometry"))
 		{
@@ -243,6 +296,17 @@ static int myXIOErrorHandler(Display *display)
 }
 
 /* ---------------------------- local functions ----------------------------- */
+
+static void send_command_to_fvwm(char *command, Window w)
+{
+	if (command == NULL || *command == 0)
+	{
+		return;
+	}
+	SendText(fd, command, w);
+
+	return;
+}
 
 static ProxyWindow *FindProxy(Window window)
 {
@@ -491,9 +555,6 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 	{
 		int dx=abs(proxy->proxyx-other->proxyx);
 		int dy=abs(proxy->proxyy-other->proxyy);
-#if 0
-		fprintf(errorFile,"dx=%d dy=%d\n",dx,dy);
-#endif
 		if(dx<(PROXY_WIDTH+PROXY_SEPARATE) &&
 		   dy<PROXY_HEIGHT+PROXY_SEPARATE )
 		{
@@ -707,28 +768,71 @@ static void StartProxies(void)
 		return;
 	}
 	selectProxy=NULL;
+	send_command_to_fvwm(show_command, None);
 	are_windows_shown = 1;
 	CloseWindows();
 	ReshuffleWindows();
 	OpenWindows();
 }
 
-static void EndProxies(Bool release)
+static void MarkProxy(Window w)
+{
+	ProxyWindow *old_proxy;
+
+	old_proxy = selectProxy;
+	selectProxy = FindProxy(w);
+	if (selectProxy != old_proxy)
+	{
+		if (old_proxy != 0)
+		{
+			DrawProxyBackground(old_proxy);
+			DrawProxy(old_proxy);
+		}
+		if (selectProxy != 0)
+		{
+			DrawProxyBackground(selectProxy);
+			DrawProxy(selectProxy);
+		}
+		XSync(dpy, 0);
+	}
+	if (selectProxy != NULL)
+	{
+		send_command_to_fvwm(mark_command, selectProxy->window);
+	}
+
+	return;
+}
+
+static void HideProxies(void)
 {
 	if (!are_windows_shown)
 	{
 		return;
 	}
 	are_windows_shown = 0;
-	if(selectProxy)
-	{
-		XRaiseWindow(dpy,selectProxy->window);
-
-		sprintf(command,"WarpToWindow 50 50");
-		SendText(fd,command,
-			 selectProxy->window);
-	}
 	CloseWindows();
+
+	return;
+}
+
+static void SelectProxy(void)
+{
+	HideProxies();
+	if (selectProxy != NULL)
+	{
+		send_command_to_fvwm(select_command, selectProxy->window);
+	}
+	send_command_to_fvwm(hide_command, None);
+
+	return;
+}
+
+static void AbortProxies(boid)
+{
+	HideProxies();
+	send_command_to_fvwm(abort_command, None);
+
+	return;
 }
 
 static void change_cset(int cset)
@@ -852,7 +956,25 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		else if(StrEquals(token, "Hide"))
 		{
-			EndProxies(True);
+			SelectProxy();
+		}
+		else if(StrEquals(token, "Abort"))
+		{
+			AbortProxies(True);
+		}
+		else if(StrEquals(token, "Mark"))
+		{
+			Window w;
+
+			if (next == NULL)
+			{
+				w = None;
+			}
+			else if (sscanf(next, "0x%x", (int *)&w) < 1)
+			{
+				w = None;
+			}
+			MarkProxy(w);
 		}
 		else if(StrEquals(token, "Colorset"))
 		{
@@ -933,10 +1055,6 @@ static void DispatchEvent(XEvent *pEvent)
 	case ButtonPress:
 	{
 		ProxyWindow *proxy;
-#if 0
-		fprintf(errorFile,"ButtonPress %d\n",
-			pEvent->xbutton.button);
-#endif
 		proxy = FindProxy(window);
 		if(proxy)
 		{
@@ -994,6 +1112,7 @@ static void Loop(int *fd)
 			DispatchEvent(&event);
 
 #if PROXY_ALT_POLLING
+#if 0
 		{
 			Window root_return, child_return;
 			int root_x_return, root_y_return;
@@ -1019,25 +1138,13 @@ static void Loop(int *fd)
 			if(oldAltState && !altState)
 			{
 				fprintf(errorFile,"ALT OFF\n");
-				EndProxies(True);
+				SelectProxy();
 			}
 		}
 #endif
-	}
-}
-
-#if 0
-/* unused */
-static void RaiseProxies(void)
-{
-	ProxyWindow *proxy;
-
-	for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
-	{
-		XRaiseWindow(dpy,proxy->proxy);
-	}
-}
 #endif
+	}
+}
 
 /* ---------------------------- interface functions ------------------------- */
 
@@ -1072,10 +1179,6 @@ int main(int argc, char **argv)
 		fflush(errorFile);
 		exit (1);
 	}
-#if 0
-	fprintf(errorFile,"Display opened\n");
-	fflush(errorFile);
-#endif
 	titles[0]="FvwmProxy";
 	if(XStringListToTextProperty(titles,1,&windowName) == 0)
 	{
@@ -1091,14 +1194,6 @@ int main(int argc, char **argv)
 	FlocaleAllocateWinString(&FwinString);
 	screen = DefaultScreen(dpy);
 	rootWindow = RootWindow(dpy,screen);
-#if 0
-	XSync(dpy,False);
-	fprintf(errorFile,"SYNC\n");
-	fflush(errorFile);
-	XSync(dpy,False);
-	fprintf(errorFile,"SYNC\n");
-	fflush(errorFile);
-#endif
 	xgcv.plane_mask=AllPlanes;
 	miniIconGC=fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
 	fg_gc = fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
@@ -1129,17 +1224,7 @@ int main(int argc, char **argv)
 	}
 	SendInfo(fd,"Send_WindowList",0);
 	SendFinishedStartupNotification(fd);
-#if 0
-	fprintf(errorFile,"Startup Finished\n");
-	fflush(errorFile);
-	fprintf(errorFile,"Setup Finished\n");
-	fflush(errorFile);
-#endif
 	Loop(fd);
-#if 0
-	fprintf(errorFile,"Main Complete\n");
-	fflush(errorFile);
-#endif
 
 	return 0;
 }
