@@ -972,7 +972,15 @@ static void parse_config(void)
 
 static int error_handler(Display *d, XErrorEvent *e)
 {
-  /* All errors cause diagnostic output and stop execution */
+  /* Since GetColor() doesn't return a status it is possible that FvwmTheme
+   * will try to free a color that it hasn't XAlloc()'d. Allow this error */
+  if (e->error_code == BadAccess && e->request_code == X_FreeColors)
+  {
+    fprintf(stderr, "%s: couldn't free a pixel, probably ran out of colors\n",
+	    name);
+    return 0;
+  }
+  /* All other errors cause diagnostic output and stop execution */
   PrintXErrorAndCoredump(d, e, name);
   return 0;
 }
