@@ -449,7 +449,8 @@ void PopupTipWindow(int px, int py, const char *text)
 }
 
 void ShowTipWindow(int open)
- {
+{
+  if (!ShowTips) return;
   if (open)
   {
     if (Tip.win != None)
