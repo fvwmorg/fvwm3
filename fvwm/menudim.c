@@ -50,3 +50,5 @@ int menudim_middle_x_offset(MenuDimensions *mdim)
 {
 	return MDIM_ITEM_X_OFFSET(*mdim) + MDIM_ITEM_WIDTH(*mdim) / 2;
 }
+
+/* hallo */

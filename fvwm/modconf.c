@@ -273,7 +273,7 @@ static void send_desktop_names(int modnum)
 
 static void send_desktop_geometry(int modnum)
 {
-	char msg[32];
+	char msg[64];
 
 	sprintf(msg, "DesktopSize %d %d\n", Scr.VxMax / Scr.MyDisplayWidth + 1,
 		Scr.VyMax / Scr.MyDisplayHeight + 1);
@@ -301,7 +301,7 @@ static void send_image_path(int modnum)
 static void send_color_limit(int modnum)
 {
 #ifndef DISABLE_COLORLIMIT_CONFIG_INFO
-	char msg[32];
+	char msg[64];
 
 	sprintf(msg, "ColorLimit %d\n", Scr.ColorLimit);
 	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
@@ -326,7 +326,7 @@ static void send_colorsets(int modnum)
 
 static void send_click_time(int modnum)
 {
-	char msg[32];
+	char msg[64];
 
 	/* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to
 	 * 'not at all' during InitFunction and RestartFunction. */
@@ -339,7 +339,7 @@ static void send_click_time(int modnum)
 
 static void send_move_threshold(int modnum)
 {
-	char msg[32];
+	char msg[64];
 
 	sprintf(msg, "MoveThreshold %d\n", Scr.MoveThreshold);
 	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
@@ -349,14 +349,13 @@ static void send_move_threshold(int modnum)
 
 void send_ignore_modifiers(int modnum)
 {
-	char msg[32];
+	char msg[64];
 
-	sprintf(msg, "IgnoreModifiers %d", GetUnusedModifiers());
+	sprintf(msg, "IgnoreModifiers %d\n", GetUnusedModifiers());
 	SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;
 }
-
 
 void CMD_Send_ConfigInfo(F_CMD_ARGS)
 {

@@ -1,3 +1,12 @@
+2004-06-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/modconf.c (send_desktop_geometry):
+	(send_color_limit):
+	(send_click_time):
+	(send_move_threshold):
+	(send_ignore_modifiers):
+	increased static buffer size
+
 2004-06-13  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/CombineChars.c (convert_to_ucs2):
