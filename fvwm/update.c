@@ -136,8 +136,8 @@ static void apply_window_updates(
 		{
 			/* stick and unstick the window to force the icon on
 			 * the current page */
-			handle_stick(NULL, exc, "", 1);
-			handle_stick(NULL, exc, "", 0);
+			handle_stick(NULL, exc, "", 1, 1, 1);
+			handle_stick(NULL, exc, "", 0, 1, 0);
 		}
 		else
 		{
@@ -146,7 +146,7 @@ static void apply_window_updates(
 	}
 	else if (flags->do_update_stick)
 	{
-		handle_stick(NULL, exc, "", S_IS_STICKY(SCF(*pstyle)));
+		handle_stick(NULL, exc, "", S_IS_STICKY(SCF(*pstyle)), 0, 0);
 	}
 	exc_destroy_context(exc);
 	if (FMiniIconsSupported && flags->do_update_mini_icon)

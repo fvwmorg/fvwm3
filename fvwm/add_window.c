@@ -2354,7 +2354,7 @@ FvwmWindow *AddWindow(
 			exc2 = exc_clone_context(
 				exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 			SET_STICKY(fw, 0);
-			handle_stick(NULL, exc2, "", 1);
+			handle_stick(NULL, exc2, "", 1, 1, 0);
 			exc_destroy_context(exc2);
 		}
 	}

@@ -4005,7 +4005,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 
 /* ----------------------------- stick code -------------------------------- */
 
-void handle_stick(F_CMD_ARGS, int toggle)
+void handle_stick(F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
 {
 	FvwmWindow *fw = exc->w.fw;
 
@@ -4037,13 +4037,19 @@ void handle_stick(F_CMD_ARGS, int toggle)
 			SET_STICKY(fw, 1);
 		}
 	}
-	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
-	border_draw_decorations(
-		fw, PART_TITLE | PART_BUTTONS, (Scr.Hilite==fw), True,
-		CLEAR_ALL, NULL, NULL);
-	EWMH_SetWMState(fw, False);
-	EWMH_SetWMDesktop(fw);
-	GNOME_SetHints(fw);
+	if (do_not_draw == 0)
+	{
+		border_draw_decorations(
+			fw, PART_TITLE | PART_BUTTONS, (Scr.Hilite==fw), True,
+			CLEAR_ALL, NULL, NULL);
+	}
+	if (!do_silently)
+	{
+		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
+		EWMH_SetWMState(fw, False);
+		EWMH_SetWMDesktop(fw);
+		GNOME_SetHints(fw);
+	}
 
 	return;
 }
@@ -4053,7 +4059,7 @@ void CMD_Stick(F_CMD_ARGS)
 	int toggle;
 
 	toggle = ParseToggleArgument(action, &action, -1, 0);
-	handle_stick(F_PASS_ARGS, toggle);
+	handle_stick(F_PASS_ARGS, toggle, 0, 0);
 
 	return;
 }
