@@ -1,3 +1,18 @@
+1999-05-28  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/add_window.c (AddWindow): Preserve the desk setting when re-
+        using an FvwmWindow struct, to keep Recapture from losing track of
+        which desk a window is on.
+
+        * fvwm/fvwm.c (CaptureAllWindows): Restored the old XFindContext check
+        of each window, and removed the attempt to follow the FvwmWindow chain
+        (which gets modified with each call to CaptureOneWindow). This fixes
+        a random failure to set styles and desk correctly during a Recapture.
+
+        * fvwm/placement.c (PlaceWindow): Bypass all the "which desk to start
+        on" logic during initial Capture or Recapture, so the saved desk will
+        be used.
+
 1999-05-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/builtins.c (setShadeAnim): rewrote and fixed buggy parsing

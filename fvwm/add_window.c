@@ -132,8 +132,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   int do_shade = 0;
   int do_maximize = 0;
   int x_max, y_max, w_max, h_max;
+  FvwmWindow  save_state;
+  FvwmWindow  *savewin = NULL;
 
   NeedToResizeToo = False;
+  memset(&save_state, '\0', sizeof(FvwmWindow));
 
   /*
       Allocate space for the FvwmWindow struct, or reuse an
@@ -150,16 +153,21 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   else
     {
       tmp_win = ReuseWin;
+      savewin = &save_state;
+      memcpy(savewin, ReuseWin, sizeof(FvwmWindow));
     }
 
   /*
-    RBW - 1999/03/20 - modify this when we implement the preserving of
-    various states across a Restart. The Destroy function in misc.c may
+    RBW - 1999/05/28 - modify this when we implement the preserving of
+    various states across a Recapture. The Destroy function in misc.c may
     also need tweaking, depending on what you want to preserve.
-    For now, just zap any old information.
+    For now, just zap any old information, except the desk.
   */
   memset(tmp_win, '\0', sizeof(FvwmWindow));
   tmp_win->w = w;
+  if (savewin != NULL)  {
+    tmp_win->Desk = savewin->Desk;
+    }
 
   tmp_win->cmap_windows = (Window *)NULL;
 #ifdef MINI_ICONS

@@ -827,12 +827,12 @@ void CaptureAllWindows(void)
   else /* must be recapture */
   {
     /* reborder all windows */
-    tmp = Scr.FvwmRoot.next;
-    for(i=0;i<nchildren && tmp != NULL;i++)
+    for(i=0; i<nchildren; i++) 
     {
-      next = tmp->next;
-      CaptureOneWindow(tmp, children[i]);
-      tmp = next;
+      if(XFindContext(dpy, children[i], FvwmContext, (caddr_t *)&tmp)!=XCNOENT)
+      {
+        CaptureOneWindow(tmp, children[i]);
+      }
     }
   }
 

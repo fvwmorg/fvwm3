@@ -508,38 +508,42 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
     }
 /**/
 
-  tmp_win->Desk = Scr.CurrentDesk;
-  if (SIS_STICKY(sflags))
+/*  Don't alter the existing desk location during Capture/Recapture.  */
+  if (!PPosOverride)  {
     tmp_win->Desk = Scr.CurrentDesk;
-  else if ((SUSE_START_ON_DESK(sflags)) && Desk && HonorStartsOnPage)
-    tmp_win->Desk = (Desk > -1) ? Desk - 1 : Desk;    /*  RBW - 11/20/1998  */
-  else
-  {
-    if((tmp_win->wmhints)&&(tmp_win->wmhints->flags & WindowGroupHint)&&
-       (tmp_win->wmhints->window_group != None)&&
-       (tmp_win->wmhints->window_group != Scr.Root))
-    {
-      /* Try to find the group leader or another window
-       * in the group */
-      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    if (SIS_STICKY(sflags))
+      tmp_win->Desk = Scr.CurrentDesk;
+    else if ((SUSE_START_ON_DESK(sflags)) && Desk && HonorStartsOnPage)
+      tmp_win->Desk = (Desk > -1) ? Desk - 1 : Desk;    /*  RBW - 11/20/1998  */
+    else
       {
-        if((t->w == tmp_win->wmhints->window_group)||
-           ((t->wmhints)&&(t->wmhints->flags & WindowGroupHint)&&
-            (t->wmhints->window_group==tmp_win->wmhints->window_group)))
-          tmp_win->Desk = t->Desk;
+        if((tmp_win->wmhints)&&(tmp_win->wmhints->flags & WindowGroupHint)&&
+           (tmp_win->wmhints->window_group != None)&&
+           (tmp_win->wmhints->window_group != Scr.Root))
+        {
+          /* Try to find the group leader or another window
+           * in the group */
+          for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+          {
+            if((t->w == tmp_win->wmhints->window_group)||
+               ((t->wmhints)&&(t->wmhints->flags & WindowGroupHint)&&
+                (t->wmhints->window_group==tmp_win->wmhints->window_group)))
+              tmp_win->Desk = t->Desk;
+          }
+        }
+        if((IS_TRANSIENT(tmp_win))&&(tmp_win->transientfor!=None)&&
+           (tmp_win->transientfor != Scr.Root))
+        {
+          /* Try to find the parent's desktop */
+          for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+          {
+            if(t->w == tmp_win->transientfor)
+              tmp_win->Desk = t->Desk;
+          }
+        }
       }
     }
-    if((IS_TRANSIENT(tmp_win))&&(tmp_win->transientfor!=None)&&
-       (tmp_win->transientfor != Scr.Root))
-    {
-      /* Try to find the parent's desktop */
-      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-      {
-        if(t->w == tmp_win->transientfor)
-          tmp_win->Desk = t->Desk;
-      }
-    }
-  }
+
   /* I think it would be good to switch to the selected desk
    * whenever a new window pops up, except during initialization */
   if((!PPosOverride)&&(!DO_NOT_SHOW_ON_MAP(tmp_win)))
