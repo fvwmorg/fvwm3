@@ -1,5 +1,15 @@
 2004-10-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (__cr_detect_icccm_move):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/builtins.c (CMD_BugOpts):
+	new BugOpts option DebugCRMotionMethod for ConfigureRequest debugging
+
+	* fvwm/move_resize.c (__move_loop):
+	(__resize_window):
+	query the pointer position in the move loop when an
+	EnterNotify/LeaveNotify event arrives; same change in resize loop.
+
 	* NEWS:
 	* configure.in:
 	increased version to 2.5.13

@@ -485,6 +485,7 @@ typedef struct ScreenInfo
 	 * specific options later on: */
 	struct
 	{
+		unsigned do_debug_cr_motion_method : 1;
 		unsigned do_disable_configure_notify : 1;
 		unsigned do_display_new_window_names : 1;
 		unsigned do_enable_ewmh_iconic_state_workaround : 1;

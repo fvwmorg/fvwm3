@@ -3633,6 +3633,22 @@ void CMD_BugOpts(F_CMD_ARGS)
 				break;
 			}
 		}
+		else if (StrEquals(opt, "DebugCRMotionMethod"))
+		{
+			switch (toggle)
+			{
+			case -1:
+				Scr.bo.do_debug_cr_motion_method ^= 1;
+				break;
+			case 0:
+			case 1:
+				Scr.bo.do_debug_cr_motion_method = toggle;
+				break;
+			default:
+				Scr.bo.do_debug_cr_motion_method = 0;
+				break;
+			}
+		}
 		else
 		{
 			fvwm_msg(ERR, "SetBugOptions",

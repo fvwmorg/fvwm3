@@ -2140,15 +2140,31 @@ Bool __move_loop(
 		if (e.type == EnterNotify || e.type == LeaveNotify)
 		{
 			XEvent e2;
+			int x;
+			int y;
 
-			fev_make_null_event(&e2, dpy);
-			e2.type = MotionNotify;
-			e2.xmotion.time = fev_get_evtime();
-			e2.xmotion.x_root = e.xcrossing.x_root;
-			e2.xmotion.y_root = e.xcrossing.y_root;
-			e2.xmotion.same_screen = e.xcrossing.same_screen;
-			e = e2;
-			fev_fake_event(&e);
+			/* Query the pointer to catch the latest information.
+			 * This *is* necessary. */
+			if (FQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
+				    &y, &JunkX, &JunkY, &button_mask) ==
+			    True)
+			{
+				fev_make_null_event(&e2, dpy);
+				e2.type = MotionNotify;
+				e2.xmotion.time = fev_get_evtime();
+				e2.xmotion.x_root = x;
+				e2.xmotion.y_root = y;
+				e2.xmotion.same_screen = True;
+				e = e2;
+				fev_fake_event(&e);
+			}
+			else
+			{
+				/* pointer is on a different screen,
+				 * ignore event */
+			}
+
 		}
 
 		/* Handle a limited number of key press events to allow
@@ -2292,7 +2308,6 @@ Bool __move_loop(
 			}
 			do_snap = nosnap_enabled &&
 				(e.xkey.state & Mod1Mask) ? False : True;
-
 			xl = e.xmotion.x_root;
 			yt = e.xmotion.y_root;
 			if (xl > 0 && xl < Scr.MyDisplayWidth - 1)
@@ -3425,15 +3440,58 @@ static Bool __resize_window(F_CMD_ARGS)
 		if (ev.type == EnterNotify || ev.type == LeaveNotify)
 		{
 			XEvent e2;
+			int x;
+			int y;
 
-			fev_make_null_event(&e2, dpy);
-			e2.type = MotionNotify;
-			e2.xmotion.time = fev_get_evtime();
-			e2.xmotion.x_root = ev.xcrossing.x_root;
-			e2.xmotion.y_root = ev.xcrossing.y_root;
-			e2.xmotion.same_screen = ev.xcrossing.same_screen;
-			ev = e2;
-			fev_fake_event(&ev);
+			/* Query the pointer to catch the latest information.
+			 * This *is* necessary. */
+			if (FQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
+				    &y, &JunkX, &JunkY, &button_mask) ==
+			    True)
+			{
+				fev_make_null_event(&e2, dpy);
+				e2.type = MotionNotify;
+				e2.xmotion.time = fev_get_evtime();
+				e2.xmotion.x_root = x;
+				e2.xmotion.y_root = y;
+				e2.xmotion.same_screen = True;
+				ev = e2;
+				fev_fake_event(&ev);
+			}
+			else
+			{
+				/* pointer is on a different screen,
+				 * ignore event */
+			}
+		}
+		if (ev.type == EnterNotify || ev.type == LeaveNotify)
+		{
+			XEvent e2;
+			int x;
+			int y;
+
+			/* Query the pointer to catch the latest information.
+			 * This *is* necessary. */
+			if (FQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
+				    &y, &JunkX, &JunkY, &button_mask) ==
+			    True)
+			{
+				fev_make_null_event(&e2, dpy);
+				e2.type = MotionNotify;
+				e2.xmotion.time = fev_get_evtime();
+				e2.xmotion.x_root = x;
+				e2.xmotion.y_root = y;
+				e2.xmotion.same_screen = True;
+				ev = e2;
+				fev_fake_event(&ev);
+			}
+			else
+			{
+				/* pointer is on a different screen,
+				 * ignore event */
+			}
 		}
 
 		is_done = False;

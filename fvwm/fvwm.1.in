@@ -3634,6 +3634,12 @@ screen and position it was placed and why.  This option can be
 used to figure out why a specific window does not appear where you
 think it should.
 
+The
+.I DebugCRMotionMethod
+option enables some debugging code in the ConfigureRequest
+handling routines of fvwm.  It is not helpful for the user, but if
+you report a bug to the fvwm team we may ask you to enable this
+option.
 
 .TP
 .BI "BusyCursor [" "Option bool" "], " ...

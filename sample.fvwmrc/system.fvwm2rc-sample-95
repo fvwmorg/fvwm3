@@ -279,7 +279,7 @@ MenuStyle winops VerticalItemSpacing 1 2, VerticalTitleSpacing 1 2
 #
 #-----------------------------------------------------------------------------#
 
-# WARNING!!!
+# WARNING!
 #
 # If you use (or ever used) Settings-->Configuration-->Base Config
 # to configure your major operating modes then all commands in this
