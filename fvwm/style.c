@@ -714,6 +714,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    butt = 10;
           if (butt > 0 && butt <= 10)
 	  {
+	    /* migo (06/Jan/1999): added the next correcting line */
+	    butt = (butt + 1) / 2 + ((butt % 2 == 0)? NR_LEFT_BUTTONS: 0);
+
             ptmpstyle->flags.is_button_disabled &= ~(1<<(butt-1));
             ptmpstyle->flag_mask.is_button_disabled |= (1<<(butt-1));
             ptmpstyle->change_mask.is_button_disabled |= (1<<(butt-1));
@@ -1595,6 +1598,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    butt = 10;
           if (butt > 0 && butt <= 10)
 	  {
+	    /* migo (06/Jan/1999): added the next correcting line */
+	    butt = (butt + 1) / 2 + ((butt % 2 == 0)? NR_LEFT_BUTTONS: 0);
+
             ptmpstyle->flags.is_button_disabled |= (1<<(butt-1));
             ptmpstyle->flag_mask.is_button_disabled |= (1<<(butt-1));
             ptmpstyle->change_mask.is_button_disabled |= (1<<(butt-1));
