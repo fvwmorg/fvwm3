@@ -387,7 +387,7 @@ LoadWindowStates(char *filename)
 
 	      for (i = 0; i < sizeof(window_flags); i++)
 		{
-		    unsigned char f;
+		    unsigned int f;
 		    sscanf(ts, "%02x ", &f );
 		    ((unsigned char *)&(matches[num_match-1].gsfr_flags))[i] = f;
 		    ts += 3;

@@ -1,3 +1,8 @@
+Sun Apr 11 09:43:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* configure.in (FVWM_CONFIGDIR): set to ${sysconfdir}/fvwm,
+	as multiple config files are now installed.
+
 1999-04-11  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/add_window.c (AddWindow): initialise tmp_win when malloc'd
@@ -9,6 +14,11 @@
 	* fvwm/add_window.c (AddWindow): Make sure tmp_win->icon_name
 	gets initialized before being used.
 
+Sat Apr 10 12:15:23 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/session.c (LoadWindowStates): corrected `unsigned int
+	format, different type arg (arg 3)' error in loading flags.
+	
 1999-04-10  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/gsfr.h (SET_FOCUS_MODE):
