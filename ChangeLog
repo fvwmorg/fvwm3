@@ -1,4 +1,21 @@
 2003-08-07  olicha  <olivier.chapuis@free.fr>
+	
+	* configure.in:
+	* acinclude.m4 (AM_SAFTY_CHECK_MKSTEMP):
+	* acconfig.h:
+	* libs/System.c (fvwm_mkstemp):
+	* libs/fvwmlib.h:
+	Added fvwm_mkstemp for replacing tempnam. configure check if mkstemp
+	exists and work correctly, if not a replacement function is used
+	(written by Michael Han in 2001-02 and inspired by the glibc mkstemp
+	implementation).
+
+	* libs/fsm.c (unique_filename):
+	(SetAuthentication):
+	* fvwm/session.c (getUniqueStateFilename):
+	Replaced tempnam by fvwm_mkstemp
+	
+2003-08-07  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Makefile.am:
 	* libs/FSMlib.h (new file):

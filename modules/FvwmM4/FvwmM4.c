@@ -271,233 +271,255 @@ int main(int argc, char **argv)
 static char *m4_defs(
   Display *display, const char *host, char *m4_options, char *config_file)
 {
-  Screen *screen;
-  Visual *visual;
-  char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
-  char ostype[BUFSIZ];
-  char options[BUFSIZ];
-  static char tmp_name[BUFSIZ];
-  struct hostent *hostname;
-  char *vc;                     /* Visual Class */
-  FILE *tmpf;
-  struct passwd *pwent;
-  int fd;
-  int ScreenWidth, ScreenHeight;
-  int Mscreen;
+	Screen *screen;
+	Visual *visual;
+	char client[MAXHOSTNAME], server[MAXHOSTNAME], *colon;
+	char ostype[BUFSIZ];
+	char options[BUFSIZ];
+	static char tmp_name[BUFSIZ];
+	struct hostent *hostname;
+	char *vc;                     /* Visual Class */
+	FILE *tmpf;
+	struct passwd *pwent;
+	int fd;
+	int ScreenWidth, ScreenHeight;
+	int Mscreen;
 
-  /* Generate a temporary filename.  Honor the TMPDIR environment variable,
-     if set. Hope nobody deletes this file! */
+	/* Generate a temporary filename.  Honor the TMPDIR environment variable,
+	   if set. Hope nobody deletes this file! */
 
-  if (strlen(m4_outfile) == 0) {
-    if ((vc = getenv("TMPDIR"))) {
-      strcpy(tmp_name, vc);
-    } else {
-      strcpy(tmp_name, "/tmp");
-    }
-    strcat(tmp_name, "/fvwmrcXXXXXX");
-    mktemp(tmp_name);
-  } else {
-    strcpy(tmp_name,m4_outfile);
-  }
+	if (strlen(m4_outfile) == 0)
+	{
+		if ((vc = getenv("TMPDIR")))
+		{
+			strcpy(tmp_name, vc);
+		}
+		else
+		{
+			strcpy(tmp_name, "/tmp");
+		}
+		strcat(tmp_name, "/fvwmrcXXXXXX");
+		fd = fvwm_mkstemp(tmp_name);
+		if (fd == -1)
+		{
+			fprintf(
+				stderr,
+				"[FvwmM4][m4_def] fvwm_mkstemp failed %s\n",
+				tmp_name);
+			exit(0377);
+		}
+	}
+	else
+	{
+		strcpy(tmp_name, m4_outfile);
+		/*
+		 * check to make sure it doesn't exist already, to prevent 
+		 * security hole
+		 */
+		/* first try to unlink it */
+		unlink(tmp_name);
+		if ((fd = open(tmp_name, O_WRONLY|O_EXCL|O_CREAT, 0600)) < 0)
+		{
+			fprintf(
+				stderr,
+				"[FvwmM4][m4_defs] error opening file %s\n",
+				tmp_name);
+			exit(0377);
+		}
+	}
 
-  if (*tmp_name == '\0')
-  {
-    perror("mktemp failed in m4_defs");
-    exit(0377);
-  }
+	close(fd);
 
-  /*
-  ** check to make sure it doesn't exist already, to prevent security hole
-  */
-  /* first try to unlink it */
-  unlink(tmp_name);
-  if ((fd = open(tmp_name, O_WRONLY|O_EXCL|O_CREAT, 0600)) < 0)
-  {
-    fprintf(stderr, "error opening file %s\n", tmp_name);
-    perror("exclusive open for output file failed in m4_defs");
-    exit(0377);
-  }
-  close(fd);
+	/*
+	 * Create the appropriate command line to run m4, and
+	 * open a pipe to the command.
+	 */
 
-  /*
-   * Create the appropriate command line to run m4, and
-   * open a pipe to the command.
-   */
+	if(m4_prefix)
+	{
+		sprintf(
+			options, "%s --prefix-builtins %s > %s\n",
+			m4_prog,
+			m4_options, tmp_name);
+	}
+	else
+	{
+		sprintf(options, "%s  %s > %s\n",
+			m4_prog,
+			m4_options, tmp_name);
+	}
+	tmpf = popen(options, "w");
+	if (tmpf == NULL)
+	{
+		fprintf(
+			stderr,
+			"[FvwmM4][m4_defs] Cannot open pipe to m4\n");
+		exit(0377);
+	}
 
-  if(m4_prefix)
-    sprintf(options, "%s --prefix-builtins %s > %s\n",
-	    m4_prog,
-	    m4_options, tmp_name);
-  else
-    sprintf(options, "%s  %s > %s\n",
-	    m4_prog,
-	    m4_options, tmp_name);
-  tmpf = popen(options, "w");
-  if (tmpf == NULL) {
-    perror("Cannot open pipe to m4");
-    exit(0377);
-  }
+	gethostname(client,MAXHOSTNAME);
+	getostype  (ostype, sizeof ostype);
 
-  gethostname(client,MAXHOSTNAME);
+	/* Change the quoting characters, if specified */
 
-  getostype  (ostype, sizeof ostype);
-
-  /* Change the quoting characters, if specified */
-
-  if (!m4_default_quotes)
-  {
-    fprintf(tmpf, "%schangequote(%s, %s)%sdnl\n",
+	if (!m4_default_quotes)
+	{
+		fprintf(
+			tmpf, "%schangequote(%s, %s)%sdnl\n",
 			(m4_prefix) ? "m4_" : "",
 			m4_startquote, m4_endquote,
 			(m4_prefix) ? "m4_" : "");
-  }
+	}
 
-  hostname = gethostbyname(client);
-  strcpy(server, XDisplayName(host));
-  colon = strchr(server, ':');
-  if (colon != NULL) *colon = '\0';
-  if ((server[0] == '\0') || (!strcmp(server, "unix")))
-    strcpy(server, client);     /* must be connected to :0 or unix:0 */
+	hostname = gethostbyname(client);
+	strcpy(server, XDisplayName(host));
+	colon = strchr(server, ':');
+	if (colon != NULL) *colon = '\0';
+	if ((server[0] == '\0') || (!strcmp(server, "unix")))
+		strcpy(server, client); /* must be connected to :0 or unix:0 */
 
-  /* TWM_TYPE is fvwm, for completeness */
+	/* TWM_TYPE is fvwm, for completeness */
 
-  fputs(MkDef("TWM_TYPE", "fvwm"), tmpf);
+	fputs(MkDef("TWM_TYPE", "fvwm"), tmpf);
 
-  /* The machine running the X server */
-  fputs(MkDef("SERVERHOST", server), tmpf);
-  /* The machine running the window manager process */
-  fputs(MkDef("CLIENTHOST", client), tmpf);
-  if (hostname)
-    fputs(MkDef("HOSTNAME", (char *)hostname->h_name), tmpf);
-  else
-    fputs(MkDef("HOSTNAME", (char *)client), tmpf);
+	/* The machine running the X server */
+	fputs(MkDef("SERVERHOST", server), tmpf);
+	/* The machine running the window manager process */
+	fputs(MkDef("CLIENTHOST", client), tmpf);
+	if (hostname)
+		fputs(MkDef("HOSTNAME", (char *)hostname->h_name), tmpf);
+	else
+		fputs(MkDef("HOSTNAME", (char *)client), tmpf);
 
-  fputs(MkDef("OSTYPE", ostype), tmpf);
+	fputs(MkDef("OSTYPE", ostype), tmpf);
 
-  pwent=getpwuid(geteuid());
-  fputs(MkDef("USER", pwent->pw_name), tmpf);
+	pwent=getpwuid(geteuid());
+	fputs(MkDef("USER", pwent->pw_name), tmpf);
 
-  fputs(MkDef("HOME", getenv("HOME")), tmpf);
-  fputs(MkNum("VERSION", ProtocolVersion(display)), tmpf);
-  fputs(MkNum("REVISION", ProtocolRevision(display)), tmpf);
-  fputs(MkDef("VENDOR", ServerVendor(display)), tmpf);
-  fputs(MkNum("RELEASE", VendorRelease(display)), tmpf);
+	fputs(MkDef("HOME", getenv("HOME")), tmpf);
+	fputs(MkNum("VERSION", ProtocolVersion(display)), tmpf);
+	fputs(MkNum("REVISION", ProtocolRevision(display)), tmpf);
+	fputs(MkDef("VENDOR", ServerVendor(display)), tmpf);
+	fputs(MkNum("RELEASE", VendorRelease(display)), tmpf);
 
-  Mscreen= DefaultScreen(display);
-  fputs(MkNum("SCREEN", Mscreen), tmpf);
+	Mscreen= DefaultScreen(display);
+	fputs(MkNum("SCREEN", Mscreen), tmpf);
 
-  ScreenWidth = DisplayWidth(display,Mscreen);
-  ScreenHeight = DisplayHeight(display,Mscreen);
-  fputs(MkNum("WIDTH", DisplayWidth(display,Mscreen)), tmpf);
-  fputs(MkNum("HEIGHT", DisplayHeight(display,Mscreen)), tmpf);
+	ScreenWidth = DisplayWidth(display,Mscreen);
+	ScreenHeight = DisplayHeight(display,Mscreen);
+	fputs(MkNum("WIDTH", DisplayWidth(display,Mscreen)), tmpf);
+	fputs(MkNum("HEIGHT", DisplayHeight(display,Mscreen)), tmpf);
 
-  screen = ScreenOfDisplay(display, Mscreen);
-  fputs(MkNum("X_RESOLUTION",Resolution(screen->width,screen->mwidth)),tmpf);
-  fputs(MkNum("Y_RESOLUTION",Resolution(screen->height,screen->mheight)),tmpf);
-  fputs(MkNum("PLANES",DisplayPlanes(display, Mscreen)), tmpf);
+	screen = ScreenOfDisplay(display, Mscreen);
+	fputs(MkNum(
+		      "X_RESOLUTION",Resolution(screen->width,screen->mwidth)),
+	      tmpf);
+	fputs(MkNum(
+		      "Y_RESOLUTION",Resolution(screen->height,screen->mheight)),
+	      tmpf);
+	fputs(MkNum("PLANES",DisplayPlanes(display, Mscreen)), tmpf);
 
-  visual = DefaultVisualOfScreen(screen);
-  fputs(MkNum("BITS_PER_RGB", visual->bits_per_rgb), tmpf);
+	visual = DefaultVisualOfScreen(screen);
+	fputs(MkNum("BITS_PER_RGB", visual->bits_per_rgb), tmpf);
 
-  switch(visual->class)
-  {
-    case(StaticGray):
-      vc = "StaticGray";
-      break;
-    case(GrayScale):
-      vc = "GrayScale";
-      break;
-    case(StaticColor):
-      vc = "StaticColor";
-      break;
-    case(PseudoColor):
-      vc = "PseudoColor";
-      break;
-    case(TrueColor):
-      vc = "TrueColor";
-      break;
-    case(DirectColor):
-      vc = "DirectColor";
-      break;
-    default:
-      vc = "NonStandard";
-      break;
-  }
-  fputs(MkDef("CLASS", vc), tmpf);
+	switch(visual->class)
+	{
+	case(StaticGray):
+		vc = "StaticGray";
+		break;
+	case(GrayScale):
+		vc = "GrayScale";
+		break;
+	case(StaticColor):
+		vc = "StaticColor";
+		break;
+	case(PseudoColor):
+		vc = "PseudoColor";
+		break;
+	case(TrueColor):
+		vc = "TrueColor";
+		break;
+	case(DirectColor):
+		vc = "DirectColor";
+		break;
+	default:
+		vc = "NonStandard";
+		break;
+	}
+	fputs(MkDef("CLASS", vc), tmpf);
 
-  switch(Pvisual->class)
-  {
-    case(StaticGray):
-      vc = "StaticGray";
-      break;
-    case(GrayScale):
-      vc = "GrayScale";
-      break;
-    case(StaticColor):
-      vc = "StaticColor";
-      break;
-    case(PseudoColor):
-      vc = "PseudoColor";
-      break;
-    case(TrueColor):
-      vc = "TrueColor";
-      break;
-    case(DirectColor):
-      vc = "DirectColor";
-      break;
-    default:
-      vc = "NonStandard";
-      break;
-  }
-  fputs(MkDef("FVWM_CLASS", vc), tmpf);
+	switch(Pvisual->class)
+	{
+	case(StaticGray):
+		vc = "StaticGray";
+		break;
+	case(GrayScale):
+		vc = "GrayScale";
+		break;
+	case(StaticColor):
+		vc = "StaticColor";
+		break;
+	case(PseudoColor):
+		vc = "PseudoColor";
+		break;
+	case(TrueColor):
+		vc = "TrueColor";
+		break;
+	case(DirectColor):
+		vc = "DirectColor";
+		break;
+	default:
+		vc = "NonStandard";
+		break;
+	}
+	fputs(MkDef("FVWM_CLASS", vc), tmpf);
 
-  if (visual->class != StaticGray && visual->class != GrayScale)
-    fputs(MkDef("COLOR", "Yes"), tmpf);
-  else
-    fputs(MkDef("COLOR", "No"), tmpf);
+	if (visual->class != StaticGray && visual->class != GrayScale)
+		fputs(MkDef("COLOR", "Yes"), tmpf);
+	else
+		fputs(MkDef("COLOR", "No"), tmpf);
 
-  if (Pvisual->class != StaticGray && Pvisual->class != GrayScale)
-    fputs(MkDef("FVWM_COLOR", "Yes"), tmpf);
-  else
-    fputs(MkDef("FVWM_COLOR", "No"), tmpf);
+	if (Pvisual->class != StaticGray && Pvisual->class != GrayScale)
+		fputs(MkDef("FVWM_COLOR", "Yes"), tmpf);
+	else
+		fputs(MkDef("FVWM_COLOR", "No"), tmpf);
 
-  fputs(MkDef("FVWM_VERSION", VERSION), tmpf);
+	fputs(MkDef("FVWM_VERSION", VERSION), tmpf);
 
-  /* Add options together */
-  *options = '\0';
-  if (FHaveShapeExtension)
-    strcat(options, "SHAPE ");
-#ifdef  XPM
-  strcat(options, "XPM ");
-#endif
+	/* Add options together */
+	*options = '\0';
+	if (FHaveShapeExtension)
+		strcat(options, "SHAPE ");
 
-  strcat(options, "M4 ");
+	if (XpmSupport)
+		strcat(options, "XPM ");
 
-  fputs(MkDef("OPTIONS", options), tmpf);
+	strcat(options, "M4 ");
 
-  fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
-  fputs(MkDef("FVWM_DATADIR", FVWM_DATADIR), tmpf);
+	fputs(MkDef("OPTIONS", options), tmpf);
 
-  if ((vc = getenv("FVWM_USERDIR")))
-     fputs(MkDef("FVWM_USERDIR", vc), tmpf);
-#ifdef SESSION
-  if ((vc = getenv("SESSION_MANAGER")))
-    fputs(MkDef("SESSION_MANAGER", vc), tmpf);
-#endif
+	fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
+	fputs(MkDef("FVWM_DATADIR", FVWM_DATADIR), tmpf);
 
-  /*
-   * At this point, we've sent the definitions to m4.  Just include
-   * the fvwmrc file now.
-   */
+	if ((vc = getenv("FVWM_USERDIR")))
+		fputs(MkDef("FVWM_USERDIR", vc), tmpf);
 
-  fprintf(tmpf, "%sinclude(%s%s%s)\n",
-	  (m4_prefix) ? "m4_": "",
-	  m4_startquote,
-	  config_file,
-	  m4_endquote);
+	if (SessionSupport && (vc = getenv("SESSION_MANAGER")))
+		fputs(MkDef("SESSION_MANAGER", vc), tmpf);
 
-  pclose(tmpf);
-  return(tmp_name);
+	/*
+	 * At this point, we've sent the definitions to m4.  Just include
+	 * the fvwmrc file now.
+	 */
+
+	fprintf(tmpf, "%sinclude(%s%s%s)\n",
+		(m4_prefix) ? "m4_": "",
+		m4_startquote,
+		config_file,
+		m4_endquote);
+
+	pclose(tmpf);
+	return(tmp_name);
 }
 
 

@@ -170,6 +170,8 @@ void setFileStamp(FileStamp *stamp, const char *name);
 Bool isFileStampChanged(const FileStamp *stamp, const char *name);
 
 
+/* mkstemp */
+int fvwm_mkstemp (char *TEMPLATE);
 
 /*
  * Stuff for dealing w/ bitmaps & pixmaps:

@@ -992,11 +992,6 @@ reserved space as explained in the
 .B EwmhBaseStruts
 command.
 
-This support can be disabled at compile time
-(use the --disable-ewmh option to configure).
-.\" This support is a compile time option which is off by default
-.\" (use the --enable-ewmh option to configure to enable it).
-
 .SH MWM COMPATIBILITY
 
 Fvwm provides options to emulate Motif Window Manager (Mwm) as

@@ -230,9 +230,9 @@ static char *getUniqueStateFilename(void)
 	{
 		return NULL;
 	}
-
-	filename = tempnam(path, ".fs-");
-	if ((fd = open (filename, O_WRONLY | O_EXCL | O_CREAT, 0600)) == -1)
+	filename = safestrdup(CatString2(path, "/.fs-XXXXXX"));
+	fd = fvwm_mkstemp(filename);
+	if (fd == -1)
 	{
 		free (filename);
 		filename = NULL;

@@ -122,9 +122,6 @@
 /* NOTE: hard coded to 1 */
 #define USEDECOR 1
 
-/* Enables multi-pixmap themeable titlebars */
-#undef FANCY_TITLEBARS
-
 /* Enables session management functionality. */
 #undef SESSION
 
@@ -133,6 +130,9 @@
 
 /* Enable X output method */
 #undef HAVE_XOUTPUT_METHOD
+
+/* Enable the use of mkstemp */
+#undef HAVE_SAFTY_MKSTEMP
 
 /* Specify a type for sig_atomic_t if it's not available. */
 #undef sig_atomic_t

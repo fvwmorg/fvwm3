@@ -1764,3 +1764,58 @@ AC_SUBST($1)dnl
 
 dnl Usage: AM_GNU_GETTEXT_VERSION([gettext-version])
 AC_DEFUN([AM_GNU_GETTEXT_VERSION], [])
+
+
+#-----------------------------------------------------------------------------
+# Safty check for mkstemp
+#
+AC_DEFUN([AM_SAFTY_CHECK_MKSTEMP],[
+  AC_CHECK_FUNCS(mkstemp)
+  has_safty_mkstemp=no
+  AC_MSG_CHECKING(if mkstemp is safe)
+  if test x$ac_cv_func_mkstemp != xno; then
+    AC_TRY_RUN([
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int main(void)
+{
+  char template[128];
+  char template_orig[128];
+  int fd;
+
+  sprintf(template, "configure-mkstemp-test.XXXXXX");
+  strcpy(template_orig, template);
+  fd = mkstemp(template);
+  if (fd == -1)
+  {
+    /* could not create temp file */
+    return 1;
+  }
+  if (strcmp(template, template_orig) == 0)
+  {
+    /* mkstemp broken */
+    return 2;
+  }
+  if (close(fd) != 0)
+  {
+    /* doh! */
+    return 3;
+  }
+  if (unlink(template))
+  {
+     return 4;
+  }
+  /* mkstemp works properly */
+  return 0;
+}
+    ],
+    [has_safty_mkstemp=yes], [has_safty_mkstemp=no])
+  fi
+  if test x$has_safty_mkstemp = xno; then
+    AC_MSG_RESULT(no, use our mkstemp)
+  else
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_SAFTY_MKSTEMP)
+  fi
+])

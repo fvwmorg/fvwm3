@@ -955,6 +955,10 @@ AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strdup strerror usleep atexi
 dnl dv: this is harmful with autoconf 2.53 and is done automatically anyway
 dnl AC_SUBST(LIBOBJS)
 
+dnl check for mkstemp, see the discution on this subject on the fvwm workers
+dnl list (2001-02-16 and 2001-02-24)
+AM_SAFTY_CHECK_MKSTEMP
+
 dnl If we do not have atexit(), then check for on_exit()
 if test x$ac_cv_func_atexit = xno; then
   AC_CHECK_FUNCS(on_exit)

@@ -1,5 +1,11 @@
 2003-08-07  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmCpp/FvwmCpp.c (cpp_defs):
+	* FvwmM4/FvwmM4.c (m4_defs):
+	Replaced mktemp by fvwm_mkstemp
+
+2003-08-07  olicha  <olivier.chapuis@free.fr>
+
 	* FvwmButtons/FvwmButtons.h:
 	* FvwmButtons/parse.c (ParseButton):
 	* FvwmButtons/FvwmButtons.c (DeadPipeCleanup):

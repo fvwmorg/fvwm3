@@ -35,6 +35,7 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 
+#include "fvwmlib.h"
 #include "safemalloc.h"
 #include "flist.h"
 #include "fsm.h"
@@ -158,9 +159,19 @@ write_iceauth(FILE *addfp, FILE *removefp, FIceAuthDataEntry *entry)
 
 
 static char *
-unique_filename(char *path, char *prefix)
+unique_filename(char *path, char *prefix, int *pFd)
 {
-	return tempnam(path, prefix);
+	char *tempFile;
+
+	tempFile = (char *)safemalloc(strlen(path) + strlen(prefix) + 8);
+	sprintf(tempFile, "%s/%sXXXXXX", path, prefix);
+	*pFd =  fvwm_mkstemp(tempFile);
+	if (*pFd == -1)
+	{
+		free(tempFile);
+		tempFile = NULL;
+	}
+	return tempFile;
 }
 
 /*
@@ -179,6 +190,7 @@ Status SetAuthentication(
 	int original_umask;
 	char command[256];
 	int i;
+	int fd;
 
 	if (!SessionSupport)
 	{
@@ -207,21 +219,21 @@ Status SetAuthentication(
 #endif
 	if (!path)
 	{
-		goto bad;
+		path = ".";
 	}
-	if ((addAuthFile = unique_filename(path, ".fsm-")) == NULL)
+	if ((addAuthFile = unique_filename (path, ".fsm-", &fd)) == NULL)
 	{
 		goto bad;
 	}
-	if (!(addfp = fopen(addAuthFile, "w")))
+	if (!(addfp = fdopen(fd, "wb")))
+	{ 
+		goto bad;
+	}
+	if ((remAuthFile = unique_filename (path, ".fsm-", &fd)) == NULL)
 	{
 		goto bad;
 	}
-	if ((remAuthFile = unique_filename(path, ".fsm-")) == NULL)
-	{
-		goto bad;
-	}
-	if (!(removefp = fopen(remAuthFile, "w")))
+	if (!(removefp = fdopen(fd, "wb")))
 	{ 
 		goto bad;
 	}
