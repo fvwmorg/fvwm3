@@ -131,6 +131,26 @@ and Y is a Yin Yang style (but without the dots, we are not \fIthat\fP mad).
 Please refer to the \fICOLOR GRADIENTS\fP section in the \fIfvwm\fP man page
 for the syntax of gradients.
 
+.\"needs_lang_check
+.I fgsh
+take a color name as an argument and set the color used by the
+shadowing font effect. See the
+.B FONT EFFECTS
+section of the fvwm man page. By default this colour is computed from
+the foreground and background colours.
+To switch back to this default the color name can be omitted.
+
+.I fg_alpha
+takes an integer between 0 and 100 as an (percentage) argument.
+It causes fvwm to merge the text and the  background with this rate
+percentage. If this rate is 0 the text is hidden and if it is 100
+the text is applied as usual (no merge). The default is 100 and it
+is restored if no argument is given.
+This option has an effect only with font loaded by Xft, see the
+.B FONT NAMES AND FONT LOADING
+section of fvwm man page.
+.\"end
+
 .I Tint
 and
 .I TintMask

@@ -1095,6 +1095,69 @@ Style * Font -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
 to force FVWM to use the font with iso8859-6 as the encoding (this is useful for
 bi-directionality) and to use local_iso8859_6_iconv for defining the converters.
 
+.SH FONT EFFECTS
+
+It is possible to shadow text by adding at the beginning of an
+FVWM font name
+.EX
+shadow=size [offset] [directions]:
+.EE
+where
+.I size
+is a positive integer which specifies the shadow , where
+.I offset
+is an optional positive integer which defines an offset for
+the position of the shadow
+and where
+.I directions
+is an optional set of directions which defines the positions of the shadow.
+This shadow effect works only if you use colorsets.
+The colour of the shadow is defined by using the
+.I fgsh
+option of the
+.I Colorset
+command.
+Please refer to the
+.B COLORSETS
+section for details about colorsets. The default
+.I offset
+is 0.
+The
+.I directions
+is a space separated list constituted by FVWM directions:
+
+.IR N ,   North ,      Top ,          t ,   Up ,         u
+
+.IR E ,   East ,       Right ,        r ,   Right ,      r
+
+.IR S ,   South ,      Bottom ,       b ,   Down ,       d
+
+.IR W ,   West ,       Left ,         l ,   Left ,       l
+
+.IR NE ,  NorthEast ,  TopRight ,     tr ,  UpRight ,    ur
+
+.IR SE ,  SouthEast ,  BottomRight ,  br ,  DownRight ,  dr
+
+.IR SW ,  SouthWest ,  BottomLeft ,   bl ,  DownLeft ,   dl
+
+.IR NW ,  NorthWest ,  TopLeft ,      tl ,  UpLeft ,     ul
+
+a shadow is displayed in each given direction.
+.I All
+is equivalent to all the directions relatively to the normal
+text . The default
+.I direction
+is
+.IR BottomRight .
+
+Note: the quality of the resulting rendering depends on a
+number of parameters. The font, the
+.IR fg , fgsh
+and
+.IR bg
+colours and the parameters above. You can obtain ugly
+result as well as great text rendering improvement.
+
 .SH BI-DIRECTIONAL TEXT
 
 Arabic and Hebrew text require bi-directional text support to be

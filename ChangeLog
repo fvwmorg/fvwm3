@@ -1,5 +1,11 @@
 2002-05-31  olicha  <olivier.chapuis@free.fr>
 
+	* NEWS:
+	* fvwm/fvwm.1:
+	Documented shadow effect in a new section FONT EFFECTS
+
+2002-05-31  olicha  <olivier.chapuis@free.fr>
+
 	* libs/Fft.c (FftDrawString):
 	* libs/Colorset.c (DumpColorset):
 	(LoadColorset):
