@@ -17,8 +17,12 @@
 # case of the fvwm commands must match those in the script
 # exactly). With gawk, it'll be case-insensitive.
 
+# It's not perfect: some old commands slip through, especially in the
+# context of Mouse and Key commands.  But it provides a good basis on
+# which to go further.
+
 #
-# Convert fvwm 1.x configuration file to 2.0
+# Convert fvwm 1.x configuration file to 2.2 configuration file
 #
 # Originally written by Martin Kraemer <Martin.Kraemer@mch.sni.de>
 # Corrected, extended, and modified by Grant McDorman <grant@isgtec.com>
@@ -29,16 +33,30 @@
 # Further minor corrections by Julian Gilbey <jdg@debian.org> based on those
 # of Austin Donnelly <and1000@debian.org>, 1 Mar 1999
 # Further major corrections by Julian Gilbey <jdg@debian.org>, 3 Mar 1999
+# and minor corrections March - May 1999.
 
 echo "fvwmrc-to-fvwm2rc" >&2
 
-# Point this to your gawk/nawk/awk exec:
-AWK=/usr/bin/awk
+# gawk has IGNORECASE, so we use it if possible.
+if [ -n `command -v gawk 2>/dev/null` ]
+then
+   AWK=gawk
+elsif [ -x /usr/bin/gawk ]
+then
+   AWK=/usr/bin/gawk
+elsif [ -n `command -v awk 2>/dev/null` ]
+then
+   AWK=awk
+elsif [ -x /usr/bin/awk ]
+then
+   AWK=/usr/bin/awk
+fi
 
 if [ ! -x $AWK ];then
-   echo "$AWK missing, cannot run" >&2
+   echo "Can't fimd any awk, cannot run!" >&2
    exit 1
 fi
+
 source=${1:-$HOME/.fvwmrc}
 dest=${2:-$HOME/.fvwm2rc}
 if [ "$dest" != "-" ] ;then
@@ -219,7 +237,10 @@ BEGIN   {
 ########## Placement & Focus styles ##########
 /^[ \t]*RandomPlacement[ \t]*/	{ print "Style \"*\" " $0; placement = TRUE; next; }
 /^[ \t]*SmartPlacement[ \t]*/	{ print "Style \"*\" " $0; placement = TRUE; next; }
-/^[ \t]*Sticky[ \t]*/		{ printf "Style \"%s\" Sticky\n", $2; next; }
+/^[ \t]*Sticky(Back|Fore)Color[ \t]*/ {
+      print "#! " $0 " (not supported in FVWM2)"; next;
+}
+/^[ \t]*Sticky[ \t]+/		{ printf "Style \"%s\" Sticky\n", $2; next; }
 /^[ \t]*NoPPosition[ \t]*/	{ print "Style \"*\" " $0; next; }
 /^[ \t]*ClickToFocus[ \t]*/	{ print "Style \"*\" " $0; next; }
 /^[ \t]*SloppyFocus[ \t]*/	{ print "Style \"*\" " $0; next; }

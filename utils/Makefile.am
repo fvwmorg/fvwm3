@@ -8,7 +8,7 @@ noinst_SCRIPTS = BuildXLockMenu
 
 EXTRA_PROGRAMS = xpmroot
 
-man_MANS = xpmroot.1 BuildXLockMenu.1 fvwmbug.1
+man_MANS = xpmroot.1 BuildXLockMenu.1 fvwmbug.1 fvwmrc_convert.1
 EXTRA_DIST = BuildXLockMenu.in fvwmrc_convert fvwm_make_browse_menu.sh \
 	fvwm_make_directory_menu.sh quantize_pixmaps $(man_MANS)
 
