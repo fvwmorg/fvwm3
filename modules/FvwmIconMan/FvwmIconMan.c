@@ -27,7 +27,7 @@
 #include "libs/Module.h"
 
 
-const char *MyName;
+char *MyName;
 FlocaleWinString *FwinString;
 int mods_unused = DEFAULT_MODS_UNUSED;
 
@@ -164,7 +164,7 @@ main_loop (void)
 int
 main(int argc, char **argv)
 {
-  const char *s;
+  char *s;
   int i;
 
 #ifdef ELECTRIC_FENCE

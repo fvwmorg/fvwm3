@@ -443,8 +443,8 @@ static void set_window_properties (Window win, char *name, char *icon,
     return;
   }
 
-  class.res_name = Module + 1;
-  class.res_class = "FvwmModule";
+  class.res_name = MyName;
+  class.res_class = "FvwmIconMan";
 
 
   XSetWMProperties (theDisplay, win, &win_name, &win_icon, NULL, 0,

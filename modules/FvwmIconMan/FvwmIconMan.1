@@ -72,6 +72,9 @@ transiently. So, when running transiently, FvwmIconMan will only create one
 manager window. Use the manager id 'transient' to specify options for this
 manager window.
 
+FvwmIconMan may accept an alias name as an argument.
+For example, "Module FvwmIconMan FvwmIconMan-Variant2".
+
 .SH CONFIGURATION OPTIONS REFERENCE CHART
 FvwmIconMan has acquired quite a few options. I assume others
 share my dislike of paging though a long man page, so here is a
@@ -261,6 +264,9 @@ current page and !screen shows only those windows not on the
 current Xinerama screen. The default is global. If Xinerama is not
 active or only a single screen is used, page and screen are
 equivalent.
+
+This configuration line is respected when FvwmIconMan is running
+as well, the resolution is changed dynamically.
 
 .IP "*FvwmIconMan: [id ]reverse \fIclass\fP"
 Causes certain classes of buttons to have their relief lines reversed so that

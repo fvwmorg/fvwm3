@@ -1,5 +1,6 @@
 2002-06-04  Mikhael Goikhman  <migo@homemail.com>
 
+	* FvwmIconMan/FvwmIconMan.1:
 	* FvwmIconMan/FvwmIconMan.c (main):
 	* FvwmIconMan/FvwmIconMan.h:
 	* FvwmIconMan/fvwm.c (handle_config_info):
@@ -9,6 +10,11 @@
 	* FvwmIconMan/xmanager.c:
 	FvwmIconMan may now change resolution dynamically, just issue
 	"*FvwmIconMan: resolution desk" while FvwmIconMan is running
+
+	* FvwmIconMan/FvwmIconMan.1:
+	* FvwmIconMan/x.c (set_window_properties):
+	don't use "FvwmModule" as a class, this is not optimal with aliases;
+	document that FvwmIconMan supports aliases
 
 	* FvwmScript/libyywrap.c:
 	* FvwmScript/scanner.c:
