@@ -65,6 +65,18 @@ Contents
           Why?
     3.15  I don't like tha gaps in my icon box when I de-iconify an
           application. Is there some kind of auto arrange function?
+    3.16  How do I set up a fvwm menu item that shuts down my Linux machine?
+
+I'm trying to get Linux set up on our home box.  I'd like my wife
+to be able to use it, so I need a simple way to shutdown the
+machine.  (I don't think she will want to su, enter the password,
+and type shutdown -h now...)
+
+I know this is probably not a pure FVWM question, and I appologize
+if this is the wrong place to ask.  But, I'm looking for suggestions
+on how to implement this.  Preferably, she would just have to click
+a button or menu item (in X, with fvwm2) to cleanly bring the system
+down.
 
 4. Modules
 
@@ -949,6 +961,20 @@ A: Assuming you are using the IconBox option of the Style command this
    with
 
      Mouse 1 I A DeiconifyAndRearrange
+
+----------------------------------------------------------------------
+
+3.16  How do I set up a fvwm menu item that shuts down my Linux machine?
+
+A: Write a little shell script to run the shutdown command.
+
+   Install sudo on your system (see the man page, etc.)
+
+   Set up the sudoers config file to allow you, your wife, etc. to run
+   that script with root permissions.
+
+   Add a menu item to your FVWM root menu (or wherever) that invokes
+   "sudo /my/script/name".
 
 ======================================================================
                              4 - Modules

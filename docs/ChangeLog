@@ -1,3 +1,7 @@
+1999-08-12  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FAQ (3.16): added question on how to shut down Linux from a menu
+
 1999-08-09  Dan Espen  <dane@mk.telcordia.com>
 
 	* Makefile.am: remove text and man page generation files,
