@@ -58,6 +58,8 @@ Changes in *experimental* release 2.5.4 (not released yet)
 
 * New FvwmIconMan option ShowTransient.
 
+* All conditions have a negation.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)

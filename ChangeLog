@@ -1,5 +1,14 @@
 2002-10-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/conditional.c (CreateConditionMask):
+	simplified parsing
+	all conditions have a negation with '!' prepended
+	(Circulate):
+	(CMD_All):
+	(select_cmd):
+	Current, All, Pick, ThisWindow and PointerWindow imply the
+	CirculateHitShaded condition.
+
 	* fvwm/focus.c (__focus_grab_buttons):
 	* libs/defaults.h (NUMBER_OF_EXTENDED_MOUSE_BUTTONS):
 	fixed bindings using mouse buttons >= 6

@@ -3807,12 +3807,12 @@ on stderr.  An optional integer argument
 define the level of information which is given.
 The current valid subject is:
 
-.IR Colors 
+.IR Colors
 which print information on the colours used by fvwm. This useful
 with screen which can only display 256 (or less) colors at once.
 If
 .I verbose
-is >= 1 the pallet used by fvwm is printed.  
+is >= 1 the pallet used by fvwm is printed.
 .\"end
 
 .TP
@@ -8855,6 +8855,12 @@ are used exactly as with the
 .B Current
 command.  Returns 1 if any window matches the condition and 0
 otherwise.
+The
+.B All
+command implies the conditions
+.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
+They can be turned off by specifying "!CirculateHit"
+etc. explicitly.
 
 .TP
 .BI "Any [(" conditions ")] " command
@@ -8926,16 +8932,20 @@ commas or whitespace.  Conditions include
 "Iconic", "!Iconic",
 "Visible", "!Visible",
 "Raised", "!Raised",
-"Layer [n]",
-"State n",
+"Layer [n]", "!Layer",
+"State n", "!State n",
 "Sticky", "!Sticky",
 "Maximized", "!Maximized",
 "Shaded", "!Shaded",
 "Transient", "!Transient",
 "PlacedByButton3", "!PlacedByButton3",
 "PlacedByFvwm", "!PlacedByFvwm",
-"CurrentDesk", "CurrentPage", "CurrentScreen"
-"CurrentGlobalPage", "CurrentPageAnyDesk" and "CurrentGlobalPageAnyDesk".
+"CurrentDesk", "!CurrentDesk",
+"CurrentPage", "!CurrentPage",
+"CurrentScreen","!CurrentScreen",
+"CurrentGlobalPage", "!CurrentGlobalPage",
+"CurrentPageAnyDesk", "!CurrentPageAnyDesk",
+and "CurrentGlobalPageAnyDesk", "!CurrentGlobalPageAnyDesk".
 In addition, the
 .I condition
 may include one window name to match to.  The window name may
@@ -8944,6 +8954,12 @@ class, and resource are considered when attempting to find a
 match.  The window name can begin with '!' which prevents
 .I command
 if any of the window name, icon name, class or resource match.
+
+All options can be negated by prepending an exclamation mark
+('!').  For the options beginning with "!Current" and "!Layer",
+this simply turns off the opposite option.  For example,
+"!CurrentPage" allows all windows to match not just those that are
+not on the current page.
 
 The "AcceptsFocus" condition excludes all windows that do not want
 the input focus (the application has set the "Input hints" for the
@@ -8992,8 +9008,8 @@ The "Layer" condition excludes all windows not in the specified
 layer.  The argument of the "Layer" condition defaults to the
 layer of the focus window.
 
-The "State" condition includes only windows with the specified
-integer state set, see the
+The "State" (or "!State") conditions include only windows with the
+specified integer state set or (or unset).  See the
 .B State
 command.  The argument may range from 0 to 31.
 
@@ -9013,6 +9029,13 @@ placed manually or by using the user or program position hint.
 Note that earlier versions of fvwm required the conditions to be
 enclosed in brackets instead of parentheses (this is still
 supported for backward compatibility).
+
+The
+.B Current
+command implies the conditions
+.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
+They can be turned off by specifying "!CirculateHit"
+etc. explicitly.
 
 .TP
 .BI "Direction [" FromPointer "] " direction " [(" conditions ")] " command
@@ -9085,6 +9108,13 @@ are met.  The conditions are the same as for
 .BR Next .
 Returns -1 if no window was selected.
 
+The
+.B Pick
+command implies the conditions
+.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
+They can be turned off by specifying "!CirculateHit"
+etc. explicitly.
+
 .TP
 .BI "PointerWindow [(" conditions ")] " command
 Performs
@@ -9094,6 +9124,13 @@ if the window under the pointer satisfies all
 exists.  Conditions are the same as for
 .BR Current .
 Returns -1 if there is no window under the pointer.
+
+The
+.B PointerWindow
+command implies the conditions
+.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
+They can be turned off by specifying "!CirculateHit"
+etc. explicitly.
 
 .TP
 .BI "Prev [(" conditions ")] " command
@@ -9121,6 +9158,13 @@ given
 are met.  The conditions are the same as for
 .BR Current .
 It returns -1 if used outside a window context.
+
+The
+.B ThisWindow
+command implies the conditions
+.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
+They can be turned off by specifying "!CirculateHit"
+etc. explicitly.
 
 .IP "\fBWindowId [\fP\fIid\fP\
 \fB] [(\fP\fIconditions\fP\
