@@ -22,6 +22,11 @@ AC_ARG_ENABLE(dmalloc,
   [ac_cv_dmalloc="$enableval"],
   [ac_cv_dmalloc="no"])
 
+AC_ARG_ENABLE(efence,
+  [  --enable-efence        enable support for the efence debugging library],
+  [ac_cv_efence="$enableval"],
+  [ac_cv_efence="no"])
+
 dnl NOTE: the disabled options will be removed in the near future for better
 dnl maintainability of the code.
 smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
@@ -419,6 +424,13 @@ case "$ac_cv_dmalloc" in
 esac
 
 
+dnl Allow building with efence.
+
+case "$ac_cv_efence" in
+  yes) AC_CHECK_LIB(efence, malloc) ;;
+esac
+
+
 # mainly for fvwm-config
 AC_SUBST(with_readline)
 AC_SUBST(with_rplay)
@@ -499,4 +511,7 @@ Configuration:
 
 case "$ac_cv_dmalloc" in
   yes) echo "  DMALLOC heap debugging library enabled." ;;
+esac
+case "$ac_cv_efence" in
+  yes) echo "  EFENCE debugging library enabled." ;;
 esac

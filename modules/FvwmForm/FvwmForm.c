@@ -1608,7 +1608,8 @@ static struct CommandTable am_table[] = {
 };
 
 /* This is similar to the other 2 "Parse" functions. */
-static void ParseActiveMessage(char *buf) {
+static void ParseActiveMessage(char *buf)
+{
   char *p;
   struct CommandTable *e;
   if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
@@ -1639,9 +1640,12 @@ static void ParseActiveMessage(char *buf) {
                               item->header.dt_ptr->dt_GC, True);
         }
       }
-      SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
-                          &Colorset[(colorset)], Pdepth,
-                          root_item_ptr->header.dt_ptr->dt_GC, True);
+      if (colorset >= 0)
+      {
+	SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
+			    &Colorset[(colorset)], Pdepth,
+			    root_item_ptr->header.dt_ptr->dt_GC, True);
+      }
     }
     return;
   }

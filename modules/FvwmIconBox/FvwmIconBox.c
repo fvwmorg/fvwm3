@@ -2760,14 +2760,14 @@ void freeitem(struct icon_info *item, int d)
     free(item->res_name);
   if (item->res_class != NULL)
     free(item->res_class);
-  if (item->wmhints != NULL)
-    XFree(item->wmhints);
   if (item->iconPixmap != None)
     XFreePixmap(dpy, item->iconPixmap);
   if (item->icon_maskPixmap != None &&
       (item->wmhints == NULL ||
        !(item->wmhints->flags & (IconPixmapHint|IconWindowHint))))
     XFreePixmap(dpy, item->icon_maskPixmap);
+  if (item->wmhints != NULL)
+    XFree(item->wmhints);
 
   free(item);
 }

@@ -160,6 +160,11 @@ int main(int argc, char **argv)
     exit(1);
   }
 
+  if (!filename)
+  {
+    fprintf(stderr, "%s: no file specified.\n", MyName);
+    exit(1);
+  }
   for(i=0;i<strlen(filename);i++)
     if((filename[i] == '\n')||(filename[i] == '\r'))
       {

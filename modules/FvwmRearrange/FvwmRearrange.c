@@ -103,13 +103,15 @@ void insert_window_list(window_list *wl, window_item *i)
   *wl = i;
 }
 
-void free_window_list(window_list *wl)
+void free_window_list(window_list wl)
 {
   window_item *q;
-  while (*wl) {
-    q = *wl;
-    free(*wl);
-    *wl = (*wl)->next;
+
+  while (wl)
+  {
+    q = wl;
+    wl = wl->next;
+    free(q);
   }
 }
 
@@ -571,7 +573,7 @@ int main(int argc, char *argv[])
     else /* FvwmTile */
       tile_windows();
   }
-  free_window_list(&wins);
+  free_window_list(wins);
 
   if (console != stderr)
     fclose(console);

@@ -315,7 +315,7 @@ void ParseConfig()
   char *line_start;
   char *tline;
 
-  line_start = safemalloc(strlen(Module) + 1);
+  line_start = safemalloc(strlen(Module) + 2);
   strcpy(line_start, "*");
   strcat(line_start, Module);
 

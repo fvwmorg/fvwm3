@@ -180,6 +180,9 @@ int dph;
 
 int save_color_limit;                   /* Color limit, if any */
 
+Bool do_allow_bad_access = False;
+Bool was_bad_access = False;
+
 /* ------------------------------ Misc functions ----------------------------*/
 
 #ifdef DEBUG
@@ -589,6 +592,11 @@ int myErrorHandler(Display *dpy, XErrorEvent *event)
 {
   /* some errors are acceptable, mostly they're caused by
    * trying to update a lost  window */
+  if((event->error_code == BadAccess) && do_allow_bad_access)
+  {
+    was_bad_access = 1;
+    return 0;
+  }
   if((event->error_code == BadWindow) || (event->error_code == BadDrawable)
      || (event->error_code == BadMatch) || (event->request_code==X_GrabButton)
      || (event->request_code == X_GetGeometry))
@@ -2326,6 +2334,9 @@ void CheckForHangon(unsigned long *body)
       {
 	b->swallow&=~b_Count;
 	b->swallow|=2;
+
+	/* must grab the server here to make sure the window is not swallowed
+	 * by some other application. */
 	if (b->flags & b_Panel)
 	  b->PanelWin=(Window)body[0];
 	else
@@ -2642,15 +2653,34 @@ void swallow(unsigned long *body)
 	      MyName,(ushort)b,body[0]);
 #endif
 
-      b->swallow&=~b_Count;
-      b->swallow|=3;
-
       if (b->flags & b_Swallow)
       {
 	/* "Swallow" the window! Place it in the void so we don't see it
 	 * until it's MoveResize'd */
-	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
+	XGrabServer(Dpy);
+	XSync(Dpy, 0);
+	do_allow_bad_access = True;
 	XSelectInput(Dpy,swin,SW_EVENTS);
+	XSync(Dpy, 0);
+	do_allow_bad_access = False;
+	if (was_bad_access)
+	{
+	  /* A BadAccess error means that the window is already swallowed by
+	   * someone else. Wait for another window. */
+	  was_bad_access = False;
+	  /* Back one square and lose one turn */
+	  b->swallow&=~b_Count;
+	  b->swallow|=1;
+	  b->flags|=b_Hangon;
+	  XUngrabServer(Dpy);
+	  return;
+	}
+	/*error checking*/
+	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
+	XUngrabServer(Dpy);
+	XSync(Dpy, 0);
+	b->swallow&=~b_Count;
+	b->swallow|=3;
 	if(buttonSwallow(b)&b_UseTitle)
 	{
 	  if(b->flags&b_Title)
@@ -2685,6 +2715,8 @@ void swallow(unsigned long *body)
       }
       else /* (b->flags & b_Panel) */
       {
+	b->swallow&=~b_Count;
+	b->swallow|=3;
 	XSelectInput(Dpy, swin, PA_EVENTS);
 	if (!XWithdrawWindow(Dpy, swin, screen))
 	{

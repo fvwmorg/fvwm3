@@ -1,3 +1,24 @@
+2000-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmBacker/FvwmBacker.c (ParseConfig):
+	core dump fixed
+
+	* FvwmM4/FvwmM4.c (main):
+	* FvwmCpp/FvwmCpp.c (main):
+	fixed dump of core
+
+	* FvwmButtons/FvwmButtons.c (CheckForHangon):
+	a core dump was fix
+
+	* FvwmRearrange/FvwmRearrange.c (free_window_list):
+	core dump fix
+
+	* FvwmForm/FvwmForm.c (ParseActiveMessage):
+	fixed dumping core
+
+	* FvwmIconBox/FvwmIconBox.c (freeitem):
+	fixed core dump
+
 2000-11-19  Mikhael Goikhman  <migo@homemail.com>
 
 	* modules/FvwmEvent/Makefile.am:
@@ -10,9 +31,9 @@
 
 2000-11-19  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmWharf/Makefile.am (EXTRA_DIST): 
-	* FvwmTaskBar/Makefile.am (EXTRA_DIST): 
-	* FvwmScript/Makefile.am (EXTRA_DIST): 
+	* FvwmWharf/Makefile.am (EXTRA_DIST):
+	* FvwmTaskBar/Makefile.am (EXTRA_DIST):
+	* FvwmScript/Makefile.am (EXTRA_DIST):
 	* FvwmBacker/Makefile.am (EXTRA_DIST): Remove references to readme
  	files.
 
