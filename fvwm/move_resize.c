@@ -2900,7 +2900,9 @@ static Bool resize_window(F_CMD_ARGS)
 			&ymotion, do_resize_opaque);
 	}
 	else
+	{
 		stashed_x = stashed_y = -1;
+	}
 
 	/* loop to resize */
 	while (!finished && bad_window != FW_W(fw))

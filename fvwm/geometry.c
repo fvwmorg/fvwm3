@@ -656,7 +656,8 @@ void constrain_size(
 {
 	int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
 	int baseWidth, baseHeight;
-	int dwidth = *widthp, dheight = *heightp;
+	int dwidth;
+	int dheight;
 	int roundUpX = 0;
 	int roundUpY = 0;
 	int old_w = 0;
@@ -670,6 +671,8 @@ void constrain_size(
 		old_w = *widthp;
 		old_h = *heightp;
 	}
+	dwidth = *widthp;
+	dheight = *heightp;
 	get_window_borders(fw, &b);
 	dwidth -= b.total_size.width;
 	dheight -= b.total_size.height;

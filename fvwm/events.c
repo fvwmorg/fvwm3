@@ -1078,6 +1078,7 @@ void HandleConfigureRequest(void)
 	{
 		size_borders b;
 
+#define EXPERIMENTAL_EWMH_CR_PN_HANDLING
 #define EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
 		/* This is not a good idea because this interferes with changes
 		 * in the size hints of the window.  However, it is impossible
@@ -1135,6 +1136,7 @@ void HandleConfigureRequest(void)
 			}
 			else if (args.ret_type != ConfigureRequest)
 			{
+				/* not good.  unselected event type! */
 				continue;
 			}
 			/* Event was removed from the queue and stored in e. */
@@ -1205,6 +1207,15 @@ void HandleConfigureRequest(void)
 		dw = 0;
 		dh = 0;
 
+#ifdef EXPERIMENTAL_EWMH_CR_PN_HANDLING
+		if (HAS_NEW_WM_NORMAL_HINTS(Fw))
+		{
+			/* get the latest size hints */
+			XSync(dpy, 0);
+			GetWindowSizeHints(Fw);
+			SET_HAS_NEW_WM_NORMAL_HINTS(Fw, 0);
+		}
+#endif
 		if (IS_SHADED(Fw) ||
 		    !is_function_allowed(F_MOVE, NULL, Fw, False, False))
 		{
@@ -1213,12 +1224,22 @@ void HandleConfigureRequest(void)
 			/* resend the old geometry */
 			do_send_event = True;
 		}
-		if (IS_MAXIMIZED(Fw) ||
-		    !is_function_allowed(F_RESIZE, NULL, Fw, False, False))
+		if (IS_MAXIMIZED(Fw))
 		{
 			/* dont allow clients to resize maximized windows */
 			cre->value_mask &= ~(CWWidth | CWHeight);
 			/* resend the old geometry */
+			do_send_event = True;
+#ifdef EXPERIMENTAL_EWMH_CR_PN_HANDLING
+			dw = Fw->max_g_defect.width;
+			dh = Fw->max_g_defect.width;
+			dw = 0;
+			dh = 0;
+#endif
+		}
+		else if(!is_function_allowed(F_RESIZE, NULL, Fw, False, False))
+		{
+			cre->value_mask &= ~(CWWidth | CWHeight);
 			do_send_event = True;
 		}
 
@@ -1274,14 +1295,12 @@ void HandleConfigureRequest(void)
 			}
 		}
 
-		/*
-		 * SetupWindow (x,y) are the location of the upper-left outer
+		/* SetupWindow (x,y) are the location of the upper-left outer
 		 * corner and are passed directly to XMoveResizeWindow (frame).
 		 *  The (width,height) are the inner size of the frame.  The
 		 * inner width is the same as the requested client window
 		 * width; the inner height is the same as the requested client
-		 * window height plus any title bar slop.
-		 */
+		 * window height plus any title bar slop. */
 		new_g = Fw->frame_g;
 		if (IS_SHADED(Fw))
 		{
@@ -1294,7 +1313,7 @@ void HandleConfigureRequest(void)
 		constr_h = oldnew_h;
 		constrain_size(
 			Fw, (unsigned int *)&constr_w,
-			(unsigned int *)&constr_h, 0, 0, 0);
+			(unsigned int *)&constr_h, 0, 0, CS_UPDATE_MAX_DEFECT);
 		dw += (constr_w - oldnew_w);
 		dh += (constr_h - oldnew_h);
 		if ((cre->value_mask & CWX) && dw)
@@ -1333,7 +1352,7 @@ void HandleConfigureRequest(void)
 			do_send_event = True;
 		}
 		else if ((cre->value_mask & CWX) || (cre->value_mask & CWY) ||
-		    dw || dh)
+			 dw || dh)
 		{
 			if (IS_SHADED(Fw))
 			{
@@ -2465,18 +2484,20 @@ void HandleMotionNotify()
 void HandlePropertyNotify(void)
 {
 	Bool OnThisPage = False;
-	Bool was_size_inc_set;
 	Bool has_icon_changed = False;
 	Bool has_icon_pixmap_hint_changed = False;
 	Bool has_icon_window_hint_changed = False;
+	FlocaleNameString new_name;
 	int old_wmhints_flags;
+#ifndef EXPERIMENTAL_EWMH_CR_PN_HANDLING
+	Bool was_size_inc_set;
 	int old_width_inc;
 	int old_height_inc;
 	int old_base_width;
 	int old_base_height;
-	FlocaleNameString new_name;
 	XEvent e;
 	check_if_event_args cie_args;
+#endif
 
 	DBUG("HandlePropertyNotify","Routine Entered");
 
@@ -2768,6 +2789,13 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 		}
 		break;
 	case XA_WM_NORMAL_HINTS:
+#ifdef EXPERIMENTAL_EWMH_CR_PN_HANDLING
+		/* just mark wm normal hints as changed and look them up when
+		 * the next ConfigureRequest w/ x, y, width or height set
+		 * arrives. */
+		SET_HAS_NEW_WM_NORMAL_HINTS(Fw, 1);
+		break;
+#else
 		cie_args.w = FW_W(Fw);
 		cie_args.do_return_true = False;
 		cie_args.do_return_true_cr = False;
@@ -2937,7 +2965,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 		EWMH_SetAllowedActions(Fw);
 		BroadcastConfig(M_CONFIGURE_WINDOW,Fw);
 		break;
-
+#endif
 	default:
 		if (Event.xproperty.atom == _XA_WM_PROTOCOLS)
 		{
@@ -3395,21 +3423,22 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 #if 0
 	/* execute any commands queued up */
 	DBUG("My_XNextEvent", "executing module comand queue");
-	ExecuteCommandQueue()
+	ExecuteCommandQueue();
 #endif
 
-		/* check for any X events already queued up.
-		 * Side effect: this does an XFlush if no events are queued
-		 * Make sure nothing between here and the select causes further
-		 * X requests to be sent or the select may block even though
-		 * there are events in the queue */
-		if (XPending(dpy)) {
-			DBUG("My_XNextEvent","taking care of queued up events"
-			     " & returning (1)");
-			XNextEvent(dpy,event);
-			StashEventTime(event);
-			return 1;
-		}
+	/* check for any X events already queued up.
+	 * Side effect: this does an XFlush if no events are queued
+	 * Make sure nothing between here and the select causes further
+	 * X requests to be sent or the select may block even though
+	 * there are events in the queue */
+	if (XPending(dpy))
+	{
+		DBUG("My_XNextEvent","taking care of queued up events"
+		     " & returning (1)");
+		XNextEvent(dpy,event);
+		StashEventTime(event);
+		return 1;
+	}
 
 	/* The SIGCHLD signal is sent every time one of our child processes
 	 * dies, and the SIGCHLD handler now reaps them automatically. We
@@ -3423,10 +3452,15 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 #endif
 
 	/* check for termination of all startup modules */
-	if (fFvwmInStartup) {
+	if (fFvwmInStartup)
+	{
 		for (i=0;i<npipes;i++)
+		{
 			if (FD_ISSET(i, &init_fdset))
+			{
 				break;
+			}
+		}
 		if (i == npipes || writePipes[i+1] == 0)
 		{
 			DBUG("My_XNextEvent", "Starting up after command"
@@ -3913,7 +3947,6 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	unsigned int count;
 	int use_wait_cursor;
 
-return;
 	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 			  &JunkX, &JunkY, &mask) == False)
 	{

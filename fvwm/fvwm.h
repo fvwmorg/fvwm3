@@ -339,6 +339,8 @@ typedef struct
 	unsigned has_icon_changed : 1;
 	/* Is this decorated with title */
 	unsigned has_title : 1;
+	/* wm_normal_hints update is pending? */
+	unsigned has_new_wm_normal_hints : 1;
 	/* ChangeDecor was used for window */
 	unsigned is_decor_changed : 1;
 	/* Sent an XUnmapWindow for iconifying, but didn't receive an

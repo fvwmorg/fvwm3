@@ -293,6 +293,12 @@
 	(fw)->flags.has_title = !!(x)
 #define SETM_HAS_TITLE(fw,x) \
 	(fw)->flag_mask.has_title = !!(x)
+#define HAS_NEW_WM_NORMAL_HINTS(fw) \
+	((fw)->flags.has_new_wm_normal_hints)
+#define SET_HAS_NEW_WM_NORMAL_HINTS(fw,x) \
+	(fw)->flags.has_new_wm_normal_hints = !!(x)
+#define SETM_HAS_NEW_WM_NORMAL_HINTS(fw,x) \
+	(fw)->flag_mask.has_new_wm_normal_hints = !!(x)
 #define IS_MAPPED(fw) \
 	((fw)->flags.is_mapped)
 #define SET_MAPPED(fw,x) \
