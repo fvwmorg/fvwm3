@@ -1,7 +1,8 @@
 ## This is a -*- Makefile -*-
 ## Process this file with automake to create Makefile.in
 
-EXTRA_DIST = docs dirs postinst postrm fvwm.menu fvwm.menu-method copyright
+EXTRA_DIST = conffiles copyright dirs docs postinst postrm prerm \
+	fvwm.menu fvwm.menu-method
 
 version = @VERSION@
 release = 0.`date +%Y%m%d`

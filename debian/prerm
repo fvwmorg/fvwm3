@@ -1,5 +1,5 @@
 #! /bin/sh
-# postrm script for fvwm
+# prerm script for fvwm
 #
 # see: dh_installdeb(1)
 
@@ -20,6 +20,11 @@ set -e
 
 case "$1" in
 	purge|remove|upgrade)
+		if [ -x update-alternatives ]; then
+			update-alternatives --remove \
+				x-window-manager /usr/bin/fvwm
+			update-alternatives --auto x-window-manager
+		fi
 		;;
 
 	failed-upgrade|abort-install|abort-upgrade|disappear)
