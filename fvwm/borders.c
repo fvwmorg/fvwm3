@@ -1722,8 +1722,10 @@ static void border_draw_decor_to_pixmap(
 		CreateGradientPixmap(
 			dpy, dest_pix, Scr.TransMaskGC,
 			df->u.grad.gradient_type, 0, 0, df->u.grad.npixels,
-			df->u.grad.pixels, dest_pix, 0, 0, pixmap_g->width,
-			pixmap_g->height, NULL);
+			df->u.grad.xcs, df->u.grad.do_dither,
+			&df->u.grad.d_pixels, &df->u.grad.d_npixels,
+			dest_pix, 0, 0, pixmap_g->width, pixmap_g->height, NULL);
+		
 		break;
 	default:
 		fvwm_msg(ERR, "DrawButton", "unknown button type");

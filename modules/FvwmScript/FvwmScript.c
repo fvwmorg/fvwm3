@@ -357,10 +357,13 @@ void LoadIcon(struct XObj *xobj)
 {
 	char *path;
 	int depth;
-	FvwmPictureFlags fpf;
+	FvwmPictureAttributes fpa;
 
-	fpf.alloc_pixels = 0;
-	fpf.alpha = 1;
+	fpa.mask = 0;
+	if (xobj->colorset >= 0 && Colorset[xobj->colorset].do_dither_icon)
+	{
+		fpa.mask |= FPAM_DITHER;
+	}
 	if (xobj->iconPixmap != None)
 	{
 		XFreePixmap(dpy, xobj->iconPixmap);
@@ -376,18 +379,25 @@ void LoadIcon(struct XObj *xobj)
 		XFreePixmap(dpy, xobj->icon_alphaPixmap);
 		xobj->icon_alphaPixmap = None;
 	}
-
+	if (xobj->alloc_pixels != NULL && xobj->nalloc_pixels > 0)
+	{
+		PictureFreeColors(
+			dpy, Pcmap, xobj->alloc_pixels, xobj->nalloc_pixels, 0,
+			False);
+		xobj->alloc_pixels = NULL;
+		xobj->nalloc_pixels = 0;
+	}
 	if ((xobj->icon) == NULL)
 		return;
 	if ((path = PictureFindImageFile(xobj->icon,imagePath,R_OK)) == NULL)
 	{
 		return;
 	}
-	if (!PImageLoadPixmapFromFile(dpy, x11base->root, path, save_color_limit,
-				      &xobj->iconPixmap, &xobj->icon_maskPixmap,
-				      &xobj->icon_alphaPixmap,
-				      &xobj->icon_w, &xobj->icon_h, &depth,
-				      0, NULL, fpf))
+	if (!PImageLoadPixmapFromFile(
+		dpy, x11base->root, path, &xobj->iconPixmap,
+		&xobj->icon_maskPixmap, &xobj->icon_alphaPixmap, &xobj->icon_w,
+		&xobj->icon_h, &depth, &xobj->nalloc_pixels, &xobj->alloc_pixels,
+		fpa))
 	{
 		fprintf(stderr,"[%s][LoadIcon]: <<WARNING>> Unable to "
 			"load pixmap %s\n",

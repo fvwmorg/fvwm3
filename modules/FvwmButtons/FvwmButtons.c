@@ -1467,12 +1467,22 @@ void RedrawWindow(button_info *b)
 /**
 *** LoadIconFile()
 **/
-int LoadIconFile(char *s, FvwmPicture **p)
+int LoadIconFile(char *s, FvwmPicture **p, int cset)
 {
-  *p=PCacheFvwmPicture(Dpy,Root,imagePath,s, save_color_limit);
-  if(*p)
-    return 1;
-  return 0;
+	FvwmPictureAttributes fpa;
+
+	fpa.mask = 0;
+	if (cset >= 0 && Colorset[cset].do_dither_icon)
+	{
+
+		fpa.mask |= FPAM_DITHER;
+	}
+	*p = PCacheFvwmPicture(Dpy, Root, imagePath, s, fpa);
+	if(*p)
+	{
+		return 1;
+	}
+	return 0;
 }
 
 /**
@@ -1491,8 +1501,9 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   fprintf(stderr,"%s: Loading: Button 0x%06x: colors",MyName,(ushort)b);
 #endif
 
+  
   /* initialise button colours and background */
-  if(b->flags & b_Colorset)
+  if (b->flags & b_Colorset)
   {
     int cset = b->colorset;
 
@@ -1517,6 +1528,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   }
   else /* no colorset */
   {
+    b->colorset = -1;
     if(b->flags&b_Fore)
       b->fc=GetColor(b->fore);
     if(b->flags&b_Back)
@@ -1526,7 +1538,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
       b->sc = GetShadow(b->bc);
       if(b->flags&b_IconBack)
       {
-	if(!LoadIconFile(b->back,&b->backicon))
+	if(!LoadIconFile(b->back,&b->backicon, b->colorset))
 	  b->flags&=~b_Back;
       }
     } /* b_Back */
@@ -1563,6 +1575,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     }
     else /* no colorset */
     {
+       b->c->colorset = -1;
 #ifdef DEBUG_LOADDATA
       fprintf(stderr,", colors2");
 #endif
@@ -1575,7 +1588,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 	b->c->sc = GetShadow(b->c->bc);
 	if(b->c->flags&b_IconBack && !(b->c->flags&b_TransBack))
 	{
-	  if(!LoadIconFile(b->c->back_file,&b->c->backicon))
+	  if(!LoadIconFile(b->c->back_file,&b->c->backicon,-1))
 	    b->c->flags&=~b_IconBack;
 	}
       }
@@ -1646,7 +1659,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   j=0;
 
   /* Load the icon */
-  if(b->flags&b_Icon && LoadIconFile(b->icon_file,&b->icon))
+  if(b->flags&b_Icon && LoadIconFile(b->icon_file,&b->icon, b->colorset))
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", icon \"%s\"",b->icon_file);
@@ -2933,7 +2946,7 @@ static void change_icon(button_info *b, char *line)
   if (l > 0 && line[l - 1] == '\n') {
     line[l - 1] = 0;
   }
-  if (LoadIconFile(line, &new_icon) == 0) {
+  if (LoadIconFile(line, &new_icon, b->colorset) == 0) {
     fprintf(stderr, "%s: cannot load icon %s\n", MyName, line);
     return;
   }

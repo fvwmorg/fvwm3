@@ -648,6 +648,8 @@ static void broadcast_mini_icon(FvwmWindow *fw)
 
 static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
 {
+	FvwmPictureAttributes fpa;
+
 	if (!FMiniIconsSupported)
 	{
 		return;
@@ -663,9 +665,9 @@ static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
 
 	if (fw->mini_pixmap_file)
 	{
+		fpa.mask = 0;
 		fw->mini_icon = PCacheFvwmPicture(
-			dpy, Scr.NoFocusWin, NULL, fw->mini_pixmap_file,
-			Scr.ColorLimit);
+			dpy, Scr.NoFocusWin, NULL, fw->mini_pixmap_file, fpa);
 	}
 	else
 	{

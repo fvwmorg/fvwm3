@@ -2463,7 +2463,8 @@ void CMD_XorPixmap(F_CMD_ARGS)
 	FvwmPicture *xp;
 	XGCValues gcv;
 	unsigned long gcm;
-
+	FvwmPictureAttributes fpa;
+	
 	action = GetNextToken(action, &PixmapName);
 	if (PixmapName == NULL)
 	{
@@ -2474,8 +2475,9 @@ void CMD_XorPixmap(F_CMD_ARGS)
 	}
 	/* get the picture in the root visual, colorlimit is ignored because the
 	 * pixels will be freed */
+	fpa.mask = FPAM_NO_COLOR_LIMIT | FPAM_NO_ALPHA;
 	PictureUseDefaultVisual();
-	xp = PGetFvwmPicture(dpy, Scr.Root, NULL, PixmapName, 0);
+	xp = PGetFvwmPicture(dpy, Scr.Root, NULL, PixmapName, fpa);
 	if (xp == NULL)
 	{
 		fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);

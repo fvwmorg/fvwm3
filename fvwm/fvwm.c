@@ -1584,7 +1584,8 @@ int main(int argc, char **argv)
 	XSetWindowAttributes attributes;
 	int i;
 	int len;
-	char *display_string, *envp;
+	char *display_string;
+	char *opt_color_limit = NULL;
 	char message[255];
 	Bool do_force_single_screen = False;
 	Bool replace_wm = False;
@@ -1812,6 +1813,14 @@ int main(int argc, char **argv)
 			       Fvwm_LicenseInfo, Fvwm_SupportInfo);
 			exit(0);
 		}
+		else if (StrEquals(argv[i], "-color-limit"))
+		{
+			if (++i >= argc)
+			{
+				usage();
+			}
+			CopyString(&opt_color_limit,argv[i]); 
+		}
 		else
 		{
 			fvwm_msg(ERR, "main", "Unknown option: `%s'", argv[i]);
@@ -2022,26 +2031,18 @@ int main(int argc, char **argv)
 	PictureSaveFvwmVisual();
 
 	Scr.ColorLimit = 0;
+	PUseDynamicColors = 0;
+	/* dynamically changeable visual class are odd numbered */
 	if (Pdepth <= 8 && (Pvisual->class & 1))
 	{
 		/* limit the number of colors */
-		Scr.ColorLimit = 256;
-	}
-	if (Pdepth <= 20 && (Pvisual->class & 1) &&
-	    (envp = getenv("FVWM_COLORLIMIT")) != NULL)
-	{
-		Scr.ColorLimit = atoi(envp);
-		if (Scr.ColorLimit < 0)
+		Scr.ColorLimit = PictureAllocColorTable(
+			opt_color_limit, PICTURE_CALLED_BY_FVWM);
+		if (opt_color_limit)
 		{
-			Scr.ColorLimit = 0;
+			free(opt_color_limit);
 		}
 	}
-#ifndef USE_OLD_COLOR_LIMIT_METHODE
-	if (Scr.ColorLimit > 0)
-	{
-		PictureAllocColorTable(Scr.ColorLimit, "FVWM");
-	}
-#endif
 
 	FShapeInit(dpy);
 	FRenderInit(dpy);

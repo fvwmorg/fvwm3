@@ -179,6 +179,11 @@ typedef struct MenuRootDynamic
 		int height;
 		int y;
 	} stored_item;
+	struct
+	{
+		Pixel *d_pixels;
+		int d_npixels;	
+	} stored_pixels; /* alloc pixels when dithering is used for gradients */
 } MenuRootDynamic;
 
 /* access macros to static menu members */
@@ -193,6 +198,7 @@ typedef struct MenuRootDynamic
 #define MR_SUBMENU_ITEM(m)          ((m)->d->submenu_item)
 #define MR_XANIMATION(m)            ((m)->d->xanimation)
 #define MR_STORED_ITEM(m)           ((m)->d->stored_item)
+#define MR_STORED_PIXELS(m)         ((m)->d->stored_pixels)
 /* flags */
 #define MR_DYNAMIC_FLAGS(m)         ((m)->d->dflags)
 #define MR_IS_BACKGROUND_SET(m)     ((m)->d->dflags.is_background_set)

@@ -59,6 +59,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/PictureUtils.h"
 #include "libs/FRenderInit.h"
 #include "FvwmAnimate.h"
 
@@ -1184,56 +1185,79 @@ void ParseConfigLine(char *buf) {
 /* Called during start-up, and whenever the color or line width changes. */
 static void CreateDrawGC(void) {
 
-  myfprintf((stderr,"Creating GC\n"));
-  if (gc != NULL) {
-    XFreeGC(dpy,gc);                /* free old GC */
-  }
-  /* From builtins.c: */
-  color = (BlackPixel(dpy, Scr.screen) ^ WhitePixel(dpy, Scr.screen));
-  pixmap = None;
-  gcv.function = GXxor;                 /* default is to xor the lines */
-  if (Animate.pixmap) {                 /* if pixmap called for */
-    FvwmPicture *picture;
+	myfprintf((stderr,"Creating GC\n"));
+	if (gc != NULL)
+	{
+		XFreeGC(dpy,gc);                /* free old GC */
+	}
+	/* From builtins.c: */
+	color = (BlackPixel(dpy, Scr.screen) ^ WhitePixel(dpy, Scr.screen));
+	pixmap = None;
+	gcv.function = GXxor;                 /* default is to xor the lines */
+	if (Animate.pixmap)
+	{       /* if pixmap called for */
+		FvwmPicture *picture;
+		FvwmPictureAttributes fpa;
 
-    picture = PGetFvwmPicture(dpy, RootWindow(dpy,Scr.screen), 0,
-			      Animate.pixmap, 0);
-    if (!picture)
-      fprintf(stderr, "%s: Could not load pixmap '%s'\n",
-	      MyName + 1, Animate.pixmap);
-    else {
-      pixmap = XCreatePixmap(dpy, RootWindow(dpy, Scr.screen), picture->width,
-			       picture->height, Pdepth);
-      PGraphicsCopyPixmaps(dpy, picture->picture, None, None, picture->depth,
-			   pixmap, None,
-			   0, 0, picture->width, picture->height, 0, 0);
-      PDestroyFvwmPicture(dpy, picture);
-    }
-  } else if (Animate.color) {           /* if color called for */
-    if (XParseColor(dpy,DefaultColormap(dpy,Scr.screen),Animate.color, &xcol)) {
-      if (XAllocColor(dpy, DefaultColormap(dpy,Scr.screen), &xcol)) {
-	color = xcol.pixel;
-	/* free it now, only interested in the pixel */
-	XFreeColors(dpy, DefaultColormap(dpy,Scr.screen), &xcol.pixel, 1, 0);
-	/*         gcv.function = GXequiv;  Afterstep used this. */
-      } else {
-	fprintf(stderr,"%s: could not allocate color '%s'\n",
-		MyName+1,Animate.color);
-      }
-    } else {
-      fprintf(stderr,"%s: could not parse color '%s'\n",
-	      MyName+1,Animate.color);
-    }
-  }
-  gcv.line_width = Animate.width;
-  gcv.foreground = color;
-  myfprintf((stderr,"Color is %ld\n",gcv.foreground));
-  gcv.subwindow_mode = IncludeInferiors;
-  if (pixmap) {
-    gcv.tile = pixmap;
-    gcv.fill_style = FillTiled;
-  }
-  gc=fvwmlib_XCreateGC(dpy, Scr.root, GCFunction | GCForeground | GCLineWidth
-	       | GCSubwindowMode | (pixmap ? GCFillStyle | GCTile : 0), &gcv);
+		fpa.mask = FPAM_NO_COLOR_LIMIT; /* ? */
+		picture = PGetFvwmPicture(
+			dpy, RootWindow(dpy,Scr.screen), 0, Animate.pixmap, fpa);
+		if (!picture)
+			fprintf(stderr, "%s: Could not load pixmap '%s'\n",
+				MyName + 1, Animate.pixmap);
+		else {
+			pixmap = XCreatePixmap(
+				dpy, RootWindow(dpy, Scr.screen), picture->width,
+				picture->height, Pdepth);
+			PGraphicsCopyPixmaps(
+				dpy, picture->picture, None, None,
+				picture->depth, pixmap, None,
+				0, 0, picture->width, picture->height, 0, 0);
+			PDestroyFvwmPicture(dpy, picture);
+		}
+	}
+	else if (Animate.color)
+	{       /* if color called for */
+		if (XParseColor(
+			dpy,DefaultColormap(dpy,Scr.screen),Animate.color,
+			&xcol))
+		{
+			if (PictureAllocColor(
+				dpy, DefaultColormap(dpy,Scr.screen), &xcol,
+				True))
+			{
+				color = xcol.pixel;
+				/* free it now, only interested in the pixel */
+				PictureFreeColors(
+					dpy, DefaultColormap(dpy,Scr.screen),
+					&xcol.pixel, 1, 0, True);
+                                /* gcv.function=GXequiv;  Afterstep used this. */
+			}
+			else
+			{
+				fprintf(stderr,
+					"%s: could not allocate color '%s'\n",
+					MyName+1,Animate.color);
+			}
+		}
+		else
+		{
+			fprintf(stderr,"%s: could not parse color '%s'\n",
+				MyName+1,Animate.color);
+		}
+	}
+	gcv.line_width = Animate.width;
+	gcv.foreground = color;
+	myfprintf((stderr,"Color is %ld\n",gcv.foreground));
+	gcv.subwindow_mode = IncludeInferiors;
+	if (pixmap)
+	{
+		gcv.tile = pixmap;
+		gcv.fill_style = FillTiled;
+	}
+	gc=fvwmlib_XCreateGC(
+		dpy, Scr.root, GCFunction | GCForeground | GCLineWidth
+		| GCSubwindowMode | (pixmap ? GCFillStyle | GCTile : 0), &gcv);
 }
 
 /*

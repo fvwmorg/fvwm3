@@ -194,7 +194,6 @@ Pixmap CreateStretchPixmap(
 	return pixmap;
 }
 
-
 /* Creates a pixmap that is a tiled version of the input pixmap.  Modifies the
  * sets the fill_style of the GC to FillSolid and the tile to None. */
 Pixmap CreateTiledPixmap(
@@ -254,10 +253,11 @@ Bool IsGradientTypeSupported(char type)
  * Allocates a linear color gradient (veliaa@rpi.edu)
  *
  ****************************************************************************/
-Pixel *AllocLinearGradient(
-	char *s_from, char *s_to, int npixels, int skip_first_color)
+static
+XColor *AllocLinearGradient(
+	char *s_from, char *s_to, int npixels, int skip_first_color, int dither)
 {
-	Pixel *pixels;
+	XColor *xcs;
 	XColor from, to, c;
 	float r;
 	float dr;
@@ -301,8 +301,8 @@ Pixel *AllocLinearGradient(
 	/* blue part and step width */
 	b = from.blue;
 	db = (float)(to.blue - from.blue);
-	pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
-	memset(pixels, 0, sizeof(Pixel) * npixels);
+	xcs = (XColor *)safemalloc(sizeof(XColor) * npixels);
+	memset(xcs, 0, sizeof(XColor) * npixels);
 	c.flags = DoRed | DoGreen | DoBlue;
 	for (i = (skip_first_color) ? 1 : 0; i < npixels && div > 0; ++i)
 	{
@@ -312,19 +312,19 @@ Pixel *AllocLinearGradient(
 			((int)(g + dg / (float)div * (float)i + 0.5));
 		c.blue  = (unsigned short)
 			((int)(b + db / (float)div * (float)i + 0.5));
-		if (!PictureAllocColor(Pdpy, Pcmap, &c, False))
+		if (dither == 0 && !PictureAllocColor(Pdpy, Pcmap, &c, False))
 		{
 			got_all = 0;
 		}
-		pixels[i] = c.pixel;
+		xcs[i] = c;
 	}
-	if (!got_all)
+	if (!got_all && dither == 0)
 	{
 		fprintf(stderr, "Cannot alloc color gradient %s to %s\n",
 			s_from, s_to);
 	}
 
-	return pixels;
+	return xcs;
 }
 
 /****************************************************************************
@@ -332,10 +332,10 @@ Pixel *AllocLinearGradient(
  * Allocates a nonlinear color gradient (veliaa@rpi.edu)
  *
  ****************************************************************************/
-Pixel *AllocNonlinearGradient(
-	char *s_colors[], int clen[], int nsegs, int npixels)
+XColor *AllocNonlinearGradient(
+	char *s_colors[], int clen[], int nsegs, int npixels, int dither)
 {
-	Pixel *pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
+	XColor *xcs = (XColor *)safemalloc(sizeof(XColor) * npixels);
 	int i;
 	int curpixel = 0;
 	int *seg_end_colors;
@@ -347,12 +347,12 @@ Pixel *AllocNonlinearGradient(
 		fprintf(stderr,
 			"Gradients must specify at least one segment and"
 			" two colors\n");
-		free(pixels);
+		free(xcs);
 		return NULL;
 	}
 	for (i = 0; i < npixels; i++)
 	{
-		pixels[i] = 0;
+		xcs[i].pixel = 0;
 	}
 
 	/* get total length of all segments */
@@ -391,7 +391,7 @@ Pixel *AllocNonlinearGradient(
 
 	for (i = 0; i < nsegs; ++i)
 	{
-		Pixel *p = NULL;
+		XColor *c = NULL;
 		int j;
 		int n;
 		int skip_first_color = (curpixel != 0);
@@ -403,22 +403,23 @@ Pixel *AllocNonlinearGradient(
 
 		if (n > 1)
 		{
-			p = AllocLinearGradient(
+			c = AllocLinearGradient(
 				s_colors[i], s_colors[i + 1], n,
-				skip_first_color);
-			if (!p && (n - skip_first_color) != 0)
+				skip_first_color, dither);
+			if (!c && (n - skip_first_color) != 0)
 			{
-				free(pixels);
+				free(xcs);
 				return NULL;
 			}
 			for (j = skip_first_color; j < n; ++j)
-				pixels[curpixel + j] = p[j];
+				xcs[curpixel + j] = c[j];
+			
 			curpixel += n - 1;
 		}
-		if (p)
+		if (c)
 		{
-			free(p);
-			p = NULL;
+			free(c);
+			c = NULL;
 		}
 		if (curpixel != seg_end_colors[i])
 		{
@@ -432,19 +433,20 @@ Pixel *AllocNonlinearGradient(
 			return NULL;
 		}
 	}
-	return pixels;
+	return xcs;
 }
 
 /* Convenience function. Calls AllocNonLinearGradient to fetch all colors and
  * then frees the color names and the perc and color_name arrays. */
-Pixel *AllocAllGradientColors(
-	char *color_names[], int perc[], int nsegs, int ncolors)
+XColor *AllocAllGradientColors(
+	char *color_names[], int perc[], int nsegs, int ncolors, int dither)
 {
-	Pixel *pixels = None;
+	XColor *xcs = NULL;
 	int i;
 
 	/* grab the colors */
-	pixels = AllocNonlinearGradient(color_names, perc, nsegs, ncolors);
+	xcs = AllocNonlinearGradient(
+		color_names, perc, nsegs, ncolors, dither);
 	for (i = 0; i <= nsegs; i++)
 	{
 		if (color_names[i])
@@ -452,13 +454,13 @@ Pixel *AllocAllGradientColors(
 	}
 	free(color_names);
 	free(perc);
-	if (!pixels)
+	if (!xcs)
 	{
 		fprintf(stderr, "couldn't create gradient\n");
 		return None;
 	}
 
-	return pixels;
+	return xcs;
 }
 
 /* groks a gradient string and creates arrays of colors and percentages
@@ -613,10 +615,11 @@ unsigned int ParseGradient(
  * colors and the gradient type. Returns False if the gradient type is not
  * supported. */
 Bool CalculateGradientDimensions(
-	Display *dpy, Drawable d, int ncolors, char type,
+	Display *dpy, Drawable d, int ncolors, char type, int dither,
 	unsigned int *width_ret, unsigned int *height_ret)
 {
 	static unsigned int best_width = 0, best_height = 0;
+	int dither_factor = (dither > 0)? ncolors:1;
 
 	/* get the best tile size (once) */
 	if (!best_width)
@@ -636,10 +639,10 @@ Bool CalculateGradientDimensions(
 	switch (type) {
 	case H_GRADIENT:
 		*width_ret = ncolors;
-		*height_ret = best_height;
+		*height_ret = best_height * dither_factor;
 		break;
 	case V_GRADIENT:
-		*width_ret = best_width;
+		*width_ret = best_width * dither_factor;
 		*height_ret = ncolors;
 		break;
 	case D_GRADIENT:
@@ -687,12 +690,16 @@ Bool CalculateGradientDimensions(
  * describe the traget rectangle within the drawable. */
 Drawable CreateGradientPixmap(
 	Display *dpy, Drawable d, GC gc, int type, int g_width, int g_height,
-	int ncolors, Pixel *pixels, Drawable in_drawable, int d_x, int d_y,
-	int d_width, int d_height, XRectangle *rclip)
+	int ncolors, XColor *xcs, int dither, Pixel **d_pixels, int *d_npixels,
+	Drawable in_drawable, int d_x, int d_y, int d_width, int d_height,
+	XRectangle *rclip)
 {
 	Pixmap pixmap = None;
+	Pixel *pixels = NULL;
+	XColor c;
 	XImage *image;
 	register int i, j;
+	int k = 0;
 	XGCValues xgcv;
 	Drawable target;
 	int t_x;
@@ -700,6 +707,24 @@ Drawable CreateGradientPixmap(
 	int t_width;
 	int t_height;
 
+	if (d_pixels != NULL)
+	{
+		if (*d_pixels != NULL)
+		{
+			if (d_npixels != NULL && d_npixels > 0)
+			{
+				PictureFreeColors(
+					dpy, Pcmap, *d_pixels, *d_npixels, 0,
+					False);
+			}
+			free(*d_pixels);
+		}
+		*d_pixels = NULL;
+	}
+	if (d_npixels != NULL)
+	{
+		*d_npixels = 0;
+	}
 	if (g_height < 0 || g_width < 0 || d_width < 0 || d_height < 0)
 		return None;
 
@@ -737,43 +762,97 @@ Drawable CreateGradientPixmap(
 	}
 	/* create space for drawing the image locally */
 	image->data = safemalloc(image->bytes_per_line * t_height);
+	if (dither && PUseDynamicColors)
+	{
+		pixels = (Pixel *)safemalloc(t_width * t_height * sizeof(Pixel));
+	}
 	/* now do the fancy drawing */
 	switch (type)
 	{
 	case H_GRADIENT:
 	{
-		for (i = 0; i < t_width; i++) {
-			register Pixel p = pixels[i * ncolors / t_width];
+		for (i = 0; i < t_width; i++)
+		{
+			int d = i * ncolors / t_width;
+			c = xcs[d];
 			for (j = 0; j < t_height; j++)
-				XPutPixel(image, i, j, p);
+			{
+				if (dither)
+				{
+					c = xcs[d];
+					PictureAllocColorAllProp(
+						dpy, Pcmap, &c, i,j, False,
+						False, True);
+					if (PUseDynamicColors)
+						pixels[k++] = c.pixel;
+				}
+				XPutPixel(image, i, j, c.pixel);
+			}
 		}
 	}
 	break;
 	case V_GRADIENT:
 	{
-		for (j = 0; j < t_height; j++) {
-			register Pixel p = pixels[j * ncolors / t_height];
+		for (j = 0; j < t_height; j++)
+		{
+			int d = j * ncolors / t_height;
+			c = xcs[d];
 			for (i = 0; i < t_width; i++)
-				XPutPixel(image, i, j, p);
+			{
+				if (dither)
+				{
+					c = xcs[d];
+					PictureAllocColorAllProp(
+						dpy, Pcmap, &c, i,j, False,
+						False,True);
+					if (PUseDynamicColors)
+						pixels[k++] = c.pixel;
+				}
+				XPutPixel(image, i, j, c.pixel);
+			}
 		}
 		break;
 	}
 	case D_GRADIENT:
 	{
 		register int t_scale = t_width + t_height - 1;
-		for (i = 0; i < t_width; i++) {
+		for (i = 0; i < t_width; i++)
+		{
 			for (j = 0; j < t_height; j++)
-				XPutPixel(image, i, j, pixels[(i + j) * ncolors / t_scale]);
+			{
+				c = xcs[(i+j) * ncolors / t_scale];
+				if (dither)
+				{
+					PictureAllocColorAllProp(
+						dpy, Pcmap, &c, i,j, False, 
+						False,True);
+					if (PUseDynamicColors)
+						pixels[k++] = c.pixel;
+				}
+				XPutPixel(image, i, j, c.pixel);
+			}
 		}
 		break;
 	}
 	case B_GRADIENT:
 	{
 		register int t_scale = t_width + t_height - 1;
-		for (i = 0; i < t_width; i++) {
+		for (i = 0; i < t_width; i++)
+		{
 			for (j = 0; j < t_height; j++)
-				XPutPixel(image, i, j,
-					  pixels[(i + (t_height - j - 1)) * ncolors / t_scale]);
+			{
+				c = xcs[(i + (t_height - j - 1)) * ncolors / 
+				       t_scale];
+				if (dither)
+				{
+					PictureAllocColorAllProp(
+						dpy, Pcmap, &c, i,j, False,
+						False, True);
+					if (PUseDynamicColors)
+						pixels[k++] = c.pixel;
+				}
+				XPutPixel(image, i, j, c.pixel);
+			}
 		}
 		break;
 	}
@@ -786,10 +865,17 @@ Drawable CreateGradientPixmap(
 			for (j = 0; j < t_height; j++) {
 				register int pj =
 					min(j, t_height - 1 - j) * t_width;
-				XPutPixel(
-					image, i, j,
-					pixels[(min(pi, pj) * myncolors - 1) /
-					       t_scale]);
+				c = xcs[(min(pi, pj) * myncolors - 1) /
+				       t_scale];
+				if (dither)
+				{
+					PictureAllocColorAllProp(
+						dpy, Pcmap, &c, i,j, False,
+						False,True);
+					if (PUseDynamicColors)
+						pixels[k++] = c.pixel;
+				}
+				XPutPixel(image, i, j, c.pixel);
 			}
 		}
 	}
@@ -799,7 +885,9 @@ Drawable CreateGradientPixmap(
 		register double t_scale =
 			(double)(t_width * t_height) / sqrt(8);
 		for (i = 0; i < t_width; i++)
-			for (j = 0; j < t_height; j++) {
+		{
+			for (j = 0; j < t_height; j++)
+			{
 				register double x =
 					(double)((2 * i - t_width) * t_height) /
 					4.0;
@@ -807,11 +895,18 @@ Drawable CreateGradientPixmap(
 					(double)((t_height - 2 * j) * t_width) /
 					4.0;
 				register double rad = sqrt(x * x + y * y);
-				XPutPixel(
-					image, i, j,
-					pixels[(int)((rad * ncolors - 0.5) /
-						     t_scale)]);
+				c = xcs[(int)((rad * ncolors - 0.5) / t_scale)];
+				if (dither)
+				{
+					PictureAllocColorAllProp(
+						dpy, Pcmap, &c, i,j, False, 
+						False,True);
+					if (PUseDynamicColors)
+						pixels[k++] = c.pixel;
+				}
+				XPutPixel(image, i, j, c.pixel);
 			}
+		}
 		break;
 	}
 	case R_GRADIENT:
@@ -839,10 +934,16 @@ Drawable CreateGradientPixmap(
 				if (angle < 0.0)
 					angle += M_PI * 2.0;
 				/* normalize to gradient */
-				XPutPixel(
-					image, i, j,
-					pixels[(int)(angle * M_1_PI * 0.5 *
-						     ncolors)]);
+				c = xcs[(int)(angle * M_1_PI * 0.5 * ncolors)];
+				if (dither)
+				{
+					PictureAllocColorAllProp(
+						dpy, Pcmap, &c, i,j, False,
+						False,True);
+					if (PUseDynamicColors)
+						pixels[k++] = c.pixel;
+				}
+				XPutPixel(image, i, j, c.pixel);
 			}
 		}
 	}
@@ -885,10 +986,16 @@ Drawable CreateGradientPixmap(
 				if (angle < 0.0)
 					angle += M_PI * 2.0;
 				/* normalize to gradient */
-				XPutPixel(
-					image, i, j,
-					pixels[(int)(angle * M_1_PI * 0.5 *
-						     ncolors)]);
+				c = xcs[(int)(angle * M_1_PI * 0.5 * ncolors)];
+				if (dither)
+				{
+					PictureAllocColorAllProp(
+						dpy, Pcmap, &c, i,j, False,
+						False,True);
+					if (PUseDynamicColors)
+						pixels[k++] = c.pixel;
+				}
+				XPutPixel(image, i, j, c.pixel);
 			}
 		}
 	}
@@ -897,8 +1004,21 @@ Drawable CreateGradientPixmap(
 		/* placeholder function, just fills the pixmap with the first
 		 * color */
 		memset(image->data, 0, image->bytes_per_line * t_height);
-		XAddPixel(image, pixels[0]);
+		XAddPixel(image, xcs[0].pixel);
 		break;
+	}
+
+	if (dither && PUseDynamicColors)
+	{
+		if (d_pixels != NULL)
+		{
+			*d_pixels = pixels;
+		}
+		else
+		{
+			/* color leak */
+			free(pixels);
+		}
 	}
 
 	/* set the gc style */
@@ -931,9 +1051,11 @@ Drawable CreateGradientPixmap(
 Pixmap CreateGradientPixmapFromString(
 	Display *dpy, Drawable d, GC gc, int type, char *action,
 	unsigned int *width_return, unsigned int *height_return,
-	Pixel **pixels_return, int *nalloc_pixels)
+	Pixel **pixels_return, int *nalloc_pixels, int dither)
 {
-	Pixel *pixels;
+	Pixel *d_pixels = NULL;
+	unsigned int d_npixels; 
+	XColor *xcs = NULL;
 	unsigned int ncolors = 0;
 	char **colors;
 	int *perc, nsegs;
@@ -951,8 +1073,9 @@ Pixmap CreateGradientPixmapFromString(
 		return None;
 	}
 	/* grab the colors */
-	pixels = AllocAllGradientColors(colors, perc, nsegs, ncolors);
-	if (pixels == None)
+	xcs = AllocAllGradientColors(
+		colors, perc, nsegs, ncolors, dither);
+	if (xcs == NULL)
 	{
 		return None;
 	}
@@ -961,30 +1084,56 @@ Pixmap CreateGradientPixmapFromString(
 	type = toupper(type);
 
 	if (CalculateGradientDimensions(
-		    dpy, d, ncolors, type, width_return, height_return))
+		    dpy, d, ncolors, type, dither, width_return, height_return))
 	{
 		pixmap = CreateGradientPixmap(
 			dpy, d, gc, type, *width_return, *height_return,
-			ncolors, pixels, None, 0, 0, 0, 0, NULL);
+			ncolors, xcs, dither, &d_pixels, &d_npixels,
+			None, 0, 0, 0, 0, NULL);
 	}
 
 	/* if the caller has not asked for the pixels there is probably a leak
 	 */
-	if (!pixels_return)
+	if (!pixels_return && PUseDynamicColors)
 	{
 		fprintf(stderr,
 			"CreateGradient: potential color leak, losing track"
 			" of pixels\n");
-		free(pixels);
 	}
-	else
+	else if (PUseDynamicColors)
 	{
-		*pixels_return = pixels;
+		if (!dither)
+		{
+			Pixel *pixels;
+			int i;
+
+			pixels = (Pixel *)safemalloc(ncolors * sizeof(Pixel));
+			for(i=0; i<ncolors; i++)
+			{
+				pixels[i] = xcs[i].pixel;
+			}
+			*pixels_return = pixels;
+		}
+		else
+		{
+			*pixels_return = d_pixels;
+		}
+	}
+	else if (d_pixels != NULL)
+	{
+		free(d_pixels);
 	}
 
-	if (nalloc_pixels)
+	if (nalloc_pixels && PUseDynamicColors)
 	{
-		*nalloc_pixels = ncolors;
+		if (dither == 0)
+		{
+			*nalloc_pixels = ncolors;
+		}
+		else
+		{
+			*nalloc_pixels = d_npixels;
+		}
 	}
 
 	return pixmap;

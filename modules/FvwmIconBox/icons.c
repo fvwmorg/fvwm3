@@ -60,6 +60,7 @@ extern int save_color_limit;
 extern Bool do_allow_bad_access;
 extern Bool was_bad_access;
 extern char *MyName;
+extern int Iconcolorset;
 
 #define ICON_EVENTS (ExposureMask |\
 ButtonReleaseMask | ButtonPressMask | EnterWindowMask | LeaveWindowMask)
@@ -237,22 +238,17 @@ void AdjustIconWindow(struct icon_info *item, int n)
 void GetIconFromFile(struct icon_info *item)
 {
 	char *path = NULL;
-	FvwmPictureFlags fpf;
+	FvwmPictureAttributes fpa;
 
-	fpf.alloc_pixels = 0;
-	fpf.alpha = 1;
-	path = PictureFindImageFile(item->icon_file, imagePath, R_OK);
-	if (path == NULL)
+	fpa.mask = FPAM_NO_ALLOC_PIXELS; /* olicha why ? */
+	if (Iconcolorset >= 0 && Colorset[Iconcolorset].do_dither_icon)
 	{
-		return;
+		fpa.mask |= FPAM_DITHER;
 	}
-	if (!PImageLoadPixmapFromFile(dpy, Root, path, save_color_limit,
-				      &item->iconPixmap, &item->icon_maskPixmap,
-				      &item->icon_alphaPixmap,
-				      &item->icon_w,
-				      &item->icon_h,
-				      &item->icon_depth,
-				      0, NULL, fpf))
+	if (!PImageLoadPixmapFromFile(
+		dpy, Root, path,&item->iconPixmap, &item->icon_maskPixmap,
+		&item->icon_alphaPixmap, &item->icon_w, &item->icon_h,
+		&item->icon_depth, 0, NULL, fpa))
 	{
 		fprintf(stderr, "[FvwmIconBox] cannot load pixmap from "
 			"file '%s'\n",path);
@@ -413,10 +409,13 @@ Bool GetBackPixmap(void)
 	char *path = NULL;
 	Pixmap tmp_pixmap;
 	int w=0, h=0, icon_depth = 0;
-	FvwmPictureFlags fpf;
+	FvwmPictureAttributes fpa;
 
-	fpf.alloc_pixels = 0;
-	fpf.alpha = 0;
+	fpa.mask = FPAM_NO_ALLOC_PIXELS | FPAM_NO_ALPHA;
+	if (Pdepth <= 8)
+	{
+		fpa.mask |= FPAM_DITHER;
+	}
 	if (IconwinPixmapFile == NULL)
 		return False;
 
@@ -425,14 +424,9 @@ Bool GetBackPixmap(void)
 	{
 		return False;
 	}
-	if (!PImageLoadPixmapFromFile(dpy, main_win, path, save_color_limit,
-				      &tmp_pixmap,
-				      &maskPixmap,
-				      NULL,
-				      &w,
-				      &h,
-				      &icon_depth,
-				      0, NULL, fpf))
+	if (!PImageLoadPixmapFromFile(
+		dpy, main_win, path, &tmp_pixmap, &maskPixmap, NULL, &w, &h,
+		&icon_depth, 0, NULL, fpa))
 	{
 		w = 0;
 		h = 0;

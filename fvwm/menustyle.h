@@ -206,7 +206,8 @@ typedef struct MenuFace
 		struct
 		{
 			int npixels;
-			Pixel *pixels;
+			XColor *xcs;
+			Bool do_dither;
 		} grad;
 	} u;
 	MenuFaceType type;

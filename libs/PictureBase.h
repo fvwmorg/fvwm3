@@ -41,7 +41,7 @@ extern Visual *Pvisual;
 extern Colormap Pcmap;
 extern unsigned int Pdepth;
 extern Display *Pdpy;     /* Save area for display pointer */
-
+extern Bool PUseDynamicColors;
 
 /* This routine called during fvwm and some modules initialization */
 void PictureInitCMap(Display *dpy);
@@ -73,6 +73,7 @@ typedef struct FvwmPictureThing
 	struct FvwmPictureThing *next;
 	char *name;
 	unsigned long stamp;  /* should be FileStamp */
+	unsigned long fpa_mask;
 	Pixmap picture;
 	Pixmap mask;
 	Pixmap alpha;
@@ -89,5 +90,24 @@ typedef struct
 	unsigned alpha : 1;
 	unsigned alloc_pixels : 1;
 } FvwmPictureFlags;
+
+#define FPAM_NO_ALLOC_PIXELS (1 << 1)  /* do not return the allocated pixels
+					* this is used only if PUseDynamicColors,
+					* if not the allocated pixels are never
+					* returned */
+#define FPAM_NO_COLOR_LIMIT  (1 << 2)  /* do not use color limitation */
+#define FPAM_NO_ALPHA        (1 << 3)  /* do not return the alpha channel */
+#define FPAM_DITHER          (1 << 4)  /* dither the image */
+#define FPAM_TINT            (1 << 5)  /* tint the image */
+
+typedef struct
+{
+	unsigned long mask;
+	XColor tint;
+	short tint_percent;
+} FvwmPictureAttributes;
+
+/* tint no yet implemented */
+#define PICTURE_FPA_AGREE(p,fpa) (p->fpa_mask == fpa.mask)
 
 #endif /* Picture_Base_H */

@@ -17,13 +17,20 @@
 #ifndef Picture_Utils_H
 #define Picture_Utils_H
 
+#define PICTURE_CALLED_BY_FVWM   0
+#define PICTURE_CALLED_BY_MODULE 1
+
+void PictureReduceColorName(char **my_color);
+void PictureAllocColors(
+	Display *dpy, Colormap cmap, XColor *colors, int size, Bool no_limit);
 int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit);
+int PictureAllocColorAllProp(
+	Display *dpy, Colormap cmap, XColor *c, int x, int y,
+	Bool no_limit, Bool is_8, Bool do_dither);
 void PictureFreeColors(
-	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes);
+	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
+	Bool no_limit);
 Pixel PictureGetNextColor(Pixel p, int n);
-void PictureAllocColorTable(int color_limit, char *module);
-void PictureReduceColor(char **my_color, int color_limit);
-void PictureReduceRGBColor(XColor *c, int color_limit);
-Pixel PictureRGBtoPixel(int r, int g, int b);
+int PictureAllocColorTable(char *opt, int call_type);
 
 #endif

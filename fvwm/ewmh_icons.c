@@ -340,12 +340,12 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 		colors[0].pixel = fwin->colors.fore;
 		colors[1].pixel = fwin->colors.back;
 		XQueryColors(dpy, Pcmap, colors, 2);
-		fg[0] = colors[0].blue/257;
-		fg[1] = colors[0].green/257;
-		fg[2] = colors[0].red/257;
-		bg[0] = colors[1].blue/257;
-		bg[1] = colors[1].green/257;
-		bg[2] = colors[1].red/257;
+		fg[0] = colors[0].blue >> 8;
+		fg[1] = colors[0].green >> 8;
+		fg[2] = colors[0].red >> 8;
+		bg[0] = colors[1].blue >> 8;
+		bg[1] = colors[1].green >> 8;
+		bg[2] = colors[1].red >> 8;
 		for (j = 0; j < height; j++)
 		{
 			for (i = 0; i < width; i++)
@@ -422,9 +422,9 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 			{
 				if (cm[m] > 0)
 				{
-					c_new_icon[l++] = colors[k].blue/257;
-					c_new_icon[l++] = colors[k].green/257;
-					c_new_icon[l++] = colors[k].red/257;
+					c_new_icon[l++] = colors[k].blue >> 8;
+					c_new_icon[l++] = colors[k].green >> 8;
+					c_new_icon[l++] = colors[k].red >> 8;
 					c_new_icon[l++] = cm[m];
 					k++;
 				}
@@ -451,9 +451,9 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 			c.pixel = XGetPixel(image, i, j);
 			XQueryColor(dpy, Pcmap, &c);
 			k = 4*(i + j*width +2 +keep_length);
-			c_new_icon[k] = (unsigned short)c.blue/257;
-			c_new_icon[k+1] = (unsigned short)c.green/257;
-			c_new_icon[k+2] = (unsigned short)c.red/257;
+			c_new_icon[k] = (unsigned short)c.blue >> 8;
+			c_new_icon[k+1] = (unsigned short)c.green >> 8;
+			c_new_icon[k+2] = (unsigned short)c.red >> 8;
 			if (m_image != None && (XGetPixel(m_image, i, j) == 0))
 				c_new_icon[k+3] = 0;
 			else
@@ -658,6 +658,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 	Pixmap alpha = None;
 	Bool free_list = False;
 	int have_alpha;
+	FvwmPictureAttributes fpa;
 
 	if (list == NULL)
 	{
@@ -675,6 +676,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 		wanted_h = MINI_ICON_WANTED_HEIGHT;
 		max_w = MINI_ICON_MAX_WIDTH;
 		max_h = ICON_MAX_HEIGHT;
+		fpa.mask = 0;
 	}
 	else
 	{
@@ -682,6 +684,10 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 		wanted_h = ICON_WANTED_HEIGHT;
 		max_w = ICON_MAX_WIDTH;
 		max_h = ICON_MAX_HEIGHT;
+		if (fwin->cs >= 0 && Colorset[fwin->cs].do_dither_icon)
+		{
+			fpa.mask = FPAM_DITHER;
+		}
 	}
 
 	extract_wm_icon(list, size, wanted_w, wanted_h, &start, &width, &height);
@@ -698,11 +704,9 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 	{
 		alpha = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 8);
 	}
-	if (!PImageCreatePixmapFromArgbData(dpy, Scr.Root, Scr.ColorLimit,
-					    (unsigned char *)list,
-					    start, width, height,
-					    pixmap, mask, alpha, &have_alpha)
-	    || pixmap == None)
+	if (!PImageCreatePixmapFromArgbData(
+		dpy, Scr.Root, (unsigned char *)list, start, width, height,
+		pixmap, mask, alpha, &have_alpha, fpa) || pixmap == None)
 	{
 		fvwm_msg(ERR, "EWMH_SetIconFromWMIcon",
 			 "fail to create a pixmap\n");

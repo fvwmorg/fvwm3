@@ -63,6 +63,7 @@ static Colormap FvwmCmap;
 unsigned int Pdepth;
 static unsigned int FvwmDepth;
 Display *Pdpy;            /* Save area for display pointer */
+Bool PUseDynamicColors;
 
 void PictureInitCMap(Display *dpy) {
 	char *envp;
@@ -94,28 +95,12 @@ void PictureInitCMap(Display *dpy) {
 	FvwmCmap = Pcmap;
 
 	/* initialise color limit */
-#ifndef USE_OLD_COLOR_LIMIT_METHODE
+	PUseDynamicColors = 0;
+	if (Pdepth <= 8 && (Pvisual->class & 1))
 	{
-		int cl = 0;
-		
-		if (Pdepth <= 8 && (Pvisual->class & 1))
-		{
-			cl = 256;
-		}
-		if (Pdepth <= 20 && (Pvisual->class & 1) &&
-		    (envp = getenv("FVWM_COLORLIMIT")) != NULL)
-		{
-			cl = atoi(envp);
-			if (cl < 0)
-				cl = 0;
-		}
-		if (cl > 0)
-		{
-			PictureAllocColorTable(cl, NULL);
-		}
+		/* initialise color limit */
+		PictureAllocColorTable(NULL, PICTURE_CALLED_BY_MODULE);
 	}
-#endif
-
 	return;
 }
 

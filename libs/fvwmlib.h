@@ -313,34 +313,34 @@ GC fvwmlib_XCreateGC(
 
 Bool IsGradientTypeSupported(char type);
 
+#if 0
 Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
 			   int skip_first_color);
 
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 			      int nsegs, int npixels);
+#endif
 
 /* Convenience function. Calls AllocNonLinearGradient to fetch all colors and
  * then frees the color names and the perc and color_name arrays. */
-Pixel *AllocAllGradientColors(char *color_names[], int perc[],
-			      int nsegs, int ncolors);
+XColor *AllocAllGradientColors(
+	char *color_names[], int perc[], int nsegs, int ncolors, int dither);
 
 unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
 			   int **perc_return, int *nsegs_return);
 
 Bool CalculateGradientDimensions(Display *dpy, Drawable d, int ncolors,
-				 char type, unsigned int *width_ret,
+				 char type, int dither, unsigned int *width_ret,
 				 unsigned int *height_ret);
-
 Drawable CreateGradientPixmap(
-  Display *dpy, Drawable d, GC gc, int type, int g_width, int g_height,
-  int ncolors, Pixel *pixels, Drawable in_drawable, int d_x, int d_y,
-  int d_width, int d_height, XRectangle *rclip);
-
-Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
-				      int type, char *action,
-				      unsigned int *width_return,
-				      unsigned int *height_return,
-				      Pixel **alloc_pixels, int *nalloc_pixels);
+	Display *dpy, Drawable d, GC gc, int type, int g_width, int g_height,
+	int ncolors, XColor *xcs, int dither, Pixel **d_pixels, int *d_npixels,
+	Drawable in_drawable, int d_x, int d_y, int d_width, int d_height,
+	XRectangle *rclip);
+Pixmap CreateGradientPixmapFromString(
+	Display *dpy, Drawable d, GC gc, int type, char *action,
+	unsigned int *width_return, unsigned int *height_return,
+	Pixel **alloc_pixels, int *nalloc_pixels, int dither);
 
 void DrawTrianglePattern(
   Display *dpy, Drawable d, GC ReliefGC, GC ShadowGC, GC FillGC,

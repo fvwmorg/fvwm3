@@ -214,6 +214,8 @@ struct XObj
   Pixmap iconPixmap;            /* Icone charge */
   Pixmap icon_maskPixmap;       /* Icone masque */
   Pixmap icon_alphaPixmap;      /* alpha channel */
+  Pixel  *alloc_pixels;
+  int nalloc_pixels;
   int icon_w,icon_h;            /* Largeur et hauteur de l'icone */
   FlocaleFont *Ffont;
   int value;                    /* Valeur courante */

@@ -56,6 +56,7 @@
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
 #include "libs/Picture.h"
+#include "libs/PictureUtils.h"
 #include "geometry.h"
 #include "borders.h"
 #include "frame.h"
@@ -3511,7 +3512,14 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 	{
 		select_menu_item(*pmr, mi, False, (*pmp->pfw));
 	}
-
+	if (MR_STORED_PIXELS(*pmr).d_pixels != NULL)
+	{
+		PictureFreeColors(
+			dpy, Pcmap, MR_STORED_PIXELS(*pmr).d_pixels,
+			MR_STORED_PIXELS(*pmr).d_npixels, 0, False);
+		free(MR_STORED_PIXELS(*pmr).d_pixels);
+		MR_STORED_PIXELS(*pmr).d_pixels = NULL;
+	}
 	if (MR_COPIES(*pmr) > 1)
 	{
 		/* delete this instance of the menu */
@@ -3769,6 +3777,7 @@ static void paint_menu_gradient_background(
 	GC pmapgc;
 	XGCValues gcv;
 	unsigned long gcm = GCLineWidth;
+	int switcher = -1;
 
 	gcv.line_width = 1;
 	bounds.x = bw;
@@ -3776,8 +3785,12 @@ static void paint_menu_gradient_background(
 	bounds.width = MR_WIDTH(mr) - bw;
 	bounds.height = MR_HEIGHT(mr) - bw;
 	/* H, V, D and B gradients are optimized and have
-	 * their own code here. */
-	switch (ST_FACE(ms).gradient_type)
+	 * their own code here. (if no dither) */
+	if (!ST_FACE(ms).u.grad.do_dither)
+	{
+		switcher = ST_FACE(ms).gradient_type;
+	}
+	switch (switcher)
 	{
 	case H_GRADIENT:
 		if (MR_IS_BACKGROUND_SET(mr) == False)
@@ -3797,7 +3810,7 @@ static void paint_menu_gradient_background(
 					ST_FACE(ms).u.grad.npixels;
 				XSetForeground(
 					dpy, pmapgc,
-					ST_FACE(ms).u.grad.pixels[i]);
+					ST_FACE(ms).u.grad.xcs[i].pixel);
 				XFillRectangle(
 					dpy, pmap, pmapgc, x, 0, dw,
 					DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS);
@@ -3842,7 +3855,7 @@ static void paint_menu_gradient_background(
 					ST_FACE(ms).u.grad.npixels;
 				XSetForeground(
 					dpy, pmapgc,
-					ST_FACE(ms).u.grad.pixels[i]);
+					ST_FACE(ms).u.grad.xcs[i].pixel);
 				XFillRectangle(
 					dpy, pmap, pmapgc, 0, y,
 					best_tile_width, dh);
@@ -3904,7 +3917,7 @@ static void paint_menu_gradient_background(
 					numLines;
 				XSetForeground(
 					dpy, Scr.TransMaskGC,
-					ST_FACE(ms).u.grad.pixels[cindex]);
+					ST_FACE(ms).u.grad.xcs[cindex].pixel);
 			}
 			if (ST_FACE(ms).gradient_type == D_GRADIENT)
 			{
@@ -3936,13 +3949,19 @@ static void paint_menu_gradient_background(
 			/* find out the size the pixmap should be */
 			CalculateGradientDimensions(
 				dpy, MR_WINDOW(mr), ST_FACE(ms).u.grad.npixels,
-				ST_FACE(ms).gradient_type, &g_width, &g_height);
+				ST_FACE(ms).gradient_type,
+				ST_FACE(ms).u.grad.do_dither, &g_width,
+				&g_height);
 			/* draw the gradient directly into the window */
 			CreateGradientPixmap(
 				dpy, MR_WINDOW(mr), pmapgc,
 				ST_FACE(ms).gradient_type, g_width, g_height,
 				ST_FACE(ms).u.grad.npixels,
-				ST_FACE(ms).u.grad.pixels, pmap, bw, bw,
+				ST_FACE(ms).u.grad.xcs,
+				ST_FACE(ms).u.grad.do_dither,
+				&(MR_STORED_PIXELS(mr).d_pixels),
+				&(MR_STORED_PIXELS(mr).d_npixels),
+				pmap, bw, bw,
 				MR_WIDTH(mr) - bw, MR_HEIGHT(mr) - bw, NULL);
 			XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
 			XFreeGC(dpy, pmapgc);
@@ -5150,8 +5169,10 @@ static Bool scanForPixmap(
 	char *name;
 	int i;
 	FvwmPicture *pp;
+	FvwmPictureAttributes fpa;
 
 	*p = NULL;
+	fpa.mask = 0;
 	if (!instring)
 	{
 		return False;
@@ -5189,7 +5210,7 @@ static Bool scanForPixmap(
 		name[i] = 0;
 		/* Next, check for a color pixmap */
 		pp = PCacheFvwmPicture(
-			dpy, Scr.NoFocusWin, NULL, name, Scr.ColorLimit);
+			dpy, Scr.NoFocusWin, NULL, name, fpa);
 		if (*s != '\0')
 		{
 			s++;
@@ -6429,12 +6450,12 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 		{
 			PDestroyFvwmPicture(dpy, MR_SIDEPIC(mr));
 		}
-memset(mr->s, 0, sizeof(*(mr->s)));
+		memset(mr->s, 0, sizeof(*(mr->s)));
 		free(mr->s);
 	}
-memset(mr->d, 0, sizeof(*(mr->d)));
+	memset(mr->d, 0, sizeof(*(mr->d)));
 	free(mr->d);
-memset(mr, 0, sizeof(*mr));
+	memset(mr, 0, sizeof(*mr));
 	free(mr);
 
 	return True;

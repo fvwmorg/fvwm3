@@ -106,4 +106,8 @@ void PGraphicsTintRectangle(
 	Display *dpy, Window win, int tint_percent, Pixel tint,
 	Drawable d, Pixmap mask, int depth, GC gc, int color_limit,
 	int dest_x, int dest_y, int dest_w, int dest_h);
+
+Pixmap PGraphicsCreateDitherPixmap(
+	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,
+	int in_width, int in_height, int out_width, int out_height);
 #endif

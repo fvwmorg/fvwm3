@@ -1584,14 +1584,19 @@ void ParseOptions(void)
   int desk;
   int dx = 3;
   int dy = 3;
-
+  FvwmPictureAttributes fpa;
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
   Scr.VScale = 32;
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-
+  
+  fpa.mask = 0;
+  if (Pdepth <= 8)
+  {
+	  fpa.mask |= FPAM_DITHER;
+  }
   InitGetConfigLine(fd,CatString3("*",MyName,0));
   for (GetConfigLine(fd,&tline); tline != NULL; GetConfigLine(fd,&tline))
   {
@@ -1887,17 +1892,15 @@ void ParseOptions(void)
 	    PDestroyFvwmPicture(dpy, item->next->bgPixmap);
 	    item->next->bgPixmap = NULL;
 	  }
-	  item->next->bgPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
-						    ImagePath,
-						    arg2, 0);
+	  item->next->bgPixmap = PCacheFvwmPicture(
+		  dpy, Scr.Pager_w, ImagePath, arg2, fpa);
 	}
 	else
 	{
 	  /* new Dcolor and desktop */
 	  item = NewPagerStringItem(item, desk);
-	  item->bgPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
-					      ImagePath,
-					      arg2, 0);
+	  item->bgPixmap = PCacheFvwmPicture(
+		  dpy, Scr.Pager_w, ImagePath, arg2, fpa);
 	}
 	if (desk == Scr.CurrentDesk)
 	{
@@ -1907,9 +1910,8 @@ void ParseOptions(void)
 	    Desks[0].bgPixmap = NULL;
 	  }
 
-	  Desks[0].bgPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
-					    ImagePath,
-					    arg2, 0);
+	  Desks[0].bgPixmap = PCacheFvwmPicture(
+		  dpy, Scr.Pager_w, ImagePath, arg2, fpa);
 	}
       }
       else if((desk >= desk1)&&(desk <=desk2))
@@ -1921,9 +1923,8 @@ void ParseOptions(void)
 	  PDestroyFvwmPicture(dpy, Desks[dNr].bgPixmap);
 	  Desks[dNr].bgPixmap = NULL;
 	}
-	Desks[dNr].bgPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
-						 ImagePath,
-						 arg2, 0);
+	Desks[dNr].bgPixmap = PCacheFvwmPicture(
+		dpy, Scr.Pager_w, ImagePath, arg2, fpa);
       }
 
 #ifdef DEBUG
@@ -1941,9 +1942,8 @@ void ParseOptions(void)
 	  PixmapBack = NULL;
 	}
 
-	PixmapBack = PCacheFvwmPicture (dpy, Scr.Pager_w,
-					ImagePath,
-					arg1, 0);
+	PixmapBack = PCacheFvwmPicture(
+		dpy, Scr.Pager_w, ImagePath, arg1, fpa);
 #ifdef DEBUG
 	fprintf(stderr,
 		"[ParseOptions]: Global: bgPixmap = %s\n", arg1);
@@ -1960,9 +1960,8 @@ void ParseOptions(void)
 	  HilightPixmap = NULL;
 	}
 
-	HilightPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
-					ImagePath,
-					arg1, 0);
+	HilightPixmap = PCacheFvwmPicture (
+		dpy, Scr.Pager_w, ImagePath, arg1, fpa);
 
 #ifdef DEBUG
 	fprintf(stderr,

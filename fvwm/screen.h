@@ -140,7 +140,10 @@ typedef struct DecorFace
 		struct
 		{
 			int npixels;
-			Pixel *pixels;
+			XColor *xcs;
+			int do_dither;
+			Pixel *d_pixels;
+			int d_npixels;
 			char gradient_type;
 		} grad;
 		struct vector_coords

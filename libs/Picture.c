@@ -60,20 +60,22 @@
 #include "fvwmlib.h"
 #include "Colorset.h"
 #include "Picture.h"
+#include "PictureUtils.h"
 
 static FvwmPicture *FvwmPictureList=NULL;
 
-FvwmPicture *PGetFvwmPicture(Display *dpy, Window Root, char *ImagePath,
-			     char *name, int color_limit)
+FvwmPicture *PGetFvwmPicture(
+	Display *dpy, Window Root, char *ImagePath, char *name,
+	FvwmPictureAttributes fpa)
 {
-	char *path = PictureFindImageFile( name, ImagePath, R_OK );
+	char *path = PictureFindImageFile(name, ImagePath, R_OK );
 	FvwmPicture *p;
 
 	if ( path == NULL )
 	{
 		return NULL;
 	}
-	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, color_limit);
+	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, fpa);
 	if ( p == NULL )
 	{
 		free(path);
@@ -82,8 +84,9 @@ FvwmPicture *PGetFvwmPicture(Display *dpy, Window Root, char *ImagePath,
 	return p;
 }
 
-FvwmPicture *PCacheFvwmPicture(Display *dpy, Window Root, char *ImagePath,
-			       char *name, int color_limit)
+FvwmPicture *PCacheFvwmPicture(
+	Display *dpy, Window Root, char *ImagePath, char *name,
+	FvwmPictureAttributes fpa)
 {
 	char *path;
 	FvwmPicture *p = FvwmPictureList;
@@ -108,7 +111,8 @@ FvwmPicture *PCacheFvwmPicture(Display *dpy, Window Root, char *ImagePath,
 		}
 
 		/* If we have found a picture with the wanted name and stamp */
-		if (!*p1 && !*p2 && !isFileStampChanged(&p->stamp, p->name))
+		if (!*p1 && !*p2 && !isFileStampChanged(&p->stamp, p->name) &&
+		    PICTURE_FPA_AGREE(p,fpa))
 		{
 			p->count++; /* Put another weight on the picture */
 			free(path);
@@ -119,7 +123,7 @@ FvwmPicture *PCacheFvwmPicture(Display *dpy, Window Root, char *ImagePath,
 
 	/* Not previously cached, have to load it ourself. Put it first in list
 	 */
-	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, color_limit);
+	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, fpa);
 	if(p)
 	{
 		p->next=FvwmPictureList;
@@ -153,9 +157,9 @@ void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p)
 	{
 		if (p->nalloc_pixels != 0)
 		{
-			XFreeColors(
+			PictureFreeColors(
 				dpy, Pcmap, p->alloc_pixels, p->nalloc_pixels,
-				0);
+				0, False);
 		}
 		free(p->alloc_pixels);
 	}

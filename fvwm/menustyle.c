@@ -43,6 +43,7 @@
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
 #include "libs/Picture.h"
+#include "libs/PictureUtils.h"
 
 #include "menustyle.h"
 
@@ -71,15 +72,24 @@ static void menustyle_free_face(MenuFace *mf)
 	switch (mf->type)
 	{
 	case GradientMenu:
-		/* - should we check visual is not TrueColor before doing this?
-		 */
-#if 0
-		XFreeColors(
-			dpy, PictureCMap, ms->u.grad.pixels,
-			ms->u.grad.npixels, AllPlanes);
-#endif
-		free(mf->u.grad.pixels);
-		mf->u.grad.pixels = NULL;
+		if (Pdepth <= 8 && mf->u.grad.npixels > 0 && 
+		    !mf->u.grad.do_dither)
+		{
+			Pixel *p;
+			int i;
+
+			p = (Pixel *)safemalloc(
+				mf->u.grad.npixels * sizeof(Pixel));
+			for(i=0; i < mf->u.grad.npixels; i++)
+			{
+				p[i] = mf->u.grad.xcs[i].pixel;
+			}
+			PictureFreeColors(
+				dpy, Pcmap, p, mf->u.grad.npixels, 0, False);
+			free(p);
+		}
+		free(mf->u.grad.xcs);
+		mf->u.grad.xcs = NULL;
 		break;
 	case PixmapMenu:
 	case TiledPixmapMenu:
@@ -90,7 +100,7 @@ static void menustyle_free_face(MenuFace *mf)
 		mf->u.p = NULL;
 		break;
 	case SolidMenu:
-		FreeColors(&mf->u.back, 1);
+		FreeColors(&mf->u.back, 1, True);
 	default:
 		break;
 	}
@@ -109,6 +119,7 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 	char *style;
 	char *token;
 	char *action = s;
+	FvwmPictureAttributes fpa;
 
 	s = GetNextToken(s, &style);
 	if (style && strncasecmp(style, "--", 2) == 0)
@@ -151,7 +162,7 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 	{
 		char **s_colors;
 		int npixels, nsegs, *perc;
-		Pixel *pixels;
+		XColor *xcs;
 
 		if (!IsGradientTypeSupported(style[0]))
 		{
@@ -164,14 +175,21 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 		{
 			return False;
 		}
+		/* dither ? */
+		mf->u.grad.do_dither = False;
+		if (Pdepth <= 8)
+		{
+			mf->u.grad.do_dither = True;
+		}
 		/* grab the colors */
-		pixels = AllocAllGradientColors(s_colors, perc, nsegs, npixels);
-		if (pixels == None)
+		xcs = AllocAllGradientColors(
+			s_colors, perc, nsegs, npixels, mf->u.grad.do_dither);
+		if (xcs == None)
 		{
 			return False;
 		}
 
-		mf->u.grad.pixels = pixels;
+		mf->u.grad.xcs = xcs;
 		mf->u.grad.npixels = npixels;
 		mf->type = GradientMenu;
 		mf->gradient_type = toupper(style[0]);
@@ -180,12 +198,11 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 	else if (StrEquals(style,"Pixmap") || StrEquals(style,"TiledPixmap"))
 	{
 		s = GetNextToken(s, &token);
+		fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
 		if (token)
 		{
-			mf->u.p = PCacheFvwmPicture(dpy, Scr.NoFocusWin,
-						    NULL,
-						    token,
-						    Scr.ColorLimit);
+			mf->u.p = PCacheFvwmPicture(
+				dpy, Scr.NoFocusWin, NULL, token, fpa);
 			if (mf->u.p == NULL)
 			{
 				if (verbose)
@@ -401,7 +418,7 @@ void menustyle_free(MenuStyle *ms)
 	}
 	if (ST_HAS_SIDE_COLOR(ms) == 1)
 	{
-		FreeColors(&ST_SIDE_COLOR(ms), 1);
+		FreeColors(&ST_SIDE_COLOR(ms), 1, True);
 	}
 	if (ST_PSTDFONT(ms) && !ST_USING_DEFAULT_FONT(ms))
 	{
@@ -685,6 +702,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 	FlocaleFont *new_font = NULL;
 	int i;
 	KeyCode keycode;
+	FvwmPictureAttributes fpa;
 
 	action = GetNextToken(action, &name);
 	if (!name)
@@ -835,7 +853,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			if (ST_HAS_SIDE_COLOR(tmpms) == 1)
 			{
-				FreeColors(&ST_SIDE_COLOR(tmpms), 1);
+				FreeColors(&ST_SIDE_COLOR(tmpms), 1, True);
 				ST_HAS_SIDE_COLOR(tmpms) = 0;
 			}
 			ST_HAS_SIDE_COLOR(tmpms) = 0;
@@ -854,7 +872,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 3: /* Foreground */
-			FreeColors(&ST_MENU_COLORS(tmpms).fore, 1);
+			FreeColors(&ST_MENU_COLORS(tmpms).fore, 1, True);
 			if (arg1)
 			{
 				ST_MENU_COLORS(tmpms).fore = GetColor(arg1);
@@ -868,7 +886,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 4: /* Background */
-			FreeColors(&ST_MENU_COLORS(tmpms).back, 1);
+			FreeColors(&ST_MENU_COLORS(tmpms).back, 1, True);
 			if (arg1)
 			{
 				ST_MENU_COLORS(tmpms).back = GetColor(arg1);
@@ -885,7 +903,8 @@ void menustyle_parse_style(F_CMD_ARGS)
 			if (ST_HAS_STIPPLE_FORE(tmpms))
 			{
 				FreeColors(
-					&ST_MENU_STIPPLE_COLORS(tmpms).fore, 1);
+					&ST_MENU_STIPPLE_COLORS(tmpms).fore, 1,
+					True);
 			}
 			if (arg1 == NULL)
 			{
@@ -904,7 +923,8 @@ void menustyle_parse_style(F_CMD_ARGS)
 			if (ST_HAS_ACTIVE_BACK(tmpms))
 			{
 				FreeColors(
-					&ST_MENU_ACTIVE_COLORS(tmpms).back, 1);
+					&ST_MENU_ACTIVE_COLORS(tmpms).back, 1,
+					True);
 			}
 			if (arg1 == NULL)
 			{
@@ -929,7 +949,8 @@ void menustyle_parse_style(F_CMD_ARGS)
 			if (ST_HAS_ACTIVE_FORE(tmpms))
 			{
 				FreeColors(
-					&ST_MENU_ACTIVE_COLORS(tmpms).fore, 1);
+					&ST_MENU_ACTIVE_COLORS(tmpms).fore, 1,
+					True);
 			}
 			if (arg1 == NULL)
 			{
@@ -1102,9 +1123,9 @@ void menustyle_parse_style(F_CMD_ARGS)
 			}
 			if (arg1)
 			{
+				fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
 				ST_SIDEPIC(tmpms) = PCacheFvwmPicture(
-					dpy, Scr.NoFocusWin, NULL, arg1,
-					Scr.ColorLimit);
+					dpy, Scr.NoFocusWin, NULL, arg1, fpa);
 				if (!ST_SIDEPIC(tmpms))
 				{
 					fvwm_msg(WARN, "NewMenuStyle",
@@ -1117,7 +1138,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 		case 32: /* SideColor */
 			if (ST_HAS_SIDE_COLOR(tmpms) == 1)
 			{
-				FreeColors(&ST_SIDE_COLOR(tmpms), 1);
+				FreeColors(&ST_SIDE_COLOR(tmpms), 1, True);
 				ST_HAS_SIDE_COLOR(tmpms) = 0;
 			}
 			if (arg1)
@@ -1370,6 +1391,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	char *buffer;
 	MenuStyle *origms;
 	MenuStyle *destms;
+	FvwmPictureAttributes fpa;
 
 	origname = PeekToken(action, &action);
 	if (origname == NULL)
@@ -1444,15 +1466,15 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	   strcture. Use  the same order as in menustyle_parse_style */
 
 	/* menu colors */
-	FreeColors(&ST_MENU_COLORS(destms).fore, 1);
-	FreeColors(&ST_MENU_COLORS(destms).back, 1);
+	FreeColors(&ST_MENU_COLORS(destms).fore, 1, True);
+	FreeColors(&ST_MENU_COLORS(destms).back, 1, True);
 	memcpy(&ST_MENU_COLORS(destms), &ST_MENU_COLORS(origms),
 	       sizeof(ColorPair));
 
 	/* Greyed */
 	if (ST_HAS_STIPPLE_FORE(destms))
 	{
-		FreeColors(&ST_MENU_STIPPLE_COLORS(destms).fore, 1);
+		FreeColors(&ST_MENU_STIPPLE_COLORS(destms).fore, 1, True);
 	}
 	ST_HAS_STIPPLE_FORE(destms) = ST_HAS_STIPPLE_FORE(origms);
 	if (ST_HAS_STIPPLE_FORE(origms))
@@ -1464,7 +1486,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	/* HilightBack */
 	if (ST_HAS_ACTIVE_BACK(destms))
 	{
-		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).back, 1);
+		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).back, 1, True);
 	}
 	ST_HAS_ACTIVE_BACK(destms) = ST_HAS_ACTIVE_BACK(origms);
 	if (ST_HAS_ACTIVE_BACK(origms))
@@ -1478,7 +1500,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	/* ActiveFore */
 	if (ST_HAS_ACTIVE_FORE(destms))
 	{
-		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).fore, 1);
+		FreeColors(&ST_MENU_ACTIVE_COLORS(destms).fore, 1, True);
 	}
 	ST_HAS_ACTIVE_FORE(destms) = ST_HAS_ACTIVE_FORE(origms);
 	if (ST_HAS_ACTIVE_FORE(origms))
@@ -1529,21 +1551,24 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		ST_FACE(destms).type = SolidMenu;
 		break;
 	case GradientMenu:
-		ST_FACE(destms).u.grad.pixels =
-			(Pixel *)safemalloc(sizeof(Pixel) *
+		ST_FACE(destms).u.grad.xcs =
+			(XColor *)safemalloc(sizeof(XColor) *
 					    ST_FACE(origms).u.grad.npixels);
-		memcpy(ST_FACE(destms).u.grad.pixels,
-		       ST_FACE(origms).u.grad.pixels,
+		memcpy(ST_FACE(destms).u.grad.xcs,
+		       ST_FACE(origms).u.grad.xcs,
 		       sizeof(Pixel) * ST_FACE(origms).u.grad.npixels);
 		ST_FACE(destms).u.grad.npixels = ST_FACE(origms).u.grad.npixels;
+		ST_FACE(destms).u.grad.do_dither =
+			ST_FACE(origms).u.grad.do_dither;
 		ST_FACE(destms).type = GradientMenu;
 		ST_FACE(destms).gradient_type = ST_FACE(origms).gradient_type;
 		break;
 	case PixmapMenu:
 	case TiledPixmapMenu:
+		fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
 		ST_FACE(destms).u.p = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, ST_FACE(origms).u.p->name,
-			Scr.ColorLimit);
+			fpa);
 		memcpy(&ST_FACE(destms).u.back, &ST_FACE(origms).u.back,
 		       sizeof(Pixel));
 		ST_FACE(destms).type = ST_FACE(origms).type;
@@ -1578,15 +1603,16 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	}
 	if (ST_SIDEPIC(origms))
 	{
+		fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
 		ST_SIDEPIC(destms) = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, ST_SIDEPIC(origms)->name,
-			Scr.ColorLimit);
+			fpa);
 	}
 
 	/* side color */
 	if (ST_HAS_SIDE_COLOR(destms) == 1)
 	{
-		FreeColors(&ST_SIDE_COLOR(destms), 1);
+		FreeColors(&ST_SIDE_COLOR(destms), 1, True);
 	}
 	ST_HAS_SIDE_COLOR(destms) = ST_HAS_SIDE_COLOR(origms);
 	if (ST_HAS_SIDE_COLOR(origms) == 1)

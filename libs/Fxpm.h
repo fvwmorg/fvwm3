@@ -163,6 +163,7 @@ typedef struct {
 	    XpmCreatePixmapFromXpmImage(a,b,c,d,e,f)
 #define FxpmFreeXpmImage(a) XpmFreeXpmImage(a)
 #define FxpmReadFileToPixmap(a,b,c,d,e,f) XpmReadFileToPixmap(a,b,c,d,e,f)
+#define FxpmReadFileToImage(a,b,c,d,e) XpmReadFileToImage(a,b,c,d,e)
 #define FxpmCreatePixmapFromData(a,b,c,d,e,f) \
 	    XpmCreatePixmapFromData(a,b,c,d,e,f)
 

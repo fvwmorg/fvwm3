@@ -1,3 +1,10 @@
+2002-08-11  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-root.c (main):
+	New options -no-dither, -dither and -no-cl
+	(SetRootWindow):
+	Update the PImageLoadPixmapFromFile args
+
 2002-08-02  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

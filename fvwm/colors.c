@@ -34,6 +34,8 @@
 #endif
 
 #include "libs/fvwmlib.h"
+#include "libs/PictureBase.h"
+#include "libs/PictureUtils.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -47,14 +49,15 @@
  * Free an array of colours (n colours), never free black
  *
  ****************************************************************************/
-void FreeColors(Pixel *pixels, int n)
+void FreeColors(Pixel *pixels, int n, Bool no_limit)
 {
   int i;
 
   /* We don't ever free black - dirty hack to allow freeing colours at all */
+  /* olicha: ???? */
   for (i = 0; i < n; i++)
   {
     if (pixels[i] != 0)
-      XFreeColors(dpy, Pcmap, pixels + i, 1, 0);
+      PictureFreeColors(dpy, Pcmap, pixels + i, 1, 0, no_limit);
   }
 }

@@ -16,6 +16,6 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-void FreeColors(Pixel *pixels, int n);
+void FreeColors(Pixel *pixels, int n, Bool no_limit);
 
 #endif /* COLORS_H */

@@ -313,26 +313,29 @@ void GetXPMData(char **data)
 
 void GetImageFile(char *file, char *path)
 {
-  char *full_file = NULL;
-  FvwmPictureFlags fpf;
+	char *full_file = NULL;
+	FvwmPictureAttributes fpa;
 
-  fpf.alloc_pixels = 0;
-  fpf.alpha = 0; /* no alpha */
-  if (file)
-    full_file = PictureFindImageFile(file,path,R_OK);
+	fpa.mask = FPAM_NO_ALLOC_PIXELS | FPAM_DITHER | FPAM_NO_ALPHA;
+	if (file)
+		full_file = PictureFindImageFile(file,path,R_OK);
 
-  if (full_file)
-  {
-    if(PImageLoadPixmapFromFile(dpy, Root, full_file, 0,
-				&view.pixmap, &view.mask, None,
-				&view.width, &view.height,
-				&view.depth, 0, NULL,fpf))
-      return;
-    fprintf(stderr,"FvwmBanner: ERROR loading image file\n");
-  }
-  else
-    fprintf(stderr,"FvwmBanner: ERROR finding image file in ImagePath\n");
-  GetXPMData(fvwm_logo_xpm);
+	if (full_file)
+	{
+		if(PImageLoadPixmapFromFile(
+			dpy, Root, full_file, &view.pixmap, &view.mask, None,
+			&view.width, &view.height, &view.depth, 0, NULL, fpa))
+		{
+			return;
+		}
+		fprintf(stderr,"FvwmBanner: ERROR loading image file\n");
+	}
+	else
+	{
+		fprintf(stderr,
+			"FvwmBanner: ERROR finding image file in ImagePath\n");
+		GetXPMData(fvwm_logo_xpm);
+	}
 }
 
 void nocolor(char *a, char *b)

@@ -68,24 +68,21 @@ Bool LoadIconFile(int button, int ico)
 {
 #ifndef NO_ICONS
 	char *path = NULL;
-	FvwmPictureFlags fpf;
+	FvwmPictureAttributes fpa;
 
-	fpf.alloc_pixels = 0;
-	fpf.alpha = 1;
+	fpa.mask = FPAM_NO_ALLOC_PIXELS;
 	path = PictureFindImageFile(Buttons[button].icons[ico].file, imagePath,
 				    R_OK);
 	if (path == NULL)
 	{
 		return False;
 	}
-	if (!PImageLoadPixmapFromFile(dpy, main_win, path, 0,
-				      &Buttons[button].icons[ico].icon,
-				      &Buttons[button].icons[ico].mask,
-				      &Buttons[button].icons[ico].alpha,
-				      &Buttons[button].icons[ico].w,
-				      &Buttons[button].icons[ico].h,
-				      &Buttons[button].icons[ico].depth,
-				      0, NULL,fpf))
+	if (!PImageLoadPixmapFromFile(
+		dpy, main_win, path, &Buttons[button].icons[ico].icon,
+		&Buttons[button].icons[ico].mask,
+		&Buttons[button].icons[ico].alpha, &Buttons[button].icons[ico].w,
+		&Buttons[button].icons[ico].h, &Buttons[button].icons[ico].depth,
+		0, NULL, fpa))
 	{
 		fprintf(stderr, "[FvwmWharf] cannot load pixmap from "
 			"file '%s'\n",path);

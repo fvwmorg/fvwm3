@@ -38,6 +38,7 @@
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
 #include <libs/Picture.h>
+#include <libs/PictureUtils.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "colorset.h"
@@ -454,6 +455,7 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 	char *token;
 	Bool stretched;
 	int pm_id, i = 0;
+	FvwmPictureAttributes fpa;
 
 	df->style.face_type = MultiPixmap;
 	df->u.multi_pixmaps = pm =
@@ -482,8 +484,9 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 		}
 		if (stretched)
 			df->u.multi_stretch_flags |= (1 << pm_id);
+		fpa.mask = (Pdepth <= 8)? FPAM_DITHER:0; /* ? */
 		pm[pm_id] = PCacheFvwmPicture(
-			dpy, Scr.NoFocusWin, NULL, token, Scr.ColorLimit);
+			dpy, Scr.NoFocusWin, NULL, token, fpa);
 		if (!pm[pm_id])
 			fvwm_msg(ERR, "ReadMultiPixmapDecor",
 				 "Pixmap '%s' could not be loaded",
@@ -948,12 +951,33 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 	switch (DFS_FACE_TYPE(df->style))
 	{
 	case GradientButton:
-		/* - should we check visual is not TrueColor before doing this?
+		if (df->u.grad.d_pixels != NULL && df->u.grad.d_npixels)
+		{
+			PictureFreeColors(
+				dpy, Pcmap, df->u.grad.d_pixels,
+				df->u.grad.d_npixels, 0, False);
+			free(df->u.grad.d_pixels);
+		}
+		else if (Pdepth <= 8 && df->u.grad.xcs != NULL &&
+			 df->u.grad.npixels > 0 && !df->u.grad.do_dither)
+		{
+			Pixel *p;
+			int i;
 
-		XFreeColors(dpy, PictureCMap,
-		df->u.grad.pixels, df->u.grad.npixels,
-		AllPlanes); */
-		free(df->u.grad.pixels);
+			p = (Pixel *)safemalloc(
+				df->u.grad.npixels * sizeof(Pixel));
+			for(i=0; i < df->u.grad.npixels; i++)
+			{
+				p[i] = df->u.grad.xcs[i].pixel;
+			}
+			PictureFreeColors(
+				dpy, Pcmap, p, df->u.grad.npixels, 0, False);
+			free(p);
+		}
+		if (df->u.grad.xcs != NULL)
+		{
+			free(df->u.grad.xcs);
+		}
 		break;
 
 	case PixmapButton:
@@ -1195,7 +1219,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 		{
 			char **s_colors;
 			int npixels, nsegs, *perc;
-			Pixel *pixels;
+			XColor *xcs;
+			Bool do_dither = False;
 
 			if (!IsGradientTypeSupported(style[0]))
 				return False;
@@ -1209,13 +1234,18 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			if (npixels <= 0)
 				return False;
 			/* grab the colors */
-			pixels = AllocAllGradientColors(
-				s_colors, perc, nsegs, npixels);
-			if (pixels == None)
+			if (Pdepth <= 8)
+			{
+				do_dither = True;
+			}
+			xcs = AllocAllGradientColors(
+				s_colors, perc, nsegs, npixels, do_dither);
+			if (xcs == None)
 				return False;
-
-			df->u.grad.pixels = pixels;
+			df->u.grad.xcs = xcs;
 			df->u.grad.npixels = npixels;
+			df->u.grad.do_dither = do_dither;
+			df->u.grad.d_pixels = NULL;
 			memset(&df->style, 0, sizeof(df->style));
 			DFS_FACE_TYPE(df->style) = GradientButton;
 			df->u.grad.gradient_type = toupper(style[0]);
@@ -1223,10 +1253,12 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 		else if (strncasecmp(style,"Pixmap",6)==0
 			 || strncasecmp(style,"TiledPixmap",11)==0)
 		{
+			FvwmPictureAttributes fpa;
+
 			s = GetNextToken(s, &file);
+			fpa.mask = (Pdepth <= 8)? FPAM_DITHER:0; /* ? */
 			df->u.p = PCacheFvwmPicture(
-					       dpy, Scr.NoFocusWin, NULL,
-					       file,Scr.ColorLimit);
+				dpy, Scr.NoFocusWin, NULL, file, fpa);
 			if (df->u.p == NULL)
 			{
 				if (file)
@@ -2256,12 +2288,12 @@ void CMD_DefaultColors(F_CMD_ARGS)
 
 	if (!StrEquals(fore, "-"))
 	{
-		XFreeColors(dpy, Pcmap, &Scr.StdFore, 1, 0);
+		PictureFreeColors(dpy, Pcmap, &Scr.StdFore, 1, 0, True);
 		Scr.StdFore = GetColor(fore);
 	}
 	if (!StrEquals(back, "-"))
 	{
-		XFreeColors(dpy, Pcmap, &Scr.StdBack, 3, 0);
+		PictureFreeColors(dpy, Pcmap, &Scr.StdBack, 3, 0, True);
 		Scr.StdBack = GetColor(back);
 		Scr.StdHilite = GetHilite(Scr.StdBack);
 		Scr.StdShadow = GetShadow(Scr.StdBack);

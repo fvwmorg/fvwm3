@@ -1,6 +1,5 @@
 /* -*-c-*- */
 /* Copyright (C) 1993, Robert Nation
- * Copyright (C) 1999 Carsten Haitzler and various contributors (imlib2)
  * Copyright (C) 2002  Olivier Chapuis
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,13 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- *
- * The PictureRGBtoPixel are from imlib2. The code is from raster
- * (Carsten Haitzler) <raster@rasterman.com> <raster@valinux.com>
- *
- */
-
 /* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
@@ -32,6 +24,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <ctype.h>
+#include <time.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
@@ -39,10 +32,36 @@
 #include <fvwmlib.h>
 #include "PictureBase.h"
 #include "PictureUtils.h"
+#include "PictureDitherMatrice.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions and macro ------------------ */
 
-/* ---------------------------- local macros -------------------------------- */
+#define PICTURE_DEBUG_COLORS_ALLOC_FAILURE 1
+#define PICTURE_DEBUG_COLORS_PRINT_CMAP    0
+#define PICTURE_DEBUG_COLORS_INFO          1
+
+/* for alloc_in_cmap from the xpm lib */
+#define XPM_DIST(r1,g1,b1,r2,g2,b2) (long)\
+                          (3*(abs((long)r1-(long)r2) + \
+			      abs((long)g1-(long)g2) + \
+			      abs((long)b1-(long)b2)) + \
+			   abs((long)r1 + (long)g1 + (long)b1 - \
+			       ((long)r2 +  (long)g2 + (long)b2)))
+#define XPM_COLOR_CLOSENESS 40000
+
+#define SQUARE(X) ((X)*(X))
+#define TRUE_DIST(r1,g1,b1,r2,g2,b2) (double)\
+                   (SQUARE((double)(r1 - r2)/655.35) \
+		+   SQUARE((double)(g1 - g2)/655.35) \
+                +   SQUARE((double)(b1 - b2)/655.35))
+
+#define FAST_DIST(r1,g1,b1,r2,g2,b2) (long)\
+                   (abs((long)(r1 - r2)) \
+		+   abs((long)(g1 - g2)) \
+                +   abs((double)(b1 - b2)))
+
+#define USED_DIST(r1,g1,b1,r2,g2,b2) FAST_DIST(r1,g1,b1,r2,g2,b2)
+#define PICTURE_COLOR_CLOSENESS USED_DIST(3333,3333,3333,0,0,0)
 
 /* ---------------------------- imports ------------------------------------- */
 
@@ -50,286 +69,52 @@
 
 /* ---------------------------- local types --------------------------------- */
 
-#ifdef USE_OLD_COLOR_LIMIT_METHODE
-/* This structure is used to quickly access the RGB values of the colors */
-/* without repeatedly having to transform them.   */
 typedef struct
 {
-	char * c_color;           /* Pointer to the name of the color */
-	XColor rgb_space;         /* rgb color info */
-#define ALLOC_COLOR_NO     0
-#define ALLOC_COLOR_DONE   1
-#define ALLOC_COLOR_FAILED 2
-	unsigned int  allocated : 2; /* True if the pixel of the rgb_space
-				      * is allocated */
-} Color_Info;
+	XColor color;               /* rgb color info */
+	unsigned long alloc_count;  /* nbr of allocation */
+} PColorInfo;
 
-#else
+typedef struct
+{
+	short nr;
+	short ng;
+	short nb;
+	short grey_bits;
+	short d_nr;
+	short d_ng;
+	short d_nb;
+} PTableInfo;
 
-#endif
+typedef struct {
+    int cols_index;
+    long closeness;
+}      CloseColor;
 
 /* ---------------------------- forward declarations ------------------------ */
 
+static int get_color_index(int r, int g, int b, int is_8);
+
 /* ---------------------------- local variables ----------------------------- */
 
-#ifdef USE_OLD_COLOR_LIMIT_METHODE
-static char color_limit_base_table_init = 'n';
-
-/* First thing in base array are colors probably already in the color map
-   because they have familiar names.
-   I pasted them into a xpm and spread them out so that similar colors are
-   spread out.
-   Toward the end are some colors to fill in the gaps.
-   Currently 61 colors in this list.
-*/
-static Color_Info base_array[] =
-{
-	{"white"},
-	{"black"},
-	{"grey"},
-	{"green"},
-	{"blue"},
-	{"red"},
-	{"cyan"},
-	{"yellow"},
-	{"magenta"},
-	{"DodgerBlue"},
-	{"SteelBlue"},
-	{"chartreuse"},
-	{"wheat"},
-	{"turquoise"},
-	{"CadetBlue"},
-	{"gray87"},
-	{"CornflowerBlue"},
-	{"YellowGreen"},
-	{"NavyBlue"},
-	{"MediumBlue"},
-	{"plum"},
-	{"aquamarine"},
-	{"orchid"},
-	{"ForestGreen"},
-	{"lightyellow"},
-	{"brown"},
-	{"orange"},
-	{"red3"},
-	{"HotPink"},
-	{"LightBlue"},
-	{"gray47"},
-	{"pink"},
-	{"red4"},
-	{"violet"},
-	{"purple"},
-	{"gray63"},
-	{"gray94"},
-	{"plum1"},
-	{"PeachPuff"},
-	{"maroon"},
-	{"lavender"},
-	{"salmon"},           /* for peachpuff, orange gap */
-	{"blue4"},            /* for navyblue/mediumblue gap */
-	{"PaleGreen4"},       /* for forestgreen, yellowgreen gap */
-	{"#AA7700"},          /* brick, no close named color */
-	{"#11EE88"},          /* light green, no close named color */
-	{"#884466"},          /* dark brown, no close named color */
-	{"#CC8888"},          /* light brick, no close named color */
-	{"#EECC44"},          /* gold, no close named color */
-	{"#AAAA44"},          /* dull green, no close named color */
-	{"#FF1188"},          /* pinkish red */
-	{"#992299"},          /* purple */
-	{"#CCFFAA"},          /* light green */
-	{"#664400"},          /* dark brown*/
-	{"#AADD99"},          /* light green */
-	{"#66CCFF"},          /* light blue */
-	{"#CC2299"},          /* dark red */
-	{"#FF11CC"},          /* bright pink */
-	{"#11CC99"},          /* grey/green */
-	{"#AA77AA"},          /* purple/red */
-	{"#EEBB77"}           /* orange/yellow */
-};
-
-#define NColors (sizeof(base_array) / sizeof(Color_Info))
-
-#else
-
-static int PpaletteType = 0;
-static int PpaletteColorLimit = 0;
-static int PpaletteStrictColorLimit = 0;
-Pixel *Pct = NULL;
-
-#endif
+static int PColorLimit = 0;
+static PColorInfo *Pct = NULL;
+static short *PMappingTable = NULL;
+static short *PDitherMappingTable = NULL;
+static Bool PStrictColorLimit = 0;
+static Bool PAllocTable = 0;
+static PTableInfo Pti;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ***************************************************************************
  *
- * colors reduction
+ * Color Allocation
+ * alloc_color_in_cmap is strongly inspired by SetCloseColor from
+ * the Xpm library
  *
  * ***************************************************************************/
-#ifdef USE_OLD_COLOR_LIMIT_METHODE
-static
-void c300_color_to_rgb(char *c_color, XColor *rgb_space)
-{
-	int rc;
 
-	rc=XParseColor(Pdpy, Pcmap, c_color, rgb_space);
-	if (rc==0) {
-		fprintf(stderr,"color_to_rgb: can't parse color %s, rc %d\n",
-			c_color, rc);
-		return;
-	}
-
-	return;
-}
-
-/* A macro for squaring things */
-#define SQUARE(X) ((X)*(X))
-/* RGB Color distance sum of square of differences */
-static
-double c400_distance(XColor *target_ptr, XColor *base_ptr)
-{
-	register double dst;
-
-	dst = SQUARE((double)(base_ptr->red   - target_ptr->red  )/655.35)
-		+   SQUARE((double)(base_ptr->green - target_ptr->green)/655.35)
-		+   SQUARE((double)(base_ptr->blue  - target_ptr->blue )/655.35);
-	return dst;
-}
-
-/* from the color names in the base table, calc rgbs */
-static
-void c100_init_base_table ()
-{
-	int i;
-
-	for (i=0; i<NColors; i++)
-	{
-		/* change all base colors to numbers */
-		c300_color_to_rgb(
-			base_array[i].c_color, &base_array[i].rgb_space);
-		base_array[i].allocated = ALLOC_COLOR_NO;
-	}
-
-	return;
-}
-
-/* Replace the color in my_color by the closest matching color
-   from base_table */
-void PictureReduceColor(char **my_color, int color_limit)
-{
-	int i, limit, minind;
-	double mindst=1e20;
-	double dst;
-	XColor rgb;          /* place to calc rgb for each color in xpm */
-
-
-	if (!XpmSupport)
-		return;
-
-	if (color_limit_base_table_init == 'n')
-	{
-		/* if base table not created yet */
-		c100_init_base_table();  /* init the base table */
-		/* remember that its set now. */
-		color_limit_base_table_init = 'y';
-	} 
-	if (!strcasecmp(*my_color,"none")) {
-		return; /* do not substitute the "none" color */
-	}
-
-	c300_color_to_rgb(*my_color, &rgb); /* get rgb for a color in xpm */
-	/* Loop over all base_array colors; find out which one is closest
-	   to my_color */
-	minind = 0;                         /* Its going to find something... */
-	limit = NColors;                    /* init to max */
-	if (color_limit < NColors) {        /* can't do more than I have */
-		limit = color_limit;        /* Do reduction using subset */
-	}                                   /* end reducing limit */
-	for(i=0; i < limit; i++) {          /* loop over base array */
-		dst = c400_distance (&rgb, &base_array[i].rgb_space);
-		/* distance */
-		if (dst < mindst ) {        /* less than min and better than
-					     * last */
-			mindst=dst;         /* new minimum */
-			minind=i;           /* save loc of new winner */
-			if (dst <= 100) {   /* if close enough */
-				break;      /* done */
-			}                   /* end close enough */
-		}                           /* end new low distance */
-	}                                   /* end all base colors */
-	/* Finally: replace the color string by the newly determined color
-	 * string */
-	free(*my_color);                    /* free old color */
-	/* area for new color */
-	*my_color = safemalloc(strlen(base_array[minind].c_color) + 1);
-	strcpy(*my_color,base_array[minind].c_color); /* put it there */
-
-	return;
-}
-#endif
-
-void PictureReduceRGBColor(XColor *c, int color_limit)
-{
-#ifdef USE_OLD_COLOR_LIMIT_METHODE
-	int i, limit, minind;
-	double mindst=1e20000;
-	double dst;
-
-	if (color_limit <= 0)
-	{
-		XAllocColor(Pdpy, Pcmap, c);
-		return;
-	}
-	if (color_limit_base_table_init == 'n') {
-		c100_init_base_table();
-		color_limit_base_table_init = 'y';
-	}
-	minind = 0;
-	limit = NColors;
-	if (color_limit < NColors) {
-		limit = color_limit;
-	}
-	for(i=0; i < limit; i++) {
-		if (base_array[i].allocated == ALLOC_COLOR_FAILED)
-			continue;
-		dst = c400_distance(c, &base_array[i].rgb_space);
-		if (dst < mindst)
-		{
-			if (base_array[i].allocated == ALLOC_COLOR_NO)
-			{
-				if (XAllocColor(
-					Pdpy, Pcmap,
-					&base_array[i].rgb_space))
-				{
-					base_array[i].allocated =
-						ALLOC_COLOR_DONE;
-				}
-				else
-				{
-					base_array[i].allocated =
-						ALLOC_COLOR_FAILED;
-					continue;
-				}
-			}
-			mindst=dst;
-			minind=i;
-			if (dst <= 100) {
-				break;
-			}
-		}
-	}
-
-	c->pixel = base_array[minind].rgb_space.pixel;
-	return;
-#else
-	c->pixel = PictureRGBtoPixel(c->red/257, c->green/257, c->blue/257);
-#endif
-}
-
-/* ***************************************************************************
- *
- * rgb to pixel, from imilib2
- *
- * ***************************************************************************/
 static
 void decompose_mask(unsigned long mask, int *shift, int *prec)
 {
@@ -349,7 +134,111 @@ void decompose_mask(unsigned long mask, int *shift, int *prec)
 	}
 }
 
-Pixel PictureRGBtoPixel(int r, int g, int b)
+static int
+closeness_cmp(const void *a, const void *b)
+{
+    CloseColor *x = (CloseColor *) a, *y = (CloseColor *) b;
+
+    /* cast to int as qsort requires */
+    return (int) (x->closeness - y->closeness);
+}
+
+static
+int alloc_color_in_cmap(XColor *c, Bool force)
+{
+	static XColor colors[256];
+	CloseColor closenesses[256];
+	XColor tmp;
+	int i,j;
+	int map_entries = Pvisual->map_entries;
+	time_t current_time;
+	time_t last_time = 0;
+
+	map_entries = (map_entries > 256)? 256:map_entries;
+	current_time = time(NULL);
+	if (current_time - last_time >= 2 || force)
+	{
+		last_time = current_time;
+		for (i = 0; i < map_entries; i++)
+		{
+			colors[i].pixel = i;
+		}
+		XQueryColors(Pdpy, Pcmap, colors, map_entries);	
+	}
+	for(i = 0; i < map_entries; i++)
+	{
+		closenesses[i].cols_index = i;
+		closenesses[i].closeness = USED_DIST(
+			(int)(c->red),
+			(int)(c->green),
+			(int)(c->blue),
+			(int)(colors[i].red),
+			(int)(colors[i].green),
+			(int)(colors[i].blue));
+	}
+	qsort(closenesses, map_entries, sizeof(CloseColor), closeness_cmp);
+
+	i = 0;
+	j = closenesses[i].cols_index;
+	while (force ||
+	       (abs((long)c->red - (long)colors[j].red) <= 
+		PICTURE_COLOR_CLOSENESS &&
+		abs((long)c->green - (long)colors[j].green) <=
+		PICTURE_COLOR_CLOSENESS &&
+		abs((long)c->blue - (long)colors[j].blue) <=
+		PICTURE_COLOR_CLOSENESS))
+	{
+			tmp.red = colors[j].red;
+			tmp.green = colors[j].green;
+			tmp.blue = colors[j].blue;
+			if (XAllocColor(Pdpy, Pcmap, &tmp))
+			{
+				c->red = tmp.red;
+				c->green = tmp.green;
+				c->blue = tmp.blue;
+				c->pixel = tmp.pixel;
+				return 1;
+			}
+			else
+			{
+				i++;
+				if (i == map_entries)
+					break;
+				j = closenesses[i].cols_index;
+			}
+	}
+	return 0;
+}
+
+static
+int alloc_color_in_pct(XColor *c, int index)
+{
+	if (Pct[index].alloc_count == 0)
+	{
+		int s = PStrictColorLimit;
+
+		PStrictColorLimit = 0;
+		c->red = Pct[index].color.red;
+		c->green = Pct[index].color.green;
+		c->blue = Pct[index].color.blue;
+		PictureAllocColor(Pdpy, Pcmap, c, True); /* WARN (rec) */
+		Pct[index].color.pixel = c->pixel;
+		Pct[index].alloc_count = 1;
+		PStrictColorLimit = s;
+	}
+	else
+	{
+		c->red = Pct[index].color.red;
+		c->green = Pct[index].color.green;
+		c->blue = Pct[index].color.blue;
+		c->pixel = Pct[index].color.pixel;
+		if (Pct[index].alloc_count < 0xffffffff)
+			(Pct[index].alloc_count)++;
+	}
+	return 1;
+}
+
+int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
 {
 	static int red_shift = 0;
 	static int green_shift = 0;
@@ -359,67 +248,53 @@ Pixel PictureRGBtoPixel(int r, int g, int b)
 	static int blue_prec = 0;
 	static Bool init = False;
 
-#ifndef USE_OLD_COLOR_LIMIT_METHODE
-	if (PpaletteColorLimit > 0 && Pct)
+	if (PStrictColorLimit && Pct != NULL)
 	{
-		switch (PpaletteType)
+		no_limit = 0;
+	}
+	if (Pdepth <= 8 && (no_limit || Pct == NULL) &&
+	    XAllocColor(dpy, cmap, c))
+	{
+		return 1;
+	}
+	else if (Pdepth <= 8 && (no_limit || Pct == NULL))
+	{
+		/* color allocation fail */
+#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
+		fprintf(stderr,"Color allocation fail for %x %x %x\n",
+			c->red >> 8, c->green >> 8, c->blue >> 8);
+#endif
+		if (!alloc_color_in_cmap(c, False))
 		{
-		case 0: /* 332 */
-			return Pct[((b >> 6) & 0x03) |
-				  ((g >> 3) & 0x1c) |
-				  (r & 0xe0)];
-			break;
-		case 1: /* 232 */
-			return Pct[((b >> 6) & 0x03) |
-				  ((g >> 3) & 0x1c) |
-				  ((r >> 1) & 0x60)];
-			break;
-		case 2: /* 222 */
-			return Pct[((b >> 6) & 0x03) |
-				  ((g >> 4) & 0x0c) |
-				  ((r >> 2) & 0x30)];
-			break;
-		case 3: /* 221 */
-			return Pct[((b >> 7) & 0x01) |
-				  ((g >> 5) & 0x06) |
-				  ((r >> 3) & 0x18)];
-			break;
-		case 4: /* 121 */
-			return Pct[((b >> 7) & 0x01) |
-				  ((g >> 5) & 0x06) |
-				  ((r >> 4) & 0x08)];
-			break;
-		case 5: /* 111 */
-			return Pct[((b >> 7) & 0x01) |
-				  ((g >> 6) & 0x02) |
-				  ((r >> 5) & 0x04)];
-			break;
-		case 6: /* 1 */
-			return Pct[(((r & 0xff) + (g & 0xff) + (b & 0xff)) / 3) 
-				  >> 7];
-			break;
-		case 7: /* 666 */
-			return Pct[
-				(((r*6) >> 8) * 36) + 
-				(((g*6) >> 8) * 6) +
-				((b*6) >> 8)];
-			break;
-		default:
-			return 0;
+			int status;
+
+			XGrabServer(dpy);
+			status = alloc_color_in_cmap(c, True);
+			XUngrabServer(dpy);
+#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
+			fprintf(stderr,"\tuse(?) %x %x %x, %i\n",
+				c->red >> 8, c->green >> 8, c->blue >> 8,
+				status);
+#endif
+			return status;
+		}
+		else
+		{
+#if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
+			fprintf(stderr,"\tuse %x %x %x\n",
+				c->red >> 8, c->green >> 8, c->blue >> 8);
+#endif
+			return 1;
 		}
 	}
-	if (Pdepth <= 8)
+	else if (Pct != NULL) /* and PColorLimit > 0 && Pdepth <= 8 */
 	{
-		XColor c;
-		
-		c.red = r*257;
-		c.green = g*257;
-		c.blue = b*257;
-		XAllocColor(Pdpy, Pcmap, &c);
-		return c.pixel;
-	}
-#endif
+		int index;
 
+		index = get_color_index(c->red,c->green,c->blue, False);
+		return alloc_color_in_pct(c, index);
+	}
+	/* Pdepth > 8 */
 	if (!init)
 	{
 		init = True;
@@ -427,46 +302,138 @@ Pixel PictureRGBtoPixel(int r, int g, int b)
 		decompose_mask(Pvisual->green_mask, &green_shift, &green_prec);
 		decompose_mask(Pvisual->blue_mask, &blue_shift, &blue_prec);
 	}
-	return (Pixel)((((r >> (8 - red_prec)) << red_shift) +
-	       ((g >> (8 - green_prec)) << green_shift) +
-	       ((b >> (8 - blue_prec)) << blue_shift)));
+	c->pixel= (Pixel)((((c->red) >> (16 - red_prec)) << red_shift) +
+			  (((c->green) >> (16 - green_prec)) << green_shift) +
+			  (((c->blue) >> (16 - blue_prec)) << blue_shift));
+	return 1;
 }
 
-int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
+static
+int my_dither(int x, int y, XColor *c)
 {
-#ifndef USE_OLD_COLOR_LIMIT_METHODE
-	if (PpaletteColorLimit > 0 && no_limit &&
-	    !PpaletteStrictColorLimit && XAllocColor(dpy, cmap, c))
+        /* the dither matrice */
+	static const char DM[128][128] = DITHER_MATRICE;
+	int index;
+	const char *dmp;
+
+	if (Pti.grey_bits != 0)
 	{
-		return 1;
+		int prec = Pti.grey_bits;
+
+		if (Pti.grey_bits == 1)
+		{
+			/* FIXME, can we do a better dithering */
+			prec = 2;
+		}
+		dmp = DM[(0 + y) & (DM_HEIGHT - 1)];
+		index = (c->green + ((c->blue + c->red) >> 1)) >> 1;
+		index += (dmp[(0 + x) & (DM_WIDTH - 1)] << 2) >> prec;
+		index = (index - (index >> prec));
+		index = index >> (8 - Pti.grey_bits);
 	}
-	c->pixel = PictureRGBtoPixel(
-		c->red/257, c->green/257, c->blue/257);
-	return 1;
+	else
+	{
+		int dith, rs, gs, bs, gb, b;
+
+		if (Pti.d_nr > 0)
+		{
+			rs = Pti.d_nr - 1;
+			gs = Pti.d_ng - 1;
+			bs = Pti.d_nb - 1;
+			gb = Pti.d_ng*Pti.d_nb;
+			b = Pti.d_nb;
+		}
+		else
+		{
+			rs = Pti.nr - 1;
+			gs = Pti.ng - 1;
+			bs = Pti.nb - 1;
+			gb = Pti.ng*Pti.nb;
+			b = Pti.nb;
+		}
+		dmp = DM[(0 + y) & (DM_HEIGHT - 1)];
+		dith = (dmp[(0 + x) & (DM_WIDTH - 1)] << 2) | 7;
+		c->red = ((c->red * rs) + dith) >> 8;
+		c->green = ((c->green * gs) + (262 - dith)) >> 8;
+		c->blue = ((c->blue * bs) + dith) >> 8;
+		index = c->red * gb + c->green * b + c->blue;
+		if (PDitherMappingTable != NULL)
+		{
+			index = PDitherMappingTable[index];
+		}
+	}
+	return index;
+}
+
+int PictureAllocColorAllProp(
+	Display *dpy, Colormap cmap, XColor *c, int x, int y,
+	Bool no_limit, Bool is_8, Bool do_dither)
+{
+	int index;
+
+	if (Pct == NULL || no_limit)
+	{
+		if (is_8)
+		{
+			c->red = c->red*257;
+			c->green = c->green*257;
+			c->blue = c->blue*257;
+		}
+		return PictureAllocColor(dpy, cmap, c, no_limit);
+	}
+	if (!is_8)
+	{
+#if 0
+		c->red = c->red/257;
+		c->green = c->green/257;
+		c->blue = c->blue/257;
 #else
-	return XAllocColor(dpy, cmap, c);
+		c->red = c->red >> 8;
+		c->green = c->green >> 8;
+		c->blue = c->blue >> 8;
 #endif
+	}
+	if (!do_dither)
+	{
+		index = get_color_index(c->red,c->green,c->blue, True);
+		return alloc_color_in_pct(c, index);
+	}
+
+	index = my_dither(x, y, c);
+	return alloc_color_in_pct(c, index);
 }
 
 void PictureFreeColors(
-	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes)
+	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
+	Bool no_limit)
 {
-#ifndef USE_OLD_COLOR_LIMIT_METHODE
-	if (PpaletteColorLimit > 0)
+	if (PStrictColorLimit && Pct != NULL)
+	{
+		no_limit = 0;
+	}
+	if (Pct != NULL && !no_limit)
 	{
 		Pixel *p;
 		int i,j,do_free;
 		int m = 0;
 
+		if (!PUseDynamicColors)
+		{
+			return;
+		}
 		p = (Pixel *)safemalloc(n*sizeof(Pixel));
 		for(i= 0; i < n; i++)
 		{
 			do_free = 1;
-			for(j=0; j<PpaletteColorLimit; j++)
+			for(j=0; j<PColorLimit; j++)
 			{
-				if (pixels[i] == Pct[j])
+				if (Pct[j].alloc_count &&
+				    Pct[j].alloc_count < 0xffffffff &&
+				    pixels[i] == Pct[j].color.pixel)
 				{
-					do_free = 0;
+					(Pct[j].alloc_count)--;
+					if (Pct[j].alloc_count)
+						do_free = 0;
 					break;
 				}
 			}
@@ -481,20 +448,17 @@ void PictureFreeColors(
 		}
 		return;
 	}
-	if (Pct == NULL && Pdepth <= 8)
+	if ((Pct == NULL || no_limit) && Pdepth <= 8)
 	{
 		XFreeColors(dpy, cmap, pixels, n, planes);
 	}
 	return;
-#else
-	XFreeColors(dpy, cmap, pixels, n, planes);
-#endif
 }
 
 Pixel PictureGetNextColor(Pixel p, int n)
 {
-#ifndef USE_OLD_COLOR_LIMIT_METHODE
 	int i;
+	XColor c;
 
 	if (n >= 0)
 		n = 1;
@@ -503,469 +467,923 @@ Pixel PictureGetNextColor(Pixel p, int n)
 
 	if (Pct == NULL)
 		return p;
-	for(i=0; i<PpaletteColorLimit; i++)
+	for(i=0; i<PColorLimit; i++)
 	{
-		if (Pct[i] == p)
+		if (Pct[i].color.pixel == p)
 		{
 			if (i == 0 && n < 0)
 			{
-				return Pct[PpaletteColorLimit-1];
+				c = Pct[PColorLimit-1].color;
+				alloc_color_in_pct(&c, PColorLimit-1);
+				return Pct[PColorLimit-1].color.pixel;
 			}
-			else if (i == PpaletteColorLimit-1 && n > 0)
+			else if (i == PColorLimit-1 && n > 0)
 			{
-				return Pct[0];
+				c = Pct[0].color;
+				alloc_color_in_pct(&c, 0);
+				return Pct[0].color.pixel;
 			}
 			else
 			{
-				return Pct[i+n];
+				c = Pct[i+n].color;
+				alloc_color_in_pct(&c, i+n);
+				return Pct[i+n].color.pixel;
 			}
 		}
 	}
 	return p;
-#else
-	return p;
-#endif
 }
 
 /* ***************************************************************************
  *
- * palette from imilib2
+ * colors reduction
  *
  * ***************************************************************************/
-#ifndef USE_OLD_COLOR_LIMIT_METHODE
+static
+int get_color_index(int r, int g, int b, int is_8)
+{
+	int index;
+
+	if (!is_8)
+	{
+		r= r >> 8;
+		g= g >> 8;
+		b= b >> 8;
+	}
+	if (Pti.grey_bits > 0)
+	{
+		index = ((r+g+b)/3) >> (8 - Pti.grey_bits);
+	}
+	else
+	{
+		index = ((r * Pti.nr)>>8) * Pti.ng*Pti.nb +
+			((g * Pti.ng)>>8) * Pti.nb +
+			((b * Pti.nb)>>8);
+		if (PMappingTable != NULL)
+		{
+			index = PMappingTable[index];
+		}
+	}
+	return index;
+}
 
 static
-void colors_alloc_fail(
-	Display *d, Colormap cmap, int i, Pixel *color_lut, Bool read_write)
+XColor *build_mapping_colors(int nr, int ng, int nb)
 {
-	unsigned long pixels[256];
-	int j;
+	int r, g, b, i;
+	XColor *colors;
 
-	if (i > 0)
+	colors = (XColor *)safemalloc(nr*ng*nb * sizeof(XColor));
+	i = 0;
+	for (r = 0; r < nr; r++)
 	{
-		for(j = 0; j < i; j++)
-			pixels[j] = (unsigned long) color_lut[j];
-		XFreeColors(d, cmap, pixels, i, 0);
+		for (g = 0; g < ng; g++)
+		{
+			for (b = 0; b < nb; b++)
+			{
+				colors[i].red =
+					r * 65535 / (nr - 1);
+				colors[i].green =
+					g * 65535 / (ng - 1);
+				colors[i].blue =
+					b * 65535 / (nb - 1);
+				i++;
+			}
+		}
+	}
+	return colors;
+}
+
+short *build_mapping_table(int nr, int ng, int nb)
+{
+	int size = nr*ng*nb;
+	XColor *colors_map;
+	short *Table;
+	int i,j, minind;
+	double mindst = 40000;
+	double dst;
+
+	colors_map = build_mapping_colors(nr, ng, nb);
+	Table = (short *)safemalloc((size+1) * sizeof(short));
+	for(i=0; i<size; i++)
+	{
+		minind = 0;
+		for(j=0; j<PColorLimit; j++)
+		{
+			dst = USED_DIST(colors_map[i].red,
+					colors_map[i].green,
+					colors_map[i].blue,
+					Pct[j].color.red,
+					Pct[j].color.green,
+					Pct[j].color.blue);
+			if (j == 0 || dst < mindst)
+			{
+				mindst=dst;
+				minind=j;
+			} 
+		}
+		Table[i] = minind;
+	}
+	Table[size] = Table[size-1];
+	free(colors_map);
+	return Table;
+}
+
+static
+void create_mapping_table(
+	int nr, int ng, int nb, int grey_bits, Bool use_named)
+{
+	Pti.d_nr = Pti.d_ng = Pti.d_nb = 0;
+	if (!use_named || PColorLimit == 0)
+	{
+		/* pure color cube */
+		Pti.nr = nr;
+		Pti.ng = ng;
+		Pti.nb = nb;
+		Pti.grey_bits = grey_bits;
+	}
+	else if (PColorLimit == 2)
+	{
+		/* ok */
+		Pti.nr = 0;
+		Pti.ng = 0;
+		Pti.nb = 0;
+		Pti.grey_bits = 1;
+	}
+	else /* named table */
+	{
+		/* dither table should be small */
+		if (PColorLimit <= 9)
+		{
+			Pti.d_nr = 3;
+			Pti.d_ng = 3;
+			Pti.d_nb = 3;
+		}
+		else
+		{
+			Pti.d_nr = 4;
+			Pti.d_ng = 4;
+			Pti.d_nb = 4;
+		}
+		PDitherMappingTable =
+			build_mapping_table(Pti.d_nr, Pti.d_ng, Pti.d_nb);
+		if (PColorLimit <= 9)
+		{
+			Pti.nr = 8;
+			Pti.ng = 8;
+			Pti.nb = 8;
+		}
+		else
+		{
+			Pti.nr = 16;
+			Pti.ng = 16;
+			Pti.nb = 16;
+		}
+		PMappingTable = build_mapping_table(Pti.nr, Pti.ng, Pti.nb);
+	}
+
+}
+
+/* Replace the color in my_color by the closest matching color
+   from base_table */
+void PictureReduceColorName(char **my_color)
+{
+	int index;
+	XColor rgb;          /* place to calc rgb for each color in xpm */
+
+	if (!XpmSupport)
+		return;
+
+	if (!strcasecmp(*my_color,"none")) {
+		return; /* do not substitute the "none" color */
+	}
+
+	if (!XParseColor(Pdpy, Pcmap, *my_color, &rgb))
+	{
+		fprintf(stderr,"color_to_rgb: can't parse color %s\n",
+			*my_color);
+	}
+	index = get_color_index(rgb.red,rgb.green,rgb.blue, False);
+	/* Finally: replace the color string by the newly determined color
+	 * string */
+	free(*my_color);                    /* free old color */
+	/* area for new color */
+	*my_color = safemalloc(8);
+	sprintf(*my_color,"#%x%x%x",
+		Pct[index].color.red >> 8,
+		Pct[index].color.green >> 8,
+		Pct[index].color.blue >> 8); /* put it there */
+	return;
+}
+
+/* ***************************************************************************
+ *
+ * color table for depth <= 8
+ *
+ * ***************************************************************************/
+#define PICTURE_PAllocTable         1000000
+#define PICTURE_PUseDynamicColors   100000
+#define PICTURE_PStrictColorLimit   10000
+#define PICTURE_use_named           1000
+#define PICTURE_TABLETYPE_LENGHT    7
+
+static
+void free_table_colors(PColorInfo *color_table, int npixels)
+{
+	Pixel pixels[256];
+	int i,n=0;
+
+	if (npixels > 0)
+	{
+		for(i = 0; i < npixels; i++)
+		{
+			if (color_table[i].alloc_count)
+			{
+				pixels[n++] = color_table[i].color.pixel;
+			}
+			color_table[i].alloc_count = 0;
+		}
+		if (n > 0)
+		{
+			XFreeColors(Pdpy, Pcmap, pixels, n, 0);
+		}
 	}
 }
 
 static
-Bool my_alloc_color(
-	Display *d, Colormap cmap, XColor *xc, int sig_mask, Bool read_write)
+int get_nbr_of_free_colors(int max_check)
 {
-	XColor *xc_in;
-	
-	xc_in = xc;
-	if ((!XAllocColor(d, cmap, xc)) ||
-	    ((xc_in->red & sig_mask) != (xc->red & sig_mask)) ||
-	    ((xc_in->green & sig_mask) != (xc->green & sig_mask)) ||
-	    ((xc_in->blue & sig_mask) != (xc->blue & sig_mask)))
-	{
+	int check = 1;
+	Pixel Pixels[256];
+
+	if (max_check < 1)
 		return 0;
+	if (Pdepth > 8)
+		return max_check;
+	max_check = (max_check > Pvisual->map_entries) ?
+		Pvisual->map_entries:max_check;
+	while(1)
+	{
+		if (XAllocColorCells(
+			Pdpy, Pcmap, False, NULL, 0, Pixels, check))
+		{
+			XFreeColors(Pdpy, Pcmap, Pixels, check, 0);
+			check++;
+		}
+		else
+		{
+			return check-1;
+		}
+		if (check > max_check)
+		{
+			return check-1;
+		}
 	}
-	return 1;
+	return check-1;
 }
 
-
 static
-Pixel *AllocColors332(Display *d, Colormap cmap, Visual *v)
+PColorInfo *alloc_color_cube(
+	int nr, int ng, int nb, int grey_bits, Bool do_allocate)
 {
-	int r, g, b, i, val;
-	Pixel *color_lut;
-	int sig_mask = 0;
-	XColor xcl, xcl_in;
+	int r, g, b, grey, i;
+	PColorInfo *color_table;
+	XColor color;
+	int size = nr*ng*nb + (1 << grey_bits)*(grey_bits != 0);
 
-	for (i = 0; i < v->bits_per_rgb; i++) sig_mask |= (0x1 << i);
-	sig_mask <<= (16 - v->bits_per_rgb);
+	color_table = (PColorInfo *)safemalloc((size+1) * sizeof(PColorInfo));
+
 	i = 0;
-	color_lut = malloc(256 * sizeof(Pixel));
-	for (r = 0; r < 8; r++)
+
+	if (grey_bits == 0)
 	{
-		for (g = 0; g < 8; g++)
+		for (r = 0; r < nr; r++)
 		{
-			for (b = 0; b < 4; b++)
+			for (g = 0; g < ng; g++)
 			{
-				val = (r << 6) | (r << 3) | (r);
-				xcl.red = (unsigned short)
-					((val << 7) | (val >> 2));
-				val = (g << 6) | (g << 3) | (g);
-				xcl.green = (unsigned short)
-					((val << 7) | (val >> 2));
-				val = (b << 6) | (b << 4) | (b << 2) | (b);
-				xcl.blue = (unsigned short)((val << 8) | (val));
-				xcl_in = xcl;
-				if (!my_alloc_color(
-					d, cmap, &xcl, sig_mask, False))
+				for (b = 0; b < nb; b++)
 				{
-					colors_alloc_fail(
-						d, cmap, i, color_lut, False);
-					free(color_lut);
-					return NULL;
+					color.red = r * 65535 / (nr - 1);
+					color.green = g * 65535 / (ng - 1);
+					color.blue = b * 65535 / (nb - 1);
+					if (do_allocate)
+					{
+						if (!XAllocColor(Pdpy, Pcmap,
+								 &color))
+						{
+							free_table_colors(
+								color_table, i);
+							free(color_table);
+							return NULL;
+						}
+						color_table[i].color.pixel =
+							color.pixel;
+						color_table[i].alloc_count = 1;
+					}
+					else
+					{
+						color_table[i].alloc_count = 0;
+					}
+					color_table[i].color.red = color.red;
+					color_table[i].color.green = color.green;
+					color_table[i].color.blue = color.blue;
+					i++;
 				}
-				color_lut[i] = xcl.pixel;
-				i++;
 			}
 		}
 	}
-	PpaletteType = 0;
-	PpaletteColorLimit = 256;
-	return color_lut;
-}
-
-static
-Pixel *AllocColors666(Display *d, Colormap cmap, Visual *v)
-{
-	int r, g, b, i, val;
-	Pixel *color_lut;
-	int sig_mask = 0;
-	XColor xcl, xcl_in;
-   
-	for (i = 0; i < v->bits_per_rgb; i++) sig_mask |= (0x1 << i);
-	sig_mask <<= (16 - v->bits_per_rgb);
-	i = 0;
-	color_lut = malloc(216 * sizeof(Pixel));
-	for (r = 0; r < 6; r++)
-	{
-		for (g = 0; g < 6; g++)
+	else /*grey_bits > 0 */
+	{	
+		for (grey = 0; grey < size; grey++)
 		{
-			for (b = 0; b < 6; b++)
+			color.red = color.green = color.blue = 
+				grey * 65535 / (size - 1);
+			if (do_allocate)
 			{
-				val = (int)((((double)r) / 5.0) * 65535);
-				xcl.red = (unsigned short)(val);
-				val = (int)((((double)g) / 5.0) * 65535);
-				xcl.green = (unsigned short)(val);
-				val = (int)((((double)b) / 5.0) * 65535);
-				xcl.blue = (unsigned short)(val);
-				xcl_in = xcl;
-				if (!my_alloc_color(
-					d, cmap, &xcl, sig_mask, False))
+				if (!XAllocColor(Pdpy, Pcmap, &color))
 				{
-					colors_alloc_fail(
-						d, cmap, i, color_lut, False);
-					free(color_lut);
+					free_table_colors(color_table, i);
+					free(color_table);
 					return NULL;
 				}
-				color_lut[i] = xcl.pixel;
-				i++;
+				color_table[i].color.pixel = color.pixel;
+				color_table[i].alloc_count = 1;
 			}
-		}
-	}
-	PpaletteType = 7;
-	PpaletteColorLimit = 216;
-	return color_lut;
-}
-
-static
-Pixel *AllocColors232(Display *d, Colormap cmap, Visual *v)
-{
-	int r, g, b, i, val;
-	Pixel *color_lut;
-	int sig_mask = 0;
-	XColor xcl, xcl_in;
-   
-	for (i = 0; i < v->bits_per_rgb; i++) sig_mask |= (0x1 << i);
-	sig_mask <<= (16 - v->bits_per_rgb);
-	i = 0;
-	color_lut = malloc(128 * sizeof(Pixel));   
-	for (r = 0; r < 4; r++)
-	{
-		for (g = 0; g < 8; g++)
-		{
-			for (b = 0; b < 4; b++)
+			else
 			{
-				val = (r << 6) | (r << 4) | (r << 2) | (r);
-				xcl.red = (unsigned short)((val << 8) | (val));
-				val = (g << 6) | (g << 3) | (g);
-				xcl.green = (unsigned short)
-					((val << 7) | (val >> 2));
-				val = (b << 6) | (b << 4) | (b << 2) | (b);
-				xcl.blue = (unsigned short)
-					((val << 8) | (val));
-				xcl_in = xcl;
-				if (!my_alloc_color(
-					d, cmap, &xcl, sig_mask, False))
-				{
-					colors_alloc_fail(
-						d, cmap, i, color_lut, False);
-					free(color_lut);
-					return NULL;
-				}
-				color_lut[i] = xcl.pixel;
-				i++;
+				color_table[i].alloc_count = 0;
 			}
+			color_table[i].color.red = color.red;
+			color_table[i].color.green = color.green;
+			color_table[i].color.blue = color.blue;
+			i++;
 		}
 	}
-	PpaletteType = 1;
-	PpaletteColorLimit = 128;
-	return color_lut;
+	color_table[size].color.red = color_table[size-1].color.red;
+	color_table[size].color.green = color_table[size-1].color.green;
+	color_table[size].color.blue = color_table[size-1].color.blue;
+	color_table[size].color.pixel = color_table[size-1].color.pixel;
+	color_table[size].alloc_count = 0;
+	PColorLimit = size;
+	return color_table;
 }
 
+
 static
-Pixel *AllocColors222(Display *d, Colormap cmap, Visual *v)
+PColorInfo *alloc_named_ct(int *limit, Bool do_allocate)
 {
-	int r, g, b, i, val;
-	Pixel *color_lut;
-	int sig_mask = 0;
-	XColor xcl;
-   
-	for (i = 0; i < v->bits_per_rgb; i++) sig_mask |= (0x1 << i);
-	sig_mask <<= (16 - v->bits_per_rgb);
-	i = 0;
-	color_lut = malloc(64 * sizeof(Pixel));   
-	for (r = 0; r < 4; r++)
+
+/* First thing in base array are colors probably already in the color map
+   because they have familiar names.
+   I pasted them into a xpm and spread them out so that similar colors are
+   spread out.
+   Toward the end are some colors to fill in the gaps.
+   Currently 61 colors in this list.
+*/
+	char *color_names[] =
 	{
-		for (g = 0; g < 4; g++)
+		"black",
+		"white",
+		"grey",
+		"green",
+		"blue",
+		"red",
+		"cyan",
+		"yellow",
+		"magenta",
+		"DodgerBlue",
+		"SteelBlue",
+		"chartreuse",
+		"wheat",
+		"turquoise",
+		"CadetBlue",
+		"gray87",
+		"CornflowerBlue",
+		"YellowGreen",
+		"NavyBlue",
+		"MediumBlue",
+		"plum",
+		"aquamarine",
+		"orchid",
+		"ForestGreen",
+		"lightyellow",
+		"brown",
+		"orange",
+		"red3",
+		"HotPink",
+		"LightBlue",
+		"gray47",
+		"pink",
+		"red4",
+		"violet",
+		"purple",
+		"gray63",
+		"gray94",
+		"plum1",
+		"PeachPuff",
+		"maroon",
+		"lavender",
+		"salmon",           /* for peachpuff, orange gap */
+		"blue4",            /* for navyblue/mediumblue gap */
+		"PaleGreen4",       /* for forestgreen, yellowgreen gap */
+		"#AA7700",          /* brick, no close named color */
+		"#11EE88",          /* light green, no close named color */
+		"#884466",          /* dark brown, no close named color */
+		"#CC8888",          /* light brick, no close named color */
+		"#EECC44",          /* gold, no close named color */
+		"#AAAA44",          /* dull green, no close named color */
+		"#FF1188",          /* pinkish red */
+		"#992299",          /* purple */
+		"#CCFFAA",          /* light green */
+		"#664400",          /* dark brown*/
+		"#AADD99",          /* light green */
+		"#66CCFF",          /* light blue */
+		"#CC2299",          /* dark red */
+		"#FF11CC",          /* bright pink */
+		"#11CC99",          /* grey/green */
+		"#AA77AA",          /* purple/red */
+		"#EEBB77"           /* orange/yellow */
+	};
+	int NColors = sizeof(color_names)/sizeof(char *);
+	int i,rc;
+	PColorInfo *color_table;
+	XColor color;
+
+	*limit = (*limit > NColors)? NColors: *limit;
+	color_table = (PColorInfo *)safemalloc((*limit+1) * sizeof(PColorInfo));
+	for(i=0; i<*limit; i++)
+	{
+		rc=XParseColor(Pdpy, Pcmap, color_names[i], &color);
+		if (rc==0) {
+			fprintf(stderr,"color_to_rgb: can't parse color %s,"
+				" rc %d\n", color_names[i], rc);
+			free_table_colors(color_table, i);
+			free(color_table);
+			return NULL;
+		}
+		if (do_allocate)
 		{
-			for (b = 0; b < 4; b++)
+			if (!XAllocColor(Pdpy, Pcmap, &color))
 			{
-				val = (r << 6) | (r << 4) | (r << 2) | (r);
-				xcl.red = (unsigned short)((val << 8) | (val));
-				val = (g << 6) | (g << 4) | (g << 2) | (g);
-				xcl.green = (unsigned short)((val << 8) | (val));
-				val = (b << 6) | (b << 4) | (b << 2) | (b);
-				xcl.blue = (unsigned short)((val << 8) | (val));
-				if (!my_alloc_color(
-					d, cmap, &xcl, sig_mask, False))
-				{
-					colors_alloc_fail(
-						d, cmap, i, color_lut, False);
-					free(color_lut);
-					return NULL;
-				}
-				color_lut[i] = xcl.pixel;
-				i++;
+				free_table_colors(color_table, i);
+				free(color_table);
+				return NULL;
 			}
+			color_table[i].color.pixel = color.pixel;
+			color_table[i].alloc_count = 1;
 		}
+		else
+		{
+			color_table[i].alloc_count = 0;
+		}
+		color_table[i].color.red = color.red;
+		color_table[i].color.green = color.green;
+		color_table[i].color.blue = color.blue;
 	}
-	PpaletteType = 2;
-	PpaletteColorLimit = 64;
-	return color_lut;
+	color_table[*limit].color.red = color_table[*limit-1].color.red;
+	color_table[*limit].color.green = color_table[*limit-1].color.green;
+	color_table[*limit].color.blue = color_table[*limit-1].color.blue;
+	color_table[*limit].color.pixel = color_table[*limit-1].color.pixel;
+	color_table[*limit].alloc_count = 0;
+	PColorLimit = *limit;
+	return color_table;
 }
 
+#if PICTURE_DEBUG_COLORS_PRINT_CMAP
 static
-Pixel *AllocColors221(Display *d, Colormap cmap, Visual *v)
+void print_colormap(void)
 {
-	int r, g, b, i, val;
-	Pixel *color_lut;
-	int sig_mask = 0;
-	XColor xcl;
-   
-	for (i = 0; i < v->bits_per_rgb; i++) sig_mask |= (0x1 << i);
-	sig_mask <<= (16 - v->bits_per_rgb);
-	i = 0;
-	color_lut = malloc(32 * sizeof(Pixel));   
-	for (r = 0; r < 4; r++)
+	XColor colors[256];
+	int i;
+
+	for (i = 0; i < Pvisual->map_entries; i++)
 	{
-		for (g = 0; g < 4; g++)
+		colors[i].pixel = i;
+	}
+	XQueryColors(Pdpy, Pcmap, colors, Pvisual->map_entries);
+	for (i = 0; i < Pvisual->map_entries; i++)
+	{
+		fprintf(stderr,"%lu: %x %x %x",
+			colors[i].pixel,
+			colors[i].red >> 8,
+			colors[i].green >> 8,
+			colors[i].blue >> 8);
+		if (Pct && i < PColorLimit)
 		{
-			for (b = 0; b < 2; b++)
-			{
-				val = (r << 6) | (r << 4) | (r << 2) | (r);
-				xcl.red = (unsigned short)((val << 8) | (val));
-				val = (g << 6) | (g << 4) | (g << 2) | (g);
-				xcl.green = (unsigned short)((val << 8) | (val));
-				val = (b << 7) | (b << 6) | (b << 5) |
-					(b << 4) | (b << 3) | (b << 2) |
-					(b << 1) | (b);
-				xcl.blue = (unsigned short)((val << 8) | (val));
-				if (!my_alloc_color(
-					d, cmap, &xcl, sig_mask, False))
-				{
-					colors_alloc_fail(
-						d, cmap, i, color_lut, False);
-					free(color_lut);
-					return NULL;
-				}
-				color_lut[i] = xcl.pixel;
-				i++;
-			}
+			fprintf(stderr,"  / %lu: %x %x %x\n",
+				Pct[i].color.pixel,
+				Pct[i].color.red >> 8,
+				Pct[i].color.green >> 8,
+				Pct[i].color.blue >> 8;
+		}
+		else
+		{
+			fprintf(stderr,"\n");
 		}
 	}
-	PpaletteType = 3;
-	PpaletteColorLimit = 32;
-	return color_lut;
 }
+#endif
 
-static
-Pixel *AllocColors121(Display *d, Colormap cmap, Visual *v)
+void finish_ct_init(
+	int call_type, int ctt, int nr, int ng, int nb, int grey_bits,
+	Bool use_named)
 {
-	int r, g, b, i, val;
-	Pixel *color_lut;
-	int sig_mask = 0;
-	XColor xcl;
-   
-	for (i = 0; i < v->bits_per_rgb; i++) sig_mask |= (0x1 << i);
-	sig_mask <<= (16 - v->bits_per_rgb);
-	i = 0;
-	color_lut = malloc(16 * sizeof(Pixel));   
-	for (r = 0; r < 2; r++)
+#if PICTURE_DEBUG_COLORS_PRINT_CMAP
+	if (call_type == PICTURE_CALLED_BY_FVWM)
+		print_colormap();
+#endif
+
+	if (call_type == PICTURE_CALLED_BY_FVWM)
 	{
-		for (g = 0; g < 4; g++)
+		char *env;
+		
+		if (PAllocTable)
 		{
-			for (b = 0; b < 2; b++)
-			{
-				val = (r << 7) | (r << 6) | (r << 5) |
-					(r << 4) | (r << 3) | (r << 2) |
-					(r << 1) | (r);
-				xcl.red = (unsigned short)((val << 8) | (val));
-				val = (g << 6) | (g << 4) | (g << 2) | (g);
-				xcl.green = (unsigned short)((val << 8) | (val));
-				val = (b << 7) | (b << 6) | (b << 5) |
-					(b << 4) | (b << 3) | (b << 2) |
-					(b << 1) | (b);
-				xcl.blue = (unsigned short)((val << 8) | (val));
-				if (!my_alloc_color(
-					d, cmap, &xcl, sig_mask, False))
-				{
-					colors_alloc_fail(
-						d, cmap, i, color_lut, False);
-					free(color_lut);
-					return NULL;
-				}
-				color_lut[i] = xcl.pixel;
-				i++;
-			}
+			ctt = PICTURE_PAllocTable + ctt;
 		}
+		if (PUseDynamicColors)
+		{
+			ctt = PICTURE_PUseDynamicColors + ctt;
+		}
+		if (PStrictColorLimit)
+		{
+			ctt = PICTURE_PStrictColorLimit + ctt;
+		}
+		if (use_named)
+		{
+			ctt = PICTURE_use_named + ctt;
+		}
+		else
+		{
+			ctt++;
+		}
+		env = safemalloc(21+PICTURE_TABLETYPE_LENGHT+1);
+		sprintf(env,"FVWM_COLORTABLE_TYPE=%i",ctt);
+		putenv(env);
 	}
-	PpaletteType = 4;
-	PpaletteColorLimit = 16;
-	return color_lut;
+
+#if PICTURE_DEBUG_COLORS_INFO
+	if (call_type == PICTURE_CALLED_BY_FVWM)
+	{
+		fprintf(stderr,"[%s][PictureAllocColorTable]: "
+			"Info -- "
+			"use color table with:\n\t"
+			"%i colours (%i,%i)\n",
+			"FVWM", PColorLimit,
+			get_nbr_of_free_colors(256),ctt);
+	}
+#endif
+
+	if (Pct)
+	{
+		if (!PAllocTable && call_type == PICTURE_CALLED_BY_FVWM)
+		{
+			free_table_colors(Pct, PColorLimit);
+		}
+		create_mapping_table(nr,ng,nb,grey_bits,use_named);
+	}
 }
 
-static
-Pixel *AllocColors111(Display *d, Colormap cmap, Visual *v)
-{
-	int r, g, b, i, val;
-	Pixel *color_lut;
-	int sig_mask = 0;
-	XColor xcl;
+#define PA_COLOR_CUBE (1 << 1)
+#define FVWM_COLOR_CUBE (1 << 2)
+#define PA_GRAY_SCALE (1 << 3)
+#define FVWM_GRAY_SCALE (1 << 4)
+#define ANY_COLOR_CUBE (PA_COLOR_CUBE|FVWM_COLOR_CUBE)
+#define ANY_GRAY_SCALE (PA_GRAY_SCALE|FVWM_GRAY_SCALE)
 
-	for (i = 0; i < v->bits_per_rgb; i++) sig_mask |= (0x1 << i);
-	sig_mask <<= (16 - v->bits_per_rgb);
-	i = 0;
-	color_lut = malloc(8 * sizeof(Pixel));   
-	for (r = 0; r < 2; r++)
-	{
-		for (g = 0; g < 2; g++)
-		{
-			for (b = 0; b < 2; b++)
-			{
-				val = (r << 7) | (r << 6) | (r << 5) | (r << 4)
-					| (r << 3) | (r << 2) | (r << 1) | (r);
-				xcl.red = (unsigned short)((val << 8) | (val));
-				val = (g << 7) | (g << 6) | (g << 5) |
-					(g << 4) | (g << 3) | (g << 2) |
-					(g << 1) | (g);
-				xcl.green = (unsigned short)((val << 8) | (val));
-				val = (b << 7) | (b << 6) | (b << 5) |
-					(b << 4) | (b << 3) | (b << 2) |
-					(b << 1) | (b);
-				xcl.blue = (unsigned short)((val << 8) | (val));
-				if (!my_alloc_color(
-					d, cmap, &xcl, sig_mask, False))
-				{
-					colors_alloc_fail(
-						d, cmap, i, color_lut, False);
-					free(color_lut);
-					return NULL;
-				}
-				color_lut[i] = xcl.pixel;
-				i++;
-			}
-		}
-	}
-	PpaletteType = 5;
-	PpaletteColorLimit = 8;
-	return color_lut;
-}
-
-static
-Pixel *AllocColors1(Display *d, Colormap cmap, Visual *v)
-{
-	XColor xcl;
-	Pixel *color_lut;
-
-	color_lut = malloc(2 * sizeof(Pixel));   
-	xcl.red = (unsigned short)(0x0000);
-	xcl.green = (unsigned short)(0x0000);
-	xcl.blue = (unsigned short)(0x0000);
-	XAllocColor(d, cmap, &xcl);
-	color_lut[0] = xcl.pixel;
-	xcl.red = (unsigned short)(0xffff);
-	xcl.green = (unsigned short)(0xffff);
-	xcl.blue = (unsigned short)(0xffff);
-	XAllocColor(d, cmap, &xcl);
-	color_lut[1] = xcl.pixel;
-	PpaletteType = 6;
-	PpaletteColorLimit = 2;
-	return color_lut;
-}
-
-static
-Pixel *AllocColorTable(int color_limit)
-{
-	Pixel *color_lut = NULL;
-
-	if (Pvisual->bits_per_rgb > 1)
-	{
-		if ((color_limit >= 256) &&
-		    (color_lut = AllocColors332(Pdpy, Pcmap, Pvisual)))
-		{
-			return color_lut;
-		}
-		if ((color_limit >= 216) &&
-		    (color_lut = AllocColors666(Pdpy, Pcmap, Pvisual)))
-		{
-			return color_lut;
-		}
-		if ((color_limit >= 128) &&
-		    (color_lut = AllocColors232(Pdpy, Pcmap, Pvisual)))
-		{
-			return color_lut;
-		}
-		if ((color_limit >= 64) &&
-		    (color_lut = AllocColors222(Pdpy, Pcmap, Pvisual)))
-		{
-			return color_lut;
-		}
-		if ((color_limit >= 32) &&
-		    (color_lut = AllocColors221(Pdpy, Pcmap, Pvisual)))
-		{
-			return color_lut;
-		}
-		if ((color_limit >= 16) &&
-		    (color_lut = AllocColors121(Pdpy, Pcmap, Pvisual)))
-		{
-			return color_lut;
-		}
-	}
-	if ((color_limit >= 8) &&
-	    (color_lut = AllocColors111(Pdpy, Pcmap, Pvisual)))
-	{
-		return color_lut;
-	}
-	color_lut = AllocColors1(Pdpy, Pcmap, Pvisual);
-
-	return color_lut;
-}
-
-void PictureAllocColorTable(int color_limit, char *module)
+int PictureAllocColorTable(char *opt, int call_type)
 {
 	char *envp;
-
-	if (color_limit <= 0 || Pct != NULL)
-		return;
-	if ((envp = getenv("FVWM_USESTRICT_COLORLIMIT")) != NULL)
+	int free_colors, map_entries, limit, cc_nbr, i, size;
+	int use_named_table = 0;
+	int do_allocate = 0;
+	int use_default = 1;
+	int dyn_cl_set = False;
+	int strict_cl_set = False;
+	int alloc_table_set = False;
+	int color_limit = 256; /* not the default at all */
+	int pa_type = (Pvisual->class != GrayScale)? PA_COLOR_CUBE:PA_GRAY_SCALE;
+	int fvwm_type = (Pvisual->class != GrayScale)?
+		FVWM_COLOR_CUBE:FVWM_GRAY_SCALE;
+	int cc[][5] =
 	{
-		if (*envp == '1')
-			PpaletteStrictColorLimit = 1;
-	}
-	
-	Pct = AllocColorTable(color_limit);
-	if (module && StrEquals("FVWM",module))
-	    fprintf(stderr,"[%s][PictureAllocColorTable]: Info -- "
-		    "use %i colours (%i asked)\n",
-		    module, PpaletteColorLimit, color_limit);
-}
+		/* {nr,ng,nb,grey_bits,logic} */
 
-#endif  /* ! USE_OLD_COLOR_LIMIT_METHODE */
+		/* 256 grey scale */
+		{0, 0, 0, 8, ANY_GRAY_SCALE},
+		/* 216 Xrender XFree-4.2,GTK/QT "default cc" */
+		{6, 6, 6, 0, ANY_COLOR_CUBE},
+		/* 180 (GTK) */
+		{6, 6, 5, 0, ANY_COLOR_CUBE},
+		/* 144 (GTK) */
+		{6, 6, 4, 0, ANY_COLOR_CUBE},
+		/* 128 grey scale */
+		{0, 0, 0, 7, ANY_GRAY_SCALE},
+		/* 125 GTK mini default cc (may change? 444) */
+		{5, 5, 5, 0, ANY_COLOR_CUBE},
+		/* 100 (GTK with color limit) */
+		{5, 5, 4, 0, ANY_COLOR_CUBE},
+		/* 64 Xrender XFree-4.3 (GTK wcl) */
+		{4, 4, 4, 0, ANY_COLOR_CUBE},
+		/* 64 grey scale */
+		{0, 0, 0, 6, ANY_GRAY_SCALE},
+		/* 48, (GTK wcl) no grey but ok */
+		{4, 4, 3, 0, FVWM_COLOR_CUBE},
+		/* 32 xrender xfree-4.2 */
+		{0, 0, 0, 5, ANY_GRAY_SCALE},
+		/* 27 (xrender in depth 6&7(hypo) GTK wcl) */
+		{3, 3, 3, 0, FVWM_COLOR_CUBE|PA_COLOR_CUBE*(Pdepth<8)},
+		/* 16 grey scale */
+		{0, 0, 0, 4, FVWM_GRAY_SCALE},
+                /* 8 (xrender/qt/gtk wcl) */
+		{2, 2, 2, 0, FVWM_COLOR_CUBE},
+		/* 8 grey scale Xrender depth 4 and XFree-4.3 */
+		{0, 0, 0, 3, FVWM_GRAY_SCALE|PA_GRAY_SCALE*(Pdepth<5)},
+		/* 4 grey scale*/
+		{0, 0, 0, 2,
+		 FVWM_GRAY_SCALE|FVWM_COLOR_CUBE|PA_COLOR_CUBE*(Pdepth<4)},
+		/* 2 */
+		{0, 0, 0, 1, FVWM_COLOR_CUBE|FVWM_GRAY_SCALE}
+	};
+
+	cc_nbr = sizeof(cc)/(sizeof(cc[0]));
+	map_entries = Pvisual->map_entries;
+
+	/* by default use dynamic colors */
+	PUseDynamicColors = 1;
+	PAllocTable = 0;
+
+	/* dynamically changeable visual class are odd numbered */
+	if (Pdepth > 8 || !(Pvisual->class & 1))
+	{
+		PColorLimit = 0;
+		PUseDynamicColors = 0;
+		return 0;
+	}
+
+#if PICTURE_DEBUG_COLORS_PRINT_CMAP
+	if (module && StrEquals("FVWM",module))
+		print_colormap();
+#endif
+
+	/* called by a module "allocate" directly */
+	if (call_type == PICTURE_CALLED_BY_MODULE && 
+	     (envp = getenv("FVWM_COLORTABLE_TYPE")) != NULL)
+	{
+		int nr = 0, ng = 0, nb = 0, grey_bits = 0;
+		int ctt = atoi(envp);
+
+		if (ctt >= PICTURE_PAllocTable)
+		{
+			ctt -= PICTURE_PAllocTable;
+			PAllocTable = 1; /* not useful for a module !*/
+		}
+		if (ctt >= PICTURE_PUseDynamicColors)
+		{
+			PUseDynamicColors = 1;
+			ctt -= PICTURE_PUseDynamicColors;
+		}
+		if (ctt >= PICTURE_PStrictColorLimit)
+		{
+			PStrictColorLimit = 1;
+			ctt -= PICTURE_PStrictColorLimit;
+		}
+		if (ctt >= PICTURE_use_named)
+		{
+			ctt -= PICTURE_use_named;
+			Pct = alloc_named_ct(&ctt, False);
+			use_named_table = True;
+		}
+		else if (ctt == 0)
+		{
+			/* depth <= 8 and no colors limit ! */
+			PColorLimit = 0;
+			return 0;
+		}
+		else if (ctt <= cc_nbr)
+		{
+			ctt--;
+			Pct = alloc_color_cube(
+				cc[ctt][0], cc[ctt][1], cc[ctt][2], cc[ctt][3],
+				False);
+			nr = cc[ctt][0];
+			ng = cc[ctt][1];
+			nb = cc[ctt][2];
+			grey_bits = cc[ctt][3];
+		}
+		if (Pct != NULL)
+		{
+			/* should always happen */
+			finish_ct_init(
+				call_type, ctt, nr, ng, nb, grey_bits,
+				use_named_table);
+			return PColorLimit;
+		}
+	}
+
+	/* parse the color limit env variable */
+	if ((envp = opt) != NULL || (envp = getenv("FVWM_COLORLIMIT")) != NULL)
+	{
+		char *rest, *l;
+ 
+		rest = GetQuotedString(envp, &l, ":", NULL, NULL, NULL);
+		if (l && *l != '\0' && (color_limit = atoi(l)) >= 0)
+		{
+			use_default = 0;
+		}
+		if (l != NULL)
+		{
+			free(l);
+		}
+		if (color_limit == 9 || color_limit == 61)
+		{
+			use_named_table = 1;
+		}
+		if (rest && *rest != '\0')
+		{
+			if (rest[0] == '1')
+			{
+				strict_cl_set = True;
+				PStrictColorLimit = 1;
+			}
+			else
+			{
+				strict_cl_set = True;
+				PStrictColorLimit = 0;
+			}
+			if (strlen(rest) > 1 && rest[1] == '1')
+			{
+				use_named_table = 1;
+			}
+			else
+			{
+				use_named_table = 0;
+			}
+			if (strlen(rest) > 2 && rest[2] == '1')
+			{
+				dyn_cl_set = True;
+				PUseDynamicColors = 1;
+			}
+			else
+			{
+				dyn_cl_set = True;
+				PUseDynamicColors = 0;
+			}
+			if (strlen(rest) > 3 && rest[3] == '1')
+			{
+				alloc_table_set = True;
+				PAllocTable = 1;
+			}
+			else
+			{
+				alloc_table_set = True;
+				PAllocTable = 0;
+			}
+		}
+	}
+
+	if (color_limit == 0)
+	{
+		/* should we forbid that ? Yes!*/
+		use_default = 1;
+#if 0
+		PColorLimit = 0;
+		finish_ct_init(
+			call_type, 0, 0, 0, 0, 0, 0);
+		return PColorLimit;
+#endif
+	}
+
+	free_colors = get_nbr_of_free_colors(map_entries);
+
+#if PICTURE_DEBUG_COLORS_INFO
+	if (call_type == PICTURE_CALLED_BY_FVWM)
+		fprintf(stderr,"[%s][PictureAllocColorTable]: "
+			"Info -- Nbr of free colors before bulding the "
+			"table: %i\n","FVWM", free_colors);
+#endif
+
+	/* first try to see if we have a "pre-allocated" color cube.
+	 * The bultin RENDER X extension pre-allocate a color cube plus 
+	 * some grey's (xc/programs/Xserver/render/miindex)
+	 * See gdk/gdkrgb.c for the cubes used by gtk+-2, 666 is the default,
+	 * 555 is the minimal cc (this may change): if gtk cannot allocate
+	 * the 555 cc (or better) a private cmap is used.
+	 * for qt-3: see src/kernel/{qapplication.cpp,qimage.cpp,qcolor_x11.c}
+	 * the 666 cube is used by default (with approx in the cmap if some
+	 * color allocation fail), and some qt app may accept an
+	 * --ncols option to limit the nbr of colors, then some "2:3:1" 
+	 * proportions color cube are used (222, 232, ..., 252, 342, ..., 362,
+	 * 452, ...,693, ...)
+	 * imlib2 try to allocate the 666 cube if this fail it try more
+	 * exotic table (see rend.c and rgba.c) */
+	i = -1;
+	while(use_default && i < cc_nbr && Pct == NULL)
+	{
+		i++;
+		size = cc[i][0]*cc[i][1]*cc[i][2] +
+			(1 << cc[i][3])*(cc[i][3] != 0);
+		if ((cc[i][4] & pa_type) && size <= map_entries &&
+		    free_colors < map_entries - size)
+		{
+			Pct = alloc_color_cube(
+				cc[i][0], cc[i][1], cc[i][2], cc[i][3], True);
+		}
+		if (Pct != NULL)
+		{
+			if (free_colors <= 
+			    get_nbr_of_free_colors(map_entries))
+			{
+				/* done */
+			}
+			else
+			{
+				free_table_colors(Pct, PColorLimit);
+				free(Pct);
+				Pct = NULL;
+			}
+		}
+	}
+	if (Pct != NULL)
+	{
+		if (!dyn_cl_set)
+		{
+			PUseDynamicColors = 0;
+		}
+		if (!alloc_table_set)
+		{
+			PAllocTable = 1;
+		}
+		finish_ct_init(
+			call_type, i, cc[i][0], cc[i][1], cc[i][2], cc[i][3], 0);
+		return PColorLimit;
+	}
+
+	/*
+	 * now use "our" table
+	 */
+
+	limit = (color_limit >= map_entries)? map_entries:color_limit;
+	if (use_default)
+	{
+		if (limit > 100)
+			limit = map_entries/3;
+		else
+			limit = map_entries/2;
+	}
+	if (limit < 2)
+	{
+		limit = 2;
+	}
+	if (PAllocTable)
+	{
+		do_allocate = 1;
+	}
+	else
+	{
+		do_allocate = 0;
+	}
+
+	/* use the named table ? */
+	if (use_named_table)
+	{
+		i = limit;
+		while(Pct == NULL && i >= 2)
+		{
+			Pct = alloc_named_ct(&i, do_allocate);
+			i--;
+		}
+	}
+	if (Pct != NULL)
+	{
+		finish_ct_init(
+			call_type, PColorLimit, 0, 0, 0, 0, 1);
+		return PColorLimit;
+	}
+
+	/* color cube or regular grey scale */
+	i = -1;
+	while(i < cc_nbr && Pct == NULL)
+	{
+		i++;
+		if ((cc[i][4] & fvwm_type) &&
+		    cc[i][0]*cc[i][1]*cc[i][2] +
+		    (1 << cc[i][3])*(cc[i][3] != 0) <= limit)
+		{
+			Pct = alloc_color_cube(
+				cc[i][0], cc[i][1], cc[i][2], cc[i][3],
+				do_allocate);
+		}
+	}
+	if (Pct != NULL)
+	{
+		finish_ct_init(
+			call_type, i, cc[i][0], cc[i][1], cc[i][2], cc[i][3], 0);
+		return PColorLimit;
+	}
+
+	/* I do not think we can be here */
+	Pct = alloc_color_cube(0, 0, 0, 1, False);
+	finish_ct_init(call_type, cc_nbr-1, 0, 0, 0, 1, 0);
+	return PColorLimit;
+}

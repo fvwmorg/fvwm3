@@ -1454,10 +1454,13 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 static void GetIconFromFile(FvwmWindow *fw)
 {
 	char *path = NULL;
-	FvwmPictureFlags fpf;
+	FvwmPictureAttributes fpa;
 
-	fpf.alloc_pixels = 0;
-	fpf.alpha = 1;
+	fpa.mask = FPAM_NO_ALLOC_PIXELS; /* olicha why ? */
+	if (fw->cs >= 0 && Colorset[fw->cs].do_dither_icon)
+	{
+		fpa.mask |= FPAM_DITHER;
+	}
 	fw->icon_g.picture_w_g.width = 0;
 	fw->icon_g.picture_w_g.height = 0;
 	path = PictureFindImageFile(fw->icon_bitmap_file, NULL, R_OK);
@@ -1465,14 +1468,10 @@ static void GetIconFromFile(FvwmWindow *fw)
 	{
 		return;
 	}
-	if (!PImageLoadPixmapFromFile(dpy, Scr.Root, path, Scr.ColorLimit,
-				      &fw->iconPixmap, &fw->icon_maskPixmap,
-				      &fw->icon_alphaPixmap,
-				      &fw->icon_g.picture_w_g.width,
-				      &fw->icon_g.picture_w_g.height,
-				      &fw->iconDepth,
-				      0, NULL,
-				      fpf))
+	if (!PImageLoadPixmapFromFile(
+		dpy, Scr.Root, path, &fw->iconPixmap, &fw->icon_maskPixmap,
+		&fw->icon_alphaPixmap, &fw->icon_g.picture_w_g.width,
+		&fw->icon_g.picture_w_g.height, &fw->iconDepth, 0, NULL, fpa))
 	{
 		fvwm_msg(ERR, "GetIconFromFile", "Failed to load %s", path);
 		free(path);

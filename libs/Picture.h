@@ -32,9 +32,10 @@
  * ImagePath.. If ImagePath is NULL the default image path is used.
  * </description>
  */
-FvwmPicture* PGetFvwmPicture(Display* dpy, Window Root,
-			     char* ImagePath, char* pictureName,
-			     int color_limit);
+FvwmPicture* PGetFvwmPicture(
+	Display* dpy, Window Root, char* ImagePath, char* pictureName,
+	FvwmPictureAttributes fpa);
+
 /* <pubfunc>PCacheFvwmPicture
  * <description>
  * Return the FvwmPicture loaded from the file pictureName found in the
@@ -45,20 +46,18 @@ FvwmPicture* PGetFvwmPicture(Display* dpy, Window Root,
  * If ImagePath is NULL the default image path is used.
  * </description>
  */
-FvwmPicture* PCacheFvwmPicture(Display *dpy, Window Root,
-			       char* ImagePath, char* pictureName,
-			       int color_limit);
+FvwmPicture* PCacheFvwmPicture(
+	Display *dpy, Window Root, char* ImagePath, char* pictureName,
+	FvwmPictureAttributes fpa);
 
 /* <pubfunc>PLoadFvwmPictureFromPixmap
  * <description>
  * Return a FvwmPicture from the given data.
  * </description>
  */
-FvwmPicture *PLoadFvwmPictureFromPixmap(Display *dpy, Window Root,
-					char *name, Pixmap pixmap,
-					Pixmap mask,
-					Pixmap alpha,
-					int width, int height);
+FvwmPicture *PLoadFvwmPictureFromPixmap(
+	Display *dpy, Window Root, char *name, Pixmap pixmap, Pixmap mask,
+	Pixmap alpha, int width, int height);
 
 /* <pubfunc>PDestroyFvwmPicture
  * <description>
@@ -67,10 +66,10 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(Display *dpy, Window Root,
  * to really cache a picture from the given data.
  * </description>
  */
-FvwmPicture *PCacheFvwmPictureFromPixmap(Display *dpy, Window Root,
-					 char *name, Pixmap pixmap,
-					 Pixmap mask,Pixmap alpha,
-					 int width, int height);
+FvwmPicture *PCacheFvwmPictureFromPixmap(
+	Display *dpy, Window Root, char *name, Pixmap pixmap,
+	Pixmap mask, Pixmap alpha, int width, int height);
+
 /* <pubfunc>PDestroyFvwmPicture
  * <description>
  * Remove a weight to the FvwmPicture p from the FvwmPicture cache.

@@ -22,6 +22,9 @@ Window root;
 char *display_name = NULL;
 void SetRootWindow(char *tline);
 Pixmap rootImage = None;
+Bool NoDither = False;
+Bool Dither = False;
+Bool NoColorLimit = False;
 
 int main(int argc, char **argv)
 {
@@ -68,6 +71,18 @@ int main(int argc, char **argv)
 		else if (strcasecmp(argv[i], "-d") == 0)
 		{
 			Dummy = True;
+		}
+		else if (strcasecmp(argv[i], "-dither") == 0)
+		{
+			Dither = True;
+		}
+		else if (strcasecmp(argv[i], "-no-dither") == 0)
+		{
+			NoDither = True;
+		}
+		else if (strcasecmp(argv[i], "-no-cl") == 0)
+		{
+			NoColorLimit = True;
 		}
 		else
 		{
@@ -130,13 +145,11 @@ void SetRootWindow(char *tline)
 
 	Pixmap shapeMask = None, temp_pix = None, alpha = None;
 	int w, h, depth;
-	FvwmPictureFlags fpf;
 	int nalloc_pixels = 0;
 	Pixel *alloc_pixels = NULL;
 	char *file_path;
+	FvwmPictureAttributes fpa;
 
-	fpf.alloc_pixels = 0;
-	fpf.alpha = 0;
 	PictureInitCMap(dpy);
 	/* try built-in image path first */
 	file_path = PictureFindImageFile(tline, NULL, R_OK);
@@ -144,9 +157,22 @@ void SetRootWindow(char *tline)
 	{
 		file_path = tline;
 	}
+	fpa.mask = FPAM_NO_ALLOC_PIXELS | FPAM_NO_ALPHA;
+	if (Pdepth <= 8 && !NoDither)
+	{
+		fpa.mask |= FPAM_DITHER;
+	}
+	else if (Pdepth <= 16 && Dither)
+	{
+		fpa.mask |= FPAM_DITHER;
+	}
+	if (NoColorLimit)
+	{
+		fpa.mask |= FPAM_NO_COLOR_LIMIT;
+	}
 	if (!PImageLoadPixmapFromFile(
-		dpy, root, file_path, 0, &temp_pix, &shapeMask, &alpha,
-		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, fpf))
+		dpy, root, file_path, &temp_pix, &shapeMask, &alpha,
+		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, fpa))
 	{
 		fprintf(
 			stderr, "[fvwm-root] failed to load image file '%s'\n",

@@ -252,7 +252,7 @@ Pixmap PCreateTintedPixmap(
 	XColor tint_color, c;
 	int j, i, m = 0, k = 0;
 
-	if (depth < 2 || depth != Pdepth)
+	if (depth != Pdepth)
 		return None;
 
 	if (!(src_im =
@@ -345,19 +345,7 @@ Pixmap PCreateTintedPixmap(
 					(((100-percent)*colors[k].red +
 					  tint_color.red * percent) / 100);
 				k++;
-				if (Pvisual->class == DirectColor ||
-				    Pvisual->class == TrueColor)
-				{
-					c.pixel = PictureRGBtoPixel(
-						c.red/257,
-						c.green/257,
-						c.blue/257);
-				}
-				else
-				{
-
-					PictureReduceRGBColor(&c,color_limit);
-				}
+				PictureAllocColor(Pdpy, Pcmap, &c, False);
 			}
 			else
 			{
@@ -375,6 +363,140 @@ Pixmap PCreateTintedPixmap(
 		XDestroyImage(mask_im);
 	}
 	XPutImage(dpy, out_pix, my_gc, out_im, 0, 0, 0, 0, width, height);
+	if (gc == None)
+	{
+		XFreeGC(dpy, my_gc);
+	}
+	XDestroyImage(out_im);
+
+	return out_pix;
+}
+
+/* never used and tested */
+static
+Pixmap PCreateDitherPixmap(
+	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,
+	int in_width, int in_height, int out_width, int out_height)
+{
+	XImage *src_im;
+	XImage *mask_im = NULL;
+	XImage *out_im;
+	GC my_gc;
+	Pixmap out_pix = None;
+	unsigned char *cm;
+	XColor *colors;
+	XColor c;
+	int j, i, m = 0, k = 0, x = 0, y = 0;
+
+	if (depth != Pdepth)
+		return None;
+
+	if (!(src_im =
+	      XGetImage(dpy, src, 0, 0,
+			in_width, in_height, AllPlanes, ZPixmap)))
+	{
+		return None;
+	}
+	if (mask != None)
+	{
+		mask_im = XGetImage(
+			dpy, mask, 0, 0, in_width, in_height, AllPlanes,
+			ZPixmap);
+	}
+	out_pix = XCreatePixmap(dpy, win, out_width, out_height, Pdepth);
+	out_im = XCreateImage(
+		dpy, Pvisual, Pdepth, ZPixmap, 0, 0, out_width, out_height,
+		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
+	if (gc == None)
+	{
+		my_gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
+	}
+	else
+	{
+		my_gc = gc;
+	}
+
+	if (!out_pix || !out_im || !my_gc)
+	{
+		XDestroyImage(src_im);
+		if (mask_im)
+		{
+			XDestroyImage(mask_im);
+		}
+		if (out_pix)
+		{
+			XFreePixmap(dpy, out_pix);
+		}
+		if (out_im)
+		{
+			XDestroyImage(out_im);
+		}
+		if (gc == None && my_gc)
+		{
+			XFreeGC(dpy, my_gc);
+		}
+		return None;
+	}
+
+	colors = (XColor *)safemalloc(out_width * out_height * sizeof(XColor));
+	cm = (unsigned char *)safemalloc(out_width * out_height * sizeof(char));
+	out_im->data = safemalloc(out_im->bytes_per_line * out_height);
+
+	x = y = 0;
+	for (j = 0; j < out_height; j++,y++)
+	{
+		if (y == in_height)
+			y = 0;
+		for (i = 0; i < out_width; i++,x++)
+		{
+			if (x == in_width)
+				x = 0;
+			if (mask_im != NULL &&
+			    (XGetPixel(mask_im, x, y) == 0))
+			{
+				cm[m++] = 0;
+			}
+			else
+			{
+				cm[m++] = 255;
+				colors[k++].pixel = XGetPixel(src_im, x, y);
+			}
+		}
+	}
+
+	for (i = 0; i < k; i += 256)
+		XQueryColors(dpy, Pcmap, &colors[i], min(k - i, 256));
+
+	k = 0;m = 0;
+	for (j = 0; j < out_height; j++)
+	{
+		for (i = 0; i < out_width; i++)
+		{
+			
+			if (cm[m] > 0)
+			{
+				c = colors[k++];
+				PictureAllocColorAllProp(
+					Pdpy, Pcmap, &c, i, j, False, False,
+					True);
+			}
+			else
+			{
+				c.pixel = XGetPixel(src_im, i, j);
+			}
+			XPutPixel(out_im, i, j, c.pixel);
+			m++;
+		}
+	}
+	free(colors);
+	free(cm);
+	XDestroyImage(src_im);
+	if (mask_im)
+	{
+		XDestroyImage(mask_im);
+	}
+	XPutImage(
+		dpy, out_pix, my_gc, out_im, 0, 0, 0, 0, out_width, out_height);
 	if (gc == None)
 	{
 		XFreeGC(dpy, my_gc);
@@ -480,4 +602,14 @@ PGraphicsTintRectangle(
 		FRenderTintRectangle(dpy, win, tint_percent, tint, mask, d,
 				     dest_x, dest_y, dest_w, dest_h);
 	}
+}
+
+/* never tested and used ! */
+Pixmap PGraphicsCreateDitherPixmap(
+	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,
+	int in_width, int in_height, int out_width, int out_height)
+{
+	return PCreateDitherPixmap(
+		dpy, win, src, mask, depth, gc,
+		in_width, in_height, out_width, out_height);
 }

@@ -72,10 +72,12 @@ static char csetbuf[184];
 char *DumpColorset(int n, colorset_struct *cs)
 {
   sprintf(csetbuf,
-	  "Colorset %x %lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %x",
-	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->fgsh, cs->pixmap,
-	  cs->shape_mask, cs->fg_alpha, cs->width, cs->height, cs->pixmap_type,
-	  cs->shape_width, cs->shape_height, cs->shape_type);
+	  "Colorset "
+	  "%x %lx %lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %x %x %x %x",
+	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->fgsh, cs->icon_tint,
+	  cs->pixmap, cs->shape_mask, cs->fg_alpha, cs->width, cs->height,
+	  cs->pixmap_type, cs->shape_width, cs->shape_height, cs->shape_type,
+	  cs->do_dither_icon, cs->icon_tint_percent, cs->icon_alpha);
   return csetbuf;
 }
 
@@ -86,21 +88,25 @@ int LoadColorset(char *line)
 {
   colorset_struct *cs;
   unsigned int n, chars;
-  Pixel fg, bg, hilite, shadow, fgsh;
+  Pixel fg, bg, hilite, shadow, fgsh, icon_tint;
   Pixmap pixmap;
   Pixmap shape_mask;
   unsigned int fg_alpha, width, height, pixmap_type;
   unsigned int shape_width, shape_height, shape_type;
+  unsigned int do_dither_icon, icon_tint_percent, icon_alpha;
 
   if (line == NULL)
     return -1;
   if (sscanf(line, "%x%n", &n, &chars) < 1)
     return -1;
   line += chars;
-  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %x",
-	     &fg, &bg, &hilite, &shadow, &fgsh, &pixmap, &shape_mask, &fg_alpha,
-	     &width, &height, &pixmap_type, &shape_width, &shape_height,
-	     &shape_type) != 14)
+  if (sscanf(line,
+	     "%lx %lx %lx %lx %lx %lx %lx %lx " 
+	     "%x %x %x %x %x %x %x %x %x %x",
+	     &fg, &bg, &hilite, &shadow, &fgsh, &icon_tint, &pixmap, &shape_mask,
+	     &fg_alpha, &width, &height, &pixmap_type, &shape_width,
+	     &shape_height, &shape_type, &do_dither_icon, &icon_tint_percent,
+	     &icon_alpha) != 18)
     return -1;
 
   AllocColorset(n);
@@ -110,6 +116,7 @@ int LoadColorset(char *line)
   cs->hilite = hilite;
   cs->shadow = shadow;
   cs->fgsh = fgsh;
+  cs->icon_tint = icon_tint;
   cs->pixmap = pixmap;
   cs->shape_mask = shape_mask;
   cs->fg_alpha = fg_alpha;
@@ -119,6 +126,9 @@ int LoadColorset(char *line)
   cs->shape_width = shape_width;
   cs->shape_height = shape_height;
   cs->shape_type = shape_type;
+  cs->do_dither_icon = do_dither_icon;
+  cs->icon_tint_percent = icon_tint_percent;
+  cs->icon_alpha = icon_alpha;
 
   return n;
 }

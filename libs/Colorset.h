@@ -29,6 +29,7 @@ typedef struct {
 	Pixel hilite;
 	Pixel shadow;
 	Pixel fgsh;
+	Pixel icon_tint;
 	Pixmap pixmap;
 	Pixmap shape_mask;
 	unsigned int fg_alpha : 7;
@@ -38,6 +39,9 @@ typedef struct {
 	unsigned int shape_width : 12;
 	unsigned int shape_height : 12;
 	unsigned int shape_type : 2;
+	unsigned int do_dither_icon : 1;
+	unsigned int icon_tint_percent : 12;
+	unsigned int icon_alpha : 12;
 #ifdef FVWM_COLORSET_PRIVATE
 	/* fvwm/colorset.c use only */
 	Pixel tint;
@@ -45,6 +49,9 @@ typedef struct {
 	Pixel fg_saved;
 	Pixmap mask;
 	Pixmap alpha_pixmap;
+	char *pixmap_args;
+	char *gradient_args;
+	char gradient_type;
 	unsigned int color_flags;
 	FvwmPicture *picture;
 	Pixel *pixels;
@@ -52,6 +59,7 @@ typedef struct {
 	int tint_percent;
 	int fg_tint_percent;
 	Bool do_tint_use_mask;
+	Bool dither;
 #endif
 } colorset_struct;
 

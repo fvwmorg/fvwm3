@@ -83,14 +83,16 @@ void StartButtonInit(int height)
 {
   FvwmPicture *p = NULL;
   int pw;
+  FvwmPictureAttributes fpa;
 
+  fpa.mask = FPAM_NO_ALLOC_PIXELS;
   /* some defaults */
   if (StartName  == NULL)
     UpdateString(&StartName, "Start");
   if (StartIconName == NULL)
     UpdateString(&StartIconName, "mini-start.xpm");
 
-  p = PGetFvwmPicture(dpy, win, ImagePath, StartIconName, ColorLimit);
+  p = PGetFvwmPicture(dpy, win, ImagePath, StartIconName, fpa);
 
   StartButton = (Button *)ButtonNew(StartName, p, BUTTON_UP,0);
   if (p != NULL) pw = p->width+3; else pw = 0;
