@@ -1679,7 +1679,7 @@ void ParseOptions(char *filename)
 	}
       else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ImagePath",9)==0))
 	{
-	  CopyString(&imagePath,&tline[10]);
+	  CopyString(&imagePath,&tline[9]);
 	}
 #ifdef ENABLE_SOUND
       else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*AudioDir",9)==0))

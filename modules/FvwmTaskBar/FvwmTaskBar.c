@@ -692,7 +692,7 @@ static void ParseConfigLine(char *tline) {
   } else if(strncasecmp(tline,"ButtonWidth",11) == 0) {
     button_width = atoi(&tline[11]);
   } else if(strncasecmp(tline,"ImagePath",9) == 0) {
-    CopyString(&ImagePath, &tline[8]);
+    CopyString(&ImagePath, &tline[9]);
   } else {
     GoodiesParseConfig(tline, Module);
     StartButtonParseConfig(tline, Module);

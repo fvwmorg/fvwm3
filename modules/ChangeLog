@@ -1,3 +1,13 @@
+1999-04-27  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmWharf/FvwmWharf.c (ParseOptions): 
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine): 
+	* FvwmIconBox/FvwmIconBox.c (ParseOptions): fix off-by-one error
+	in copying the ImagePath config option.
+
+	* FvwmForm/FvwmForm.c: fix "int format, different type arg"
+	errors in printf()s.
+
 1999-04-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmGtk/FvwmGtk.c (parse_config_line): use stripcpy from

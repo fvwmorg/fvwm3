@@ -1483,7 +1483,7 @@ void ParseOptions(void)
 					      ""),Clength+1)==0)
 	  parseicon(&tline[Clength + 1]);
 	else if (strncasecmp(tline,"ImagePath",9)==0)
-	  CopyString(&imagePath,&tline[8]);
+	  CopyString(&imagePath,&tline[9]);
 	else if (strncasecmp(tline,"ClickTime",9)==0)
 	  ClickTime = atoi(&tline[9]);
 	else if (strncasecmp(tline,"ColorLimit",10)==0) {

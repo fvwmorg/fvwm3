@@ -341,7 +341,7 @@ static void ct_InputFont(char *cp) {
 static void ct_Line(char *cp) {
   cur_line->next=calloc(sizeof(struct _line),1); /* malloc new line */
   if (cur_line->next == 0) {
-    fprintf(stderr, "%s: Malloc for line, (%d bytes) failed. exiting.\n",
+    fprintf(stderr, "%s: Malloc for line, (%ld bytes) failed. exiting.\n",
             MyName+1, sizeof(struct _line));
     exit (1);
   }
@@ -468,7 +468,7 @@ static void AssignDrawTable(Item *adt_item) {
   new_dt = malloc(sizeof(struct _drawtable)); /* get one */
   if (new_dt == 0) {                /* malloc failed? */
     fprintf(stderr,
-            "%s: Malloc for DrawTable, (%d bytes) failed. exiting.\n",
+            "%s: Malloc for DrawTable, (%ld bytes) failed. exiting.\n",
             MyName+1, sizeof(struct _drawtable));
     exit (1);                           /* give up */
   }
@@ -501,7 +501,7 @@ static void AddItem() {
   save_item = (Item *)item;             /* save current item */
   item = calloc(sizeof(Item),1);        /* get a new item */
   if (item == 0) {                      /* if out of mem */
-    fprintf(stderr, "%s: Malloc for item, (%d bytes) failed. exiting.\n",
+    fprintf(stderr, "%s: Malloc for item, (%ld bytes) failed. exiting.\n",
             MyName+1, sizeof(Item));
     exit (1);                           /* give up */
   }
@@ -786,7 +786,7 @@ static void ct_Command(char *cp) {
                        sizeof(char *) *
                        cur_button->button.button_array_size);
     if (cur_button->button.commands == 0) {
-      fprintf(stderr,"%s: realloc button array size %d failed\n",
+      fprintf(stderr,"%s: realloc button array size %ld failed\n",
               MyName+1, cur_button->button.button_array_size *
               sizeof(char *));
       exit (1);
