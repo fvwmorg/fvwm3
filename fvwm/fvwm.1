@@ -619,26 +619,38 @@ the
 .I config.h
 file that is generated during compilation.
 
+
 .SH ICONS AND IMAGES
-.\"needs_lang_check
-Fvwm can load image from files in various format depending on compile-time
-options.
-Fvwm can always uses monochrome bitmap image file (aka xbm image file).
-The other formats that Fvwm can support are
+
+Fvwm can load
+.B .xbm,
+.B .xpm,
+and
+.B .png
+images.
+.B XBM
+images are monochrome.
+FVWM can always display
+.B XBM
+files.
 .B XPM
 and
 .B PNG
-which allow to use colored icons and images.
-In order to use these formats you need the corresponding package,
-as described in the
+formats are color images.
+Compile-time
+options determine whether FVWM can display
+.B XPM
+or
+.B PNG
+icons and images.
+See the
 .I INSTALL.fvwm
-file.
+file for more information.
 
-Moreover, if
+The related
 .BR SHAPE
-option is compiled in you get shaped color icons, which are very
-spiffy.
-.\"end
+compile-time option can make FVWM display spiffy
+shaped icons.
 
 .SH MODULES
 
@@ -1034,31 +1046,31 @@ fvwm loads the font "-adobe-courier-bold-r-normal--14-*". This
 allows for writting portable configuration files.
 
 .\"needs_lang_check
-Fonts are not only used by fvwm to display strings, a font is also
-used by fvwm (and sometime X) to determine the encoding used. For example,
+The font name is used by FVWM, (and X),
+to determine the encoding used.
+
+For example,
 if you use an iso10646-1 (unicode) font for menus you should use
 UTF-8 encoding in your configuration file for the menus labels.
-Also, the EWMH specification forces fvwm to convert certain window
-name from/into UTF-8, fvwm used the font encoding to found the good
-converters. Moreover, in certain case fvwm has to know encoding to display
-the string in the good way (this is the case for iso10646-1 and encoding
-for right to left languages). In normal situation all these is done
-automatically. However, it may happen that you should give some
-information to fvwm (for if, you should know what you do).
 
-What it may happen is that a font name has an exotic encoding name.
-For example
+Also, the EWMH specification forces fvwm to convert some window
+names from/into UTF-8. FVWM uses the font encoding to do font
+converersions. FVWM has to know the font encoding to display
+the string correctly. One example is ISO10646-1 and encodings
+for right to left languages.
+In most cases, FVWM correctly deterimines the
+encoding.
+When the font name isn't normal, for example:
 .EX
 -misc-fixed-*--20-*-my_utf8-36
 .EE
-has "my_utf8-36" as XLFD encoding but it is not an "official"
-encoding. To solve this problem you can add after a / the
-real encoding. With the above example you should use something
-like:
+you need to add the encoding after the font name
+using a slash as a delimiter.
+In the example, "my_utf8-36" isn't an "official"
+For example:
 .EX
 MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
 .EE
-which enforces iso10646-1 as encoding for fvwm.
 Concerning UTF-8 conversions the problem is a bit different.
 If fvwm has found the good encoding, fvwm try to found valid converts.
 Unfortunately, there are no standard here: for conversion between
