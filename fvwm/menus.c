@@ -2084,7 +2084,12 @@ static void MenuInteraction(
     if (pmp->ret_paction && *pmp->ret_paction && mi && MI_IS_MENU(mi))
     {
       get_popup_options(pmp->menu, mi, &mops);
-      if (mops.flags.do_select_in_place)
+      if (mops.flags.has_poshints && !MI_IS_POPUP(mi))
+      {
+	/* position hints are always used for 'Menu' command */
+	last_saved_pos_hints.pos_hints = mops.pos_hints;
+      }
+      else if (mops.flags.do_select_in_place)
       {
 	MenuRoot *submenu;
 	XWindowAttributes win_attribs;
@@ -6626,7 +6631,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 	 !XTranslateCoordinates(
 	   dpy, context_window, Scr.Root, 0, 0, &x, &y, &JunkChild)))
     {
-      /* now window or could not get geometry */
+      /* no window or could not get geometry */
       XQueryPointer(dpy,Scr.Root, &JunkRoot, &JunkChild,&x,&y, &JunkX, &JunkY,
 		    &JunkMask);
       width = height = 1;
@@ -6670,7 +6675,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     }
     /* we want to do this only once */
     break;
-  } /* while (1) */
+  } /* while */
 
   if (!pops->flags.has_poshints && fValidPosHints)
   {

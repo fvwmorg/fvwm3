@@ -1,3 +1,11 @@
+2000-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (GetMenuOptions):
+	fixed typos
+	(MenuInteraction):
+	menus invoked with 'Menu' honour position hints even if they are invoked
+	from a menu without specifying 'SelectInPlace'
+
 2000-04-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/icons.c (DeIconify):
