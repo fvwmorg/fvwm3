@@ -1,5 +1,8 @@
 2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/windowshade.c (CMD_WindowShade):
+	changed syntax of windowshade with direction
+
 	* fvwm/add_window.c (AddWindow):
 	fixed mini icon update
 

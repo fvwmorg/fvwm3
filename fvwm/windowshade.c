@@ -56,42 +56,6 @@
 
 /* ---------------------------- local functions ----------------------------- */
 
-static void print_g(char *text, rectangle *g)
-{
-	if (g == NULL)
-	{
-		fprintf(stderr, "%s: (null)", (text == NULL) ? "" : text);
-	}
-	else
-	{
-		fprintf(stderr, "%s: %4d %4d %4dx%4d (%4d - %4d %4d - %4d)\n",
-			(text == NULL) ? "" : text,
-			g->x, g->y, g->width, g->height,
-			g->x, g->x + g->width - 1, g->y, g->y + g->height - 1);
-	}
-}
-
-char *get_dir_string(int dir)
-{
-	char *dirs[] = {
-		" N",
-		" E",
-		" S",
-		" W",
-		"NE",
-		"SE",
-		"SW",
-		"NW"
-	};
-
-	if (dir < 0 || dir > 7)
-	{
-		return "--";
-	}
-
-	return dirs[dir];
-}
-
 /* ---------------------------- interface functions ------------------------- */
 
 /* ---------------------------- builtin commands ---------------------------- */
@@ -111,10 +75,11 @@ void CMD_WindowShade(F_CMD_ARGS)
 	rectangle start_g;
 	rectangle end_g;
 	frame_move_resize_args mr_args;
+	char *token;
+	char *naction;
+	Bool do_force_shading;
+	Bool has_dir;
 
-#if 0
-fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
-#endif
 	if (DeferExecution(
 		    eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
 	{
@@ -125,15 +90,26 @@ fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
 		return;
 	}
 
+	token = PeekToken(action, &naction);
+	if (StrEquals("shadeagain", token))
+	{
+		do_force_shading = True;
+		action = naction;
+	}
+	else
+	{
+		do_force_shading = False;
+	}
 	/* parse arguments */
 	shade_dir = ParseDirectionArgument(action, NULL, -1);
 	if (shade_dir != -1)
 	{
-		toggle = (!IS_SHADED(fw) ||
-			  SHADED_DIR(fw) != shade_dir);
+		has_dir = True;
+		toggle = (!IS_SHADED(fw) || SHADED_DIR(fw) != shade_dir);
 	}
 	else
 	{
+		has_dir = False;
 		toggle = ParseToggleArgument(action, NULL, -1, 0);
 		if (toggle == -1 &&
 		    GetIntegerArguments(action, NULL, &toggle, 1) > 0)
@@ -168,33 +144,35 @@ fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
 			shade_dir = -1;
 		}
 	}
-#if 0
-fprintf(stderr, "toggle %d (%s) state %d (%s) title dir %s\n", toggle, get_dir_string(shade_dir), IS_SHADED(fw), get_dir_string((IS_SHADED(fw))?SHADED_DIR(fw):-1), get_dir_string(GET_TITLE_DIR(fw)));
-#endif
 	if (!IS_SHADED(fw) && toggle == 0)
 	{
 		/* nothing to do */
 		return;
 	}
-	if (IS_SHADED(fw) && toggle == 1 && shade_dir == SHADED_DIR(fw))
+	if (IS_SHADED(fw) && toggle == 1)
 	{
-		/* nothing to do */
-		return;
+		if (has_dir == False)
+		{
+			/* nothing to do */
+			return;
+		}
+		else if (do_force_shading == False)
+		{
+			toggle = 0;
+		}
+		else if (shade_dir == SHADED_DIR(fw))
+		{
+			return;
+		}
 	}
 
 	/* draw the animation */
 	start_g = fw->frame_g;
 	get_unshaded_geometry(fw, &end_g);
-#if 1
-if(0)print_g("end1", &end_g);
-#endif
 	if (toggle == 1)
 	{
 		get_shaded_geometry_with_dir(fw, &end_g, &end_g, shade_dir);
 	}
-#if 0
-print_g("end2", &end_g);
-#endif
 	resize_mode = (DO_SHRINK_WINDOWSHADE(fw)) ?
 		FRAME_MR_SHRINK : FRAME_MR_SCROLL;
 	mr_args = frame_create_move_resize_args(

@@ -4596,7 +4596,7 @@ regardless of its current state the
 argument must be "True".  To make it non-sticky use "False".
 
 .TP
-.BI "WindowShade [" bool "|" direction "]"
+.BI "WindowShade [" bool "] | [ [ "ShadeAgain" ] " direction "]"
 Toggles the window shade feature for titled windows.  Windows in
 the shaded state only display a title-bar.  If
 .I bool
@@ -4607,12 +4607,24 @@ is "True", the window is forced to the shaded state.  If
 is "False", then the window is forced to the non-shaded
 state.  To force shading in a certain direction, the
 .I direction
-argument can be used.  Either "North" or "South" can be given.
- Windows without titles can be shaded too.  See also
+argument can be used.  Any of the strings "North", "South",
+"West", "East", "NorthWest", "NorthEast", "SouthWest" or
+"SouthEast" can be given.  The direction can be abbreviated with
+the usual one or two letters "N", "NW", etc.  Using a direction on
+a window that was already shaded unshades the window.  To shade it
+in a different direction, use the
+.I ShadeAgain
+option.  Windows without titles can be shaded too.  See also
 .I WindowShadeSteps
 option of the
 .B Style
-command.
+command.  Exmaples:
+.EX
+Mouse 1 S - WindowShade North
+Mouse 1 S [ WindowShade West
+Mouse 1 S ] WindowShade E
+Mouse 1 S _ WindowShade S
+.EE
 
 For backwards compatibility, the optional argument may also be 1
 to signify "on", and 2 to signify "off". Note that this syntax is
