@@ -73,7 +73,7 @@
 #include "screen.h"
 
 /* prevent core dumping */
-#define MAX_MENU_COPIES 4
+#define MAX_MENU_COPIES 10
 
 typedef struct
 {

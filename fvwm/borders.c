@@ -102,11 +102,24 @@ static enum ButtonState get_button_state(Bool onoroff, Bool toggled, Window w)
 
 /****************************************************************************
  *
- * Redraws the windows borders
+ * Redraws the windows borders and the title bar
  *
  ****************************************************************************/
 void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		Window expose_win)
+{
+  RedrawBorder (t, onoroff, force, Mapped, expose_win);
+  SetTitleBar (t,onoroff, False);
+}
+
+
+/****************************************************************************
+ *
+ * Redraws the windows borders
+ *
+ ****************************************************************************/
+void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
+		   Window expose_win)
 {
   int i;
   GC ReliefGC,ShadowGC;
@@ -397,8 +410,6 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 	    }
 	}
     }
-    SetTitleBar(t,onoroff, False);
-
   }
 
   /* draw the border */

@@ -1,3 +1,13 @@
+1999-05-25  Ben Mansell  <ben.mansell@deathsdoor.com>
+
+	* fvwm/misc.h:
+	* fvwm/borders.c (SetBorder): Moved the border redrawing code to a
+	new function, RedrawBorder, which is called by SetBorder. SetBorder
+	still contains a call to SetTitleBar, whilst RedrawBorder will not
+	call this function.
+	* fvwm/events.c (HandleExpose): Changed the SetBorder call into
+	RedrawBorder. This prevents unnecessary title bar redraws.
+
 Wed May 26 19:45:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/colors.c (PI): might be defined in system headers like
@@ -33,7 +43,7 @@ Wed May 26 19:45:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/misc.c (ComputeActualPosition): commented out unused
  	function.
-	
+
 	* fvwm/menus.c (PaintSidePic, FreeMenuItem, scanForHotkeys,
  	scanForPixmap): make static.
 
@@ -60,10 +70,10 @@ Wed May 26 19:45:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-05-26  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 
-	* fvwm/session.c (LoadGlobalState): 
+	* fvwm/session.c (LoadGlobalState):
 	(MatchWinToSM): restore only the "dynamic" state if we are
 	restarting. Otherwise, Restarting becomes useless for rereading
-	a changed rc file. By "dynamic" state I mean: geometry, desk, 
+	a changed rc file. By "dynamic" state I mean: geometry, desk,
 	layer and maximizedness/shadedness/iconification. This fixes
 	the second part of bug #315.
 
@@ -99,8 +109,8 @@ Mon May 24 17:45:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Bindings.c (GrabWindowButton): make static.
 
-	* libs/wild.h: 
-	* libs/safemalloc.h: 
+	* libs/wild.h:
+	* libs/safemalloc.h:
 	* libs/Grab.h:
 	* libs/ClientMsg.h: new files.
 

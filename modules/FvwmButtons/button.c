@@ -344,6 +344,7 @@ button_info *alloc_button(button_info *ub,int num)
   b->swallow = 0;
   b->BWidth = b->BHeight = 1;
   b->BPosX = b->BPosY = 0;
+fprintf(stderr,"setting parent for button 0x%x to 0x%x\n", b, ub);
   b->parent = ub;
   b->n = -1;
   b->IconWin = 0;
@@ -377,6 +378,9 @@ void MakeContainer(button_info *b)
   b->c->ypos=0;
   if(b->parent != NULL)
     {
+fprintf(stderr,"mc: b = 0x%x\n",b);
+fprintf(stderr,"mc: b->parent = 0x%x\n",b->parent);
+fprintf(stderr,"mc: b->parent->c = 0x%x\n",b->parent->c);
       if (b->parent->c->flags&b_IconBack || b->parent->c->flags&b_IconParent)
 	b->c->flags=b_IconParent;
       else

@@ -125,6 +125,7 @@ void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
 void SelectDecor(FvwmWindow *, style_flags *, int,int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
+void RedrawBorder (FvwmWindow *, Bool,Bool,Bool, Window);
 void set_animation(F_CMD_ARGS);
 void CreateIconWindow(FvwmWindow *, int, int);
 void SetStickyProp(FvwmWindow *, int, int, int);

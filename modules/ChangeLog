@@ -1,3 +1,8 @@
+1999-05-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/parse.c (ParseConfigLine): fixed coredump occuring with
+	multiple empty panels
+
 Mon May 24 21:27:48 1999  DanEspen  <dje@blue>
 
 	* FvwmIconMan/readconfig.c (init_config_file): Use InitGetConfigLine to
@@ -81,7 +86,7 @@ Mon May 17 21:35:54 1999  DanEspen  <dje@blue>
 
 1999-05-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* FvwmGtk/*: implement "Function <func>" and titles for window lists. 
+	* FvwmGtk/*: implement "Function <func>" and titles for window lists.
 
 1999-05-17  Hippo
 

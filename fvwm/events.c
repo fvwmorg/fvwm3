@@ -759,7 +759,7 @@ void HandleExpose(void)
 	}
       else
 	{
-	  SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,
+	  RedrawBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,
 		    Event.xany.window);
 	}
     }

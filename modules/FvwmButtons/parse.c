@@ -948,6 +948,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       memset(CurrentPanel, 0, sizeof(panel_info));
       CurrentPanel->uber = UberButton
                          = (button_info *) mymalloc(sizeof(button_info));
+      memset(CurrentPanel->uber, 0, sizeof(button_info));
       UberButton->title = seekright(&s);
       UberButton->BWidth = 1;
       UberButton->BHeight = 1;
