@@ -350,7 +350,7 @@ problem_png=": png library or header not found!"
 $UNSET ac_cv_header_png_h
 $UNSET ac_cv_lib_png_png_read_info
 smr_CHECK_LIB(png, png, for coloured or shaped icons,
-    png_read_info, png.h, , -lz -lm)
+    png_read_info, png.h, -lz -lm,)
 
 if test "$png_LIBS"; then
   AC_DEFINE(HAVE_PNG)

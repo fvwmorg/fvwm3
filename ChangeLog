@@ -1,5 +1,8 @@
 2002-04-06  olicha  <olivier.chapuis@free.fr>
 
+	* configure.in: 
+	Fixed png detection
+
 	* libs/FImageLoader.c (FImageCreatePixmapFromArgbData): 
 	Fixed a GC memory leaks.
 
