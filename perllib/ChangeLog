@@ -1,3 +1,8 @@
+2002-03-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* General/*:
+	added general purpose packages General::FileSystem and General::Parse
+
 2002-02-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Makefile.am:
