@@ -1,7 +1,9 @@
 Note, the changes for the last OFFICIAL release start with release
 _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
-Changes in beta release 2.3.14 (not released yet)
+Changes in beta release 2.3.15 (not released yet)
+
+Changes in beta release 2.3.14 (February 2000)
 
 * New style option ParentalRelativity to enable Fvwm modules to use
   'Transparent' colorsets from FvwmTheme.  'Opacity' turns it off.
