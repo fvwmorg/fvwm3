@@ -3,8 +3,8 @@ Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
 Nadim Shaikli:
-Added joining and shaping in bi-directional languages that need this,
-arabic translations.
+Added joining and shaping in bi-directional languages that need
+this, arabic translations.
 
 Richard Lister:
 New module FvwmWindowLister.
@@ -67,52 +67,61 @@ Johannes Zellner:
 StrokeWidth option for StrokeFunc.
 
 Darren Stuart Embry:
-ActiveColorset uses colour set supplied hilight and shadow colours.
+ActiveColorset uses colour set supplied hilight and shadow
+colours.
 
 Neil Bird:
-Add $c, $r, $n variables for Functions.
-Add Next/Prev conditions to WindowId and WindowList.
-Attempted fix of OLDecor hints use for decorations. Add DestroyStyle command.
+Add $c, $r, $n variables for Functions. Add Next/Prev conditions
+to WindowId and WindowList. Attempted fix of OLDecor hints use for
+decorations. Add DestroyStyle command.
 
 Alan F. Ho:
-fvwm-logo-colorful.xpm, a prototype of a current default FvwmBanner logo.
+fvwm-logo-colorful.xpm, a prototype of a current default
+FvwmBanner logo.
 
 Olivier Chapuis:
-fvwm: Rewrote -version command line option to print out configure options;
-OnlySkipList option to WindowList; BusyCursor command, EscapeFunc command;
-StrokeFunc command and some works on the STROKE patch; some bug fixes.
-libs: setSyncMask to define the messages on which a module is lock on send
-(not my idea); put SendFvwmPipe in the library; amelioration of SlideWindow.
-FvwmButtons: position option for panel; some fixes. FvwmEvent: StartDelay
-option. FvwmIconBox: UseSkipList options. FvwmM4/Cpp: -lock and -noread
-options. FvwmPager: Aliases support; some fixes. FvwmScript: The Default
-configuration options; some fixes; rewrite some scripts examples and new
-script examples. FvwmPager: Aliases support; some fixes. FvwmScroll: p option
-for a percentage reduction. FvwmTaskBar: the Focus, Rows, 3DFvwm, NoIconAction
-options, take in account the real border width for geometry computation,
-AutoHide ameliorations, A number of fixes. FvwmWinList: geometries fixes.
-utils: fvwm-menu-desktop script for GNOME and KDE desktop menus.
+fvwm: Rewrote -version command line option to print out configure
+options; OnlySkipList option to WindowList; BusyCursor command,
+EscapeFunc command; StrokeFunc command and some works on the
+STROKE patch; some bug fixes. libs: setSyncMask to define the
+messages on which a module is lock on send (not my idea); put
+SendFvwmPipe in the library; amelioration of
+SlideWindow. FvwmButtons: position option for panel; some
+fixes. FvwmEvent: StartDelay option. FvwmIconBox: UseSkipList
+options. FvwmM4/Cpp: -lock and -noread options. FvwmPager: Aliases
+support; some fixes. FvwmScript: The Default configuration
+options; some fixes; rewrite some scripts examples and new script
+examples. FvwmPager: Aliases support; some fixes. FvwmScroll: p
+option for a percentage reduction. FvwmTaskBar: the Focus, Rows,
+3DFvwm, NoIconAction options, take in account the real border
+width for geometry computation, AutoHide ameliorations, A number
+of fixes. FvwmWinList: geometries fixes. utils: fvwm-menu-desktop
+script for GNOME and KDE desktop menus.
+
 
 Mikhael Goikhman:
-Parsing Restart command, Session*Function and StartFunction special functions,
-{Save|Quit}Session commands, some work on restart logic and session stuff,
-FormFvwmRootCursor, creating fvwm-menu-* scripts, FvwmWharf improvements,
-new FvwmBacker syntax, new default FvwmBanner logo, updates to envvar lib,
-FVWM_DATADIR/FVWM_USERDIR changes, fvwm-config script, some work on configure,
-module alias support in KillModule & SendToModule, many small fixes.
+Parsing Restart command, Session*Function and StartFunction
+special functions, {Save|Quit}Session commands, some work on
+restart logic and session stuff, FormFvwmRootCursor, creating
+fvwm-menu-* scripts, FvwmWharf improvements, new FvwmBacker
+syntax, new default FvwmBanner logo, updates to envvar lib,
+FVWM_DATADIR/FVWM_USERDIR changes, fvwm-config script, some work
+on configure, module alias support in KillModule & SendToModule,
+many small fixes.
 
 Matthias Clasen:
-Session management, layered stacking order, maximized shaded windows,
-FvwmGtk module, colored and xpm cursors.
+Session management, layered stacking order, maximized shaded
+windows, FvwmGtk module, colored and xpm cursors.
 
 Nagi Aboulenein:
-Original idea for 'previous page' parameter (MoveToPage and GotoPage).
+Original idea for 'previous page' parameter (MoveToPage and
+GotoPage).
 
 Dan Espen:
-Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d
-hilight/shadow calc from scwm as a library routine, updated web docs,
-lots of improvements in FvwmForm, replacement of FvwmTalk with FvwmForm,
-fvwm setup form.
+Color Limiting, Multiple IconBoxes, Iconification Animation, new
+3d hilight/shadow calc from scwm as a library routine, updated web
+docs, lots of improvements in FvwmForm, replacement of FvwmTalk
+with FvwmForm, fvwm setup form.
 
 Tony Finch:
 Original patch for opaque resizing for 2.2.
@@ -124,24 +133,24 @@ Julian Gilbey:
 Fixes in the fvwmrc_convert script.
 
 German Gomez Garcia:
-Implemented new menu style definition, allowing multiple definitios and
-gradients and pixmaps 'ala' ButtonStyle. See doc/README.styles for more
-info.
+Implemented new menu style definition, allowing multiple
+definitios and gradients and pixmaps 'ala' ButtonStyle. See
+doc/README.styles for more info.
 
 Udo Grabowski:
 Private colormaps on subwindows.
 
 Mike Han:
-Multiple menu hotkeys. Automatic menu hotkeys. Reverse-resolution for
-FvwmIconMan. Multiple FvwmIconMan invocations. FvwmBacker per-page hacks
-(only usable after lots of fixes by others). Finally killed FvwmAudio.
-Finished off GSFR in modules.
+Multiple menu hotkeys. Automatic menu hotkeys. Reverse-resolution
+for FvwmIconMan. Multiple FvwmIconMan invocations. FvwmBacker
+per-page hacks (only usable after lots of fixes by
+others). Finally killed FvwmAudio. Finished off GSFR in modules.
 
 Albrecht Kadlec:
-Code & manual cleanups, enhancements, Fixes and module-library which
-partially made it into fvwm-2.0.42-47d.
-Rewrite & cleanup of FvwmAuto & FvwmAudio.
-Created FvwmEvent to supersede FvwmAudio (& FvwmAuto).
+Code & manual cleanups, enhancements, Fixes and module-library
+which partially made it into fvwm-2.0.42-47d. Rewrite & cleanup of
+FvwmAuto & FvwmAudio. Created FvwmEvent to supersede FvwmAudio (&
+FvwmAuto).
 
 Andrew Morton:
 MoveThreshold command.
@@ -159,22 +168,24 @@ Chetan Patil:
 Patch fix MoveToPage command without arguments.
 
 Mark Rainford:
-Handling of transient windows in Raise/Lower: reasonable emulation of
-Motif group behaviour is now possible. $v variable in fvwm commands.
+Handling of transient windows in Raise/Lower: reasonable emulation
+of Motif group behaviour is now possible. $v variable in fvwm
+commands.
 
 Chris Rankin:
-Rework of signal handlers (fvwm, FvwmButtons, FvwmIconMan, FvwmPager and
-FvwmEvent).
+Rework of signal handlers (fvwm, FvwmButtons, FvwmIconMan,
+FvwmPager and FvwmEvent).
 
 Steven M. Robbins:
 Autoconf & automake support, configuration & portability
 improvements, and general code gadfly a la Paul Smith.
 
 Paul D. Smith:
-Purify support (heap rot, array overwrites, memory stompage of all sorts).
-Some autoconf/automake/portability help.  Initial cut at a generic
-debugging API.  Rework module interface API on fvwm's side.
-General code gadfly: tiptoe in; change some code; run away, run away!
+Purify support (heap rot, array overwrites, memory stompage of all
+sorts). Some autoconf/automake/portability help.  Initial cut at a
+generic debugging API.  Rework module interface API on fvwm's
+side. General code gadfly: tiptoe in; change some code; run away,
+run away!
 
 Benoit Triquet:
 Original idea and some code for IgnoreModifiers command.
@@ -184,66 +195,75 @@ OpenVMS port.
 
 Dominik Vogt:
 Improved ShuffleButtons algorithm (FvwmButtons), button geometries
-(FvwmButtons), Menu Position Hints, XResources.c, various move/resize
-and menu enhancements, MoveToPage, MoveToDesk, various parsing
-functions, COPYING file, a myriad of bugfixes, Rewrite of MenuStyle syntax,
-Silent command, GSFR preparations, various enhancements and bugfixes for
-FvwmButtons, FvwmPager and FvwmTaskBar, split function and menu code, FAQ
-rewrite, rewrite of toggling function syntax (with hints from Matthias
-Claasen), IgnoreModifiers command, enhancements of GotoPage and MoveToPage
-syntax, Repeat command, menu code clean up, panel enhancements (FvwmButtons),
-transient FvwmPager, GSFR for the main module, dynamic menus, recursive menus,
-rewrite of menu drawing, speed up startup with lots of menus, new menu styles
-BorderWidth, ItemFormat, VerticalItemSpacing, VerticalTitleSpacing,
-Hilight3DThickness and SubmenusLeft, major clean up of the menu code,
-improved transient FvwmPager, improved transient window handling, MaxWindowSize
-style, Improved(?) mouse paging, RaiseTransient and LowerTransient styles,
-nicer cursors, helped with colorset implementation, variables for FvwmButtons
-actions, fvwm-cats page, ported &%!#?-95 like config file from fvwm95, cleanup
-of gradient drawing code, rewrite of opaque resize patch for 2.3.8,
-HideSizeWindow command, enhanced CursorStyle command, TitleAtBottom style,
-patches to obsolete Recapture command (styles apply immediately), new old styles
-BackingStore/BackingStoreOff and SaveUnder/SaveUnderOff, more WindowList
-enhancements, look of sticky icons, WindowList menu style, PointerKey command,
-several FvwmTheme options, FvwmTheme parsing, styles Font and IconFont,
-introduced the decor_w, smooth window shading, smooth (well, sort of) opaque
-resizing, many many more bugfixes. Lost motivation to continue this list.
+(FvwmButtons), Menu Position Hints, XResources.c, various
+move/resize and menu enhancements, MoveToPage, MoveToDesk, various
+parsing functions, COPYING file, a myriad of bugfixes, Rewrite of
+MenuStyle syntax, Silent command, GSFR preparations, various
+enhancements and bugfixes for FvwmButtons, FvwmPager and
+FvwmTaskBar, split function and menu code, FAQ rewrite, rewrite of
+toggling function syntax (with hints from Matthias Claasen),
+IgnoreModifiers command, enhancements of GotoPage and MoveToPage
+syntax, Repeat command, menu code clean up, panel enhancements
+(FvwmButtons), transient FvwmPager, GSFR for the main module,
+dynamic menus, recursive menus, rewrite of menu drawing, speed up
+startup with lots of menus, new menu styles BorderWidth,
+ItemFormat, VerticalItemSpacing, VerticalTitleSpacing,
+Hilight3DThickness and SubmenusLeft, major clean up of the menu
+code, improved transient FvwmPager, improved transient window
+handling, MaxWindowSize style, Improved(?) mouse paging,
+RaiseTransient and LowerTransient styles, nicer cursors, helped
+with colorset implementation, variables for FvwmButtons actions,
+fvwm-cats page, ported &%!#?-95 like config file from fvwm95,
+cleanup of gradient drawing code, rewrite of opaque resize patch
+for 2.3.8, HideSizeWindow command, enhanced CursorStyle command,
+TitleAtBottom style, patches to obsolete Recapture command (styles
+apply immediately), new old styles BackingStore/BackingStoreOff
+and SaveUnder/SaveUnderOff, more WindowList enhancements, look of
+sticky icons, WindowList menu style, PointerKey command, several
+FvwmTheme options, FvwmTheme parsing, styles Font and IconFont,
+introduced the decor_w, smooth window shading, smooth (well, sort
+of) opaque resizing, many many more bugfixes. Lost motivation to
+continue this list.
 
 A.J. Weber:
 SnapAttraction patch.
 
 Bob Woodside:
-StartsOnPage style, Stacking Order chain, new variable module packets,
-GSFR for the modules.
+StartsOnPage style, Stacking Order chain, new variable module
+packets, GSFR for the modules.
 
 Charles Hines:
-Contributed some patches in the early days of fvwm.  Later took over
-maintenance of fvwm-2.0.x after Rob Nation, the original author of fvwm,
-decided to "retire".  Made a fair amount of changes and fixes, and incorporated
-changes and fixes from numerous people all over the net.  Did this from about
-August of 1995 until May of 1998 when he came to the realization that he didn't
-have enough time to properly devote to it and decided to "retire" himself,
-handing Brady Montz the torch.  Shortly thereafter is when fvwm became "ruled by
-committee" and this previous fvwm dictator is now happy to see fvwm surviving
-and thriving with this new development methodology (and may even contribute
-again himself, someday).
+Contributed some patches in the early days of fvwm.  Later took
+over maintenance of fvwm-2.0.x after Rob Nation, the original
+author of fvwm, decided to "retire".  Made a fair amount of
+changes and fixes, and incorporated changes and fixes from
+numerous people all over the net.  Did this from about August of
+1995 until May of 1998 when he came to the realization that he
+didn't have enough time to properly devote to it and decided to
+"retire" himself, handing Brady Montz the torch.  Shortly
+thereafter is when fvwm became "ruled by committee" and this
+previous fvwm dictator is now happy to see fvwm surviving and
+thriving with this new development methodology (and may even
+contribute again himself, someday).
 
 Dan Astoorian:
-Wrote extras/fvwmperl, before X11::Fvwm (available via CPAN) made it
-obsolete.
+Wrote extras/fvwmperl, before X11::Fvwm (available via CPAN) made
+it obsolete.
 
 Greg J. Badros:
-Substantial rewrite of fvwm-2.0.x menuing code to support arbitrary depth
-menus, animated menus, Win95 look, better logically-based shortcut keys,
-auto-splitting of long menus, check for re-used hot-keys, integrated
-LEFT_MENUS option.  Added primitives: animated-moves, SetEnv, fix to
-Echo. Improve modules: Make FvwmM4 pass args on to m4, font-related
-seg-fault bug fix in FvwmButtons.
+Substantial rewrite of fvwm-2.0.x menuing code to support
+arbitrary depth menus, animated menus, Win95 look, better
+logically-based shortcut keys, auto-splitting of long menus, check
+for re-used hot-keys, integrated LEFT_MENUS option.  Added
+primitives: animated-moves, SetEnv, fix to Echo. Improve modules:
+Make FvwmM4 pass args on to m4, font-related seg-fault bug fix in
+FvwmButtons.
 
 
 Along with a cast of thousands (well, dozens) mentioned in old
-ChangeLog entries.  If you find your name below, please send an entry
-in the style of the above entries, to the mailing list fvwm-workers@fvwm.org.
+ChangeLog entries.  If you find your name below, please send an
+entry in the style of the above entries, to the mailing list
+fvwm-workers@fvwm.org.
 
 Andrew (a.b.) Atrens
 John Aughey

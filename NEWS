@@ -108,9 +108,9 @@ Changes in development release 2.5.5 (2-Dec-2002)
      OnlyStickyAcrossPages, OnlyStickyAcrossDesks.
    - New FvwmRearrange options -sp and -sd.
 
-* Fixed flickering in FvwmTaskBar, FvwmWinList, FvwmIconBox, FvwmForm,
-  FvwmScript and FvwmScroll when xft fonts or icons with an alpha
-  channel is used.
+* Fixed flickering in FvwmTaskBar, FvwmWinList, FvwmIconBox,
+  FvwmForm, FvwmScript and FvwmScroll when xft fonts or icons with
+  an alpha channel is used.
 
 * New Colorset option RootTransparent
 
@@ -183,7 +183,8 @@ Changes in alpha release 2.5.4 (20-Oct-2002)
 * New FvwmBacker option RetainPixmap.
 
 * Fixed flickering in menus, icon title, FvwmButtons, FvwmIconMan
-  and FvwmPager when xft fonts or icons with an alpha channel is used.
+  and FvwmPager when xft fonts or icons with an alpha channel is
+  used.
 
 * FvwmButtons redrawing improvement: colorsets are now usable with
   containers.
@@ -739,8 +740,8 @@ Changes in stable release 2.4.8 (11-Jun-2002)
 * Fixed another problem with the DeskOnly option and sticky icons
   in FvwmTaskBar.
 
-* New FvwmIconMan configuration syntax now conforms to the syntax of
-  other modules, see the man page.
+* New FvwmIconMan configuration syntax now conforms to the syntax
+  of other modules, see the man page.
 
 * New WindowList option CurrentAtEnd.
 
@@ -886,7 +887,8 @@ Changes in stable release 2.4.5 (27-Jan-2002)
 * Fixed a crash with the UseStyle style in combination with
   HilightBack.
 
-* Fixed excessive redraws of the windows under a window being shaded.
+* Fixed excessive redraws of the windows under a window being
+  shaded.
 
 * Fixed a minor memory leak in the Style command.
 
@@ -923,9 +925,9 @@ Changes in stable release 2.4.4 (16-Dec-2001)
 
 * Fixed ClickToFocusClickRaises style.
 
-* FvwmForm: Customize pointers, support ISO_Tab key, buttons can activate
-  on press or release, special pointer during grab, arrow keys useful in form
-  with one input field.
+* FvwmForm: Customize pointers, support ISO_Tab key, buttons can
+  activate on press or release, special pointer during grab, arrow
+  keys useful in form with one input field.
 
 * New OpaqueMoveSize argument "unlimited".
 
@@ -936,11 +938,11 @@ Changes in stable release 2.4.4 (16-Dec-2001)
 
 * Mouse bindings are activated without a recapture.
 
-* FvwmScript: new keyboard bindings. New flags NoFocus and Left, Center,
-  and Right for text position. Amelioration of the Menu and PopupMenu
-  Widgets. New functions GetPid, Parse, SendMsgAndGet and LastString.
-  New instruction Key for key bindings. New command SendToModule ScriptName
-  SendString.
+* FvwmScript: new keyboard bindings. New flags NoFocus and Left,
+  Center, and Right for text position. Amelioration of the Menu
+  and PopupMenu Widgets. New functions GetPid, Parse,
+  SendMsgAndGet and LastString. New instruction Key for key
+  bindings. New command SendToModule ScriptName SendString.
 
 * Command "Silent" when precedes "Key", "Mouse" and "PointerKey"
   disables warning messages.
@@ -962,8 +964,8 @@ Changes in stable release 2.4.3 (08-Oct-2001)
 
 * Fixed flickering icon titles.
 
-* New X resource fvwmscreen to select the Xinerama screen on which to
-  place new windows.
+* New X resource fvwmscreen to select the Xinerama screen on which
+  to place new windows.
 
 * Coordinates of a window during motion are show relative to the
   Xinerama screen.
@@ -974,7 +976,8 @@ Changes in stable release 2.4.3 (08-Oct-2001)
 
 Changes in stable release 2.4.2 (16-Sep-2001)
 
-* Desk and page can be given as X resources in .Xdefaults, for example:
+* Desk and page can be given as X resources in .Xdefaults, for
+  example:
     xterm.desk: 1
     xterm.page: 1 2 3
 
@@ -1021,9 +1024,11 @@ Changes in stable release 2.4.1 (15-Sep-2001)
 
 * FvwmIconBox, FvwmTaskBar and FvwmWinList support aliases.
 
-* Enhancements in fvwm-menu-headlines and support for 10 more sites.
+* Enhancements in fvwm-menu-headlines and support for 10 more
+  sites.
 
-* Color enhancements in button vectors: @2 is bg color, @3 is fg color.
+* Color enhancements in button vectors: @2 is bg color, @3 is fg
+  color.
 
 * Improved detection of the Shape library.
 
@@ -1035,14 +1040,17 @@ Changes in stable release 2.4.1 (15-Sep-2001)
   with the system.fvwm2rc-sample-95 configuration.
 
 * The modules FvwmPager, FvwmIconMan, FvwmWinList and FvwmButtos
-  set the transient_for hint when started with the "transient" option.
+  set the transient_for hint when started with the "transient"
+  option.
 
-* Fixed FvwmIconMan with the transient option when mapped off screen.
+* Fixed FvwmIconMan with the transient option when mapped off
+  screen.
 
-* Fixed ClickToFocus focus policy when iconifying the focused window.
+* Fixed ClickToFocus focus policy when iconifying the focused
+  window.
 
-* Fixed some focus problems in conjunction with unclutter vs xv/xmms
-  and Open Look applications.
+* Fixed some focus problems in conjunction with unclutter vs
+  xv/xmms and Open Look applications.
 
 * Fixed a problem that could cause windows to be lost off screen
   with interactive window motion.
@@ -1072,34 +1080,37 @@ Changes in stable release 2.4.1 (15-Sep-2001)
 
 * Fixed missing button or key events over the pan frames.
 
-* Fixed placement of the FvwmDragWell, FvwmButtons and FvwmForm modules.
+* Fixed placement of the FvwmDragWell, FvwmButtons and FvwmForm
+  modules.
 
-* Fixed parsing double quotes in FvwmPager's Font and SmallFont options.
-  Fixed FvwmPager crash with certain font strings.
+* Fixed parsing double quotes in FvwmPager's Font and SmallFont
+  options. Fixed FvwmPager crash with certain font strings.
 
 * Fixed drawing of the grid lines in an iconified FvwmPager window.
 
 * Fixed button grabbing problem for buttons > 3 in FvwmTaskBar.
 
-* Fixed some exotic problems with window gravity and resizing windows.
+* Fixed some exotic problems with window gravity and resizing
+  windows.
 
-* Fixed a problem with maximizing windows with the vieport not starting
-  on a page boundary.
+* Fixed a problem with maximizing windows with the vieport not
+  starting on a page boundary.
 
 * Fixed handling of parentheses in FvwmButtons button actions.
 
-* Work around a key binding problem with keys that generate the same
-  symbol with more than one key code (e.g. Shift-F1 = F11).
+* Work around a key binding problem with keys that generate the
+  same symbol with more than one key code (e.g. Shift-F1 = F11).
 
-* The Desk option of FvwmBacker is compatible to earlier version.
-  Desk or Page coordinates can be omitted to indicate that desk
-  or page changes trigger no action at all.
+* The Desk option of FvwmBacker is compatible to earlier
+  version. Desk or Page coordinates can be omitted to indicate
+  that desk or page changes trigger no action at all.
 
-* Fixed double updating of background with FvwmBacker sometimes leading
-  to the wrong background.
+* Fixed double updating of background with FvwmBacker sometimes
+  leading to the wrong background.
 
-* Fixed several escaping errors in fvwm-menu-directory, so files and
-  directories containing special chars and spaces should work.
+* Fixed several escaping errors in fvwm-menu-directory, so files
+  and directories containing special chars and spaces should
+  work.
 
 * Fixed PlacedByButton3 condition.
 
@@ -1129,9 +1140,10 @@ Changes in stable release 2.4.0 (03-Jul-2001)
 
 Changes in beta release 2.3.33 (22-Jun-2001)
 
-* Module configuration commands are now partially expanded similarly to
-  any other commands, except that single alphabetic-letter parameters are
-  not expanded for backward compatibility.
+* Module configuration commands are now partially expanded
+  similarly to any other commands, except that single
+  alphabetic-letter parameters are not expanded for backward
+  compatibility.
 
 -------------------------------------------------------------------
 
@@ -1158,7 +1170,8 @@ Changes in beta release 2.3.30 (29-Mar-2001)
 
 * The configure option --disable-modality was removed.
 
-* New FvwmCommand -c option to read multiple commands from standard input.
+* New FvwmCommand -c option to read multiple commands from
+  standard input.
 
 -------------------------------------------------------------------
 
@@ -1168,12 +1181,14 @@ Changes in beta release 2.3.29 (2-Mar-2001)
 
 * New styles IconifyWindowGroupsTogether and IconifyWindowGroupsOff.
 
-* New styles KeepWindowGroupsOnDesk and ScatterWindowGroups to cope with
-  applications using the window group hint incorrectly (mozilla).
+* New styles KeepWindowGroupsOnDesk and ScatterWindowGroups to
+  cope with applications using the window group hint incorrectly
+  (mozilla).
 
 * New BugOpts option FlickeringQtDialogsWorkaround.
 
-* New configure option --disable-package-subdirs, see INSTALL.fvwm for info.
+* New configure option --disable-package-subdirs, see INSTALL.fvwm
+  for info.
 
 * New option "None" to the IconBox style.
 
@@ -1183,25 +1198,26 @@ Changes in beta release 2.3.28 (25-Jan-2001)
 
 * Renamed configure option --enable-kanji to --enable-multibyte.
 
-* Security fix related to .fvwm2rc being searched in the current directory
-  when $HOME is not set.
+* Security fix related to .fvwm2rc being searched in the current
+  directory when $HOME is not set.
 
 * New menu styles PopdownImmediately, PopdownDelayed and PopdownDelay.
 
 * New command CopyMenuStyle.
 
-* Replaced Dumb/SmartPlacement, Active/RandomPlacement, SmartPlacement/Off
-  style by ManualPlacement / CascadePlacement / MinOverlapPlacement /
-  MinOverlapPercentPlacement / TileManualPlacement /TileCascadePlacement
-  (old style still supported).
+* Replaced Dumb/SmartPlacement, Active/RandomPlacement,
+  SmartPlacement/Off style by ManualPlacement / CascadePlacement /
+  MinOverlapPlacement / MinOverlapPercentPlacement /
+  TileManualPlacement /TileCascadePlacement (old style still
+  supported).
 
 * Replaced ActivePlacementHonorsStartsOnPage with
   ManualPlacementHonorsStartsOnPage and
   ActivePlacementHonorsStartsOnPageOff with
   ManualPlacementHonorsStartsOnPageOff.
 
-* We have two "clever" placement algorithms: MinOverlapPlacement (the old one)
-  and MinOverlapPercentPlacement.
+* We have two "clever" placement algorithms: MinOverlapPlacement
+  (the old one) and MinOverlapPercentPlacement.
 
 -------------------------------------------------------------------
 
@@ -1215,14 +1231,15 @@ Changes in beta release 2.3.26 (26-Dec-2000)
 
 Changes in beta release 2.3.25 (5-Dec-2000)
 
-* Removed the now obsolete 'Recapture' option of the BusyCursor command.
+* Removed the now obsolete 'Recapture' option of the BusyCursor
+  command.
 
 -------------------------------------------------------------------
 
 Changes in beta release 2.3.24 (28-Nov-2000)
 
-* WindowId and WarpToFunction have been enhanced to handle windows on
-  different screens and unmanaged windows.
+* WindowId and WarpToFunction have been enhanced to handle windows
+  on different screens and unmanaged windows.
 
 * New command FakeClick.
 
@@ -1238,12 +1255,14 @@ Changes in beta release 2.3.23 (25-Nov-2000)
 
 Changes in beta release 2.3.22 (10-Nov-2000)
 
-* Configuration samples of FvwmForm and FvwmScript installed with fvwm are
-  converted to the scheme: "FvwmForm-RootCursor", "FvwmScript-FileBrowser".
+* Configuration samples of FvwmForm and FvwmScript installed with
+  fvwm are converted to the scheme: "FvwmForm-RootCursor",
+  "FvwmScript-FileBrowser".
 
 * New expanding variables: $., $[page.nx], $[page.ny].
 
-* New command UnsetEnv unsets environment variables, compliments SetEnv.
+* New command UnsetEnv unsets environment variables, compliments
+  SetEnv.
 
 * Pressing mouse button 2 in an FvwmIdent window restarts FvwmIdent
   and asks for a new window.
@@ -1256,14 +1275,16 @@ Changes in beta release 2.3.22 (10-Nov-2000)
 
 * Speed up command execution and startup.
 
-* Improved handling of windows that set the "input focus" hint to "false".
+* Improved handling of windows that set the "input focus" hint to
+  "false".
 
 -------------------------------------------------------------------
 
 Changes in beta release 2.3.21 (September 2000)
 
-* Module configuration syntax now accepts a delimiter - colon and optional
-  spaces; the old syntax is supported as usual (but it allows conflicts):
+* Module configuration syntax now accepts a delimiter - colon and
+  optional spaces; the old syntax is supported as usual (but it
+  allows conflicts):
     *FvwmIconBoxMaxIconSize 48x48
     *FvwmIconBox: MaxIconSize 48x48
 
@@ -1277,7 +1298,8 @@ Changes in beta release 2.3.21 (September 2000)
 
 Changes in beta release 2.3.20 (July 2000)
 
-* KillModule supports an optional alias parameter as given in Module.
+* KillModule supports an optional alias parameter as given in
+  Module.
     Module FvwmModule Alias
     KillModule FvwmModule Alias
 
@@ -1292,8 +1314,9 @@ Changes in beta release 2.3.19 (June 2000)
   shell and is replaced by all arguments of a function.
 
 * Implemented several new parameters:
-    $[desk.width], $[desk.height], $[vp.x], $[vp.y], $[vp.width], $[vp.height],
-    $[w.x], $[w.y], $[w.width], $[w.height], $[screen], $[<env-var>]
+    $[desk.width], $[desk.height], $[vp.x], $[vp.y], $[vp.width],
+    $[vp.height], $[w.x], $[w.y], $[w.width], $[w.height],
+    $[screen], $[<env-var>]
 
 -------------------------------------------------------------------
 
@@ -1312,36 +1335,40 @@ Changes in beta release 2.3.18 (May 2000)
 
 Changes in beta release 2.3.17 (May 2000)
 
-* The commands Refresh and RefreshWindow apply all outstanding visual
-  changes of a window.
+* The commands Refresh and RefreshWindow apply all outstanding
+  visual changes of a window.
 
 * New options GrowUp, GrowDown, GrowLeft, GrowRight to the Maximize
   command.
 
 * New command ResizeMove combines Move and Resize commands.
 
-* New options "keep" to Move command to leave either coordinate unchanged.
+* New options "keep" to Move command to leave either coordinate
+  unchanged.
 
 * New options "bottomright" and "br" to Resize command.
 
-* Resize command can take negative arguments.  A "keep" argument leaves
-  the corresponding dimension untouched.
+* Resize command can take negative arguments.  A "keep" argument
+  leaves the corresponding dimension untouched.
 
-* New condition "MovedButton3" that is true if the last interactive
-  Move command was finished by pressing mouse button 3.
+* New condition "MovedButton3" that is true if the last
+  interactive Move command was finished by pressing mouse button
+  3.
 
-* Mouse button 3 can no longer be used to cancel interactive window
-  movement.
+* Mouse button 3 can no longer be used to cancel interactive
+  window movement.
 
-* $FVWM_USERHOME used to set the fvwm user directory renamed to $FVWM_USERDIR.
+* $FVWM_USERHOME used to set the fvwm user directory renamed to
+  $FVWM_USERDIR.
 
 * The default fvwm user directory is now $HOME/.fvwm, not $HOME,
   the fvwm user directory is now created if needed.
 
-* It is suggested to put all personal fvwm files to $HOME/.fvwm; to simulate
-  the old fvwm behaviour, export FVWM_USERDIR=$HOME.
+* It is suggested to put all personal fvwm files to $HOME/.fvwm;
+  to simulate the old fvwm behaviour, export FVWM_USERDIR=$HOME.
 
-* Instalating fvwm goodies is now to share/fvwm (FVWM_DATADIR), not etc/fvwm.
+* Instalating fvwm goodies is now to share/fvwm (FVWM_DATADIR),
+  not etc/fvwm.
 
 * fvwm-config utility can be used for querying fvwm instalation.
 
@@ -1364,15 +1391,16 @@ Changes in beta release 2.3.15 (February 2000)
 
 * Documented previously undocumented GotoDeskAndPage command.
 
-* New parameter 'prev' for GotoDesk, GotoDeskAndPage and MoveToDesk
-  commands.
+* New parameter 'prev' for GotoDesk, GotoDeskAndPage and
+  MoveToDesk commands.
 
 -------------------------------------------------------------------
 
 Changes in beta release 2.3.14 (February 2000)
 
-* New style option ParentalRelativity to enable Fvwm modules to use
-  'Transparent' colorsets from FvwmTheme.  'Opacity' turns it off.
+* New style option ParentalRelativity to enable Fvwm modules to
+  use 'Transparent' colorsets from FvwmTheme.  'Opacity' turns it
+  off.
 
 * The GlobalOpts command was removed in favour of individual
   window styles.  Please look for GlobalOpts in the man page to
@@ -1436,11 +1464,11 @@ Changes in beta release 2.3.11 (December 1999)
 
 * New styles BackingStore/BackingStoreOff and SaveUnder/SaveUnderOff.
 
-* Any changes in your configuration file are applied during a restart now.
-  (This obsoletes the contrary entry for 2.3.6.)
+* Any changes in your configuration file are applied during a
+  restart now. (This obsoletes the contrary entry for 2.3.6.)
 
-* New FvwmIconMan options: IconButton and IconColorset to control colors for
-  iconified windows.
+* New FvwmIconMan options: IconButton and IconColorset to control
+  colors for iconified windows.
 
 -------------------------------------------------------------------
 
@@ -1458,25 +1486,27 @@ Changes in beta release 2.3.10 (December 1999)
 
 * New styles TitleAtBottom and TitleAtTop.
 
-* FvwmIconBox, FvwmIconMan, FvwmTaskBar and FvwmWinList support animatation via
-  FvwmAnimate.
+* FvwmIconBox, FvwmIconMan, FvwmTaskBar and FvwmWinList support
+  animatation via FvwmAnimate.
 
 * New command StrokeFunc to handle mouse stroke.
 
-* The default root cursor, unless specified otherwise, is now left pointer.
+* The default root cursor, unless specified otherwise, is now left
+  pointer.
 
-* New command BusyCursor to control a busy cursor during execution of
-  certain commands.
+* New command BusyCursor to control a busy cursor during execution
+  of certain commands.
 
 * CursorStyle can set the root cursor and use X11 cursor name.
 
 * New command EscapeFunc to configure an aborting key sequence
   (default is Ctrl-Alt-Escape).
 
-* New command HideGeometryWindow to hide the size/position when moving or
-  resizing windows.
+* New command HideGeometryWindow to hide the size/position when
+  moving or resizing windows.
 
-* New options for the WindowList command: UseListSkip and OnlySkipList.
+* New options for the WindowList command: UseListSkip and
+  OnlySkipList.
 
 * New FvwmPager options SolidSeparators and NoSeparators.
 
@@ -1484,18 +1514,19 @@ Changes in beta release 2.3.10 (December 1999)
 
 Changes in beta release 2.3.9 (October 1999)
 
-* Color names from colorsets can be used in fvwm command ($[fg.cs<n>],
-  $[bg.cs<n>], $[hilite.cs<n>] and $[shadow.cs<n>]).
+* Color names from colorsets can be used in fvwm command
+  ($[fg.cs<n>], $[bg.cs<n>], $[hilite.cs<n>] and
+  $[shadow.cs<n>]).
 
 * FvwmScript supports colorsets.
 
-* FvwmTaskBar supports colorsets with the options Colorset, IconColorset and
-  TipsColorset.
+* FvwmTaskBar supports colorsets with the options Colorset,
+  IconColorset and TipsColorset.
 
 * New function variable $v.
 
-* Menus can use colorsets with the new MenuStyle options MenuColorset,
-  ActiveColorset and GreyedColorset.
+* Menus can use colorsets with the new MenuStyle options
+  MenuColorset, ActiveColorset and GreyedColorset.
 
 -------------------------------------------------------------------
 
@@ -1505,25 +1536,28 @@ Changes in beta release 2.3.8 (September 1999)
 
 * A long-awaited new default FvwmBanner logo.
 
-* RaiseTransient no longer flips main above/below already raised transients.
-  New style FlipTransient turns flipping back on, and additionally does a
-  similar job for LowerTransient at the bottom of the layer.
-  New style StackTransientParent augments Raise/LowerTransient.
+* RaiseTransient no longer flips main above/below already raised
+  transients. New style FlipTransient turns flipping back on, and
+  additionally does a similar job for LowerTransient at the bottom
+  of the layer. New style StackTransientParent augments
+  Raise/LowerTransient.
 
-* Icons have been removed from the fvwm package and are available at
-  the fvwm web site.  (Temporarily only at "xxx.fvwm.org" instead of
-  "www.fvwm.org".)
+* Icons have been removed from the fvwm package and are available
+  at the fvwm web site.  (Temporarily only at "xxx.fvwm.org"
+  instead of "www.fvwm.org".)
 
 * New command BugOpts enables various former bug fixing compile
   time options to be changed at run time.
 
 * FvwmWharf and FvwmBacker support colorsets.
 
-* A new special fvwm function StartFunction is introduced. It is supposed to
-  be used to start modules and for other start commands. This function is
-  executed before InitFunction and RestartFunction.  Any commands currently
-  in both the InitFunction and RestartFuction can be moved to the new
+* A new special fvwm function StartFunction is introduced. It is
+  supposed to be used to start modules and for other start
+  commands. This function is executed before InitFunction and
+  RestartFunction.  Any commands currently in both the
+  InitFunction and RestartFuction can be moved to the new
   StartFunction.
+
 
 -------------------------------------------------------------------
 
@@ -1588,24 +1622,25 @@ Changes in beta release 2.3.6 (August 1999)
   fvwm has a default icon box that covers the screen, it filled
   top to bottom, then left to right, and has an 80x80 pixel grid.
 
-* The new styles LowerTransient and DontLowerTransient allow to control if the
-  transients of a window are lowered when the window itself is lowered
-  (default) or not.
+* The new styles LowerTransient and DontLowerTransient allow to
+  control if the transients of a window are lowered when the
+  window itself is lowered (default) or not.
 
-* The Restart function has been partially rewritten. If you were using
-  'Restart' without any parameters and wonder why changes in your configuration
-  file are not used during a restart you should use
-  'Restart --dont-preserve-state' instead.
+* The Restart function has been partially rewritten. If you were
+  using 'Restart' without any parameters and wonder why changes in
+  your configuration file are not used during a restart you should
+  use 'Restart --dont-preserve-state' instead.
 
-* New menu styles VerticalItemSpacing and VerticalTitleSpacing allow control
-  over the height of menu items and titles.
+* New menu styles VerticalItemSpacing and VerticalTitleSpacing
+  allow control over the height of menu items and titles.
 
 -------------------------------------------------------------------
 
 Changes in alpha release 2.3.5 (July 1999)
 
-* New special functions Session{Init|Restart|Exit}Function are called instead
-  of {Init|Restart|Exit}Function when running under a session manager.
+* New special functions Session{Init|Restart|Exit}Function are
+  called instead of {Init|Restart|Exit}Function when running under
+  a session manager.
 
 * New form for setting root cursor: FvwmForm FormFvwmRootCursor. .
 
@@ -1613,25 +1648,26 @@ Changes in alpha release 2.3.5 (July 1999)
 
 * All modules except FvwmScript and FvwmGTK share fvwm's visual.
 
-* The behaviour of the Raised and Visible flags for Next, Circulate, ...
-  commands has been changed. They now do what their names suggest, i.e.
-  visible = partially visible and raised = fully visible.
+* The behaviour of the Raised and Visible flags for Next,
+  Circulate, ... commands has been changed. They now do what their
+  names suggest, i.e. visible = partially visible and raised =
+  fully visible.
 
-* The new styles RaiseTransient and DontRaiseTransient allow to control if the
-  transients of a window are raised when the window itself is raised (default)
-  or not.
+* The new styles RaiseTransient and DontRaiseTransient allow to
+  control if the transients of a window are raised when the window
+  itself is raised (default) or not.
 
-* A new action type 'H' for 'Hold' can be assigned to complex fvwm functions.
-  It is triggered when the button is pressed and held longer than ClickTime
-  milliseconds.
+* A new action type 'H' for 'Hold' can be assigned to complex fvwm
+  functions. It is triggered when the button is pressed and held
+  longer than ClickTime milliseconds.
 
-* The activedow-button and inactive-button configure options have been replaced
-  with the ButtonState built in command.
+* The activedow-button and inactive-button configure options have
+  been replaced with the ButtonState built in command.
 
 * Most of the configure options have been removed.
 
-* The cursors used for resizing and selecting windows and handling menus have
-  changed.
+* The cursors used for resizing and selecting windows and handling
+  menus have changed.
 
 -------------------------------------------------------------------
 
@@ -1639,8 +1675,9 @@ Changes in alpha release 2.3.4 (June 1999)
 
 * Fvwm is GNOME compliant.
 
-* Dynamic menus enhancement: The special menu item name 'MissingSubmenuFunc'
-  alows to create submenus on the fly. See manpage on 'AddToMenu' for details.
+* Dynamic menus enhancement: The special menu item name
+  'MissingSubmenuFunc' alows to create submenus on the fly. See
+  manpage on 'AddToMenu' for details.
 
 * The Restart command accepts simple shell-like syntax now.
 
@@ -1648,104 +1685,118 @@ Changes in alpha release 2.3.4 (June 1999)
   by Mark Willey(willey@etla.net).
   (http://www.etla.net/~willey/projects/libstroke/)
 
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.3.3 (June 1999)
 
 * There can be two mini icons per menu label instead of one now.
 
-* Menu enhancements: the layout of the menu items can be controlled in detail
-  with the ItemFormat option for the MenuStyle command. The width of the
-  borders around menus and hilighted items can be controlled with the
-  options BorderWidth and Hilight3DThickness (MenuStyle). Menu behavior can
-  be mirrored with the SumbenusLeft option (hard to describe, it's best to
-  try it out). A menu item can get up to three different labels. The first
-  two are left aligned, the third is right aligned by default.
+* Menu enhancements: the layout of the menu items can be
+  controlled in detail with the ItemFormat option for the
+  MenuStyle command. The width of the borders around menus and
+  hilighted items can be controlled with the options BorderWidth
+  and Hilight3DThickness (MenuStyle). Menu behavior can be
+  mirrored with the SumbenusLeft option (hard to describe, it's
+  best to try it out). A menu item can get up to three different
+  labels. The first two are left aligned, the third is right
+  aligned by default.
 
-* Colour gradients may use up to 1000 colours. The old limit was 128 colours.
+* Colour gradients may use up to 1000 colours. The old limit was
+  128 colours.
 
-* New command MaxWindowSize limits the initial dimensions of a window.
+* New command MaxWindowSize limits the initial dimensions of a
+  window.
 
 * Include fvwmbug script for reporting bugs.
 
-* New button states ToggledActiveUp, ToggledActiveDown, ToggledInactive
-  for customizing, as an example, the "maximized" appearance of the
-  maximize button.
+* New button states ToggledActiveUp, ToggledActiveDown,
+  ToggledInactive for customizing, as an example, the "maximized"
+  appearance of the maximize button.
 
-* New button style flag MWMDecorStick to support toggle buttons for the
-  Stick function.
+* New button style flag MWMDecorStick to support toggle buttons
+  for the Stick function.
 
-* New condition [!]shaded for Current and other commands taking conditions.
+* New condition [!]shaded for Current and other commands taking
+  conditions.
 
-* New menu styles HoldSubmenus/DeleteSubmenus. HoldSubmenus is the new default
-  for mwm and fvwm menus. When you move back from a submenu to its parent menu
-  the submenu remains visible.
+* New menu styles HoldSubmenus/DeleteSubmenus. HoldSubmenus is the
+  new default for mwm and fvwm menus. When you move back from a
+  submenu to its parent menu the submenu remains visible.
 
 * Menus can be visible multiple times at once.
 
 * Restarting fvwm no longer moves the viewport to (0,0).
 
-* New style DepressableBorder/FirmBorder to influence the appearance
-  of the window border under button presses.
+* New style DepressableBorder/FirmBorder to influence the
+  appearance of the window border under button presses.
 
 -------------------------------------------------------------------
 
 Changes in alpha release 2.3.2 (May 1999)
 
-* The Alt-Tab binding to invoke the window list as described in the FAQ
-  is  now built-in.  You can remove it as described in the fvwm man page.
+* The Alt-Tab binding to invoke the window list as described in
+  the FAQ is  now built-in.  You can remove it as described in the
+  fvwm man page.
 
-* The MoveThreshold command lets the user fine tune the threshold when a click
-  becomes a move. It works in FvwmPager too.
+* The MoveThreshold command lets the user fine tune the threshold
+  when a click becomes a move. It works in FvwmPager too.
 
 * New style IconOverride/NoIconOverride/NoActiveIconOverride to
   influence the overriding behaviour of the Icon style.
 
-* The FvwmCommand module is now much faster and can thus comfortably be used in
-  shell scripts. The tradeoff is that it does not report errors any more. To
-  get the old behaviour run FvwmCommand with the '-i 1' option.
+* The FvwmCommand module is now much faster and can thus
+  comfortably be used in shell scripts. The tradeoff is that it
+  does not report errors any more. To get the old behaviour run
+  FvwmCommand with the '-i 1' option.
 
-* Dynamic menus are provided by the special menu items 'DynamicPopupAction' and
-  'DynamicPopdownAction'. See the man page on 'AddToMenu' for details.
+* Dynamic menus are provided by the special menu items
+  'DynamicPopupAction' and 'DynamicPopdownAction'. See the man
+  page on 'AddToMenu' for details.
 
 * System-wide config files are now in ${sysconfdir}/fvwm
-  (i.e. /usr/local/etc/fvwm by default) as many files are now installed there.
+  (i.e. /usr/local/etc/fvwm by default) as many files are now
+  installed there.
 
 -------------------------------------------------------------------
 
 Changes in alpha release 2.3.1 (April 1999)
 
-* New button style flag MWMDecorShade to support toggle buttons for shaded
-  windows.
+* New button style flag MWMDecorShade to support toggle buttons
+  for shaded windows.
 
-* Daily snapshots of the development sources available on our web page.
+* Daily snapshots of the development sources available on our web
+  page.
 
 * FixedPosition style: disables moving the window.
 
-* IgnoreRestack style: forbids clients to change their own stacking
-  order position.
+* IgnoreRestack style: forbids clients to change their own
+  stacking order position.
 
-* The NoWarp option to the Focus command for focusing window on a different
-  page without switching to that page.
+* The NoWarp option to the Focus command for focusing window on a
+  different page without switching to that page.
 
 * Fvwm raises icon titles when the pointer is over the icon.
 
-* The cursors used for the pan frames at the edge of the screen can be changed.
+* The cursors used for the pan frames at the edge of the screen
+  can be changed.
 
 * StaysOnBottom style.
 
-* ResizeHintOverride style: a window with this style can be resized beyond the
-  program supplied minimum and maximum size. This is a hack to make fvwm
-  cooperate with broken applications.
+* ResizeHintOverride style: a window with this style can be
+  resized beyond the program supplied minimum and maximum
+  size. This is a hack to make fvwm cooperate with broken
+  applications.
 
-* NeverFocus style: windows with this style never receive the focus.
+* NeverFocus style: windows with this style never receive the
+  focus.
 
 * New command: DefaultIcon to set the default icon.
 
 * New command line arguments -visual and -visualId.
 
-* GrabFocusTransient is a new style that does the same as GrabFocus, but only
-  for transient windows.
+* GrabFocusTransient is a new style that does the same as
+  GrabFocus, but only for transient windows.
 
 -------------------------------------------------------------------
 
@@ -1755,16 +1806,17 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * New command: RecaptureWindow captures a single window.
 
-* 'GotoDesk' command replaces former command 'Desk' (the old name is still
-  supported.
+* 'GotoDesk' command replaces former command 'Desk' (the old name
+  is still supported.
 
 * 'Restart fvwm2' preserves almost all per-window using the file
   $FVWM_USERHOME/.fvwm_restart.
 
-* #define PICK_TRUECOLOR will make fvwm use the best TrueColor Visual.  This is
-  for those poor unfortunates with legacy apps that crash if the default visual
-  is not an 8 bit PseudoColor (but fortunate enough to have a 24 bit server
-  that supports both 8 bit and 24 bit TrueColor)
+* #define PICK_TRUECOLOR will make fvwm use the best TrueColor
+  #Visual.  This is for those poor unfortunates with legacy apps
+  #that crash if the default visual is not an 8 bit PseudoColor
+  #(but fortunate enough to have a 24 bit server that supports
+  #both 8 bit and 24 bit TrueColor)
 
 * New command line argument -replace. fvwm will try to "take over"
   from a running wm only if it is given.
@@ -1772,43 +1824,48 @@ Changes in alpha release 2.3.0 (February 1999)
 * ImagePath and ModulePath commands now expand '+' to be the
   previous value of the path.
 
-* Key and mouse bindings take effect immediately. A 'Recapture' was necessary
-  before this change.
+* Key and mouse bindings take effect immediately. A 'Recapture'
+  was necessary before this change.
 
 * Unmaximizing keeps windows on the same page.
 
-* Maximize can now expand until some other window is found to fully utilize
-  available screen space.
+* Maximize can now expand until some other window is found to
+  fully utilize available screen space.
 
-* Use the 'GrabFocusOff' style to prevent ClickToFocus windows taking the focus
-  from other ClickToFocus windows when they are mapped the first time. The
-  opposite option is called 'GrabFocus' and can be used in conjunction with
-  MouseFocus and SloppyFocus too.
+* Use the 'GrabFocusOff' style to prevent ClickToFocus windows
+  taking the focus from other ClickToFocus windows when they are
+  mapped the first time. The opposite option is called 'GrabFocus'
+  and can be used in conjunction with MouseFocus and SloppyFocus
+  too.
 
-* New command IgnoreModifiers for ignoring the pesky num-lock key with
-  key and mouse bindings.  Hint: try this command with XFree86:
+* New command IgnoreModifiers for ignoring the pesky num-lock key
+  with key and mouse bindings.  Hint: try this command with
+  XFree86:
 
     IgnoreModifiers L25
 
-  If you encounter performance problems please consult the manpage and the FAQ.
+  If you encounter performance problems please consult the manpage
+  and the FAQ.
 
-* Enhancements to MoveToPage and GotoPage: 'prev' option to refer to the last
-  visited page, negative numbers refer to lower/right page, suffix 'p'
-  indicates page number relative to current page.
+* Enhancements to MoveToPage and GotoPage: 'prev' option to refer
+  to the last visited page, negative numbers refer to lower/right
+  page, suffix 'p' indicates page number relative to current
+  page.
 
 * Mailcheck interval option for FvwmTaskBar.
 
-* Colorlimit command does nothing if display depth is greater than 20.
-  This helps if you want to use the same configuration on more than one
-  display depth.  ColorLimit defaults to ON if display depth is 8 bits
-  or less.  This should help new users.
+* Colorlimit command does nothing if display depth is greater than
+  20. This helps if you want to use the same configuration on more
+  than one display depth.  ColorLimit defaults to ON if display
+  depth is 8 bits or less.  This should help new users.
 
-* Maximize can now expand until some other window is found to fully utilize
-  available screen space.
+* Maximize can now expand until some other window is found to
+  fully utilize available screen space.
 
-* FvwmWinList option *FvwmWinListFollowWindowList to display the order that
-  fvwm keeps windows in. You can now see the order that Next/Prev will take,
-  Prev goes down the list, Next goes up (from the bottom).
+* FvwmWinList option *FvwmWinListFollowWindowList to display the
+  order that fvwm keeps windows in. You can now see the order that
+  Next/Prev will take, Prev goes down the list, Next goes up (from
+  the bottom).
 
 * WindowID command now takes conditions like Current.
 
@@ -1817,16 +1874,18 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * New style options: StartsLowered, StartsRaised.
 
-* New function PlaceAgain: moves a window to where it would be placed.
+* New function PlaceAgain: moves a window to where it would be
+  placed.
 
-* New module FvwmGtk. It implements menus, dialogs and window-lists
-  using the GTK toolkit.
+* New module FvwmGtk. It implements menus, dialogs and
+  window-lists using the GTK toolkit.
 
-* NoInset is independent from HiddenHandles, it now works on NoHandles style
-  windows.
+* NoInset is independent from HiddenHandles, it now works on
+  NoHandles style windows.
 
-* Made FvwmPager a bit simpler. Added -transient options to bind a transient
-  pager to mouse buttons (see FvwmPager man page for an example).
+* Made FvwmPager a bit simpler. Added -transient options to bind a
+  transient pager to mouse buttons (see FvwmPager man page for an
+  example).
 
 * VMS port; see vms/README for details.
 
@@ -1835,11 +1894,11 @@ Changes in alpha release 2.3.0 (February 1999)
 * The 'extras' directory has been merged into 'modules'; the
   --enable-extras configure flag is obsolete.
 
-* New command: Silent. Suppresses user interaction when a window is needed but
-  none is selected.
+* New command: Silent. Suppresses user interaction when a window
+  is needed but none is selected.
 
-* New utility xselection which can be used with PipeRead to feed the
-  content of the X Selection as commands to fvwm.
+* New utility xselection which can be used with PipeRead to feed
+  the content of the X Selection as commands to fvwm.
 
 * Fvwm can now "take over" from a running (ICCCM 2 compliant) wm.
 
@@ -1853,28 +1912,31 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * Windows can be shaded and maximized.
 
-* Fonts and colors are no longer hard-coded on the FvwmAnimate customization
-  form.  FvwmForm can set defaults that the FvwmAnimate form will use.
+* Fonts and colors are no longer hard-coded on the FvwmAnimate
+  customization form.  FvwmForm can set defaults that the
+  FvwmAnimate form will use.
 
 * New commands All and Pick.
 
-* New command XORPixmap for increased visibility of the rubber band lines and
-  general spangly-ness.
+* New command XORPixmap for increased visibility of the rubber
+  band lines and general spangly-ness.
 
-* New start up sequence: all start up scripts etc. are read before the initial
-  capture so windows styles will be correct, no need for a recapture.
+* New start up sequence: all start up scripts etc. are read before
+  the initial capture so windows styles will be correct, no need
+  for a recapture.
 
 * EdgeThickness can resize/hide/show panframes in mid function.
 
-* Support for transparent Eterms etc. during opaque/animated moves.
+* Support for transparent Eterms etc. during opaque/animated
+  moves.
 
 * FvwmPager tracks windows during opaque/animated moves.
 
 * Session management. Fvwm talks to a session manager
   and saves and restores its state.
 
-* Layers. New commands Layer, DefaultLayers; new Style
-  option, WindowList option and condition Layer.
+* Layers. New commands Layer, DefaultLayers; new Style option,
+  WindowList option and condition Layer.
 
 * Lots of changes to FvwmForm:
   No limits of form size.
@@ -1885,8 +1947,8 @@ Changes in alpha release 2.3.0 (February 1999)
   Forms can be read in directly from a file.
   Some forms are installed automatically.
   Tab to previous field.
-  You can control vertical spacing on text so spacing is OK for help panels.
-  A button can execute a synchronous shell command.
+  You can control vertical spacing on text so spacing is OK for
+  help panels. A button can execute a synchronous shell command.
   You can paste into a form
   Forms can read configuration data.
 
@@ -1906,8 +1968,8 @@ _+_/A_-_
 
 * Fixed a compile problem with Slackware 7.1.
 
-* Security fix related to .fvwm2rc being searched in the current directory
-  when $HOME is not set.
+* Security fix related to .fvwm2rc being searched in the current
+  directory when $HOME is not set.
 
 * A small fix in the code for SmartPlacement.
 
@@ -1929,7 +1991,8 @@ Changes in official release 2.2.3 (October 1999)
 
 * Fixed dragging windows out of the pager.
 
-* Added support for StartFunction & ImagePath not to break new configurations.
+* Added support for StartFunction & ImagePath not to break new
+  configurations.
 
 * Fixed long-window-name-hangs-X bug.
 
@@ -1937,8 +2000,8 @@ Changes in official release 2.2.3 (October 1999)
 
 Changes in official release 2.2.2 (May 1999)
 
-* New "Emulate"  command  for independent  control of the  move/resize
-  feedback window.
+* New "Emulate"  command  for independent  control of the
+  move/resize feedback window.
 
 * EdgeThickness command can be issued at any time.
 
@@ -1952,8 +2015,8 @@ Changes in official release 2.2.2 (May 1999)
 
 * Fix bug in window shading that left one row of pixels visible.
 
-* Fix to FvwmTaskbar so that  it won't loop  when  there are too  many
-  buttons.
+* Fix to FvwmTaskbar so that  it won't loop  when  there are too
+  many buttons.
 
 * Fix positioning bug on overlapping menus.
 

@@ -203,14 +203,39 @@ int main ( int argc, char *argv[])
   if( f_stem == NULL )
   {
     char *dpy_name;
+    char dpy_name_add[3];
+    int i;
 
     /* default name */
     dpy_name = getenv("DISPLAY");
-    if (!dpy_name)
+    if (!dpy_name || *dpy_name == 0)
       dpy_name = ":0.0";
     if (strncmp(dpy_name, "unix:", 5) == 0)
       dpy_name += 4;
-    f_stem = safemalloc(13 + strlen(F_NAME) + MAXHOSTNAME + strlen(dpy_name));
+    dpy_name_add[0] = 0;
+    c = strrchr(dpy_name, '.');
+    i = 0;
+    if (c != NULL)
+    {
+      if (*(c + 1) != 0)
+      {
+	for (c++, i = 0; isdigit(*c); c++, i++)
+	{
+	  /* nothing */
+	}
+      }
+      else
+      {
+	/* cut off trailing period */
+	*c = 0;
+      }
+    }
+    if (i == 0)
+    {
+      /* append screen number */
+      strcpy(dpy_name_add, ".0");
+    }
+    f_stem = safemalloc(11 + strlen(F_NAME) + MAXHOSTNAME + strlen(dpy_name));
 
     if ((stat("/var/tmp", &stat_buf) == 0) && (stat_buf.st_mode & S_IFDIR))
       strcpy (f_stem, "/var/tmp/");
@@ -225,19 +250,7 @@ int main ( int argc, char *argv[])
       strcat(f_stem, hostname);  /* Put hostname before dpy if not there */
     }
     strcat(f_stem, dpy_name);
-    c = strrchr(f_stem, '.');
-    if (c != NULL)
-    {
-      for (c++; isdigit(*c); c++)
-      {
-	/* nothing */
-      }
-    }
-    if (c == NULL || *c != 0)
-    {
-      /* append screen number */
-      strcat(f_stem, ".0");
-    }
+    strcat(f_stem, dpy_name_add);
   }
 
   /* create 2 fifos */
