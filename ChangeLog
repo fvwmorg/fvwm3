@@ -1,3 +1,21 @@
+2002-12-21  Marcus Lundblad <ml@update.uu.se>
+	
+	* fvwm/style.c (style_parse_one_style_option):
+	* fvwm/style.h:
+	* fvwm/fvwm.h:
+	* fvwm/window_flags:
+	* fvwm/decorations.c (is_function_allowed, 
+	                      __is_resize_allowed):
+	Added styles Closable, Iconifiable, Maximizable and
+	AllowMaximizeFixedSize
+	* fvwm/conditional.c (MatchesConditionMask,
+	                      CreateConditionMask):
+	Added conditionals Closable,Iconifiable and Maximizable
+	* fvwm/fvwm.1.in:
+	Documented styles Closable, Iconifiable, Maximizable and
+	AllowMaximizeFixedSize and conditionals 
+	Closable,Iconifiable and Maximizable
+
 2002-12-20  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/window_flags.h:

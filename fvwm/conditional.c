@@ -450,6 +450,21 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		        SET_HAS_HANDLES(mask,on);
 			SETM_HAS_HANDLES(mask,1);
 		}
+		else if (StrEquals(cond,"Iconifiable"))
+		{
+		        SET_IS_UNICONIFIABLE(mask,!on);
+		        SETM_IS_UNICONIFIABLE(mask,1);
+		}
+		else if (StrEquals(cond,"Maximizable"))
+		{
+		        SET_IS_UNMAXIMIZABLE(mask,!on);
+		        SETM_IS_UNMAXIMIZABLE(mask,1);
+		}
+		else if (StrEquals(cond,"Closable"))
+		{
+		        SET_IS_UNCLOSABLE(mask,!on);
+		        SETM_IS_UNCLOSABLE(mask,1);
+		}
 		else if (StrEquals(cond,"Shaded"))
 		{
 			SET_SHADED(mask, on);
@@ -603,6 +618,53 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	        return False;
         }
         SETM_SIZE_FIXED(mask, 0);
+	
+	if(IS_UNICONIFIABLE(mask) &&
+	   mask->flag_mask.common.s.is_uniconifiable &&
+	   is_function_allowed(F_ICONIFY,NULL,fw,True,False))
+	{
+	        return False;
+	}
+	if(!IS_UNICONIFIABLE(mask) &&
+	   mask->flag_mask.common.s.is_uniconifiable &&
+	   !is_function_allowed(F_ICONIFY,NULL,fw,True,False))
+	{
+	        return False;
+	}
+	SETM_IS_UNICONIFIABLE(mask, 0);
+
+	if(IS_UNMAXIMIZABLE(mask) &&
+	   mask->flag_mask.common.s.is_unmaximizable &&
+	   is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
+	{
+	        return False;
+	}
+	if(!IS_UNMAXIMIZABLE(mask) &&
+	   mask->flag_mask.common.s.is_unmaximizable &&
+	   !is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
+	{
+	        return False;
+	}
+	SETM_IS_UNMAXIMIZABLE(mask, 0);
+
+	if(IS_UNCLOSABLE(mask) &&
+	   mask->flag_mask.common.s.is_unclosable &&
+	   (is_function_allowed(F_CLOSE,NULL,fw,True,False) ||
+	    is_function_allowed(F_DELETE,NULL,fw,True,False) ||
+	    is_function_allowed(F_DESTROY,NULL,fw,True,False)))
+	{
+	        return False;
+	}
+	if(!IS_UNCLOSABLE(mask) &&
+	   mask->flag_mask.common.s.is_unclosable &&
+	   (!is_function_allowed(F_CLOSE,NULL,fw,True,False) &&
+	    !is_function_allowed(F_DELETE,NULL,fw,True,False) &&
+	    !is_function_allowed(F_DESTROY,NULL,fw,True,False)))
+	{
+	        return False;
+	}
+	SETM_IS_UNCLOSABLE(mask, 0);
+
 	if (!blockcmpmask((char *)&(fw->flags), (char *)&(mask->flags),
 			  (char *)&(mask->flag_mask), sizeof(fw->flags)))
 	{

@@ -276,6 +276,10 @@ typedef struct
 		unsigned is_bottom_title_rotated : 1;
 		unsigned is_fixed : 1;
 		unsigned is_fixed_ppos : 1;
+	        unsigned is_uniconifiable : 1;
+	        unsigned is_unmaximizable : 1;
+	        unsigned is_unclosable : 1;
+	        unsigned is_maximize_fixed_size_disallowed : 1;
 		unsigned is_icon_sticky_across_pages : 1;
 		unsigned is_icon_sticky_across_desks : 1;
 		unsigned is_icon_suppressed : 1;

@@ -250,6 +250,14 @@
 	((c).s.is_fixed_ppos)
 #define S_SET_IS_FIXED_PPOS(c,x) \
 	((c).s.is_fixed_ppos = !!(x))
+#define S_SET_IS_UNICONIFIABLE(c,x) \
+        ((c).s.is_uniconifiable = !!(x))
+#define S_SET_IS_UNMAXIMIZABLE(c,x) \
+        ((c).s.is_unmaximizable = !!(x))
+#define S_SET_IS_UNCLOSABLE(c,x) \
+        ((c).s.is_unclosable = !!(x))
+#define S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(c,x) \
+        ((c).s.is_maximize_fixed_size_disallowed = !!(x))
 #define S_IS_ICON_STICKY_ACROSS_PAGES(c) \
 	((c).s.is_icon_sticky_across_pages)
 #define S_SET_IS_ICON_STICKY_ACROSS_PAGES(c,x) \

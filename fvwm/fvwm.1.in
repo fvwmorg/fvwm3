@@ -5860,6 +5860,10 @@ slashes ('/').  The last style in these groups is the default.
 .IR FixedSize " / " VariableSize ,
 .IR FixedUSSize " / " VariableUSSize ,
 .IR FixedPSize " / " VariablePSize ,
+.IR Closable " / " Unclosable ,
+.IR Iconifiable " / " Uniconifiable ,
+.IR Maximizable " / " Unmaximizable ,
+.IR AllowMaximizeFixedSize " / " DisallowMaximizeFixedSize ,
 .IR IconOverride " / " NoIconOverride " / " NoActiveIconOverride ,
 .IR DepressableBorder " / " FirmBorder ,
 .IR MaxWindowSize ,
@@ -6658,6 +6662,58 @@ styles.  The
 .I FixedPSize
 style may screw up window dimensions for some applications.  Don't
 use this style in this case.
+
+.IR Closable
+enables the functions 
+.I Close, 
+.I Delete 
+and 
+.I Destroy 
+to be performed on the windows. This is on by default.
+.IR Unclosable
+disables the functions 
+.I Close,
+.I Delete 
+and 
+.I Destroy 
+to be performed on the windows.
+
+.IR Iconifiable
+enables the function 
+.I Iconify 
+to be performed on the windows.
+This is on by default.
+.IR Uniconifiable
+disables the function 
+.I Iconify 
+to be performed on the windows.
+This can be useful for example on the FvwmIconBox.
+
+.IR Maximizable
+enables the function 
+.I Maximize 
+to be performed on the windows.
+This is on by default.
+.IR Unmaximizable
+disables the function 
+.I Maximize 
+to be performed on the windows.
+
+.IR AllowMaximizeFixedSize
+enables the function 
+.I Maximize
+to be performed on windows that are not resizable, unless maximisation
+has been disabled either using the style 
+.I Unmaximizable
+or throuth WM hints,
+This on by default.
+.IR DisallowMaximizeFixedSize
+disables the function 
+.I Maximize
+for all windows that are not resizable.
+Note that some applications set the window's minumum and maximum size
+the same and and expect this to mean that the size is fixed.
+This style forbids maximisation of such windows.
 
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and maximum
@@ -9202,6 +9258,9 @@ commas or whitespace.  Conditions include
 "Sticky", "!Sticky",
 "FixedSize", "!FixedSize",
 "HasHandles", "!HasHandles",
+"Closable", "!Closable",
+"Iconifiable", "!Iconifiable",
+"Maximizable", "!Maximizable",
 "StickyAcrossPages", "!StickyAcrossPages",
 "StickyAcrossDesks", "!StickyAcrossDesks",
 "Maximized", "!Maximized",
@@ -9287,6 +9346,15 @@ size, either set through WM hints or the style option "FixedSize".
 
 The condition "HasHandles" excludes all windoows that don't have
 resize handles.
+
+The condition "Closable" excludes all windows that are not possible
+to close.
+
+The condition "Iconifiable" excludes all windows that are not possible
+to iconify.
+
+The condition "Maximizable" excludes all windows that are not possible
+to maximise.
 
 The "PlacedByButton3" condition is fulfilled if the last
 interactive motion of the window (with the

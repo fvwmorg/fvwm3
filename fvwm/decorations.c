@@ -609,6 +609,30 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 	return;
 }
 
+static Bool __is_resize_allowed(FvwmWindow *t, int functions,
+				Bool is_user_request)
+{
+        if (!HAS_OVERRIDE_SIZE_HINTS(t) &&
+	    t->hints.min_width == t->hints.min_width &&
+	    t->hints.min_height == t->hints.max_height)
+	{
+	        return False;
+	}
+	if (is_user_request && IS_SIZE_FIXED(t))
+	{
+	        return False;
+	}
+	else if (!is_user_request && IS_PSIZE_FIXED(t))
+	{
+	        return False;
+	}
+	if (is_user_request && !(functions & MWM_FUNC_RESIZE))
+	{
+	        return False;
+	}
+	return True;
+}
+
 /*
 ** seemed kind of silly to have check_allowed_function and
 ** check_allowed_function2 partially overlapping in their checks, so I
@@ -698,6 +722,10 @@ Bool is_function_allowed(
 	switch(function)
 	{
 	case F_DELETE:
+	        if (IS_UNCLOSABLE(t))
+		{
+		        return False;
+		}
 		if (IS_TEAR_OFF_MENU(t))
 		{
 			/* always allow this on tear off menus */
@@ -709,6 +737,10 @@ Bool is_function_allowed(
 		}
 		/* fall through to close clause */
 	case F_CLOSE:
+	        if (IS_UNCLOSABLE(t))
+		{
+		        return False;
+		}
 		if (IS_TEAR_OFF_MENU(t))
 		{
 			/* always allow this on tear off menus */
@@ -720,6 +752,10 @@ Bool is_function_allowed(
 		}
 		break;
 	case F_DESTROY: /* shouldn't destroy always be allowed??? */
+	        if (IS_UNCLOSABLE(t))
+		{
+		        return False;
+		}
 		if (IS_TEAR_OFF_MENU(t))
 		{
 			/* always allow this on tear off menus */
@@ -731,33 +767,26 @@ Bool is_function_allowed(
 		}
 		break;
 	case F_RESIZE:
-		if (!HAS_OVERRIDE_SIZE_HINTS(t) &&
-		    t->hints.min_width == t->hints.min_width &&
-		    t->hints.min_height == t->hints.max_height)
+	        if(!__is_resize_allowed(t,functions,is_user_request))
 		{
-			return False;
-		}
-		if (is_user_request && IS_SIZE_FIXED(t))
-		{
-			return False;
-		}
-		else if (!is_user_request && IS_PSIZE_FIXED(t))
-		{
-			return False;
-		}
-		if (is_user_request && !(functions & MWM_FUNC_RESIZE))
-		{
-			return False;
+		        return False;
 		}
 		break;
 	case F_ICONIFY:
-		if (!IS_ICONIFIED(t) && !(functions & MWM_FUNC_MINIMIZE))
+		if ((!IS_ICONIFIED(t) && !(functions & MWM_FUNC_MINIMIZE)) ||
+		    IS_UNICONIFIABLE(t))
 		{
 			return False;
 		}
 		break;
 	case F_MAXIMIZE:
-		if (is_user_request && !(functions & MWM_FUNC_MAXIMIZE))
+	        if (IS_MAXIMIZE_FIXED_SIZE_DISALLOWED(t) &&
+		    !__is_resize_allowed(t,functions,is_user_request))
+		{
+		       return False;
+		}
+		if ((is_user_request && !(functions & MWM_FUNC_MAXIMIZE)) ||
+		    IS_UNMAXIMIZABLE(t))
 		{
 			return False;
 		}
