@@ -5795,7 +5795,7 @@ Mouse 3 R A GnomeButton
 .EE
 
 .TP
-.BI "Key " "Keyname Context Modifiers Function"
+.BI "Key [(" window ")] " "Keyname Context Modifiers Function"
 Binds a keyboard key to a specified fvwm command, or
 removes the binding if
 .I Function
@@ -5842,7 +5842,7 @@ Please refer to the
 command for details.
 
 .TP
-.BI "Mouse " "Button Context Modifiers Function"
+.BI "Mouse [(" window ")] " "Button Context Modifiers Function"
 Defines a mouse binding, or removes the binding if
 .I Function
 is '-'.
@@ -5920,7 +5920,7 @@ side buttons which are drawn.  Actions can be bound to either
 mouse buttons or keyboard keys.
 
 .TP
-.BI "PointerKey [" "-" "]" "Keyname Context Modifiers Function"
+.BI "PointerKey [(" window ")] " "Keyname Context Modifiers Function"
 This command works exactly like the
 .B Key
 command.  The only difference is that the binding operates on the
@@ -5944,7 +5944,7 @@ PointerKey f1 a m Menu MainMenu
 .EE
 
 .TP
-.BI "Stroke " "Sequence Button Context Modifiers Function"
+.BI "Stroke [(" window ")] " "Sequence Button Context Modifiers Function"
 Binds a mouse stroke sequence to a specified fvwm command,
 or removes the binding if
 .I Function
