@@ -1366,6 +1366,9 @@ void InitVariables(void)
   CreateGCs();
 
   Scr.d_depth = DefaultDepth(dpy, Scr.screen);
+  if (Scr.d_depth <= 8) {               /* if the color is limited */
+    Scr.ColorLimit = 255;               /* a number > than the builtin table! */
+  }
   Scr.FvwmRoot.w = Scr.Root;
   Scr.FvwmRoot.next = 0;
 

@@ -968,7 +968,8 @@ destroyed.
 .IP "ColorLimit \fIlimit\fP"
 Specifies a limit  on the colors used in  pixmaps used  by fvwm2.  Zero
 (the   default)  sets no     limit.   Fvwm2 uses  pixmaps  for  icons,
-mini-icons, and pixmap borders and titles.  This command limits pixmap
+mini-icons, and pixmap borders, menu backgrounds and titles.
+This command limits pixmap
 colors  to a set  of colors that  starts out with  common colors.  The
 current  list contains about 60 colors  and  starts with white, black,
 grey,   green,  blue, red, cyan,  yellow,  and   magenta.  The command
@@ -981,6 +982,16 @@ definitions that contain mini-icons.
 Solid frame and title colors (including shadows and gradients) are not
 controlled by this command.
 
+This  command only  makes sense  on screens that display a
+limited number of colors at  once.
+If your  display can display  more
+than 256 colors at once, this command is ignored.
+Screens that only display 256 colors at once are known as
+8 bit displays.
+
+On 8 bit displays, the default color limit is set to the size of
+the built in table, (about 60).  We recommend that you start with the
+default value, and not include this command in your .fvwm2rc.
 
 .IP "ColormapFocus \fIFollowsMouse\fP|\fIFollowsFocus\fP"
 By default, fvwm2 installs the colormap of the window that the cursor

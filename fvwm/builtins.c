@@ -4990,6 +4990,9 @@ void SetColorLimit(F_CMD_ARGS)
 {
   int val;
 
+  if (Scr.d_depth > 8) {                /* if move than 8 bit color */
+    return;                             /* ignore the limit */
+  }
   if (GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
     fvwm_msg(ERR,"SetColorLimit","ColorLimit requires one argument");

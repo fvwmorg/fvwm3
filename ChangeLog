@@ -1,5 +1,14 @@
 Sat Mar 20 15:22:02 1999  DanEspen  <dje@blue>
 
+	* fvwm/builtins.c (SetColorLimit): Ignore ColorLimit if display
+	depth exceeds 8 bits.
+
+	* fvwm/fvwm2.1 (Example): Describe new behavior, colorlimit does
+	nothing on display depths greater than 8, else new default is 255.
+
+	* fvwm/fvwm.c (InitVariables): If screen depth is 8 bits or less,
+	automatically colorlimit.
+
 	* fvwm/fvwm2.1 (id): remove FvwmTalk
 
 	* configure.in (xpm_problem): remove FvwmTalk
