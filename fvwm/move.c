@@ -603,8 +603,14 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
   DragY = eventp->xbutton.y_root;
   /* If this is commented out, then the move starts from the button press
    * location instead of the current location */
+/*  RBW-temp  - uncommenting this does 2 things:
+      - breaks moving a window "out of the Pager" onto the desktop (we
+        don't want the window in its current location, we want it *here*)
+      - causes the cursor to "lead" the move during normal grab-and-drag
+        operations
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
       &DragX, &DragY,	&JunkX, &JunkY, &JunkMask);
+*/
 
   if(!GrabEm(MOVE))
     {

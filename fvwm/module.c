@@ -240,8 +240,6 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    free(args[i]);
 	}
 
-      if(cptr != NULL)
-	free(cptr);
     }
   else if (val ==0)
     {
