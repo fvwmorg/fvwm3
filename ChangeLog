@@ -1,3 +1,8 @@
+2002-01-01  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/read.c (CMD_Read): Correct message on missing file when using
+	Read with full path.
+
 2002-01-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/defaults.h:

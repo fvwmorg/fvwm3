@@ -272,9 +272,15 @@ void CMD_Read(F_CMD_ARGS)
   if ( !run_command_file( filename, eventp, tmp_win, context, *Module ) &&
        !read_quietly )
   {
-    fvwm_msg( ERR, "Read",
-	      "file '%s' not found in %s or "FVWM_DATADIR,
-	      filename, fvwm_userdir );
+    if (filename[0] == '/')
+    {
+      fvwm_msg( ERR, "Read",
+                "file '%s' not found",filename);
+    } else {
+      fvwm_msg( ERR, "Read",
+                "file '%s' not found in %s or "FVWM_DATADIR,
+                filename, fvwm_userdir );
+    }
   }
   free( filename );
   cursor_control(False);
