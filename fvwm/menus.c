@@ -4445,8 +4445,8 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
     /* Read label up to next tab. */
     if (*end)
     {
-      while (*end && (*end != '\t'
-        || i == MAX_ITEM_LABELS - 1 && (tab_in_label = 1) != 0))
+      while (*end && ( (*end != '\t')
+        || ((i == MAX_ITEM_LABELS - 1) && ((tab_in_label = 1) != 0))))
 	/* seek next tab or end of string */
 	end++;
       /* Copy the label. */
@@ -4465,7 +4465,7 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
 	{
 	  if (*s == '\t')
 	    *s = ' ';
-	  *s++;
+	  ++s;
 	}
       }
     }
@@ -4813,7 +4813,6 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
     char **s_colors;
     int npixels, nsegs, *perc;
     Pixel *pixels;
-    char gtype = style[0];
 
     if (!IsGradientTypeSupported(style[0]))
       return False;

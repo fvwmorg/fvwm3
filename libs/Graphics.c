@@ -127,7 +127,7 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, int src_width,
   Pixmap temp_pixmap;
   
   if (src_width < 0 || src_height < 0 || src_depth < 0 || dest_width < 0)
-  	return;
+  	return None;
 
   temp_pixmap = CreateStretchXPixmap(dpy, src, src_width, src_height,
 					    src_depth, dest_width, gc);
