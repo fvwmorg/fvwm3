@@ -57,6 +57,7 @@
 #include "module_interface.h"
 #include "libs/Colorset.h"
 #include "gnome.h"
+#include "geometry.h"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -518,6 +519,8 @@ void AutoPlaceIcon(FvwmWindow *t)
   Bool loc_ok;
   int real_x=10, real_y=10;
   int new_x, new_y;
+  Bool do_move_pixmap = False;
+  Bool do_move_title = False;
 
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons. Neither for icons of windows that are
@@ -568,11 +571,15 @@ void AutoPlaceIcon(FvwmWindow *t)
       t->icon_g.x += Scr.MyDisplayWidth;
     if(t->icon_g.y < 0)
       t->icon_g.y += Scr.MyDisplayHeight;
+    t->icon_xl_loc = t->icon_g.x;
+    do_move_pixmap = True;
+    do_move_title = True;
   }
   else if (t->wmhints && t->wmhints->flags & IconPositionHint)
   {
     t->icon_g.x = t->wmhints->icon_x;
     t->icon_g.y = t->wmhints->icon_y;
+    t->icon_xl_loc = t->icon_g.x;
   }
   /* dje 10/12/97:
      Look thru chain of icon boxes assigned to window.
@@ -798,15 +805,22 @@ void AutoPlaceIcon(FvwmWindow *t)
     t->icon_g.width = t->icon_p_width;
     t->icon_xl_loc = t->icon_g.x;
 
-    if (t->icon_w != None)
-      XMoveResizeWindow(
-	dpy, t->icon_w, t->icon_xl_loc, t->icon_g.y+t->icon_p_height,
-	t->icon_g.width, ICON_HEIGHT(t));
+    do_move_title = True;
     BroadcastPacket(M_ICON_LOCATION, 7,
                     t->w, t->frame,
                     (unsigned long)t,
                     t->icon_g.x, t->icon_g.y,
                     t->icon_p_width, t->icon_g.height+t->icon_p_height);
+  }
+  if (do_move_pixmap && t->icon_pixmap_w != None)
+  {
+    XMoveWindow(dpy, t->icon_pixmap_w, t->icon_g.x, t->icon_g.y);
+  }
+  if (do_move_title && t->icon_w != None)
+  {
+    XMoveResizeWindow(
+      dpy, t->icon_w, t->icon_xl_loc, t->icon_g.y+t->icon_p_height,
+      t->icon_g.width, ICON_HEIGHT(t));
   }
 }
 
@@ -1092,6 +1106,8 @@ void DeIconify(FvwmWindow *tmp_win)
 	  t->frame_g.y -=
 	    truncate_to_multiple(t->frame_g.y,Scr.MyDisplayHeight);
 	  XMoveWindow(dpy, t->frame, t->frame_g.x, t->frame_g.y);
+          update_absolute_geometry(t);
+          maximize_adjust_offset(t);
 	}
       }
       if (t == tmp_win)

@@ -1,7 +1,18 @@
 2000-02-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/icons.c (AutoPlaceIcon):
+	another page flipping fix:
+	  style * icon, iconify, movetopage 1 1, deiconify, iconify; the
+	  latter two issued from FvwmConsole
+	and another page flipping fix:
+	  style * noicon, iconify, movetopage 1 1, deiconify, iconify; the
+	  latter two issued from FvwmConsole
+
 	* fvwm/virtual.c (MoveViewport):
-	fixed page flipping with sticky icons of shaded windows
+	fixed page flipping with sticky icons of shaded windows:
+	  Style * stickyicon, shade, iconify, flip page, deiconify, unshade
+	fixed another page flipping bug:
+	  shade, iconify, movetopage 1 1, switch to page 1 1, deiconify, unshade
 
 2000-02-03  Dan Espen  <dane@mk.telcordia.com>
 
