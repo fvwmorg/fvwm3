@@ -113,7 +113,6 @@
 #undef sig_atomic_t
 
 
-@TOP@
 /*
 ** if you would like to see lots of debug messages from fvwm, for debugging
 ** purposes, uncomment the next line
@@ -126,6 +125,33 @@
 #   define DBUG(x,y) /* no messages */
 #endif
 
+/**
+ * The next few defines are options that are only changed from their values
+ * shown here on systems that _don't_ use the configure script.
+ **/
+
+/* Enable tests for missing too many XEvents.  Usually you want this. */
+#define WORRY_ABOUT_MISSED_XEVENTS 1
+
+/* Define if the X11 ConnectionNumber is actually a file descriptor. */
+#define HAVE_X11_FD 1
+
+/* Define if fork() has unix semantics.  On VMS, no child process is created
+   until after a successful exec(). */
+#define FORK_CREATES_CHILD 1
+
+/* Suffix for executable filenames; NULL if no extension needed. */
+#define EXECUTABLE_EXTENSION NULL
+
+/* Define to remove the extension from executable pathnames before calling
+   exec(). */
+#undef REMOVE_EXECUTABLE_EXTENSION
+
+@TOP@
+
+#error The stuff above TOP goes to the top of config.h.in
+#error What appears below BOTTOM goes to the bottom
+#error This text should not appear anywhere!
 
 @BOTTOM@
 
@@ -177,10 +203,3 @@
 #ifndef abs
 #  define abs(a) (((a)>=0)?(a):-(a))
 #endif
-
-
-/* Enable tests for missing too many XEvents.  Usually you want this. */
-#define WORRY_ABOUT_MISSED_XEVENTS 1
-
-/* Close one end of pipe in child process.  Unix wants this. */
-#define CLOSE_PIPES_IN_CHILD 1

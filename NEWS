@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* VMS port; see vms/README for details.
+
 * New MenuStyle options: PopupAsRootmenu, PopupAsSubmenu
 
 * The 'extras' directory has been merged into 'modules'; the

@@ -132,7 +132,16 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (!cptr)
     return;
 
-  arg1 = searchPath( ModulePath, cptr, NULL, X_OK );
+  arg1 = searchPath( ModulePath, cptr, EXECUTABLE_EXTENSION, X_OK );
+
+#ifdef REMOVE_EXECUTABLE_EXTENSION
+  {
+      char* p = arg1 + strlen( arg1 ) - strlen( EXECUTABLE_EXTENSION );
+      if ( strcmp( p, EXECUTABLE_EXTENSION ) ==  0 )
+	  *p = 0;
+  }
+#endif
+
   if(arg1 == NULL)
     {
       fvwm_msg(ERR,"executeModule",
@@ -247,17 +256,19 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       /* this is  the child */
       /* this fork execs the module */
-#ifdef CLOSE_PIPES_IN_CHILD
+#ifdef FORK_CREATES_CHILD
       close(fvwm_to_app[1]);
       close(app_to_fvwm[0]);
 #endif
-
+      /** Why is this execvp??  We've already searched the module path! **/
       execvp(arg1,args);
       fvwm_msg(ERR,"executeModule","Execution of module failed: %s",arg1);
       perror("");
       close(app_to_fvwm[1]);
       close(fvwm_to_app[0]);
+#ifdef FORK_CREATES_CHILD
       exit(1);
+#endif
     }
   else
     {

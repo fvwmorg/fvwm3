@@ -358,11 +358,13 @@ int main(int argc, char **argv)
   x_fd = XConnectionNumber(dpy);
   fd_width = GetFdWidth();
 
+#ifdef HAVE_X11_FD
   if (fcntl(x_fd, F_SETFD, 1) == -1)
   {
     fvwm_msg(ERR,"main","close-on-exec failed");
     exit (1);
   }
+#endif
 
   /*  Add a DISPLAY entry to the environment, incase we were started
    * with fvwm -display term:0.0

@@ -1107,7 +1107,7 @@ void HandleHardFocus(FvwmWindow *t)
 }
 
 
-#ifndef fvwm_msg /* VMS port defines own version */
+#ifndef fvwm_msg /* Some ports (i.e. VMS) define their own version */
 /*
 ** fvwm_msg: used to send output from fvwm to files and or stderr/stdout
 **

@@ -18,6 +18,26 @@
 	* fvwm/events.c (DispatchEvent) clears the rubber band outline
 	before processing the event.
 
+Wed Mar 10 10:52:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* vms/*: files specific to the VMS port, courtesy of Fabien Villard.
+
+	* fvwm/module.c (executeModule): put ifdef around exit() if child
+	fails to exec the module binary.  Apparently VMS doesn't actually
+	spawn a child process unless the exec() call succeeds.  Calling
+	exit after fork() returns 0 will exit the parent!  Search for
+	executables ending with EXECUTABLE_EXTENSION, and optionally
+	remove the extension before exec().
+
+	* fvwm/fvwm.c (main): put ifdef around setting close-on-exec for
+	the X11 file descriptor.  DecWindows returns an event flag instead
+	of a file descriptor in the fd field of the Display structure.
+
+	* acconfig.h: add preprocessor symbols HAVE_X11_FD,
+	FORK_CREATES_CHILD, EXECUTABLE_EXTENSION, and
+	REMOVE_EXECUTABLE_EXTENSION to support the above.  All are set to
+	suitable values for unix semantics.
+	
 Tue Mar  9 22:14:25 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 
 	* extras: removed.  Copied former 'extra' modules FvwmCommand,

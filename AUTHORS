@@ -28,13 +28,17 @@ Rework of signal handlers (fvwm, FvwmButtons, FvwmIconMan, FvwmPager and
 FvwmEvent).
 
 Steven M. Robbins:
-Autoconf & automake support.
+Autoconf & automake support, configuration & portability
+improvements, and general code gadfly a la Paul Smith.
 
 Paul D. Smith:
 Purify support (heap rot, array overwrites, memory stompage of all sorts).
 Some autoconf/automake/portability help.  Initial cut at a generic
 debugging API.  Rework module interface API on fvwm's side.
 General code gadfly: tiptoe in; change some code; run away, run away!
+
+Fabien Villard:
+OpenVMS port.
 
 Dominik Vogt:
 Improved ShuffleButtons algorithm (FvwmButtons), button geometries
