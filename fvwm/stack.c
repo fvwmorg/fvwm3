@@ -331,7 +331,7 @@ static void raise_over_unmanaged(FvwmWindow *t)
       count++;
       if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))
       {
-	if (t2->icon_w != None)
+	if (t2->icon_title_w != None)
 	{
 	  count++;
         }
@@ -355,9 +355,9 @@ static void raise_over_unmanaged(FvwmWindow *t)
 	wins[i++] = t2->frame;
 	if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))
 	{
-	  if (t2->icon_w != None)
+	  if (t2->icon_title_w != None)
 	  {
-	    wins[i++] = t2->icon_w;
+	    wins[i++] = t2->icon_title_w;
           }
 	  if (t2->icon_pixmap_w != None)
 	  {
@@ -479,8 +479,8 @@ static void restack_windows(
     wins[i++] = t->frame;
     if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
     {
-      if(t->icon_w != None)
-	wins[i++] = t->icon_w;
+      if(t->icon_title_w != None)
+	wins[i++] = t->icon_title_w;
       if(t->icon_pixmap_w != None)
 	wins[i++] = t->icon_pixmap_w;
     }
@@ -782,7 +782,7 @@ overlap_box (FvwmWindow *r, int x, int y, int w, int h)
     return ((r->icon_pixmap_w) &&
              intersect (x, y, w, h, r->icon_g.x, r->icon_g.y,
 			r->icon_p_width, r->icon_p_height)) ||
-           ((r->icon_w) &&
+           ((r->icon_title_w) &&
              intersect (x, y, w, h, r->icon_xl_loc,
 			r->icon_g.y + r->icon_p_height,
 			r->icon_g.width, r->icon_g.height));
@@ -807,7 +807,7 @@ overlap (FvwmWindow *r, FvwmWindow *s)
     return ((r->icon_pixmap_w) &&
              overlap_box (s, r->icon_g.x, r->icon_g.y,
                              r->icon_p_width, r->icon_p_height)) ||
-           ((r->icon_w) &&
+           ((r->icon_title_w) &&
              overlap_box (s, r->icon_xl_loc, r->icon_g.y + r->icon_p_height,
                              r->icon_g.width, r->icon_g.height));
   }
@@ -908,7 +908,7 @@ static void ResyncFvwmStackRing (void)
     {
       if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
       {
-	if (t1->icon_w == children[i] || t1->icon_pixmap_w == children[i])
+	if (t1->icon_title_w == children[i] || t1->icon_pixmap_w == children[i])
 	{
 	  break;
 	}
@@ -967,8 +967,8 @@ static void ResyncXStackingOrder(void)
       wins[i++] = t->frame;
       if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
       {
-	if (t->icon_w != None)
-	  wins[i++] = t->icon_w;
+	if (t->icon_title_w != None)
+	  wins[i++] = t->icon_title_w;
 	if (t->icon_pixmap_w != None)
 	  wins[i++] = t->icon_pixmap_w;
       }

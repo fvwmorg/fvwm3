@@ -190,8 +190,8 @@ static void unmap_window(FvwmWindow *t)
   {
     if (t->icon_pixmap_w != None)
       XUnmapWindow(dpy,t->icon_pixmap_w);
-    if (t->icon_w != None)
-      XUnmapWindow(dpy,t->icon_w);
+    if (t->icon_title_w != None)
+      XUnmapWindow(dpy,t->icon_title_w);
   }
   else
   {
@@ -241,8 +241,8 @@ static void map_window(FvwmWindow *t)
   {
     if(t->icon_pixmap_w != None)
       XMapWindow(dpy,t->icon_pixmap_w);
-    if(t->icon_w != None)
-      XMapWindow(dpy,t->icon_w);
+    if(t->icon_title_w != None)
+      XMapWindow(dpy,t->icon_title_w);
   }
   else if(IS_MAPPED(t))
   {
@@ -1029,8 +1029,8 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    if(t->icon_pixmap_w != None)
 	      XMoveWindow(dpy,t->icon_pixmap_w,t->icon_g.x,
 			  t->icon_g.y);
-	    if(t->icon_w != None)
-	      XMoveWindow(dpy,t->icon_w,t->icon_g.x,
+	    if(t->icon_title_w != None)
+	      XMoveWindow(dpy,t->icon_title_w,t->icon_g.x,
 			  t->icon_g.y+t->icon_p_height);
 	    if(!(IS_ICON_UNMAPPED(t)))
 	    {
@@ -1078,8 +1078,8 @@ void MoveViewport(int newx, int newy, Bool grab)
 	      XMoveWindow(dpy,t1->icon_pixmap_w,
 			  t1->icon_g.x,
 			  t1->icon_g.y);
-	    if(t1->icon_w != None)
-	      XMoveWindow(dpy,t1->icon_w,t1->icon_g.x,
+	    if(t1->icon_title_w != None)
+	      XMoveWindow(dpy,t1->icon_title_w,t1->icon_g.x,
 			  t1->icon_g.y+t1->icon_p_height);
 	    if(!IS_ICON_UNMAPPED(t1))
 	    {

@@ -122,7 +122,7 @@ Bool is_move_allowed(
 	{
 		return False;
 	}
-	if (is_user_request && 
+	if (is_user_request &&
 	    !check_if_function_allowed(F_MOVE, tmp_win, False, NULL))
 	{
 		return False;
@@ -153,7 +153,7 @@ Bool is_resize_allowed(
 	{
 		return False;
 	}
-	if (is_user_request && 
+	if (is_user_request &&
 	    !check_if_function_allowed(F_RESIZE, tmp_win, False, NULL))
 	{
 		return False;
@@ -1043,11 +1043,11 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     if(tmp_win->icon_pixmap_w != None)
     {
       w = tmp_win->icon_pixmap_w;
-      XUnmapWindow(dpy,tmp_win->icon_w);
+      XUnmapWindow(dpy,tmp_win->icon_title_w);
     }
     else
     {
-      w = tmp_win->icon_w;
+      w = tmp_win->icon_title_w;
     }
   }
   if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, &width, &height,
@@ -1162,20 +1162,20 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
 		    tmp_win->icon_g.height + tmp_win->icon_p_height);
     if (do_animate)
     {
-      AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,
+      AnimatedMoveOfWindow(tmp_win->icon_title_w,-1,-1,tmp_win->icon_xl_loc,
 			   FinalY+tmp_win->icon_p_height, fWarp,-1,
 			   NULL, False);
     }
     else
     {
-      XMoveWindow(dpy,tmp_win->icon_w, tmp_win->icon_xl_loc,
+      XMoveWindow(dpy,tmp_win->icon_title_w, tmp_win->icon_xl_loc,
 		  FinalY+tmp_win->icon_p_height);
       if (fWarp)
 	XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
     }
     if(tmp_win->icon_pixmap_w != None)
     {
-      XMapWindow(dpy,tmp_win->icon_w);
+      XMapWindow(dpy,tmp_win->icon_title_w);
       if (do_animate)
       {
 	AnimatedMoveOfWindow(tmp_win->icon_pixmap_w, -1,-1,
@@ -1631,8 +1631,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   {
     if (tmp_win->icon_pixmap_w != None)
       move_w = tmp_win->icon_pixmap_w;
-    else if (tmp_win->icon_w != None)
-      move_w = tmp_win->icon_w;
+    else if (tmp_win->icon_title_w != None)
+      move_w = tmp_win->icon_title_w;
   }
   else
   {
@@ -1884,8 +1884,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    tmp_win->icon_g.y = yt;
 	    if(tmp_win->icon_pixmap_w != None)
 	      XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_g.x,yt);
-	    else if (tmp_win->icon_w != None)
-	      XMoveWindow(dpy, tmp_win->icon_w,tmp_win->icon_xl_loc,
+	    else if (tmp_win->icon_title_w != None)
+	      XMoveWindow(dpy, tmp_win->icon_title_w,tmp_win->icon_xl_loc,
 			  yt+tmp_win->icon_p_height);
 	  }
 	  else
@@ -3128,7 +3128,7 @@ static void MaximizeHeight(
       continue;
     if (IS_ICONIFIED(cwin))
     {
-      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
+      if(cwin->icon_title_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
       x21 = cwin->icon_g.x;
       y21 = cwin->icon_g.y;
@@ -3198,7 +3198,7 @@ static void MaximizeWidth(
       continue;
     if (IS_ICONIFIED(cwin))
     {
-      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
+      if(cwin->icon_title_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
       x21 = cwin->icon_g.x;
       y21 = cwin->icon_g.y;

@@ -175,10 +175,32 @@
 #define PLACEMENT_AVOID_EWMH_STRUT        50
 /* used in MinOverlap*Placement to forbid complete covering (99%, 95%
    85% and 75%) of windows */
-#define PLACEMENT_AVOID_COVER_99           12
+#define PLACEMENT_AVOID_COVER_99          12
 #define PLACEMENT_AVOID_COVER_95           6
 #define PLACEMENT_AVOID_COVER_85           4
 #define PLACEMENT_AVOID_COVER_75           1
+
+/*** icon layout ***/
+/* width of the relief around the icon and icon title */
+#define ICON_RELIEF_WIDTH                  2 /* pixels */
+
+
+/* height of stick lines */
+#define ICON_TITLE_STICK_HEIGHT            WINDOW_TITLE_STICK_HEIGHT
+/* vertical distance between stick lines */
+#define ICON_TITLE_STICK_VERT_DIST         WINDOW_TITLE_STICK_VERT_DIST
+/* vertical offset for icon title */
+#define ICON_TITLE_VERT_TEXT_OFFSET       -3 /* pixels */
+/* minimum width of stick lines */
+#define ICON_TITLE_STICK_MIN_WIDTH         3 /* pixels */
+/* number of blank pixels before and after a collapsed title */
+#define ICON_TITLE_TEXT_GAP_COLLAPSED      1 /* pixels */
+/* number of blank pixels before and after an expanded title */
+#define ICON_TITLE_TEXT_GAP_EXPANDED       4 /* pixels */
+/* extra blank pixels if the icon is sticky */
+#define ICON_TITLE_TO_STICK_EXTRA_GAP      1 /* pixels */
+
+
 
 /*** general keyboard shortcuts used in move, resize, ... ***/
 #define DEFAULT_KDB_SHORTCUT_MOVE_DISTANCE 5 /* pixels */

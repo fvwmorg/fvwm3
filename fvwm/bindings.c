@@ -364,10 +364,11 @@ static void activate_binding(
     }
     if (binding->Context & C_ICON)
     {
-      if(t->icon_w != None)
+      if(t->icon_title_w != None)
       {
         GrabWindowKeyOrButton(
-	  dpy, t->icon_w, binding, C_ICON, GetUnusedModifiers(), None, do_grab);
+	  dpy, t->icon_title_w, binding, C_ICON, GetUnusedModifiers(), None,
+	  do_grab);
       }
       if(t->icon_pixmap_w != None)
       {

@@ -915,7 +915,7 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->hints.min_height,\
             (_t)->hints.max_width,\
             (_t)->hints.max_height,\
-            (_t)->icon_w,\
+            (_t)->icon_title_w,\
             (_t)->icon_pixmap_w,\
             (_t)->hints.win_gravity,\
             (_t)->colors.fore,\
@@ -945,7 +945,7 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->hints.min_height,\
             (_t)->hints.max_width,\
             (_t)->hints.max_height,\
-            (_t)->icon_w,\
+            (_t)->icon_title_w,\
             (_t)->icon_pixmap_w,\
             (_t)->hints.win_gravity,\
             (_t)->colors.fore,\
@@ -1042,7 +1042,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    (unsigned long)(0),\
             &(*(_t))->hints.max_height,\
 	    (unsigned long)(0),\
-            &(*(_t))->icon_w,\
+            &(*(_t))->icon_title_w,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->icon_pixmap_w,\
 	    (unsigned long)(0),\

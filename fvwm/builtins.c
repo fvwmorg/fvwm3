@@ -843,7 +843,7 @@ void CMD_RefreshWindow(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
-  refresh_window((context == C_ICON)? tmp_win->icon_w : tmp_win->frame);
+  refresh_window((context == C_ICON)? tmp_win->icon_title_w : tmp_win->frame);
 }
 
 

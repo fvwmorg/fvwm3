@@ -199,9 +199,9 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   {
     Bool is_window_selected = False;
 
-    if (Fw->icon_w)
+    if (Fw->icon_title_w)
     {
-      w = Fw->icon_w;
+      w = Fw->icon_title_w;
       is_window_selected = True;
     }
     if ((!is_window_selected || WAS_ICON_HINT_PROVIDED(Fw)) &&
@@ -473,7 +473,7 @@ static void warp_to_fvwm_window(
   int cx,cy;
   int x,y;
 
-  if(t == (FvwmWindow *)0 || (IS_ICONIFIED(t) && t->icon_w == None))
+  if(t == (FvwmWindow *)0 || (IS_ICONIFIED(t) && t->icon_title_w == None))
     return;
 
   if(t->Desk != Scr.CurrentDesk)

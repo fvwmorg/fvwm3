@@ -285,7 +285,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
       if (IS_ICONIFIED(fw))
       {
 	if (!HAS_NO_ICON_TITLE(fw))
-	  SafeDefineCursor(fw->icon_w, Scr.FvwmCursors[CRS_DEFAULT]);
+	  SafeDefineCursor(fw->icon_title_w, Scr.FvwmCursors[CRS_DEFAULT]);
 	if (fw->icon_pixmap_w != None)
 	  SafeDefineCursor(fw->icon_pixmap_w, Scr.FvwmCursors[CRS_DEFAULT]);
       }

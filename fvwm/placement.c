@@ -121,7 +121,7 @@ static int SmartPlacement(
 	  }
 	  do_test = False;
           if(PLACEMENT_AVOID_ICON != 0 && IS_ICONIFIED(test_window) &&
-	     !IS_ICON_UNMAPPED(test_window) && test_window->icon_w)
+	     !IS_ICON_UNMAPPED(test_window) && test_window->icon_title_w)
           {
             tw=test_window->icon_p_width;
             th=test_window->icon_p_height+
@@ -286,7 +286,7 @@ static int get_next_x(
 	win_left = PageLeft + testw->icon_g.x - stickyx - t->frame_g.width;
 	for(i=start; i <= GET_NEXT_STEP; i++)
 	{
-	  xtest = (win_left) + (testw->icon_p_width) * 
+	  xtest = (win_left) + (testw->icon_p_width) *
 	    (GET_NEXT_STEP - i) /GET_NEXT_STEP;
 	  if (xtest > x)
 	    xnew = MIN(xnew, xtest);
@@ -306,7 +306,7 @@ static int get_next_x(
       win_left = PageLeft + testw->frame_g.x - stickyx - t->frame_g.width;
       for(i=start; i <= GET_NEXT_STEP; i++)
       {
-	xtest = (win_left) + (testw->frame_g.width) * 
+	xtest = (win_left) + (testw->frame_g.width) *
 	  (GET_NEXT_STEP - i)/GET_NEXT_STEP;
 	if (xtest > x)
 	  xnew = MIN(xnew, xtest);
@@ -375,7 +375,7 @@ static int get_next_y(
       win_top = testw->icon_g.y - stickyy;
       for(i=start; i <= GET_NEXT_STEP; i++)
       {
-	ytest = (win_top) + (testw->icon_p_height + testw->icon_g.height) * 
+	ytest = (win_top) + (testw->icon_p_height + testw->icon_g.height) *
 	  i/GET_NEXT_STEP;
 	if (ytest > y)
 	  ynew = MIN(ynew, ytest);
@@ -463,7 +463,7 @@ static float test_fit(
 
     if (IS_ICONIFIED(testw))
     {
-       if (testw->icon_w == None || IS_ICON_UNMAPPED(testw))
+       if (testw->icon_title_w == None || IS_ICON_UNMAPPED(testw))
 	  continue;
        x21 = testw->icon_g.x - stickyx;
        y21 = testw->icon_g.y - stickyy;
@@ -537,7 +537,7 @@ static float test_fit(
   /* now handle the working area */
   if (SEWMH_PLACEMENT_MODE(sflags) == EWMH_USE_WORKING_AREA)
   {
-    aoi += EWMH_STRUT_PLACEMENT_PENALTY(t) * 
+    aoi += EWMH_STRUT_PLACEMENT_PENALTY(t) *
       EWMH_GetStrutIntersection(x11, y11, x12, y12, use_percent);
   }
   return aoi;

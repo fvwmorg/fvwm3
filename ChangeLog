@@ -1,3 +1,35 @@
+2002-01-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c:
+	* fvwm/cursor.c:
+	* fvwm/virtual.c:
+	* fvwm/builtins.c:
+	* fvwm/bindings.c:
+	* fvwm/move_resize.c:
+	* fvwm/events.c:
+	* fvwm/stack.c:
+	* fvwm/module_interface.c:
+	* fvwm/focus.c:
+	* fvwm/placement.c:
+	* fvwm/menus.c:
+	* fvwm/icons.c:
+	* fvwm/fvwm.h (FvwmWindow):
+	remnamed icon_w member to icon_title_w
+
+2002-01-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (RedoIconName):
+	fixed sizing of icon title for icons without a pixmap
+	(RedoIconName):
+	(CreateIconWindow):
+	(Iconify):
+	(CreateIconWindow):
+	rewrote icon title layout and moved the constants to defaults.h
+
+	* fvwm/menus.c (menuShortcuts):
+	(handle_emacs_bindings):
+	implemented emacs style bindings in menus [ctrl-a/b/e/f/g/left/right]
+
 2002-01-04  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Language checks done.
@@ -16,7 +48,7 @@
 
 2002-01-03  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm/move_resize.c (is_resize_allowed): 
+	* fvwm/move_resize.c (is_resize_allowed):
 	(is_move_allowed):
 	Do not check if moveing/resizeing is MWM allowed for a no user request
 	This fix for example FvwmWinList with MwmFunctions & NoOverride
@@ -31,7 +63,7 @@
 	(ewmh_AllowsResize):
 	Check as a user request
 
-	* fvwm/fvwm2.1: 
+	* fvwm/fvwm2.1:
         * fvwm/move_resize.c (CMD_Maximize):
 	(MaximizeWidth):
 	(MaximizeHeight):

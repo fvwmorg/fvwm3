@@ -524,8 +524,8 @@ typedef struct FvwmWindow
 #ifdef USEDECOR
   struct FvwmDecor *decor;
 #endif
-  Window icon_w;              /* the icon window */
-  Window icon_pixmap_w;       /* the icon window */
+  Window icon_title_w;        /* icon title window */
+  Window icon_pixmap_w;       /* icon picture window */
   int wShaped;               /* is this a shaped window */
   Pixmap title_background_pixmap;
   Pixmap button_background_pixmap[NUMBER_OF_BUTTONS];

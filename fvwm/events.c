@@ -1273,8 +1273,8 @@ void HandleMapNotify(void)
    * when it really isn't.
    */
   MyXGrabServer (dpy);
-  if (Tmp_win->icon_w)
-    XUnmapWindow(dpy, Tmp_win->icon_w);
+  if (Tmp_win->icon_title_w)
+    XUnmapWindow(dpy, Tmp_win->icon_title_w);
   if(Tmp_win->icon_pixmap_w != None)
     XUnmapWindow(dpy, Tmp_win->icon_pixmap_w);
   XMapSubwindows(dpy, Tmp_win->frame);
@@ -2049,7 +2049,7 @@ void HandleLeaveNotify(void)
     if (Event.xcrossing.mode == NotifyGrab && Tmp_win &&
 	(Event.xcrossing.window == Tmp_win->decor_w ||
 	 Event.xcrossing.window == Tmp_win->w ||
-	 Event.xcrossing.window == Tmp_win->icon_w ||
+	 Event.xcrossing.window == Tmp_win->icon_title_w ||
 	 Event.xcrossing.window == Tmp_win->icon_pixmap_w))
     {
       xcrossing_last_grab_window = Tmp_win;
@@ -2218,7 +2218,7 @@ void HandleConfigureRequest(void)
    * Instead, we'll read the current geometry.  Therefore, we should respond
    * to configuration requests for windows which have never been mapped.
    */
-  if (!Tmp_win || cre->window == Tmp_win->icon_w ||
+  if (!Tmp_win || cre->window == Tmp_win->icon_title_w ||
       cre->window == Tmp_win->icon_pixmap_w)
   {
     xwcm = cre->value_mask &
@@ -2230,7 +2230,7 @@ void HandleConfigureRequest(void)
       Tmp_win->icon_p_height = cre->height+ cre->border_width +
 	cre->border_width;
     }
-    else if((Tmp_win)&&((Tmp_win->icon_w == cre->window)))
+    else if((Tmp_win)&&((Tmp_win->icon_title_w == cre->window)))
     {
       Tmp_win->icon_xl_loc = cre->x;
       Tmp_win->icon_g.x = cre->x +
@@ -2260,12 +2260,12 @@ void HandleConfigureRequest(void)
 	xwcm = cre->value_mask & (CWX | CWY);
 	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
       }
-      if(Tmp_win->icon_w != None)
+      if(Tmp_win->icon_title_w != None)
       {
 	xwc.x = Tmp_win->icon_g.x;
 	xwc.y = Tmp_win->icon_g.y;
 	xwcm = cre->value_mask & (CWX | CWY);
-        XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
+        XConfigureWindow(dpy, Tmp_win->icon_title_w, xwcm, &xwc);
       }
     }
     if (!Tmp_win)
@@ -2464,9 +2464,9 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
       xwc.sibling = Tmp_win->frame;
       xwc.stack_mode = Below;
       xwcm = CWSibling | CWStackMode;
-      if (Tmp_win->icon_w != None)
+      if (Tmp_win->icon_title_w != None)
       {
-	XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
+	XConfigureWindow(dpy, Tmp_win->icon_title_w, xwcm, &xwc);
       }
       if (Tmp_win->icon_pixmap_w != None)
       {
@@ -2479,9 +2479,9 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
 	xwc.sibling = otherwin->frame;
 	xwc.stack_mode = Below;
 	xwcm = CWSibling | CWStackMode;
-	if (otherwin->icon_w != None)
+	if (otherwin->icon_title_w != None)
 	{
-	  XConfigureWindow(dpy, otherwin->icon_w, xwcm, &xwc);
+	  XConfigureWindow(dpy, otherwin->icon_title_w, xwcm, &xwc);
 	}
 	if (otherwin->icon_pixmap_w != None)
 	{
@@ -3014,7 +3014,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
       Context = C_EWMH_DESKTOP;
     else if (*w == t->w || *w == t->Parent || *w == t->frame)
       Context = C_WINDOW;
-    else if (*w == t->icon_w || *w == t->icon_pixmap_w)
+    else if (*w == t->icon_title_w || *w == t->icon_pixmap_w)
       Context = C_ICON;
     else if (*w == t->decor_w)
       Context = C_SIDEBAR;

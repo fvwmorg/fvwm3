@@ -328,7 +328,7 @@ static void animated_move_back(
 		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
   {
     /* move it back */
-    if (ST_HAS_MENU_CSET(MR_STYLE(mr)) && 
+    if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
 	Colorset[ST_CSET_MENU(MR_STYLE(mr))].pixmap == ParentRelative)
     {
       Parental = True;
@@ -920,6 +920,54 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   return;
 }
 
+/* Translate emacs style binding into normal fvwm bindings */
+static void handle_emacs_bindings(
+	KeySym *keysym, int *fControlKey, int *fShiftedKey, int *fMetaKey)
+{
+	if (*fControlKey == 0 || *fShiftedKey != 0 || *fMetaKey != 0)
+	{
+		return;
+	}
+	/* remap keys */
+	switch (*keysym)
+	{
+	case XK_a:
+		*keysym = XK_Home;
+		*fControlKey = 0;
+		break;
+	case XK_e:
+		*keysym = XK_End;
+		*fControlKey = 0;
+		break;
+	case XK_b:
+		*keysym = XK_Up;
+		*fControlKey = 0;
+		break;
+	case XK_f:
+		*keysym = XK_Down;
+		*fControlKey = 0;
+		break;
+	case XK_Left:
+		*keysym = XK_Up;
+		*fMetaKey = 1;
+		*fControlKey = 0;
+		break;
+	case XK_Right:
+		*keysym = XK_Down;
+		*fMetaKey = 1;
+		*fControlKey = 0;
+		break;
+	case XK_g:
+		*keysym = XK_Escape;
+		*fControlKey = 0;
+		break;
+	default:
+		/* no match */
+		break;
+	}
+
+	return;
+}
 
 /***********************************************************************
  * Procedure
@@ -1061,6 +1109,10 @@ static void menuShortcuts(
     }
     /* MMH mikehan@best.com 2/7/99 */
   }
+
+  /*** handle emacs style bindings */
+
+  handle_emacs_bindings(&keysym, &fControlKey, &fShiftedKey, &fMetaKey);
 
   /*** now determine the action to take ***/
 
@@ -2950,8 +3002,8 @@ static int pop_menu_up(
 	  MR_HAS_POPPED_UP_RIGHT(mr) = 0;
 	}
 	MR_XANIMATION(parent_menu) += end_x - prev_x;
-	if (ST_HAS_MENU_CSET(MR_STYLE(parent_menu)) && 
-	    Colorset[ST_CSET_MENU(MR_STYLE(parent_menu))].pixmap == 
+	if (ST_HAS_MENU_CSET(MR_STYLE(parent_menu)) &&
+	    Colorset[ST_CSET_MENU(MR_STYLE(parent_menu))].pixmap ==
 	    ParentRelative)
 	{
 	  Parental = True;
@@ -4168,7 +4220,7 @@ void ParentalMenuRePaint(void)
 
   /* redraw the background of non active item */
   for (mi = MR_FIRST_ITEM(parental_mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
-  { 
+  {
     if (mi == MR_SELECTED_ITEM(parental_mr))
     {
       int left;
@@ -4199,7 +4251,7 @@ void ParentalMenuRePaint(void)
   {
     XClearArea(dpy, MR_WINDOW(parental_mr),
       MR_ITEM_X_OFFSET(parental_mr),
-      s_h + h + MST_RELIEF_THICKNESS(parental_mr) + 
+      s_h + h + MST_RELIEF_THICKNESS(parental_mr) +
 	       MST_BORDER_WIDTH(parental_mr),
       MR_ITEM_WIDTH(parental_mr), e_h, 0);
   }
@@ -7569,7 +7621,7 @@ char *get_menu_options(
       if (tmp_win)
       {
 	if (IS_ICONIFIED(tmp_win))
-	  context_window = tmp_win->icon_w;
+	  context_window = tmp_win->icon_title_w;
 	else
 	  context_window = tmp_win->title_w;
       }

@@ -1298,7 +1298,7 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
   /* wait until the window is iconified and the icon window is mapped
    * before creating the icon window
    */
-  tmp_win->icon_w = None;
+  tmp_win->icon_title_w = None;
 
   EWMH_SetVisibleName(tmp_win, True);
   BroadcastWindowIconNames(tmp_win, False, True);
@@ -1311,7 +1311,7 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
 static void destroy_icon(FvwmWindow *tmp_win)
 {
   free_window_names(tmp_win, False, True);
-  if (tmp_win->icon_w)
+  if (tmp_win->icon_title_w)
   {
     if (IS_PIXMAP_OURS(tmp_win))
     {
@@ -1321,8 +1321,8 @@ static void destroy_icon(FvwmWindow *tmp_win)
 	XFreePixmap(dpy, tmp_win->icon_maskPixmap);
       }
     }
-    XDestroyWindow(dpy, tmp_win->icon_w);
-    XDeleteContext(dpy, tmp_win->icon_w, FvwmContext);
+    XDestroyWindow(dpy, tmp_win->icon_title_w);
+    XDeleteContext(dpy, tmp_win->icon_title_w, FvwmContext);
   }
   if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_pixmap_w != None))
     XDestroyWindow(dpy, tmp_win->icon_pixmap_w);
@@ -2256,8 +2256,8 @@ void destroy_window(FvwmWindow *tmp_win)
     /* unmap the the window to fake that it was already removed */
     if (IS_ICONIFIED(tmp_win))
     {
-      if (tmp_win->icon_w)
-	XUnmapWindow(dpy, tmp_win->icon_w);
+      if (tmp_win->icon_title_w)
+	XUnmapWindow(dpy, tmp_win->icon_title_w);
       if(tmp_win->icon_pixmap_w != None)
 	XUnmapWindow(dpy, tmp_win->icon_pixmap_w);
     }
@@ -2455,8 +2455,8 @@ void RestoreWithdrawnLocation(
 
   if (IS_ICONIFIED(tmp) && !IS_ICON_SUPPRESSED(tmp))
   {
-    if (tmp->icon_w)
-      XUnmapWindow(dpy, tmp->icon_w);
+    if (tmp->icon_title_w)
+      XUnmapWindow(dpy, tmp->icon_title_w);
     if (tmp->icon_pixmap_w)
       XUnmapWindow(dpy, tmp->icon_pixmap_w);
   }

@@ -1337,7 +1337,7 @@ Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]
 .in +.5i
 $[desk.name<n>]
 .in -.5i
-These parameters are replaced with the name of the desktop 
+These parameters are replaced with the name of the desktop
 number <n> that is defined with the
 .B DesktopName
 command. If no name is defined, then the default name is returned.
@@ -1658,6 +1658,7 @@ keystrokes are also allowed. Specifically,
 .SM Tab,
 .SM Meta-Tab,
 .SM Cursor-Down,
+.SM Ctrl-F,
 .SM Ctrl-N,
 or
 .SM Ctrl-J
@@ -1665,6 +1666,7 @@ move to the next item;
 .SM Shift-Tab,
 .SM Shift-Meta-Tab,
 .SM Cursor-Up,
+.SM Ctrl-B,
 .SM Ctrl-P,
 or
 .SM Ctrl-K
@@ -1688,14 +1690,18 @@ and
 .SM Page-Down
 move down five items, respectively;
 .SM Home,
-.SM Shift-Cursor-Up
+.SM Shift-Cursor-Up,
+.SM Ctrl-A
 or
 .SM End,
-.SM Shift-Cursor-Down
+.SM Shift-Cursor-Down,
+.SM Ctrl-E
 move to the first or last item, respectively;
-.SM Meta-Cursor-Up
+.SM Meta-Cursor-Up,
+.SM Ctrl-Cursor-Left
 or
 .SM Meta-Cursor-Down
+.SM Ctrl-Cursor-Right
 move just behind the next or previous separator;
 .SM Shift-Ctrl-Tab
 or
@@ -1708,9 +1714,10 @@ or
 executes the current item;
 .SM Insert
 opens the "More..." sub-menu if any;
-.SM Escape
-and
+.SM Escape,
 .SM Delete
+or
+.SM Ctrl-G
 exit the current sequence of menus.
 
 The pointer is warped to where it was when the menu was invoked if
