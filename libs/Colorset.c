@@ -130,11 +130,17 @@ inline int LoadColorsetAndFree(char *line) {
 }
 
 /* sets a window background from a colorset
+ * if width or height are zero the window size is queried
  */
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 colorset_struct *colorset, unsigned int depth, GC gc)
 {
   Pixmap pixmap = None;
+  XID junk;
+
+  if (0 ==width || 0 == height)
+    XGetGeometry(dpy, win, &junk, (int *)&junk, (int *)&junk, &width, &height,
+		 (unsigned int *)&junk, (unsigned int *)&junk);
 
   if (!colorset->pixmap)
     /* use the bg pixel */
