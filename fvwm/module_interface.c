@@ -116,6 +116,7 @@ static int do_execute_module(F_CMD_ARGS)
 {
   int fvwm_to_app[2],app_to_fvwm[2];
   int i,val,nargs = 0;
+  int ret_pipe;
   char *cptr;
   char *args[20];
   char *arg1 = NULL;
@@ -175,6 +176,7 @@ static int do_execute_module(F_CMD_ARGS)
       free(cptr);
       return -1;
     }
+  ret_pipe = i;
 
   /* I want one-ended pipes, so I open two two-ended pipes,
    * and close one end of each. I need one ended pipes so that
@@ -309,7 +311,7 @@ static int do_execute_module(F_CMD_ARGS)
       return -1;
     }
 
-  return i;
+  return ret_pipe;
 }
 
 void executeModule(F_CMD_ARGS)
@@ -332,7 +334,6 @@ void executeModuleSync(F_CMD_ARGS)
   Window targetWindow;
   extern fd_set_size_t fd_width;
 
-fprintf(stderr,"1\n");
   if (!action)
     return;
 
@@ -361,7 +362,6 @@ fprintf(stderr,"1\n");
       return;
     }
   }
-fprintf(stderr,"2\n");
 
   if (!action)
   {
@@ -377,8 +377,6 @@ fprintf(stderr,"2\n");
   }
 
   /* wait for the message from the module */
-
-fprintf(stderr,"3\n");
 
   /* wait for module input */
   while (1)
@@ -412,7 +410,6 @@ fprintf(stderr,"3\n");
 	  if (HandleModuleInput(targetWindow, pipe_slot, expect) == 77)
 	  {
 	    /* we got the message we were waiting for */
-fprintf(stderr,"module %s synchronized\n", action);
 	    return;
 	  }
 	}
@@ -430,7 +427,6 @@ fprintf(stderr,"module %s synchronized\n", action);
     else
     {
       /* timeout */
-fprintf(stderr,"5\n");
       return;
     }
   }
