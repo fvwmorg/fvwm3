@@ -48,7 +48,6 @@
 typedef struct kst_item
 {
   Window w;
-  int any;
   struct  kst_item *next;
 } KstItem;
 
@@ -402,8 +401,8 @@ void EWMH_SetWMState(FvwmWindow *fwin)
  * ************************************************************************* */
 
 /*** kde system tray ***/
- 
-void add_kst_item(Window w, int any)
+
+void add_kst_item(Window w)
 {
   KstItem *t,**prev;
 
@@ -417,7 +416,6 @@ void add_kst_item(Window w, int any)
 
   *prev = (KstItem *)safemalloc(sizeof(KstItem));
   (*prev)->w = w;
-  (*prev)->any = any;
   (*prev)->next = NULL;
 }
 
@@ -471,49 +469,63 @@ void set_kde_sys_tray(void)
     free(wins);
 }
 
-int ewmh_AddToKdeSysTray(FvwmWindow *fwin)
+void ewmh_AddToKdeSysTray(FvwmWindow *fwin)
 {
   unsigned int size = 0;
   Atom *val;
   KstItem *t;
-  Bool first_delete = False;
 
   val = ewmh_AtomGetByName(fwin->w, "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR",
 			   EWMH_ATOM_LIST_FIXED_PROPERTY, &size);
 
   if (val == NULL)
-    return 0;
+    return;
   free(val);
 
   t = ewmh_KstWinList;
-  while(t != NULL)
-  {
-    if (t->w == fwin->w)
-    {
-      delete_kst_item(t->w);
-      t = ewmh_KstWinList;
-      first_delete = True;
-    }
-    else if (XGetGeometry(dpy, t->w, &JunkRoot, &JunkX, &JunkY,
-                  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
-    {
-      delete_kst_item(t->w);
-      t = ewmh_KstWinList;
-      first_delete = True;
-    }
-    else
-      t = t->next;
-  }
+  while(t != NULL && t->w != fwin->w)
+    t = t->next;
 
-  if (first_delete)
-  {
-    set_kde_sys_tray();
-    XSync(dpy,0);
-  }
+  if (t != NULL)
+    return; /* already in the list */
 
-  add_kst_item(fwin->w, 0);
+  add_kst_item(fwin->w);
   set_kde_sys_tray();
+}
+
+int EWMH_IsKdeSysTrayWindow(Window w)
+{
+  KstItem *t;
+
+  t = ewmh_KstWinList;
+  while(t != NULL && t->w != w)
+    t = t->next;
+
+  if (t == NULL)
+    return 0;
   return 1;
+}
+
+void EWMH_ManageKdeSysTray(Window w, Bool is_destroy)
+{
+  KstItem *t;
+
+  t = ewmh_KstWinList;
+  while(t != NULL && t->w != w)
+    t = t->next;
+
+  if (t == NULL)
+    return;
+
+  if (!is_destroy)
+  {
+    XSelectInput(dpy, w, StructureNotifyMask);
+  }
+  else
+  {
+    delete_kst_item(w);
+    set_kde_sys_tray();
+  }
 }
 
 /**** Client lists ****/
@@ -920,20 +932,19 @@ void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */
 void EWMH_WindowInit(FvwmWindow *fwin)
 {
-  /*  EWMH_DLOG("Init window 0x%lx",fwin->w); */
+  EWMH_DLOG("Init window 0x%lx",fwin->w);
   EWMH_SetWMState(fwin);
   EWMH_SetWMDesktop(fwin);
   EWMH_SetFrameStrut(fwin);
   ewmh_WMStrut(fwin, NULL, NULL);
   ewmh_WMIconGeometry(fwin, NULL, NULL);
-  if (ewmh_AddToKdeSysTray(fwin))
-    return;
+  ewmh_AddToKdeSysTray(fwin);
   if (IS_EWMH_DESKTOP(fwin->w))
     return;
   if (ksmserver_workarround(fwin))
     return;
   ewmh_WMIcon(fwin, NULL, NULL);
-  /* EWMH_DLOG("window 0x%lx initialised",fwin->w);*/
+  EWMH_DLOG("window 0x%lx initialised",fwin->w);
 }
 
 /* a window are going to be destroyed */
@@ -1061,6 +1072,7 @@ void EWMH_Init(void)
 }
 
 #ifdef EWMH_DEBUG
+fqfqf;
 void EWMH_DLOG(char *msg, ...)
 {
   va_list args;

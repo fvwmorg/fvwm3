@@ -105,7 +105,7 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS);
 int ewmh_HandleNormal(EWMH_CMD_ARGS);
 int ewmh_HandleToolBar(EWMH_CMD_ARGS);
 
-int ewmh_AddToKdeSysTray(FvwmWindow *fwin);
+void ewmh_AddToKdeSysTray(FvwmWindow *fwin);
 void ewmh_SetWorkArea(void);
 void ewmh_ComputeAndSetWorkArea(void);
 void ewmh_HandleDynamicWorkArea(void);
@@ -139,7 +139,7 @@ int ewmh_WMIcon(EWMH_CMD_ARGS);
 /* debugging */
 #ifdef EWMH_DEBUG
 void  EWMH_DLOG(char *msg, ...);
-#define EWMH_DEBUG_CODE(x, ...) x
+#define EWMH_DEBUG_CODE(x) x
 
 #else
 

@@ -1,3 +1,16 @@
+2001-11-18  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh.{c,h} (add_kst_item):
+	(ewmh_AddToKdeSysTray):
+	(EWMH_IsKdeSysTrayWindow):
+	(EWMH_ManageKdeSysTray):
+	(EWMH_WindowInit):
+	fvwm/ewmh_intern.h:
+	* fvwm/events.c (HandleDestroyNotify):
+	(HandleMapRequest):
+	(HandleUnmapNotify):
+	Fixed the KDE system tray implementation
+
 2001-11-16  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.h:

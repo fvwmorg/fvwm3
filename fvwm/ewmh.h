@@ -30,6 +30,8 @@ void EWMH_SetActiveWindow(Window w);
 void EWMH_SetWMDesktop(FvwmWindow *fwin);
 void EWMH_SetWMState(FvwmWindow *fwin);
 
+int EWMH_IsKdeSysTrayWindow(Window w);
+void EWMH_ManageKdeSysTray(Window w, Bool is_destroy);
 void EWMH_SetClientList(void);
 void EWMH_SetClientListStacking(void);
 void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
@@ -69,7 +71,9 @@ int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_WMIconName(x,y,z) 0
 #endif /* HAVE_ICONV */
 
+
 #else /* HAVE_EWMH */
+
 
 #define EWMH_SetCurrentDesktop()
 #define EWMH_SetNumberOfDesktops()
@@ -78,6 +82,8 @@ int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_SetWMDesktop(x)
 #define EWMH_SetWMState(x)
 
+#define EWMH_IsKdeSysTrayWindow(x) 0
+#define EWMH_ManageKdeSysTray(x,y);
 #define EWMH_SetClientList()
 #define EWMH_SetClientListStacking()
 #define EWMH_GetWorkAreaIntersection(x,y,z,t,u,v)

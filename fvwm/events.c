@@ -915,6 +915,7 @@ void HandleDestroyNotify(void)
   DBUG("HandleDestroyNotify","Routine Entered");
 
   destroy_window(Tmp_win);
+  EWMH_ManageKdeSysTray(Event.xdestroywindow.window, True);
   EWMH_WindowDestroyed();
   GNOME_SetClientList();
 }
@@ -1008,6 +1009,13 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
     Tmp_win = ReuseWin;
   }
 
+  if (Tmp_win == NULL && EWMH_IsKdeSysTrayWindow(Event.xany.window))
+  {
+    /* This means that the window is swallowed by kicker and that 
+     * kicker restart or exit. As we should assume that kicker restart
+     * we should return here, if not we go into trouble ... */
+    return;
+  }
   if (!PPosOverride)
   {
     XFlush(dpy);
@@ -1409,6 +1417,7 @@ void HandleUnmapNotify(void)
   {
     CoerceEnterNotifyOnCurrentWindow();
   }
+  EWMH_ManageKdeSysTray(Event.xunmap.window, False);
   EWMH_WindowDestroyed();
   GNOME_SetClientList();
 }
