@@ -1,3 +1,8 @@
+2002-04-27  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/move_resize.c:
+	don't start Move with snap disabled if Alt is initially pressed
+
 2002-04-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS, configure.in:

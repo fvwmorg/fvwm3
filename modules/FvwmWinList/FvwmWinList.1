@@ -40,9 +40,6 @@ FvwmWinList can also be bound to a keystroke, mouse button, or menu option to
 be invoked later, in this case using 'Transient' as an argument will cause
 FvwmWinList to resemble the built in window list.
 
-FvwmWinList must reside in a directory that is listed in the ModulePath option
-of FVWM for it to be executed by FVWM.
-
 .SH CONFIGURATION OPTIONS
 .IP "*FvwmWinList: Geometry \fI{+-}<X>{+-}<Y>\fP"
 Specifies the location and gravity of the FvwmWinList window.  At the current
@@ -70,12 +67,12 @@ has the input focus. Defaults to 1.
 
 .IP "*FvwmWinList: FocusFore \fIcolor\fP"
 Specifies the color to use for the button names for the window that
-has the input focus. If omitted, the color from \fBFvwmWinListFore\fP
+has the input focus. If omitted, the color from \fB*FvwmWinList: Fore\fP
 is used. Cancels *FvwmWinList: FocusColorset.
 
 .IP "*FvwmWinList: FocusBack \fIcolor\fP"
 Specifies the color to use for the button for the window that
-has the input focus. If omitted, the color from \fBFvwmWinListBack\fP
+has the input focus. If omitted, the color from \fB*FvwmWinList: Back\fP
 is used. Cancels *FvwmWinList: FocusColorset.
 
 .IP "*FvwmWinList: IconColorset \fIn\fP"
@@ -84,12 +81,12 @@ are iconified. Defaults to 0.
 
 .IP "*FvwmWinList: IconFore \fIcolor\fP"
 Specifies the color to use for the button names for windows that
-are iconified. If omitted, the color from \fBFvwmWinListFore\fP
+are iconified. If omitted, the color from \fB*FvwmWinList: Fore\fP
 is used. Cancels *FvwmWinList: IconColorset.
 
 .IP "*FvwmWinList: IconBack \fIcolor\fP"
 Specifies the color to use for the button for windows that
-are iconified. If omitted, the color from \fBFvwmWinListBack\fP
+are iconified. If omitted, the color from \fB*FvwmWinList: Back\fP
 is used. Cancels *FvwmWinList: IconColorset.
 
 .IP "*FvwmWinList: DontDepressFocus"

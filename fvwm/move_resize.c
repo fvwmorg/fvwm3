@@ -1576,6 +1576,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int orig_icon_x = 0;
   int orig_icon_y = 0;
   Bool do_snap = True;
+  /* if Alt is initially pressed don't enable no-snap until Alt is released */
+  Bool nosnap_enabled = False;
 
   if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
   {
@@ -1725,7 +1727,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     switch(Event.type)
     {
     case KeyPress:
-      do_snap = Event.xkey.state & Mod1Mask ? False : True;
+      if (!(Event.xkey.state & Mod1Mask))
+	nosnap_enabled = True;
+      do_snap = nosnap_enabled && (Event.xkey.state & Mod1Mask) ? False : True;
 
       /* simple code to bag out of move - CKH */
       if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
@@ -1830,7 +1834,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       break;
 
     case MotionNotify:
-      do_snap = Event.xkey.state & Mod1Mask ? False : True;
+      if (!(Event.xkey.state & Mod1Mask))
+	nosnap_enabled = True;
+      do_snap = nosnap_enabled && (Event.xkey.state & Mod1Mask) ? False : True;
 
       xl = Event.xmotion.x_root;
       yt = Event.xmotion.y_root;
