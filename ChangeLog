@@ -1,3 +1,12 @@
+2003-01-02  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/builtins.c (ReadMultiPixmapDecor):
+	StretchedPixmap -> AdjustedPixmap
+
+	* fvwm/fvwm.1.in:
+	Documented Colorset in BorderStyle, TitleStyle and ButonsStyle
+	Documented the new MultiPixmap syntax
+
 2002-12-31  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:

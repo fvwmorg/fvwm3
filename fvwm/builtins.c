@@ -675,7 +675,7 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 			s = DoPeekToken(s, &token, ",", NULL, NULL);
 			load_pixmap = True;
 		}
-		else if (strncasecmp(token, "StretchedPixmap", 14) == 0)
+		else if (strncasecmp(token, "AdjustedPixmap", 14) == 0)
 		{
 			s = DoPeekToken(s, &token, ",", NULL, NULL);
 			load_pixmap = True;
