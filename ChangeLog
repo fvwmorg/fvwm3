@@ -1,3 +1,8 @@
+2002-07-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	send Map/UnmapNotify before iconyfying, not after
+
 2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised):

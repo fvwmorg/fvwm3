@@ -2256,6 +2256,16 @@ void HandleMapRequestKeepRaised(
 			break;
 
 		case IconicState:
+			if (is_new_window)
+			{
+				/* the window will not be mapped - fake a
+				 * MapNotify and an UnmapNotify event.  Can't
+				 * remember exactly why this is necessary, but
+				 * probably something w/ (de)iconify state
+				 * confusion. */
+				fake_map_unmap_notify(Fw, MapNotify);
+				fake_map_unmap_notify(Fw, UnmapNotify);
+			}
 			if (win_opts->flags.is_iconified_by_parent ||
 			    ((tmp = get_transientfor_fvwmwindow(Fw)) &&
 			     IS_ICONIFIED(tmp)))
@@ -2270,16 +2280,6 @@ void HandleMapRequestKeepRaised(
 				win_opts->default_icon_y = Fw->wmhints->icon_y;
 			}
 			Iconify(Fw, win_opts);
-			if (is_new_window)
-			{
-				/* the window will not be mapped - fake a
-				 * MapNotify and an UnmapNotify event.  Can't
-				 * remember exactly why this is necessary, but
-				 * probably something w/ (de)iconify state
-				 * confusion. */
-				fake_map_unmap_notify(Fw, MapNotify);
-				fake_map_unmap_notify(Fw, UnmapNotify);
-			}
 			break;
 		}
 	}
@@ -3940,10 +3940,16 @@ int addkbsubinstoarray(Window parentw, Window *winlist, int offset)
 			continue;
 		}
 #endif
+#define KBWIN_MIN_WIDTH 100
+#define KBWIN_MIN_HEIGHT 23
 #define MASK (KeyPressMask|KeyReleaseMask)
 		s = addkbsubinstoarray(children[i], winlist, offset);
-		if ((xwa.all_event_masks & MASK) && s == offset)
+		if ((xwa.all_event_masks & MASK) &&
+		    xwa.width >= KBWIN_MIN_WIDTH &&
+		    xwa.height >= KBWIN_MIN_HEIGHT &&
+		    s == offset)
 		{
+fprintf(stderr, "w %d (%d), h %d (%d)\n", xwa.width, KBWIN_MIN_WIDTH, xwa.height, KBWIN_MIN_HEIGHT);
 			winlist[offset] = children[i];
 			offset++;
 fprintf(stderr,"%d: + 0x%08x offset %d\n", depth, (int)children[i], offset);
@@ -4086,7 +4092,7 @@ fprintf(stderr,"  %d (%d %d %dx%d) -> ", i, x,y,wid,hei);
 	win = winlist[i];
 XGetGeometry(dpy, win, &JunkRoot, &x,&y,&wid,&hei,&JunkBW, &JunkMask);
 fprintf(stderr," %d (%d %d %dx%d)\n", i, x,y,wid,hei);
-	sprintf(cmd, "WindowId 0x%x WarpToWindow 50 50", (int)win);
+	sprintf(cmd, "WindowId 0x%x WarpToWindow 99 99", (int)win);
 	fprintf(stderr, "%s\n", cmd);
 	old_execute_function(NULL, cmd, fw, eventp, C_WINDOW, *Module, 0, NULL);
 	last_win = win;
