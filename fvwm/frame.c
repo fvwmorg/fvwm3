@@ -90,6 +90,7 @@ typedef struct
 		unsigned is_lazy_shading : 1;
 		unsigned is_setup : 1;
 		unsigned is_shading : 1;
+		unsigned was_moved : 1;
 	} flags;
 	/* used during the animation */
 	int next_titlebar_compression;
@@ -393,6 +394,7 @@ static void __frame_setup_window(
 		mr_args = frame_create_move_resize_args(
 			fw, mode, NULL, &new_g, 0, DIR_NONE);
 		frame_move_resize(fw, mr_args);
+		((mr_args_internal *)mr_args)->flags.was_moved = 0;
 		frame_free_move_resize_args(fw, mr_args);
 		fw->frame_g = *frame_g;
 	}
@@ -708,6 +710,7 @@ static void frame_update_hidden_window_pos(
 	XMoveResizeWindow(
 		dpy, FW_W(fw), hidden_g.x, hidden_g.y, mra->client_g.width,
 		mra->client_g.height);
+	mra->flags.was_moved = 1;
 
 	return;
 }
@@ -986,6 +989,7 @@ static void frame_mrs_resize_move_windows(
 		{
 			XMoveWindow(dpy, FW_W(fw), 0, 0);
 		}
+		mra->flags.was_moved = 1;
 #if 0
 		/* reduces flickering */
 		/* dv (11-Aug-2002): ... and slows down large scripts
@@ -1792,6 +1796,7 @@ frame_move_resize_args frame_create_move_resize_args(
 	}
 
 	/* various flags */
+	mra->flags.was_moved = 0;
 	mra->step_flags.was_hidden =
 		(frame_is_parent_hidden(fw, &mra->start_g) == True);
 	mra->flags.is_setup =
@@ -1920,7 +1925,13 @@ void frame_free_move_resize_args(
 	{
 		frame_restore_client_gravities(fw);
 	}
-
+	if (!IS_SHADED(fw) && mra->flags.was_moved)
+	{
+		SendConfigureNotify(
+			fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
+			fw->frame_g.height, 0, True);
+		mra->flags.was_moved = 0;
+	}
 	focus_grab_buttons_on_layer(fw->layer);
 	/* free the memory */
 	free(mr_args);

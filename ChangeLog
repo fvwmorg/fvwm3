@@ -1,3 +1,20 @@
+2004-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/geometry.c (constrain_size):
+	Don't touch the aspect ratio if modifying the width/height does not
+	improve the situation
+
+	* fvwm/frame.c (frame_free_move_resize_args):
+	(__frame_setup_window):
+	(frame_update_hidden_window_pos):
+	(frame_mrs_resize_move_windows):
+	(frame_create_move_resize_args):
+	* fvwm/move_resize.c (__resize_window):
+	some event handling fixes
+
+	* fvwm/geometry.c (constrain_size):
+	look up the latest size hints if necessary
+
 2004-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/geometry.c (constrain_size):

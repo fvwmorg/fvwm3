@@ -32,6 +32,7 @@
 #include "module_interface.h"
 #include "borders.h"
 #include "icons.h"
+#include "add_window.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -680,6 +681,13 @@ void constrain_size(
 	{
 		return;
 	}
+	if (HAS_NEW_WM_NORMAL_HINTS(fw))
+	{
+		/* get the latest size hints */
+		XSync(dpy, 0);
+		GetWindowSizeHints(fw);
+		SET_HAS_NEW_WM_NORMAL_HINTS(fw, 0);
+	}
 	if (IS_MAXIMIZED(fw) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
 		*widthp += fw->max_g_defect.width;
@@ -826,6 +834,10 @@ void constrain_size(
 
 	if (fw->hints.flags & PAspect)
 	{
+		double odefect;
+		double defect;
+		int ow;
+		int oh;
 
 		if (fw->hints.flags & PBaseSize)
 		{
@@ -842,7 +854,19 @@ void constrain_size(
 			maxHeight -= baseHeight;
 			minHeight -= baseHeight;
 		}
-
+		ow = dwidth;
+		oh = dheight;
+		odefect = 0;
+		if (minAspectX * dheight > minAspectY * dwidth)
+		{
+			odefect = ((double)minAspectX / (double)minAspectY -
+				   (double)dwidth / (double)dheight);
+		}
+		else if (maxAspectX * dheight < maxAspectY * dwidth)
+		{
+			odefect = ((double)dwidth / (double)dheight -
+				   (double)maxAspectX / (double)maxAspectY);
+		}
 		if ((minAspectX * dheight > minAspectY * dwidth) &&
 		    (xmotion == 0))
 		{
@@ -905,7 +929,22 @@ void constrain_size(
 				}
 			}
 		}
-
+		defect = 0;
+		if (minAspectX * dheight > minAspectY * dwidth)
+		{
+			defect = ((double)minAspectX / (double)minAspectY -
+				  (double)dwidth / (double)dheight);
+		}
+		else if (maxAspectX * dheight < maxAspectY * dwidth)
+		{
+			defect = ((double)dwidth / (double)dheight -
+				  (double)maxAspectX / (double)maxAspectY);
+		}
+		if (odefect <= defect)
+		{
+			dwidth = ow;
+			dheight = oh;
+		}
 		if (fw->hints.flags & PBaseSize)
 		{
 			dwidth += baseWidth;

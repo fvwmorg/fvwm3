@@ -2875,11 +2875,11 @@ static void __resize_get_refpos(
 	int *ret_x, int *ret_y, int xmotion, int ymotion, int w, int h,
 	FvwmWindow *fw)
 {
-	if (xmotion == 1)
+	if (xmotion > 0)
 	{
 		*ret_x = 0;
 	}
-	else if (xmotion == -1)
+	else if (xmotion < 0)
 	{
 		*ret_x = w - 1;
 	}
@@ -2887,11 +2887,11 @@ static void __resize_get_refpos(
 	{
 		*ret_x = w / 2;
 	}
-	if (ymotion == 1)
+	if (ymotion > 0)
 	{
 		*ret_y = 0;
 	}
-	else if (ymotion == -1)
+	else if (ymotion < 0)
 	{
 		*ret_y = h - 1;
 	}
@@ -3068,6 +3068,7 @@ static Bool __resize_window(F_CMD_ARGS)
 {
 	extern Window bad_window;
 	Bool finished = False, is_done = False, is_aborted = False;
+	Bool do_send_cn = False;
 	Bool do_resize_opaque;
 	Bool do_warp_to_border;
 	Bool is_direction_fixed;
@@ -3435,6 +3436,10 @@ static Bool __resize_window(F_CMD_ARGS)
 		if (ev.type == KeyPress)
 		{
 			Keyboard_shortcuts(&ev, fw, NULL, NULL, ButtonRelease);
+			if (ev.type == ButtonRelease)
+			{
+				do_send_cn = True;
+			}
 		}
 		switch (ev.type)
 		{
@@ -3456,13 +3461,21 @@ static Bool __resize_window(F_CMD_ARGS)
 			if (button_mask || (ev.xbutton.button != 1))
 			{
 				fButtonAbort = True;
+				/* fall through */
+			}
+			else
+			{
+				finished = True;
+				do_send_cn = True;
+				break;
 			}
 		case KeyPress:
 			/* simple code to bag out of move - CKH */
-			if (XLookupKeysym(&ev.xkey, 0) == XK_Escape ||
-			    fButtonAbort)
+			if (fButtonAbort ||
+			    XLookupKeysym(&ev.xkey, 0) == XK_Escape)
 			{
 				is_aborted = True;
+				do_send_cn = True;
 				finished = True;
 				/* return pointer if aborted resize was invoked
 				 * with key */
@@ -3659,6 +3672,20 @@ static Bool __resize_window(F_CMD_ARGS)
 	if (mr_args != NULL)
 	{
 		frame_free_move_resize_args(fw, mr_args);
+	}
+	if (do_send_cn == True)
+	{
+		rectangle g;
+
+		if (is_aborted)
+		{
+			g = start_g;
+		}
+		else
+		{
+			g = *drag;
+		}
+		SendConfigureNotify(fw, g.x, g.y, g.width, g.height, 0, True);
 	}
 	MyXUngrabKeyboard(dpy);
 	WaitForButtonsUp(True);
