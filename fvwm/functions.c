@@ -610,12 +610,10 @@ static void __execute_function(
 			if ((bif->flags & FUNC_NEEDS_WINDOW) &&
 			    !(exec_flags & FUNC_DONT_DEFER))
 			{
-/*!!!*/fprintf(stderr, "   _ef: f dd %d\n", exec_flags & FUNC_DONT_DEFER);
 				rc = DeferExecution(
 					&ecc, &mask, bif->cursor,
 					exc->x.elast->type,
 					(bif->flags & FUNC_ALLOW_UNMANAGED));
-/*!!!*/fprintf(stderr, "   _ef: g\n");
 			}
 			else if ((bif->flags & FUNC_NEEDS_WINDOW) &&
 				 !__context_has_window(
@@ -816,11 +814,9 @@ static void __run_complex_function_items(
 		}
 		if (c == cond)
 		{
-/*!!!*/fprintf(stderr, "_rcfi: %c: %s\n", cond, fi->action);
 			__execute_function(
 				cond_rc, exc, fi->action, FUNC_DONT_DEFER,
 				args);
-/*!!!*/fprintf(stderr, "_rcfi: done\n");
 		}
 		fi = fi->next_item;
 	}
@@ -998,10 +994,8 @@ static void execute_complex_function(
 		return;
 	}
 	exc2 = exc_clone_context(exc, &ecc, mask);
-/*!!!*/fprintf(stderr,"+++_rcfe\n");
 	__run_complex_function_items(
 		cond_rc, CF_IMMEDIATE, func, exc2, arguments);
-/*!!!*/fprintf(stderr,"---_rcfe\n");
 	exc_destroy_context(exc2);
 	for (fi = func->first_item;
 	     fi != NULL && cond_rc->break_levels == 0;
@@ -1039,7 +1033,6 @@ static void execute_complex_function(
 	 * a window to operate on */
 	if (NeedsTarget)
 	{
-/*!!!*/fprintf(stderr,"+++de\n");
 		if (DeferExecution(
 			    &ecc, &mask, CRS_SELECT, trigger_evtype,
 			    do_allow_unmanaged))
@@ -1047,10 +1040,8 @@ static void execute_complex_function(
 			func->use_depth--;
 			__cf_cleanup(&depth, arguments, cond_rc);
 			UngrabEm(GRAB_NORMAL);
-/*!!!*/fprintf(stderr,"!!!de\n");
 			return;
 		}
-/*!!!*/fprintf(stderr,"---de\n");
 	}
 
 	te = (mask & ECC_ETRIGGER) ? ecc.x.etrigger : exc->x.elast;

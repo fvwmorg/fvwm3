@@ -1283,9 +1283,7 @@ void CMD_Any(F_CMD_ARGS)
 
 void CMD_Current(F_CMD_ARGS)
 {
-/*!!!*/fprintf(stderr, "   +++CC\n");
 	circulate_cmd(F_PASS_ARGS, C_WINDOW, 0, True, True);
-/*!!!*/fprintf(stderr, "   ---CC\n");
 
 	return;
 }

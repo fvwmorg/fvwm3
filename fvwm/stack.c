@@ -1770,9 +1770,7 @@ Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
 
 void CMD_Raise(F_CMD_ARGS)
 {
-/*!!!*/fprintf(stderr, "   +++CR\n");
 	RaiseWindow(exc->w.fw);
-/*!!!*/fprintf(stderr, "   ---CR\n");
 
 	return;
 }
