@@ -45,10 +45,6 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
 #ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
@@ -56,6 +52,7 @@
 #include <stdlib.h>
 
 #include "libs/Module.h"
+#include "libs/fvwmsignal.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
@@ -105,8 +102,6 @@ int ReliefWidth = 2;
 long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
 
-static volatile sig_atomic_t isTerminated = False;
-
 static RETSIGTYPE TerminateHandler(int sig);
 
 /***************************************************************************
@@ -114,7 +109,12 @@ static RETSIGTYPE TerminateHandler(int sig);
  ***************************************************************************/
 static RETSIGTYPE TerminateHandler(int sig)
 {
-  isTerminated = True;
+  /*
+   * This function might not return - it could "long-jump"
+   * right out, so we need to do everything we need to do
+   * BEFORE we call it ...
+   */
+  fvwmSetTerminate(sig);
 }
 
 int ItemCountD(List *list )
@@ -174,15 +174,26 @@ int main(int argc, char **argv)
   sigact.sa_flags = 0;
 #endif
   sigemptyset(&sigact.sa_mask);
+  sigaddset(&sigact.sa_mask, SIGTERM);
+  sigaddset(&sigact.sa_mask, SIGPIPE);
+  sigaddset(&sigact.sa_mask, SIGINT);
   sigact.sa_handler = TerminateHandler;
   sigaction(SIGPIPE, &sigact, NULL);
   sigaction(SIGTERM, &sigact, NULL);
+  sigaction(SIGINT, &sigact, NULL);
 #else
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) |
+                     sigmask(SIGINT)  |
+                     sigmask(SIGTERM) );
+#endif
   signal(SIGPIPE, TerminateHandler);
   signal(SIGTERM, TerminateHandler);
+  signal(SIGINT, TerminateHandler);
 #ifdef HAVE_SIGINTERRUPT
   siginterrupt(SIGPIPE, True);
   siginterrupt(SIGTERM, True);
+  siginterrupt(SIGINT, True);
 #endif
 #endif
 
@@ -217,6 +228,12 @@ int main(int argc, char **argv)
   /* Recieve all messages from Fvwm */
   atexit(ShutMeDown);
   MainEventLoop();
+#ifdef FVWM_DEBUG_MSGS
+  if ( debug_term_signal )
+  {
+    fvwm_msg(DBG, "main", "Terminated by signal %d", debug_term_signal);
+  }
+#endif
   return 0;
 }
 
@@ -226,7 +243,7 @@ int main(int argc, char **argv)
 ******************************************************************************/
 void MainEventLoop(void)
 {
-fd_set readset;
+  fd_set readset;
 
   while( !isTerminated ) {
     FD_ZERO(&readset);
@@ -238,7 +255,7 @@ fd_set readset;
      * having one fewer select statements
      */
     XFlush(dpy);
-    if (select(fd_width,SELECT_FD_SET_CAST &readset,NULL,NULL,NULL) > 0) {
+    if (fvwmSelect(fd_width, &readset, NULL, NULL, NULL) > 0) {
 
       if (FD_ISSET(x_fd,&readset) || XPending(dpy)) LoopOnEvents();
       if (FD_ISSET(Fvwm_fd[1],&readset)) ReadFvwmPipe();

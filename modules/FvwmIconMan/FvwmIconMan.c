@@ -12,11 +12,11 @@
 #include "x.h"
 #include "xmanager.h"
 
+#include "libs/fvwmsignal.h"
 #include "libs/Module.h"
 
 
 static fd_set_size_t fd_width;
-static volatile sig_atomic_t isTerminated = False;
 
 static char *IM_VERSION = "1.3";
 
@@ -88,7 +88,7 @@ void PrintMemuse (void)
 static RETSIGTYPE
 TerminateHandler(int sig)
 {
-  isTerminated = True;
+  fvwmSetTerminate(sig);
 }
 
 
@@ -137,7 +137,7 @@ static void main_loop (void)
      * there is nothing there yet ...
      */
     readset = saveset;
-    if (select(fd_width, SELECT_FD_SET_CAST &readset,NULL,NULL,NULL) < 0) {
+    if (fvwmSelect(fd_width, &readset,NULL,NULL,NULL) < 0) {
       ConsoleMessage ("Internal error with select: errno=%d\n",errno);
     }
     else {
@@ -215,6 +215,11 @@ int main (int argc, char **argv)
     struct sigaction  sigact;
 
     sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
 # ifdef SA_INTERRUPT
     sigact.sa_flags = SA_INTERRUPT;
 # else
@@ -230,11 +235,25 @@ int main (int argc, char **argv)
   }
 #else
   /* We don't have sigaction(), so fall back to less robust methods.  */
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) |
+                     sigmask(SIGINT) |
+                     sigmask(SIGHUP) |
+                     sigmask(SIGTERM) |
+                     sigmask(SIGQUIT) );
+#endif
   signal(SIGPIPE, TerminateHandler);
   signal(SIGINT,  TerminateHandler);
   signal(SIGHUP,  TerminateHandler);
   signal(SIGTERM, TerminateHandler);
   signal(SIGQUIT, TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGINT, 1);
+  siginterrupt(SIGHUP, 1);
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGQUIT, 1);
+#endif
 #endif
 
   read_in_resources (argv[3]);
@@ -258,6 +277,13 @@ int main (int argc, char **argv)
   SendInfo (Fvwm_fd, "Send_WindowList", 0);
 
   main_loop();
+
+#ifdef FVWM_DEBUG_MSGS
+  if ( debug_term_signal )
+  {
+    fvwm_msg(DBG, "main", "Terminated by signal %d", debug_term_signal);
+  }
+#endif
 
   return 0;
 }

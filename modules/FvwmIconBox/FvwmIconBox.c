@@ -30,14 +30,11 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include "libs/Module.h"
+#include "libs/fvwmsignal.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -164,6 +161,10 @@ int sortby = UNSORT;
 
 int save_color_limit = 0;                   /* color limit from config */
 
+static RETSIGTYPE TerminateHandler(int);
+static int myErrorHandler(Display *dpy, XErrorEvent *event);
+static void CleanUp(void);
+
 /************************************************************************
   Main
   Based on main() from GoodStuff:
@@ -185,7 +186,42 @@ int main(int argc, char **argv)
   MyName = safemalloc(strlen(temp)+1);
   strcpy(MyName, temp);
 
-  signal (SIGPIPE, DeadPipe);
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+  }
+#else
+  /*
+   * No sigaction, so fall back onto standard and unreliable signals
+   */
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) | sigmask(SIGTERM) | sigmask(SIGINT) );
+#endif
+
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+  signal(SIGINT, TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGINT, 1);
+#endif
+#endif
 
   if((argc != 6)&&(argc != 7))
     {
@@ -217,7 +253,7 @@ int main(int argc, char **argv)
   InitPictureCMap(dpy,Root); /* store the root cmap */
   d_depth = DefaultDepth(dpy, screen);
 
-  XSetErrorHandler((XErrorHandler)myErrorHandler);
+  XSetErrorHandler(myErrorHandler);
 
   ParseOptions();
 
@@ -235,9 +271,16 @@ int main(int argc, char **argv)
   CreateWindow();
 
   SendFvwmPipe(fd,"Send_WindowList",0);
+  atexit(CleanUp);
 
   Loop();
-  return 0;
+#ifdef FVWM_DEBUG_MSGS
+  if ( debug_term_signal )
+  {
+    fvwm_msg(DBG, "main", "Terminated by signal %d", debug_term_signal);
+  }
+#endif
+ return 0;
 }
 
 
@@ -258,7 +301,7 @@ void Loop(void)
   int diffx, diffy;
   int oldw, oldh;
 
-  while(1)
+  while( !isTerminated )
     {
       if(My_XNextEvent(dpy,&Event))
 	{
@@ -1281,13 +1324,34 @@ void Prev(void)
 }
 
 /************************************************************************
+ * TerminateHandler - signal handler to make FvwmIconBox exit cleanly
+ */
+static RETSIGTYPE
+TerminateHandler(int sig)
+{
+  /*
+   * This function might not return - it could "long-jump"
+   * right out, so we need to do everything we need to do
+   * BEFORE we call it ...
+   */
+  fvwmSetTerminate(sig);
+}
+
+
+/************************************************************************
  * DeadPipe --Dead pipe handler
  * 	Based on DeadPipe() from GoodStuff:
  *		Copyright 1993, Robert Nation.
  ***********************************************************************/
-void DeadPipe(int nonsense)
+void
+DeadPipe(int nonsense)
 {
-#if 0 /* can't do X or malloc stuff in a signal handler, so just exit */
+  exit(0);
+}
+
+static void
+CleanUp(void)
+{
   struct icon_info *tmpi, *tmpi2;
   struct mousefunc *tmpm, *tmpm2;
   struct keyfunc *tmpk, *tmpk2;
@@ -1331,8 +1395,6 @@ void DeadPipe(int nonsense)
   if ((local_flags & SETWMICONSIZE))
     XDeleteProperty(dpy, Root, XA_WM_ICON_SIZE);
   XSync(dpy,0);
-#endif /* 0 */
-  exit(0);
 }
 
 
@@ -1744,9 +1806,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-  select(fd_width,SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL);
+  if (fvwmSelect(fd_width, &in_fdset, 0, 0, NULL) > 0)
+  {
 
-  if(FD_ISSET(x_fd, &in_fdset))
+    if(FD_ISSET(x_fd, &in_fdset))
     {
       if(XPending(dpy))
 	{
@@ -1757,10 +1820,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       else
 	miss_counter++;
       if(miss_counter > 100)
-	DeadPipe(0);
+	exit(0);
     }
 
-  if(FD_ISSET(fd[1], &in_fdset))
+    if(FD_ISSET(fd[1], &in_fdset))
     {
       FvwmPacket* packet = ReadFvwmPacket(fd[1]);
       if ( packet == NULL )
@@ -1768,6 +1831,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       else
 	  process_message( packet->type, packet->body );
     }
+  }
   return 0;
 }
 
@@ -2604,7 +2668,8 @@ char *stripcpy2(char *source)
 /***********************************************************************
  Error handler
  ***********************************************************************/
-XErrorHandler myErrorHandler(Display *dpy, XErrorEvent *event)
+static int
+myErrorHandler(Display *dpy, XErrorEvent *event)
 {
   char msg[256];
 

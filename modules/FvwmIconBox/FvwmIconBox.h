@@ -69,7 +69,6 @@ extern char *stripcpy2(char *source);
 extern void mapicons(void);
 extern int desk_cond(struct icon_info *item);
 extern int itemcmp(struct icon_info *item1, struct icon_info *item2);
-extern XErrorHandler myErrorHandler(Display *dpy, XErrorEvent *event);
 
 
 extern Display *dpy;			/* which display are we talking to */

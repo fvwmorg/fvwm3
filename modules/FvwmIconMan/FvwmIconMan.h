@@ -16,10 +16,6 @@
 
 #include "libs/fvwmlib.h"
 
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
 #include "debug.h"
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
