@@ -59,9 +59,10 @@ with_readline=@with_readline@
 with_rplay=@with_rplay@
 with_stroke=@with_stroke@
 with_xpm=@with_xpm@
-with_gtk=@with_gtk@
-with_gnome=@with_gnome@
+with_gnomewm=@with_gnomewm@
 with_sm=@with_sm@
+with_gtk=@with_gtk@
+with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
 with_multibyte=@with_multibyte@
 
@@ -114,15 +115,17 @@ while test $# -gt 0; do
 			test "$with_rplay"     = "yes" && echo "rplay"
 			test "$with_stroke"    = "yes" && echo "stroke"
 			test "$with_xpm"       = "yes" && echo "xpm"
-			test "$with_gtk"       = "yes" && echo "gtk"
-			test "$with_gnome"     = "yes" && echo "gnome"
+			test "$with_gnomewm"   = "yes" && echo "gnome-wm"
 			test "$with_sm"        = "yes" && echo "sm"
-			test "$with_gnomelibs" = "yes" && echo "gnomelibs"
+			test "$with_gtk"       = "yes" && echo "gtk"
+			test "$with_gdkimlib"  = "yes" && echo "gdk-imlib"
+			test "$with_gnomelibs" = "yes" && echo "gnome-libs"
 			test "$with_multibyte" = "yes" && echo "multibyte"
 			;;
 
 		--supports-*)
 			feature=`echo "$1" | sed 's/^--supports-//'`
+			feature=`echo "feature" | sed 's/[-_]//g'`
 			with=`eval echo '$'with_"$feature"`
 			test "$with" = "yes" && exit 0
 			test "$with" = "no"  && exit 100
@@ -153,10 +156,11 @@ while test $# -gt 0; do
 			echo "	rplay: $with_rplay"
 			echo "	stroke: $with_stroke"
 			echo "	xpm: $with_xpm"
-			echo "	gtk: $with_gtk"
-			echo "	gnome (gnome wm hints): $with_gnome"
+			echo "	gnome-wm (window manager hints): $with_gnomewm"
 			echo "	sm (session management): $with_sm"
-			echo "	gnomelibs: $with_gnomelibs"
+			echo "	gtk (FvwmGtk): $with_gtk"
+			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
+			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
 			echo "	multibyte: $with_multibyte"
 			;;
 

@@ -1,3 +1,13 @@
+2001-05-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	report gdk-imlib support in FvwmGtk; don't report gnome-libs and
+	gdk-imlib support in FvwmGtk if FvwmGtk is not installed;
+	rename $*_gnome to $*_gnomewm to reduce confusion
+
+	* INSTALL.fvwm:
+	added a note for Cygwin users, other minor documentation improvements
+
 2001-05-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleEnterNotify):

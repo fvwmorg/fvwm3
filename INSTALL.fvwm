@@ -2,8 +2,12 @@
 VMS users: ignore this file, and follow the instructions in vms/README
 instead.
 
+Cygwin users: try "make -i -k" and "make -i -k install" to work around the
+Cygwin problem, not supporting POSIX's mkfifo; FvwmCommand will be skipped.
+
 This file details only configuration options peculiar to FVWM.  Please
 read the generic instructions in INSTALL first.
+
 
 Important Note!
 ===============
@@ -32,16 +36,15 @@ What gets installed, and where
 
 * fvwm2 is installed into ${prefix}/bin
 * a couple of utilities are also installed into ${prefix}/bin; this includes
-  fvwm-config, fvwm-menu-*, FvwmCommand, fvwmbug, xpmroot, xselection
+  fvwm-config, fvwm-menu-*, FvwmCommand, fvwmbug, fvwm24_convert, xpmroot
 * all FvwmModule modules are installed into ${libexecdir}/fvwm/${VERSION}
 * all manual pages are installed into ${mandir}/man1
 * some configuration files are installed into ${datadir}/fvwm, for example,
   FvwmForm & FvwmScript configurations and others
 
-Where VERSION is the version string of FVWM, typically something like
-"2.2.0".  No other files are installed.  There are sample
-system.fvwm2rc files which you may copy manually to ${sysconfdir}/fvwm ---
-see below.
+where VERSION is the version string of FVWM, typically something like
+"2.4.0".  No other files are installed.  There are sample system.fvwm2rc
+files which you may copy manually to ${sysconfdir}/fvwm, see below.
 
 Unless you used configure options,
 
@@ -88,6 +91,7 @@ For users starting fvwm without a .fvwm2rc file, there are built-in
 dialogs that can copy files from the configuration directory into the
 users home directory to create the users starting .fvwm2rc.
 See the fvwm2 man page under "INITIALIZATION".
+
 
 C++
 ===
@@ -177,15 +181,18 @@ Only one version of the --with-foo-library flag may be specified.
 Optional libraries used by FvwmGtk
 ==================================
 
-FvwmGtk module requires GTK and optionally Imlib and GNOME libraries.
+FvwmGtk module requires GTK and optionally GDK-Imlib and GNOME libraries.
 
 Note, FVWM itself has an ability to support GNOME Window Manager hints
 (which is enabled by default), this has nothing to do with GNOME library
 support compiled into FvwmGtk (which is autoprobed and used if passed).
 
-To disable autoprobing of GTK and GNOME libraries, use:
+To disable autoprobing of GTK, Imlib and GNOME libraries, use:
 
-  --disable-gtktest --without-gnome
+  --disable-gtktest --disable-imlibtest --without-gnome
+
+This does not turn GTK and Imlib support off, instead, one part of the
+checking, precisely compilation, is quietly considered to be passed.
 
 Run './configure --help' for more information about configure options.
 

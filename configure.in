@@ -411,9 +411,9 @@ fi
 
 
 dnl ********* GTK, IMLIB, GNOME
-dnl Check the availability of Gtk
+dnl Check the availability of gtk
 AM_PATH_GTK(1.1.0,[FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)],)
-if test "x$no_gtk" = x ; then
+if test "x$no_gtk" = x; then
   with_gtk=yes
   problem_gtk=""
 else
@@ -423,17 +423,24 @@ fi
 
 dnl Check the availability of gdk-imlib
 AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(IMLIB),)
+if test "x$no_imlib" = x; then
+  with_gdkimlib=yes
+  problem_gdkimlib=""
+else
+  with_gdkimlib=no
+  problem_gdkimlib=": Failed on gdk-imlib, see config.log"
+fi
 
 GNOME_INIT_HOOK
 
 dnl Unfortunately we have 2 gnome supports: WM hints and gnome libs.
-dnl The $with_gnome below refers to the first, not GNOME_INIT_HOOK.
+dnl The $with_gnomewm below refers to the first, not GNOME_INIT_HOOK.
 if test "x$enable_gnome" != "xno"; then
-  with_gnome=yes
-  problem_gnome=""
+  with_gnomewm=yes
+  problem_gnomewm=""
 else
-  with_gnome=no
-  problem_gnome=": Explicitly disabled"
+  with_gnomewm=no
+  problem_gnomewm=": Explicitly disabled"
 fi
 
 
@@ -459,9 +466,10 @@ AC_SUBST(with_readline)
 AC_SUBST(with_rplay)
 AC_SUBST(with_stroke)
 AC_SUBST(with_xpm)
-AC_SUBST(with_gtk)
-AC_SUBST(with_gnome)
+AC_SUBST(with_gnomewm)
 AC_SUBST(with_sm)
+AC_SUBST(with_gtk)
+AC_SUBST(with_gdkimlib)
 AC_SUBST(with_gnomelibs)
 AC_SUBST(with_multibyte)
 
@@ -524,6 +532,13 @@ eval my_mandir="`eval echo ${mandir}`"
 eval my_moddir="`eval echo ${FVWM_MODULEDIR}`"; eval my_moddir="$my_moddir"
 eval my_datdir="`eval echo ${FVWM_DATADIR}`"
 
+case "$with_gtk" in
+  yes) fvwmgtk_msg="
+  Have Imlib support in FvwmGtk?     $with_gdkimlib$problem_gdkimlib
+  Have GNOME support in FvwmGtk?     $with_gnomelibs$problem_gnomelibs" ;;
+  no) fvwmgtk_msg="" ;;
+esac
+
 echo "
 FVWM Configuration:
 
@@ -538,10 +553,9 @@ FVWM Configuration:
   Have RPlay support?                $with_rplay$problem_rplay
   Have Stroke support?               $with_stroke$problem_stroke
   Have XPM support?                  $with_xpm$problem_xpm
-  Have GTK support?                  $with_gtk$problem_gtk
-  Have GNOME Window Manager support? $with_gnome$problem_gnome
+  Have GNOME Window Manager support? $with_gnomewm$problem_gnomewm
   Have Session Management support?   $with_sm$problem_sm
-  Have GNOME support in FvwmGtk?     $with_gnomelibs$problem_gnomelibs
+  Have GTK support, FvwmGtk?         $with_gtk$problem_gtk$fvwmgtk_msg
   Have Multibyte support?            $with_multibyte$problem_multibyte
 "
 case "$ac_cv_dmalloc" in
