@@ -164,9 +164,9 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
     /* maximum amount to adjust left edge of (a right justified) mini window */
     max = MinSize - size;
     /* position of window on virtual page */
-    pos = (virt - t->width) % Scr.MyDisplayWidth;
+    pos = (virt - t->width / 2) % Scr.MyDisplayWidth;
     /* how far right it would be to be right justified */
-    gap = Scr.MyDisplayWidth - t->width;
+    gap = Scr.MyDisplayWidth;
     /* move the window left proportional to how far right on the page it is */
     edge -= max * pos / gap;
     /* change the mini-window size */
@@ -185,8 +185,8 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   if (size < MinSize)
   {
     max = MinSize - size;
-    pos = (virt - t->height) % Scr.MyDisplayHeight;
-    gap = Scr.MyDisplayHeight - t->height;
+    pos = (virt - t->height / 2) % Scr.MyDisplayHeight;
+    gap = Scr.MyDisplayHeight;
     edge -= max * pos / gap;
     size = MinSize;
   }
