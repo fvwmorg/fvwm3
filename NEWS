@@ -1,5 +1,9 @@
 Changes in beta release 2.3.8 (September? 1999)
 
+* Icons have been removed from the fvwm package and are available at
+  the fvwm web site.  (Temporarily only at "xxx.fvwm.org" instead of
+  "www.fvwm.org".)
+
 * New command BugOpts allows to enable various former bug fixing compile
   time options to be changed at run time.
 

@@ -9,7 +9,6 @@ SUBDIRS = libs \
 	modules \
 	utils \
 	docs \
-	icons \
 	sample.fvwmrc \
 	tests
 

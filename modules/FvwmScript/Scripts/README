@@ -5,7 +5,7 @@ FvwmScript:
 requires xsetup.
 	- Buttons: buttons panel wich can replace FvwmButtons. 
 This script support popup menu and requires xload, xclock, 
-FvwmPager, TkDesk and some icons wich are located in ./some_nice_icons.
+FvwmPager, TkDesk and some icons wich are located at the fvwm web site.
 	- Date: desk accessory to setup date and time, requires
 xclock and date.
 	- KeyboardSetup: desk accessory to setup keyboard, requires

@@ -1,3 +1,10 @@
+1999-09-14  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmScript/Scripts/README (FvwmScript): New location for icons.
+
+	* FvwmScript/Scripts/Makefile.am (EXTRA_DIST): Removed some_nice_icons
+	directory, now in icon package.
+
 1999-09-14  Hippo
 
 	* FvwmTheme/FvwwTheme.c: "contrast" can be used as a forground color,
