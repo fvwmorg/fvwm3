@@ -1,5 +1,8 @@
 2000-10-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmButtons/FvwmButtons.c (MyXFree):
+	...
+
 	* FvwmDebug/FvwmDebug.c (list_configure):
 	* FvwmCommand/FvwmCommand.c (list_configure):
 	adapted to new format of border_width
