@@ -1,3 +1,7 @@
+2003-02-01  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmTaskBar/FvwmTaskBar.1: Typos.
+
 2003-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):
