@@ -1,3 +1,11 @@
+1999-06-18  Tim Cutts  <tim.cutts@incyte.com>
+
+	* libs/System.c (getostype): Code was assuming that buf had been
+	initialised to nulls.  Under Solaris 2.5.1/gcc, this is not the
+	case and OSTYPE in FvwmM4 was being set to garbage and SunOS stuck
+	on the end.  Set the initial byte of buf to \0 to fix this.  There
+	may be other bugs of this type elsewhere.
+
 1999-06-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* sample.fvwmrc/new-features:

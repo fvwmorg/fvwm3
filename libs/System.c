@@ -51,6 +51,7 @@ int getostype(char *buf, int max)
     struct utsname sysname;
 
     if ( uname( &sysname ) >= 0 ) {
+        buf[0] = '\0';
 	strncat( buf, sysname.sysname, max );
 	return 0;
     }
