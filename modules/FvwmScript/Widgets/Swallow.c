@@ -28,7 +28,7 @@ void DrawRelief(struct XObj *xobj)
 
  if (xobj->value!=0)
  {
-  for (i=1;i<4;i++)
+  for (i=1;i<2;i++)
   {
    segm[0].x1=xobj->x-i;
    segm[0].y1=xobj->y-i;
@@ -41,8 +41,8 @@ void DrawRelief(struct XObj *xobj)
    if (xobj->value==-1)
     XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
    else
-    XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
-   XDrawSegments(dpy,*xobj->ParentWin,xobj->gc,segm,2);
+    XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
+   XDrawSegments(dpy,x11base->win,xobj->gc,segm,2);
 
    segm[0].x1=xobj->x-i;
    segm[0].y1=xobj->y+xobj->height+i-1;
@@ -53,10 +53,10 @@ void DrawRelief(struct XObj *xobj)
    segm[1].x2=xobj->x+xobj->width+i-1;
    segm[1].y2=xobj->y+xobj->height+i-1;
    if (xobj->value==-1)
-    XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+    XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
    else
     XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
-   XDrawSegments(dpy,*xobj->ParentWin,xobj->gc,segm,2);
+   XDrawSegments(dpy,x11base->win,xobj->gc,segm,2);
   }
  }
 
@@ -68,12 +68,17 @@ void InitSwallow(struct XObj *xobj)
  XSetWindowAttributes Attr;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
@@ -98,7 +103,6 @@ void InitSwallow(struct XObj *xobj)
 
 void DestroySwallow(struct XObj *xobj)
 {
- XSetCloseDownMode(dpy,DestroyAll);
  /* Arrete le programme swallow */
  if (xobj->win!=None)
   XKillClient(dpy, xobj->win);
@@ -153,21 +157,9 @@ void ProcessMsgSwallow(struct XObj *xobj,unsigned long type,unsigned long *body)
  {
   case M_MAP:
    swallow(xobj,body);
-  break;
-  case M_RES_NAME:
-  break;
-  case M_RES_CLASS:
-  break;
+   break;
   case M_WINDOW_NAME:
-    CheckForHangon(xobj,body);
-  break;
-  default:
-  break;
+   CheckForHangon(xobj,body);
+   break;
  }
 }
-
-
-
-
-
-

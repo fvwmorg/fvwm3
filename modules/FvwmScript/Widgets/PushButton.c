@@ -30,13 +30,17 @@ void InitPushButton(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
-
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.cursor=XCreateFontCursor(dpy,XC_hand2);
@@ -93,7 +97,12 @@ void InitPushButton(struct XObj *xobj)
    xobj->height=i;
  }
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
  xobj->value3=CountOption(xobj->title);
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyPushButton(struct XObj *xobj)
@@ -106,8 +115,7 @@ void DestroyPushButton(struct XObj *xobj)
 
 void DrawPushButton(struct XObj *xobj)
 {
- DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-   xobj->TabColor[li],xobj->TabColor[shad],xobj->TabColor[black],0);
+ DrawReliefRect(0,0,xobj->width,xobj->height,xobj,hili,shad);
  DrawIconStr(0,xobj,True);
 }
 
@@ -145,8 +153,7 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	   if (WinBut==0)
 	   {
 	    WinBut=Win2;
-	    DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		xobj->TabColor[shad],xobj->TabColor[li],xobj->TabColor[black],0);
+	    DrawReliefRect(0,0,xobj->width,xobj->height,xobj,shad,hili);
 	    DrawIconStr(1,xobj,True);
 	    In=1;
 	   }
@@ -154,16 +161,14 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	   {
 	    if (Win2==WinBut)
 	    {
-	     DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		xobj->TabColor[shad],xobj->TabColor[li],xobj->TabColor[black],0);
+	     DrawReliefRect(0,0,xobj->width,xobj->height,xobj,shad,hili);
 	     DrawIconStr(1,xobj,True);
 	     In=1;
 	    }
 	    else if (In)
 	    {
 	     In=0;
-	     DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		xobj->TabColor[li],xobj->TabColor[shad],xobj->TabColor[black],0);
+	     DrawReliefRect(0,0,xobj->width,xobj->height,xobj,hili,shad);
 	     DrawIconStr(0,xobj,True);
 	    }
 	   }
@@ -174,22 +179,19 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	   if (Win2==WinBut)
 	   {
 	    In=1;
-	    DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		xobj->TabColor[shad],xobj->TabColor[li],xobj->TabColor[black],0);
+	    DrawReliefRect(0,0,xobj->width,xobj->height,xobj,shad,hili);
 	    DrawIconStr(1,xobj,True);
 	   }
 	   else if (In)
 	   {
-	    DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		xobj->TabColor[li],xobj->TabColor[shad],xobj->TabColor[black],0);
+	    DrawReliefRect(0,0,xobj->width,xobj->height,xobj,hili,shad);
 	    DrawIconStr(0,xobj,True);
 	    In=0;
 	   }
 	  break;
       case ButtonRelease:
 	   End=0;
-	   DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		xobj->TabColor[li],xobj->TabColor[shad],xobj->TabColor[black],0);
+	   DrawReliefRect(0,0,xobj->width,xobj->height,xobj,hili,shad);
 	   DrawIconStr(0,xobj,True);
 	   if (In)
 	   {
@@ -234,7 +236,7 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
     mask=0;
     Attr.background_pixel=xobj->TabColor[back];
     mask|=CWBackPixel;
-    Attr.border_pixel = xobj->TabColor[fore];
+    Attr.border_pixel = 0;
     mask |= CWBorderPixel;
     Attr.colormap = Pcmap;
     mask |= CWColormap;
@@ -243,12 +245,16 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
     Attr.override_redirect=True;
     mask|=CWOverrideRedirect;
     WinPop=XCreateWindow(dpy,XRootWindow(dpy,screen),
- 	x,y,wMenu-5,hMenu,1,
+ 	x,y,wMenu-5,hMenu,0,
  	Pdepth,InputOutput,Pvisual,mask,&Attr);
-   XMapRaised(dpy,WinPop);
+    if (xobj->colorset >= 0)
+      SetWindowBackground(dpy, WinPop, wMenu - 5, hMenu,
+		          &Colorset[xobj->colorset % nColorsets], Pdepth,
+		          xobj->gc, True);
+    XMapRaised(dpy,WinPop);
 
    /* Dessin du menu */
-   DrawPMenu(xobj,WinPop,hOpt,2);
+   DrawPMenu(xobj,WinPop,hOpt,1);
    do
    {
     XQueryPointer(dpy,XRootWindow(dpy,XDefaultScreen(dpy)),
@@ -265,8 +271,8 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
      newvalue=0;
     if (newvalue!=oldvalue)
     {
-     SelectMenu(xobj,WinPop,hOpt,oldvalue,0);
-     SelectMenu(xobj,WinPop,hOpt,newvalue,1);
+     UnselectMenu(xobj,WinPop,hOpt,oldvalue,wMenu-5,asc,1);
+     SelectMenu(xobj,WinPop,hOpt,newvalue);
      oldvalue=newvalue;
     }
    }
@@ -312,12 +318,3 @@ void EvtKeyPushButton(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgPushButton(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-
-
-
-
-
-
-

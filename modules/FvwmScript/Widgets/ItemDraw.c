@@ -28,12 +28,17 @@ void InitItemDraw(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.background_pixel=xobj->TabColor[back];
@@ -54,11 +59,18 @@ void InitItemDraw(struct XObj *xobj)
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 
  /* Redimensionnement du widget */
+ if (strlen(xobj->title)!=0)
+   XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
+ else {
+   asc = 0;
+   desc = 0;
+ }
+   
  if (xobj->icon==NULL)
  {
   if (strlen(xobj->title)!=0)
   {
-   XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
+   /* title but no icon */
    minHeight=asc+desc+2;
    minWidth=XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title))+2;
    if (xobj->height < minHeight)
@@ -69,6 +81,7 @@ void InitItemDraw(struct XObj *xobj)
  }
  else if (strlen(xobj->title)==0)
  {
+  /* icon but no title */
   if (xobj->height<xobj->icon_h)
    xobj->height=xobj->icon_h;
   if (xobj->width<xobj->icon_w)
@@ -76,16 +89,25 @@ void InitItemDraw(struct XObj *xobj)
  }
  else
  {
+  /* title and icon */
   if (xobj->icon_w>XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title))+2)
   {
+  /* icon is wider than the title */
    if (xobj->width<xobj->icon_w)
     xobj->width=xobj->icon_w;
   }
   else
-   xobj->width=XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title))+2;
-  xobj->height=xobj->icon_h+2*(asc+desc+15);
+   /* title is wider than icon */
+   if (xobj->width<XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title))+2)
+    xobj->width=XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title))+2;
+  xobj->height=xobj->icon_h+asc+desc+2;
  }
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyItemDraw(struct XObj *xobj)
@@ -97,10 +119,8 @@ void DestroyItemDraw(struct XObj *xobj)
 
 void DrawItemDraw(struct XObj *xobj)
 {
-
  /* Calcul de la position de la chaine de charactere */
- XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
- XFillRectangle(dpy,xobj->win,xobj->gc,0,0,xobj->width,xobj->height);
+ XClearArea(dpy,xobj->win,0,0,xobj->width,xobj->height,False);
  DrawIconStr(0,xobj,False);
 }
 
@@ -115,11 +135,3 @@ void EvtKeyItemDraw(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgItemDraw(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-
-
-
-
-
-

@@ -28,6 +28,7 @@ void InitVarGlob()
  scriptprop=(ScriptProp*) calloc(1,sizeof(ScriptProp));
  scriptprop->x=-1;
  scriptprop->y=-1;
+ scriptprop->colorset = -1;
  scriptprop->initbloc=NULL;
 
  tabobj=(TabObj*) calloc(1,sizeof(TabObj));
@@ -353,12 +354,13 @@ int yyerror(char *errmsg)
 %token <number> NUMBER	/* Nombre pour communiquer les dimensions */
 
 %token WINDOWTITLE WINDOWSIZE WINDOWPOSITION FONT
-%token FORECOLOR BACKCOLOR SHADCOLOR LICOLOR
+%token FORECOLOR BACKCOLOR SHADCOLOR LICOLOR COLORSET
 %token OBJECT INIT PERIODICTASK MAIN END PROP
 %token TYPE SIZE POSITION VALUE VALUEMIN VALUEMAX TITLE SWALLOWEXEC ICON FLAGS WARP WRITETOFILE
 %token HIDDEN CANBESELECTED NORELIEFSTRING
 %token CASE SINGLECLIC DOUBLECLIC BEG POINT
-%token EXEC HIDE SHOW FONT CHFORECOLOR CHBACKCOLOR GETVALUE CHVALUE CHVALUEMAX CHVALUEMIN
+%token EXEC HIDE SHOW FONT CHFORECOLOR CHBACKCOLOR CHCOLORSET
+%token GETVALUE CHVALUE CHVALUEMAX CHVALUEMIN
 %token ADD DIV MULT GETTITLE GETOUTPUT STRCOPY NUMTOHEX HEXTONUM QUIT
 %token LAUNCHSCRIPT GETSCRIPTFATHER SENDTOSCRIPT RECEIVFROMSCRIPT
 %token GET SET SENDSIGN REMAINDEROFDIV GETTIME GETSCRIPTARG
@@ -375,36 +377,43 @@ initvar: 			{ InitVarGlob(); }
 
 /* Entete du scripte decrivant les options par defaut */
 head:				/* vide: dans ce cas on utilise les valeurs par défaut */	
-    | WINDOWTITLE GSTR head	{		/* Titre de la fenetre */
-				 scriptprop->titlewin=$2;
+    | head WINDOWTITLE GSTR	{		/* Titre de la fenetre */
+				 scriptprop->titlewin=$3;
 				}
-    | ICON STR head		{
-				 scriptprop->icon=$2;
+    | head ICON STR		{
+				 scriptprop->icon=$3;
 				}
-    | WINDOWPOSITION NUMBER NUMBER head
+    | head WINDOWPOSITION NUMBER NUMBER
 				{		/* Position et taille de la fenetre */
-				 scriptprop->x=$2;
-				 scriptprop->y=$3;
+				 scriptprop->x=$3;
+				 scriptprop->y=$4;
 				}
-    | WINDOWSIZE NUMBER NUMBER head
+    | head WINDOWSIZE NUMBER NUMBER
 				{		/* Position et taille de la fenetre */
-				 scriptprop->width=$2;
-				 scriptprop->height=$3;
+				 scriptprop->width=$3;
+				 scriptprop->height=$4;
 				}
-    | BACKCOLOR GSTR head	{ 		/* Couleur de fond */
-				 scriptprop->backcolor=$2;
+    | head BACKCOLOR GSTR	{ 		/* Couleur de fond */
+				 scriptprop->backcolor=$3;
+				 scriptprop->colorset = -1;
 				}
-    | FORECOLOR GSTR head	{ 		/* Couleur des lignes */
-				 scriptprop->forecolor=$2;
+    | head FORECOLOR GSTR	{ 		/* Couleur des lignes */
+				 scriptprop->forecolor=$3;
+				 scriptprop->colorset = -1;
 				}
-    | SHADCOLOR GSTR head	{ 		/* Couleur des lignes */
-				 scriptprop->shadcolor=$2;
+    | head SHADCOLOR GSTR	{ 		/* Couleur des lignes */
+				 scriptprop->shadcolor=$3;
+				 scriptprop->colorset = -1;
 				}
-    | LICOLOR GSTR head	{ 		/* Couleur des lignes */
-				 scriptprop->licolor=$2;
+    | head LICOLOR GSTR		{ 		/* Couleur des lignes */
+				 scriptprop->hilicolor=$3;
+				 scriptprop->colorset = -1;
 				}
-    | FONT STR head		{
-				 scriptprop->font=$2;
+    | head COLORSET NUMBER	{
+				 scriptprop->colorset = $3;
+				}
+    | head FONT STR		{
+				 scriptprop->font=$3;
 				}
    ;
 
@@ -426,7 +435,7 @@ periodictask:		/* cas ou il n'y a pas de tache periodique */
 
 /* Desciption d'un objet */
 object :			/* Vide */
-    | OBJECT id PROP init verify mainloop object
+    | object OBJECT id PROP init verify mainloop
     ;
 
 id: NUMBER			{ nbobj++;
@@ -445,62 +454,69 @@ id: NUMBER			{ nbobj++;
   ;
 
 init:				/* vide */
-    | TYPE STR init		{
-				 (*tabobj)[nbobj].type=$2;
+    | init TYPE STR		{
+				 (*tabobj)[nbobj].type=$3;
 				 HasType=1;
 				}
-    | SIZE NUMBER NUMBER init	{
-				 (*tabobj)[nbobj].width=$2;
-				 (*tabobj)[nbobj].height=$3;
+    | init SIZE NUMBER NUMBER	{
+				 (*tabobj)[nbobj].width=$3;
+				 (*tabobj)[nbobj].height=$4;
 				}
-    | POSITION NUMBER NUMBER init {
-				 (*tabobj)[nbobj].x=$2;
-				 (*tabobj)[nbobj].y=$3;
+    | init POSITION NUMBER NUMBER {
+				 (*tabobj)[nbobj].x=$3;
+				 (*tabobj)[nbobj].y=$4;
 				 HasPosition=1;
 				}
-    | VALUE NUMBER init		{
-				 (*tabobj)[nbobj].value=$2;
+    | init VALUE NUMBER		{
+				 (*tabobj)[nbobj].value=$3;
 				}
-    | VALUEMIN NUMBER init		{
-				 (*tabobj)[nbobj].value2=$2;
+    | init VALUEMIN NUMBER		{
+				 (*tabobj)[nbobj].value2=$3;
 				}
-    | VALUEMAX NUMBER init		{
-				 (*tabobj)[nbobj].value3=$2;
+    | init VALUEMAX NUMBER		{
+				 (*tabobj)[nbobj].value3=$3;
 				}
-    | TITLE GSTR init		{
-				 (*tabobj)[nbobj].title=$2;
+    | init TITLE GSTR		{
+				 (*tabobj)[nbobj].title=$3;
 				}
-    | SWALLOWEXEC GSTR init	{
-				 (*tabobj)[nbobj].swallow=$2;
+    | init SWALLOWEXEC GSTR	{
+				 (*tabobj)[nbobj].swallow=$3;
 				}
-    | ICON STR init		{
-				 (*tabobj)[nbobj].icon=$2;
+    | init ICON STR		{
+				 (*tabobj)[nbobj].icon=$3;
 				}
-    | BACKCOLOR GSTR init	{
-				 (*tabobj)[nbobj].backcolor=$2;
+    | init BACKCOLOR GSTR	{
+				 (*tabobj)[nbobj].backcolor=$3;
+				 (*tabobj)[nbobj].colorset = -1;
 				}
-    | FORECOLOR GSTR init	{
-				 (*tabobj)[nbobj].forecolor=$2;
+    | init FORECOLOR GSTR	{
+				 (*tabobj)[nbobj].forecolor=$3;
+				 (*tabobj)[nbobj].colorset = -1;
 				}
-    | SHADCOLOR GSTR init	{
-				 (*tabobj)[nbobj].shadcolor=$2;
+    | init SHADCOLOR GSTR	{
+				 (*tabobj)[nbobj].shadcolor=$3;
+				 (*tabobj)[nbobj].colorset = -1;
 				}
-    | LICOLOR GSTR init	{
-				 (*tabobj)[nbobj].licolor=$2;
+    | init LICOLOR GSTR		{
+				 (*tabobj)[nbobj].hilicolor=$3;
+				 (*tabobj)[nbobj].colorset = -1;
 				}
-    | FONT STR init		{
-				 (*tabobj)[nbobj].font=$2;
+    | init COLORSET NUMBER	{
+				 (*tabobj)[nbobj].colorset = $3;
 				}
-    | FLAGS flags init		
+    | init FONT STR		{
+				 (*tabobj)[nbobj].font=$3;
+				}
+    | init FLAGS flags		
     ;
 flags:
-     | HIDDEN flags		{
+     | flags HIDDEN		{
 				 (*tabobj)[nbobj].flags[0]=True;
 				}
-     | NORELIEFSTRING flags	{
+     | flags NORELIEFSTRING	{
 				 (*tabobj)[nbobj].flags[1]=True;
 				}
-     | CANBESELECTED flags	{
+     | flags CANBESELECTED	{
 				 (*tabobj)[nbobj].flags[2]=True;
 				}
     ; 
@@ -524,8 +540,8 @@ mainloop: END			{ InitObjTabCase(0); }
 addtabcase:			{ InitObjTabCase(1); }
 
 case:
-    | clic POINT bloc case
-    | number POINT bloc case
+    | case clic POINT bloc
+    | case number POINT bloc
     ;
 
 clic :  SINGLECLIC	{ InitCase(-1); }
@@ -541,28 +557,29 @@ bloc: BEG instr END
 				
 /* ensemble d'instructions */
 instr:
-    |	EXEC exec instr
-    |   WARP warp instr
-    |	WRITETOFILE writetofile instr
-    |	HIDE hide instr
-    |	SHOW show instr
-    |	CHVALUE chvalue instr
-    |	CHVALUEMAX chvaluemax instr
-    |	CHVALUEMIN chvaluemin instr
-    |	POSITION position instr
-    |	SIZE size instr
-    |	TITLE title instr
-    |	ICON icon instr
-    |	FONT font instr
-    |	CHFORECOLOR chforecolor instr
-    |	CHBACKCOLOR chbackcolor instr
-    |   SET set instr
-    |   SENDSIGN sendsign instr
-    |	QUIT quit instr
-    |	SENDTOSCRIPT sendtoscript instr
-    |	IF ifthenelse instr
-    |	FOR loop instr
-    |	WHILE while instr
+    | instr EXEC exec
+    | instr WARP warp
+    | instr WRITETOFILE writetofile
+    | instr HIDE hide
+    | instr SHOW show
+    | instr CHVALUE chvalue
+    | instr CHVALUEMAX chvaluemax
+    | instr CHVALUEMIN chvaluemin
+    | instr POSITION position
+    | instr SIZE size
+    | instr TITLE title
+    | instr ICON icon
+    | instr FONT font
+    | instr CHFORECOLOR chforecolor
+    | instr CHBACKCOLOR chbackcolor
+    | instr CHCOLORSET chcolorset
+    | instr SET set
+    | instr SENDSIGN sendsign
+    | instr QUIT quit
+    | instr SENDTOSCRIPT sendtoscript
+    | instr IF ifthenelse
+    | instr FOR loop
+    | instr WHILE while
     ;
 
 /* une seule instruction */
@@ -581,6 +598,7 @@ oneinstr: EXEC exec
 	| FONT font
 	| CHFORECOLOR chforecolor
 	| CHBACKCOLOR chbackcolor
+	| CHCOLORSET chcolorset
 	| SET set
 	| SENDSIGN sendsign
 	| QUIT quit
@@ -614,6 +632,8 @@ font: addlbuff numarg addlbuff strarg	{ AddCom(9,2);}
 chforecolor: addlbuff numarg addlbuff gstrarg	{ AddCom(10,2);}
            ;
 chbackcolor: addlbuff numarg addlbuff gstrarg	{ AddCom(19,2);}
+           ;
+chcolorset : addlbuff numarg addlbuff numarg	{ AddCom(24,2);}
            ;
 set: addlbuff vararg GET addlbuff args	{ AddCom(11,2);}
    ;
@@ -748,17 +768,3 @@ compare	: INF			 { l=1-250000; AddBufArg(&l,1); }
 	;
 
 %%
-
-
-
-
-
-
-
-
-
-
-
-
-
-

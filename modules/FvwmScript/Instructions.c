@@ -641,6 +641,8 @@ void ChangeValue (int NbArg,long *TabArg)
 
  tabxobj[TabIdObj[atoi(arg[0])]]->value=atoi(arg[1]);
  /* On redessine l'objet pour le mettre a jour */
+ if (tabxobj[TabIdObj[atoi(arg[0])]]->TypeWidget != SwallowExec)
+   XClearWindow(dpy, tabxobj[TabIdObj[atoi(arg[0])]]->win);
  tabxobj[TabIdObj[atoi(arg[0])]]->DrawObj(tabxobj[TabIdObj[atoi(arg[0])]]);
  free(arg[0]);
  free(arg[1]);
@@ -662,6 +664,8 @@ void ChangeValueMax (int NbArg,long *TabArg)
  if (tabxobj[TabIdObj[j]]->value>tabxobj[TabIdObj[j]]->value3)
  {
   tabxobj[TabIdObj[j]]->value=atoi(arg[1]);
+  if (tabxobj[TabIdObj[j]]->TypeWidget != SwallowExec)
+    XClearWindow(dpy, tabxobj[TabIdObj[j]]->win);
   tabxobj[TabIdObj[j]]->DrawObj(tabxobj[TabIdObj[j]]);
  }
  free(arg[0]);
@@ -684,6 +688,8 @@ void ChangeValueMin (int NbArg,long *TabArg)
  if (tabxobj[TabIdObj[j]]->value<tabxobj[TabIdObj[j]]->value2)
  {
   tabxobj[TabIdObj[j]]->value=atoi(arg[1]);
+  if (tabxobj[TabIdObj[j]]->TypeWidget != SwallowExec)
+    XClearWindow(dpy, tabxobj[TabIdObj[j]]->win);
   tabxobj[TabIdObj[j]]->DrawObj(tabxobj[TabIdObj[j]]);
  }
  free(arg[0]);
@@ -762,6 +768,8 @@ void ChangeFont (int NbArg,long *TabArg)
   XSetFont(dpy,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
  }
 #endif
+ if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+   XClearWindow(dpy, tabxobj[IdItem]->win);
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
  free(arg[0]);
  free(arg[1]);
@@ -804,6 +812,8 @@ void ChangeTitle (int NbArg,long *TabArg)
  IdItem= TabIdObj[atoi(arg[0])];
 
  tabxobj[IdItem]->title=strdup(arg[1]);
+ if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+   XClearWindow(dpy, tabxobj[IdItem]->win);
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
  free(arg[0]);
  free(arg[1]);
@@ -829,6 +839,8 @@ void ChangeIcon (int NbArg,long *TabArg)
  }*/
  tabxobj[IdItem]->icon=strdup(arg[1]);
  LoadIcon(tabxobj[IdItem]);
+ if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+   XClearWindow(dpy, tabxobj[IdItem]->win);
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
  free(arg[0]);
  free(arg[1]);
@@ -846,14 +858,22 @@ void ChangeForeColor (int NbArg,long *TabArg)
  IdItem= TabIdObj[atoi(arg[0])];
 
  /* Liberation de la couleur */
- XFreeColors(dpy,Pcmap,
-		(void*)(&(tabxobj[IdItem])->TabColor[fore]),1,0);
+ if (tabxobj[IdItem]->colorset < 0)
+   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[fore]),1,0);
 
  tabxobj[IdItem]->forecolor=(char*)calloc(100,sizeof(char));
  sprintf(tabxobj[IdItem]->forecolor,"%s",arg[1]);
 
  tabxobj[IdItem]->TabColor[fore] = GetColor(tabxobj[IdItem]->forecolor);
+ if (tabxobj[IdItem]->colorset >= 0) {
+   tabxobj[IdItem]->TabColor[back] = GetColor(tabxobj[IdItem]->backcolor);
+   tabxobj[IdItem]->TabColor[hili] = GetColor(tabxobj[IdItem]->hilicolor);
+   tabxobj[IdItem]->TabColor[shad] = GetColor(tabxobj[IdItem]->shadcolor);
+ }
+ tabxobj[IdItem]->colorset = -1;
 
+ if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+   XClearWindow(dpy, tabxobj[IdItem]->win);
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
 
  free(arg[0]);
@@ -873,14 +893,56 @@ void ChangeBackColor (int NbArg,long *TabArg)
  IdItem= TabIdObj[atoi(arg[0])];
 
  /* Liberation de la couleur */
- XFreeColors(dpy,Pcmap,
-		(void*)(&(tabxobj[IdItem])->TabColor[back]),1,0);
+ if (tabxobj[IdItem]->colorset < 0)
+   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[back]),1,0);
 
  tabxobj[IdItem]->backcolor=(char*)calloc(100,sizeof(char));
  sprintf(tabxobj[IdItem]->backcolor,"%s",arg[1]);
 
  tabxobj[IdItem]->TabColor[back] = GetColor(tabxobj[IdItem]->backcolor);
+ if (tabxobj[IdItem]->colorset >= 0) {
+   tabxobj[IdItem]->TabColor[fore] = GetColor(tabxobj[IdItem]->forecolor);
+   tabxobj[IdItem]->TabColor[hili] = GetColor(tabxobj[IdItem]->hilicolor);
+   tabxobj[IdItem]->TabColor[shad] = GetColor(tabxobj[IdItem]->shadcolor);
+ }
+ tabxobj[IdItem]->colorset = -1;
 
+ if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+   XClearWindow(dpy, tabxobj[IdItem]->win);
+ tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+
+ free(arg[0]);
+ free(arg[1]);
+}
+
+void ChangeColorset (int NbArg,long *TabArg)
+{
+ int i=0;
+ char *arg[2];
+ int IdItem;
+
+ arg[0]=CalcArg(TabArg,&i);
+ i++;
+ arg[1]=CalcArg(TabArg,&i);
+ IdItem= TabIdObj[atoi(arg[0])];
+
+ /* Liberation de la couleur */
+ if (tabxobj[IdItem]->colorset < 0) {
+   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[fore]),1,0);
+   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[back]),1,0);
+   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[hili]),1,0);
+   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[shad]),1,0);
+ }
+ sscanf(arg[1], "%d", &i);
+ i = i %nColorsets;
+ tabxobj[IdItem]->colorset = i;
+ tabxobj[IdItem]->TabColor[fore] = Colorset[i].fg;
+ tabxobj[IdItem]->TabColor[back] = Colorset[i].bg;
+ tabxobj[IdItem]->TabColor[hili] = Colorset[i].hilite;
+ tabxobj[IdItem]->TabColor[shad] = Colorset[i].shadow;
+
+ if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+   XClearWindow(dpy, tabxobj[IdItem]->win);
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
 
  free(arg[0]);
@@ -1228,6 +1290,7 @@ void InitCom()
  TabCom[21]=ChangeValueMax;
  TabCom[22]=ChangeValueMin;
  TabCom[23]=SendToScript;
+ TabCom[24]=ChangeColorset;
 
  /* Fonction */
  TabFunc[1]=FuncGetValue;

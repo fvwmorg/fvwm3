@@ -29,12 +29,17 @@ void InitMenu(struct XObj *xobj)
  char *Option;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.background_pixel=xobj->TabColor[back];
@@ -63,7 +68,7 @@ void InitMenu(struct XObj *xobj)
  free(Option);
 
  /* Position */
- xobj->y=3;
+ xobj->y=2;
  xobj->x=2;
  i=0;
  while (xobj!=tabxobj[i])
@@ -78,6 +83,11 @@ void InitMenu(struct XObj *xobj)
  }
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
  XMoveWindow(dpy,xobj->win,xobj->x,xobj->y);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+                       &Colorset[xobj->colorset % nColorsets], Pdepth,
+                       xobj->gc, True);
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyMenu(struct XObj *xobj)
@@ -105,19 +115,19 @@ void DrawMenu(struct XObj *xobj)
    segm[1].x1=i;
    segm[1].y1=i;
    segm[1].x2=i;
-   segm[1].y2=xobj->height-i+5;
-   XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+   segm[1].y2=xobj->height-i+3;
+   XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
    XDrawSegments(dpy,x11base->win,xobj->gc,segm,2);
 
    segm[0].x1=1+i;
-   segm[0].y1=xobj->height-i+5;
+   segm[0].y1=xobj->height-i+3;
    segm[0].x2=x11base->size.width-i-1;
-   segm[0].y2=xobj->height-i+5;
+   segm[0].y2=xobj->height-i+3;
 
    segm[1].x1=x11base->size.width-i-1;
    segm[1].y1=i;
    segm[1].x2=x11base->size.width-i-1;
-   segm[1].y2=xobj->height-i+5;
+   segm[1].y2=xobj->height-i+3;
    XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
    XDrawSegments(dpy,x11base->win,xobj->gc,segm,2);
   }
@@ -141,14 +151,13 @@ void EvtMouseMenu(struct XObj *xobj,XButtonEvent *EvtButton)
  XCharStruct struc;
  fd_set in_fdset;
 
- DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-   xobj->TabColor[shad],xobj->TabColor[li],xobj->TabColor[black],-1);
+ DrawReliefRect(0,0,xobj->width,xobj->height,xobj,shad,hili);
 
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  hOpt=asc+desc+10;
  xobj->value3=CountOption(xobj->title);
  hMenu=(xobj->value3-1)*hOpt;			/* Hauteur totale du menu */
- yMenu=xobj->y+xobj->height+1;
+ yMenu=xobj->y+xobj->height;
  wMenu=0;
  for (i=2;i<=xobj->value3;i++)
  {
@@ -183,10 +192,14 @@ void EvtMouseMenu(struct XObj *xobj,XButtonEvent *EvtButton)
  mask|=CWOverrideRedirect;
  WinPop=XCreateWindow(dpy,XRootWindow(dpy,screen),
 	x,y,wMenu-5,hMenu,0,Pdepth,InputOutput,Pvisual,mask,&Attr);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, WinPop, wMenu - 5, hMenu,
+                       &Colorset[xobj->colorset % nColorsets], Pdepth,
+                       xobj->gc, True);
  XMapRaised(dpy,WinPop);
 
  /* Dessin du menu */
- DrawPMenu(xobj,WinPop,hOpt,2);
+ DrawPMenu(xobj,WinPop,hOpt,1);
  do
  {
   XQueryPointer(dpy,XRootWindow(dpy,XDefaultScreen(dpy)),
@@ -203,8 +216,8 @@ void EvtMouseMenu(struct XObj *xobj,XButtonEvent *EvtButton)
     newvalue=0;
    if (newvalue!=oldvalue)
    {
-    SelectMenu(xobj,WinPop,hOpt,oldvalue,0);
-    SelectMenu(xobj,WinPop,hOpt,newvalue,1);
+    UnselectMenu(xobj,WinPop,hOpt,oldvalue,wMenu-5,asc,1);
+    SelectMenu(xobj,WinPop,hOpt,newvalue);
     oldvalue=newvalue;
    }
   }
@@ -220,12 +233,7 @@ void EvtMouseMenu(struct XObj *xobj,XButtonEvent *EvtButton)
   SendMsg(xobj,SingleClic);
   xobj->value=0;
  }
- XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
- XFillRectangle(dpy,xobj->win,xobj->gc,0,0,xobj->width,xobj->height);
- DrawIconStr(0,xobj,True);
- for (i=0;i<nbobj;i++)
-  tabxobj[i]->DrawObj(tabxobj[i]);
-
+ XClearArea(dpy, xobj->win, 0, 0, xobj->width, xobj->height, True);
 }
 
 void EvtKeyMenu(struct XObj *xobj,XKeyEvent *EvtKey)
@@ -235,12 +243,3 @@ void EvtKeyMenu(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgMenu(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-
-
-
-
-
-
-

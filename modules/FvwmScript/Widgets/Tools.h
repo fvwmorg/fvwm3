@@ -33,11 +33,11 @@ extern int x_fd;
 #define DoubleClic -2
 
 #ifdef I18N_MB
-void FakeDrawString(XFontSet FONTSET, Display *dpy,GC gc,Window win,int x,int y,char *str,
-		int strl,unsigned long ForeC,unsigned long HiC,
-		unsigned long BackC,int WithRelief);
+void FakeDrawString(XFontSet FONTSET,Display *dpy,struct XObj *xobj,Window win,
+		    int x,int y,char *str,int strl,unsigned long ForeC,
+		    unsigned long HiC,unsigned long BackC,int WithRelief);
 #else
-void DrawString(Display *dpy,GC gc,Window win,int x,int y,char *str,
+void DrawString(Display *dpy,struct XObj *xobj,Window win,int x,int y,char *str,
 		int strl,unsigned long ForeC,unsigned long HiC,
 		unsigned long BackC,int WithRelief);
 #endif
@@ -46,14 +46,16 @@ char* GetMenuTitle(char *str,int id);
 
 void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt);
 
-void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int newvalue,int Show);
+void UnselectMenu(struct XObj *xobj,Window WinPop,int hOpt,int value,
+		  unsigned int width, int asc, int start);
+void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int value);
 
 int CountOption(char *str);
 
 void DrawIconStr(int offset,struct XObj *xobj,int DoRedraw);
 
 void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
-		unsigned int LiC, unsigned int ShadC,unsigned int ForeC,int RectIn);
+		unsigned int LiC, unsigned int ShadC);
 
 int GetAscFont(XFontStruct *xfont);
 

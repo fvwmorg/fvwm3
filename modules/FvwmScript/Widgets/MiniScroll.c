@@ -26,13 +26,17 @@ void InitMiniScroll(struct XObj *xobj)
  int i;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
-
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.background_pixel=xobj->TabColor[back];
@@ -42,16 +46,16 @@ void InitMiniScroll(struct XObj *xobj)
  xobj->width=19;
  xobj->height=34;
  xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
-		xobj->x,xobj->y,xobj->width,xobj->height,1,
+		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
  xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
- if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
-   fprintf(stderr,"Can't load font %s\n",xobj->font);
- else
-  XSetFont(dpy,xobj->gc,xobj->xfont->fid);
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
  if (xobj->value2>xobj->value3)
  {
@@ -61,11 +65,11 @@ void InitMiniScroll(struct XObj *xobj)
  }
  if ((xobj->value<xobj->value2)||(xobj->value>xobj->value3))
   xobj->value=xobj->value2;
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyMiniScroll(struct XObj *xobj)
 {
- XFreeFont(dpy,xobj->xfont);
  XFreeGC(dpy,xobj->gc);
  XDestroyWindow(dpy,xobj->win);
 }
@@ -73,8 +77,7 @@ void DestroyMiniScroll(struct XObj *xobj)
 void DrawMiniScroll(struct XObj *xobj)
 {
 
- DrawReliefRect(-1,-1,xobj->width+2,xobj->height+2,xobj,xobj->TabColor[li],
- 		xobj->TabColor[shad],xobj->TabColor[black],-1);
+ DrawReliefRect(-1,-1,xobj->width+2,xobj->height+2,xobj,hili,shad);
 
  /* Dessin de la fleche du haut */
  DrawArrowN(xobj,3,3,0);
@@ -162,11 +165,3 @@ void EvtKeyMiniScroll(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgMiniScroll(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-
-
-
-
-
-

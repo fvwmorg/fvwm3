@@ -28,12 +28,17 @@ void InitTextField(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.cursor=XCreateFontCursor(dpy,XC_xterm);
@@ -66,7 +71,11 @@ void InitTextField(struct XObj *xobj)
  if (xobj->width<i)
   xobj->width=i;
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
-
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+                       &Colorset[xobj->colorset % nColorsets], Pdepth,
+                       xobj->gc, True);
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyTextField(struct XObj *xobj)
@@ -77,7 +86,7 @@ void DestroyTextField(struct XObj *xobj)
 }
 
 /* Dessin du curseur du texte */
-void DrawPointTxt(struct XObj *xobj,unsigned int color)
+void DrawPointTxt(struct XObj *xobj,unsigned int pixel)
 {
 #define dec 2
  int x,y;
@@ -97,7 +106,7 @@ void DrawPointTxt(struct XObj *xobj,unsigned int color)
  segm[1].y1=y;
  segm[1].x2=x+dec;
  segm[1].y2=y+dec;
- XSetForeground(dpy,xobj->gc,color);
+ XSetForeground(dpy,xobj->gc,pixel);
  XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 }
 
@@ -114,16 +123,14 @@ void DrawTextField(struct XObj *xobj)
   xobj->value=l;
  if (xobj->value2>l)
   xobj->value2=l;
- DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-	xobj->TabColor[shad],xobj->TabColor[li],xobj->TabColor[black],1);
- XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
- XFillRectangle(dpy,xobj->win,xobj->gc,3,3,xobj->width-6,xobj->height-6);
+ DrawReliefRect(0,0,xobj->width,xobj->height,xobj,shad,hili);
+ XClearArea(dpy,xobj->win,2,2,xobj->width-4,xobj->height-4,False);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&y1,&desc,&struc);
 #ifdef I18N_MB
- XmbDrawImageString(dpy,xobj->win,xobj->xfontset,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
+ XmbDrawString(dpy,xobj->win,xobj->xfontset,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
 #else
- XDrawImageString(dpy,xobj->win,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
+ XDrawString(dpy,xobj->win,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
 #endif
 
  /* Dessin de la zone selectionnee */
@@ -197,10 +204,8 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
         rect.y=0;
         rect.width=XTextWidth(xobj->xfont,xobj->title,PosCurs+1)-rect.x+1;
         rect.height=xobj->height;
-        XSetClipRectangles(dpy,xobj->gc,0,0,&rect,1,Unsorted);
         xobj->value2=PosCurs;
         DrawTextField(xobj);
-        XSetClipMask(dpy,xobj->gc,None);
        }
        else
        if (PosCurs<xobj->value2)
@@ -209,10 +214,8 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
         rect.y=0;
         rect.width=XTextWidth(xobj->xfont,xobj->title,xobj->value2+1)-rect.x+2;
         rect.height=xobj->height;
-        XSetClipRectangles(dpy,xobj->gc,0,0,&rect,1,Unsorted);
         xobj->value2=PosCurs;
         DrawTextField(xobj);
-        XSetClipMask(dpy,xobj->gc,None);
        }
 
       break;
@@ -221,7 +224,6 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
       break;
      }
     }
-    XSetClipMask(dpy,xobj->gc,None);
     /* Enregistrement de la selection dans le presse papier */
     /* Le programme devient proprietaire de la selection */
     if (xobj->value!=xobj->value2)
@@ -306,10 +308,8 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
         rect.y=0;
         rect.width=XTextWidth(xobj->xfont,xobj->title,PosCurs+1)-rect.x+1;
         rect.height=xobj->height;
-        XSetClipRectangles(dpy,xobj->gc,0,0,&rect,1,Unsorted);
         xobj->value2=PosCurs;
         DrawTextField(xobj);
-        XSetClipMask(dpy,xobj->gc,None);
        }
        else
        if (PosCurs<xobj->value2)
@@ -318,10 +318,8 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
         rect.y=0;
         rect.width=XTextWidth(xobj->xfont,xobj->title,xobj->value2+1)-rect.x+2;
         rect.height=xobj->height;
-        XSetClipRectangles(dpy,xobj->gc,0,0,&rect,1,Unsorted);
         xobj->value2=PosCurs;
         DrawTextField(xobj);
-        XSetClipMask(dpy,xobj->gc,None);
        }
        PosCurs=0;
       break;
@@ -423,6 +421,3 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgTextField(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-

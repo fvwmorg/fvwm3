@@ -33,13 +33,17 @@ void InitPopupMenu(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
-
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.background_pixel=xobj->TabColor[back];
@@ -78,6 +82,11 @@ void InitPopupMenu(struct XObj *xobj)
   free(str);
  }
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyPopupMenu(struct XObj *xobj)
@@ -96,8 +105,7 @@ void DrawPopupMenu(struct XObj *xobj)
  XCharStruct struc;
 
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-   xobj->TabColor[li],xobj->TabColor[shad],xobj->TabColor[black],0);
+ DrawReliefRect(0,0,xobj->width,xobj->height,xobj,hili,shad);
 
  /* Dessin de la fleche */
  segm[0].x1=7;
@@ -126,17 +134,15 @@ void DrawPopupMenu(struct XObj *xobj)
  segm[1].y1=asc;
  segm[1].x2=14;
  segm[1].y2=5+asc;
- XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
  XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 
  /* Dessin du titre du popup menu */
  str=(char*)GetMenuTitle(xobj->title,xobj->value);
  x=25;
  y=asc+5;
- DrawString(dpy,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore],xobj->TabColor[li],
-	xobj->TabColor[back],
-	!xobj->flags[1]);
+ DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,
+	    !xobj->flags[1]);
 
  free(str);
 }
@@ -171,7 +177,7 @@ void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton)
  mask=0;
  Attr.background_pixel=xobj->TabColor[back];
  mask|=CWBackPixel;
- Attr.border_pixel = xobj->TabColor[fore];
+ Attr.border_pixel = 0;
  mask |= CWBorderPixel;
  Attr.colormap = Pcmap;
  mask |= CWColormap; 
@@ -179,13 +185,16 @@ void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton)
  mask|=CWCursor;		/* Curseur pour la fenetre */
  Attr.override_redirect=True;
  mask|=CWOverrideRedirect;
- WinPop=XCreateWindow(dpy,XRootWindow(dpy,screen),
- 	x,y,xobj->width-2,hMenu,1,
- 	Pdepth,InputOutput,Pvisual,mask,&Attr);
+ WinPop=XCreateWindow(dpy,XRootWindow(dpy,screen),x,y,xobj->width,hMenu,0,
+		      Pdepth,InputOutput,Pvisual,mask,&Attr);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, WinPop, xobj->width, hMenu,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
  XMapRaised(dpy,WinPop);
 
   /* Dessin du menu */
- DrawPMenu(xobj,WinPop,hOpt,1);
+ DrawPMenu(xobj,WinPop,hOpt,0);
  do
  {
   XQueryPointer(dpy,XRootWindow(dpy,XDefaultScreen(dpy)),
@@ -202,8 +211,8 @@ void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton)
     newvalue=0;
    if (newvalue!=oldvalue)
    {
-    SelectMenu(xobj,WinPop,hOpt,oldvalue,0);
-    SelectMenu(xobj,WinPop,hOpt,newvalue,1);
+    UnselectMenu(xobj,WinPop,hOpt,oldvalue,xobj->width,asc,0);
+    SelectMenu(xobj,WinPop,hOpt,newvalue);
     oldvalue=newvalue;
    }
   }
@@ -215,7 +224,6 @@ void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton)
   xobj->value=newvalue;
   SendMsg(xobj,SingleClic);
  }
- xobj->DrawObj(xobj);
 }
 
 
@@ -226,17 +234,3 @@ void EvtKeyPopupMenu(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgPopupMenu(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -43,12 +43,10 @@ extern int __bounds_debug_no_checking;
 #endif
 
 /* Constante de couleurs utilise dans le tableau TabColor */
-#define black 0
-#define white 1
-#define back 2
-#define fore 3
-#define shad 4
-#define li 5
+#define back 0
+#define fore 1
+#define shad 2
+#define hili 3
 
 
 /* Variables globales */
@@ -182,24 +180,20 @@ void ParseOptions(void)
 
   InitGetConfigLine(fd,"*FvwmScript");
   GetConfigLine(fd,&tline);
-  while(tline != (char *)0)
-    {
-      if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ImagePath",9)==0))
-      {
+  while(tline != (char *)0) {
+    if (strlen(tline) > 1) {
+      if (strncasecmp(tline,"ImagePath",9) == 0)
 	CopyString(&imagePath,&tline[9]);
-      }
-      else if((strlen(&tline[0])>1)&&
-	      (strncasecmp(tline,"*FvwmScriptPath",15)==0))
-      {
+      else if (strncasecmp(tline,"*FvwmScriptPath",15) == 0)
 	CopyString(&ScriptPath,&tline[15]);
-      }
-      else if (strncasecmp(tline,"ColorLimit",10)==0)
-      {
+      else if (strncasecmp(tline,"ColorLimit",10) == 0)
 	save_color_limit = atoi(&tline[10]);
-      }
-
-      GetConfigLine(fd,&tline);
+      else if (strncasecmp(tline,"Colorset",8) == 0)
+	LoadColorset(&tline[8]);
     }
+
+    GetConfigLine(fd,&tline);
+  }
 }
 
 
@@ -260,9 +254,7 @@ void LoadIcon(struct XObj *xobj)
 
   if ((xobj->icon)!=NULL)
   {
-    pic = LoadPicture(dpy,
-		      RootWindow(dpy,DefaultScreen(dpy)),
-		      imagePath, save_color_limit);
+    pic = CachePicture(dpy,x11base->win,imagePath,xobj->icon,save_color_limit);
     if (!pic)
     {
       fprintf(stderr,"Unable to load pixmap %s\n",xobj->icon);
@@ -288,12 +280,17 @@ void OpenWindow (void)
  XSetWindowAttributes Attr;
 
  /* Allocation des couleurs */
- x11base->TabColor[fore] = GetColor(x11base->forecolor);
- x11base->TabColor[back] = GetColor(x11base->backcolor);
- x11base->TabColor[shad] = GetColor(x11base->shadcolor);
- x11base->TabColor[li] = GetColor(x11base->licolor);
- x11base->TabColor[black] = GetColor("#000000");
- x11base->TabColor[white] = GetColor("#FFFFFF");
+ if (x11base->colorset >= 0) {
+  x11base->TabColor[fore] = Colorset[x11base->colorset % nColorsets].fg;
+  x11base->TabColor[back] = Colorset[x11base->colorset % nColorsets].bg;
+  x11base->TabColor[shad] = Colorset[x11base->colorset % nColorsets].shadow;
+  x11base->TabColor[hili] = Colorset[x11base->colorset % nColorsets].hilite;
+ } else {
+  x11base->TabColor[fore] = GetColor(x11base->forecolor);
+  x11base->TabColor[back] = GetColor(x11base->backcolor);
+  x11base->TabColor[shad] = GetColor(x11base->shadcolor);
+  x11base->TabColor[hili] = GetColor(x11base->hilicolor);
+ }
 
  /* Definition des caracteristiques de la fentre */
  mask = CWBackPixel | CWBorderPixel | CWColormap;
@@ -301,19 +298,15 @@ void OpenWindow (void)
  Attr.border_pixel = 0;
  Attr.colormap = Pcmap;
 
- x11base->win=XCreateWindow(dpy,
-			DefaultRootWindow(dpy),
-			x11base->size.x,
-			x11base->size.y,
-			x11base->size.width,
-			x11base->size.height,0,
-			Pdepth,
-			InputOutput,
-			Pvisual,
-			mask,&Attr);
-
- XSetWindowColormap(dpy,x11base->win,Pcmap);
+ x11base->win=XCreateWindow(dpy, DefaultRootWindow(dpy), x11base->size.x,
+			    x11base->size.y, x11base->size.width,
+			    x11base->size.height, 0, Pdepth, InputOutput,
+			    Pvisual, mask, &Attr);
  x11base->gc=XCreateGC(dpy,x11base->win,0,NULL);
+ if (x11base->colorset >= 0)
+   SetWindowBackground(dpy, x11base->win, x11base->size.width, x11base->size.height,
+		       &Colorset[x11base->colorset % nColorsets], Pdepth,
+		       x11base->gc, True);
 
  /* Choix des evts recus par la fenetre */
  XSelectInput(dpy,x11base->win,KeyPressMask|ButtonPressMask|
@@ -393,10 +386,12 @@ void BuildGUI(int IsFather)
  else
   x11base->shadcolor=scriptprop->shadcolor;
 
- if (scriptprop->licolor==NULL)
-  x11base->licolor=strdup("black");
+ if (scriptprop->hilicolor==NULL)
+  x11base->hilicolor=strdup("black");
  else
-  x11base->licolor=scriptprop->licolor;
+  x11base->hilicolor=scriptprop->hilicolor;
+
+ x11base->colorset = scriptprop->colorset;
 
  x11base->icon=scriptprop->icon;
 
@@ -458,10 +453,13 @@ void BuildGUI(int IsFather)
    else
     tabxobj[i]->shadcolor=(*tabobj)[i].shadcolor;
 
-  if ((*tabobj)[i].licolor==NULL)
-    tabxobj[i]->licolor=strdup(x11base->licolor);
+  if ((*tabobj)[i].hilicolor==NULL)
+    tabxobj[i]->hilicolor=strdup(x11base->hilicolor);
   else
-    tabxobj[i]->licolor=(*tabobj)[i].licolor;
+    tabxobj[i]->hilicolor=(*tabobj)[i].hilicolor;
+
+  if ((*tabobj)[i].colorset >= 0)
+    tabxobj[i]->colorset=(*tabobj)[i].colorset;
 
   ChooseFunction(tabxobj[i],(*tabobj)[i].type);
   tabxobj[i]->gc=x11base->gc;
@@ -577,29 +575,46 @@ void ReadXServer (void)
     switch (event.type)
     {
       case Expose:
-	   if (event.xexpose.count==0)
+	   if (event.xexpose.count==0) {
 	    for (i=0;i<nbobj;i++)
-	     tabxobj[i]->DrawObj(tabxobj[i]);
+	     if (event.xexpose.window == tabxobj[i]->win) {
+	      tabxobj[i]->DrawObj(tabxobj[i]);
+	      break;
+	     }
+	    /* handle exposes on x11base that need an object to render */
+	    if (event.xexpose.window == x11base->win) {
+	     /* redraw first menu item to get the 3d menubar */
+	     for (i=0;i<nbobj;i++)
+	      if (Menu == tabxobj[i]->TypeWidget) {
+	       tabxobj[i]->DrawObj(tabxobj[i]);
+	       break;
+	      }
+	     /* redraw all Rectangles and SwallowExec's */
+	     for (i=0;i<nbobj;i++)
+	      if ((Rectangle == tabxobj[i]->TypeWidget)
+		  ||(SwallowExec == tabxobj[i]->TypeWidget))
+	       tabxobj[i]->DrawObj(tabxobj[i]);
+	    }
+	   }
 	  break;
       case KeyPress:
 	   /* Touche presse dans un objet */
 	   if (event.xkey.subwindow!=0)
-	   {
 	    /* Envoi de l'evt à l'objet */
 	    for (i=0;i<nbobj;i++)
-	     if (tabxobj[i]->win==event.xkey.subwindow)
+	     if (tabxobj[i]->win==event.xkey.subwindow) {
 	      tabxobj[i]->EvtKey(tabxobj[i],&event.xkey);
-	   }
+	      break;
+	     }
 	  break;
       case ButtonPress:
-          /* Clique dans quel fenetre? */
-	  if (event.xbutton.subwindow!=0)
-	  {
-	   i=0;
-	   while ((tabxobj[i]->win!=event.xbutton.subwindow)&&(i<nbobj-1))
-	    i++;
-	   tabxobj[i]->EvtMouse(tabxobj[i],&event.xbutton);
-	  }
+           /* Clique dans quel fenetre? */
+	   if (event.xbutton.subwindow!=0)
+	    for (i=0;i<nbobj;i++)
+	     if (tabxobj[i]->win==event.xbutton.subwindow) {
+	      tabxobj[i]->EvtMouse(tabxobj[i],&event.xbutton);
+	      break;
+	     }
           break;
       case ButtonRelease:
 	  break;
@@ -686,36 +701,73 @@ void MainLoop (void)
  int i;
  struct timeval tv;
  struct timeval *ptv;
-
  fd_set_size_t fd_width = fd[1];
+
  if (x_fd > fd_width) fd_width = x_fd;
  ++fd_width;
 
+ tv.tv_sec = 1;
+ tv.tv_usec = 0;
+ ptv = NULL;
+ if (x11base->periodictasks != NULL)
+  ptv = &tv;
+
  while ( !isTerminated )
  {
+  while (XPending(dpy))
+   ReadXServer();
+
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-  XFlush(dpy);
-
-  tv.tv_sec = 1;
-  tv.tv_usec = 0;
-
-  ptv = NULL;
-  if (x11base->periodictasks != NULL)
-    ptv = &tv;
   if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, ptv) > 0)
   {
    if (FD_ISSET(x_fd, &in_fdset))
-    ReadXServer();
+    ReadXServer();    
 
    if(FD_ISSET(fd[1], &in_fdset))
    {
        FvwmPacket* packet = ReadFvwmPacket(fd[1]);
        if ( packet == NULL )
 	   exit(0);
-       for (i=0; i<nbobj; i++)
+       if (packet->type == M_CONFIG_INFO) {
+         char *line, *token;
+         int n;
+
+         line = (char*)&(packet->body[3]);
+         line = GetNextToken(line, &token);
+         if (StrEquals(token, "Colorset")) {
+           /* track all colorset changes and update display if necessary */
+           n = LoadColorset(line);
+           for (i=0; i<nbobj; i++) {
+	     if (n == tabxobj[i]->colorset) {
+	       tabxobj[i]->TabColor[fore] = Colorset[n].fg;
+	       tabxobj[i]->TabColor[back] = Colorset[n].bg;
+	       tabxobj[i]->TabColor[shad] = Colorset[n].shadow;
+	       tabxobj[i]->TabColor[hili] = Colorset[n].hilite;
+               if (tabxobj[i]->TypeWidget != SwallowExec) {
+		 SetWindowBackground(dpy, tabxobj[i]->win, tabxobj[i]->width,
+				     tabxobj[i]->height, &Colorset[n], Pdepth,
+				     tabxobj[i]->gc, False);
+		 XClearWindow(dpy, tabxobj[i]->win);
+	       }
+	       tabxobj[i]->DrawObj(tabxobj[i]);
+	     }
+	   }
+           if (n == x11base->colorset) {
+             x11base->TabColor[fore] = Colorset[n].fg;
+             x11base->TabColor[back] = Colorset[n].bg;
+             x11base->TabColor[shad] = Colorset[n].shadow;
+             x11base->TabColor[hili] = Colorset[n].hilite;
+             SetWindowBackground(dpy, x11base->win, x11base->size.width,
+				 x11base->size.height, &Colorset[n], Pdepth,
+				 x11base->gc, True);
+           }
+         }
+         if (token) free(token);
+       } else
+         for (i=0; i<nbobj; i++)
 	   tabxobj[i]->ProcessMsg(tabxobj[i], packet->type, packet->body);
    }
   }
@@ -799,7 +851,7 @@ int main (int argc, char **argv)
   fd[1] = atoi(argv[2]);
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST|
 		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
-		 M_END_CONFIG_INFO| M_WINDOW_NAME);
+		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
 
   /* Enregistrement des arguments du script */
   x11base=(X11base*) calloc(1,sizeof(X11base));

@@ -10,7 +10,7 @@ EXTRA_PROGRAMS = FvwmScript
 
 FvwmScript_SOURCES = FvwmScript.c Instructions.c libyywrap.c \
 	script.y scanner.l types.h
-FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a Widgets/libWidgets.a
 
 YFLAGS = -d
 

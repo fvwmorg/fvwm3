@@ -27,12 +27,17 @@ void InitHDipstick(struct XObj *xobj)
  XSetWindowAttributes Attr;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  /* Minimum size */
  if (xobj->width<30)
@@ -41,13 +46,18 @@ void InitHDipstick(struct XObj *xobj)
   xobj->height=11;
 
  mask=0;
- Attr.background_pixel=x11base->TabColor[back];
+ Attr.background_pixel=xobj->TabColor[back];
  mask|=CWBackPixel;
  xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
  xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
+ 
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  XSetBackground(dpy,xobj->gc,x11base->TabColor[back]);
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
@@ -58,6 +68,8 @@ void InitHDipstick(struct XObj *xobj)
   xobj->value=xobj->value2;
  if (xobj->value>xobj->value3)
   xobj->value=xobj->value3;
+
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyHDipstick(struct XObj *xobj)
@@ -72,16 +84,12 @@ void DrawHDipstick(struct XObj *xobj)
 
  i=(xobj->width-4)*(xobj->value-xobj->value2)/(xobj->value3-xobj->value2);
 
- DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		x11base->TabColor[shad],x11base->TabColor[li],
-		x11base->TabColor[black],-1);
+ DrawReliefRect(0,0,xobj->width,xobj->height,xobj,shad,hili);
  if (i!=0)
  {
-  DrawReliefRect(2,2,i,xobj->height-4,xobj,
-		xobj->TabColor[li],xobj->TabColor[shad],
-		xobj->TabColor[black],-1);
-  XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
-  XFillRectangle(dpy,xobj->win,xobj->gc,5,5,i-6,xobj->height-10);
+  DrawReliefRect(2,2,i,xobj->height-4,xobj,hili,shad);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+  XFillRectangle(dpy,xobj->win,xobj->gc,4,4,i-4,xobj->height-8);
  }
 
 }

@@ -28,12 +28,17 @@ void InitRadioButton(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.cursor=XCreateFontCursor(dpy,XC_hand2);
@@ -64,7 +69,12 @@ void InitRadioButton(struct XObj *xobj)
  xobj->height=asc+desc+5;
  xobj->width=XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title))+20;
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
 
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyRadioButton(struct XObj *xobj)
@@ -83,23 +93,17 @@ void DrawRadioButton(struct XObj *xobj)
  /* Dessin du cercle arrondi */
  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
  XDrawArc(dpy,xobj->win,xobj->gc,1,j-11,11,11,45*64,180*64);
- XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
  XDrawArc(dpy,xobj->win,xobj->gc,1,j-11,11,11,225*64,180*64);
- XSetForeground(dpy,xobj->gc,xobj->TabColor[white]);
- XFillArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
- XSetForeground(dpy,xobj->gc,xobj->TabColor[black]);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
  XDrawArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  if (xobj->value)
- {
-  XSetForeground(dpy,xobj->gc,xobj->TabColor[black]);
-  XFillArc(dpy,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
- }
+  XFillArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
 
  /* Calcul de la position de la chaine de charactere */
- DrawString(dpy,xobj->gc,xobj->win,i,j,xobj->title,
-	strlen(xobj->title),xobj->TabColor[fore],
-	xobj->TabColor[li],xobj->TabColor[back],
-	!xobj->flags[1]);
+ DrawString(dpy,xobj,xobj->win,i,j,xobj->title,strlen(xobj->title),fore,hili,
+	    back,!xobj->flags[1]);
 }
 
 void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
@@ -128,7 +132,7 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	    WinBut=Win2;
 	    /* Mouse on button */
 	    XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
-	    XFillArc(dpy,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
+	    XFillArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
 	    In=1;
 	   }
 	   else
@@ -137,15 +141,15 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	    {
 	    /* Mouse on button */
 	     XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
-	     XFillArc(dpy,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
+	     XFillArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
 	     In=1;
 	    }
 	    else if (In)
 	    {
 	     In=0;
 	     /* Mouse not on button */
-	     XSetForeground(dpy,xobj->gc,xobj->TabColor[white]);
-	     XFillArc(dpy,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
+	     XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+	     XFillArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
 	    }
 	   }
 	  break;
@@ -157,13 +161,13 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	    In=1;
 	    /* Mouse on button */
 	    XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
-	    XFillArc(dpy,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
+	    XFillArc(dpy,xobj->win,xobj->gc,2,j-10,8,8,0*64,360*64);
 	   }
 	   else if (In)
 	   {
 	    /* Mouse not on button */
-	    XSetForeground(dpy,xobj->gc,xobj->TabColor[white]);
-	    XFillArc(dpy,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
+	    XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+	    XFillArc(dpy,xobj->win,xobj->gc,2,j-10,8,8,0*64,360*64);
 	    In=0;
 	   }
 	  break;
@@ -174,14 +178,19 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	   {
 	    /* Envoie d'un message vide de type SingleClic pour un clique souris */
 	    xobj->value=1;
-	    XSetForeground(dpy,xobj->gc,xobj->TabColor[black]);
-	    XFillArc(dpy,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
+	    XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+	    XFillArc(dpy,xobj->win,xobj->gc,2,j-10,8,8,0*64,360*64);
 	    SendMsg(xobj,SingleClic);
 	   }
 	   else if (xobj->value)
 	   {
-	    XSetForeground(dpy,xobj->gc,xobj->TabColor[black]);
-	    XFillArc(dpy,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
+	    XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+	    XFillArc(dpy,xobj->win,xobj->gc,2,j-10,8,8,0*64,360*64);
+	   }
+	   else
+	   {
+	    XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+	    XFillArc(dpy,xobj->win,xobj->gc,2,j-10,8,8,0*64,360*64);
 	   }
 	  break;
      }
@@ -195,9 +204,3 @@ void EvtKeyRadioButton(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgRadioButton(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-
-
-
-

@@ -27,12 +27,17 @@ void InitVDipstick(struct XObj *xobj)
  XSetWindowAttributes Attr;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  /* Minimum size */
  if (xobj->width<11)
@@ -48,6 +53,10 @@ void InitVDipstick(struct XObj *xobj)
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
  xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  XSetBackground(dpy,xobj->gc,x11base->TabColor[back]);
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
@@ -58,6 +67,7 @@ void InitVDipstick(struct XObj *xobj)
   xobj->value=xobj->value2;
  if (xobj->value>xobj->value3)
   xobj->value=xobj->value3;
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyVDipstick(struct XObj *xobj)
@@ -71,18 +81,13 @@ void DrawVDipstick(struct XObj *xobj)
  int  i,j;
 
  i=(xobj->height-4)*(xobj->value-xobj->value2)/(xobj->value3-xobj->value2);
- j=xobj->height-i;
 
- DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		x11base->TabColor[shad],x11base->TabColor[li],
-		x11base->TabColor[black],-1);
+ DrawReliefRect(0,0,xobj->width,xobj->height,xobj,shad,hili);
  if (i!=0)
  {
-  DrawReliefRect(2,j-2,xobj->width-4,i,xobj,
-		xobj->TabColor[li],xobj->TabColor[shad],
-		xobj->TabColor[black],-1);
-  XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
-  XFillRectangle(dpy,xobj->win,xobj->gc,5,j+1,xobj->width-10,i-6);
+  DrawReliefRect(2,xobj->height-i-2,xobj->width-4,i,xobj,hili,shad);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+  XFillRectangle(dpy,xobj->win,xobj->gc,4,xobj->height-i,xobj->width-8,i-4);
  }
 
 }

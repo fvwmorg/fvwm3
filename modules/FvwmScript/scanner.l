@@ -34,6 +34,7 @@ get		=
 ^{bl}+BackColor		{ return BACKCOLOR; }
 ^{bl}+ShadowColor	{ return SHADCOLOR; }
 ^{bl}+HilightColor	{ return LICOLOR; }
+^{bl}+Colorset		{ return COLORSET; }
 ^{bl}+Widget		{ return OBJECT; }
 ^{bl}+Property		{ return PROP; }
 ^{bl}+Main		{ return MAIN; }
@@ -82,6 +83,7 @@ GetScriptArgument	{ return GETSCRIPTARG; }
 ^{bl}+ChangeFont	{ return FONT; }
 ^{bl}+ChangeForeColor	{ return CHFORECOLOR; }
 ^{bl}+ChangeBackColor	{ return CHBACKCOLOR; }
+^{bl}+ChangeColorset	{ return CHCOLORSET; }
 ^{bl}+Set		{ return SET; }
 ^{bl}+SendSignal	{ return SENDSIGN; }
 ^{bl}+Quit		{ return QUIT; }
@@ -137,19 +139,3 @@ Else			{ return ELSE; }
 
 
 {nl}		{ numligne++; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

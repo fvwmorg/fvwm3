@@ -26,12 +26,17 @@ void InitCheckBox(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.background_pixel=xobj->TabColor[back];
@@ -58,6 +63,11 @@ void InitCheckBox(struct XObj *xobj)
  xobj->height=asc+desc+5;
  xobj->width=XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title))+30;
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
+  XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyCheckBox(struct XObj *xobj)
@@ -72,31 +82,27 @@ void DrawCheckBox(struct XObj *xobj)
  XSegment segm[2];
  int asc,desc,dir;
  XCharStruct struc;
-
+ 
  /* Dessin du rectangle arrondi */
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- DrawReliefRect(0,asc-11,15,15,xobj,xobj->TabColor[li],
- 		xobj->TabColor[shad],xobj->TabColor[black],0);
+ DrawReliefRect(0,asc-11,xobj->height,xobj->height,xobj,hili,shad);
 
  /* Calcul de la position de la chaine de charactere */
- DrawString(dpy,xobj->gc,xobj->win,23,
-	asc,xobj->title,
-	strlen(xobj->title),xobj->TabColor[fore],
-	xobj->TabColor[li],xobj->TabColor[back],
-	!xobj->flags[1]);
+ DrawString(dpy,xobj,xobj->win,23,asc,xobj->title,strlen(xobj->title),fore,
+	    hili,back,!xobj->flags[1]);
  /* Dessin de la croix */
  if (xobj->value)
  {
   XSetLineAttributes(dpy,xobj->gc,2,LineSolid,CapProjecting,JoinMiter);
   segm[0].x1=5;
-  segm[0].y1=5+asc-11;
-  segm[0].x2=9;
-  segm[0].y2=9+asc-11;
+  segm[0].y1=5;
+  segm[0].x2=xobj->height-6;
+  segm[0].y2=xobj->height-6;
   segm[1].x1=5;
-  segm[1].y1=9+asc-11;
-  segm[1].x2=9;
-  segm[1].y2=5+asc-11;
-  XSetForeground(dpy,xobj->gc,xobj->TabColor[black]);
+  segm[1].y1=xobj->height-6;
+  segm[1].x2=xobj->height-6;
+  segm[1].y2=5;
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
   XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
   XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
  }
@@ -114,7 +120,7 @@ void EvtMouseCheckBox(struct XObj *xobj,XButtonEvent *EvtButton)
  XSegment segm[2];
  int asc,desc,dir;
  XCharStruct struc;
-
+ 
  while (End)
  {
   XNextEvent(dpy, &event);
@@ -128,8 +134,7 @@ void EvtMouseCheckBox(struct XObj *xobj,XButtonEvent *EvtButton)
 	    WinBut=Win2;
 	    /* Mouse on button */
 	     XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
-             DrawReliefRect(0,asc-11,15,15,xobj,xobj->TabColor[shad],
-            		xobj->TabColor[li],xobj->TabColor[black],0);
+             DrawReliefRect(0,asc-11,xobj->height,xobj->height,xobj,shad,hili);
 	    In=1;
 	   }
 	   else
@@ -137,16 +142,14 @@ void EvtMouseCheckBox(struct XObj *xobj,XButtonEvent *EvtButton)
 	    if (Win2==WinBut)
 	    {
 	    /* Mouse on button */
-             DrawReliefRect(0,asc-11,15,15,xobj,xobj->TabColor[shad],
-             		xobj->TabColor[li],xobj->TabColor[black],0);
+             DrawReliefRect(0,asc-11,xobj->height,xobj->height,xobj,shad,hili);
 	     In=1;
 	    }
 	    else if (In)
 	    {
 	     In=0;
 	     /* Mouse not on button */
-             DrawReliefRect(0,asc-11,15,15,xobj,xobj->TabColor[li],
-             		xobj->TabColor[shad],xobj->TabColor[black],0);
+             DrawReliefRect(0,asc-11,xobj->height,xobj->height,xobj,hili,shad);
 	    }
 	   }
 	  break;
@@ -157,14 +160,12 @@ void EvtMouseCheckBox(struct XObj *xobj,XButtonEvent *EvtButton)
 	   {
 	    In=1;
 	    /* Mouse on button */
-            DrawReliefRect(0,asc-11,15,15,xobj,xobj->TabColor[shad],
-            	xobj->TabColor[li],xobj->TabColor[black],0);
+            DrawReliefRect(0,asc-11,xobj->height,xobj->height,xobj,shad,hili);
 	   }
 	   else if (In)
 	   {
 	    /* Mouse not on button */
-            DrawReliefRect(0,asc-11,15,15,xobj,xobj->TabColor[li],
-            	xobj->TabColor[shad],xobj->TabColor[black],0);
+            DrawReliefRect(0,asc-11,xobj->height,xobj->height,xobj,hili,shad);
 	    In=0;
 	   }
 	  break;
@@ -175,29 +176,27 @@ void EvtMouseCheckBox(struct XObj *xobj,XButtonEvent *EvtButton)
 	   {
 	    /* Envoie d'un message vide de type SingleClic pour un clique souris */
 	    xobj->value=!xobj->value;
-            DrawReliefRect(0,asc-11,15,15,xobj,xobj->TabColor[li],
-            	xobj->TabColor[shad],xobj->TabColor[black],0);
+            DrawReliefRect(0,asc-11,xobj->height,xobj->height,xobj,hili,shad);
 	    SendMsg(xobj,SingleClic);
 	   }
 	   if (xobj->value)
 	   {
   	    XSetLineAttributes(dpy,xobj->gc,2,LineSolid,CapProjecting,JoinMiter);
 	    segm[0].x1=5;
-	    segm[0].y1=5+asc-11;
-	    segm[0].x2=9;
-	    segm[0].y2=9+asc-11;
+	    segm[0].y1=5;
+	    segm[0].x2=xobj->height-6;
+	    segm[0].y2=xobj->height-6;
 	    segm[1].x1=5;
-	    segm[1].y1=9+asc-11;
-	    segm[1].x2=9;
-	    segm[1].y2=5+asc-11;
-	    XSetForeground(dpy,xobj->gc,xobj->TabColor[black]);
+	    segm[1].y1=xobj->height-6;
+	    segm[1].x2=xobj->height-6;
+	    segm[1].y2=5;
+	    XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
 	    XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 	    XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 	   }
 	   else
 	   {
-	    XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
-	    XFillRectangle(dpy,xobj->win,xobj->gc,3,asc-8,9,9);
+	    XClearArea(dpy,xobj->win,4,4,xobj->height-8,xobj->height-8,False);
 	   }
 	  break;
      }
@@ -212,8 +211,3 @@ void EvtKeyCheckBox(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgCheckBox(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-
-
-

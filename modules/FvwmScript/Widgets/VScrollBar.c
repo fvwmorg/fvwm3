@@ -28,12 +28,11 @@ void DrawThumbV(struct XObj *xobj)
  int asc,desc,dir;
  XCharStruct struc;
 
- x=xobj->width/2-9;
- y=3+(xobj->height-36)*(xobj->value-xobj->value3)/(xobj->value2-xobj->value3);
- w=18;
- h=30;
- DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[li],xobj->TabColor[shad],
- 		xobj->TabColor[black],-1);
+ x=xobj->width/2-10;
+ y=2+(xobj->height-36)*(xobj->value-xobj->value3)/(xobj->value2-xobj->value3);
+ w=20;
+ h=32;
+ DrawReliefRect(x,y,w,h,xobj,hili,shad);
  segm.x1=x+3;
  segm.y1=y+15;
  segm.x2=x+w-3;
@@ -44,7 +43,7 @@ void DrawThumbV(struct XObj *xobj)
  segm.y1=y+16;
  segm.x2=x+w-3;
  segm.y2=y+16;
- XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
  XDrawSegments(dpy,xobj->win,xobj->gc,&segm,1);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
 
@@ -52,10 +51,8 @@ void DrawThumbV(struct XObj *xobj)
  x=x-XTextWidth(xobj->xfont,str,strlen(str))-6;
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  y=y+13+asc/2;
- DrawString(dpy,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore],
-	xobj->TabColor[li],xobj->TabColor[back],
-	!xobj->flags[1]);
+ DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,
+	    !xobj->flags[1]);
 
 }
 
@@ -66,15 +63,14 @@ void HideThumbV(struct XObj *xobj)
  int asc,desc,dir;
  XCharStruct struc;
 
- x=xobj->width/2-8;
- y=4+(xobj->height-36)*(xobj->value-xobj->value3)/(xobj->value2-xobj->value3);
- XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
- XFillRectangle(dpy,xobj->win,xobj->gc,x,y,16,28);
+ x=xobj->width/2-10;
+ y=2+(xobj->height-36)*(xobj->value-xobj->value3)/(xobj->value2-xobj->value3);
+ XClearArea(dpy,xobj->win,x,y,20,32,False);
  sprintf(str,"%d",xobj->value);
- x=x-XTextWidth(xobj->xfont,str,strlen(str))-7;
+ x=x-XTextWidth(xobj->xfont,str,strlen(str))-6;
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- XFillRectangle(dpy,xobj->win,xobj->gc,x,y,XTextWidth(xobj->xfont,
- 	str,strlen(str)),asc+desc+8);
+ XClearArea(dpy,xobj->win,x,y,XTextWidth(xobj->xfont,str,strlen(str)),
+	    asc+desc+8,False);
 }
 
 void InitVScrollBar(struct XObj *xobj)
@@ -87,13 +83,17 @@ void InitVScrollBar(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
-
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.background_pixel=xobj->TabColor[back];
@@ -134,7 +134,11 @@ void InitVScrollBar(struct XObj *xobj)
   i=i*2+30;
  xobj->width=i;
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
-
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyVScrollBar(struct XObj *xobj)
@@ -156,25 +160,20 @@ void DrawVScrollBar(struct XObj *xobj)
  y=0;
  w=24;
  h=xobj->height;
- DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[shad],xobj->TabColor[li],
- 		xobj->TabColor[black],1);
+ DrawReliefRect(x,y,w,h,xobj,shad,hili);
  DrawThumbV(xobj);
 
  /* Ecriture des valeurs */
- sprintf(str,"%d",xobj->value3);
+ XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  x=x+26;
  y=asc+2;
- XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- DrawString(dpy,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore],
-	xobj->TabColor[li],xobj->TabColor[back],
-	!xobj->flags[1]);
+ sprintf(str,"%d",xobj->value3);
+ DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,
+	    !xobj->flags[1]);
  sprintf(str,"%d",xobj->value2);
  y=h-desc-2;
- DrawString(dpy,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore],
-	xobj->TabColor[li],xobj->TabColor[back],
-	!xobj->flags[1]);
+ DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,
+	    !xobj->flags[1]);
 }
 
 void EvtMouseVScrollBar(struct XObj *xobj,XButtonEvent *EvtButton)
@@ -220,6 +219,3 @@ void EvtKeyVScrollBar(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgVScrollBar(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-

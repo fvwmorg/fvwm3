@@ -66,12 +66,10 @@ extern int yylex(void);
 
 
 /* Constante de couleurs */
-#define black 0
-#define white 1
-#define back 2
-#define fore 3
-#define shad 4
-#define li 5
+#define back 0
+#define fore 1
+#define shad 2
+#define hili 3
 
 /* Constante type de widget */
 #define PushButton	1
@@ -116,7 +114,8 @@ typedef struct			/* Type pour la gestion X */
   char *forecolor;		/* Couleur des lignes */
   char *backcolor;		/* Couleur de fond */
   char *shadcolor;		/* Couleur des lignes */
-  char *licolor;		/* Couleur des lignes */
+  char *hilicolor;		/* Couleur des lignes */
+  int colorset;
   char *font;			/* Police utilisee */
   char *icon;			/* Icone pour l'application iconisee */
   Bloc *periodictasks;		/* Tableau de taches periodiques */
@@ -143,7 +142,8 @@ typedef struct			/* Type pour les boutons */
   char *forecolor;		/* Couleur des lignes */
   char *backcolor;		/* Couleur de fond */
   char *shadcolor;
-  char *licolor;
+  char *hilicolor;
+  int colorset;
   char *font;			/* Police utilisé */
   int flags[5];			/* Etat du bouton:invisible, inactif et actif */
   int value;
@@ -159,12 +159,13 @@ typedef struct
   Window root ;
   Window win ;
   GC gc ;
-  Pixel TabColor[6];
+  Pixel TabColor[4];
   XSizeHints size;
   char *backcolor;
   char *forecolor;
   char *shadcolor;
-  char *licolor;
+  char *hilicolor;
+  int colorset;
   char *font;
   char *icon;
   char *title;
@@ -193,7 +194,7 @@ struct XObj
   int TypeWidget;
   Window win;		/* Fenetre contenant l'objet */
   Window *ParentWin;		/* Fenetre parent */
-  Pixel TabColor[6];
+  Pixel TabColor[4];
   GC gc;			/* gc utilise pour les requetes: 4 octets */
   int id;			/* Numero d'id */
   int x,y;			/* Origine du bouton */
@@ -204,7 +205,8 @@ struct XObj
   char *forecolor;		/* Couleur des lignes */
   char *backcolor;		/* Couleur de fond */
   char *shadcolor;		/* Couleur des lignes */
-  char *licolor;		/* Couleur de fond */
+  char *hilicolor;		/* Couleur de fond */
+  int colorset;
   char *font;			/* Police utilisee */
   Pixmap iconPixmap;		/* Icone charge */
   Pixmap icon_maskPixmap;	/* Icone masque */

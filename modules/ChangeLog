@@ -2,6 +2,10 @@
 
 	* FvwmPager/x_pager.c (MovePage): fixed memory leak
 
+1999-09-28  Hippo
+
+	* FvwmScript/*: Implemented colorset support.
+
 1999-09-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTaskBar/ButtonArray.c (find_n): fixed bug that totally screwed up

@@ -73,6 +73,9 @@ This option sets the default hilight color for all widgets.
 .IP "ShadowColor {\fIcolor\fP}"
 This option sets the default shadow color for all widgets.
 
+.IP "Colorset {\fIn\fP}"
+This option sets the default colorset for all widgets.
+
 .IP "Font {\fIfont\fP}"
 This option sets the default font color for all widgets.
 
@@ -124,11 +127,13 @@ Property
  ForeColor 	{ color }
  BackColor 	{ color }
  HilightColor	{ color }
- ShadowColor	{ Color }
+ ShadowColor	{ color }
+ Colorset	int
  Flags		Hidden and/or NoReliefString
 .EE
 The option 'Flags` is used to specify if the widget is hidden or not and 
-if strings are drew with relief or not.
+if strings are drawn with relief or not. The position of every widget must be
+specified.
 
 .EX
 Main
@@ -152,38 +157,24 @@ Main
 .SH LIST OF WIDGETS
 There is fifteen types of widgets.
 
-.IP "\fBItemDraw\fP: Display an icon and/or a string."
-
-\fBTitle\fP: string to display.
-
-\fBIcon\fP: icon to display.
-
-.IP "\fBPushButton\fP: Display push button with an icon and/or a string."
-
-\fBTitle\fP: this string has the following syntax {Title of the button|Option 1|Option 2|
-Option3|...|Option N}. "Option 1|Option 2|...|Option N" is the popup menu which is
-displayed when pressing the right button.
-
-\fBIcon\fP: icon to display.
-
-.IP "\fBRadioButton\fP: Display radio button with a string."
-
-\fBTitle\fP: title of the radio button.
-
-\fBValue\fP: if Value is equal to 1, the box is checked else it is not.
-
 .IP "\fBCheckBox\fP: Display check box with a string."
 
 \fBTitle\fP: title of the check box.
 
 \fBValue\fP: if Value is equal to 1, the box is checked else it is not.
 
-.IP "\fBTextField\fP: Display a text input field."
-The text input field can be used to edit a single-line string.
+The \fBSize\fP property is ignored.
 
-\fBTitle\fP: content of text field.
+.IP "\fBHDipstick\fP: Display a horizontal dipstick."
+This widget can be used to display disk usage.
 
-\fBValue\fP: position of the insert point.
+\fBValue\fP: specify the current value of the dipstick.
+
+\fBMinValue\fP: specify the minimum value of the dipstick.
+
+\fBMaxValue\fP: specify the maximum value of the dipstick.
+
+A minimum size of 30x11 is imposed.
 
 .IP "\fBHScrollBar\fP: Display an horizontal scrollbar."
 
@@ -193,13 +184,39 @@ The text input field can be used to edit a single-line string.
 
 \fBMinValue\fP: lower limit of Value.
 
-.IP "\fBVScrollBar\fP: Display a vertical scrollbar."
+The height property is ignored and a minimum width is imposed.  The width
+should be at least the range plus 37 if all values are to be selectable e.g.
+a min of 0 and max of 10 has a range of 11 and therefore should have a minimum width
+of 48.
 
-\fBValue\fP: position of the thumb.
+.IP "\fBItemDraw\fP: Display an icon and/or a string."
 
-\fBMaxValue\fP: upper limit of Value.
+\fBTitle\fP: string to display.
 
-\fBMinValue\fP: lower limit of Value.
+\fBIcon\fP: icon to display.
+
+The size is made large enough to contain the title and/or the icon.
+
+.IP "\fBList\fP: Display a list."
+List lets user to choose between various options.
+
+\fBValue\fP: specify which option is selected.
+
+\fBTitle\fP: title contains options displayed in the list. The syntaxe is the
+following: {Option 1|Option 2|...|Option N}. All menus are displayed at the top
+of window.
+
+A minimum height of three items is imposed and the width is made to be at least 108.
+
+.IP "\fBMenu\fP: Display a menu whom lets user to choose a option."
+Items of type Menu are layed out from left to right along the top
+of the window. The size and position properties are ignored.
+
+\fBValue\fP: specify which option is selected.
+
+\fBTitle\fP: title contains options displayed in the menu. The syntaxe is the
+following:
+{Option 1|Option 2|...|Option N}.
 
 .IP "\fBMiniScroll\fP: Display a very small vertical scrollbar."
 
@@ -208,6 +225,36 @@ The text input field can be used to edit a single-line string.
 \fBMaxValue\fP: upper limit of Value.
 
 \fBMinValue\fP: lower limit of Value.
+
+The size is set to 19x34.
+
+.IP "\fBPopupMenu\fP: Display a popup menu."
+
+\fBValue\fP: specify what option is selected.
+
+\fBTitle\fP: the title has the following syntax:
+{Option 1|Option 2|...|Option N}."Option 1|Option 2|...|Option N" is the
+popup menu which is displayed when pressing mouse button.
+
+The size property is ignored.
+
+.IP "\fBPushButton\fP: Display push button with an icon and/or a string."
+
+\fBTitle\fP: this string has the following syntax {Title of the button|Option 1|Option 2|
+Option3|...|Option N}. "Option 1|Option 2|...|Option N" is the popup menu which is
+displayed when pressing the right button.
+
+\fBIcon\fP: icon to display.
+
+The button is made large enough to fit the icon and or label.
+
+.IP "\fBRadioButton\fP: Display radio button with a string."
+
+\fBTitle\fP: title of the radio button.
+
+\fBValue\fP: if Value is equal to 1, the box is checked else it is not.
+
+The size property is ignored
 
 .IP "\fBRectangle\fP: Display a rectangle."
  This type of widget can be used to decorate window.
@@ -221,26 +268,21 @@ window.
 script window.
  
 \fBSwallowExec\fP: specify the command line to execute to spawn the process.
-Modules canalso be swallowed.
+Modules can also be swallowed.
 
 \fBValue\fP: specify the looking of the border. Possible value: -1, 0, 1.
 
-.IP "\fBPopupMenu\fP: Display a popup menu."
+The size is made to be at least 30x30
 
-\fBValue\fP: specify what option is selected.
+.IP "\fBTextField\fP: Display a text input field."
+The text input field can be used to edit a single-line string.
 
-\fBTitle\fP: the title has the following syntax:
-{Option 1|Option 2|...|Option N}."Option 1|Option 2|...|Option N" is the
-popup menu which is displayed when pressing mouse button.
+\fBTitle\fP: content of text field.
 
-.IP "\fBHDipstick\fP: Display a horizontal dipstick."
-This widget can be used to display disk usage.
+\fBValue\fP: position of the insert point.
 
-\fBValue\fP: specify the current value of the dipstick.
-
-\fBMinValue\fP: specify the minimum value of the dipstick.
-
-\fBMaxValue\fP: specify the maximum value of the dipstick.
+The height property is gnored, the width is made to bae at least 40 pixels wider than
+the inital contents.
 
 .IP "\fBVDipstick\fP: Display a vertical dipstick."
 
@@ -250,22 +292,20 @@ This widget can be used to display disk usage.
 
 \fBMaxValue\fP: specify the maximum value of the dipstick.
 
-.IP "\fBList\fP: Display a list."
-List lets user to choose between various options.
+The size is made to be at least 11x30.
 
-\fBValue\fP: specify which option is selected.
+.IP "\fBVScrollBar\fP: Display a vertical scrollbar."
 
-\fBTitle\fP: title contains options displayed in the list. The syntaxe is the
-following: {Option 1|Option 2|...|Option N}. All menus are displayed at the top
-of window.
+\fBValue\fP: position of the thumb.
 
-.IP "\fBMenu\fP: Display a menu whom lets user to choose a option."
+\fBMaxValue\fP: upper limit of Value.
 
-\fBValue\fP: specify which option is selected.
+\fBMinValue\fP: lower limit of Value.
 
-\fBTitle\fP: title contains options displayed in the menu. The syntaxe is the
-following:
-{Option 1|Option 2|...|Option N}.
+The width property is ignored and a minimum height is imposed.  The height
+should be at least the range plus 37 if all values are to be selectable e.g.
+a min of 0 and max of 10 has a range of 11 and therefore should have a minimum height
+of 48.
 
 .SH INSTRUCTIONS
 
@@ -295,6 +335,9 @@ Set the foreground color of the widget numbered \fIid1\fP to {\fIcolor\fP}.
 
 .IP "ChangeBackColor \fIid1\fP {\fIcolor\fP}"
 Set the background color of the widget numbered \fIid1\fP to {\fIcolor\fP}.
+
+.IP "ChangeColorSet \fIid1\fP {\fIcolor\fP}"
+Set the colorset of the widget numbered \fIid1\fP to {\fIcolor\fP}.
 
 .IP "ChangePosition \fIid1 x y\fP"
 Move the widget numbered \fIid1\fP to position (\fIx\fP,\fIy\fP).

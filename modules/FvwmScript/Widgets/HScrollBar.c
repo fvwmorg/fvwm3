@@ -28,12 +28,11 @@ void DrawThumbH(struct XObj *xobj)
  int asc,desc,dir;
  XCharStruct struc;
 
- x=3+(xobj->width-36)*(xobj->value-xobj->value2)/(xobj->value3-xobj->value2);
- y=xobj->height/2-9;
- w=30;
- h=18;
- DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[li],xobj->TabColor[shad],
- 		xobj->TabColor[black],-1);
+ x=2+(xobj->width-36)*(xobj->value-xobj->value2)/(xobj->value3-xobj->value2);
+ y=xobj->height/2-11;
+ w=32;
+ h=22;
+ DrawReliefRect(x,y,w,h,xobj,hili,shad);
  segm.x1=x+15;
  segm.y1=y+3;
  segm.x2=x+15;
@@ -44,7 +43,7 @@ void DrawThumbH(struct XObj *xobj)
  segm.y1=y+3;
  segm.x2=x+16;
  segm.y2=y+h-3;
- XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
  XDrawSegments(dpy,xobj->win,xobj->gc,&segm,1);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
 
@@ -52,10 +51,8 @@ void DrawThumbH(struct XObj *xobj)
  x=x+15-(XTextWidth(xobj->xfont,str,strlen(str))/2);
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  y=y-desc-4;
- DrawString(dpy,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore],
-	xobj->TabColor[li],xobj->TabColor[back],
-	!xobj->flags[1]);
+ DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,
+	    !xobj->flags[1]);
 
 }
 
@@ -65,13 +62,11 @@ void HideThumbH(struct XObj *xobj)
  int asc,desc,dir;
  XCharStruct struc;
 
- x=4+(xobj->width-36)*(xobj->value-xobj->value2)/(xobj->value3-xobj->value2);
- y=xobj->height/2-8;
- XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
- XFillRectangle(dpy,xobj->win,xobj->gc,x,y,28,16);
+ x=2+(xobj->width-36)*(xobj->value-xobj->value2)/(xobj->value3-xobj->value2);
+ y=xobj->height/2-11;
+ XClearArea(dpy,xobj->win,x,y,32,22,False);
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- XFillRectangle(dpy,xobj->win,xobj->gc,x-asc
- 			-desc,y-asc-10,90,asc+desc+2);
+ XClearArea(dpy,xobj->win,x-asc-desc,y-asc-10,90,asc+desc+5,False);
 }
 
 void InitHScrollBar(struct XObj *xobj)
@@ -84,12 +79,17 @@ void InitHScrollBar(struct XObj *xobj)
  char str[20];
 
  /* Enregistrement des couleurs et de la police */
- xobj->TabColor[fore] = GetColor(xobj->forecolor);
- xobj->TabColor[back] = GetColor(xobj->backcolor);
- xobj->TabColor[li] = GetColor(xobj->licolor);
- xobj->TabColor[shad] = GetColor(xobj->shadcolor);
- xobj->TabColor[black] = GetColor("#000000");
- xobj->TabColor[white] = GetColor("#FFFFFF");
+ if (xobj->colorset >= 0) {
+  xobj->TabColor[fore] = Colorset[xobj->colorset % nColorsets].fg;
+  xobj->TabColor[back] = Colorset[xobj->colorset % nColorsets].bg;
+  xobj->TabColor[hili] = Colorset[xobj->colorset % nColorsets].hilite;
+  xobj->TabColor[shad] = Colorset[xobj->colorset % nColorsets].shadow;
+ } else {
+  xobj->TabColor[fore] = GetColor(xobj->forecolor);
+  xobj->TabColor[back] = GetColor(xobj->backcolor);
+  xobj->TabColor[hili] = GetColor(xobj->hilicolor);
+  xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ }
 
  mask=0;
  Attr.background_pixel=xobj->TabColor[back];
@@ -124,6 +124,11 @@ void InitHScrollBar(struct XObj *xobj)
  if (xobj->width<i)
   xobj->width=i;
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
+ if (xobj->colorset >= 0)
+   SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		       &Colorset[xobj->colorset % nColorsets], Pdepth,
+		       xobj->gc, True);
+ XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
 void DestroyHScrollBar(struct XObj *xobj)
@@ -142,11 +147,10 @@ void DrawHScrollBar(struct XObj *xobj)
 
  /* Calcul de la taille de l'ascenseur */
  x=0;
- y=xobj->height/2-12;
+ y=xobj->height/2-13;
  w=xobj->width;
- h=24;
- DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[shad],xobj->TabColor[li],
- 		xobj->TabColor[black],1);
+ h=26;
+ DrawReliefRect(x,y,w,h,xobj,shad,hili);
  DrawThumbH(xobj);
 
  /* Ecriture des valeurs */
@@ -154,16 +158,12 @@ void DrawHScrollBar(struct XObj *xobj)
  x=4;
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  y=y+asc+h;
- DrawString(dpy,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore],
-	xobj->TabColor[li],xobj->TabColor[back],
-	!xobj->flags[1]);
+ DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,
+	    !xobj->flags[1]);
  sprintf(str,"%d",xobj->value3);
  x=w-XTextWidth(xobj->xfont,str,strlen(str))-4;
- DrawString(dpy,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore],
-	xobj->TabColor[li],xobj->TabColor[back],
-	!xobj->flags[1]);
+ DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,!
+	    !xobj->flags[1]);
 }
 
 void EvtMouseHScrollBar(struct XObj *xobj,XButtonEvent *EvtButton)
@@ -177,10 +177,10 @@ void EvtMouseHScrollBar(struct XObj *xobj,XButtonEvent *EvtButton)
  Window Win1,Win2;
  unsigned int modif;
 
- x=3+((xobj->width-36)*xobj->value)/(xobj->value3-xobj->value2);
- y=xobj->height/2-9;
- w=30;
- h=18;
+ x=2+((xobj->width-36)*xobj->value)/(xobj->value3-xobj->value2);
+ y=xobj->height/2-11;
+ w=34;
+ h=22;
 
 
  do
@@ -215,17 +215,3 @@ void EvtKeyHScrollBar(struct XObj *xobj,XKeyEvent *EvtKey)
 void ProcessMsgHScrollBar(struct XObj *xobj,unsigned long type,unsigned long *body)
 {
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
