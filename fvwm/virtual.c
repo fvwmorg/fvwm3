@@ -1117,20 +1117,20 @@ return;
 void gotoDeskAndPage_func(F_CMD_ARGS)
 {
   int val[3];
+  Bool is_new_desk = (Scr.CurrentDesk != val[0]);
 
   if (GetIntegerArguments(action, NULL, val, 3) != 3)
     return;
 
 /* MyXGrabServer(dpy); */
-  if (Scr.CurrentDesk != val [0])
+  if (is_new_desk)
   {
     UnmapDesk(Scr.CurrentDesk, True);
-  }
-  MoveViewport((val[1] * Scr.MyDisplayWidth), (val[2] * Scr.MyDisplayHeight),
-	       True);
-  if (Scr.CurrentDesk != val [0])
-  {
     Scr.CurrentDesk = val[0];
+  }
+  MoveViewport((val[1] * Scr.MyDisplayWidth), (val[2] * Scr.MyDisplayHeight), True);
+  if (is_new_desk)
+  {
     MapDesk(val[0], True);
   }
   /* MyXUngrabServer(dpy); */

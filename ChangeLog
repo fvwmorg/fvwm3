@@ -1,5 +1,9 @@
 1999-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/virtual.c (gotoDeskAndPage_func):
+	fixed sending wrong desk number in M_NEW_PAGE packets with the
+	GotoDeskAndPage function
+
 	* fvwm/builtins.c (ApplyHilightColors):
 	* fvwm/borders.c (get_common_decorations):
 	finalised HilightColorset command
