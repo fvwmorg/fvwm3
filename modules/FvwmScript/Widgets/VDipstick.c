@@ -78,7 +78,7 @@ void DestroyVDipstick(struct XObj *xobj)
 
 void DrawVDipstick(struct XObj *xobj)
 {
- int  i,j;
+ int  i;
 
  i=(xobj->height-4)*(xobj->value-xobj->value2)/(xobj->value3-xobj->value2);
 

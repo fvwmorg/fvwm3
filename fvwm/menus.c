@@ -5070,9 +5070,9 @@ static void UpdateMenuStyle(MenuStyle *ms)
   else
   {
     active_fore = (ST_HAS_ACTIVE_FORE(ms)) ?
-      ST_MENU_ACTIVE_COLORS(ms).fore : relief_fore;
+      ST_MENU_ACTIVE_COLORS(ms).fore : menu_fore;
     active_back = (ST_HAS_ACTIVE_BACK(ms)) ?
-      ST_MENU_ACTIVE_COLORS(ms).back : relief_back;
+      ST_MENU_ACTIVE_COLORS(ms).back : menu_back;
   }
 
   /* make GC's */

@@ -215,12 +215,30 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   int fd;
   int ScreenWidth, ScreenHeight;
   int Mscreen;
+  char *user_home_dir;
+
+  /* Figure out the working directory and go to it */
+  user_home_dir = getenv("FVWM_USERHOME");
+  if ( user_home_dir == NULL )
+    user_home_dir = getenv("HOME");
+#ifdef HAVE_GETPWUID
+  if ( user_home_dir == NULL ) {
+    struct passwd* pw = getpwuid(getuid());
+    if ( pw != NULL )
+      user_home_dir = strdup( pw->pw_dir );
+  }
+#endif
+  if ( user_home_dir != NULL ) {
+    if ( chdir(user_home_dir) < 0 )
+      fprintf(stderr, "%s: <<Warning>> chdir to %s failed in m4_defs",
+	      MyName, user_home_dir);
+  }
 
   /* Generate a temporary filename.  Honor the TMPDIR environment variable,
      if set. Hope nobody deletes this file! */
 
   if (strlen(m4_outfile) == 0) {
-    if ((vc=getenv("TMPDIR"))) {
+    if ((vc = getenv("TMPDIR"))) {
       strcpy(tmp_name, vc);
     } else {
       strcpy(tmp_name, "/tmp");
@@ -411,6 +429,13 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
 
   fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
   fputs(MkDef("FVWM_CONFIGDIR", FVWM_CONFIGDIR), tmpf);
+
+  if ((vc = getenv("FVWM_USERHOME")))
+     fputs(MkDef("FVWM_USERHOME", vc), tmpf);
+#ifdef SESSION
+  if ((vc = getenv("SESSION_MANAGER")))
+    fputs(MkDef("SESSION_MANAGER", vc), tmpf);
+#endif
 
   /*
    * At this point, we've sent the definitions to m4.  Just include

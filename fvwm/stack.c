@@ -336,133 +336,135 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
     }
   }
 
-  if ( ! no_movement ) {
-
-  /* detach t, so it doesn't make trouble in the loops */
-  remove_window_from_stack_ring(t);
-
-  count = 1;
-  if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
+  if ( ! no_movement )
   {
-    count += 2;
-  }
+    /* detach t, so it doesn't make trouble in the loops */
+    remove_window_from_stack_ring(t);
 
-  if (do_move_transients)
-  {
-    /* collect the transients in a temp list */
-    tmp_r.stack_prev = &tmp_r;
-    tmp_r.stack_next = &tmp_r;
-    for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+    count = 1;
+    if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
     {
-      next = t2->stack_next;
-      if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
-	  (t2->layer == t->layer))
+      count += 2;
+    }
+
+    if (do_move_transients)
+    {
+      /* collect the transients in a temp list */
+      tmp_r.stack_prev = &tmp_r;
+      tmp_r.stack_next = &tmp_r;
+      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
       {
-	/* t2 is a transient to lower */
-	count++;
-	if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
+	next = t2->stack_next;
+	if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
+	    (t2->layer == t->layer))
 	{
-	  count += 2;
+	  /* t2 is a transient to lower */
+	  count++;
+	  if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
+	  {
+	    count += 2;
+	  }
+
+	  /* unplug it */
+	  remove_window_from_stack_ring(t2);
+
+	  /* put it above tmp_r */
+	  t2->stack_next = &tmp_r;
+	  t2->stack_prev = tmp_r.stack_prev;
+	    t2->stack_prev->stack_next = t2;
+	    tmp_r.stack_prev = t2;
 	}
-
-	/* unplug it */
-	remove_window_from_stack_ring(t2);
-
-	/* put it above tmp_r */
-	t2->stack_next = &tmp_r;
-	t2->stack_prev = tmp_r.stack_prev;
-	t2->stack_prev->stack_next = t2;
-	tmp_r.stack_prev = t2;
       }
     }
-  }
-
-  test_layer = t->layer;
-  if (do_lower)
-    test_layer--;
-  /* now find the place to reinsert t and friends */
-  for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
-  {
-    if (test_layer >= s->layer)
+    if (do_move_transients && tmp_r.stack_next == &tmp_r)
     {
-      break;
+	do_move_transients = False;
     }
-  }
-  r = s->stack_prev;
 
-  if (do_move_transients && tmp_r.stack_next != &tmp_r)
-  {
-    /* insert all transients between r and s. */
-    r->stack_next = tmp_r.stack_next;
-    tmp_r.stack_next->stack_prev = r;
-    s->stack_prev = tmp_r.stack_prev;
-    tmp_r.stack_prev->stack_next = s;
-  }
-
-  /*
-  ** Re-insert t - either above transients at the bottom
-  ** when flipping, or else below transients
-  */
-  if ( flip_at_bottom )
-  {
-    add_window_to_stack_ring_after(t, r);
-  }
-  else
-  {
-  add_window_to_stack_ring_after(t, s->stack_prev);
-  }
-
-  wins = (Window*) safemalloc (count * sizeof (Window));
-
-  i = 0;
-  for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
+    test_layer = t->layer;
+    if (do_lower)
+	test_layer--;
+    /* now find the place to reinsert t and friends */
+    for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
     {
-      if (i >= count) {
+      if (test_layer >= s->layer)
+      {
+	break;
+      }
+    }
+    r = s->stack_prev;
+
+    if (do_move_transients && tmp_r.stack_next != &tmp_r)
+    {
+	/* insert all transients between r and s. */
+	r->stack_next = tmp_r.stack_next;
+	tmp_r.stack_next->stack_prev = r;
+	s->stack_prev = tmp_r.stack_prev;
+	tmp_r.stack_prev->stack_next = s;
+    }
+
+    /*
+    ** Re-insert t - either above transients at the bottom
+    ** when flipping, or else below transients
+    */
+    if ( flip_at_bottom )
+    {
+      add_window_to_stack_ring_after(t, r);
+    }
+    else
+    {
+      add_window_to_stack_ring_after(t, s->stack_prev);
+    }
+
+    wins = (Window*) safemalloc (count * sizeof (Window));
+
+    i = 0;
+    for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
+    {
+      if (i >= count)
+      {
 	fvwm_msg (ERR, "RaiseOrLowerWindow", "more transients than expected");
 	break;
       }
       wins[i++] = t2->frame;
       if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
-	{
-	  if(t2->icon_w != None)
+      {
+	if(t2->icon_w != None)
 	    wins[i++] = t2->icon_w;
-	  if(t2->icon_pixmap_w != None)
+	if(t2->icon_pixmap_w != None)
 	    wins[i++] = t2->icon_pixmap_w;
-	}
+      }
     }
 
-  changes.sibling = s->frame;
-  if (changes.sibling != None)
+    changes.sibling = s->frame;
+    if (changes.sibling != None)
     {
       changes.stack_mode = Above;
       flags = CWSibling|CWStackMode;
     }
-  else
+    else
     {
       changes.stack_mode = Below;
       flags = CWStackMode;
     }
 
-  XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
-  XRestackWindows (dpy, wins, count);
+    XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
+    XRestackWindows (dpy, wins, count);
 
-  if (do_move_transients)
-    /* send out M_RESTACK for all windows, to make sure we don't forget
-     * anything. */
-    BroadcastRestack (Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
-  else
     /* send out (one or more) M_RESTACK packets for windows between r and s */
     BroadcastRestack (r, s);
+    if (do_move_transients && tmp_r.stack_next != &tmp_r)
+    {
+      /* send out M_RESTACK for all windows, to make sure we don't forget
+       * anything. */
+      BroadcastRestack (Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+    }
 
-  free (wins);
-
+    free (wins);
   }
-
 
   if (!do_lower)
   {
-
-
     /*
         This hack raises the target and all higher FVWM windows over any
         override_redirect windows that may be above it. This is used to
@@ -470,9 +472,9 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
         override_redirects.
     */
     if (Scr.bo.RaiseOverUnmanaged)
-      {
+    {
       raise_over_unmanaged(t);
-      }
+    }
 
 
     /*
@@ -501,9 +503,10 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
       }
       XFree (tops);
 #endif
-      for (t2 = t; t2 != &Scr.FvwmRoot; t2 = t2->stack_prev)  {
+      for (t2 = t; t2 != &Scr.FvwmRoot; t2 = t2->stack_prev)
+      {
         XRaiseWindow (dpy, t2->frame);
-        }
+      }
     }
 
     /*  This needs to be done after all the raise hacks.  */

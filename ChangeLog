@@ -1,3 +1,19 @@
+1999-09-27 Olivier Chapuis <olivier.chapuis@free.fr>
+	
+	* FvwmM4/FvwmM4.c (m4_defs): 
+	* FvwmM4/FvwmM4.1:
+	* FvwmCpp/FvwmCpp.c (cpp_defs):
+	* FvwmCpp/FvwmCpp.1:
+	Change dir to the "good" directory before popen m4/cpp. 
+	Add FVWM_USERHOME and SESSION_MANAGER.
+
+1999-09-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (UpdateMenuStyle): fixed hilighting menu items
+
+	* fvwm/stack.c (inner_RaiseOrLowerWindow): fixed broadcasting of
+	stacking order
+
 1999-09-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Graphics.c (CreateGradientPixmap): and another attempt to fix
@@ -7598,4 +7614,3 @@ Sat Oct 31 06:02:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* modules/FvwmCpp:
 	* modules/FvwmM4: Changed FVWMDIR to FVWM_MODULEDIR.
-

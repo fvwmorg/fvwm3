@@ -91,6 +91,8 @@ The hostname of the machine running fvwm. Generally the same as CLIENTHOST.
 The operating system for CLIENTHOST.
 .IP USER
 The name of the person running fvwm.
+.IP HOME
+The home directory of the person running fvwm.
 .IP VERSION
 The X11 version.
 .IP REVISION
@@ -127,6 +129,10 @@ configure.h at compile time.
 .IP FVWM_MODULEDIR
 The directory where fvwm looks for .fvwmrc and modules by default, as
 determined at compile time.
+.IP FVWM_USERHOME
+The value of $FVWM_USERHOME. Undefined if this variable is not set.
+.IP SESSION_MANAGER
+The value of $SESSION_MANAGER. Undefined if this variable is not set.
 
 .SH EXAMPLE PROLOG
 
@@ -153,6 +159,8 @@ define(COLOR,``Yes'')dnl
 define(FVWM_VERSION,``1.24l'')dnl
 define(OPTIONS,``SHAPE XPM M4 '')dnl
 define(FVWM_MODULEDIR,``/local/homes/dsp/nation/modules'')dnl
+define(FVWM_USERHOME,``/local/homes/dsp/nation/.fvwm2rc.d'')dnl
+define(SESSION_MANAGER,``local/grumpy:/tmp/.ICE-unix/440,tcp/spx20:1025'')dnl
 .EE
 
 .SH AUTHOR
