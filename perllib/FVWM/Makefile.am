@@ -4,13 +4,12 @@ SUBDIRS = Module Tracker
 
 configdir = @FVWM_PERLLIBDIR@/FVWM
 
-config_DATA = \
-	Module.pm Commands.pm Constants.pm EventNames.pm Event.pm Tracker.pm
+ORIGINAL_PMS = \
+	Commands.pm Constants.pm EventNames.pm Event.pm Tracker.pm
 
-EXTRA_DIST = \
-	create-commands Commands.pm \
-	create-constants Constants.pm \
-	EventNames.pm Event.pm
+config_DATA = $(ORIGINAL_PMS) Module.pm
+
+EXTRA_DIST = $(ORIGINAL_PMS) create-commands create-constants
 
 _Constants.pm: Makefile.am $(top_srcdir)/libs/Module.h
 	cd $(top_builddir)/perllib/FVWM && \

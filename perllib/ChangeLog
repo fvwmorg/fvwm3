@@ -4,6 +4,7 @@
 	* FVWM/Tracker/*.pm:
 	documented Tracker superclass and 6 tracker subclasses
 
+	* FVWM/Makefile.am:
 	* FVWM/Tracker/Makefile.pm:
 	fixed dist
 
