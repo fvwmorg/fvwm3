@@ -1,5 +1,8 @@
 2001-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* Makefile.am (distcheck2):
+	build distcheck before dist2; save a few seconds if the build fails
+
 	* libs/alloca.c:
 	* libs/ClientMsg.c:
 	* libs/envvar.c:

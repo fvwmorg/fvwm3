@@ -26,7 +26,7 @@ autoconf):
 
     automake --add-missing
     autoreconf
-    automake
+    automake --add-missing
     autoreconf
 
 There will be some warnings, which are ignorable as long as you get a
@@ -166,9 +166,10 @@ Steps: 1. When building a release, update the CVS sources first. For a
           been added to CVS.
        2. Make sure you have XPM, the strokes library and a X server with
           the shape extension.
-       3. If you checked out fresh sources in step 1, run
-            automake --add-missing; autoconf
-          otherwise run
+       3. Run
+            automake --add-missing; autoreconf
+	  If you checked out fresh sources in step 1, run the same line
+          again:
             automake --add-missing; autoreconf
        4. If building a stable release, remove the config.cache file.
        5. ./configure
