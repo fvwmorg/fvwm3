@@ -85,6 +85,12 @@ int main(int argc, char **argv)
   }
   InitPictureCMap(dpy);
 
+  /* This module allocates resouces that othe rmodules may rely on.
+   * Set the closedown mode so that the pixmaps and colors are not freed
+   * by the server if this module dies
+   */
+  XSetCloseDownMode(dpy, RetainTemporary);
+
   /* create a window to work in */
   xswa.background_pixmap = CopyFromParent;
   xswa.border_pixel = 0;
@@ -110,6 +116,12 @@ int main(int argc, char **argv)
 
   /* garbage collect */
   alloca(0);
+
+  /* just in case any previous FvwmTheme has died and left pixmaps dangling.
+   * This might be overkill but any other method must ensure that fvwm doesn't
+   * get killed (it can be the owner of the pixels in colorset 0)
+   */
+  XKillClient(dpy, AllTemporary);
 
   /* sit around waiting for something to do */
   main_loop();
