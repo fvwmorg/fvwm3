@@ -272,9 +272,32 @@ void setup_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)
 {
   /* copy iconboxes ptr (if any) */
   if (SHAS_ICON_BOXES(&pstyle->flags))
+  {
     tmp_win->IconBoxes = SGET_ICON_BOXES(*pstyle);
+    tmp_win->IconBoxes->use_count++;
+  }
   else
     tmp_win->IconBoxes = NULL;
+}
+
+
+void destroy_icon_boxes(FvwmWindow *tmp_win)
+{
+  if (tmp_win->IconBoxes)
+  {
+    tmp_win->IconBoxes->use_count--;
+    if (tmp_win->IconBoxes->use_count == 0 && tmp_win->IconBoxes->is_orphan)
+    {
+      /* finally destroy the icon box */
+      free_icon_boxes(tmp_win->IconBoxes);
+    }
+  }
+}
+
+void change_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  destroy_icon_boxes(tmp_win);
+  setup_icon_boxes(tmp_win, pstyle);
 }
 
 void setup_layer(FvwmWindow *tmp_win, window_style *pstyle)
@@ -671,7 +694,7 @@ void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
       tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
     else
       tmp_win->icon_bitmap_file = NULL;
- }
+  }
   else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
   {
     if (SHAS_ICON(&pstyle->flags) &&
@@ -707,6 +730,41 @@ void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
    * before creating the icon window
    */
   tmp_win->icon_w = None;
+
+  BroadcastName(M_ICON_NAME,tmp_win->w,tmp_win->frame,
+		(unsigned long)tmp_win,tmp_win->icon_name);
+  if (tmp_win->icon_bitmap_file != NULL &&
+      tmp_win->icon_bitmap_file != Scr.DefaultIcon)
+    BroadcastName(M_ICON_FILE,tmp_win->w,tmp_win->frame,
+		  (unsigned long)tmp_win,tmp_win->icon_bitmap_file);
+}
+
+void destroy_icon(FvwmWindow *tmp_win)
+{
+  if (tmp_win->icon_w)
+  {
+    if (IS_PIXMAP_OURS(tmp_win))
+    {
+      XFreePixmap(dpy, tmp_win->iconPixmap);
+      if (tmp_win->icon_maskPixmap != None)
+	XFreePixmap(dpy, tmp_win->icon_maskPixmap);
+    }
+    XDestroyWindow(dpy, tmp_win->icon_w);
+    XDeleteContext(dpy, tmp_win->icon_w, FvwmContext);
+  }
+  if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_pixmap_w != None))
+    XDestroyWindow(dpy, tmp_win->icon_pixmap_w);
+  if(tmp_win->icon_pixmap_w != None)
+    XDeleteContext(dpy, tmp_win->icon_pixmap_w, FvwmContext);
+  tmp_win->icon_pixmap_w = None;
+  tmp_win->iconPixmap = None;
+  tmp_win->icon_maskPixmap = None;
+}
+
+void change_icon(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  destroy_icon(tmp_win);
+  setup_icon(tmp_win, pstyle);
 }
 
 #ifdef MINI_ICONS
@@ -726,10 +784,45 @@ void setup_mini_icon(FvwmWindow *tmp_win, window_style *pstyle)
     tmp_win->mini_icon = CachePicture(dpy, Scr.NoFocusWin, NULL,
 				      tmp_win->mini_pixmap_file,
 				      Scr.ColorLimit);
+    if (tmp_win->mini_icon != NULL)
+    {
+      BroadcastMiniIcon(M_MINI_ICON,
+			tmp_win->w, tmp_win->frame, (unsigned long)tmp_win,
+			tmp_win->mini_icon->width,
+			tmp_win->mini_icon->height,
+			tmp_win->mini_icon->depth,
+			tmp_win->mini_icon->picture,
+			tmp_win->mini_icon->mask,
+			tmp_win->mini_pixmap_file);
+    }
   }
   else
   {
     tmp_win->mini_icon = NULL;
+  }
+
+}
+
+void destroy_mini_icon(FvwmWindow *tmp_win)
+{
+  if (tmp_win->mini_icon)
+  {
+    DestroyPicture(dpy, tmp_win->mini_icon);
+  }
+}
+
+void change_mini_icon(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  Picture *old_mi = tmp_win->mini_icon;
+  destroy_mini_icon(tmp_win);
+  setup_mini_icon(tmp_win, pstyle);
+  if (old_mi != NULL && tmp_win->mini_icon == 0)
+  {
+    /* this case is not handled in setup_mini_icon, so we must broadcast here
+     * explicitly */
+    BroadcastMiniIcon(M_MINI_ICON,
+		      tmp_win->w, tmp_win->frame, (unsigned long)tmp_win,
+			0, 0, 0, 0, 0, "");
   }
 }
 #endif
@@ -780,6 +873,7 @@ void setup_key_and_button_grabs(FvwmWindow *tmp_win)
   setup_focus_policy(tmp_win);
 }
 
+
 /***********************************************************************
  *
  *  Procedure:
@@ -799,7 +893,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   window_style style;
   /* used for faster access */
   style_flags *sflags;
-  int width,height;
   int a,b;
   extern FvwmWindow *colormap_win;
   extern Boolean PPosOverride;
@@ -970,16 +1063,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);
 
-  /****** icon ******/
-
-  setup_icon(tmp_win, &style);
-
-  /****** mini icon ******/
-
-#ifdef MINI_ICONS
-  setup_mini_icon(tmp_win, &style);
-#endif
-
   /****** select events ******/
 
   valuemask = CWEventMask | CWDontPropagate;
@@ -995,14 +1078,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   XAddToSaveSet(dpy, tmp_win->w);
 
-  /******  ******/
+  /****** setup the frame and subwindows ******/
 
-  width = tmp_win->frame_g.width;
-  tmp_win->frame_g.width = 0;
-  height = tmp_win->frame_g.height;
-  tmp_win->frame_g.height = 0;
-  SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,width,height,
-	     True, False);
+  ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+		  tmp_win->frame_g.width, tmp_win->frame_g.height,
+		  True, False);
 
   /****** maximize ******/
 
@@ -1060,26 +1140,19 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   BroadcastConfig(M_ADD_WINDOW,tmp_win);
   BroadcastName(M_WINDOW_NAME,tmp_win->w,tmp_win->frame,
 		(unsigned long)tmp_win,tmp_win->name);
-  BroadcastName(M_ICON_NAME,tmp_win->w,tmp_win->frame,
-		(unsigned long)tmp_win,tmp_win->icon_name);
-   if (tmp_win->icon_bitmap_file != NULL &&
-       tmp_win->icon_bitmap_file != Scr.DefaultIcon)
-     BroadcastName(M_ICON_FILE,tmp_win->w,tmp_win->frame,
-		   (unsigned long)tmp_win,tmp_win->icon_bitmap_file);
   BroadcastName(M_RES_CLASS,tmp_win->w,tmp_win->frame,
 		(unsigned long)tmp_win,tmp_win->class.res_class);
   BroadcastName(M_RES_NAME,tmp_win->w,tmp_win->frame,
 		(unsigned long)tmp_win,tmp_win->class.res_name);
+
+  /****** icon ******/
+
+  setup_icon(tmp_win, &style);
+
+  /****** mini icon ******/
+
 #ifdef MINI_ICONS
-  if (tmp_win->mini_icon != NULL)
-    BroadcastMiniIcon(M_MINI_ICON,
-                      tmp_win->w, tmp_win->frame, (unsigned long)tmp_win,
-                      tmp_win->mini_icon->width,
-                      tmp_win->mini_icon->height,
-                      tmp_win->mini_icon->depth,
-                      tmp_win->mini_icon->picture,
-                      tmp_win->mini_icon->mask,
-                      tmp_win->mini_pixmap_file);
+  setup_mini_icon(tmp_win, &style);
 #endif
 
   /****** resize window ******/
@@ -1495,35 +1568,6 @@ void destroy_auxiliary_windows(FvwmWindow *tmp_win,
   }
 }
 
-void destroy_icon_window(FvwmWindow *tmp_win)
-{
-  if (tmp_win->icon_w)
-  {
-    if (IS_PIXMAP_OURS(tmp_win))
-    {
-      XFreePixmap(dpy, tmp_win->iconPixmap);
-      if (tmp_win->icon_maskPixmap != None)
-	XFreePixmap(dpy, tmp_win->icon_maskPixmap);
-    }
-    XDestroyWindow(dpy, tmp_win->icon_w);
-    XDeleteContext(dpy, tmp_win->icon_w, FvwmContext);
-  }
-  if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_pixmap_w != None))
-    XDestroyWindow(dpy, tmp_win->icon_pixmap_w);
-  if(tmp_win->icon_pixmap_w != None)
-    XDeleteContext(dpy, tmp_win->icon_pixmap_w, FvwmContext);
-}
-
-#ifdef MINI_ICON
-void destroy_mini_icon(FvwmWindow *tmp_win)
-{
-  if (tmp_win->mini_icon)
-  {
-    DestroyPicture(dpy, tmp_win->mini_icon);
-  }
-}
-#endif
-
 
 
 /**************************************************************************
@@ -1669,7 +1713,8 @@ void destroy_window(FvwmWindow *tmp_win)
 
   /****** destroy icon ******/
 
-  destroy_icon_window(tmp_win);
+  destroy_icon_boxes(tmp_win);
+  destroy_icon(tmp_win);
 
   /****** destroy mini icon ******/
 

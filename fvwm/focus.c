@@ -56,13 +56,18 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
   extern Time lastTimestamp;
 
   if (Fw && HAS_NEVER_FOCUS(Fw))
+  {
+    /* make sure the window is not hilighted */
+    SetBorder(Fw, False, False, True, None);
     return;
+  }
 
   /* ClickToFocus focus queue manipulation - only performed for
    * Focus-by-mouse type focus events */
   /* Watch out: Fw may not be on the windowlist and the windowlist may be
    * empty */
-  if (Fw && Fw != Scr.Focus && Fw != &Scr.FvwmRoot) {
+  if (Fw && Fw != Scr.Focus && Fw != &Scr.FvwmRoot)
+  {
     if (FocusByMouse) /* pluck window from list and deposit at top */
     {
       /* remove Fw from list */
@@ -121,7 +126,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
 	      for(i=0;i<3;i++)
 		if(Scr.buttons2grab & (1<<i))
 		  {
-		    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->frame,True,
+		    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->decor_w,True,
 				ButtonPressMask, GrabModeSync,GrabModeAsync,
 				None,Scr.FvwmCursors[CRS_SYS]);
 		    XGrabButton(dpy,(i+1),GetUnusedModifiers(),
@@ -152,7 +157,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
       XSync(dpy,0);
       for(i=0;i<3;i++)
 	if(Scr.buttons2grab & (1<<i))
-	  XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->frame,True,
+	  XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->decor_w,True,
 		      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
 		      Scr.FvwmCursors[CRS_SYS]);
       Scr.Ungrabbed = NULL;
@@ -192,7 +197,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
       Scr.Focus = Fw;
       Scr.UnknownWinFocused = None;
     }
-  else if(!((Fw)&&(Fw->wmhints)&&(Fw->wmhints->flags & InputHint)&&
+  else if(!((Fw) && (Fw->wmhints)&&(Fw->wmhints->flags & InputHint)&&
 	    (Fw->wmhints->input == False)))
     {
       /* Window will accept input focus */

@@ -268,11 +268,11 @@ static enum ButtonState get_button_state(Bool onoroff, Bool toggled, Window w)
  * Redraws the windows borders and the title bar
  *
  ****************************************************************************/
-void SetBorder(FvwmWindow *t, Bool onoroff, int force,Bool Mapped,
+void SetBorder(FvwmWindow *t, Bool onoroff, int force, Bool Mapped,
 	       Window expose_win)
 {
   RedrawBorder(t, onoroff, force, Mapped, expose_win);
-  SetTitleBar(t,onoroff, False);
+  SetTitleBar(t, onoroff, False);
 }
 
 
@@ -281,7 +281,7 @@ void SetBorder(FvwmWindow *t, Bool onoroff, int force,Bool Mapped,
  * Redraws the windows borders
  *
  ****************************************************************************/
-void RedrawBorder(FvwmWindow *t, Bool onoroff,int force,Bool Mapped,
+void RedrawBorder(FvwmWindow *t, Bool onoroff, int force, Bool Mapped,
 		  Window expose_win)
 {
   int i;
@@ -1384,6 +1384,15 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   XSync(dpy,0);
 
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
+}
+
+void ForceSetupFrame(
+  FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
+  Bool curr_shading)
+{
+  tmp_win->frame_g.width = 0;
+  tmp_win->frame_g.height = 0;
+  SetupFrame(tmp_win, x, y, w, h, sendEvent, curr_shading);
 }
 
 

@@ -939,9 +939,6 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   /* to understand the following, pay attention to the fall thrus in the
      switch statement, and how "items_to_move" affects the flow. */
   items_to_move = 0;
-  if (fShiftedKey && (keysym == XK_Tab)) { /* chg shift tab */
-    items_to_move = -1;			/* to move up */
-  }
   switch(keysym)		/* Other special keyboard handling	*/
   {
   case XK_Escape:		/* Escape key pressed. Abort		*/
@@ -1066,7 +1063,44 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
       items_to_move = 5;
     }
     /* fall through */
-  case XK_Tab:				/* Tab added mostly for Winlist */
+  case XK_Tab:
+    /* Tab added mostly for Winlist */
+    if (items_to_move == 0)
+    {
+      switch (fShiftedKey + 2 * fMetaKey + 4 * fControlKey)
+      {
+      case 1:
+      case 3:
+	/* meta-tab, shift-tab */
+	items_to_move = 1;
+	break;
+      case 4:
+	/* ctrl-tab */
+	items_to_move = 1;
+	fSkipSection = True;
+	break;
+      case 5:
+	/* shift-ctrl-tab */
+	items_to_move = -1;
+	fSkipSection = True;
+	break;
+      case 6:
+	/* ctrl-meta-tab */
+	items_to_move = 5;
+	break;
+      case 7:
+	/* shift-ctrl-meta-tab */
+	items_to_move = -5;
+	break;
+      case 0:
+      case 2:
+      default:
+	/* tab, alt-tab */
+	items_to_move = 1;
+	break;
+      }
+    }
+    /* fall through */
   case XK_Down:
   case XK_KP_2:
   case XK_j: /* vi down */

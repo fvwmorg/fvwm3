@@ -315,5 +315,6 @@ void reset_style_changes(void);
 void handle_style_changes(void);
 void update_style_colorset(int colorset);
 void update_window_color_style(FvwmWindow *tmp_win, window_style *style);
+void free_icon_boxes(icon_boxes *ib);
 
 #endif /* _STYLE_ */

@@ -25,6 +25,12 @@ void setup_style_and_decor(FvwmWindow *tmp_win, window_style *pstyle);
 void setup_auxiliary_windows(FvwmWindow *tmp_win, Bool setup_frame_and_parent);
 void setup_key_and_button_grabs(FvwmWindow *tmp_win);
 void setup_frame_geometry(FvwmWindow *tmp_win);
+void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle);
+void change_icon(FvwmWindow *tmp_win, window_style *pstyle);
+#ifdef MINI_ICONS
+void change_mini_icon(FvwmWindow *tmp_win, window_style *pstyle);
+#endif
+void change_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle);
 void destroy_auxiliary_windows(
   FvwmWindow *Tmp_win, Bool destroy_frame_and_parent);
 

@@ -375,7 +375,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       p.mask = body[7];
 
       UpdateButtonPicture(&buttons, i, &p);
-      redraw = 0;
+      redraw = 1;
     }
     break;
 #endif

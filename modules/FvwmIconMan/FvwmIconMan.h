@@ -199,6 +199,7 @@ typedef struct win_data {
   /* stuff shadowed in the Button structure */
 #ifdef MINI_ICONS
   Picture pic;
+  Picture old_pic;
 #endif
   char *display_string; /* what gets shown in the manager window */
   Uchar iconified, state;

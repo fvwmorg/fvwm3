@@ -1,5 +1,40 @@
+1999-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (change_icon_boxes):
+	(destroy_icon_boxes):
+	(change_icon):
+	* fvwm/style.c (handle_window_style_change):
+	handle icon related style changes without recapture
+
+	* fvwm/fvwm2.1:
+ 	documented menu key bindings
+
+	* fvwm/menus.c (menuShortcuts):
+	new alt-tab bindings
+
+	* fvwm/style.c (handle_window_style_change):
+	* fvwm/add_window.c (change_mini_icon):
+	handle MiniIcon style change without recapture
+
+	* fvwm/style.c (handle_window_style_change):
+	handle MaxWindowSize style change without recapture
+
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/borders.c (ForceSetupFrame):
+	new function ForceSetupFrame
+
+	* fvwm/style.c (handle_style_changes):
+	* fvwm/focus.c (DoSetFocus):
+	focus poliy style changes update
+
+	* fvwm/focus.c (DoSetFocus):
+	fixed title buttons with clicktofocus; broken in decor_w patch
+
+	* fvwm/events.c:
+	fixed a subtle bug with clicktofocus/grabfocusoff
+
 1999-11-12 olicha <olivier.chapuis@free.fr>
-	
+
 	* fvwm/module_interface.c (PoistiveWrite):
 	* fvwm/module_interface.h (MAX_MASK):
 	* libs/Modules.h:
@@ -474,9 +509,7 @@
 
 	* fvwm/style.c (merge_styles):
 	(ProcessNewStyle): all style flags (i.e. all styles) have a change_mask
-	indicationg that the style has changed.
-
-	* fvwm/add_window.c (AddWindow):
+	indicationg that the style has changed.	* fvwm/add_window.c (AddWindow):
 	* fvwm/style.c (ProcessNewStyle):
 	Icon boxes can be reset to default by omitting the arguments,
 	icon boxes now have their own style flag

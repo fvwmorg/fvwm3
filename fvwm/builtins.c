@@ -2471,8 +2471,6 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
 
-  /* Wow, this grabbing speeds up recapture tremendously! I think that is the
-   * solution for this weird -blackout option. */
   MyXGrabServer(dpy);
   if (BUSY_RECAPTURE & Scr.BusyCursor)
     if (GrabEm(CRS_WAIT, GRAB_BUSY)) need_ungrab = True;

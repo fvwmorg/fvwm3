@@ -1,10 +1,19 @@
+1999-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (set_win_picture):
+	(draw_button):
+	fixed redrawing when mini icon changes causing the button to shrink
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	redraw window list when mini icon changes
+
 1999-11-12 olicha <olivier.chapuis@free.fr>
 
 	* FvwmGtk/FvwmGtk.c (main):
 	(ProcessMessage):
 	Use SetSyncMask in the place of M_LOCKONSEND. Lock on send
 	only for M_STRING
-	
+
 1999-11-12 olicha <olivier.chapuis@free.fr>
 
 	* FvwmAnimate/FvwmAnimate.c (main):
@@ -20,27 +29,27 @@
 	* FvwmTaskBar/FvwmTaskBar.1:
 	* FvwmTaskBar/ButtonArray.{c,h} (ButtonCoordinates):
         New configuration option NoIconAction for animation
-	
+
 1999-11-12 olicha <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/FvwmIconMan.c (main):
 	* FvwmIconMan/fvwm.c (ProcessMessage):
-	Use SetSyncMask in the place of M_LOCKONSEND for synchronize its 
+	Use SetSyncMask in the place of M_LOCKONSEND for synchronize its
 	processing with fvwm only for M_ICONIFY and M_DEICONIFY messages
-	
+
 1999-11-11 olicha <olivier.chapuis@free.fr>
 
 	* FvwmWinList/FvwmWinList.c (main):
 	(ProcessMessage):
 	Use SetSyncMask in the place of M_LOCKONSEND for NoIconAction
 	configuration command
-	
+
 1999-11-09  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):
 	(ProcessMessage):
 	* FvwmTaskBar/ButtonArray.c (AddButton):
-        Fixed mini-icons and iconified state problems with DeskOnly 
+        Fixed mini-icons and iconified state problems with DeskOnly
 	option.
 
 1999-11-09  Dominik Vogt  <dominik.vogt@gmx.de>

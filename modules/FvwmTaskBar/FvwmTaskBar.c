@@ -552,14 +552,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_DEICONIFY:
   case M_ICONIFY:
     /* fwvm will wait for an Unlock message before continuing
-     * be careful when changing this construct, make sure unlock happens 
+     * be careful when changing this construct, make sure unlock happens
      * if AnimCommand && AnimCommand[0] != 0 */
    tb_flags = ItemFlags(&windows, body[0]);
     if (((i = FindItem(&windows, body[0])) == -1)
 	|| (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED))
 	|| (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED))
     {
-      if (AnimCommand && AnimCommand[0] != 0) 
+      if (AnimCommand && AnimCommand[0] != 0)
 	SendText(Fvwm_fd, "Unlock 1", 0);
       break;
     }
@@ -567,9 +567,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     UpdateItemFlags(&windows, body[0], tb_flags);
     {
       Button *temp = find_n(&buttons, i);
-      if (temp) 
+      if (temp)
       {
-	if (AnimCommand && (AnimCommand[0] != 0)) 
+	if (AnimCommand && (AnimCommand[0] != 0))
 	{
 	  char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	  Window child;

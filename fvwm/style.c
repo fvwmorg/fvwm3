@@ -53,8 +53,8 @@
 #include "libs/Colorset.h"
 #include "borders.h"
 #include "add_window.h"
-/*!!!*/
-#include "bindings.h"
+#include "focus.h"
+#include "icons.h"
 
 /* list of window names with attributes */
 static window_style *all_styles = NULL;
@@ -63,14 +63,22 @@ static window_style *last_style_in_list = NULL;
 #define SAFEFREE( p )  {if (p)  free(p);}
 
 
-static void free_icon_boxes(icon_boxes *ib)
+void free_icon_boxes(icon_boxes *ib)
 {
   icon_boxes *temp;
 
   for ( ; ib != NULL; ib = temp)
   {
     temp = ib->next;
-    free(ib);
+    if (ib->use_count == 0)
+    {
+      free(ib);
+    }
+    else
+    {
+      /* we can't delete the icon box yet, it is still in use */
+      ib->is_orphan = True;
+    }
   }
 }
 
@@ -1883,7 +1891,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
       Scr.DefaultIcon = SGET_ICON_NAME(*ptmpstyle);
     ptmpstyle->flags.has_icon = 0;
     ptmpstyle->flag_mask.has_icon = 0;
-    ptmpstyle->change_mask.has_icon = 0;
+    ptmpstyle->change_mask.has_icon = 1;
     SSET_ICON_NAME(*ptmpstyle, NULL);
   }
   /* add temp name list to list */
@@ -1895,8 +1903,6 @@ static void handle_window_style_change(FvwmWindow *t)
 {
   window_style style;
   int i;
-  int width;
-  int height;
   char *wf;
   char *sf;
   char *sc;
@@ -1904,6 +1910,8 @@ static void handle_window_style_change(FvwmWindow *t)
   Bool do_redecorate = False;
   Bool do_update_icon = False;
   Bool do_setup_focus_policy = False;
+  Bool do_resize_window = False;
+  Bool do_setup_frame = False;
 
   lookup_style(t, &style);
   if (style.has_style_changed == 0)
@@ -1967,13 +1975,9 @@ static void handle_window_style_change(FvwmWindow *t)
   /*
    * has_no_icon_title
    * is_icon_suppressed
+   *
+   * handled below
    */
-  if (SCHAS_NO_ICON_TITLE(style) ||
-      SCIS_ICON_SUPPRESSED(style))
-  {
-    do_update_icon = True;
-  }
-
 
   /****** private style flags ******/
 
@@ -1989,23 +1993,55 @@ static void handle_window_style_change(FvwmWindow *t)
    *   capture_honors_starts_on_page
    *   recapture_honors_starts_on_page
    *   use_layer
-   *
    */
 
   /* not implemented yet:
    *
-   *   has_decor
-   *
-   *   has_icon
-   *
-   *   has_icon_boxes
-   *
-   *   has_max_window_size
-   *
-   *   has_mini_icon
-   *
-   *   icon_override
+   *   handling changes in included decors
+   *   handling the 'usestyle' style
    */
+
+  /*
+   * has_icon
+   * has_no_icon_title
+   * icon_override
+   * is_icon_suppressed
+   */
+  if (style.change_mask.has_icon ||
+      style.change_mask.icon_override ||
+      SCHAS_NO_ICON_TITLE(style) ||
+      SCIS_ICON_SUPPRESSED(style))
+  {
+    do_update_icon = True;
+  }
+
+  /*
+   *   has_icon_boxes
+   */
+  if (style.change_mask.has_icon_boxes)
+  {
+    change_icon_boxes(t, &style);
+    do_update_icon = True;
+  }
+
+#if MINI_ICONS
+  /*
+   * has_mini_icon
+   */
+  if (style.change_mask.has_mini_icon)
+  {
+    change_mini_icon(t, &style);
+    do_redecorate = True;
+  }
+#endif
+
+  /*
+   * has_max_window_size
+   */
+  if (style.change_mask.has_max_window_size)
+  {
+    do_resize_window = True;
+  }
 
   /*
    * has_color_back
@@ -2023,10 +2059,10 @@ static void handle_window_style_change(FvwmWindow *t)
   /*
    * do_decorate_transient
    * has_border_width
+   * has_decor
    * has_handle_width
    * has_mwm_decor
    * has_mwm_functions
-   *
    * has_no_border
    * has_no_title
    * has_ol_decor
@@ -2034,6 +2070,7 @@ static void handle_window_style_change(FvwmWindow *t)
    */
   if (style.change_mask.do_decorate_transient ||
       style.change_mask.has_border_width ||
+      style.change_mask.has_decor ||
       style.change_mask.has_handle_width ||
       style.change_mask.has_mwm_decor ||
       style.change_mask.has_mwm_functions ||
@@ -2047,7 +2084,7 @@ static void handle_window_style_change(FvwmWindow *t)
 
   /****** clean up, redraw, etc. ******/
 
-  if (do_redecorate && 0)
+  if (do_redecorate)
   {
     /* destroy old decorations */
     destroy_auxiliary_windows(t, False);
@@ -2062,50 +2099,47 @@ static void handle_window_style_change(FvwmWindow *t)
     setup_key_and_button_grabs(t);
     do_setup_focus_policy = False;
 
+#if 0
     {
-    /*!!!*/
-    int a,b;
-    unsigned int mask;
-    XWindowChanges xwc;
+      int a,b;
+      unsigned int mask;
+      XWindowChanges xwc;
 
-    if (XGetGeometry(dpy, t->w, &JunkRoot, &(t->attr.x), &(t->attr.y),
-		     &width, &height, &JunkBW, &JunkDepth))
-    {
-      XTranslateCoordinates(dpy, t->frame, Scr.Root, t->attr.x, t->attr.y,
-			    &a,&b,&JunkChild);
-      xwc.x = a + t->xdiff;
-      xwc.y = b + t->ydiff;
-      xwc.border_width = t->old_bw;
-      mask = (CWX | CWY| CWBorderWidth);
-      /*
-      XConfigureWindow (dpy, t->w, mask, &xwc);
-      */
+      if (XGetGeometry(dpy, t->w, &JunkRoot, &(t->attr.x), &(t->attr.y),
+		       &width, &height, &JunkBW, &JunkDepth))
+      {
+	XTranslateCoordinates(dpy, t->frame, Scr.Root, t->attr.x, t->attr.y,
+			      &a,&b,&JunkChild);
+	xwc.x = a + t->xdiff;
+	xwc.y = b + t->ydiff;
+	xwc.border_width = t->old_bw;
+	mask = (CWX | CWY| CWBorderWidth);
+	/*
+	  XConfigureWindow (dpy, t->w, mask, &xwc);
+	*/
+      }
+      else
+      {
+	xwc.x = t->attr.x;
+	xwc.y = t->attr.y;
+      }
     }
-    else
-    {
-      xwc.x = t->attr.x;
-      xwc.y = t->attr.y;
-    }
-    }
-
-
-
-
-
-
-
-
     setup_frame_geometry(t);
-    width = t->frame_g.width;
-    t->frame_g.width = 0;
-    height = t->frame_g.height;
-    t->frame_g.height = 0;
-fprintf(stderr,"x=%d, y=%d, w=%d, h=%d\n", t->frame_g.x, t->frame_g.y, width, height);
-    SetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width, t->frame_g.height, True, False);
+#endif
 
-
-
+    do_setup_frame = True;
     do_redraw_decoration = True;
+  }
+  if (do_resize_window)
+  {
+    setup_frame_size_limits(t, &style);
+    do_setup_frame = True;
+    do_redraw_decoration = True;
+  }
+  if (do_setup_frame)
+  {
+    ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
+		    t->frame_g.height, True, False);
   }
   if (do_redraw_decoration)
   {
@@ -2116,13 +2150,17 @@ fprintf(stderr,"x=%d, y=%d, w=%d, h=%d\n", t->frame_g.x, t->frame_g.y, width, he
   }
   if (do_update_icon)
   {
-    /*!!!*/
+    change_icon(t, &style);
+    if (IS_ICONIFIED(t))
+    {
+      SET_ICONIFIED(t, 0);
+      Iconify(t, 0, 0);
+    }
   }
   if (do_setup_focus_policy)
   {
     setup_focus_policy(t);
   }
-fprintf(stderr,"updated style for window %s\n", t->name);
 
   return;
 }
@@ -2145,15 +2183,38 @@ void reset_style_changes(void)
 void handle_style_changes(void)
 {
   FvwmWindow *t;
+  Window focus_w;
+  FvwmWindow *focus_fw;
+  Bool do_need_ungrab = False;
 
 fprintf(stderr,"updating styles\n");
+
+  /* Grab the server during the style update! */
+  MyXGrabServer(dpy);
+  if (GrabEm(CRS_WAIT, GRAB_BUSY))
+    do_need_ungrab = True;
+  XSync(dpy,0);
+
+  /* This is necessary in case the focus policy changes. With ClickToFocus some
+   * buttons have to be grabbed/ungrabbed. */
+  focus_fw = Scr.Focus;
+  focus_w = (focus_fw) ? focus_fw->w : None;
+  SetFocus(Scr.NoFocusWin, NULL, 1);
   /* update styles for all windows */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
     handle_window_style_change(t);
   }
+  /* restore the focus; also handles the case that the previously focused
+   * window is now NeverFocus */
+  SetFocus(focus_w, focus_fw, 1);
   /* finally clean up the change flags */
   reset_style_changes();
+
+  if (do_need_ungrab)
+    UngrabEm(GRAB_BUSY);
+  MyXUngrabServer(dpy);
+  XSync(dpy, 0);
 
   return;
 }

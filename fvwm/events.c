@@ -1349,17 +1349,26 @@ void HandleButtonPress(void)
       RaiseWindow(Tmp_win);
     }
 
-    if(!IS_ICONIFIED(Tmp_win))
+    Context = GetContext(Tmp_win,&Event, &PressedW);
+    if (!IS_ICONIFIED(Tmp_win) && Context == C_WINDOW)
     {
       XSync(dpy,0);
       /* pass click event to just clicked to focus window? Do not swallow the
        * click if the window didn't accept the focus */
       if (Scr.go.ClickToFocusPassesClick || Scr.Focus != Tmp_win)
+      {
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      }
       else /* don't pass click to just focused window */
+      {
 	XAllowEvents(dpy,AsyncPointer,CurrentTime);
+      }
       XSync(dpy,0);
       return;
+    }
+    if (!IS_ICONIFIED(Tmp_win))
+    {
+      SetBorder(Tmp_win, True, True, True, None);
     }
   }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
