@@ -202,10 +202,10 @@ static void apply_window_updates(
   {
     if (IS_SHADED(t))
     {
-      rectangle *new_g;
+      rectangle new_g;
 
-      new_g = (IS_MAXIMIZED(t)) ? &t->max_g : &t->normal_g;
-      get_relative_geometry(&t->frame_g, new_g);
+      get_unshaded_geometry(t, &new_g);
+      get_relative_geometry(&t->frame_g, &new_g);
       get_shaded_geometry(t, &t->frame_g, &t->frame_g);
     }
     ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,

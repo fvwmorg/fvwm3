@@ -3,6 +3,9 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.28 (not released yet)
 
+* Security fix related to .fvwm2rc being searched in the current directory
+  when $HOME is not set.
+
 * New menu styles PopdownImmediately, PopdownDelayed and PopdownDelay.
 
 * New command CopyMenuStyle
@@ -475,6 +478,9 @@ Changes in alpha release 2.3.2 (May 1999)
   (i.e. /usr/local/etc/fvwm by default) as many files are now installed there.
 
 Changes in alpha release 2.3.1 (April 1999)
+
+* New button style flag MWMDecorShade to support toggle buttons for shaded
+  windows.
 
 * Daily snapshots of the development sources available on our web page.
 

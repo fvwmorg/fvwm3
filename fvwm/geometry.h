@@ -28,6 +28,7 @@ void gravity_translate_to_northwest_geometry(
   int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
 void gravity_translate_to_northwest_geometry_no_bw(
   int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
+void get_unshaded_geometry(FvwmWindow *tmp_win, rectangle *ret_g);
 void get_shaded_geometry(
   FvwmWindow *tmp_win, rectangle *small_g, rectangle *big_g);
 void update_relative_geometry(FvwmWindow *tmp_win);

@@ -113,7 +113,6 @@ int CatchFatal(Display *);
 int CatchRedirectError(Display *, XErrorEvent *);
 void InstallSignals(void);
 void SaveDesktopState(void);
-void SetMWM_INFO(Window window);
 void SetRCDefaults(void);
 void StartupStuff(void);
 static void catch_exit(void);
@@ -232,7 +231,7 @@ int main(int argc, char **argv)
   }
 #endif
   if (home_dir == NULL)
-    home_dir = "."; /* give up and use current dir */
+    home_dir = "/"; /* give up and use root dir */
 
   /* Figure out where to read and write user's data files. */
   fvwm_userdir = getenv("FVWM_USERDIR");

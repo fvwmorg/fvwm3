@@ -4221,51 +4221,24 @@ static void merge_continuation_menus(MenuRoot *mr)
 
 /****************************************************************************
  *
- * Calculate the positions of the columns in the menu.
- * Called by make_menu().
+ * Extract interesting values from the item format string that are needed by
+ * the size_menu_... functions.
  *
  ****************************************************************************/
-static void size_menu_horizontally(MenuRoot *mr)
+static void calculate_item_sizes(MenuSizingParameters *msp)
 {
   MenuItem *mi;
-  struct
-  {
-    unsigned short label_width[MAX_MENU_ITEM_LABELS];
-    unsigned short sidepic_width;
-    unsigned short icon_width[MAX_MENU_ITEM_MINI_ICONS];
-    unsigned short picture_width;
-    unsigned short triangle_width;
-    unsigned short title_width;
-  } max;
-  Bool sidepic_is_left = True;
-  int total_width;
-  int sidepic_space = 0;
-  int relief_gap = 0;
   unsigned short w;
-  unsigned short label_offset[MAX_MENU_ITEM_LABELS];
-  char lcr_column[MAX_MENU_ITEM_LABELS];
   int i;
   int j;
-  int d;
-  short relief_thickness = MST_RELIEF_THICKNESS(mr);
-  unsigned short *item_order[MAX_MENU_ITEM_LABELS + MAX_MENU_ITEM_MINI_ICONS +
-			    1 /* triangle */ + 2 /* relief markers */];
-  short used_objects = 0;
-  short left_objects = 0;
-  short right_objects = 0;
-  Bool is_last_object_left = True;
 
-  memset(&max, 0, sizeof(max));
-  memset(item_order, 0, sizeof(item_order));
-  for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
-    lcr_column[i] = 'l';
-
+  memset(&(msp->max), 0, sizeof(msp->max));
   /* Calculate the widths for all columns of all items. */
-  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
+  for (mi = MR_FIRST_ITEM(msp->menu); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
-    if(MI_IS_POPUP(mi))
+    if (MI_IS_POPUP(mi))
     {
-      max.triangle_width = MENU_TRIANGLE_WIDTH;
+      msp->max.triangle_width = MENU_TRIANGLE_WIDTH;
     }
     else if (MI_IS_TITLE(mi) && !MI_HAS_PICTURE(mi))
     {
@@ -4288,77 +4261,109 @@ static void size_menu_horizontally(MenuRoot *mr)
       if (!is_formatted && MI_LABEL(mi)[0] != NULL)
       {
 	MI_LABEL_STRLEN(mi)[0] = strlen(MI_LABEL(mi)[0]);
-	w = XTextWidth(MST_PSTDFONT(mr)->font, MI_LABEL(mi)[0],
+	w = XTextWidth(MST_PSTDFONT(msp->menu)->font, MI_LABEL(mi)[0],
 		       MI_LABEL_STRLEN(mi)[0]);
 	MI_LABEL_OFFSET(mi)[0] = w;
 	MI_IS_TITLE_CENTERED(mi) = True;
-	if (max.title_width < w)
-	  max.title_width = w;
+	if (msp->max.title_width < w)
+	  msp->max.title_width = w;
 	continue;
       }
     }
-
 
     for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
     {
       if (MI_LABEL(mi)[i])
       {
 	MI_LABEL_STRLEN(mi)[i] = strlen(MI_LABEL(mi)[i]);
-	w = XTextWidth(MST_PSTDFONT(mr)->font, MI_LABEL(mi)[i],
+	w = XTextWidth(MST_PSTDFONT(msp->menu)->font, MI_LABEL(mi)[i],
 		       MI_LABEL_STRLEN(mi)[i]);
 	MI_LABEL_OFFSET(mi)[i] = w;
-	if (max.label_width[i] < w)
-	  max.label_width[i] = w;
+	if (msp->max.label_width[i] < w)
+	  msp->max.label_width[i] = w;
       }
     }
-    if (MI_PICTURE(mi) && max.picture_width < MI_PICTURE(mi)->width)
+    if (MI_PICTURE(mi) && msp->max.picture_width < MI_PICTURE(mi)->width)
     {
-      max.picture_width = MI_PICTURE(mi)->width;
+      msp->max.picture_width = MI_PICTURE(mi)->width;
     }
     for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
     {
       int k;
 
       /* We need to reverse the mini icon order for left submenu style. */
-      k = (MST_USE_LEFT_SUBMENUS(mr)) ?
+      k = (MST_USE_LEFT_SUBMENUS(msp->menu)) ?
 	MAX_MENU_ITEM_MINI_ICONS - 1 - i : i;
 
-      if (MI_MINI_ICON(mi)[i] && max.icon_width[k] < MI_MINI_ICON(mi)[i]->width)
+      if (MI_MINI_ICON(mi)[i] &&
+	  msp->max.icon_width[k] < MI_MINI_ICON(mi)[i]->width)
       {
-	max.icon_width[k] = MI_MINI_ICON(mi)[i]->width;
+	msp->max.icon_width[k] = MI_MINI_ICON(mi)[i]->width;
       }
     }
-  } /* for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi)) */
+  } /* for (mi = MR_FIRST_ITEM(msp->menu); mi != NULL; mi = MI_NEXT_ITEM(mi)) */
 
-  if (MR_SIDEPIC(mr))
+  if (MR_SIDEPIC(msp->menu))
   {
-    max.sidepic_width = MR_SIDEPIC(mr)->width;
+    msp->max.sidepic_width = MR_SIDEPIC(msp->menu)->width;
   }
-  else if (MST_SIDEPIC(mr))
+  else if (MST_SIDEPIC(msp->menu))
   {
-    max.sidepic_width = MST_SIDEPIC(mr)->width;
+    msp->max.sidepic_width = MST_SIDEPIC(msp->menu)->width;
   }
+
+  return;
+}
+
+/****************************************************************************
+ *
+ * Calculate the positions of the columns in the menu.
+ * Called by make_menu().
+ *
+ ****************************************************************************/
+static void size_menu_horizontally(MenuSizingParameters *msp)
+{
+  MenuItem *mi;
+  Bool sidepic_is_left = True;
+  int total_width;
+  int sidepic_space = 0;
+  unsigned short label_offset[MAX_MENU_ITEM_LABELS];
+  char lcr_column[MAX_MENU_ITEM_LABELS];
+  int i;
+  int d;
+  short relief_thickness = MST_RELIEF_THICKNESS(msp->menu);
+  unsigned short *item_order[MAX_MENU_ITEM_LABELS + MAX_MENU_ITEM_MINI_ICONS +
+			    1 /* triangle */ + 2 /* relief markers */];
+  short used_objects = 0;
+  short left_objects = 0;
+  short right_objects = 0;
+
+  memset(item_order, 0, sizeof(item_order));
+  for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
+    lcr_column[i] = 'l';
 
   /* Now calculate the offsets for the columns. */
   {
     int x;
-    char *format;
-    unsigned char columns_placed = 0;
     unsigned char icons_placed = 0;
     Bool sidepic_placed = False;
     Bool triangle_placed = False;
     Bool relief_begin_placed = False;
     Bool relief_end_placed = False;
+    char *format;
     Bool first = True;
     Bool done = False;
+    Bool is_last_object_left = True;
+    unsigned char columns_placed = 0;
+    int relief_gap = 0;
     int gap_left;
     int gap_right;
     int chars;
 
-    format = MST_ITEM_FORMAT(mr);
+    format = MST_ITEM_FORMAT(msp->menu);
     if (!format)
     {
-      format = (MST_USE_LEFT_SUBMENUS(mr)) ?
+      format = (MST_USE_LEFT_SUBMENUS(msp->menu)) ?
 	DEFAULT_LEFT_MENU_ITEM_FORMAT : DEFAULT_MENU_ITEM_FORMAT;
     }
     /* Place the individual items off the menu in case they are not set in the
@@ -4368,7 +4373,7 @@ static void size_menu_horizontally(MenuRoot *mr)
       label_offset[i] = 2 * Scr.MyDisplayWidth;
     }
 
-    x = MST_BORDER_WIDTH(mr);
+    x = MST_BORDER_WIDTH(msp->menu);
     while (*format && !done)
     {
       switch (*format)
@@ -4404,12 +4409,12 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  /* A left, center or right aligned column. */
 	  if (columns_placed < MAX_MENU_ITEM_LABELS)
 	  {
-	    if (max.label_width[columns_placed] > 0)
+	    if (msp->max.label_width[columns_placed] > 0)
 	    {
 	      lcr_column[columns_placed] = *format;
 	      x += gap_left;
 	      label_offset[columns_placed] = x;
-	      x += max.label_width[columns_placed] + gap_right;
+	      x += msp->max.label_width[columns_placed] + gap_right;
 	      item_order[used_objects++] = &(label_offset[columns_placed]);
 	      if (is_last_object_left && (*format == 'l'))
 		left_objects++;
@@ -4430,7 +4435,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  if (!sidepic_placed)
 	  {
 	    sidepic_placed = True;
-	    if (max.sidepic_width > 0)
+	    if (msp->max.sidepic_width > 0)
 	    {
 	      x += gap_left;
 	      if (!first)
@@ -4440,14 +4445,14 @@ static void size_menu_horizontally(MenuRoot *mr)
 		sidepic_is_left = False;
 		done = True;
 	      }
-	      MR_SIDEPIC_X_OFFSET(mr) = x;
+	      MR_SIDEPIC_X_OFFSET(msp->menu) = x;
 	      if (first)
 	      {
 		sidepic_is_left = True;
 	      }
-	      sidepic_space =
-		max.sidepic_width + ((sidepic_is_left) ? gap_left : gap_right);
-	      x += max.sidepic_width + gap_right;
+	      sidepic_space = msp->max.sidepic_width +
+		((sidepic_is_left) ? gap_left : gap_right);
+	      x += msp->max.sidepic_width + gap_right;
 	    }
 	  }
 	  break;
@@ -4455,13 +4460,13 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  /* a mini icon */
 	  if (icons_placed < MAX_MENU_ITEM_MINI_ICONS)
 	  {
-	    if (max.icon_width[icons_placed] > 0)
+	    if (msp->max.icon_width[icons_placed] > 0)
 	    {
 	      x += gap_left;
-	      MR_ICON_X_OFFSET(mr)[icons_placed] = x;
-	      x += max.icon_width[icons_placed] + gap_right;
+	      MR_ICON_X_OFFSET(msp->menu)[icons_placed] = x;
+	      x += msp->max.icon_width[icons_placed] + gap_right;
 	      item_order[used_objects++] =
-		&(MR_ICON_X_OFFSET(mr)[icons_placed]);
+		&(MR_ICON_X_OFFSET(msp->menu)[icons_placed]);
 	      if (is_last_object_left)
 		left_objects++;
 	      else
@@ -4476,10 +4481,10 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  {
 	    relief_begin_placed = True;
 	    x += gap_left;
-	    MR_HILIGHT_X_OFFSET(mr) = x;
+	    MR_HILIGHT_X_OFFSET(msp->menu) = x;
 	    x += relief_thickness + gap_right;
 	    relief_gap += gap_right;
-	    item_order[used_objects++] = &(MR_HILIGHT_X_OFFSET(mr));
+	    item_order[used_objects++] = &(MR_HILIGHT_X_OFFSET(msp->menu));
 	    if (is_last_object_left)
 	      left_objects++;
 	    else
@@ -4492,10 +4497,10 @@ static void size_menu_horizontally(MenuRoot *mr)
 	    /* This is a hack: for now we record the x coordinate of the
 	     * end of the hilight area, but later we'll place the width in
 	     * here. */
-	    MR_HILIGHT_WIDTH(mr) = x;
+	    MR_HILIGHT_WIDTH(msp->menu) = x;
 	    x += gap_right;
 	    relief_gap += gap_left;
-	    item_order[used_objects++] = &(MR_HILIGHT_WIDTH(mr));
+	    item_order[used_objects++] = &(MR_HILIGHT_WIDTH(msp->menu));
 	    right_objects++;
 	  }
 	  break;
@@ -4505,13 +4510,13 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  if (!triangle_placed)
 	  {
 	    triangle_placed = True;
-	    if (max.triangle_width > 0)
+	    if (msp->max.triangle_width > 0)
 	    {
 	      x += gap_left;
-	      MR_TRIANGLE_X_OFFSET(mr) = x;
-	      MR_IS_LEFT_TRIANGLE(mr) = (*format == '<');
-	      x += max.triangle_width + gap_right;
-	      item_order[used_objects++] = &(MR_TRIANGLE_X_OFFSET(mr));
+	      MR_TRIANGLE_X_OFFSET(msp->menu) = x;
+	      MR_IS_LEFT_TRIANGLE(msp->menu) = (*format == '<');
+	      x += msp->max.triangle_width + gap_right;
+	      item_order[used_objects++] = &(MR_TRIANGLE_X_OFFSET(msp->menu));
 	      if (is_last_object_left && *format == '<')
 		left_objects++;
 	      else
@@ -4532,11 +4537,11 @@ static void size_menu_horizontally(MenuRoot *mr)
 	} /* switch (*format) */
 	break;
       case '\t':
-	x += MENU_TAB_WIDTH * XTextWidth(MST_PSTDFONT(mr)->font, " ", 1);
+	x += MENU_TAB_WIDTH * XTextWidth(MST_PSTDFONT(msp->menu)->font, " ", 1);
 	break;
       case ' ':
 	/* Advance the x position. */
-	x += XTextWidth(MST_PSTDFONT(mr)->font, format, 1);
+	x += XTextWidth(MST_PSTDFONT(msp->menu)->font, format, 1);
 	break;
       default:
 	/* Ignore unknown characters. */
@@ -4546,26 +4551,26 @@ static void size_menu_horizontally(MenuRoot *mr)
       first = False;
     } /* while (*format) */
     /* stored for vertical sizing */
-    MR_ITEM_LABELS_USED(mr) = columns_placed;
-    MR_MINI_ICONS_USED(mr) = icons_placed;
+    msp->used_item_labels = columns_placed;
+    msp->used_mini_icons = icons_placed;
 
     /* Hide unplaced parts of the menu. */
     if (!sidepic_placed)
     {
-      MR_SIDEPIC_X_OFFSET(mr) = 2 * Scr.MyDisplayWidth;
+      MR_SIDEPIC_X_OFFSET(msp->menu) = 2 * Scr.MyDisplayWidth;
     }
     for (i = icons_placed; i < MAX_MENU_ITEM_MINI_ICONS; i++)
     {
-      MR_ICON_X_OFFSET(mr)[i] = 2 * Scr.MyDisplayWidth;
+      MR_ICON_X_OFFSET(msp->menu)[i] = 2 * Scr.MyDisplayWidth;
     }
     if (!triangle_placed)
     {
-      MR_TRIANGLE_X_OFFSET(mr) = 2 * Scr.MyDisplayWidth;
+      MR_TRIANGLE_X_OFFSET(msp->menu) = 2 * Scr.MyDisplayWidth;
     }
 
-    total_width = x - MST_BORDER_WIDTH(mr);
+    total_width = x - MST_BORDER_WIDTH(msp->menu);
     d = (sidepic_space + 2 * relief_thickness +
-	 max(max.title_width, max.picture_width)) - total_width;
+	 max(msp->max.title_width, msp->max.picture_width)) - total_width;
     if (d > 0)
     {
       /* The title is larger than all menu items. Stretch the gaps between the
@@ -4589,24 +4594,25 @@ static void size_menu_horizontally(MenuRoot *mr)
       total_width += d;
       if (!sidepic_is_left)
       {
-	MR_SIDEPIC_X_OFFSET(mr) += d;
+	MR_SIDEPIC_X_OFFSET(msp->menu) += d;
       }
     } /* if (d > 0) */
-    MR_WIDTH(mr) = total_width + 2 * MST_BORDER_WIDTH(mr);
-    MR_ITEM_WIDTH(mr) = total_width - sidepic_space;
-    MR_ITEM_X_OFFSET(mr) = MST_BORDER_WIDTH(mr);
+    MR_WIDTH(msp->menu) = total_width + 2 * MST_BORDER_WIDTH(msp->menu);
+    MR_ITEM_WIDTH(msp->menu) = total_width - sidepic_space;
+    MR_ITEM_X_OFFSET(msp->menu) = MST_BORDER_WIDTH(msp->menu);
     if (sidepic_is_left)
-      MR_ITEM_X_OFFSET(mr) += sidepic_space;
+      MR_ITEM_X_OFFSET(msp->menu) += sidepic_space;
     if (!relief_begin_placed)
-      MR_HILIGHT_X_OFFSET(mr) = MR_ITEM_X_OFFSET(mr);
+      MR_HILIGHT_X_OFFSET(msp->menu) = MR_ITEM_X_OFFSET(msp->menu);
     if (relief_end_placed)
-      MR_HILIGHT_WIDTH(mr) = MR_HILIGHT_WIDTH(mr) - MR_HILIGHT_X_OFFSET(mr);
+      MR_HILIGHT_WIDTH(msp->menu) =
+	MR_HILIGHT_WIDTH(msp->menu) - MR_HILIGHT_X_OFFSET(msp->menu);
     else
-      MR_HILIGHT_WIDTH(mr) = MR_ITEM_WIDTH(mr);
+      MR_HILIGHT_WIDTH(msp->menu) = MR_ITEM_WIDTH(msp->menu);
   }
 
   /* Now calculate the offsets for the individual labels. */
-  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
+  for (mi = MR_FIRST_ITEM(msp->menu); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
     for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
     {
@@ -4621,10 +4627,10 @@ static void size_menu_horizontally(MenuRoot *mr)
 	    break;
 	  case 'c':
 	    MI_LABEL_OFFSET(mi)[i] = label_offset[i] +
-	      (max.label_width[i] - MI_LABEL_OFFSET(mi)[i]) / 2;
+	      (msp->max.label_width[i] - MI_LABEL_OFFSET(mi)[i]) / 2;
 	    break;
 	  case 'r':
-	    MI_LABEL_OFFSET(mi)[i] = label_offset[i] + max.label_width[i] -
+	    MI_LABEL_OFFSET(mi)[i] = label_offset[i] + msp->max.label_width[i] -
 	      MI_LABEL_OFFSET(mi)[i];
 	    break;
 	  }
@@ -4633,7 +4639,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 	{
 	  /* This is a centered title item (indicated by negative width). */
 	  MI_LABEL_OFFSET(mi)[i] =
-	    menu_middle_x_offset(mr) - MI_LABEL_OFFSET(mi)[i] / 2;
+	    menu_middle_x_offset(msp->menu) - MI_LABEL_OFFSET(mi)[i] / 2;
 	}
       }
     } /* for */
@@ -4649,25 +4655,27 @@ static void size_menu_horizontally(MenuRoot *mr)
  * Called by make_menu().
  *
  ****************************************************************************/
-static void size_menu_vertically(MenuRoot *mr)
+static Bool size_menu_vertically(MenuSizingParameters *msp)
 {
   MenuItem *mi;
   int y;
   int cItems;
-  short relief_thickness = MST_RELIEF_THICKNESS(mr);
+  short relief_thickness = MST_RELIEF_THICKNESS(msp->menu);
   short simple_entry_height;
   int i;
+  Bool has_continuation_menu = False;
 
-  MR_ITEM_TEXT_Y_OFFSET(mr) =
-    MST_PSTDFONT(mr)->y + relief_thickness + MST_ITEM_GAP_ABOVE(mr);
+  MR_ITEM_TEXT_Y_OFFSET(msp->menu) =
+    MST_PSTDFONT(msp->menu)->y + relief_thickness +
+    MST_ITEM_GAP_ABOVE(msp->menu);
 
-  simple_entry_height =	MST_PSTDFONT(mr)->height +
-    MST_ITEM_GAP_ABOVE(mr) + MST_ITEM_GAP_BELOW(mr);
+  simple_entry_height =	MST_PSTDFONT(msp->menu)->height +
+    MST_ITEM_GAP_ABOVE(msp->menu) + MST_ITEM_GAP_BELOW(msp->menu);
 
   /* mi_prev trails one behind mi, since we need to move that
      into a newly-made menu if we run out of space */
-  y = MST_BORDER_WIDTH(mr);
-  for (cItems = 0, mi = MR_FIRST_ITEM(mr); mi != NULL;
+  y = MST_BORDER_WIDTH(msp->menu);
+  for (cItems = 0, mi = MR_FIRST_ITEM(msp->menu); mi != NULL;
        mi = MI_NEXT_ITEM(mi), cItems++)
   {
     int separator_height;
@@ -4681,8 +4689,8 @@ static void size_menu_vertically(MenuRoot *mr)
     MI_Y_OFFSET(mi) = y;
     if (MI_IS_TITLE(mi) && MI_IS_TITLE_CENTERED(mi))
     {
-      MI_HEIGHT(mi) = MST_PSTDFONT(mr)->height +
-	MST_TITLE_GAP_ABOVE(mr) + MST_TITLE_GAP_BELOW(mr);
+      MI_HEIGHT(mi) = MST_PSTDFONT(msp->menu)->height +
+	MST_TITLE_GAP_ABOVE(msp->menu) + MST_TITLE_GAP_BELOW(msp->menu);
     }
     else if (MI_IS_SEPARATOR(mi))
     {
@@ -4692,32 +4700,33 @@ static void size_menu_vertically(MenuRoot *mr)
     else
     {
       /* Normal text entry */
-      if (MI_HAS_TEXT(mi) && MR_ITEM_LABELS_USED(mr))
+      if (MI_HAS_TEXT(mi) && msp->used_item_labels)
       {
 	MI_HEIGHT(mi) = simple_entry_height + relief_thickness;
       }
       else
       {
-	MI_HEIGHT(mi) = MST_ITEM_GAP_ABOVE(mr) + MST_ITEM_GAP_BELOW(mr) +
+	MI_HEIGHT(mi) =
+	  MST_ITEM_GAP_ABOVE(msp->menu) + MST_ITEM_GAP_BELOW(msp->menu) +
 	  relief_thickness;
       }
     }
     if (MI_IS_TITLE(mi))
     {
       /* add space for the underlines */
-      switch (MST_TITLE_UNDERLINES(mr))
+      switch (MST_TITLE_UNDERLINES(msp->menu))
       {
       case 0:
 	if (last_item_has_relief)
 	  MI_HEIGHT(mi) += relief_thickness;
 	break;
       case 1:
-	if(mi != MR_FIRST_ITEM(mr))
+	if (mi != MR_FIRST_ITEM(msp->menu))
 	{
 	  /* Space to draw the separator plus a gap above */
 	  MI_HEIGHT(mi) += separator_height;
 	}
-	if(MI_NEXT_ITEM(mi) != NULL)
+	if (MI_NEXT_ITEM(mi) != NULL)
 	{
 	  /* Space to draw the separator */
 	  MI_HEIGHT(mi) += MENU_SEPARATOR_HEIGHT;
@@ -4725,13 +4734,14 @@ static void size_menu_vertically(MenuRoot *mr)
 	break;
       default:
 	/* Space to draw n underlines. */
-	MI_HEIGHT(mi) += MENU_UNDERLINE_HEIGHT * MST_TITLE_UNDERLINES(mr);
+	MI_HEIGHT(mi) +=
+	  MENU_UNDERLINE_HEIGHT * MST_TITLE_UNDERLINES(msp->menu);
 	if (last_item_has_relief)
 	  MI_HEIGHT(mi) += relief_thickness;
 	break;
       }
     }
-    for (i = 0; i < /*MAX_MENU_ITEM_MINI_ICONS*/MR_MINI_ICONS_USED(mr); i++)
+    for (i = 0; i < msp->used_mini_icons; i++)
     {
       if (MI_MINI_ICON(mi)[i])
       {
@@ -4745,7 +4755,7 @@ static void size_menu_vertically(MenuRoot *mr)
     }
     if (MI_PICTURE(mi))
     {
-      if ((MI_HAS_TEXT(mi) && MR_ITEM_LABELS_USED(mr)) || has_mini_icon)
+      if ((MI_HAS_TEXT(mi) && msp->used_item_labels) || has_mini_icon)
 	MI_HEIGHT(mi) += MI_PICTURE(mi)->height;
       else
 	MI_HEIGHT(mi) = MI_PICTURE(mi)->height + relief_thickness;
@@ -4753,7 +4763,7 @@ static void size_menu_vertically(MenuRoot *mr)
     y += MI_HEIGHT(mi);
     /* this item would have to be the last item, or else
      * we need to add a "More..." entry pointing to a new menu */
-    if (y + MST_BORDER_WIDTH(mr) +
+    if (y + MST_BORDER_WIDTH(msp->menu) +
 	((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0)
 	> Scr.MyDisplayHeight)
     {
@@ -4769,8 +4779,8 @@ static void size_menu_vertically(MenuRoot *mr)
 	y -= MI_HEIGHT(mi);
 	mi = MI_PREV_ITEM(mi);
 	cItems--;
-	if (y + MST_BORDER_WIDTH(mr) + simple_entry_height + 2*relief_thickness
-	    <= Scr.MyDisplayHeight)
+	if (y + MST_BORDER_WIDTH(msp->menu) + simple_entry_height +
+	    2 * relief_thickness <= Scr.MyDisplayHeight)
 	{
 	  /* ok, it fits now */
 	  does_fit = True;
@@ -4787,49 +4797,53 @@ static void size_menu_vertically(MenuRoot *mr)
       }
 
       szMenuContinuationActionAndName =
-	(char *)safemalloc((8+strlen(MR_NAME(mr)))*sizeof(char));
+	(char *)safemalloc((8+strlen(MR_NAME(msp->menu)))*sizeof(char));
       strcpy(szMenuContinuationActionAndName,"Popup ");
-      strcat(szMenuContinuationActionAndName, MR_NAME(mr));
+      strcat(szMenuContinuationActionAndName, MR_NAME(msp->menu));
       strcat(szMenuContinuationActionAndName,"$");
       /* NewMenuRoot inserts at the head of the list of menus
 	 but, we need it at the end */
       /* (Give it just the name, which is 6 chars past the action
 	 since strlen("Popup ")==6 ) */
       menuContinuation = NewMenuRoot(szMenuContinuationActionAndName + 6);
-      MR_CONTINUATION_MENU(mr) = menuContinuation;
+      MR_CONTINUATION_MENU(msp->menu) = menuContinuation;
 
       /* Now move this item and the remaining items into the new menu */
       MR_FIRST_ITEM(menuContinuation) = MI_NEXT_ITEM(mi);
-      MR_LAST_ITEM(menuContinuation) = MR_LAST_ITEM(mr);
-      MR_ITEMS(menuContinuation) = MR_ITEMS(mr) - cItems;
+      MR_LAST_ITEM(menuContinuation) = MR_LAST_ITEM(msp->menu);
+      MR_ITEMS(menuContinuation) = MR_ITEMS(msp->menu) - cItems;
       MI_PREV_ITEM(MI_NEXT_ITEM(mi)) = NULL;
 
       /* mi_prev is now the last item in the parent menu */
-      MR_LAST_ITEM(mr) = mi;
-      MR_ITEMS(mr) = cItems;
+      MR_LAST_ITEM(msp->menu) = mi;
+      MR_ITEMS(msp->menu) = cItems;
       MI_NEXT_ITEM(mi) = NULL;
 
       /* use the same style for the submenu */
-      MR_STYLE(menuContinuation) = MR_STYLE(mr);
-      MR_IS_LEFT_TRIANGLE(menuContinuation) = MR_IS_LEFT_TRIANGLE(mr);
+      MR_STYLE(menuContinuation) = MR_STYLE(msp->menu);
+      MR_IS_LEFT_TRIANGLE(menuContinuation) = MR_IS_LEFT_TRIANGLE(msp->menu);
       /* migo: propagate missing_submenu_func */
-      if (MR_MISSING_SUBMENU_FUNC(mr))
+      if (MR_MISSING_SUBMENU_FUNC(msp->menu))
       {
 	MR_MISSING_SUBMENU_FUNC(menuContinuation) =
-	  strdup(MR_MISSING_SUBMENU_FUNC(mr));
+	  strdup(MR_MISSING_SUBMENU_FUNC(msp->menu));
       }
       /* don't propagate sidepic, sidecolor, popup- and popdown actions */
 
       /* And add the entry pointing to the new menu */
-      AddToMenu(mr, "More&...", szMenuContinuationActionAndName,
+      AddToMenu(msp->menu, "More&...", szMenuContinuationActionAndName,
 		False /* no pixmap scan */, False);
       free(szMenuContinuationActionAndName);
+      has_continuation_menu = True;
     }
   } /* for */
   /* The menu may be empty here! */
-  if (MR_LAST_ITEM(mr) != NULL && MI_IS_SELECTABLE(MR_LAST_ITEM(mr)))
+  if (MR_LAST_ITEM(msp->menu) != NULL &&
+      MI_IS_SELECTABLE(MR_LAST_ITEM(msp->menu)))
     y += relief_thickness;
-  MR_HEIGHT(mr) = y + MST_BORDER_WIDTH(mr);
+  MR_HEIGHT(msp->menu) = y + MST_BORDER_WIDTH(msp->menu);
+
+  return has_continuation_menu;
 }
 
 
@@ -4878,14 +4892,22 @@ static void make_menu_window(MenuRoot *mr)
  ****************************************************************************/
 static void make_menu(MenuRoot *mr)
 {
+  MenuSizingParameters msp;
+  Bool has_continuation_menu = False;
+
   if (!Scr.flags.windows_captured)
     return;
 
   merge_continuation_menus(mr);
-  /* size_menu_horizontally must be called first because it evaluates the
-   * item format and stores some values used by size_menu_vertically */
-  size_menu_horizontally(mr);
-  size_menu_vertically(mr);
+  do
+  {
+    memset(&msp, 0, sizeof(MenuSizingParameters));
+    msp.menu = mr;
+    calculate_item_sizes(&msp);
+    size_menu_horizontally(&msp);
+    has_continuation_menu = size_menu_vertically(&msp);
+    /* repeat this step if the menu was split */
+  } while (has_continuation_menu);
 
   MR_XANIMATION(mr) = 0;
   memset(&(MR_DYNAMIC_FLAGS(mr)), 0, sizeof(MR_DYNAMIC_FLAGS(mr)));

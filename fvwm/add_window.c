@@ -2060,18 +2060,22 @@ void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
   unsigned int mask;
   XWindowChanges xwc;
   rectangle naked_g;
+  rectangle unshaded_g;
 
   if(!tmp)
     return;
 
+  get_unshaded_geometry(tmp, &unshaded_g);
   gravity_get_naked_geometry(
-    tmp->hints.win_gravity, tmp, &naked_g, &tmp->frame_g);
+    tmp->hints.win_gravity, tmp, &naked_g, &unshaded_g);
   gravity_translate_to_northwest_geometry(
     tmp->hints.win_gravity, tmp, &naked_g, &naked_g);
   xwc.x = naked_g.x;
   xwc.y = naked_g.y;
+  xwc.width = naked_g.width;
+  xwc.height = naked_g.height;
   xwc.border_width = tmp->old_bw;
-  mask = (CWX | CWY| CWBorderWidth);
+  mask = (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
 
   /* We can not assume that the window is currently on the screen.
    * Although this is normally the case, it is not always true.  The
@@ -2093,22 +2097,22 @@ void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
    * half off the screen. (RN)
    */
 
-  if(!restart)
+  if (!restart)
   {
     /* Don't mess with it if its partially on the screen now */
-    if((tmp->frame_g.x < 0)||(tmp->frame_g.y<0)||
-       (tmp->frame_g.x >= Scr.MyDisplayWidth)||
-       (tmp->frame_g.y >= Scr.MyDisplayHeight))
+    if (unshaded_g.x < 0 || unshaded_g.y < 0 ||
+	unshaded_g.x >= Scr.MyDisplayWidth ||
+	unshaded_g.y >= Scr.MyDisplayHeight)
     {
-      w2 = (tmp->frame_g.width>>1);
-      h2 = (tmp->frame_g.height>>1);
-      if (( xwc.x < -w2) || (xwc.x > (Scr.MyDisplayWidth-w2 )))
+      w2 = (unshaded_g.width >> 1);
+      h2 = (unshaded_g.height >> 1);
+      if (( xwc.x < -w2) || (xwc.x > (Scr.MyDisplayWidth - w2)))
       {
 	xwc.x = xwc.x % Scr.MyDisplayWidth;
 	if ( xwc.x < -w2 )
 	  xwc.x += Scr.MyDisplayWidth;
       }
-      if ((xwc.y < -h2) || (xwc.y > (Scr.MyDisplayHeight-h2 )))
+      if ((xwc.y < -h2) || (xwc.y > (Scr.MyDisplayHeight  -h2)))
       {
 	xwc.y = xwc.y % Scr.MyDisplayHeight;
 	if ( xwc.y < -h2 )

@@ -537,4 +537,6 @@ typedef struct FvwmWindow
  * this header file. */
 #include "fvwmdebug.h"
 
+void SetMWM_INFO(Window window);
+
 #endif /* _FVWM_ */

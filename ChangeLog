@@ -1,3 +1,23 @@
+2001-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (main):
+	use / instead of . as home directory if $HOME is not set
+
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/geometry.c (get_unshaded_geometry):
+	* fvwm/add_window.c (RestoreWithdrawnLocation):
+	geometry got screwed up when recapturing shaded windows
+
+	* fvwm/menus.c (make_menu):
+	(size_menu_horizontally):
+	(size_menu_vertically):
+	(calculate_item_sizes):
+	fome menu sizing fixes
+
+	* fvwm/fvwm.h:
+	* fvwm/fvwm.c:
+	properly provide decalration of SetMWM_INFO
+
 2001-01-18  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Document the fact that ModalityIsEvil can't be turned
