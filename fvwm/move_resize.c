@@ -44,7 +44,6 @@
 
 /* ----- move globals ----- */
 extern XEvent Event;
-extern int menuFromFrameOrWindowOrTitlebar;
 Bool NeedToResizeToo;
 
 /* Animated move stuff added by Greg J. Badros, gjb@cs.washington.edu */
@@ -64,7 +63,6 @@ static void DisplayPosition(FvwmWindow *, int, int,Bool);
  * Since some functions are called from other modules unwanted side effects
  * (i.e. bugs.) would be created */
 
-extern int menuFromFrameOrWindowOrTitlebar;
 extern Window PressedW;
 
 static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
@@ -85,11 +83,10 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   w = *win;
 
   InstallRootColormap();
-  if (menuFromFrameOrWindowOrTitlebar)
-    {
-      /* warp the pointer to the cursor position from before menu appeared*/
-      XFlush(dpy);
-    }
+  /* warp the pointer to the cursor position from before menu appeared*/
+  /* domivogt (17-May-1999): an XFlush should not hurt anyway, so do it
+   * unconditionally to remove the external */
+  XFlush(dpy);
 
   /* Although a move is usually done with a button depressed we have to check
    * for ButtonRelease too since the event may be faked. */
@@ -1581,13 +1578,13 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
     dwidth = ((dwidth - baseWidth + constrainx) / xinc * xinc) + baseWidth;
     dheight = ((dheight - baseHeight + constrainy) / yinc * yinc) + baseHeight;
 
-    /* 
+    /*
      * Step 2a: Check that we didn't violate min and max.
      */
     if (dwidth < minWidth) dwidth += xinc;
-    if (dheight < minHeight) dheight += yinc; 
+    if (dheight < minHeight) dheight += yinc;
     if (dwidth > maxWidth) dwidth -= xinc;
-    if (dheight > maxHeight) dheight -= yinc; 
+    if (dheight > maxHeight) dheight -= yinc;
 
     /*
      * Third, adjust for aspect ratio
@@ -1616,8 +1613,8 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
 
 	if (tmp_win->hints.flags & PBaseSize)
 	  {
-	    /* 
-               ICCCM 2 demands that aspect ratio should apply 
+	    /*
+               ICCCM 2 demands that aspect ratio should apply
 	       to width - base_width. To prevent funny results,
 	       we reset PBaseSize in GetWindowSizeHints, if
 	       base is not smaller than min.

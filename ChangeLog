@@ -1,3 +1,31 @@
+1999-05-18  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c: menus.c should be reentrant now; the MenuRoot struct
+	itself still needs some work, but not today
+
+	* fvwm/menus.c: removed extern reference to Tmp_win
+	removed extern reference to Context
+	removed static variables dkp_...
+	made position hint code reentrant
+	removed extern reference to ButtonWindow
+	made fWarpPointerToTitle code reentrant
+	removed extern reference to Event
+
+	* fvwm/misc.h:
+	* fvwm/misc.c (check_if_fvwm_window_exists): function to make sure that
+	the given FvwmWindow structure is still valid
+
+1999-05-17  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move_resize.c:
+	* fvwm/events.c: dont use external menuFromFrameOrWindowOrTitlebar
+	anymore
+
+	* fvwm/menus.h:
+	* fvwm/menus.c: renamed the flags, removed 'allflags' from unions and
+	restructured MenuRoot structure.
+	Fixed '^<colour>^' in menu titles, removed some nearly unused macros.
+
 1999-05-17  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 
 	* fvwm/icons.c (AutoPlaceIcon): don't move window unless it is
@@ -4152,10 +4180,10 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 1998-12-14  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* configure.in: Changed version to 2.1.4.
+	* configure.in: Changed version to 2.1.5.
 	* NEWS: Ditto.
 
-	Released fvwm 2.1.3 beta (CVS tag version-2_1_3).
+	Released fvwm 2.1.4 beta (CVS tag version-2_1_4).
 
 1998-12-13  Dominik Vogt  <dominik_vogt@hp.com>
 

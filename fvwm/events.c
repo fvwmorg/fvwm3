@@ -89,8 +89,6 @@
 #define XUrgencyHint            (1L << 8)
 #endif
 
-extern int menuFromFrameOrWindowOrTitlebar;
-
 extern Boolean debugging;
 extern Bool fFvwmInStartup;
 
@@ -1321,9 +1319,9 @@ void HandleEnterNotify(void)
     return;
 
   if(HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
-    {
-      SetFocus(Tmp_win->w,Tmp_win,1);
-    }
+  {
+    SetFocus(Tmp_win->w,Tmp_win,1);
+  }
   if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
   {
     if((!IS_ICONIFIED(Tmp_win))&&(Event.xany.window == Tmp_win->w))

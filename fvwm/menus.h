@@ -66,6 +66,13 @@
 #include <libs/fvwmlib.h>
 #include "fvwm.h"
 
+
+
+/*************************
+ * MENU STYLE STRUCTURES *
+ *************************/
+
+
 typedef enum {
     /* menu types */
     SimpleMenu = 0,
@@ -86,11 +93,11 @@ typedef enum {
 typedef struct MenuFeel {
     struct
     {
-      unsigned Animated : 1;
-      unsigned PopupImmediately : 1;
-      unsigned TitleWarp : 1;
-      unsigned PopupAsRootmenu : 1;
-    } f;
+      unsigned is_animated : 1;
+      unsigned do_popup_immediately : 1;
+      unsigned do_title_warp : 1;
+      unsigned do_popup_as_root_menu : 1;
+    } flags;
     int PopupOffsetPercent;
     int PopupOffsetAdd;
 } MenuFeel;
@@ -116,14 +123,14 @@ typedef struct MenuLook {
     MenuFace face;
     struct
     {
-      unsigned Hilight : 1;
-      unsigned hasActiveFore : 1;
-      unsigned hasActiveBack : 1;
-      unsigned hasStippleFore : 1;
-      unsigned LongSeparators : 1;
-      unsigned TriangleRelief : 1;
-      unsigned hasSideColor : 1;
-    } f;
+      unsigned do_hilight : 1;
+      unsigned has_active_fore : 1;
+      unsigned has_active_back : 1;
+      unsigned has_stipple_fore : 1;
+      unsigned has_long_separators : 1;
+      unsigned has_triangle_relief : 1;
+      unsigned has_side_color : 1;
+    } flags;
     char ReliefThickness;
     char TitleUnderlines;
     Picture *sidePic;
@@ -148,6 +155,13 @@ typedef struct MenuStyle {
     MenuLook look;
     MenuFeel feel;
 } MenuStyle;
+
+
+
+/************************
+ * MENU ITEM STRUCTURES *
+ ************************/
+
 
 struct MenuRoot; /* forward declaration */
 
@@ -193,6 +207,17 @@ typedef struct MenuItem
     } flags;
 } MenuItem;
 
+
+
+/************************
+ * MENU ROOT STRUCTURES *
+ ************************/
+
+
+typedef struct MenuRootCommon
+{
+} MenuRootCommon;
+
 typedef struct MenuRoot
 {
     MenuItem *first;	/* first item in menu */
@@ -227,23 +252,23 @@ typedef struct MenuRoot
     short items;		/* number of items in the menu */
     Picture *sidePic;
     Pixel sideColor;
-    MenuStyle *ms;        /* Menu Face    */
-    union                 /* internal flags, deleted when menu pops down! */
+    /* Menu Face    */
+    MenuStyle *ms;
+    /* temporary flags, deleted when menu pops down! */
+    struct
     {
-      /* need to change that type if we have more than 8 flags.
-       * more that a word will entail some changes in the code! */
-      unsigned char allflags;
-      struct
-      {
-	unsigned is_backgroundset : 1; /* is win background set? */
-	unsigned is_in_use : 1;
-	unsigned colorize : 1;
-	unsigned painted : 1;
-	unsigned is_left : 1;   /* menu direction relative to parent menu */
-	unsigned is_right : 1;
-	unsigned is_up : 1;
-	unsigned is_down : 1;
-      } f;
+      unsigned is_background_set : 1; /* is win background set? */
+      unsigned is_in_use : 1;
+      unsigned is_painted : 1;
+      unsigned is_left : 1;   /* menu direction relative to parent menu */
+      unsigned is_right : 1;
+      unsigned is_up : 1;
+      unsigned is_down : 1;
+    } tflags;
+    /* permanent flags */
+    struct
+    {
+      unsigned has_side_color : 1;
     } flags;
     struct
     {
@@ -253,6 +278,13 @@ typedef struct MenuRoot
     int xanimation;      /* x distance window was moved by animation     */
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
+
+
+
+/***********************************
+ * MENU OPTIONS AND POSITION HINTS *
+ ***********************************/
+
 
 typedef struct
 {
@@ -266,25 +298,43 @@ typedef struct
 typedef struct
 {
   MenuPosHints pos_hints;
-  union
+  struct
   {
-    /* need to change that type if we have more than 8 flags.
-     * more that a word will entail some changes in the code! */
-    unsigned char allflags;
-    struct
-    {
-      unsigned no_warp : 1;
-      unsigned warp_title : 1;
-      unsigned fixed : 1;
-      unsigned select_in_place : 1;
-      unsigned select_warp : 1;
-      unsigned has_poshints : 1;
-    } f;
+    unsigned no_warp : 1;
+    unsigned warp_title : 1;
+    unsigned fixed : 1;
+    unsigned select_in_place : 1;
+    unsigned select_warp : 1;
+    unsigned has_poshints : 1;
   } flags;
 } MenuOptions;
 
 extern MenuPosHints lastMenuPosHints;
 extern Bool fLastMenuPosHintsValid;
+
+
+
+/****************************
+ * MISCELLANEOUS MENU STUFF *
+ ****************************/
+
+typedef struct
+{
+  MenuRoot *menu;
+  MenuRoot *menu_prior;
+  FvwmWindow **pTmp_win;
+  FvwmWindow *button_window;
+  int *pcontext;
+  XEvent *eventp;
+  char **ret_paction;
+  MenuOptions *pops;
+  int cmenuDeep;
+  struct
+  {
+    unsigned is_menu_from_frame_or_window_or_titlebar : 1;
+    unsigned is_sticky : 1;
+  } flags;
+} MenuParameters;
 
 
 /* Return values for UpdateMenu, do_menu, menuShortcuts */
@@ -317,7 +367,7 @@ typedef struct MenuInfo
   int DoubleClickTime;
   struct
   {
-    unsigned animated_menus : 1;
+    unsigned use_animated_menus : 1;
   } flags;
 } MenuInfo;
 
@@ -328,6 +378,13 @@ extern MenuInfo Menus;
 #define MENU_ADD_BUTTON(x) ((x)==MENU_DONE || (x)==MENU_ABORTED?(x)+1:(x))
 #define MENU_ADD_BUTTON_IF(y,x) (y?MENU_ADD_BUTTON((x)):(x))
 
+
+
+/**********************
+ * EXPORTED FUNCTIONS *
+ **********************/
+
+
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 			  Bool fWarpPointerToo, int cusDelay,
@@ -336,9 +393,7 @@ MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 void MakeMenu(MenuRoot *);
 Bool PopUpMenu(MenuRoot *, int, int);
-MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,
-		    char **ret_paction, int cmenuDeep, Bool fSticks,
-		    XEvent *eventp, MenuOptions *pops);
+MenuStatus do_menu(MenuParameters *pmp);
 MenuRoot *FindPopup(char *popup_name);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuItem *mi, MenuOptions *pops);

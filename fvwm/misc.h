@@ -355,5 +355,6 @@ void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
 Bool IsRectangleOnThisPage(rectangle *rec, int desk);
 
 void Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
+Bool check_if_fvwm_window_exists(FvwmWindow *fw);
 
 #endif /* MISC_H */

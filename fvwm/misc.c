@@ -906,3 +906,22 @@ void Keyboard_shortcuts(XEvent *Event, FvwmWindow *fw, int ReturnEvent)
       Event->xkey.y_root += y_move;
     }
 }
+
+
+/****************************************************************************
+ *
+ * Check if the given FvwmWindow structure still points to a valid window.
+ *
+ ****************************************************************************/
+
+Bool check_if_fvwm_window_exists(FvwmWindow *fw)
+{
+  FvwmWindow *t;
+
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    if (t == fw)
+      return True;
+  }
+  return False;
+}

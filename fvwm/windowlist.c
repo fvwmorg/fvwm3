@@ -41,6 +41,9 @@
 #include "parse.h"
 #include "screen.h"
 
+extern FvwmWindow *Tmp_win;
+extern FvwmWindow *ButtonWindow;
+
 #define SHOW_GEOMETRY (1<<0)
 #define SHOW_ALLDESKS (1<<1)
 #define SHOW_NORMAL   (1<<2)
@@ -72,6 +75,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action,int *Module)
 {
   MenuRoot *mr;
+  MenuParameters mp;
   char* ret_action = NULL;
   FvwmWindow *t;
   FvwmWindow **windowList;
@@ -97,8 +101,9 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   MenuOptions mops;
   int low_layer = 0;  /* show all layers by default */
   int high_layer = INT_MAX;
+  int tc;
 
-  mops.flags.allflags = 0;
+  memset(&(mops.flags), 0, sizeof(mops.flags));
   if (action && *action)
   {
     /* parse postitioning args */
@@ -379,7 +384,22 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     teventp = (XEvent *)1;
   else
     teventp = eventp;
-  menu_retval = do_menu(mr, NULL, &ret_action, 0, TRUE, teventp, &mops);
+
+  mp.menu = mr;
+  mp.menu_prior = NULL;
+  t = Tmp_win;
+  mp.pTmp_win = &t;
+  mp.button_window = ButtonWindow;
+  tc = context;
+  mp.pcontext = &tc;
+  mp.flags.is_menu_from_frame_or_window_or_titlebar = FALSE;
+  mp.flags.is_sticky = TRUE;
+  mp.eventp = teventp;
+  mp.cmenuDeep = 0;
+  mp.pops = &mops;
+  mp.ret_paction = &ret_action;
+
+  menu_retval = do_menu(&mp);
   if (ret_action)
     free(ret_action);
   DestroyMenu(mr, False);
