@@ -133,10 +133,12 @@
 #define MAX_FONT_HEIGHT			 256 /* pixels */
 
 /*** Flocale ***/
+/* adding the good number of "*" speed-up font loading with certain X
+ * server */
 #define FLOCALE_MB_FALLBACK_FONT \
-	"-*-fixed-medium-r-semicondensed-*-13-*," \
-	"-*-fixed-medium-r-normal-*-14-*," \
-	"-*-medium-r-normal-*-16-*"
+	"-*-fixed-medium-r-semicondensed-*-13-*-*-*-*-*-*-*," \
+	"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*," \
+	"-*-*-medium-r-normal-*-16-*-*-*-*-*-*-*-*"
 /* rationale: -*-fixed-medium-r-semicondensed-*-13-* should gives "fixed" in
    most non multibyte charset (?).
    -*-fixed-medium-r-normal-*-14-* is ok for jsx
