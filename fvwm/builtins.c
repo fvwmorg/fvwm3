@@ -987,16 +987,18 @@ void SetHiColorset(F_CMD_ARGS)
   {
     fvwm_msg(
       ERR, "SetHiColorset",
-      "Decors do not support the HilighColorset command anymore.\n"
+      "Decors do not support the HilightColorset command anymore.\n"
       "    Please use 'Style <stylename> HilightColorset <colorset>' instead."
       "    Sorry for the inconvenience.");
     return;
   }
 #endif
+  char *newaction;
+
   if (action)
   {
-    action = safemalloc(strlen(action) + 12);
-    sprintf(action, "* Colorset %s", action);
+    newaction = safemalloc(strlen(action) + 32);
+    sprintf(newaction, "* HilightColorset %s", action);
     ProcessNewStyle(F_PASS_ARGS);
   }
 #endif

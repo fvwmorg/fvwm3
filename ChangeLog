@@ -1,8 +1,15 @@
+1999-12-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (SetHiColorset):
+	fixed a bug in HilightColorset command
+	(SetHiColorset):
+	fixed core dump
+
 1999-12-20  Dan Espen  <dane@mk.telcordia.com>
 
 	* libs/ColorUtils.c: Use Lesstif's shadow/hilite calcs.
 	Note: FvwmTheme not changed yet, bug observed in pixel_to_color_string.
-	
+
 1999-12-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
