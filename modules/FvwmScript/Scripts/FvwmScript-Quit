@@ -17,7 +17,7 @@ Init
   ChangeValue 9 0
   ChangeValue 10 0
  End
- 
+
 Widget 1
 Property
  Position 40 40
@@ -92,7 +92,7 @@ Main
       Begin
       Do {Exec sync}
       Do {Exec /sbin/shutdown -h now}
-      Quit   
+      Quit
       End
      End
     End
@@ -198,7 +198,7 @@ Main
  Case message of
   SingleClic :
   Begin
-   ChangeValue 6 0 
+   ChangeValue 6 0
    ChangeValue 7 0
    ChangeValue 8 0
    ChangeValue 10 0
@@ -221,23 +221,6 @@ Main
    ChangeValue 7 0
    ChangeValue 8 0
    ChangeValue 9 0
-   Set $ToDo = Restart
+   Set $ToDo = Reboot
   End
 End
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
