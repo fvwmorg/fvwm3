@@ -13,7 +13,7 @@
 #include "screen.h"
 #include "module.h"
 
-struct charstring 
+struct charstring
 {
   char key;
   int  value;
@@ -94,6 +94,8 @@ void remove_binding(int contexts, int mods, int button, KeySym keysym,
         {
           Scr.AllBindings = temp2;
         }
+        free(temp->key_name);
+        free(temp->Action);
         free(temp);
         temp=NULL;
       }
@@ -105,10 +107,10 @@ void remove_binding(int contexts, int mods, int button, KeySym keysym,
 }
 
 /****************************************************************************
- * 
+ *
  *  Parses a mouse or key binding
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 void ParseBindEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		    unsigned long junk, char *tline,int* Module, Bool fKey)
 {
@@ -121,7 +123,7 @@ void ParseBindEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int mods;
 
   /* tline points after the key word "Mouse" or "Key" */
-  ptr = GetNextToken(tline, &token);  
+  ptr = GetNextToken(tline, &token);
   if(token != NULL)
   {
     if (fKey)
@@ -137,7 +139,7 @@ void ParseBindEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     n2 = sscanf(token,"%19s",context);
     free(token);
   }
-  
+
   action = GetNextToken(ptr,&token);
   if(token != NULL)
   {
@@ -259,11 +261,11 @@ void ParseKeyEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 /****************************************************************************
- * 
- * Turns a  string context of context or modifier values into an array of 
+ *
+ * Turns a  string context of context or modifier values into an array of
  * true/false values (bits)
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 void find_context(char *string, int *output, struct charstring *table,
 		  char *tline)
 {

@@ -1,7 +1,7 @@
 /*
  * *************************************************************************
  * This module was all new
- * by Rob Nation 
+ * by Rob Nation
  * Copyright 1993 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved
  *
@@ -43,14 +43,14 @@ void CreateGCs(void)
 {
   XGCValues gcv;
   unsigned long gcm;
-  
+
   /* create scratch GC's */
   gcm = GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth;
   gcv.line_width = 0;
   gcv.function = GXcopy;
   gcv.plane_mask = AllPlanes;
   gcv.graphics_exposures = False;
-  
+
   Scr.ScratchGC1 = XCreateGC(dpy, Scr.Root, gcm, &gcv);
   Scr.ScratchGC2 = XCreateGC(dpy, Scr.Root, gcm, &gcv);
   Scr.ScratchGC3 = XCreateGC(dpy, Scr.Root, gcm, &gcv);
@@ -62,20 +62,20 @@ void CreateGCs(void)
 
 
 /****************************************************************************
- * 
+ *
  * Loads a single color
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 Pixel GetColor(char *name)
 {
   XColor color;
 
   color.pixel = 0;
-  if (!XParseColor (dpy, Scr.FvwmRoot.attr.colormap, name, &color)) 
+  if (!XParseColor (dpy, Scr.FvwmRoot.attr.colormap, name, &color))
     {
       nocolor("parse",name);
     }
-  else if(!XAllocColor (dpy, Scr.FvwmRoot.attr.colormap, &color)) 
+  else if(!XAllocColor (dpy, Scr.FvwmRoot.attr.colormap, &color))
     {
       nocolor("alloc",name);
     }
@@ -84,10 +84,10 @@ Pixel GetColor(char *name)
 
 #ifdef GRADIENT_BUTTONS
 /****************************************************************************
- * 
+ *
  * Allocates a nonlinear color gradient (veliaa@rpi.edu)
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 			      int nsegs, int npixels)
 {
@@ -107,13 +107,13 @@ Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 	int j = 0, n = clen[i] * npixels / 100;
 	p = AllocLinearGradient(s_colors[i], s_colors[i + 1], n);
 	if (!p) {
-	    fvwm_msg(ERR,"AllocNonlinearGradient",
-		     "couldn't allocate gradient");
+	    fvwm_msg(ERR, "AllocNonlinearGradient",
+                     "couldn't allocate gradient");
 	    free(pixels);
 	    return NULL;
 	}
 	for (; j < n; ++j)
-	    pixels[curpixel + j] = p[j];	
+	    pixels[curpixel + j] = p[j];
 	perc += clen[i];
 	curpixel += n;
 	free(p);
@@ -124,18 +124,22 @@ Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 }
 
 /****************************************************************************
- * 
+ *
  * Allocates a linear color gradient (veliaa@rpi.edu)
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
 {
     Pixel *pixels;
     XColor from, to, c;
     int r, dr, g, dg, b, db;
     int i = 0, got_all = 1;
-    
-    if (npixels < 1) return NULL;
+
+    if (npixels < 1) {
+      fvwm_msg(ERR, "AllocLinearGradient", "Invalid number of pixels: %d",
+               npixels);
+      return NULL;
+    }
     if (!s_from || !XParseColor(dpy, Scr.FvwmRoot.attr.colormap, s_from, &from)) {
 	nocolor("parse", s_from);
 	return NULL;
@@ -170,5 +174,5 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
 
 void nocolor(char *note, char *name)
 {
-  fvwm_msg(ERR,"nocolor","can't %s color %s", note,name);
+  fvwm_msg(ERR,"nocolor","can't %s color %s", note, name ? name : "<NONE>");
 }

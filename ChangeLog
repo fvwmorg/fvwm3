@@ -1,3 +1,51 @@
+1998-12-02  Paul D. Smith  <psmith@gnu.org>
+
+	* archive/purify/purify.fvwm2rc: Comment out things that cause
+	heap corruption, until they can be fixed.
+
+	* fvwm/icons.c (Iconify): Initialize winattrs to empty to avoid
+	possible uninitialized memory reads in your_event_mask.
+
+	* fvwm/colors.c (AllocLinearGradient): Added an error message for
+	invalid npixels.
+
+1998-12-01  Paul D. Smith  <psmith@gnu.org>
+
+	* fvwm/builtins.c (AddTitleStyle): Free the parm string each time
+	through the loop.
+
+	* fvwm/menus.c (DestroyMenu): Free the menu name string.
+
+	* fvwm/builtins.c (set_animation): Free the first option string.
+
+	* fvwm/bindings.c (remove_binding): Free the key_name and Action
+	strings when deleting the binding.
+
+	* fvwm/windows.c (do_windowList): Make sure to free func, if not
+	already freed.  Use tfunc to contain the menu title, not tlabel
+	(which is fixed-size).
+
+	* libs/Parse.c (GetOnePercentArgument): Free the token returned
+	from GetNextToken().
+
+	* fvwm/builtins.c (ReadButtonFace): Free the perc array.
+
+	* fvwm/fvwm.c (DestroyFvwmDecor): Free the Decor font if one was
+	allocated.
+
+	* fvwm/builtins.c (SetMenuStyle): Free the StdFont before
+	resetting it.
+
+	* libs/Parse.c (DoGetNextToken): Cast chars to unsigned before
+	using the is*() functions on them, to handle 8-bit chars
+	correctly.
+	(PeekToken): Ditto.
+
+1998-11-30  Paul D. Smith  <psmith@gnu.org>
+
+	* fvwm/colors.c (nocolor): Make sure we don't call fvwm_msg with a
+	NULL ptr for a string.
+
 1998-11-30  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in: Changed version to 2.1.4.

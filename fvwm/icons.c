@@ -880,7 +880,7 @@ void DeIconify(FvwmWindow *tmp_win)
 void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 {
   FvwmWindow *t;
-  XWindowAttributes winattrs;
+  XWindowAttributes winattrs = {0};
   unsigned long eventMask;
 
   if(!tmp_win)

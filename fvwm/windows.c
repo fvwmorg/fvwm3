@@ -222,7 +222,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     }
     if(flags & NO_DESK_SORT)
       next_desk = INT_MAX; /* only go through loop once */
-      
+
     last_desk_done = next_desk;
     for (ii = 0; ii < numWindows; ii++)
     {
@@ -291,20 +291,20 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           strcat(t_hot,"\t");
           strcat(t_hot,tname);
         }
-        if (func)
+        if (!func)
+        {
+          tfunc = safemalloc(40);
+          sprintf(tfunc,"WindowListFunc %ld",t->w);
+        }
+        else
 	{
-	  tfunc = safemalloc(strlen(func) + 32);
-          sprintf(tlabel,"%s %ld",func,t->w);
+          tfunc = safemalloc(strlen(func) + 32);
+          sprintf(tfunc,"%s %ld",func,t->w);
 	  free(func);
 	  func = NULL;
 	}
-        else
-	{
-	  tfunc = safemalloc(40);
-          sprintf(tlabel,"WindowListFunc %ld",t->w);
-	}
-	free(tfunc);
-        AddToMenu(mr, t_hot, tlabel, FALSE, FALSE);
+        AddToMenu(mr, t_hot, tfunc, FALSE, FALSE);
+        free(tfunc);
 #ifdef MINI_ICONS
         /* Add the title pixmap */
         if (t->mini_icon) {
@@ -321,6 +321,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     }
   }
 
+  if (func)
+    free(func);
   free(windowList);
   MakeMenu(mr);
   if (!default_action && eventp && eventp->type == KeyPress)

@@ -1952,13 +1952,15 @@ void DestroyMenu(MenuRoot *mr)
   else
     prev->next = mr->next;
 
+  free(mr->name);
   XDestroyWindow(dpy,mr->w);
   XDeleteContext(dpy, mr->w, MenuContext);
 
   if (mr->sidePic)
       DestroyPicture(dpy, mr->sidePic);
 
- if( mr->mf != Scr.DefaultMenuFace && mr->mf ) /* I'm a bit paranoid about segfaults :) */
+  if (mr->mf != Scr.DefaultMenuFace && mr->mf) /* I'm a bit paranoid about
+                                                  segfaults :) */
   {
         XFreeGC(dpy,mr->mf->MenuReliefGC);
         XFreeGC(dpy,mr->mf->MenuShadowGC);

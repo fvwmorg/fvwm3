@@ -4,8 +4,10 @@
 ## FvwmCommand.pm, but they are not to be found.  The perl example
 ## scripts were not installed.
 
+bin_PROGRAMS = FvwmCommand
+
 moduledir = @FVWM_MODULEDIR@
-module_PROGRAMS = FvwmCommandS FvwmCommand
+module_PROGRAMS = FvwmCommandS
 
 FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
 FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h

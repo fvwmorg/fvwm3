@@ -1114,6 +1114,8 @@ void DestroyFvwmDecor(FvwmDecor *fl)
       XFreeGC(dpy, fl->HiShadowGC);
       fl->HiShadowGC = NULL;
   }
+  if (fl->WindowFont.font != NULL)
+    XFreeFont(dpy, fl->WindowFont.font);
 }
 
 /***********************************************************************

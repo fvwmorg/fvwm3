@@ -1,9 +1,14 @@
+1998-12-02  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCommand/Makefile.am: Put FvwmCommand into bindir, not the
+	module directory.  FvwmCommandS still goes in the module dir.
+
 1998-12-02  Dan Espen  <dane@mk.bellcore.com>
 
 	* FvwmTaskBar/FvwmTaskBar.h: Update prototype for ParseConfig.
 
-	* FvwmTaskBar/FvwmTaskBar.1: Update config file reading note, bugs info,
-	and remove references to fvwm95.
+	* FvwmTaskBar/FvwmTaskBar.1: Update config file reading note, bugs
+	info, and remove references to fvwm95.
 
 	* FvwmTaskBar/FvwmTaskBar.c: Use GetConfigLine to read the config.
 

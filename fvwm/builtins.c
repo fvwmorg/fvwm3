@@ -1775,11 +1775,14 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     tmpmf->MenuActiveColors.fore = GetColor("white");
   }
 
-  if ((font == NULL)||
-      (Scr.StdFont.font = GetFontOrFixed(dpy, font)) == NULL)
+  if (Scr.StdFont.font != NULL)
+    XFreeFont(dpy, Scr.StdFont.font);
+
+  if (font == NULL
+      || (Scr.StdFont.font = GetFontOrFixed(dpy, font)) == NULL)
   {
     fvwm_msg(ERR,"SetMenuStyle","Couldn't load font '%s' or 'fixed'\n",
-	     (font==NULL)?("NULL"):(font));
+             font ? font : "<NULL>");
     exit(1);
   }
 
@@ -2095,24 +2098,24 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button);
  *
  ****************************************************************************/
 void AddTitleStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                   unsigned long context, char *action,int* Module)
+                   unsigned long context, char *action,int *Module)
 {
 #ifdef USEDECOR
     FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
     FvwmDecor *fl = &Scr.DefaultDecor;
 #endif
-    char *parm=NULL, *prev;
-    prev = action;
-    action = GetNextToken(action,&parm);
-    while(parm)
+    char *parm=NULL;
+
+    /* See if there's a next token.  We actually don't care what it is, so
+       GetNextToken allocating memory is overkill, but... */
+    GetNextToken(action,&parm);
+    while (parm)
     {
-	if (!(action = ReadTitleButton(prev, &fl->titlebar, True, -1))) {
-	    free(parm);
-	    break;
-	}
-	prev = action;
-	action = GetNextToken(action,&parm);
+      free(parm);
+      if ((action = ReadTitleButton(action, &fl->titlebar, True, -1)) == NULL)
+        break;
+      GetNextToken(action, &parm);
     }
 }
 #endif /* MULTISTYLE && EXTENDED_TITLESTYLE */
@@ -2369,7 +2372,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
     char *action = s;
 
     if (sscanf(s, "%s%n", style, &offset) < 1) {
-	if(verbose)fvwm_msg(ERR, "ReadButtonFace", "error in face: %s", action);
+	if (verbose)
+          fvwm_msg(ERR, "ReadButtonFace", "error in face `%s'", s);
 	return False;
     }
 
@@ -2535,6 +2539,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
               if (s_colors[i])
 		free(s_colors[i]);
 	    free(s_colors);
+            free(perc);
 
 	    if (!pixels) {
 		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
@@ -4174,6 +4179,7 @@ void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       free(opt);
     return;
   }
+  free(opt);
   if (delay > 500) {
     fvwm_msg(WARN,"SetAnimation",
 	     "Using longer than .5 seconds as between frame animation delay");

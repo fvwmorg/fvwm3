@@ -4,7 +4,7 @@
 ##### PIXMAP PATH
 
 PixmapPath
-PixmapPath 	 	 	
+PixmapPath
 PixmapPath   /usr/lib/X11/icons/pixmaps
 PixmapPath		/usr/lib/X11/icons/pixmaps
 PixmapPath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles
@@ -17,7 +17,7 @@ PixmapPath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/su
 ##### ICON PATH
 
 IconPath
-IconPath 	 	 	
+IconPath
 IconPath   /usr/X11R6/include/X11/bitmaps:/usr/lib/X11/bitmaps
 IconPath 		/usr/X11R6/include/X11/bitmaps:/usr/lib/X11/bitmaps
 IconPath /usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/bitmaps:/etc/dtpixmaps
@@ -30,7 +30,7 @@ IconPath /tmp:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/3dpixm
 ##### MODULE PATH
 
 ModulePath
-ModulePath 	 	 	
+ModulePath
 ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
 ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
 ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
@@ -45,35 +45,35 @@ ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
 ##### MODULE CONFIG, DESTROY MODULE CONFIG
 
 *dummymodule
-*dummymodule 	 	 	
+*dummymodule
 *dummymodule ÖLq- ö.qljüpßi+123
 *dummymodule1fooqmnld Ä"§k
 *dummymodule1p	o q#köpiü
-*dummymodule1wqwq  lkjöö 13 
-*dummymodule1r 13r  g3w 
-*dummymodule2r 13r  g3w 
-*dummymodule2r 13r  g3w 
-*dummymodule2 121 32 
-*dummymodule2 qw 124   
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
 
 DestroyModuleConfig
-DestroyModuleConfig 	 	 	
+DestroyModuleConfig
 DestroyModuleConfig  dummymodule1
 DestroyModuleConfig		dummymodule1
 DestroyModuleConfig dummymod*
 DestroyModuleConfig dummymod*
 
 *dummymodule
-*dummymodule 	 	 	
+*dummymodule
 *dummymodule ÖLq- ö.qljüpßi+123
 *dummymodule1fooqmnld Ä"§k
 *dummymodule1p	o q#köpiü
-*dummymodule1wqwq  lkjöö 13 
-*dummymodule1r 13r  g3w 
-*dummymodule2r 13r  g3w 
-*dummymodule2r 13r  g3w 
-*dummymodule2 121 32 
-*dummymodule2 qw 124   
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
 
 DestroyModuleConfig *
 
@@ -85,7 +85,7 @@ DestroyModuleConfig *
 *FvwmBannerTimeout 1000
 
 Module
-Module	 	 	 
+Module
 Module FvwmBanner
 Module    FvwmBanner
 Module		FvwmBanner
@@ -171,7 +171,7 @@ popup menu1 root c+0 c+0 beep
 popup menu1 root c+0 c+0 beep
 
 DestroyMenu
-DestroyMenu 	 	 	
+DestroyMenu
 DestroyMenu		 menu1
 
 addtofunc makelongmenu
@@ -220,7 +220,7 @@ DestroyMenu longmenu
 ##### BEEP
 
 Beep
-Beep  	 			
+Beep
 Beep ü30 23äö ü9823r ,l.öapü39
 
 ##### BORDER STYLE
@@ -297,7 +297,7 @@ TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
 TitleStyle hGradient 16 2 Red 20 Blue 80
 TitleStyle hGradient 128 2 Red 20 Blue 80
 TitleStyle hGradient 2 2 Red 20 Blue 80
- 
+
 ### vector buttons
 
 TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
@@ -370,7 +370,7 @@ AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
 AddTitleStyle hGradient 16 2 Red 20 Blue 80
 AddTitleStyle hGradient 128 2 Red 20 Blue 80
 AddTitleStyle hGradient 2 2 Red 20 Blue 80
- 
+
 ### vector buttons
 
 AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
@@ -448,7 +448,7 @@ ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
 ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
 ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
 ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
- 
+
 ### vector buttons
 
 ButtonStyle Reset
@@ -480,7 +480,7 @@ ButtonStyle 1 miniicons
 
 ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
 ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
-ButtonStyle 1 - MWMDecorMax 
+ButtonStyle 1 - MWMDecorMax
 ButtonStyle 1 - MWMDecorMin
 ButtonStyle 1 -
 
@@ -535,7 +535,7 @@ AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
 AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
 AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
 AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
- 
+
 ### vector buttons
 
 AddButtonStyle Reset
@@ -657,7 +657,7 @@ DeskTopSize 2x2
 ##### ECHO
 
 Echo
-Echo   	 	  						
+Echo
 Echo ädsa		 iopq9 $SHELL "'lksaä"
 
 ##### EDGE RESISTACE
@@ -752,7 +752,7 @@ Key
 Key f12
 Key f12 t
 key f12 t cs
-key		f12		t		cs               
+key		f12		t		cs
 Key		f12		a		a		Nop
 Key  f12     a  a     function nonexistent
 Key f12 a a function nonexistent
@@ -763,8 +763,8 @@ Key f12 t a -
 ##### MENU STYLE
 
 MenuStyle
-MenuStyle  red  yellow  green  9x15  mwm  anim 
-MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim	
+MenuStyle  red  yellow  green  9x15  mwm  anim
+MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim
 MenuStyle red yellow green 9x15 mwm anim
 MenuStyle red yellow green 9x15 mwm anim
 MenuStyle red yellow green 6x10 mwm anim
@@ -779,7 +779,7 @@ Mouse
 Mouse 2
 Mouse 2 t
 Mouse 2 t cs
-Mouse		2		t		cs               
+Mouse		2		t		cs
 Mouse		2		a		a		Nop
 Mouse  2     a  a     function nonexistent
 Mouse 2 a a function nonexistent
@@ -790,7 +790,7 @@ Mouse 2 t a -
 ##### NOP
 
 Nop
-NOP	 	 	 	
+NOP
 nOp allöoawqj _Ö:K_ÖL ökq
 
 ##### OPAQUE MOVE SIZE
@@ -826,7 +826,7 @@ SetAnimation 0 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
 SetAnimation 20 -.01 0 .01 .03 .08
 SetAnimation 1000 -.01 0 .01 .03 .08
 SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
- 
+
 ##### SET ENV
 
 SetEnv
@@ -840,7 +840,7 @@ SetEnv FOO "   ""ölwäökkü"''
 ##### SET MENU DELAY
 
 SetMenuDelay
-SetMenuDelay   	 	 	
+SetMenuDelay
 SetMenuDelay 50
 SetMenuDelay 	  50
 SetMenuDelay 0
@@ -852,7 +852,7 @@ SetMenuDelay -120
 Title
 Title "lökjads
 Title "lökjads
-Title -A -köq 
+Title -A -köq
 
 ##### WINDOW FONT
 
@@ -1312,12 +1312,12 @@ style "*" FocusFollowsMouse
 ##### READ, PIPE READ
 
 read
-read 	 	 	
+read
 read /nonexistent/foo/bar
 read 	  /tmp/purify.read
 
 piperead
-piperead 	 	 	
+piperead
 ## hangs !!
 #piperead cat
 piperead "cat /nonexistent/foo/bar"
@@ -1354,11 +1354,11 @@ AddToDecor foo
 
 AddToFunc test_func
  + "I" SendToModule
- + "I" SendToModule	 	 	
+ + "I" SendToModule
  + "I" SendToModule		FvwmBanner		.-, q-l  ,j
  + "I" SendToModule		FvwmBanner		.-, q-l  ,j
  + "I" KillModule
- + "I" KillModule   	 	
+ + "I" KillModule
  + "I" KillModule  	FvwmBanner
  + "I" KillModule FvwmBanner
  + "I" KillModule FvwmBanner
@@ -1368,13 +1368,13 @@ AddToFunc test_func
 ##### RAISE, RAISE LOWER, LOWER
 
  + "I" Raise
- + "I" Lower 
+ + "I" Lower
  + "I" RaiseLower
  + "I" RaiseLower
- + "I" Raise	 	 	 
- + "I" Lower 	 	 	 
- + "I" RaiseLower	 	 	 
- + "I" RaiseLower	 	 	 
+ + "I" Raise
+ + "I" Lower
+ + "I" RaiseLower
+ + "I" RaiseLower
  + "I" Raise asöpoi
  + "I" Lower asöpoi
  + "I" RaiseLower asöpoi
@@ -1388,7 +1388,7 @@ AddToFunc test_func
  + "I" Move   10    10
  + "I" Move		-10		-10
  + "I" MoveToPage
- + "I" MoveToPage	 	 		
+ + "I" MoveToPage
  + "I" MoveToPage 1 1
  + "I" MoveToPage 10000 -12312
  + "I" MoveToPage 0 0
@@ -1416,7 +1416,7 @@ AddToFunc test_func
  + "I" Maximize		0	100
  + "I" Maximize 50 50
  + "I" Maximize
- + "I" Iconify 	 	 	
+ + "I" Iconify
  + "I" Iconify   0 üpikü
  + "I" Iconify		0
  + "I" Iconify -1
@@ -1427,7 +1427,7 @@ AddToFunc test_func
 ##### STICK
 
  + "I" Stick
- + "I" Stick	 	 		
+ + "I" Stick
  + "I" Stick öäpqewikrpü8.,.-kl-.294
 
 ##### WARP TO WINDOW
@@ -1473,34 +1473,35 @@ AddToFunc test_func
 ##### REFRESH WINDOW, REFRESH, RECAPTURE
 
  + "I" RefreshWindow
- + "I" RefreshWindow 	 	 	
+ + "I" RefreshWindow
  + "I" RefreshWindow wäepik-ö .-,poci32
  + "I" Refresh
- + "I" Refresh 	 	 	 	
+ + "I" Refresh
  + "I" Refresh .-3mölp 9 n a.d.ök3qj0
- + "I" Recapture
- + "I" Recapture	 	 	 
- + "I" Recapture .-QW,ÖKcäük,.-qköcli qopiuw
+# These can cause heap corruption (see bug #42)
+# + "I" Recapture
+# + "I" Recapture
+# + "I" Recapture .-QW,ÖKcäük,.-qköcli qopiuw
 
 ##### FOCUS, FLIP FOCUS, NEXT, PREV, CURRENT, NONE
 
  + "I" prev
- + "I" prev	 	 	 	
+ + "I" prev
  + "I" prev  ()
  + "I" prev   (*)   focus
  + "I" prev		(*)		flipfocus
  + "I" next
- + "I" next	 	 	 	
+ + "I" next
  + "I" next  ()
  + "I" next   (*)   focus
  + "I" next		(*)		flipfocus
  + "I" current
- + "I" current	 	 	 	
+ + "I" current
  + "I" current  ()
  + "I" current   (*)   focus 97ö.,j1n, mp12l
  + "I" current		(*)		flipfocus
  + "I" none
- + "I" none	 	 	 	
+ + "I" none
  + "I" none  ()
  + "I" none   (*)   focus
  + "I" none		(*)		flipfocus olöiqwehj
@@ -1508,7 +1509,7 @@ AddToFunc test_func
 ##### WINDOW ID
 
  + "I" WindowID
- + "I" WindowID 	 	 	
+ + "I" WindowID
  + "I" WindowID 0x7491
  + "I" WindowID  3ölu -öirü2i 4li<F2><F5><F4>7z90
  + "I" WindowID 0x00110011 nop
@@ -1517,22 +1518,23 @@ AddToFunc test_func
 
 ##### WINDOW LIST
 
- + "I" WindowList 
- + "I" WindowList	 	 	
+ + "I" WindowList
+ + "I" WindowList
  + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, Unsorted, UseIconName, Alphabetic, NotAlphabetic Nop
  + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, Unsorted, UseIconName, Alphabetic, NotAlphabetic Nop
 
 ##### CLOSE, DELETE, DESTROY
 
  + "I" Close
- + "I" Close	 	 	
+ + "I" Close
  + "I" Close #älök.,nm-öp93m-öki 0 <F3>üß8
  + "I" Delete
- + "I" Delete	 	 	
+ + "I" Delete
  + "I" Delete .mwq.-l km<F3>noi
- + "I" Destroy .mwq.-l km<F3>noiDestroy .mwq.-l km<F3>noi
- + "I" Destroy 	 	 	
- + "I" Destroy
+# These can cause heap corruption (see bug #42)
+# + "I" Destroy .mwq.-l km<F3>noiDestroy .mwq.-l km<F3>noi
+# + "I" Destroy
+# + "I" Destroy
 
 ##### all functions without parameters
 
@@ -1577,8 +1579,9 @@ AddToFunc test_func
  + "I" Desk
  + "I" echo DeskTopSize
  + "I" DeskTopSize
- + "I" echo Destroy
- + "I" Destroy
+# This can cause heap corruption (see bug #42)
+# + "I" echo Destroy
+# + "I" Destroy
  + "I" echo DestroyDecor
  + "I" DestroyDecor
  + "I" echo DestroyFunc
@@ -1657,8 +1660,9 @@ AddToFunc test_func
  + "I" RaiseLower
  + "I" echo Read
  + "I" Read
- + "I" echo Recapture
- + "I" Recapture
+# This can cause heap corruption (see bug #42)
+# + "I" echo Recapture
+# + "I" Recapture
  + "I" echo Refresh
  + "I" Refresh
  + "I" echo RefreshWindow

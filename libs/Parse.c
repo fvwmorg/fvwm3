@@ -52,7 +52,7 @@ char *PeekToken(const char *pstr)
       }
       else /* normal token */
       {
-        if (isspace(*p) || *p == ',')
+        if (isspace((unsigned char)*p) || *p == ',')
           break;
       }
 
@@ -168,13 +168,13 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
     }
   t = indata;
   while ( (*t != 0) &&
-	  ( isspace(*t) ||
+	  ( isspace((unsigned char)*t) ||
 	    (snum &&
 	     strchr(spaces, *t)) ) )
     t++;
   start = t;
   while ( (*t != 0) &&
-	  !( isspace(*t) ||
+	  !( isspace((unsigned char)*t) ||
 	     (snum &&
 	      strchr(spaces, *t)) ||
 	     (dnum &&
@@ -448,6 +448,7 @@ int GetOnePercentArgument(char *action, int *value, int *unit_io)
   }
   n = sscanf(token, "%d", value);
 
+  free(token);
   return n;
 }
 

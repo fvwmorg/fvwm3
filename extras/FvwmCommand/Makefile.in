@@ -84,8 +84,10 @@ socket_LIBS = @socket_LIBS@
 xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
+bin_PROGRAMS = FvwmCommand
+
 moduledir = @FVWM_MODULEDIR@
-module_PROGRAMS = FvwmCommandS FvwmCommand
+module_PROGRAMS = FvwmCommandS
 
 FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
 FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h
@@ -110,7 +112,7 @@ INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
-PROGRAMS =  $(module_PROGRAMS)
+PROGRAMS =  $(bin_PROGRAMS) $(module_PROGRAMS)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I../..
@@ -121,12 +123,12 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-FvwmCommandS_OBJECTS =  FvwmCommandS.o
-FvwmCommandS_LDADD = $(LDADD)
-FvwmCommandS_LDFLAGS = 
 FvwmCommand_OBJECTS =  FvwmCommand.o
 FvwmCommand_LDADD = $(LDADD)
 FvwmCommand_LDFLAGS = 
+FvwmCommandS_OBJECTS =  FvwmCommandS.o
+FvwmCommandS_LDADD = $(LDADD)
+FvwmCommandS_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LINK = $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -139,11 +141,11 @@ DIST_COMMON =  README INSTALL Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmCommand.P .deps/FvwmCommandS.P
-SOURCES = $(FvwmCommandS_SOURCES) $(FvwmCommand_SOURCES)
-OBJECTS = $(FvwmCommandS_OBJECTS) $(FvwmCommand_OBJECTS)
+SOURCES = $(FvwmCommand_SOURCES) $(FvwmCommandS_SOURCES)
+OBJECTS = $(FvwmCommand_OBJECTS) $(FvwmCommandS_OBJECTS)
 
 all: Makefile $(PROGRAMS) $(MANS)
 
@@ -156,6 +158,31 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
 
 mostlyclean-modulePROGRAMS:
 
@@ -198,13 +225,13 @@ distclean-compile:
 
 maintainer-clean-compile:
 
-FvwmCommandS: $(FvwmCommandS_OBJECTS) $(FvwmCommandS_DEPENDENCIES)
-	@rm -f FvwmCommandS
-	$(LINK) $(FvwmCommandS_LDFLAGS) $(FvwmCommandS_OBJECTS) $(FvwmCommandS_LDADD) $(LIBS)
-
 FvwmCommand: $(FvwmCommand_OBJECTS) $(FvwmCommand_DEPENDENCIES)
 	@rm -f FvwmCommand
 	$(LINK) $(FvwmCommand_LDFLAGS) $(FvwmCommand_OBJECTS) $(FvwmCommand_LDADD) $(LIBS)
+
+FvwmCommandS: $(FvwmCommandS_OBJECTS) $(FvwmCommandS_DEPENDENCIES)
+	@rm -f FvwmCommandS
+	$(LINK) $(FvwmCommandS_LDFLAGS) $(FvwmCommandS_OBJECTS) $(FvwmCommandS_LDADD) $(LIBS)
 
 install-man1:
 	$(mkinstalldirs) $(DESTDIR)$(man1dir)
@@ -314,7 +341,7 @@ info:
 dvi:
 check: all
 installcheck:
-install-exec: 
+install-exec: install-binPROGRAMS
 	@$(NORMAL_INSTALL)
 
 install-data: install-modulePROGRAMS install-man
@@ -323,12 +350,13 @@ install-data: install-modulePROGRAMS install-man
 install: install-exec install-data all
 	@:
 
-uninstall: uninstall-modulePROGRAMS uninstall-man
+uninstall: uninstall-binPROGRAMS uninstall-modulePROGRAMS uninstall-man
 
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(moduledir) $(DESTDIR)$(mandir)/man1
+	$(mkinstalldirs)  $(DESTDIR)$(bindir) $(DESTDIR)$(moduledir) \
+		$(DESTDIR)$(mandir)/man1
 
 
 mostlyclean-generic:
@@ -340,24 +368,29 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean:  mostlyclean-modulePROGRAMS mostlyclean-compile \
-		mostlyclean-tags mostlyclean-depend mostlyclean-generic
+mostlyclean:  mostlyclean-binPROGRAMS mostlyclean-modulePROGRAMS \
+		mostlyclean-compile mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
 
-clean:  clean-modulePROGRAMS clean-compile clean-tags clean-depend \
-		clean-generic mostlyclean
+clean:  clean-binPROGRAMS clean-modulePROGRAMS clean-compile clean-tags \
+		clean-depend clean-generic mostlyclean
 
-distclean:  distclean-modulePROGRAMS distclean-compile distclean-tags \
-		distclean-depend distclean-generic clean
+distclean:  distclean-binPROGRAMS distclean-modulePROGRAMS \
+		distclean-compile distclean-tags distclean-depend \
+		distclean-generic clean
 	-rm -f config.status
 
-maintainer-clean:  maintainer-clean-modulePROGRAMS \
+maintainer-clean:  maintainer-clean-binPROGRAMS \
+		maintainer-clean-modulePROGRAMS \
 		maintainer-clean-compile maintainer-clean-tags \
 		maintainer-clean-depend maintainer-clean-generic \
 		distclean
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
-.PHONY: mostlyclean-modulePROGRAMS distclean-modulePROGRAMS \
+.PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
+maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
+mostlyclean-modulePROGRAMS distclean-modulePROGRAMS \
 clean-modulePROGRAMS maintainer-clean-modulePROGRAMS \
 uninstall-modulePROGRAMS install-modulePROGRAMS mostlyclean-compile \
 distclean-compile clean-compile maintainer-clean-compile install-man1 \
