@@ -136,8 +136,13 @@ starting with "*OtherPager", and not the lines belonging to FvwmPager.
 This way multiple pager programs can be used.
 
 Note: the old way to use the FvwmPager with several different configurations
-is to link the executable to another name, i.e. ln -s 
-FvwmPager OtherPager. This may work, but this method is not supported. 
+is to link the executable to another name, i.e.
+.nf
+.sp
+ln -s FvwmPager OtherPager
+.sp
+.fi
+This may work, but this method is not supported.
 
 .SH KEYBOARD FOCUS CONTROL
 You can direct the keyboard focus to any window on the current desktop
@@ -366,7 +371,7 @@ about colorsets.
 .IP "*FvwmPagerWindowBorderWidth \fIn\fP"
 Specifies the width of the border drawn around the mini windows. This also sets
 the minimum size of the mini windows to (2 * \fIn\fP + 1).
-The default is 1;
+The default is 1.
 .IP "*FvwmPagerWindow3DBorders"
 Specifies that the mini windows should have a 3d borders based on the
 mini window background. This option only works if *FvwmPagerWindowColorsets
