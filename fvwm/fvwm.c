@@ -1,4 +1,5 @@
 /* -*-c-*- */
+/*!!!*/int do_loop=0;
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -1393,6 +1394,7 @@ void StartupStuff(void)
 
 	ecc.w.wcontext = C_ROOT;
 	exc = exc_create_null_context();
+/*!!!*/while (do_loop) sleep(1);
 	CaptureAllWindows(exc, False);
 	/* Turn off the SM stuff after the initial capture so that new windows
 	 * will not be matched by accident. */
@@ -1838,6 +1840,7 @@ int main(int argc, char **argv)
 			}
 			CopyString(&opt_color_limit,argv[i]);
 		}
+/*!!!*/else if (StrEquals(argv[i], "--loop"))do_loop=1;
 		else
 		{
 			fvwm_msg(ERR, "main", "Unknown option: `%s'", argv[i]);

@@ -2,6 +2,8 @@
 
 	* fvwm/add_window.c (CaptureOneWindow):
 	fixed RecaptureWindow
+	(CaptureAllWindows):
+	fixed Restart
 
 	* fvwm/functable.c (func_table):
 	fixed running RecaptureWindow without a context window

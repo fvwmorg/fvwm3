@@ -3234,8 +3234,13 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 			{
 				XUnmapWindow(dpy, children[i]);
 				e.xmaprequest.window = children[i];
+				e.xmaprequest.parent = Scr.Root;
+				ecc.w.fw = NULL;
+				ecc.w.w = children[i];
+				ecc.w.wcontext = C_ROOT;
 				ea.exc = exc_clone_context(
-					exc, &ecc, ECC_ETRIGGER);
+					exc, &ecc, ECC_ETRIGGER | ECC_FW |
+					ECC_W | ECC_WCONTEXT);
 				HandleMapRequestKeepRaised(
 					&ea, None, NULL, &win_opts);
 				exc_destroy_context(ea.exc);
