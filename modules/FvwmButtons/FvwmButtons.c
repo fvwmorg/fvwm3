@@ -41,10 +41,6 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -60,6 +56,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/fvwmsignal.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "parse.h" /* ParseOptions() */
@@ -160,7 +157,6 @@ int dpw, dph;
 
 int save_color_limit;                   /* Color limit, if any */
 
-static volatile sig_atomic_t isTerminated = False;
 /* ------------------------------ Misc functions ----------------------------*/
 
 #ifdef DEBUG
@@ -185,10 +181,10 @@ Bool DestroyedWindow(Display *d,XEvent *e,char *a)
       return True;
   return False;
 }
+
 int IsThereADestroyEvent(button_info *b)
 {
   XEvent event;
-  Bool DestroyedWindow();
   return XCheckIfEvent(Dpy,&event,DestroyedWindow,(char*)b->IconWin);
 }
 
@@ -209,7 +205,7 @@ void DeadPipe(int whatever)
 static RETSIGTYPE
 TerminateHandler(int sig)
 {
-  isTerminated = True;
+  fvwmSetTerminate(sig);
 }
 
 /**
@@ -517,6 +513,11 @@ int main(int argc, char **argv)
     struct sigaction  sigact;
 
     sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
+    sigaddset(&sigact.sa_mask, SIGTERM);
 # ifdef SA_INTERRUPT
     sigact.sa_flags = SA_INTERRUPT;
 # else
@@ -532,11 +533,26 @@ int main(int argc, char **argv)
   }
 #else
   /* We don't have sigaction(), so fall back to less robust methods.  */
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) |
+                     sigmask(SIGINT)  |
+                     sigmask(SIGHUP)  |
+                     sigmask(SIGQUIT) |
+                     sigmask(SIGTERM) );
+#endif
+
   signal(SIGPIPE, TerminateHandler);
   signal(SIGINT,  TerminateHandler);
   signal(SIGHUP,  TerminateHandler);
   signal(SIGQUIT, TerminateHandler);
   signal(SIGTERM, TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGINT, 1);
+  siginterrupt(SIGHUP, 1);
+  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGTERM, 1);
+#endif
 #endif
 
   if(argc<6 || argc>8)
@@ -1630,7 +1646,7 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-  if (select(fd_width,SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL) > 0)
+  if (fvwmSelect(fd_width,SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL) > 0)
   {
 
   if(FD_ISSET(x_fd, &in_fdset))
@@ -1668,7 +1684,7 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
 *** Is run after the windowlist is checked. If any button hangs on UseOld,
 *** it has failed, so we try to spawn a window for them.
 **/
-void SpawnSome()
+void SpawnSome(void)
 {
   static char first=1;
   button_info *b,*ub=UberButton;

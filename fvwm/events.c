@@ -62,11 +62,6 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <signal.h>
-
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
 
 #include "fvwm.h"
 #include "fvwmsignal.h"
