@@ -39,6 +39,7 @@
 #include <sys/socket.h>
 
 #include "fvwm.h"
+#include "fvwmsignal.h"
 #include "events.h"
 #include "misc.h"
 #include "parse.h"
@@ -398,6 +399,12 @@ int HandleModuleInput(Window w, int channel)
 
 RETSIGTYPE DeadPipe(int nonsense)
 {
+  /*
+   * This function might not return - it could "long-jump"
+   * right out, so we need to do everything we need to do
+   * BEFORE we call it ...
+   */
+  fvwmSetTerminate();
 }
 
 

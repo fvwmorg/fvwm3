@@ -69,6 +69,7 @@
 #endif
 
 #include "fvwm.h"
+#include "fvwmsignal.h"
 #include "events.h"
 #include "icons.h"
 #include <X11/Xatom.h>
@@ -210,13 +211,6 @@ void DispatchEvent(Bool preserve_Tmp_win)
  ************************************************************************/
 void HandleEvents(void)
 {
-  /*
-   * TEMPORARY declaration: this variable should really be
-   * part of a separate source-file to handle signals
-   */
-  extern volatile sig_atomic_t isTerminated;
-  /**/
-
   DBUG("HandleEvents","Routine Entered");
   while ( !isTerminated )
     {
@@ -1748,11 +1742,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   DBUG("My_XNextEvent","waiting for module input/output");
   XFlush(dpy);
-  if (select( fd_width,
-	      SELECT_FD_SET_CAST &in_fdset,
-	      SELECT_FD_SET_CAST &out_fdset,
-	      SELECT_FD_SET_CAST 0,
-              timeoutP) > 0) {
+  if (fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP) > 0) {
 
     /* Check for module input. */
     for (i=0; i<npipes; i++) {
