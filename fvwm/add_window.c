@@ -326,6 +326,11 @@ int setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
   int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
 /**/
 
+  /****** border width ******/
+
+  tmp_win->old_bw = tmp_win->attr.border_width;
+  XSetWindowBorderWidth (dpy, tmp_win->w,0);
+
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
   if (XGetCommand (dpy, tmp_win->w, &client_argv, &client_argc))
@@ -821,11 +826,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     free((char *)tmp_win);
     return NULL;
   }
-
-  /****** border width ******/
-
-  tmp_win->old_bw = tmp_win->attr.border_width;
-  XSetWindowBorderWidth (dpy, tmp_win->w,0);
 
   /****** window name ******/
 

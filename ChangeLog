@@ -1,5 +1,8 @@
 1999-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (setup_window_placement):
+	completed previous fix
+
 	* fvwm/add_window.c (AddWindow):
 	fixed handling of border width during window placement
 
