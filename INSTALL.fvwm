@@ -105,21 +105,6 @@ To override this default, set $FVWM_BUGADDR before running ./configure.
 There is also a web based bug reporting system, see the Home Page.
 
 
-C++
-===
-
-This section is irrelevant for the fvwm 2.3 and 2.4 series, there are no
-modules using C++ anymore.  It is left for historical reasons.
-
-FVWM proper does not need C++ to compile.  However, some modules are
-written in C++, so configure probes for a C++ compiler by default, and
-will build these modules only if a C++ compiler exists.  If configure
-doesn't do the right thing, specify one or the other of these flags:
-
-  --with-cxx=foo  to use "foo" for compiling C++ programs
-  --without-cxx   to disable probing for a C++ compiler altogether
-
-
 CPP
 ===
 

@@ -697,7 +697,7 @@ This deletes all event handlers without exception.
 
 Defines a handler (that is a I<code> subroutine) for the given I<mask> event
 (or several events). Usually the event type is one of the FVWM I<M_*> or
-I<MX_*> constants, but it may also be M<ON_EXIT>, this special event is
+I<MX_*> constants, but it may also be I<ON_EXIT>, this special event is
 called just before the event loop is terminated.
 
 The I<mask> may include several events in the same category (the event types
