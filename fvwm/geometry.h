@@ -37,7 +37,8 @@ void get_title_gravity_factors(
 Bool get_title_button_geometry(
 	FvwmWindow *tmp_win, rectangle *ret_g, int context);
 void get_title_font_size_and_offset(
-	FvwmWindow *tmp_win, direction_type title_dir, int *width, int *offset);
+	FvwmWindow *tmp_win, direction_type title_dir,
+	text_direction_type text_dir, int *size, int *offset);
 void get_icon_corner(
 	FvwmWindow *tmp_win, rectangle *ret_g);
 void get_shaded_geometry(

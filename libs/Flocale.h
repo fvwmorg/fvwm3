@@ -47,7 +47,19 @@
 
 /* ---------------------------- global macros ------------------------------- */
 
+#define IS_TEXT_DIR_VERTICAL(x) \
+    (x == TEXT_DIR_TOP_TO_BOTTOM || x == TEXT_DIR_BOTTOM_TO_TOP)
+
 /* ---------------------------- type definitions ---------------------------- */
+
+typedef enum
+{
+	TEXT_DIR_LEFT_TO_RIGHT = 0,
+	TEXT_DIR_TOP_TO_BOTTOM = 1,
+	TEXT_DIR_BOTTOM_TO_TOP = 2,
+	TEXT_DIR_RIGHT_TO_LEFT = 3, /* not used and not tested */
+	TEXT_DIR_MASK          = 3,
+} text_direction_type;
 
 typedef struct _FlocaleFont
 {
@@ -74,7 +86,7 @@ typedef struct
 	int len;
 	struct
 	{
-		unsigned is_vertical_string : 1;
+		unsigned text_direction : 2;
 	} flags;
 } FlocaleWinString;
 

@@ -1,3 +1,31 @@
+2002-03-15  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm2.1:
+	Removed matrix xft specification doc as now it is use internally by
+	fvwm
+
+	* libs/Flocale.c (FlocaleRotateDrawString):
+	(FlocaleUnloadFont):
+	(FlocaleDrawString):
+	(FlocaleTextWidth):
+	* libs/Fft.h: 
+	* libs/Fft.c (FftGetRotatedFont): 
+	(FftGetFont):
+	(FftDrawString):
+	(FftTextWidth):
+	* fvwm/borders.c (DrawMultiPixmapTitlebar):
+	(RedrawTitle): 
+	* fvwm/geometry.c (get_title_font_size_and_offset): 
+	* fvwm/style.c (parse_and_set_window_style):
+	(check_window_style_change):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
+	* fvwm/style.h:
+	* fvwm/fvwm.h:
+	* fvwm/window_flags.h:
+	Implemented vertical text rendering, new style SideTitleTextDefault,
+	SideTitleTextTopToBottom, SideTitleTextBottomToTop
+
 2002-03-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/gravity.c (ParseDirectionArgument):

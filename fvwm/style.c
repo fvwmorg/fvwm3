@@ -2357,6 +2357,27 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         break;
 
       case 's':
+	if (StrEquals(token, "SideTitleTextTopToBottom"))
+        {
+	  found = True;
+	  SFSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_TOP_TO_BOTTOM);
+	  SMSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
+	  SCSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
+        }
+        else if (StrEquals(token, "SideTitleTextBottomToTop"))
+        {
+	  found = True;
+	  SFSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_BOTTOM_TO_TOP);
+	  SMSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
+	  SCSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
+        }
+	else if (StrEquals(token, "SideTitleTextDefault"))
+        {
+	  found = True;
+	  SFSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_LEFT_TO_RIGHT);
+	  SMSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
+	  SCSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
+        }
         if (StrEquals(token, "SMARTPLACEMENT"))
         {
 	  found = True;
@@ -3017,6 +3038,14 @@ void check_window_style_change(
       )
   {
     flags->do_setup_focus_policy = True;
+  }
+
+  /*
+   * title_text_dir_mode
+   */
+  if (SCTITLE_TEXT_DIR_MODE(*ret_style))
+  {
+    flags->do_update_title_text_dir = True;
   }
 
   /*

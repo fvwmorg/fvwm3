@@ -364,7 +364,8 @@ void setup_title_geometry(
 	int offset;
 
 	get_title_font_size_and_offset(
-		tmp_win, STITLE_DIR(pstyle->flags), &width, &offset);
+		tmp_win, STITLE_DIR(pstyle->flags),
+		STITLE_TEXT_DIR_MODE(pstyle->flags), &width, &offset);
 	tmp_win->title_thickness = width;
 	tmp_win->title_text_offset = offset;
 	tmp_win->corner_width =

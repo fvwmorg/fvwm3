@@ -224,6 +224,13 @@ static void apply_window_updates(
 		flags->do_setup_frame = True;
 		flags->do_redraw_decoration = True;
 	}
+	if (flags->do_update_title_text_dir)
+	{
+		SET_TITLE_TEXT_DIR_MODE(t, STITLE_TEXT_DIR_MODE(pstyle->flags));
+		if (!flags->do_update_title_dir)
+			setup_title_geometry(t, pstyle);
+		flags->do_redraw_decoration = True;
+	}
 	if (flags->do_update_title_dir)
 	{
 		size_borders b_old;

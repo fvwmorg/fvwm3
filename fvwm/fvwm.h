@@ -197,6 +197,7 @@ typedef struct
 	unsigned has_icon_font : 1;
 	unsigned has_window_font : 1;
 	unsigned title_dir : 2;
+	unsigned title_text_dir_mode : 2;
 	/* static flags that do not change dynamically after the window has been
 	 * created */
 	struct
@@ -605,6 +606,7 @@ typedef struct FvwmWindow
 	short title_text_offset;
 	short title_length;
 	short title_thickness;
+	short title_text_dir;
 	struct
 	{
 		/* geometry of the icon picture window */

@@ -16,6 +16,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* FlocaleRotateDrawString is strongly inspired by some part of xvertext
+ * taken from wmx */ 
+/* Here the copyright for this function: */
+/* xvertext, Copyright (c) 1992 Alan Richardson (mppa3@uk.ac.sussex.syma)
+ *
+ * Permission to use, copy, modify, and distribute this software and its
+ * documentation for any purpose and without fee is hereby granted, provided
+ * that the above copyright notice appear in all copies and that both the
+ * copyright notice and this permission notice appear in supporting
+ * documentation.  All work developed as a consequence of the use of
+ * this program should duly acknowledge such use. No representations are
+ * made about the suitability of this software for any purpose.  It is
+ * provided "as is" without express or implied warranty.
+ *
+ * Minor modifications by Chris Cannam for wm2/wmx
+ * Major modifications by Kazushi (Jam) Marukawa for wm2/wmx i18n patch
+ * Simplification by olicha for use with fvwm
+ */
+
 /* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
@@ -35,9 +54,11 @@
 #endif
 
 #include "defaults.h"
+#include "libs/fvwmlib.h"
 #include "safemalloc.h"
 #include "Strings.h"
 #include "Parse.h"
+#include "Picture.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -246,6 +267,176 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 		return flf;
 	}
 	return NULL;
+}
+
+static
+void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
+			     FlocaleWinString *fws, int len)
+{
+	static GC my_gc, font_gc;
+	int j, i, xp, yp;
+	unsigned char *vertdata, *bitdata;
+	int vert_w, vert_h, vert_len, bit_w, bit_h, bit_len;
+	char val;
+	int width, height;
+	XImage *image, *rotated_image;
+	Pixmap canvas_pix, rotated_pix;
+  
+	if (fws->str == NULL || len < 1)
+		return;
+	if (fws->flags.text_direction == TEXT_DIR_LEFT_TO_RIGHT)
+		return; /* should not happen */
+
+	my_gc = fvwmlib_XCreateGC(dpy, fws->win, 0, NULL);
+	XCopyGC(dpy, fws->gc, GCForeground|GCBackground, my_gc);
+
+	/* width and height */
+	width = FlocaleTextWidth(flf, fws->str, len);
+	height = flf->height;
+
+	if (width < 1) width = 1;
+	if (height < 1) height = 1;
+
+	/* glyph width and height when vertical */
+	vert_w = width;
+	vert_h = height;
+
+	/* width in bytes */
+	vert_len = (vert_w-1)/8+1;
+
+	/* create and clear the canvas */
+	canvas_pix = XCreatePixmap(dpy, fws->win, width, height, 1);
+	font_gc = fvwmlib_XCreateGC(dpy, canvas_pix, 0, NULL);
+	XSetBackground(dpy, font_gc, 0);
+	XSetForeground(dpy, font_gc, 0);
+	XFillRectangle(dpy, canvas_pix, font_gc, 0, 0, width, height);
+
+	/* draw the character centre top right on canvas .*/
+	XSetForeground(dpy, font_gc, 1);
+	if (flf->font != NULL)
+	{
+		XSetFont(dpy, font_gc, flf->font->fid);
+		XDrawImageString(dpy, canvas_pix, font_gc,
+				 0, flf->height - flf->descent,
+				 fws->str, len);
+	}
+	else if (FlocaleMultibyteSupport && flf->fontset != None)
+	{
+		XmbDrawString(dpy, canvas_pix, flf->fontset, font_gc,
+			      0, flf->height - flf->descent,
+			      fws->str, len);
+	}
+
+	/* reserve memory for first XImage */
+	vertdata = (unsigned char *) safemalloc((unsigned)(vert_len*vert_h));
+
+	/* create depth 1 XImage */
+	if ((image = XCreateImage(dpy, Pvisual, 1, XYBitmap,
+		    0, (char *)vertdata, vert_w, vert_h, 8, 0)) == NULL)
+	{
+		return;
+	}
+	image->byte_order = image->bitmap_bit_order = MSBFirst;
+
+	/* extract character from canvas ... */
+	XGetSubImage(dpy, canvas_pix, 0, 0, vert_w, vert_h,
+		     1, XYPixmap, image, 0, 0);
+	image->format = XYBitmap;
+
+	/* width, height of rotated character ... */
+	if (fws->flags.text_direction == TEXT_DIR_RIGHT_TO_LEFT)
+	{
+		bit_w = vert_w;
+		bit_h = vert_h;
+	}
+	else /* vertival text */
+	{
+		bit_w = vert_h;
+		bit_h = vert_w; 
+	}
+
+	/* width in bytes ... */
+	bit_len = (bit_w-1)/8 + 1;
+
+	/* reserve memory for the rotated image ... */
+	bitdata = (unsigned char *)safecalloc((unsigned)(bit_h*bit_len), 1);
+
+	/* create the rotated X image ... */
+	if ((rotated_image = XCreateImage(dpy, Pvisual, 1, XYBitmap, 0,
+					  (char *)bitdata,
+					  bit_w, bit_h, 8, 0)) == NULL)
+	{
+		return;
+	}
+
+	rotated_image->byte_order = rotated_image->bitmap_bit_order = MSBFirst;
+
+	/* map vertical data to rotated character ... */
+	for (j = 0; j < bit_h; j++)
+	{
+		for (i = 0; i < bit_w; i++)
+		{
+			/* map bits ... */
+			if (fws->flags.text_direction == TEXT_DIR_BOTTOM_TO_TOP)
+				val = vertdata[i*vert_len + (vert_w-j-1)/8] &
+					(128>>((vert_w-j-1)%8));
+
+			else if (fws->flags.text_direction ==
+				 TEXT_DIR_RIGHT_TO_LEFT)
+				val = vertdata[
+				        (vert_h-j-1)*vert_len + (vert_w-i-1)/8] &
+					(128>>((vert_w-i-1)%8));
+		
+			else /* TEXT_DIR_TOP_TO_BOTTOM */
+				val = vertdata[(vert_h-i-1)*vert_len + j/8] & 
+					(128>>(j%8));
+    
+			if (val)
+				bitdata[j*bit_len + i/8] =
+					bitdata[j*bit_len + i/8] |
+		    (128>>(i%8));
+	      }
+	  }
+
+	/* create the character's bitmap  and put the image on it */
+	rotated_pix = XCreatePixmap(dpy, fws->win, bit_w, bit_h, 1);
+	XPutImage(dpy, rotated_pix, font_gc, rotated_image,
+		  0, 0, 0, 0, bit_w, bit_h);
+  
+	/* free the image and data  */
+	XDestroyImage(image);
+	XDestroyImage(rotated_image);
+
+	/* free pixmap and GC ... */
+	XFreePixmap(dpy, canvas_pix);
+	XFreeGC(dpy, font_gc);
+
+	/* suitable offset: FIXME */
+	if (fws->flags.text_direction == TEXT_DIR_BOTTOM_TO_TOP)
+	{
+		xp = 1;
+		yp = fws->y;
+	}
+	else if (fws->flags.text_direction == TEXT_DIR_RIGHT_TO_LEFT)
+	{
+		/* not used and not tested */
+		xp = 0;
+		yp = fws->y;
+	}
+	else /* fws->flags.text_direction == TEXT_DIR_TOP_TO_BOTTOM */
+	{
+		xp = 1;
+		yp = fws->y;
+	}
+
+	/* write the image on the window */
+	XSetFillStyle(dpy, my_gc, FillStippled);
+	XSetStipple(dpy, my_gc, rotated_pix);
+	XSetTSOrigin(dpy, my_gc, xp, yp);
+	XFillRectangle(dpy, fws->win, my_gc, xp, yp, bit_w, bit_h);
+
+	XFreePixmap(dpy, rotated_pix);
+	XFreeGC(dpy, my_gc);
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -504,6 +695,10 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{
 		FftFontClose(dpy, flf->fftf.fftfont);
+		if (flf->fftf.tb_fftfont != NULL)
+			FftFontClose(dpy, flf->fftf.tb_fftfont);
+		if (flf->fftf.bt_fftfont != NULL)
+			FftFontClose(dpy, flf->fftf.bt_fftfont);
 	}
 	if (FlocaleMultibyteSupport && flf->fontset != NULL)
 	{
@@ -556,16 +751,31 @@ void FlocaleDrawString(
 	{
 		len = strlen(fstring->str);
 	}
-	if (fstring->flags.is_vertical_string)
+	if (fstring->flags.text_direction != TEXT_DIR_LEFT_TO_RIGHT &&
+	    flf->fftf.fftfont == NULL)
 	{
-		/* FIXME: still have to write vertical text drawing.  Use
-		 * normal code for now. */
+		FlocaleRotateDrawString(dpy, flf, fstring, len);
+		return;
 	}
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{
+		int x,y;
+		switch(fstring->flags.text_direction)
+		{
+		case TEXT_DIR_BOTTOM_TO_TOP:
+			y = fstring->y +
+				FftTextWidth(&flf->fftf, fstring->str, len);
+			x = fstring->x;
+			break;
+		case TEXT_DIR_TOP_TO_BOTTOM:
+		default:
+			y = fstring->y;
+			x = fstring->x;
+			break;
+		}
 		FftDrawString(
-			dpy, fstring->win, &flf->fftf, fstring->gc, fstring->x,
-			fstring->y, fstring->str, len);
+			dpy, fstring->win, &flf->fftf, fstring->gc, x, y,
+			fstring->str, len, fstring->flags.text_direction);
 		return;
 	}
 	if (FlocaleMultibyteSupport && flf->fontset != None)
@@ -592,11 +802,8 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 
 	if (sl < 0)
 	{
-		/* a vertical string */
-		/* FIXME: still have to write vertical text handling, just use
-		 * the normal calculations for now. */
+		/* a vertical string: noting todo! */
 		sl = -sl;
-		return sl * flf->height;
 	}
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{

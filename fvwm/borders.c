@@ -651,7 +651,8 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 		}
 
 		get_title_font_size_and_offset(
-			tmp_win, GET_TITLE_DIR(tmp_win), &size, &text_offset);
+			tmp_win, GET_TITLE_DIR(tmp_win),
+			GET_TITLE_TEXT_DIR_MODE(tmp_win), &size, &text_offset);
 		memset(&fstr, 0, sizeof(fstr));
 		fstr.str = tmp_win->visible_name;
 		fstr.win = title_win;
@@ -666,7 +667,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 			fstr.x = text_pos;
 		}
 		fstr.gc = gc;
-		fstr.flags.is_vertical_string = HAS_VERTICAL_TITLE(tmp_win);
+		fstr.flags.text_direction = tmp_win->title_text_dir;
 		FlocaleDrawString(dpy, tmp_win->title_font, &fstr, 0);
 	}
 	else
@@ -1434,7 +1435,8 @@ static void RedrawTitle(
   if (t->visible_name != (char *)NULL)
   {
     length = FlocaleTextWidth(
-      t->title_font, t->visible_name, strlen(t->visible_name));
+      t->title_font, t->visible_name,
+      (HAS_VERTICAL_TITLE(t))? -strlen(t->visible_name):strlen(t->visible_name));
     if (length > t->title_length - 12)
       length = t->title_length - 4;
     if (length < 0)
@@ -1497,7 +1499,7 @@ static void RedrawTitle(
   memset(&fstr, 0, sizeof(fstr));
   fstr.str = t->visible_name;
   fstr.win = t->title_w;
-  fstr.flags.is_vertical_string = HAS_VERTICAL_TITLE(t);
+  fstr.flags.text_direction = t->title_text_dir;
   if (HAS_VERTICAL_TITLE(t))
   {
     fstr.y = offset;

@@ -83,6 +83,16 @@
           ((st).flag_mask.common.title_dir = DIR_MAJOR_MASK * !!(x))
 #define SCSET_TITLE_DIR(st,x) \
           ((st).change_mask.common.title_dir = DIR_MAJOR_MASK * !!(x))
+#define STITLE_TEXT_DIR_MODE(sf) ((sf).common.title_text_dir_mode)
+#define SFTITLE_TEXT_DIR_MODE(st) ((st).flags.common.title_text_dir_mode)
+#define SMTITLE_TEXT_DIR_MODE(st) ((st).flag_mask.common.title_text_dir_mode)
+#define SCTITLE_TEXT_DIR_MODE(st) ((st).change_mask.common.title_text_dir_mode)
+#define SFSET_TITLE_TEXT_DIR_MODE(st,x) \
+           ((st).flags.common.title_text_dir_mode = (x))
+#define SMSET_TITLE_TEXT_DIR_MODE(st,x) \
+           ((st).flag_mask.common.title_text_dir_mode = (x))
+#define SCSET_TITLE_TEXT_DIR_MODE(st,x) \
+           ((st).change_mask.common.title_text_dir_mode = (x))
 #define SIS_STICKY(sf) ((sf).common.is_sticky)
 #define SFIS_STICKY(st) ((st).flags.common.is_sticky)
 #define SMIS_STICKY(st) ((st).flag_mask.common.is_sticky)
@@ -440,7 +450,6 @@
 #define SFSET_EWMH_MAXIMIZE_MODE(st,x) ((st).flags.common.s.ewmh_maximize_mode = (x))
 #define SMSET_EWMH_MAXIMIZE_MODE(st,x) ((st).flag_mask.common.s.ewmh_maximize_mode = (x))
 #define SCSET_EWMH_MAXIMIZE_MODE(st,x) ((st).change_mask.common.s.ewmh_maximize_mode = (x))
-
 
 
 

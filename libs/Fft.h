@@ -54,6 +54,7 @@ typedef XftChar8 FftChar8;
 typedef XftChar16 FftChar16;
 typedef XftChar32 FftChar32;
 typedef XftType FftType;
+typedef XftMatrix FftMatrix;
 typedef XftResult FftResult;
 typedef XftValue FftValue;
 typedef XftValueList FftValueList;
@@ -80,6 +81,10 @@ typedef unsigned char FftChar8;
 typedef unsigned short FftChar16;
 typedef unsigned int FftChar32;
 typedef int FftType;
+typedef struct
+{
+    double xx, xy, yx, yy;
+} FftMatrix;
 typedef int FftResult;
 typedef struct
 {
@@ -156,6 +161,8 @@ typedef void FftObjectSet;
 typedef struct
 {
 	FftFont *fftfont;
+	FftFont *tb_fftfont;
+	FftFont *bt_fftfont;
 	Bool utf8;
 } FftFontType;
 
@@ -169,8 +176,8 @@ void FftGetFontWidths(
 	FftFontType *fftf, int *max_char_width, int *min_char_offset);
 FftFontType *FftGetFont(Display *dpy, char *fontname);
 void FftDrawString(
-	Display *dpy, Window win, FftFontType *flf, GC gc, int x, int y,
-	char *str, int len);
+	Display *dpy, Window win, FftFontType *fftf, GC gc, int x,
+	int y, char *str, int len, int is_vertical_string);
 int FftTextWidth(FftFontType *fftf, char *str, int len);
 
 /* ---------------------------- global definitions -------------------------- */
@@ -199,6 +206,7 @@ int FftTextWidth(FftFontType *fftf, char *str, int len);
 #define FFT_RENDER XFT_RENDER
 #define FFT_CHAR_WIDTH XFT_CHAR_WIDTH
 #define FFT_CHAR_HEIGHT XFT_CHAR_HEIGHT
+#define FFT_MATRIX XFT_MATRIX
 #define FFT_WEIGHT_LIGHT XFT_WEIGHT_LIGHT
 #define FFT_WEIGHT_MEDIUM XFT_WEIGHT_MEDIUM
 #define FFT_WEIGHT_DEMIBOLD XFT_WEIGHT_DEMIBOLD
@@ -268,6 +276,7 @@ int FftTextWidth(FftFontType *fftf, char *str, int len);
 #define FftPatternAddDouble(a,b,c) XftPatternAddDouble(a,b,c)
 #define FftPatternAddString(a,b,c) XftPatternAddString(a,b,c)
 #define FftPatternAddBool(a,b,c) XftPatternAddBool(a,b,c)
+#define FftPatternAddMatrix(a,b,c) XftPatternAddMatrix(a,b,c)
 #define FftPatternGetInteger(a,b,c,d) XftPatternGetInteger(a,b,c,d)
 #define FftPatternGetDouble(a,b,c,d) XftPatternGetDouble(a,b,c,d)
 #define FftPatternGetString(a,b,c,d) XftPatternGetString(a,b,c,d)
@@ -309,6 +318,8 @@ int FftTextWidth(FftFontType *fftf, char *str, int len);
 #define FFT_RENDER ""
 #define FFT_CHAR_WIDTH ""
 #define FFT_CHAR_HEIGHT ""
+#define FFT_MATRIX ""
+
 #define FFT_WEIGHT_LIGHT 0
 #define FFT_WEIGHT_MEDIUM 0
 #define FFT_WEIGHT_DEMIBOLD 0
@@ -378,6 +389,7 @@ int FftTextWidth(FftFontType *fftf, char *str, int len);
 #define FftPatternAddDouble(a,b,c) False
 #define FftPatternAddString(a,b,c) False
 #define FftPatternAddBool(a,b,c) False
+#define FftPatternAddMatrix(a,b,c) False
 #define FftPatternGetInteger(a,b,c,d) 0
 #define FftPatternGetDouble(a,b,c,d) 0
 #define FftPatternGetString(a,b,c,d) 0

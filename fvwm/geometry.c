@@ -221,35 +221,55 @@ Bool get_title_button_geometry(
 }
 
 void get_title_font_size_and_offset(
-	FvwmWindow *tmp_win, direction_type title_dir, int *size, int *offset)
+	FvwmWindow *tmp_win, direction_type title_dir,
+	text_direction_type text_dir, int *size, int *offset)
 {
 	int decor_size;
 	int extra_size;
 	int font_size;
 	int min_offset;
-	int fh;
-
+	
 	/* adjust font offset according to height specified in title style */
 	decor_size = tmp_win->decor->title_height;
-	fh = tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
+	font_size = tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
 	switch (title_dir)
 	{
 	case DIR_W:
-	case DIR_E:
-		font_size = tmp_win->title_font->max_char_width +
-			EXTRA_TITLE_FONT_WIDTH;
-		if (font_size < fh)
+		switch(text_dir)
 		{
-			font_size = fh;
+		case TEXT_DIR_TOP_TO_BOTTOM:
+			tmp_win->title_text_dir = TEXT_DIR_TOP_TO_BOTTOM;
+			min_offset = tmp_win->title_font->height -
+				tmp_win->title_font->ascent;
+			break;
+		case TEXT_DIR_LEFT_TO_RIGHT:
+		case TEXT_DIR_BOTTOM_TO_TOP:
+		default:
+			tmp_win->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
+			min_offset = tmp_win->title_font->ascent;
+			break;
 		}
-		min_offset =
-			(EXTRA_TITLE_FONT_HEIGHT + 1) / 2 -
-			tmp_win->title_font->min_char_offset;
+		break;
+	case DIR_E:
+		switch(text_dir)
+		{
+		case TEXT_DIR_BOTTOM_TO_TOP:
+			tmp_win->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
+			min_offset = tmp_win->title_font->ascent;
+			break;
+		case TEXT_DIR_LEFT_TO_RIGHT:
+		case TEXT_DIR_TOP_TO_BOTTOM:
+		default:
+			tmp_win->title_text_dir =  TEXT_DIR_TOP_TO_BOTTOM;
+			min_offset = tmp_win->title_font->height -
+				tmp_win->title_font->ascent;
+			break;
+		}
 		break;
 	case DIR_N:
 	case DIR_S:
 	default:
-		font_size = fh;
+		tmp_win->title_text_dir =  TEXT_DIR_LEFT_TO_RIGHT;
 		min_offset = tmp_win->title_font->ascent;
 		break;
 	}
@@ -260,7 +280,6 @@ void get_title_font_size_and_offset(
 		*offset += extra_size / 2;
 	}
 	*size = font_size + extra_size;
-
 	return;
 }
 

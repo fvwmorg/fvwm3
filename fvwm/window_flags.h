@@ -98,6 +98,12 @@
 	  (fw)->flag_mask.common.title_dir = DIR_MAJOR_MASK * !!(x)
 #define HAS_VERTICAL_TITLE(fw) \
           (HAS_TITLE_DIR(fw,DIR_W) || HAS_TITLE_DIR(fw,DIR_E))
+#define GET_TITLE_TEXT_DIR_MODE(fw) \
+                    ((fw)->flags.common.title_text_dir_mode)
+#define SET_TITLE_TEXT_DIR_MODE(fw,x) \
+                    (fw)->flags.common.title_text_dir_mode = (x)
+#define SETM_TITLE_TEXT_DIR_MODE(fw,x) \
+                    (fw)->flag_mask.common.title_text_dir_mode =(x)
 #define HAS_STIPPLED_TITLE(fw)  \
           ((fw)->flags.common.s.has_stippled_title)
 #define SET_HAS_STIPPLED_TITLE(fw,x) \
