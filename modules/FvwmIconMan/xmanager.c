@@ -1712,8 +1712,13 @@ void man_exposed (WinManager *man, XEvent *theEvent)
      but avoids having to match which expose event results from which shape
      change */
 
-  for (i = 0; i < man->buttons.num_windows; i++) {
-    bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
+  if (man->buttons.num_windows) {
+    for (i = 0; i < man->buttons.num_windows; i++) {
+      bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
+    }
+  }
+  else {
+    draw_empty_manager (man);
   }
 
   return;
