@@ -1,5 +1,34 @@
 2002-08-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (__handle_click_to_focus):
+	* fvwm/focus.c (set_focus_to_fwin):
+	(__set_focus_to_fwin):
+	removed drawing code that broke as many places as it fixed; plus it
+	cause unnecessary redraws
+
+	* fvwm/events.c (HandleConfigureRequest):
+	send a synthetical ConfigureNotify if an application is not granted its
+	wishes from a ConfigureRequest; this is necessary for FixedPPosition
+	and FixedPSize to work properly; also to be ICCCM compliant
+	always force border_width 0 in these events
+	in the experimental cr merging code, send a number of cn events equal
+	to the number of merged events
+
+	* libs/Parse.c:
+	* fvwm/style.c:
+	reformatted
+
+	* fvwm/style.c (style_parse_focus_policy_style):
+	(style_parse_icon_size_style):
+	(style_parse_icon_box_style):
+	(style_parse_icon_grid_style):
+	(style_parse_icon_fill_style):
+	(style_parse_one_style_option):
+	(parse_and_set_window_style):
+	split into separate functions
+	(style_parse_one_style_option):
+	simplified and cleaned up
+
 	* fvwm/events.h:
 	* fvwm/decorations.c:
 	* fvwm/cursor.h:

@@ -287,25 +287,24 @@ static Bool __try_other_screen_focus(FvwmWindow *fw)
 /********************************************************************
  * Sets the input focus to the indicated window.
  ********************************************************************/
-static Bool __set_focus_to_fwin(
+static void __set_focus_to_fwin(
 	Window w, FvwmWindow *fw, sftfwin_args_t *args)
 {
 	FvwmWindow *sf;
-	Bool rc = False;
 
 	if (__try_forbid_user_focus(w, fw) == True)
 	{
-		return False;
+		return;
 	}
 	__try_program_focus(w, fw);
 	if (__check_allow_focus(w, fw, args->set_by) == False)
 	{
-		return False;
+		return;
 	}
 	__update_windowlist(fw, args->is_focus_by_focus_cmd, args->set_by);
 	if (__try_other_screen_focus(fw) == True)
 	{
-		return False;
+		return;
 	}
 
 	if (fw && !args->do_forbid_warp)
@@ -335,7 +334,7 @@ static Bool __set_focus_to_fwin(
 		FOCUS_SET(Scr.NoFocusWin);
 		set_focus_window(NULL);
 		XFlush(dpy);
-		return False;
+		return;
 	}
 	/* RBW - allow focus to go to a NoIconTitle icon window so
 	 * auto-raise will work on it. */
@@ -359,7 +358,6 @@ static Bool __set_focus_to_fwin(
 	{
 		FOCUS_SET(w);
 		set_focus_window(fw);
-		rc = True;
 		if (args->do_allow_force_broadcast)
 		{
 			SET_FOCUS_CHANGE_BROADCAST_PENDING(fw, 1);
@@ -371,7 +369,6 @@ static Bool __set_focus_to_fwin(
 		/* Window will accept input focus */
 		FOCUS_SET(w);
 		set_focus_window(fw);
-		rc = True;
 		if (fw)
 		{
 			if (args->do_allow_force_broadcast)
@@ -392,7 +389,7 @@ static Bool __set_focus_to_fwin(
 	}
 	XFlush(dpy);
 
-	return rc;
+	return;
 }
 
 static void set_focus_to_fwin(
@@ -406,12 +403,7 @@ static void set_focus_to_fwin(
 		focus_grab_buttons(sf);
 		return;
 	}
-	if (__set_focus_to_fwin(w, fw, args) && !IS_ICONIFIED(fw))
-	{
-		border_draw_decorations(
-			fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
-	}
-
+	__set_focus_to_fwin(w, fw, args);
 	/* Make sure the button grabs on the new and the old focused windows
 	 * are up to date. */
 	focus_grab_buttons(fw);

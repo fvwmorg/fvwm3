@@ -500,6 +500,11 @@ static Bool __handle_click_to_focus(FvwmWindow *fw, int context)
 	}
 	SetFocusWindow(fw, True, set_by);
 	focus_grab_buttons(fw);
+	if (focus_is_focused(fw) && !IS_ICONIFIED(fw))
+	{
+		border_draw_decorations(
+			fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
+	}
 
 	return focus_is_focused(fw);
 }
@@ -861,6 +866,7 @@ void HandleConfigureRequest(void)
 	unsigned long xwcm;
 	XConfigureRequestEvent *cre = &Event.xconfigurerequest;
 	Bool do_send_event = False;
+	int cn_count = 0;
 
 	DBUG("HandleConfigureRequest","Routine Entered");
 
@@ -1082,7 +1088,7 @@ void HandleConfigureRequest(void)
 		 * then the WM will read the *second* size inc upon the *first*
 		 * event and use the wrong one in the ConfigureRequest
 		 * calculations. */
-		/* domivogt (31 Mar 2002): The code now handles these
+		/* dv (31 Mar 2002): The code now handles these
 		 * situations, so enable it again. */
 #ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
 		/* merge all pending ConfigureRequests for the window into a
@@ -1098,13 +1104,13 @@ void HandleConfigureRequest(void)
 			(CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
 #if 0
 		/* free some CPU */
-		/* dv (7 May 2002): No, it's better to reschedule processes here
-		 * because some funny applications (XMMS, GTK) seem to expect
-		 * that ConfigureRequests are handles instantly or they will
+		/* dv (7 May 2002): No, it's better to not reschedule processes
+		 * here because some funny applications (XMMS, GTK) seem to
+		 * expect that ConfigureRequests are handled instantly or they
 		 * freak out. */
 		usleep(1);
 #endif
-		while (1)
+		for (cn_count = 0; 1; cn_count++)
 		{
 			unsigned long vma;
 			unsigned long vmo;
@@ -1177,10 +1183,11 @@ void HandleConfigureRequest(void)
 				cre->value_mask |= CWBorderWidth;
 				cre->border_width = ecre->border_width;
 			}
-		} /* while */
+		}
+fprintf(stderr, "cn_count = %d\n", cn_count);
 #endif
 
-#if 0
+#if 1
 		fprintf(stderr,
 			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
 			"ew 0x%08x  '%s'\n",
@@ -1202,12 +1209,16 @@ void HandleConfigureRequest(void)
 		{
 			/* forbid shaded applications to move their windows */
 			cre->value_mask &= ~(CWX | CWY);
+			/* resend the old geometry */
+			do_send_event = True;
 		}
 		if (IS_MAXIMIZED(Fw) ||
 		    !is_function_allowed(F_RESIZE, NULL, Fw, False, False))
 		{
 			/* dont allow clients to resize maximized windows */
 			cre->value_mask &= ~(CWWidth | CWHeight);
+			/* resend the old geometry */
+			do_send_event = True;
 		}
 
 		/* for restoring */
@@ -1343,9 +1354,20 @@ void HandleConfigureRequest(void)
 	 * ask for a nonsense height and expect that they really get it. */
 	if (do_send_event)
 	{
+		cn_count++;
+	}
+	else if (cn_count > 0)
+	{
+		do_send_event = 1;
+	}
+	for ( ; cn_count > 0; cn_count--)
+	{
 		SendConfigureNotify(
-			Fw, Fw->frame_g.x, Fw->frame_g.y,
-			new_g.width, new_g.height, cre->border_width, True);
+			Fw, Fw->frame_g.x, Fw->frame_g.y, Fw->frame_g.width,
+			Fw->frame_g.height, 0, True);
+	}
+	if (do_send_event)
+	{
 		XFlush(dpy);
 	}
 #endif
