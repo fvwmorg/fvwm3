@@ -3051,7 +3051,7 @@ FixedPosition / VariablePosition,
 IconOverride / NoIconOverride / NoActiveIconOverride,
 DepressableBorder / FirmBorder,
 MaxWindowSize,
-ResizeOpaque / Resize Outline.
+ResizeOpaque / ResizeOutline.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -3089,17 +3089,15 @@ main window is always below its transients.
 \fILowerTransient\fP are not used.
 
 The \fIStackTransientParent\fP style augments \fIRaiseTransient\fP and
-\fILowerTransient\fP styles.
-Raising a window with \fIStackTransientParent\fP style transfers the raise
-action to the main window if the window being raised is a transient
-and its main window has \fIRaiseTransient\fP style;
-this effect makes raise on a transient act just like raise on its main -
-the whole group is raised.
-Similar behaviour holds for lowering a whole group of transients when the
-main has \fILowerTransient\fP style.
-\fIDontStackTransientParent\fP turns this behaviour off.
-\fI(Dont)StackTransientParent\fP has no effect if \fIRaiseTransient\fP and
-\fILowerTransient\fP are not used.
+\fILowerTransient\fP styles.  Raising a window with
+\fIStackTransientParent\fP style transfers the raise action to the
+main window if the window being raised is a transient and its main
+window has \fIRaiseTransient\fP style; this effect makes raise on a
+transient act just like raise on its main - the whole group is raised.
+Similar behaviour holds for lowering a whole group of transients when
+the main has \fILowerTransient\fP style. \fIDontStackTransientParent\fP
+turns this behaviour off. \fI(Dont)StackTransientParent\fP has no
+effect if \fIRaiseTransient\fP and \fILowerTransient\fP are not used.
 
 A reasonable emulation of Motif raise/lower on transients is possible like this
 .EX
@@ -3296,12 +3294,12 @@ opaque instead of using an outline.  Since this causes the application
 to redraw frequently it can be quite slow and make the window flicker
 excessiveley, depending on the amount of graphics the application
 has to redraw.  The \fIResizeOutline\fP style (default) negates the
-\fIResizeOutlineStyle\fP.  Many applications do not like their windows
+\fIResizeOpaque\fP style.  Many applications do not like their windows
 being resized opaque, e.g. XEmacs, Netscape or terminals with a pixmap
-background.  If you don't like the result, do not like the result,
-don't use the \fIResizeOpaque\fP style for these windows.  To exempt
-certain windows from opaque resizing you could use these lines
-in your configuration file:
+background.  If you do not like the result, don't use the
+\fIResizeOpaque\fP style for these windows.  To exempt certain windows
+from opaque resizing you could use these lines in your configuration
+file:
 
 .EX
 Style * ResizeOpaque
