@@ -1,17 +1,17 @@
 ----- Summary ------------------------------------------------------------------
 
 Issues opened recently: 6 (E.11 - E.16)
-Issues closed recently: 0
+Issues closed recently: 5
                              open / closed
 A. Release stopping bugs:       0 / 1
 B. Normal bugs:                 3 / 5
 C. To be verified:             14 / 12
 D. To be discussed:             1 / 0
 E. To do:                      13 / 3
-F. Distribution issues:         3 / 2
+F. Distribution issues:         3 / 1
 G. Testing:                     5 / 0
 
-Total:                         47 / 15
+Total:                         39 / 22
 
 - When you add/close an item give dates
 
@@ -40,6 +40,7 @@ B. Normal Bugs
 
   B.7 strange xawtv fullscreen handling [#973,2002-12-23]. Not a bug? Dominik?
       [dv: if (contains_string("xawtv", report) { move_to_dev_null(report); }]
+
 
 C. To be verified
 -----------------
@@ -90,6 +91,12 @@ D. To be discussed
 
   D.1 Make the distinction between FVWM (project) and fvwm (core executable)?
       [dv: Huh?]
+
+  D.2 Leave or remove the current change to triggering bindings on button press
+      or release?  Seems to irritate a lot of users, but fixes a root window
+      binding bug.
+      [dv: added on 29-Mar-2003]
+
 
 E. To do
 --------
@@ -191,8 +198,6 @@ G. Testing
       [Olivier: do not have the time now, but if someone wants to do it,
        (s)he is welcome]
 
-  F.5 Dump fvwm and write a better window manager :-)
-
 ---- Closed -------------------------------------------------------------------
 
   A.1 Fixed a core dump reported by Mikhael
@@ -213,7 +218,6 @@ G. Testing
   B.6 Edge scrolling breaks on non-rectangular Xinerama display
       [#987,2003-02-11]
       Maybe not a bug: a miss-feature
-
       [dv: Would not do anything about it]
       [dv: --> enhancement request]
 
