@@ -535,8 +535,8 @@ int HandleModuleInput(Window w, int channel, char *expect)
 	}
       else
 	{
-	  Event.xbutton.x_root = 0;
-	  Event.xbutton.y_root = 0;
+          XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
+                        &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
 	}
       Event.xbutton.button = 1;
       Event.xbutton.x = 0;

@@ -31,13 +31,6 @@ void SetFocus(Window, FvwmWindow *, Bool FocusByMouse);
  *************************************************************************/
 void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action);
 
-/**************************************************************************
- *
- * Moves pointer to specified window
- *
- *************************************************************************/
-void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit);
-
 /**
  * These need documentation
  **/

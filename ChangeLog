@@ -1,5 +1,11 @@
 1999-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/module_interface.c (HandleModuleInput): query the pointer
+	when handling module input
+
+	* fvwm/focus.c (FocusOn):
+	(WarpOn): mangle pointer position in event when warping the pointer
+
 	* fvwm/windowlist.c (do_windowList): reset nogeometrywithinfo when
 	using geometry or nogeometry
 

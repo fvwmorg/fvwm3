@@ -223,6 +223,26 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
   DoSetFocus(w, Fw, FocusByMouse, False);
 }
 
+SetPointerEventPosition(XEvent *eventp, int x, int y)
+{
+  switch (eventp->type)
+  {
+  case ButtonPress:
+  case ButtonRelease:
+  case KeyPress:
+  case KeyRelease:
+  case MotionNotify:
+    eventp->type = ButtonPress;
+    eventp->xbutton.x_root = x;
+    eventp->xbutton.y_root = y;
+    break;
+  default:
+    break;
+  }
+
+  return;
+}
+
 /**************************************************************************
  *
  * Moves focus to specified window
@@ -267,7 +287,9 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
     {
       SetupFrame(t,0,0,t->frame_g.width, t->frame_g.height,False,False);
       if(HAS_MOUSE_FOCUS(t) || HAS_SLOPPY_FOCUS(t))
+      {
 	XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
+      }
     }
   }
 
@@ -280,7 +302,8 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
  * Moves pointer to specified window
  *
  *************************************************************************/
-void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
+static void WarpOn(XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit,
+                   int warp_y, int y_unit)
 {
   int dx,dy;
   int cx,cy;
@@ -328,6 +351,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   }
   if (warp_x >= 0 && warp_y >= 0) {
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
+    SetPointerEventPosition(eventp, x, y);
   }
   RaiseWindow(t);
 
@@ -339,6 +363,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   {
     SetupFrame(t,0,0,t->frame_g.width, t->frame_g.height,False,False);
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
+    SetPointerEventPosition(eventp, 2, 2);
   }
 }
 
@@ -371,9 +396,9 @@ void warp_func(F_CMD_ARGS)
    n = GetTwoArguments (action, &val1, &val2, &val1_unit, &val2_unit);
 
    if (n == 2)
-     WarpOn (tmp_win, val1, val1_unit, val2, val2_unit);
+     WarpOn (eventp, tmp_win, val1, val1_unit, val2, val2_unit);
    else
-     WarpOn (tmp_win, 0, 0, 0, 0);
+     WarpOn (eventp, tmp_win, 0, 0, 0, 0);
 }
 
 Bool IsLastFocusSetByMouse(void)
