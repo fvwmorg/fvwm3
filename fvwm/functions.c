@@ -564,24 +564,31 @@ static char *expand(
 	i++;
 	break;
       case 'c':
-	if (tmp_win && tmp_win->class.res_class &&
-	    tmp_win->class.res_class[0] && !IS_EWMH_DESKTOP(tmp_win->w))
-	{
-	  string = tmp_win->class.res_class;
-	}
-	break;
       case 'r':
-	if (tmp_win && tmp_win->class.res_name &&
-	    tmp_win->class.res_name[0] && !IS_EWMH_DESKTOP(tmp_win->w))
-	{
-	  string = tmp_win->class.res_name;
-	}
-	break;
       case 'n':
-	if (tmp_win && tmp_win->name && tmp_win->name[0] &&
-	    !IS_EWMH_DESKTOP(tmp_win->w))
+	if (tmp_win && !IS_EWMH_DESKTOP(tmp_win->w))
 	{
-	  string = tmp_win->name;
+	  switch(input[i+1])
+	  {
+	  case 'c':
+	    if (tmp_win->class.res_class && tmp_win->class.res_class[0])
+	    {
+	      string = tmp_win->class.res_class;
+	    }
+	    break;
+	  case 'r':
+	    if (tmp_win->class.res_name && tmp_win->class.res_name[0])
+	    {
+	      string = tmp_win->class.res_name;
+	    }
+	    break;
+	  case 'n':
+	    if (tmp_win->name && tmp_win->name[0])
+	    {
+	      string = tmp_win->name;
+	    }
+	    break;
+	  }
 	}
 	break;
       case 'v':
@@ -713,28 +720,35 @@ static char *expand(
 	break;
 
       case 'c':
-	if (tmp_win && tmp_win->class.res_class &&
-	    tmp_win->class.res_class[0] && !IS_EWMH_DESKTOP(tmp_win->w))
-	{
-	  string = tmp_win->class.res_class;
-	}
-	is_string = True;
-	break;
       case 'r':
-	if (tmp_win && tmp_win->class.res_name &&
-	    tmp_win->class.res_name[0] && !IS_EWMH_DESKTOP(tmp_win->w))
-	{
-	  string = tmp_win->class.res_name;
-	}
-	is_string = True;
-	break;
       case 'n':
-	if (tmp_win && tmp_win->name && tmp_win->name[0] &&
-	    !IS_EWMH_DESKTOP(tmp_win->w))
+	if (tmp_win && !IS_EWMH_DESKTOP(tmp_win->w))
 	{
-	  string = tmp_win->name;
+	  switch(input[i+1])
+	  {
+	  case 'c':
+	    if (tmp_win->class.res_class && tmp_win->class.res_class[0])
+	    {
+	      string = tmp_win->class.res_class;
+	    }
+	    is_string = True;
+	    break;
+	  case 'r':
+	    if (tmp_win->class.res_name && tmp_win->class.res_name[0])
+	    {
+	      string = tmp_win->class.res_name;
+	    }
+	    is_string = True;
+	    break;
+	  case 'n':
+	    if (tmp_win->name && tmp_win->name[0])
+	    {
+	      string = tmp_win->name;
+	    }
+	    is_string = True;
+	    break;
+	  }
 	}
-	is_string = True;
 	break;
       case 'v':
 	sprintf(&out[j], "%s", (Fvwm_VersionInfo) ? Fvwm_VersionInfo : "");
