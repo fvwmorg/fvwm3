@@ -1,3 +1,8 @@
+1999-09-26  Chris Rankin <rankinc@zipworld.com.au>
+
+	* FvwmAnimate/FvwmAnimate.c:
+	Installed reentrant signal handling, and make a few -Wall fixes
+
 1999-09-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (change_swallowed_window_colorset):
