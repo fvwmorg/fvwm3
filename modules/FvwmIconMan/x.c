@@ -166,17 +166,6 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
 static void reparentnotify_event (WinManager *man, XEvent *ev)
 {
   ConsoleDebug (X11, "XEVENT: ReparentNotify\n");
-#if 0
-  ConsoleMessage ("seen %d expected %d\n", num_reparents_seen,
-		  num_reparents_expected);
-  man->off_x = ev->xreparent.x;
-  man->off_y = ev->xreparent.y;
-  ConsoleDebug (X11, "reparent: off = (%d, %d)\n",man->off_x, man->off_y);
-  man->theFrame = find_frame_window (ev->xany.window,
-				     &man->off_x, &man->off_y);
-  ConsoleMessage ("\twin = 0x%x, frame = 0x%x\n", man->theWindow,
-		  man->theFrame);
-#endif
   if (man->can_draw == 0) {
     man->can_draw = 1;
     force_manager_redraw (man);
@@ -329,7 +318,7 @@ void xevent_loop (void)
       ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n",
 		    man->geometry.x, man->geometry.y,
 		    man->geometry.width, man->geometry.height);
-        if (man->colorsets[DEFAULT] != -1) {
+        if (man->colorsets[DEFAULT] >= 0) {
 	  if (man->pixmap[DEFAULT] && man->pixmap[DEFAULT] != ParentRelative)
 	    XFreePixmap(theDisplay, man->pixmap[DEFAULT]);
 	  if (Colorset[man->colorsets[DEFAULT]].pixmap) {
@@ -349,6 +338,11 @@ void xevent_loop (void)
         }
 	force_redraw = 1;
       }
+      /* must refresh transparent windows when moved */
+      if ((man->geometry.x != theEvent.xconfigure.x ||
+          man->geometry.y != theEvent.xconfigure.y)
+          && man->pixmap[DEFAULT] == ParentRelative)
+        XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
 
       set_manager_width (man, theEvent.xconfigure.width);
       ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
@@ -357,27 +351,6 @@ void xevent_loop (void)
       else
 	draw_manager (man);
 
-#if 0
-      set_manager_width (man, theEvent.xconfigure.width);
-      ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
-      draw_manager (man);
-
-      /* pointer may not be in the same box as before */
-      if (XQueryPointer (theDisplay, man->theWindow, &root, &child, &glob_x,
-			 &glob_y,
-			 &x, &y, &mask)) {
-	b = xy_to_button (man, x, y);
-	if (b != man->select_button) {
-	  move_highlight (man, b);
-	  run_binding (man, SELECT);
-	  draw_managers();
-	}
-      }
-      else {
-	if (man->select_button != NULL)
-	  move_highlight (NULL, NULL);
-      }
-#endif
       break;
 
     case MotionNotify:
@@ -500,45 +473,6 @@ void unmap_manager (WinManager *man)
   }
 }
 
-#if 0
-void read_all_reparent_events (WinManager *man, int block)
-{
-  XEvent evs[2];
-  int i = 0, got_one = 0, the_event;
-
-  /* We're going to be junking ConfigureNotify events, but that's ok,
-     since this is only going to be called from resize_manager() */
-  /* This shouldn't slow things down terribly, since we'd just have to read
-     these events anyway */
-
-  assert (man->can_draw);
-
-  if (block) {
-    while (1) {
-      XWindowEvent (theDisplay, man->theWindow, StructureNotifyMask, &evs[0]);
-      if (evs[0].type == ReparentNotify) {
-	the_event = 0;
-	got_one = 1;
-	break;
-      }
-    }
-  }
-  else {
-    while (XCheckWindowEvent (theDisplay, man->theWindow, StructureNotifyMask,
-			      &evs[i])) {
-      if (evs[i].type == ReparentNotify) {
-	got_one = 1;
-	the_event = i;
-	i ^= 1;
-      }
-    }
-  }
-  if (got_one) {
-    reparentnotify_event (man, &evs[the_event]);
-  }
-}
-#endif
-
 void X_init_manager (int man_id)
 {
   WinManager *man;
@@ -605,7 +539,7 @@ void X_init_manager (int man_id)
 
   for ( i = 0; i < NUM_CONTEXTS; i++ ) {
     man->pixmap[i] = None;
-    if (man->colorsets[i] > -1) {
+    if (man->colorsets[i] >= 0) {
       man->backcolor[i] = Colorset[man->colorsets[i]].bg;
     }
     else if (man->backColorName[i]) {
@@ -621,7 +555,7 @@ void X_init_manager (int man_id)
 		      contextDefaults[i].name);
     }
 
-    if (man->colorsets[i] > -1) {
+    if (man->colorsets[i] >= 0) {
       man->forecolor[i] = Colorset[man->colorsets[i]].fg;
     }
     else if (man->foreColorName[i]) {
@@ -638,7 +572,7 @@ void X_init_manager (int man_id)
     }
 
     if (Pdepth > 2) {
-      if (man->colorsets[i] > -1) {
+      if (man->colorsets[i] >= 0) {
         man->shadowcolor[i] = Colorset[man->colorsets[i]].shadow;
         man->hicolor[i] = Colorset[man->colorsets[i]].hilite;
       }
@@ -647,17 +581,6 @@ void X_init_manager (int man_id)
       man->shadowcolor[i] = GetShadow(man->backcolor[i]);
       man->hicolor[i] = GetHilite(man->backcolor[i]);
       }
-#if 0
-      /* thing about message id bg vs fg */
-      if (!lookup_shadow_color (man->backcolor[i], &man->shadowcolor[i])) {
-	ConsoleMessage ("Can't load %s shadow color\n",
-			contextDefaults[i].name);
-      }
-      if (!lookup_hilite_color (man->backcolor[i], &man->hicolor[i])) {
-	ConsoleMessage ("Can't load %s hilite color\n",
-			contextDefaults[i].name);
-      }
-#endif
     }
   }
 
@@ -784,13 +707,8 @@ void create_manager_window (int man_id)
   XSizeHints sizehints;
   XGCValues gcval;
   unsigned long gcmask = 0;
-#if 0
-  unsigned long winattrmask = CWBackPixel | CWBorderPixel | CWEventMask |
-    CWBackingStore | CWBitGravity | CWColormap;
-#else
   unsigned long winattrmask = CWBackPixmap | CWBorderPixel | CWEventMask |
     CWBackingStore | CWBitGravity | CWColormap;
-#endif
   XSetWindowAttributes winattr;
   unsigned int line_width = 1;
   int line_style = LineSolid;
@@ -827,13 +745,9 @@ void create_manager_window (int man_id)
   }
   sizehints.win_gravity = man->gravity;
   sizehints.width_inc = 1;
-#if 0
-  sizehints.height_inc = man->geometry.boxheight;
-#else
   /* This works much better with colour sets and when swallowed in
    * FvwmButtons. */
   sizehints.height_inc = 1;
-#endif
   sizehints.flags |= PBaseSize | PMinSize | PMaxSize | PWinGravity | PResizeInc;
   sizehints.x = man->geometry.x;
   sizehints.y = man->geometry.y;
@@ -845,11 +759,8 @@ void create_manager_window (int man_id)
   ConsoleDebug (X11, "gravity: %d %d\n", sizehints.win_gravity, man->gravity);
 
 
-#if 0
-  winattr.background_pixel = man->backcolor[DEFAULT];
-#else
-  winattr.background_pixmap = ParentRelative;
-#endif
+  /* set the background to be transparent later if necessary */
+  winattr.background_pixmap = None;
   winattr.border_pixel = man->forecolor[DEFAULT];
   winattr.backing_store = WhenMapped;
   winattr.bit_gravity = man->gravity;
@@ -994,20 +905,11 @@ void change_colorset(int color)
     man = &globals.managers[j];
     for ( i = 0; i < NUM_CONTEXTS; i++ ) {
       if(man->colorsets[i] == color) {
-        man->backcolor[i] = Colorset[man->colorsets[i]].bg;
-        man->forecolor[i] = Colorset[man->colorsets[i]].fg;
-        man->shadowcolor[i] = Colorset[man->colorsets[i]].shadow;
-        man->hicolor[i] = Colorset[man->colorsets[i]].hilite;
+        man->backcolor[i] = Colorset[color].bg;
+        man->forecolor[i] = Colorset[color].fg;
+        man->shadowcolor[i] = Colorset[color].shadow;
+        man->hicolor[i] = Colorset[color].hilite;
 
-#if 0
-        if (i == DEFAULT)
-        {
-          XSetWindowBackground(theDisplay, man->theWindow,
-                               man->backcolor[DEFAULT]);
-          XSetWindowBorder(theDisplay, man->theWindow,
-                           man->forecolor[DEFAULT]);
-        }
-#endif
 	if (!man->backContext[i] || !man->hiContext[i] ||
 	    !man->flatContext[i] || !man->reliefContext[i] ||
 	    !man->shadowContext[i])
@@ -1032,11 +934,11 @@ void change_colorset(int color)
 
         if (man->pixmap[i] && man->pixmap[i] != ParentRelative)
           XFreePixmap(theDisplay, man->pixmap[i]);
-        if (Colorset[man->colorsets[i]].pixmap) {
+        if (Colorset[color].pixmap) {
           man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
-                                   man->geometry.width, man->geometry.height,
-                                   &Colorset[man->colorsets[i]],
-                                   Pdepth, man->backContext[i], False);
+			     man->geometry.width, man->geometry.height,
+			     &Colorset[color], Pdepth, man->backContext[i],
+			     False);
           XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
           XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
 	  if (i == DEFAULT)

@@ -637,10 +637,6 @@ void set_win_picture (WinData *win, Pixmap picture, Pixmap mask,
 
 void set_win_iconified (WinData *win, int iconified)
 {
-#if 0
-  if (win->button && win->iconified != iconified)
-    win->button->drawn_state.dirty_flags |= ICON_STATE_CHANGED;
-#else
   /* This change has become necessary because with colorsets we don't know
    * the background colour of the button (gradient background). Thus the button
    * has to be redrawn completely, we can not just draw the square in the
@@ -678,7 +674,6 @@ void set_win_iconified (WinData *win, int iconified)
     }
     win->button->drawn_state.dirty_flags |= ICON_STATE_CHANGED;
   }
-#endif
   win->iconified = iconified;
 }
 
@@ -991,7 +986,7 @@ static void resize_manager (WinManager *man, int force)
     for (i = 0; i < NUM_CONTEXTS; i++) {
       if (man->pixmap[i])
         XFreePixmap(theDisplay, man->pixmap[i]);
-      if (Colorset[man->colorsets[i]].pixmap) {
+      if ((man->colorsets[i] >= 0) && Colorset[man->colorsets[i]].pixmap) {
         man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
                        man->geometry.width, man->geometry.height,
                        &Colorset[man->colorsets[i]],
