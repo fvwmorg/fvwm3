@@ -760,6 +760,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 
   deltay = Scr.Vy - newy;
   deltax = Scr.Vx - newx;
+fprintf(stderr,"mv: new vp = %d %d, vp = %d %d\n", newx, newy, Scr.Vx, Scr.Vy);
   /*
       Identify the bounding rectangle that will be moved into
       the viewport.
@@ -798,7 +799,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	tyt = t->frame_g.y;
 	txr = t->frame_g.x + t->frame_g.width;
 	tyb = t->frame_g.y + t->frame_g.height;
-	if (IS_STICKY(t) && !IS_VIEWPORT_MOVED(t))
+	if (IS_STICKY(t) && !IS_VIEWPORT_MOVED(t) && !IS_VIEWPORT_MOVED(t))
 	{
 	  /* the absolute position has changed */
 	  t->normal_g.x -= deltax;
@@ -806,6 +807,15 @@ void MoveViewport(int newx, int newy, Bool grab)
 	  t->max_g.x -= deltax;
 	  t->max_g.y -= deltay;
 	  SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
+	}
+	if (IS_STICKY(t1) && !IS_VIEWPORT_MOVED(t1) && !IS_VIEWPORT_MOVED(t1))
+	{
+	  /* the absolute position has changed */
+	  t1->normal_g.x -= deltax;
+	  t1->normal_g.y -= deltay;
+	  t1->max_g.x -= deltax;
+	  t1->max_g.y -= deltay;
+	  SET_VIEWPORT_MOVED(t1, 1); /*  Block double move.  */
 	}
 	if ((txr >= PageLeft && txl <= PageRight
 	     && tyb >= PageTop && tyt <= PageBottom)

@@ -275,7 +275,6 @@ void WindowShade(F_CMD_ARGS)
   }
   else if (!IS_SHADED(tmp_win) && toggle == 1)
   {
-
     /* shade window */
     SET_SHADED(tmp_win, 1);
     get_shaded_geometry(tmp_win, &small_g, &big_g);
