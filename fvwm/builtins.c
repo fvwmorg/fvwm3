@@ -28,6 +28,9 @@
 
 #include <stdio.h>
 #include <unistd.h>                     /* for STDIN_FILENO */
+#include <sys/types.h>		/* for open */
+#include <sys/stat.h>		/* for open */
+#include <fcntl.h>		/* for open */
 #include <errno.h>
 #include <X11/keysym.h>
 
@@ -2414,9 +2417,10 @@ void CMD_Exec(F_CMD_ARGS)
 
 	if (!(fork())) /* child process */
 	{
-		/* close stdin so the exec'd process knows its not
-		   interactive */
-	  	close(STDIN_FILENO);
+		/* This is for fixing a problem with rox filer */
+		int fd;
+		fd = open("/dev/null", O_RDONLY, 0);
+		dup2(fd,STDIN_FILENO);
 		if (fvwm_setpgrp() == -1)
 		{
 			fvwm_msg(ERR, "exec_function", "setpgrp failed (%s)",

@@ -1,5 +1,8 @@
 2003-05-25  Dan Espen  <dane@mk.telcordia.com>
 
+	* fvwm/builtins.c (CMD_Exec): Another attempt to fix problem with
+	Rox Filer.
+
 	* fvwm/decorations.c: Sync up motif hints structure to aix,hp,
 	solaris.
 
