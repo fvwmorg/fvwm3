@@ -293,6 +293,10 @@ typedef struct
   unsigned is_window_shaded : 1;
   unsigned using_default_icon_font : 1;
   unsigned using_default_window_font : 1;
+#define ICON_HINT_NEVER    0
+#define ICON_HINT_ONCE     1
+#define ICON_HINT_MULTIPLE 2
+  unsigned was_icon_hint_provided : 2;
 } window_flags;
 
 /* Window mask for Circulate and Direction functions */

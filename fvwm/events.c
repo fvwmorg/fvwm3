@@ -541,6 +541,7 @@ void HandlePropertyNotify(void)
     {
       has_icon_window_hint_changed = True;
     }
+    increase_icon_hint_count(Tmp_win);
     if (has_icon_window_hint_changed || has_icon_pixmap_hint_changed)
     {
       if (ICON_OVERRIDE_MODE(Tmp_win) == ICON_OVERRIDE)
@@ -552,7 +553,14 @@ void HandlePropertyNotify(void)
 #if 0
 	has_icon_changed = True;
 #else
-	if (has_icon_window_hint_changed)
+	if (WAS_ICON_HINT_PROVIDED(Tmp_win) == ICON_HINT_ONCE &&
+	    has_icon_pixmap_hint_changed)
+	{
+	  /* ignore the first icon pixmap hint if the application did not
+	   * provide it from the start */
+	  has_icon_changed = False;
+	}
+	else if (has_icon_window_hint_changed)
 	{
 	  has_icon_changed = True;
 	}

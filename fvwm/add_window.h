@@ -37,6 +37,7 @@ void change_auxiliary_windows(FvwmWindow *tmp_win, short buttons);
 void setup_key_and_button_grabs(FvwmWindow *tmp_win);
 void setup_frame_geometry(FvwmWindow *tmp_win);
 void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle);
+void increase_icon_hint_count(FvwmWindow *tmp_win);
 void change_icon(FvwmWindow *tmp_win, window_style *pstyle);
 #ifdef MINI_ICONS
 void change_mini_icon(FvwmWindow *tmp_win, window_style *pstyle);

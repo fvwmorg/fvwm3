@@ -993,8 +993,31 @@ void change_auxiliary_windows(FvwmWindow *tmp_win, short buttons)
   setup_frame_stacking(tmp_win);
 }
 
-void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
+void increase_icon_hint_count(FvwmWindow *tmp_win)
 {
+  if (tmp_win->wmhints &&
+      (tmp_win->wmhints->flags & (IconWindowHint | IconPixmapHint)))
+  {
+    switch (WAS_ICON_HINT_PROVIDED(tmp_win))
+    {
+    case ICON_HINT_NEVER:
+      SET_WAS_ICON_HINT_PROVIDED(tmp_win, ICON_HINT_ONCE);
+      break;
+    case ICON_HINT_ONCE:
+      SET_WAS_ICON_HINT_PROVIDED(tmp_win, ICON_HINT_MULTIPLE);
+      break;
+    case ICON_HINT_MULTIPLE:
+    default:
+      break;
+    }
+  }
+
+  return;
+}
+
+static void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  increase_icon_hint_count(tmp_win);
   /* find a suitable icon pixmap */
   if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
   {
@@ -1042,7 +1065,7 @@ void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
 		  (unsigned long)tmp_win,tmp_win->icon_bitmap_file);
 }
 
-void destroy_icon(FvwmWindow *tmp_win)
+static void destroy_icon(FvwmWindow *tmp_win)
 {
   free_window_names(tmp_win, False, True);
   if (tmp_win->icon_w)
