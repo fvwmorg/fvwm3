@@ -58,6 +58,7 @@ typedef struct sProxyWindow
 	char			*name;
 	char			*iconname;
 	struct sProxyWindow	*next;
+	struct sProxyWindow	*prev;
 	struct
 	{
 		unsigned is_shown : 1;

@@ -37,14 +37,6 @@
 
 #include "FvwmProxy.h"
 
-/***
-    To use the Alt-Tab switching, try something like:
-    Key Tab     A   M   SendToModule    FvwmProxy   Next
-
-    To activate and deativate proxies other than with the built in Alt polling,
-    use 'SendToModule FvwmProxy Show' and 'SendToModule FvwmProxy  Hide'.
-*/
-
 /* ---------------------------- local definitions --------------------------- */
 
 /* things we might put in a configuration file */
@@ -90,8 +82,10 @@ static FILE *errorFile;
 static XTextProperty windowName;
 static int deskNumber=0;
 static int mousex,mousey;
-static ProxyWindow *firstWindow=NULL;
+static ProxyWindow *firstProxy=NULL;
+static ProxyWindow *lastProxy=NULL;
 static ProxyWindow *selectProxy=NULL;
+static ProxyWindow *startProxy=NULL;
 static ProxyWindow *enterProxy=NULL;
 static XGCValues xgcv;
 static int are_windows_shown = 0;
@@ -345,9 +339,9 @@ static void send_command_to_fvwm(char *command, Window w)
 
 static ProxyWindow *FindProxy(Window window)
 {
-	ProxyWindow *proxy=firstWindow;
+	ProxyWindow *proxy=firstProxy;
 
-	for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		if(proxy->proxy==window || proxy->window==window)
 			return proxy;
@@ -403,7 +397,7 @@ static void DrawWindow(
 		edge = w / 2;
 	}
 	top=(h+ Ffont->ascent - Ffont->descent)/2;	/* center */
-	top+=8;				                /* HACK tweak */
+	top+=8;						/* HACK tweak */
 
 	if(edge<5)
 		edge=5;
@@ -519,7 +513,7 @@ static void OpenWindows(void)
 {
 	ProxyWindow *proxy;
 
-	for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		OpenOneWindow(proxy);
 	}
@@ -546,7 +540,7 @@ static void CloseWindows(void)
 {
 	ProxyWindow *proxy;
 
-	for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
 		CloseOneWindow(proxy);
 	}
@@ -558,14 +552,14 @@ static Bool __SortProxies(void)
 {
 	Bool change=False;
 
-	ProxyWindow *last=NULL;
 	ProxyWindow *proxy;
 	ProxyWindow *next;
 
 	int x1,x2;
 
-	for (proxy=firstWindow; proxy != NULL && proxy->next != NULL;
-	     proxy=proxy->next)
+	lastProxy=NULL;
+	for (proxy=firstProxy; proxy != NULL && proxy->next != NULL;
+		proxy=proxy->next)
 	{
 		x1=proxy->proxyx;
 		x2=proxy->next->proxyx;
@@ -575,15 +569,22 @@ static Bool __SortProxies(void)
 			change=True;
 			next=proxy->next;
 
-			if(last)
-				last->next=next;
+			if(lastProxy)
+				lastProxy->next=next;
 			else
-				firstWindow=next;
+				firstProxy=next;
 			proxy->next=next->next;
 			next->next=proxy;
 		}
 
-		last=proxy;
+		lastProxy=proxy;
+	}
+
+	lastProxy=NULL;
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+	{
+		proxy->prev=lastProxy;
+		lastProxy=proxy;
 	}
 
 	return change;
@@ -659,7 +660,7 @@ static void AdjustWindows(void)
 		ProxyWindow *proxy;
 
 		collision=False;
-		for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
+		for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 		{
 			if (AdjustOneWindow(proxy) == True)
 			{
@@ -722,8 +723,8 @@ static void ConfigureWindow(FvwmPacket *packet)
 	{
 		is_new_window = 1;
 		proxy=new_ProxyWindow();
-		proxy->next = firstWindow;
-		firstWindow = proxy;
+		proxy->next = firstProxy;
+		firstProxy = proxy;
 		proxy->window=target;
 	}
 	proxy->x=wx;
@@ -757,7 +758,7 @@ static void DestroyWindow(Window w)
 	ProxyWindow *proxy;
 	ProxyWindow *prev;
 
-	for (proxy=firstWindow, prev = NULL; proxy != NULL;
+	for (proxy=firstProxy, prev = NULL; proxy != NULL;
 	     prev = proxy, proxy=proxy->next)
 	{
 		if(proxy->proxy==w || proxy->window==w)
@@ -769,7 +770,7 @@ static void DestroyWindow(Window w)
 	}
 	if (prev == NULL)
 	{
-		firstWindow = proxy->next;
+		firstProxy = proxy->next;
 	}
 	else
 	{
@@ -831,6 +832,8 @@ static void StartProxies(void)
 	CloseWindows();
 	ReshuffleWindows();
 	OpenWindows();
+
+	return;
 }
 
 static void MarkProxy(ProxyWindow *new_proxy)
@@ -874,13 +877,22 @@ static void HideProxies(void)
 
 static void SelectProxy(void)
 {
+	ProxyWindow *proxy;
+
 	HideProxies();
-	if (selectProxy != NULL)
-	{
+	if(selectProxy && selectProxy->desk==deskNumber)
 		send_command_to_fvwm(select_command, selectProxy->window);
-	}
+
 	send_command_to_fvwm(hide_command, None);
-	selectProxy = NULL;
+
+	for(proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+		if(proxy==selectProxy)
+		{
+			startProxy=proxy;
+			break;
+		}
+
+	selectProxy=NULL;
 
 	return;
 }
@@ -900,7 +912,7 @@ static void change_cset(int cset)
 	{
 		ProxyWindow *proxy;
 
-		for (proxy = firstWindow; proxy != NULL; proxy = proxy->next)
+		for (proxy = firstProxy; proxy != NULL; proxy = proxy->next)
 		{
 			DrawProxyBackground(proxy);
 		}
@@ -992,22 +1004,41 @@ static void ProcessMessage(FvwmPacket* packet)
 		char *message=(char*)&body[3];
 		char *token;
 		char *next;
+		int prev;
 
 		fprintf(errorFile, "M_STRING \"%s\"\n", message);
 		token = PeekToken(message, &next);
-		if (StrEquals(token, "Next"))
+		prev=(StrEquals(token, "Prev"));
+		if(StrEquals(token, "Next") || prev)
 		{
 			ProxyWindow *lastSelect=selectProxy;
-			if(selectProxy)
-				selectProxy=selectProxy->next;
-			if(!selectProxy)
-				selectProxy=firstWindow;
-			while(selectProxy!=lastSelect &&
-				selectProxy->desk!=deskNumber)
+			ProxyWindow *first=prev? lastProxy: firstProxy;
+			if(startProxy && startProxy->desk==deskNumber)
 			{
-				selectProxy=selectProxy->next;
-				if(!selectProxy && lastSelect)
-					selectProxy=firstWindow;
+				selectProxy=startProxy;
+				startProxy=NULL;
+			}
+			else
+			{
+				if(selectProxy)
+				{
+					if(prev)
+						selectProxy=selectProxy->prev;
+					else
+						selectProxy=selectProxy->next;
+				}
+				if(!selectProxy)
+					selectProxy=first;
+				while(selectProxy!=lastSelect &&
+					selectProxy->desk!=deskNumber)
+				{
+					if(prev)
+						selectProxy=selectProxy->prev;
+					else
+						selectProxy=selectProxy->next;
+					if(!selectProxy && lastSelect)
+						selectProxy=first;
+				}
 			}
 
 			DrawProxy(lastSelect);

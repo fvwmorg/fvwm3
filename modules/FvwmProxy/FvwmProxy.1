@@ -12,13 +12,15 @@ The FvwmProxy allows the user to locate and control windows obscured
 by other windows by using small non-overlapping proxy windows.
 The current capabilites include raising and lowering the proxied windows.
 
-Holding the Alt key activates the proxy windows.
+Using the default configureation, holding the Alt key activates
+the proxy windows and releasing the Alt key deactivates the Proxy windows.
+
 Proxy windows are always on top and try to center on the regular
 window they proxy.
 A simple collision algorithm tweaks the positions of the proxy windows
 to prevent them from overlapping.
 Pressing the left or right mouse buttons on a proxy window
-raises or lowers the assiciated proxied window respectively.
+raises or lowers the associated proxied window respectively.
 
 .SH COPYRIGHTS
 The FvwmProxy program is original work by Jason Weber.
@@ -38,13 +40,120 @@ menu or mouse button or keystroke to invoke it later. Fvwm will search
 directory specified in the ModulePath configuration option to attempt
 to locate FvwmProxy.
 
-You may optionally use the following arguments when invoking FvwmProxy:
-
-.IP none yet
-TBD
-
 .SH CONFIGURATION OPTIONS
-There are no configuration options at this time.
+
+.IP "*FvwmProxy: Colorset"
+Specifies the color theme for unselected proxy windows.
+
+.IP "*FvwmProxy: SelectColorset"
+Specifies the color theme for the selected proxy window.
+
+.IP "*FvwmProxy: Font"
+Specifies the font used for all proxy window text.
+
+.IP "*FvwmProxy: Width"
+Specifies the size in X of each proxy window.
+
+.IP "*FvwmProxy: Height"
+Specifies the size in Y of each proxy window.
+
+.IP "*FvwmProxy: Separation"
+Specifies the minimum distance between proxy windows when adjusting
+for collisions.
+
+.IP "*FvwmProxy: EnterSelect"
+If true, a proxy is automatically selected when the mouse moved
+over the proxy, even if no mouse buttons are pressed.
+
+.IP "*FvwmProxy: ProxyMove"
+If true, moving a proxy window will move the window it represents.
+Currently, the proxied window doesn't recognize snap effects during
+this operation.
+
+.IP "*FvwmProxy: ShowCommand"
+This selects an fvwm function to be called during a FvwmProxy Show command.
+The default is "FvwmProxyShowFunc".
+
+.IP "*FvwmProxy: HideCommand"
+This selects an fvwm function to be called during a FvwmProxy Hide command.
+The default is "FvwmProxyHideFunc".
+
+.IP "*FvwmProxy: AbortCommand"
+This selects an fvwm function to be called during a FvwmProxy Abort command.
+The default is "FvwmProxyAbortFunc".
+
+.IP "*FvwmProxy: SelectCommand"
+This selects an fvwm function to be called during a FvwmProxy Select command.
+The default is "FvwmProxySelectFunc", which by default, raises the selected
+window and warps the mouse to near its upper left corner.
+
+.IP "*FvwmProxy: MarkCommand"
+This selects an fvwm function to be called during a FvwmProxy Mark command.
+The default is "FvwmProxyMarkFunc".
+
+.SH COMMANDS
+
+.IP "SendToModule FvwmProxy Show"
+Activate proxy windows for all windows on the current desk without
+the WindowListSkip option.
+If the desk is switched, new proxies are automatically generated.
+
+.IP "SendToModule FvwmProxy Hide"
+Deactivate all proxy windows.
+If a proxy is selected (such as with the Next and Prev commands),
+that window, the Function FvwmProxySelectFunc is called on the
+proxied window.  The default action is to raise the window and
+warp the mouse to a position over that window.
+
+.IP "SendToModule FvwmProxy Abort"
+Deactivate all proxy windows.
+This differs from the Hide command in that no action is taken
+on a selected window.
+
+.IP "SendToModule FvwmProxy Next"
+If a proxy window is selected, the next proxy is selected.
+Windows with the WindowListSkip option are ignored.
+The proxies are sorted left to right during the Show command.
+If no proxy is currently selected, but a proxy on this desk was
+selected on a recent show, that proxy is selected.
+If no proxy on this desk was recently selected,
+the leftmost proxy is used.
+
+.IP "SendToModule FvwmProxy Prev"
+If a proxy window is selected, the previous proxy is selected.
+The starting point is the same as with the Next command, except
+that the choice with no recent selection is the rightmost proxy.
+
+.SH SAMPLE CONFIGURATION
+The following are excerpts from a .fvwm2rc file which describe
+FvwmProxy initialization commands:
+.nf
+.sp
+
+Key Alt_L   A   N   SendToModule    FvwmProxy   Show    # hold Alt key
+Key -Alt_L  A   A   SendToModule    FvwmProxy   Hide    # release Alt key
+Key Tab     A   M   SendToModule    FvwmProxy   Next    # Alt-Tab
+Key Tab     A   SM  SendToModule    FvwmProxy   Prev    # Alt-Shift-Tab
+
+*FvwmProxy: Font            -*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
+*FvwmProxy: Colorset        1
+*FvwmProxy: SelectColorset  2
+*FvwmProxy: EnterSelect     false
+*FvwmProxy: ProxyMove       false
+*FvwmProxy: Width           180
+*FvwmProxy: Height          60
+*FvwmProxy: Separation      10
+
+# warp mouse to center of window when selected
+AddToFunc FvwmProxySelectFunc
++ I WindowId $w WarpToWindow 50 50
+.sp
+.fi
+
+The default configuration does not activate the Next and Prev using
+Alt-Tab since that is, by default, used by another module.
+Adding these lines to your .fvwm2rc will switch this responsibility
+to FvwmProxy.
 
 .SH AUTHOR
 Jason Weber

@@ -26,3 +26,13 @@ AddToFunc FvwmProxy_Mark
 AddToFunc FvwmProxy_Circulate
 + I WindowId $[FvwmProxy_S] $0 $1 FvwmProxy_Mark
 + I CondCase (Error) $0 $1 FvwmProxy_Mark
+
+Key Alt_L	A N	SendToModule	FvwmProxy	Show
+Key -Alt_L	A A	SendToModule	FvwmProxy	Hide
+
+*FvwmProxy: Font	-*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
+*FvwmProxy: EnterSelect	false
+*FvwmProxy: ProxyMove	false
+*FvwmProxy: Width	180
+*FvwmProxy: Height	60
+*FvwmProxy: Separation	10
