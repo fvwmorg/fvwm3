@@ -1,5 +1,7 @@
 2001-01-25  Dan Espen  <dane@mk.telcordia.com>
 
+	* configure.in: changed version to 2.3.29.
+
 	* NEWS, configure.in:
 	changed version to 2.3.$[VMINOR + 1]
 
