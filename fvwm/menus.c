@@ -921,6 +921,7 @@ static void menuShortcuts(
 		break;
 
 	case XK_Insert:
+	case XK_KP_Insert:
 	case XK_KP_0:
 		/* move to last entry of menu ('More...' if this exists) and
 		 * try to enter the menu.  Otherwise try to enter the current
@@ -930,6 +931,7 @@ static void menuShortcuts(
 		break;
 
 	case XK_Left:
+	case XK_KP_Left:
 	case XK_KP_4:
 	case XK_h: /* vi left */
 		/* leave or enter a submenu */
@@ -937,6 +939,7 @@ static void menuShortcuts(
 		break;
 
 	case XK_Right:
+	case XK_KP_Right:
 	case XK_KP_6:
 	case XK_l: /* vi right */
 		/* enter or leave a submenu */
@@ -954,18 +957,21 @@ static void menuShortcuts(
 		break;
 
 	case XK_Page_Up:
+	case XK_KP_Prior:
 	case XK_KP_9:
 		items_to_move = -5;
 		saction = SA_MOVE_ITEMS;
 		break;
 
 	case XK_Page_Down:
+	case XK_KP_Next:
 	case XK_KP_3:
 		items_to_move = 5;
 		saction = SA_MOVE_ITEMS;
 		break;
 
 	case XK_Up:
+	case XK_KP_Up:
 	case XK_KP_8:
 	case XK_k: /* vi up */
 	case XK_p: /* prior */
@@ -987,6 +993,7 @@ static void menuShortcuts(
 		break;
 
 	case XK_Down:
+	case XK_KP_Down:
 	case XK_KP_2:
 	case XK_j: /* vi down */
 	case XK_n: /* next */
@@ -1039,11 +1046,13 @@ static void menuShortcuts(
 		break;
 
 	case XK_Home:
+	case XK_KP_Home:
 	case XK_KP_7:
 		saction = SA_FIRST;
 		break;
 
 	case XK_End:
+	case XK_KP_End:
 	case XK_KP_1:
 		saction = SA_LAST;
 		break;
