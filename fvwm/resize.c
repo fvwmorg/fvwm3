@@ -332,12 +332,9 @@ void resize_window(F_CMD_ARGS)
 #ifdef WINDOWSHADE
        if (tmp_win->buttons & WSHADE)
        {
-         tmp_win->orig_x = drag->x;
-         tmp_win->orig_y = drag->y;
-         tmp_win->orig_wd = drag->width;
-         tmp_win->orig_ht = drag->height;
-         SetupFrame (tmp_win, tmp_win->orig_x, tmp_win->orig_y,
+         SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,
                      drag->width, tmp_win->frame_height, FALSE, False);
+         tmp_win->orig_ht = drag->height;
        }
       else
 #endif

@@ -1,5 +1,10 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* Unmaximizing keeps windows on the same page.
+ 
+* Maximize can now expand until some other window is found to fully utilize
+  available screen space.
+
 * ClickToFocus windows don't take the focus from other ClickToFocus windows
   when they are mapped the first time automatically anymore. To force this use
   the 'GrabFocus' style (works with MouseFocus and SloppyFocus too).

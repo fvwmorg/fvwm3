@@ -1,3 +1,19 @@
+1999-03-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/resize.c (resize_window): 
+	* fvwm/builtins.c (Maximize): 
+	* fvwm/add_window.c (AddWindow): 
+	* fvwm/session.c (SaveWindowStates): 
+	* fvwm/events.c (HandleConfigureRequest): 
+	* fvwm/borders.c (SetBorder): Change orig_x/orig_y to absolute coords.
+	
+	* fvwm/builtins.c (Maximize): Unmaximize to the same
+	absolute position as before (unless we're sticky). 
+
+	* fvwm/events.c (HandleMapRequest): While in startup,
+	handle map request by just mapping the window, decorations
+	are added later.
+
 1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/misc.h:

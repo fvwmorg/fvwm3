@@ -235,7 +235,7 @@ SaveWindowStates(FILE *f)
   char **wm_command;
   int wm_command_count;
   FvwmWindow              *ewin;
-  int                 i, x, y, xmax, ymax;
+  int                 i;
 
   for (ewin=Scr.FvwmRoot.stack_next; ewin!=&Scr.FvwmRoot; ewin=ewin->stack_next)
     {
@@ -277,48 +277,17 @@ SaveWindowStates(FILE *f)
 	    }
 	} /* !window_role */
 
-
-      /*
-	 We want to save absolute coordinates for the desk;
-	 I hope the calculation makes sense... everything
-	 would be much easier, if the frame/orig positions
-	 would be absolute.
-      */
-      i = 0;
-      xmax = Scr.Vx + ewin->frame_x;
-      while (xmax < 0) {
-	xmax += Scr.MyDisplayWidth;
-	i--;
-      }
-      i += xmax / Scr.MyDisplayWidth;
-      x = i * Scr.MyDisplayWidth
-	+ (ewin->orig_x % Scr.MyDisplayWidth)
-	- ewin->old_bw;
-      if (x < 0) x += Scr.MyDisplayWidth;
-
-      i = 0;
-      ymax = Scr.Vy + ewin->frame_y;
-      while (ymax < 0) {
-	ymax += Scr.MyDisplayHeight;
-	i--;
-      }
-      i += ymax / Scr.MyDisplayHeight;
-      y = i * Scr.MyDisplayHeight
-	+ (ewin->orig_y % Scr.MyDisplayHeight)
-	- ewin->old_bw;
-      if (y < 0) y += Scr.MyDisplayHeight;
-
       fprintf(f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i\n",
-	      x, y,
+	      ewin->orig_x, 
+              ewin->orig_y,
 	      ewin->orig_wd - 2*ewin->boundary_width ,
-	      ewin->orig_ht - 2*ewin->boundary_width
-	      - ewin->title_height,
-	      xmax, ymax,
-            ewin->frame_width,
-            ewin->maximized_ht,
-
-	      Scr.Vx + ewin->icon_x_loc,
-	      Scr.Vy + ewin->icon_y_loc);
+	      ewin->orig_ht - 2*ewin->boundary_width - ewin->title_height,
+	      ewin->frame_x + Scr.Vx, 
+              ewin->frame_y + Scr.Vy,
+              ewin->frame_width,
+              ewin->maximized_ht,
+	      ewin->icon_x_loc + Scr.Vx,
+	      ewin->icon_y_loc + Scr.Vy);
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
       fprintf(f, "  [FLAGS] %lu %i %i\n", ewin->flags,
@@ -529,6 +498,12 @@ Bool matchWin(FvwmWindow *w, Match *m)
   return found;
 }
 
+static int
+my_modulo (int x, int m)
+{
+   return (x < 0) ? (m + (x % m)) : (x % m); 
+}
+
 /*
    This routine (potentially) changes the flags STARTICONIC,
    MAXIMIZED, WSHADE and STICKY and the Desk and
@@ -589,10 +564,11 @@ MatchWinToSM(FvwmWindow *ewin,
 
 	       if (matches[i].flags & STICKY) {
                  ewin->flags |= STICKY;
-                 while (ewin->attr.x < 0) ewin->attr.x += Scr.MyDisplayWidth;
-                 ewin->attr.x = ewin->attr.x % Scr.MyDisplayWidth;
-                 while (ewin->attr.y < 0) ewin->attr.y += Scr.MyDisplayHeight;
-                 ewin->attr.y = ewin->attr.y % Scr.MyDisplayHeight;
+                 /* force sticky windows on screen */
+                 ewin->attr.x = my_modulo (ewin->attr.x, Scr.MyDisplayWidth);
+                 ewin->attr.y = my_modulo (ewin->attr.y, Scr.MyDisplayHeight);
+                 *x_max = my_modulo (*x_max, Scr.MyDisplayWidth);
+                 *y_max = my_modulo (*y_max, Scr.MyDisplayHeight);
 	       } else {
                  ewin->flags &= ~STICKY;
 		 ewin->Desk = matches[i].desktop;
@@ -811,6 +787,7 @@ callback_shutdown_cancelled(SmcConn smc_conn, SmPointer client_data)
 {
   if (!sent_save_done)
     {
+
       SmcSaveYourselfDone(smc_conn, False);
       sent_save_done = 1;
     }

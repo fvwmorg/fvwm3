@@ -189,6 +189,11 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 }
 
 
+static int 
+truncate_to_multiple (int x, int m)
+{
+  return (x < 0) ? (m * (x / m - 1)) : (m * (x / m)); 
+}
 
 /***********************************************************************
  *
@@ -199,6 +204,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 void Maximize(F_CMD_ARGS)
 {
   int new_width, new_height,new_x,new_y;
+  int page_x, page_y, dummx, dummy;
   int val1, val2, val1_unit, val2_unit;
   int toggle;
   char *token;
@@ -257,11 +263,18 @@ void Maximize(F_CMD_ARGS)
     tmp_win->flags &= ~MAXIMIZED;
     /* Unmaximizing is slightly tricky since we want the window to
        stay on the same page, even if we have move to a different page
-       in the meantime. */
-    new_x = (tmp_win->frame_x / Scr.MyDisplayWidth) +
-      (tmp_win->orig_x % Scr.MyDisplayWidth);
-    new_y = (tmp_win->frame_y / Scr.MyDisplayHeight) +
-      (tmp_win->orig_y % Scr.MyDisplayHeight);
+       in the meantime. the orig values are absolute! */
+    if (tmp_win->flags & STICKY) 
+      {
+	/* make sure we keep it on screen while unmaximizing */ 
+	new_x=tmp_win->orig_x-truncate_to_multiple(tmp_win->orig_x,Scr.MyDisplayWidth);
+	new_y=tmp_win->orig_y-truncate_to_multiple(tmp_win->orig_y,Scr.MyDisplayHeight); 
+      }
+    else 
+      {
+	new_x = tmp_win->orig_x - Scr.Vx;
+	new_y = tmp_win->orig_y - Scr.Vy;
+      }
     new_width = tmp_win->orig_wd;
 #ifdef WINDOWSHADE
     if (tmp_win->buttons & WSHADE)
@@ -269,8 +282,8 @@ void Maximize(F_CMD_ARGS)
     else
 #endif
       new_height = tmp_win->orig_ht;
-    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE,False);
-    SetBorder(tmp_win,True,True,True,None);
+    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE, False);
+    SetBorder(tmp_win, True, True, True, None);
   }
   else
   {
@@ -282,8 +295,12 @@ void Maximize(F_CMD_ARGS)
       new_height = tmp_win->frame_height;
     new_width = tmp_win->frame_width;
 
+    page_x = truncate_to_multiple (tmp_win->frame_x,Scr.MyDisplayWidth);
+    page_y = truncate_to_multiple (tmp_win->frame_y,Scr.MyDisplayHeight);
+
     new_x = tmp_win->frame_x;
     new_y = tmp_win->frame_y;
+
     if (grow_y)
     {
       MaximizeHeight(tmp_win, new_width, new_x, &new_height, &new_y);
@@ -291,7 +308,7 @@ void Maximize(F_CMD_ARGS)
     else if(val2 >0)
     {
       new_height = val2*val2_unit/100-2;
-      new_y = 0;
+      new_y = page_y;
     }
     if (grow_x)
     {
@@ -300,12 +317,12 @@ void Maximize(F_CMD_ARGS)
     else if(val1 >0)
     {
       new_width = val1*val1_unit/100-2;
-      new_x = 0;
+      new_x = page_x;
     }
     if((val1==0)&&(val2==0))
     {
-      new_x = 0;
-      new_y = 0;
+      new_x = page_x;
+      new_y = page_y;
       new_height = Scr.MyDisplayHeight-2;
       new_width = Scr.MyDisplayWidth-2;
     }

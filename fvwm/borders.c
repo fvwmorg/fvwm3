@@ -106,7 +106,6 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   Bool shaded;
 #endif
 
-fprintf(stderr,"border %d %d %d %d\n", t, onoroff, force, expose_win);
   if(!t)
     return;
 
@@ -1023,16 +1022,16 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
 #endif
 
   /* if windows is not being maximized, save size in case of maximization */
-  if (!(tmp_win->flags & MAXIMIZED)
-#ifdef WINDOWSHADE
-      && !shaded
-#endif
-      )
+  if (!(tmp_win->flags & MAXIMIZED))
   {
-    tmp_win->orig_x = x;
-    tmp_win->orig_y = y;
+    /* store orig values in absolute coords */
+    tmp_win->orig_x = x + Scr.Vx;
+    tmp_win->orig_y = y + Scr.Vy;
     tmp_win->orig_wd = w;
-    tmp_win->orig_ht = h;
+#ifdef WINDOWSHADE
+    if (!shaded)
+#endif
+      tmp_win->orig_ht = h;
   }
 
   if((w != tmp_win->frame_width) || (h != tmp_win->frame_height))

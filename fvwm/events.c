@@ -765,6 +765,13 @@ void HandleMapRequest()
 {
   DBUG("HandleMapRequest","Routine Entered");
 
+  if (fFvwmInStartup)
+   {
+      /* Just map the damn thing, decorations are added later
+       in CaptureAllWindows. */
+      XMapWindow (dpy, Event.xmaprequest.window);
+      return;
+   }
   HandleMapRequestKeepRaised(None, NULL);
 }
 void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
@@ -1537,18 +1544,15 @@ void HandleConfigureRequest()
   if (Tmp_win->buttons & WSHADE)
     {
       /* for shaded windows, allow resizing, but keep it shaded */
-      Tmp_win->orig_x = x;
-      Tmp_win->orig_y = y;
-      Tmp_win->orig_wd = width;
-      Tmp_win->orig_ht = height;
       SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent, False);
+      Tmp_win->orig_ht = height;
     }
   else
 #endif
   if (!(Tmp_win->flags & MAXIMIZED))
     {
       /* dont allow clients to resize maximized windows */
-      SetupFrame (Tmp_win, x, y, width, height,sendEvent, False);
+      SetupFrame (Tmp_win, x, y, width, height, sendEvent, False);
     }
 }
 
