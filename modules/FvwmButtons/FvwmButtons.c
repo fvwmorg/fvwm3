@@ -716,8 +716,6 @@ int main(int argc, char **argv)
 
   /* parse module options */
   ParseConfiguration(UberButton);
-XSynchronize(Dpy,1);
-sleep(15);
   /* we can't set the size if it was specified in pixels per button here;
    * delay until after call to RecursiveLoadData. */
   /* parse the geometry string */

@@ -85,6 +85,7 @@ int main(int argc, char **argv)
   char mask_mesg[80];
   unsigned long last_win = 0;	/* last window handled */
   unsigned long focus_win = 0;	/* current focus */
+  unsigned long raised_win = 0;
   fd_set_size_t fd_width;
   int fd[2];
   int timeout;
@@ -138,7 +139,8 @@ int main(int argc, char **argv)
 #endif
 
   fd_width = GetFdWidth();
-  sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)(M_FOCUS_CHANGE));
+  sprintf(mask_mesg,"SET_MASK %lu\n",
+	  (unsigned long)(M_FOCUS_CHANGE|M_RAISE_WINDOW));
   SendInfo(fd,mask_mesg,0);
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
@@ -164,19 +166,29 @@ int main(int argc, char **argv)
     raise_window_now = 0;
     if (FD_ISSET(fd[1], &in_fdset))
     {
-      FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+      FvwmPacket *packet = ReadFvwmPacket(fd[1]);
       if ( packet == NULL )
       {
 	exit(0);
       }
-      else
+      switch (packet->type)
       {
+      case M_FOCUS_CHANGE:
+	/* it's a focus package */
 	focus_win = packet->body[0];
-	if (focus_win != last_win)
+	if (focus_win != raised_win)
 	{
 	  have_new_window = 1;
 	}
 	raise_window_now = raise_immediately;
+	break;
+      case M_RAISE_WINDOW:
+	raised_win = packet->body[0];
+	if (have_new_window && focus_win == raised_win)
+	{
+	  have_new_window = 0;
+	}
+	break;
       }
     }
     else

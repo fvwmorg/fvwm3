@@ -1,8 +1,13 @@
 1999-08-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmAuto/FvwmAuto.c (main): another fix for FvwmAuto; it's probably
+	still possible to make FvwmAuto fail with repeated lower/raise/restack
+	packages
+
 	* FvwmButtons/FvwmButtons.c (recursive_change_colorset): FvwmButtons
 	allows to set coluor sets on all buttons and containers and updates
 	them at run time
+	(main): removed forgotten debug code
 
 1999-08-29  Dominik Vogt  <dominik_vogt@gmx.de>
 
