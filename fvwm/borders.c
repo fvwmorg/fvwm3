@@ -621,7 +621,6 @@ static void RedrawBorder(
     XRectangle r;
     Bool is_pressed = False;
 
-fprintf(stderr,"pw = 0x%x, dw=0x%x, f=0x%x\n", (int)PressedW, (int)t->decor_w, (int)t->frame);
     if (PressedW == t->sides[0])
     {
       /* top */
