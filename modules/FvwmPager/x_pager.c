@@ -1320,7 +1320,7 @@ void DrawGrid(int i, int erase)
   int MaxW,MaxH;
   char str[15], *ptr;
 
-  if((i < 0 ) || (i >= ndesks) || (use_no_separators))
+  if((i < 0 ) || (i >= ndesks))
     return;
 
   MaxW = (Scr.VxMax + Scr.MyDisplayWidth);

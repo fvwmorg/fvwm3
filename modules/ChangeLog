@@ -3,6 +3,8 @@
 	* FvwmPager/x_pager.c (DrawGrid):
 	(DrawIconGrid):
 	fixed previous patch
+	(DrawGrid):
+	fixed previous fix
 
 	* FvwmPager/FvwmPager.c: (ParseOptions):
 	* FvwmPager/x_pager.c (DrawGrid):
