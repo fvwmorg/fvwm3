@@ -373,10 +373,10 @@ SaveWindowStates(FILE *f)
               ewin->orig_g.y - ewin->old_bw,
 	      ewin->orig_g.width - 2*ewin->boundary_width ,
 	      ewin->orig_g.height -2*ewin->boundary_width-ewin->title_g.height,
-	      ewin->frame_g.x + ((!IS_STICKY(ewin)) ? Scr.Vx : 0),
-              ewin->frame_g.y + ((!IS_STICKY(ewin)) ? Scr.Vy : 0),
-              ewin->frame_g.width,
-              ewin->maximized_ht,
+              ewin->maximized_g.x + ((!IS_STICKY(ewin)) ? Scr.Vx : 0),
+              ewin->maximized_g.y + ((!IS_STICKY(ewin)) ? Scr.Vy : 0),
+              ewin->maximized_g.width,
+              ewin->maximized_g.height,
 	      ewin->icon_x_loc + ((!is_icon_sticky) ? Scr.Vx : 0),
 	      ewin->icon_y_loc + ((!is_icon_sticky) ? Scr.Vy : 0));
       fprintf(f, "  [DESK] %i\n", ewin->Desk);

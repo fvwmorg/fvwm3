@@ -177,6 +177,7 @@ typedef struct
 #define FOCUS_NEVER   0x3
 #define FOCUS_MASK    0x3
     unsigned focus_mode : 2;
+    unsigned has_bottom_title : 1;
     unsigned has_depressable_border : 1;
     unsigned has_mwm_border : 1;
     unsigned has_mwm_buttons : 1;
@@ -375,8 +376,7 @@ typedef struct FvwmWindow
     char *icon_bitmap_file;
 
     rectangle orig_g;
-
-    int maximized_ht;           /* maximized window height */
+    rectangle maximized_g;      /* maximized window geometry */
 
     int xdiff,ydiff;            /* used to restore window position on exit*/
     int *mwm_hints;

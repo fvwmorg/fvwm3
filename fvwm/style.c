@@ -1763,6 +1763,20 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           ptmpstyle->flag_mask.has_no_title = 1;
           ptmpstyle->change_mask.has_no_title = 1;
         }
+	else if(StrEquals(token, "TitleAtBottom"))
+        {
+	  found = True;
+	  SFSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
+	  SMSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
+	  SCSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
+        }
+        else if(StrEquals(token, "TitleAtTop"))
+        {
+	  found = True;
+	  SFSET_HAS_BOTTOM_TITLE(*ptmpstyle, 0);
+	  SMSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
+	  SCSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
+        }
         break;
 
       case 'u':
@@ -1789,12 +1803,15 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         {
 	  found = True;
 	  token = PeekToken(rest, &rest);
-          if (token) {
+          if (token)
+	  {
             int hit = 0;
             /* changed to accum multiple Style definitions (veliaa@rpi.edu) */
             for (add_style = all_styles; add_style;
-		 add_style = SGET_NEXT_STYLE(*add_style)) {
-              if (StrEquals(token, SGET_NAME(*add_style))) {
+		 add_style = SGET_NEXT_STYLE(*add_style))
+	    {
+              if (StrEquals(token, SGET_NAME(*add_style)))
+	      {
 		/* match style */
                 if (!hit)
                 {
@@ -1936,10 +1953,9 @@ static void handle_window_style_change(FvwmWindow *t)
   /*
    * is_sticky
    * is_icon_sticky
-   */
-
-  /* sticky and icon_sticky are a bit more complicated because they can move
-   * windows to a different page or desk. */
+   *
+   * These are a bit more complicated because they can move windows to a
+   * different page or desk. */
   if (SCIS_STICKY(style))
   {
     handle_stick(&Event, t->frame, t, C_FRAME, "", 0, SFIS_STICKY(style));
@@ -1960,6 +1976,14 @@ static void handle_window_style_change(FvwmWindow *t)
   if (SCFOCUS_MODE(style))
   {
     do_setup_focus_policy = True;
+  }
+
+  /*
+   * has_bottom_title
+   */
+  if (SCHAS_BOTTOM_TITLE(style))
+  {
+    do_setup_frame = True;
   }
 
   /*
@@ -2086,20 +2110,17 @@ static void handle_window_style_change(FvwmWindow *t)
 
   if (do_redecorate)
   {
-    /* destroy old decorations */
-    destroy_auxiliary_windows(t, False);
+    char left_buttons;
+    char right_buttons;
 
     /* determine level of decoration */
-    setup_style_and_decor(t, &style);
+    setup_style_and_decor(t, &style, &left_buttons, &right_buttons);
 
     /* redecorate */
-    setup_auxiliary_windows(t, False);
-
-    /* grab keys and buttons */
-    setup_key_and_button_grabs(t);
-    do_setup_focus_policy = False;
+    change_auxiliary_windows(t, left_buttons, right_buttons);
 
 #if 0
+    /*!!! calculate new size and position of frame */
     {
       int a,b;
       unsigned int mask;
@@ -2145,6 +2166,8 @@ static void handle_window_style_change(FvwmWindow *t)
   {
     FvwmWindow *u = Scr.Hilite;
 
+    if (IS_SHADED(t))
+      XRaiseWindow(dpy, t->decor_w);
     SetBorder(t, (Scr.Hilite == t), 2, True, None);
     Scr.Hilite = u;
   }
@@ -2186,8 +2209,6 @@ void handle_style_changes(void)
   Window focus_w;
   FvwmWindow *focus_fw;
   Bool do_need_ungrab = False;
-
-fprintf(stderr,"updating styles\n");
 
   /* Grab the server during the style update! */
   MyXGrabServer(dpy);

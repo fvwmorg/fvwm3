@@ -1540,6 +1540,10 @@ void resize_window(F_CMD_ARGS)
 		  False);
     if (IS_SHADED(tmp_win))
     {
+#if 0
+      if (HAS_BOTTOM_TITLE(tmp_win))
+	tmp_win->orig_g.y = tmp_win->frame_g.y - drag->height + tmp_win->frame_g.height;
+#endif
       tmp_win->orig_g.width = drag->width;
       tmp_win->orig_g.height = drag->height;
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
@@ -1576,13 +1580,18 @@ void resize_window(F_CMD_ARGS)
 
   if (IS_SHADED(tmp_win))
   {
+    if (HAS_BOTTOM_TITLE(tmp_win))
+      drag->height = tmp_win->frame_g.height;
+    else
+    {
+      if (was_maximized)
+	drag->height = tmp_win->maximized_g.height;
+      else
+	drag->height = tmp_win->orig_g.height;
+    }
     drag->x = tmp_win->frame_g.x;
     drag->y = tmp_win->frame_g.y;
     drag->width = tmp_win->frame_g.width;
-    if (was_maximized)
-      drag->height = tmp_win->maximized_ht;
-    else
-      drag->height = tmp_win->orig_g.height;
   }
   else
     XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
@@ -1922,8 +1931,16 @@ void resize_window(F_CMD_ARGS)
 		  True);
     if (IS_SHADED(tmp_win))
     {
-      SetupFrame(tmp_win, drag->x, drag->y,
-		 drag->width, tmp_win->frame_g.height, False, False);
+      if (HAS_BOTTOM_TITLE(tmp_win))
+      {
+	SetupFrame(tmp_win, drag->x, tmp_win->frame_g.y,
+		   drag->width, tmp_win->frame_g.height, False, False);
+      }
+      else
+      {
+	SetupFrame(tmp_win, drag->x, drag->y,
+		   drag->width, tmp_win->frame_g.height, False, False);
+      }
       tmp_win->orig_g.height = drag->height;
     }
     else
@@ -2759,7 +2776,10 @@ void Maximize(F_CMD_ARGS)
     SET_MAXIMIZED(tmp_win, 1);
 
     ConstrainSize(tmp_win, &new_width, &new_height, 0, 0, False);
-    tmp_win->maximized_ht = new_height;
+    tmp_win->maximized_g.x = new_x;
+    tmp_win->maximized_g.y = new_y;
+    tmp_win->maximized_g.width = new_width;
+    tmp_win->maximized_g.height = new_height;
     if (IS_SHADED(tmp_win))
       new_height = tmp_win->frame_g.height;
     SetupFrame(tmp_win,new_x,new_y,new_width,new_height,True,False);

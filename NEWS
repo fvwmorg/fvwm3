@@ -1,5 +1,7 @@
 Changes in beta release 2.3.10
 
+* New styles TitleAtBottom and TitleAtTop.
+
 * FvwmIconMan, FvwmTaskBar and FvwmWinList support animatation via
   FvwmAnimate.
 

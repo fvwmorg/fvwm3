@@ -97,20 +97,24 @@ static char  *button_states[MaxButtonState]={
  ***********************************************************************/
 void WindowShade(F_CMD_ARGS)
 {
-  int h, y, step=1, old_h;
-  int new_x, new_y, new_height;
+  int h;
+  int y;
+  int fy;
+  int step = 1;
+  int old_h;
+  int new_y;
+  int new_height;
   int toggle;
+  Bool do_scroll;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
   if (tmp_win == NULL)
     return;
 
-  if (!HAS_TITLE(tmp_win)) {
-    XBell(dpy, 0);
-    return;
-  }
-
+  do_scroll = Scr.go.WindowShadeScrolls;
+  if (HAS_BOTTOM_TITLE(tmp_win))
+    do_scroll ^= True;
   toggle = ParseToggleArgument(action, NULL, -1, 0);
   if (toggle == -1)
   {
@@ -139,31 +143,38 @@ void WindowShade(F_CMD_ARGS)
   {
     /* unshade window */
     SET_SHADED(tmp_win, 0);
-    new_x = tmp_win->frame_g.x;
-    new_y = tmp_win->frame_g.y;
+    XRaiseWindow(dpy, tmp_win->Parent);
     if (IS_MAXIMIZED(tmp_win))
-      new_height = tmp_win->maximized_ht;
+      new_height = tmp_win->maximized_g.height;
     else
       new_height = tmp_win->orig_g.height;
+    new_y = tmp_win->frame_g.y;
+    if (HAS_BOTTOM_TITLE(tmp_win))
+      new_y += (tmp_win->frame_g.height - new_height);
 
     /* this is necessary if the maximized state has changed while shaded */
-    SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_g.width, new_height,
-               True, True);
+    SetupFrame(tmp_win, tmp_win->frame_g.x, new_y, tmp_win->frame_g.width,
+	       new_height, True, True);
 
-    if (Scr.shade_anim_steps != 0) {
+    if (Scr.shade_anim_steps != 0)
+    {
       h = tmp_win->title_g.height+tmp_win->boundary_width;
-      if (Scr.go.WindowShadeScrolls)
+      if (do_scroll)
         XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
       y = h - new_height;
+      fy = tmp_win->frame_g.y;
       old_h = tmp_win->frame_g.height;
-      while (h < new_height) {
-        XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_g.width, h);
+      while (h < new_height)
+      {
+        XMoveResizeWindow(
+	  dpy, tmp_win->frame, tmp_win->frame_g.x, fy, tmp_win->frame_g.width,
+	  h);
         XResizeWindow(dpy, tmp_win->decor_w, tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->Parent,
                       tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
                       max(h - 2 * tmp_win->boundary_width
                           - tmp_win->title_g.height, 1));
-        if (Scr.go.WindowShadeScrolls)
+        if (do_scroll)
           XMoveWindow(dpy, tmp_win->w, 0, y);
         tmp_win->frame_g.height = h;
         /* way too flickery
@@ -172,14 +183,16 @@ void WindowShade(F_CMD_ARGS)
         BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
         FlushOutputQueues();
         XSync(dpy, 0);
-        h+=step;
-        y+=step;
+        h += step;
+        y += step;
+	if (HAS_BOTTOM_TITLE(tmp_win))
+	  fy -= step;
       }
       tmp_win->frame_g.height = old_h;
       XMoveWindow(dpy, tmp_win->w, 0, 0);
     }
-    SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_g.width, new_height,
-               True, False);
+    SetupFrame(tmp_win, tmp_win->frame_g.x, new_y, tmp_win->frame_g.width,
+	       new_height, True, False);
     BroadcastPacket(M_DEWINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }
@@ -187,14 +200,27 @@ void WindowShade(F_CMD_ARGS)
   {
     /* shade window */
     SET_SHADED(tmp_win, 1);
+    if (HAS_BOTTOM_TITLE(tmp_win))
+      new_y = tmp_win->frame_g.y + tmp_win->frame_g.height -
+	tmp_win->title_g.height - 2 * tmp_win->boundary_width;
+    else
+      new_y = tmp_win->frame_g.y;
+    new_height =
+      tmp_win->title_g.height + 2 * tmp_win->boundary_width;
 
-    if (Scr.shade_anim_steps != 0) {
+    if (Scr.shade_anim_steps != 0)
+    {
       h = tmp_win->frame_g.height;
       y = 0;
       old_h = tmp_win->frame_g.height;
-      while (h > tmp_win->title_g.height+tmp_win->boundary_width) {
-	if (Scr.go.WindowShadeScrolls)
+      while (h > tmp_win->title_g.height + 2 * tmp_win->boundary_width)
+      {
+	if (do_scroll)
 	  XMoveWindow(dpy, tmp_win->w, 0, y);
+        XMoveResizeWindow(
+	  dpy, tmp_win->frame, tmp_win->frame_g.x,
+	  tmp_win->frame_g.y - ((HAS_BOTTOM_TITLE(tmp_win)) ? y : 0),
+	  tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->decor_w, tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->Parent,
@@ -208,16 +234,16 @@ void WindowShade(F_CMD_ARGS)
         BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
         FlushOutputQueues();
         XSync(dpy, 0);
-        h-=step;
-        y-=step;
+        h -= step;
+        y -= step;
       }
       tmp_win->frame_g.height = old_h;
-      if (Scr.go.WindowShadeScrolls)
+      if (do_scroll)
         XMoveWindow(dpy, tmp_win->w, 0, 0);
     }
-    SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-               tmp_win->frame_g.width, tmp_win->title_g.height
-               + tmp_win->boundary_width, False, False);
+    XRaiseWindow(dpy, tmp_win->decor_w);
+    SetupFrame(tmp_win, tmp_win->frame_g.x, new_y, tmp_win->frame_g.width,
+	       new_height, False, False);
     BroadcastPacket(M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }

@@ -1,5 +1,47 @@
 1999-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/session.c (LoadWindowStates):
+	(SaveWindowStates):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/builtins.c (WindowShade):
+	* fvwm/move_resize.c (Maximize):
+	(resize_window):
+	* fvwm/borders.c (RedrawBorder):
+	* fvwm/builtins.c (WindowShade):
+	shaded windows get a full border
+	new style 'TitleAtBottom'
+
+	* fvwm/borders.c (SetupFrame):
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h (struct):
+	* fvwm/style.c (ProcessNewStyle):
+
+	* fvwm/builtins.c (WindowShade):
+	windows without title can be shaded too
+
+	* fvwm/style.c (handle_window_style_change):
+	* fvwm/add_window.c (setup_style_and_decor):
+	(destroy_title_window):
+	(change_title_window):
+	(setup_button_windows):
+	(destroy_button_windows):
+	(change_button_windows):
+	(setup_resize_handle_windows):
+	(destroy_resize_handle_windows):
+	(change_resize_handle_windows):
+	(setup_frame_stacking):
+	(setup_auxiliary_windows):
+	(change_auxiliary_windows):
+	(destroy_auxiliary_windows):
+	(AddWindow):
+	changind decor related styles is much faster
+	minimised overhead for changed decorations
+
+	* fvwm/decorations.c (SelectDecor):
+	return a bit mask for selected buttons instead of messing with the
+	window ids.
+
 	* fvwm/add_window.c (change_icon_boxes):
 	(destroy_icon_boxes):
 	(change_icon):
@@ -25,7 +67,7 @@
 
 	* fvwm/style.c (handle_style_changes):
 	* fvwm/focus.c (DoSetFocus):
-	focus poliy style changes update
+	focus policy style changes update
 
 	* fvwm/focus.c (DoSetFocus):
 	fixed title buttons with clicktofocus; broken in decor_w patch

@@ -212,7 +212,9 @@ void setup_wm_hints(FvwmWindow *tmp_win)
   tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
 }
 
-void setup_style_and_decor(FvwmWindow *tmp_win, window_style *pstyle)
+void setup_style_and_decor(
+  FvwmWindow *tmp_win, window_style *pstyle, char *left_buttons,
+  char *right_buttons)
 {
 #ifdef SHAPE
   if (ShapesSupported)
@@ -259,7 +261,7 @@ void setup_style_and_decor(FvwmWindow *tmp_win, window_style *pstyle)
   GetOlHints(tmp_win);
 
   SelectDecor(tmp_win, &pstyle->flags, SGET_BORDER_WIDTH(*pstyle),
-	      SGET_HANDLE_WIDTH(*pstyle));
+	      SGET_HANDLE_WIDTH(*pstyle), left_buttons, right_buttons);
 
 #ifdef SHAPE
   /* set boundary width to zero for shaped windows */
@@ -523,8 +525,26 @@ void setup_title_window(
   XSaveContext(dpy, tmp_win->title_w, FvwmContext, (caddr_t) tmp_win);
 }
 
-void setup_button_windows(
+void destroy_title_window(FvwmWindow *tmp_win, Bool do_only_delete_context)
+{
+  if (!do_only_delete_context)
+    XDestroyWindow(dpy, tmp_win->title_w);
+  XDeleteContext(dpy, tmp_win->title_w, FvwmContext);
+  tmp_win->title_w = 0;
+}
+
+void change_title_window(
   FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
+{
+  if (HAS_TITLE(tmp_win) && tmp_win->title_w == None)
+    setup_title_window(tmp_win, valuemask, pattributes);
+  else if (!HAS_TITLE(tmp_win) && tmp_win->title_w != None)
+    destroy_title_window(tmp_win, False);
+}
+
+void setup_button_windows(
+  FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes,
+  char left_buttons, char right_buttons)
 {
   int i;
 
@@ -539,7 +559,8 @@ void setup_button_windows(
 
   for(i = 4; i >= 0; i--)
   {
-    if((i < Scr.nr_left_buttons) && (tmp_win->left_w[i] > 0))
+    if(tmp_win->left_w[i] == None && i < Scr.nr_left_buttons &&
+       (left_buttons & (1 << i)))
     {
       tmp_win->left_w[i] = XCreateWindow(dpy, tmp_win->decor_w,
 					 tmp_win->title_g.height * i, 0,
@@ -550,12 +571,16 @@ void setup_button_windows(
 					 pattributes);
       XSaveContext(dpy, tmp_win->left_w[i], FvwmContext, (caddr_t) tmp_win);
     }
-    else
+    else if (tmp_win->left_w[i] != None && !(left_buttons & (1 << i)))
     {
+      /* destroy the current button window */
+      XDestroyWindow(dpy, tmp_win->left_w[i]);
+      XDeleteContext(dpy, tmp_win->left_w[i], FvwmContext);
       tmp_win->left_w[i] = None;
     }
 
-    if((i < Scr.nr_right_buttons) && (tmp_win->right_w[i] > 0))
+    if(tmp_win->right_w[i] == None && i < Scr.nr_right_buttons &&
+       (right_buttons & (1 << i)))
     {
       tmp_win->right_w[i] = XCreateWindow(dpy, tmp_win->decor_w,
 					  tmp_win->title_g.width
@@ -567,12 +592,53 @@ void setup_button_windows(
 					  pattributes);
       XSaveContext(dpy, tmp_win->right_w[i], FvwmContext, (caddr_t) tmp_win);
     }
-    else
+    else if (tmp_win->right_w[i] != None && !(right_buttons & (1 << i)))
     {
+      /* destroy the current button window */
+      XDestroyWindow(dpy, tmp_win->right_w[i]);
+      XDeleteContext(dpy, tmp_win->right_w[i], FvwmContext);
       tmp_win->right_w[i] = None;
     }
   }
 }
+
+void destroy_button_windows(FvwmWindow *tmp_win, Bool do_only_delete_context)
+{
+  int i;
+
+  for(i = Scr.nr_left_buttons - 1; i >= 0; i--)
+  {
+    if(tmp_win->left_w[i] != None)
+    {
+      if (!do_only_delete_context)
+	XDestroyWindow(dpy, tmp_win->left_w[i]);
+      XDeleteContext(dpy, tmp_win->left_w[i], FvwmContext);
+      tmp_win->left_w[i] = None;
+    }
+  }
+  for(i = Scr.nr_right_buttons - 1; i >= 0; i--)
+  {
+    if(tmp_win->right_w[i] != None)
+    {
+      if (!do_only_delete_context)
+	XDestroyWindow(dpy, tmp_win->right_w[i]);
+      XDeleteContext(dpy, tmp_win->right_w[i], FvwmContext);
+      tmp_win->right_w[i] = None;
+    }
+  }
+}
+
+void change_button_windows(
+  FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes,
+  char left_buttons, char right_buttons)
+{
+  if (HAS_TITLE(tmp_win))
+    setup_button_windows(
+      tmp_win, valuemask, pattributes, left_buttons, right_buttons);
+  else
+    destroy_button_windows(tmp_win, False);
+}
+
 
 void setup_parent_window(FvwmWindow *tmp_win)
 {
@@ -638,7 +704,49 @@ void setup_resize_handle_windows(FvwmWindow *tmp_win)
   }
 }
 
-void setup_auxiliary_windows(FvwmWindow *tmp_win, Bool setup_frame_and_parent)
+void destroy_resize_handle_windows(
+  FvwmWindow *tmp_win, Bool do_only_delete_context)
+{
+  int i;
+
+  for(i = 0; i < 4 ; i++)
+  {
+    if (!do_only_delete_context)
+    {
+      XDestroyWindow(dpy, tmp_win->sides[i]);
+      XDestroyWindow(dpy, tmp_win->corners[i]);
+    }
+    XDeleteContext(dpy, tmp_win->sides[i], FvwmContext);
+    XDeleteContext(dpy, tmp_win->corners[i], FvwmContext);
+    tmp_win->sides[i] = None;
+    tmp_win->corners[i] = None;
+  }
+}
+
+void change_resize_handle_windows(FvwmWindow *tmp_win)
+{
+  if (HAS_BORDER(tmp_win) && tmp_win->sides[0] == None)
+    setup_resize_handle_windows(tmp_win);
+  else if (!HAS_BORDER(tmp_win) && tmp_win->sides[0] != None)
+    destroy_resize_handle_windows(tmp_win, False);
+}
+
+void setup_frame_stacking(FvwmWindow *tmp_win)
+{
+  int i;
+
+  XMapSubwindows(dpy, tmp_win->decor_w);
+  XLowerWindow(dpy, tmp_win->decor_w);
+  for (i = 0; i < 4; i++)
+  {
+    if (tmp_win->corners[i] != None)
+      XLowerWindow(dpy, tmp_win->corners[i]);
+  }
+}
+
+void setup_auxiliary_windows(
+  FvwmWindow *tmp_win, Bool setup_frame_and_parent, char left_buttons,
+  char right_buttons)
 {
   unsigned long valuemask_save = 0;
   XSetWindowAttributes attributes;
@@ -659,7 +767,8 @@ void setup_auxiliary_windows(FvwmWindow *tmp_win, Bool setup_frame_and_parent)
 
   /****** button windows ******/
   if (HAS_TITLE(tmp_win))
-    setup_button_windows(tmp_win, valuemask_save, &attributes);
+    setup_button_windows(
+      tmp_win, valuemask_save, &attributes, left_buttons, right_buttons);
 
   /****** resize handle windows ******/
   setup_resize_handle_windows(tmp_win);
@@ -669,17 +778,42 @@ void setup_auxiliary_windows(FvwmWindow *tmp_win, Bool setup_frame_and_parent)
     setup_parent_window(tmp_win);
 
   /****** setup frame stacking order ******/
-  XMapSubwindows (dpy, tmp_win->decor_w);
-  /* Put parent at the bottom so it appears first in XQueryTree() results */
-  XLowerWindow(dpy, tmp_win->Parent);
-  XLowerWindow(dpy, tmp_win->decor_w);
-  /* have to lower the corners as they may overlap with the client */
-  XLowerWindow(dpy, tmp_win->corners[0]);
-  XLowerWindow(dpy, tmp_win->corners[1]);
-  XLowerWindow(dpy, tmp_win->corners[2]);
-  XLowerWindow(dpy, tmp_win->corners[3]);
-  XRaiseWindow(dpy, tmp_win->title_w);
+  setup_frame_stacking(tmp_win);
   XMapSubwindows (dpy, tmp_win->frame);
+}
+
+void destroy_auxiliary_windows(FvwmWindow *tmp_win,
+			       Bool destroy_frame_and_parent)
+{
+  if (destroy_frame_and_parent)
+  {
+    XDestroyWindow(dpy, tmp_win->frame);
+    XDeleteContext(dpy, tmp_win->frame, FvwmContext);
+    XDeleteContext(dpy, tmp_win->decor_w, FvwmContext);
+    XDeleteContext(dpy, tmp_win->Parent, FvwmContext);
+    XDeleteContext(dpy, tmp_win->w, FvwmContext);
+  }
+
+  if (HAS_TITLE(tmp_win))
+    destroy_title_window(tmp_win, True);
+  if (HAS_TITLE(tmp_win))
+    destroy_button_windows(tmp_win, True);
+  if (HAS_BORDER(tmp_win))
+    destroy_resize_handle_windows(tmp_win, True);
+}
+
+void change_auxiliary_windows(
+  FvwmWindow *tmp_win, char left_buttons, char right_buttons)
+{
+  unsigned long valuemask_save = 0;
+  XSetWindowAttributes attributes;
+
+  get_default_window_background(tmp_win, &valuemask_save, &attributes);
+  change_title_window(tmp_win, valuemask_save, &attributes);
+  change_button_windows(tmp_win, valuemask_save, &attributes, left_buttons,
+			right_buttons);
+  change_resize_handle_windows(tmp_win);
+  setup_frame_stacking(tmp_win);
 }
 
 void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
@@ -893,6 +1027,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   window_style style;
   /* used for faster access */
   style_flags *sflags;
+  char left_buttons;
+  char right_buttons;
   int a,b;
   extern FvwmWindow *colormap_win;
   extern Boolean PPosOverride;
@@ -948,7 +1084,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* get merged styles */
   lookup_style(tmp_win, &style);
   sflags = SGET_FLAGS_POINTER(style);
-  setup_style_and_decor(tmp_win, &style);
+  setup_style_and_decor(tmp_win, &style, &left_buttons, &right_buttons);
   memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(sflags->common),
 	 sizeof(common_flags_type));
 
@@ -1057,7 +1193,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /****** auxiliary window setup ******/
 
-  setup_auxiliary_windows(tmp_win, True);
+  setup_auxiliary_windows(tmp_win, True, left_buttons, right_buttons);
 
   /****** reparent the window ******/
 
@@ -1091,7 +1227,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     /* This is essentially Maximize, only we want the given dimensions */
     SET_MAXIMIZED(tmp_win, 1);
     ConstrainSize(tmp_win, &w_max, &h_max, 0, 0, False);
-    tmp_win->maximized_ht = h_max;
+    tmp_win->maximized_g.x = 0;
+    tmp_win->maximized_g.y = 0;
+    tmp_win->maximized_g.width = w_max;
+    tmp_win->maximized_g.height = h_max;
     SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
     SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
     /* fix orig values to not change page on unmaximize  */
@@ -1507,69 +1646,6 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 }
 
 
-/* ---------------------- window destruction functions --------------------- */
-
-
-void destroy_auxiliary_windows(FvwmWindow *tmp_win,
-			       Bool destroy_frame_and_parent)
-{
-  int i;
-
-  if (destroy_frame_and_parent)
-  {
-    XDestroyWindow(dpy, tmp_win->frame);
-    XDeleteContext(dpy, tmp_win->frame, FvwmContext);
-    XDeleteContext(dpy, tmp_win->decor_w, FvwmContext);
-    XDeleteContext(dpy, tmp_win->Parent, FvwmContext);
-    XDeleteContext(dpy, tmp_win->w, FvwmContext);
-  }
-
-  if (HAS_TITLE(tmp_win))
-  {
-    if (!destroy_frame_and_parent)
-      XDestroyWindow(dpy, tmp_win->title_w);
-    for(i=0;i<Scr.nr_left_buttons;i++)
-    {
-      if(tmp_win->left_w[i] != None)
-      {
-	if (!destroy_frame_and_parent)
-	{
-	  XDestroyWindow(dpy, tmp_win->left_w[i]);
-	}
-	XDeleteContext(dpy, tmp_win->left_w[i], FvwmContext);
-      }
-    }
-    for(i=0;i<Scr.nr_right_buttons;i++)
-    {
-      if(tmp_win->right_w[i] != None)
-      {
-	if (!destroy_frame_and_parent)
-	{
-	  XDestroyWindow(dpy, tmp_win->right_w[i]);
-	}
-	XDeleteContext(dpy, tmp_win->right_w[i], FvwmContext);
-      }
-    }
-  }
-  if (HAS_BORDER(tmp_win))
-  {
-    for(i=0;i<4;i++)
-    {
-      if (!destroy_frame_and_parent)
-	XDestroyWindow(dpy, tmp_win->sides[i]);
-      XDeleteContext(dpy, tmp_win->sides[i], FvwmContext);
-    }
-    for(i=0;i<4;i++)
-    {
-      if (!destroy_frame_and_parent)
-	XDestroyWindow(dpy, tmp_win->corners[i]);
-      XDeleteContext(dpy, tmp_win->corners[i], FvwmContext);
-    }
-  }
-}
-
-
-
 /**************************************************************************
  *
  * Releases dynamically allocated space used to store window/icon names
@@ -1700,10 +1776,8 @@ void destroy_window(FvwmWindow *tmp_win)
 
   if(tmp_win == Scr.Ungrabbed)
     Scr.Ungrabbed = NULL;
-
   if(tmp_win == Scr.pushed_window)
     Scr.pushed_window = NULL;
-
   if(tmp_win == colormap_win)
     colormap_win = NULL;
 

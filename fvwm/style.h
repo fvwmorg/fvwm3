@@ -68,7 +68,16 @@
 #define SMGET_COMMON_STATIC_FLAGS(st) ((st).flag_mask.common.s)
 #define SCGET_COMMON_FLAGS(st) ((st).change_mask.common)
 #define SCGET_COMMON_STATIC_FLAGS(st) ((st).change_mask.common.s)
-
+#define SHAS_BOTTOM_TITLE(sf) ((sf).common.s.has_bottom_title)
+#define SFHAS_BOTTOM_TITLE(st) ((st).flags.common.s.has_bottom_title)
+#define SMHAS_BOTTOM_TITLE(st) ((st).flag_mask.common.s.has_bottom_title)
+#define SCHAS_BOTTOM_TITLE(st) ((st).change_mask.common.s.has_bottom_title)
+#define SFSET_HAS_BOTTOM_TITLE(st,x) \
+          ((st).flags.common.s.has_bottom_title = !!(x))
+#define SMSET_HAS_BOTTOM_TITLE(st,x) \
+          ((st).flag_mask.common.s.has_bottom_title = !!(x))
+#define SCSET_HAS_BOTTOM_TITLE(st,x) \
+          ((st).change_mask.common.s.has_bottom_title = !!(x))
 #define SIS_STICKY(sf) ((sf).common.is_sticky)
 #define SFIS_STICKY(st) ((st).flags.common.is_sticky)
 #define SMIS_STICKY(st) ((st).flag_mask.common.is_sticky)

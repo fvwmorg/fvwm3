@@ -443,7 +443,7 @@ void RedrawBorder(FvwmWindow *t, Bool onoroff, int force, Bool Mapped,
 	Bool toggled =
 	  (HAS_MWM_BUTTONS(t) &&
 	   ((stateflags & MWM_DECOR_MAXIMIZE && IS_MAXIMIZED(t)) ||
-	    (stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
+	    (stateflags & MWM_DECOR_SHADE && shaded) ||
 	    (stateflags & MWM_DECOR_STICK && IS_STICKY(t))));
 	enum ButtonState bs = get_button_state(onoroff, toggled, t->left_w[i]);
 	DecorFace *df = &TB_STATE(GetDecor(t, left_buttons[i]))[bs];
@@ -524,7 +524,7 @@ void RedrawBorder(FvwmWindow *t, Bool onoroff, int force, Bool Mapped,
 	Bool toggled =
 	  (HAS_MWM_BUTTONS(t) &&
 	   ((stateflags & MWM_DECOR_MAXIMIZE && IS_MAXIMIZED(t)) ||
-	    (stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
+	    (stateflags & MWM_DECOR_SHADE && shaded) ||
 	    (stateflags & MWM_DECOR_STICK && IS_STICKY(t))));
 	enum ButtonState bs = get_button_state(onoroff, toggled, t->right_w[i]);
 	DecorFace *df = &TB_STATE(GetDecor(t,right_buttons[i]))[bs];
@@ -653,8 +653,7 @@ void RedrawBorder(FvwmWindow *t, Bool onoroff, int force, Bool Mapped,
 	  )
         {
           int height = t->frame_g.height - (t->boundary_width * 2 ) + 1;
-          /* Inset for shaded windows goes to the bottom */
-          if (shaded) height += t->boundary_width;
+
           /* draw a single pixel band for MWMBorders and the top FvwmBorder
 	   * line */
           RelieveRectangle(dpy, t->decor_w,
@@ -727,33 +726,35 @@ void RedrawBorder(FvwmWindow *t, Bool onoroff, int force, Bool Mapped,
             marks[i].x2 = marks[i].x1 = t->frame_g.width - t->corner_width + j;
             marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
             i++;
-            if (!shaded)
-            {
-	      /* bot left */
-              marks[i].x2 = marks[i].x1 = t->corner_width + j;
-              marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
-              i++;
-              /* bot right */
-              marks[i].x2 = marks[i].x1 = t->frame_g.width - t->corner_width+j;
-              marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
-              i++;
-              /* left top */
-              marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
-              marks[i].y2 = marks[i].y1 = t->corner_width + j;
-              i++;
-              /* left bot */
-              marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
-              marks[i].y2 = marks[i].y1 = t->frame_g.height-t->corner_width+j;
-              i++;
-              /* right top */
-              marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
-              marks[i].y2 = marks[i].y1 = t->corner_width + j;
-              i++;
-              /* right bot */
-              marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
-              marks[i].y2 = marks[i].y1 = t->frame_g.height-t->corner_width +j;
-              i++;
-            }
+	    /* bot left */
+	    marks[i].x2 = marks[i].x1 = t->corner_width + j;
+	    marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
+	    i++;
+	    /* bot right */
+	    marks[i].x2 = marks[i].x1 = t->frame_g.width - t->corner_width+j;
+	    marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
+	    i++;
+
+	    if (!shaded)
+	    {
+	      /* left top */
+	      marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
+	      marks[i].y2 = marks[i].y1 = t->corner_width + j;
+	      i++;
+	      /* left bot */
+	      marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
+	      marks[i].y2 = marks[i].y1 = t->frame_g.height-t->corner_width+j;
+	      i++;
+	      /* right top */
+	      marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
+	      marks[i].y2 = marks[i].y1 = t->corner_width + j;
+	      i++;
+	      /* right bot */
+	      marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
+	      marks[i].y2 = marks[i].y1 = t->frame_g.height-t->corner_width +j;
+	      i++;
+	    }
+
             XDrawSegments(dpy, t->decor_w, rgc, marks, i);
 
             /* shadow marks, reuse the array assuming XDraw doesn't trash it */
@@ -766,13 +767,14 @@ void RedrawBorder(FvwmWindow *t, Bool onoroff, int force, Bool Mapped,
             /* top right */
             marks[i].x2 = (marks[i].x1 -= j);
             i++;
+	    /* bot left */
+	    marks[i].x2 = (marks[i].x1 -= j);
+	    i++;
+	    /* bot right */
+	    marks[i].x2 = (marks[i].x1 -= j);
+	    i++;
             if (!shaded)
-            { /* bot left */
-              marks[i].x2 = (marks[i].x1 -= j);
-              i++;
-              /* bot right */
-              marks[i].x2 = (marks[i].x1 -= j);
-              i++;
+            {
               /* left top */
               marks[i].y2 = (marks[i].y1 -= j);
               i++;
@@ -1167,7 +1169,6 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     tmp_win->title_g.width = w - (left + right) * tmp_win->title_g.height
                            - 2 * tmp_win->boundary_width;
 
-
     if(tmp_win->title_g.width < 1)
       tmp_win->title_g.width = 1;
 
@@ -1178,21 +1179,26 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
         (left)*tmp_win->title_g.height;
       if(tmp_win->title_g.x >=  w - tmp_win->boundary_width)
         tmp_win->title_g.x = -10;
-      tmp_win->title_g.y = tmp_win->boundary_width;
+      if (HAS_BOTTOM_TITLE(tmp_win))
+      {
+	tmp_win->title_g.y =
+	  h - tmp_win->boundary_width - tmp_win->title_g.height;
+      }
+      else
+      {
+	tmp_win->title_g.y = tmp_win->boundary_width;
+      }
 
       xwc.width = tmp_win->title_g.width;
-
       xwc.height = tmp_win->title_g.height;
       xwc.x = tmp_win->title_g.x;
       xwc.y = tmp_win->title_g.y;
       XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
 
-
       xwcm = CWX | CWY | CWHeight | CWWidth;
       xwc.height = tmp_win->title_g.height;
       xwc.width = tmp_win->title_g.height;
-
-      xwc.y = tmp_win->boundary_width;
+      xwc.y = tmp_win->title_g.y;
       xwc.x = tmp_win->boundary_width;
       for(i=0;i<Scr.nr_left_buttons;i++)
       {
@@ -1274,8 +1280,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
           xwc.width = tmp_win->boundary_width;
           xwc.height = ywidth;
         }
-        if (!shaded||(i!=2))
-          XConfigureWindow(dpy, tmp_win->sides[i], xwcm, &xwc);
+	XConfigureWindow(dpy, tmp_win->sides[i], xwcm, &xwc);
       }
 
       xwcm = CWX|CWY|CWWidth|CWHeight;
@@ -1303,7 +1308,10 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   tmp_win->attr.height = h - tmp_win->title_g.height
     - 2*tmp_win->boundary_width;
   cx = tmp_win->boundary_width;
-  cy = tmp_win->title_g.height + tmp_win->boundary_width;
+  if (HAS_BOTTOM_TITLE(tmp_win))
+    cy = tmp_win->boundary_width;
+  else
+    cy = tmp_win->title_g.height + tmp_win->boundary_width;
 
   if (!shaded)
   {
@@ -1390,6 +1398,8 @@ void ForceSetupFrame(
   FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   Bool curr_shading)
 {
+  tmp_win->frame_g.x = x + 1;
+  tmp_win->frame_g.y = y + 1;
   tmp_win->frame_g.width = 0;
   tmp_win->frame_g.height = 0;
   SetupFrame(tmp_win, x, y, w, h, sendEvent, curr_shading);

@@ -3361,6 +3361,7 @@ BorderWidth, HandleWidth,
 NoIcon / Icon, MiniIcon,
 IconBox, IconGrid, IconFill,
 NoTitle / Title,
+TitleAtBottom / TitleAtTop,
 NoHandles / Handles,
 WindowListSkip / WindowListHit,
 CirculateSkip / CirculateHit,
@@ -3412,6 +3413,14 @@ In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
 entries that have them describes the fvwm default behavior and
 can be used if you want to change the fvwm default behavior.
+
+The \fITitle\fP and \fINoTitle\fP determine if the window has a title
+bar or not. By default all windows have a title bar.
+
+Windows with the \fITitleAtBottom\fP style will have a title bar
+below the window instead of above as usual. The \fITitleAtTop\fP
+style restores the default placement. Even if the window has the
+\fINoTitle\fP style set, this affects the \fIWindowShade\fP command.
 
 \fIDecorateTransient\fP causes transient windows, which are normally
 left undecorated, to be given the usual fvwm decorations (title
