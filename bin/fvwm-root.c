@@ -14,7 +14,6 @@
 #include <X11/Xatom.h>
 #include <libs/fvwmlib.h>
 #include <libs/Picture.h>
-#include <X11/xpm.h> /* Has to be after Intrinsic.h gets included */
 
 int save_colors = 0;
 Display *dpy;
@@ -134,18 +133,23 @@ void SetRootWindow(char *tline)
 	FvwmPictureFlags fpf;
 	int nalloc_pixels = 0;
 	Pixel *alloc_pixels = NULL;
-	char *icon;
+	char *file_path;
 
 	fpf.alloc_pixels = 0;
 	fpf.alpha = 0;
 	PictureInitCMap(dpy);
-	icon = PictureFindImageFile(tline, NULL, R_OK);
+	/* try built-in image path first */
+	file_path = PictureFindImageFile(tline, NULL, R_OK);
+	if (file_path == NULL)
+	{
+		file_path = tline;
+	}
 	if (!PImageLoadPixmapFromFile(
-		dpy, root, tline, 0, &temp_pix, &shapeMask, &alpha,
+		dpy, root, file_path, 0, &temp_pix, &shapeMask, &alpha,
 		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, fpf))
 	{
 		fprintf(
-			stderr,"[fvwm-root] failed to load image file '%s'\n",
+			stderr, "[fvwm-root] failed to load image file '%s'\n",
 			tline);
 		return;
 	}
