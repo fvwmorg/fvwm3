@@ -32,7 +32,7 @@ foreach my $entry ($$contentRef =~
 		"\t\twindow => $window,\n\t\tdescr => q{$descr},\n\t},\n";
 }
 
-my $version = `egrep 'VERSION = |VERSIONINFO = ' Makefile | cut -d"=" -f2 \\
+my $version = `egrep '^VERSION = |^VERSIONINFO = ' Makefile | cut -d"=" -f2 \\
 	| perl -pe 's/^ //;s/\\n//'`;
 my $time = time;
 

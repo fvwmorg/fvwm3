@@ -1,3 +1,8 @@
+2003-10-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/add_window.c (GetWindowSizeHints):
+	reindented broken hint messages
+
 2003-10-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

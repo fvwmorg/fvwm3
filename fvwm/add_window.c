@@ -2860,16 +2860,17 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 			tmp->hints.flags &= ~PAspect;
 			fvwm_msg(
 				WARN, "GetWindowSizeHints",
-				"The applicaton window \"%s\"\n"
-				"(window id %#lx)"
-				" has broken aspect ratio: %d/%d - %d/%d\n"
-				"Fvwm is ignoring the aspect ratio.  "
-				"If you are having a problem\n"
-				"with the application, send this message to"
-				" the application owner.\n"
+				"The applicaton window (window id %#lx)\n"
+				"  \"%s\" has broken aspect ratio: "
+				"%d/%d - %d/%d\n"
+				"    fvwm is ignoring this aspect ratio.  "
+				"If you are having a problem with the\n"
+				"    application, send a bug report with this "
+				"message included to the\n"
+				"    application owner.  "
 				"There is no need to notify "
 				"fvwm-workers@fvwm.org.\n",
-				tmp->name.name, FW_W(tmp), minAspectX,
+				FW_W(tmp), tmp->name.name, minAspectX,
 				minAspectY, maxAspectX, maxAspectY);
 		}
 		else
@@ -2912,32 +2913,33 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
 	if (*broken_cause != 0)
 	{
-		fvwm_msg(WARN, "GetWindowSizeHints",
-			 "The application window \"%s\"\n(window id %#lx) "
-			 "has broken size hints (%s).\n"
-			 "Fvwm is ignoring those hints.  "
-			 "If you are having a problem\n"
-			 "with the application, send this message to"
-			 " the application owner.\n"
-			 "There is no need to notify fvwm-workers@fvwm.org.\n"
-			 "hint override = %d "
-			 "flags = %lx\n"
-			 "min_width = %d, min_height = %d, "
-			 "max_width = %d, max_height = %d\n"
-			 "width_inc = %d, height_inc = %d\n"
-			 "min_aspect = %d/%d, max_aspect = %d/%d\n"
-			 "base_width = %d, base_height = %d\n"
-			 "win_gravity = %d\n",
-			 tmp->name.name, FW_W(tmp), broken_cause,
-			 HAS_OVERRIDE_SIZE_HINTS(tmp),
-			 orig_hints.flags,
-			 orig_hints.min_width, orig_hints.min_height,
-			 orig_hints.max_width, orig_hints.max_height,
-			 orig_hints.width_inc, orig_hints.height_inc,
-			 orig_hints.min_aspect.x, orig_hints.min_aspect.y,
-			 orig_hints.max_aspect.x, orig_hints.max_aspect.y,
-			 orig_hints.base_width, orig_hints.base_height,
-			 orig_hints.win_gravity);
+		fvwm_msg(
+			WARN, "GetWindowSizeHints",
+			"The application window (id %#lx)\n"
+			"  \"%s\" has broken size hints (%s).\n"
+			"    fvwm is ignoring those hints.  "
+			"If you are having a problem with the\n"
+			"    application, send a bug report with this "
+			"message included to the\n"
+			"    application owner.  "
+			"There is no need to notify fvwm-workers@fvwm.org.\n"
+			"  hint override = %d, flags = %lx\n"
+			"  min_width = %d, min_height = %d, "
+			"max_width = %d, max_height = %d\n"
+			"  width_inc = %d, height_inc = %d\n"
+			"  min_aspect = %d/%d, max_aspect = %d/%d\n"
+			"  base_width = %d, base_height = %d\n"
+			"  win_gravity = %d\n",
+			FW_W(tmp), tmp->name.name, broken_cause,
+			HAS_OVERRIDE_SIZE_HINTS(tmp),
+			orig_hints.flags,
+			orig_hints.min_width, orig_hints.min_height,
+			orig_hints.max_width, orig_hints.max_height,
+			orig_hints.width_inc, orig_hints.height_inc,
+			orig_hints.min_aspect.x, orig_hints.min_aspect.y,
+			orig_hints.max_aspect.x, orig_hints.max_aspect.y,
+			orig_hints.base_width, orig_hints.base_height,
+			orig_hints.win_gravity);
 	}
 
 	return;

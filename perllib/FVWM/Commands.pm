@@ -5,7 +5,7 @@ package FVWM::Commands;
 use vars qw($VERS $TIME @LIST);
 
 $VERS = '2.5.8 (from cvs)';
-$TIME = 1057578789;
+$TIME = 1067046743;
 
 @LIST = (
 	{
@@ -289,6 +289,12 @@ $TIME = 1057578789;
 		cursor => '',
 		window => 0,
 		descr => q{Delete style defined using Style},
+	},
+	{
+		name => 'DestroyWindowStyle',
+		cursor => 'SELECT',
+		window => 1,
+		descr => q{Delete style defined using WindowStyle},
 	},
 	{
 		name => 'Direction',
@@ -1021,6 +1027,12 @@ $TIME = 1057578789;
 		cursor => '',
 		window => 0,
 		descr => q{(obsolete, use Style * WindowShadeSteps)},
+	},
+	{
+		name => 'WindowStyle',
+		cursor => 'SELECT',
+		window => 1,
+		descr => q{Set styles on the selected window},
 	},
 	{
 		name => 'Xinerama',

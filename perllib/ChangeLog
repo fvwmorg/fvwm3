@@ -1,3 +1,9 @@
+2003-10-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* perllib/FVWM/create-commands:
+	* perllib/FVWM/Commands.pm:
+	minor fix and regenerated
+
 2003-08-05  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module/Gtk2.pm:

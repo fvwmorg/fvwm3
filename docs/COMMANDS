@@ -1,4 +1,4 @@
-The recognized commands for fvwm 2.5.8 (from cvs) as of 07-Jul-2003:
+The recognized commands for fvwm 2.5.8 (from cvs) as of 25-Oct-2003:
 
   #                     - Comment line (ignored)
   *                     - Module configuration line (no space after asterisk)
@@ -47,6 +47,7 @@ The recognized commands for fvwm 2.5.8 (from cvs) as of 07-Jul-2003:
   DestroyMenuStyle      - Delete menu style defined using MenuStyle
   DestroyModuleConfig   - Delete matching module config lines defined using "*"
   DestroyStyle          - Delete style defined using Style
+  DestroyWindowStyle    - Delete style defined using WindowStyle
   Direction             - Operate on the next window in the specified direction
   Echo                  - Print message to stderr, mainly for debugging
   EdgeCommand           - Bind one or another screen edge to an fvwm action
@@ -169,6 +170,7 @@ The recognized commands for fvwm 2.5.8 (from cvs) as of 07-Jul-2003:
   WindowList            - Display the window list as a menu to select a window
   WindowShade           - Shade/unshade a window
   WindowShadeAnimate    - (obsolete, use Style * WindowShadeSteps)
+  WindowStyle           - Set styles on the selected window
   Xinerama              - Control Xinerama support
   XineramaPrimaryScreen - Identify Xinerama primary screen
   XineramaSls           - Control single logical screen support
