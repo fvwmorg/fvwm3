@@ -1,3 +1,10 @@
+1999-09-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmM4/FvwmM4:
+	* FvwmCpp/FvwmCpp.c:
+	removed unused reference to <X11/Xmu/SysUtil.h>
+	removed unused reference to <X11/extensions/shape.h>
+
 1999-09-23  Paul D. Smith  <psmith@gnu.org>
 
 	* Fvwm*/Makefile.am (LDADD): Move the $(X_LIBS) reference earlier

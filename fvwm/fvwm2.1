@@ -3753,7 +3753,7 @@ milliseconds.  "D" stands for double-click. The action "I" will cause
 an action to be performed on the button-press, if the function is
 invoked with prior knowledge of which window to act on.
 
-The special symbols $d, $w, $c, $r, $n, $x, $y and $0 through $9 are available
+The special symbols $d, $w, $c, $r, $n, $v, $x, $y and $0 through $9 are available
 in the ComplexFunctions or Macros, or whatever you want to call them.
 Within a macro, $w is expanded to the window-id (expressed in
 hex, i.e. 0x10023c) of the window for which the macro was called, $x and $y
@@ -3761,6 +3761,7 @@ are expanded to the current coordinates of the viewport
 and $d is expanded to the current desk number.
 $c, $r, $n are expanded to the window resource class, resource name
 and window name respectively.
+$v expands to the first line printed by the -version command line option.
 $0 through $9 are the arguments to the macro, so if you call
 .EX
 Key F10 R A Function MailFunction \\

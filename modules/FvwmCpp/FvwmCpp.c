@@ -53,8 +53,6 @@
 #include "libs/Picture.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
-#include <X11/extensions/shape.h>
-#include <X11/Xmu/SysUtil.h>
 #define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
 
 char *MyName;

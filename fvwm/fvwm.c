@@ -110,6 +110,7 @@ static void InternUsefulAtoms(void);
 static void InitVariables(void);
 static void usage(void);
 static int MappedNotOverride(Window w);
+static void setVersionInfo(void);
 
 XContext FvwmContext;		/* context for fvwm windows */
 XContext MenuContext;		/* context for fvwm menus */
@@ -153,6 +154,8 @@ Bool Restarting = False;
 int fd_width, x_fd;
 char *display_name = NULL;
 char *user_home_dir;
+char const *Fvwm_VersionInfo;
+char const *Fvwm_ConfigInfo;
 
 typedef enum { FVWM_RUNNING=0, FVWM_DONE, FVWM_RESTART } FVWM_STATE;
 
@@ -185,6 +188,8 @@ int main(int argc, char **argv)
   g_argc = argc;
 
   DBUG("main","Entered, about to parse args");
+
+  setVersionInfo();
 
 #ifdef I18N_MB
   if (setlocale(LC_CTYPE, "") == NULL)
@@ -316,32 +321,9 @@ int main(int argc, char **argv)
     }
     else if (strncasecmp(argv[i], "-version", 8) == 0)
     {
-      char configinfo[128] = "";
-
-      fvwm_msg(INFO,"main", "Fvwm Version %s compiled on %s at %s",
-              VERSION,__DATE__,__TIME__);
-#ifdef HAVE_READLINE
-      strcat(configinfo ," ReadLine");
-#endif
-#ifdef HAVE_RPLAY
-      strcat(configinfo ," RPlay");
-#endif
-#ifdef HAVE_STROKE
-      strcat(configinfo ," Stroke");
-#endif
-#ifdef XPM
-      strcat(configinfo, " XPM");
-#endif
-#ifdef IMLIB
-      strcat(configinfo, " IMLIB");
-#endif
-#ifdef GNOME
-      strcat(configinfo, " Gnome");
-#endif
-      if (strlen(configinfo))
-	fvwm_msg(INFO,"main", "with support for:%s\n", configinfo);
-      else
-	fprintf(stderr, "\n");
+      fvwm_msg(INFO,"main",(char *)Fvwm_VersionInfo);
+      if (Fvwm_ConfigInfo != NULL) fvwm_msg(INFO,"main",
+					    (char *)Fvwm_ConfigInfo);
       exit(0);
     }
     else
@@ -2120,4 +2102,41 @@ void setInitFunctionName(int n, const char *name)
 const char *getInitFunctionName(int n)
 {
   return initFunctionNames[n >= 0 && n < 3? n: 3];
+}
+
+
+static void setVersionInfo(void)
+{
+  char buf[1024];
+  int emptylen;
+
+  /* Set version information string */
+  sprintf(buf,"Fvwm Version %s compiled on %s at %s",
+          VERSION,__DATE__,__TIME__);
+  Fvwm_VersionInfo = strdup(buf);
+
+  /* Set configuration info string (may end up empty) */
+  strcpy(buf,"with support for: ");
+  emptylen = strlen(buf);
+
+#ifdef HAVE_READLINE
+  strcat(buf ," ReadLine");
+#endif
+#ifdef HAVE_RPLAY
+  strcat(buf ," RPlay");
+#endif
+#ifdef HAVE_STROKE
+  strcat(buf ," Stroke");
+#endif
+#ifdef XPM
+  strcat(buf, " XPM");
+#endif
+#ifdef IMLIB
+  strcat(buf, " IMLIB");
+#endif
+#ifdef GNOME
+  strcat(buf, " Gnome");
+#endif
+
+  Fvwm_ConfigInfo = (strlen(buf) == emptylen) ? '\0' : strdup(buf);
 }

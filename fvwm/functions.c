@@ -64,6 +64,7 @@
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
+extern char const * const Fvwm_VersionInfo;
 
 /* forward declarations */
 static void ComplexFunction(F_CMD_ARGS);
@@ -410,6 +411,10 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 	    case 'x':
 	      sprintf(&out[j], "%d", Scr.Vx);
 	      j += strlen(&out[j]);
+	      i++;
+	      break;
+	    case 'v':
+	      sprintf(&out[j], "%s", Fvwm_VersionInfo);
 	      i++;
 	      break;
 	    case 'y':

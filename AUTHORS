@@ -5,10 +5,6 @@ Maintainers of GNU Software" (maintain.texi), the section called
 Alan F. Ho:
 fvwm-logo-colorful.xpm, a prototype of a current default FvwmBanner logo.
 
-Mark Rainford:
-Handling of transient windows in Raise/Lower: reasonable emulation of
-Motif group behaviour is now possible.
-
 Olivier Chapuis:
 fvwm-menu-desktop script for GNOME and KDE desktop menus.
 
@@ -78,6 +74,10 @@ Gnome support (thanks, Jay!).
 
 Chetan Patil:
 Patch fix MoveToPage command without arguments.
+
+Mark Rainford:
+Handling of transient windows in Raise/Lower: reasonable emulation of
+Motif group behaviour is now possible. $v in fvwm commands.
 
 Chris Rankin:
 Rework of signal handlers (fvwm, FvwmButtons, FvwmIconMan, FvwmPager and
