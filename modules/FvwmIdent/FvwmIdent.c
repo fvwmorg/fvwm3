@@ -1373,9 +1373,14 @@ void MakeList(void)
 	{
 		strcat(ewmh_init_state, "Sticky ");
 	}
-	if (target.ewmh_hint_layer > 0)
+	/* FIXME: we should use the fvwm default layers */
+	if (target.ewmh_hint_layer == 6)
 	{
 		strcat(ewmh_init_state, "StaysOnTop ");
+	}
+	else if (target.ewmh_hint_layer == 2)
+	{
+		strcat(ewmh_init_state, "StaysOnBottom ");
 	}
 	if (HAS_EWMH_INIT_WM_DESKTOP(targ) == EWMH_STATE_HAS_HINT &&
 	    target.ewmh_hint_desktop < 256)

@@ -810,7 +810,12 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 #endif
     if (!has_hint && fwin->ewmh_hint_layer == 0)
     {
-      return 0;
+	    fwin->ewmh_hint_layer = -1;
+	    return 0;
+    }
+    if (fwin->ewmh_hint_layer == -1)
+    {
+	    return 0;
     }
 
     fwin->ewmh_hint_layer = Scr.TopLayer;
@@ -875,7 +880,12 @@ int ewmh_WMStateStaysOnBottom(EWMH_CMD_ARGS)
 #endif
     if (!has_hint && fwin->ewmh_hint_layer == 0)
     {
-      return 0;
+	    fwin->ewmh_hint_layer = -1;
+	    return 0;
+    }
+    if (fwin->ewmh_hint_layer == -1)
+    {
+	    return 0;
     }
 
     fwin->ewmh_hint_layer = Scr.BottomLayer;

@@ -94,6 +94,8 @@ ewmhInfo ewmhc =
 #define ENTRY(name, type, func) \
  {name, None, type, func}
 
+/* WARNING: lists must be in "name" alphabetic order! */
+
 /* EWMH_ATOM_LIST_CLIENT_ROOT
  * net atoms that can be send (Client Message) by a client and do not
  * need a window to operate */
@@ -126,6 +128,8 @@ ewmh_atom ewmh_atom_client_win[] =
  * too */
 ewmh_atom ewmh_atom_wm_state[] =
 {
+  ENTRY("_NET_WM_STATE_ABOVE",           XA_ATOM,   ewmh_WMStateStaysOnTop),
+  ENTRY("_NET_WM_STATE_BELOW",           XA_ATOM,   ewmh_WMStateStaysOnBottom),
   ENTRY("_NET_WM_STATE_FULLSCREEN",      XA_ATOM,   ewmh_WMStateFullScreen),
   ENTRY("_NET_WM_STATE_HIDDEN",          XA_ATOM,   ewmh_WMStateHidden),
   ENTRY("_NET_WM_STATE_MAXIMIZED_HORIZ", XA_ATOM,   ewmh_WMStateMaxHoriz),
@@ -136,8 +140,6 @@ ewmh_atom ewmh_atom_wm_state[] =
   ENTRY("_NET_WM_STATE_SKIP_PAGER",      XA_ATOM,   ewmh_WMStateSkipPager),
   ENTRY("_NET_WM_STATE_SKIP_TASKBAR",    XA_ATOM,   ewmh_WMStateSkipTaskBar),
   ENTRY("_NET_WM_STATE_STAYS_ON_TOP",    XA_ATOM,   ewmh_WMStateStaysOnTop),
-  ENTRY("_NET_WM_STATE_ABOVE",           XA_ATOM,   ewmh_WMStateStaysOnTop),
-  ENTRY("_NET_WM_STATE_BELOW",           XA_ATOM,   ewmh_WMStateStaysOnBottom),
   ENTRY("_NET_WM_STATE_STICKY",          XA_ATOM,   ewmh_WMStateSticky),
   {NULL,0,0,0}
 };
@@ -150,8 +152,8 @@ ewmh_atom ewmh_atom_allowed_actions[] =
   ENTRY("_NET_WM_ACTION_CLOSE",          XA_ATOM, ewmh_AllowsClose),
   ENTRY("_NET_WM_ACTION_MAXIMIZE_HORZ",  XA_ATOM, ewmh_AllowsMaximize),
   ENTRY("_NET_WM_ACTION_MAXIMIZE_VERT",  XA_ATOM, ewmh_AllowsMaximize),
-  ENTRY("_NET_WM_ACTION_MOVE",           XA_ATOM, ewmh_AllowsMove),
   ENTRY("_NET_WM_ACTION_MINIMIZE",       XA_ATOM, ewmh_AllowsMinimize),
+  ENTRY("_NET_WM_ACTION_MOVE",           XA_ATOM, ewmh_AllowsMove),
   ENTRY("_NET_WM_ACTION_RESIZE",         XA_ATOM, ewmh_AllowsResize),
   ENTRY("_NET_WM_ACTION_SHADE",          XA_ATOM, ewmh_AllowsYes),
   ENTRY("_NET_WM_ACTION_STICK",          XA_ATOM, ewmh_AllowsYes),
@@ -1026,6 +1028,7 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
   SSET_LAYER(*style, 0);
   style->flags.use_layer = 1;
   style->flag_mask.use_layer = 1;
+  style->change_mask.use_layer = 1;
 
   S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
   S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
@@ -1136,6 +1139,24 @@ int ewmh_HandleDock(EWMH_CMD_ARGS)
   S_SET_IS_UNMAXIMIZABLE(SCM(*style), 1);
   S_SET_IS_UNMAXIMIZABLE(SCC(*style), 1);
 
+  if (fwin->ewmh_hint_layer == -1)
+  {
+	  fwin->ewmh_hint_layer = Scr.TopLayer;
+	  if (DO_EWMH_USE_STACKING_HINTS(style))
+	  {
+		  SSET_LAYER(*style, Scr.TopLayer);
+		  style->flags.use_layer = 1;
+		  style->flag_mask.use_layer = 1;
+		  style->change_mask.use_layer = 1;
+	  }
+	  else if (!style->change_mask.use_layer)
+	  {
+		  SSET_LAYER(*style, Scr.DefaultLayer);
+		  style->flags.use_layer = 1;
+		  style->flag_mask.use_layer = 1;
+		  style->change_mask.use_layer = 1;
+	  }
+  }
   /* no title ? MWM hints should be used by the app but ... */
 
   return 1;
@@ -1144,6 +1165,8 @@ int ewmh_HandleDock(EWMH_CMD_ARGS)
 int ewmh_HandleMenu(EWMH_CMD_ARGS)
 {
   fwin->ewmh_window_type = EWMH_WINDOW_TYPE_MENU_ID;
+
+  /* ???? */
 
   S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
   S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
@@ -1188,6 +1211,8 @@ int ewmh_HandleToolBar(EWMH_CMD_ARGS)
 {
   fwin->ewmh_window_type = EWMH_WINDOW_TYPE_TOOLBAR_ID;
 
+  /* this ok for KDE 2 (and 3??) but I do not think that a toolbar
+     should be sticky */
   S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
   S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
   S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
