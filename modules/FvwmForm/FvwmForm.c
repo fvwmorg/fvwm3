@@ -46,6 +46,7 @@
 
 #include <libs/Picture.h>               /* for InitPictureCMap */
 #include "libs/Colorset.h"               /* for InitPictureCMap */
+#include "libs/XineramaSupport.h"
 
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 
@@ -1461,8 +1462,8 @@ static void OpenWindows ()
     else
       y = DisplayHeight(dpy, screen) - CF.total_height + CF.gy;
   } else {
-    x = (DisplayWidth(dpy, screen) - CF.max_width) / 2;
-    y = (DisplayHeight(dpy, screen) - CF.total_height) / 2;
+    XineramaSupportInit(dpy);
+    XineramaSupportCenterCurrent(&x, &y, CF.max_width, CF.total_height);
   }
   myfprintf((stderr,"going to create window w. bg %s\n",
              screen_background_color));

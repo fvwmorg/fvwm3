@@ -1,3 +1,29 @@
+2001-07-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	reformatted man page source to improve readability
+	fixed some source formatting bugs
+
+	* libs/XineramaSupport.c (GetMouseXY):
+	don't poll the pointer if there is only one screen or if xinerama is
+	turned off
+
+	* fvwm/fvwm2.1:
+	* fvwm/fvwm.c (main):
+	removed -noxinerama option
+
+	* fvwm/fvwm.c (main):
+	size window is positioned and sized in move_resize.c
+
+	* libs/XineramaSupport.c:
+	reindented file
+
+	* configure.in:
+	print Xinerama support in configure summary
+
+	* **/*:
+	applied Xinerama patch by Dmitry Yu. Bolkhovityanov
+
 2001-07-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* acconfig.h:

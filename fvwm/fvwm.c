@@ -39,6 +39,7 @@
 #endif
 
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -66,6 +67,7 @@
 #include "focus.h"
 #include "update.h"
 #include "window_flags.h"
+#include "move_resize.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -196,7 +198,6 @@ int main(int argc, char **argv)
   Bool option_error = False;
   int visualClass = -1;
   int visualId = -1;
-  int x, y;
 
   /* for use on restart */
   g_argv = (char **)safemalloc((argc + 4) * sizeof(char *));
@@ -426,6 +427,8 @@ int main(int argc, char **argv)
 */
     g_argv[argc] = NULL;
   }
+
+  XineramaSupportInit(dpy);
 
   x_fd = XConnectionNumber(dpy);
   fd_width = GetFdWidth();
@@ -699,32 +702,15 @@ int main(int argc, char **argv)
 				  WhitePixel(dpy, Scr.screen), Pdepth);
   }
 
-  /* create the move/resize feedback window */
-  Scr.SizeStringWidth = XTextWidth (Scr.DefaultFont.font,
-                                    " +8888 x +8888 ", 15);
+  ResizeSizeWindow();
   attributes.background_pixel = Scr.StdBack;
   attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
   valuemask = CWBackPixel | CWColormap | CWBorderPixel;
 
-  if(!Scr.gs.EmulateMWM)
-  {
-    x = 0;
-    y = 0;
-  }
-  else
-  {
-    x = Scr.MyDisplayWidth/2 - (Scr.SizeStringWidth + SIZE_HINDENT*2)/2;
-    y = Scr.MyDisplayHeight/2 - (Scr.DefaultFont.height + SIZE_VINDENT*2)/2;
-  }
-  Scr.SizeWindow = XCreateWindow (dpy, Scr.Root, x, y,
-				  (unsigned int)(Scr.SizeStringWidth +
-						 SIZE_HINDENT*2),
-				  (unsigned int) (Scr.DefaultFont.height +
-						  SIZE_VINDENT*2),
-				  (unsigned int) 0, Pdepth,
-				  InputOutput, Pvisual,
-				  valuemask, &attributes);
+  Scr.SizeWindow = XCreateWindow(
+    dpy, Scr.Root, 0, 0, 1, 1, (unsigned int)0, Pdepth, InputOutput, Pvisual,
+    valuemask, &attributes);
   initPanFrames();
 
   MyXGrabServer(dpy);
@@ -1466,6 +1452,7 @@ static void InitVariables(void)
   Scr.EdgeScrollX = Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL;
   Scr.ScrollResistance = DEFAULT_SCROLL_RESISTANCE;
   Scr.MoveResistance = DEFAULT_MOVE_RESISTANCE;
+  Scr.XiMoveResistance = DEFAULT_XIMOVE_RESISTANCE;
   Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
   Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
   Scr.SnapGridX = DEFAULT_SNAP_GRID_X;

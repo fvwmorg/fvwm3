@@ -48,6 +48,7 @@
 #include "screen.h"
 #include "repeat.h"
 #include "read.h"
+#include "virtual.h"
 #include "libs/Colorset.h"
 
 extern XEvent Event;
@@ -244,6 +245,8 @@ static const func_type func_config[] =
   CMD_ENTRY("windowlist", CMD_WindowList, F_WINDOWLIST, 0),
   CMD_ENTRY("windowshade", CMD_WindowShade, F_WINDOW_SHADE, FUNC_NEEDS_WINDOW),
   CMD_ENTRY("windowshadeanimate", CMD_WindowShadeAnimate, F_SHADE_ANIMATE, 0),
+  CMD_ENTRY("xineramadisable", CMD_XineramaDisable, F_XINERAMA_DISABLE, 0),
+  CMD_ENTRY("xineramaenable", CMD_XineramaEnable, F_XINERAMA_ENABLE, 0),
   CMD_ENTRY("xorpixmap", CMD_XorPixmap, F_XOR, 0),
   CMD_ENTRY("xorvalue", CMD_XorValue, F_XOR, 0),
   {"",0,0,0}

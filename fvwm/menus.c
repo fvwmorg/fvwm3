@@ -51,6 +51,7 @@
 #include "decorations.h"
 #include "libs/Colorset.h"
 #include "defaults.h"
+#include "libs/XineramaSupport.h"
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
  * have to be #defined in the section below or defaults.h to ensure full
@@ -670,6 +671,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   static int x_start;
   static int y_start;
   static Bool has_mouse_moved = False;
+  int scr_x, scr_y, scr_w, scr_h;
 
   pmret->rc = MENU_NOP;
   if (pmp->flags.is_sticky && !pmp->flags.is_submenu)
@@ -738,8 +740,11 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	return;
       }
       /* Make the menu appear under the pointer rather than warping */
+      XineramaSupportGetScrRect(x, y, &scr_x, &scr_y, &scr_w, &scr_h);
       x -= menu_middle_x_offset(pmp->menu);
       y -= item_middle_y_offset(pmp->menu, MR_FIRST_ITEM(pmp->menu));
+      if (x < scr_x) x = scr_x;
+      if (y < scr_y) y = scr_y;
     }
 
     /* pop_menu_up may move the x,y to make it fit on screen more nicely */
@@ -2521,6 +2526,7 @@ static int pop_menu_up(
   int prev_y;
   unsigned int prev_width;
   unsigned int prev_height;
+  int scr_x, scr_y, scr_w, scr_h;
 
   mr = *pmenu;
   if (!mr || MR_WINDOW(mr) == None ||
@@ -2702,14 +2708,10 @@ static int pop_menu_up(
   }
 
   /* clip to screen */
-  if (x + MR_WIDTH(mr) > Scr.MyDisplayWidth)
-    x = Scr.MyDisplayWidth - MR_WIDTH(mr);
-  if (y + MR_HEIGHT(mr) > Scr.MyDisplayHeight)
-    y = Scr.MyDisplayHeight - MR_HEIGHT(mr);
-  if (x < 0)
-    x = 0;
-  if (y < 0)
-    y = 0;
+  XineramaSupportClipToScreen(&x, &y, MR_WIDTH(mr), MR_HEIGHT(mr));
+
+  /* "this" screen is defined -- so get its coords for future reference */
+  XineramaSupportGetScrRect(x, y, &scr_x, &scr_y, &scr_w, &scr_h);
 
   /***************************************************************
    * Calculate position and animate menus
@@ -2781,19 +2783,19 @@ static int pop_menu_up(
 	if (prefer_left_submenu)
 	{
 	  /* popup menu is left of old menu, try to move prior menu right */
-	  if (a_right_x + prev_width <= Scr.MyDisplayWidth)
+          if (a_right_x + prev_width <= scr_x + scr_w)
 	    end_x = a_right_x;
-	  else if (a_left_x >= 0)
+	  else if (a_left_x >= scr_x)
 	    end_x = a_left_x;
 	  else
-	    end_x = Scr.MyDisplayWidth - prev_width;
+            end_x = scr_x + scr_w - prev_width;
 	}
 	else
 	{
 	  /* popup menu is right of old menu, try to move prior menu left */
-	  if (a_left_x >= 0)
+	  if (a_left_x >= scr_x)
 	    end_x = a_left_x;
-	  else if (a_right_x + prev_width <= Scr.MyDisplayWidth)
+	  else if (a_right_x + prev_width <= scr_x + scr_w)
 	    end_x = a_right_x;
 	  else
 	    end_x = 0;
@@ -2825,9 +2827,9 @@ static int pop_menu_up(
 	Bool use_left_as_last_resort;
 
 	use_left_as_last_resort =
-	  (left_x > Scr.MyDisplayWidth - right_x - MR_WIDTH(mr));
-	may_use_left = (left_x >= 0);
-	may_use_right = (right_x + MR_WIDTH(mr) <= Scr.MyDisplayWidth);
+	  (left_x > scr_x + scr_w - right_x - MR_WIDTH(mr));
+	may_use_left = (left_x >= scr_x);
+	may_use_right = (right_x + MR_WIDTH(mr) <= scr_x + scr_w);
 	if (!may_use_left && !may_use_right)
 	{
 	  /* If everything goes wrong, put the submenu on the side with more
@@ -2844,9 +2846,11 @@ static int pop_menu_up(
 
 	/* Force the menu onto the screen, but leave at least
 	 * PARENT_MENU_FORCE_VISIBLE_WIDTH pixels of the parent menu visible */
-	if (x + MR_WIDTH(mr) > Scr.MyDisplayWidth)
+/*!!! Not sure if I completely understand the logic of these calculations,
+ maybe something more should be modified -- D.Yu.B.*/
+	if (x + MR_WIDTH(mr) > scr_x + scr_w)
 	{
-	  int d = x + MR_WIDTH(mr) - Scr.MyDisplayWidth;
+	  int d = x + MR_WIDTH(mr) - (scr_x + scr_w);
 	  int c;
 
 	  if (prev_width >= PARENT_MENU_FORCE_VISIBLE_WIDTH)
@@ -2859,7 +2863,8 @@ static int pop_menu_up(
 	  else if (x > c)
 	    x = c;
 	}
-	if (x < 0)
+/*!!! The same comment... -- D.Yu.B.*/
+        if (x < scr_x)
 	{
 	  int c = prev_width - PARENT_MENU_FORCE_VISIBLE_WIDTH;
 
@@ -4370,6 +4375,8 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	    sscanf(format, "%d%n", &gap_left, &chars) >= 1 ||
 	    sscanf(format, ".%d%n", &gap_right, &chars) >= 1)
 	{
+/*!!! Don't know where to get (x,y) for current screen if it is at all
+ possible -- it can be a "detached" menu -- D.Yu.B. */
 	  if (gap_left > Scr.MyDisplayWidth ||
 	      gap_left < -Scr.MyDisplayWidth)
 	  {
@@ -7384,6 +7391,8 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       {
 	height = 1;
       }
+/*!!!These calculations shouldn't be affected by Xinerama support logic
+ since geometry specifications are for "global" screen -- D.Yu.B. */
       if (flags & XNegative)
 	x = Scr.MyDisplayWidth - x - width;
       if (flags & YNegative)

@@ -32,6 +32,8 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Colorset.h"
+#include "libs/XineramaSupport.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -63,13 +65,22 @@ extern XEvent Event;
 
 /* Animated move stuff added by Greg J. Badros, gjb@cs.washington.edu */
 
-float rgpctMovementDefault[32] = {
-    -.01, 0, .01, .03,.08,.18,.3,.45,.60,.75,.85,.90,.94,.97,.99,1.0
-    /* must end in 1.0 */
-  };
-
+float rgpctMovementDefault[32] =
+{
+  -.01, 0, .01, .03,.08,.18,.3,.45,.60,.75,.85,.90,.94,.97,.99,1.0
+  /* must end in 1.0 */
+};
 int cmsDelayDefault = 10; /* milliseconds */
-static void DisplayPosition(FvwmWindow *, int, int,Bool);
+
+/* current geometry of size window */
+static rectangle sizew_g =
+{
+  -1,
+  -1,
+  -1,
+  -1
+};
+
 /* ----- end of move globals ----- */
 
 /* ----- resize globals ----- */
@@ -361,6 +372,184 @@ static int GetResizeMoveArguments(
   return 4;
 }
 
+/* Positions the SizeWindow on the current ("moused") xinerama-screen */
+static void PositionSizeWindow(void)
+{
+  int x;
+  int y;
+
+  /* Probably should remove this positioning code from {builtins,fvwm}.c? */
+  if (Scr.gs.EmulateMWM)
+  {
+    XineramaSupportCenterCurrent(&x, &y, sizew_g.width, sizew_g.height);
+  }
+  else
+  {
+    XineramaSupportGetCurrent00(&x, &y);
+  }
+  if (x != sizew_g.x || y != sizew_g.y)
+  {
+    XMoveWindow(dpy, Scr.SizeWindow, x, y);
+    sizew_g.x = x;
+    sizew_g.y = y;
+  }
+
+  return;
+}
+
+void ResizeSizeWindow(void)
+{
+  int w;
+  int h;
+  int cset = Scr.DefaultColorset;
+
+  Scr.SizeStringWidth =
+    XTextWidth(Scr.DefaultFont.font, " +8888 x +8888 ", 15);
+  w = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
+  h = Scr.DefaultFont.height + 2 * SIZE_VINDENT;
+  if (w != sizew_g.width || h != sizew_g.height)
+  {
+    XResizeWindow(dpy, Scr.SizeWindow, w, h);
+    sizew_g.width = w;
+    sizew_g.height = h;
+  }
+  if (cset >= 0)
+  {
+    SetWindowBackground(
+      dpy, Scr.SizeWindow, w, h, &Colorset[cset], Pdepth, Scr.StdGC,
+      False);
+  }
+  else
+  {
+    XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdBack);
+  }
+
+  return;
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *      DisplayPosition - display the position in the dimensions window
+ *
+ *  Inputs:
+ *      tmp_win - the current fvwm window
+ *      x, y    - position of the window
+ *
+ ************************************************************************/
+
+static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
+{
+  char str [100];
+  int offset;
+
+  if (Scr.gs.do_hide_position_window)
+    return;
+  PositionSizeWindow();
+  (void) sprintf (str, " %+-4d %+-4d ", x, y);
+  if(Init)
+  {
+    XClearWindow(dpy,Scr.SizeWindow);
+  }
+  else
+  {
+    /* just clear indside the relief lines to reduce flicker */
+    XClearArea(dpy,Scr.SizeWindow,2,2,
+	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
+	       Scr.DefaultFont.height + SIZE_VINDENT*2 - 3,False);
+  }
+
+  if(Pdepth >= 2)
+    RelieveRectangle(dpy,Scr.SizeWindow,0,0,
+                     Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
+                     Scr.DefaultFont.height + SIZE_VINDENT*2 - 1,
+                     Scr.StdReliefGC,
+                     Scr.StdShadowGC, 2);
+  offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
+	    - XTextWidth(Scr.DefaultFont.font,str,strlen(str)))/2;
+#ifdef I18N_MB
+  XmbDrawString (dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
+#else
+  XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
+#endif
+	       offset,
+	       Scr.DefaultFont.font->ascent + SIZE_VINDENT,
+	       str, strlen(str));
+}
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *      DisplaySize - display the size in the dimensions window
+ *
+ *  Inputs:
+ *      tmp_win - the current fvwm window
+ *      width   - the width of the rubber band
+ *      height  - the height of the rubber band
+ *
+ ***********************************************************************/
+static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
+			Bool resetLast)
+{
+  char str[100];
+  int dwidth,dheight,offset;
+  static int last_width = 0;
+  static int last_height = 0;
+
+  if (Scr.gs.do_hide_resize_window)
+    return;
+  PositionSizeWindow();
+  if (resetLast)
+  {
+    last_width = 0;
+    last_height = 0;
+  }
+  if (last_width == width && last_height == height)
+    return;
+
+  last_width = width;
+  last_height = height;
+
+  dheight = height - tmp_win->title_g.height - 2*tmp_win->boundary_width;
+  dwidth = width - 2*tmp_win->boundary_width;
+
+  dwidth -= tmp_win->hints.base_width;
+  dheight -= tmp_win->hints.base_height;
+  dwidth /= tmp_win->hints.width_inc;
+  dheight /= tmp_win->hints.height_inc;
+
+  (void) sprintf (str, " %4d x %-4d ", dwidth, dheight);
+  if(Init)
+  {
+    XClearWindow(dpy,Scr.SizeWindow);
+  }
+  else
+  {
+    /* just clear indside the relief lines to reduce flicker */
+    XClearArea(dpy,Scr.SizeWindow,2,2,
+	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
+	       Scr.DefaultFont.height + SIZE_VINDENT*2 - 3,False);
+  }
+
+  if(Pdepth >= 2)
+    RelieveRectangle(dpy,Scr.SizeWindow,0,0,
+                     Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
+                     Scr.DefaultFont.height + SIZE_VINDENT*2 - 1,
+                     Scr.StdReliefGC,
+                     Scr.StdShadowGC, 2);
+  offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
+    - XTextWidth(Scr.DefaultFont.font,str,strlen(str)))/2;
+#ifdef I18N_MB
+  XmbDrawString (dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
+		 offset, Scr.DefaultFont.font->ascent + SIZE_VINDENT, str, 13);
+#else
+  XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
+	       offset, Scr.DefaultFont.font->ascent + SIZE_VINDENT, str, 13);
+#endif
+}
+
+
 void CMD_ResizeMove(F_CMD_ARGS)
 {
   int FinalX = 0;
@@ -529,7 +718,10 @@ static void InteractiveMove(
   XOffset = origDragX - DragX;
   YOffset = origDragY - DragY;
   if (!Scr.gs.do_hide_position_window)
+  {
+    PositionSizeWindow();
     XMapRaised(dpy,Scr.SizeWindow);
+  }
   moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
 	   do_move_opaque);
   if (Scr.bo.InstallRootCmap)
@@ -1007,6 +1199,49 @@ static void DoSnapAttract(
       if (!((other.x + (int)other.width) < (*px) ||
 	    (other.x) > (*px + (int)self.width)))
       {
+	dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
+
+	if(dist < closestRight)
+	{
+	  closestRight = dist;
+
+	  if(((*px + (int)self.width) >= Scr.MyDisplayWidth)&&
+	     ((*px + (int)self.width) < Scr.MyDisplayWidth +
+	      Scr.SnapAttraction))
+	    {
+	    nxl = Scr.MyDisplayWidth - (int)self.width;
+	  }
+
+	  if(((*px + (int)self.width) >= Scr.MyDisplayWidth -
+	      Scr.SnapAttraction)&&
+	     ((*px + (int)self.width) < Scr.MyDisplayWidth))
+	  {
+	    nxl = Scr.MyDisplayWidth - (int)self.width;
+	  }
+	}
+
+	dist = abs(*px);
+
+	if(dist < closestLeft)
+	{
+	  closestLeft = dist;
+
+	  if((*px <= 0)&&
+	     (*px > - Scr.SnapAttraction))
+	  {
+	    nxl = 0;
+	  }
+	  if((*px <= Scr.SnapAttraction)&&
+	     (*px > 0))
+	  {
+	    nxl = 0;
+	  }
+	}
+      }
+
+      if(!((other.x + (int)other.width) < (*px) ||
+	   (other.x) > (*px + (int)self.width)))
+      {
 	dist = abs(other.y - (*py + (int)self.height));
 	if (dist < closestBottom)
 	{
@@ -1147,6 +1382,10 @@ static void DoSnapAttract(
 	Scr.SnapGridY * Scr.SnapGridY;
     }
   }
+  else
+  {
+    *py = nyt;
+  }
 
   /*
    * Resist moving windows beyond the edge of the screen
@@ -1163,6 +1402,31 @@ static void DoSnapAttract(
       *py = Scr.MyDisplayHeight - Height;
     if ((*py <= 0) && (*py > -Scr.MoveResistance))
       *py = 0;
+  }
+  /* Resist moving windows between xineramascreens */
+  if (Scr.XiMoveResistance > 0)
+  {
+    int scr_x0, scr_y0, scr_x1, scr_y1;
+
+    XineramaSupportGetResistanceRect(*px, *py, Width, Height,
+				     &scr_x0, &scr_y0, &scr_x1, &scr_y1);
+
+    if (scr_x1 != Scr.MyDisplayWidth  &&
+	*px + Width >= scr_x1         &&
+	*px + Width <  scr_x1 + Scr.XiMoveResistance)
+      *px = scr_x1 - Width;
+    if (scr_x0 != 0                   &&
+	*px <= scr_x0                 &&
+	scr_x0 - *px < Scr.XiMoveResistance)
+      *px = scr_x0;
+    if (scr_y1 != Scr.MyDisplayHeight  &&
+	*py + Height >= scr_y1         &&
+	*py + Height <  scr_y1 + Scr.XiMoveResistance)
+      *py = scr_y1 - Height;
+    if (scr_y0 != 0                   &&
+	*py <= scr_y0                 &&
+	scr_y0 - *py < Scr.XiMoveResistance)
+      *py = scr_y0;
   }
 
   return;
@@ -1534,56 +1798,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
   return do_resize_too;
 }
-
-/***********************************************************************
- *
- *  Procedure:
- *      DisplayPosition - display the position in the dimensions window
- *
- *  Inputs:
- *      tmp_win - the current fvwm window
- *      x, y    - position of the window
- *
- ************************************************************************/
-
-static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
-{
-  char str [100];
-  int offset;
-
-  if (Scr.gs.do_hide_position_window)
-    return;
-  (void) sprintf (str, " %+-4d %+-4d ", x, y);
-  if(Init)
-  {
-    XClearWindow(dpy,Scr.SizeWindow);
-  }
-  else
-  {
-    /* just clear indside the relief lines to reduce flicker */
-    XClearArea(dpy,Scr.SizeWindow,2,2,
-	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
-	       Scr.DefaultFont.height + SIZE_VINDENT*2 - 3,False);
-  }
-
-  if(Pdepth >= 2)
-    RelieveRectangle(dpy,Scr.SizeWindow,0,0,
-                     Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
-                     Scr.DefaultFont.height + SIZE_VINDENT*2 - 1,
-                     Scr.StdReliefGC,
-                     Scr.StdShadowGC, 2);
-  offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
-	    - XTextWidth(Scr.DefaultFont.font,str,strlen(str)))/2;
-#ifdef I18N_MB
-  XmbDrawString (dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
-#else
-  XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
-#endif
-	       offset,
-	       Scr.DefaultFont.font->ascent + SIZE_VINDENT,
-	       str, strlen(str));
-}
-
 
 void CMD_MoveThreshold(F_CMD_ARGS)
 {
@@ -1985,7 +2199,10 @@ void CMD_Resize(F_CMD_ARGS)
 
   /* pop up a resize dimensions window */
   if (!Scr.gs.do_hide_resize_window)
+  {
+    PositionSizeWindow();
     XMapRaised(dpy, Scr.SizeWindow);
+  }
   DisplaySize(tmp_win, orig->width, orig->height,True,True);
 
   if((PressedW != Scr.Root)&&(PressedW != None))
@@ -2446,77 +2663,6 @@ static void DoResize(
   DisplaySize(tmp_win, drag->width, drag->height,False,False);
 }
 
-
-
-/***********************************************************************
- *
- *  Procedure:
- *      DisplaySize - display the size in the dimensions window
- *
- *  Inputs:
- *      tmp_win - the current fvwm window
- *      width   - the width of the rubber band
- *      height  - the height of the rubber band
- *
- ***********************************************************************/
-static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
-			Bool resetLast)
-{
-  char str[100];
-  int dwidth,dheight,offset;
-  static int last_width = 0;
-  static int last_height = 0;
-
-  if (Scr.gs.do_hide_resize_window)
-    return;
-  if (resetLast)
-  {
-    last_width = 0;
-    last_height = 0;
-  }
-  if (last_width == width && last_height == height)
-    return;
-
-  last_width = width;
-  last_height = height;
-
-  dheight = height - tmp_win->title_g.height - 2*tmp_win->boundary_width;
-  dwidth = width - 2*tmp_win->boundary_width;
-
-  dwidth -= tmp_win->hints.base_width;
-  dheight -= tmp_win->hints.base_height;
-  dwidth /= tmp_win->hints.width_inc;
-  dheight /= tmp_win->hints.height_inc;
-
-  (void) sprintf (str, " %4d x %-4d ", dwidth, dheight);
-  if(Init)
-  {
-    XClearWindow(dpy,Scr.SizeWindow);
-  }
-  else
-  {
-    /* just clear indside the relief lines to reduce flicker */
-    XClearArea(dpy,Scr.SizeWindow,2,2,
-	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
-	       Scr.DefaultFont.height + SIZE_VINDENT*2 - 3,False);
-  }
-
-  if(Pdepth >= 2)
-    RelieveRectangle(dpy,Scr.SizeWindow,0,0,
-                     Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
-                     Scr.DefaultFont.height + SIZE_VINDENT*2 - 1,
-                     Scr.StdReliefGC,
-                     Scr.StdShadowGC, 2);
-  offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
-    - XTextWidth(Scr.DefaultFont.font,str,strlen(str)))/2;
-#ifdef I18N_MB
-  XmbDrawString (dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
-		 offset, Scr.DefaultFont.font->ascent + SIZE_VINDENT, str, 13);
-#else
-  XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
-	       offset, Scr.DefaultFont.font->ascent + SIZE_VINDENT, str, 13);
-#endif
-}
 
 
 /***********************************************************************

@@ -55,6 +55,7 @@
 #include "style.h"
 #include "focus.h"
 #include "stack.h"
+#include "move_resize.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -1080,8 +1081,6 @@ void ApplyDefaultFontAndColors(void)
 {
   XGCValues gcv;
   unsigned long gcm;
-  int wid;
-  int hei;
   int cset = Scr.DefaultColorset;
 
   /* make GC's */
@@ -1123,31 +1122,7 @@ void ApplyDefaultFontAndColors(void)
   /* update the geometry window for move/resize */
   if(Scr.SizeWindow != None)
   {
-    Scr.SizeStringWidth =
-      XTextWidth(Scr.DefaultFont.font, " +8888 x +8888 ", 15);
-    wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
-    hei = Scr.DefaultFont.height + 2 * SIZE_VINDENT;
-    if (cset >= 0)
-    {
-      SetWindowBackground(
-	dpy, Scr.SizeWindow, wid, hei, &Colorset[cset], Pdepth, Scr.StdGC,
-	False);
-    }
-    else
-    {
-      XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdBack);
-    }
-
-    if(Scr.gs.EmulateMWM)
-    {
-      XMoveResizeWindow(
-	dpy, Scr.SizeWindow, (Scr.MyDisplayWidth - wid) / 2,
-	(Scr.MyDisplayHeight - hei) / 2, wid, hei);
-    }
-    else
-    {
-      XMoveResizeWindow(dpy, Scr.SizeWindow, 0, 0, wid, hei);
-    }
+    ResizeSizeWindow();
   }
 
   UpdateAllMenuStyles();

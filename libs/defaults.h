@@ -177,6 +177,7 @@
  * two samples */
 #define MAX_PAGING_MOVE_DISTANCE	   5 /* pixels */
 #define DEFAULT_MOVE_RESISTANCE		   0 /* ms */
+#define DEFAULT_XIMOVE_RESISTANCE	   0 /* pixels */
 #define DEFAULT_SCROLL_RESISTANCE	   0 /* ms */
 
 

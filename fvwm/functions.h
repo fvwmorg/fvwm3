@@ -185,6 +185,8 @@ enum
   F_WAIT,
   F_WINDOWFONT,
   F_WINDOWLIST,
+  F_XINERAMA_DISABLE,
+  F_XINERAMA_ENABLE,
   F_XOR,
 
   /* functions that need a window to operate on */

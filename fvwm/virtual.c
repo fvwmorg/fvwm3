@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -40,7 +41,7 @@
 /*
  * dje 12/19/98
  *
- * Testing with edge_thickness of 1  showed that some XServers don't
+ * Testing with edge_thickness of 1 showed that some XServers don't
  * care for 1 pixel windows, causing EdgeScrolling  not to work with some
  * servers.  One  bug report was for SUNOS  4.1.3_U1.  We didn't find out
  * the exact  cause of the problem.  Perhaps  no enter/leave  events were
@@ -319,16 +320,30 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 
 void CMD_EdgeResistance(F_CMD_ARGS)
 {
-  int val[2];
+  int val[3];
+  int n;
 
-  if (GetIntegerArguments(action, NULL, val, 2) != 2)
+  n = GetIntegerArguments(action, NULL, val, 3);
+  fprintf(stderr, "%s: n=%d\n", __FUNCTION__, n);
+  if (n < 2 || n > 3)
   {
-    fvwm_msg(ERR,"SetEdgeResistance","EdgeResistance requires two arguments");
+    fvwm_msg(ERR, "SetEdgeResistance",
+	     "EdgeResistance requires two or three arguments");
     return;
   }
-
   Scr.ScrollResistance = val[0];
   Scr.MoveResistance = val[1];
+  Scr.XiMoveResistance = (n < 3) ? val[1] : val[2];
+}
+
+void CMD_XineramaDisable(F_CMD_ARGS)
+{
+  XineramaSupportDisable();
+}
+
+void CMD_XineramaEnable(F_CMD_ARGS)
+{
+  XineramaSupportEnable();
 }
 
 
