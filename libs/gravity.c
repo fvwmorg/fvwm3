@@ -45,6 +45,7 @@ struct _gravity_offset
 
 /* ---------------------------- local variables ---------------------------- */
 
+#define STRINGS_PER_DIR 7
 static char *gravity_dir_optlist[] = {
 	"-", "N",  "North",     "Top",         "t", "Up",         "u",
 	"]", "E",  "East",      "Right",       "r", "Right",      "r",
@@ -428,6 +429,7 @@ direction_t gravity_parse_dir_argument(
 	int index;
 	int rc;
 	char *next;
+
 	next = GetNextTokenIndex(action, gravity_dir_optlist, 0, &index);
 	if (index == -1)
 	{
@@ -437,7 +439,7 @@ direction_t gravity_parse_dir_argument(
 	}
 	else
 	{
-		rc = index / 7;
+		rc = index / STRINGS_PER_DIR;
 	}
 	if (ret_action)
 	{
@@ -450,7 +452,7 @@ direction_t gravity_parse_dir_argument(
 char *gravity_dir_to_string(direction_t dir, char *default_str)
 {
 	char *str = NULL;
-	int d = dir * 7;
+	int d = dir * STRINGS_PER_DIR;
 
 	if (d >= sizeof(gravity_dir_optlist)/sizeof(gravity_dir_optlist[0]))
 	{
@@ -462,7 +464,7 @@ char *gravity_dir_to_string(direction_t dir, char *default_str)
 	{
 		return default_str;
 	}
-	
+
 	return str;
 }
 

@@ -1909,7 +1909,6 @@ void CMD_Scroll(F_CMD_ARGS)
 		/* to few parameters */
 		return;
 	}
-
 	if ((val1 > -100000)&&(val1 < 100000))
 	{
 		x = Scr.Vx + val1*val1_unit/100;
@@ -1918,7 +1917,6 @@ void CMD_Scroll(F_CMD_ARGS)
 	{
 		x = Scr.Vx + (val1/1000)*val1_unit/100;
 	}
-
 	if ((val2 > -100000)&&(val2 < 100000))
 	{
 		y=Scr.Vy + val2*val2_unit/100;
@@ -1927,7 +1925,6 @@ void CMD_Scroll(F_CMD_ARGS)
 	{
 		y = Scr.Vy + (val2/1000)*val2_unit/100;
 	}
-
 	if (((val1 <= -100000)||(val1 >= 100000))&&(x>Scr.VxMax))
 	{
 		int xpixels;

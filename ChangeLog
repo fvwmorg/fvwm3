@@ -1,9 +1,15 @@
+2003-12-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/gravity.c (gravity_dir_to_string):
+	(gravity_parse_dir_argument):
+	use a constant for the dir table
+
 2003-12-16  Marcus Lundblad  <ml@update.uu.se>
 
 	* fvwm/Flocale.c (FlocaleEncodeString)
 	(FlocaleDrawUnderline):
 	Fixed crash when there's no Iconv support
-	
+
 2003-12-16  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/functions.h:
