@@ -2,6 +2,8 @@
 
 # options:
 #
+#  -R   increase release number after building (2.3.29 -> 3.0.0)
+#  -M   increase major number after building (2.3.29 -> 2.4.0)
 #  -r   build and commit a release (tags the sources and updates version info)
 #
 # environment variables:
@@ -23,125 +25,184 @@ CHECK_VERSION_STRING="AM_INIT_AUTOMAKE"
 VERSION_PRE="fvwm-"
 VERSION_POST=".tar.gz"
 READY_STRING=" is ready for distribution"
+CFLAGS="-g -O2 -Wall -Werror"
 
-if [ "$1" = -r ] ; then
-  IS_RELEASE=1
-  echo "Your name and email address will show up in the ChangeLog."
-  if [ -z "$FVWMRELNAME" ] ; then
-    echo "Please enter your name (set the FVWMRELNAME variable to avoid this)"
-    read FVWMRELNAME
-  fi
-  if [ -z "$FVWMRELEMAIL" ] ; then
-    echo "Please enter your name (set the FVWMRELEMAIL variable to avoid this)"
-    read FVWMRELEMAIL
-  fi
-else
-  IS_RELEASE=0
-fi
+# parse options
+IS_RELEASE=0
+IS_MINOR=1
+IS_MAJOR=0
+while [ ! x$1 = x ] ; do
+  case "$1" in
+    -r)
+      IS_RELEASE=1
+      echo "Your name and email address will show up in the ChangeLog."
+      if [ -z "$FVWMRELNAME" ] ; then
+        echo "Please enter your name (or set FVWMRELNAME variable)"
+        read FVWMRELNAME
+      else
+        echo "Name: $FVWMRELNAME"
+      fi
+      if [ -z "$FVWMRELEMAIL" ] ; then
+        echo "Please enter your name (or set FVWMRELEMAIL variable)"
+        read FVWMRELEMAIL
+      else
+        echo "Email: $FVWMRELEMAIL"
+      fi
+      ;;
+    -R) IS_MINOR=0; IS_MAJOR=0 ;;
+    -M) IS_MINOR=0; IS_MAJOR=1 ;;
+  esac
+  shift
+done
 
 wrong_dir=1
 if [ -r "$CHECK_FILE" ] ; then
-  wrong_dir=0
-elif grep "$CHECK_STRING1" "$CHECK_FILE" ; then
-  wrong_dir=0
-elif grep "$CHECK_STRING2" "$CHECK_FILE" ; then
-  wrong_dir=0
+  if grep "$CHECK_STRING1" "$CHECK_FILE" ; then
+    if grep "$CHECK_STRING2" "$CHECK_FILE" ; then
+      wrong_dir=0
+    fi > /dev/null 2> /dev/null
+  fi > /dev/null 2> /dev/null
 fi > /dev/null 2> /dev/null
 
 if [ $wrong_dir = 1 ] ; then
   echo "The fvwm sources are not present in the current directory."
-  exit 2;
+  exit 11;
 fi
 
+# get release numbers
 VERSION=`grep $CHECK_VERSION_STRING configure.in 2>&1 |
          cut -f 2 -d "," |
-         sed -e "s/[[:space:]]//g" -e "s/)//g"`
+         perl -pe 's/[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).$/$1/g'`
 VRELEASE=`echo $VERSION | cut -f 1 -d "."`
 VMAJOR=`echo $VERSION | cut -f 2 -d "."`
 VMINOR=`echo $VERSION | cut -f 3 -d "."`
-if [ -z "$VRELEASE" -o -z "$VMAJOR" -o -z "$VMINOR" ] ; then
+if [ -z "$VRELEASE" -o -z "$VMAJOR" ] ; then
   echo "Failed to fetch version number from configure.in."
   exit 3;
 fi
-VERSION_STRING=$VERSION_PRE$VRELEASE.$VMAJOR.$VMINOR$VERSION_POST
+if [ x$VMINOR = x ] ; then
+  VMINOR=0
+fi
+if [ "$IS_MINOR" = 1 ] ; then
+  # minor release
+  VRELEASEP=$VRELEASE
+  VMAJORP=$VMAJOR
+  VMINORP=`echo $VMINOR | perl -pe 's/(.+)/@{[$1+1]}/g'`
+elif [ "$IS_MAJOR" = 1 ] ; then
+  # major release
+  VRELEASEP=$VRELEASE
+  VMAJORP=`echo $VMAJOR | perl -pe 's/(.+)/@{[$1+1]}/g'`
+  VMINORP=0
+else
+  VRELEASEP=`echo $VRELEASE | perl -pe 's/(.+)/@{[$1+1]}/g'`
+  VMAJORP=0
+  VMINORP=0
+fi
+VRELNUM=$VRELEASE.$VMAJOR.$VMINOR
+VRELNUMP=$VRELEASEP.$VMAJORP.$VMINORP
+VERSION_STRING=$VERSION_PRE$VRELNUM$VERSION_POST
 echo "***** building $VERSION_STRING *****"
+
+# find GNU make
+MAKE=
+for i in gnumake gmake make; do
+  VER=`(echo 'all:;@echo $(MAKE_VERSION)' | $i -f -) 2>/dev/null`
+  case $VER in
+    3.*) MAKE=$i; break 2 ;;
+  esac
+done
+case $MAKE in
+  ?*) : OK, found one ;;
+  *)  echo "Can't find GNU make version 3 on the PATH!"; exit 12 ;;
+esac
+
+# find compiler (prefer gcc)
+CC=
+VER=
+VER=`(gcc --version) 2>/dev/null`
+if [ x$VER = x ] ; then
+  CC=cc
+else
+  CC=gcc
+fi
 
 # clean up
 echo removing old configure files ...
 if [ -f configure ] ; then
-  rm configure || exit 4
+  rm configure || exit 21
 fi
 if [ -f config.cache ] ; then
-  rm config.cache || exit 5
+  rm config.cache || exit 22
 fi
 if [ -f config.log ] ; then
-  rm config.log || exit 6
+  rm config.log || exit 23
 fi
 if [ -f config.status ] ; then
-  rm config.status || exit 7
+  rm config.status || exit 24
 fi
 
+# build the distribution
 echo running automake ...
-automake --add-missing || exit 8
+automake --add-missing || exit 31
 echo running autoreconf ...
-autoreconf || exit 9
+autoreconf || exit 32
 echo running configure ...
-./configure --enable-gnome || exit 10
+./configure --enable-gnome || exit 33
 echo running make clean ...
-make clean || exit 11
+$MAKE clean || exit 34
 echo running make ...
-make CFLAGS="-g -O2 -Wall -Werror" || exit 12
+$MAKE CC="$CC" CFLAGS="$CFLAGS" || exit 35
 echo running make distcheck2 ...
-make distcheck2 2>&1 | grep "$VERSION_STRING$READY_STRING" || exit 13
+$MAKE CC="$CC" distcheck2 2>&1 | grep "$VERSION_STRING$READY_STRING" || exit 36
 echo
 echo "distribution file is ready"
 echo
+
+# update some files and commit changes
 if [ $IS_RELEASE = 0 ] ; then
   echo "If this is to be an official release:"
   echo " . Tag the source tree:"
   echo "     cvs tag version-x_y_z"
   echo " . Increase the version number in configure.in and commit this change"
   echo " . Create entries in ChangeLog and NEWS files indicating the release"
-  echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
-  echo " . Notify fvwm-owner@fvwm.org of the upload"
 else
   echo updating NEWS file
   NNEWS="new-NEWS"
-  perl -pe 's/^(.*) ('$VRELEASE.$VMAJOR.')('$VMINOR') (\(not released yet\))$/$1 $2@{[$3+1]} $4\n\n$1 $2$3 (@{[substr(`date +%Y-%m-%d`,0,10)]})/' \
-    < NEWS > $NNEWS || exit 14
-  mv $NNEWS NEWS || exit 15
+  perl -pe 's/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$1 '$VRELNUM' (@{[substr(`date +%Y-%m-%d`,0,10)]})/' \
+    < NEWS > $NNEWS || exit 41
+  mv $NNEWS NEWS || exit 42
   echo tagging CVS source
   if [ ! "$FVWMRELPRECVSCOMMAND" = "" ] ; then
     $FVWMRELPRECVSCOMMAND
   fi
-  cvs tag version-${VRELEASE}_${VMAJOR}_$VMINOR || exit 16
+  cvs tag version-${VRELEASE}_${VMAJOR}_${VMINOR} || exit 43
   echo increasing version number in configure.in
   NCFG="new-configure.in"
-  touch $NCFG || exit 17
+  touch $NCFG || exit 44
   cat configure.in |
-  sed -e "s/$VRELEASE\.$VMAJOR\.$VMINOR/$VRELEASE\.$VMAJOR\.$[$VMINOR+1]/g" \
-    > $NCFG || exit 18
-  mv $NCFG configure.in || exit 19
+  perl -pe 's/'$VRELNUM'/'$VRELNUMP'/g' \
+    > $NCFG || exit 45
+  mv $NCFG configure.in || exit 46
   echo generating ChangeLog entry ...
   NCLOG="new-ChangeLog"
-  touch $NCLOG || exit 20
+  touch $NCLOG || exit 47
   echo `date +%Y-%m-%d`"  $FVWMRELNAME  <$FVWMRELEMAIL>" > $NCLOG
   echo >> $NCLOG
   echo "	* NEWS, configure.in:" >> $NCLOG
-  echo "	changed version to $VRELEASE.$VMAJOR.$[VMINOR + 1]" >> $NCLOG
+  echo "	changed version to $VRELNUMP" >> $NCLOG
   echo >> $NCLOG
   cat ChangeLog >> $NCLOG
-  mv $NCLOG ChangeLog || exit 21
+  mv $NCLOG ChangeLog || exit 48
   echo committing configure.in and ChangeLog
   cvs commit -m \
-    "* Set development version to $VRELEASE.$VMAJOR.$[VMINOR + 1]." \
-    NEWS configure.in ChangeLog || exit 22
+    "* Set development version to $VRELNUMP." \
+    NEWS configure.in ChangeLog || exit 49
   if [ ! "$FVWMRELPOSTCVSCOMMAND" = "" ] ; then
     $FVWMRELPOSTCVSCOMMAND
   fi
   echo
   echo Then
-  echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
-  echo " . Notify fvwm-owner@fvwm.org of the upload"
-  echo " . Update the version numbers in fvwm-web/download.html"
 fi
+echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
+echo " . Notify fvwm-owner@fvwm.org of the upload"
+echo " . Update the version numbers in fvwm-web/download.html"
