@@ -120,8 +120,8 @@ sub start ($) {
 			# external modules have to do.
 			if ($oldHash) {
 				my $p = $self->{data}->{$winId};
-				if ($p->{frame_width} != $oldHash->{frame_width} ||
-					$p->{frame_height} != $oldHash->{frame_height})
+				if ($p->{width} != $oldHash->{width} ||
+					$p->{height} != $oldHash->{height})
 				{
 					$self->notify("window resized", $winId, $oldHash);
 				}

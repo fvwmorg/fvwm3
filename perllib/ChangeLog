@@ -1,3 +1,10 @@
+2004-07-01  Scott Smedley  <scottie7@tpg.com.au>
+
+	* FVWM/Tracker/WindowList.pm:
+	bugfix.
+	Previous patch also did: s/frame_width/width/, s/frame_height/height/
+	Updated references to frame_width & frame_height.
+
 2004-06-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Tracker/WindowList.pm:
