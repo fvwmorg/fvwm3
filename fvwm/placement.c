@@ -317,10 +317,9 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax, int pdelt
   {
     if((testw == t) || (testw->Desk != t->Desk))
        continue;
-    if((testw->flags & ICONIFIED)&&
-       (testw->icon_w))
+    if(testw->flags & ICONIFIED)
     {
-       if(testw->flags & ICON_UNMAPPED)
+       if(testw->icon_w == None || testw->flags & ICON_UNMAPPED)
 	  continue;
        x21 = testw->icon_x_loc;
        y21 = testw->icon_y_loc;

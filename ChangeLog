@@ -1,5 +1,12 @@
 1998-12-30  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/menus.c (MakeMenu): fixed font-change bug with menus: If a menu
+	has a continuation and then the font is changed (to a smaller one) the
+	continuations are not recalculated (i.e. the menus are too short).
+
+	* fvwm/placement.c (test_fit): applied placement fix for iconified
+	windows without an icon (by Trent Piepho)
+
 	* libs/Picture.c (GetPicture): fixed use of freed memory (path)
 
 	* fvwm/read.c (ReadSubFunc): fixed PipeRead memory leak

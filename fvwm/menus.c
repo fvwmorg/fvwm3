@@ -2155,6 +2155,28 @@ void MakeMenu(MenuRoot *mr)
   if((mr->func != F_POPUP)||(!(Scr.flags & WindowsCaptured)))
     return;
 
+  /* merge menu continuations into one menu again - needed when changing the
+   * font size of a long menu. */
+  while (mr->continuation != NULL)
+    {
+      MenuRoot *cont = mr->continuation;
+
+      if (mr->first == mr->last)
+	{
+	  fvwm_msg(ERR, "MakeMenu", "BUG: Menu contains only contionuation");
+	  break;
+	}
+      /* link first item of continuation to item before 'more...' */
+      mr->last->prev->next = cont->first;
+      cont->first->prev = mr->last->prev;
+      FreeMenuItem(mr->last);
+      mr ->last = cont->last;
+      mr->continuation = cont->continuation;
+      /* fake an empty menu so that DestroyMenu does not destroy the items. */
+      cont->first = NULL;
+      DestroyMenu(cont);
+    }
+
   mr->width = 0;
   mr->width2 = 0;
   mr->width0 = 0;
