@@ -3422,7 +3422,8 @@ void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     {
       Scr.StipledTitles = True;
     }
-         /*  RBW - 11/02/1998  */
+         /*  RBW - 11/14/1998 - I'll eventually remove these. */
+/*
     else if (StrEquals(opt,"STARTSONPAGEMODIFIESUSPOSITION"))
     {
       Scr.ModifyUSP = True;
@@ -3431,6 +3432,7 @@ void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     {
       Scr.ModifyUSP = False;
     }
+*/
     else if (StrEquals(opt,"CAPTUREHONORSSTARTSONPAGE"))
     {
       Scr.CaptureHonorsStartsOnPage = True;

@@ -1219,7 +1219,6 @@ SmartPlacementIsReallySmart/SmartPlacementIsNormal,
 ClickToFocusDoesntPassClick/ClickToFocusPassesClick,
 ClickToFocusDoesntRaise/ClickToFocusRaises,
 MouseFocusClickDoesntRaise/MouseFocusClickRaises,
-StartsOnPageModifiesUSPosition/StartsOnPageHonorsUSPosition,
 CaptureHonorsStartsOnPage/CaptureIgnoresStartsOnPage,
 RecaptureHonorsStartsOnPage/RecaptureIgnoresStartsOnPage,
 ActivePlacementHonorsStartsOnPage/ActivePlacementIgnoresStartsOnPage,
@@ -1228,12 +1227,6 @@ NoStipledTitles/StipledTitles
 GlobalOpts ClickToFocusDoesntPassClick, \\
   ClickToFocusDoesntRaise
 .EE
-
-StartsOnPageModifiesUSPosition allows for a window with the StartsOnPage
-style and a command line geometry argument to have the geometry x and
-y positions adjusted relative to the page specified in the style.
-StartsOnPageHonorsUSPosition renders StartsOnPage inoperative for such
-windows. The default is StartsOnPageModifiesUSPosition.
 
 RecaptureHonorsStartsOnPage causes a window to be placed according to, or
 revert to, the StartsOnPage desk and page specification on Restart or
@@ -2040,12 +2033,7 @@ specified via a resource (e.g., "-xrm 'Fvwm.Page: 1 0 2'").
 
 StartsOnPage in conjunction with SkipMapping is a useful technique when you
 want to start an app on some other page and continue with what you were
-doing, rather than waiting for it to appear. However, there are a few things
-to be aware of in this version of StartsOnPage.
-The page position will have no effect if the app was started with a command
-line geometry argument specifying x,y coordinates, unless you have also
-specified GlobalOpts StartsOnPageModifiesUSPosition; if you have, the
-geometry position will be adjusted relative to the target page. 
+doing, rather than waiting for it to appear.
 
 StaysOnTop makes the window always try to stay on top of the other
 windows.  This might be handy for clocks or mailboxes that you would
