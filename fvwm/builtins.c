@@ -44,6 +44,7 @@
 #include "defaults.h"
 #include "gnome.h"
 #include "borders.h"
+#include "session.h"
 #include "libs/Colorset.h"
 
 static void ApplyIconFont(void);
@@ -949,6 +950,21 @@ void quit_func(F_CMD_ARGS)
 void quit_screen_func(F_CMD_ARGS)
 {
   Done(0,NULL);
+}
+
+void quitSession_func(F_CMD_ARGS)
+{
+  quitSession();
+}
+
+void saveSession_func(F_CMD_ARGS)
+{
+  saveSession();
+}
+
+void saveQuitSession_func(F_CMD_ARGS)
+{
+  saveQuitSession();
 }
 
 void echo_func(F_CMD_ARGS)

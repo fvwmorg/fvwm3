@@ -1,5 +1,12 @@
 Changes in beta release 2.3.6 (July 1999)
 
+* The new commands QuitSession, SaveSession, SaveQuitSession allow to
+  manage the session from the window manager.
+
+* If you use xsm session manager, which has buggy discard command
+  implementation, set environment $SESSION_MANAGER_NAME to "xsm".
+  If you use another SM, unset this variable or set to something else.
+
 * New module FvwmTheme for creating Colorsets that can be shared with
   fvwm2 and other modules when they have been modified.
 

@@ -2777,6 +2777,13 @@ Exits fvwm2, generally causing X to exit too.
 Causes fvwm2 to stop managing the screen on which the command was issued.
 
 
+.IP "QuitSession"
+Causes a session manager (if any) to shutdown the session.
+
+This command does not work for xsm, it seems that xsm didn't implement this
+functionality. Use unix signals to manage xsm remotely.
+
+
 .IP "Raise"
 Allows the user to raise a window. Note that this raises a window
 only in its layer. To bring a window to the absolute top, use
@@ -2879,6 +2886,20 @@ over the restart.
 
 Without this option, Restart command preserves most per-window state
 by writing it to a file named .fs-restart in the user's home directory.
+
+
+.IP "SaveSession"
+Causes a session manager (if any) to save the session.
+
+This command does not work for xsm, it seems that xsm didn't implement this
+functionality. Use unix signals to manage xsm remotely.
+
+.IP "SaveQuitSession"
+Causes a session manager (if any) to save and then shutdown the session.
+
+This command does not work for xsm, it seems that xsm didn't implement this
+functionality. Use unix signals to manage xsm remotely.
+
 
 .IP "Scroll \fIhorizonal vertical\fP"
 Scrolls the virtual desktop's viewport by \fIhorizontal\fP pages in

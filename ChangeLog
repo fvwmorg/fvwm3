@@ -1,3 +1,27 @@
+1999-07-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/builtins.c:
+	* fvwm/functions.c:
+	* fvwm/functions.h:
+	* fvwm/misc.h:
+	* fvwm/session.c:
+	* fvwm/session.h:
+	* fvwm/fvwm2.1:
+	* NEWS:
+	Initially implemented new commands QuitSession, SaveSession,
+	SaveQuitSession. They work for gnome-session, but not for xsm.
+	Another way to implement them (which works for xsm) is sending
+	SIGTERM and SIGUSR1 to a SM pid specified in $SESSION_MANAGER.
+
+	* fvwm/session.c (set_sm_properties):
+	XSM_BUGGY_DISCARD_COMMAND now extended by run-time xsm detection
+	(currently using $SESSION_MANAGER_NAME environment, set by user).
+	Fixed bug - added discardCommand declaration and initialization.
+	(LoadGlobalState, LoadWindowStates, saveStateFile):
+	Renamed SESSION_STATE to REAL_STATE_FILENAME. There are still
+	problems with it specific to gnome-session.
+	Some rearranging in the functions.
+
 1999-07-20  Hippo
 
 	* fvwm/builtins.c: Fixed color leak with FvwmTheme.
@@ -36,6 +60,7 @@
 	background pixmap from borderstyle
 
 	* fvwm/move_resize.c (moveLoop): removed debug fprintf
+
 1999-07-13  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/session.c (LoadWindowStates): Replaced all sscanf "%4000s"
