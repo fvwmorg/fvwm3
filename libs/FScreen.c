@@ -65,6 +65,7 @@
 #include "fvwmlib.h"
 #include "safemalloc.h"
 #include "FScreen.h"
+#include "PictureBase.h"
 
 #ifdef HAVE_XINERAMA
 #define FScreenHaveXinerama 1
@@ -303,7 +304,7 @@ void FScreenInit(Display *dpy)
 		screens_xi[2].width         = w - ws;
 		screens_xi[2].height        = 7 * h / 8;
 		/* add delimiter */
-		attributes.background_pixel = WhitePixel(disp, scr);
+		attributes.background_pixel = PictureWhitePixel();
 		attributes.override_redirect = True;
 		blank_w = XCreateWindow(
 			disp, root, 0, screens_xi[1].y_org - 1,

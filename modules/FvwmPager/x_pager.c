@@ -245,9 +245,10 @@ void initialize_viz_pager(void)
   XSetWindowAttributes attr;
   XGCValues xgcv;
 
+  /* FIXME: I think that we only need that Pdepth == 
+   * DefaultDepth(dpy, Scr.screen) to use the Scr.Root for Scr.Pager_w */
   if (Pdefault) {
     Scr.Pager_w = Scr.Root;
-    Scr.NormalGC = DefaultGC(dpy, Scr.screen);
   } else {
     attr.background_pixmap = None;
     attr.border_pixel = 0;
@@ -257,6 +258,8 @@ void initialize_viz_pager(void)
 				CWBackPixmap|CWBorderPixel|CWColormap, &attr);
     Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, &xgcv);
   }
+  Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, NULL);
+
   xgcv.plane_mask = AllPlanes;
   Scr.MiniIconGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCPlaneMask, &xgcv);
   Scr.black = GetColor("Black");

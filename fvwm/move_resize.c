@@ -2554,6 +2554,7 @@ void CMD_XorValue(F_CMD_ARGS)
 		val = 0;
 	}
 
+	PictureUseDefaultVisual();
 	gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
 	gcv.subwindow_mode = IncludeInferiors;
 	gcv.function = GXxor;
@@ -2566,7 +2567,7 @@ void CMD_XorValue(F_CMD_ARGS)
 	*/
 	/* Xlib programming manual suggestion: */
 	gcv.foreground = (val)?
-		(val):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
+		(val):(PictureBlackPixel() ^ PictureWhitePixel());
 	gcv.fill_style = FillSolid;
 	gcv.subwindow_mode = IncludeInferiors;
 
@@ -2585,6 +2586,7 @@ void CMD_XorValue(F_CMD_ARGS)
 		XFreePixmap(dpy, XorPixmap);
 		XorPixmap = None;
 	}
+	PictureUseFvwmVisual();
 
 	return;
 }

@@ -389,7 +389,7 @@ void FftDrawString(
 		fprintf(stderr, "[fvwmlibs][FftDrawString]: ERROR --"
 			" cannot find color\n");
 #endif
-		xfg.pixel = WhitePixel(dpy, fftscreen);
+		xfg.pixel = PictureBlackPixel();
 	}
 
 	XQueryColor(dpy, Pcmap, &xfg);

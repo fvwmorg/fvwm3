@@ -2009,6 +2009,7 @@ int main(int argc, char **argv)
 		if (total)
 		{
 			/* visualID's are unique so there will only be one */
+			Pdpy = dpy;
 			Pvisual = vizinfo[0].visual;
 			Pdepth = vizinfo[0].depth;
 			XFree(vizinfo);
@@ -2035,6 +2036,8 @@ int main(int argc, char **argv)
 		Pcmap = DefaultColormap(dpy, Scr.screen);
 		Pdefault = True;
 	}
+
+	PictureSetupWhiteAndBlack();
 
 	/* make a copy of the visual stuff so that XorPixmap can swap with root
 	 */
@@ -2206,17 +2209,14 @@ int main(int argc, char **argv)
 	if (Pdepth<2)
 	{
 		Scr.gray_pixmap = XCreatePixmapFromBitmapData(
-			dpy,Scr.NoFocusWin, g_bits, g_width, g_height,
-			BlackPixel(dpy, Scr.screen),
-			WhitePixel(dpy, Scr.screen), Pdepth);
+			dpy, Scr.NoFocusWin, g_bits, g_width, g_height,
+			PictureBlackPixel(), PictureWhitePixel(), Pdepth);
 		Scr.light_gray_pixmap = XCreatePixmapFromBitmapData(
 			dpy, Scr.NoFocusWin, l_g_bits, l_g_width, l_g_height,
-			BlackPixel(dpy, Scr.screen),
-			WhitePixel(dpy, Scr.screen), Pdepth);
+			PictureBlackPixel(), PictureWhitePixel(), Pdepth);
 		Scr.sticky_gray_pixmap = XCreatePixmapFromBitmapData(
 			dpy, Scr.NoFocusWin, s_g_bits, s_g_width, s_g_height,
-			BlackPixel(dpy, Scr.screen),
-			WhitePixel(dpy, Scr.screen), Pdepth);
+			PictureBlackPixel(), PictureWhitePixel(), Pdepth);
 	}
 
 	attributes.background_pixel = Scr.StdBack;

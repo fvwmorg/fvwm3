@@ -490,7 +490,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 	  fw->icon_g.picture_w_g.y, fw->icon_g.picture_w_g.width,
 	  fw->icon_g.picture_w_g.height);
       }
-      if (FShapesSupported)
+      if (FShapesSupported && Pdepth == DefaultDepth(dpy, (DefaultScreen(dpy))))
       {
 	      XSetWindowBackgroundPixmap(
 		      dpy, FW_W_ICON_PIXMAP(fw), ParentRelative);

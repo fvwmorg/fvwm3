@@ -813,9 +813,9 @@ int main(int argc, char **argv) {
     fprintf(stderr,"%s: could not open display\n",MyName+1);
     exit(1);
   }
-  /* FvwmAnimate must use the root visuals so trash the fvwm one */
-  putenv("FVWM_VISUALID=");
-  PictureInitCMap(dpy);
+  /* FvwmAnimate must use the root visuals so do not call
+   * PictureInitCMap but PictureInitCMapRoot. Color Limit is not needed */
+  PictureInitCMapRoot(dpy, False, NULL);
   FRenderInit(dpy);
   Scr.root = DefaultRootWindow(dpy);
   Scr.screen = DefaultScreen(dpy);
@@ -1190,7 +1190,7 @@ static void CreateDrawGC(void) {
 		XFreeGC(dpy,gc);                /* free old GC */
 	}
 	/* From builtins.c: */
-	color = (BlackPixel(dpy, Scr.screen) ^ WhitePixel(dpy, Scr.screen));
+	color = (PictureBlackPixel() ^ PictureWhitePixel());
 	pixmap = None;
 	gcv.function = GXxor;                 /* default is to xor the lines */
 	if (Animate.pixmap)
@@ -1198,7 +1198,7 @@ static void CreateDrawGC(void) {
 		FvwmPicture *picture;
 		FvwmPictureAttributes fpa;
 
-		fpa.mask = FPAM_NO_COLOR_LIMIT; /* ? */
+		fpa.mask = FPAM_NO_COLOR_LIMIT;
 		picture = PGetFvwmPicture(
 			dpy, RootWindow(dpy,Scr.screen), 0, Animate.pixmap, fpa);
 		if (!picture)
@@ -1217,19 +1217,14 @@ static void CreateDrawGC(void) {
 	}
 	else if (Animate.color)
 	{       /* if color called for */
-		if (XParseColor(
-			dpy,DefaultColormap(dpy,Scr.screen),Animate.color,
-			&xcol))
+		if (XParseColor( dpy, Pcmap,Animate.color, &xcol))
 		{
-			if (PictureAllocColor(
-				dpy, DefaultColormap(dpy,Scr.screen), &xcol,
-				True))
+			if (PictureAllocColor(dpy, Pcmap, &xcol, True))
 			{
 				color = xcol.pixel;
 				/* free it now, only interested in the pixel */
 				PictureFreeColors(
-					dpy, DefaultColormap(dpy,Scr.screen),
-					&xcol.pixel, 1, 0, True);
+					dpy, Pcmap, &xcol.pixel, 1, 0, True);
                                 /* gcv.function=GXequiv;  Afterstep used this. */
 			}
 			else

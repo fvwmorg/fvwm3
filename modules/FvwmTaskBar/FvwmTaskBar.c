@@ -1810,13 +1810,13 @@ static void CreateOrUpdateGCs(void)
    else
      hilite = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
-   gcval.foreground = WhitePixel(dpy, screen);;
+   gcval.foreground = PictureWhitePixel();
    if (whitegc)
      XChangeGC(dpy,whitegc,gcmask,&gcval);
    else
      whitegc = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
-   gcval.foreground = BlackPixel(dpy, screen);
+   gcval.foreground = PictureBlackPixel();
    if (blackgc)
      XChangeGC(dpy,blackgc,gcmask,&gcval);
    else
@@ -1995,12 +1995,12 @@ void StartMeUp(void)
    win_y = hints.y;
 
    if(Pdepth < 2) {
-     back = WhitePixel(dpy, screen);
-     fore = BlackPixel(dpy, screen);
-     iconback = WhitePixel(dpy, screen);
-     iconfore = BlackPixel(dpy, screen);
-     focusback = WhitePixel(dpy, screen);
-     focusfore = BlackPixel(dpy, screen);
+     back = PictureWhitePixel();
+     fore = PictureBlackPixel();
+     iconback = PictureWhitePixel();
+     iconfore = PictureBlackPixel();
+     focusback = PictureWhitePixel();
+     focusfore = PictureBlackPixel();
    } else {
      back = GetColor(BackColor);
      fore = GetColor(ForeColor);

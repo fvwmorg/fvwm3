@@ -43,8 +43,29 @@ extern unsigned int Pdepth;
 extern Display *Pdpy;     /* Save area for display pointer */
 extern Bool PUseDynamicColors;
 
-/* This routine called during fvwm and some modules initialization */
+/* This routine called during modules initialization. Fvwm has its own code
+ * in fvwm.c */
 void PictureInitCMap(Display *dpy);
+
+/* as above but force to use the default visual. If color_limit is True also
+ * enable color limitation (independent than the fvwm one). */
+void PictureInitCMapRoot(Display *dpy, Bool color_limit, char *color_limit_arg);
+
+/* Analogue of the Xlib WhitePixel and BlackPixel functions but use the
+   Pvisual */
+Pixel PictureWhitePixel(void);
+Pixel PictureBlackPixel(void);
+
+/* for initialization of the white and black pixel (for fvwm as PictureInitCMap*
+ * do this) */
+void PictureSetupWhiteAndBlack(void);
+
+/* Analogue of the Xlib DefaultGC function but take care of the Pdepth:
+ - If Pdepth == DefaultDepth return the DefaultGC
+ - If Pdepth != DefaultDepth and first call create a static gc with the win
+   and return the gc
+ -  If Pdepth != DefaultDepth and already called return the static gc */
+GC PictureDefaultGC(Display *dpy, Window win);
 
 /* these can be used to switch visuals before calling GetPicture */
 /* do NOT use with CachePicture */

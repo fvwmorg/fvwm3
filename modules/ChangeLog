@@ -1,3 +1,22 @@
+2002-10-08  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmPager/x_pager.c (initialize_viz_pager): 
+	* FvwmForm/FvwmForm.c (InitConstants):
+	(CheckAlloc):
+	* FvwmBanner/FvwmBanner.c (main):
+	* FvwmTaskBar/Goodies.c (CreateOrUpdateGoodyGC):
+	* FvwmTaskBar/FvwmTaskBar.c (StartMeUp):
+	(CreateOrUpdateGCs):
+	(CreateTipWindow):
+	* FvwmAnimate/FvwmAnimate.c (CreateDrawGC):
+	(main):
+	Use the new interface functions and some Black and White fixes
+
+	* FvwmBacker/FvwmBacker.c (SetDeskPageBackground):
+	(AddCommand):
+	Forbid colorset background if the fvwm depth is not equal to the depth
+	of the root window. Use the root color map for solid color.
+
 2002-10-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/FvwmDebug.in:

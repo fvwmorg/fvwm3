@@ -132,7 +132,7 @@ static void CreateOrUpdateGoodyGC(void)
       XFreePixmap(dpy, wmailpix);
     wmailpix = XCreatePixmapFromBitmapData(
       dpy, win, (char *)minimail_bits, minimail_width, minimail_height,
-      BlackPixel(dpy, screen), WhitePixel(dpy, screen), Pdepth);
+      PictureBlackPixel(), PictureWhitePixel(), Pdepth);
     goodies_width += minimail_width + 7;
   }
   else
@@ -336,7 +336,7 @@ void DrawGoodies(void)
       XBell(dpy, BellVolume);
   }
 
-  if (!mailcleared && (unreadmail || newmail))
+  if (!mailcleared && (unreadmail || newmail ||1))
     XCopyArea(dpy, wmailpix, win, statusgc, 0, 0,
 	      minimail_width, minimail_height,
 	      win_width - stwin_width + clock_width + 3,
@@ -508,7 +508,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   }
 
   winattr.background_pixel = tip_back;
-  winattr.border_pixel = BlackPixel(dpy, screen);
+  winattr.border_pixel = PictureBlackPixel();
   winattr.colormap = Pcmap;
   winattr.override_redirect = True;
   winattr.save_under = True;

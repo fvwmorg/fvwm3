@@ -1,3 +1,8 @@
+2002-10-08  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-root.c (*):
+	ColorLimit Visual fixes
+
 2002-09-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-perllib.in:

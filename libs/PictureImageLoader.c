@@ -45,7 +45,7 @@
 #include "FRenderInit.h"
 
 /* ---------------------------- local definitions --------------------------- */
-#define FIMAGE_CMD_ARGS Display *dpy, Window Root, char *path, \
+#define FIMAGE_CMD_ARGS Display *dpy, Window win, char *path, \
 		  Pixmap *pixmap, Pixmap *mask, Pixmap *alpha, \
 		  int *width, int *height, int *depth, \
 		  int *nalloc_pixels, Pixel **alloc_pixels, \
@@ -217,14 +217,14 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	fclose(f);
 
 	*depth = Pdepth;
-	*pixmap = XCreatePixmap(dpy, Root, w, h, Pdepth);
-	*mask = XCreatePixmap(dpy, Root, w, h, 1);
+	*pixmap = XCreatePixmap(dpy, win, w, h, Pdepth);
+	*mask = XCreatePixmap(dpy, win, w, h, 1);
 	if (!(fpa.mask & FPAM_NO_ALPHA) && FRenderGetAlphaDepth())
 	{
-		*alpha = XCreatePixmap(dpy, Root, w, h, FRenderGetAlphaDepth());
+		*alpha = XCreatePixmap(dpy, win, w, h, FRenderGetAlphaDepth());
 	}
 	if (!PImageCreatePixmapFromArgbData(
-		dpy, Root, (unsigned char *)data, 0, w, h, *pixmap, *mask,
+		dpy, win, (unsigned char *)data, 0, w, h, *pixmap, *mask,
 		*alpha, &have_alpha, fpa)
 	    || *pixmap == None)
 	{
@@ -266,8 +266,6 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	XColor *colors;
 	XColor tc;
 	Pixel *pixels;
-	Pixel back = WhitePixel(dpy, DefaultScreen(dpy));
-	Pixel fore = BlackPixel(dpy, DefaultScreen(dpy));
 	int i,j,w,h;
 	int k = 0, m = 0;
 	char *color_mask;
@@ -394,7 +392,7 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 			m++;
 			if (point_mask && im_mask)
 			{
-				XPutPixel(im_mask, i,j, fore);
+				XPutPixel(im_mask, i,j, 0);
 			}
 			else
 			{
@@ -407,26 +405,25 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 				}
 				if (im_mask)
 				{
-					XPutPixel(im_mask, i,j, back);
+					XPutPixel(im_mask, i,j, 1);
 				}
 			}
 			XPutPixel(im, i,j, tc.pixel);
 		}
 	}
 
-	*pixmap = XCreatePixmap(dpy, Root, w, h, Pdepth);
+	*pixmap = XCreatePixmap(dpy, win, w, h, Pdepth);
 	XPutImage(
-		dpy, *pixmap,
-		DefaultGC(dpy, DefaultScreen(dpy)), im,
+		dpy, *pixmap, PictureDefaultGC(dpy, win), im,
 		0, 0, 0, 0, w, h);
 	if (im_mask)
 	{
 		GC mono_gc = None;
 		XGCValues xgcv;
 
-		*mask = XCreatePixmap(dpy, Root, w, h, 1);
-		xgcv.foreground = fore;
-		xgcv.background = back;
+		*mask = XCreatePixmap(dpy, win, w, h, 1);
+		xgcv.foreground = 0;
+		xgcv.background = 1;
 		mono_gc = fvwmlib_XCreateGC(
 			dpy, *mask, GCForeground | GCBackground, &xgcv);
 		XPutImage(dpy, *mask, mono_gc, im_mask, 0, 0, 0, 0, w, h);
@@ -469,7 +466,7 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
 {
 	int l;
 
-	if (XReadBitmapFile(dpy, Root, path, width, height, pixmap, &l, &l)
+	if (XReadBitmapFile(dpy, win, path, width, height, pixmap, &l, &l)
 	    == BitmapSuccess)
 	{
 		*mask = None;
@@ -488,11 +485,10 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
  * ***************************************************************************/
 /* FIXME: colors leaks (if PUseDynamicColors) */
 Bool PImageCreatePixmapFromArgbData(
-	Display *dpy, Window Root, unsigned char *data, int start, int width,
+	Display *dpy, Window win, unsigned char *data, int start, int width,
 	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha, int *have_alpha,
 	FvwmPictureAttributes fpa)
 {
-	static GC my_gc = None;
 	GC mono_gc = None;
 	GC a_gc = None;
 	XGCValues xgcv;
@@ -500,8 +496,6 @@ Bool PImageCreatePixmapFromArgbData(
 	XImage *image, *m_image = NULL;
 	XImage *a_image = NULL;
 	XColor c;
-	Pixel back = WhitePixel(dpy, DefaultScreen(dpy));
-	Pixel fore = BlackPixel(dpy, DefaultScreen(dpy));
 	int a;
 	Bool use_alpha_pix = (alpha != None && !(fpa.mask & FPAM_NO_ALPHA)
 		&& FRenderGetAlphaDepth());
@@ -517,22 +511,14 @@ Bool PImageCreatePixmapFromArgbData(
 #endif
 
 	*have_alpha = False;
-	if (my_gc == None)
-	{
-		my_gc = fvwmlib_XCreateGC(dpy,
-					  RootWindow(dpy, DefaultScreen(dpy)),
-					  0, NULL);
-		if (my_gc == None)
-			return False;
-	}
 	if (use_alpha_pix)
 	{
 		a_gc = fvwmlib_XCreateGC(dpy, alpha, 0, NULL);
 	}
 	if (mask)
 	{
-		xgcv.foreground = fore;
-		xgcv.background = back;
+		xgcv.foreground = 0;
+		xgcv.background = 1;
 		mono_gc = fvwmlib_XCreateGC(dpy, mask,
 					    GCForeground | GCBackground, &xgcv);
 	}
@@ -602,7 +588,7 @@ Bool PImageCreatePixmapFromArgbData(
 			{
 				XPutPixel(
 					m_image, i, j,
-					(a > alpha_limit)? back:fore);
+					(a > alpha_limit)? 1:0);
 			}
 			if (use_alpha_pix && a_image)
 			{
@@ -612,7 +598,9 @@ Bool PImageCreatePixmapFromArgbData(
 		}
 	}
 	/* copy the image to the server */
-	XPutImage(dpy, pixmap, my_gc, image, 0, 0, 0, 0, width, height);
+	XPutImage(
+		dpy, pixmap, PictureDefaultGC(dpy, win), image,
+		0, 0, 0, 0, width, height);
 	if (m_image)
 	{
 		XPutImage(
@@ -642,7 +630,7 @@ Bool PImageCreatePixmapFromArgbData(
  * ***************************************************************************/
 
 Bool PImageLoadPixmapFromFile(
-	Display *dpy, Window Root, char *path, Pixmap *pixmap, Pixmap *mask,
+	Display *dpy, Window win, char *path, Pixmap *pixmap, Pixmap *mask,
 	Pixmap *alpha, int *width, int *height, int *depth, int *nalloc_pixels,
 	Pixel **alloc_pixels, FvwmPictureAttributes fpa)
 {
@@ -662,7 +650,7 @@ Bool PImageLoadPixmapFromFile(
 		if (StrEquals(Loaders[i].extension, ext))
 		{
 			if (Loaders[i].func(
-				dpy, Root, path, pixmap, mask, alpha, width,
+				dpy, win, path, pixmap, mask, alpha, width,
 				height, depth, nalloc_pixels, alloc_pixels, fpa))
 			{
 				return True;
@@ -677,7 +665,7 @@ Bool PImageLoadPixmapFromFile(
 	while(Loaders[i].extension != NULL)
 	{
 		if (i != tried && Loaders[i].func(
-			dpy, Root, path, pixmap, mask, alpha, width, height,
+			dpy, win, path, pixmap, mask, alpha, width, height,
 			depth, nalloc_pixels, alloc_pixels, fpa))
 		{
 			return True;
@@ -697,7 +685,7 @@ Bool PImageLoadPixmapFromFile(
 }
 
 FvwmPicture *PImageLoadFvwmPictureFromFile(
-	Display *dpy, Window Root, char *path, FvwmPictureAttributes fpa)
+	Display *dpy, Window win, char *path, FvwmPictureAttributes fpa)
 {
 	FvwmPicture *p;
 	Pixmap pixmap = None;
@@ -708,7 +696,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 	Pixel *alloc_pixels = NULL;
 
 	if (!PImageLoadPixmapFromFile(
-		dpy, Root, path, &pixmap, &mask, &alpha, &width, &height,
+		dpy, win, path, &pixmap, &mask, &alpha, &width, &height,
 		&depth, &nalloc_pixels, &alloc_pixels, fpa))
 	{
 		return NULL;
@@ -734,10 +722,9 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 }
 
 
-Bool PImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
-				    char *path, Pixmap *source, Pixmap *mask,
-				    unsigned int *x,
-				    unsigned int *y)
+Bool PImageLoadCursorPixmapFromFile(
+	Display *dpy, Window win, char *path, Pixmap *source, Pixmap *mask,
+	unsigned int *x, unsigned int *y)
 {
 
 	FxpmAttributes xpm_attributes;
@@ -748,7 +735,7 @@ Bool PImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
 	/* we need source to be a bitmap */
 	xpm_attributes.depth = 1;
 	xpm_attributes.valuemask = FxpmSize | FxpmDepth | FxpmHotspot;
-	if (FxpmReadFileToPixmap(dpy, Root, path, source, mask,
+	if (FxpmReadFileToPixmap(dpy, win, path, source, mask,
 				&xpm_attributes) != FxpmSuccess)
 	{
 		fprintf(stderr, "[FVWM][PImageLoadCursorPixmapFromFile]"
@@ -771,10 +758,11 @@ Bool PImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
 }
 
 /* FIXME: Use color limit */
-Bool PImageLoadPixmapFromXpmData(Display *dpy, Window Root, int color_limit,
-				 char **data,
-				 Pixmap *pixmap, Pixmap *mask,
-				 int *width, int *height, int *depth)
+Bool PImageLoadPixmapFromXpmData(
+	Display *dpy, Window win, int color_limit,
+	char **data,
+	Pixmap *pixmap, Pixmap *mask,
+	int *width, int *height, int *depth)
 {
 	FxpmAttributes xpm_attributes;
 
@@ -784,7 +772,7 @@ Bool PImageLoadPixmapFromXpmData(Display *dpy, Window Root, int color_limit,
 	xpm_attributes.visual = Pvisual;
 	xpm_attributes.colormap = Pcmap;
 	xpm_attributes.depth = Pdepth;
-	if(FxpmCreatePixmapFromData(dpy, Root, data, pixmap, mask,
+	if(FxpmCreatePixmapFromData(dpy, win, data, pixmap, mask,
 				   &xpm_attributes)!=FxpmSuccess)
 	{
 		return False;

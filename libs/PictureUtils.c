@@ -40,7 +40,7 @@
 
 #define PICTURE_DEBUG_COLORS_ALLOC_FAILURE 0
 #define PICTURE_DEBUG_COLORS_PRINT_CMAP    0
-#define PICTURE_DEBUG_COLORS_INFO          1
+#define PICTURE_DEBUG_COLORS_INFO          0
 
 /* form alloc_in_cmap from the xpm lib */
 #define XPM_DIST(r1,g1,b1,r2,g2,b2) (long)\
@@ -1624,8 +1624,9 @@ int PictureAllocColorTable(char *opt, int call_type)
 			}
 			else
 			{
-				limit = 54; /* 4x4x3 + 6 grey */
-				/* other candidate:
+				limit = 68;
+				/* candidate:
+				 * limit = 54;  4x4x3 + 6 grey
 				 * limit = 61 (named table)
 				 * limit = 85 current XRender default 4cc + 21
 				 * limit = 76 future(?) XRender default 4cc + 16

@@ -1,3 +1,34 @@
+2002-10-08  olicha  <olivier.chapuis@free.fr>
+
+	* libs/PictureBase.c (*):
+	(PictureInitCMapRoot)
+	(PictureSetupWhiteAndBlack):
+	(PictureWhitePixel):
+	(PictureBlackPixel):
+	(PictureDefaultGC):
+	New interface function PictureWhitePixel, PictureBlackPixel. Analogue
+	of the Xlib WhitePixel and BlackPixel functions but in the Pvisaul.
+	New interface function PictureInitCMapRoot analogue to PictureInitCMap,
+	but always use the root visual and allows to set or not a private
+	color limit table.
+	New interface PictureDefaultGC, analogue of Xlib DefaultGC function
+	but which respects the Pvisual
+ 
+	* libs/PictureGraphics.c (*):
+	* libs/FScreen.c (FScreenInit):
+	* libs/FRender.c (FRenderRender):
+	* libs/Fft.c (FftDrawString):
+	* fvwm/icons.c (CreateIconWindow):
+	* fvwm/colorset.c (parse_colorset):
+	* fvwm/move_resize.c (CMD_XorValue):
+	* fvwm/colorset.c (alloc_colorset):
+	* fvwm/fvwm.c (main):
+	Use the new interface functions and some fix if the fvwm depth !=
+	the root depth.
+
+	* libs/PictureUtils.c (PictureAllocColorTable):
+	Change the default color table to a 4x4x4 cc + 4 grey
+
 2002-10-07  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: Use built-in, not builtin.

@@ -199,10 +199,6 @@ Bool FRenderCreateShadePicture(
 	{
 		FRenderPictureAttributes  pa;
 
-		if (win == None)
-		{
-			win = RootWindow(dpy, DefaultScreen(dpy));
-		}
 		if (!shade_pixmap)
 		{
 			shade_pixmap = XCreatePixmap(dpy, win, 1, 1, 8);
@@ -253,10 +249,6 @@ Bool FRenderTintPicture(
 
 	if (!tint_pixmap || !tint_picture)
 	{
-		if (win == None)
-		{
-			win = RootWindow(dpy, DefaultScreen(dpy));
-		}
 		pa.repeat = True;
 		if (!tint_pixmap)
 		{
@@ -301,10 +293,6 @@ Bool FRenderTintPicture(
 	}
 	if (!shade_picture)
 	{
-		if (win == None)
-		{
-			win = RootWindow(dpy, DefaultScreen(dpy));
-		}
 		shade_picture = FRenderCreateShadePicture(dpy, win, 100);
 	}
 
@@ -385,7 +373,6 @@ int FRenderRender(
 	int alpha_x = src_x;
 	int alpha_y = src_y;
 	Bool rv = False;
-	Bool free_gc = False;
 	Bool free_alpha_gc = False;
 
 	if (!XRenderSupport || !FRenderGetExtensionSupported())
@@ -429,6 +416,10 @@ int FRenderRender(
 	 */
 	if (pixmap == DefaultRootWindow(dpy))
 	{
+		if (Pdepth != DefaultDepth(dpy,DefaultScreen(dpy)))
+		{
+			goto bail;
+		}
 		pam |= FRenderCPSubwindowMode;
 		pa.subwindow_mode = IncludeInferiors;
 		pixmap_copy = XCreatePixmap(dpy, win, src_w, src_h, Pdepth);
@@ -451,34 +442,24 @@ int FRenderRender(
 	else if (pixmap == ParentRelative)
 	{
 		/* need backing store and good preparation of the win */
-		if (win == None)
-		{
-			win = RootWindow(dpy, DefaultScreen(dpy));
-		}
 		if (gc == None)
 		{
-			gc = fvwmlib_XCreateGC(dpy, pixmap, 0, NULL);
-			free_gc = True;
+			gc = PictureDefaultGC(dpy, win);
 		}
 		pixmap_copy = XCreatePixmap(dpy, win, src_w, src_h, Pdepth);
 		if (pixmap_copy && gc)
 		{
-			XCopyArea(dpy, win,
-				  pixmap_copy, gc,
-				  src_x, src_y, src_w, src_h, 0, 0);
+			XCopyArea(
+				dpy, win, pixmap_copy, gc,
+				src_x, src_y, src_w, src_h, 0, 0);
 		}
 		src_x = src_y = 0;
 	}
 	else if (tint_percent > 0 && !pixmap_copy)
 	{
-		if (win == None)
-		{
-			win = RootWindow(dpy, DefaultScreen(dpy));
-		}
 		if (gc == None)
 		{
-			gc = fvwmlib_XCreateGC(dpy, pixmap, 0, NULL);
-			free_gc = True;
+			gc = PictureDefaultGC(dpy, win);
 		}
 		pixmap_copy = XCreatePixmap(dpy, win, src_w, src_h, Pdepth);
 		if (pixmap_copy && gc)
@@ -501,10 +482,6 @@ int FRenderRender(
 			dpy, pixmap_copy, PFrenderVisualFormat, pam, &pa);
 	}
 
-	if (free_gc && gc)
-	{
-		XFreeGC(dpy, gc);
-	}
 	if (!src_picture)
 	{
 		goto bail;
@@ -543,10 +520,6 @@ int FRenderRender(
 	}
 	else
 	{
-		if (win == None && (alpha != None || mask != None))
-		{
-			win = RootWindow(dpy, DefaultScreen(dpy));
-		}
 		if (alpha != None)
 		{
 			alpha_copy = XCreatePixmap(dpy, win, src_w, src_h, 8);

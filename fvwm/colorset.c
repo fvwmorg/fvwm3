@@ -788,6 +788,13 @@ void parse_colorset(int n, char *line)
 			cs->pixmap_type = PIXMAP_STRETCH;
 			break;
 		case 24: /* RootTransparent */
+			if (Pdepth != DefaultDepth(dpy, (DefaultScreen(dpy))))
+			{
+				fvwm_msg(
+					ERR, name, "can't do RootTransparent "
+					"when root_depth!=fvwm_depth");
+				break;
+			}
 			free_colorset_background(cs, True);
 			has_pixmap_changed = True;
 			cs->pixmap_type = PIXMAP_ROOT_PIXMAP_PURE;
@@ -1652,8 +1659,8 @@ void alloc_colorset(int n)
 			ncs->pixmap = XCreatePixmapFromBitmapData(
 				dpy, Scr.NoFocusWin,
 				&g_bits[4 * (nColorsets % 3)], 4, 4,
-				BlackPixel(dpy, Scr.screen),
-				WhitePixel(dpy, Scr.screen), Pdepth);
+				PictureBlackPixel(), PictureWhitePixel(),
+				Pdepth);
 			ncs->width = 4;
 			ncs->height = 4;
 		}

@@ -65,6 +65,14 @@ static unsigned int FvwmDepth;
 Display *Pdpy;            /* Save area for display pointer */
 Bool PUseDynamicColors;
 
+Pixel PWhitePixel;
+Pixel PBlackPixel;
+Pixel FvwmWhitePixel;
+Pixel FvwmBlackPixel;
+
+void PictureSetupWhiteAndBlack(void);
+
+
 void PictureInitCMap(Display *dpy) {
 	char *envp;
 
@@ -90,9 +98,9 @@ void PictureInitCMap(Display *dpy) {
 		Pcmap = DefaultColormap(dpy, screen);
 		Pdefault = True;
 	}
-	FvwmVisual = Pvisual;
-	FvwmDepth = Pdepth;
-	FvwmCmap = Pcmap;
+
+	PictureSetupWhiteAndBlack();
+	PictureSaveFvwmVisual();
 
 	/* initialise color limit */
 	PUseDynamicColors = 0;
@@ -104,6 +112,52 @@ void PictureInitCMap(Display *dpy) {
 	return;
 }
 
+void PictureInitCMapRoot(Display *dpy, Bool color_limit, char *color_limit_arg)
+{
+	int screen = DefaultScreen(dpy);
+
+	Pdpy = dpy;
+
+	Pvisual = DefaultVisual(dpy, screen);
+	Pdepth = DefaultDepth(dpy, screen);
+	Pcmap = DefaultColormap(dpy, screen);
+	Pdefault = True;
+
+	PictureSetupWhiteAndBlack();
+	PictureSaveFvwmVisual();
+
+	/* initialise color limit */
+	PUseDynamicColors = 1;
+	if (color_limit && Pdepth <= 8 && (Pvisual->class & 1))
+	{
+		PictureAllocColorTable(color_limit_arg, PICTURE_CALLED_BY_FVWM);
+	}
+	return;
+}
+
+void PictureSetupWhiteAndBlack(void)
+{
+	XColor c;
+
+	if (!Pdefault)
+	{
+		c.flags = DoRed|DoGreen|DoBlue;
+		c.red = c.green = c.blue = 65535;
+		XAllocColor(Pdpy, Pcmap, &c);
+		PWhitePixel = c.pixel;
+		c.red = c.green = c.blue = 0;
+		XAllocColor(Pdpy, Pcmap, &c);
+		PBlackPixel = c.pixel;
+	}
+	else
+	{
+		PWhitePixel = WhitePixel(Pdpy, DefaultScreen(Pdpy));
+		PBlackPixel = BlackPixel(Pdpy, DefaultScreen(Pdpy));
+	}
+
+	return;
+}
+
 void PictureUseDefaultVisual(void)
 {
 	int screen = DefaultScreen(Pdpy);
@@ -111,7 +165,8 @@ void PictureUseDefaultVisual(void)
 	Pvisual = DefaultVisual(Pdpy, screen);
 	Pdepth = DefaultDepth(Pdpy, screen);
 	Pcmap = DefaultColormap(Pdpy, screen);
-
+	PWhitePixel = WhitePixel(Pdpy, DefaultScreen(Pdpy));
+	PBlackPixel = BlackPixel(Pdpy, DefaultScreen(Pdpy));
 	return;
 }
 
@@ -120,7 +175,8 @@ void PictureUseFvwmVisual(void)
 	Pvisual = FvwmVisual;
 	Pdepth = FvwmDepth;
 	Pcmap = FvwmCmap;
-
+	PWhitePixel = FvwmWhitePixel;
+	PBlackPixel = FvwmBlackPixel;
 	return;
 }
 
@@ -129,8 +185,39 @@ void PictureSaveFvwmVisual(void)
 	FvwmVisual = Pvisual;
 	FvwmDepth = Pdepth;
 	FvwmCmap = Pcmap;
-
+	FvwmWhitePixel = PWhitePixel;
+	FvwmBlackPixel = PBlackPixel;
 	return;
+}
+
+Pixel PictureWhitePixel(void)
+{
+	return PWhitePixel;
+}
+
+Pixel PictureBlackPixel(void)
+{
+	return PBlackPixel;
+}
+
+GC PictureDefaultGC(Display *dpy, Window win)
+{
+	static GC gc = None;
+
+	if (Pdepth == DefaultDepth(dpy, DefaultScreen(dpy)))
+	{
+		return DefaultGC(dpy, DefaultScreen(dpy));
+	}
+	if (gc == None)
+	{
+		XGCValues xgcv;
+
+		xgcv.foreground = PictureBlackPixel();
+		xgcv.background = PictureWhitePixel();
+		gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
+	}
+
+	return gc;
 }
 
 static char* imagePath = FVWM_IMAGEPATH;

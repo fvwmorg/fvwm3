@@ -182,8 +182,8 @@ int main(int argc, char **argv)
 	  GC gc;
 	  Pixmap temp;
 
-	  gcv.background= WhitePixel(dpy, screen);
-	  gcv.foreground= BlackPixel(dpy, screen);
+	  gcv.background= PictureWhitePixel();
+	  gcv.foreground= PictureBlackPixel();
 	  gc = fvwmlib_XCreateGC(dpy, win,
 				 GCForeground | GCBackground, &gcv);
 	  temp = XCreatePixmap(dpy, win, view.width, view.height, Pdepth);

@@ -108,8 +108,8 @@ void PCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, int depth,
 		gcv.clip_mask = None;
 		if (my_gc != None)
 		{
-			gcv.foreground = WhitePixel(dpy, DefaultScreen(dpy));
-			gcv.background = BlackPixel(dpy, DefaultScreen(dpy));
+			gcv.foreground = PictureWhitePixel();
+			gcv.background = PictureBlackPixel();
 			gcm |= GCBackground|GCForeground;
 			XChangeGC(dpy,my_gc,gcm,&gcv);
 		}
@@ -350,7 +350,6 @@ Pixmap PCreateRenderPixmap(
 	XColor tint_color, c;
 	int w ,h, n_src_w, n_src_h;
 	int j, i, j1, i1, m = 0, k = 0, l = 0;
-	Bool do_free_gc = False;
 	Bool do_free_mono_gc = False;
 	Bool make_new_mask = False;
 	Bool error = False;
@@ -363,13 +362,7 @@ Pixmap PCreateRenderPixmap(
 		pixmap_copy = XCreatePixmap(dpy, win, src_w, src_h, Pdepth);
 		if (gc == None)
 		{
-			XGCValues gcv;
-
-			gc = fvwmlib_XCreateGC(dpy, d, 0, NULL);
-			gcv.foreground = WhitePixel(dpy, DefaultScreen(dpy));
-			gcv.background = BlackPixel(dpy, DefaultScreen(dpy));
-			XChangeGC(dpy, gc, GCBackground|GCForeground, &gcv);
-			do_free_gc = True;
+			gc = PictureDefaultGC(dpy, win);
 		}
 		if (pixmap_copy && gc)
 		{
@@ -450,8 +443,7 @@ Pixmap PCreateRenderPixmap(
 		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
 	if (gc == None)
 	{
-		gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
-		do_free_gc = True;
+		gc = PictureDefaultGC(dpy, win);
 	}
 
 	if (!out_pix || !out_im || !gc)
@@ -591,11 +583,7 @@ Pixmap PCreateRenderPixmap(
 			{
 				if (*new_mask)
 				{
-					XPutPixel(
-						new_mask_im, i, j,
-						WhitePixel(
-							dpy,
-							DefaultScreen(dpy)));
+					XPutPixel(new_mask_im, i, j, 1);
 				}
 				if (tint_percent > 0)
 				{
@@ -691,11 +679,7 @@ Pixmap PCreateRenderPixmap(
 								if (*new_mask)
 								{
 									XPutPixel(
-										new_mask_im, i+i1, j+j1,
-										WhitePixel(
-											dpy,
-											DefaultScreen(
-												dpy)));
+										new_mask_im, i+i1, j+j1, 1);
 								}
 								c.blue = colors[k].blue;
 								c.green = colors[k].green;
@@ -781,10 +765,6 @@ Pixmap PCreateRenderPixmap(
 	{
 		XDestroyImage(dest_im);
 	}
-	if (do_free_gc && gc)
-	{
-		XFreeGC(dpy, gc);
-	}
 	if (new_mask_im)
 	{
 		XDestroyImage(new_mask_im);
@@ -823,7 +803,6 @@ Pixmap PCreateDitherPixmap(
 	XImage *src_im;
 	XImage *mask_im = NULL;
 	XImage *out_im;
-	GC my_gc;
 	Pixmap out_pix = None;
 	unsigned char *cm;
 	XColor *colors;
@@ -851,14 +830,10 @@ Pixmap PCreateDitherPixmap(
 		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
 	if (gc == None)
 	{
-		my_gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
-	}
-	else
-	{
-		my_gc = gc;
+		gc = PictureDefaultGC(dpy, win);
 	}
 
-	if (!out_pix || !out_im || !my_gc)
+	if (!out_pix || !out_im || !gc)
 	{
 		XDestroyImage(src_im);
 		if (mask_im)
@@ -872,10 +847,6 @@ Pixmap PCreateDitherPixmap(
 		if (out_im)
 		{
 			XDestroyImage(out_im);
-		}
-		if (gc == None && my_gc)
-		{
-			XFreeGC(dpy, my_gc);
 		}
 		return None;
 	}
@@ -938,45 +909,30 @@ Pixmap PCreateDitherPixmap(
 		XDestroyImage(mask_im);
 	}
 	XPutImage(
-		dpy, out_pix, my_gc, out_im, 0, 0, 0, 0, out_width, out_height);
-	if (gc == None)
-	{
-		XFreeGC(dpy, my_gc);
-	}
+		dpy, out_pix, gc, out_im, 0, 0, 0, 0, out_width, out_height);
 	XDestroyImage(out_im);
 
 	return out_pix;
 }
 
 /* ---------------------------- interface functions ------------------------- */
+
 Pixmap PictureBitmapToPixmap(
 	Display *dpy, Window win, Pixmap src, int depth, GC gc,
 	int src_x, int src_y, int src_w, int src_h)
 {
 	Pixmap dest = None;
-	Bool free_gc = False;
 
 	dest = XCreatePixmap(dpy, win, src_w, src_h, depth);
 	if (dest && gc == None)
 	{
-		XGCValues gcv;
-
-		gc = fvwmlib_XCreateGC(dpy, src, 0, NULL);
-		gcv.foreground = WhitePixel(dpy, DefaultScreen(dpy));
-		gcv.background = BlackPixel(dpy, DefaultScreen(dpy));
-		XChangeGC(dpy, gc, GCBackground|GCForeground, &gcv);
-		free_gc = True;
+		gc = PictureDefaultGC(dpy, win);
 	}
 	if (dest && gc)
 	{
 		XCopyPlane(
 			dpy, src, dest, gc,
 			src_x, src_y, src_w, src_h, 0, 0, 1);
-	}
-	
-	if (free_gc && gc)
-	{
-		XFreeGC(dpy, gc);
 	}
 
 	return dest;

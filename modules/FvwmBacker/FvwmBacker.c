@@ -189,10 +189,10 @@ int main(int argc, char **argv)
 	MyDisplayHeight = DisplayHeight(dpy, screen);
 	MyDisplayWidth = DisplayWidth(dpy, screen);
 	XSetErrorHandler(ErrorHandler);
+	PictureInitCMap(dpy);
 	/* allocate default colorset */
 	AllocColorset(0);
 	FShapeInit(dpy);
-	PictureInitCMap(dpy);
 	FRenderInit(dpy);
 
 	XA_XSETROOT_ID = XInternAtom(dpy, "_XSETROOT_ID", False);
@@ -357,6 +357,16 @@ void SetDeskPageBackground(const Command *c)
 					fvwm_msg(ERR,"FvwmBacker", "You cannot "
 						 "use a transparent colorset as "
 						 "background!");
+					XUngrabServer(dpy2);
+					XCloseDisplay(dpy2);
+					return;
+				}
+				else if (Pdepth != DefaultDepth(dpy2, screen2))
+				{
+					fvwm_msg(ERR,"FvwmBacker", "You cannot "
+						 "use a colorset background if\n"
+						 "the fvwm depth is not equal "
+						 "to the root depth!");
 					XUngrabServer(dpy2);
 					XCloseDisplay(dpy2);
 					return;
@@ -741,9 +751,10 @@ void AddCommand(char *line)
 		line += 6;
 		line = GetNextToken(line, &token);
 		this->type = 1;
+		/* use the root default color map */
 		this->solidColor = (!token || !*token) ?
 			BlackPixel(dpy, screen) :
-			GetColor(token);
+			BackerGetColor(token);
 		free(token);
 	}
 	else if (strncasecmp(line, "colorset", 8) == 0)

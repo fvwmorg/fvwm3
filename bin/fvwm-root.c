@@ -25,6 +25,22 @@ Pixmap rootImage = None;
 Bool NoDither = False;
 Bool Dither = False;
 Bool NoColorLimit = False;
+char *opt_color_limit = NULL;
+Bool use_our_color_limit = False;
+
+void usage(void)
+{
+fprintf(
+			stderr, "fvwm-root version %s with support for: XBM "
+#ifdef XPM
+			"XPM "
+#endif
+#ifdef HAVE_PNG
+			"PNG"
+#endif
+			"\n", VERSION);
+		fprintf(stderr, "Usage: fvwm-root [-fe -np -d] file\n");
+}
 
 int main(int argc, char **argv)
 {
@@ -38,16 +54,7 @@ int main(int argc, char **argv)
 
 	if (argc < 2)
 	{
-		fprintf(
-			stderr, "fvwm-root version %s with support for: XBM "
-#ifdef XPM
-			"XPM "
-#endif
-#ifdef HAVE_PNG
-			"PNG"
-#endif
-			"\n", VERSION);
-		fprintf(stderr, "Usage: fvwm-root [-fe -np -d] file\n");
+		usage();
 		fprintf(stderr, "Try Again\n");
 		exit(1);
 	}
@@ -80,9 +87,18 @@ int main(int argc, char **argv)
 		{
 			NoDither = True;
 		}
-		else if (strcasecmp(argv[i], "-no-cl") == 0)
+		else if (strcasecmp(argv[i], "-no-color-limit") == 0)
 		{
 			NoColorLimit = True;
+		}
+		else if (strcasecmp(argv[i], "-color-limit") == 0)
+		{
+			use_our_color_limit = True;
+			if (i+1 < argc)
+			{
+				i++;
+				CopyString(&opt_color_limit,argv[i]);
+			}
 		}
 		else
 		{
@@ -142,7 +158,6 @@ int main(int argc, char **argv)
 
 void SetRootWindow(char *tline)
 {
-
 	Pixmap shapeMask = None, temp_pix = None, alpha = None;
 	int w, h, depth;
 	int nalloc_pixels = 0;
@@ -150,7 +165,24 @@ void SetRootWindow(char *tline)
 	char *file_path;
 	FvwmPictureAttributes fpa;
 
-	PictureInitCMap(dpy);
+	if (use_our_color_limit)
+	{
+		PictureInitCMapRoot(dpy, !NoColorLimit, opt_color_limit);
+	}
+	else
+	{
+		/* this use the default visual (not the fvwm one) as
+		 * getenv("FVWM_VISUALID") is NULL in any case. But this use
+		 * the same color limit than fvwm.
+		 * This is "broken" when fvwm use depth <= 8 and a private
+		 * color map (i.e., fvwm is started with the -visual{ID} option),
+		 * because when fvwm use a private color map the default color
+		 * limit is 244. There is no way to know here if
+		 * getenv("FVWM_VISUALID") !=NULL.
+		 * So, in this unfortunate case the user should use the
+		 * --color-limit option */
+		PictureInitCMap(dpy);
+	}
 	/* try built-in image path first */
 	file_path = PictureFindImageFile(tline, NULL, R_OK);
 	if (file_path == NULL)

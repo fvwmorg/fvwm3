@@ -712,8 +712,8 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
   }
   dt->dt_item_GC = fvwmlib_XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
   if (Pdepth < 2) {
-    dt->dt_colors[c_itemlo] = BlackPixel(dpy, screen);
-    dt->dt_colors[c_itemhi] = WhitePixel(dpy, screen);
+    dt->dt_colors[c_itemlo] = PictureBlackPixel();
+    dt->dt_colors[c_itemhi] = PictureWhitePixel();
   } else {
     dt->dt_colors[c_itemlo] = (itemcolorset < 0)
       ? GetShadow(dt->dt_colors[c_item_bg])
@@ -1241,13 +1241,13 @@ static void InitConstants () {
   font_names[2]=safestrdup("8x13bold");
   font_names[3]=safestrdup("8x13bold");
   screen_background_color=safestrdup("Light Gray");
-  CF.p_c[input_fore].pointer_color.pixel = WhitePixel(dpy, screen);
-  CF.p_c[input_back].pointer_color.pixel = BlackPixel(dpy, screen);
-  CF.p_c[button_fore].pointer_color.pixel = BlackPixel(dpy, screen);
-  CF.p_c[button_back].pointer_color.pixel = WhitePixel(dpy, screen);
+  CF.p_c[input_fore].pointer_color.pixel = PictureWhitePixel();
+  CF.p_c[input_back].pointer_color.pixel = PictureBlackPixel();
+  CF.p_c[button_fore].pointer_color.pixel = PictureBlackPixel();
+  CF.p_c[button_back].pointer_color.pixel = PictureWhitePixel();
   /* The in pointer is the reverse of the hover pointer. */
-  CF.p_c[button_in_fore].pointer_color.pixel = WhitePixel(dpy, screen);
-  CF.p_c[button_in_back].pointer_color.pixel = BlackPixel(dpy, screen);
+  CF.p_c[button_in_fore].pointer_color.pixel = PictureWhitePixel();
+  CF.p_c[button_in_back].pointer_color.pixel = PictureBlackPixel();
 }
 
 /* read the configuration file */
