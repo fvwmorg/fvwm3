@@ -610,7 +610,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *window, DecorFace *df)
     if (text_y_pos < 0)
       text_y_pos = 0;
 #ifdef I18N_MB
-    XmbDrawString(dpy, title_win, window->title_font.fontset, gc, text_offset,
+    XmbDrawString(dpy, title_win, window->title_font.fontset,
                   gc, text_offset, text_y_pos, title, strlen(title));
 #else
     XDrawString(dpy, title_win, gc, text_offset, text_y_pos, title,

@@ -1,3 +1,8 @@
+2001-11-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/borders.c:
+	fixed compilation of I18N_MB
+
 2001-10-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* AUTHORS:
