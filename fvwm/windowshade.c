@@ -71,7 +71,7 @@ static void print_g(char *text, rectangle *g)
 	}
 }
 
-static char *get_dir_string(int dir)
+char *get_dir_string(int dir)
 {
 	char *dirs[] = {
 		" N",
@@ -112,7 +112,9 @@ void CMD_WindowShade(F_CMD_ARGS)
 	rectangle end_g;
 	frame_move_resize_args mr_args;
 
+#if 0
 fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
+#endif
 	if (DeferExecution(
 		    eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
 	{
@@ -166,7 +168,9 @@ fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
 			shade_dir = -1;
 		}
 	}
+#if 0
 fprintf(stderr, "toggle %d (%s) state %d (%s) title dir %s\n", toggle, get_dir_string(shade_dir), IS_SHADED(fw), get_dir_string((IS_SHADED(fw))?SHADED_DIR(fw):-1), get_dir_string(GET_TITLE_DIR(fw)));
+#endif
 	if (!IS_SHADED(fw) && toggle == 0)
 	{
 		/* nothing to do */
@@ -190,7 +194,9 @@ fprintf(stderr, "toggle %d (%s) state %d (%s) title dir %s\n", toggle, get_dir_s
 		SET_SHADED_DIR(fw, shade_dir);
 		get_shaded_geometry(fw, &end_g, &end_g);
 	}
-print_g("end", &end_g);
+#if 1
+if (0)print_g("end", &end_g);
+#endif
 	resize_mode = (DO_SHRINK_WINDOWSHADE(fw)) ?
 		FRAME_MR_SHRINK : FRAME_MR_SCROLL;
 	mr_args = frame_create_move_resize_args(
