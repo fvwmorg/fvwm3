@@ -1,5 +1,10 @@
 2003-07-01  Marcus Lundblad  <ml@update.uu.se>
 
+	* todo-2.6:
+	Updated
+
+2003-07-01  Marcus Lundblad  <ml@update.uu.se>
+
 	* libs/FbidiJoin.c (get_shaped_combined_char):
 	(shape_n_join):
 	Removed unused (get_shaped_combined_char) and commented out code
