@@ -1313,7 +1313,7 @@ static void RedrawTitle(
     case DFS_BUTTON_IS_SUNK:
       reverse = 1;
     case DFS_BUTTON_IS_UP:
-      RelieveRectangle(
+      RelieveRectangle2(
 	dpy, t->title_w, 0, 0, t->title_g.width - 1, t->title_g.height - 1,
 	(reverse) ? sgc : rgc, (reverse) ? rgc : sgc, cd->relief_width);
       break;

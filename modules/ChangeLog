@@ -1,3 +1,11 @@
+2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/Widgets/Tools.h (EnterKey):
+	* FvwmScript/scanner.l:
+
+	* FvwmPager/FvwmPager.c (main):
+	fixed grabbing the keyboard in transient mode
+
 2001-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmBacker/root_bits.c:

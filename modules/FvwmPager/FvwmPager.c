@@ -407,20 +407,32 @@ int main(int argc, char **argv)
 
   if (is_transient)
   {
+    Bool is_pointer_grabbed = False;
+    Bool is_keyboard_grabbed = False;
     XSync(dpy,0);
-    while (i < 50 &&
-	   XGrabPointer(dpy, Scr.Root, True,
-			ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
-			PointerMotionMask|EnterWindowMask|LeaveWindowMask,
-			GrabModeAsync, GrabModeAsync, None,
-			None, CurrentTime) != GrabSuccess)
+    for (i = 0; i < 50 && !(is_pointer_grabbed && is_keyboard_grabbed); i++)
     {
-      i++;
+      if (!is_pointer_grabbed &&
+	  XGrabPointer(
+	    dpy, Scr.Root, True,
+	    ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
+	    PointerMotionMask|EnterWindowMask|LeaveWindowMask, GrabModeAsync,
+	    GrabModeAsync, None, None, CurrentTime) == GrabSuccess)
+      {
+	is_pointer_grabbed = True;
+      }
+      if (!is_keyboard_grabbed &&
+	  XGrabKeyboard(
+	    dpy, Scr.Root, True, GrabModeAsync, GrabModeAsync, CurrentTime) ==
+	  GrabSuccess)
+      {
+	is_keyboard_grabbed = True;
+      }
       /* If you go too fast, other windows may not get a change to release
        * any grab that they have. */
       usleep(20000);
     }
-    if (i >= 50)
+    if (!is_pointer_grabbed)
     {
       XBell(dpy, 0);
       fprintf(stderr,
@@ -428,8 +440,7 @@ int main(int argc, char **argv)
 	      MyName);
       exit(1);
     }
-    XGrabKeyboard(dpy, Scr.Root, True, GrabModeAsync,
-		  GrabModeAsync, CurrentTime);
+
     XSync(dpy,0);
   }
 

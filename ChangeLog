@@ -1,6 +1,7 @@
 2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (RedrawButtons):
+	(RedrawTitle):
 	fixed top border hilight drawing of title buttons
 
 	* libs/Graphics.c (do_relieve_rectangle):
