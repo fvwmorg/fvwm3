@@ -1035,6 +1035,7 @@ void ParseOptions(button_info *ub)
 	  break;
 	case 1:
 	  ParseGraphics(Dpy, s, G);
+	  SavePictureCMap(Dpy, G->viz, G->cmap, G->depth);
 	  break;
 	case 2:
 	  if (imagePath)

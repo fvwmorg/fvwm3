@@ -637,6 +637,7 @@ int main(int argc, char **argv)
       exit (1);
     }
   G = CreateGraphics(Dpy);
+  SavePictureCMap(Dpy, G->viz, G->cmap, G->depth);
 
   x_fd=XConnectionNumber(Dpy);
   fd_width=GetFdWidth();
@@ -673,7 +674,6 @@ int main(int argc, char **argv)
   UberButton->swallow = 1; /* the panel is shown */
 
   ParseOptions(UberButton);
-  SavePictureCMap(Dpy, G->viz, G->cmap, G->depth); /* store cmap */
 
   for (CurrentPanel = MainPanel, LastPanel = NULL;
        CurrentPanel != NULL;
@@ -1838,8 +1838,10 @@ void process_message(unsigned long type,unsigned long *body)
     case M_CONFIG_INFO:
       { /* there's only one config line of interest at this point */
 	char *line = (char *)&body[3];
-	if (strncasecmp(line, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+	if (strncasecmp(line, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
 	  ParseGraphics(Dpy, line, G);
+	  SavePictureCMap(Dpy, G->viz, G->cmap, G->depth);
+	}
 /* this is where you put the stuff for FvwmButtons to follow colorsets
    in real time
    	  if (UberButton->c->flags & b_FvwmLook))

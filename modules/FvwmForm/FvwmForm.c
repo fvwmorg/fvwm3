@@ -242,8 +242,10 @@ static void ParseDefaults(char *buf) {
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
   /* grok the global config lines sent from fvwm */
-  if (strncasecmp(buf, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+  if (strncasecmp(buf, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
     ParseGraphics(dpy, buf, G);
+    SavePictureCMap(dpy, G->viz, G->cmap, G->depth); /* for shadow routines */
+  }
   /* Accept commands beginning with "*FvwmFormDefault".
      This is to make sure defaults are read first.
      Note the hack w. bg_state. */
@@ -1581,6 +1583,7 @@ int main (int argc, char **argv)
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
   G = CreateGraphics(dpy);
+  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
 
   fd_x = XConnectionNumber(dpy);
 
@@ -1595,8 +1598,6 @@ int main (int argc, char **argv)
   }
 
   ReadConfig();                         /* get config from fvwm */
-
-  SavePictureCMap(dpy, G->viz, G->cmap, G->depth); /* for shadow routines */
 
   MassageConfig();                      /* add data, calc window x/y */
 

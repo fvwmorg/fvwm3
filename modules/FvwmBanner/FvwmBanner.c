@@ -152,6 +152,7 @@ int main(int argc, char **argv)
   ScreenWidth = DisplayWidth(dpy,screen);
 
   G = CreateGraphics(dpy);
+  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
   parseOptions(fd);
 
   /* chick in the neck situation:
