@@ -195,16 +195,16 @@ if [ $IS_RELEASE = 0 ] ; then
 else
   echo updating NEWS file
   NNEWS="new-NEWS"
-  perl -pe '$hr = "-" x 69; s/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$hr\n\n$1 '$VRELNUM' (@{[substr(`date "+%d-%b-%Y"`,0,11)]})/' \
-      < NEWS > $NNEWS || exit 41
+  perl -pe '$hr = "-" x 67; s/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$hr\n\n$1 '$VRELNUM' (@{[substr(`date "+%d-%b-%Y"`,0,11)]})/' \
+    < NEWS > $NNEWS || exit 41
   mv $NNEWS NEWS || exit 42
   echo updating FAQ file
   NFAQ="new-FAQ"
   if [ $IS_MINOR = 1 ]; then
-    perl -pe 's/(Last updated).*(for beta release) '$VRELNUM' (and official)$/$1 @{[substr(`date "+%b %d, %Y"`,0,12)]} $2 '$VRELNUMP' $3/' \
+    perl -pe 's/(Last updated).*(for unstable release) '$VRELNUM' (and stable)$/$1 @{[substr(`date "+%b %d, %Y"`,0,12)]} $2 '$VRELNUMP' $3/' \
       < docs/FAQ > docs/$NFAQ || exit 43
   else
-    perl -pe 's/(Last updated).*(for beta release .* and official release) [0-9]*\.[0-9*]\.[0-9*]\.$/$1 @{[substr(`date "+%b %d, %Y"`,0,12)]} $2 '$VRELNUMP'\./' \
+    perl -pe 's/(Last updated).*(for unstable release .* and stable release) [0-9]*\.[0-9*]\.[0-9*]\.$/$1 @{[substr(`date "+%b %d, %Y"`,0,12)]} $2 '$VRELNUMP'\./' \
       < docs/FAQ > docs/$NFAQ || exit 44
   fi
   mv docs/$NFAQ docs/FAQ || exit 45

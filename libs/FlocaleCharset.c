@@ -734,7 +734,7 @@ void FlocaleCharsetSetFlocaleCharset(
 
 FlocaleCharset *FlocaleCharsetGetDefaultCharset(Display *dpy, char *module)
 {
-	static warn = True;
+	static int warn = True;
 
 	FlocaleCharsetInit(dpy, module);
 
