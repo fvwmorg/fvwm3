@@ -79,7 +79,7 @@ Display *dpy;			/* which display are we talking to */
 
 Window BlackoutWin=None;        /* window to hide window captures */
 Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
-Bool DoingCommandLine = True;	/* False after starting all cmd line modules */
+Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
 
 #define MAX_CFG_CMDS 10
 static char *config_commands[MAX_CFG_CMDS];
@@ -603,10 +603,12 @@ int main(int argc, char **argv)
     int i;
     for(i=0;i<num_config_commands;i++)
     {
+      DoingCommandLine = True;
       ExecuteFunction(config_commands[i], NULL,&Event,C_ROOT,-1,
 		      EXPAND_COMMAND);
       free(config_commands[i]);
     }
+    DoingCommandLine = False;
   } else {
       /** Run startup commands in ~/.fvwm2rc or FVWM_CONFIGDIR/system.fvwm2rc.
 	  If these fail, try FVWM_CONFIGDIR/.fvwm2rc for backwards compat. **/
@@ -625,7 +627,6 @@ int main(int argc, char **argv)
       }
   }
 
-  DoingCommandLine = False;
   DBUG("main","Done running config_commands");
 
   if(Scr.depth<2)

@@ -157,6 +157,8 @@ void ReadFile(F_CMD_ARGS)
     char* filename;
     int read_quietly;
 
+    DoingCommandLine = False;
+
     if (debugging)
 	fvwm_msg(DBG,"ReadFile","about to attempt '%s'",action);
 
@@ -180,6 +182,8 @@ void PipeRead(F_CMD_ARGS)
     char* command;
     int read_quietly;
     FILE* f;
+
+    DoingCommandLine = False;
 
     /* Save filename for passing as argument to modules */
     if (fvwm_file != NULL)

@@ -1,3 +1,9 @@
+1999-05-19  Hippo
+
+	* fvwm/{fvwm,read}.c: Fixed startup delays due to having modules
+	started by reading a file.  The only modules that are waited for are
+	those specified on the command line.
+
 1999-05-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* configure.in: changed version to 2.3.3
