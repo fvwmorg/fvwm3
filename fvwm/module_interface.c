@@ -415,7 +415,7 @@ void executeModuleSync(F_CMD_ARGS)
 	}
 	else
 	{
-	  KillModule(pipe_slot, 10);
+	  KillModule(pipe_slot);
 	}
       }
       if ((writePipes[pipe_slot] >= 0) &&
@@ -446,7 +446,7 @@ int HandleModuleInput(Window w, int channel, char *expect)
   n = read(readPipes[channel], &size, sizeof(size));
   if(n < sizeof(size))
     {
-      KillModule(channel,1);
+      KillModule(channel);
       return 0;
     }
 
@@ -463,7 +463,7 @@ int HandleModuleInput(Window w, int channel, char *expect)
   n = read(readPipes[channel],text, size);
   if(n < size)
     {
-      KillModule(channel,2);
+      KillModule(channel);
       return 0;
     }
   text[n] = '\0';
@@ -473,12 +473,12 @@ int HandleModuleInput(Window w, int channel, char *expect)
   /* DB(("Module read[%d] cont = %d", n, cont)); */
   if(n < sizeof(cont))
     {
-      KillModule(channel,3);
+      KillModule(channel);
       return 0;
     }
   if(cont == 0)
     {
-      KillModule(channel,4);
+      KillModule(channel);
     }
   if(strlen(text)>0)
     {
@@ -503,7 +503,7 @@ int HandleModuleInput(Window w, int channel, char *expect)
       /* perhaps the module would like us to kill it? */
       if(strncasecmp(text,"KillMe",6)==0)
       {
-        KillModule(channel,12);
+        KillModule(channel);
         return 0;
       }
 
@@ -555,13 +555,8 @@ RETSIGTYPE DeadPipe(int sig)
 {}
 
 
-void KillModule(int channel, int place)
+void KillModule(int channel)
 {
-#if 0
-  /* this causes a coredump (why?) */
-  /* domivogt (06-Jul-1999): because the parameters are illegal */
-  DBUG("KillModule %i\n", place);
-#endif
   close(readPipes[channel]);
   close(writePipes[channel]);
 
@@ -598,7 +593,7 @@ static void KillModuleByName(char *name)
     {
       if((pipeName[i] != NULL)&&(matchWildcards(name,pipeName[i])))
 	{
-	  KillModule(i,10);
+	  KillModule(i);
 	}
       i++;
     }
@@ -1146,7 +1141,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
       }
     }
     if (e <= 0) {
-      KillModule(module,10);
+      KillModule(module);
     }
     fcntl(readPipes[module],F_SETFL,O_NDELAY);
   }
@@ -1221,7 +1216,7 @@ void FlushQueue(int module)
 	    }
 	  else
 	    {
-	      KillModule(module,123);
+	      KillModule(module);
 	      return;
 	    }
 	}

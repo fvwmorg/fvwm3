@@ -73,7 +73,7 @@ void executeModule(F_CMD_ARGS);
 void executeModuleSync(F_CMD_ARGS);
 void initModules(void);
 int HandleModuleInput(Window w, int channel, char *expect);
-void KillModule(int channel, int place);
+void KillModule(int channel);
 void ClosePipes(void);
 void BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...);
 void BroadcastConfig(unsigned long event_type, const FvwmWindow *t);

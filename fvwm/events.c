@@ -2049,7 +2049,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
           HandleModuleInput(targetWindow, i, NULL);
 	} else {
           DBUG("My_XNextEvent","calling KillModule");
-          KillModule(i,10);
+          KillModule(i);
         }
       }
       if ((writePipes[i] >= 0) && FD_ISSET(writePipes[i], &out_fdset)) {
