@@ -458,8 +458,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	flagitem = ItemFlags(&windows, body[0]);
 	if ((type == M_DEICONIFY && IS_ICONIFIED(flagitem))
 	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem))) {
-	  if (IS_ICON_SUPPRESSED(flagitem) &&
-	      AnimCommand && WindowState && AnimCommand[0] != 0) {
+	  if (IS_ICON_SUPPRESSED(flagitem) && IsItemIndexVisible(&windows,i)
+	      && AnimCommand && WindowState && AnimCommand[0] != 0) {
 	    char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	    Window child;
 	    int x, y;

@@ -52,6 +52,7 @@ fvwm-menu-desktop
 [ \fB\-\-destroy\-type\fR \fIFLAG\fR ]
 [ \fB\-\-xterm\fR \fICMD\fR ]
 [ \fB\-\-lang\fR \fINAME\fR ]
+[ \fB\-\-utf8\fR ]
 [ \fB\-\-no\-check\-app\fR ]
 [ \fB\-\-time\-limit\fR \fINUM\fR ]
 
@@ -74,6 +75,7 @@ AddToMenu Utilities "KDE System Menu" Popup kde\-sys
  ...
 PipeRead 'fvwm-menu-desktop --desktop kde-sys'
 .EE
+For KDE2 you may have to add --utf8 (see below).
 If you use KDE version 1 (see below for KDE2) and you want mini\-icons 
 in the menu and if the KDE mini\-icons are in "mini/"
 relative to your FVWM ImagePath add the option \-\-enable-mini\-icons.
@@ -390,7 +392,13 @@ Default is 'xterm -e'.
 .IP "\fB\-\-lang\fR \fINAME\fR"
 Default is the value of $LANG. Useful if your language is not GNOME/KDE
 compliant and you prefer a non-English compliant
-language.
+language. Also useful if fvwm-menu-desktop gives bad result with your language.
+.IP "\fB\-\-utf8\fR"
+Assume that the desktop entries used UTF-8 encoding. This is the case
+with KDE version 2 and will be probably the case with GNOME version 2.
+At the present time this option work only if you have perl version 5.6 
+or better and if your laguage use latin-1 font. If one of the above conditions
+is not satisfied, then this option is equivalent to --lang en.
 .IP "\fB\-\-[no]check-app\fR"
 Either check or don't check that applications to execute are in your path.
 Default is \-\-check-app.

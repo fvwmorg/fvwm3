@@ -52,7 +52,6 @@
 use strict;
 # For the option
 use Getopt::Long;
-
 # version needs to be fvwm version or script version ?
 my $version = "@VERSION@";
 
@@ -156,6 +155,8 @@ my $TERM_CMD = "xterm -e";
 # Other stuff
 my $timelimit = 15;                    # limit runing time for the script
 my $LANG      = $ENV{LANG} || "";      # Internationalization support :o)
+my $UTF8      = 0;                     # KDE2 use UTF-8
+my $UTF8_TR   = "";                    # charset type for UTF-8 translation
 my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
 my $CHECK     = 1;                     # we check by default
 my $MENU_DESTROY = '';
@@ -208,6 +209,7 @@ GetOptions(
 	"destroy-type:s" => \$MENU_DESTROY,
 	"xterm:s" => \$TERM_CMD,
 	"lang:s" => \$LANG,
+	"utf8"   => \$UTF8,
 	"check-app!" => \$CHECK,
 	"wm-icons" => \$wmIcons,
 	"time-limit=s" => \$timelimit,
@@ -407,6 +409,23 @@ if ( $STYLE ) {
 		|| $list[2] eq 're' );
 	$addstyle = $list[3] if ( $list[3] ne '' );
 
+}
+
+#----------------
+# LANG init for UTF-8
+if ($UTF8) {
+	# check if we have perl >= 5.6
+	eval { require v5.6 };
+	if ($@) { $UTF8_TR = ""; }
+	else {
+		my $l = substr($LANG,0,2);
+		# latin-1: not sure that all these lang are "latin1"!
+		$UTF8_TR = '$label =~ tr/\0-\x{ff}//UC'	
+			if ($l =~ /^ca/ || $l =~ /^de/ || $l =~ /^es/ || $l =~ /^it/ || 
+	   		 $l =~ /^fr/ || $l =~ /^gl/ || $l =~ /^hu/ || $l =~ /^is/ || 
+			 	 $l =~ /^lt/ || $l =~ /^nl/ || $l =~ /^no/ || $l =~ /^pt/ ||
+				 $l =~ /^sv/);
+	}
 }
 
 #----------------
@@ -656,13 +675,15 @@ sub get_info {
 	open(DESC,$file) || die "fvwm-menu-desktop: can't open $file: $!";
 	while(<DESC>) {
 
-		if ( /^Name\[$LANG\]=(.*)$/ ) { $label = $1 }
+		if ( /^Name\[$LANG\]=(.*)$/ ) { 
+			$label = $1;
+			if ($UTF8) {
+				if ($UTF8_TR ne "") { eval $UTF8_TR; } 
+				else { $label = ""; }
+			}
+		}
 
 		if (/^Name=(.*)$/) { $deflabel = $1 }
-
-		# we need one label, may be useful for freind user menu with
-		# other lang
-		if (/^Name.*=(.*)$/) { $onelabel = $1 }
 
 		if ( /^Exec=((\S*).*$)/ ) {
 			$exec = $1;
@@ -679,7 +700,7 @@ sub get_info {
 		# kde2 give just the name of the icons and use png icons
 		# try a more general fix.
 		my $tmp = "xpm";
-		$tmp = "png" if $TRAN;
+		$tmp = "png" if $TRAN || $MENU_TYPE eq "gtk";
 		$icon = "$icon.$tmp" if $icon !~ /\....$/ && $icon ne '';
 		$mini_icon = "$mini_icon.$tmp" 
 			if $mini_icon !~ /\....$/ && $mini_icon ne '';
@@ -923,6 +944,7 @@ Options:
 	--xterm CMD               complete terminal command to run applications
 		in it, default is 'xterm -e'
 	--lang NAME               language, default is \$LANG
+   --utf8                    For desktop entries coded in UTF-8 (KDE2)
 	--[no]check-app           [do not] check that apps are in your path
 	--time-limit NUM          limit script running time to NUM seconds
 Short options are ok if not ambiguous: -h, -x, -icon-a.
