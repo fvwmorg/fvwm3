@@ -142,6 +142,7 @@ Contents
           happened to to rxvt and rclock which Rob Nation used to
           support?  Where can I find them now?
      6.6  How do I set the background with fvwm?
+     6.7  When I use Fvwm --- isn't the right color.  Whats wrong?
 
 7. Hints and Examples from the Developers
 
@@ -1905,6 +1906,47 @@ A: Setting the background image is not really part of the window
 
    The fvwm module FvwmBacker can be used to change the background
    depending on the desk you are currently on.
+
+----------------------------------------------------------------------
+
+6.7  When I use Fvwm --- isn't the right color.  Whats wrong?
+
+A: Under this heading we've had questions about FvwmForm being all
+   white, icons not displaying and message about being unable to
+   allocate colors.
+
+   Older hardware uses something called 8 bit color.  You can also
+   misconfigure newer hardware so that its only using 8 bit color.
+   When you use 8 bit color, your display can only have 256 colors on
+   it at once.
+
+   This is explained in excruciating detail in the
+   _+_A HREF="http://www.sunhelp.org/faq/FrameBuffer.html"_-_Frame Buffer FAQ_+_/A_-_
+
+   If your display can support more than 256 colors, thats the way to
+   go.  Look up the documentation for your X server.  You may want to
+   start with "man X".
+
+   If you are stuck with 8 bit color, fvwm can help.  In the 2.2.x
+   releases, you can use the "ColorLimit" command to reduce the number
+   of colors Fvwm uses in icons.  In the 2.3.x releases and later,
+   ColorLimiting is automatic, but you still might want to use this
+   command to further reduce color use.
+
+   Other things you may want to do:
+
+   - Always run Netscape with the "-install" argument.
+
+   - If you use a image on your screen background, reduce the number
+     of colors it uses.  For "xv" add the "-nc nn" argument.  For
+     "xli" use the "-colors nn" argument.
+
+   - Don't use gradients.
+
+   - Some applications are color hungry.  Beware of anything TK based,
+   and FrameMaker in its default setting.
+
+   If you still have problems after this, try the fvwm mailing list.
 
 ======================================================================
               7 - Hints and Examples from the Developers

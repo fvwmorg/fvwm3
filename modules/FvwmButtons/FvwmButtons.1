@@ -334,6 +334,8 @@ animation steps.
 The \fIdelay ms\fP option sets the delay between the steps
 of the animation in milliseconds.  Use zero for no delay.
 The maximum delay is 10 seconds (10000).
+It doesn't make any sense to use the delay option unless
+you also use the smooth option.
 
 The \fIsmooth\fP option causes the panel  to  redraw  between
 the steps of the animation.  The sliding animation
@@ -604,7 +606,7 @@ Former versions of FvwmButtons (fvwm 2.0.46 to 2.3.6)
 had a different way of handling panels.
 You can not use
 your old panel configuration with the new panel feature.  Read
-"CONVERTING OLD PANEL CONFIGURATIONS TO THE NEW STYLE" for more
+"CONVERTING OLD PANEL CONFIGURATIONS" for more
 information.
 
 .SS HOW TO CREATE NEW PANELS
@@ -686,7 +688,7 @@ There are several more options to configure how your panel works,
 for example the speed and smoothness of the sliding animation. Please
 refer to the description of the \fIPanel\fP option for further details.
 
-.SS CONVERTING OLD PANEL CONFIGURATIONS TO THE NEW STYLE
+.SS CONVERTING OLD PANEL CONFIGURATIONS
 
 With the old panel feature you first had one or more lines
 defining panels in your main FvwmButtons configuration:
