@@ -401,6 +401,7 @@ void SetDeskPageBackground(const Command *c)
 						DefaultDepth(dpy2, screen2));
 					XFillRectangle(
 						dpy2, pix, gc, 0, 0, 1, 1);
+					XFreeGC(dpy2, gc);
 				}
 				XSetWindowBackground(dpy2, root2, c->solidColor);
 				XClearWindow(dpy2, root2);

@@ -296,15 +296,13 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   Pixmap cs_pixmap = None;
   XGCValues xgcv;
   static GC shape_gc = None;
-  static GC solid_gc = None;
-  static GC fill_gc = None;
+  GC fill_gc = None; /* not static as dpy may change (FvwmBacker) */
   int cs_width;
   int cs_height;
   Bool cs_keep_aspect;
   Bool cs_stretch_x;
   Bool cs_stretch_y;
 
-  
   if (colorset->pixmap == ParentRelative && !is_shape_mask &&
       colorset->tint_percent > 0)
   {
@@ -380,19 +378,14 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	  {
 		  sy = sy - cs_height;
 	  }
-	  if (!fill_gc)
-	  {
-		  fill_gc = fvwmlib_XCreateGC(dpy, win, 0, 0);
-	  }
+	  xgcv.fill_style = FillTiled;
 	  xgcv.tile = cs_pixmap;
 	  xgcv.ts_x_origin = cs_width-sx;
 	  xgcv.ts_y_origin = cs_height-sy;
-	  xgcv.fill_style = FillTiled;
-	  XChangeGC(
-		  dpy, fill_gc, GCTile | GCTileStipXOrigin | GCTileStipYOrigin |
-		  GCFillStyle, &xgcv);
-	  XFillRectangle(dpy, pixmap, fill_gc,
-			 0, 0, width, height);
+	  fill_gc = fvwmlib_XCreateGC(
+		  dpy, win, GCTile | GCTileStipXOrigin | GCTileStipYOrigin
+		  | GCFillStyle, &xgcv);
+	  XFillRectangle(dpy, pixmap, fill_gc, 0, 0, width, height);
 	  if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset) &&
 	      colorset->tint_percent > 0)
 	  {
@@ -445,18 +438,10 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   if (cs_pixmap == None)
   {
 	  xgcv.foreground = colorset->bg;
-	  if (solid_gc == None)
-	  {
-		  /* create a gc for solid drawing */
-		  solid_gc = fvwmlib_XCreateGC(dpy, win, GCForeground, &xgcv);
-	  }
-	  else
-	  {
-		  XChangeGC(dpy, solid_gc, GCForeground, &xgcv);
-	  }
+	  fill_gc = fvwmlib_XCreateGC(dpy, win, GCForeground, &xgcv);
 	  /* create a solid pixmap - not very useful most of the time */
 	  pixmap = XCreatePixmap(dpy, win, width, height, depth);
-	  XFillRectangle(dpy, pixmap, solid_gc, 0, 0, width, height);
+	  XFillRectangle(dpy, pixmap, fill_gc, 0, 0, width, height);
   }
   else if (cs_keep_aspect)
   {

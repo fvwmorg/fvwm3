@@ -1,5 +1,8 @@
 2002-09-15  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmBacker/FvwmBacker.c (SetDeskPageBackground):
+	Fixed a GC leaks
+
 	* FvwmPager/x_pager.c (update_pr_transparent_windows):
 	* FvwmPager/FvwmPager.c (list_property_change):
 	* FvwmPager/FvwmPager.h:
