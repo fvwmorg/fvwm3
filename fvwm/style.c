@@ -3077,7 +3077,7 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.has_max_window_size = 1;
 			ps->change_mask.has_max_window_size = 1;
 		}
-		else if (StrEquals(token, "MoveWindowByProgramMethod"))
+		else if (StrEquals(token, "MoveByProgramMethod"))
 		{
 			int i;
 			char *methodlist[] = {

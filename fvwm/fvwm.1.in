@@ -6157,7 +6157,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR EWMHMaximizeUseDynamicWorkingArea ,
 .IR EWMHPlacementIgnoreWorkingArea " / " EWMHPlacementUseWorkingArea
 .IR EWMHPlacementUseDynamicWorkingArea ,
-.IR MoveWindowByProgramMethod .
+.IR MoveByProgramMethod .
 
 .\" +++++++++++++++ general notes
 In the above list some options are listed as
@@ -6986,7 +6986,7 @@ styles.  The
 style may screw up window dimensions for some applications.  Don't
 use this style in this case.
 
-.IR MoveWindowByProgramMethod
+.IR MoveByProgramMethod
 affects how fvwm reacts to requests by the application to move its
 windows.  By default, fvwm tries to detect which method to use,
 but it sometimes detects the wrong method.  You may come across a

@@ -19,7 +19,7 @@ Changes in development release 2.5.8 (not released yet)
 
 * New extended variable $[func.context].
 
-* New Style option MoveWindowByProgramMethod.  Tries to autodetect
+* New Style option MoveByProgramMethod.  Tries to autodetect
   whether application windows are moved honouring the ICCCM or not
   (default).  The method can be overridden manually if the
   detection does not work.

@@ -1,8 +1,13 @@
+2003-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.1.in:
+	renamed MoveWindowByProgramMethod to MoveByProgramMethod
+
 2003-07-08  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/FBidi.h:
 	fixed FBidi.h macro to work with no FriBIDI
-	
+
 2003-07-08  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/CombineChars.h (CombineChars):
@@ -15,7 +20,7 @@
 	(FlocaleTextWidth):
 	fixed drawing of underlines on characters to work in with BIDI
 	and combining characters
-	
+
 2003-07-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* todo-2.6:
