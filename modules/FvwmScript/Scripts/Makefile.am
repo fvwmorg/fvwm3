@@ -1,5 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
-EXTRA_DIST = BellSetup Buttons Colorset Date DeskSetup FileBrowser	\
-	Find KeyboardSetup PointerSetup Quit ScreenDump ScreenSetup	\
+configdir = @FVWM_CONFIGDIR@
+
+EXTRA_DIST = ScriptFvwmBellSetup ScriptFvwmButtons ScriptFvwmColorset	\
+	ScriptFvwmDate ScriptFvwmDefaultStyle ScriptFvwmFileBrowser	\
+	ScriptFvwmFind ScriptFvwmKeyboardSetup ScriptFvwmPointerSetup	\
+	ScriptFvwmQuit ScriptFvwmScreenDump ScriptFvwmScreenSetup	\
 	TerminalSettings.fss UpdateFvwm2TermMenu system.fvwmrc
+
+config_DATA = ScriptFvwmBellSetup ScriptFvwmButtons ScriptFvwmColorset	\
+	ScriptFvwmDate ScriptFvwmDefaultStyle ScriptFvwmFileBrowser	\
+	ScriptFvwmFind ScriptFvwmKeyboardSetup ScriptFvwmPointerSetup	\
+	ScriptFvwmQuit ScriptFvwmScreenDump ScriptFvwmScreenSetup

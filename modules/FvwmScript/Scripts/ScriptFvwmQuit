@@ -1,0 +1,234 @@
+WindowTitle {Quit}
+WindowSize 400 265		# Taille
+WindowPosition 191 143		# Position
+#ForeColor	{black}
+#BackColor	{grey85}
+#ShadowColor	{grey55}
+#HilightColor	{grey100}
+#Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  WarpPointer 1
+  Set $ToDo = Logout
+  ChangeValue 6 1
+  ChangeValue 7 0
+  ChangeValue 8 0
+  ChangeValue 9 0
+  ChangeValue 10 0
+ End
+ 
+Widget 1
+Property
+ Position 40 40
+ Type ItemDraw
+ Icon shutdown.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 2
+Property
+ Size 370 200
+ Position 15 15
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 3
+Property
+ Title { What do you want to do? }
+ Position 100  8
+ Type ItemDraw
+ Value 0
+ Font -adobe-helvetica-bold-r-*-*-12-*
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 4
+Property
+ Title {OK}
+ Size 60 28
+ Position 300 225
+ Type PushButton
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If $ToDo == Logout Then
+    Do {Quit}
+   Else
+   Begin
+    If $ToDo == Restart Then
+     Do {Restart}
+    Else
+    Begin
+     If $ToDo == RestartWith Then
+      Do {Restart } (GetTitle 11)
+     Else
+     Begin
+     If $ToDo == Reboot Then
+      Begin
+      Do {Exec sync}
+      Do {Exec /sbin/shutdown -r now}
+      Quit
+      End
+     Else
+      Begin
+      Do {Exec sync}
+      Do {Exec /sbin/shutdown -h now}
+      Quit
+      End
+     End
+    End
+   End
+  End
+End
+
+Widget 5
+Property
+ Title {Cancel}
+ Size 60 28
+ Position 40 225
+ Type PushButton
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Quit
+  End
+End
+
+Widget 6
+Property
+ Title {Logout}
+ Position 90 45
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 7 0
+   ChangeValue 8 0
+   ChangeValue 9 0
+   ChangeValue 10 0
+   Set $ToDo = Logout
+  End
+End
+
+Widget 7
+Property
+ Title {Restart fvwm}
+ Position 90 75
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 6 0
+   ChangeValue 8 0
+   ChangeValue 9 0
+   ChangeValue 10 0
+   Set $ToDo = Logout
+  End
+End
+
+Widget 8
+Property
+ Title {Restart with:}
+ Position 90 105
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 6 0
+   ChangeValue 7 0
+   ChangeValue 9 0
+   ChangeValue 10 0
+   Set $ToDo = Logout
+  End
+End
+
+Widget 11
+Property
+ Position 215 100
+ Size 120 15
+ Type TextField
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 9
+Property
+ Title {Shut down the computer}
+ Position 90 135
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 6 0 
+   ChangeValue 7 0
+   ChangeValue 8 0
+   ChangeValue 10 0
+   Set $ToDo = Halt
+  End
+End
+
+Widget 10
+Property
+ Title {Restart the computer}
+ Position 90 165
+ Type RadioButton
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 6 0
+   ChangeValue 7 0
+   ChangeValue 8 0
+   ChangeValue 9 0
+   Set $ToDo = Restart
+  End
+End
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

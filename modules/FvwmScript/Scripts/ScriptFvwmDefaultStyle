@@ -1,0 +1,1036 @@
+WindowTitle {Default Style}
+WindowSize 650 400		# Taille
+#WindowPosition 191 50		# Position
+#ForeColor	{black}
+#BackColor	{grey85}
+#ShadowColor	{grey55}
+#HilightColor	{grey100}
+#Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  WarpPointer 2
+  Set $FHOME=(GetOutput  {echo "$FVWM_USERHOME"} 1 -1)
+  If $FHOME=={} Then
+   Begin
+   Set $FILE={~/.fvwmrc-script-setting}
+   Set $err=(GetOutput {test -f ~/.fvwmrc-script-setting} 1 -1)
+   End
+  Else
+   Begin
+   Set $FILE=(GetOutput {echo $FVWM_USERHOME/.fvwmrc-script-setting} 1 -1)
+   Set $err=(GetOutput {ls -a $FVWM_USERHOME/.fvwmrc-script-setting} 1 -1)
+   End
+
+  If $err<>{} Then # .fvwmrc-script-setting exists, Parse it !
+   Begin
+
+   Set $pos=0
+   Set $finish=1
+   While $finish=={1} Do
+    Begin
+      Set $pos=(Add $pos 1)
+    If $FHOME=={} Then
+     Set $tmp=(GetOutput {cat ~/.fvwmrc-script-setting} $pos 1)
+    Else
+     Set $tmp=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos 1)
+    If $tmp=={#DefaultStyleSetupMark} Then
+     Set $finish=0
+    If $pos=={100} Then
+     Set $finish=0
+    End
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $FOCUS=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $FOCUS=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $FOCUS=={Style * SloppyFocus} Then
+    ChangeValue 14 1
+   If $FOCUS=={Style * ClickToFocus} Then
+    ChangeValue 14 2
+   If $FOCUS=={Style * FocusFollowsMouse} Then
+    ChangeValue 14 3
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $GLOBOPTCR=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $GLOBOPTCR=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $GLOBOPTCR=={GlobalOpts MouseFocusClickRaises} Then
+    ChangeValue 15 1
+   Else
+    ChangeValue 15 0
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $GLOBOPTPC=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $GLOBOPTPC=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $GLOBOPTPC=={GlobalOpts ClickToFocusPassesClick} Then
+    ChangeValue 16 1
+   Else
+    ChangeValue 16 0
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $GLOBOPTR=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $GLOBOPTR=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $GLOBOPTR=={GlobalOpts ClickToFocusRaises} Then
+    ChangeValue 17 1
+   Else
+    ChangeValue 17 0
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $COLOR=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $COLOR=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $COLOR=={ColormapFocus FollowsMouse} Then
+    ChangeValue 19 1
+   Else
+    ChangeValue 19 2
+
+   Set $pos=(Add $pos 2)
+   If $FHOME=={} Then
+    Set $PAGE=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $PAGE=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $PAGE == {EdgeScroll 100 100} Then
+    ChangeValue 23 1
+   If $PAGE == {EdgeScroll 0 0} Then
+    ChangeValue 23 2
+   If $PAGE == {EdgeScroll 100 0} Then
+    ChangeValue 23 3
+   If $PAGE == {EdgeScroll 0 100} Then
+    ChangeValue 23 4
+   If $PAGE == {EdgeScroll 50 50} Then
+    ChangeValue 23 5
+   If $PAGE == {EdgeScroll 100000 100000} Then
+    ChangeValue 23 6
+
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $OPAQ=(GetOutput {cat ~/.fvwmrc-script-setting} $pos 2)
+   Else
+    Set $OPAQ=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos 2)
+   ChangeValue 26 $OPAQ
+   ChangeTitle 28 $OPAQ
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $SMOOTHOPAQ=(GetOutput {cat ~/.fvwmrc-script-setting} $pos 2)
+   Else
+    Set $SMOOTHOPAQ=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos 2)
+   ChangeTitle 30 $SMOOTHOPAQ
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $RESIZEOPAQ=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $RESIZEOPAQ=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $RESIZEOPAQ=={Style * ResizeOpaque} Then
+    Begin
+    ChangeValue 32 1
+    ChangeValue 33 0
+    End
+   Else
+    Begin
+    ChangeValue 32 0
+    ChangeValue 33 1
+    End
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $PLACEMENT=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $PLACEMENT=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $PLACEMENT=={Style * SmartPlacement} Then
+    ChangeValue 35 1
+   If $PLACEMENT=={Style * DumbPlacement} Then
+    ChangeValue 35 2
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $INTERPLACE=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $INTERPLACE=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $INTERPLACE=={Style * RandomPlacement} Then
+    ChangeValue 36 1
+   If $INTERPLACE=={Style * ActivePlacement} Then
+    ChangeValue 36 2
+  
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $REALLYSMART=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $REALLYSMART=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $REALLYSMART=={GlobalOpts SmartPlacementIsReallySmart} Then
+    ChangeValue 37 1
+   Else
+    ChangeValue 37 0
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $PPOSITION=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $PPOSITION=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $PPOSITION=={Style * UsePPosition} Then
+    Begin
+    ChangeValue 39 1
+    ChangeValue 40 0
+    End
+   Else
+    Begin
+    ChangeValue 39 0
+    ChangeValue 40 1
+    End
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+    Set $GRABFOCUS=(GetOutput {cat ~/.fvwmrc-script-setting} $pos -1)
+   Else
+    Set $GRABFOCUS=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos -1)
+   If $GRABFOCUS=={Style * GrabFocus} Then
+    Begin
+    ChangeValue 42 1
+    ChangeValue 43 0
+    End
+   Else
+    Begin
+    ChangeValue 42 0
+    ChangeValue 43 1
+    End
+
+   Set $pos=(Add $pos 1)
+   If $FHOME=={} Then
+     Begin
+     Set $SADISTANCE=(GetOutput {cat ~/.fvwmrc-script-setting} $pos 2)
+     Set $SNAPTYPE=(GetOutput {cat ~/.fvwmrc-script-setting} $pos 3)
+     Set $SASCREEN=(GetOutput {cat ~/.fvwmrc-script-setting} $pos 4)
+     End
+    Else
+     Begin
+     Set $SADISTANCE=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos 2)
+     Set $SNAPTYPE=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos 3)
+     Set $SASCREEN=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos 4)
+     End
+     ChangeTitle 49 $SADISTANCE
+     If $SNAPTYPE=={All} Then
+      ChangeValue 51 1
+     If $SNAPTYPE=={SameType} Then
+      ChangeValue 51 2
+     If $SNAPTYPE=={Windows} Then
+      ChangeValue 51 3
+     If $SNAPTYPE=={Icons} Then
+      ChangeValue 51 4
+     If $SASCREEN=={Screen} Then
+      ChangeValue 52 1
+
+     Set $pos=(Add $pos 1)
+     If $FHOME=={} Then
+      Set $SHADESTEPS=(GetOutput {cat ~/.fvwmrc-script-setting} $pos 2)
+     Else
+     Set $SHADESTEPS=(GetOutput {cat $FVWM_USERHOME/.fvwmrc-script-setting} $pos 2)
+     ChangeTitle 56 $SHADESTEPS
+
+  End
+  Else #.fvwmrc-script-setting does not exist, set the default!
+   Begin
+
+   Set $FOCUS={Style * SloppyFocus}
+   ChangeValue 14 1
+
+   Set $GLOBOPTCR={GlobalOpts MouseFocusClickRaises}
+   ChangeValue 15 1
+
+   Set $GLOBOPTPC={GlobalOpts ClickToFocusPassesClick}
+   ChangeValue 16 1
+
+   Set $GLOBOPTR={GlobalOpts ClickToFocusRaises}
+   ChangeValue 17 1
+
+   Set $COLOR={ColormapFocus FollowsMouse}
+   ChangeValue 19 1
+
+   Set $PAGE={EdgeScroll 0 0}
+   ChangeValue 23 2
+
+   Set $OPAQ=50
+   ChangeValue 26 $OPAQ
+   ChangeTitle 28 $OPAQ
+
+   Set $SMOOTHOPAQ=5
+   ChangeTitle 30 $SMOOTHOPAQ
+
+   ChangeValue 32 0
+   ChangeValue 33 1
+   Set $RESIZEOPAQ={Style * ResizeOutline}
+
+   Set $PLACEMENT={Style * SmartPlacement}
+   ChangeValue 35 1
+
+   Set $INTERPLACE={Style * RandomPlacement}
+   ChangeValue 36 1
+ 
+   Set $REALLYSMART={GlobalOpts SmartPlacementIsNormal}
+   ChangeValue 37 0
+
+   Set $PPOSITION={Style * NoPPosition}
+   ChangeValue 39 0
+   ChangeValue 40 1
+
+   Set $GRABFOCUS={Style * GrabFocusOff}
+   ChangeValue 42 0
+   ChangeValue 43 1
+   
+   Set $SADISTANCE=10
+   ChangeTitle 49 $SADISTANCE
+   Set $SNAPTYPE={All}
+   ChangeValue 51 1
+   Set $SASCREEN={Screen}
+   ChangeValue 52 1
+
+   Set $SHADESTEPS=20
+   ChangeTitle 56 $SHADESTEPS
+
+  End
+ End
+
+Widget 1
+Property
+ Size 50 30
+ Position 350 355
+ Type PushButton
+ Title {Ok}
+Main
+ Case message of
+  SingleClic :
+  Begin
+
+   WriteToFile $FILE {#DefaultStyleSetupMark}
+
+   Do $FOCUS
+   WriteToFile $FILE $FOCUS
+
+   Do $GLOBOPTCR
+   WriteToFile $FILE $GLOBOPTCR
+  
+   Do $GLOBOPTPC
+   WriteToFile $FILE $GLOBOPTPC
+
+   Do $GLOBOPTPC
+   WriteToFile $FILE $GLOBOPTR
+
+   Do $COLOR
+   WriteToFile $FILE $COLOR
+
+   Do {EdgeThickness 1}
+   Do $PAGE
+   WriteToFile $FILE {EdgeThickness 1}
+   WriteToFile $FILE $PAGE
+
+   Do {OpaqueMoveSize } (GetValue 26)
+   WriteToFile $FILE {OpaqueMoveSize } (GetValue 26)
+
+   Do {MoveSmoothness } (GetTitle 30)
+   WriteToFile $FILE {MoveSmoothness } (GetTitle 30)
+
+   Do $RESIZEOPAQ
+   WriteToFile $FILE $RESIZEOPAQ
+ 
+   Do $PLACEMENT
+   WriteToFile $FILE $PLACEMENT
+
+   Do $INTERPLACE
+   WriteToFile $FILE $INTERPLACE
+
+   Do $REALLYSMART
+   WriteToFile $FILE $REALLYSMART
+   
+   Do $PPOSITION
+   WriteToFile $FILE $PPOSITION
+
+   Do $GRABFOCUS
+   WriteToFile $FILE $GRABFOCUS
+
+   Do {SnapAttraction } (GetTitle 49) { }  $SNAPTYPE { } $SASCREEN
+   WriteToFile $FILE {SnapAttraction } (GetTitle 49) { }  $SNAPTYPE { } $SASCREEN
+
+   Do {WindowShadeAnimate } (GetTitle 56)
+   WriteToFile $FILE {WindowShadeAnimate } (GetTitle 56)
+   
+   Quit
+  End
+End
+
+Widget 2
+Property
+ Size 50 30
+ Position 450 355
+ Type PushButton
+ Title {Apply}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do $FOCUS
+   Do $GLOBOPTCR
+   Do $GLOBOPTPC
+   Do $GLOBOPTR
+   Do $COLOR
+   Do {EdgeThickness 1}
+   Do $PAGE
+   Do {OpaqueMoveSize } (GetValue 26)
+   Do {MoveSmoothness } (GetTitle 30)
+   Do $RESIZEOPAQ
+   Do $PLACEMENT
+   Do $INTERPLACE
+   Do $REALLYSMART
+   Do $PPOSITION
+   Do $GRABFOCUS
+   Do {SnapAttraction } (GetTitle 49) { }  $SNAPTYPE { } $SASCREEN
+   Do {WindowShadeAnimate } (GetTitle 56)
+  End
+End
+
+Widget 3
+Property
+ Size 30 30
+ Position 550 355
+ Type PushButton
+ Title {Cancel}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Quit
+  End
+End
+
+Widget 4
+Property
+ Size 30 30
+ Position 100 355
+ Type PushButton
+ Title {Reset "Defaults"}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   
+   Set $FOCUS={Style * SloppyFocus}
+   ChangeValue 14 1
+
+   Set $GLOBOPTCR={GlobalOpts MouseFocusClickRaises}
+   ChangeValue 15 1
+
+   Set $GLOBOPTPC={GlobalOpts ClickToFocusPassesClick}
+   ChangeValue 16 1
+
+   Set $GLOBOPTR={GlobalOpts ClickToFocusRaises}
+   ChangeValue 17 1
+
+   Set $COLOR={ColormapFocus FollowsMouse}
+   ChangeValue 19 1
+
+   Set $PAGE={EdgeScroll 0 0}
+   ChangeValue 23 2
+
+   Set $OPAQ=50
+   ChangeValue 26 $OPAQ
+   ChangeTitle 28 $OPAQ
+
+   Set $SMOOTHOPAQ=5
+   ChangeTitle 30 $SMOOTHOPAQ
+
+   ChangeValue 32 0
+   ChangeValue 33 1
+   Set $RESIZEOPAQ={Style * ResizeOutline}
+
+   Set $PLACEMENT={Style * SmartPlacement}
+   ChangeValue 35 1
+
+   Set $INTERPLACE={Style * RandomPlacement}
+   ChangeValue 36 1
+ 
+   Set $REALLYSMART={GlobalOpts SmartPlacementIsNormal}
+   ChangeValue 37 0
+
+   Set $PPOSITION={Style * NoPPosition}
+   ChangeValue 39 0
+   ChangeValue 40 1
+
+   Set $GRABFOCUS={Style * GrabFocusOff}
+   ChangeValue 42 0
+   ChangeValue 43 1
+   
+   Set $SADISTANCE=10
+   ChangeTitle 49 $SADISTANCE
+   Set $SNAPTYPE={All}
+   ChangeValue 51 1
+   Set $SASCREEN={Screen}
+   ChangeValue 52 1
+
+   Set $SHADESTEPS=20
+   ChangeTitle 56 $SHADESTEPS
+  End
+End
+
+Widget 5
+Property
+ Size 310 330
+ Position 10 10
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 6
+Property
+ Size 310 330
+ Position 330 10
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+#############################################################################
+# First rectangle
+
+Widget 13
+Property
+ Position 20 30
+ Type ItemDraw
+ Title {Focus:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 14
+Property
+ Position 100 25
+ Type PopupMenu
+ Title {Sloppy Focus|Click To Focus|Focus Follows Mouse}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 14) == 1 Then
+    Set $FOCUS={Style * SloppyFocus}
+   If (GetValue 14) == 2 Then
+    Set $FOCUS={Style * ClickToFocus}
+   If (GetValue 14) == 3 Then
+    Set $FOCUS={Style * FocusFollowsMouse}
+  End
+End
+
+Widget 15
+Property
+ Position 100 60
+ Type CheckBox
+ Title {Click on the window Raise}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 15) == 1 Then
+    Set $GLOBOPTCR={GlobalOpts MouseFocusClickRaises}
+   Else
+    Set $GLOBOPTCR={GlobalOpts MouseFocusClickDoesntRaise}
+  End
+End
+
+Widget 16
+Property
+ Position 100 80
+ Type CheckBox
+ Title {Click to focus passes click}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 16) == 1 Then
+    Set $GLOBOPTPC={GlobalOpts ClickToFocusPassesClick}
+   Else
+    Set $GLOBOPTPC={GlobalOpts ClickToFocusDoesntPassClick}
+  End
+End
+
+Widget 17
+Property
+ Position 100 100
+ Type CheckBox
+ Title {Click to focus raise}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 17) == 1 Then
+    Set $GLOBOPTR={GlobalOpts ClickToFocusRaises}
+   Else
+    Set $GLOBOPTR={GlobalOpts ClickToFocusDoesntRaise}
+  End
+End
+
+Widget 18
+Property
+ Position 20 140
+ Type ItemDraw
+ Title {Colormap:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 19
+Property
+ Position 100 135
+ Type PopupMenu
+ Title {Colormap Follows Mouse|Colormap Follows Focus}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 19) == 1 Then
+    Set $COLOR={ColormapFocus FollowsMouse}
+   Else
+    Set $COLOR={ColormapFocus FollowsFocus}
+  End
+End
+
+Widget 22
+Property
+ Position 20 180
+ Type ItemDraw
+ Title {Paging:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 23
+Property
+ Position 100 175
+ Type PopupMenu
+ Title {Full Paging ON|All Paging OFF|Horizontal Paging Only|Vertical Paging Only|Partial Paging|Full Paging && Edge Wrap}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 23) == 1 Then
+    Set $PAGE={EdgeScroll 100 100}
+   If (GetValue 23) == 2 Then
+    Set $PAGE={EdgeScroll 0 0}
+   If (GetValue 23) == 3 Then
+    Set $PAGE={EdgeScroll 100 0}
+   If (GetValue 23) == 4 Then
+    Set $PAGE={EdgeScroll 0 100}
+   If (GetValue 23) == 5 Then
+    Set $PAGE={EdgeScroll 50 50}
+   If (GetValue 23) == 6 Then
+    Set $PAGE={EdgeScroll 100000 100000}
+  End
+End
+
+Widget 25
+Property
+ Size 35 25
+ Position 200 220 #272
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 26
+Property
+ Size 25 25
+ Position 240 216 #268
+ Value 10
+ MaxValue 101
+ MinValue 0
+ Type MiniScroll
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeTitle 28 (GetValue 26)
+  End
+End
+
+Widget 27
+Property
+ Size 25 25
+ Position 20 220 #277
+ Type ItemDraw
+ Title {Opaque move size (%):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 28
+Property
+ Position 208 223 #277
+ Size 20 20
+ Font fixed
+ Type ItemDraw
+ Title {10}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 29
+Property
+ Position 20 265
+ Type ItemDraw
+ Title {Opaque move smothness:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 30
+Property
+ Position 200 260
+ Size 30 15
+ Type TextField
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 31
+Property
+ Position 20 305
+ Type ItemDraw
+ Title {Resize:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 32
+Property
+ Title {Opaque}
+ Position 90 305
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 32 1
+   ChangeValue 33 0
+   Set $RESIZEOPAQ={Style * ResizeOpaque}
+  End
+End
+
+Widget 33
+Property
+ Title {Out line}
+ Position 180 305
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 32 0
+   ChangeValue 33 1
+   Set $RESIZEOPAQ={Style * ResizeOutline}
+  End
+End
+
+#########################################################################
+# Second rectangle #
+
+Widget 34
+Property
+ Position 340 20
+ Type ItemDraw
+ Title {Windows Placement:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 35
+Property
+ Position 380 40
+ Type PopupMenu
+ Title {Smart|Dumb}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 35) == 1 Then
+    Set $PLACEMENT={Style * SmartPlacement}
+   If (GetValue 35) == 2 Then
+    Set $PLACEMENT={Style * DumbPlacement}
+  End
+End
+
+Widget 36
+Property
+ Position 520 40
+ Type PopupMenu
+ Title {Random|Active}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 36) == 1 Then
+    Set $INTERPLACE={Style * RandomPlacement}
+   If (GetValue 36) == 2 Then
+    Set $INTERPLACE={Style * ActivePlacement}
+  End
+End
+
+Widget 37
+Property
+ Position 380 75
+ Type CheckBox
+ Title {Smart placement is really smart}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 37) == 1 Then
+    Set $REALLYSMART={GlobalOpts SmartPlacementIsReallySmart}
+   Else
+    Set $REALLYSMART={GlobalOpts SmartPlacementIsNormal}
+  End
+End
+
+Widget 38
+Property
+ Position 340 105
+ Type ItemDraw
+ Title {Use Applications position hints:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 39
+Property
+ Title {Yes}
+ Position 535 125
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 39 1
+   ChangeValue 40 0
+   Set $PPOSITION={Style * UsePPosition}
+  End
+End
+
+Widget 40
+Property
+ Title {No}
+ Position 590 125
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 39 0
+   ChangeValue 40 1
+   Set $PPOSITION={Style * NoPPosition}
+  End
+End
+
+Widget 41
+Property
+ Position 340 145
+ Type ItemDraw
+ Title {New windows grab the focus:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 42
+Property
+ Title {Yes}
+ Position 535 165
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 42 1
+   ChangeValue 43 0
+   Set $GRABFOCUS={Style * GrabFocus}
+  End
+End
+
+Widget 43
+Property
+ Title {No}
+ Position 590 165
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 42 0
+   ChangeValue 43 1
+   Set $PPOSITION={Style * GrabFocusOff}
+  End
+End
+
+Widget 47
+Property
+ Position 340 190
+ Type ItemDraw
+ Title {Snap Attraction:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 48
+Property
+ Position 360 215
+ Type ItemDraw
+ Title {distance (pixels):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 49
+Property
+ Position 490 210
+ Size 30 15
+ Type TextField
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 50
+Property
+ Position 360 248
+ Type ItemDraw
+ Title {behavior:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 51
+Property
+ Position 445 243
+ Type PopupMenu
+ Title {Icons & Windows|Same Type|Only Windows|Only Icons}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 51) == 1 Then
+    Set $SNAPTYPE={All}
+   If (GetValue 51) == 2 Then
+    Set $SNAPTYPE={SameType}
+   If (GetValue 51) == 3 Then
+    Set $SNAPTYPE={Windows}
+   If (GetValue 51) == 4 Then
+    Set $SNAPTYPE={Icons}
+  End
+End
+
+Widget 52
+Property
+ Position 360 275
+ Type CheckBox
+ Title {Take in account the screen edges}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 52) == 1 Then
+    Set $SASCREEN={Screen}
+   Else
+    Set $SASCREEN={#Screen}
+  End
+End
+
+Widget 55
+Property
+ Position 340 305
+ Type ItemDraw
+ Title {Window shade animation steps:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 56
+Property
+ Position 550 300
+ Size 30 15
+ Type TextField
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End

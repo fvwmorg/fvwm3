@@ -1,0 +1,214 @@
+WindowTitle {Keyboard Setup}
+WindowSize 360 250		# Taille
+#ForeColor	{black}
+#BackColor	{grey85}
+#ShadowColor	{grey55}
+#HilightColor	{grey100}
+#Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  WarpPointer 2
+  Set $pos=0
+  Set $finish=1
+  While $finish=={1} Do
+  Begin
+    Set $pos=(Add $pos 1)
+    Set $tmp=(GetOutput {xset -q} $pos 1)
+    If $tmp=={auto} Then
+      Set $finish=0
+    If $pos=={50} Then
+      Set $finish=0
+  End
+  If $pos=={50} Then
+  Begin
+   Do {Exec sh -c "echo 'KeyboardSetup: uncompatible xset'"}
+   Quit
+  End
+  ChangeValue 4 (GetOutput  {xset -q} $pos 7)
+  If (GetOutput  {xset -q } $pos 3)==on Then
+   ChangeValue 6 1
+  Set $pos=(Add $pos 1)
+  ChangeTitle 7 (GetOutput  {xset -q} $pos 4)
+  ChangeTitle 9 (GetOutput  {xset -q} $pos 7)
+ End
+ 
+Widget 1
+Property
+ Size 50 30
+ Position 100 200
+ Type PushButton
+ Title {Apply}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec xset c } (GetValue 4)
+   If (GetValue 6) == 1 Then
+    Do {Exec xset r on r rate } (GetTitle 7) { } (GetTitle 9)
+   Else
+    Do {Exec xset r off}
+  End
+End
+
+Widget 2
+Property
+ Size 50 30
+ Position 190 200
+ Type PushButton
+ Title {OK}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec xset c } (GetValue 4)
+   If (GetValue 6) == 1 Then
+   Begin
+    Do {Exec xset r on r rate }  (GetTitle 7) { } (GetTitle 9)
+    WriteToFile .xinitrc-fvwm {xset r on r rate }  (GetTitle 7) { } (GetTitle 9) { c } (GetValue 4)
+   End
+   Else
+   Begin
+    Do {Exec xset r off}
+    WriteToFile .xinitrc-fvwm {xset r off c } (GetValue 4)
+   End
+   Quit
+  End
+End
+
+Widget 3
+Property
+ Size 50 30
+ Position 280 200
+ Type PushButton
+ Title {Cancel}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Quit
+  End
+End
+
+Widget 4
+Property
+ Size 300 1
+ Position 30 120
+ Type HScrollBar
+ MinValue 0
+ MaxValue 100
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 5
+Property
+ Position 130 100
+ Type ItemDraw
+ Title {Click Volume (%)}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 6
+Property
+ Position 30 40
+ Type CheckBox
+ Title {AutoRepeat On}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 7
+Property
+ Size 60 1
+ Position 270 35
+ Type TextField
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 8
+Property
+ Position 170 40
+ Type ItemDraw
+ Title {Start Delay:  }
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 9
+Property
+ Size 60 1
+ Position 270 60
+ Type TextField
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 10
+Property
+ Position 170 65
+ Type ItemDraw
+ Title {Repeat Delay:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 11
+Property
+ Size 340 180
+ Position 10 10
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 12
+Property
+ Position 15 3
+ Type ItemDraw
+ Title {Keyboard}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,260 @@
+WindowTitle	{FvwmScript Widgets}
+WindowSize	150 610
+WindowPosition  0 170
+ForeColor	{pink}
+BackColor	{navy}
+ShadowColor	{black}
+HilightColor	{grey}
+Colorset 0
+
+Widget 1
+Property
+ Position	10 30 # leave space at top for menu
+ Type		CheckBox
+ Title		{CheckBox1}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	1
+End
+
+Widget 99
+Property
+ Position	10 50
+ Type		CheckBox
+ Title		{CheckBox2}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	1
+End
+
+Widget 2
+Property
+ Size		80 20
+ Position	10 70
+ Type		HDipstick
+ Title		{HDipstick}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Value		50
+ MinValue	1
+ MaxValue	100
+ Colorset	2
+End
+
+Widget 3
+Property
+ Size		48 0
+ Position	10 100
+ Type		HScrollBar
+ Title		{HScrollBar}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	3
+End
+
+Widget 4
+Property
+ Size		80 20
+ Position	10 160
+ Type		ItemDraw
+ Icon		fred.xpm
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	4
+End
+
+Widget 5
+Property
+ Size		80 20
+ Position	10 200
+ Type		List
+ Title		{List|Choice 1|Choice 2|Choice 3|Choice 4}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	5
+End
+
+Widget 6
+Property
+ Position	10000 10000
+ Type		Menu
+ Title		{Menu1|Choice 1|Choice 2|Choice 3}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	0
+End
+
+Widget 60
+Property
+ Position	1000000 10000
+ Type		Menu
+ Title		{Menu2|Choice 1|Choice 2|Choice 3}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	0
+End
+
+Widget 7
+Property
+ Position	10 270
+ Type		MiniScroll
+ Title		{MiniScroll}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	7
+End
+
+Widget 8
+Property
+ Size		80 20
+ Position	10 310
+ Type		PopupMenu
+ Title		{PopupMenu|Choice 1|Choice 2|Choice 3}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	8
+End
+
+Widget 9
+Property
+ Size		80 20
+ Position	10 340
+ Type		PushButton
+ Title		{PushButton|Choice 1|Choice 2|Choice 3}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	9
+End
+
+Widget 10
+Property
+ Size		80 20
+ Position	10 370
+ Type		RadioButton
+ Title		{RadioButton}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	10
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 80 0
+   ChangeValue 2 20
+  End
+End
+
+Widget 80
+Property
+ Size		80 20
+ Position	10 390
+ Type		RadioButton
+ Value		1
+ Title		{RadioButton}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	10
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 10 0
+   ChangeValue 2 80
+  End
+End
+
+Widget 11
+Property
+ Size		80 20
+ Position	10 410
+ Type		Rectangle
+ Title		{Rectangle}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	11
+End
+
+Widget 12
+Property
+ Size		80 20
+ Position	10 440
+ Type		SwallowExec
+ Title		{SwallowExec}
+ SwallowExec	{Exec xclock -name SwallowExec}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	12
+ Value		1
+End
+
+Widget 13
+Property
+ Size		80 20
+ Position	10 480
+ Type		TextField
+ Title		{TextField}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	13
+End
+
+Widget 14
+Property
+ Size		80 20
+ Position	10 510
+ Type		VDipstick
+ Title		{VDipstick}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Value		40
+ MinValue	0
+ MaxValue	80
+ Colorset	14
+End
+
+Widget 15
+Property
+ Size		0 10
+ Position	10 550
+ Type		VScrollBar
+ Title		{VScrollBar}
+ ForeColor	{navy}
+ BackColor	{grey}
+ ShadowColor	{DarkGray}
+ HilightColor	{white}
+ Colorset	15
+End

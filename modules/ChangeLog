@@ -1,5 +1,19 @@
 1999-12-31  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmScript/Scripts/*:
+	Rename Buttons, Colorset, Date, FileBrowser, Find, ScreenDump, 
+	ScreenSetup and WidgetDemo to ScriptFvwm*.
+	Rename and modify BellSetup, KeyboardSetup, PointerSetup, Quit.
+	Replace DeskSetup by ScriptFvwmDefaultStyle that allows to change
+	and save most of the fvwm default styles
+
+	* FvwmScript/Scripts/Makefile.am:
+	The above scripts are installed in FVWM_CONFIGDIR
+
+	* FvwmScript/FvwmScript.1
+	New section EXAMPLES
+1999-12-31  olicha  <olivier.chapuis@free.fr>
+
 	* FvwmScript/FvwmScript.c (BuildGUI):
         Fixed DefaultColorset
 	Fixed main Colorset against Widget Colors

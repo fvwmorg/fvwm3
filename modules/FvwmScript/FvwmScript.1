@@ -521,6 +521,35 @@ Begin
  Do {Exec xcalc &}			# List of instructions
 End
 .EE
+
+.SH EXAMPLES
+You will find examples of scripts in the fvwm configuration directory.
+
+ScriptFvwmBellSetup, ScriptFvwmKeyboardSetup, ScriptFvwmPointerSetup and
+ScriptFvwmScreenSetup is a set of scripts that allow to modify some X setting.
+These scripts save preferences into a file named ~/.xinit-fvwmrc. If you want 
+to load these preferences at every startup, you have to include the line 
+".xinit-fvwmrc" in your .xinitrc (or .xsession) file before starting fvwm.
+
+ScriptFvwmDefaultStyle allows to modify some fvwm preferences: 
+focus, colormap and paging mouse policy, opacity of the move and resize
+commands, windows placement, snap attraction and shading animation.
+This script save preferences into a file named .fvwmrc-script-setting in the
+user configuration directory (i.e., $HOME or $FVWM_USERHOME if set). 
+If you want to load these preferences at every startup you must add
+the line "Read .fvwmrc-script-setting" in your fvwm configuration file.
+
+ScriptFvwmButtons is a buttons panel which can replace FvwmButtons (this 
+script support popup menu and requires xload, xclock, FvwmPager, TkDesk).
+ScriptFvwmColorset allows to edit your colorset (see FvwmTheme).
+ScriptFvwmDate allows to setup date and time.
+ScriptFvwmFileBrowser is a file browser used by the others scripts.
+ScriptFvwmFind is an elementary front-end to find. 
+ScriptFvwmQuit allows to quit fvwm, restart fvwm or an other windows 
+manager, shut down and reboot the computer.
+ScriptFvwmScreenDump is a screen dumper. ScriptFvwmWidgetDemo is a pure
+example script.
+
 .SH AUTHOR
        Frederic Cordier (cordie97@cui.unige.ch or f-cord96@univ-lyon1.fr).
 .SH CONTRIBUTOR

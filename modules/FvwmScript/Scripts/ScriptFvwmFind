@@ -1,0 +1,217 @@
+WindowTitle {Find}
+WindowSize 520 340		# Taille
+#ForeColor	{black}
+#BackColor	{grey85}
+#ShadowColor	{grey55}
+#HilightColor	{grey100}
+#Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  Set $CMD0={sh -c "cd; pwd"}
+  Set $PATH=(GetOutput $CMD0 0 0)
+  Set $NAME={}
+  Set $NAMEOPT={}
+  Set $NAMEOPT2={}
+  Set $BODY={}
+  Set $BODYOPT={}
+  Set $REC={-maxdepth 1 }
+  ChangeTitle 5 $PATH
+  ChangeTitle 7 $NAME
+  ChangeTitle 9 $BODY
+ End
+
+PeriodicTasks
+ Begin
+  Set $MSG=(ReceivFromScript $BROWSER)
+  If $MSG <> {No message} Then
+   ChangeTitle 5 $MSG
+ End
+
+Widget 1
+Property
+ Size 70 18
+ Position 25 300
+ Type PushButton
+ Title {Search}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 12) == 1 Then
+    Set $REC={}
+   Else
+    Set $REC={-maxdepth 1 }
+   Set $PATH=(GetTitle 5)
+   Set $NAME=(GetTitle 7)
+   If $NAME == {} Then
+    Set $NAMEOPT={}
+   Else
+    Set $NAMEOPT={-name } $NAME
+   Set $BODY=(GetTitle 9)
+   If $BODY == {} Then
+    Begin
+    Set $BODYOPT={}
+    Set $TYPE={}
+    End
+   Else
+    Begin
+    Set $BODYOPT={|xargs grep -l "} $BODY {"}
+    Set $TYPE={-type f}
+    End
+   Set $CMD={sh -c "find }$PATH { }  $REC  { } $TYPE { } $NAMEOPT { } $BODYOPT { "}
+   Set $LS=(GetOutput $CMD 1 -1)
+   Set $ID=2
+   While (GetOutput $CMD $ID -1) <> {} Do
+   Begin
+    Set $LS=$LS {|} (GetOutput $CMD $ID -1)
+    Set $ID=(Add $ID 1)
+   End
+   ChangeTitle 13 $LS
+  End
+End
+
+Widget 2
+Property
+ Size 70 18
+ Position 425 300
+ Type PushButton
+ Title {Quit}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Quit
+  End
+End
+
+Widget 3
+Property
+ Position 10 10
+ Size 500 280
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 4
+Property
+ Position 20 42
+ Type ItemDraw
+ Title {Path:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 5
+Property
+ Position 65 37
+ Size 320 20
+ Type TextField
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 6
+Property
+ Position 20 67
+ Type ItemDraw
+ Title {Name:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 7
+Property
+ Position 65 62
+ Size 270 20
+ Type TextField
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 8
+Property
+ Position 20 92
+ Type ItemDraw
+ Title {Body:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 9
+Property
+ Position 65 87
+ Size 270 20
+ Type TextField
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 10
+Property
+ Size 70 18
+ Position 410 35
+ Type PushButton
+ Title {Browser...}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $ARG={ScriptFvwmFileBrowser } (GetTitle 5) {/}
+   Set $BROWSER=(LaunchScript $ARG )
+  End
+End
+
+Widget 12
+Property
+ Position 20 125
+ Type CheckBox
+ Title {Recursive Search}
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 13
+Property
+ Position 20 157
+ Size 480 115
+ Type List
+ Title {}
+Main 
+  Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
