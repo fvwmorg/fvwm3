@@ -243,6 +243,29 @@ that the icon can be traced to an FvwmIconBox button. An example action
 is "*FvwmIconBox: NoIconAction SendToModule FvwmAnimate animate". A blank or null
 action turns this feature off.
 
+.IP "*FvwmIconBox: NoIconifiedParentheses"
+Tells FvwmIconBox to not enclose the title of an iconified window within
+parantheses.
+
+.IP "*FvwmIconBox: NormalTitleRelief \fInum\fP"
+Sets the width in pixels of the relief that is put around icon titles for
+windows that are not iconified. The default if this option is not specified is
+2 pixels.
+
+.IP "*FvwmIconBox: IconifiedTitleRelief \fInum\fP"
+Sets the width in pixels of the relief that is put around icon titles for
+windows that are iconified. The default if this option is not specified is
+2 pixels.
+
+.IP "*FvwmIconBox: NormalTitleInvertedRelief"
+This option makes the relief around titles of uniconified windows to appear
+pressed in. The default is a relief that makes the label look raised from
+the background (unless a relief width of 0 pixels is specified, see above).
+
+.IP "*FvwmIconBox: IconifiedTitleInvertedRelief"
+This option makes the relief around titles of iconified windows to appear
+pressed in.
+
 .SH SAMPLE CONFIGURATION
 The following are excepts from a .fvwm2rc file which describe
 FvwmIconBox initialization commands:

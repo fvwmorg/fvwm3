@@ -68,7 +68,6 @@
 
 #include "FvwmIconBox.h"
 
-
 char *MyName;
 
 Display *dpy;                   /* which display are we talking to */
@@ -152,6 +151,15 @@ int redraw_flag = 3;
 int icon_relief = 4;
 int margin1 = 8;
 int margin2 = 6;
+
+/* true if iconified windows doesn't have () around the title */
+Bool iconified_has_normal_title = False;
+
+int normal_title_relief = 2;
+int iconified_title_relief = 2;
+
+Bool normal_title_inverted_relief = False;
+Bool iconified_title_inverted_relief = False;
 
 Pixmap IconwinPixmap = None;
 char *IconwinPixmapFile = NULL;
@@ -760,6 +768,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 {
 	int hr, len;
 	int diff, lm ,w, h, tw;
+	int title_relief;
 	char label[256];
 	int cs;
 	XRectangle inter;
@@ -885,17 +894,16 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 		{
 			if (item->icon_w > 0 && item->icon_h > 0)
 				RelieveRectangle(dpy, item->icon_pixmap_w,
-						 0, 0, item->icon_w
-						 +icon_relief - 1,
+						 0, 0, 
+						 item->icon_w + icon_relief - 1,
 						 item->icon_h + icon_relief - 1,
 						 IconReliefGC,
 						 IconShadowGC, 2);
 			else
 				RelieveRectangle(dpy, item->icon_pixmap_w,
-						 0, 0, max_icon_width
-						 + icon_relief - 1,
-						 max_icon_height +
-						 icon_relief - 1,
+						 0, 0,
+						 max_icon_width + icon_relief - 1,
+						 max_icon_height + icon_relief - 1,
 						 IconReliefGC,
 						 IconShadowGC, 2);
 		}
@@ -909,12 +917,23 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 
 		if (IS_ICONIFIED(item))
 		{
-			sprintf(label, "(%s)", item->name);
+		        if( ! iconified_has_normal_title )
+			        sprintf(label, "(%s)", item->name);
+			else
+			        strcpy(label, item->name);
+		    
 		}
 		else
 		{
 			strcpy(label, item->name);
 		}
+
+		/* calculate the actual relief thickness */
+		title_relief = IS_ICONIFIED(item) ? 
+			                iconified_title_relief :
+			                normal_title_relief;
+		
+
 		if (evp)
 		{
 			inter.x = evp->xexpose.x;
@@ -934,13 +953,15 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 		tw = FlocaleTextWidth(Ffont, label, len);
 		diff = max_icon_width + icon_relief - tw;
 		lm = diff/2;
-		lm = lm > 4 ? lm : 4;
+		lm = lm > 2 + title_relief ? lm : 2 + title_relief;
 
 		FwinString->str = label;
 		FwinString->win = item->IconWin;
 		FwinString->gc =  NormalGC;
 		FwinString->x = lm;
-		FwinString->y = 3 + Ffont->ascent;
+		FwinString->y = 1 + max(normal_title_relief,
+					iconified_title_relief) + 
+		                Ffont->ascent;
 		if (cs >= 0)
 		{
 			FwinString->colorset = &Colorset[cs];
@@ -950,14 +971,20 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 		{
 			FwinString->flags.has_colorset = False;
 		}
+		
 
+		
 		if (Hilite == item)
 		{
 			XRaiseWindow(dpy, item->IconWin);
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x + min(0, (diff - 8))/2,
 					  item->y + h,
-					  max(tw + 8, w), 6 + Ffont->height);
+					  max(tw + 4 + 2 * title_relief, w), 
+					  2 + 
+					  2 * max(iconified_title_relief,
+						  normal_title_relief) + 
+					  Ffont->height);
 			if (evp)
 			{
 				XClearArea(
@@ -971,16 +998,49 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 				XClearWindow(dpy, item->IconWin);
 			}
 			FlocaleDrawString(dpy, Ffont, FwinString, 0);
-			RelieveRectangle(dpy, item->IconWin, 0, 0,
-					 max(tw + 8, w) - 1,
-					 6 + Ffont->height - 1,
-					 IconReliefGC, IconShadowGC, 2);
+
+			if((IS_ICONIFIED(item) && 
+			    !iconified_title_inverted_relief) ||
+			   (!IS_ICONIFIED(item) &&
+			    !normal_title_inverted_relief))
+			{
+			        RelieveRectangle(dpy, item->IconWin, 0, 0,
+						 max(tw + 4 + 2 * title_relief,
+						     w) 
+						 - 1,
+						 2 + 
+						 2 * 
+						 max(iconified_title_relief,
+						     normal_title_relief) + 
+						 Ffont->height - 1,
+						 IconReliefGC, IconShadowGC, 
+						 title_relief);
+			}
+			else
+			{
+			         RelieveRectangle(dpy, item->IconWin, 0, 0,
+						 max(tw + 4 + 2 * title_relief,
+						     w) 
+						 - 1,
+						 2 + 
+						 2 * 
+						 max(iconified_title_relief,
+						     normal_title_relief) + 
+						 Ffont->height - 1,
+						 IconShadowGC, IconReliefGC, 
+						 title_relief);
+			}
 		}
+
 		else
 		{
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x, item->y + h,
-					  w, 6 + Ffont->height);
+					  w, 
+					  2 + 
+					  2 * max(iconified_title_relief,
+						  normal_title_relief) + 
+					  Ffont->height);
 			if (evp)
 			{
 				XClearArea(
@@ -994,9 +1054,35 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 				XClearWindow(dpy, item->IconWin);
 			}
 			FlocaleDrawString(dpy, Ffont, FwinString, 0);
-			RelieveRectangle(dpy, item->IconWin, 0, 0,
-					 w - 1, 5 + Ffont->height,
-					 IconReliefGC, IconShadowGC, 2);
+			
+			if((IS_ICONIFIED(item) && 
+			    !iconified_title_inverted_relief) ||
+			   (!IS_ICONIFIED(item) &&
+			    !normal_title_inverted_relief))
+			{
+			        RelieveRectangle(dpy, item->IconWin, 0, 0,
+						 w - 1,
+						 2 + 
+						 2 * 
+						 max(iconified_title_relief,
+						     normal_title_relief) + 
+						 Ffont->height - 1,
+						 IconReliefGC, IconShadowGC,
+						 title_relief );
+			}
+			else
+			{
+			        RelieveRectangle(dpy, item->IconWin, 0, 0,
+						 w - 1,
+						 2 + 
+						 2 * 
+						 max(iconified_title_relief,
+						     normal_title_relief) + 
+						 Ffont->height - 1,
+						 IconShadowGC, IconReliefGC,
+						 title_relief );
+			}
+			
 		}
 		if (region)
 		{
@@ -1231,8 +1317,10 @@ void CreateWindow(void)
   if ((local_flags & HIDE_V))
     h_margin -= bar_width + margin2 + 4;
 
+  /* calculate the (maximal) width and height of an icon */
   UWidth = max_icon_width + icon_relief + interval;
-  UHeight = Ffont->height + max_icon_height + icon_relief + 6 + interval;
+  UHeight = Ffont->height + 2 + 2 * max(normal_title_relief,iconified_title_relief) + 
+            max_icon_height + icon_relief + interval;
   Width = UWidth * num_columns + interval -1;
   Height = UHeight * num_rows + interval -1;
 
@@ -1912,6 +2000,41 @@ void ParseOptions(void)
 	  max_icon_width += 4;
 	}
       }
+      else if (strncasecmp(tline, CatString3(
+			   "*", MyName, "NoIconifiedParentheses"),
+			   Clength+23) == 0)
+      {
+	iconified_has_normal_title = True;
+      }
+
+      else if (strncasecmp(tline, CatString3(
+			   "*", MyName, "NormalTitleRelief"),
+			   Clength+18) == 0)
+      {
+	normal_title_relief = atoi(&tline[Clength+18]);
+      }	
+      
+      else if (strncasecmp(tline, CatString3(
+			   "*", MyName, "IconifiedTitleRelief"),
+			   Clength+21) == 0)
+      {
+	iconified_title_relief = atoi(&tline[Clength+21]);
+      }
+
+      else if (strncasecmp(tline, CatString3(
+			   "*", MyName, "NormalTitleInvertedRelief"),
+			   Clength+26) == 0)
+      {
+	normal_title_inverted_relief = True;
+      }
+
+      else if (strncasecmp(tline, CatString3(
+			   "*", MyName, "IconifiedTitleInvertedRelief"),
+			   Clength+29) == 0)
+      {
+	iconified_title_inverted_relief = True;
+      }
+
       else if (strncasecmp(tline, "Colorset", 8) == 0)
       {
 	LoadColorset(&tline[8]);

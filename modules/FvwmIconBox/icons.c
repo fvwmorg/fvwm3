@@ -61,6 +61,9 @@ extern Bool was_bad_access;
 extern char *MyName;
 extern int Iconcolorset;
 
+extern int normal_title_relief;
+extern int iconified_title_relief;
+
 #define ICON_EVENTS (ExposureMask |\
 ButtonReleaseMask | ButtonPressMask | EnterWindowMask | LeaveWindowMask)
 
@@ -179,8 +182,9 @@ void AdjustIconWindow(struct icon_info *item, int n)
   int x=0,y=0,w,h,h2,h3,w3;
 
   w3 = w = max_icon_width + icon_relief;
+  /* the height of the picture window */
   h3 = h2 = max_icon_height + icon_relief;
-  h = h2 + 6 + Ffont->height;
+  h = h2 + 2 + 2 * max(normal_title_relief,iconified_title_relief) + Ffont->height;
 
   switch (primary){
   case LEFT:
