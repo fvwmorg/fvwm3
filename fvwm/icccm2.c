@@ -13,9 +13,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _ICCCM2_
-#define _ICCCM2_
-
 #include "config.h"
 
 #include <stdio.h>
@@ -221,4 +218,7 @@ HandleSelectionClear (void)
   Done(0, NULL);
 }
 
-#endif /* _ICCCM2_ */
+
+
+
+
