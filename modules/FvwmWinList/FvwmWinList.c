@@ -110,7 +110,7 @@ char *ClickAction[3]={"Iconify -1,Raise","Iconify","Lower"},*EnterAction,
       *ForeColor[MAX_COLOUR_SETS] = { "black" },
       *geometry="";
 char *font_string = "fixed";
-int UseSkipList=0,Anchor=1,UseIconNames=0,LeftJustify=0,TruncateLeft=1;
+int UseSkipList=0,Anchor=1,UseIconNames=0,LeftJustify=0,TruncateLeft=1,ShowFocus=1;
 
 long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
@@ -181,9 +181,6 @@ int main(int argc, char **argv)
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
 
-/*  SetMessageMask(Fvwm_fd,M_ADD_WINDOW|M_CONFIGURE_WINDOW| M_DESTROY_WINDOW|
-	      M_WINDOW_NAME|M_ICON_NAME|M_DEICONIFY|M_ICONIFY|M_END_WINDOWLIST|
-	      M_NEW_DESK| M_NEW_PAGE);*/
   SetMessageMask(Fvwm_fd,M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME |
                  M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME |
                  M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST |
@@ -368,7 +365,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	    flags=ItemFlags(&windows,body[0]);
  	    UpdateItemFlags(&windows,body[0],flags);
     }
-    RadioButton(&buttons,i);
+    if (ShowFocus) RadioButton(&buttons,i);
     redraw = 1;
     break;
 
@@ -552,6 +549,8 @@ void ParseConfig()
                                 Clength+8)==0) MinWidth=atoi(&tline[Clength+8]);
           else if(strncasecmp(tline,CatString3(Module, "MaxWidth",""),
                                 Clength+8)==0) MaxWidth=atoi(&tline[Clength+8]);
+	  else if(strncasecmp(tline,CatString3(Module, "DontDepressFocus",""),
+				Clength+16)==0) ShowFocus=0;
 	}
       GetConfigLine(Fvwm_fd,&tline);
     }
