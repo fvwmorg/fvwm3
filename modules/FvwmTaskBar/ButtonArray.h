@@ -41,7 +41,7 @@
 
 typedef struct button {
   char   *title;
-  int    state, needsupdate, truncate;
+  int    state, needsupdate, truncate, iconified;
   struct button *next;
   Picture p;
 } Button;

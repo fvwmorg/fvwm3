@@ -111,8 +111,8 @@ int   x_fd;
 Display *dpy;
 Window  Root, win;
 int     screen;
-Pixel   back, fore;
-GC      graph, shadow, hilite, blackgc, whitegc;
+Pixel   back, fore, iconfore;
+GC      icongraph, graph, shadow, hilite, blackgc, whitegc;
 XFontStruct *ButtonFont, *SelButtonFont;
 #ifdef I18N_MB
 XFontSet ButtonFontset, SelButtonFontset;
@@ -147,6 +147,7 @@ char *ClickAction[3] = { DEFAULT_CLICK1, DEFAULT_CLICK2, DEFAULT_CLICK3 },
      *EnterAction,
      *BackColor      = "white",
      *ForeColor      = "black",
+     *IconForeColor  = "black",
      *geometry       = NULL,
      *font_string    = "fixed",
      *selfont_string = NULL;
@@ -479,6 +480,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       redraw = 0;
     }
     UpdateItemFlags(&windows, body[0], tb_flags);
+    {
+      Button *temp = find_n(&buttons, i);
+      if (temp) {
+	temp->needsupdate = 1;
+	temp->iconified = (tb_flags & F_ICONIFIED) ? 1 : 0;
+      }
+    }
     break;
 
   case M_END_WINDOWLIST:
@@ -667,12 +675,15 @@ static void ParseConfigLine(char *tline) {
     CopyString(&font_string,&tline[Clength+4]);
   else if(strncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
     CopyString(&selfont_string,&tline[Clength+7]);
-  else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0) {
+  else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
     CopyString(&ForeColor,&tline[Clength+4]);
-  }
-  else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
+  else if(strncasecmp(tline,CatString3(Module,"IconFore",""), Clength+8)==0)
+    CopyString(&IconForeColor,&tline[Clength+8]);
+  else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0)
+  {
     str = &tline[Clength+9];
-    while(((isspace((unsigned char)*str))&&(*str != '\n'))&&(*str != 0))	str++;
+    while(((isspace((unsigned char)*str))&&(*str != '\n'))&&(*str != 0))
+      str++;
     str[strlen(str)-1] = 0;
     UpdateString(&geometry,str);
   }
@@ -1248,9 +1259,11 @@ void StartMeUp()
    if(Pdepth < 2) {
      back = GetColor("white");
      fore = GetColor("black");
+     iconfore = GetColor("black");
    } else {
      back = GetColor(BackColor);
      fore = GetColor(ForeColor);
+     iconfore = GetColor(IconForeColor);
    }
 
    attr.background_pixel = back;
@@ -1282,6 +1295,8 @@ void StartMeUp()
    gcval.font = SelButtonFont->fid;
    gcval.graphics_exposures = False;
    graph = XCreateGC(dpy,win,gcmask,&gcval);
+   gcval.foreground = iconfore;
+   icongraph = XCreateGC(dpy,Root,gcmask,&gcval);
 
    if(Pdepth < 2)
      gcval.foreground = GetShadow(fore);
@@ -1333,6 +1348,7 @@ ShutMeDown(void)
   FreeList(&windows);
   FreeAllButtons(&buttons);
   XFreeGC(dpy,graph);
+  XFreeGC(dpy,icongraph);
   XDestroyWindow(dpy, win);
   XCloseDisplay(dpy);
 }

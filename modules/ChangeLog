@@ -1,3 +1,9 @@
+1999-07-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/ButtonArray.c:
+	* FvwmTaskBar/ButtonArray.h: applied IconFore patch by Danny Dulai
+
 1999-07-04  Chris Rankin  <rankinc@zipworld.com.au>
 
     * FvwmScript/FvwmScript.c : Added new signal handling (sigaction),

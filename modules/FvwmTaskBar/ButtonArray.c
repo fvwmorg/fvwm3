@@ -55,7 +55,7 @@ extern XFontSet ButtonFontset, SelButtonFontset;
 #endif
 extern Display *dpy;
 extern Window win;
-extern GC shadow, hilite, graph, whitegc, blackgc, checkered;
+extern GC shadow, hilite, graph, whitegc, blackgc, checkered, icongraph;
 extern int button_width;
 
 extern Button *StartButton;
@@ -126,6 +126,7 @@ Button *ButtonNew(char *title, Picture *p, int state)
   new->state = state;
   new->next  = NULL;
   new->needsupdate = 1;
+  new->iconified = 0;
 
   return new;
 }
@@ -144,11 +145,16 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 #endif
   XGCValues gcv;
   unsigned long gcm;
+  GC *drawgc;
 
   if (button == NULL) return;
   button->needsupdate = 0;
   state = button->state;
   Draw3dRect(win, x, y, w, h, state);
+  if (button->iconified)
+    drawgc = &icongraph;
+  else
+    drawgc = &graph;
 
   if (state != BUTTON_UP) { x++; y++; }
 
@@ -173,7 +179,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 
   gcm = GCFont;
   gcv.font = font->fid;
-  XChangeGC(dpy, graph, gcm, &gcv);
+  XChangeGC(dpy, *drawgc, gcm, &gcv);
 
   newx = 4;
 
@@ -217,7 +223,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 #else
     XDrawString(dpy, win,
 #endif
-		graph, x + x3p, y+ButtonFont->ascent+4, t3p, 3);
+		*drawgc, x + x3p, y+ButtonFont->ascent+4, t3p, 3);
     button->truncate = True;
   }
 
@@ -228,7 +234,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 #else
     XDrawString(dpy, win,
 #endif
-		graph, x+newx, y+font->ascent+4,
+		*drawgc, x+newx, y+font->ascent+4,
 		button->title, search_len);
 }
 
