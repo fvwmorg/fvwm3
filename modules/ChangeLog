@@ -1,3 +1,10 @@
+2001-12-30  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIdent/FvwmIdent.h (struct target_struct):
+	* FvwmIdent/FvwmIdent.c (MakeList):
+	(list_configure):
+	Added the EWMH window type and the EWMH init state if any
+
 2001-12-19  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instructions.c (FuncSendMsgAndGet):

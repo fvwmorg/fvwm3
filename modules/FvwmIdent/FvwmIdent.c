@@ -365,6 +365,9 @@ void list_configure(unsigned long *body)
       target.width_inc = cfgpacket->hints_width_inc;
       target.height_inc = cfgpacket->hints_height_inc;
       target.gravity = cfgpacket->hints_win_gravity;
+      target.ewmh_hint_layer = cfgpacket->ewmh_hint_layer;
+      target.ewmh_hint_desktop = cfgpacket->ewmh_hint_desktop;
+      target.ewmh_window_type = cfgpacket->ewmh_window_type;
       found = 1;
     }
 }
@@ -1000,4 +1003,89 @@ void MakeList(void)
       } /* end getsizehints worked */
     }
   }
+
+  /* EWMH window type */
+  if (target.ewmh_window_type == EWMH_WINDOW_TYPE_DESKTOP_ID)
+    AddToList("EWMH Window Type:","Desktop");
+  else if (target.ewmh_window_type == EWMH_WINDOW_TYPE_DIALOG_ID)
+    AddToList("EWMH Window Type:","Dialog");
+  else if (target.ewmh_window_type == EWMH_WINDOW_TYPE_DOCK_ID)
+    AddToList("EWMH Window Type:","Dock");
+  else if (target.ewmh_window_type == EWMH_WINDOW_TYPE_MENU_ID)
+    AddToList("EWMH Window Type:","Menu");
+  else if (target.ewmh_window_type == EWMH_WINDOW_TYPE_NORMAL_ID)
+    AddToList("EWMH Window Type:","Normal");
+  else if (target.ewmh_window_type == EWMH_WINDOW_TYPE_TOOLBAR_ID)
+    AddToList("EWMH Window Type:","ToolBar");
+
+  /* EWMH wm state */
+  {
+    char *ewmh_init_state = "";
+    Bool add_to_list = False;
+
+    ewmh_init_state = (char *)safemalloc(256*sizeof(char));
+    
+    if (HAS_EWMH_INIT_FULLSCREEN_STATE(targ) == EWMH_STATE_HAS_HINT)
+    {
+      sprintf(ewmh_init_state, "%sFullScreen ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (HAS_EWMH_INIT_HIDDEN_STATE(targ) == EWMH_STATE_HAS_HINT)
+    {
+      sprintf(ewmh_init_state, "%sIconic ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (HAS_EWMH_INIT_MAXHORIZ_STATE(targ) == EWMH_STATE_HAS_HINT)
+    {
+      sprintf(ewmh_init_state, "%sMaxHoriz ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (HAS_EWMH_INIT_MAXVERT_STATE(targ) == EWMH_STATE_HAS_HINT)
+    {
+      sprintf(ewmh_init_state, "%sMaxVert ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (HAS_EWMH_INIT_MODAL_STATE(targ) == EWMH_STATE_HAS_HINT)
+    {
+      sprintf(ewmh_init_state, "%sModal ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (HAS_EWMH_INIT_SHADED_STATE(targ)== EWMH_STATE_HAS_HINT)
+    {
+      sprintf(ewmh_init_state, "%sShaded ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (HAS_EWMH_INIT_SKIP_PAGER_STATE(targ) == EWMH_STATE_HAS_HINT ||
+	HAS_EWMH_INIT_SKIP_TASKBAR_STATE(targ) == EWMH_STATE_HAS_HINT )
+    {
+      sprintf(ewmh_init_state, "%sSkipList ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (HAS_EWMH_INIT_STICKY_STATE(targ) == EWMH_STATE_HAS_HINT ||
+	(HAS_EWMH_INIT_WM_DESKTOP(targ) ==  EWMH_STATE_HAS_HINT &&
+	(target.ewmh_hint_desktop == 0xFFFFFFFE ||
+	 target.ewmh_hint_desktop == 0xFFFFFFFF)))
+    {
+      sprintf(ewmh_init_state, "%sSticky ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (target.ewmh_hint_layer > 0)
+    {
+      sprintf(ewmh_init_state, "%sStaysOnTop ", ewmh_init_state);
+      add_to_list = True;
+    }
+    if (HAS_EWMH_INIT_WM_DESKTOP(targ) == EWMH_STATE_HAS_HINT &&
+	target.ewmh_hint_desktop < 256)
+    {
+      sprintf(ewmh_init_state, "%sStartOnDesk %lu",
+	      ewmh_init_state, target.ewmh_hint_desktop);
+      add_to_list = True;
+    }
+    if (add_to_list)
+    {
+      /* should remove ending space */
+      AddToList("EWMH Init State:",ewmh_init_state);
+    }
+  }
+
 }

@@ -142,7 +142,23 @@ Bool setup_window_structure(
     (*ptmp_win)->ewmh_mini_icon_height = savewin->ewmh_mini_icon_height;
     (*ptmp_win)->ewmh_icon_width = savewin->ewmh_icon_width;
     (*ptmp_win)->ewmh_icon_height = savewin->ewmh_icon_height;
-    (*ptmp_win)->ewmh_hint_layer = savewin->ewmh_hint_layer;
+    (*ptmp_win)->ewmh_hint_desktop = savewin->ewmh_hint_desktop;
+    /* restore ewmh state */
+    EWMH_SetWMState(savewin, True);
+    SET_HAS_EWMH_INIT_WM_DESKTOP(
+      *ptmp_win, HAS_EWMH_INIT_WM_DESKTOP(savewin));
+    SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
+      *ptmp_win, HAS_EWMH_INIT_FULLSCREEN_STATE(savewin));
+    SET_HAS_EWMH_INIT_HIDDEN_STATE(
+      *ptmp_win, HAS_EWMH_INIT_HIDDEN_STATE(savewin));
+    SET_HAS_EWMH_INIT_MAXHORIZ_STATE(
+      *ptmp_win, HAS_EWMH_INIT_MAXHORIZ_STATE(savewin));
+    SET_HAS_EWMH_INIT_MAXVERT_STATE(
+      *ptmp_win, HAS_EWMH_INIT_MAXVERT_STATE(savewin));
+    SET_HAS_EWMH_INIT_SHADED_STATE(
+      *ptmp_win, HAS_EWMH_INIT_SHADED_STATE(savewin));
+    SET_HAS_EWMH_INIT_STICKY_STATE(
+      *ptmp_win, HAS_EWMH_INIT_STICKY_STATE(savewin));
   }
 
   (*ptmp_win)->cmap_windows = (Window *)NULL;
@@ -360,7 +376,7 @@ void setup_visible_name(FvwmWindow *tmp_win, Bool is_icon)
 
 void setup_window_name(FvwmWindow *tmp_win)
 {
-  if (!EWMH_WMName(tmp_win, NULL, NULL))
+  if (!EWMH_WMName(tmp_win, NULL, NULL, 0))
   {
       GET_NAME_PROPERTY(XGetWMName, tmp_win->w, &(tmp_win->name),
 			&(tmp_win->name_list));
@@ -1267,7 +1283,7 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
   }
 
   /* icon name */
-  if (!EWMH_WMIconName(tmp_win, NULL, NULL))
+  if (!EWMH_WMIconName(tmp_win, NULL, NULL, 0))
       GET_NAME_PROPERTY(XGetWMIconName, tmp_win->w, &(tmp_win->icon_name),
 			&(tmp_win->icon_name_list));
   if (tmp_win->icon_name == NoName)

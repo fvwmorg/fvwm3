@@ -39,6 +39,9 @@ struct target_struct
   window_flags flags;
   long title_h;
   long border_w;
+  long ewmh_hint_layer;
+  unsigned long ewmh_hint_desktop;
+  long ewmh_window_type;
 };
 
 struct Item

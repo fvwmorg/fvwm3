@@ -1282,7 +1282,7 @@ void new_layer(FvwmWindow *tmp_win, int layer)
   {
     s->layer = layer;
     GNOME_SetLayer(tmp_win);
-    EWMH_SetWMState(tmp_win);
+    EWMH_SetWMState(tmp_win, False);
   }
   /* move the windows without modifying their stacking order */
   restack_windows(list_head.stack_next->stack_prev, target, count, (count > 1));

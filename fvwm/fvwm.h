@@ -243,7 +243,7 @@ typedef struct
     unsigned do_ewmh_use_stacking_hints : 1;
     unsigned do_ewmh_ignore_strut_hints : 1;
     unsigned do_ewmh_ignore_state_hints : 1;
-    unsigned ewmh_maximize_mode : 2;
+    unsigned ewmh_maximize_mode : 2; /* see ewmh.h */
   } s;
 } common_flags_type;
 
@@ -322,6 +322,20 @@ typedef struct
 				    * acceptable size for a mini icon in its
 				    * list of icons */
   unsigned use_ewmh_icon : 1; /* the ewmh icon is used as icon pixmap */
+  unsigned is_ewmh_modal : 1;
+#define EWMH_STATE_UNDEFINED_HINT 0
+#define EWMH_STATE_NO_HINT        1
+#define EWMH_STATE_HAS_HINT       2
+  unsigned has_ewmh_init_fullscreen_state : 2;
+  unsigned has_ewmh_init_hidden_state : 2;
+  unsigned has_ewmh_init_maxhoriz_state : 2;
+  unsigned has_ewmh_init_maxvert_state : 2;
+  unsigned has_ewmh_init_modal_state : 2;
+  unsigned has_ewmh_init_shaded_state : 2;
+  unsigned has_ewmh_init_skip_pager_state : 2;
+  unsigned has_ewmh_init_skip_taskbar_state : 2;
+  unsigned has_ewmh_init_sticky_state : 2;
+  unsigned has_ewmh_init_wm_desktop : 2;
 } window_flags;
 
 /* Window mask for Circulate and Direction functions */
@@ -376,7 +390,7 @@ typedef struct
 #define PLACE_MINOVERLAP        0x7
 #define PLACE_MASK              0x7
   unsigned placement_mode : 3;
-  unsigned ewmh_placement_mode : 2;
+  unsigned ewmh_placement_mode : 2; /* see ewmh.h */
   unsigned do_save_under : 1;
   unsigned do_start_lowered : 1;
   unsigned has_border_width : 1;
@@ -574,18 +588,29 @@ typedef struct FvwmWindow
   int max_window_height;
   int shade_anim_steps;
   unsigned char grabbed_buttons;
+
   float placement_penalty[6];
   int placement_percentage_penalty[4];
 
-  Atom ewmh_window_type;
-  rectangle ewmh_icon_geometry;
-  ewmh_strut strut;            /* for computing the working area */
-  ewmh_strut dyn_strut;        /* for the dynamic working area */
-  int ewmh_icon_height;
-  int ewmh_icon_width;
+#define EWMH_WINDOW_TYPE_NONE_ID      0
+#define EWMH_WINDOW_TYPE_DESKTOP_ID   1
+#define EWMH_WINDOW_TYPE_DIALOG_ID    2
+#define EWMH_WINDOW_TYPE_DOCK_ID      3
+#define EWMH_WINDOW_TYPE_MENU_ID      4
+#define EWMH_WINDOW_TYPE_NORMAL_ID    5
+#define EWMH_WINDOW_TYPE_TOOLBAR_ID   6
+
+  int ewmh_window_type;
+  rectangle ewmh_icon_geometry; /* icon geometry */
+  ewmh_strut strut;             /* for computing the working area */
+  ewmh_strut dyn_strut;         /* for the dynamic working area */
+  int ewmh_icon_height;         /* memories for the icons we set on the */
+  int ewmh_icon_width;          /* _NET_WM_ICON */
   int ewmh_mini_icon_height;
   int ewmh_mini_icon_width;
-  int ewmh_hint_layer;
+
+  int ewmh_hint_layer;        /* memory for the initial _NET_WM_STATE */
+  unsigned long ewmh_hint_desktop;    /* memory for the initial _NET_WM_STATE */
 
   void *pscratch;             /* multi purpose scratch pointer */
 } FvwmWindow;

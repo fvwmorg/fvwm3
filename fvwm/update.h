@@ -35,7 +35,6 @@ typedef struct
   unsigned do_update_visible_icon_name : 1;
   unsigned do_update_mini_icon : 1;
   unsigned do_update_ewmh_mini_icon : 1;
-  unsigned do_update_list_skip : 1;
   unsigned do_update_stick : 1;
   unsigned do_update_stick_icon : 1;
   unsigned do_update_window_color : 1;
@@ -47,6 +46,7 @@ typedef struct
   unsigned do_update_modules_flags : 1;
   unsigned do_update_placement_penalty : 1;
   unsigned do_update_working_area : 1;
+  unsigned do_update_ewmh_state_hints : 1;
   unsigned do_update_ewmh_stacking_hints : 1;
   unsigned do_update_ewmh_allowed_actions : 1;
 } update_win;

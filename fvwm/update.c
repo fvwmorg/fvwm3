@@ -316,9 +316,9 @@ static void apply_window_updates(
   {
     setup_frame_attributes(t, pstyle);
   }
-  if (flags->do_update_list_skip)
+  if (flags->do_update_ewmh_state_hints)
   {
-    EWMH_SetWMState(t);
+     EWMH_SetWMState(t, False);
   }
   if (flags->do_update_modules_flags)
   {

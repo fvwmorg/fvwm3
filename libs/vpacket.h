@@ -69,6 +69,9 @@ unsigned long int  TextPixel;
 unsigned long int  BackPixel;
 
 /*  Everything below this is post-GSFR  */
+unsigned long int  ewmh_hint_layer;
+unsigned long int  ewmh_hint_desktop;
+unsigned long int  ewmh_window_type;
 window_flags       flags;
 
 } ConfigWinPacket;

@@ -107,14 +107,15 @@ ewmh_atom ewmh_atom_client_win[] =
  * too */
 ewmh_atom ewmh_atom_wm_state[] =
 {
+  ENTRY("_NET_WM_STATE_FULLSCREEN",      XA_ATOM,   ewmh_WMStateFullScreen),
   ENTRY("_NET_WM_STATE_HIDDEN",          XA_ATOM,   ewmh_WMStateHidden),
   ENTRY("_NET_WM_STATE_MAXIMIZED_HORIZ", XA_ATOM,   ewmh_WMStateMaxHoriz),
   ENTRY("_NET_WM_STATE_MAXIMIZED_HORZ",  XA_ATOM,   ewmh_WMStateMaxHoriz),
   ENTRY("_NET_WM_STATE_MAXIMIZED_VERT",  XA_ATOM,   ewmh_WMStateMaxVert),
   ENTRY("_NET_WM_STATE_MODAL",           XA_ATOM,   ewmh_WMStateModal),
   ENTRY("_NET_WM_STATE_SHADED",          XA_ATOM,   ewmh_WMStateShaded),
-  ENTRY("_NET_WM_STATE_SKIP_PAGER",      XA_ATOM,   ewmh_WMStateListSkip),
-  ENTRY("_NET_WM_STATE_SKIP_TASKBAR",    XA_ATOM,   ewmh_WMStateListSkip),
+  ENTRY("_NET_WM_STATE_SKIP_PAGER",      XA_ATOM,   ewmh_WMStateSkipPager),
+  ENTRY("_NET_WM_STATE_SKIP_TASKBAR",    XA_ATOM,   ewmh_WMStateSkipTaskBar),
   ENTRY("_NET_WM_STATE_STAYS_ON_TOP",    XA_ATOM,   ewmh_WMStateStaysOnTop),
   ENTRY("_NET_WM_STATE_STICKY",          XA_ATOM,   ewmh_WMStateSticky),
   {NULL,0,0,0}
@@ -446,7 +447,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
  *  fvwm2 must maintain the _NET_WM_STATE
  * ************************************************************************* */
 
-void EWMH_SetWMState(FvwmWindow *fwin)
+void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore)
 {
   Atom wm_state[EWMH_NUMBER_OF_STATE];
   int i = 0;
@@ -454,7 +455,7 @@ void EWMH_SetWMState(FvwmWindow *fwin)
 
   while(list->name != NULL)
   {
-    if (list->action(fwin, NULL, NULL))
+    if (list->action(fwin, NULL, NULL, do_restore))
       wm_state[i++] = list->atom;
     list++;
   }
@@ -961,7 +962,7 @@ void EWMH_SetAllowedActions(FvwmWindow *fwin)
 
   while(list->name != NULL)
   {
-    if (list->action(fwin, NULL, NULL))
+    if (list->action(fwin, NULL, NULL, 0))
       wm_actions[i++] = list->atom;
     list++;
   }
@@ -988,6 +989,7 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
     /* what to do ? */
   }
 
+  fwin->ewmh_window_type = EWMH_WINDOW_TYPE_DESKTOP_ID;
   Scr.EwmhDesktop = fwin;
 
   SSET_LAYER(*style, 0);
@@ -1049,11 +1051,14 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
 
 int ewmh_HandleDialog(EWMH_CMD_ARGS)
 {
+  fwin->ewmh_window_type = EWMH_WINDOW_TYPE_DIALOG_ID;
   return 0;
 }
 
 int ewmh_HandleDock(EWMH_CMD_ARGS)
 {
+  fwin->ewmh_window_type = EWMH_WINDOW_TYPE_DOCK_ID;
+
   SFSET_IS_STICKY(*style, 1);
   SMSET_IS_STICKY(*style, 1);
   SCSET_IS_STICKY(*style, 1);
@@ -1073,6 +1078,8 @@ int ewmh_HandleDock(EWMH_CMD_ARGS)
 
 int ewmh_HandleMenu(EWMH_CMD_ARGS)
 {
+  fwin->ewmh_window_type = EWMH_WINDOW_TYPE_MENU_ID;
+
   SFSET_IS_STICKY(*style, 1);
   SMSET_IS_STICKY(*style, 1);
   SCSET_IS_STICKY(*style, 1);
@@ -1105,11 +1112,14 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS)
 
 int ewmh_HandleNormal(EWMH_CMD_ARGS)
 {
+  fwin->ewmh_window_type = EWMH_WINDOW_TYPE_NORMAL_ID;
   return 0;
 }
 
 int ewmh_HandleToolBar(EWMH_CMD_ARGS)
 {
+  fwin->ewmh_window_type = EWMH_WINDOW_TYPE_TOOLBAR_ID;
+
   SFSET_IS_STICKY(*style, 1);
   SMSET_IS_STICKY(*style, 1);
   SCSET_IS_STICKY(*style, 1);
@@ -1146,8 +1156,7 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
   {
     if (list->atom == val[0])
     {
-      list->action(fwin, NULL, style);
-      fwin->ewmh_window_type = list->atom;
+      list->action(fwin, NULL, style, 0);
     }
      list++;
   }
@@ -1186,27 +1195,28 @@ int ksmserver_workarround(FvwmWindow *fwin)
 
 void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
 {
+  ewmh_WMState(fwin, NULL, style, 0);
+  ewmh_WMDesktop(fwin, NULL, style, 0);
+  /* the window type override the state hint */
   ewmh_HandleWindowType(fwin, style);
-  if (!DO_EWMH_IGNORE_STATE_HINTS(fwin))
-    ewmh_WMState(fwin, NULL, style);
 }
 
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */
 void EWMH_WindowInit(FvwmWindow *fwin)
 {
   /*EWMH_DLOG("Init window 0x%lx",fwin->w);*/
-  EWMH_SetWMState(fwin);
+  EWMH_SetWMState(fwin, False);
   EWMH_SetWMDesktop(fwin);
   EWMH_SetFrameStrut(fwin);
   EWMH_SetAllowedActions(fwin);
-  ewmh_WMStrut(fwin, NULL, NULL);
-  ewmh_WMIconGeometry(fwin, NULL, NULL);
+  ewmh_WMStrut(fwin, NULL, NULL, 0);
+  ewmh_WMIconGeometry(fwin, NULL, NULL, 0);
   ewmh_AddToKdeSysTray(fwin);
   if (IS_EWMH_DESKTOP(fwin->w))
     return;
   if (ksmserver_workarround(fwin))
     return;
-  ewmh_WMIcon(fwin, NULL, NULL);
+  ewmh_WMIcon(fwin, NULL, NULL, 0);
   /*EWMH_DLOG("window 0x%lx initialised",fwin->w);*/
 }
 
@@ -1335,34 +1345,13 @@ void EWMH_Init(void)
 void EWMH_ExitStuff(void)
 {
   FvwmWindow *t;
-  int sl;
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
     if (HAS_EWMH_WM_ICON_HINT(t) == EWMH_FVWM_ICON)
       EWMH_DeleteWmIcon(t, True, True);
-    /* restore the wm_state stays on top hints */
-    if (t->ewmh_hint_layer == t->layer && t->layer == Scr.TopLayer)
-    {
-      /* window is stays on top by a hint, wm_state is ok */
-      set_layer(t, Scr.DefaultLayer);
-    }
-    else if (t->layer >= Scr.TopLayer && t->ewmh_hint_layer < Scr.TopLayer)
-    {
-      /* wm_state has stays on top, but no stays on top hint */
-      sl = t->layer;
-      set_layer(t, Scr.DefaultLayer);
-      EWMH_SetWMState(t);
-      set_layer(t, sl);
-    }
-    else if (t->ewmh_hint_layer == Scr.TopLayer && t->layer < Scr.TopLayer)
-    {
-      /* no stay on top wm_state, but window has stays on top hint */
-      sl = t->layer;
-      set_layer(t, Scr.TopLayer);
-      EWMH_SetWMState(t);
-      set_layer(t, sl);
-    }
+    /* restore the wm_state */
+    EWMH_SetWMState(t, True);
   }
 
 }

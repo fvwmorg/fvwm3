@@ -3471,7 +3471,7 @@ fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", tmp_win->m
   {
     focus_grab_buttons(sf, True);
   }
-  EWMH_SetWMState(tmp_win);
+  EWMH_SetWMState(tmp_win, False);
   GNOME_SetWinArea(tmp_win);
 }
 
@@ -3513,7 +3513,7 @@ void handle_stick(F_CMD_ARGS, int toggle)
   {
     focus_grab_buttons(sf, True);
   }
-  EWMH_SetWMState(tmp_win);
+  EWMH_SetWMState(tmp_win, False);
   EWMH_SetWMDesktop(tmp_win);
   GNOME_SetHints(tmp_win);
 }

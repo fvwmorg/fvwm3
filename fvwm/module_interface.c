@@ -881,7 +881,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 
 /* this is broken, the flags may not fit in a word */
-#define CONFIGARGS(_t) 24,\
+#define CONFIGARGS(_t) 27,\
             (_t)->w,\
             (_t)->frame,\
             (unsigned long)(_t),\
@@ -905,10 +905,13 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->icon_pixmap_w,\
             (_t)->hints.win_gravity,\
             (_t)->colors.fore,\
-            (_t)->colors.back
+            (_t)->colors.back,\
+            (_t)->ewmh_hint_layer,\
+            (_t)->ewmh_hint_desktop,\
+            (_t)->ewmh_window_type
 
 #ifndef DISABLE_MBC
-#define OLDCONFIGARGS(_t) 24,\
+#define OLDCONFIGARGS(_t) 27,\
             (_t)->w,\
             (_t)->frame,\
             (unsigned long)(_t),\
@@ -932,7 +935,10 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->icon_pixmap_w,\
             (_t)->hints.win_gravity,\
             (_t)->colors.fore,\
-            (_t)->colors.back
+            (_t)->colors.back,\
+            (_t)->ewmh_hint_layer,\
+            (_t)->ewmh_hint_desktop,\
+            (_t)->ewmh_window_type
 
 #define SETOLDFLAGS \
 { int i = 1; \
@@ -982,7 +988,7 @@ static void BroadcastNewPacket(unsigned long event_type,
         as a dummy to preserve alignment of the other fields in the
         old packet: we should drop this before the next release.
 *****************************************************************/
-#define CONFIGARGSNEW(_t) 25,\
+#define CONFIGARGSNEW(_t) 28,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->w,\
 	    (unsigned long)(sizeof(unsigned long)),\
@@ -1031,6 +1037,12 @@ static void BroadcastNewPacket(unsigned long event_type,
             &(*(_t))->colors.fore,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->colors.back,\
+            (unsigned long)(0),\
+            &(*(_t))->ewmh_hint_layer,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->ewmh_hint_desktop,\
+	    (unsigned long)(0),\
+            &(*(_t))->ewmh_window_type,\
 	    (unsigned long)(sizeof((*(_t))->flags)),\
             &(*(_t))->flags
 

@@ -35,12 +35,13 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
 
 #include <X11/Xmd.h>
 
+
 void EWMH_SetCurrentDesktop(void);
 void EWMH_SetNumberOfDesktops(void);
 
 void EWMH_SetActiveWindow(Window w);
 void EWMH_SetWMDesktop(FvwmWindow *fwin);
-void EWMH_SetWMState(FvwmWindow *fwin);
+void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore);
 
 int EWMH_IsKdeSysTrayWindow(Window w);
 void EWMH_ManageKdeSysTray(Window w, int type);
@@ -79,17 +80,19 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
 /* ewmh_name.c */
 #ifdef HAVE_ICONV
 void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name);
-int EWMH_WMName(FvwmWindow *fwin, XEvent *ev, window_style *style);
+int EWMH_WMName(FvwmWindow *fwin, XEvent *ev, window_style *style,
+		unsigned long any);
 #define EWMH_WMName_func EWMH_WMName
-int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
+int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style,
+		    unsigned long any);
 #define EWMH_WMIconName_func EWMH_WMIconName
 void EWMH_SetDesktopNames(void);
 #else /* HAVE_ICONV */
 #define EWMH_SetVisibleName(x,y)
-#define EWMH_WMName(x,y,z)     0
-#define EWMH_WMName_func       0
-#define EWMH_WMIconName(x,y,z) 0
-#define EWMH_WMIconName_func   0
+#define EWMH_WMName(x,y,z,t)     0
+#define EWMH_WMName_func         0
+#define EWMH_WMIconName(x,y,z,t) 0
+#define EWMH_WMIconName_func     0
 #define EWMH_SetDesktopNames()
 #endif /* HAVE_ICONV */
 
@@ -101,7 +104,7 @@ void EWMH_SetDesktopNames(void);
 
 #define EWMH_SetActiveWindow(x)
 #define EWMH_SetWMDesktop(x)
-#define EWMH_SetWMState(x)
+#define EWMH_SetWMState(x,y)
 
 #define EWMH_IsKdeSysTrayWindow(x) 0
 #define EWMH_ManageKdeSysTray(x,y);

@@ -439,4 +439,68 @@
 #define HAS_EWMH_MINI_ICON(fw) ((fw)->flags.has_ewmh_mini_icon)
 #define SET_HAS_EWMH_MINI_ICON(fw,x) (fw)->flags.has_ewmh_mini_icon = !!(x)
 #define SETM_HAS_EWMH_MINI_ICON(fw,x) (fw)->flag_mask.has_ewmh_mini_icon = !!(x)
+#define IS_EWMH_MODAL(fw)     ((fw)->flags.is_ewmh_modal)
+#define SET_EWMH_MODAL(fw,x)  (fw)->flags.is_ewmh_modal = !!(x)
+#define SETM_EWMH_MODAL(fw,x) \
+          (fw)->flag_mask.is_ewmh_modal = !!(x)
+#define SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_fullscreen_state = (x)
+#define SETM_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_fullscreen_state = (x)
+#define HAS_EWMH_INIT_FULLSCREEN_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_fullscreen_state)
+#define SET_HAS_EWMH_INIT_HIDDEN_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_hidden_state = (x)
+#define SETM_HAS_EWMH_INIT_HIDDEN_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_hidden_state = (x)
+#define HAS_EWMH_INIT_HIDDEN_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_hidden_state)
+#define SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_maxhoriz_state = (x)
+#define SETM_HAS_EWMH_INIT_MAXHORIZ_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_maxhoriz_state = (x)
+#define HAS_EWMH_INIT_MAXHORIZ_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_maxhoriz_state)
+#define SET_HAS_EWMH_INIT_MAXVERT_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_maxvert_state = (x)
+#define SETM_HAS_EWMH_INIT_MAXVERT_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_maxvert_state = (x)
+#define HAS_EWMH_INIT_MAXVERT_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_fullscreen_state)
+#define SET_HAS_EWMH_INIT_MODAL_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_modal_state = (x)
+#define SETM_HAS_EWMH_INIT_MODAL_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_modal_state = (x)
+#define HAS_EWMH_INIT_MODAL_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_modal_state)
+#define SET_HAS_EWMH_INIT_SHADED_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_shaded_state = (x)
+#define SETM_HAS_EWMH_INIT_SHADED_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_shaded_state = (x)
+#define HAS_EWMH_INIT_SHADED_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_shaded_state)
+#define SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_skip_pager_state = (x)
+#define SETM_HAS_EWMH_INIT_SKIP_PAGER_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_skip_pager_state = (x)
+#define HAS_EWMH_INIT_SKIP_PAGER_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_skip_pager_state)
+#define SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_skip_taskbar_state = (x)
+#define SETM_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_skip_taskbar_state = (x)
+#define HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_skip_taskbar_state)
+#define SET_HAS_EWMH_INIT_STICKY_STATE(fw,x) \
+          (fw)->flags.has_ewmh_init_sticky_state = (x)
+#define SETM_HAS_EWMH_INIT_STICKY_STATE(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_sticky_state = (x)
+#define HAS_EWMH_INIT_STICKY_STATE(fw) \
+          ((fw)->flags.has_ewmh_init_sticky_state)
+#define SET_HAS_EWMH_INIT_WM_DESKTOP(fw,x) \
+          (fw)->flags.has_ewmh_init_wm_desktop = (x)
+#define SETM_HAS_EWMH_INIT_WM_DESKTOP(fw,x) \
+          (fw)->flags_mask.has_ewmh_init_wm_desktop = (x)
+#define HAS_EWMH_INIT_WM_DESKTOP(fw) \
+          ((fw)->flags.has_ewmh_init_wm_desktop)
 #endif /* _WINDOW_FLAGS_ */

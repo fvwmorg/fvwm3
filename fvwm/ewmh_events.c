@@ -43,8 +43,9 @@
 
 extern ewmh_atom ewmh_atom_wm_state[];
 
+#define DEBUG_EWMH_INIT_STATE 1
 /* ************************************************************************* *
- *
+ * root
  * ************************************************************************* */
 int ewmh_CurrentDesktop(EWMH_CMD_ARGS)
 {
@@ -80,7 +81,7 @@ int ewmh_NumberOfDesktops(EWMH_CMD_ARGS)
 }
 
 /* ************************************************************************* *
- *
+ * window
  * ************************************************************************* */
 
 int ewmh_ActiveWindow(EWMH_CMD_ARGS)
@@ -103,10 +104,9 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
 
 int ewmh_WMDesktop(EWMH_CMD_ARGS)
 {
-  if (ev == NULL)
-    return 0;
-
+  if (ev != NULL && style == NULL)
   {
+    /* client message */
     unsigned long d = (unsigned long)ev->xclient.data.l[0];
 
     /* the spec says that if d = 0xFFFFFFFF then we have to Stick the window 
@@ -122,6 +122,53 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
       if (fwin->Desk != d)
 	do_move_window_to_desk(fwin, (int)d);
     }
+    return 0;
+  }
+  
+  if (style != NULL && ev == NULL)
+  {
+    /* start on desk */
+    unsigned long *val;
+    unsigned int size = 0;
+
+    if (HAS_EWMH_INIT_WM_DESKTOP(fwin) != EWMH_STATE_UNDEFINED_HINT)
+      return 0;
+
+    val = ewmh_AtomGetByName(fwin->w,
+			     "_NET_WM_DESKTOP",
+			     EWMH_ATOM_LIST_CLIENT_WIN,
+			     &size);
+
+    if (val == NULL)
+    {
+      SET_HAS_EWMH_INIT_WM_DESKTOP(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+#if DEBUG_EWMH_INIT_STATE
+    fprintf(stderr,"ewmh WM_DESKTOP hint for window 0x%lx  (%i,%lu,%lu)\n",
+	    fwin->w, HAS_EWMH_INIT_WM_DESKTOP(fwin),
+	    fwin->ewmh_hint_desktop, val[0]);
+#endif
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
+    {
+      if ((val[0] == 0xFFFFFFFE || val[0] == 0xFFFFFFFF))
+      {
+	SFSET_IS_STICKY(*style, 1);
+	SMSET_IS_STICKY(*style, 1);
+	SCSET_IS_STICKY(*style, 1);
+      }
+      else if (val[0] < 256)
+      {
+	/* prevent crazy hints ?? */
+	style->flags.use_start_on_desk = 1;
+	style->flag_mask.use_start_on_desk = 1;
+	style->change_mask.use_start_on_desk = 1;
+	SSET_START_DESK(*style, val[0]);
+      }
+    }
+    SET_HAS_EWMH_INIT_WM_DESKTOP(fwin, EWMH_STATE_HAS_HINT);
+    fwin->ewmh_hint_desktop = val[0];
+    free(val);
   }
   return 0;
 }
@@ -182,7 +229,6 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 /* ************************************************************************* *
  * WM_STATE* 
  * ************************************************************************* */
-
 int ewmh_WMState(EWMH_CMD_ARGS)
 {
   unsigned long maximize = 0;
@@ -196,11 +242,11 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 
     if (a1 != NULL)
     {
-      maximize |= a1->action(fwin, ev, NULL);
+      maximize |= a1->action(fwin, ev, NULL, 0);
     }
     if (a2 != NULL)
     {
-      maximize |= a2->action(fwin, ev, NULL);
+      maximize |= a2->action(fwin, ev, NULL, 0);
     }
   }
   else if (style != NULL)
@@ -208,6 +254,8 @@ int ewmh_WMState(EWMH_CMD_ARGS)
     Atom *val;
     unsigned int size = 0;
     int i;
+    ewmh_atom *list = ewmh_atom_wm_state;
+    int has_hint = 0;
 
     val = ewmh_AtomGetByName(fwin->w,
 			     "_NET_WM_STATE",
@@ -215,20 +263,25 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 			     &size);
 
     if (val == NULL)
-      return 0;
+      size = 0;
 
-    for(i = 0; i < (size / (sizeof(Atom))); i++) 
+#if DEBUG_EWMH_INIT_STATE
+    if (size != 0)
+      fprintf(stderr,"Window 0x%lx has an init _NET_WM_STATE hint\n",fwin->w);
+#endif
+    while(list->name != NULL)
     {
-      ewmh_atom *list = ewmh_atom_wm_state;
-
-      while(list->name != NULL)
+      has_hint = 0;
+      for(i = 0; i < (size / (sizeof(Atom))); i++) 
       {
 	if (list->atom == val[i])
-	  maximize |= list->action(fwin, NULL, style);
-	list++;
+	  has_hint = 1;
       }
+      maximize |= list->action(fwin, NULL, style, has_hint);
+      list++;
     }
-    free(val);
+    if (val != NULL)
+      free(val);
     return 0;
   }
 
@@ -247,16 +300,71 @@ int ewmh_WMState(EWMH_CMD_ARGS)
   return 0;
 }
 
-int ewmh_WMStateHidden(EWMH_CMD_ARGS)
+/* not yet implemented */
+int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 {
+
   if (ev == NULL && style == NULL)
-    return IS_ICONIFIED(fwin);
+  {
+    return 0;
+  }
 
   if (ev == NULL && style != NULL)
   {
-    SFSET_DO_START_ICONIC(*style, 1);
-    SMSET_DO_START_ICONIC(*style, 1);
-    SCSET_DO_START_ICONIC(*style, 1);
+    /* start full screen */
+    int ret = 0;
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\tFullscreen\n");
+#endif
+    if (HAS_EWMH_INIT_FULLSCREEN_STATE(fwin) != EWMH_STATE_UNDEFINED_HINT)
+      return 0;
+    if (!has_hint)
+    {
+      SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
+    {
+      ret = EWMH_MAXIMIZE_FULLSCREEN;
+    }
+    SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fwin, EWMH_STATE_HAS_HINT);
+    return 0;
+  }
+
+  return 0;
+}
+
+int ewmh_WMStateHidden(EWMH_CMD_ARGS)
+{
+  if (ev == NULL && style == NULL)
+  {
+    return IS_ICONIFIED(fwin);
+  }
+
+  if (ev == NULL && style != NULL)
+  {
+    /* start iconified */
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\tHidden\n");
+#endif
+    if (HAS_EWMH_INIT_HIDDEN_STATE(fwin) != EWMH_STATE_UNDEFINED_HINT)
+      return 0;
+    if (!has_hint)
+    {
+      SET_HAS_EWMH_INIT_HIDDEN_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
+    {
+      SFSET_DO_START_ICONIC(*style, 1);
+      SMSET_DO_START_ICONIC(*style, 1);
+      SCSET_DO_START_ICONIC(*style, 1);
+    }
+    SET_HAS_EWMH_INIT_HIDDEN_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
   }
 
@@ -286,11 +394,29 @@ int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS)
 {
 
   if (ev == NULL && style == NULL)
+  {
     return IS_MAXIMIZED(fwin);
+  }
 
   if (ev == NULL && style != NULL)
   {
-    /* SET_MAXIMIZED(fwin, 1); */
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\t Maxhoriz %i\n", HAS_EWMH_INIT_MAXHORIZ_STATE(fwin));
+#endif
+    if (HAS_EWMH_INIT_MAXHORIZ_STATE(fwin) != EWMH_STATE_UNDEFINED_HINT)
+      return 0;
+    if (!has_hint)
+    {
+      SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
+    {
+      /* SET_MAXIMIZED(fwin, 1); */
+    }
+    SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
   }
 
@@ -309,11 +435,29 @@ int ewmh_WMStateMaxVert(EWMH_CMD_ARGS)
 {
 
   if (ev == NULL && style == NULL)
+  {
     return IS_MAXIMIZED(fwin);
+  }
 
   if (ev == NULL && style != NULL)
   {
-    /* SET_MAXIMIZED(fwin, 1); */
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\t Maxvert %i\n", HAS_EWMH_INIT_MAXVERT_STATE(fwin));
+#endif
+    if (HAS_EWMH_INIT_MAXVERT_STATE(fwin) != EWMH_STATE_UNDEFINED_HINT)
+      return 0;
+    if (!has_hint)
+    {
+      SET_HAS_EWMH_INIT_MAXVERT_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
+    {
+      /* SET_MAXIMIZED(fwin, 1); */
+    }
+    SET_HAS_EWMH_INIT_MAXVERT_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
   }
 
@@ -328,17 +472,81 @@ int ewmh_WMStateMaxVert(EWMH_CMD_ARGS)
   }
 }
 
-/* not yet implemented */
 int ewmh_WMStateModal(EWMH_CMD_ARGS)
 {
   if (ev == NULL && style == NULL)
-    return 0;
+  {
+    unsigned long do_restore = any;
+
+    if (do_restore)
+    {
+      if (HAS_EWMH_INIT_MODAL_STATE(fwin) == EWMH_STATE_HAS_HINT)
+	return True;
+      return False;
+    } 
+    return IS_EWMH_MODAL(fwin);
+  }
 
   if (ev == NULL && style != NULL)
   {
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\t Modal %i\n", HAS_EWMH_INIT_MODAL_STATE(fwin));
+#endif
+    if (!has_hint && 
+	HAS_EWMH_INIT_MODAL_STATE(fwin) != EWMH_STATE_HAS_HINT)
+    {
+      SET_HAS_EWMH_INIT_MODAL_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+
+    /* the window map or had mapped with a modal hint */
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
+    {
+      SET_EWMH_MODAL(fwin, True);
+      /* the window is a modal transient window so we grab the focus
+       * and we raise it */
+      SFSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
+      SMSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
+      SCSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
+      
+      SFSET_DO_RAISE_TRANSIENT(*style, 1);
+      SMSET_DO_RAISE_TRANSIENT(*style, 1);
+      SCSET_DO_RAISE_TRANSIENT(*style, 1);
+    }
+    else
+    {
+      SET_EWMH_MODAL(fwin, False);
+      if (!DO_GRAB_FOCUS_TRANSIENT(style))
+      {
+	SFSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 0);
+	SMSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
+	SCSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
+      }
+      if (!DO_RAISE_TRANSIENT(style))
+      {
+	SFSET_DO_RAISE_TRANSIENT(*style, 0);
+	SMSET_DO_RAISE_TRANSIENT(*style, 1);
+	SCSET_DO_RAISE_TRANSIENT(*style, 1);
+      }
+    }
+    SET_HAS_EWMH_INIT_MODAL_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
   }
 
+  if (ev != NULL && fwin != NULL)
+  {
+    /* client message: I do not think we can get such message */
+    int bool_arg = ev->xclient.data.l[0];
+    if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_EWMH_MODAL(fwin)) ||
+	bool_arg == NET_WM_STATE_ADD)
+    {
+    }
+    else
+    {
+    }
+  }
   return 0;
 }
 
@@ -346,11 +554,30 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
 {
 
   if (ev == NULL && style == NULL)
+  {
     return IS_SHADED(fwin);
+  }
 
   if (ev == NULL && style != NULL)
   {
-    /* SET_SHADED(fwin, 1); */
+    /* start shaded */
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\t Shaded %i\n", HAS_EWMH_INIT_SHADED_STATE(fwin));
+#endif
+    if (HAS_EWMH_INIT_SHADED_STATE(fwin) != EWMH_STATE_UNDEFINED_HINT)
+      return 0;
+    if (!has_hint)
+    {
+      SET_HAS_EWMH_INIT_SHADED_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
+    {
+      SET_SHADED(fwin, 1);
+    }
+    SET_HAS_EWMH_INIT_SHADED_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
   }
 
@@ -370,19 +597,55 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
   return 0;
 }
 
-int ewmh_WMStateListSkip(EWMH_CMD_ARGS)
+int ewmh_WMStateSkipPager(EWMH_CMD_ARGS)
 {
   if (ev == NULL && style == NULL)
+  {
+    unsigned long do_restore = any;
+
+    if (do_restore)
+    {
+      if (HAS_EWMH_INIT_SKIP_PAGER_STATE(fwin) == EWMH_STATE_HAS_HINT)
+	return True;
+      return False;
+    } 
     return DO_SKIP_WINDOW_LIST(fwin);
+  }
 
   if (ev == NULL && style != NULL)
   {
-    if (!SCDO_WINDOW_LIST_SKIP(*style))
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    /*if (has_hint)*/
+      fprintf(stderr,"\t Skip_Pager %lu, %i, %i\n",
+	      has_hint,
+	      HAS_EWMH_INIT_SKIP_PAGER_STATE(fwin),
+	      DO_EWMH_IGNORE_STATE_HINTS(style));
+#endif
+    if (!has_hint &&
+	HAS_EWMH_INIT_SKIP_PAGER_STATE(fwin) != EWMH_STATE_HAS_HINT)
+    {
+      SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+    if (has_hint && HAS_EWMH_INIT_SKIP_PAGER_STATE(fwin) == EWMH_STATE_NO_HINT)
+    {
+      return 0;
+    }
+
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
     {
       SFSET_DO_WINDOW_LIST_SKIP(*style, 1);
       SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
       SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
     }
+    else if (!DO_SKIP_WINDOW_LIST(style))
+    {
+      SFSET_DO_WINDOW_LIST_SKIP(*style, 0);
+      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+    }
+    SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
   }
   
@@ -393,11 +656,76 @@ int ewmh_WMStateListSkip(EWMH_CMD_ARGS)
     if ((bool_arg == NET_WM_STATE_TOGGLE && !DO_SKIP_WINDOW_LIST(fwin)) ||
 	bool_arg == NET_WM_STATE_ADD)
     {
-
     }
     else
     {
+    }
+  }
+  return 0;
+}
 
+int ewmh_WMStateSkipTaskBar(EWMH_CMD_ARGS)
+{
+  if (ev == NULL && style == NULL)
+  {
+    unsigned long do_restore = any;
+
+    if (do_restore)
+    {
+      if (HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fwin) == EWMH_STATE_HAS_HINT)
+	return True;
+      return False;
+    } 
+    return DO_SKIP_WINDOW_LIST(fwin);
+  }
+
+  if (ev == NULL && style != NULL)
+  {
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    /*if (has_hint)*/
+      fprintf(stderr,"\t Skip_Taskbar %lu, %i, %i\n",
+	      has_hint,
+	      HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fwin),
+	      DO_EWMH_IGNORE_STATE_HINTS(style));
+#endif
+    if (!has_hint &&
+	HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fwin) != EWMH_STATE_HAS_HINT)
+    {
+      SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+    if (has_hint && HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fwin) == EWMH_STATE_NO_HINT)
+    {
+      return 0;
+    }
+
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
+    {
+      SFSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+    }
+    else if (!DO_SKIP_WINDOW_LIST(style))
+    {
+      SFSET_DO_WINDOW_LIST_SKIP(*style, 0);
+      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+    }
+    SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fwin, EWMH_STATE_HAS_HINT);
+    return 0;
+  }
+  
+  {
+    /* I do not think we can get such client message */
+    int bool_arg = ev->xclient.data.l[0];
+    
+    if ((bool_arg == NET_WM_STATE_TOGGLE && !DO_SKIP_WINDOW_LIST(fwin)) ||
+	bool_arg == NET_WM_STATE_ADD)
+    {
+    }
+    else
+    {
     }
   }
   return 0;
@@ -407,8 +735,14 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 {
   if (ev == NULL && style == NULL)
   {
-    if (fwin->ewmh_hint_layer == 0)
-      fwin->ewmh_hint_layer = -1;
+    unsigned long do_restore = any;
+
+    if (do_restore)
+    {
+      if (fwin->ewmh_hint_layer == Scr.TopLayer)
+	return True;
+      return False;
+    }
     if (fwin->layer >= Scr.TopLayer)
       return True;
     return False;
@@ -416,16 +750,30 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 
   if (ev == NULL && style != NULL)
   {
-    if (fwin->ewmh_hint_layer != -1)
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\tStaysOnTop\n");
+#endif
+    if (!has_hint && fwin->ewmh_hint_layer == 0)
     {
-      fwin->ewmh_hint_layer = Scr.TopLayer;
-      if (!style->change_mask.use_layer && DO_EWMH_USE_STACKING_HINTS(fwin))
-      {
-	SSET_LAYER(*style, Scr.TopLayer);
-	style->flags.use_layer = 1;
-	style->flag_mask.use_layer = 1;
-	style->change_mask.use_layer = 1;
-      }
+      return 0;
+    }
+
+    fwin->ewmh_hint_layer = Scr.TopLayer;
+    if (DO_EWMH_USE_STACKING_HINTS(style))
+    {
+      SSET_LAYER(*style, Scr.TopLayer);
+      style->flags.use_layer = 1;
+      style->flag_mask.use_layer = 1;
+      style->change_mask.use_layer = 1;
+    }
+    else if (!style->change_mask.use_layer)
+    {
+      SSET_LAYER(*style, Scr.DefaultLayer);
+      style->flags.use_layer = 1;
+      style->flag_mask.use_layer = 1;
+      style->change_mask.use_layer = 1;
     }
     return 0;
   }
@@ -450,18 +798,34 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 
 int ewmh_WMStateSticky(EWMH_CMD_ARGS)
 {
-  
+
   if (ev == NULL && style == NULL)
+  {
     return IS_STICKY(fwin);
+  }
 
   if (ev == NULL && style != NULL)
   {
-    if (!SCIS_STICKY(*style))
+    /* start sticky */
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\t Sticky\n");
+#endif
+    if (HAS_EWMH_INIT_STICKY_STATE(fwin) != EWMH_STATE_UNDEFINED_HINT)
+      return 0;
+    if (!has_hint)
+    {
+      SET_HAS_EWMH_INIT_STICKY_STATE(fwin, EWMH_STATE_NO_HINT);
+      return 0;
+    }
+    if (!DO_EWMH_IGNORE_STATE_HINTS(style))
     {
       SFSET_IS_STICKY(*style, 1);
       SMSET_IS_STICKY(*style, 1);
       SCSET_IS_STICKY(*style, 1);
     }
+    SET_HAS_EWMH_INIT_STICKY_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
   }
 
@@ -585,11 +949,8 @@ Bool EWMH_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
        (ewmh_atom *)ewmh_GetEwmhAtomByAtom(ev->xclient.message_type,
 					   EWMH_ATOM_LIST_CLIENT_ROOT)) != NULL)
   {
-#if 0
-    fprintf(stderr, "NW: 0x%lx, 0x%lx\n", ev->xany.window, ev->xclient.window);
-#endif
     if (ewmh_a->action != None)
-      ewmh_a->action(fwin, ev, NULL);
+      ewmh_a->action(fwin, ev, NULL, 0);
     return True;
   }
 
@@ -601,11 +962,8 @@ Bool EWMH_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
        (ewmh_atom *)ewmh_GetEwmhAtomByAtom(ev->xclient.message_type,
 					   EWMH_ATOM_LIST_CLIENT_WIN)) != NULL)
   {
-#if 0
-    fprintf(stderr, "WW: 0x%lx, 0x%lx\n", ev->xany.window, ev->xclient.window);
-#endif
     if (ewmh_a->action != None)
-      ewmh_a->action(fwin, ev, NULL);
+      ewmh_a->action(fwin, ev, NULL, 0);
     return True;
   }
 
@@ -626,7 +984,7 @@ void EWMH_ProcessPropertyNotify(FvwmWindow *fwin, XEvent *ev)
     if (ewmh_a->action != None)
     {
       flush_property_notify(ewmh_a->atom, fwin->w);
-      ewmh_a->action(fwin, ev, NULL);
+      ewmh_a->action(fwin, ev, NULL, 0);
     }
   }
 

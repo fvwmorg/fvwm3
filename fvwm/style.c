@@ -3057,7 +3057,7 @@ void check_window_style_change(
   if (SCDO_WINDOW_LIST_SKIP(*ret_style))
   {
     flags->do_update_modules_flags = True;
-    flags->do_update_list_skip = True;
+    flags->do_update_ewmh_state_hints = True;
   }
   /*
    * has_icon
@@ -3237,6 +3237,15 @@ void check_window_style_change(
   if (SCDO_EWMH_IGNORE_STRUT_HINTS(*ret_style))
   {
     flags->do_update_working_area = True;
+  }
+
+  /*
+   * do_ewmh_ignore_state_hints
+   */
+  if (SCDO_EWMH_IGNORE_STATE_HINTS(*ret_style))
+  {
+    flags->do_update_ewmh_state_hints = True;
+    flags->do_update_modules_flags = True;
   }
 
   /*

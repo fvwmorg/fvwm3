@@ -30,13 +30,15 @@
 #include <sys/times.h>
 #endif
 
+#define EWMH_CMD_ARGS FvwmWindow *fwin, XEvent *ev, window_style *style, unsigned long any
+
 typedef struct ewmh_atom
 {
   char *name;
   Atom atom;
   Atom atom_type;
 #ifdef __STDC__
-  int (*action)(FvwmWindow *, XEvent *, window_style *);
+  int (*action)(EWMH_CMD_ARGS);
 #else
   int (*action)();
 #endif
@@ -68,11 +70,11 @@ typedef struct
 #define NET_WM_STATE_REMOVE    0
 #define NET_WM_STATE_TOGGLE    2
 
-#define EWMH_MAXIMIZE_HORIZ  0x1
-#define EWMH_MAXIMIZE_VERT   0x2
-#define EWMH_MAXIMIZE_FULL   0x3
-#define EWMH_MAXIMIZE_REMOVE 0x4
-
+#define EWMH_MAXIMIZE_HORIZ      0x1
+#define EWMH_MAXIMIZE_VERT       0x2
+#define EWMH_MAXIMIZE_FULL       0x3
+#define EWMH_MAXIMIZE_REMOVE     0x4
+#define EWMH_MAXIMIZE_FULLSCREEN 0x8
 typedef enum
 {
   _NET_WM_MOVERESIZE_SIZE_TOPLEFT,
@@ -97,7 +99,6 @@ typedef struct ewmh_info
 
 extern ewmhInfo ewmhc;
 
-#define EWMH_CMD_ARGS FvwmWindow *fwin, XEvent *ev, window_style *style
 
 ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name);
 void ewmh_ChangeProperty(Window w,
@@ -135,12 +136,14 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS);
 int ewmh_MoveResize(EWMH_CMD_ARGS);
 
 int ewmh_WMState(EWMH_CMD_ARGS);
+int ewmh_WMStateFullScreen(EWMH_CMD_ARGS);
 int ewmh_WMStateHidden(EWMH_CMD_ARGS);
 int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS);
 int ewmh_WMStateMaxVert(EWMH_CMD_ARGS);
 int ewmh_WMStateModal(EWMH_CMD_ARGS);
 int ewmh_WMStateShaded(EWMH_CMD_ARGS);
-int ewmh_WMStateListSkip(EWMH_CMD_ARGS);
+int ewmh_WMStateSkipPager(EWMH_CMD_ARGS);
+int ewmh_WMStateSkipTaskBar(EWMH_CMD_ARGS);
 int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS);
 int ewmh_WMStateSticky(EWMH_CMD_ARGS);
 

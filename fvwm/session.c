@@ -67,6 +67,7 @@ typedef struct _match
   int                 layer;
   int                 used;
   int                 gravity;
+  unsigned long       ewmh_hint_desktop;
   window_flags        flags;
 }
 Match;
@@ -313,7 +314,7 @@ char *get_version_string()
   /* migo (14-Mar-2001): it is better to manually update a version string
    * in the stable branch, othervise saving sessions becomes useless */
   /*return CatString3(VERSION, ", ",__DATE__);*/
-  return "2.5-3";
+  return "2.5-4";
 }
 
 /*
@@ -473,6 +474,7 @@ SaveWindowStates(FILE *f)
     if (layer == ewin->ewmh_hint_layer && layer > 0)
       layer = Scr.DefaultLayer;
     fprintf(f, "  [LAYER] %i\n", layer);
+    fprintf(f, "  [EWMH_DESKTOP] %lu\n", ewin->ewmh_hint_desktop);
     fprintf(f, "  [FLAGS] ");
     for (i = 0; i < sizeof(window_flags); i++)
       fprintf(f, "%02x ", (int)(((unsigned char *)&(ewin->flags))[i]));
@@ -586,6 +588,11 @@ LoadWindowStates(char *filename)
     {
       sscanf(s, "%*s %i",
 	     &(matches[num_match - 1].layer));
+    }
+    else if (!strcmp(s1, "[EWMH_DESKTOP]"))
+    {
+      sscanf(s, "%*s %lu",
+	     &(matches[num_match - 1].ewmh_hint_desktop));
     }
     else if (!strcmp(s1, "[FLAGS]"))
     {
@@ -832,6 +839,23 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	ewin->icon_g.x -= Scr.Vx;
 	ewin->icon_g.y -= Scr.Vy;
       }
+      /* Note: the Modal, skip pager, skip taskbar and "stacking order" state
+       * are not restored here: there are restored in EWMH_ExitStuff */
+      ewin->ewmh_hint_desktop = matches[i].ewmh_hint_desktop;
+      SET_HAS_EWMH_INIT_WM_DESKTOP(
+	  ewin, HAS_EWMH_INIT_WM_DESKTOP(&(matches[i])));
+      SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
+	  ewin, HAS_EWMH_INIT_FULLSCREEN_STATE(&(matches[i])));
+      SET_HAS_EWMH_INIT_HIDDEN_STATE(
+	  ewin, HAS_EWMH_INIT_HIDDEN_STATE(&(matches[i])));
+      SET_HAS_EWMH_INIT_MAXHORIZ_STATE(
+	  ewin, HAS_EWMH_INIT_MAXHORIZ_STATE(&(matches[i])));
+      SET_HAS_EWMH_INIT_MAXVERT_STATE(
+	  ewin, HAS_EWMH_INIT_MAXVERT_STATE(&(matches[i])));
+      SET_HAS_EWMH_INIT_SHADED_STATE(
+	  ewin, HAS_EWMH_INIT_SHADED_STATE(&(matches[i])));
+      SET_HAS_EWMH_INIT_STICKY_STATE(
+	  ewin, HAS_EWMH_INIT_STICKY_STATE(&(matches[i])));
       return True;
     }
   }
