@@ -134,7 +134,7 @@ A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
 
 A: New main distribution site (official + beta code):
 
-                ftp://ftp.hpc.uh.edu/pub/fvwm
+                ftp://ftp.fvwm.org/pub/fvwm/
 
    Alternate sites:
 
@@ -170,18 +170,21 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    comp.windows.x.apps is a good place, but the fvwm mailing list is
    usually better.  The new FVWM discussion mailing list address is:
 
-                           fvwm@hpc.uh.edu
+                           fvwm@fvwm.org
 
    And there is an announce mailing list as well:
 
-                       fvwm-announce@hpc.uh.edu
+                       fvwm-announce@fvwm.org
 
    They are maintained by Jason Tibbitts, and are Majordomo based
    mailing lists.  To subscribe to the list, send "subscribe fvwm" in
-   the body of a message to majordomo@hpc.uh.edu.  To unsubscribe from
-   the list, send "unsubscribe fvwm" in the body of a message to
-   majordomo@hpc.uh.edu.  To report problems, send mail to
-   fvwm-owner@hpc.uh.edu.
+   the body of a message to <list>-request@fvwm.org.  For example, to
+   subscribe to the fvwm mailing list, send a request to
+   fvwm-request@fvwm.org.
+
+   To unsubscribe from a list, send "unsubscribe fvwm" in the body of a
+   message to <list>-request@fvwm.org.  To report problems, send mail to
+   fvwm-owner@fvwm.org.
 
    Here's the list descriptions and instructions directly from Jason:
 
@@ -205,17 +208,17 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    Instructions
    ------------
 
-   To send a message to the list, mail to fvwm@hpc.uh.edu.  For help
-   on dealing with the mailing list software (for getting the archives
-   or other files which may be made available) send the message "help"
-   to majordomo@hpc.uh.edu.  If you have problems with the mailing
-   list itself and need to talk to a human, send mail to
-   fvwm-owner@hpc.uh.edu.  This address is for mailing list issues
-   only; reports on the FVWM software will be sent to /dev/null.
+   To send a message to the list, mail to fvwm@fvwm.org.  For help on
+   dealing with the mailing list software (for getting the archives or
+   other files which may be made available) send the message "help" to
+   fvwm-request@fvwm.org.  If you have problems with the mailing list
+   itself and need to talk to a human, send mail to fvwm-owner@fvwm.org.
+   This address is for mailing list issues only; reports on the FVWM
+   software will be sent to /dev/null.
 
    Archives of previous messages are available; to get them send the
    above mentioned help message and investigate the "index" and "get"
-   commands or ftp them from ftp.hpc.uh.edu in /pub/fvwm/list-archive.
+   commands or ftp them from ftp://ftp.fvwm.org/pub/fvwm/list-archive/.
 
 
    (fvwm-announce)
@@ -226,10 +229,10 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    high degree of Motif mwm compatibility.
 
    Replies to messages from this list are set by default to go the
-   FVWM discussion list, fvwm@hpc.uh.edu.
+   FVWM discussion list, fvwm@fvwm.org.
 
    The current FVWM distribution is available for ftp at
-   ftp.hpc.uh.edu in /pub/fvwm.
+   ftp://ftp.fvwm.org/pub/fvwm/
    =================================================================
 
 ----------------------------------------------------------------------
@@ -685,7 +688,7 @@ A: Creating a patch -
 
    Submitting a patch -
 
-        Mail it to the fvwm-workers mailing list <fvwm-workers@hpc.uh.edu>.
+        Mail it to the fvwm-workers mailing list <fvwm-workers@fvwm.org>.
 
 	If your patch is large you should compress it (preferrably
         with gzip). Should it still be larger than 25k you might want
@@ -699,8 +702,8 @@ A: Creating a patch -
    Applying a patch -
 
         Get a copy of the program 'patch' from your favorite source,
-        such as ftp.gnu.org in /pub/gnu, compile it, and then follow
-        its directions (generally just cd into the appropriate
+        such as ftp://ftp.gnu.org/gnu/patch/, compile it, and then
+        follow its directions (generally just cd into the appropriate
         directory and run 'patch < patchfile').
 
 ----------------------------------------------------------------------
@@ -710,14 +713,14 @@ A: Creating a patch -
 
 A: You can't directly with fvwm, but there may be a solution that is
    more generally applicable - use the program 'xcb' available at
-   ftp.x.org in /contrib/utilities or from your favorite mirror.  It
+   ftp://ftp.x.org/contrib/utilities/ or from your favorite mirror.  It
    could probably be used to get the desired effect or close to it.
-   This is most useful for running programs and passing the selection
-   to them (eg - invoke your favorite browser with the current
-   selection as the URL).  To get a semi-generic paste facility to
-   work, you'll probably need to use 'xse' (see #26 below).  If anyone
-   comes up with a good example of this, please send it to the fvwm
-   mailing list for inclusion here.
+   This is most useful for running programs and passing the selection to
+   them (eg - invoke your favorite browser with the current selection as
+   the URL).  To get a semi-generic paste facility to work, you'll
+   probably need to use 'xse' (see #26 below).  If anyone comes up with
+   a good example of this, please send it to the fvwm mailing list for
+   inclusion here.
 
 ----------------------------------------------------------------------
 

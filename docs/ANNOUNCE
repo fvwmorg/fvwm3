@@ -13,7 +13,7 @@ this beta):
    has been merged into MenuStyle, please make sure to change
    your .fvwm2rc on that).
 *) The growing windows bug from the last betas has been fixed
-   (if you see it again, please contact fvwm-workers@hpc.uh.edu).
+   (if you see it again, please contact fvwm-workers@fvwm.org).
 *) AutoHide bugfixes for FvwmTaskBar (EdgeThickness command).
 *) New commands DefaultFont, DefaultColors and Emulate. The
    SetMenuDelay command from the previous betas has been removed.
@@ -74,7 +74,7 @@ beta, but I you feel like doing something really helpful, pick an
 area from the following list, try to test it as completely as you
 can and report your test setup to the fvwm-workers mailing list:
 
-  <fvwm-workers@hpc.uh.edu>
+  <fvwm-workers@fvwm.org>
 
  - Compile fvwm2 on as many different platforms and with as many
    combinations of options as you can (see INSTALL.fvwm for a

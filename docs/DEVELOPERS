@@ -1,14 +1,14 @@
 			Living with CVS and Autoconf                 -*-text-*-
 			----------------------------
 
-These notes are intended for code developers.  
+These notes are intended for code developers.
 
 You will need to install several GNU tools to be able to use the cvs
 sources.  If you do not have these tools available, build from the tar
-file distribution instead, available from ftp.hpc.uh.edu.
+file distribution instead, available from ftp.fvwm.org.
 
 To build from the CVS sources, you will need:
-  * GNU gcc 
+  * GNU gcc
   * GNU make
   * autoconf (version >= 2.13)
   * automake (version >= 1.4)
@@ -72,9 +72,9 @@ If this is to be an "official" release, then do also the following:
        6. tag the CVS tree:
           cvs tag version-x_y_z
        7. increase the version number in configure.in (see above)
-       8. upload the file fvwm-x.y.z.tar.gz to 
-	  ftp://ftp.hpc.uh.edu/pub/incoming/fvwm
-       9. notify fvwm-owner@hpc.uh.edu of the upload
+       8. upload the file fvwm-x.y.z.tar.gz to
+	  ftp://ftp.fvwm.org/pub/incoming/fvwm
+       9. notify fvwm-owner@fvwm.org of the upload
 
 
 One thing I've learned the hard way:

@@ -1,3 +1,7 @@
+1999-02-02  Paul D. Smith  <psmith@gnu.org>
+
+	* configure.in: Change version to 2.1.12
+
 1999-02-02  Hippo
 
 	* fvwm/menus.c (PaintMenu) Rewrote DGradient/BGradient menu code to

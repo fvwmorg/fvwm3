@@ -8,13 +8,13 @@ Description:    FVWM2 is an ICCCM-compliant X window manager providing a 3D
                 module interface for implementing functional extensions.
 Keywords:       window manager, X11, virtual
 Author:         Rob Nation
-Maintained-by:  Fvwm Workers List <fvwm-workers@hpc.uh.edu>
-Primary-site:   fvwm.math.uh.edu
+Maintained-by:  Fvwm Workers List <fvwm-workers@fvwm.org>
+Primary-site:   ftp.fvwm.org
                 1035k fvwm-2.2.0.tar.gz
 Alternate-site: sunsite.unc.edu/pub/Linux/X11/window-managers/fvwm-2.2.0.tar.gz
                 1k fvwm.lsm
                 1035k fvwm-2.2.0.tar.gz
-Original-site:  
+Original-site:
 Platform:       Unix, X, Xpm package (for optional xpm support)
 Copying-policy: GPL ?
 End

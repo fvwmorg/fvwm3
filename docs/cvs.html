@@ -34,7 +34,7 @@ version 1.9 or better,
 <li>GNU <a href="http://www.gnu.org/software/make/make.html">make</a>,
 <li><a
 href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a>,
-version 2.13 or better, and 
+version 2.13 or better, and
 <li><a
 href="http://www.gnu.org/software/automake/automake.html">automake</a>,
 version 1.4 or better.
@@ -60,7 +60,7 @@ waste your CPU time.
 <p>Before you can download development source code for the first time,
 you must login.
 
-<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm login 
+<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.fvwm.org:/home/cvs/fvwm login
 </font></pre>
 
 The password is `guest'.  The command outputs nothing if it works, and
@@ -70,7 +70,7 @@ subsequent CVS commands read the password stored in the file
 
 <p>Next, you checkout the latest source code.
 
-<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm checkout fvwm
+<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.fvwm.org:/home/cvs/fvwm checkout fvwm
 </font></pre>
 
 This creates a "fvwm" directory in your current directory.  Get in
@@ -83,7 +83,7 @@ there and get to work.
 You <em>did</em> remember to install autoconf and automake, right?
 
 <p>Once you are inside the working directory, you no longer need the
-long "-d :pserver:..." argument when issuing cvs commands.  
+long "-d :pserver:..." argument when issuing cvs commands.
 
 <p>CVS commands work from <em>anywhere</em> inside the source tree,
 and recurse downwards.  So if you happen to issue an update from
@@ -102,7 +102,7 @@ fvwm-workers list.  You will want to be subscribed to this list!
 <p>You can update your copy of the sources to match the master
 repository with the update command.
 
-<pre><font color="yellow"> cvs update 
+<pre><font color="yellow"> cvs update
 </font></pre>
 
 
@@ -168,7 +168,7 @@ example, let's say you want the sources as they existed for 2.1.5.
 need to <font color="yellow">cd</font> out of the fvwm source tree
 before issuing the following command.
 
-<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm checkout -r version-2_1_5 fvwm
+<pre><font color="yellow"> cvs -d :pserver:anonymous@cvs.fvwm.org:/home/cvs/fvwm checkout -r version-2_1_5 fvwm
 </font></pre>
 
 This creates a directory called `fvwm', with the sources as they

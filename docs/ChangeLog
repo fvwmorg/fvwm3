@@ -1,3 +1,15 @@
+1999-02-04  Paul D. Smith  <psmith@gnu.org>
+
+	* cvs.html: Update CVS pserver hostname.
+	* links.html: Update web site, ftp site, and mailing list URLs.
+	* FAQ: Ditto.
+	* download.html: Ditto.
+	* ftp.html: Ditto.
+	* fvwm-2.2.lsm: Ditto.
+	* mailinglist.html: Ditto.
+	* version.html: Ditto.
+	* fvwm-2.xx.lsm: Ditto.
+
 1999-02-02  Paul D. Smith  <psmith@gnu.org>
 
 	* FAQ: Rewrote question 13 about XPM support.
