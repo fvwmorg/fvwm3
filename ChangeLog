@@ -1,5 +1,12 @@
 2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (CMD_ResizeMove):
+	(CMD_Resize):
+	(CMD_Maximize):
+	(CMD_ResizeMaximize):
+	(CMD_ResizeMoveMaximize):
+	commands can be used on iconified windows again
+
 	* ONEWS:
 	* NEWS:
 	moved pre-2.2 NEWS to ONEWS

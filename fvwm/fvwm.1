@@ -4386,7 +4386,7 @@ ResizeMove w+0 -10p 0 -20p
 Combines the effects of
 .BR ResizeMove " and " Maximize
 in a single command.  When used on a maximized window, the window
-is resized and moved  and is still in the maximized state
+is resized and moved and is still in the maximized state
 afterwards.  When used on an unmaximized window, the window is
 resized and put into the maximized state afterwards.  This is
 useful if the user wants to resize the window temporarily and then
@@ -8340,11 +8340,21 @@ PipeRead 'for i in $HOME/*; \\
   do echo "+ $i Exec xterm -e vi $i"; done'
 .EE
 
+Note: The
+.B PipeRead
+changes the pointer to a watch cursor by default during
+execution.  However, some commands, for example xwd, need to take
+control of the pointer themselves and do not work.  To disable the
+watch cursor, use the command prior to
+.B PipeRead
+.EX
+BusyCursor Read off
+.EE
+
 The
-.I PipeRead
-command executes synchronously.
-If you want to
-.I Exec
+.B PipeRead
+command executes synchronously.  If you want to
+.B Exec
 something, but need the command to run sunchronously,
 you might do something like:
 .EX
@@ -8446,9 +8456,8 @@ This built-in is intended to be used in fvwm functions only.  It
 causes execution of a function to pause until a new window with
 the title
 .I windowname
-appears.  Fvwm remains partially functional during a wait.  This
-is particularly useful in the "InitFunction" if you are trying to
-start windows on specific desktops:
+appears.  This is particularly useful in the "InitFunction" if you
+are trying to start windows on specific desktops:
 .EX
 AddToFunc InitFunction
  + I exec xterm -geometry 80x64+0+0
@@ -8462,6 +8471,11 @@ AddToFunc InitFunction
 The above function starts an xterm on the current desk, waits for
 it to map itself, then switches to desk 2 and starts an xmh.
 After the xmh window appears control moves to desk 0.
+
+Fvwm remains partially functional during a wait, but any input
+from the modules is queued up and processed only after the window
+appears or the command is aborted.  For example, windows can not
+be focused with FvwmTaskBar or FvwmWinList during a wait.
 
 You can escape from a
 .B Wait

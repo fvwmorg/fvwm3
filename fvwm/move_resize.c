@@ -753,7 +753,7 @@ void CMD_ResizeMove(F_CMD_ARGS)
 	{
 		return;
 	}
-	if (fw == NULL || IS_ICONIFIED(fw))
+	if (fw == NULL)
 	{
 		return;
 	}
@@ -2464,7 +2464,7 @@ void CMD_XorPixmap(F_CMD_ARGS)
 	XGCValues gcv;
 	unsigned long gcm;
 	FvwmPictureAttributes fpa;
-	
+
 	action = GetNextToken(action, &PixmapName);
 	if (PixmapName == NULL)
 	{
@@ -3182,7 +3182,7 @@ void CMD_Resize(F_CMD_ARGS)
 	{
 		return;
 	}
-	if (fw == NULL || IS_ICONIFIED(fw))
+	if (fw == NULL)
 	{
 		return;
 	}
@@ -3730,7 +3730,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	{
 		return;
 	}
-	if (fw == NULL || IS_ICONIFIED(fw))
+	if (fw == NULL)
 	{
 		return;
 	}
@@ -4009,7 +4009,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	{
 		return;
 	}
-	if (fw == NULL || IS_ICONIFIED(fw))
+	if (fw == NULL)
 	{
 		return;
 	}
@@ -4043,7 +4043,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 	{
 		return;
 	}
-	if (fw == NULL || IS_ICONIFIED(fw))
+	if (fw == NULL)
 	{
 		return;
 	}
