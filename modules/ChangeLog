@@ -1,3 +1,9 @@
+2001-07-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmButtons/FvwmButtons.c (process_message):
+	fixed drawing of "desk" buttons; bug #748
+
 2001-07-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmForm/FvwmForm.c (OpenWindows):

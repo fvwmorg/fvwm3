@@ -258,17 +258,41 @@ void RedrawButton(button_info *b,int clean)
     clean = 1;
     XClearArea(Dpy, MyWindow, ix, iy, iw, ih, False);
   }
-  if(b->flags&b_Action) /* If this is a Desk button that takes you to here.. */
+  if (b->flags&b_Action) /* If this is a Desk button that takes you to here.. */
   {
-    int n=0;
-    while(n<4 && (!b->action[n] || strncasecmp(b->action[n],"Desk",4)))
-      n++;
-    if(n<4)
+    int n;
+
+    for (n = 0; n < 4; n++)
     {
-      k=sscanf(&b->action[n][4],"%d%d",&i,&j);
-      if (k == 2 && i == 0 && j == new_desk)
+      if (b->action[n])
       {
-	rev=1;
+	if (strncasecmp(b->action[n], "GotoDeskAndPage", 15) == 0)
+	{
+	  k = sscanf(&b->action[n][15], "%d", &i);
+	  if (k == 1 && i == new_desk)
+	  {
+	    rev=1;
+	  }
+	  break;
+	}
+	else if (strncasecmp(b->action[n], "Desk", 4) == 0)
+	{
+	  k = sscanf(&b->action[n][4], "%d%d", &i, &j);
+	  if (k == 2 && i == 0 && j == new_desk)
+	  {
+	    rev=1;
+	  }
+	  break;
+	}
+	else if (strncasecmp(b->action[n], "GotoDesk", 8) == 0)
+	{
+	  k = sscanf(&b->action[n][8], "%d%d", &i, &j);
+	  if (k == 2 && i == 0 && j == new_desk)
+	  {
+	    rev=1;
+	  }
+	  break;
+	}
       }
     }
   }

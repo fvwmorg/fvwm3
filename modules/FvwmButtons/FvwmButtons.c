@@ -2427,6 +2427,7 @@ void process_message(unsigned long type,unsigned long *body)
   {
   case M_NEW_DESK:
     new_desk = body[0];
+    RedrawWindow(NULL);
     break;
   case M_END_WINDOWLIST:
     SpawnSome();
