@@ -1,5 +1,6 @@
 2002-03-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/frame.c (frame_setup_border):
 	* fvwm/functions.c (execute_complex_function):
 	removed debug code
 

@@ -1100,7 +1100,6 @@ static void frame_move_resize_step(
 		w[0] = hide_wins.w[3];
 		w[1] = FW_W_PARENT(fw);
 		XRestackWindows(dpy, w, 2);
-fprintf(stderr,"raise\n");
 	}
 	else if (flags.do_hide_parent)
 	{
@@ -1185,7 +1184,6 @@ fprintf(stderr,"raise\n");
 		XChangeWindowAttributes(
 			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
 		/*!!! update the hidden position of the client and parent*/
-fprintf(stderr,"lowered\n");
 		XLowerWindow(dpy, FW_W_PARENT(fw));
 		XMapWindow(dpy, FW_W_PARENT(fw));
 	}
