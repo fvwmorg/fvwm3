@@ -1301,11 +1301,18 @@ void HandleButtonPress(void)
     SetFocus(Tmp_win->w,Tmp_win,1);
     /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
        I'll leave this as is for now.  */
-    if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Tmp_win) ||
+    if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Tmp_win)
+#if 0
+	/* DV - this forces that every focus click on the decorations raises
+	 * the window.  This somewhat negates the ClickToFocusRaisesOff style.
+	 */
+	||
 	((Event.xany.window != Tmp_win->w)&&
 	 (Event.xbutton.subwindow != Tmp_win->w)&&
 	 (Event.xany.window != Tmp_win->Parent)&&
-	 (Event.xbutton.subwindow != Tmp_win->Parent)))
+	 (Event.xbutton.subwindow != Tmp_win->Parent))
+#endif
+      )
     {
       /* We can't raise the window immediately because the action bound to the
        * click might be "Lower" or "RaiseLower". So mark the window as scheduled
