@@ -1,5 +1,13 @@
 2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmProxy/FvwmProxy.c:
+	added "Colorset" and "SelectColorset" module options and removed default
+	colours
+	some clean up and performance patches
+
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	removed unused variable
+
 	* FvwmProxy/FvwmProxy.c (ConfigureWindow):
 	fixed WindowlistSkip style in FvwmProxy
 	(IconifyWindow):

@@ -1598,7 +1598,6 @@ void ParseOptions(void)
     int g_x, g_y, flags;
     unsigned width,height;
     char *resource;
-    char *resource_string;
     char *arg1;
     char *arg2;
     char *tline2;
@@ -1606,7 +1605,7 @@ void ParseOptions(void)
     char *next;
     Bool MoveThresholdSetForModule = False;
 
-    resource_string = arg1 = arg2 = NULL;
+    arg1 = arg2 = NULL;
 
     token = PeekToken(tline, &next);
     if (StrEquals(token, "Colorset"))

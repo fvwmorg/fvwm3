@@ -36,16 +36,6 @@
 #include <X11/Intrinsic.h>
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
-
-#ifndef FALSE
-#define FALSE	0
-#endif
-#ifndef TRUE
-#define TRUE	1
-#endif
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"

@@ -21,11 +21,15 @@
 /* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
-
 #include <stdio.h>
 
-#include "libs/fvwmlib.h"
 #include "libs/Module.h"
+#include "libs/fvwmlib.h"
+#include "libs/FRenderInit.h"
+#include "libs/Colorset.h"
+#include "libs/Flocale.h"
+#include "libs/FScreen.h"
+
 #include "FvwmProxy.h"
 
 /***
@@ -41,15 +45,10 @@
 /* things we might put in a configuration file */
 
 #define	PROXY_ALT_POLLING	True	/* poll Alt key to Show/Hide proxies */
-#define PROXY_MANUAL_SHOWHIDE	False	/* allow SendToModule Show/Hide */
 #define PROXY_MOVE		False	/* move window when proxy is dragged */
 #define PROXY_WIDTH		180
 #define PROXY_HEIGHT		60
 #define PROXY_SEPARATE		10
-#define PROXY_COLOR_FG		"#000000"
-#define PROXY_COLOR_BG		"#AAFFAA"
-#define PROXY_COLOR_SELECT	"#FFAAAA"
-#define PROXY_COLOR_EDGE	"#000000"
 
 /* ---------------------------- local macros -------------------------------- */
 
@@ -61,27 +60,18 @@
 
 /* ---------------------------- forward declarations ------------------------ */
 
-static void Loop(int *fd);
-static int  My_XNextEvent(Display *dpy, XEvent *event);
-static void DispatchEvent(XEvent *Event);
-static void ProcessMessage(FvwmPacket* packet);
-static void AdjustWindows(void);
-static void OpenWindows(void);
-static void CloseWindows(void);
-static void DrawProxy(ProxyWindow *proxy);
-static void DrawWindow(Window window,int x,int y,int w,int h);
-static void DrawPicture(Window window,int x,int y,FvwmPicture *picture);
-static void SortProxies(void);
-static ProxyWindow *FindProxy(Window window);
-
 /* ---------------------------- local variables ----------------------------- */
 
+static char *MyName;
 static int x_fd;
 static fd_set_size_t fd_width;
 static int fd[2];
 static Display *dpy;
 static unsigned long screen;
-static GC gcon,miniIconGC;
+static GC fg_gc;
+static GC hi_gc;
+static GC sh_gc;
+static GC miniIconGC;
 static Window rootWindow;
 static FILE *errorFile;
 static char command[256];
@@ -95,10 +85,83 @@ static ProxyWindow *selectProxy=NULL;
 static XGCValues xgcv;
 static int are_windows_shown = 0;
 
+static int cset_normal = 0;
+static int cset_select = 0;
+
 static int (*originalXErrorHandler)(Display *,XErrorEvent *);
 static int (*originalXIOErrorHandler)(Display *);
 
 /* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions (options) ------------------- */
+
+static Bool parse_options(void)
+{
+	char *tline;
+
+	InitGetConfigLine(fd, CatString3("*", MyName, 0));
+	for (GetConfigLine(fd, &tline); tline != NULL;
+	     GetConfigLine(fd, &tline))
+	{
+		char *resource;
+		char *token;
+		char *next;
+
+		token = PeekToken(tline, &next);
+		if (StrEquals(token, "Colorset"))
+		{
+			LoadColorset(next);
+			continue;
+		}
+
+		tline = GetModuleResource(tline, &resource, MyName);
+		if (resource == NULL)
+		{
+			continue;
+		}
+		if (StrEquals(resource, "Colorset"))
+		{
+			if (sscanf(tline, "%d", &cset_normal) < 1)
+			{
+				cset_normal = 0;
+			}
+		}
+		if (StrEquals(resource, "SelectColorset"))
+		{
+			if (sscanf(tline, "%d", &cset_select) < 1)
+			{
+				cset_select = 0;
+			}
+		}
+#if 0
+		else if (StrEquals(resource, "ProxyGeometry"))
+		{
+			flags = FScreenParseGeometry(
+				tline, &g_x, &g_y, &width, &height);
+			if (flags & WidthValue)
+			{
+				/*!!!*/
+			}
+			if (flags & HeightValue)
+			{
+				/*!!!*/
+			}
+			if (flags & (XValue | YValue))
+			{
+				/*!!!error*/
+			}
+		}
+		else if (StrEquals(resource, "Font"))
+		{
+			/*!!!*/
+		}
+#endif
+
+		free(resource);
+	}
+
+	return True;
+}
 
 /* ---------------------------- local functions (classes) ------------------- */
 
@@ -151,9 +214,11 @@ static int myXErrorHandler(Display *display,XErrorEvent *error_event)
 		error_event->request_code,error_event->minor_code,
 		function,(unsigned int)error_event->serial,
 		error_event->error_code);
-
+#if 0
+	/* !!!calling X routines from error handlers is not allowed! */
 	XGetErrorText(display,error_event->error_code,buffer,messagelen);
 	fprintf(errorFile,"  %s\n",buffer);
+#endif
 
 	return 0;
 }
@@ -172,6 +237,115 @@ static int myXIOErrorHandler(Display *display)
 }
 
 /* ---------------------------- local functions ----------------------------- */
+
+static ProxyWindow *FindProxy(Window window)
+{
+	ProxyWindow *proxy=firstWindow;
+
+	for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
+	{
+		if(proxy->proxy==window || proxy->window==window)
+			return proxy;
+	}
+
+	return NULL;
+}
+
+static void DrawPicture(Window window,int x,int y,FvwmPicture *picture)
+{
+	XGCValues gcv;
+	unsigned long gcm=(GCClipMask|GCClipXOrigin|GCClipYOrigin);
+
+	if(!picture)
+		return;
+
+	gcv.clip_mask=picture->mask;
+	gcv.clip_x_origin=x;
+	gcv.clip_y_origin=y;
+
+	XChangeGC(dpy,miniIconGC,gcm,&gcv);
+	XCopyArea(dpy,picture->picture,window,miniIconGC,
+		  0,0,picture->width,picture->height,x,y);
+}
+
+static void DrawWindow(
+	ProxyWindow *proxy, int x,int y,int w,int h)
+{
+	int direction;
+	int ascent;
+	int descent;
+	XCharStruct overall;
+	int edge, top;
+	int cset;
+
+	if (!proxy)
+	{
+		return;
+	}
+	XTextExtents(font,"Xy",2,&direction,&ascent,&descent,&overall);
+	x=0;
+	y=0;
+	w=proxy->proxyw;
+	h=proxy->proxyh;
+	if (proxy->iconname != NULL)
+	{
+		edge=(w-XTextWidth(
+			      font,proxy->iconname,strlen(proxy->iconname)))/2;
+	}
+	else
+	{
+		edge = w / 2;
+	}
+#if 0
+	top=h-descent-4;
+#endif
+	top=(h+ascent-descent)/2;	/* center */
+	top+=8;				/* HACK tweak */
+
+	if(edge<5)
+		edge=5;
+
+	cset = (proxy==selectProxy) ? cset_select : cset_normal;
+	XSetForeground(dpy,fg_gc,Colorset[cset].fg);
+	XSetBackground(dpy,fg_gc,Colorset[cset].bg);
+	XSetForeground(dpy,sh_gc,Colorset[cset].shadow);
+	XSetForeground(dpy,hi_gc,Colorset[cset].hilite);
+	RelieveRectangle(
+		dpy, proxy->proxy, 0, 0, w - 1, h - 1, hi_gc, sh_gc, 2);
+	if (proxy->iconname != NULL)
+	{
+		XDrawString(
+			dpy, proxy->proxy, fg_gc, edge, top, proxy->iconname,
+			strlen(proxy->iconname));
+	}
+	DrawPicture(proxy->proxy, (w-16)/2, 8, &proxy->picture);
+}
+
+static void DrawProxy(ProxyWindow *proxy)
+{
+	if (proxy)
+	{
+		DrawWindow(
+			proxy, proxy->proxyx, proxy->proxyy, proxy->proxyw,
+			proxy->proxyh);
+	}
+}
+
+static void DrawProxyBackground(ProxyWindow *proxy)
+{
+	int cset;
+
+	if (proxy == NULL)
+	{
+		return;
+	}
+	cset = (proxy==selectProxy) ? cset_select : cset_normal;
+	XSetForeground(dpy,fg_gc,Colorset[cset].fg);
+	XSetBackground(dpy,fg_gc,Colorset[cset].bg);
+	SetWindowBackground(
+		dpy, proxy->proxy, proxy->proxyw, proxy->proxyh,
+		&Colorset[cset], Pdepth, fg_gc, True);
+}
 
 static void OpenOneWindow(ProxyWindow *proxy)
 {
@@ -200,6 +374,7 @@ static void OpenOneWindow(ProxyWindow *proxy)
 	XSelectInput(dpy,proxy->proxy,ButtonPressMask|ExposureMask|
 		     ButtonMotionMask);
 	XMapRaised(dpy,proxy->proxy);
+	DrawProxyBackground(proxy);
 	proxy->flags.is_shown = 1;
 
 	return;
@@ -242,6 +417,124 @@ static void CloseWindows(void)
 	}
 
 	return;
+}
+
+static Bool __SortProxies(void)
+{
+	Bool change=False;
+
+	ProxyWindow *last=NULL;
+	ProxyWindow *proxy;
+	ProxyWindow *next;
+
+	int x1,x2;
+
+	for (proxy=firstWindow; proxy != NULL && proxy->next != NULL;
+	     proxy=proxy->next)
+	{
+		x1=proxy->proxyx;
+		x2=proxy->next->proxyx;
+
+		if( x1>x2 || (x1==x2 && proxy->proxyy > proxy->next->proxyy) )
+		{
+			change=True;
+			next=proxy->next;
+
+			if(last)
+				last->next=next;
+			else
+				firstWindow=next;
+			proxy->next=next->next;
+			next->next=proxy;
+		}
+
+		last=proxy;
+	}
+
+	return change;
+}
+
+static void SortProxies(void)
+{
+	while (__SortProxies() == True)
+	{
+		/* nothing */
+	}
+
+	return;
+}
+
+static Bool AdjustOneWindow(ProxyWindow *proxy)
+{
+	Bool rc = False;
+	ProxyWindow *other=proxy->next;
+
+	for (other=proxy->next; other; other=other->next)
+	{
+		int dx=abs(proxy->proxyx-other->proxyx);
+		int dy=abs(proxy->proxyy-other->proxyy);
+#if 0
+		fprintf(errorFile,"dx=%d dy=%d\n",dx,dy);
+#endif
+		if(dx<(PROXY_WIDTH+PROXY_SEPARATE) &&
+		   dy<PROXY_HEIGHT+PROXY_SEPARATE )
+		{
+			rc = True;
+			if(PROXY_WIDTH-dx<PROXY_HEIGHT-dy)
+			{
+				fprintf(errorFile,"Adjust X\n");
+				if(proxy->proxyx<other->proxyx)
+				{
+					other->proxyx=
+						proxy->proxyx+ proxy->proxyw+
+						PROXY_SEPARATE;
+				}
+				else
+				{
+					proxy->proxyx=
+						other->proxyx+ other->proxyw+
+						PROXY_SEPARATE;
+				}
+			}
+			else
+			{
+				fprintf(errorFile,"Adjust y\n");
+				if(proxy->proxyy<other->proxyy)
+				{
+					other->proxyy=
+						proxy->proxyy+ proxy->proxyh+
+						PROXY_SEPARATE;
+				}
+				else
+				{
+					proxy->proxyy=
+						other->proxyy+ other->proxyh+
+						PROXY_SEPARATE;
+				}
+			}
+		}
+	}
+
+	return rc;
+}
+
+static void AdjustWindows(void)
+{
+	Bool collision=True;
+
+	while(collision == True)
+	{
+		ProxyWindow *proxy;
+
+		collision=False;
+		for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
+		{
+			if (AdjustOneWindow(proxy) == True)
+			{
+				collision = True;
+			}
+		}
+	}
 }
 
 static void ReshuffleWindows(void)
@@ -420,94 +713,23 @@ static void EndProxies(Bool release)
 	CloseWindows();
 }
 
-static void Loop(int *fd)
+static void change_cset(int cset)
 {
-	XEvent event;
-	long result;
-
-
-	while(1)
+	if (cset == cset_normal)
 	{
-		if((result=My_XNextEvent(dpy,&event))==1)
-			DispatchEvent(&event);
+		ProxyWindow *proxy;
 
-#if PROXY_ALT_POLLING
+		for (proxy = firstWindow; proxy != NULL; proxy = proxy->next)
 		{
-			Window root_return, child_return;
-			int root_x_return, root_y_return;
-			int win_x_return, win_y_return;
-			unsigned int mask_return;
-			int oldAltState=altState;
-
-			if (FQueryPointer(
-				    dpy,rootWindow,&root_return, &child_return,
-				    &root_x_return,&root_y_return,
-				    &win_x_return,&win_y_return,
-				    &mask_return) == False)
-			{
-				/* pointer is on another screen - ignore */
-			}
-			altState=((mask_return&0x8)!=0);
-
-			if(!oldAltState && altState)
-			{
-				fprintf(errorFile,"ALT ON\n");
-				StartProxies();
-			}
-			if(oldAltState && !altState)
-			{
-				fprintf(errorFile,"ALT OFF\n");
-				EndProxies(True);
-			}
-		}
-#endif
-	}
-}
-
-static int My_XNextEvent(Display *dpy,XEvent *event)
-{
-	fd_set in_fdset;
-
-	struct timeval timevalue,*timeout=&timevalue;
-	timevalue.tv_sec = 0;
-	timevalue.tv_usec = 100000;
-
-	if(FPending(dpy))
-	{
-		FNextEvent(dpy,event);
-		return 1;
-	}
-
-	FD_ZERO(&in_fdset);
-	FD_SET(x_fd,&in_fdset);
-	FD_SET(fd[1],&in_fdset);
-
-	if( fvwmSelect(fd_width, &in_fdset, 0, 0, timeout) > 0)
-	{
-		if(FD_ISSET(x_fd, &in_fdset))
-		{
-			if(FPending(dpy))
-			{
-				FNextEvent(dpy,event);
-				return 1;
-			}
-		}
-
-		if(FD_ISSET(fd[1], &in_fdset))
-		{
-			FvwmPacket* packet = ReadFvwmPacket(fd[1]);
-			if(!packet)
-			{
-				fprintf(errorFile,"\nNULL packet: exiting\n");
-				fflush(errorFile);
-				exit(0);
-			}
-
-			ProcessMessage(packet);
+			DrawProxyBackground(proxy);
 		}
 	}
+	else if (cset == cset_select && selectProxy != NULL)
+	{
+		DrawProxyBackground(selectProxy);
+	}
 
-	return 0;
+	return;
 }
 
 static void ProcessMessage(FvwmPacket* packet)
@@ -557,10 +779,6 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	case M_NEW_DESK:
-#if 0
-		fprintf(errorFile,"M_NEW_DESK %d (from %d)\n",
-			(int)body[0],deskNumber);
-#endif
 		if(deskNumber!=body[0] && altState)
 		{
 			deskNumber=body[0];
@@ -590,23 +808,40 @@ static void ProcessMessage(FvwmPacket* packet)
 	case M_STRING:
 	{
 		char *message=(char*)&body[3];
-		fprintf(errorFile,"M_STRING \"%s\"\n",message);
-		if(!strcmp(message,"Next"))
+		char *token;
+		char *next;
+
+		fprintf(errorFile, "M_STRING \"%s\"\n", message);
+		token = PeekToken(message, &next);
+		if (StrEquals(token, "Next"))
 		{
 			ProxyWindow *lastSelect=selectProxy;
 			if(selectProxy)
+			{
 				selectProxy=selectProxy->next;
+			}
 			else
+			{
 				selectProxy=firstWindow;
+			}
 			DrawProxy(lastSelect);
 			DrawProxy(selectProxy);
 		}
-#if PROXY_MANUAL_SHOWHIDE
-		if(!strcmp(message,"Show"))
+		else if(StrEquals(token, "Show"))
+		{
 			StartProxies();
-		if(!strcmp(message,"Hide"))
+		}
+		else if(StrEquals(token, "Hide"))
+		{
 			EndProxies(True);
-#endif
+		}
+		else if(StrEquals(token, "Colorset"))
+		{
+			int cset;
+
+			cset = LoadColorset(next);
+			change_cset(cset);
+		}
 	}
 	break;
 	}
@@ -614,15 +849,67 @@ static void ProcessMessage(FvwmPacket* packet)
 	fflush(errorFile);
 }
 
+static int My_XNextEvent(Display *dpy,XEvent *event)
+{
+	fd_set in_fdset;
+
+	struct timeval timevalue,*timeout=&timevalue;
+	timevalue.tv_sec = 0;
+	timevalue.tv_usec = 100000;
+
+	if(FPending(dpy))
+	{
+		FNextEvent(dpy,event);
+		return 1;
+	}
+
+	FD_ZERO(&in_fdset);
+	FD_SET(x_fd,&in_fdset);
+	FD_SET(fd[1],&in_fdset);
+
+	if( fvwmSelect(fd_width, &in_fdset, 0, 0, timeout) > 0)
+	{
+		if(FD_ISSET(x_fd, &in_fdset))
+		{
+			if(FPending(dpy))
+			{
+				FNextEvent(dpy,event);
+				return 1;
+			}
+		}
+
+		if(FD_ISSET(fd[1], &in_fdset))
+		{
+			FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+			if(!packet)
+			{
+				fprintf(errorFile,"\nNULL packet: exiting\n");
+				fflush(errorFile);
+				exit(0);
+			}
+
+			ProcessMessage(packet);
+		}
+	}
+
+	return 0;
+}
+
 static void DispatchEvent(XEvent *pEvent)
 {
 	Window window=pEvent->xany.window;
+	ProxyWindow *proxy;
 
 	switch(pEvent->xany.type)
 	{
 	case Expose:
-		DrawWindow(window,pEvent->xexpose.x,pEvent->xexpose.y,
-			   pEvent->xexpose.width,pEvent->xexpose.height);
+		proxy = FindProxy(window);
+		if (proxy != NULL)
+		{
+			DrawWindow(
+				proxy, pEvent->xexpose.x, pEvent->xexpose.y,
+				pEvent->xexpose.width, pEvent->xexpose.height);
+		}
 		break;
 	case ButtonPress:
 	{
@@ -676,76 +963,47 @@ static void DispatchEvent(XEvent *pEvent)
 	fflush(errorFile);
 }
 
-static Bool AdjustOneWindow(ProxyWindow *proxy)
+static void Loop(int *fd)
 {
-	Bool rc = False;
-	ProxyWindow *other=proxy->next;
+	XEvent event;
+	long result;
 
-	for (other=proxy->next; other; other=other->next)
+
+	while(1)
 	{
-		int dx=abs(proxy->proxyx-other->proxyx);
-		int dy=abs(proxy->proxyy-other->proxyy);
-#if 0
-		fprintf(errorFile,"dx=%d dy=%d\n",dx,dy);
+		if((result=My_XNextEvent(dpy,&event))==1)
+			DispatchEvent(&event);
+
+#if PROXY_ALT_POLLING
+		{
+			Window root_return, child_return;
+			int root_x_return, root_y_return;
+			int win_x_return, win_y_return;
+			unsigned int mask_return;
+			int oldAltState=altState;
+
+			if (FQueryPointer(
+				    dpy,rootWindow,&root_return, &child_return,
+				    &root_x_return,&root_y_return,
+				    &win_x_return,&win_y_return,
+				    &mask_return) == False)
+			{
+				/* pointer is on another screen - ignore */
+			}
+			altState=((mask_return&0x8)!=0);
+
+			if(!oldAltState && altState)
+			{
+				fprintf(errorFile,"ALT ON\n");
+				StartProxies();
+			}
+			if(oldAltState && !altState)
+			{
+				fprintf(errorFile,"ALT OFF\n");
+				EndProxies(True);
+			}
+		}
 #endif
-		if(dx<(PROXY_WIDTH+PROXY_SEPARATE) &&
-		   dy<PROXY_HEIGHT+PROXY_SEPARATE )
-		{
-			rc = True;
-			if(PROXY_WIDTH-dx<PROXY_HEIGHT-dy)
-			{
-				fprintf(errorFile,"Adjust X\n");
-				if(proxy->proxyx<other->proxyx)
-				{
-					other->proxyx=
-						proxy->proxyx+ proxy->proxyw+
-						PROXY_SEPARATE;
-				}
-				else
-				{
-					proxy->proxyx=
-						other->proxyx+ other->proxyw+
-						PROXY_SEPARATE;
-				}
-			}
-			else
-			{
-				fprintf(errorFile,"Adjust y\n");
-				if(proxy->proxyy<other->proxyy)
-				{
-					other->proxyy=
-						proxy->proxyy+ proxy->proxyh+
-						PROXY_SEPARATE;
-				}
-				else
-				{
-					proxy->proxyy=
-						other->proxyy+ other->proxyh+
-						PROXY_SEPARATE;
-				}
-			}
-		}
-	}
-
-	return rc;
-}
-
-static void AdjustWindows(void)
-{
-	Bool collision=True;
-
-	while(collision == True)
-	{
-		ProxyWindow *proxy;
-
-		collision=False;
-		for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
-		{
-			if (AdjustOneWindow(proxy) == True)
-			{
-				collision = True;
-			}
-		}
 	}
 }
 
@@ -762,168 +1020,21 @@ static void RaiseProxies(void)
 }
 #endif
 
-static ProxyWindow *FindProxy(Window window)
-{
-	ProxyWindow *proxy=firstWindow;
-
-	for (proxy=firstWindow; proxy != NULL; proxy=proxy->next)
-	{
-		if(proxy->proxy==window || proxy->window==window)
-			return proxy;
-	}
-
-	return NULL;
-}
-
-static void DrawProxy(ProxyWindow *proxy)
-{
-	if(proxy)
-		DrawWindow(proxy->proxy,proxy->proxyx,proxy->proxyy,
-			   proxy->proxyw,proxy->proxyh);
-}
-
-static void DrawWindow(Window window,int x,int y,int w,int h)
-{
-	int direction;
-	int ascent;
-	int descent;
-	XCharStruct overall;
-	ProxyWindow *proxy=FindProxy(window);
-	char *iconname;
-	int edge, top;
-	int select;
-	unsigned long bgcolor;
-
-	XTextExtents(font,"Xy",2,&direction,&ascent,&descent,&overall);
-
-	if (!proxy)
-	{
-		return;
-	}
-	x=0;
-	y=0;
-	w=proxy->proxyw;
-	h=proxy->proxyh;
-	iconname = proxy->iconname? proxy->iconname: "";
-	edge=(w-XTextWidth(font,iconname,strlen(iconname)))/2;
-#if 0
-	top=h-descent-4;
-#endif
-	top=(h+ascent-descent)/2;	/* center */
-	top+=8;				/* HACK tweak */
-
-	if(edge<5)
-		edge=5;
-
-	select=(proxy==selectProxy);
-	bgcolor= select? GetColor(PROXY_COLOR_SELECT): GetColor(PROXY_COLOR_BG);
-
-	XSetForeground(dpy,gcon,bgcolor);
-	XFillRectangle(dpy,window,gcon,x+1,y+1,w-3,h-3);
-
-	XSetForeground(dpy,gcon,GetColor(PROXY_COLOR_EDGE));
-	XDrawRectangle(dpy,window,gcon,x,y,w-1,h-1);
-
-	{
-		char *name="?";
-		Status status=XFetchName(dpy,proxy->window,&name);
-		if(status)
-		{
-#if 0
-			fprintf(errorFile,"name=%s iconname=%s\n",
-				name,iconname);
-#endif
-			XSetForeground(dpy,gcon,GetColor(PROXY_COLOR_FG));
-			XDrawString(
-				dpy,proxy->proxy,gcon,edge,top,iconname,
-				strlen(iconname));
-#if 0
-			XDrawString(dpy,proxy->proxy,gcon,edge,top+20,
-				    name,strlen(name));
-#endif
-			XFree(name);
-		}
-
-		DrawPicture(window,(w-16)/2,8,&proxy->picture);
-	}
-
-	XSetForeground(dpy,gcon,bgcolor);
-	XDrawRectangle(dpy,window,gcon,x+1,y+1,w-3,h-3);
-}
-
-static void DrawPicture(Window window,int x,int y,FvwmPicture *picture)
-{
-	XGCValues gcv;
-	unsigned long gcm=(GCClipMask|GCClipXOrigin|GCClipYOrigin);
-
-	if(!picture)
-		return;
-
-	gcv.clip_mask=picture->mask;
-	gcv.clip_x_origin=x;
-	gcv.clip_y_origin=y;
-
-	XChangeGC(dpy,miniIconGC,gcm,&gcv);
-	XCopyArea(dpy,picture->picture,window,miniIconGC,
-		  0,0,picture->width,picture->height,x,y);
-}
-
-static Bool __SortProxies(void)
-{
-	Bool change=False;
-
-	ProxyWindow *last=NULL;
-	ProxyWindow *proxy;
-	ProxyWindow *next;
-
-	int x1,x2;
-
-	for (proxy=firstWindow; proxy != NULL && proxy->next != NULL;
-	     proxy=proxy->next)
-	{
-		x1=proxy->proxyx;
-		x2=proxy->next->proxyx;
-
-		if( x1>x2 || (x1==x2 && proxy->proxyy > proxy->next->proxyy) )
-		{
-			change=True;
-			next=proxy->next;
-
-			if(last)
-				last->next=next;
-			else
-				firstWindow=next;
-			proxy->next=next->next;
-			next->next=proxy;
-		}
-
-		last=proxy;
-	}
-
-	return change;
-}
-
-static void SortProxies(void)
-{
-	while (__SortProxies() == True)
-	{
-		/* nothing */
-	}
-
-	return;
-}
 /* ---------------------------- interface functions ------------------------- */
 
 int main(int argc, char **argv)
 {
 	char *titles[1];
 
-	if(argc<6)
+	if (argc < 6)
 	{
 		fprintf(stderr,"FvwmProxy should only be executed by fvwm!\n");
 		fflush(errorFile);
 		exit(1);
 	}
+
+	FlocaleInit(LC_CTYPE, "", "", "FvwmProxy");
+	MyName = GetFileNameFromPath(argv[0]);
 
 	errorFile=fopen("/tmp/FvwmProxy.log","a");
 
@@ -942,10 +1053,10 @@ int main(int argc, char **argv)
 		fflush(errorFile);
 		exit (1);
 	}
-
+#if 0
 	fprintf(errorFile,"Display opened\n");
 	fflush(errorFile);
-
+#endif
 	titles[0]="FvwmProxy";
 	if(XStringListToTextProperty(titles,1,&windowName) == 0)
 	{
@@ -955,47 +1066,55 @@ int main(int argc, char **argv)
 	}
 
 	PictureInitCMap(dpy);
+	FScreenInit(dpy);
 	AllocColorset(0);
 	screen = DefaultScreen(dpy);
-	gcon = DefaultGC(dpy,screen);
 	rootWindow = RootWindow(dpy,screen);
 #if 0
 	XSync(dpy,False);
 	fprintf(errorFile,"SYNC\n");
 	fflush(errorFile);
-
 	XSync(dpy,False);
 	fprintf(errorFile,"SYNC\n");
 	fflush(errorFile);
 #endif
+	xgcv.plane_mask=AllPlanes;
+	miniIconGC=fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
+	fg_gc = fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
+	hi_gc = fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
+	sh_gc = fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
+
 	font=XLoadQueryFont(dpy,"*-helvetica-bold-r-*--17-*");
 	if(font)
-		XSetFont(dpy,gcon,font->fid);
+		XSetFont(dpy,fg_gc,font->fid);
 
 	x_fd = XConnectionNumber(dpy);
 	fd_width = GetFdWidth();
 
-	xgcv.plane_mask=AllPlanes;
-	miniIconGC=fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
-
 	SetMessageMask(
 		fd, M_STRING| M_CONFIGURE_WINDOW| M_ADD_WINDOW|
 		M_DESTROY_WINDOW| M_NEW_DESK| M_NEW_PAGE| M_ICON_NAME|
-		M_WINDOW_NAME| M_MINI_ICON| M_ICONIFY| M_DEICONIFY);
+		M_WINDOW_NAME| M_MINI_ICON| M_ICONIFY| M_DEICONIFY|
+		M_CONFIG_INFO| M_END_CONFIG_INFO);
+
+	if (parse_options() == False)
+	{
+		exit(1);
+	}
 
 	SendInfo(fd,"Send_WindowList",0);
 	SendFinishedStartupNotification(fd);
-
+#if 0
 	fprintf(errorFile,"Startup Finished\n");
 	fflush(errorFile);
-
 	fprintf(errorFile,"Setup Finished\n");
 	fflush(errorFile);
-
+#endif
 	Loop(fd);
-
+#if 0
 	fprintf(errorFile,"Main Complete\n");
 	fflush(errorFile);
+#endif
 
 	return 0;
 }
