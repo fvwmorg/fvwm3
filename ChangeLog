@@ -1,3 +1,12 @@
+2002-12-06  olicha  <olivier.chapuis@free.fr>
+
+	* acinclude.m4:
+	Fixed the "detection" of the LINGUAS variable
+
+	* configure.in:
+	Added ar to ALL_LINGUAS
+
+	
 2002-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (__resize_window):

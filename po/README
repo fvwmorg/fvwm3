@@ -18,6 +18,9 @@
 * For creating a new catalogs, say LL_CC (e.g., fr, zh_CN):
 
   - Edit configure.in and add LL_CC to ALL_LINGUAS
+  - run autoconf and ./configure (with your usual options) and check that
+    the new "lang" appear in the list of "lang"
+        Locale msg:  prefix/share/locale   ... LL_CC ...
   - cd to po/
   - create a domain.LL_CC.po file for all files domain.pot:
       

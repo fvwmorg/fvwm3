@@ -1,0 +1,33 @@
+# Arabic translations for fvwm package.
+# Copyright (C) 2002 fvwm workers
+# This file is distributed under the same license as the fvwm package.
+# Nadim Shaikli <shaikli@yahoo.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm\n"
+"POT-Creation-Date: 2002-11-28 14:23+0100\n"
+"PO-Revision-Date: 2002-12-06 08:25+0100\n"
+"Last-Translator: Nadim Shaikli <shaikli@yahoo.com>\n"
+"Language-Team: Arabic\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 0.9.6\n"
+
+#: ../modules/FvwmTaskBar/Goodies.c:462
+msgid "No new mail"
+msgstr "لا يوجد رسائل جديدة"
+
+#: ../modules/FvwmTaskBar/Goodies.c:466
+msgid "You have new mail"
+msgstr "لديك رسائل جديدة"
+
+#: ../modules/FvwmTaskBar/Goodies.c:470
+msgid "You have mail"
+msgstr "لديك رسائل بالبريد"
+
+#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1308
+msgid "Click here to start"
+msgstr "أضغط هنا للبدأ"
+

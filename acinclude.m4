@@ -1580,7 +1580,9 @@ AC_DEFUN([AM_PO_SUBDIRS],
   # CATALOGS depends on both $ac_dir and the user's LINGUAS environment variable.
   INST_LINGUAS=
   AC_MSG_CHECKING([for NLS desired catalogs to be installed])
-  if test "%UNSET%" != "$LINGUAS"; then
+  #if test "%UNSET%" != "$LINGUAS"; then
+  # FIXME: How to check if LINGUAS has been *set* to ""
+  if test -n "$LINGUAS"; then
     AC_MSG_RESULT([$LINGUAS])  
   else
     AC_MSG_RESULT([all])
@@ -1589,7 +1591,8 @@ AC_DEFUN([AM_PO_SUBDIRS],
   if test -n "$ALL_LINGUAS"; then
     for presentlang in $ALL_LINGUAS; do
       useit=no
-      if test "%UNSET%" != "$LINGUAS"; then
+      #if test "%UNSET%" != "$LINGUAS"; then
+      if test -n "$LINGUAS"; then
         desiredlanguages="$LINGUAS"
       else
         desiredlanguages="$ALL_LINGUAS"

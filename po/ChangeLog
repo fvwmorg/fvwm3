@@ -1,3 +1,14 @@
+2002-12-06  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm.ar.gmo (new file):
+	* FvwmTaskBar.ar.gmo (new file):
+	* fvwm.ar.po (new file):
+	* FvwmTaskBar.ar.po (new file):
+	Arabic translation from Nadim Shaikli <shaikli@yahoo.com>
+
+	* README:
+	Updated
+
 2002-12-03  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar.fr.po:
