@@ -1,3 +1,10 @@
+1999-06-10  Chris Rankin  <rankinc@zipworld.com.au>
+
+    * modules/FvwmIconMan
+      modules/FvwmIconBox
+      modules/FvwmWinList
+i   Modified signal handling to use fvwmsignal.
+
 1999-06-09  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/fvwm.c: Fixed the problem of windows wandering after a
