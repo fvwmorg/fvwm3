@@ -1,5 +1,10 @@
 2000-04-20  olicha <olivier.chapuis@free.fr>
 
+	* modules/FvwmScript/Instruction.c (*LaunchScript, Exec):
+	Replace some int by unsigned long for OSF1 V4.O alpha and al.
+	
+2000-04-20  olicha <olivier.chapuis@free.fr>
+
 	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:
 	* modules/FvwmScript/Scripts/script-fvwm-sample95.pl:
 	Added a CDE support and a new FAST/SLOW X server option for 
