@@ -241,7 +241,6 @@ Bool isFileStampChanged(const FileStamp *stamp, const char *name)
 	return *stamp != getFileStamp(name);
 }
 
-#undef HAVE_SAFTY_MKSTEMP
 #ifdef HAVE_SAFTY_MKSTEMP
 int fvwm_mkstemp (char *TEMPLATE)
 {

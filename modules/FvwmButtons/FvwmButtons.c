@@ -3075,10 +3075,6 @@ void exec_swallow(char *action, button_info *b)
 			/* this set the new SESSION_MANAGER env */
 			session_manager = fsm_init(MyName);
 		}
-		else
-		{
-			fprintf(stderr, "No Session Manager");
-		}
 	}
 
 	if (!session_manager /*|| (buttonSwallow(b)&b_NoClose)*/)

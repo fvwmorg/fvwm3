@@ -922,6 +922,7 @@ static Bool __simplify_style_list(void)
 					/* merge cmp into cur and delete it
 					 * afterwards */
 					merge_styles(cmp, cur, True);
+					free_style(cur);
 					memcpy(cur, cmp, sizeof(window_style));
 					/* restore fields overwritten by
 					 * memcpy */
@@ -955,6 +956,7 @@ static Bool __simplify_style_list(void)
 					/* merge cur into cmp and delete it
 					 * afterwards */
 					merge_styles(cur, cmp, True);
+					free_style(cmp);
 					memcpy(cmp, cur, sizeof(window_style));
 					/* restore fields overwritten by
 					 * memcpy */

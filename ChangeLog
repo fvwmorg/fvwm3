@@ -1,3 +1,11 @@
+2003-08-08  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/style.c (__simplify_style_list):
+	Fixed a memory leak
+
+	* libs/System.c (fvwm_mkstemp):
+	Removed debug code
+
 2003-08-07  olicha  <olivier.chapuis@free.fr>
 	
 	* configure.in:

@@ -1,3 +1,8 @@
+2003-08-08  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/FvwmButtons.c (exec_swallow):
+	Removed debug code
+
 2003-08-07  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmCpp/FvwmCpp.c (cpp_defs):
