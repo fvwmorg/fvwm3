@@ -89,6 +89,11 @@ Boolean debugging = False,PPosOverride,Blackout = False;
 char **g_argv;
 int g_argc;
 
+#ifdef SESSION
+  char *client_id = NULL;
+  char *restore_filename = NULL;
+#endif
+
 /* assorted gray bitmaps for decorative borders */
 #define g_width 2
 #define g_height 2
@@ -150,6 +155,7 @@ int main(int argc, char **argv)
   Bool option_error = FALSE;
   int x, y;
 
+
   g_argv = argv;
   g_argc = argc;
 
@@ -165,6 +171,20 @@ int main(int argc, char **argv)
     {
       debugging = True;
     }
+#ifdef SESSION
+    else if (strncasecmp(argv[i], "-clientId", 9) == 0)
+      {
+	if (++i >= argc)
+	  usage();
+	client_id = argv[i];
+      }
+    else if (strncasecmp(argv[i], "-restore", 8) == 0)
+      {
+	if (++i >= argc)
+	  usage();
+	restore_filename = argv[i];
+      }
+#endif
     else if (strncasecmp(argv[i],"-s",2)==0)
     {
       single = True;
@@ -410,6 +430,15 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(FvwmErrorHandler);
 
+#ifdef SESSION
+  /* 
+     This should be done early enough to have the window states loaded
+     before the first call to AddWindow.  
+   */
+  if (restore_filename)
+    LoadWindowStates(restore_filename); 
+#endif
+
   BlackoutScreen(); /* if they want to hide the capture/startup */
 
   CreateCursors();
@@ -438,6 +467,7 @@ int main(int argc, char **argv)
   {
     ExecuteFunction(default_config_command, NULL,&Event,C_ROOT,-1);
   }
+
   DBUG("main","Done running config_commands");
 
   if(Scr.d_depth<2)
@@ -518,6 +548,10 @@ int main(int argc, char **argv)
 
   DBUG("main","Entering HandleEvents loop...");
 
+#ifdef SESSION
+  SessionInit(client_id);
+#endif
+
   HandleEvents();
   switch( fvwmRunState )
   {
@@ -566,6 +600,14 @@ void StartupStuff(void)
     if(mr != NULL)
       ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1);
   }
+#ifdef SESSION
+  /*
+     This should be done after the initialization is finished, since
+     it directly changes the global state. 
+   */
+  if (restore_filename)
+    LoadGlobalState(restore_filename);
+#endif
 } /* StartupStuff */
 
 
@@ -689,7 +731,6 @@ void CaptureAllWindows(void)
   /* after the windows already on the screen are in place,
    * don't use PPosition */
   PPosOverride = False;
-  KeepOnTop();
   MyXUngrabServer(dpy);
   XSync(dpy,0); /* should we do this on initial capture? */
 }
@@ -807,6 +848,12 @@ Atom _XA_OL_DECOR_RESIZE;
 Atom _XA_OL_DECOR_HEADER;
 Atom _XA_OL_DECOR_ICON_NAME;
 
+#ifdef SESSION
+Atom _XA_WM_WINDOW_ROLE;
+Atom _XA_WM_CLIENT_LEADER;
+Atom _XA_SM_CLIENT_ID;
+#endif
+
 void InternUsefulAtoms (void)
 {
   /*
@@ -835,6 +882,12 @@ void InternUsefulAtoms (void)
   _XA_OL_DECOR_RESIZE=XInternAtom(dpy,"_OL_DECOR_RESIZE",False);
   _XA_OL_DECOR_HEADER=XInternAtom(dpy,"_OL_DECOR_HEADER",False);
   _XA_OL_DECOR_ICON_NAME=XInternAtom(dpy,"_OL_DECOR_ICON_NAME",False);
+
+#ifdef SESSION
+  _XA_WM_WINDOW_ROLE=XInternAtom(dpy, "WM_WINDOW_ROLE",False);
+  _XA_WM_CLIENT_LEADER=XInternAtom(dpy, "WM_CLIENT_LEADER",False);
+  _XA_SM_CLIENT_ID=XInternAtom(dpy, "SM_CLIENT_ID",False);
+#endif
   return;
 }
 
@@ -1294,6 +1347,9 @@ void InitVariables(void)
   Scr.hasIconFont = False;
   Scr.hasWindowFont = False;
 
+  Scr.OnTopLayer = 1;
+  Scr.StaysPutLayer = 0;
+
   /* create graphics contexts */
   CreateGCs();
 
@@ -1304,6 +1360,7 @@ void InitVariables(void)
   /*  RBW - 11/13/1998 - 2 new fields to init - stacking order chain.  */
   Scr.FvwmRoot.stack_next  =  &Scr.FvwmRoot;
   Scr.FvwmRoot.stack_prev  =  &Scr.FvwmRoot;
+  Scr.FvwmRoot.layer = -1; 
 
   XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr));
   Scr.root_pushes = 0;

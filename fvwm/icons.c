@@ -178,6 +178,15 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       XDefineCursor(dpy, tmp_win->icon_w, Scr.FvwmCursors[DEFAULT]);
       GrabIconButtons(tmp_win,tmp_win->icon_w);
       GrabIconKeys(tmp_win,tmp_win->icon_w);
+
+#ifdef SESSION
+      {
+        XWindowChanges xwc;
+        xwc.sibling = tmp_win->frame;
+        xwc.stack_mode = Above;   
+        XConfigureWindow(dpy, tmp_win->icon_w, CWSibling|CWStackMode, &xwc);
+      }
+#endif
     }
   if(tmp_win->icon_pixmap_w != None)
     {
@@ -185,7 +194,16 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       XDefineCursor(dpy, tmp_win->icon_pixmap_w, Scr.FvwmCursors[DEFAULT]);
       GrabIconButtons(tmp_win,tmp_win->icon_pixmap_w);
       GrabIconKeys(tmp_win,tmp_win->icon_pixmap_w);
-    }
+
+#ifdef SESSION
+      {
+        XWindowChanges xwc;
+        xwc.sibling = tmp_win->frame;
+        xwc.stack_mode = Above;   
+        XConfigureWindow(dpy, tmp_win->icon_pixmap_w, CWSibling|CWStackMode, &xwc);
+      }
+#endif
+  }
   return;
 }
 
@@ -875,8 +893,6 @@ void DeIconify(FvwmWindow *tmp_win)
   if(tmp_win->flags & ClickToFocus)
     FocusOn(tmp_win,TRUE);
 
-  KeepOnTop();
-
   return;
 }
 
@@ -958,7 +974,12 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     tmp_win->icon_w_width = tmp_win->icon_p_width;
   }
 
+#ifdef SESSION
+  if (!((tmp_win->flags & STARTICONIC) &&
+     (tmp_win->flags & ICON_MOVED)))
+#endif
   AutoPlace(tmp_win);
+
   tmp_win->flags |= ICONIFIED;
   tmp_win->flags &= ~ICON_UNMAPPED;
   BroadcastPacket(M_ICONIFY, 11,
@@ -974,6 +995,10 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
                   tmp_win->frame_height);
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
 
+#ifdef SESSION
+  if (!((tmp_win->flags & STARTICONIC) &&
+     (tmp_win->flags & ICON_MOVED)))
+#endif
   LowerWindow(tmp_win);
   if(tmp_win->Desk == Scr.CurrentDesk)
     {
@@ -982,7 +1007,6 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 
       if(tmp_win->icon_pixmap_w != None)
 	XMapWindow(dpy, tmp_win->icon_pixmap_w);
-      KeepOnTop();
     }
   if((tmp_win->flags & ClickToFocus)||(tmp_win->flags & SloppyFocus))
     {

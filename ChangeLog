@@ -1,3 +1,18 @@
+1999-02-27  Matthias Clasen  <clasen@clasen.home.uni-freiburg.de>
+
+	* fvwm/{add_window,builtins,events,functions,fvwm,misc,
+	   placement,session,style,windows}.c:
+	* fvwm/{fvwm,misc}.h:
+	* fvwm/fvwm2.1:
+	implement a layered stacking order.	
+
+	* configure.in, config.h.in:
+	* fvwm/{session,add_window,events,fvwm,icons}.c:
+	* fvwm/{fvwm,misc}.h: 
+	* fvwm/fvwm2.1:
+	add session management functionality (make fvwm a client 
+	of a X SMP compliant session manager).
+	
 Sat Feb 27 12:49:23 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: allow FVWM_{MODULE,CONFIG}DIR to be overridden by

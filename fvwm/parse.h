@@ -84,9 +84,10 @@ enum {
     F_SNAP_GRID,
     F_DFLT_FONT,
     F_DFLT_COLORS,
+    F_DFLT_LAYERS,
     F_GLOBAL_OPTS,
     F_EMULATE,
-
+    F_LAYER,
     F_RESIZE = 100,
     F_RAISE,
     F_LOWER,

@@ -480,6 +480,9 @@ void HandlePropertyNotify()
       free_window_names (Tmp_win, True, False);
 
       Tmp_win->name = (char *)text_prop.value;
+#ifdef SESSION
+      Tmp_win->tmpflags.NameChanged = 1;
+#endif
       if (Tmp_win->name == NULL)
         Tmp_win->name = NoName;
       BroadcastName(M_WINDOW_NAME,Tmp_win->w,Tmp_win->frame,
@@ -833,8 +836,12 @@ void HandleMapRequestKeepRaised(Window KeepRaised)
     {
       DeIconify(Tmp_win);
     }
-  if(!PPosOverride)
-    KeepOnTop();
+
+#ifdef SESSION 
+  /* just to be on the safe side, we make sure that STARTICONIC
+     can only influence the initial transition from withdrawn state */
+  Tmp_win->flags &= ~STARTICONIC; 
+#endif
 }
 
 
@@ -925,7 +932,6 @@ void HandleMapNotify()
   Tmp_win->flags &= ~MAP_PENDING;
   Tmp_win->flags &= ~ICONIFIED;
   Tmp_win->flags &= ~ICON_UNMAPPED;
-  KeepOnTop();
 }
 
 
@@ -1097,7 +1103,6 @@ void HandleButtonPress()
       RaiseWindow(Tmp_win);
     }
 
-    KeepOnTop();
     /* Why is this here? Seems to cause breakage with
      * non-focusing windows! */
     if(!(Tmp_win->flags & ICONIFIED))
@@ -1122,7 +1127,6 @@ void HandleButtonPress()
         GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
     {
       RaiseWindow(Tmp_win);
-      KeepOnTop();
     }
     XSync(dpy,0);
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
@@ -1379,6 +1383,29 @@ void HandleConfigureRequest()
                     (XFindContext (dpy, cre->above, FvwmContext,
                                    (caddr_t *) &otherwin) == XCSUCCESS))
                    ? otherwin->frame : cre->above);
+     /* we only allow clients to restack their windows within
+       their layer. Thus we don't handle TopIf, BottomIf or
+       Opposite modes. We could perhaps allow them and then
+       catch windows that have gone off to the end of the stack
+       and bring them back to the layer, but who cares ? Nobody will
+       use these modes anyway.
+    */
+    if (!(cre->value_mask & CWSibling))
+      {
+         switch (cre->detail)
+           {
+            case Above:
+              RaiseWindow (Tmp_win);
+              break;
+            case Below:
+              LowerWindow (Tmp_win);
+              break;
+           }
+      }
+    else if (otherwin &&
+      (otherwin->layer == Tmp_win->layer) &&
+      ((cre->detail == Above) || (cre->detail == Below)))
+      {
     xwc.stack_mode = cre->detail;
     XConfigureWindow (dpy, Tmp_win->frame,
                       cre->value_mask & (CWSibling | CWStackMode), &xwc);
@@ -1416,6 +1443,7 @@ void HandleConfigureRequest()
         */
         ResyncFvwmStackRing();
       }
+  }
   }
 
 #ifdef SHAPE
@@ -1462,7 +1490,6 @@ void HandleConfigureRequest()
    */
   ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
   SetupFrame (Tmp_win, x, y, width, height,sendEvent);
-  KeepOnTop();
 }
 
 /***********************************************************************
@@ -1509,19 +1536,6 @@ void HandleVisibilityNotify()
 	Tmp_win->flags |= VISIBLE;
       else
 	Tmp_win->flags &= ~VISIBLE;
-
-      /* For the most part, we'll raised partially obscured ONTOP windows
-       * here. The exception is ONTOP windows that are obscured by
-       * other ONTOP windows, which are raised in KeepOnTop(). This
-       * complicated set-up saves us from continually re-raising
-       * every on top window */
-      if(((vevent->state == VisibilityPartiallyObscured)||
-	  (vevent->state == VisibilityFullyObscured))&&
-	 (Tmp_win->flags&ONTOP)&&(Tmp_win->flags & RAISED))
-	{
-	  RaiseWindow(Tmp_win);
-	  Tmp_win->flags &= ~RAISED;
-	}
     }
 }
 
@@ -1538,6 +1552,9 @@ fd_set init_fdset;
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   extern int fd_width, x_fd;
+#ifdef SESSION 
+  extern int sm_fd;
+#endif
   fd_set in_fdset, out_fdset;
   Window targetWindow;
   int i;
@@ -1578,6 +1595,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
+#ifdef SESSION
+  if (sm_fd >= 0) FD_SET(sm_fd, &in_fdset);
+#endif
   FD_ZERO(&out_fdset);
   for(i=0; i<npipes; i++)
     {
@@ -1628,6 +1648,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	    }
 	}
     } /* for */
+#ifdef SESSION
+  if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset))) ProcessICEMsgs();
+#endif
   } else {
   /* select has timed out, things must have calmed down so let's decorate */
     if (fFvwmInStartup) {

@@ -251,6 +251,9 @@ typedef struct ScreenInfo
   ColorPair StdColors; 	/* standard fore/back colors */
   ColorPair StdRelief;
 
+  int OnTopLayer;
+  int StaysPutLayer;
+
   MenuGlobals menus;
 
   MyFont StdFont;     	/* font structure */

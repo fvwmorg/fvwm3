@@ -31,11 +31,10 @@
 #define SHOW_NORMAL   (1<<2)
 #define SHOW_ICONIC   (1<<3)
 #define SHOW_STICKY   (1<<4)
-#define SHOW_ONTOP    (1<<5)
 #define NO_DESK_SORT  (1<<6)
 #define SHOW_ICONNAME (1<<7)
 #define SHOW_ALPHABETIC (1<<8)
-#define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | SHOW_ICONIC | SHOW_STICKY | SHOW_ONTOP)
+#define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | SHOW_ICONIC | SHOW_STICKY)
 
 /* Function to compare window title names
  */
@@ -81,6 +80,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   MenuStatus menu_retval;
   XEvent *teventp;
   MenuOptions mops;
+  int low_layer = 0;  /* show all layers by default */ 
+  int high_layer = INT_MAX;
 
   mops.flags.allflags = 0;
   if (action && *action)
@@ -144,12 +145,40 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         flags |= SHOW_STICKY;
       else if (StrEquals(tok,"OnlySticky"))
         flags = SHOW_STICKY;
-      else if (StrEquals(tok,"NoOnTop"))
-        flags &= ~SHOW_ONTOP;
-      else if (StrEquals(tok,"OnTop"))
-        flags |= SHOW_ONTOP;
-      else if (StrEquals(tok,"OnlyOnTop"))
-        flags = SHOW_ONTOP;
+          /* 
+             these are a bit dubious, but we
+             should keep the OnTop options 
+             for compatibility 
+           */
+      else if (StrEquals(tok, "NoOnTop"))
+	{
+	  if (high_layer >= Scr.OnTopLayer)
+            high_layer = Scr.OnTopLayer - 1;
+        }  
+      else if (StrEquals(tok, "OnTop"))
+        {
+	  if (high_layer < Scr.OnTopLayer)
+            high_layer = Scr.OnTopLayer;
+	}  
+      else if (StrEquals(tok, "OnlyOnTop"))
+        {
+	  high_layer = low_layer = Scr.OnTopLayer;
+        }
+      else if (StrEquals(tok, "Layers")) 
+      {
+	free(tok);
+        line = GetNextOption(line, &tok);
+	if (tok) 
+        {
+          low_layer = high_layer = atoi(tok);
+	  free(tok);
+          line = GetNextOption(line, &tok);
+	  if (tok) 
+          {
+            high_layer = atoi(tok);
+          }
+        }
+      }
       else if (!line || !*line)
 	default_action = strdup(tok);
       else
@@ -235,13 +264,11 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           continue; /* don't want icons - skip */
         if (!(flags & SHOW_STICKY) && (t->flags & STICKY))
           continue; /* don't want sticky ones - skip */
-        if (!(flags & SHOW_ONTOP) && (t->flags & ONTOP))
-          continue; /* don't want ontop ones - skip */
         if (!(flags & SHOW_NORMAL) &&
-            !((t->flags & ICONIFIED) ||
-              (t->flags & STICKY) ||
-              (t->flags & ONTOP)))
+            !((t->flags & ICONIFIED) || (t->flags & STICKY))) 
           continue; /* don't want "normal" ones - skip */
+        if ((t->layer < low_layer) || (t->layer > high_layer))
+          continue;  /* don't want this layer */
 
         /* add separator between desks when geometry shown but not at the top */
         if (t->Desk != last_desk_displayed)
@@ -294,8 +321,6 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
           if (t->flags & STICKY)
             strcat(tname, " S");
-          if (t->flags & ONTOP)
-            strcat(tname, " T");
           if (t->flags & ICONIFIED)
             strcat(tname, ")");
           strcat(t_hot,"\t");

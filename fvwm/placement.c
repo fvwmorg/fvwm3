@@ -35,6 +35,9 @@ int test_fit(FvwmWindow *t, int test_x, int test_y, int aoimin, int pdeltax, int
 void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay);
 /**/
 
+/* With the advent of layers, the meaning of ONTOP in the following 
+   explanation has changed to mean any window in a higher layer. */
+
 /* The following factors represent the amount of area that these types of
  * windows are counted as.  For example, by default the area of ONTOP windows
  * is counted 5 times as much as normal windows.  So CleverPlacement will
@@ -393,7 +396,7 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
       anew = (xr - xl) * (yb - yt);
       if(testw->flags & ICONIFIED)
         avoidance_factor = AVOIDICON;
-      else if(testw->flags & ONTOP)
+      else if(testw->layer > t->layer)
         avoidance_factor = AVOIDONTOP;
       else if(testw->flags & STICKY)
         avoidance_factor = AVOIDSTICKY;

@@ -106,6 +106,10 @@ FvwmWindow *AddWindow(Window w)
   XrmValue rm_value;
   XTextProperty text_prop;
   extern Boolean PPosOverride;
+#ifdef SESSION
+  int do_shade, do_maximize;
+  int x_max, y_max, w_max, h_max;
+#endif
 
   NeedToResizeToo = False;
   /* allocate space for the fvwm window */
@@ -117,6 +121,9 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->flags = 0;
   tmp_win->tmpflags.ViewportMoved = 0;
   tmp_win->tmpflags.IconifiedByParent = 0;
+#ifdef SESSION
+  tmp_win->tmpflags.NameChanged = 0;
+#endif
   tmp_win->w = w;
 
   tmp_win->cmap_windows = (Window *)NULL;
@@ -195,6 +202,9 @@ FvwmWindow *AddWindow(Window w)
 
   tmp_win->IconBoxes = styles.IconBoxes; /* copy iconboxes ptr (if any) */
   tmp_win->buttons = styles.on_buttons; /* on and off buttons combined. */
+  /* FIXME: shouldn't transients inherit the layer ? */
+  tmp_win->layer = styles.layer;
+
 #ifdef USEDECOR
   /* search for a UseDecor tag in the Style */
   tmp_win->fl = NULL;
@@ -389,7 +399,6 @@ FvwmWindow *AddWindow(Window w)
   /* tmp_win->prev points to the last window in the list, tmp_win->next is NULL.
      Now fix the last window to point to tmp_win */
   tmp_win->prev->next = tmp_win;
-
   /*
       RBW - 11/13/1998 - add it into the stacking order chain also.
       This chain is anchored at both ends on Scr.FvwmRoot, there are
@@ -400,6 +409,14 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->stack_prev = &Scr.FvwmRoot;
   Scr.FvwmRoot.stack_next = tmp_win;
 
+#ifdef SESSION
+  /* 
+      MatchWinToSM changes tmp_win->attr and tmp_win->stack_{prev,next}.
+      Thus it is important have this call *after* PlaceWindow and the
+      stacking order initialization.
+  */
+  MatchWinToSM(tmp_win, &x_max, &y_max, &w_max, &h_max, &do_shade, &do_maximize);
+#endif
 
   /* create windows */
   tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw - tmp_win->bw;
@@ -411,6 +428,7 @@ FvwmWindow *AddWindow(Window w)
   ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False,
 		0, 0);
 
+  
   valuemask = CWBorderPixel | CWCursor | CWEventMask;
   if(Scr.d_depth < 2)
     {
@@ -665,8 +683,22 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->frame_width = 0;
   height = tmp_win->frame_height;
   tmp_win->frame_height = 0;
+
   SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height, True);
 
+#ifdef SESSION
+  if (do_shade) { 
+    WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
+  }
+
+  if (do_maximize) { 
+    /* This is essentially Maximize, only we want the given dimensions */
+    tmp_win->flags |= MAXIMIZED;
+    ConstrainSize (tmp_win, &w_max, &h_max, False, 0, 0);
+    SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE);
+    SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
+  }
+#endif
   /* wait until the window is iconified and the icon window is mapped
    * before creating the icon window
    */
@@ -695,8 +727,23 @@ FvwmWindow *AddWindow(Window w)
 	  XSaveContext(dpy,tmp_win->corners[i],FvwmContext, (caddr_t) tmp_win);
 	}
     }
+#ifndef SESSION
   RaiseWindow(tmp_win);
-  KeepOnTop();
+#else
+  { 
+    XWindowChanges xwc;
+    unsigned long vm;
+    if (tmp_win->stack_next == &Scr.FvwmRoot) {
+      xwc.stack_mode = Below;
+      vm = CWStackMode;
+    } else {
+      xwc.sibling = tmp_win->stack_next->frame;
+      xwc.stack_mode = Above;
+      vm = CWSibling|CWStackMode;
+    }
+    XConfigureWindow(dpy, tmp_win->frame, vm, &xwc);
+  }
+#endif
   MyXUngrabServer(dpy);
 
   XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
@@ -1142,5 +1189,9 @@ static void merge_styles(name_list *styles, name_list *nptr) {
   if(nptr->IconBoxes != NULL) {         /* If style has iconboxes */
     styles->IconBoxes = nptr->IconBoxes; /* copy it */
   }
+  /* FIXME: must have a flag */
+ if (nptr->layer >= 0) {
+   styles->layer = nptr->layer;
+ }
   return;                               /* return */
 }

@@ -219,7 +219,6 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
 #if 0 /* don't want to raise anymore either */
   RaiseWindow(t);
 #endif /* 0 */
-  KeepOnTop();
 
   /* If the window is still not visible, make it visible! */
   if(((t->frame_x + t->frame_height)< 0)||(t->frame_y + t->frame_width < 0)||
@@ -294,7 +293,6 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
   }
   RaiseWindow(t);
-  KeepOnTop();
 
   /* If the window is still not visible, make it visible! */
   if(((t->frame_x + t->frame_height)< 0)||(t->frame_y + t->frame_width < 0)||
@@ -716,14 +714,7 @@ void raise_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
 
-  if(tmp_win)
-    RaiseWindow(tmp_win);
-
-  LookInList(tmp_win, &styles);         /* get merged styles */
-  if (styles.on_flags & STAYSONTOP_FLAG) {
-    tmp_win->flags |= ONTOP;
-  }
-  KeepOnTop();
+  RaiseWindow(tmp_win);
 }
 
 void lower_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -733,8 +724,6 @@ void lower_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
 
   LowerWindow(tmp_win);
-
-  tmp_win->flags &= ~ONTOP;
 }
 
 void destroy_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -1125,23 +1114,15 @@ void raiselower_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
-  if(tmp_win == NULL)
-    return;
 
   if((tmp_win == Scr.LastWindowRaised)||
      (tmp_win->flags & VISIBLE))
   {
     LowerWindow(tmp_win);
-    tmp_win->flags &= ~ONTOP;
   }
   else
   {
     RaiseWindow(tmp_win);
-    LookInList(tmp_win, &styles);       /* get merged styles */
-    if (styles.on_flags & STAYSONTOP_FLAG) {
-      tmp_win->flags |= ONTOP;
-    }
-    KeepOnTop();
   }
 }
 
@@ -4233,6 +4214,7 @@ void DefaultConditionMask(WindowConditionMask *mask)
   mask->useCirculateHitIcon = 0;
   mask->onFlags = 0;
   mask->offFlags = 0;
+  mask->layer = -2; /* -2  means no layer condition, -1 means current */ 
 }
 
 /**********************************************************************
@@ -4274,10 +4256,6 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       mask->onFlags |= TRANSIENT;
     else if(StrEquals(condition,"!Transient"))
       mask->offFlags |= TRANSIENT;
-    else if(StrEquals(condition,"Raised"))
-      mask->onFlags |= RAISED;
-    else if(StrEquals(condition,"!Raised"))
-      mask->offFlags |= RAISED;
     else if(StrEquals(condition,"CurrentDesk"))
       mask->needsCurrentDesk = 1;
     else if(StrEquals(condition,"CurrentPage"))
@@ -4292,6 +4270,19 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       mask->useCirculateHit = 1;
     else if(StrEquals(condition,"CirculateHitIcon"))
       mask->useCirculateHitIcon = 1;
+    else if (StrEquals(condition, "Layer")) 
+    {  
+       if (sscanf(tmp,"%d",&mask->layer)) 
+       {
+	  tmp = GetNextToken (tmp, &condition);
+          if (mask->layer < 0) 
+            mask->layer = -2; /* silently ignore invalid layers */
+       }
+       else
+       {
+          mask->layer = -1; /* needs current layer */ 
+       }
+    }
     else if(!mask->needsName && !mask->needsNotName)
     {
       /* only 1st name to avoid mem leak */
@@ -4371,6 +4362,12 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
     return 0;
 
   if (mask->needsNotName && fMatches)
+    return 0;
+
+  if ((mask->layer == -1) && (fw->layer != Scr.Focus->layer)) 
+    return 0;
+
+  if ((mask->layer >= 0) && (fw->layer != mask->layer))  
     return 0;
 
   return 1;
@@ -4912,4 +4909,110 @@ void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (i>0 && rgpctMovementDefault[i-1] != 1.0) {
     rgpctMovementDefault[i++] = 1.0;
   }
+}
+
+void change_layer(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		  unsigned long context, char *action,int* Module)
+{
+  int n, layer, val[2];
+  FvwmWindow *t2, *next;
+  name_list styles;
+  
+  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+    return;
+  
+  if(tmp_win == NULL)
+    return;
+
+  n = GetIntegerArguments(action, NULL, val, 2);
+
+  layer = tmp_win->layer;
+  if ((n == 1) || 
+      ((n == 2) && (val[0] != 0))) 
+    {
+      layer += val[0];
+    }
+  else if ((n == 2) && (val[1] >= 0)) 
+    {
+      layer = val[1];
+    }
+  else
+    {
+      /* a hack: Layer 0 -1 goes back to the "default" layer */
+      LookInList (tmp_win, &styles);
+      layer = styles.layer;
+    }
+
+  if (layer < 0) 
+    {
+      layer = 0;
+    } 
+
+  if (layer < tmp_win->layer)
+    {
+      tmp_win->layer = layer;
+      RaiseWindow(tmp_win);
+    } 
+  else if (layer > tmp_win->layer)
+    {
+#ifndef DONT_RAISE_TRANSIENTS
+      /* this could be done much more efficiently */
+      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+	{
+	  next = t2->stack_next;
+	  if ((t2->flags & TRANSIENT) &&
+	      (t2->transientfor == tmp_win->w) &&
+	      (t2 != tmp_win) &&
+	      (t2->layer >= tmp_win->layer) &&
+              (t2->layer < layer))
+	    {
+	      t2->layer = layer;
+	      LowerWindow(t2);  
+	    }
+	}
+#endif
+      tmp_win->layer = layer;
+      LowerWindow(tmp_win);
+    } 
+}
+
+void SetDefaultLayers(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		      unsigned long context, char *action,int* Module)
+{
+  char *tok = NULL;
+  int i;
+  
+  action = GetNextToken(action, &tok);
+
+  if (tok) 
+    {
+       i = atoi (tok);
+       if (i < 0) 
+         {          
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else 
+         {
+           Scr.OnTopLayer = i;
+         } 
+       free (tok);
+       tok = NULL;
+    }
+
+  action = GetNextToken(action, &tok);
+
+  if (tok) 
+    {
+       i = atoi (tok);
+       if (i < 0) 
+         {          
+            fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else 
+         {
+            Scr.StaysPutLayer = i;
+         } 
+       free (tok);
+       tok = NULL;
+    }
 }

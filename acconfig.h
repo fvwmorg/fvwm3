@@ -106,6 +106,9 @@
  * "WindowShade" for more information.  */
 #undef WINDOWSHADE
 
+/* Enables session management functionality. */
+#undef SESSION
+
 /* Specify a type for sig_atomic_t if it's not available.  */
 #undef sig_atomic_t
 

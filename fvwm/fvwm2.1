@@ -108,6 +108,10 @@ the window manager to operate.  Windows may also be listed, along with
 their geometries, in a window list, accessible as a pop-up menu, or as
 a separate window, called the FvwmWinList (another module).
 
+Fvwm keeps the windows on the desktop in a "layered" stacking order;
+a window in a lower layer will never obscure a window in a higher layer.
+The layer of a window can be changed by using the Layer built-in command.
+
 "Sticky" windows are windows which transcend the virtual desktop by
 "Sticking to the screen's glass."  They always stay put on the screen.
 This is convenient for things like clocks and xbiff's, so you only need
@@ -334,6 +338,9 @@ option. Normally, \fIfvwm\fP will attempt to start up on all screens
 of a multi-screen display.
 .IP "\fB-version\fP"
 Print the version of \fIfvwm\fP to stderr.
+.IP "\fB-clientId\fP"
+.IP "\fB-restore\fP"
+These options are used by the session manager when restarting fvwm.
 
 .SH CONFIGURATION FILES
 The configuration file is used to describe mouse and button bindings,
@@ -953,14 +960,17 @@ keyboard focus.
 .IP "Current (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
-"!Visible", "Sticky", "!Sticky", "Maximized", "!Maximized",
-"Transient", "!Transient", "Raised", "!Raised", "CurrentDesk",
-"CurrentPage", and "CurrentPageAnyDesk".  In addition, the condition
+"!Visible", "Layer [ n ]", "Sticky", "!Sticky", "Maximized", 
+"!Maximized", "Transient", "!Transient", "CurrentDesk", "CurrentPage", 
+and "CurrentPageAnyDesk".  In addition, the condition
 may include a window name to match to.  The window name may include
 the wildcards * and ?.  The window name, icon name, class, and
 resource will be considered when attempting to find a match.  The
 window name can begin with ! which will prevent \fIcommand\fP if any
 of the window name, icon name, class or resource match.
+
+The argument of the "Layer" condition defaults to the layer of the
+focus window.
 
 Note that earlier versions of fvwm2 required the conditions to be
 enclosed in brackets instead of parentheses (this is still supported
@@ -1098,6 +1108,11 @@ icon titles as well as the geometry feedback windows during a move
 or resize operation. To override the default font in a specific
 context, use the \fIWindowFont\fP, \fIIconFont\fP or \fIMenuStyle\fP
 commands.
+
+
+.IP "DefaultLayers \fIontop\fP \fIput\fP"
+changes the layers that are used for the StaysOnTop/StaysPut style
+options. Initially, the layers 1 and 0 are used.
 
 
 .IP "Delete"
@@ -1451,9 +1466,21 @@ Causes the module which was invoked with name \fIname\fP to be killed.
 \fIname\fP may include wild-cards.
 
 
-.IP "Lower"
-Allows the user to lower a window.
+.IP "Layer \fIarg1\fP [ \fIarg2\fP ]"
+puts the current window in a new layer. The arguments are interpreted
+in the same way as the arguments to the Desk command. As a special case,
+Layer 0 -1 puts the window in its "default" layer, ie the layer it was
+initially in. 
 
+
+.IP "Lower"
+Allows the user to lower a window. Note that this lowers a window
+only in its layer. To bring a window to the absolute bottom, use
+.EX
+AddToFunc lower-to-bottom
+ + "I" Layer 0 0 
+ + "I" Lower
+.EE
 
 .IP "Maximize [ \fI horizontal vertical\fP ]"
 Without its optional arguments Maximize causes the window to
@@ -2163,8 +2190,14 @@ Causes fvwm to stop managing the screen on which the command was issued.
 
 
 .IP "Raise"
-Allows the user to raise a window.
-
+Allows the user to raise a window. Note that this raises a window
+only in its layer. To bring a window to the absolute top, use 
+.EX
+AddToFunc raise-to-top
+ + "I" Layer 0 ontop
+ + "I" Raise
+.EE
+where ontop is the highest layer used in your setup.
 
 .IP "RaiseLower"
 Alternately raises and lowers a window.
@@ -2342,7 +2375,7 @@ are given Class = "NoClass" and those that don't have a resource
 keywords BorderWidth, HandleWidth, NoIcon/Icon, MiniIcon, IconBox,
 IconGrid, IconFill,
 NoTitle/Title, NoHandles/Handles, WindowListSkip/WindowListHit,
-CirculateSkip/CirculateHit, StaysOnTop/StaysPut, Sticky/Slippery,
+CirculateSkip/CirculateHit, Layer, StaysOnTop/StaysPut, Sticky/Slippery,
 StartIconic/StartNormal, Color, ForeColor, BackColor,
 StartsOnDesk/StartsOnPage/StartsAnyWhere, IconTitle/NoIconTitle,
 MWMButtons/FvwmButtons, MWMBorder/FvwmBorder, MWMDecor/NoDecorHint,
@@ -2456,12 +2489,14 @@ StartsOnPage in conjunction with SkipMapping is a useful technique when you
 want to start an app on some other page and continue with what you were
 doing, rather than waiting for it to appear.
 
-\fIStaysOnTop\fP makes the window always try to stay on top of the other
-windows.  This might be handy for clocks or mailboxes that you would
-always like to be visible.  If the window is explicitly lowered it
-will not try to force its way back to the top until it is explicitly
-raised.  StaysPut (the default) allows the window to be obscured and
-stay that way.
+\fILayer\fP accepts one argument: a nonnegative integer. This is 
+the layer the window is put in. 
+
+\fIStaysOnTop\fP puts the window in the ontop layer. This layer can
+be changed by the built-in command DefaultLayers; the default is 1.
+
+\fIStaysPut\fP puts the window in the put layer. This layer can   
+be changed by the built-in command DefaultLayers; the default is 0.
 
 \fIBorderWidth\fP takes a numeric argument which is the width of the border
 to place the window if it does not have resize-handles.
@@ -2753,8 +2788,8 @@ window.
 The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
 <funcname>", "Desk <desknum>", "CurrentDesk", "NoIcons", "Icons",
 "OnlyIcons", "NoNormal", "Normal", "OnlyNormal", "NoSticky", "Sticky",
-"OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "NoDeskSort", "UseIconName",
-"Alphabetic", "NotAlphabetic".
+"OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "Layer m [ n ]", 
+"NoDeskSort", "UseIconName", "Alphabetic", "NotAlphabetic".
 
 (Note - normal means not iconic, sticky, or ontop)
 
@@ -2765,6 +2800,9 @@ AddToFunc IFunc "I" WindowId $0 Iconify
 WindowList Function IFunc, NoSticky, \\
   CurrentDesk, NoIcons
 .EE
+
+If you use the Layer m [ n ] option, only windows in layers between
+m and n are displayed. n defaults to m.
 
 If you wanted to use the WindowList as an icon manager, you could invoke
 the following:
@@ -2844,6 +2882,32 @@ displays.
 You may need to quit on each screen to quit from the X session
 completely.
 
+.SH SESSION MANAGEMENT
+Fvwm supports session management according to the X Session Management
+Protocol. It saves and restores window position, size, stacking order, 
+desk, stickyness, shadedness, maximizedness, iconifiedness for all windows.
+Furthermore, some global state is saved.
+
+Note that fvwm doesn't save any information regarding styles, decors, 
+functions or menus. If you change anything wrt. to these resources during 
+a session (eg by issuing Style commands via the FvwmTalk module), these 
+changes will be lost after saving and restarting the session. To 
+become permanent, such changes have to be added to the config file.
+
+Note further that the current implementation has the following
+anomaly when used on a multi-screen display: Starting fvwm
+for the first time, it will manage all screens by forking a copy
+of itself for each screen. Every copy knows its parent and issuing
+a Quit command to any instance of fvwm will kill the master and
+thus all copies of fvwm. When you save and restart the session,
+the session manager brings up a copy of fvwm on each screen, but
+this time they are started as individual instances managing one
+screen only. Thus a Quit will now kill only the copy it was sent
+to. I don't think this is a very serious problem, since with session
+management, you are supposed to quit a session through the session
+manager anyway. If it is really needed, "Exec exec killall fvwm2" will
+still kill all copies of fvwm.
+
 
 .SH ENVIRONMENT
 .TP
@@ -2855,7 +2919,13 @@ option is given.
 FVWM_MODULEDIR
 Set by \fIfvwm\fP to the directory containing the standard \fIfvwm\fP
 modules.
-
+.TP
+SESSION_MANAGER
+Fvwm tries to contact this session manager.
+.TP
+SM_SAVE_DIR
+if this is set, fvwm saves its session data in this directory. Otherwise
+it uses $HOME.
 
 .SH BUGS
 As of fvwm 2.2 there were exactly 46.144 unidentified bugs.

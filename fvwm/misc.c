@@ -811,33 +811,6 @@ void UngrabEm()
 }
 
 
-
-/****************************************************************************
- *
- * Keeps the "StaysOnTop" windows on the top of the pile.
- * This is achieved by clearing a flag for OnTop windows here, and waiting
- * for a visibility notify on the windows. Exeption: OnTop windows which are
- * obscured by other OnTop windows, which need to be raised here.
- *
- ****************************************************************************/
-void KeepOnTop()
-{
-  FvwmWindow *t;
-
-  /* flag that on-top windows should be re-raised */
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-    {
-      if((t->flags & ONTOP)&&!(t->flags & VISIBLE))
-	{
-	  RaiseWindow(t);
-	  t->flags &= ~RAISED;
-	}
-      else
-	t->flags |= RAISED;
-    }
-}
-
-
 /**************************************************************************
  *
  * Unmaps a window on transition to a new desktop
@@ -891,195 +864,185 @@ void MapIt(FvwmWindow *t)
 }
 
 
-
-
 void RaiseWindow(FvwmWindow *t)
 {
-  FvwmWindow *t2;
-  int count, i;
-  Window *wins;
+  FvwmWindow *s, *r, *t2, *next;
+  unsigned int flags;
+  int i, count;
   XWindowChanges changes;
-  FvwmWindow *t1;
-  FvwmWindow **FvwmTopwins = NULL;
-  int j, count2;
+  Window *wins;
 
+  Scr.LastWindowRaised = t;
 
-  memset((void *) &changes, '\0', sizeof(changes));
-  /* raise the target, at least */
-  count = 1;
+  for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
+    {
+       if ((t != s) && (t->layer >= s->layer))
+        {
+             break;
+        }
+     }
+
+  if (s == t->stack_next)
+     {
+      return;
+     }
+
+  r = s->stack_prev;
+  /* We have to insert t and all its transients between r and s. */
+
+  count = 0;
+
+#ifndef DONT_RAISE_TRANSIENTS
+  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+     {
+      next = t2->stack_next;
+      if ((t2->flags & TRANSIENT) &&
+          (t2->transientfor == t->w) &&
+          (t2 != t) &&
+          (t2->layer == t->layer))
+        {
+          if (t2 == s)
+            {
+              /* t2 is a transient that is already in place.
+                 This should only happen if we haven't yet
+                 inserted anything between r and s. */
+              if (r != s->stack_prev)
+                fprintf(stderr, "OOPS 1 in RaiseWindow\n");
+              s = s->stack_next;
+              r = s->stack_prev;
+            }
+          else
+            {
+          /* t2 is a transient to raise */
+          count++;
+          if ((t2->flags & ICONIFIED) && (!(t2->flags & SUPPRESSICON)))
+            {
+               count += 2;
+            }
+
+          BroadcastPacket(M_RAISE_WINDOW, 3,
+                          t2->w, t2->frame, (unsigned long)t2);
+          /* unplug it */
+          t2->stack_next->stack_prev = t2->stack_prev;
+          t2->stack_prev->stack_next = t2->stack_next;
+          /* put it above s */
+          t2->stack_next = s;
+          t2->stack_prev = s->stack_prev;
+          t2->stack_next->stack_prev = t2;
+          t2->stack_prev->stack_next = t2;
+          }
+        }
+     }
+#endif
+
+  /* don't forget t itself */
+  count++;
+  if ((t->flags & ICONIFIED) && (!(t->flags & SUPPRESSICON)))
+    {
+       count += 2;
+    }
+
   BroadcastPacket(M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
 
-  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
-    {
-      if(t2->flags & ONTOP)
-	count++;
-      if((t2->flags & TRANSIENT) &&(t2->transientfor == t->w)&&
-	 (t2 != t))
-	{
-	  count++;
-	  BroadcastPacket(M_RAISE_WINDOW, 3,
-                          t2->w, t2->frame,(unsigned long) t2);
-	  if ((t2->flags & ICONIFIED)&&(!(t2->flags & SUPPRESSICON)))
-	    {
-	      count += 2;
-	    }
-	}
-    }
-  if ((t->flags & ICONIFIED)&&(!(t->flags & SUPPRESSICON)))
-    {
-      count += 2;
-    }
+  t->stack_prev->stack_next = t->stack_next;
+  t->stack_next->stack_prev = t->stack_prev;
+
+  t->stack_next = s;
+  t->stack_prev = s->stack_prev;
+  t->stack_prev->stack_next = t;
+  t->stack_next->stack_prev = t;
 
   wins = (Window *)safemalloc(count*sizeof(Window));
-  FvwmTopwins = (FvwmWindow **)safemalloc(count*sizeof(FvwmWindow));
 
-  i=0;
-  j = 0;
-  count2 = 0;
-
-  /* ONTOP windows on top */
-  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
-    {
-      if(t2->flags & ONTOP)
-	{
-	  BroadcastPacket(M_RAISE_WINDOW, 3,
-                          t2->w, t2->frame, (unsigned long) t2);
-	  wins[i++] = t2->frame;
-          FvwmTopwins[j++] = t2;
-	}
-    }
-
-  /* now raise transients */
-#ifndef DONT_RAISE_TRANSIENTS
-  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
+  i = 0;
+  for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
   {
-    if((t2->flags & TRANSIENT) &&
-       (t2->transientfor == t->w) &&
-       (t2 != t) &&
-       (!(t2->flags & ONTOP)))
-    {
-      wins[i++] = t2->frame;
-      FvwmTopwins[j++] = t2;
-      if ((t2->flags & ICONIFIED)&&(!(t2->flags & SUPPRESSICON)))
-      {
+     if (i >= count)
+       fprintf(stderr, "OOPS2 in RaiseWindow i==%d\n", i);
+     wins[i++] = t2->frame;
+     if ((t2->flags & ICONIFIED) && (!(t2->flags & SUPPRESSICON)))
+     {
         if(!(t2->flags & NOICON_TITLE))
           wins[i++] = t2->icon_w;
         if(!(t2->icon_pixmap_w))
           wins[i++] = t2->icon_pixmap_w;
-      }
-    }
-  }
-#endif
-  if ((t->flags & ICONIFIED)&&(!(t->flags & SUPPRESSICON)))
-  {
-    if(!(t->flags & NOICON_TITLE))
-      wins[i++] = t->icon_w;
-    if (t->icon_pixmap_w)
-      wins[i++] = t->icon_pixmap_w;
-  }
-  if(!(t->flags & ONTOP))
+     }
+   }
+
+  changes.sibling = s->frame;
+  if (changes.sibling != None)
     {
-      wins[i++] = t->frame;
-      FvwmTopwins[j++] = t;
-      Scr.LastWindowRaised = t;
+      changes.stack_mode = Above;
+      flags = CWSibling|CWStackMode;
     }
-  count2 = j;
-
-  if(i > 0)
+  else
     {
-/*      XRaiseWindow(dpy,wins[0]);  */
-      /*
-           clasen@mathematik.uni-freiburg.de - 01/01/1999 -
-         simply calling XRaiseWindow(dpy,wins[0]); here will put StaysOnTop
-         windows over override_redirect windows like FvwmPager ballon_win or
-         Motif menus. Instead raise wins[0] only above the topmost window
-	 which is managed by us.
-      */
-     if (wins[0] != Scr.FvwmRoot.stack_next->frame && wins[0] != Scr.FvwmRoot.stack_next->icon_w && wins[0] != Scr.FvwmRoot.stack_next->icon_pixmap_w) 
-      { 
-        if (Scr.FvwmRoot.stack_next->flags & ICONIFIED)
-          {
-            /*
-                RBW - use the icon window or pixmap if there is one; but
-                there may not be (NoIconTitle or NoIcon) --
-            */
-            if (Scr.FvwmRoot.stack_next->icon_w)
-              {
-                changes.sibling = Scr.FvwmRoot.stack_next->icon_w;
-              }
-            else if (Scr.FvwmRoot.stack_next->icon_pixmap_w)
-              {
-                changes.sibling = Scr.FvwmRoot.stack_next->icon_pixmap_w;
-              }
-            else
-              {
-                changes.sibling = Scr.FvwmRoot.stack_next->frame;
-              }
-          }
-        else
-          {
-            changes.sibling = Scr.FvwmRoot.stack_next->frame;
-          }
-        changes.stack_mode = Above;
-        XConfigureWindow(dpy, wins[0], (CWSibling|CWStackMode), &changes);
-      }
-
-
-      /*
-          RBW  - 01/05/1998 - move all raised windows to front of stacking
-          order chain.
-      */
-      j = 0;
-      t2 = &Scr.FvwmRoot;
-      while (j < count2)
-        {
-          t1 = FvwmTopwins[j];
-	  if (t1 != t2->stack_next)
-            {
-              t1->stack_prev->stack_next = t1->stack_next;  /* Pluck from chain.       */
-              t1->stack_next->stack_prev = t1->stack_prev;
-              t1->stack_next = t2->stack_next;    /* Set new pointers.       */
-              t1->stack_prev = t2->stack_next->stack_prev;
-              t2->stack_next->stack_prev = t1;    /* Insert in new position in chain. */
-              t2->stack_next = t1;
-            }
-          j++;
-          if (t2->stack_next != &Scr.FvwmRoot)
-          {
-	    t2 = t2->stack_next;
-          }
-        }
-
+      changes.stack_mode = Below;
+      flags = CWStackMode;
     }
+  
+  XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
+  XRestackWindows (dpy, wins, count);
 
-  XRestackWindows(dpy,wins,i);
-  free(wins);
-  if (FvwmTopwins) free(FvwmTopwins);
+  free (wins);
+
+  /* This should be unnecessary, since we never
+     do an unguarded XRaiseWindow */
   raisePanFrames();
 }
 
-
+  
 void LowerWindow(FvwmWindow *t)
 {
-  XLowerWindow(dpy,t->frame);
+  FvwmWindow *s;
+  XWindowChanges changes;
+  int i;
+  unsigned int flags;
+
+  Scr.LastWindowRaised = NULL;
+
+  for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
+    {
+      if (t->layer > s->layer)
+        {
+           break;
+        }
+    }
+
+  if (s == t->stack_next)
+    {
+      return;
+    }
 
   BroadcastPacket(M_LOWER_WINDOW, 3, t->w, t->frame, (unsigned long)t);
 
+  changes.sibling = s->frame;
+  if (changes.sibling != None)
+    {
+      changes.stack_mode = Above;
+      flags = CWSibling|CWStackMode;
+    }
+  else
+    {
+      changes.stack_mode = Below;
+      flags = CWStackMode;
+    }
+
+  XConfigureWindow(dpy, t->frame, flags, &changes);
+
   if((t->flags & ICONIFIED)&&(!(t->flags & SUPPRESSICON)))
     {
-      XLowerWindow(dpy, t->icon_w);
-      XLowerWindow(dpy, t->icon_pixmap_w);
+      XConfigureWindow(dpy, t->icon_w, flags, &changes);
+      XConfigureWindow(dpy, t->icon_pixmap_w, flags, &changes);
     }
-  Scr.LastWindowRaised = (FvwmWindow *)0;
-  /*
-      RBW - 11/13/1998 - new: maintain the stacking order chain.
-  */
-  t->stack_prev->stack_next = t->stack_next;            /* Pluck from chain.       */
+
+  t->stack_prev->stack_next = t->stack_next;
   t->stack_next->stack_prev = t->stack_prev;
-  t->stack_next = Scr.FvwmRoot.stack_prev->stack_next;  /* Set new pointers.       */
-  t->stack_prev = Scr.FvwmRoot.stack_prev;
-  Scr.FvwmRoot.stack_prev->stack_next = t;              /* Insert at end of chain. */
-  Scr.FvwmRoot.stack_prev = t;
+
+  t->stack_next = s;
+  t->stack_prev = s->stack_prev;
+  t->stack_prev->stack_next = t;
+  t->stack_next->stack_prev = t;
 }
 
 

@@ -33,6 +33,7 @@ smr_SWITCH(extended-titlestyle, styled title-bars, on, EXTENDED_TITLESTYLE)
 smr_SWITCH(borderstyle, BorderStyle command, on, BORDERSTYLE)
 smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
 smr_SWITCH(windowshade, WindowShade function, on, WINDOWSHADE)
+smr_SWITCH(session, session management functionality, on, SESSION)
 smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
 
 dnl FIXME: default value should be derived from computed path to X

@@ -249,6 +249,11 @@ typedef struct FvwmWindow
       unsigned ViewportMoved : 1; /* To prevent double move in MoveViewport. */
       unsigned IconifiedByParent : 1; /* To prevent iconified transients in a
 				       * parent icon from counting for Next */
+#ifdef SESSION
+      unsigned NameChanged : 1; /* Set if the client changes its WM_NAME. 
+				   The source of twm contains an explanation
+				   why we need this information. */
+#endif
     } tmpflags;
 #endif /* GSFR */
 
@@ -275,6 +280,9 @@ typedef struct FvwmWindow
     Pixel BackPixel;
     unsigned long buttons;
     icon_boxes *IconBoxes;              /* zero or more iconboxes */
+
+    int layer;
+
 } FvwmWindow;
 
 /* Window mask for Circulate and Direction functions */
@@ -290,6 +298,7 @@ typedef struct WindowConditionMask {
   unsigned long onFlags;
   unsigned long offFlags;
   char *name;
+  int layer;
 } WindowConditionMask;
 
 /***************************************************************************
@@ -298,7 +307,6 @@ typedef struct WindowConditionMask {
 /* The first 13 items are mapped directly from the style structure's
  * flag value, so they MUST correspond to the first 13 entries in misc.h */
 #define STARTICONIC             (1<<0)
-#define ONTOP                   (1<<1) /* does window stay on top */
 #define STICKY                  (1<<2) /* Does window stick to glass? */
 #define WINDOWLISTSKIP          (1<<3)
 #define SUPPRESSICON            (1<<4)
@@ -310,7 +318,7 @@ typedef struct WindowConditionMask {
 #define ClickToFocus            (1<<10)
 #define SloppyFocus             (1<<11)
 #define SHOW_ON_MAP    (1<<12) /* switch to desk when it gets mapped? */
-#define ALL_COMMON_FLAGS (STARTICONIC|ONTOP|STICKY|WINDOWLISTSKIP| \
+#define ALL_COMMON_FLAGS (STARTICONIC|STICKY|WINDOWLISTSKIP| \
 			  SUPPRESSICON|NOICON_TITLE|Lenience|StickyIcon| \
 			  CirculateSkipIcon|CirculateSkip|ClickToFocus| \
 			  SloppyFocus|SHOW_ON_MAP)
@@ -320,7 +328,6 @@ typedef struct WindowConditionMask {
 #define MAPPED         (1<<15) /* is it mapped? */
 #define ICONIFIED      (1<<16) /* is it an icon now? */
 #define TRANSIENT      (1<<17) /* is it a transient window? */
-#define RAISED         (1<<18) /* if its a sticky window, needs raising? */
 #define VISIBLE        (1<<19) /* is the window fully visible */
 #define ICON_OURS      (1<<20) /* is the icon window supplied by the app? */
 #define PIXMAP_OURS    (1<<21)/* is the icon pixmap ours to free? */
@@ -405,6 +412,11 @@ extern Atom _XA_OL_DECOR_CLOSE;
 extern Atom _XA_OL_DECOR_RESIZE;
 extern Atom _XA_OL_DECOR_HEADER;
 extern Atom _XA_OL_DECOR_ICON_NAME;
+#ifdef SESSION
+extern Atom _XA_WM_WINDOW_ROLE;
+extern Atom _XA_WM_CLIENT_LEADER;
+extern Atom _XA_SM_CLIENT_ID;
+#endif
 
 /* include this down here because FvwmWindows must be defined when including
  * this header file. */

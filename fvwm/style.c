@@ -488,6 +488,16 @@ void ProcessNewStyle(XEvent *eventp,
           SKIP("LENIENCE");
           tname.off_flags |= LENIENCE_FLAG;
         }
+	else if (ITIS("LAYER"))
+	  {
+	    SKIP("LAYER");
+	    sscanf(restofline,"%d",&tname.layer);
+	    if(tname.layer < 0)
+	      fvwm_msg(ERR,"ProcessNewStyle", "Layer must be non-negative." );
+	    GETWORD;
+	    restofline = tmp;
+	    SKIPSPACE;
+	  }
         break;
       case 'm':
         if(ITIS("MWMBUTTONS"))
@@ -666,12 +676,12 @@ void ProcessNewStyle(XEvent *eventp,
         else if(ITIS("StaysOnTop"))
         {
           SKIP("StaysOnTop");
-          tname.off_flags |= STAYSONTOP_FLAG;
+          tname.layer = Scr.OnTopLayer;
         }
         else if(ITIS("StaysPut"))
         {
           SKIP("StaysPut");
-          tname.on_flags |= STAYSONTOP_FLAG;
+          tname.layer = Scr.StaysPutLayer;
         }
         else if(ITIS("Sticky"))
         {

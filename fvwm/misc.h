@@ -45,7 +45,7 @@ typedef struct name_list_struct
   icon_boxes *IconBoxes;                /* pointer to iconbox(s) */
   unsigned long on_buttons;
   unsigned long off_buttons;
-
+  int layer;
 } name_list;
 
 /* used for parsing configuration */
@@ -78,7 +78,6 @@ struct functions
 /* The first 13 items are mapped directly into the FvwmWindow structures
  * flag value, so they MUST correspond to the first 13 entries in fvwm.h */
 #define START_ICONIC_FLAG    (1<<0)
-#define STAYSONTOP_FLAG      (1<<1)
 #define STICKY_FLAG          (1<<2)
 #define LISTSKIP_FLAG        (1<<3)
 #define SUPPRESSICON_FLAG    (1<<4)
@@ -298,7 +297,6 @@ void SetStickyProp(FvwmWindow *, int, int, int);
 void SetClientProp(FvwmWindow *);
 void Iconify(FvwmWindow *, int, int);
 void DeIconify(FvwmWindow *);
-void KeepOnTop(void);
 void show_panner(void);
 void WaitForButtonsUp(void);
 void FocusOn(FvwmWindow *t,Bool FocusByMouse);
@@ -476,6 +474,9 @@ void SetEnv(F_CMD_ARGS);
 
 void CoerceEnterNotifyOnCurrentWindow();
 
+void change_layer(F_CMD_ARGS);
+void SetDefaultLayers(F_CMD_ARGS);
+
 /*
 ** message levels for fvwm_msg:
 */
@@ -485,5 +486,16 @@ void CoerceEnterNotifyOnCurrentWindow();
 #define ERR  2
 void fvwm_msg(int type,char *id,char *msg,...);
 
+#ifdef SESSION
+/* session management adapted from enlightenment */
+void SessionInit(char *client_id);
+void LoadWindowStates(char *filename);
+void LoadGlobalState(char *filename);
+void ProcessICEMsgs(void);
+void MatchWinToSM(FvwmWindow *t, int *, int *, int *, int *, int *, int *);
+#endif
+
 #endif /* MISC_H */
+
+
 
