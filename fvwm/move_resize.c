@@ -503,7 +503,7 @@ static void DisplayPosition(
   Scr.ScratchStr->gc = Scr.StdGC;
   Scr.ScratchStr->x = offset;
   Scr.ScratchStr->y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;;
-  FlocaleDrawString(dpy, Scr.DefaultFont, Scr.ScratchStr, 0); 
+  FlocaleDrawString(dpy, Scr.DefaultFont, Scr.ScratchStr, 0);
 }
 
 
@@ -1751,8 +1751,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     case ButtonRelease:
       if(!do_move_opaque)
 	switch_move_resize_grid(False);
-      xl2 = Event.xbutton.x_root + XOffset;
-      yt2 = Event.xbutton.y_root + YOffset;
+      xl2 = Event.xbutton.x_root + XOffset + x_virtual_offset;
+      yt2 = Event.xbutton.y_root + YOffset + y_virtual_offset;
       /* ignore the position of the button release if it was on a
        * different page. */
       if (!(((xl <  0 && xl2 >= 0) || (xl >= 0 && xl2 <  0) ||
