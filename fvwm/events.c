@@ -784,7 +784,8 @@ void HandleConfigureRequest(void)
 	 * Event.xany.window is Event.xconfigurerequest.parent, so Fw will
 	 * be wrong
 	 */
-	Event.xany.window = cre->window;	/* mash parent field */
+	/* mash parent field */
+	Event.xany.window = cre->window;
 	if (XFindContext (dpy, cre->window, FvwmContext, (caddr_t *) &Fw) ==
 	    XCNOENT)
 	{
@@ -881,14 +882,14 @@ void HandleConfigureRequest(void)
 	/*  Stacking order change requested...  */
 	/*  Handle this *after* geometry changes, since we need the new
 	    geometry in occlusion calculations */
-	if ( (cre->value_mask & CWStackMode) && !DO_IGNORE_RESTACK(Fw) )
+	if ((cre->value_mask & CWStackMode) && !DO_IGNORE_RESTACK(Fw))
 	{
 		FvwmWindow *otherwin = NULL;
 
 		if (cre->value_mask & CWSibling)
 		{
-			if (XFindContext (dpy, cre->above, FvwmContext,
-					  (caddr_t *) &otherwin) == XCNOENT)
+			if (XFindContext(dpy, cre->above, FvwmContext,
+                                         (caddr_t *) &otherwin) == XCNOENT)
 			{
 				otherwin = NULL;
 			}
@@ -899,8 +900,9 @@ void HandleConfigureRequest(void)
 		}
 		if ((cre->detail != Above) && (cre->detail != Below))
 		{
-			HandleUnusualStackmodes (cre->detail, Fw, cre->window,
-						 otherwin, cre->above);
+			HandleUnusualStackmodes(
+                                cre->detail, Fw, cre->window, otherwin,
+                                cre->above);
 		}
 		/* only allow clients to restack windows within their layer */
 		else if (!otherwin || compare_window_layers(otherwin, Fw) != 0)
@@ -920,7 +922,7 @@ void HandleConfigureRequest(void)
 			xwc.sibling = FW_W_FRAME(otherwin);
 			xwc.stack_mode = cre->detail;
 			xwcm = CWSibling | CWStackMode;
-			XConfigureWindow (dpy, FW_W_FRAME(Fw), xwcm, &xwc);
+			XConfigureWindow(dpy, FW_W_FRAME(Fw), xwcm, &xwc);
 
 			/* Maintain the condition that icon windows are stacked
 			   immediately below their frame */
@@ -1012,8 +1014,14 @@ void HandleConfigureRequest(void)
 		args.do_return_true_cr = True;
 		args.cr_value_mask =
 			(CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
+#if 0
 		/* free some CPU */
-		usleep(1);
+                /* dv (7 May 2002): No, it's better to reschedule processes here
+                 * because some funny applications (XMMS, GTK) seem to expect
+                 * that ConfigureRequests are handles instantly or they will
+                 * freak out. */
+                usleep(1);
+#endif
 		while (1)
 		{
 			unsigned long vma;
@@ -1090,14 +1098,16 @@ void HandleConfigureRequest(void)
 		} /* while */
 #endif
 
-#if 0
+#if 1
 		fprintf(stderr,
-			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
+			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
+                        "ew 0x%08x  '%s'\n",
 			cre->x, (int)(cre->value_mask & CWX),
 			cre->y, (int)(cre->value_mask & CWY),
 			cre->width, (int)(cre->value_mask & CWWidth),
 			cre->height, (int)(cre->value_mask & CWHeight),
-			(int)FW_W(Fw), (Fw->name) ? Fw->name : "");
+			(int)FW_W_FRAME(Fw), (int)FW_W(Fw), (int)cre->window,
+                        (Fw->name.name) ? Fw->name.name : "");
 #endif
 		/* Don't modify frame_XXX fields before calling SetupWindow! */
 		dx = 0;
@@ -1423,30 +1433,42 @@ void HandleEnterNotify(void)
 		Scr.flags.is_pointer_on_this_screen = 1;
 	}
 
-	/* an EnterEvent in one of the PanFrameWindows activates the Paging or 
+	/* an EnterEvent in one of the PanFrameWindows activates the Paging or
 	   an EdgeCommand */
 	if (ewp->window==Scr.PanFrameTop.win
 	    || ewp->window==Scr.PanFrameLeft.win
 	    || ewp->window==Scr.PanFrameRight.win
-	    || ewp->window==Scr.PanFrameBottom.win )
+	    || ewp->window==Scr.PanFrameBottom.win)
 	{
 
 	  /* check for edge commands */
-	  if ( ewp->window == Scr.PanFrameTop.win &&
-	       Scr.PanFrameTop.command != NULL ) {
-	    old_execute_function(NULL,Scr.PanFrameTop.command, Fw, &Event,C_WINDOW, -1, 0, NULL);
+	  if (ewp->window == Scr.PanFrameTop.win &&
+	       Scr.PanFrameTop.command != NULL)
+          {
+                  old_execute_function(
+                          NULL, Scr.PanFrameTop.command, Fw, &Event,
+                          C_WINDOW, -1, 0, NULL);
 	  }
-	  else if ( ewp->window == Scr.PanFrameBottom.win &&
-		    Scr.PanFrameBottom.command != NULL )  {
-	    old_execute_function(NULL,Scr.PanFrameBottom.command, Fw, &Event,C_WINDOW, -1, 0, NULL);
+	  else if (ewp->window == Scr.PanFrameBottom.win &&
+		    Scr.PanFrameBottom.command != NULL)
+          {
+                  old_execute_function(
+                          NULL, Scr.PanFrameBottom.command, Fw, &Event,
+                          C_WINDOW, -1, 0, NULL);
 	  }
-	  else if ( ewp->window == Scr.PanFrameLeft.win &&
-		    Scr.PanFrameLeft.command != NULL )  {
-	    old_execute_function(NULL,Scr.PanFrameLeft.command, Fw, &Event,C_WINDOW, -1, 0, NULL);
+	  else if (ewp->window == Scr.PanFrameLeft.win &&
+		    Scr.PanFrameLeft.command != NULL)
+          {
+                  old_execute_function(
+                          NULL, Scr.PanFrameLeft.command, Fw, &Event,
+                          C_WINDOW, -1, 0, NULL);
 	  }
-	  else if ( ewp->window == Scr.PanFrameRight.win &&
-		    Scr.PanFrameRight.command != NULL )  {
-	    old_execute_function(NULL,Scr.PanFrameRight.command, Fw, &Event,C_WINDOW, -1, 0, NULL);
+	  else if (ewp->window == Scr.PanFrameRight.win &&
+		    Scr.PanFrameRight.command != NULL)
+          {
+                  old_execute_function(
+                          NULL, Scr.PanFrameRight.command, Fw, &Event,
+                          C_WINDOW, -1, 0, NULL);
 	  }
 	  else {
 	    /* no edge command for this pan frame - so we do HandlePaging */
@@ -3131,7 +3153,7 @@ void HandleEvents(void)
 {
 	DBUG("HandleEvents","Routine Entered");
 	STROKE_CODE(send_motion = FALSE);
-	while ( !isTerminated )
+	while (!isTerminated)
 	{
 		last_event_type = 0;
 		if (Scr.flags.is_window_scheduled_for_destroy)
@@ -3299,9 +3321,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		}
 
 		/* Express route out of FVWM ... */
-		if ( isTerminated ) return 0;
-	}
-	while (num_fd < 0);
+		if (isTerminated)
+                {
+                        return 0;
+                }
+	} while (num_fd < 0);
 
 	if (num_fd > 0)
 	{
