@@ -1996,14 +1996,17 @@ In fvwm there are four slightly different types of menus:
 can appear everywhere on the screen on their own or attached to a
 part of a window.  The
 .B Popup
-command opens popup menus.  Releasing a mouse button over a popup
-menu activates the item below the pointer and executes the
-associated action.
+command opens popup menus.  If the popup menu was invoked with a
+mouse button held down, it is closed when the button is released.
+THe item under the pointer is then activated and the associated
+action is executed.
 
 .B Menu
 is a very similar command, but the menus it opens are slightly less
-transient.  A separate click is required to activate a menu item -
-releasing a mouse button does not activate it.
+transient.  When invoked by clicking a mouse button, it stays open
+and can be navigated with no button held.  But if it is invoked by
+a button press followed by mouse motion, it behaves exactly like a
+popup menu.
 
 .IR "Tear off" " or " "Pin up menus"
 are menus from either of the above two commands that have been
