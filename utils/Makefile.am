@@ -19,10 +19,10 @@ LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 
 
-fvwm-menu-xlock.1: fvwm-menu-xlock
-	pod2man --center "Fvwm Utility" $< > $@ 2>/dev/null
-fvwm-menu-directory.1: fvwm-menu-directory
-	pod2man --center "Fvwm Utility" $< > $@ 2>/dev/null
+fvwm-menu-xlock.1: fvwm-menu-xlock.in
+	pod2man --center "Fvwm Utility" fvwm-menu-xlock     > $@ 2>/dev/null
+fvwm-menu-directory.1: fvwm-menu-directory.in
+	pod2man --center "Fvwm Utility" fvwm-menu-directory > $@ 2>/dev/null
 
 fvwmbug: fvwmbug.sh FORCE
 	@rm -f $@
