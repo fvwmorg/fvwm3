@@ -37,6 +37,7 @@
 #include "ewmh.h"
 #include "borders.h"
 #include "frame.h"
+#include "focus.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -187,6 +188,9 @@ void CMD_WindowShade(F_CMD_ARGS)
 		SET_SHADED_DIR(fw, shade_dir);
 	}
 	frame_free_move_resize_args(fw, mr_args);
+	border_draw_decorations(
+		fw, PART_TITLEBAR, (fw == get_focus_window()) ? True : False,
+		0, CLEAR_BUTTONS, NULL, NULL);
 	/* update hints and inform modules */
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 	BroadcastPacket(

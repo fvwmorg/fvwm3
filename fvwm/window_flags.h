@@ -86,11 +86,6 @@
           (fw)->flag_mask.common.s.do_window_list_skip = !!(x)
 #define DO_STACK_TRANSIENT_PARENT(fw) \
           ((fw)->flags.common.s.do_stack_transient_parent)
-#define DO_START_ICONIC(fw)    ((fw)->flags.common.s.do_start_iconic)
-#define SET_DO_START_ICONIC(fw,x) \
-          (fw)->flags.common.s.do_start_iconic = !!(x)
-#define SETM_DO_START_ICONIC(fw,x) \
-          (fw)->flag_mask.common.s.do_start_iconic = !!(x)
 #define GET_TITLE_DIR(fw)    ((fw)->flags.common.title_dir)
 #define HAS_TITLE_DIR(fw,x)  ((fw)->flags.common.title_dir == x)
 #define SET_TITLE_DIR(fw,x)  ((fw)->flags.common.title_dir = x)
@@ -260,12 +255,6 @@
 #define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.s.has_depressable_border)
 
 /* access to the special flags of a window */
-#define DO_DELETE_ICON_MOVED(fw) \
-                               ((fw)->flags.do_delete_icon_moved)
-#define SET_DELETE_ICON_MOVED(fw,x) \
-                               (fw)->flags.do_delete_icon_moved = !!(x)
-#define SETM_DELETE_ICON_MOVED(fw,x) \
-                               (fw)->flag_mask.do_delete_icon_moved = !!(x)
 #define DO_REUSE_DESTROYED(fw) ((fw)->flags.do_reuse_destroyed)
 #define SET_DO_REUSE_DESTROYED(fw,x) \
           (fw)->flags.do_reuse_destroyed = !!(x)

@@ -966,7 +966,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 #define SETOLDFLAGS \
 { int i = 1; \
-  old_flags |= DO_START_ICONIC(t)		? i : 0; i<<=1; \
+  old_flags |= 0 /* was start_iconic */		? i : 0; i<<=1; \
   old_flags |= False /* OnTop */		? i : 0; i<<=1; \
   old_flags |= IS_STICKY(t)			? i : 0; i<<=1; \
   old_flags |= DO_SKIP_WINDOW_LIST(t)		? i : 0; i<<=1; \

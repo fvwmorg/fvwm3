@@ -2445,16 +2445,16 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         else if (StrEquals(token, "StartIconic"))
         {
 	  found = True;
-	  SFSET_DO_START_ICONIC(*ptmpstyle, 1);
-	  SMSET_DO_START_ICONIC(*ptmpstyle, 1);
-	  SCSET_DO_START_ICONIC(*ptmpstyle, 1);
+	  ptmpstyle->flags.do_start_iconic = 1;
+	  ptmpstyle->flag_mask.do_start_iconic = 1;
+	  ptmpstyle->change_mask.do_start_iconic = 1;
         }
         else if (StrEquals(token, "StartNormal"))
         {
 	  found = True;
-	  SFSET_DO_START_ICONIC(*ptmpstyle, 0);
-	  SMSET_DO_START_ICONIC(*ptmpstyle, 1);
-	  SCSET_DO_START_ICONIC(*ptmpstyle, 1);
+	  ptmpstyle->flags.do_start_iconic = 0;
+	  ptmpstyle->flag_mask.do_start_iconic = 1;
+	  ptmpstyle->change_mask.do_start_iconic = 1;
         }
         else if (StrEquals(token, "StaysOnBottom"))
         {

@@ -735,8 +735,6 @@ void list_configure(unsigned long *body)
 	    DO_SHRINK_WINDOWSHADE( cfgpacket ) );
     printf( "do_stack_transient_parent: %d\n",
 	    DO_STACK_TRANSIENT_PARENT( cfgpacket ) );
-    printf( "do_start_iconic: %d\n",
-	    DO_START_ICONIC( cfgpacket ) );
     printf( "do_window_list_skip: %d\n",
 	    DO_SKIP_WINDOW_LIST( cfgpacket ) );
     printf( "focus_mode: %d\n",

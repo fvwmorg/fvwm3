@@ -588,7 +588,6 @@ void list_configure(const unsigned long *body)
     fprintf(output,"\t\tdo_shrink_windowshade: %d\n", DO_SHRINK_WINDOWSHADE(p));
     fprintf(output,"\t\tdo_stack_transient_parent: %d\n",
 	    DO_STACK_TRANSIENT_PARENT(p));
-    fprintf(output,"\t\tdo_start_iconic: %d\n", DO_START_ICONIC(p));
     fprintf(output,"\t\tdo_window_list_skip: %d\n", DO_SKIP_WINDOW_LIST(p));
     fprintf(output,"\t\tfocus_mode: %d\n", GET_FOCUS_MODE(p));
     fprintf(output,"\t\thas_depressable_border: %d\n",

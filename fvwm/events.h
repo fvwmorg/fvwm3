@@ -75,7 +75,8 @@ void HandleFocusOut(void);
 void HandleDestroyNotify(void);
 void HandleMapRequest(void);
 void HandleMapRequestKeepRaised(
-	Window keepraised, FvwmWindow *ReuseWin, Bool is_menu);
+	Window keepraised, FvwmWindow *ReuseWin,
+	initial_window_options_type *win_opts);
 void HandleMapNotify(void);
 void HandleUnmapNotify(void);
 void HandleMotionNotify(void);

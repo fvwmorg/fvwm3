@@ -539,7 +539,8 @@ static float test_fit(
  **************************************************************************/
 Bool PlaceWindow(
 	FvwmWindow *fw, style_flags *sflags, rectangle *attr_g,
-	int Desk, int PageX, int PageY, int XineramaScreen, int mode)
+	int Desk, int PageX, int PageY, int XineramaScreen, int mode,
+	initial_window_options_type *win_opts)
 {
   FvwmWindow *t;
   int xl = -1;
@@ -566,7 +567,6 @@ Bool PlaceWindow(
     unsigned do_not_use_wm_placement : 1;
   } flags;
   extern Bool Restarting;
-  extern Bool PPosOverride;
 
   memset(&flags, 0, sizeof(flags));
 
@@ -590,7 +590,8 @@ Bool PlaceWindow(
      * Honor the flag unless...
      * it's a restart or recapture, and that option's disallowed...
      */
-    if (PPosOverride && (Restarting || (Scr.flags.windows_captured)) &&
+    if (win_opts->flags.do_override_ppos &&
+	(Restarting || (Scr.flags.windows_captured)) &&
 	!SRECAPTURE_HONORS_STARTS_ON_PAGE(sflags))
     {
       flags.do_honor_starts_on_page = False;
@@ -599,7 +600,8 @@ Bool PlaceWindow(
     /*
      * it's a cold start window capture, and that's disallowed...
      */
-    if (PPosOverride && (!Restarting && !(Scr.flags.windows_captured)) &&
+    if (win_opts->flags.do_override_ppos &&
+	(!Restarting && !(Scr.flags.windows_captured)) &&
 	!SCAPTURE_HONORS_STARTS_ON_PAGE(sflags))
     {
       flags.do_honor_starts_on_page = False;
@@ -608,7 +610,7 @@ Bool PlaceWindow(
     /*
      * it's ActivePlacement and SkipMapping, and that's disallowed.
      */
-    if (!PPosOverride &&
+    if (!win_opts->flags.do_override_ppos &&
 	(DO_NOT_SHOW_ON_MAP(fw) &&
 	 (SPLACEMENT_MODE(sflags) == PLACE_MANUAL ||
 	  SPLACEMENT_MODE(sflags) == PLACE_MANUAL_B ||
@@ -665,7 +667,7 @@ Bool PlaceWindow(
   yt = PageTop;
 
   /* Don't alter the existing desk location during Capture/Recapture.  */
-  if (!PPosOverride)
+  if (!win_opts->flags.do_override_ppos)
   {
     fw->Desk = Scr.CurrentDesk;
   }
@@ -737,7 +739,7 @@ Bool PlaceWindow(
   /* I think it would be good to switch to the selected desk
    * whenever a new window pops up, except during initialization */
   /*  RBW - 11/02/1998  --  I dont. */
-  if ((!PPosOverride)&&(!DO_NOT_SHOW_ON_MAP(fw)))
+  if ((!win_opts->flags.do_override_ppos)&&(!DO_NOT_SHOW_ON_MAP(fw)))
   {
     goto_desk(fw->Desk);
   }
@@ -754,7 +756,7 @@ Bool PlaceWindow(
       py = PageY - 1;
       px *= Scr.MyDisplayWidth;
       py *= Scr.MyDisplayHeight;
-      if ( (!PPosOverride) && (!DO_NOT_SHOW_ON_MAP(fw)))
+      if ( (!win_opts->flags.do_override_ppos) && (!DO_NOT_SHOW_ON_MAP(fw)))
       {
 	MoveViewport(px,py,True);
       }
@@ -821,7 +823,7 @@ Bool PlaceWindow(
     {
       flags.do_not_use_wm_placement = True;
     }
-    else if (PPosOverride)
+    else if (win_opts->flags.do_override_ppos)
     {
       flags.do_not_use_wm_placement = True;
     }
@@ -1004,7 +1006,7 @@ Bool PlaceWindow(
   } /* !flags.do_not_use_wm_placement */
   else
   {
-    if (!PPosOverride)
+    if (!win_opts->flags.do_override_ppos)
       SET_PLACED_BY_FVWM(fw,False);
     /* the USPosition was specified, or the window is a transient,
      * or it starts iconic so place it automatically */
@@ -1130,6 +1132,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	window_style style;
 	rectangle attr_g;
 	XWindowAttributes attr;
+	initial_window_options_type win_opts;
 
 	if (DeferExecution(
 		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
@@ -1140,7 +1143,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	{
 		return;
 	}
-
+	memset(&win_opts, 0, sizeof(win_opts));
 	lookup_style(fw, &style);
 	attr_g.x = attr.x;
 	attr_g.y = attr.y;
@@ -1149,7 +1152,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	PlaceWindow(
 		fw, &style.flags, &attr_g, SGET_START_DESK(style),
 		SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style),
-		SGET_START_SCREEN(style), PLACE_AGAIN);
+		SGET_START_SCREEN(style), PLACE_AGAIN, &win_opts);
 
 	/* Possibly animate the movement */
 	token = PeekToken(action, NULL);

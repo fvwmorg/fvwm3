@@ -49,20 +49,32 @@ void setup_frame_attributes(
 	FvwmWindow *fw, window_style *pstyle);
 void destroy_auxiliary_windows(
 	FvwmWindow *fw, Bool destroy_frame_and_parent);
-void change_auxiliary_windows(FvwmWindow *fw, short buttons);
-void setup_key_and_button_grabs(FvwmWindow *fw);
-void setup_frame_geometry(FvwmWindow *fw);
-void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle);
-void increase_icon_hint_count(FvwmWindow *fw);
-void change_icon(FvwmWindow *fw, window_style *pstyle);
-void change_mini_icon(FvwmWindow *fw, window_style *pstyle);
-void change_icon_boxes(FvwmWindow *fw, window_style *pstyle);
-
-void FetchWmProtocols(FvwmWindow *);
-FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu);
-void GetWindowSizeHints(FvwmWindow *);
-void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
-void destroy_window(FvwmWindow *);
+void change_auxiliary_windows(
+	FvwmWindow *fw, short buttons);
+void setup_key_and_button_grabs(
+	FvwmWindow *fw);
+void setup_frame_geometry(
+	FvwmWindow *fw);
+void setup_frame_size_limits(
+	FvwmWindow *fw, window_style *pstyle);
+void increase_icon_hint_count(
+	FvwmWindow *fw);
+void change_icon(
+	FvwmWindow *fw, window_style *pstyle);
+void change_mini_icon(
+	FvwmWindow *fw, window_style *pstyle);
+void change_icon_boxes(
+	FvwmWindow *fw, window_style *pstyle);
+void FetchWmProtocols(
+	FvwmWindow *);
+FvwmWindow *AddWindow(
+	Window w, FvwmWindow *ReuseWin, initial_window_options_type * win_opts);
+void GetWindowSizeHints(
+	FvwmWindow *);
+void free_window_names(
+	FvwmWindow *tmp, Bool nukename, Bool nukeicon);
+void destroy_window(
+	FvwmWindow *);
 void RestoreWithdrawnLocation(
 	FvwmWindow *tmp, Bool is_restart_or_recapture, Window parent);
 void Reborder(void);

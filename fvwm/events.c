@@ -937,18 +937,23 @@ void HandleMapRequest(void)
     XMapWindow (dpy, Event.xmaprequest.window);
     return;
   }
-  HandleMapRequestKeepRaised(None, NULL, False);
+  HandleMapRequestKeepRaised(None, NULL, NULL);
 }
 void HandleMapRequestKeepRaised(
-	Window KeepRaised, FvwmWindow *ReuseWin, Bool is_menu)
+	Window KeepRaised, FvwmWindow *ReuseWin,
+	initial_window_options_type *win_opts)
 {
-  extern long isIconicState;
-  extern Bool isIconifiedByParent;
-  extern Bool PPosOverride;
   Bool is_on_this_page = False;
   Bool is_new_window = False;
   FvwmWindow *tmp;
   FvwmWindow *sf;
+  initial_window_options_type win_opts_bak;
+
+  if (win_opts == NULL)
+  {
+    memset(&win_opts_bak, 0, sizeof(win_opts_bak));
+    win_opts = &win_opts_bak;
+  }
 
   Event.xany.window = Event.xmaprequest.window;
 
@@ -977,7 +982,7 @@ void HandleMapRequestKeepRaised(
      * we should return here, if not we go into trouble ... */
     return;
   }
-  if (!PPosOverride)
+  if (!win_opts->flags.do_override_ppos)
   {
     XFlush(dpy);
   }
@@ -986,7 +991,7 @@ void HandleMapRequestKeepRaised(
   if (!Fw || (Fw && DO_REUSE_DESTROYED(Fw)))
   {
     /* Add decorations. */
-    Fw = AddWindow(Event.xany.window, ReuseWin, is_menu);
+    Fw = AddWindow(Event.xany.window, ReuseWin, win_opts);
     if (Fw == NULL)
       return;
     is_new_window = True;
@@ -1020,12 +1025,8 @@ void HandleMapRequestKeepRaised(
       state = Fw->wmhints->initial_state;
     else
       state = NormalState;
-
-    if (DO_START_ICONIC(Fw))
-      state = IconicState;
-
-    if (isIconicState != DontCareState)
-      state = isIconicState;
+    if (win_opts->initial_state != DontCareState)
+      state = win_opts->initial_state;
 
     switch (state)
     {
@@ -1106,22 +1107,19 @@ void HandleMapRequestKeepRaised(
       break;
 
     case IconicState:
-      if (isIconifiedByParent ||
+      if (win_opts->flags.is_iconified_by_parent ||
 	  ((tmp = get_transientfor_fvwmwindow(Fw)) && IS_ICONIFIED(tmp)))
       {
-	isIconifiedByParent = False;
+	win_opts->flags.is_iconified_by_parent = 0;
 	SET_ICONIFIED_BY_PARENT(Fw, 1);
       }
       if (USE_ICON_POSITION_HINT(Fw) && Fw->wmhints &&
 	  (Fw->wmhints->flags & IconPositionHint))
       {
-	Iconify(Fw, Fw->wmhints->icon_x,
-		Fw->wmhints->icon_y);
+	win_opts->default_icon_x = Fw->wmhints->icon_x;
+	win_opts->default_icon_y = Fw->wmhints->icon_y;
       }
-      else
-      {
-	Iconify(Fw, 0, 0);
-      }
+      Iconify(Fw, win_opts);
       if (is_new_window)
       {
 	/* the window will not be mapped - fake an UnmapNotify event */
@@ -1154,30 +1152,15 @@ void HandleMapRequestKeepRaised(
       focus_grab_buttons(sf, True);
     }
   }
-  if (is_menu)
+  if (win_opts->flags.is_menu)
   {
     SET_MAPPED(Fw, 1);
     SET_MAP_PENDING(Fw, 0);
   }
-
-  /* Just to be on the safe side, we make sure that STARTICONIC
-     can only influence the initial transition from withdrawn state. */
-  SET_DO_START_ICONIC(Fw, 0);
-  if (DO_DELETE_ICON_MOVED(Fw))
-  {
-    SET_DELETE_ICON_MOVED(Fw, 0);
-    SET_ICON_MOVED(Fw, 0);
-  }
-  /* Clean out the global so that it isn't used on additional map events. */
-  isIconicState = DontCareState;
   EWMH_SetClientList();
   GNOME_SetClientList();
-#if 0
-{void setup_window_name(FvwmWindow *tmp_win);
-usleep(200000);
-setup_window_name(Fw);}
-fprintf(stderr,"-----\n");
-#endif
+
+  return;
 }
 
 
@@ -1272,9 +1255,12 @@ void HandleMapNotify(void)
   SET_ICON_UNMAPPED(Fw, 0);
   if (DO_ICONIFY_AFTER_MAP(Fw))
   {
+    initial_window_options_type win_opts;
+
     /* finally, if iconification was requested before the window was mapped,
      * request it now. */
-    Iconify(Fw, 0, 0);
+    memset(&win_opts, 0, sizeof(win_opts));
+    Iconify(Fw, &win_opts);
     SET_ICONIFY_AFTER_MAP(Fw, 0);
   }
 }

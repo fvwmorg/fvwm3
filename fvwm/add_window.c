@@ -101,9 +101,6 @@
 char NoName[] = "Untitled"; /* name if no name in XA_WM_NAME */
 char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
 char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
-long isIconicState = 0;
-Bool PPosOverride = False;
-Bool isIconifiedByParent = False;
 
 /* ---------------------------- local functions ----------------------------- */
 
@@ -123,8 +120,8 @@ static void CaptureOneWindow(
 {
 	Window w;
 	unsigned long data[1];
+	initial_window_options_type win_opts;
 
-	isIconicState = DontCareState;
 	if (fw == NULL)
 	{
 		return;
@@ -150,22 +147,25 @@ static void CaptureOneWindow(
 	}
 	if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT)
 	{
-		Bool f = PPosOverride;
 		Bool is_mapped = IS_MAPPED(fw);
-		Bool is_menu;
 
-		PPosOverride = True;
+		memset(&win_opts, 0, sizeof(win_opts));
+		win_opts.initial_state = DontCareState;
+		win_opts.flags.do_override_ppos = 1;
 		if (IS_ICONIFIED(fw))
 		{
-			isIconicState = IconicState;
-			isIconifiedByParent = IS_ICONIFIED_BY_PARENT(fw);
+			win_opts.initial_state = IconicState;
+			win_opts.flags.is_iconified_by_parent =
+				IS_ICONIFIED_BY_PARENT(fw);
 		}
 		else
 		{
-			isIconicState = NormalState;
-			isIconifiedByParent = 0;
+			win_opts.initial_state = NormalState;
+			win_opts.flags.is_iconified_by_parent = 0;
 			if (Scr.CurrentDesk != fw->Desk)
+			{
 				SetMapStateProp(fw, NormalState);
+			}
 		}
 		data[0] = (unsigned long) fw->Desk;
 		XChangeProperty(
@@ -186,25 +186,14 @@ static void CaptureOneWindow(
 		SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
 		destroy_window(fw);
 		Event.xmaprequest.window = w;
-		if (is_recapture && fw != NULL && IS_TEAR_OFF_MENU(fw))
-		{
-			is_menu = True;
-		}
-		else
-		{
-			is_menu = False;
-		}
-		HandleMapRequestKeepRaised(keep_on_top_win, fw, is_menu);
+		win_opts.flags.is_menu =
+			(is_recapture && fw != NULL && IS_TEAR_OFF_MENU(fw));
+		HandleMapRequestKeepRaised(keep_on_top_win, fw, &win_opts);
 		if (!fFvwmInStartup)
 		{
 			SET_MAP_PENDING(fw, 0);
 			SET_MAPPED(fw, is_mapped);
 		}
-		/* Clean out isIconicState here, otherwise all new windos may
-		 * start iconified. */
-		isIconicState = DontCareState;
-		/* restore previous value */
-		PPosOverride = f;
 	}
 	MyXUngrabServer(dpy);
 
@@ -313,7 +302,8 @@ static void hide_screen(
  *
  ***********************************************************************/
 
-static int MappedNotOverride(Window w)
+static int MappedNotOverride(
+	Window w, initial_window_options_type *win_opts)
 {
 	XWindowAttributes wa;
         Atom atype;
@@ -321,18 +311,18 @@ static int MappedNotOverride(Window w)
 	unsigned long nitems, bytes_remain;
 	unsigned char *prop;
 
-	isIconicState = DontCareState;
-
+	win_opts->initial_state = DontCareState;
 	if ((w==Scr.NoFocusWin)||(!XGetWindowAttributes(dpy, w, &wa)))
+	{
 		return False;
-
+	}
 	if (XGetWindowProperty(
 		    dpy,w,_XA_WM_STATE,0L,3L,False,_XA_WM_STATE,
 		    &atype,&aformat,&nitems,&bytes_remain,&prop)==Success)
 	{
 		if (prop != NULL)
 		{
-			isIconicState = *(long *)prop;
+			win_opts->initial_state = *(long *)prop;
 			XFree(prop);
 		}
 	}
@@ -340,7 +330,7 @@ static int MappedNotOverride(Window w)
 	{
 		XSelectInput(dpy, w, XEVMASK_ORW);
 	}
-	return (((isIconicState == IconicState) ||
+	return (((win_opts->initial_state == IconicState) ||
 		 (wa.map_state != IsUnmapped)) &&
 		(wa.override_redirect != True));
 }
@@ -1065,7 +1055,8 @@ void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
 }
 
 Bool setup_window_placement(
-	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g)
+	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
+	initial_window_options_type *win_opts)
 {
 	int client_argc = 0;
 	char **client_argv = NULL;
@@ -1159,11 +1150,14 @@ Bool setup_window_placement(
 		XFreeStringList(client_argv);
 		XrmDestroyDatabase(db);
 	}
-
+	if (pstyle->flags.do_start_iconic)
+	{
+		win_opts->initial_state = IconicState;
+	}
 	return PlaceWindow(
 		fw, &pstyle->flags, attr_g, SGET_START_DESK(*pstyle),
 		SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle),
-		SGET_START_SCREEN(*pstyle), PLACE_INITIAL);
+		SGET_START_SCREEN(*pstyle), PLACE_INITIAL, win_opts);
 }
 
 void setup_placement_penalty(FvwmWindow *fw, window_style *pstyle)
@@ -1937,7 +1931,7 @@ void setup_key_and_button_grabs(FvwmWindow *fw)
  *
  ***********************************************************************/
 FvwmWindow *AddWindow(
-	Window w, FvwmWindow *ReuseWin, Bool is_menu)
+	Window w, FvwmWindow *ReuseWin, initial_window_options_type *win_opts)
 {
 	/* new fvwm window structure */
 	register FvwmWindow *fw = NULL;
@@ -1953,7 +1947,6 @@ FvwmWindow *AddWindow(
 	style_flags *sflags;
 	short buttons;
 	extern FvwmWindow *colormap_win;
-	extern Bool PPosOverride;
 	int do_shade = 0;
 	int shade_dir = 0;
 	int do_maximize = 0;
@@ -1971,7 +1964,7 @@ FvwmWindow *AddWindow(
 	fw = tmpfw;
 
 	/****** safety check, window might disappear before we get to it ******/
-	if (!PPosOverride &&
+	if (!win_opts->flags.do_override_ppos &&
 	    XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
 			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
 	{
@@ -2010,7 +2003,7 @@ FvwmWindow *AddWindow(
 	SET_TRANSIENT(
 		fw, !!XGetTransientForHint(
 			dpy, FW_W(fw), &FW_W_TRANSIENTFOR (fw)));
-	if (is_menu)
+	if (win_opts->flags.is_menu)
 	{
 		SET_TEAR_OFF_MENU(fw, 1);
 	}
@@ -2072,7 +2065,8 @@ FvwmWindow *AddWindow(
 	 * stacking order initialization.
 	 */
 	get_window_borders(fw, &b);
-	used_sm = MatchWinToSM(fw, &do_shade, &shade_dir, &do_maximize);
+	used_sm = MatchWinToSM(
+		fw, &do_shade, &shade_dir, &do_maximize, win_opts);
 	if (used_sm)
 	{
 		/* read the requested absolute geometry */
@@ -2132,7 +2126,8 @@ FvwmWindow *AddWindow(
 		attr_g.y = wattr.y;
 		attr_g.width = wattr.width;
 		attr_g.height = wattr.height;
-		do_resize_too = setup_window_placement(fw, &style, &attr_g);
+		do_resize_too = setup_window_placement(
+			fw, &style, &attr_g, win_opts);
 		wattr.x = attr_g.x;
 		wattr.y = attr_g.y;
 
@@ -2762,8 +2757,6 @@ void free_window_names(FvwmWindow *fw, Bool nukename, Bool nukeicon)
  ****************************************************************************/
 void destroy_window(FvwmWindow *fw)
 {
-	extern Bool PPosOverride;
-
 	/*
 	 * Warning, this is also called by HandleUnmapNotify; if it ever needs
 	 * to look at the event, HandleUnmapNotify will have to mash the
@@ -2828,12 +2821,7 @@ void destroy_window(FvwmWindow *fw)
 	/****** unmap the frame ******/
 
 	XUnmapWindow(dpy, FW_W_FRAME(fw));
-
-	if (!PPosOverride)
-	{
-		XFlush(dpy);
-	}
-
+	XFlush(dpy);
 	/* already done above? */
 	if (!IS_SCHEDULED_FOR_DESTROY(fw))
 	{
@@ -2923,10 +2911,7 @@ void destroy_window(FvwmWindow *fw)
 
 	/****** cleanup ******/
 
-	if (!PPosOverride)
-	{
-		XFlush(dpy);
-	}
+	XFlush(dpy);
 
 	return;
 }
@@ -3091,17 +3076,17 @@ void CaptureAllWindows(Bool is_recapture)
 	int i,j;
 	unsigned int nchildren;
 	Window root, parent, *children;
-	FvwmWindow *fw;		/* temp fvwm window structure */
+	initial_window_options_type win_opts;
+	FvwmWindow *fw;
 
 	MyXGrabServer(dpy);
-
 	if (!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren))
 	{
 		MyXUngrabServer(dpy);
 		return;
 	}
-
-	PPosOverride = True;
+	memset(&win_opts, 0, sizeof(win_opts));
+	win_opts.flags.do_override_ppos = 1;
 	if (!(Scr.flags.windows_captured)) /* initial capture? */
 	{
 		/*
@@ -3138,11 +3123,13 @@ void CaptureAllWindows(Bool is_recapture)
 		*/
 		for (i=0;i<nchildren;i++)
 		{
-			if (children[i] && MappedNotOverride(children[i]))
+			if (children[i] &&
+			    MappedNotOverride(children[i], &win_opts))
 			{
 				XUnmapWindow(dpy, children[i]);
 				Event.xmaprequest.window = children[i];
-				HandleMapRequestKeepRaised(None, NULL, False);
+				HandleMapRequestKeepRaised(
+					None, NULL, &win_opts);
 			}
 		}
 		Scr.flags.windows_captured = 1;
@@ -3184,15 +3171,10 @@ void CaptureAllWindows(Bool is_recapture)
 			}
 		}
 	}
-
-	isIconicState = DontCareState;
-
 	if (nchildren > 0)
+	{
 		XFree((char *)children);
-
-	/* after the windows already on the screen are in place,
-	 * don't use PPosition */
-	PPosOverride = False;
+	}
 	MyXUngrabServer(dpy);
 
 	return;

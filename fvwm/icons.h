@@ -25,12 +25,12 @@
 int get_visible_icon_window_count(FvwmWindow *fw);
 void clear_icon(FvwmWindow *fw);
 void GetIconPicture(FvwmWindow *fw, Bool no_icon_window);
-void AutoPlaceIcon(FvwmWindow *);
+void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts);
 void ChangeIconPixmap(FvwmWindow *fw);
 void RedoIconName(FvwmWindow *);
 void DrawIconWindow(FvwmWindow *);
 void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y);
-void Iconify(FvwmWindow *, int, int);
+void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts);
 void DeIconify(FvwmWindow *);
 void SetMapStateProp(FvwmWindow *, int);
 

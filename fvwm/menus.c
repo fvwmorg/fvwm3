@@ -5662,6 +5662,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	int x = 0;
 	int y = 0;
 	unsigned int add_mask = 0;
+	initial_window_options_type win_opts;
 
 	/* keep the menu open */
 	discard_window_events(
@@ -5730,7 +5731,9 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	ev.xmaprequest.parent = Scr.Root;
 	ev.xmaprequest.window = MR_WINDOW(mr);
 	Event = ev;
-	HandleMapRequestKeepRaised(None, NULL, True);
+	memset(&win_opts, 0, sizeof(win_opts));
+	win_opts.flags.is_menu = True;
+	HandleMapRequestKeepRaised(None, NULL, &win_opts);
 
 	return;
 }

@@ -603,7 +603,7 @@ GNOME_SetLayer(FvwmWindow *fwin)
 }
 
 
-/*** INITALIZE GNOME WM SUPPORT ***/
+/*** INITIALIZE GNOME WM SUPPORT ***/
 
 /* sets the virtual desktop grid properties */
 void
@@ -829,7 +829,7 @@ GNOME_Init(void)
 		  PropModeReplace, (unsigned char *)&val, 1);
 
 
-  /* some inital settings */
+  /* some initial settings */
   GNOME_SetDeskCount();
   GNOME_SetCurrentDesk();
   GNOME_SetDeskNames();

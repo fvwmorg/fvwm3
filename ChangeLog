@@ -1,3 +1,31 @@
+2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual.c (MoveViewport):
+	(MapDesk):
+	(do_move_window_to_desk):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/icons.c (Iconify):
+	(CMD_Iconify):
+	* fvwm/module_interface.c (SETOLDFLAGS):
+	* fvwm/ewmh_events.c (ewmh_WMStateHidden):
+	* fvwm/style.c (parse_and_set_window_style):
+	* fvwm/window_flags.h:
+	* fvwm/session.c (MatchWinToSM):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/add_window.c (CaptureAllWindows):
+	(setup_window_placement):
+	(CaptureOneWindow):
+	(AddWindow):
+	(destroy_window):
+	* fvwm/menus.c (menu_tear_off):
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	(HandleMapNotify):
+	* fvwm/fvwm.h:
+	removed some of those pesky globals: PPosOverride, isIconicState and
+	isIconifiedByParent; pass round a structure instead
+	removed the do_start_iconic window flag
+	removed do_delete_icon_moved flag
+
 2002-03-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* acconfig.h:
@@ -17,6 +45,8 @@
 
 	* fvwm/windowshade.c (CMD_WindowShade):
 	changed syntax of windowshade with direction
+	(CMD_WindowShade):
+	update button state after unshading
 
 	* fvwm/add_window.c (AddWindow):
 	fixed mini icon update

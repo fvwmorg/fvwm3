@@ -393,8 +393,11 @@ static void apply_window_updates(
 	{
 		if (IS_ICONIFIED(t))
 		{
+			initial_window_options_type win_opts;
+
+			memset(&win_opts, 0, sizeof(win_opts));
 			SET_ICONIFIED(t, 0);
-			Iconify(t, 0, 0);
+			Iconify(t, &win_opts);
 		}
 	}
 	if (flags->do_setup_focus_policy)

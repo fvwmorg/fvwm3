@@ -758,7 +758,9 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   to be set up correctly beforehand!
 */
 Bool
-MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max)
+MatchWinToSM(
+	FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max,
+	initial_window_options_type *win_opts)
 {
   int i;
 
@@ -806,19 +808,17 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max)
 	  ICON_MOVED is necessary to make fvwm use icon_[xy]_loc
 	  for icon placement
 	*/
-	SET_DO_START_ICONIC(ewin, 1);
-	if (!IS_ICON_MOVED(ewin))
+	win_opts->initial_state = IconicState;
+	win_opts->flags.use_initial_icon_xy = 1;
+	win_opts->initial_icon_x = matches[i].icon_x;
+	win_opts->initial_icon_y = matches[i].icon_y;
+	if (!IS_STICKY(&(matches[i])) &&
+	  !(IS_ICONIFIED(&(matches[i])) && IS_ICON_STICKY(&(matches[i]))))
 	{
-	  /* only temporary to initially place the icon */
-	  SET_ICON_MOVED(ewin, 1);
-	  SET_DELETE_ICON_MOVED(ewin, 1);
+		win_opts->initial_icon_x -= Scr.Vx;
+		win_opts->initial_icon_y -= Scr.Vy;
 	}
       }
-      else
-      {
-	SET_DO_START_ICONIC(ewin, 0);
-      }
-
       ewin->normal_g.x = matches[i].x;
       ewin->normal_g.y = matches[i].y;
       ewin->normal_g.width = matches[i].w;
@@ -834,15 +834,6 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max)
       SET_STICKY(ewin, IS_STICKY(&(matches[i])));
       ewin->Desk = (IS_STICKY(ewin)) ? Scr.CurrentDesk : matches[i].desktop;
       set_layer(ewin, matches[i].layer);
-      /* this is not enough to fight fvwms attempts to
-	 put icons on the current page */
-      set_icon_position(ewin, matches[i].icon_x, matches[i].icon_y);
-      if (!IS_STICKY(&(matches[i])) &&
-	  !(IS_ICONIFIED(&(matches[i])) && IS_ICON_STICKY(&(matches[i]))))
-      {
-	set_icon_position(
-	  ewin, matches[i].icon_x - Scr.Vx, matches[i].icon_y - Scr.Vy);
-      }
       /* Note: the Modal, skip pager, skip taskbar and "stacking order" state
        * are not restored here: there are restored in EWMH_ExitStuff */
       ewin->ewmh_hint_desktop = matches[i].ewmh_hint_desktop;

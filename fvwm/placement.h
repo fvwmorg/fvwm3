@@ -33,6 +33,7 @@
 
 Bool PlaceWindow(
 	FvwmWindow *fw, style_flags *sflags, rectangle *attr_g,
-	int Desk, int PageX, int PageY, int XineramaScreen, int mode);
+	int Desk, int PageX, int PageY, int XineramaScreen, int mode,
+	initial_window_options_type *win_opts);
 
 #endif /* PLACEMENT_H */

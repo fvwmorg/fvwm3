@@ -812,7 +812,7 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
     if (!IS_ICON_SUPPRESSED(fw))
     {
       LowerWindow(fw);
-      AutoPlaceIcon(fw);
+      AutoPlaceIcon(fw, NULL);
       if(fw->Desk == Scr.CurrentDesk)
       {
 	if(FW_W_ICON_TITLE(fw))
@@ -855,7 +855,7 @@ void RedoIconName(FvwmWindow *fw)
  *	AutoPlace - Find a home for an icon
  *
  ************************************************************************/
-void AutoPlaceIcon(FvwmWindow *t)
+void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
 {
   int base_x, base_y;
   int width,height;
@@ -912,13 +912,19 @@ void AutoPlaceIcon(FvwmWindow *t)
     base_x -= Scr.Vx;
     base_y -= Scr.Vy;
   }
-  if (IS_ICON_MOVED(t))
+  if (IS_ICON_MOVED(t) ||
+      (win_opts != NULL && win_opts->flags.use_initial_icon_xy))
   {
     rectangle g;
     int dx;
     int dy;
 
     get_icon_geometry(t, &g);
+    if (win_opts != NULL && win_opts->flags.use_initial_icon_xy)
+    {
+      g.x = win_opts->initial_icon_x;
+      g.y = win_opts->initial_icon_y;
+    }
     dx = g.x;
     dy = g.y;
 
@@ -1663,7 +1669,7 @@ void DeIconify(FvwmWindow *fw)
  * Iconifies the selected window
  *
  ****************************************************************************/
-void Iconify(FvwmWindow *fw, int def_x, int def_y)
+void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 {
   FvwmWindow *t;
   FvwmWindow *sf;
@@ -1757,16 +1763,21 @@ void Iconify(FvwmWindow *fw, int def_x, int def_y)
 
   if (FW_W_ICON_TITLE(fw) == None || HAS_ICON_CHANGED(fw))
   {
-    if (IS_ICON_MOVED(fw))
+    if (IS_ICON_MOVED(fw) || win_opts->flags.use_initial_icon_xy)
     {
       rectangle g;
 
       get_icon_geometry(fw, &g);
+      if (win_opts->flags.use_initial_icon_xy)
+      {
+	g.x = win_opts->initial_icon_x;
+	g.y = win_opts->initial_icon_y;
+      }
       CreateIconWindow(fw, g.x, g.y);
     }
     else
     {
-      CreateIconWindow(fw, def_x, def_y);
+      CreateIconWindow(fw, win_opts->default_icon_x, win_opts->default_icon_y);
     }
     SET_HAS_ICON_CHANGED(fw, 0);
   }
@@ -1779,9 +1790,10 @@ void Iconify(FvwmWindow *fw, int def_x, int def_y)
 
   /* this condition will be true unless we restore a window to
      iconified state from a saved session. */
-  if (!(DO_START_ICONIC(fw) && IS_ICON_MOVED(fw)))
+  if (win_opts->initial_state != IconicState ||
+      (!IS_ICON_MOVED(fw) && !win_opts->flags.use_initial_icon_xy))
   {
-    AutoPlaceIcon(fw);
+    AutoPlaceIcon(fw, win_opts);
   }
   /* domivogt (1-Mar-2000): The next block is a hack to prevent animation if the
    * window has an icon, but neither a pixmap nor a title. */
@@ -1807,7 +1819,8 @@ void Iconify(FvwmWindow *fw, int def_x, int def_y)
                   fw->frame_g.height);
   BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 
-  if (!(DO_START_ICONIC(fw) && IS_ICON_MOVED(fw)))
+  if (win_opts->initial_state != IconicState ||
+      (!IS_ICON_MOVED(fw) && !win_opts->flags.use_initial_icon_xy))
   {
     LowerWindow(fw);
   }
@@ -1872,8 +1885,6 @@ void SetMapStateProp(FvwmWindow *fw, int state)
 void CMD_Iconify(F_CMD_ARGS)
 {
   int toggle;
-  int x;
-  int y;
 
   if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT, ButtonRelease))
     return;
@@ -1906,15 +1917,18 @@ void CMD_Iconify(F_CMD_ARGS)
   {
     if (toggle == 1)
     {
+      initial_window_options_type win_opts;
+
       if (!is_function_allowed(F_ICONIFY, NULL, fw, False, True))
       {
 	XBell(dpy, 0);
 	return;
       }
-      x = 0;
-      y = 0;
-      GetLocationFromEventOrQuery(dpy, Scr.Root, eventp, &x, &y);
-      Iconify(fw, x, y);
+      memset(&win_opts, 0, sizeof(win_opts));
+      GetLocationFromEventOrQuery(
+	      dpy, Scr.Root, eventp, &win_opts.default_icon_x,
+	      &win_opts.default_icon_y);
+      Iconify(fw, &win_opts);
       EWMH_SetWMState(fw, False);
     }
   }

@@ -1099,7 +1099,9 @@ void MoveViewport(int newx, int newy, Bool grab)
       if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
 	 IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
 	 !IS_ICON_UNMAPPED(t))
-	AutoPlaceIcon(t);
+      {
+	AutoPlaceIcon(t, NULL);
+      }
     }
   }
   checkPanFrames();
@@ -1228,7 +1230,7 @@ static void MapDesk(int desk, Bool grab)
        IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
        !IS_ICON_UNMAPPED(t))
     {
-      AutoPlaceIcon(t);
+      AutoPlaceIcon(t, NULL);
     }
     /*	Keep track of the last-focused window on the new desk.	*/
     if (t->flags.is_focused_on_other_desk && t->FocusDesk == desk)
@@ -1416,7 +1418,9 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
       fw->Desk = desk;
       /* If its an icon, auto-place it */
       if (IS_ICONIFIED(fw))
-	AutoPlaceIcon(fw);
+      {
+	AutoPlaceIcon(fw, NULL);
+      }
       map_window(fw);
     }
     else

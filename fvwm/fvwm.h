@@ -130,6 +130,22 @@ struct FvwmDecor;
 
 /* ---------------------------- type definitions ---------------------------- */
 
+typedef struct
+{
+	long initial_state;
+	struct
+	{
+		unsigned do_override_ppos : 1;
+		unsigned is_iconified_by_parent : 1;
+		unsigned is_menu : 1;
+		unsigned use_initial_icon_xy : 1;
+	} flags;
+	int initial_icon_x;
+	int initial_icon_y;
+	int default_icon_x;
+	int default_icon_y;
+} initial_window_options_type;
+
 typedef enum
 {
 	COND_RC_BREAK = -2,
@@ -244,7 +260,6 @@ typedef struct
 		unsigned do_resize_opaque : 1;
 		unsigned do_shrink_windowshade : 1;
 		unsigned do_stack_transient_parent : 1;
-		unsigned do_start_iconic : 1;
 		unsigned do_window_list_skip : 1;
 		unsigned ewmh_maximize_mode : 2; /* see ewmh.h */
 #define FOCUS_MOUSE   0x0
@@ -286,8 +301,6 @@ typedef struct
 	common_flags_type common;
 	unsigned does_wm_delete_window : 1;
 	unsigned does_wm_take_focus : 1;
-	/* delete is_icon_moved flag after evaluating it for the first time */
-	unsigned do_delete_icon_moved : 1;
 	unsigned do_iconify_after_map : 1;
 	/* Reuse this struct, don't free it, when destroying/recapturing
 	 * window. */
@@ -463,6 +476,7 @@ typedef struct
 	unsigned placement_mode : 3;
 	unsigned ewmh_placement_mode : 2; /* see ewmh.h */
 	unsigned do_save_under : 1;
+	unsigned do_start_iconic : 1;
 	unsigned do_start_lowered : 1;
 	unsigned has_border_width : 1;
 	unsigned has_color_back : 1;

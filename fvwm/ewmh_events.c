@@ -369,9 +369,9 @@ int ewmh_WMStateHidden(EWMH_CMD_ARGS)
     }
     if (!DO_EWMH_IGNORE_STATE_HINTS(style))
     {
-      SFSET_DO_START_ICONIC(*style, 1);
-      SMSET_DO_START_ICONIC(*style, 1);
-      SCSET_DO_START_ICONIC(*style, 1);
+      style->flags.do_start_iconic = 1;
+      style->flag_mask.do_start_iconic = 1;
+      style->change_mask.do_start_iconic = 1;
     }
     SET_HAS_EWMH_INIT_HIDDEN_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
