@@ -68,13 +68,16 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   extern Time lastTimestamp;
   FvwmWindow *sf;
 
+  if (Fw && WM_TAKES_FOCUS(Fw))
+  {
+    send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
+  }
   if (Fw && HAS_NEVER_FOCUS(Fw))
   {
     if (WM_TAKES_FOCUS(Fw))
     {
       /* give it a chance to take the focus itself */
-      send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
-      XSync(dpy,0);
+      XSync(dpy, 0);
     }
     else
     {
@@ -83,24 +86,12 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     }
     return;
   }
-
   if (Fw && !IS_LENIENT(Fw) &&
       Fw->wmhints && (Fw->wmhints->flags & InputHint) && !Fw->wmhints->input &&
       (sf = get_focus_window()) && sf->Desk == Scr.CurrentDesk)
   {
-    if (Fw && WM_TAKES_FOCUS(Fw))
-    {
-      /* "Globally Active" input model (see ICCCM2 4.1.7) */
-      send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
-      XSync(dpy,0);
-    }
-    else
-    {
-      /* "No Input" input model (see ICCCM2 4.1.7) */
-    }
     return;
   }
-
   /* ClickToFocus focus queue manipulation - only performed for
    * Focus-by-mouse type focus events */
   /* Watch out: Fw may not be on the windowlist and the windowlist may be
@@ -248,10 +239,6 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   {
     FOCUS_SET(Scr.NoFocusWin);
     set_focus_window(NULL);
-  }
-  if (Fw && WM_TAKES_FOCUS(Fw))
-  {
-    send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
   }
   XSync(dpy,0);
 
