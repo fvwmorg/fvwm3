@@ -5186,6 +5186,37 @@ static Bool scanForPixmap(
 	return (*p != NULL);
 }
 
+static void unlink_item_from_menu(
+	MenuRoot *mr, MenuItem *mi)
+{
+	MenuItem *next;
+	MenuItem *prev;
+
+	next = MI_NEXT_ITEM(mi);
+	prev = MI_PREV_ITEM(mi);
+	if (next != NULL)
+	{
+		MI_PREV_ITEM(next) = prev;
+	}
+	else
+	{
+		MR_LAST_ITEM(mr) = prev;
+	}
+	if (prev != NULL)
+	{
+		MI_NEXT_ITEM(prev) = next;
+	}
+	else
+	{
+		MR_FIRST_ITEM(mr) = next;
+	}
+	MI_NEXT_ITEM(mi) = NULL;
+	MI_PREV_ITEM(mi) = NULL;
+	MR_ITEMS(mr)--;
+
+	return;
+}
+
 /* Add the given menu item to the menu.  If the first item of the menu is a
  * title, and the do_replace_title flag is True, the old title is deleted and
  * replaced by the new item.  Otherwise the item is appended at the end of the
@@ -5560,23 +5591,34 @@ void menus_remove_style_from_menus(MenuStyle *ms)
 
 static char *menu_strip_tear_off_title(MenuRoot *mr)
 {
-	MenuItem *mi_first;
+	MenuItem *mi;
 	int i;
 	int len;
 	char *name;
 
-	mi_first = MR_FIRST_ITEM(mr);
-	if (mi_first == NULL || !MI_IS_TITLE(mi_first) ||
-	    !MI_HAS_TEXT(mi_first) || MI_NEXT_ITEM(mi_first) == NULL)
+	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
+	{
+		if (MI_IS_TITLE(mi))
+		{
+			break;
+		}
+		else if (!MI_IS_SEPARATOR(mi) && !MI_IS_TEAR_OFF_BAR(mi))
+		{
+			/* a normal item, no title found */
+			return NULL;
+		}
+		/* skip separators and tear off bars */
+	}
+	if (mi == NULL || !MI_HAS_TEXT(mi) || MI_NEXT_ITEM(mi) == NULL)
 	{
 		return NULL;
 	}
 	/* extract the window title from the labels */
 	for (i = 0, len = 0; i < MAX_MENU_ITEM_LABELS; i++)
 	{
-		if (MI_LABEL(mi_first)[i] != 0)
+		if (MI_LABEL(mi)[i] != 0)
 		{
-			len += strlen(MI_LABEL(mi_first)[i]) + 1;
+			len += strlen(MI_LABEL(mi)[i]) + 1;
 		}
 	}
 	if (len == 0)
@@ -5587,27 +5629,17 @@ static char *menu_strip_tear_off_title(MenuRoot *mr)
 	*name = 0;
 	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
 	{
-		if (MI_LABEL(mi_first)[i] != 0)
+		if (MI_LABEL(mi)[i] != 0)
 		{
-			strcat(name, MI_LABEL(mi_first)[i]);
+			strcat(name, MI_LABEL(mi)[i]);
 			strcat(name, " ");
 		}
 	}
 	/* strip the last space */
 	name[len - 1] = 0;
 	/* unlink and destroy the item */
-	MR_FIRST_ITEM(mr) = MI_NEXT_ITEM(mi_first);
-	MI_NEXT_ITEM(mi_first) = 0;
-	MR_ITEMS(mr)--;
-	if (MR_LAST_ITEM(mr) == mi_first)
-	{
-		MR_LAST_ITEM(mr) = MR_FIRST_ITEM(mr);
-	}
-	if (MR_FIRST_ITEM(mr) != NULL)
-	{
-		MI_PREV_ITEM(MR_FIRST_ITEM(mr)) = NULL;
-	}
-	menuitem_free(mi_first);
+	unlink_item_from_menu(mr, mi);
+	menuitem_free(mi);
 
 	return name;
 }

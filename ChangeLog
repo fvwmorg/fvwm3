@@ -1,8 +1,11 @@
 2002-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (menu_tear_off):
+	(unlink_item_from_menu):
+	(menu_strip_tear_off_title):
 	use the text from a title item as the tear off menu title if the menu
-	begins with a title
+	begins with a title; skip separators and tear off bars at the front of
+	the menu
 
 	* **/*.[ch]:
 	implemented titleatleft and titleatright styles; titles are not drawn
