@@ -2,6 +2,11 @@
 
 	* NEWS:
 	* configure.in:
+	increased version to 2.5.13
+	released 2.5.12
+
+	* NEWS:
+	* configure.in:
 	updated for 2.5.12 release
 
 	* fvwm/frame.c (frame_create_move_resize_args):
