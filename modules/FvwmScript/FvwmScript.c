@@ -77,6 +77,8 @@ char *imagePath = NULL;
 int save_color_limit = 0;                   /* color limit from config */
 static Bool is_dead_pipe = False;
 KeySym shift_tab_ks;  /* shift-Tab keysym */
+char *LastString = NULL;  /* last string send by a SendString ot Key cmd */
+Binding *BindingsList;
 
 extern void InitCom(void);
 static void TryToFind(char *filename);
@@ -94,9 +96,6 @@ ShutdownX(void)
   int NbEssai=0;
   struct timeval tv;
 
-  if (is_dead_pipe)
-    return;
-
 #ifdef DEBUG			/* For debugging */
   XSync(dpy,0);
 #endif
@@ -105,12 +104,17 @@ ShutdownX(void)
   XUnmapWindow(dpy,x11base->win);
   XFlush(dpy);
 
+  /* execute the QuitFunc */
+  if (x11base->quitfunc != NULL)
+    ExecBloc(x11base->quitfunc);
+
   /* Le script ne possede plus la propriete */
   MyAtom = XInternAtom(dpy, x11base->TabScriptId[1], False);
   XSetSelectionOwner(dpy, MyAtom, x11base->root, CurrentTime);
 
   /* On verifie si tous les messages ont ete envoyes */
-  while( !isTerminated && (BuffSend.NbMsg > 0) && (NbEssai < 10000) )
+  while(!is_dead_pipe && !isTerminated && (BuffSend.NbMsg > 0)
+	&& (NbEssai < 10000) )
   {
     tv.tv_sec = 1;
     tv.tv_usec = 0;
@@ -590,7 +594,9 @@ void BuildGUI(int IsFather)
 
   /* Enregistrement du bloc de taches periodic */
   x11base->periodictasks = scriptprop->periodictasks;
-
+  /* the QuitFunc */
+  x11base->quitfunc = scriptprop->quitfunc;
+   
   /*Si un bloc d'initialisation du script existe, on l'execute ici */
   if (scriptprop->initbloc != NULL)
   {
@@ -607,7 +613,6 @@ void BuildGUI(int IsFather)
       XMapWindow(dpy,tabxobj[i]->win);
 }
 
-
 /***********************************************/
 /* Fonction de traitement des msg entre objets */
 /***********************************************/
@@ -621,6 +626,52 @@ void SendMsg(struct XObj *xobj,int TypeMsg)
       /* Execution du bloc d'instruction */
       ExecBloc(&TabIObj[TabIdObj[xobj->id]][i]);
     }
+}
+
+/***********************************************/
+/* Fonction de traitement des msg entre objets */
+/***********************************************/
+void SendMsgAndString(char *action, char *type)
+{
+  int val[2];
+  char *token = NULL;
+  int i;
+
+  if (GetIntegerArguments(action, NULL, val, 2) == 2)
+  {
+    if (val[0] > 1000 || val[0] < 1)
+    {
+      fprintf(stderr,
+	"[%s][%s]: <<WARNING>> Widget id out of range: %i\n",
+	ScriptName,type,val[0]);
+      return;
+    }
+    i = TabIdObj[val[0]];
+    if (i != -1) {
+    /* skip the integer argument */
+      action = GetNextToken(action, &token);
+      action = GetNextToken(action, &token);
+      if (LastString != NULL) {
+	free(LastString);
+	LastString = NULL;
+      }
+      if (action != NULL && strlen(action) > 0)
+	CopyString(&LastString,action);
+      SendMsg(tabxobj[i],val[1]);
+    }
+    else
+    {
+	fprintf(stderr,"[%s][%s]: <<WARNING>> no Widget %i\n",
+		ScriptName,type,val[0]);
+    }
+    if (token)
+      free(token);
+  }
+  else
+  {
+    fprintf(stderr,"[%s][%s]: <<WARNING>> Syntaxe Error: %s\n",
+	    ScriptName,type,action);
+  }
 }
 
 /*******************************************/
@@ -688,6 +739,7 @@ void ReadXServer (void)
   KeySym ks;
   static unsigned char buf[10];         /* unsigned for international */
   Bool find = False;
+  char *action;
 
   while (XEventsQueued(dpy, QueuedAfterReading))
   {
@@ -722,6 +774,18 @@ void ReadXServer (void)
       isTab = 0;
       find = False;
       XLookupString(&event.xkey, (char *)buf, sizeof(buf), &ks, NULL);
+      event.xkey.keycode =
+	XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,event.xkey.keycode,0));
+
+      /* check for bindings defined by the Key instruction */
+      if ((action = CheckBinding(BindingsList, STROKE_ARG(0)
+				 event.xkey.keycode,
+				 event.xkey.state, LockMask, 
+				 C_WINDOW, KEY_BINDING)) != NULL)
+      {
+	SendMsgAndString(action, "CheckBinding");
+	break;
+      }
       if (ks == XK_Tab) {
 	isTab = 1;
 	if (event.xkey.state & ShiftMask) {
@@ -936,6 +1000,16 @@ void MainLoop (void)
 	  if (token)
 	    free(token);
 	}
+	else if (packet->type == M_STRING) {
+	  char *action, *token;
+	  action = (char*)&(packet->body[3]);
+	  action = GetNextToken(action, &token);
+	  if (StrEquals(token,"SendString")) {
+	    SendMsgAndString(action, "SendString");
+	  }
+	  if (token)
+	    free(token);
+	}
 	else
 	  for (i=0; i<nbobj; i++)
 	    tabxobj[i]->ProcessMsg(tabxobj[i], packet->type, packet->body);
@@ -1024,7 +1098,7 @@ int main (int argc, char **argv)
   if (ref == 0) ref = None;
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
-  SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST|
+  SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST| M_STRING |
 		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
 		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
 

@@ -1,3 +1,17 @@
+2001-10-19  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Instruction.c:
+	* FvwmScript/FvwmScript.c:
+	* FvwmScript/FvwmScript.1:
+	* FvwmScript/script.y:
+	* FvwmScript/scanner.l:
+	* FvwmScript/script.c:
+	* FvwmScript/scanner.c:
+	* FvwmScript/types.h
+	New bloc QuitFunc (bloc executed at exit), new instruction Key
+	for key bindings, new function LastString, new command 
+	SendToModule ScriptName SendString id sig str
+
 2001-10-16  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmScript/FvwmScript.1: fix up.

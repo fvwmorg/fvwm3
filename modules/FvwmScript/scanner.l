@@ -85,6 +85,7 @@ GetScriptArgument	{ return GETSCRIPTARG; }
 GetPid			{ return GETPID; }
 SendMsgAndGet		{ return SENDMSGANDGET; }
 Parse			{ return PARSE; }
+LastString		{ return LASTSTRING; }
 ^{bl}+ChangePosition	{ return POSITION; }
 ^{bl}+ChangeSize	{ return SIZE; }
 ^{bl}+ChangeTitle	{ return TITLE; }
@@ -98,12 +99,14 @@ Parse			{ return PARSE; }
 ^{bl}+Quit		{ return QUIT; }
 ^{bl}+Init		{ return INIT; }
 ^{bl}+PeriodicTasks	{ return PERIODICTASK; }
+^{bl}+QuitFunc		{ return QUITFUNC; }
 ^{bl}+For		{ return FOR; }
 ^{bl}+WarpPointer	{ return WARP; }
 ^{bl}+WriteToFile	{ return WRITETOFILE; }
 ^{bl}+SendToScript	{ return SENDTOSCRIPT; }
 ^{bl}+SingleClic	{ return SINGLECLIC; }
 ^{bl}+DoubleClic	{ return DOUBLECLIC; }
+^{bl}+Key		{ return KEY; }
 To			{ return TO; }
 Do			{ return DO; }
 ^{bl}+If		{ return IF; }

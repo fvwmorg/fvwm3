@@ -5,18 +5,17 @@ Changes in beta 2.5.0 (not released yet)
 
 * New OpaqueMoveSize argument "unlimited".
 
-* FvwmScript: new keyboard bindings. New flags NoFocus. Amelioration of the
-  Menu and PopupMenu Widgets.
-
 * Fixed binding keys with and without "Shift" modifier under some
   circumstances.
 
 * Fixed binding actions to the client window with ClickToFocus.
 
-* Mouse bindings are activated without a recapture.
-
-* New functions "GetPid", "Parse" and "SendMsgAndGet". The SendMsgAndGet
-  function allows to extend FvwmScript with various programming languages.
+* Mouse bindings are activated without a recapture
+.
+* FvwmScript: new keyboard bindings. New flags NoFocus. Amelioration of the
+  Menu and PopupMenu Widgets. New functions GetPid, Parse, SendMsgAndGet
+  and LastString. New instruction Key for key bindings. New command
+  SendToModule ScriptName SendString.
 
 Changes in stable 2.4.3 (8-Oct-2001)
 

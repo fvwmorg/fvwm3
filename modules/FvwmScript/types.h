@@ -125,6 +125,7 @@ typedef struct			/* Type pour la gestion X */
   char *icon;			/* Icone pour l'application iconisee */
   Bloc *periodictasks;		/* Tableau de taches periodiques */
   Bloc *initbloc;		/* Bloc d'initalisation */
+  Bloc *quitfunc;               /* Bloc executed at exit */
 } ScriptProp;
 
 
@@ -175,6 +176,7 @@ typedef struct
   char *icon;
   char *title;
   Bloc *periodictasks;
+  Bloc *quitfunc;
   int HaveXSelection;
   char* TabScriptId[999];
   int NbChild;

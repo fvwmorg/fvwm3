@@ -24,8 +24,8 @@
 extern int fd[2];
 extern Window ref;
 
-void (*TabCom[25]) (int NbArg,long *TabArg);
-char *(*TabFunc[25]) (int *NbArg, long *TabArg);
+void (*TabCom[26]) (int NbArg,long *TabArg);
+char *(*TabFunc[26]) (int *NbArg, long *TabArg);
 int (*TabComp[7]) (char *arg1,char *arg2);
 
 extern Display *dpy;
@@ -33,6 +33,7 @@ extern int screen;
 extern X11base *x11base;
 extern int grab_serve;
 extern struct XObj *tabxobj[1000];
+extern Binding *BindingsList;
 extern void LoadIcon(struct XObj *xobj);
 
 extern int nbobj;
@@ -42,7 +43,7 @@ extern char *ScriptName;
 extern char *ModuleName;
 extern TypeBuffSend BuffSend;
 extern Atom propriete;
-
+extern char *LastString;
 char *FvwmUserDir = NULL;
 char *BufCom;
 char Command[255]="None";
@@ -947,7 +948,7 @@ static char *FuncParse(int *NbArg,long *TabArg)
   if (end > l || end <= start)
   {
     str=(char*)safecalloc(1,sizeof(char));
-    str[0] ='\0';;
+    str[0] ='\0';
   }
   else
   {
@@ -956,6 +957,22 @@ static char *FuncParse(int *NbArg,long *TabArg)
     str[end-start] ='\0';
   }
   free(string);
+  return str;
+}
+
+/******* GetLastString *******/
+static char *FuncGetLastString(int *NbArg,long *TabArg)
+{
+  char *str;
+
+  if (LastString == NULL) {
+    str = (char*)safecalloc(1,sizeof(char));
+    str[0] ='\0';
+  }
+  else
+  {
+    CopyString(&str,LastString);
+  }
   return str;
 }
 
@@ -1726,6 +1743,73 @@ static void SendToScript (int NbArg,long *TabArg)
   }
 }
 
+/******* Key *******/
+static void Key (int NbArg,long *TabArg)
+{
+  char *key_string,*in_modifier,*action,*str,*tmp,*widget,*sig;
+  int modifier;
+  int error = 0;
+  int i,j=0;
+  KeySym keysym = NoSymbol;
+  int button = 0;
+
+  /* the key */
+  key_string = CalcArg(TabArg,&j);
+  /* the modifier */
+  j++;
+  in_modifier = CalcArg(TabArg,&j);
+  /* the widget */
+  j++;
+  widget = CalcArg(TabArg,&j);
+  /* the signal */
+  j++;
+  sig = CalcArg(TabArg,&j);
+
+  /* the string */
+  str = (char*)safecalloc(256,sizeof(char));
+  for (i=j+1; i<NbArg; i++)
+  {
+    tmp = CalcArg(TabArg,&i);
+    str = (char*)saferealloc((void*)str, strlen(str) + strlen(tmp) + 1);
+    str = strcat(str, tmp);
+    free(tmp);
+  }
+  
+  tmp = safestrdup(CatString3(widget, " ", sig));
+  action = safestrdup(CatString3(tmp, " ", str));
+  fprintf(stderr, "Action: %s\n", action);
+  free(sig);
+  free(widget);
+  free(str);
+  free(tmp);
+
+  keysym = FvwmStringToKeysym(dpy, key_string);
+  if (keysym == 0)
+  {
+    fprintf(stderr, "[%s][Key]: No such key: %s", ScriptName, key_string);
+    error = 1;
+  }
+
+  if (ParseModifiers(in_modifier, &modifier)) {
+    fprintf(stderr,"[%s][Key]: bad modifier: %s\n",
+	    ScriptName,in_modifier);
+    error = 1;
+  }
+
+  if (error) {
+    free(key_string);
+    free(in_modifier);
+    free(action);
+    return;
+  }
+  
+  AddBinding(dpy, &BindingsList, KEY_BINDING, STROKE_ARG(0)
+	     button, keysym, key_string, modifier, C_WINDOW, 
+	     (void *)action, NULL);
+  free(key_string);
+  free(in_modifier);
+}
+
 /****************************************************/
 /* Fonction d'initialisation de TabCom et TabFunc   */
 /****************************************************/
@@ -1755,6 +1839,7 @@ void InitCom()
   TabCom[22]=ChangeValueMin;
   TabCom[23]=SendToScript;
   TabCom[24]=ChangeColorset;
+  TabCom[25]=Key;
 
   /* Fonction */
   TabFunc[1]=FuncGetValue;
@@ -1781,6 +1866,7 @@ void InitCom()
   TabFunc[22]=FuncGetPid;
   TabFunc[23]=FuncSendMsgAndGet;
   TabFunc[24]=FuncParse;
+  TabFunc[25]=FuncGetLastString;
 
   /* Fonction de comparaison */
   TabComp[1]=Inf;

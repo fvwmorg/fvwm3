@@ -21,6 +21,7 @@ long BuffArg[6][20];	/* Les arguments s'ajoute par couche pour chaque fonction i
 int NbArg[6];		/* Tableau: nb d'args pour chaque couche */
 int SPileArg;		/* Taille de la pile d'arguments */
 long l;
+extern char* ScriptName;
 
 /* Initialisation globale */
 void InitVarGlob()
@@ -40,6 +41,7 @@ void InitVarGlob()
 
  SPileArg=-1;
  scriptprop->periodictasks=NULL;
+ scriptprop->quitfunc=NULL;
 }
 
 /* Initialisation pour un objet */
@@ -189,7 +191,8 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
 
  if (NbVar>MAX_VARS-2) 	
  {
-  fprintf(stderr,"Line %d: too many variables (>512)\n",numligne);
+  fprintf(stderr,
+    "[%s] Line %d: too many variables (>5120)\n",ScriptName,numligne);
   exit(1);
  }
 
@@ -335,7 +338,7 @@ void DepilerBloc(int IdBloc)
 /* Gestion des erreurs de syntaxes */
 int yyerror(char *errmsg)
 {
- fprintf(stderr,"Line %d: %s\n",numligne,errmsg);
+ fprintf(stderr,"[%s] Line %d: %s\n",ScriptName,numligne,errmsg);
  return 0;
 }
 
@@ -355,22 +358,22 @@ int yyerror(char *errmsg)
 
 %token WINDOWTITLE WINDOWSIZE WINDOWPOSITION FONT
 %token FORECOLOR BACKCOLOR SHADCOLOR LICOLOR COLORSET
-%token OBJECT INIT PERIODICTASK MAIN END PROP
+%token OBJECT INIT PERIODICTASK QUITFUNC MAIN END PROP
 %token TYPE SIZE POSITION VALUE VALUEMIN VALUEMAX TITLE SWALLOWEXEC ICON FLAGS WARP WRITETOFILE
 %token HIDDEN NOFOCUS NORELIEFSTRING
 %token CASE SINGLECLIC DOUBLECLIC BEG POINT
-%token EXEC HIDE SHOW FONT CHFORECOLOR CHBACKCOLOR CHCOLORSET
+%token EXEC HIDE SHOW FONT CHFORECOLOR CHBACKCOLOR CHCOLORSET KEY
 %token GETVALUE GETMINVALUE GETMAXVALUE GETFORE GETBACK GETHILIGHT GETSHADOW CHVALUE CHVALUEMAX CHVALUEMIN
 %token ADD DIV MULT GETTITLE GETOUTPUT STRCOPY NUMTOHEX HEXTONUM QUIT
 %token LAUNCHSCRIPT GETSCRIPTFATHER SENDTOSCRIPT RECEIVFROMSCRIPT
 %token GET SET SENDSIGN REMAINDEROFDIV GETTIME GETSCRIPTARG
-%token GETPID SENDMSGANDGET PARSE
+%token GETPID SENDMSGANDGET PARSE LASTSTRING
 %token IF THEN ELSE FOR TO DO WHILE
 %token BEGF ENDF
 %token EQUAL INFEQ SUPEQ INF SUP DIFF
 
 %%
-script: initvar head initbloc periodictask object ;
+script: initvar head initbloc periodictask quitfunc object ;
 
 /* Initialisation des variables */
 initvar: 			{ InitVarGlob(); }
@@ -429,6 +432,12 @@ initbloc:		/* cas ou il n'y pas de bloc d'initialisation du script */
 periodictask:		/* cas ou il n'y a pas de tache periodique */
 	    | PERIODICTASK creerbloc BEG instr END {
 				 scriptprop->periodictasks=PileBloc[TopPileB];
+				 TopPileB--; 
+				}
+
+quitfunc:		/* case where there are no QuitFunc */
+	    | QUITFUNC creerbloc BEG instr END {
+				 scriptprop->quitfunc=PileBloc[TopPileB];
 				 TopPileB--; 
 				}
 
@@ -584,6 +593,7 @@ instr:
     | instr IF ifthenelse
     | instr FOR loop
     | instr WHILE while
+    | instr KEY key
     ;
 
 /* une seule instruction */
@@ -609,6 +619,7 @@ oneinstr: EXEC exec
 	| SENDTOSCRIPT sendtoscript
 	| FOR loop
 	| WHILE while
+    	| KEY key
 	;
 
 exec: addlbuff args			{ AddCom(1,1); }
@@ -641,7 +652,7 @@ chcolorset : addlbuff numarg addlbuff numarg	{ AddCom(24,2);}
            ;
 set: addlbuff vararg GET addlbuff args	{ AddCom(11,2);}
    ;
-sendsign: addlbuff numarg addlbuff numarg{ AddCom(12,2);}
+sendsign: addlbuff numarg addlbuff numarg { AddCom(12,2);}
 	;
 quit: 					{ AddCom(13,0);}
     ;
@@ -650,6 +661,8 @@ warp: addlbuff numarg			{ AddCom(17,1);}
 sendtoscript: addlbuff numarg addlbuff args 	{ AddCom(23,2);}
 	    ;
 writetofile: addlbuff strarg addlbuff args	{ AddCom(18,2);}
+	   ;
+key: addlbuff strarg addlbuff strarg addlbuff numarg addlbuff numarg addlbuff args { AddCom(25,5);}
 	   ;
 ifthenelse: headif creerbloc bloc1 else
           ;
@@ -722,6 +735,7 @@ function: GETVALUE numarg	{ AddFunct(1,1); }
 	| GETPID { AddFunct(22,1); }
 	| SENDMSGANDGET gstrarg gstrarg numarg { AddFunct(23,1); }
 	| PARSE gstrarg numarg { AddFunct(24,1); }
+	| LASTSTRING { AddFunct(25,1); }
 	;
 
 
