@@ -8,6 +8,7 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
+#define XLIB_ILLEGAL_ACCESS
 #define TRUE 1
 #define FALSE
 
@@ -48,7 +49,11 @@ Display *dpy;			/* which display are we talking to */
 Window Root;
 int screen;
 int x_fd;
-int d_depth;
+int depth;
+Visual* viz;
+VisualID vid;
+Colormap cmap;
+GContext gcontext = None;
 int ScreenWidth, ScreenHeight;
 
 char *BackColor = "white";
@@ -56,10 +61,13 @@ char *ForeColor = "black";
 char *font_string = "fixed";
 
 Pixel back_pix, fore_pix;
-GC  NormalGC;
+GC  NormalGC = None;
 Window main_win;
 Window app_win;
 XFontStruct *font;
+Font fid;
+
+Bool UseFvwmLook = True;
 
 int Width, Height,win_x,win_y;
 
@@ -127,14 +135,17 @@ int main(int argc, char **argv)
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  d_depth = DefaultDepth(dpy, screen);
+  depth = DefaultDepth(dpy, screen);
+  viz = DefaultVisual(dpy, screen);
+  vid = XVisualIDFromVisual(viz);
+  cmap = DefaultColormap(dpy, screen);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
 
-  SetMessageMask(fd,M_CONFIGURE_WINDOW|M_WINDOW_NAME|M_ICON_NAME|
-		 M_RES_CLASS| M_RES_NAME| M_END_WINDOWLIST|M_CONFIG_INFO|
-		 M_END_CONFIG_INFO);
+  SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
+                 | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
+                 | M_NEW_LOOK | M_END_CONFIG_INFO);
   /* scan config file for set-up parameters */
   /* Colors and fonts */
 
@@ -147,16 +158,19 @@ int main(int argc, char **argv)
 	  if(strncasecmp(tline, CatString3(MyName,"Font",""),Clength+4)==0)
 	    {
 	      CopyString(&font_string,&tline[Clength+4]);
+	      UseFvwmLook = False;
 	    }
 	  else if(strncasecmp(tline,CatString3(MyName,"Fore",""),
 				Clength+4)==0)
 	    {
 	      CopyString(&ForeColor,&tline[Clength+4]);
+	      UseFvwmLook = False;
 	    }
 	  else if(strncasecmp(tline,CatString3(MyName, "Back",""),
 				Clength+4)==0)
 	    {
 	      CopyString(&BackColor,&tline[Clength+4]);
+	      UseFvwmLook = False;
 	    }
 	}
       GetConfigLine(fd,&tline);
@@ -205,6 +219,11 @@ void process_message(unsigned long type,unsigned long *body)
 {
   switch(type)
     {
+    /* should turn off this packet but it comes after config_list so have to
+       accept at least one */
+    case M_NEW_LOOK:
+      if (UseFvwmLook) change_defaults(body);
+      break;
     case M_CONFIGURE_WINDOW:
       list_configure(body);
       break;
@@ -245,7 +264,7 @@ void DeadPipe(int nonsense)
 
 /***********************************************************************
  *
- * Got window configuration info - if its our window, safe data
+ * Got window configuration info - if its our window, save data
  *
  ***********************************************************************/
 void list_configure(unsigned long *body)
@@ -329,6 +348,37 @@ void list_res_name(unsigned long *body)
     }
 }
 
+/*************************************************************************
+ *
+ * M_NEW_LOOK packet received, change builtin defaults
+ *
+ ************************************************************************/
+void change_defaults(unsigned long *body) {
+XVisualInfo vizinfo, *xvi;
+int count;
+
+#if 0
+  fprintf(stderr, "got look packet\n");
+  fprintf(stderr, "VisualID 0x%lx\n", body[0]);
+  fprintf(stderr, "Colormap 0x%lx\n", body[1]);
+  fprintf(stderr, "Depth %d\n", body[2]);
+#endif
+
+/* fvwm passes the VisualID over, have to get a Visual pointer from this */
+  vizinfo.visualid = body[0];
+  if ((xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &count)) == NULL)
+    return;
+  viz = xvi->visual;
+  XFree(xvi);
+
+  cmap = body[1];
+  depth = body[2];
+  back_pix = body[5];
+  gcontext = body[6];
+  fid = body[9];
+ 
+}
+
 
 /*************************************************************************
  *
@@ -346,6 +396,7 @@ void list_end(void)
   int JunkX, JunkY;
   unsigned int JunkMask;
   int x,y;
+  XSetWindowAttributes attributes;
 
   if(!found)
     {
@@ -357,11 +408,15 @@ void list_end(void)
   close(fd[1]);
 
   /* load the font */
-  if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
-    {
+  if (UseFvwmLook) {
+    if ((font = XQueryFont(dpy, fid)) == NULL)
+      exit(1);
+  }
+  else {
+    if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
       if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
 	exit(1);
-    };
+  }
 
   /* make window infomation list */
   MakeList();
@@ -406,22 +461,22 @@ void list_end(void)
   mysizehints.y = y;
 
 
-
-  if(d_depth < 2)
-    {
+  if (!UseFvwmLook) {
+    if(depth < 2) {
       back_pix = GetColor("white");
       fore_pix = GetColor("black");
-    }
-  else
-    {
+    } else {
       back_pix = GetColor(BackColor);
       fore_pix = GetColor(ForeColor);
-
     }
+  }
 
-  main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
-				 mysizehints.width,mysizehints.height,
-				 0,fore_pix,back_pix);
+  attributes.colormap = cmap;
+  attributes.background_pixel = back_pix;
+  main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
+			   mysizehints.width, mysizehints.height, 0, depth,
+			   InputOutput, viz, CWColormap | CWBackPixel,
+			   &attributes);
   XSetTransientForHint(dpy,main_win,app_win);
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
@@ -430,11 +485,17 @@ void list_end(void)
   XSelectInput(dpy,main_win,MW_EVENTS);
   change_window_name(&MyName[1]);
 
-  gcm = GCForeground|GCBackground|GCFont;
+  gcm = GCForeground|GCFont;
   gcv.foreground = fore_pix;
-  gcv.background = back_pix;
   gcv.font =  font->fid;
   NormalGC = XCreateGC(dpy, Root, gcm, &gcv);
+
+  /* This looks horrible, but is the only way I could think of getting a GC
+   * given a GContext since there is no gcv.gcontext.
+   * I assume that the original GContext is freed by the server at exit */
+  if (UseFvwmLook)
+    NormalGC->gid = gcontext;
+
   XMapWindow(dpy,main_win);
 
   /* Window is created. Display it until the user clicks or deletes it. */

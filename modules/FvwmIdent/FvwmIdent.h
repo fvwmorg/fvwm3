@@ -56,6 +56,7 @@ void AddToList(char *, char *);
 void MakeList(void);
 void freelist(void);
 
+void change_defaults(unsigned long *body);
 void list_configure(unsigned long *body);
 void list_window_name(unsigned long *body);
 void list_icon_name(unsigned long *body);
