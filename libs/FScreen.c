@@ -316,7 +316,8 @@ void FScreenInit(Display *dpy)
 #endif
     {
       total_screens_xi = 0;
-      screens = (XineramaScreenInfo *)safemalloc(sizeof(XineramaScreenInfo)*1);
+      screens_xi =
+	(XineramaScreenInfo *)safemalloc(sizeof(XineramaScreenInfo)*1);
     }
   total_screens = total_screens_xi;
   screens = screens_xi;

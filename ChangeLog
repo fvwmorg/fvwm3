@@ -1,3 +1,8 @@
+2001-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/FScreen.c (FScreenInit):
+	fixed a memory allocation bug pointed out by Giuseppe Della Ricca
+
 2001-09-05  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/session.c (MatchWinToSM):
