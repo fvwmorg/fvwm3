@@ -440,26 +440,60 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
   case M_ADD_WINDOW:
   case M_CONFIGURE_WINDOW:
-    /* Matched only at startup when default border width and
-       actual border width differ. Don't assign win_width here so
-       Window redraw and rewarping gets handled by XEvent
-       ConfigureNotify code. */
     cfgpacket = (ConfigWinPacket *) body;
     if (!ShowTransients && (IS_TRANSIENT(cfgpacket)))
       break;
+    /* Matched only at startup when default border width and
+       actual border width differ. Don't assign win_width here so
+       Window redraw and rewarping gets handled by XEvent
+       ConfigureNotify code.
+       Not exactly: users cannot modify the win_width of the taskbar (see
+       the hints in StartMeup; it is a good idea). So "we have to" modify
+       the win_with here by modifying the WMNormalHints (olicha Nov 20, 99) */ 
     if (cfgpacket->w == win)
     {
       if (win_border != (int)cfgpacket->border_width)
       {
-	win_x = win_border = (int)cfgpacket->border_width;
+	XSizeHints hints;
+	long dumy;
 
-        if (win_y > Midline)
-          win_y = ScreenHeight - (AutoHide ? 2 : win_height + win_border);
-        else
-          win_y = AutoHide ? 2 - win_height : win_border;
+ 	XGetWMNormalHints(dpy,win,&hints,&dumy);
+	/* Need to inverse gravity if AutoHide */
+	if (AutoHide) {
+	  if ((int)cfgpacket->border_width > win_border) { 
+	    if (win_y < Midline)
+	      hints.win_gravity=SouthWestGravity;
+	    else
+	      hints.win_gravity=NorthWestGravity;
+	  }
+	  if ((int)cfgpacket->border_width < win_border) { 
+	    if (win_y < Midline)
+	      hints.win_gravity=NorthWestGravity;
+	    else
+	      hints.win_gravity=SouthWestGravity;
+	  }
+	}
 
-        XMoveResizeWindow(dpy, win, win_x, win_y,
-                          ScreenWidth-(win_border<<1), win_height);
+	win_border = (int)cfgpacket->border_width;
+	win_width = ScreenWidth-(win_border<<1);
+       
+	if (AutoStick)
+	{
+	    if (win_y > Midline)
+	      win_y = ScreenHeight - win_height + win_border;
+	    else
+	      win_y = win_border;
+	}
+
+	/* allows to resize */
+	hints.min_width   = win_width;
+	hints.max_width   = win_width;
+	XSetWMNormalHints(dpy,win,&hints);
+
+ 	if (AutoStick && !AutoHide)
+	  WarpTaskBar(win_y);
+	else if (!AutoHide)
+	  XResizeWindow(dpy, win, win_width, win_height);
       }
       break;
     }
@@ -590,7 +624,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  int x, y;
 	  int abs_x, abs_y;
 
-	  fprintf(stderr, "Entring Animation\n");
 	  ButtonCoordinates(&buttons, i, &x, &y);
 	  XTranslateCoordinates(dpy, win, Root, x, y,
 				&abs_x, &abs_y, &child);
@@ -1047,9 +1080,7 @@ static void ParseConfigLine(char *tline)
       break;
     case 28: /* Rows */
       RowsNumber = atoi(rest);
-      fprintf(stderr,"RN %i\n", RowsNumber);
-      if (!(1 <= RowsNumber && RowsNumber <= 7)) {
-	fprintf(stderr,"RN %i\n", RowsNumber);
+      if (!(1 <= RowsNumber && RowsNumber <= 8)) {
 	RowsNumber = 1;
       }
       break;
@@ -1393,7 +1424,13 @@ void LoopOnEvents(void)
 	    WarpTaskBar(win_y);
 	  redraw = 1;
         }
-        else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
+	/* useful because of dynamic style change */
+	if (!Event.xconfigure.send_event)
+	{
+	  PurgeConfigEvents();
+	  break;
+	}
+        else if ((Event.xconfigure.x != win_x || Event.xconfigure.y != win_y))
 	{
           if (AutoStick)
 	  {
@@ -1763,19 +1800,34 @@ void StartMeUp(void)
 	 	        (unsigned int *)&hints.width,
 		        (unsigned int *)&hints.height);
 
-   if (ret & YNegative)
-     hints.y = ScreenHeight - (AutoHide ? 1 : win_height + (win_border<<1));
-   else
+   if (ret & YNegative) 
+   {
+     if (AutoStick)
+       hints.y = ScreenHeight - (AutoHide ? 1 : win_height);
+     else
+       hints.y += ScreenHeight - win_height;
+   }
+   else if (AutoStick)
      hints.y = AutoHide ? 1 - win_height : 0;
+
+    if (ret & XNegative)
+    {
+      if (ret & YNegative) hints.win_gravity=SouthEastGravity;
+      else hints.win_gravity=NorthEastGravity;
+    }
+    else
+    {
+      if (ret & YNegative) hints.win_gravity=SouthWestGravity;
+      else hints.win_gravity=NorthWestGravity;
+    }
 
    hints.flags=USPosition|PPosition|USSize|PSize|PResizeInc|
      PWinGravity|PMinSize|PMaxSize|PBaseSize;
    hints.x           = 0;
    hints.width       = win_width;
    hints.height      = win_height;
-   hints.width_inc   = win_width;
+   hints.width_inc   = 1;
    hints.height_inc  = RowHeight+2;
-   hints.win_gravity = NorthWestGravity;
    hints.min_width   = win_width;
    hints.min_height  = RowHeight-1;
    hints.max_width   = win_width;
