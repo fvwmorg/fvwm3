@@ -1122,7 +1122,7 @@ void ApplyDefaultFontAndColors(void)
   /* update the geometry window for move/resize */
   if(Scr.SizeWindow != None)
   {
-    ResizeSizeWindow();
+    resize_geometry_window();
   }
 
   UpdateAllMenuStyles();

@@ -16,7 +16,7 @@
 #ifndef _MOVE_RESIZE_
 #define _MOVE_RESIZE_
 
-void MoveOutline(int x, int  y, int  width, int height);
+void switch_move_resize_grid(Bool state);
 void AnimatedMoveOfWindow(
   Window w,int startX,int startY,int endX, int endY,Bool fWarpPointerToo,
   int cusDelay, float *ppctMovement);
@@ -29,6 +29,6 @@ void move_window_doit(
   XEvent *eventp,Window w,FvwmWindow *tmp_win, unsigned long context,
   char *action,int* Module, Bool do_animate, Bool do_move_to_page);
 void handle_stick(F_CMD_ARGS, int toggle);
-void ResizeSizeWindow(void);
+void resize_geometry_window(void);
 
 #endif /* _MOVE_RESIZE_ */

@@ -11,8 +11,20 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Improved detection of the Shape library.
 
+* Fixed a problem that could cause windows to be lost off screen
+  with interactive window motion.
+
+* Fixed some FvwmTaskBar autohide problem.
+
+* Fixed a display string problem in FvwmForm.
+
+* Fixed a problem with FvwmTheme shadow colours.
+
 * Fixed the CirculateSkipIcon and CirculateSkipShaded options in
   conditional commands.
+
+* Fixed a formatting problem of the man page on AIX, Solaris, and
+  some other UNIX variants.
 
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)

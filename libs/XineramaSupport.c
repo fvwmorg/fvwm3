@@ -62,6 +62,7 @@
 #include "safemalloc.h"
 
 #include "XineramaSupport.h"
+#include "fvwmlib.h"
 #ifdef HAVE_XINERAMA
 #include <X11/extensions/Xinerama.h>
 #else
@@ -255,13 +256,8 @@ static int FindScreenOfXY(int x, int y)
   return 0;
 }
 
-static void GetMouseXY(int *x, int *y)
+static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
-  Window r_w;
-  Window c_w;
-  int int_v;
-  unsigned int uint_v;
-
   if (is_xinerama_disabled || last_to_check == first_to_check)
   {
     *x = 0;
@@ -269,9 +265,14 @@ static void GetMouseXY(int *x, int *y)
   }
   else
   {
-    XQueryPointer(
-      disp, RootWindow(disp, DefaultScreen(disp)), &r_w, &c_w, x, y, &int_v,
-      &int_v, &uint_v);
+    XEvent e;
+
+    if (eventp == NULL)
+    {
+      eventp = &e;
+      e.type = 0;
+    }
+    GetLocationFromEventOrQuery(disp, DefaultRootWindow(disp), eventp, x, y);
   }
 
   return;
@@ -306,21 +307,21 @@ void XineramaSupportCenter(int ms_x, int ms_y, int *x, int *y, int w, int h)
   *y += screens[scr].y_org;
 }
 
-void XineramaSupportCenterCurrent(int *x, int *y, int w, int h)
+void XineramaSupportCenterCurrent(XEvent *eventp, int *x, int *y, int w, int h)
 {
   int ms_x;
   int ms_y;
 
-  GetMouseXY(&ms_x, &ms_y);
+  GetMouseXY(eventp, &ms_x, &ms_y);
   XineramaSupportCenter(ms_x, ms_y, x, y, w, h);
 }
 
-void XineramaSupportGetCurrent00(int *x, int *y)
+void XineramaSupportGetCurrent00(XEvent *eventp, int *x, int *y)
 {
   int  scr;
   int  ms_x, ms_y;
 
-  GetMouseXY(&ms_x, &ms_y);
+  GetMouseXY(eventp, &ms_x, &ms_y);
   scr = FindScreenOfXY(ms_x, ms_y);
   *x = screens[scr].x_org;
   *y = screens[scr].y_org;
@@ -339,11 +340,12 @@ Bool XineramaSupportGetScrRect(int l_x, int l_y, int *x, int *y, int *w, int *h)
   return !(scr == 0 && num_screens > 1);
 }
 
-void XineramaSupportGetCurrentScrRect(int *x, int *y, int *w, int *h)
+void XineramaSupportGetCurrentScrRect(
+  XEvent *eventp, int *x, int *y, int *w, int *h)
 {
   int ms_x, ms_y;
 
-  GetMouseXY(&ms_x, &ms_y);
+  GetMouseXY(eventp, &ms_x, &ms_y);
   XineramaSupportGetScrRect(ms_x, ms_y, x, y, w, h);
 }
 

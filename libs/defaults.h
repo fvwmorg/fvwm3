@@ -103,9 +103,7 @@
 #define DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS 4
 
 
-
 /*** colours ***/
-
 #define DEFAULT_FORE_COLOR                "black"
 #define DEFAULT_BACK_COLOR                "gray"
 #define DEFAULT_HILIGHT_COLOR             "white"
@@ -117,12 +115,10 @@
 #define DEFAULT_MOVE_THRESHOLD		   3 /* pixels */
 #define DEFAULT_PAGER_WINDOW_BORDER_WIDTH  1 /* pixels */
 
-
 /*** fonts ***/
 #define EXTRA_TITLE_FONT_HEIGHT		   3 /* pixels */
 #define MIN_FONT_HEIGHT			   (EXTRA_TITLE_FONT_HEIGHT + 2)
 #define MAX_FONT_HEIGHT			 256 /* pixels */
-
 
 /*** window geometry ***/
 #define DEFAULT_MIN_MAX_WINDOW_WIDTH	 100 /* pixels */
@@ -132,6 +128,11 @@
 /* this value is used in a bugfix */
 #define WINDOW_FREAKED_OUT_HEIGHT      65500 /* pixels */
 
+/* geometry window */
+#define GEOMETRY_WINDOW_BW                 2 /* pixels */
+#define GEOMETRY_WINDOW_STRING             " +8888 x +8888 "
+#define GEOMETRY_WINDOW_POS_STRING         " %+-4d %+-4d "
+#define GEOMETRY_WINDOW_SIZE_STRING        " %4d x %-4d "
 
 /*** window placement (MinOverlap(Percent)Placement) ***/
 

@@ -1170,13 +1170,20 @@ void RedrawFrame ()
 void RedrawText(Item *item)
 {
   int x, y;
+  int len;
+  char *p;
+
   CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
   x = item->header.pos_x + TEXT_SPC;
   y = item->header.pos_y + ( CF.padVText / 2 ) +
     item->header.dt_ptr->dt_font_struct->ascent;
+  len = item->text.n;
+  if ((p = memchr(item->text.value, '\0', len)) != NULL)
+    len = p - item->text.value;
   XDrawString(dpy, CF.frame, item->header.dt_ptr->dt_GC,
-                   x, y, item->text.value,
-                   item->text.n);
+	      x, y, item->text.value, len);
+
+  return;
 }
 
 /* redraw an item */
@@ -1463,7 +1470,7 @@ static void OpenWindows ()
       y = DisplayHeight(dpy, screen) - CF.total_height + CF.gy;
   } else {
     XineramaSupportInit(dpy);
-    XineramaSupportCenterCurrent(&x, &y, CF.max_width, CF.total_height);
+    XineramaSupportCenterCurrent(NULL, &x, &y, CF.max_width, CF.total_height);
   }
   myfprintf((stderr,"going to create window w. bg %s\n",
              screen_background_color));

@@ -1,5 +1,5 @@
-Possible things to do for perfect Xinerama support:
----------------------------------------------------
+Possible things to do for perfect(?) Xinerama support:
+------------------------------------------------------
 
  1) Window placement:
     a) place windows on Xinerama screens
@@ -27,6 +27,7 @@ Possible things to do for perfect Xinerama support:
     d) Maximize
     e) Move/SnapAttraction: Limit SnapAttraction to windows on
        same screen.
+       [not useful, EdgeResistance is good enough]
     f) MaxWindowSize
     g) General X geometry replacement (WxH+X+Y@Screen)?
     h) Like g, but for X resource strings?
@@ -53,7 +54,25 @@ Still to do:
 2b
 5e (placement only)
 6d
-8b
+
+Optional to do:
+---------------
+1a
+2a
+5b
+5c
+5d
+5e
+5f
+6b
+6c
+6f
+6g
+6h
+6i
+8a
+8c
+8d
 
 Already done:
 -------------
@@ -62,4 +81,10 @@ Already done:
 3c
 4a
 5a
+6a
 7a
+8b
+
+Not to be done:
+---------------
+6e (not useful, EdgeResistance is good enough)

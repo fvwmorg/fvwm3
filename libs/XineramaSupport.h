@@ -10,11 +10,12 @@ void XineramaSupportEnable(void);
 void XineramaSupportClipToScreen(
   int src_x, int src_y, int *dest_x, int *dest_y, int w, int h);
 void XineramaSupportCenter(int ms_x, int ms_y, int *x, int *y, int w, int h);
-void XineramaSupportCenterCurrent(int *x, int *y, int w, int h);
-void XineramaSupportGetCurrent00(int *x, int *y);
+void XineramaSupportCenterCurrent(XEvent *eventp, int *x, int *y, int w, int h);
+void XineramaSupportGetCurrent00(XEvent *eventp, int *x, int *y);
 Bool XineramaSupportGetScrRect(
   int l_x, int l_y, int *x, int *y, int *w, int *h);
-void XineramaSupportGetCurrentScrRect(int *x, int *y, int *w, int *h);
+void XineramaSupportGetCurrentScrRect(
+  XEvent *eventp, int *x, int *y, int *w, int *h);
 void XineramaSupportGetResistanceRect(
   int wx, int wy, int ww, int wh, int *x0, int *y0, int *x1, int *y1);
 

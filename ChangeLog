@@ -1,3 +1,53 @@
+2001-07-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (moveLoop):
+	windows were lost off screen w/ non opaque interactive move when motion
+	was aborted with Escape on a different page that it was started
+
+	* fvwm/move_resize.c (position_geometry_window):
+	(DisplayPosition):
+	(DisplaySize):
+	(InteractiveMove):
+	(CMD_Resize):
+	(moveLoop):
+	(CMD_Resize):
+	(DoResize):
+	* libs/XineramaSupport.c (GetMouseXY):
+	(XineramaSupportCenterCurrent):
+	(XineramaSupportGetCurrent00):
+	(XineramaSupportGetCurrentScrRect):
+	allow to pass in an event with the pointer position
+	minimize number of XQueryPointer calls in interactive move/resize
+
+	* libs/defaults.h:
+	* fvwm/move_resize.c (resize_geometry_window):
+	(DisplayPosition):
+	(DisplaySize):
+	border width of geometry window moved to defaults.h
+	moved strings for size window formatting to defaults.h
+	reworked calculations of geometry window dimensions
+
+	* fvwm/move_resize.c (resize_geometry_window):
+	(position_geometry_window):
+	(DisplaySize):
+	(InteractiveMove):
+	(CMD_Resize):
+	* fvwm/builtins.c (ApplyDefaultFontAndColors):
+	* fvwm/fvwm.c (main):
+	funtions ResizeSizeWindow and PositionSizeWindow renamed to
+	resize_geometry_window and position_geometry_window
+
+	* fvwm/fvwm.c (main):
+	fixed resizing geometry window before creating it
+
+	* fvwm/move_resize.c (switch_move_resize_grid):
+	(MoveOutline):
+	* fvwm/virtual.c (HandlePaging):
+	renamed MoveOutline to draw_move_resize_grid and made static
+	new function switch_move_resize_grid for external calls
+	delete grid before moving the geometry window to get rid of arifacts of
+	the grid
+
 2001-07-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/XineramaSupport.c (XineramaSupportInit):

@@ -702,7 +702,6 @@ int main(int argc, char **argv)
 				  WhitePixel(dpy, Scr.screen), Pdepth);
   }
 
-  ResizeSizeWindow();
   attributes.background_pixel = Scr.StdBack;
   attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
@@ -711,6 +710,7 @@ int main(int argc, char **argv)
   Scr.SizeWindow = XCreateWindow(
     dpy, Scr.Root, 0, 0, 1, 1, (unsigned int)0, Pdepth, InputOutput, Pvisual,
     valuemask, &attributes);
+  resize_geometry_window();
   initPanFrames();
 
   MyXGrabServer(dpy);

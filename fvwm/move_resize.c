@@ -94,7 +94,11 @@ extern Window PressedW;
 static void DoResize(
   int x_root, int y_root, FvwmWindow *tmp_win, rectangle *drag,
   rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque);
-static void DisplaySize(FvwmWindow *, int, int, Bool, Bool);
+static void DisplaySize(
+  FvwmWindow *tmp_win, XEvent *eventp, int width, int height, Bool Init,
+  Bool resetLast);
+static void draw_move_resize_grid(int x, int  y, int  width, int height);
+
 /* ----- end of resize globals ----- */
 
 /* The vars are named for the x-direction, but this is used for both x and y */
@@ -373,7 +377,7 @@ static int GetResizeMoveArguments(
 }
 
 /* Positions the SizeWindow on the current ("moused") xinerama-screen */
-static void PositionSizeWindow(void)
+static void position_geometry_window(XEvent *eventp)
 {
   int x;
   int y;
@@ -381,15 +385,17 @@ static void PositionSizeWindow(void)
   /* Probably should remove this positioning code from {builtins,fvwm}.c? */
   if (Scr.gs.EmulateMWM)
   {
-    XineramaSupportCenterCurrent(&x, &y, sizew_g.width, sizew_g.height);
+    XineramaSupportCenterCurrent(eventp, &x, &y, sizew_g.width, sizew_g.height);
   }
   else
   {
-    XineramaSupportGetCurrent00(&x, &y);
+    XineramaSupportGetCurrent00(eventp, &x, &y);
   }
   if (x != sizew_g.x || y != sizew_g.y)
   {
+    switch_move_resize_grid(False);
     XMoveWindow(dpy, Scr.SizeWindow, x, y);
+    switch_move_resize_grid(True);
     sizew_g.x = x;
     sizew_g.y = y;
   }
@@ -397,16 +403,17 @@ static void PositionSizeWindow(void)
   return;
 }
 
-void ResizeSizeWindow(void)
+void resize_geometry_window(void)
 {
   int w;
   int h;
   int cset = Scr.DefaultColorset;
 
   Scr.SizeStringWidth =
-    XTextWidth(Scr.DefaultFont.font, " +8888 x +8888 ", 15);
-  w = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
-  h = Scr.DefaultFont.height + 2 * SIZE_VINDENT;
+    XTextWidth(Scr.DefaultFont.font, GEOMETRY_WINDOW_STRING,
+	       strlen(GEOMETRY_WINDOW_STRING));
+  w = Scr.SizeStringWidth + 2 * GEOMETRY_WINDOW_BW;
+  h = Scr.DefaultFont.height + 2 * GEOMETRY_WINDOW_BW;
   if (w != sizew_g.width || h != sizew_g.height)
   {
     XResizeWindow(dpy, Scr.SizeWindow, w, h);
@@ -438,43 +445,49 @@ void ResizeSizeWindow(void)
  *
  ************************************************************************/
 
-static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
+static void DisplayPosition(
+  FvwmWindow *tmp_win, XEvent *eventp, int x, int y,int Init)
 {
   char str [100];
   int offset;
 
   if (Scr.gs.do_hide_position_window)
     return;
-  PositionSizeWindow();
-  (void) sprintf (str, " %+-4d %+-4d ", x, y);
-  if(Init)
+  position_geometry_window(eventp);
+  (void) sprintf (str, GEOMETRY_WINDOW_POS_STRING, x, y);
+  if (Init)
   {
-    XClearWindow(dpy,Scr.SizeWindow);
+    XClearWindow(dpy, Scr.SizeWindow);
   }
   else
   {
     /* just clear indside the relief lines to reduce flicker */
-    XClearArea(dpy,Scr.SizeWindow,2,2,
-	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
-	       Scr.DefaultFont.height + SIZE_VINDENT*2 - 3,False);
+    XClearArea(dpy,Scr.SizeWindow, GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
+	       Scr.SizeStringWidth, Scr.DefaultFont.height, False);
   }
 
-  if(Pdepth >= 2)
-    RelieveRectangle(dpy,Scr.SizeWindow,0,0,
-                     Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
-                     Scr.DefaultFont.height + SIZE_VINDENT*2 - 1,
-                     Scr.StdReliefGC,
-                     Scr.StdShadowGC, 2);
-  offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
-	    - XTextWidth(Scr.DefaultFont.font,str,strlen(str)))/2;
+  if (Pdepth >= 2)
+  {
+    RelieveRectangle(
+      dpy, Scr.SizeWindow, 0, 0,
+      Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
+      Scr.DefaultFont.height + GEOMETRY_WINDOW_BW * 2 - 1,
+      Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
+  }
+  offset = (Scr.SizeStringWidth -
+	    XTextWidth(Scr.DefaultFont.font, str, strlen(str))) / 2;
+  offset += GEOMETRY_WINDOW_BW;
 #ifdef I18N_MB
-  XmbDrawString (dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
+  XmbDrawString(dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
+		offset,
+		Scr.DefaultFont.font->ascent + GEOMETRY_WINDOW_BW,
+		str, strlen(str));
 #else
-  XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
+  XDrawString(dpy, Scr.SizeWindow, Scr.StdGC,
+	      offset,
+	      Scr.DefaultFont.font->ascent + GEOMETRY_WINDOW_BW,
+	      str, strlen(str));
 #endif
-	       offset,
-	       Scr.DefaultFont.font->ascent + SIZE_VINDENT,
-	       str, strlen(str));
 }
 
 
@@ -489,8 +502,9 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
  *      height  - the height of the rubber band
  *
  ***********************************************************************/
-static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
-			Bool resetLast)
+static void DisplaySize(
+  FvwmWindow *tmp_win, XEvent *eventp, int width, int height, Bool Init,
+  Bool resetLast)
 {
   char str[100];
   int dwidth,dheight,offset;
@@ -499,7 +513,7 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
 
   if (Scr.gs.do_hide_resize_window)
     return;
-  PositionSizeWindow();
+  position_geometry_window(eventp);
   if (resetLast)
   {
     last_width = 0;
@@ -519,33 +533,37 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
   dwidth /= tmp_win->hints.width_inc;
   dheight /= tmp_win->hints.height_inc;
 
-  (void) sprintf (str, " %4d x %-4d ", dwidth, dheight);
-  if(Init)
+  (void) sprintf (str, GEOMETRY_WINDOW_SIZE_STRING, dwidth, dheight);
+  if (Init)
   {
     XClearWindow(dpy,Scr.SizeWindow);
   }
   else
   {
     /* just clear indside the relief lines to reduce flicker */
-    XClearArea(dpy,Scr.SizeWindow,2,2,
-	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
-	       Scr.DefaultFont.height + SIZE_VINDENT*2 - 3,False);
+    XClearArea(dpy, Scr.SizeWindow, GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
+	       Scr.SizeStringWidth, Scr.DefaultFont.height, False);
   }
 
-  if(Pdepth >= 2)
-    RelieveRectangle(dpy,Scr.SizeWindow,0,0,
-                     Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
-                     Scr.DefaultFont.height + SIZE_VINDENT*2 - 1,
-                     Scr.StdReliefGC,
-                     Scr.StdShadowGC, 2);
-  offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
-    - XTextWidth(Scr.DefaultFont.font,str,strlen(str)))/2;
+  if (Pdepth >= 2)
+  {
+    RelieveRectangle(
+      dpy, Scr.SizeWindow, 0, 0,
+      Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
+      Scr.DefaultFont.height + GEOMETRY_WINDOW_BW*2 - 1,
+      Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
+  }
+  offset = (Scr.SizeStringWidth -
+	    XTextWidth(Scr.DefaultFont.font, str, strlen(str))) / 2;
+  offset += GEOMETRY_WINDOW_BW;
 #ifdef I18N_MB
-  XmbDrawString (dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
-		 offset, Scr.DefaultFont.font->ascent + SIZE_VINDENT, str, 13);
+  XmbDrawString(dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
+		offset, Scr.DefaultFont.font->ascent + GEOMETRY_WINDOW_BW,
+		str, strlen(str));
 #else
-  XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
-	       offset, Scr.DefaultFont.font->ascent + SIZE_VINDENT, str, 13);
+  XDrawString(dpy, Scr.SizeWindow, Scr.StdGC,
+	      offset, Scr.DefaultFont.font->ascent + GEOMETRY_WINDOW_BW,
+	      str, strlen(str));
 #endif
 }
 
@@ -719,7 +737,7 @@ static void InteractiveMove(
   YOffset = origDragY - DragY;
   if (!Scr.gs.do_hide_position_window)
   {
-    PositionSizeWindow();
+    position_geometry_window(NULL);
     XMapRaised(dpy,Scr.SizeWindow);
   }
   moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
@@ -1430,7 +1448,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   bad_window = None;
   if (IS_ICONIFIED(tmp_win))
   {
-    if(tmp_win->icon_pixmap_w != None)
+    if (tmp_win->icon_pixmap_w != None)
       move_w = tmp_win->icon_pixmap_w;
     else if (tmp_win->icon_w != None)
       move_w = tmp_win->icon_w;
@@ -1467,9 +1485,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   /* draw initial outline */
   if (!IS_ICONIFIED(tmp_win) &&
       ((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win)))
-    MoveOutline(xl, yt, Width - 1, Height - 1);
+    draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
 
-  DisplayPosition(tmp_win,xl,yt,True);
+  DisplayPosition(tmp_win, &Event, xl, yt, True);
 
   while (!finished && bad_window != tmp_win->w)
   {
@@ -1530,12 +1548,15 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       /* simple code to bag out of move - CKH */
       if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
       {
-	if(!do_move_opaque)
-	  MoveOutline(0, 0, 0, 0);
+	if (!do_move_opaque)
+	  switch_move_resize_grid(False);
 	if (!IS_ICONIFIED(tmp_win))
 	{
-	  *FinalX = tmp_win->frame_g.x;
-	  *FinalY = tmp_win->frame_g.y;
+	  if (do_move_opaque)
+	  {
+	    *FinalX = tmp_win->frame_g.x;
+	    *FinalY = tmp_win->frame_g.y;
+	  }
 	}
 	else
 	{
@@ -1577,7 +1598,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	if (button_mask || (Event.xbutton.button != 1))
 	{
 	  if(!do_move_opaque)
-	    MoveOutline(0, 0, 0, 0);
+	    switch_move_resize_grid(False);
 	  if (!IS_ICONIFIED(tmp_win))
 	  {
 	    *FinalX = tmp_win->frame_g.x;
@@ -1595,7 +1616,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       }
     case ButtonRelease:
       if(!do_move_opaque)
-	MoveOutline(0, 0, 0, 0);
+	switch_move_resize_grid(False);
       xl2 = Event.xbutton.x_root + XOffset;
       yt2 = Event.xbutton.y_root + YOffset;
       /* ignore the position of the button release if it was on a
@@ -1632,7 +1653,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       while (paged <= 1)
       {
 	if(!do_move_opaque)
-	  MoveOutline(xl, yt, Width - 1, Height - 1);
+	  draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
 	else
 	{
 	  if (IS_ICONIFIED(tmp_win))
@@ -1652,7 +1673,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    XMoveWindow(dpy,tmp_win->frame,xl,yt);
 	  }
 	}
-	DisplayPosition(tmp_win,xl,yt,False);
+	DisplayPosition(tmp_win, &Event, xl, yt, False);
 
 	/* prevent window from lagging behind mouse when paging - mab */
 	if (paged == 0)
@@ -1677,11 +1698,11 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       if (!do_move_opaque)
       {
 	/* must undraw the rubber band in case the event causes some drawing */
-	MoveOutline(0,0,0,0);
+	switch_move_resize_grid(False);
       }
       DispatchEvent(False);
       if (!do_move_opaque)
-	MoveOutline(xl, yt, Width - 1, Height - 1);
+	draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
       break;
 
     default:
@@ -2153,10 +2174,10 @@ void CMD_Resize(F_CMD_ARGS)
   /* pop up a resize dimensions window */
   if (!Scr.gs.do_hide_resize_window)
   {
-    PositionSizeWindow();
+    position_geometry_window(NULL);
     XMapRaised(dpy, Scr.SizeWindow);
   }
-  DisplaySize(tmp_win, orig->width, orig->height,True,True);
+  DisplaySize(tmp_win, &Event, orig->width, orig->height,True,True);
 
   if((PressedW != Scr.Root)&&(PressedW != None))
   {
@@ -2314,7 +2335,7 @@ void CMD_Resize(F_CMD_ARGS)
 
   /* draw the rubber-band window */
   if (!do_resize_opaque)
-    MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+    draw_move_resize_grid(drag->x, drag->y, drag->width - 1, drag->height - 1);
   /* kick off resizing without requiring any motion if invoked with a key
    * press */
   if (eventp->type == KeyPress)
@@ -2442,10 +2463,11 @@ void CMD_Resize(F_CMD_ARGS)
     {
       if (!do_resize_opaque)
 	/* must undraw the rubber band in case the event causes some drawing */
-	MoveOutline(0,0,0,0);
+	switch_move_resize_grid(False);
       DispatchEvent(False);
       if (!do_resize_opaque)
-	MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+	draw_move_resize_grid(
+	  drag->x, drag->y, drag->width - 1, drag->height - 1);
     }
     else
     {
@@ -2461,7 +2483,7 @@ void CMD_Resize(F_CMD_ARGS)
 
   /* erase the rubber-band */
   if (!do_resize_opaque)
-    MoveOutline(0, 0, 0, 0);
+    switch_move_resize_grid(False);
 
   /* pop down the size window */
   if (!Scr.gs.do_hide_resize_window)
@@ -2557,6 +2579,7 @@ static void DoResize(
   rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque)
 {
   int action = 0;
+  XEvent e;
 
   if ((y_root <= orig->y) ||
       ((*ymotionp == 1)&&(y_root < orig->y+orig->height-1)))
@@ -2605,7 +2628,8 @@ static void DoResize(
 
     if(!do_resize_opaque)
     {
-      MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+      draw_move_resize_grid(
+	drag->x, drag->y, drag->width - 1, drag->height - 1);
     }
     else
     {
@@ -2613,7 +2637,10 @@ static void DoResize(
 	tmp_win, drag->x, drag->y, drag->width, drag->height, False);
     }
   }
-  DisplaySize(tmp_win, drag->width, drag->height,False,False);
+  e.type = MotionNotify;
+  e.xbutton.x_root = x_root;
+  e.xbutton.y_root = y_root;
+  DisplaySize(tmp_win, &e, drag->width, drag->height,False,False);
 }
 
 
@@ -2621,7 +2648,7 @@ static void DoResize(
 /***********************************************************************
  *
  *  Procedure:
- *	MoveOutline - move a window outline
+ *	draw_move_resize_grid - move a window outline
  *
  *  Inputs:
  *	root	    - the window we are outlining
@@ -2686,40 +2713,88 @@ static int get_outline_rects(
   return i;
 }
 
-void MoveOutline(int x, int  y, int  width, int height)
+struct
 {
-  static int lastx = 0;
-  static int lasty = 0;
-  static int lastWidth = 0;
-  static int lastHeight = 0;
+  rectangle geom;
+  struct
+  {
+    unsigned is_enabled : 1;
+  } flags;
+} move_resize_grid =
+{
+  { 0, 0, 0, 0 },
+  { 0 }
+};
+
+static void draw_move_resize_grid(int x, int  y, int  width, int height)
+{
   int nrects = 0;
   XRectangle rects[10];
 
-  if (x == lastx && y == lasty && width == lastWidth && height == lastHeight)
+  if (x == move_resize_grid.geom.x &&
+      y == move_resize_grid.geom.y &&
+      width == move_resize_grid.geom.width &&
+      height == move_resize_grid.geom.height)
+  {
     return;
+  }
 
   memset(rects, 0, 10 * sizeof(XRectangle));
   /* place the resize rectangle into the array of rectangles */
   /* interleave them for best visual look */
   /* draw the new one, if any */
-  if (width || height)
+  if (move_resize_grid.flags.is_enabled
+      /*move_resize_grid.geom.width && move_resize_grid.geom.height*/)
   {
-    nrects += get_outline_rects(&(rects[0]), x, y, width, height);
-  }
-  if (lastWidth || lastHeight)
-  {
+    move_resize_grid.flags.is_enabled = 0;
     nrects +=
-      get_outline_rects(&(rects[1]), lastx, lasty, lastWidth, lastHeight);
+      get_outline_rects(
+	&(rects[1]), move_resize_grid.geom.x, move_resize_grid.geom.y,
+	move_resize_grid.geom.width, move_resize_grid.geom.height);
+  }
+  if (width && height)
+  {
+    move_resize_grid.flags.is_enabled = 1;
+    move_resize_grid.geom.x = x;
+    move_resize_grid.geom.y = y;
+    move_resize_grid.geom.width = width;
+    move_resize_grid.geom.height = height;
+    nrects += get_outline_rects(&(rects[0]), x, y, width, height);
   }
   if (nrects > 0)
   {
     XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, 10);
     XSync(dpy, 0);
   }
-  lastx = x;
-  lasty = y;
-  lastWidth = width;
-  lastHeight = height;
+
+  return;
+}
+
+void switch_move_resize_grid(Bool state)
+{
+  if (state == False)
+  {
+    if (move_resize_grid.flags.is_enabled)
+    {
+      draw_move_resize_grid(0, 0, 0, 0);
+    }
+    else
+    {
+      move_resize_grid.geom.x = 0;
+      move_resize_grid.geom.y = 0;
+      move_resize_grid.geom.width = 0;
+      move_resize_grid.geom.height = 0;
+    }
+  }
+  else if (!move_resize_grid.flags.is_enabled)
+  {
+    if (move_resize_grid.geom.width && move_resize_grid.geom.height)
+    {
+      draw_move_resize_grid(
+	move_resize_grid.geom.x, move_resize_grid.geom.y,
+	move_resize_grid.geom.width, move_resize_grid.geom.height);
+    }
+  }
 
   return;
 }
