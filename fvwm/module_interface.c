@@ -85,7 +85,6 @@ fqueue *pipeQueue;
 extern fd_set init_fdset;
 
 static void DeleteMessageQueueBuff(int module);
-static void AddToMessageQueue(int module, unsigned long *ptr, int size, int done);
 static void AddToCommandQueue(Window w, int module, char * command);
 
 /*
@@ -1372,7 +1371,6 @@ void CMD_SendToModule(F_CMD_ARGS)
   free(str);
 }
 
-
 /* This used to be marked "fvwm_inline".  I removed this
    when I added the lockonsend logic.  The routine seems too big to
    want to inline.  dje 9/4/98 */
@@ -1380,148 +1378,160 @@ extern int myxgrabcount;                /* defined in libs/Grab.c */
 extern char *ModuleUnlock;		/* defined in libs/Module.c */
 void PositiveWrite(int module, unsigned long *ptr, int size)
 {
-  extern int moduleTimeout;
-  msg_masks_type mask;
+	extern int moduleTimeout;
+	msg_masks_type mask;
 
-  if(ptr == NULL)
-  {
-   return;
-  }
-  if (pipeOn[module] < 0)
-  {
-    return;
-  }
-  if (!IS_MESSAGE_IN_MASK(&PipeMask[module], ptr[1]))
-  {
-    return;
-  }
+	if(ptr == NULL)
+	{
+		return;
+	}
+	if (pipeOn[module] < 0)
+	{
+		return;
+	}
+	if (!IS_MESSAGE_IN_MASK(&PipeMask[module], ptr[1]))
+	{
+		return;
+	}
 
-  /* a dirty hack to prevent FvwmAnimate triggering during Recapture */
-  /* would be better to send RecaptureStart and RecaptureEnd messages. */
-  /* If module is lock on send for iconify message and it's an
-   * iconify event and server grabbed, then return */
-  mask.m1 = (NoGrabMask[module].m1 & SyncMask[module].m1);
-  mask.m2 = (NoGrabMask[module].m2 & SyncMask[module].m2);
-  if (IS_MESSAGE_IN_MASK(&mask, ptr[1]) && myxgrabcount != 0)
-  {
-    return;
-  }
+	/* a dirty hack to prevent FvwmAnimate triggering during Recapture */
+	/* would be better to send RecaptureStart and RecaptureEnd messages. */
+	/* If module is lock on send for iconify message and it's an
+	 * iconify event and server grabbed, then return */
+	mask.m1 = (NoGrabMask[module].m1 & SyncMask[module].m1);
+	mask.m2 = (NoGrabMask[module].m2 & SyncMask[module].m2);
+	if (IS_MESSAGE_IN_MASK(&mask, ptr[1]) && myxgrabcount != 0)
+	{
+		return;
+	}
 
-  AddToMessageQueue(module,ptr,size,0);
+	/* DV: This was once the AddToMessageQueue function.  Since it was only
+	 * called once, put it in here for better performance. */
+	{
+		mqueue_object_type *c;
 
-  /* dje, from afterstep, for FvwmAnimate, allows modules to sync with fvwm.
-   * this is disabled when the server is grabbed, otherwise deadlocks happen.
-   * M_LOCKONSEND has been replaced by a separated mask which defines on
-   * which messages the fvwm-to-module communication need to be lock
-   * on send. olicha Nov 13, 1999 */
-  /* migo (19-Aug-2000): removed !myxgrabcount to sync M_DESTROY_WINDOW */
-/*if ((SyncMask[module] & ptr[1]) && !myxgrabcount) */
+		c = (mqueue_object_type *)malloc(
+			sizeof(mqueue_object_type) + size);
+		if (c == NULL)
+		{
+			fvwm_msg(ERR, "PositiveWrite", "malloc failed\n");
+			exit(1);
+		}
+		c->size = size;
+		c->done = 0;
+		c->data = (unsigned long *)(c + 1);
+		memcpy((void*)c->data, (const void*)ptr, size);
 
-  if (IS_MESSAGE_IN_MASK(&SyncMask[module], ptr[1]))
-  {
-    Window targetWindow;
-    fd_set readSet;
-    struct timeval timeout;
-    int channel = readPipes[module];
+		fqueue_add_at_end(&pipeQueue[module], c);
+	}
 
-    FlushMessageQueue(module);
+	/* dje, from afterstep, for FvwmAnimate, allows modules to sync with
+	 * fvwm. this is disabled when the server is grabbed, otherwise
+	 * deadlocks happen. M_LOCKONSEND has been replaced by a separated
+	 * mask which defines on which messages the fvwm-to-module
+	 * communication need to be lock on send. olicha Nov 13, 1999 */
+	/* migo (19-Aug-2000): removed !myxgrabcount to sync M_DESTROY_WINDOW */
+	/*if ((SyncMask[module] & ptr[1]) && !myxgrabcount) */
+	if (IS_MESSAGE_IN_MASK(&SyncMask[module], ptr[1]))
+	{
+		Window targetWindow;
+		fd_set readSet;
+		struct timeval timeout;
+		int channel = readPipes[module];
 
-    do
-    {
-      int rc = 0;
-      /*
-       * We give the read a long timeout; if the module fails to
-       * respond within this time then it deserves to be KILLED!
-       *
-       * NOTE: rather than impose an arbitrary timeout on the user,
-       *       we will make this a configuration parameter.
-       */
+		FlushMessageQueue(module);
 
-      do
-      {
-        timeout.tv_sec = moduleTimeout;
-        timeout.tv_usec = 0;
-        FD_ZERO(&readSet);
-        FD_SET(channel, &readSet);
+		do
+		{
+			int rc = 0;
+			/*
+			 * We give the read a long timeout; if the module
+			 * fails to respond within this time then it deserves
+			 * to be KILLED!
+			 *
+			 * NOTE: rather than impose an arbitrary timeout on the
+			 * user, we will make this a configuration parameter. */
+			do
+			{
+				timeout.tv_sec = moduleTimeout;
+				timeout.tv_usec = 0;
+				FD_ZERO(&readSet);
+				FD_SET(channel, &readSet);
 
-        /* Wait for input to arrive on just one descriptor, with a timeout */
-        /* (fvwmSelect <= 0) or read() returning wrong size is bad news */
-        rc = fvwmSelect(channel + 1, &readSet, NULL, NULL, &timeout);
-        /* retry if select() failed with EINTR */
-      } while ((rc < 0) && !isTerminated && (errno == EINTR));
+				/* Wait for input to arrive on just one
+				 * descriptor, with a timeout (fvwmSelect <= 0)
+				 * or read() returning wrong size is bad news */
+				rc = fvwmSelect(
+					channel + 1, &readSet, NULL, NULL,
+					&timeout);
+				/* retry if select() failed with EINTR */
+			} while ((rc < 0) && !isTerminated && (errno == EINTR));
 
-      if ( isTerminated ) break;
+			if ( isTerminated ) break;
 
-      if (rc <= 0 || read(channel, &targetWindow, sizeof(targetWindow))
-           != sizeof(targetWindow))
-      {
-        char *name;
+			if (rc <= 0 || read(channel, &targetWindow,
+					    sizeof(targetWindow))
+			    != sizeof(targetWindow))
+			{
+				char *name;
 
-        if (pipeName[module] != NULL)
-        {
-          if (pipeAlias[module] != NULL)
-          {
-            name = CatString3(pipeName[module], " ", pipeAlias[module]);
-          }
-          else
-          {
-            name = pipeName[module];
-          }
-        }
-        else
-        {
-          name = "(null)";
-        }
+				if (pipeName[module] != NULL)
+				{
+					if (pipeAlias[module] != NULL)
+					{
+						name = CatString3(
+							pipeName[module], " ",
+							pipeAlias[module]);
+					}
+					else
+					{
+						name = pipeName[module];
+					}
+				}
+				else
+				{
+					name = "(null)";
+				}
 
-        /* Doh! Something has gone wrong - get rid of the offender!! */
-        fvwm_msg(ERR, "PositiveWrite",
-                 "Failed to read descriptor from '%s':\n"
-                 "- data available=%c\n"
-                 "- terminate signal=%c\n",
-                 name,
-                 (FD_ISSET(channel, &readSet) ? 'Y' : 'N'),
-                 isTerminated ? 'Y' : 'N');
-        KillModule(module);
-        break;
-      }
+				/* Doh! Something has gone wrong - get rid of
+				 * the offender!! */
+				fvwm_msg(ERR, "PositiveWrite",
+					 "Failed to read descriptor from"
+					 " '%s':\n"
+					 "- data available=%c\n"
+					 "- terminate signal=%c\n",
+					 name,
+					 (FD_ISSET(channel, &readSet) ?
+					  'Y' : 'N'),
+					 isTerminated ? 'Y' : 'N');
+				KillModule(module);
+				break;
+			}
 
-      /* Execute all messages from the module until UNLOCK is received
-       * N.B. This may cause recursion if a command results in a sync message
-       * to another module, which in turn may send a command that results in
-       * another sync message to this module.
-
-       * Hippo: I don't think this will cause deadlocks, but the third time we
-       * get here the first times UNLOCK will be read and then on returning up
-       * the third level UNLOCK will be read at the first level. This could be
-       * difficult to fix without turning queueing on.  Turning queueing on
-       * may be bad because it can be useful for modules to be able to inject
-       * commands from modules in a synchronous manner. e.g. FvwmIconMan
-       * can tell FvwmAnimate to do an animation when a window is de-iconified
-       * from the IconMan, queueing make s this happen too late.
-       */
-    }
-    while (!HandleModuleInput(targetWindow, module, ModuleUnlock, False));
-  }
-}
-
-
-static void AddToMessageQueue(
-	int module, unsigned long *ptr, int size, int done)
-{
-	mqueue_object_type *c;
-	unsigned long *d;
-
-	c = (mqueue_object_type *)safemalloc(sizeof(mqueue_object_type));
-	c->size = size;
-	c->done = done;
-	d = (unsigned long *)safemalloc(size);
-	c->data = d;
-	memcpy((void*)d, (const void*)ptr, size);
-
-	fqueue_add_at_end(&pipeQueue[module], c);
+			/* Execute all messages from the module until UNLOCK is
+			 * received N.B. This may cause recursion if a command
+			 * results in a sync message to another module, which
+			 * in turn may send a command that results in another
+			 * sync message to this module.
+			 * Hippo: I don't think this will cause deadlocks, but
+			 * the third time we get here the first times UNLOCK
+			 * will be read and then on returning up the third
+			 * level UNLOCK will be read at the first level. This
+			 * could be difficult to fix without turning queueing
+			 * on.  Turning queueing on may be bad because it can
+			 * be useful for modules to be able to inject commands
+			 * from modules in a synchronous manner. e.g.
+			 * FvwmIconMan can tell FvwmAnimate to do an animation
+			 * when a window is de-iconified from the IconMan,
+			 * queueing make s this happen too late. */
+		}
+		while (!HandleModuleInput(
+			       targetWindow, module, ModuleUnlock, False));
+	}
 
 	return;
 }
+
 
 static void DeleteMessageQueueBuff(int module)
 {
@@ -1532,10 +1542,8 @@ static void DeleteMessageQueueBuff(int module)
 		/* remove from queue */
 		fqueue_remove_or_operate_from_front(
 			&pipeQueue[module], NULL, NULL);
-		if (obj->data != NULL)
-		{
-			free(obj->data);
-		}
+		/* we don't need to free the ocj->data here because it's in the
+		 * same malloced block as the obj itself. */
 		free(obj);
 	}
 

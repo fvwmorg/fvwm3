@@ -691,17 +691,19 @@ void menustyle_parse_style(F_CMD_ARGS)
 		return;
 	}
 	tmpms = (MenuStyle *)safemalloc(sizeof(MenuStyle));
-	memset(tmpms, 0, sizeof(MenuStyle));
 	if (ms)
 	{
 		/* copy the structure over our temporary menu face. */
 		memcpy(tmpms, ms, sizeof(MenuStyle));
 		if (ms == default_menu_style)
+		{
 			is_default_style = True;
+		}
 		free(name);
 	}
 	else
 	{
+		memset(tmpms, 0, sizeof(MenuStyle));
 		ST_NAME(tmpms) = name;
 		is_initialised = False;
 	}

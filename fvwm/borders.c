@@ -790,8 +790,47 @@ static window_parts border_get_tb_parts_to_draw(
 			td->tbstate.draw_bmask |= (1 << i);
 		}
 	}
-	/*!!! position changed and background is tiled? */
-	/*!!! background changed? */
+	/* position changed and background is tiled? */
+	if ((draw_parts & PART_TITLE) == PART_NONE &&
+	    (td->old_layout.title_g.x != td->layout.title_g.x ||
+	     td->old_layout.title_g.y != td->layout.title_g.y) &&
+	    td->layout.title_g.x >= 0 && td->layout.title_g.y >= 0 &&
+	    (td->cd->valuemask & CWBackPixmap))
+	{
+		DecorFaceStyle *ts;
+
+		ts = &TB_STATE(
+			GetDecor(fw, titlebar))[td->tbstate.tstate].style;
+		if (DFS_USE_BORDER_STYLE(*ts))
+		{
+			draw_parts |= PART_TITLE;
+		}
+	}
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		unsigned int mask;
+		DecorFaceStyle *bs;
+
+		mask = (1 << i);
+		if ((td->tbstate.draw_bmask & mask) ||
+		    !(td->cd->valuemask & CWBackPixmap))
+		{
+			continue;
+		}
+		if ((td->old_layout.button_g[i].x == td->layout.button_g[i].x &&
+		     td->old_layout.button_g[i].y == td->layout.button_g[i].y)
+		    || td->layout.button_g[i].x < 0 ||
+		    td->layout.button_g[i].y < 0)
+		{
+			continue;
+		}
+		bs = &TB_STATE(
+			GetDecor(fw, buttons[i]))[td->tbstate.bstate[i]].style;
+		if (DFS_USE_BORDER_STYLE(*bs))
+		{
+			td->tbstate.draw_bmask |= mask;
+		}
+	}
 	td->tbstate.max_bmask = 0;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
@@ -816,6 +855,10 @@ static window_parts border_get_tb_parts_to_draw(
 	if (td->tbstate.draw_bmask == 0)
 	{
 		draw_parts &= ~PART_BUTTONS;
+	}
+	else
+	{
+		draw_parts |= PART_BUTTONS;
 	}
 
 	return draw_parts;
@@ -1350,8 +1393,7 @@ static void border_fill_pixmap_background(
 				dpy, shape, Scr.MonoGC, 0, 0, pixmap_g->width,
 				pixmap_g->height);
 			xgcv.fill_style = FillSolid;
-			xgcv.tile = None;
-			valuemask = GCFillStyle | GCTile;
+			valuemask = GCFillStyle;
 			XChangeGC(dpy, Scr.MonoGC, valuemask, &xgcv);
 		}
 		xgcv.clip_mask = shape;
@@ -1367,9 +1409,10 @@ static void border_fill_pixmap_background(
 			pixmap_g->height);
 		xgcv.clip_mask = None;
 		xgcv.fill_style = FillSolid;
-		xgcv.tile = None;
 		xgcv.ts_x_origin = 0;
 		xgcv.ts_y_origin = 0;
+		valuemask = GCFillStyle | GCClipMask| GCTileStipXOrigin |
+			GCTileStipYOrigin;
 		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
 		if (shape != None)
 		{
@@ -1572,6 +1615,8 @@ static void border_draw_decor_to_pixmap(
 			border = HAS_MWM_BORDER(fw) ? 1 : 2;
 		}
 		r = *pixmap_g;
+		r.x = border;
+		r.y = border;
 		switch (DFS_H_JUSTIFICATION(df->style))
 		{
 		case JUST_LEFT:

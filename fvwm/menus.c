@@ -5062,13 +5062,15 @@ static void scanForColor(
 	char *name;
 	char *t;
 	int i;
+	int len;
 
 	*flag = False;
 
+	len = strlen(instring) + 1;
 	/* save instring in case can't find pixmap */
-	save_instring = (char *)safemalloc(strlen(instring)+1);
-	name = (char *)safemalloc(strlen(instring)+1);
-	strcpy(save_instring,instring);
+	save_instring = (char *)alloca(len);
+	name = (char *)alloca(len);
+	strcpy(save_instring, instring);
 
 	/* Scan whole string	      */
 	for (s = instring; *s != '\0'; s++)
@@ -5110,8 +5112,6 @@ static void scanForColor(
 		}
 		*tstart = 0;
 	}
-	free(name);
-	free(save_instring);
 
 	return;
 }
