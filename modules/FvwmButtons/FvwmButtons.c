@@ -126,44 +126,46 @@ static void HandlePanelPress(button_info *b);
 
 Display *Dpy;
 Window Root;
-GC trans_gc = NULL;
+static GC trans_gc = NULL;
 Window MyWindow;
 char *MyName;
-XFontStruct *font;
-int screen;
+static int screen;
 
-int x_fd;
-fd_set_size_t fd_width;
+static int x_fd;
+static fd_set_size_t fd_width;
 
 char *config_file = NULL;
 
 static Atom _XA_WM_DEL_WIN;
-Atom _XA_WM_PROTOCOLS;
-Atom _XA_WM_NORMAL_HINTS;
-Atom _XA_WM_NAME;
 
 char *imagePath = NULL;
 
-Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
+static Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
 GC  NormalGC;
 /* needed for relief drawing only */
 GC  ShadowGC;
-int Width,Height;
+static int Width,Height;
 
-int x= -30000,y= -30000,w= -1,h= -1,gravity = NorthWestGravity;
+static int x= -30000,y= -30000;
+int w = -1;
+int h = -1;
+static int gravity = NorthWestGravity;
 int new_desk = 0;
-int ready = 0;
-int xneg = 0, yneg = 0;
+static int ready = 0;
+static int xneg = 0;
+static int yneg = 0;
 int button_width = 0;
 int button_height = 0;
 Bool has_button_geometry = 0;
+Bool is_transient = 0;
 
 button_info *CurrentButton = NULL;
 int fd[2];
 
 button_info *UberButton=NULL;
 
-int dpw, dph;
+int dpw;
+int dph;
 
 int save_color_limit;                   /* Color limit, if any */
 
@@ -659,6 +661,10 @@ int main(int argc, char **argv)
 	geom_option_argc = i;
       }
     }
+    else if (!has_geometry && strcmp(argv[i], "-transient") == 0)
+    {
+      is_transient = 1;
+    }
     else if (!has_name) /* There is a naming argument here! */
     {
       free(MyName);
@@ -965,6 +971,11 @@ void Loop(void)
 	if (b && (b->flags & b_Panel))
 	{
 	  HandlePanelPress(b);
+	  if (b->newflags.panel_mapped == 0 && is_transient)
+	  {
+	    /* terminate if transient and panel has been unmapped */
+	    exit(0);
+	  };
 	}
 	else
 	{
@@ -1003,7 +1014,18 @@ void Loop(void)
 	      while(act[i2]!=0 && isspace((unsigned char)act[i2]))
 		i2++;
 	      strcat(tmp,&act[i2]);
+	      if (is_transient)
+	      {
+		/* delete the window before continuing */
+		XDestroyWindow(Dpy, MyWindow);
+		XSync(Dpy, 0);
+	      }
 	      MySendText(fd,tmp,0);
+	      if (is_transient)
+	      {
+		/* and exit */
+		exit(0);
+	      }
 	      free(tmp);
 	    } /* exec */
 	    else if(strncasecmp(act,"DumpButtons",11)==0)
@@ -1011,7 +1033,20 @@ void Loop(void)
 	    else if(strncasecmp(act,"SaveButtons",11)==0)
 	      SaveButtons(UberButton);
 	    else
+	    {
+	      if (is_transient)
+	      {
+		/* delete the window before continuing */
+		XDestroyWindow(Dpy, MyWindow);
+		XSync(Dpy, 0);
+	      }
 	      MySendText(fd,act,0);
+	      if (is_transient)
+	      {
+		/* and exit */
+		exit(0);
+	      }
+	    }
 	  } /* act */
 	  if (act != NULL)
 	  {
@@ -1080,15 +1115,32 @@ void Loop(void)
 	    b->IconWin=None;
 	    if(buttonSwallow(b)&b_Respawn && b->hangon && b->spawn)
 	    {
+	      char *p;
+
 #ifdef DEBUG_HANGON
 	      fprintf(stderr,", respawning\n");
 #endif
+	      if (b->newflags.is_panel && is_transient)
+	      {
+		/* terminate if transient and a panel has been killed */
+		exit(0);
+	      }
 	      b->swallow|=1;
 	      if (!b->newflags.is_panel)
 		b->flags |= (b_Swallow | b_Hangon);
 	      else
+	      {
 		b->flags |= (b_Panel | b_Hangon);
-	      MySendText(fd,b->spawn,0);
+		b->newflags.panel_mapped = 0;
+	      }
+
+	      p = expand_action(b->spawn, NULL);
+	      if (p)
+	      {
+		MySendText(fd,b->spawn,0);
+		free(p);
+	      }
+	      RedrawButton(b,1);
 	    }
 	    else
 	    {
@@ -1518,7 +1570,7 @@ static void HandlePanelPress(button_info *b)
   SlideWindow(Dpy, b->IconWin,
 	      x1, y1, w1, h1,
 	      x2, y2, w2, h2,
-	      steps, b->slide_delay_ms, NULL, False);
+	      steps, b->slide_delay_ms, NULL, b->slide_flags.smooth);
 
   if (is_mapped)
   {
@@ -1558,7 +1610,6 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
 #endif
 
   _XA_WM_DEL_WIN = XInternAtom(Dpy,"WM_DELETE_WINDOW",0);
-  _XA_WM_PROTOCOLS = XInternAtom (Dpy, "WM_PROTOCOLS",0);
 
 #ifdef DEBUG_INIT
   fprintf(stderr,"sizing...");

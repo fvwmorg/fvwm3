@@ -34,7 +34,18 @@ inherited unless overridden by command line options.
 Module FvwmConsole -g 40x10 -fg black -bg green3
 .RE
 
-The option -e can be used to choose an alternate front-end:
+A different terminal emulator can be specified with the -terminal
+option.  However, only terminal programs that understand the options
+-name, -title and -e can be used.
+
+.RS
+Module FvwmConsole -terminal rxvt
+.RE
+
+Previous versions of FvwmConsole supported a -e option to choose a
+different front-end.  Although this option is still provided for
+backwards compatibility its use is discouraged unless you know
+exactly what you are doing.
 
 .RS
 Module FvwmConsole -e FvwmConsoleC.pl

@@ -39,7 +39,8 @@ void CloseSocket();
 void ErrMsg( char *msg );
 void SigHandler( int );
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
   char *tmp, *s;
   char client[120];
   char **eargv;
@@ -91,6 +92,11 @@ int main(int argc, char *argv[]){
 	if( !strcmp ( argv[i], "-e" ) ) {
 	  i++;
 	  break;
+	} else if( !strcmp ( argv[i], "-terminal" ) ) {
+	  i++;
+	  if (i < argc)
+	    /* use alternative terminal emulator */
+	    eargv[0] = argv[i];
 	} else {
 	  eargv[j++] = argv[i];
 	}
@@ -134,13 +140,14 @@ int main(int argc, char *argv[]){
 /***********************************************************************
  *	signal handler
  ***********************************************************************/
-void DeadPipe( int dummy ) {
-  fprintf(stderr,"%s: dead pipe\n", Name);
+void DeadPipe( int dummy )
+{
   CloseSocket();
   exit(0);
 }
 
-void SigHandler(int dummy) {
+void SigHandler(int dummy)
+{
   CloseSocket();
   exit(1);
 }
@@ -148,7 +155,8 @@ void SigHandler(int dummy) {
 /*********************************************************/
 /* close sockets and spawned process                     */
 /*********************************************************/
-void CloseSocket() {
+void CloseSocket()
+{
   send(Ns, C_CLOSE, strlen(C_CLOSE), 0);
   close(Ns);     /* remove the socket */
   unlink( S_name );
@@ -158,7 +166,8 @@ void CloseSocket() {
 /*********************************************************/
 /* setup server and communicate with fvwm and the client */
 /*********************************************************/
-void server ( void ) {
+void server ( void )
+{
   struct sockaddr_un sas, csas;
   int  len;
   size_t clen;     /* length of sockaddr */
@@ -266,7 +275,8 @@ void server ( void ) {
 /******************************************/
 /* print error message on stderr and exit */
 /******************************************/
-void ErrMsg( char *msg ) {
+void ErrMsg( char *msg )
+{
   fprintf( stderr, "%s server error in %s, errno %d\n", Name, msg, errno );
   CloseSocket();
   exit(1);

@@ -136,6 +136,12 @@ struct container_info_struct
   ushort minx,miny;        /* b_Size */
 };
 
+typedef struct
+{
+  unsigned smooth : 1;
+  unsigned ignore_border : 1;
+} slide_flags_type;
+
 struct button_info_struct
 {
   /* required fields */
@@ -194,6 +200,7 @@ struct button_info_struct
   char slide_direction;        /* b_Panel */
   int slide_steps;             /* b_Panel */
   int slide_delay_ms;          /* b_Panel */
+  slide_flags_type slide_flags;
 };
 
 #include "button.h"

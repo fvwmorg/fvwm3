@@ -1,5 +1,9 @@
 1999-09-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Graphics.c (CreateGradientPixmap):
+ 	C_GRADIENTs use full scope of colours again
+	(CreateGradientPixmap): fixed C_GRADIENT with large pixmaps
+
 	* fvwm/stack.c (new_layer): fixed some problems in stack ring with
 	layer hints; one of the fixes is a temporary fix for a problem
 	introduced by the latest transient handling patch

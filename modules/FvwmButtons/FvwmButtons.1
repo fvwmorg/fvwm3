@@ -5,12 +5,21 @@
 .SH NAME
 FvwmButtons \- the FVWM buttonbox module
 .SH SYNOPSIS
-\fBFvwmButtons\fP [ \fI-g geometry\fP ] [ \fIname\fP [ \fIconfig file\fP ] ]
+\fBFvwmButtons\fP [\fI-g geometry\fP] [\fI-transient\fP] [\fIname\fP [\fIconfig file\fP]]
 FvwmButtons is spawned by fvwm, so no command line invocation will work.
 
 With the \fI-g\fP option you can specify the geometry of the main window.
 The command line option takes precedence over any other gemotry settings
 in the configuration file.
+
+The \fI-transient\fP option tells FvwmButtons to terminate itself
+after the first key or button press has been received (presses to open
+a sub panel do not count) or a sub panel has been closed or respawned.
+This is especially useful for sub panels where you want to select
+a single button hand have it closed automatically.  It could be used
+too to create two-dimensional graphical menus.  Since \fI-transient\fP
+is an option, not a configuration setting you can use the same
+configuration for transient and non transient button bars.
 
 .SH DESCRIPTION
 The FvwmButtons module provides a window of buttons which sits on the X
@@ -287,6 +296,12 @@ animation steps.
 
 The \fIdelay ms\fP option sets the delay between the steps
 of the animation in milliseconds.
+
+The \fIsmooth\fP option causes the panel to redraw between
+the steps of the animation.  The sliding animation is a bit
+smoother this way, but most applications will appear
+to grow from the button instead of sliding out.  Also, without
+the \fIsmooth\fP option the animation may be delayed a bit.
 
 The defaults are sliding up with a delay of five millisecond and
 twelve animation steps. To post the panel without any animation,

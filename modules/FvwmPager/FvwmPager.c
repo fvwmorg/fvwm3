@@ -513,8 +513,10 @@ void process_message( FvwmPacket* packet )
       break;
     case M_RESTACK:
       list_restack(body,length);
+      break;
     case M_CONFIG_INFO:
       list_colorset(body);
+      break;
     default:
       list_unknown(body);
       break;
@@ -553,8 +555,14 @@ void list_add(unsigned long *body)
 
   t = Start;
   prev = &Start;
+
   while(t!= NULL)
     {
+      if (t->w == cfgpacket->w)
+      {
+	/* it's already there, do nothing */
+	return;
+      }
       prev = &(t->next);
       t = t->next;
       i++;
@@ -620,58 +628,57 @@ void list_configure(unsigned long *body)
   if(t== NULL)
     {
       list_add(body);
+      return;
     }
+
+  t->t = (char *) cfgpacket->fvwmwin;
+  t->frame = cfgpacket->frame;
+  t->frame_x = cfgpacket->frame_x;
+  t->frame_y = cfgpacket->frame_y;
+  t->frame_width = cfgpacket->frame_width;
+  t->frame_height = cfgpacket->frame_height;
+  t->title_height = cfgpacket->title_height;
+  t->border_width = cfgpacket->border_width;
+  memcpy(&(t->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
+  t->icon_w = cfgpacket->icon_w;
+  t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
+
+  if ((win_fore_pix != -1) && (win_back_pix != -1))
+  {
+    t->text = win_fore_pix;
+    t->back = win_back_pix;
+  }
   else
+  {
+    t->text = body[22];
+    t->back = body[23];
+  }
+  if(IS_ICONIFIED(t))
+  {
+    t->x = t->icon_x;
+    t->y = t->icon_y;
+    t->width = t->icon_width;
+    t->height = t->icon_height;
+    if(IS_ICON_SUPPRESSED(t))
     {
-      t->t = (char *) cfgpacket->fvwmwin;
-      t->frame = cfgpacket->frame;
-      t->frame_x = cfgpacket->frame_x;
-      t->frame_y = cfgpacket->frame_y;
-      t->frame_width = cfgpacket->frame_width;
-      t->frame_height = cfgpacket->frame_height;
-      t->title_height = cfgpacket->title_height;
-      t->border_width = cfgpacket->border_width;
-      memcpy(&(t->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
-      t->icon_w = cfgpacket->icon_w;
-      t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
-
-      if ((win_fore_pix != -1) && (win_back_pix != -1))
-        {
-	  t->text = win_fore_pix;
-	  t->back = win_back_pix;
-        }
-      else
-        {
-	  t->text = body[22];
-	  t->back = body[23];
-        }
-      if(IS_ICONIFIED(t))
-	{
-	  t->x = t->icon_x;
-	  t->y = t->icon_y;
-	  t->width = t->icon_width;
-	  t->height = t->icon_height;
-	  if(IS_ICON_SUPPRESSED(t))
-	    {
-	      t->x = -10000;
-	      t->y = -10000;
-	    }
-	}
-      else
-	{
-	  t->x = t->frame_x;
-	  t->y = t->frame_y;
-	  t->width = t->frame_width;
-	  t->height = t->frame_height;
-	}
-      if(t->desk != cfgpacket->desk)
-	{
-	  ChangeDeskForWindow(t, cfgpacket->desk);
-	}
-
-      else
-	MoveResizePagerView(t);
+      t->x = -10000;
+      t->y = -10000;
     }
+  }
+  else
+  {
+    t->x = t->frame_x;
+    t->y = t->frame_y;
+    t->width = t->frame_width;
+    t->height = t->frame_height;
+  }
+  if(t->desk != cfgpacket->desk)
+  {
+    ChangeDeskForWindow(t, cfgpacket->desk);
+  }
+
+  else
+    MoveResizePagerView(t);
 }
 
 /***********************************************************************

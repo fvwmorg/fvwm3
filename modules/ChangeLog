@@ -1,3 +1,26 @@
+1999-09-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/parse.c (ParseButton):
+ 	new 'smooth' option for panels
+
+	* FvwmPager/FvwmPager.c (list_add): prevent windows from being added
+	twice
+	(process_message): switch cases were not terminated with break;
+
+	* FvwmButtons/FvwmButtons.c (Loop): make $bg and $fg options work when
+	respawning
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(main):
+	added -transient option
+
+	* FvwmButtons/FvwmButtons.c (Loop): respawning doesn't cause panle
+	button to stay pressed in.
+
+	* FvwmConsole/FvwmConsole.c (DeadPipe): removed dead pipe error message
+	on shutdown
+	(main): new option '-terminal' to choose a different terminal emulator
+
 1999-09-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (HandlePanelPress): mape sure the panel is

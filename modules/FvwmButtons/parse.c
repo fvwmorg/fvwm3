@@ -302,7 +302,7 @@ static void ParseSwallow(char **ss,byte *flags,byte *mask)
 *** Parses the options possible to Panel
 **/
 static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
-		       int *steps, int *delay)
+		       int *steps, int *delay, slide_flags_type *slide_flags)
 {
   char *swallowopts[] =
   {
@@ -315,6 +315,8 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
     "up", "down", "left", "right",
     "steps",
     "delay",
+    "smooth",
+    "noborder",
     NULL
   };
   char *t,*s=*ss;
@@ -394,6 +396,12 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
     case 17: /* delay */
       sscanf(s, "%d%n", delay, &n);
       s += n;
+      break;
+    case 18: /* smooth */
+      (*slide_flags).smooth = 1;
+      break;
+    case 19: /* noborder */
+      (*slide_flags).ignore_border = 1;
       break;
     default:
       t=seekright(&s);
@@ -840,7 +848,7 @@ static void ParseButton(button_info **uberb,char *s)
 	    ParseSwallow(&s, &b->swallow,&b->swallow_mask);
 	  else
 	    ParsePanel(&s, &b->swallow, &b->swallow_mask, &b->slide_direction,
-		       &b->slide_steps, &b->slide_delay_ms);
+		       &b->slide_steps, &b->slide_delay_ms, &b->slide_flags);
 	}
 	t=seekright(&s);
 	o=seekright(&s);

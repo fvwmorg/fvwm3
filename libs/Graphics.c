@@ -668,14 +668,14 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
       {
 	register int w = t_width - 1;
 	register int h = t_height - 1;
-	register int t_scale = t_width * t_height / 2;
+	register int t_scale = (double)(w * h) / sqrt(8);
 
 	for (i = 0; i <= w; i++)
 	  for (j = 0; j <= h; j++) {
-	    register int x = (i - t_width / 2) * h / 2;
-	    register int y = (j - t_height / 2) * w / 2;
-	    register int rad = sqrt(x*x + y*y);
-	    XPutPixel(image, i, j, pixels[rad * ncolors / t_scale]);
+            register double x = (i - w / 2) * h / 2;
+            register double y = (h / 2 - j) * w / 2;
+            register double rad = sqrt(x * x + y * y);
+	    XPutPixel(image, i, j, pixels[(int)(rad * ncolors / t_scale)]);
 	  }
 	break;
       }
@@ -720,7 +720,7 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
       {
 	register int w = t_width - 1;
 	register int h = t_height - 1;
-        register int r = w * h / 4;
+	register int r = w * h / 4;
 
         for (i = 0; i <= w; i++) {
           for (j = 0; j <= h; j++) {
