@@ -187,9 +187,11 @@ following:
           cvs tag version-x_y_z
        8. increase the version number in configure.in (see above)
           and `cvs commit' this change
-       9. upload the file fvwm-x.y.z.tar.gz to
+       9. Create entries in the ChangeLog and NEWS files indicating the
+          release.
+      10. upload the file fvwm-x.y.z.tar.gz to
 	  ftp://ftp.fvwm.org/pub/incoming/fvwm
-      10. notify fvwm-owner@fvwm.org of the upload
+      11. notify fvwm-owner@fvwm.org of the upload
 
 Be sure to do steps 7 and 8 in that order, so you get the label on the
 right version of configure.in.
