@@ -563,7 +563,7 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints
 
 		/* the user has specified an iconv converter name and we do not
 		 * have it: must create a FlocaleCharset */
-		flf->must_free_fc = True;
+		flf->flags.must_free_fc = True;
 		fc = (FlocaleCharset *)safemalloc(sizeof(FlocaleCharset));
 		if (flf->fc != NULL)
 		{
@@ -587,11 +587,11 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints
 	if (flf->font != NULL && flf->fc != NULL &&
 	    StrEquals(flf->fc->x, "ISO10646-1"))
 	{
-		flf->utf8 = True;
+		flf->flags.is_utf8 = True;
 	}
 	else
 	{
-		flf->utf8 = False;
+		flf->flags.is_utf8 = False;
 	}
 	if (charset != NULL)
 	{

@@ -1,3 +1,8 @@
+2002-05-26  olicha  <olivier.chapuis@free.fr>
+	
+	* FvwmScript/Widgets/Tools.c (MyDrawString):
+	Use internal relief only with font without shadow
+
 2002-05-25  Mikhael Goikhman  <migo@homemail.com>
 
         * FvwmIconMan/FvwmIconMan.c (copy_string):

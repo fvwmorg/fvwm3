@@ -263,7 +263,7 @@ void FftDrawString(
 		}
 		uf = fftf->fftfont_rotated_90;
 		y = fws->y;
-		x = fws->x - ((flf->shadow_size > 0)? flf->shadow_size: 0);
+		x = fws->x - FLF_SHADOW_BOTTOM_SIZE(flf);
 	}
 	else if (fws->flags.text_rotation == TEXT_ROTATED_180)
 	{
@@ -287,7 +287,7 @@ void FftDrawString(
 		}
 		uf = fftf->fftfont_rotated_270;
 		y = fws->y + FftTextWidth(&flf->fftf, fws->str, len);
-		x = fws->x + ((flf->shadow_size > 0)? 0:flf->shadow_size);
+		x = fws->x - FLF_SHADOW_UPPER_SIZE(flf);
 	}
 	else
 	{

@@ -81,6 +81,144 @@ static Bool FlocaleSeted = False;
 
 /* ---------------------------- local functions ----------------------------- */
 
+/* ***************************************************************************
+ * shadow local functions
+ * ***************************************************************************/
+
+static
+void FlocaleParseShadow(char *str, int *shadow_size, int *direction,
+			char * fontname, char *module)
+{
+	char *dir_str;
+	char *token;
+
+	*direction = 0;
+	token = PeekToken(str, &dir_str);
+	if (token == NULL || *token == 0 ||
+	    (GetIntegerArguments(token, NULL, shadow_size, 1) != 1) ||
+	    *shadow_size < 0)
+	{
+		*shadow_size = 0;
+		fprintf(stderr,"[%s][FlocaleGetFont]: WARNING -- bad "
+			"shadow size in font name:\n\t'%s'\n",
+			(module)? module: "FVWM", fontname);
+		return;
+	}
+	token = PeekToken(dir_str, &dir_str);
+	if (!token || !*token || *token == '\n')
+	{
+		*direction |= MULTIDIR_BOTTOM_RIGHT;
+		return;
+	}
+	while(token && *token && *token != '\n')
+	{
+		if (StrEquals(token,"br"))
+		{
+			*direction |= MULTIDIR_BOTTOM_RIGHT;
+		}
+		else if (StrEquals(token,"ur"))
+		{
+			*direction |= MULTIDIR_UPPER_RIGHT;
+		}
+		else if (StrEquals(token,"bl"))
+		{
+			*direction |= MULTIDIR_BOTTOM_LEFT;
+		}
+		else if (StrEquals(token,"ul"))
+		{
+			*direction |= MULTIDIR_UPPER_LEFT;
+		}
+		else if (StrEquals(token,"l"))
+		{
+			*direction |= MULTIDIR_LEFT;
+		}
+		else if (StrEquals(token,"r"))
+		{
+			*direction |= MULTIDIR_RIGHT;
+		}
+		else if (StrEquals(token,"b"))
+		{
+			*direction |= MULTIDIR_BOTTOM;
+		}
+		else if (StrEquals(token,"u"))
+		{
+			*direction |= MULTIDIR_UPPER;
+		}
+		else if (StrEquals(token,"all"))
+		{
+			*direction |= MULTIDIR_ALL;
+		}
+		else
+		{
+			fprintf(stderr,"[%s][FlocaleGetFont]: WARNING -- bad "
+				"shadow direction %s in font description:"
+				"%s\n",
+				(module)? module: "FVWM", token, fontname);
+		}
+		token = PeekToken(dir_str, &dir_str);
+	}
+	if (*direction == 0)
+		*direction = MULTIDIR_BOTTOM_RIGHT;
+}
+
+static
+void FlocaleGetNextShadowDirection(FlocaleFont *flf, short *dir)
+{
+
+	if (*dir == 0)
+	{
+		*dir = MULTIDIR_LEFT;
+		if (*dir & flf->flags.shadow_dir)
+			return;
+	}
+	if (*dir & MULTIDIR_LEFT)
+	{
+		*dir = MULTIDIR_UPPER_LEFT;
+		if (*dir & flf->flags.shadow_dir)
+			return;
+	}
+	if (*dir & MULTIDIR_UPPER_LEFT)
+	{
+		*dir = MULTIDIR_UPPER;
+		if (*dir & flf->flags.shadow_dir)
+			return;
+	}
+	if (*dir & MULTIDIR_UPPER)
+	{
+		*dir = MULTIDIR_UPPER_RIGHT;
+		if (*dir & flf->flags.shadow_dir)
+			return;
+	}
+	if (*dir & MULTIDIR_UPPER_RIGHT)
+	{
+		*dir = MULTIDIR_RIGHT;
+		if (*dir & flf->flags.shadow_dir)
+			return;
+	}
+	if (*dir & MULTIDIR_RIGHT)
+	{
+		*dir = MULTIDIR_BOTTOM_RIGHT;
+		if (*dir & flf->flags.shadow_dir)
+			return;
+	}
+	if (*dir & MULTIDIR_BOTTOM_RIGHT)
+	{
+		*dir = MULTIDIR_BOTTOM;
+		if (*dir & flf->flags.shadow_dir)
+			return;
+	}
+	if (*dir & MULTIDIR_BOTTOM)
+	{
+		*dir = MULTIDIR_BOTTOM_LEFT;
+		if (*dir & flf->flags.shadow_dir)
+			return;
+	}
+	*dir = 0;
+}
+
+/* ***************************************************************************
+ * some simple converters
+ * ***************************************************************************/
 
 static
 XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
@@ -150,6 +288,10 @@ XChar2b *FlocaleStringToString2b(unsigned char *str, int len, int *nl)
 	return str2b;
 }
 
+/* ***************************************************************************
+ * Text Drawing with a FontStruct
+ * ***************************************************************************/
+
 static
 void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
 				 GC gc, int x, int y, Pixel fg, Pixel fgsh,
@@ -158,12 +300,12 @@ void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
 {
 	int xt = x, yt = y, step = 0;
 
-	if (flf->utf8 || flf->mb)
+	if (flf->flags.is_utf8 || flf->flags.is_mb)
 	{
 		XChar2b *str2b;
 		int nl;
 
-		if (flf->utf8)
+		if (flf->flags.is_utf8)
 			str2b = FlocaleUtf8ToUnicodeStr2b(fws->str, len, &nl);
 		else
 			str2b = FlocaleStringToString2b(fws->str, len, &nl);
@@ -183,7 +325,7 @@ void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
 					while(FlocaleGetShadowTextPosition(
 							 flf, fws, x, y,
 							 &xt, &yt, &step))
-					{	
+					{
 						XDrawString16(
 							      dpy, d, gc,
 							      xt, yt,
@@ -225,6 +367,9 @@ void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
 	}
 }
 
+/* ***************************************************************************
+ * Rotated Text Drawing with a FontStruct or a FontSet
+ * ***************************************************************************/
 static
 void FlocaleRotateDrawString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, Pixel fg,
@@ -240,7 +385,6 @@ void FlocaleRotateDrawString(
 	int width, height, descent;
 	XImage *image, *rotated_image;
 	Pixmap canvas_pix, rotated_pix;
-	int abs_shadow_size = abs(flf->shadow_size);
 
 	if (fws->str == NULL || len < 1)
 		return;
@@ -251,9 +395,9 @@ void FlocaleRotateDrawString(
 	XCopyGC(dpy, fws->gc, GCForeground|GCBackground, my_gc);
 
 	/* width and height (no shadow!) */
-	width = FlocaleTextWidth(flf, fws->str, len) - abs_shadow_size;
-	height = flf->height - abs_shadow_size;
-	descent = flf->descent - ((flf->shadow_size > 0)? abs_shadow_size:0);
+	width = FlocaleTextWidth(flf, fws->str, len) - FLF_SHADOW_WIDTH(flf);
+	height = flf->height - FLF_SHADOW_HEIGHT(flf);
+	descent = flf->descent - FLF_SHADOW_DESCENT(flf);;
 
 	if (width < 1) width = 1;
 	if (height < 1) height = 1;
@@ -388,7 +532,7 @@ void FlocaleRotateDrawString(
 	{
 		xpfg = fws->x;
 		ypfg = fws->y - (flf->height - flf->ascent) +
-			((flf->shadow_size > 0)? flf->shadow_size:0);
+			FLF_SHADOW_BOTTOM_SIZE(flf);
 	}
 	else /* fws->flags.text_rotation == TEXT_ROTATED_90 (CW) */
 	{
@@ -418,6 +562,10 @@ void FlocaleRotateDrawString(
 	XFreePixmap(dpy, rotated_pix);
 	XFreeGC(dpy, my_gc);
 }
+
+/* ***************************************************************************
+ * Fonts loading
+ * ***************************************************************************/
 
 static
 FlocaleFont *FlocaleGetFftFont(Display *dpy, char *fontname)
@@ -562,9 +710,7 @@ FlocaleFont *FlocaleGetFont(Display *dpy, char *fontname)
 	flf->descent = flf->font->descent;
 	flf->max_char_width = flf->font->max_bounds.width;
 	if (flf->font->max_byte1 > 0)
-		flf->mb = True;
-	else
-		flf->mb = False;
+		flf->flags.is_mb = True;
 	if (fn != NULL)
 		free(fn);
 	if (tmp != NULL)
@@ -619,6 +765,10 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 	}
 	return NULL;
 }
+
+/* ***************************************************************************
+ * locale local functions
+ * ***************************************************************************/
 
 static
 void FlocaleSetlocaleForX(
@@ -693,6 +843,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	char *t;
 	char *str,*fn = NULL;
 	int shadow_size = 0;
+	int shadow_dir;
 
 	/* removing quoting for modules */
 	if (fontname && (t = strchr("\"'`", *fontname)))
@@ -732,19 +883,17 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	/* not cached load the font as a ";" separated list */
 
 	/* first see if we have a shadow relief */
-	if (strlen(fontname) > 12 &&
-	    strncasecmp("shadowsize=", fontname, 11) == 0)
+	if (strlen(fontname) > 8 && strncasecmp("shadow=", fontname, 7) == 0)
 	{
-		str = GetQuotedString(fontname+11, &fn, ":", NULL, NULL, NULL);
-		if (!(fn && *fn) ||
-		    !GetIntegerArguments(fn, NULL,&shadow_size, 1))
-		{
-			shadow_size = 0;
-			fprintf(stderr,"[%s][FlocaleGetFont]: WARNING -- bad "
-				"shadow size description in font:\n\t'%s'\n",
-				(module)? module: "FVWM", fontname);
-		}
-		if (fn && *fn)
+		char *shadow_str;
+
+		str = GetQuotedString(fontname+7, &shadow_str, ":",
+				      NULL, NULL, NULL);
+		FlocaleParseShadow(shadow_str, &shadow_size, &shadow_dir,
+				   fontname, module);
+		if (shadow_str != NULL)
+			free(shadow_str);
+		if (str && *str)
 		{
 			str = GetQuotedString(str, &fn, ";", NULL, NULL, NULL);
 		}
@@ -845,18 +994,15 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	
 	if (flf != NULL)
 	{
-		flf->shadow_size = shadow_size;
-		/* add the shadow to ascent or descent ? */
 		if (shadow_size > 0)
 		{
-			flf->descent += abs(shadow_size);
+			flf->shadow_size = shadow_size;
+			flf->flags.shadow_dir = shadow_dir;
+			flf->descent += FLF_SHADOW_DESCENT(flf);
+			flf->ascent += FLF_SHADOW_ASCENT(flf);
+			flf->height += FLF_SHADOW_HEIGHT(flf);
+			flf->max_char_width += FLF_SHADOW_WIDTH(flf);
 		}
-		else
-		{
-			flf->ascent += abs(shadow_size);
-		}
-		flf->height += abs(shadow_size);
-		flf->max_char_width += abs(shadow_size);
 		if (flf->fc == FlocaleCharsetGetUnknownCharset())
 		{
 			fprintf(stderr,"[%s][FlocaleLoadFont]: "
@@ -909,7 +1055,7 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	{
 		XFreeFont(dpy, flf->font);
 	}
-	if (flf->must_free_fc)
+	if (flf->flags.must_free_fc)
 	{
 		if (flf->fc->x)
 			free(flf->fc->x);
@@ -957,82 +1103,288 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 				  int orig_x, int orig_y,
 				  int *x, int *y, int *step)
 {
-	int abs = abs(flf->shadow_size);
-	int x_sign = 1, y_sign = 1;
 
-	if (*step == abs)
-	{
-		if (fws->flags.text_rotation == TEXT_ROTATED_270) /* CCW */
-		{
-			*x = orig_x + ((flf->shadow_size > 0)? 0 : abs);
-			*y = orig_y + ((flf->shadow_size > 0)? abs: 0);
-		}
-		else if (fws->flags.text_rotation == TEXT_ROTATED_180)
-		{
-			*x = orig_x + ((flf->shadow_size > 0)? abs : 0);
-			*y = orig_y;
-		}
-		else if (fws->flags.text_rotation == TEXT_ROTATED_90) /* CW */
-		{
-			*x = orig_x + ((flf->shadow_size > 0)? abs : 0);
-			*y = orig_y + ((flf->shadow_size > 0)? 0 : abs);
-		}
-		else
-		{
-			/* default */
-			*x = orig_x + ((flf->shadow_size > 0)? 0 : abs);
-			*y = orig_y;
-		}
-		return False;
-	}
+	static unsigned short direction = 0;
+	static unsigned short inter_step = 0;
+	static unsigned short x_sign = 0, y_sign = 0;
 
 	if (*step == 0)
 	{
-		if (fws->flags.text_rotation == TEXT_ROTATED_270) /* CCW */
-		{
-			*x = orig_x + ((flf->shadow_size > 0)? 1 : 0);
-			*y = abs + orig_y + ((flf->shadow_size > 0)? -1:0);
-		}
-		else if (fws->flags.text_rotation == TEXT_ROTATED_180)
-		{
-			*x = orig_x + ((flf->shadow_size > 0)? abs : abs);
-			*y = orig_y + ((flf->shadow_size > 0)? -1 : abs);
-		}
-		else if (fws->flags.text_rotation == TEXT_ROTATED_90) /* CW */
-		{
-			*x = abs + orig_x + ((flf->shadow_size > 0)? -1 : 0);
-			*y = orig_y + ((flf->shadow_size > 0)? 1 : 0);
-			     
-		}
-		else
-		{
-			*x = orig_x + ((flf->shadow_size > 0)? 1 : 0);
-			*y = orig_y + ((flf->shadow_size > 0)? 1 : -abs); 
-		}
+		direction = 0;
 	}
-	else
+	if (*step == 0 || inter_step == flf->shadow_size)
 	{
-		if (fws->flags.text_rotation == TEXT_ROTATED_270) /* CCW */
-		{
-			y_sign = -1;
+		/* setup a new direction */
+		inter_step = 0;
+		FlocaleGetNextShadowDirection(flf, &direction);
+	}
+	if (direction == 0)
+	{
+		/* finished; return the position for the no shadow drawing */
+		switch(fws->flags.text_rotation)
+		{		
+		case TEXT_ROTATED_270: /* CCW */
+#define TR_CCW_ORIG_X  orig_x + FLF_SHADOW_UPPER_SIZE(flf)
+#define TR_CCW_ORIG_Y  orig_y + FLF_SHADOW_RIGHT_SIZE(flf)
+			*x = TR_CCW_ORIG_X;
+			*y = TR_CCW_ORIG_Y;
+			break;
+		case TEXT_ROTATED_180:
+#define REVERSE_ORIG_X  orig_x + FLF_SHADOW_RIGHT_SIZE(flf)
+#define REVERSE_ORIG_Y  orig_y
+			*x = REVERSE_ORIG_X;
+			*y = REVERSE_ORIG_Y;
+			break;
+		case TEXT_ROTATED_90: /* CW */
+#define TR_CW_ORIG_X  orig_x + FLF_SHADOW_BOTTOM_SIZE(flf)
+#define TR_CW_ORIG_Y  orig_y + FLF_SHADOW_LEFT_SIZE(flf)
+			*x = TR_CW_ORIG_X;
+			*y = TR_CW_ORIG_Y;
+			break;
+		case TEXT_ROTATED_0:
+		default:
+#define NORMAL_ORIG_X  orig_x + FLF_SHADOW_LEFT_SIZE(flf)
+#define NORMAL_ORIG_Y  orig_y
+			*x = NORMAL_ORIG_X;
+			*y = NORMAL_ORIG_Y;
+			break;
 		}
-		else if (fws->flags.text_rotation == TEXT_ROTATED_180)
-		{
-			x_sign = -1;
-			y_sign = -1;
-		}
-		else if (fws->flags.text_rotation == TEXT_ROTATED_90) /* CW */
-		{
-			x_sign = -1;
-		}
-		else
-		{
-			/* default */
-		}
-
+		return False;
+	}
+	if (inter_step > 0)
+	{
+		/* into a directional drawing */
 		(*x) += x_sign;
 		(*y) += y_sign;
 	}
+	else
+	{
+		/* start a drawing in a given direction */
+		switch(fws->flags.text_rotation)
+		{
+		case TEXT_ROTATED_270: /* CCW */
+			switch(direction)
+			{
+			case MULTIDIR_LEFT:
+				*x = TR_CCW_ORIG_X;
+				*y = TR_CCW_ORIG_Y + 1;
+				x_sign = 0;
+				y_sign = 1;
+				break;
+			case MULTIDIR_UPPER_LEFT:
+				*x = TR_CCW_ORIG_X - flf->shadow_size;
+				*y = TR_CCW_ORIG_Y + flf->shadow_size;
+				x_sign = 1;
+				y_sign = - 1;
+				break;
+			case MULTIDIR_UPPER:
+				*x = TR_CCW_ORIG_X - flf->shadow_size;
+				*y = TR_CCW_ORIG_Y;
+				x_sign = 1;
+				y_sign = 0;
+				break;
+			case MULTIDIR_UPPER_RIGHT:
+				*x = TR_CCW_ORIG_X - flf->shadow_size;
+				*y = TR_CCW_ORIG_Y - flf->shadow_size;
+				x_sign = 1;
+				y_sign = 1;
+				break;
+			case MULTIDIR_RIGHT:
+				*x = TR_CCW_ORIG_X;
+				*y = TR_CCW_ORIG_Y - 1;
+				x_sign = 0;
+				y_sign = -1;
+				break;
+			case MULTIDIR_BOTTOM_RIGHT:
+				*x = TR_CCW_ORIG_X + 1;
+				*y = TR_CCW_ORIG_Y - 1;
+				x_sign = 1;
+				y_sign = -1;
+				break;
+			case MULTIDIR_BOTTOM:
+				*x = TR_CCW_ORIG_X + 1;
+				*y = TR_CCW_ORIG_Y;
+				x_sign = 1;
+				y_sign = 0;
+				break;
+			case MULTIDIR_BOTTOM_LEFT:
+				*x = TR_CCW_ORIG_X + flf->shadow_size;
+				*y = TR_CCW_ORIG_Y + flf->shadow_size;
+				x_sign = -1;
+				y_sign = -1;
+				break;
+			default: /* never happen */
+				break;
+			}
+			break;
+		case TEXT_ROTATED_180: /* (exact "opposite" of normal dir) */
+			switch(direction)
+			{
+			case MULTIDIR_LEFT:
+				*x = REVERSE_ORIG_X + flf->shadow_size;
+				*y = REVERSE_ORIG_Y;
+				x_sign = -1;
+				y_sign = 0;
+				break;
+			case MULTIDIR_UPPER_LEFT:
+				*x = REVERSE_ORIG_X + flf->shadow_size;
+				*y = REVERSE_ORIG_Y + flf->shadow_size;
+				x_sign = -1;
+				y_sign = -1;
+				break;
+			case MULTIDIR_UPPER:
+				*x = REVERSE_ORIG_X;
+				*y = REVERSE_ORIG_Y + flf->shadow_size;
+				x_sign = 0;
+				y_sign = -1;
+				break;
+			case MULTIDIR_UPPER_RIGHT:
+				*x = REVERSE_ORIG_X - 1;
+				*y = REVERSE_ORIG_Y + 1;
+				x_sign = -1;
+				y_sign = 1;
+				break;
+			case MULTIDIR_RIGHT:
+				*x = REVERSE_ORIG_X - 1;
+				*y = REVERSE_ORIG_Y;
+				x_sign = -1;
+				y_sign = 0;
+				break;
+			case MULTIDIR_BOTTOM_RIGHT:
+				*x = REVERSE_ORIG_X - 1;
+				*y = REVERSE_ORIG_Y - 1;
+				x_sign = -1;
+				y_sign = -1;
+				break;
+			case MULTIDIR_BOTTOM:
+				*x = REVERSE_ORIG_X;
+				*y = REVERSE_ORIG_Y - 1;
+				x_sign = 0;
+				y_sign = -1;
+				break;
+			case MULTIDIR_BOTTOM_LEFT:
+				*x = REVERSE_ORIG_X + flf->shadow_size;
+				*y = REVERSE_ORIG_Y - flf->shadow_size;
+				x_sign = -1;
+				y_sign = 1;
+				break;
+			default: /* never happen */
+				break;
+			}
+			break;
+		case TEXT_ROTATED_90: /* CW (exact "opposite" of CCW) */
+			switch(direction)
+			{
+			case MULTIDIR_LEFT:
+				*x = TR_CW_ORIG_X;
+				*y = TR_CW_ORIG_Y - 1;
+				x_sign = 0;
+				y_sign = -1;
+				break;
+			case MULTIDIR_UPPER_LEFT:
+				*x = TR_CW_ORIG_X + flf->shadow_size;
+				*y = TR_CW_ORIG_Y - flf->shadow_size;
+				x_sign = -1;
+				y_sign = +1;
+				break;
+			case MULTIDIR_UPPER:
+				*x = TR_CW_ORIG_X + flf->shadow_size;
+				*y = TR_CW_ORIG_Y;
+				x_sign = -1;
+				y_sign = 0;
+				break;
+			case MULTIDIR_UPPER_RIGHT:
+				*x = TR_CW_ORIG_X + flf->shadow_size;
+				*y = TR_CW_ORIG_Y + flf->shadow_size;
+				x_sign = -1;
+				y_sign = -1;
+				break;
+			case MULTIDIR_RIGHT:
+				*x = TR_CW_ORIG_X;
+				*y = TR_CW_ORIG_Y + 1;
+				x_sign = 0;
+				y_sign = 1;
+				break;
+			case MULTIDIR_BOTTOM_RIGHT:
+				*x = TR_CW_ORIG_X - 1;
+				*y = TR_CW_ORIG_Y + 1;
+				x_sign = -1;
+				y_sign = 1;
+				break;
+			case MULTIDIR_BOTTOM:
+				*x = TR_CW_ORIG_X - 1;
+				*y = TR_CW_ORIG_Y;
+				x_sign = -1;
+				y_sign = 0;
+				break;
+			case MULTIDIR_BOTTOM_LEFT:
+				*x = TR_CW_ORIG_X - flf->shadow_size;
+				*y = TR_CW_ORIG_Y - flf->shadow_size;
+				x_sign = 1;
+				y_sign = 1;
+				break;
+			default: /* never happen */
+				break;
+			}
+			break;
+		case TEXT_ROTATED_0:
+		default: /* no rotation */
+			switch(direction)
+			{
+			case MULTIDIR_LEFT:
+				*x = NORMAL_ORIG_X - flf->shadow_size;
+				*y = NORMAL_ORIG_Y;
+				x_sign = 1;
+				y_sign = 0;
+				break;
+			case MULTIDIR_UPPER_LEFT:
+				*x = NORMAL_ORIG_X - flf->shadow_size;
+				*y = NORMAL_ORIG_Y - flf->shadow_size;
+				x_sign = 1;
+				y_sign = 1;
+				break;
+			case MULTIDIR_UPPER:
+				*x = NORMAL_ORIG_X;
+				*y = NORMAL_ORIG_Y - flf->shadow_size;
+				x_sign = 0;
+				y_sign = 1;
+				break;
+			case MULTIDIR_UPPER_RIGHT:
+				*x = NORMAL_ORIG_X + 1;
+				*y = NORMAL_ORIG_Y - 1;
+				x_sign = 1;
+				y_sign = -1;
+				break;
+			case MULTIDIR_RIGHT:
+				*x = NORMAL_ORIG_X + 1;
+				*y = NORMAL_ORIG_Y;
+				x_sign = 1;
+				y_sign = 0;
+				break;
+			case MULTIDIR_BOTTOM_RIGHT:
+				*x = NORMAL_ORIG_X + 1;
+				*y = NORMAL_ORIG_Y + 1;
+				x_sign = 1;
+				y_sign = 1;
+				break;
+			case MULTIDIR_BOTTOM:
+				*x = NORMAL_ORIG_X;
+				*y = NORMAL_ORIG_Y + 1;
+				x_sign = 0;
+				y_sign = 1;
+				break;
+			case MULTIDIR_BOTTOM_LEFT:
+				*x = NORMAL_ORIG_X - flf->shadow_size;
+				*y = NORMAL_ORIG_Y + flf->shadow_size;
+				x_sign = 1;
+				y_sign = -1;
+				break;
+			default: /* never happen */
+				break;
+			}
+		}
+	}
+	inter_step++;
 	(*step)++;
 	return True;
 }
@@ -1139,14 +1491,11 @@ void FlocaleDrawUnderline(
 {
 	int off1, off2, y, x_s, x_e;
 
-	off1 = FlocaleTextWidth(flf, fws->str, coffset);
-	if ((coffset > 0 && flf->shadow_size > 0) ||
-	    (coffset == 0 && flf->shadow_size < 0))
-	{
-		off1 -= flf->shadow_size;
-	}
+	off1 = FlocaleTextWidth(flf, fws->str, coffset) +
+		((coffset == 0)?
+		 FLF_SHADOW_LEFT_SIZE(flf) : - FLF_SHADOW_RIGHT_SIZE(flf) );
 	off2 = FlocaleTextWidth(flf, fws->str + coffset, 1) -
-		abs(flf->shadow_size) - 1 + off1;
+		FLF_SHADOW_WIDTH(flf) - 1 + off1;
 	y = fws->y + 2;
 	x_s = fws->x + off1;
 	x_e = fws->x + off2;
@@ -1179,12 +1528,12 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	}
 	else if (flf->font != None)
 	{
-		if (flf->utf8 || flf->mb)
+		if (flf->flags.is_utf8 || flf->flags.is_mb)
 		{
 			XChar2b *str2b;
 			int nl;
 
-			if (flf->utf8)
+			if (flf->flags.is_utf8)
 				str2b = FlocaleUtf8ToUnicodeStr2b(str, sl, &nl);
 			else
 				str2b = FlocaleStringToString2b(str, sl, &nl);
@@ -1200,7 +1549,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 		}
 	}
 
-	return result + abs(flf->shadow_size);
+	return result + FLF_SHADOW_WIDTH(flf);
 }
 
 void FlocaleAllocateWinString(FlocaleWinString **pfws)

@@ -1,3 +1,23 @@
+2002-05-26  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.h:
+	* libs/Flocale.c (FlocaleParseShadow): 
+	(FlocaleGetNextShadowDirection):
+	(FlocaleGetShadowTextPosition):
+	(FlocaleLoadFont):
+	Implemented multidirectional shadow text rendering
+
+	* libs/Flocale.h:
+	* libs/Flocale.c 
+	(FlocaleFontStructDrawString):
+	(FlocaleRotateDrawString):
+	(FlocaleLoadFont):
+	(FlocaleDrawString):
+	(FlocaleTextWidth):
+	* libs/FlocaleCharset.c (FlocaleCharsetSetFlocaleCharset):
+	* libs/Fft.c (FftDrawString):
+	Cleanup the FlocaleFont structure by addings some flags
+	
 2002-05-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleFocusIn):

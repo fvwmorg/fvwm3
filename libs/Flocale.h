@@ -83,6 +83,53 @@
 #define FLOCALE_DEBUG_CHARSET   0
 #define FLOCALE_DEBUG_ICONV     0
 
+#define MULTIDIR_NONE           0
+#define MULTIDIR_LEFT           (1)
+#define MULTIDIR_UPPER_LEFT     (1<<1)
+#define MULTIDIR_UPPER          (1<<2)
+#define MULTIDIR_UPPER_RIGHT    (1<<3)
+#define MULTIDIR_RIGHT          (1<<4)
+#define MULTIDIR_BOTTOM_RIGHT   (1<<5)
+#define MULTIDIR_BOTTOM         (1<<6)
+#define MULTIDIR_BOTTOM_LEFT    (1<<7)
+#define MULTIDIR_ALL MULTIDIR_LEFT | MULTIDIR_UPPER_LEFT | MULTIDIR_UPPER | \
+                     MULTIDIR_UPPER_RIGHT | MULTIDIR_RIGHT | \
+                     MULTIDIR_BOTTOM_RIGHT | MULTIDIR_BOTTOM  | \
+                     MULTIDIR_BOTTOM_LEFT
+
+#define FLF_MULTIDIR_HAS_UPPER(flf) \
+              ((flf->flags.shadow_dir & MULTIDIR_UPPER_LEFT) || \
+               (flf->flags.shadow_dir & MULTIDIR_UPPER) || \
+               (flf->flags.shadow_dir & MULTIDIR_UPPER_RIGHT))
+#define FLF_MULTIDIR_HAS_BOTTOM(flf) \
+              ((flf->flags.shadow_dir & MULTIDIR_BOTTOM_LEFT) || \
+               (flf->flags.shadow_dir & MULTIDIR_BOTTOM) || \
+               (flf->flags.shadow_dir & MULTIDIR_BOTTOM_RIGHT))
+#define FLF_MULTIDIR_HAS_LEFT(flf) \
+              ((flf->flags.shadow_dir & MULTIDIR_UPPER_LEFT) || \
+               (flf->flags.shadow_dir & MULTIDIR_LEFT) || \
+               (flf->flags.shadow_dir & MULTIDIR_BOTTOM_LEFT))
+#define FLF_MULTIDIR_HAS_RIGHT(x) \
+              ((flf->flags.shadow_dir & MULTIDIR_UPPER_RIGHT) || \
+               (flf->flags.shadow_dir & MULTIDIR_RIGHT) || \
+               (flf->flags.shadow_dir & MULTIDIR_BOTTOM_RIGHT))
+
+#define FLF_SHADOW_HEIGHT(flf) \
+ (flf->shadow_size * (FLF_MULTIDIR_HAS_UPPER(flf)+FLF_MULTIDIR_HAS_BOTTOM(flf)))
+#define FLF_SHADOW_WIDTH(flf) \
+ (flf->shadow_size * (FLF_MULTIDIR_HAS_LEFT(flf)+FLF_MULTIDIR_HAS_RIGHT(flf)))
+#define FLF_SHADOW_ASCENT(flf) (flf->shadow_size * FLF_MULTIDIR_HAS_UPPER(flf))
+#define FLF_SHADOW_DESCENT(flf) (flf->shadow_size * FLF_MULTIDIR_HAS_BOTTOM(flf))
+
+#define FLF_SHADOW_LEFT_SIZE(flf) \
+            (flf->shadow_size * FLF_MULTIDIR_HAS_LEFT(flf))
+#define FLF_SHADOW_RIGHT_SIZE(flf) \
+            (flf->shadow_size * FLF_MULTIDIR_HAS_RIGHT(flf))
+#define FLF_SHADOW_UPPER_SIZE(flf) \
+            (flf->shadow_size * FLF_MULTIDIR_HAS_UPPER(flf))
+#define FLF_SHADOW_BOTTOM_SIZE(flf) \
+            (flf->shadow_size * FLF_MULTIDIR_HAS_BOTTOM(flf))
+
 /* ---------------------------- type definitions ---------------------------- */
 
 typedef enum
@@ -111,18 +158,23 @@ typedef struct _FlocaleFont
 	XFontSet fontset;	/* font set */
 	FftFontType fftf;
 	FlocaleCharset *fc;
-	Bool must_free_fc;
-	/* utf8 and mb are used only with a XFontStruct font, fftf as is own
-	 * value in the FftFontType and for XFontSet evrything is done in the
-	 * good way automatically and these parameters are not needed */
-	Bool utf8;              /* if true the font is an iso10646-1 and utf8
-				 * encoding is assumed */
-	Bool mb;                /* if true the font is a 2 bytes font */
-	short shadow_size;      /* relief tickness */
 	int height;		/* height of the font: ascent + descent */
 	int ascent;
 	int descent;
 	int max_char_width;
+	short shadow_size;
+	struct
+	{
+		unsigned shadow_dir : 8;
+		unsigned must_free_fc : 1;
+		/* is_utf8 and is_mb are used only with a XFontStruct font,
+		 * fftf as its own value in the FftFontType and for XFontSet
+		 * everything is done in the good way automatically and these
+		 * parameters are not needed */
+		unsigned is_mb      : 1; /* if true the font is an iso10646-1
+					  * and utf8 encoding is assumed */
+		unsigned is_utf8    : 1; /* if true the font is a 2 bytes font */
+	} flags;
 } FlocaleFont;
 
 typedef struct
