@@ -1,4 +1,20 @@
+2003-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (apply_window_updates):
+	fixed drawing of sticky icon titles when the stickyicon style is being
+	set
+
 2003-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (CMD_PlaceAgain):
+	* fvwm/add_window.c (setup_window_placement):
+	* fvwm/virtual.c (MapDesk):
+	update the GNOME hints desk when changing desks; fixes placeagain with
+	stickyicon style
+	some placeagain fixes
+
+	* fvwm/fvwm.1.in (Example):
+	removed duplicate Iconify section
 
 	* todo-2.6 (todo):
 	closed C.11

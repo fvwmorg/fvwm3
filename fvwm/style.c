@@ -4615,7 +4615,6 @@ void update_style_colorset(int colorset)
 			temp->change_mask.use_icon_background_colorset = 1;
 			Scr.flags.do_need_window_update = 1;
 		}
-		
 	}
 
 	return;

@@ -400,6 +400,8 @@ static void MapDesk(int desk, Bool grab)
 			/*  If window is sticky, just update its desk (it's
 			 * still mapped).  */
 			t->Desk = desk;
+			GNOME_SetDesk(t);
+			GNOME_SetWinArea(t);
 			if (sf == t)
 			{
 				StickyWin = t;

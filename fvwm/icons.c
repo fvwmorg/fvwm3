@@ -182,7 +182,7 @@ static void SetIconPixmapSize(
 	int r_w,r_h;
 	GC gc;
 	XGCValues gc_init;
-	
+
 	*nrx = 0;
 	*nry = 0;
 
@@ -204,7 +204,7 @@ static void SetIconPixmapSize(
 		{
 			*icon = CreateStretchPixmap(
 				dpy, oldPixmap, width, height, depth, newWidth,
-				newHeight, gc);			
+				newHeight, gc);
 		}
 		break;
 	case ICON_RESIZE_TYPE_STRETCHED:
@@ -1095,7 +1095,7 @@ void DrawIconTitleWindow(
 				ICON_TITLE_STICK_HEIGHT);
 		}
 	}
-	
+
 	return;
 }
 

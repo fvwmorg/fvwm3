@@ -145,10 +145,7 @@ static void apply_window_updates(
 				S_IS_STICKY_ACROSS_DESKS(SCF(*pstyle)), 1, 1);
 			handle_stick(NULL, exc, "", 0, 0, 1, 0);
 		}
-		else
-		{
-			flags->do_update_icon_title = True;
-		}
+		flags->do_update_icon_title = True;
 	}
 	else if (flags->do_update_stick)
 	{
@@ -324,7 +321,7 @@ static void apply_window_updates(
 		{
 			flags->do_setup_frame = True;
 			flags->do_redraw_decoration = True;
-		} 
+		}
 	}
 	if (0 && flags->do_update_title_dir)
 	{
@@ -456,7 +453,7 @@ static void apply_window_updates(
 	if (flags->do_update_icon_background_cs)
 	{
 		int old_cs = t->icon_background_cs;
-		
+
 		update_icon_background_cs_style(t, pstyle);
 		if ((old_cs < 0 && t->icon_background_cs >= 0) ||
 		    (old_cs >= 0 && t->icon_background_cs < 0))
