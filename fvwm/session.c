@@ -150,69 +150,75 @@ LoadGlobalState(char *filename)
 	      if (last_used_filename) free (last_used_filename);
 	      last_used_filename = strdup (s2);
 	    }
-	  else
+	  else 
 #endif /* SESSION */
-	  if (!strcmp(s1, "[DESKTOP]"))
-	    {
-	      sscanf(s, "%*s %i", &i1);
-	      changeDesks(i1);
-	    }
-	  else if (!strcmp(s1, "[VIEWPORT]"))
-	    {
-	      sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
-	      Scr.VxMax = i3;
-	      Scr.VyMax = i4;
-	      MoveViewport(i1, i2, True);
-	    }
-	  else if (!strcmp(s1, "[SCROLL]"))
-	    {
-	      sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5,
-		     &i6);
-	      Scr.EdgeScrollX = i1;
-	      Scr.EdgeScrollY = i2;
-	      Scr.ScrollResistance = i3;
-	      Scr.MoveResistance = i4;
-	      if (i5)
-		Scr.flags.edge_wrap_x = 1;
-	      else
-		Scr.flags.edge_wrap_x = 0;
-	      if (i6)
-		Scr.flags.edge_wrap_y = 1;
-	      else
-		Scr.flags.edge_wrap_y = 0;
-	    }
-	  else if (!strcmp(s1, "[SNAP]"))
-	    {
-	      sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
-	      Scr.SnapAttraction = i1;
-	      Scr.SnapMode = i2;
-	      Scr.SnapGridX = i3;
-	      Scr.SnapGridY = i4;
-	    }
-	  else if (!strcmp(s1, "[MISC]"))
-	    {
-	      sscanf(s, "%*s %i %i %i %i %i %i %i %i %i", &i1, &i2, &i3, &i4,
-		     &i5, &i6, &i7, &i8, &i9);
-	      Scr.ClickTime = i1;
-	      Scr.ColormapFocus = i2;
-	      Scr.ColorLimit = i3;
-	      Scr.go.SmartPlacementIsClever = i4;
-	      Scr.go.ClickToFocusPassesClick = i5;
-	      Scr.go.ClickToFocusRaises = i6;
-	      Scr.go.MouseFocusClickRaises = i7;
-	      Scr.go.StipledTitles = i8;
-	      Scr.go.WindowShadeScrolls = i9;
-	    }
-	  else if (!strcmp(s1, "[STYLE]"))
-	    {
-	      sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
-	      Scr.go.ModifyUSP = i1;
-	      Scr.go.CaptureHonorsStartsOnPage = i2;
-	      Scr.go.RecaptureHonorsStartsOnPage = i3;
-	      Scr.go.ActivePlacementHonorsStartsOnPage = i4;
-	      Scr.gs.EmulateMWM = i5;
-	      Scr.gs.EmulateWIN = i6;
-	    }
+	    if (!Restarting) 
+	      {
+ 	      /* We don't want to restore too much state if
+		 we are restarting, since that would make restarting
+		 useless for rereading changed rc files. */
+		if (!strcmp(s1, "[DESKTOP]"))
+		  {
+		    sscanf(s, "%*s %i", &i1);
+		    changeDesks(i1);
+		  }
+		else if (!strcmp(s1, "[VIEWPORT]"))
+		  {
+		    sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
+		    Scr.VxMax = i3;
+		    Scr.VyMax = i4;
+		    MoveViewport(i1, i2, True);
+		  }
+		else if (!strcmp(s1, "[SCROLL]"))
+		  {
+		    sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5,
+			   &i6);
+		    Scr.EdgeScrollX = i1;
+		    Scr.EdgeScrollY = i2;
+		    Scr.ScrollResistance = i3;
+		    Scr.MoveResistance = i4;
+		    if (i5)
+		      Scr.flags.edge_wrap_x = 1;
+		    else
+		      Scr.flags.edge_wrap_x = 0;
+		    if (i6)
+		      Scr.flags.edge_wrap_y = 1;
+		    else
+		      Scr.flags.edge_wrap_y = 0;
+		  }
+		else if (!strcmp(s1, "[SNAP]"))
+		  {
+		    sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
+		    Scr.SnapAttraction = i1;
+		    Scr.SnapMode = i2;
+		    Scr.SnapGridX = i3;
+		    Scr.SnapGridY = i4;
+		  }
+		else if (!strcmp(s1, "[MISC]"))
+		  {
+		    sscanf(s, "%*s %i %i %i %i %i %i %i %i %i", &i1, &i2, &i3, &i4,
+			   &i5, &i6, &i7, &i8, &i9);
+		    Scr.ClickTime = i1;
+		    Scr.ColormapFocus = i2;
+		    Scr.ColorLimit = i3;
+		    Scr.go.SmartPlacementIsClever = i4;
+		    Scr.go.ClickToFocusPassesClick = i5;
+		    Scr.go.ClickToFocusRaises = i6;
+		    Scr.go.MouseFocusClickRaises = i7;
+		    Scr.go.StipledTitles = i8;
+		    Scr.go.WindowShadeScrolls = i9;
+		  }
+		else if (!strcmp(s1, "[STYLE]"))
+		  {
+		    sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
+		    Scr.go.ModifyUSP = i1;
+		    Scr.go.CaptureHonorsStartsOnPage = i2;
+		    Scr.go.RecaptureHonorsStartsOnPage = i3;
+		    Scr.go.ActivePlacementHonorsStartsOnPage = i4;
+		    Scr.gs.EmulateMWM = i5;
+		    Scr.gs.EmulateWIN = i6;
+		  }
+	      }
 	}
       fclose(f);
     }
@@ -585,6 +591,22 @@ MatchWinToSM(FvwmWindow *ewin,
 	{
 
 	  matches[i].used = 1;
+	  if (!Restarting)
+	    {
+ 	      /* We don't want to restore too much state if
+		 we are restarting, since that would make restarting
+		 useless for rereading changed rc files. */
+	      SET_DO_SKIP_WINDOW_LIST(ewin, DO_SKIP_WINDOW_LIST(&(matches[i])));
+	      SET_ICON_SUPPRESSED(ewin, IS_ICON_SUPPRESSED(&(matches[i])));
+	      SET_HAS_NO_ICON_TITLE(ewin, HAS_NO_ICON_TITLE(&(matches[i])));
+	      SET_LENIENT(ewin, IS_LENIENT(&(matches[i])));
+	      SET_ICON_STICKY(ewin, IS_ICON_STICKY(&(matches[i])));
+	      SET_DO_SKIP_ICON_CIRCULATE(ewin,
+					 DO_SKIP_ICON_CIRCULATE(&(matches[i])));
+	      SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
+	      SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
+	      ewin->name = matches[i].wm_name;
+	    }
 	  *do_shade = IS_SHADED(&(matches[i]));
 	  *do_max = IS_MAXIMIZED(&(matches[i]));
 	  if (IS_ICONIFIED(&(matches[i]))) {
@@ -597,16 +619,6 @@ MatchWinToSM(FvwmWindow *ewin,
 	  } else {
 	    SET_DO_START_ICONIC(ewin, 0);
 	  }
-	  SET_DO_SKIP_WINDOW_LIST(ewin, DO_SKIP_WINDOW_LIST(&(matches[i])));
-	  SET_ICON_SUPPRESSED(ewin, IS_ICON_SUPPRESSED(&(matches[i])));
-	  SET_HAS_NO_ICON_TITLE(ewin, HAS_NO_ICON_TITLE(&(matches[i])));
-	  SET_LENIENT(ewin, IS_LENIENT(&(matches[i])));
-	  SET_ICON_STICKY(ewin, IS_ICON_STICKY(&(matches[i])));
-	  SET_DO_SKIP_ICON_CIRCULATE(ewin,
-				     DO_SKIP_ICON_CIRCULATE(&(matches[i])));
-	  SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
-	  SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
-	  ewin->name = matches[i].wm_name;
 	  /* this doesn't work very well if Vx/Vy is not on
 	     a page boundary */
 	  ewin->attr.x = matches[i].x - Scr.Vx;

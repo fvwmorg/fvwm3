@@ -1,3 +1,12 @@
+1999-05-26  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
+
+	* fvwm/session.c (LoadGlobalState): 
+	(MatchWinToSM): restore only the "dynamic" state if we are
+	restarting. Otherwise, Restarting becomes useless for rereading
+	a changed rc file. By "dynamic" state I mean: geometry, desk, 
+	layer and maximizedness/shadedness/iconification. This fixes
+	the second part of bug #315.
+
 1999-05-25  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 
 	* fvwm/borders.c (SetBorder): remove unused variable `w'.
