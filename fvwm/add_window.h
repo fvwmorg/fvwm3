@@ -30,7 +30,7 @@ void setup_style_and_decor(
 void setup_auxiliary_windows(
   FvwmWindow *tmp_win, Bool setup_frame_and_parent, short buttons);
 void setup_frame_attributes(
-  FvwmWindow *tmp_win, window_style *pstyle);
+  FvwmWindow *tmp_win, window_style *pstyle, short buttons);
 void destroy_auxiliary_windows(
   FvwmWindow *Tmp_win, Bool destroy_frame_and_parent);
 void change_auxiliary_windows(FvwmWindow *tmp_win, short buttons);
