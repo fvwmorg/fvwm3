@@ -2308,7 +2308,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
 7.12  Toggling windows on and off.
 
-   It is often desirable to have a menu item of perhaps a button in
+   It is often desirable to have a menu item or perhaps a button in
    FvwmButtons or FvwmWharf that launches an application when used
    the first time and closes it if used a second time.  Although it
    is not obvious how to do this, it is possible.  Let's assume you
