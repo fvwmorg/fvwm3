@@ -189,10 +189,10 @@ static void parse_config_line(char *line)
   case 3: /* *FvwmThemeReadWriteColors */
     if (sharedCells)
       fprintf(stderr, "%s: must come first, already allocated shared pixels\n",
-	      config_options[4]);
+	      config_options[3]);
     else if (Pvisual->class != PseudoColor)
       fprintf(stderr, "%s: only works with PseudoColor visuals\n",
-	      config_options[4]);
+	      config_options[3]);
     else
       privateCells = True;
   }
