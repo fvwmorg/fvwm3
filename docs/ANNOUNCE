@@ -163,10 +163,11 @@ Full list of changes:
 New commands:
 -------------
 
- * New command UnsetEnv accomplishes SetEnv.
+ * New command UnsetEnv unsets environment variables, compliments
+   SetEnv.
  * New command UpdateStyles forces an immediate style update, even
    within a complex function.
- * New command ResizeMove combined Move and Resize commands.
+ * New command ResizeMove combines Move and Resize commands.
  * New command PointerKey.  Similar to the Key command but binds
    keystrokes to the window under the pointer instead of the
    window that has the keyboard focus.
@@ -178,18 +179,17 @@ New commands:
    (default is Ctrl-Alt-Escape).
  * New command HideGeometryWindow to hide the size/position when
    moving or resizing windows.
- * New command BugOpts allows to enable various former bug fixing
+ * New command BugOpts enables various former bug fixing
    compile time options to be changed at run time.
  * The new commands QuitSession, SaveSession, SaveQuitSession
-   allow to manage the session from the window manager.
+   control the session management feature.
  * New command MaxWindowSize limits the initial dimensions of a
    window.
  * The MoveThreshold command lets the user fine tune the threshold
    when a click becomes a move.  It works in FvwmPager too.
- * IgnoreModifiers command allows to ignore this pesky num-lock
-   key to be ignored as far as key and mouse bindings are
-   concerned.
- * ImagePath and ModulePath commands will now expand '+' to be the
+ * IgnoreModifiers command for ignoring the pesky num-lock
+   key with key and mouse bindings.
+ * ImagePath and ModulePath commands now expand '+' to be the
    previous value of the path.
  * New command: DefaultIcon to set the default icon.
  * New command: RecaptureWindow captures a single window.
@@ -210,7 +210,7 @@ New command features:
  * WindowId and WarpToFunction have been enhanced to handle
    windows on different screens and unmanaged windows.
  * New expanding variables: $., $[page.nx], $[page.ny].
- * Pressing mouse button 2 in an FvwmIdent window restart
+ * Pressing mouse button 2 in an FvwmIdent window restarts
    FvwmIdent and asks for a new window.
  * New window styles GNOMEIgnoreHints and GNOMEUseHints to disable
    GNOME hints for specific windows even if GNOME compliance is
@@ -250,8 +250,8 @@ New command features:
  * A new special fvwm function StartFunction is introduced.  It is
    supposed to be used to start modules and for other start
    commands.  This function is executed before InitFunction and
-   RestartFunction and anyone can take out a common part for both
-   of these functions in favour of StartFunction.
+   RestartFunction.  Any commands currently in both the InitFunction
+   and RestartFuction can be moved to the new StartFunction.
  * New function variables $c, $r, $n.
  * The Restart function has been partially rewritten.  If you were
    using Restart without any parameters and wonder why changes
@@ -270,7 +270,7 @@ New command features:
  * Colour gradients may use up to 1000 colours.  The old limit was
    128 colours.
  * New button states ToggledActiveUp, ToggledActiveDown,
-   ToggledInactive for customizing e.g.  the "maximised"
+   ToggledInactive for customizing, as an example, the "maximised"
    appearance of the maximise button.
  * New button style flag MWMDecorStick to support toggle buttons
    for the Stick function.
@@ -278,7 +278,7 @@ New command features:
    conditions.
  * New button style flag MWMDecorShade to support toggle buttons
    for shaded windows.
- * The NoWarp option to the Focus command allow focusing window on
+ * The NoWarp option to the Focus command for focusing a window on
    a different page without switching to that page.
  * Enhancements to MoveToPage and GotoPage: "prev" option to refer
    to the last visited page, negative numbers refer to lower/right
@@ -365,17 +365,17 @@ New menu features:
    from a submenu to its parent menu the submenu remains visible.
  * Menus can be visible multiple times at once.
  * Dynamic menus are provided by the special menu items
-   DynamicPopupAction and DynamicPopdownAction.  See man page
-   on AddToMenu for details.
+   DynamicPopupAction and DynamicPopdownAction.  See then man page
+   under AddToMenu for details.
  * New MenuStyle options: PopupAsRootmenu, PopupAsSubmenu
 
 Mew module options and features:
 --------------------------------
 
- * New FvwmIconMan options: iconbutton and iconcolorset to control
+ * New FvwmIconMan options: IconButton and IconColorset to control
    colors for iconified windows.
  * New FvwmIconBox option: FvwmIconBoxUseSkipList.
- * FvwmBacker is now page-aware, a new configuration syntax.
+ * FvwmBacker is now page-aware, using a new configuration syntax.
  * New FvwmPager options SolidSeparators and NoSeparators.
  * Colour names from colour sets can be used in fvwm command
    ($[fg.cs<n>], $[bg.cs<n>], $[hilite.cs<n>] and
@@ -438,6 +438,7 @@ Miscellaneous:
    at the fvwm web site.
  * Sub windows can have a private colourmap too.
  * FvwmConfig module has been removed.
+ * FvwmPipe module has been removed.
  * The FvwmCommand module is now much faster and can thus
    comfortably be used in shell scripts.  The tradeoff is that it
    does not report errors any more.  To get the old behaviour run
