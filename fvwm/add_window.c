@@ -378,7 +378,7 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 	MyXUngrabServer(dpy);
 }
 
-static Bool setup_window_structure(
+static void setup_window_structure(
 	FvwmWindow **pfw, Window w, FvwmWindow *ReuseWin)
 {
 	FvwmWindow save_state;
@@ -449,7 +449,7 @@ static Bool setup_window_structure(
 		(*pfw)->mini_icon = NULL;
 	}
 
-	return True;
+	return;
 }
 
 static void setup_window_name_count(FvwmWindow *fw)
@@ -1982,8 +1982,7 @@ FvwmWindow *AddWindow(
 	Window w, FvwmWindow *ReuseWin, initial_window_options_type *win_opts)
 {
 	/* new fvwm window structure */
-	register FvwmWindow *fw = NULL;
-	FvwmWindow *tmpfw = NULL;
+	register FvwmWindow *fw;
 	/* mask for create windows */
 	unsigned long valuemask;
 	/* attributes for create windows */
@@ -2001,13 +2000,7 @@ FvwmWindow *AddWindow(
 	mwtsm_state_args state_args;
 
 	/****** init window structure ******/
-	if (!setup_window_structure(&tmpfw, w, ReuseWin))
-	{
-		fvwm_msg(ERR, "AddWindow",
-			 "Bad return code from setup_window_structure");
-		return NULL;
-	}
-	fw = tmpfw;
+	setup_window_structure(&fw, w, ReuseWin);
 
 	/****** Make sure the client window still exists.  We don't want to
 	 * leave an orphan frame window if it doesn't.  Since we now have the
@@ -2019,7 +2012,7 @@ FvwmWindow *AddWindow(
 		    dpy, w, &JunkRoot, &JunkX, &JunkY, &JunkWidth, &JunkHeight,
 		    &JunkBW,  &JunkDepth) == 0)
 	{
-		free((char *)fw);
+		free(fw);
 		MyXUngrabServer(dpy);
 		return NULL;
 	}

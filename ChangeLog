@@ -53,6 +53,10 @@
 
 2002-08-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (setup_window_structure):
+	(AddWindow):
+	discarded unused return code
+
 	* fvwm/focus.c (focus_grab_buttons):
 	split into two fucntions and fixed a bug with ungrabbing buttons
 
