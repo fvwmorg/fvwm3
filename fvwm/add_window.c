@@ -239,12 +239,11 @@ void setup_wm_hints(FvwmWindow *tmp_win)
 
 static void destroy_window_font(FvwmWindow *tmp_win)
 {
-  if (HAS_WINDOW_FONT(tmp_win) &&
+  if (IS_WINDOW_FONT_LOADED(tmp_win) && !USING_DEFAULT_WINDOW_FONT(tmp_win) &&
       tmp_win->title_font.font != Scr.DefaultFont.font)
   {
     FreeFvwmFont(dpy, &(tmp_win->title_font));
   }
-  SET_HAS_WINDOW_FONT(tmp_win, 0);
   SET_WINDOW_FONT_LOADED(tmp_win, 0);
 }
 
@@ -265,13 +264,13 @@ void setup_window_font(
     if (SFHAS_WINDOW_FONT(*pstyle) && SGET_WINDOW_FONT(*pstyle) &&
 	LoadFvwmFont(dpy, SGET_WINDOW_FONT(*pstyle), &(tmp_win->title_font)))
     {
-      SET_HAS_WINDOW_FONT(tmp_win, 1);
+      SET_USING_DEFAULT_WINDOW_FONT(tmp_win, 0);
     }
     else
     {
       /* no explicit font or failed to load, use default font instead */
       tmp_win->title_font = Scr.DefaultFont;
-      SET_HAS_WINDOW_FONT(tmp_win, 0);
+      SET_USING_DEFAULT_WINDOW_FONT(tmp_win, 1);
     }
     SET_WINDOW_FONT_LOADED(tmp_win, 1);
   }
@@ -308,12 +307,11 @@ void setup_window_font(
 
 static void destroy_icon_font(FvwmWindow *tmp_win)
 {
-  if (HAS_ICON_FONT(tmp_win) &&
-      tmp_win->icon_font.font != Scr.DefaultFont.font)
+  if (IS_ICON_FONT_LOADED(tmp_win) && !USING_DEFAULT_ICON_FONT(tmp_win) &&
+      tmp_win->title_font.font != Scr.DefaultFont.font)
   {
     FreeFvwmFont(dpy, &(tmp_win->icon_font));
   }
-  SET_HAS_ICON_FONT(tmp_win, 0);
   SET_ICON_FONT_LOADED(tmp_win, 0);
 }
 
@@ -341,13 +339,13 @@ void setup_icon_font(
     if (SFHAS_ICON_FONT(*pstyle) && SGET_ICON_FONT(*pstyle) &&
 	LoadFvwmFont(dpy, SGET_ICON_FONT(*pstyle), &(tmp_win->icon_font)))
     {
-      SET_HAS_ICON_FONT(tmp_win, 1);
+      SET_USING_DEFAULT_ICON_FONT(tmp_win, 0);
     }
     else
     {
       /* no explicit font or failed to load, use default font instead */
       tmp_win->title_font = Scr.DefaultFont;
-      SET_HAS_ICON_FONT(tmp_win, 0);
+      SET_USING_DEFAULT_ICON_FONT(tmp_win, 1);
     }
     SET_ICON_FONT_LOADED(tmp_win, 1);
   }

@@ -78,6 +78,9 @@ Contents
           get focus/be moved/be resized/be closed/be shaded...  How?
     3.19  When my specific window (or all windows) is closed, I want to
           switch desks/wrap to my app X/popup a menu/start app X...  How?
+    3.20  I have a multi head setup (multiple screens used under X).  How
+          can I tell fvwm to use different configuration files for the
+          screens?
 
 4. Modules
 
@@ -1190,6 +1193,24 @@ A: Please read the answer to the previous question to understand better.
 
      AddToFunc StartFunction I FvwmEvent FvwmEvent-OldWindow
 
+----------------------------------------------------------------------
+
+3.20  I have a multi head setup (multiple screens used under X).  How
+      can I tell fvwm to use different configuration files for the
+      screens?
+
+A: Write your configuration file as you would if you had only one
+   screen.  Then move the screen specific lines into separate
+   configuration files and call them for example .fvwm2rc.<screen>
+   where <screen> is the screen number.  Usually this will be 0 for
+   the main screen and 1 for the secondary screen.  Place the screen
+   specific files in the $HOME/.fvwm directory or whatever you set
+   $FVWM_USERHOME to.  Now add this line to your .fvwm2rc:
+
+     Read .fvwm2rc.$[screen]
+
+   The $[screen] will be replaced with the number of the screen each
+   instance of fvwm is started on.
 
 ======================================================================
                              4 - Modules

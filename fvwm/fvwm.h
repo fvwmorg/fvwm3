@@ -278,6 +278,8 @@ typedef struct
   unsigned is_window_being_moved_opaque : 1;
   unsigned is_window_font_loaded : 1;
   unsigned is_window_shaded : 1;
+  unsigned using_default_icon_font : 1;
+  unsigned using_default_window_font : 1;
 } window_flags;
 
 /* Window mask for Circulate and Direction functions */

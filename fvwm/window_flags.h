@@ -292,7 +292,18 @@
           (fw)->flags.does_wm_take_focus = !!(x)
 #define SETM_WM_TAKES_FOCUS(fw,x) \
           (fw)->flag_mask.does_wm_take_focus = !!(x)
-
+#define USING_DEFAULT_WINDOW_FONT(fw) \
+          ((fw)->flags.using_default_window_font)
+#define SET_USING_DEFAULT_WINDOW_FONT(fw,x) \
+          (fw)->flags.using_default_window_font = !!(x)
+#define SETM_USING_DEFAULT_WINDOW_FONT(fw,x) \
+          (fw)->flag_mask.using_default_window_font = !!(x)
+#define USING_DEFAULT_ICON_FONT(fw) \
+          ((fw)->flags.using_default_icon_font)
+#define SET_USING_DEFAULT_ICON_FONT(fw,x) \
+          (fw)->flags.using_default_icon_font = !!(x)
+#define SETM_USING_DEFAULT_ICON_FONT(fw,x) \
+          (fw)->flag_mask.using_default_icon_font = !!(x)
 
 
 #endif /* _WINDOW_FLAGS_ */

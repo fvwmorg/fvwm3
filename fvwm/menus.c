@@ -1875,7 +1875,6 @@ static void MenuInteraction(
 	{
 	  /* draw the parent menu if it is not already drawn */
 	  paint_menu(pmp->menu, NULL, (*pmp->pTmp_win));
-fprintf(stderr,"drawing menu now\n");
 	  flush_expose(MR_WINDOW(pmp->menu));
 	}
 	/* get pos hints for item's action */
@@ -1927,6 +1926,7 @@ fprintf(stderr,"drawing menu now\n");
 	  efa.module = -2;
 	  efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
 	  efa.flags.do_save_tmpwin = 1;
+	  execute_function(&efa);
 	  if (is_complex_function)
 	    free(action);
 	  if (is_busy_grabbed)
@@ -2875,6 +2875,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     pos_hints = last_saved_pos_hints;
     t = lastTimestamp;
     /* Execute the action */
+    memset(&efa, 0, sizeof(efa));
     efa.eventp = &Event;
     efa.tmp_win = (*pmp->pTmp_win);
     efa.action = MR_POPDOWN_ACTION(*pmr);
