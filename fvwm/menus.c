@@ -84,7 +84,7 @@
 #define MAX_ITEM_LABELS              3
 
 /* Default item formats for left and right submenus. */
-#define DEFAULT_ITEM_FORMAT          "%.s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
+#define DEFAULT_ITEM_FORMAT          "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
 #define DEFAULT_LEFT_ITEM_FORMAT     "%.1|%3.2<%5i%5l%5l%5r%5i%1|%s"
 
 #define GRADIENT_PIXMAP_THICKNESS    5
