@@ -4990,12 +4990,24 @@ void Emulate(F_CMD_ARGS)
   ApplyDefaultFontAndColors();
   return;
 }
-
+/*
+ * The ColorLimit command is  ignored if the  user has no reason to limit
+ * color.  This is so the   same configuration will work on  colorlimited
+ * and   non-colorlimited  displays  without    resorting   to using    a
+ * preprocessor.
+ *
+ * Lets assume  the display is  no more  than  2000x1000 pixels. Ie.  the
+ * display can display no more than 2,000,000 million  pixels at once.  A
+ * display depth of 21 will display 2  million colors at once.  Hence the
+ * logic below.
+ *
+ * dje 03/22/99
+ */
 void SetColorLimit(F_CMD_ARGS)
 {
   int val;
 
-  if (Scr.d_depth > 8) {                /* if move than 8 bit color */
+  if (Scr.d_depth > 20) {               /* if more than 20 bit color */
     return;                             /* ignore the limit */
   }
   if (GetIntegerArguments(action, NULL, &val, 1) != 1)
