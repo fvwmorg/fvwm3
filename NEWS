@@ -5,9 +5,6 @@ Changes in beta release 2.3.18 (not released yet)
 
 Changes in beta release 2.3.17 (May 2000)
 
-* Mouse button 3 can no longer be used to cancel interactive window
-  movement.
-
 * The commands Refresh and RefreshWindow apply all outstanding visual
   changes of a window.
 
@@ -25,6 +22,9 @@ Changes in beta release 2.3.17 (May 2000)
 
 * New condition "MovedButton3" that is true if the last interactive
   Move command was finished by pressing mouse button 3.
+
+* Mouse button 3 can no longer be used to cancel interactive window
+  movement.
 
 * $FVWM_USERHOME used to set the fvwm user directory renamed to $FVWM_USERDIR.
 
