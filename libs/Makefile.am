@@ -3,7 +3,7 @@
 noinst_LIBRARIES = libfvwm.a
 
 ## .c files in largest first order to speed up parallel makes
-libfvwm_a_SOURCES = ColorSets.h ClientMsg.h Grab.h Module.h Parse.h Picture.h \
+libfvwm_a_SOURCES = Coloret.h ClientMsg.h Grab.h Module.h Parse.h Picture.h \
 	Strings.h envvar.h fvwmlib.h fvwmsignal.h lang-strings.h safemalloc.h \
 	vpacket.h wild.c wild.h Parse.c Picture.c Bindings.c envvar.c \
 	XResource.c ColorUtils.c Module.c Graphics.c fvwmsignal.c System.c \

@@ -1,5 +1,7 @@
 1999-08-05  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
+	* libs/Makefile.am: ColorSets.h -> Colorset.h
+
 	* fvwm/events.c (HandleButtonRelease): 
 	* fvwm/session.c (getUniqueStateFilename):
 	(LoadGlobalState):
