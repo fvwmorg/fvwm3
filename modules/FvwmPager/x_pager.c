@@ -53,6 +53,8 @@ extern Picture *PixmapBack;
 extern Picture *HilightPixmap;
 extern int HilightDesks;
 
+extern int MoveThreshold;
+
 extern int icon_w, icon_h, icon_x, icon_y;
 XFontStruct *font, *windowFont;
 
@@ -1641,8 +1643,8 @@ void MoveWindow(XEvent *Event)
 
   if(moved)
     {
-      if((x - xi < 3)&&(y - yi < 3)&&
-	 (x - xi > -3)&&(y -yi > -3))
+      if((x - xi < MoveThreshold)&&(y - yi < MoveThreshold)&&
+	 (x - xi > -MoveThreshold)&&(y -yi > -MoveThreshold))
 	moved = 0;
     }
   if(KeepMoving)
@@ -1684,15 +1686,28 @@ void MoveWindow(XEvent *Event)
   else
     {
       column = (x/(desk_w+1));
+      if (column >= Columns)
+	column = Columns - 1;
+      if (column < 0)
+	column = 0;
       row =  (y/(desk_h+ label_h+1));
+      if (row >= Rows)
+	row = Rows - 1;
+      if (row < 0)
+	row = 0;
       NewDesk = column + (row)*Columns;
-      if((NewDesk <0)||(NewDesk >=ndesks))
-	{
-	  NewDesk = Scr.CurrentDesk - desk1;
-	  x = xi;
-	  y = yi;
-	  moved = 0;
-	}
+      while (NewDesk < 0)
+      {
+	NewDesk += Columns;
+	if (NewDesk >= ndesks)
+	  NewDesk = 0;
+      }
+      while (NewDesk >= ndesks)
+      {
+	NewDesk -= Columns;
+	if (NewDesk < 0)
+	  NewDesk = ndesks - 1;
+      }
       XTranslateCoordinates(dpy, Scr.Pager_w,Desks[NewDesk].w,
 			    x-x1, y-y1, &x2,&y2,&dumwin);
 
@@ -1702,16 +1717,16 @@ void MoveWindow(XEvent *Event)
 	(Scr.VxMax + Scr.MyDisplayWidth)/(desk_w-n) - Scr.Vx;
       y = (y2-m1)*
 	(Scr.VyMax + Scr.MyDisplayHeight)/(desk_h-m) - Scr.Vy;
+      /* force onto desk */
       if(x + t->frame_width + Scr.Vx < 0 )
-	x = -Scr.Vx;
-      if(y+t->frame_height + Scr.Vy< 0)
-	y = -Scr.Vy;
-      if(x + Scr.Vx > Scr.MyDisplayWidth+Scr.VxMax)
-	x = Scr.MyDisplayWidth + Scr.VxMax - t->frame_width - Scr.Vx;
-      if(y +Scr.Vy> Scr.MyDisplayHeight+Scr.VyMax)
-	y = Scr.MyDisplayHeight+ Scr.VyMax - t->frame_height - Scr.Vy;
-      if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||
-	 (IS_STICKY(t)))
+	x = - Scr.Vx - t->frame_width;
+      if(y + t->frame_height + Scr.Vy< 0)
+	y = - Scr.Vy - t->frame_height;
+      if(x + Scr.Vx >= Scr.MyDisplayWidth + Scr.VxMax)
+	x = Scr.MyDisplayWidth + Scr.VxMax - Scr.Vx - 1;
+      if(y + Scr.Vy >= Scr.MyDisplayHeight + Scr.VyMax)
+	y = Scr.MyDisplayHeight+ Scr.VyMax - Scr.Vy - 1;
+      if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||(IS_STICKY(t)))
 	{
 	  NewDesk = Scr.CurrentDesk - desk1;
 	  if(x > Scr.MyDisplayWidth -16)
@@ -1723,10 +1738,9 @@ void MoveWindow(XEvent *Event)
 	  if(y + t->height < 16)
 	    y = 16 - t->height;
 	}
-      if(NewDesk +desk1 != t->desk)
+      if(NewDesk + desk1 != t->desk)
 	{
-	  if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||
-	     (IS_STICKY(t)))
+	  if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||(IS_STICKY(t)))
 	    {
 	      NewDesk = Scr.CurrentDesk - desk1;
 	      if(t->desk != Scr.CurrentDesk)
@@ -1746,10 +1760,14 @@ void MoveWindow(XEvent *Event)
 	  if(moved)
 	    {
 	      if(IS_ICONIFIED(t))
+	      {
 		XMoveWindow(dpy,t->icon_w,x,y);
+	      }
 	      else
+	      {
 		XMoveWindow(dpy,t->w,x+t->border_width,
 			    y+t->title_height+t->border_width);
+	      }
 	      XSync(dpy,0);
 	    }
 	  else
@@ -1994,8 +2012,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 
   n = (Scr.VxMax)/Scr.MyDisplayWidth;
   m = (Scr.VyMax)/Scr.MyDisplayHeight;
-  n1 = (Scr.Vx+t->x)/Scr.MyDisplayWidth;
-  m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
+  n1 = (Scr.Vx + t->x)/Scr.MyDisplayWidth;
+  m1 = (Scr.Vy + t->y)/Scr.MyDisplayHeight;
   wx = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
   wy = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
 
@@ -2041,8 +2059,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 
   if(moved)
     {
-      if((x - xi < 3)&&(y - yi < 3)&&
-	 (x - xi > -3)&&(y -yi > -3))
+      if((x - xi < MoveThreshold)&&(y - yi < MoveThreshold)&&
+	 (x - xi > -MoveThreshold)&&(y -yi > -MoveThreshold))
 	moved = 0;
     }
 
@@ -2064,13 +2082,20 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 	(Scr.VxMax + Scr.MyDisplayWidth)/(icon_w-n) - Scr.Vx;
       y = (y-m1)*
 	(Scr.VyMax + Scr.MyDisplayHeight)/(icon_h-m) - Scr.Vy;
-
-      if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||
-	 (IS_STICKY(t)))
+      /* force onto desk */
+      if(x + t->icon_width + Scr.Vx < 0 )
+	x = - Scr.Vx - t->icon_width;
+      if(y + t->icon_height + Scr.Vy< 0)
+	y = - Scr.Vy - t->icon_height;
+      if(x + Scr.Vx >= Scr.MyDisplayWidth + Scr.VxMax)
+	x = Scr.MyDisplayWidth + Scr.VxMax - Scr.Vx - 1;
+      if(y + Scr.Vy >= Scr.MyDisplayHeight + Scr.VyMax)
+	y = Scr.MyDisplayHeight + Scr.VyMax - Scr.Vy - 1;
+      if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||(IS_STICKY(t)))
 	{
-	  if(x > Scr.MyDisplayWidth -16)
+	  if(x > Scr.MyDisplayWidth - 16)
 	    x = Scr.MyDisplayWidth - 16;
-	  if(y > Scr.MyDisplayHeight-16)
+	  if(y > Scr.MyDisplayHeight - 16)
 	    y = Scr.MyDisplayHeight - 16;
 	  if(x + t->width < 16)
 	    x = 16 - t->width;

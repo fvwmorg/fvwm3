@@ -1,3 +1,27 @@
+1999-05-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c: (RedrawWindow): fixed redrawing when
+	resizing FvwmButtons
+
+	* FvwmButtons/draw.c (RelieveButton): use library function to draw
+	reliefs
+
+1999-05-18  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/draw.c (RelieveButton): fixed off-by-one bug: relief
+	around buttons was a bit too large
+
+	* FvwmPager/FvwmPager.c (ParseOptions): implemented MoveThreshold as
+	for main module
+
+	* FvwmPager/x_pager.c (MoveWindow):
+	(IconMoveWindow):
+	fix to prevent windows in the pager to get lost off the virtual desktop
+	(MoveWindow): fixed a bug that could warp a window from the last desk
+	to the first desk
+	(MoveWindow): move window to closest page when dragged off the virtual
+	desktop (when there are more slots in the pager than pages displayed).
+
 1999-05-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmGtk/*: implement "Function <func>" and titles for window lists. 
@@ -9,26 +33,26 @@
 
 Sun May 16 10:56:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmWinList/FvwmWinList.c (MainEventLoop): 
-	* FvwmWharf/FvwmWharf.c (My_XNextEvent): 
-	* FvwmTaskBar/FvwmTaskBar.c (EndLessLoop): 
-	* FvwmScroll/FvwmScroll.h: 
-	* FvwmScroll/GrabWindow.c (Loop): 
-	* FvwmScript/Widgets/Menu.c (EvtMouseMenu): 
-	* FvwmScript/Widgets/List.c: 
-	* FvwmScript/Instructions.c (Quit): 
-	* FvwmScript/FvwmScript.c (MainLoop): 
-	* FvwmRearrange/FvwmRearrange.c: 
-	* FvwmPager/FvwmPager.c (My_XNextEvent): 
-	* FvwmIdent/FvwmIdent.c (list_end): 
-	* FvwmIconMan/FvwmIconMan.c (main_loop): 
-	* FvwmIconBox/FvwmIconBox.c (My_XNextEvent): 
+	* FvwmWinList/FvwmWinList.c (MainEventLoop):
+	* FvwmWharf/FvwmWharf.c (My_XNextEvent):
+	* FvwmTaskBar/FvwmTaskBar.c (EndLessLoop):
+	* FvwmScroll/FvwmScroll.h:
+	* FvwmScroll/GrabWindow.c (Loop):
+	* FvwmScript/Widgets/Menu.c (EvtMouseMenu):
+	* FvwmScript/Widgets/List.c:
+	* FvwmScript/Instructions.c (Quit):
+	* FvwmScript/FvwmScript.c (MainLoop):
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmPager/FvwmPager.c (My_XNextEvent):
+	* FvwmIdent/FvwmIdent.c (list_end):
+	* FvwmIconMan/FvwmIconMan.c (main_loop):
+	* FvwmIconBox/FvwmIconBox.c (My_XNextEvent):
 	* FvwmForm/FvwmForm.c (MainLoop):
-	* FvwmConsole/FvwmConsole.c: 
-	* FvwmCommand/FvwmCommandS.c: 
-	* FvwmCommand/FvwmCommand.c: 
-	* FvwmButtons/FvwmButtons.c (My_XNextEvent): 
-	* FvwmBanner/FvwmBanner.c (main): 
+	* FvwmConsole/FvwmConsole.c:
+	* FvwmCommand/FvwmCommandS.c:
+	* FvwmCommand/FvwmCommand.c:
+	* FvwmButtons/FvwmButtons.c (My_XNextEvent):
+	* FvwmBanner/FvwmBanner.c (main):
 	* FvwmAuto/FvwmAuto.c (main): update select() function call and
  	fd_width type, for new AC_FUNC_SELECT macro.
 

@@ -272,6 +272,15 @@ are shown at 1/\fInumber\fP of the actual size.
 Allow the pager to display a window's mini icon in the pager, if it has
 one, instead of showing the window's name.
 
+.IP "*FvwmPagerMoveThreshold \fIpixels\fP"
+Defines the distance the pointer has to be moved before a window being
+dragged with button 2 is actually moved. The default value is three
+pixels. If the pointer moved less that this amount the window snaps back
+to its original position when the button is released. If \fIpixels\fP is
+less than zero the default value is used. The value set with the
+\fIMoveThreshold\fP command in fvwm is inherited by FvwmPager but can
+be overridden with this option.
+
 .IP "*FvwmPagerBalloons [\fItype\fP]"
 Show a balloon describing the window when the pointer is moved into
 a window in the pager. Currently only the window's icon name is shown.

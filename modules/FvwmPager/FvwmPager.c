@@ -79,6 +79,9 @@ Picture *PixmapBack = NULL;
 
 char *ImagePath = NULL;
 
+#define DEFAULT_MOVE_THRESHOLD 3
+int MoveThreshold = DEFAULT_MOVE_THRESHOLD;
+
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
 char *BalloonTypeString = NULL;
 char *BalloonBack = NULL;
@@ -1243,23 +1246,41 @@ void ParseOptions(void)
       char *arg1;
       char *arg2;
       char *tline2;
+      char *token;
+      char *next;
+      Bool MoveThresholdSetForModule = False;
 
       resource_string = arg1 = arg2 = NULL;
 
-      if (MatchToken(tline, "ImagePath")) {
-	  if (ImagePath != NULL) {
+      token = PeekToken(tline, &next);
+      if (StrEquals(token, "ImagePath"))
+      {
+	  if (ImagePath != NULL)
+	  {
 	      free(ImagePath);
 	      ImagePath = NULL;
 	  }
-
-	  tline = SkipNTokens( tline, 1 );
-
-	  CopyString(&ImagePath, tline);
+	  GetNextToken(next, &ImagePath);
 
 #ifdef DEBUG
 	  fprintf(stderr, "[ParseOptions]: ImagePath = %s\n", ImagePath);
 #endif
 	  continue;
+      }
+      else if (StrEquals(token, "MoveThreshold"))
+      {
+	if (!MoveThresholdSetForModule)
+	{
+	  int val;
+	  if (GetIntegerArguments(next, NULL, &val, 1) > 0)
+	  {
+	    if (val >= 0)
+	      MoveThreshold = val;
+	    else
+	      MoveThreshold = DEFAULT_MOVE_THRESHOLD;
+	  }
+	}
+	continue;
       }
 
       tline2 = GetModuleResource(tline, &resource, MyName);
@@ -1635,13 +1656,21 @@ void ParseOptions(void)
 	      GetNextToken(tline2, &WindowHiBack);
 	    }
 	}
-       else if (StrEquals(resource,"WindowLabelFormat"))
-         {
-           if (WindowLabelFormat)
-             free(WindowLabelFormat);
-           CopyString(&WindowLabelFormat,arg1);
-         }
-
+      else if (StrEquals(resource,"WindowLabelFormat"))
+	{
+	  if (WindowLabelFormat)
+	    free(WindowLabelFormat);
+	  CopyString(&WindowLabelFormat,arg1);
+	}
+      else if (StrEquals(resource, "MoveThreshold"))
+	{
+	  int val;
+	  if (GetIntegerArguments(next, NULL, &val, 1) > 0 && val >= 0)
+	    {
+	      MoveThreshold = val;
+	      MoveThresholdSetForModule = True;
+	    }
+	}
       /* ... and get Balloon config options ...
          -- ric@giccs.georgetown.edu */
       else if (StrEquals(resource, "Balloons"))

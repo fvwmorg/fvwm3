@@ -72,42 +72,26 @@ void RelieveButton(Window wn,int width,int x,int y,int w,int h,Pixel relief,
   if(width<0)
     {
       width=-width;
-      p=relief;relief=shadow;shadow=p;
+      p=relief;
+      relief=shadow;
+      shadow=p;
     }
   if(rev)
     {
-      p=relief;relief=shadow;shadow=p;
+      p=relief;
+      relief=shadow;
+      shadow=p;
     }
 
   gcm=GCForeground;
   gcv.foreground=relief;
   XChangeGC(Dpy,NormalGC,gcm,&gcv);
 
-  for(j=0;j<width && w>1 && h>1 ;j++,w-=2,h-=2,x+=1,y+=1)
-    {
-      i=0;
-      seg[i].x1 = x;      seg[i].y1   = y;
-      seg[i].x2 = x+w;    seg[i++].y2 = y;
-      seg[i].x1 = x;      seg[i].y1   = y;
-      seg[i].x2 = x;      seg[i++].y2 = y+h;
-      XDrawSegments(Dpy,wn,NormalGC,seg,i);
-    }
-
-  w+=width*2;h+=width*2;x-=width;y-=width;
-
   gcm=GCForeground;
   gcv.foreground=shadow;
-  XChangeGC(Dpy,NormalGC,gcm,&gcv);
+  XChangeGC(Dpy,ShadowGC,gcm,&gcv);
 
-  for(j=0;j<width && w>1 && h>1 ;j++,w-=2,h-=2,x+=1,y+=1)
-    {
-      i=0;
-      seg[i].x1 = x+1;    seg[i].y1   = y+h-1;
-      seg[i].x2 = x+w;    seg[i++].y2 = y+h-1;
-      seg[i].x1 = x+w-1;  seg[i].y1   = y+1;
-      seg[i].x2 = x+w-1;  seg[i++].y2 = y+h;
-      XDrawSegments(Dpy,wn,NormalGC,seg,i);
-    }
+  RelieveRectangle(Dpy, wn, x, y, w-1, h-1, NormalGC, ShadowGC, width);
 }
 
 /**
@@ -231,11 +215,12 @@ void RedrawButton(button_info *b,int clean)
     }
 
   /* draw relief around button with lib functions if using fvwm graphics */
-  if (b->flags&b_FvwmLook) {
+  if (b->flags&b_FvwmLook)
+  {
     GC reliefGC = G->reliefGC;
     GC shadowGC = G->shadowGC;
     GC temp;
-    
+
     if(f<0) {
       f=-f;
       temp=reliefGC;reliefGC=shadowGC;shadowGC=temp;
@@ -244,7 +229,8 @@ void RedrawButton(button_info *b,int clean)
       temp=reliefGC;reliefGC=shadowGC;shadowGC=temp;
     }
     RelieveRectangle(Dpy, MyWindow, x, y, BW, BH, reliefGC, shadowGC, f);
-  } else
+  }
+  else
     RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
 
   /* ----------------------------------------------------------------------- */
@@ -265,10 +251,14 @@ void RedrawButton(button_info *b,int clean)
 	  w2+=iw - b->c->num_columns*b->c->ButtonWidth;
 	  h2+=ih - b->c->num_rows*b->c->ButtonHeight;
 
-	  if(w1)XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w1,h);
-	  if(w2)XFillRectangle(Dpy,MyWindow,NormalGC,x1+w-w2,y1,w2,h);
-	  if(h1)XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w,h1);
-	  if(h2)XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
+	  if(w1)
+	    XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w1,h);
+	  if(w2)
+	    XFillRectangle(Dpy,MyWindow,NormalGC,x1+w-w2,y1,w2,h);
+	  if(h1)
+	    XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w,h1);
+	  if(h2)
+	    XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
 	}
       else if(!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
 	      !(b->flags&b_Swallow))

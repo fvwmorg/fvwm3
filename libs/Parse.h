@@ -10,7 +10,7 @@
 #define IsQuote(c) ((c) == '"' || (c) == '\'' || (c) =='`')
 #define IsBlockStart(c) ((c) == '[' || (c) == '{' || (c) == '(')
 #define IsBlockEnd(c,cs) (((c) == ']' && (cs) == '[') || ((c) == '}' && (cs) == '{') || ((c) == ')' && (cs) == '('))
-#define MAX_TOKEN_LENGTH 255
+#define MAX_TOKEN_LENGTH 1023
 
 char *SkipQuote(char *s, const char *qlong, const char *qstart,
 		const char *qend);

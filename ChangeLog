@@ -1,3 +1,17 @@
+1999-05-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.h: more preparations for tear-off menus
+
+	* fvwm/menus.c (MenuInteraction): fixed coredump with double key press
+
+1999-05-18  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Parse.h (MAX_TOKEN_LENGTH): increased MAX_TOKEN_LENGTH from 255
+	to 1023. Was not big enough for ImagePath!
+
+	* fvwm/modconf.c (SendDataToModule): send the MoveThreshold value to
+	modules
+
 1999-05-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.h (common_flags_type): new member has_depressable_border.
@@ -17,6 +31,7 @@ Tue May 18 12:44:11 1999  Steve ROBBINS  <stever@bic.mni.mcgill.ca>
 	bugfix from Lars Hecking.
 
 1999-05-18  Dominik Vogt  <dominik_vogt@gmx.de>
+>>>>>>> 1.419
 
 	* fvwm/menus.c: menus.c should be reentrant now; the MenuRoot struct
 	itself still needs some work, but not today

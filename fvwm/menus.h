@@ -213,13 +213,82 @@ typedef struct MenuItem
  * MENU ROOT STRUCTURES *
  ************************/
 
-
-typedef struct MenuRootCommon
+/* This struct contains the parts of a root menu that are shared among all
+ * copies of the menu */
+typedef struct MenuRootStatic
 {
-} MenuRootCommon;
+    MenuItem *first;	/* first item in menu */
+    MenuItem *last;	/* last item in menu */
+
+    int copies;         /* # of copies, 0 if none except this one */
+
+    char *name;			/* name of root */
+    short height;		/* height of the menu */
+    short width0;               /* width of the menu-left-picture col */
+    short width;		/* width of the menu for 1st col */
+    short width2;		/* width of the menu for 2nd col */
+    short width3;               /* width of the submenu triangle col */
+    short xoffset;              /* the distance between the left border and the
+				 * beginning of the menu items */
+    short items;		/* number of items in the menu */
+    Picture *sidePic;
+    Pixel sideColor;
+    /* Menu Face    */
+    MenuStyle *ms;
+    /* temporary flags, deleted when menu pops down! */
+    struct
+    {
+      unsigned is_background_set : 1; /* is win background set? */
+      unsigned is_in_use : 1;
+      unsigned is_painted : 1;
+      unsigned is_left : 1;   /* menu direction relative to parent menu */
+      unsigned is_right : 1;
+      unsigned is_up : 1;
+      unsigned is_down : 1;
+    } tflags;
+    /* permanent flags */
+    struct
+    {
+      unsigned has_side_color : 1;
+    } flags;
+    struct
+    {
+      char *popup_action;
+      char *popdown_action;
+    } dynamic;
+} MenuRootStatic;
+
+
+/* This struct contains the parts of a root menu that differ in all copies of
+ * the menu */
+typedef struct MenuRootDynamic
+{
+    struct MenuRoot *original;  /* the first copy of the current menu */
+    struct MenuRoot *next;	/* next in list of root menus */
+    struct MenuRoot *continuation; /* continuation of this menu
+				    * (too tall for screen) */
+    /* can get the menu that this popped up through selected->mr when
+       selected is a popup menu item */
+    struct MenuRoot *mrDynamicPrev; /* the menu that popped this up, if any */
+    Window w;			/* the window of the menu */
+    MenuItem *selected;	        /* the selected item in menu */
+    int xanimation;             /* x distance window was moved by animation */
+#ifdef GRADIENT_BUTTONS
+    struct
+    {
+      Pixmap stored;
+      int width;
+      int height;
+      int y;
+    } stored_item;
+#endif
+} MenuRootDynamic;
+
+
 
 typedef struct MenuRoot
 {
+#if 1
     MenuItem *first;	/* first item in menu */
     MenuItem *last;	/* last item in menu */
     MenuItem *selected;	/* the selected item in menu */
@@ -276,6 +345,10 @@ typedef struct MenuRoot
       char *popdown_action;
     } dynamic;
     int xanimation;      /* x distance window was moved by animation     */
+#else
+    MenuRootStatic *s;
+    MenuRootDynamic *d;
+#endif
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
 
@@ -354,7 +427,8 @@ typedef enum {
     MENU_POPUP,
     MENU_POPDOWN,
     MENU_SELECTED,
-    MENU_NEWITEM
+    MENU_NEWITEM,
+    MENU_TEAR_OFF
 } MenuStatus;
 
 

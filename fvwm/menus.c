@@ -465,7 +465,9 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *event,MenuItem **pmiCurrent,
   /* handle double-keypress */
   if (pdkp->timestamp &&
       lastTimestamp-pdkp->timestamp < Menus.DoubleClickTime &&
-      event->xkey.state == pdkp->keystate && event->xkey.keycode == pdkp->keycode){
+      event->xkey.state == pdkp->keystate &&
+      event->xkey.keycode == pdkp->keycode)
+  {
     *pmiCurrent = NULL;
     return MENU_SELECTED;
   }
@@ -1087,7 +1089,7 @@ static MenuStatus MenuInteraction(MenuParameters *pmp, double_keypress *pdkp,
        pmp->menu->name,mi->item); */
     /* save action to execute so that the menu may be destroyed now */
     if (pmp->ret_paction)
-      *pmp->ret_paction = strdup(mi->action);
+      *pmp->ret_paction = (mi) ? strdup(mi->action) : NULL;
     retval = MENU_ADD_BUTTON_IF(fKeyPress,MENU_DONE);
     if (pmp->ret_paction && *pmp->ret_paction && mi) {
       if (IS_MENU_ITEM(mi))

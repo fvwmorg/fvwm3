@@ -209,6 +209,7 @@ extern int fd[];
 extern int screen;
 extern int new_desk;
 extern GC  NormalGC;
+extern GC  ShadowGC;
 extern int x,y,xneg,yneg,w,h; /* Dirty... */
 
 /* ---------------------------------- misc --------------------------------- */

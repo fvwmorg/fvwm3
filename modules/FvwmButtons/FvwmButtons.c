@@ -141,6 +141,8 @@ char *imagePath = NULL;
 
 Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
 GC  NormalGC;
+/* needed for relief drawing only */
+GC  ShadowGC;
 int Width,Height;
 
 int x= -30000,y= -30000,w= -1,h= -1,gravity = NorthWestGravity;
@@ -419,7 +421,7 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 
   if (trans_gc == NULL) {
     XGCValues gcv;
-  
+
     /* create a GC for doing transparency */
     trans_gc = XCreateGC(Dpy,pmap_mask,(unsigned long)0,&gcv);
   }
@@ -568,7 +570,7 @@ int main(int argc, char **argv)
   G->create_reliefGC = True;
   G->create_shadowGC = True;
   InitGraphics(Dpy, G);
-  
+
   x_fd=XConnectionNumber(Dpy);
   fd_width=GetFdWidth();
 
@@ -1053,12 +1055,17 @@ void RedrawWindow(button_info *b)
   int button;
   XEvent dummy;
   button_info *ub;
+  XGCValues gcv;
+  unsigned long gcm=0;
+  static Bool initial_redraw = True;
+  Bool clear_buttons;
 
   if(ready<1)
     return;
 
   /* Flush expose events */
-  while (XCheckTypedWindowEvent (Dpy, MyWindow, Expose, &dummy));
+  while (XCheckTypedWindowEvent (Dpy, MyWindow, Expose, &dummy))
+    ;
 
   if(b)
     {
@@ -1066,7 +1073,24 @@ void RedrawWindow(button_info *b)
       return;
     }
 
-  button=-1;ub=UberButton;
+  /* Clean out the entire window first */
+  if (initial_redraw == False)
+  {
+    gcm = GCBackground;
+    gcv.foreground = fore_pix;
+    gcv.background = back_pix;
+    XChangeGC(Dpy,NormalGC,gcm,&gcv);
+    XFillRectangle(Dpy,MyWindow,NormalGC,0,0,Width,Height);
+    clear_buttons = False;
+  }
+  else
+  {
+    initial_redraw = False;
+    clear_buttons = True;
+  }
+
+  button=-1;
+  ub=UberButton;
   while(NextButton(&ub,&b,&button,1))
     RedrawButton(b,1);
 }
@@ -1451,6 +1475,9 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
       gcm |= GCFont;
     }
   NormalGC = XCreateGC(Dpy, MyWindow, gcm, &gcv);
+  gcv.foreground = shadow_pix;
+  gcv.background = fore_pix;
+  ShadowGC = XCreateGC(Dpy, MyWindow, gcm, &gcv);
 
   free(myclasshints.res_class);
   free(myclasshints.res_name);

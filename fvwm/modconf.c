@@ -178,7 +178,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *ImagePath = GetImagePath();
 
   SendLook(*Module);
-  
+
   if (ImagePath && strlen(ImagePath))
   {
     message=safemalloc(strlen(ImagePath)+12);
@@ -197,7 +197,9 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   sprintf(msg2,"ClickTime %d\n", (Scr.ClickTime < 0) ?
 	  -Scr.ClickTime : Scr.ClickTime);
   SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
-  
+  sprintf(msg2,"MoveThreshold %d\n", Scr.MoveThreshold);
+  SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
+
   t = modlistroot;
   while(t != NULL)
   {
