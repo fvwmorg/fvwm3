@@ -2,6 +2,8 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
+last updated 12/07/98 as of beta release 2.1.4.
+
 INDEX
 
         1) What does FVWM stand for?
@@ -45,7 +47,9 @@ INDEX
        21) I heard about this FvwmFileMgr module.  Where can I find it?
        22) I'd really like {NeXT, Win95, etc} look and feel.  Are you
            going to support that?
-       23) Imake didn't come with my machine.  How do I build FVWM?
+
+       23) (Question gone)
+
        24) How do I create/submit/apply patches?
        25) I'd like to bind a key to paste/use the current selection,
            how can I do that?
@@ -63,9 +67,9 @@ INDEX
            under MWM or OLWM.  What's going on?
        32) I'm want to use FVWM, but I don't have root access on my
            machine.  Can I still install and run it?
-       33) I'm compiling under SunOS/Solaris with gcc, but it's
-           complaining that "Language 'F' is unknown".  What's the
-           problem?
+
+       33) (Question gone)
+
        34) When will fvwm release X.Y.Z be ready?
        35) I'm a sysadmin, and if I wanted to force fvwm to read a
            system rc file and then the user's rc file, how would I do
@@ -73,8 +77,9 @@ INDEX
        36) I'm a sysadmin, and if I wanted fvwm to look for all of
            it's rc files in a hidden directory, say ~/.fvwm, much like
            CDE does, how could I do that?
-       37) When trying to install under Solaris, I'm getting errors.
-           Why?
+
+       37) (question gone)
+
        38) When having FvwmButtons swallow an app, is it possible to
            have button presses assigned to actions as well?  For
            instance, I'd like to swallow xload and have a button press
@@ -138,31 +143,9 @@ A: New main distribution site (official + beta code):
 
 A: Yup.  The official site is currently:
 
-        http://www.hpc.uh.edu/fvwm/
+        http://fvwm.math.uh.edu/fvwm/
 
-   And there are others.  Try the following (note - the first one has
-   changed recently):
-
-        http://www.cs.hmc.edu/~tkelly/docs/proj/fvwm.html
-        http://www.cobaltgroup.com/~roland/fvwm/
-        http://xenon.chem.uidaho.edu/~fvwm/
-        http://namu19.gwdg.de/fvwm/fvwm.html
-        http://mars.superlink.net/user/ekahler/fvwm.html
-
-   There are pointers to all of these (and maybe more) from the
-   official fvwm WWW site.
-
-   Here's an FVWM related one, for 'The Dotfile Generator' which can
-   be used to create and customize .fvwmrc/.fvwm2rc files (and .emacs
-   and .tcshrc files too).  Some people have found it a handy tool:
-
-        http://www.imada.ou.dk/~blackie/dotfile/
-
-   Here' another related one for TKGoodStuff, which can be compiled to
-   be an FVWM module (and is based on the idea of GoodStuff or
-   FvwmButtons) but can be used with any window manager:
-
-        http://www-personal.umich.edu/~markcrim/tkgoodstuff/
+   There are links on the official site to other related fvwm sites.
 
 ----------------------------------------------------------------------
 
@@ -203,7 +186,7 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    maintainer for inspection and possible inclusion in the
    distribution.  The current maintainer is:
 
-   Brady Montz <bradym@cs.arizona.edu>  	
+   the fvwm-workers list.  See our web page for instructions.
 
 
    Instructions
@@ -277,7 +260,7 @@ A: Start with a new one or convert your old one.  This can be done by
    CirculateSkipIcons                         Style (CirculateSkipIcon)
    ClickTime delay                            <-
    ClickToFocus                               Style (ClickToFocus)
-   Cursor  cursor_num cursor_type             (obsoleted)
+   Cursor  cursor_num cursor_type             CursorStyle context cursornum
    DecorateTransients                         Style (DecorateTransient)
    DeskTopScale Scale                         (obsoleted, use FvwmPager)
    DeskTopSize HorizontalxVertical            <-
@@ -311,7 +294,7 @@ A: Start with a new one or convert your old one.  This can be done by
    NoPPosition                                Style (NoPPosition)
    NoTitle windowname                         Style (NoTitle)
    OpaqueMove percentage                      OpaqueMoveSize percentage
-   OpaqueResize                               (obsoleted, use FvwmPager)
+   OpaqueResize                               (obsoleted)
    Pager  X_Location Y_Location               (obsoleted, use FvwmPager)
    PagerForeColor colorname                   (obsoleted, use FvwmPager)
    PagerBackColor colorname                   (obsoleted, use FvwmPager)
@@ -397,7 +380,7 @@ A: Start with a new one or convert your old one.  This can be done by
 
 A: First, check your rc file and your .Xdefaults to make sure that
    something blatantly obvious in there isn't causing the problem,
-   plus *PLEASE PLEASE PLEASE* check the FAQ, BUGS, TO-DO, and man
+   plus *PLEASE PLEASE PLEASE* check the FAQ, BUGS, TODO, and man
    pages (i.e. RTFM).  Perhaps even the official WWW page and the
    mailing list archives (which have a search facility) stored there.
 
@@ -416,9 +399,7 @@ A: First, check your rc file and your .Xdefaults to make sure that
         - What version of X11 are you running under, and is it an MIT
           server or a vendor specific server (ex the OpenWindow X
           server under SunOS)
-        - What exact version of FVWM you are running (note that this
-          is a number like 2.0.43, not 2.4, and the distinction is
-          rather important)
+        - What exact version of FVWM you are running.
         - How was FVWM compiled (compiler & version, options, etc)
         - What settings to you have in your .fvwm2rc that may be
           pertinent
@@ -476,13 +457,15 @@ A: This may be the biggest RTFM answerable question that we get on the
 A: It was actually part of the M4 preprocessing (see above).  You can
    use the 'Read' builtin to get the same effect, or use the M4
    module.
-
 ----------------------------------------------------------------------
 
 12) I really like the horizontal bars that appear on the title bars of
     sticky windows.  Can I get those on other windows as well?
 
 A: Yes. Put the line "GlobalOpts StipledTitles" in your .fvwm2rc.
+   Note that this is a purposely undocumented feature since it
+   will eventually be made a Style option.  If you use this,
+   it is guaranteed to stop working some day.
 
 ----------------------------------------------------------------------
 
@@ -496,7 +479,7 @@ A: You need to have the Xpm (X Pixmap) library on your system.  You
    at its home page http://www.inria.fr/koala/lehors/xpm.html) to
    compile and install it by hand, or you can find some "standard"
    distribution for your particular flavor of OS and install that.  Or
-   you can compile fvwm without Xpm support (see the configure.h file)
+   you can compile fvwm without Xpm support (try ./configure --help)
    and lose out on all the pretty color icons.
 
 ----------------------------------------------------------------------
@@ -520,7 +503,7 @@ A: Rob put it in there for the following reason:
    Rob> they get lots of expose events, and they redraw a lot, many
    Rob> times unnecessarily, because they soon get hidden again. I
    Rob> thought that the single black window covering everything would
-   Rob> keep these windows from getting unneede expose events, and
+   Rob> keep these windows from getting unneeded expose events, and
    Rob> minimize redraws.
 
    Which makes a lot of sense.
@@ -549,18 +532,18 @@ A: People are always requesting or suggestion new features (many of
 
    So if you have a suggestion (or a patch), please think of a way to
    make it as small and generic as possible if you feel it belongs in
-   the main module.  Also, take a look in the TO-DO list and see if it
+   the main module.  Also, take a look in the TODO list and see if it
    isn't already in there.
 
-   Bear in mind that I make no guarantees that I'll add any requested
+   Bear in mind that we make no guarantees that we'll add any requested
    feature or apply any submitted patches to the official version, but
-   please don't let this dissuade you from submitting them.  I like to
-   get new ideas and I'm always curious to see how someone would
-   implement a given feature, even if I never plan to put it in fvwm.
-   Also, I may choose to reimplement any patches submitted, which may
+   please don't let this dissuade you from submitting them.  We like to
+   get new ideas and we're always curious to see how someone would
+   implement a given feature, even if we never plan to put it in fvwm.
+   Also, we may choose to reimplement any patches submitted, which may
    change the syntax, functionality, etc.  Please don't take offense
-   from that, as I mean no offense and I generally have a good reason
-   (at least by my way of thinking) for my actions...
+   from that, as we mean no offense and we generally have a good reason
+   (at least by our way of thinking) for our actions...
 
 ----------------------------------------------------------------------
 
@@ -647,67 +630,8 @@ A: The FvwmFileMgr module dissappeared because a file manager doesn't
 22) I'd really like {OpenWindows, NeXT, Win95, Mac, etc} look and
     feel.  Are you going to support that?
 
-A: Nope!  Generically applicable features might appear, but no work
-   will be specifically added to FVWM just to make it look or feel
-   specifically like another window manager or window manager like
-   product.  Future enhancements may appear that allow you to alter
-   the appearance to get similiar to other window managers though.
-
-----------------------------------------------------------------------
-
-23) Imake didn't come with my machine.  How do I build FVWM?
-
-A: This is a problem with some IBM AIX and HP HP-UX installations.
-   You really have to have Imake currently to build FVWM.  So, you'll
-   either have to find out how to install Imake from your install
-   media (it does come on the AIX install media), or get it from from
-   MIT and install it yourself, or wait until I convert over to using
-   GNU's AutoConf, which I would like to do someday...
-
-   Also checkout the following URL:
-
-            http://www.primate.wisc.edu/software/imake-stuff/
-
-   which contains lots of Imake info, hints, tips, fixes, etc.
-
-   For HPs, the following note was sent to the FVWM mailing list that
-   may be helpfull:
-
-   ============================================================
-
-   >>   I've been using and compiling fvwm on HP-UX since version
-   >>   0.99 something.  I've always used HP's C compiler and make.
-   >>   I can't remember when was the last time it didn't compile out
-   >>   of the box.
-   >
-   > What do you do for imake?
-   >
-
-     (-: Not an official HP response or advertisement :-)
-
-     Imake used to be available on a HP ftp server accessible from
-     the "outside" (hpcvaaz.cv.hp.com).  The current imake I have,
-     may or not have been obtained there, as I've installed a few
-     different versions from a few different (HP) places, some that
-     work on my system, some that don't, that I've lost track.
-
-     Same goes for Xaw and Xmu, which along with imake, HP doesn't
-     ship on 9.0x, and rather points to public sites.  This may have
-     changed at 10.x, but I'm not sure what the "official line" is.
-     A good place to get HP-UX stuff is at the archives maintained by
-     the University of Liverpool, which are mirrored at the
-     University of Wisconsin, and a few other places,
-     http://hpux.cae.wisc.edu, http://hpux.csc.liv.ac.uk, etc.
-
-
-   > My HPUX 9.03 doesn't have it, I had to install X11R5. Is this
-   > normal for HPUX?
-
-     X11R5 development is probably an optional product, as is the
-     "real C" compiler, for example.  X11R5 run time libraries is
-     probably part of the core HP-UX, as is the brain dead C compiler
-     used to regen the kernel.
-   ============================================================
+A: This is not our primary mission, but we think fvwm2 does a pretty
+   good job of producing these appearances.
 
 ----------------------------------------------------------------------
 
@@ -820,9 +744,6 @@ A: Some people find this annoying, but let me say that I did that for
           versions, since they rarely mention exactly what version
           they are running.
 
-   BTW - If you want to compile it as just 'fvwm' and all that, there
-   is an option for that in the Fvwm.tmpl file.
-
 ----------------------------------------------------------------------
 
 29) Every time I update my install, my currently running fvwm session
@@ -891,52 +812,23 @@ A: Oh yes.  FVWM doesn't need to be "properly" installed by root to be
 
 ----------------------------------------------------------------------
 
-33) I'm compiling under SunOS/Solaris with gcc, but it's complaining
-    that "Language 'F' is unknown".  What's the problem?
-
-A: Your Imake setup is not right for using gcc.  It's trying to use
-   some flags for the native compilers that gcc interprets
-   differently.  Get your system admin to "fix" your setup for use
-   with gcc, or try using the FvwmCompiler and FvwmCompilerFlags
-   defines in the Fvwm.tmpl file to get it to work for you.
-
-   Also, check out the URL mentioned in #23 above - I believe there is
-   a fix for this located there.
-
-----------------------------------------------------------------------
-
 34) When will fvwm release X.Y.Z be ready?
 
-A: This is always a difficult question to answer.  I work on fvwm at
-   home in my rather nebulous and semi-mythical "spare time", therefore
-   I usually can't provide an exact answer for this, since my time
-   estimates for it are often wrong/changing.
+A: This is always a difficult question to answer. We work on fvwm on
+   a volunteer basis.  Things get done when we have the time.
 
-   "Real Soon Now" is one of my favorite responses when they are
-   getting close, but then, who is to say what "close" means? :)
-
-   Never fear though, as they will keep coming...  I do try to post
-   periodic status reports to the mailing lists, so you could search
-   the archives at any point in time to see if I've made any reports
-   lately.
+   Joining the fvwm-workers mailing list might prove instructive.
 
 ----------------------------------------------------------------------
 
 35) I'm a sysadmin, and if I wanted to force fvwm to read a system rc
     file and then the user's rc file, how would I do that?
 
-A: Well, you could probably do something like these:
+A: Well, you could probably do something like this:
 
         - have the first line of everyone's .fvwm2rc be 'Read
           global.fvwm2rc' and have global.fvwm2rc reside in your
-          defined FvwmDir (in Fvwm.tmpl).
-        - change FvwmRc (in Fvwm.tmpl) to be something odd, like
-          .FVWM2RC, but don't tell anyone, then put a .FVWM2RC in the
-          FvwmDir and have the last line of it be 'Read .fvwm2rc'.
-          ~/.FVWM2RC wouldn't be found so it would look for the system
-          one, which would then load the user's one.
-
-   and I'm sure there are more ways.
+          defined "sysconfdir" (from the ./configure step).
 
 ----------------------------------------------------------------------
 
@@ -945,27 +837,19 @@ A: Well, you could probably do something like these:
     could I do that?
 
 A: This could be probably done similarily to #35 above.  The system rc
-   file in the FvwmDir could do something like:
+   file in the "sysconfdir" could do something like:
 
-        Read .fvwm/Init
-        Read .fvwm/Decors
-        Read .fvwm/Styles
-        Read .fvwm/Functions
-        Read .fvwm/Menus
-        Read .fvwm/Keys
-        Read .fvwm/Modules
+        Read .fvwm/Init      quiet
+        Read .fvwm/Decors    quiet
+        Read .fvwm/Styles    quiet
+        Read .fvwm/Functions quiet
+        Read .fvwm/Menus     quiet
+        Read .fvwm/Keys      quiet
+        Read .fvwm/Modules   quiet
 
    or whatever breakdown you deemed appropriate, and you would have
-   default versions of these in {FvwmDir}/.fvwm/ that it could find in
-   case the user was missing one of them.
-
-----------------------------------------------------------------------
-
-37) When trying to install under Solaris, I'm getting errors.  Why?
-
-A: You need to use a certain version of 'install', specifically the
-   one in /usr/ucb.  Make sure that /usr/ucb is in your path ahead of
-   the openwindows bin directory (and in front of /etc and /usr/sbin).
+   default versions of these in {"sysconfdir"}/.fvwm/ that it could find in
+   case the user was missing one of them and you wanted to supply defaults.
 
 ----------------------------------------------------------------------
 
