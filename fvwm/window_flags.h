@@ -369,10 +369,10 @@
 #define IS_TRANSIENT(fw)       ((fw)->flags.is_transient)
 #define SET_TRANSIENT(fw,x)    (fw)->flags.is_transient = !!(x)
 #define SETM_TRANSIENT(fw,x)   (fw)->flag_mask.is_transient = !!(x)
-#define IS_DEICONIFY_PENDING(fw)     ((fw)->flags.is_deiconify_pending)
-#define SET_DEICONIFY_PENDING(fw,x)  (fw)->flags.is_deiconify_pending = !!(x)
-#define SETM_DEICONIFY_PENDING(fw,x) \
-	  (fw)->flag_mask.is_deiconify_pending = !!(x)
+#define IS_ICONIFY_PENDING(fw) ((fw)->flags.is_iconify_pending)
+#define SET_ICONIFY_PENDING(fw,x)  (fw)->flags.is_iconify_pending = !!(x)
+#define SETM_ICONIFY_PENDING(fw,x) \
+	  (fw)->flag_mask.is_iconify_pending = !!(x)
 #define DO_ICONIFY_AFTER_MAP(fw)     ((fw)->flags.do_iconify_after_map)
 #define SET_ICONIFY_AFTER_MAP(fw,x)  (fw)->flags.do_iconify_after_map = !!(x)
 #define SETM_ICONIFY_AFTER_MAP(fw,x) \

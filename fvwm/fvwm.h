@@ -352,9 +352,9 @@ typedef struct
 	unsigned has_title : 1;
 	/* ChangeDecor was used for window */
 	unsigned is_decor_changed : 1;
-	/* Sent an XUnmapWindow for deiconifying, but didn't receive a
+	/* Sent an XUnmapWindow for iconifying, but didn't receive an
 	 * UnmapNotify yet.*/
-	unsigned is_deiconify_pending : 1;
+	unsigned is_iconify_pending : 1;
 	/* window had the focus when the desk was switched. set if the window
 	 * was mapped and got focused but the focus change was not announced
 	 * to the modules yet. */

@@ -263,27 +263,27 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
     unsigned int newHeight = fw->icon_g.picture_w_g.height;
     Boolean resize = False;
 
-    if(newWidth < fw->min_icon_width) {
+    if (newWidth < fw->min_icon_width) {
       newWidth = fw->min_icon_width;
       resize = True;
     } else
 
-    if(newWidth > fw->max_icon_width) {
+    if (newWidth > fw->max_icon_width) {
       newWidth = fw->max_icon_width;
       resize = True;
     }
 
-    if(newHeight < fw->min_icon_height) {
+    if (newHeight < fw->min_icon_height) {
       newHeight = fw->min_icon_height;
       resize = True;
     } else
 
-    if(newHeight > fw->max_icon_height) {
+    if (newHeight > fw->max_icon_height) {
       newHeight = fw->max_icon_height;
       resize = True;
     }
 
-    if(resize) {
+    if (resize) {
       ICON_DBG((stderr,"ciw: Changing icon (%s) from %dx%d to %dx%d\n",
 	fw->name,
 	fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
@@ -296,7 +296,7 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 	(IS_PIXMAP_OURS(fw)));
 
       /* Resize the icon mask Pixmap if one was defined */
-      if(fw->icon_maskPixmap) {
+      if (fw->icon_maskPixmap) {
 	SetIconPixmapSize(&(fw->icon_maskPixmap),
 	  fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
 	  1, newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
@@ -377,7 +377,9 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
   old_icon_w = FW_W_ICON_TITLE(fw);
   old_icon_pixmap_w = (IS_ICON_OURS(fw)) ? FW_W_ICON_PIXMAP(fw) : None;
   if (!IS_ICON_OURS(fw) && FW_W_ICON_PIXMAP(fw))
+  {
     XUnmapWindow(dpy, FW_W_ICON_PIXMAP(fw));
+  }
   SET_ICON_OURS(fw, 1);
   SET_PIXMAP_OURS(fw, 0);
   SET_ICON_SHAPED(fw, 0);
@@ -958,11 +960,11 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
     {
       LowerWindow(fw);
       AutoPlaceIcon(fw, NULL);
-      if(fw->Desk == Scr.CurrentDesk)
+      if (fw->Desk == Scr.CurrentDesk)
       {
-	if(FW_W_ICON_TITLE(fw))
+	if (FW_W_ICON_TITLE(fw))
 	  XMapWindow(dpy, FW_W_ICON_TITLE(fw));
-	if(FW_W_ICON_PIXMAP(fw) != None)
+	if (FW_W_ICON_PIXMAP(fw) != None)
 	  XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
       }
     }
@@ -1026,9 +1028,9 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
     /*Also, if its a stickyWindow, put it on the current page! */
     new_x = t->frame_g.x % Scr.MyDisplayWidth;
     new_y = t->frame_g.y % Scr.MyDisplayHeight;
-    if(new_x + t->frame_g.width <= 0)
+    if (new_x + t->frame_g.width <= 0)
       new_x += Scr.MyDisplayWidth;
-    if(new_y + t->frame_g.height <= 0)
+    if (new_y + t->frame_g.height <= 0)
       new_y += Scr.MyDisplayHeight;
     frame_setup_window(
 	    t, new_x, new_y, t->frame_g.width, t->frame_g.height, False);
@@ -1341,17 +1343,17 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
 		&&(loc_ok == True || loc_ok_wrong_screen2))
 	  {
 	    /* test overlap */
-	    if(test_fw->Desk == t->Desk)
+	    if (test_fw->Desk == t->Desk)
 	    {
 	      rectangle g;
 
-	      if((IS_ICONIFIED(test_fw)) &&
+	      if ((IS_ICONIFIED(test_fw)) &&
 		 (!IS_TRANSIENT(test_fw) ||
 		  !IS_ICONIFIED_BY_PARENT(test_fw)) &&
 		 (FW_W_ICON_TITLE(test_fw)||FW_W_ICON_PIXMAP(test_fw)) &&
 		 (test_fw != t)) {
 		get_icon_geometry(test_fw, &g);
-		if((g.x<(real_x+width+MIN_ICON_BOX_DIST))&&
+		if ((g.x<(real_x+width+MIN_ICON_BOX_DIST))&&
 		   ((g.x+g.width+MIN_ICON_BOX_DIST) > real_x)&&
 		   (g.y<(real_y+height+MIN_ICON_BOX_DIST))&&
 		   ((g.y+g.height + MIN_ICON_BOX_DIST)>real_y))
@@ -1594,164 +1596,184 @@ static void GetIconBitmap(FvwmWindow *fw)
  ***********************************************************************/
 void DeIconify(FvwmWindow *fw)
 {
-  FvwmWindow *t,*tmp;
-  FvwmWindow *sf = get_focus_window();
-  rectangle icon_rect;
-  XWindowAttributes winattrs = {0};
+	FvwmWindow *t,*tmp;
+	FvwmWindow *sf = get_focus_window();
+	rectangle icon_rect;
+	XWindowAttributes winattrs = {0};
 
-  if(!fw)
-    return;
-
-  if (!XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
-  {
-    return;
-  }
-  /* make sure fw->flags.is_map_pending is OK */
-  if (winattrs.map_state == IsViewable && IS_MAP_PENDING(fw))
-  {
-    SET_MAP_PENDING(fw, 0);
-  }
-  else if (IS_MAP_PENDING(fw))
-  {
-    /* final state: de-iconified */
-    SET_ICONIFY_AFTER_MAP(fw, 0);
-    return;
-  }
-  while (IS_ICONIFIED_BY_PARENT(fw))
-  {
-    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-    {
-      if (t != fw && FW_W_TRANSIENTFOR(fw) == FW_W(t))
-	fw = t;
-    }
-  }
-
-  /* AS dje  RaiseWindow(fw); */
-
-  mark_transient_subtree(fw, MARK_ALL_LAYERS, MARK_ALL, False, True);
-  if (fw == sf)
-  {
-    /* take away the focus before mapping */
-    DeleteFocus(False, True);
-  }
-  /* now de-iconify transients */
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-  {
-    if (t == fw || IS_IN_TRANSIENT_SUBTREE(t))
-    {
-      SET_IN_TRANSIENT_SUBTREE(t, 0);
-      SET_MAPPED(t, 1);
-      SET_ICONIFIED_BY_PARENT(t, 0);
-      if(Scr.Hilite == t)
-      {
-	border_draw_decorations(
-		t, PART_ALL, False, True, CLEAR_ALL, NULL, NULL);
-      }
-
-      /* AS stuff starts here dje */
-      if (FW_W_ICON_PIXMAP(t))
-	XUnmapWindow(dpy, FW_W_ICON_PIXMAP(t));
-      if (FW_W_ICON_TITLE(t))
-	XUnmapWindow(dpy, FW_W_ICON_TITLE(t));
-      XFlush(dpy);
-      /* End AS */
-      XMapWindow(dpy, FW_W(t));
-      if (t->Desk == Scr.CurrentDesk)
-      {
-	rectangle r;
-
-	get_icon_geometry(t, &r);
-	/* update absoluthe geometry in case the icon was moved over a page
-	 * boundary; the move code already takes care of keeping the frame
-	 * geometry up to date */
-	update_absolute_geometry(t);
-	if (IsRectangleOnThisPage(&r, t->Desk) &&
-	    !IsRectangleOnThisPage(&(t->frame_g), t->Desk))
+	if (!fw)
 	{
-	  /* Make sure we keep it on screen when de-iconifying. */
-	  t->frame_g.x -=
-	    truncate_to_multiple(t->frame_g.x,Scr.MyDisplayWidth);
-	  t->frame_g.y -=
-	    truncate_to_multiple(t->frame_g.y,Scr.MyDisplayHeight);
-	  XMoveWindow(dpy, FW_W_FRAME(t), t->frame_g.x, t->frame_g.y);
-	  update_absolute_geometry(t);
-	  maximize_adjust_offset(t);
+		return;
 	}
-      }
-      /* domivogt (1-Mar-2000): The next block is a hack to prevent animation
-       * if the window has an icon, but neither a pixmap nor a title. */
-      if (HAS_NO_ICON_TITLE(t) && FW_W_ICON_PIXMAP(t) == None)
-      {
-	memset(&fw->icon_g, 0, sizeof(fw->icon_g));
-      }
-      get_icon_geometry(t, &icon_rect);
-      /* if this fails it does not overwrite icon_rect */
-      EWMH_GetIconGeometry(t, &icon_rect);
-      if (t == fw)
-      {
-	BroadcastPacket(M_DEICONIFY, 11,
-			FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t,
-			icon_rect.x, icon_rect.y,
-			icon_rect.width, icon_rect.height,
-			t->frame_g.x, t->frame_g.y,
-			t->frame_g.width, t->frame_g.height);
-      }
-      else
-      {
-	BroadcastPacket(M_DEICONIFY, 7,
-			FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t,
-			icon_rect.x, icon_rect.y,
-			icon_rect.width, icon_rect.height);
-      }
-      if(t->Desk == Scr.CurrentDesk)
-      {
-	XMapWindow(dpy, FW_W_FRAME(t));
-	SET_MAP_PENDING(t, 1);
-      }
-      XMapWindow(dpy, FW_W_PARENT(t));
-      SetMapStateProp(t, NormalState);
-      SET_ICONIFIED(t, 0);
-      SET_ICON_UNMAPPED(t, 0);
-      SET_ICON_ENTERED(t, 0);
-      /* Need to make sure the border is colored correctly,
-       * in case it was stuck or unstuck while iconified. */
-      tmp = Scr.Hilite;
-      Scr.Hilite = t;
-      border_draw_decorations(
-	      t, PART_ALL, (sf == t) ? True : False, True, CLEAR_ALL, NULL,
-	      NULL);
-      Scr.Hilite = tmp;
-    }
-  }
+	if (!XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
+	{
+		return;
+	}
+
+	/* make sure fw->flags.is_map_pending is OK */
+	if (winattrs.map_state == IsViewable && IS_MAP_PENDING(fw))
+	{
+		SET_MAP_PENDING(fw, 0);
+	}
+	else if (IS_MAP_PENDING(fw))
+	{
+		/* final state: de-iconified */
+		SET_ICONIFY_AFTER_MAP(fw, 0);
+		return;
+	}
+	while (IS_ICONIFIED_BY_PARENT(fw))
+	{
+		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+		{
+			if (t != fw && FW_W_TRANSIENTFOR(fw) == FW_W(t))
+			{
+				fw = t;
+			}
+		}
+	}
+
+	/* AS dje  RaiseWindow(fw); */
+
+	mark_transient_subtree(fw, MARK_ALL_LAYERS, MARK_ALL, False, True);
+	if (fw == sf)
+	{
+		/* take away the focus before mapping */
+		DeleteFocus(False, True);
+	}
+	/* now de-iconify transients */
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		if (t == fw || IS_IN_TRANSIENT_SUBTREE(t))
+		{
+			SET_IN_TRANSIENT_SUBTREE(t, 0);
+			SET_MAPPED(t, 1);
+			SET_ICONIFIED_BY_PARENT(t, 0);
+			if (Scr.Hilite == t)
+			{
+				border_draw_decorations(
+					t, PART_ALL, False, True, CLEAR_ALL,
+					NULL, NULL);
+			}
+
+			/* AS stuff starts here dje */
+			if (FW_W_ICON_PIXMAP(t))
+			{
+				XUnmapWindow(dpy, FW_W_ICON_PIXMAP(t));
+			}
+			if (FW_W_ICON_TITLE(t))
+			{
+				XUnmapWindow(dpy, FW_W_ICON_TITLE(t));
+			}
+			XFlush(dpy);
+			/* End AS */
+			XMapWindow(dpy, FW_W(t));
+			if (t->Desk == Scr.CurrentDesk)
+			{
+				rectangle r;
+
+				get_icon_geometry(t, &r);
+				/* update absoluthe geometry in case the icon
+				 * was moved over a page boundary; the move
+				 * code already takes care of keeping the frame
+				 * geometry up to date */
+				update_absolute_geometry(t);
+				if (IsRectangleOnThisPage(&r, t->Desk) &&
+				    !IsRectangleOnThisPage(
+					    &(t->frame_g), t->Desk))
+				{
+					/* Make sure we keep it on screen when
+					 * de-iconifying. */
+					t->frame_g.x -=
+						truncate_to_multiple(
+							t->frame_g.x,
+							Scr.MyDisplayWidth);
+					t->frame_g.y -=
+						truncate_to_multiple(
+							t->frame_g.y,
+							Scr.MyDisplayHeight);
+					XMoveWindow(
+						dpy, FW_W_FRAME(t),
+						t->frame_g.x, t->frame_g.y);
+					update_absolute_geometry(t);
+					maximize_adjust_offset(t);
+				}
+			}
+			/* domivogt (1-Mar-2000): The next block is a hack to
+			 * prevent animation if the window has an icon, but
+			 * neither a pixmap nor a title. */
+			if (HAS_NO_ICON_TITLE(t) && FW_W_ICON_PIXMAP(t) == None)
+			{
+				memset(&fw->icon_g, 0, sizeof(fw->icon_g));
+			}
+			get_icon_geometry(t, &icon_rect);
+			/* if this fails it does not overwrite icon_rect */
+			EWMH_GetIconGeometry(t, &icon_rect);
+			if (t == fw)
+			{
+				BroadcastPacket(
+					M_DEICONIFY, 11, FW_W(t), FW_W_FRAME(t),
+					(unsigned long)t, icon_rect.x,
+					icon_rect.y, icon_rect.width,
+					icon_rect.height, t->frame_g.x,
+					t->frame_g.y, t->frame_g.width,
+					t->frame_g.height);
+			}
+			else
+			{
+				BroadcastPacket(
+					M_DEICONIFY, 7, FW_W(t), FW_W_FRAME(t),
+					(unsigned long)t, icon_rect.x,
+					icon_rect.y, icon_rect.width,
+					icon_rect.height);
+			}
+			XMapWindow(dpy, FW_W_PARENT(t));
+			if (t->Desk == Scr.CurrentDesk)
+			{
+				XMapWindow(dpy, FW_W_FRAME(t));
+				SET_MAP_PENDING(t, 1);
+			}
+			SetMapStateProp(t, NormalState);
+			SET_ICONIFIED(t, 0);
+			SET_ICON_UNMAPPED(t, 0);
+			SET_ICON_ENTERED(t, 0);
+			/* Need to make sure the border is colored correctly,
+			 * in case it was stuck or unstuck while iconified. */
+			tmp = Scr.Hilite;
+			Scr.Hilite = t;
+			border_draw_decorations(
+				t, PART_ALL, (sf == t) ? True : False, True,
+				CLEAR_ALL, NULL, NULL);
+			Scr.Hilite = tmp;
+		}
+	}
 
 #if 1
-  RaiseWindow(fw); /* moved dje */
+	RaiseWindow(fw); /* moved dje */
 #endif
-  if (sf)
-  {
-    focus_grab_buttons(sf, True);
-  }
-  if (sf == fw)
-  {
-    /* update the focus to make sure the application knows its state */
-    if (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw))
-    {
-      SetFocusWindow(fw, False, True);
-    }
-  }
-  else if (HAS_CLICK_FOCUS(fw))
-  {
+	if (sf)
+	{
+		focus_grab_buttons(sf, True);
+	}
+	if (sf == fw)
+	{
+		/* update the focus to make sure the application knows its
+		 * state */
+		if (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw))
+		{
+			SetFocusWindow(fw, False, True);
+		}
+	}
+	else if (HAS_CLICK_FOCUS(fw))
+	{
 #if 0
-    FocusOn(fw, TRUE, "");
+		FocusOn(fw, TRUE, "");
 #else
-    SetFocusWindow(fw, True, True);
+		SetFocusWindow(fw, True, True);
 #endif
-  }
-  GNOME_SetWinArea(fw);
+	}
+	GNOME_SetWinArea(fw);
 
-  return;
+	return;
 }
 
 
@@ -1762,194 +1784,201 @@ void DeIconify(FvwmWindow *fw)
  ****************************************************************************/
 void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 {
-  FvwmWindow *t;
-  FvwmWindow *sf;
-  XWindowAttributes winattrs = {0};
-  unsigned long eventMask;
-  rectangle icon_rect;
+	FvwmWindow *t;
+	FvwmWindow *sf;
+	XWindowAttributes winattrs = {0};
+	unsigned long eventMask;
+	rectangle icon_rect;
 
-  if(!fw)
-    return;
+	if (!fw)
+	{
+		return;
+	}
+	if (!XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
+	{
+		return;
+	}
 
-  if (!XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
-  {
-    return;
-  }
+	/* make sure fw->flags.is_map_pending is OK */
+	if ((winattrs.map_state == IsViewable) && IS_MAP_PENDING(fw))
+	{
+		SET_MAP_PENDING(fw, 0);
+	}
 
-  /* make sure fw->flags.is_map_pending is OK */
-  if((winattrs.map_state == IsViewable) && IS_MAP_PENDING(fw))
-  {
-    SET_MAP_PENDING(fw, 0);
-  }
-
-  if (IS_MAP_PENDING(fw))
-  {
-    /* final state: iconified */
-    SET_ICONIFY_AFTER_MAP(fw, 1);
-    return;
-  }
-  eventMask = winattrs.your_event_mask;
+	if (IS_MAP_PENDING(fw))
+	{
+		/* final state: iconified */
+		SET_ICONIFY_AFTER_MAP(fw, 1);
+		return;
+	}
+	eventMask = winattrs.your_event_mask;
 #if 0
-  if (fw == Scr.Hilite && HAS_CLICK_FOCUS(fw) && fw->next)
-  {
-    SetFocusWindow(fw->next, 1);
-  }
+	if (fw == Scr.Hilite && HAS_CLICK_FOCUS(fw) && fw->next)
+	{
+		SetFocusWindow(fw->next, 1);
+	}
 #endif
 
-  mark_transient_subtree(fw, MARK_ALL_LAYERS, MARK_ALL, False, True);
-  sf = get_focus_window();
-  if (sf && IS_IN_TRANSIENT_SUBTREE(sf))
-  {
-    restore_focus_after_unmap(sf, True);
-  }
-  /* iconify transients first */
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-  {
-    if (t == fw || IS_IN_TRANSIENT_SUBTREE(t))
-    {
-      SET_IN_TRANSIENT_SUBTREE(t, 0);
-      SET_ICON_ENTERED(t, 0);
-      /*
-       * Prevent the receipt of an UnmapNotify, since that would
-       * cause a transition to the Withdrawn state.
-       */
-      SET_MAPPED(t, 0);
-      XSelectInput(dpy, FW_W(t), eventMask & ~StructureNotifyMask);
-      XUnmapWindow(dpy, FW_W(t));
-      XSelectInput(dpy, FW_W(t), eventMask);
-      XUnmapWindow(dpy, FW_W_FRAME(t));
-      border_undraw_decorations(t);
-      t->DeIconifyDesk = t->Desk;
-      if (FW_W_ICON_TITLE(t))
-	XUnmapWindow(dpy, FW_W_ICON_TITLE(t));
-      if (FW_W_ICON_PIXMAP(t))
-	XUnmapWindow(dpy, FW_W_ICON_PIXMAP(t));
+	mark_transient_subtree(fw, MARK_ALL_LAYERS, MARK_ALL, False, True);
+	sf = get_focus_window();
+	if (sf && IS_IN_TRANSIENT_SUBTREE(sf))
+	{
+		restore_focus_after_unmap(sf, True);
+	}
+	/* iconify transients first */
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		if (t == fw || IS_IN_TRANSIENT_SUBTREE(t))
+		{
+			SET_IN_TRANSIENT_SUBTREE(t, 0);
+			SET_ICON_ENTERED(t, 0);
+			/* Prevent the receipt of an UnmapNotify, since that
+			 * would cause a transition to the Withdrawn state. */
+			SET_MAPPED(t, 0);
+			XSelectInput(
+				dpy, FW_W(t), eventMask & ~StructureNotifyMask);
+			XUnmapWindow(dpy, FW_W(t));
+			XSelectInput(dpy, FW_W(t), eventMask);
+			XUnmapWindow(dpy, FW_W_FRAME(t));
+			border_undraw_decorations(t);
+			t->DeIconifyDesk = t->Desk;
+			if (FW_W_ICON_TITLE(t))
+			{
+				XUnmapWindow(dpy, FW_W_ICON_TITLE(t));
+			}
+			if (FW_W_ICON_PIXMAP(t))
+			{
+				XUnmapWindow(dpy, FW_W_ICON_PIXMAP(t));
+			}
 
-      SetMapStateProp(t, IconicState);
-      border_draw_decorations(t, PART_ALL, False, False, CLEAR_ALL, NULL, NULL);
-      if (t == fw && !IS_ICONIFIED_BY_PARENT(fw))
-      {
-	SET_DEICONIFY_PENDING(t, 1);
-      }
-      else
-      {
-	rectangle g;
+			SetMapStateProp(t, IconicState);
+			border_draw_decorations(
+				t, PART_ALL, False, False, CLEAR_ALL, NULL,
+				NULL);
+			if (t == fw && !IS_ICONIFIED_BY_PARENT(fw))
+			{
+				SET_ICONIFY_PENDING(t, 1);
+			}
+			else
+			{
+				rectangle g;
 
-	SET_ICONIFIED(t, 1);
-	SET_ICON_UNMAPPED(t, 1);
-	SET_ICONIFIED_BY_PARENT(t, 1);
-	get_icon_geometry(t, &g);
-	BroadcastPacket(M_ICONIFY, 7,
-			FW_W(t), FW_W_FRAME(t),
-			(unsigned long)t,
-			-32768, -32768,
-			g.width, g.height);
-	BroadcastConfig(M_CONFIGURE_WINDOW,t);
-      }
-    } /* if */
-  } /* for */
+				SET_ICONIFIED(t, 1);
+				SET_ICON_UNMAPPED(t, 1);
+				SET_ICONIFIED_BY_PARENT(t, 1);
+				get_icon_geometry(t, &g);
+				BroadcastPacket(
+					M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
+					(unsigned long)t, -32768, -32768,
+					g.width, g.height);
+				BroadcastConfig(M_CONFIGURE_WINDOW,t);
+			}
+		} /* if */
+	} /* for */
 
-  /* necessary during a recapture */
-  if (IS_ICONIFIED_BY_PARENT(fw))
-    return;
+	/* necessary during a recapture */
+	if (IS_ICONIFIED_BY_PARENT(fw))
+	{
+		return;
+	}
 
-  if (FW_W_ICON_TITLE(fw) == None || HAS_ICON_CHANGED(fw))
-  {
-    if (IS_ICON_MOVED(fw) || win_opts->flags.use_initial_icon_xy)
-    {
-      rectangle g;
+	if (FW_W_ICON_TITLE(fw) == None || HAS_ICON_CHANGED(fw))
+	{
+		if (IS_ICON_MOVED(fw) || win_opts->flags.use_initial_icon_xy)
+		{
+			rectangle g;
 
-      get_icon_geometry(fw, &g);
-      if (win_opts->flags.use_initial_icon_xy)
-      {
-	g.x = win_opts->initial_icon_x;
-	g.y = win_opts->initial_icon_y;
-      }
-      CreateIconWindow(fw, g.x, g.y);
-    }
-    else
-    {
-      CreateIconWindow(fw, win_opts->default_icon_x, win_opts->default_icon_y);
-    }
-    SET_HAS_ICON_CHANGED(fw, 0);
-  }
-  else if (FW_W_ICON_TITLE(fw) && !FW_W_ICON_PIXMAP(fw))
-  {
-    /* if no pixmap we want icon width to change to text width every iconify;
-     * not necessary if the icon was created above */
-    setup_icon_title_size(fw);
-  }
+			get_icon_geometry(fw, &g);
+			if (win_opts->flags.use_initial_icon_xy)
+			{
+				g.x = win_opts->initial_icon_x;
+				g.y = win_opts->initial_icon_y;
+			}
+			CreateIconWindow(fw, g.x, g.y);
+		}
+		else
+		{
+			CreateIconWindow(
+				fw, win_opts->default_icon_x,
+				win_opts->default_icon_y);
+		}
+		SET_HAS_ICON_CHANGED(fw, 0);
+	}
+	else if (FW_W_ICON_TITLE(fw) && !FW_W_ICON_PIXMAP(fw))
+	{
+		/* if no pixmap we want icon width to change to text width
+		 * every iconify; not necessary if the icon was created above */
+		setup_icon_title_size(fw);
+	}
 
-  /* this condition will be true unless we restore a window to
-     iconified state from a saved session. */
-  if (win_opts->initial_state != IconicState ||
-      (!IS_ICON_MOVED(fw) && !win_opts->flags.use_initial_icon_xy))
-  {
-    AutoPlaceIcon(fw, win_opts);
-  }
-  /* domivogt (1-Mar-2000): The next block is a hack to prevent animation if the
-   * window has an icon, but neither a pixmap nor a title. */
-  if (HAS_NO_ICON_TITLE(fw) && FW_W_ICON_PIXMAP(fw) == None)
-  {
-    memset(&fw->icon_g, 0, sizeof(fw->icon_g));
-  }
-  SET_ICONIFIED(fw, 1);
-  SET_ICON_UNMAPPED(fw, 0);
-  get_icon_geometry(fw, &icon_rect);
-  /* if this fails it does not overwrite icon_rect */
-  EWMH_GetIconGeometry(fw, &icon_rect);
-  BroadcastPacket(M_ICONIFY, 11,
-		  FW_W(fw), FW_W_FRAME(fw),
-		  (unsigned long)fw,
-		  icon_rect.x,
-		  icon_rect.y,
-		  icon_rect.width,
-		  icon_rect.height,
-		  fw->frame_g.x, /* next 4 added for Animate module */
-		  fw->frame_g.y,
-		  fw->frame_g.width,
-		  fw->frame_g.height);
-  BroadcastConfig(M_CONFIGURE_WINDOW,fw);
+	/* this condition will be true unless we restore a window to
+	 * iconified state from a saved session. */
+	if (win_opts->initial_state != IconicState ||
+	    (!IS_ICON_MOVED(fw) && !win_opts->flags.use_initial_icon_xy))
+	{
+		AutoPlaceIcon(fw, win_opts);
+	}
+	/* domivogt (1-Mar-2000): The next block is a hack to prevent animation
+	 * if the window has an icon, but neither a pixmap nor a title. */
+	if (HAS_NO_ICON_TITLE(fw) && FW_W_ICON_PIXMAP(fw) == None)
+	{
+		memset(&fw->icon_g, 0, sizeof(fw->icon_g));
+	}
+	SET_ICONIFIED(fw, 1);
+	SET_ICON_UNMAPPED(fw, 0);
+	get_icon_geometry(fw, &icon_rect);
+	/* if this fails it does not overwrite icon_rect */
+	EWMH_GetIconGeometry(fw, &icon_rect);
+	BroadcastPacket(
+		M_ICONIFY, 11, FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
+		icon_rect.x, icon_rect.y, icon_rect.width, icon_rect.height,
+		/* next 4 added for Animate module */
+		fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
+		fw->frame_g.height);
+	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 
-  if (win_opts->initial_state != IconicState ||
-      (!IS_ICON_MOVED(fw) && !win_opts->flags.use_initial_icon_xy))
-  {
-    LowerWindow(fw);
-  }
-  if (IS_ICON_STICKY(fw) || IS_STICKY(fw))
-  {
-    fw->Desk = Scr.CurrentDesk;
-  }
-  if (fw->Desk == Scr.CurrentDesk)
-  {
-    if (FW_W_ICON_TITLE(fw) != None)
-      XMapWindow(dpy, FW_W_ICON_TITLE(fw));
-
-    if(FW_W_ICON_PIXMAP(fw) != None)
-      XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
-  }
+	if (win_opts->initial_state != IconicState ||
+	    (!IS_ICON_MOVED(fw) && !win_opts->flags.use_initial_icon_xy))
+	{
+		LowerWindow(fw);
+	}
+	if (IS_ICON_STICKY(fw) || IS_STICKY(fw))
+	{
+		fw->Desk = Scr.CurrentDesk;
+	}
+	if (fw->Desk == Scr.CurrentDesk)
+	{
+		if (FW_W_ICON_TITLE(fw) != None)
+		{
+			XMapWindow(dpy, FW_W_ICON_TITLE(fw));
+		}
+		if (FW_W_ICON_PIXMAP(fw) != None)
+		{
+			XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
+		}
+	}
 #if 0
-  if (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw))
-  {
-    if (fw == get_focus_window())
-    {
-      if (HAS_CLICK_FOCUS(fw) && fw->next)
-      {
-	SetFocusWindow(fw->next, 1);
-      }
-      else
-      {
-	DeleteFocus(1);
-      }
-    }
-  }
+	if (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw))
+	{
+		if (fw == get_focus_window())
+		{
+			if (HAS_CLICK_FOCUS(fw) && fw->next)
+			{
+				SetFocusWindow(fw->next, 1);
+			}
+			else
+			{
+				DeleteFocus(1);
+			}
+		}
+	}
 #endif
-  if ((sf = get_focus_window()))
-  {
-    focus_grab_buttons(sf, True);
-  }
+	if ((sf = get_focus_window()))
+	{
+		focus_grab_buttons(sf, True);
+	}
 
-  return;
+	return;
 }
 
 
@@ -1963,65 +1992,79 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
  ****************************************************************************/
 void SetMapStateProp(FvwmWindow *fw, int state)
 {
-  unsigned long data[2];                /* "suggested" by ICCCM version 1 */
+	/* "suggested" by ICCCM version 1 */
+	unsigned long data[2];
 
-  data[0] = (unsigned long) state;
-  data[1] = (unsigned long) FW_W_ICON_TITLE(fw);
-/*  data[2] = (unsigned long) FW_W_ICON_PIXMAP(fw);*/
+	data[0] = (unsigned long) state;
+	data[1] = (unsigned long) FW_W_ICON_TITLE(fw);
+	/*  data[2] = (unsigned long) FW_W_ICON_PIXMAP(fw);*/
 
-  XChangeProperty(dpy, FW_W(fw), _XA_WM_STATE, _XA_WM_STATE, 32,
-		  PropModeReplace, (unsigned char *) data, 2);
-  return;
+	XChangeProperty(dpy, FW_W(fw), _XA_WM_STATE, _XA_WM_STATE, 32,
+			PropModeReplace, (unsigned char *) data, 2);
+	return;
 }
 
 void CMD_Iconify(F_CMD_ARGS)
 {
-  int toggle;
+	int toggle;
 
-  if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT, ButtonRelease))
-    return;
+	if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT, ButtonRelease))
+	{
+		return;
+	}
 
-  toggle = ParseToggleArgument(action, NULL, -1, 0);
-  if (toggle == -1)
-  {
-    if (GetIntegerArguments(action, NULL, &toggle, 1) > 0)
-    {
-      if (toggle > 0)
-	toggle = 1;
-      else if (toggle < 0)
-	toggle = 0;
-      else
-	toggle = -1;
-    }
-  }
-  if (toggle == -1)
-    toggle = (IS_ICONIFIED(fw)) ? 0 : 1;
+	toggle = ParseToggleArgument(action, NULL, -1, 0);
+	if (toggle == -1)
+	{
+		if (GetIntegerArguments(action, NULL, &toggle, 1) > 0)
+		{
+			if (toggle > 0)
+			{
+				toggle = 1;
+			}
+			else if (toggle < 0)
+			{
+				toggle = 0;
+			}
+			else
+			{
+				toggle = -1;
+			}
+		}
+	}
+	if (toggle == -1)
+	{
+		toggle = (IS_ICONIFIED(fw)) ? 0 : 1;
+	}
 
-  if (IS_ICONIFIED(fw))
-  {
-    if (toggle == 0)
-    {
-      DeIconify(fw);
-      EWMH_SetWMState(fw, False);
-    }
-  }
-  else
-  {
-    if (toggle == 1)
-    {
-      initial_window_options_type win_opts;
+	if (IS_ICONIFIED(fw))
+	{
+		if (toggle == 0)
+		{
+			DeIconify(fw);
+			EWMH_SetWMState(fw, False);
+		}
+	}
+	else
+	{
+		if (toggle == 1)
+		{
+			initial_window_options_type win_opts;
 
-      if (!is_function_allowed(F_ICONIFY, NULL, fw, False, True))
-      {
-	XBell(dpy, 0);
+			if (!is_function_allowed(
+				    F_ICONIFY, NULL, fw, False, True))
+			{
+				XBell(dpy, 0);
+				return;
+			}
+			memset(&win_opts, 0, sizeof(win_opts));
+			GetLocationFromEventOrQuery(
+				dpy, Scr.Root, eventp, &win_opts.default_icon_x,
+				&win_opts.default_icon_y);
+			Iconify(fw, &win_opts);
+			EWMH_SetWMState(fw, False);
+		}
+	}
+
 	return;
-      }
-      memset(&win_opts, 0, sizeof(win_opts));
-      GetLocationFromEventOrQuery(
-	      dpy, Scr.Root, eventp, &win_opts.default_icon_x,
-	      &win_opts.default_icon_y);
-      Iconify(fw, &win_opts);
-      EWMH_SetWMState(fw, False);
-    }
-  }
 }

@@ -284,7 +284,6 @@ typedef struct
 		unsigned is_already_mapped : 1;
 		unsigned is_first_root_menu : 1;
 		unsigned is_invoked_by_key_press : 1;
-		unsigned is_menu_from_frame_or_window_or_titlebar : 1;
 		unsigned is_sticky : 1;
 		unsigned is_submenu : 1;
 	} flags;

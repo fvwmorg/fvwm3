@@ -2294,7 +2294,6 @@ static void MenuInteraction(
 	  mp.pcontext = pmp->pcontext;
 	  mp.flags.has_default_action = False;
 	  mp.flags.is_already_mapped = flags.is_submenu_mapped;
-	  mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	  mp.flags.is_sticky = False;
 	  mp.flags.is_submenu = True;
 	  mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
@@ -2737,8 +2736,8 @@ static int pop_menu_up(
 		{
 			/* Now let's see if the menu still exists. It may have
 			 * been destroyed and recreated, so we have to look for
-			 * a menu with the saved name. menus_find_menu() will always
-			 * return the original menu, not one of its copies, so
+			 * a menu with the saved name. menus_find_menu() always
+			 * returns the original menu, not one of its copies, so
 			 * below logic would fail miserably if used with a menu
 			 * copy. On the other hand, menu copies can't be
 			 * deleted within a dynamic popup action, so just
@@ -2844,7 +2843,7 @@ static int pop_menu_up(
 			}
 			if (gy != 0)
 			{
-				y= button_g.y +
+				y = button_g.y +
 					(gy == 1) * button_g.height -
 					(gy == -1) * MR_HEIGHT(mr);
 			}
@@ -2900,10 +2899,9 @@ static int pop_menu_up(
 	{
 		bw = MST_BORDER_WIDTH(mr);
 		bwp = MST_BORDER_WIDTH(parent_menu);
-		x_overlap =
-			do_menus_overlap(
-				parent_menu, x, y, MR_WIDTH(mr), MR_HEIGHT(mr),
-				bwp, bwp, bwp, True);
+		x_overlap = do_menus_overlap(
+			parent_menu, x, y, MR_WIDTH(mr), MR_HEIGHT(mr), bwp,
+			bwp, bwp, True);
 	}
 
 	{
@@ -3502,10 +3500,6 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 	MST_USAGE_COUNT(*pmr)--;
 	UninstallFvwmColormap();
 	XFlush(dpy);
-	if (*(pmp->pcontext) & (C_WINDOW | C_FRAME | C_TITLE | C_SIDEBAR))
-		pmp->flags.is_menu_from_frame_or_window_or_titlebar = True;
-	else
-		pmp->flags.is_menu_from_frame_or_window_or_titlebar = False;
 	if ((mi = MR_SELECTED_ITEM(*pmr)) != NULL)
 	{
 		select_menu_item(*pmr, mi, False, (*pmp->pfw));
@@ -5802,7 +5796,6 @@ void menu_enter_tear_off_menu(FvwmWindow *fw)
 	mp.pcontext = &context;
 	mp.flags.has_default_action = 0;
 	mp.flags.is_already_mapped = True;
-	mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	mp.flags.is_sticky = False;
 	mp.flags.is_submenu = False;
 	mp.eventp = NULL;
@@ -6103,7 +6096,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 				pop_menu_down(&pmp->menu, pmp);
 			}
 		}
-		pmp->flags.is_menu_from_frame_or_window_or_titlebar = False;
 		XFlush(dpy);
 
 		if (!pmp->flags.is_submenu && x_start >= 0 && y_start >= 0 &&

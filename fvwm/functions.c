@@ -1359,12 +1359,9 @@ void CMD_Plus(F_CMD_ARGS)
 	else if (Scr.last_added_item.type == ADDED_DECOR)
 	{
 		FvwmDecor *tmp = &Scr.DefaultDecor;
-		for (; tmp; tmp = tmp->next)
+		for ( ; tmp && tmp != Scr.last_added_item.item; tmp = tmp->next)
 		{
-			if (tmp == Scr.last_added_item.item)
-			{
-				break;
-			}
+			/* nothing to do here */
 		}
 		if (!tmp)
 		{

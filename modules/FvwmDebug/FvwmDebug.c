@@ -608,7 +608,7 @@ void list_configure(const unsigned long *body)
     fprintf(output,"\t\tdo_reuse_destroyed: %d\n", DO_REUSE_DESTROYED(p));
     fprintf(output,"\t\thas_border: %d\n", !HAS_NO_BORDER(p));
     fprintf(output,"\t\thas_title: %d\n", HAS_TITLE(p));
-    fprintf(output,"\t\tis_deiconify_pending: %d\n", IS_DEICONIFY_PENDING(p));
+    fprintf(output,"\t\tis_iconify_pending: %d\n", IS_ICONIFY_PENDING(p));
     fprintf(output,"\t\tis_fully_visible: %d\n", IS_FULLY_VISIBLE(p));
     fprintf(output,"\t\tis_iconified: %d\n", IS_ICONIFIED(p));
     fprintf(output,"\t\tis_iconfied_by_parent: %d\n",

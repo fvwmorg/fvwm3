@@ -773,8 +773,8 @@ void list_configure(unsigned long *body)
 	    !HAS_NO_BORDER( cfgpacket ) );
     printf( "has_title: %d\n",
 	    HAS_TITLE( cfgpacket ) );
-    printf( "is_deiconify_pending: %d\n",
-	    IS_DEICONIFY_PENDING( cfgpacket ) );
+    printf( "is_iconify_pending: %d\n",
+	    IS_ICONIFY_PENDING( cfgpacket ) );
     printf( "is_fully_visible: %d\n",
 	    IS_FULLY_VISIBLE( cfgpacket ) );
     printf( "is_iconified: %d\n",

@@ -86,7 +86,6 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	int tc;
 	extern FvwmWindow *Fw;
 	extern FvwmWindow *ButtonWindow;
-	extern int Context;
 
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));
@@ -133,10 +132,9 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	mp.pfw = &fw2;
 	mp.button_window = ButtonWindow;
 	MR_IS_TEAR_OFF_MENU(menu) = 0;
-	tc = Context;
+	tc = context;
 	mp.pcontext = &tc;
 	mp.flags.has_default_action = (action != NULL);
-	mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	mp.flags.is_sticky = fStaysUp;
 	mp.flags.is_submenu = False;
 	mp.flags.is_already_mapped = False;

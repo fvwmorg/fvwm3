@@ -149,7 +149,6 @@ static PFEH EventHandlerJumpTable[LASTEvent];
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
-int Context = C_NO_CONTEXT;             /* current button press context */
 FvwmWindow *ButtonWindow = NULL;        /* button press window structure */
 XEvent Event;                           /* the current event */
 FvwmWindow *Fw = NULL;                  /* the current fvwm window */
@@ -160,22 +159,22 @@ fd_set init_fdset;
 
 /* ---------------------------- local functions ----------------------------- */
 
-static void fake_map_unmap_notify(FvwmWindow *tmp_win, int event_type)
+static void fake_map_unmap_notify(FvwmWindow *fw, int event_type)
 {
 	XEvent client_event;
 	XWindowAttributes winattrs = {0};
 
-	if (!XGetWindowAttributes(dpy, FW_W(tmp_win), &winattrs))
+	if (!XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
 	{
 		return;
 	}
 	XSelectInput(
-		dpy, FW_W(tmp_win),
+		dpy, FW_W(fw),
 		winattrs.your_event_mask & ~StructureNotifyMask);
 	client_event.type = event_type;
 	client_event.xmap.display = dpy;
-	client_event.xmap.event = FW_W(tmp_win);
-	client_event.xmap.window = FW_W(tmp_win);
+	client_event.xmap.event = FW_W(fw);
+	client_event.xmap.window = FW_W(fw);
 	switch (event_type)
 	{
 	case MapNotify:
@@ -189,8 +188,8 @@ static void fake_map_unmap_notify(FvwmWindow *tmp_win, int event_type)
 		break;
 	}
 	XSendEvent(
-		dpy, FW_W(tmp_win), False, StructureNotifyMask, &client_event);
-	XSelectInput(dpy, FW_W(tmp_win), winattrs.your_event_mask);
+		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
+	XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask);
 
 	return;
 }
@@ -269,40 +268,40 @@ static Bool test_resizing_event(
  *
  ************************************************************************/
 void SendConfigureNotify(
-	FvwmWindow *tmp_win, int x, int y, unsigned int w, unsigned int h,
+	FvwmWindow *fw, int x, int y, unsigned int w, unsigned int h,
 	int bw, Bool send_for_frame_too)
 {
 	XEvent client_event;
 	size_borders b;
 
-	if (!tmp_win || IS_SHADED(tmp_win))
+	if (!fw || IS_SHADED(fw))
 	{
 		return;
 	}
 	client_event.type = ConfigureNotify;
 	client_event.xconfigure.display = dpy;
-	client_event.xconfigure.event = FW_W(tmp_win);
-	client_event.xconfigure.window = FW_W(tmp_win);
-	get_window_borders(tmp_win, &b);
+	client_event.xconfigure.event = FW_W(fw);
+	client_event.xconfigure.window = FW_W(fw);
+	get_window_borders(fw, &b);
 	client_event.xconfigure.x = x + b.top_left.width;
 	client_event.xconfigure.y = y + b.top_left.height;
 	client_event.xconfigure.width = w - b.total_size.width;
 	client_event.xconfigure.height = h - b.total_size.height;
 	client_event.xconfigure.border_width = bw;
-	client_event.xconfigure.above = FW_W_FRAME(tmp_win);
+	client_event.xconfigure.above = FW_W_FRAME(fw);
 	client_event.xconfigure.override_redirect = False;
 	XSendEvent(
-		dpy, FW_W(tmp_win), False, StructureNotifyMask, &client_event);
+		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
 	if (send_for_frame_too)
 	{
 		/* This is for buggy tk, which waits for the real
 		 * ConfigureNotify on frame instead of the synthetic one on w.
 		 * The geometry data in the event will not be correct for the
 		 * frame, but tk doesn't look at that data anyway. */
-		client_event.xconfigure.event = FW_W_FRAME(tmp_win);
-		client_event.xconfigure.window = FW_W_FRAME(tmp_win);
+		client_event.xconfigure.event = FW_W_FRAME(fw);
+		client_event.xconfigure.window = FW_W_FRAME(fw);
 		XSendEvent(
-			dpy, FW_W_FRAME(tmp_win), False, StructureNotifyMask,
+			dpy, FW_W_FRAME(fw), False, StructureNotifyMask,
 			&client_event);
 	}
 
@@ -319,7 +318,8 @@ void SendConfigureNotify(
  ***********************************************************************/
 void HandleButtonPress(void)
 {
-	int LocalContext;
+	int context;
+	int local_context;
 	char *action;
 	Window OldPressedW;
 	Window eventw;
@@ -418,8 +418,8 @@ void HandleButtonPress(void)
 		}
 		do_regrab_buttons = True;
 
-		Context = GetContext(Fw, &Event, &PressedW);
-		if (!IS_ICONIFIED(Fw) && Context == C_WINDOW)
+		context = GetContext(Fw, &Event, &PressedW);
+		if (!IS_ICONIFIED(Fw) && context == C_WINDOW)
 		{
 			if (Fw && IS_SCHEDULED_FOR_RAISE(Fw))
 			{
@@ -542,14 +542,14 @@ void HandleButtonPress(void)
 		Scr.Ungrabbed = tmp;
 	}
 
-	Context = GetContext(Fw, &Event, &PressedW);
-	LocalContext = Context;
+	context = GetContext(Fw, &Event, &PressedW);
+	local_context = context;
 	STROKE_CODE(stroke_init());
 	STROKE_CODE(send_motion = TRUE);
 	/* need to search for an appropriate mouse binding */
 	action = CheckBinding(
 		Scr.AllBindings, STROKE_ARG(0) Event.xbutton.button,
-		Event.xbutton.state, GetUnusedModifiers(), Context,
+		Event.xbutton.state, GetUnusedModifiers(), context,
 		MOUSE_BINDING);
 	if (action && *action)
 	{
@@ -561,7 +561,7 @@ void HandleButtonPress(void)
 		window_parts part;
 		Bool do_force;
 
-		part = border_context_to_parts(LocalContext);
+		part = border_context_to_parts(local_context);
 		do_force = (part & PART_TITLEBAR) ? True : False;
 		border_draw_decorations(
 			Fw, part, (Scr.Hilite == Fw), do_force, CLEAR_ALL,
@@ -580,8 +580,8 @@ void HandleButtonPress(void)
 			XAllowEvents(dpy, AsyncPointer, CurrentTime);
 		}
 		old_execute_function(
-			NULL, action, Fw, &Event, Context, -1, 0, NULL);
-		if (Context != C_WINDOW && Context != C_NO_CONTEXT)
+			NULL, action, Fw, &Event, context, -1, 0, NULL);
+		if (context != C_WINDOW && context != C_NO_CONTEXT)
 		{
 			WaitForButtonsUp(True);
 			do_pass_click = False;
@@ -622,7 +622,7 @@ void HandleButtonPress(void)
 		window_parts part;
 		Bool do_force;
 
-		part = border_context_to_parts(LocalContext);
+		part = border_context_to_parts(local_context);
 		do_force = (part & PART_TITLEBAR) ? True : False;
 		border_draw_decorations(
 			ButtonWindow, part, (Scr.Hilite == ButtonWindow),
@@ -644,6 +644,7 @@ void HandleButtonPress(void)
 void HandleButtonRelease()
 {
 	char *action;
+	int context;
 	int real_modifier;
 	Window dummy;
 
@@ -655,7 +656,7 @@ void HandleButtonRelease()
 
 	DBUG("HandleButtonRelease",sequence);
 
-	Context = GetContext(Fw,&Event, &dummy);
+	context = GetContext(Fw,&Event, &dummy);
 
 	/*  Allows modifier to work (Only R context works here). */
 	real_modifier = Event.xbutton.state - (1 << (7 + Event.xbutton.button));
@@ -663,12 +664,12 @@ void HandleButtonRelease()
 	/* need to search for an appropriate stroke binding */
 	action = CheckBinding(
 		Scr.AllBindings, sequence, Event.xbutton.button, real_modifier,
-		GetUnusedModifiers(), Context, STROKE_BINDING);
+		GetUnusedModifiers(), context, STROKE_BINDING);
 	/* got a match, now process it */
 	if (action != NULL && (action[0] != 0))
 	{
 		old_execute_function(
-			NULL, action, Fw, &Event, Context, -1, 0, NULL);
+			NULL, action, Fw, &Event, context, -1, 0, NULL);
 		WaitForButtonsUp(True);
 	}
 	else
@@ -681,6 +682,8 @@ void HandleButtonRelease()
 			GNOME_ProxyButtonEvent(&Event);
 		}
 	}
+
+	return;
 }
 #endif /* HAVE_STROKE */
 
@@ -1780,11 +1783,12 @@ void HandleFocusOut(void)
 void HandleKeyPress(void)
 {
 	char *action;
+	int context;
 	FvwmWindow *sf;
 
 	DBUG("HandleKeyPress","Routine Entered");
 
-	Context = GetContext(Fw, &Event, &PressedW);
+	context = GetContext(Fw, &Event, &PressedW);
 	PressedW = None;
 
 	/* Here's a real hack - some systems have two keys with the
@@ -1797,12 +1801,12 @@ void HandleKeyPress(void)
 	/* Check if there is something bound to the key */
 	action = CheckBinding(
 		Scr.AllBindings, STROKE_ARG(0) Event.xkey.keycode,
-		Event.xkey.state, GetUnusedModifiers(), Context, KEY_BINDING);
+		Event.xkey.state, GetUnusedModifiers(), context, KEY_BINDING);
 	if (action != NULL)
 	{
 		ButtonWindow = Fw;
 		old_execute_function(
-			NULL, action, Fw, &Event, Context, -1, 0, NULL);
+			NULL, action, Fw, &Event, context, -1, 0, NULL);
 		ButtonWindow = NULL;
 		return;
 	}
@@ -1930,8 +1934,8 @@ void HandleMapNotify(void)
 
 	if (!Fw)
 	{
-		if ((Event.xmap.override_redirect == True)&&
-		   (Event.xmap.window != Scr.NoFocusWin))
+		if (Event.xmap.override_redirect == True &&
+		    Event.xmap.window != Scr.NoFocusWin)
 		{
 			XSelectInput(dpy, Event.xmap.window, XEVMASK_ORW);
 			Scr.UnknownWinFocused = Event.xmap.window;
@@ -1949,15 +1953,13 @@ void HandleMapNotify(void)
 
 	SET_MAP_PENDING(Fw, 0);
 	/* don't map if the event was caused by a de-iconify */
-	if (IS_DEICONIFY_PENDING(Fw))
+	if (IS_ICONIFY_PENDING(Fw))
 	{
 		return;
 	}
 
-	/*
-	  Make sure at least part of window is on this page
-	  before giving it focus...
-	*/
+	/* Make sure at least part of window is on this page before giving it
+	 * focus... */
 	is_on_this_page = IsRectangleOnThisPage(&(Fw->frame_g), Fw->Desk);
 
 	/*
@@ -1968,20 +1970,29 @@ void HandleMapNotify(void)
 	 */
 	MyXGrabServer (dpy);
 	if (FW_W_ICON_TITLE(Fw))
+	{
 		XUnmapWindow(dpy, FW_W_ICON_TITLE(Fw));
+	}
 	if (FW_W_ICON_PIXMAP(Fw) != None)
+	{
 		XUnmapWindow(dpy, FW_W_ICON_PIXMAP(Fw));
+	}
 	XMapSubwindows(dpy, FW_W_FRAME(Fw));
 	if (Fw->Desk == Scr.CurrentDesk)
 	{
 		XMapWindow(dpy, FW_W_FRAME(Fw));
 	}
 	if (IS_ICONIFIED(Fw))
-		BroadcastPacket(M_DEICONIFY, 3,
-				FW_W(Fw), FW_W_FRAME(Fw), (unsigned long)Fw);
+	{
+		BroadcastPacket(
+			M_DEICONIFY, 3, FW_W(Fw), FW_W_FRAME(Fw),
+			(unsigned long)Fw);
+	}
 	else
-		BroadcastPacket(M_MAP, 3,
-				FW_W(Fw),FW_W_FRAME(Fw), (unsigned long)Fw);
+	{
+		BroadcastPacket(
+			M_MAP, 3, FW_W(Fw), FW_W_FRAME(Fw), (unsigned long)Fw);
+	}
 
 	if ((!IS_TRANSIENT(Fw) && DO_GRAB_FOCUS(Fw)) ||
 	   (IS_TRANSIENT(Fw) && DO_GRAB_FOCUS_TRANSIENT(Fw) &&
@@ -2010,6 +2021,8 @@ void HandleMapNotify(void)
 		Iconify(Fw, &win_opts);
 		SET_ICONIFY_AFTER_MAP(Fw, 0);
 	}
+
+	return;
 }
 
 /***********************************************************************
@@ -2030,6 +2043,8 @@ void HandleMapRequest(void)
 		return;
 	}
 	HandleMapRequestKeepRaised(None, NULL, NULL);
+
+	return;
 }
 
 void HandleMapRequestKeepRaised(
@@ -2088,7 +2103,9 @@ void HandleMapRequestKeepRaised(
 		/* Add decorations. */
 		Fw = AddWindow(Event.xany.window, ReuseWin, win_opts);
 		if (Fw == NULL)
+		{
 			return;
+		}
 		is_new_window = True;
 	}
 	/*
@@ -2104,6 +2121,9 @@ void HandleMapRequestKeepRaised(
 
 	if (IS_ICONIFIED(Fw))
 	{
+XWindowAttributes winattrs = {0};
+if (XGetWindowAttributes(dpy, FW_W(Fw), &winattrs))
+{if (winattrs.map_state == IsViewable) fake_map_unmap_notify(Fw, MapNotify); }
 		/* If no hints, or currently an icon, just "deiconify" */
 		DeIconify(Fw);
 	}
@@ -2117,11 +2137,17 @@ void HandleMapRequestKeepRaised(
 		int state;
 
 		if (Fw->wmhints && (Fw->wmhints->flags & StateHint))
+		{
 			state = Fw->wmhints->initial_state;
+		}
 		else
+		{
 			state = NormalState;
+		}
 		if (win_opts->initial_state != DontCareState)
+		{
 			state = win_opts->initial_state;
+		}
 
 		switch (state)
 		{
@@ -2134,14 +2160,18 @@ void HandleMapRequestKeepRaised(
 			{
 				Bool do_grab_focus;
 
+				SET_MAP_PENDING(Fw, 1);
 				XMapWindow(dpy, FW_W_FRAME(Fw));
 				XMapWindow(dpy, FW_W(Fw));
-				SET_MAP_PENDING(Fw, 1);
 				SetMapStateProp(Fw, NormalState);
 				if (Scr.flags.is_map_desk_in_progress)
+				{
 					do_grab_focus = False;
+				}
 				else if (!is_on_this_page)
+				{
 					do_grab_focus = False;
+				}
 				else if (DO_GRAB_FOCUS(Fw) &&
 					 (!IS_TRANSIENT(Fw) ||
 					  FW_W_TRANSIENTFOR(Fw) == Scr.Root))
@@ -2172,7 +2202,9 @@ void HandleMapRequestKeepRaised(
 					do_grab_focus = True;
 				}
 				else
+				{
 					do_grab_focus = False;
+				}
 				if (do_grab_focus)
 				{
 					SetFocusWindow(Fw, True, True);
@@ -2804,7 +2836,9 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 void HandleReparentNotify(void)
 {
 	if (!Fw)
+	{
 		return;
+	}
 	if (Event.xreparent.parent == Scr.Root)
 	{
 		/* Ignore reparenting to the root window.  In some cases these
@@ -2878,8 +2912,8 @@ void HandleUnmapNotify(void)
 	int dstx, dsty;
 	Window dumwin;
 	XEvent dummy;
-	int    weMustUnmap;
-	int    focus_grabbed = 0;
+	int weMustUnmap;
+	int focus_grabbed = 0;
 	Bool must_return = False;
 
 	DBUG("HandleUnmapNotify","Routine Entered");
@@ -2914,7 +2948,7 @@ void HandleUnmapNotify(void)
 	}
 	if (Event.xunmap.window == FW_W_FRAME(Fw))
 	{
-		SET_DEICONIFY_PENDING(Fw , 0);
+		SET_ICONIFY_PENDING(Fw , 0);
 	}
 	if (must_return)
 	{
@@ -3015,6 +3049,8 @@ void HandleUnmapNotify(void)
 	EWMH_ManageKdeSysTray(Event.xunmap.window, Event.type);
 	EWMH_WindowDestroyed();
 	GNOME_SetClientList();
+
+	return;
 }
 
 /***********************************************************************
@@ -3048,6 +3084,8 @@ void HandleVisibilityNotify(void)
 			SET_PARTIALLY_VISIBLE(Fw, 0);
 		}
 	}
+
+	return;
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -3433,9 +3471,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
  ************************************************************************/
 int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 {
-	int Context;
+	int context;
 
-	Context = C_NO_CONTEXT;
+	context = C_NO_CONTEXT;
 	if (e->type == KeyPress && e->xkey.window == Scr.Root &&
 	    e->xkey.subwindow != None)
 	{
@@ -3491,9 +3529,9 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 	{
 		return C_ROOT;
 	}
-	Context = frame_window_id_to_context(t, *w, &Button);
+	context = frame_window_id_to_context(t, *w, &Button);
 
-	return Context;
+	return context;
 }
 
 
