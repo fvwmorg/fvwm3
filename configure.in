@@ -143,8 +143,9 @@ AC_SUBST(rplay_CFLAGS)
 unset ac_cv_header_stroke_h
 unset ac_cv_lib_stroke_stroke_init
 dnl Add in X_LIBS for MOUSE_DROPPINGS?
+dnl As of 23/Mar/2000 the only libstroke RPM has /usr/X11R6/include/stroke.h
 smr_CHECK_LIB(stroke, , adds mouse strokes recognition, stroke_init, stroke.h,
-          $X_LIBS)
+          $X_LIBS, $X_CFLAGS -I/usr/X11R6/include)
 test "$stroke_LIBS" && AC_DEFINE(HAVE_STROKE)
 AC_SUBST(stroke_LIBS)
 AC_SUBST(stroke_CFLAGS)
@@ -174,19 +175,6 @@ else
 fi
 AC_SUBST(readline_LIBS)
 AC_SUBST(readline_CFLAGS)
-
-dnl FreeBSD has libxpg4, check this and use if found.
-if test "$enable_kanji" = yes; then
-  AC_CANONICAL_HOST
-  case $host_os in
-    freebsd*)
-      AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"]);;
-    *) ;;
-  esac
-fi
-
-dnl Check if Xsetlocale() is available or not.
-AC_CHECK_LIB(X11, _Xsetlocale, AC_DEFINE(X_LOCALE),, $X_LIBS -lX11)
 
 dnl FreeBSD has libxpg4, check this and use if found.
 if test "$enable_kanji" = yes; then

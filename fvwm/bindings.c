@@ -202,9 +202,8 @@ int ParseBinding(
     action++;
 
   /*
-  ** is this an unbind request?
+  ** Remove the "old" bindings if any
   */
-  if (!action || action[0] == '-')
   {
     Bool is_binding_removed = False;
     Binding *b;
@@ -254,8 +253,11 @@ int ParseBinding(
 	*nr_right_buttons = 0;
       update_nr_buttons(bcontexts, nr_left_buttons, nr_right_buttons);
     }
-    return 0;
   }
+
+  /* return if it is an unbind request */
+  if (!action || action[0] == '-') return 0;
+
   update_nr_buttons(contexts, nr_left_buttons, nr_right_buttons);
 
   if((mods & AnyModifier)&&(mods&(~AnyModifier)))

@@ -1,3 +1,11 @@
+2000-03-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in: removed duplicated checks for libxpg4 and Xsetlocale,
+	added X_CFLAGS to stroke check to fix header detection
+
+	* fvwm/bindings.c (ParseBinding): patch by Olivier, remove the
+	old binding first; this fixes memory leaks and an eventual crash
+
 2000-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (movecursor):
@@ -31,7 +39,7 @@
 	only if the mouse is not grabbed on the window, e.g. if the motion was
 	invoked via a key.
 
-2000-03-08  olicha	<olivier.chapuis@free.fr>
+2000-03-08  olicha  <olivier.chapuis@free.fr>
 
 	* AUTHORS: update my entries for my ego :)
 
@@ -243,7 +251,7 @@
 	* fvwm/module_interface.c (PositiveWrite)
 	Increased the "dead module" timeout to 5 seconds to save FvwmAnimate
 
-2000-02-07  olicha	<olivier.chapuis@free.fr>
+2000-02-07  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/virtual.c (checkPanFrames):
 	Fixed check pan frames if y edgescroll is 0 and x  edgescroll is not
@@ -463,7 +471,7 @@
 	* fvwm/fvwm.h:
 	fixed 'hollow' windows when iconifying thrice in a function
 
-2000-01-26 olicha	<olivier.chapuis@free.fr>
+2000-01-26 olicha  <olivier.chapuis@free.fr>
 	* fvwm/screen.h: a "-Wall" fix to BUSYCURSOR ifdef
 	* libs/WinMagic.c: corrected a missprint
 
@@ -529,7 +537,7 @@
 
 	* libs/ColorUtils.c: Removed the color cache
 
-2000-01-18 olicha	<olivier.chapuis@free.fr>
+2000-01-18 olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/builtins.c (wait_func, recapture):
 	* fvwm/cursor.{c,h} (setBusyCursor):
