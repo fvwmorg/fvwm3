@@ -72,7 +72,8 @@ Changes in alpha release 2.5.10 (19-Mar-2004)
 * Security patch in fvwm-bug.
   See http://securitytracker.com/alerts/2004/Jan/1008781.html
 
-* Security fixes in
+* Security fixes in:
+
     fvwm-menu-directory (BugTraq id 9161)
     fvwm_make_directory_menu.sh
     fvwm_make_browse_menu.sh
@@ -539,7 +540,7 @@ Changes in alpha release 2.5.1 (26-Apr-2002)
   StartMenu correctly.
 
     *FvwmTaskBar: StartCommand Popup RootMenu \
-	rectangle $widthx$height+$left+$top 0 -100m
+        rectangle $widthx$height+$left+$top 0 -100m
 
   Please refer to the FvwmTaskBar man page for details.
 
@@ -2307,7 +2308,7 @@ Changes in official release 2.2.2 (May 1999)
 
 -------------------------------------------------------------------
 
-Changes in official release 2.2 (February 1999)
+Changes in official release 2.2.0 (February 1999)
 
 -------------------------------------------------------------------
 

@@ -6517,14 +6517,9 @@ when the
 command is used.
 
 .I FPLenient
-instructs fvwm to ignore the convention in the
-.SM ICCCM
-which states that if an application sets the input field of the
-wm_hints structure to False, then it never wants the window
-manager to give it the input focus.  The only application that we
-know of which needs this is sxpm, and that is a silly bug with a
-trivial fix and has no overall effect on the program anyway.
-Rumor is that some older applications have problems too.
+allows to force focus upon windows that do not want it, like
+.BR FvwmPager
+or xclock.
 
 The
 .IR FPFocusClickButtons

@@ -1593,7 +1593,8 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 		action = CheckBinding(
 			Scr.AllBindings, STROKE_ARG(0) e->xbutton.button,
 			e->xbutton.state, GetUnusedModifiers(),
-			exc->w.wcontext, BIND_BUTTONPRESS, &fw->class, fw->name.name);
+			exc->w.wcontext, BIND_BUTTONPRESS, &fw->class,
+			fw->name.name);
 		if (__handle_bpress_action(exc, action))
 		{
 			f.do_swallow_click = 1;
@@ -2446,7 +2447,7 @@ void __handle_key(const evh_args_t *ea, Bool is_press)
 	}
 	XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
 
-	return;	
+	return;
 }
 
 void HandleKeyPress(const evh_args_t *ea)
