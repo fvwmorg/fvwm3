@@ -1142,15 +1142,40 @@ void __handle_configure_request(
 	return;
 }
 
+static Bool __predicate_button_click(
+	Display *display, XEvent *event, char *arg)
+{
+	if (event->type == ButtonPress || event->type == ButtonRelease)
+	{
+		return True;
+	}
+
+	return False;
+}
+
 /* Helper function for __handle_focus_raise_click(). */
 static Bool __test_for_motion(int x0, int y0)
 {
 	int x;
 	int y;
 	unsigned int mask;
+	XEvent e;
+	char *args = NULL;
 
 	/* Query the pointer to do this. We can't check for events here since
 	 * the events are still needed if the pointer moves. */
+
+	/* However, some special mouse (e.g., a touchpad with the
+	 * synaptic driver) may handle a double click in a special way
+	 * (for dragging through short touching and holding down the
+	 * finger on the touchpad). Bascially, when you execute a
+	 * double click the first button release is queued after the
+	 * second _physical_ mouse release happen. It seems that
+	 * XQueryPointer may not work as espected: it does not see
+	 * that the button is released on a double click.  So, we need
+	 * to check for a button press in the future to avoid a fvwm
+	 * lockup! (olicha 2004-01-31) */
+
 	for (x = x0, y = y0; FQueryPointer(
 		     dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 		     &x, &y, &mask) == True; usleep(20000))
@@ -1165,6 +1190,18 @@ static Bool __test_for_motion(int x0, int y0)
 		{
 			/* the pointer has moved */
 			return True;
+		}
+		if (FCheckIfEvent(dpy, &e, __predicate_button_click, args))
+		{
+			/* click in the future */
+			FPutBackEvent(dpy, &e);
+			return False;
+		}
+		else
+		{
+			/* The predicate procedure finds no match, no event
+			 * has been removed from the queue and XFlush was called
+			 * Nothing to do */
 		}
 	}
 
