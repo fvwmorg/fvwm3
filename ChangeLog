@@ -1,5 +1,9 @@
 2001-01-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c:
+	* fvwm/menus.h:
+	cleaned up
+
 	* fvwm/menus.c (parse_vertical_spacing_line):
 	moved some variables to defaults.h
 	(paint_item):

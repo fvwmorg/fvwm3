@@ -261,13 +261,6 @@ static void get_prefered_popup_position(
     *px = get_right_popup_x_position(mr, submenu, menu_x);
   }
   /* get the y position */
-#if 0
-  if (MR_TO_BE_SELECTED_ITEM(mr))
-  {
-    mi = MR_TO_BE_SELECTED_ITEM(mr);
-  }
-  else
-#endif
   if (MR_SELECTED_ITEM(mr))
   {
     mi = MR_SELECTED_ITEM(mr);
@@ -374,7 +367,6 @@ static MenuItem *find_entry(
 		&root_x,&root_y, &JunkX, &JunkY, &JunkMask);
   if (XFindContext(dpy, Child, MenuContext, (caddr_t *)&mr) == XCNOENT)
   {
-fprintf(stderr,"pointer in no menu item\n");
     return NULL;
   }
 
@@ -384,28 +376,6 @@ fprintf(stderr,"pointer in no menu item\n");
   XQueryPointer(dpy, Child, &JunkRoot, &JunkChild,
 		&root_x,&root_y, &x, &y, &JunkMask);
 
-#if 0
-  r = MST_RELIEF_THICKNESS(mr) / 2;
-  /* look for the entry that the mouse is in */
-  for (mi = MR_FIRST_ITEM(mr); mi; mi = MI_NEXT_ITEM(mi))
-  {
-    int a;
-    int b;
-
-    a = (MI_PREV_ITEM(mi) && MI_IS_SELECTABLE(MI_PREV_ITEM(mi))) ? r : 0;
-    if (!MI_IS_SELECTABLE(mi))
-      b = 0;
-    else if (MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(MI_NEXT_ITEM(mi)))
-      b = MST_RELIEF_THICKNESS(mr) + r;
-    else
-      b = 2 * MST_RELIEF_THICKNESS(mr);
-    if (y >= MI_Y_OFFSET(mi) - a &&
-	y < MI_Y_OFFSET(mi) + MI_HEIGHT(mi) + b)
-    {
-      break;
-    }
-  }
-#else
   r = MST_RELIEF_THICKNESS(mr);
   /* look for the entry that the mouse is in */
   for (mi = MR_FIRST_ITEM(mr); mi; mi = MI_NEXT_ITEM(mi))
@@ -426,7 +396,6 @@ fprintf(stderr,"pointer in no menu item\n");
       break;
     }
   }
-#endif
   if (x < MR_ITEM_X_OFFSET(mr) ||
       x >= MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) - 1)
   {
@@ -436,7 +405,6 @@ fprintf(stderr,"pointer in no menu item\n");
   if (mi && px_offset)
     *px_offset = x;
 
-fprintf(stderr,"pointer in item 0x%0x8 '%s'\n", (int)mi, mi?MI_LABEL(mi)[0]:"");
   return mi;
 }
 
@@ -1398,9 +1366,6 @@ static void MenuInteraction(
   extern XEvent Event;
   MenuItem *mi = NULL;
   MenuItem *tmi;
-#if 0
-  MenuItem *miUnselect = NULL;
-#endif
   MenuItem *miRemovedSubmenu = NULL;
   MenuRoot *mrMi = NULL;
   MenuRoot *tmrMi = NULL;
@@ -1608,19 +1573,11 @@ static void MenuInteraction(
       flags.was_item_unposted = 0;
       if (pmret->flags.is_menu_posted && mrMi != NULL)
       {
-#if 0
-	if (mi == MR_SELECTED_ITEM(pmp->menu))
-	{
-	  pmret->flags.is_menu_posted = 0;
-	  flags.was_item_unposted = 1;
-	}
-#else
 	if (mi == MR_SUBMENU_ITEM(pmp->menu))
 	{
 	  pmret->flags.is_menu_posted = 0;
 	  flags.was_item_unposted = 1;
 	}
-#endif
 	else if (mrPopup && mrMi == mrPopup)
 	{
 	  flags.do_propagate_event_into_submenu = True;
@@ -1863,25 +1820,6 @@ static void MenuInteraction(
 	  /* We have to pop down the menu before unselecting the item in case
 	   * we are using gradient menus. The recalled image would paint over
 	   * the submenu. */
-#if 0
-	  if (mrPopup && mrPopup != mrPopdown)
-	  {
-	    mrPopdown = mrPopup;
-	    popdown_delay_10ms = 0;
-	    does_popdown_submenu_overlap = does_submenu_overlap;
-	    mrPopup = NULL;
-	    miUnselect = MR_SELECTED_ITEM(pmp->menu);
-	  }
-	  else if (mrPopdown)
-	  {
-	    miUnselect = MR_SELECTED_ITEM(pmp->menu);
-	  }
-	  else
-	  {
-	    select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			     (*pmp->pTmp_win));
-	  }
-#else
 	  if (mrPopup && mrPopup != mrPopdown)
 	  {
 	    mrPopdown = mrPopup;
@@ -1891,22 +1829,9 @@ static void MenuInteraction(
 	  }
 	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
 			   (*pmp->pTmp_win));
-#endif
 	}
-#if 0
-	if (miUnselect)
-	{
-	  MR_TO_BE_SELECTED_ITEM(pmp->menu) = mi;
-	}
-	else
-	{
-	  /* highlight the new item; sets MR_SELECTED_ITEM(pmp->menu), too */
-	  select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
-	}
-#else
 	/* highlight the new item; sets MR_SELECTED_ITEM(pmp->menu), too */
 	select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
-#endif
       } /* new item of the same menu */
       else if (mi != MR_SELECTED_ITEM(pmp->menu) && mrMi && mrMi == mrPopdown)
       {
@@ -2035,22 +1960,7 @@ static void MenuInteraction(
 	{
 	  pop_menu_down_and_repaint_parent(
 	    &mrPopdown, &does_popdown_submenu_overlap, pmp);
-#if 0
-	  if (miUnselect)
-	  {
-	    select_menu_item(pmp->menu, miUnselect, False, (*pmp->pTmp_win));
-	    miUnselect = NULL;
-	  }
-	  if (MR_TO_BE_SELECTED_ITEM(pmp->menu))
-	  {
-	    select_menu_item(
-	      pmp->menu, MR_TO_BE_SELECTED_ITEM(pmp->menu), True,
-	      (*pmp->pTmp_win));
-	    MR_TO_BE_SELECTED_ITEM(pmp->menu) = NULL;
-	  }
-#else
 	  MR_SUBMENU_ITEM(pmp->menu) = NULL;
-#endif
 	  if (mrPopup == mrPopdown)
 	    mrPopup = NULL;
 	  mrPopdown = NULL;
@@ -2168,9 +2078,7 @@ static void MenuInteraction(
 	      pmret->rc = MENU_ERROR;
 	      goto DO_RETURN;
 	    }
-#if 1
 	    MR_SUBMENU_ITEM(pmp->menu) = mi;
-#endif
 	  }
 	  if (flags.do_popdown)
 	  {
@@ -2181,21 +2089,6 @@ static void MenuInteraction(
 		pop_menu_down_and_repaint_parent(
 		  &mrPopdown, &does_popdown_submenu_overlap, pmp);
 	      }
-#if 0
-	      if (miUnselect)
-	      {
-		select_menu_item(
-		  pmp->menu, miUnselect, False, (*pmp->pTmp_win));
-		miUnselect = NULL;
-	      }
-	      if (MR_TO_BE_SELECTED_ITEM(pmp->menu))
-	      {
-		select_menu_item(
-		  pmp->menu, MR_TO_BE_SELECTED_ITEM(pmp->menu), True,
-		  (*pmp->pTmp_win));
-		MR_TO_BE_SELECTED_ITEM(pmp->menu) = NULL;
-	      }
-#endif
 	      mrPopdown = NULL;
 	    }
 	    flags.do_popdown = False;
@@ -2277,9 +2170,7 @@ static void MenuInteraction(
 	  miRemovedSubmenu = MR_PARENT_ITEM(mrPopup);
 	  pop_menu_down_and_repaint_parent(
 	    &mrPopup, &does_submenu_overlap, pmp);
-#if 1
 	  MR_SUBMENU_ITEM(pmp->menu) = NULL;
-#endif
 	  if (mrPopup == mrPopdown)
 	    mrPopdown = NULL;
 	  mrPopup = NULL;
@@ -2338,9 +2229,7 @@ static void MenuInteraction(
 	      pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pTmp_win));
 	    pop_menu_down_and_repaint_parent(
 	      &mrPopup, &does_submenu_overlap, pmp);
-#if 1
 	    MR_SUBMENU_ITEM(pmp->menu) = NULL;
-#endif
 	    if (mrPopup == mrPopdown)
 	      mrPopdown = NULL;
 	    mrPopup = NULL;
@@ -2367,16 +2256,11 @@ static void MenuInteraction(
   } /* while (True) */
 
   DO_RETURN:
-#if 0
-  MR_TO_BE_SELECTED_ITEM(pmp->menu) = NULL;
-#endif
   if (mrPopdown)
   {
     pop_menu_down_and_repaint_parent(
       &mrPopdown, &does_popdown_submenu_overlap, pmp);
-#if 1
     MR_SUBMENU_ITEM(pmp->menu) = NULL;
-#endif
   }
   if (pmret->rc == MENU_SELECTED &&
       is_double_click(t0, mi, pmp, pmret, pdkp, flags.has_mouse_moved))
@@ -2483,9 +2367,7 @@ fprintf(stderr,"got MENU_TEAR_OFF\n");
   if (mrPopup)
   {
     pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap, pmp);
-#if 1
     MR_SUBMENU_ITEM(pmp->menu) = NULL;
-#endif
   }
   pmret->flags.is_key_press = flags.is_key_press;
 
@@ -3019,10 +2901,6 @@ static void select_menu_item(
 
   if (select == False)
     MI_WAS_DESELECTED(mi) = True;
-#if 0
-  else
-    MR_TO_BE_SELECTED_ITEM(mr) = NULL;
-#endif
 
   if (!MST_HAS_MENU_CSET(mr))
   {
