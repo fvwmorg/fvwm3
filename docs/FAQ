@@ -2,7 +2,7 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-Last updated Apr 25, 2002 for unstable release 2.5.2 and stable release 2.4.8.
+Last updated 13 Sept 2002 for unstable release 2.5.2 and stable release 2.4.8.
 
 Contents
 
@@ -1349,8 +1349,6 @@ A: Yes, with the alpha release 2.5.0 or any later release.  For older
 4.3  I'm seeing odd things when trying to preprocess files with the
      FvwmM4/Cpp module...
 
-(A: This is partly fixed in version 2.2, and virtually fixed in 2.4)
-
 A: Yup, I imagine that you might be.  Things like the InitFunction not
    being called or windows that were running before FVWM started not
    getting their Borders & Style options set, etc.
@@ -1361,27 +1359,11 @@ A: Yup, I imagine that you might be.  Things like the InitFunction not
    startup is all done and it has already tried to execute the
    InitFunction.
 
-   There are two possible solutions:
+   To force synchronous execution of FvwmM4/Cpp use:
 
-        - Start all your applications inside an InitFunction, or
-        - Put a Recapture in the end of your .fvwm2rc
+     ModuleSunchronous FvwmM4/Cpp -lock filename
 
-   Version 2.2 has a partial fix that makes FvwmCpp/FvwmM4 work if it is
-   the only -cmd or -f command line argument specified.
-
-     fvwm -cmd "FvwmCpp .fvwmrc.cpp"
-
-   will work but the following is unreliable
-
-     fvwm -f /usr/local/X11/etc/system.fvwm2rc -cmd "FvwmCpp .fvwmrc.cpp"
-
-   Version 2.4 has a more compete fix that makes the above line work
-   reliably: any module started by command line arguments is assumed to be
-   a module that sends back config commands.  All command line modules
-   have to quit before fvwm will proceed on to the InitFunction and
-   setting border decorations and styles.  There is a potential deadlock
-   if you start a module other than FvwmCpp/FvwmM4 but there is a timeout
-   so fvwm will eventually get going.
+   See the man page for more details.
 
 ----------------------------------------------------------------------
 

@@ -1,3 +1,9 @@
+2002-09-12  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmCpp/FvwmCpp.1: 
+	* FvwmM4/FvwmM4.1: New way to present module synopsis,
+	more prominent discussion of ModuleSynchronous.
+
 2002-09-13  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/xmanager.c (GetRegion):
