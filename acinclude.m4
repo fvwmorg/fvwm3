@@ -861,9 +861,11 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 		my_LIBS="$LIBS"
 		CPPFLAGS="$CPPFLAGS $GNOME_INCLUDEDIR"
 		LIBS="$LIBS $GNOME_LIBDIR $GNOMEUI_LIBS"
-		AC_TRY_RUN([#include <gnome.h>
+		AC_TRY_RUN([
+			#include <gnome.h>
 			int main(int c, char **v) {
-				gnome_init("test-app", "0.0", c, v);
+				/* we can't really run this outside of X */
+				if (!c) gnome_init("test-app", "0.0", c, v);
 				return 0;
 			}],
 			[want_gnome=yes],
