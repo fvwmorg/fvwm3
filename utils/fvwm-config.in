@@ -159,7 +159,7 @@ while test $# -gt 0; do
 			echo "	Default UserDir: $fvwm_userdir"
 			echo ""
 			echo "Support for features:"
-			echo "	Extended WM hints (ewmh): $with_ewmh"
+			echo "	ewmh (extended window manager hints): $with_ewmh"
 			echo "	gnome-hints (window manager hints): $with_gnomehints"
 			echo "	gtk (FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"

@@ -7,7 +7,7 @@
 /* define if GNOME WM hints are enabled */
 #undef GNOME
 
-/* define if extanded WM hints are enabled */
+/* define if extended WM hints are enabled */
 #undef HAVE_EWMH
 
 /* Where to search for images.  */

@@ -385,7 +385,7 @@ AC_SUBST(iconv_LIBS)
 AC_SUBST(iconv_CFLAGS)
 
 if test "x$found_iconv" = "xno" -a "x$with_ewmh" = "xyes"; then
-   AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv (for extanded WM hints)])
+   AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv (for extended WM hints)])
 fi
 if test "x$found_iconv" = "xyes"; then
    AC_DEFINE(HAVE_ICONV)
@@ -684,7 +684,7 @@ FVWM Configuration:
   Modules:     $my_moddir
   Data files:  $my_datdir
 
-  With Extanded Window Manager hints? $with_ewmh$problem_ewmh
+  With Extended Window Manager hints? $with_ewmh$problem_ewmh
   With GNOME Window Manager hints?    $with_gnomehints$problem_gnomehints
   With GTK support for FvwmGtk?       $with_gtk$problem_gtk$fvwmgtk_msg
   With Multibyte support?             $with_multibyte$problem_multibyte

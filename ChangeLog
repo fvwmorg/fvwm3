@@ -1,3 +1,9 @@
+2001-11-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	* acconfig.h:
+	s/extanded/extended/
+
 2001-11-26  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/Makefile.am:
