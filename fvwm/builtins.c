@@ -1181,6 +1181,7 @@ void SetXORPixmap(F_CMD_ARGS)
   else
     Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
+  XFlushGC(dpy, Scr.DrawGC);
   BroadcastLook();
 }
 
