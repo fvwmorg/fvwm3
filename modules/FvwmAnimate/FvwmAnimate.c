@@ -184,6 +184,8 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
     d = sqrt((cw/2)*(cw/2)+(ch/2)*(ch/2));
 
     angle_finite = 2*AS_PI*Animate.twist;
+    XGrabServer(dpy);
+    XInstallColormap(dpy, Pcmap);
     for (angle=0;; angle+=(float)(2*AS_PI*Animate.twist/Animate.iterations)) {
         if (angle > angle_finite)
 	    angle = angle_finite;
@@ -197,12 +199,10 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
         points[3].y = cy+sin(angle+a+AS_PI)*d;
         points[4].x = cx+cos(angle-a)*d;
         points[4].y = cy+sin(angle-a)*d;
-	XGrabServer(dpy);
 	XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
 	XFlush(dpy);
 	usleep(Animate.delay*1000);
 	XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
-	XUngrabServer(dpy);
 	cx+=xstep;
 	cy+=ystep;
 	cw+=wstep;
@@ -212,6 +212,7 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
         if (angle >= angle_finite)
 	    break;
     }
+    XUngrabServer(dpy);
     XFlush(dpy);
 }
 
@@ -246,6 +247,8 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
   ch = (float) h;
 
   angle_finite = 2 * AS_PI * Animate.twist;
+  XGrabServer(dpy);
+  XInstallColormap(dpy, Pcmap);
   for (angle = 0;; angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
     if (angle > angle_finite)
       angle = angle_finite;
@@ -265,12 +268,10 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
     points[4].x = points[0].x;
     points[4].y = points[0].y;
 
-    XGrabServer(dpy);
     XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
     XFlush(dpy);
     usleep(Animate.delay * 1000);
     XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
-    XUngrabServer(dpy);
     cx += xstep;
     cy += ystep;
     cw += wstep;
@@ -278,6 +279,7 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
     if (angle >= angle_finite)
       break;
   }
+  XUngrabServer(dpy);
   XFlush(dpy);
 }
 
@@ -308,6 +310,8 @@ void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int f
     ch = (float) h;
 
     angle_finite = 2 * AS_PI * Animate.twist;
+    XGrabServer(dpy);
+    XInstallColormap(dpy, Pcmap);
     for (angle = 0;; angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
 	if (angle > angle_finite)
 	    angle = angle_finite;
@@ -327,12 +331,10 @@ void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int f
 	points[4].x = points[0].x;
 	points[4].y = points[0].y;
 
-	XGrabServer(dpy);
 	XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
 	XFlush(dpy);
 	usleep(Animate.delay * 1000);
 	XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
-	XUngrabServer(dpy);
 	cx += xstep;
 	cy += ystep;
 	cw += wstep;
@@ -340,6 +342,7 @@ void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int f
 	if (angle >= angle_finite)
 	    break;
     }
+    XUngrabServer(dpy);
     XFlush(dpy);
 }
 
@@ -364,18 +367,19 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
     cy = (float)y;
     cw = (float)w;
     ch = (float)h;
+    XGrabServer(dpy);
+    XInstallColormap(dpy, Pcmap);
     for (i=0; i<Animate.iterations; i++) {
-	XGrabServer(dpy);
 	XDrawRectangle(dpy, root, gc, (int)cx, (int)cy, (int)cw, (int)ch);
 	XFlush(dpy);
 	usleep(Animate.delay*1000);
 	XDrawRectangle(dpy, root, gc, (int)cx, (int)cy, (int)cw, (int)ch);
-	XUngrabServer(dpy);
 	cx+=xstep;
 	cy+=ystep;
 	cw+=wstep;
 	ch+=hstep;
     }
+    XUngrabServer(dpy);
     XFlush(dpy);
 }
 
@@ -404,12 +408,13 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
     cy = (float) y;
     cw = (float) w;
     ch = (float) h;
+    XGrabServer(dpy);
+    XInstallColormap(dpy, Pcmap);
 
     if (dsta <= srca)
   /* We are going from a Window to an Icon */
     {
 	for (i = 0; i < Animate.iterations; i++) {
-	    XGrabServer(dpy);
 	    XDrawRectangle(dpy, root, gc, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
 	    XDrawRectangle(dpy, root, gc, (int) fx, (int) fy, (int) fw,
@@ -434,7 +439,6 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
 			    ((int) cy + (int) ch), (fx + fw), (fy + fh));
 	    XDrawLine(dpy, root, gc, (int) cx, ((int) cy + (int) ch), fx,
 			    (fy + fh));
-	    XUngrabServer(dpy);
 	    cx += xstep;
 	    cy += ystep;
 	    cw += wstep;
@@ -444,7 +448,6 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
     if (dsta > srca) {
 /* We are going from an Icon to a Window */
 	for (i = 0; i < Animate.iterations; i++) {
-	    XGrabServer(dpy);
 	    XDrawRectangle(dpy, root, gc, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
 	    XDrawRectangle(dpy, root, gc, x, y, w, h);
@@ -467,13 +470,13 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
 			    ((int) cy + (int) ch), (x + w), (y + h));
 	    XDrawLine(dpy, root, gc, (int) cx, ((int) cy + (int) ch), x,
 			    (y + h));
-	    XUngrabServer(dpy);
 	    cx += xstep;
 	    cy += ystep;
 	    cw += wstep;
 	    ch += hstep;
 	}
     }
+    XUngrabServer(dpy);
     XFlush(dpy);
 }
 
@@ -524,6 +527,7 @@ static void AnimateResizeLines(int x, int y, int w, int h,
 
   if (ants == 1) {                      /* if draw then erase */
     XGrabServer(dpy);                   /* grab for whole animation */
+    XInstallColormap(dpy, Pcmap);
   }
   for (ant_ctr=0;ant_ctr<=ants;ant_ctr++) {
     /*  Put args into arrays: */
@@ -580,6 +584,7 @@ ant_ctr %d\n",
                  BEG.LL.x1, BEG.LL.y1, BEG.LL.x2, BEG.LL.y2, ant_ctr));
       if (ants==0) {
         XGrabServer(dpy);
+	XInstallColormap(dpy, Pcmap);
       }
       XDrawSegments(dpy, root, gc, BEG.seg, 4);
       XFlush(dpy);

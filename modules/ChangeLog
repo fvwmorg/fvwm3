@@ -1,3 +1,7 @@
+1999-09-01  Hippo
+
+	* FvwmAnimate/FvwmAnimate.c: Installs root colormap before animating
+
 1999-09-01  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (HandlePanelPress): added handling for
