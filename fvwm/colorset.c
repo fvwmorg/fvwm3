@@ -1002,7 +1002,9 @@ void parse_colorset(int n, char *line)
 	/*
 	 * reset the pixmap if the tint or the alpha has changed
 	 */
-	if (!do_reload_pixmap && (has_tint_changed || has_image_alpha_changed))
+	if (!do_reload_pixmap &&
+	    (has_tint_changed || has_image_alpha_changed  ||
+	     (has_bg_changed && cs->alpha_pixmap != None)))
 	{
 		if (cs->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE ||
 		    cs->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)

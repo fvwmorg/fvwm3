@@ -67,7 +67,6 @@ int ewmh_DesktopGeometry(EWMH_CMD_ARGS)
 		return -1;
 	}
 
-	sprintf(action, "DesktoSize %ld %ld", width, height);
 	execute_function_override_window(NULL, NULL, action, 0, NULL);
 
 	return -1;
