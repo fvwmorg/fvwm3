@@ -1,6 +1,9 @@
 /* 
-   FvwmPipe v0.1 copyright 1996 Matthias Ettrich
+   FvwmPipe v0.1 Copyright 1996 Matthias Ettrich
    (ettrich@informatik.uni-tuebingen.de)
+   Permission is granted to distribute this software freely
+   for any purpose as long as the copyright and this
+   copyright notice remain intact.
 
    Simple hacked module to control fvwm from outside.
    When invoked this module creates a pipe "$HOME/.fvwmpipe.in".
