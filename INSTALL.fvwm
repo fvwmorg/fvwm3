@@ -323,41 +323,26 @@ is run under a session manager like xsm or gnome-session.
 This option disables session management support completely.
 
 
-  --enable-multibyte            multibyte character support (experimental)
-  ~~~~~~~~~~~~~~~~~~
+  --disable-xft                  disable anti-aliased text rendering support
+  ~~~~~~~~~~~~~
 
-FVWM has limited support for multibyte charsets.  It is fully experimental
-and does not work in all places.  If you have access to a multibyte system
-and want to extend this support, contact the fvwm-workers@fvwm.org list.
-
-
-  --disable-compound-text       disable compound text conversion
-  ~~~~~~~~~~~~~~~~~~~~~~~
-
-International application may encode its window and icon name using a
-special encoding (COMPOUND_TEXT) even with a non multibyte charset.
-Basically, this happen if the window title contains non ASCII characters
-(or only non ISO-8859-1 characters, this depends on the locale). By default,
-FVWM converts these names into STRING encoded in the current locale. In the
-pure ISO-8859-1 environment such conversion is rarely needed. Some shared
-libraries are loaded at the FVWM startup when compound text is enabled.
-This option disable this conversion. Note that --enable-multibyte causes to
-ignore this option and you should try to use --enable-multibyte if you have
-problems with the window titles.
+FVWM can use the Xft library to perform anti-aliased text rendering in any
+text drawn by fvwm and modules. This support is experimental and when FVWM
+use anti-aliased rendering, FVWM performs more redrawing that may cause
+text flickering. By default, Xft library is probed and this support is enabled
+if Xft works. You need XFree version >= 4.1 and freetype2 version >= 6.1.0
+(aka version 2.0.6), but more recent versions are better. The FONT NAMES
+AND FONT LOADING section of the fvwm manual page explains how to enable
+anti-aliased rendering at runing time.
+This option disables Xft support completely.
 
 
-  --enable-xft                  enable anti-aliased text rendering
-  ~~~~~~~~~~~~
+  --disable-xrender      disable Xrender alpha-blend rendering
+  ~~~~~~~~~~~~~~~~~
 
-Allow using Xft anti-aliased text rendering in any text drawn by fvwm
-and modules. This support is totally experimental and if anti-aliased
-rendering is enabled fvwm performs more redrawing that may cause text
-flickering. Moreover, this option adds a not negligible amount of shared
-memory to all fvwm processes. You need XFree version >= 4.1 and freetype2
-version >= 6.1.0 (aka version 2.0.6), but more recent versions are better.
-The FONT NAMES AND FONT LOADING section of the fvwm manual page explains
-how to enable anti-aliased rendering.
-
+FVWM uses the Xrender library for alpha-blend rendering and tinting. This
+library is contained in XFree version >= 4.0 and others recent X package.
+This option disables Xrender support completely.
 
   --disable-shape               disable shape extensions
   ~~~~~~~~~~~~~~~

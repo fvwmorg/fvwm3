@@ -231,7 +231,7 @@ else
 fi
 
 dnl ********* xrender
-problem_xrender=" (experimental)"
+problem_xrender=""
 AC_ARG_ENABLE(xrender,
   [  --disable-xrender      disable Xrender alpha-blend rendering ],
   [ if test "$enableval" = yes; then
@@ -255,22 +255,22 @@ AC_SUBST(Xrender_LIBS)
 AC_SUBST(Xrender_CFLAGS)
 
 dnl ********* xft
-problem_xft=" (experimental)"
+problem_xft=""
 
 AC_ARG_ENABLE(xft,
-  [  --enable-xft            enable Xft anti-aliased font rendering],
+  [  --disable-xft            disable Xft anti-aliased font rendering],
   [ if test "$enableval" = yes; then
-    with_xft="check"
+    with_xft="yes, check"
   else
     with_xft="no"
-    problem_xft=": This is the suggested default"
+    problem_xft=": Explicitly disabled"
   fi ],
-  [ with_xft="no"
-    problem_xft=": This is the suggested default"
+  [
+    problem_xft=": not specified, check"
   ]
 )
 
-if test "$with_xft" = "check"; then
+if test "$with_xft" != "no"; then
 
   dnl first check for freetype2
   have_freetype=no
@@ -301,7 +301,7 @@ if test "$with_xft" = "check"; then
     AM_CHECK_XFT(2.0.0)
     if test "x$no_xft" = x; then
       with_xft=yes
-      problem_xft=" (experimental, version 2)"
+      problem_xft=" (version 2)"
       AC_DEFINE(HAVE_XFT2)
       AC_DEFINE(HAVE_XFT)
       AC_DEFINE(HAVE_XFT_UTF8)
@@ -327,7 +327,7 @@ if test "$with_xft" = "check"; then
       if test "x$is_xft1" = "xyes"; then
         Xft_LIBS="-lXft $FT2_LIBS"
 	Xft_CFLAGS="$Xft_CFLAGS $FT2_CFLAGS"
-        problem_xft=" (experimental, version 1)"
+        problem_xft=" (version 1)"
         AC_DEFINE(HAVE_XFT)
       else
         with_xft=no
@@ -562,8 +562,11 @@ if test "x$found_lib_iconv" = "xyes" -o "x$found_sys_iconv" = "xyes"; then
    found_iconv=yes
 fi
 
-if test "x$found_iconv" = "xno" -a "x$with_ewmh" = "xyes"; then
-   AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv (for extended WM hints)])
+if test "x$found_iconv" = "xno"; then
+   AC_MSG_WARN([*** ]) 
+   AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv])
+   AC_MSG_WARN([*** Please install libiconv ftp://ftp.gnu.org/pub/gnu/libiconv/])
+   AC_MSG_WARN([*** ]) 
 fi
 
 if test "x$found_iconv" = "xyes"; then

@@ -37,16 +37,21 @@ Bool FBidiIsApplicable(const char *charset)
 	return True;
 }
 
-char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl)
+char *FBidiConvert(const char *logical_str, const char *charset, int str_len,
+		   Bool *is_rtl, int *out_len)
 {
 
-	int str_len = strlen(logical_str);
 	char *visual_str;
-
 	FriBidiCharSet fribidi_charset;
 	FriBidiChar *logical_unicode_str;
 	FriBidiChar *visual_unicode_str;
 	FriBidiCharType pbase_dir = FRIBIDI_TYPE_ON;
+
+	if (logical_str == NULL)
+		return NULL;
+
+	if (str_len < 0)
+		str_len = strlen(logical_str);
 
 	if (charset == NULL)
 	{
@@ -83,9 +88,8 @@ char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl)
 		visual_unicode_str, NULL, NULL, NULL);
 
 	/* convert from unicode finally */
-	str_len = fribidi_unicode_to_charset(
-		fribidi_charset, visual_unicode_str, str_len,
-		visual_str);
+	*out_len = fribidi_unicode_to_charset(
+		fribidi_charset, visual_unicode_str, str_len, visual_str);
 
 	if (is_rtl != NULL && pbase_dir == FRIBIDI_TYPE_RTL)
 	{

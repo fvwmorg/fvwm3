@@ -27,8 +27,16 @@
 #include "safemalloc.h"
 #include "Strings.h"
 #include "Parse.h"
+#include "Flocale.h"
 #include "FlocaleCharset.h"
 #include "Ficonv.h"
+
+#if FlocaleLibcharsetSupport
+#include <libcharset.h>
+#endif
+#if FlocaleCodesetSupport
+#include <langinfo.h>
+#endif
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -44,10 +52,15 @@
 
 /* ---------------------------- local variables ----------------------------- */
 
-static FlocaleCharset *FLCXOMCharset = NULL;	    /* X locale charset */
+/* X locale charset */
+static FlocaleCharset *FLCXOMCharset = NULL;
 /* list of XOM locale charset */
 static FlocaleCharset **FLCXOMCharsetList = NULL;
 static int FLCXOMCharsetList_num = 0;
+/* UTF-8 charset */
+static FlocaleCharset *FLCUtf8Charset = NULL;
+/* locale charset from the locale not X */
+static FlocaleCharset *FLCLocaleCharset = NULL;
 
 static char *nullsl[]		 = {NULL};
 
@@ -61,34 +74,35 @@ char *big5_0[]		  = {"BIG5",
 			     "big5",	   /* aix, hpux, osf */
 			     "zh_TW-big5", /* solaris 9? */
 			     NULL};
-char *cns11643_1986_1[]	  = {NULL};
-char *cns11643_1986_2[]	  = {NULL};
-char *cns11643_1992_3[]	  = {NULL};
-char *cns11643_1992_4[]	  = {NULL};
-char *cns11643_1992_5[]	  = {NULL};
-char *cns11643_1992_6[]	  = {NULL};
-char *cns11643_1992_7[]	  = {NULL};
+char *big5hkscs_0[]          = {"BIG5-HKSCS",
+				"BIG5",
+				"big5",       /* aix, hpux, osf */
+				"zh_TW-big5", /* solaris 9? */
+				NULL};
+char *cns11643[]          = {"EUCTW",
+			     "EUC-TW",
+			     "eucTW",
+			     "euc-tw",
+			     "euctw",
+			     NULL};
 char *dosencoding_cp437[] = {"CP437", NULL};
 char *dosencoding_cp850[] = {"CP850",
 			     "cp850",	/* osf */
 			     "IBM-850", /* aix */
 			     NULL};
-char *gb2312_1980_0[]	  = {"GB2312",
-			     "gb2312",	  /* solaris */
+char *gb2312_1980_0[]     = {"EUC-CN",
+			     "GB2312",
+			     "gb2312",    /* solaris */
 			     "dechanzi",  /* osf */
 			     "hp15CN",	  /* hpux */
 			     "IBM-eucCN", /* aix */
 			     "eucCN",	  /* irix */
 			     NULL};
+char *gbk_0[0]            = {"GBK", NULL};
 char *georgian_academy[]  = {"GEORGIAN-ACADEMY", NULL};
-char *georgian_ps[]	  = {"GEORGIAN-PS", NULL};
-char *ibm_cp1133[]	  = {"CP850" , NULL};
-char *isiri_3342[]	  = {"ISIRI-3342", NULL};
-char *iso10646_1[]	  = {"UTF-8", /* gnu, aix, osf, solaris */
-			     "utf8"   /* hpux */,
-			     "UTF8",
-			     "utf_8",
-			     NULL};
+char *georgian_ps[]       = {"GEORGIAN-PS", NULL};
+char *ibm_cp1133[]        = {"CP850" , NULL};
+char *isiri_3342[]        = {"ISIRI-3342", NULL};
 /* embed ascii into ISO-8859-1*/
 char *iso8859_1[]	  = {"ISO-8859-1",  /* gnu */
 			     "ISO8859-1",   /* aix, irix, osf, solaris */
@@ -200,12 +214,7 @@ char *iso8859_16[]	  = {"ISO-8859-16",
 			     "iso80",
 			     "iso16",
 			     NULL};
-char *utf_8[]		  =  {"UTF-8", /* gnu, solaris */
-			      "UTF8",
-			      "utf8",
-			      "utf_8",
-			      NULL};
-char *jisx0201_1976_0[]	  = {"JIS_X0201",
+char *jisx0201_1976_0[]   = {"JIS_X0201",
 			     "ISO-IR-14",
 			     "jis", /* hpux */
 			     NULL};
@@ -216,14 +225,15 @@ char *koi8_r[]		  = {"KOI8-R", /* gnu, solaris */
 			     NULL};
 char *koi8_u[]		  = {"KOI8-U",
 			     NULL};
-char *ksc5601_1987_0[]	  = {"KSC5636",
+char *ksc5601[]           = {"KSC5636",
 			     "ko_KR-johap", /* solaris */
 			     "ko_KR-johap92",
 			     "ko_KR-euc",
+			     "eucKR",
+			     "EUC-KR",
+			     "EUCKR",
+			     "euc-kr",
 			     "CP949", /* osf */
-			     NULL};
-char *ksc5601_1992_0[]	  = {"KSC5636", /* ?? */
-			     "ko_KR-johap92", /* solaris */
 			     NULL};
 char *microsoft_cp1251[]  = {"CP1251",
 			     NULL};
@@ -245,23 +255,64 @@ char *tis620_0[]	  = {"TIS-620",
 			     "tis620", /* hpux */
 			     "TACTIS", /* osf */
 			     NULL};
-char *viscii1_1_1[]	  = {"VISCII", NULL};
+char *viscii1_1_1[]       = {"VISCII", NULL};
+/* encofing only ...*/
+char *utf_8[]             =  {"UTF-8", /* gnu, solaris */
+			      "UTF8",
+			      "utf8",
+			      "utf_8",
+			      NULL};
+char *usc_2[]             = {"USC-2",
+			     "USC2",
+			     "usc2",
+			     "usc-2",
+			     "usc_2",
+			     NULL};
+char *usc_4[]             = {"USC-4",
+			     "USC4",
+			     "usc4",
+			     "usc-4",
+			     "usc_4",
+			     NULL};
+char *utf_16[]             =  {"UTF-16",
+			      "UTF16",
+			      "utf16",
+			      "utf_16",
+			      NULL};
+char *euc_jp[]            = {"EUC-JP",
+			     "EUCJP",
+			     "euc_jp",
+			     "euc-jp",
+			     "eucjp",
+			     NULL};
 #endif
 
 #if FiconvSupport
 
 #ifdef HAVE_BIDI
-#define	 CT_ENTRY(x,y,z) {x, y, FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED, z}
+#define  CT_ENTRY(x,y,z) \
+  {x, y, FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED, z, FLC_ENCODING_TYPE_FONT}
+#define  CT_ENTRY_WET(x,y,z,t) \
+  {x, y, FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED, z, t}
 #else
-#define	 CT_ENTRY(x,y,z) {x, y, FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED, NULL}
+#define  CT_ENTRY(x,y,z) \
+  {x, y, FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED, NULL, FLC_ENCODING_TYPE_FONT}
+#define  CT_ENTRY_WET(x,y,z,t) \
+  {x, y, FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED, NULL, t}
 #endif
 
 #else /* !FlocaleIconvSupport */
 
 #ifdef HAVE_BIDI
-#define	 CT_ENTRY(x,y,z) {x, nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, z}
+#define  CT_ENTRY(x,y,z) \
+  {x, nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, z, FLC_ENCODING_TYPE_FONT}
+#define  CT_ENTRY_WET(x,y,z,t) \
+  {x, nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, z, t}
 #else
-#define	 CT_ENTRY(x,y,z) {x, nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, NULL}
+#define  CT_ENTRY(x,y,z) \
+  {x, nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, NULL, FLC_ENCODING_TYPE_FONT}
+#define  CT_ENTRY_WET(x,y,z,t) \
+  {x, nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, NULL, t}
 #endif
 
 #endif
@@ -276,23 +327,24 @@ FlocaleCharset FlocaleCharsetTable[] =
 {
 	CT_ENTRY("ARMSCII-8",		armscii_8,	     NULL),
 	CT_ENTRY("BIG5-0",		big5_0,		     NULL),
-	/* These CNS* are official for Xorg (traditional Chinese) but
-	 * I do not know the iconv charset names */
-	CT_ENTRY("CNS11643.1986-1",	cns11643_1986_1,     NULL),
-	CT_ENTRY("CNS11643.1986-2",	cns11643_1986_2,     NULL),
-	CT_ENTRY("CNS11643.1992-3",	cns11643_1992_3,     NULL),
-	CT_ENTRY("CNS11643.1992-4",	cns11643_1992_4,     NULL),
-	CT_ENTRY("CNS11643.1992-5",	cns11643_1992_5,     NULL),
-	CT_ENTRY("CNS11643.1992-6",	cns11643_1992_6,     NULL),
-	CT_ENTRY("CNS11643.1992-7",	cns11643_1992_7,     NULL),
+	CT_ENTRY("BIG5HKSCS-0",         big5hkscs_0,         NULL),
+	CT_ENTRY("CNS11643.1986-1",	cns11643,     NULL),
+	CT_ENTRY("CNS11643.1986-2",	cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-3",	cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-4",	cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-5",	cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-6",	cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-7",	cns11643,     NULL),
 	CT_ENTRY("DOSENCODING-CP437",	dosencoding_cp437,   NULL),
 	CT_ENTRY("DOSENCODING-CP850",	dosencoding_cp850,   NULL),
 	CT_ENTRY("GB2312.1980-0",	gb2312_1980_0,	     NULL),
+	CT_ENTRY("GBK-0",               gbk_0,               NULL),
 	CT_ENTRY("GEORGIAN-ACADEMY",	georgian_academy,    NULL),
 	CT_ENTRY("GEORGIAN-PS",		georgian_ps,	     NULL),
 	CT_ENTRY("IBM-CP1133",		ibm_cp1133,	     NULL),
 	CT_ENTRY("ISIRI-3342",		isiri_3342,	     "ISIRI-3342"),
-	CT_ENTRY("ISO10646-1",		iso10646_1,	     "UTF-8"),
+	/* exception ISO10646-1 implies UTF-8 and not USC-2 ! */
+	CT_ENTRY_WET("ISO10646-1",  utf_8,  "UTF-8",  FLC_ENCODING_TYPE_UTF_8),
 	CT_ENTRY("ISO8859-1",		iso8859_1,	     NULL),
 	CT_ENTRY("ISO8859-2",		iso8859_2,	     NULL),
 	CT_ENTRY("ISO8859-3",		iso8859_3,	     NULL),
@@ -303,7 +355,7 @@ FlocaleCharset FlocaleCharsetTable[] =
 	CT_ENTRY("ISO8859-7",		iso8859_7,	     NULL),
 	CT_ENTRY("ISO8859-8",		iso8859_8,	     "ISO8859-8"),
 	CT_ENTRY("ISO8859-9",		iso8859_9,	     NULL),
-	CT_ENTRY("ISO8859-9E",		iso8859_9,	    NULL),
+	CT_ENTRY("ISO8859-9E",		iso8859_9,	     NULL),
 	CT_ENTRY("ISO8859-10",		iso8859_10,	     NULL),
 	CT_ENTRY("ISO8859-13",		iso8859_13,	     NULL),
 	CT_ENTRY("ISO8859-14",		iso8859_14,	     NULL),
@@ -317,8 +369,8 @@ FlocaleCharset FlocaleCharsetTable[] =
 	CT_ENTRY("KOI8-C",		koi8_r,		     NULL),
 	CT_ENTRY("KOI8-R",		koi8_r,		     NULL),
 	CT_ENTRY("KOI8-U",		koi8_u,		     NULL),
-	CT_ENTRY("KSC5601.1987-0",	ksc5601_1987_0,	     NULL),
-	CT_ENTRY("KSC5601.1992-0",	ksc5601_1992_0,	     NULL),
+	CT_ENTRY("KSC5601.1987-0",	ksc5601,	     NULL),
+	CT_ENTRY("KSC5601.1992-0",	ksc5601,	     NULL),
 	CT_ENTRY("MICROSOFT-CP1251",	microsoft_cp1251,    NULL),
 	CT_ENTRY("MICROSOFT-CP1255",	microsoft_cp1255,    "CP1255"),
 	CT_ENTRY("MICROSOFT-CP1256",	microsoft_cp1256,    "CP1256"),
@@ -329,7 +381,7 @@ FlocaleCharset FlocaleCharsetTable[] =
 	CT_ENTRY("TIS620-0",		tis620_0,	     NULL),
 	CT_ENTRY("VISCII1.1-1",		viscii1_1_1,	     NULL),
 	/* aliases */
-	CT_ENTRY("ADOBE-STANDARD",	iso8859_1,	     NULL), /* ? */
+	/* CT_ENTRY("ADOBE-STANDARD",	iso8859_1,	     NULL), no! */
 	CT_ENTRY("ASCII-0",		iso8859_1,	     NULL),
 	CT_ENTRY("BIBIG5HKSCS",		big5_0,		     NULL), /* ? */
 	CT_ENTRY("BIG5-E0",		big5_0,		     NULL), /* emacs */
@@ -337,12 +389,59 @@ FlocaleCharset FlocaleCharsetTable[] =
 	CT_ENTRY("BIG5-1",		big5_0,		     NULL),
 	CT_ENTRY("ISO646.1991-IRV",	iso8859_1,	     NULL),
 	CT_ENTRY("TIS620.2533-1",	tis620_0,	     NULL),
+	CT_ENTRY_WET("UTF-8",  utf_8,  "UTF-8",  FLC_ENCODING_TYPE_UTF_8),
+	CT_ENTRY_WET("USC-2",  usc_2,  "USC-2",  FLC_ENCODING_TYPE_USC_2),
+	CT_ENTRY_WET("USC-4",  usc_4,  NULL,     FLC_ENCODING_TYPE_USC_4),
+	CT_ENTRY_WET("UTF-16", utf_16, NULL,     FLC_ENCODING_TYPE_UTF_16),
 	CT_ENTRY(NULL, nullsl, NULL)
 };
+
+/* to be supported: ADOBE-STANDARD, some Xft1 charset  */
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- local functions ----------------------------- */
+
+static
+FlocaleCharset *FlocaleCharsetOfXCharset(char *x)
+{
+	int j = 0;
+
+	while(FlocaleCharsetTable[j].x != NULL)
+	{
+		if (StrEquals(x,FlocaleCharsetTable[j].x))
+		{
+			return &FlocaleCharsetTable[j];
+		}
+		j++;
+	}
+	return NULL;
+}
+
+static
+FlocaleCharset *FlocaleCharsetOfLocaleCharset(char *l)
+{
+	int j = 0, i = 0;
+
+	while(FlocaleCharsetTable[j].x != NULL)
+	{
+		if (StrEquals(l, FlocaleCharsetTable[j].x))
+		{
+			return &FlocaleCharsetTable[j];
+		}
+		i = 0;
+		while(FlocaleCharsetTable[j].locale[i] != NULL)
+		{
+			if (StrEquals(l, FlocaleCharsetTable[j].locale[i]))
+			{
+				return &FlocaleCharsetTable[j];
+			}
+			i++;
+		}
+		j++;
+	}
+	return NULL;
+}
 
 static
 FlocaleCharset *FlocaleCharsetOfFontStruct(Display *dpy, XFontStruct *fs)
@@ -432,6 +531,7 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 void FlocaleCharsetInit(Display *dpy, const char *module)
 {
 	static Bool initialized = False;
+	char *charset;
 
 	if (initialized)
 		return;
@@ -440,55 +540,46 @@ void FlocaleCharsetInit(Display *dpy, const char *module)
 
 	/* set the defaults X locale charsets */
 	FlocaleInit_X_Charset(dpy, module);
-}
 
-FlocaleCharset *FlocaleCharsetOfLocaleCharset(char *l)
-{
-	int j = 0, i = 0;
-
-	while(FlocaleCharsetTable[j].x != NULL)
+	charset = getenv("CHARSET");
+	if ((!charset || strlen(charset) < 3) && FlocaleLibcharsetSupport)
 	{
-		if (StrEquals(l, FlocaleCharsetTable[j].x))
-		{
-			return &FlocaleCharsetTable[j];
-		}
-		i = 0;
-		while(FlocaleCharsetTable[j].locale[i] != NULL)
-		{
-			if (StrEquals(l, FlocaleCharsetTable[j].locale[i]))
-			{
-				return &FlocaleCharsetTable[j];
-			}
-			i++;
-		}
-		j++;
+		charset = (char *)Flocale_charset();
 	}
-	return NULL;
-}
-
-FlocaleCharset *FlocaleCharsetOfXCharset(char *x)
-{
-	int j = 0;
-
-	while(FlocaleCharsetTable[j].x != NULL)
+	if ((!charset || strlen(charset) < 3) && FlocaleCodesetSupport)
 	{
-		if (StrEquals(x,FlocaleCharsetTable[j].x))
-		{
-			return &FlocaleCharsetTable[j];
-		}
-		j++;
+		charset = Fnl_langinfo(FCODESET);
 	}
-	return NULL;
+	if (charset != NULL && strlen(charset) > 2)
+	{
+		FLCLocaleCharset =
+			FlocaleCharsetOfLocaleCharset(charset);
+	}
+
+	/* never null */
+	FLCUtf8Charset = FlocaleCharsetOfXCharset(FLOCALE_UTF8_XCHARSET);
+
+#if FLOCALE_DEBUG_CHARSET
+	fprintf(stderr,"[FlocaleCharsetInit] locale charset: x:%s, bidi:%s\n",
+		FLC_DEBUG_GET_X_CHARSET(FLCXOMCharset),
+		FLC_DEBUG_GET_BIDI_CHARSET (FLCXOMCharset));
+	fprintf(stderr,"[FlocaleCharsetInit] locale charset: x:%s, bidi:%s\n",
+		FLC_DEBUG_GET_X_CHARSET(FLCLocaleCharset),
+		FLC_DEBUG_GET_BIDI_CHARSET (FLCLocaleCharset));      
+#endif
+	
 }
 
-void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints)
+void FlocaleCharsetSetFlocaleCharset(
+	Display *dpy, FlocaleFont *flf, char *hints, char *encoding,
+	char *module)
 {
 	char *charset = NULL;
 	char *iconv = NULL;
 	Bool iconv_found = False;
 	int i = 0;
 
-	FlocaleCharsetInit(dpy, "fvwmlibs");
+	FlocaleCharsetInit(dpy, module);
 
 	if (hints && *hints)
 	{
@@ -565,6 +656,7 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints
 		if (flf->fc != NULL)
 		{
 			CopyString(&fc->x, flf->fc->x);
+			fc->encoding_type = flf->fc->encoding_type;
 			if (flf->fc->bidi)
 				CopyString(&fc->bidi, flf->fc->bidi);
 			else
@@ -574,6 +666,7 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints
 		{
 			CopyString(&fc->x, "Unkown"); /* for simplicity */
 			fc->bidi = NULL;
+			fc->encoding_type = FLC_ENCODING_TYPE_FONT;
 		}
 		fc->locale = (char **)safemalloc(2*sizeof(char *));
 		CopyString(&fc->locale[0], iconv);
@@ -581,12 +674,6 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints
 		fc->iconv_index =  FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED;
 		flf->fc = fc;
 	}
-	if (flf->font != NULL && flf->fc != NULL &&
-	    StrEquals(flf->fc->x, "ISO10646-1"))
-	{
-		flf->flags.is_utf8 = True;
-	}
-
 	if (charset != NULL)
 	{
 		free(charset);
@@ -595,6 +682,90 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints
 	{
 		flf->fc = &UnkownCharset;
 	}
+
+	/* now the string charset */
+	if (encoding != NULL)
+	{
+		flf->str_fc = FlocaleCharsetOfXCharset(encoding);
+		if (flf->str_fc == NULL)
+		{
+			flf->str_fc = FlocaleCharsetOfLocaleCharset(encoding);
+		}
+		if (flf->str_fc == NULL)
+		{
+			flf->str_fc = &UnkownCharset;
+		}
+	}
+	else if (FftSupport && flf->fftf.fftfont != NULL)
+	{
+		if (flf->fftf.str_encoding != NULL)
+		{
+			flf->str_fc = FlocaleCharsetOfXCharset(
+							flf->fftf.str_encoding);
+			if (flf->str_fc == NULL)
+			{
+				flf->str_fc = FlocaleCharsetOfLocaleCharset(
+							flf->fftf.str_encoding);
+			}
+			if (flf->str_fc == NULL)
+			{
+				flf->str_fc = &UnkownCharset;
+			}
+		}
+		else
+		{
+			flf->str_fc =
+				FlocaleCharsetGetDefaultCharset(dpy, module);
+		}
+	}
+	if (flf->str_fc == NULL)
+	{
+		if (flf->fc != &UnkownCharset)
+		{
+			flf->str_fc = flf->fc;
+		}
+		else
+		{
+			flf->str_fc =
+				FlocaleCharsetGetDefaultCharset(dpy, module);
+		}
+	}
+}
+
+FlocaleCharset *FlocaleCharsetGetDefaultCharset(Display *dpy, char *module)
+{
+	static warn = True;
+
+	FlocaleCharsetInit(dpy, module);
+
+	if (FLCXOMCharset != NULL)
+		return FLCXOMCharset;
+	if (FLCLocaleCharset != NULL)
+		return FLCLocaleCharset;
+
+	if (warn)
+	{
+		warn = False;
+		fprintf(stderr,
+			"[%s][%s]: WARN -- Cannot find default locale "
+			"charset with:\n\t",
+			(module != NULL)? module:"FVWMlibs",
+			"FlocaleGetDefaultCharset");
+		fprintf(stderr,"X Ouput Method ");
+		fprintf(stderr,"CHARSET env variable ");
+		if (FlocaleLibcharsetSupport)
+			fprintf(stderr,"locale_charset");
+		if (FlocaleCodesetSupport)
+			fprintf(stderr," nl_langinfo");
+		fprintf(stderr,"\n");
+		/* never null */
+		FLCLocaleCharset =
+			FlocaleCharsetOfXCharset(FLOCALE_FALLBACK_XCHARSET);
+		fprintf(stderr,"\tUse default charset: %s\n",
+			FLOCALE_FALLBACK_XCHARSET);
+
+	}
+	return FLCLocaleCharset;
 }
 
 FlocaleCharset *FlocaleCharsetGetFLCXOMCharset(void)
@@ -602,23 +773,40 @@ FlocaleCharset *FlocaleCharsetGetFLCXOMCharset(void)
 	return FLCXOMCharset;
 }
 
+FlocaleCharset *FlocaleCharsetGetUtf8Charset(void)
+{
+	return FLCUtf8Charset;
+}
+
+FlocaleCharset *FlocaleCharsetGetLocaleCharset(void)
+{
+	return FLCLocaleCharset;
+}
+
 FlocaleCharset *FlocaleCharsetGetUnknownCharset(void)
 {
 	return &UnkownCharset;
 }
 
-const char *FlocaleGetBidiCharset(Display *dpy, FlocaleFont *flf)
+const char *FlocaleGetBidiCharset(Display *dpy, FlocaleCharset *fc)
 {
-	FlocaleCharset *fc;
-	if (flf == NULL)
-	{
-		return NULL;
-	}
-	fc = flf->fc;
-	if (fc == FlocaleCharsetGetUnknownCharset() || fc->bidi == NULL)
+	if (fc == NULL || fc == FlocaleCharsetGetUnknownCharset() ||
+	    fc->bidi == NULL)
 	{
 		return NULL;
 	}
 	return (const char *)fc->bidi;
 }
 
+
+FlocaleCharset *FlocaleCharsetGetEUCJPCharset(void)
+{
+	static FlocaleCharset *fc = NULL;
+
+	if (fc != NULL)
+		return fc;
+
+	/* never null */
+	fc = FlocaleCharsetOfXCharset("EUC-JP");
+	return fc;
+}

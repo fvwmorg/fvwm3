@@ -20,11 +20,11 @@
 void FftGetFontHeights(
 	FftFontType *fftf, int *height, int *ascent, int *descent);
 void FftGetFontWidths(
-	FftFontType *fftf, int *max_char_width);
-FftFontType *FftGetFont(Display *dpy, char *fontname);
+	FlocaleFont *flf, int *max_char_width);
+FftFontType *FftGetFont(Display *dpy, char *fontname, char *module);
 void FftDrawString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws,
 	Pixel fg, Pixel fgsh, Bool has_fg_pixels, int len, unsigned long flags);
-int FftTextWidth(FftFontType *fftf, char *str, int len);
+int FftTextWidth(FlocaleFont *flf, char *str, int len);
 
 #endif

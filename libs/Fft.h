@@ -285,8 +285,7 @@ typedef struct
 	FftFont *fftfont_rotated_180;
 	FftFont *fftfont_rotated_270;
 	char *encoding;
-	Bool utf8;
-	Bool mb;
+	char *str_encoding;
 } FftFontType;
 
 /* ---------------------------- exported variables (globals) ---------------- */
@@ -489,6 +488,9 @@ typedef struct
 #define FftDrawString8(a,b,c,d,e,f,g) XftDrawString8(a,b,c,d,e,f,g)
 #define FftDrawString16(a,b,c,d,e,f,g) XftDrawString16(a,b,c,d,e,f,g)
 #define FftDrawString32(a,b,c,d,e,f,g) XftDrawString32(a,b,c,d,e,f,g)
+#define FftPDrawString8  XftDrawString8
+#define FftPDrawString16 XftDrawString16
+#define FftPDrawString32 XftDrawString32
 #define FftDrawRect(a,b,c,d,e,f) XftDrawRect(a,b,c,d,e,f)
 #define FftDrawSetClip(a,b) XftDrawSetClip(a,b)
 #define FftTextExtents8(a,b,c,d,e) XftTextExtents8(a,b,c,d,e)
@@ -510,9 +512,11 @@ typedef struct
 /* utf8 functions */
 #if FftUtf8Support
 #define FftDrawStringUtf8(a,b,c,d,e,f,g) XftDrawStringUtf8(a,b,c,d,e,f,g)
+#define FftPDrawStringUtf8 XftDrawStringUtf8
 #define FftTextExtentsUtf8(a,b,c,d,e) XftTextExtentsUtf8(a,b,c,d,e)
 #else
 #define FftDrawStringUtf8(a,b,c,d,e,f,g)
+#define FftPDrawStringUtf8 FftPDumyFunc
 #define FftTextExtentsUtf8(a,b,c,d,e)
 #endif
 
@@ -617,6 +621,9 @@ typedef struct
 #define FftDrawString8(a,b,c,d,e,f,g)
 #define FftDrawString16(a,b,c,d,e,f,g)
 #define FftDrawString32(a,b,c,d,e,f,g)
+#define FftPDrawString8 FftPDumyFunc
+#define FftPDrawString16 FftPDumyFunc
+#define FftPDrawString32 FftPDumyFunc
 #define FftDrawRect(a,b,c,d,e,f)
 #define FftDrawSetClip(a,b) False
 #define FftTextExtents8(a,b,c,d,e)
@@ -638,6 +645,7 @@ typedef struct
 
 /* utf8 functions */
 #define FftDrawStringUtf8(a,b,c,d,e,f,g)
+#define FftPDrawStringUtf8 FftPDumyFunc
 #define FftTextExtentsUtf8(a,b,c,d,e)
 
 #endif

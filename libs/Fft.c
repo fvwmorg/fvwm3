@@ -27,6 +27,7 @@
 #include "Strings.h"
 #include "Flocale.h"
 #include "Fft.h"
+#include "FlocaleCharset.h"
 #include "FftInterface.h"
 #include "PictureBase.h"
 
@@ -101,18 +102,37 @@ FftChar16 *FftUtf8ToFftString16(unsigned char *str, int len, int *nl)
 }
 
 static
-void FftSetupEncoding(FftFontType *fftf)
+void FftSetupEncoding(
+	Display *dpy, FftFontType *fftf, char *encoding, char *module)
 {
-	if (fftf == NULL)
+	FlocaleCharset *fc;
+
+	if (!FftSupport || fftf == NULL)
 		return;
 
-	fftf->utf8 = False;
 	fftf->encoding = NULL;
+	fftf->str_encoding = NULL;
 
+	if (encoding != NULL)
+	{
+		fftf->str_encoding = encoding;
+	}
 	if (FftSupportUseXft2)
 	{
-		fftf->utf8 = True;
-		fftf->encoding = "ISO10646-1";
+		if (encoding != NULL)
+		{
+			fftf->encoding = encoding;
+		}
+		else if ((fc =
+			  FlocaleCharsetGetDefaultCharset(dpy,NULL)) != NULL &&
+			 StrEquals(fc->x,FLC_FFT_ENCODING_ISO8859_1))
+		{
+			fftf->encoding = FLC_FFT_ENCODING_ISO8859_1;
+		}
+		else
+		{
+			fftf->encoding = FLC_FFT_ENCODING_ISO10646_1;
+		}
 	}
 	else if (FftSupport)
 	{
@@ -128,10 +148,6 @@ void FftSetupEncoding(FftFontType *fftf)
 			    e->values->value.u.s != NULL)
 			{
 				fftf->encoding = e->values->value.u.s;
-				if (StrEquals(fftf->encoding, "ISO10646-1"))
-				{
-					fftf->utf8 = True;
-				}
 				return;
 			}
 			i++;
@@ -178,6 +194,10 @@ FftFont *FftGetRotatedFont(
 	return FftFontOpenPattern(dpy, rotated_pat);
 }
 
+void FftPDumyFunc(void)
+{
+}
+
 /* ---------------------------- interface functions ------------------------- */
 
 void FftGetFontHeights(
@@ -193,28 +213,30 @@ void FftGetFontHeights(
 }
 
 void FftGetFontWidths(
-	FftFontType *fftf, int *max_char_width)
+	FlocaleFont *flf, int *max_char_width)
 {
 	FGlyphInfo extents;
 
-	/* FIXME */
-	if (FftUtf8Support && fftf->utf8)
+	/* FIXME:  max_char_width should not be use in the all fvwm !!!*/
+	if (FftUtf8Support && FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
-		FftTextExtentsUtf8(fftdpy, fftf->fftfont, "W", 1, &extents);
+		FftTextExtentsUtf8(fftdpy, flf->fftf.fftfont, "W", 1, &extents);
 	}
 	else
 	{
-		FftTextExtents8(fftdpy, fftf->fftfont, "W", 1, &extents);
+		FftTextExtents8(fftdpy, flf->fftf.fftfont, "W", 1, &extents);
 	}
 	*max_char_width = extents.xOff;
 
 	return;
 }
 
-FftFontType *FftGetFont(Display *dpy, char *fontname)
+FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 {
 	FftFont *fftfont = NULL;
 	FftFontType *fftf = NULL;
+	char *fn = NULL, *str_enc = NULL;
+	FlocaleCharset *fc;
 
 	if (!FftSupport)
 	{
@@ -228,7 +250,37 @@ FftFontType *FftGetFont(Display *dpy, char *fontname)
 	{
 		init_fft(dpy);
 	}
-	fftfont = FftFontOpenName(dpy, fftscreen, fontname);
+	/* Xft2 always load an USC-4 fonts, that we consider as an USC-2 font
+	 * (i.e., an ISO106464-1 font) or an ISO8859-1 if the user ask for this
+	 * or the locale charset is ISO8859-1.
+	 * Xft1 support ISO106464-1, ISO8859-1 and others we load an
+	 * ISO8859-1 font by default if the locale charset is ISO8859-1 and
+	 * an ISO106464-1 one if this not the case */
+	if (matchWildcards("*?8859-1*", fontname))
+	{
+		str_enc = FLC_FFT_ENCODING_ISO8859_1;
+	}
+	else if (matchWildcards("*?10646-1*", fontname))
+	{
+		str_enc = FLC_FFT_ENCODING_ISO10646_1;
+	}
+	if (!FftSupportUseXft2 && str_enc == NULL)
+	{
+		if ((fc = FlocaleCharsetGetFLCXOMCharset()) != NULL &&
+		    StrEquals(fc->x,FLC_FFT_ENCODING_ISO8859_1))
+		{
+			fn = CatString2(fontname,":encoding=ISO8859-1");
+		}
+		else
+		{
+			fn = CatString2(fontname,":encoding=ISO10646-1");
+		}
+	}
+	else
+	{
+		fn = fontname;
+	}
+	fftfont = FftFontOpenName(dpy, fftscreen, fn);
 	if (!fftfont)
 	{
 		return NULL;
@@ -238,7 +290,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname)
 	fftf->fftfont_rotated_90 = NULL;
 	fftf->fftfont_rotated_180 = NULL;
 	fftf->fftfont_rotated_270 = NULL;
-	FftSetupEncoding(fftf);
+	FftSetupEncoding(dpy, fftf, str_enc, module);
 
 	return fftf;
 }
@@ -248,6 +300,9 @@ void FftDrawString(
 	Pixel fg, Pixel fgsh, Bool has_fg_pixels, int len, unsigned long flags)
 {
 	FftDraw *fftdraw = NULL;
+	void (*DrawStringFunc)();
+	char *str;
+	Bool free_str = False;
 	XGCValues vr;
 	XColor xfg, xfgsh;
 	FftColor fft_fg, fft_fgsh;
@@ -255,7 +310,7 @@ void FftDrawString(
 	FftFont *uf;
 	int x,y, xt,yt, step = 0;
 	float alpha_factor;
-
+	
 	if (!FftSupport)
 	{
 		return;
@@ -284,7 +339,7 @@ void FftDrawString(
 		}
 		uf = fftf->fftfont_rotated_180;
 		y = fws->y;
-		x = fws->x + FftTextWidth(&flf->fftf, fws->str, len);
+		x = fws->x + FftTextWidth(flf, fws->e_str, len);
 	}
 	else if (fws->flags.text_rotation == TEXT_ROTATED_270)
 	{
@@ -295,7 +350,7 @@ void FftDrawString(
 						  fws->flags.text_rotation);
 		}
 		uf = fftf->fftfont_rotated_270;
-		y = fws->y + FftTextWidth(&flf->fftf, fws->str, len);
+		y = fws->y + FftTextWidth(flf, fws->e_str, len);
 		x = fws->x - FLF_SHADOW_UPPER_SIZE(flf);
 	}
 	else
@@ -350,75 +405,64 @@ void FftDrawString(
 	xt = x;
 	yt = y;
 
-	if (FftUtf8Support && fftf->utf8)
+	str = fws->e_str;
+	if (FftUtf8Support && FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
-		if (flf->shadow_size != 0 && has_fg_pixels)
-		{
-			while(FlocaleGetShadowTextPosition(flf, fws, x, y,
-							   &xt, &yt, &step))
-			{
-				FftDrawStringUtf8(
-					  fftdraw, &fft_fgsh, uf, xt, yt,
-					  (FftChar8 *)fws->str, len);
-			}
-		}
-		FftDrawStringUtf8(fftdraw, &fft_fg, uf, xt, yt,
-				  (FftChar8 *)fws->str, len);
+		DrawStringFunc = FftPDrawStringUtf8;
 	}
-	else if (fftf->utf8)
+	else if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
-		FftChar16 *new;
-		int nl;
-
-		new = FftUtf8ToFftString16((unsigned char *)fws->str, len, &nl);
-		if (new != NULL)
-		{
-			if (flf->shadow_size != 0 && has_fg_pixels)
-			{
-				while(FlocaleGetShadowTextPosition(
-							      flf, fws, x, y,
-							      &xt, &yt, &step))
-				{
-					FftDrawString16(
-						fftdraw, &fft_fgsh, uf,
-						xt, yt, new, nl);
-				}
-			}
-			FftDrawString16(fftdraw, &fft_fg, uf, xt, yt, new, nl);
-			free(new);
-		}
+		DrawStringFunc = FftPDrawString16;
+		str = (char *)FftUtf8ToFftString16(
+			  (unsigned char *)fws->e_str, len, &len);
+		free_str = True;
+	}
+	else if (FLC_ENCODING_TYPE_IS_USC_2(flf->fc))
+	{
+		DrawStringFunc = FftPDrawString16;
+	}
+	else if (FLC_ENCODING_TYPE_IS_USC_4(flf->fc))
+	{
+		DrawStringFunc = FftPDrawString32;
 	}
 	else
 	{
-		if (flf->shadow_size != 0 && has_fg_pixels)
+		DrawStringFunc = FftPDrawString8;
+	}
+
+	if (flf->shadow_size != 0 && has_fg_pixels)
+	{
+		while(FlocaleGetShadowTextPosition(flf, fws, x, y,
+						   &xt, &yt, &step))
 		{
-			while(FlocaleGetShadowTextPosition(flf, fws, x, y,
-							   &xt, &yt, &step))
-			{
-				FftDrawString8(
-				       fftdraw, &fft_fgsh, uf, xt, yt,
-				       (unsigned char *)fws->str, len);
-			}
+			DrawStringFunc(fftdraw, &fft_fgsh, uf, xt, yt, str, len);
 		}
-		FftDrawString8(fftdraw, &fft_fg, uf, xt, yt,
-			       (unsigned char *)fws->str, len);
+	}
+	DrawStringFunc(fftdraw, &fft_fg, uf, xt, yt, str, len);
+
+	if (free_str && str != NULL)
+	{
+		free(str);
 	}
 	FftDrawDestroy (fftdraw);
 }
 
-int FftTextWidth(FftFontType *fftf, char *str, int len)
+int FftTextWidth(FlocaleFont *flf, char *str, int len)
 {
 	FGlyphInfo extents;
+	int result = 0;
 
 	if (!FftSupport)
 	{
 		return 0;
 	}
-	if (FftUtf8Support && fftf->utf8)
+	if (FftUtf8Support && FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
-		FftTextExtentsUtf8(fftdpy, fftf->fftfont, str, len, &extents);
+		FftTextExtentsUtf8(
+				fftdpy, flf->fftf.fftfont, str, len, &extents);
+		result = extents.xOff;
 	}
-	else if (fftf->utf8)
+	else if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
 		FftChar16 *new;
 		int nl;
@@ -427,14 +471,32 @@ int FftTextWidth(FftFontType *fftf, char *str, int len)
 		if (new != NULL)
 		{
 			FftTextExtents16(
-				fftdpy, fftf->fftfont, new, nl, &extents);
+				fftdpy, flf->fftf.fftfont, new, nl, &extents);
+			result = extents.xOff;
 			free(new);
 		}
 	}
+	else if (FLC_ENCODING_TYPE_IS_USC_2(flf->fc))
+	{
+		FftTextExtents16(
+			fftdpy, flf->fftf.fftfont, (FftChar16 *)str, len,
+			&extents);
+		result = extents.xOff;
+	}
+	else if (FLC_ENCODING_TYPE_IS_USC_4(flf->fc))
+	{
+		FftTextExtents32(
+			fftdpy, flf->fftf.fftfont, (FftChar32 *)str, len,
+			&extents);
+		result = extents.xOff;
+	}
 	else
 	{
-		FftTextExtents8(fftdpy, fftf->fftfont, str, len, &extents);
+		FftTextExtents8(
+			fftdpy, flf->fftf.fftfont, (FftChar8 *)str, len,
+			&extents);
+		result = extents.xOff;
 	}
 
-	return extents.xOff;
+	return result;
 }

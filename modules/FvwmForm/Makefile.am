@@ -45,9 +45,10 @@ config_DATA =        \
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs $(Xft_LIBS) $(X_LIBS) -lfvwm  \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
-	-lm $(Bidi_LIBS)
+	-lm $(iconv_LIBS) $(Bidi_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS) $(Bidi_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS) $(iconv_CFLAGS) \
+	$(Bidi_CFLAGS)
 
 FvwmForm-Setup: FvwmForm-Setup.in Makefile
 	rm -f $@

@@ -42,13 +42,6 @@
 #endif
 #endif /* FiconvSupport */
 
-#if FlocaleLibcharsetSupport
-#include <libcharset.h>
-#endif
-#if FlocaleCodesetSupport
-#include <langinfo.h>
-#endif
-
 /* ---------------------------- local definitions --------------------------- */
 
 /* ---------------------------- local macros -------------------------------- */
@@ -64,8 +57,8 @@
 /* ---------------------------- local variables ----------------------------- */
 
 static Bool FiconvInitialized = False;
-static FlocaleCharset *FLCUtf8Charset = NULL;	    /* UTF-8 charset */
-static FlocaleCharset *FLCDefaultIconvCharset = NULL;
+static FlocaleCharset *FLCIconvUtf8Charset = NULL;       /* UTF-8 charset */
+static FlocaleCharset *FLCIconvDefaultCharset = NULL; 
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -97,19 +90,19 @@ int set_default_iconv_charsets(FlocaleCharset *fc)
 {
 	int i=0,j=0;
 
-	if (!FiconvSupport || FLCUtf8Charset == NULL || fc == NULL)
+	if (!FiconvSupport || FLCIconvUtf8Charset == NULL || fc == NULL)
 		return False;
 
-	while(FLC_GET_LOCALE_CHARSET(FLCUtf8Charset,i) != NULL)
+	while(FLC_GET_LOCALE_CHARSET(FLCIconvUtf8Charset,i) != NULL)
 	{
 		j = 0;
 		while(FLC_GET_LOCALE_CHARSET(fc,j) != NULL)
 		{
 			if (is_iconv_supported(
-				  FLC_GET_LOCALE_CHARSET(FLCUtf8Charset,i),
+				  FLC_GET_LOCALE_CHARSET(FLCIconvUtf8Charset,i),
 				  FLC_GET_LOCALE_CHARSET(fc,j)))
 			{
-				FLC_SET_ICONV_INDEX(FLCUtf8Charset,i);
+				FLC_SET_ICONV_INDEX(FLCIconvUtf8Charset,i);
 				FLC_SET_ICONV_INDEX(fc,j);
 				return 1;
 			}
@@ -117,7 +110,8 @@ int set_default_iconv_charsets(FlocaleCharset *fc)
 		}
 		i++;
 	}
-	FLC_SET_ICONV_INDEX(FLCUtf8Charset, FLC_INDEX_ICONV_CHARSET_NOT_FOUND);
+	FLC_SET_ICONV_INDEX(FLCIconvUtf8Charset,
+			    FLC_INDEX_ICONV_CHARSET_NOT_FOUND);
 	FLC_SET_ICONV_INDEX(fc, FLC_INDEX_ICONV_CHARSET_NOT_FOUND);
 	return 0;
 }
@@ -132,8 +126,8 @@ void set_iconv_charset_index(FlocaleCharset *fc)
 
 	if (FLC_DO_ICONV_CHARSET_INITIALIZED(fc))
 		return; /* already set */
-	if (FLCUtf8Charset == NULL ||
-	    !FLC_DO_ICONV_CHARSET_INITIALIZED(FLCUtf8Charset))
+	if (FLCIconvUtf8Charset == NULL ||
+	    !FLC_DO_ICONV_CHARSET_INITIALIZED(FLCIconvUtf8Charset))
 	{
 		FLC_SET_ICONV_INDEX(fc, FLC_INDEX_ICONV_CHARSET_NOT_FOUND);
 		return;
@@ -141,7 +135,7 @@ void set_iconv_charset_index(FlocaleCharset *fc)
 	while(FLC_GET_LOCALE_CHARSET(fc,i) != NULL)
 	{
 		if (is_iconv_supported(
-			FLC_GET_ICONV_CHARSET(FLCUtf8Charset),
+			FLC_GET_ICONV_CHARSET(FLCIconvUtf8Charset),
 			FLC_GET_LOCALE_CHARSET(fc,i)))
 		{
 			FLC_SET_ICONV_INDEX(fc,i);
@@ -275,107 +269,48 @@ static
 void FiconvInit(Display *dpy, const char *module)
 {
 	int suc = False;
-	char *charset;
-	FlocaleCharset *xom_charset;
 
 	if (!FiconvSupport || FiconvInitialized)
 		return;
 
 	FiconvInitialized = True;
 	FlocaleCharsetInit(dpy, module);
-	xom_charset = FlocaleCharsetGetFLCXOMCharset();
+	FLCIconvUtf8Charset = FlocaleCharsetGetUtf8Charset();
+	FLCIconvDefaultCharset = FlocaleCharsetGetFLCXOMCharset();
 
-	charset = getenv("CHARSET");
-	if ((!charset || strlen(charset) < 3) && FlocaleLibcharsetSupport)
-		charset = (char *)Flocale_charset();
-	if ((!charset || strlen(charset) < 3) && FlocaleCodesetSupport)
-		charset = Fnl_langinfo(FCODESET);
-
-	if (charset != NULL && strlen(charset) > 2)
+	suc = set_default_iconv_charsets(FLCIconvDefaultCharset);
+	if (!suc)
 	{
-		FLCDefaultIconvCharset = FlocaleCharsetOfLocaleCharset(charset);
-	}
-	if (FLCDefaultIconvCharset == NULL)
-	{
-		FLCDefaultIconvCharset = xom_charset;
-	}
-	if (FLCDefaultIconvCharset == NULL)
-	{
-		if (charset == NULL)
-		{
-			fprintf(stderr,
-				"[%s][%s]: WARN -- Cannot get locale "
-				"charset with:\n\t",
-				module, "FiconvInit");
-		}
-		else
-		{
-			fprintf(stderr,
-				"[%s][%s]: WARN -- Unsupported locale "
-				"charset '%s' obtained with:\n",
-				module, "FiconvInit", charset);
-		}
-		fprintf(stderr,"\tCHARSET env variable");
-		if (FlocaleLibcharsetSupport)
-			fprintf(stderr,", locale_charset");
-		if (FlocaleCodesetSupport)
-			fprintf(stderr,", nl_langinfo");
-		fprintf(stderr,", XOM");
-		fprintf(stderr,"\n");
-	}
-
-	/* get the fallback charset if the above fail: never null */
-	if (FLCDefaultIconvCharset == NULL)
-	{
-		FLCDefaultIconvCharset =
-			FlocaleCharsetOfXCharset(FLOCALE_FALLBACK_XCHARSET);
-		fprintf(stderr,"\tUse Default Charset: %s\n",
-			FLC_GET_X_CHARSET(FLCDefaultIconvCharset));
-	}
-
-#if FLOCALE_DEBUG_CHARSET
-	fprintf(stderr,"[Ficonv] locale charset: x:%s, bidi:%s\n",
-		FLC_DEBUG_GET_X_CHARSET(FLCDefaultIconvCharset),
-		FLC_DEBUG_GET_BIDI_CHARSET (FLCDefaultIconvCharset));
-#endif
-
-	/* never null */
-	FLCUtf8Charset = FlocaleCharsetOfXCharset(FLOCALE_UTF8_XCHARSET);
-
-	suc = set_default_iconv_charsets(FLCDefaultIconvCharset);
-	if (!suc && FLCDefaultIconvCharset != xom_charset && xom_charset != NULL)
-	{
-		FLCDefaultIconvCharset = xom_charset;
-		suc = set_default_iconv_charsets(FLCDefaultIconvCharset);
+		FLCIconvDefaultCharset = FlocaleCharsetGetLocaleCharset();
+		suc = set_default_iconv_charsets(FLCIconvDefaultCharset);
 	}
 	if (!suc)
 	{
 		fprintf(stderr,
-			"[%s][FiconvInit]: WARN -- Cannot get default "
-			"iconv charset with:\n", module);
-		fprintf(stderr, "\tlocale charset '%s'\n",
-			FLC_DEBUG_GET_X_CHARSET(FLCDefaultIconvCharset));
-		fprintf(stderr, "\tXOM charset '%s'\n",
-			FLC_GET_X_CHARSET(xom_charset));
-		FLCUtf8Charset = NULL;
-		FLCDefaultIconvCharset = NULL;
+		       "[%s][FiconvInit]: WARN -- Cannot get default "
+		       "iconv charset for default charsets '%s' and '%s'\n",
+		       module,
+		       FLC_DEBUG_GET_X_CHARSET(FlocaleCharsetGetFLCXOMCharset()),
+		       FLC_DEBUG_GET_X_CHARSET(FLCIconvDefaultCharset));
+		FLCIconvUtf8Charset = NULL;
+		FLCIconvDefaultCharset = NULL;
 	}
 
 #if FLOCALE_DEBUG_CHARSET
-fprintf(stderr,"[FiconvInit] iconv charset: x:%s, iconv:%s\n",
-		FLC_DEBUG_GET_X_CHARSET(FLCDefaultIconvCharset),
-		FLC_DEBUG_GET_ICONV_CHARSET(FLCDefaultIconvCharset));
+	fprintf(stderr,"[FiconvInit] iconv charset: x:%s, iconv:%s\n",
+		FLC_DEBUG_GET_X_CHARSET(FLCIconvDefaultCharset),
+		FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvDefaultCharset));
 	fprintf(stderr,"[FiconvInit] UTF-8 charset: x:%s, iconv:%s\n",
-		FLC_DEBUG_GET_X_CHARSET(FLCUtf8Charset),
-		FLC_DEBUG_GET_ICONV_CHARSET(FLCUtf8Charset));
+		FLC_DEBUG_GET_X_CHARSET(FLCIconvUtf8Charset),
+		FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset));
 #endif
 
 }
 
 static
-FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleFont *flf)
+FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleCharset *fc)
 {
-	FlocaleCharset *fc;
+	FlocaleCharset *my_fc;
 
 	if (!FiconvSupport)
 		return NULL;
@@ -383,88 +318,169 @@ FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleFont *flf)
 	if (!FiconvInitialized)
 		FiconvInit(dpy, "FVWM");
 
-	if (FLCUtf8Charset == NULL)
+	if (FLCIconvUtf8Charset == NULL)
 		return NULL;
 
-	if (flf == NULL)
+	if (fc == NULL)
 	{
-		fc = FLCDefaultIconvCharset;
+		my_fc = FLCIconvDefaultCharset;
+		if (my_fc == NULL)
+			return NULL;
 	}
 	else
 	{
-		fc = flf->fc;
+		my_fc = fc;
 	}
 
-	if (fc == FlocaleCharsetGetUnknownCharset())
-		return NULL;
-
-	if (!FLC_DO_ICONV_CHARSET_INITIALIZED(fc))
+	if (!FLC_DO_ICONV_CHARSET_INITIALIZED(my_fc))
 	{
-		set_iconv_charset_index(fc);
+		set_iconv_charset_index(my_fc);
 #if FLOCALE_DEBUG_CHARSET
 		fprintf(stderr, "[Flocale] set up iconv charset: "
 			"x: %s, iconv: %s\n",
-			FLC_DEBUG_GET_X_CHARSET(fc),
-			FLC_DEBUG_GET_ICONV_CHARSET(fc));
+			FLC_DEBUG_GET_X_CHARSET(my_fc),
+			FLC_DEBUG_GET_ICONV_CHARSET(my_fc));
 #endif
+		if (!FLC_HAVE_ICONV_CHARSET(my_fc))
+		{
+			fprintf(stderr, "[fvwmlibs] cannot get iconv converter " 
+				"for charset %s\n",
+				FLC_DEBUG_GET_X_CHARSET(my_fc));
+			return NULL;
+		}
 	}
-	if (!FLC_HAVE_ICONV_CHARSET(FLCUtf8Charset) ||
-	    !FLC_HAVE_ICONV_CHARSET(fc))
+	if (!FLC_HAVE_ICONV_CHARSET(my_fc))
 	{
 		return NULL;
 	}
 
-	return fc;
+	return my_fc;
 }
 
 /* ---------------------------- interface functions ------------------------- */
 
-/* conversion from UTF8 to the current charset */
-char *FiconvUtf8ToCharset(Display *dpy, FlocaleFont *flf,
+/* conversion from UTF8 to the "current" charset */
+char *FiconvUtf8ToCharset(Display *dpy, FlocaleCharset *fc,
 			  const char *in, unsigned int in_size)
 {
 	char *out = NULL;
-	FlocaleCharset *fc;
+	FlocaleCharset *my_fc;
 
-	if (!FiconvSupport || (fc = FiconvSetupConversion(dpy, flf)) == NULL)
+	if (!FiconvSupport || (my_fc = FiconvSetupConversion(dpy, fc)) == NULL)
 	{
 		return NULL;
 	}
 
 #if FLOCALE_DEBUG_ICONV
 	fprintf(stderr, "[FiconvUtf8ToCharset] conversion from %s to %s\n",
-		FLC_DEBUG_GET_ICONV_CHARSET(FLCUtf8Charset),
-		FLC_DEBUG_GET_ICONV_CHARSET(fc));
+		FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset),
+		FLC_DEBUG_GET_ICONV_CHARSET(my_fc));
 #endif
 
-	out = convert_charsets(FLC_GET_ICONV_CHARSET(FLCUtf8Charset),
-			       FLC_GET_ICONV_CHARSET(fc),
-			       in, in_size);
+	if (FLC_ENCODING_TYPE_IS_UTF_8(my_fc))
+	{
+		/* in can be a none terminate string so do not use CopyString */
+		out = safemalloc(in_size+1);
+		strncpy(out, in, in_size);
+		out[in_size]=0;
+	}
+	else
+	{
+		out = convert_charsets(
+				FLC_GET_ICONV_CHARSET(FLCIconvUtf8Charset),
+				FLC_GET_ICONV_CHARSET(my_fc),
+				in, in_size);
+	}
 
 	return out;
 }
 
 /* conversion from the current charset to UTF8 */
-char *FiconvCharsetToUtf8(Display *dpy, FlocaleFont *flf,
+char *FiconvCharsetToUtf8(Display *dpy, FlocaleCharset *fc,
 			  const char *in, unsigned int in_size)
 {
 	char *out = NULL;
-	FlocaleCharset *fc;
+	FlocaleCharset *my_fc;
 
-	if (!FiconvSupport || (fc = FiconvSetupConversion(dpy, flf)) == NULL)
+	if (!FiconvSupport || (my_fc = FiconvSetupConversion(dpy, fc)) == NULL)
 	{
 		return NULL;
 	}
 
 #if FLOCALE_DEBUG_ICONV
 	fprintf(stderr, "[FiconvCharsetToUtf8] conversion from %s to %s\n",
-		FLC_DEBUG_GET_ICONV_CHARSET(fc),
-		FLC_DEBUG_GET_ICONV_CHARSET(FLCUtf8Charset));
+		FLC_DEBUG_GET_ICONV_CHARSET(my_fc),
+		FLC_DEBUG_GET_ICONV_CHARSET(FLCIconvUtf8Charset));
 #endif
 
-	out = convert_charsets(FLC_GET_ICONV_CHARSET(fc),
-			       FLC_GET_ICONV_CHARSET(FLCUtf8Charset),
-			       in, in_size);
+	if (FLC_ENCODING_TYPE_IS_UTF_8(my_fc))
+	{
+		/* in can be a none terminate string so do not use CopyString */
+		out = safemalloc(in_size+1);
+		strncpy(out, in, in_size);
+		out[in_size]=0;
+	}
+	else
+	{
+		out = convert_charsets(
+				FLC_GET_ICONV_CHARSET(my_fc),
+				FLC_GET_ICONV_CHARSET(FLCIconvUtf8Charset),
+				in, in_size);
+	}
+	return out;
+}
+
+/* conversion from charset to charset */
+char *FiconvCharsetToCharset(
+	Display *dpy, FlocaleCharset *in_fc, FlocaleCharset *out_fc,
+	const char *in, unsigned int in_size)
+{
+	char *out = NULL;
+	char *tmp = NULL;
+	int tmp_len;
+	Bool free_tmp = False;
+	FlocaleCharset *my_in_fc;
+	FlocaleCharset *my_out_fc;
+
+	if (!FiconvSupport ||
+	    (my_in_fc = FiconvSetupConversion(dpy, in_fc)) == NULL)
+	{
+		return NULL;
+	}
+	if (!FiconvSupport ||
+	    (my_out_fc = FiconvSetupConversion(dpy, out_fc)) == NULL)
+	{
+		return NULL;
+	}
+
+	tmp = (char *)in;
+	tmp_len = in_size;
+	if (!FLC_ENCODING_TYPE_IS_UTF_8(my_in_fc))
+	{
+		tmp = FiconvCharsetToUtf8(
+			dpy, my_in_fc, (const char *)in, in_size);
+		if (tmp != NULL)
+		{
+			free_tmp = True;
+			tmp_len = strlen(tmp);
+		}
+		else
+		{
+			/* fail to convert */
+			return NULL;
+		}
+	}
+
+	out = tmp;
+	if (!FLC_ENCODING_TYPE_IS_UTF_8(my_out_fc))
+	{
+		out = FiconvUtf8ToCharset(
+			dpy, my_out_fc, (const char *)tmp, tmp_len);
+		if (free_tmp)
+		{
+			free(tmp);
+		}
+	}
 
 	return out;
 }

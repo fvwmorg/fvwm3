@@ -956,9 +956,7 @@ First, you can use what we can call a usual font name, for example,
 That is, you can use an X Logical Font Description (XLFD for
 short).  Then the "first" font which matches the description is
 loaded and used. This "first" font depends of your font path and
-also of your locale if fvwm has been compiled with the
---enable-multibyte option to configure.  If you have multibyte
-support, fonts which match the locale charset are loaded in
+also of your locale. Fonts which match the locale charset are loaded in
 priority order. For example with
 .EX
 -adobe-courier-bold-r-normal--10-*
@@ -978,10 +976,8 @@ is a comma separated list of (simple) XLFD font names, for example:
 .EX
 -adobe-courier-bold-r-normal--14-*,-*-courier-medium-r-normal--14-*
 .EE
-Without multibyte support each simple font name is tried until a
-matching font is found.  With multibyte support each simple font
-name is tried until a matching font with the locale charset is
-found and if this fails each simple font name is tried without
+Each simple font name is tried until a matching font with the locale
+charset is found and if this fails each simple font name is tried without
 constraint on the charset.
 
 More details on the XLFD can be found in the X
@@ -989,25 +985,24 @@ manual page, the X Logical Font Description Conventions document
 (called xlfd) and the XLoadFont and XCreateFontSet manual pages.
 Some useful font utilities are: xlsfonts, xfontsel, xfd and xset.
 
-If you have Xft support (--enable-xft configure option) you can
-specify an Xft font name (description) of a true type (or Type1)
-font prefixed by "xft:", for example:
+If you have Xft support you can specify an Xft font name (description)
+of a true type (or Type1) font prefixed by "xft:", for example:
 .EX
 "xft:Luxi Mono"
 "xft:Luxi Mono:Medium:Roman:size=14:encoding=iso8859-1"
 .EE
 The "first" font which matches the description is loaded.  This
-first font depends on the XftConfig configuration file.
-Unfortunately, it does not seem that there is documentation on
-Xft font names (but it is similar to XLFD in some respects).  One
-may read the Xft manual page. It seems that the first string which
-follows "xft:" is always considered as the family.  With the
-second example Luxi Mono is the Family (Other XFree TTF families:
+first font depends on the XftConfig configuration file with Xft1
+and on the /etc/fonts/fonts.conf file with Xft2.
+One may read the Xft manual page and the fontconfig man page with Xft2.
+The first string which follows "xft:" is always considered as the family.
+With the second example Luxi Mono is the Family (Other XFree TTF families:
 "Luxi Serif", "Luxi Sans"), Medium is the Weight (other possible
 weights: Light, DemiBold, Bold, Black), Roman is the slant or the
 style (other possibility: Regular, Oblique, Italic) size specifies
 the point size (for a pixel size use pixelsize=), encoding allows
-for defining the charset (basically iso8859-1 or iso10646-1).
+for enforce a charset (iso8859-1 or iso10646-1 only; if no encoding
+is given the locale charset is assumed).
 An important parameter is "minspace=bool" where bool is True or
 False. If bool is False (the default?) Xft gives a greater font
 height to fvwm than if bool is True. This may modify text
@@ -1021,15 +1016,11 @@ in between ":", as "foundry=foundry_name", "spacing=type" where
 type can be monospace, proportional or charcell,
 "charwidth=integer", "charheight=integer" or "antialias=bool"
 where bool is True or False. It seems that these
-parameters are not always taken in account. Moreover, for each
-category it is possible to give several value separated by a
-period:
-.EX
-"xft:familly1,familly2:pixelsize=13:encoding=koi8-u,iso8859-15"
-.EE
+parameters are not always taken in account.
 To determine which Xft fonts are really loaded you can export
 XFT_DEBUG=1 before starting fvwm and take a look to the error
-log. Anyway, Xft support is experimental (from the X and the fvwm
+log. With Xft2 you may use fc-list to list the available fonts.
+Anyway, Xft support is experimental (from the X and the fvwm
 point of view) and the quality of the rendering depends on number
 of parameters (the XFree and the freetype versions and your
 video card(s)).  Moreover, the Xft protocol forces fvwm to produce
@@ -1047,8 +1038,7 @@ allows for writting portable configuration files.
 
 .SH FONT ENCODINGS
 
-The font name is used by FVWM, (and X),
-to determine the font encoding.
+The font name is used by FVWM, (and X), to determine the font encoding.
 
 For example,
 if you use an iso10646-1 (Unicode) font for menus you should use
@@ -1100,7 +1090,7 @@ bi-directionality) and to use local_iso8859_6_iconv for defining the converters.
 Fonts can be given 3d effects.
 At the beginning of the font name add
 .EX
-shadow=size [offset] [directions]:
+Shadow=size [offset] [directions]:
 .EE
 .I size
 is a positive integer which specifies the number of pixels of shadow.

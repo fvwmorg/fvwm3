@@ -37,14 +37,31 @@
 
 #define FWS_HAVE_LENGTH (1)
 
+#define FLC_ENCODING_TYPE_NONE     0
+#define FLC_ENCODING_TYPE_FONT     1
+#define FLC_ENCODING_TYPE_UTF_8    2
+#define FLC_ENCODING_TYPE_USC_2    3
+#define FLC_ENCODING_TYPE_USC_4    4
+#define FLC_ENCODING_TYPE_UTF_16   5
+
+#define FLC_FFT_ENCODING_ISO8859_1  "ISO8859-1"
+#define FLC_FFT_ENCODING_ISO10646_1 "ISO10646-1"
+
+#define FLOCALE_FALLBACK_XCHARSET "ISO8859-1"
+#define FLOCALE_UTF8_XCHARSET     "ISO10646-1"
+#define FLOCALE_ICONV_CONVERSION_MAX_NUMBER_OF_WARNING 10
+
+#define FLC_INDEX_ICONV_CHARSET_NOT_FOUND         -1
+#define FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED   -2
+
+#define FLOCALE_DEBUG_SETLOCALE 0
+#define FLOCALE_DEBUG_CHARSET   0
+#define FLOCALE_DEBUG_ICONV     0
+
 /* ---------------------------- global macros ------------------------------- */
 
 #define IS_TEXT_DRAWN_VERTICALLY(x) \
 	(x == TEXT_ROTATED_90 || x == TEXT_ROTATED_270)
-
-
-#define FLC_INDEX_ICONV_CHARSET_NOT_FOUND	  -1
-#define FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED	  -2
 
 #define FLC_GET_X_CHARSET(fc)	      (fc != NULL)? fc->x:NULL
 #define FLC_SET_ICONV_INDEX(fc, i)    fc->iconv_index = i
@@ -55,6 +72,12 @@
       (fc != NULL && fc->iconv_index != FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED)
 #define FLC_HAVE_ICONV_CHARSET(fc) (fc != NULL && fc->iconv_index >= 0)
 #define FLC_GET_BIDI_CHARSET(fc) (fc != NULL)? fc->bidi : NULL
+#define FLC_ENCODING_TYPE_IS_UTF_8(fc) \
+      (fc != NULL && fc->encoding_type == FLC_ENCODING_TYPE_UTF_8)
+#define FLC_ENCODING_TYPE_IS_USC_2(fc) \
+      (fc != NULL && fc->encoding_type == FLC_ENCODING_TYPE_USC_2)
+#define FLC_ENCODING_TYPE_IS_USC_4(fc) \
+      (fc != NULL && fc->encoding_type == FLC_ENCODING_TYPE_USC_4)
 
 #define FLC_DEBUG_GET_X_CHARSET(fc)  \
 	 (fc == NULL || fc->x == NULL)? "None":fc->x
@@ -62,14 +85,6 @@
 	 (fc != NULL && fc->iconv_index >= 0)? fc->locale[fc->iconv_index]:"None"
 #define FLC_DEBUG_GET_BIDI_CHARSET(fc) \
 	 (fc == NULL || fc->bidi == NULL)? "None":fc->bidi
-
-#define FLOCALE_FALLBACK_XCHARSET "ISO8859-1"
-#define FLOCALE_UTF8_XCHARSET	  "ISO10646-1"
-#define FLOCALE_ICONV_CONVERSION_MAX_NUMBER_OF_WARNING 10
-
-#define FLOCALE_DEBUG_SETLOCALE 0
-#define FLOCALE_DEBUG_CHARSET	0
-#define FLOCALE_DEBUG_ICONV	0
 
 #define FLF_MULTIDIR_HAS_UPPER(flf) \
 	      ((flf->flags.shadow_dir & MULTI_DIR_NW) || \
@@ -122,10 +137,11 @@ typedef enum
 
 typedef struct FlocaleCharset
 {
-	char *x;	  /* X font charset */
-	char **locale;	  /* list of possible charset names */
-	int iconv_index;  /* defines the iconv charset name */
-	char *bidi;	  /* if not null a fribidi charset */
+	char *x;               /* X font charset */
+	char **locale;         /* list of possible charset names */
+	int iconv_index;       /* defines the iconv charset name */
+	char *bidi;            /* if not null a fribidi charset */
+	short encoding_type;   /* encoding: font, utf8 or usc2 */
 } FlocaleCharset;
 
 typedef struct _FlocaleFont
@@ -135,8 +151,9 @@ typedef struct _FlocaleFont
 	int count;
 	XFontStruct *font;	/* font structure */
 	XFontSet fontset;	/* font set */
-	FftFontType fftf;
-	FlocaleCharset *fc;
+	FftFontType fftf;       /* fvwm xft font */
+	FlocaleCharset *fc;     /* fvwm charset of the font */
+	FlocaleCharset *str_fc; /* fvwm charset of the strings to be displayed */
 	int height;		/* height of the font: ascent + descent */
 	int ascent;
 	int descent;
@@ -147,19 +164,18 @@ typedef struct _FlocaleFont
 	{
 		unsigned shadow_dir : 8;
 		unsigned must_free_fc : 1;
-		/* is_utf8 and is_mb are used only with a XFontStruct font,
-		 * fftf as its own value in the FftFontType and for XFontSet
-		 * everything is done in the good way automatically and these
-		 * parameters are not needed */
-		unsigned is_mb	    : 1; /* if true the font is an iso10646-1
-					  * and utf8 encoding is assumed */
-		unsigned is_utf8    : 1; /* if true the font is a 2 bytes font */
+		/* is_mb are used only with a XFontStruct font, for XFontSet
+		 * everything is done in the good way automatically and this
+		 * parameters is not needed */
+		unsigned is_mb  : 1; /* if true the font is a 2 bytes font */
 	} flags;
 } FlocaleFont;
 
 typedef struct
 {
 	char *str;
+	char *e_str;    /* tmp */
+	XChar2b *str2b; /* tmp */
 	GC gc;
 	colorset_struct *colorset;
 	Window win;
@@ -315,7 +331,6 @@ Bool FlocaleTextListToTextProperty(
 /* ***************************************************************************
  * Misc
  * ***************************************************************************/
-const char *FlocaleGetBidiCharset(Display *dpy, FlocaleFont *flf);
 
 #endif /* FLOCALE_H */
 

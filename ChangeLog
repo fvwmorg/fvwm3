@@ -1,3 +1,30 @@
+2002-06-19  olicha  <olivier.chapuis@free.fr>
+
+	* INSTALL.fvwm:
+	Removed --enable-mulibyte and --disable-compound-text config option
+	documentation. s/enable-xft/disable-xft/ and document --disable-xrender
+
+	* configure.in:
+	Xft is on by default no
+
+	* libs/FlocaleCharset.c (*):
+	* libs/FlocaleCharset.h:
+	* libs/Ficonv.c (*):
+	* libs/Ficonv.h:
+	* libs/Flocale.c (*):
+	* libs/Flocale.h:
+	* libs/Fft.c (*):
+	* libs/FftInterface.h:
+	* libs/FBidi.c:
+	* libs/FBidi.h:
+	* fvwm/ewmh_names.c ():
+	Some cleanup. Implemented StringEncoding= in font names. Fixed
+	string encoding for xft fonts. Try to be more cleaver about defaults
+	charsets. Improvement in the locale charset table.
+
+	* fvwm/fvwm.1:
+	Some documentation cleanup regarding Xft
+
 2002-06-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (find_func_type):

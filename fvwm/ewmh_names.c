@@ -25,6 +25,8 @@
 #include <X11/Xmd.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Flocale.h"
+#include "libs/FlocaleCharset.h"
 #include "libs/Ficonv.h"
 #include "fvwm.h"
 #include "window_flags.h"
@@ -47,7 +49,7 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 {
 	unsigned char *val;
 	char *tmp_str;
-	FlocaleFont *flf;
+	FlocaleCharset *fc = NULL;
 
 	if (!FiconvSupport)
 		return;
@@ -65,7 +67,10 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 					    EWMH_ATOM_LIST_FVWM_WIN);
 			return;
 		}
-		flf = fwin->icon_font;
+		if (fwin->icon_font != NULL)
+		{
+			fc = fwin->icon_font->str_fc;
+		}
 		tmp_str = fwin->visible_icon_name;
 	}
 	else
@@ -78,15 +83,18 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 					    EWMH_ATOM_LIST_FVWM_WIN);
 			return;
 		}
-		flf = fwin->title_font;
+		if (fwin->title_font != NULL)
+		{
+			fc = fwin->title_font->str_fc;
+		}
 		tmp_str = fwin->visible_name;
 	}
 
 	if (tmp_str == NULL)
 		return; /* should never happen */
 
-	val = (unsigned char *)FiconvCharsetToUtf8(dpy, flf,
-						   tmp_str, strlen(tmp_str));
+	val = (unsigned char *)FiconvCharsetToUtf8(
+					dpy, fc, tmp_str, strlen(tmp_str));
 
 	if (val == NULL)
 		return;
@@ -114,6 +122,7 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 	unsigned int size = 0;
 	CARD32 *val;
 	char *tmp_str;
+	FlocaleCharset *fc = NULL;
 
 	if (!FiconvSupport)
 		return 0;
@@ -126,9 +135,13 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 		SET_HAS_EWMH_WM_ICON_NAME(fwin,0);
 		return 0;
 	}
+	if (fwin->icon_font != NULL)
+	{
+		fc = fwin->icon_font->str_fc;
+	}
 
-	tmp_str = (char *)FiconvUtf8ToCharset(dpy, fwin->icon_font ,
-					      (const char *) val, size);
+	tmp_str = (char *)FiconvUtf8ToCharset(
+					dpy, fc, (const char *) val, size);
 	free(val);
 	if (tmp_str == NULL)
 	{
@@ -171,6 +184,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 	unsigned int size = 0;
 	CARD32 *val;
 	char *tmp_str;
+	FlocaleCharset *fc = NULL;
 
 	if (!FiconvSupport)
 		return 0;
@@ -183,9 +197,13 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 		SET_HAS_EWMH_WM_NAME(fwin,0);
 		return 0;
 	}
+	if (fwin->title_font != NULL)
+	{
+		fc = fwin->title_font->str_fc;
+	}
 
-	tmp_str = (char *)FiconvUtf8ToCharset(dpy, fwin->title_font,
-					      (const char *) val, size);
+	tmp_str = (char *)FiconvUtf8ToCharset(
+					dpy, fc, (const char *) val, size);
 	free(val);
 	if (tmp_str == NULL)
 	{

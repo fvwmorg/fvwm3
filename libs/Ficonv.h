@@ -22,12 +22,10 @@
 /* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
-#include "FlocaleCharset.h"
 
 /* ---------------------------- global definitions -------------------------- */
 
-/* at present time iconv is used only for EWMH support */
-#if defined(HAVE_EWMH) && defined(HAVE_ICONV)
+#ifdef HAVE_ICONV
 #define FiconvSupport 1
 #else
 #define FiconvSupport 0
@@ -47,32 +45,6 @@
 
 #endif
 
-#ifdef HAVE_LIBCHARSET
-#define FlocaleLibcharsetSupport 1
-#else
-#define FlocaleLibcharsetSupport 0
-#endif
-
-#ifdef HAVE_CODESET
-#define FlocaleCodesetSupport 1
-#else
-#define FlocaleCodesetSupport 0
-#endif
-
-#if FlocaleLibcharsetSupport
-#define Flocale_charset()   locale_charset()
-#else
-#define Flocale_charset()   NULL
-#endif
-
-#if FlocaleCodesetSupport
-#define Fnl_langinfo(a) nl_langinfo(a)
-#define FCODESET CODESET
-#else
-#define Fnl_langinfo(a) NULL
-#define FCODESET 0
-#endif
-
 /* ---------------------------- global macros ------------------------------- */
 
 #define FICONV_CONVERSION_MAX_NUMBER_OF_WARNING 10
@@ -82,9 +54,11 @@
 typedef void* Ficonv_t;
 
 /* ---------------------------- interface functions ------------------------- */
-char *FiconvUtf8ToCharset(Display *dpy, FlocaleFont *flf,
+char *FiconvUtf8ToCharset(Display *dpy, FlocaleCharset *fc,
 			  const char *in, unsigned int in_size);
-char *FiconvCharsetToUtf8(Display *dpy, FlocaleFont *flf,
+char *FiconvCharsetToUtf8(Display *dpy, FlocaleCharset *fc,
 			  const char *in, unsigned int in_size);
-
+char *FiconvCharsetToCharset(
+	Display *dpy, FlocaleCharset *in_fc, FlocaleCharset *out_fc,
+	const char *in, unsigned int in_size);
 #endif /* FICONV_H */

@@ -85,7 +85,6 @@
 #include <X11/Xlib.h>
 
 #if HAVE_BIDI
-
 /*
  * Checks whether the string in the given charset should be BidiConvert'd.
  */
@@ -94,7 +93,8 @@ Bool FBidiIsApplicable(const char *charset);
 /*
  * Converts the given logical string to visual string for the given charset.
  */
-char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl);
+char *FBidiConvert(const char *logical_str, const char *charset, int str_len,
+		   Bool *is_rtl, int *out_len);
 
 #else /* !HAVE_BIDI */
 
