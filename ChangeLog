@@ -1,7 +1,11 @@
 2003-04-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh_events.c (ewmh_WMStateStaysOnBottom):
+	Fixed a miss print in my previous commit
+ 
+	* fvwm/ewmh_events.c (ewmh_WMStateStaysOnBottom):
 	(ewmh_MoveResize)
+	(ewmh_WMStateStaysOnBottom): 
 	* fvwm/ewmh.c (ewmh_AllowsMinimize):
 	* fvwm/ewmh_intern.h:
 	Added comment on the implementation at the top of ewmh.c.

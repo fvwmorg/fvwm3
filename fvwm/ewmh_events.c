@@ -861,7 +861,7 @@ int ewmh_WMStateStaysOnBottom(EWMH_CMD_ARGS)
 	return True;
       return False;
     }
-    if (fwin->layer >= Scr.BottomLayer)
+    if (fwin->layer <= Scr.BottomLayer)
       return True;
     return False;
   }
