@@ -15,6 +15,9 @@ Init
 
    HideWidget 17
    HideWidget 18
+   HideWidget 47
+   HideWidget 48
+   HideWidget 49
    HideWidget 35
    HideWidget 36
    HideWidget 37
@@ -94,6 +97,7 @@ Init
      Set $SoundPlayer = {rplay}
 
      Set $Fvwm = 0
+     Set $Slow =0
      Set $Laptop = 0
      Set $KdeSysMenu = 0
      Set $KdeUserMenu = 0
@@ -464,6 +468,49 @@ Main
   End
 End
 
+Widget 47
+Property
+ Position 285 110
+ Type ItemDraw
+ Title {Do you have a slow X server?}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 48
+Property
+ Title {No}
+ Position 485 110
+ Type RadioButton
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 48 1
+   ChangeValue 49 0
+   Set $Slow={0}
+  End
+End
+
+Widget 49
+Property
+ Title {Yes}
+ Position 535 110
+ Type RadioButton
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 48 0
+   ChangeValue 49 1
+   Set $Slow={1}
+  End
+End
 
 Widget 35
 Property
@@ -611,7 +658,7 @@ Main
    If (GetValue 42) == 9 Then
     ChangeTitle 43 {gnome-terminal}
    If (GetValue 42) == 10 Then
-    ChangeTitle 43 {/usr/dt/dtterm}
+    ChangeTitle 43 {/usr/dt/bin/dtterm}
   End
 End
 
@@ -927,6 +974,9 @@ Main
      
       ShowWidget 17
       ShowWidget 18
+      ShowWidget 47
+      ShowWidget 48
+      ShowWidget 49
       ShowWidget 35
       ShowWidget 36
       ShowWidget 37
@@ -980,6 +1030,9 @@ Main
 
       HideWidget 17
       HideWidget 18
+      HideWidget 47
+      HideWidget 48
+      HideWidget 49
       HideWidget 35
       HideWidget 36
       HideWidget 37
@@ -1066,7 +1119,10 @@ Main
       ShowWidget 33
 
       HideWidget 17
-      HideWidget 18     
+      HideWidget 18
+      HideWidget 47
+      HideWidget 48
+      HideWidget 49
       HideWidget 35
       HideWidget 36
       HideWidget 37
@@ -1122,6 +1178,9 @@ Main
       ShowWidget 18
       ShowWidget 35
       ShowWidget 36
+      ShowWidget 47
+      ShowWidget 48
+      ShowWidget 49
       ShowWidget 37
       ShowWidget 38
       ShowWidget 39
@@ -1273,10 +1332,9 @@ Main
   Begin
 
    # Create the fvwm user home dir if needed
-   Do {Exec /bin/mkdir -p } $FHOME
+   Do {[Exec /bin/mkdir -p } $FHOME
  
    # Backup: script-fvwm-setup95.pl do that
-   
    
    Set $ImagePath = (GetTitle 24)
    Set $SoundPath = (GetTitle 29)
@@ -1324,7 +1382,7 @@ Main
    If $KdeUserMenu == {1} Then
       Set $KdeMenu = {1}
 
-   Set $PERLCMD = $CONFDIR{/script-fvwm-setup95.pl --configin=} $INPUT { --dirout=} $FHOME { --fvwm=} $Fvwm { --km=} $KdeMenu { --ksm=} $KdeSysMenu { --kum=} $KdeUserMenu { --kfm=} $KfmIcons { --gmg=} $GnomeMenuGtk { --gsmg=} $GnomeSysMenuGtk { --gumg=} $GnomeUserMenuGtk { --grmg=} $GnomeRHMenuGtk { --gsmf=} $GnomeSysMenuFvwm { --gumf=} $GnomeUserMenuFvwm { --grmf=} $GnomeRHMenuFvwm { --gs=} $GnomeSession { --gy=} $GnomeY { --gpath=} $GnomePath { --cde=} $Cde { --stroke=} $Stroke { --lap=} $Laptop { --pp=} $PanelStaysPut { --editor="} $Editor {" --reditor="} $Reditor {" --file="} $FileMgr {" --term="} $Term {" --spl="} $SoundPlayer {" --spa=} $SoundPath { --i=} $IP { --ip=} $ImagePath { --dip="} $DefImagePath {"}
+   Set $PERLCMD = $CONFDIR{/script-fvwm-setup95.pl --configin=} $INPUT { --dirout=} $FHOME { --fvwm=} $Fvwm { --sxs=} $Slow { --km=} $KdeMenu { --ksm=} $KdeSysMenu { --kum=} $KdeUserMenu { --kfm=} $KfmIcons { --gmg=} $GnomeMenuGtk { --gsmg=} $GnomeSysMenuGtk { --gumg=} $GnomeUserMenuGtk { --grmg=} $GnomeRHMenuGtk { --gsmf=} $GnomeSysMenuFvwm { --gumf=} $GnomeUserMenuFvwm { --grmf=} $GnomeRHMenuFvwm { --gs=} $GnomeSession { --gy=} $GnomeY { --gpath=} $GnomePath { --cde=} $Cde { --stroke=} $Stroke { --lap=} $Laptop { --pp=} $PanelStaysPut { --editor="} $Editor {" --reditor="} $Reditor {" --file="} $FileMgr {" --term="} $Term {" --spl="} $SoundPlayer {" --spa=} $SoundPath { --i=} $IP { --ip=} $ImagePath { --dip="} $DefImagePath {"}
 
   Do {BusyCursor Read True}
   Do {Echo Piperead 'perl } $PERLCMD {'}

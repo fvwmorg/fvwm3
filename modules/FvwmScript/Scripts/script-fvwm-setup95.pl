@@ -18,6 +18,7 @@ GetOptions(
    "configin=s"	=> \$ConfigIn,
    "dirout=s"		=> \$DirOut,
 	"fvwm=i"       => \$Fvwm,
+	"sxs=i"			=> \$Slow,
 	"km=i"			=> \$KdeMenu,
 	"ksm=i"       	=> \$KdeSysMenu,
 	"kum=i"			=> \$KdeUserMenu,
@@ -47,7 +48,7 @@ GetOptions(
 	"dip=s"			=> \$DefImagePath
 ) || wrongUsage();
 
-if ($ConfigIn eq "" || $DirOut eq "" || $Fvwm eq "" ||
+if ($ConfigIn eq "" || $DirOut eq "" || $Fvwm eq "" || $Slow eq "" ||
 		$KdeMenu eq "" || $KdeSysMenu eq "" || $KdeUserMenu eq "" ||  
 		$KfmIcons eq "" ||  $GnomeMenuGtk eq "" || 
 		$GnomeSysMenuGtk eq "" || $GnomeUserMenuGtk eq "" ||
@@ -93,12 +94,14 @@ while(<IN>) {
    $uncomment-- if ($uncomment > 0);
    $comment-- if ($comment > 0);
 
-   if (/^\#WIN/ && $Fvwm) {
+   if ((/^\#WIN/ && $Fvwm)||(/^\#FAST/ && $Slow)) {
 		@l=split(' ',$line);
 		$comment=$l[1];
 	}
+	
 
-	if(($line =~ /^\#FVWM/ && $Fvwm) || 
+	if(($line =~ /^\#FVWM/ && $Fvwm) ||
+			($line =~ /^\#SLOW/ && $Slow) ||
 			($line =~ /^\#K_M/ && $KdeMenu) || 
 			($line =~ /^\#K_SM/&& $KdeSysMenu) || 
 			($line =~ /^\#K_UM/ && $KdeUserMenu) ||

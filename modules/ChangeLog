@@ -1,3 +1,13 @@
+2000-04-20  olicha <olivier.chapuis@free.fr>
+
+	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:
+	* modules/FvwmScript/Scripts/script-fvwm-sample95.pl:
+	Added a CDE support and a new FAST/SLOW X server option for 
+	the Sample-95 installation
+
+	* modules/FvwmScript/Scripts/ScriptFvwmBrowser
+	Some fixes, need more work.
+	
 2000-04-19  Hippo
 
 	* FvwmIconMan/xmanager.c: fixed disappearing title button (todo 109)

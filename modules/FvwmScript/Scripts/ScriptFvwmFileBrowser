@@ -21,11 +21,11 @@ Init
    Set $POS=(Add $POS -1)
   End
   Set $PWD=(StrCopy $PWD 1 $POS)
-  Set $CMD2={bash -c "cd;cd } $PWD {; pwd"}
+  Set $CMD2={cd;cd } $PWD {; pwd}
   Set $PWD=(GetOutput $CMD2 0 0)
   Do {Exec echo } $PWD
   Set $OPT={ }
-  Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+  Set $CMD={cd } $PWD {; ls} $OPT {-1 -F}
   Set $LS=(GetOutput $CMD 1 -1)
   Set $ID=2
   While (GetOutput $CMD $ID -1) <> {} Do
@@ -121,15 +121,16 @@ Widget 6
 Property
  Position 21 67
  Size 50 18
- Icon up.xpm
+ Title {up}
+ #Icon up.xpm
  Type PushButton
 Main
  Case message of
   SingleClic :
   Begin
-   Set $CMD={bash -c "cd } $PWD {/..; pwd"}
+   Set $CMD={cd } $PWD {/..; pwd}
    Set $PWD=(GetOutput $CMD 0 0)
-   Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+   Set $CMD={cd } $PWD {; ls} $OPT {-1 -F}
    Set $LS=(GetOutput $CMD 1 -1)
    Set $ID=2
    While (GetOutput $CMD $ID -1) <> {} Do
@@ -147,14 +148,15 @@ Widget 11
 Property
  Position 91 67
  Size 50 18
- Icon home.xpm
+ Title {home}
+ #Icon home.xpm
  Type PushButton
 Main
  Case message of
   SingleClic :
   Begin
-   Set $PWD={~}
-   Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+   Set $PWD={~/}
+   Set $CMD={cd } $PWD {; ls} $OPT {-1 -F}
    Set $LS=(GetOutput $CMD 1 -1)
    Set $ID=2
    While (GetOutput $CMD $ID -1) <> {} Do
@@ -181,7 +183,7 @@ Main
     Set $OPT={ -A }
    Else
     Set $OPT={ }
-   Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+   Set $CMD={cd } $PWD {; ls} $OPT {-1 -F}
    Set $LS=(GetOutput $CMD 1 -1)
    Set $ID=2
    While (GetOutput $CMD $ID -1) <> {} Do
@@ -205,14 +207,14 @@ Main
  Case message of
   SingleClic :
   Begin
-   Set $CMD3={bash -c "cd } $PWD {; ls} $OPT {-1"}
+   Set $CMD3={cd } $PWD {; ls} $OPT {-1}
    Set $PWD2=$PWD {/} (GetOutput $CMD3 (GetValue 7) -1)
-   Set $CMD2={bash -c "cd } $PWD {;cd } $PWD2 {; pwd"}
+   Set $CMD2={cd } $PWD {;cd } $PWD2 {; pwd}
    Set $PWD2=(GetOutput $CMD2 0 0)
    If $PWD2 <> $PWD Then
    Begin
     Set $PWD = $PWD2
-    Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+    Set $CMD={cd } $PWD {; ls} $OPT {-1 -F}
     Set $LS=(GetOutput $CMD 1 -1)
     Set $ID=2
     While (GetOutput $CMD $ID -1) <> {} Do
