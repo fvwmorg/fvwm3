@@ -1095,36 +1095,25 @@ Style * Font -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
 to force FVWM to use the font with iso8859-6 as the encoding (this is useful for
 bi-directionality) and to use local_iso8859_6_iconv for defining the converters.
 
-.SH FONT EFFECTS
+.SH FONT SHADOW EFFECTS
 
-It is possible to shadow text by adding at the beginning of an
-FVWM font name
+Fonts can be given 3d effects.
+At the beginning of the font name add
 .EX
 shadow=size [offset] [directions]:
 .EE
-where
 .I size
-is a positive integer which specifies the shadow , where
+is a positive integer which specifies the number of pixels of shadow.
 .I offset
-is an optional positive integer which defines an offset for
-the position of the shadow
-and where
+is an optional positive integer which defines the number of pixels to offset
+the shadow from the edge of the character.
+The default offset is zero.
 .I directions
-is an optional set of directions which defines the positions of the shadow.
-This shadow effect works only if you use colorsets.
-The colour of the shadow is defined by using the
-.I fgsh
-option of the
-.I Colorset
-command.
-Please refer to the
-.B COLORSETS
-section for details about colorsets. The default
-.I offset
-is 0.
+is an optional set of directions the shadow
+emanates from the character.
 The
 .I directions
-is a space separated list constituted by FVWM directions:
+are a space separated list of FVWM directions:
 
 .IR N ,   North ,      Top ,          t ,   Up ,         u
 
@@ -1144,19 +1133,29 @@ is a space separated list constituted by FVWM directions:
 
 a shadow is displayed in each given direction.
 .I All
-is equivalent to all the directions relatively to the normal
-text . The default
+is equivalent to all the directions.
+The default
 .I direction
 is
 .IR BottomRight .
 
-Note: the quality of the resulting rendering depends on a
-number of parameters. The font, the
+The shadow effect only works with colorsets.
+The color of the shadow is defined by using the
+.I fgsh
+option of the
+.I Colorset
+command.
+Please refer to the
+.B COLORSETS
+section for details about colorsets.
+
+Note: It can be difficult to find
+the font,
 .IR fg , fgsh
 and
 .IR bg
-colours and the parameters above. You can obtain ugly
-result as well as great text rendering improvement.
+colors to make this effect look good, but it
+can look quite good.
 
 .SH BI-DIRECTIONAL TEXT
 
