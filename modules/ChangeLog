@@ -1,6 +1,17 @@
+1999-08-12  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(GetRealGeometry): fixed signature (XGetGeometry was called with ushort
+	arguments instead of unsigned int)
+	(GetButtonAction): implemented $l, $r, $t, $b, $w, $h variables in
+	actions.
+
+	* FvwmButtons/parse.c (get_window_geometry): removed debug fprintf
+	sigh!
+
 1999-08-12  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
-	* FvwmButtons/parse.c (get_window_geometry): 
+	* FvwmButtons/parse.c (get_window_geometry):
 	(ParseConfigLine): moved parsing of geometry string into separate
 	function
 
@@ -22,10 +33,10 @@
 1999-08-09  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* FvwmPager/FvwmPager.c: Disable SloppyFocus by default
-	
-	* FvwmPager/FvwmPager.c (ParseOptions): 
-	* FvwmPager/x_pager.c (HandleEnterNotify): 
-	(DispatchEvent): 
+
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	* FvwmPager/x_pager.c (HandleEnterNotify):
+	(DispatchEvent):
 	* FvwmPager/FvwmPager.h: new option 'FvwmPagerSloppyFocus': transfer
 	focus whenever a pager subwindow is entered with the mouse
 

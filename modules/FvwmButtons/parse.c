@@ -848,7 +848,6 @@ void get_window_geometry(char *geom)
   unsigned int height;
 
   flags = XParseGeometry(geom,&g_x,&g_y,&width,&height);
-fprintf(stderr,"parsed geom = %s\n");
   UberButton->w = 0;
   UberButton->h = 0;
   if (flags&WidthValue)

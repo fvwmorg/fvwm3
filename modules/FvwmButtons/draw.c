@@ -107,12 +107,12 @@ void MakeButton(button_info *b)
 
   if(!b)
     {
-      fprintf(stderr,"%s: BUG: DrawButton called with NULL pointer\n",MyName);
+      fprintf(stderr,"%s: BUG: MakeButton called with NULL pointer\n",MyName);
       exit(2);
     }
   if(b->flags&b_Container)
     {
-      fprintf(stderr,"%s: BUG: DrawButton called with container\n",MyName);
+      fprintf(stderr,"%s: BUG: MakeButton called with container\n",MyName);
       exit(2);
     }
 

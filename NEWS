@@ -1,5 +1,10 @@
 Changes in beta release 2.3.7 (August 1999)
 
+* Geometry (-g) command line option to FvwmButtons.
+
+* FvwmButtons parses action strings for certain variables that describe the
+  geometry of the depressed button: $l, $r, $t, $b, $w and $h.
+
 * *FvwmPagerSloppyFocus option: To focus a window, simply move the
   pointer over the window's mini window in the pager.
 

@@ -104,8 +104,9 @@ void process_message(unsigned long type,unsigned long *body);
 extern void send_clientmessage (Display *disp, Window w, Atom a,
 				Time timestamp);
 void CheckForHangon(unsigned long*);
-Window GetRealGeometry(Display*,Window,int*,int*,ushort*,ushort*,
-		       ushort*,ushort*);
+static Window GetRealGeometry(
+  Display*,Window,int*,int*,unsigned int*,unsigned int*, unsigned int*,
+  unsigned int*);
 void swallow(unsigned long*);
 void AddButtonAction(button_info*,int,char*);
 char *GetButtonAction(button_info*,int);
@@ -445,9 +446,130 @@ void AddButtonAction(button_info *b,int n,char *action)
 **/
 char *GetButtonAction(button_info *b,int n)
 {
+  char *action = NULL;
+  char *src;
+  char *dest;
+  int i = 16;
+  int val;
+  int number;
+  int offset;
+  int x;
+  int y;
+  int px;
+  int py;
+  int f;
+  unsigned int w;
+  unsigned int h;
+  Window win;
+
   if(!b || !(b->flags&b_Action) || !(b->action) || n<0 || n>3)
     return NULL;
-  return b->action[n];
+  if (!b->action[n])
+    return NULL;
+
+  /* create a temporary storage for expanding */
+  action = (char *)malloc(strlen(b->action[n]) + 256);
+  if (!action)
+  {
+    /* could not alloc memory */
+    return NULL;
+  }
+
+  /* calculate geometry */
+  w = buttonWidth(b);
+  h = buttonHeight(b);
+  buttonInfo(b, &x, &y, &px, &py, &f);
+  XTranslateCoordinates(Dpy, MyWindow, Root, x, y, &x, &y, &win);
+
+  number = buttonNum(b);
+  /* expand the action */
+  for (src = b->action[n], dest = action; *src != 0; src++)
+  {
+    if (*src == '$')
+    {
+      char *src_org = src;
+      char *dest_org = dest;
+      Bool is_negative = False;
+
+      *(dest++) = *(src++);
+      if (*src == '-')
+      {
+	/* offset from the righ/bottom */
+	*(dest++) = *(src++);
+	is_negative = True;
+      }
+      switch (*src)
+      {
+      case 0:
+	continue;
+      case 'l':
+	/* left border */
+	val = x;
+	if (is_negative)
+	{
+	  val = dpw - x - 1;
+	}
+	break;
+      case 'r':
+	/* right border */
+	val = x + w;
+	if (is_negative)
+	{
+	  val = dpw - x - w - 1;
+	}
+	break;
+      case 't':
+	/* top border */
+	val = y;
+	if (is_negative)
+	{
+	  val = dph - y - 1;
+	}
+	break;
+      case 'b':
+	/* bottom border */
+	val = y + h;
+	if (is_negative)
+	{
+	  val = dph - y - h - 1;
+	}
+	break;
+      case 'w':
+	/* width */
+	val = w;
+	break;
+      case 'h':
+	/* height */
+	val = h;
+	break;
+      default:
+      case '$':
+	/* literal $ */
+	/* copy the character into temp area */
+	*(dest++) = *src;
+	continue;
+      }
+      if (i-- == 0)
+      {
+	/* max. 16 variables to expand */
+	free(action);
+	return NULL;
+      }
+      dest = dest_org;
+      /* print the number into the string */
+      sprintf(dest, "%d%n", val, &offset);
+      dest += offset;
+    }
+    else
+    {
+      /* copy the character into temp area */
+      *(dest++) = *src;
+    }
+  }
+  *dest = 0;
+
+fprintf(stderr,"%s\n", action);
+  return action;
 }
 
 #ifdef SHAPE
@@ -688,13 +810,13 @@ int main(int argc, char **argv)
   UberButton->title   = MyName;
   UberButton->swallow = 1; /* the panel is shown */
 
+  /* parse module options */
+  ParseOptions(UberButton);
   /* parse the geometry string */
   if (geom_option_argc != 0)
   {
     get_window_geometry(argv[geom_option_argc]);
   }
-  /* parse module options */
-  ParseOptions(UberButton);
 
   for (CurrentPanel = MainPanel, LastPanel = NULL;
        CurrentPanel != NULL;
@@ -761,8 +883,8 @@ int main(int argc, char **argv)
     fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
 # endif
 
-    XGetGeometry(Dpy,MyWindow,&root,&x,&y,(ushort*)&Width,(ushort*)&Height,
-		 (ushort*)&border_width,(ushort*)&depth);
+    XGetGeometry(Dpy,MyWindow,&root,&x,&y,&Width,&Height,
+		 &border_width,&depth);
     SetButtonSize(UberButton,Width,Height);
     i=-1;ub=UberButton;
     while(NextButton(&ub,&b,&i,0))
@@ -902,8 +1024,8 @@ void Loop(void)
 	    Window root;
 
 	    XGetGeometry(Dpy, MyWindow, &root, &x, &y,
-			 (ushort*)&tw,(ushort*)&th,
-			 (ushort*)&border_width,(ushort*)&depth);
+			 &tw,&th,
+			 &border_width,&depth);
 	    if(tw!=Width || th!=Height)
 	      {
 		Width=tw;
@@ -956,10 +1078,14 @@ void Loop(void)
 	    {
 	      if (strncasecmp(act, "panel-", 6) == 0)
                 Slide(seekpanel(b), b);
+	      free(act);
+	      act = NULL;
 	      break;
             }
 	    else /* i.e. action is Popup */
 	      XUngrabPointer(Dpy,CurrentTime); /* And fall through */
+	    free(act);
+	    act = NULL;
 
 	  case KeyRelease:
 	  case ButtonRelease:
@@ -1028,6 +1154,11 @@ void Loop(void)
 		   PanelIndex->flags.close_on_select)
 		  Slide(PanelIndex, NULL);
 	      } /* act */
+	    if (act != NULL)
+	    {
+	      free(act);
+	      act = NULL;
+	    }
 
             /* recover the old record */
 	    /* the panel, the button pressed */
@@ -1886,8 +2017,8 @@ void CheckForHangon(unsigned long *body)
 
             /* We get the parent of the window to compare with later... */
             b->IconWinParent=
-	      GetRealGeometry(Dpy,b->IconWin,
-			      &b->x,&b->y,&b->w,&b->h,&b->bw,&d);
+	      GetRealGeometry(Dpy, b->IconWin, &b->x, &b->y,
+			      &b->w, &b->h, &b->bw, &d);
 
 #           ifdef DEBUG_HANGON
 	    fprintf(stderr,"%s: Button 0x%06x %s 0x%lx \"%s\", parent 0x%lx\n",
@@ -1922,8 +2053,9 @@ void CheckForHangon(unsigned long *body)
 *** Traverses window tree to find the real x,y of a window. Any simpler?
 *** Returns parent window, or None if failed.
 **/
-Window GetRealGeometry(Display *dpy,Window win,int *x,int *y,ushort *w,
-		     ushort *h,ushort *bw,ushort *d)
+Window GetRealGeometry(
+  Display *dpy, Window win, int *x, int *y, unsigned int *w, unsigned int *h,
+  unsigned int *bw, unsigned int *d)
 {
   Window root;
   Window rp=None;
@@ -1935,7 +2067,6 @@ Window GetRealGeometry(Display *dpy,Window win,int *x,int *y,ushort *w,
 
   /* Now, x and y are not correct. They are parent relative, not root... */
   /* Hmm, ever heard of XTranslateCoordinates!? */
-
   XTranslateCoordinates(dpy,win,root,*x,*y,x,y,&rp);
 
   XQueryTree(dpy,win,&root,&rp,&children,&n);
@@ -1954,14 +2085,14 @@ void swallow(unsigned long *body)
   char *temp;
   button_info *ub=UberButton,*b;
   int button=-1;
-  ushort d;
+  unsigned int d;
   Window p;
 
   while(NextButton(&ub,&b,&button,0))
     if((b->IconWin==(Window)body[0]) && (buttonSwallowCount(b)==2))
       {
 	/* Store the geometry in case we need to unswallow. Get parent */
-	p=GetRealGeometry(Dpy,b->IconWin,&b->x,&b->y,&b->w,&b->h,&b->bw,&d);
+	p = GetRealGeometry(Dpy,b->IconWin,&b->x,&b->y,&b->w,&b->h,&b->bw,&d);
 #       ifdef DEBUG_HANGON
 	fprintf(stderr,"%s: Button 0x%06x %s 0x%lx, with parent 0x%lx\n",
 		MyName,(ushort)b,"trying to swallow window",body[0],p);
@@ -2074,9 +2205,7 @@ void Slide(panel_info *p, button_info *b)
   if (p->uber->swallow)
   {
     /* shown ---> hidden */
-    root = GetRealGeometry(Dpy, PanelWin, &x, &y,
-                           (ushort*)&iw, (ushort*)&ih,
-                           (ushort*)&BW, (ushort*)&depth);
+    root = GetRealGeometry(Dpy, PanelWin, &x, &y, &iw, &ih, &BW, &depth);
 
     switch (direction)
     {
@@ -2131,8 +2260,7 @@ void Slide(panel_info *p, button_info *b)
     int h = mh % PanelPopUpStep;   /* current height */
 
     root = GetRealGeometry(Dpy, CurrentPanel->uber->IconWinParent, &x, &y,
-                           (ushort*)&iw, (ushort*)&ih,
-                           (ushort*)&BW, (ushort*)&depth);
+                           &iw, &ih, &BW, &depth);
 
     x += p->uber->x + ix;
     y += p->uber->y + iy;
