@@ -525,20 +525,16 @@ void list_end(void)
 	  break;
         case KeyPress:
 	  is_key_pressed = 1;
-fprintf(stderr, "\t[FvwmIdent] KeyPress\n");
 	  break;
         case ButtonPress:
 	  is_button_pressed = 1;
-fprintf(stderr, "\t[FvwmIdent] ButtonPress\n");
 	  break;
         case KeyRelease:
-fprintf(stderr, "\t[FvwmIdent] %d KeyRelease\n", is_key_pressed);
 	  if (is_key_pressed)
 	    exit(0);
 	  else
 	    break;
         case ButtonRelease:
-fprintf(stderr, "\t[FvwmIdent] %d ButtonRelease\n", is_button_pressed);
 	  if (is_button_pressed)
 	    exit(0);
 	  else

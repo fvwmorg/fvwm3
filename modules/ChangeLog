@@ -1,5 +1,12 @@
 2000-04-23  Mikhael Goikhman  <migo@homemail.com>
 
+	* FvwmWharf/FvwmWharf.c (CreateWindow): fixed (re)size hints
+	* FvwmWharf/FvwmWharf.c (change_window_name): set resource names
+	* FvwmWharf/FvwmWharf.c (swallow): use more correct max limit
+	* FvwmIdent/FvwmIdent.c (list_end): remove debug messages
+
+2000-04-23  Mikhael Goikhman  <migo@homemail.com>
+
 	* FvwmIdent/FvwmIdent.c (list_end): don't exit on button or key
 	release without an actual press first
 

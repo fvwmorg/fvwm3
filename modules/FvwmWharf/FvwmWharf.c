@@ -1417,10 +1417,10 @@ void CreateWindow(void)
   /* subtract one for the right/bottom border */
   mysizehints.width = BUTTONWIDTH*num_columns;
   mysizehints.height= BUTTONHEIGHT*num_rows;
-  mysizehints.width_inc = num_columns;
-  mysizehints.height_inc = num_rows;
-  mysizehints.base_height = num_rows - 1;
-  mysizehints.base_width = num_columns - 1;
+  mysizehints.width_inc = BUTTONWIDTH;
+  mysizehints.height_inc = BUTTONHEIGHT;
+  mysizehints.base_height = 0;
+  mysizehints.base_width = 0;
   if(x > -100000)
   {
     if (x <= -1)
@@ -2051,6 +2051,7 @@ void match_string(char *tline)
 void change_window_name(char *str)
 {
   XTextProperty name;
+  XClassHint myclasshints;
   int i;
 
   if (XStringListToTextProperty(&str,1,&name) == 0)
@@ -2066,6 +2067,9 @@ void change_window_name(char *str)
     XSetWMIconName(dpy, Folders[i].win,&name);
   }
   XFree(name.value);
+  myclasshints.res_name = str;
+  myclasshints.res_class = "FvwmWharf";
+  XSetClassHint(dpy,main_win,&myclasshints);
 }
 
 
@@ -2353,8 +2357,8 @@ void swallow(unsigned long *body)
 		       &junk1, &junk2, &width, &height, &junk3,
 		       &junk4);
 
-	  if (width  > 64) width  = 64;
-	  if (height > 64) height = 64;
+	  if (width  > BUTTONWIDTH)  width  = BUTTONWIDTH;
+	  if (height > BUTTONHEIGHT) height = BUTTONHEIGHT;
 	  Buttons[button].icons[0].w = width;
 	  Buttons[button].icons[0].h = height;
 	}

@@ -1,3 +1,7 @@
+1999-04-23  Mikhael Goikhman  migo@homemail.com
+
+	* libs/Target.c (fvwmlib_get_target_window): patch from Michael Han
+
 1999-04-22  Mikhael Goikhman  migo@homemail.com
 
 	* fvwm/windowlist.c (do_windowList): don't free Function before

@@ -144,12 +144,14 @@ void fvwmlib_get_target_window(
   Bool finished = False;
   Bool canceled = False;
   Window Root = RootWindow(dpy, screen);
+  int is_key_pressed = 0, is_button_pressed = 0;
+  KeySym keysym;
 
   trials = 0;
   while((trials <100)&&(val != GrabSuccess))
     {
       val=XGrabPointer(dpy, Root, True,
-		       ButtonReleaseMask,
+		       ButtonPressMask | ButtonReleaseMask,
 		       GrabModeAsync, GrabModeAsync, Root,
 		       XCreateFontCursor(dpy,XC_crosshair),
 		       CurrentTime);
@@ -168,10 +170,16 @@ void fvwmlib_get_target_window(
 
   while (!finished && !canceled)
   {
-    XMaskEvent(dpy, ButtonReleaseMask | KeyReleaseMask, &eventp);
-    if(eventp.type == KeyRelease)
+    XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+                   KeyPressMask | KeyReleaseMask, &eventp);
+    switch (eventp.type)
     {
-      KeySym keysym = XLookupKeysym(&eventp.xkey,0);
+    case KeyPress:
+      is_key_pressed++;
+      break;
+    case KeyRelease:
+      keysym = XLookupKeysym(&eventp.xkey,0);
+      if( !is_key_pressed ) break;
       switch (keysym)
       {
       case XK_Escape:
@@ -186,10 +194,13 @@ void fvwmlib_get_target_window(
         fvwmlib_keyboard_shortcuts(dpy, screen, &eventp, 0, 0, 0);
         break;
       }
-    }
-    else
-    {
-      finished = True;
+      break;
+    case ButtonPress:
+      is_button_pressed++;
+      break;
+    case ButtonRelease:
+      if( is_button_pressed ) finished = True;
+      break;
     }
   }
 
