@@ -301,6 +301,15 @@ the mini window in the pager to give the real window the focus.
 Simply putting the pointer over the window inside the pager is
 enough.
 
+Note: This option interferes slightly with the MouseFocus and
+SloppyFocus styles of fvwm.  Sometimes, if you click into the
+pager window to change pages or desks and then move the pointer	to
+a place on the screen where a window of the new page will appear,
+this new window does not get the input focus.  This may happen if
+you drag the pointer over one of the mini windows in the
+pager.  There is nothing that can be done about this - except not
+using SloppyFocus in the pager.
+
 .IP "*FvwmPager: SolidSeparators"
 By default the pages of the virtual desktop are separated by
 dashed lines in the pager window.  This option causes FvwmPager to
