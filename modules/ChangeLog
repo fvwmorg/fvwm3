@@ -1,3 +1,8 @@
+2001-05-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPager/FvwmPager.c (main):
+	removed debug XSynchronize
+
 2001-05-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (change_colorset):

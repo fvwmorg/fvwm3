@@ -2,7 +2,7 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-Last updated May 1, 2001 for beta release 2.3.31 and official
+Last updated May 10, 2001 for beta release 2.3.32 and official
 release 2.2.5.
 
 Contents
@@ -1378,7 +1378,8 @@ A: Yes, but not with the current implementation of the panels.  Please
      that be cool?  I even have a patch.  When can it be added?
 
 A: If you plan to write a patch, *please*, first of all fetch the
-   latest development release from our web site.  It is also a good
+   latest development release from our web site or better yet use CVS
+   as described in http://www.fvwm.org/cvs.html.  It is also a good
    idea to contact the fvwm-workers list.  At times, patches for
    older releases may prove completely worthless, e.g. because the
    fix has already been integrated, a feature already added or
@@ -1428,7 +1429,15 @@ A: If you plan to write a patch, *please*, first of all fetch the
 
 A: First of all, please read the first section of the answer to Q5.1!
 
-   Creating a patch -
+   Creating a patch against CVS sources (preferrable) -
+
+        1) Execute "cvs update -AdP" to ensure there are no conflicts
+           with the most recent sources.
+        2) Don't forget to update the ChangeLog file (see below) and
+           all manual pages if needed.
+        3) In the base cvs directory run: cvs diff -u >myfeature.patch
+
+   Creating a patch against released sources -
 
         1) Copy the original file(s) to the same name with the
            additional extension of .orig (or something like that).
@@ -1461,7 +1470,7 @@ A: First of all, please read the first section of the answer to Q5.1!
 
 	Be sure to read the answer to Q5.1.
 
-	Don't forget the ChangeLog.
+	Don't forget the ChangeLog and the documentation.
 
    Applying a patch -
 

@@ -313,7 +313,7 @@ char *get_version_string()
    * in the stable branch, othervise saving sessions becomes useless */
   /*return CatString3(VERSION, ", ",__DATE__);*/
 
-  return "2.4-2";
+  return "2.4-3";
 }
 
 /*
