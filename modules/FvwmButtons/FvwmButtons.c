@@ -662,7 +662,8 @@ int myErrorHandler(Display *dpy, XErrorEvent *event)
   }
   if((event->error_code == BadWindow) || (event->error_code == BadDrawable)
      || (event->error_code == BadMatch) || (event->request_code==X_GrabButton)
-     || (event->request_code == X_GetGeometry))
+     || (event->request_code == X_GetGeometry) 
+     || (event->error_code == BadPixmap))
     return 0;
 
   PrintXErrorAndCoredump(dpy, event, MyName);
