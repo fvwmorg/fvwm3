@@ -315,7 +315,7 @@ void fvwm_msg(int type,char *id,char *msg,...)
 
   if (Scr.NumberOfScreens > 1)
   {
-    fprintf(stderr,"[FVWM.%d][%s]: %s ",Scr.screen,id,typestr);
+    fprintf(stderr,"[FVWM.%d][%s]: %s ",(int)Scr.screen,id,typestr);
   }
   else
   {
@@ -326,11 +326,14 @@ void fvwm_msg(int type,char *id,char *msg,...)
 
   if (type == ERR)
   {
-    char tmp[1024]; /* I hate to use a fixed length but this will do for now */
+    /* I hate to use a fixed length but this will do for now */
+    char tmp[2 * MAX_TOKEN_LENGTH];
     sprintf(tmp,"[FVWM][%s]: %s ",id,typestr);
     vsprintf(tmp+strlen(tmp), msg, args);
     tmp[strlen(tmp)+1]='\0';
     tmp[strlen(tmp)]='\n';
+    if (strlen(tmp) >= MAX_MODULE_INPUT_TEXT_LEN)
+      sprintf(tmp + MAX_MODULE_INPUT_TEXT_LEN - 5, "...\n");
     BroadcastName(M_ERROR,0,0,0,tmp);
   }
 

@@ -1211,7 +1211,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
       /*
        * We give the read a long timeout; if the module fails to
        * respond within this time then it deserves to be KILLED!!!
-       * 
+       *
        * NOTE: I initially tried a smaller timeout, but FvwmAnimate
        *       kept dying on me (CJR 30/01/00)
        *     : One second is still not enough - try five (CJR 08/02/00)
@@ -1229,7 +1229,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
            * Our descriptor set only contains one descriptor, so if
            * any watched descriptors receive readable data then there
            * is only one candidate ...
-           */ 
+           */
           (fvwmSelect(readPipes[module] + 1,
                       &readSet,
                       NULL,
