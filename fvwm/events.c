@@ -806,8 +806,7 @@ void HandlePropertyNotify(void)
 	  if (IS_SHADED(Tmp_win))
 	    get_shaded_geometry(Tmp_win, &new_g, &new_g);
 	  ForceSetupFrame(
-	    Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False,
-	    False);
+	    Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
 	}
 	else
 	{
@@ -918,8 +917,17 @@ void HandleExpose(void)
 
   if (Tmp_win)
   {
+    draw_window_parts draw_parts;
+
+    if (Event.xany.window == Tmp_win->title_w)
+      draw_parts = DRAW_TITLE;
+    else if (Event.xany.window == Tmp_win->decor_w ||
+	     Event.xany.window == Tmp_win->frame)
+      draw_parts = DRAW_FRAME;
+    else
+      draw_parts = DRAW_BUTTONS;
     DrawDecorations(
-      Tmp_win, DRAW_ALL, (Scr.Hilite == Tmp_win), True, Event.xany.window);
+      Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True, Event.xany.window);
   }
   return;
 }
@@ -1829,7 +1837,7 @@ void HandleConfigureRequest(void)
       if (IS_SHADED(Tmp_win))
 	get_shaded_geometry(Tmp_win, &new_g, &new_g);
       SetupFrame(
-	Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False, False);
+	Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
     }
     /* make sure the window structure has the new position */
     update_absolute_geometry(Tmp_win);

@@ -498,8 +498,7 @@ void AutoPlaceIcon(FvwmWindow *t)
       new_x += Scr.MyDisplayWidth;
     if(new_y + t->frame_g.height <= 0)
       new_y += Scr.MyDisplayHeight;
-    SetupFrame(t,new_x,new_y,
-	       t->frame_g.width,t->frame_g.height,False,False);
+    SetupFrame(t, new_x, new_y, t->frame_g.width, t->frame_g.height, False);
     t->Desk = Scr.CurrentDesk;
   }
   else if (IsRectangleOnThisPage(&(t->frame_g), t->Desk))

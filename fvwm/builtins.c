@@ -101,8 +101,8 @@ void WindowShade(F_CMD_ARGS)
   int ch;
   int step = 1;
   int toggle;
-  int grav = 0;
-  int client_grav = 0;
+  int grav = NorthWestGravity;
+  int client_grav = NorthWestGravity;
   int move_parent_too = False;
   rectangle frame_g;
   rectangle parent_g;
@@ -160,29 +160,29 @@ void WindowShade(F_CMD_ARGS)
     step = 1;
   if (Scr.shade_anim_steps)
   {
-    grav = (HAS_BOTTOM_TITLE(tmp_win)) ? SouthWestGravity : NorthWestGravity;
+    grav = (HAS_BOTTOM_TITLE(tmp_win)) ? SouthEastGravity : NorthWestGravity;
     if (!do_scroll)
       client_grav = grav;
     else
       client_grav =
-	(HAS_BOTTOM_TITLE(tmp_win)) ? NorthWestGravity : SouthWestGravity;
+	(HAS_BOTTOM_TITLE(tmp_win)) ? NorthWestGravity : SouthEastGravity;
     set_decor_gravity(tmp_win, grav, grav, client_grav);
     move_parent_too = HAS_BOTTOM_TITLE(tmp_win);
   }
 
   if (IS_SHADED(tmp_win) && toggle == 0)
   {
-    XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht, cw, 1);
-    XMoveWindow(dpy, tmp_win->w, 0,
-      (client_grav == SouthWestGravity) ? -ch + 1 : 0);
-    XLowerWindow(dpy, tmp_win->decor_w);
     /* unshade window */
     SET_SHADED(tmp_win, 0);
 
     if (Scr.shade_anim_steps != 0)
     {
+      XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht, cw, 1);
+      XMoveWindow(dpy, tmp_win->w, 0,
+		  (client_grav == SouthEastGravity) ? -ch + 1 : 0);
+      XLowerWindow(dpy, tmp_win->decor_w);
       parent_g.x = bwl;
-      parent_g.y = bht - step;
+      parent_g.y = bht + (HAS_BOTTOM_TITLE(tmp_win) ? -step : 0);
       parent_g.width = cw;
       parent_g.height = 0;
       pdiff.x = 0;
@@ -190,7 +190,7 @@ void WindowShade(F_CMD_ARGS)
       pdiff.width = 0;
       pdiff.height = step;
       diff.x = 0;
-      diff.y = HAS_BOTTOM_TITLE(tmp_win) ? -step : 0;;
+      diff.y = HAS_BOTTOM_TITLE(tmp_win) ? -step : 0;
       diff.width = 0;
       diff.height = step;
 
@@ -218,6 +218,7 @@ void WindowShade(F_CMD_ARGS)
 	}
 	else
 	{
+
 	  XResizeWindow(dpy, tmp_win->Parent, parent_g.width, parent_g.height);
 	  XMoveResizeWindow(
 	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
@@ -226,10 +227,7 @@ void WindowShade(F_CMD_ARGS)
         FlushOutputQueues();
         XSync(dpy, 0);
       }
-    }
-    if (Scr.shade_anim_steps != 0)
-    {
-      if (client_grav == SouthWestGravity && move_parent_too)
+      if (client_grav == SouthEastGravity && move_parent_too)
       {
 	/* We must finish above loop to the very end for this special case.
 	 * Otherwise there is a visible jump of the client window. */
@@ -244,13 +242,33 @@ void WindowShade(F_CMD_ARGS)
 	XMoveWindow(dpy, tmp_win->w, 0, 0);
       }
       XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
-      set_decor_gravity(
-	tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
     }
+    else
+    {
+      XMoveResizeWindow(dpy, tmp_win->w, 0, 0, cw, ch);
+      if (HAS_BOTTOM_TITLE(tmp_win))
+      {
+	XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht - ch + 1, cw, ch);
+	set_decor_gravity(
+	  tmp_win, SouthEastGravity, SouthEastGravity, NorthWestGravity);
+      }
+      else
+      {
+	XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht, cw, ch);
+	set_decor_gravity(
+	  tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
+      }
+      XLowerWindow(dpy, tmp_win->decor_w);
+      XMoveResizeWindow(
+	dpy, tmp_win->frame, big_g.x, big_g.y, big_g.width, big_g.height);
+    }
+    set_decor_gravity(
+      tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
+    tmp_win->frame_g.height = big_g.height + 1;
+    SetupFrame(
+      tmp_win, big_g.x, big_g.y, big_g.width, big_g.height, True);
     tmp_win->frame_g = big_g;
     update_absolute_geometry(tmp_win);
-    ForceSetupFrame(
-      tmp_win, big_g.x, big_g.y, big_g.width, big_g.height, True, False);
     BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
     BroadcastPacket(M_DEWINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
@@ -306,27 +324,28 @@ void WindowShade(F_CMD_ARGS)
         XSync(dpy, 0);
       }
     }
+    /* All this stuff is necessary to prevent flickering */
+    set_decor_gravity(tmp_win, grav, UnmapGravity, client_grav);
+    XMoveResizeWindow(
+      dpy, tmp_win->frame, small_g.x, small_g.y, small_g.width,
+      small_g.height);
     XResizeWindow(dpy, tmp_win->Parent, cw, 1);
-    if (Scr.shade_anim_steps != 0)
-    {
-      XMoveResizeWindow(
-	dpy, tmp_win->frame, small_g.x, small_g.y, small_g.width,
-	small_g.height);
-      XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
-      set_decor_gravity(
-	tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
-    }
+    XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
+    XRaiseWindow(dpy, tmp_win->decor_w);
+    XMapWindow(dpy, tmp_win->Parent);
+    set_decor_gravity(
+      tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
+    /* Finally let SetupFrame take care of the window */
+    SetupFrame(
+      tmp_win, small_g.x, small_g.y, small_g.width, small_g.height, False);
     tmp_win->frame_g = small_g;
     update_absolute_geometry(tmp_win);
-    ForceSetupFrame(
-      tmp_win, small_g.x, small_g.y, small_g.width, small_g.height, False,
-      False);
-    XRaiseWindow(dpy, tmp_win->decor_w);
     BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
     BroadcastPacket(
       M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
   }
-  DrawDecorations(tmp_win, DRAW_FRAME, (Scr.Hilite == tmp_win), True, None);
+  DrawDecorations(
+    tmp_win, DRAW_FRAME | DRAW_BUTTONS, (Scr.Hilite == tmp_win), True, None);
   FlushOutputQueues();
   XSync(dpy, 0);
 
@@ -997,7 +1016,7 @@ void SetTitleStyle(F_CMD_ARGS)
 	  tmp->frame_g.y = 0;
 	  tmp->frame_g.height = 0;
 	  tmp->frame_g.width = 0;
-	  SetupFrame(tmp,x,y,w,h,True,False);
+	  SetupFrame(tmp, x, y, w, h, True);
 	  DrawDecorations(tmp, DRAW_TITLE, True, True, None);
 	  DrawDecorations(tmp, DRAW_TITLE, False, True, None);
 	  tmp = tmp->next;
@@ -1371,7 +1390,7 @@ static void ApplyWindowFont(FvwmDecor *decor)
     }
     new_g = tmp->frame_g;
     gravity_resize(tmp->hints.win_gravity, &new_g, 0, -extra_height);
-    SetupFrame(tmp, new_g.x, new_g.y, new_g.width, new_g.height, True, False);
+    SetupFrame(tmp, new_g.x, new_g.y, new_g.width, new_g.height, True);
     DrawDecorations(tmp, DRAW_ALL, (tmp == Scr.Hilite), True, None);
     tmp = tmp->next;
   }
@@ -1996,7 +2015,7 @@ void ChangeDecor(F_CMD_ARGS)
     tmp_win->frame_g.y = 0;
     tmp_win->frame_g.height = 0;
     tmp_win->frame_g.width = 0;
-    SetupFrame(tmp_win,x,y,width,height,True,False);
+    SetupFrame(tmp_win, x, y, width, height, True);
     DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None);
 }
 
@@ -2942,7 +2961,7 @@ void setShadeAnim(F_CMD_ARGS)
   int unit = 0;
 
   n = GetOnePercentArgument(action, &val, &unit);
-  if (n != 1 || val < 0)
+  if (n != 1)
   {
     Scr.shade_anim_steps = 0;
     return;

@@ -549,28 +549,6 @@ void setup_button_windows(
 
   for(i = 4; i >= 0; i--)
   {
-    if(tmp_win->left_w[i] == None && i < Scr.nr_left_buttons &&
-       (left_buttons & (1 << i)))
-    {
-      tmp_win->left_w[i] = XCreateWindow(dpy, tmp_win->decor_w,
-					 tmp_win->title_g.height * i, 0,
-					 tmp_win->title_g.height,
-					 tmp_win->title_g.height, 0,
-					 CopyFromParent, InputOutput,
-					 CopyFromParent, valuemask,
-					 pattributes);
-      XSaveContext(dpy, tmp_win->left_w[i], FvwmContext, (caddr_t) tmp_win);
-    }
-    else if (tmp_win->left_w[i] != None && !(left_buttons & (1 << i)))
-    {
-      /* destroy the current button window */
-      XDestroyWindow(dpy, tmp_win->left_w[i]);
-      XDeleteContext(dpy, tmp_win->left_w[i], FvwmContext);
-      tmp_win->left_w[i] = None;
-    }
-  }
-  for(i = 4; i >= 0; i--)
-  {
     if(tmp_win->right_w[i] == None && i < Scr.nr_right_buttons &&
        (right_buttons & (1 << i)))
     {
@@ -590,6 +568,28 @@ void setup_button_windows(
       XDestroyWindow(dpy, tmp_win->right_w[i]);
       XDeleteContext(dpy, tmp_win->right_w[i], FvwmContext);
       tmp_win->right_w[i] = None;
+    }
+  }
+  for(i = 4; i >= 0; i--)
+  {
+    if(tmp_win->left_w[i] == None && i < Scr.nr_left_buttons &&
+       (left_buttons & (1 << i)))
+    {
+      tmp_win->left_w[i] = XCreateWindow(dpy, tmp_win->decor_w,
+					 tmp_win->title_g.height * i, 0,
+					 tmp_win->title_g.height,
+					 tmp_win->title_g.height, 0,
+					 CopyFromParent, InputOutput,
+					 CopyFromParent, valuemask,
+					 pattributes);
+      XSaveContext(dpy, tmp_win->left_w[i], FvwmContext, (caddr_t) tmp_win);
+    }
+    else if (tmp_win->left_w[i] != None && !(left_buttons & (1 << i)))
+    {
+      /* destroy the current button window */
+      XDestroyWindow(dpy, tmp_win->left_w[i]);
+      XDeleteContext(dpy, tmp_win->left_w[i], FvwmContext);
+      tmp_win->left_w[i] = None;
     }
   }
 }
@@ -751,12 +751,12 @@ void setup_auxiliary_windows(
 
   /****** title window ******/
   if (HAS_TITLE(tmp_win))
+  {
     setup_title_window(tmp_win, valuemask_save, &attributes);
-
-  /****** button windows ******/
-  if (HAS_TITLE(tmp_win))
     setup_button_windows(
       tmp_win, valuemask_save, &attributes, left_buttons, right_buttons);
+    XLowerWindow(dpy, tmp_win->title_w);
+  }
 
   /****** resize handle windows ******/
   setup_resize_handle_windows(tmp_win);
@@ -1213,7 +1213,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /****** arrange the frame ******/
   ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
 		  tmp_win->frame_g.width, tmp_win->frame_g.height,
-		  True, False);
+		  True);
 
   /****** windowshade ******/
   if (do_shade)

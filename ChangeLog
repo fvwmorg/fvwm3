@@ -1,3 +1,48 @@
+1999-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (reset_style_changes):
+	clear change mask after a style was applied
+
+	* fvwm/builtins.c (WindowShade):
+	fixed flash when shading/unshading without animation
+
+	* fvwm/borders.c (SetupFrame):
+	improved opaque resizing
+
+	* fvwm/events.c (HandleExpose):
+	reduced redrawing with expose events
+
+	* fvwm/borders.c (SetupTitleBar):
+	fixed bug that cause buttons to be drawn over the border
+
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	removed useless function
+	(inner_RaiseOrLowerWindow):
+	renamed to RaiseOrLowerWindow
+	(RaiseOrLowerWindow):
+	draw decorations immediately after raising
+
+	* fvwm/focus.c (FocusOn):
+	(WarpOn):
+	* fvwm/placement.c (PlaceAgain_func):
+	* fvwm/icons.c (AutoPlaceIcon):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/style.c (handle_window_style_change):
+	* fvwm/virtual.c (MoveViewport):
+	* fvwm/move_resize.c (move_window_doit):
+	(resize_window):
+	(DoResize):
+	(Maximize):
+	* fvwm/events.c (HandlePropertyNotify):
+	(HandleConfigureRequest):
+	* fvwm/builtins.c (WindowShade):
+	(SetTitleStyle):
+	(ApplyWindowFont):
+	(ChangeDecor):
+	* fvwm/borders.c (ForceSetupFrame):
+	(SetupFrame):
+	removed unused 'curr_shading' argument from SetupFrame
+
 1999-11-20  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1 (Note): Fixed up the PipeRead example so the whole

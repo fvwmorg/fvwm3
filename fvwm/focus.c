@@ -289,7 +289,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
        (t->frame_g.y + t->frame_g.width < 0)||
        (t->frame_g.x >Scr.MyDisplayWidth)||(t->frame_g.y>Scr.MyDisplayHeight))
     {
-      SetupFrame(t,0,0,t->frame_g.width, t->frame_g.height,False,False);
+      SetupFrame(t, 0, 0, t->frame_g.width, t->frame_g.height, False);
       if(HAS_MOUSE_FOCUS(t) || HAS_SLOPPY_FOCUS(t))
       {
 	XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
@@ -360,12 +360,12 @@ static void WarpOn(XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit,
   RaiseWindow(t);
 
   /* If the window is still not visible, make it visible! */
-  if(t->frame_g.x + t->frame_g.width  < 0 ||
-     t->frame_g.y + t->frame_g.height < 0 ||
-     t->frame_g.x >= Scr.MyDisplayWidth   ||
-     t->frame_g.y >= Scr.MyDisplayHeight)
+  if (t->frame_g.x + t->frame_g.width  < 0 ||
+      t->frame_g.y + t->frame_g.height < 0 ||
+      t->frame_g.x >= Scr.MyDisplayWidth   ||
+      t->frame_g.y >= Scr.MyDisplayHeight)
   {
-    SetupFrame(t,0,0,t->frame_g.width, t->frame_g.height,False,False);
+    SetupFrame(t, 0, 0, t->frame_g.width, t->frame_g.height, False);
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
     SetPointerEventPosition(eventp, 2, 2);
   }

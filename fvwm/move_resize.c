@@ -69,9 +69,9 @@ static void DisplayPosition(FvwmWindow *, int, int,Bool);
 
 extern Window PressedW;
 
-static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
-		     rectangle *drag, rectangle *orig, int *xmotionp,
-		     int *ymotionp, Bool do_resize_opaque);
+static void DoResize(
+  int x_root, int y_root, FvwmWindow *tmp_win, rectangle *drag,
+  rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque);
 static void DisplaySize(FvwmWindow *, int, int, Bool, Bool);
 /* ----- end of resize globals ----- */
 
@@ -472,7 +472,7 @@ fprintf(stderr,"move window '%s'\n", tmp_win->name);
       AnimatedMoveFvwmWindow(tmp_win,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
     SetupFrame(tmp_win, FinalX, FinalY,
-	       tmp_win->frame_g.width, tmp_win->frame_g.height,True,False);
+	       tmp_win->frame_g.width, tmp_win->frame_g.height, True);
     if (fWarp & !do_animate)
       XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
   }
@@ -1529,7 +1529,8 @@ void resize_window(F_CMD_ARGS)
   rectangle *drag = &sdrag;
   rectangle *orig = &sorig;
   rectangle start_g;
-  int ymotion=0, xmotion = 0;
+  int ymotion = 0;
+  int xmotion = 0;
   int was_maximized;
   unsigned edge_wrap_x;
   unsigned edge_wrap_y;
@@ -1608,12 +1609,12 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
     if (IS_SHADED(tmp_win))
     {
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		 drag->width, tmp_win->frame_g.height,False,False);
+		 drag->width, tmp_win->frame_g.height, False);
     }
     else
     {
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		 drag->width, drag->height,False,False);
+		 drag->width, drag->height, False);
     }
     DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
     update_absolute_geometry(tmp_win);
@@ -1917,8 +1918,9 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
 	}
 	if (do_resize_opaque)
 	{
-	  DoResize(start_g.x, start_g.y, tmp_win, &start_g, orig,
-		   &xmotion, &ymotion, do_resize_opaque);
+	  DoResize(
+	    start_g.x, start_g.y, tmp_win, &start_g, orig, &xmotion, &ymotion,
+	    do_resize_opaque);
 	  DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
 	}
       }
@@ -1937,8 +1939,8 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
 	y = Event.xmotion.y_root;
 	/* resize before paging request to prevent resize from lagging
 	 * mouse - mab */
-	DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion,
-		 do_resize_opaque);
+	DoResize(
+	  x, y, tmp_win, drag, orig, &xmotion, &ymotion, do_resize_opaque);
 	/* need to move the viewport */
 	HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
 		     &delta_x, &delta_y, False, False, False);
@@ -1951,8 +1953,8 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
 	drag->x -= delta_x;
 	drag->y -= delta_y;
 
-	DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion,
-		 do_resize_opaque);
+	DoResize(
+	  x, y, tmp_win, drag, orig, &xmotion, &ymotion, do_resize_opaque);
       }
       fForceRedraw = False;
       done = True;
@@ -1998,18 +2000,20 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
       if (HAS_BOTTOM_TITLE(tmp_win))
       {
 	SetupFrame(tmp_win, drag->x, tmp_win->frame_g.y,
-		   drag->width, tmp_win->frame_g.height, False, False);
+		   drag->width, tmp_win->frame_g.height, False);
       }
       else
       {
 	SetupFrame(tmp_win, drag->x, drag->y,
-		   drag->width, tmp_win->frame_g.height, False, False);
+		   drag->width, tmp_win->frame_g.height, False);
       }
       tmp_win->normal_g.height = drag->height;
     }
     else
-      SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
-		 False, False);
+    {
+      SetupFrame(
+	tmp_win, drag->x, drag->y, drag->width, drag->height, False);
+    }
   }
   if (abort && was_maximized)
   {
@@ -2063,11 +2067,11 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
  *      ymotionp - pointer to ymotion in resize_window
  *
  ************************************************************************/
-static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
-		     rectangle *drag, rectangle *orig, int *xmotionp,
-		     int *ymotionp, Bool do_resize_opaque)
+static void DoResize(
+  int x_root, int y_root, FvwmWindow *tmp_win, rectangle *drag,
+  rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque)
 {
-  int action=0;
+  int action = 0;
 
   if ((y_root <= orig->y) ||
       ((*ymotionp == 1)&&(y_root < orig->y+orig->height-1)))
@@ -2106,21 +2110,27 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
   if (action)
   {
     /* round up to nearest OK size to keep pointer inside rubberband */
-    ConstrainSize(tmp_win, &drag->width, &drag->height, *xmotionp, *ymotionp,
-		  True);
+    ConstrainSize(
+      tmp_win, &drag->width, &drag->height, *xmotionp, *ymotionp, True);
     if (*xmotionp == 1)
       drag->x = orig->x + orig->width - drag->width;
     if (*ymotionp == 1)
       drag->y = orig->y + orig->height - drag->height;
 
-    if(!do_resize_opaque)
+    if (drag->x != tmp_win->frame_g.x ||
+	drag->y != tmp_win->frame_g.y ||
+	drag->width != tmp_win->frame_g.width ||
+	drag->height != tmp_win->frame_g.height)
     {
-      MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
-    }
-    else
-    {
-      SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
-		 False, False);
+      if(!do_resize_opaque)
+      {
+	MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+      }
+      else
+      {
+	SetupFrame(
+	  tmp_win, drag->x, drag->y, drag->width, drag->height, False);
+      }
     }
   }
   DisplaySize(tmp_win, drag->width, drag->height,False,False);
@@ -2805,7 +2815,7 @@ fprintf(stderr,"normalize window '%s'\n", tmp_win->name);
       get_shaded_geometry(tmp_win, &tmp_win->frame_g, &tmp_win->frame_g);
     ForceSetupFrame(
       tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width,
-      tmp_win->frame_g.height, True, False);
+      tmp_win->frame_g.height, True);
     DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
   }
   else /* maximize */
@@ -2868,7 +2878,7 @@ fprintf(stderr,"maximize window '%s'\n", tmp_win->name);
     if (IS_SHADED(tmp_win))
       get_shaded_geometry(tmp_win, &new_g, &tmp_win->max_g);
     SetupFrame(
-      tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, True, False);
+      tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, True);
     DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None);
     /* remember the offset between old and new position in case the maximized
      * window is moved more than the screen width/height. */

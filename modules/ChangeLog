@@ -1,10 +1,15 @@
+1999-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/fvwm.c (new_window):
+	removed debug 'sleep'
+
 1999-11-21  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmWinList/FvwmWinList.c (AdjustWindow):
 	Fixed a core dump. I hope I have not completely reverted the last
  	WinList commit.
 
-	
+
 1999-11-21  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
@@ -17,7 +22,7 @@
 	Removed some forgeted debug code.
 	Note: There are some problems with AutoHide at the first Reveal/Hide
 	after a change of the frame width.
-	
+
 1999-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/x.c (xevent_loop):

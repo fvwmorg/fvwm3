@@ -838,8 +838,8 @@ void MoveViewport(int newx, int newy, Bool grab)
 				t->icon_w_height+t->icon_p_height);
 	      }
 	    }
-	    SetupFrame (t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
-			t->frame_g.width, t->frame_g.height,FALSE, False);
+	    SetupFrame(t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
+		       t->frame_g.width, t->frame_g.height, False);
 	  }
 	}
 	/*  Bump to next win...    */
@@ -889,7 +889,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    }
 	    SetupFrame(t1, t1->frame_g.x+ deltax,
 		       t1->frame_g.y + deltay, t1->frame_g.width,
-		       t1->frame_g.height,FALSE, False);
+		       t1->frame_g.height, False);
 	  }
 	}
 	/*  Bump to next win...    */

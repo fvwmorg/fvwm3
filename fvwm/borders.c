@@ -975,23 +975,25 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   xwc.width = tmp_win->title_g.height;
   xwc.y = tmp_win->title_g.y;
   xwc.x = tmp_win->boundary_width;
-  for(i=0;i<Scr.nr_left_buttons;i++)
+  for(i = 0; i < Scr.nr_left_buttons; i++)
   {
     if(tmp_win->left_w[i] != None)
     {
       if(xwc.x + tmp_win->title_g.height < w-tmp_win->boundary_width)
+      {
 	XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
+	xwc.x += tmp_win->title_g.height;
+      }
       else
       {
 	xwc.x = -tmp_win->title_g.height;
 	XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
       }
-      xwc.x += tmp_win->title_g.height;
     }
   }
 
   xwc.x=w-tmp_win->boundary_width;
-  for(i=0;i<Scr.nr_right_buttons;i++)
+  for(i = 0 ; i < Scr.nr_right_buttons; i++)
   {
     if(tmp_win->right_w[i] != None)
     {
@@ -1184,8 +1186,7 @@ void DrawDecorations(
 /***********************************************************************
  *
  *  Procedure:
- *      SetupFrame - set window sizes, this was called from either
- *              AddWindow, EndResize, or HandleConfigureNotify.
+ *      SetupFrame - set window sizes
  *
  *  Inputs:
  *      tmp_win - the FvwmWindow pointer
@@ -1206,16 +1207,34 @@ void DrawDecorations(
  *
  ************************************************************************/
 
-void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
-		Bool curr_shading)
+void SetupFrame(
+  FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent)
 {
   XEvent client_event;
-  XWindowChanges frame_wc, xwc;
-  unsigned long frame_mask, xwcm;
-  int cx,cy,i;
-  Bool Resized = False, Moved = False;
-  int xwidth,ywidth,left,right;
+  XWindowChanges xwc;
+  unsigned long xwcm;
+  int i;
+  Bool is_resized = False;
+  Bool is_moved = False;
+  int xwidth;
+  int ywidth;
+  int left;
+  int right;
   int shaded = IS_SHADED(tmp_win);
+
+  int xmove_sign;
+  int ymove_sign;
+  int xsize_sign;
+  int ysize_sign;
+  int i0 = 0;
+  int i1 = 0;
+  int id = 0;
+  int dx;
+  int dy;
+  int px;
+  int py;
+  int decor_gravity;
+  Bool is_order_reversed = False;
 
 #ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG,"SetupFrame",
@@ -1223,20 +1242,129 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
            x, y, w, h);
 #endif
 
-  if((w != tmp_win->frame_g.width) || (h != tmp_win->frame_g.height))
-    Resized = True;
-  if ((x != tmp_win->frame_g.x || y != tmp_win->frame_g.y))
-    Moved = True;
+  if (w != tmp_win->frame_g.width || h != tmp_win->frame_g.height)
+    is_resized = True;
+  if (x != tmp_win->frame_g.x || y != tmp_win->frame_g.y)
+    is_moved = True;
 
   /*
    * According to the July 27, 1988 ICCCM draft, we should send a
    * "synthetic" ConfigureNotify event to the client if the window
    * was moved but not resized.
    */
-  if (Moved && !Resized)
+  if (is_moved && !is_resized)
     sendEvent = True;
 
-  if (Resized)
+  /* optimization code for opaque resize */
+#define SIGN(x) (((x) < 0) ? -1 : !!(x))
+  xmove_sign = SIGN(x - tmp_win->frame_g.x);
+  ymove_sign = SIGN(y - tmp_win->frame_g.y);
+  xsize_sign = SIGN(w - tmp_win->frame_g.width);
+  ysize_sign = SIGN(h - tmp_win->frame_g.height);
+#undef SIGN(x)
+
+  if (HAS_BOTTOM_TITLE(tmp_win))
+  {
+    decor_gravity = SouthEastGravity;
+  }
+  else
+  {
+    decor_gravity = NorthWestGravity;
+  }
+
+  if (xsize_sign != 0 || ysize_sign != 0)
+  {
+    if (ysize_sign == 0 || xsize_sign > 0)
+      is_order_reversed = (xsize_sign >= 0);
+    else
+      is_order_reversed = (ysize_sign >= 0);
+  }
+  else
+  {
+    is_order_reversed = False;
+  }
+
+  /*
+   * Now set up the client, the parent and the frame window
+   */
+
+  set_decor_gravity(
+    tmp_win, decor_gravity, NorthWestGravity, NorthWestGravity);
+  tmp_win->attr.width = w - 2 * tmp_win->boundary_width;
+  tmp_win->attr.height =
+    h - tmp_win->title_g.height - 2*tmp_win->boundary_width;
+  if (tmp_win->attr.height <= 1 || tmp_win->attr.width <= 1)
+    is_order_reversed = 0;
+  px = tmp_win->boundary_width;
+  if (HAS_BOTTOM_TITLE(tmp_win))
+    py = tmp_win->boundary_width;
+  else
+    py = tmp_win->title_g.height + tmp_win->boundary_width;
+  dx = 0;
+  dy = 0;
+  if (is_order_reversed && decor_gravity == SouthEastGravity)
+  {
+    dx = tmp_win->frame_g.width - w;
+    dy = tmp_win->frame_g.height - h;
+  }
+
+  if (is_order_reversed)
+  {
+    i0 = 3;
+    i1 = -1;
+    id = -1;
+  }
+  else
+  {
+    i0 = 0;
+    i1 = 4;
+    id = 1;
+  }
+  for (i = i0; i != i1; i += id)
+  {
+    switch(i)
+    {
+    case 0:
+      /*
+       * fix up frame and assign size/location values in tmp_win
+       */
+      XMoveResizeWindow(dpy, tmp_win->frame, x, y, w, h);
+      break;
+    case 1:
+      if (!shaded)
+      {
+	XMoveResizeWindow(
+	dpy, tmp_win->Parent, px, py, tmp_win->attr.width,
+	tmp_win->attr.height);
+      }
+      break;
+    case 2:
+      if (!shaded)
+      {
+	XResizeWindow(
+	  dpy, tmp_win->w, tmp_win->attr.width, tmp_win->attr.height);
+	/* This reduces flickering */
+	XSync(dpy, 0);
+      }
+      break;
+    case 3:
+      XMoveResizeWindow(dpy, tmp_win->decor_w, dx, dy, w, h);
+      break;
+    }
+  }
+  set_decor_gravity(
+    tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
+  XMoveWindow(dpy, tmp_win->Parent, px, py);
+  XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
+  tmp_win->frame_g.x = x;
+  tmp_win->frame_g.y = y;
+  tmp_win->frame_g.width = w;
+  tmp_win->frame_g.height = h;
+
+  /*
+   * Set up the decoration windows
+   */
+  if (is_resized)
   {
     left = tmp_win->nr_left_buttons;
     right = tmp_win->nr_right_buttons;
@@ -1272,7 +1400,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
       if(ywidth<2)
         ywidth = 2;
 
-      for(i=0;i<4;i++)
+      for(i = 0; i < 4; i++)
       {
         if(i==0)
         {
@@ -1309,70 +1437,43 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
       xwcm = CWX|CWY|CWWidth|CWHeight;
       xwc.width = tmp_win->corner_width;
       xwc.height = tmp_win->corner_width;
-      for(i=0;i<4;i++)
+      for(i = 0; i < 4; i++)
       {
-        if(i%2)
+        if (i & 0x1)
           xwc.x = w - tmp_win->corner_width;
         else
           xwc.x = 0;
 
-        if(i/2)
+        if (i & 0x2)
           xwc.y = h - tmp_win->corner_width;
         else
           xwc.y = 0;
 
-	if (!shaded||(i==0)||(i==1))
-	    XConfigureWindow(dpy, tmp_win->corners[i], xwcm, &xwc);
+	if (!shaded || !(i & 2))
+	  XConfigureWindow(dpy, tmp_win->corners[i], xwcm, &xwc);
       }
 
     }
   }
-  tmp_win->attr.width = w - 2*tmp_win->boundary_width;
-  tmp_win->attr.height = h - tmp_win->title_g.height
-    - 2*tmp_win->boundary_width;
-  cx = tmp_win->boundary_width;
-  if (HAS_BOTTOM_TITLE(tmp_win))
-    cy = tmp_win->boundary_width;
-  else
-    cy = tmp_win->title_g.height + tmp_win->boundary_width;
 
-  if (!shaded)
-  {
-    XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width, tmp_win->attr.height);
-    XMoveResizeWindow(dpy, tmp_win->Parent, cx,cy, tmp_win->attr.width,
-		      tmp_win->attr.height);
-  }
 
   /*
-   * fix up frame and assign size/location values in tmp_win
+   * Set up window shape
    */
-  if (!curr_shading)
-  {
-    frame_wc.x = tmp_win->frame_g.x = x;
-    frame_wc.y = tmp_win->frame_g.y = y;
-    frame_wc.width = tmp_win->frame_g.width = w;
-    frame_wc.height = tmp_win->frame_g.height = h;
-    frame_mask = (CWX | CWY | CWWidth | CWHeight);
-    XConfigureWindow(dpy, tmp_win->frame, frame_mask, &frame_wc);
-    frame_wc.x = 0;
-    frame_wc.y = 0;
-    XConfigureWindow(dpy, tmp_win->decor_w, frame_mask, &frame_wc);
-  }
-#ifdef FVWM_DEBUG_MSGS
-  fvwm_msg(DBG,"SetupFrame",
-           "New frame dimensions (x == %d, y == %d, w == %d, h == %d)",
-           frame_wc.x, frame_wc.y, frame_wc.width, frame_wc.height);
-#endif
 
 #ifdef SHAPE
   if (ShapesSupported)
   {
-    if ((Resized)&&(tmp_win->wShaped))
+    if (is_resized && tmp_win->wShaped)
     {
-      SetShape(tmp_win,w);
+      SetShape(tmp_win, w);
     }
   }
 #endif /* SHAPE */
+
+  /*
+   * Send ConfigureNotify
+   */
 
   XSync(dpy,0);
   /* must not send events to shaded windows because this might cause them to
@@ -1426,14 +1527,13 @@ fprintf(stderr,"    max:    %5d %5d, %4d x %4d, %5d %5d\n", tmp_win->max_g.x, tm
 }
 
 void ForceSetupFrame(
-  FvwmWindow *tmp_win,int x,int y,int w,int h, Bool sendEvent,
-  Bool curr_shading)
+  FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent)
 {
   tmp_win->frame_g.x = x + 1;
   tmp_win->frame_g.y = y + 1;
   tmp_win->frame_g.width = 0;
   tmp_win->frame_g.height = 0;
-  SetupFrame(tmp_win, x, y, w, h, sendEvent, curr_shading);
+  SetupFrame(tmp_win, x, y, w, h, sendEvent);
 }
 
 void update_absolute_geometry(FvwmWindow *tmp_win)
@@ -1477,11 +1577,31 @@ void set_decor_gravity(
   XChangeWindowAttributes(dpy, tmp_win->decor_w, valuemask, &xcwa);
   if (HAS_TITLE(tmp_win))
   {
+    int left_gravity;
+    int right_gravity;
+
+    if (gravity == StaticGravity || gravity == ForgetGravity)
+    {
+      left_gravity = gravity;
+      right_gravity = gravity;
+    }
+    else
+    {
+      /* West...Gravity */
+      left_gravity = gravity - ((gravity - 1) % 3);
+      /* East...Gravity */
+      right_gravity = left_gravity + 2;
+    }
+    xcwa.win_gravity = left_gravity;
     XChangeWindowAttributes(dpy, tmp_win->title_w, valuemask, &xcwa);
     for (i = 4; i >= 0; i--)
     {
       if (tmp_win->left_w[i])
 	XChangeWindowAttributes(dpy, tmp_win->left_w[i], valuemask, &xcwa);
+    }
+    xcwa.win_gravity = right_gravity;
+    for (i = 4; i >= 0; i--)
+    {
       if (tmp_win->right_w[i])
 	XChangeWindowAttributes(dpy, tmp_win->right_w[i], valuemask, &xcwa);
     }

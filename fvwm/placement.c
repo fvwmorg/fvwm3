@@ -848,8 +848,8 @@ void PlaceAgain_func(F_CMD_ARGS)
     AnimatedMoveFvwmWindow(tmp_win, tmp_win->frame, -1, -1, x, y, False, -1,
 			   NULL);
 
-  SetupFrame(tmp_win,x,y,tmp_win->frame_g.width, tmp_win->frame_g.height,
-	     False, False);
+  SetupFrame(
+    tmp_win,x,y,tmp_win->frame_g.width, tmp_win->frame_g.height, False);
 
   return;
 }

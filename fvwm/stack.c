@@ -30,6 +30,7 @@
 #include "virtual.h"
 #include "defaults.h"
 #include "gnome.h"
+#include "borders.h"
 
 
 /* ----------------------------- stack ring code --------------------------- */
@@ -261,8 +262,8 @@ static Bool must_move_transients(FvwmWindow *t, Bool do_lower,
   return False;
 }
 
-static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
-				     Bool allow_recursion)
+static void RaiseOrLowerWindow(
+  FvwmWindow *t, Bool do_lower, Bool allow_recursion)
 {
   FvwmWindow *s, *r, *t2, *next, tmp_r;
   unsigned int flags;
@@ -275,7 +276,7 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
   Bool flip_at_bottom=False;
   int test_layer;
 
-  if ( allow_recursion )
+  if (allow_recursion)
   {
     /*
      * This part makes Raise/Lower on a Transient act on its Main and sibling
@@ -298,7 +299,7 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
           if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
               (do_lower && DO_LOWER_TRANSIENT(t2))  )
           {
-              inner_RaiseOrLowerWindow(t2,do_lower,False);
+              RaiseOrLowerWindow(t2,do_lower,False);
               return;
           }
         }
@@ -512,12 +513,12 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
     /*  This needs to be done after all the raise hacks.  */
     raisePanFrames();
   }
+  /* If the window has been raised, make sure the decorations are updated
+   * immediately in case we are in a complex function (e.g. raise, unshade). */
+  if (!do_lower)
+    DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), True, None);
 }
 
-static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
-{
-  inner_RaiseOrLowerWindow(t, do_lower, True);
-}
 /*
    Raise t and its transients to the top of its layer.
    For the pager to work properly it is necessary that
@@ -526,13 +527,13 @@ static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
 */
 void RaiseWindow(FvwmWindow *t)
 {
-  RaiseOrLowerWindow(t, False);
+  RaiseOrLowerWindow(t, False, True);
   return;
 }
 
 void LowerWindow(FvwmWindow *t)
 {
-  RaiseOrLowerWindow(t, True);
+  RaiseOrLowerWindow(t, True, True);
   return;
 }
 
@@ -802,7 +803,7 @@ new_layer (FvwmWindow *tmp_win, int layer)
     {
       tmp_win->layer = layer;
       /* temporary fix; new transient handling code assumes the layers are
-       * properly arranged when inner_RaiseOrLowerWindow() is called. */
+       * properly arranged when RaiseOrLowerWindow() is called. */
       ResyncFvwmStackRing();
       /* domivogt (9-Sep-1999): this was RaiseWindow before. The intent may
        * have been good (put the window on top of the new lower layer), but it

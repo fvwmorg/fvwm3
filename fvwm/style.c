@@ -2162,7 +2162,7 @@ static void handle_window_style_change(FvwmWindow *t)
   if (do_setup_frame)
   {
     ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
-		    t->frame_g.height, True, False);
+		    t->frame_g.height, True);
   }
   if (do_redraw_decoration)
   {
@@ -2199,6 +2199,9 @@ void reset_style_changes(void)
   for (temp = all_styles; temp != NULL; temp = SGET_NEXT_STYLE(*temp))
   {
     temp->has_style_changed = 0;
+    memset(&SCGET_COMMON_STATIC_FLAGS(*temp), 0,
+	   sizeof(SCGET_COMMON_STATIC_FLAGS(*temp)));
+    memset(&(temp->change_mask), 0, sizeof(temp->change_mask));
   }
   Scr.flags.has_any_style_changed = 0;
 

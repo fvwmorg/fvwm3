@@ -25,8 +25,10 @@ typedef enum
 } draw_window_parts;
 
 void SetupTitleBar(FvwmWindow *tmp_win, int w, int h);
-void SetupFrame(FvwmWindow *, int, int, int, int, Bool, Bool);
-void ForceSetupFrame(FvwmWindow *, int, int, int, int, Bool, Bool);
+void SetupFrame(
+  FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent);
+void ForceSetupFrame(
+  FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent);
 void update_absolute_geometry(FvwmWindow *tmp_win);
 void set_decor_gravity(
   FvwmWindow *tmp_win, int gravity, int parent_gravity, int client_gravity);

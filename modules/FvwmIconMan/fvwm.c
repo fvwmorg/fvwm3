@@ -391,7 +391,6 @@ static void new_window (FvwmPacketBody *body)
 {
   WinData *win;
 
-sleep(1);
   win = new_windata();
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
   if (!(IS_TRANSIENT(win)))
