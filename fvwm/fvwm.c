@@ -1376,7 +1376,7 @@ static void SetRCDefaults(void)
 		},
 		{
 			"+ \"&3. ",
-			_("Setup 95 Script"), 
+			_("Setup 95 Script"),
 			"\" Module FvwmScript FvwmScript-Setup95"
 		},
 		{
@@ -1483,7 +1483,7 @@ void StartupStuff(void)
 
 	ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 	ecc.w.wcontext = C_ROOT;
-	exc = exc_create_context(&ecc, ECC_TYPE | ECC_W);
+	exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
 	CaptureAllWindows(exc, False);
 	/* Turn off the SM stuff after the initial capture so that new windows
 	 * will not be matched by accident. */

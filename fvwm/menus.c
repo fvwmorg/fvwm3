@@ -5677,6 +5677,10 @@ static void __mloop_exit_selected(
 	 * now */
 	if (pmp->ret_paction)
 	{
+		if (*pmp->ret_paction)
+		{
+			free(*pmp->ret_paction);
+		}
 		*pmp->ret_paction = (med->mi) ?
 			safestrdup(MI_ACTION(med->mi)) : NULL;
 	}
@@ -6427,15 +6431,15 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		{
 			if (pmret->rc == MENU_DONE)
 			{
-				if (pmp->ret_paction && *(pmp->ret_paction))
+				if (pmp->ret_paction && *pmp->ret_paction)
 				{
 					indirect_depth++;
 					/* Execute the action */
 					__menu_execute_function(
 						pmp->pexc, *pmp->ret_paction);
-					*(pmp->ret_paction) = NULL;
 					indirect_depth--;
-					free(*(pmp->ret_paction));
+					free(*pmp->ret_paction);
+					*pmp->ret_paction = NULL;
 				}
 				last_saved_pos_hints.flags.
 					do_ignore_pos_hints = False;

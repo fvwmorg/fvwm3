@@ -2644,6 +2644,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		FlocaleGetNameProperty(XGetWMName, dpy, FW_W(fw), &new_name);
 		if (new_name.name == NULL)
 		{
+			FlocaleFreeNameProperty(&new_name);
 			return;
 		}
 		if (strlen(new_name.name) > MAX_WINDOW_NAME_LEN)
@@ -2654,6 +2655,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		if (fw->name.name && strcmp(new_name.name, fw->name.name) == 0)
 		{
 			/* migo: some apps update their names every second */
+			FlocaleFreeNameProperty(&new_name);
 			return;
 		}
 
@@ -2698,6 +2700,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			XGetWMIconName, dpy, FW_W(fw), &new_name);
 		if (new_name.name == NULL)
 		{
+			FlocaleFreeNameProperty(&new_name);
 			return;
 		}
 		if (new_name.name && strlen(new_name.name) > MAX_ICON_NAME_LEN)
@@ -2709,6 +2712,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			strcmp(new_name.name, fw->icon_name.name) == 0)
 		{
 			/* migo: some apps update their names every second */
+			FlocaleFreeNameProperty(&new_name);
 			return;
 		}
 

@@ -118,6 +118,10 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	{
 		execute_function(cond_rc, exc2, action, 0);
 	}
+	if (ret_action != NULL)
+	{
+		free(ret_action);
+	}
 	exc_destroy_context(exc2);
 
 	return;

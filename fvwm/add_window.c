@@ -2931,62 +2931,50 @@ void free_window_names(FvwmWindow *fw, Bool nukename, Bool nukeicon)
 		return;
 	}
 
-	if (nukename && fw->visible_name &&
-	    fw->visible_name != fw->name.name &&
-	    fw->visible_name != NoName)
+	if (nukename)
 	{
-		free(fw->visible_name);
-		fw->visible_name = NULL;
+		if (fw->visible_name && fw->visible_name != fw->name.name &&
+		    fw->visible_name != NoName)
+		{
+			free(fw->visible_name);
+		}
+		fw->visible_name = NoName;
+		if (fw->name.name)
+		{
+			if (fw->icon_name.name == fw->name.name)
+			{
+				fw->icon_name.name = NoName;
+			}
+			if (fw->visible_icon_name == fw->name.name)
+			{
+				fw->visible_icon_name = fw->icon_name.name;
+			}
+			if (fw->name.name != NoName)
+			{
+				FlocaleFreeNameProperty(&(fw->name));
+				fw->visible_name = NULL;
+			}
+		}
 	}
-	if (nukeicon && fw->visible_icon_name &&
-	    fw->visible_icon_name != fw->name.name &&
-	    fw->visible_icon_name != fw->icon_name.name &&
-	    fw->visible_icon_name != NoName)
+	if (nukeicon)
 	{
-		free(fw->visible_icon_name);
-		fw->visible_icon_name = NULL;
-	}
-	if (nukename && fw->name.name)
-	{
-#ifdef CODE_WITH_LEAK_I_THINK
-		if (fw->name.name != fw->icon_name.name &&
-		    fw->name.name != NoName)
+		if (fw->visible_icon_name &&
+		    fw->visible_icon_name != fw->name.name &&
+		    fw->visible_icon_name != fw->icon_name.name &&
+		    fw->visible_icon_name != NoName)
 		{
-			FlocaleFreeNameProperty(&(fw->name));
+			free(fw->visible_icon_name);
 		}
-#else
-		if (fw->icon_name.name == fw->name.name)
+		fw->visible_icon_name = NoName;
+		if (fw->icon_name.name)
 		{
-			fw->icon_name.name = NoName;
+			if ((fw->icon_name.name != fw->name.name) &&
+			    fw->icon_name.name != NoName)
+			{
+				FlocaleFreeNameProperty(&(fw->icon_name));
+				fw->visible_icon_name = NULL;
+			}
 		}
-		if (fw->visible_icon_name == fw->name.name)
-		{
-			fw->visible_icon_name = fw->icon_name.name;
-		}
-		if (fw->name.name != NoName)
-		{
-			FlocaleFreeNameProperty(&(fw->name));
-			fw->visible_name = NULL;
-		}
-#endif
-	}
-	if (nukeicon && fw->icon_name.name)
-	{
-#ifdef CODE_WITH_LEAK_I_THINK
-		if ((fw->name.name != fw->icon_name.name || nukename) &&
-		    fw->icon_name.name != NoName)
-		{
-			FlocaleFreeNameProperty(&(fw->icon_name));
-			fw->visible_icon_name = NULL;
-		}
-#else
-		if ((fw->name.name != fw->icon_name.name) &&
-		    fw->icon_name.name != NoName)
-		{
-			FlocaleFreeNameProperty(&(fw->icon_name));
-			fw->visible_icon_name = NULL;
-		}
-#endif
 	}
 
 	return;
