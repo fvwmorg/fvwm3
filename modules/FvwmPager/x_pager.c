@@ -127,6 +127,15 @@ extern void ExitPager(void);
 
 Pixmap default_pixmap = None;
 
+#ifdef DEBUG
+#define MYFPRINTF(X) \
+  fprintf X;\
+  fflush (stderr);
+#else
+#define MYFPRINTF(X)
+#endif
+
+
 /* discard certain events on a window */
 static void discard_events(long event_type, Window w, XEvent *last_ev)
 {
@@ -2224,6 +2233,7 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	static int last_sy = -999999;
 	int sx;
 	int sy;
+	int adjx,adjy;
 
 	/* Desk < 0 means we want to scroll an icon window */
 	if(Desk >= 0 && Desk + desk1 != Scr.CurrentDesk)
@@ -2232,9 +2242,12 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	}
 
 	/* center around mouse */
-	x -= (desk_w / (1 + Scr.VxMax / Scr.MyDisplayWidth)) / 2;
-	y -= (desk_h / (1 + Scr.VyMax / Scr.MyDisplayHeight)) / 2;
+	adjx = (desk_w / (1 + Scr.VxMax / Scr.MyDisplayWidth));
+	adjy = (desk_h / (1 + Scr.VyMax / Scr.MyDisplayHeight));
+	x-=adjx/2;
+	y-=adjy/2;
 
+	/* adjust for pointer going out of range */
 	if(x < 0)
 	{
 		x = 0;
@@ -2243,14 +2256,14 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	{
 		y = 0;
 	}
-
-	if(x > window_w)
+	
+	if(x > window_w-adjx)
 	{
-		x = window_w;
+		x = window_w-adjx;
 	}
-	if(y > window_h)
+	if(y > window_h-adjy)
 	{
-		y = window_h;
+		y = window_h-adjy;
 	}
 
 	sx = 0;
@@ -2265,10 +2278,8 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 		sy = 100 * (y * Scr.VHeight / window_h - MyVy) /
 			Scr.MyDisplayHeight;
 	}
-#ifdef DEBUG
-	fprintf(stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
-		y, sx, sy);
-#endif
+	MYFPRINTF((stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
+		y, sx, sy));
 	/* Make sure weExecuteCommandQueue(); don't get stuck a few pixels fromt
 	 * the top/left border. Since sx/sy are ints, values between 0 and 1 are
 	 * rounded down. */
