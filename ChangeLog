@@ -1,3 +1,10 @@
+Tue Mar  9 18:00:22 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
+
+	* configure.in (readline): check for readline/history.h, rather
+	than readline/readline.h.  Some packages install the latter, but
+	not the former, but both are required if FVWM is to use readline.
+	Also tell user why we are checking for readline twice.
+
 1999-03-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/misc.h:
