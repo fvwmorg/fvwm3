@@ -698,9 +698,9 @@ void DrawButton(FvwmWindow *t, Window win, int w, int h,
       if(HAS_MWM_BUTTONS(t) &&
 	 ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
 	  (stateflags & MWMDecorShade && IS_SHADED(t))))
-	DrawLinePattern(win, ShadowGC, ReliefGC, &bf->vector, w, h);
+	DrawLinePattern(win, ShadowGC, ReliefGC, &bf->u.vector, w, h);
       else
-	DrawLinePattern(win, ReliefGC, ShadowGC, &bf->vector, w, h);
+	DrawLinePattern(win, ReliefGC, ShadowGC, &bf->u.vector, w, h);
       break;
 #endif /* VECTOR_BUTTONS */
 
@@ -996,11 +996,11 @@ void DrawLinePattern(Window win,
 		     struct vector_coords *coords,
                      int w, int h)
 {
-  int i = 1;
-  for (; i < coords->num; ++i)
+  int i;
+  for (i = 1; i < coords->num; ++i)
   {
       XDrawLine(dpy,win,
-		coords->line_style[i] ? ReliefGC : ShadowGC,
+		(coords->line_style & (1 << i))  ? ReliefGC : ShadowGC,
 		w * coords->x[i-1]/100,
 		h * coords->y[i-1]/100,
 		w * coords->x[i]/100,

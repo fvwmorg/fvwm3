@@ -231,12 +231,16 @@ void Maximize(F_CMD_ARGS)
      * in the meantime. The orig values are absolute! */
     if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
       {
-	/* make sure we keep it on screen while unmaximizing */
+	/* Make sure we keep it on screen while unmaximizing. Since
+	   orig_g is in absolute coords, we need to extract the 
+	   page-relative coords. This doesn't work well if the page
+	   has been moved by a fractional part of the page size
+	   between maximizing and unmaximizing. */
 	new_x = tmp_win->orig_g.x -
 	  truncate_to_multiple(tmp_win->orig_g.x,Scr.MyDisplayWidth);
 	new_y = tmp_win->orig_g.y -
 	  truncate_to_multiple(tmp_win->orig_g.y,Scr.MyDisplayHeight);
-      }
+	}
     else
       {
 	new_x = tmp_win->orig_g.x - Scr.Vx;
@@ -2105,6 +2109,22 @@ void FreeButtonFace(Display *dpy, ButtonFace *bf)
 	bf->u.p = NULL;
 	break;
 #endif
+
+#ifdef VECTOR_BUTTONS
+    case VectorButton:
+      if (bf->u.vector.x)
+	{
+	  free (bf->u.vector.x);
+	  bf->u.vector.x = NULL;
+	}
+      if (bf->u.vector.y)
+	{
+	  free (bf->u.vector.y);
+	  bf->u.vector.y = NULL;
+	}
+      break;
+#endif
+
     default:
 	break;
     }
@@ -2173,8 +2193,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		 (strlen(style)<=2 && isdigit(*style)))
 	{
 	    /* normal coordinate list button style */
-	    int i, num_coords, num;
-	    struct vector_coords *vc = &bf->vector;
+	    int i, num_coords, num, line_style;
+	    struct vector_coords *vc = &bf->u.vector;
 
 	    /* get number of points */
 	    if (strncasecmp(style,"Vector",6)==0) {
@@ -2183,7 +2203,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    } else
 		num = sscanf(style,"%d",&num_coords);
 
-	    if((num != 1)||(num_coords>20)||(num_coords<2))
+	    if((num != 1)||(num_coords>32)||(num_coords<2))
 	    {
 		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
 				    "Bad button style (2) in line: %s",action);
@@ -2191,13 +2211,15 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    }
 
 	    vc->num = num_coords;
+	    vc->x = (int *) safemalloc (sizeof (int) * num_coords);
+	    vc->y = (int *) safemalloc (sizeof (int) * num_coords);
 
 	    /* get the points */
 	    for(i = 0; i < vc->num; ++i)
 	    {
 		/* X x Y @ line_style */
 		num = sscanf(s,"%dx%d@%d%n",&vc->x[i],&vc->y[i],
-			     &vc->line_style[i], &offset);
+			     &line_style, &offset);
 		if(num != 3)
 		{
 		    if(verbose)fvwm_msg(ERR,"ReadButtonFace",
@@ -2205,6 +2227,10 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 					action);
 		    return False;
 		}
+		if (line_style != 0)
+		  {
+		    vc->line_style |= (1 << i);
+		  }
 		s += offset;
 	    }
 	    bf->style = VectorButton;

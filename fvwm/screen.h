@@ -163,16 +163,15 @@ typedef struct ButtonFace {
 	    Pixel *pixels;
 	} grad;
 #endif
-    } u;
-
 #ifdef VECTOR_BUTTONS
     struct vector_coords {
-	int num;
-	int x[20];
-	int y[20];
-	int line_style[20];
+      int num;
+      int *x;
+      int *y;
+      unsigned long line_style;
     } vector;
 #endif
+    } u;
 
 #ifdef MULTISTYLE
     struct ButtonFace *next;

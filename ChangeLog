@@ -1,3 +1,37 @@
+1999-05-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/screen.h (ButtonFace): reduce memory consumption by
+	moving the vector member into the union and making it more compact.
+	The old vector_coords always used 61 ints. The new vector_coords 
+	use 10 ints for the most common case of buttons with a pattern of 
+	4 lines. Considering that I counted up to 33 ButtonFace structs
+	per FvwmDecor, this should sum up to a memory reduction of
+	approx. 6k / FvwmDecor.
+
+	* fvwm/fvwm.c (LoadDefaultLeftButton): 
+	(LoadDefaultRightButton): 
+	(ResetAllButtons): adapt to new vector_coords.
+
+	* fvwm/builtins.c (FreeButtonFace): free the dynamically allocated
+	memory in vector_coords.
+	* fvwm/builtins.c (ReadButtonFace): allocate memory for 
+	vector_coords dynamically, allow up to 32 points in vector
+	patterns, since we use a long to hold the line_style flags.
+
+	* fvwm/borders.c (DrawButton): 
+	(DrawLinePattern): adapt to new vector_coords.
+
+	* fvwm/fvwm2.1: document the limit of 32 points / pattern.
+	
+1999-05-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.c: remove SaveDesktopState, remove all references
+	to _XA_WM_DESKTOP, set the Restarting flag based on restore_filename.
+	(Done): don't move to viewport 0,0 if restarting.
+
+	* fvwm/placement.c (PlaceWindow): 
+	* fvwm/fvwm.h: remove _XA_WM_DESKTOP
+
 1999-05-19  Hippo
 
 	* fvwm/{fvwm,read}.c: Fixed startup delays due to having modules
@@ -32,6 +66,9 @@
 	* fvwm/borders.c (SetBorder): remove undocumented dependency of
 	border depressability on has_mwm_buttons. Use
 	has_depressable_border instead.
+
+	* NEWS:
+	* fvwm/fvwm2.1: document DepressableBorder/FirmBorder.
 
 Tue May 18 12:44:11 1999  Steve ROBBINS  <stever@bic.mni.mcgill.ca>
 

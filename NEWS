@@ -1,9 +1,11 @@
 Changes in alpha release 2.3.3 (May 1999)
 
-Changes in alpha release 2.3.2 (May 1999)
+* Restarting fvwm no longer moves the viewport to (0,0).
 
 * New style DepressableBorder/FirmBorder to influence the appearance
   of the window border under button presses.
+
+Changes in alpha release 2.3.2 (May 1999)
 
 * The MoveThreshold command lets the user fine tune the threshold when a click
   becomes a move. It works in FvwmPager too.

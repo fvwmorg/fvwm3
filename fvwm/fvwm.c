@@ -571,6 +571,11 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(FvwmErrorHandler);
 
+  if (restore_filename && strstr (restore_filename, ".fvwm_restart"))
+    {
+      Restarting = True;
+    }
+
   /*
      This should be done early enough to have the window states loaded
      before the first call to AddWindow.
@@ -790,9 +795,6 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
 	XFree(prop);
       }
     }
-    data[0] = (unsigned long)fw->Desk;
-    XChangeProperty(dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-		    PropModeReplace, (unsigned char *) data, 1);
 
     XSelectInput(dpy, fw->w, 0);
     w = fw->w;
@@ -985,7 +987,6 @@ Atom _XA_WM_COLORMAP_WINDOWS;
 extern Atom _XA_WM_PROTOCOLS;
 Atom _XA_WM_TAKE_FOCUS;
 Atom _XA_WM_DELETE_WINDOW;
-Atom _XA_WM_DESKTOP;
 Atom _XA_MwmAtom;
 Atom _XA_MOTIF_WM;
 
@@ -1018,7 +1019,6 @@ void InternUsefulAtoms (void)
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
   _XA_WM_TAKE_FOCUS = XInternAtom (dpy, "WM_TAKE_FOCUS", False);
   _XA_WM_DELETE_WINDOW = XInternAtom (dpy, "WM_DELETE_WINDOW", False);
-  _XA_WM_DESKTOP = XInternAtom (dpy, "WM_DESKTOP", False);
   _XA_MwmAtom=XInternAtom(dpy,"_MOTIF_WM_HINTS",False);
   _XA_MOTIF_WM=XInternAtom(dpy,"_MOTIF_WM_INFO",False);
 
@@ -1125,86 +1125,92 @@ void CreateCursors(void)
  *		assumes associated button memory is already free
  *
  ************************************************************************/
+
 void LoadDefaultLeftButton(ButtonFace *bf, int i)
 {
 #ifndef VECTOR_BUTTONS
     bf->style = SimpleButton;
 #else
+    struct vector_coords *v = &bf->u.vector;
+
     bf->style = VectorButton;
     switch (i % 5)
     {
     case 0:
     case 4:
-	bf->vector.x[0] = 22;
-	bf->vector.y[0] = 39;
-	bf->vector.line_style[0] = 1;
-	bf->vector.x[1] = 78;
-	bf->vector.y[1] = 39;
-	bf->vector.line_style[1] = 1;
-	bf->vector.x[2] = 78;
-	bf->vector.y[2] = 61;
-	bf->vector.line_style[2] = 0;
-	bf->vector.x[3] = 22;
-	bf->vector.y[3] = 61;
-	bf->vector.line_style[3] = 0;
-	bf->vector.x[4] = 22;
-	bf->vector.y[4] = 39;
-	bf->vector.line_style[4] = 1;
-	bf->vector.num = 5;
+	v->num = 5;
+	v->line_style = 0;
+	v->x = (int *) safemalloc (sizeof(int) * v->num);
+	v->y = (int *) safemalloc (sizeof(int) * v->num);
+	v->x[0] = 22;
+	v->y[0] = 39;
+	v->line_style |= (1 << 0);
+	v->x[1] = 78;
+	v->y[1] = 39;
+	v->line_style |= (1 << 1);
+	v->x[2] = 78;
+	v->y[2] = 61;
+	v->x[3] = 22;
+	v->y[3] = 61;
+	v->x[4] = 22;
+	v->y[4] = 39;
+	v->line_style |= (1 << 4);
 	break;
     case 1:
-	bf->vector.x[0] = 32;
-	bf->vector.y[0] = 45;
-	bf->vector.line_style[0] = 0;
-	bf->vector.x[1] = 68;
-	bf->vector.y[1] = 45;
-	bf->vector.line_style[1] = 0;
-	bf->vector.x[2] = 68;
-	bf->vector.y[2] = 55;
-	bf->vector.line_style[2] = 1;
-	bf->vector.x[3] = 32;
-	bf->vector.y[3] = 55;
-	bf->vector.line_style[3] = 1;
-	bf->vector.x[4] = 32;
-	bf->vector.y[4] = 45;
-	bf->vector.line_style[4] = 0;
-	bf->vector.num = 5;
+	v->num = 5;
+	v->line_style = 0;
+	v->x = (int *) safemalloc (sizeof(int) * v->num);
+	v->y = (int *) safemalloc (sizeof(int) * v->num);
+	v->x[0] = 32;
+	v->y[0] = 45;
+	v->x[1] = 68;
+	v->y[1] = 45;
+	v->x[2] = 68;
+	v->y[2] = 55;
+	v->line_style |= (1 << 2);
+	v->x[3] = 32;
+	v->y[3] = 55;
+	v->line_style |= (1 << 3);
+	v->x[4] = 32;
+	v->y[4] = 45;
 	break;
     case 2:
-	bf->vector.x[0] = 49;
-	bf->vector.y[0] = 49;
-	bf->vector.line_style[0] = 1;
-	bf->vector.x[1] = 51;
-	bf->vector.y[1] = 49;
-	bf->vector.line_style[1] = 1;
-	bf->vector.x[2] = 51;
-	bf->vector.y[2] = 51;
-	bf->vector.line_style[2] = 0;
-	bf->vector.x[3] = 49;
-	bf->vector.y[3] = 51;
-	bf->vector.line_style[3] = 0;
-	bf->vector.x[4] = 49;
-	bf->vector.y[4] = 49;
-	bf->vector.line_style[4] = 1;
-	bf->vector.num = 5;
+	v->num = 5;
+	v->line_style = 0;
+	v->x = (int *) safemalloc (sizeof(int) * v->num);
+	v->y = (int *) safemalloc (sizeof(int) * v->num);
+	v->x[0] = 49;
+	v->y[0] = 49;
+	v->line_style |= (1 << 0);
+	v->x[1] = 51;
+	v->y[1] = 49;
+	v->line_style |= (1 << 1);
+	v->x[2] = 51;
+	v->y[2] = 51;
+	v->x[3] = 49;
+	v->y[3] = 51;
+	v->x[4] = 49;
+	v->y[4] = 49;
+	v->line_style |= (1 << 4);
 	break;
     case 3:
-	bf->vector.x[0] = 32;
-	bf->vector.y[0] = 45;
-	bf->vector.line_style[0] = 1;
-	bf->vector.x[1] = 68;
-	bf->vector.y[1] = 45;
-	bf->vector.line_style[1] = 1;
-	bf->vector.x[2] = 68;
-	bf->vector.y[2] = 55;
-	bf->vector.line_style[2] = 0;
-	bf->vector.x[3] = 32;
-	bf->vector.y[3] = 55;
-	bf->vector.line_style[3] = 0;
-	bf->vector.x[4] = 32;
-	bf->vector.y[4] = 45;
-	bf->vector.line_style[4] = 1;
-	bf->vector.num = 5;
+	v->num = 5;
+	v->line_style = 0;
+	v->x = (int *) safemalloc (sizeof(int) * v->num);
+	v->y = (int *) safemalloc (sizeof(int) * v->num);
+	v->x[0] = 32;
+	v->y[0] = 45;
+	v->line_style |= (1 << 0);
+	v->x[1] = 68;
+	v->y[1] = 45;
+	v->line_style |= (1 << 1);
+	v->x[2] = 68;
+	v->y[2] = 55;
+	v->x[3] = 32;
+	v->y[3] = 55;
+	v->x[4] = 32;
+	v->y[4] = 45;
+	v->line_style |= (1 << 4);
 	break;
     }
 #endif /* VECTOR_BUTTONS */
@@ -1221,81 +1227,87 @@ void LoadDefaultRightButton(ButtonFace *bf, int i)
 #ifndef VECTOR_BUTTONS
     bf->style = SimpleButton;
 #else
+    struct vector_coords *v = &bf->u.vector;
+
     bf->style = VectorButton;
     switch (i % 5)
     {
     case 0:
     case 3:
-	bf->vector.x[0] = 25;
-	bf->vector.y[0] = 25;
-	bf->vector.line_style[0] = 1;
-	bf->vector.x[1] = 75;
-	bf->vector.y[1] = 25;
-	bf->vector.line_style[1] = 1;
-	bf->vector.x[2] = 75;
-	bf->vector.y[2] = 75;
-	bf->vector.line_style[2] = 0;
-	bf->vector.x[3] = 25;
-	bf->vector.y[3] = 75;
-	bf->vector.line_style[3] = 0;
-	bf->vector.x[4] = 25;
-	bf->vector.y[4] = 25;
-	bf->vector.line_style[4] = 1;
-	bf->vector.num = 5;
+	v->num = 5;
+	v->line_style = 0;
+	v->x = (int *) safemalloc (sizeof(int) * v->num);
+	v->y = (int *) safemalloc (sizeof(int) * v->num);
+	v->x[0] = 25;
+	v->y[0] = 25;
+	v->line_style |= (1 << 0);
+	v->x[1] = 75;
+	v->y[1] = 25;
+	v->line_style |= (1 << 1);
+	v->x[2] = 75;
+	v->y[2] = 75;
+	v->x[3] = 25;
+	v->y[3] = 75;
+	v->x[4] = 25;
+	v->y[4] = 25;
+	v->line_style |= (1 << 4);
 	break;
     case 1:
-	bf->vector.x[0] = 39;
-	bf->vector.y[0] = 39;
-	bf->vector.line_style[0] = 1;
-	bf->vector.x[1] = 61;
-	bf->vector.y[1] = 39;
-	bf->vector.line_style[1] = 1;
-	bf->vector.x[2] = 61;
-	bf->vector.y[2] = 61;
-	bf->vector.line_style[2] = 0;
-	bf->vector.x[3] = 39;
-	bf->vector.y[3] = 61;
-	bf->vector.line_style[3] = 0;
-	bf->vector.x[4] = 39;
-	bf->vector.y[4] = 39;
-	bf->vector.line_style[4] = 1;
-	bf->vector.num = 5;
+	v->num = 5;
+	v->line_style = 0;
+	v->x = (int *) safemalloc (sizeof(int) * v->num);
+	v->y = (int *) safemalloc (sizeof(int) * v->num);
+	v->x[0] = 39;
+	v->y[0] = 39;
+	v->line_style |= (1 << 0);
+	v->x[1] = 61;
+	v->y[1] = 39;
+	v->line_style |= (1 << 1);
+	v->x[2] = 61;
+	v->y[2] = 61;
+	v->x[3] = 39;
+	v->y[3] = 61;
+	v->x[4] = 39;
+	v->y[4] = 39;
+	v->line_style |= (1 << 4);
 	break;
     case 2:
-	bf->vector.x[0] = 49;
-	bf->vector.y[0] = 49;
-	bf->vector.line_style[0] = 1;
-	bf->vector.x[1] = 51;
-	bf->vector.y[1] = 49;
-	bf->vector.line_style[1] = 1;
-	bf->vector.x[2] = 51;
-	bf->vector.y[2] = 51;
-	bf->vector.line_style[2] = 0;
-	bf->vector.x[3] = 49;
-	bf->vector.y[3] = 51;
-	bf->vector.line_style[3] = 0;
-	bf->vector.x[4] = 49;
-	bf->vector.y[4] = 49;
-	bf->vector.line_style[4] = 1;
-	bf->vector.num = 5;
+	v->num = 5;
+	v->line_style = 0;
+	v->x = (int *) safemalloc (sizeof(int) * v->num);
+	v->y = (int *) safemalloc (sizeof(int) * v->num);
+	v->x[0] = 49;
+	v->y[0] = 49;
+	v->line_style |= (1 << 0);
+	v->x[1] = 51;
+	v->y[1] = 49;
+	v->line_style |= (1 << 1);
+	v->x[2] = 51;
+	v->y[2] = 51;
+	v->x[3] = 49;
+	v->y[3] = 51;
+	v->x[4] = 49;
+	v->y[4] = 49;
+	v->line_style |= (1 << 4);
 	break;
     case 4:
-	bf->vector.x[0] = 36;
-	bf->vector.y[0] = 36;
-	bf->vector.line_style[0] = 1;
-	bf->vector.x[1] = 64;
-	bf->vector.y[1] = 36;
-	bf->vector.line_style[1] = 1;
-	bf->vector.x[2] = 64;
-	bf->vector.y[2] = 64;
-	bf->vector.line_style[2] = 0;
-	bf->vector.x[3] = 36;
-	bf->vector.y[3] = 64;
-	bf->vector.line_style[3] = 0;
-	bf->vector.x[4] = 36;
-	bf->vector.y[4] = 36;
-	bf->vector.line_style[4] = 1;
-	bf->vector.num = 5;
+	v->num = 5;
+	v->line_style = 0;
+	v->x = (int *) safemalloc (sizeof(int) * v->num);
+	v->y = (int *) safemalloc (sizeof(int) * v->num);
+	v->x[0] = 36;
+	v->y[0] = 36;
+	v->line_style |= (1 << 0);
+	v->x[1] = 64;
+	v->y[1] = 36;
+	v->line_style |= (1 << 1);
+	v->x[2] = 64;
+	v->y[2] = 64;
+	v->x[3] = 36;
+	v->y[3] = 64;
+	v->x[4] = 36;
+	v->y[4] = 36;
+	v->line_style |= (1 << 4);
 	break;
     }
 #endif /* VECTOR_BUTTONS */
@@ -1352,8 +1364,8 @@ void ResetAllButtons(FvwmDecor *fl)
         FreeButtonFace(dpy, lface);
         FreeButtonFace(dpy, rface);
 
-        *lface = leftp->state[0];
-        *rface = rightp->state[0];
+	LoadDefaultLeftButton(lface, i);
+	LoadDefaultRightButton(rface, i);
       }
     }
 
@@ -1557,24 +1569,7 @@ void InitVariables(void)
   /* Sets the current desktop number to zero */
   /* Multiple desks are available even in non-virtual
    * compilations */
-  {
-    Atom atype;
-    int aformat;
-    unsigned long nitems, bytes_remain;
-    unsigned char *prop;
-
-    Scr.CurrentDesk = 0;
-    if ((XGetWindowProperty(dpy, Scr.Root, _XA_WM_DESKTOP, 0L, 1L, True,
-			    _XA_WM_DESKTOP, &atype, &aformat, &nitems,
-			    &bytes_remain, &prop))==Success)
-    {
-      if(prop != NULL)
-      {
-        Restarting = True;
-        Scr.CurrentDesk = *(unsigned long *)prop;
-      }
-    }
-  }
+  Scr.CurrentDesk = 0;
 
   Scr.EdgeScrollX = Scr.EdgeScrollY = 100;
   Scr.ScrollResistance = Scr.MoveResistance = 0;
@@ -1681,7 +1676,10 @@ void Done(int restart, char *command)
 {
   FvwmFunction *func;
 
-  MoveViewport(0,0,False);
+  if (!restart)
+    {
+      MoveViewport(0,0,False);
+    }
 
   func = FindFunction("ExitFunction");
   if(func != NULL)
@@ -1698,14 +1696,6 @@ void Done(int restart, char *command)
   if(restart)
   {
      char* filename = strdup( CatString2(user_home_dir, "/.fvwm_restart") );
-
-     /* We currently still need this, since InitVariables
-        sets the Restarting flag based on the presence of
-        WM_DESKTOP on root. This could be changed to eg
-        match restore_filename against ".fvwm_restart".
-        Then SaveDesktopState and all places where fvwm
-        deals with WM_DESKTOP could be eliminated. */
-     SaveDesktopState();		/* I wonder why ... */
 
      if (!command || strstr (command, "fvwm"))
        {
@@ -1837,30 +1827,6 @@ void usage(void)
   fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
 #endif
   exit( 1 );
-}
-
-/****************************************************************************
- *
- * Save Desktop State
- *
- ****************************************************************************/
-void SaveDesktopState(void)
-{
-  FvwmWindow *t;
-  unsigned long data[1];
-
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-  {
-    data[0] = (unsigned long) t->Desk;
-    XChangeProperty (dpy, t->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-                     PropModeReplace, (unsigned char *) data, 1);
-  }
-
-  data[0] = (unsigned long) Scr.CurrentDesk;
-  XChangeProperty (dpy, Scr.Root, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-		   PropModeReplace, (unsigned char *) data, 1);
-
-  XSync(dpy, 0);
 }
 
 
