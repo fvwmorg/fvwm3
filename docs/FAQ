@@ -1546,7 +1546,8 @@ A: First, check your rc file and your .Xdefaults to make sure that
 
 A: Because they are treated as modifiers.  You can use the
    IgnoreModifiers command to turn individual modifiers off for
-   bindings.  With XFree86 the right command is
+   bindings.  With XFree86 and fvwm version 2.4.0 or above, the
+   right command is
 
      IgnoreModifiers L25
 
@@ -1555,11 +1556,12 @@ A: Because they are treated as modifiers.  You can use the
    correspond to the keys you want to switch off.
 
    This command creates a lot of extra network traffic, depending
-   on your CPU, network connection, the number of Key Mouse commands
-   in your configuration file and the number of modifiers you want to
-   ignore.  If you do not have a lightning fast machine or very few
-   bindings you should not ignore more than two modifiers.  So do
-   not ignore scroll-lock if you have no problem with it.
+   on your CPU, network connection, the number of Key, Mouse or
+   PointerKey commands in your configuration file and the number
+   of modifiers you want to ignore.  If you do not have a
+   lightning fast machine or very few bindings you should not
+   ignore more than two modifiers.  So do not ignore scroll-lock
+   if you have no problem with it.
 
    A better way to solve this problem is to modify the keyboard
    mapping of your X server.  The commands
@@ -1568,18 +1570,19 @@ A: Because they are treated as modifiers.  You can use the
      xmodmap -e "clear Mod2"
      xmodmap -e "clear Mod5"
 
-   remove the CapsLock, NumLock and ScrollLock from the keyboard map.
-   Pressing these keys has no effect then.  To re-add them try this:
+   remove the CapsLock, NumLock and ScrollLock from the keyboard
+   map.  Pressing these keys has no effect then.  To re-add them
+   try this:
 
      xmodmap -e "add Lock = Caps_Lock"
      xmodmap -e "add Mod2 = Num_Lock"
      xmodmap -e "add Mod5 = Scroll_Lock"
 
-   Fvwm has to be restarted to use the changes made by xmodmap.
-   Please refer to the man page of the xmodmap command for further
-   details.  If you disable the CapsLock key in your keyboard map in
-   this way, you can speed up fvwm a bit by removing the Lock
-   modifier from the list of ignored modifiers:
+   Fvwm has to be restarted to use the changes made by
+   xmodmap.  Please refer to the man page of the xmodmap command
+   for further details.  If you disable the CapsLock key in your
+   keyboard map in this way, you can speed up fvwm a bit by
+   removing the Lock modifier from the list of ignored modifiers:
 
      IgnoreModifiers
 

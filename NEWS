@@ -23,6 +23,8 @@ Changes in alpha release 2.5.3 (not released yet)
   See -menter and -menterleave options and examples in the FvwmAuto
   man page.
 
+* The "hangon" strings in FvwmButtons support wildcards.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

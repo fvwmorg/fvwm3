@@ -290,6 +290,10 @@ static void DeadPipeCleanup(void)
 	  XMoveWindow(Dpy,swin,b->x,b->y);
 	  XResizeWindow(Dpy,swin,b->w,b->h);
 	  XSetWindowBorderWidth(Dpy,swin,b->bw);
+	  if ((b->flags & b_Panel))
+	  {
+	    XMapWindow(Dpy, swin);
+	  }
 	}
       }
 #ifdef DEBUG_HANGON
@@ -2457,7 +2461,7 @@ void CheckForHangon(unsigned long *body)
 
   while(NextButton(&ub,&b,&button,0))
   {
-    if(b->flags&b_Hangon && strcmp(cbody,b->hangon)==0)
+    if(b->flags&b_Hangon && matchWildcards(b->hangon, cbody))
     {
       /* Is this a swallowing button in state 1? */
       if(buttonSwallowCount(b)==1)
