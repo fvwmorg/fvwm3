@@ -499,9 +499,34 @@ static void do_title_style(F_CMD_ARGS, Bool do_add)
 					height = 0;
 				}
 			}
-			if (decor->title_height != height)
+			if (decor->title_height != height ||
+			    decor->min_title_height != 0)
 			{
 				decor->title_height = height;
+				decor->min_title_height = 0;
+				decor->flags.has_title_height_changed = 1;
+			}
+			if (action)
+				action += next;
+		}
+		else if (!do_add && StrEquals(parm,"MinHeight"))
+		{
+			int height = 0;
+			int next = 0;
+
+			if (!action ||
+			    sscanf(action, "%d%n", &height, &next) <= 0 ||
+			    height < MIN_FONT_HEIGHT ||
+			    height > MAX_FONT_HEIGHT)
+			{
+				if (height < MIN_FONT_HEIGHT)
+					height = MIN_FONT_HEIGHT;
+				else if (height > MAX_FONT_HEIGHT)
+					height = 0;
+			}
+			if (decor->min_title_height != height)
+			{
+				decor->min_title_height = height;
 				decor->flags.has_title_height_changed = 1;
 			}
 			if (action)

@@ -44,6 +44,8 @@ Changes in developement release 2.5.5 (not released yet)
 
 * The Transparent Colorset option can be tinted under certain
   conditions
+
+* New MinHeight option to TitleStyle
  
 -------------------------------------------------------------------
 

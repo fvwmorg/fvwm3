@@ -497,7 +497,7 @@ Bool __compare_binding(
 	{
 		return True;
 	}
-	if (0 STROKE_CODE((|| (BIND_IS_STROKE_BINDING(type) &&
+	if (0 STROKE_CODE(|| ((BIND_IS_STROKE_BINDING(type) &&
 			       (strcmp(b->Stroke_Seq,stroke) == 0) &&
 			       b->Button_Key == button_keycode))))
 	{
@@ -582,7 +582,7 @@ Bool MatchBindingExactly(
 	{
 		return False;
 	}
-	if (0 STROKE_CODE((|| (BIND_IS_STROKE_BINDING(type) &&
+	if (0 STROKE_CODE(|| ((BIND_IS_STROKE_BINDING(type) &&
 			       (b->Button_Key != button ||
 				(strcmp(b->Stroke_Seq,stroke) != 0))))))
 	{

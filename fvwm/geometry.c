@@ -271,6 +271,11 @@ void get_title_font_size_and_offset(
 		fw->title_font, fw->title_text_rotation);
 	extra_size = (decor_size > 0) ? decor_size - font_size : 0;
 	*offset = min_offset;
+	if (fw->decor->min_title_height > 0 &&
+	    font_size + extra_size < fw->decor->min_title_height)
+	{
+		extra_size = fw->decor->min_title_height - font_size;
+	}
 	if (extra_size > 0)
 	{
 		*offset += extra_size / 2;

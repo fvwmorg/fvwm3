@@ -8064,21 +8064,30 @@ DestroyDecor CustomDecor1
 .EE
 
 .TP
-.BI "TitleStyle [" justification "] [" height " [" num "]]"
+.BI "TitleStyle [" justification "] [" Height " [" num "]]" [" MinHeight " [" num "]]"
 This command is deprecated and will be removed in the future.  There
 are plans to replace it with a more flexible solution in fvwm-3.0.
 
 Sets attributes for the title-bar.  Justifications can be
 .IR Centered ", " RightJustified " or " LeftJustified .
-.I height
-sets the title bar's height to an amount in pixels.  Defaults are
-.I Centered
-and the window's font height.  To reset the font height to the
+.I Height
+sets the title bar's height to an amount in pixels.
+.I MinHeight
+sets the minimal height in pixels of the title bar's.
+Defaults are
+.IR Centered ,
+the window's font height and no minimal height. 
+To reset the font height to the
 default value, omit the
 .I num
 argument after the
-.I height
-keyword.  Example:
+.I Height
+keyword. The
+.I MinHeight
+height is reseted by
+.I Height
+or if given with no argument.
+is Example:
 .EX
 TitleStyle LeftJustified Height 24
 .EE

@@ -1,7 +1,20 @@
 2002-11-15  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Bindings.c (MatchBindingExactly):
+	(__compare_binding):
+	compile fixes w/o stroke lib
+	
+	* NEWS: 
+	* fvwm/geometry.c (get_title_font_size_and_offset):
+	* fvwm/builtins.c (do_title_style):
+	New MinHeight option to TitleStyle
+
+2002-11-15  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/builtins.c (update_fvwm_colorset):
 	(CMD_Colorset):
+	(do_title_style):
+
 	* fvwm/builtins.h:
 	* fvwm/colorset.c (update_root_transparent_colorset):
 	Fixed update of the RootTransparent colorset in fvwm

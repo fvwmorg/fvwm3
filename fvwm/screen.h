@@ -251,24 +251,25 @@ typedef struct
 typedef struct FvwmDecor
 {
 #ifdef USEDECOR
-  char *tag;                    /* general style tag */
+	char *tag;                    /* general style tag */
 #endif
-  int title_height;           /* explicitly specified title bar height */
-  /* titlebar buttons */
-  TitleButton buttons[NUMBER_OF_BUTTONS];
-  TitleButton titlebar;
-  struct BorderStyle
-  {
-    DecorFace active, inactive;
-  } BorderStyle;
+	int title_height;           /* explicitly specified title bar height */
+	int min_title_height;
+	/* titlebar buttons */
+	TitleButton buttons[NUMBER_OF_BUTTONS];
+	TitleButton titlebar;
+	struct BorderStyle
+	{
+		DecorFace active, inactive;
+	} BorderStyle;
 #ifdef USEDECOR
-  struct FvwmDecor *next;       /* additional user-defined styles */
+	struct FvwmDecor *next;       /* additional user-defined styles */
 #endif
-  struct
-  {
-    unsigned has_changed : 1;
-    unsigned has_title_height_changed : 1;
-  } flags;
+	struct
+	{
+		unsigned has_changed : 1;
+		unsigned has_title_height_changed : 1;
+	} flags;
 } FvwmDecor;
 
 typedef struct DesktopsInfo
