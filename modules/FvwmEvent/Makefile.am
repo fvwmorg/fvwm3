@@ -10,6 +10,7 @@ FvwmEvent_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 # This module behaves like the old FvwmAudio when invoked with that name.
 install-exec-local:
+	rm -f $(moduleexecdir)/FvwmAudio
 	$(LN_S) FvwmEvent $(moduleexecdir)/FvwmAudio
 
 ## Xpm note: while this module may not depend on Xpm explicitly,

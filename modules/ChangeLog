@@ -1,3 +1,8 @@
+Sat May  8 11:55:10 1999  DanEspen  <dje@blue>
+
+	* FvwmEvent/Makefile.am  (install-exec-local): rm FvwmAudio before
+ 	attempting to create a link, otherwise "ln -s" might fail.
+
 1999-05-07  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* FvwmEvent/FvwmEvent.c (config): fix two printfs that had too
