@@ -59,6 +59,7 @@
 #include "FftInterface.h"
 #include "Colorset.h"
 #include "Ficonv.h"
+#include "FCombineChars.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -309,10 +310,39 @@ char *FlocaleEncodeString(
 	}
 
 	str1 = str;
+	if (FiconvSupport)
+	{
+	        /* first process combining characters */
+	        str1 = FiconvCharsetToUtf8(
+			dpy,
+			flf->str_fc,
+			(const char *)str,len);
+		/* if conversion to UTF-8 failed str1 will be NULL */
+		if(str1 != NULL)
+		{
+		        /* do combining */
+			len = FCombineChars(str1,strlen(str1));
+			/* returns the length of the resulting UTF-8 string */
+			/* convert back to current charset */
+			str1 = FiconvUtf8ToCharset(
+						   dpy,
+						   flf->str_fc,
+						   (const char *)str1,len);
+			len = strlen(str1);
+		}
+		else
+		{
+		        /* in case conversion to UTF-8 failed above, 
+			   use original string as is */
+		        str1 = str;
+		}	  
+	}
+
 	if (FiconvSupport && do_iconv)
 	{
+		
 		str1 = FiconvCharsetToCharset(
-			dpy, flf->str_fc, flf->fc, (const char *)str, len);
+			dpy, flf->str_fc, flf->fc, (const char *)str1, len);
 		if (str1 == NULL)
 		{
 			/* fail to convert */

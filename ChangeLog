@@ -1,3 +1,11 @@
+2003-05-31  Marcus Lundblad  <ml@update.uu.se>
+
+	* libs/Makefile.am:
+	* libs/Flocale.c (FlocaleEncodeString):
+	* libs/FCombineChars.c:
+	* libs/FCombineChars.h:
+	implemeted support for combining characters
+	
 2003-05-31  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
