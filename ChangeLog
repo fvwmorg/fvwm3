@@ -1,7 +1,8 @@
 2002-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleEnterNotify):
-	removed ddebug code
+	removed debug code
+	anothe click+drag fix
 
 	* libs/Pointer.c (GetLocationFromEventOrQuery):
 	* fvwm/focus.c (SetPointerEventPosition):

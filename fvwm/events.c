@@ -1305,7 +1305,7 @@ void HandleDestroyNotify(void)
  *      HandleEnterNotify - EnterNotify event handler
  *
  ************************************************************************/
-#define DEBUG_ENTERNOTIFY 0
+#define DEBUG_ENTERNOTIFY 1
 #if DEBUG_ENTERNOTIFY
 static int ecount=0;
 #define ENTER_DBG(x) fprintf x;
@@ -1423,6 +1423,15 @@ ENTER_DBG((stderr, "en: NU: refreshing focus\n"));
 			if (Fw && Fw == xcrossing_last_grab_window)
 			{
 ENTER_DBG((stderr, "en: exit: NU: is last grab window\n"));
+				if (Event.xcrossing.window == FW_W_FRAME(Fw) ||
+				    Event.xcrossing.window ==
+				    FW_W_ICON_TITLE(Fw) ||
+				    Event.xcrossing.window ==
+				    FW_W_ICON_PIXMAP(Fw))
+				{
+ENTER_DBG((stderr, "en: exit: NU: last grab window = NULL\n"));
+					xcrossing_last_grab_window = NULL;
+				}
 				return;
 			}
 		}
@@ -1899,7 +1908,7 @@ ENTER_DBG((stderr, "-------- ln (%d): 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ec
 		     Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
 		     Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw)))
 		{
-ENTER_DBG((stderr, "ln: +++ lgw = 0x%08x\n", (int)Fw));
+ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)Fw));
 			xcrossing_last_grab_window = Fw;
 		}
 #ifdef FOCUS_EXPANDS_TITLE
