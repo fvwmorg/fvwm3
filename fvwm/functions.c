@@ -148,6 +148,7 @@ static struct functions func_config[] =
   {"SetMenuDelay", set_menudelay,    F_SET_MENUDELAY,	    FUNC_NO_WINDOW},
   {"SetMenustyle", SetMenuStyle,     F_SET_MENUSTYLE,       FUNC_NO_WINDOW},
   {"SnapAttraction",SetSnapAttraction,F_SNAP_ATT,           FUNC_NO_WINDOW},
+  {"SnapGrid",     SetSnapGrid,      F_SNAP_GRID,           FUNC_NO_WINDOW},
   {"Stick",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
   {"Style",        ProcessNewStyle,  F_STYLE,               FUNC_NO_WINDOW},
   {"Title",        Nop_func,         F_TITLE,               FUNC_TITLE},

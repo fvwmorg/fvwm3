@@ -305,6 +305,9 @@ typedef struct ScreenInfo
   int ScrollResistance;        /* resistance to scrolling in desktop */
   int MoveResistance;          /* res to moving windows over viewport edge */
   int SnapAttraction;          /* attractiveness of window edges */
+  int SnapMode;                /* mode of snap attraction */
+  int SnapGridX;               /* snap grid X size */
+  int SnapGridY;               /* snap grid Y size */
   int OpaqueSize;
   int CurrentDesk;             /* The current desktop number */
   int ColormapFocus;           /* colormap focus style */

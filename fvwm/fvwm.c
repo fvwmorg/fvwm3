@@ -1270,7 +1270,10 @@ void InitVariables(void)
 
   Scr.EdgeScrollX = Scr.EdgeScrollY = 100;
   Scr.ScrollResistance = Scr.MoveResistance = 0;
-  Scr.SnapAttraction = 0;
+  Scr.SnapAttraction = -1;
+  Scr.SnapMode = 0;
+  Scr.SnapGridX = 1;
+  Scr.SnapGridY = 1;
   Scr.OpaqueSize = 5;
   /* ClickTime is set to the positive value upon entering the event loop. */
   Scr.ClickTime = -150;

@@ -1256,19 +1256,59 @@ void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     Scr.ClickTime = -Scr.ClickTime;
 }
 
+
 void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+		       unsigned long context, char *action,int* Module)
 {
   int val;
+  char *token;
 
-  if(GetIntegerArguments(action, NULL, &val, 1) != 1)
+  if(GetIntegerArguments(action, &action, &val, 1) != 1)
   {
-    fvwm_msg(ERR,"SetSnapAttraction","SnapAttraction requires 1 argument");
+    fvwm_msg(ERR,"SetSnapAttraction",
+	     "SnapAttraction requires at least 1 argument");
+    return;
+  }
+  Scr.SnapAttraction = val;
+
+  action = GetNextToken(action, &token);
+  if(token == NULL)
+  {
     return;
   }
 
-  Scr.SnapAttraction = val;
+  if(StrEquals(token,"All"))
+    { Scr.SnapMode = 0; }
+  if(StrEquals(token,"SameType"))
+    { Scr.SnapMode = 1; }
+  if(StrEquals(token,"Icons"))
+    { Scr.SnapMode = 2; }
+  if(StrEquals(token,"Windows"))
+    { Scr.SnapMode = 3; }
+
+  free(token);
 }
+
+void SetSnapGrid(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		 unsigned long context, char *action,int* Module)
+{
+  int val[2];
+  int val1_unit,val2_unit,n;
+
+  if(GetIntegerArguments(action, NULL, &val[0], 2) != 2)
+  {
+    fvwm_msg(ERR,"SetSnapGrid","SetSnapGrid requires 2 arguments");
+    return;
+  }
+
+  Scr.SnapGridX = val[0];
+  if(Scr.SnapGridX < 1)
+    { Scr.SnapGridX = 1;}
+  Scr.SnapGridY = val[1];
+  if(Scr.SnapGridY < 1)
+    { Scr.SnapGridY = 1;}
+}
+
 
 void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
             unsigned long context, char *action,int* Module)
@@ -2599,8 +2639,13 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 #ifdef MINI_ICONS
 	else if (strncasecmp (style, "MiniIcon", 8) == 0) {
 	    bf->style = MiniIconButton;
+#if 0
+/* Have to remove this again. This is all so badly written there is no chance
+ * to prevent a coredump and a memory leak the same time without a rewrite of
+ * large parts of the code. */
 	    if (bf->u.p)
 	      DestroyPicture(dpy, bf->u.p);
+#endif
 	    bf->u.p = NULL; /* pixmap read in when the window is created */
   	}
 #endif

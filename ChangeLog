@@ -1,8 +1,17 @@
+1998-12-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/move.c (et al.): Applied updated SnapAttraction patch but put
+	the SnapAttration stuff in a new function called DoSnapAttract to save
+	us duplicate code.
+
 1998-12-09  Paul D. Smith  <psmith@gnu.org>
 
 	* fvwm/fvwm2.1: Clarify the uses and abuses of the Exec function.
 
 1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (ReadButtonFace): Removed MiniIcons memory leak fix.
+	No chance to get this stable without a rewrite of large parts of code.
 
 	* libs/ColorUtils.c (color_mult): applied fix by Adam Rice that caused
 	some colours to be wrong

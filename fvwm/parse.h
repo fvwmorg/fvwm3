@@ -84,7 +84,8 @@ enum {
     F_SET_MENUSTYLE,
     F_CHANGE_MENUSTYLE,
     F_DESTROY_MENUSTYLE,
-    F_SNAP_ATT, /* 65 */
+    F_SNAP_ATT, 
+    F_SNAP_GRID, /* 66 */
 /* Functions which require a target window */
     F_RESIZE = 100,
     F_RAISE,

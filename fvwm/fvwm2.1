@@ -1917,10 +1917,48 @@ desktop, so that every page is hit in turn.
 If the letter "p" is appended to each coordinate (horizontal and/or
 vertical), then the scroll amount will be measured in pixels.
 
-.IP "SnapAttraction \fIproximity\fP"
-If during an interactive move the window comes within \fIproximity\fP
-pixels of another the window will be moved to make the borders
-adjoin. The default of zero means that no snapping will happen.
+.IP "SnapAttraction \fIproximity behavior\fP"
+If during an interactive move the window (or icon) comes within \fIproximity\fP
+pixels of another the window (or icon) will be moved to make the borders
+adjoin. The default of -1 means that no snapping will happen.  A setting of
+0 does indeed snap when the distance is zero pixels.  This is relevent when
+the \fISnapGrid\fP option is used.
+
+The \fIbehavior\fP argument is optional and may be set to one of the four
+following values:
+.in +.5i
+All
+.in +.3i
+Windows snap to both other windows and other icons.  Icons snap to both other
+windows and other icons.
+.in -.3i
+SameType
+.in +.3i
+Windows snap to only other windows.  Icons snap to only other icons.
+.in -.3i
+Windows
+.in +.3i
+Windows snap to only other windows.  Icons do not snap.
+.in -.3i
+Icons
+.in +.3i
+Icons snap to only other icons.  Windows do not snap.
+.in -.3i
+.in -.5i
+
+The default SnapAttraction setting for behavior is "All".
+
+.IP "SnapGrid \fIx-grid-size y-grid-size\fP"
+During an interactive move a window (or icon) will be positioned such that 
+its location (top left corner) will be coincindent with the nearest grid point.
+The default \fIx-grid-size\fP and \fIy-grid-size\fP setting are both 1, which 
+is effectively no grid all.  An interactive move with both \fISnapGrid\fP
+and \fISnapAttraction\fP in effect will result in the window being moved to be
+adjacent to the nearest window border (if within snap proximity) or grid 
+position.  In other words, the window will move the shortest distance possible
+to satisfy both \fISnapGrid\fP and \fISnapAttraction\fP.  Note that the X and 
+Y coordinates are not coupled.  For example, a window may snap to another window
+on the X axis while snapping to a grid point on the Y axis.
 
 .IP "SendToModule \fImodulename string\fP"
 Sends an arbitrary string (no quotes required) to all modules matching
