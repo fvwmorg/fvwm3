@@ -35,9 +35,6 @@
 #include "icons.h"
 #include "stack.h"
 
-static void UnmapDesk(int desk, Bool grab);
-static void MapDesk(int desk, Bool grab);
-
 
 /*
  * dje 12/19/98
@@ -166,7 +163,7 @@ static int GetDeskNumber(char *action)
  * Unmaps a window on transition to a new desktop
  *
  *************************************************************************/
-static void UnmapIt(FvwmWindow *t)
+static void unmap_window(FvwmWindow *t)
 {
   XWindowAttributes winattrs;
   unsigned long eventMask;
@@ -196,7 +193,7 @@ static void UnmapIt(FvwmWindow *t)
  * Maps a window on transition to a new desktop
  *
  *************************************************************************/
-static void MapIt(FvwmWindow *t)
+static void map_window(FvwmWindow *t)
 {
   if(IS_ICONIFIED(t))
     {
@@ -935,55 +932,6 @@ void MoveViewport(int newx, int newy, Bool grab)
   GNOME_SetCurrentArea();
 }
 
-/**************************************************************************
- *
- * Move to a new desktop
- *
- *************************************************************************/
-void changeDesks_func(F_CMD_ARGS)
-{
-  changeDesks(GetDeskNumber(action));
-}
-
-void changeDesks(int desk)
-{
-  FvwmWindow *t;
-
-/*
-  RBW - the unmapping operations are now removed to their own functions so
-  they can also be used by the new GoToDeskAndPage command.
-*/
-  if (Scr.CurrentDesk != desk)
-  {
-    prev_desk = Scr.CurrentDesk;
-    UnmapDesk(Scr.CurrentDesk, True);
-    Scr.CurrentDesk = desk;
-    MapDesk(desk, True);
-    BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
-    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-    {
-      if (IS_STICKY(t) || (IS_ICONIFIED(t) && IS_ICON_STICKY(t)))
-      {
-	/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky window
-	 * upon desk change.  This is a workaround for a problem in FvwmPager:
-	 * The pager has a separate 'root' window for each desk.  If the active
-	 * desk changes, the pager destroys sticky mini windows and creates new
-	 * ones in the other desktop 'root'.  But the pager can't know where to
-	 * stack them.  So we have to tell it ecplicitly where they go :-(
-	 * This should be fixed in the pager, but right now the pager doesn't
-	 * maintain the stacking order. */
-	BroadcastRestackThisWindow(t);
-      }
-    }
-    GNOME_SetCurrentDesk();
-    GNOME_SetDeskCount();
-  }
-
-  return;
-}
-
-
-
 /*=========================================================================
  *
  * Unmap all windows on a desk -
@@ -992,7 +940,7 @@ void changeDesks(int desk)
  *   - unmaps from the bottom of the stack up
  *
  *=======================================================================*/
-void UnmapDesk(int desk, Bool grab)
+static void UnmapDesk(int desk, Bool grab)
 {
   FvwmWindow  *t;
 
@@ -1012,7 +960,7 @@ void UnmapDesk(int desk, Bool grab)
             t->FocusDesk = desk;
           else
             t->FocusDesk = -1;
-          UnmapIt(t);
+          unmap_window(t);
 	}
       }
     else
@@ -1045,11 +993,11 @@ return;
  *   - maps from the top of the stack down
  *
  *=======================================================================*/
-void MapDesk(int desk, Bool grab)
+static void MapDesk(int desk, Bool grab)
 {
-  FvwmWindow	*t;
-  FvwmWindow	*FocusWin = NULL;
-  FvwmWindow	*StickyWin = NULL;
+  FvwmWindow *t;
+  FvwmWindow *FocusWin = NULL;
+  FvwmWindow *StickyWin = NULL;
 
   if (grab)
   {
@@ -1057,25 +1005,25 @@ void MapDesk(int desk, Bool grab)
   }
   for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
   {
-  /* Only change mapping for non-sticky windows */
+    /* Only change mapping for non-sticky windows */
     if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
        !(IS_STICKY(t)) && !IS_ICON_UNMAPPED(t))
+    {
+      if(t->Desk == desk)
       {
-	if(t->Desk == desk)
-	{
-	  MapIt(t);
-	}
+	map_window(t);
       }
+    }
     else
+    {
+      /*  If window is sticky, just update its desk (it's still mapped).  */
+      t->Desk = desk;
+      if (Scr.Focus == t)
       {
-	/*  If window is sticky, just update its desk (it's still mapped).  */
-	t->Desk = desk;
-	if (Scr.Focus == t)
-	  {
-	    t->FocusDesk = desk;
-	    StickyWin = t;
-	  }
+	t->FocusDesk = desk;
+	StickyWin = t;
       }
+    }
   }
   if (grab)
   {
@@ -1086,41 +1034,82 @@ void MapDesk(int desk, Bool grab)
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
     /*
-       Autoplace any sticky icons, so that sticky icons from the old
-       desk don't land on top of stationary ones on the new desk.
+      Autoplace any sticky icons, so that sticky icons from the old
+      desk don't land on top of stationary ones on the new desk.
     */
     if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
-      IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
-      !IS_ICON_UNMAPPED(t))
-      {
-	AutoPlaceIcon(t);
-      }
+       IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
+       !IS_ICON_UNMAPPED(t))
+    {
+      AutoPlaceIcon(t);
+    }
     /*	Keep track of the last-focused window on the new desk.	*/
     if (t->FocusDesk == desk)
-      {
-	FocusWin = t;
-      }
+    {
+      FocusWin = t;
+    }
   }
 
-/*  If a sticky window has focus, don't disturb it.  */
+  /*  If a sticky window has focus, don't disturb it.  */
   if (! StickyWin)
- {
-  /*  Otherwise, handle remembering the last-focused clicky window.  */
-  if((FocusWin)&&(HAS_CLICK_FOCUS(FocusWin)))
-   {
+  {
+    /*  Otherwise, handle remembering the last-focused clicky window.  */
+    if((FocusWin)&&(HAS_CLICK_FOCUS(FocusWin)))
+    {
 #ifndef NO_REMEMBER_FOCUS
-    SetFocus(FocusWin->w, FocusWin, True);
-   }
-  else if ((FocusWin) && (!HAS_NEVER_FOCUS(FocusWin)))
-   {
+      SetFocus(FocusWin->w, FocusWin, True);
+    }
+    else if ((FocusWin) && (!HAS_NEVER_FOCUS(FocusWin)))
+    {
 #endif
-    SetFocus(Scr.NoFocusWin, NULL, 1);
-   }
- }
+      SetFocus(Scr.NoFocusWin, NULL, 1);
+    }
+  }
 
-
-return;
+  return;
 }
+
+
+/**************************************************************************
+ *
+ * Move to a new desktop
+ *
+ *************************************************************************/
+void goto_desk_func(F_CMD_ARGS)
+{
+  goto_desk(GetDeskNumber(action));
+}
+
+void goto_desk(int desk)
+{
+
+/*
+  RBW - the unmapping operations are now removed to their own functions so
+  they can also be used by the new GoToDeskAndPage command.
+*/
+  if (Scr.CurrentDesk != desk)
+  {
+    prev_desk = Scr.CurrentDesk;
+    UnmapDesk(Scr.CurrentDesk, True);
+    Scr.CurrentDesk = desk;
+    MapDesk(desk, True);
+    BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+    /* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky window
+     * upon desk change.  This is a workaround for a problem in FvwmPager:
+     * The pager has a separate 'root' window for each desk.  If the active
+     * desk changes, the pager destroys sticky mini windows and creates new
+     * ones in the other desktop 'root'.  But the pager can't know where to
+     * stack them.  So we have to tell it ecplicitly where they go :-(
+     * This should be fixed in the pager, but right now the pager doesn't
+     * maintain the stacking order. */
+    BroadcastRestack(Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+    GNOME_SetCurrentDesk();
+    GNOME_SetDeskCount();
+  }
+
+  return;
+}
+
 
 
 /*=========================================================================
@@ -1157,13 +1146,41 @@ void gotoDeskAndPage_func(F_CMD_ARGS)
     prev_desk = Scr.CurrentDesk;
     Scr.CurrentDesk = val[0];
     MapDesk(val[0], True);
+    BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+    /* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky window
+     * upon desk change.  This is a workaround for a problem in FvwmPager:
+     * The pager has a separate 'root' window for each desk.  If the active
+     * desk changes, the pager destroys sticky mini windows and creates new
+     * ones in the other desktop 'root'.  But the pager can't know where to
+     * stack them.  So we have to tell it ecplicitly where they go :-(
+     * This should be fixed in the pager, but right now the pager doesn't
+     * maintain the stacking order. */
+    BroadcastRestack(Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
   }
-  BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+  else
+  {
+    BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+  }
 
   GNOME_SetCurrentDesk();
   GNOME_SetDeskCount();
 
   return;
+}
+
+
+void goto_page_func(F_CMD_ARGS)
+{
+  int x;
+  int y;
+
+  if (!get_page_arguments(action, &x, &y))
+  {
+    fvwm_msg(ERR,"goto_page_func","GotoPage: invalid arguments: %s", action);
+    return;
+  }
+
+  MoveViewport(x,y,True);
 }
 
 
@@ -1187,7 +1204,7 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
     if(tmp_win->Desk == Scr.CurrentDesk)
     {
       tmp_win->Desk = desk;
-      UnmapIt(tmp_win);
+      unmap_window(tmp_win);
     }
     else if(desk == Scr.CurrentDesk)
     {
@@ -1195,7 +1212,7 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
       /* If its an icon, auto-place it */
       if(IS_ICONIFIED(tmp_win))
 	AutoPlaceIcon(tmp_win);
-      MapIt(tmp_win);
+      map_window(tmp_win);
     }
     else
       tmp_win->Desk = desk;
@@ -1352,18 +1369,4 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
     *page_y = Scr.VyMax;
 
   return True;
-}
-
-void goto_page_func(F_CMD_ARGS)
-{
-  int x;
-  int y;
-
-  if (!get_page_arguments(action, &x, &y))
-    {
-      fvwm_msg(ERR,"goto_page_func","GotoPage: invalid arguments: %s", action);
-      return;
-    }
-
-  MoveViewport(x,y,True);
 }

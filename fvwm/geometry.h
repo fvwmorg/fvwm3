@@ -30,6 +30,7 @@ void gravity_translate_to_northwest_geometry_no_bw(
   int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
 void get_shaded_geometry(
   FvwmWindow *tmp_win, rectangle *small_g, rectangle *big_g);
+void update_relative_geometry(FvwmWindow *tmp_win);
 void update_absolute_geometry(FvwmWindow *tmp_win);
 void maximize_adjust_offset(FvwmWindow *tmp_win);
 void constrain_size(

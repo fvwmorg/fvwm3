@@ -285,7 +285,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
   {
     if(t->Desk != Scr.CurrentDesk)
     {
-      changeDesks(t->Desk);
+      goto_desk(t->Desk);
     }
 
     if(IS_ICONIFIED(t))
@@ -338,7 +338,7 @@ static void WarpOn(XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit,
 
   if(t->Desk != Scr.CurrentDesk)
   {
-    changeDesks(t->Desk);
+    goto_desk(t->Desk);
   }
 
   if(IS_ICONIFIED(t))

@@ -141,7 +141,7 @@ static const func_type func_config[] =
   {"defaulticon",  SetDefaultIcon,   F_DFLT_ICON,            0},
   {"defaultlayers",SetDefaultLayers, F_DFLT_LAYERS,          0},
   {"delete",       delete_function,  F_DELETE,               FUNC_NEEDS_WINDOW},
-  {"desk",         changeDesks_func, F_DESK,                 0},
+  {"desk",         goto_desk_func,   F_GOTO_DESK,            0},
   {"desktopsize",  SetDeskSize,      F_SETDESK,              0},
   {"destroy",      destroy_function, F_DESTROY,              FUNC_NEEDS_WINDOW},
 #ifdef USEDECOR
@@ -167,10 +167,10 @@ static const func_type func_config[] =
   {"globalopts",   SetGlobalOptions, F_GLOBAL_OPTS,          0},
 #ifdef GNOME
   {"gnomebutton",  GNOME_ButtonFunc, F_MOUSE,                0},
-  {"gnomeshowdesks", GNOME_ShowDesks, F_DESK,                0},
+  {"gnomeshowdesks", GNOME_ShowDesks, F_GOTO_DESK,           0},
 #endif /* GNOME */
-  {"gotodesk",     changeDesks_func, F_DESK,                 0},
-  {"gotodeskandpage",  gotoDeskAndPage_func, F_DESK,         0},
+  {"gotodesk",     goto_desk_func,   F_GOTO_DESK,            0},
+  {"gotodeskandpage", gotoDeskAndPage_func, F_GOTO_DESK,     0},
   {"gotopage",     goto_page_func,   F_GOTO_PAGE,            0},
   {"hidegeometrywindow",HideGeometryWindow,F_HIDEGEOMWINDOW, 0},
   {"hilightcolor", SetHiColor,       F_HICOLOR,              0},

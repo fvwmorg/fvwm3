@@ -883,7 +883,7 @@ GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
   a = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
   if (ev->xclient.message_type == a)
     {
-      changeDesks(ev->xclient.data.l[0]);
+      goto_desk(ev->xclient.data.l[0]);
       return 1;
     }
 

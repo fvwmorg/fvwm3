@@ -1,3 +1,13 @@
+2000-04-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (initialize_pager):
+	fixed negative x/y geometries of main pager window
+
+2000-04-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/Instructions.c (Exec):
+	-Wall fix
+
 2000-04-26  Mikhael Goikhman  migo@homemail.com
 
 	* FvwmAnimate/FvwmAnimate.c, FvwmBacker/Makefile.am,
@@ -28,7 +38,7 @@
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	* FvwmTaskBar/List.{c,h} (UpdateItemFlagsDesk, UpdateItemFlagsAnimate,
 	IsItemIndexIconSuppressed):
-	Fixed double animations (module & icon) with NoIconAction. 
+	Fixed double animations (module & icon) with NoIconAction.
 	This does not work perfectly with a dynamic (no)icon style change.
 
 2000-04-24  olicha  <olivier.chapuis@free.fr>
@@ -36,7 +46,7 @@
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	* FvwmTaskBar/List.{c,h} (UpdateItemFlagsDesk, IsItemIndexSticky):
 	Fixed sticky/slippery change with DeskOnly
-	
+
 2000-04-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmWharf/FvwmWharf.c (CreateWindow): fixed (re)size hints
@@ -70,17 +80,17 @@
 
 	* FvwmScript/Instruction.c (*LaunchScript, Exec):
 	Replace some int by unsigned long for OSF1 V4.O alpha and al.
-	
+
 2000-04-20  olicha <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFvwmSetup95.in:
 	* FvwmScript/Scripts/script-fvwm-sample95.pl:
-	Added a CDE support and a new FAST/SLOW X server option for 
+	Added a CDE support and a new FAST/SLOW X server option for
 	the Sample-95 installation
 
 	* FvwmScript/Scripts/ScriptFvwmBrowser
 	Some fixes, need more work.
-	
+
 2000-04-19  Hippo
 
 	* FvwmIconMan/xmanager.c: fixed disappearing title button (todo 109)

@@ -415,12 +415,12 @@ void initialize_pager(void)
   if(xneg)
   {
     sizehints.win_gravity = NorthEastGravity;
-    window_x = Scr.MyDisplayWidth - window_w + window_x -2;
+    window_x = Scr.MyDisplayWidth - window_w + window_x;
   }
 
   if(yneg)
   {
-    window_y = Scr.MyDisplayHeight - window_h + window_y -2;
+    window_y = Scr.MyDisplayHeight - window_h + window_y;
     if(sizehints.win_gravity == NorthEastGravity)
       sizehints.win_gravity = SouthEastGravity;
     else

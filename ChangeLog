@@ -1,3 +1,37 @@
+2000-04-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (DeIconify):
+	fixed shade-iconify-drag_to_other_page-deiconify-unshade
+	fixed maximize-iconify-drag_to_other_page-deiconify-unmaximize
+
+	* fvwm/geometry.c (update_relative_geometry):
+	new function
+
+	* fvwm/virtual.c (gotoDeskAndPage_func):
+	(goto_desk):
+	completed FvwmPager workaround for sticky windows with brute force.
+	Each desk change is followed by a complete set of restack messages.
+
+	* fvwm/virtual.c:
+	renamed MapIt() to map_window()
+	renamed UnmapIt() to unmap_window()
+
+	* fvwm/virtual.h (gotoDeskAndPage_func):
+	* fvwm/virtual.c (goto_desk_func):
+	(goto_desk):
+	* fvwm/session.c (LoadGlobalState):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/functions.h (enum):
+	* fvwm/gnome.c (GNOME_ProcessClientMessage):
+	* fvwm/focus.c (WarpOn):
+	(FocusOn):
+	* fvwm/functions.c (func_config):
+	renamed chageDesks() to goto_desk()
+	renamed chageDesks_func() to goto_desk_func()
+
+	* fvwm/fvwm2.1:
+	fixed typo
+
 2000-04-26  Mikhael Goikhman  migo@homemail.com
 
 	* NEWS, configure.in, fvwm/Makefile.am, fvwm/externs.h, fvwm/fvwm.c,
@@ -11,7 +45,7 @@
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	Fixed some miss prints
-	
+
 2000-04-23  Mikhael Goikhman  migo@homemail.com
 
 	* fvwm/menus.c (paint_item):

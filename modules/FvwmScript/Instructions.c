@@ -661,12 +661,13 @@ static void Exec (int NbArg,long *TabArg)
  for (i=0;i<NbArg;i++)
    leng += strlen(CalcArg(TabArg,&i));
 
- if (leng >= 998) 
+ if (leng >= 998)
  {
-   fprintf(stderr,"[FvwmScript]: too long command %ld chars max 998\n", leng);
+   fprintf(stderr, "[FvwmScript]: too long command %i chars max 998\n",
+	   (int)leng);
    return;
  }
-   
+
  execstr=(char*)calloc(1,leng+1);
  for (i=0;i<NbArg;i++)
  {

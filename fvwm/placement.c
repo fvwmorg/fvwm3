@@ -591,7 +591,7 @@ Bool PlaceWindow(
   /*  RBW - 11/02/1998  --  I dont. */
   if ((!PPosOverride)&&(!DO_NOT_SHOW_ON_MAP(tmp_win)))
   {
-    changeDesks(tmp_win->Desk);
+    goto_desk(tmp_win->Desk);
   }
 
   /* Don't move viewport if SkipMapping, or if recapturing the window,

@@ -1101,6 +1101,9 @@ void DeIconify(FvwmWindow *tmp_win)
 	r.y = t->icon_g.y;
 	r.width = t->icon_g.width;
 	r.height = t->icon_p_height+t->icon_g.height;
+	/* update frame geometry in case the icon was moved over a page
+	 * boundary*/
+	update_relative_geometry(t);
 	if (IsRectangleOnThisPage(&r, t->Desk) &&
 	    !IsRectangleOnThisPage(&(t->frame_g), t->Desk))
 	{

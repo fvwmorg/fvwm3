@@ -185,6 +185,19 @@ void get_shaded_geometry(
 			   (big_height - small_g->height) : 0);
 }
 
+/* update the frame_g according to the window's normal_g or max_g and shaded
+ * state */
+void update_relative_geometry(FvwmWindow *tmp_win)
+{
+  get_relative_geometry(
+    &tmp_win->frame_g,
+    (IS_MAXIMIZED(tmp_win)) ? &tmp_win->max_g : &tmp_win->normal_g);
+  if (IS_SHADED(tmp_win))
+  {
+    get_shaded_geometry(tmp_win, &tmp_win->frame_g, &tmp_win->frame_g);
+  }
+}
+
 /* update the normal_g or max_g according to the window's current position */
 void update_absolute_geometry(FvwmWindow *tmp_win)
 {

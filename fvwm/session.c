@@ -188,7 +188,7 @@ LoadGlobalState(char *filename)
     if (!strcmp(s1, "[DESKTOP]"))
     {
       sscanf(s, "%*s %i", &i1);
-      changeDesks(i1);
+      goto_desk(i1);
     }
     else if (!strcmp(s1, "[VIEWPORT]"))
     {
