@@ -1,3 +1,13 @@
+1999-12-26  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/ReadXServer.c: A little goto removal and code cleanup.
+	Input redisplay seems to work, but could use more cleanup.
+	Added comments about same.
+
+	* FvwmForm/FvwmForm.c (RedrawItem): Fixed display corruption due to
+	pasting, and display corruption for multiple messages arriving from
+	fvwm and showing in a forms message area.
+
 1999-12-20  Brad Giaccio  <bgiaccio@psrw.com>
 
 	* FvwmIconMan/globals.c: Fix for defaults styles I forgot to add

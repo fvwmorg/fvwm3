@@ -1170,6 +1170,17 @@ void RedrawItem (Item *item, int click)
     dy = item->header.size_y - 1;
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                    item->header.dt_ptr->dt_colors[c_itemlo]);
+
+    /* around 12/26/99, added XClearArea to this function.
+       this was done to deal with display corruption during
+       multifield paste.  dje */
+    XClearArea(dpy, item->header.win,
+               BOX_SPC + TEXT_SPC - 1, BOX_SPC,
+               item->header.size_x
+               - (2 * BOX_SPC) - 2 - TEXT_SPC,
+               (item->header.size_y - 1)
+               - 2 * BOX_SPC + 1, False);
+
     xsegs[0].x1 = 0, xsegs[0].y1 = 0;
     xsegs[0].x2 = 0, xsegs[0].y2 = dy;
     xsegs[1].x1 = 0, xsegs[1].y1 = 0;
@@ -1550,6 +1561,13 @@ static void process_message(unsigned long type, unsigned long *body) {
       /* ignore form size, its OK to write outside the window boundary */
       int msg_len;
       char *msg_ptr;
+      /* Clear old message first */
+      memset(CF.last_error->text.value, ' ', CF.last_error->text.n); /* clear */
+      XClearArea(dpy,CF.frame,
+                 CF.last_error->header.pos_x,
+                 CF.last_error->header.pos_y,
+                 2000,
+                 CF.last_error->header.size_y, False);
       msg_ptr = (char *)&body[3];
       msg_len = strlen(msg_ptr);
       if (msg_ptr[msg_len-1] == '\n') { /* line ends w newline */

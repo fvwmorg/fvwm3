@@ -62,6 +62,8 @@ static void process_history(int direction);
 static void process_paste_request (XEvent *event, Item *item);
 static void ToggleChoice (Item *item);
 static void ResizeFrame (void);
+static void redraw_newcursor ();
+static void redraw ();
 
 /* read an X event */
 void ReadXServer ()
@@ -144,13 +146,13 @@ void ReadXServer ()
         case '>':
           if (event.xkey.state & Mod1Mask) { /* Meta, shift > */
             process_history(1);
-            goto redraw_newcursor;
+            redraw_newcursor();
           }
           break;
         case '<':
           if (event.xkey.state & Mod1Mask) { /* Meta, shift < */
             process_history(-1);
-            goto redraw_newcursor;
+            redraw_newcursor();
           }
           break;
         }
@@ -173,7 +175,7 @@ void ReadXServer ()
 	  CF.rel_cursor = 0;
 	  CF.abs_cursor = 0;
 	  CF.cur_input->input.left = 0;
-	  goto redraw_newcursor;
+	  redraw_newcursor();
 	  break;
 	case '\005':  /* ^E */
 	  old_cursor = CF.abs_cursor;
@@ -182,7 +184,7 @@ void ReadXServer ()
                CF.rel_cursor - CF.cur_input->input.size) < 0)
 	    CF.cur_input->input.left = 0;
 	  CF.abs_cursor = CF.rel_cursor - CF.cur_input->input.left;
-	  goto redraw_newcursor;
+	  redraw_newcursor();
 	  break;
 	case '\002':  /* ^B */
 	  old_cursor = CF.abs_cursor;
@@ -194,7 +196,7 @@ void ReadXServer ()
 	      CF.cur_input->input.left--;
 	    }
 	  }
-	  goto redraw_newcursor;
+	  redraw_newcursor();
 	  break;
 	case '\006':  /* ^F */
 	  old_cursor = CF.abs_cursor;
@@ -207,7 +209,7 @@ void ReadXServer ()
 	      CF.cur_input->input.left++;
 	    }
 	  }
-	  goto redraw_newcursor;
+	  redraw_newcursor();
 	  break;
 	case '\010':  /* ^H */
 	  old_cursor = CF.abs_cursor;
@@ -226,7 +228,7 @@ void ReadXServer ()
 	    } else
 	      CF.cur_input->input.left--;
 	  }
-	  goto redraw_newcursor;
+	  redraw_newcursor();
 	  break;
 	case '\177':  /* DEL */
 	case '\004':  /* ^D */
@@ -235,18 +237,20 @@ void ReadXServer ()
 	    dp = sp - 1;
 	    for (; *dp = *sp, *sp != '\0'; dp++, sp++);
 	    CF.cur_input->input.n--;
-	    goto redraw_newcursor;
+	    redraw_newcursor();
 	  }
 	  break;
 	case '\013':  /* ^K */
 	  CF.cur_input->input.value[CF.rel_cursor] = '\0';
 	  CF.cur_input->input.n = CF.rel_cursor;
-	  goto redraw_newcursor;
+	  redraw_newcursor();
+          break;
 	case '\025':  /* ^U */
 	  CF.cur_input->input.value[0] = '\0';
 	  CF.cur_input->input.n = CF.cur_input->input.left = 0;
 	  CF.rel_cursor = CF.abs_cursor = 0;
-	  goto redraw_newcursor;
+	  redraw_newcursor();
+          break;
         case '\020':                    /* ^P previous field */
           old_item = CF.cur_input;
           old_item->input.o_cursor = CF.rel_cursor;
@@ -254,15 +258,15 @@ void ReadXServer ()
           RedrawItem(old_item, 1);
           CF.rel_cursor = old_item->input.o_cursor;
           CF.abs_cursor = CF.rel_cursor - old_item->input.left;
-          goto redraw;
+          redraw();
 	  break;
 	case '\t':
 	case '\n':
 	case '\015':
 	case '\016':  /* LINEFEED, TAB, RETURN, ^N, jump to the next field */
           switch (process_tabtypes(&buf[0])) {
-            case 0: goto no_redraw;break;
-            case 1: goto redraw;break;
+          case 0: goto no_redraw;break;
+          case 1: redraw();break;
           }
 	  break;
 	default:
@@ -271,7 +275,8 @@ void ReadXServer ()
               buf[0] < '\177') ||
              (buf[0] >= 160)) {         /* regular or intl char */
             process_regular_char_input(&buf[0]); /* insert into input field */
-	    goto redraw_newcursor;
+	    redraw_newcursor();
+            break;
 	  }
 	  /* unrecognized key press, check for buttons */
 	  for (item = root_item_ptr; item != 0;
@@ -284,47 +289,10 @@ void ReadXServer ()
 	      RedrawItem(item, 0);
 	      DoCommand(item);
 	      goto no_redraw;
+              break;
 	    }
 	  }
 	  break;
-	}
-      redraw_newcursor:
-	{
-	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
-                         CF.cur_input->header.dt_ptr->dt_colors[c_item_bg]);
-          /* Since XDrawString is being used, I changed this to clear the
-             entire input field.  dje 10/24/99. */
-	  XClearArea(dpy, CF.cur_input->header.win,
-                     BOX_SPC + TEXT_SPC - 1, BOX_SPC,
-		     CF.cur_input->header.size_x
-                     - (2 * BOX_SPC) - 2 - TEXT_SPC,
-		     (CF.cur_input->header.size_y - 1)
-                     - 2 * BOX_SPC + 1, False);
-	}
-      redraw:
-	{
-	  int len, x, dy;
-	  len = CF.cur_input->input.n - CF.cur_input->input.left;
-	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
-                         CF.cur_input->header.dt_ptr->dt_colors[c_item_fg]);
-	  if (len > CF.cur_input->input.size)
-	    len = CF.cur_input->input.size;
-	  XDrawString(dpy, CF.cur_input->header.win,
-                           CF.cur_input->header.dt_ptr->dt_item_GC,
-			   BOX_SPC + TEXT_SPC,
-			   BOX_SPC + TEXT_SPC +
-                           CF.cur_input->header.dt_ptr->dt_font_struct->ascent,
-			   CF.cur_input->input.value +
-                           CF.cur_input->input.left, len);
-	  x = BOX_SPC + TEXT_SPC +
-            FontWidth(CF.cur_input->header.dt_ptr->dt_font_struct) *
-            CF.abs_cursor - 1;
-	  dy = CF.cur_input->header.size_y - 1;
-	  XDrawLine(dpy, CF.cur_input->header.win,
-                    CF.cur_input->header.dt_ptr->dt_item_GC,
-		    x, BOX_SPC, x, dy - BOX_SPC);
-          myfprintf((stderr,"Line %d/%d - %d/%d (char)\n",
-                     x, BOX_SPC, x, dy - BOX_SPC));
 	}
       no_redraw:
 	break;  /* end of case KeyPress */
@@ -365,6 +333,7 @@ void ReadXServer ()
 	    CF.abs_cursor = CF.rel_cursor - item->input.left;
             if (event.xbutton.button == Button2) { /* if paste request */
               process_paste_request (&event, item);
+              redraw_newcursor();       /* redisplay input field */
             }
 	    RedrawItem(item, 0);
 	  }
@@ -388,6 +357,53 @@ void ReadXServer ()
     }  /* end of for (i = 0) */
   }  /* while loop */
 }
+
+/* Clear area to draw in, then draw the current input field. */
+static void redraw_newcursor () {
+  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
+                 CF.cur_input->header.dt_ptr->dt_colors[c_item_bg]);
+  /* Since XDrawString is being used, I changed this to clear the
+     entire input field.  dje 10/24/99.
+     Note: around 12/26/99, I put an XClearArea into RedrawItem.
+     My guess is that this one is now unneccesary. This
+     whole function may be redundant.
+     The whole input field redisplay flow should be looked at, it was
+     ugly from the very beginning. dje. */
+  XClearArea(dpy, CF.cur_input->header.win,
+             BOX_SPC + TEXT_SPC - 1, BOX_SPC,
+             CF.cur_input->header.size_x
+             - (2 * BOX_SPC) - 2 - TEXT_SPC,
+             (CF.cur_input->header.size_y - 1)
+             - 2 * BOX_SPC + 1, False);
+  redraw();                             /* now do the drawing */
+}
+
+/* Draw the current input field. */
+static void redraw () {
+  int len, x, dy;
+  len = CF.cur_input->input.n - CF.cur_input->input.left;
+  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
+                 CF.cur_input->header.dt_ptr->dt_colors[c_item_fg]);
+  if (len > CF.cur_input->input.size)
+    len = CF.cur_input->input.size;
+  XDrawString(dpy, CF.cur_input->header.win,
+              CF.cur_input->header.dt_ptr->dt_item_GC,
+              BOX_SPC + TEXT_SPC,
+              BOX_SPC + TEXT_SPC +
+              CF.cur_input->header.dt_ptr->dt_font_struct->ascent,
+              CF.cur_input->input.value +
+              CF.cur_input->input.left, len);
+  x = BOX_SPC + TEXT_SPC +
+    FontWidth(CF.cur_input->header.dt_ptr->dt_font_struct) *
+    CF.abs_cursor - 1;
+  dy = CF.cur_input->header.size_y - 1;
+  XDrawLine(dpy, CF.cur_input->header.win,
+            CF.cur_input->header.dt_ptr->dt_item_GC,
+            x, BOX_SPC, x, dy - BOX_SPC);
+  myfprintf((stderr,"Line %d/%d - %d/%d (char)\n",
+             x, BOX_SPC, x, dy - BOX_SPC));
+}
+
 
 /* Each input field has a history, depending on the passed
    direction, get the desired history item into the input field.
