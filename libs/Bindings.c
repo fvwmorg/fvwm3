@@ -271,7 +271,7 @@ Bool MatchBinding(Display *dpy, Binding *b,
   static int kc_maxlen = 0;
   static KeySym last_keysym = NoSymbol;
 
-  modifier &= used_modifiers;
+  modifier &= (used_modifiers & ALL_MODIFIERS);
   if (((b->Modifier & used_modifiers) != modifier &&
        b->Modifier != AnyModifier) ||
       (b->Context & Context) == 0 ||
@@ -588,6 +588,7 @@ Bool MatchBindingExactly(
   int button, KeyCode keycode, unsigned int modifier, int Context,
   BindingType type)
 {
+  modifier &= ALL_MODIFIERS;
   if (b->type == type)
   {
     if (
@@ -634,6 +635,7 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 {
   /* remove unnecessary bits from dead_modifiers */
   dead_modifiers &= ~(binding->Modifier & dead_modifiers);
+  dead_modifiers &= ALL_MODIFIERS;
 
   if((binding->Context & contexts) && (binding->type == KEY_BINDING))
   {
@@ -692,6 +694,7 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
     return;
 
   dead_modifiers &= ~(binding->Modifier & dead_modifiers); /* dje */
+  dead_modifiers &= ALL_MODIFIERS;
 
   if ((binding->Context & contexts) &&
       ((binding->type == MOUSE_BINDING)

@@ -1,6 +1,10 @@
 2002-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Bindings.c (CheckBinding):
+	(MatchBinding):
+	(GrabWindowKey):
+	(GrabWindowButton):
+	(MatchBindingExactly):
 	patch by yeti@physics.muni.cz to help with a weird problem w/ czech
 	keyboards
 
