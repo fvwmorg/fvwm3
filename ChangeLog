@@ -1,3 +1,8 @@
+1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/misc.h:
+	* fvwm/fvwm.h: fixed order of window flags
+
 1999-03-24  Bob Woodside <proteus@pcnet.com>
 
 	* fvwm/add_window.c: Reuse FvwmWindow structure on Recapture.
