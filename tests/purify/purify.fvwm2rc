@@ -185,9 +185,10 @@ AddToFunc MenuStyle-Func
 # I have no idea what this will do but its in the man page:
  + I MenuStyle XStyle ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
 
-# This only works for the default menuStyle:
  + I MenuStyle * PopupDelay 12, DoubleClickTime 2
  + I MenuStyle * PopupDelay 0
+ + I MenuStyle * PopdownDelay 12, PopdownDelayed
+ + I MenuStyle * PopupDelay 0, PopdownImmediately
  + I DestroyMenu Main
  + I AddToMenu Main "Main menu - Test MenuStyles"
  + I AddToMenu Main "Popup FvwmStyle" Popup FvwmStyle

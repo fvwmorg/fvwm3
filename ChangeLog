@@ -1,3 +1,11 @@
+2001-01-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* tests/purify/purify.fvwm2rc:
+	added Popdown... menu style tests
+
+	* fvwm/conditional.c (WindowIdFunc):
+	fixed WindowId syntax
+
 2001-01-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction):

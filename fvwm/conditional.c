@@ -721,7 +721,6 @@ void PickFunc(F_CMD_ARGS)
 void WindowIdFunc(F_CMD_ARGS)
 {
   FvwmWindow *t;
-  char *num;
   char *token;
   char *naction;
   unsigned long win;
@@ -731,31 +730,40 @@ void WindowIdFunc(F_CMD_ARGS)
   char *flags, *restofline;
 
   /* Get window ID */
-  action = GetNextToken(action, &num);
+  action = GetNextToken(action, &token);
 
-  if (num)
-  {
-    win = (unsigned long)strtol(num,NULL,0); /* SunOS doesn't have strtoul */
-    free(num);
-  }
-  else
-    win = 0;
-
-  token = PeekToken(action, &naction);
   if (token && StrEquals(token, "root"))
   {
     int screen = Scr.screen;
 
-    token = PeekToken(naction, NULL);
+    free(token);
+    token = PeekToken(action, &naction);
     if (!token || GetIntegerArguments(token, NULL, &screen, 1) != 1)
+    {
       screen = Scr.screen;
+    }
+    else
+    {
+      action = naction;
+    }
     use_screenroot = True;
     if (screen < 0 || screen >= Scr.NumberOfScreens)
       screen = 0;
-    w = XRootWindow(dpy, screen);
-    if (w == None)
+    win = XRootWindow(dpy, screen);
+    if (win == None)
       return;
   }
+  else if (token)
+  {
+    /* SunOS doesn't have strtoul */
+    win = (unsigned long)strtol(token, NULL, 0);
+    free(token);
+  }
+  else
+  {
+    win = 0;
+  }
+
   /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
   if (!use_screenroot)
   {
