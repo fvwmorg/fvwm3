@@ -920,7 +920,7 @@ can be used as a source of examples for fvwm configuration.
 .SH FONT NAMES AND FONT LOADING
 
 The fonts used for the text of a window title, icon titles,
-menus and geometry windoww can be specified by using the Font
+menus and geometry window can be specified by using the Font
 and IconFont Style, the Font MenuStyle and the DefaultFont
 command. Also, all the Modules which use text have configuration
 command(s) to specify font(s). All these styles and commands take a
@@ -934,7 +934,7 @@ First, you can use what we can call a usual font name, for example,
 -*-fixed-medium-o-normal--14-*-ISO8859-15
 .EE
 That is, you can use an X Logical Font Description (XLFD for
-short).  Then the "first" font which matchs the description is
+short).  Then the "first" font which matches the description is
 loaded and used. This "first" font depends of your font path and
 also of your locale if fvwm has been compiled with the
 --enable-multibyte option to configure.  If you have multibyte
@@ -1511,32 +1511,43 @@ Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]
 
 .in +.5i
 $[desk.name<n>]
-.in -.5i
+.in +.3i
 These parameters are replaced with the name of the desktop
 number <n> that is defined with the
 .B DesktopName
 command. If no name is defined, then the default name is returned.
-
-$[schedule.last]
+.in -.3i
 .in -.5i
+
+.in +.5i
+$[schedule.last]
+.in +.3i
 This is replaced by the id of the last command that was scheduled
 with the
 .B Schedule
 command, even if this command was already executed.
-
-$[schedule.next]
+.in -.3i
 .in -.5i
+
+.in +.5i
+$[schedule.next]
+.in +.3i
 This is replaced by the id the next command used with
 .B Schedule
 will get (unless a different id is specified explicitly).
-
-$[cond.rc]
+.in -.3i
 .in -.5i
+
+.in +.5i
+$[cond.rc]
+.in +.3i
 The return code of the last conditional command.  This variable is
 only valid inside a function and can not be used in a conditional
 command.  Please refer to the section
 .B CONDITIONAL COMMANDS
 in the command list.
+.in -.3i
+.in -.5i
 
 .in +.5i
 $[...]
