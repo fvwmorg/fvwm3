@@ -23,7 +23,7 @@ fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c \
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
-	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
+	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libs $(xpm_CFLAGS) $(X_CFLAGS)
 

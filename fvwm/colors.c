@@ -36,6 +36,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pwd.h>
+#include <math.h>
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -219,7 +220,6 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
  * types are HVDBSCRY for Horizontal, Vertical, Diagonal, Back-diagonal, Square,
  * Circular, Radar and Yin/Yang respectively (in order of bloatiness)
  */
-#define SQRT2 1.4142135623731
 #define PI    3.1415926535898
 Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
 			    char type, char *action, unsigned int width,
@@ -231,8 +231,10 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
   Pixel *pixels;
   unsigned int ncolors = 0;
   char **colors;
-  int *perc, nsegs, i;
+  int *perc, nsegs;
+  register int i, j;
   XGCValues xgcv;
+  XImage *image;
 
   /* translate the gradient string into an array of colors etc */
   if (0 == (ncolors = ParseGradient(action, &colors, &perc, &nsegs))) {
@@ -271,16 +273,17 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
       height = ncolors + 1 - width;
       break;
     case 'S':
-      width = height = 2 * ncolors;
+      /* square gradients have the last color as a single pixel in the centre */
+      width = height = 2 * ncolors - 1;
       break;
     case 'C':
-      /* circular gradients have the last color as a pixel in each corner */
-      width = height = ncolors;
+      /* circular gradients have the first color as a pixel in each corner */
+      width = height = 2 * ncolors - 1;
       break;
     case 'R':
     case 'Y':
       /* swept types need each color to occupy at least one pixel at the edge */
-      width = height = ncolors * (1.0 / PI);
+      width = height = (int)((double) ncolors / PI);
       break;
     default:
       fvwm_msg(ERR, me, "%cGradient not supported", type);
@@ -345,26 +348,32 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
       }
       break;
     case 'S':
-      for (i = 0; i < ncolors; i++) {
+      j = ncolors - 1;
+      for (i = 0; i < j; i++) {
 	xgcv.foreground = pixels[i];
 	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawRectangle(dpy, pixmap, gc, ncolors - 1 - i, ncolors - 1 - i,
-		       2 * i + 2, 2 * i + 2);
+	XDrawRectangle(dpy, pixmap, gc, i, i, (j - i) * 2, (j - i) * 2);
       }
+      xgcv.foreground = pixels[i];
+      XChangeGC(dpy, gc, GCForeground, &xgcv);
+      XDrawPoint(dpy, pixmap, gc, i, i);
       break;
     case 'C':
-      /* seem to need fat lines to avoid missing pixels */
-      xgcv.line_width = 3;
-      XChangeGC(dpy, gc, GCLineWidth, &xgcv);
-      for (i = 0; i < ncolors; i++) {
-	register double j = (1.0 / SQRT2) * (double)i;
-	xgcv.foreground = pixels[i];
-	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawArc(dpy, pixmap, gc, width / 2 - 1 - j, width / 2 - 1 - j,
-		 2.0 * j + 2.0, 2.0 * j + 2.0, 0, 64 * 360);
+      /* fixme: would be more efficient to create the image locally rather than
+       * copy an empty pixmap, Help! I don't know how to do this */
+      image = XGetImage(dpy, pixmap, 0, 0, width, width, AllPlanes, XYPixmap);
+      if (!image){
+	fvwm_msg(ERR, me, "%cGradient couldn't get image", type);
+	break;
       }
-      xgcv.line_width = 0;
-      XChangeGC(dpy, gc, GCLineWidth, &xgcv);
+      for (i = 0; i < width; i++)
+	for (j = 0; j < width; j++) {
+	  register int x = (i - width / 2), y = (j - width / 2);
+	  register long pixel = sqrt((x * x + y * y) / 2);
+	  XPutPixel(image, i, j, pixels[pixel]);
+	}
+      XPutImage(dpy, pixmap, gc, image, 0, 0, 0, 0, width, width);
+      XDestroyImage(image);
       break;
     default:
       /* placeholder function, just fills the pixmap */
