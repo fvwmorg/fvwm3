@@ -1,5 +1,11 @@
 1999-05-04  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/move_resize.c (moveLoop): fixed move/page bug when the button
+	was released while the windows were being unmapped
+
+	* fvwm/icons.c (AutoPlaceIcon): fixed icon palcement (Bug #319)
+	(Iconify): fixed icon title raising bug
+
 	* fvwm/events.c (HandleMapNotify): fixed focus policy (mouse focus)
 
 	* fvwm/Makefile.am (fvwm2_SOURCES):

@@ -459,9 +459,9 @@ void AutoPlaceIcon(FvwmWindow *t)
       /*Also, if its a stickyWindow, put it on the current page! */
       new_x = t->frame_x % Scr.MyDisplayWidth;
       new_y = t->frame_y % Scr.MyDisplayHeight;
-      if(new_x < 0)
+      if(new_x + t->frame_width <= 0)
 	new_x += Scr.MyDisplayWidth;
-      if(new_y < 0)
+      if(new_y + t->frame_height <= 0)
 	new_y += Scr.MyDisplayHeight;
       SetupFrame(t,new_x,new_y,
 		 t->frame_width,t->frame_height,False,False);
@@ -946,6 +946,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   FvwmWindow *t;
   XWindowAttributes winattrs = {0};
   unsigned long eventMask;
+  XEvent dummy;
 
   if(!tmp_win)
     return;
@@ -1037,6 +1038,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   if (!(DO_START_ICONIC(tmp_win) && IS_ICON_MOVED(tmp_win)))
 #endif
   LowerWindow(tmp_win);
+
   if(tmp_win->Desk == Scr.CurrentDesk)
     {
       if (tmp_win->icon_w != None)
@@ -1054,11 +1056,14 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 	  if(HAS_CLICK_FOCUS(tmp_win) && tmp_win->next)
 	    SetFocus(tmp_win->next->w, tmp_win->next,1);
 	  else
-	    {
-	      SetFocus(Scr.NoFocusWin, NULL,1);
-	    }
+	    SetFocus(Scr.NoFocusWin, NULL,1);
 	}
     }
+  /* domivogt (04-may-1999): Need to throw away enter events for the currently
+   * iconified window so that the icon title is not raised */
+  XFlush(dpy);
+  while (XCheckTypedWindowEvent(dpy, tmp_win->frame, EnterNotify, &dummy))
+    ;
   return;
 }
 

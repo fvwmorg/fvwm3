@@ -1330,7 +1330,9 @@ void HandleEnterNotify(void)
   if (IS_ICONIFIED(Tmp_win))
     {
       SET_ICON_ENTERED(Tmp_win,1);
+fprintf(stderr,"entering icon 0x%x\n", Tmp_win);
       DrawIconWindow (Tmp_win);
+fprintf(stderr,"entering icon done\n");
     }
 
   return;
@@ -1352,7 +1354,9 @@ void HandleLeaveNotify(void)
   if (Tmp_win && IS_ICONIFIED(Tmp_win))
     {
       SET_ICON_ENTERED(Tmp_win,0);
+fprintf(stderr,"leaving icon 0x%x\n", Tmp_win);
       DrawIconWindow (Tmp_win);
+fprintf(stderr,"leaving icon done\n");
     }
 
   /* If we leave the root window, then we're really moving

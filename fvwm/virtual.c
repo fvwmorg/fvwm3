@@ -232,9 +232,8 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	     lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance);
 
   if (lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance)
-{
     return False;
-}
+
   /* Move the viewport */
   /* and/or move the cursor back to the approximate correct location */
   /* that is, the same place on the virtual desktop that it */

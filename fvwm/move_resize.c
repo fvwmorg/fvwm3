@@ -652,7 +652,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 {
   Bool finished = False;
   Bool done;
-  int xl,yt,delta_x,delta_y,paged;
+  int xl,xl2,yt,yt2,delta_x,delta_y,paged;
   unsigned int button_mask = 0;
   FvwmWindow tmp_win_copy;
   int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
@@ -766,8 +766,16 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	case ButtonRelease:
 	  if(!opaque_move)
 	    MoveOutline(Scr.Root, 0, 0, 0, 0);
-	  xl = Event.xmotion.x_root + XOffset;
-	  yt = Event.xmotion.y_root + YOffset;
+	  xl2 = Event.xmotion.x_root + XOffset;
+	  yt2 = Event.xmotion.y_root + YOffset;
+	  /* ignore the position of the button release if it was on a
+	   * different page. */
+	  if (!((xl < 0 && xl2 >= 0) || (xl >= 0 && xl2 < 0) ||
+		(yt < 0 && yt2 >= 0) || (yt >= 0 && yt2 < 0)))
+	  {
+	    xl = xl2;
+	    yt = yt2;
+	  }
 
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
@@ -832,25 +840,36 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
 		    }
 		  else
-		    XMoveWindow(dpy,tmp_win->frame,xl,yt);
+		    {
+fprintf(stderr,"xl=%d, yt=%d\n",xl,yt);
+		      XMoveWindow(dpy,tmp_win->frame,xl,yt);
+		    }
 		}
 	      DisplayPosition(tmp_win,xl,yt,False);
+fprintf(stderr,"display position: xl=%d, yt=%d\n",xl,yt);
 
 	      /* prevent window from lagging behind mouse when paging - mab */
 	      if(paged==0)
 		{
+fprintf(stderr,"2\n");
 		  xl = Event.xmotion.x_root;
 		  yt = Event.xmotion.y_root;
   		  HandlePaging(dx, dy, &xl, &yt, &delta_x, &delta_y, False,
 			       False);
 		  xl += XOffset;
 		  yt += YOffset;
+fprintf(stderr,"2 xl=%d, yt=%d\n",xl,yt);
 		  if ( (delta_x==0) && (delta_y==0))
+{
+XFlush(dpy);
 		    /* break from while paged */
 		    break;
+}
+fprintf(stderr,"2b\n");
 		}
 	      paged++;
 	    }  /* end while paged */
+fprintf(stderr,"end of loop\n");
 
 	  done = TRUE;
 	  break;
@@ -863,7 +882,6 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  DispatchEvent();
 	  if(!opaque_move)
 	    MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
-
 	}
       if (opaque_move && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
         {
