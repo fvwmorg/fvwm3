@@ -1,3 +1,8 @@
+1999-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmRearrange/Makefile.am (FvwmCascade):
+	(FvwmTile): removed warning messages
+
 1999-10-07  Eric Gillespie Jr.  <epg@pobox.com>
 
 	* FvwmGtk/FvwmGtk.c: Include <gnome.h> if Gnome is installed.
