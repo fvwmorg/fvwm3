@@ -2,6 +2,18 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Charles Hines:
+Contributed some patches in the early days of fvwm.  Later took over
+maintenance of fvwm2 after Rob Nation, the original author of fvwm, decided to
+"retire".  Made a fair amount of changes and fixes, and incorporated changes
+and fixes from numerous people all over the net.  Did this from about August
+of 1995 until May of 1998 when he came to the realization that he didn't have
+enough time to properly devote to it and decided to "retire" himself, handing
+Brady Montz the torch.  Shortly thereafter is when fvwm became "ruled by
+committee" and this previous fvwm dictator is now happy to see fvwm surviving
+and thriving with this new development methodology (and may even contribute
+again himself, someday).
+
 Lorenz Minder:
 Patches for fvwm-setup95 and safestrdup.
 
@@ -204,7 +216,6 @@ Eddy J. Gurney
 Markus Gutschke
 Georg Hager
 John Heidemann
-Charles Hines
 Paul Hudson
 Sverre H. Huseby
 Toshi Isogai
