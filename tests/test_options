@@ -1,8 +1,11 @@
 #!/bin/sh
 # Hell, this is really difficult with /bin/sh. I want my zsh back!
 
+testdir=tests
+fvwmdir=..
 myname=`basename $0`
-log=archive/automated_tests/$myname.log
+log=$testdir/$myname.log
+
 typeset -i c1
 typeset -i c2
 typeset -i c3
@@ -61,10 +64,10 @@ if [ -z "$custom" ]; then
 fi
 
 if [ ! -x ./$myname ] ; then
-  echo please run $myname from archive/automated_tests
+  echo please run $myname from $testdir
   exit 1
 fi
-cd ../..
+cd $fvwmdir
 rm -f "$log"* > /dev/null 2>&1
 
 
@@ -111,7 +114,6 @@ reverse_options ()
 # call configure and make (with logging)
 build ()
 {
-return
   clean_up
   echo >> $log
   echo >> $log
@@ -142,12 +144,15 @@ return
 #
 c1=0
 for i in `
-grep smr_SWITCH configure.in | grep -v debug-msgs |
+grep "^smr_SWITCH" configure.in | grep -v debug-msgs |
 sed -e 's/^smr_SWITCH.//g' |
 cut -f 1 -d ","`; do
   BUILD_OPTIONS[$c1]="$i"
+  OPTIONS="$OPTIONS $i"
   c1=$c1+1;
 done
+
+echo options: $OPTIONS
 
 #
 # now do the tests

@@ -101,8 +101,6 @@ unsigned long context, int Module
 #define SIGNAL_RETURN return
 #endif
 
-#define BOUNDARY_WIDTH 7    	/* border width */
-
 #ifndef TRUE
 #define TRUE	1
 #define FALSE	0
@@ -313,7 +311,7 @@ typedef struct
 #if 0
   unsigned has_condition_mask : 1;
 #endif
-  unsigned is_button_disabled : 10;
+  unsigned is_button_disabled : NUMBER_OF_BUTTONS;
   unsigned use_backing_store : 1;
   unsigned use_parent_relative : 1;
   unsigned use_colorset : 1;
@@ -360,8 +358,8 @@ typedef struct window_style
   int colorset_hi;
   int border_colorset;
   int border_colorset_hi;
-  int border_width;
-  int handle_width; /* resize handle width */
+  short border_width;
+  short handle_width; /* resize handle width */
   int layer;
   int start_desk;
   int start_page_x;
@@ -412,7 +410,7 @@ typedef struct FvwmWindow
   int wShaped;               /* is this a shaped window */
 #endif
 
-  int boundary_width;
+  short boundary_width;
   short corner_width;
   short visual_corner_width;
 

@@ -1529,8 +1529,6 @@ static void InitVariables(void)
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
   Scr.BusyCursor = BUSY_RECAPTURE;
-  Scr.NoBoundaryWidth = 1;
-  Scr.BoundaryWidth = BOUNDARY_WIDTH;
   Scr.Hilite = NULL;
   Scr.Focus = NULL;
   Scr.PreviousFocus = NULL;
@@ -1551,7 +1549,8 @@ static void InitVariables(void)
   Scr.CurrentDesk = 0;
 
   Scr.EdgeScrollX = Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL;
-  Scr.ScrollResistance = Scr.MoveResistance = 0;
+  Scr.ScrollResistance = DEFAULT_SCROLL_RESISTANCE;
+  Scr.MoveResistance = DEFAULT_MOVE_RESISTANCE;
   Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
   Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
   Scr.SnapGridX = DEFAULT_SNAP_GRID_X;

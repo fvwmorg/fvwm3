@@ -82,6 +82,8 @@
 /* Don't page if the pointer has moved for more than this many pixels between
  * two samples */
 #define MAX_PAGING_MOVE_DISTANCE           5
+#define DEFAULT_MOVE_RESISTANCE            0
+#define DEFAULT_SCROLL_RESISTANCE          0
 
 /* layers */
 #define DEFAULT_BOTTOM_LAYER               2
@@ -93,6 +95,12 @@
 #define NR_LEFT_BUTTONS                    5
 #define NR_RIGHT_BUTTONS                   5
 #define NUMBER_OF_BUTTONS                  (NR_LEFT_BUTTONS + NR_RIGHT_BUTTONS)
+
+/* window borders */
+#define DEFAULT_BORDER_WIDTH               1
+#define DEFAULT_HANDLE_WIDTH               7
+#define MAX_BORDER_WIDTH                 500
+#define MAX_HANDLE_WIDTH                   (MAX_BORDER_WIDTH)
 
 /* module configuration */
 #define DEFAULT_MODULE_TIMEOUT            30 /* seconds */

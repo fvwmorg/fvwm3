@@ -287,8 +287,6 @@ typedef struct ScreenInfo
   GC ScratchGC2;
   GC TitleGC;
   int SizeStringWidth;	        /* minimum width of size window */
-  int BoundaryWidth;	        /* frame width for decorated windows */
-  int NoBoundaryWidth;	        /* frame width for decorated windows */
 
   FvwmDecor DefaultDecor;	/* decoration style(s) */
   FvwmDecor *cur_decor;

@@ -266,17 +266,23 @@ void GetOlHints(FvwmWindow *t)
  * accordingly
  *
  *****************************************************************************/
-void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
-		 int handle_width, short *buttons)
+void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 {
-  int decor,i;
+  int decor;
+  int i;
+  short border_width;
+  short handle_width;
   PropMwmHints *prop;
+  style_flags *sflags = &(pstyle->flags);
 
-  if(!SHAS_BORDER_WIDTH(sflags))
-    border_width = Scr.NoBoundaryWidth;
-
-  if(!SHAS_HANDLE_WIDTH(sflags))
-    handle_width = Scr.BoundaryWidth;
+  border_width = (SHAS_BORDER_WIDTH(sflags)) ?
+    SGET_BORDER_WIDTH(*pstyle) : DEFAULT_BORDER_WIDTH;
+  if (border_width > MAX_BORDER_WIDTH)
+    border_width = MAX_BORDER_WIDTH;
+  handle_width = (SHAS_HANDLE_WIDTH(sflags)) ?
+    SGET_HANDLE_WIDTH(*pstyle) : DEFAULT_HANDLE_WIDTH;
+  if (handle_width > MAX_HANDLE_WIDTH)
+    handle_width = MAX_HANDLE_WIDTH;
 
   *buttons = (1 << NUMBER_OF_BUTTONS) - 1;
 

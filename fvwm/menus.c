@@ -757,7 +757,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   /* Figure out where we should popup, if possible */
   if (!pmp->flags.is_already_mapped)
   {
-    Bool prefer_left_submenus;
+    Bool prefer_left_submenus = False;
 
     /* Make sure we are using the latest style and menu layout. */
     update_menu(pmp->menu);
@@ -1434,7 +1434,7 @@ static void MenuInteraction(
   memset(&flags, 0, sizeof(flags));
   flags.do_force_reposition = 1;
 
-  memset(&(mops.flags), 0, sizeof(mops.flags));
+  memset(&mops, 0, sizeof(mops));
   flags.do_popup_immediately =
     (MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
      (Menus.PopupDelay10ms > 0));
@@ -1760,8 +1760,8 @@ static void MenuInteraction(
 	  /* something else was already selected on this menu */
 	  if (mrPopup)
 	  {
-	    pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
-					     pmp);
+	    pop_menu_down_and_repaint_parent(
+	      &mrPopup, &does_submenu_overlap, pmp);
 	    mrPopup = NULL;
 	  }
 	  /* We have to pop down the menu before unselecting the item in case
@@ -5047,7 +5047,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   extern FvwmWindow *ButtonWindow;
   extern int Context;
 
-  memset(&(mops.flags), 0, sizeof(mops.flags));
+  memset(&mops, 0, sizeof(mops));
   memset(&mret, 0, sizeof(MenuReturn));
   action = GetNextToken(action,&menu_name);
   action = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
@@ -6799,6 +6799,6 @@ static void get_popup_options(MenuRoot *mr, MenuItem *mi, MenuOptions *pops)
     return;
   pops->flags.has_poshints = 0;
   /* just look past "Popup <name>" in the action */
-  GetMenuOptions(SkipNTokens(MI_ACTION(mi), 2), MR_WINDOW(mr), NULL, mr, mi,
-		 pops);
+  GetMenuOptions(
+    SkipNTokens(MI_ACTION(mi), 2), MR_WINDOW(mr), NULL, mr, mi, pops);
 }

@@ -409,6 +409,7 @@ void setup_style_and_decor(
 
   /*  Assume that we'll decorate */
   SET_HAS_BORDER(tmp_win, 1);
+
   SET_HAS_TITLE(tmp_win, 1);
 
 #ifdef USEDECOR
@@ -435,8 +436,7 @@ void setup_style_and_decor(
   GetOlHints(tmp_win);
 
   tmp_win->buttons = SIS_BUTTON_DISABLED(&pstyle->flags);
-  SelectDecor(tmp_win, &pstyle->flags, SGET_BORDER_WIDTH(*pstyle),
-	      SGET_HANDLE_WIDTH(*pstyle), buttons);
+  SelectDecor(tmp_win, pstyle, buttons);
 
   if (IS_TRANSIENT(tmp_win) && !pstyle->flags.do_decorate_transient)
   {

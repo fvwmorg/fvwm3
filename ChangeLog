@@ -1,5 +1,50 @@
 2000-10-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.c (InitVariables):
+	* libs/defaults.h (DEFAULT_MOVE_RESISTANCE):
+	(DEFAULT_SNAP_ATTRACTION):
+	new defaults
+
+	* fvwm/decorations.c (SelectDecor):
+	* libs/defaults.h (MAX_HANDLE_WIDTH):
+	(MAX_BORDER_WIDTH):
+	new macros
+
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/style.c (ProcessNewStyle):
+	made boundary_width, border_width and handle_width short instead of int
+
+	* fvwm/fvwm.h (struct):
+	use NUMBER_OF_BUTTONS macro
+
+	* fvwm/decorations.h:
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/add_window.c (setup_style_and_decor):
+	simplified signature of SelectDecor
+
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/fvwm.h (BOUNDARY_WIDTH):
+	* fvwm/screen.h (ScreenInfo):
+	removed BoundaryWidth and NoBoundaryWidth members; use macros from
+	defaults.h instead
+
+	* fvwm/menus.c (menu_func):
+	(MenuInteraction):
+	zero mops variable to fix UMR
+
+	* fvwm/events.c:
+	initialise some globals
+
+	* fvwm/menus.c (do_menu):
+	fixed UMR
+
+	* fvwm/Makefile.am (fvwm2_SOURCES):
+	sorted .c filed by size
+
+	* tests/test_options:
+	made test script work again
+
 	* fvwm/move_resize.c (move_window_doit):
 	fixed MoveToPage command
 

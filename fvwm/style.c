@@ -933,7 +933,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  found = True;
 	  if (GetIntegerArguments(rest, NULL, val, 1))
 	  {
-	    SSET_BORDER_WIDTH(*ptmpstyle, *val);
+	    SSET_BORDER_WIDTH(*ptmpstyle, (short)*val);
 	    ptmpstyle->flags.has_border_width = 1;
 	    ptmpstyle->flag_mask.has_border_width = 1;
 	    ptmpstyle->change_mask.has_border_width = 1;
@@ -1337,7 +1337,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  found = True;
 	  if (GetIntegerArguments(rest, NULL, val, 1))
 	  {
-	    SSET_HANDLE_WIDTH(*ptmpstyle, *val);
+	    SSET_HANDLE_WIDTH(*ptmpstyle, (short)*val);
 	    ptmpstyle->flags.has_handle_width = 1;
 	    ptmpstyle->flag_mask.has_handle_width = 1;
 	    ptmpstyle->change_mask.has_handle_width = 1;

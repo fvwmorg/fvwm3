@@ -18,8 +18,7 @@
 
 void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
-void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
-		 int handle_width, short *buttons);
+void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons);
 int check_if_function_allowed(int function, FvwmWindow *t,
 			      Bool override_allowed, char *menu_string);
 

@@ -103,14 +103,14 @@
 
 extern void StartupStuff(void);
 
-int Context = C_NO_CONTEXT;	/* current button press context */
+int Context = C_NO_CONTEXT;		/* current button press context */
 static int Button = 0;
-FvwmWindow *ButtonWindow;	/* button press window structure */
-XEvent Event;			/* the current event */
-FvwmWindow *Tmp_win;		/* the current fvwm window */
+FvwmWindow *ButtonWindow = NULL;	/* button press window structure */
+XEvent Event;				/* the current event */
+FvwmWindow *Tmp_win = NULL;		/* the current fvwm window */
 
 int last_event_type=0;
-Window last_event_window=0;
+static Window last_event_window=0;
 Time lastTimestamp = CurrentTime;	/* until Xlib does this for us */
 
 
