@@ -1,3 +1,11 @@
+2001-10-09  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-headlines.in:
+	improved support for linuxfr.org, added thinkgeek.com
+
+	* make_fvwmdist.sh:
+	s/autormake/automake/
+
 2001-09-05  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-menu-headlines.in:

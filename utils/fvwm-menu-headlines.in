@@ -125,7 +125,14 @@ local $siteInfo = {
 		'host' => "linuxfr.org",
 		'path' => "/short.php3",
 		'func' => \&processLinuxFr,
-		'flds' => 'title, link, author, author_email, type',
+		'flds' => 'headline, url, author_name, author_email, type',
+	},
+	'thinkgeek' => {
+		'name' => "ThinkGeek",
+		'host' => "www.thinkgeek.com",
+		'path' => "/thinkgeek.rdf",
+		'func' => \&processPoorRdf,
+		'flds' => 'title, link',
 	},
 };
 
@@ -400,12 +407,13 @@ sub processText ($$$$) {
 	while (1) {
 		my $entry = {};
 		foreach (@$fields) {
-			my $line = undef;
-			### It waits 15 seconds until returning last undef :-(
-			eval {
-				local $SIG{ALRM} = sub { die "\n"; };
-				alarm(1); $line = <SOCK>; alarm(0);
-			};
+#			my $line = undef;
+#			### It waits 15 seconds until returning last undef :-(
+#			eval {
+#				local $SIG{ALRM} = sub { die "\n"; };
+#				alarm(1); $line = <SOCK>; alarm(0);
+#			};
+			my $line = <SOCK>;
 			last ENTRY unless defined $line;
 			next if $_ eq '_ignore_';
 			print STDERR $line if $ENV{"DEBUG_DUMP_RESPONSE"};
@@ -550,16 +558,24 @@ sub processKuro5hin () {
 }
 
 sub processLinuxFr () {
+	my $linkToDate = sub ($) {
+		$_[0]->{'url'} =~ m|/(\d\d\d\d/\d\d/\d\d)/|; $1;
+	};
+	my $hackForUrl = sub ($) {
+		# hack for netscape -remote openURL
+		my $u = $_[0]->{'url'};
+		$u =~ s|,|\%2c|g; $u;
+	};
 	while (<SOCK>) {
 		last if /^%%/;  # skip the text note
 	}
 	return processText(
 		[ qw( headline url author_name author_email type _ignore_ ) ],
-		{ 'h' => 'headline', 'u' => 'url', 'd' => undef },
+		{ 'h' => 'headline', 'u' => $hackForUrl, 'd' => $linkToDate },
 		sub ($) {
-			# this site's rdf does not supply the time, how weird...
-			(gmtime())[5,4,3,2,1,0];
-		}, +0
+			$_[0] =~ m|(\d+)/(\d+)/(\d+)|;
+			($1, ($2 || 0) - 1, $3);
+		}, +0,
 	);
 }
 # ---------------------------------------------------------------------------
@@ -691,7 +707,7 @@ B<fvwm-menu-headlines>
 This configurable perl script builds an fvwm menu definition for headlines
 of popular news web sites: FreshMeat, Slashdot, LinuxToday, Segfault, AppWatch,
 LinuxApps, JustLinux, DaemonNews, GNOME-News, KDE-News, FreeKDE, RootPrompt,
-LinuxFr and more.
+LinuxFr, ThinkGeek and more.
 
 It is possible to specify a customized menu item format, change a command
 (usually launching a browser) and add menu icons (there is a support for
