@@ -774,7 +774,7 @@ static void parse_colorset(char *line)
 	XStoreColor(dpy, Pcmap, &color);
       } else {
 	XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
-	cs->shadow = GetColor(hi);
+	cs->shadow = GetColor(sh);
 	have_pixels_changed = True;
       }
     } /* user specified */
