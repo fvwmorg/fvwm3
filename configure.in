@@ -695,10 +695,27 @@ if test x"$with_bidi" != xno; then
 fi
 
 if test x"$with_bidi" != xno; then
-	ac_save_CFLAGS="$CFLAGS"
+	fribdi_in_path=yes
 	ac_save_LIBS="$LIBS"
-	CFLAGS="$CFLAGS $Bidi_CFLAGS"
-	LIBS="$LIBS $Bidi_LIBS"
+	LIBS="$LIBS -lfiribidi"
+	AC_TRY_RUN([#include <stdlib.h>
+#include <fribidi/fribidi.h>
+int main()
+{
+	FriBidiChar *logical_unicode_str =
+		(FriBidiChar *)malloc((4 + 1) * sizeof(FriBidiChar));
+	fribidi_charset_to_unicode(
+		fribidi_parse_charset("iso8859-8"), "test", 4,
+		logical_unicode_str);
+	return 0;
+}
+], [:], [fribdi_in_path=no])
+	LIBS="$ac_save_LIBS"
+	if test x"$fribidi_in_path" != xyes; then
+		ac_save_CFLAGS="$CFLAGS"
+		ac_save_LIBS="$LIBS"
+		CFLAGS="$CFLAGS $Bidi_CFLAGS"
+		LIBS="$LIBS $Bidi_LIBS"
 	AC_TRY_RUN([#include <stdlib.h>
 #include <fribidi/fribidi.h>
 int main()
@@ -711,15 +728,21 @@ int main()
 	return 0;
 }
 ], [:], [with_bidi=no; problem_bidi=": Bad fribidi version, see config.log"])
-	CFLAGS="$ac_save_CFLAGS"
-	LIBS="$ac_save_LIBS"
+		CFLAGS="$ac_save_CFLAGS"
+		LIBS="$ac_save_LIBS"
+	fi
+	if test x"$fribidi_in_path" != xno; then
+		Bidi_CFLAGS=
+		Bidi_LIBS=-lfribidi
+	fi
 fi
 
 if test x"$with_bidi" = xno; then
 	Bidi_CFLAGS=
 	Bidi_LIBS=
+else
+	AC_DEFINE(HAVE_BIDI)
 fi
-test x"$Bidi_LIBS" != x && AC_DEFINE(HAVE_BIDI)
 AC_SUBST(Bidi_LIBS)
 AC_SUBST(Bidi_CFLAGS)
 
