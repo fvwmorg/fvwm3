@@ -1,3 +1,18 @@
+1999-09-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmBanner/fvwm-logo-old.xpm: renamed from fvwm2_big.xpm,
+	removed stylized '2' and renamed array name to fvwm_logo_xpm,
+	removed redudand color and reduced size of the image
+
+	* FvwmBanner/fvwm-logo-{current,colorful}.xpm: new default logo
+	and its original colorful version
+
+	* FvwmBanner/Makefile.am: add new logos to EXTRA_DIST and
+	add fvwm-logo-current.xpm to FvwmBanner dependences
+
+	* FvwmBanner/FvwmBanner.c (main,GetXPMFile): renamed fvwm2_big_xpm
+	to fvwm_logo_xpm
+
 1999-09-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (SwallowedWindow):

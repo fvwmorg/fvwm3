@@ -51,7 +51,10 @@
 #include <libs/Module.h>
 
 
-#include "fvwm2_big.xpm"
+/* migo (16-Sep-1999): How about to do this configurable? */
+/*#include "fvwm-logo-old.xpm"*/
+/*#include "fvwm-logo-colorful.xpm"*/
+#include "fvwm-logo-current.xpm"
 
 typedef struct _XpmIcon {
     Pixmap pixmap;
@@ -170,7 +173,7 @@ int main(int argc, char **argv)
   if (imageName)
     GetXPMFile(imageName,imagePath);
   else
-    GetXPMData(fvwm2_big_xpm);
+    GetXPMData(fvwm_logo_xpm);
   XSetWindowBackgroundPixmap(dpy, win, view.pixmap);
 
   /* Create a window to hold the banner */
@@ -299,7 +302,7 @@ void GetXPMFile(char *file, char *path)
   }
   else
     fprintf(stderr,"FvwmBanner: ERROR finding pixmap file in ImagePath\n");
-  GetXPMData(fvwm2_big_xpm);
+  GetXPMData(fvwm_logo_xpm);
 }
 
 void nocolor(char *a, char *b)
