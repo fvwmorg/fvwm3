@@ -1,3 +1,11 @@
+2003-04-07  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/ewmh_names.c (EWMH_WMName, EWMH_WMIconName):
+	completely ignore application requests to set exactly the same
+	window name or icon name (xmms sets it every second),
+	this avoids some redundant module messages and redraws
+
 2003-04-05  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

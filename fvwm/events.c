@@ -705,7 +705,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 
 void HandleButtonPress(const evh_args_t *ea)
 {
-	DBUG("HandleButtonPress","Routine Entered");
+	DBUG("HandleButtonPress", "Routine Entered");
 
 	GrabEm(CRS_NONE, GRAB_PASSIVE);
 	if (__is_bpress_window_handled(ea->exc) == False)
@@ -732,7 +732,7 @@ void HandleButtonRelease(const evh_args_t *ea)
 	int real_modifier;
 	const XEvent *te = ea->exc->x.etrigger;
 
-	DBUG("HandleButtonRelease","Routine Entered");
+	DBUG("HandleButtonRelease", "Routine Entered");
 
 	send_motion = False;
 	stroke_trans (sequence);
@@ -771,7 +771,7 @@ void HandleClientMessage(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleClientMessage","Routine Entered");
+	DBUG("HandleClientMessage", "Routine Entered");
 
 	/* Process GNOME and EWMH Messages */
 	if (GNOME_ProcessClientMessage(ea->exc))
@@ -862,7 +862,7 @@ void HandleConfigureRequest(const evh_args_t *ea)
 	XConfigureRequestEvent cre;
 	FvwmWindow *fw = ea->exc->w.fw;
 
-	DBUG("HandleConfigureRequest","Routine Entered");
+	DBUG("HandleConfigureRequest", "Routine Entered");
 
 	cre = te->xconfigurerequest;
 	/* te->xany.window is te->.xconfigurerequest.parent, so the context
@@ -1441,7 +1441,7 @@ void HandleConfigureRequest(const evh_args_t *ea)
 
 void HandleDestroyNotify(const evh_args_t *ea)
 {
-	DBUG("HandleDestroyNotify","Routine Entered");
+	DBUG("HandleDestroyNotify", "Routine Entered");
 
 	destroy_window(ea->exc->w.fw);
 	EWMH_ManageKdeSysTray(
@@ -1470,7 +1470,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleEnterNotify","Routine Entered");
+	DBUG("HandleEnterNotify", "Routine Entered");
 	ewp = &te->xcrossing;
 ENTER_DBG((stderr, "++++++++ en (%d): fw 0x%08x w 0x%08x sw 0x%08xmode 0x%x detail 0x%x '%s'\n", ++ecount, (int)fw, (int)ewp->window, (int)ewp->subwindow, ewp->mode, ewp->detail, fw?fw->visible_name:"(none)"));
 
@@ -1840,7 +1840,7 @@ void HandleFocusIn(const evh_args_t *ea)
 	static Bool was_nothing_ever_focused = True;
 	FvwmWindow *fw = ea->exc->w.fw;
 
-	DBUG("HandleFocusIn","Routine Entered");
+	DBUG("HandleFocusIn", "Routine Entered");
 
 	Scr.focus_in_pending_window = NULL;
 	/* This is a hack to make the PointerKey command work */
@@ -2064,7 +2064,7 @@ void HandleLeaveNotify(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleLeaveNotify","Routine Entered");
+	DBUG("HandleLeaveNotify", "Routine Entered");
 
 ENTER_DBG((stderr, "-------- ln (%d): fw 0x%08x w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, (int)fw, (int)te->xcrossing.window, (int)te->xcrossing.subwindow, te->xcrossing.mode, te->xcrossing.detail, fw?fw->visible_name:"(none)"));
 	/* Ignore LeaveNotify events while a window is resized or moved as a
@@ -2164,7 +2164,7 @@ void HandleMapNotify(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleMapNotify","Routine Entered");
+	DBUG("HandleMapNotify", "Routine Entered");
 
 	if (!fw)
 	{
@@ -2268,7 +2268,7 @@ void HandleMappingNotify(const evh_args_t *ea)
 
 void HandleMapRequest(const evh_args_t *ea)
 {
-	DBUG("HandleMapRequest","Routine Entered");
+	DBUG("HandleMapRequest", "Routine Entered");
 
 	if (fFvwmInStartup)
 	{
@@ -2503,7 +2503,7 @@ void HandleMapRequestKeepRaised(
 #ifdef HAVE_STROKE
 void HandleMotionNotify(const evh_args_t *ea)
 {
-	DBUG("HandleMotionNotify","Routine Entered");
+	DBUG("HandleMotionNotify", "Routine Entered");
 
 	if (send_motion == True)
 	{
@@ -2528,7 +2528,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	char *urgency_action = NULL;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandlePropertyNotify","Routine Entered");
+	DBUG("HandlePropertyNotify", "Routine Entered");
 
 	if (te->xproperty.window == Scr.Root &&
 	    te->xproperty.state == PropertyNewValue &&
@@ -2646,13 +2646,19 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		{
 			return;
 		}
-		free_window_names (fw, True, False);
-		fw->name = new_name;
-		if (fw->name.name &&
-		    strlen(fw->name.name) > MAX_WINDOW_NAME_LEN)
+		if (strlen(new_name.name) > MAX_WINDOW_NAME_LEN)
 		{
-			(fw->name.name)[MAX_WINDOW_NAME_LEN] = 0;
+			/* limit to prevent hanging X server */
+			(new_name.name)[MAX_WINDOW_NAME_LEN] = 0;
 		}
+		if (fw->name.name && strcmp(new_name.name, fw->name.name) == 0)
+		{
+			/* migo: some apps update their names every second */
+			return;
+		}
+
+		free_window_names(fw, True, False);
+		fw->name = new_name;
 		SET_NAME_CHANGED(fw, 1);
 		if (fw->name.name == NULL)
 		{
@@ -2660,6 +2666,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		}
 		setup_visible_name(fw, False);
 		BroadcastWindowIconNames(fw, True, False);
+
 		/* fix the name in the title bar */
 		if (!IS_ICONIFIED(fw))
 		{
@@ -2693,18 +2700,25 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		{
 			return;
 		}
-		free_window_names(fw, False, True);
-		fw->icon_name = new_name;
-		if (fw->icon_name.name && strlen(fw->icon_name.name) >
-		    MAX_ICON_NAME_LEN)
+		if (new_name.name && strlen(new_name.name) > MAX_ICON_NAME_LEN)
 		{
 			/* limit to prevent hanging X server */
-			(fw->icon_name.name)[MAX_ICON_NAME_LEN] = 0;
+			(new_name.name)[MAX_ICON_NAME_LEN] = 0;
 		}
+		if (fw->icon_name.name &&
+			strcmp(new_name.name, fw->icon_name.name) == 0)
+		{
+			/* migo: some apps update their names every second */
+			return;
+		}
+
+		free_window_names(fw, False, True);
+		fw->icon_name = new_name;
 		SET_WAS_ICON_NAME_PROVIDED(fw, 1);
 		if (fw->icon_name.name == NULL)
 		{
-			fw->icon_name .name= fw->name.name;
+			/* currently never happens */
+			fw->icon_name.name = fw->name.name;
 			SET_WAS_ICON_NAME_PROVIDED(fw, 0);
 		}
 		setup_visible_name(fw, True);
@@ -2736,13 +2750,13 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		if ((fw->wmhints->flags & IconPixmapHint) ||
 		    (old_wmhints_flags & IconPixmapHint))
 		{
-ICON_DBG((stderr,"hpn: iph changed (%d) '%s'\n", !!(int)(fw->wmhints->flags & IconPixmapHint), fw->name));
+ICON_DBG((stderr, "hpn: iph changed (%d) '%s'\n", !!(int)(fw->wmhints->flags & IconPixmapHint), fw->name));
 			has_icon_pixmap_hint_changed = True;
 		}
 		if ((fw->wmhints->flags & IconWindowHint) ||
 		    (old_wmhints_flags & IconWindowHint))
 		{
-ICON_DBG((stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(fw->wmhints->flags & IconWindowHint), fw->name));
+ICON_DBG((stderr, "hpn: iwh changed (%d) '%s'\n", !!(int)(fw->wmhints->flags & IconWindowHint), fw->name));
 			has_icon_window_hint_changed = True;
 			SET_USE_EWMH_ICON(fw, False);
 		}
@@ -2752,7 +2766,7 @@ ICON_DBG((stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(fw->wmhints->flags & Ic
 		{
 			if (ICON_OVERRIDE_MODE(fw) == ICON_OVERRIDE)
 			{
-ICON_DBG((stderr,"hpn: icon override '%s'\n", fw->name));
+ICON_DBG((stderr, "hpn: icon override '%s'\n", fw->name));
 				has_icon_changed = False;
 			}
 			else if (ICON_OVERRIDE_MODE(fw) ==
@@ -2763,7 +2777,7 @@ ICON_DBG((stderr,"hpn: icon override '%s'\n", fw->name));
 					if (WAS_ICON_HINT_PROVIDED(fw) ==
 					    ICON_HINT_MULTIPLE)
 					{
-ICON_DBG((stderr,"hpn: using further iph '%s'\n", fw->name));
+ICON_DBG((stderr, "hpn: using further iph '%s'\n", fw->name));
 						has_icon_changed = True;
 					}
 					else  if (fw->icon_bitmap_file ==
@@ -2771,7 +2785,7 @@ ICON_DBG((stderr,"hpn: using further iph '%s'\n", fw->name));
 						  fw->icon_bitmap_file ==
 						  Scr.DefaultIcon)
 					{
-ICON_DBG((stderr,"hpn: using first iph '%s'\n", fw->name));
+ICON_DBG((stderr, "hpn: using first iph '%s'\n", fw->name));
 						has_icon_changed = True;
 					}
 					else
@@ -2780,24 +2794,24 @@ ICON_DBG((stderr,"hpn: using first iph '%s'\n", fw->name));
 						 * hint if the application did
 						 * not provide it from the
 						 * start */
-ICON_DBG((stderr,"hpn: first iph ignored '%s'\n", fw->name));
+ICON_DBG((stderr, "hpn: first iph ignored '%s'\n", fw->name));
 						has_icon_changed = False;
 					}
 				}
 				else if (has_icon_window_hint_changed)
 				{
-ICON_DBG((stderr,"hpn: using iwh '%s'\n", fw->name));
+ICON_DBG((stderr, "hpn: using iwh '%s'\n", fw->name));
 					has_icon_changed = True;
 				}
 				else
 				{
-ICON_DBG((stderr,"hpn: iwh not changed, hint ignored '%s'\n", fw->name));
+ICON_DBG((stderr, "hpn: iwh not changed, hint ignored '%s'\n", fw->name));
 					has_icon_changed = False;
 				}
 			}
 			else /* NO_ICON_OVERRIDE */
 			{
-ICON_DBG((stderr,"hpn: using hint '%s'\n", fw->name));
+ICON_DBG((stderr, "hpn: using hint '%s'\n", fw->name));
 				has_icon_changed = True;
 			}
 
@@ -2808,7 +2822,7 @@ ICON_DBG((stderr,"hpn: using hint '%s'\n", fw->name));
 
 			if (has_icon_changed)
 			{
-ICON_DBG((stderr,"hpn: icon changed '%s'\n", fw->name));
+ICON_DBG((stderr, "hpn: icon changed '%s'\n", fw->name));
 				/* Okay, the icon hint has changed and style
 				 * options tell us to honour this change.  Now
 				 * let's see if we have to use the application
@@ -2950,7 +2964,7 @@ void HandleShapeNotify(const evh_args_t *ea)
 {
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleShapeNotify","Routine Entered");
+	DBUG("HandleShapeNotify", "Routine Entered");
 
 	if (FShapesSupported)
 	{
@@ -2983,7 +2997,7 @@ void HandleUnmapNotify(const evh_args_t *ea)
 	Bool must_return = False;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleUnmapNotify","Routine Entered");
+	DBUG("HandleUnmapNotify", "Routine Entered");
 
 	/* Don't ignore events as described below. */
 	if (te->xunmap.event != te->xunmap.window &&
@@ -3118,7 +3132,7 @@ void HandleVisibilityNotify(const evh_args_t *ea)
 {
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-	DBUG("HandleVisibilityNotify","Routine Entered");
+	DBUG("HandleVisibilityNotify", "Routine Entered");
 
 	if (fw && ea->exc->x.etrigger->xvisibility.window == FW_W_FRAME(fw))
 	{
@@ -3200,7 +3214,7 @@ void dispatch_event(XEvent *e)
 	Window w = e->xany.window;
 	FvwmWindow *fw;
 
-	DBUG("dispatch_event","Routine Entered");
+	DBUG("dispatch_event", "Routine Entered");
 
 	XFlush(dpy);
 	if (w == Scr.Root)
@@ -3250,7 +3264,7 @@ void dispatch_event(XEvent *e)
 	 */
 	alloca(0);
 #endif
-	DBUG("dispatch_event","Leaving Routine");
+	DBUG("dispatch_event", "Leaving Routine");
 
 	return;
 }
@@ -3259,7 +3273,7 @@ void HandleEvents(void)
 {
 	XEvent ev;
 
-	DBUG("HandleEvents","Routine Entered");
+	DBUG("HandleEvents", "Routine Entered");
 	STROKE_CODE(send_motion = False);
 	while (!isTerminated)
 	{
@@ -3303,7 +3317,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	static struct timeval timeout;
 	static struct timeval *timeoutP = &timeout;
 
-	DBUG("My_XNextEvent","Routine Entered");
+	DBUG("My_XNextEvent", "Routine Entered");
 
 	/* include this next bit if HandleModuleInput() gets called anywhere
 	 * else with queueing turned on.  Because this routine is the only
@@ -3323,8 +3337,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	 * there are events in the queue */
 	if (FPending(dpy))
 	{
-		DBUG("My_XNextEvent","taking care of queued up events"
-		     " & returning (1)");
+		DBUG(
+			"My_XNextEvent", "taking care of queued up events"
+			" & returning (1)");
 		FNextEvent(dpy, event);
 		return 1;
 	}
@@ -3333,7 +3348,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	 * dies, and the SIGCHLD handler now reaps them automatically. We
 	 * should therefore never see a zombie */
 #if 0
-	DBUG("My_XNextEvent","no X events waiting - about to reap children");
+	DBUG("My_XNextEvent", "no X events waiting - about to reap children");
 	/* Zap all those zombies! */
 	/* If we get to here, then there are no X events waiting to be
 	 * processed. Just take a moment to check for dead children. */
@@ -3427,7 +3442,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 			}
 		}
 
-		DBUG("My_XNextEvent","waiting for module input/output");
+		DBUG("My_XNextEvent", "waiting for module input/output");
 		num_fd = fvwmSelect(
 			fd_width, &in_fdset, &out_fdset, 0, timeoutP);
 		if (is_waiting_for_scheduled_command)
@@ -3517,7 +3532,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		return 1;
 	}
 
-	DBUG("My_XNextEvent","leaving My_XNextEvent");
+	DBUG("My_XNextEvent", "leaving My_XNextEvent");
 	return 0;
 }
 

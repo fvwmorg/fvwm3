@@ -126,8 +126,9 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 	if (!FiconvSupport)
 		return 0;
 
-	val = ewmh_AtomGetByName(FW_W(fwin), "_NET_WM_ICON_NAME",
-				 EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
+	val = ewmh_AtomGetByName(
+		FW_W(fwin), "_NET_WM_ICON_NAME",
+		EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
 	if (val == NULL)
 	{
@@ -140,11 +141,21 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 	}
 
 	tmp_str = (char *)FiconvUtf8ToCharset(
-					dpy, fc, (const char *) val, size);
+		dpy, fc, (const char *) val, size);
 	free(val);
 	if (tmp_str == NULL)
 	{
-		SET_HAS_EWMH_WM_ICON_NAME(fwin,0);
+		SET_HAS_EWMH_WM_ICON_NAME(fwin, 0);
+		return 0;
+	}
+	if (strlen(tmp_str) > MAX_ICON_NAME_LEN)
+	{
+		tmp_str[MAX_ICON_NAME_LEN] = 0;
+	}
+	if (fwin->icon_name.name && strcmp(tmp_str, fwin->icon_name.name) == 0)
+	{
+		/* migo: some apps update their names every second */  
+		free(tmp_str);
 		return 0;
 	}
 
@@ -165,12 +176,6 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 		return 1;
 	}
 
-	if (fwin->icon_name.name &&
-	    strlen(fwin->icon_name.name) > MAX_ICON_NAME_LEN)
-	{
-		(fwin->icon_name.name)[MAX_ICON_NAME_LEN] = 0;
-	}
-
 	setup_visible_name(fwin, True);
 	EWMH_SetVisibleName(fwin, True);
 	BroadcastWindowIconNames(fwin, False, True);
@@ -188,8 +193,9 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 	if (!FiconvSupport)
 		return 0;
 
-	val = ewmh_AtomGetByName(FW_W(fwin), "_NET_WM_NAME",
-				 EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
+	val = ewmh_AtomGetByName(
+		FW_W(fwin), "_NET_WM_NAME",
+		EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
 	if (val == NULL)
 	{
@@ -202,16 +208,29 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 	}
 
 	tmp_str = (char *)FiconvUtf8ToCharset(
-					dpy, fc, (const char *) val, size);
+		dpy, fc, (const char *) val, size);
 	free(val);
 	if (tmp_str == NULL)
 	{
 		SET_HAS_EWMH_WM_NAME(fwin,0);
 		return 0;
 	}
+	if (strlen(tmp_str) > MAX_WINDOW_NAME_LEN)
+	{
+		tmp_str[MAX_WINDOW_NAME_LEN] = 0;
+	}
+	if (fwin->name.name && strcmp(tmp_str, fwin->name.name) == 0)
+	{
+		/* migo: some apps update their names every second */  
+		free(tmp_str);
+		return 0;
+	}
 
 	if (ev != NULL)
+	{
+		/* client message */
 		free_window_names(fwin, True, False);
+	}
 
 	fwin->name.name = tmp_str;
 	SET_HAS_EWMH_WM_NAME(fwin, 1);
@@ -221,22 +240,17 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 		return 1;
 	}
 
-	if (fwin->name.name && strlen(fwin->name.name) > MAX_WINDOW_NAME_LEN)
-	{
-		(fwin->name.name[MAX_WINDOW_NAME_LEN]) = 0;
-	}
-
 	setup_visible_name(fwin, False);
 	SET_NAME_CHANGED(fwin, 1);
 	EWMH_SetVisibleName(fwin, False);
 	BroadcastWindowIconNames(fwin, True, False);
 
 	/* fix the name in the title bar */
-	if(!IS_ICONIFIED(fwin))
+	if (!IS_ICONIFIED(fwin))
 	{
 		border_draw_decorations(
-		  fwin, PART_TITLE, (Scr.Hilite == fwin),
-		  True, CLEAR_ALL, NULL, NULL);
+			fwin, PART_TITLE, (Scr.Hilite == fwin),
+			True, CLEAR_ALL, NULL, NULL);
 	}
 
 	if (!WAS_ICON_NAME_PROVIDED(fwin))
