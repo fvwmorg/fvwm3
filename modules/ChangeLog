@@ -1,7 +1,12 @@
+2002-02-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/FvwmPager.c (list_focus):
+	fixed updating the window hilight colour sent by fvwm
+
 2002-02-03  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
-	Fixed a read descriptor problem 
+	Fixed a read descriptor problem
 
 2002-02-02  Dominik Vogt  <dominik.vogt@gmx.de>
 

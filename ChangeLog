@@ -1,3 +1,8 @@
+2002-02-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (apply_window_updates):
+	fixed propagation of window border and title colours to the modules
+
 2002-02-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (do_menu):

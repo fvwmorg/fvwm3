@@ -773,15 +773,24 @@ void list_focus(unsigned long *body)
   PagerWindow *t;
   Window target_w;
   extern Pixel focus_pix, focus_fore_pix;
-  target_w = body[0];
+  Bool do_force_update = False;
 
+  target_w = body[0];
   if (win_hi_pix_set)
   {
+    if (focus_pix != win_hi_back_pix || focus_fore_pix != win_hi_fore_pix)
+    {
+      do_force_update = True;
+    }
     focus_pix = win_hi_back_pix;
     focus_fore_pix = win_hi_fore_pix;
   }
   else
   {
+    if (focus_pix != body[4] || focus_fore_pix != body[3])
+    {
+      do_force_update = True;
+    }
     focus_pix = body[4];
     focus_fore_pix = body[3];
   }
@@ -790,12 +799,12 @@ void list_focus(unsigned long *body)
   {
     t = t->next;
   }
-  if(t != FocusWin)
+  if (t != FocusWin || do_force_update)
   {
-    if(FocusWin != NULL)
+    if (FocusWin != NULL)
       Hilight(FocusWin, False);
     FocusWin = t;
-    if(FocusWin != NULL)
+    if (FocusWin != NULL)
       Hilight(FocusWin, True);
   }
 }

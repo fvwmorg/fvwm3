@@ -260,12 +260,21 @@ static void apply_window_updates(
     if (focus_w != t)
       flags->do_redraw_decoration = True;
     update_window_color_style(t, pstyle);
+    if (t != Scr.Hilite)
+    {
+      flags->do_broadcast_focus = True;
+    }
   }
   if (flags->do_update_window_color_hi)
   {
     if (focus_w == t)
       flags->do_redraw_decoration = True;
     update_window_color_hi_style(t, pstyle);
+    flags->do_broadcast_focus = True;
+    if (t == Scr.Hilite)
+    {
+      flags->do_broadcast_focus = True;
+    }
   }
   if (flags->do_redraw_decoration)
   {
@@ -353,6 +362,16 @@ static void apply_window_updates(
   if (flags->do_update_ewmh_allowed_actions)
   {
     EWMH_SetAllowedActions(t);
+  }
+  if (flags->do_broadcast_focus)
+  {
+    if (Scr.Hilite != NULL && t == Scr.Hilite)
+    {
+fprintf(stderr,"fc broadcast 0x%08x '%s'\n", (int)Scr.Hilite, Scr.Hilite->name);
+      BroadcastPacket(
+	M_FOCUS_CHANGE, 5, Scr.Hilite->w, Scr.Hilite->frame, 0,
+	Scr.Hilite->hicolors.fore, Scr.Hilite->hicolors.back);
+    }
   }
   t->shade_anim_steps = pstyle->shade_anim_steps;
 

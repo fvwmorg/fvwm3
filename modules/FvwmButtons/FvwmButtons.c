@@ -1847,6 +1847,8 @@ static void HandlePanelPress(button_info *b)
   }
   else
   {
+    XWMHints wmhints;
+
     /* Make sure the icon is unmapped first. Needed to work properly with
      * shaded and iconified windows. */
     XWithdrawWindow(Dpy, b->PanelWin, screen);
@@ -1858,6 +1860,10 @@ static void HandlePanelPress(button_info *b)
     mysizehints.x = 32767;
     mysizehints.y = 32767;
     XSetWMNormalHints(Dpy, b->PanelWin, &mysizehints);
+    /* make sure its not mapped as an icon */
+    wmhints.flags = StateHint;
+    wmhints.initial_state = NormalState;
+    XSetWMHints(Dpy, b->PanelWin, &wmhints);
 
     /* map the window in the void */
     XMoveWindow(Dpy, b->PanelWin, 32767, 32767);
@@ -2409,7 +2415,7 @@ static void send_bg_change_to_module(button_info *b, XEvent *Event)
     Event->xconfigure.y = UberButton->y + by;
     Event->xconfigure.width = b->icon_w;
     Event->xconfigure.height = b->icon_h;
-    Event->xconfigure.window = SwallowedWindow(b);  
+    Event->xconfigure.window = SwallowedWindow(b);
     XSendEvent(Dpy, SwallowedWindow(b), False, NoEventMask, Event);
   }
   else
@@ -2476,13 +2482,13 @@ static void recursive_change_colorset(container_info *c, int colorset,
     }
     else  if (buttonColorset(b) > -1 &&
 	      Colorset[buttonColorset(b)].pixmap == ParentRelative &&
-	      (UberButton->c->flags & b_Colorset && 
+	      (UberButton->c->flags & b_Colorset &&
 	       colorset == UberButton->c->colorset))
     {
       bg_change = True;
     }
     else  if ((b->flags & b_Swallow) && (b->swallow & b_FvwmModule) &&
-	      (UberButton->c->flags & b_Colorset && 
+	      (UberButton->c->flags & b_Colorset &&
 	       colorset == UberButton->c->colorset))
     {
       /* swallowed module */
@@ -3116,7 +3122,7 @@ static void parse_title(char *line)
     CopyString(&b->title, line);
     RedrawButton(b, 2);
   }
-  return;  
+  return;
 }
 
 static char *message_options[] = {"Title", NULL};

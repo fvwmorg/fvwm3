@@ -18,6 +18,7 @@
 
 typedef struct
 {
+  unsigned do_broadcast_focus : 1;
   unsigned do_redecorate : 1;
   unsigned do_redecorate_transient : 1;
   unsigned do_redraw_decoration : 1;
