@@ -9,6 +9,9 @@
 	* fvwm/modconf.c (DestroyModConfig):
 	handle spaces propertly after DestroyModuleConfig with a new syntax
 
+	* libs/Picture.c (GetSimpleColor):
+	try to make "Cannot Parse Color " error message more meaningful
+
 2000-11-05  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: Add timestamping, my ModulePath.
