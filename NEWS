@@ -37,6 +37,8 @@ Changes in beta release 2.4.1 (not released yet)
   parents with the "BugOpts RaiseOverUnmanaged on".  This occured
   with the system.fvwm2rc-sample-95 configuration.
 
+* Fixed ClickToFocus focus policy when iconifying the focused window.
+
 * Fixed some focus problems in conjunction with unclutter vs xv/xmms
   and Open Look applications.
 

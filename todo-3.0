@@ -14,9 +14,10 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
  12) New option for FvwmIconMan to follow WinList order.
  13) Put tooltips and fix colorsets in FvwmIconMan.
  14) New style AutoHide (hide to closest edge on loss of focus).
- 15) Remove FvwmTaskBar (It's an AutoHiding FvwmButtons with FvwmIconMan).
- 15.5) Remove FvwmWinList (It's just FvwmIconMan).
- 15.5.5) Remove FvwmIconBox (It's just FvwmIconMan with some enhancements ???).
+ 15.1) Remove FvwmTaskBar (It's an AutoHiding FvwmButtons with FvwmIconMan).
+ 15.2) Remove FvwmWinList (It's just FvwmIconMan).
+ 15.3) Remove FvwmIconBox (It's just FvwmIconMan with some enhancements?).
+ 15.4) Remove FvwmWharf (It's just a stripped down FvwmButtons).
  16) Expand Style command to support name=pattern syntax.
      Style (Name "File *", Class XPaint, Resource *browser) NoIcon
  17) Add id-pattern to Style command.

@@ -18,7 +18,7 @@
 #include "xmanager.h"
 #include "readconfig.h"
 
-#define DEFAULT_MOUSE "0 N sendcommand Iconify"
+#define DEFAULT_MOUSE "0 N sendcommand \"Silent Iconify\""
 
 static char const rcsid[] =
   "$Id$";

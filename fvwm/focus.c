@@ -325,7 +325,7 @@ void restore_focus_after_unmap(
       {
 	if (t->w == tmp_win->transientfor &&
 	    t->Desk == tmp_win->Desk &&
-	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(tmp_win)))
+	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(t)))
 	{
 	  set_focus_to = t;
 	  break;
@@ -340,7 +340,7 @@ void restore_focus_after_unmap(
 	if (t->Desk == tmp_win->Desk &&
 	    !DO_SKIP_CIRCULATE(t) &&
 	    !(DO_SKIP_ICON_CIRCULATE(t) && IS_ICONIFIED(t)) &&
-	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(tmp_win)))
+	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(t)))
 	{
 	  /* If it is on a different desk we have to look for another window */
 	  set_focus_to = t;
