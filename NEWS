@@ -3,10 +3,13 @@ _+_A HREF="#2.4.14"_-_2.4.14_+_/A_-_.
 
 -------------------------------------------------------------------
 
-Changes in developement release 2.5.6 (not released yet)
+Changes in development release 2.5.6 (not released yet)
+
+* Fix for gmplayer launched by fvwm.  Close stdin on Exec so the
+  exex'd process knows its not running interactively.
 
 * Improvement in MultiPixmap.  In particular Colorset and Solid
-  colour can be specified.
+  color can be specified.
 
 * New ButtonStyle and TitleStyle style options AdjustedPixmap,
   StretchedPixmap and ShrunkPixmap.
@@ -14,7 +17,7 @@ Changes in developement release 2.5.6 (not released yet)
 * Use the MIT Shared Memory Extension for XImage.
 
 * The TitleStyle decor of a vertical window Title is rotated.
-  This is controlable using a new style option:
+  This is controllable using a new style option:
 
     !UseTitleDecorRotation / UseTitleDecorRotation
 
@@ -51,7 +54,7 @@ Changes in developement release 2.5.6 (not released yet)
 
 -------------------------------------------------------------------
 
-Changes in developement release 2.5.5 (2-Dec-2002)
+Changes in development release 2.5.5 (2-Dec-2002)
 
 * Added support for joining and shaping in bi-directional
   languages that need this.
@@ -74,7 +77,7 @@ Changes in developement release 2.5.5 (2-Dec-2002)
 
 * The MoveToPage command does nothing with sticky windows.
 
-* New module FvwmWindowLister, a WindowList subtitute.
+* New module FvwmWindowLister, a WindowList substitute.
 
 * Sticky windows can be sticky across pages, across desks or both.
   Related to this are:
@@ -106,7 +109,7 @@ Changes in developement release 2.5.5 (2-Dec-2002)
 
 Changes in alpha release 2.5.4 (20-Oct-2002)
 
-* FvwmTaskBar may now include mini launchbuttons using the Button
+* FvwmTaskBar may now include mini launch buttons using the Button
   command.  Also has new options for spacing the buttons:
   WindowButtonsLeftMargin, WindowButtonsRightMargin, and
   StartButtonRightMargin.  See man page for details.
@@ -195,7 +198,7 @@ Changes in alpha release 2.5.3 (25-Aug-2002)
 
 * Fixed interaction bug between CascadePlacement and StartsOnPage
   - if the target page was at a negative x or y page displacement
-  from the current viewport, the window would be placed on the
+  from the current view port, the window would be placed on the
   wrong page.
 
 * New Style option IconSize for restricting icon sizes.
@@ -213,11 +216,11 @@ Changes in alpha release 2.5.3 (25-Aug-2002)
 * Vastly improved FvwmEvent performance.
 
 * FvwmAuto can operate on Enter and Leave events too.  This makes
-  it possible to have autoraising with ClickToFocus and
+  it possible to have auto raising with ClickToFocus and
   NeverFocus. See -menter and -menterleave options and examples in
   the FvwmAuto man page.
 
-* The "hangon" strings in FvwmButtons support wildcards.
+* The "hangon" strings in FvwmButtons support wild cards.
 
 * New option "Icon" to PlaceAgain command.
 
@@ -369,7 +372,7 @@ Changes in alpha release 2.5.1 (26-Apr-2002)
 * The Current command does not select a random window when no
   window has the focus.
 
-* New colour '@4' (transparent) in button vectors.
+* New color '@4' (transparent) in button vectors.
 
 * New option "Frame" for the Resize and ResizeMove commands.
 
@@ -383,7 +386,7 @@ Changes in alpha release 2.5.1 (26-Apr-2002)
 * The DO_START_ICONIC flag is no longer supported in the module
   interface.
 
-* Added bi-directional text support for asian charsets.
+* Added bi-directional text support for Asian charsets.
 
 * New option MinimalLayer for FvwmIdent to control window layer.
 

@@ -2485,6 +2485,9 @@ void CMD_Exec(F_CMD_ARGS)
 
 	if (!(fork())) /* child process */
 	{
+		/* close stdin so the exec'd process knows its not
+		   interactive */
+	  	close(0);
 		if (fvwm_setpgrp() == -1)
 		{
 			fvwm_msg(ERR, "exec_function", "setpgrp failed (%s)",
