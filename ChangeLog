@@ -1,3 +1,11 @@
+1999-02-28  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* configure.in:
+	* INSTALL.fvwm: backed out of Sat Feb 27 12:49:23 1999 change.
+	Fvwm exports FVWM_MODULEDIR to the environment of subprocesses, so
+	running configure in an xterm will always pick up the current
+	module dir.
+
 1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* AUTHORS: fix the spelling of my name. 

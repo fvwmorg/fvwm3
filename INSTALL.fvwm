@@ -46,7 +46,8 @@ What gets installed, and Where
 
 * fvwm2 is installed into ${prefix}/bin
 * a couple of utilities (xpmroot, etc) are also installed in ${prefix}/bin
-* all the modules are installed into FVWM_MODULEDIR (${libexecdir}/fvwm/${VERSION})
+* all the modules (and extra modules) are installed
+  into ${libexecdir}/fvwm/${VERSION}
 
 Where VERSION is the version string of FVWM, typically something like
 "2.2.0".  No other files are installed.  There are sample
@@ -61,11 +62,7 @@ Unless you used configure options,
 
 Thus the default locations are: /usr/local/bin,
 /usr/local/libexec/fvwm/VERSION, and /usr/local/etc for the FVWM
-binary, modules, and system.fvwm2rc, respectively.  You can set
-FVWM_MODULEDIR and FVWM_CONFIGDIR at configure time by setting the
-corresponding environment variable, as in the following example:
-
-    FVWM_MODULEDIR=/special/place ./configure ...
+binary, modules, and system.fvwm2rc, respectively.
 
 Note that by default, none of the executables are stripped when they're
 installed.  If you'd like them to be, run `make install-strip' instead
@@ -81,8 +78,8 @@ Configuration File
 FVWM configures itself at runtime by reading one or more configuration
 files.  The default location for the system-wide configuration (named
 system.fvwm2rc) is /usr/local/etc; this may be changed by changing the
-prefix. or by setting sysconfdir or FVWM_CONFIGDIR explicitly.  This
-system-wide file is read only if the user's ~/.fvwm2rc is not found.
+prefix or setting sysconfdir explicitly.  This system-wide file is
+read only if the user's ~/.fvwm2rc is not found.
 
 Sample configuration files may be found in the sample.fvwm2rc
 directory.  To avoid clobbering the current configuration, no
