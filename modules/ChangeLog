@@ -1,3 +1,8 @@
+2001-04-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmButtons/parse.c (ParseContainer):
+	suppressed an incorrect error in parsing of "Colorset" option
+
 2001-04-15  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmWinList/FvwmWinList.c (main)

@@ -728,6 +728,7 @@ static void ParseContainer(char **ss,button_info *b)
 	b->c->colorset = i;
 	b->c->flags |= b_Colorset;
 	AllocColorset(i);
+	s = t;
       }
       else
       {
