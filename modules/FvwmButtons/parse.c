@@ -81,6 +81,28 @@ static char *seekright(char **s)
   return token;
 }
 
+static char *my_get_font(char **s)
+{
+  char *rest;
+  char *option;
+  int len;
+
+  *s = GetNextFullOption(*s, &option);
+  if (option)
+  {
+    for (len = strlen(option) - 1; len >= 0 && isspace(option[len]); len--)
+    {
+      /* remove trailing whitespace */
+      option[len] = 0;
+    }
+    for ( ; *option && isspace(*option); option++)
+    {
+      /* remove leading whitespace */
+    }
+  }
+  return option;
+}
+
 /**
 *** ParseBack()
 *** Parses the options possible to Back
@@ -326,7 +348,7 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
 
   char *positionopts[] =
   {
-    "button", "module", "root", "center", "left", "top", "right", 
+    "button", "module", "root", "center", "left", "top", "right",
     "bottom", "noplr", "noptb", "mlr", "mtb", NULL
   };
 
@@ -430,7 +452,7 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
       n = 0;
       *rela_x = *rela_y = 0;
       while(*s != ',' && *s != ')' && *s)
-      {    
+      {
 	s = trimleft(s);
 	/* get x and y offset */
 	if((*s>='0' && *s<='9') || *s=='+' || *s=='-')
@@ -490,7 +512,7 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
 	default:
 	  t=seekright(&s);
 	  s--;
-	  if (t) 
+	  if (t)
 	  {
 	    fprintf(stderr,"%s: Illegal Panel position option \"%s\"\n",MyName,
 		    (t)?t:"");
@@ -553,8 +575,13 @@ static void ParseContainer(char **ss,button_info *b)
       s=t;
       break;
     case 2: /* Font */
-      if (b->c->font_string) free(b->c->font_string);
+      if (b->c->font_string)
+        free(b->c->font_string);
+#if 0
       b->c->font_string=seekright(&s);
+#else
+      b->font_string = my_get_font(&s);
+#endif
       if(b->c->font_string)
       {
 	b->c->flags|=b_Font;
@@ -826,7 +853,11 @@ static void ParseButton(button_info **uberb,char *s)
       case 2: /* Font */
 	if(b->flags&b_Font && b->font_string)
 	  free(b->font_string);
+#if 0
 	b->font_string=seekright(&s);
+#else
+        b->font_string = my_get_font(&s);
+#endif
 	if(b->font_string)
 	{
 	  b->flags|=b_Font;
@@ -1266,7 +1297,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
     break;
   }
   case 2:/* Font */
-    CopyString(&ub->c->font_string,s);
+    CopyString(&ub->c->font_string, s);
     break;
   case 3:/* Padding */
     i=sscanf(s,"%d %d",&j,&k);
