@@ -1,3 +1,18 @@
+1999-08-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (HandleExpose):
+	(GetWindowColors):
+	(change_colorset): handle change of window foreground at run time with
+	colorsets
+
+	* FvwmPager/FvwmPager.c (list_colorset): use PeekToken instead of
+	GetNextToken
+	(NewPagerStringItem): initialise colorsets in desk specific settings
+	(ParseOptions): fixed several coredumps (accessing item->next->...
+	althought item is newly created and thus item->next == NULL)
+
+	* FvwmTheme/FvwmTheme.1: fixed typo
+
 1999-08-06  Hippo
 
 	* FvwmWinList/FvwmWinList.c: uses XTranslateCoordinates for positioning
@@ -9,8 +24,8 @@
 
 1999-08-05  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
-	* FvwmForm/FvwmForm.c: 
-	* FvwmForm/FvwmForm.h: moved colorset statics to .c file	
+	* FvwmForm/FvwmForm.c:
+	* FvwmForm/FvwmForm.h: moved colorset statics to .c file
 
 1999-08-04  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 

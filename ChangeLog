@@ -1,3 +1,10 @@
+1999-08-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/borders.c (SetShape): applied fix for ShapeNotify events on non
+	shaped windows by Owen Taylor (otaylor@redhat.com)
+
+	* fvwm/menus.c (OldMenuStyle): fixed quoting in old menu style syntax
+
 1999-08-06  Hippo
 
 	* fvwm/move_resize.c: Fixed interactive resize to not allow borders
@@ -8,14 +15,14 @@
 	* fvwm/fvwm2.1 (IgnoreModifiers): make it clear that the command
 	should appear before any bindings are made.
 
-	* libs/Bindings.c (GrabWindowButton): 
+	* libs/Bindings.c (GrabWindowButton):
 	(GrabWindowKey): fixed bindings with 'N'o modifiers and the
 	IgnoreModifiers command
 
 	* fvwm/add_window.c (AddWindow): fixed grabbing of buttons for
 	ClickToFocus and MouseFocusClickRaises
 
-	* libs/fvwmlib.h: 
+	* libs/fvwmlib.h:
 	* libs/Bindings.c (GrabWindowButton): made function global again
 
 1999-08-05  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
@@ -24,7 +31,7 @@
 
 	* libs/Makefile.am: ColorSets.h -> Colorset.h
 
-	* fvwm/events.c (HandleButtonRelease): 
+	* fvwm/events.c (HandleButtonRelease):
 	* fvwm/session.c (getUniqueStateFilename):
 	(LoadGlobalState):
 	removed unused variables

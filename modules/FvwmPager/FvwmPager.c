@@ -621,16 +621,15 @@ void list_configure(unsigned long *body)
       t->icon_w = cfgpacket->icon_w;
       t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
 
-
-        if ((win_fore_pix != -1) && (win_back_pix != -1))
+      if ((win_fore_pix != -1) && (win_back_pix != -1))
         {
-            t->text = win_fore_pix;
-            t->back = win_back_pix;
+	  t->text = win_fore_pix;
+	  t->back = win_back_pix;
         }
-        else
+      else
         {
-	      t->text = body[22];
-	      t->back = body[23];
+	  t->text = body[22];
+	  t->back = body[23];
         }
       if(IS_ICONIFIED(t))
 	{
@@ -724,19 +723,19 @@ void list_focus(unsigned long *body)
   }
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
-    {
-      t = t->next;
-    }
+  {
+    t = t->next;
+  }
   if(t != FocusWin)
-    {
-      temp = FocusWin;
-      FocusWin = t;
+  {
+    temp = FocusWin;
+    FocusWin = t;
 
-      if(temp != NULL)
-	Hilight(temp,False);
-      if(FocusWin != NULL)
-	Hilight(FocusWin,True);
-    }
+    if(temp != NULL)
+      Hilight(temp,False);
+    if(FocusWin != NULL)
+      Hilight(FocusWin,True);
+  }
 }
 
 /***********************************************************************
@@ -751,11 +750,11 @@ void list_new_page(unsigned long *body)
   Scr.Vy = (long)body[1];
   Scr.CurrentDesk = (long)body[2];
   if((Scr.VxMax != body[3])||(Scr.VyMax != body[4]))
-    {
-      Scr.VxMax = body[3];
-      Scr.VyMax = body[4];
-      ReConfigure();
-    }
+  {
+    Scr.VxMax = body[3];
+    Scr.VyMax = body[4];
+    ReConfigure();
+  }
   MovePage();
   MoveStickyWindows();
   Hilight(FocusWin,False);
@@ -1204,12 +1203,11 @@ void list_colorset(unsigned long *body)
   int color;
 
   tline = (char*)&(body[3]);
-  tline = GetNextToken(tline, &token);
+  token = PeekToken(tline, &tline);
   if (StrEquals(token, "Colorset")) {
     color = LoadColorset(tline);
     change_colorset(color);
   }
-  free(token);
 }
 
 
@@ -1335,30 +1333,30 @@ void ParseOptions(void)
 	}
 	continue;
       }
-    else if(StrEquals(token, "Colorset"))
-    {
+      else if(StrEquals(token, "Colorset"))
+      {
         LoadColorset(next);
-	      continue;
-    }
+	continue;
+      }
 
       tline2 = GetModuleResource(tline, &resource, MyName);
       if (!resource)
         continue;
       tline2 = GetNextToken(tline2, &arg1);
       if (!arg1)
-	{
-	  arg1 = (char *)safemalloc(1);
-	  arg1[0] = 0;
-	}
+      {
+	arg1 = (char *)safemalloc(1);
+	arg1[0] = 0;
+      }
       tline2 = GetNextToken(tline2, &arg2);
       if (!arg2)
-	{
-	  arg2 = (char *)safemalloc(1);
-	  arg2[0] = 0;
-	}
+      {
+	arg2 = (char *)safemalloc(1);
+	arg2[0] = 0;
+      }
 
       if(StrEquals(resource,"Colorset"))
-  {
+	{
 	  if (StrEquals(arg1, "*"))
 	    {
 	      desk = Scr.CurrentDesk;
@@ -1374,27 +1372,27 @@ void ParseOptions(void)
 
 	      item = FindDeskStrings(desk);
 	      if (item->next != NULL)
-		    {
-          sscanf(arg2,"%d",&item->next->colorset);
-		    }
+		{
+		  sscanf(arg2,"%d",&item->next->colorset);
+		}
 	      else
-		    {
-		      /* new Dcolor and desktop */
-		      item = NewPagerStringItem(item, desk);
-          sscanf(arg2,"%d",&item->next->colorset);
-		    }
-	          if (desk == Scr.CurrentDesk)
-		    {
-          sscanf(arg2,"%d",&Desks[0].colorset);
-		    }
+		{
+		  /* new Dcolor and desktop */
+		  item = NewPagerStringItem(item, desk);
+		  sscanf(arg2, "%d", &item->colorset);
+		}
+	      if (desk == Scr.CurrentDesk)
+		{
+		  sscanf(arg2,"%d",&Desks[0].colorset);
+		}
 	    }
 	  else if((desk >= desk1)&&(desk <=desk2))
 	    {
-        sscanf(arg2,"%d",&Desks[desk - desk1].colorset);
+	      sscanf(arg2,"%d",&Desks[desk - desk1].colorset);
 	    }
-  }
-            else if(StrEquals(resource,"BalloonColorset"))
-  {
+	}
+      else if(StrEquals(resource,"BalloonColorset"))
+	{
 	  if (StrEquals(arg1, "*"))
 	    {
 	      desk = Scr.CurrentDesk;
@@ -1410,27 +1408,27 @@ void ParseOptions(void)
 
 	      item = FindDeskStrings(desk);
 	      if (item->next != NULL)
-		    {
-          sscanf(arg2,"%d",&item->next->ballooncolorset);
-		    }
+		{
+		  sscanf(arg2,"%d",&item->next->ballooncolorset);
+		}
 	      else
-		    {
-		      /* new Dcolor and desktop */
-		      item = NewPagerStringItem(item, desk);
-          sscanf(arg2,"%d",&item->next->ballooncolorset);
-		    }
-	          if (desk == Scr.CurrentDesk)
-		    {
-          sscanf(arg2,"%d",&Desks[0].ballooncolorset);
-		    }
+		{
+		  /* new Dcolor and desktop */
+		  item = NewPagerStringItem(item, desk);
+		  sscanf(arg2,"%d",&item->ballooncolorset);
+		}
+	      if (desk == Scr.CurrentDesk)
+		{
+		  sscanf(arg2,"%d",&Desks[0].ballooncolorset);
+		}
 	    }
 	  else if((desk >= desk1)&&(desk <=desk2))
 	    {
-        sscanf(arg2,"%d",&Desks[desk - desk1].ballooncolorset);
+	      sscanf(arg2,"%d",&Desks[desk - desk1].ballooncolorset);
 	    }
-  }
-                  else if(StrEquals(resource,"HilightColorset"))
-  {
+	}
+      else if(StrEquals(resource,"HilightColorset"))
+	{
 	  if (StrEquals(arg1, "*"))
 	    {
 	      desk = Scr.CurrentDesk;
@@ -1446,25 +1444,25 @@ void ParseOptions(void)
 
 	      item = FindDeskStrings(desk);
 	      if (item->next != NULL)
-		    {
-          sscanf(arg2,"%d",&item->next->highcolorset);
-		    }
+		{
+		  sscanf(arg2,"%d",&item->next->highcolorset);
+		}
 	      else
-		    {
-		      /* new Dcolor and desktop */
-		      item = NewPagerStringItem(item, desk);
-          sscanf(arg2,"%d",&item->next->highcolorset);
-		    }
-	          if (desk == Scr.CurrentDesk)
-		    {
-          sscanf(arg2,"%d",&Desks[0].highcolorset);
-		    }
+		{
+		  /* new Dcolor and desktop */
+		  item = NewPagerStringItem(item, desk);
+		  sscanf(arg2,"%d",&item->highcolorset);
+		}
+	      if (desk == Scr.CurrentDesk)
+		{
+		  sscanf(arg2,"%d",&Desks[0].highcolorset);
+		}
 	    }
 	  else if((desk >= desk1)&&(desk <=desk2))
 	    {
-        sscanf(arg2,"%d",&Desks[desk - desk1].highcolorset);
+	      sscanf(arg2,"%d",&Desks[desk - desk1].highcolorset);
 	    }
-  }
+	}
       else if (StrEquals(resource, "Geometry"))
 	{
 	  flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
@@ -1948,6 +1946,9 @@ PagerStringList *NewPagerStringItem(PagerStringList *last, int desk)
 
   newitem = (PagerStringList *)safemalloc(sizeof(PagerStringList));
   last->next = newitem;
+  newitem->colorset = -1;
+  newitem->highcolorset = -1;
+  newitem->ballooncolorset = -1;
   newitem->desk = desk;
   newitem->next = NULL;
   newitem->label = NULL;

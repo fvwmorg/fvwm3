@@ -1,3 +1,8 @@
+1999-08-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FAQ (6.1): Added hint on how to bind keys for page or desk flipping
+	as suggested by Paul E. Johnson.
+
 1999-08-01  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FAQ (3.15): Corrected hint to work on current page
@@ -9,10 +14,12 @@ Sun Jul 11 10:42:20 1999  DanEspen  <dje@blue>
 	an additional read directory ($FVWMRCDIR or $FVWMHOME or something
  	similiar)?"  (Its done.)
 	"Add better overall icon handling options?"
-	(I can only guess what it meant, but I think the default box covers it.)
+	(I can only guess what it meant, but I think the default box covers
+	it.)
 	"Support for passwords in FvwmForm"
 	You can set the fg/bg color on a field by field basis.
-	"Fix line spacing in FvwmForm for lines that have only text (no buttons)
+	"Fix line spacing in FvwmForm for lines that have only text (no
+	buttons)
 	so that FvwmForm can be used as a "Help" form."
 	Done.
 	"Run profiling on FVWM to see if I can speed it up any more"

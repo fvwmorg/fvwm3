@@ -5708,6 +5708,7 @@ static void OldMenuStyle(F_CMD_ARGS)
   rest = GetNextToken(rest,&style);
   rest = GetNextToken(rest,&animated);
 
+fprintf(stderr,"fore='%s' back='%s' grey='%s' font='%s' style='%s'\n", fore,back,stipple,font,style);
   if(!fore || !back || !stipple || !font || !style)
   {
     fvwm_msg(ERR,"OldMenuStyle", "error in %s style specification", action);
@@ -5718,9 +5719,9 @@ static void OldMenuStyle(F_CMD_ARGS)
     sprintf(buffer,
 #ifdef I18N_MB
 	    /* looks funny, but font will be a,b,c; should be quoted */
-	    "* %s, Foreground %s, Background %s, Greyed %s, Font \"%s\", %s",
+	    "* \"%s\", Foreground \"%s\", Background \"%s\", Greyed \"%s\", Font \"%s\", \"%s\"",
 #else
-	    "* %s, Foreground %s, Background %s, Greyed %s, Font %s, %s",
+	    "* \"%s\", Foreground \"%s\", Background \"%s\", Greyed \"%s\", Font \"%s\", \"%s\"",
 #endif
 	    style, fore, back, stipple, font,
 	    (animated && StrEquals(animated, "anim")) ?

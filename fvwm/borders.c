@@ -1386,25 +1386,31 @@ void SetShape(FvwmWindow *tmp_win, int w)
 #ifdef SHAPE
   if (ShapesSupported)
   {
-    XRectangle rect;
-
-    XShapeCombineShape (dpy, tmp_win->frame, ShapeBounding,
-                        tmp_win->boundary_width,
-                        tmp_win->title_g.height+tmp_win->boundary_width,
-                        tmp_win->w,
-                        ShapeBounding, ShapeSet);
-    if (tmp_win->title_w)
+    if (tmp_win->wShaped)
     {
-      /* windows w/ titles */
-      rect.x = tmp_win->boundary_width;
-      rect.y = tmp_win->title_g.y;
-      rect.width = w - 2*tmp_win->boundary_width;
-      rect.height = tmp_win->title_g.height;
+      XRectangle rect;
 
-
-      XShapeCombineRectangles(dpy,tmp_win->frame,ShapeBounding,
-                              0,0,&rect,1,ShapeUnion,Unsorted);
+      XShapeCombineShape (dpy, tmp_win->frame, ShapeBounding,
+			  tmp_win->boundary_width,
+			  tmp_win->title_g.height+tmp_win->boundary_width,
+			  tmp_win->w,
+			  ShapeBounding, ShapeSet);
+      if (tmp_win->title_w)
+	{
+	  /* windows w/ titles */
+	  rect.x = tmp_win->boundary_width;
+	  rect.y = tmp_win->title_g.y;
+	  rect.width = w - 2*tmp_win->boundary_width;
+	  rect.height = tmp_win->title_g.height;
+	  
+	  
+	  XShapeCombineRectangles(dpy,tmp_win->frame,ShapeBounding,
+				  0,0,&rect,1,ShapeUnion,Unsorted);
+	}
     }
+    else
+      XShapeCombineMask (dpy, tmp_win->frame, ShapeBounding,
+			 0, 0, None, ShapeSet);
   }
 #endif
 }

@@ -184,7 +184,7 @@ int main ( int argc, char *argv[]) {
 
   if ((Frun = fopen (Fr_name,"r" )) !=NULL) {
     if (fgets (cmd, 20, Frun) != NULL) {
-      fprintf (stderr, "\nFvwmCommand lock file  %sR is detected. "
+      fprintf (stderr, "\nFvwmCommand lock file %sR is detected. "
 	       "This may indicate another FvwmCommand is running. "
 	       "It appears to be running under process ID:\n%s\n",
 	       f_stem, cmd );

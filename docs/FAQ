@@ -40,7 +40,7 @@ Contents
 3. Features, Configuration, Functions & Commands
 
      3.1  I use FVWM on a RedHat Linux system and can't figure out how to
-          change my FVWM configuration.  I've read the FVWM manpage but when
+          change my FVWM configuration.  I've read the FVWM man page but when
           I edit my .fvwm2rc nothing seems to happen.  What's going on ?
      3.2  Is it possible to raise a window when I click into the
           window itself, not just the border?
@@ -342,7 +342,7 @@ A: Very easily, using the '--prefix' flag at configure time.
    fvwm2 sources, do "./configure --prefix=/home/sam [other options as
    needed]'.  Now, after building ("make") and installing ("make
    install"), you will find the binaries in /home/sam/bin, the
-   manpages in /home/sam/man, etc.  The modules will be in
+   man pages in /home/sam/man, etc.  The modules will be in
    /home/sam/libexec, and fvwm2 binary will have this module path
    built in.
 
@@ -469,7 +469,7 @@ A: This could be probably done similarly to Q2.5 above.  The system rc
 ======================================================================
 
 3.1  I use FVWM on a RedHat Linux system and can't figure out how to
-     change my FVWM configuration.  I've read the FVWM manpage but when
+     change my FVWM configuration.  I've read the FVWM man page but when
      I edit my .fvwm2rc nothing seems to happen.  What's going on?
 
 A: RedHat Linux installs the X server accompanied (by default) by a
@@ -863,7 +863,7 @@ A: Start with a new one or convert your old one.  This can be done by
    SnapGrid
    +
    (more functions are being added from time to time, so please check
-    the manpage too).
+    the man page too).
 
 ----------------------------------------------------------------------
 
@@ -1225,7 +1225,7 @@ A: Because they are treated as modifiers. You can use the
      xmodmap -e "add Mod2 = Num_Lock"
      xmodmap -e "add Mod5 = Scroll_Lock"
 
-   Please refer to the manpage of the xmodmap command for further
+   Please refer to the man page of the xmodmap command for further
    details.
 
 ----------------------------------------------------------------------
@@ -1354,6 +1354,37 @@ A: Our naming convention is sometimes a source of confusion, and when
    It shows two 2 x 2 DESKTOPS.  If the current DESK were number 0,
    and the current PAGE were 0 1, the SCREEN would show only the
    windows located there, plus any sticky ones.
+
+   Desktops are numbered consecutively, beginning with 0. The user is
+   not responsible for creating new desktops, those details are
+   handled inside fvwm.  To display the different desktops, the user
+   can configure keybindings that determine which desktop is
+   displayed.  For example, to have the combinations Meta-1 to Meta-4
+   display desktop numbers 0 to 3, one would add this to .fvwm2rc:
+
+     Key 1 A M GotoDesk 0
+     Key 2 A M GotoDesk 1
+     Key 3 A M GotoDesk 2
+     Key 4 A M GotoDesk 3
+
+   The same can be done for pages.  For example, if each desktop has
+   a size of 2 by to pages you could bind Meta-F1 to Meta-F4 to
+   flip pages:
+
+     DeskTopSize 2x2
+     Key F1 A M GotoPage 0 0
+     Key F2 A M GotoPage 1 0
+     Key F3 A M GotoPage 0 1
+     Key F4 A M GotoPage 1 1
+
+   It is also a good idea to create a pager that displays several
+   desktops, side by side. This command displays the first 4 desktops:
+
+     Module FvwmPager 0 3
+
+   Or if you prefer to see only the current desktop in the pager:
+
+     Module FvwmPager * *
 
 ----------------------------------------------------------------------
 
@@ -1556,7 +1587,7 @@ A: This has come up a few times, so I thought I'd put it here too.
 
    You can place menus anywhere you like, not just where the mouse
    pointer is.  Please read the section for the 'Menu' command in the
-   manpage.
+   man page.
 
 ----------------------------------------------------------------------
 

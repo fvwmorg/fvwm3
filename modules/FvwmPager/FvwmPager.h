@@ -202,7 +202,7 @@ void PictureIconWindow(PagerWindow *t);
 void ReConfigureIcons(void);
 void IconSwitchPage(XEvent *Event);
 void IconMoveWindow(XEvent *Event,PagerWindow *t);
-void HandleExpose(XEvent *Event);
+void HandleExpose(XEvent *Event, Bool redraw_subwindows);
 void MoveStickyWindows(void);
 void MapBalloonWindow(XEvent *);
 void UnmapBalloonWindow();
