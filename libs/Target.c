@@ -207,3 +207,39 @@ void fvwmlib_get_target_window(
 
   return;
 }
+
+Window fvwmlib_client_window(Display *dpy, Window input)
+{
+  Atom _XA_WM_STATE;
+  unsigned int nchildren;
+  Window root, parent, *children,target;
+  unsigned long nitems, bytesafter;
+  unsigned char *prop;
+  Atom atype;
+  int aformat;
+  int i;
+
+  _XA_WM_STATE = XInternAtom (dpy, "WM_STATE", False);
+
+  if (XGetWindowProperty(dpy, input, _XA_WM_STATE , 0L, 3L , False,
+			 _XA_WM_STATE, &atype, &aformat, &nitems, &bytesafter,
+			 &prop) == Success) {
+    if(prop != NULL) {
+      XFree(prop);
+      return input;
+    }
+  }
+
+  if (!XQueryTree(dpy, input, &root, &parent, &children, &nchildren))
+    return None;
+
+  for (i = 0; i < nchildren; i++) {
+    target = fvwmlib_client_window(dpy, children[i]);
+    if(target != None) {
+      XFree((char *)children);
+      return target;
+    }
+  }
+  XFree((char *)children);
+  return None;
+}

@@ -14,10 +14,7 @@
  */
 
 #include <stdio.h>
-#include <X11/Intrinsic.h>
-#include <X11/Xatom.h>
-#include <X11/Xmu/Xmu.h>
-#include <X11/Xmu/WinUtil.h>
+#include "libs/fvwmlib.h"
 #include "dragSource.h"
 #include "cursorStuff.h"
 #include "fvwmDragWell.h"
@@ -348,7 +345,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 
 	if (child_return != None) {
 	  /* get new client window if not on root window.*/
-	  ds->dropTargWin = XmuClientWindow(ds->display,child_return);
+	  ds->dropTargWin = fvwmlib_client_window(ds->display, child_return);
 
 	  /*Setup new drag if XDndAware*/
 	  if (xdndSrcQueryDndAware (ds, ds->dropTargWin, &version, NULL)) {

@@ -1,3 +1,7 @@
+1999-11-04  Hippo
+
+	* FvwmScroll/*.c, FvwmDragWell/*.c: use fvwmlib_client_window()
+
 1999-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/xmanager.c (get_gcs):

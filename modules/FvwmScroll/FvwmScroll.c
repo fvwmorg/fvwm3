@@ -218,61 +218,7 @@ void GetTargetWindow(Window *app_win)
   Window target_win;
 
   fvwmlib_get_target_window(dpy, screen, MyName, app_win, True);
-  target_win = ClientWindow(*app_win);
+  target_win = fvwmlib_client_window(dpy, *app_win);
   if(target_win != None)
     *app_win = target_win;
-}
-
-
-void nocolor(char *a, char *b)
-{
-  fprintf(stderr,"FvwmScroll: can't %s %s\n", a,b);
-}
-
-
-
-/****************************************************************************
- *
- * Find the actual application
- *
- ***************************************************************************/
-Window ClientWindow(Window input)
-{
-  Atom _XA_WM_STATE;
-  unsigned int nchildren;
-  Window root, parent, *children,target;
-  unsigned long nitems, bytesafter;
-  unsigned char *prop;
-  Atom atype;
-  int aformat;
-  int i;
-
-  _XA_WM_STATE = XInternAtom (dpy, "WM_STATE", False);
-
-  if (XGetWindowProperty (dpy,input, _XA_WM_STATE , 0L,
-			  3L , False, _XA_WM_STATE,&atype,
-			  &aformat, &nitems, &bytesafter,
-			  &prop) == Success)
-    {
-      if(prop != NULL)
-	{
-	  XFree(prop);
-	  return input;
-	}
-    }
-
-  if(!XQueryTree(dpy, input, &root, &parent, &children, &nchildren))
-    return None;
-
-  for (i = 0; i < nchildren; i++)
-    {
-      target = ClientWindow(children[i]);
-      if(target != None)
-	{
-	  XFree((char *)children);
-	  return target;
-	}
-    }
-  XFree((char *)children);
-  return None;
 }

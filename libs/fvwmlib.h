@@ -405,4 +405,5 @@ void fvwmlib_get_target_window(
     Display *dpy, int screen, char *MyName, Window *app_win,
     Bool return_subwindow);
 
+Window fvwmlib_client_window(Display *dpy, Window input);
 #endif

@@ -1,3 +1,8 @@
+1999-11-04  Hippo
+
+	* libs/Target.c: new function fvwmlib_client_window() to replace
+	XMUClientWindow()
+
 1999-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (...):

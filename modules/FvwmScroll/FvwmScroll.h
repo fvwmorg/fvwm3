@@ -26,8 +26,6 @@ extern int ScreenWidth, ScreenHeight;
 char *safemalloc(int length);
 void DeadPipe(int nonsense);
 void GetTargetWindow(Window *app_win);
-void nocolor(char *a, char *b);
-Window ClientWindow(Window input);
 void get_graphics(char *line);
 
 void CreateWindow(int x, int y,int w, int h);
