@@ -457,20 +457,18 @@ static void restack_windows(
 
 	if (count <= 0)
 	{
-		FvwmWindow *prev;
-
-		for (t = r, prev = NULL; prev != s; prev = t, t = t->stack_next)
+		for (count = 0, t = r->stack_next; t != s; t = t->stack_next)
 		{
 			count++;
 			count += get_visible_icon_window_count(t);
 		}
 	}
 	/* restack the windows between r and s */
-	wins = (Window*) safemalloc (count * sizeof (Window));
+	wins = (Window*) safemalloc ((count + 3) * sizeof (Window));
 	i = 0;
 	for (t = r->stack_next; t != s; t = t->stack_next)
 	{
-		if (i >= count)
+		if (i > count)
 		{
 			fvwm_msg(
 				ERR, "restack_windows",
@@ -480,30 +478,30 @@ static void restack_windows(
 		wins[i++] = FW_W_FRAME(t);
 		if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
 		{
-			if(FW_W_ICON_TITLE(t) != None)
+			if (FW_W_ICON_TITLE(t) != None)
 			{
 				wins[i++] = FW_W_ICON_TITLE(t);
 			}
-			if(FW_W_ICON_PIXMAP(t) != None)
+			if (FW_W_ICON_PIXMAP(t) != None)
 			{
 				wins[i++] = FW_W_ICON_PIXMAP(t);
 			}
 		}
 	}
 
-	changes.sibling = (do_lower) ? FW_W_FRAME(r) : FW_W_FRAME(s);
-	if (changes.sibling != None)
+	changes.sibling = FW_W_FRAME(r);
+	if (changes.sibling == None)
 	{
 		changes.stack_mode = (do_lower) ? Below : Above;
-		flags = CWSibling|CWStackMode;
+		flags = CWStackMode;
 	}
 	else
 	{
-		changes.stack_mode = (do_lower) ? Above : Below;
-		flags = CWStackMode;
+		changes.stack_mode = Below;
+		flags = CWStackMode | CWSibling;
 	}
-	XConfigureWindow (dpy, FW_W_FRAME(r->stack_next), flags, &changes);
-	XRestackWindows (dpy, wins, count);
+	XConfigureWindow(dpy, FW_W_FRAME(r->stack_next), flags, &changes);
+	XRestackWindows(dpy, wins, count);
 	free(wins);
 	EWMH_SetClientListStacking();
 	if (do_broadcast_all)
@@ -587,9 +585,7 @@ static Bool __restack_window(
 	/* detach t, so it doesn't make trouble in the loops */
 	remove_window_from_stack_ring(t);
 
-	count = 1;
-	count += get_visible_icon_window_count(t);
-
+	count = 0;
 	if (do_restack_transients)
 	{
 		/* collect the transients in a temp list */
@@ -601,8 +597,8 @@ static Bool __restack_window(
 		{
 			do_restack_transients = False;
 		}
-		count++;
 	}
+	count += 1 + get_visible_icon_window_count(t);
 
 	test_layer = t->layer;
 	if (do_lower)

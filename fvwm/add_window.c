@@ -1246,20 +1246,23 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 static void destroy_icon(FvwmWindow *fw)
 {
 	free_window_names(fw, False, True);
+	if (IS_PIXMAP_OURS(fw))
+	{
+		XFreePixmap(dpy, fw->iconPixmap);
+		fw->iconPixmap = None;
+		if (fw->icon_maskPixmap != None)
+		{
+			XFreePixmap(dpy, fw->icon_maskPixmap);
+			fw->icon_maskPixmap = None;
+		}
+		if (fw->icon_alphaPixmap != None)
+		{
+			XFreePixmap(dpy, fw->icon_alphaPixmap);
+			fw->icon_alphaPixmap = None;
+		}
+	}
 	if (FW_W_ICON_TITLE(fw))
 	{
-		if (IS_PIXMAP_OURS(fw))
-		{
-			XFreePixmap(dpy, fw->iconPixmap);
-			if (fw->icon_maskPixmap != None)
-			{
-				XFreePixmap(dpy, fw->icon_maskPixmap);
-			}
-			if (fw->icon_alphaPixmap != None)
-			{
-				XFreePixmap(dpy, fw->icon_alphaPixmap);
-			}
-		}
 		XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
 		XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);
 		XFlush(dpy);

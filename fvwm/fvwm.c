@@ -1604,6 +1604,7 @@ int main(int argc, char **argv)
 
 	DBUG("main", "Entered, about to parse args");
 
+	memset(&Scr, 0, sizeof(Scr));
 	/* for use on restart */
 	g_argv = (char **)safemalloc((argc + 4) * sizeof(char *));
 	g_argc = argc;
@@ -2050,7 +2051,7 @@ int main(int argc, char **argv)
 		int num, i;
 
 		Pdepth = 0;
-		
+
 		/* Detection of a card with 2 hardware colormaps (8+24) which use
 		 * depth 8 for the default. We can use our own depth 24 cmap
 		 * without affecting other applications. */
@@ -2060,7 +2061,7 @@ int main(int argc, char **argv)
 		{
 			XVisualInfo template, *vizinfo;
 			int total;
-				
+
 			template.screen = Scr.screen;
 			template.class = TrueColor;
 			vizinfo = XGetVisualInfo(
