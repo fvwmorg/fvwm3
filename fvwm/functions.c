@@ -106,6 +106,21 @@ static void execute_complex_function(
 
 /* ---------------------------- local functions ----------------------------- */
 
+static int __context_has_window(
+	const exec_context_t *exc, execute_flags_t flags)
+{
+	if (exc->w.fw != NULL)
+	{
+		return 1;
+	}
+	else if ((flags & FUNC_ALLOW_UNMANAGED) && exc->w.w != None)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 /***********************************************************************
  *
  *  Procedure:
@@ -596,6 +611,15 @@ static void __execute_function(
 					exc->x.elast->type,
 					(bif->flags & FUNC_ALLOW_UNMANAGED));
 			}
+			else if ((bif->flags & FUNC_NEEDS_WINDOW) &&
+				 !__context_has_window(
+					 exc,
+					 bif->flags & FUNC_ALLOW_UNMANAGED))
+			{
+				/* no context window and not allowed to defer,
+				 * skip command */
+				rc = True;
+			}
 			if (rc == False)
 			{
 				exc2 = exc_clone_context(exc, &ecc, mask);
@@ -774,7 +798,8 @@ static void __run_complex_function_items(
 	char c;
 	FunctionItem *fi;
 
-	for (fi = func->first_item; fi != NULL && *cond_func_rc != COND_RC_BREAK; )
+	for (fi = func->first_item;
+	     fi != NULL && *cond_func_rc != COND_RC_BREAK; )
 	{
 		/* make lower case */
 		c = fi->condition;

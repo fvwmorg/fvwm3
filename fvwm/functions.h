@@ -24,7 +24,7 @@
 /* ---------------------------- global definitions -------------------------- */
 
 /* Bits for the function flag byte. */
-enum
+typedef enum
 {
 	FUNC_NEEDS_WINDOW        = 0x01,
 	FUNC_DONT_REPEAT         = 0x02,
@@ -35,7 +35,7 @@ enum
 	FUNC_IS_UNMANAGED        = 0x20,
 	FUNC_DONT_EXPAND_COMMAND = 0x40,
 	FUNC_DONT_DEFER          = 0x80
-};
+} execute_flags_t;
 
 /* ---------------------------- global macros ------------------------------- */
 

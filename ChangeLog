@@ -1,3 +1,11 @@
+2003-05-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (__context_has_window):
+	(__execute_function):
+	* fvwm/functions.h:
+	fixed excution of functions requiring a window without a window when
+	called with "silent" from a complex function
+
 2003-05-07  olicha  <olivier.chapuis@free.fr>
 
 	* libs/System.c (searchPath):
