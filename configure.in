@@ -374,25 +374,37 @@ AC_CHECK_LIB(X11, _Xsetlocale, AC_DEFINE(X_LOCALE),, $X_LIBS -lX11)
 
 dnl ******** iconv
 found_iconv=no
-AC_CHECK_FUNC(iconv_open, found_iconv=yes)
+found_lib_iconv=no
+found_sys_iconv=no
 
-if test "x$found_iconv" != "xyes"; then
-   # Check for libiconv
-   $UNSET ac_cv_header_libiconv_h
-   $UNSET ac_cv_lib_libiconv_libiconv_open
-   smr_CHECK_LIB(iconv, ,if no C implementation is found,
-       libiconv_open, iconv.h)
-   if test "x$iconv_LIBS" != "x"; then
-      AC_DEFINE(USE_LIBICONV)
-      found_iconv=yes
-   fi
+dnl * first check for gnu libiconv, hum ...
+$UNSET ac_cv_header_libiconv_h
+$UNSET ac_cv_lib_libiconv_libiconv_open
+smr_CHECK_LIB(iconv, ,if not found sys iconv is used,
+              libiconv_open, iconv.h)
+if test "x$iconv_LIBS" != "x"; then
+   AC_DEFINE(USE_LIBICONV)
+   found_lib_iconv=yes
 fi
 AC_SUBST(iconv_LIBS)
 AC_SUBST(iconv_CFLAGS)
 
+dnl * check for system iconv
+AC_CHECK_FUNC(iconv_open, found_sys_iconv=yes)
+
+if test "x$found_lib_iconv" = "xyes" -a "x$found_sys_iconv" = "xyes"; then
+   AC_MSG_WARN([***  Both system iconv and libiconv found: use libiconv])
+   AC_MSG_WARN([***  Use --with-iconv-library=no to use the system iconv])
+fi
+
+if test "x$found_lib_iconv" = "xyes" -o "x$found_sys_iconv" = "xyes"; then
+   found_iconv=yes
+fi
+
 if test "x$found_iconv" = "xno" -a "x$with_ewmh" = "xyes"; then
    AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv (for extended WM hints)])
 fi
+
 if test "x$found_iconv" = "xyes"; then
    AC_DEFINE(HAVE_ICONV)
    ICONV_SECOND_ARG
