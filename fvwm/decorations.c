@@ -454,125 +454,91 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
 ** check_allowed_function2 partially overlapping in their checks, so I
 ** combined them here and made them wrapper functions instead.
 */
-static int check_if_function_allowed(int function,
-                                     FvwmWindow *t,
-                                     MenuItem *mi)
+int check_if_function_allowed(int function, FvwmWindow *t,
+			      Bool override_allowed, char *menu_string)
 {
-  if (t) /* should always be ok */
+  if (!t)
+    return 1;
+
+  if (override_allowed && t->flags & HintOverride)
+    return 1;
+
+  switch(function)
   {
-    if (!mi) /* no menu item, must be exec check, so allow overrides */
-    {
-      if(t->flags & HintOverride)
-        return 1;
-    }
-
-    switch(function)
-    {
-      case F_DELETE:
-        if (!(t->flags & DoesWmDeleteWindow))
-          return 0;
-        /* fall through to close clause */
-      case F_CLOSE:
-        if (!(t->functions & MWM_FUNC_CLOSE))
-          return 0;
-        break;
-      case F_DESTROY: /* shouldn't destroy always be allowed??? */
-        if (!(t->functions & MWM_FUNC_CLOSE))
-          return 0;
-        break;
-      case F_RESIZE:
-        if (!(t->functions & MWM_FUNC_RESIZE))
-          return 0;
-        break;
-      case F_ICONIFY:
-        if ((!(t->flags & ICONIFIED))&&
-            (!(t->functions & MWM_FUNC_MINIMIZE)))
-          return 0;
-        break;
-      case F_MAXIMIZE:
-        if (!(t->functions & MWM_FUNC_MAXIMIZE))
-          return 0;
-        break;
-      case F_MOVE:
-        /* Move is a funny hint. Keeps it out of the menu, but you're
-         * still allowed to move. */
-        if((!(t->functions & MWM_FUNC_MOVE))&&mi)
-          return 0;
-        break;
-      case F_FUNCTION:
-        /* Hard part! What to do now? */
-        /* Hate to do it, but for lack of a better idea,
-         * check based on the menu entry name */
-        /* Complex functions are a little tricky, ignore them if no menu item*/
-        if (mi && mi->item)
-        {
-          if((!(t->functions & MWM_FUNC_MOVE))&&
-             (StrEquals(mi->item,MOVE_STRING)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_RESIZE))&&
-             (StrEquals(mi->item,RESIZE_STRING1)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_RESIZE))&&
-             (StrEquals(mi->item,RESIZE_STRING2)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_MINIMIZE))&&
-             (!(t->flags & ICONIFIED))&&
-             (StrEquals(mi->item,MINIMIZE_STRING)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_MINIMIZE))&&
-             (StrEquals(mi->item,MINIMIZE_STRING2)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_MAXIMIZE))&&
-             (StrEquals(mi->item,MAXIMIZE_STRING)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_CLOSE))&&
-             (StrEquals(mi->item,CLOSE_STRING1)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_CLOSE))&&
-             (StrEquals(mi->item,CLOSE_STRING2)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_CLOSE))&&
-             (StrEquals(mi->item,CLOSE_STRING3)))
-            return 0;
-          if((!(t->functions & MWM_FUNC_CLOSE))&&
-             (StrEquals(mi->item,CLOSE_STRING4)))
-            return 0;
-        }
-        break;
-      default:
-        break;
-    } /* end of switch */
-  } /* end of if */
-
+    case F_DELETE:
+      if (!(t->flags & DoesWmDeleteWindow))
+	return 0;
+      /* fall through to close clause */
+    case F_CLOSE:
+      if (!(t->functions & MWM_FUNC_CLOSE))
+	return 0;
+      break;
+    case F_DESTROY: /* shouldn't destroy always be allowed??? */
+      if (!(t->functions & MWM_FUNC_CLOSE))
+	return 0;
+      break;
+    case F_RESIZE:
+      if (!(t->functions & MWM_FUNC_RESIZE))
+	return 0;
+      break;
+    case F_ICONIFY:
+      if ((!(t->flags & ICONIFIED))&&
+	  (!(t->functions & MWM_FUNC_MINIMIZE)))
+	return 0;
+      break;
+    case F_MAXIMIZE:
+      if (!(t->functions & MWM_FUNC_MAXIMIZE))
+	return 0;
+      break;
+    case F_MOVE:
+      /* Move is a funny hint. Keeps it out of the menu, but you're
+       * still allowed to move. */
+      if((!(t->functions & MWM_FUNC_MOVE))&&menu_string)
+	return 0;
+      break;
+    case F_FUNCTION:
+      /* Hard part! What to do now? */
+      /* Hate to do it, but for lack of a better idea,
+       * check based on the menu entry name */
+      /* Complex functions are a little tricky, ignore them if no menu item*/
+      if (menu_string)
+      {
+	if((!(t->functions & MWM_FUNC_MOVE))&&
+	   (StrEquals(menu_string,MOVE_STRING)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_RESIZE))&&
+	   (StrEquals(menu_string,RESIZE_STRING1)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_RESIZE))&&
+	   (StrEquals(menu_string,RESIZE_STRING2)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_MINIMIZE))&&
+	   (!(t->flags & ICONIFIED))&&
+	   (StrEquals(menu_string,MINIMIZE_STRING)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_MINIMIZE))&&
+	   (StrEquals(menu_string,MINIMIZE_STRING2)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_MAXIMIZE))&&
+	   (StrEquals(menu_string,MAXIMIZE_STRING)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_CLOSE))&&
+	   (StrEquals(menu_string,CLOSE_STRING1)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_CLOSE))&&
+	   (StrEquals(menu_string,CLOSE_STRING2)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_CLOSE))&&
+	   (StrEquals(menu_string,CLOSE_STRING3)))
+	  return 0;
+	if((!(t->functions & MWM_FUNC_CLOSE))&&
+	   (StrEquals(menu_string,CLOSE_STRING4)))
+	  return 0;
+      }
+      break;
+    default:
+      break;
+  } /* end of switch */
   /* if we fell through, just return a 1 */
   return 1;
 }
-
-/****************************************************************************
- *
- * Checks the function described in menuItem mi, and sees if it
- * is an allowed function for window Tmp_Win,
- * according to the motif way of life.
- *
- * This routine is used to determine whether or not to grey out menu items.
- *
- ****************************************************************************/
-int check_allowed_function(MenuItem *mi)
-{
-  return check_if_function_allowed(mi->func_type,Tmp_win,mi);
-}
-
-/****************************************************************************
- *
- * Checks the function "function", and sees if it
- * is an allowed function for window t,  according to the motif way of life.
- * This routine is used to decide if we should refuse to perform a function.
- *
- ****************************************************************************/
-int check_allowed_function2(int function, FvwmWindow *t)
-{
-  return check_if_function_allowed(function,t,NULL);
-}
-
-
-

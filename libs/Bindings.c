@@ -238,8 +238,9 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
 		      BindingType type, int *nr_left_buttons,
 		      int *nr_right_buttons, unsigned char *buttons_grabbed)
 {
-  char *action, context[20], modifiers[20], key[20], *ptr, *token;
-  int button;
+  char *action, context[20], modifiers[20], *ptr, *token;
+  char key[20] = { '\0' };
+  int button = 0;
   int n1=0,n2=0,n3=0;
   int i;
   KeySym keysym = NoSymbol;

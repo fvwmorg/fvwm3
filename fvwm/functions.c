@@ -204,23 +204,14 @@ static struct functions func_config[] =
 };
 
 
-void update_last_string(char **pdest, char **pdest2, char *src,
-			Bool no_expand, Bool no_store)
+static void update_last_string(char **pdest, char **pdest2, char *src,
+			       Bool no_store)
 {
-  if (no_store)
+  if (no_store || *pdest == src)
     return;
-  if (no_expand)
-    {
-      if (*pdest == src)
-	return;
-      *pdest = strdup(src);
-    }
-  else
-    {
-/* dje, try leaking instead      if (*pdest) */
-/* 	free(*pdest); */
-      *pdest = src;
-    }
+  if (*pdest)
+    free(*pdest);
+  *pdest = strdup(src);
   *pdest2 = *pdest;
   return;
 }
@@ -520,7 +511,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     {
       matched = TRUE;
       update_last_string(&last_builtin_function, &last_function, expaction,
-		         no_expand, no_store);
+		         no_store);
       bif->action(eventp,w,tmp_win,context,action,&Module);
     }
 
@@ -532,12 +523,12 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
       if(desperate)
 	{
 	  update_last_string(&last_module, &last_function, expaction,
-			     no_expand, no_store);
+			     no_store);
 	  executeModule(eventp,w,tmp_win,context,taction, &Module);
 	}
       else
 	update_last_string(&last_complex_function, &last_function,
-			   expaction, no_expand, no_store);
+			   expaction, no_store);
     }
 
   /* Only wait for an all-buttons-up condition after calls from

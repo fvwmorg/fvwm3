@@ -300,8 +300,8 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,
 		    MenuItem **pmiExecuteAction, int cmenuDeep, Bool fSticks,
 		    XEvent *eventp, MenuOptions *pops);
-int check_allowed_function(MenuItem *mi);
-int check_allowed_function2(int function, FvwmWindow *t);
+int check_if_function_allowed(int function, FvwmWindow *t,
+			      Bool override_allowed, char *menu_string);
 void ReInstallActiveColormap(void);
 
 void ParsePopupEntry(char *,FILE *, char **, int *);

@@ -218,7 +218,7 @@ void Maximize(F_CMD_ARGS)
   if(tmp_win == NULL)
     return;
 
-  if(check_allowed_function2(F_MAXIMIZE,tmp_win) == 0)
+  if(check_if_function_allowed(F_MAXIMIZE,tmp_win,True,NULL) == 0)
   {
     XBell(dpy, 0);
     return;
@@ -872,7 +872,7 @@ void iconify_function(F_CMD_ARGS)
   {
     if (toggle == 1)
     {
-      if(check_allowed_function2(F_ICONIFY,tmp_win) == 0)
+      if(check_if_function_allowed(F_ICONIFY,tmp_win,True,0) == 0)
       {
 	XBell(dpy, 0);
 	return;
@@ -903,7 +903,7 @@ void destroy_function(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY, ButtonRelease))
     return;
 
-  if(check_allowed_function2(F_DESTROY,tmp_win) == 0)
+  if(check_if_function_allowed(F_DESTROY,tmp_win,True,NULL) == 0)
   {
     XBell(dpy, 0);
     return;
@@ -922,7 +922,7 @@ void delete_function(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY,ButtonRelease))
     return;
 
-  if(check_allowed_function2(F_DELETE,tmp_win) == 0)
+  if(check_if_function_allowed(F_DELETE,tmp_win,True,NULL) == 0)
   {
     XBell(dpy, 0);
     return;
@@ -943,7 +943,7 @@ void close_function(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY,ButtonRelease))
     return;
 
-  if(check_allowed_function2(F_CLOSE,tmp_win) == 0)
+  if(check_if_function_allowed(F_CLOSE,tmp_win,True,NULL) == 0)
   {
     XBell(dpy, 0);
     return;

@@ -1,3 +1,25 @@
+1999-03-31  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/misc.h:
+	* fvwm/decorations.c (check_allowed_function):
+	(check_allowed_function2): removed
+
+	* fvwm/builtins.c (Maximize):
+	(iconify_function):
+	(destroy_function):
+	(delete_function):
+	(close_function): use check_if_function_allowed
+
+	* fvwm/decorations.c (check_if_function_allowed): modified function to
+	make it independent of menu code
+
+	* fvwm/menus.c (PaintEntry): fixed hilighting greyed out items
+
+	* libs/Bindings.c (ParseBinding): fixed uninitialised memory reads
+
+	* fvwm/functions.c (update_last_string): fixed freeing unallocated
+	memory
+
 1999-03-31  Dan Espen  <dane@mk.bellcore.com>
 
 	* fvwm/Makefile.am (fvwm2_SOURCES): gnome.c listed twice.
@@ -36,7 +58,7 @@ Tue Mar 30 20:54:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-03-31  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/virtual.c (MoveViewport): fix a typo: there was a 
+	* fvwm/virtual.c (MoveViewport): fix a typo: there was a
 	reference to t left in the t1-part of the double loop. This
 	caused strange behaviour when moving across page boundaries.
 

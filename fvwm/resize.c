@@ -73,7 +73,7 @@ void resize_window(F_CMD_ARGS)
 		 &JunkX, &JunkY, &JunkX, &JunkY, &button_mask);
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
 
-  if(check_allowed_function2(F_RESIZE,tmp_win) == 0)
+  if(check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
     {
       XBell(dpy, 0);
       return;

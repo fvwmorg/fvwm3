@@ -81,15 +81,15 @@ static int ButtonPosition(int context, FvwmWindow * t);
 static Bool FMenuMapped(MenuRoot *menu);
 
 Bool menuFromFrameOrWindowOrTitlebar = FALSE;
-Bool fShowPopupTimedout = FALSE;
-Bool mouse_moved = FALSE;
+static Bool fShowPopupTimedout = FALSE;
+static Bool mouse_moved = FALSE;
 
 extern int Context,Button;
 extern FvwmWindow *ButtonWindow, *Tmp_win;
 extern XEvent Event;
 extern XContext MenuContext;
 
-static FvwmWindow *s_Tmp_win=NULL;
+static FvwmWindow *my_Tmp_win=NULL;
 
 /* dirty patch to pass the last popups position hints to popup_func */
 MenuPosHints lastMenuPosHints;
@@ -98,9 +98,9 @@ static Bool fIgnorePosHints = FALSE;
 static Bool fWarpPointerToTitle = FALSE;
 
 /* patch to allow double-keypress (like doubleclick) */
-unsigned int dkp_keystate;
-unsigned int dkp_keycode;
-Time dkp_timestamp;
+static unsigned int dkp_keystate;
+static unsigned int dkp_keycode;
+static Time dkp_timestamp;
 
 #define IS_TITLE_MENU_ITEM(mi) (((mi)?((mi)->func_type==F_TITLE):FALSE))
 #define IS_POPUP_MENU_ITEM(mi) (((mi)?((mi)->func_type==F_POPUP):FALSE))
@@ -145,6 +145,8 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
   static int cindirectDeep = 0;
   XEvent tmpevent;
 
+  if (cmenuDeep == 0 && cindirectDeep == 0)
+    my_Tmp_win = Tmp_win;
   DBUG("do_menu","called");
 
   if (fStick && cmenuDeep == 0)
@@ -768,20 +770,11 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	     dispatch this too by letting it fall
 	     through so window decorations get redrawn
 	     after being obscured by menus */
-	  s_Tmp_win = Tmp_win; /* BUT we need to save Tmp_win first
-				  because DispatchEvent changes
-				  Tmp_win and messes up our calls to
-				  check_allowed_function for stippling
-				  disallowed menu items */
+	  DispatchEvent();
+	  continue;
 
 	default:
 	  DispatchEvent();
-	  if (s_Tmp_win)
-	    {
-	      Tmp_win = s_Tmp_win; /* restore Tmp_win */
-	      s_Tmp_win = NULL;
-	      continue; /* now 'continue' if event was an expose */
-	    }
 	  break;
 	} /* switch (Event.type) */
 
@@ -1770,21 +1763,20 @@ void PaintEntry(MenuItem *mi)
   if(mi == mr->first)
     DrawSeparator(mr->w,ReliefGC,ReliefGC,mr->xoffset,0, mr->width-1,0,-1);
 
-  if(check_allowed_function(mi))
+  if(!mi || check_if_function_allowed(mi->func_type,my_Tmp_win,False,mi->item))
   {
     if(mi->state && !IS_TITLE_MENU_ITEM(mi))
       currentGC = mr->ms->look.MenuActiveGC;
     else
       currentGC = mr->ms->look.MenuGC;
+    if (mr->ms->look.f.Hilight && !mr->ms->look.f.hasActiveFore &&
+	mi->state && mi->fIsSeparator == FALSE)
+      /* Use a lighter color for highlighted windows menu items for win mode */
+      currentGC = mr->ms->look.MenuReliefGC;
   }
   else
     /* should be a shaded out word, not just re-colored. */
     currentGC = mr->ms->look.MenuStippleGC;
-
-  if (mr->ms->look.f.Hilight && !mr->ms->look.f.hasActiveFore &&
-      mi->state && mi->fIsSeparator == FALSE)
-    /* Use a lighter color for highlighted windows menu items for win mode */
-    currentGC = mr->ms->look.MenuReliefGC;
 
   if(*mi->item)
     XDrawString(dpy, mr->w,currentGC,mi->x+mr->xoffset,text_y, mi->item,
