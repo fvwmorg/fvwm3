@@ -929,20 +929,40 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
     default:
       if (Tmp_win->Desk == Scr.CurrentDesk)
       {
+	Bool do_grab_focus;
+
 	XMapWindow(dpy, Tmp_win->w);
 	XMapWindow(dpy, Tmp_win->frame);
 	SET_MAP_PENDING(Tmp_win, 1);
 	SetMapStateProp(Tmp_win, NormalState);
-	if(((!IS_TRANSIENT(Tmp_win) ||
-	     Tmp_win->transientfor == Scr.Root) &&
-	    DO_GRAB_FOCUS(Tmp_win)) ||
-	   (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
-	    Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
+	if (!OnThisPage)
+	  do_grab_focus = True;
+	else if (DO_GRAB_FOCUS(Tmp_win) &&
+		 (!IS_TRANSIENT(Tmp_win) || Tmp_win->transientfor == Scr.Root))
 	{
-	  if (OnThisPage)
-	  {
-	    SetFocusWindow(Tmp_win, 1);
-	  }
+	  do_grab_focus = True;
+	}
+	else if (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
+		 Scr.Focus && Scr.Focus->w == Tmp_win->transientfor)
+	{
+	  /* it's a transient and its transientfor currently has focus. */
+	  do_grab_focus = True;
+	}
+	else if (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win) &&
+		 !(XGetGeometry(dpy, Tmp_win->transientfor, &JunkRoot, &JunkX,
+				&JunkY, &JunkWidth, &JunkHeight, &JunkBW,
+				&JunkDepth)))
+	{
+	  /* Gee, the transientfor does not exist! These evil application
+	   * programmers must hate us a lot. */
+	  Tmp_win->transientfor = Scr.Root;
+	  do_grab_focus = True;
+	}
+	else
+	  do_grab_focus = False;
+	if (do_grab_focus)
+	{
+	  SetFocusWindow(Tmp_win, 1);
 	}
       }
       else
