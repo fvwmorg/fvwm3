@@ -4801,6 +4801,7 @@ void Emulate(XEvent *eventp, Window junk, FvwmWindow *tmp_win,
       fvwm_msg(ERR, "Emulate", "Unknown style '%s'", style);
     }
   free(style);
+  ApplyDefaultFontAndColors();
   return;
 }
 
