@@ -5,6 +5,8 @@ Note, the changes for the last STABLE release start with release 2.4.16
 Changes in development release 2.5.8 (not released yet)
 
 
+-------------------------------------------------------------------
+
 Changes in development release 2.5.7 (30-May-2003)
 
 * The commands Cond and CondCase now support checking for
@@ -41,7 +43,7 @@ Changes in development release 2.5.7 (30-May-2003)
   "WindowId $0" may be removed in user event handlers.
 
 * New FvwmTaskBar option NoDefaultStartButton.
- 
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.6 (28-Feb-2003)
