@@ -1,3 +1,14 @@
+1999-05-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/move_resize.c (ConstrainSize): make sure to stay within
+	min and max.
+
+	* fvwm/add_window.c (GetWindowSizeHints): 
+	fix the fix to silently accept min width zero,
+	reject any negative values in aspect ratios, scale the aspect
+	ratios to be <= 65536 to avoid overflows in ConstrainSize.
+	(gcd): removed. 	
+	
 1999-05-07  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* fvwm/windowlist.c (do_windowList): fix call to do_menu.

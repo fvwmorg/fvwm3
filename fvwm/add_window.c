@@ -906,28 +906,6 @@ void FetchWmProtocols (FvwmWindow *tmp)
 }
 
 
-int
-gcd (int a, int b)
-{
-  int r0, r1, r2;
-
-  if ((a == 0) || (b == 0))
-    {
-       return 0;
-    }
-
-  r1 = a;
-  r2 = b;
-  while (r2 != 0)
-   {
-     r0 = r1;
-     r1 = r2;
-     r2 = r0 % r1;
-   }
-
-  return r1;
-}
-
 
 /***********************************************************************
  *
@@ -971,17 +949,17 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if(tmp->hints.flags & PMinSize)
     {
-      if (tmp->hints.min_width < 0)
+      if (tmp->hints.min_width <= 0)
         {
+	  if (tmp->hints.min_width < 0)
+	    broken_hints = True;
           tmp->hints.min_width = 1;
-	  if (tmp->hints.min_width != 0)
-	    broken_hints = True;
         }
-      if (tmp->hints.min_height < 0)
+      if (tmp->hints.min_height <= 0)
         {
-          tmp->hints.min_height = 1;
-	  if (tmp->hints.min_height != 0)
+	  if (tmp->hints.min_height < 0)
 	    broken_hints = True;
+          tmp->hints.min_height = 1;
         }
     }
   else
@@ -1040,11 +1018,9 @@ void GetWindowSizeHints(FvwmWindow *tmp)
           /* In this case, doing the aspect ratio calculation
 	     for window_size - base_size as prescribed by the
              ICCCM is going to fail.
-             Resetting the flag disables
-             the use of base_size in aspect ratio calculation
-             while it is still used for grid sizing in the way
-	     most window manager do, allowing for window sizes
-	     below the base size.
+             Resetting the flag disables the use of base_size 
+	     in aspect ratio calculation while it is still used 
+	     for grid sizing.
            */
           tmp->hints.flags &= ~PBaseSize;
 #if 0
@@ -1075,8 +1051,6 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if (tmp->hints.flags & PAspect)
   {
-    int g;
-
     /*
     ** check to make sure min/max aspect ratios look valid
     */
@@ -1102,30 +1076,55 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     **
     */
 
-    /* protect against silly things like MAXINT/MAXINT */
-    g  = gcd(maxAspectX, maxAspectY);
-    if (g != 0)
-      {
-        maxAspectX /= g;
-        maxAspectY /= g;
-      }
-
-    g = gcd (minAspectX, minAspectY);
-    if (g != 0)
-      {
-        minAspectX /= g;
-        minAspectY /= g;
-      }
-
-    if ((minAspectX * maxAspectY) > (maxAspectX * minAspectY))
-    {
-      tmp->hints.flags &= ~PAspect;
-      broken_hints = True;
-      fvwm_msg (WARN, "GetWindowSizeHints",
-               "%s window %#lx has broken aspect ratio: %d/%d - %d/%d\n",
-                tmp->name, tmp->w, minAspectX, minAspectY, maxAspectX,
-		maxAspectY);
-    }
+    /* We also ignore people who put negative entries into
+     * their aspect ratios. They deserve it. 
+     *  
+     * We cast to double here, since the values may be large. 
+     */
+    if ((maxAspectX < 0) || (maxAspectY < 0) ||
+        (minAspectX < 0) || (minAspectY < 0) || 
+        (((double)minAspectX * (double)maxAspectY) > 
+         ((double)maxAspectX * (double)minAspectY)))
+     {
+        broken_hints = True;      
+        tmp->hints.flags &= ~PAspect;
+        fvwm_msg (WARN, "GetWindowSizeHints",
+                 "%s window %#lx has broken aspect ratio: %d/%d - %d/%d\n",
+                  tmp->name, tmp->w, minAspectX, minAspectY, maxAspectX,
+	  	maxAspectY);
+     }
+    else 
+     {
+       /* protect against overflow */ 
+       if ((maxAspectX > 65536) || (maxAspectY > 65536))
+         {
+            double ratio = (double) maxAspectX / (double) maxAspectY;
+            if (ratio > 1.0)
+              {
+                 maxAspectX = 65536;
+                 maxAspectY = 65536 / ratio;
+              }
+            else
+              {
+                 maxAspectX = 65536 * ratio;
+                 maxAspectY = 65536;
+              } 
+         }  
+       if ((minAspectX > 65536) || (minAspectY > 65536))
+         {
+            double ratio = (double) minAspectX / (double) minAspectY;
+            if (ratio > 1.0)
+              {
+                 minAspectX = 65536;
+                 minAspectY = 65536 / ratio;
+              }
+            else
+              {
+                 minAspectX = 65536 * ratio;
+                 minAspectY = 65536;
+              } 
+         }  
+     }
   }
 
   if (broken_hints)

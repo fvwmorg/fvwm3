@@ -1581,6 +1581,13 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
     dwidth = ((dwidth - baseWidth + constrainx) / xinc * xinc) + baseWidth;
     dheight = ((dheight - baseHeight + constrainy) / yinc * yinc) + baseHeight;
 
+    /* 
+     * Step 2a: Check that we didn't violate min and max.
+     */
+    if (dwidth < minWidth) dwidth += xinc;
+    if (dheight < minHeight) dheight += yinc; 
+    if (dwidth > maxWidth) dwidth -= xinc;
+    if (dheight > maxHeight) dheight -= yinc; 
 
     /*
      * Third, adjust for aspect ratio
@@ -1609,12 +1616,12 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
 
 	if (tmp_win->hints.flags & PBaseSize)
 	  {
-	    /* ICCCM 2 demands that aspect ratio should apply
-	       to width - base_width if base_width is explicitly
-	       given. This might give funny results if dwidth is
-	       smaller than baseWidth. Maybe we should warn about
-	       slightly broken size hints if base is larger than
-	       min. */
+	    /* 
+               ICCCM 2 demands that aspect ratio should apply 
+	       to width - base_width. To prevent funny results,
+	       we reset PBaseSize in GetWindowSizeHints, if
+	       base is not smaller than min.
+	     */
 	    dwidth -= baseWidth;
 	    maxWidth -= baseWidth;
 	    minWidth -= baseWidth;
