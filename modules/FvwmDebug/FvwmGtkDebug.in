@@ -151,7 +151,7 @@ sub updateEventMaskChangeButtons () {
 # ----------------------------------------------------------------------------
 # creating gui
 
-my $tmp;  # there is a Gtk::Frame bug regarding border_width, so use tmp box
+my $tmp;  # there is a Gtk::Frame bug regarding set_border_width, so use tmp box
 my $tooltips = Gtk::Tooltips->new;
 
 my $window = new Gtk::Window;
@@ -173,7 +173,7 @@ my $eventMaskScroll = new Gtk::ScrolledWindow("", "");
 $eventMaskScroll->set_policy("automatic", "always");
 
 my $eventMaskScrollFrame = new Gtk::Frame(" Event mask ");
-$tmp = new Gtk::VBox(0, 0); $tmp->add($eventMaskScroll); $tmp->border_width(5);
+$tmp = new Gtk::VBox(0, 0); $tmp->add($eventMaskScroll); $tmp->set_border_width(5);
 $eventMaskScrollFrame->add($tmp);
 $eventMaskBox->pack_start($eventMaskScrollFrame, 1, 1, 10);
 
@@ -184,7 +184,7 @@ my $eventTypeCheckButtons = {};
 my $type;
 foreach $type (@{allEventTypes()}) {
 	my $checkButton = new Gtk::CheckButton(eventName($type));
-	$checkButton->border_width(0);
+	$checkButton->set_border_width(0);
 	$eventTypeBox->pack_start($checkButton, 0, 0, 0);
 	$eventTypeCheckButtons->{$type} = $checkButton;
 	$checkButton->signal_connect("clicked", sub {
@@ -243,7 +243,7 @@ $revertEventMaskButton->signal_connect("clicked", sub {
 });
 
 my $setupButtonBox = new Gtk::HButtonBox();
-$setupButtonBox->border_width(10);
+$setupButtonBox->set_border_width(10);
 $setupButtonBox->set_child_size(190, 0);
 $setupButtonBox->set_child_ipadding(0, 2);
 $setupButtonBox->set_layout('edge');
@@ -263,14 +263,14 @@ $startMonitoringButton->signal_connect("clicked", \&switchMonitoring);
 
 # ---- event page ----
 my $eventPage = new Gtk::VBox(0, 0);
-$eventPage->border_width(10);
+$eventPage->set_border_width(10);
 $notebook->append_page($eventPage, new Gtk::Label(" Stored Events "));
 
 my $eventNameLine = new Gtk::HBox(0, 0);
 $eventPage->pack_start($eventNameLine, 0, 0, 0);
 
 my $eventNumBox = new Gtk::HBox(0, 0);
-$eventNumBox->border_width(5);
+$eventNumBox->set_border_width(5);
 my $eventNumFrame = new Gtk::Frame(" Event num ");
 $eventNumFrame->add($eventNumBox);
 $eventNameLine->pack_start($eventNumFrame, 0, 0, 0);
@@ -291,7 +291,7 @@ $eventName->set_editable(0);
 $eventName->set_usize(154, 0);
 
 my $eventNameFrame = new Gtk::Frame(" Event type ");
-$tmp = new Gtk::VBox(0, 0); $tmp->add($eventName); $tmp->border_width(5);
+$tmp = new Gtk::VBox(0, 0); $tmp->add($eventName); $tmp->set_border_width(5);
 $eventNameFrame->add($tmp);
 $eventNameLine->pack_start($eventNameFrame, 0, 0, 10);
 
@@ -300,7 +300,7 @@ $eventTime->set_usize(46, 0);
 $eventTime->set_editable(0);
 
 my $eventTimeFrame = new Gtk::Frame(" Time ");
-$tmp = new Gtk::VBox(0, 0); $tmp->add($eventTime); $tmp->border_width(5);
+$tmp = new Gtk::VBox(0, 0); $tmp->add($eventTime); $tmp->set_border_width(5);
 $eventTimeFrame->add($tmp);
 $eventNameLine->pack_start($eventTimeFrame, 0, 0, 0);
 
@@ -342,7 +342,7 @@ $eventArgsList->signal_connect("select_row", sub {
 			map { sprintf("\n%032b", $_) } @{$text->{value}}
 		);
 	}
-	$module->openMessageDialog(
+	$module->showMessage(
 		"$data->{name} (" . eventArgTypeToName($data->{type}) .
 		"): $text", $eventName->get_text() . " event argument"
 	);
@@ -354,7 +354,7 @@ $eventArgsListScroll->set_policy("automatic", "automatic");
 $eventArgsListScroll->add_with_viewport($eventArgsList);
 
 my $eventArgsListScrollFrame = new Gtk::Frame(" Event arguments ");
-$tmp = new Gtk::VBox(0, 0); $tmp->add($eventArgsListScroll); $tmp->border_width(5);
+$tmp = new Gtk::VBox(0, 0); $tmp->add($eventArgsListScroll); $tmp->set_border_width(5);
 $eventArgsListScrollFrame->add($tmp);
 $eventPage->pack_start($eventArgsListScrollFrame, 1, 1, 10);
 
@@ -499,7 +499,7 @@ sub switchMonitoring () {
 
 # ---- tools page ----
 my $toolsPage = new Gtk::VBox(0, 0);
-$toolsPage->border_width(10);
+$toolsPage->set_border_width(10);
 $notebook->append_page($toolsPage, new Gtk::Label(" Tools "));
 
 my $requestButtonBox = new Gtk::HButtonBox();
@@ -508,7 +508,7 @@ $requestButtonBox->set_child_ipadding(0, 2);
 $requestButtonBox->set_layout('edge');
 
 my $requestButtonBoxFrame = new Gtk::Frame(" Request module info ");
-$tmp = new Gtk::VBox(0, 0); $tmp->add($requestButtonBox); $tmp->border_width(5);
+$tmp = new Gtk::VBox(0, 0); $tmp->add($requestButtonBox); $tmp->set_border_width(5);
 $requestButtonBoxFrame->add($tmp);
 $toolsPage->pack_start($requestButtonBoxFrame, 0, 0, 0);
 
@@ -531,7 +531,7 @@ $commandToSend->signal_connect("activate", sub {
 });
 
 my $commandToSendFrame = new Gtk::Frame(" Command console ");
-$tmp = new Gtk::VBox(0, 0); $tmp->add($commandToSend); $tmp->border_width(5);
+$tmp = new Gtk::VBox(0, 0); $tmp->add($commandToSend); $tmp->set_border_width(5);
 $commandToSendFrame->add($tmp);
 $toolsPage->pack_start($commandToSendFrame, 0, 0, 10);
 
@@ -544,7 +544,7 @@ $toolsPage->pack_end($quitButtonBox, 0, 0, 0);
 my $helpButton = new Gtk::Button(" Help ");
 $quitButtonBox->pack_end($helpButton, 1, 1, 6);
 $helpButton->signal_connect("clicked", sub {
-	$module->openMessageDialog(<<ENDMSG, "FvwmGtkDebug Help");
+	$module->showMessage(<<ENDMSG, "FvwmGtkDebug Help");
 This module captures the event information received from fvwm and shows it.
 You should configure events you want to receive and then activate the
 monitoring mode. The activation may be done either from the "Setup" or

@@ -107,7 +107,7 @@ sub dumpEvent ($$) {
 		my $nameLen = 12;
 		$nameLen = int((length($name) + 5) / 6) * 6
 			if length($name) > $nameLen;
-		printf STDERR "\t%-${nameLen}s %s\n", $name, $text;
+		printf $logStream "\t%-${nameLen}s %s\n", $name, $text;
 	}
 }
 

@@ -64,7 +64,7 @@ $module->addHandler(M_NEW_PAGE, sub {
 	# alarm is not called in perl-5.8.0, but called in earlier perls!..
 	# probably some problem with Gtk-Perl and perl-5.8.0
 	$SIG{ALRM} = sub {
-		$lastwindow->destroy();
+		$lastWindow->destroy();
 		$lastWindow = undef;
 	};
 	alarm(1);

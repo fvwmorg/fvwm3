@@ -3,6 +3,11 @@
 	* FvwmPager/FvwmPager.c (list_new_page):
 	updated to the changed arguments of M_NEW_PAGE
 
+	* FvwmDebug/FvwmDebug.in:
+	fixed printing to wrong stream
+	* FvwmDebug/FvwmGtkDebug.in:
+	fixed opening message windows
+
 2002-12-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmWindowMenu/*:
