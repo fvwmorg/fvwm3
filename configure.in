@@ -398,10 +398,10 @@ if test x"$with_xft" != xno; then
     $UNSET ac_cv_lib_Xft_XftDrawStringUtf8
     AC_CHECK_LIB(Xft, XftFontOpen,
       with_xft=yes, with_xft=no,
-      [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
+      [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS $Xrender_LIBS])
     if test x"$with_xft" = xyes ; then
       AC_CHECK_LIB(Xft, XftConfigSubstitute, is_xft1=yes, is_xft1=no,
-                   [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
+        [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS $Xrender_LIBS])
       if test x"$is_xft1" = xyes; then
         Xft_LIBS="-lXft $FT2_LIBS"
 	Xft_CFLAGS="$Xft_CFLAGS $FT2_CFLAGS"
@@ -416,7 +416,7 @@ if test x"$with_xft" != xno; then
     fi
     if test x"$with_xft" = xyes; then
       AC_CHECK_LIB(Xft, XftDrawStringUtf8, AC_DEFINE(HAVE_XFT_UTF8),,
-                   [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
+        [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS $Xrender_LIBS])
     fi
   fi
 

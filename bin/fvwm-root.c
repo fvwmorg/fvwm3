@@ -25,7 +25,7 @@ Pixmap rootImage = None;
 Bool NoDither = False;
 Bool Dither = False;
 Bool NoColorLimit = False;
-char *opt_color_limit = NULL;
+int opt_color_limit = -1;
 Bool use_our_color_limit = False;
 
 void usage(int verbose)
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 			if (i+1 < argc)
 			{
 				i++;
-				CopyString(&opt_color_limit,argv[i]);
+				opt_color_limit = atoi(argv[i]);
 			}
 		}
 		else if (
@@ -251,6 +251,8 @@ void SetRootWindow(char *tline)
 
 	if (use_our_color_limit)
 	{
+		PictureColorLimitOption colorLimitop = {-1, -1, -1, -1, -1};
+		colorLimitop.color_limit = opt_color_limit;
 		PictureInitCMapRoot(
 			dpy, !NoColorLimit, opt_color_limit, True, True);
 	}

@@ -109,7 +109,7 @@ void PictureInitCMap(Display *dpy) {
 }
 
 void PictureInitCMapRoot(
-	Display *dpy, Bool init_color_limit, char *color_limit_arg,
+	Display *dpy, Bool init_color_limit, PictureColorLimitOption *opt,
 	Bool use_my_color_limit, Bool init_dither)
 {
 	int screen = DefaultScreen(dpy);
@@ -125,9 +125,8 @@ void PictureInitCMapRoot(
 	PictureSaveFvwmVisual();
 
 	/* initialise color limit */
-	PUseDynamicColors = 1;
 	PictureInitColors(
-		PICTURE_CALLED_BY_MODULE, init_color_limit, color_limit_arg,
+		PICTURE_CALLED_BY_MODULE, init_color_limit, opt,
 		use_my_color_limit, init_dither);
 	return;
 }

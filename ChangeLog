@@ -1,9 +1,35 @@
+2002-11-04  olicha  <olivier.chapuis@free.fr>
+
+	* configure.in:
+	Added -lXrender in Xft 1 tests (Ethan Blanton <eblanton@cs.ohiou.edu>)
+
+	* libs/PictureUtils.c (alloc_color_dynamic_no_limit):
+	(finish_ct_init):
+	(PictureFreeColors):
+	(PicturePrintColorInfo):
+	Trace colours allocation out of the pallet in depth <= 8. Better
+	information on coulours
+
+	* libs/Fft.c (FftGetRotatedFont):
+	* libs/Fft.h:
+	Fixed rotated font when the original font has a matrix
+
+	* libs/PictureBase.c (PictureInitCMapRoot):
+	* libs/PictureUtils.h:
+	* libs/PictureUtils.c (PictureInitColors):
+	(PictureAllocColorTable):
+	* libs/PictureBase.h (PictureColorLimitOption):
+	* fvwm/fvwm.c (main):
+	* fvwm/fvwm.1.in
+	New options -strict-color-limit, -allocate-pallet, -static-pallet,
+	-named-pallet. -color-limit now take only integer argument.
+	
+
 2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Module.h (struct):
 	new type FvwmWinPacketBodyHeader to access the standard fields in a
 	packet with a window
-
 
 2002-11-01  Dominik Vogt  <dominik.vogt@gmx.de>
 

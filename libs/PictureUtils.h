@@ -42,7 +42,7 @@ Pixel PictureGetNextColor(Pixel p, int n);
 Bool PictureDitherByDefault(void);
 Bool PictureUseBWOnly(void);
 int PictureInitColors(
-	int call_type, Bool init_color_limit, char *opt,
+	int call_type, Bool init_color_limit, PictureColorLimitOption *opt,
 	Bool use_my_color_limit, Bool init_dither);
 void PicturePrintColorInfo(int verbose);
 

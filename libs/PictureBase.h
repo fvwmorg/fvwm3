@@ -43,6 +43,15 @@ extern unsigned int Pdepth;
 extern Display *Pdpy;     /* Save area for display pointer */
 extern Bool PUseDynamicColors;
 
+typedef struct
+{
+	int color_limit;
+	int strict;
+	int allocate;
+	int not_dynamic;
+	int use_named_table;
+} PictureColorLimitOption;
+
 /* This routine called during modules initialization. Fvwm has its own code
  * in fvwm.c */
 void PictureInitCMap(Display *dpy);
@@ -50,7 +59,7 @@ void PictureInitCMap(Display *dpy);
 /* as above but force to use the default visual. If use_my_color_limit is True
  * also enable color limitation (independent than the fvwm one). */
 void PictureInitCMapRoot(
-	Display *dpy, Bool init_color_limit, char *color_limit_arg,
+	Display *dpy, Bool init_color_limit, PictureColorLimitOption *opt,
 	Bool use_my_color_limit, Bool init_dither);
 
 /* Analogue of the Xlib WhitePixel and BlackPixel functions but use the

@@ -114,7 +114,9 @@ typedef struct
 	short d_ng;
 	short d_nb;
 	short d_ngrey_bits;
-       /* info for depth > 8 */
+	/* do we found a pre-allocated pallet ? */
+	Bool pre_allocated_pallet;
+	/* info for depth > 8 */
 	int red_shift;
 	int green_shift;
 	int blue_shift;
@@ -138,14 +140,12 @@ typedef struct
 	int (*alloc_color_no_limit)();
 	int (*alloc_color_dither)();
 #endif
-
-
 } PColorsInfo;
 
 typedef struct {
-    int cols_index;
-    long closeness;
-}      CloseColor;
+	int cols_index;
+	long closeness;
+} CloseColor;
 
 /* ---------------------------- forward declarations ------------------------ */
 
@@ -153,12 +153,13 @@ typedef struct {
 
 static int PColorLimit = 0;
 static PColor *Pct = NULL;
+static PColor *Pac = NULL;
 static short *PMappingTable = NULL;
 static short *PDitherMappingTable = NULL;
 static Bool PStrictColorLimit = 0;
 static Bool PAllocTable = 0;
 static PColorsInfo Pcsi = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL,
 	NULL, NULL};
 
 /* ---------------------------- exported variables (globals) ---------------- */
@@ -650,24 +651,31 @@ int alloc_color_in_table_dither(
 int alloc_color_dynamic_no_limit(
 	Display *dpy, Colormap cmap, XColor *c, Bool is_8)
 {
+	int r = 0;
+
 	if (XAllocColor(dpy, cmap, c))
 	{
-		return 1;
+		r = 1;
 	}
-	if (!alloc_color_in_cmap(c, False))
+	else if (!alloc_color_in_cmap(c, False))
 	{
-		int status;
-
 		XGrabServer(dpy);
-		status = alloc_color_in_cmap(c, True);
+		r = alloc_color_in_cmap(c, True);
 		XUngrabServer(dpy);
-		return status;
 	}
 	else
 	{
-		return 1;
+		r = 1;
 	}
-	return 0;
+	if (r && Pac != NULL && (c->pixel <= (1 << Pdepth) /* always true*/))
+	{
+		Pac[c->pixel].alloc_count++;
+		Pac[c->pixel].color.red = c->red;
+		Pac[c->pixel].color.green = c->green;
+		Pac[c->pixel].color.blue = c->blue;
+		Pac[c->pixel].color.pixel = c->pixel;
+	}
+	return r;
 }
 
 /* ***************************************************************************
@@ -1169,6 +1177,11 @@ void finish_ct_init(
 		env = safemalloc(21+PICTURE_TABLETYPE_LENGHT+1);
 		sprintf(env,"FVWM_COLORTABLE_TYPE=%i",ctt);
 		putenv(env);
+		if (Pdepth <= 8)
+		{
+			Pac = (PColor *)safecalloc(
+				(1 << Pdepth), sizeof(PColor));
+		}
 	}
 
 	if (Pct)
@@ -1189,7 +1202,8 @@ void finish_ct_init(
 #define ANY_GRAY_SCALE (PA_GRAY_SCALE|FVWM_GRAY_SCALE)
 
 static
-int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
+int PictureAllocColorTable(
+	PictureColorLimitOption *opt, int call_type, Bool use_my_color_limit)
 {
 	char *envp;
 	int free_colors, nbr_of_color, limit, cc_nbr, i, size;
@@ -1200,14 +1214,14 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	int dyn_cl_set = False;
 	int strict_cl_set = False;
 	int alloc_table_set = False;
-	int color_limit; /* not the default at all */
+	int color_limit;
 	int pa_type = (Pvisual->class != GrayScale)? PA_COLOR_CUBE:PA_GRAY_SCALE;
 	int fvwm_type = (Pvisual->class != GrayScale)?
 		FVWM_COLOR_CUBE:FVWM_GRAY_SCALE;
 	int cc[][6] =
 	{
 		/* {nr,ng,nb,ngrey,grey_bits,logic} */
-		/* 3 first for direct colors and Pdepth > 8*/
+		/* 5 first for direct colors and Pdepth > 8*/
 		/* 8192 colors depth 13, a reasonable max for a color table */
 		{16, 32, 16, 0, 0, FVWM_COLOR_CUBE},
 		/* 4096 colors depth 12 */
@@ -1274,9 +1288,14 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	};
 
 	cc_nbr = sizeof(cc)/(sizeof(cc[0]));
-	/* by default use dynamic colors */
+
+	/* set up  default */
+	PStrictColorLimit = 0;
 	PUseDynamicColors = 1;
 	PAllocTable = 0;
+	use_named_table = False;
+	color_limit = 0;
+	use_default = True;
 
 	/* use fvwm color limit */
 	if (!use_my_color_limit &&
@@ -1339,7 +1358,7 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	color_limit = 0;
 
 	/* parse the color limit env variable */
-	if ((envp = opt) != NULL || (envp = getenv("FVWM_COLORLIMIT")) != NULL)
+	if ((envp = getenv("FVWM_COLORLIMIT")) != NULL)
 	{
 		char *rest, *l;
 
@@ -1398,8 +1417,58 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 			}
 		}
 	}
+	else if (opt != NULL) /* use the option */
+	{
+		if (opt->color_limit > 0)
+		{
+			use_default = 0;
+			color_limit = opt->color_limit;
+		}
+		if (color_limit == 9 || color_limit == 61)
+		{
+			use_named_table = 1;
+		}
+		if (opt->strict > 0)
+		{
+			strict_cl_set = True;
+			PStrictColorLimit = 1;
+		}
+		else if (opt->strict == 0)
+		{
+			strict_cl_set = True;
+			PStrictColorLimit = 0;
+		}
+		if (opt->use_named_table > 0)
+		{
+			use_named_table = 1;
+		}
+		else if (opt->use_named_table == 0)
+		{
+			use_named_table = 0;
+		}
+		if (opt->not_dynamic > 0)
+		{
+			dyn_cl_set = True;
+			PUseDynamicColors = 0;
+		}
+		else if (opt->not_dynamic == 0)
+		{
+			dyn_cl_set = True;
+			PUseDynamicColors = 0;
+		}
+		if (opt->allocate > 0)
+		{
+			alloc_table_set = True;
+			PAllocTable = 1;
+		}
+		else if (opt->allocate == 0)
+		{
+			alloc_table_set = True;
+			PAllocTable = 0;
+		}
+	}
 
-	if (color_limit == 0)
+	if (color_limit <= 0)
 	{
 		use_default = 1;
 		color_limit = nbr_of_color;
@@ -1420,6 +1489,12 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	 * imlib2 try to allocate the 666 cube if this fail it try more
 	 * exotic table (see rend.c and rgba.c) */
 	i = 0;
+	free_colors = 0;
+	if (Pdepth <= 8 && !private_cmap && use_default &&
+	    i < cc_nbr && Pct == NULL && (Pvisual->class & 1))
+	{
+		free_colors = get_nbr_of_free_colors(nbr_of_color);
+	}
 	while(Pdepth <= 8 && !private_cmap && use_default &&
 	      i < cc_nbr && Pct == NULL && (Pvisual->class & 1))
 	{
@@ -1430,7 +1505,6 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 			i++;
 			continue;
 		}
-		free_colors = get_nbr_of_free_colors(nbr_of_color);
 		if (free_colors <= nbr_of_color - size)
 		{
 			Pct = alloc_color_cube(
@@ -1455,14 +1529,9 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	}
 	if (Pct != NULL)
 	{
-		if (!dyn_cl_set)
-		{
-			PUseDynamicColors = 0;
-		}
-		if (!alloc_table_set)
-		{
-			PAllocTable = 1;
-		}
+		PUseDynamicColors = 0;
+		PAllocTable = 1;
+		Pcsi.pre_allocated_pallet = 1;
 		i = i - 1;
 		finish_ct_init(
 			call_type, i, cc[i][0], cc[i][1], cc[i][2], cc[i][3],
@@ -1566,19 +1635,9 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	{
 		/* humm ... Any way this case should never happen in real life:
 		 * DirectColor default colormap! */
-		if (!dyn_cl_set)
-		{
-			PUseDynamicColors = 0;
-			PAllocTable = 1;
-		}
-		if (!strict_cl_set)
-		{
-			PStrictColorLimit = 1;
-		}
-		if (Pdepth > 8)
-		{
-			PAllocTable = 1;
-		}
+		PUseDynamicColors = 0;
+		PAllocTable = 1;
+		PStrictColorLimit = 1;
 	}
 	if (PAllocTable)
 	{
@@ -1636,6 +1695,7 @@ int PictureAllocColorTable(char *opt, int call_type, Bool use_my_color_limit)
 	{
 		fprintf(stderr,
 			"[FVWM] ERR -- Cannot get Black and White. exiting!\n");
+		exit(2);
 	}
 	return PColorLimit;
 }
@@ -1959,6 +2019,19 @@ void PictureFreeColors(
 	if ((Pct == NULL || no_limit) && (Pvisual->class & 1))
 	{
 		XFreeColors(dpy, cmap, pixels, n, planes);
+		if (Pac != NULL)
+		{
+			int nbr_colors = (1 << Pdepth);
+			int i;
+
+			for(i= 0; i < n; i++)
+			{
+				if (pixels[i] <= nbr_colors)
+				{
+					Pac[pixels[i]].alloc_count--;
+				}
+			}
+		}
 	}
 	return;
 }
@@ -2055,12 +2128,14 @@ Bool PictureUseBWOnly(void)
 }
 
 int PictureInitColors(
-	int call_type, Bool init_color_limit, char *opt,
+	int call_type, Bool init_color_limit, PictureColorLimitOption *opt,
 	Bool use_my_color_limit, Bool init_dither)
 {
+	char *fct_env = NULL;
+
 	if (!use_my_color_limit && opt == NULL)
 	{
-		opt = getenv("FVWM_COLORTABLE_TYPE");
+		fct_env = getenv("FVWM_COLORTABLE_TYPE");
 	}
 
 	switch (Pvisual->class)
@@ -2087,7 +2162,7 @@ int PictureInitColors(
 		break;
 	}
 
-	if (!(Pvisual->class & 1) && opt == NULL)
+	if (!(Pvisual->class & 1) && (fct_env == NULL || *fct_env == '\0'))
 	{
 		Bool dither_ok = False;
 
@@ -2173,6 +2248,8 @@ int PictureInitColors(
 
 void PicturePrintColorInfo(int verbose)
 {
+	unsigned long nbr_of_colors = 1 << Pdepth;
+
 	fprintf(stderr, "FVWM info on colors\n");
 	fprintf(stderr, "  Visual ID: 0x%x, Default?: %s, Class: ",
 		(int)(Pvisual->visualid),
@@ -2203,7 +2280,7 @@ void PicturePrintColorInfo(int verbose)
 	}
 	fprintf(stderr, "\n");
 	fprintf(stderr, "  Depth: %i, Number of colors: %lu",
-		Pdepth, (unsigned long)(1 << Pdepth));
+		Pdepth, (unsigned long)nbr_of_colors);
 	if (Pct != NULL)
 	{
 		fprintf(stderr,"\n  Pallet with %i colors", PColorLimit);
@@ -2211,25 +2288,96 @@ void PicturePrintColorInfo(int verbose)
 		{
 			fprintf(stderr,", Number of free colors: %i\n",
 				get_nbr_of_free_colors((1 << Pdepth)));
+			fprintf(stderr,
+				"  Auto Detected: %s, Strict: %s, Allocated: %s,"
+				" Dynamic: %s\n",
+				(Pcsi.pre_allocated_pallet)? "Yes":"No",
+				(PStrictColorLimit)? "Yes":"No",
+				(PAllocTable)? "Yes":"No",
+				(PUseDynamicColors)? "Yes":"No");
 		}
 		else
 		{
 			fprintf(stderr," for testing propose\n");
 		}
-		if (verbose && PColorLimit <= 256)
+		if (PColorLimit <= 256)
 		{
 			int i;
+			int count = 0;
+			int count_alloc = 0;
 
-			fprintf(stderr,"  The fvwm colors table:\n");
+			if (verbose)
+			{
+				fprintf(stderr,"  The fvwm colors table:\n");
+			}
 			for (i = 0; i < PColorLimit; i++)
 			{
-				fprintf(
-					stderr,"    rgb:%.3i/%.3i/%.3i\t%lu\n",
-					Pct[i].color.red >> 8,
-					Pct[i].color.green >> 8,
-					Pct[i].color.blue >> 8,
-					Pct[i].alloc_count);
+				if (verbose)
+				{
+					fprintf(
+						stderr,
+						"    rgb:%.3i/%.3i/%.3i\t%lu\n",
+						Pct[i].color.red >> 8,
+						Pct[i].color.green >> 8,
+						Pct[i].color.blue >> 8,
+						Pct[i].alloc_count);
+				}
+				if (Pct[i].alloc_count)
+				{
+					count++;
+				}
 			}
+			if (Pac != NULL)
+			{
+				if (verbose)
+				{
+					fprintf(stderr,"  fvwm colors not in"
+						" the table:\n");
+				}
+				for(i=0; i < nbr_of_colors; i++)
+				{
+					int j = 0;
+					Bool found = False;
+
+					if (!Pac[i].alloc_count)
+						continue;
+					while(j < PColorLimit && !found)
+					{
+						if (i == Pct[j].color.pixel)
+						{
+							found = True;
+						}
+						j++;
+					}
+					if (found)
+						continue;
+					count_alloc++;
+					if (verbose)
+					{
+						fprintf(
+							stderr,
+							"    rgb:"
+							"%.3i/%.3i/%.3i\t%lu\n",
+							Pac[i].color.red >> 8,
+							Pac[i].color.green >> 8,
+							Pac[i].color.blue >> 8,
+							Pac[i].alloc_count);
+					}
+				}
+				if (verbose && count_alloc == 0)
+				{
+					if (verbose)
+					{
+						fprintf(stderr,"    None\n");
+					}
+				}
+			}
+			fprintf(stderr, "  Number of colours used by fvwm:\n");
+			fprintf(stderr, "    In the table: %i\n", count);
+			fprintf(
+				stderr, "    Out of the table: %i\n",
+				count_alloc);
+			fprintf(stderr, "    Total: %i\n", count_alloc+count);
 		}
 	}
 	else

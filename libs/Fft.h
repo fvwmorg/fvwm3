@@ -51,9 +51,6 @@
 
 #ifdef HAVE_XFT2
 #define FftSupportUseXft2 1
-/* XftDrawStringUtf8 is broken in the current version of Xft2 */
-#undef FftUtf8Support
-#define FftUtf8Support 0
 #else
 #define FftSupportUseXft2 0
 #endif
@@ -440,6 +437,7 @@ typedef struct
 #define FftPatternGetDouble(a,b,c,d) FcPatternGetDouble(a,b,c,d)
 #define FftPatternGetString(a,b,c,d) FcPatternGetString(a,b,c,d)
 #define FftPatternGetBool(a,b,c,d) FcPatternGetBool(a,b,c,d)
+#define FftPatternGetMatrix(a,b,c,d) FcPatternGetMatrix(a,b,c,d)
 #define FftPatternVaBuild(a,b) FcPatternVaBuild(a,b)
 #else /* !FftSupportUseXft2 */
 #define FftConfigSubstitute(a) XftConfigSubstitute(a)
@@ -471,6 +469,7 @@ typedef struct
 #define FftPatternGetDouble(a,b,c,d) XftPatternGetDouble(a,b,c,d)
 #define FftPatternGetString(a,b,c,d) XftPatternGetString(a,b,c,d)
 #define FftPatternGetBool(a,b,c,d) XftPatternGetBool(a,b,c,d)
+#define FftPatternGetMatrix(a,b,c,d) XftPatternGetMatrix(a,b,c,d)
 #define FftPatternVaBuild(a,b) XftPatternVaBuild(a,b)
 #endif /* !XftSupportUseXft2 */
 
@@ -605,6 +604,7 @@ typedef struct
 #define FftPatternGetDouble(a,b,c,d) 0
 #define FftPatternGetString(a,b,c,d) 0
 #define FftPatternGetBool(a,b,c,d) 0
+#define FftPatternGetMatrix(a,b,c,d) 0
 #define FftPatternVaBuild(a,b) NULL
 
 /* Xft stuff */

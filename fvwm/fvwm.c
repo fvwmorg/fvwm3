@@ -1240,7 +1240,11 @@ static void usage(void)
 		" [-restore file]"
 		" [-visualId id]"
 		" [-visual class]"
-		" [-color-limit]"
+		" [-color-limit num]"
+		" [-strict-color-limit]"
+		" [-allocate-pallet]"
+		" [-static-pallet]"
+		" [-named-pallet]"
 		"\n\n",g_argv[0]);
 	exit(1);
 }
@@ -1623,13 +1627,13 @@ int main(int argc, char **argv)
 	int i;
 	int len;
 	char *display_string;
-	char *opt_color_limit = NULL;
 	char message[255];
 	Bool do_force_single_screen = False;
 	Bool replace_wm = False;
 	Bool option_error = False;
 	int visualClass = -1;
 	int visualId = -1;
+	PictureColorLimitOption colorLimitop = {-1, -1, -1, -1, -1};
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
 
@@ -1854,7 +1858,27 @@ int main(int argc, char **argv)
 			{
 				usage();
 			}
-			CopyString(&opt_color_limit,argv[i]);
+			colorLimitop.color_limit = atoi(argv[i]);
+		}
+		else if (StrEquals(argv[i], "-strict-color-limit") ||
+			 StrEquals(argv[i], "--strict-color-limit"))
+		{
+			colorLimitop.strict = True;
+		}
+		else if (StrEquals(argv[i], "-allocate-pallet") ||
+			 StrEquals(argv[i], "--allocate-pallet"))
+		{
+			colorLimitop.allocate = True;
+		}
+		else if (StrEquals(argv[i], "-static-pallet") ||
+			 StrEquals(argv[i], "--static-pallet"))
+		{
+			colorLimitop.not_dynamic = True;
+		}
+		else if (StrEquals(argv[i], "-named-pallet") ||
+			 StrEquals(argv[i], "--named-pallet"))
+		{
+			colorLimitop.use_named_table = True;
 		}
 		else if (StrEquals(argv[i], "-version") ||
 			 StrEquals(argv[i], "--version"))
@@ -2137,11 +2161,7 @@ int main(int argc, char **argv)
 	Scr.ColorLimit = 0;
 	PUseDynamicColors = 0;
 	Scr.ColorLimit = PictureInitColors(
-		PICTURE_CALLED_BY_FVWM, True, opt_color_limit, True, True);
-	if (opt_color_limit)
-	{
-		free(opt_color_limit);
-	}
+		PICTURE_CALLED_BY_FVWM, True, &colorLimitop, True, True);
 
 	FShapeInit(dpy);
 	FRenderInit(dpy);

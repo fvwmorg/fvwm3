@@ -161,36 +161,52 @@ FftFont *FftGetRotatedFont(
 	Display *dpy, FftFont *f, rotation_type rotation)
 {
 	FftPattern *rotated_pat;
-	FftMatrix m;
-	int dummy;
+	FftMatrix r,b;
+	FftMatrix *pm = NULL;
 
 	if (f == NULL)
 		return NULL;
 
 	rotated_pat = FftPatternDuplicate(f->pattern);
+
 	if (rotated_pat == NULL)
 		return NULL;
 
-	dummy = FftPatternDel(rotated_pat, FFT_MATRIX);
-
 	if (rotation == ROTATION_90)
 	{
-		FFT_SET_ROTATED_90_MATRIX(&m);
+		FFT_SET_ROTATED_90_MATRIX(&r);
 	}
 	else if (rotation == ROTATION_180)
 	{
-		FFT_SET_ROTATED_180_MATRIX(&m);
+		FFT_SET_ROTATED_180_MATRIX(&r);
 	}
 	else if (rotation == ROTATION_270)
 	{
-		FFT_SET_ROTATED_270_MATRIX(&m);
+		FFT_SET_ROTATED_270_MATRIX(&r);
 	}
 	else
 	{
 		return NULL;
 	}
 
-	if (!FftPatternAddMatrix(rotated_pat, FFT_MATRIX, &m))
+	FftPatternGetMatrix(rotated_pat, FFT_MATRIX, 0, &pm);
+	if (pm)
+	{
+		/* rotate the matrice */
+		b.xx = r.xx * pm->xx + r.xy * pm->yx;
+		b.xy = r.xx * pm->xy + r.xy * pm->yy;
+		b.yx = r.yx * pm->xx + r.yy * pm->yx;
+		b.yy = r.yx * pm->xy + r.yy * pm->yy;
+	}
+	else
+	{
+		b.xx = r.xx;
+		b.xy = r.xy;
+		b.yx = r.yx;
+		b.yy = r.yy;
+	}
+	FftPatternDel(rotated_pat, FFT_MATRIX);
+	if (!FftPatternAddMatrix(rotated_pat, FFT_MATRIX, &b))
 		return NULL;
 	return FftFontOpenPattern(dpy, rotated_pat);
 }
