@@ -3,7 +3,6 @@
 PERL = @PERL@
 
 bin_PROGRAMS = @XPMROOT@ xselection
-bin_SCRIPTS = fvwm_make_browse_menu.sh
 noinst_SCRIPTS = BuildXLockMenu
 
 EXTRA_PROGRAMS = xpmroot

@@ -991,7 +991,6 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   FvwmWindow *t;
   XWindowAttributes winattrs = {0};
   unsigned long eventMask;
-  XEvent dummy;
 
   if(!tmp_win)
     return;
