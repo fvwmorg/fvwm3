@@ -3,6 +3,10 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.20 (not released yet)
 
+* KillModule supports an optional alias parameter as given in Module.
+    Module FvwmModule Alias
+    KillModule FvwmModule Alias
+
 Changes in beta release 2.3.19 (June 2000)
 
 * New command UpdateStyles forces an immediate style update, even

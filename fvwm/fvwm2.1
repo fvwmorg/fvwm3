@@ -6391,15 +6391,23 @@ DestroyModuleConfig FvwmButtons*
 .EE
 
 .TP
-.BI "KillModule " module
+.BI "KillModule " modulename " [" modulealias ]
 Causes the module which was invoked with name
-.I module
-to be killed.  The name may include wildcards.
+.I modulename
+to be killed.  The name may include wildcards. If
+.I modulealias
+is given, only modules started with the given alias are killed.
+.EX
+KillModule FvwmPager  # kill all pagers
+
+Module FvwmEvent SoundEvent
+KillModule FvwmEvent SoundEvent
+.EE
 
 .TP
 .BI "Module " modulename
-Specifies a module which should be spawned during initialization.  At
-the current time the available modules (included with fvwm) are
+Specifies a module with its optional parameters which should be spawned.
+At the current time the available modules (included with fvwm) are
 .B FvwmAnimate
 (produces animation effects when a window is iconified or de-iconifed).
 .B FvwmAudio
@@ -6412,14 +6420,24 @@ the current time the available modules (included with fvwm) are
 (to display a spiffy XPM),
 .B FvwmButtons
 (brings up a customizable tool bar),
+.B FvwmCommandS
+(a command server to use with shell's FvwmCommand client)
+.B FvwmConsole
+(to execute fvwm commands directly)
 .B FvwmCpp
 (to preprocess your
 .I .fvwm2rc
 with cpp),
+.B FvwmDebug
+(to help debug fvwm)
+.B FvwmDragWell
+(the place to drag&drop to)
 .B FvwmEvent
 (trigger various actions by events),
 .B FvwmForm
 (to bring up dialogs),
+.B FvwmGtk
+(to bring up GTK menus and dialogs),
 .B FvwmIconBox
 (like the mwm IconBox),
 .B FvwmIconMan
@@ -6436,14 +6454,28 @@ with m4),
 (saves the desktop state in .xinitrc style),
 .B FvwmSaveDesk
 (saves the desktop state in fvwm commands),
+.B FvwmScript
+(another powerful dialog toolkit),
 .B FvwmScroll
 (puts scrollbars on any window),
 .B FvwmTaskBar
 (a Windows like task bar),
+.B FvwmTheme
+(manages colorsets, see below),
 .B FvwmWinList
-(a window list).
-These modules have their own man pages.  There are other modules
+(a window list),
+.B FvwmWharf
+(an AfterStep like button bar).
+These modules have their own man pages.  There may be other modules
 out on there as well.
+
+Note,
+.B FvwmTheme
+is a special module which manages colorsets. Most of other modules and fvwm
+itself support colorsets and changing colors dynamically. Colorsets will be
+the only method to specify colors in the next stable fvwm release, and then
+the functionality of FvwmTheme will be moved to the core fvwm.
+
 
 Modules can be short lived transient programs or, like
 .BR FvwmButtons ,

@@ -1,3 +1,14 @@
+2000-06-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/module_interface.c:
+	KillModule now supports optional alias parameter, so it is now
+	possible to stop individual modules started by alias.
+
+	* NEWS:
+	* fvwm2.1:
+	Documented KillModule additional parameter.
+	Improved description of Module command.
+
 2000-06-27  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/placement.c (NEW_CLEVERPLACEMENT_CODE):

@@ -61,6 +61,9 @@ int *readPipes;
 int *writePipes;
 int *pipeOn;
 char **pipeName;
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+char **pipeAlias;  /* as given in: Module FvwmPager MyAlias */
+#endif
 
 unsigned long *PipeMask;
 unsigned long *SyncMask;
@@ -86,6 +89,9 @@ void initModules(void)
   SyncMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
   NoGrabMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
   pipeName = (char **)safemalloc(sizeof(char *)*npipes);
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+  pipeAlias= (char **)safemalloc(sizeof(char *)*npipes);
+#endif
   pipeQueue=(struct queue_buff_struct **)
     safemalloc(sizeof(struct queue_buff_struct *)*npipes);
 
@@ -99,6 +105,9 @@ void initModules(void)
       NoGrabMask[i] = 0;
       pipeQueue[i] = (struct queue_buff_struct *)NULL;
       pipeName[i] = NULL;
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+      pipeAlias[i] = NULL;
+#endif
     }
   DBUG("initModules", "Zeroing init module array\n");
   FD_ZERO(&init_fdset);
@@ -119,6 +128,13 @@ void ClosePipes(void)
 	  free(pipeName[i]);
 	  pipeName[i] = 0;
 	}
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+      if(pipeAlias[i] != NULL)
+	{
+	  free(pipeAlias[i]);
+	  pipeAlias[i] = NULL;
+	}
+#endif
       while(pipeQueue[i] != NULL)
 	{
 	  DeleteMessageQueueBuff(i);
@@ -240,6 +256,15 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     {
       args[nargs] = 0;
       action = GetNextToken(action,&args[nargs]);
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+      if (pipeAlias[i] == NULL && args[nargs])
+      {
+        const char *ptr = args[nargs];
+        while (*ptr && isalpha(*ptr)) ptr++;
+        if (*ptr == '\0')
+          pipeAlias[i] = stripcpy(args[nargs]);
+      }
+#endif
       nargs++;
     }
   if(args[nargs-1] == NULL)
@@ -611,7 +636,13 @@ void KillModule(int channel)
       free(pipeName[channel]);
       pipeName[channel] = NULL;
     }
-
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+  if(pipeAlias[channel] != NULL)
+    {
+      free(pipeAlias[channel]);
+      pipeAlias[channel] = NULL;
+    }
+#endif
   if (fFvwmInStartup) {
     /* remove from list of command line modules */
     DBUG("killModule", "ending command line module\n");
@@ -621,7 +652,11 @@ void KillModule(int channel)
   return;
 }
 
-static void KillModuleByName(char *name)
+static void KillModuleByName(char *name
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+  , char *alias
+#endif
+)
 {
   int i = 0;
 
@@ -630,7 +665,11 @@ static void KillModuleByName(char *name)
 
   while(i<npipes)
     {
-      if((pipeName[i] != NULL)&&(matchWildcards(name,pipeName[i])))
+      if((pipeName[i] != NULL)&&(matchWildcards(name,pipeName[i]))
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+          && (!alias || (pipeAlias[i] && matchWildcards(alias, pipeAlias[i])))
+#endif
+        )
 	{
 	  KillModule(i);
 	}
@@ -642,11 +681,20 @@ static void KillModuleByName(char *name)
 void module_zapper(F_CMD_ARGS)
 {
   char *module;
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+  char *alias = NULL;
+#endif
 
-  GetNextToken(action,&module);
+  action = GetNextToken(action,&module);
   if (!module)
     return;
+
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+  GetNextToken(action, &alias);
+  KillModuleByName(module, alias);
+#else
   KillModuleByName(module);
+#endif
   free(module);
 }
 
