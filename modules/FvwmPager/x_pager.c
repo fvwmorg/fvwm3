@@ -134,6 +134,8 @@ Window		icon_win;               /* icon window */
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
 
+static Pixmap default_pixmap = None;
+
 /***********************************************************************
  *
  *  Procedure:
@@ -149,7 +151,7 @@ void initialize_viz_pager(void)
     Scr.Pager_w = Scr.Root;
     Scr.NormalGC = DefaultGC(dpy, Scr.screen);
   } else {
-    attr.background_pixmap = ParentRelative;
+    attr.background_pixmap = None;
     attr.border_pixel = 0;
     attr.colormap = Pcmap;
     Scr.Pager_w = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth,
@@ -160,6 +162,10 @@ void initialize_viz_pager(void)
   xgcv.plane_mask = AllPlanes;
   Scr.MiniIconGC = XCreateGC(dpy, Scr.Pager_w, GCPlaneMask, &xgcv);
   Scr.black = GetColor("Black");
+
+  /* Transparent background are only allowed when the depth matched the root */
+  if (Pdepth == DefaultDepth(dpy, Scr.screen))
+    default_pixmap = ParentRelative;
 }
 
 /***********************************************************************
@@ -425,7 +431,7 @@ void initialize_pager(void)
     sizehints.flags |= USPosition;
 
   valuemask = (CWBackPixmap | CWBorderPixel | CWColormap | CWEventMask);
-  attributes.background_pixmap = ParentRelative;
+  attributes.background_pixmap = default_pixmap;
   attributes.border_pixel = fore_pix;
   attributes.colormap = Pcmap;
   attributes.event_mask = (StructureNotifyMask);
@@ -2849,7 +2855,7 @@ void change_colorset(int colorset)
   if (colorset < 0)
     return;
 
-  XSetWindowBackgroundPixmap(dpy, Scr.Pager_w, ParentRelative);
+  XSetWindowBackgroundPixmap(dpy, Scr.Pager_w, default_pixmap);
   for(i=0;i<ndesks;i++)
   {
     if (Desks[i].highcolorset == colorset)
@@ -2870,7 +2876,7 @@ void change_colorset(int colorset)
     if (Desks[i].colorset == colorset)
     {
       attributes.border_pixel = Colorset[colorset].fg;
-      XSetWindowBackgroundPixmap(dpy, Desks[i].title_w, ParentRelative);
+      XSetWindowBackgroundPixmap(dpy, Desks[i].title_w, default_pixmap);
       XClearArea(dpy, Desks[i].title_w, 0, 0, 0, 0, True);
       XChangeWindowAttributes(dpy,Desks[i].w, CWBorderPixel, &attributes);
       SetWindowBackground(dpy, Desks[i].w, 0, 0,
