@@ -1944,8 +1944,6 @@ void Done(int restart, char *command)
     if (command)
     {
 #define MAX_ARG_SIZE 25
-      /* This is not allowed by ANSI C! Must use a macro. */
-      /* const int MAX_ARG_SIZE = 25; */
       char *my_argv[MAX_ARG_SIZE];
       const char *errorMsg;
       int n = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);
@@ -1983,6 +1981,14 @@ void Done(int restart, char *command)
       }
       else
       {
+        /* Warn against an old 'Restart fvwm2' usage */
+        if (n == 1 && strcmp(my_argv[0], "fvwm2") == 0)
+        {
+          fvwm_msg(WARN, "Done",
+            "`Restart fvwm2' might not do what you want, see the man page.\n\t"
+            "Use Restart without parameters if you mean to restart the same WM."
+          );
+        }
         execvp(my_argv[0], my_argv);
         fvwm_msg(ERR, "Done", "Call of '%s' failed! (restarting '%s' instead)",
           my_argv[0], g_argv[0]);

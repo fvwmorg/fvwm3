@@ -1144,11 +1144,12 @@ A: The following discusses a general solution, you should substitute
 
      AddToFunc StartFunction I Module FvwmEvent
 
-   The sample to use with fvwm 2.3.19+ versions (this moves a newly
+   The sample to use with fvwm 2.3.21+ versions (this moves a newly
    created window "My Window" only, and switches to all new windows):
 
      *FvwmEvent-NewWindow: Cmd
      *FvwmEvent-NewWindow: PassId
+     *FvwmEvent-NewWindow: StartDelay 4
      *FvwmEvent-NewWindow: add_window FuncFocusWindow
 
      DestroyFunc FuncFocusWindow

@@ -1,14 +1,14 @@
 New items
 
-  168, 169, 170
+  168, 169, 170, 171
 
 Items with highest priority / most severe problems:
 
-  117, 134, 146, 170
+  117, 134, 146, 171
 
 Closed recently:
 
- 168, 169
+ 168, 169, 170
 
 ---------- Summary: ----------------------------------------------
 
@@ -19,8 +19,8 @@ Closed recently:
  9 testing
 ----------------------
  14 open items
-156 items closed/postponed
-170 items in total
+157 items closed/postponed
+171 items in total
 
 ---------- To be verified: ---------------------------------------
 
@@ -34,8 +34,9 @@ Closed recently:
 134) Investigate DecWindows ConfigureRequest/Notify race condition.
      [reported by Fabien Viallard on 19-Apr-2000]
 146) Bug #542 (Winch signals).
-170) Update man page for Restart command w/ multi head.
-     [Mikhael]
+171) With virtually any border config, when moving opaqually, the borders of
+     all underlying windows flick a lot. There is no any flicking in 2.2.x.
+     [reported by Mikhael]
 
 ---------- Distribution issues: ----------------------------------
 
@@ -60,6 +61,8 @@ Closed recently:
 
 168) Fix SIGCHLD handling in Piperead which interrupts select().
 169) Clean up placement algorithm.
+170) Update man page for Restart command w/ multi head.
+     [Mikhael]
 
 ========== Postponed until after 2.4: ============================
 
@@ -189,6 +192,7 @@ Closed recently:
  57) Fix autohiding and TaskBar tips.
  58) DeskTopSize is not honoured upon a restart (the old one is reused).
      [use Restart --dont-preserve-state]
+     [Mikhael: DeskTopSize is in fact honored since 2.3.12]
  59) Get Raise/Lower of transients straight.
      [duplicate of item 54]
  60) Make MaxWindowSize a style (don't release a command that will

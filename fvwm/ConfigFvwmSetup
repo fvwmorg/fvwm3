@@ -241,7 +241,7 @@ DestroyMenu MenuFvwmQuitVerify
 AddToMenu MenuFvwmQuitVerify "Really Quit Fvwm?" Title
 + "&Q. Yes, Really Quit" Quit
 + ""                     Nop
-+ "&R. Restart Fvwm2"    Restart fvwm2
++ "&R. Restart"          Restart
 + ""                     Nop
 + "&T. Start twm"        Restart twm
 + "&C. Start ctwm"       Restart ctwm
@@ -250,7 +250,7 @@ AddToMenu MenuFvwmQuitVerify "Really Quit Fvwm?" Title
 + "&M. Start mwm"        Restart mwm
 + "&O. Start olwm"       Restart /usr/openwin/bin/olwm
 + ""                     Nop
-+ "&X. Just an Xterm"    Restart xterm
++ "&X. Just an Xterm"    Restart xterm -n '"X Console"' -T '"X Console"'
 + ""                     Nop
 + "&N. No, Don't Quit"   Nop
 

@@ -1,3 +1,14 @@
+2001-01-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.c: issue a warning when restarting as 'Restart fvwm2'
+	* fvwm/fvwm2.1: enhanced Restart entry
+	* fvwm/ConfigFvwmSetup: s/Restart fvwm2/Restart/
+	* todo-2.4: closed 170, added an old annoying problem 171
+
+	* fvwm/menus.h: removed incorect leading #
+	* fvwm/menus.c: corrected an error message
+	* docs/FAQ: minor corrections in 3.18
+
 2001-01-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1 (quotes):
@@ -233,7 +244,7 @@
 	* fvwm/icons.c (CreateIconWindow):
 	properly determine the icon to use, honouring icon override style
 
-2000-01-04  Mikhael Goikhman  <migo@homemail.com>
+2001-01-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:
 	small rewordings in the SM command line options and HideGeometryWindow

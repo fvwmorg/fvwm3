@@ -5055,7 +5055,7 @@ static Bool scanForPixmap(char *instring, Picture **p, char identifier)
 	*p = pp;
       else
 	fvwm_msg(WARN, "scanForPixmap",
-		 "Couldn't load image from mini-news.xpm %s", name);
+		 "Couldn't load image from %s", name);
       break;
     }
   }
