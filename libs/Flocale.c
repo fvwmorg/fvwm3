@@ -2291,11 +2291,11 @@ void FlocaleGetNameProperty(
 	int num;
 	XTextProperty text_prop;
 
+	list = NULL;
 	if (func(dpy, w, &text_prop) == 0)
 	{
 		return;
 	}
-
 	if (text_prop.encoding == XA_STRING)
 	{
 		/* STRING encoding, use this as it is */

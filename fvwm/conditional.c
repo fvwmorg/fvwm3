@@ -601,7 +601,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond,"State"))
 		{
-			if (sscanf(tmp, "%d", &state) &&
+			if (sscanf(tmp, "%u", &state) &&
 			    state >= 0 && state <= 31)
 			{
 				state = (1 << state);
