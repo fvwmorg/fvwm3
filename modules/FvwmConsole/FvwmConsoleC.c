@@ -62,10 +62,10 @@ int main ( int argc, char *argv[]) {
   }
 
   /* make a socket */
-  home = getenv("HOME");
-  s_name = safemalloc( strlen(home)+ 14);
-  strcpy(s_name,home);
-  strcat(s_name,S_NAME);
+  home = getenv("FVWM_USERDIR");
+  s_name = safemalloc( strlen(home) + sizeof(S_NAME) + 1);
+  strcpy(s_name, home);
+  strcat(s_name, S_NAME);
   if( (s = socket(AF_UNIX, SOCK_STREAM, 0)) < 0 ) {
 	ErrMsg ("socket");
   }

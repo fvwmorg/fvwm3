@@ -141,14 +141,14 @@ The key binding can be overridden or defined
 in fvwm module configuration.
 
 .RS
-*FvwmConsoleKey \\ck prev_line
+*FvwmConsole: Key \\ck prev_line
 .RE
 
 Non-space character sequence need not be quoted.
 In order to undefine, omit the last argument.
 
 .RS
-*FvwmConsoleKey \\ck
+*FvwmConsole: Key \\ck
 .RE
 
 Note that non-meta character is case sensitive. 
@@ -159,7 +159,7 @@ repeatedly. Subst will replace particular input sequence to user defined
 string. Example:
 
 .RS
-*FvwmConsoleSubst '^bigx' 'Exec xterm -g 120x60+0+0 -fn 10x20 -fg black -bg lemonchiffon'
+*FvwmConsole: Subst '^bigx' 'Exec xterm -g 120x60+0+0 -fn 10x20 -fg black -bg lemonchiffon'
 .RE
 
 Typing 'bigx<return>' in FvwmConsole will launch xterm. '^' denotes 
@@ -173,7 +173,7 @@ Single or double quotes have no difference, although they have to match,
 and cannot include itself in the string.
 
 .RS
-*FvwmConsoleSubst '^g\\s*(\\d+)' 'Desk 0 0\\nGotoPage 0 $1\\nFocus'
+*FvwmConsole: Subst '^g\\s*(\\d+)' 'Desk 0 0\\nGotoPage 0 $1\\nFocus'
 .RE
 
 Entering 'g4' or 'g  4' will jump to desk 0 page 0 4 and focus.

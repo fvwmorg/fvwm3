@@ -53,10 +53,10 @@ char *getline()
         rl_bind_key('\t', rl_insert);
 
 		/* get history from file */
-		home = getenv("HOME");
-		h_file = safemalloc( strlen(home)+ 14);
-		strcpy(h_file,home);
-		strcat(h_file,HISTFILE);
+		home = getenv("FVWM_USERDIR");
+		h_file = safemalloc(strlen(home) + sizeof(HISTFILE) + 1);
+		strcpy(h_file, home);
+		strcat(h_file, HISTFILE);
 		if( access( h_file, F_OK)  < 0) {
 		  /* if it doesn't exist create it */
 		  fdh = creat( h_file, S_IRUSR | S_IWUSR );

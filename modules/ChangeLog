@@ -1,3 +1,14 @@
+2002-04-14  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmConsole/FvwmConsole.c:
+	* FvwmConsole/FvwmConsole.h:
+	* FvwmConsole/FvwmConsoleC.c:
+	* FvwmConsole/FvwmConsoleC.pl.1:
+	* FvwmConsole/FvwmConsoleC.pl.in:
+	* FvwmConsole/getline.c:
+	use $FVWM_USERDIR not $HOME for FvwmConsole history and socket files,
+	make these file names more readable, increase history from 50 to 100
+
 2002-04-11  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmIconMan/xmanager.c:

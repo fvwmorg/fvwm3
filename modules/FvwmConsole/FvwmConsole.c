@@ -184,10 +184,10 @@ void server ( void )
   }
 
   /* name the socket */
-  home = getenv("HOME");
-  S_name = safemalloc( strlen(home)+ 16);
-  strcpy(S_name,home);
-  strcat(S_name,S_NAME);
+  home = getenv("FVWM_USERDIR");
+  S_name = safemalloc(strlen(home) + sizeof(S_NAME) + 1);
+  strcpy(S_name, home);
+  strcat(S_name, S_NAME);
 
   sas.sun_family = AF_UNIX;
   strcpy( sas.sun_path, S_name );

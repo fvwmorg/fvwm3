@@ -40,13 +40,13 @@
 #include <libs/fvwmlib.h>
 #include <libs/Module.h>
 
-#define S_NAME  "/.FvConSocket"
+#define S_NAME  "/.FvwmConsole-Socket"
 /* Prompts for readline support */
 #define PS1     ""
 #define PS2     ">"
 
-#define HISTSIZE 50    /* readline history file size */
-#define HISTFILE "/.FvConHist"
+#define HISTSIZE 100    /* readline history file size */
+#define HISTFILE "/.FvwmConsole-History"
 
 /* #define M_PASS M_ERROR */
 #define M_PASS M_ERROR

@@ -26,16 +26,20 @@ require 5.002;
 use Socket;
 
 $ESC = "\e";
-$HISTFILE = "$ENV{HOME}/.FvConHist0";
-$SOCKET_NAME = "$ENV{HOME}/.FvConSocket";
+$HISTFILE = "$ENV{FVWM_USERDIR}/.FvwmConsole-History0";
+$SOCKET_NAME = "$ENV{FVWM_USERDIR}/.FvwmConsole-Socket";
 #$VERSION = '1.2';
 $VERSION = '@VERSION@';
 
 
 
-if( -c "/dev/console" ) {
+if (-c "/dev/console" && -w "/dev/console") {
 	close STDERR;
-	open (STDERR,">/dev/console") || die "/dev/console: ",$!;
+	if (!open (STDERR, ">/dev/console")) {
+		print "Can't redirect STDERR to /dev/console: $!\n";
+		sleep 3;
+		exit;
+	}
 }
 
 ($Filename = $0) =~ s@.*/@@;
@@ -48,10 +52,11 @@ $org_stty = &stty('-g');
 
 @Hist = ();
 @Histall = ();
-$HIST_SIZE = 50;
+$HIST_SIZE = 100;
 $MAX_COMMAND_SIZE = 1000;
 
 main();
+print "Done\n";
 exit;
 
 
@@ -158,9 +163,9 @@ sub main {
 	my($sin, $cmd);
 	my($name, $ppid, $cpid);
 
-	socket(SH, PF_UNIX, SOCK_STREAM, 0) || die "$! ";
+	socket(SH, PF_UNIX, SOCK_STREAM, 0) || die "$!\n";
 	$sun = sockaddr_un($SOCKET_NAME);
-	connect(SH,$sun) || die "$sun:", $!;
+	connect(SH, $sun) || die "$sun: $!\n";
 	print "$Filename $VERSION\n";
 	default_key();
 	read_config();  #must be done before forking
