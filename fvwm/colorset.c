@@ -1091,9 +1091,12 @@ void parse_colorset(int n, char *line)
 				{
 					average_pix = None;
 				}
-				if (w != cs->width || h != cs->height)
+				else
 				{
-					average_pix = None;
+					if (w != cs->width || h != cs->height)
+					{
+						average_pix = None;
+					}
 				}
 				if (average_pix == None)
 				{

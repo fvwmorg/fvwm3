@@ -1,5 +1,8 @@
 2003-05-22  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/colorset.c (parse_colorset):
+	Fixed an uninit mem
+
 	* fvwm/borders.c (border_fill_pixmap_background): 
 	Fixed problem with depth 1 pixmap
 
