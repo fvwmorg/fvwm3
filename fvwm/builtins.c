@@ -3009,6 +3009,7 @@ void strokeFunc(F_CMD_ARGS)
 
   Window JunkRoot, JunkChild;
   int JunkX, JunkY;
+  int tmpx, tmpy;
   unsigned int JunkMask;
   Bool feed_back = False;
   int stroke_width = 1;
@@ -3105,10 +3106,20 @@ void strokeFunc(F_CMD_ARGS)
     switch (eventp->type)
     {
     case MotionNotify:
-      stroke_record(eventp->xmotion.x,eventp->xmotion.y);
+      if (eventp->xany.window != Scr.Root) 
+      {
+	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &tmpx, &tmpy,
+		&JunkX, &JunkY, &JunkMask);
+      }
+      else
+      {
+	tmpx = eventp->xmotion.x;
+	tmpy = eventp->xmotion.y;
+      }
+      stroke_record(tmpx,tmpy);
       if (draw_motion)
       {
-	if ((x[i] != eventp->xmotion.x || y[i] != eventp->xmotion.y))
+	if ((x[i] != tmpx || y[i] != tmpy))
 	{
 	  i++;
 	  if (i >= coords_size) {
@@ -3126,8 +3137,8 @@ void strokeFunc(F_CMD_ARGS)
 	      break;
 	    }
 	  }
-	  x[i] = eventp->xmotion.x;
-	  y[i] = eventp->xmotion.y;
+	  x[i] = tmpx;
+	  y[i] = tmpy;
 	  XDrawLine(dpy, Scr.Root, Scr.XorGC, x[i-1], y[i-1], x[i], y[i]);
 	}
       }
