@@ -1,3 +1,8 @@
+2002-06-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/module_interface.c (CMD_SendToModule):
+	fixed SendToModule when the first parameter contains quotes
+
 2002-06-06  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm.c (main):

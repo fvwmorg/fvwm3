@@ -1,3 +1,8 @@
+2002-06-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	added Debug option to modules
+
 2002-05-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* General/FileSystem.pm:
@@ -5,26 +10,26 @@
 
 2002-05-28  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/Module.pm.in:
+	* FVWM/Module.pm.in:
 	renamed sendText to send, support continuation lines
 
-	* perllib/FVWM/Module/Gtk.pm:
+	* FVWM/Module/Gtk.pm:
 	added openErrorDialog method, good for debugging
 
-	* perllib/General/Parse.pm:
+	* General/Parse.pm:
 	added getTokens, cutTokens
 
 2002-04-30  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/Module.pm.in:
-	* perllib/FVWM/Constants.pm:
-	* perllib/FVWM/create-constants:
+	* FVWM/Module.pm.in:
+	* FVWM/Constants.pm:
+	* FVWM/create-constants:
 	added support for synchronous startup and synchronous messages
 
 2002-04-20  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/Module.pm.in:
-	* perllib/General/FileSystem.pm:
+	* FVWM/Module.pm.in:
+	* General/FileSystem.pm:
 	search a non fully qualified file in $FVWM_USERDIR and $FVWM_DATADIR
 
 2002-03-04  Mikhael Goikhman  <migo@homemail.com>

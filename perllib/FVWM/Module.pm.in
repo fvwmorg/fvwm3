@@ -71,6 +71,9 @@ my $PACKET_TYPE_ARGS = {
 	&MX_PROPERTY_CHANGE     => "l3a*",
 };
 
+# will be filled on demand in getPacketName()
+my $PACKET_TYPE_NAMES = undef;
+
 my $TEXTBASED_PACKET_MASK = (
 	M_ERROR       | M_CONFIG_INFO | M_STRING      | M_WINDOW_NAME |
 	M_ICON_NAME   | M_RES_CLASS   | M_RES_NAME    | M_ICON_FILE   |
@@ -98,6 +101,14 @@ sub internalDie ($$) {
 	die $self->name . ": $msg Exiting.\n";
 }
 
+sub debug ($$) {
+	my $self = shift;
+	return unless $self->{debug};
+	my $msg = shift;
+	$msg =~ s/\n$//s;
+	print STDERR $self->name . ": $msg\n";
+}
+
 sub getPacketArgs ($$) {
 	my $self = shift;
 	my $type = shift;
@@ -105,6 +116,20 @@ sub getPacketArgs ($$) {
 	$self->internalDie("Unsupported packet type ($type)")
 		unless defined $args;
 	return $args;
+}
+
+sub getPacketName ($$) {
+	my $self = shift;
+	my $type = shift;
+	if (!defined $PACKET_TYPE_NAMES) {
+		foreach (@EXPORT) {
+			next unless /^M_/ || /^MX_/;
+			no strict 'refs';
+			$PACKET_TYPE_NAMES->{&$_()} = $_;
+		}
+	}
+	my $name = $PACKET_TYPE_NAMES->{$type};
+	return defined $name? $name: "*unknown-packet-$type*";
 }
 
 sub isPacketTextBased ($$) {
@@ -154,6 +179,7 @@ sub new ($@) {
 	$self->{ostream}->autoflush(1);
 	$self->{istream}->autoflush(1);
 
+	$self->{debug} = $params{'Debug'} || 0;
 	$self->{lastPacket} = [];
 	$self->{handlers} = {};
 	$self->{shouldSendUnlock} = 0;
@@ -278,6 +304,7 @@ sub send ($$;$$) {
 		}
 		next if $line =~ /^\s*$/;
 
+		$self->debug("send: [$line]");
 		my $len = length $line;
 		$self->{ostream}->print(
 			pack("lla${len}l", $winId, $len, $line, $continue)
@@ -343,7 +370,7 @@ sub readPacket ($) {
 	}
 
 	$self->{lastPacket} = [$packet, $type];
-	($packet, $type);
+	return ($packet, $type);
 }
 
 sub invokeHandler ($$@) {
@@ -384,6 +411,12 @@ sub processPacket ($;$$) {
 	my @args = unpack($self->getPacketArgs($type), $packet);
 	# strip everything past the first null (or newline) if needed
 	$args[@args - 1] =~ s/\n*\0.*//s if $self->isPacketTextBased($type);
+
+	if ($self->{debug}) {
+		my $msg = "got " . $self->getPacketName($type);
+		$msg .= " [$args[@args - 1]]" if $self->isPacketTextBased($type);
+		$self->debug($msg);
+	}
 
 	$self->{shouldSendUnlock} = 1 if $type &
 		($self->isExtended($type)? $self->{sync_xmask}: $self->{sync_mask});

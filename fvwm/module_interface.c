@@ -1359,10 +1359,9 @@ void CMD_SendToModule(F_CMD_ARGS)
   /* UngrabEm(); */
   if (!action)
     return;
-  GetNextToken(action,&module);
+  str = GetNextToken(action, &module);
   if (!module)
     return;
-  str = safestrdup(action + strlen(module) + 1);
 
   if (fw) {
     /* Modules may need to know which window this applies to */
@@ -1385,7 +1384,6 @@ void CMD_SendToModule(F_CMD_ARGS)
   }
 
   free(module);
-  free(str);
 }
 
 /* This used to be marked "fvwm_inline".  I removed this
