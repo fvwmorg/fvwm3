@@ -215,7 +215,6 @@ void SetDeskPageBackground(const Command *c)
   case 1:
     /* Process a solid color request */
     XSetWindowBackground(dpy, root, c->solidColor);
-    fprintf(stderr,"background change\n");
     XClearWindow(dpy, root);
     XFlush(dpy);
     break;
