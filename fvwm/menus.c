@@ -1497,15 +1497,20 @@ static void MenuInteraction(
 	    if ((mrPopdown || mrPopup) &&
 		(is_popdown_timed_out || MST_DO_POPDOWN_IMMEDIATELY(pmp->menu)))
 	    {
-	      flags.do_popdown_now = True;
-	      do_fake_motion = True;
-	      if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-		  !MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) &&
-		  MST_POPUP_DELAY(pmp->menu) <= MST_POPDOWN_DELAY(pmp->menu) &&
-		  popup_delay_10ms == popdown_delay_10ms)
+	      MenuRoot *m = (mrPopdown) ? mrPopdown : mrPopup;
+
+	      if (!m || mi != MR_PARENT_ITEM(m))
 	      {
-		flags.do_popup_now = True;
-		flags.is_popped_up_by_timeout = True;
+		flags.do_popdown_now = True;
+		do_fake_motion = True;
+		if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+		    !MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) &&
+		    MST_POPUP_DELAY(pmp->menu) <= MST_POPDOWN_DELAY(pmp->menu)
+		    && popup_delay_10ms == popdown_delay_10ms)
+		{
+		  flags.do_popup_now = True;
+		  flags.is_popped_up_by_timeout = True;
+		}
 	      }
 	    }
 	    if (flags.do_popup_now && mi == miRemovedSubmenu &&
