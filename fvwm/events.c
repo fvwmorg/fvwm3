@@ -928,8 +928,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	SetMapStateProp(Tmp_win, NormalState);
 	if (Scr.flags.is_map_desk_in_progress)
 	  do_grab_focus = False;
-	if (!OnThisPage)
-	  do_grab_focus = True;
+	else if (!OnThisPage)
+	  do_grab_focus = False;
 	else if (DO_GRAB_FOCUS(Tmp_win) &&
 		 (!IS_TRANSIENT(Tmp_win) || Tmp_win->transientfor == Scr.Root))
 	{
@@ -947,7 +947,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 				&JunkDepth)))
 	{
 	  /* Gee, the transientfor does not exist! These evil application
-	   * programmers must hate us a lot. */
+	   * programmers must hate us a lot ;-) */
 	  Tmp_win->transientfor = Scr.Root;
 	  do_grab_focus = True;
 	}

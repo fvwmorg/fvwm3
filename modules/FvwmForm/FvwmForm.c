@@ -112,6 +112,21 @@
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 #undef IamTheMain
 
+/* globals that are exported */
+Line root_line = {&root_line,    /* ->next */
+                  0,             /* number of items */
+                  L_CENTER,0,0,  /* justify, size x/y */
+                  0,             /* current array size */
+                  0};            /* items ptr */
+Line *cur_line = &root_line;            /* curr line in parse rtns */
+char preload_yorn='n';           /* init to non-preload */
+char bg_state = 'd';                    /* in default state */
+  /* d = default state */
+  /* s = set by command (must be in "d" state for first "back" cmd to set it) */
+  /* u = used (color allocated, too late to accept "back") */
+char endDefaultsRead = 'n';
+
+
 /* Font/color stuff
    The colors are:
    . defaults are changed by commands during parse
@@ -1588,7 +1603,7 @@ static void OpenWindows ()
                         &Colorset[(colorset)], Pdepth,
                         root_item_ptr->header.dt_ptr->dt_GC, True);
   }
-  if (preload_yorn == 'n') {            /* if not a preload */
+  if (preload_yorn != 'y') {            /* if not a preload */
     XMapRaised(dpy, CF.frame);
     XMapSubwindows(dpy, CF.frame);
     if (CF.warp_pointer) {

@@ -933,7 +933,7 @@ static void ResyncXStackingOrder(void)
   int count;
   int i;
 
-  for (count = 0, t = Scr.FvwmRoot.next; t != None; count++, t = t->next)
+  for (count = 0, t = Scr.FvwmRoot.next; t != NULL; count++, t = t->next)
     ;
   if (count > 0)
   {

@@ -24,14 +24,6 @@
 
  */
 
-/* I hate things defined in 2 places. */
-#ifdef IamTheMain
-#define EXTERN
-#else
-#define EXTERN extern
-#endif
-
-
 /*
  * This next stuff should be more specific and customizable.
  * For example padVText (above) was one of the things TXT_SPC
@@ -194,56 +186,38 @@ typedef struct _form {
   char have_env_var;                    /* at least one env var on cmd line */
 } Form;
 
-EXTERN Form cur_form;                   /* current form */
+extern Form cur_form;                   /* current form */
 #define CF cur_form                     /* I may want to undo this... */
 
   /* Globals: */
 /* These aren't customizable as to shape or color, so for now, they aren't
    in the "form" structure */
-EXTERN Cursor xc_ibeam, xc_hand;
+extern Cursor xc_ibeam, xc_hand;
 
 /* Link list roots */
-EXTERN Item *root_item_ptr;             /* pointer to root of item list */
-#ifdef IamTheMain
-EXTERN Line root_line = {&root_line,    /* ->next */
-                         0,             /* number of items */
-                         L_CENTER,0,0,  /* justify, size x/y */
-                         0,             /* current array size */
-                         0};            /* items ptr */
-EXTERN Line *cur_line = &root_line;            /* curr line in parse rtns */
-EXTERN char preload_yorn='n';           /* init to non-preload */
-#else
-EXTERN Line root_line;
-EXTERN Line *cur_line;
-EXTERN char preload_yorn;
-#endif
-EXTERN Item *item;                             /* current during parse */
-EXTERN Item *cur_sel, *cur_button;             /* current during parse */
-EXTERN Display *dpy;
-EXTERN int fd_x;                  /* fd for X connection */
-EXTERN Window root, ref;
-EXTERN int screen;
+extern Item *root_item_ptr;             /* pointer to root of item list */
+extern Line root_line;
+extern Line *cur_line;
+extern char preload_yorn;
+extern Item *item;                             /* current during parse */
+extern Item *cur_sel, *cur_button;             /* current during parse */
+extern Display *dpy;
+extern int fd_x;                  /* fd for X connection */
+extern Window root, ref;
+extern int screen;
 
 enum { c_bg, c_fg, c_item_bg, c_item_fg, c_itemlo, c_itemhi };
-EXTERN char *color_names[4];
-#ifdef IamTheMain
-EXTERN char bg_state = 'd';                    /* in default state */
-  /* d = default state */
-  /* s = set by command (must be in "d" state for first "back" cmd to set it) */
-  /* u = used (color allocated, too late to accept "back") */
-EXTERN char endDefaultsRead = 'n';
-#else
-EXTERN char bg_state;
-EXTERN char endDefaultsRead;
-#endif
+extern char *color_names[4];
+extern char bg_state;
+extern char endDefaultsRead;
 enum { f_text, f_input, f_button };
-EXTERN char *font_names[3];
-EXTERN char *screen_background_color;
+extern char *font_names[3];
+extern char *screen_background_color;
 
 
 /* From FvwmAnimate start */
-EXTERN char *MyName;
-EXTERN int MyNameLen;
+extern char *MyName;
+extern int MyNameLen;
 /* here is the old double parens trick. */
 /* #define DEBUG */
 #ifdef DEBUG
@@ -258,7 +232,7 @@ EXTERN int MyNameLen;
   fprintf X;\
   fflush (stderr);
 
-EXTERN int Channel[2];
+extern int Channel[2];
 
 /* From FvwmAnimate end */
 
@@ -274,4 +248,3 @@ char * ParseCommand (int, char *, char, int *, char **s); /* ParseCommand.c */
 void DeadPipe(int nonsense);            /* FvwmForm.c */
 
 #endif
-
