@@ -113,6 +113,31 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
 	return 0;
 }
 
+int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
+{
+	XConfigureRequestEvent cre;
+	
+	if (ev == NULL)
+	{
+		return 0;
+	}
+
+	cre.value_mask = ev->xclient.data.l[0];
+	cre.x = ev->xclient.data.l[1];
+	cre.y = ev->xclient.data.l[2];
+	cre.width = ev->xclient.data.l[3];
+	cre.height = ev->xclient.data.l[4];
+	cre.window = ev->xclient.window;
+#if 1
+	fprintf(stderr, "_NET_MOVERESIZE_WINDOW: %i,%i,%i,%i,%i (%s)\n",
+		cre.x, cre.y, cre.width, cre.height, (int)cre.value_mask,
+		(fwin)? fwin->name.name:"unmanaged");
+#endif
+	events_handle_configure_request(cre, fwin, True);
+	
+	return 0;
+}
+
 int ewmh_WMDesktop(EWMH_CMD_ARGS)
 {
 	if (ev != NULL && style == NULL)
@@ -1284,7 +1309,26 @@ Bool EWMH_ProcessClientMessage(const exec_context_t *exc)
 		return True;
 	}
 
-	if (fwin == NULL || ev->xclient.window == None)
+	if ((ewmh_a = (ewmh_atom *)ewmh_GetEwmhAtomByAtom(
+		     ev->xclient.message_type, EWMH_ATOM_LIST_CLIENT_WIN))
+	    == NULL)
+	{
+		return False;
+	}
+
+	if (ev->xclient.window == None)
+	{
+		return False;
+	}
+
+	/* this one is special: we can get it on an unamaged window */
+	if (StrEquals(ewmh_a->name, "_NET_MOVERESIZE_WINDOW"))
+	{
+		ewmh_a->action(fwin, ev, NULL, 0);
+		return True;
+	}
+	
+	if (fwin == NULL)
 	{
 		return False;
 	}

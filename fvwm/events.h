@@ -35,5 +35,6 @@ int discard_window_events(Window w, long event_mask);
 int flush_property_notify(Atom atom, Window w);
 void sync_server(int toggle);
 Bool is_resizing_event_pending(FvwmWindow *fw);
-
+void events_handle_configure_request(
+	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force_use_grav);
 #endif /* EVENTS_H */

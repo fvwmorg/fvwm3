@@ -44,7 +44,7 @@
  * - _NET_WM_WINDOW_TYPE_TOOLBAR is interpreted in a different way
  * in GNOME (the spec) and in KDE 2/3.0 (~ simple dock?).
  * - What is a window of TYPE MENU ?
- *
+ * - the _NET_WM_ACTION_FULLSCREEN (_NET_WM_ALLOWED_ACTIONS) is not perfect
  */
 
 #include "config.h"
@@ -114,11 +114,12 @@ ewmh_atom ewmh_atom_client_root[] =
  * window to operate */
 ewmh_atom ewmh_atom_client_win[] =
 {
-	ENTRY("_NET_ACTIVE_WINDOW", XA_WINDOW,   ewmh_ActiveWindow),
-	ENTRY("_NET_CLOSE_WINDOW",  XA_WINDOW,   ewmh_CloseWindow),
-	ENTRY("_NET_WM_DESKTOP",    XA_CARDINAL, ewmh_WMDesktop),
-	ENTRY("_NET_WM_MOVERESIZE", XA_WINDOW,   ewmh_MoveResize),
-	ENTRY("_NET_WM_STATE",      XA_ATOM,     ewmh_WMState),
+	ENTRY("_NET_ACTIVE_WINDOW",     XA_WINDOW,   ewmh_ActiveWindow),
+	ENTRY("_NET_CLOSE_WINDOW",      XA_WINDOW,   ewmh_CloseWindow),
+	ENTRY("_NET_MOVERESIZE_WINDOW", XA_WINDOW,   ewmh_MoveResizeWindow),
+	ENTRY("_NET_WM_DESKTOP",        XA_CARDINAL, ewmh_WMDesktop),
+	ENTRY("_NET_WM_MOVERESIZE",     XA_WINDOW,   ewmh_MoveResize),
+	ENTRY("_NET_WM_STATE",          XA_ATOM,     ewmh_WMState),
 	{NULL,0,0,0}
 };
 

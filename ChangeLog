@@ -1,5 +1,15 @@
 2003-07-28  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/events.c (events_handle_configure_request):
+	(HandleConfigureRequest):
+	(__handle_configure_request):
+	(__handle_cr_on_client):
+	* fvwm/ewmh.c (ewmh_atom_client_win):
+	* fvwm/ewmh_intern.h:
+	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow): 
+	(EWMH_ProcessClientMessage):
+	Implemented _NET_MOVERESIZE_WINDOW
+	
 	* fvwm/fvwm.c (main):
 	A -Wall fix
 

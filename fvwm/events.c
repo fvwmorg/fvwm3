@@ -812,9 +812,9 @@ static inline int __merge_cr_moveresize(
 #endif
 
 static inline int __handle_cr_on_client(
-	int *ret_do_send_event, const evh_args_t *ea, FvwmWindow *fw)
+	int *ret_do_send_event, XConfigureRequestEvent cre, const evh_args_t *ea,
+	FvwmWindow *fw, Bool force_use_grav)
 {
-	XConfigureRequestEvent cre = ea->exc->x.etrigger->xconfigurerequest;
 	rectangle new_g;
 	rectangle d_g;
 	size_rect constr_dim;
@@ -822,13 +822,18 @@ static inline int __handle_cr_on_client(
 	size_borders b;
 	int cn_count = 0;
 
+	if (ea)
+	{
+		cre = ea->exc->x.etrigger->xconfigurerequest;
+	}
+
 	get_window_borders(fw, &b);
 #ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
 	/* Merge all pending ConfigureRequests for the window into a single
 	 * event.  However, we can not do this if the window uses the motion
 	 * method autodetection because the merged event might confuse the
 	 * detection code. */
-	if (CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
+	if (ea && CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
 	{
 		cn_count = __merge_cr_moveresize(ea, &cre, fw, &b);
 	}
@@ -913,7 +918,7 @@ static inline int __handle_cr_on_client(
 		/* for restoring */
 		fw->attr_backup.border_width = cre.border_width;
 	}
-	if (CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
+	if (!force_use_grav && CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
 	{
 		__cr_detect_icccm_move(fw, &cre, &b);
 	}
@@ -921,7 +926,8 @@ static inline int __handle_cr_on_client(
 	{
 		/* nothing */
 	}
-	else if (CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_USE_GRAV &&
+	else if ((force_use_grav || 
+		  CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_USE_GRAV) &&
 		 fw->hints.win_gravity != StaticGravity)
 	{
 		int ref_x;
@@ -1069,6 +1075,71 @@ static inline int __handle_cr_on_client(
 	SET_FORCE_NEXT_PN(fw, 0);
 
 	return cn_count;
+}
+
+void __handle_configure_request(
+	XConfigureRequestEvent cre, const evh_args_t *ea, FvwmWindow *fw,
+	Bool force_use_grav)
+{
+	int do_send_event = 0;
+	int cn_count = 0;
+
+	/* According to the July 27, 1988 ICCCM draft, we should ignore size
+	 * and position fields in the WM_NORMAL_HINTS property when we map a
+	 * window. Instead, we'll read the current geometry.  Therefore, we
+	 * should respond to configuration requests for windows which have
+	 * never been mapped. */
+	if (fw == NULL)
+	{
+		__handle_cr_on_unmanaged(&cre);
+		return;
+	}
+	if (cre.window == FW_W_ICON_TITLE(fw) ||
+	    cre.window == FW_W_ICON_PIXMAP(fw))
+	{
+		__handle_cr_on_icon(&cre, fw);
+	}
+	if (FHaveShapeExtension && FShapesSupported)
+	{
+		__handle_cr_on_shaped(fw);
+	}
+	if (fw != NULL && cre.window == FW_W(fw))
+	{
+		cn_count = __handle_cr_on_client(
+			&do_send_event, cre, ea, fw, force_use_grav);
+	}
+	/* Stacking order change requested.  Handle this *after* geometry
+	 * changes, since we need the new geometry in occlusion calculations */
+	if ((cre.value_mask & CWStackMode) && !DO_IGNORE_RESTACK(fw))
+	{
+		__handle_cr_restack(&do_send_event, &cre, fw);
+	}
+#if 1
+	/* This causes some ddd windows not to be drawn properly. Reverted back
+	 * to the old method in frame_setup_window. */
+	/* domivogt (15-Oct-1999): enabled this to work around buggy apps that
+	 * ask for a nonsense height and expect that they really get it. */
+	if (cn_count == 0 && do_send_event)
+	{
+		cn_count = 1;
+	}
+	else if (cn_count > 0)
+	{
+		do_send_event = 1;
+	}
+	for ( ; cn_count > 0; cn_count--)
+	{
+		SendConfigureNotify(
+			fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
+			fw->frame_g.height, 0, True);
+	}
+	if (do_send_event)
+	{
+		XFlush(dpy);
+	}
+#endif
+
+	return;
 }
 
 /* Helper function for __handle_focus_raise_click(). */
@@ -1607,8 +1678,6 @@ void HandleColormapNotify(const evh_args_t *ea)
 
 void HandleConfigureRequest(const evh_args_t *ea)
 {
-	int do_send_event = 0;
-	int cn_count = 0;
 	const XEvent *te = ea->exc->x.etrigger;
 	XConfigureRequestEvent cre;
 	FvwmWindow *fw = ea->exc->w.fw;
@@ -1623,61 +1692,8 @@ void HandleConfigureRequest(const evh_args_t *ea)
 	{
 		fw = NULL;
 	}
-	/* According to the July 27, 1988 ICCCM draft, we should ignore size
-	 * and position fields in the WM_NORMAL_HINTS property when we map a
-	 * window. Instead, we'll read the current geometry.  Therefore, we
-	 * should respond to configuration requests for windows which have
-	 * never been mapped. */
-	if (fw == NULL)
-	{
-		__handle_cr_on_unmanaged(&cre);
-		return;
-	}
-	if (cre.window == FW_W_ICON_TITLE(fw) ||
-	    cre.window == FW_W_ICON_PIXMAP(fw))
-	{
-		__handle_cr_on_icon(&cre, fw);
-	}
-	if (FHaveShapeExtension && FShapesSupported)
-	{
-		__handle_cr_on_shaped(fw);
-	}
-	if (fw != NULL && cre.window == FW_W(fw))
-	{
-		cn_count = __handle_cr_on_client(&do_send_event, ea, fw);
-	}
-	/* Stacking order change requested.  Handle this *after* geometry
-	 * changes, since we need the new geometry in occlusion calculations */
-	if ((cre.value_mask & CWStackMode) && !DO_IGNORE_RESTACK(fw))
-	{
-		__handle_cr_restack(&do_send_event, &cre, fw);
-	}
-#if 1
-	/* This causes some ddd windows not to be drawn properly. Reverted back
-	 * to the old method in frame_setup_window. */
-	/* domivogt (15-Oct-1999): enabled this to work around buggy apps that
-	 * ask for a nonsense height and expect that they really get it. */
-	if (cn_count == 0 && do_send_event)
-	{
-		cn_count = 1;
-	}
-	else if (cn_count > 0)
-	{
-		do_send_event = 1;
-	}
-	for ( ; cn_count > 0; cn_count--)
-	{
-		SendConfigureNotify(
-			fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
-			fw->frame_g.height, 0, True);
-	}
-	if (do_send_event)
-	{
-		XFlush(dpy);
-	}
-#endif
 
-	return;
+	__handle_configure_request(cre, ea, fw, False);
 }
 
 void HandleDestroyNotify(const evh_args_t *ea)
@@ -3565,6 +3581,13 @@ void dispatch_event(XEvent *e)
 	DBUG("dispatch_event", "Leaving Routine");
 
 	return;
+}
+
+/* ewmh configure request */
+void events_handle_configure_request(
+	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force_use_grav)
+{
+	__handle_configure_request(cre, NULL, fw, force_use_grav);
 }
 
 void HandleEvents(void)
