@@ -342,7 +342,7 @@ void setup_icon_font(
   if (!IS_ICON_FONT_LOADED(tmp_win))
   {
     if (SFHAS_ICON_FONT(*pstyle) && SGET_ICON_FONT(*pstyle) &&
-	LoadFvwmFont(dpy, SGET_ICON_FONT(*pstyle), &(tmp_win->title_font)))
+	LoadFvwmFont(dpy, SGET_ICON_FONT(*pstyle), &(tmp_win->icon_font)))
     {
       SET_HAS_ICON_FONT(tmp_win, 1);
     }
