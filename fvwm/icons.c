@@ -532,8 +532,9 @@ void AutoPlace(FvwmWindow *t)
           while((test_window != (FvwmWindow *)0)
                 &&(loc_ok == True)) { /* test overlap */
             if(test_window->Desk == t->Desk) {
-              if((test_window->flags&ICONIFIED)&&
-                 (test_window->icon_w||test_window->icon_pixmap_w)&&
+              if((test_window->flags&ICONIFIED) &&
+                 (!test_window->tmpflags.IconifiedByParent) &&
+                 (test_window->icon_w||test_window->icon_pixmap_w) &&
                  (test_window != t)) {
                 tw=test_window->icon_p_width;
                 th=test_window->icon_p_height+
@@ -833,13 +834,20 @@ void DeIconify(FvwmWindow *tmp_win)
 	  if (t->icon_w)
 	    XUnmapWindow(dpy, t->icon_w);
           XFlush(dpy);
-	  BroadcastPacket(M_DEICONIFY, 11,
-                          t->w, t->frame,
-                          (unsigned long)t,
-                          t->icon_x_loc, t->icon_y_loc,
-                          t->icon_p_width, t->icon_p_height+t->icon_w_height,
-                          t->frame_x, t->frame_y,
-                          t->frame_width, t->frame_height);
+          if (t == tmp_win)
+	    BroadcastPacket(M_DEICONIFY, 11,
+                            t->w, t->frame,
+                            (unsigned long)t,
+                            t->icon_x_loc, t->icon_y_loc,
+                            t->icon_p_width, t->icon_p_height+t->icon_w_height,
+                            t->frame_x, t->frame_y,
+                            t->frame_width, t->frame_height);
+          else
+	    BroadcastPacket(M_DEICONIFY, 7,
+                            t->w, t->frame,
+                            (unsigned long)t,
+                            t->icon_x_loc, t->icon_y_loc,
+                            t->icon_p_width, t->icon_p_height+t->icon_w_height);
           /* End AS */
 	  XMapWindow(dpy, t->w);
 	  if(t->Desk == Scr.CurrentDesk)
