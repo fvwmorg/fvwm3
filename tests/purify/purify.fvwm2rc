@@ -1,7 +1,10 @@
+DestroyFunc Log
+AddToFunc Log I Exec echo "### `date`: $0 ###"
+
 ########### PATH section -- must be first #############
 
 
-Echo "Test ImagePath"
+Log "Test ImagePath"
 
 ImagePath
 ImagePath
@@ -19,7 +22,7 @@ ImagePath $HOME/.wm-icons:+
 ImagePath +:/usr/share/icons/mini
 ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
 
-Echo "Test CONFIG, DESTROY MODULE CONFIG"
+Log "Test CONFIG, DESTROY MODULE CONFIG"
 
 *dummymodule
 *dummymodule
@@ -54,7 +57,7 @@ DestroyModuleConfig dummymod*
 
 DestroyModuleConfig *
 
-Echo "Test FvwmBanner"
+Log "Test FvwmBanner"
 
 *FvwmBannerTimeout 9182743120348908713204
 *FvwmBannerTimeout 1000
@@ -67,7 +70,7 @@ Module FvwmBanner
 Module    FvwmBanner
 Module		FvwmBanner
 
-Echo "Test ModulePath"
+Log "Test ModulePath"
 # the proper config does not have ModulePath, this overwrites a good default
 
 ModulePath
@@ -79,11 +82,11 @@ ModulePath $HOME/bin/fvwm2
 ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
 ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
 ModulePath
-ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
+ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22
 
 ################# GLOBAL COMMANDS ###################
 
-Echo "Test AddToFunc, DestroyFunc, Function"
+Log "Test AddToFunc, DestroyFunc, Function"
 
 AddToFunc
 AddToFunc   foo
@@ -130,7 +133,7 @@ DestroyFunc		grow1
 DestroyFunc loop1
 DestroyFunc loop2
 
-Echo "Test TO MENU, DESTROY MENU, MENU, POPUP"
+Log "Test TO MENU, DESTROY MENU, MENU, POPUP"
 
 AddToMenu menu1 "tt1" title top
 AddToMenu menu1 "t1" title
@@ -209,13 +212,13 @@ Menu longmenu
 Popup longmenu
 DestroyMenu longmenu
 
-Echo "Test BEEP"
+Log "Test BEEP"
 
 Beep
 Beep
 Beep ü30 23äö ü9823r ,l.öapü39
 
-Echo "Test BorderStyle"
+Log "Test BorderStyle"
 
 BorderStyle
 BorderStyle -- HiddenHandles
@@ -228,9 +231,9 @@ BorderStyle Active TiledPixmap test1.xpm
 BorderStyle Inactive TiledPixmap test2.xpm
 BorderStyle Active -- HiddenHandles NoInset
 
-Echo "Test TITLE STYLE"
+Log "Test TITLE STYLE"
 
-Echo "Test TitleStyle justification and height"
+Log "Test TitleStyle justification and height"
 
 TitleStyle
 TitleStyle LEFtJusTiFied
@@ -242,7 +245,7 @@ TitleStyle heIGht 20
 TitleStyle leftjustified height 37
 TitleStyle leftjustified height 24
 
-Echo "Test TitleStyles"
+Log "Test TitleStyles"
 
 TitleStyle -- raisED
 TitleStyle -- SUNk
@@ -263,7 +266,7 @@ TitleStyle solid blaCK
 TitleStyle solid blaCK
 TitleStyle simple
 
-Echo "Test gradients"
+Log "Test gradients"
 
 TitleStyle hgradient 16 green red
 TitleStyle hgradient 16 green red
@@ -290,7 +293,7 @@ TitleStyle hGradient 16 2 Red 20 Blue 80
 TitleStyle hGradient 128 2 Red 20 Blue 80
 TitleStyle hGradient 2 2 Red 20 Blue 80
 
-Echo "Test vector buttons"
+Log "Test vector buttons"
 
 TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
 TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
@@ -299,7 +302,7 @@ TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
 TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
 TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
 
-Echo "Test pixmaps"
+Log "Test pixmaps"
 
 TitleStyle Pixmap test1.xpm
 TitleStyle Pixmap test2.xpm
@@ -314,7 +317,7 @@ TitleStyle Inactive Pixmap
 TitleStyle MiniIcons
 TitleStyle miniicons
 
-Echo "Test ADD TITLE STYLE"
+Log "Test ADD TITLE STYLE"
 
 AddTitleStyle
 AddTitleStyle -- raisED
@@ -336,7 +339,7 @@ AddTitleStyle solid blaCK
 AddTitleStyle solid blaCK
 AddTitleStyle simple
 
-Echo "Test gradients"
+Log "Test gradients"
 
 AddTitleStyle hgradient 16 green red
 AddTitleStyle hgradient 16 green red
@@ -363,7 +366,7 @@ AddTitleStyle hGradient 16 2 Red 20 Blue 80
 AddTitleStyle hGradient 128 2 Red 20 Blue 80
 AddTitleStyle hGradient 2 2 Red 20 Blue 80
 
-Echo "Test vector buttons"
+Log "Test vector buttons"
 
 AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
 AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
@@ -372,7 +375,7 @@ AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
 AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
 AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
 
-Echo "Test pixmaps"
+Log "Test pixmaps"
 
 AddTitleStyle Pixmap test1.xpm
 AddTitleStyle Pixmap test2.xpm
@@ -387,9 +390,9 @@ AddTitleStyle Inactive Pixmap
 AddTitleStyle MiniIcons
 AddTitleStyle miniicons
 
-Echo "Test BUTTON STYLE"
+Log "Test BUTTON STYLE"
 
-Echo "Test various states and styles"
+Log "Test various states and styles"
 
 ButtonStyle
 ButtonStyle All -- UseBorderStyle
@@ -414,7 +417,7 @@ ButtonStyle 1 solid blaCK
 ButtonStyle 1 solid blaCK
 ButtonStyle 1 simple
 
-Echo "Test gradients"
+Log "Test gradients"
 
 ButtonStyle 2 hgradient 16 green red
 ButtonStyle 2 hgradient 16 green red
@@ -441,7 +444,7 @@ ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
 ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
 ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
 
-Echo "Test vector buttons"
+Log "Test vector buttons"
 
 ButtonStyle Reset
 ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
@@ -453,7 +456,7 @@ ButtonStyle 1 5
 ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
 ButtonStyle Reset
 
-Echo "Test pixmaps"
+Log "Test pixmaps"
 
 ButtonStyle 1 Pixmap test1.xpm
 ButtonStyle 1 Pixmap test2.xpm
@@ -468,7 +471,7 @@ ButtonStyle 1 Inactive Pixmap
 ButtonStyle 1 MiniIcons
 ButtonStyle 1 miniicons
 
-Echo "Test state-independent flags"
+Log "Test state-independent flags"
 
 ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
 ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
@@ -476,9 +479,9 @@ ButtonStyle 1 - MWMDecorMax
 ButtonStyle 1 - MWMDecorMin
 ButtonStyle 1 -
 
-Echo "Test ADD BUTTON STYLE"
+Log "Test ADD BUTTON STYLE"
 
-Echo "Test various states and styles"
+Log "Test various states and styles"
 
 AddButtonStyle
 AddButtonStyle Reset
@@ -501,7 +504,7 @@ AddButtonStyle 1 solid blaCK
 AddButtonStyle 1 solid blaCK
 AddButtonStyle 1 simple
 
-Echo "Test gradients"
+Log "Test gradients"
 
 AddButtonStyle 2 hgradient 16 green red
 AddButtonStyle 2 hgradient 16 green red
@@ -528,7 +531,7 @@ AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
 AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
 AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
 
-Echo "Test vector buttons"
+Log "Test vector buttons"
 
 AddButtonStyle Reset
 AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
@@ -540,7 +543,7 @@ AddButtonStyle 1 5
 AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
 AddButtonStyle Reset
 
-Echo "Test pixmaps"
+Log "Test pixmaps"
 
 AddButtonStyle 1 Pixmap test1.xpm
 AddButtonStyle 1 Pixmap test2.xpm
@@ -555,7 +558,7 @@ AddButtonStyle 1 Inactive Pixmap
 AddButtonStyle 1 MiniIcons
 AddButtonStyle 1 miniicons
 
-Echo "Test CLICK TIME test"
+Log "Test CLICK TIME test"
 
 ClickTime
 ClickTime 0
@@ -566,7 +569,7 @@ ClickTime 150
 ClickTime 150
 ClickTime 200
 
-Echo "Test COLORMAP FOCUS"
+Log "Test COLORMAP FOCUS"
 
 ColormapFocus
 ColormapFocus    FollowsFocus
@@ -576,7 +579,7 @@ ColormapFocus FollowsFocus
 ColormapFocus FollowsFocus
 ColormapFocus FollowsMouse
 
-Echo "Test COLOR LIMIT"
+Log "Test COLOR LIMIT"
 
 ColorLimit
 ColorLimit 0
@@ -588,7 +591,7 @@ ColorLimit 40
 ColorLimit -23
 ColorLimit 0
 
-Echo "Test CURSOR MOVE"
+Log "Test CURSOR MOVE"
 
 CursorMove
 CursorMove 50p
@@ -598,7 +601,7 @@ CursorMove -0 +0
 CursorMove -50p -50p
 CursorMove -1000 -1000
 
-Echo "Test CURSOR STYLE"
+Log "Test CURSOR STYLE"
 
 CursorStyle
 CursorStyle liewud
@@ -614,7 +617,7 @@ CursorStyle DESTROY 99
 CursorStyle DESTROY
 CursorStyle DEFAULT
 
-Echo "Test DESK"
+Log "Test DESK"
 
 Desk
 Desk    2
@@ -629,7 +632,7 @@ Desk 0 0 5 7
 Desk 0 -11111 5 7
 Desk 0 0
 
-Echo "Test DESK TOP SIZE"
+Log "Test DESK TOP SIZE"
 
 DeskTopSize
 DeskTopSize ödslajf
@@ -646,13 +649,13 @@ DeskTopSize 0x0
 DeskTopSize 1000x1000
 DeskTopSize 2x2
 
-Echo "Test ECHO"
+Log "Test ECHO"
 
 Echo
 Echo
 Echo ädsa		 iopq9 $SHELL "'lksaä"
 
-Echo "Test EDGE RESISTANCE"
+Log "Test EDGE RESISTANCE"
 
 EdgeResistance
 EdgeResistance     300   10
@@ -665,7 +668,7 @@ EdgeResistance -1 20
 EdgeResistance 20 0
 EdgeResistance 20 -1
 
-Echo "Test EDGE SCROLL"
+Log "Test EDGE SCROLL"
 
 EdgeScroll
 EdgeScroll    50    50
@@ -676,9 +679,9 @@ EdgeScroll 100000 100000
 EdgeScroll 0 0
 EdgeScroll 75 75
 
-Echo "Test EXEC, EXEC USE SHELL"
+Log "Test EXEC, EXEC USE SHELL"
 
-Echo "Test ExecUseShell"
+Log "Test ExecUseShell"
 
 ExecUseShell
 ExecUseShell
@@ -688,20 +691,20 @@ ExecUseShell /bin/bash
 ExecUseShell /nonexistent/foo/bar
 ExecUseShell
 
-Echo "Test Exec"
+Log "Test Exec"
 
 Exec
 Exec  	 	 	""
 Exec ls
 Exec ls -l
 
-Echo "Test Old GLOBAL OPTIONS, now styles"
+Log "Test Old GLOBAL OPTIONS, now styles"
 
 Style "*"  CleverPlacement, SmartPlacement
 Style "*"  ClickToFocusPassesClickOff, CLICKTOFOCUSPASSESCLICK
 Style "*"  ClickToFocusRaisesOff, CLICKTOFOCUSRAISES, MouseFocusClickRaisesOff, MOUSEFOCUSCLICKRAISES, StippledTitleOff, StippledTitle, STARTSONPAGEMODIFIESUSPOSITION, STARTSONPAGEHONORSUSPOSITION, CAPTUREHONORSSTARTSONPAGE, CAPTUREIGNORESSTARTSONPAGE, RECAPTUREHONORSSTARTSONPAGE, RECAPTUREIGNORESSTARTSONPAGE, ACTIVEPLACEMENTHONORSSTARTSONPAGE, ACTIVEPLACEMENTIGNORESSTARTSONPAGE
 Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
-Echo "Test GOTO PAGE"
+Log "Test GOTO PAGE"
 
 GotoPage
 GotoPage  2  2
@@ -712,7 +715,7 @@ GotoPage 2 1
 GotoPage 2 1
 GotoPage 1 1
 
-Echo "Test old HilightColor commands, the conversion utility changed them."
+Log "Test old HilightColor commands, the conversion utility changed them."
 
 Style "*" HilightFore , HilightBack 
 Style "*" HilightFore blue, HilightBack 
@@ -724,7 +727,7 @@ Style "*" HilightFore gold2, HilightBack SteelBlue
 Style "*" HilightFore , HilightBack 
 Style "*" HilightFore gold2, HilightBack SteelBlue
 
-Echo "Test ICON FONT"
+Log "Test ICON FONT"
 
 IconFont
 IconFont     9x15
@@ -734,7 +737,7 @@ IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
 IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
 IconFont
 
-Echo "Test KEY"
+Log "Test KEY"
 
 Key
 Key f12
@@ -748,7 +751,7 @@ Key f12 t a function nonexistent
 Key f12 t a -
 Key f12 t a -
 
-Echo "Test MENU STYLE"
+Log "Test MENU STYLE"
 
 MenuStyle
 MenuStyle  red  yellow  green  9x15  mwm  anim
@@ -761,7 +764,7 @@ MenuStyle red yellow green 6x10 fvwm
 MenuStyle red yellow green 6x10 fvwm anim
 MenuStyle yellow green blue 6x10 fvwm anim
 
-Echo "Test MOUSE"
+Log "Test MOUSE"
 
 Mouse
 Mouse 2
@@ -775,13 +778,13 @@ Mouse 2 t a function nonexistent
 Mouse 2 t a -
 Mouse 2 t a -
 
-Echo "Test NOP"
+Log "Test NOP"
 
 Nop
 NOP
 nOp allöoawqj _Ö:K_ÖL ökq
 
-Echo "Test OPAQUE MOVE SIZE"
+Log "Test OPAQUE MOVE SIZE"
 
 OpaqueMoveSize
 OpaqueMoveSize    50
@@ -795,7 +798,7 @@ OpaqueMoveSize 75
 OpaqueMoveSize 75
 OpaqueMoveSize 0
 
-Echo "Test SCROLL"
+Log "Test SCROLL"
 
 Scroll
 Scroll 50p
@@ -805,7 +808,7 @@ Scroll -0 +0
 Scroll -50p -50p
 Scroll -1000 -1000
 
-Echo "Test SET ANIMATION"
+Log "Test SET ANIMATION"
 
 SetAnimation
 SetAnimation  10  -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
@@ -815,7 +818,7 @@ SetAnimation 20 -.01 0 .01 .03 .08
 SetAnimation 1000 -.01 0 .01 .03 .08
 SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
 
-Echo "Test SET ENV"
+Log "Test SET ENV"
 
 SetEnv
 SetEnv FOO
@@ -825,20 +828,20 @@ SetEnv "	FOO	" x
 SetEnv FOO "   ""ölwäökkü"''
 SetEnv FOO "   ""ölwäökkü"''
 
-Echo "Test UNSET ENV"
+Log "Test UNSET ENV"
 
 UnsetEnv FOO         BAR
 UnsetEnv       FOO
 UnSetEnv "   ""ölwäökkü"''
 
-Echo "Test TITLE"
+Log "Test TITLE"
 
 Title
 Title "lökjads
 Title "lökjads
 Title -A -köq
 
-Echo "Test old WINDOWFONT commands, the conversion utility changed them"
+Log "Test old WINDOWFONT commands, the conversion utility changed them"
 
 Style "*" Font 
 Style "*" Font 9x15
@@ -848,7 +851,7 @@ Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
 Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
 Style "*" Font 
 
-Echo "Test XOR VALUE"
+Log "Test XOR VALUE"
 
 XORValue
 XORValue     1
@@ -861,9 +864,9 @@ XORValue 128
 XORValue 0
 
 
-Echo "Test settings that require a window"
+Log "Test settings that require a window"
 
-Echo "Test CREATE WINDOWS"
+Log "Test CREATE WINDOWS"
 
 Style "*" SmartPlacement
 Style "*" RandomPlacement
@@ -884,7 +887,7 @@ AddToFunc makewindows
 function makewindows
 CursorMove 90 90
 
-Echo "Test STYLE"
+Log "Test STYLE"
 
 Style "foo*" BorderWidth
 Style "foo*" BorderWidth  3
@@ -1293,7 +1296,7 @@ style "*" FocusFollowsMouse
 
 
 
-Echo "Test READ, PIPE READ"
+Log "Test READ, PIPE READ"
 
 read
 read
@@ -1307,7 +1310,7 @@ piperead `sleep 2`
 piperead "cat /nonexistent/foo/bar"
 piperead " 	cat	  /tmp/purify.read"
 
-Echo "Test DECORS"
+Log "Test DECORS"
 
 AddToDecor
 AddToDecor bar
@@ -1332,9 +1335,9 @@ AddToDecor foo
  + BorderStyle -- HiddenHandles NoInset
  + HilightColor white navy
 
-Echo "Test CREATE TEST FUNC"
+Log "Test CREATE TEST FUNC"
 
-Echo "Test SEND TO MODULE, KILL MODULE"
+Log "Test SEND TO MODULE, KILL MODULE"
 
 AddToFunc test_func
  + "I" SendToModule
@@ -1349,7 +1352,7 @@ AddToFunc test_func
  + "I" KillModule FvwmBanner
  + "I" KillModule FvwmBanner
 
-Echo "Test RAISE, RAISE LOWER, LOWER"
+Log "Test RAISE, RAISE LOWER, LOWER"
 
  + "I" Raise
  + "I" Lower
@@ -1365,7 +1368,7 @@ Echo "Test RAISE, RAISE LOWER, LOWER"
  + "I" RaiseLower asöpoi
  + "I" Raise
 
-Echo "Test MOVE, ANIMATED MOVE, MOVE TO PAGE, MOVE TO DESK"
+Log "Test MOVE, ANIMATED MOVE, MOVE TO PAGE, MOVE TO DESK"
 
  + "I" AnimatedMove 50 50 warp
  + "I" AnimatedMove -50 -50 warp
@@ -1389,7 +1392,7 @@ Echo "Test MOVE, ANIMATED MOVE, MOVE TO PAGE, MOVE TO DESK"
  + "I" MoveToDesk 0 -11111 5 7
  + "I" MoveToDesk 0 0
 
-Echo "Test RESIZE, MAXIMIZE, ICONIFY"
+Log "Test RESIZE, MAXIMIZE, ICONIFY"
 
  + "I" Resize 50 50
  + "I" Resize   45    45
@@ -1408,13 +1411,13 @@ Echo "Test RESIZE, MAXIMIZE, ICONIFY"
  + "I" Iconify 1
  + "I" Iconify -102973
 
-Echo "Test STICK"
+Log "Test STICK"
 
  + "I" Stick
  + "I" Stick
  + "I" Stick öäpqewikrpü8.,.-kl-.294
 
-Echo "Test WARP TO WINDOW"
+Log "Test WARP TO WINDOW"
 
  + "I" CursorMove -100 -100
  + "I" CursorMove 0 100
@@ -1429,7 +1432,7 @@ Echo "Test WARP TO WINDOW"
  + "I" CursorMove 0 100
  + "I" WarpToWindow 50 50
 
-Echo "Test DECOR COMMANDS"
+Log "Test DECOR COMMANDS"
 
 AddToFunc test_func
  + "I" DestroyDecor
@@ -1442,7 +1445,7 @@ AddToFunc test_func
  + "I" ChangeDecor
  + "I" ChangeDecor foo
 
-Echo "Test WINDOW SHADE"
+Log "Test WINDOW SHADE"
 
 AddToFunc test_func
  + "I" WindowShade
@@ -1454,7 +1457,7 @@ AddToFunc test_func
  + "I" WindowShade
  + "I" WindowShade 1
 
-Echo "Test REFRESH WINDOW, REFRESH, RECAPTURE"
+Log "Test REFRESH WINDOW, REFRESH, RECAPTURE"
 
  + "I" RefreshWindow
  + "I" RefreshWindow
@@ -1467,7 +1470,7 @@ Echo "Test REFRESH WINDOW, REFRESH, RECAPTURE"
 # + "I" Recapture
 # + "I" Recapture .-QW,ÖKcäük,.-qköcli qopiuw
 
-Echo "Test FOCUS, FLIP FOCUS, NEXT, PREV, CURRENT, NONE"
+Log "Test FOCUS, FLIP FOCUS, NEXT, PREV, CURRENT, NONE"
 
  + "I" prev
  + "I" prev
@@ -1490,7 +1493,7 @@ Echo "Test FOCUS, FLIP FOCUS, NEXT, PREV, CURRENT, NONE"
  + "I" none   (*)   focus
  + "I" none		(*)		flipfocus olöiqwehj
 
-Echo "Test WINDOW ID"
+Log "Test WINDOW ID"
 
  + "I" WindowID
  + "I" WindowID
@@ -1500,14 +1503,14 @@ Echo "Test WINDOW ID"
  + "I" WindowID   0x00110011   nop
  + "I" WindowID		0x00110011		nop
 
-Echo "Test WINDOW LIST"
+Log "Test WINDOW LIST"
 
  + "I" WindowList
  + "I" WindowList
  + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, UseIconName, Alphabetic, NotAlphabetic Nop
  + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, UseIconName, Alphabetic, NotAlphabetic Nop
 
-Echo "Test CLOSE, DELETE, DESTROY"
+Log "Test CLOSE, DELETE, DESTROY"
 
  + "I" Close
  + "I" Close
@@ -1520,7 +1523,7 @@ Echo "Test CLOSE, DELETE, DESTROY"
 # + "I" Destroy
 # + "I" Destroy
 
-Echo "Test all functions without parameters"
+Log "Test all functions without parameters"
 
 AddToFunc test_func
  + "I" echo AddButtonStyle
@@ -1678,7 +1681,7 @@ AddToFunc test_func
  + "I" echo WarpToWindow
  + "I" WarpToWindow
 
-Echo "Test hang"
+#Log "Test hang"
 #echo Wait
 #Wait
 
@@ -1696,7 +1699,7 @@ AddToFunc test_func
  + "I" echo XORvalue
  + "I" XORvalue
 
-Echo "Test cleanup"
+Log "Test cleanup"
  + "I" beep
  + "I" Echo ------------ ok ------------
  + "I" quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
@@ -1705,3 +1708,5 @@ Mouse 1 a a function test_func
 Mouse 2 a a function test_func
 Mouse 3 a a function test_func
 Key F12 a a function test_func
+
+Log "Tests done, F12 or any mouse button will make fvwm quit"
