@@ -6,3 +6,4 @@ FvwmConsoleC.pl
 .deps
 TAGS
 .gdb_history
+gmon.out

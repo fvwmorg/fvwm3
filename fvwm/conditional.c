@@ -373,9 +373,9 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   sf = get_focus_window();
   if (sf)
   {
-    if (Direction == 1)
+    if (Direction > 0)
       fw = sf->prev;
-    else if (Direction == -1)
+    else if (Direction < 0)
       fw = sf->next;
     else
       fw = sf;
@@ -383,19 +383,21 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   else
     fw = NULL;
 
-  while((pass < 3)&&(found == NULL))
+  for (pass = 0; pass < 3 && !found; pass++)
   {
-    while((fw)&&(found==NULL)&&(fw != &Scr.FvwmRoot))
+    while (fw && !found && fw != &Scr.FvwmRoot)
     {
 #ifdef FVWM_DEBUG_MSGS
       fvwm_msg(DBG,"Circulate","Trying %s",fw->name);
 #endif /* FVWM_DEBUG_MSGS */
       /* Make CirculateUp and CirculateDown take args. by Y.NOMURA */
       if (MatchesConditionMask(fw, &mask))
+      {
 	found = fw;
+      }
       else
       {
-	if (Direction == 1)
+	if (Direction > 0)
 	  fw = fw->prev;
 	else
 	  fw = fw->next;
@@ -406,26 +408,25 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
         return found;
       }
     }
-    if((fw == NULL)||(fw == &Scr.FvwmRoot))
+    if (!fw || fw == &Scr.FvwmRoot)
     {
-      if(Direction == 1)
+      if (Direction > 0)
       {
         /* Go to end of list */
-        fw = &Scr.FvwmRoot;
-        while(fw && fw->next)
-        {
-          fw = fw->next;
+	for (fw = &Scr.FvwmRoot; fw && fw->next; fw = fw->next)
+	{
+	  /* nop */
         }
       }
       else
       {
-        /* GO to top of list */
+        /* Go to top of list */
         fw = Scr.FvwmRoot.next;
       }
     }
-    pass++;
   }
   FreeConditionMask(&mask);
+
   return found;
 }
 

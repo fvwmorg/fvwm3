@@ -50,7 +50,6 @@
 #include "focus.h"
 
 static unsigned int grab_count[GRAB_MAXVAL] = { 1, 1, 0, 0, 0, 0, 0 };
-static unsigned int focus_prev_level = 0;
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
 
 
@@ -148,15 +147,6 @@ Bool GrabEm(int cursor, int grab_context)
     /* cannot happen */
     return False;
   default:
-    if (!get_current_focus_window() ||
-	do_accept_input_focus(get_current_focus_window()))
-    {
-      /* But do not grab if the window does not accept input focus from the
-       * window manager */
-      store_prevfocus_window();
-      DeleteFocus(0);
-      focus_prev_level = grab_count[GRAB_ALL];
-    }
     grab_win = Scr.Root;
     rep = 500;
     break;
@@ -275,13 +265,6 @@ print_grab_stats("-restore");
 print_grab_stats("-ungrab");
 #endif
     XUngrabPointer(dpy, CurrentTime);
-  }
-  if (grab_count[GRAB_ALL] == 0 || grab_count[GRAB_ALL] == focus_prev_level)
-  {
-    if (ungrab_context != GRAB_BUSY)
-    {
-      restore_prevfocus_window();
-    }
   }
   XSync(dpy,0);
 

@@ -3,3 +3,4 @@ Makefile.in
 TAGS
 FvwmScript-Setup95
 .gdb_history
+gmon.out

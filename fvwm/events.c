@@ -153,7 +153,7 @@ void HandleFocusIn(void)
   Window focus_fw = None;
   Pixel fc = 0;
   Pixel bc = 0;
-  FvwmWindow *ffw_old = get_current_focus_window();
+  FvwmWindow *ffw_old = get_focus_window();
   FvwmWindow *sf;
   Bool do_force_broadcast = False;
   Bool is_unmanaged_focused = False;
@@ -262,7 +262,7 @@ void HandleFocusIn(void)
     last_focus_fw = focus_fw;
     is_never_focused = False;
   }
-  if ((sf = get_current_focus_window()) != ffw_old)
+  if ((sf = get_focus_window()) != ffw_old)
   {
     focus_grab_buttons(sf, True);
     focus_grab_buttons(ffw_old, False);
@@ -306,7 +306,7 @@ void HandleKeyPress(void)
   /* if we get here, no function key was bound to the key.  Send it
    * to the client if it was in a window we know about.
    */
-  sf = get_current_focus_window();
+  sf = get_focus_window();
   if (sf && Event.xkey.window != sf->w)
   {
     Event.xkey.window = sf->w;
@@ -796,7 +796,7 @@ ICON_DBG((stderr,"hpn: applying new icon '%s'\n", Tmp_win->name));
     else if (Event.xproperty.atom == _XA_WM_STATE)
     {
       if (Tmp_win && HAS_CLICK_FOCUS(Tmp_win) &&
-	  Tmp_win == get_current_focus_window())
+	  Tmp_win == get_focus_window())
       {
 	if (OnThisPage)
 	{
@@ -1092,7 +1092,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	  do_grab_focus = True;
 	}
 	else if (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
-		 (sf = get_current_focus_window()) &&
+		 (sf = get_focus_window()) &&
 		 sf->w == Tmp_win->transientfor)
 	{
 	  /* it's a transient and its transientfor currently has focus. */
@@ -1118,7 +1118,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	{
 	  /* make sure the old focused window still has grabbed all necessary
 	   * buttons. */
-	  if ((sf = get_current_focus_window()))
+	  if ((sf = get_focus_window()))
 	  {
 	    focus_grab_buttons(sf, True);
 	  }
@@ -1179,7 +1179,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
                     (unsigned long)Tmp_win);
   }
 
-  if (!IS_ICONIFIED(Tmp_win) && (sf = get_current_focus_window()) &&
+  if (!IS_ICONIFIED(Tmp_win) && (sf = get_focus_window()) &&
       sf != Tmp_win && !is_on_top_of_layer(sf))
   {
     if (Tmp_win->Desk == Scr.CurrentDesk &&
@@ -1279,8 +1279,8 @@ void HandleMapNotify(void)
 
   if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
-      get_current_focus_window() &&
-      get_current_focus_window()->w == Tmp_win->transientfor))
+      get_focus_window() &&
+      get_focus_window()->w == Tmp_win->transientfor))
   {
     if (is_on_this_page)
     {
@@ -1292,7 +1292,7 @@ void HandleMapNotify(void)
     DrawDecorations(
       Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w);
   }
-  else if (Tmp_win == get_current_focus_window() && Tmp_win != Scr.Hilite)
+  else if (Tmp_win == get_focus_window() && Tmp_win != Scr.Hilite)
   {
     /* BUG 679: must redraw decorations here to make sure the window is properly
      * hilighted after being de-iconified by a key press. */
@@ -1369,8 +1369,7 @@ void HandleUnmapNotify(void)
   {
     Scr.Hilite = NULL;
   }
-  update_prevfocus_window(Tmp_win);
-  focus_grabbed = (Tmp_win == get_current_focus_window()) &&
+  focus_grabbed = (Tmp_win == get_focus_window()) &&
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
   restore_focus_after_unmap(Tmp_win);
@@ -1505,8 +1504,10 @@ void HandleButtonPress(void)
   /* click to focus stuff goes here */
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
-    if (Tmp_win != get_current_focus_window())
+    if (Tmp_win != get_focus_window())
+    {
       SetFocusWindow(Tmp_win, 1);
+    }
     /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
        I'll leave this as is for now.  */
     if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Tmp_win)
@@ -1539,12 +1540,12 @@ void HandleButtonPress(void)
 	SET_SCHEDULED_FOR_RAISE(Tmp_win, 0);
       }
       if (do_regrab_buttons)
-	focus_grab_buttons(Tmp_win, (Tmp_win == get_current_focus_window()));
+	focus_grab_buttons(Tmp_win, (Tmp_win == get_focus_window()));
       XSync(dpy,0);
       /* Pass click event to just clicked to focus window? Do not swallow the
        * click if the window didn't accept the focus. */
       if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Tmp_win) ||
-	  get_current_focus_window() != Tmp_win)
+	  get_focus_window() != Tmp_win)
       {
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
       }
@@ -1666,7 +1667,7 @@ void HandleButtonPress(void)
   }
   if (do_regrab_buttons)
   {
-    focus_grab_buttons(Tmp_win, (Tmp_win == get_current_focus_window()));
+    focus_grab_buttons(Tmp_win, (Tmp_win == get_focus_window()));
   }
 
   OldPressedW = PressedW;
@@ -1770,11 +1771,20 @@ void HandleEnterNotify(void)
 
   DBUG("HandleEnterNotify","Routine Entered");
 
-  /* Ignore EnterNotify events while a window is resized or moved as a wire
-   * frame; otherwise the window list may be screwed up. */
   if (Scr.flags.is_wire_frame_displayed)
+  {
+    /* Ignore EnterNotify events while a window is resized or moved as a wire
+     * frame; otherwise the window list may be screwed up. */
     return;
-
+  }
+  if (ewp->mode != NotifyNormal)
+  {
+    /* Ignore events generated by grabbing or ungrabbing the pointer.  However,
+     * there is no way to prevent the ckient application from handling this
+     * event and, for example, grabbing the focus.  This will interfere with
+     * functions that transferred the focus to a different window. */
+    return;
+  }
   /* look for a matching leaveNotify which would nullify this enterNotify */
   if(XCheckTypedWindowEvent (dpy, ewp->window, LeaveNotify, &d))
   {
@@ -1813,7 +1823,7 @@ void HandleEnterNotify(void)
       }
       set_last_screen_focus_window(NULL);
     }
-    else if (!(sf = get_current_focus_window()) || HAS_MOUSE_FOCUS(sf))
+    else if (!(sf = get_focus_window()) || HAS_MOUSE_FOCUS(sf))
     {
       DeleteFocus(1);
     }
@@ -1859,13 +1869,13 @@ void HandleEnterNotify(void)
   else if (HAS_NEVER_FOCUS(Tmp_win))
   {
     /* Give the window a chance to grab the buttons needed for raise-on-click */
-    if ((sf = get_current_focus_window()) != Tmp_win)
+    if ((sf = get_focus_window()) != Tmp_win)
     {
       focus_grab_buttons(Tmp_win, False);
       focus_grab_buttons(sf, True);
     }
   }
-  else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == get_current_focus_window() &&
+  else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == get_focus_window() &&
 	   do_accept_input_focus(Tmp_win))
   {
     /* We have to refresh the focus window here in case we left the focused
@@ -1909,7 +1919,14 @@ void HandleLeaveNotify(void)
    * frame; otherwise the window list may be screwed up. */
   if (Scr.flags.is_wire_frame_displayed)
     return;
-
+  if (Event.xcrossing.mode != NotifyNormal)
+  {
+    /* Ignore events generated by grabbing or ungrabbing the pointer.  However,
+     * there is no way to prevent the ckient application from handling this
+     * event and, for example, grabbing the focus.  This will interfere with
+     * functions that transferred the focus to a different window. */
+    return;
+  }
   /* CDE-like behaviour of raising the icon title if the icon
      gets the focus (in particular if the cursor is over the icon) */
   if (Tmp_win && IS_ICONIFIED(Tmp_win))
@@ -1931,7 +1948,7 @@ void HandleLeaveNotify(void)
     {
       if (Event.xcrossing.detail != NotifyInferior)
       {
-	FvwmWindow *sf = get_current_focus_window();
+	FvwmWindow *sf = get_focus_window();
 
 	Scr.flags.is_pointer_on_this_screen = 0;
 	set_last_screen_focus_window(sf);

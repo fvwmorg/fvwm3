@@ -5,3 +5,4 @@ FvwmPager
 bb.out
 TAGS
 .gdb_history
+gmon.out

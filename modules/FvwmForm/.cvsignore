@@ -6,3 +6,4 @@ FvwmForm-Setup
 .deps
 TAGS
 .gdb_history
+gmon.out

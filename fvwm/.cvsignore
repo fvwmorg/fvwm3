@@ -7,3 +7,4 @@ bb.out
 outfile
 TAGS
 .gdb_history
+gmon.out

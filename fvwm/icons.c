@@ -1490,13 +1490,16 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   }
   if (HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win))
   {
-    if (tmp_win == get_current_focus_window())
+    if (tmp_win == get_focus_window())
     {
-      update_prevfocus_window(NULL);
       if (HAS_CLICK_FOCUS(tmp_win) && tmp_win->next)
+      {
 	SetFocusWindow(tmp_win->next, 1);
+      }
       else
+      {
 	DeleteFocus(1);
+      }
     }
   }
   if ((sf = get_focus_window()))
