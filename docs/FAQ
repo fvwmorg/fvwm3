@@ -1133,5 +1133,6 @@ A: The application won't allow it. This has only been observed with
 Netscape. When Netscape starts up, FVWM starts the main window in the
 iconic state. Netscape immediately issues another MapRequest, to which
 the window manager must respond by de-iconifying the window, according
-to the ICCCM rules.
+to the ICCCM rules. (Netscape can be persuaded to start iconic, however,
+by invoking it with the -iconic command line flag.)
 ----------------------------------------------------------------------
