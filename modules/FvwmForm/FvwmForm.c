@@ -1225,8 +1225,8 @@ void DoCommand (Item *cmd)
     SendText(Channel,"KillMe", ref);    /* let commands complete */
     /* Note how the window is withdrawn, but execution continues until
        the KillMe command catches up with this module...
-       Do something useful... */
-    sleep(1);                           /* don't use cpu */
+       Should not be a problem, there shouldn't be any more commands
+       coming into FvwmForm.  dje */
 #else
     exit(0);
 #endif
