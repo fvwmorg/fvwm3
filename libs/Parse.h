@@ -53,23 +53,15 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
    table must be sorted in ascending order for FindToken.
 */
 
+
 #define FindToken(key,table,struct_entry)                               \
         (struct_entry *) bsearch(key,                                   \
                                  (char *)(table),                       \
                                  sizeof(table) / sizeof(struct_entry),  \
                                  sizeof(struct_entry),                  \
-                                 XCmpToken)
+                                 (int(*)(const void*, const void*))XCmpToken)
 
-/* We don't prototype the following, because it will generate
-   warnings about incompatible fifth parameter to bsearch().  The 
-   bsearch() comparison function is prototyped as 
-   "int compare( const void*, const void* )" */
-extern int XCmpToken(); /* const char* s, const char** t */
-
-
-
-
-
+int XCmpToken(const char *s, const char **t);
 
 #endif
 

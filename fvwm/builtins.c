@@ -482,10 +482,6 @@ void Bell(F_CMD_ARGS)
 
 void add_another_item(F_CMD_ARGS)
 {
-#ifdef USEDECOR
-  extern void AddToDecor(FvwmDecor *, char *);
-#endif
-
   if (Scr.last_added_item.type == ADDED_MENU)
     add_another_menu_item(action);
   else if (Scr.last_added_item.type == ADDED_FUNCTION)
@@ -3176,7 +3172,7 @@ void SetEnv(F_CMD_ARGS)
  * Note that the returned string is allocated here and it must be
  * freed when it is not needed anymore.
  **********************************************************************/
-char *CreateFlagString(char *string, char **restptr)
+static char *CreateFlagString(char *string, char **restptr)
 {
   char *retval;
   char *c;
@@ -3230,7 +3226,7 @@ char *CreateFlagString(char *string, char **restptr)
  * The name field of the mask is allocated in CreateConditionMask.
  * It must be freed.
  **********************************************************************/
-void FreeConditionMask(WindowConditionMask *mask)
+static void FreeConditionMask(WindowConditionMask *mask)
 {
   if (mask->my_flags.needs_name)
     free(mask->name);
@@ -3239,7 +3235,7 @@ void FreeConditionMask(WindowConditionMask *mask)
 }
 
 /* Assign the default values for the window mask */
-void DefaultConditionMask(WindowConditionMask *mask)
+static void DefaultConditionMask(WindowConditionMask *mask)
 {
   memset(mask, 0, sizeof(WindowConditionMask));
   mask->layer = -2; /* -2  means no layer condition, -1 means current */
@@ -3249,7 +3245,7 @@ void DefaultConditionMask(WindowConditionMask *mask)
  * Note that this function allocates the name field of the mask struct.
  * FreeConditionMask must be called for the mask when the mask is discarded.
  **********************************************************************/
-void CreateConditionMask(char *flags, WindowConditionMask *mask)
+static void CreateConditionMask(char *flags, WindowConditionMask *mask)
 {
   char *condition;
   char *prev_condition = NULL;
@@ -3380,7 +3376,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
  * Checks whether the given window matches the mask created with
  * CreateConditionMask.
  **********************************************************************/
-Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
+static Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
   Bool fMatchesName;
   Bool fMatchesIconName;
@@ -3454,7 +3450,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
  * Direction = 0 ==> operation on current window (returns pass or fail)
  *
  **************************************************************************/
-FvwmWindow *Circulate(char *action, int Direction, char **restofline)
+static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 {
   int pass = 0;
   FvwmWindow *fw, *found = NULL;

@@ -410,6 +410,11 @@ void ResetAllButtons(FvwmDecor *fl);
 void InitFvwmDecor(FvwmDecor *fl);
 void DestroyFvwmDecor(FvwmDecor *fl);
 
+/*
+ * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
+ */
+void AddToDecor(FvwmDecor *fl, char *s);
+
 extern ScreenInfo Scr;
 
 #endif /* _SCREEN_ */

@@ -412,17 +412,19 @@ Bool StashEventTime (XEvent *ev)
   return True;
 }
 
+/*** This function is nowhere used.  
+     Is it historical cruft or a future direction?  ***/
 
-void ComputeActualPosition(int x,int y,int x_unit,int y_unit,
-			   int width,int height,int *pfinalX, int *pfinalY)
-{
-  *pfinalX = x*x_unit/100;
-  *pfinalY = y*y_unit/100;
-  if (*pfinalX < 0)
-    *pfinalX += Scr.MyDisplayWidth - width;
-  if (*pfinalY < 0)
-    *pfinalY += Scr.MyDisplayHeight - height;
-}
+/* void ComputeActualPosition(int x,int y,int x_unit,int y_unit, */
+/* 			   int width,int height,int *pfinalX, int *pfinalY) */
+/* { */
+/*   *pfinalX = x*x_unit/100; */
+/*   *pfinalY = y*y_unit/100; */
+/*   if (*pfinalX < 0) */
+/*     *pfinalX += Scr.MyDisplayWidth - width; */
+/*   if (*pfinalY < 0) */
+/*     *pfinalY += Scr.MyDisplayHeight - height; */
+/* } */
 
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit)

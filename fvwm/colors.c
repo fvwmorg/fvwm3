@@ -220,7 +220,9 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
  * types are HVDBSCRY for Horizontal, Vertical, Diagonal, Back-diagonal, Square,
  * Circular, Radar and Yin/Yang respectively (in order of bloatiness)
  */
+#ifndef PI
 #define PI    3.1415926535898
+#endif
 Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
 			    char type, char *action, unsigned int width,
 			    unsigned int height, unsigned int *width_return,

@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include "fvwm.h"
+#include "colormaps.h"
 #include <X11/Xatom.h>
 #include "misc.h"
 #include "parse.h"

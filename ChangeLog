@@ -1,10 +1,62 @@
+Wed May 26 19:45:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/colors.c (PI): might be defined in system headers like
+ 	<math.h>.
+
+	* libs/Parse.h (XCmpToken): prototype this function, but add cast
+	to the bsearch() call in FindToken macro.  This avoids the warning
+	"passing arg 5 of `bsearch' from incompatible pointer type".
+
+	* libs/Makefile.am (libfvwm_a_SOURCES): add wild.h, safemalloc.h,
+ 	fvwmsignal.h, Grab.h, and ClientMsg.h.
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): add colormaps.h
+
+	* fvwm/windowlist.c (winCompare): make static.
+
+	* fvwm/stack.c (intersect, overlap_box, overlap): make static.
+
+	* fvwm/session.c (SaveGlobalState, GetWindowRole, GetClientID,
+ 	SaveWindowStates, matchWin): make static.
+
+	* fvwm/session.c (MyIoErrorHandler): make a prototype.
+
+	* fvwm/session.c: include session.h.
+
+	* fvwm/read.c: include read.h.
+
+	* fvwm/module_interface.c (SendNewPacket, BroadcastNewPacket,
+ 	SendMiniIcon): make static.
+
+	* fvwm/modconf.c (make_look_packet): make prototype and declare
+	static.
+
+	* fvwm/misc.c (ComputeActualPosition): commented out unused
+ 	function.
+	
+	* fvwm/menus.c (PaintSidePic, FreeMenuItem, scanForHotkeys,
+ 	scanForPixmap): make static.
+
+	* fvwm/fvwm.c (InternUsefulAtoms, InitVariables): make static.
+
+	* fvwm/colormaps.c: include colormaps.h.
+	* fvwm/colormaps.h: new file of prototypes.
+
+	* fvwm/builtins.c: make CreateFlagString, FreeConditionMask,
+ 	DefaultConditionMask, CreateConditionMask, MatchesConditionMask,
+ 	and Circulate static functions.
+
+	* fvwm/screen.h: prototype AddToDecor.
+
 1999-05-26  Chris Rankin  <rankinc@zipworld.com.au>
 
-    * libs/fvwmsignal.c: added <sys/select.h> header
-    * fvwm/events.c:     removed <sys/select.h>, <signal.h> header
-    * modules/FvwmButtons/FvwmButtons.c
-    Replaced select() with fvwmSelect() in FvwmButtons, altered signal
-    installation and fixed some invalid C prototypes.
+	* libs/fvwmsignal.c: added <sys/select.h> header.
+
+	* fvwm/events.c: removed <sys/select.h>, <signal.h> header.
+
+	* modules/FvwmButtons/FvwmButtons.c: Replaced select() with
+ 	fvwmSelect() in FvwmButtons, altered signal installation and fixed
+ 	some invalid C prototypes.
 
 1999-05-26  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 

@@ -546,8 +546,8 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 /* ============================================================
     RBW - 04/16/1999 - new style packet senders for GSFR --
    ============================================================ */
-void
-SendNewPacket(int module, unsigned long event_type, unsigned long num_datum, ...)
+static void SendNewPacket(int module, unsigned long event_type, 
+			  unsigned long num_datum, ...)
 {
   char body[MAX_NEW_PACKET_SIZE];
   va_list ap;
@@ -560,8 +560,8 @@ SendNewPacket(int module, unsigned long event_type, unsigned long num_datum, ...
   PositiveWrite(module, (void *) &body, plen);
 }
 
-void
-BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
+static void BroadcastNewPacket(unsigned long event_type, 
+			       unsigned long num_datum, ...)
 {
   char body[MAX_NEW_PACKET_SIZE];
   va_list ap;
@@ -839,7 +839,7 @@ BroadcastName(unsigned long event_type,
 }
 
 #ifdef MINI_ICONS
-void
+static void
 SendMiniIcon(int module, unsigned long event_type,
              unsigned long data1, unsigned long data2,
              unsigned long data3, unsigned long data4,

@@ -1,0 +1,102 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/****************************************************************************
+ * This module is all new
+ * by Rob Nation
+ *
+ * This code handles colormaps for fvwm.
+ *
+ * Copyright 1994 Robert Nation. No restrictions are placed on this code,
+ * as long as the copyright notice is preserved . No guarantees or
+ * warrantees of any sort whatsoever are given or implied or anything.
+ ****************************************************************************/
+
+#include "fvwm.h"
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	HandleColormapNotify - colormap notify event handler
+ *
+ * This procedure handles both a client changing its own colormap, and
+ * a client explicitly installing its colormap itself (only the window
+ * manager should do that, so we must set it correctly).
+ *
+ ***********************************************************************/
+void HandleColormapNotify(void);
+
+
+/************************************************************************
+ *
+ * Re-Install the active colormap
+ *
+ *************************************************************************/
+void ReInstallActiveColormap(void);
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	InstallWindowColormaps - install the colormaps for one fvwm window
+ *
+ *  Inputs:
+ *	type	- type of event that caused the installation
+ *	tmp	- for a subset of event types, the address of the
+ *		  window structure, whose colormaps are to be installed.
+ *
+ ************************************************************************/
+
+void InstallWindowColormaps (FvwmWindow *tmp);
+
+
+/***********************************************************************
+ *
+ *  Procedures:
+ *	<Uni/I>nstallRootColormap - Force (un)loads root colormap(s)
+ *
+ *	   These matching routines provide a mechanism to insure that
+ *	   the root colormap(s) is installed during operations like
+ *	   rubber banding or menu display that require colors from
+ *	   that colormap.  Calls may be nested arbitrarily deeply,
+ *	   as long as there is one UninstallRootColormap call per
+ *	   InstallRootColormap call.
+ *
+ *	   The final UninstallRootColormap will cause the colormap list
+ *	   which would otherwise have be loaded to be loaded, unless
+ *	   Enter or Leave Notify events are queued, indicating some
+ *	   other colormap list would potentially be loaded anyway.
+ ***********************************************************************/
+void InstallRootColormap(void);
+
+
+/***************************************************************************
+ *
+ * Unstacks one layer of root colormap pushing
+ * If we peel off the last layer, re-install th e application colormap
+ *
+ ***************************************************************************/
+void UninstallRootColormap(void);
+
+
+/*****************************************************************************
+ *
+ * Gets the WM_COLORMAP_WINDOWS property from the window
+ *   This property typically doesn't exist, but a few applications
+ *   use it. These seem to occur mostly on SGI machines.
+ *
+ ****************************************************************************/
+void FetchWmColormapWindows (FvwmWindow *tmp);

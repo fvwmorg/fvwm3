@@ -2275,7 +2275,7 @@ void paint_menu_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw)
  *
  ************************************************************/
 
-void PaintSidePic(MenuRoot *mr)
+static void PaintSidePic(MenuRoot *mr)
 {
   GC ReliefGC, TextGC;
   Picture *sidePic;
@@ -2628,7 +2628,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 }
 
 
-void FreeMenuItem(MenuItem *mi)
+static void FreeMenuItem(MenuItem *mi)
 {
   if (!mi)
     return;
@@ -3091,7 +3091,7 @@ static void MakeMenuWindow(MenuRoot *mr)
  * 	which 	- +1 to look in it->item1 and -1 to look in it->item2.
  *
  ***********************************************************************/
-char scanForHotkeys(MenuItem *it, int which)
+static char scanForHotkeys(MenuItem *it, int which)
 {
   char *start, *txt;
 
@@ -3178,7 +3178,7 @@ static void scanForColor(char *instring, Pixel *p, Bool *flag, char identifier)
   return;
 }
 
-void scanForPixmap(char *instring, Picture **p, char identifier)
+static void scanForPixmap(char *instring, Picture **p, char identifier)
 {
   char *tstart, *txt, *name;
   int i;

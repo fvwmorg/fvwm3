@@ -57,7 +57,7 @@ extern FvwmWindow *ButtonWindow;
 /* Function to compare window title names
  */
 static int globalFlags;
-int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
+static int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
 {
   if(globalFlags & SHOW_ICONNAME)
     return strcasecmp((*a)->icon_name,(*b)->icon_name);

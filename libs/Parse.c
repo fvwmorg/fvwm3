@@ -20,9 +20,14 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include "fvwmlib.h"
+
+#include "safemalloc.h"
+#include "Strings.h"
+#include "Parse.h"
+
 
 /* If the string s begins with a quote chracter SkipQuote returns a pointer
  * to the first unquoted character or to the final '\0'. If it does not, a
@@ -258,6 +263,7 @@ int MatchToken(char *pstr,char *tok)
                         = 0  if s = t
                         > 0  if s > t
 */
+
 
 int XCmpToken(const char *s, const char **t)
 {

@@ -36,6 +36,7 @@
 #include <fcntl.h>
 
 #include "fvwm.h"
+#include "read.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"

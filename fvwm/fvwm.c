@@ -155,8 +155,8 @@ int main(int argc, char **argv)
 {
   unsigned long valuemask;	/* mask for create windows */
   XSetWindowAttributes attributes;	/* attributes for create windows */
-  void InternUsefulAtoms (void);
-  void InitVariables(void);
+  static void InternUsefulAtoms (void);
+  static void InitVariables(void);
   int i;
   extern int x_fd;
   int len;
@@ -963,7 +963,7 @@ Atom _XA_WM_WINDOW_ROLE;
 Atom _XA_WM_CLIENT_LEADER;
 Atom _XA_SM_CLIENT_ID;
 
-void InternUsefulAtoms (void)
+static void InternUsefulAtoms (void)
 {
   /*
    * Create priority colors if necessary.
@@ -1496,7 +1496,7 @@ void InitFvwmDecor(FvwmDecor *fl)
  *	InitVariables - initialize fvwm variables
  *
  ************************************************************************/
-void InitVariables(void)
+static void InitVariables(void)
 {
   FvwmContext = XUniqueContext();
   MenuContext = XUniqueContext();

@@ -217,7 +217,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   free(match);
 }
 
-char *make_look_packet()
+static char *make_look_packet(void)
 {
   char *b = safemalloc(DEFGRAPHNUM * (sizeof(long) * 2 + 1) + DEFGRAPHLEN + 3);
   sprintf(b, "%s %lx %lx %lx %lx %lx %lx %lx %lx %lx\n",

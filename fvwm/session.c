@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include "fvwm.h"
+#include "session.h"
 #include <X11/Xatom.h>
 #include "screen.h"
 #include "misc.h"
@@ -82,7 +83,7 @@ char *duplicate(char *s)
  * to save here. Then the option "-restore xyz" could
  * be replaced by "-f xyz".
  */
-int
+static int
 SaveGlobalState(FILE *f)
 {
   fprintf(f, "[GLOBAL]\n");
@@ -224,7 +225,7 @@ LoadGlobalState(char *filename)
     }
 }
 
-char *
+static char *
 GetWindowRole(Window window)
 {
   XTextProperty tp;
@@ -238,7 +239,7 @@ GetWindowRole(Window window)
   return NULL;
 }
 
-char *
+static char *
 GetClientID(Window window)
 {
   char *client_id = NULL;
@@ -275,7 +276,7 @@ GetClientID(Window window)
   return client_id;
 }
 
-int
+static int
 SaveWindowStates(FILE *f)
 {
   char *client_id;
@@ -481,7 +482,7 @@ LoadWindowStates(char *filename)
 
 #define xstreq(a,b) ((!a && !b) || (a && b && (strcmp(a,b)==0)))
 
-Bool matchWin(FvwmWindow *w, Match *m)
+static Bool matchWin(FvwmWindow *w, Match *m)
 {
   char *client_id = NULL;
   char *window_role = NULL;
@@ -922,10 +923,7 @@ callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
 static IceIOErrorHandler prev_handler;
 
 static void
-MyIoErrorHandler (ice_conn)
-
-  IceConn ice_conn;
-
+MyIoErrorHandler (IceConn ice_conn)
 {
   if (prev_handler)
     (*prev_handler) (ice_conn);
