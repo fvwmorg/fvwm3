@@ -2,6 +2,7 @@
 
 	* FvwmAnimate.c: Remove fonts and colors from customization form.
 	These can now be set globally by FvwmForm.
+	Second try, removed another color spec.
 
 1999-01-25  Steven Michael ROBBINS  <stever@bongo.cs.mcgill.ca>
 

@@ -1190,7 +1190,6 @@ static void DefineForm() {
   CMD1X("*Form%sLine         left");
   CMD1X("*Form%sText         \"\"");
   CMD1X("*Form%sLine         left");
-  CMD1X("*Form%sFore         Black");
   CMD1X("*Form%sText         \"Effect:\"");
   CMD1X("*Form%sSelection    meth single");
   for (i=0; i < NUM_EFFECTS; i++) {    /* for all effects */
