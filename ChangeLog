@@ -1,4 +1,11 @@
+1999-06-27 Olivier Chapuis <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm2.1: Corrected misprints
+
 1999-06-27  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Parse.c: some clean up, added comments
+	(GetFileName): convenience function to simplify module code.
 
 	* fvwm/fvwm2.1 (ButtonState): new command
 

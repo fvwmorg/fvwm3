@@ -1,17 +1,32 @@
 /* Author: Dietmar Maurer <dm@vlsivie.tuwien.ac.at> */
 /* Description:
-   
+
    This widget works like a normal menu_item, but you can insert a
-   arbitrary widget (most often a pixmap widget), which is displayed 
-   at the left side. The advantage is that indentation is handled the 
+   arbitrary widget (most often a pixmap widget), which is displayed
+   at the left side. The advantage is that indentation is handled the
    same way as GTK does.
 
    (i.e if you create a menu with a gtk_check_menu_item, all normal
    menu_items are automatically indented by GTK - so if you use a normal
-   menu_item to display pixmaps at the left side, the pixmaps will be 
+   menu_item to display pixmaps at the left side, the pixmaps will be
    indented, which is not what you want. This widget solves the problem)
 
    */
+
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #ifndef __GTK_MENU_PIXMAP_ITEM_H__
 #define __GTK_MENU_PIXMAP_ITEM_H__

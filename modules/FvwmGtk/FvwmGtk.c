@@ -1,4 +1,3 @@
-
 /*
  * FvwmGtk - gtk menus and dialogs for fvwm2
  *
@@ -468,7 +467,7 @@ main (int argc, char **argv)
     fprintf(stderr,"%s should only be executed by fvwm!\n", my_name + 1);
     exit(1);
   }
- 
+
   fvwm_fd[0] = atoi (argv[1]);
   fvwm_fd[1] = atoi (argv[2]);
 

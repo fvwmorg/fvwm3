@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "Tools.h"
 
 
@@ -10,9 +25,9 @@ void InitRectangle(struct XObj *xobj)
  XSetWindowAttributes Attr;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
@@ -21,7 +36,7 @@ void InitRectangle(struct XObj *xobj)
  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
  XSetBackground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
  XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
- 
+
  mask=0;
  xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
 		-1000,-1000,xobj->width,xobj->height,0,
@@ -38,12 +53,12 @@ void DestroyRectangle(struct XObj *xobj)
 void DrawRectangle(struct XObj *xobj)
 {
  XSegment segm[4];
- 
+
  segm[0].x1=xobj->x;
  segm[0].y1=xobj->y;
  segm[0].x2=xobj->width+xobj->x-1;
  segm[0].y2=xobj->y;
-  
+
  segm[1].x1=xobj->x;
  segm[1].y1=xobj->y;
  segm[1].x2=xobj->x;
@@ -67,7 +82,7 @@ void DrawRectangle(struct XObj *xobj)
  segm[0].y1=1+xobj->y;
  segm[0].x2=xobj->width-1+xobj->x;
  segm[0].y2=1+xobj->y;
-  
+
  segm[1].x1=1+xobj->x;
  segm[1].y1=1+xobj->y;
  segm[1].x2=1+xobj->x;

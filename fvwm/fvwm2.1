@@ -180,8 +180,8 @@ will start an xterm two pages to the right and one down from the upper
 left hand page of desk number 3. Not all applications understand the use
 of these options, however.
 
-You could achieve the same results with the following lines in your
-.Xdefaults file:
+You could achieve the same results with the following lines in
+your .Xdefaults file:
 .EX
 XTerm*Desk: 1
 .EE
@@ -1146,8 +1146,8 @@ current  list contains about 60 colors  and  starts with white, black,
 grey,   green,  blue, red, cyan,  yellow,  and   magenta.  The command
 "ColorLimit 9" would limit pixmaps to these 9 colors.
 
-It makes the most sense to put this command at the front of the
-.fvwm2rc  file.  This   command should  be   before any  menu
+It makes the most sense to put this command at the front of
+the .fvwm2rc  file.  This   command should  be   before any  menu
 definitions that contain mini-icons.
 
 Solid frame and title colors (including shadows and gradients) are not
@@ -2359,7 +2359,7 @@ Is the default string used by fvwm: (side picture + 4 pixels gap)
 (first column left aligned + 5p) (second column left aligned + 5p)
 (third column right aligned) (second mini icon + 5p)
 (2p + submenu triangle + 3p) (1p + end of hilighted area).
-.Ex
+.EX
 MenuStyle * ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
 .EE
 Is used by fvwm with the \fISubmenusLeft\fP option below.
@@ -2900,7 +2900,7 @@ window was selected when such a function is invoked the user is asked
 to select a window. Sometimes this behavior is unwanted, for example
 if the function was called by a module and the window that was
 selected at first does not exist anymore. You can prevent this by
-putting \FISilent\fP in front of the \fIcommand\fP. If a function that needs
+putting \fISilent\fP in front of the \fIcommand\fP. If a function that needs
 a window is called with \fISilent\fP without a window selected, it simply
 returns without doing anything. If \fISilent\fP is used on a user defined
 function it affects all function and sub function calls until the
@@ -2968,13 +2968,13 @@ the button number. The \fIContext\fP and \fIModifiers\fP fields are defined
 as in the mouse binding.
 
 strokes are defined in a grid like this:
-
+.EX
  1  2  3
 
  4  5  6
 
  7  8  9
-
+.EE
 Because of the default button menu in fvwm, you may need to dis-associate
 a mouse button binding before using the stroke
 .EX

@@ -133,9 +133,9 @@ appear pushed in until the mouse button is released.
 A single extension to the Fvwm built-in command set is provided.
 A command of the form:
 .nf
-
+.sp
 *FvwmWharf junk clock.xpm Swallow "Clock" asclock -shape -12 &
-
+.sp
 .fi
 will cause FvwmWharf to spawn an asclock process, and capture 
 the first window whose name or resource is "Clock", and display it in
@@ -155,13 +155,13 @@ To create folder "slide-outs" in
 .B FvwmWharf
 the following format must be used:
 .nf
-
+.sp
 *FvwmWharf files Folders.xpm Folder
 *FvwmWharf xftp 3DRings.xpm	Exec xftp &
 *FvwmWharf xdir FolderDeposit.xpm Exec xdir &
 *FvwmWharf moxfm FilingCabinet.xpm Exec moxfm &
 *FvwmWharf ~Folders
-
+.sp
 .fi
 The first line of this set tells FvwmWharf that this button definition will be a 
 folder.  All of the button definitions between the
@@ -185,10 +185,10 @@ folders are Swallowed applications and more folders.
 have Drag and Drop enabled on a particular button, the following syntax
 must be adhered to:
 .nf
-
+.sp
 *FvwmWharf	nil      nil	     DropExec "\fIprogram\fP" \fIprogram\fP %s
 *FvwmWharf	\fIprogram\fP  \fIiconname\fP	Exec "\fIprogram\fP" \fIprogram\fP
-
+.sp
 .fi
 
 The button will call \fIprogram\fP when pushed.  If a file is dragged

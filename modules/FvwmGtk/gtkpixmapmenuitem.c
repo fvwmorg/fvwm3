@@ -1,5 +1,20 @@
 /* Author: Dietmar Maurer <dm@vlsivie.tuwien.ac.at> */
 
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "gtkpixmapmenuitem.h"
 #include <gtk/gtkaccellabel.h>
 #include <gtk/gtksignal.h>
@@ -25,7 +40,7 @@ static void gtk_pixmap_menu_item_size_request  (GtkWidget        *widget,
 static void gtk_pixmap_menu_item_remove        (GtkContainer *container,
 						GtkWidget    *child);
 
-					       
+
 static GtkMenuItemClass *parent_class = NULL;
 
 #define INDENT 18
@@ -49,7 +64,7 @@ gtk_pixmap_menu_item_get_type (void)
         (GtkClassInitFunc) NULL,
       };
 
-      pixmap_menu_item_type = gtk_type_unique (gtk_menu_item_get_type (), 
+      pixmap_menu_item_type = gtk_type_unique (gtk_menu_item_get_type (),
 					       &pixmap_menu_item_info);
     }
 
@@ -105,7 +120,7 @@ gtk_pixmap_menu_item_draw (GtkWidget    *widget,
   if (GTK_WIDGET_CLASS (parent_class)->draw)
     (* GTK_WIDGET_CLASS (parent_class)->draw) (widget, area);
 
-  if (GTK_WIDGET_DRAWABLE (widget) && 
+  if (GTK_WIDGET_DRAWABLE (widget) &&
       GTK_PIXMAP_MENU_ITEM(widget)->pixmap) {
     gtk_widget_draw(GTK_WIDGET(GTK_PIXMAP_MENU_ITEM(widget)->pixmap),NULL);
   }
@@ -122,7 +137,7 @@ gtk_pixmap_menu_item_expose (GtkWidget      *widget,
   if (GTK_WIDGET_CLASS (parent_class)->expose_event)
     (* GTK_WIDGET_CLASS (parent_class)->expose_event) (widget, event);
 
-  if (GTK_WIDGET_DRAWABLE (widget) && 
+  if (GTK_WIDGET_DRAWABLE (widget) &&
       GTK_PIXMAP_MENU_ITEM(widget)->pixmap) {
     gtk_widget_draw(GTK_WIDGET(GTK_PIXMAP_MENU_ITEM(widget)->pixmap),NULL);
   }
@@ -147,12 +162,12 @@ gtk_pixmap_menu_item_set_pixmap (GtkPixmapMenuItem *menu_item,
     if (GTK_WIDGET_REALIZED (pixmap->parent) &&
 	!GTK_WIDGET_REALIZED (pixmap))
       gtk_widget_realize (pixmap);
-      
+
     if (GTK_WIDGET_MAPPED (pixmap->parent) &&
 	!GTK_WIDGET_MAPPED (pixmap))
       gtk_widget_map (pixmap);
   }
-  
+
   if (GTK_WIDGET_VISIBLE (pixmap) && GTK_WIDGET_VISIBLE (menu_item))
     gtk_widget_queue_resize (pixmap);
 
@@ -196,7 +211,7 @@ gtk_pixmap_menu_item_size_allocate (GtkWidget        *widget,
     child_allocation.width = INDENT-child_allocation.x;
     child_allocation.height = allocation->height-2*child_allocation.y;
     gtk_widget_size_allocate (menu_item->pixmap, &child_allocation);
-  }  
+  }
 
   GTK_WIDGET_CLASS(parent_class)->size_allocate(widget,allocation);
 }
@@ -236,11 +251,11 @@ gtk_pixmap_menu_item_size_request (GtkWidget      *widget,
   GTK_WIDGET_CLASS(parent_class)->size_request(widget,requisition);
 
   menu_item = GTK_PIXMAP_MENU_ITEM (widget);
-  
+
   /* some widgets needs this */
   if (menu_item->pixmap)
     gtk_widget_size_request(menu_item->pixmap,&req);
-    
+
 }
 
 static void
@@ -256,17 +271,17 @@ gtk_pixmap_menu_item_remove (GtkContainer *container,
   g_return_if_fail (GTK_IS_WIDGET (child));
 
   bin = GTK_BIN (container);
-  g_return_if_fail ((bin->child == child || 
+  g_return_if_fail ((bin->child == child ||
 		     (GTK_PIXMAP_MENU_ITEM(container)->pixmap == child)));
 
   widget_was_visible = GTK_WIDGET_VISIBLE (child);
-  
+
   gtk_widget_unparent (child);
   if (bin->child == child)
-    bin->child = NULL; 
-  else 
+    bin->child = NULL;
+  else
     GTK_PIXMAP_MENU_ITEM(container)->pixmap = NULL;
-  
+
   if (widget_was_visible)
     gtk_widget_queue_resize (GTK_WIDGET (container));
 }

@@ -1,10 +1,24 @@
 #! xPERLx
 # FvwmCommand example - move a group of windows
 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-ask();  
 
-  
+ask();
+
+
 open( FCM, "FvwmCommand -m -i3 |" ) || die "$! FvwmCommand";
 open( FCC, ">$ENV{'HOME'}/.FvwmCommandC" ) || die "FCC";
 select( FCC ); $| = 1;
@@ -36,12 +50,12 @@ while( <FCM> ) {
 		}
 	}
 }
-		
+
 
 
 sub ask {
     my($k,$c,$w, $mark);
-    
+
 	# list up windows
 	open( FCM, "FvwmCommand -i2 send_windowlist |" ) || die "$! FvwmCommand";
 	while( <FCM> ) {
@@ -71,7 +85,7 @@ sub ask {
 		system "stty icanon";
 
 		if( $c eq '*' ) {
-			foreach(keys %win) { 
+			foreach(keys %win) {
 				$Config{$_}{'grp'} = 1;
 			}
 		}elsif( $c eq "\n" ) {

@@ -1,9 +1,23 @@
 #! xPERLx
-# FvwmCommand script 
+# FvwmCommand script
 # Written by Toshi Isogai
 #
 # 1. auto focus Netscape dialog when opened
 # 2. move download/upload window to right edge of the screen
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 # screen width
 if( `xwininfo -root` =~ /Width: (\d+)/ ) {
@@ -38,40 +52,40 @@ LOOP1: while( <FCM> ) {
 		$id = $1;
 
 		while( <FCM> ) {
-			
+
 			# keep window frame
 			if( /^$id frame\s+x -?\d+, y (-?\d+), width (\d+)/ ) {
 				$y = $1;
 				$width = $2;
-				
+
 				# search for class  line
 			}elsif( /^$id class/ ) {
-				
+
 				if( !/\sNetscape/ ) {
 					# not Netscape
 					last;
 				}
-				
+
 				# the next line should be resource line
-				$_ = <FCM>; 
-				
+				$_ = <FCM>;
+
 				# resource line tells what the window is
 				if( /^$id resource/ ) {
-					
+
 					# search for Netscape popups
 					if( /\s+\w+popup/ ) {
-						
+
 						# fvwm doesn't like commands from modules too fast
 						select(undef,undef,undef, 0.4 );
-						
+
 						# focus it
 						print FCC "windowid $id focus\n";
-						
+
 					}
 					# search for Netscape download or upload window
 					elsif( /\s+(Down|Up)load/ ) {
 						select(undef,undef,undef, 0.4 );
-						
+
 						# move to the right edge, keep the whole window in screen
 						$x = $SW - $width;
 						print FCC "windowid $id move ${x}p ${y}p\n";

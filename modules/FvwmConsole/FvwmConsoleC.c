@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "FvwmConsole.h"
 
 int  s;    /* socket handle */
@@ -38,8 +53,8 @@ int main ( int argc, char *argv[]) {
   char *home;
   char *s_name;
 
-  signal (SIGINT, sclose);  
-  signal (SIGQUIT, sclose);  
+  signal (SIGINT, sclose);
+  signal (SIGQUIT, sclose);
 
   name=strrchr(argv[0], '/');
   if (name != NULL) {
@@ -78,7 +93,7 @@ int main ( int argc, char *argv[]) {
 	  if (cmd == NULL) {
 		break;
 	  }
-	
+
 	  clen = strlen(cmd);
 	  if( clen == 1 ) {
 		continue;    /* empty line */
@@ -98,8 +113,8 @@ int main ( int argc, char *argv[]) {
 	  while( fgets( data, MAX_MESSAGE_SIZE, sp) ) {
 		if( *data == '\0' || !strcmp(data,C_END) ) {
 		  break;
-		}  
-	  }	
+		}
+	  }
 	  if( *data != '\0' ) {
 		continue;
 	  }

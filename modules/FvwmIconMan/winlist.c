@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include <limits.h>
 #include "FvwmIconMan.h"
 
@@ -36,7 +51,7 @@ void print_stringlist (StringList *list)
     case CLASS_NAME:
       s = "class";
       break;
-      
+
     default:
       s = "unknown type";
     }
@@ -73,7 +88,7 @@ void add_to_stringlist (StringList *list, char *s)
     type = ALL_NAME;
   }
 
-  ConsoleDebug (WINLIST, "add_to_stringlist: %s %s\n", 
+  ConsoleDebug (WINLIST, "add_to_stringlist: %s %s\n",
 		type == ALL_NAME ? "all" : s, pat);
 
   new = (StringEl *)safemalloc (sizeof (StringEl));
@@ -91,14 +106,14 @@ void add_to_stringlist (StringList *list, char *s)
   ConsoleDebug (WINLIST, "Exiting add_to_stringlist\n");
 }
 
-static int matches_string (NameType type, char *pattern, char *tname, 
+static int matches_string (NameType type, char *pattern, char *tname,
 			   char *iname, char *rname, char *cname)
 {
   int ans = 0;
-  
-  ConsoleDebug (WINLIST, "matches_string: type: 0x%x pattern: %s\n", 
+
+  ConsoleDebug (WINLIST, "matches_string: type: 0x%x pattern: %s\n",
 		type, pattern);
-  ConsoleDebug (WINLIST, "\tstrings: %s:%s %s:%s\n", tname, iname, 
+  ConsoleDebug (WINLIST, "\tstrings: %s:%s %s:%s\n", tname, iname,
 		rname, cname);
 
   if (tname && (type == ALL_NAME || type == TITLE_NAME)) {
@@ -137,14 +152,14 @@ static int iconmanager_show (WinManager *man, char *tname, char *iname,
 
   for (string = man->dontshow.list; string; string = string->next) {
     ConsoleDebug (WINLIST, "Matching: %s\n", string->string);
-    if (matches_string (string->type, string->string, tname, iname, 
+    if (matches_string (string->type, string->string, tname, iname,
 			rname, cname)) {
       ConsoleDebug (WINLIST, "Dont show\n");
       in_dontshowlist = 1;
       break;
     }
   }
-  
+
   if (!in_dontshowlist) {
     if (man->show.list == NULL) {
       in_showlist = 1;
@@ -202,7 +217,7 @@ void free_windata (WinData *p)
     globals.select_win = NULL;
     abort();
   }
- 
+
   Free (p->resname);
   Free (p->classname);
   Free (p->iconname);
@@ -275,7 +290,7 @@ int check_win_complete (WinData *p)
   ConsoleDebug (WINLIST, "\tcomplete: 0\n\n");
   return 0;
 }
-     
+
 void init_winlists (void)
 {
   int i;
@@ -294,7 +309,7 @@ void delete_win_hashtab (WinData *win)
   entry = win->app_id & 0xff;
   list = &hash_tab[entry];
 
-  if (win->win_prev) 
+  if (win->win_prev)
     win->win_prev->win_next = win->win_next;
   else
     list->head = win->win_next;
@@ -303,7 +318,7 @@ void delete_win_hashtab (WinData *win)
   else
     list->tail = win->win_prev;
   list->n--;
-}  
+}
 
 void insert_win_hashtab (WinData *win)
 {

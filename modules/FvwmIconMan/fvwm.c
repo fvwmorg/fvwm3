@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "config.h"
 
 #include "FvwmIconMan.h"
@@ -118,7 +133,7 @@ static void set_draw_mode (WinManager *man, int flag)
   else if (man->we_are_drawing && !flag) {
     the_manager = man;
     num = accumulate_walk_hashtab (count_nonsticky_in_hashtab);
-    ConsoleDebug (FVWM, "SetDrawMode on 0x%lx, num = %d\n", 
+    ConsoleDebug (FVWM, "SetDrawMode on 0x%lx, num = %d\n",
 		  (unsigned long)man, num);
 
     if (num == 0)
@@ -385,9 +400,9 @@ static void mini_icon (FvwmPacketBody *body)
 		   body->mini_icon_data.width, body->mini_icon_data.height);
 
 
-  ConsoleDebug (FVWM, "mini_icon: 0x%lx 0x%lx %dx%dx%d\n", 
+  ConsoleDebug (FVWM, "mini_icon: 0x%lx 0x%lx %dx%dx%d\n",
 		(unsigned long) win->pic.picture,
-		(unsigned long) win->pic.mask, 
+		(unsigned long) win->pic.mask,
 		win->pic.width, win->pic.height, win->pic.depth);
 }
 #endif
@@ -563,6 +578,6 @@ void ReadFvwmPipe (void)
 	exit(0);
     else
 	ProcessMessage( packet->type, (FvwmPacketBody*) packet->body );
-  
+
     ConsoleDebug(FVWM, "DEBUG: leaving ReadFvwmPipe\n");
 }

@@ -1,5 +1,5 @@
 #! xPERLx
-# FvwmCommand script 
+# FvwmCommand script
 # Written by Toshi Isogai
 #
 # push-away
@@ -8,6 +8,20 @@
 #   direction   - direction (down,up,left,right) to push away
 #   window name - windows to be protected, name can be regular expression
 # icons are ignored
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 $Dir = shift;
@@ -65,10 +79,10 @@ while( <FCM> ) {
 
 	if( /^(0x\S+) frame\s+x (-?\d+), y (-?\d+), width (\d+), height (\d+)/ ) {
 		$id = $1;
-		$Config{$id}{'x'} = $2; 
-		$Config{$id}{'y'} = $3; 
-		$Config{$id}{'w'} = $4; 
-		$Config{$id}{'h'} = $5; 
+		$Config{$id}{'x'} = $2;
+		$Config{$id}{'y'} = $3;
+		$Config{$id}{'w'} = $4;
+		$Config{$id}{'h'} = $5;
 
 		next if ! $endlist ;
 
@@ -88,7 +102,7 @@ while( <FCM> ) {
 		}
 
 	}elsif( /^(0x\S+) desktop +(-?\d+)/ ) {
-		$Config{$1}{'desk'} = $2; 
+		$Config{$1}{'desk'} = $2;
 
 	}elsif( /^(0x\S+) Iconified +(yes|no)/ ) {
 		$Config{$1}{'Iconified'} = $2;
@@ -115,7 +129,7 @@ while( <FCM> ) {
 
 	}elsif( /^(0x\S+) destroy/ ) {
 		delete $Config{$1};
-		
+
 	}
 }
 
@@ -127,14 +141,14 @@ sub move_if_overlap {
 	my($c2xl,$c2xh,$c2yl,$c2yh);
 
 
-	
-	if( $Config{$id1}{'desk'} != $Config{$id2}{'desk'} 
-		|| $Config{$id1}{'Iconified'} eq 'yes' 
+
+	if( $Config{$id1}{'desk'} != $Config{$id2}{'desk'}
+		|| $Config{$id1}{'Iconified'} eq 'yes'
 		|| $Config{$id2}{'Iconified'} eq 'yes' ) {
 		return;
 	}
 
-	
+
 	$ov = 0;
 
 	$c1xl = $Config{$id1}{'x'};
@@ -148,14 +162,14 @@ sub move_if_overlap {
 	$c2yh = $Config{$id2}{'y'}+$Config{$id2}{'h'};
 
 
-		if( $c2xl >= $c1xl && $c2xl <= $c1xh 
-			|| $c2xh >= $c1xl && $c2xh <= $c1xh ) {		
+		if( $c2xl >= $c1xl && $c2xl <= $c1xh
+			|| $c2xh >= $c1xl && $c2xh <= $c1xh ) {
 			if($c2yl >= $c1yl && $c2yl <= $c1yh
 			   || $c2yh >= $c1yl && $c2yh <= $c1yh  ) {
 				$ov = 1;
 			}
-		}elsif( $c1xl >= $c2xl && $c1xl <= $c2xh 
-				|| $c1xh >= $c2xl && $c1xh <= $c2xh ) {		
+		}elsif( $c1xl >= $c2xl && $c1xl <= $c2xh
+				|| $c1xh >= $c2xl && $c1xh <= $c2xh ) {
 			if($c1yl >= $c2yl && $c1yl <= $c2yh
 			   || $c1yh >= $c2yl && $c1yh <= $c2yh  ) {
 				$ov = 1;

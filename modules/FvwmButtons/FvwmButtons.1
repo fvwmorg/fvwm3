@@ -59,7 +59,7 @@ all buttons have a chance to fit. The number of columns is increased to at
 least the width of the widest button and new rows are added until all buttons
 can be placed. For best tolerance of configuration of errors use the
 smart option.
-.IP "*FvwmButtonsCloseOnSelect\fP"
+.IP "*FvwmButtonsCloseOnSelect"
 This option is only valid for panels.  Calling any action within a panel closes
 the panel.  With the opposite option \fIStayUpOnSelect\fP the panel never
 closes when pressing anything inside it.  The default is to close the panel
@@ -108,8 +108,8 @@ background.
 .IP "*FvwmButtonsRows \fIrows\fP"
 Specifies the number of rows of buttons to be created. If unspecified,
 2 rows will be used.
-.IP "*FvwmButtonsStayUpOnSelect\fP"
-See \f*FvwmButtonsCloseOnSelect\fP.
+.IP "*FvwmButtonsStayUpOnSelect"
+See \fI*FvwmButtonsCloseOnSelect\fP.
 .IP "*FvwmButtons(\fIoptions\fP) [\fItitle icon command\fP]"
 Specifies the contents of a button in the buttonbox.
 The following \fIoptions\fP, separated by commas or whitespace, can be
@@ -154,10 +154,12 @@ The container button itself (separate from the contents) can take format
 options like
 \fIFrame\fP and \fIPadding\fP, and commands can be bound to it. This means
 you can make a sensitive relief around a container, like
-
+.nf
+.sp
   *FvwmButtons(2x2, Frame 5, Padding 2 2, Action Beep,\\
       Container(Frame 1))
-
+.sp
+.fi
 Typically you will want to at least give the container a size setting
 \fIwidth\fPx\fIheight\fP.
 
@@ -165,8 +167,11 @@ Typically you will want to at least give the container a size setting
 Specifies that no more buttons are defined for the current container, and
 further buttons will be put in the container's parent. This option should
 be given on a line by itself, i.e
-
+.nf
+.sp
   *FvwmButtons(End)
+.sp
+.fi
 .IP "  Font \fIfontname\fP"
 Specifies that the font \fIfontname\fP is to be used for labeling this button.
 .IP "  Fore \fIcolor\fP"
@@ -219,15 +224,19 @@ larger sizes.
 Causes FvwmButtons to execute \fIcommand\fP, and when a window matching the
 name \fIhangon\fP appears, it is captured and swallowed into this button.
 An example:
-
+.nf
+.sp
   *FvwmButtons(Swallow XClock 'Exec xclock &')
-
+.sp
+.fi
 will take the first window whose name, class or resource is "XClock" and
 display it in the button. Modules can be swallowed by specifying
 the module instead of 'Exec whatever', like:
-
+.nf
+.sp
   *FvwmButtons(Swallow "FvwmPager" "FvwmPager 0 0")
-
+.sp
+.fi
 The flags that can be given to swallow are:
 
 NoClose / Close -
@@ -260,14 +269,18 @@ The default value is "NoOld".
 "UseOld" can be combined with "NoKill" to have windows survive restart of
 windowmanager. If you want FvwmButtons to swallow an old window, and not
 spawn one itself if failing, let the \fIcommand\fP be "Nop":
-
+.nf
+.sp
   *FvwmButtons(Swallow (UseOld) "Console" Nop)
-
+.sp
+.fi
 If you want to be able to start it yourself, combine it with an action:
-
+.nf
+.sp
   *FvwmButtons(Swallow (UseOld) "Console" Nop, \\
                Action `Exec "Console" console &`)
-
+.sp
+.fi
 NoTitle / UseTitle -
 Specifies whether the title of the button will be taken from the swallowed
 window's title or not. If "UseTitle" is given, the title on the button will
@@ -305,9 +318,11 @@ Action \fIcommand\fP or alternatively Swallow "\fIhangon\fP" \fIcommand\fP.
 Any fvwm command is recognized by FvwmButtons. See fvwm(1) for more info
 on this. The Exec command has a small extension when used in Actions,
 its syntax is here:
-
+.nf
+.sp
   Exec ["hangon"] command
-
+.sp
+.fi
 When FvwmButtons finds such an Exec command, the button will remain
 pushed in until a window whose name or class matches the
 qouted portion of the command is encountered. This is intended to
@@ -338,10 +353,12 @@ and backquote:
 The backquoting is purposeful
 if you use a preprocessor like FvwmCpp and want it to get into your
 commands, like this:
-
+.nf
+.sp
   #define BG gray60
   *FvwmButtons(Swallow "xload" `Exec xload -bg BG &`)
-
+.sp
+.fi
 Furthermore a single character can be quoted with a preceding
 backslash '\'.
 

@@ -12,6 +12,36 @@
  *  Things to do:  Convert to C++  (In Progress)
  */
 
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "config.h"
 
 #include <stdlib.h>
@@ -115,7 +145,7 @@ void ReorderButtons(ButtonArray *array, int ButNum, int FlipFocus)
     temp = temp->next;
     i++;
   }
-  
+
   if (!temp) return; /* we fell off the list */
 
   /* prev is guaranteed to be !NULL */
@@ -381,11 +411,11 @@ void DoButton(Button *button, int x, int y, int w, int h)
   string=button->title;
 
   if (TruncateLeft
-      && (newx + button->tw + 2*button->reliefwidth + INNER_MARGIN) > w) { 
+      && (newx + button->tw + 2*button->reliefwidth + INNER_MARGIN) > w) {
     if (button->truncatewidth == w)
       string=button->truncate_title;
     else {
-      while(*string && (newx + XTextWidth(ButtonFont,string,strlen(string)) 
+      while(*string && (newx + XTextWidth(ButtonFont,string,strlen(string))
                       + 2*button->reliefwidth + INNER_MARGIN) > w)
       string++;
       button->truncatewidth = w;
@@ -395,7 +425,7 @@ void DoButton(Button *button, int x, int y, int w, int h)
   XDrawString(dpy,win,graph[set],x+newx+button->reliefwidth,
               y+1+button->reliefwidth+ButtonFont->ascent,
               string,strlen(string));
- 
+
   /* Draw relief last, don't forget that XDrawLine doesn't do the last pixel */
   RelieveRectangle(dpy,win,x,y,w,h,topgc,bottomgc,button->reliefwidth);
 

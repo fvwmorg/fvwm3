@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -33,7 +48,7 @@ extern unsigned long context;
 extern int icon_w, icon_h;
 
 
-static void 
+static void
 send_item (GtkWidget *item, char *s)
 {
   SendText (fvwm_fd, s, context);
@@ -54,10 +69,10 @@ find_or_create_menu (char *name)
 
   menu = g_hash_table_lookup (widgets, name);
 
-  if (menu == NULL) 
+  if (menu == NULL)
     {
       menu = gtk_menu_new ();
-      gtk_menu_attach_to_widget (GTK_MENU (menu), 
+      gtk_menu_attach_to_widget (GTK_MENU (menu),
 				 attach_to_toplevel, detacher);
       gtk_widget_set_name (menu, name);
       name_copy = gtk_widget_get_name (menu);
@@ -65,7 +80,7 @@ find_or_create_menu (char *name)
       gtk_object_sink (GTK_OBJECT (menu));
       g_hash_table_insert (widgets, name_copy, menu);
       gtk_object_ref (GTK_OBJECT (menu));
-    } 
+    }
   if (GTK_IS_MENU (menu))
     {
       return menu;
@@ -81,8 +96,8 @@ find_or_create_menu (char *name)
 /* from gtkcauldron.c */
 /* result must be g_free'd */
 static gchar *
-convert_label_with_ampersand (const gchar * _label, 
-			      gint * accelerator_key, 
+convert_label_with_ampersand (const gchar * _label,
+			      gint * accelerator_key,
 			      gint * underbar_pos)
 {
     gchar *p;
@@ -124,13 +139,13 @@ get_menu_accel_group (GtkMenuShell *menu_shell)
 {
 	GtkAccelGroup *ag;
 
-	ag = gtk_object_get_data (GTK_OBJECT (menu_shell), 
+	ag = gtk_object_get_data (GTK_OBJECT (menu_shell),
 			"gnome_menu_accel_group");
 
 	if (!ag) {
 		ag = gtk_accel_group_new ();
 		gtk_accel_group_attach (ag, GTK_OBJECT (menu_shell));
-		gtk_object_set_data (GTK_OBJECT (menu_shell), 
+		gtk_object_set_data (GTK_OBJECT (menu_shell),
 				"gnome_menu_accel_group", ag);
 	}
 
@@ -154,11 +169,11 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
 
   path = findImageFile (file ? file : "", image_path, R_OK);
 
-  if (path == NULL) 
+  if (path == NULL)
     {
       item = gtk_menu_item_new ();
-    } 
-  else 
+    }
+  else
     {
 #ifdef IMLIB
       im = gdk_imlib_load_image (path);
@@ -169,7 +184,7 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
 	      w = im->rgb_width;
 	      h = im->rgb_height;
 	    }
-	  else 
+	  else
 	    {
 	      w = icon_w;
 	      h = icon_h;
@@ -178,7 +193,7 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
 	  pixmap = gdk_imlib_move_image (im);
 	  mask = gdk_imlib_move_mask (im);
 	}
-#else      
+#else
       pixmap = gdk_pixmap_create_from_xpm (NULL, &mask, NULL, path);
 #endif
       if (pixmap)
@@ -188,30 +203,30 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
 	  gtk_pixmap_menu_item_set_pixmap (GTK_PIXMAP_MENU_ITEM (item), icon);
 	  gtk_widget_show (icon);
 	}
-      else 
+      else
 	{
 	  item = gtk_menu_item_new ();
 	}
 
       free (path);
     }
-  
+
   converted_label = convert_label_with_ampersand (l_label, &accel_key,
 						  &underbar_pos);
   label = gtk_label_new (converted_label);
   if (underbar_pos != -1)
     {
-      GtkAccelGroup *accel_group = 
+      GtkAccelGroup *accel_group =
 	get_menu_accel_group (GTK_MENU_SHELL (current));
 
       pattern = create_label_pattern (converted_label, underbar_pos);
       gtk_label_set_pattern (GTK_LABEL (label), pattern);
 
-      gtk_widget_add_accelerator (item, "activate_item", 
+      gtk_widget_add_accelerator (item, "activate_item",
 				  accel_group, accel_key, 0, 0);
     }
   g_free (converted_label);
-  
+
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   if (r_label)
     {
@@ -223,12 +238,12 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
       gtk_container_add (GTK_CONTAINER (item), box);
       gtk_widget_show_all (box);
     }
-  else 
+  else
     {
       gtk_container_add (GTK_CONTAINER (item), label);
       gtk_widget_show (label);
     }
-  
+
   return item;
 }
 
@@ -242,22 +257,22 @@ open_menu (int argc, char **argv)
 }
 
 
-void 
+void
 menu_title (int argc, char **argv)
 {
   GtkWidget *item;
 
   g_return_if_fail (argc > 0);
 
-  item = menu_item_new_with_pixmap_and_label 
+  item = menu_item_new_with_pixmap_and_label
     (argc > 1 ? argv[1] : NULL, argv[0], argc > 2 ? argv[2] : NULL);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
-  /* 
+  /*
      This is a hack stolen from the Gnome panel. There ought
      to be a better way.
   */
-  gtk_signal_connect 
+  gtk_signal_connect
     (GTK_OBJECT (item), "select",
      GTK_SIGNAL_FUNC (gtk_menu_item_deselect), NULL);
 }
@@ -267,7 +282,7 @@ void
 menu_separator (int argc, char **argv)
 {
   GtkWidget *item;
-  
+
   item = gtk_menu_item_new ();
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
@@ -279,16 +294,16 @@ void
 menu_item (int argc, char **argv)
 {
   GtkWidget *item;
-  
+
   g_return_if_fail (argc > 1);
 
-  item = menu_item_new_with_pixmap_and_label 
+  item = menu_item_new_with_pixmap_and_label
     (argc > 2 ? argv[2] : NULL, argv[0], argc > 3 ? argv[3] : NULL);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
-  gtk_signal_connect 
+  gtk_signal_connect
     (GTK_OBJECT (item), "activate",
-     GTK_SIGNAL_FUNC (send_item), strdup (argv[1])); 
+     GTK_SIGNAL_FUNC (send_item), strdup (argv[1]));
 }
 
 
@@ -296,7 +311,7 @@ void
 menu_tearoff_item (int argc, char **argv)
 {
   GtkWidget *item;
-  
+
   item = gtk_tearoff_menu_item_new ();
 
   gtk_menu_append (GTK_MENU (current), item);
@@ -310,14 +325,14 @@ menu_submenu (int argc, char **argv)
   GtkWidget *item, *submenu;
   char *file;
 
-  item = menu_item_new_with_pixmap_and_label 
+  item = menu_item_new_with_pixmap_and_label
     (argc > 2 ? argv[2] : NULL, argv[0], NULL);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
   submenu = find_or_create_menu (argv[1]);
 
   gtk_menu_detach (GTK_MENU (submenu));
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu); 
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu);
 }
 
 

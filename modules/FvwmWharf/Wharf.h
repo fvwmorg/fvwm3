@@ -1,10 +1,25 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "config.h"
 #include <libs/fvwmlib.h>
 
 /*************************************************************************
  *
  * Subroutine Prototypes
- * 
+ *
  *************************************************************************/
 extern void   CreateWindow(void);
 extern Pixel  GetColor(char *name);
@@ -73,7 +88,7 @@ typedef struct icon_info {
     char *file;
     short w, h;
     Pixmap icon, mask;
-    signed char depth;    
+    signed char depth;
 } icon_info;
 
 struct button_info
@@ -95,7 +110,7 @@ struct button_info
   int folder;
 #ifdef ENABLE_DND
   char *drop_action;
-#endif    
+#endif
 };
 
 struct folder_info

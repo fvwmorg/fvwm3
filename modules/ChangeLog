@@ -1,3 +1,155 @@
+1999-06-27  Olivier Chapuis <olivier.chapuis@free.fr>
+
+	* FvwmAnimate/FvwmAnimate.1: Corrected misprints
+	* FvwmButtons/FvwmButtons.1:
+	* FvwmCommand/FvwmCommand.1:
+	* FvwmConsole/FvwmConsoleC.pl.1:
+	* FvwmEvent/FvwmEvent.1:
+	* FvwmForm/FvwmFrom.1:
+	* FvwmPager/FvwmPager.1:
+	* FvwmWharf/FvwmWharf.1:
+	* FvwmSaveDesk/FvwmSaveDesk.1:
+
+1999-06-27  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmScript/Widgets/Widget.c:
+	* FvwmScript/Widgets/VScrollBar.c:
+	* FvwmScript/Widgets/VDipstick.c:
+	* FvwmScript/Widgets/Tools.h:
+	* FvwmScript/Widgets/Tools.c:
+	* FvwmScript/Widgets/TextField.c:
+	* FvwmScript/Widgets/Swallow.c:
+	* FvwmScript/Widgets/Rectangle.c:
+	* FvwmScript/Widgets/RadioButton.c:
+	* FvwmScript/Widgets/PushButton.c:
+	* FvwmScript/Widgets/PopupMenu.c:
+	* FvwmScript/Widgets/MiniScroll.c:
+	* FvwmScript/Widgets/Menu.c:
+	* FvwmScript/Widgets/List.c:
+	* FvwmScript/Widgets/ItemDraw.c:
+	* FvwmScript/Widgets/HScrollBar.c:
+	* FvwmScript/Widgets/HDipstick.c:
+	* FvwmScript/Widgets/CheckBox.c:
+	* FvwmScript/types.h:
+	* FvwmScript/Instructions.c:
+	* FvwmScript/FvwmScript.c:
+	* FvwmWinList/Mallocs.h:
+	* FvwmWinList/Mallocs.c:
+	* FvwmWinList/List.h:
+	* FvwmWinList/List.c:
+	* FvwmWinList/FvwmWinList.h:
+	* FvwmWinList/FvwmWinList.c:
+	* FvwmWinList/Colors.h:
+	* FvwmWinList/Colors.c:
+	* FvwmWinList/ButtonArray.c:
+	* FvwmWinList/ButtonArray.h:
+	* FvwmWinList/ButtonArray.c:
+	* FvwmWharf/stepgfx.h:
+	* FvwmWharf/stepgfx.c:
+	* FvwmWharf/icons.c:
+	* FvwmWharf/Wharf.h:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/Start.h:
+	* FvwmTaskBar/Start.c:
+	* FvwmTaskBar/Mallocs.h:
+	* FvwmTaskBar/Mallocs.c:
+	* FvwmTaskBar/List.h:
+	* FvwmTaskBar/List.c:
+	* FvwmTaskBar/Goodies.h:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmTaskBar/FvwmTaskBar.h:
+	* FvwmTaskBar/Colors.h:
+	* FvwmTaskBar/Colors.c:
+	* FvwmTaskBar/ButtonArray.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/ButtonArray.h:
+	* FvwmScroll/GrabWindow.c:
+	* FvwmScroll/FvwmScroll.h:
+	* FvwmScroll/FvwmScroll.c:
+	* FvwmSaveDesk/FvwmSaveDesk.h:
+	* FvwmSaveDesk/FvwmSaveDesk.c:
+	* FvwmSave/FvwmSave.h:
+	* FvwmSave/FvwmSave.c:
+	* FvwmPager/x_pager.c:
+	* FvwmPager/FvwmPager.h:
+	* FvwmPager/FvwmPager.c:
+	* FvwmM4/FvwmM4.h:
+	* FvwmM4/FvwmM4.c:
+	* FvwmIdent/FvwmIdent.h:
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmIconMan/xmanager.h:
+	* FvwmIconMan/xmanager.c:
+	* FvwmIconMan/x.h:
+	* FvwmIconMan/x.c:
+	* FvwmIconMan/winlist.c:
+	* FvwmIconMan/readconfig.h:
+	* FvwmIconMan/readconfig.c:
+	* FvwmIconMan/globals.c:
+	* FvwmIconMan/fvwm.c:
+	* FvwmIconMan/functions.c:
+	* FvwmIconMan/debuglevels.h:
+	* FvwmIconMan/debug.h:
+	* FvwmIconMan/debug.c:
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/FvwmIconMan.c:
+	* FvwmIconBox/icons.c:
+	* FvwmIconBox/FvwmIconBox.h:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmGtk/windowlist.h:
+	* FvwmGtk/windowlist.c:
+	* FvwmGtk/menu.h:
+	* FvwmGtk/menu.c:
+	* FvwmGtk/gtkpixmapmenuitem.h:
+	* FvwmGtk/gtkpixmapmenuitem.c:
+	* FvwmGtk/expand.h:
+	* FvwmGtk/expand.c:
+	* FvwmGtk/dialog.c:
+	* FvwmForm/ReadXServer.c:
+	* FvwmForm/ParseCommand.c:
+	* FvwmForm/FvwmForm.h:
+	* FvwmForm/FvwmForm.c:
+	* FvwmDebug/FvwmDebug.h:
+	* FvwmDebug/FvwmDebug.c:
+	* FvwmCpp/FvwmCpp.h:
+	* FvwmConsole/getline.c:
+	* FvwmConsole/FvwmConsoleC.pl.in:
+	* FvwmConsole/FvwmConsoleC.c:
+	* FvwmConsole/FvwmConsole.h:
+	* FvwmConsole/FvwmConsole.c:
+	* FvwmCommand/scripts/test2.sh:
+	* FvwmCommand/scripts/test1.pl:
+	* FvwmCommand/scripts/test1:
+	* FvwmCommand/scripts/push-away.pl:
+	* FvwmCommand/scripts/push-away:
+	* FvwmCommand/scripts/focus-link.pl:
+	* FvwmCommand/scripts/focus-link:
+	* FvwmCommand/scripts/focus-Netscape.pl:
+	* FvwmCommand/scripts/focus-Netscape:
+	* FvwmCommand/scripts/ex-grpmv.pl:
+	* FvwmCommand/scripts/ex-grpmv:
+	* FvwmCommand/scripts/ex-cascade.pl:
+	* FvwmCommand/scripts/ex-cascade:
+	* FvwmCommand/scripts/ex-auto.pl:
+	* FvwmCommand/scripts/ex-auto:
+	* FvwmCommand/findcmd:
+	* FvwmCommand/findcmd.pl:
+	* FvwmCommand/FvwmCommand.h:
+	* FvwmCommand/FvwmCommandS.c:
+	* FvwmCommand/FvwmCommand.c:
+	* FvwmBanner/FvwmBanner.c:
+	* FvwmBacker/Mallocs.h:
+	* FvwmBacker/Mallocs.c:
+	* FvwmBacker/FvwmBacker.c:
+	* FvwmAuto/FvwmAuto.c:
+	* FvwmAnimate/FvwmAnimate.h:
+	Added GPL copyright notice
+
+	* FvwmButtons/FvwmButtons.c (main): use GetFileNameFromPath from the
+	library
+
+	* FvwmScript/FvwmScript.c (MainLoop): corrected a typo;
+	(Xinit): print module name if XOpenDisplay fails
+
 1999-06-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmForm/Makefile.am:

@@ -133,8 +133,10 @@ static char *SkipSpaces(char *indata, char *spaces, int snum)
 }
 
 /* Copies a token beginning at src to a previously allocated area dest. dest
- * must be large enough to hold the token. Leading whitespaces cause the token
+ * must be large enough to hold the token. Leading whitespace causes the token
  * to be NULL. */
+/* NOTE: CopyToken can be called with dest == src. The token will be copied
+ * back down over the src string. */
 static char *CopyToken(char *src, char *dest, char *spaces, int snum,
 		       char *delims, int dnum, char *out_delim)
 {
@@ -176,12 +178,19 @@ static char *CopyToken(char *src, char *dest, char *spaces, int snum,
 
 
 /*
+** PeekToken:
 ** DoPeekToken: returns next token from string, leaving string intact
 **              (you must not free returned string)
+**
+** WARNING: The returned pointer points to a static array that will be
+**           overwritten all functions in this file!
 **
 ** For a description of the parameters see DoGetNextToken below. DoPeekToken
 ** is a bit faster.
 */
+/* NOTE: If indata is the pointer returned by a previous call to PeekToken or
+ * DoPeekToken, the input string will be destroyed. */
+
 char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
 		  char *out_delim)
 {
@@ -223,6 +232,7 @@ char *PeekToken(char *indata, char **outdata)
 
 
 /**** SMR: Defined but not used -- is this for the future or a relic of the past? ****/
+/* domivogt (27-Jun-1999): It's intended for future use. I have no problem commentinc it out if it's not used. */
 
 /* Tries to seek up to n tokens in indata. Returns the number of tokens
  * actually found (up to a maximum of n). */
@@ -531,6 +541,12 @@ char *GetNextTokenIndex(char *action, char *list[], int len, int *index)
 }
 
 
+/***************************************************************************
+ *
+ * Parses two integer arguments given in the form <int><character><int>.
+ * character can be ' ' or 'x', but any other character is allowed too.
+ *
+ **************************************************************************/
 int GetRectangleArguments(char *action, int *width, int *height)
 {
   char *token;
@@ -539,7 +555,6 @@ int GetRectangleArguments(char *action, int *width, int *height)
   token = PeekToken(action, NULL);
   if (!token)
     return 0;
-  /* now try MxN style number, specifically for DeskTopSize: */
   n = sscanf(token, "%d%*c%d", width, height);
 
   return (n == 2) ? 2 : 0;
@@ -576,12 +591,15 @@ int GetOnePercentArgument(char *action, int *value, int *unit_io)
 int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 			   int *val2_unit)
 {
-  char *tok1, *tok2;
+  char *tok1;
+  char *tok2;
+  char *next;
   int n = 0;
 
   *val1 = 0;
   *val2 = 0;
 
+  tok1 = PeekToken(action, &next);
   action = GetNextToken(action, &tok1);
   if (!tok1)
     return 0;
@@ -646,4 +664,26 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
   if (ret_action)
     *ret_action = next;
   return rc;
+}
+
+/* Strips the path from 'path' and returns the last component in a malloc'ed
+ * area. */
+char *GetFileNameFromPath(char *path)
+{
+  char *s;
+  char *name;
+
+  /* we get rid of the path from program name */
+  s = strrchr(path, '/');
+  if(s)
+  {
+    s++;
+  }
+  else
+  {
+    s = path;
+  }
+  name = (char *)safemalloc(strlen(s)+1);
+  strcpy(name, s);
+  return name;
 }

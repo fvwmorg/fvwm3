@@ -4,6 +4,21 @@
  * given, provided that this copyright is kept intact.
  */
 
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "types.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
@@ -144,8 +159,8 @@ void Xinit(int IsFather)
  x11base->display=XOpenDisplay(NULL);
  if (x11base->display==NULL)
  {
-  fprintf(stderr,"Enable to open display.\n");
-  exit(1);
+   fprintf(stderr,"%s: Can't open display %s", ModuleName, XDisplayName(NULL));
+   exit(1);
  }
 
 #ifdef MEMDEBUG
@@ -653,8 +668,9 @@ void MainLoop ()
 	   tabxobj[i]->ProcessMsg(tabxobj[i], packet->type, packet->body);
    }
   }
-  if (x11base->periodictasks!=NULL)		/* Execution des taches periodics */
-   ExecBloc(x11base->periodictasks);
+  if (x11base->periodictasks!=NULL)
+    /* Execution des taches periodics */
+    ExecBloc(x11base->periodictasks);
  }
 }
 
@@ -692,8 +708,7 @@ int main (int argc, char **argv)
   int IsFather;
   int i;
 
-  /* we get rid of the path from program name */
-  ModuleName = argv[0];
+  ModuleName = GetFileNameFromPath(argv[0]);
 
   /* On determine si le script a un pere */
   if (argc>=8)

@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "Tools.h"
 
 
@@ -32,7 +47,7 @@ void DrawThumbV(struct XObj *xobj)
  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
  XDrawSegments(xobj->display,xobj->win,xobj->gc,&segm,1);
  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
- 
+
  sprintf(str,"%d",xobj->value);
  x=x-XTextWidth(xobj->xfont,str,strlen(str))-6;
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
@@ -70,11 +85,11 @@ void InitVScrollBar(struct XObj *xobj)
  char str[20];
  int asc,desc,dir;
  XCharStruct struc;
- 
+
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
@@ -83,7 +98,7 @@ void InitVScrollBar(struct XObj *xobj)
  mask=0;
  Attr.background_pixel=xobj->TabColor[back].pixel;
  mask|=CWBackPixel;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2); 
+ Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
  mask|=CWCursor;		/* Curseur pour la fenetre */
 
  xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
@@ -99,12 +114,12 @@ void InitVScrollBar(struct XObj *xobj)
   XSetFont(xobj->display,xobj->gc,xobj->xfont->fid);
 
  XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
- 
+
  if ((xobj->value3-xobj->value2)<=0)
   xobj->value3=xobj->value2+10;
  if (!((xobj->value>=xobj->value2)&&(xobj->value<=xobj->value3)))
   xobj->value=xobj->value2;
-  
+
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  i=(asc+desc)*2+30;
  if (xobj->height<i)
@@ -144,7 +159,7 @@ void DrawVScrollBar(struct XObj *xobj)
  DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[shad].pixel,xobj->TabColor[li].pixel,
  		xobj->TabColor[black].pixel,1);
  DrawThumbV(xobj);
- 
+
  /* Ecriture des valeurs */
  sprintf(str,"%d",xobj->value3);
  x=x+26;
@@ -193,7 +208,7 @@ void EvtMouseVScrollBar(struct XObj *xobj,XButtonEvent *EvtButton)
     oldvalue=newvalue;
     SendMsg(xobj,SingleClic);
    }
-  } 
+  }
  }
  while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
 }

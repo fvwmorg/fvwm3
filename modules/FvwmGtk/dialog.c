@@ -1,3 +1,17 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #include "config.h"
 
@@ -34,7 +48,7 @@ int option_menu_active_item = 0;
 char *notebook_label = NULL;
 
 
-gpointer 
+gpointer
 widget_get_value (GtkWidget *w)
 {
   static char buf[100];
@@ -44,9 +58,9 @@ widget_get_value (GtkWidget *w)
       GtkWidget *item;
 
       item = gtk_menu_get_active (GTK_MENU (GTK_OPTION_MENU (w)->menu));
-      if (item)  
+      if (item)
 	{
-	  return gtk_object_get_data (GTK_OBJECT (item), "value");      
+	  return gtk_object_get_data (GTK_OBJECT (item), "value");
 	}
       else
 	{
@@ -55,7 +69,7 @@ widget_get_value (GtkWidget *w)
     }
   else if (GTK_IS_SCALE (w))
     {
-      g_snprintf (buf, sizeof (buf), "%.*f", 
+      g_snprintf (buf, sizeof (buf), "%.*f",
 	  	  GTK_RANGE (w)->digits,
 		  gtk_range_get_adjustment (GTK_RANGE (w))->value);
       return buf;
@@ -81,7 +95,7 @@ widget_get_value (GtkWidget *w)
 	{
 	  blue = 65535;
 	}
-      g_snprintf (buf, sizeof (buf), "rgb:%.4lx/%.4lx/%.4lx", 
+      g_snprintf (buf, sizeof (buf), "rgb:%.4lx/%.4lx/%.4lx",
 		red, green, blue);
       return buf;
     }
@@ -89,7 +103,7 @@ widget_get_value (GtkWidget *w)
     {
       /* this also catches spin buttons */
       return gtk_entry_get_text (GTK_ENTRY (w));
-    } 
+    }
   else if (GTK_IS_TOGGLE_BUTTON (w))
     {
       if (GTK_TOGGLE_BUTTON (w)->active)
@@ -101,27 +115,27 @@ widget_get_value (GtkWidget *w)
 	  return gtk_object_get_data (GTK_OBJECT (w), "off-value");
 	}
     }
-  
+
   return NULL;
 }
 
 
-/* generic callback added to all data widgets */ 
-static void 
+/* generic callback added to all data widgets */
+static void
 update_value (GtkWidget *w)
 {
   char *val;
-  
+
   val = widget_get_value (w);
-  if (val) 
+  if (val)
     {
-      gtk_object_set_data_full (GTK_OBJECT (gtk_widget_get_toplevel (w)), 
+      gtk_object_set_data_full (GTK_OBJECT (gtk_widget_get_toplevel (w)),
 				gtk_widget_get_name (w), strdup (val), free);
     }
 }
 
 
-static void 
+static void
 add_to_dialog (GtkWidget *w, int argc, char **argv)
 {
   int i;
@@ -171,13 +185,13 @@ add_to_dialog (GtkWidget *w, int argc, char **argv)
     }
   if (GTK_IS_NOTEBOOK (current))
     {
-      gtk_notebook_append_page (GTK_NOTEBOOK (current), w, 
+      gtk_notebook_append_page (GTK_NOTEBOOK (current), w,
 				gtk_label_new (notebook_label));
     }
   else if (GTK_IS_BOX (current))
     {
       gtk_box_pack_start (GTK_BOX (current), w, expand, fill, padding);
-    } 
+    }
   else
     {
       gtk_container_add (GTK_CONTAINER (current), w);
@@ -198,7 +212,7 @@ add_to_dialog (GtkWidget *w, int argc, char **argv)
 }
 
 
-void 
+void
 send_values (GtkWidget *w)
 {
   GtkWidget *dialog;
@@ -209,16 +223,16 @@ send_values (GtkWidget *w)
        *vals; vals++)
     {
       char *val = recursive_replace (dialog, *vals);
-      if (strcasecmp (val, "close") == 0) 
+      if (strcasecmp (val, "close") == 0)
 	{
 	  gtk_widget_hide (dialog);
 	}
-      else 
+      else
 	{
-	  if (val[0] == '!') 
+	  if (val[0] == '!')
 	    {
 	      system (val + 1);
-	    } 
+	    }
 	  else
 	    {
 	      SendText (fvwm_fd, val, context);
@@ -228,7 +242,7 @@ send_values (GtkWidget *w)
     }
 }
 
-void 
+void
 open_dialog (int argc, char **argv)
 {
   GtkWidget *item;
@@ -238,7 +252,7 @@ open_dialog (int argc, char **argv)
 
   item = g_hash_table_lookup (widgets, argv[0]);
   if (item)
-    { 
+    {
       name = gtk_widget_get_name (item);
     }
   else
@@ -248,20 +262,20 @@ open_dialog (int argc, char **argv)
       name = gtk_widget_get_name (item);
       g_hash_table_insert (widgets, name, item);
       gtk_object_ref (GTK_OBJECT (item));
-     
+
       gtk_window_set_title (GTK_WINDOW (item), argv[1]);
       gtk_window_set_wmclass (GTK_WINDOW (item), argv[1], "FvwmGtk");
-      gtk_object_set_data 
-	(GTK_OBJECT (item), "values", 
-	 g_hash_table_new (g_str_hash, g_str_equal)); 
-      gtk_signal_connect 
+      gtk_object_set_data
+	(GTK_OBJECT (item), "values",
+	 g_hash_table_new (g_str_hash, g_str_equal));
+      gtk_signal_connect
 	(GTK_OBJECT (item), "delete_event",
 	 GTK_SIGNAL_FUNC (gtk_widget_hide), current);
-      if (argc >= 3 && strcasecmp ("center", argv[2]) == 0) 
+      if (argc >= 3 && strcasecmp ("center", argv[2]) == 0)
         {
           gtk_window_position (GTK_WINDOW (item), GTK_WIN_POS_CENTER);
         }
-      else 
+      else
         {
           gtk_window_position (GTK_WINDOW (item), GTK_WIN_POS_MOUSE);
         }
@@ -273,7 +287,7 @@ open_dialog (int argc, char **argv)
 
           gtk_container_border_width (GTK_CONTAINER (item), border_width);
         }
-    }  
+    }
   if (GTK_IS_MENU (item))
     {
       fprintf (stderr, "%s is a menu\n", name);
@@ -283,15 +297,15 @@ open_dialog (int argc, char **argv)
 
 
 /* this applies to rows, columns and frames */
-void 
+void
 dialog_end_something (int argc, char **argv)
 {
-  g_return_if_fail (current != NULL); 
+  g_return_if_fail (current != NULL);
   current = GTK_WIDGET (current)->parent;
 }
 
 
-void 
+void
 dialog_label (int argc, char **argv)
 {
   GtkWidget *item;
@@ -304,12 +318,12 @@ dialog_label (int argc, char **argv)
 }
 
 
-void 
+void
 dialog_notebook (int argc, char **argv)
 {
   g_return_if_fail (argc >= 1);
 
-  if (!GTK_IS_NOTEBOOK (current)) 
+  if (!GTK_IS_NOTEBOOK (current))
     {
       GtkWidget *nb = gtk_notebook_new ();
       gtk_widget_show (nb);
@@ -325,10 +339,10 @@ dialog_notebook (int argc, char **argv)
 }
 
 
-void 
+void
 dialog_end_notebook (int argc, char **argv)
 {
-  g_return_if_fail (current != NULL); 
+  g_return_if_fail (current != NULL);
 
   if (notebook_label)
     {
@@ -339,7 +353,7 @@ dialog_end_notebook (int argc, char **argv)
 }
 
 
-void 
+void
 dialog_start_frame (int argc, char **argv)
 {
   GtkWidget *item;
@@ -361,7 +375,7 @@ dialog_start_frame (int argc, char **argv)
 }
 
 
-void 
+void
 dialog_button (int argc, char **argv)
 {
   GtkWidget *item;
@@ -373,7 +387,7 @@ dialog_button (int argc, char **argv)
   item = gtk_button_new_with_label (argv[0]);
 
   vals = (char **) safemalloc (argc * sizeof (char *));
-  for (i = 0; i < argc - 1; i++) 
+  for (i = 0; i < argc - 1; i++)
     {
       if (strcmp (argv[i+1], "--") == 0)
 	{
@@ -382,8 +396,8 @@ dialog_button (int argc, char **argv)
       vals[i] = strdup(argv[i + 1]);
     }
   vals[i] = NULL;
-  gtk_object_set_data (GTK_OBJECT (item), "return_values", vals); 
-  gtk_signal_connect 
+  gtk_object_set_data (GTK_OBJECT (item), "return_values", vals);
+  gtk_signal_connect
     (GTK_OBJECT (item), "clicked",
      GTK_SIGNAL_FUNC (send_values), item);
   gtk_widget_show (item);
@@ -410,7 +424,7 @@ dialog_checkbutton (int argc, char **argv)
     {
       gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (item), FALSE);
     }
-  gtk_signal_connect 
+  gtk_signal_connect
     (GTK_OBJECT (item), "toggled",
      GTK_SIGNAL_FUNC (update_value), item);
 
@@ -419,7 +433,7 @@ dialog_checkbutton (int argc, char **argv)
 }
 
 
-void 
+void
 dialog_entry (int argc, char **argv)
 {
   GtkWidget *item;
@@ -431,7 +445,7 @@ dialog_entry (int argc, char **argv)
     {
       gtk_entry_set_text (GTK_ENTRY (item), argv[1]);
     }
-  gtk_signal_connect 
+  gtk_signal_connect
     (GTK_OBJECT (item), "changed",
      GTK_SIGNAL_FUNC (update_value), item);
   gtk_widget_show (item);
@@ -458,12 +472,12 @@ dialog_radiobutton (int argc, char **argv)
     {
       gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (item), FALSE);
     }
-  gtk_signal_connect 
+  gtk_signal_connect
     (GTK_OBJECT (item), "toggled",
      GTK_SIGNAL_FUNC (update_value), item);
 
   gtk_widget_show (item);
-  add_to_dialog (item, argc, argv);  
+  add_to_dialog (item, argc, argv);
 }
 
 
@@ -476,7 +490,7 @@ dialog_start_radiogroup (int argc, char **argv)
     {
       free (group_name);
     }
-  group_name = strdup (argv[0]); 
+  group_name = strdup (argv[0]);
   radio_group = NULL;
 }
 
@@ -518,15 +532,15 @@ dialog_color (int argc, char **argv)
 	  gtk_color_selection_set_color (GTK_COLOR_SELECTION (item), rgb);
 	}
     }
-  gtk_signal_connect 
+  gtk_signal_connect
     (GTK_OBJECT (item), "color_changed",
-     GTK_SIGNAL_FUNC (update_value), item);  
+     GTK_SIGNAL_FUNC (update_value), item);
   gtk_widget_show (item);
   add_to_dialog (item, argc, argv);
 }
 
 
-void 
+void
 dialog_start_box (int argc, char **argv)
 {
   GtkWidget *item;
@@ -537,7 +551,7 @@ dialog_start_box (int argc, char **argv)
   int i;
   gboolean read_spacing = TRUE;
 
-  for (i = 0; i < argc; i++) 
+  for (i = 0; i < argc; i++)
     {
       if (strcmp (argv[i], "--") == 0)
 	{
@@ -556,7 +570,7 @@ dialog_start_box (int argc, char **argv)
 	  spacing = atoi (argv[i]);
 	  read_spacing = FALSE;
 	}
-      else 
+      else
 	{
 	  border_width = atoi (argv[i]);
 	}
@@ -582,7 +596,7 @@ dialog_separator (int argc, char **argv)
 {
   GtkWidget *item;
 
-  if (GTK_IS_HBOX (current)) 
+  if (GTK_IS_HBOX (current))
     {
       item = gtk_vseparator_new ();
     }
@@ -591,7 +605,7 @@ dialog_separator (int argc, char **argv)
       item = gtk_hseparator_new ();
     }
   gtk_widget_show (item);
-  add_to_dialog (item, argc, argv);  
+  add_to_dialog (item, argc, argv);
 }
 
 
@@ -609,25 +623,25 @@ dialog_scale (int argc, char **argv)
   i = 0;
   if (argc >= 8)
     {
-      if (strcasecmp (argv[1], "vertical") == 0) 
+      if (strcasecmp (argv[1], "vertical") == 0)
 	{
 	  vertical = 1;
 	  i = 1;
 	}
-      else if (strcasecmp (argv[1], "horizontal") == 0) 
+      else if (strcasecmp (argv[1], "horizontal") == 0)
 	{
 	  vertical = 0;
 	  i = 1;
 	}
     }
 
-  if (argc >= 8 + i) 
+  if (argc >= 8 + i)
     {
       digits = atoi (argv[i + 7]);
     }
 
-  adj = gtk_adjustment_new (atof (argv[i + 1]), atof (argv[i + 2]), 
-			    atof (argv[i + 3]), atof (argv[i + 4]), 
+  adj = gtk_adjustment_new (atof (argv[i + 1]), atof (argv[i + 2]),
+			    atof (argv[i + 3]), atof (argv[i + 4]),
 			    atof (argv[i + 5]), atof (argv[i + 6]));
   if (vertical)
     {
@@ -643,7 +657,7 @@ dialog_scale (int argc, char **argv)
   gtk_widget_set_name (item, argv[0]);
   gtk_scale_set_digits (GTK_SCALE (item), digits);
   gtk_widget_show (item);
-  add_to_dialog (item, argc, argv);  
+  add_to_dialog (item, argc, argv);
 }
 
 
@@ -661,8 +675,8 @@ dialog_spinbutton (int argc, char **argv)
       digits = atoi (argv[8]);
     }
 
-  adj = gtk_adjustment_new (atof (argv[1]), atof (argv[2]), 
-			    atof (argv[3]), atof (argv[4]), 
+  adj = gtk_adjustment_new (atof (argv[1]), atof (argv[2]),
+			    atof (argv[3]), atof (argv[4]),
 			    atof (argv[5]), atof (argv[6]));
 
   item = gtk_spin_button_new (GTK_ADJUSTMENT (adj), atof (argv[7]), digits);
@@ -671,7 +685,7 @@ dialog_spinbutton (int argc, char **argv)
      GTK_SIGNAL_FUNC (update_value), GTK_OBJECT (item));
   gtk_widget_set_name (item, argv[0]);
   gtk_widget_show (item);
-  add_to_dialog (item, argc, argv);   
+  add_to_dialog (item, argc, argv);
 }
 
 
@@ -681,7 +695,7 @@ dialog_start_option_menu (int argc, char **argv)
   GtkWidget *item;
   g_return_if_fail (argc >= 1);
 
-  option_menu_active_item = -1; 
+  option_menu_active_item = -1;
   option_menu_items = 0;
   item = gtk_option_menu_new ();
   gtk_widget_set_name (item, argv[0]);
@@ -700,9 +714,9 @@ dialog_end_option_menu (int argc, char **argv)
      GTK_SIGNAL_FUNC (update_value), GTK_OBJECT (current));
   gtk_option_menu_set_menu (GTK_OPTION_MENU (current), menu);
   menu = NULL;
-  if (option_menu_active_item > 0) 
+  if (option_menu_active_item > 0)
    {
-     gtk_option_menu_set_history (GTK_OPTION_MENU (current), 
+     gtk_option_menu_set_history (GTK_OPTION_MENU (current),
 				  option_menu_active_item);
    }
   update_value (current);

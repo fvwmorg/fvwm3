@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "Tools.h"
 
 extern int fd[2];
@@ -10,7 +25,7 @@ void DrawRelief(struct XObj *xobj)
 {
  XSegment segm[2];
  int i;
- 
+
  if (xobj->value!=0)
  {
   for (i=1;i<4;i++)
@@ -28,7 +43,7 @@ void DrawRelief(struct XObj *xobj)
    else
     XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
    XDrawSegments(xobj->display,*xobj->ParentWin,xobj->gc,segm,2);
- 
+
    segm[0].x1=xobj->x-i;
    segm[0].y1=xobj->y+xobj->height+i-1;
    segm[0].x2=xobj->x+xobj->width+i-1;
@@ -53,9 +68,9 @@ void InitSwallow(struct XObj *xobj)
  XSetWindowAttributes Attr;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
@@ -69,7 +84,7 @@ void InitSwallow(struct XObj *xobj)
  /* Redimensionnement du widget */
  if (xobj->height<30)
   xobj->height=30;
- if (xobj->width<30) 
+ if (xobj->width<30)
   xobj->width=30;
 
  if (xobj->swallow!=NULL)

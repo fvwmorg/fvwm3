@@ -498,15 +498,10 @@ int main(int argc, char **argv)
   int i;
   Window root;
   int x,y,maxx,maxy,border_width,depth;
-  char *temp, *s;
   button_info *b,*ub;
   panel_info *LastPanel;
 
-  temp=argv[0];
-  s=strrchr(argv[0],'/');
-  if(s) temp=s+1;
-  MyName=mymalloc(strlen(temp)+1);
-  strcpy(MyName,temp);
+  MyName = GetFileNameFromPath(argv[0]);
 
 #ifdef HAVE_SIGACTION
   {

@@ -1,4 +1,4 @@
-/* Part of the FvwmTaskBar Module for Fvwm. 
+/* Part of the FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994, Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -16,6 +16,21 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "config.h"
 #include <stdio.h>
 #include <X11/Xlib.h>
@@ -27,7 +42,7 @@ extern char *Module;
 
 /****************************************************************************
   Loads a single color
-*****************************************************************************/ 
+*****************************************************************************/
 Pixel GetColor(char *name)
 {
   XColor color;
@@ -35,9 +50,9 @@ Pixel GetColor(char *name)
 
   XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color)) 
+   if (!XParseColor (dpy, attributes.colormap, name, &color))
      nocolor("parse",name);
-   else if(!XAllocColor (dpy, attributes.colormap, &color)) 
+   else if(!XAllocColor (dpy, attributes.colormap, &color))
        nocolor("alloc",name);
   return color.pixel;
 }
@@ -45,53 +60,53 @@ Pixel GetColor(char *name)
 /****************************************************************************
   This routine computes the hilight color from the background color
 *****************************************************************************/
-Pixel GetHilite(Pixel background) 
+Pixel GetHilite(Pixel background)
 {
   XColor bg_color, white_p;
   XWindowAttributes attributes;
-  
+
   XGetWindowAttributes(dpy,Root,&attributes);
-  
+
   bg_color.pixel = background;
   XQueryColor(dpy,attributes.colormap,&bg_color);
 
   white_p.pixel = GetColor("white");
   XQueryColor(dpy,attributes.colormap,&white_p);
-  
+
   bg_color.red = max((white_p.red/5), bg_color.red);
   bg_color.green = max((white_p.green/5), bg_color.green);
   bg_color.blue = max((white_p.blue/5), bg_color.blue);
-  
+
   bg_color.red = min(white_p.red, (bg_color.red*140)/100);
   bg_color.green = min(white_p.green, (bg_color.green*140)/100);
   bg_color.blue = min(white_p.blue, (bg_color.blue*140)/100);
-  
+
   if(!XAllocColor(dpy,attributes.colormap,&bg_color))
     nocolor("alloc hilight","");
-  
+
   return bg_color.pixel;
 }
 
 /****************************************************************************
   This routine computes the shadow color from the background color
 *****************************************************************************/
-Pixel GetShadow(Pixel background) 
+Pixel GetShadow(Pixel background)
 {
   XColor bg_color;
   XWindowAttributes attributes;
-  
+
   XGetWindowAttributes(dpy,Root,&attributes);
-  
+
   bg_color.pixel = background;
   XQueryColor(dpy,attributes.colormap,&bg_color);
-  
+
   bg_color.red = (unsigned short)((bg_color.red*60)/100); /* was 50% */
   bg_color.green = (unsigned short)((bg_color.green*60)/100);
   bg_color.blue = (unsigned short)((bg_color.blue*60)/100);
-  
+
   if(!XAllocColor(dpy,attributes.colormap,&bg_color))
     nocolor("alloc shadow","");
-  
+
   return bg_color.pixel;
 }
 

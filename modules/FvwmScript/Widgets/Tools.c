@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "Tools.h"
 
 /***********************************************/
@@ -33,7 +48,7 @@ char* GetMenuTitle(char *str,int id)
  int w=0;
  int w2=0;
  char* TempStr;
- 
+
  while ((str[w+w2]!='\0')&&(str[w+w2]!='|'))
   w2++;
 
@@ -46,7 +61,7 @@ char* GetMenuTitle(char *str,int id)
   while ((str[w+w2]!='\0')&&(str[w+w2]!='|'))
    w2++;
  }
- TempStr=(char*)calloc(sizeof(char),w2+1); 
+ TempStr=(char*)calloc(sizeof(char),w2+1);
  TempStr=strncpy(TempStr,&str[w],w2);
  return TempStr;
 }
@@ -64,7 +79,7 @@ void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
  Window Root;
  int asc,desc,dir;
  XCharStruct struc;
- 
+
  XGetGeometry(xobj->display,WinPop,&Root,&x,&y,&width,&height,&i,&i);
  for (i=0;i<2;i++)
  {
@@ -72,19 +87,19 @@ void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
   segm[0].y1=i;
   segm[0].x2=width-i-1;
   segm[0].y2=i;
-  
+
   segm[1].x1=i;
   segm[1].y1=i;
   segm[1].x2=i;
   segm[1].y2=height-i-1;
   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
   XDrawSegments(xobj->display,WinPop,xobj->gc,segm,2);
- 
+
   segm[0].x1=1+i;
   segm[0].y1=height-i-1;
   segm[0].x2=width-i-1;
   segm[0].y2=height-i-1;
-  
+
   segm[1].x1=width-i-1;
   segm[1].y1=i;
   segm[1].x2=width-i-1;
@@ -124,7 +139,7 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int newvalue,int Show)
  int x,y;
  int width,height;
  Window Root;
- 
+
  XGetGeometry(xobj->display,WinPop,&Root,&x,&y,&width,&height,&i,&i);
  y=hOpt*(newvalue-1);
  for (i=0;i<2;i++)
@@ -133,7 +148,7 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int newvalue,int Show)
   segm[0].y1=i+y+2;
   segm[0].x2=width-i-3;
   segm[0].y2=i+y+2;
-  
+
   segm[1].x1=i+2;
   segm[1].y1=i+y+2;
   segm[1].x2=i+2;
@@ -143,12 +158,12 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int newvalue,int Show)
   else
    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
   XDrawSegments(xobj->display,WinPop,xobj->gc,segm,2);
- 
+
   segm[0].x1=i+3;
   segm[0].y1=y-i-3+hOpt;
   segm[0].x2=width-i-3;
   segm[0].y2=y-i-3+hOpt;
-  
+
   segm[1].x1=width-i-3;
   segm[1].y1=i+y+2;
   segm[1].x2=width-i-3;
@@ -174,7 +189,7 @@ int CountOption(char *str)
   if (str[w]=='|') i++;
   w++;
  }
- 
+
  return i;
 }
 
@@ -195,7 +210,7 @@ void DrawIconStr(int offset,struct XObj *xobj,int DoRedraw)
   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
   XFillRectangle(xobj->display,xobj->win,xobj->gc,4,4,xobj->width-8,xobj->height-8);
  }
- 
+
  if (xobj->iconPixmap==None)			/* Si l'icone n'existe pas */
  {
   str=GetMenuTitle(xobj->title,1);
@@ -242,7 +257,7 @@ void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
 {
  XSegment segm[2];
  int i;
- int j; 
+ int j;
 
 /* XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
  XFillRectangle(xobj->display,xobj->win,xobj->gc,x,y,width,height);*/
@@ -262,7 +277,7 @@ void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
   segm[1].y2=i+y;
   XSetForeground(xobj->display,xobj->gc,LiC);
   XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,2);
- 
+
   segm[0].x1=width+j+x+1;
   segm[0].y1=i+1+y;
   segm[0].x2=width+j+x+1;
@@ -401,7 +416,7 @@ void DrawArrowN(struct XObj *xobj,int x,int y,int Press)
  segm[2].x1=6+x;
  segm[2].y1=0+y;
  segm[2].x2=12+x;
- segm[2].y2=12+y; 
+ segm[2].y2=12+y;
  segm[3].x1=6+x;
  segm[3].y1=2+y;
  segm[3].x2=10+x;
@@ -411,7 +426,7 @@ void DrawArrowN(struct XObj *xobj,int x,int y,int Press)
  else
   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
  XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,4);
-} 
+}
 
 /************************************************************/
 /* Dessine une fleche direction sud                         */
@@ -442,7 +457,7 @@ void DrawArrowS(struct XObj *xobj,int x,int y,int Press)
  else
   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
  XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,4);
- 
+
  segm[0].x1=6+x;
  segm[0].y1=11+y;
  segm[0].x2=12+x;

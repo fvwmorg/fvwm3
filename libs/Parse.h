@@ -61,6 +61,7 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
                                  (int(*)(const void*, const void*))XCmpToken)
 
 int XCmpToken(const char *s, const char **t);
+char *GetFileNameFromPath(char *path);
 
 #endif
 

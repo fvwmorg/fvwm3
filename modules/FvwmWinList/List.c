@@ -1,15 +1,30 @@
-/* FvwmWinList Module for Fvwm. 
+/* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
  *
  * The functions in this source file are the original work of Mike Finger.
- * 
+ *
  * No guarantees or warantees or anything are provided or implied in any way
  * whatsoever. Use this program at your own risk. Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
  *
  *  Things to do:  Convert to C++  (In Progress)
+ */
+
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -68,14 +83,14 @@ void ReorderList(List *list, long id, long FlipFocus)
   int i = 0;
 
   if (!id) return; /* this is a NOP if id == 0 */
-  
+
   /* find the item */
   while (temp && i != id) {
     prev = temp;
     temp = temp->next;
     i++;
   }
-  
+
   if (!temp) return; /* we fell off the list */
 
   /* prev is guaranteed to be !NULL */
@@ -110,7 +125,7 @@ int FindItem(List *list, long id)
   if (temp==NULL) return -1;
   return i;
 }
- 
+
 /******************************************************************************
   FindItemDesk - Find the item in the list matching the id, and desk id
 ******************************************************************************/
@@ -141,8 +156,8 @@ int UpdateItemName(List *list, long id, char *string)
 
 /******************************************************************************
   UpdateItemDesk - Update the item in the list, setting desk as necessary.
-  returns 1 if desk was updated, 
-  returns 0, if not changed 
+  returns 1 if desk was updated,
+  returns 0, if not changed
   returns -1 if not found
 ******************************************************************************/
 int UpdateItemDesk(List *list, long id, long desk)
@@ -162,7 +177,7 @@ int UpdateItemDesk(List *list, long id, long desk)
   return 0;
 }
 
-  
+
 /******************************************************************************
   FreeItem - Frees allocated space for an Item
 ******************************************************************************/
@@ -235,7 +250,7 @@ void PrintList(List *list)
 	int i;
 	unsigned char* p = (unsigned char*)&temp->flags;
 	ConsoleMessage("   %10ld %-15.15s ",
-		       temp->id, 
+		       temp->id,
 		       (temp->name==NULL) ? "<null>" : temp->name);
 	for( i = 0; i < sizeof(temp->flags); ++i ) {
 	    ConsoleMessage( "%x2", *p++ );

@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "Tools.h"
 
 #define BdWidth 2		/* Border width */
@@ -16,18 +31,18 @@ void InitList(struct XObj *xobj)
  int NbVisCell,NbCell;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
 
- 
+
  mask=0;
  Attr.background_pixel=xobj->TabColor[back].pixel;
  mask|=CWBackPixel;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2); 
+ Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
  mask|=CWCursor;		/* Curseur pour la fenetre */
  xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
@@ -48,12 +63,12 @@ void InitList(struct XObj *xobj)
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  minh=8+3*BdWidth+3*(asc+desc+3);
  if (xobj->height<minh)
- { 
+ {
   xobj->height=minh;
   resize=1;
  }
  minw=12+3*BdWidth+SbWidth+75;
- if (xobj->width<minw) 
+ if (xobj->width<minw)
  {
   xobj->width=minw;
   resize=1;
@@ -126,7 +141,7 @@ void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int a
     r.width=xobj->width-r.x-10-2*BdWidth-SbWidth;
     r.height=xobj->height-r.y-4-2*BdWidth;
 
-    /* Dessin des cellules */ 
+    /* Dessin des cellules */
     XSetClipRectangles(xobj->display,xobj->gc,0,0,&r,1,Unsorted);
     for (i=xobj->value2;i<xobj->value2+NbVisCell;i++)
     {
@@ -159,7 +174,7 @@ void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int a
 			   xobj->width-2,HeightCell-2);
 	}
     }
-    XSetClipMask(xobj->display,xobj->gc,None); 
+    XSetClipMask(xobj->display,xobj->gc,None);
 }
 
 void DestroyList(struct XObj *xobj)
@@ -201,7 +216,7 @@ void DrawList(struct XObj *xobj)
  }
  else
   xobj->value2=1;
- 
+
 
  /* Dessin des cellules */
  DrawCellule(xobj,NbCell,NbVisCell,HeightCell,asc);
@@ -252,7 +267,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
    SendMsg(xobj,SingleClic);
   return ;
  }
- 
+
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  HeightCell=asc+desc+3;
  NbVisCell=(xobj->height-6-BdWidth)/HeightCell;
@@ -385,7 +400,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
     /* Calcul de l'id de la premiere cellule */
     pt.y=y2-xobj->y-PosMouse;
     NPosCell=(pt.y-rect.y)*NbCell/(rect.height);
-    
+
     if (NPosCell<1) NPosCell=1;
     if (NbCell>NbVisCell)
     {
@@ -433,7 +448,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
     DrawVSbList(xobj,NbCell,NbVisCell,0);
    }
   }
- } 
+ }
 }
 
 void EvtKeyList(struct XObj *xobj,XKeyEvent *EvtKey)

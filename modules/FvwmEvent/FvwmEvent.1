@@ -71,12 +71,14 @@ This determines the \fIfvwm2\fP function that is to be called with the
 event parameters. You might want to do one of the following (details below):
 .nf
 .sp
+	#play sounds
 	*FvwmEventCmd \fIbuiltin-rplay\fP
-				play sounds
+			
+	#execute distinct fvwm2 functions
 	*FvwmEventCmd
-				execute distinct fvwm2 functions
+		
+	#execute distinct external programs	
 	*FvwmEventCmd exec
-				execute distinct external programs
 .sp
 .fi
 This version of \fIFvwmEvent\fP has builtin \fIrplay\fP support which does not
@@ -90,10 +92,13 @@ For example:
 .sp
 	*FvwmEventCmd \fIbuiltin-rplay\fP
 	*FvwmEvent add_window drip.au
-
+.sp
+.fi
 rplay can be obtained via anonymous ftp at
-	<URL:ftp://ftp.sdsu.edu/pub/rplay>
-or	<URL:ftp://ftp.x.org/contrib/Event/rplay>
+.nf
+.sp
+	<URL:ftp://ftp.sdsu.edu/pub/rplay> or
+	<URL:ftp://ftp.x.org/contrib/Event/audio/rplay>
 .sp
 .fi
 \fIFvwmEvent\fP also has support for any other external program.
@@ -129,10 +134,10 @@ event refers to, new_desk will have the new desk number.
 
 .IP "*FvwmEvent \fIwindow-manager-event action-or-filename\fP"
 Binds particular actions to window manager events.
+
+e.g. for audio-events:
 .nf
 .sp
-e.g. for audio-events:
-
 	*FvwmEvent startup TaDa.au
 	*FvwmEvent shutdown Elvis_Left.au
 	*FvwmEvent unknown doh.au

@@ -226,7 +226,7 @@ until either FvwmCommand is terminated or stdout buffer from
 grep is filled.
 .EX
 FvwmCommand -mi3 | grep ' map' | 
-sed 's/\(0x[0-9a-f]*\).*/windowid \1 move 0 0/'
+sed 's/\\(0x[0-9a-f]*\\).*/windowid \\1 move 0 0/'
 .EE
 Instead, use tools with buffer control such as pty or perl. 
 The below will iconify new windows when opened.
