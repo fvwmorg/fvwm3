@@ -1670,7 +1670,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
   valuemask = CWEventMask | CWDontPropagate;
   if (IS_TEAR_OFF_MENU(tmp_win))
   {
-    attributes.event_mask = XEVMASK_TEAR_OFF_MENU;
+    attributes.event_mask = XEVMASK_TEAR_OFF_MENUW;
   }
   else
   {

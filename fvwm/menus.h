@@ -102,7 +102,6 @@ typedef struct MenuFeel
   KeyCode select_on_release_key;
 } MenuFeel;
 
-
 typedef struct MenuFace
 {
   union
@@ -504,6 +503,7 @@ typedef struct MenuRootDynamic
     unsigned is_right : 1;
     unsigned is_up : 1;
     unsigned is_down : 1;
+    unsigned is_tear_off_menu : 1;
     unsigned has_popped_up_left : 1;
     unsigned has_popped_up_right : 1;
   } dflags;
@@ -535,6 +535,7 @@ typedef struct MenuRootDynamic
 #define MR_IS_RIGHT(m)              ((m)->d->dflags.is_right)
 #define MR_IS_UP(m)                 ((m)->d->dflags.is_up)
 #define MR_IS_DOWN(m)               ((m)->d->dflags.is_down)
+#define MR_IS_TEAR_OFF_MENU(m)      ((m)->d->dflags.is_tear_off_menu)
 #define MR_HAS_POPPED_UP_LEFT(m)    ((m)->d->dflags.has_popped_up_left)
 #define MR_HAS_POPPED_UP_RIGHT(m)   ((m)->d->dflags.has_popped_up_right)
 
@@ -611,12 +612,12 @@ typedef struct
   struct
   {
     unsigned has_default_action : 1;
+    unsigned is_already_mapped : 1;
+    unsigned is_first_root_menu : 1;
     unsigned is_invoked_by_key_press : 1;
     unsigned is_menu_from_frame_or_window_or_titlebar : 1;
     unsigned is_sticky : 1;
     unsigned is_submenu : 1;
-    unsigned is_already_mapped : 1;
-    unsigned is_first_root_menu : 1;
   } flags;
 } MenuParameters;
 
@@ -660,6 +661,8 @@ typedef enum
   MENU_POST,
   MENU_UNPOST,
   MENU_TEAR_OFF,
+  MENU_SUBMENU_TORN_OFF,
+  MENU_KILL_TEAR_OFF_MENU,
   /* propagate the event to a different menu */
   MENU_PROPAGATE_EVENT
 } MenuRC;
@@ -688,7 +691,8 @@ typedef struct MenuInfo
 
 extern MenuInfo Menus;
 
-#define IS_MENU_RETURN(x) ((x)==MENU_DONE || (x)==MENU_ABORTED)
+#define IS_MENU_RETURN(x) \
+  ((x)==MENU_DONE || (x)==MENU_ABORTED || (x)==MENU_SUBMENU_TORN_OFF)
 
 
 

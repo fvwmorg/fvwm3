@@ -685,7 +685,8 @@ void CMD_Destroy(F_CMD_ARGS)
 	}
 	if (IS_TEAR_OFF_MENU(tmp_win))
 	{
-		menu_close_tear_off_menu(tmp_win);
+		/* 'soft' delete tear off menus */
+		CMD_Delete(F_PASS_ARGS);
 		return;
 	}
 	if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
@@ -712,11 +713,6 @@ void CMD_Delete(F_CMD_ARGS)
 	if (!is_function_allowed(F_DELETE, NULL, tmp_win, True, True))
 	{
 		XBell(dpy, 0);
-		return;
-	}
-	if (IS_TEAR_OFF_MENU(tmp_win))
-	{
-		menu_close_tear_off_menu(tmp_win);
 		return;
 	}
 	if (WM_DELETES_WINDOW(tmp_win))
@@ -748,7 +744,8 @@ void CMD_Close(F_CMD_ARGS)
 	}
 	if (IS_TEAR_OFF_MENU(tmp_win))
 	{
-		menu_close_tear_off_menu(tmp_win);
+		/* 'soft' delete tear off menus */
+		CMD_Delete(F_PASS_ARGS);
 		return;
 	}
 	if (WM_DELETES_WINDOW(tmp_win))

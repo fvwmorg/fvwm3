@@ -49,6 +49,7 @@ static void do_relieve_rectangle(
     if (w < 0 || h < 0)
     {
       fprintf(stderr,"RelieveRectangle: called with w = %d, h = %d\n", w, h);
+abort();
     }
     return;
   }

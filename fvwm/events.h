@@ -32,16 +32,17 @@
 			 VisibilityChangeMask | ExposureMask | KeyPressMask | \
 			 EnterWindowMask | LeaveWindowMask | FocusChangeMask)
 #define XEVMASK_ICONPW  XEVMASK_ICONW
-#define XEVMASK_MENU    (ButtonPressMask | ButtonReleaseMask | ExposureMask | \
- 		         KeyReleaseMask | KeyPressMask | \
-                         VisibilityChangeMask | ButtonMotionMask)
-#define XEVMASK_MENUW   (ExposureMask | EnterWindowMask | \
-                         KeyPressMask | KeyReleaseMask)
+#define XEVMASK_MENU \
+  (ButtonPressMask | ButtonReleaseMask | ExposureMask | KeyReleaseMask | \
+   KeyPressMask | VisibilityChangeMask | ButtonMotionMask | PointerMotionMask)
 #define XEVMASK_TEAR_OFF_MENU \
-  (ExposureMask | KeyPressMask | KeyReleaseMask | \
-   EnterWindowMask | LeaveWindowMask | StructureNotifyMask | \
-   FocusChangeMask | ButtonPressMask | ButtonReleaseMask | \
-   ButtonMotionMask | PointerMotionMask)
+  (XEVMASK_MENU | LeaveWindowMask)
+#define XEVMASK_MENUW \
+  (ExposureMask | KeyPressMask | KeyReleaseMask)
+#define XEVMASK_TEAR_OFF_MENUW \
+  (XEVMASK_MENUW | EnterWindowMask | LeaveWindowMask | StructureNotifyMask)
+#define XEVMASK_TEAR_OFF_SUBMENUW \
+  (XEVMASK_MENUW | LeaveWindowMask)
 #define XEVMASK_PANFW   (ButtonPressMask | ButtonReleaseMask | \
  		         KeyReleaseMask | KeyPressMask | \
                          EnterWindowMask | LeaveWindowMask | \

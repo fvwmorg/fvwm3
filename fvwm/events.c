@@ -240,10 +240,6 @@ void HandleFocusIn(void)
 	InstallWindowColormaps(NULL);
       }
     }
-    if (Tmp_win && IS_TEAR_OFF_MENU(Tmp_win))
-    {
-      menu_enter_tear_off_menu(Tmp_win);
-    }
   }
   else
   {
@@ -839,6 +835,14 @@ void HandleClientMessage(void)
   }
   if (EWMH_ProcessClientMessage(Tmp_win, &Event))
   {
+    return;
+  }
+
+  /* handle deletion of tear out menus */
+  if (Tmp_win && IS_TEAR_OFF_MENU(Tmp_win) && Event.xclient.format == 32 &&
+      Event.xclient.data.l[0] == _XA_WM_DELETE_WINDOW)
+  {
+    menu_close_tear_off_menu(Tmp_win);
     return;
   }
 
@@ -1954,6 +1958,7 @@ void HandleEnterNotify(void)
   XEvent d;
   FvwmWindow *sf;
   static Bool is_initial_ungrab_pending = True;
+  Bool is_tear_off_menu;
 
   DBUG("HandleEnterNotify","Routine Entered");
 
@@ -1963,6 +1968,7 @@ void HandleEnterNotify(void)
      * frame; otherwise the window list may be screwed up. */
     return;
   }
+
   if (Tmp_win)
   {
     if (ewp->window != Tmp_win->frame && ewp->window != Tmp_win->Parent &&
@@ -2027,9 +2033,13 @@ void HandleEnterNotify(void)
   /*
    * RBW - if we're in startup, this is a coerced focus, so we don't
    * want to save the event time, or exit prematurely.
+   *
+   * Ignore LeaveNotify events for tear out menus - handled by menu code
    */
-  if (!fFvwmInStartup &&
-      XCheckTypedWindowEvent (dpy, ewp->window, LeaveNotify, &d))
+  is_tear_off_menu =
+    (Tmp_win && IS_TEAR_OFF_MENU(Tmp_win) && ewp->window == Tmp_win->w);
+  if (!fFvwmInStartup && !is_tear_off_menu &&
+      XCheckTypedWindowEvent(dpy, ewp->window, LeaveNotify, &d))
   {
     StashEventTime(&d);
     if((d.xcrossing.mode==NotifyNormal)&&
@@ -2139,7 +2149,6 @@ void HandleEnterNotify(void)
       InstallWindowColormaps(NULL);
     }
   }
-
   /* We get an EnterNotify with mode == UnGrab when fvwm releases
      the grab held during iconification. We have to ignore this,
      or icon title will be initially raised. */
@@ -2147,6 +2156,11 @@ void HandleEnterNotify(void)
   {
     SET_ICON_ENTERED(Tmp_win,1);
     DrawIconWindow(Tmp_win);
+  }
+  /* Check for tear off menus */
+  if (is_tear_off_menu)
+  {
+    menu_enter_tear_off_menu(Tmp_win);
   }
 
   return;

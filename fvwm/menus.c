@@ -160,133 +160,179 @@ static void merge_continuation_menus(MenuRoot *mr);
  * functions dealing with coordinates
  ***************************************************************/
 
+static Bool menu_get_geometry(
+	MenuRoot *mr,
+	Window *root_return, int *x_return, int *y_return,
+	unsigned int *width_return, unsigned int *height_return,
+	unsigned int *border_width_return, unsigned int *depth_return)
+{
+	Status rc;
+	Bool brc;
+	int root_x;
+	int root_y;
+
+	rc = XGetGeometry(
+		dpy, MR_WINDOW(mr), root_return, x_return, y_return,
+		width_return, height_return, border_width_return,
+		depth_return);
+	if (rc == 0)
+	{
+		return False;
+	}
+	if (!MR_IS_TEAR_OFF_MENU(mr))
+	{
+		return True;
+	}
+	brc = XTranslateCoordinates(
+		dpy, MR_WINDOW(mr), Scr.Root, *x_return, *y_return, &root_x,
+		&root_y, &JunkChild);
+	if (brc == True)
+	{
+		*x_return = root_x;
+		*y_return = root_y;
+	}
+	else
+	{
+		*x_return = 0;
+		*y_return = 0;
+	}
+
+	return brc;
+}
+
 static int item_middle_y_offset(MenuRoot *mr, MenuItem *mi)
 {
-  int r;
-  if (!mi)
-    return MST_BORDER_WIDTH(mr);
-  r = (MI_IS_SELECTABLE(mi)) ? MST_RELIEF_THICKNESS(mr) : 0;
-  return MI_Y_OFFSET(mi) + (MI_HEIGHT(mi) + r) / 2;
+	int r;
+
+	if (!mi)
+	{
+		return MST_BORDER_WIDTH(mr);
+	}
+	r = (MI_IS_SELECTABLE(mi)) ? MST_RELIEF_THICKNESS(mr) : 0;
+
+	return MI_Y_OFFSET(mi) + (MI_HEIGHT(mi) + r) / 2;
 }
 
 static int menu_middle_x_offset(MenuRoot *mr)
 {
-  return MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) / 2;
+	return MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) / 2;
 }
 
 static Bool pointer_in_active_item_area(int x_offset, MenuRoot *mr)
 {
-  float ratio = (float)MST_ACTIVE_AREA_PERCENT(mr) / 100.0;
+	float ratio = (float)MST_ACTIVE_AREA_PERCENT(mr) / 100.0;
 
-  if (MST_ACTIVE_AREA_PERCENT(mr) >= 100)
-  {
-    return False;
-  }
-  if (MST_USE_LEFT_SUBMENUS(mr))
-  {
-    return (x_offset <=
-	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
-	    MR_ITEM_WIDTH(mr) * ratio);
-  }
-  else
-  {
-    return (x_offset >=
-	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * ratio);
-  }
+	if (MST_ACTIVE_AREA_PERCENT(mr) >= 100)
+	{
+		return False;
+	}
+	if (MST_USE_LEFT_SUBMENUS(mr))
+	{
+		return (x_offset <=
+			MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
+			MR_ITEM_WIDTH(mr) * ratio);
+	}
+	else
+	{
+		return (x_offset >=
+			MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * ratio);
+	}
 }
 
 static Bool pointer_in_passive_item_area(int x_offset, MenuRoot *mr)
 {
-  float ratio = (float)MST_ACTIVE_AREA_PERCENT(mr) / 100.0;
+	float ratio = (float)MST_ACTIVE_AREA_PERCENT(mr) / 100.0;
 
-  if (MST_ACTIVE_AREA_PERCENT(mr) >= 100)
-  {
-    return False;
-  }
-  if (MST_USE_LEFT_SUBMENUS(mr))
-  {
-    return (x_offset >=
-	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * ratio);
-  }
-  else
-  {
-    return (x_offset <=
-	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
-	    MR_ITEM_WIDTH(mr) * ratio);
-  }
+	if (MST_ACTIVE_AREA_PERCENT(mr) >= 100)
+	{
+		return False;
+	}
+	if (MST_USE_LEFT_SUBMENUS(mr))
+	{
+		return (x_offset >=
+			MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * ratio);
+	}
+	else
+	{
+		return (x_offset <=
+			MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
+			MR_ITEM_WIDTH(mr) * ratio);
+	}
 }
 
 static int get_left_popup_x_position(MenuRoot *mr, MenuRoot *submenu, int x)
 {
-  if (MST_USE_LEFT_SUBMENUS(mr))
-  {
-    return (x - MST_POPUP_OFFSET_ADD(mr) - MR_WIDTH(submenu) +
-	    MR_WIDTH(mr) * (100 - MST_POPUP_OFFSET_PERCENT(mr))/100);
-  }
-  else
-  {
-    return (x - MR_WIDTH(submenu) + MST_BORDER_WIDTH(mr));
-  }
+	if (MST_USE_LEFT_SUBMENUS(mr))
+	{
+		return (x - MST_POPUP_OFFSET_ADD(mr) - MR_WIDTH(submenu) +
+			MR_WIDTH(mr) *
+			(100 - MST_POPUP_OFFSET_PERCENT(mr)) / 100);
+	}
+	else
+	{
+		return (x - MR_WIDTH(submenu) + MST_BORDER_WIDTH(mr));
+	}
 }
 
 static int get_right_popup_x_position(MenuRoot *mr, MenuRoot *submenu, int x)
 {
-  if (MST_USE_LEFT_SUBMENUS(mr))
-  {
-    return (x + MR_WIDTH(mr) - MST_BORDER_WIDTH(mr));
-  }
-  else
-  {
-    return (x + MR_WIDTH(mr) * MST_POPUP_OFFSET_PERCENT(mr) / 100 +
-	    MST_POPUP_OFFSET_ADD(mr));
-  }
+	if (MST_USE_LEFT_SUBMENUS(mr))
+	{
+		return (x + MR_WIDTH(mr) - MST_BORDER_WIDTH(mr));
+	}
+	else
+	{
+		return (x + MR_WIDTH(mr) * MST_POPUP_OFFSET_PERCENT(mr) / 100 +
+			MST_POPUP_OFFSET_ADD(mr));
+	}
 }
 
 static void get_prefered_popup_position(
   MenuRoot *mr, MenuRoot *submenu, int *px, int *py,
   Bool *pprefer_left_submenus)
 {
-  int menu_x, menu_y;
-  MenuItem *mi = NULL;
+	int menu_x, menu_y;
+	MenuItem *mi = NULL;
 
-  if (!XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
-		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
-  {
-    *px = 0;
-    *py = 0;
-    *pprefer_left_submenus = False;
-    fvwm_msg(ERR, "get_prefered_popup_position",
-	     "can't get geometry of menu %s", MR_NAME(mr));
-    return;
-  }
-  /* set the direction flag */
-  *pprefer_left_submenus =
-    (MR_HAS_POPPED_UP_LEFT(mr) ||
-     (MST_USE_LEFT_SUBMENUS(mr) &&
-      !MR_HAS_POPPED_UP_RIGHT(mr)));
-  /* get the x position */
-  if (*pprefer_left_submenus)
-  {
-    *px = get_left_popup_x_position(mr, submenu, menu_x);
-  }
-  else
-  {
-    *px = get_right_popup_x_position(mr, submenu, menu_x);
-  }
-  /* get the y position */
-  if (MR_SELECTED_ITEM(mr))
-  {
-    mi = MR_SELECTED_ITEM(mr);
-  }
-  if (mi)
-  {
-    *py = menu_y + MI_Y_OFFSET(mi) -
-      MST_BORDER_WIDTH(mr) + MST_RELIEF_THICKNESS(mr);
-  }
-  else
-  {
-    *py = menu_y;
-  }
+	if (!menu_get_geometry(
+		    mr, &JunkRoot, &menu_x, &menu_y, &JunkWidth, &JunkHeight,
+		    &JunkBW, &JunkDepth))
+	{
+		*px = 0;
+		*py = 0;
+		*pprefer_left_submenus = False;
+		fvwm_msg(ERR, "get_prefered_popup_position",
+			 "can't get geometry of menu %s", MR_NAME(mr));
+		return;
+	}
+	/* set the direction flag */
+	*pprefer_left_submenus =
+		(MR_HAS_POPPED_UP_LEFT(mr) ||
+		 (MST_USE_LEFT_SUBMENUS(mr) &&
+		  !MR_HAS_POPPED_UP_RIGHT(mr)));
+	/* get the x position */
+	if (*pprefer_left_submenus)
+	{
+		*px = get_left_popup_x_position(mr, submenu, menu_x);
+	}
+	else
+	{
+		*px = get_right_popup_x_position(mr, submenu, menu_x);
+	}
+	/* get the y position */
+	if (MR_SELECTED_ITEM(mr))
+	{
+		mi = MR_SELECTED_ITEM(mr);
+	}
+	if (mi)
+	{
+		*py = menu_y + MI_Y_OFFSET(mi) -
+			MST_BORDER_WIDTH(mr) + MST_RELIEF_THICKNESS(mr);
+	}
+	else
+	{
+		*py = menu_y;
+	}
 }
 
 
@@ -296,29 +342,37 @@ static void get_prefered_popup_position(
 
 static void warp_pointer_to_title(MenuRoot *mr)
 {
-  XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0, menu_middle_x_offset(mr),
-	       item_middle_y_offset(mr, MR_FIRST_ITEM(mr)));
+	XWarpPointer(
+		dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0, menu_middle_x_offset(mr),
+		item_middle_y_offset(mr, MR_FIRST_ITEM(mr)));
 }
 
-static MenuItem *warp_pointer_to_item(MenuRoot *mr, MenuItem *mi,
-				      Bool do_skip_title)
+static MenuItem *warp_pointer_to_item(
+	MenuRoot *mr, MenuItem *mi, Bool do_skip_title)
 {
-  if (do_skip_title)
-  {
-    while (MI_NEXT_ITEM(mi) != NULL &&
-	   (MI_IS_SEPARATOR(mi) || MI_IS_TITLE(mi)))
-    {
-      /* skip separators and titles until the first 'real' item is found */
-      mi = MI_NEXT_ITEM(mi);
-    }
-  }
-  if (mi == NULL)
-    mi = MR_LAST_ITEM(mr);
-  if (mi == NULL)
-    return mi;
-  XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
-	       menu_middle_x_offset(mr), item_middle_y_offset(mr, mi));
-  return mi;
+	if (do_skip_title)
+	{
+		while (MI_NEXT_ITEM(mi) != NULL &&
+		       (MI_IS_SEPARATOR(mi) || MI_IS_TITLE(mi)))
+		{
+			/* skip separators and titles until the first 'real'
+			 * item is found */
+			mi = MI_NEXT_ITEM(mi);
+		}
+	}
+	if (mi == NULL)
+	{
+		mi = MR_LAST_ITEM(mr);
+	}
+	if (mi == NULL)
+	{
+		return mi;
+	}
+	XWarpPointer(
+		dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0, menu_middle_x_offset(mr),
+		item_middle_y_offset(mr, mi));
+
+	return mi;
 }
 
 /***************************************************************
@@ -327,32 +381,36 @@ static MenuItem *warp_pointer_to_item(MenuRoot *mr, MenuItem *mi,
 
 /* Undo the animation of a menu */
 static void animated_move_back(
-  MenuRoot *mr, Bool do_warp_pointer, FvwmWindow *fw)
+	MenuRoot *mr, Bool do_warp_pointer, FvwmWindow *fw)
 {
-  int act_x;
-  int act_y;
-  Bool Parental = False;
+	int act_x;
+	int act_y;
+	Bool Parental = False;
 
-  if (MR_XANIMATION(mr) == 0)
-    return;
-  if (XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &act_x, &act_y,
-		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
-  {
-    /* move it back */
-    if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
-	Colorset[ST_CSET_MENU(MR_STYLE(mr))].pixmap == ParentRelative)
-    {
-      Parental = True;
-      parental_mr = mr;
-      parental_fw = fw;
-    }
-    AnimatedMoveOfWindow(
-      MR_WINDOW(mr) ,act_x, act_y, act_x - MR_XANIMATION(mr), act_y,
-      do_warp_pointer, -1, NULL, Parental);
-    MR_XANIMATION(mr) = 0;
-  }
+	if (MR_XANIMATION(mr) == 0)
+	{
+		return;
+	}
+	if (menu_get_geometry(
+		    mr, &JunkRoot, &act_x, &act_y, &JunkWidth, &JunkHeight,
+		    &JunkBW, &JunkDepth))
+	{
+		/* move it back */
+		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
+		    Colorset[ST_CSET_MENU(MR_STYLE(mr))].pixmap ==
+		    ParentRelative)
+		{
+			Parental = True;
+			parental_mr = mr;
+			parental_fw = fw;
+		}
+		AnimatedMoveOfWindow(
+			MR_WINDOW(mr), act_x, act_y, act_x - MR_XANIMATION(mr),
+			act_y, do_warp_pointer, -1, NULL, Parental);
+		MR_XANIMATION(mr) = 0;
+	}
 
-  return;
+	return;
 }
 
 
@@ -415,14 +473,9 @@ static MenuItem *find_entry(
 		/* we're in the top level torn off menu */
 		Child = pmp->tear_off_root_menu_window->w;
 	}
-	if (XFindContext(
-			 dpy, Child, MenuContext, (caddr_t *)&mr) == XCNOENT)
+	if (XFindContext(dpy, Child, MenuContext, (caddr_t *)&mr) == XCNOENT)
 	{
 		return NULL;
-	}
-	if (pmr)
-	{
-		*pmr = mr;
 	}
 	/* get position in that child window */
 	if (!XTranslateCoordinates(
@@ -430,6 +483,14 @@ static MenuItem *find_entry(
 		    &JunkChild))
 	{
 		return NULL;
+	}
+	if (x < 0 || y < 0 || x >= MR_WIDTH(mr) || y >= MR_HEIGHT(mr))
+	{
+		return NULL;
+	}
+	if (pmr)
+	{
+		*pmr = mr;
 	}
 	r = MST_RELIEF_THICKNESS(mr);
 	/* look for the entry that the mouse is in */
@@ -711,10 +772,11 @@ void menu_tear_off(MenuRoot *mr)
 	XWMHints menuwmhints;
 	char *list[] ={ NULL, NULL };
 	char *t;
+	Atom protocols[1];
 
 	/* focus policy */
 	menuwmhints.flags = InputHint;
-	menuwmhints.input = True;
+	menuwmhints.input = False;
 	/* size hints */
 	menusizehints.flags =
 		PBaseSize | PMinSize | PMaxSize | USPosition;
@@ -743,6 +805,9 @@ void menu_tear_off(MenuRoot *mr)
 		dpy, MR_WINDOW(mr), &menunametext, &menunametext, NULL, 0,
 		&menusizehints, NULL, &menuclasshints);
 	XSetWMHints(dpy, MR_WINDOW(mr), &menuwmhints);
+	protocols[0] = _XA_WM_DELETE_WINDOW;
+	XSetWMProtocols(dpy, MR_WINDOW(mr), &(protocols[0]), 1);
+
 	/* free memory */
 	if (menunametext.value != NULL)
 	{
@@ -784,13 +849,14 @@ void menu_enter_tear_off_menu(FvwmWindow *tmp_win)
 	fw = NULL;
 	mp.pTmp_win = &fw;
 	mp.tear_off_root_menu_window = tmp_win;
+	MR_IS_TEAR_OFF_MENU(mr) = 1;
 	context = C_ROOT;
 	mp.pcontext = &context;
 	mp.flags.has_default_action = 0;
+	mp.flags.is_already_mapped = True;
 	mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	mp.flags.is_sticky = False;
 	mp.flags.is_submenu = False;
-	mp.flags.is_already_mapped = True;
 	mp.eventp = NULL;
 	mp.pops = &mops;
 	mp.ret_paction = &ret_action;
@@ -842,9 +908,9 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 
   int x;
   int y;
-  Bool fFailedPopup = False;
   Bool fWasAlreadyPopped = False;
   Bool key_press;
+  Bool is_pointer_grabbed = False;
   Time t0 = lastTimestamp;
   XEvent tmpevent;
   double_keypress dkp;
@@ -927,13 +993,14 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 
       /* we're a top level menu */
       has_mouse_moved = False;
-      if(!GrabEm(CRS_MENU, GRAB_MENU))
+      if (!GrabEm(CRS_MENU, GRAB_MENU))
       {
 	/* GrabEm specifies the cursor to use */
 	XBell(dpy, 0);
 	pmret->rc = MENU_ABORTED;
 	return;
       }
+      is_pointer_grabbed = True;
       /* Make the menu appear under the pointer rather than warping */
       fscr.xypos.x = x;
       fscr.xypos.y = y;
@@ -957,7 +1024,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
       x, y, prefer_left_submenus, key_press /*warp*/, pmp->pops, NULL,
       &do_warp_to_title, None))
     {
-      fFailedPopup = True;
       XBell(dpy, 0);
       UngrabEm(GRAB_MENU);
       pmret->rc = MENU_ERROR;
@@ -967,6 +1033,17 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   else
   {
     fWasAlreadyPopped = True;
+    if (pmp->tear_off_root_menu_window != NULL)
+    {
+      if (!GrabEm(CRS_MENU, GRAB_MENU))
+      {
+	/* GrabEm specifies the cursor to use */
+	XBell(dpy, 0);
+	pmret->rc = MENU_ABORTED;
+	return;
+      }
+      is_pointer_grabbed = True;
+    }
     if (key_press)
     {
       warp_pointer_to_item(pmp->menu, MR_FIRST_ITEM(pmp->menu),
@@ -995,27 +1072,45 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
     /* we need to grab the keyboard so we are sure no key presses are lost */
     MyXGrabKeyboard(dpy);
   }
-  if (!fFailedPopup)
+  if (!pmp->flags.is_submenu)
   {
-    if (!pmp->flags.is_submenu)
-    {
-      XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
-    }
-    MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title);
-    if (!pmp->flags.is_submenu)
-    {
-      XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
-    }
+    XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
   }
-  else
+  MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title);
+  if (!pmp->flags.is_submenu)
   {
+    XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
+  }
+  switch (pmret->rc)
+  {
+  case MENU_TEAR_OFF:
+    /* keep the menu open */
+    discard_window_events(MR_WINDOW(pmp->menu), SubstructureNotifyMask);
+    break;
+  case MENU_KILL_TEAR_OFF_MENU:
+    if (MR_IS_TEAR_OFF_MENU(pmp->menu))
+    {
+      /* kill the menu */
+      pop_menu_down(&pmp->menu, pmp);
+      pmret->rc = MENU_ABORTED;
+      discard_window_events(MR_WINDOW(pmp->menu), EnterWindowMask);
+    }
+    else
+    {
+      /* pass the return code up to the torn off menu */
+    }
+    break;
+  case MENU_SUBMENU_TORN_OFF:
     pmret->rc = MENU_ABORTED;
-  }
-  if (!fWasAlreadyPopped && pmret->rc != MENU_TEAR_OFF)
-  {
+    /* fall through */
+  default:
     /* popping down the menu may destroy the menu via the dynamic popdown
      * action! */
-    pop_menu_down(&pmp->menu, pmp);
+    if (!MR_IS_TEAR_OFF_MENU(pmp->menu) && fWasAlreadyPopped == False)
+    {
+      pop_menu_down(&pmp->menu, pmp);
+    }
+    break;
   }
   pmp->flags.is_menu_from_frame_or_window_or_titlebar = False;
   XFlush(dpy);
@@ -1034,12 +1129,19 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
       Event.xkey.y_root = y_start;
     }
   }
+  if (pmret->rc == MENU_TEAR_OFF)
+  {
+    pmret->rc = MENU_SUBMENU_TORN_OFF;
+  }
 
   dkp.timestamp = 0;
-  if(!pmp->flags.is_submenu)
+  if (is_pointer_grabbed)
   {
     UngrabEm(GRAB_MENU);
     WaitForButtonsUp(True);
+  }
+  if(!pmp->flags.is_submenu)
+  {
     if (pmret->rc == MENU_DONE)
     {
       if (pmp->ret_paction && *(pmp->ret_paction))
@@ -1427,8 +1529,9 @@ static void menuShortcuts(
   if (!miCurrent &&
       (saction == SA_ENTER || saction == SA_MOVE_ITEMS || saction == SA_SELECT))
   {
-    if (XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
-		      &menu_width, &menu_height, &JunkBW, &JunkDepth))
+    if (menu_get_geometry(
+		mr, &JunkRoot, &menu_x, &menu_y, &menu_width, &menu_height,
+		&JunkBW, &JunkDepth))
     {
       if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 			&mx, &my, &JunkX, &JunkY, &JunkMask) == False)
@@ -1582,7 +1685,8 @@ static void menuShortcuts(
     return;
 
   case SA_TEAROFF:
-    pmret->rc = MENU_TEAR_OFF;
+    pmret->rc =
+      (MR_IS_TEAR_OFF_MENU(mr)) ? MENU_KILL_TEAR_OFF_MENU: MENU_TEAR_OFF;
     return;
 
   case SA_NONE:
@@ -1655,6 +1759,7 @@ static void MenuInteraction(
   int x_offset = 0;
   int popdown_delay_10ms = 0;
   int popup_delay_10ms = 0;
+  unsigned int event_mask;
   Time t0 = lastTimestamp;
   MenuOptions mops;
   exec_func_args_type efa;
@@ -1701,6 +1806,15 @@ static void MenuInteraction(
     x_init = 0;
     y_init = 0;
   }
+  /* get the event mask right */
+  if (pmp->tear_off_root_menu_window == NULL)
+  {
+    event_mask = XEVMASK_MENU;
+  }
+  else
+  {
+    event_mask = XEVMASK_TEAR_OFF_MENU;
+  }
 
   while (True)
   {
@@ -1740,6 +1854,13 @@ static void MenuInteraction(
 	mi = MR_SELECTED_ITEM(pmp->menu);
       }
     } /* flags.do_recycle_event */
+    else if (pmp->tear_off_root_menu_window != NULL &&
+	     XCheckTypedWindowEvent(
+	       dpy, pmp->tear_off_root_menu_window->w, ClientMessage,
+	       &Event))
+    {
+      /* Got a ClientMessage for the tear out menu */
+    }
     else
     {
       if (flags.do_force_reposition)
@@ -1769,7 +1890,7 @@ static void MenuInteraction(
 	if (flags.do_force_popup || flags.is_pointer_in_active_item_area ||
 	    is_popdown_timer_active || is_popup_timer_active)
 	{
-	  while (!XPending(dpy) || !XCheckMaskEvent(dpy, XEVMASK_MENU, &Event))
+	  while (!XPending(dpy) || !XCheckMaskEvent(dpy, event_mask, &Event))
 	  {
 	    Bool is_popup_timed_out =
 	      (MST_POPUP_DELAY(pmp->menu) > 0 &&
@@ -1852,7 +1973,7 @@ static void MenuInteraction(
 	else
 	{
 	  /* block until there is an event */
-	  XMaskEvent(dpy, XEVMASK_MENU, &Event);
+	  XMaskEvent(dpy, event_mask, &Event);
 	  flags.is_popped_up_by_timeout = False;
 	}
       }
@@ -1875,7 +1996,7 @@ static void MenuInteraction(
     }
 
     pmret->rc = MENU_NOP;
-    switch(Event.type)
+    switch (Event.type)
     {
     case ButtonRelease:
       mi = find_entry(pmp, &x_offset, &mrMi, None, -1, -1);
@@ -2029,6 +2150,7 @@ static void MenuInteraction(
       case MENU_ABORTED:
       case MENU_DOUBLE_CLICKED:
       case MENU_TEAR_OFF:
+      case MENU_KILL_TEAR_OFF_MENU:
 	goto DO_RETURN;
       case MENU_NEWITEM:
       case MENU_POPUP:
@@ -2104,8 +2226,55 @@ static void MenuInteraction(
       DispatchEvent(True);
       continue;
 
+    case ClientMessage:
+      if (Event.xclient.format == 32 &&
+	  Event.xclient.data.l[0] == _XA_WM_DELETE_WINDOW &&
+	  pmp->tear_off_root_menu_window != NULL &&
+	  Event.xclient.window == pmp->tear_off_root_menu_window->w)
+      {
+	/* handle deletion of tear out menus */
+	pmret->rc = MENU_KILL_TEAR_OFF_MENU;
+	goto DO_RETURN;
+      }
+      break;
+
+    case EnterNotify:
+      /* ignore EnterNotify events */
+      break;
+
+    case LeaveNotify:
+      if (pmp->tear_off_root_menu_window != NULL &&
+	  find_entry(pmp, NULL, &tmrMi, None, -1, -1) == NULL &&
+	  tmrMi == NULL)
+      {
+	/* handle deletion of tear out menus */
+	pmret->rc = MENU_ABORTED;
+	goto DO_RETURN;
+      }
+      continue;
+
+    case UnmapNotify:
+      /* should never happen, but does not hurt */
+      if (pmp->tear_off_root_menu_window != NULL &&
+	  Event.xunmap.window == pmp->tear_off_root_menu_window->w)
+      {
+	/* handle deletion of tear out menus */
+	pmret->rc = MENU_KILL_TEAR_OFF_MENU;
+	/* extra safety: pass event back to main event loop to make sure the
+	 * FvwmWindow is destroyed */
+	XPutBackEvent(dpy, &Event);
+	goto DO_RETURN;
+      }
+      break;
+
     default:
+      /* We must not dispatch events here.  There is no guarantee that
+       * DispatchEvent doesn't destroy a window stored in the menu structures.
+       * Anyway, no events should ever get here except, to tear off menus and
+       * these must be handled individually. */
+#if 0
       DispatchEvent(False);
+#endif
       break;
     } /* switch (Event.type) */
 
@@ -2490,12 +2659,13 @@ static void MenuInteraction(
 	  mp.pTmp_win = pmp->pTmp_win;
 	  mp.button_window = pmp->button_window;
 	  mp.tear_off_root_menu_window = pmp->tear_off_root_menu_window;
+	  MR_IS_TEAR_OFF_MENU(mrPopup) = 0;
 	  mp.pcontext = pmp->pcontext;
 	  mp.flags.has_default_action = False;
+	  mp.flags.is_already_mapped = flags.is_submenu_mapped;
 	  mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	  mp.flags.is_sticky = False;
 	  mp.flags.is_submenu = True;
-	  mp.flags.is_already_mapped = flags.is_submenu_mapped;
 	  mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
 	  mp.pops = &mops;
 	  mp.ret_paction = pmp->ret_paction;
@@ -2555,9 +2725,8 @@ static void MenuInteraction(
 	animated_move_back(mrPopup, False, (*pmp->pTmp_win));
       }
       /* now check whether we should animate the current real menu
-	 over to the right to unobscure the prior menu; only a very
-	 limited case where this might be helpful and not too disruptive */
-
+       * over to the right to unobscure the prior menu; only a very
+       * limited case where this might be helpful and not too disruptive */
       if (mrPopup == NULL && pmp->parent_menu != NULL &&
 	  MR_XANIMATION(pmp->menu) != 0 &&
 	  pointer_in_passive_item_area(x_offset, mrMi))
@@ -2596,8 +2765,9 @@ static void MenuInteraction(
 	    x = 0;
 	    y = 0;
 	  }
-	  if (XGetGeometry(dpy, MR_WINDOW(pmp->menu), &JunkRoot, &mx, &my,
-			   &mw, &mh, &JunkBW, &JunkDepth) &&
+	  if (menu_get_geometry(
+		    pmp->menu, &JunkRoot, &mx, &my, &mw, &mh, &JunkBW,
+		    &JunkDepth) &&
 	      ((!MR_IS_LEFT(mrPopup)  && x < mx) ||
 	       (!MR_IS_RIGHT(mrPopup) && x > mx + mw) ||
 	       (!MR_IS_UP(mrPopup)    && y < my) ||
@@ -2677,6 +2847,20 @@ static void MenuInteraction(
     }
     break;
 
+  case MENU_ABORTED:
+    if (!MR_IS_TEAR_OFF_MENU(pmp->menu))
+    {
+      break;
+    }
+    /* fall through */
+  case MENU_KILL_TEAR_OFF_MENU:
+    if (MR_SELECTED_ITEM(pmp->menu))
+    {
+      select_menu_item(
+	pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pTmp_win));
+    }
+    break;
+
   case MENU_SELECTED:
     /* save action to execute so that the menu may be destroyed now */
     if (pmp->ret_paction)
@@ -2702,10 +2886,11 @@ static void MenuInteraction(
 	    MR_WINDOW(submenu) != None &&
 	    XGetWindowAttributes(dpy, MR_WINDOW(submenu), &win_attribs) &&
 	    win_attribs.map_state == IsViewable &&
-	    XGetGeometry(dpy, MR_WINDOW(submenu), &JunkRoot,
-			 &last_saved_pos_hints.pos_hints.x,
-			 &last_saved_pos_hints.pos_hints.y,
-			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+	    menu_get_geometry(
+		    submenu, &JunkRoot,
+		    &last_saved_pos_hints.pos_hints.x,
+		    &last_saved_pos_hints.pos_hints.y,
+		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
 	{
 	  /* The submenu is mapped, just take its position and put it in the
 	   * position hints. */
@@ -2735,16 +2920,24 @@ static void MenuInteraction(
       last_saved_pos_hints.pos_hints.screen_origin_y = pmp->screen_origin_y;
     } /* a menu was selected */
     break;
+
   case MENU_TEAR_OFF:
+    MR_PARENT_MENU(pmp->menu) = NULL;
+    MR_PARENT_ITEM(pmp->menu) = NULL;
     menu_tear_off(pmp->menu);
     break;
+
   default:
     break;
   }
 
+  if (pmret->rc == MENU_SUBMENU_TORN_OFF)
+  {
+    mrPopup = NULL;
+    MR_SUBMENU_ITEM(pmp->menu) = NULL;
+  }
   if (mrPopup)
   {
-mi_with_popup=NULL;
     pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap, pmp);
     MR_SUBMENU_ITEM(pmp->menu) = NULL;
   }
@@ -2757,44 +2950,55 @@ static int do_menus_overlap(
   MenuRoot *mr, int x, int y, int width, int height, int h_tolerance,
   int v_tolerance, int s_tolerance, Bool allow_popup_offset_tolerance)
 {
-  int prior_x, prior_y, x_overlap;
-  unsigned int prior_width, prior_height;
+	int prior_x, prior_y, x_overlap;
+	unsigned int prior_width, prior_height;
 
-  if (mr == NULL)
-    return 0;
-  if (!XGetGeometry(dpy,MR_WINDOW(mr), &JunkRoot,&prior_x,&prior_y,
-		    &prior_width,&prior_height, &JunkBW, &JunkDepth))
-  {
-    return 0;
-  }
-  x_overlap = 0;
-  if (allow_popup_offset_tolerance)
-  {
-    if (MST_POPUP_OFFSET_ADD(mr) < 0)
-      s_tolerance = -MST_POPUP_OFFSET_ADD(mr);
-    if (MST_USE_LEFT_SUBMENUS(mr))
-      prior_x += (100 - MST_POPUP_OFFSET_PERCENT(mr)) / 100;
-    else
-      prior_width *= (float)(MST_POPUP_OFFSET_PERCENT(mr)) / 100.0;
-  }
-  if (MST_USE_LEFT_SUBMENUS(mr))
-  {
-    int t = s_tolerance;
-    s_tolerance = h_tolerance;
-    h_tolerance = t;
-  }
-  if (y < prior_y + prior_height - v_tolerance &&
-      prior_y < y + height - v_tolerance &&
-      x < prior_x + prior_width - s_tolerance &&
-      prior_x < x + width - h_tolerance)
-  {
-    x_overlap = x - prior_x;
-    if (x <= prior_x)
-    {
-      x_overlap--;
-    }
-  }
-  return x_overlap;
+	if (mr == NULL)
+	{
+		return 0;
+	}
+	if (!menu_get_geometry(
+		    mr, &JunkRoot,&prior_x,&prior_y, &prior_width,
+		    &prior_height, &JunkBW, &JunkDepth))
+	{
+		return 0;
+	}
+	x_overlap = 0;
+	if (allow_popup_offset_tolerance)
+	{
+		if (MST_POPUP_OFFSET_ADD(mr) < 0)
+		{
+			s_tolerance = -MST_POPUP_OFFSET_ADD(mr);
+		}
+		if (MST_USE_LEFT_SUBMENUS(mr))
+		{
+			prior_x += (100 - MST_POPUP_OFFSET_PERCENT(mr)) / 100;
+		}
+		else
+		{
+			prior_width *=
+				(float)(MST_POPUP_OFFSET_PERCENT(mr)) / 100.0;
+		}
+	}
+	if (MST_USE_LEFT_SUBMENUS(mr))
+	{
+		int t = s_tolerance;
+		s_tolerance = h_tolerance;
+		h_tolerance = t;
+	}
+	if (y < prior_y + prior_height - v_tolerance &&
+	    prior_y < y + height - v_tolerance &&
+	    x < prior_x + prior_width - s_tolerance &&
+	    prior_x < x + width - h_tolerance)
+	{
+		x_overlap = x - prior_x;
+		if (x <= prior_x)
+		{
+			x_overlap--;
+		}
+	}
+
+	return x_overlap;
 }
 
 /***********************************************************************
@@ -2828,6 +3032,7 @@ static int pop_menu_up(
   int prev_y;
   unsigned int prev_width;
   unsigned int prev_height;
+  unsigned int event_mask;
   int scr_x, scr_y, scr_w, scr_h;
 
   mr = *pmenu;
@@ -3078,8 +3283,9 @@ static int pop_menu_up(
    ***************************************************************/
 
   if (parent_menu == NULL ||
-      !XGetGeometry(dpy, MR_WINDOW(parent_menu), &JunkRoot, &prev_x, &prev_y,
-		    &prev_width,&prev_height, &JunkBW, &JunkDepth))
+      !menu_get_geometry(
+	      parent_menu, &JunkRoot, &prev_x, &prev_y, &prev_width,
+	      &prev_height, &JunkBW, &JunkDepth))
   {
     MR_HAS_POPPED_UP_LEFT(mr) = 0;
     MR_HAS_POPPED_UP_RIGHT(mr) = 0;
@@ -3124,6 +3330,7 @@ static int pop_menu_up(
 	int a_right_x;
 	int end_x;
 	Bool Parental = False;
+	Window w;
 
 	if (use_left_submenus)
 	{
@@ -3180,8 +3387,28 @@ static int pop_menu_up(
 	  parental_mr = parent_menu;
 	  parental_fw = fw;
 	}
-	AnimatedMoveOfWindow(MR_WINDOW(parent_menu),prev_x,prev_y,end_x,prev_y,
-			     True, -1, NULL, Parental);
+
+	if (MR_IS_TEAR_OFF_MENU(parent_menu))
+	{
+	  int cx;
+	  int cy;
+
+	  w = pmp->tear_off_root_menu_window->frame;
+	  if (XGetGeometry(
+		      dpy, w, &JunkRoot, &cx, &cy, &JunkWidth, &JunkHeight,
+		      &JunkBW, &JunkDepth))
+	  {
+	    end_x += (cx - prev_x );
+	    prev_x = cx;
+	    prev_y = cy;
+	  }
+	}
+	else
+	{
+	  w = MR_WINDOW(parent_menu);
+	}
+	AnimatedMoveOfWindow(
+		w, prev_x, prev_y, end_x, prev_y, True, -1, NULL, Parental);
       } /* if (MST_IS_ANIMATED(mr)) */
 
       /*
@@ -3265,10 +3492,31 @@ static int pop_menu_up(
   } /* if (parent_menu) */
 
   /***************************************************************
+   * Make sure we have the correct events selected
+   ***************************************************************/
+
+  if (pmp->tear_off_root_menu_window == NULL)
+  {
+    /* normal menus and sub menus */
+    event_mask = XEVMASK_MENUW;
+  }
+  else if (parent_menu == NULL)
+  {
+    /* tear off menu needs more events */
+    event_mask = XEVMASK_TEAR_OFF_MENUW;
+  }
+  else
+  {
+    /* sub menus of tear off menus need LeaveNotify */
+    event_mask = XEVMASK_TEAR_OFF_SUBMENUW;
+  }
+
+  /***************************************************************
    * Pop up the menu
    ***************************************************************/
 
   XMoveWindow(dpy, MR_WINDOW(mr), x, y);
+  XSelectInput(dpy, MR_WINDOW(mr), event_mask);
   XMapRaised(dpy, MR_WINDOW(mr));
   if (popdown_window)
     XUnmapWindow(dpy, popdown_window);
@@ -3573,10 +3821,12 @@ static void pop_menu_down_and_repaint_parent(
 
     /* Create a fake event to pass into paint_menu */
     event.type = Expose;
-    if (!XGetGeometry(dpy, win, &JunkRoot, &mr_x, &mr_y,
-		      &mr_width, &mr_height, &JunkBW, &JunkDepth) ||
-	!XGetGeometry(dpy, MR_WINDOW(parent), &JunkRoot, &parent_x, &parent_y,
-		       &parent_width, &parent_height, &JunkBW, &JunkDepth))
+    if (!menu_get_geometry(
+		*pmr, &JunkRoot, &mr_x, &mr_y, &mr_width, &mr_height, &JunkBW,
+		&JunkDepth) ||
+	!menu_get_geometry(
+		parent, &JunkRoot, &parent_x, &parent_y, &parent_width,
+		&parent_height, &JunkBW, &JunkDepth))
     {
       pop_menu_down(pmr, pmp);
       paint_menu(parent, NULL, (*pmp->pTmp_win));
@@ -4395,7 +4645,7 @@ static void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
  *	ParentalMenuRePaint - repaint the menu background if it is tranparent
  *        (ParentRelative) during an animated move.
  *        Called in move_resize.c (AnimatedMoveAnyWindow)
- *      Performance improvement Welcome!!
+ *      Performance improvement Welcome!
  *
  ***********************************************************************/
 void ParentalMenuRePaint(void)
@@ -5978,12 +6228,10 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 
   memset(&mp, 0, sizeof(mp));
   mp.menu = menu;
-  mp.parent_menu = NULL;
-  mp.parent_item = NULL;
   fw = (tmp_win != None) ? tmp_win : Tmp_win;
   mp.pTmp_win = &fw;
   mp.button_window = ButtonWindow;
-  mp.tear_off_root_menu_window = NULL;
+  MR_IS_TEAR_OFF_MENU(menu) = 0;
   tc = Context;
   mp.pcontext = &tc;
   mp.flags.has_default_action = (action != NULL);
@@ -5994,7 +6242,6 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   mp.eventp = teventp;
   mp.pops = &mops;
   mp.ret_paction = &ret_action;
-  mp.event_propagate_to_submenu = NULL;
 
   do_menu(&mp, &mret);
   if (mret.rc == MENU_DOUBLE_CLICKED && action)
