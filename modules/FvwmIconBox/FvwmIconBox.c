@@ -180,6 +180,7 @@ int sortby = UNSORT;
 char* AnimCommand = NULL;
 
 int save_color_limit = 0;                   /* color limit from config */
+static Bool is_dead_pipe = False;
 
 static RETSIGTYPE TerminateHandler(int);
 static int myErrorHandler(Display *dpy, XErrorEvent *event);
@@ -529,7 +530,7 @@ void Loop(void)
 	    case ClientMessage:
 	      if ((Event.xclient.format==32) &&
 		  (Event.xclient.data.l[0]==wm_del_win))
-		DeadPipe(1);
+		exit (0);
 	      break;
 	    case PropertyNotify:
 	      switch (Event.xproperty.atom){
@@ -544,7 +545,8 @@ void Loop(void)
 		  tmp = tmp->next;
 		  ++i;
 		}
-		if (tmp == NULL || tmp->wmhints == NULL || !(tmp->extra_flags & DEFAULTICON))
+		if (tmp == NULL || tmp->wmhints == NULL ||
+		    !(tmp->extra_flags & DEFAULTICON))
 		  break;
 		if (tmp->wmhints)
 		  XFree (tmp->wmhints);
@@ -1538,17 +1540,32 @@ TerminateHandler(int sig)
 void
 DeadPipe(int nonsense)
 {
+  is_dead_pipe = True;
   exit(0);
 }
 
 static void
 CleanUp(void)
 {
+#if 0
   struct icon_info *tmpi, *tmpi2;
   struct mousefunc *tmpm, *tmpm2;
   struct keyfunc *tmpk, *tmpk2;
   struct iconfile *tmpf, *tmpf2;
+#endif
 
+  if (!is_dead_pipe)
+  {
+    if ((local_flags & SETWMICONSIZE))
+    {
+      XDeleteProperty(dpy, Root, XA_WM_ICON_SIZE);
+      XFlush(dpy);
+    }
+  }
+
+#if 0
+  /* DV: my, what is all this stuff good for? All memory gets freed
+   * automatically! */
   if (FvwmDefaultIcon != NULL)
     free(FvwmDefaultIcon);
 
@@ -1584,9 +1601,9 @@ CleanUp(void)
     tmpi = tmpi->next;
     freeitem(tmpi2, 0);
   }
-  if ((local_flags & SETWMICONSIZE))
-    XDeleteProperty(dpy, Root, XA_WM_ICON_SIZE);
-  XSync(dpy,0);
+#endif
+
+  return;
 }
 
 

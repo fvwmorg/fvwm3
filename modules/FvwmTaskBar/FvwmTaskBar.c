@@ -131,6 +131,7 @@ XFontSet ButtonFontset, SelButtonFontset;
 int fontheight;
 static Atom wm_del_win;
 Atom MwmAtom = None;
+static Bool is_dead_pipe = False;
 
 /* Module related information */
 char *Module;
@@ -774,6 +775,7 @@ void redraw_buttons()
  **********************************************************************/
 void DeadPipe(int nonsense)
 {
+  is_dead_pipe = True;
   exit(1);
 }
 
@@ -1834,13 +1836,16 @@ void StartMeUp(void)
 static void
 ShutMeDown(void)
 {
-  FreeList(&windows);
-  FreeAllButtons(&buttons);
-  XFreeGC(dpy,graph);
-  XFreeGC(dpy,icongraph);
-  XFreeGC(dpy,focusgraph);
-  XDestroyWindow(dpy, win);
-  XCloseDisplay(dpy);
+  if (!is_dead_pipe)
+  {
+    FreeList(&windows);
+    FreeAllButtons(&buttons);
+    XFreeGC(dpy,graph);
+    XFreeGC(dpy,icongraph);
+    XFreeGC(dpy,focusgraph);
+    XDestroyWindow(dpy, win);
+    XCloseDisplay(dpy);
+  }
 }
 
 

@@ -1,3 +1,19 @@
+2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/FvwmScript.c (DeadPipe):
+	(ShutdownX):
+	dito
+
+	* FvwmIconBox/FvwmIconBox.c (DeadPipe):
+	(Loop):
+	(CleanUp):
+	fixed core dump at module shutdown and removed a lot of unnecessary
+	shutdown code
+
+	* FvwmTaskBar/FvwmTaskBar.c (ShutMeDown):
+	(ReadFvwmPipe):
+	fixed illegal X calls upon X shutdown
+
 2000-11-20  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmM4/FvwmM4.c (main)

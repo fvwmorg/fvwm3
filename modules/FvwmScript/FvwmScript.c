@@ -72,6 +72,7 @@ Atom propriete,type;
 static Atom wm_del_win;
 char *imagePath = NULL;
 int save_color_limit = 0;                   /* color limit from config */
+static Bool is_dead_pipe = False;
 
 extern void InitCom(void);
 static void TryToFind(char *filename);
@@ -88,6 +89,9 @@ ShutdownX(void)
  Atom MyAtom;
  int NbEssai=0;
  struct timeval tv;
+
+ if (is_dead_pipe)
+   return;
 
 #ifdef DEBUG			/* For debugging */
   XSync(dpy,0);
@@ -203,7 +207,8 @@ static void TryToFind(char *filename) {
 /* Quitter par l'option Delete du bouton de la fenetre */
 void DeadPipe(int nonsense)
 {
- Quit (0,NULL);
+  is_dead_pipe = True;
+  Quit (0,NULL);
 }
 
 /* Lecture du fichier system.fvwmrc ou .fvwmrc */
