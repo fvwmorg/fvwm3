@@ -1,3 +1,8 @@
+2004-12-06  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm.1.in: 
+	Really commit EWMHUseStackingOrderHints documentation update
+
 2004-12-02  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm.1.in:
