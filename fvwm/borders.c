@@ -621,6 +621,7 @@ static void RedrawBorder(
     XRectangle r;
     Bool is_pressed = False;
 
+fprintf(stderr,"pw = 0x%x, dw=0x%x, f=0x%x\n", (int)PressedW, (int)t->decor_w, (int)t->frame);
     if (PressedW == t->sides[0])
     {
       /* top */
@@ -630,7 +631,6 @@ static void RedrawBorder(
       r.height = t->boundary_width - 1;
       is_pressed = True;
     }
-
     else if (PressedW == t->sides[1])
     {
       /* right */
@@ -706,6 +706,8 @@ static void RedrawBorder(
 
     if (is_pressed == True)
     {
+      XSetClipRectangles(dpy, rgc, 0, 0, &r, 1, Unsorted);
+      XSetClipRectangles(dpy, sgc, 0, 0, &r, 1, Unsorted);
       draw_frame_relief(
 	t, sgc, rgc, tgc, w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
       XSetClipMask(dpy, sgc, None);
