@@ -49,6 +49,7 @@ Old Patches:
 
 Bugfixes:
 
+  - Rewrite VISIBLE/RAISED lags to do something comprehensible.
   - Change flags implementation to allow adding more Styles easily
     (bitfields?) - THE GREAT STYLE FLAG REWRITE (GSFR)
   - Fix Restart to not pass original (fvwm specific) options to other wm's

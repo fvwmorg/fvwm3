@@ -1318,9 +1318,10 @@ read 	  /tmp/purify.read
 
 piperead
 piperead 	 	 	
-piperead cat
-piperead cat /nonexistent/foo/bar
-piperead 	cat	  /tmp/purify.read
+## hangs !!
+#piperead cat
+piperead "cat /nonexistent/foo/bar"
+piperead " 	cat	  /tmp/purify.read"
 
 ##### DECORS
 
