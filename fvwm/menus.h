@@ -58,6 +58,58 @@
 
 #include "../libs/fvwmlib.h"
 
+typedef enum {
+    /* menu types */
+    MWMMenu                   ,
+    FVWMMenu                  ,
+    WINMenu                   ,
+#ifdef GRADIENT_BUTTONS
+    HGradMenu                 ,
+    VGradMenu                 ,
+    DGradMenu                 ,
+    BGradMenu                 ,
+#endif
+#ifdef PIXMAP_BUTTONS
+    PixmapMenu                ,
+    TiledPixmapMenu           ,
+#endif
+    SolidMenu
+    /* max button is 8 (0x8) */
+} MenuFaceStyle;
+
+
+#define MenuFaceTypeMask        0x0008
+
+typedef struct MenuFace {
+    char *name;
+    struct MenuFace *next;
+    MenuFaceStyle style;
+    union {
+#ifdef PIXMAP_BUTTONS
+        Picture *p;
+#endif
+        Pixel back;
+#ifdef GRADIENT_BUTTONS
+        struct {
+            int npixels;
+            Pixel *pixels;
+        } grad;
+#endif
+    } u;
+    GC MenuGC;
+    GC MenuActiveGC;
+    GC MenuStippleGC;
+    GC MenuReliefGC;
+    GC MenuShadowGC;
+    ColorPair MenuColors;
+    ColorPair MenuActiveColors;
+    ColorPair MenuStippleColors;
+    ColorPair MenuRelief;
+    MyFont StdFont;
+    int EntryHeight;
+    char animated;
+} MenuFace;
+
 struct MenuRoot; /* forward declaration */
 
 typedef struct MenuItem
@@ -117,6 +169,7 @@ typedef struct MenuRoot
     Pixel sideColor;
     Bool colorize;
     short xoffset;
+    MenuFace        *mf;        /* Menu Face    */
     unsigned char flags; /* internal flags, deleted when menu pops down! */
     int xanimation;      /* x distance window was moved by animation     */
 } MenuRoot;
@@ -184,11 +237,18 @@ typedef enum {
 #define MENU_ADD_BUTTON(x) ((x)==MENU_DONE || (x)==MENU_ABORTED?(x)+1:(x))
 #define MENU_ADD_BUTTON_IF(y,x) (y?MENU_ADD_BUTTON((x)):(x))
 
+#define USING_MWM_MENUS(menu)	((menu)->MenuFace->style == MWMMenu)
+#define USING_FVWM_MENUS(menu)	((menu)->MenuFace->style == FVWMMenu)
+#define USING_WIN_MENUS(menu)	((menu)->MenuFace->style == WINMenu)
+#define USING_NEXT_MENUS(menu)	((menu)->MenuFace->style >  WINMenu)
+
+/*
 #define USING_MWM_MENUS (Scr.menu_type == MWM)
 #define USING_WIN_MENUS (Scr.menu_type == WIN)
 #define USING_FVWM_MENUS (Scr.menu_type == FVWM)
 #define USING_PREPOP_MENUS (Scr.menu_type == MWM || Scr.menu_type == WIN)
 #define USING_ANIMATED_MENUS (Scr.flags & AnimatedMenus)
+*/
 
 /* Types of events for the FUNCTION builtin */
 #define MOTION 'm'

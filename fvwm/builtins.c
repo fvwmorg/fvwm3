@@ -24,6 +24,8 @@
 #include "screen.h"
 #include "module.h"
 
+Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose);
+
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
 static char  *button_states[MaxButtonState]={
@@ -1179,9 +1181,9 @@ void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 
   /*
-  ** if edgescroll >1000 and < 100000m
-  ** wrap at edges of desktop (a "spherical" desktop)
-  */
+   * if edgescroll >1000 and < 100000m
+   * wrap at edges of desktop (a "spherical" desktop)
+   */
   if (val1 >= 1000)
   {
     val1 /= 1000;
@@ -1259,6 +1261,22 @@ void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     Scr.ClickTime = 0;
   else
     Scr.ClickTime = val1;
+}
+
+void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+              unsigned long context, char *action,int* Module)
+{
+  int val1;
+  int val1_unit,n;
+
+  n = GetOneArgument(action, &val1, &val1_unit);
+  if(n != 1)
+  {
+    fvwm_msg(ERR,"SetSnapAttraction","SnapAttraction requires 1 argument");
+    return;
+  }
+
+  Scr.SnapAttraction = val1;
 }
 
 void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -1551,166 +1569,287 @@ void CursorStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     mr = mr->next;
   }
 }
+  
+MenuFace *FindMenuStyle(char *name)
+{
+  MenuFace *mf = Scr.DefaultMenuFace;
+
+  while(mf != NULL )
+  {
+     if(strcasecmp(mf->name,name)==0)
+        return mf;
+     mf = mf->next;
+  }
+
+return NULL;
+}
+
+void DestroyMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+                  unsigned long context, char *action,int* Module)
+{
+  MenuFace *mf = NULL;
+  char *name = NULL;
+
+  action = GetNextToken(action,&name);
+
+  if(name != NULL)
+     mf = FindMenuStyle(name);
+
+  if(mf == NULL)
+       fvwm_msg(ERR,"DestroyMenuStyle", "cannot find style %s", name);
+  else if (mf == Scr.DefaultMenuFace)
+       fvwm_msg(ERR,"DestroyMenuStyle", "cannot destroy Default Menu Face", name
+);
+  else
+  {
+     MenuRoot *mr;
+     MenuFace *before = Scr.DefaultMenuFace;
+
+     mr = Scr.AllMenus;
+     while(mr != NULL)
+     {
+        if(mr->mf == mf)
+            mr->mf = Scr.DefaultMenuFace;
+        mr = mr->next;
+     }
+     if(mf->MenuGC)
+        XFreeGC(dpy, mf->MenuGC);
+     if(mf->MenuActiveGC)
+        XFreeGC(dpy, mf->MenuActiveGC);
+     if(mf->MenuReliefGC)
+        XFreeGC(dpy, mf->MenuReliefGC);
+     if(mf->MenuStippleGC)
+        XFreeGC(dpy, mf->MenuStippleGC);
+     if(mf->MenuShadowGC)
+        XFreeGC(dpy, mf->MenuShadowGC);
+
+     while(before->next != mf)  /* Not too many checks, may segfaults in race co
+nditions */
+        before = before->next;
+
+     before->next = mf->next;
+     free(mf->name);
+     free(mf);
+
+     MakeMenus();
+  }
+  free(name);
+}
+
+void SetMenuStyle1(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		   unsigned long context, char *action,int* Module)
+{
+  char *buffer, *rest;
+  int  i = 0;
+  char *fore, *back, *stipple, *font, *style, *animated;
+  
+  rest = GetNextToken(action,&fore);
+  rest = GetNextToken(rest,&back);
+  rest = GetNextToken(rest,&stipple);
+  rest = GetNextToken(rest,&font);
+  rest = GetNextToken(rest,&style);
+  rest = GetNextToken(rest,&animated);
+  
+  if(!fore || !back || !stipple || !font || !style)
+    {
+      fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification", action);
+      goto etiqueta_final; /* ;-) */
+      if(fore != NULL)
+	free(fore);
+      if(back != NULL)
+	free(back);
+      if(stipple != NULL)
+	free(stipple);
+      if(font != NULL)
+	free(font);
+      if(style != NULL)
+	free(style);
+      if(animated != NULL)
+	free(animated);
+      return;
+    }
+  buffer = (char *)safemalloc(strlen(action) + strlen(fore) + 16);
+  sprintf(buffer,"default %s %s %s %s %s %s %s", fore, back, stipple, fore,
+	  font, animated == NULL ? "noanim" : "anim", style);
+  SetMenuStyle(eventp, w, tmp_win, context, buffer, Module);
+
+  free(buffer);
+
+etiqueta_final:
+
+  if(fore != NULL)
+    free(fore);
+  if(back != NULL)
+    free(back);
+  if(stipple != NULL)
+    free(stipple);
+  if(font != NULL)
+    free(font);
+  if(style != NULL)
+    free(style);
+  if(animated != NULL)
+    free(animated);
+}
 
 void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                   unsigned long context, char *action,int* Module)
 {
-#if 0 /* new parse syntax -- unfinished */
-  if (action && *action)
-  {
-    line = action;
-    while (line && *line)
-    {
-      line = GetNextToken(line, &tok);
-      if (StrEquals(tok,"Color"))
-      {
-        /* Color fg/bg/st */
-      }
-      else if (StrEquals(tok,"mwm"))
-      {
-        Scr.flags |= MWMMenus;
-      }
-      else if (StrEquals(tok,"fvwm"))
-      {
-        Scr.flags &= ~MWMMenus;
-      }
-      else if (StrEquals(tok,"Font"))
-      {
-      }
-      else if (StrEquals(tok,"NoWarp"))
-      {
-      }
-      else if (StrEquals(tok,"Warp"))
-      {
-      }
-      else if (StrEquals(tok,"Warp"))
-      {
-      }
-      if (tok)
-        free(tok);
-    }
-  }
-#else
   XGCValues gcv;
   unsigned long gcm;
-  char *fore=NULL, *back=NULL, *stipple = NULL, *font= NULL, *style = 0;
-  char *animated=NULL;
+  char *fore, *back, *stipple, *active, *font, *style, *name, *animated;
+  MenuFace *tmpmf, *mf = NULL;
   int wid,hei;
 
+  action = GetNextToken(action,&name);
   action = GetNextToken(action,&fore);
   action = GetNextToken(action,&back);
   action = GetNextToken(action,&stipple);
+  action = GetNextToken(action,&active);
   action = GetNextToken(action,&font);
-  action = GetNextToken(action,&style);
   action = GetNextToken(action,&animated);
+  action = GetNextToken(action,&style);
 
-  if (style == NULL)
+  tmpmf = malloc(sizeof(MenuFace));
+  if(tmpmf == NULL)
+    exit(1);
+
+  memset(tmpmf, 0, sizeof(MenuFace));
+
+  if((animated != NULL)&&(StrEquals(animated, "ANIM")))
+    tmpmf->animated = TRUE;
+  else
+    tmpmf->animated = FALSE;
+
+  if((style != NULL)&&(StrEquals(style,"MWM")))
+    tmpmf->style = MWMMenu;
+  else if((style != NULL)&&(StrEquals(style,"WIN")))
+    tmpmf->style = WINMenu;
+  else if((style != NULL)&&(StrEquals(style,"NEXT")))
   {
-    if(fore != NULL)
-      free(fore);
-    if(back != NULL)
-      free(back);
-    if(stipple != NULL)
-      free(stipple);
-    if(font != NULL)
-      free(font);
-    return;
-  }
+    char *end, *tmp;
+    int len;
 
-  if((style != NULL)&&(strncasecmp(style,"MWM",3)==0)) {
-    Scr.menu_type = MWM;
-  } else if((style != NULL)&&(strncasecmp(style,"WIN",3)==0)) {
-    Scr.menu_type = WIN;
-  } else {
-    Scr.menu_type = FVWM;
-  }
+    while(isspace(*action)) ++action;
+    if( '(' != *action )
+    {
+      if (!*action)
+      {
+	fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification",
+		 action);
+	free(tmpmf);
+	goto etiqueta_final;
+      }
+    }
+    end = strchr(++action, ')');
+    if (!end)
+    {
+      fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification", action);
+      free(tmpmf);
+      goto etiqueta_final;
+    }
 
-  if ((animated != NULL) && (strncasecmp(animated,"anim",4)==0)) {
-    Scr.flags |= AnimatedMenus;
+    len = end - action + 1;
+    tmp = safemalloc(len);
+    strncpy(tmp, action, len - 1);
+    tmp[len - 1] = 0;
+    if(!ReadMenuFace(tmp, tmpmf, True))
+    {
+      free(tmpmf);
+      free(tmp);
+      goto etiqueta_final;
+    }
+    free(tmp);
+    action = end + 1;
   }
-  else {
-    Scr.flags &= ~AnimatedMenus;
-  }
+  else
+    tmpmf->style = FVWMMenu;
 
   if(Scr.d_depth > 2)
   {
     if(fore != NULL)
     {
-      Scr.MenuColors.fore = GetColor(fore);
+      tmpmf->MenuColors.fore = GetColor(fore);
     }
     if(back != NULL)
     {
-      Scr.MenuColors.back = GetColor(back);
+      tmpmf->MenuColors.back = GetColor(back);
     }
-    Scr.MenuRelief.back  = GetShadow(Scr.MenuColors.back);
-    Scr.MenuRelief.fore  = GetHilite(Scr.MenuColors.back);
-    Scr.MenuStippleColors.back = Scr.MenuColors.back;
-    Scr.MenuStippleColors.fore = GetColor(stipple);
+    tmpmf->MenuRelief.back = GetShadow(tmpmf->MenuColors.back);
+    tmpmf->MenuRelief.fore = GetHilite(tmpmf->MenuColors.back);
+    tmpmf->MenuStippleColors.back = tmpmf->MenuColors.back;
+    tmpmf->MenuStippleColors.fore = GetColor(stipple);
+    tmpmf->MenuActiveColors.back = tmpmf->MenuColors.back;
+    tmpmf->MenuActiveColors.fore = GetColor(active);
   }
   else
   {
-    Scr.MenuColors.back  = GetColor("white");
-    Scr.MenuColors.fore  = GetColor("black");
-    Scr.MenuRelief.back  = GetColor("black");
-    Scr.MenuRelief.fore  = GetColor("white");
-    Scr.MenuStippleColors.back = GetColor("white");
-    Scr.MenuStippleColors.fore = GetColor("black");
+    tmpmf->MenuColors.back = GetColor("white");
+    tmpmf->MenuColors.fore = GetColor("black");
+    tmpmf->MenuRelief.back = GetColor("black");
+    tmpmf->MenuRelief.fore = GetColor("white");
+    tmpmf->MenuStippleColors.back = GetColor("white");
+    tmpmf->MenuStippleColors.fore = GetColor("black");
+    tmpmf->MenuActiveColors.back = GetColor("black");
+    tmpmf->MenuActiveColors.fore = GetColor("white");
   }
 
-  if (Scr.StdFont.font != NULL)
-    XFreeFont(dpy, Scr.StdFont.font);
   if ((font == NULL)||
       (Scr.StdFont.font = GetFontOrFixed(dpy, font)) == NULL)
   {
     fvwm_msg(ERR,"SetMenuStyle","Couldn't load font '%s' or 'fixed'\n",
-             (font==NULL)?("NULL"):(font));
+	     (font==NULL)?("NULL"):(font));
     exit(1);
   }
+
   Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
   Scr.StdFont.y = Scr.StdFont.font->ascent;
   Scr.EntryHeight = Scr.StdFont.height + HEIGHT_EXTRA;
 
   gcm = GCFunction|GCPlaneMask|GCFont|GCGraphicsExposures|
     GCLineWidth|GCForeground|GCBackground;
-  gcv.foreground = Scr.MenuRelief.fore;
-  gcv.background = Scr.MenuRelief.back;
+  gcv.foreground = tmpmf->MenuRelief.fore;
+  gcv.background = tmpmf->MenuRelief.back;
   gcv.fill_style = FillSolid;
   gcv.font = Scr.StdFont.font->fid;
   gcv.plane_mask = AllPlanes;
   gcv.function = GXcopy;
   gcv.graphics_exposures = False;
   gcv.line_width = 0;
-  if(Scr.MenuReliefGC != NULL)
+  if(tmpmf->MenuReliefGC != NULL)
   {
-    XFreeGC(dpy,Scr.MenuReliefGC);
+    XFreeGC(dpy,tmpmf->MenuReliefGC);
   }
-  Scr.MenuReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  tmpmf->MenuReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
-  gcv.foreground = Scr.MenuRelief.back;
-  gcv.background = Scr.MenuRelief.fore;
-  if(Scr.MenuShadowGC != NULL)
+  gcv.foreground = tmpmf->MenuRelief.back;
+  gcv.background = tmpmf->MenuRelief.fore;
+  if(tmpmf->MenuShadowGC != NULL)
   {
-    XFreeGC(dpy,Scr.MenuShadowGC);
+    XFreeGC(dpy,tmpmf->MenuShadowGC);
   }
-  Scr.MenuShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-  gcv.foreground = Scr.MenuColors.fore;
-  gcv.background = Scr.MenuColors.back;
-  if(Scr.MenuGC != NULL)
+  tmpmf->MenuShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  gcv.foreground = tmpmf->MenuColors.fore;
+  gcv.background = tmpmf->MenuColors.back;
+  if(tmpmf->MenuGC != NULL)
   {
-    XFreeGC(dpy,Scr.MenuGC);
+    XFreeGC(dpy,tmpmf->MenuGC);
   }
-  Scr.MenuGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-  if(Scr.MenuStippleGC != NULL)
+  tmpmf->MenuGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  gcv.foreground = tmpmf->MenuActiveColors.fore;
+  gcv.background = tmpmf->MenuActiveColors.back;
+  if(tmpmf->MenuActiveGC != NULL)
   {
-    XFreeGC(dpy,Scr.MenuStippleGC);
+    XFreeGC(dpy,tmpmf->MenuActiveGC);
   }
+  tmpmf->MenuActiveGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+
   if(Scr.d_depth < 2)
   {
     gcv.fill_style = FillStippled;
     gcv.stipple = Scr.gray_bitmap;
     gcm=GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth|GCForeground|
       GCBackground|GCFont|GCStipple|GCFillStyle;
-    Scr.MenuStippleGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+    tmpmf->MenuStippleGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
     gcm=GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth|GCForeground|
       GCBackground|GCFont;
@@ -1718,9 +1857,9 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
   else
   {
-    gcv.foreground = Scr.MenuStippleColors.fore;
-    gcv.background = Scr.MenuStippleColors.back;
-    Scr.MenuStippleGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+    gcv.foreground = tmpmf->MenuStippleColors.fore;
+    gcv.background = tmpmf->MenuStippleColors.back;
+    tmpmf->MenuStippleGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
   }
   if(Scr.SizeWindow != None)
   {
@@ -1728,7 +1867,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                                       " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth+SIZE_HINDENT*2;
     hei = Scr.StdFont.height+SIZE_VINDENT*2;
-    if(USING_MWM_MENUS)
+    if(tmpmf->style == MWMMenu)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,
                         Scr.MyDisplayWidth/2 -wid/2,
@@ -1744,23 +1883,136 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(Scr.SizeWindow != None)
   {
-    XSetWindowBackground(dpy,Scr.SizeWindow,Scr.MenuColors.back);
+    XSetWindowBackground(dpy,Scr.SizeWindow,tmpmf->MenuColors.back);
   }
+
+  tmpmf->StdFont = Scr.StdFont;
+  tmpmf->EntryHeight = Scr.EntryHeight;
+  tmpmf->name = name;
+
+
+  if( Scr.DefaultMenuFace == NULL)  /* First MenuStyle MUST be the default style
+ */
+  {
+     Scr.DefaultMenuFace = tmpmf;
+     tmpmf->next = NULL;
+  }
+  else
+  {
+      mf = FindMenuStyle(name);
+
+      if(mf != NULL)
+      {
+          MenuRoot *mr;
+
+          mr = Scr.AllMenus;
+          while(mr != NULL)
+          {
+              if(mr->mf == mf) /* Only update default styles */
+                mr->mf = tmpmf;
+              mr = mr->next;
+          }
+
+          if(mf->MenuGC)
+            XFreeGC(dpy, mf->MenuGC);
+
+          if(mf->MenuActiveGC)
+            XFreeGC(dpy, mf->MenuActiveGC);
+          if(mf->MenuReliefGC)
+            XFreeGC(dpy, mf->MenuReliefGC);
+          if(mf->MenuStippleGC)
+            XFreeGC(dpy, mf->MenuStippleGC);
+          if(mf->MenuShadowGC)
+            XFreeGC(dpy, mf->MenuShadowGC);
+
+          tmpmf->next = mf->next;
+
+          if(mf == Scr.DefaultMenuFace)
+            Scr.DefaultMenuFace = tmpmf;
+          else
+          {
+              MenuFace *before = Scr.DefaultMenuFace;
+
+              while(before->next != mf) /* Not too many checks, may segfaults in
+ race conditions */
+                before = before->next;
+
+              before->next = tmpmf;
+          }
+
+          free(mf->name);
+          free(mf);
+      }
+      else
+      {
+          MenuFace *before = Scr.DefaultMenuFace;
+
+          tmpmf->next = NULL;
+
+          while(before->next != NULL)
+            before = before->next;
+
+          before->next = tmpmf;
+      }
+  }
+
   MakeMenus();
+
+etiqueta_final:                         /*  :(  */
+
   if(fore != NULL)
     free(fore);
   if(back != NULL)
     free(back);
   if(stipple != NULL)
     free(stipple);
+  if(active != NULL)
+    free(active);
   if(font != NULL)
     free(font);
   if(style != NULL)
     free(style);
   if(animated != NULL)
     free(animated);
-#endif /* 0 */
 }
+
+void ChangeMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+                  unsigned long context, char *action,int* Module)
+{
+  char *name = NULL, *menuname = NULL;
+  MenuFace *mf = NULL;
+  MenuRoot *mr = NULL;
+
+
+  action = GetNextToken(action,&name);
+  action = GetNextToken(action,&menuname);
+
+  mf = FindMenuStyle(name);
+
+  if(mf == NULL)
+  {
+        fvwm_msg(ERR,"ChangeMenuStyle", "cannot find style %s", name);
+        return;
+  }
+
+  while(menuname != NULL && *menuname)
+  {
+        mr = FindPopup(menuname);
+
+        if(mr == NULL)
+        {
+            fvwm_msg(ERR,"ChangeMenuStyle", "cannot find menu %s", menuname);
+            break;
+        }
+        mr->mf = mf;
+        action = GetNextToken(action,&menuname);
+  }
+
+  MakeMenus();
+  if(name != NULL) free(name);
+  if(menuname != NULL) free(menuname);
+}
+
 
 Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose);
 void FreeButtonFace(Display *dpy, ButtonFace *bf);
@@ -2598,6 +2850,201 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     return end;
 }
 
+void FreeMenuFace(Display *dpy, MenuFace *mf)
+{
+    switch (mf->style)
+    {
+#ifdef GRADIENT_BUTTONS
+    case HGradMenu:
+    case VGradMenu:
+    case DGradMenu:
+        /* - should we check visual is not TrueColor before doing this?
+         * 
+         *            XFreeColors(dpy, Scr.FvwmRoot.attr.colormap,
+         *                                mf->u.grad.pixels, mf->u.grad.npixels,
+         *                                                    AllPlanes); */
+        free(mf->u.grad.pixels);
+        mf->u.grad.pixels = NULL;
+        break;
+#endif
+
+#ifdef PIXMAP_BUTTONS
+    case PixmapMenu:
+    case TiledPixmapMenu:
+        if (mf->u.p)
+            DestroyPicture(dpy, mf->u.p);
+        mf->u.p = NULL;
+        break;
+#endif
+    default:
+        break;
+    }
+    mf->style = FVWMMenu;
+}
+
+/*****************************************************************************
+ *
+ * Reads a menu face line into a structure (veliaa@rpi.edu)
+ *
+ ****************************************************************************/
+Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
+{
+    int offset;
+    char style[256], *file;
+    char *action = s;
+
+    if (sscanf(s, "%s%n", style, &offset) < 1) {
+        if(verbose)fvwm_msg(ERR, "ReadMenuFace", "error in face: %s", action);
+        return False;
+    }
+
+    if (strncasecmp(style, "--", 2) != 0) {
+        s += offset;
+
+        /* FreeMenuFace(dpy, mf); */
+
+        /* determine menu style */
+        if (strncasecmp(style,"Solid",5)==0)
+        {
+            s = GetNextToken(s, &file);
+            if (file && *file) {
+                mf->style = SolidMenu;
+                mf->u.back = GetColor(file);
+            } else {
+                if(verbose)fvwm_msg(ERR,"ReadMenuFace",
+                                    "no color given for Solid face type: %s",
+                                    action);
+                return False;
+            }
+            free(file);
+        }
+#ifdef GRADIENT_BUTTONS
+        else if (strncasecmp(style,"HGradient",9)==0
+                 || strncasecmp(style,"VGradient",9)==0
+                 || strncasecmp(style,"DGradient",9)==0
+                 || strncasecmp(style,"BGradient",9)==0)
+        {
+            char *item, **s_colors;
+            int npixels, nsegs, i, sum, *perc;
+            Pixel *pixels;
+
+            if (!(s = GetNextToken(s, &item)) || (item == NULL)) {
+                if(verbose)fvwm_msg(ERR,"ReadMenuFace",
+                                    "expected number of colors to allocate in gr
+adient");
+                return False;
+            }
+            npixels = atoi(item); free(item);
+
+            if (!(s = GetNextToken(s, &item)) || (item == NULL)) {
+                if(verbose)fvwm_msg(ERR,"ReadMenuFace",
+                                    "incomplete gradient style");
+                return False;
+            }
+
+            if (!(isdigit(*item))) {
+                s_colors = (char **)safemalloc(sizeof(char *) * 2);
+                perc = (int *)safemalloc(sizeof(int));
+                nsegs = 1;
+                s_colors[0] = item;
+                s = GetNextToken(s, &s_colors[1]);
+                perc[0] = 100;
+            } else {
+                nsegs = atoi(item); free(item);
+                if (nsegs < 1) nsegs = 1;
+                if (nsegs > 128) nsegs = 128;
+                s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
+                perc = (int *)safemalloc(sizeof(int) * nsegs);
+                for (i = 0; i <= nsegs; ++i) {
+                    s =GetNextToken(s, &s_colors[i]);
+                    if (i < nsegs) {
+                        s = GetNextToken(s, &item);
+                        if (item)
+                            perc[i] = atoi(item);
+                        else
+                            perc[i] = 0;
+                        free(item);
+                    }
+                }
+            }
+
+            for (i = 0, sum = 0; i < nsegs; ++i)
+                sum += perc[i];
+
+            if (sum != 100) {
+                if(verbose)fvwm_msg(ERR,"ReadMenuFace",
+                                    "multi gradient lenghts must sum to 100");
+                for (i = 0; i <= nsegs; ++i)
+                    free(s_colors[i]);
+                free(s_colors);
+                return False;
+            }
+
+            if (npixels < 2) npixels = 2;
+            if (npixels > 128) npixels = 128;
+
+            pixels = AllocNonlinearGradient(s_colors, perc, nsegs, npixels);
+            for (i = 0; i <= nsegs; ++i)
+                free(s_colors[i]);
+            free(s_colors);
+
+            if (!pixels) {
+                if(verbose)fvwm_msg(ERR,"ReadMenuFace",
+                                    "couldn't create gradient");
+                return False;
+            }
+
+            mf->u.grad.pixels = pixels;
+            mf->u.grad.npixels = npixels;
+
+            if (strncasecmp(style,"H",1)==0)
+                mf->style = HGradMenu;
+            else if (strncasecmp(style,"V",1)==0)
+                mf->style = VGradMenu;
+            else if (strncasecmp(style,"D",1)==0)
+                mf->style = DGradMenu;
+            else
+                mf->style = BGradMenu;
+        }
+#endif /* GRADIENT_BUTTONS */
+#ifdef PIXMAP_BUTTONS
+        else if (strncasecmp(style,"Pixmap",6)==0
+                 || strncasecmp(style,"TiledPixmap",11)==0)
+        {
+            s = GetNextToken(s, &file);
+            mf->u.p = CachePicture(dpy, Scr.Root,
+                                   IconPath,
+#ifdef XPM
+                                   PixmapPath,
+#else
+                                   NULL,
+#endif
+                                   file, Scr.ColorLimit);
+            if (mf->u.p == NULL)
+            {
+                if(verbose)fvwm_msg(ERR,"ReadMenuFace",
+                                    "couldn't load pixmap %s",
+                                    file);
+                free(file);
+                return False;
+            }
+            free(file); file = NULL;
+
+            if (strncasecmp(style,"Tiled",5)==0)
+                mf->style = TiledPixmapMenu;
+            else
+                mf->style = PixmapMenu;
+        }
+#endif /* PIXMAP_BUTTONS */
+        else {
+            if(verbose)fvwm_msg(ERR,"ReadMenuFace",
+                                "unknown style %s: %s", style, action);
+            return False;
+        }
+    }
+
+    return True;
+}
 
 #ifdef USEDECOR
 /*****************************************************************************

@@ -516,6 +516,8 @@ void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	       unsigned long context, char *action,int* Module);
 void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	       unsigned long context, char *action,int* Module);
+void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+			unsigned long context, char *action,int* Module);
 void NextFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	      unsigned long context, char *action,int* Module);
 void PrevFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,

@@ -80,6 +80,10 @@ enum {
     F_SETENV,
     F_SET_ANIMATION,
     F_SET_MENUDELAY,
+    F_SET_MENUSTYLE,
+    F_CHANGE_MENUSTYLE,
+    F_DESTROY_MENUSTYLE,
+    F_SNAP_ATT, /* 65 */
 /* Functions which require a target window */
     F_RESIZE = 100,
     F_RAISE,

@@ -340,10 +340,10 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->flags &= ~MAXIMIZED;
 
 
-  tmp_win->TextPixel = Scr.MenuColors.fore;
-  tmp_win->ReliefPixel = Scr.MenuRelief.fore;
-  tmp_win->ShadowPixel = Scr.MenuRelief.back;
-  tmp_win->BackPixel = Scr.MenuColors.back;
+  tmp_win->TextPixel = Scr.DefaultMenuFace->MenuColors.fore;
+  tmp_win->ReliefPixel = Scr.DefaultMenuFace->MenuRelief.fore;
+  tmp_win->ShadowPixel = Scr.DefaultMenuFace->MenuRelief.back;
+  tmp_win->BackPixel = Scr.DefaultMenuFace->MenuColors.back;
 
   if(styles.ForeColor != NULL) {
     XColor color;

@@ -1,3 +1,19 @@
+1998-11-18  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/resize.c (resize_window):  fixed bug that prevented moving from
+	a mouse button from working with ClickToFocus
+
+	* fvwm/move.c (moveLoop): Applied SnapAttraction patch.
+	(moveLoop): fixed bug that prevented moving from a mouse button from
+	working with ClickToFocus
+
+	* fvwm/builtins.c (SetMenuStyle1): fixed memory leak
+
+	* fvwm/menus.c (MakeMenu): bugfix: Titles in newmenu patch drawn too
+	far right.
+
+	* fvwm/**: Applied newmenu patch by German Garcia.
+
 1998-11-18  Paul D. Smith  <psmith@gnu.org>
 
 	* fvwm/menus.c (NewMenuRoot): Initialize the in_use flag.
@@ -24,7 +40,7 @@ Sun Nov 15 12:24:12 1998  DanEspen  <dje@blue>
 	* fvwm/builtins.c (wait_func): Wait builtin can be aborted with
 	Control-Escape.
 	(movecursor): fixed bugs: cursor move didn't work on edge of screen;
-	didn't work if NON_VIRTUAL is defined
+	didn't compile if NON_VIRTUAL is defined
 
 1998-11-14  Dominik Vogt  <dominik_vogt@hp.com>
 

@@ -1,7 +1,12 @@
 Changes in release 2.1.2
 * Modules FvwmCascade and FvwmTile were replaced with FvwmRearrange.
 * Improved Shadow/Hilite algorithm (from scwm).  Logic moved into
-library and all modules with 3D logic now use this routine.
+  library and all modules with 3D logic now use this routine.
+* SnapAttraction Command: If during an interactive move a window comes
+  within a certain distance in pixels of another it will be moved to
+  make the borders adjoin.
+* ...MenuStyle commands: allow to name different menu styles and apply them
+  to individual menus.
 
 Changes in release 2.1.1
 * Official home page html added to docs directory.

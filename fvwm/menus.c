@@ -30,6 +30,13 @@
    of MenuInteraction and FPopupMenus.
    */
 
+/* German Gomez Garcia, Nov 1998
+   german@pinon.ccu.uniovi.es
+  
+   Implemented new menu style definition, allowing multiple definitios and
+   gradients and pixmaps 'ala' ButtonStyle. See doc/README.styles for more
+   info.  */
+
 
 /***********************************************************************
  *
@@ -56,7 +63,7 @@
 #include "parse.h"
 #include "screen.h"
 
-static void DrawTrianglePattern(Window,GC,GC,GC,GC,int,int,int,int);
+static void DrawTrianglePattern(Window,GC,GC,GC,GC,int,int,int,int,int);
 static void DrawSeparator(Window, GC,GC,int, int,int,int,int);
 static void DrawUnderline(Window w, GC gc, int x, int y, char *txt, int off);
 static MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
@@ -321,12 +328,14 @@ static
 int PopupPositionOffset(MenuRoot *mr)
 {
   int x;
-  if(USING_MWM_MENUS)
+  if(mr->mf->style == MWMMenu)
     x = mr->width - 3;
-  else if (USING_WIN_MENUS)
+  else if (mr->mf->style == WINMenu)
     x = mr->width - 5;
-  else /* fvwm menus */
+  else if (mr->mf->style == FVWMMenu)
     x = mr->width*2/3;
+  else /* next menus */
+    x = mr->width + 1;
   return x;
 }
 
@@ -577,7 +586,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 			   MenuItem **pmiExecuteAction,int cmenuDeep,
 			   Bool fSticks)
 {
-  Bool fPopupImmediately = USING_PREPOP_MENUS && !DELAY_POPUP_MENUS;
+  Bool fPopupImmediately;
   MenuItem *mi = NULL, *tmi;
   MenuRoot *mr = NULL;
   MenuRoot *mrPopup = NULL;
@@ -602,6 +611,11 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   Bool fFakedMotion = FALSE;
 
   mops.flags = 0;
+  fPopupImmediately = ((menu->mf->style == MWMMenu 
+			|| menu->mf->style == WINMenu)
+                      && (c10msDelaysBeforePopup > 0));
+
+
   /* remember where the pointer was so we can tell if it has moved */
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 		 &x_init, &y_init, &JunkX, &JunkY, &JunkMask);
@@ -615,12 +629,12 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	Event.xmotion.time = lastTimestamp;
 	fFakedMotion = TRUE;
 	fForceReposition = FALSE;
-      } else if (DELAY_POPUP_MENUS) {
-	while (XCheckMaskEvent(dpy,
-			       ButtonPressMask|ButtonReleaseMask|
-			       ExposureMask|KeyPressMask|VisibilityChangeMask|
-			       ButtonMotionMask,
-			       &Event) == FALSE) {
+      } else if (c10msDelaysBeforePopup > 0) {
+        while (XCheckMaskEvent(dpy,
+                               ButtonPressMask|ButtonReleaseMask|
+                               ExposureMask|KeyPressMask|VisibilityChangeMask|
+                               ButtonMotionMask,
+                               &Event) == FALSE) {
 	  usleep(MICRO_S_FOR_10MS);
  	  if (c10msDelays++ == c10msDelaysBeforePopup) {
 	    DBUG("MenuInteraction","Faking motion");
@@ -840,7 +854,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    mi = FindEntry(NULL);
 	    if (mi && mi->mr == mrPopup) {
 	      fDoMenu = TRUE;
-	      fPopdown = (USING_FVWM_MENUS) ? TRUE : FALSE;
+	      fPopdown = (mr->mf->style == FVWMMenu) ? TRUE : FALSE;
 	    }
 	  } /* if (!mrPopup) */
 	} /* if (fPopup) */
@@ -852,7 +866,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    dkp_timestamp = 0;
 	    goto DO_RETURN;
 	  }
-	  if (fPopdown || USING_FVWM_MENUS) {
+	  if (fPopdown ||  mr->mf->style == FVWMMenu) {
 	    PopDownMenu(mrPopup);
 	    mrPopup = NULL;
 	  }
@@ -866,7 +880,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	   over to the right to unobscure the current menu;  this
 	   happens only when using animation */
 	tmi = FindEntry(NULL);
-	if (mrPopup && mrPopup->xanimation && USING_PREPOP_MENUS && tmi &&
+	if (mrPopup && mrPopup->xanimation && mr->mf->style <= WINMenu && tmi &&
 	  (tmi == menu->selected || tmi->mr != menu)) {
 	  int x_popup, y_popup;
 	  DBUG("MenuInteraction","Moving the popup menu back over");
@@ -881,7 +895,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	/* now check whether we should animate the current real menu
 	   over to the right to unobscure the prior menu; only a very
 	   limited case where this might be helpful and not too disruptive */
-	if (mrPopup == NULL && menuPrior != NULL && USING_FVWM_MENUS &&
+	if (mrPopup == NULL && menuPrior != NULL && mr->mf->style <= WINMenu &&
 	    menu->xanimation != 0 && x_offset < menu->width/4) {
 	  int x_menu, y_menu;
 	  DBUG("MenuInteraction","Moving the menu back over");
@@ -1019,7 +1033,7 @@ int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
   XGetGeometry(dpy,mr->w,&JunkRoot,&prior_x,&prior_y,
 	       &prior_width,&prior_height,&JunkBW,&JunkDepth);
   x_overlap = 0;
-  if (USING_FVWM_MENUS)
+  if (mr->mf->style == FVWMMenu)
     prior_width = prior_width * 2/3;
   if (y <= prior_y + prior_height - 4 - tolerance &&
       prior_y <= y + height - tolerance &&
@@ -1120,7 +1134,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
       Bool fEmergencyLeft;
 
       left_x = prev_x - menu->width + 2;
-      if (USING_FVWM_MENUS)
+      if (menu->mf->style == FVWMMenu)
 	right_x = prev_x + prev_width * 2/3;
       else
 	right_x = prev_x + prev_width - 2;
@@ -1131,10 +1145,10 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	fDefaultLeft = FALSE;
       fEmergencyLeft = (prev_x > Scr.MyDisplayWidth - right_x) ? TRUE : FALSE;
 
-      if (USING_ANIMATED_MENUS) {
+      if (menu->mf->animated) {
 	/* animate previous out of the way */
 	int left_x, right_x, end_x;
-	if (USING_FVWM_MENUS)
+	if (menu->mf->style == FVWMMenu)
 	  left_x = x - prev_width * 2/3;
 	else
 	  left_x = x - prev_width + 3;
@@ -1160,7 +1174,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	AnimatedMoveOfWindow(menuPrior->w,prev_x,prev_y,end_x,prev_y,
 			     TRUE, -1, NULL);
       } /* if (USING_ANIMATED_MENUS) */
-      else if ((USING_MWM_MENUS || USING_WIN_MENUS) &&
+      else if ( menu->mf->style != FVWMMenu &&
 	       !(pops->flags & MENU_FIXED)) {
 	Bool fLeftIsOK = FALSE;
 	Bool fRightIsOK = FALSE;
@@ -1200,7 +1214,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     mi = FindEntry(NULL);
     if (mi && mi->mr == menu && mi != mi->mr->first) {
       /* pointer is on an item of the popup */
-      if (USING_FVWM_MENUS || (USING_PREPOP_MENUS && menuPrior != NULL)) {
+      if (menu->mf->style == FVWMMenu  || menuPrior != NULL) {
 	/* warp pointer if not on a root menu and MWM/WIN menuy style */
 	fWarpTitle = TRUE;
       }
@@ -1364,13 +1378,13 @@ void PaintEntry(MenuItem *mi)
       text_y += y/2;
   }
 
-  ShadowGC = Scr.MenuShadowGC;
+  ShadowGC = mr->mf->MenuShadowGC;
   if(Scr.d_depth<2)
-    ReliefGC = Scr.MenuShadowGC;
+      ReliefGC = mr->mf->MenuShadowGC;
   else
-    ReliefGC = Scr.MenuReliefGC;
+      ReliefGC = mr->mf->MenuReliefGC;
 
-  if(USING_MWM_MENUS) {
+  if(mr->mf->style == MWMMenu) {
     if((!mi->prev)||(!mi->prev->state))
       XClearArea(dpy, mr->w,mr->xoffset,y_offset-1,mr->width,y_height+2,0);
     else
@@ -1395,19 +1409,19 @@ void PaintEntry(MenuItem *mi)
       }
     RelieveHalfRectangle(mr->w, 0, y_offset-1, mr->width,
 			 y_height+2, ReliefGC, ShadowGC);
-  } else if (USING_WIN_MENUS) {
+  } else if (mr->mf->style == WINMenu) {
     if (mi->state && (!mi->fIsSeparator) &&
 	(((*mi->item)!=0) || mi->picture || mi->lpicture)) {
       XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
-      XFillRectangle(dpy, mr->w, Scr.MenuShadowGC, mr->xoffset+3, y_offset,
-		     mr->width - mr->xoffset-6, y_height);
+      XFillRectangle(dpy, mr->w, mr->mf->MenuShadowGC, mr->xoffset+3, y_offset,
+                     mr->width - mr->xoffset-6, y_height);
     } else {
       XClearArea(dpy,mr->w,mr->xoffset+3,y_offset,mr->width -mr->xoffset-6,
 		 y_height,0);
     }
     RelieveHalfRectangle(mr->w, 0, y_offset-1, mr->width,
 			 y_height+3, ReliefGC, ShadowGC);
-  } else {
+  } else if (mr->mf->style == FVWMMenu) {
     XClearArea(dpy, mr->w, mr->xoffset,y_offset,mr->width,y_height,0);
     if ((mi->state)&&(!mi->fIsSeparator)&&
 	(((*mi->item)!=0)|| mi->picture || mi->lpicture ))
@@ -1439,7 +1453,7 @@ void PaintEntry(MenuItem *mi)
 
   if(IS_TITLE_MENU_ITEM(mi))
     {
-      if(USING_MWM_MENUS)
+      if(mr->mf->style == MWMMenu)
 	{
 	  text_y += HEIGHT_EXTRA/2;
 	  XDrawLine(dpy, mr->w, ShadowGC, mr->xoffset+2, y_offset+y_height-2,
@@ -1447,7 +1461,7 @@ void PaintEntry(MenuItem *mi)
 	  XDrawLine(dpy, mr->w, ShadowGC, mr->xoffset+2, y_offset+y_height-4,
 		    mr->width-3, y_offset+y_height-4);
 	}
-      else if (USING_WIN_MENUS || USING_FVWM_MENUS)
+      else if (mr->mf->style == FVWMMenu || mr->mf->style == WINMenu)
 	{
 	  if(mi->next != NULL)
 	    {
@@ -1468,7 +1482,7 @@ void PaintEntry(MenuItem *mi)
   /* see if it's am actual separator (titles are also separators) */
   if(mi->fIsSeparator && !IS_TITLE_MENU_ITEM(mi) && !IS_LABEL_MENU_ITEM(mi))
     {
-      if(USING_MWM_MENUS)
+      if(mr->mf->style == MWMMenu)
 	DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+2,
 		      y_offset-1+HEIGHT_SEPARATOR/2,
 		      mr->width-3,y_offset-1+HEIGHT_SEPARATOR/2,0);
@@ -1484,13 +1498,17 @@ void PaintEntry(MenuItem *mi)
     DrawSeparator(mr->w,ReliefGC,ReliefGC,mr->xoffset,0, mr->width-1,0,-1);
 
   if(check_allowed_function(mi))
-  /* if(check_allowed_function2(mi->func_type,Tmp_win)) */
-    currentGC = Scr.MenuGC;
+  {
+    if(mi->state)
+        currentGC = mr->mf->MenuActiveGC;
+    else
+        currentGC = mr->mf->MenuGC;
+  }
   else
     /* should be a shaded out word, not just re-colored. */
-    currentGC = Scr.MenuStippleGC;
+    currentGC = mr->mf->MenuStippleGC;
 
-  if (USING_WIN_MENUS && mi->state && (mi->fIsSeparator == FALSE))
+  if (mr->mf->style == WINMenu && mi->state && (mi->fIsSeparator == FALSE))
     /* Use a lighter color for highlighted windows menu items for win mode */
     currentGC = ReliefGC;
 
@@ -1509,16 +1527,16 @@ void PaintEntry(MenuItem *mi)
    DrawUnderline(mr->w, currentGC,mr->xoffset+mi->x2,text_y,mi->item2,
 		 -1 - mi->hotkey);
 
-  d=(Scr.EntryHeight-7)/2;
+  d=(mr->mf->EntryHeight-7)/2;
   if(mi->func_type == F_POPUP)
     if(mi->state)
       DrawTrianglePattern(mr->w, ShadowGC, ReliefGC, ShadowGC, ReliefGC,
 			  mr->width-d-8, y_offset+d-1, mr->width-d-1,
-			  y_offset+d+7);
+			  y_offset+d+7, mr->mf->style);
     else
-      DrawTrianglePattern(mr->w, ReliefGC, ShadowGC, ReliefGC, Scr.MenuGC,
+      DrawTrianglePattern(mr->w, ReliefGC, ShadowGC, ReliefGC,  mr->mf->MenuGC,
 			  mr->width-d-8, y_offset+d-1, mr->width-d-1,
-			  y_offset+d+7);
+			  y_offset+d+7, mr->mf->style);
 
   if(mi->picture)
     {
@@ -1593,10 +1611,10 @@ void PaintSidePic(MenuRoot *mr)
     return;
 
   if(Scr.d_depth<2)
-    ReliefGC = Scr.MenuShadowGC;
+    ReliefGC = mr->mf->MenuShadowGC;
   else
-    ReliefGC = Scr.MenuReliefGC;
-  TextGC = Scr.MenuGC;
+    ReliefGC = mr->mf->MenuReliefGC;
+  TextGC = mr->mf->MenuGC;
 
   if(mr->colorize) {
     Globalgcv.foreground = mr->sideColor;
@@ -1668,13 +1686,13 @@ void DrawSeparator(Window w, GC TopGC, GC BottomGC,int x1,int y1,int x2,int y2,
  ****************************************************************************/
 static
 void DrawTrianglePattern(Window w,GC GC1,GC GC2,GC GC3,GC gc,int l,int u,
-			 int r,int b)
+			 int r,int b, int style)
 {
   int m;
 
   m = (u + b)/2;
 
-  if (USING_WIN_MENUS) {
+  if (style == WINMenu) {
       XPoint points[3];
       points[0].x = l; points[0].y = u;
       points[1].x = l; points[1].y = b;
@@ -1697,31 +1715,201 @@ void DrawTrianglePattern(Window w,GC GC1,GC GC2,GC GC3,GC gc,int l,int u,
 void PaintMenu(MenuRoot *mr, XEvent *e)
 {
   MenuItem *mi;
+  MenuFace *mf = mr->mf;
+  register int type;
+  XRectangle bounds;
 
-  GC ReliefGC;
+#ifdef PIXMAP_BUTTONS
+  Picture *p;
+  int border = 0;
+  int width, height, x, y;
+#endif
 
-  if(Scr.d_depth<2)
-    ReliefGC = Scr.MenuShadowGC;
-  else
-    ReliefGC = Scr.MenuReliefGC;
+  if( mf )
+    {
+     type = mf->style;
+     switch(type)
+     {
+     case SolidMenu:
+        XSetWindowBackground(dpy, mr->w, mr->mf->u.back);
+        flush_expose(mr->w);
+        XClearWindow(dpy,mr->w);
+        break;
+#ifdef GRADIENT_BUTTONS
+     case HGradMenu:
+     case VGradMenu:
+     case DGradMenu:
+     case BGradMenu:
+        bounds.x = 2; bounds.y = 2;
+        bounds.width = mr->width - 5;
+        bounds.height = mr->height;
+
+        if ( type == HGradMenu ) {
+            register int i = 0, dw = (float) bounds.width / mf->u.grad.npixels + 1;
+            while (i < mf->u.grad.npixels)
+            {
+                unsigned short x = i * bounds.width / mf->u.grad.npixels;
+                XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[i++ ]);
+                XFillRectangle(dpy, mr->w, Scr.TransMaskGC,
+                               bounds.x + x, bounds.y,
+                               dw, bounds.height);
+            }
+        }
+        else if ( type == VGradMenu )
+        {
+            register int i = 0, dh = bounds.height / mf->u.grad.npixels + 1;
+            while (i < mf->u.grad.npixels)
+            {
+                unsigned short y = i * bounds.height / mf->u.grad.npixels;
+                XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[ i++ ]);
+                XFillRectangle(dpy, mr->w, Scr.TransMaskGC,
+                               bounds.x, bounds.y + y,
+                               bounds.width, dh);
+            }
+        }
+        else if ( type == DGradMenu )
+        {
+            register int i = 0, dc;
+            float ds;
+            int cindex = 0;
+
+            if( mr->width > mr->height )
+            {
+                ds = (float) mr->height / mr->width;
+                dc = mr->width * 2 / mf->u.grad.npixels + 1;
+                for(i = 0; i < mr->width; i++)
+                {
+                    if( i % dc == 0 )
+                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
+                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i*ds, i, 0);
+                }
+                for(i = 0; i < mr->width; i++)
+                {
+                    if( i % dc == 0 )
+                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
+                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, mr->height, mr->width, i*ds);
+                }
+            }
+            else
+            {
+                ds = (float) mr->width / mr->height;
+                dc = mr->height * 2 / mf->u.grad.npixels + 1;
+                for(i = 0; i < mr->height; i++)
+                {
+                    if( i % dc == 0 )
+                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
+                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i, i*ds, 0);
+                }
+                for(i = 0; i < mr->height; i++)
+                {
+                    if( i % dc == 0 )
+                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
+                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, i*ds, mr->height, mr->width, i);
+                }
+            }
+        }
+        else
+        {
+            register int i = 0, dc;
+            float ds;
+            int cindex = 0;
+
+            if( mr->width > mr->height )
+            {
+                ds = (float) mr->height / mr->width;
+                dc = mr->width * 2 / mf->u.grad.npixels + 1;
+                for(i = 0; i < mr->width; i++)
+                {
+                    if( i % dc == 0 )
+                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
+                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i*ds, i, mr->height);
+                }
+                for(i = 0; i < mr->width; i++)
+                {
+                    if( i % dc == 0 )
+                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
+                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, 0, mr->width, mr->height - i*ds);
+                }
+            }
+            else
+            {
+                ds = (float) mr->width / mr->height;
+                dc = mr->height * 2 / mf->u.grad.npixels + 1;
+                for(i = 0; i < mr->height; i++)
+                {
+                    if( i % dc == 0 )
+                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
+                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i, i*ds , mr->height);
+                }
+                for(i = 0; i < mr->height; i++)
+                {
+                    if( i % dc == 0 )
+                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
+                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, i*ds, 0, mr->width, mr->height - i);
+                }
+            }
+        }
+        break;
+#endif  /* GRADIENT_BUTTONS */
+#ifdef PIXMAP_BUTTONS
+    case PixmapMenu:
+        p = mf->u.p;
+
+        border = 0;
+        width = mr->width - border * 2; height = mr->height - border * 2;
+
+        x = border;
+        if (mf->style&HOffCenter) {
+            if (mf->style&HRight)
+                x += (int)(width - p->width);
+        } else
+            x += (int)(width - p->width) / 2;
+
+        y = border;
+        if (mf->style&VOffCenter) {
+            if (mf->style&VBottom)
+                y += (int)(height - p->height);
+        } else
+            y += (int)(height - p->height) / 2;
+
+        if (x < border) x = border;
+        if (y < border) y = border;
+        if (width > p->width) width = p->width;
+        if (height > p->height) height = p->height;
+        if (width > mr->width - x - border) width = mr->width - x - border;
+        if (height > mr->height - y - border) height = mr->height - y - border;
+
+        XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
+        XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
+        XCopyArea(dpy, p->picture, mr->w, Scr.TransMaskGC,
+                  0, 0, width, height, x, y);
+        break;
+
+   case TiledPixmapMenu:
+        XSetWindowBackgroundPixmap(dpy, mr->w, mf->u.p->picture);
+        flush_expose(mr->w);
+        XClearWindow(dpy,mr->w);
+        break;
+#endif /* PIXMAP_BUTTONS */
+    }
+  }
 
   for (mi = mr->first; mi != NULL; mi = mi->next)
     {
       /* be smart about handling the expose, redraw only the entries
-       * that we need to
-       */
-      if (e->xexpose.y < (mi->y_offset + mi->y_height) &&
-	  (e->xexpose.y + e->xexpose.height) > mi->y_offset)
-	{
-	  PaintEntry(mi);
-	}
+       *        *        * that we need to
+       *               *               */
+      if( mr->mf->style != SolidMenu || (e->xexpose.y < (mi->y_offset + mi->y_height) &&
+          (e->xexpose.y + e->xexpose.height) > mi->y_offset))
+        {
+          PaintEntry(mi);
+        }
     }
 
   PaintSidePic(mr);
   XSync(dpy, 0);
   return;
 }
-
 
 void FreeMenuItem(MenuItem *mi)
 {
@@ -1769,6 +1957,15 @@ void DestroyMenu(MenuRoot *mr)
 
   if (mr->sidePic)
       DestroyPicture(dpy, mr->sidePic);
+
+ if( mr->mf != Scr.DefaultMenuFace && mr->mf ) /* I'm a bit paranoid about segfaults :) */
+  {
+        XFreeGC(dpy,mr->mf->MenuReliefGC);
+        XFreeGC(dpy,mr->mf->MenuShadowGC);
+        XFreeGC(dpy,mr->mf->MenuActiveGC);
+        XFreeGC(dpy,mr->mf->MenuGC);
+        free( mr->mf );
+  }
 
   /* need to free the window list ? */
   mi = mr->first;
@@ -1820,7 +2017,7 @@ void MakeMenu(MenuRoot *mr)
   mr->width0 = 0;
   for (cur = mr->first; cur != NULL; cur = cur->next)
     {
-      width = XTextWidth(Scr.StdFont.font, cur->item, cur->strlen);
+      width = XTextWidth(mr->mf->StdFont.font, cur->item, cur->strlen);
       if(cur->picture && width < cur->picture->width)
 	width = cur->picture->width;
       if(cur->func_type == F_POPUP)
@@ -1830,7 +2027,7 @@ void MakeMenu(MenuRoot *mr)
       if (width > mr->width)
 	mr->width = width;
 
-      width = XTextWidth(Scr.StdFont.font, cur->item2, cur->strlen2);
+      width = XTextWidth(mr->mf->StdFont.font, cur->item2, cur->strlen2);
       if (width < 0)
 	width = 0;
       if (width > mr->width2)
@@ -1859,23 +2056,22 @@ void MakeMenu(MenuRoot *mr)
       cur->x = 5+mr->width0;
       if(IS_TITLE_MENU_ITEM(cur))
 	{
+	  width = XTextWidth(mr->mf->StdFont.font, cur->item, cur->strlen);
 	  /* Title */
 	  if(cur->strlen2  == 0)
-	    cur->x = (mr->width+mr->width2+mr->width0
-		      - XTextWidth(Scr.StdFont.font, cur->item,
-				   cur->strlen))/2;
+	    cur->x = (mr->width+mr->width2+mr->width0 - width) / 2;
 
 	  if((cur->strlen > 0)||(cur->strlen2>0))
 	    {
-	      if(USING_MWM_MENUS)
-		cur->y_height = Scr.EntryHeight + HEIGHT_EXTRA_TITLE;
+	      if(mr->mf->style == MWMMenu)
+		cur->y_height = mr->mf->EntryHeight + HEIGHT_EXTRA_TITLE;
 	      else
 		{
 		  if((cur == mr->first)||(cur->next == NULL))
-		    cur->y_height=Scr.EntryHeight-HEIGHT_EXTRA+1+
+		    cur->y_height=mr->mf->EntryHeight-HEIGHT_EXTRA+1+
 		      (HEIGHT_EXTRA_TITLE/2);
 		  else
-		    cur->y_height = Scr.EntryHeight -HEIGHT_EXTRA +1+
+		    cur->y_height = mr->mf->EntryHeight-HEIGHT_EXTRA +1+
 		      HEIGHT_EXTRA_TITLE;
 		}
 	    }
@@ -1899,7 +2095,7 @@ void MakeMenu(MenuRoot *mr)
         if ((cur->strlen==0)&&(cur->strlen2 == 0))
           cur->y_height = HEIGHT_EXTRA;
         else
-          cur->y_height = Scr.EntryHeight;
+          cur->y_height = mr->mf->EntryHeight;
 	}
       if(cur->picture)
 	cur->y_height += cur->picture->height;
@@ -1916,7 +2112,7 @@ void MakeMenu(MenuRoot *mr)
 	}
       /* this item would have to be the last item, or else
 	 we need to add a "More..." entry pointing to a new menu */
-      if (y+Scr.EntryHeight > Scr.MyDisplayHeight &&
+      if (y+mr->mf->EntryHeight > Scr.MyDisplayHeight &&
 	  cur->next != NULL)
 	{
 	  char *szMenuContinuationActionAndName;
@@ -1963,7 +2159,7 @@ void MakeMenu(MenuRoot *mr)
     } /* for */
   mr->in_use = 0;
   /* allow two pixels for top border */
-  mr->height = y + ((USING_FVWM_MENUS)? 2 : 3);
+  mr->height = y + ((mr->mf->style == FVWMMenu)? 2 : 3);
   mr->flags = 0;
   mr->xanimation = 0;
 
@@ -1972,7 +2168,7 @@ void MakeMenu(MenuRoot *mr)
 #else
   valuemask = (CWBackPixel | CWEventMask | CWCursor);
 #endif
-  attributes.background_pixel = Scr.MenuColors.back;
+  attributes.background_pixel = mr->mf->MenuColors.back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
   attributes.cursor = Scr.FvwmCursors[MENU];
 #ifndef NO_SAVEUNDERS
@@ -2408,6 +2604,7 @@ MenuRoot *NewMenuRoot(char *name,int fFunction)
   else
     tmp->func = F_POPUP;
 
+  tmp->mf = Scr.DefaultMenuFace;
   tmp->name = stripcpy(name);
   tmp->first = NULL;
   tmp->last = NULL;

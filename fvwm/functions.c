@@ -67,6 +67,7 @@ static struct functions func_config[] =
 #ifdef USEDECOR
   {"ChangeDecor",  ChangeDecor,      F_CHANGE_DECOR,        FUNC_NEEDS_WINDOW},
 #endif /* USEDECOR */
+  {"ChangeMenuStyle", ChangeMenuStyle, F_CHANGE_MENUSTYLE,  FUNC_NO_WINDOW},
   {"ClickTime",    SetClick,         F_CLICK,               FUNC_NO_WINDOW},
   {"Close",        close_function,   F_CLOSE,               FUNC_NEEDS_WINDOW},
   {"ColorLimit",   SetColorLimit,    F_COLOR_LIMIT,         FUNC_NO_WINDOW},
@@ -83,6 +84,7 @@ static struct functions func_config[] =
 #endif /* USEDECOR */
   {"DestroyFunc",  destroy_menu,     F_DESTROY_MENU,        FUNC_NO_WINDOW},
   {"DestroyMenu",  destroy_menu,     F_DESTROY_MENU,        FUNC_NO_WINDOW},
+  {"DestroyMenuStyle", DestroyMenuStyle, F_DESTROY_MENUSTYLE,  FUNC_NO_WINDOW},
   {"DestroyModuleConfig", DestroyModConfig, F_DESTROY_MOD,  FUNC_NO_WINDOW},
   {"Echo",         echo_func,        F_ECHO,                FUNC_NO_WINDOW},
   {"EdgeResistance",SetEdgeResistance,F_EDGE_RES,           FUNC_NO_WINDOW},
@@ -103,7 +105,7 @@ static struct functions func_config[] =
   {"Lower",        lower_function,   F_LOWER,               FUNC_NEEDS_WINDOW},
   {"Maximize",     Maximize,         F_MAXIMIZE,            FUNC_NEEDS_WINDOW},
   {"Menu",         staysup_func,     F_STAYSUP,             FUNC_POPUP},
-  {"Menustyle",    SetMenuStyle,     F_MENUSTYLE,           FUNC_NO_WINDOW},
+  {"Menustyle",    SetMenuStyle1,    F_MENUSTYLE,           FUNC_NO_WINDOW},
   {"Module",       executeModule,    F_MODULE,              FUNC_NO_WINDOW},
   {"ModulePath",   setModulePath,    F_MODULE_PATH,         FUNC_NO_WINDOW},
   {"Mouse",        ParseMouseEntry,  F_MOUSE,               FUNC_NO_WINDOW},
@@ -138,6 +140,8 @@ static struct functions func_config[] =
   {"SetAnimation", set_animation,    F_SET_ANIMATION,	    FUNC_NO_WINDOW},
   {"SetEnv",       SetEnv,           F_SETENV,              FUNC_NO_WINDOW},
   {"SetMenuDelay", set_menudelay,    F_SET_MENUDELAY,	    FUNC_NO_WINDOW},
+  {"SetMenustyle", SetMenuStyle,     F_SET_MENUSTYLE,       FUNC_NO_WINDOW},
+  {"SnapAttraction",SetSnapAttraction,F_SNAP_ATT,           FUNC_NO_WINDOW},
   {"Stick",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
   {"Style",        ProcessNewStyle,  F_STYLE,               FUNC_NO_WINDOW},
   {"Title",        Nop_func,         F_TITLE,               FUNC_TITLE},

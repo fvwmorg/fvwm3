@@ -880,6 +880,12 @@ AddToDecor command.
 ChangeDecor "CustomDecor1"
 .EE
 
+.IP "ChangeMenuStyle \fImenustyle menu ...\fP"
+Changes the menu style of "menu" to "menustyle", you may specified more 
+than one menu in each \fIChangeMenuStyle\fP.
+.EX
+ChangeMenuStyle  pixmap1 Screensavers ScreenLock
+.EE
 
 .IP "ClickTime \fIdelay\fP"
 Specifies the maximum delay (in milliseconds) between a button press
@@ -1107,6 +1113,12 @@ fvwm session.  The menu can be rebuilt using AddToMenu.
 DestroyMenu "Utilities"
 .EE
 
+.IP "DestroyMenuStyle \fImenustyle\fP"
+Deletes the menu style named "menustyle" and changes all menus using 
+this style to the default style, you cannot destroy the default menu.
+.EX
+DestroyMenuStyle pixamp1
+.EE
 
 .IP "DestroyModuleConfig"
 Deletes module configuration entries, so that new configuration lines
@@ -1498,7 +1510,6 @@ Note that the \fIspecial-options\fP do work with a normal menu that has
 no other position arguments.
 .in -.5i
 
-
 .IP "MenuStyle \fIforecolor backcolor shadecolor font style anim\fP"
 Sets the menu style.  When using monochrome the colors are ignored.
 The shade-color is the one used to draw a menu-selection which is
@@ -1516,7 +1527,7 @@ The "anim" option is either "anim" or blank.  When this option
 is "anim", sub-menus that don't fit on the screen cause the parent menu
 to be shifted to the left so the sub-menu can be seen.
 
-See also the "SetAnimation" and "SetMenuDelay" commands.
+See also the "SetMenuStyle", "SetAnimation" and "SetMenuDelay" commands.
 
 .IP "Module \fIModuleName\fP"
 Specifies a module which should be spawned during initialization.  At
@@ -1856,6 +1867,10 @@ desktop, so that every page is hit in turn.
 If the letter "p" is appended to each coordinate (horizontal and/or
 vertical), then the scroll amount will be measured in pixels.
 
+.IP "SnapAttraction \fIproximity\fP"
+If during an interactive move the window comes within \fIproximity\fP
+pixels of another the window will be moved to make the borders
+adjoin. The default of zero means that no snapping will happen.
 
 .IP "SendToModule \fImodulename string\fP"
 Sends an arbitrary string (no quotes required) to all modules matching
@@ -1895,6 +1910,41 @@ enclose it in quotes.
 .IP "SetMenuDelay \fImilliseconds-delay\fP"
 Sets the time to delay before popping up the current menu item's popup menu
 when you're using mwm or win menus.  See also the \fIMenuStyle\fP command.
+
+.IP "SetMenuStyle \fIstylename forecolor backcolor shadecolor activecolor font animflag style\fP"
+Sets a new menu style or changes a previously defined style.  
+The "stylename" is the style name, it maybe any word without spaces,
+and the first is always considered the default menu style, as it is
+defined in the code before loading anything, you must use the name default
+when changing the default menu style. The default menu style is used for
+every menu-like object that had not be assigned a style using the 
+\fIChangeMenuStyle\fP. See also \fIDestroyMenuStyle\fP.
+When using monochrome the colors are ignored.
+The shade-color is the one used to draw a menu-selection which is
+prohibited (or not recommended) by the mwm-hints which an application
+has specified.  The active-color is the one used to draw the text of the
+selected entry. The animflag is either "anim" or "noanim", when enabled
+sub-menus that don't fit on the screen cause the parent menu to be shifted 
+to the left so the sub-menu can be seen. See also the "SetAnimation" 
+and "SetMenuDelay" commands. The style option 
+is either "fvwm" "mwm" "win" or "next (menuface)", which changes the appearance 
+and operation of the menus.
+
+"mwm" and "win" style menus popup sub-menus automatically.
+"win" menus indicate the current menu item by changing the
+background to black.
+"fvwm" sub-menus overlap the parent menu, "mwm" and "win" style menus
+never overlap the parent menu.
+"next (menuface)" style is used to define more complex menus, you can use the 
+ame options for menuface as for ButtonStyle plus DGradient, top-left to down-right, and BGradient, down-left to top-right. see \fIButtonStyle\fP for more info.
+Some examples of menufaces are:
+
+.EX
+(DGradient 128 2 lightgrey 50 blue 50 white)
+(TiledPixmap texture10.xpm)
+(HGradient 128 2 Red 40 Maroon 60 White)
+(Solid Maroon)
+.EE
 
 .IP "Stick"
 Makes a window sticky if it is not already sticky, or non-sticky if it

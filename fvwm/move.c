@@ -253,22 +253,23 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool opaque_move,
 	      Bool AddWindow)
 {
+  Window root, parent, *children;
+  FvwmWindow *tmp;
+  unsigned int nchildren;
+  int i,j;
+  int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
   Bool finished = False;
   Bool done;
-  Bool fButtonDown;
   int xl,yt,delta_x,delta_y,paged;
-  unsigned int mask = 0;
-
+  unsigned int button_mask = 0;
+  
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
-		&JunkX, &JunkY, &mask);
-  if((mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
-    fButtonDown = False;
-  else
-    fButtonDown = True;;
+		&JunkX, &JunkY, &button_mask);
+  button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
   xl += XOffset;
   yt += YOffset;
 
-  if(((!opaque_move)&&(!USING_MWM_MENUS))||(AddWindow))
+  if(((!opaque_move)&&(Scr.DefaultMenuFace->style!=MWMMenu))||(AddWindow))
     MoveOutline(Scr.Root, xl, yt, Width,Height);
 
   DisplayPosition(tmp_win,xl+Scr.Vx,yt+Scr.Vy,True);
@@ -312,8 +313,18 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  break;
 	case ButtonPress:
 	  XAllowEvents(dpy,ReplayPointer,CurrentTime);
-	  if(((Event.xbutton.button == 2)&&(!USING_MWM_MENUS))||
-	     ((Event.xbutton.button == 1)&&(USING_MWM_MENUS)&&
+	  if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
+	      ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
+	      ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
+	      ((Event.xbutton.button == 4) && (button_mask & Button4Mask)) ||
+	      ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
+	    {
+	      /* No new button was pressed, just a delayed event */
+	      done = 1;
+	      break;
+	    }
+	  if(((Event.xbutton.button == 2)&&(Scr.DefaultMenuFace != MWMMenu))||
+	     ((Event.xbutton.button == 1)&&(Scr.DefaultMenuFace == MWMMenu)&&
 	      (Event.xbutton.state & ShiftMask)))
 	    {
 	      NeedToResizeToo = True;
@@ -326,7 +337,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	       *    was pressed during the operation
 	       *  - no button was started at the beginning and any button
 	       *    except button 1 was pressed. */
-	      if (fButtonDown || (Event.xbutton.button != 1))
+	      if (button_mask || (Event.xbutton.button != 1))
 		{
 		  if(!opaque_move)
 		    MoveOutline(Scr.Root, 0, 0, 0, 0);
@@ -342,7 +353,90 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    MoveOutline(Scr.Root, 0, 0, 0, 0);
 	  xl = Event.xmotion.x_root + XOffset;
 	  yt = Event.xmotion.y_root + YOffset;
-
+	  
+	  /* resist based on window edges */
+	  tmp = Scr.FvwmRoot.next;
+	  closestTop = Scr.SnapAttraction;
+	  closestBottom = Scr.SnapAttraction;
+	  closestRight = Scr.SnapAttraction;
+	  closestLeft = Scr.SnapAttraction;
+	  nxl = xl;
+	  nyt = yt;
+	  while(tmp)
+	    {
+	      if (tmp_win != tmp && (tmp_win->Desk == tmp->Desk))
+		{
+		  if(!((tmp->frame_y + tmp->frame_height) < (yt) ||
+		       (tmp->frame_y) > (yt + Height) ))
+		    {
+		      dist = abs(tmp->frame_x - (xl + Width));
+		      if(dist < closestRight)
+			{
+			  closestRight = dist;
+			  if(((xl + Width) >= tmp->frame_x)&&
+			     ((xl + Width) < tmp->frame_x+Scr.SnapAttraction))
+			    nxl = tmp->frame_x - Width - tmp_win->bw;
+			  if(((xl + Width) >= tmp->frame_x
+			      - Scr.SnapAttraction)&&
+			     ((xl + Width) < tmp->frame_x))
+			    nxl = tmp->frame_x - Width - tmp_win->bw;
+			}
+		      dist = abs(tmp->frame_x + tmp->frame_width - xl);
+		      if(dist < closestLeft)
+			{
+			  closestLeft = dist;
+			  if((xl <= tmp->frame_x + tmp->frame_width)&&
+			     (xl > tmp->frame_x + tmp->frame_width
+			      - Scr.SnapAttraction))
+			    nxl = tmp->frame_x + tmp->frame_width;
+			  if((xl <= tmp->frame_x + tmp->frame_width
+			      + Scr.SnapAttraction)&&
+			     (xl > tmp->frame_x + tmp->frame_width))
+			    nxl = tmp->frame_x + tmp->frame_width;
+			}
+		    }
+		  if(!(   (tmp->frame_x + tmp->frame_width) < (xl) ||
+			  (tmp->frame_x) > (xl + Width) ))
+		    {
+		      dist = abs(tmp->frame_y - (yt + Height));
+		      if(dist < closestBottom)
+			{
+			  closestBottom = dist;
+			  if(((yt + Height) >= tmp->frame_y)&&
+			     ((yt + Height) < tmp->frame_y+Scr.SnapAttraction))
+			    nyt = tmp->frame_y - Height - tmp_win->bw;
+			  if(((yt + Height) >= tmp->frame_y
+			      - Scr.SnapAttraction)&&
+			     ((yt + Height) < tmp->frame_y))
+			    nyt = tmp->frame_y - Height - tmp_win->bw;
+			}
+		      dist = abs(tmp->frame_y + tmp->frame_height - yt);
+		      if(dist < closestTop)
+			{
+			  closestTop = dist;
+			  if((yt <= tmp->frame_y + tmp->frame_height)&&
+			     (yt > tmp->frame_y + tmp->frame_height
+			      - Scr.SnapAttraction))
+			    nyt = tmp->frame_y + tmp->frame_height;
+			  if((yt <= tmp->frame_y + tmp->frame_height
+			      + Scr.SnapAttraction)&&
+			     (yt > tmp->frame_y + tmp->frame_height))
+			    nyt = tmp->frame_y + tmp->frame_height;
+			}
+		    }
+#if 0
+		  if(((yt + Height) >= Scr.MyDisplayHeight)&&
+		     ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
+		    yt = Scr.MyDisplayHeight - Height - tmp_win->bw;
+		  if((yt <= 0)&&(yt > -Scr.MoveResistance))
+		    yt = 0;
+#endif
+                }
+	      tmp = tmp->next;
+	    }
+	  xl = nxl;
+	  yt = nyt;
+	  
 	  /* Resist moving windows over the edge of the screen! */
 	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
 	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
@@ -371,79 +465,160 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  xl += XOffset;
 	  yt += YOffset;
 
-	  /* Resist moving windows over the edge of the screen! */
-	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
-	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
-	    xl = Scr.MyDisplayWidth - Width - tmp_win->bw;
-	  if((xl <= 0)&&(xl > -Scr.MoveResistance))
-	    xl = 0;
-	  if(((yt + Height) >= Scr.MyDisplayHeight)&&
-	     ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
-	    yt = Scr.MyDisplayHeight - Height - tmp_win->bw;
-	  if((yt <= 0)&&(yt > -Scr.MoveResistance))
-	    yt = 0;
-
-	/* check Paging request once and only once after outline redrawn */
-	/* redraw after paging if needed - mab */
-	paged=0;
-	while(paged<=1)
+         /* resist based on window edges */
+         tmp = Scr.FvwmRoot.next;
+         closestTop = Scr.SnapAttraction;
+         closestBottom = Scr.SnapAttraction;
+         closestRight = Scr.SnapAttraction;
+         closestLeft = Scr.SnapAttraction;
+         nxl = xl;
+         nyt = yt;
+         while(tmp)
 	 {
-	  if(!opaque_move)
-	    MoveOutline(Scr.Root, xl, yt, Width,Height);
-	  else
-	    {
-	      if (tmp_win->flags & ICONIFIED)
-		{
-		  tmp_win->icon_x_loc = xl ;
-		  tmp_win->icon_xl_loc = xl -
-		    (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
-		  tmp_win->icon_y_loc = yt;
-		  if(tmp_win->icon_pixmap_w != None)
-		    XMoveWindow (dpy, tmp_win->icon_pixmap_w,
-				 tmp_win->icon_x_loc,yt);
-                  else if (tmp_win->icon_w != None)
-		    XMoveWindow(dpy, tmp_win->icon_w,tmp_win->icon_xl_loc,
-				yt+tmp_win->icon_p_height);
-
-		}
-	      else
-		XMoveWindow(dpy,tmp_win->frame,xl,yt);
-	    }
-	  DisplayPosition(tmp_win,xl+Scr.Vx,yt+Scr.Vy,False);
-
-/* prevent window from lagging behind mouse when paging - mab */
-	  if(paged==0)
-	    {
-	    xl = Event.xmotion.x_root;
-	    yt = Event.xmotion.y_root;
+	   if (tmp_win != tmp && (tmp_win->Desk == tmp->Desk))
+	   {
+	     if(!(   (tmp->frame_y + tmp->frame_height) < (yt) ||
+		     (tmp->frame_y) > (yt + Height) ))
+	     {
+	       dist = abs(tmp->frame_x - (xl + Width));
+	       if(dist < closestRight)
+	       {
+		 closestRight = dist;
+		 if(((xl + Width) >= tmp->frame_x)&&
+		    ((xl + Width) < tmp->frame_x+Scr.SnapAttraction))
+		   nxl = tmp->frame_x - Width - tmp_win->bw;
+		 if(((xl + Width) >= tmp->frame_x-Scr.SnapAttraction)&&
+		    ((xl + Width) < tmp->frame_x))
+		   nxl = tmp->frame_x - Width - tmp_win->bw;
+	       }
+	       dist = abs(tmp->frame_x + tmp->frame_width - xl);
+	       if(dist < closestLeft)
+	       {
+		 closestLeft = dist;
+		 if((xl <= tmp->frame_x + tmp->frame_width)&&
+		    (xl > tmp->frame_x + tmp->frame_width-Scr.SnapAttraction))
+		   nxl = tmp->frame_x + tmp->frame_width;
+		 if((xl <= tmp->frame_x + tmp->frame_width +
+		     Scr.SnapAttraction)&&
+		    (xl > tmp->frame_x + tmp->frame_width))
+		   nxl = tmp->frame_x + tmp->frame_width;
+	       }
+	     }
+	     if(!((tmp->frame_x + tmp->frame_width) < (xl) ||
+		  (tmp->frame_x) > (xl + Width) ))
+	     {
+	       dist = abs(tmp->frame_y - (yt + Height));
+	       if(dist < closestBottom)
+	       {
+		 closestBottom = dist;
+		 if(((yt + Height) >= tmp->frame_y)&&
+		    ((yt + Height) < tmp->frame_y+Scr.SnapAttraction))
+		   nyt = tmp->frame_y - Height - tmp_win->bw;
+		 if(((yt + Height) >= tmp->frame_y-Scr.SnapAttraction)&&
+		    ((yt + Height) < tmp->frame_y))
+		   nyt = tmp->frame_y - Height - tmp_win->bw;
+	       }
+	       dist = abs(tmp->frame_y + tmp->frame_height - yt);
+	       if(dist < closestTop)
+	       {
+		 closestTop = dist;
+		 if((yt <= tmp->frame_y + tmp->frame_height)&&
+		    (yt > tmp->frame_y + tmp->frame_height-Scr.SnapAttraction))
+		   nyt = tmp->frame_y + tmp->frame_height;
+		 if((yt <= tmp->frame_y + tmp->frame_height +
+		     Scr.SnapAttraction)&&
+		    (yt > tmp->frame_y + tmp->frame_height))
+		   nyt = tmp->frame_y + tmp->frame_height;
+	       }
+	     }
 #if 0
-	    HandlePaging(Scr.MyDisplayWidth,Scr.MyDisplayHeight,&xl,&yt,
-		       &delta_x,&delta_y,False);
-#else /* probably should actually use EdgeScroll values: */
-	    HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&xl,&yt,
-		       &delta_x,&delta_y,False);
+	     if(((yt + Height) >= Scr.MyDisplayHeight)&&
+		((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
+	       yt = Scr.MyDisplayHeight - Height - tmp_win->bw;
+	     if((yt <= 0)&&(yt > -Scr.MoveResistance))
+	       yt = 0;
 #endif
-	    xl += XOffset;
-	    yt += YOffset;
-	    if ( (delta_x==0) && (delta_y==0)) break; /* break from while paged */
-	    }
-	  paged++;
+	   }
+	   tmp = tmp->next;
+	 }
+         xl = nxl;
+         yt = nyt;
+	 
+	 /* Resist moving windows over the edge of the screen! */
+	 if(((xl + Width) >= Scr.MyDisplayWidth)&&
+	    ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
+	   xl = Scr.MyDisplayWidth - Width - tmp_win->bw;
+	 if((xl <= 0)&&(xl > -Scr.MoveResistance))
+	   xl = 0;
+	 if(((yt + Height) >= Scr.MyDisplayHeight)&&
+	    ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
+	   yt = Scr.MyDisplayHeight - Height - tmp_win->bw;
+	 if((yt <= 0)&&(yt > -Scr.MoveResistance))
+	   yt = 0;
+	 
+	 /* check Paging request once and only once after outline redrawn */
+	 /* redraw after paging if needed - mab */
+	 paged=0;
+	 while(paged<=1)
+	 {
+	   if(!opaque_move)
+	     MoveOutline(Scr.Root, xl, yt, Width,Height);
+	   else
+	   {
+	     if (tmp_win->flags & ICONIFIED)
+	     {
+	       tmp_win->icon_x_loc = xl ;
+	       tmp_win->icon_xl_loc = xl -
+		 (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
+	       tmp_win->icon_y_loc = yt;
+	       if(tmp_win->icon_pixmap_w != None)
+		 XMoveWindow (dpy, tmp_win->icon_pixmap_w,
+			      tmp_win->icon_x_loc,yt);
+	       else if (tmp_win->icon_w != None)
+		 XMoveWindow(dpy, tmp_win->icon_w,tmp_win->icon_xl_loc,
+			     yt+tmp_win->icon_p_height);
+	       
+	     }
+	     else
+	       XMoveWindow(dpy,tmp_win->frame,xl,yt);
+	   }
+	   DisplayPosition(tmp_win,xl+Scr.Vx,yt+Scr.Vy,False);
+	   
+	   /* prevent window from lagging behind mouse when paging - mab */
+	   if(paged==0)
+	   {
+	     xl = Event.xmotion.x_root;
+	     yt = Event.xmotion.y_root;
+#if 0
+	     HandlePaging(Scr.MyDisplayWidth,Scr.MyDisplayHeight,&xl,&yt,
+			  &delta_x,&delta_y,False);
+#else /* probably should actually use EdgeScroll values: */
+	     HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&xl,&yt,
+			  &delta_x,&delta_y,False);
+#endif
+	     xl += XOffset;
+	     yt += YOffset;
+	     if ( (delta_x==0) && (delta_y==0))
+	       /* break from while paged */
+	       break;
+	   }
+	   paged++;
 	 }  /* end while paged */
-
-	  done = TRUE;
-	  break;
-
+	 
+	 done = TRUE;
+	 break;
+	 
 	default:
 	  break;
 	}
       if(!done)
-	{
-	  if(!opaque_move)
-	    MoveOutline(Scr.Root,0,0,0,0);
-   	  DispatchEvent();
-	  if(!opaque_move)
-	    MoveOutline(Scr.Root, xl, yt, Width, Height);
-	}
+      {
+	if(!opaque_move)
+	  MoveOutline(Scr.Root,0,0,0,0);
+	DispatchEvent();
+	if(!opaque_move)
+	  MoveOutline(Scr.Root, xl, yt, Width, Height);
+      }
     }
   WaitForButtonsUp();
 }
@@ -472,7 +647,8 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 	RelieveWindow(tmp_win,Scr.SizeWindow,0,0,
 		      Scr.SizeStringWidth+ SIZE_HINDENT*2,
 		      Scr.StdFont.height + SIZE_VINDENT*2,
-		      Scr.MenuReliefGC,Scr.MenuShadowGC, FULL_HILITE);
+		      Scr.DefaultMenuFace->MenuReliefGC,Scr.DefaultMenuFace->MenuShadowGC, FULL_HILITE);
+
     }
   else
     {
@@ -482,7 +658,7 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
 	    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
-  XDrawString (dpy, Scr.SizeWindow, Scr.MenuGC,
+  XDrawString (dpy, Scr.SizeWindow, Scr.DefaultMenuFace->MenuGC,
 	       offset,
 	       Scr.StdFont.font->ascent + SIZE_VINDENT,
 	       str, strlen(str));

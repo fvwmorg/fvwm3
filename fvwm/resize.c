@@ -51,20 +51,17 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int x,y,delta_x,delta_y,stashed_x,stashed_y;
   Window ResizeWindow;
   Bool flags;
-  Bool fButtonDown;
   Bool fButtonAbort = False;
   int val1, val2, val1_unit,val2_unit,n;
-  unsigned int mask = 0;
+  unsigned int button_mask = 0;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
     return;
 
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		 &JunkX, &JunkY, &JunkX, &JunkY, &mask);    
-  if((mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
-    fButtonDown = False;
-  else
-    fButtonDown = True;;
+		 &JunkX, &JunkY, &JunkX, &JunkY, &button_mask);    
+  button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
+
   if(check_allowed_function2(F_RESIZE,tmp_win) == 0
 #ifdef WINDOWSHADE
      || (tmp_win->buttons & WSHADE)
@@ -209,7 +206,6 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    if (Event.type == ButtonRelease) break;
 	  }
 
-
       done = FALSE;
       /* Handle a limited number of key press events to allow mouseless
        * operation */
@@ -219,12 +215,22 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	{
 	case ButtonPress:
 	  XAllowEvents(dpy,ReplayPointer,CurrentTime);
+	  done = TRUE;
+	  if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
+	      ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
+	      ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
+	      ((Event.xbutton.button == 4) && (button_mask & Button4Mask)) ||
+	      ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
+	    {
+	      /* No new button was pressed, just a delayed event */
+	      break;
+	    }
 	  /* Abort the resize if
 	   *  - the move started with a pressed button and another button
 	   *    was pressed during the operation
 	   *  - no button was started at the beginning and any button
 	   *    except button 1 was pressed. */
-	  if (fButtonDown || (Event.xbutton.button != 1))
+	  if (button_mask || (Event.xbutton.button != 1))
 	    fButtonAbort = TRUE;
 	case KeyPress:
 	  /* simple code to bag out of move - CKH */
@@ -411,7 +417,7 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height,Bool Init)
 	RelieveWindow(tmp_win,
 		      Scr.SizeWindow,0,0,Scr.SizeStringWidth+ SIZE_HINDENT*2,
 		      Scr.StdFont.height + SIZE_VINDENT*2,
-		      Scr.MenuReliefGC,Scr.MenuShadowGC,FULL_HILITE);
+		      Scr.DefaultMenuFace->MenuReliefGC,Scr.DefaultMenuFace->MenuShadowGC,FULL_HILITE);
     }
   else
     {
@@ -419,7 +425,7 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height,Bool Init)
 		 Scr.StdFont.height,False);
     }
 
-  XDrawString (dpy, Scr.SizeWindow, Scr.MenuGC,
+  XDrawString (dpy, Scr.SizeWindow, Scr.DefaultMenuFace->MenuGC,
 	       offset, Scr.StdFont.font->ascent + SIZE_VINDENT, str, 13);
 
 }

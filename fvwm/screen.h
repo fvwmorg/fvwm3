@@ -214,13 +214,6 @@ typedef struct FvwmDecor {
 } FvwmDecor;
 
 
-typedef enum
-{
-  MWM,
-  WIN,
-  FVWM
-} MenuType;
-
 typedef struct ScreenInfo
 {
 
@@ -256,12 +249,11 @@ typedef struct ScreenInfo
   name_list *TheList;		/* list of window names with attributes */
   char *DefaultIcon;            /* Icon to use when no other icons are found */
 
-  ColorPair MenuColors;
-  ColorPair MenuStippleColors;
-  ColorPair MenuRelief;
-
   ColorPair StdColors; 	/* standard fore/back colors */
   ColorPair StdRelief;
+
+  struct MenuFace *DefaultMenuFace;
+  struct MenuFace *LastMenuFace;
 
   MyFont StdFont;     	/* font structure */
   MyFont IconFont;      /* for icon labels */
@@ -270,10 +262,6 @@ typedef struct ScreenInfo
   GC TransMaskGC;               /* GC for transparency masks */
 #endif
   GC DrawGC;			/* GC to draw lines for move and resize */
-  GC MenuGC;
-  GC MenuStippleGC;
-  GC MenuReliefGC;
-  GC MenuShadowGC;
   GC ScratchGC1;
   GC ScratchGC2;
   GC ScratchGC3;
@@ -298,12 +286,11 @@ typedef struct ScreenInfo
   FvwmWindow *Ungrabbed;
   FvwmWindow *PreviousFocus;    /* Window which had focus before fvwm stole it
 				 * to do moves/menus/etc. */
-  int EntryHeight;		/* menu entry height */
+  int EntryHeight;              /* menu entry height */
   int EdgeScrollX;              /* #pixels to scroll on screen edge */
   int EdgeScrollY;              /* #pixels to scroll on screen edge */
   unsigned char buttons2grab;   /* buttons to grab in click to focus mode */
   unsigned long flags;
-  MenuType menu_type;           /* one of FVWM, MWM, WIN */
   int NumBoxes;
   int randomx;                  /* values used for randomPlacement */
   int randomy;
@@ -317,6 +304,7 @@ typedef struct ScreenInfo
   int ClickTime;               /*Max button-click delay for Function built-in*/
   int ScrollResistance;        /* resistance to scrolling in desktop */
   int MoveResistance;          /* res to moving windows over viewport edge */
+  int SnapAttraction;          /* attractiveness of window edges */
   int OpaqueSize;
   int CurrentDesk;             /* The current desktop number */
   int ColormapFocus;           /* colormap focus style */

@@ -127,9 +127,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   tmp_win->icon_y_loc = final_y;
 
   /* clip to fit on screen */
-  attributes.background_pixel = Scr.MenuColors.back;
+  attributes.background_pixel = Scr.DefaultMenuFace->MenuColors.back;
   valuemask =  CWBorderPixel | CWCursor | CWEventMask | CWBackPixel;
-  attributes.border_pixel = Scr.MenuColors.fore;
+  attributes.border_pixel = Scr.DefaultMenuFace->MenuColors.fore;
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
 			   VisibilityChangeMask |
@@ -248,8 +248,8 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
     {
       if(Scr.d_depth < 2)
 	{
-	  Relief = Scr.MenuGC;
-	  Shadow = Scr.MenuGC;
+	  Relief = Scr.DefaultMenuFace->MenuGC;
+	  Shadow = Scr.DefaultMenuFace->MenuGC;
 	}
       else
 	{

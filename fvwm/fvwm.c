@@ -240,6 +240,8 @@ int main(int argc, char **argv)
   Scr.NumberOfScreens = ScreenCount(dpy);
   Scr.DrawGC = 0;
 
+  Scr.DefaultMenuFace = NULL;
+
   master_pid = getpid();
 
   if(!single)
@@ -386,11 +388,11 @@ int main(int argc, char **argv)
   {
     Scr.gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,g_bits, g_width,g_height,
-                                  Scr.MenuColors.fore,Scr.MenuColors.back,
+                                  Scr.DefaultMenuFace->MenuColors.fore,Scr.DefaultMenuFace->MenuColors.back,
                                   Scr.d_depth);
     Scr.light_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,l_g_bits,l_g_width,l_g_height,
-                                  Scr.MenuColors.fore,Scr.MenuColors.back,
+                                  Scr.DefaultMenuFace->MenuColors.fore,Scr.DefaultMenuFace->MenuColors.back,
                                   Scr.d_depth);
   }
 
@@ -414,11 +416,11 @@ int main(int argc, char **argv)
 
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
-  attributes.border_pixel = Scr.MenuColors.fore;
-  attributes.background_pixel = Scr.MenuColors.back;
+  attributes.border_pixel = Scr.DefaultMenuFace->MenuColors.fore;
+  attributes.background_pixel = Scr.DefaultMenuFace->MenuColors.back;
   attributes.bit_gravity = NorthWestGravity;
   valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
-  if(!USING_MWM_MENUS)
+  if(Scr.DefaultMenuFace->style != MWMMenu)
   {
     Scr.SizeWindow = XCreateWindow (dpy, Scr.Root,
                                     0, 0,
@@ -637,7 +639,7 @@ void SetRCDefaults()
   char *defaults[] = {
     "HilightColor black grey",
     "XORValue 0",
-    "MenuStyle black grey slategrey fixed fvwm",
+    "SetMenuStyle default black grey slategrey white fixed fvwm"
     "TitleStyle Centered -- Raised",
     "IconFont fixed",
     "WindowFont fixed",
@@ -1251,6 +1253,7 @@ void InitVariables(void)
 
   Scr.EdgeScrollX = Scr.EdgeScrollY = 100;
   Scr.ScrollResistance = Scr.MoveResistance = 0;
+  Scr.SnapAttraction = 0;
   Scr.OpaqueSize = 5;
   Scr.ClickTime = 150;
   Scr.ColormapFocus = COLORMAP_FOLLOWS_MOUSE;
