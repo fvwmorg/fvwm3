@@ -110,6 +110,7 @@ Contents
           example are the shortcuts of KFM (the KDE file manager).
           What can I do about that?
     5.12  The StartsOnPage style does not work for me.  Why?
+    5.13  Some modules can not be started when I restart fvwm.
 
 6. Miscellaneous
 
@@ -1426,6 +1427,28 @@ A: Many applications request a specific position where they want to
    configuration file:
 
      Style * NoPPosition
+
+----------------------------------------------------------------------
+
+5.13  Some modules can not be started when I restart fvwm.
+
+A: You may see the following error message on the console:
+
+     [FVWM][PositiveWrite]: <<ERROR>> Failed to read descriptor:
+     - data available=N
+     - terminate signal=N
+
+   It means that fvwm has given up waiting for one of its modules to
+   reply, and so has killed it.  The length of the timeout is a
+   configuration parameter - try adding
+
+     ModuleTimeout 10
+
+   to your .fvwm2rc file.  The units are in seconds and the default
+   value is 5.
+
+   This problem will only occur on slow machines or high system load
+   (many open windows).
 
 
 ======================================================================
