@@ -49,6 +49,7 @@
 #include <libs/fvwmlib.h>
 #include <libs/Picture.h>
 #include <libs/Module.h>
+#include <libs/XineramaSupport.h>
 
 
 /* migo (16-Sep-1999): How about to do this configurable? */
@@ -85,7 +86,6 @@ Display *dpy;			/* which display are we talking to */
 Window Root;
 int screen;
 int x_fd;
-int ScreenWidth, ScreenHeight;
 XSizeHints mysizehints;
 Pixel back_pix, fore_pix;
 GC NormalGC,FGC;
@@ -149,10 +149,8 @@ int main(int argc, char **argv)
   Root = RootWindow(dpy, screen);
   x_fd = XConnectionNumber(dpy);
 
-  ScreenHeight = DisplayHeight(dpy,screen);
-  ScreenWidth = DisplayWidth(dpy,screen);
-
   InitPictureCMap(dpy);
+  XineramaSupportInit(dpy);
   parseOptions(fd);
 
   /* chick in the neck situation:
@@ -190,8 +188,9 @@ int main(int argc, char **argv)
   mysizehints.max_width = mysizehints.width;
   mysizehints.win_gravity = NorthWestGravity;
 
-  mysizehints.x = (ScreenWidth - view.attributes.width)/2;
-  mysizehints.y = (ScreenHeight - view.attributes.height)/2;
+  XineramaSupportCenterPrimary(
+    &mysizehints.x, &mysizehints.y, view.attributes.width,
+    view.attributes.height);
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
@@ -233,25 +232,25 @@ int main(int argc, char **argv)
       exit(0);
     }
 
-    if(FD_ISSET(x_fd, &in_fdset))
+    if (FD_ISSET(x_fd, &in_fdset))
     {
       /* read a packet */
       XNextEvent(dpy,&Event);
       switch(Event.type)
       {
-        case ButtonRelease:
-          XDestroyWindow(dpy,win);
-          XSync(dpy,0);
-          exit(0);
-        case ClientMessage:
-          if (Event.xclient.format==32 && Event.xclient.data.l[0]==wm_del_win)
-          {
-            XDestroyWindow(dpy,win);
-            XSync(dpy,0);
-            exit(0);
-          }
-        default:
-          break;
+      case ButtonRelease:
+	XDestroyWindow(dpy,win);
+	XSync(dpy,0);
+	exit(0);
+      case ClientMessage:
+	if (Event.xclient.format==32 && Event.xclient.data.l[0]==wm_del_win)
+	{
+	  XDestroyWindow(dpy,win);
+	  XSync(dpy,0);
+	  exit(0);
+	}
+      default:
+	break;
       }
     }
   }
@@ -309,42 +308,62 @@ void nocolor(char *a, char *b)
  fprintf(stderr,"FvwmBanner: can't %s %s\n", a,b);
 }
 
-static void parseOptions (int fd[2])
+static void parseOptions(int fd[2])
 {
   char *tline= NULL;
-  char *p;
+  char *tok;
+  int i;
 
   InitGetConfigLine(fd,MyName);
-  while (GetConfigLine (fd, &tline),tline != NULL) {
-    if (strlen (tline) > 1) {
-      if (strncasecmp(tline, "ImagePath",9)==0) {
-        CopyString (&imagePath, &tline[9]);
-        if (imagePath[0] == 0) {
+  while (GetConfigLine (fd, &tline),tline != NULL)
+  {
+    if (strlen(tline) > 1)
+    {
+      tok = PeekToken(tline, &tline);
+      if (StrEquals(tok, XINERAMA_CONFIG_STRING))
+      {
+	i = atoi(tline);
+	XineramaSupportConfigureModule(i);
+	continue;
+      }
+      if (StrEquals(tok, "ImagePath"))
+      {
+        CopyString(&imagePath, tline);
+        if (imagePath[0] == 0)
+	{
           free (imagePath);
           imagePath = (char *) 0;
         }
         continue;
       }
-      if (strncasecmp(tline,MyName,MyNameLen)) { /* if not for me */
-        continue;                       /* ignore it */
+      if (strncasecmp(tok,MyName,MyNameLen))
+      {
+	/* if not for me: ignore it*/
+        continue;
       }
-      p = tline+MyNameLen;              /* start of interesting part */
-      if (strncasecmp (p, "Pixmap", 6) == 0) {
-	if (imageName == (char *) 0) {
-	  CopyString (&imageName, p+7);
-	  if (imageName[0] == 0) {
+      /* start of interesting part */
+      tok += MyNameLen;
+      if (StrEquals(tok, "Pixmap"))
+      {
+	if (imageName == (char *) 0)
+	{
+	  CopyString(&imageName, tline);
+	  if (imageName[0] == 0)
+	  {
 	    free (imageName);
 	    imageName = (char *) 0;
 	  }
 	}
         continue;
       }
-      if (strncasecmp (p, "NoDecor", 7) == 0) {
+      if (StrEquals(tok, "NoDecor"))
+      {
         no_wm = True;
         continue;
       }
-      if (strncasecmp (p, "Timeout", 7) == 0) {
-        timeout = atoi(p+8) * 1000000;
+      if (StrEquals(tok, "Timeout"))
+      {
+        timeout = atoi(tline) * 1000000;
         continue;
       }
     }
@@ -382,4 +401,3 @@ void DeadPipe (int nonsense)
 {
   exit (0);
 }
-

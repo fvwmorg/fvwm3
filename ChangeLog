@@ -1,5 +1,18 @@
 2001-07-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/XineramaSupport.c (XineramaSupportConfigureModule):
+	* fvwm/modconf.c (send_xinerama_state):
+	* fvwm/module_interface.c (broadcast_xinerama_state):
+	* libs/defaults.h:
+	revised module support for Xinerama
+
+	* libs/XineramaSupport.c (XineramaSupportParseGeometryWithScreen):
+	(XineramaSupportParseGeometry):
+	(XineramaSupportGetGeometry):
+	make interface compatible with XineramaSupportParseGeometry().
+	(XineramaSupportGetPrimaryScreen):
+	new function
+
 	* fvwm/stack.c (raise_over_unmanaged):
 	fixed restacking of windows with RaiseOverUnmanaged - windows were
 	raised in reverse order so that the top window became the bottom

@@ -104,8 +104,6 @@ enum
 
 enum
 {
-  /* Replace with -1 to switch off "primary screen" concept by default */
-  DEFAULT_PRIMARY_SCREEN  = 0,
   /* Replace with GEOMETRY_SCREEN_GLOBAL to restore default behaviour */
   DEFAULT_GEOMETRY_SCREEN = GEOMETRY_SCREEN_PRIMARY
 };
@@ -130,7 +128,7 @@ static int                 num_screens        = 0;
 static int                 total_screens     = 0;
 static int                 first_to_check    = 0;
 static int                 last_to_check     = 0;
-static int                 primary_scr       = DEFAULT_PRIMARY_SCREEN;
+static int                 primary_scr       = DEFAULT_PRIMARY_SCREEN + 1;
 
 #if 0
 #ifdef HAVE_RANDR
@@ -315,12 +313,44 @@ void XineramaSupportDisableRandR(void)
 }
 #endif
 
+int XineramaSupportGetPrimaryScreen(void)
+{
+  return (is_xinerama_disabled) ? 0 : primary_scr;
+}
+
 void XineramaSupportSetPrimaryScreen(int scr)
 {
-  char  buf[100];
+  if (scr >= 0 && scr < num_screens)
+  {
+    primary_scr = scr + 1;
+  }
+  else
+  {
+    primary_scr = 0;
+  }
 
-  primary_scr = scr;
-  sprintf(buf, "%d", scr);
+  return;
+}
+
+/* Intended to be called by modules.  Simply pass in the parameter from the
+ * config string sent by fvwm. */
+void XineramaSupportConfigureModule(int screen)
+{
+  if (screen < 0)
+  {
+    screen = -1;
+  }
+  XineramaSupportSetPrimaryScreen(screen - 1);
+  if (screen == -1)
+  {
+    XineramaSupportDisable();
+  }
+  else
+  {
+    XineramaSupportEnable();
+  }
+
+  return;
 }
 
 static int FindScreenOfXY(int x, int y)
@@ -484,28 +514,19 @@ void XineramaSupportGetCurrentScrRect(
 /* Note: <=-2:current, =-1:global, 0..?:screenN */
 void XineramaSupportGetPrimaryScrRect(int *x, int *y, int *w, int *h)
 {
-  int  scr = primary_scr + 1;
+  int scr = primary_scr;
 
-  /* <0? (-MAXINT..-1)+1=(~-MAXINT..0) -- current mouse screen */
-  if (scr < 0)
+  /* out of range: use global screen */
+  if (scr < first_to_check  ||  scr > last_to_check)
   {
-    XineramaSupportGetCurrentScrRect(NULL, x, y, w, h);
-    return;
+    scr = 0;
   }
-
-  if (scr == 0)
-  {
-    /* Treat out-of-range screen as 1st one */
-  }
-  else if (scr < first_to_check  ||  scr > last_to_check)
-  {
-    scr = first_to_check;
-  }
-
   *x = screens[scr].x_org;
   *y = screens[scr].y_org;
   *w = screens[scr].width;
   *h = screens[scr].height;
+
+  return;
 }
 
 void XineramaSupportGetGlobalScrRect(int *x, int *y, int *w, int *h)
@@ -582,7 +603,86 @@ Bool XineramaSupportIsRectangleOnThisScreen(
 
 
 #if 1
-/*  XineramaSupportParseGeometry
+/*
+ * XineramaSupportParseGeometry
+ *     Does the same as XParseGeometry, but handles additional "@scr".
+ *     Since it isn't safe to define "ScreenValue" constant (actual values
+ *     of other "XXXValue" are specified in Xutil.h, not by us, so there can
+ *     be a clash), the screen value is always returned, event if it wasn't
+ *     present in `parse_string' (set to default in that case).
+ *
+ */
+
+static int XineramaSupportParseGeometryWithScreen(
+  char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
+  unsigned int *height_return, int *screen_return)
+{
+  int   ret;
+  char *copy, *scr_p;
+  int   s_size;
+  int   scr = DEFAULT_GEOMETRY_SCREEN;
+
+  /* Safety net */
+  if (parsestring == NULL  ||  *parsestring == '\0')
+    return 0;
+
+  /* Make a local copy devoid of "@scr" */
+  s_size = strlen(parsestring) + 1;
+  copy = safemalloc(s_size);
+  memcpy(copy, parsestring, s_size);
+  scr_p = strchr(copy, '@');
+  if (scr_p != NULL)
+    *scr_p++ = '\0';
+
+  /* Do the parsing */
+  ret = XParseGeometry(copy, x_return, y_return, width_return, height_return);
+
+#if DEBUG_PRINTS
+  fprintf(stderr,
+	  "copy=%s, scr_p=%s, x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
+	  copy, scr_p, *x_return, *y_return, *width_return, *height_return,
+	  ret&XValue?      " XValue":"",
+	  ret&YValue?      " YValue":"",
+	  ret&WidthValue?  " WidthValue":"",
+	  ret&HeightValue? " HeightValue":"",
+	  ret&XNegative?   " XNegative":"",
+	  ret&YNegative?   " YNegative":"");
+#endif
+
+  /* Parse the "@scr", if any */
+  if (scr_p != NULL)
+  {
+    if      (tolower(*scr_p) == 'g')
+      scr = GEOMETRY_SCREEN_GLOBAL;
+    else if (tolower(*scr_p) == 'c')
+      scr = GEOMETRY_SCREEN_CURRENT;
+    else if (tolower(*scr_p) == 'p')
+      scr = GEOMETRY_SCREEN_PRIMARY;
+    else if (*scr_p >= '0' && *scr_p <= '9')
+      scr = atoi(scr_p);
+  }
+  *screen_return = scr;
+
+  /* We don't need the string any more */
+  free(copy);
+
+  return ret;
+}
+
+/* Same as above, but dump screen return value to keep compatible with the X
+ * function. */
+int XineramaSupportParseGeometry(
+  char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
+  unsigned int *height_return)
+{
+  int t;
+
+  return XineramaSupportParseGeometryWithScreen(
+    parsestring, x_return, y_return, width_return, height_return, &t);
+}
+
+
+/*  XineramaSupportGetGeometry
  *      Parses the geometry in a form: XGeometry[@screen], i.e.
  *          [=][<width>{xX}<height>][{+-}<xoffset>{+-}<yoffset>][@<screen>]
  *          where <screen> is either a number or "G" (global) "C" (current)
@@ -601,10 +701,6 @@ Bool XineramaSupportIsRectangleOnThisScreen(
  *      This function's behaviour is crafted to sutisfy/emulate the
  *      FvwmWinList::MakeMeWindow()'s behaviour.
  *
- *
- * dv 27-jul-2001: what is the "flags" good for? The caller is not forced to
- * use the returned values, so who cares?
- *
  *  Note3:
  *      A special value of `flags' when [XY]Value are there but [XY]Negative
  *      aren't, means that in case of negative geometry specification
@@ -620,66 +716,22 @@ Bool XineramaSupportIsRectangleOnThisScreen(
  *          This option can be also useful in cases where dimensions are
  *      specified not in pixels but in some other units (e.g., charcells).
  */
-int XineramaSupportParseGeometry(
-  char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
-  unsigned int *height_return)
+int XineramaSupportGetGeometry(
+  char *parsestring, int *x_return, int *y_return,
+  int *width_return, int *height_return, XSizeHints *hints, int flags)
 {
   int   ret;
   int   saved;
-  char *copy, *scr_p;
-  int   s_size;
   int   x, y, w=0, h=0;
-#if 0
   int   grav, x_grav, y_grav;
-#endif
   int   scr = DEFAULT_GEOMETRY_SCREEN;
   int   scr_x, scr_y, scr_w, scr_h;
 
-  /* Safety net */
-  if (parsestring == NULL  ||  *parsestring == '\0')
-    return 0;
-
-  /* I. Do the string parsing */
-
-  /* Make a local copy devoid of "@scr" */
-  s_size = strlen(parsestring) + 1;
-  copy = safemalloc(s_size);
-  memcpy(copy, parsestring, s_size);
-  scr_p = strchr(copy, '@');
-  if (scr_p != NULL)
-    *scr_p++ = '\0';
-
-  /* Do the parsing and strip off extra bits */
-  ret = XParseGeometry(copy, &x, &y, &w, &h);
+  /* I. Do the parsing and strip off extra bits */
+  ret = XineramaSupportParseGeometryWithScreen(
+    parsestring, &x, &y, &w, &h, &scr);
   saved = ret & (XNegative | YNegative);
-
-#if DEBUG_PRINTS
-  fprintf(stderr,
-	  "copy=%s, scr_p=%s, x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
-	  copy, scr_p, x, y, w, h,
-	  ret&XValue?      " XValue":"",
-	  ret&YValue?      " YValue":"",
-	  ret&WidthValue?  " WidthValue":"",
-	  ret&HeightValue? " HeightValue":"",
-	  ret&XNegative?   " XNegative":"",
-	  ret&YNegative?   " YNegative":"");
-#endif
-
-  /* Parse the "@scr", if any */
-  if (scr_p != NULL)
-  {
-    if (tolower(*scr_p) == 'g')
-      scr = GEOMETRY_SCREEN_GLOBAL;
-    else if (tolower(*scr_p) == 'c')
-      scr = GEOMETRY_SCREEN_CURRENT;
-    else if (tolower(*scr_p) == 'p')
-      scr = GEOMETRY_SCREEN_PRIMARY;
-    else if (*scr_p >= '0' && *scr_p <= '9')
-      scr = atoi(scr_p);
-  }
-
-  /* We don't need the string any more */
-  free(copy);
+  ret  &= flags;
 
   /* II. Get the screen rectangle */
   switch (scr)
@@ -715,7 +767,6 @@ int XineramaSupportParseGeometry(
   /* Fill in dimensions for future negative calculations if
    * omitted/forbidden */
   /*!!! Maybe should use *x_return,*y_return if hints==NULL?  Unreliable... */
-#if 0
   if (hints != NULL  &&  hints->flags & PSize)
   {
     if ((ret & WidthValue)  == 0)
@@ -724,7 +775,6 @@ int XineramaSupportParseGeometry(
       h = hints->height;
   }
   else
-#endif
   {
     /* This branch is required for case when size *is* specified, but masked
      * off */
@@ -762,57 +812,43 @@ int XineramaSupportParseGeometry(
   /* Restore negative bits */
   ret |= saved;
 
-#if 0
   /* Guess orientation */
   x_grav = (ret & XNegative)? GRAV_NEG : GRAV_POS;
   y_grav = (ret & YNegative)? GRAV_NEG : GRAV_POS;
   grav   = grav_matrix[y_grav][x_grav];
-#endif
 
   /* Return the values */
   if (ret & XValue)
   {
     *x_return = x;
-#if 0
     if (hints != NULL)
       hints->x = x;
-#endif
   }
   if (ret & YValue)
   {
     *y_return = y;
-#if 0
     if (hints != NULL)
       hints->y = y;
-#endif
   }
   if (ret & WidthValue)
   {
     *width_return = w;
-#if 0
     if (hints != NULL)
       hints->width = w;
-#endif
   }
   if (ret & HeightValue)
   {
     *height_return = h;
-#if 0
     if (hints != NULL)
       hints->height = h;
-#endif
   }
-#if 0
   if (1 /*flags & GravityValue*/  &&  grav != DEFAULT_GRAVITY)
   {
     if (hints != NULL  &&  hints->flags & PWinGravity)
       hints->win_gravity = grav;
   }
-#endif
-#if 0
   if (hints != NULL  &&  ret & XValue  &&  ret & YValue)
     hints->flags |= USPosition;
-#endif
 
 #if DEBUG_PRINTS
   fprintf(stderr, "x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",

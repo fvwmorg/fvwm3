@@ -219,8 +219,9 @@
 
 /*** Xinerama ***/
 #define DEFAULT_XINERAMA_DISABLED      False /* Xinerama on by default */
-#define XINERAMA_ENABLE_STRING             "XineramaEnable"
-#define XINERAMA_DISABLE_STRING            "XineramaDisable"
+#define XINERAMA_CONFIG_STRING             "XineramaConfig"
+/* Replace with -1 to switch off "primary screen" concept by default */
+#define DEFAULT_PRIMARY_SCREEN             0
 
 /*** Very long window names (600000 characters or more) seem to hang the X
  *** server. ***/

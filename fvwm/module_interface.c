@@ -1225,18 +1225,15 @@ void BroadcastConfigInfoString(char *string)
  **********************************************************************/
 void broadcast_xinerama_state(void)
 {
-  if (XineramaSupportIsEnabled())
-  {
-    BroadcastConfigInfoString(XINERAMA_ENABLE_STRING);
-  }
-  else
-  {
-    BroadcastConfigInfoString(XINERAMA_DISABLE_STRING);
-  }
+  char buf[100];
+  int scr;
+
+  scr = (XineramaSupportIsEnabled()) ? XineramaSupportGetPrimaryScreen() : -1;
+  sprintf(buf, "%s %d", XINERAMA_CONFIG_STRING, scr);
+  BroadcastConfigInfoString(buf);
 
   return;
 }
-
 
 
 /*

@@ -220,16 +220,11 @@ void CMD_DestroyModuleConfig(F_CMD_ARGS)
 
 static void send_xinerama_state(int modnum)
 {
-  char *msg;
+  char msg[100];
+  int scr;
 
-  if (XineramaSupportIsEnabled())
-  {
-    msg = XINERAMA_ENABLE_STRING;
-  }
-  else
-  {
-    msg = XINERAMA_DISABLE_STRING;
-  }
+  scr = (XineramaSupportIsEnabled()) ? XineramaSupportGetPrimaryScreen() : -1;
+  sprintf(msg, "%s %d", XINERAMA_CONFIG_STRING, scr);
   SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
 
   return;

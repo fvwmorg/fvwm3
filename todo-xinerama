@@ -14,6 +14,7 @@ Possible things to do for perfect(?) Xinerama support:
     d) FvwmRearrange
     e) FvwmWinList
     f) FvwmTaskBar
+    g) FvwmBanner
  6) Commands and styles:
     a) EdgeResistance
     b) Move/Resize/Resizemove
@@ -27,6 +28,7 @@ Possible things to do for perfect(?) Xinerama support:
     h) Like g, but for X resource strings?
     i) StartsOnScreen style?
     j) Adapt conditional commands and add new conditions
+    k) WindowList command.
  8) General/Performance:
     a) Introduce libs/Screen.c or something like that w/o Xinerama
        in the name.
@@ -60,6 +62,7 @@ Optional to do:
 5d
 5e
 5f
+5g
 6b
 6c
 6f
@@ -67,6 +70,7 @@ Optional to do:
 6h
 6i
 6j
+6k
 8a
 8c
 8d
@@ -80,6 +84,7 @@ Already done:
  4) Geometry window:
     a) Place on proper Xinerama screen
 5a
+5g
 6a
 6j
  7) Control:

@@ -279,6 +279,13 @@ static void ParseConfigLine(char *buf)
   }
 
   /* This used to be case sensitive */
+  if (strncasecmp(buf, XINERAMA_CONFIG_STRING,
+		  strlen(XINERAMA_CONFIG_STRING)) == 0)
+  {
+    int i = atoi(buf + strlen(XINERAMA_CONFIG_STRING));
+    XineramaSupportConfigureModule(i);
+    return;
+  }
   if (strncasecmp(buf, "Colorset", 8) == 0) {
     LoadColorset(&buf[8]);
     return;
@@ -1469,7 +1476,6 @@ static void OpenWindows ()
     else
       y = DisplayHeight(dpy, screen) - CF.total_height + CF.gy;
   } else {
-    XineramaSupportInit(dpy);
     XineramaSupportCenterCurrent(NULL, &x, &y, CF.max_width, CF.total_height);
   }
   myfprintf((stderr,"going to create window w. bg %s\n",
@@ -1864,6 +1870,7 @@ int main (int argc, char **argv)
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
   InitPictureCMap(dpy);
+  XineramaSupportInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
 
