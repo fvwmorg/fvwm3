@@ -591,6 +591,7 @@ void SetTransparentBackground(button_info *ub,int w,int h)
       Dpy, MyWindow, FShapeBounding, 0, 0, pmap_mask, FShapeSet);
     XFreePixmap(Dpy, pmap_mask);
     XDestroyRegion(shape_r);
+    XFlush(Dpy);
   }
 
   return;
@@ -1047,13 +1048,13 @@ void Loop(void)
 	  SetButtonSize(UberButton,Width,Height);
 	  button=-1;
 	  ub=UberButton;
+	  /* what follow can be optimized */
+	  while(NextButton(&ub,&b,&button,0))
+	    MakeButton(b);
 	  if (FShapesSupported && UberButton->c->flags & b_TransBack)
 	  {
 	    SetTransparentBackground(UberButton, Width, Height);
 	  }
-	  /* what follow can be optimized */
-	  while(NextButton(&ub,&b,&button,0))
-	    MakeButton(b);
 	  for (i = 0; i < nColorsets; i++)
 		  change_colorset(i, &Event);
 	  if (!(UberButton->c->flags & b_Colorset))

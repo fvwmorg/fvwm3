@@ -1,3 +1,9 @@
+2003-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(SetTransparentBackground):
+	Fixed FvwmButtons transparency
+
 2003-03-01  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmPager/x_pager.c (ReConfigure): Fix so Pager correctly draws active
@@ -12,6 +18,7 @@
 
 	* FvwmAuto/FvwmAuto.c (main): Remove bad debug code.
 
+>>>>>>> 1.1040
 2003-02-23  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmPager/x_pager.c (Scroll): Fix pointer centering when returning on
@@ -23,9 +30,8 @@
 
 2003-02-16  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmPager/x_pager.c (DispatchEvent):
-	Fix compilation problems caused by last
-	minute cleanup.
+	* FvwmPager/x_pager.c (DispatchEvent): Fix compilation problems caused
+	by last minute cleanup.
 
 2003-02-15  Dan Espen  <dane@mk.telcordia.com>
 
