@@ -1,9 +1,0 @@
-FvwmScript uses lex and yacc for parsing.  Due to portability problems the lex
-and yacc source files are not compiled by default, instead the C language
-output files are distributed.  If you want to change the FvwmScript syntax you
-should not edit the C files (script.c, script.h & scanner.c) but edit
-script.y and scanner.l.  To compile these run "make syntax", then "make"
-and finally "make install".
-
-The file scanner.c may have to be hand edited afterwards to remove some
-compiler warnings.

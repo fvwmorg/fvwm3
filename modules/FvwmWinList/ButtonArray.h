@@ -61,9 +61,9 @@ extern int AddButton(ButtonArray *array, char *title, Picture *p,int up);
 extern int UpdateButton(ButtonArray *array, int butnum, char *title, int up);
 extern void UpdateButtonIconified(
     ButtonArray *array, int butnum, int iconified);
-extern void RadioButton(ButtonArray *array, int butnum);
+extern void RadioButton(ButtonArray *array, int butnum, int butnumpressed);
 extern void ReorderButtons(ButtonArray *array, int butnum, int FlipFocus);
-extern int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk, 
+extern int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk,
 				 int is_sticky, int skip);
 extern int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p);
 extern int UpdateButtonSet(ButtonArray *array, int butnum, int set);

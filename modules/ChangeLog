@@ -1,3 +1,15 @@
+2000-11-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/FvwmWinList.c (LoopOnEvents):
+	* FvwmWinList/ButtonArray.c (RadioButton):
+	fixed drawing of buttons in transient window lists
+	* FvwmWinList/FvwmWinList.c (MakeMeWindow):
+	fixed 'transient' pointer grabbing which was probably broken by the
+	busy cursor patches
+
+	* FvwmTheme/FvwmTheme.1:
+	ask users not to write 'transparency' bug reports
+
 2000-11-14  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/README: Remove obsolete README file.
@@ -6,7 +18,7 @@
 
 	* FvwmScript/Scripts/Makefile.am:
 	Install Setup95 not Setup95.in
-	
+
 2000-11-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* modules/FvwmBacker/root_bits.c:

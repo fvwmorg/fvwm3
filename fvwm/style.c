@@ -424,22 +424,6 @@ static void merge_styles(
     SSET_WINDOW_SHADE_STEPS(*merged_style, SGET_WINDOW_SHADE_STEPS(*add_style));
   }
 
-  /* merge the style flags */
-  merge_flags = (char *)&(merged_style->flags);
-  add_flags = (char *)&(add_style->flags);
-  merge_mask = (char *)&(merged_style->flag_mask);
-  add_mask = (char *)&(add_style->flag_mask);
-  merge_change_mask = (char *)&(merged_style->change_mask);
-  add_change_mask = (char *)&(add_style->change_mask);
-  for (i = 0; i < sizeof(style_flags); i++)
-  {
-    merge_flags[i] |= (add_flags[i] & add_mask[i]);
-    merge_flags[i] &= (add_flags[i] | ~add_mask[i]);
-    merge_mask[i] |= add_mask[i];
-    merge_change_mask[i] &= ~(add_mask[i]);
-    merge_change_mask[i] |= add_change_mask[i];
-  }
-
   /* Note, only one style cmd can define a windows iconboxes,
    * the last one encountered. */
   if (SHAS_ICON_BOXES(&add_style->flags))
@@ -448,11 +432,7 @@ static void merge_styles(
     /* copy it */
     if (do_free)
     {
-#if 1
-      free_icon_boxes(SGET_ICON_BOXES(*merged_style));
-#else
       remove_icon_boxes_from_style(merged_style);
-#endif
       copy_icon_boxes(
 	&SGET_ICON_BOXES(*merged_style), SGET_ICON_BOXES(*add_style));
     }
@@ -481,6 +461,26 @@ static void merge_styles(
   {
     SSET_BORDER_COLORSET_HI(*merged_style,SGET_BORDER_COLORSET_HI(*add_style));
   }
+
+  /* merge the style flags */
+
+  /*** ATTENTION:
+   ***   This must be the last thing that is done in this function! */
+  merge_flags = (char *)&(merged_style->flags);
+  add_flags = (char *)&(add_style->flags);
+  merge_mask = (char *)&(merged_style->flag_mask);
+  add_mask = (char *)&(add_style->flag_mask);
+  merge_change_mask = (char *)&(merged_style->change_mask);
+  add_change_mask = (char *)&(add_style->change_mask);
+  for (i = 0; i < sizeof(style_flags); i++)
+  {
+    merge_flags[i] |= (add_flags[i] & add_mask[i]);
+    merge_flags[i] &= (add_flags[i] | ~add_mask[i]);
+    merge_mask[i] |= add_mask[i];
+    merge_change_mask[i] &= ~(add_mask[i]);
+    merge_change_mask[i] |= add_change_mask[i];
+  }
+
   merged_style->has_style_changed |= add_style->has_style_changed;
   return;
 }
@@ -2686,7 +2686,7 @@ void check_window_style_change(
 
   /*
    * has_ol_decor
-0   */
+   */
   if (ret_style->change_mask.has_ol_decor)
   {
     /* old decor overrides 'has_no_icon_title'! */

@@ -235,7 +235,10 @@ int UpdateButton(ButtonArray *array, int butnum, char *title, int up)
       temp->tw=XTextWidth(ButtonFont,title,strlen(title));
       temp->truncatewidth = 0;
     }
-    if (up!=-1) temp->up=up;
+    if (up!=-1)
+    {
+      temp->up=up;
+    }
   } else return -1;
   temp->needsupdate=1;
   return 1;
@@ -296,7 +299,7 @@ int UpdateButtonSet(ButtonArray *array, int butnum, int set)
 /******************************************************************************
   UpdateButtonDeskFlags - Change desk and flags of a button
 ******************************************************************************/
-int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk, 
+int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk,
 			  int is_sticky, int skip)
 {
   Button *btn;
@@ -557,15 +560,18 @@ void SwitchButton(ButtonArray *array, int butnum)
   Button *btn;
 
   btn = find_n(array, butnum);
-  btn->up =!btn->up;
-  btn->needsupdate=1;
-  DrawButtonArray(array, False, True);
+  if (btn != NULL)
+  {
+    btn->up =!btn->up;
+    btn->needsupdate=1;
+    DrawButtonArray(array, False, True);
+  }
 }
 
 /* -------------------------------------------------------------------------
    RadioButton - Enable button i and verify all others are disabled
    ------------------------------------------------------------------------- */
-void RadioButton(ButtonArray *array, int butnum)
+void RadioButton(ButtonArray *array, int butnum, int butnumpressed)
 {
   Button *temp;
   int i;
@@ -583,6 +589,14 @@ void RadioButton(ButtonArray *array, int butnum)
       {
         temp->set |= 2;
         temp->needsupdate=1;
+      }
+    }
+    else if (i == butnumpressed)
+    {
+      if (temp->set & 2)
+      {
+        temp->set &= 1;
+        temp->needsupdate = 1;
       }
     }
     else
@@ -674,7 +688,7 @@ int IsButtonVisible(Button *btn)
 }
 
 /******************************************************************************
-  IsButtonIndexVisible - Says if the button of index butnum should be 
+  IsButtonIndexVisible - Says if the button of index butnum should be
   in winlist
 ******************************************************************************/
 int IsButtonIndexVisible(ButtonArray *array, int butnum)

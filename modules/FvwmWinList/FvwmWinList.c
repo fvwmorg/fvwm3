@@ -221,7 +221,10 @@ int main(int argc, char **argv)
   }
 
 
-  if ((argc==7)&&(!strcasecmp(argv[6],"Transient"))) Transient=1;
+  if ((argc==7)&&(!strcasecmp(argv[6],"Transient")))
+  {
+    Transient=1;
+  }
 
   Fvwm_fd[0] = atoi(argv[1]);
   Fvwm_fd[1] = atoi(argv[2]);
@@ -496,18 +499,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       redraw = 1;
       if ((i=FindItem(&windows,body[0]))!=-1)
       {
-/* RBW- wait a minute! - this never did anything anyway...
-        flags=ItemFlags(&windows,body[0]);
-        UpdateItemFlags(&windows,body[0],flags);
-*/
-        RadioButton(&buttons,i);
+        RadioButton(&buttons,i,ButPressed);
         if (Follow && i) { /* rearrange order */
           ReorderList(&windows,i,body[2]);
           if (WindowState) ReorderButtons(&buttons,i,body[2]);
         }
       }
       else
-        RadioButton(&buttons,-1);
+        RadioButton(&buttons,-1,ButPressed);
       break;
     case M_END_WINDOWLIST:
       if (!WindowState)
@@ -747,22 +746,31 @@ void LoopOnEvents(void)
   int num;
   char buffer[10];
   XEvent Event;
+#if 1
   Window dummyroot,dummychild;
   int x,x1,y,y1;
   unsigned int dummy1;
 
   if (Transient && !Checked)
   {
-    XQueryPointer(dpy,win,&dummyroot,&dummychild,&x1,&y1,&x,&y,&dummy1);
-    num=WhichButton(&buttons,x,y);
-    if (num!=-1)
+    if (Pressed)
     {
-      Pressed=1;
-      ButPressed=num;
-      SwitchButton(&buttons,num);
-    } else Pressed=0;
+      XQueryPointer(dpy,win,&dummyroot,&dummychild,&x1,&y1,&x,&y,&dummy1);
+      num=WhichButton(&buttons,x,y);
+      if (num!=-1)
+      {
+	Pressed=1;
+	ButPressed=num;
+	UpdateButton(&buttons, num, NULL, 0);
+      }
+      else
+      {
+	Pressed=0;
+      }
+    }
     Checked=1;
   }
+#endif
 
   while(XPending(dpy))
   {
@@ -783,7 +791,10 @@ void LoopOnEvents(void)
             SwitchButton(&buttons,num);
           }
         }
-        if (Transient) exit(0);
+        if (Transient)
+	{
+	  exit(0);
+	}
         Pressed=0;
         ButPressed=-1;
         break;
@@ -1071,7 +1082,10 @@ void MakeMeWindow(void)
   int i;
   XSetWindowAttributes attr;
 
-  if ((count = ItemCountVisible(&windows))==0 && Transient) exit(0);
+  if ((count = ItemCountVisible(&windows))==0 && Transient)
+  {
+    exit(0);
+  }
   AdjustWindow(False);
 
   hints.width=win_width;
@@ -1242,12 +1256,31 @@ void MakeMeWindow(void)
 
   if (Transient)
   {
-    if ( XGrabPointer(dpy,win,True,GRAB_EVENTS,GrabModeAsync,GrabModeAsync,
-      None,None,CurrentTime)!=GrabSuccess) exit(1);
-    XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,&dummy1);
-    if (!SomeButtonDown(dummy1)) exit(0);
-  }
+    int i = 0;
 
+    XSync(dpy,0);
+    while (i < 1000 &&
+	   XGrabPointer(dpy, win, True,
+			ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
+			PointerMotionMask|EnterWindowMask|LeaveWindowMask,
+			GrabModeAsync, GrabModeAsync, None,
+			None, CurrentTime) != GrabSuccess)
+    {
+      i++;
+      /* If you go too fast, other windows may not get a change to release
+       * any grab that they have. */
+      usleep(1000);
+    }
+    XSync(dpy,0);
+    if (i >= 1000)
+    {
+      fprintf(stderr,"failed to grab pointer\n");
+      exit(1);
+    }
+    XQueryPointer(
+      dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,&dummy1);
+    Pressed = !!SomeButtonDown(dummy1);
+  }
 }
 
 /******************************************************************************
@@ -1280,9 +1313,15 @@ void StartMeUp(void)
 #ifdef I18N_MB
   if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
 #ifdef STRICTLY_FIXED
-    if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL) exit(1);
+    if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL)
+    {
+      exit(1);
+    }
 #else
-    if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL) exit(1);
+    if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL)
+    {
+      exit(1);
+    }
 #endif
   }
   XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
@@ -1290,7 +1329,10 @@ void StartMeUp(void)
 #else
   if ((ButtonFont=XLoadQueryFont(dpy,font_string))==NULL)
   {
-    if ((ButtonFont=XLoadQueryFont(dpy,"fixed"))==NULL) exit(1);
+    if ((ButtonFont=XLoadQueryFont(dpy,"fixed"))==NULL)
+    {
+      exit(1);
+    }
   }
 #endif
 

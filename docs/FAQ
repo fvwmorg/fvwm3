@@ -519,7 +519,7 @@ A: Since the latest fvwm versions are mostly GNOME compliant, you may
 
    o If you run gnome panel inside fvwm without GNOME support, you can't
      fully use GNOME pager applets (if at all); with such support you can
-     see right pages/desks and move windows between them inside applets. 
+     see right pages/desks and move windows between them inside applets.
      You can also use Tasklist applet and manage your windows using it.
 
    o If you run gmc and bind GnomeButton (see the man page), you can pass
@@ -1448,7 +1448,7 @@ A: Because they are treated as modifiers. You can use the
    This command creates a lot of extra network traffic, depending
    on your CPU, network connection, the number of Key Mouse commands
    in you configuration file and the number of modifiers you want to
-   ignore. If you do not have a lightning fast machine ore very few
+   ignore. If you do not have a lightning fast machine or very few
    bindings you should not ignore more than two modifiers. E.g. do
    not ignore scroll-lock if you have no problem with it.
 
@@ -1636,20 +1636,20 @@ A: This problem might occur on other applications besides the one
      I've been using FVWM for ages and it's always worked for me just
      fine.  However, I've started using Rational Rose for Solaris.  FVWM
      seems to get completely confused.
-     
+
      o FVWM doesn't draw any frames around the Rose window like it does for
        all other windows (except for those I explicit said not to).
-     
+
      o The Rose window is always on top.  Nothing I do can bring another
        window above the Rose window.
-     
+
      o Using FVWM's identify window module shows nothing.  No identify
        window pops up showing the window info.
-     
+
      o Focus sometimes seems to be lost.  (I have focus follows mouse).  I
        have to move the mouse out of the window and back in to get focus.
        Sometimes I also have to click in the window to get focus.
-     
+
      The annoying thing is that this all seems to work with CDE and dtwm.
      I don't want to have to switch to dtwm so any hints or pointers on
      where to look to get FVWM to understand this window would help me a
@@ -1659,10 +1659,10 @@ A: This problem might occur on other applications besides the one
 
    Rational Rose  uses software from Mainsoft  that  lets MS Windows
    applications be recompiled to run on UNIX.
-   
+
    There are 2 Mainsoft Knowledgebase pages that relate to UNIX
    window managers:
-   
+
    _+_A HREF="http://www.mainsoft.com/nbase/mainwin/kb/kbmw0027.htm"
    _-_http://www.mainsoft.com/nbase/mainwin/kb/kbmw0027.htm_+_/A_-_
    _+_A HREF="http://www.mainsoft.com/nbase/mainwin/kb/kbmw0034.htm"
@@ -1682,7 +1682,7 @@ A: This problem might occur on other applications besides the one
      Knowledgebase pages above.)   I don't  recall what Rose
      looks like with dtwm, but I suspect it's quite close to
      all MWWM=MWM.
-   
+
 ======================================================================
                           6 - Miscellaneous
 ======================================================================

@@ -85,7 +85,7 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
  * from within this function have depth 2 and higher, this may be applicable
  * to future enhancements like menus).
  *
- * !!! [finish and update description]
+ * TODO: [finish and update description]
  */
 Bool set_repeat_data(void *data, repeat_type type, const func_type *builtin)
 {
@@ -145,8 +145,10 @@ void repeat_function(F_CMD_ARGS)
   {
   case 0: /* command */
   default:
+#if 0
       fprintf( stderr, "repeating 0x%lx, %s\n",
 	       (unsigned long) last.command_line, last.command_line);
+#endif
       action = last.command_line;
       ExecuteFunction(F_PASS_EXEC_ARGS, FUNC_DONT_EXPAND_COMMAND, NULL);
     break;
