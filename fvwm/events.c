@@ -2289,6 +2289,20 @@ void HandlePropertyNotify(void)
 		 * Esetroot compatible program we get the message _before_ the
 		 * background change. This is fixed with Esetroot 9.2 (not yet
 		 * released, 2002-01-14) */
+		if (XRenderSupport)
+		{
+			/* update icon window with some alpha */
+			FvwmWindow *t;
+
+			for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+			{
+				if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t) &&
+				    t->icon_alphaPixmap != None)
+				{
+					DrawIconWindow(t);
+				}
+			}
+		}
 		BroadcastPropertyChange(
 			MX_PROPERTY_CHANGE_BACKGROUND, 0, 0, "");
 		return;

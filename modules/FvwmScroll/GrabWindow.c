@@ -47,7 +47,7 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
-#include "libs/InitPicture.h"
+#include "libs/PictureBase.h"
 
 #include "FvwmScroll.h"
 

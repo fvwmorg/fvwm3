@@ -38,10 +38,14 @@ typedef struct {
 #ifdef FVWM_COLORSET_PRIVATE
   /* fvwm/colorset.c use only */
   Pixmap mask;
+  Pixmap alpha_pixmap;
   unsigned int color_flags : 6;
-  Picture *picture;
+  FvwmPicture *picture;
   Pixel *pixels;
   int nalloc_pixels;
+  Pixel tint;
+  int tint_percent;
+  Bool do_tint_use_mask;
 #endif
 } colorset_struct;
 
@@ -54,7 +58,6 @@ typedef struct {
 #define SHAPE_TILED 0
 #define SHAPE_STRETCH 1
 #define SHAPE_STRETCH_ASPECT 2
-
 #ifdef FVWM_COLORSET_PRIVATE
 #define FG_SUPPLIED 0x1
 #define BG_SUPPLIED 0x2
@@ -62,6 +65,7 @@ typedef struct {
 #define SH_SUPPLIED 0x8
 #define FG_CONTRAST 0x10
 #define BG_AVERAGE  0x20
+#define TINT_SUPPLIED  0x40
 #endif
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */

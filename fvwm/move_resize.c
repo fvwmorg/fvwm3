@@ -833,7 +833,7 @@ static void InteractiveMove(
 static void AnimatedMoveAnyWindow(
   FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
   Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
-  FvwmWindow *parental_menu_window)
+  MenuRoot *menu_root)
 {
   int pointerX, pointerY;
   int currentX, currentY;
@@ -882,9 +882,9 @@ static void AnimatedMoveAnyWindow(
       /* don't waste time in the same spot */
       continue;
     XMoveWindow(dpy,w,currentX,currentY);
-    if (parental_menu_window != NULL)
+    if (menu_root != NULL)
     {
-      ParentalMenuRePaint(parental_menu_window);
+      ParentalMenuRePaint(menu_root);
     }
     if (fWarpPointerToo == True)
     {
@@ -937,9 +937,9 @@ static void AnimatedMoveAnyWindow(
       StashEventTime(&Event);
       /* finish the move immediately */
       XMoveWindow(dpy,w,endX,endY);
-      if (parental_menu_window != NULL)
+      if (menu_root != NULL)
       {
-	ParentalMenuRePaint(parental_menu_window);
+	ParentalMenuRePaint(menu_root);
       }
       break;
     }
@@ -959,10 +959,10 @@ static void AnimatedMoveAnyWindow(
 void AnimatedMoveOfWindow(Window w, int startX, int startY,
 			  int endX, int endY, Bool fWarpPointerToo,
 			  int cmsDelay, float *ppctMovement,
-			  FvwmWindow *parental_menu_window)
+			  MenuRoot *menu_root)
 {
   AnimatedMoveAnyWindow(NULL, w, startX, startY, endX, endY, fWarpPointerToo,
-                        cmsDelay, ppctMovement, parental_menu_window);
+                        cmsDelay, ppctMovement, menu_root);
 }
 
 /* used for moving client windows */
@@ -1140,7 +1140,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
       if (do_animate)
       {
 	AnimatedMoveOfWindow(
-	  FW_W_ICON_PIXMAP(fw), -1, -1, gp.x, gp.y, fWarp, -1, NULL, False);
+	  FW_W_ICON_PIXMAP(fw), -1, -1, gp.x, gp.y, fWarp, -1, NULL, NULL);
       }
       else
       {
@@ -1162,7 +1162,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
       if (do_animate)
       {
 	AnimatedMoveOfWindow(
-	  FW_W_ICON_TITLE(fw), -1, -1, gt.x, gt.y, fWarp, -1, NULL, False);
+	  FW_W_ICON_TITLE(fw), -1, -1, gt.x, gt.y, fWarp, -1, NULL, NULL);
       }
       else
       {
@@ -2189,7 +2189,7 @@ void CMD_XorValue(F_CMD_ARGS)
 void CMD_XorPixmap(F_CMD_ARGS)
 {
   char *PixmapName;
-  Picture *xp;
+  FvwmPicture *xp;
   XGCValues gcv;
   unsigned long gcm;
 
@@ -2203,12 +2203,12 @@ void CMD_XorPixmap(F_CMD_ARGS)
   }
   /* get the picture in the root visual, colorlimit is ignored because the
    * pixels will be freed */
-  UseDefaultVisual();
-  xp = GetPicture(dpy, Scr.Root, NULL, PixmapName, 0);
+  PictureUseDefaultVisual();
+  xp = PGetFvwmPicture(dpy, Scr.Root, NULL, PixmapName, 0);
   if (xp == NULL) {
     fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
     free(PixmapName);
-    UseFvwmVisual();
+    PictureUseFvwmVisual();
     return;
   }
   free(PixmapName);
@@ -2221,8 +2221,8 @@ void CMD_XorPixmap(F_CMD_ARGS)
   XCopyArea(dpy, xp->picture, XorPixmap, DefaultGC(dpy, Scr.screen), 0, 0,
 	    xp->width, xp->height, 0, 0);
   /* destroy picture and free colors */
-  DestroyPicture(dpy, xp);
-  UseFvwmVisual();
+  PDestroyFvwmPicture(dpy, xp);
+  PictureUseFvwmVisual();
 
   /* create Graphics context */
   gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;

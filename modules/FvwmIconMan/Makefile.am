@@ -21,8 +21,8 @@ FvwmIconMan_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
-	$(Xft_LIBS) -lm $(FT2_LIBS) $(Bidi_LIBS)
+	$(Xrender_LIBS) $(Xft_LIBS) -lm $(FT2_LIBS) $(Bidi_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) \
-	$(FT2_CFLAGS) $(Bidi_CFLAGS)
+	$(Xrender_CFLAGS) $(FT2_CFLAGS) $(Bidi_CFLAGS)
 

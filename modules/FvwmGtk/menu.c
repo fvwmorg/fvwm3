@@ -36,7 +36,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
-#include "libs/InitPicture.h"
+#include "libs/PictureBase.h"
 
 
 extern int fvwm_fd[2];
@@ -167,7 +167,7 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
   int w, h;
 #endif
 
-  path = findImageFile (file ? file : "", image_path, R_OK);
+  path = PictureFindImageFile (file ? file : "", image_path, R_OK);
 
   if (path == NULL)
     {

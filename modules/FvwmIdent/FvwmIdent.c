@@ -51,7 +51,6 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Module.h"
-#include "libs/Picture.h"
 #include "libs/Colorset.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Flocale.h"
@@ -85,12 +84,17 @@ static char *ForeColor = "black";
 static char *font_string = NULL;
 
 static Pixel fore_pix;
+static Pixel back_pix;
 static Window main_win;
 static Window app_win;
+static Bool UsePixmapDrawing = False; /* if True draw everything in a pixamp
+				       * and set the window background. Use
+				       * this with Xft */
+static int main_width;
+static int main_height;
 
-static EventMask mw_events =
-  ExposureMask | ButtonPressMask | KeyPressMask |
-  ButtonReleaseMask | KeyReleaseMask | StructureNotifyMask;
+static EventMask mw_events = ButtonPressMask | KeyPressMask |
+  ButtonReleaseMask | KeyReleaseMask;
 
 static Atom wm_del_win;
 
@@ -205,7 +209,7 @@ int main(int argc, char **argv)
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
 
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   FScreenInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
@@ -479,9 +483,9 @@ void list_property_change(unsigned long *body)
  * End of window list, open an x window and display data in it
  *
  ************************************************************************/
-XSizeHints mysizehints;
 void list_end(void)
 {
+  XSizeHints mysizehints;
   XGCValues gcv;
   unsigned long gcm;
   int lmax,height;
@@ -506,6 +510,10 @@ void list_end(void)
     exit(1);
   }
 
+  /* chose the rendering methode */
+  if (FftSupport && Ffont->fftf.fftfont != NULL)
+	  UsePixmapDrawing = True;
+
   /* make window infomation list */
   MakeList();
 
@@ -516,8 +524,8 @@ void list_end(void)
 
   mysizehints.flags=
     USSize|USPosition|PWinGravity|PResizeInc|PBaseSize|PMinSize|PMaxSize;
-  mysizehints.width = lmax + 10;
-  mysizehints.height= height + 10;
+  main_width = mysizehints.width = lmax + 10;
+  main_height = mysizehints.height = height + 10;
   mysizehints.width_inc = 1;
   mysizehints.height_inc = 1;
   mysizehints.base_height = mysizehints.height;
@@ -567,20 +575,18 @@ void list_end(void)
 
   if (Pdepth < 2)
   {
-    attributes.background_pixel = GetColor("white");
+    back_pix = GetColor("white");
     fore_pix = GetColor("black");
   }
   else
   {
-    attributes.background_pixel = (colorset < 0)
-				  ? GetColor(BackColor)
-    				  : Colorset[colorset].bg;
-    fore_pix = (colorset < 0) ? GetColor(ForeColor)
-			      : Colorset[colorset].fg;
+    back_pix = (colorset < 0)? GetColor(BackColor) : Colorset[colorset].bg;
+    fore_pix = (colorset < 0)? GetColor(ForeColor) : Colorset[colorset].fg;
   }
 
   attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
+  attributes.background_pixel = back_pix;
   main_win = XCreateWindow(dpy, Root, x, y,
 			   mysizehints.width, mysizehints.height, 0, Pdepth,
 			   InputOutput, Pvisual,
@@ -590,9 +596,13 @@ void list_end(void)
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
+  if (!UsePixmapDrawing)
+    mw_events |= ExposureMask;
   /* have to ask for configure events when transparent */
   if (colorset >= 0 && Colorset[colorset].pixmap == ParentRelative)
-    mw_events |= StructureNotifyMask;
+    mw_events |= StructureNotifyMask|ExposureMask;
+
+
   XSelectInput(dpy, main_win, mw_events);
   change_window_name(&MyName[1]);
 
@@ -604,11 +614,11 @@ void list_end(void)
     gcv.font = Ffont->font->fid;
   }
   gc = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
-
-  if (colorset >= 0)
-    SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
+  if (UsePixmapDrawing) 
+    PixmapDrawWindow(main_width, main_height);
+  else if (colorset >= 0)
+    SetWindowBackground(dpy, main_win, main_width, main_height,
 			&Colorset[(colorset)], Pdepth, gc, True);
-
   XMapWindow(dpy,main_win);
 
   /* Window is created. Display it until the user clicks or deletes it. */
@@ -629,8 +639,10 @@ void list_end(void)
       XNextEvent(dpy,&Event);
       switch(Event.type) {
         case Expose:
-          while (XCheckTypedEvent(dpy, Expose, &Event)) ;
-	  RedrawWindow();
+          while (XCheckTypedEvent(dpy, Expose, &Event));
+	  if (FftSupport && Ffont->fftf.fftfont != NULL)
+		  XClearWindow(dpy, main_win);
+	  DrawItems(main_win);
 	  break;
         case KeyPress:
 	  is_key_pressed = 1;
@@ -697,9 +709,9 @@ void list_end(void)
 	    x = Event.xconfigure.x;
 	    y = Event.xconfigure.y;
 	    /* flush any expose events */
-	    while (XCheckTypedEvent(dpy, Expose, &Event)) ;
+	    while (XCheckTypedEvent(dpy, Expose, &Event));
 	    XClearWindow(dpy, main_win);
-	    RedrawWindow();
+	    DrawItems(main_win);
 	  }
 	  break;
 	}
@@ -726,17 +738,22 @@ void list_end(void)
 	if (StrEquals(token, "Colorset") && colorset >= 0) {
 	  /* track all colorset changes and update display if necessary */
 	  if (LoadColorset(tline) == colorset) {
-	    XSetForeground(dpy, gc, Colorset[colorset].fg);
-	    SetWindowBackground(dpy, main_win, mysizehints.width,
-				mysizehints.height,
-				&Colorset[colorset], Pdepth, gc,
-				True);
 	    /* ask for movement events iff transparent */
 	    if (Colorset[colorset].pixmap == ParentRelative)
-	      mw_events |= StructureNotifyMask;
+	      mw_events |= StructureNotifyMask|ExposureMask;
 	    else
-	      mw_events &= ~StructureNotifyMask;
+	    {
+	      mw_events &= ~(StructureNotifyMask);
+	      if (UsePixmapDrawing)
+		mw_events &= ~(ExposureMask);
+	    }
 	    XSelectInput(dpy, main_win, mw_events);
+	    XSetForeground(dpy, gc, Colorset[colorset].fg);
+	    if (UsePixmapDrawing)
+	      PixmapDrawWindow(main_width, main_height);
+	    else
+	      SetWindowBackground(dpy, main_win, main_width, main_height,
+				&Colorset[colorset], Pdepth, gc, True);
 	  }
 	}
 	else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
@@ -749,41 +766,84 @@ void list_end(void)
   }
 }
 
-
-
 /************************************************************************
  *
- * Draw the window
+ * Draw the items
  *
  ***********************************************************************/
-void RedrawWindow(void)
+void DrawItems(Drawable d)
 {
-  int fontheight,i=0;
-  struct Item *cur = itemlistRoot;
+	int fontheight,i=0;
+	struct Item *cur = itemlistRoot;
 
-  fontheight = Ffont->height;
-  FwinString->win = main_win;
-  FwinString->gc = gc;
+	fontheight = Ffont->height;
+	FwinString->win = d;
+	FwinString->gc = gc;
 
-  if (FftSupport && Ffont->fftf.fftfont != NULL)
-    XClearWindow(dpy, main_win);
+	while(cur != NULL)
+	{
+		/* first column */
+		FwinString->str = cur->col1;
+		FwinString->x = 5;
+		FwinString->y = 5 + Ffont->ascent + i * fontheight;
+		FlocaleDrawString(dpy, Ffont, FwinString, 0);
 
-  while(cur != NULL)
-    {
-      /* first column */
-      FwinString->str = cur->col1;
-      FwinString->x = 5;
-      FwinString->y = 5 + Ffont->ascent + i * fontheight;
-      FlocaleDrawString(dpy, Ffont, FwinString, 0);
+		/* second column */
+		FwinString->str = cur->col2;
+		FwinString->x = 10 + max_col1;
+		FlocaleDrawString(dpy, Ffont, FwinString, 0);
 
-      /* second column */
-      FwinString->str = cur->col2;
-      FwinString->x = 10 + max_col1;
-      FlocaleDrawString(dpy, Ffont, FwinString, 0);
+		++i;
+		cur = cur->next;
+	}
+}
 
-      ++i;
-      cur = cur->next;
-    }
+void PixmapDrawWindow(int w, int h)
+{
+	Pixmap pix;
+	XGCValues gcv;
+	unsigned long gcm;
+
+	if (colorset >= 0)
+	{
+		Pixmap cs_pix;
+		cs_pix = CreateBackgroundPixmap(dpy, main_win, w, h,
+						&Colorset[(colorset)],
+						Pdepth, gc, False);
+		if (cs_pix == ParentRelative)
+		{
+			pix = cs_pix;
+		}
+		else
+		{
+			pix = CreateTiledPixmap(dpy, cs_pix, 0,0,w,h,Pdepth, gc);
+			XFreePixmap(dpy, cs_pix);
+		}
+	}
+	else
+	{
+		gcm = GCForeground;
+		gcv.foreground = back_pix;
+		XChangeGC(dpy, gc, gcm, &gcv);
+		pix = XCreatePixmap(dpy, main_win, w, h, Pdepth);
+		XFillRectangle(dpy, pix, gc, 0, 0, w, h);
+		gcv.foreground = fore_pix;
+		XChangeGC(dpy, gc, gcm, &gcv);
+	}
+
+	if (pix != ParentRelative)
+	{
+		DrawItems(pix);
+		XSetWindowBackgroundPixmap(dpy, main_win, pix);
+		XClearWindow(dpy, main_win);
+		XFreePixmap(dpy, pix);
+	}
+	else
+	{
+		XSetWindowBackgroundPixmap(dpy, main_win, pix);
+		XClearWindow(dpy, main_win);
+		DrawItems(main_win);
+	}
 }
 
 /**************************************************************************

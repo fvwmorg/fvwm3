@@ -84,7 +84,7 @@ char *font_string = NULL;
 char *smallFont = NULL;
 char *HilightC = NULL;
 
-Picture *HilightPixmap = NULL;
+FvwmPicture *HilightPixmap = NULL;
 int HilightDesks = 1;
 
 char *WindowBack = NULL;
@@ -99,7 +99,7 @@ Bool WindowBorders3d = False;
 
 Bool UseSkipList = False;
 
-Picture *PixmapBack = NULL;
+FvwmPicture *PixmapBack = NULL;
 
 char *ImagePath = NULL;
 
@@ -310,7 +310,7 @@ int main(int argc, char **argv)
       exit (1);
     }
   x_fd = XConnectionNumber(dpy);
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);
@@ -883,7 +883,7 @@ void list_new_desk(unsigned long *body)
 
     if (Desks[0].bgPixmap != NULL)
     {
-      DestroyPicture(dpy, Desks[0].bgPixmap);
+      PDestroyFvwmPicture(dpy, Desks[0].bgPixmap);
       Desks[0].bgPixmap = NULL;
     }
 
@@ -1227,17 +1227,20 @@ void list_mini_icon(unsigned long *body)
 {
   PagerWindow	*t;
   Window target_w;
+  MiniIconPacket *mip = (MiniIconPacket *) body;
+
   target_w = body[0];
   t = Start;
-  while (t && (t->w != target_w))
+  while (t && (t->w != mip->w))
     t = t->next;
   if (t)
   {
-    t->mini_icon.width   = body[3];
-    t->mini_icon.height  = body[4];
-    t->mini_icon.depth   = body[5];
-    t->mini_icon.picture = body[6];
-    t->mini_icon.mask    = body[7];
+    t->mini_icon.width   = mip->width;
+    t->mini_icon.height  = mip->height;
+    t->mini_icon.depth   = mip->depth;
+    t->mini_icon.picture = mip->picture;
+    t->mini_icon.mask    = mip->mask;
+    t->mini_icon.alpha   = mip->alpha;
     /* repaint by clearing window */
     if (MiniIcons && t->mini_icon.picture) {
       if (t->PagerView)
@@ -1886,30 +1889,30 @@ void ParseOptions(void)
 	{
 	  if (item->next->bgPixmap != NULL)
 	  {
-	    DestroyPicture(dpy, item->next->bgPixmap);
+	    PDestroyFvwmPicture(dpy, item->next->bgPixmap);
 	    item->next->bgPixmap = NULL;
 	  }
-	  item->next->bgPixmap = CachePicture (dpy, Scr.Pager_w,
-					       ImagePath,
-					       arg2, 0);
+	  item->next->bgPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
+						    ImagePath,
+						    arg2, 0);
 	}
 	else
 	{
 	  /* new Dcolor and desktop */
 	  item = NewPagerStringItem(item, desk);
-	  item->bgPixmap = CachePicture (dpy, Scr.Pager_w,
-					 ImagePath,
-					 arg2, 0);
+	  item->bgPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
+					      ImagePath,
+					      arg2, 0);
 	}
 	if (desk == Scr.CurrentDesk)
 	{
 	  if (Desks[0].bgPixmap != NULL)
 	  {
-	    DestroyPicture(dpy, Desks[0].bgPixmap);
+	    PDestroyFvwmPicture(dpy, Desks[0].bgPixmap);
 	    Desks[0].bgPixmap = NULL;
 	  }
 
-	  Desks[0].bgPixmap = CachePicture (dpy, Scr.Pager_w,
+	  Desks[0].bgPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
 					    ImagePath,
 					    arg2, 0);
 	}
@@ -1920,12 +1923,12 @@ void ParseOptions(void)
 
 	if (Desks[dNr].bgPixmap != NULL)
 	{
-	  DestroyPicture(dpy, Desks[dNr].bgPixmap);
+	  PDestroyFvwmPicture(dpy, Desks[dNr].bgPixmap);
 	  Desks[dNr].bgPixmap = NULL;
 	}
-	Desks[dNr].bgPixmap = CachePicture (dpy, Scr.Pager_w,
-					    ImagePath,
-					    arg2, 0);
+	Desks[dNr].bgPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
+						 ImagePath,
+						 arg2, 0);
       }
 
 #ifdef DEBUG
@@ -1939,13 +1942,13 @@ void ParseOptions(void)
       if(Pdepth > 1)
       {
 	if (PixmapBack) {
-	  DestroyPicture (dpy, PixmapBack);
+	  PDestroyFvwmPicture (dpy, PixmapBack);
 	  PixmapBack = NULL;
 	}
 
-	PixmapBack = CachePicture (dpy, Scr.Pager_w,
-				   ImagePath,
-				   arg1, 0);
+	PixmapBack = PCacheFvwmPicture (dpy, Scr.Pager_w,
+					ImagePath,
+					arg1, 0);
 #ifdef DEBUG
 	fprintf(stderr,
 		"[ParseOptions]: Global: bgPixmap = %s\n", arg1);
@@ -1958,13 +1961,13 @@ void ParseOptions(void)
       if(Pdepth > 1)
       {
 	if (HilightPixmap) {
-	  DestroyPicture (dpy, HilightPixmap);
+	  PDestroyFvwmPicture (dpy, HilightPixmap);
 	  HilightPixmap = NULL;
 	}
 
-	HilightPixmap = CachePicture (dpy, Scr.Pager_w,
-				      ImagePath,
-				      arg1, 0);
+	HilightPixmap = PCacheFvwmPicture (dpy, Scr.Pager_w,
+					ImagePath,
+					arg1, 0);
 
 #ifdef DEBUG
 	fprintf(stderr,

@@ -20,7 +20,7 @@
 
 /*
  *
- * The png loader and FImageRGBtoPixel are from imlib2. The code is from raster
+ * The png loader and PImageRGBtoPixel are from imlib2. The code is from raster
  * (Carsten Haitzler) <raster@rasterman.com> <raster@valinux.com> 
  *
  */
@@ -38,20 +38,19 @@
 
 #include <fvwmlib.h>
 #include "safemalloc.h"
-#include "InitPicture.h"
 #include "Picture.h"
 #include "Fxpm.h"
 #include "Fpng.h"
-#include "FImageLoader.h"
 
 /* ---------------------------- local definitions --------------------------- */
 #define FIMAGE_CMD_ARGS Display *dpy, Window Root, char *path, \
                   int color_limit, \
-		  Pixmap *pixmap, Pixmap *mask, \
+		  Pixmap *pixmap, Pixmap *mask, Pixmap *alpha, \
 		  int *width, int *height, int *depth, \
-		  int *nalloc_pixels, Pixel *alloc_pixels
+		  int *nalloc_pixels, Pixel *alloc_pixels, \
+                  FvwmPictureFlags fpf
 
-typedef struct FImageLoader
+typedef struct PImageLoader
 {
   char *extension;
 #ifdef __STDC__
@@ -59,11 +58,15 @@ typedef struct FImageLoader
 #else
   int (*func)();
 #endif
-} FImageLoader;
+} PImageLoader;
 
 /* ---------------------------- local macros -------------------------------- */
 
+#if XRenderSupport
+#define FIMAGE_ALPHA_LIMIT 0
+#else
 #define FIMAGE_ALPHA_LIMIT 130
+#endif
 
 /* ---------------------------- imports ------------------------------------- */
 
@@ -83,19 +86,19 @@ typedef struct
 
 /* ---------------------------- forward declarations ------------------------ */
 
-static Bool FImageLoadPng(FIMAGE_CMD_ARGS);
-static Bool FImageLoadXpm(FIMAGE_CMD_ARGS);
-static Bool FImageLoadBitmap(FIMAGE_CMD_ARGS);
+static Bool PImageLoadPng(FIMAGE_CMD_ARGS);
+static Bool PImageLoadXpm(FIMAGE_CMD_ARGS);
+static Bool PImageLoadBitmap(FIMAGE_CMD_ARGS);
 
 /* ---------------------------- local variables ----------------------------- */
 
 static char color_limit_base_table_init = 'n';
 
-FImageLoader Loaders[] =
+PImageLoader Loaders[] =
 {
-	{ "xpm", FImageLoadXpm },
-	{ "png", FImageLoadPng },
-	{ "bmp", FImageLoadBitmap },
+	{ "xpm", PImageLoadXpm },
+	{ "png", PImageLoadPng },
+	{ "bmp", PImageLoadBitmap },
 	{NULL,0}
 };
 
@@ -318,7 +321,7 @@ void color_reduce_pixmap(FxpmImage *image,int color_limit)
 	return;
 }
 
-static void FImageReduceRGBColor(XColor *c, int color_limit)
+static void PImageReduceRGBColor(XColor *c, int color_limit)
 {
 	int i, limit, minind;
 	double mindst=1e20;
@@ -363,7 +366,7 @@ static void FImageReduceRGBColor(XColor *c, int color_limit)
  * rgb to pixel, from imilib2
  *
  * ***************************************************************************/
-static CARD32 FImageRGBtoPixel(int r, int g, int b)
+static CARD32 PImageRGBtoPixel(int r, int g, int b)
 {
 	static int rshift = 0;
 	static int gshift = 0;
@@ -444,7 +447,7 @@ static CARD32 FImageRGBtoPixel(int r, int g, int b)
  *
  * ***************************************************************************/
 static
-Bool FImageLoadPng(FIMAGE_CMD_ARGS)
+Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 {
 	Fpng_uint_32 w32, h32;
 	Fpng_structp Fpng_ptr = NULL;
@@ -457,6 +460,7 @@ Bool FImageLoadPng(FIMAGE_CMD_ARGS)
 	unsigned char buf[FPNG_BYTES_TO_CHECK];
 	unsigned char **lines;
 	int i;
+	int have_alpha;
 
 	if (!PngSupport)
 		return False;
@@ -566,18 +570,31 @@ Bool FImageLoadPng(FIMAGE_CMD_ARGS)
 	*depth = Pdepth;
 	*pixmap = XCreatePixmap(dpy, Root, w, h, Pdepth);
 	*mask = XCreatePixmap(dpy, Root, w, h, 1);
-	if (!FImageCreatePixmapFromArgbData(dpy, Root, color_limit,
+	if (XRenderSupport && fpf.alpha)
+	{
+		*alpha = XCreatePixmap(dpy, Root, w, h, 8);
+	}
+	if (!PImageCreatePixmapFromArgbData(dpy, Root, color_limit,
 					    (unsigned char *)data,
 					    0, w, h,
-					    *pixmap, *mask)
+					    *pixmap, *mask, *alpha, &have_alpha)
 	    || *pixmap == None)
 	{
 		if (*pixmap != None)
 			XFreePixmap(dpy, *pixmap);
+		if (*alpha != None)
+		{
+			XFreePixmap(dpy, *alpha);
+		}
 		if (*mask != None)
 			XFreePixmap(dpy, *mask);
 		free(data);
 		return False;
+	}
+	if (!have_alpha && *alpha != None)
+	{
+		XFreePixmap(dpy, *alpha);
+		*alpha = None;
 	}
 	free(data);
 	return True;
@@ -589,7 +606,7 @@ Bool FImageLoadPng(FIMAGE_CMD_ARGS)
  *
  * ***************************************************************************/
 static
-Bool FImageLoadXpm(FIMAGE_CMD_ARGS)
+Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 {
 	FxpmAttributes xpm_attributes;
 	int rc;
@@ -610,7 +627,7 @@ Bool FImageLoadXpm(FIMAGE_CMD_ARGS)
 	xpm_attributes.closeness=40000; /* Allow for "similar" colors */
 	xpm_attributes.valuemask = FxpmSize | FxpmCloseness | FxpmVisual |
 		FxpmColormap | FxpmDepth;
-	if (*nalloc_pixels == 0)
+	if (fpf.alloc_pixels)
 	{
 		xpm_attributes.valuemask |= FxpmReturnAllocPixels;
 	}
@@ -643,8 +660,11 @@ Bool FImageLoadXpm(FIMAGE_CMD_ARGS)
 			*height = my_image.height;
 			*depth = Pdepth;
 			FxpmFreeXpmImage(&my_image);
-			alloc_pixels = xpm_attributes.alloc_pixels;
-			*nalloc_pixels = xpm_attributes.nalloc_pixels;
+			if (fpf.alloc_pixels && nalloc_pixels != NULL)
+			{
+				alloc_pixels = xpm_attributes.alloc_pixels;
+				*nalloc_pixels = xpm_attributes.nalloc_pixels;
+			}
 			return True;
 		}
 		FxpmFreeXpmImage(&my_image);
@@ -658,7 +678,7 @@ Bool FImageLoadXpm(FIMAGE_CMD_ARGS)
  *
  * ***************************************************************************/
 static
-Bool FImageLoadBitmap(FIMAGE_CMD_ARGS)
+Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
 {
 	int l;
 
@@ -667,8 +687,6 @@ Bool FImageLoadBitmap(FIMAGE_CMD_ARGS)
 	{
 		*mask = None;
 		*depth = 1;
-		*nalloc_pixels = 0;
-		alloc_pixels = NULL;
 		return True;
 	}
 	return False;
@@ -681,24 +699,37 @@ Bool FImageLoadBitmap(FIMAGE_CMD_ARGS)
  * argb data to pixmaps
  *
  * ***************************************************************************/
-Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
+Bool PImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 				    unsigned char *data,
 				    int start, int width, int height,
-				    Pixmap pixmap, Pixmap mask)
+				    Pixmap pixmap, Pixmap mask,
+				    Pixmap alpha, int *have_alpha)
 {
 	static GC my_gc = None;
 	GC mono_gc;
+	GC a_gc = None;
 	XGCValues xgcv;
 	register int i,j,k;
 	XImage *image, *m_image;
+	XImage *a_image = NULL;
 	XColor c;
 	Pixel back = WhitePixel(dpy, DefaultScreen(dpy));
 	Pixel fore = BlackPixel(dpy, DefaultScreen(dpy));
 	int a,r,g,b;
-	
+	Bool use_alpha_pix = (XRenderSupport && alpha != None);
+
+	*have_alpha = False;
 	if (my_gc == None)
 	{
-		my_gc = fvwmlib_XCreateGC(dpy, Root, 0, NULL);
+		my_gc = fvwmlib_XCreateGC(dpy,
+					  RootWindow(dpy, DefaultScreen(dpy)),
+					  0, NULL);
+		if (my_gc == None)
+			return False;
+	}
+	if (use_alpha_pix)
+	{
+		a_gc = fvwmlib_XCreateGC(dpy, alpha, 0, NULL);
 	}
 	xgcv.foreground = fore;
 	xgcv.background = back;
@@ -710,16 +741,27 @@ Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 			     Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
 	if (!image)
 	{
-		fprintf(stderr, "[FVWM][FImageCreatePixmapFromArgbData] "
+		if (mono_gc != None)
+			XFreeGC(dpy, mono_gc);
+		if (a_gc != None)
+			XFreeGC(dpy, a_gc);
+		fprintf(stderr, "[FVWM][PImageCreatePixmapFromArgbData] "
 			"-- WARN cannot create an XImage\n");
 		return False;
 	}
 	m_image = XCreateImage(dpy, Pvisual, 1, ZPixmap, 0, 0, width, height,
 			       Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-
 	/* create space for drawing the image locally */
 	image->data = safemalloc(image->bytes_per_line * height);
 	m_image->data = safemalloc(m_image->bytes_per_line * height);
+	if (use_alpha_pix)
+	{
+		a_image = XCreateImage(dpy, Pvisual, 8, ZPixmap,
+				       0, 0, width, height,
+				       Pdepth > 16 ? 32 :
+				       (Pdepth > 8 ? 16 : 8), 0);
+		a_image->data = safemalloc(a_image->bytes_per_line * height);
+	}
 
 	k = 4*start;
 	c.flags = DoRed | DoGreen | DoBlue;
@@ -731,18 +773,20 @@ Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 			g = data[k++];
 			r = data[k++];
 			a = data[k++];
-			if ((a >= FIMAGE_ALPHA_LIMIT) && color_limit <= 0 &&
+		       
+			if ((a > FIMAGE_ALPHA_LIMIT) &&
+			    color_limit <= 0 &&
 			    (Pvisual->class == DirectColor ||
 			     Pvisual->class == TrueColor))
 			{
-				c.pixel = FImageRGBtoPixel(r,g,b);
+				c.pixel = PImageRGBtoPixel(r,g,b);
 			}
-			else if (a >= FIMAGE_ALPHA_LIMIT)
+			else if (a > FIMAGE_ALPHA_LIMIT)
 			{
 				c.blue = b * 257;
 				c.green = g * 257;
 				c.red = r * 257;
-				FImageReduceRGBColor(&c,color_limit);
+				PImageReduceRGBColor(&c,color_limit);
 			}
 			else
 			{
@@ -750,16 +794,31 @@ Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 			}
 			XPutPixel(image, i, j, c.pixel);
 			XPutPixel(m_image, i, j,
-				  (a >= FIMAGE_ALPHA_LIMIT)? back:fore);
+				  (a > FIMAGE_ALPHA_LIMIT)? back:fore);
+			if (use_alpha_pix && a_image)
+			{
+				XPutPixel(a_image, i, j, a);
+				*have_alpha |= (a < 255 && a > 0);
+			}
 		}
 	}
 	/* copy the image to the server */
 	XPutImage(dpy, pixmap, my_gc, image, 0, 0, 0, 0, width, height);
 	XPutImage(dpy, mask, mono_gc, m_image, 0, 0, 0, 0, width, height);
+	if (*have_alpha)
+	{
+		XPutImage(dpy, alpha, a_gc, a_image,
+			  0, 0, 0, 0, width, height);
+	}
 	XDestroyImage(image);
-	XFreeGC(dpy, mono_gc);
-	if (m_image != None)
+	if (m_image)
 		XDestroyImage(m_image);
+	if (use_alpha_pix && a_image)
+		XDestroyImage(a_image);
+	if (mono_gc != None)
+		XFreeGC(dpy, mono_gc);
+	if (a_gc != None)
+		XFreeGC(dpy, a_gc);
 	return True;
 }
 
@@ -770,11 +829,12 @@ Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
  *
  * ***************************************************************************/
 
-Bool FImageLoadPixmapFromFile(Display *dpy, Window Root, char *path,
+Bool PImageLoadPixmapFromFile(Display *dpy, Window Root, char *path,
 			      int color_limit,
-			      Pixmap *pixmap, Pixmap *mask,
+			      Pixmap *pixmap, Pixmap *mask, Pixmap *alpha,
 			      int *width, int *height, int *depth,
-			      int *nalloc_pixels, Pixel *alloc_pixels)
+			      int *nalloc_pixels, Pixel *alloc_pixels,
+			      FvwmPictureFlags fpf)
 {
 	int done = 0, i = 0, tried = -1;
 	char *ext = NULL;
@@ -792,9 +852,9 @@ Bool FImageLoadPixmapFromFile(Display *dpy, Window Root, char *path,
 		if (StrEquals(Loaders[i].extension, ext))
 		{
 			if (Loaders[i].func(dpy, Root, path, color_limit,
-					    pixmap, mask,
+					    pixmap, mask, alpha,
 					    width, height, depth,
-					    nalloc_pixels, alloc_pixels))
+					    nalloc_pixels, alloc_pixels, fpf))
 			{
 				return True;
 			}
@@ -808,9 +868,10 @@ Bool FImageLoadPixmapFromFile(Display *dpy, Window Root, char *path,
 	while(Loaders[i].extension != NULL)
 	{
 		if (i != tried && Loaders[i].func(dpy, Root, path, color_limit,
-						  pixmap, mask,
+						  pixmap, mask, alpha,
 						  width, height, depth,
-						  nalloc_pixels, alloc_pixels))
+						  nalloc_pixels, alloc_pixels,
+						  fpf))
 		{
 			return True;
 		}
@@ -818,37 +879,51 @@ Bool FImageLoadPixmapFromFile(Display *dpy, Window Root, char *path,
 	}
 	pixmap = None;
 	mask = None;
-	*width = *height = *depth = *nalloc_pixels = 0;
+	alpha = None;
+	*width = *height = *depth = 0;
+	if (nalloc_pixels != NULL)
+	{
+		*nalloc_pixels = 0;
+	}
 	alloc_pixels = NULL;
 	return False;
 }
 
-Picture *FImageLoadPictureFromFile(Display *dpy, Window Root, char *path,
-				   int color_limit)
+FvwmPicture *PImageLoadFvwmPictureFromFile(Display *dpy, Window Root, char *path,
+					   int color_limit)
 {
-	Picture *p;
+	FvwmPicture *p;
 	Pixmap pixmap = None;
 	Pixmap mask = None;
+	Pixmap alpha = None;
 	int width = 0, height = 0, depth = 0;
 	int nalloc_pixels = 0;
 	Pixel *alloc_pixels = NULL;
+	FvwmPictureFlags fpf;
 
-	if (!FImageLoadPixmapFromFile(dpy, Root, path, color_limit,
-				       &pixmap, &mask,
-				       &width, &height, &depth,
-				       &nalloc_pixels, alloc_pixels))
+	fpf.alloc_pixels = 1;
+	fpf.alpha = 1;
+	if (!PImageLoadPixmapFromFile(dpy, Root, path, color_limit,
+				      &pixmap, &mask, &alpha,
+				      &width, &height, &depth,
+				      &nalloc_pixels, alloc_pixels, fpf))
 	{
 		return NULL;
 	}
  
-	p = (Picture*)safemalloc(sizeof(Picture));
-	memset(p, 0, sizeof(Picture));
+#if 0
+	if (alloc_pixels != NULL)
+		fprintf(stderr, "PImageLoadPixmapFromFile return alloc_pix\n");
+#endif
+	p = (FvwmPicture*)safemalloc(sizeof(FvwmPicture));
+	memset(p, 0, sizeof(FvwmPicture));
 	p->count = 1;
 	p->name = path;
 	p->next = NULL;
 	setFileStamp(&p->stamp, p->name);
 	p->picture = pixmap;
 	p->mask = mask;
+	p->alpha = alpha;
 	p->width = width;
 	p->height = height;
 	p->depth = depth;
@@ -858,7 +933,7 @@ Picture *FImageLoadPictureFromFile(Display *dpy, Window Root, char *path,
 	return p;
 }
 
-Bool FImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
+Bool PImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
 				    char *path, Pixmap *source, Pixmap *mask,
 				    unsigned int *x,
 				    unsigned int *y)
@@ -875,7 +950,7 @@ Bool FImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
 	if (FxpmReadFileToPixmap(dpy, Root, path, source, mask,
 				&xpm_attributes) != FxpmSuccess)
 	{
-		fprintf(stderr, "[FVWM][FImageLoadCursorPixmapFromFile]"
+		fprintf(stderr, "[FVWM][PImageLoadCursorPixmapFromFile]"
 			" Error reading cursor xpm %s",
 			path);
 		return False;
@@ -894,7 +969,7 @@ Bool FImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
 	return True;
 }
 
-Bool FImageLoadPixmapFromXpmData(Display *dpy, Window Root, int color_limit,
+Bool PImageLoadPixmapFromXpmData(Display *dpy, Window Root, int color_limit,
 				 char **data,
 				 Pixmap *pixmap, Pixmap *mask,
 				 int *width, int *height, int *depth)

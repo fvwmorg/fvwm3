@@ -52,6 +52,7 @@
 #include <X11/Xlib.h>
 
 #include <fvwmlib.h>
+#include "PictureBase.h"
 
 Bool Pdefault;
 Visual *Pvisual;
@@ -62,7 +63,7 @@ unsigned int Pdepth;
 static unsigned int FvwmDepth;
 Display *Pdpy;            /* Save area for display pointer */
 
-void InitPictureCMap(Display *dpy) {
+void PictureInitCMap(Display *dpy) {
 	char *envp;
 
 	Pdpy = dpy;
@@ -94,7 +95,7 @@ void InitPictureCMap(Display *dpy) {
 	return;
 }
 
-void UseDefaultVisual(void)
+void PictureUseDefaultVisual(void)
 {
 	int screen = DefaultScreen(Pdpy);
 
@@ -105,7 +106,7 @@ void UseDefaultVisual(void)
 	return;
 }
 
-void UseFvwmVisual(void)
+void PictureUseFvwmVisual(void)
 {
 	Pvisual = FvwmVisual;
 	Pdepth = FvwmDepth;
@@ -114,7 +115,7 @@ void UseFvwmVisual(void)
 	return;
 }
 
-void SaveFvwmVisual(void)
+void PictureSaveFvwmVisual(void)
 {
 	FvwmVisual = Pvisual;
 	FvwmDepth = Pdepth;
@@ -125,7 +126,7 @@ void SaveFvwmVisual(void)
 
 static char* imagePath = FVWM_IMAGEPATH;
 
-void SetImagePath( const char* newpath )
+void PictureSetImagePath( const char* newpath )
 {
 	static int need_to_free = 0;
 	setPath( &imagePath, newpath, need_to_free );
@@ -134,7 +135,7 @@ void SetImagePath( const char* newpath )
 	return;
 }
 
-char* GetImagePath()
+char* PictureGetImagePath()
 {
 	return imagePath;
 }
@@ -148,7 +149,7 @@ char* GetImagePath()
  * Oh well.
  *
  ****************************************************************************/
-char* findImageFile( const char* icon, const char* pathlist, int type )
+char* PictureFindImageFile( const char* icon, const char* pathlist, int type )
 {
 	if ( pathlist == NULL )
 	{

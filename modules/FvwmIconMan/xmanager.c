@@ -22,6 +22,7 @@
 #include "FvwmIconMan.h"
 #include "x.h"
 #include "xmanager.h"
+#include "libs/PictureGraphics.h"
 
 static char const rcsid[] =
   "$Id$";
@@ -632,7 +633,7 @@ void force_manager_redraw (WinManager *man)
   draw_manager (man);
 }
 
-void set_win_picture (WinData *win, Pixmap picture, Pixmap mask,
+void set_win_picture (WinData *win, Pixmap picture, Pixmap mask, Pixmap alpha,
 		      unsigned int depth, unsigned int width,
 		      unsigned int height)
 {
@@ -645,6 +646,7 @@ void set_win_picture (WinData *win, Pixmap picture, Pixmap mask,
   win->old_pic = win->pic;
   win->pic.picture = picture;
   win->pic.mask = mask;
+  win->pic.alpha = alpha;
   win->pic.width = width;
   win->pic.height = height;
   win->pic.depth = depth;
@@ -1121,8 +1123,6 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 			 ButtonGeometry *g, int iconified, Contexts contextId,
 			 int button_already_cleared)
 {
-  XGCValues gcv;
-  unsigned long gcm;
 
   if (!man->window_up)
     return;
@@ -1137,18 +1137,10 @@ static void iconify_box (WinManager *man, WinData *win, int box,
       }
     }
     else {
-      gcm = GCClipMask|GCClipXOrigin|GCClipYOrigin;
-      gcv.clip_mask = win->pic.mask;
-      gcv.clip_x_origin = g->icon_x;
-      gcv.clip_y_origin = g->icon_y;
-      XChangeGC (theDisplay, man->hiContext[contextId], gcm, &gcv);
-
-      XCopyArea(theDisplay, win->pic.picture, man->theWindow,
-		man->hiContext[contextId], 0, 0, g->icon_w, g->icon_h,
-		g->icon_x, g->icon_y);
-      gcm = GCClipMask;
-      gcv.clip_mask = None;
-      XChangeGC(theDisplay, man->hiContext[contextId], gcm, &gcv);
+      PGraphicsCopyFvwmPicture(theDisplay, &win->pic, man->theWindow,
+			       man->hiContext[contextId],
+			       0, 0, g->icon_w, g->icon_h,
+			       g->icon_x, g->icon_y);
     }
   }
   else {
@@ -1333,7 +1325,7 @@ static void draw_button (WinManager *man, int button, int force)
 	draw_string = 1;
       }
       if (FMiniIconsSupported && PICTURE_CHANGED) {
-	Picture tpic;
+	FvwmPicture tpic;
 
 	ConsoleDebug (X11, "\tPicture changed\n");
 	tpic = win->pic;

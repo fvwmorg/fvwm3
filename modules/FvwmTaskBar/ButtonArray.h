@@ -25,8 +25,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <libs/InitPicture.h>
-#include <libs/Picture.h>
+#include <libs/PictureBase.h>
 
 #define DEFAULT_BTN_WIDTH 180
 
@@ -45,7 +44,7 @@ typedef struct button
   char   *title;
   int    state, needsupdate, truncate, count, iconified;
   struct button *next;
-  Picture p;
+  FvwmPicture p;
 } Button;
 
 typedef struct
@@ -59,15 +58,15 @@ typedef struct
 
 void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
 		Bool iconified);
-Button *ButtonNew(const char *title, Picture *p, int state, int count);
+Button *ButtonNew(const char *title, FvwmPicture *p, int state, int count);
 int ButtonUpdate(Button *button, const char *title, int state);
 char *ButtonName(Button *button);
 void InitArray(ButtonArray *array, int x, int y, int w, int h, int tw);
 void UpdateArray(ButtonArray *array, int x, int y, int w, int h, int tw);
-void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
+void AddButton(ButtonArray *array, const char *title, FvwmPicture *p, int state,
                int count, int iconified);
 int UpdateButton(ButtonArray *array, int butnum, const char *title, int state);
-int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p);
+int UpdateButtonPicture(ButtonArray *array, int butnum, FvwmPicture *p);
 void RemoveButton(ButtonArray *array, int butnum);
 Button *find_n(ButtonArray *array, int n);
 void FreeButton(Button *ptr);

@@ -27,7 +27,7 @@
 #include "Strings.h"
 #include "Flocale.h"
 #include "Fft.h"
-#include "InitPicture.h"
+#include "PictureBase.h"
 
 /* ---------------------------- local definitions --------------------------- */
 

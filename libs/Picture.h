@@ -16,37 +16,75 @@
 #ifndef Picture_H
 #define Picture_H
 
-#include "InitPicture.h"
+#include "PictureBase.h"
+#include "PictureImageLoader.h"
 
-/** Manipulating Pictures **/
-
-/**
- * Load the given picture file.  If XPM is enabled, will try first to load
- * as pixmap file.  If no XPM file found (or XPM not enabled) will try to
- * load as bitmap.
- **/
-Picture* LoadPicture( Display* dpy, Window Root,
-		      char *pictureFileName, int color_limit);
+/** Manipulating FvwmPictures **/
 
 /**
- * For GetPicture() and CachePicture(), setting ImagePath to
- * NULL means "search the default image path".
+ * For PGetFvwmPicture() and PCacheFvwmPicture(), setting
+ * ImagePath to NULL means "search the default image path".
  **/
-Picture* GetPicture( Display* dpy, Window Root,
-		     char* ImagePath, char* pictureName, int color_limit);
-Picture* CachePicture( Display *dpy, Window Root,
-		       char* ImagePath, char* pictureName, int color_limit);
 
-Picture *LoadPictureFromPixmap(Display *dpy, Window Root, char *name,
-			       Pixmap pixmap, Pixmap mask,
-			       int width, int height);
-Picture *CachePictureFromPixmap(Display *dpy, Window Root,char *name,
-				Pixmap pixmap, Pixmap mask,
-				int width, int height);
+/* <pubfunc>PGetFvwmPicture
+ * <description>
+ * Return an FvwmPicture loaded from the file pictureName found in the 
+ * ImagePath.. If ImagePath is NULL the default image path is used.
+ * </description>
+ */
+FvwmPicture* PGetFvwmPicture(Display* dpy, Window Root,
+			     char* ImagePath, char* pictureName,
+			     int color_limit);
+/* <pubfunc>PCacheFvwmPicture
+ * <description>
+ * Return the FvwmPicture loaded from the file pictureName found in the 
+ * ImagePath. Fisrt the picture is searched in the FvwmPicture cache (so 
+ * if this picture has been already loaded it is not loaded again and a
+ * weight is added to the found picture). If the picture is not in the cache 
+ * it is loaded from the file and added to the FvwmPicture cache. 
+ * If ImagePath is NULL the default image path is used.
+ * </description>
+ */
+FvwmPicture* PCacheFvwmPicture(Display *dpy, Window Root,
+			       char* ImagePath, char* pictureName,
+			       int color_limit);
 
-void DestroyPicture(Display* dpy, Picture* p);
+/* <pubfunc>PLoadFvwmPictureFromPixmap
+ * <description>
+ * Return a FvwmPicture from the given data.
+ * </description>
+ */
+FvwmPicture *PLoadFvwmPictureFromPixmap(Display *dpy, Window Root,
+					char *name, Pixmap pixmap,
+					Pixmap mask,
+					Pixmap alpha,
+					int width, int height);
 
-/* duplicate an already allocated picture */
-Picture *fvwmlib_clone_picture(Picture *pic);
+/* <pubfunc>PDestroyFvwmPicture
+ * <description>
+ * Return a FvwmPicture from the given data. The picture is added to the 
+ * FvwmPicture cache. This is not really usefull as it is not possible
+ * to really cache a picture from the given data.
+ * </description>
+ */
+FvwmPicture *PCacheFvwmPictureFromPixmap(Display *dpy, Window Root,
+					 char *name, Pixmap pixmap,
+					 Pixmap mask,Pixmap alpha,
+					 int width, int height);
+/* <pubfunc>PDestroyFvwmPicture
+ * <description>
+ * Remove a weight to the FvwmPicture p from the FvwmPicture cache.
+ * If the weight is zero the allocated datas from p are freed
+ * </description>
+ */
+void PDestroyFvwmPicture(Display* dpy, FvwmPicture* p);
+
+/* <pubfunc>PCloneFvwmPicture
+ * <description>
+ * Duplicate an already allocated FvwmPicture in the FvwmPicture cache
+ * (a weight is added to the picture).
+ * </description>
+ */
+FvwmPicture *PCloneFvwmPicture(FvwmPicture *pic);
 
 #endif

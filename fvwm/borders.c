@@ -49,6 +49,7 @@
 #include "icons.h"
 #include "module_interface.h"
 #include "colorset.h"
+#include "libs/PictureGraphics.h"
 #include "add_window.h"
 #include "frame.h"
 
@@ -75,6 +76,8 @@ typedef struct
 	{
 		Pixmap p;
 		Pixmap shape;
+		Pixmap alpha;
+		Pixmap depth;
 		size_rect size;
 		struct
 		{
@@ -198,8 +201,8 @@ unsigned long Globalgcm;
  *
  ****************************************************************************/
 static void RenderIntoWindow(
-	GC gc, Picture *src, Window dest, int x_start, int y_start, int width,
-	int height, Bool stretch)
+	GC gc, FvwmPicture *src, Window dest, int x_start, int y_start,
+	int width, int height, Bool stretch)
 {
 	Pixmap pm;
 
@@ -222,7 +225,7 @@ static void RenderIntoWindow(
 }
 
 static int get_multipm_length(
-	FvwmWindow *fw, Picture **pm, int part)
+	FvwmWindow *fw, FvwmPicture **pm, int part)
 {
 	if (pm[part] == NULL)
 	{
@@ -249,7 +252,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 	Window title_win;
 	GC gc;
 	char *title;
-	Picture **pm;
+	FvwmPicture **pm;
 	short stretch_flags;
 	int text_length, text_pos, text_offset;
 	int before_space, after_space, under_offset, under_width;
@@ -521,7 +524,8 @@ static void get_common_decorations(
 	if (has_focus)
 	{
 		/* are we using textured borders? */
-		if (DFS_FACE_TYPE(df->style) == TiledPixmapButton)
+		if (DFS_FACE_TYPE(df->style) == TiledPixmapButton &&
+		    GetDecor(t, BorderStyle.active.u.p->depth) == Pdepth)
 		{
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.active.u.p->picture);
@@ -538,7 +542,8 @@ static void get_common_decorations(
 	}
 	else
 	{
-		if (DFS_FACE_TYPE(df->style) == TiledPixmapButton)
+		if (DFS_FACE_TYPE(df->style) == TiledPixmapButton &&
+		    GetDecor(t, BorderStyle.inactive.u.p->depth) == Pdepth)
 		{
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.inactive.u.p->picture);
@@ -1320,7 +1325,8 @@ inline static void border_set_part_background(
 }
 
 static void border_fill_pixmap_background(
-	Pixmap dest_pix, rectangle *pixmap_g, pixmap_background_type *bg)
+	Pixmap dest_pix, rectangle *pixmap_g, pixmap_background_type *bg,
+	common_decorations_type *cd)
 {
 	Bool do_tile;
 	XGCValues xgcv;
@@ -1346,67 +1352,37 @@ static void border_fill_pixmap_background(
 	else if (do_tile == False)
 	{
 		/* pixmap, offset stored in pixmap_g->x/y */
-		xgcv.fill_style = FillSolid;
-		xgcv.clip_mask = bg->pixmap.shape;
-		xgcv.clip_x_origin = pixmap_g->x;
-		xgcv.clip_y_origin = pixmap_g->y;
-		valuemask = GCFillStyle | GCClipMask | GCClipXOrigin |
-			GCClipYOrigin;
+		xgcv.foreground = cd->fore_color;
+		xgcv.background = cd->back_color;
+		valuemask = GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
-		XCopyArea(
-			dpy, bg->pixmap.p, dest_pix, Scr.TileGC, 0, 0,
-			bg->pixmap.size.width, bg->pixmap.size.height,
-			pixmap_g->x, pixmap_g->y);
-		XSetClipMask(dpy, Scr.TileGC, None);
+		PGraphicsCopyPixmaps(dpy, bg->pixmap.p, bg->pixmap.shape,
+				     bg->pixmap.alpha, bg->pixmap.depth,
+				     dest_pix,
+				     Scr.TileGC,
+				     0, 0,
+				     bg->pixmap.size.width,
+				     bg->pixmap.size.height,
+				     pixmap_g->x, pixmap_g->y);
 	}
 	else
 	{
 		/* tiled pixmap */
-		Pixmap shape = None;
+		xgcv.foreground = cd->fore_color;
+		xgcv.background = cd->back_color;
+		valuemask = GCForeground|GCBackground;
+		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
+		PGraphicsTileRectangle(dpy, Scr.Root,
+				       bg->pixmap.p,
+				       bg->pixmap.shape,
+				       bg->pixmap.alpha,
+				       bg->pixmap.depth,
+				       0, 0,
+				       dest_pix, Scr.TileGC, Scr.MonoGC,
+				       pixmap_g->x, pixmap_g->y,
+				       pixmap_g->width - pixmap_g->x,
+				       pixmap_g->height - pixmap_g->y);
 
-		valuemask = 0;
-		if (bg->pixmap.shape != None)
-		{
-			/* create a shape mask */
-			shape = XCreatePixmap(
-				dpy, Scr.Root, pixmap_g->width,
-				pixmap_g->height, 1);
-			xgcv.tile = bg->pixmap.shape;
-			xgcv.ts_x_origin = -pixmap_g->x;
-			xgcv.ts_y_origin = -pixmap_g->y;
-			xgcv.fill_style = FillTiled;
-			valuemask = GCFillStyle | GCClipXOrigin |
-				GCClipYOrigin | GCTile;
-			XChangeGC(dpy, Scr.MonoGC, valuemask, &xgcv);
-			XFillRectangle(
-				dpy, shape, Scr.MonoGC, 0, 0, pixmap_g->width,
-				pixmap_g->height);
-			xgcv.fill_style = FillSolid;
-			valuemask = GCFillStyle;
-			XChangeGC(dpy, Scr.MonoGC, valuemask, &xgcv);
-		}
-		xgcv.clip_mask = shape;
-		xgcv.fill_style = FillTiled;
-		xgcv.tile = bg->pixmap.p;
-		xgcv.ts_x_origin = -pixmap_g->x;
-		xgcv.ts_y_origin = -pixmap_g->y;
-		valuemask = GCFillStyle | GCClipMask | GCTile |
-			GCTileStipXOrigin | GCTileStipYOrigin;
-		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
-		XFillRectangle(
-			dpy, dest_pix, Scr.TileGC, 0, 0, pixmap_g->width,
-			pixmap_g->height);
-		xgcv.clip_mask = None;
-		xgcv.fill_style = FillSolid;
-		xgcv.ts_x_origin = 0;
-		xgcv.ts_y_origin = 0;
-		valuemask = GCFillStyle | GCClipMask| GCTileStipXOrigin |
-			GCTileStipYOrigin;
-		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
-		if (shape != None)
-		{
-			XFreePixmap(dpy, shape);
-		}
 	}
 
 	return;
@@ -1415,11 +1391,13 @@ static void border_fill_pixmap_background(
 static void border_get_border_background(
 	pixmap_background_type *bg, common_decorations_type *cd)
 {
-	if (cd->valuemask & CWBackPixmap)
+	if (cd->texture_pixmap)
 	{
 		bg->flags.use_pixmap = 1;
-		bg->pixmap.p = cd->attributes.background_pixmap;
+		bg->pixmap.p = cd->texture_pixmap;
 		bg->pixmap.shape = None;
+		bg->pixmap.alpha = None;
+		bg->pixmap.depth = Pdepth;
 		bg->pixmap.flags.is_tiled = 1;
 	}
 	else
@@ -1439,6 +1417,7 @@ static void border_draw_one_border_part(
 {
 	pixmap_background_type bg;
 	rectangle part_g;
+	rectangle pix_g;
 	Pixmap p;
 	Window w;
 
@@ -1451,7 +1430,13 @@ static void border_draw_one_border_part(
 	p = border_create_decor_pixmap(cd, &part_g);
 	/* set the background tile */
 	border_get_border_background(&bg, cd);
-	border_fill_pixmap_background(p, &part_g, &bg);
+	/* set the geometry for drawing the Tiled pixmap; maybe add the relief
+	 * as offset? */
+	pix_g.x = 0;
+	pix_g.y = 0;
+	pix_g.width = part_g.width;
+	pix_g.height = part_g.height;
+	border_fill_pixmap_background(p, &pix_g, &bg, cd);
 	/* draw the relief over the background */
 	if (!br->relief.is_flat)
 	{
@@ -1570,7 +1555,7 @@ static void border_draw_decor_to_pixmap(
 	register DecorFaceType type = DFS_FACE_TYPE(df->style);
 	pixmap_background_type bg;
 	rectangle r;
-	Picture *p;
+	FvwmPicture *p;
 	int border;
 
 	switch (type)
@@ -1580,7 +1565,7 @@ static void border_draw_decor_to_pixmap(
 		break;
 	case SolidButton:
 		/* overwrite with the default background */
-		border_fill_pixmap_background(dest_pix, pixmap_g, solid_bg);
+		border_fill_pixmap_background(dest_pix, pixmap_g, solid_bg, cd);
 		break;
 	case VectorButton:
 	case DefaultVectorButton:
@@ -1623,10 +1608,10 @@ static void border_draw_decor_to_pixmap(
 		case JUST_CENTER:
 		default:
 			/* round down */
-			r.x += (int)(pixmap_g->width - p->width) / 2;
+			r.x = (int)(pixmap_g->width - p->width) / 2;
 			break;
 		}
-		switch (DFS_H_JUSTIFICATION(df->style))
+		switch (DFS_V_JUSTIFICATION(df->style))
 		{
 		case JUST_TOP:
 			r.y = border;
@@ -1637,7 +1622,7 @@ static void border_draw_decor_to_pixmap(
 		case JUST_CENTER:
 		default:
 			/* round down */
-			r.y += (int)(pixmap_g->height - p->height) / 2;
+			r.y = (int)(pixmap_g->height - p->height) / 2;
 			break;
 		}
 		if (r.x < border)
@@ -1651,10 +1636,12 @@ static void border_draw_decor_to_pixmap(
 		bg.flags.use_pixmap = 1;
 		bg.pixmap.p = p->picture;
 		bg.pixmap.shape = p->mask;
+		bg.pixmap.alpha = p->alpha;
+		bg.pixmap.depth = p->depth;
 		bg.pixmap.size.width = p->width;
 		bg.pixmap.size.height = p->height;
 		bg.pixmap.flags.is_tiled = 0;
-		border_fill_pixmap_background(dest_pix, &r, &bg);
+		border_fill_pixmap_background(dest_pix, &r, &bg, cd);
 		break;
 	case TiledPixmapButton:
 #ifdef FANCY_TITLEBARS
@@ -1716,8 +1703,12 @@ static void border_draw_decor_to_pixmap(
 		bg.flags.use_pixmap = 1;
 		bg.pixmap.p = p->picture;
 		bg.pixmap.shape = p->mask;
+		bg.pixmap.alpha = p->alpha;
+		bg.pixmap.depth = p->depth;
+		bg.pixmap.size.width = p->width;
+		bg.pixmap.size.height = p->height;
 		bg.pixmap.flags.is_tiled = 1;
-		border_fill_pixmap_background(dest_pix, &r, &bg);
+		border_fill_pixmap_background(dest_pix, &r, &bg, cd);
 		break;
 	case GradientButton:
 		/* draw the gradient into the pixmap */
@@ -1769,7 +1760,7 @@ static void border_set_button_pixmap(
 		/* draw pixmap background inherited from border style */
 		border_get_border_background(&bg, td->cd);
 	}
-	border_fill_pixmap_background(dest_pix, button_g, &bg);
+	border_fill_pixmap_background(dest_pix, button_g, &bg, td->cd);
 	/* handle title style */
 	if (DFS_USE_TITLE_STYLE(df->style))
 	{
@@ -2094,7 +2085,8 @@ static void border_set_title_pixmap(
 		/* draw pixmap background inherited from border style */
 		border_get_border_background(&bg, td->cd);
 	}
-	border_fill_pixmap_background(dest_pix, &td->layout.title_g, &bg);
+	border_fill_pixmap_background(
+		dest_pix, &td->layout.title_g, &bg, td->cd);
 	if (Pdepth < 2)
 	{
 		border_draw_title_mono(fw, td, &tdd, &fstr, dest_pix);
@@ -2486,6 +2478,8 @@ void border_get_part_geometry(
 	int bw;
 
 	bw = fw->boundary_width;
+	/* ret_g->x and ret->y is just an offset relatively to the w,
+	 * maybe we can take the relief in account? */
 	switch (part)
 	{
 	case PART_BORDER_N:
@@ -2529,8 +2523,9 @@ void border_get_part_geometry(
 		*ret_w = FW_W_CORNER(fw, 3);
 		break;
 	default:
-		return;
+		break;
 	}
+	
 	switch (part)
 	{
 	case PART_BORDER_N:
@@ -2653,6 +2648,7 @@ void border_draw_decorations(
 	}
 	if (draw_parts & PART_FRAME)
 	{
+		memset(&cd, 0, sizeof(cd));
 		get_common_decorations(
 			&cd, fw, draw_parts, has_focus, True, True);
 		border_draw_border_parts(

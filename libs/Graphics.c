@@ -22,7 +22,7 @@
 
 #include "defaults.h"
 #include "libs/fvwmlib.h"
-#include "libs/InitPicture.h"
+#include "libs/PictureBase.h"
 
 #include <X11/Xlib.h>
 #include <stdio.h>
@@ -238,8 +238,7 @@ Pixmap CreateTiledPixmap(
 	XChangeGC(dpy, gc, GCFillStyle | GCTile, &xgcv);
 	XFillRectangle(dpy, pixmap, gc, 0, 0, dest_width, dest_height);
 	xgcv.fill_style = FillSolid;
-	xgcv.tile = None;
-	XChangeGC(dpy, gc, GCFillStyle | GCTile, &xgcv);
+	XChangeGC(dpy, gc, GCFillStyle, &xgcv);
 
 	return pixmap;
 }

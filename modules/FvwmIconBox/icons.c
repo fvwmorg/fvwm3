@@ -52,13 +52,14 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
-#include "libs/InitPicture.h"
 #include "libs/Picture.h"
-#include "libs/FImageLoader.h"
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 
 extern int save_color_limit;
+extern Bool do_allow_bad_access;
+extern Bool was_bad_access;
+extern char *MyName;
 
 #define ICON_EVENTS (ExposureMask |\
 ButtonReleaseMask | ButtonPressMask | EnterWindowMask | LeaveWindowMask)
@@ -73,87 +74,98 @@ ButtonReleaseMask | ButtonPressMask | EnterWindowMask | LeaveWindowMask)
  ****************************************************************************/
 void CreateIconWindow(struct icon_info *item)
 {
-  unsigned long valuemask;		/* mask for create windows */
-  XSetWindowAttributes attributes;	/* attributes for create windows */
+	unsigned long valuemask;	      /* mask for create windows */
+	XSetWindowAttributes attributes;      /* attributes for create windows */
 
-  attributes.background_pixel = icon_back_pix;
-  attributes.border_pixel = 0;
-  attributes.colormap = Pcmap;
-  attributes.event_mask = ExposureMask;
-  valuemask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
+	attributes.background_pixel = icon_back_pix;
+	attributes.border_pixel = 0;
+	attributes.colormap = Pcmap;
+	attributes.event_mask = ExposureMask;
+	valuemask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 
-  /* ccreate the icon label */
-  item->IconWin = XCreateWindow(dpy, icon_win, 0, 0, max_icon_width,
-				max_icon_height + 10, 0, CopyFromParent,
-				CopyFromParent, CopyFromParent, valuemask,
-				&attributes);
-  XSelectInput(dpy, item->IconWin, ICON_EVENTS);
+	/* ccreate the icon label */
+	item->IconWin = XCreateWindow(dpy, icon_win, 0, 0, max_icon_width,
+				      max_icon_height + 10, 0, CopyFromParent,
+				      CopyFromParent, CopyFromParent, valuemask,
+				      &attributes);
+	XSelectInput(dpy, item->IconWin, ICON_EVENTS);
 
-  XSelectInput(dpy, item->id, PropertyChangeMask);
-  item->wmhints = XGetWMHints(dpy, item->id);
+	XSelectInput(dpy, item->id, PropertyChangeMask);
+	item->wmhints = XGetWMHints(dpy, item->id);
 
-  if (max_icon_height == 0)
-    return;
+	if (max_icon_height == 0)
+		return;
 
-  /* config specified icons have priority */
-  if ((item->icon_file != NULL) && !(item->extra_flags & DEFAULTICON)) {
-    GetIconFromFile(item);
-  }
-  /* next come program specified icon windows and pixmaps*/
-  if((item->icon_h == 0) && (item->icon_w == 0) && item->wmhints)
-  {
-    if (item->wmhints->flags & IconWindowHint)
-      GetIconWindow(item);
-    else if (item->wmhints->flags & IconPixmapHint)
-      GetIconBitmap(item);
-  }
+	/* config specified icons have priority */
+	if ((item->icon_file != NULL) && !(item->extra_flags & DEFAULTICON))
+	{
+		GetIconFromFile(item);
+	}
+	/* next come program specified icon windows and pixmaps*/
+	if((item->icon_h == 0) && (item->icon_w == 0) && item->wmhints)
+	{
+		if (item->wmhints->flags & IconWindowHint)
+			GetIconWindow(item);
+		else if (item->wmhints->flags & IconPixmapHint)
+			GetIconBitmap(item);
+	}
 
-  /* if that all fails get the default */
-  if ((item->icon_file != NULL) && (item->icon_h == 0) && (item->icon_w == 0)) {
-     GetIconFromFile(item);
-  }
+	/* if that all fails get the default */
+	if ((item->icon_file != NULL) && (item->icon_h == 0) &&
+	    (item->icon_w == 0))
+	{
+		GetIconFromFile(item);
+	}
 
-  /* create the window to hold the pixmap */
-  /* if using a non default visual client pixmaps must have a default visual
-     window to be drawn into */
-  if (IS_ICON_OURS(item)) {
-    if (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item)){
-      item->icon_pixmap_w = XCreateWindow(dpy, icon_win, 0, 0,
-					  max(max_icon_width, item->icon_w),
-					  max(max_icon_height, item->icon_h), 0,
-					  CopyFromParent, CopyFromParent,
-					  CopyFromParent, valuemask,
-					  &attributes);
-    } else {
-      attributes.background_pixel = 0;
-      attributes.colormap = DefaultColormap(dpy, screen);
-      item->icon_pixmap_w = XCreateWindow(dpy, icon_win, 0, 0,
-					  max(max_icon_width,item->icon_w),
-					  max(max_icon_height,item->icon_h), 0,
-					  DefaultDepth(dpy, screen),
-					  InputOutput,
-					  DefaultVisual(dpy, screen), valuemask,
-					  &attributes);
-    }
-    XSelectInput(dpy, item->icon_pixmap_w, ICON_EVENTS);
-  }
+	if ((item->icon_h == 0) && (item->icon_w == 0))
+	{
+		return;
+	}
 
-  if (FShapesSupported && item->icon_maskPixmap != None) {
-     int hr;
-     hr = (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item)) ?
-       icon_relief/2 : 0;
-     FShapeCombineMask(
-       dpy, item->icon_pixmap_w, FShapeBounding, hr, hr, item->icon_maskPixmap,
-       FShapeSet);
-  }
+	/* create the window to hold the pixmap */
+	/* if using a non default visual client pixmaps must have a default
+	 * visual window to be drawn into */
+	if (IS_ICON_OURS(item)) 
+	{
+		if (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item))
+		{
+			item->icon_pixmap_w = XCreateWindow(dpy, icon_win, 0, 0,
+					max(max_icon_width, item->icon_w),
+					max(max_icon_height, item->icon_h), 0,
+					CopyFromParent, CopyFromParent,
+					CopyFromParent, valuemask,
+					&attributes);
+		}
+		else
+		{
+			attributes.background_pixel = 0;
+			attributes.colormap = DefaultColormap(dpy, screen);
+			item->icon_pixmap_w = XCreateWindow(dpy, icon_win, 0, 0,
+					max(max_icon_width,item->icon_w),
+					max(max_icon_height,item->icon_h), 0,
+					Pdepth,
+					InputOutput,
+					Pvisual, valuemask,
+					&attributes);
+		}
+		XSelectInput(dpy, item->icon_pixmap_w, ICON_EVENTS);
+	}
 
-  if(item->icon_depth == -1 ) {
-    Pixmap temp = item->iconPixmap;
-    item->iconPixmap = XCreatePixmap(dpy, Root, item->icon_w, item->icon_h,
-				     Pdepth);
-    XCopyPlane(dpy, temp, item->iconPixmap, NormalGC, 0, 0, item->icon_w,
-	       item->icon_h, 0, 0, 1);
-  }
+	if (FShapesSupported && item->icon_maskPixmap != None)
+	{
+		int hr;
+		hr = (Pdefault | (item->icon_depth == 1) |
+		      IS_PIXMAP_OURS(item)) ? icon_relief/2 : 0;
+		FShapeCombineMask(dpy, item->icon_pixmap_w, FShapeBounding,
+				  hr, hr, item->icon_maskPixmap, FShapeSet);
+	}
+
+	if (item->icon_alphaPixmap != None)
+	{
+		/* pixmap icon with some alpha */
+		XSetWindowBackgroundPixmap(dpy,
+					   item->icon_pixmap_w, ParentRelative);
+	}
 }
 
 /****************************************************************************
@@ -225,29 +237,33 @@ void AdjustIconWindow(struct icon_info *item, int n)
 void GetIconFromFile(struct icon_info *item)
 {
 	char *path = NULL;
-	Pixel *dummy = NULL;
-	int nalloc_pixels = -1;
+	FvwmPictureFlags fpf;
 
-	path = findImageFile(item->icon_file, imagePath, R_OK);
+	fpf.alloc_pixels = 0;
+	fpf.alpha = 1;
+	path = PictureFindImageFile(item->icon_file, imagePath, R_OK);
 	if (path == NULL)
 	{
 		return;
 	}
-	if (!FImageLoadPixmapFromFile(dpy, Root, path, save_color_limit,
-				      &item->iconPixmap,
-				      &item->icon_maskPixmap,
+	if (!PImageLoadPixmapFromFile(dpy, Root, path, save_color_limit,
+				      &item->iconPixmap, &item->icon_maskPixmap,
+				      &item->icon_alphaPixmap,
 				      &item->icon_w,
 				      &item->icon_h,
 				      &item->icon_depth,
-				      &nalloc_pixels, dummy))
+				      0, NULL, fpf))
 	{
 		fprintf(stderr, "[FvwmIconBox] cannot load pixmap from " 
 			"file '%s'\n",path);
 		item->icon_w = 0;
 		item->icon_h = 0;
+		return;
 	}
 	item->icon_w = min(max_icon_width, item->icon_w);
 	item->icon_h = min(max_icon_height, item->icon_h);
+	SET_ICON_OURS(item, True);
+	SET_PIXMAP_OURS(item, True);
 	free(path);
 	return;
 }
@@ -259,36 +275,68 @@ void GetIconFromFile(struct icon_info *item)
  *************************************************************************** */
 void GetIconWindow(struct icon_info *item)
 {
-  int x, y;
-  unsigned int bw;
-  Window Junkroot;
+	int x, y;
+	unsigned int bw;
+	Window Junkroot;
 
-  if(!XGetGeometry(dpy, item->wmhints->icon_window, &Junkroot,
-                  &x, &y, (unsigned int *)&item->icon_w,
-		   (unsigned int *)&item->icon_h,
-		   &bw, (unsigned int *)&item->icon_depth))
-  {
-    /* disable the icon window hint */
-    item->wmhints->icon_window = None;
-    item->wmhints->flags &= ~IconWindowHint;
-    return;
-  }
+	if(!XGetGeometry(dpy, item->wmhints->icon_window, &Junkroot,
+			 &x, &y, (unsigned int *)&item->icon_w,
+			 (unsigned int *)&item->icon_h,
+			 &bw, (unsigned int *)&item->icon_depth))
+	{
+#if 0
+		fprintf(stderr, "[%s][GetIconWindow] WARN -- '%s' has an " 
+			"invalid icon window hint\n", MyName, item->name);
+#endif
+		/* disable the icon window hint */
+		item->icon_w = 0;
+		item->icon_h = 0;
+		item->wmhints->icon_window = None;
+		item->wmhints->flags &= ~IconWindowHint;
+		return;
+	}
 
-  item->icon_pixmap_w = item->wmhints->icon_window;
+	item->icon_pixmap_w = item->wmhints->icon_window;
 
-  if (FShapesSupported && (item->wmhints->flags & IconMaskHint))
-  {
-    SET_ICON_SHAPED(item, True);
-    item->icon_maskPixmap = item->wmhints->icon_mask;
-  }
+	if (FShapesSupported && (item->wmhints->flags & IconMaskHint))
+	{
+		SET_ICON_SHAPED(item, True);
+		item->icon_maskPixmap = item->wmhints->icon_mask;
+	}
 
-  item->icon_w = min(max_icon_width + icon_relief,  item->icon_w);
-  item->icon_h = min(max_icon_height + icon_relief, item->icon_h);
+	item->icon_w = min(max_icon_width + icon_relief,  item->icon_w);
+	item->icon_h = min(max_icon_height + icon_relief, item->icon_h);
 
-  XReparentWindow(dpy, item->icon_pixmap_w, icon_win, 0, 0);
-  XSetWindowBorderWidth(dpy, item->icon_pixmap_w, 0);
-  SET_ICON_OURS(item, False);
-  SET_PIXMAP_OURS(item, False);
+	MyXGrabServer(dpy);
+	do_allow_bad_access = True;
+	XReparentWindow(dpy, item->icon_pixmap_w, icon_win, 0, 0);
+	XSetWindowBorderWidth(dpy, item->icon_pixmap_w, 0);
+	XSelectInput(dpy, item->icon_pixmap_w, ICON_EVENTS);
+	XSync(dpy, 0);
+	do_allow_bad_access = False;
+	if (was_bad_access)
+	{
+		/* give up */
+#if 0
+		fprintf(stderr, "[%s][GetIconWindow] WARN -- BadAcces when "
+			"reparenting %s icon window\n", MyName, item->name);
+#endif
+		XSelectInput(dpy, item->icon_pixmap_w, NoEventMask);
+		XUnmapWindow(dpy, item->icon_pixmap_w);
+		XReparentWindow(dpy, item->icon_pixmap_w, Root, 0, 0);
+		XUnmapWindow(dpy, item->icon_pixmap_w);
+		MyXUngrabServer(dpy);
+		item->icon_pixmap_w = item->wmhints->icon_window = None;
+		item->wmhints->flags &= ~IconWindowHint;
+		item->icon_maskPixmap = None;
+		item->icon_w = 0;
+		item->icon_h = 0;
+		was_bad_access = False;
+		return;
+	}
+	MyXUngrabServer(dpy);
+	SET_ICON_OURS(item, False);
+	SET_PIXMAP_OURS(item, False);
 }
 
 /***************************************************************************
@@ -300,57 +348,63 @@ void GetIconWindow(struct icon_info *item)
 */
 void GetIconBitmap(struct icon_info *item)
 {
-  int x, y;
-  unsigned int bw, depth;
-  Window Junkroot;
-  GC gc;
+	int x, y;
+	unsigned int bw, depth;
+	Window Junkroot;
+	GC gc;
 
-  item->icon_file = NULL;
-  item->icon_maskPixmap = None;
-  item->iconPixmap = None;
-  item->icon_w = 0;
-  item->icon_h = 0;
-  if (!XGetGeometry(dpy, item->wmhints->icon_pixmap, &Junkroot, &x, &y,
-               (unsigned int *)&item->icon_w,
-               (unsigned int *)&item->icon_h, &bw, &depth))
-  {
-    /* disable icon pixmap hint */
-    item->wmhints->icon_pixmap = None;
-    item->wmhints->flags &= ~IconPixmapHint;
-    return;
-  }
-  /* sanity check the pixmap depth, it must be the same as the root or 1 */
-  if (depth != 1 && depth != DefaultDepth(dpy, screen))
-  {
-    /* disable icon pixmap hint */
-    item->wmhints->icon_pixmap = None;
-    item->wmhints->flags &= ~IconPixmapHint;
-    return;
-  }
-  item->icon_depth = depth;
+	item->icon_file = NULL;
+	item->icon_maskPixmap = None;
+	item->icon_alphaPixmap = None;
+	item->iconPixmap = None;
+	item->icon_w = 0;
+	item->icon_h = 0;
+	if (!XGetGeometry(dpy, item->wmhints->icon_pixmap, &Junkroot, &x, &y,
+			  (unsigned int *)&item->icon_w,
+			  (unsigned int *)&item->icon_h, &bw, &depth))
+	{
+		/* disable icon pixmap hint */
+		item->icon_w = 0;
+		item->icon_h = 0;
+		item->wmhints->icon_pixmap = None;
+		item->wmhints->flags &= ~IconPixmapHint;
+		return;
+	}
+	/* sanity check the pixmap depth, it must be the same as the root or 1 */
+	if (depth != 1 && depth != Pdepth)
+	{
+		/* disable icon pixmap hint */
+		item->icon_w = 0;
+		item->icon_h = 0;
+		item->wmhints->icon_pixmap = None;
+		item->wmhints->flags &= ~IconPixmapHint;
+		return;
+	}
+	item->icon_depth = depth;
 
-  if (FShapesSupported && (item->wmhints->flags & IconMaskHint))
-  {
-    SET_ICON_SHAPED(item, True);
-    item->icon_maskPixmap = item->wmhints->icon_mask;
-  }
+	if (FShapesSupported && (item->wmhints->flags & IconMaskHint))
+	{
+		SET_ICON_SHAPED(item, True);
+		item->icon_maskPixmap = item->wmhints->icon_mask;
+	}
 
-  item->icon_w = min(max_icon_width, item->icon_w);
-  item->icon_h = min(max_icon_height, item->icon_h);
-  if (item->icon_w <= 0 || item->icon_h <= 0)
-  {
-    item->icon_w = 0;
-    item->icon_h = 0;
-    return;
-  }
+	item->icon_w = min(max_icon_width, item->icon_w);
+	item->icon_h = min(max_icon_height, item->icon_h);
+	if (item->icon_w <= 0 || item->icon_h <= 0)
+	{
+		item->icon_w = 0;
+		item->icon_h = 0;
+		return;
+	}
 
-  item->iconPixmap = XCreatePixmap(dpy, Root, item->icon_w,
-                                   item->icon_h, depth);
-  gc = fvwmlib_XCreateGC(dpy, item->iconPixmap, 0, NULL);
-  XCopyArea(dpy, item->wmhints->icon_pixmap, item->iconPixmap,
-               gc, 0, 0, item->icon_w, item->icon_h, 0, 0);
-  XFreeGC(dpy, gc);
-  SET_PIXMAP_OURS(item, False);
+	item->iconPixmap = XCreatePixmap(dpy, Root,
+					 item->icon_w, item->icon_h, depth);
+	gc = fvwmlib_XCreateGC(dpy, item->iconPixmap, 0, NULL);
+	XCopyArea(dpy, item->wmhints->icon_pixmap, item->iconPixmap,
+		  gc, 0, 0, item->icon_w, item->icon_h, 0, 0);
+	XFreeGC(dpy, gc);
+	SET_PIXMAP_OURS(item, False);
+	SET_ICON_OURS(item, True);
 }
 
 Bool GetBackPixmap(void)
@@ -358,25 +412,27 @@ Bool GetBackPixmap(void)
 	Pixmap maskPixmap;
 	char *path = NULL;
 	Pixmap tmp_pixmap;
-	Pixel *dummy = NULL;
-	int nalloc_pixels = -1;
 	int w=0, h=0, icon_depth = 0;
+	FvwmPictureFlags fpf;
 
+	fpf.alloc_pixels = 0;
+	fpf.alpha = 0;
 	if (IconwinPixmapFile == NULL)
 		return False;
 
-	path = findImageFile(IconwinPixmapFile, imagePath, R_OK);
+	path = PictureFindImageFile(IconwinPixmapFile, imagePath, R_OK);
 	if (path == NULL)
 	{
 		return False;
 	}
-	if (!FImageLoadPixmapFromFile(dpy, main_win, path, save_color_limit,
+	if (!PImageLoadPixmapFromFile(dpy, main_win, path, save_color_limit,
 				      &tmp_pixmap,
 				      &maskPixmap,
+				      NULL,
 				      &w,
 				      &h,
 				      &icon_depth,
-				      &nalloc_pixels, dummy))
+				      0, NULL, fpf))
 	{
 		w = 0;
 		h = 0;

@@ -1,3 +1,85 @@
+2002-04-22  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTheme/FvwmTheme.1:
+	Documented Tint, TintMask and NoTint
+
+	* FvwmWinList/ButtonArray.c (ButtonNew):
+	(AddButton):
+	(DoButton):
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	* FvwmIconMan/Makefile.am:
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/xmanager.h:
+	* FvwmIconMan/xmanager.c (iconify_box):
+	(set_win_picture):
+	* FvwmIconMan/fvwm.c (mini_icon):
+	* FvwmPager/Makefile.am:
+	* FvwmPager/x_pager.c (do_picture_window):
+	* FvwmPager/FvwmPager.h:
+	* FvwmPager/FvwmPager.c (main):
+	(list_mini_icon):
+	* FvwmTaskBar/List.h:
+	* FvwmTaskBar/Start.c (StartButtonInit):
+	* FvwmTaskBar/List.c (AddItem):
+	(UpdateItemPicture):
+	* FvwmTaskBar/ButtonArray.h:
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw):
+	(AddButton):
+	(UpdateButtonPicture):
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	Use the alpha of the mini icon send by fvwm
+
+	* FvwmWinList/Makefile.am
+	* FvwmWharf/Makefile.am: 
+	* FvwmTaskBar/Makefile.am:
+	* FvwmScript/Makefile.am: 
+	* FvwmPager/Makefile.am:
+	* FvwmIconMan/Makefile.am:
+	* FvwmIconBox/Makefile.am:
+	* FvwmBanner/Makefile.am:
+	* FvwmAnimate/Makefile.am: 
+	Links to Xrender if needed
+
+	* FvwmWharf/icons.c (GetXPMGradient): 
+	(GetXPMColorset): 
+	(GetSolidXPM): 
+	(LoadIconFile): 
+	(ConfigureIconWindow): 
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmIconBox/icons.c (GetIconFromFile): 
+	(GetBackPixmap):
+	(CreateIconWindow):
+	(GetIconWindow):
+	* FvwmIconBox/FvwmIconBox.c (RedrawIcon):
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmButtons/icons.c (ConfigureIconWindow):
+	(CreateIconWindow):
+	* FvwmScript/types.h:
+	* FvwmScript/Widgets/Tools.c (DrawIconStr):
+	* FvwmScript/FvwmScript.c (LoadIcon):
+	Implement alpha rendering using libs function in PictureGraphics
+
+	* FvwmBanner/FvwmBanner.c (GetImageFile):
+	Load the picture without alpha
+
+	* FvwmIconBox/icons.c (GetIconWindow):
+	* FvwmIconBox/FvwmIconBox.c (CleanUp):
+	(myErrorHandler):
+	Fixed a few problems related to reparent icon windows, there are still
+	problems here
+
+	* FvwmTaskBar/Start.c (StartButtonInit):
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	Start Button icon use fvwm color limit
+
+	* FvwmIdent/FvwmIdent.h:
+	* FvwmIdent/FvwmIdent.c (DrawItems):
+	(PixmapDrawWindow):
+	(RedrawWindow):
+	(list_end):
+	If the font is an Xft font (and the background is not Transparent) draw
+	everything in the background to reduce redrawing
+
 2002-04-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* modules/FvwmPerl/FvwmPerl.1:

@@ -39,6 +39,8 @@
 #include "libs/Colorset.h"
 #include "libs/safemalloc.h"
 #include "libs/Flocale.h"
+#include "libs/Picture.h"
+#include "libs/PictureGraphics.h"
 
 #include "ButtonArray.h"
 #include "Mallocs.h"
@@ -176,7 +178,7 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
 /* -------------------------------------------------------------------------
    ButtonNew - Allocates and fills a new button structure
    ------------------------------------------------------------------------- */
-Button *ButtonNew(const char *title, Picture *p, int state, int count)
+Button *ButtonNew(const char *title, FvwmPicture *p, int state, int count)
 {
   Button *new;
 
@@ -188,6 +190,7 @@ Button *ButtonNew(const char *title, Picture *p, int state, int count)
   if (p != NULL) {
     new->p.picture = p->picture;
     new->p.mask    = p->mask;
+    new->p.alpha   = p->alpha;
     new->p.width   = p->width;
     new->p.height  = p->height;
     new->p.depth   = p->depth;
@@ -256,18 +259,14 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
     int pheight = min(button->p.height, h-2);
     int offset = (button->p.height > h) ? 0 : ((h - button->p.height) >> 1);
     int pwidth = min(button->p.width, w-5);
-    gcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-    gcv.clip_mask = button->p.mask;
-    gcv.clip_x_origin = x + 3;
-    gcv.clip_y_origin = y + offset;
-    XChangeGC(dpy, hilite, gcm, &gcv);
-    XCopyArea(dpy, button->p.picture, win, hilite, 0, 0,
-                   pwidth, pheight,
-                   gcv.clip_x_origin, gcv.clip_y_origin);
-    gcm = GCClipMask;
-    gcv.clip_mask = None;
-    XChangeGC(dpy, hilite, gcm, &gcv);
-
+ 
+    if (button->p.alpha != None)
+    {
+      XClearArea(dpy, win, x+3, y+offset, pwidth, pheight, False);
+    }
+    PGraphicsCopyFvwmPicture(dpy, &(button->p), win, hilite,
+			     0, 0, pwidth, pheight,
+			     x+3, y+offset);
     newx += pwidth+2;
   }
 
@@ -408,7 +407,7 @@ void UpdateArray(ButtonArray *array,int x,int y,int w, int h, int tw)
 /* -------------------------------------------------------------------------
    AddButton - Allocate space for and add the button to the list
    ------------------------------------------------------------------------- */
-void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
+void AddButton(ButtonArray *array, const char *title, FvwmPicture *p, int state,
                int count, int iconified)
 {
   Button *new, *temp;
@@ -478,7 +477,7 @@ int UpdateButton(ButtonArray *array, int butnum, const char *title, int state)
 /* -------------------------------------------------------------------------
    UpdateButtonPicture - Change the picture of a button
    ------------------------------------------------------------------------- */
-int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
+int UpdateButtonPicture(ButtonArray *array, int butnum, FvwmPicture *p)
 {
   Button *temp;
 
@@ -490,6 +489,7 @@ int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
   if (temp->p.picture != p->picture || temp->p.mask != p->mask) {
     temp->p.picture = p->picture;
     temp->p.mask    = p->mask;
+    temp->p.alpha   = p->alpha;
     temp->p.width   = p->width;
     temp->p.height  = p->height;
     temp->p.depth   = p->depth;

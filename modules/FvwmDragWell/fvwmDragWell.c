@@ -51,7 +51,7 @@
 #include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"
-#include "libs/InitPicture.h"
+#include "libs/PictureBase.h"
 #include "libs/fvwmsignal.h"
 #include "libs/FScreen.h"
 
@@ -441,7 +441,7 @@ void XStartup(char *appName)
 
   xg.appName = (char *) malloc(sizeof(char) * (strlen(appNameStart)+1));
   strcpy(xg.appName,appNameStart); /*save the name of the application*/
-  InitPictureCMap(xg.dpy);
+  PictureInitCMap(xg.dpy);
   FScreenInit(xg.dpy);
   AllocColorset(0);
   FShapeInit(xg.dpy);

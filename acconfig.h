@@ -32,6 +32,9 @@
 /* Define if Xinerama library is used. */
 #undef HAVE_XINERAMA
 
+/* Define if Xrender library is used. */
+#undef HAVE_XRENDER
+
 /* Define if Xft library is used. */
 #undef HAVE_XFT
 

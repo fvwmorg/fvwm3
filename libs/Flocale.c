@@ -52,7 +52,7 @@
 #include "safemalloc.h"
 #include "Strings.h"
 #include "Parse.h"
-#include "InitPicture.h"
+#include "PictureBase.h"
 #include "Flocale.h"
 #include "FBidi.h"
 

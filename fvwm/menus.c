@@ -407,22 +407,19 @@ static void animated_move_back(
 		    mr, &JunkRoot, &act_x, &act_y, &JunkWidth, &JunkHeight,
 		    &JunkBW, &JunkDepth))
 	{
-		FvwmWindow *parental_fw;
+		Bool parent_relative_bg = False;
 
 		/* move it back */
 		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
 		    Colorset[ST_CSET_MENU(MR_STYLE(mr))].pixmap ==
 		    ParentRelative)
 		{
-			parental_fw = fw;
-		}
-		else
-		{
-			parental_fw = NULL;
+			parent_relative_bg = True;
 		}
 		AnimatedMoveOfWindow(
 			MR_WINDOW(mr), act_x, act_y, act_x - MR_XANIMATION(mr),
-			act_y, do_warp_pointer, -1, NULL, parental_fw);
+			act_y, do_warp_pointer, -1, NULL,
+			(parent_relative_bg)? mr:NULL);
 		MR_XANIMATION(mr) = 0;
 	}
 
@@ -2674,7 +2671,7 @@ static int pop_menu_up(
 	unsigned int prev_height;
 	unsigned int event_mask;
 	int scr_x, scr_y, scr_w, scr_h;
-	FvwmWindow *parental_fw;
+	Bool parent_relative_bg = False;
 
 	mr = *pmenu;
 	if (!mr || (MR_MAPPED_COPIES(mr) > 0 &&
@@ -3061,11 +3058,7 @@ static int pop_menu_up(
 						     MR_STYLE(parent_menu))].
 				    pixmap == ParentRelative)
 				{
-					parental_fw = fw;
-				}
-				else
-				{
-					parental_fw = NULL;
+					parent_relative_bg = True;
 				}
 
 				if (MR_IS_TEAR_OFF_MENU(parent_menu))
@@ -3091,7 +3084,8 @@ static int pop_menu_up(
 				}
 				AnimatedMoveOfWindow(
 					w, prev_x, prev_y, end_x, prev_y, True,
-					-1, NULL, parental_fw);
+					-1, NULL,
+					(parent_relative_bg)? parent_menu:NULL);
 			} /* if (MST_IS_ANIMATED(mr)) */
 
 			/*
@@ -3420,7 +3414,7 @@ static void select_menu_item(
 				  MST_FACE(mr).gradient_type == B_GRADIENT))
 			{
 				XEvent e;
-				Picture *sidePic = NULL;
+				FvwmPicture *sidePic = NULL;
 
 				e.type = Expose;
 				e.xexpose.x = MST_BORDER_WIDTH(mr);
@@ -3674,7 +3668,7 @@ static void get_menu_paint_item_parameters(
 static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 {
 	GC ReliefGC, TextGC;
-	Picture *sidePic;
+	FvwmPicture *sidePic;
 	int ys;
 	int yt;
 	int h;
@@ -3858,7 +3852,7 @@ static void paint_menu_gradient_background(
 		register int i = 0, numLines;
 		int cindex = -1;
 		XRectangle r;
-		Picture *sidePic = NULL;
+		FvwmPicture *sidePic = NULL;
 		int bw = bw;
 
 		if (MR_SIDEPIC(mr))
@@ -3962,7 +3956,7 @@ static void paint_menu_pixmap_background(
 	MenuStyle *ms = MR_STYLE(mr);
 	int width, height, x, y;
 	int bw = MST_BORDER_WIDTH(mr);
-	Picture *p;
+	FvwmPicture *p;
 
 	p = ST_FACE(ms).u.p;
 
@@ -5144,14 +5138,14 @@ static void scanForColor(
 }
 
 static Bool scanForPixmap(
-	char *instring, Picture **p, char identifier)
+	char *instring, FvwmPicture **p, char identifier)
 {
 	char *tstart;
 	char *s;
 	char *t;
 	char *name;
 	int i;
-	Picture *pp;
+	FvwmPicture *pp;
 
 	*p = NULL;
 	if (!instring)
@@ -5190,7 +5184,7 @@ static Bool scanForPixmap(
 		}
 		name[i] = 0;
 		/* Next, check for a color pixmap */
-		pp = CachePicture(
+		pp = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, name, Scr.ColorLimit);
 		if (*s != '\0')
 		{
@@ -5384,7 +5378,7 @@ static void clone_menu_root_static(
 		MR_SIDECOLOR(dest_mr) =
 			fvwmlib_clone_color(MR_SIDECOLOR(src_mr));
 	}
-	MR_SIDEPIC(dest_mr) = fvwmlib_clone_picture(MR_SIDEPIC(src_mr));
+	MR_SIDEPIC(dest_mr) = PCloneFvwmPicture(MR_SIDEPIC(src_mr));
 	clone_menu_item_list(dest_mr, src_mr);
 
 	return;
@@ -6192,17 +6186,17 @@ void menu_expose(XEvent *event, FvwmWindow *fw)
  *      Performance improvement Welcome!
  *
  ***********************************************************************/
-void ParentalMenuRePaint(FvwmWindow *fw)
+void ParentalMenuRePaint(MenuRoot *mr)
 {
 	MenuItem *mi;
-	MenuRoot *mr;
 	MenuPaintItemParameters mpip;
 	int h = 0;
 	int s_h = 0;
 	int e_h = 0;
 
+#if 0
 	/* find the menu root for the window */
-	for (mr = Menus.all; mr != NULL && FW_W(fw) == MR_WINDOW(mr);
+	for (mr = Menus.all; mr != NULL && w == MR_WINDOW(mr);
 	     mr = MR_NEXT_MENU(mr))
 	{
 		/* nothing to do here */
@@ -6211,6 +6205,7 @@ void ParentalMenuRePaint(FvwmWindow *fw)
 	{
 		return;
 	}
+#endif
 
 	/* redraw the background of non active item */
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
@@ -6253,7 +6248,7 @@ void ParentalMenuRePaint(FvwmWindow *fw)
 	}
 
 	/* now redraw the items */
-	get_menu_paint_item_parameters(&mpip, mr, NULL, fw, True);
+	get_menu_paint_item_parameters(&mpip, mr, NULL, NULL, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
 		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT(mr))
@@ -6269,7 +6264,7 @@ void ParentalMenuRePaint(FvwmWindow *fw)
 	if ((MR_SIDEPIC(mr) || MST_SIDEPIC(mr)) &&
 	    !MR_HAS_SIDECOLOR(mr) && !MST_HAS_SIDE_COLOR(mr))
 	{
-		Picture *sidePic;
+		FvwmPicture *sidePic;
 		if (MR_SIDEPIC(mr))
 		{
 			sidePic = MR_SIDEPIC(mr);
@@ -6419,7 +6414,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 		free(MR_NAME(mr));
 		if (MR_SIDEPIC(mr))
 		{
-			DestroyPicture(dpy, MR_SIDEPIC(mr));
+			PDestroyFvwmPicture(dpy, MR_SIDEPIC(mr));
 		}
 		free(mr->s);
 	}

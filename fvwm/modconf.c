@@ -253,7 +253,7 @@ static void send_desktop_geometry(int modnum)
 static void send_image_path(int modnum)
 {
   char *msg;
-  char *ImagePath = GetImagePath();
+  char *ImagePath = PictureGetImagePath();
 
   if (ImagePath && *ImagePath != 0)
   {

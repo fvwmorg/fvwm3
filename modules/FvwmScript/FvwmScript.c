@@ -25,7 +25,7 @@
 #include "libs/FShape.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
-#include "libs/FImageLoader.h"
+#include "libs/PictureGraphics.h"
 
 #ifdef MEMDEBUG			/* For debugging */
 #include <unchecked.h>
@@ -313,7 +313,7 @@ void Xinit(int IsFather)
   }
   screen = DefaultScreen(dpy);
   Root = RootWindow(dpy,screen);
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);
@@ -352,9 +352,11 @@ void Xinit(int IsFather)
 void LoadIcon(struct XObj *xobj)
 {
 	char *path;
-	int depth, nap;
-	Pixel *dummy = NULL;
+	int depth;
+	FvwmPictureFlags fpf;
 
+	fpf.alloc_pixels = 0;
+	fpf.alpha = 1;
 	if (xobj->iconPixmap != None)
 	{
 		XFreePixmap(dpy, xobj->iconPixmap);
@@ -365,17 +367,23 @@ void LoadIcon(struct XObj *xobj)
 		XFreePixmap(dpy, xobj->icon_maskPixmap);
 		xobj->icon_maskPixmap = None;
 	}
+	if (xobj->icon_alphaPixmap != None)
+	{
+		XFreePixmap(dpy, xobj->icon_alphaPixmap);
+		xobj->icon_alphaPixmap = None;
+	}
 	
 	if ((xobj->icon) == NULL)
 		return;
-	if ((path = findImageFile(xobj->icon,imagePath,R_OK)) == NULL)
+	if ((path = PictureFindImageFile(xobj->icon,imagePath,R_OK)) == NULL)
 	{
 		return;
 	}
-	if (!FImageLoadPixmapFromFile(dpy, x11base->root, path, save_color_limit,
+	if (!PImageLoadPixmapFromFile(dpy, x11base->root, path, save_color_limit,
 				      &xobj->iconPixmap, &xobj->icon_maskPixmap,
+				      &xobj->icon_alphaPixmap,
 				      &xobj->icon_w, &xobj->icon_h, &depth,
-				      &nap, dummy))
+				      0, NULL, fpf))
 	{
 		fprintf(stderr,"[%s][LoadIcon]: <<WARNING>> Unable to "
 			"load pixmap %s\n",

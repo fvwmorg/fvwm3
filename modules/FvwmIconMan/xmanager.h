@@ -43,8 +43,8 @@ extern void draw_added_icon (WinManager *man);
 extern void draw_deleted_icon (WinManager *man);
 extern void move_highlight (WinManager *man, Button *button);
 extern void set_win_picture (WinData *win, Pixmap picture, Pixmap mask,
-			     unsigned int depth, unsigned int width,
-			     unsigned int height);
+			     Pixmap alpha, unsigned int depth,
+			     unsigned int width, unsigned int height);
 extern void set_win_iconified (WinData *win, int iconified);
 extern void set_win_state (WinData *win, int state);
 extern void add_win_state (WinData *win, int flag);

@@ -367,7 +367,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   char *name,*string;
   static int current_focus=-1;
   struct ConfigWinPacket  *cfgpacket;
-  Picture p;
+  FvwmPicture p;
 
   switch(type)
   {
@@ -431,11 +431,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     if (UpdateButton(&buttons,i,NULL,-1)!=-1)
     {
-      p.width = body[3];
-      p.height = body[4];
-      p.depth = body[5];
-      p.picture = body[6];
-      p.mask = body[7];
+      MiniIconPacket *mip = (MiniIconPacket *) body;
+      p.picture = mip->picture;
+      p.mask    = mip->mask;
+      p.alpha   = mip->alpha;
+      p.width   = mip->width;
+      p.height  = mip->height;
+      p.depth   = mip->depth;
 
       UpdateButtonPicture(&buttons, i, &p);
 
@@ -1388,7 +1390,7 @@ void StartMeUp_I(void)
       XDisplayName(""));
     exit (1);
   }
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);

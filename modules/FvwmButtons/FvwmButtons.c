@@ -314,12 +314,12 @@ static void DeadPipeCleanup(void)
   {
     /* The picture pointer is NULL if the pixmap came from a colorset. */
     if(b->flags&b_Icon && b->icon != NULL)
-      DestroyPicture(Dpy, b->icon);
+      PDestroyFvwmPicture(Dpy, b->icon);
     if(b->flags&b_IconBack && b->backicon != NULL)
-      DestroyPicture(Dpy, b->icon);
+      PDestroyFvwmPicture(Dpy, b->icon);
     if(b->flags&b_Container && b->c->flags&b_IconBack &&
        !(b->c->flags&b_TransBack) && b->c->backicon != NULL)
-      DestroyPicture(Dpy, b->c->backicon);
+      PDestroyFvwmPicture(Dpy, b->c->backicon);
   }
 }
 
@@ -743,7 +743,7 @@ int main(int argc, char **argv)
 	    XDisplayName(NULL));
     exit (1);
   }
-  InitPictureCMap(Dpy);
+  PictureInitCMap(Dpy);
   FScreenInit(Dpy);
   /* Initialise default colorset */
   AllocColorset(0);
@@ -1466,9 +1466,9 @@ void RedrawWindow(button_info *b)
 /**
 *** LoadIconFile()
 **/
-int LoadIconFile(char *s,Picture **p)
+int LoadIconFile(char *s, FvwmPicture **p)
 {
-  *p=CachePicture(Dpy,Root,imagePath,s, save_color_limit);
+  *p=PCacheFvwmPicture(Dpy,Root,imagePath,s, save_color_limit);
   if(*p)
     return 1;
   return 0;
@@ -2950,7 +2950,7 @@ static void change_title(button_info *b, char *line)
 
 static void change_icon(button_info *b, char *line)
 {
-  Picture *new_icon;
+  FvwmPicture *new_icon;
   int l;
 
   if (line == NULL) {
@@ -2970,7 +2970,7 @@ static void change_icon(button_info *b, char *line)
   }
   free(b->icon_file);
   CopyString(&b->icon_file, line);
-  DestroyPicture(Dpy, b->icon);
+  PDestroyFvwmPicture(Dpy, b->icon);
   XDestroyWindow(Dpy, b->IconWin);
   b->IconWin = None;
   b->icon = new_icon;

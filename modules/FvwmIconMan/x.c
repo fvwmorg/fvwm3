@@ -920,7 +920,7 @@ void init_display (void)
   }
   XSetErrorHandler (handle_error);
   _XA_WM_DEL_WIN = XInternAtom(theDisplay, "WM_DELETE_WINDOW", 0);
-  InitPictureCMap (theDisplay);
+  PictureInitCMap (theDisplay);
   FScreenInit(theDisplay);
   AllocColorset(0);
   FShapeInit(theDisplay);

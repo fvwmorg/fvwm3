@@ -21,21 +21,15 @@
 
 /* ---------------------------- included header files ----------------------- */
 
-#include "config.h"
+#include "PictureBase.h"
 
-#ifdef HAVE_PNG
+#if PngSupport
 #include <png.h>
 #else
 #include <setjmp.h>
 #endif
 
 /* ---------------------------- global definitions -------------------------- */
-
-#ifdef HAVE_PNG
-#define PngSupport 1
-#else
-#define PngSupport 0
-#endif
 
 /* ---------------------------- global macros ------------------------------- */
 

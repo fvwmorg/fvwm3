@@ -131,8 +131,35 @@ and Y is a Yin Yang style (but without the dots, we are not \fIthat\fP mad).
 Please refer to the \fICOLOR GRADIENTS\fP section in the \fIfvwm\fP man page
 for the syntax of gradients.
 
-\fINoShape\fP removes tha shape mask from the colorset while \fIPlain\fP
-removes the background pixmap or gradient.
+.\"needs_check_lang
+.I Tint
+and
+.I TintMask
+take a colour and an integer between 0 and 100 as arguments.
+These cause the pixmap defined with 
+.IR Pixmap ,
+.I TiledPixmap
+or
+.I AspectPixmap
+to be tinted with the sepcified colour at a percentage rate given
+by the integer.
+.I Tint
+tints the pixmap and the pixmap background as
+.I TintMask
+tint only the pixmap.
+Unfortunately, a
+.I Transparent
+background cannot be tinted. Note that this option is activate only if
+you fvwm is compiled with XFree Xrender support (needs XFree version 4.1
+or better).
+
+.I NoShape
+removes the shape mask from the colorset,
+.I Plain
+removes the background pixmap or gradient while
+.I NoTint
+removes the pixmap tint. 
+.\"end
 
 .IP "*FvwmTheme: ReadWriteColors"
 Tells FvwmTheme to use read/write color cells for the foreground and background
@@ -188,7 +215,7 @@ will add a Yin Yang gradient background pixmap to colorset 3.  If the
 background is set to average it will be recomputed as will the foreground
 if that is set to contrast.
 
-.EX
+	.EX
  #!/bin/sh
  FvwmCommand "SendToModule FvwmTheme Colorset 7
    fg navy, bg gray"

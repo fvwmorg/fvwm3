@@ -38,7 +38,7 @@ typedef struct button
   char *truncate_title;
   int up, needsupdate, tw, set, truncatewidth;
   struct button *next;
-  Picture p;
+  FvwmPicture p;
   int reliefwidth;
   long desk;
   Bool is_sticky;
@@ -54,10 +54,10 @@ typedef struct
 } ButtonArray;
 
 /* Function Prototypes */
-extern Button *ButtonNew(char *title, Picture *p, int up);
+extern Button *ButtonNew(char *title, FvwmPicture *p, int up);
 extern void InitArray(ButtonArray *array,int x,int y,int w,int h,int rw);
 extern void UpdateArray(ButtonArray *array,int w);
-extern int AddButton(ButtonArray *array, char *title, Picture *p,int up);
+extern int AddButton(ButtonArray *array, char *title, FvwmPicture *p,int up);
 extern int UpdateButton(ButtonArray *array, int butnum, char *title, int up);
 extern void UpdateButtonIconified(
     ButtonArray *array, int butnum, int iconified);
@@ -65,7 +65,7 @@ extern void RadioButton(ButtonArray *array, int butnum, int butnumpressed);
 extern void ReorderButtons(ButtonArray *array, int butnum, int FlipFocus);
 extern int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk,
 				 int is_sticky, int skip);
-extern int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p);
+extern int UpdateButtonPicture(ButtonArray *array, int butnum, FvwmPicture *p);
 extern int UpdateButtonSet(ButtonArray *array, int butnum, int set);
 extern void RemoveButton(ButtonArray *array, int butnum);
 extern Button *find_n(ButtonArray *array, int n);
@@ -78,6 +78,6 @@ extern void SwitchButton(ButtonArray *array,int butnum);
 extern int WhichButton(ButtonArray *array,int x, int y);
 extern char *ButtonName(ButtonArray *array, int butnum);
 extern void PrintButtons(ButtonArray *array);
-extern Picture *ButtonPicture(ButtonArray *array, int butnum);
+extern FvwmPicture *ButtonPicture(ButtonArray *array, int butnum);
 extern int IsButtonVisible(Button *btn);
 extern int IsButtonIndexVisible(ButtonArray *array, int butnum);

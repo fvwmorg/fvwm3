@@ -41,8 +41,8 @@
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 
-#include <libs/InitPicture.h>               /* for InitPictureCMap */
-#include "libs/Colorset.h"               /* for InitPictureCMap */
+#include <libs/PictureBase.h>            /* for PictureInitCMap */
+#include "libs/Colorset.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 
@@ -2433,7 +2433,7 @@ int main (int argc, char **argv)
   if (ref == 0) ref = None;
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   FScreenInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);

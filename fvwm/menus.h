@@ -77,7 +77,7 @@ typedef struct MenuRootStatic
 	char *name;
 	MenuDimensions dim;
 	unsigned short items;
-	Picture *sidePic;
+	FvwmPicture *sidePic;
 	Pixel sideColor;
 	/* Menu Face */
 	MenuStyle *ms;
@@ -354,7 +354,7 @@ void change_mr_menu_style(MenuRoot *mr, char *stylename);
 void UpdateAllMenuStyles(void);
 void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
-void ParentalMenuRePaint(FvwmWindow *fw);
+void ParentalMenuRePaint(MenuRoot *mr);
 void menu_expose(XEvent *event, FvwmWindow *fw);
 
 #endif /* _MENUS_ */

@@ -37,6 +37,9 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/Picture.h"
+#include "libs/PictureGraphics.h"
+#include "libs/PictureImageLoader.h"
 #include <libs/gravity.h>
 #include <stdio.h>
 #include "fvwm.h"
@@ -58,7 +61,6 @@
 #include "decorations.h"
 #include "module_interface.h"
 #include "colorset.h"
-#include "libs/FImageLoader.h"
 #include "gnome.h"
 #include "ewmh.h"
 #include "geometry.h"
@@ -74,6 +76,7 @@ void clear_icon(FvwmWindow *fw)
 	FW_W_ICON_PIXMAP(fw) = None;
 	fw->iconPixmap = None;
 	fw->icon_maskPixmap = None;
+	fw->icon_alphaPixmap = None;
 	memset(&fw->icon_g, 0, sizeof(fw->icon_g));
 
 	return;
@@ -203,6 +206,7 @@ ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
   fw->icon_g.picture_w_g.height = 0;
   fw->iconPixmap = None;
   fw->icon_maskPixmap = None;
+  fw->icon_alphaPixmap= None;
   FW_W_ICON_PIXMAP(fw) = None;
   for (i = 0; i < 4 && fw->icon_g.picture_w_g.width == 0 &&
 	 fw->icon_g.picture_w_g.height == 0; i++)
@@ -679,10 +683,12 @@ void DrawIconWindow(FvwmWindow *fw)
   if ((fw->iconPixmap != None) && !IS_ICON_SHAPED(fw)
       && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
   {
-    RelieveRectangle(
-      dpy, FW_W_ICON_PIXMAP(fw), 0, 0, fw->icon_g.picture_w_g.width - 1,
-      fw->icon_g.picture_w_g.height - 1, Relief, Shadow,
-      ICON_RELIEF_WIDTH);
+	  RelieveRectangle(
+			   dpy, FW_W_ICON_PIXMAP(fw), 0, 0,
+			   fw->icon_g.picture_w_g.width - 1,
+			   fw->icon_g.picture_w_g.height - 1,
+			   Relief, Shadow,
+			   ICON_RELIEF_WIDTH);
   }
 
   /* need to locate the icon pixmap */
@@ -701,12 +707,21 @@ void DrawIconWindow(FvwmWindow *fw)
     {
       if (Pdefault || IS_PIXMAP_OURS(fw))
       {
-        /* it's a pixmap that need copying */
-	XCopyArea(
-	  dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw), Scr.TitleGC, 0, 0,
-	  fw->icon_g.picture_w_g.width - 2 * ICON_RELIEF_WIDTH,
-	  fw->icon_g.picture_w_g.height - 2 * ICON_RELIEF_WIDTH,
-	  ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH);
+	      if (fw->icon_alphaPixmap)
+	      {
+		      XClearWindow(dpy, FW_W_ICON_PIXMAP(fw));
+		      XSetWindowBackgroundPixmap(dpy, FW_W_ICON_PIXMAP(fw),
+						 ParentRelative);
+	      }
+	      PGraphicsCopyPixmaps(dpy, fw->iconPixmap, None,
+				   fw->icon_alphaPixmap,
+				   Pdepth,
+				   FW_W_ICON_PIXMAP(fw), Scr.TitleGC, 0, 0, 
+				   fw->icon_g.picture_w_g.width - 2 *
+				   ICON_RELIEF_WIDTH,
+				   fw->icon_g.picture_w_g.height - 2 *
+				   ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH,
+				   ICON_RELIEF_WIDTH);
       }
       else
       {
@@ -1283,22 +1298,25 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 static void GetIconFromFile(FvwmWindow *fw)
 {
 	char *path = NULL;
-	Pixel *dummy = NULL;
-	int nalloc_pixels = -1; /* do not care of allocated pixel ...? */
+	FvwmPictureFlags fpf;
 
+	fpf.alloc_pixels = 0;
+	fpf.alpha = 1;
 	fw->icon_g.picture_w_g.width = 0;
 	fw->icon_g.picture_w_g.height = 0;
-	path = findImageFile(fw->icon_bitmap_file, NULL, R_OK);
+	path = PictureFindImageFile(fw->icon_bitmap_file, NULL, R_OK);
 	if (path == NULL)
 	{
 		return;
 	}
-	if (!FImageLoadPixmapFromFile(dpy, Scr.Root, path, Scr.ColorLimit,
+	if (!PImageLoadPixmapFromFile(dpy, Scr.Root, path, Scr.ColorLimit,
 				      &fw->iconPixmap, &fw->icon_maskPixmap,
-				      &fw->icon_g.picture_w_g.width ,
+				      &fw->icon_alphaPixmap,
+				      &fw->icon_g.picture_w_g.width,
 				      &fw->icon_g.picture_w_g.height,
 				      &fw->iconDepth,
-				      &nalloc_pixels, dummy))
+				      0, NULL,
+				      fpf))
 	{
 		fvwm_msg(ERR, "GetIconFromFile", "Failed to load %s", path);
 		free(path);
@@ -1306,7 +1324,7 @@ static void GetIconFromFile(FvwmWindow *fw)
 	}
 	SET_PIXMAP_OURS(fw, 1);
 	free(path);
-	if (FShapesSupported && fw->icon_maskPixmap)
+	if (FShapesSupported && fw->icon_maskPixmap && !fw->icon_alphaPixmap)
 		SET_ICON_SHAPED(fw, 1);
 
 	return;

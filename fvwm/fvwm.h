@@ -53,8 +53,7 @@
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
 #include <X11/Intrinsic.h>
-#include <libs/InitPicture.h>
-/*#include <libs/Picture.h>*/
+#include <libs/PictureBase.h>
 #include <libs/Flocale.h>
 #include "window_flags.h"
 
@@ -702,6 +701,7 @@ typedef struct FvwmWindow
 	Pixmap iconPixmap;
 	/* pixmap for the icon mask */
 	Pixmap icon_maskPixmap;
+	Pixmap icon_alphaPixmap;
 	FlocaleFont *icon_font;
 
 	/* some parts of the window attributes */
@@ -726,7 +726,7 @@ typedef struct FvwmWindow
 	int DeIconifyDesk;
 
 	char *mini_pixmap_file;
-	Picture *mini_icon;
+	FvwmPicture *mini_icon;
 	char *icon_bitmap_file;
 
 	rectangle frame_g;

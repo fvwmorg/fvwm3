@@ -57,8 +57,8 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
-#include "libs/InitPicture.h"
 #include "libs/Picture.h"
+#include "libs/PictureGraphics.h"
 #include "FvwmAnimate.h"
 
 #define AS_PI 3.14159265358979323846
@@ -814,7 +814,7 @@ int main(int argc, char **argv) {
   }
   /* FvwmAnimate must use the root visuals so trash the fvwm one */
   putenv("FVWM_VISUALID=");
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   Scr.root = DefaultRootWindow(dpy);
   Scr.screen = DefaultScreen(dpy);
 
@@ -1052,7 +1052,7 @@ void ParseConfigLine(char *buf) {
   }
   /* capture the ImagePath setting, don't worry about ColorLimit */
   if (strncasecmp(buf, "ImagePath",9)==0) {
-    SetImagePath(&buf[9]);
+    PictureSetImagePath(&buf[9]);
   }
   /* Search for MyName (normally *FvwmAnimate) */
   else if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
@@ -1191,20 +1191,20 @@ static void CreateDrawGC(void) {
   pixmap = None;
   gcv.function = GXxor;                 /* default is to xor the lines */
   if (Animate.pixmap) {                 /* if pixmap called for */
-    Picture *picture;
+    FvwmPicture *picture;
 
-    picture = GetPicture(dpy, RootWindow(dpy,Scr.screen), 0, Animate.pixmap, 0);
+    picture = PGetFvwmPicture(dpy, RootWindow(dpy,Scr.screen), 0,
+			      Animate.pixmap, 0);
     if (!picture)
       fprintf(stderr, "%s: Could not load pixmap '%s'\n",
 	      MyName + 1, Animate.pixmap);
     else {
-      if (picture->depth == DefaultDepth(dpy, Scr.screen)) {
-	pixmap = XCreatePixmap(dpy, RootWindow(dpy, Scr.screen), picture->width,
-			       picture->height, picture->depth);
-	XCopyArea(dpy, picture->picture, pixmap, DefaultGC(dpy, Scr.screen), 0,
-                  0, picture->width, picture->height, 0, 0);
-      }
-      DestroyPicture(dpy, picture);
+      pixmap = XCreatePixmap(dpy, RootWindow(dpy, Scr.screen), picture->width,
+			       picture->height, Pdepth);
+      PGraphicsCopyPixmaps(dpy, picture->picture, None, None, picture->depth,
+			   pixmap, None,
+			   0, 0, picture->width, picture->height, 0, 0);
+      PDestroyFvwmPicture(dpy, picture);
     }
   } else if (Animate.color) {           /* if color called for */
     if (XParseColor(dpy,DefaultColormap(dpy,Scr.screen),Animate.color, &xcol)) {

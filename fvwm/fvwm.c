@@ -531,7 +531,7 @@ int main(int argc, char **argv)
   }
 
   /* make a copy of the visual stuff so that XorPixmap can swap with root */
-  SaveFvwmVisual();
+  PictureSaveFvwmVisual();
 
   FShapeInit(dpy);
   Scr.pscreen = XScreenOfDisplay(dpy, Scr.screen);

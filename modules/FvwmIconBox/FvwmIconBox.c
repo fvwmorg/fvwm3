@@ -27,7 +27,6 @@
 
 #define NONE 0
 #define VERTICAL 1
-
 #define HORIZONTAL 2
 
 #include "config.h"
@@ -61,6 +60,7 @@
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
+#include "libs/PictureGraphics.h"
 #include "FvwmIconBox.h"
 
 
@@ -185,6 +185,9 @@ static int myErrorHandler(Display *dpy, XErrorEvent *event);
 static void CleanUp(void);
 static void change_colorset(int color);
 
+Bool do_allow_bad_access = False;
+Bool was_bad_access = False;
+
 /************************************************************************
   Main
   Based on main() from GoodStuff:
@@ -267,7 +270,7 @@ int main(int argc, char **argv)
 	      XDisplayName(display_name));
       exit (1);
     }
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);
@@ -340,9 +343,12 @@ void Loop(void)
 	    {
 	    case Expose:
 	      if(Event.xexpose.count == 0){
-		if (Event.xany.window == main_win){
-		  RedrawWindow();
-		}else{
+		if (Event.xany.window == main_win)
+		{
+			RedrawWindow();
+		}
+		else
+		{
 		  tmp = Head;
 		  while(tmp != NULL){
 		    if (Event.xany.window == tmp->icon_pixmap_w){
@@ -708,112 +714,171 @@ void RedrawIcons(void)
 
 void RedrawIcon(struct icon_info *item, int f)
 {
-  unsigned long plane = 1;
-  int hr, len;
-  int diff, lm ,w, h, tw;
-  char label[256];
+	unsigned long plane = 1;
+	int hr, len;
+	int diff, lm ,w, h, tw;
+	char label[256];
 
-  hr = icon_relief/2;
+	hr = icon_relief/2;
 
-  if (Hilite == item){
-    XSetForeground(dpy, NormalGC, act_icon_fore_pix);
-    XSetBackground(dpy, NormalGC, act_icon_back_pix);
-    XSetForeground(dpy, IconReliefGC, act_icon_hilite_pix);
-    XSetForeground(dpy, IconShadowGC, act_icon_shadow_pix);
+	if (Hilite == item)
+	{
+		XSetForeground(dpy, NormalGC, act_icon_fore_pix);
+		XSetBackground(dpy, NormalGC, act_icon_back_pix);
+		XSetForeground(dpy, IconReliefGC, act_icon_hilite_pix);
+		XSetForeground(dpy, IconShadowGC, act_icon_shadow_pix);
 
-    if (max_icon_height != 0 && (IS_ICON_OURS(item)))
-      XSetWindowBackground(dpy, item->icon_pixmap_w, act_icon_back_pix);
-    XSetWindowBackground(dpy, item->IconWin, act_icon_back_pix);
-  }
-
-  /* icon pixmap */
-  if ((f & 1) && (IS_ICON_OURS(item))){
-    if (item->iconPixmap != None && item->icon_pixmap_w != None){
-      if (item->icon_depth == 1) {
-	XCopyPlane(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
-		   0, 0, item->icon_w, item->icon_h,
-		   hr, hr, plane);
-      } else {
-        if (Pdefault || IS_PIXMAP_OURS(item)) {
-	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
-		    0, 0, item->icon_w, item->icon_h, hr, hr);
-        } else {
-	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w,
-		    DefaultGC(dpy, screen),
-		    0, 0, item->icon_w, item->icon_h, 0, 0);
+		if (max_icon_height != 0 && (IS_ICON_OURS(item)))
+		{
+			if (item->icon_alphaPixmap != None)
+				XSetWindowBackgroundPixmap(dpy,
+							   item->icon_pixmap_w,
+							   ParentRelative);
+			else
+				XSetWindowBackground(dpy, item->icon_pixmap_w,
+						     act_icon_back_pix);
+		}
+		XSetWindowBackground(dpy, item->IconWin, act_icon_back_pix);
 	}
-      }
-    }
 
-    if (!(IS_ICON_SHAPED(item))
-	&& (Pdefault || (item->icon_depth == 1) || IS_PIXMAP_OURS(item))) {
-      if (item->icon_w > 0 && item->icon_h > 0)
-	RelieveRectangle(dpy, item->icon_pixmap_w, 0, 0, item->icon_w
-		         +icon_relief - 1,
-		         item->icon_h + icon_relief - 1, IconReliefGC,
-		         IconShadowGC, 2);
-      else
-	RelieveRectangle(dpy, item->icon_pixmap_w, 0, 0, max_icon_width
-		         + icon_relief - 1,
-		         max_icon_height + icon_relief - 1, IconReliefGC,
-		         IconShadowGC, 2);
-    }
-  }
+	/* icon pixmap */
+	if ((f & 1) && (IS_ICON_OURS(item)))
+	{
+		if (item->iconPixmap != None && item->icon_pixmap_w != None)
+		{
+			if (item->icon_depth == 1)
+			{
+				XCopyPlane(dpy,
+					   item->iconPixmap,
+					   item->icon_pixmap_w,
+					   NormalGC,
+					   0, 0, item->icon_w, item->icon_h,
+					   hr, hr, plane);
+			}
+			else if (IS_PIXMAP_OURS(item))
+			{
+				if (item->icon_alphaPixmap != None)
+					XClearWindow(dpy, item->icon_pixmap_w);
+				PGraphicsCopyPixmaps(dpy,
+						     item->iconPixmap,
+						     item->icon_maskPixmap,
+						     item->icon_alphaPixmap,
+						     item->icon_depth,
+						     item->icon_pixmap_w,
+						     NormalGC,
+						     0, 0,
+						     item->icon_w, item->icon_h,
+						     hr, hr);  
+			}
+			else if (Pdefault)
+			{
+				XCopyArea(dpy, item->iconPixmap,
+					  item->icon_pixmap_w,
+					  NormalGC,
+					  0, 0,
+					  item->icon_w, item->icon_h, hr, hr);
+			}
+			else
+			{
+				XCopyArea(dpy, item->iconPixmap,
+					  item->icon_pixmap_w,
+					  DefaultGC(dpy, screen),
+					  0, 0,
+					  item->icon_w, item->icon_h, 0, 0);
+			}
+		}
 
-  /* label */
-  if (f & 2){
-    w = max_icon_width + icon_relief;
-    h = max_icon_height + icon_relief;
+		if (!(IS_ICON_SHAPED(item))
+		    && (Pdefault || (item->icon_depth == 1) ||
+			IS_PIXMAP_OURS(item))) 
+		{
+			if (item->icon_w > 0 && item->icon_h > 0)
+				RelieveRectangle(dpy, item->icon_pixmap_w,
+						 0, 0, item->icon_w
+						 +icon_relief - 1,
+						 item->icon_h + icon_relief - 1,
+						 IconReliefGC,
+						 IconShadowGC, 2);
+			else
+				RelieveRectangle(dpy, item->icon_pixmap_w,
+						 0, 0, max_icon_width
+						 + icon_relief - 1,
+						 max_icon_height + 
+						 icon_relief - 1,
+						 IconReliefGC,
+						 IconShadowGC, 2);
+		}
+	}
 
-    if (IS_ICONIFIED(item)){
-      sprintf(label, "(%s)", item->name);
-    }else
-      strcpy(label, item->name);
+	/* label */
+	if (f & 2)
+	{
+		w = max_icon_width + icon_relief;
+		h = max_icon_height + icon_relief;
 
-    len = strlen(label);
-    tw = FlocaleTextWidth(Ffont, label, len);
-    diff = max_icon_width + icon_relief - tw;
-    lm = diff/2;
-    lm = lm > 4 ? lm : 4;
+		if (IS_ICONIFIED(item))
+		{
+			sprintf(label, "(%s)", item->name);
+		}
+		else
+		{
+			strcpy(label, item->name);
+		}
 
-    FwinString->str = label;
-    FwinString->win = item->IconWin;
-    FwinString->gc =  NormalGC;
-    FwinString->x = lm;
-    FwinString->y = 3 + Ffont->ascent;
+		len = strlen(label);
+		tw = FlocaleTextWidth(Ffont, label, len);
+		diff = max_icon_width + icon_relief - tw;
+		lm = diff/2;
+		lm = lm > 4 ? lm : 4;
 
-    if (Hilite == item){
-      XRaiseWindow(dpy, item->IconWin);
-      XMoveResizeWindow(dpy, item->IconWin,
-			item->x + min(0, (diff - 8))/2,
-			item->y + h,
-			max(tw + 8, w), 6 + Ffont->height);
-      XClearWindow(dpy, item->IconWin);
-      FlocaleDrawString(dpy, Ffont, FwinString, 0);
-      RelieveRectangle(dpy, item->IconWin, 0, 0,
-		       max(tw + 8, w) - 1, 6 + Ffont->height - 1,
-		       IconReliefGC, IconShadowGC, 2);
-    }else{
-      XMoveResizeWindow(dpy, item->IconWin, item->x, item->y + h,
-			w, 6 + Ffont->height);
-      XClearWindow(dpy, item->IconWin);
-      FlocaleDrawString(dpy, Ffont, FwinString, 0);
-      RelieveRectangle(dpy, item->IconWin, 0, 0,
-		       w - 1, 5 + Ffont->height,
-		       IconReliefGC, IconShadowGC, 2);
-    }
-  }
+		FwinString->str = label;
+		FwinString->win = item->IconWin;
+		FwinString->gc =  NormalGC;
+		FwinString->x = lm;
+		FwinString->y = 3 + Ffont->ascent;
 
-  if (Hilite == item){
-    XSetForeground(dpy, NormalGC, icon_fore_pix);
-    XSetBackground(dpy, NormalGC, icon_back_pix);
-    XSetForeground(dpy, IconReliefGC, icon_hilite_pix);
-    XSetForeground(dpy, IconShadowGC, icon_shadow_pix);
+		if (Hilite == item)
+		{
+			XRaiseWindow(dpy, item->IconWin);
+			XMoveResizeWindow(dpy, item->IconWin,
+					  item->x + min(0, (diff - 8))/2,
+					  item->y + h,
+					  max(tw + 8, w), 6 + Ffont->height);
+			XClearWindow(dpy, item->IconWin);
+			FlocaleDrawString(dpy, Ffont, FwinString, 0);
+			RelieveRectangle(dpy, item->IconWin, 0, 0,
+					 max(tw + 8, w) - 1,
+					 6 + Ffont->height - 1,
+					 IconReliefGC, IconShadowGC, 2);
+		}
+		else
+		{
+			XMoveResizeWindow(dpy, item->IconWin,
+					  item->x, item->y + h,
+					  w, 6 + Ffont->height);
+			XClearWindow(dpy, item->IconWin);
+			FlocaleDrawString(dpy, Ffont, FwinString, 0);
+			RelieveRectangle(dpy, item->IconWin, 0, 0,
+					 w - 1, 5 + Ffont->height,
+					 IconReliefGC, IconShadowGC, 2);
+		}
+	}
 
-    if (max_icon_height != 0 && (IS_ICON_OURS(item)))
-      XSetWindowBackground(dpy, item->icon_pixmap_w, icon_back_pix);
-    XSetWindowBackground(dpy, item->IconWin, icon_back_pix);
-  }
+	if (Hilite == item)
+	{
+		XSetForeground(dpy, NormalGC, icon_fore_pix);
+		XSetBackground(dpy, NormalGC, icon_back_pix);
+		XSetForeground(dpy, IconReliefGC, icon_hilite_pix);
+		XSetForeground(dpy, IconShadowGC, icon_shadow_pix);
+
+		if (max_icon_height != 0 && (IS_ICON_OURS(item)) && 
+		    item->icon_alphaPixmap == None)
+		{
+			XSetWindowBackground(dpy, item->icon_pixmap_w,
+					     icon_back_pix);
+		}
+		XSetWindowBackground(dpy, item->IconWin, icon_back_pix);
+	}
 }
 
 void animate(struct icon_info *item, unsigned long *body)
@@ -1552,25 +1617,38 @@ DeadPipe(int nonsense)
 static void
 CleanUp(void)
 {
+	struct icon_info *tmpi;
 #if 0
-  struct icon_info *tmpi, *tmpi2;
-  struct mousefunc *tmpm, *tmpm2;
-  struct keyfunc *tmpk, *tmpk2;
-  struct iconfile *tmpf, *tmpf2;
+	struct icon_info *tmpi, *tmpi2;
+	struct mousefunc *tmpm, *tmpm2;
+	struct keyfunc *tmpk, *tmpk2;
+	struct iconfile *tmpf, *tmpf2;
 #endif
 
-  if (!is_dead_pipe)
-  {
-    if ((local_flags & SETWMICONSIZE))
-    {
-      XDeleteProperty(dpy, Root, XA_WM_ICON_SIZE);
-      XFlush(dpy);
-    }
-  }
-
+	if (!is_dead_pipe)
+	{
+		if ((local_flags & SETWMICONSIZE))
+		{
+			XDeleteProperty(dpy, Root, XA_WM_ICON_SIZE);
+			XFlush(dpy);
+		}
+	}
+	/* DV: my, what is all this stuff good for? All memory gets freed
+	 * automatically! 
+	 * OC: Yes but the icon window must be reparented to the root window */
+	tmpi = Head;
+	while(tmpi != NULL)
+	{
+		if (!IS_ICON_OURS(tmpi) && tmpi->icon_pixmap_w &&
+		    tmpi->icon_w != 0)
+		{
+			XSelectInput(dpy, tmpi->icon_pixmap_w, NoEventMask);
+			XReparentWindow(dpy, tmpi->icon_pixmap_w, Root, 0, 0);
+			XUnmapWindow(dpy, tmpi->icon_pixmap_w);
+		}
+		tmpi = tmpi->next;
+	}
 #if 0
-  /* DV: my, what is all this stuff good for? All memory gets freed
-   * automatically! */
   if (FvwmDefaultIcon != NULL)
     free(FvwmDefaultIcon);
 
@@ -3138,14 +3216,20 @@ char *stripcpy2(char *source)
 static int
 myErrorHandler(Display *dpy, XErrorEvent *event)
 {
-  /* some errors are ignored, mostly due to colorsets changing too fast */
-  if (event->error_code == BadWindow)
-    return 0;
-  if (event->error_code == BadDrawable)
-    return 0;
-  if (event->error_code == BadPixmap)
-    return 0;
+	if((event->error_code == BadAccess) && do_allow_bad_access)
+	{
+		/* may happen when reparenting a icon window */
+		was_bad_access = 1;
+		return 0;
+	}
+	/* some errors are ignored, mostly due to colorsets changing too fast */
+	if (event->error_code == BadWindow)
+		return 0;
+	if (event->error_code == BadDrawable)
+		return 0;
+	if (event->error_code == BadPixmap)
+		return 0;
 
-  PrintXErrorAndCoredump(dpy, event, MyName);
-  return 0;
+	PrintXErrorAndCoredump(dpy, event, MyName);
+	return 0;
 }

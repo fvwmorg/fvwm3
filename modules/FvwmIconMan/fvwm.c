@@ -63,7 +63,7 @@ typedef struct {
 
 typedef struct {
   Ulong app_id, frame_id, dbase_entry;
-  Ulong width, height, depth, picture, mask;
+  Ulong width, height, depth, picture, mask, alpha;
   union {
     Ulong name_long[1];
     Uchar name[4];
@@ -482,8 +482,9 @@ static void mini_icon (FvwmPacketBody *body)
   }
   win = id_to_win (app_id);
   set_win_picture (win, body->mini_icon_data.picture,
-		   body->mini_icon_data.mask, body->mini_icon_data.depth,
-		   body->mini_icon_data.width, body->mini_icon_data.height);
+		   body->mini_icon_data.mask, body->mini_icon_data.alpha,
+		   body->mini_icon_data.depth, body->mini_icon_data.width,
+		   body->mini_icon_data.height);
 
 
   ConsoleDebug (FVWM, "mini_icon: 0x%lx 0x%lx %dx%dx%d\n",

@@ -23,8 +23,9 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/PictureBase.h"
 #include "libs/Picture.h"
-#include "libs/FImageLoader.h"
+#include "libs/PictureImageLoader.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "window_flags.h"
@@ -180,275 +181,317 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 				 unsigned int *orig_size,
 				 Bool is_mini_icon)
 {
-  CARD32 *new_icon = NULL;
-  unsigned char *c_new_icon;
-  int keep_start = 0, keep_length = 0;
-  int width = 0, height = 0;
-  unsigned int i,j,k,l,m;
-  int s;
-  Pixmap pixmap = None;
-  Pixmap mask = None;
-  XImage *image;
-  XImage *m_image;
-  int save_picture_w_g_width = 0;
-  int save_picture_w_g_height = 0;
-  int save_icon_depth = 0;
-  Pixmap save_icon_pixmap = None;
-  Pixmap save_icon_mask = None;
-  Window save_icon_pixmap_w = None;
-  Bool is_pixmap_ours = False;
-  Bool is_icon_ours = False;
-  Bool is_icon_shaped = False;
-  Bool destroy_icon_pix = False;
+	CARD32 *new_icon = NULL;
+	unsigned char *c_new_icon;
+	int keep_start = 0, keep_length = 0;
+	int width = 0, height = 0;
+	unsigned int i,j,k,l,m;
+	int s;
+	Pixmap pixmap = None;
+	Pixmap mask = None;
+	Pixmap alpha = None;
+	XImage *image;
+	XImage *m_image = NULL;
+	XImage *a_image = NULL;
+	int save_picture_w_g_width = 0;
+	int save_picture_w_g_height = 0;
+	int save_icon_depth = 0;
+	Pixmap save_icon_pixmap = None;
+	Pixmap save_icon_mask = None;
+	Window save_icon_pixmap_w = None;
+	Bool is_pixmap_ours = False;
+	Bool is_icon_ours = False;
+	Bool is_icon_shaped = False;
+	Bool destroy_icon_pix = False;
 
-  s = *orig_size / sizeof(CARD32);
-  *orig_size = 0;
+	s = *orig_size / sizeof(CARD32);
+	*orig_size = 0;
 
-  if (is_mini_icon)
-  {
-    if (FMiniIconsSupported && fwin->mini_icon != NULL)
-    {
-      pixmap = fwin->mini_icon->picture;
-      mask = fwin->mini_icon->mask;
-      width = fwin->mini_icon->width;
-      height = fwin->mini_icon->height;
-    }
-  }
-  else
-  {
-    /* should save and restore any iformation modified by
-     * a call to GetIconPicture */
-    save_picture_w_g_width = fwin->icon_g.picture_w_g.width;
-    save_picture_w_g_height = fwin->icon_g.picture_w_g.height;
-    save_icon_depth = fwin->iconDepth;
-    save_icon_pixmap = fwin->iconPixmap;
-    save_icon_mask = fwin->icon_maskPixmap;
-    save_icon_pixmap_w =  FW_W_ICON_PIXMAP(fwin);
-    is_pixmap_ours = IS_PIXMAP_OURS(fwin);
-    is_icon_ours = IS_ICON_OURS(fwin);
-    is_icon_shaped = IS_ICON_SHAPED(fwin);
-    GetIconPicture(fwin, True);
-    if (IS_PIXMAP_OURS(fwin))
-      destroy_icon_pix = True;
-    pixmap = fwin->iconPixmap;
-    mask = fwin->icon_maskPixmap;
-    width = fwin->icon_g.picture_w_g.width;
-    height = fwin->icon_g.picture_w_g.height;
-
-    fwin->icon_g.picture_w_g.width = save_picture_w_g_width;
-    fwin->icon_g.picture_w_g.height = save_picture_w_g_height;
-    fwin->iconDepth = save_icon_depth;
-    fwin->iconPixmap = save_icon_pixmap;
-    fwin->icon_maskPixmap = save_icon_mask;
-    FW_W_ICON_PIXMAP(fwin) = save_icon_pixmap_w;
-    SET_ICON_OURS(fwin, is_icon_ours);
-    SET_PIXMAP_OURS(fwin, is_pixmap_ours);
-    SET_ICON_SHAPED(fwin, is_icon_shaped);
-  }
-
-  if (pixmap == None)
-    return NULL;
-
-  if (FMiniIconsSupported && orig_icon != NULL)
-  {
-    int k_width =
-      (is_mini_icon)? fwin->ewmh_icon_width : fwin->ewmh_mini_icon_width;
-    int k_height =
-      (is_mini_icon)? fwin->ewmh_icon_height : fwin->ewmh_mini_icon_height;
-
-    i = 0;
-    while(i < s)
-    {
-      if (i+1 < s)
-      {
-	if (i + 1 + orig_icon[i]*orig_icon[i+1] < s)
+	if (is_mini_icon)
 	{
-	  if (orig_icon[i] == k_width && orig_icon[i+1] == k_height)
-	  {
-	    keep_start = i;
-	    keep_length =  2 + orig_icon[i]*orig_icon[i+1];
-	    i = s;
-	  }
+		if (FMiniIconsSupported && fwin->mini_icon != NULL)
+		{
+			pixmap = fwin->mini_icon->picture;
+			mask = fwin->mini_icon->mask;
+			alpha = fwin->mini_icon->alpha;
+			width = fwin->mini_icon->width;
+			height = fwin->mini_icon->height;
+		}
 	}
-	if (i != s && orig_icon[i]*orig_icon[i+1] > 0)
-	  i = i + 2 + orig_icon[i]*orig_icon[i+1];
 	else
-	  i = s;
-      }
-      else
-	i = s;
-    }
-  }
-
-  image = XGetImage(dpy, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
-  if (image == None)
-  {
-    fvwm_msg(ERR, "EWMH_SetWmIconFromPixmap","cannot create XImage\n");
-    if (destroy_icon_pix)
-    {
-      XFreePixmap(dpy, pixmap);
-      if (mask != None)
-	XFreePixmap(dpy, mask);
-    }
-    return NULL;
-  }
-
-  m_image = XGetImage(dpy, mask, 0, 0, width, height, AllPlanes, ZPixmap);
-
-  *orig_size = (height*width + 2 + keep_length) * sizeof(CARD32);
-  new_icon = (CARD32 *)safemalloc(*orig_size);
-  if (keep_length > 0)
-    memcpy(new_icon, &orig_icon[keep_start], keep_length * sizeof(CARD32));
-  new_icon[keep_length] = width;
-  new_icon[1+keep_length] = height;
-
-  c_new_icon = (unsigned char *)new_icon;
-  k = 0;
-  l = 4 * (2 + keep_length);
-  m = 0;
-
-  switch(image->depth)
-  {
-    case 1:
-    {
-      XColor colors[2];
-      unsigned short fg[3];
-      unsigned short bg[3];
-
-      colors[0].pixel = fwin->colors.fore;
-      colors[1].pixel = fwin->colors.back;
-      XQueryColors(dpy, Pcmap, colors, 2);
-      fg[0] = colors[0].blue/257;
-      fg[1] = colors[0].green/257;
-      fg[2] = colors[0].red/257;
-      bg[0] = colors[1].blue/257;
-      bg[1] = colors[1].green/257;
-      bg[2] = colors[1].red/257;
-      for (j = 0; j < height; j++)
-	for (i = 0; i < width; i++)
 	{
-	  if (m_image != None && (XGetPixel(m_image, i, j) == 0))
-	  {
-	    c_new_icon[l++] = 0;
-	    c_new_icon[l++] = 0;
-	    c_new_icon[l++] = 0;
-	    c_new_icon[l++] = 0;
-	  }
-	  else
-	  {
-	    if (XGetPixel(image, i, j) == 0)
-	    {
-	      c_new_icon[l++] = bg[0];
-	      c_new_icon[l++] = bg[1];
-	      c_new_icon[l++] = bg[2];
-	      c_new_icon[l++] = 255;
-	    }
-	    else
-	    {
-	      c_new_icon[l++] = fg[0];
-	      c_new_icon[l++] = fg[1];
-	      c_new_icon[l++] = fg[2];
-	      c_new_icon[l++] = 255;
-	    }
-	  }
-	}
-      break;
-    }
-    default: /* depth = Pdepth */
-    {
-      unsigned char *cm;
-      XColor *colors;
+		/* should save and restore any iformation modified by
+		 * a call to GetIconPicture */
+		save_picture_w_g_width = fwin->icon_g.picture_w_g.width;
+		save_picture_w_g_height = fwin->icon_g.picture_w_g.height;
+		save_icon_depth = fwin->iconDepth;
+		save_icon_pixmap = fwin->iconPixmap;
+		save_icon_mask = fwin->icon_maskPixmap;
+		save_icon_pixmap_w =  FW_W_ICON_PIXMAP(fwin);
+		is_pixmap_ours = IS_PIXMAP_OURS(fwin);
+		is_icon_ours = IS_ICON_OURS(fwin);
+		is_icon_shaped = IS_ICON_SHAPED(fwin);
+		GetIconPicture(fwin, True);
+		if (IS_PIXMAP_OURS(fwin))
+			destroy_icon_pix = True;
+		pixmap = fwin->iconPixmap;
+		mask = fwin->icon_maskPixmap;
+		alpha = fwin->icon_alphaPixmap;
+		width = fwin->icon_g.picture_w_g.width;
+		height = fwin->icon_g.picture_w_g.height;
 
-      colors = (XColor *)safemalloc(width * height * sizeof(XColor));
-      cm = (unsigned char *)safemalloc(width * height * sizeof(char));
-      for (j = 0; j < height; j++)
-	for (i = 0; i < width; i++)
-	{
-	  if (m_image != None && (XGetPixel(m_image, i, j) == 0))
-	    cm[m++] = 0;
-	  else
-	  {
-	    cm[m++] = 255;
-	    colors[k++].pixel = XGetPixel(image, i, j);
-	  }
+		fwin->icon_g.picture_w_g.width = save_picture_w_g_width;
+		fwin->icon_g.picture_w_g.height = save_picture_w_g_height;
+		fwin->iconDepth = save_icon_depth;
+		fwin->iconPixmap = save_icon_pixmap;
+		fwin->icon_maskPixmap = save_icon_mask;
+		FW_W_ICON_PIXMAP(fwin) = save_icon_pixmap_w;
+		SET_ICON_OURS(fwin, is_icon_ours);
+		SET_PIXMAP_OURS(fwin, is_pixmap_ours);
+		SET_ICON_SHAPED(fwin, is_icon_shaped);
 	}
 
-      for (i = 0; i < k; i += 256)
-	XQueryColors(dpy, Pcmap, &colors[i], min(k - i, 256));
+	if (pixmap == None)
+		return NULL;
 
-      k = 0;m = 0;
-      for (j = 0; j < height; j++)
-	for (i = 0; i < width; i++)
+	if (FMiniIconsSupported && orig_icon != NULL)
 	{
-	  if (cm[m] == 255)
-	  {
-	    c_new_icon[l++] = colors[k].blue/257;
-	    c_new_icon[l++] = colors[k].green/257;
-	    c_new_icon[l++] = colors[k].red/257;
-	    c_new_icon[l++] = 255;
-	    k++;
-	  }
-	  else
-	  {
-	    c_new_icon[l++] = 0;
-	    c_new_icon[l++] = 0;
-	    c_new_icon[l++] = 0;
-	    c_new_icon[l++] = 0;
-	  }
-	  m++;
+		int k_width = (is_mini_icon)?
+			fwin->ewmh_icon_width : fwin->ewmh_mini_icon_width;
+		int k_height = (is_mini_icon)?
+			fwin->ewmh_icon_height : fwin->ewmh_mini_icon_height;
+
+		i = 0;
+		while(i < s)
+		{
+			if (i+1 < s)
+			{
+				if (i + 1 + orig_icon[i]*orig_icon[i+1] < s)
+				{
+					if (orig_icon[i] == k_width &&
+					    orig_icon[i+1] == k_height)
+					{
+						keep_start = i;
+						keep_length =  2 +
+						     orig_icon[i]*orig_icon[i+1];
+						i = s;
+					}
+				}
+				if (i != s && orig_icon[i]*orig_icon[i+1] > 0)
+					i = i + 2 + orig_icon[i]*orig_icon[i+1];
+				else
+					i = s;
+			}
+			else
+				i = s;
+		}
 	}
 
-      free(colors);
-      free(cm);
-      break;
-    }
-  } /* switch */
+	image = XGetImage(dpy, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
+	if (image == NULL)
+	{
+		fvwm_msg(ERR, "EWMH_SetWmIconFromPixmap",
+			 "cannot create XImage\n");
+		if (destroy_icon_pix)
+		{
+			XFreePixmap(dpy, pixmap);
+			if (mask != None)
+				XFreePixmap(dpy, mask);
+			if (alpha != None)
+				XFreePixmap(dpy, alpha);
+		}
+		return NULL;
+	}
+
+	if (mask != None)
+	{
+		m_image = XGetImage(dpy, mask, 0, 0, width, height,
+				    AllPlanes, ZPixmap);
+	}
+	if (alpha != None)
+	{
+		a_image = XGetImage(dpy, alpha, 0, 0, width, height,
+				    AllPlanes, ZPixmap);
+	}
+	*orig_size = (height*width + 2 + keep_length) * sizeof(CARD32);
+	new_icon = (CARD32 *)safemalloc(*orig_size);
+	if (keep_length > 0)
+	{
+		memcpy(new_icon, &orig_icon[keep_start],
+		       keep_length * sizeof(CARD32));
+	}
+	new_icon[keep_length] = width;
+	new_icon[1+keep_length] = height;
+
+	c_new_icon = (unsigned char *)new_icon;
+	k = 0;
+	l = 4 * (2 + keep_length);
+	m = 0;
+
+	switch(image->depth)
+	{
+	case 1:
+	{
+		XColor colors[2];
+		unsigned short fg[3];
+		unsigned short bg[3];
+
+		colors[0].pixel = fwin->colors.fore;
+		colors[1].pixel = fwin->colors.back;
+		XQueryColors(dpy, Pcmap, colors, 2);
+		fg[0] = colors[0].blue/257;
+		fg[1] = colors[0].green/257;
+		fg[2] = colors[0].red/257;
+		bg[0] = colors[1].blue/257;
+		bg[1] = colors[1].green/257;
+		bg[2] = colors[1].red/257;
+		for (j = 0; j < height; j++)
+		{
+			for (i = 0; i < width; i++)
+			{
+				if (m_image != NULL &&
+				    (XGetPixel(m_image, i, j) == 0))
+				{
+					c_new_icon[l++] = 0;
+					c_new_icon[l++] = 0;
+					c_new_icon[l++] = 0;
+					c_new_icon[l++] = 0;
+				}
+				else
+				{
+					if (XGetPixel(image, i, j) == 0)
+					{
+						c_new_icon[l++] = bg[0];
+						c_new_icon[l++] = bg[1];
+						c_new_icon[l++] = bg[2];
+						c_new_icon[l++] = 255;
+					}
+					else
+					{
+						c_new_icon[l++] = fg[0];
+						c_new_icon[l++] = fg[1];
+						c_new_icon[l++] = fg[2];
+						c_new_icon[l++] = 255;
+					}
+				}
+			}
+		}
+		break;
+		
+	}
+	default: /* depth = Pdepth */
+	{
+		unsigned char *cm;
+		XColor *colors;
+
+		colors = (XColor *)safemalloc(width * height * sizeof(XColor));
+		cm = (unsigned char *)safemalloc(width * height * sizeof(char));
+		for (j = 0; j < height; j++)
+		{
+			for (i = 0; i < width; i++)
+			{
+				if (m_image != NULL &&
+				    (XGetPixel(m_image, i, j) == 0))
+				{
+					cm[m++] = 0;
+				}
+				else
+				{
+					if (a_image != NULL)
+					{
+						cm[m++] = (unsigned char)
+						    XGetPixel(a_image, i, j);
+					}
+					else
+					{
+						cm[m++] = 255;
+					}
+					colors[k++].pixel = 
+						XGetPixel(image, i, j);
+				}
+			}
+		}
+		for (i = 0; i < k; i += 256)
+			XQueryColors(dpy, Pcmap, &colors[i], min(k - i, 256));
+
+		k = 0;m = 0;
+		for (j = 0; j < height; j++)
+		{
+			for (i = 0; i < width; i++)
+			{
+				if (cm[m] > 0)
+				{
+					c_new_icon[l++] = colors[k].blue/257;
+					c_new_icon[l++] = colors[k].green/257;
+					c_new_icon[l++] = colors[k].red/257;
+					c_new_icon[l++] = cm[m];
+					k++;
+				}
+				else
+				{
+					c_new_icon[l++] = 0;
+					c_new_icon[l++] = 0;
+					c_new_icon[l++] = 0;
+					c_new_icon[l++] = 0;
+				}
+				m++;
+			}
+		}
+		free(colors);
+		free(cm);
+		break;
+	}
+	} /* switch */
 
 #if 0 /* this is dramatically slow */
-  for (j = 0; j < height; j++)
-    for (i = 0; i < width; i++)
-    {
-      c.pixel = XGetPixel(image, i, j);
-      XQueryColor(dpy, Pcmap, &c);
-      k = 4*(i + j*width +2 +keep_length);
-      c_new_icon[k] = (unsigned short)c.blue/257;
-      c_new_icon[k+1] = (unsigned short)c.green/257;
-      c_new_icon[k+2] = (unsigned short)c.red/257;
-      if (m_image != None && (XGetPixel(m_image, i, j) == 0))
-	c_new_icon[k+3] = 0;
-      else
-	c_new_icon[k+3] = 255;
-    }
+	for (j = 0; j < height; j++)
+		for (i = 0; i < width; i++)
+		{
+			c.pixel = XGetPixel(image, i, j);
+			XQueryColor(dpy, Pcmap, &c);
+			k = 4*(i + j*width +2 +keep_length);
+			c_new_icon[k] = (unsigned short)c.blue/257;
+			c_new_icon[k+1] = (unsigned short)c.green/257;
+			c_new_icon[k+2] = (unsigned short)c.red/257;
+			if (m_image != None && (XGetPixel(m_image, i, j) == 0))
+				c_new_icon[k+3] = 0;
+			else
+				c_new_icon[k+3] = 255;
+		}
 #endif
 
-  if (is_mini_icon)
-  {
-    fwin->ewmh_mini_icon_width = width;
-    fwin->ewmh_mini_icon_height = height;
-  }
-  else
-  {
-    fwin->ewmh_icon_width = width;
-    fwin->ewmh_icon_height = height;
-  }
+	if (is_mini_icon)
+	{
+		fwin->ewmh_mini_icon_width = width;
+		fwin->ewmh_mini_icon_height = height;
+	}
+	else
+	{
+		fwin->ewmh_icon_width = width;
+		fwin->ewmh_icon_height = height;
+	}
 
-  ewmh_ChangeProperty(FW_W(fwin),"_NET_WM_ICON",
-		      EWMH_ATOM_LIST_PROPERTY_NOTIFY,
-		      (unsigned char *)new_icon,
-		      height*width + 2 + keep_length);
+	ewmh_ChangeProperty(FW_W(fwin),"_NET_WM_ICON",
+			    EWMH_ATOM_LIST_PROPERTY_NOTIFY,
+			    (unsigned char *)new_icon,
+			    height*width + 2 + keep_length);
 
-  if (destroy_icon_pix)
-  {
-    XFreePixmap(dpy, pixmap);
-    if (mask != None)
-      XFreePixmap(dpy, mask);
-  }
+	if (destroy_icon_pix)
+	{
+		XFreePixmap(dpy, pixmap);
+		if (mask != None)
+			XFreePixmap(dpy, mask);
+		if (alpha != None)
+			XFreePixmap(dpy, alpha);
+	}
 
-  XDestroyImage(image);
-  if (m_image != None)
-    XDestroyImage(m_image);
+	XDestroyImage(image);
+	if (m_image != None)
+		XDestroyImage(m_image);
+	if (a_image != None)
+		XDestroyImage(a_image);
 
-  return new_icon;
+	return new_icon;
 }
 
 /* ***************************************************************************
@@ -611,7 +654,9 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
   int max_w, max_h;
   Pixmap pixmap = None;
   Pixmap mask = None;
+  Pixmap alpha = None;
   Bool free_list = False;
+  int have_alpha;
 
   if (list == NULL)
   {
@@ -648,19 +693,31 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 
   pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, Pdepth);
   mask = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 1);
-  if (!FImageCreatePixmapFromArgbData(dpy, Scr.Root, Scr.ColorLimit,
+  if (XRenderSupport)
+  {
+	  alpha = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 8);
+  }
+  if (!PImageCreatePixmapFromArgbData(dpy, Scr.Root, Scr.ColorLimit,
 				      (unsigned char *)list,
 				      start, width, height,
-				      pixmap, mask) || pixmap == None)
+				      pixmap, mask, alpha, &have_alpha)
+      || pixmap == None)
   {
     fvwm_msg(ERR, "EWMH_SetIconFromWMIcon","fail to create a pixmap\n");
     if (pixmap != None)
       XFreePixmap(dpy, pixmap);
     if (mask != None)
       XFreePixmap(dpy, mask);
+    if (alpha != None)
+      XFreePixmap(dpy, alpha);
     if (free_list)
       free(list);
     return 0;
+  }
+  if (!have_alpha && alpha != None)
+  {
+	  XFreePixmap(dpy, alpha);
+	  alpha = None;
   }
 
   if (FMiniIconsSupported && is_mini_icon && !DO_EWMH_MINI_ICON_OVERRIDE(fwin))
@@ -670,23 +727,19 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
     CopyString(&name,"ewmh_mini_icon");
     if (fwin->mini_icon)
     {
-	DestroyPicture(dpy,fwin->mini_icon);
+	PDestroyFvwmPicture(dpy,fwin->mini_icon);
 	fwin->mini_icon = 0;
     }
-    fwin->mini_icon = CachePictureFromPixmap(dpy, Scr.NoFocusWin, name,
-					     pixmap, mask,
-					     width, height);
+    fwin->mini_icon = PCacheFvwmPictureFromPixmap(dpy, Scr.NoFocusWin,
+						  name,pixmap, mask, alpha,
+						  width, height);
     if (fwin->mini_icon != NULL)
     {
       fwin->mini_pixmap_file = name;
-      BroadcastMiniIcon(M_MINI_ICON,
-			FW_W(fwin), FW_W_FRAME(fwin), (unsigned long)fwin,
-			fwin->mini_icon->width,
-			fwin->mini_icon->height,
-			fwin->mini_icon->depth,
-			fwin->mini_icon->picture,
-			fwin->mini_icon->mask,
-			fwin->mini_pixmap_file);
+      BroadcastFvwmPicture(M_MINI_ICON,
+			   FW_W(fwin), FW_W_FRAME(fwin), (unsigned long)fwin,
+			   fwin->mini_icon,
+			   fwin->mini_pixmap_file);
       border_redraw_decorations(fwin);
     }
   }
@@ -694,11 +747,12 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
   {
     fwin->iconPixmap = pixmap;
     fwin->icon_maskPixmap = mask;
+    fwin->icon_alphaPixmap = alpha;
     fwin->icon_g.picture_w_g.width = width;
     fwin->icon_g.picture_w_g.height = height;
     fwin->iconDepth = Pdepth;
     SET_PIXMAP_OURS(fwin, 1);
-    if (FShapesSupported && mask)
+    if (FShapesSupported && mask && !alpha)
       SET_ICON_SHAPED(fwin, 1);
   }
   if (free_list)

@@ -32,6 +32,7 @@
 #include "geometry.h"
 #include "module_interface.h"
 #include "borders.h"
+#include "icons.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -1071,6 +1072,10 @@ void move_icon_to_position(
 			dpy, FW_W_ICON_TITLE(fw),
 			fw->icon_g.title_w_g.x,
 			fw->icon_g.title_w_g.y);
+		if (fw->icon_alphaPixmap)
+		{
+			DrawIconWindow(fw);
+		}
 	}
 
 	return;

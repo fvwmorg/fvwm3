@@ -271,16 +271,14 @@ void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
       MyDrawString(dpy,xobj,xobj->win,i,j,str,fore,hili,back,!xobj->flags[1]);
     }
     /* Dessin de l'icone */
-    if (xobj->icon_maskPixmap!=None)
-      XSetClipMask(dpy, xobj->gc, xobj->icon_maskPixmap);
     j=(xobj->height - xobj->icon_h)/2+offset;
     i=(xobj->width - xobj->icon_w)/2+offset;
-    XSetClipOrigin(dpy, xobj->gc, i, j);
-    XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
-    
-    XCopyArea(dpy, xobj->iconPixmap, xobj->win, xobj->gc, 0, 0,
-	      xobj->icon_w, xobj->icon_h, i, j);
-    XSetClipMask(dpy, xobj->gc, None);
+    PGraphicsCopyPixmaps(dpy, xobj->iconPixmap,
+			 xobj->icon_maskPixmap,
+			 xobj->icon_alphaPixmap,
+			 Pdepth, xobj->win, xobj->gc,
+			 0, 0, xobj->icon_w, xobj->icon_h,
+			 i, j);
   }
   free(str);
 }

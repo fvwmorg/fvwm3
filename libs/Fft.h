@@ -23,7 +23,6 @@
 #define Picture XRenderPicture
 #include <X11/Xft/Xft.h>
 #undef Picture
-#define Picture Picture
 #endif
 
 /* ---------------------------- global definitions -------------------------- */

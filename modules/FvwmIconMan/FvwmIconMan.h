@@ -192,8 +192,8 @@ typedef struct Function {
 typedef struct win_data {
   struct button *button;
   /* stuff shadowed in the Button structure */
-  Picture pic;
-  Picture old_pic;
+  FvwmPicture pic;
+  FvwmPicture old_pic;
   Uchar iconified, state;
 
   Ulong desknum;
@@ -222,7 +222,7 @@ typedef struct button {
   int x, y, w, h; /* current coords of button */
   struct {
     int dirty_flags;
-    Picture pic;
+    FvwmPicture pic;
     WinData *win;
     char *display_string;
     int x, y, w, h;

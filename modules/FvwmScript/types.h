@@ -17,8 +17,8 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
-#include "libs/InitPicture.h"
 #include "libs/Picture.h"
+#include "libs/PictureGraphics.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
 
@@ -213,6 +213,7 @@ struct XObj
   char *font;			/* Police utilisee */
   Pixmap iconPixmap;		/* Icone charge */
   Pixmap icon_maskPixmap;	/* Icone masque */
+  Pixmap icon_alphaPixmap;	/* alpha channel */
   int icon_w,icon_h;		/* Largeur et hauteur de l'icone */
   FlocaleFont *Ffont;
   int value;			/* Valeur courante */

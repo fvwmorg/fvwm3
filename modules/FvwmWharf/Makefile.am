@@ -14,6 +14,8 @@ EXTRA_DIST = $(man_MANS) sample.style \
 	   OffiX/DragAndDrop.h OffiX/DragAndDropTypes.h
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(png_LIBS) \
-	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS)
+	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) \
+	$(Xrender_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
+	$(Xrender_CFLAGS)

@@ -20,8 +20,8 @@ FvwmButtons_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS)  \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) \
-	$(Xft_LIBS) $(FT2_LIBS) $(Bidi_LIBS) $(png_LIBS)
+	$(Xrender_LIBS) $(Xft_LIBS) $(FT2_LIBS) $(Bidi_LIBS) $(png_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) \
-	$(FT2_CFLAGS) $(fribidi_CFLAGS) $(png_CFLAGS)
+	$(Xrender_CFLAGS) $(FT2_CFLAGS) $(fribidi_CFLAGS) $(png_CFLAGS)
 

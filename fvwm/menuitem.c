@@ -21,11 +21,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <X11/Intrinsic.h>
-#include <libs/Picture.h>
-
 #include "libs/fvwmlib.h"
 #include "libs/safemalloc.h"
 #include "libs/Flocale.h"
+#include <libs/Picture.h>
+#include <libs/PictureGraphics.h>
 #include "externs.h"
 #include "fvwm.h"
 #include "cursor.h"
@@ -155,13 +155,13 @@ void menuitem_free(MenuItem *mi)
 	}
 	if (MI_PICTURE(mi))
 	{
-		DestroyPicture(dpy,MI_PICTURE(mi));
+		PDestroyFvwmPicture(dpy,MI_PICTURE(mi));
 	}
 	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
 	{
 		if (MI_MINI_ICON(mi)[i])
 		{
-			DestroyPicture(dpy, MI_MINI_ICON(mi)[i]);
+			PDestroyFvwmPicture(dpy, MI_MINI_ICON(mi)[i]);
 		}
 	}
 	free(mi);
@@ -196,14 +196,14 @@ MenuItem *menuitem_clone(MenuItem *mi)
 	}
 	if (MI_PICTURE(mi) != NULL)
 	{
-		MI_PICTURE(new_mi) = fvwmlib_clone_picture(MI_PICTURE(mi));
+		MI_PICTURE(new_mi) = PCloneFvwmPicture(MI_PICTURE(mi));
 	}
 	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
 	{
 		if (MI_MINI_ICON(mi)[i] != NULL)
 		{
 			MI_MINI_ICON(new_mi)[i] =
-				fvwmlib_clone_picture(MI_MINI_ICON(mi)[i]);
+				PCloneFvwmPicture(MI_MINI_ICON(mi)[i]);
 		}
 	}
 
@@ -320,6 +320,7 @@ void menuitem_paint(
 	short relief_thickness = ST_RELIEF_THICKNESS(ms);
 	Bool is_item_selected;
 	Bool xft_redraw = False;
+	Bool alpha_redraw = False;
 	int i;
 	int sx1;
 	int sx2;
@@ -412,6 +413,9 @@ void menuitem_paint(
 		XClearArea(
 			dpy, mpip->w, MDIM_ITEM_X_OFFSET(*dim), y_offset + d,
 			MDIM_ITEM_WIDTH(*dim), y_height + relief_thickness - d, 0);
+	}
+	else {
+		alpha_redraw = True;
 	}
 
 	MI_WAS_DESELECTED(mi) = False;
@@ -625,29 +629,16 @@ void menuitem_paint(
 		x = menudim_middle_x_offset(mpip->dim) -
 			MI_PICTURE(mi)->width / 2;
 		y = y_offset + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
-
-		if (MI_PICTURE(mi)->depth == Pdepth) /* pixmap */
+		if(alpha_redraw && MI_PICTURE(mi)->alpha != None)
 		{
-			Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-			Globalgcv.clip_mask = MI_PICTURE(mi)->mask;
-			Globalgcv.clip_x_origin = x;
-			Globalgcv.clip_y_origin = y;
-			XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
-			XCopyArea(
-				dpy, MI_PICTURE(mi)->picture, mpip->w,
-				ReliefGC, 0, 0, MI_PICTURE(mi)->width,
-				MI_PICTURE(mi)->height, x, y);
-			Globalgcm = GCClipMask;
-			Globalgcv.clip_mask = None;
-			XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
+			XClearArea(dpy, mpip->w, x, y, MI_PICTURE(mi)->width,
+				   MI_PICTURE(mi)->height, False);
 		}
-		else
-		{
-			XCopyPlane(
-				dpy, MI_PICTURE(mi)->picture, mpip->w,
-				currentGC, 0, 0, MI_PICTURE(mi)->width,
-				MI_PICTURE(mi)->height, x, y, 1);
-		}
+		PGraphicsCopyFvwmPicture(dpy, MI_PICTURE(mi), mpip->w, ReliefGC,
+					 0, 0,
+					 MI_PICTURE(mi)->width,
+					 MI_PICTURE(mi)->height,
+					 x, y);
 	}
 
 	/***************************************************************
@@ -678,37 +669,21 @@ void menuitem_paint(
 					  relief_thickness : 0) -
 					 MI_MINI_ICON(mi)[i]->height) / 2;
 			}
-			Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-			Globalgcv.clip_x_origin = MDIM_ICON_X_OFFSET(*dim)[k];
-			Globalgcv.clip_y_origin = y;
-			if (MI_MINI_ICON(mi)[i]->depth == Pdepth)
+			if(alpha_redraw && MI_MINI_ICON(mi)[i]->alpha != None)
 			{
-				/* pixmap */
-				Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->mask;
-				XChangeGC(dpy,currentGC,Globalgcm,&Globalgcv);
-				XCopyArea(
-					dpy, MI_MINI_ICON(mi)[i]->picture,
-					mpip->w, currentGC, 0, 0,
-					MI_MINI_ICON(mi)[i]->width,
-					MI_MINI_ICON(mi)[i]->height,
-					MDIM_ICON_X_OFFSET(*dim)[k], y);
+				XClearArea(dpy, mpip->w,
+					   MDIM_ICON_X_OFFSET(*dim)[k], y,
+					   MI_MINI_ICON(mi)[i]->width,
+					   MI_MINI_ICON(mi)[i]->height,
+					   False);
 			}
-			else
-			{
-				/* monochrome bitmap */
-				Globalgcv.clip_mask =
-					MI_MINI_ICON(mi)[i]->picture;
-				XChangeGC(dpy,currentGC,Globalgcm,&Globalgcv);
-				XCopyPlane(
-					dpy, MI_MINI_ICON(mi)[i]->picture,
-					mpip->w, currentGC, 0, 0,
-					MI_MINI_ICON(mi)[i]->width,
-					MI_MINI_ICON(mi)[i]->height,
-					MDIM_ICON_X_OFFSET(*dim)[k], y, 1);
-			}
-			Globalgcm = GCClipMask;
-			Globalgcv.clip_mask = None;
-			XChangeGC(dpy, currentGC, Globalgcm, &Globalgcv);
+			PGraphicsCopyFvwmPicture(dpy, MI_MINI_ICON(mi)[i],
+						 mpip->w,
+						 currentGC,
+						 0, 0,
+						 MI_MINI_ICON(mi)[i]->width,
+						 MI_MINI_ICON(mi)[i]->height,
+						 MDIM_ICON_X_OFFSET(*dim)[k], y);
 		}
 	}
 

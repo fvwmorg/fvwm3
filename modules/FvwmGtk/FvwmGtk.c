@@ -341,6 +341,7 @@ process_message (unsigned long type,
   int button = 0;
   GtkWidget *widget;
   window_list_options *opts;
+
   char name[128];
 
   switch (type)
@@ -422,10 +423,12 @@ process_message (unsigned long type,
       break;
     case M_MINI_ICON:
       {
-	window_list_entry *wle = lookup_window_list_entry (body[0]);
+	MiniIconPacket *mip = (MiniIconPacket *) body;
+	window_list_entry *wle = lookup_window_list_entry (mip->w);
+
 	if (wle->mini_icon)
 	  free(wle->mini_icon);
-	wle->mini_icon = safestrdup ((char*) (&body[8]));
+	wle->mini_icon = safestrdup (mip->name);
       }
       break;
     }

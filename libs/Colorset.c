@@ -30,6 +30,8 @@
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
 #include "libs/safemalloc.h"
+#include "libs/PictureBase.h"
+#include "libs/PictureGraphics.h"
 
 /* globals */
 colorset_struct *Colorset = NULL;

@@ -19,8 +19,8 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Flocale.h"
+#include "libs/Picture.h"
 #include "ButtonArray.h"
-#include "libs/FImageLoader.h"
 #include "Mallocs.h"
 
 extern Display *dpy;
@@ -28,6 +28,8 @@ extern Window Root, win;
 extern FlocaleFont *FButtonFont;
 extern int Clength;
 extern char *ImagePath;
+extern int ColorLimit;
+
 Button *StartButton;
 int StartButtonWidth, StartButtonHeight;
 char *StartName     = NULL,
@@ -79,7 +81,7 @@ Bool StartButtonParseConfig(char *tline)
 
 void StartButtonInit(int height)
 {
-  Picture *p = NULL;
+  FvwmPicture *p = NULL;
   int pw;
 
   /* some defaults */
@@ -88,10 +90,7 @@ void StartButtonInit(int height)
   if (StartIconName == NULL)
     UpdateString(&StartIconName, "mini-start.xpm");
 
-  /** FIXME: what should the colour limit be?
-      I put in -1, which apparently imposes NO limit.
-  **/
-  p = GetPicture(dpy, win, ImagePath, StartIconName, -1);
+  p = PGetFvwmPicture(dpy, win, ImagePath, StartIconName, ColorLimit);
 
   StartButton = (Button *)ButtonNew(StartName, p, BUTTON_UP,0);
   if (p != NULL) pw = p->width+3; else pw = 0;

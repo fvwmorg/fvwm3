@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
-#ifndef FIMAGE_LOADER_H
-#define FIMAGE_LOADER_H 
+#ifndef PICTURE_IMAGE_LOADER_H
+#define PICTURE_IMAGE_LOADER_H
 
 /* ---------------------------- included header files ----------------------- */
 
@@ -26,25 +26,61 @@
 /* ---------------------------- type definitions ---------------------------- */
 
 /* ---------------------------- interface functions ------------------------- */
-Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
+
+/*
+ * <pubfunc>PImageCreatePixmapFromArgbData
+ * <description>
+ * Create a pixmap with its mask and alpha channel from ARGB data.
+ * </description>
+ */
+Bool PImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 				    unsigned char *data,
 				    int start, int width, int height,
-				    Pixmap pixmap, Pixmap mask);
-Bool FImageLoadPixmapFromFile(Display *dpy, Window Root, char *path,
+				    Pixmap pixmap, Pixmap mask, Pixmap alpha,
+				    int *have_alpha);
+/*
+ * <pubfunc>PImageLoadPixmapFromFile
+ * <description>
+ * Create a pixmap with its mask and alpha channel from a file.
+ * </description>
+ */
+Bool PImageLoadPixmapFromFile(Display *dpy, Window Root, char *file,
 			      int color_limit,
-			      Pixmap *pixmap, Pixmap *mask,
+			      Pixmap *pixmap, Pixmap *mask, Pixmap *alpha,
 			      int *width, int *height, int *depth,
-			      int *nalloc_pixels, Pixel *alloc_pixels);
-Picture *FImageLoadPictureFromFile(Display *dpy, Window Root, char *path,
-				   int color_limit);
-Bool FImageLoadCursorPixmapFromFile(Display *dpy, Window Root, 
+			      int *nalloc_pixels, Pixel *alloc_pixels,
+			      FvwmPictureFlags fpf);
+
+/*
+ * <pubfunc>PImageLoadPixmapFromFile
+ * <description>
+ * Create a FvwmPicture from a file.
+ * </description>
+ */
+FvwmPicture *PImageLoadFvwmPictureFromFile(Display *dpy, Window Root, char *path,
+					   int color_limit);
+
+/*
+ * <pubfunc>PImageLoadPixmapFromFile
+ * <description>
+ * Create a cursor from a file.
+ * </description>
+ */
+Bool PImageLoadCursorPixmapFromFile(Display *dpy, Window Root, 
 				    char *path,
 				    Pixmap *source, Pixmap *mask,
 				    unsigned int *x,
 				    unsigned int *y);
-Bool FImageLoadPixmapFromXpmData(Display *dpy, Window Root, int color_limit,
+
+/*
+ * <pubfunc>PImageLoadPixmapFromFile
+ * <description>
+ * Create a pixmap with its mask from xpm data.
+ * </description>
+ */
+Bool PImageLoadPixmapFromXpmData(Display *dpy, Window Root, int color_limit,
 				 char **data,
 				 Pixmap *pixmap, Pixmap *mask,
 				 int *width, int *height, int *depth);
 
-#endif /* FIMAGE_LOADER_H */
+#endif /* PICTURE_IMAGE_LOADER_H  */

@@ -50,7 +50,6 @@
 /* -------------------------------- more  ---------------------------------- */
 
 #include "libs/fvwmlib.h"
-#include "libs/InitPicture.h"
 #include "libs/Picture.h"
 #include "libs/Flocale.h"
 
@@ -134,7 +133,7 @@ struct container_info_struct
   int colorset;            /* b_Colorset */
   Pixel fc;                /* b_Fore */
   Pixel bc,hc,sc;          /* b_Back && !b_IconBack */
-  Picture *backicon;       /* b_Back && b_IconBack */
+  FvwmPicture *backicon;   /* b_Back && b_IconBack */
   ushort minx,miny;        /* b_Size */
 };
 
@@ -177,8 +176,8 @@ struct button_info_struct
   Pixel fc;                /* b_Fore */
   Pixel bc,hc,sc;          /* b_Back && !b_IconBack */
   ushort minx,miny;        /* b_Size */
-  Picture *icon;           /* b_Icon */
-  Picture *backicon;       /* b_Back && b_IconBack */
+  FvwmPicture *icon;       /* b_Icon */
+  FvwmPicture *backicon;   /* b_Back && b_IconBack */
   Window IconWin;          /* b_Icon || b_Swallow */
   Window PanelWin;         /* b_Panel */
   Window BackIconWin;      /* b_Back && b_IconBack */

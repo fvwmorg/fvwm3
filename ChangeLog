@@ -1,3 +1,97 @@
+2002-04-22  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/Makefile.am:
+	* acconfig.h:
+	* configure.in:
+	Added Xrender detection and link fvwm2 if needed
+
+	* libs/PictureGraphics.{c,h}:
+	* libs/FRender.{c,h}:
+	* libs/FRenderInterface.h:
+	* libs/PictureGrpahics.c (*):
+	* libs/PictureGrpahics.h:
+	New libs files to acheive alpha-blend rendering and better XBM
+	support. PictureGraphics contains elaborated version and also
+	simplified version of XFillRectangle, XCopyPlan and XCopyArea
+	Xlib functions.
+
+	* fvwm/fvwm.h:
+	* fvwm/icons.c (clear_icon):
+	(GetIconPicture):
+	(DrawIconWindow):
+	(GetIconFromFile):
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/borders.c (border_fill_pixmap_background):
+	(border_get_border_background):
+	(border_draw_decor_to_pixmap):
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/add_window.c (destroy_icon):
+	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
+	* fvwm/geometry.c (move_icon_to_position):
+	* fvwm/colorset.c (free_colorset_background):
+	(parse_colorset):
+	* libs/Colorset.h:
+	Implemented alpha-blend rendering with the new libs function
+
+	* fvwm/colorset.c (free_colorset_background):
+	(parse_colorset):
+	* libs/Colorset.h:
+	Implemented tinting of a Pixmap background colorset
+
+	* fvwm/colorset.c (parse_colorset):
+	Use the Scr.NoFocusWin as main window in the place of the Scr.SizeWindow,
+	this fix a lot of X errors in my machine.
+
+	* fvwm/ewmh_icons.c (ewmh_SetWmIconFromPixmap):
+	Donated our alpha channel
+
+	* libs/vpacket.h:
+	* fvwm/module_interface.h:
+	* fvwm/module_interface.c (SendFvwmPicture):
+	(BroadcastMiniIcon):
+	(SendMiniIcon): 
+	(BroadcastFvwmPicture):
+	(CMD_Send_WindowList):
+	* fvwm/add_window.c (change_mini_icon):
+	(broadcast_mini_icon):
+	* fvwm/ewmh_icons.c:
+	Replace BroadcastMiniIcon and SendMiniIcon by BroadcastFvwmPicture and
+	SendFvwmPicture which send the alpha. Add a MiniIconPacket structure
+
+	* libs/Makefile.am:
+	* libs/PictureBase.{c,h} (*):
+	* libs/Picture.{c,h} (*):
+	* libs/PictureImageLoader.{c,h} (*):
+	* fvwm/*:
+	Rename some libs file InitPicture -> PictureBase, FImageLoader ->
+	PictureImageLoader.
+	Rename some libs function: InitPictureCMap -> PictureInitCMap,
+	UseDefaultVisual -> PictureUseDefaultVisual, UseFvwmVisual ->
+	PictureUseFvwmVisual, PictureSaveFvwmVisual -> SaveFvwmVisual,
+	SetImagePath -> PictureSetImagePath, findImageFile ->
+	PictureFindImageFile, PictureList -> FvwmPictureList,
+	LoadFvwmPicture removed now  PImageLoadFvwmPictureFromFile replace it,
+	GetPicture -> PGetFvwmPicture, CachePicture -> PCacheFvwmPicture,
+	DestroyPicture -> PDestroyFvwmPicture, LoadPictureFromPixmap ->
+	PLoadFvwmPictureFromPixmap, CachePictureFromPixmap -> 
+	PCacheFvwmPictureFromPixmap, fvwm_clone_picture -> PCloneFvwmPicture.
+	Also renamed more recent functions in PictureImageLoader.
+	
+	* fvwm/borders.c (border_draw_one_border_part):
+	(border_draw_decor_to_pixmap):
+	Fixed drawing of a TiledPixmap borded and fixed position of buttons
+	pixmap
+
+	* fvwm/menus.c (pop_menu_up):
+	(animated_move_back):
+	(ParentalMenuRePaint):
+	* fvwm/move_resize.h (resize_geometry_window):
+	* fvwm/move_resize.c (move_window_doit):
+	(AnimatedMoveAnyWindow): 
+	(AnimatedMoveOfWindow): 
+	(AnimatedMoveFvwmWindow):
+	Fixed transparent animated menu
+
 2002-04-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:

@@ -60,27 +60,20 @@
 #include "fvwmlib.h"
 #include "Colorset.h"
 #include "Picture.h"
-#include "FImageLoader.h"
 
-static Picture *PictureList=NULL;
+static FvwmPicture *FvwmPictureList=NULL;
 
-Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
+FvwmPicture *PGetFvwmPicture(Display *dpy, Window Root, char *ImagePath,
+			     char *name, int color_limit)
 {
-	return FImageLoadPictureFromFile(dpy, Root, path, color_limit);
-}
-
-
-Picture *GetPicture(Display *dpy, Window Root, char *ImagePath, char *name,
-		    int color_limit)
-{
-	char *path = findImageFile( name, ImagePath, R_OK );
-	Picture *p;
+	char *path = PictureFindImageFile( name, ImagePath, R_OK );
+	FvwmPicture *p;
 
 	if ( path == NULL )
 	{
 		return NULL;
 	}
-	p = LoadPicture(dpy, Root, path, color_limit);
+	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, color_limit);
 	if ( p == NULL )
 	{
 		free(path);
@@ -89,14 +82,14 @@ Picture *GetPicture(Display *dpy, Window Root, char *ImagePath, char *name,
 	return p;
 }
 
-Picture *CachePicture(Display *dpy, Window Root,
-		      char *ImagePath, char *name, int color_limit)
+FvwmPicture *PCacheFvwmPicture(Display *dpy, Window Root, char *ImagePath,
+			       char *name, int color_limit)
 {
 	char *path;
-	Picture *p=PictureList;
+	FvwmPicture *p = FvwmPictureList;
 
 	/* First find the full pathname */
-	if ( !(path=findImageFile(name,ImagePath,R_OK)) )
+	if ( !(path = PictureFindImageFile(name,ImagePath,R_OK)) )
 	{
 		return NULL;
 	}
@@ -126,11 +119,11 @@ Picture *CachePicture(Display *dpy, Window Root,
 
 	/* Not previously cached, have to load it ourself. Put it first in list
 	 */
-	p=LoadPicture(dpy, Root, path, color_limit);
+	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, color_limit);
 	if(p)
 	{
-		p->next=PictureList;
-		PictureList=p;
+		p->next=FvwmPictureList;
+		FvwmPictureList=p;
 	}
 	else
 	{
@@ -140,9 +133,9 @@ Picture *CachePicture(Display *dpy, Window Root,
 	return p;
 }
 
-void DestroyPicture(Display *dpy, Picture *p)
+void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p)
 {
-	Picture *q=PictureList;
+	FvwmPicture *q = FvwmPictureList;
 
 	if (!p)
 	{
@@ -178,21 +171,24 @@ void DestroyPicture(Display *dpy, Picture *p)
 	{
 		XFreePixmap(dpy,p->mask);
 	}
-
+	if(p->alpha != None)
+	{
+		XFreePixmap(dpy, p->alpha);
+	}
 	/* Link it out of the list (it might not be there) */
 	if(p==q) /* in head? simple */
 	{
-		PictureList=p->next;
+		FvwmPictureList = p->next;
 	}
 	else
 	{
 		while(q && q->next!=p) /* fast forward until end or found */
 		{
-			q=q->next;
+			q = q->next;
 		}
 		if(q) /* not end? means we found it in there, possibly at end */
 		{
-			q->next=p->next; /* link around it */
+			q->next = p->next; /* link around it */
 		}
 	}
 	free(p);
@@ -200,20 +196,21 @@ void DestroyPicture(Display *dpy, Picture *p)
 	return;
 }
 
-Picture *LoadPictureFromPixmap(
-	Display *dpy, Window Root, char *name, Pixmap pixmap, Pixmap mask,
-	int width, int height)
+FvwmPicture *PLoadFvwmPictureFromPixmap(Display *dpy, Window Root, char *name,
+					Pixmap pixmap, Pixmap mask, Pixmap alpha,
+					int width, int height)
 {
-	Picture *q;
+	FvwmPicture *q;
 
-	q = (Picture*)safemalloc(sizeof(Picture));
-	memset(q, 0, sizeof(Picture));
+	q = (FvwmPicture*)safemalloc(sizeof(FvwmPicture));
+	memset(q, 0, sizeof(FvwmPicture));
 	q->count = 1;
 	q->name = name;
 	q->next = NULL;
 	q->stamp = pixmap;
 	q->picture = pixmap;
 	q->mask = mask;
+	q->alpha = alpha;
 	q->width = width;
 	q->height = height;
 	q->depth = Pdepth;
@@ -223,14 +220,14 @@ Picture *LoadPictureFromPixmap(
 	return q;
 }
 
-Picture *CachePictureFromPixmap(Display *dpy, Window Root,char *name,
-				Pixmap pixmap, Pixmap mask,
-				int width, int height)
+FvwmPicture *PCacheFvwmPictureFromPixmap(Display *dpy, Window Root, char *name,
+					 Pixmap pixmap, Pixmap mask,
+					 Pixmap alpha, int width, int height)
 {
-	Picture *p=PictureList;
+	FvwmPicture *p = FvwmPictureList;
 
 	/* See if the picture is already cached */
-	for(;p!=NULL;p=p->next)
+	for(; p != NULL; p = p->next)
 	{
 #if 0
 		/* at th present time no good way to cache a pixmap */
@@ -243,17 +240,18 @@ Picture *CachePictureFromPixmap(Display *dpy, Window Root,char *name,
 	}
 
 	/* Not previously cached, have to load. Put it first in list */
-	p = LoadPictureFromPixmap(dpy, Root, name, pixmap, mask, width, height);
+	p = PLoadFvwmPictureFromPixmap(dpy, Root, name, pixmap, mask,
+				       alpha, width, height);
 	if(p)
 	{
-		p->next=PictureList;
-		PictureList=p;
+		p->next = FvwmPictureList;
+		FvwmPictureList = p;
 	}
 
 	return p;
 }
 
-Picture *fvwmlib_clone_picture(Picture *pic)
+FvwmPicture *PCloneFvwmPicture(FvwmPicture *pic)
 {
 	if (pic != NULL)
 	{

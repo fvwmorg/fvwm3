@@ -55,6 +55,7 @@
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
 #include "Mallocs.h"
+#include "libs/PictureGraphics.h"
 
 extern FlocaleFont *FButtonFont;
 extern FlocaleWinString *FwinString;
@@ -79,7 +80,7 @@ extern int UseSkipList;
 /* -------------------------------------------------------------------------
    ButtonNew - Allocates and fills a new button structure
    ------------------------------------------------------------------------- */
-Button *ButtonNew(char *title, Picture *p, int up)
+Button *ButtonNew(char *title, FvwmPicture *p, int up)
 {
   Button *new;
 
@@ -90,6 +91,7 @@ Button *ButtonNew(char *title, Picture *p, int up)
   {
     new->p.picture = p->picture;
     new->p.mask = p->mask;
+    new->p.alpha = p->alpha;
     new->p.width = p->width;
     new->p.height = p->height;
     new->p.depth = p->depth;
@@ -181,7 +183,7 @@ void ReorderButtons(ButtonArray *array, int ButNum, int FlipFocus)
 /******************************************************************************
   AddButton - Allocate space for and add the button to the bottom
 ******************************************************************************/
-int AddButton(ButtonArray *array, char *title, Picture *p, int up)
+int AddButton(ButtonArray *array, char *title, FvwmPicture *p, int up)
 {
   Button *new;
 
@@ -238,7 +240,7 @@ int UpdateButton(ButtonArray *array, int butnum, char *title, int up)
 /* -------------------------------------------------------------------------
    UpdateButtonPicture - Change the picture of a button
    ------------------------------------------------------------------------- */
-int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
+int UpdateButtonPicture(ButtonArray *array, int butnum, FvwmPicture *p)
 {
   Button *temp;
   temp=find_n(array,butnum);
@@ -247,6 +249,7 @@ int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
   {
     temp->p.picture = p->picture;
     temp->p.mask = p->mask;
+    temp->p.alpha = p->alpha;
     temp->p.width = p->width;
     temp->p.height = p->height;
     temp->p.depth = p->depth;
@@ -407,7 +410,8 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 
   Fontheight=FButtonFont->height;
 
-  if (FftSupport && Ffont->fftf.fftfont != NULL)
+  if ((FftSupport && Ffont->fftf.fftfont != NULL) ||
+      (button->p.picture != 0 && button->p.alpha != 0))
   {
     clear_bg = True;
   }
@@ -420,23 +424,13 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
       XFillRectangle(dpy,win,background[set],x,y,w,h+1);
   }
 
-  if ((button->p.picture != 0)/* &&
-      (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)*/) {
+  if (button->p.picture != 0) {
     /* clip pixmap to fit inside button */
     int height = min(button->p.height, h);
     int offset = (button->p.height > h) ? 0 : ((h - button->p.height) >> 1);
-    gcm = GCClipMask|GCClipXOrigin|GCClipYOrigin;
-    gcv.clip_mask = button->p.mask;
-    gcv.clip_x_origin = x + 2 + button->reliefwidth;
-    gcv.clip_y_origin = y + offset;
-    XChangeGC(dpy, hilite[set], gcm, &gcv);
-    XCopyArea(dpy, button->p.picture, win, hilite[set], 0, 0,
-                   button->p.width, height,
-                   gcv.clip_x_origin, gcv.clip_y_origin);
-    gcm = GCClipMask;
-    gcv.clip_mask = None;
-    XChangeGC(dpy, hilite[set], gcm, &gcv);
-
+    PGraphicsCopyFvwmPicture(dpy, &(button->p), win, hilite[set],
+			     0, 0, button->p.width, height,
+			     x + 2 + button->reliefwidth, y+offset);
     newx = button->p.width+2*INNER_MARGIN;
   }
   else
@@ -662,7 +656,7 @@ void PrintButtons(ButtonArray *array)
 /******************************************************************************
   ButtonPicture - Return the mini icon associated with the button
 ******************************************************************************/
-Picture *ButtonPicture(ButtonArray *array, int butnum)
+FvwmPicture *ButtonPicture(ButtonArray *array, int butnum)
 {
   Button *temp;
 

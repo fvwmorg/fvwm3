@@ -49,9 +49,9 @@
 #include "libs/Module.h"
 
 #include "FvwmM4.h"
-#include "libs/InitPicture.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/PictureBase.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #define Resolution(pixels, mm) ((((pixels) * 2000 / (mm)) + 1) / 2)
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
     }
 
   /* set up G */
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
 
   /* tell fvwm we're running if -lock is not used */
   if (!lock)

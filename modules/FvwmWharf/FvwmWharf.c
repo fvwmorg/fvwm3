@@ -74,7 +74,7 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Module.h"
-#include "libs/InitPicture.h"
+#include "libs/PictureBase.h"
 #include "libs/Colorset.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -245,6 +245,7 @@ int main(int argc, char **argv)
       Buttons[i].icons[j].h = 0;
       Buttons[i].icons[j].mask = None;	/* pixmap for the icon mask */
       Buttons[i].icons[j].icon = None;
+      Buttons[i].icons[j].alpha = None;
       Buttons[i].icons[j].depth = 0;
     }
     Buttons[i].IconWin = None;
@@ -269,7 +270,7 @@ int main(int argc, char **argv)
 	    XDisplayName(display_name));
     exit (1);
   }
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   FScreenInit(dpy);
   /* Initialise default colorset */
   AllocColorset(0);

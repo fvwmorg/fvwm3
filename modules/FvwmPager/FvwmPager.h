@@ -87,7 +87,7 @@ typedef struct pager_window
   char *res_name;
   char *res_class;
   char *window_label; /* This is displayed inside the mini window */
-  Picture mini_icon;
+  FvwmPicture mini_icon;
   int pager_view_x;
   int pager_view_y;
   int pager_view_width;
@@ -120,7 +120,7 @@ typedef struct desk_info
   Window title_w;
   Window CPagerWin;
   BalloonWindow balloon;
-  Picture *bgPixmap;		/* Pixmap used as background. */
+  FvwmPicture *bgPixmap;		/* Pixmap used as background. */
   int colorset;
   int highcolorset;
   int ballooncolorset;
@@ -142,7 +142,7 @@ typedef struct pager_string_list
   int ballooncolorset;
   char *Dcolor;
   char *label;
-  Picture *bgPixmap;		/* Pixmap used as background. */
+  FvwmPicture *bgPixmap;		/* Pixmap used as background. */
 } PagerStringList;
 
 /*************************************************************************

@@ -44,9 +44,7 @@
 #include <X11/Shell.h>
 
 #include <libs/fvwmlib.h>
-#include <libs/InitPicture.h>
 #include <libs/Picture.h>
-#include <libs/FImageLoader.h>
 #include <libs/Module.h>
 #include <libs/FScreen.h>
 #include <libs/FShape.h>
@@ -58,13 +56,13 @@
 #include "fvwm-logo-current.xpm"
 #include "fvwm-logo-current.xbm"
 
-typedef struct _FImageIcon {
+typedef struct _PImageIcon {
 	Pixmap pixmap;
 	Pixmap mask;
 	int width;
 	int height;
 	int depth;
-}        FImageIcon;
+}        PImageIcon;
 
 /**************************************************************************
  * A few function prototypes
@@ -76,7 +74,7 @@ void GetImageFile(char *,char *);
 void change_window_name(char *str);
 static void parseOptions (int fd[2]);
 
-FImageIcon view;
+PImageIcon view;
 Window win;
 
 char *imagePath = NULL;
@@ -153,7 +151,7 @@ int main(int argc, char **argv)
   Root = RootWindow(dpy, screen);
   x_fd = XConnectionNumber(dpy);
 
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   FScreenInit(dpy);
   FShapeInit(dpy);
   parseOptions(fd);
@@ -303,7 +301,7 @@ void GetXBMData(void)
 
 void GetXPMData(char **data)
 {
-  if(!FImageLoadPixmapFromXpmData(dpy, win, 0, data,
+  if(!PImageLoadPixmapFromXpmData(dpy, win, 0, data,
 				  &view.pixmap, &view.mask,
 				  &view.width, &view.height,
 				  &view.depth))
@@ -315,18 +313,19 @@ void GetXPMData(char **data)
 void GetImageFile(char *file, char *path)
 {
   char *full_file = NULL;
-  int nap = -1;
-  Pixel *dummy = NULL;
+  FvwmPictureFlags fpf;
 
+  fpf.alloc_pixels = 0;
+  fpf.alpha = 0; /* no alpha */
   if (file)
-    full_file = findImageFile(file,path,R_OK);
+    full_file = PictureFindImageFile(file,path,R_OK);
 
   if (full_file)
   {
-    if(FImageLoadPixmapFromFile(dpy, Root, full_file, 0, 
-				&view.pixmap, &view.mask,
+    if(PImageLoadPixmapFromFile(dpy, Root, full_file, 0, 
+				&view.pixmap, &view.mask, None,
 				&view.width, &view.height,
-				&view.depth, &nap, dummy))
+				&view.depth, 0, NULL,fpf))
       return;
     fprintf(stderr,"FvwmBanner: ERROR loading image file\n");
   }

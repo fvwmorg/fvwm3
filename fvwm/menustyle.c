@@ -89,7 +89,7 @@ static void menustyle_free_face(MenuFace *mf)
 	case TiledPixmapMenu:
 		if (mf->u.p)
 		{
-			DestroyPicture(dpy, mf->u.p);
+			PDestroyFvwmPicture(dpy, mf->u.p);
 		}
 		mf->u.p = NULL;
 		break;
@@ -186,8 +186,10 @@ static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 		s = GetNextToken(s, &token);
 		if (token)
 		{
-			mf->u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
-					       token, Scr.ColorLimit);
+			mf->u.p = PCacheFvwmPicture(dpy, Scr.NoFocusWin,
+						    NULL,
+						    token,
+						    Scr.ColorLimit);
 			if (mf->u.p == NULL)
 			{
 				if (verbose)
@@ -399,7 +401,7 @@ void menustyle_free(MenuStyle *ms)
 	}
 	if (ST_SIDEPIC(ms))
 	{
-		DestroyPicture(dpy, ST_SIDEPIC(ms));
+		PDestroyFvwmPicture(dpy, ST_SIDEPIC(ms));
 	}
 	if (ST_HAS_SIDE_COLOR(ms) == 1)
 	{
@@ -843,7 +845,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			ST_HAS_SIDE_COLOR(tmpms) = 0;
 			if (ST_SIDEPIC(tmpms))
 			{
-				DestroyPicture(dpy, ST_SIDEPIC(tmpms));
+				PDestroyFvwmPicture(dpy, ST_SIDEPIC(tmpms));
 				ST_SIDEPIC(tmpms) = NULL;
 			}
 
@@ -1099,12 +1101,12 @@ void menustyle_parse_style(F_CMD_ARGS)
 		case 31: /* SidePic */
 			if (ST_SIDEPIC(tmpms))
 			{
-				DestroyPicture(dpy, ST_SIDEPIC(tmpms));
+				PDestroyFvwmPicture(dpy, ST_SIDEPIC(tmpms));
 				ST_SIDEPIC(tmpms) = NULL;
 			}
 			if (arg1)
 			{
-				ST_SIDEPIC(tmpms) = CachePicture(
+				ST_SIDEPIC(tmpms) = PCacheFvwmPicture(
 					dpy, Scr.NoFocusWin, NULL, arg1,
 					Scr.ColorLimit);
 				if (!ST_SIDEPIC(tmpms))
@@ -1543,7 +1545,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		break;
 	case PixmapMenu:
 	case TiledPixmapMenu:
-		ST_FACE(destms).u.p = CachePicture(
+		ST_FACE(destms).u.p = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, ST_FACE(origms).u.p->name,
 			Scr.ColorLimit);
 		memcpy(&ST_FACE(destms).u.back, &ST_FACE(origms).u.back,
@@ -1574,12 +1576,12 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	/* SidePic */
 	if (ST_SIDEPIC(destms))
 	{
-		DestroyPicture(dpy, ST_SIDEPIC(destms));
+		PDestroyFvwmPicture(dpy, ST_SIDEPIC(destms));
 		ST_SIDEPIC(destms) = NULL;
 	}
 	if (ST_SIDEPIC(origms))
 	{
-		ST_SIDEPIC(destms) = CachePicture(
+		ST_SIDEPIC(destms) = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, ST_SIDEPIC(origms)->name,
 			Scr.ColorLimit);
 	}

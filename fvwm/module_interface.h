@@ -86,12 +86,9 @@ void BroadcastConfig(unsigned long event_type, const FvwmWindow *t);
 void BroadcastName(unsigned long event_type, unsigned long data1,
 		   unsigned long data2, unsigned long data3, const char *name);
 void BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon);
-void BroadcastMiniIcon(unsigned long event_type,
-		       unsigned long data1, unsigned long data2,
-		       unsigned long data3, unsigned long data4,
-		       unsigned long data5, unsigned long data6,
-		       unsigned long data7, unsigned long data8,
-		       const char *name);
+void BroadcastFvwmPicture(unsigned long event_type,
+			  unsigned long data1, unsigned long data2,
+			  unsigned long data3, FvwmPicture *picture, char *name);
 void BroadcastPropertyChange(unsigned long argument, unsigned long data1,
 			     unsigned long data2, char *string);
 void BroadcastColorset(int n);

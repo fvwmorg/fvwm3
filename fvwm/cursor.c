@@ -19,7 +19,7 @@
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
-#include "libs/FImageLoader.h"
+#include "libs/PictureImageLoader.h"
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
@@ -289,7 +289,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 			unsigned int x;
 			unsigned int y;
 
-			path = findImageFile (newcursor, NULL, R_OK);
+			path = PictureFindImageFile (newcursor, NULL, R_OK);
 			if (!path)
 			{
 				fvwm_msg(ERR, "CursorStyle",
@@ -298,7 +298,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 				return;
 			}
 			
-			if (!FImageLoadCursorPixmapFromFile(dpy, Scr.Root,
+			if (!PImageLoadCursorPixmapFromFile(dpy, Scr.Root,
 							    path, &source,
 							    &mask, &x, &y))
 			{

@@ -122,6 +122,7 @@ struct icon_info
   int icon_h;
   Pixmap iconPixmap;		/* pixmap for the icon */
   Pixmap icon_maskPixmap;
+  Pixmap icon_alphaPixmap;
   Window IconWin;
   Window icon_pixmap_w;
   XWMHints *wmhints;

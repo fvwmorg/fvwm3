@@ -35,7 +35,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
-#include "libs/InitPicture.h"
+#include "libs/PictureBase.h"
 #include "FvwmScroll.h"
 
 char *MyName;
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
   ScreenWidth = DisplayWidth(dpy,screen);
 
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
-  InitPictureCMap(dpy);
+  PictureInitCMap(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
   FShapeInit(dpy);

@@ -295,6 +295,10 @@ void RedrawButton(button_info *b,int clean)
     XClearArea(Dpy, MyWindow, ix, iy, iw, ih, False);
     clean = 1;
   }
+  if(b->flags&b_Icon && b->icon->alpha != None)
+  {
+    ConfigureIconWindow(b);
+  }
 
   RelieveButton(MyWindow,f,x,y,BW,BH,hc,sc,rev ^ rev_xor);
 

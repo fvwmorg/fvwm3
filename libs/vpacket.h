@@ -76,4 +76,18 @@ window_flags       flags;
 
 } ConfigWinPacket;
 
+typedef struct MiniIconPacket
+{
+	Window             w;
+	Window             frame;
+	FvwmWindow         *fvwmwin;
+	unsigned long int  width;
+	unsigned long int  height;
+	unsigned long int  depth;
+	unsigned long int  picture;
+	unsigned long int  mask;
+	unsigned long int  alpha;
+	char *name;
+} MiniIconPacket;
+
 #endif /* _VPACKET_ */

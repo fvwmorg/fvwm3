@@ -201,7 +201,7 @@ typedef struct MenuFace
 {
 	union
 	{
-		Picture *p;
+		FvwmPicture *p;
 		Pixel back;
 		struct
 		{
@@ -249,7 +249,7 @@ typedef struct MenuLook
 		int active;
 		int greyed;
 	} cset;
-	Picture *side_picture;
+	FvwmPicture *side_picture;
 	Pixel side_color;
 	GC MenuGC;
 	GC MenuActiveGC;

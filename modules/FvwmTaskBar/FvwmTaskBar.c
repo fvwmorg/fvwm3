@@ -229,6 +229,7 @@ extern char *StartCommand;
 char *ImagePath = NULL;
 char *XineramaConfig = NULL;
 static int fscreen = 0;
+int ColorLimit = 0;
 
 static void ParseConfig( void );
 static void ParseConfigLine(char *tline);
@@ -452,12 +453,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   int i = -1;
   char *string;
   long Desk;
-  Picture p;
+  FvwmPicture p;
   struct ConfigWinPacket  *cfgpacket;
   int iconified;
   rectangle new_g;
-
-/*    memset(&p, 0, sizeof(Picture)); */
 
   switch(type)
   {
@@ -718,11 +717,15 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_MINI_ICON:
     if (!FMiniIconsSupported || (i = FindItem(&windows, body[0])) == -1)
       break;
-    p.picture = body[6];
-    p.mask    = body[7];
-    p.width   = body[3];
-    p.height  = body[4];
-    p.depth   = body[5];
+    {
+	    MiniIconPacket *mip = (MiniIconPacket *) body;
+	    p.picture = mip->picture;
+	    p.mask    = mip->mask;
+	    p.alpha   = mip->alpha;
+	    p.width   = mip->width;
+	    p.height  = mip->height;
+	    p.depth   = mip->depth;
+    }
     UpdateItemPicture(&windows, i, &p);
     if (UpdateButton(&buttons, i, NULL, DONT_CARE) != -1) {
       UpdateButtonPicture(&buttons, i, &p);
@@ -966,6 +969,7 @@ static char *configopts[] =
   "imagepath",
   "colorset",
   XINERAMA_CONFIG_STRING,
+  "ColorLimit",
   NULL
 };
 
@@ -1046,6 +1050,9 @@ static void ParseConfigLine(char *tline)
 	free(XineramaConfig);
       }
       CopyString(&XineramaConfig, rest);
+      break;
+    case 3: /* ColorLimit */
+      sscanf(rest, "%d", &ColorLimit);
       break;
     default:
       /* unknown option */
@@ -1849,7 +1856,7 @@ void StartMeUp(void)
 	     XDisplayName(""));
      exit (1);
    }
-   InitPictureCMap(dpy);
+   PictureInitCMap(dpy);
    FScreenInit(dpy);
    if (XineramaConfig)
    {

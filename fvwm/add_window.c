@@ -625,12 +625,10 @@ static void broadcast_mini_icon(FvwmWindow *fw)
         }
 	if (fw->mini_pixmap_file && fw->mini_icon)
 	{
-		BroadcastMiniIcon(
+		BroadcastFvwmPicture(
 			M_MINI_ICON,
 			FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
-			fw->mini_icon->width, fw->mini_icon->height,
-			fw->mini_icon->depth, fw->mini_icon->picture,
-			fw->mini_icon->mask, fw->mini_pixmap_file);
+			fw->mini_icon, fw->mini_pixmap_file);
 	}
 
 	return;
@@ -653,7 +651,7 @@ static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
 
 	if (fw->mini_pixmap_file)
 	{
-		fw->mini_icon = CachePicture(
+		fw->mini_icon = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, fw->mini_pixmap_file,
 			Scr.ColorLimit);
 	}
@@ -1838,6 +1836,11 @@ static void destroy_icon(FvwmWindow *fw)
 			{
 				XFreePixmap(dpy, fw->icon_maskPixmap);
 			}
+			if (fw->icon_alphaPixmap != None)
+			{
+				XFreePixmap(dpy, fw->icon_alphaPixmap);
+			}
+			
 		}
 		XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
 		XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);
@@ -1865,7 +1868,7 @@ void destroy_mini_icon(FvwmWindow *fw)
 {
 	if (fw->mini_icon)
 	{
-		DestroyPicture(dpy, fw->mini_icon);
+		PDestroyFvwmPicture(dpy, fw->mini_icon);
 		fw->mini_icon = 0;
 	}
 
@@ -1874,7 +1877,7 @@ void destroy_mini_icon(FvwmWindow *fw)
 
 void change_mini_icon(FvwmWindow *fw, window_style *pstyle)
 {
-	Picture *old_mi = fw->mini_icon;
+	FvwmPicture *old_mi = fw->mini_icon;
 	destroy_mini_icon(fw);
 	setup_mini_icon(fw, pstyle);
 	broadcast_mini_icon(fw);
@@ -1882,9 +1885,9 @@ void change_mini_icon(FvwmWindow *fw, window_style *pstyle)
 	{
 		/* this case is not handled in setup_mini_icon, so we must
 		 * broadcast here explicitly */
-		BroadcastMiniIcon(
+		BroadcastFvwmPicture(
 			M_MINI_ICON, FW_W(fw), FW_W_FRAME(fw),
-			(unsigned long)fw, 0, 0, 0, 0, 0, "");
+			(unsigned long)fw, NULL, "");
 	}
 
 	return;

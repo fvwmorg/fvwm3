@@ -1205,49 +1205,66 @@ BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon)
 	return;
 }
 
-static void
-SendMiniIcon(int module, unsigned long event_type,
-             unsigned long data1, unsigned long data2,
-             unsigned long data3, unsigned long data4,
-             unsigned long data5, unsigned long data6,
-             unsigned long data7, unsigned long data8,
-             const char *name)
+void
+SendFvwmPicture(int module, unsigned long event_type,
+		unsigned long data1, unsigned long data2,
+		unsigned long data3, FvwmPicture *picture, char *name)
 {
         unsigned long *body;
+	unsigned int data4 = 0, data5 = 0, data6 = 0,
+		data7 = 0, data8 = 0, data9 = 0;
         int l;
 
         if (!FMiniIconsSupported)
         {
                 return;
         }
-        if ((name == NULL) || (event_type != M_MINI_ICON))
+	if ((name == NULL) || (event_type != M_MINI_ICON))
                 return;
 
-        body = make_named_packet(&l, event_type, name, 8, data1, data2, data3,
-                                 data4, data5, data6, data7, data8);
-        PositiveWrite(module, body, l*sizeof(unsigned long));
+	if (picture != NULL)
+	{
+		data4 = picture->width;
+		data5 = picture->height;
+		data6 = picture->depth;
+		data7 = picture->picture;
+		data8 = picture->mask;
+		data9 = picture->alpha;
+	}
+        body = make_named_packet(&l, event_type, name, 9, data1, data2, data3,
+				 data4, data5, data6, data7, data8, data9);
+
+	PositiveWrite(module, body, l*sizeof(unsigned long));
         free(body);
 
-        return;
+	return;
 }
 
 void
-BroadcastMiniIcon(unsigned long event_type,
-                  unsigned long data1, unsigned long data2,
-                  unsigned long data3, unsigned long data4,
-                  unsigned long data5, unsigned long data6,
-                  unsigned long data7, unsigned long data8,
-                  const char *name)
+BroadcastFvwmPicture(unsigned long event_type,
+		     unsigned long data1, unsigned long data2,
+		     unsigned long data3, FvwmPicture *picture, char *name)
 {
         unsigned long *body;
+	unsigned int data4 = 0, data5 = 0, data6 = 0,
+		data7 = 0, data8 = 0, data9 = 0;
         int i, l;
 
         if (!FMiniIconsSupported)
         {
                 return;
         }
-        body = make_named_packet(&l, event_type, name, 8, data1, data2, data3,
-                                 data4, data5, data6, data7, data8);
+	if (picture != NULL)
+	{
+		data4 = picture->width;
+		data5 = picture->height;
+		data6 = picture->depth;
+		data7 = picture->picture;
+		data8 = picture->mask;
+		data9 = picture->alpha;
+	}
+        body = make_named_packet(&l, event_type, name, 9, data1, data2, data3,
+				 data4, data5, data6, data7, data8, data9);
 
         for (i=0; i < npipes; i++)
                 PositiveWrite(i, body, l*sizeof(unsigned long));
@@ -1737,14 +1754,9 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		       (unsigned long)t,
                        0, 0, 0, 0);
 	  if (FMiniIconsSupported && t->mini_icon != NULL)
-            SendMiniIcon(*Module, M_MINI_ICON,
-                         FW_W(t), FW_W_FRAME(t), (unsigned long)t,
-                         t->mini_icon->width,
-                         t->mini_icon->height,
-                         t->mini_icon->depth,
-                         t->mini_icon->picture,
-                         t->mini_icon->mask,
-                         t->mini_pixmap_file);
+            SendFvwmPicture(*Module, M_MINI_ICON,
+			    FW_W(t), FW_W_FRAME(t), (unsigned long)t,
+			    t->mini_icon, t->mini_pixmap_file);
 	}
 
       if(Scr.Hilite == NULL)

@@ -43,6 +43,7 @@
 #include <libs/Module.h>
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
+#include "libs/PictureGraphics.h"
 #include "FvwmPager.h"
 
 
@@ -70,8 +71,8 @@ extern unsigned int WindowBorderWidth;
 extern unsigned int MinSize;
 extern Bool WindowBorders3d;
 extern Bool UseSkipList;
-extern Picture *PixmapBack;
-extern Picture *HilightPixmap;
+extern FvwmPicture *PixmapBack;
+extern FvwmPicture *HilightPixmap;
 extern int HilightDesks;
 extern char fAlwaysCurrentDesk;
 
@@ -2405,8 +2406,6 @@ void LabelIconWindow(PagerWindow *t)
 
 static void do_picture_window(PagerWindow *t, Window w, int width, int height)
 {
-  XGCValues Globalgcv;
-  unsigned long Globalgcm;
   int iconX;
   int iconY;
 
@@ -2426,13 +2425,15 @@ static void do_picture_window(PagerWindow *t, Window w, int width, int height)
 	iconY = -((t->mini_icon.height - height) / 2);
       else
 	iconY = 0;
-      Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-      Globalgcv.clip_mask = t->mini_icon.mask;
-      Globalgcv.clip_x_origin = iconX;
-      Globalgcv.clip_y_origin = iconY;
-      XChangeGC(dpy, Scr.MiniIconGC, Globalgcm, &Globalgcv);
-      XCopyArea(dpy, t->mini_icon.picture, w,  Scr.MiniIconGC, 0, 0,
-		t->mini_icon.width, t->mini_icon.height, iconX, iconY);
+      if (t->mini_icon.alpha != None)
+      {
+	      XClearArea(dpy, w, iconX, iconY,
+			 t->mini_icon.width,
+			 t->mini_icon.height, False);
+      }
+      PGraphicsCopyFvwmPicture(dpy, &t->mini_icon, w,  Scr.MiniIconGC, 0, 0,
+			       t->mini_icon.width, t->mini_icon.height,
+			       iconX, iconY);
     }
   }
 }

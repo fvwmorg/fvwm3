@@ -71,9 +71,9 @@ typedef struct MenuItem
 	unsigned short label_strlen[MAX_MENU_ITEM_LABELS];
 
 	/* Pixmap to show above label*/
-	Picture *picture;
+	FvwmPicture *picture;
 	/* Pics to show left/right of label */
-	Picture *lpicture[MAX_MENU_ITEM_MINI_ICONS];
+	FvwmPicture *lpicture[MAX_MENU_ITEM_MINI_ICONS];
 
 	/* y offset and height for item */
 	short y_offset;

@@ -19,19 +19,13 @@
 #ifndef FXPM_H
 #define FXPM_H 
 
-#include "config.h"
+#include "PictureBase.h"
 
-#ifdef XPM
+#if XpmSupport
 #include <X11/xpm.h>
 #endif
 
 /* ---------------------------- global definitions -------------------------- */
-
-#ifdef XPM
-#define XpmSupport 1
-#else
-#define XpmSupport 0
-#endif
 
 /* ---------------------------- global macros ------------------------------- */
 

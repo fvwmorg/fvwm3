@@ -37,7 +37,7 @@
 #include "libs/FShape.h"
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
-#include "libs/Picture.h"
+#include <libs/Picture.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "colorset.h"
@@ -208,15 +208,15 @@ static void refresh_window(Window w)
 static void obsolete_imagepaths( const char* pre_path )
 {
 	char* tmp = stripcpy( pre_path );
-	char* path = alloca( strlen( tmp ) + strlen( GetImagePath() ) + 2 );
+	char* path = alloca(strlen( tmp ) + strlen(PictureGetImagePath()) + 2 );
 
 	strcpy( path, tmp );
 	free( tmp );
 
 	strcat( path, ":" );
-	strcat( path, GetImagePath() );
+	strcat( path, PictureGetImagePath() );
 
-	SetImagePath( path );
+	PictureSetImagePath( path );
 
 	return;
 }
@@ -482,14 +482,14 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 			"RightButtons",
 			NULL
 		};
-	Picture **pm;
+	FvwmPicture **pm;
 	char *token;
 	Bool stretched;
 	int pm_id, i = 0;
 
 	df->style.face_type = MultiPixmap;
 	df->u.multi_pixmaps = pm =
-		(Picture**)safecalloc(NUM_TB_PIXMAPS, sizeof(Picture*));
+		(FvwmPicture**)safecalloc(NUM_TB_PIXMAPS, sizeof(FvwmPicture*));
 
 	s = GetNextTokenIndex(s, pm_names, 0, &pm_id);
 	while (pm_id >= 0)
@@ -514,7 +514,7 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 		}
 		if (stretched)
 			df->u.multi_stretch_flags |= (1 << pm_id);
-		pm[pm_id] = CachePicture(
+		pm[pm_id] = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, token, Scr.ColorLimit);
 		if (!pm[pm_id])
 			fvwm_msg(ERR, "ReadMultiPixmapDecor",
@@ -532,7 +532,7 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 		for (i=0; i < NUM_TB_PIXMAPS; i++)
 		{
 			if (pm[i])
-				DestroyPicture(dpy, pm[i]);
+				PDestroyFvwmPicture(dpy, pm[i]);
 		}
 		free(pm);
 		return NULL;
@@ -959,7 +959,7 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 	case PixmapButton:
 	case TiledPixmapButton:
 		if (df->u.p)
-			DestroyPicture(dpy, df->u.p);
+			PDestroyFvwmPicture(dpy, df->u.p);
 		break;
 
 #ifdef FANCY_TITLEBARS
@@ -969,7 +969,7 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 			for (i=0; i < NUM_TB_PIXMAPS; i++)
 			{
 				if (df->u.multi_pixmaps[i])
-					DestroyPicture(
+					PDestroyFvwmPicture(
 						dpy, df->u.multi_pixmaps[i]);
 			}
 			free(df->u.multi_pixmaps);
@@ -1224,7 +1224,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			 || strncasecmp(style,"TiledPixmap",11)==0)
 		{
 			s = GetNextToken(s, &file);
-			df->u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
+			df->u.p = PCacheFvwmPicture(
+					       dpy, Scr.NoFocusWin, NULL,
 					       file,Scr.ColorLimit);
 			if (df->u.p == NULL)
 			{
@@ -1281,7 +1282,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			 * and a memory leak the same time without a rewrite of
 			 * large parts of the code. */
 			if (df->u.p)
-				DestroyPicture(dpy, df->u.p);
+				PDestroyFvwmPicture(dpy, df->u.p);
 #endif
 			/* pixmap read in when the window is created */
 			df->u.p = NULL;
@@ -2097,7 +2098,7 @@ void CMD_ClickTime(F_CMD_ARGS)
 
 void CMD_ImagePath(F_CMD_ARGS)
 {
-	SetImagePath( action );
+	PictureSetImagePath( action );
 
 	return;
 }

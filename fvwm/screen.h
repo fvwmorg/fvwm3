@@ -131,9 +131,9 @@ typedef struct DecorFace
 	DecorFaceStyle style;
 	struct
 	{
-		Picture *p;
+		FvwmPicture *p;
 #ifdef FANCY_TITLEBARS
-		Picture **multi_pixmaps;
+		FvwmPicture **multi_pixmaps;
 		short multi_stretch_flags;
 #endif
 		Pixel back;

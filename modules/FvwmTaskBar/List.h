@@ -35,7 +35,7 @@ typedef struct item {
   long Desk;
   rectangle win_g;
   int  count;
-  Picture p;
+  FvwmPicture p;
   struct item *next;
 } Item;
 
@@ -70,7 +70,7 @@ int IsItemIndexIconSupressed(List *list, int i);
 int ItemCount(List *list);
 long ItemID(List *list, int n);
 void CopyItem(List *dest,List *source,int n);
-void UpdateItemPicture(List *list, int n, Picture *p);
+void UpdateItemPicture(List *list, int n, FvwmPicture *p);
 int GetDeskNumber(List *list, int n, long *Desk);
-Picture *GetItemPicture(List *list, int n);
+FvwmPicture *GetItemPicture(List *list, int n);
 int GetItemGeometry(List *list, int n, rectangle **r);
