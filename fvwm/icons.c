@@ -984,14 +984,17 @@ void DrawIconPixmapWindow(
 }
 
 void DrawIconWindow(
-	FvwmWindow *fw, Bool draw_title, Bool draw_pixmap, XEvent *pev)
+	FvwmWindow *fw, Bool draw_title, Bool draw_pixmap, Bool focus_change,
+	XEvent *pev)
 {
 	GC Shadow;
 	GC Relief;
 	Pixel TextColor;
 	Pixel BackColor;
 	color_quad *draw_colors;
+	color_quad *co_draw_colors;
 	int cs;
+	int co_cs;
 	int is_expanded = IS_ICON_ENTERED(fw);
 
 	if (IS_ICON_SUPPRESSED(fw) || (pev && fw->Desk != Scr.CurrentDesk))
@@ -1002,12 +1005,16 @@ void DrawIconWindow(
 	if (Scr.Hilite == fw)
 	{
 		draw_colors = &(fw->hicolors);
+		co_draw_colors = &(fw->colors);
 		cs = fw->cs_hi;
+		co_cs = fw->cs;
 	}
 	else
 	{
 		draw_colors = &(fw->colors);
+		co_draw_colors = &(fw->hicolors);
 		cs = fw->cs;
+		co_cs = fw->cs_hi;
 	}
 	if (Pdepth < 2 && Scr.Hilite != fw)
 	{
@@ -1052,10 +1059,71 @@ void DrawIconWindow(
 		{
 			if (!pev)
 			{
-				flush_expose(FW_W_ICON_PIXMAP(fw));
+				flush_expose(FW_W_ICON_TITLE(fw));
 			}
 			DrawIconTitleWindow(
 				fw, pev, BackColor, Shadow, Relief, cs);
+		}
+	}
+
+	if (focus_change && draw_pixmap)
+	{
+		Bool alpha_change = False;
+		Bool tint_change = False;
+		Bool relief_change = False;
+		Bool color_change = False;
+
+		draw_pixmap = False;
+		/* check if we have to draw the icons */
+
+		if (Pdepth < 2)
+		{
+			relief_change = True;
+		}
+		else if (fw->iconDepth == 1)
+		{
+			color_change =
+				(draw_colors->fore !=
+				 co_draw_colors->back) ||
+				(draw_colors->fore !=
+				 co_draw_colors->back);
+		}
+		if (!relief_change &&
+		    (fw->iconPixmap != None) && !IS_ICON_SHAPED(fw)
+		    && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
+		{
+			relief_change =
+				(draw_colors->hilight !=
+				 co_draw_colors->hilight) ||
+				(draw_colors->shadow !=
+				 co_draw_colors->shadow);
+		}
+		if (cs >= 0 && co_cs >= 0)
+		{
+			alpha_change =
+				(Colorset[cs].icon_alpha !=
+				 Colorset[co_cs].icon_alpha);
+			tint_change =
+				(Colorset[cs].icon_tint_percent !=
+				 Colorset[co_cs].icon_tint_percent) ||
+				(Colorset[cs].icon_tint_percent > 0 &&
+				 Colorset[cs].icon_tint !=
+				 Colorset[co_cs].icon_tint);
+		}
+		else if (cs >= 0 && co_cs < 0)
+		{
+			alpha_change = (Colorset[cs].icon_alpha < 100);
+			tint_change = (Colorset[cs].icon_tint_percent > 0);
+		}
+		else if (cs < 0 && co_cs >= 0)
+		{
+			alpha_change = (Colorset[co_cs].icon_alpha < 100);
+			tint_change = (Colorset[co_cs].icon_tint_percent > 0);
+		}
+		if (alpha_change || tint_change || relief_change ||
+		    color_change)
+		{
+			draw_pixmap = True;
 		}
 	}
 
@@ -1161,7 +1229,7 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
       }
     }
     SET_ICONIFIED(fw, 1);
-    DrawIconWindow(fw, False, True, NULL);
+    DrawIconWindow(fw, False, True, False, NULL);
   }
 }
 
@@ -1181,7 +1249,7 @@ void RedoIconName(FvwmWindow *fw)
   /* clear the icon window, and trigger a re-draw via an expose event */
   if (IS_ICONIFIED(fw))
   {
-    DrawIconWindow(fw, True, False, NULL);
+    DrawIconWindow(fw, True, False, False, NULL);
     XClearArea(dpy, FW_W_ICON_TITLE(fw), 0, 0, 0, 0, True);
   }
 

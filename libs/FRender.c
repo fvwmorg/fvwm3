@@ -488,9 +488,9 @@ int FRenderRender(
 		}
 		src_x = src_y = 0;
 	}
-	else
+	else if (!pixmap_copy)
 	{
-		src_picture = FRenderCreatePicture(
+		src_picture = XRenderCreatePicture(
 			dpy, pixmap, PFrenderVisualFormat, pam, &pa);	
 	}
 

@@ -2642,7 +2642,7 @@ void border_draw_decorations(
 	}
 	if (IS_ICONIFIED(fw))
 	{
-		DrawIconWindow(fw, True, True, NULL);
+		DrawIconWindow(fw, True, True, True, NULL);
 		return;
 	}
 	/* calculate some values and flags */

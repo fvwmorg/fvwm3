@@ -1076,10 +1076,25 @@ void move_icon_to_position(
 {
 	if (fw->icon_g.picture_w_g.width > 0)
 	{
+		int cs;
+
+		if (Scr.Hilite == fw)
+		{
+			cs = fw->cs_hi;
+		}
+		else
+		{
+			cs = fw->cs;
+		}
 		XMoveWindow(
 			dpy, FW_W_ICON_PIXMAP(fw),
 			fw->icon_g.picture_w_g.x,
 			fw->icon_g.picture_w_g.y);
+		if (fw->icon_alphaPixmap ||
+		    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+		{
+			DrawIconWindow(fw, False, True, False, NULL);
+		}
 	}
 	if (!HAS_NO_ICON_TITLE(fw))
 	{
@@ -1087,10 +1102,6 @@ void move_icon_to_position(
 			dpy, FW_W_ICON_TITLE(fw),
 			fw->icon_g.title_w_g.x,
 			fw->icon_g.title_w_g.y);
-		if (fw->icon_alphaPixmap)
-		{
-			DrawIconWindow(fw, False, True, NULL);
-		}
 	}
 
 	return;

@@ -1729,7 +1729,7 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 	    FW_W_ICON_PIXMAP(fw) != None)
 	{
 		SET_ICON_ENTERED(fw, 1);
-		DrawIconWindow(fw, True, False, NULL);
+		DrawIconWindow(fw, True, False, False, NULL);
 	}
 	/* Check for tear off menus */
 	if (is_tear_off_menu)
@@ -1765,7 +1765,7 @@ void HandleExpose(const evh_args_t *ea)
 	if (e.xany.window == FW_W_ICON_TITLE(fw) ||
 	    e.xany.window == FW_W_ICON_PIXMAP(fw))
 	{
-		DrawIconWindow(fw, True, True, &e);
+		DrawIconWindow(fw, True, True, False, &e);
 		return;
 	}
 	else if (IS_TEAR_OFF_MENU(fw) && e.xany.window == FW_W(fw))
@@ -2018,7 +2018,7 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)fw));
 		if (fw && IS_ICONIFIED(fw))
 		{
 			SET_ICON_ENTERED(fw, 0);
-			DrawIconWindow(fw, True, False, NULL);
+			DrawIconWindow(fw, True, False, False, NULL);
 		}
 #endif
 		return;
@@ -2028,7 +2028,7 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)fw));
 	if (fw && IS_ICONIFIED(fw))
 	{
 		SET_ICON_ENTERED(fw,0);
-		DrawIconWindow(fw, True, False, NULL);
+		DrawIconWindow(fw, True, False, False, NULL);
 	}
 
 	/* If we leave the root window, then we're really moving
@@ -2477,7 +2477,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			    (t->icon_alphaPixmap != None ||
 			     (cs >= 0 && Colorset[cs].icon_alpha < 100)))
 			{
-				DrawIconWindow(t, False, True, NULL);
+				DrawIconWindow(t, False, True, False, NULL);
 			}
 		}
 		update_root_transparent_colorset(te->xproperty.atom);

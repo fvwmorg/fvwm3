@@ -461,7 +461,7 @@ static void apply_window_updates(
 		RedoIconName(t);
 		if (IS_ICONIFIED(t))
 		{
-			DrawIconWindow(t, True, True, NULL);
+			DrawIconWindow(t, True, True, False, NULL);
 		}
 	}
 	if (flags->do_update_icon_placement)
