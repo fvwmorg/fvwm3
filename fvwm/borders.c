@@ -1313,13 +1313,14 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   /*
    * fix up frame and assign size/location values in tmp_win
    */
-  if (!curr_shading) {
-      frame_wc.x = tmp_win->frame_g.x = x;
-      frame_wc.y = tmp_win->frame_g.y = y;
-      frame_wc.width = tmp_win->frame_g.width = w;
-      frame_wc.height = tmp_win->frame_g.height = h;
-      frame_mask = (CWX | CWY | CWWidth | CWHeight);
-      XConfigureWindow (dpy, tmp_win->frame, frame_mask, &frame_wc);
+  if (!curr_shading)
+  {
+    frame_wc.x = tmp_win->frame_g.x = x;
+    frame_wc.y = tmp_win->frame_g.y = y;
+    frame_wc.width = tmp_win->frame_g.width = w;
+    frame_wc.height = tmp_win->frame_g.height = h;
+    frame_mask = (CWX | CWY | CWWidth | CWHeight);
+    XConfigureWindow(dpy, tmp_win->frame, frame_mask, &frame_wc);
   }
 #ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG,"SetupFrame",
@@ -1338,7 +1339,9 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
 #endif /* SHAPE */
 
   XSync(dpy,0);
-  if (sendEvent /*&& !shaded*/)
+  /* must not send events to shaded windows because this might cause them to
+   * look at their current geometry */
+  if (sendEvent && !shaded)
   {
     client_event.type = ConfigureNotify;
     client_event.xconfigure.display = dpy;

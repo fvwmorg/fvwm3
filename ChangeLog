@@ -1,5 +1,8 @@
 1999-11-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/borders.c (SetupFrame):
+	fixed page switching with shaded XEmacs
+
 	* fvwm/windowlist.c (do_windowList):
 	* fvwm/menus.c (MenuInteraction):
 	(menu_func):
