@@ -4547,16 +4547,19 @@ regardless of its current state the
 argument must be "True".  To make it non-sticky use "False".
 
 .TP
-.BI "WindowShade [" bool "]"
+.BI "WindowShade [" bool "|" direction "]"
 Toggles the window shade feature for titled windows.  Windows in
 the shaded state only display a title-bar.  If
 .I bool
 is not given or "toggle", the window shade state is toggled.  If
 .I bool
-is "True", the window is forced to the shaded state. If
+is "True", the window is forced to the shaded state.  If
 .I bool
 is "False", then the window is forced to the non-shaded
-state. Windows without titles can be shaded too.  See also
+state.  To force shading in a certain direction, the
+.I direction
+argument can be used.  Either "North" or "South" can be given.
+ Windows without titles can be shaded too.  See also
 .I WindowShadeSteps
 option of the
 .B Style

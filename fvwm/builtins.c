@@ -90,10 +90,6 @@ static char *button_states[BS_MaxButtonState + 1] =
   NULL
 };
 
-
-
-
-
 /***********************************************************************
  *
  *  WindowShade -- shades or unshades a window (veliaa@rpi.edu)
@@ -110,19 +106,15 @@ static char *button_states[BS_MaxButtonState + 1] =
  ***********************************************************************/
 void CMD_WindowShade(F_CMD_ARGS)
 {
-  int bwl;
-  int bwr;
-  int bw;
-  int bht;
-  int bhb;
-  int bh;
   int cw;
   int ch;
   int step = 1;
   int toggle;
-  int grav = NorthWestGravity;
+  int parent_grav = NorthWestGravity;
   int client_grav = NorthWestGravity;
+  int title_grav = NorthWestGravity;
   int move_parent_too = False;
+  int shade_dir;
   rectangle frame_g;
   rectangle parent_g;
   rectangle shape_g;
@@ -131,6 +123,7 @@ void CMD_WindowShade(F_CMD_ARGS)
   rectangle sdiff;
   rectangle big_g;
   rectangle small_g;
+  size_borders b;
   Bool do_scroll;
   FvwmWindow *sf;
   static Window shape_w = None;
@@ -154,18 +147,34 @@ void CMD_WindowShade(F_CMD_ARGS)
 
   sf = get_focus_window();
   /* parse arguments */
-  toggle = ParseToggleArgument(action, NULL, -1, 0);
-  if (toggle == -1)
+  if (IS_SHADED(tmp_win))
   {
-    if (GetIntegerArguments(action, NULL, &toggle, 1) > 0)
+    shade_dir = SHADED_DIR(tmp_win);
+  }
+  else
+  {
+    shade_dir = ParseDirectionArgument(action, NULL, -1);
+  }
+  if (shade_dir != DIR_N && shade_dir != DIR_S)
+  {
+    toggle = ParseToggleArgument(action, NULL, -1, 0);
+    shade_dir = (HAS_BOTTOM_TITLE(tmp_win)) ? DIR_S : DIR_N;
+    if (toggle == -1)
     {
-      if (toggle == 1)
-        toggle = 1;
-      else if (toggle == 2)
-        toggle = 0;
-      else
-        toggle = -1;
+      if (GetIntegerArguments(action, NULL, &toggle, 1) > 0)
+      {
+	if (toggle == 1)
+	  toggle = 1;
+	else if (toggle == 2)
+	  toggle = 0;
+	else
+	  toggle = -1;
+      }
     }
+  }
+  else
+  {
+    toggle = -1;
   }
   if (toggle == -1)
   {
@@ -181,15 +190,9 @@ void CMD_WindowShade(F_CMD_ARGS)
   frame_g = tmp_win->frame_g;
   big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->normal_g;
   get_relative_geometry(&big_g, &big_g);
-  bwl = tmp_win->boundary_width;
-  bwr = tmp_win->boundary_width;
-  bw = bwl + bwr;
-  bht = tmp_win->boundary_width + tmp_win->title_top_height;
-  bhb = tmp_win->boundary_width +
-    tmp_win->title_g.height - tmp_win->title_top_height;;
-  bh = bht + bhb;
-  cw = big_g.width - bw;
-  ch = big_g.height - bh;
+  get_window_borders(tmp_win, &b);
+  cw = big_g.width - b.total_size.width;
+  ch = big_g.height - b.total_size.height;
   do_scroll = !DO_SHRINK_WINDOWSHADE(tmp_win);
   /* calcuate the step size */
   if (tmp_win->shade_anim_steps > 0)
@@ -200,13 +203,14 @@ void CMD_WindowShade(F_CMD_ARGS)
     step = 1;
   if (tmp_win->shade_anim_steps)
   {
-    grav = (HAS_BOTTOM_TITLE(tmp_win)) ? SouthEastGravity : NorthWestGravity;
+    title_grav = (HAS_BOTTOM_TITLE(tmp_win)) ?
+      SouthEastGravity : NorthWestGravity;
+    parent_grav = (shade_dir == DIR_S) ? SouthEastGravity : NorthWestGravity;
     if (!do_scroll)
-      client_grav = grav;
+      client_grav = parent_grav;
     else
-      client_grav =
-	(HAS_BOTTOM_TITLE(tmp_win)) ? NorthWestGravity : SouthEastGravity;
-    set_decor_gravity(tmp_win, grav, grav, client_grav);
+      client_grav = (shade_dir == DIR_S) ? NorthWestGravity : SouthEastGravity;
+    set_decor_gravity(tmp_win, title_grav, parent_grav, client_grav);
     move_parent_too = HAS_BOTTOM_TITLE(tmp_win);
   }
 
@@ -217,12 +221,14 @@ void CMD_WindowShade(F_CMD_ARGS)
 
     if (tmp_win->shade_anim_steps != 0)
     {
-      XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht, cw, 1);
-      XMoveWindow(dpy, tmp_win->w, 0,
-		  (client_grav == SouthEastGravity) ? -ch + 1 : 0);
+      XMoveResizeWindow(
+	      dpy, tmp_win->Parent, b.top_left.width, b.top_left.height, cw, 1);
+      XMoveWindow(
+	      dpy, tmp_win->w, 0,
+	      (client_grav == SouthEastGravity) ? -ch + 1 : 0);
       XLowerWindow(dpy, tmp_win->decor_w);
-      parent_g.x = bwl;
-      parent_g.y = bht + (HAS_BOTTOM_TITLE(tmp_win) ? -step : 0);
+      parent_g.x = b.top_left.width;
+      parent_g.y = b.top_left.height + ((shade_dir == DIR_S) ? -step : 0);
       parent_g.width = cw;
       parent_g.height = 0;
       pdiff.x = 0;
@@ -231,29 +237,30 @@ void CMD_WindowShade(F_CMD_ARGS)
       pdiff.height = step;
       if (client_grav == SouthEastGravity)
       {
-	shape_g.x = bwl;
-	shape_g.y = bht - ch;
+	shape_g.x = b.top_left.width;
+	shape_g.y = b.top_left.height - ch;
 	sdiff.x = 0;
 	sdiff.y = step;
       }
       else
       {
-	shape_g.x = bwl;
-	shape_g.y = bht;
+	shape_g.x = b.top_left.width;
+	shape_g.y = b.top_left.height;
 	sdiff.x = 0;
 	sdiff.y = 0;
       }
       diff.x = 0;
-      diff.y = HAS_BOTTOM_TITLE(tmp_win) ? -step : 0;
+      diff.y = (shade_dir == DIR_S) ? -step : 0;
       diff.width = 0;
       diff.height = step;
 
       /* This causes a ConfigureNotify if the client size has changed while
        * the window was shaded. */
       XResizeWindow(dpy, tmp_win->w, cw, ch);
-      /* make the decor window the full sze before the animation unveils it */
-      XMoveResizeWindow(dpy, tmp_win->decor_w, 0, HAS_BOTTOM_TITLE(tmp_win)
-        ? frame_g.height - big_g.height : 0, big_g.width, big_g.height);
+      /* make the decor window the full size before the animation unveils it */
+      XMoveResizeWindow(
+	      dpy, tmp_win->decor_w, 0, (shade_dir == DIR_S) ?
+	      frame_g.height - big_g.height : 0, big_g.width, big_g.height);
       tmp_win->frame_g.width = big_g.width;
       tmp_win->frame_g.height = big_g.height;
       /* draw the border decoration iff backing store is on */
@@ -290,9 +297,10 @@ void CMD_WindowShade(F_CMD_ARGS)
 	    XRectangle rect;
 
 	    /* windows w/ titles */
-	    rect.x = bwl;
-	    rect.y = (HAS_BOTTOM_TITLE(tmp_win)) ? frame_g.height - bhb : 0;
-	    rect.width = frame_g.width - bw;
+	    rect.x = b.top_left.width;
+	    rect.y = (shade_dir == DIR_S) ?
+		    frame_g.height - b.bottom_right.height : 0;
+	    rect.width = frame_g.width - b.total_size.width;
 	    rect.height = tmp_win->title_g.height;
 	    FShapeCombineRectangles(
 	      dpy, shape_w, FShapeBounding, 0, 0, &rect, 1, FShapeUnion,
@@ -335,7 +343,8 @@ void CMD_WindowShade(F_CMD_ARGS)
 	 * Otherwise there is a visible jump of the client window. */
 	XMoveResizeWindow(
 	  dpy, tmp_win->Parent, parent_g.x,
-	  bht - (big_g.height - frame_g.height), parent_g.width, ch);
+	  b.top_left.height - (big_g.height - frame_g.height), parent_g.width,
+	  ch);
 	XMoveResizeWindow(
 	  dpy, tmp_win->frame, big_g.x, big_g.y, big_g.width, big_g.height);
       }
@@ -351,15 +360,19 @@ void CMD_WindowShade(F_CMD_ARGS)
     else
     {
       XMoveResizeWindow(dpy, tmp_win->w, 0, 0, cw, ch);
-      if (HAS_BOTTOM_TITLE(tmp_win))
+      if (shade_dir == DIR_S)
       {
-	XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht - ch + 1, cw, ch);
+	XMoveResizeWindow(
+		dpy, tmp_win->Parent, b.top_left.width,
+		b.top_left.height - ch + 1, cw, ch);
 	set_decor_gravity(
 	  tmp_win, SouthEastGravity, SouthEastGravity, NorthWestGravity);
       }
       else
       {
-	XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht, cw, ch);
+	XMoveResizeWindow(
+		dpy, tmp_win->Parent, b.top_left.width, b.top_left.height, cw,
+		ch);
 	set_decor_gravity(
 	  tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
       }
@@ -382,6 +395,7 @@ void CMD_WindowShade(F_CMD_ARGS)
   {
     /* shade window */
     SET_SHADED(tmp_win, 1);
+    SET_SHADED_DIR(tmp_win, shade_dir);
     get_shaded_geometry(tmp_win, &small_g, &big_g);
     if (small_g.width < 1)
     {
@@ -393,10 +407,10 @@ void CMD_WindowShade(F_CMD_ARGS)
     }
     if (tmp_win->shade_anim_steps != 0)
     {
-      parent_g.x = bwl;
-      parent_g.y = bht;
+      parent_g.x = b.top_left.width;
+      parent_g.y = b.top_left.height;
       parent_g.width = cw;
-      parent_g.height = frame_g.height - bh;
+      parent_g.height = frame_g.height - b.total_size.height;
       pdiff.x = 0;
       pdiff.y = 0;
       pdiff.width = 0;
@@ -405,7 +419,7 @@ void CMD_WindowShade(F_CMD_ARGS)
       sdiff.x = 0;
       sdiff.y = (client_grav == SouthEastGravity) ? -step : 0;
       diff.x = 0;
-      diff.y = HAS_BOTTOM_TITLE(tmp_win) ? step : 0;
+      diff.y = (shade_dir == DIR_S) ? step : 0;
       diff.width = 0;
       diff.height = -step;
 
@@ -431,9 +445,10 @@ void CMD_WindowShade(F_CMD_ARGS)
 	    XRectangle rect;
 
 	    /* windows w/ titles */
-	    rect.x = bwl;
-	    rect.y = (HAS_BOTTOM_TITLE(tmp_win)) ? frame_g.height - bhb : 0;
-	    rect.width = big_g.width - bw;
+	    rect.x = b.top_left.width;
+	    rect.y = (shade_dir == DIR_S) ?
+		    frame_g.height - b.bottom_right.height : 0;
+	    rect.width = big_g.width - b.total_size.width;
 	    rect.height = tmp_win->title_g.height;
 	    FShapeCombineRectangles(
 	      dpy, shape_w, FShapeBounding, 0, 0, &rect, 1, FShapeUnion,
@@ -473,7 +488,7 @@ void CMD_WindowShade(F_CMD_ARGS)
       }
     }
     /* All this stuff is necessary to prevent flickering */
-    set_decor_gravity(tmp_win, grav, UnmapGravity, client_grav);
+    set_decor_gravity(tmp_win, title_grav, UnmapGravity, client_grav);
     XMoveResizeWindow(
       dpy, tmp_win->frame, small_g.x, small_g.y, small_g.width,
       small_g.height);
@@ -482,7 +497,7 @@ void CMD_WindowShade(F_CMD_ARGS)
     XRaiseWindow(dpy, tmp_win->decor_w);
     XMapWindow(dpy, tmp_win->Parent);
 
-    if (HAS_BOTTOM_TITLE(tmp_win))
+    if (shade_dir == DIR_S)
     {
       XMoveWindow(dpy, tmp_win->w, 0, 1 - ch);
     }

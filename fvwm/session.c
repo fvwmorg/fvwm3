@@ -757,7 +757,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   to be set up correctly beforehand!
 */
 Bool
-MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
+MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max)
 {
   int i;
 
@@ -795,6 +795,7 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       SET_PLACED_WB3(ewin,IS_PLACED_WB3(&(matches[i])));
       SET_PLACED_BY_FVWM(ewin,IS_PLACED_BY_FVWM(&(matches[i])));
       *do_shade = IS_SHADED(&(matches[i]));
+      *shade_dir = SHADED_DIR(&(matches[i]));
       *do_max = IS_MAXIMIZED(&(matches[i]));
       SET_ICON_MOVED(ewin, IS_ICON_MOVED(&(matches[i])));
       if (IS_ICONIFIED(&(matches[i])))

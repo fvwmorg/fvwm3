@@ -60,7 +60,7 @@ void RestartInSession (char *filename, Bool isNative, Bool doPreserveState);
 **  The dimensions returned in x, y, w, h should be used when the
 **  window is to be maximized.
  */
-Bool MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max);
+Bool MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max);
 
 #ifdef SESSION
 void SetClientID(char *client_id);

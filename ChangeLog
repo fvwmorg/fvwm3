@@ -1,4 +1,19 @@
-2002-03-04  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/geometry.c (update_absolute_geometry):
+	* fvwm/builtins.c (CMD_WindowShade):
+	* fvwm/ewmh_events.c (ewmh_WMStateShaded):
+	* fvwm/conditional.c (CreateConditionMask):
+	* fvwm/geometry.c (get_shaded_geometry):
+	* fvwm/session.c (MatchWinToSM):
+	* fvwm/add_window.c (setup_window_structure):
+	(AddWindow):
+	* fvwm/window_flags.h (SHADED_DIR):
+	* fvwm/fvwm.h (struct):
+	implemented new WindowShade options "North" and "South" to allow shading
+	a window in either direction, regardless of if the title is at the top
+	or bottom.
 
 	* libs/Module.c (module_expand_action):
 	new convenience function for modules

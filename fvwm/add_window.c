@@ -135,6 +135,7 @@ Bool setup_window_structure(
   {
     (*ptmp_win)->Desk = savewin->Desk;
     SET_SHADED(*ptmp_win, IS_SHADED(savewin));
+    SET_SHADED_DIR(*ptmp_win, SHADED_DIR(savewin));
     SET_PLACED_WB3(*ptmp_win,IS_PLACED_WB3(savewin));
     SET_PLACED_BY_FVWM(*ptmp_win, IS_PLACED_BY_FVWM(savewin));
     SET_HAS_EWMH_WM_ICON_HINT(*ptmp_win, HAS_EWMH_WM_ICON_HINT(savewin));
@@ -1407,6 +1408,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
   extern FvwmWindow *colormap_win;
   extern Bool PPosOverride;
   int do_shade = 0;
+  int shade_dir = 0;
   int do_maximize = 0;
   Bool used_sm = False;
   Bool do_resize_too = False;
@@ -1521,7 +1523,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
    * Thus it is important have this call *after* PlaceWindow and the
    * stacking order initialization.
    */
-  used_sm = MatchWinToSM(tmp_win, &do_shade, &do_maximize);
+  used_sm = MatchWinToSM(tmp_win, &do_shade, &shade_dir, &do_maximize);
   if (used_sm)
   {
     /* read the requested absolute geometry */
@@ -1561,6 +1563,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
     if (IS_SHADED(tmp_win))
     {
       do_shade = 1;
+      shade_dir = SHADED_DIR(tmp_win);
       SET_SHADED(tmp_win, 0);
     }
     /* Tentative size estimate */
@@ -1710,7 +1713,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
     big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->frame_g;
     get_shaded_geometry(tmp_win, &tmp_win->frame_g, &tmp_win->frame_g);
     XLowerWindow(dpy, tmp_win->Parent);
-    SET_SHADED(tmp_win ,1);
+    SET_SHADED(tmp_win, 1);
+    SET_SHADED_DIR(tmp_win, do_shade);
     SetupFrame(
       tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
       tmp_win->frame_g.width, tmp_win->frame_g.height, False);

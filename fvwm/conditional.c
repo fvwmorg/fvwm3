@@ -796,18 +796,6 @@ void CMD_All(F_CMD_ARGS)
  **********************************************************************/
 void CMD_Direction(F_CMD_ARGS)
 {
-	static char *directions[] =
-		{
-			"North",
-			"East",
-			"South",
-			"West",
-			"NorthEast",
-			"SouthEast",
-			"SouthWest",
-			"NorthWest",
-			NULL
-		};
 	/* The rectangles are inteded for a future enhancement and are not used
 	 * yet. */
 	rectangle my_g;
@@ -830,11 +818,11 @@ void CMD_Direction(F_CMD_ARGS)
 
 	/* Parse the direction. */
 	action = GetNextToken(action, &tmp);
-	dir = GetTokenIndex(tmp, directions, 0, NULL);
+	dir = ParseDirectionArgument(tmp, NULL, -1);
 	if (dir == -1)
 	{
 		fvwm_msg(ERR, "Direction", "Invalid direction %s",
-			 (tmp)? tmp : "");
+			 (tmp) ? tmp : "");
 		if (tmp)
 		{
 			free(tmp);
@@ -846,7 +834,9 @@ void CMD_Direction(F_CMD_ARGS)
 		return;
 	}
 	if (tmp)
+	{
 		free(tmp);
+	}
 
 	/* Create the mask for flags */
 	flags = CreateFlagString(action, &restofline);

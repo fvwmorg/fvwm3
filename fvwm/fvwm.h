@@ -343,6 +343,7 @@ typedef struct
 	unsigned is_window_border_drawn : 1;
 	unsigned is_window_font_loaded : 1;
 	unsigned is_window_shaded : 1;
+	unsigned shaded_dir : 3;
 	unsigned using_default_icon_font : 1;
 	unsigned using_default_window_font : 1;
 #define ICON_HINT_NEVER    0

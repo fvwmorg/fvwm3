@@ -98,8 +98,8 @@ static void apply_window_updates(
 	 * is_sticky
 	 * is_icon_sticky
 	 *
-	 * These are a bit complicated because they can move windows to a different
-	 * page or desk. */
+	 * These are a bit complicated because they can move windows to a
+	 * different page or desk. */
 	if (flags->do_update_stick_icon && IS_ICONIFIED(t) && !IS_STICKY(t))
 	{
 		if (IS_ICON_STICKY(pstyle))
@@ -250,13 +250,9 @@ static void apply_window_updates(
 	}
 	if (flags->do_setup_frame)
 	{
-		if (IS_SHADED(t))
-		{
-			get_unshaded_geometry(t, &t->frame_g);
-			get_shaded_geometry(t, &t->frame_g, &t->frame_g);
-		}
-		ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
-				t->frame_g.height, True);
+		ForceSetupFrame(
+			t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
+			t->frame_g.height, True);
 		GNOME_SetWinArea(t);
 		EWMH_SetFrameStrut(t);
 	}

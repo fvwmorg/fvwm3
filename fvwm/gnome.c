@@ -347,7 +347,11 @@ GNOME_GetHintState(FvwmWindow *fwin)
       SET_STICKY(fwin, 1);
 
     if (*retval & WIN_STATE_SHADED)
+    {
+      /* Fixme: how do we find out the correct shade direction here? */
       SET_SHADED(fwin, 1);
+      SET_SHADED_DIR(fwin, DIR_N);
+    }
 
     if (*retval & WIN_STATE_FIXED_POSITION)
       SET_FIXED(fwin, 1);
