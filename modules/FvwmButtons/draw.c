@@ -194,10 +194,7 @@ void RedrawButton(button_info *b,int clean)
   int ix,iy,iw,ih;
   XFontStruct *font = buttonFont(b);
 #ifdef I18N_MB
-  /*
-    there seems to be no I18N patch here
   XFontSet fontset = buttonFontSet(b);
-  */
 #endif
   XGCValues gcv;
   int rev = 0;
@@ -531,15 +528,26 @@ void DrawTitle(button_info *b,Window win,GC gc)
 	((buttonSwallowCount(b)==3) && (b->flags&b_Swallow))) &&
        !(justify&b_Horizontal))
     {
-      XDrawString(Dpy, win, gc, xpos, iy+ih-font->descent, s, l);
+#ifdef I18N_MB
+      XmbDrawString(Dpy, win, fontset, gc, xpos,
+		    iy+ih-font->descent, s, l);
+#else
+      XDrawString(Dpy, win, gc, xpos,
+		  iy+ih-font->descent, s, l);
+#endif
       /* Shrink the space available for icon/window */
       ih-=font->descent+font->ascent;
     }
     /* Or else center vertically */
     else
     {
-      XDrawString(
-	Dpy, win, gc, xpos, iy+(ih+font->ascent-font->descent)/2, s, l);
+#ifdef I18N_MB
+      XmbDrawString(Dpy, win, fontset, gc, xpos,
+		    iy+(ih+font->ascent-font->descent)/2, s, l);
+#else
+      XDrawString(Dpy, win, gc, xpos,
+		  iy+(ih+font->ascent-font->descent)/2, s, l);
+#endif
     }
   }
 }
