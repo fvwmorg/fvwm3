@@ -1313,7 +1313,7 @@ $[hilight.cs<n>]
 .in +.5i
 $[shadow.cs<n>]
 .in +.3i
-These class of parameters is replaced with the name of the
+These parameters are replaced with the name of the
 foreground (fg), background (bg), hilight (hilight) or shadow
 (shadow) color that is defined in colorset <n> (replace <n> with
 zero or a positive integer).  For example "$[fg.cs3]" is expanded
@@ -1337,12 +1337,10 @@ Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]
 .in +.5i
 $[desk.name<n>]
 .in -.5i
-\"needs_lang_check
-These class of parameters is replaced with the name of the desktop 
+These parameters are replaced with the name of the desktop 
 number <n> that is defined with the
 .B DesktopName
 command. If no name is defined, then the default name is returned.
-\"end
 
 .in +.5i
 $[...]
@@ -4134,28 +4132,24 @@ horizontal and vertical values are "grow", it expands vertically
 first, then horizontally to find space.  Instead of the horizontal
 "grow" argument, "growleft" or "growright" can be used
 respectively "growup" and "growdown".
-\"needs_lang_check
 The optional
 .I flags
-argument can be a space separated list containing the following
-key word:
+argument is a space separated list containing the following
+key words:
 .IR ewmhiwa ", " layer " and " screen .
-.I ewmhiwa forces to ignore the EWMH working area.
+.I ewmhiwa causes fvwm to ignore the EWMH working area.
 .I layer
 causes the various grow methods to ignore the windows with a layer less
-or equal to the layer of the window which is maximized.
+than or equal to the layer on the window which is maximized.
 .I screen
-should take an argument which specifies the Xinerama screen on which
+must have an argument which specifies the Xinerama screen on which
 to operate.
-\"end
 It can be 'p' for the primary screen, 'c' for the current
 screen (containing the mouse pointer), 'g' for the global screen
 or the screen number itself (counting from zero).  This option is
 only useful with multiple Xinerama screens.
 
-\"needs_lang_check
-Let us give some examples.
-\"end
+Here are some examples.
 The following
 adds a title-bar button to switch a window to the full vertical
 size of the screen:
@@ -4175,14 +4169,12 @@ To expand a window horizontally until any other window is found:
 .EX
 Mouse 0 4 A Maximize 0 grow
 .EE
-\"needs_lang_check
 To expand a window until any other window with a larger layer is found:
-\"end
 .EX
 Mouse 0 4 A Maximize layer grow grow
 .EE
 To expand a window but leave the lower 60 pixels of the screen
-unoccupied
+unoccupied:
 .EX
 Mouse 0 4 A Maximize 100 -60p
 .EE
