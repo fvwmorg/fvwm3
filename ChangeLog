@@ -1,3 +1,14 @@
+1999-01-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (ButtonStyle): fixed parsing bug causing a hang
+
+	* fvwm/module.c (HandleModuleInput): fixed parsing with popup
+
+1999-01-13  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/icons.c (AutoPlace): fixed a bug in icon placement (netscape 4.5
+	refused to go into the icon box
+
 1999-01-13  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* fvwm/builtins.c (DirectionFunc): Made variable "dir" an int, to

@@ -325,10 +325,10 @@ int HandleModuleInput(Window w, int channel)
       }
 
       /* If a module does XUngrabPointer(), it can now get proper Popups */
-      if(strncasecmp(text,"popup",5)==0)
-	  Event.xany.type = ButtonPress;
+      if(StrEquals(text, "popup"))
+	Event.xany.type = ButtonPress;
       else
-	  Event.xany.type = ButtonRelease;
+	Event.xany.type = ButtonRelease;
       Event.xany.window = w;
 
       if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &tmp_win) == XCNOENT)

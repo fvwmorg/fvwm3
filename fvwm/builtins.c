@@ -3941,21 +3941,21 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 		    }
 		}
                 else if (strncasecmp(tok,"MWMDecorMenu",12)==0) {
-		    SetButtonFlag(MWMDecorMenu);
+		  SetButtonFlag(MWMDecorMenu);
 		} else if (strncasecmp(tok,"MWMDecorMin",11)==0) {
-		    SetButtonFlag(MWMDecorMinimize);
+		  SetButtonFlag(MWMDecorMinimize);
                 } else if (strncasecmp(tok,"MWMDecorMax",11)==0) {
-		    SetButtonFlag(MWMDecorMaximize);
+		  SetButtonFlag(MWMDecorMaximize);
 		} else {
-		    fvwm_msg(ERR, "ButtonStyle",
-			     "unknown title button flag %s -- line: %s",
-			     tok, text);
-		    if (set)
-			free(tok);
-		    else
-			free(tok - 1);
-		    text = GetNextToken(text, &tok);
+		  fvwm_msg(ERR, "ButtonStyle",
+			   "unknown title button flag %s -- line: %s",
+			   tok, text);
 		}
+		if (set)
+		  free(tok);
+		else
+		  free(tok - 1);
+		text = GetNextToken(text, &tok);
 	    }
 	    free(parm);
 	    break;

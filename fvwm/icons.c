@@ -533,7 +533,8 @@ void AutoPlace(FvwmWindow *t)
                 &&(loc_ok == True)) { /* test overlap */
             if(test_window->Desk == t->Desk) {
               if((test_window->flags&ICONIFIED) &&
-                 (!test_window->tmpflags.IconifiedByParent) &&
+                 (!(test_window->flags&TRANSIENT) ||
+		  !test_window->tmpflags.IconifiedByParent) &&
                  (test_window->icon_w||test_window->icon_pixmap_w) &&
                  (test_window != t)) {
                 tw=test_window->icon_p_width;
@@ -947,7 +948,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     else
 	CreateIconWindow(tmp_win, def_x, def_y);
   }
-  
+
   /* if no pixmap we want icon width to change to text width every iconify */
   if( (tmp_win->icon_w != None) && (tmp_win->icon_pixmap_w == None) ) {
     tmp_win->icon_t_width =
