@@ -2313,11 +2313,11 @@ static void setVersionInfo(void)
   strcat(support_str, " SM,");
 #endif
 #ifdef I18N_MB
-  strcat(support_str, " I18N_MB,");
+  strcat(support_str, " Multibyte,");
 #endif
 
   support_len = strlen(support_str);
-  if (support_len)
+  if (support_len > 0)
   {
     /* strip last comma */
     support_str[support_len - 1] = '\0';

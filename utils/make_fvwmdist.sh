@@ -24,8 +24,6 @@ VERSION_PRE="fvwm-"
 VERSION_POST=".tar.gz"
 READY_STRING=" is ready for distribution"
 
-wrong_dir=0
-
 if [ "$1" = -r ] ; then
   IS_RELEASE=1
   echo "Your name and email address will show up in the ChangeLog."
@@ -41,24 +39,18 @@ else
   IS_RELEASE=0
 fi
 
-err_exit ()
-{
-  echo
-  echo "an error occured while builting the distribution. Error code = $1"
-  exit $1
-}
-
-if [ ! -r "$CHECK_FILE" ] ; then
-  wrong_dir=1
-elif ! grep "$CHECK_STRING1" "$CHECK_FILE" ; then
-  wrong_dir=1
-elif ! grep "$CHECK_STRING2" "$CHECK_FILE" ; then
-  wrong_dir=1
+wrong_dir=1
+if [ -r "$CHECK_FILE" ] ; then
+  wrong_dir=0
+elif grep "$CHECK_STRING1" "$CHECK_FILE" ; then
+  wrong_dir=0
+elif grep "$CHECK_STRING2" "$CHECK_FILE" ; then
+  wrong_dir=0
 fi > /dev/null 2> /dev/null
 
 if [ $wrong_dir = 1 ] ; then
   echo "The fvwm sources are not present in the current directory."
-  err_exit 1;
+  exit 2;
 fi
 
 VERSION=`grep $CHECK_VERSION_STRING configure.in 2>&1 |
@@ -69,7 +61,7 @@ VMAJOR=`echo $VERSION | cut -f 2 -d "."`
 VMINOR=`echo $VERSION | cut -f 3 -d "."`
 if [ -z "$VRELEASE" -o -z "$VMAJOR" -o -z "$VMINOR" ] ; then
   echo "Failed to fetch version number from configure.in."
-  err_exit 12;
+  exit 3;
 fi
 VERSION_STRING=$VERSION_PRE$VRELEASE.$VMAJOR.$VMINOR$VERSION_POST
 echo "***** building $VERSION_STRING *****"
@@ -77,30 +69,30 @@ echo "***** building $VERSION_STRING *****"
 # clean up
 echo removing old configure files ...
 if [ -f configure ] ; then
-  rm configure || err_exit 2
+  rm configure || exit 4
 fi
 if [ -f config.cache ] ; then
-  rm config.cache || err_exit 3
+  rm config.cache || exit 5
 fi
 if [ -f config.log ] ; then
-  rm config.log || err_exit 4
+  rm config.log || exit 6
 fi
 if [ -f config.status ] ; then
-  rm config.status || err_exit 5
+  rm config.status || exit 7
 fi
 
 echo running automake ...
-automake --add-missing || err_exit 6
+automake --add-missing || exit 8
 echo running autoreconf ...
-autoreconf || err_exit 7
+autoreconf || exit 9
 echo running configure ...
-./configure --enable-gnome || err_exit 8
+./configure --enable-gnome || exit 10
 echo running make clean ...
-make clean || err_exit 9
+make clean || exit 11
 echo running make ...
-make CFLAGS="-g -O2 -Wall -Werror" || err_exit 10
+make CFLAGS="-g -O2 -Wall -Werror" || exit 12
 echo running make distcheck2 ...
-make distcheck2 2>&1 | grep "$VERSION_STRING$READY_STRING" || err_exit 11
+make distcheck2 2>&1 | grep "$VERSION_STRING$READY_STRING" || exit 13
 echo
 echo "distribution file is ready"
 echo
@@ -116,34 +108,34 @@ else
   echo updating NEWS file
   NNEWS="new-NEWS"
   perl -pe 's/^(.*) ('$VRELEASE.$VMAJOR.')('$VMINOR') (\(not released yet\))$/$1 $2@{[$3+1]} $4\n\n$1 $2$3 (@{[substr(`date +%Y-%m-%d`,0,10)]})/' \
-    < NEWS > $NNEWS || err_exit 12
-  mv $NNEWS NEWS || err_exit 13
+    < NEWS > $NNEWS || exit 14
+  mv $NNEWS NEWS || exit 15
   echo tagging CVS source
   if [ ! "$FVWMRELPRECVSCOMMAND" = "" ] ; then
     $FVWMRELPRECVSCOMMAND
   fi
-  cvs tag version-${VRELEASE}_${VMAJOR}_$VMINOR || err_exit 14
+  cvs tag version-${VRELEASE}_${VMAJOR}_$VMINOR || exit 16
   echo increasing version number in configure.in
   NCFG="new-configure.in"
-  touch $NCFG || err_exit 15
+  touch $NCFG || exit 17
   cat configure.in |
   sed -e "s/$VRELEASE\.$VMAJOR\.$VMINOR/$VRELEASE\.$VMAJOR\.$[$VMINOR+1]/g" \
-    > $NCFG || err_exit 16
-  mv $NCFG configure.in || err_exit 17
+    > $NCFG || exit 18
+  mv $NCFG configure.in || exit 19
   echo generating ChangeLog entry ...
   NCLOG="new-ChangeLog"
-  touch $NCLOG || err_exit 18
+  touch $NCLOG || exit 20
   echo `date +%Y-%m-%d`"  $FVWMRELNAME  <$FVWMRELEMAIL>" > $NCLOG
   echo >> $NCLOG
   echo "	* NEWS, configure.in:" >> $NCLOG
   echo "	changed version to $VRELEASE.$VMAJOR.$[VMINOR + 1]" >> $NCLOG
   echo >> $NCLOG
   cat ChangeLog >> $NCLOG
-  mv $NCLOG ChangeLog || err_exit 19
+  mv $NCLOG ChangeLog || exit 21
   echo committing configure.in and ChangeLog
   cvs commit -m \
     "* Set development version to $VRELEASE.$VMAJOR.$[VMINOR + 1]." \
-    NEWS configure.in ChangeLog || err_exit 20
+    NEWS configure.in ChangeLog || exit 22
   if [ ! "$FVWMRELPOSTCVSCOMMAND" = "" ] ; then
     $FVWMRELPOSTCVSCOMMAND
   fi

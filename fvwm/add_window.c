@@ -209,6 +209,10 @@ static void get_name_property(
       *ret_name = NoName;
     }
   }
+  else
+  {
+    *ret_name = NoName;
+  }
 
   return;
 }

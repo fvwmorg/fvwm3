@@ -1,9 +1,20 @@
+2001-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (setVersionInfo):
+	"I18N_MB" -> "Multibyte"
+
+	* Makefile.am:
+	* INSTALL.fvwm (http):
+	renamed "kanji" option to "multibyte" in some supporting files
+
+	* fvwm/add_window.c (get_name_property):
+	fixed icon title core dump with multibyte support
+
 2001-01-25  Dan Espen  <dane@mk.telcordia.com>
 
-	* configure.in: changed version to 2.3.29.
-
-	* NEWS, configure.in:
-	changed version to 2.3.$[VMINOR + 1]
+	* configure.in:
+	* NEWS:
+	changed version to 2.3.29:
 
 2001-01-24  Mikhael Goikhman  <migo@homemail.com>
 

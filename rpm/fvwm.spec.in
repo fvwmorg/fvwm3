@@ -3,7 +3,7 @@
 
 %define ver @VERSION@
 %define rel 1
-%define c_p --disable-kanji
+%define c_p --disable-multibyte
 %define m_p CFLAGS="-O2"
 
 %define _sourcedir /tmp

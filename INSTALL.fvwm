@@ -122,8 +122,8 @@ Optional libraries used by FVWM
 ===============================
 
 FVWM can optionally be compiled to use the following libraries: Xpm, rplay,
-readline, LibStroke.  By default, these are probed for, and used if found. 
-If you want to use any of them, install the library before configuring FVWM. 
+readline, LibStroke.  By default, these are probed for, and used if found.
+If you want to use any of them, install the library before configuring FVWM.
 It is possible to explicitly tell configure to skip autoprobing of a given
 library and disable it.
 
@@ -232,7 +232,7 @@ listed.
 If you would like to see lots of debug messages from FVWM, for
 debugging purposes, enable this option.
 
-  --enable-kanji                multibyte character support (does not work yet)
+  --enable-multibyte            multibyte character support (does not work yet)
 
 FVWM has limited support for multibyte charsets.  It is fully experimental
 and does not work in all places.  If you have access to a multibyte system

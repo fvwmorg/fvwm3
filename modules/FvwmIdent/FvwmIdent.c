@@ -53,7 +53,10 @@
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
+#include "libs/fvwmsignal.h"
 #include "FvwmIdent.h"
+
+static RETSIGTYPE TerminateHandler(int);
 
 static char *MyName;
 static fd_set_size_t fd_width;
@@ -136,8 +139,51 @@ int main(int argc, char **argv)
       exit(1);
     }
 
-  /* Dead pipe == dead fvwm */
-  signal (SIGPIPE, DeadPipe);
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
+# ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+# else
+    sigact.sa_flags = 0;
+# endif
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGHUP,  &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) |
+                     sigmask(SIGTERM) |
+                     sigmask(SIGQUIT) |
+                     sigmask(SIGINT) |
+                     sigmask(SIGHUP) );
+#endif
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+  signal(SIGQUIT, TerminateHandler);
+  signal(SIGINT,  TerminateHandler);
+  signal(SIGHUP,  TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGINT, 1);
+  siginterrupt(SIGHUP, 1);
+#endif
+#endif
 
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
@@ -273,12 +319,14 @@ void process_message(unsigned long type,unsigned long *body)
 
 /***********************************************************************
  *
- * Detected a broken pipe - time to exit
+ *  Procedure:
+ *	SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- **********************************************************************/
-void DeadPipe(int nonsense)
+ ***********************************************************************/
+static RETSIGTYPE
+TerminateHandler(int sig)
 {
-  exit(0);
+  fvwmSetTerminate(sig);
 }
 
 /***********************************************************************
@@ -595,6 +643,8 @@ void list_end(void)
       char *tline, *token;
 
       packet = ReadFvwmPacket(fd[1]);
+      if (packet == NULL)
+	exit(0);
       if (colorset >= 0 && packet && packet->type == M_CONFIG_INFO) {
 	tline = (char*)&(packet->body[3]);
 	tline = GetNextToken(tline, &token);

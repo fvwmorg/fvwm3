@@ -1,3 +1,9 @@
+2001-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIdent/FvwmIdent.c (list_end):
+	use standard module signal hangling
+	don't gobble all CPU when fvwm dies (bug report #693)
+
 2001-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/FvwmPager.c (ParseOptions):
