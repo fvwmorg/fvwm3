@@ -349,6 +349,8 @@ static void UnmapDesk(int desk, Bool grab)
 					t->flags.is_focused_on_other_desk = 0;
 				}
 				unmap_window(t);
+				SET_FULLY_VISIBLE(t, 0);
+				SET_PARTIALLY_VISIBLE(t, 0);
 			}
 		}
 		else
@@ -1301,6 +1303,8 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 				DeleteFocus(True);
 			}
 			unmap_window(fw);
+			SET_FULLY_VISIBLE(fw, 0);
+			SET_PARTIALLY_VISIBLE(fw, 0);
 		}
 		else if (desk == Scr.CurrentDesk)
 		{

@@ -654,60 +654,60 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	   the is_size_fixed flag makes a window unresizable (width and height
 	   hints etc.) */
 	if (IS_SIZE_FIXED(mask) &&
-	   mask->flag_mask.common.s.is_size_fixed &&
-	   is_function_allowed(F_RESIZE,NULL,fw,True,False))
+	    mask->flag_mask.common.s.is_size_fixed &&
+	    is_function_allowed(F_RESIZE,NULL,fw,True,False))
 	{
 	        return False;
 	}
 	if (!IS_SIZE_FIXED(mask) &&
-           mask->flag_mask.common.s.is_size_fixed &&
-	   !is_function_allowed(F_RESIZE,NULL,fw,True,False))
+	    mask->flag_mask.common.s.is_size_fixed &&
+	    !is_function_allowed(F_RESIZE,NULL,fw,True,False))
 	{
 	        return False;
         }
         SETM_SIZE_FIXED(mask, 0);
 
 	if (IS_UNICONIFIABLE(mask) &&
-	   mask->flag_mask.common.s.is_uniconifiable &&
-	   is_function_allowed(F_ICONIFY,NULL,fw,True,False))
+	    mask->flag_mask.common.s.is_uniconifiable &&
+	    is_function_allowed(F_ICONIFY,NULL,fw,True,False))
 	{
 	        return False;
 	}
 	if (!IS_UNICONIFIABLE(mask) &&
-	   mask->flag_mask.common.s.is_uniconifiable &&
-	   !is_function_allowed(F_ICONIFY,NULL,fw,True,False))
+	    mask->flag_mask.common.s.is_uniconifiable &&
+	    !is_function_allowed(F_ICONIFY,NULL,fw,True,False))
 	{
 	        return False;
 	}
 	SETM_IS_UNICONIFIABLE(mask, 0);
 
 	if (IS_UNMAXIMIZABLE(mask) &&
-	   mask->flag_mask.common.s.is_unmaximizable &&
-	   is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
+	    mask->flag_mask.common.s.is_unmaximizable &&
+	    is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
 	{
 	        return False;
 	}
 	if (!IS_UNMAXIMIZABLE(mask) &&
-	   mask->flag_mask.common.s.is_unmaximizable &&
-	   !is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
+	    mask->flag_mask.common.s.is_unmaximizable &&
+	    !is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
 	{
 	        return False;
 	}
 	SETM_IS_UNMAXIMIZABLE(mask, 0);
 
 	if (IS_UNCLOSABLE(mask) &&
-	   mask->flag_mask.common.s.is_unclosable &&
-	   (is_function_allowed(F_CLOSE,NULL,fw,True,False) ||
-	    is_function_allowed(F_DELETE,NULL,fw,True,False) ||
-	    is_function_allowed(F_DESTROY,NULL,fw,True,False)))
+	    mask->flag_mask.common.s.is_unclosable &&
+	    (is_function_allowed(F_CLOSE,NULL,fw,True,False) ||
+	     is_function_allowed(F_DELETE,NULL,fw,True,False) ||
+	     is_function_allowed(F_DESTROY,NULL,fw,True,False)))
 	{
 	        return False;
 	}
 	if (!IS_UNCLOSABLE(mask) &&
-	   mask->flag_mask.common.s.is_unclosable &&
-	   (!is_function_allowed(F_CLOSE,NULL,fw,True,False) &&
-	    !is_function_allowed(F_DELETE,NULL,fw,True,False) &&
-	    !is_function_allowed(F_DESTROY,NULL,fw,True,False)))
+	    mask->flag_mask.common.s.is_unclosable &&
+	    (!is_function_allowed(F_CLOSE,NULL,fw,True,False) &&
+	     !is_function_allowed(F_DELETE,NULL,fw,True,False) &&
+	     !is_function_allowed(F_DESTROY,NULL,fw,True,False)))
 	{
 	        return False;
 	}
