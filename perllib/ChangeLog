@@ -1,3 +1,11 @@
+2002-02-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module/Gtk.pm:
+	new subclass in perl library for writting Perl/Gtk based FVWM modules
+
+	* FVWM/Module/Tk.pm:
+	minor corrections
+
 2002-02-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

@@ -8,8 +8,13 @@ These are 2 small FVWM modules written in perl:
 	Prints window names and ids to stderr and exits.
 	If -x flag is given, do this in xmessage instead of stderr.
 
+* module-gtkwinlist:
+	Shows a list of windows, two columns that may be sorted by clicking
+	on titles, multiple windows may be iconified/shaded. Using Perl/Gtk.
+
 * module-tkdesker:
 	A simple version of pager, does not show mini-windows or pages;
 	shows only buttons, one per desk. Using Perl/Tk.
 
 You may just run these modules in FvwmConsole using their full path.
+The last 2 modules require extra perl modules from CPAN to be installed.

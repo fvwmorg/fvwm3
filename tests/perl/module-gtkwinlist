@@ -1,0 +1,97 @@
+#!/usr/bin/perl -w
+
+use 5.003;
+use strict;
+use Gtk;
+init Gtk;
+
+use lib `fvwm-config -p | tr -d '\n'`;
+use FVWM::Module::Gtk;
+
+my $module = new FVWM::Module::Gtk(
+	Name => "FvwmPerlGtkWinList",
+	Mask => M_WINDOW_NAME | M_END_WINDOWLIST | M_ERROR,
+);
+
+my $dialog = new Gtk::Dialog;
+$dialog->set_title("Window List");
+$dialog->set_border_width(4);
+
+my $smode = 'single';
+my $clist = new_with_titles Gtk::CList(" Id" . " " x 13, " Name" . " " x 20);
+$clist->set_selection_mode($smode);
+$clist->signal_connect("click_column", \&sortListByColumn);
+$dialog->vbox->add($clist);
+
+my $creatingWindowList = 0;
+sub requestWindowList () {
+	$creatingWindowList = 1;
+	$clist->freeze;
+	$clist->clear;
+	$module->sendText(0, "Send_WindowList");
+}
+
+sub doCommand ($) {
+	my $command = shift;
+	foreach ($clist->selection) {
+		$module->sendText(hex($clist->get_text($_, 0)), $command);
+	}
+}
+
+sub sortListByColumn ($$) {
+	my $clist = shift;
+	my $column = shift;
+
+	if ($column == $clist->sort_column()) {
+		if ($clist->sort_type() eq 'ascending') {
+			$clist->set_sort_type('descending');
+		} else {
+			$clist->set_sort_type('ascending');
+		}
+	} else {
+		$clist->set_sort_column($column);
+	}
+	$clist->sort;
+}
+
+my $button = new Gtk::CheckButton "Enable multiple selection";
+$dialog->vbox->add($button);
+$button->signal_connect("clicked", sub { $clist->set_selection_mode(
+	$smode = $smode eq 'multiple'? 'single': 'multiple'); });
+
+my $hbox = new Gtk::HBox(1, 0);
+$dialog->vbox->pack_end($hbox, 1, 1, 8);
+
+$button = new Gtk::Button "Iconify";
+$hbox->pack_start($button, 1, 1, 4);
+$button->signal_connect("clicked", sub { doCommand("Iconify"); });
+
+$button = new Gtk::Button "WindowShade";
+$hbox->pack_start($button, 1, 1, 4);
+$button->signal_connect("clicked", sub { doCommand("WindowShade"); });
+
+$button = new Gtk::Button "Refresh";
+$dialog->action_area->pack_start($button, 1, 1, 0);
+$button->signal_connect("clicked", sub { requestWindowList(); });
+ 
+$button = new Gtk::Button "Quit";
+$dialog->action_area->pack_start($button, 1, 1, 0);
+$button->signal_connect("clicked", sub { Gtk->main_quit; });
+
+$dialog->show_all;
+
+$module->addHandler(M_WINDOW_NAME, sub {
+	my ($self, $type, $winid, $frameid, $ptr, $name) = @_;
+	return unless $creatingWindowList;
+	$clist->append(sprintf("0x%07lx", $winid), $name);
+});
+
+$module->addHandler(M_END_WINDOWLIST, sub {
+	$creatingWindowList = 0;
+	$clist->thaw;
+});
+
+$module->addDefaultErrorHandler;
+
+requestWindowList();
+$module->eventLoop;

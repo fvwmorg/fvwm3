@@ -2,4 +2,4 @@
 
 configdir = @FVWM_PERLLIBDIR@/FVWM/Module
 
-config_DATA = Tk.pm
+config_DATA = Gtk.pm Tk.pm

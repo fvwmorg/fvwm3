@@ -1,3 +1,9 @@
+2002-02-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* perl/README:
+	* perl/module-gtkwinlist:
+	a new sample Perl/Gtk module
+
 2002-02-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* perl/README:
