@@ -65,6 +65,7 @@ with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
 with_multibyte=@with_multibyte@
+with_xinerama=@with_xinerama@
 
 while test $# -gt 0; do
 	case "$1" in
@@ -121,6 +122,7 @@ while test $# -gt 0; do
 			test "$with_gdkimlib"  = "yes" && echo "gdk-imlib"
 			test "$with_gnomelibs" = "yes" && echo "gnome-libs"
 			test "$with_multibyte" = "yes" && echo "multibyte"
+			test "$with_xinerama"  = "yes" && echo "xinerama"
 			;;
 
 		--supports-*)
@@ -162,6 +164,7 @@ while test $# -gt 0; do
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
 			echo "	multibyte: $with_multibyte"
+			echo "	xinerama: $with_xinerama"
 			;;
 
 		*)

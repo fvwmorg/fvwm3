@@ -507,6 +507,7 @@ AC_SUBST(with_gtk)
 AC_SUBST(with_gdkimlib)
 AC_SUBST(with_gnomelibs)
 AC_SUBST(with_multibyte)
+AC_SUBST(with_xinerama)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile utils/fvwm-config
