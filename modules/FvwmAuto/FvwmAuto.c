@@ -43,21 +43,18 @@
 #endif
 
 #include <stdio.h>
-#include <signal.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
 
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/fvwmsignal.h"
 
 /* here is the old double parens trick. */
 /* #define DEBUG */
@@ -72,18 +69,33 @@
 #define myfprintf(X)
 #endif
 
+
+static RETSIGTYPE TerminateHandler(int signo);
+
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *  Termination procedure : *not* a signal handler
  *
  ***********************************************************************/
 void DeadPipe(int nonsense)
 {
+  (void)nonsense;
   myfprintf((stderr,"Leaving via DeadPipe\n"));
   exit(0);
 }
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *  Signal handler that tells the module to quit
+ *
+ ***********************************************************************/
+static RETSIGTYPE
+TerminateHandler(int signo)
+{
+  fvwmSetTerminate(signo);
+}
 
 /***********************************************************************
  *
@@ -91,7 +103,8 @@ void DeadPipe(int nonsense)
  *	main - start of module
  *
  ***********************************************************************/
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
   char *enter_fn="Silent Raise";	/* default */
   char *leave_fn=NULL;
@@ -123,7 +136,52 @@ int main(int argc, char **argv)
   }
 
   /* Dead pipes mean fvwm died */
-  signal (SIGPIPE, DeadPipe);
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+# else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGHUP,  &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+  }
+#else
+  /* We don't have sigaction(), so fall back to less robust methods.  */
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) |
+                     sigmask(SIGINT)  |
+                     sigmask(SIGHUP)  |
+                     sigmask(SIGQUIT) |
+                     sigmask(SIGTERM) );
+#endif
+
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGINT,  TerminateHandler);
+  signal(SIGHUP,  TerminateHandler);
+  signal(SIGQUIT, TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGINT, 1);
+  siginterrupt(SIGHUP, 1);
+  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGTERM, 1);
+#endif
+#endif
 
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
@@ -132,7 +190,7 @@ int main(int argc, char **argv)
   {
     sec = timeout / 1000;
     usec = (timeout % 1000) * 1000;
-    delay=&value;
+    delay = &value;
     raise_immediately = 0;
   }
   else
@@ -156,9 +214,9 @@ int main(int argc, char **argv)
       token = PeekToken(enter_fn, NULL);
       if (!StrEquals(token, "Silent"))
       {
-	token = enter_fn;
-	enter_fn = safemalloc(strlen(token + 8));
-	sprintf(enter_fn,"Silent %s\n", token);
+        token = enter_fn;
+        enter_fn = safemalloc(strlen(token + 8));
+        sprintf(enter_fn,"Silent %s\n", token);
       }
     }
     if (argv[8] && *argv[8] && !StrEquals(argv[8],"NOP"))
@@ -169,30 +227,30 @@ int main(int argc, char **argv)
       token = PeekToken(leave_fn, NULL);
       if (!StrEquals(token, "Silent"))
       {
-	token = leave_fn;
-	leave_fn = safemalloc(strlen(token + 8));
-	sprintf(leave_fn,"Silent %s\n", token);
+        token = leave_fn;
+        leave_fn = safemalloc(strlen(token + 8));
+        sprintf(leave_fn,"Silent %s\n", token);
       }
     }
   }
 
-  fd_width = GetFdWidth();
-
-  SetMessageMask(fd,M_FOCUS_CHANGE|M_RAISE_WINDOW);
+  SetMessageMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW);
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
   /* tell fvwm that we want to be lock on send */
   SetSyncMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW);
 
-  while(1)
+  fd_width = fd[1] + 1;
+  FD_ZERO(&in_fdset);
+
+  while( !isTerminated )
   {
     char raise_window_now;
     static char have_new_window = 0;
 
-    FD_ZERO(&in_fdset);
-    FD_SET(fd[1],&in_fdset);
+    FD_SET(fd[1], &in_fdset);
 
-    myfprintf((stderr,"\nstart %d (ri = %d, hnw = %d, usec = %d)\n",
+    myfprintf((stderr, "\nstart %d (ri = %d, hnw = %d, usec = %d)\n",
                count++, raise_immediately, have_new_window, usec));
     if (!raise_immediately)
     {
@@ -205,12 +263,17 @@ int main(int argc, char **argv)
       /* delay is already a NULL pointer */
     }
 #ifdef DEBUG
-    sprintf(big_int_area,"%d usecs",delay->tv_usec);
-#endif
-    myfprintf((stderr,"select: delay = %s\n",
+    sprintf(big_int_area, "%d usecs", delay->tv_usec);
+    myfprintf((stderr, "select: delay = %s\n",
                (have_new_window) ? big_int_area : "infinite" ));
-    select(fd_width, SELECT_FD_SET_CAST &in_fdset, 0, 0,
-	   (have_new_window) ? delay : NULL);
+#endif
+    if (fvwmSelect(fd_width,
+                   &in_fdset, NULL, NULL,
+                   (have_new_window) ? delay : NULL) == -1)
+    {
+      myfprintf((stderr, "select: error! (%s)\n", strerror(errno)));
+      break;
+    } 
 
     raise_window_now = 0;
     if (FD_ISSET(fd[1], &in_fdset))
@@ -218,68 +281,76 @@ int main(int argc, char **argv)
       FvwmPacket *packet = ReadFvwmPacket(fd[1]);
       if ( packet == NULL )
       {
-        myfprintf((stderr,"Leaving because of null packet\n"));
-	exit(0);
+        myfprintf((stderr, "Leaving because of null packet\n"));
+        break;
       }
-      myfprintf((stderr,"pw = 0x%x, fw=0x%x, rw = 0x%x, lw=0x%x\n",
-                packet->body[0],focus_win,raised_win,last_win));
+
+      myfprintf((stderr, "pw = 0x%x, fw=0x%x, rw = 0x%x, lw=0x%x\n",
+                packet->body[0], focus_win, raised_win, last_win));
+
       switch (packet->type)
       {
       case M_FOCUS_CHANGE:
-	/* it's a focus package */
-	focus_win = packet->body[0];
-        myfprintf((stderr,"focus change\n"));
-	if (focus_win != raised_win)
-	{
-          myfprintf((stderr,"its a new window\n"));
-	  have_new_window = 1;
-	  raise_window_now = raise_immediately;
-	}
+        /* it's a focus package */
+        focus_win = packet->body[0];
+        myfprintf((stderr, "focus change\n"));
+
+        if (focus_win != raised_win)
+        {
+          myfprintf((stderr, "its a new window\n"));
+          have_new_window = 1;
+          raise_window_now = raise_immediately;
+        }
 #ifdef DEBUG
-        else fprintf(stderr,"no new window\n");
+        else fprintf(stderr, "no new window\n");
 #endif
-	break;
+        break;
+
       case M_RAISE_WINDOW:
-        myfprintf((stderr,"raise packet 0x%x\n", packet->body[0]));
-	raised_win = packet->body[0];
-	if (have_new_window && focus_win == raised_win)
-	{
-          myfprintf((stderr,"its the old window: don't raise\n"));
-	  have_new_window = 0;
-	}
-	break;
-      }
+        myfprintf((stderr, "raise packet 0x%x\n", packet->body[0]));
+        raised_win = packet->body[0];
+
+        if (have_new_window && focus_win == raised_win)
+        {
+          myfprintf((stderr, "its the old window: don't raise\n"));
+          have_new_window = 0;
+        }
+        break;
+      } /* switch */
       SendInfo(fd, "UNLOCK", 0);
     }
     else
     {
       if (have_new_window)
       {
-        myfprintf((stderr,"must raise now\n"));
-	raise_window_now = 1;
+        myfprintf((stderr, "must raise now\n"));
+        raise_window_now = 1;
       }
     }
+
     if (raise_window_now)
     {
-      myfprintf((stderr,"raising 0x%x\n", focus_win));
+      myfprintf((stderr, "raising 0x%x\n", focus_win));
+
       if (last_win && leave_fn)
       {
-	/* if focus_win isn't the root */
-	SendInfo(fd,leave_fn,last_win);
+        /* if focus_win isn't the root */
+        SendInfo(fd, leave_fn, last_win);
       }
+
       if (focus_win && enter_fn)
       {
-	/* if focus_win isn't the root */
-	SendInfo(fd,enter_fn,focus_win);
-	raised_win = focus_win;
+        /* if focus_win isn't the root */
+        SendInfo(fd, enter_fn, focus_win);
+        raised_win = focus_win;
       }
+
       /* switch to wait mode again */
       last_win = focus_win;
       have_new_window = 0;
     }
-  }
+  } /* while */
+
   return 0;
 }
-
-
 
