@@ -201,42 +201,56 @@ typedef struct FvwmWindow
 
 #ifdef GSFR
     struct {
-      start_iconic : 1;
-      staysontop : 1;
-      sticky : 1;
-      listskip : 1;
-      suppressicon : 1;
-      noicon_title : 1;
+      /* style flags */
+      color_back : 1; /* was back_color */
+      color_fore : 1; /* was fore_color */
+      decorate_transient : 1;
+#define FOCUS_MOUSE   0x0
+#define FOCUS_CLICK   0x1
+#define FOCUS_SLOPPY  0x2
+      focus_mode : 1; /* was click_focus/sloppy_focus */
       lenience : 1;
-      sticky_icon : 1;
-      circulate_skip_icon : 1;
-      circulateskip : 1;
-      click_focus : 1;
-      sloppy_focus : 1;
-      show_mapping : 1;
-
-      notitle : 1;
-      noborder : 1;
-      icon : 1;
-      startsondesk : 1;
-      bw : 1;            /* what are these for ??? */
-      nobw : 1;
-      fore_color : 1;
-      back_color : 1;
-      random_place : 1;
-      smart_place : 1;
+      mwm_border : 1;
       mwm_button : 1;
       mwm_decor : 1;
       mwm_functions : 1;
       mwm_override : 1;
-      mwm_border : 1;
-      decorate_transient : 1;
-      no_pposition : 1;
-      ol_decor : 1;
+      noicon_title : 1;
+      place_random : 1; /* was random_place */
+      place_smart : 1; /* was smart_place */
+      show_mapping : 1;
+      start_iconic : 1;
+      startsondesk : 1;
+      staysontop : 1;
+      sticky : 1;
+      sticky_icon : 1;
 
+      /* state flags */
+      unsigned viewport_moved : 1; /* To prevent double move in MoveViewport.*/
+      unsigned iconified_by_parent : 1; /* To prevent iconified transients in
+					 * a parent icon from counting for
+					 * Next */
+#ifdef SESSION
+      unsigned name_changed : 1; /* Set if the client changes its WM_NAME.
+				  * The source of twm contains an explanation
+				  * why we need this information. */
+#endif
+
+      /* flags where I'm not sure if they are state or style flags */
+      bw : 1;            /* what are these for ??? */
+      nobw : 1;
+      circulate_skip_icon : 1;
+      circulateskip : 1;
+      icon : 1;
+      listskip : 1;
 #ifdef MINI_ICONS
       miniicon : 1;
 #endif
+      noborder : 1;
+      notitle : 1;
+      no_pposition : 1;
+      ol_decor : 1;
+      suppressicon : 1;
     } new_flags;
 #else
     unsigned long flags;
@@ -249,7 +263,7 @@ typedef struct FvwmWindow
       unsigned IconifiedByParent : 1; /* To prevent iconified transients in a
 				       * parent icon from counting for Next */
 #ifdef SESSION
-      unsigned NameChanged : 1; /* Set if the client changes its WM_NAME. 
+      unsigned NameChanged : 1; /* Set if the client changes its WM_NAME.
 				   The source of twm contains an explanation
 				   why we need this information. */
 #endif
@@ -267,7 +281,7 @@ typedef struct FvwmWindow
     int orig_wd;                /* unmaximized window width */
     int orig_ht;                /* unmaximized window height */
 
-    int maximized_ht;           /* maximized window height */     
+    int maximized_ht;           /* maximized window height */
 
     int xdiff,ydiff;            /* used to restore window position on exit*/
     int *mwm_hints;

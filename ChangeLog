@@ -1,5 +1,7 @@
 1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/fvwm.h (FvwmWindow): some preparations for GSFR
+
 	* fvwm/fvwm2.1: marked IconPath and PixmapPath as obsolete and added a
 	hint to the ImagePath command
 
