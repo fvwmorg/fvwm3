@@ -1522,6 +1522,9 @@ static void InitVariables(void)
   Scr.PanFrameBottom.command = NULL;
   Scr.PanFrameRight.command  = NULL;
   Scr.PanFrameLeft.command   = NULL;
+  Scr.flags.is_pointer_on_this_screen = !!XQueryPointer(
+	  dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX, &JunkY,
+	  &JunkMask);
 
   return;
 }
@@ -1992,9 +1995,6 @@ static void setVersionInfo(void)
     strcat(support_str, " Shape,");
 #ifdef SESSION
   strcat(support_str, " SM,");
-#endif
-#ifdef MULTIBYTE
-  strcat(support_str, " Multibyte,");
 #endif
 #ifdef HAVE_BIDI
   strcat(support_str, " bidi text,");

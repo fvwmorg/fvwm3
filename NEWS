@@ -18,6 +18,9 @@ Changes in alpha release 2.5.2 (not released yet)
 * New styles NoBorder and Border to enable or disable window
   borders.
 
+* Removed the --enable-multibyte configure option.  Multibyte
+  support is nor compiled in unconditionally.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)

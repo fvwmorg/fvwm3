@@ -103,30 +103,14 @@ if unset UNSET 2>/dev/null; then UNSET=unset; fi
 
 
 dnl ********* multibyte
-smr_SWITCH(multibyte, multibyte character support (experimental), on, MULTIBYTE)
-if test "x$enable_multibyte" != "xno"; then
-	with_multibyte=yes
-	problem_multibyte=""
-else
-	with_multibyte=no
-	problem_multibyte=": Explicitly disabled"
-fi
-
-if test "$with_multibyte" = no; then
-	smr_SWITCH(compound-text, compound text conversion support, on, COMPOUND_TEXT)
-fi
-
 dnl FreeBSD has libxpg4, check this and use if found.
-if test "$with_multibyte" = yes; then
-	AC_CANONICAL_HOST
-	case $host_os in
-	freebsd*)
-		AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"]);;
-	*)
-		;;
-	esac
-fi
-
+AC_CANONICAL_HOST
+case $host_os in
+freebsd*)
+	AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"]);;
+*)
+	;;
+esac
 
 dnl ********* GNOME window manager hints
 dnl Note, no gnome headers or libs are needed for FVWM to be GNOME compliant.
@@ -830,7 +814,6 @@ AC_SUBST(with_gnomehints)
 AC_SUBST(with_gtk)
 AC_SUBST(with_gdkimlib)
 AC_SUBST(with_gnomelibs)
-AC_SUBST(with_multibyte)
 AC_SUBST(with_perllib)
 AC_SUBST(with_png)
 AC_SUBST(with_readline)
@@ -961,7 +944,6 @@ FVWM Configuration:
   With Extended Window Manager Hints? $with_ewmh$problem_ewmh
   With GNOME Window Manager Hints?    $with_gnomehints$problem_gnomehints
   With GTK support for FvwmGtk?       $with_gtk$problem_gtk$fvwmgtk_msg
-  With Multibyte support?             $with_multibyte$problem_multibyte
   With PNG support?                   $with_png$problem_png
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
   With RPlay support in FvwmEvent?    $with_rplay$problem_rplay

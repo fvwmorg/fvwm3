@@ -413,12 +413,6 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 #ifdef	XPM
   strcat(options, "XPM ");
 #endif
-#ifdef	MULTIBYTE
-    strcat(options, "I18N_MB ");
-#endif
-#ifdef	MULTIBYTE
-    strcat(options, "MULTIBYTE ");
-#endif
 
   strcat(options, "Cpp ");
 

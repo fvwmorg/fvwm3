@@ -218,17 +218,13 @@ Pixel fvwmlib_clone_color(Pixel p);
 typedef struct FvwmFont
 {
   XFontStruct *font;		/* font structure */
-#ifdef MULTIBYTE
   XFontSet fontset;		/* font set */
-#endif
   int height;			/* height of the font */
   int y;			/* Y coordinate to draw characters */
 } FvwmFont;
 
 XFontStruct *GetFontOrFixed(Display *disp, char *fontname);
-#ifdef MULTIBYTE
 XFontSet GetFontSetOrFixed(Display *disp, char *fontname);
-#endif
 Bool LoadFvwmFont(Display *dpy, char *fontname, FvwmFont *ret_font);
 void FreeFvwmFont(Display *dpy, FvwmFont *font);
 

@@ -470,12 +470,6 @@ static char *m4_defs(
 #ifdef	XPM
   strcat(options, "XPM ");
 #endif
-#ifdef  MULTIBYTE
-  strcat(options, "I18N_MB ");
-#endif
-#ifdef  MULTIBYTE
-  strcat(options, "MULTIBYTE ");
-#endif
 
   strcat(options, "M4 ");
 

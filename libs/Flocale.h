@@ -33,12 +33,14 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
+/* always off */
 #ifdef COMPOUND_TEXT
 #define FlocaleCompoundText 1
 #else
 #define FlocaleCompoundText 0
 #endif
 
+/* always on */
 #ifdef MULTIBYTE
 #define FlocaleMultibyteSupport 1
 #undef FlocaleCompoundText

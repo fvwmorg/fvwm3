@@ -67,7 +67,7 @@
 
 #ifdef USE_LIBICONV
 /* define to use locale_charset in the place of nl_langinfog if libiconv
- * is used */ 
+ * is used */
 #undef HAVE_LIBCHARSET
 #endif
 
@@ -120,12 +120,6 @@
 
 /* Enables session management functionality. */
 #undef SESSION
-
-/* Enables X11 multibyte character support (was I18N_MB) */
-#undef MULTIBYTE
-
-/* Enables compund text */
-#undef COMPOUND_TEXT
 
 /* Enables to use setlocale() provided by X */
 #undef X_LOCALE
@@ -272,6 +266,9 @@
 #if HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
+
+/* Enables X11 multibyte character support (was I18N_MB) */
+#define MULTIBYTE
 
 #ifndef min
 #  define min(a,b) (((a)<(b)) ? (a) : (b))
