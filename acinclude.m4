@@ -11,7 +11,7 @@ if test "$ac_cv_func_select" = yes; then
   AC_MSG_CHECKING([argument types of select()])
   AC_CACHE_VAL(ac_cv_type_fd_set_size_t,dnl
     [AC_CACHE_VAL(ac_cv_type_fd_set,dnl
-      [for ac_cv_type_fd_set in 'fd_set' 'int'; do
+      [for ac_cv_type_fd_set in 'fd_set' 'int' 'void'; do
         for ac_cv_type_fd_set_size_t in 'int' 'size_t' 'unsigned long' 'unsigned'; do
 	  for ac_type_timeval in 'struct timeval' 'const struct timeval'; do
             AC_TRY_COMPILE(dnl
