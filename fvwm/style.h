@@ -326,6 +326,8 @@
 /* access to other parts of a style (call with the style itself) */
 #define SGET_NEXT_STYLE(s)            ((s).next)
 #define SSET_NEXT_STYLE(s,x)          ((s).next = (x))
+#define SGET_PREV_STYLE(s)            ((s).prev)
+#define SSET_PREV_STYLE(s,x)          ((s).prev = (x))
 #define SGET_NAME(s)                  ((s).name)
 #define SSET_NAME(s,x)                ((s).name = (x))
 #define SGET_ICON_NAME(s)             ((s).icon_name)

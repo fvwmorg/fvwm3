@@ -325,6 +325,7 @@ typedef struct
 typedef struct window_style
 {
   struct window_style *next;
+  struct window_style *prev;
   char *name;
 #if 0
   WindowConditionMask *condition_mask;

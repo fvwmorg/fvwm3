@@ -61,6 +61,7 @@
 /* list of window names with attributes */
 static window_style *all_styles = NULL;
 static window_style *last_style_in_list = NULL;
+static void remove_style_from_list(window_style *style, Bool do_free_style);
 
 #define SAFEFREE( p )  {if (p)  free(p);}
 
@@ -391,25 +392,127 @@ static void free_style(window_style *style)
   return;
 }
 
-static void merge_style_list(void)
+static Bool blockor(char *dest, char *blk1, char *blk2, int length)
 {
-  window_style *temp;
-  window_style *prev = NULL;
+  int i;
+  char result = 0;
 
-  /* not first entry in list, look for styles with the same name */
-  for (temp = all_styles; temp != NULL;
-       prev = temp, temp = SGET_NEXT_STYLE(*temp))
+  for (i = 0; i < length; i++)
   {
-    if (prev && strcmp(SGET_NAME(*prev), SGET_NAME(*temp)) == 0)
+    dest[i] = (blk1[i] | blk2[i]);
+    result |= dest[i];
+  }
+
+  return (result) ? True : False;
+}
+
+static Bool blockand(char *dest, char *blk1, char *blk2, int length)
+{
+  int i;
+  char result = 0xff;
+
+  for (i = 0; i < length; i++)
+  {
+    dest[i] = (blk1[i] & blk2[i]);
+    result &= dest[i];
+  }
+
+  return (result) ? True : False;
+}
+
+static Bool blockissubset(char *sub, char *super, int length)
+{
+  int i;
+
+  for (i = 0; i < length; i++)
+  {
+    if ((sub[i] & super[i]) != sub[i])
+      return False;
+  }
+
+  return True;
+}
+
+static void simplify_style_list(void)
+{
+  window_style *cur;
+  window_style *cmp;
+  /* incremental flags set in styles with the same name */
+  style_flags sumflags;
+  /* incremental flags set in styles with other names */
+  style_flags interflags;
+  style_flags dummyflags;
+  Bool has_merged = True;
+
+  /* repeat until nothing has been done for a complete pass */
+  while (has_merged)
+  {
+    has_merged = False;
+    /* Step 1:
+     *   Remove styles that are completely overridden by later style
+     *   definitions.  At the same time...
+     * Step 2:
+     *   Merge styles with the same name if there are no conflicting styles
+     *   with other names set in between.
+     */
+    for (cur = last_style_in_list; cur; cur = SGET_PREV_STYLE(*cur))
     {
-      /* merge style into previous style with same name */
-      if (last_style_in_list == temp)
-	last_style_in_list = prev;
-      merge_styles(prev, temp, True);
-      SSET_NEXT_STYLE(*prev, SGET_NEXT_STYLE(*temp));
-      free_style(temp);
-      free(temp);
-      temp = prev;
+      memset(&interflags, 0, sizeof(style_flags));
+      memcpy(&sumflags, &cur->flag_mask, sizeof(style_flags));
+      cmp = SGET_PREV_STYLE(*cur);
+      while (cmp)
+      {
+        if (strcmp(SGET_NAME(*cur), SGET_NAME(*cmp)) == 0)
+        {
+          if (blockissubset((char *)&cmp->flag_mask, (char *)&sumflags,
+                            sizeof(style_flags)))
+          {
+            /* The style is a subset of later style definitions; nuke it */
+            window_style *tmp = SGET_PREV_STYLE(*cmp);
+
+            remove_style_from_list(cmp, True);
+            cmp = tmp;
+            has_merged = True;
+          }
+          else
+          {
+            /* Add the style to the set */
+            blockor((char *)&sumflags, (char *)&sumflags,
+                    (char *)&cmp->flag_mask, sizeof(style_flags));
+            if (!blockand((char *)&dummyflags, (char *)&sumflags,
+                          (char *)&interflags, sizeof(style_flags)))
+            {
+              window_style *tmp = SGET_PREV_STYLE(*cmp);
+              window_style *prev = SGET_PREV_STYLE(*cur);
+              window_style *next = SGET_NEXT_STYLE(*cur);
+
+              /* merge cmp into cur and delete it afterwards */
+              merge_styles(cmp, cur, True);
+              memcpy(cur, cmp, sizeof(window_style));
+              /* restore fields overwritten by memcpy */
+              SSET_PREV_STYLE(*cur, prev);
+              SSET_NEXT_STYLE(*cur, next);
+              /* remove the style without freeing the memory */
+              remove_style_from_list(cmp, False);
+              /* release the style structure */
+              free(cmp);
+              cmp = tmp;
+              has_merged = True;
+            }
+            else
+            {
+              memset(&interflags, 0, sizeof(style_flags));
+              cmp = SGET_PREV_STYLE(*cmp);
+            }
+          }
+        }
+        else
+        {
+          blockor((char *)&interflags, (char *)&interflags,
+                  (char *)&cmp->flag_mask, sizeof(style_flags));
+          cmp = SGET_PREV_STYLE(*cmp);
+        }
+      }
     }
   }
 
@@ -424,6 +527,7 @@ static void add_style_to_list(window_style *new_style)
    * used to merge duplicate entries, but that is no longer
    * appropriate since conflicting styles are possible, and the
    * last match should win! */
+fprintf(stderr,"adding style '%s'\n", SGET_NAME(*new_style));
 
   if(last_style_in_list != NULL)
   {
@@ -435,52 +539,62 @@ static void add_style_to_list(window_style *new_style)
     /* first entry in list set the list root pointer. */
     all_styles = new_style;
   }
+  SSET_PREV_STYLE(*new_style, last_style_in_list);
+  SSET_NEXT_STYLE(*new_style, NULL);
   last_style_in_list = new_style;
-  merge_style_list();
+  simplify_style_list();
 
   return;
 } /* end function */
 
+static void remove_style_from_list(window_style *style, Bool do_free_style)
+{
+  window_style *prev;
+  window_style *next;
+
+  prev = SGET_PREV_STYLE(*style);
+  next = SGET_NEXT_STYLE(*style);
+  if (!prev)
+  {
+    /* first style in list */
+    all_styles = next;
+  }
+  else
+  {
+    /* not first style in list */
+    SSET_NEXT_STYLE(*prev, next);
+  }
+  if (!next)
+  {
+    /* last style in list */
+    last_style_in_list = prev;
+  }
+  else
+  {
+    SSET_PREV_STYLE(*next, prev);
+  }
+  if (do_free_style)
+  {
+    free_style(style);
+    free(style);
+  }
+}
 
 static void remove_all_of_style_from_list(char *style_ref)
 {
   window_style *nptr = all_styles;
-  window_style *lptr = NULL;
 
   /* loop though styles */
   while (nptr)
   {
     /* Check if it's to be wiped */
-    if (!strcmp(SGET_NAME(*nptr), style_ref ))
+    if (!strcmp(SGET_NAME(*nptr), style_ref))
     {
-      window_style *tmp_ptr = nptr;
-
-      /* Reset nptr now */
-      nptr = SGET_NEXT_STYLE(*nptr);
-
-      /* Is it the first one? */
-      if (NULL == lptr)
-      {
-        /* Yup - reset all_styles */
-        all_styles = nptr;
-      }
-      else
-      {
-        /* Middle of list */
-        SSET_NEXT_STYLE(*lptr, nptr);
-      }
-      /* fix list end pointer */
-      if (last_style_in_list == tmp_ptr)
-        last_style_in_list = lptr;
-
-      free_style(tmp_ptr);
-      /* Free style */
-      free( tmp_ptr );
+      remove_style_from_list(nptr, True);
     }
     else
     {
       /* No match - move on */
-      lptr = nptr;
       nptr = SGET_NEXT_STYLE(*nptr);
     }
   }
@@ -501,9 +615,9 @@ void ProcessDestroyStyle(F_CMD_ARGS)
     return;
 
   /* Do it */
-  remove_all_of_style_from_list( name );
+  remove_all_of_style_from_list(name);
   /* compact the current list of styles */
-  merge_style_list();
+  simplify_style_list();
 }
 
 
