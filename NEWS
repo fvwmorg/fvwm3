@@ -1,5 +1,11 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* Layer information is displayed in WindowList.
+
+* Shaded windows can be resized.
+
+* Windows can be shaded and maximized.
+ 
 * Fonts and colors are no longer hard-coded on the FvwmAnimate customization
   form.  FvwmForm can set defaults that the FvwmAnimate form will use.
 

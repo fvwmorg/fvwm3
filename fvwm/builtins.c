@@ -324,11 +324,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if(tmp_win == NULL)
     return;
 
-  if(check_allowed_function2(F_MAXIMIZE,tmp_win) == 0
-#ifdef WINDOWSHADE
-     || (tmp_win->buttons & WSHADE)
-#endif
-     )
+  if(check_allowed_function2(F_MAXIMIZE,tmp_win) == 0)
   {
     XBell(dpy, 0);
     return;
@@ -345,13 +341,31 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (tmp_win->flags & MAXIMIZED)
   {
     tmp_win->flags &= ~MAXIMIZED;
-    SetupFrame(tmp_win, tmp_win->orig_x, tmp_win->orig_y, tmp_win->orig_wd,
-               tmp_win->orig_ht,TRUE);
+    /* Unmaximizing is slightly tricky since we want the window to
+       stay on the same page, even if we have move to a different page
+       in the meantime. */
+    new_x = tmp_win->frame_x + (tmp_win->orig_x % Scr.MyDisplayWidth);
+    new_y = tmp_win->frame_y + (tmp_win->orig_y % Scr.MyDisplayHeight);
+    new_width = tmp_win->orig_wd;
+#ifdef WINDOWSHADE
+    if (tmp_win->buttons & WSHADE)
+      {
+	new_height = tmp_win->title_height + tmp_win->boundary_width; 
+      }
+    else
+#endif
+	new_height = tmp_win->orig_ht;
+    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE);
     SetBorder(tmp_win,True,True,True,None);
   }
   else
   {
     new_width = tmp_win->frame_width;
+#ifdef WINDOWSHADE
+    if (tmp_win->buttons & WSHADE) 
+	new_height = tmp_win->orig_ht;
+    else
+#endif
     new_height = tmp_win->frame_height;
     new_x = tmp_win->frame_x;
     new_y = tmp_win->frame_y;
@@ -374,8 +388,13 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     }
     tmp_win->flags |= MAXIMIZED;
     ConstrainSize (tmp_win, &new_width, &new_height, False, 0, 0);
+    tmp_win->maximized_ht = new_height;
+#ifdef WINDOWSHADE
+    if (tmp_win->buttons & WSHADE)
+      new_height = tmp_win->frame_height;
+#endif
     SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE);
-    SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
+    /*   SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);*/
   }
 }
 
@@ -391,11 +410,12 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 unsigned long context, char *action, int *Module)
 {
     int n = 0;
+    int new_x, new_y, new_width, new_height;
 
     if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
 	return;
 
-    if (!(tmp_win->flags & TITLE) || (tmp_win->flags & MAXIMIZED)) {
+    if (!(tmp_win->flags & TITLE)) {
 	XBell(dpy, 0);
 	return;
     }
@@ -406,12 +426,14 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     if (((tmp_win->buttons & WSHADE)||(n==2))&&(n!=1))
     {
 	tmp_win->buttons &= ~WSHADE;
-	SetupFrame(tmp_win,
-		   tmp_win->frame_x,
-		   tmp_win->frame_y,
-		   tmp_win->orig_wd,
-		   tmp_win->orig_ht,
-		   True);
+	new_x = tmp_win->frame_x;
+	new_y = tmp_win->frame_y;
+	new_width = tmp_win->frame_width;
+	if (tmp_win->flags & MAXIMIZED) 
+	  new_height = tmp_win->maximized_ht;
+	else
+	  new_height = tmp_win->orig_ht;
+	SetupFrame(tmp_win, new_x, new_y, new_width, new_height, True);
         BroadcastPacket(M_DEWINDOWSHADE, 3,
                         tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
     }

@@ -1,5 +1,22 @@
 1999-03-02  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+	* fvwm/fvwm2.1: details about the geometry displayed
+	in window lists.
+
+	* fvwm/windows.c (do_windowList): show layer in window list.
+
+	* fvwm/builtins.c (Maximize): 
+	(WindowShade): allow shading maximized/maximizing shaded windows.
+        * fvwm/fvwm.h (FvwmWindow): new field maximized_ht.
+	* fvwm/add_window.c (AddWindow): initialize maximized_ht.
+	* fvwm/session.c (SaveWindowStates): save the correct maximized
+	size for shaded windows.
+	* fvwm/events.c (HandleConfigureRequest): allow clients
+	to resize themself if shaded, but not if maximized.
+	* fvwm/resize.c (resize_window): allow interactive resizing
+	if shaded.
+	* fvwm/fvwm2.1: adjust documentation of WindowShade.
+
 	* fvwm/builtins.c (PickFunc): 
 	(AllFunc): new functions.
 

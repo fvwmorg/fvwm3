@@ -60,6 +60,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   geom *drag = &sdrag;
   geom *orig = &sorig;
   int ymotion=0, xmotion = 0;
+  int was_maximized;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
     return;
@@ -71,26 +72,16 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 &JunkX, &JunkY, &JunkX, &JunkY, &button_mask);
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
 
-  if(check_allowed_function2(F_RESIZE,tmp_win) == 0
-#ifdef WINDOWSHADE
-     || (tmp_win->buttons & WSHADE)
-#endif
-     )
+  if(check_allowed_function2(F_RESIZE,tmp_win) == 0)
     {
       XBell(dpy, 0);
       return;
     }
   n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 
+  was_maximized = !!(tmp_win->flags & MAXIMIZED);
   tmp_win->flags &= ~MAXIMIZED;
 
-  /* Already checked this in functions.c, but its here too incase
-   * there's a resize on initial placement. */
-  if(check_allowed_function2(F_RESIZE,tmp_win) == 0)
-    {
-      XBell(dpy, 0);
-      return;
-    }
   /* can't resize icons */
   if(tmp_win->flags & ICONIFIED)
     return;
@@ -107,8 +98,19 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       /* size will be less or equal to requested */
       ConstrainSize (tmp_win, &drag->width, &drag->height, False, xmotion,
 		     ymotion);
+#ifdef WINDOWSHADE
+      if (tmp_win->buttons & WSHADE) 
+	{
+	  tmp_win->orig_wd = drag->width;
+	  tmp_win->orig_ht = drag->height;
+ 	  SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,
+		      drag->width, tmp_win->frame_height,FALSE);
+	} 
+      else 
+#endif
       SetupFrame (tmp_win, tmp_win->frame_x,
 		  tmp_win->frame_y ,drag->width, drag->height,FALSE);
+      SetBorder(tmp_win,True,True,True,None);
 
       ResizeWindow = None;
       return;
@@ -129,6 +131,19 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   flags = Scr.flags;
   Scr.flags &= ~(EdgeWrapX|EdgeWrapY);
 
+#ifdef WINDOWSHADE
+  if (tmp_win->buttons & WSHADE) 
+    {
+      drag->x = tmp_win->frame_x;
+      drag->y = tmp_win->frame_y;
+      drag->width = tmp_win->frame_width;
+      if (was_maximized) 
+        drag->height = tmp_win->maximized_ht;
+      else 
+        drag->height = tmp_win->orig_ht;
+    } 
+  else 
+#endif
   XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
 	       &drag->x, &drag->y, (unsigned int *)&drag->width,
 	       (unsigned int *)&drag->height, &JunkBW,&JunkDepth);
@@ -294,6 +309,18 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       /* size will be >= to requested */
       ConstrainSize (tmp_win, &drag->width, &drag->height, True, xmotion,
 		     ymotion);
+#ifdef WINDOWSHADE
+       if (tmp_win->buttons & WSHADE)
+       {
+         tmp_win->orig_x = drag->x;
+         tmp_win->orig_y = drag->y;
+         tmp_win->orig_wd = drag->width;
+         tmp_win->orig_ht = drag->height;
+         SetupFrame (tmp_win, tmp_win->orig_x, tmp_win->orig_y,
+                     drag->width, tmp_win->frame_height, FALSE);
+       }
+      else
+#endif
       SetupFrame (tmp_win, drag->x,
 		  drag->y, drag->width, drag->height,FALSE);
     }
@@ -588,9 +615,11 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp,
      */
     *widthp = dwidth + 2*tmp_win->boundary_width;
     *heightp = dheight + tmp_win->title_height + 2*tmp_win->boundary_width;
+#if 0
 #ifdef WINDOWSHADE
     if (tmp_win->buttons & WSHADE)
       *heightp = tmp_win->title_height + tmp_win->boundary_width;
+#endif
 #endif
 
     return;

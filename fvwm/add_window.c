@@ -686,16 +686,11 @@ FvwmWindow *AddWindow(Window w)
   SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height, True);
 
 #ifdef SESSION
-#ifdef WINDOWSHADE
-  if (do_shade) { 
-    WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
-  }
-#endif
-
   if (do_maximize) { 
     /* This is essentially Maximize, only we want the given dimensions */
     tmp_win->flags |= MAXIMIZED;
     ConstrainSize (tmp_win, &w_max, &h_max, False, 0, 0);
+    tmp_win->maximized_ht = h_max;
     SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE);
     SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
     /* fix orig values to not change page on unmaximize  */
@@ -704,7 +699,13 @@ FvwmWindow *AddWindow(Window w)
     if (tmp_win->orig_y >= Scr.MyDisplayHeight)
       tmp_win->orig_y = tmp_win->orig_y % Scr.MyDisplayHeight; 
   }
-#endif
+
+#ifdef WINDOWSHADE
+  if (do_shade) { 
+    WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
+  }
+#endif /* WINDOWSHADE */
+#endif /* SESSION */
   /* wait until the window is iconified and the icon window is mapped
    * before creating the icon window
    */

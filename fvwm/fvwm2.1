@@ -2767,6 +2767,10 @@ Mostly this is useful for functions used with the WindowList builtin.
 .IP "WindowList [ \fIposition\fP ] [ \fIoptions\fP ] [ \fIdouble-click-action\fP ]"
 Generates a pop-up menu (and pops it up) in which the title and
 geometry of each of the windows currently on the desk top are shown.
+The format of the geometry part is: 
+"\fIdesk\fP(\fIlayer\fP): \fIx-geometry\fP \fIsticky\fP", where
+\fIdesk\fP and \fIlayer\fP are the corresponding numbers and \fIsticky\fP
+is empty or a capital S.  
 The geometry of iconified windows is shown in parenthesis.  Selecting
 an item from the window list pop-up menu will by default cause the
 interpreted function WindowListFunc to be run with the window id of
@@ -2839,8 +2843,7 @@ Toggles the window shade feature for titled windows.  Windows in the
 shaded state only display a title bar.  If \fIopt\fP is not given, the
 window shade state is toggled.  If \fIopt\fP is 1, the window is
 forced to the shaded state.  If \fIopt\fP is 2, then the window is
-forced to the non-shaded state.  Maximized windows and windows without
-titles cannot be shaded.
+forced to the non-shaded state.  Windows without titles cannot be shaded.
 
 
 .IP "XORpixmap \fIpixmap\fP"

@@ -1489,7 +1489,23 @@ void HandleConfigureRequest()
    * requested client window height plus any title bar slop.
    */
   ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
-  SetupFrame (Tmp_win, x, y, width, height,sendEvent);
+#ifdef WINDOWSHADE
+  if (Tmp_win->buttons & WSHADE)
+    {
+      /* for shaded windows, allow resizing, but keep it shaded */
+      Tmp_win->orig_x = x;
+      Tmp_win->orig_y = y;
+      Tmp_win->orig_wd = width;
+      Tmp_win->orig_ht = height;
+      SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent);
+    }
+  else 
+#endif
+  if (!(Tmp_win->flags & MAXIMIZED))
+    {
+      /* dont allow clients to resize maximized windows */
+      SetupFrame (Tmp_win, x, y, width, height,sendEvent);
+    }
 }
 
 /***********************************************************************

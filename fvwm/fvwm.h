@@ -266,6 +266,8 @@ typedef struct FvwmWindow
     int orig_wd;                /* unmaximized window width */
     int orig_ht;                /* unmaximized window height */
 
+    int maximized_ht;           /* maximized window height */     
+
     int xdiff,ydiff;            /* used to restore window position on exit*/
     int *mwm_hints;
     int ol_hints;
