@@ -4221,7 +4221,7 @@ void ParentalMenuRePaint(void)
   /* redraw the background of non active item */
   for (mi = MR_FIRST_ITEM(parental_mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
-    if (mi == MR_SELECTED_ITEM(parental_mr))
+    if (mi == MR_SELECTED_ITEM(parental_mr) && MST_HAS_ACTIVE_BACK(parental_mr))
     {
       int left;
 
@@ -4259,7 +4259,7 @@ void ParentalMenuRePaint(void)
   /* now redraw the item */
   for (mi = MR_FIRST_ITEM(parental_mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
-    if (mi == MR_SELECTED_ITEM(parental_mr))
+    if (mi == MR_SELECTED_ITEM(parental_mr) && MST_HAS_ACTIVE_BACK(parental_mr))
       continue;
     paint_item(parental_mr, mi, parental_fw, True);
   }

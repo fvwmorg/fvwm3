@@ -1,3 +1,11 @@
+2002-01-09  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/style.c (CMD_Style):
+	free all the elements of the ptmpstyle before freeing it
+
+	* fvwm/menus.c (ParentalMenuRePaint):
+	Fixed transparent animated menu with HilightBackOff
+
 2002-01-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (merge_styles):
