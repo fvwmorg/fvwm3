@@ -269,13 +269,6 @@ void initialize_viz_pager(void)
 
 void draw_desk_background(int i, int page_w, int page_h)
 {
-	int do_hilight_label = 0;
-
-	if (uselabel && HilightDesks && i == Scr.CurrentDesk &&
-	    Desks[i].highcolorset > -1)
-	{
-		do_hilight_label = 1;
-	}
 	if (Desks[i].colorset > -1)
 	{
 		XSetWindowBorder(
@@ -286,7 +279,7 @@ void draw_desk_background(int i, int page_w, int page_h)
 			dpy, Desks[i].NormalGC,Colorset[Desks[i].colorset].fg);
 		XSetForeground(
 			dpy, Desks[i].DashedGC,Colorset[Desks[i].colorset].fg);
-		if (uselabel && !do_hilight_label)
+		if (uselabel)
 		{
 			SetWindowBackground(
 				dpy, Desks[i].title_w, desk_w, desk_h + label_h,
@@ -315,13 +308,6 @@ void draw_desk_background(int i, int page_w, int page_h)
 			Colorset[Desks[i].highcolorset].bg);
 		XSetForeground(
 			dpy, Desks[i].rvGC, Colorset[Desks[i].highcolorset].fg);
-		if (do_hilight_label)
-		{
-			SetWindowBackground(
-				dpy, Desks[i].title_w, desk_w, desk_h + label_h,
-				&Colorset[Desks[i].highcolorset], Pdepth,
-				Scr.NormalGC, True);
-		}
 		if (HilightDesks && Scr.CurrentDesk - desk1 == i)
 		{
 			SetWindowBackground(
