@@ -323,7 +323,6 @@ void
 menu_submenu (int argc, char **argv)
 {
   GtkWidget *item, *submenu;
-  char *file;
 
   item = menu_item_new_with_pixmap_and_label
     (argc > 2 ? argv[2] : NULL, argv[0], NULL);

@@ -1,3 +1,11 @@
+1999-07-01  Paul D. Smith  <psmith@gnu.org>
+
+	* libs/fvwmlib.h (Background):  Change Bool type to unsigned for
+	bitfields.
+
+	* fvwm/screen.h (ScreenInfo): Change Bool type to unsigned for
+	bitfields.
+
 1999-07-01  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/module_interface.c:

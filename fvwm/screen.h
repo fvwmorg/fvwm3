@@ -330,24 +330,24 @@ typedef struct ScreenInfo
   */
   struct
   {
-    Bool ModifyUSP : 1;                          /* - RBW - 11/02/1998  */
-    Bool CaptureHonorsStartsOnPage : 1;          /* - RBW - 11/02/1998  */
-    Bool RecaptureHonorsStartsOnPage : 1;        /* - RBW - 11/02/1998  */
-    Bool ActivePlacementHonorsStartsOnPage : 1;  /* - RBW - 11/02/1998  */
-    Bool SmartPlacementIsClever : 1;
-    Bool ClickToFocusPassesClick : 1;
-    Bool ClickToFocusRaises : 1;
-    Bool MouseFocusClickRaises : 1;
-    Bool StipledTitles : 1;
-    Bool WindowShadeScrolls : 1;
-    Bool RaiseHackNeeded : 1;
+    unsigned ModifyUSP : 1;                          /* - RBW - 11/02/1998  */
+    unsigned CaptureHonorsStartsOnPage : 1;          /* - RBW - 11/02/1998  */
+    unsigned RecaptureHonorsStartsOnPage : 1;        /* - RBW - 11/02/1998  */
+    unsigned ActivePlacementHonorsStartsOnPage : 1;  /* - RBW - 11/02/1998  */
+    unsigned SmartPlacementIsClever : 1;
+    unsigned ClickToFocusPassesClick : 1;
+    unsigned ClickToFocusRaises : 1;
+    unsigned MouseFocusClickRaises : 1;
+    unsigned StipledTitles : 1;
+    unsigned WindowShadeScrolls : 1;
+    unsigned RaiseHackNeeded : 1;
   } go; /* global options */
   struct
   {
-    Bool EmulateMWM : 1;
-    Bool EmulateWIN : 1;
-    Bool use_active_down_buttons : 1;
-    Bool use_inactive_buttons : 1;
+    unsigned EmulateMWM : 1;
+    unsigned EmulateWIN : 1;
+    unsigned use_active_down_buttons : 1;
+    unsigned use_inactive_buttons : 1;
   } gs; /* global style structure */
   struct
   {

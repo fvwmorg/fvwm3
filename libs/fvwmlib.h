@@ -191,9 +191,9 @@ typedef struct _Background {
   union {
     unsigned long word;
     struct {
-      Bool is_pixmap : 1;
-      Bool stretch_h : 1;
-      Bool stretch_v : 1;
+      unsigned int is_pixmap : 1;
+      unsigned int stretch_h : 1;
+      unsigned int stretch_v : 1;
       unsigned int w : 12;
       unsigned int h : 12;
     } bits;
