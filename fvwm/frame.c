@@ -1259,7 +1259,12 @@ void frame_get_sidebar_geometry(
 		return;
 	}
 	/* get the corner size */
-	if (borderstyle == NULL)
+	if (!HAS_HANDLES(fw))
+	{
+		*ret_has_x_marks = False;
+		*ret_has_y_marks = False;
+	}
+	else if (borderstyle == NULL)
 	{
 		if (fw->decor_state.parts_drawn & PART_X_HANDLES)
 		{
