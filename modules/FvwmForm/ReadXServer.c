@@ -558,6 +558,10 @@ static int process_tabtypes(unsigned char * buf) {
 
 static void process_regular_char_input(unsigned char *buf) {
   char *sp, *dp, *ep;
+  /* n is the space actually used.
+     buf is the size of the buffer
+     size is the size of the field on the screen
+     size is used as the increment, arbitrarily. */
   if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
     CF.cur_input->input.buf += CF.cur_input->input.size;
     CF.cur_input->input.value =
