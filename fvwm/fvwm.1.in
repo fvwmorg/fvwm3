@@ -1176,9 +1176,7 @@ log. With Xft2 you may use fc-list to list the available fonts.
 Anyway, Xft support is experimental (from the X and the fvwm
 point of view) and the quality of the rendering depends on number
 of parameters (the XFree and the freetype versions and your
-video card(s)).  Moreover, the Xft protocol forces fvwm to produce
-more redrawing which can lead to text flickering. If you are not
-happy with this simply do not use Xft rendering.
+video card(s)).
 
 After an Xft font name you can add after a ";" an XLFD
 font name (simple or extended) as:

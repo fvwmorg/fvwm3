@@ -351,15 +351,14 @@ This option disables session management support completely.
   --disable-xft                 disable anti-aliased text rendering
   ~~~~~~~~~~~~~
 
-FVWM can use the Xft library to perform anti-aliased text rendering in any
-text drawn by fvwm and modules. This support is experimental and when FVWM
-use anti-aliased rendering, FVWM performs more redrawing that may cause
-text flickering. By default, Xft library is probed and this support is enabled
-if Xft works. You need XFree version >= 4.1 and freetype2 version >= 6.1.0
-(aka version 2.0.6), but more recent versions are better. The FONT NAMES
-AND FONT LOADING section of the fvwm manual page explains how to enable
-anti-aliased rendering at runing time.
-This option disables Xft support completely.
+FVWM can use the Xft library (version 1 or 2) to perform anti-aliased
+text rendering in any text drawn by fvwm and modules.  By default, Xft
+library is probed and this support is enabled if Xft works. You need
+XFree version >= 4.1 and freetype2 version >= 6.1.0 (aka version
+2.0.6), but more recent versions are better. The FONT NAMES AND FONT
+LOADING section of the fvwm manual page explains how to enable
+anti-aliased rendering at runing time.  This option disables Xft
+support completely.
 
 
   --disable-xrender      disable Xrender alpha-blend rendering

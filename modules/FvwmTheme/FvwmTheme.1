@@ -1,5 +1,19 @@
 .\" t
 .\" @(#)FvwmTheme.1  7/20/1999
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.ta .3i .6i .9i 1.2i 1.5i 1.8i
 .TH FvwmTheme 1 "25 April 2002" FVWM "FVWM Modules"
 .UC
 
@@ -57,8 +71,10 @@ be used.  Keep your colorset numbers as small as possible.
 
 \fIoptions\fP is a comma separated list containing some of the keywords:
 fg, Fore, Foreground, bg, Back, Background, hi, Hilite, Hilight, sh,
-Shade, Shadow, Pixmap, TiledPixmap, AspectPixmap, Shape, TiledShape,
-AspectShape, NoShape, ?Gradient, Plain and Transparent.
+Shade, Shadow, fgsh, Pixmap, TiledPixmap, AspectPixmap, Transparent,
+RootTransparent, Shape, TiledShape, AspectShape, NoShape, ?Gradient,
+Tint, fgTint, bgTint, Alpha, fgAlpha, Dither, NoDither, IconTint,
+IconAlpha, NoShape and Plain.
 
 \fIfg\fP, \fIFore\fP and \fIForeground\fP take a color name as an argument and
 set the foreground color.  The special name \fIContrast\fP may be used to
@@ -107,9 +123,12 @@ to and \fIAscpectPixmap\fP will stretch to fit but will retain the image
 aspect ratio.
 
 \fITransparent\fP tries to create a transparent background pixmap.
-It may be necessary to reapply this option whenever the background
-of one of the affected application changes.
 The pixmap may be used as a window background to achieve root transparency.
+.\"needs_lang_check
+For this you should use the
+.B ParentalRelativity
+fvwm style.
+.\"end
 The root background change may be detected or not, this depends on the program
 used to set the background. If you use fvwm-root, xsetbg (xli),
 FvwmBacker with a solid or a colorset colors or a recent version of Esetroot
@@ -120,8 +139,105 @@ the -d option of fvwm-root:
 xv -root -quit mybg.png; fvwm-root -d
 .in -.3i
 Due to the way X implements transparency no guarantees can be made
-that the desired effect can be achieved.  The application may even crash.
-If you experience any problems with this option, do not use it.
+that the desired effect can be achieved. The application may even
+crash.  If you experience any problems with this option, do not use
+it.
+.\"needs_lang_check
+Using out line move and resize (see the
+.B OpaqueMoveSize
+command and the
+.I ResizeOpaque
+style) as well as setting the
+.I WindowShadeScrolls
+style may help. The transparency achieved with
+.I Transparent
+depends on whether the colorset is applied on the "foreground" or in the
+background of a window. In the second case the transparency is
+relative to the parent window of the window on which the colorset is
+defined. For example:
+.EX
+Colorset 12 Vgradient 200 grey30 gery60
+Colorset 17 Transparent
+*FvwmIconMan: Colorset 10
+*FvwmIconMan: PlainColorset 17
+.EE
+gives an IconMan with a vertical grey gradient background and the
+plain buttons use this background (by transparency). To obtain a
+(root) transparent IconMan:
+.EX
+Colorset 12 Transparent
+Colorset 17 Transparent
+Colorset 18 Transparent
+Colorset 19 Transparent
+...
+*FvwmIconMan: Colorset 12
+*FvwmIconMan: PlainColorset 17
+*FvwmIconMan: FocusColorset 18
+*FvwmIconMan: IconColorset  19
+...
+.EE
+The Colorset IconMan option defines the IconMan window background, but
+the PlainColorset and the FocusColorset are drawn on the
+"foreground". So, the transparency of the IconMan buttons is achieved
+by drawing nothing.  Now if this IconMan is swallowed in an
+FvwmButtons as:
+.EX
+FvwmButtons:(Colorset 10, Swallow "FvwmIconMan" 'FvwmIconMan')
+.EE
+then, IconMan become a child of the FvwmButtons and it is transparent
+relatively to the FvwmButtons. So, in this case IconMan "use" Colorset
+10 as background. If you want root transparency in any case you should
+use the
+.I RootTransprent
+option. FvwmButtons, FvwmIconMan, FvwmIdent, FvwmScroll and
+FvwmTaskBar are relatively simple. There is one main colorset option
+which defines the background of the window and the others colorsets
+(if any) are drawn on the "foreground". The case of FvwmWinList and
+FvwmProxy are simpler. With FvwmWinList all the colorsets are drawn on
+the "foreground" and with FvwmProxy the two colorsets refer to the
+windows backgrounds. The situation of the FvwmPager is more
+complicated as almost everything are windows with some parental
+relations (the mini windows are the child and the desktops are the
+parents and all this is troubled by the hilighted page). So, the
+colorsets apply on the background of these windows. You should
+experiment. For FvwmForm and FvwmScript the situation is similar.
+There is a main window (a child of the root window) which corresponds
+to the main colorset and most of the widget are windows which are
+child of the main window.
+.I Tint
+may work or not with the
+.I Transparent
+option. When the colorset is drawn on the "foreground"
+.I Tint
+should works. In the other cases, tinting work in some exceptional case
+(and may be very slow). Tinting may works with fvwm menu (without
+animation). In the other case tinting may work if your X server has
+backing store enabled (try xdpyinfo to see if this the case).
+But, there are big chances that the backing store support of your
+X driver does not fit well with the terrible hack used to Tint
+the ParentRelative Pixmap. So, to get tinted root transparency
+it is more safe to use the
+.I RootTransparent
+option.
+
+.IR RootTransparent " [ " buffer " ] "
+creates a root transparent background. So that this option works, you
+must use an Esetroot compatible program, fvwm-root with the
+--retain-pixmap option or FvwmBacker with the RetainPixmap option (and
+colorset or solid backgrounds).
+.I buffer
+is useful only if you
+.IR Tint .
+This speed up creation of windows which use such colorset (useful for
+fvwm menus).
+This also speed up opaque move and resize which can be unacceptably slow
+without
+.IR buffer .
+However, this option may add a lot of memory to your X server (depending
+on the size of the image used to set your background). Again using
+out line move and resize for modules which use such colorset may be
+a good idea.
+.\"end
 
 \fIShape\fP, \fITiledShape\fP and \fIAspectShape\fP take a file name as
 an argument, search the \fIImagePath\fP and use it as the shape bitmap.
@@ -157,7 +273,9 @@ If the image is transparent
 tints only the image part.
 Unfortunately, a colorset background specified using the
 .I Transparent
-option cannot be tinted.
+option can give strange results. See the
+.I Transparent
+option for details.
 With no arguments this option removes the tint.
 
 .I fgTint

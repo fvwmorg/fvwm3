@@ -36,6 +36,15 @@ Changes in developement release 2.5.5 (not released yet)
   key name with a '-' in the Key command.  Please read about the
   caveats in the man page.
 
+* Fixed flickering in FvwmTaskBar, FvwmWinList, FvwmIconBox, FvwmForm,
+  FvwmScript and FvwmScroll when xft fonts or icons with an alpha
+  channel is used.
+
+* New Colorset option RootTransparent
+
+* The Transparent Colorset option can be tinted under certain
+  conditions
+ 
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)
@@ -100,7 +109,7 @@ Changes in alpha release 2.5.4 (20-Oct-2002)
 * New FvwmBacker option RetainPixmap.
 
 * Fixed flickering in menus, icon title, FvwmButtons, FvwmIconMan
-  and FvwmPager when xft font is used.
+  and FvwmPager when xft fonts or icons with an alpha channel is used.
 
 * FvwmButtons redrawing improvement: colorsets are now usable with
   containers.

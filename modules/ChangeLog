@@ -1,5 +1,8 @@
 2002-11-14  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmTheme/FvwmTheme.1:
+	Doc for RootTransparent. More doc for Transparent
+
 	* FvwmScroll/FvwmScroll.c (ErrorHandler):
 	(main):
 	* FvwmScroll/GrabWindow.c (LoopOnEvents):
