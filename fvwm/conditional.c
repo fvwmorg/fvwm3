@@ -621,151 +621,58 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 	return found;
 }
 
-void CMD_Prev(F_CMD_ARGS)
+static void circulate_cmd(
+	F_CMD_ARGS, int circ_dir, Bool do_use_found)
 {
 	FvwmWindow *found;
 	char *restofline;
 
-	found = Circulate(action, -1, &restofline);
+	found = Circulate(action, circ_dir, &restofline);
 	if (cond_rc != NULL)
 	{
 		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
 	}
-	if (found && restofline)
+	if ((!found == !do_use_found) && restofline)
 	{
 		old_execute_function(
-			NULL, restofline, found, eventp, C_WINDOW, *Module, 0,
-			NULL);
+			NULL, restofline,
+			(do_use_found) ? found : tmp_win, eventp,
+			context, *Module, 0, NULL);
 	}
 
 	return;
+}
+
+void CMD_Prev(F_CMD_ARGS)
+{
+	circulate_cmd(
+		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, -1, True);
 }
 
 void CMD_Next(F_CMD_ARGS)
 {
-	FvwmWindow *found;
-	char *restofline;
-
-	found = Circulate(action, 1, &restofline);
-	if (cond_rc != NULL)
-	{
-		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
-	}
-	if (found && restofline)
-	{
-		old_execute_function(
-			NULL, restofline, found, eventp, C_WINDOW, *Module, 0,
-			NULL);
-	}
-
-	return;
+	circulate_cmd(
+		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, 1, True);
 }
 
 void CMD_None(F_CMD_ARGS)
 {
-	FvwmWindow *found;
-	char *restofline;
-
-	found = Circulate(action, 1, &restofline);
-	if (cond_rc != NULL)
-	{
-		*cond_rc = (found != NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
-	}
-	if (!found && restofline)
-	{
-		old_execute_function(
-			NULL, restofline, NULL, eventp, C_ROOT, *Module, 0,
-			NULL);
-	}
-
-	return;
+	circulate_cmd(
+		cond_rc, eventp, w, NULL, C_ROOT, action, Module, 1, False);
 }
 
 void CMD_Any(F_CMD_ARGS)
 {
-	FvwmWindow *found;
-	char *restofline;
-
-	found = Circulate(action, 1, &restofline);
-	if (cond_rc != NULL)
-	{
-		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
-	}
-	if (found && restofline)
-	{
-		old_execute_function(
-			NULL, restofline, NULL, eventp, C_ROOT, *Module, 0,
-			NULL);
-	}
-
-	return;
+	circulate_cmd(F_PASS_ARGS, 1, False);
 }
 
 void CMD_Current(F_CMD_ARGS)
 {
-	FvwmWindow *found;
-	char *restofline;
-
-	found = Circulate(action, 0, &restofline);
-	if (cond_rc != NULL)
-	{
-		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
-	}
-	if (found && restofline)
-	{
-		old_execute_function(
-			NULL, restofline, found, eventp, C_WINDOW, *Module, 0,
-			NULL);
-	}
-
-	return;
+	circulate_cmd(
+		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, 0, True);
 }
 
-void CMD_PointerWindow(F_CMD_ARGS)
-{
-	char *restofline;
-	FvwmWindow *t;
-	WindowConditionMask mask;
-	char *flags;
-
-	t = get_pointer_fvwm_window();
-	if (t == NULL)
-	{
-		if (cond_rc != NULL)
-		{
-			*cond_rc = COND_RC_ERROR;
-		}
-		return;
-	}
-	flags = CreateFlagString(action, &restofline);
-	DefaultConditionMask(&mask);
-	CreateConditionMask(flags, &mask);
-	if (flags)
-	{
-		free(flags);
-	}
-	mask.my_flags.use_circulate_hit = 1;
-	mask.my_flags.use_circulate_hit_icon = 1;
-	if (MatchesConditionMask(t, &mask))
-	{
-		if (cond_rc != NULL)
-		{
-			*cond_rc = COND_RC_OK;
-		}
-		old_execute_function(
-			NULL, restofline, t, eventp, C_WINDOW, *Module, 0,
-			NULL);
-	}
-	else if (cond_rc != NULL)
-	{
-		*cond_rc = COND_RC_NO_MATCH;
-	}
-
-	FreeConditionMask(&mask);
-	return;
-}
-
-void CMD_This(F_CMD_ARGS)
+static void select_cmd(F_CMD_ARGS)
 {
 	char *restofline;
 	char *flags;
@@ -788,7 +695,6 @@ void CMD_This(F_CMD_ARGS)
 	{
 		free(flags);
 	}
-
 	if (MatchesConditionMask(tmp_win, &mask) && restofline)
 	{
 		if (cond_rc != NULL)
@@ -803,8 +709,32 @@ void CMD_This(F_CMD_ARGS)
 	{
 		*cond_rc = COND_RC_NO_MATCH;
 	}
-
 	FreeConditionMask(&mask);
+
+	return;
+}
+
+void CMD_PointerWindow(F_CMD_ARGS)
+{
+	tmp_win = get_pointer_fvwm_window();
+	select_cmd(F_PASS_ARGS);
+
+	return;
+}
+
+void CMD_This(F_CMD_ARGS)
+{
+	select_cmd(F_PASS_ARGS);
+
+	return;
+}
+
+void CMD_Pick(F_CMD_ARGS)
+{
+	DeferExecution(
+		eventp, &w, &tmp_win, &context, CRS_SELECT, ButtonRelease);
+	select_cmd(F_PASS_ARGS);
+
 	return;
 }
 
@@ -819,13 +749,13 @@ void CMD_All(F_CMD_ARGS)
 
 	flags = CreateFlagString(action, &restofline);
 	DefaultConditionMask(&mask);
+	mask.my_flags.use_circulate_hit = 1;
+	mask.my_flags.use_circulate_hit_icon = 1;
 	CreateConditionMask(flags, &mask);
 	if (flags)
 	{
 		free(flags);
 	}
-	mask.my_flags.use_circulate_hit = 1;
-	mask.my_flags.use_circulate_hit_icon = 1;
 
 	num = 0;
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
@@ -1052,50 +982,6 @@ void CMD_Direction(F_CMD_ARGS)
 	FreeConditionMask(&mask);
 }
 
-/* A very simple function, but handy if you want to call
- * complex functions from root context without selecting a window
- * for every single function in it. */
-void CMD_Pick(F_CMD_ARGS)
-{
-	char *restofline;
-	char *flags;
-	WindowConditionMask mask;
-
-	if (DeferExecution(
-		    eventp, &w, &tmp_win, &context, CRS_SELECT, ButtonRelease))
-	{
-		if (cond_rc != NULL)
-		{
-			*cond_rc = COND_RC_ERROR;
-		}
-		return;
-	}
-
-	flags = CreateFlagString(action, &restofline);
-	DefaultConditionMask(&mask);
-	CreateConditionMask(flags, &mask);
-	if (flags)
-	{
-		free(flags);
-	}
-	if (MatchesConditionMask(tmp_win, &mask) && restofline)
-	{
-		if (cond_rc != NULL)
-		{
-			*cond_rc = COND_RC_OK;
-		}
-		old_execute_function(
-			NULL, restofline, tmp_win, eventp, C_WINDOW, *Module,
-			0, NULL);
-	}
-	else if (cond_rc != NULL)
-	{
-		*cond_rc = COND_RC_NO_MATCH;
-	}
-
-	return;
-}
-
 void CMD_WindowId(F_CMD_ARGS)
 {
 	FvwmWindow *t;
@@ -1286,8 +1172,7 @@ void CMD_Cond(F_CMD_ARGS)
 		/* execute the command in root window context; overwrite the
 		 * return code with the return code of the command */
 		old_execute_function(
-			cond_rc, restofline, tmp_win, eventp,
-			(tmp_win != NULL) ? C_WINDOW : C_ROOT, *Module,
+			cond_rc, restofline, tmp_win, eventp, context, *Module,
 			0, NULL);
 
 	}

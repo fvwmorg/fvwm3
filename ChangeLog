@@ -1,6 +1,29 @@
 2002-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/conditional.c (CMD_Cond):
+	Fixed it the right way this time
+	(CMD_Any):
+	same fix for the 'Any' command
+	(circulate_cmd):
+	(CMD_Prev):
+	(CMD_Next):
+	(CMD_None):
+	(CMD_Any):
+	(CMD_Current):
+	unified circulating functions into a single one
+	(CMD_Pick):
+	Pick allows to pick functions that have CirculateSkip set
+	fixed a memory leak
+	(select_cmd):
+	(CMD_This):
+	(CMD_Pick):
+	(CMD_PointerWindow):
+	unified selecting functions into a single one
+	(CMD_PointerKey):
+	(CMD_All):
+	Allow user to override the default CirculateHit of these functions
+
+	* fvwm/conditional.c (CMD_Cond):
 	Fixed a problem w/ the window selection
 
 	* fvwm/menus.h:
