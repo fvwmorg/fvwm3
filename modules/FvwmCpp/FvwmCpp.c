@@ -74,7 +74,7 @@ char cpp_outfile[BUFSIZ]="";
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   Display *dpy;			/* which display are we talking to */
   char *temp, *s;
@@ -126,24 +126,24 @@ void main(int argc, char **argv)
     {
       /* leaving this in just in case-- any option starting with '-'
          will get passed on to cpp anyway */
-      if(mystrcasecmp(argv[i],"-cppopt") == 0)
+      if(strcasecmp(argv[i],"-cppopt") == 0)
 	{
 	  strcat(cpp_options, argv[++i]);
 	  strcat(cpp_options, " ");	    
 	}
-      else if (mystrcasecmp(argv[i], "-cppprog") == 0)
+      else if (strcasecmp(argv[i], "-cppprog") == 0)
 	{
 	  cpp_prog = argv[++i];
 	}
-      else if(mystrcasecmp(argv[i], "-outfile") == 0)
+      else if(strcasecmp(argv[i], "-outfile") == 0)
       {
         strcpy(cpp_outfile,argv[++i]);
       }
-      else if(mystrcasecmp(argv[i], "-debug") == 0)
+      else if(strcasecmp(argv[i], "-debug") == 0)
 	{
 	  cpp_debug = 1;
 	}
-      else if (mystrncasecmp(argv[i],"-",1) == 0)
+      else if (strncasecmp(argv[i],"-",1) == 0)
       {
         /* pass on any other arguments starting with '-' to cpp */
         strcat(cpp_options, argv[i]);
@@ -240,9 +240,9 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
     exit(0377);
   }
     
-  mygethostname(client,MAXHOSTNAME);
+  gethostname(client,MAXHOSTNAME);
   
-  mygetostype  (ostype, sizeof ostype);
+  getostype  (ostype, sizeof ostype);
   
   hostname = gethostbyname(client);
   strcpy(server, XDisplayName(host));

@@ -27,7 +27,7 @@ void relay_packet( unsigned long, unsigned long, unsigned long *);
 void server( char * );
 void sig_handler( int );
 
-void main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
 	char *fifoname;
 
 	if(argc < FARGS)    {

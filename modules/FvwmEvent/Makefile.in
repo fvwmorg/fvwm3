@@ -73,7 +73,6 @@ MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
-XPMREDUCE = @XPMREDUCE@
 XPMROOT = @XPMROOT@
 readline_CFLAGS = @readline_CFLAGS@
 readline_LIBS = @readline_LIBS@
@@ -90,10 +89,10 @@ EXTRA_DIST = $(man_MANS)
 
 FvwmEvent_SOURCES = FvwmEvent.c Parse.c Parse.h
 
-LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
+LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) $(rplay_LIBS) \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS) 
+INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS) $(rplay_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
@@ -135,7 +134,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign modules/FvwmEvent/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu modules/FvwmEvent/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -260,7 +259,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign modules/FvwmEvent/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu modules/FvwmEvent/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

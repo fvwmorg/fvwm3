@@ -1,0 +1,15 @@
+1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmPager/FvwmPager.1:
+	* FvwmIdent/FvwmIdent.1: Fixes from Austin Donelly.
+
+	* FvwmIconMan/readconfig.c: Removed stripcpy, since it is
+	identical to the function already available in libfvwm.  Renamed
+	the static GetNextToken() to internal_GetNextToken() to avoid
+	compiler warnings (a non-static version exists in libfvwm).
+
+	* FvwmEvent/Makefile.am (LDADD): Added rplay_LIBS.
+	* FvwmEvent/Makefile.am (INCLUDES): Added rplay_CFLAGS.
+
+	* FvwmAudio/Makefile.am (INCLUDES): Added rplay_CFLAGS.
+

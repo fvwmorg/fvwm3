@@ -74,6 +74,10 @@
  * as long as the copyright is kept intact.
  */
 
+#include "config.h"
+#include "../../fvwm/module.h"
+#include "fvwmlib.h"     
+
 /*
  * fvwm includes:
  */
@@ -87,13 +91,6 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
-
-/*
- * rplay includes:
- */
-#include "config.h"
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"     
 
 #ifdef HAVE_RPLAY
 #include <rplay.h>
@@ -259,23 +256,23 @@ void	config(void)
 	  /*
 	   * Search for MyName (normally *FvwmAudio)
 	   */
-	  if (mystrncasecmp(buf, MyName, MyNameLen) == 0)
+	  if (strncasecmp(buf, MyName, MyNameLen) == 0)
 	    {
 	      p = strtok(buf+MyNameLen, " \t");	
 	
-	      if (mystrcasecmp(p, "PlayCmd") == 0) {
+	      if (strcasecmp(p, "PlayCmd") == 0) {
 		p = strtok(NULL, "\n"); /* allow parameters */
 		if (p && *p) {
 		  strcpy(audio_play_cmd_line, p);
 		}
 	      }
-	      else if (mystrcasecmp(p, "Dir") == 0) {
+	      else if (strcasecmp(p, "Dir") == 0) {
 		p = strtok(NULL, " \t");
 		if (p && *p) {
 		  strcpy(audio_play_dir, p);
 		}
 	      }
-	      else if (mystrcasecmp(p, "Delay") == 0) {
+	      else if (strcasecmp(p, "Delay") == 0) {
 		p = strtok(NULL, " \t");
 		if (p && *p) {
 		  audio_delay = atoi(p);
@@ -286,7 +283,7 @@ void	config(void)
 	      /*
 	       * Check for rplay configuration options.
 	       */
-	      else if (mystrcasecmp(p, "RplayHost") == 0)
+	      else if (strcasecmp(p, "RplayHost") == 0)
 		{
 		  p = strtok(NULL, " \t");
 		  if (p && *p)
@@ -310,14 +307,14 @@ void	config(void)
 			}
 		    }
 		}
-	      else if (mystrcasecmp(p, "RplayVolume") == 0)
+	      else if (strcasecmp(p, "RplayVolume") == 0)
 		{
 		  p = strtok(NULL, " \t");
 		  if (p && *p) {
 		    volume = atoi(p);
 		  }
 		}
-	      else if (mystrcasecmp(p, "RplayPriority") == 0)
+	      else if (strcasecmp(p, "RplayPriority") == 0)
 		{
 		  p = strtok(NULL, " \t");
 		  if (p && *p) {
@@ -358,7 +355,7 @@ void	config(void)
 
 	    	for (i = 0; !found && i < MAX_MESSAGES+MAX_BUILTIN; i++)
 		  {
-		    if (mystrcasecmp(message, messages[i]) == 0) {
+		    if (strcasecmp(message, messages[i]) == 0) {
 #ifdef HAVE_RPLAY
 		      rplay_table[i] = rplay_create(RPLAY_PLAY);
 		      rplay_set(rplay_table[i], RPLAY_APPEND,
@@ -383,7 +380,7 @@ void	config(void)
   /*
    * Builtin rplay support is enabled when FvwmAudioPlayCmd == builtin-rplay.
    */
-  if (mystrcasecmp(audio_play_cmd_line, "builtin-rplay") == 0)
+  if (strcasecmp(audio_play_cmd_line, "builtin-rplay") == 0)
     {
       rplay_fd = rplay_open(host);
       if (rplay_fd < 0)

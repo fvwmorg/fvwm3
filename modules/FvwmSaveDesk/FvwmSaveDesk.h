@@ -1,6 +1,8 @@
-#include "../../libs/fvwmlib.h"       
+#include "fvwmlib.h"       
+
 #define STICKY 1
 #define ICONIFIED     32 /* is it an icon now? */
+
 struct list
 {
   unsigned long id;
@@ -36,11 +38,3 @@ void process_message(unsigned long type,unsigned long *body);
 void do_save(void);
 void list_new_page(unsigned long *body);
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */

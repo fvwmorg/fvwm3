@@ -18,7 +18,7 @@ extern void   ParseOptions(void);
 extern char   *safemalloc(int length);
 extern int    My_XNextEvent(Display *dpy, XEvent *event);
 extern void   CopyString(char **dest, char *source);
-extern FVWM_INLINE void RelieveWindow(Window win,int x,int y,int w,int h,GC rGC,GC sGC);
+extern inline void RelieveWindow(Window win,int x,int y,int w,int h,GC rGC,GC sGC);
 extern void   SendFvwmPipe(int *,char *text, unsigned long window);
 extern void   DeadPipe(int nonsense);
 extern void   CreateIconWindow(struct icon_info *item);
@@ -51,7 +51,6 @@ extern void parseaction(char *tline);
 extern void AdjustIconWindow(struct icon_info *item, int n);
 extern int AdjustIconWindows(void);
 extern struct icon_info *SetFlag(unsigned long id, int t);
-extern void sleep_a_little(int n);
 extern void RedrawIcon(struct icon_info *item, int f);
 extern void Next(void);
 extern void Prev(void);
@@ -155,13 +154,6 @@ extern char *pixmapPath;
 
 extern int icon_relief;
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
 
 
 #define NOPLACE -1

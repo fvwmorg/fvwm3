@@ -28,7 +28,7 @@ void ErrMsg( char *msg ) {
 /* setup socket.                                       */
 /* send command to and receive message from the server */
 /*******************************************************/
-void main ( int argc, char *argv[]) {
+int main ( int argc, char *argv[]) {
   char *cmd;
   unsigned char data[BUFSIZE];
   int  len;  /* length of socket address */

@@ -150,7 +150,7 @@ void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
   if (opts && num_opts > 0)
     XrmParseCommand(pdb, opts, num_opts, name, pargc, argv);
   if (!fNoDefaults)
-    XrmParseCommand(pdb, (XrmOptionDescList)&default_opts, NUM_DEFAULT_OPTS,
+    XrmParseCommand(pdb, default_opts, NUM_DEFAULT_OPTS,
 		    name, pargc, argv);
 }
 
@@ -192,7 +192,7 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
 
   line++;
   len = (prefix) ? strlen(prefix) : 0;
-  if (!prefix || mystrncasecmp(line, prefix, len))
+  if (!prefix || strncasecmp(line, prefix, len))
     return False;
 
   line += len;

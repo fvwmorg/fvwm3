@@ -7,8 +7,8 @@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmCommandS FvwmCommand
 
-FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h sunos_headers.h
-FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h sunos_headers.h
+FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
+FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h
 
 man_MANS = FvwmCommand.1
 
@@ -19,7 +19,9 @@ EXTRA_DIST = $(man_MANS) $(examples) \
 	   findcmd findcmd.pl test2.sh
 
 LDADD = -L$(top_builddir)/libs -lfvwm 
+
+# FIXME:
 # Despite not using X functions explicitly, the code includes
-# fvwmlib.h, which *does* include X headers!
-INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS)
+# fvwmlib.h, which *does* include X headers and xpm.h!
+INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 

@@ -82,6 +82,10 @@
  * as long as the copyright is kept intact.
  */
 
+#include "config.h"
+#include "../../fvwm/module.h"
+#include "fvwmlib.h"
+
 /*
  * fvwm includes:
  */
@@ -94,10 +98,6 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <ctype.h>
-
-#include "config.h"
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"
 
 /*
  * rplay includes:
@@ -372,7 +372,7 @@ void	config(void)
 
 
 	/* Search for MyName (normally *FvwmAudio) */
-	if (mystrncasecmp(buf, MyName, MyNameLen) == 0)
+	if (strncasecmp(buf, MyName, MyNameLen) == 0)
 	{
 	    p = buf+MyNameLen;
 INFO(buf);
@@ -459,7 +459,7 @@ INFO("found\n");
     /*
      * Builtin rplay support is enabled when FvwmAudioPlayCmd == builtin-rplay.
      */
-    if (mystrcasecmp(cmd_line, "builtin-rplay") == 0)
+    if (strcasecmp(cmd_line, "builtin-rplay") == 0)
 	if ((rplay_fd = rplay_open(host)) < 0)
 	{
 	    rplay_perror("rplay_open");

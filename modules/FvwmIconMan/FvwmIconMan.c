@@ -130,7 +130,7 @@ void SendFvwmPipe (char *message,unsigned long window)
   }
 }
 
-static void main_loop (void)
+static int main_loop (void)
 {
   fd_set readset, saveset;
   struct timeval tv;

@@ -73,7 +73,6 @@ MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
-XPMREDUCE = @XPMREDUCE@
 XPMROOT = @XPMROOT@
 readline_CFLAGS = @readline_CFLAGS@
 readline_LIBS = @readline_LIBS@
@@ -86,8 +85,8 @@ xpm_LIBS = @xpm_LIBS@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmCommandS FvwmCommand
 
-FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h sunos_headers.h
-FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h sunos_headers.h
+FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
+FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h
 
 man_MANS = FvwmCommand.1
 
@@ -98,9 +97,11 @@ EXTRA_DIST = $(man_MANS) $(examples) \
 	   findcmd findcmd.pl test2.sh
 
 LDADD = -L$(top_builddir)/libs -lfvwm 
+
+# FIXME:
 # Despite not using X functions explicitly, the code includes
-# fvwmlib.h, which *does* include X headers!
-INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS)
+# fvwmlib.h, which *does* include X headers and xpm.h!
+INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
@@ -146,7 +147,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmCommand/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmCommand/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -275,7 +276,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmCommand/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmCommand/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

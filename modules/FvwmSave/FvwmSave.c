@@ -49,7 +49,7 @@ long Vx, Vy;
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
   char *display_name = NULL;

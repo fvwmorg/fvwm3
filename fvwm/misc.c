@@ -503,7 +503,7 @@ char *GetOneMenuPositionArgument(char *action,int x,int w,int *pFinalX,
   float factor = (float)w/100;
 
   naction = GetNextToken(action, &token);
-  if (token == NULL)
+  if (token == NULL || *token == '\0')
     return action;
   length = strlen(token);
   if (token[length-1] == 'p') {
@@ -596,7 +596,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 	if (tmp_win->flags & ICONIFIED) context_window = tmp_win->icon_w;
 	else context_window = tmp_win->title_w;
       }
-    } else if (mystrncasecmp(tok,"button",6) == 0) {
+    } else if (strncasecmp(tok,"button",6) == 0) {
       if (sscanf(&(tok[6]),"%d",&button) != 1 ||
 		 tok[6] == '+' || tok[6] == '-' || button < 0 || button > 9) {
 	fHasContext = FALSE;
@@ -797,7 +797,7 @@ Bool GrabEm(int cursor)
       i++;
       /* If you go too fast, other windows may not get a change to release
        * any grab that they have. */
-      sleep_a_little(1000);
+      usleep(1000);
     }
 
   /* If we fall out of the loop without grabbing the pointer, its

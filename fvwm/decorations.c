@@ -188,7 +188,8 @@ void GetOlHints(FvwmWindow *t)
 	    t->ol_hints &= ~OL_DECOR_ICON_NAME;
 	}
 
-      XFree (hints);
+      if (hints)
+        XFree(hints);
     }
 
   if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_ADD, 0L, 20L, False,
@@ -205,6 +206,7 @@ void GetOlHints(FvwmWindow *t)
 	else if (hints[i] == _XA_OL_DECOR_ICON_NAME)
             t->ol_hints |= OL_DECOR_ICON_NAME;
       }
+      if (hints)
       XFree (hints);
     }
 
@@ -222,7 +224,8 @@ void GetOlHints(FvwmWindow *t)
 	else if (hints[i] == _XA_OL_DECOR_ICON_NAME)
             t->ol_hints &= ~OL_DECOR_ICON_NAME;
       }
-      XFree (hints);
+      if (hints)
+        XFree(hints);
     }
 
 }

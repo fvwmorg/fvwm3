@@ -587,7 +587,7 @@ void match_string(button_info **uberb,char *s)
 	      if(*s=='(')
 		{
 		  s++;
-		  if(mystrncasecmp(s,"mouse",5)!=0)
+		  if(strncasecmp(s,"mouse",5)!=0)
 		    {
 		      fprintf(stderr,"%s: Couldn't parse action\n",MyName);
 		    }
@@ -751,7 +751,7 @@ void match_string(button_info **uberb,char *s)
   trimleft(s);
 
   /* Swallow hangon command */
-  if(mystrncasecmp(s,"swallow",7)==0)
+  if(strncasecmp(s,"swallow",7)==0)
     {
       if(b->flags&b_Swallow)
 	{
@@ -763,7 +763,7 @@ void match_string(button_info **uberb,char *s)
       /*
        * Swallow old 'swallowmodule' command
        */
-      if (mystrncasecmp(s,"module",6)==0)
+      if (strncasecmp(s,"module",6)==0)
       {
         s+=6;
       }
@@ -851,7 +851,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       break;
     case 9:/* Pixmap */
       trimleft(s);
-      if (mystrncasecmp(s,"none",4)==0)
+      if (strncasecmp(s,"none",4)==0)
 	ub->c->flags|=b_TransBack;
       else
         CopyString(&(ub->c->back_file),s);

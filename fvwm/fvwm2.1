@@ -212,18 +212,18 @@ when exiting or restarting before actually quitting or anything else.
 It could be used to explicitly kill modules, etc.
 
 .SH COMPILATION OPTIONS
-\fIFvwm\fP has a number of ways in which you can reduce memory usage
-by limiting the use of certain features during compilation.  If you
+\fIFvwm\fP has a number of compile-time options to reduce memory usage
+by limiting the use of certain features.  If you
 have trouble using a certain command or feature, check to see if
 support for it was included at compile time.  Optional features are
-described fully in the Fvwm.tmpl Imake configuration file.
+described in the config.h file.
 
 .SH ICONS
 The basic \fIFvwm\fP configuration uses monochrome bitmap icons,
 similar to \fItwm\fP.  If XPM extensions are compiled in, then color
 icons similar to ctwm, MS-Windows, or the Macintosh icons can be used.
 In order to use these options you will need the XPM package, as
-described in the Fvwm.tmpl Imake configuration file.
+described in the INSTALL.fvwm file.
 
 If both the SHAPE and XPM options are compiled in you will get shaped
 color icons, which are very spiffy.
@@ -918,9 +918,12 @@ for backwards compatibility).
 Moves the mouse pointer by \fIhorizontal\fP pages in the X direction
 and \fIvertical\fP pages in the Y direction.  Either or both entries
 may be negative.  Both horizontal and vertical values are expressed in
-percent of pages, so "CursorMove 100 100" means to move down and left
-by one full page.  "CursorMove 50 25" means to move left half a page
-and down a quarter of a page.  The CursorMove function should not be
+percent of pages, so "CursorMove 100 100" means to move down and right
+by one full page.  "CursorMove 50 25" means to move right half a page
+and down a quarter of a page.  Alternatively, the distance can be
+specified in pixels by appending a 'p' to the horizontal and/or vertical
+specification.  For example "CursorMove -10p -10p" means move ten
+pixels up and ten pixels left.  The CursorMove function should not be
 called from pop-up menus.
 
 .IP "CursorStyle \fIcontext cursornum\fP"

@@ -167,8 +167,6 @@ void MapBalloonWindow(XEvent *);
 void UnmapBalloonWindow(void);
 void DrawInBalloonWindow(void);
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
+
 
 

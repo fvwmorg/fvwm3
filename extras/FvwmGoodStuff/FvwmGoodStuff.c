@@ -91,7 +91,7 @@ Atom _XA_WM_NAME;
  *
  ***********************************************************************
 */
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *display_name = NULL;
   int i,j;
@@ -178,7 +178,7 @@ void main(int argc, char **argv)
     }
 
   /* load the font, or none */
-  if (mystrncasecmp(font_string,"none",4)==0)
+  if (strncasecmp(font_string,"none",4)==0)
     {
       font=NULL;
     }
@@ -373,7 +373,7 @@ void Loop(void)
               if(NewButton == CurrentButton)
 		{
 		  if((Buttons[CurrentButton].action)&&
-		     (mystrncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
+		     (strncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
 		    {
 		      /* Look for Exec "identifier", in which
 		       * case the button stays down until window
@@ -554,7 +554,7 @@ void RedrawWindow(int newbutton)
 		      }
 		  }
 		if((Buttons[button].action)&&
-		   (mystrncasecmp(Buttons[button].action,"Desk",4)==0))
+		   (strncasecmp(Buttons[button].action,"Desk",4)==0))
 		  {
 		    sscanf(&Buttons[button].action[4],"%d %d",&val1,&val2);
 		    if((val1 == 0)&&(val2 == new_desk))
@@ -590,7 +590,7 @@ void RedrawWindow(int newbutton)
  *  Draws the relief pattern around a window
  *
  ****************************************************************************/
-FVWM_INLINE void RelieveWindow(Window win,int x,int y,int w,int h,
+inline void RelieveWindow(Window win,int x,int y,int w,int h,
 		   GC rgc,GC sgc)
 {
   XSegment seg[4];
@@ -1084,7 +1084,7 @@ void ParseOptions(void)
       unsigned width,height;
       
       if((strlen(&tline[0])>1)&&
-	 (mystrncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
+	 (strncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
 	{
 	  tmp = &tline[Clength+9];
 	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
@@ -1108,26 +1108,26 @@ void ParseOptions(void)
 	    yneg = 1;
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0))
 	{
 	  CopyString(&font_string,&tline[Clength+5]);
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
 	{
 	  len=sscanf(&tline[Clength+5],"%d",&num_rows);
 	  if(len < 1)
 	    num_rows = 0;
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
 	{
 	  len=sscanf(&tline[Clength+8],"%d",&num_columns);
 	  if(len < 1)
 	    num_columns = 0;
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Padding"),Clength+8)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Padding"),Clength+8)==0))
 	{
 	  len=sscanf(&tline[Clength+8],"%d %d",&xpad,&ypad);
 	  if(len < 2)
@@ -1139,7 +1139,7 @@ void ParseOptions(void)
 	    }
 	}
 /*    else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"PadY"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"PadY"),Clength+5)==0))
 	{
 	  len=sscanf(&tline[Clength+5],"%d",&ypad);
 	  if(len < 1)
@@ -1147,26 +1147,26 @@ void ParseOptions(void)
 	}
 */
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Fore"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Fore"),Clength+5)==0))
 	{
 	  CopyString(&GoodStuffFore,&tline[Clength+5]);
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName, "Back"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName, "Back"),Clength+5)==0))
 	{
 	  CopyString(&GoodStuffBack,&tline[Clength+5]);
 	}	
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)&&
+	      (strncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)&&
 	      (num_buttons < MAX_BUTTONS))
 	{
 	  match_string(&tline[Clength+1]);
 	}
-      else if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"IconPath",8)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"IconPath",8)==0))
 	{
 	  CopyString(&iconPath,&tline[8]);
 	}
-      else if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"PixmapPath",10)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"PixmapPath",10)==0))
 	{
 	  CopyString(&pixmapPath,&tline[10]);
 	}
@@ -1242,7 +1242,7 @@ void match_string(char *tline)
   while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
 
-  if(mystrncasecmp(tline,"swallow",7)==0)
+  if(strncasecmp(tline,"swallow",7)==0)
     {
       /* Look for swallow "identifier", in which
        * case GoodStuff spawns and gobbles up window */
@@ -1272,7 +1272,7 @@ void match_string(char *tline)
 	  len--;
 	}
       ptr = safemalloc(len+1);
-      if(mystrncasecmp(&tline[i2],"Module",6)==0)
+      if(strncasecmp(&tline[i2],"Module",6)==0)
 	{
           Buttons[num_buttons].module = 1;
 	}	  

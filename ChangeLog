@@ -1,3 +1,106 @@
+1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* libs/XResource.c (MergeCmdLineResources): DEC's compiler claims
+	that a '&' in front of the array "default_opts" is ignored, so I
+	removed it.
+
+	* libs/System.h: Removed.
+	* libs/System.c: Removed mygethostname(), replaced with
+	gethostname.c from some GNU utils package.  Renamed mygetostype()
+	to just getostype(), in parallel with gethostname().
+
+	* libs/Strings.c: Pulled out mystrcasecmp() and mystrncasecmp() to
+	their own files.
+
+	* libs/Parse.c (PeekToken): Add const qualifier to variable 'p' to
+	stop pstr from losing its constness.
+
+	* fvwm/style.c: Cast arguments to memcpy() to placate gcc on DEC
+	alpha.
+
+	* fvwm/module.c: Explicit checks for the presence of <stdarg.h> or
+	<varargs.h>.  If using <stdarg.h>, use the two-argument form of
+	va_start(), otherwise the single-argument form.
+
+	* fvwm/menus.c (menuShortcuts): Fixed parameters in call to
+	XLookupString().
+
+	* fvwm/fvwm2.1: Replace references to Fvwm.tmpl with current
+	equivalents.  Other fixes from Austin Donelly.
+
+	* fvwm/functions.c (func_comp): Put const qualifiers on the
+	arguments, to match requirements for bsearch().
+
+	* fvwm/builtins.c: Moved strerror() function to libs/strerror.c.
+
+	* libs/sleep.c: Removed and globally changed sleep_a_little() to
+	usleep().
+
+	* libs/gethostname.c:
+	* libs/strerror.c:
+	* libs/usleep.c:
+	* libs/strcasecmp.c:
+	* libs/strncasecmp.c: 
+
+	* libs/Makefile.am: Added the above files.  Each file is compiled
+	into libfvwm only if the system libraries are missing the
+	corresponding function.  Globally replaced the "my"-version of
+	these functions with the standard one.
+
+	* include config.h: Moved #include to the top of the file in some
+	but not yet all the files that include config.h.
+
+	* main: All main() functions return int rather than void.
+
+	* symbols: Changed the ifdefs around header includes to read
+	#if HAVE_FOO_H, rather than a maze of machine-type symbols.
+
+	* sun_headers.h:
+	* sunos_headers.h:
+	* alpha_header.h: Removed all traces of these.  Removed
+	declarations of system functions when a conflict noticed.
+
+	* configure.in: Require autoconf 2.12 as prerequisite.  Changed
+	version string to 2.1.1.  Added more checks.
+
+	* acconfig.h: Code to define str[r]chr and mem{cpy,move} if not
+	available.  Removed obsolete FVWM_INLINE and globally replaced
+	with "inline".
+
+	* Makefile.am (AUTOMAKE_OPTIONS): Set to 1.3b, so that automake
+	complains if it is too old.
+
+	* utils/xpm-reduce.c
+	* utils/xpm-reduced-rgb.txt: removed; obsoleted by a runtime
+	colour reduction scheme.
+
+1998-11-04  Paul D. Smith  <psmith@gnu.org>
+
+	* Fix problems discovered by Purify:
+
+	* fvwm/menus.c (MenuInteraction): Don't try to call
+	GetPopupOptions() until we know we're looking at a popup menu.
+
+	* libs/Picture.c (LoadPicture): Free pixmaps after we create and
+	translate them and they're no longer needed.
+
+	* fvwm/misc.c (GetOneMenuPositionArgument): If the returned token
+	is an empty string, don't try to parse it.
+
+	* fvwm/module.c (SendName): Zero out the end of the array to avoid
+	uninitialized mem access.
+
+	* libs/Picture.c (CachePicture): Don't look past the end of
+	allocated memory.  If someone proves that this function is slowing
+	down fvwm using some hard profiling, then we can revisit, but in
+	the absence of this information it's not worth the risk.
+
+	* fvwm/decorations.c (GetOlHints): Don't free(NULL).  This is OK
+	under ANSI, but not portable.
+
+	* fvwm/fvwm.c (InitFvwmDecor): Initialize the TitleHeight field to
+	0; otherwise we may use it before it's set (in LoadWindowFont).
+
 1998-11-04  Dominik Vogt <dominik_vogt@hp.com>
 
 	* fvwm/fvwm2.1: 

@@ -44,7 +44,7 @@ static void AddToList(name_list *);     /* prototype */
 
 /* A macro for checking the command with a caseless compare */
 #define ITIS(THIS) \
-  mystrncasecmp(restofline,THIS,sizeof(THIS)-1)==0
+  strncasecmp(restofline,THIS,sizeof(THIS)-1)==0
 
 /* A macro for skipping over the command without counting it's size */
 #define SKIP(THIS) \
@@ -785,11 +785,11 @@ void ProcessNewStyle(XEvent *eventp,
 	    int hit = 0;            
 	    /* changed to accum multiple Style definitions (veliaa@rpi.edu) */
             for ( nptr = Scr.TheList; nptr; nptr = nptr->next ) {
-              if (!mystrncasecmp(restofline,nptr->name,len)) { /* match style */
+              if (!strncasecmp(restofline,nptr->name,len)) { /* match style */
                 if (!hit) {             /* first match */
 		  char *save_name;
 		  save_name = tname.name;
-                  memcpy(&tname, nptr, sizeof(name_list)); /* copy everything */
+                  memcpy((void*)&tname, (const void*)nptr, sizeof(name_list)); /* copy everything */
                   tname.next = 0;       /* except the next pointer */
 		  tname.name = save_name; /* and the name */
                   hit = 1;              /* set not first match */
@@ -918,7 +918,7 @@ static void AddToList(name_list *tname)
   }
 
   nptr = (name_list *)safemalloc(sizeof(name_list)); /* malloc area */
-  memcpy(nptr, tname, sizeof(name_list)); /* copy term area into list */
+  memcpy((void*)nptr, (const void*)tname, sizeof(name_list)); /* copy term area into list */
   if(lastptr != NULL)                   /* If not first entry in list */
     lastptr->next = nptr;               /* chain this entry to the list */
   else                                  /* else first entry in list */

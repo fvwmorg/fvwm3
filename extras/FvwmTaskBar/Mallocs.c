@@ -25,14 +25,6 @@
 #include <string.h>
 #include <sys/time.h>
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
-
 extern char *Module;
 
 /******************************************************************************

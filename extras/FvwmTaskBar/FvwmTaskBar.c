@@ -148,7 +148,7 @@ char *IconPath   = NULL,
     Based on main() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
 
@@ -586,37 +586,37 @@ void ParseConfig(char *file)
   while (tline != (char *)0) {
     while (isspace(*tline))tline++;
     if (strlen(tline)>1 && tline[0] != '#') {
-      if(mystrncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
+      if(strncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
 	CopyString(&font_string,&tline[Clength+4]);
-      else if(mystrncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
+      else if(strncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
 	CopyString(&selfont_string,&tline[Clength+7]);
-      else if(mystrncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
+      else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
 	CopyString(&ForeColor,&tline[Clength+4]);
-      else if(mystrncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
+      else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
 	str = &tline[Clength+9];
 	while(((isspace(*str))&&(*str != '\n'))&&(*str != 0))	str++;
 	str[strlen(str)-1] = 0;
 	UpdateString(&geometry,str);
-      } else if(mystrncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
+      } else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
 	CopyString(&BackColor,&tline[Clength+4]);
-      else if(mystrncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
+      else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
 	LinkAction(&tline[Clength+6]);
-      else if(mystrncasecmp(tline,CatString3(Module, "UseSkipList",""),
+      else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
 			    Clength+11)==0) UseSkipList=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "AutoStick",""),
+      else if(strncasecmp(tline,CatString3(Module, "AutoStick",""),
 			    Clength+9)==0) AutoStick=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "AutoHide",""),
+      else if(strncasecmp(tline,CatString3(Module, "AutoHide",""),
                             Clength+4)==0) { AutoHide=True; AutoStick=True; }
-      else if(mystrncasecmp(tline,CatString3(Module, "UseIconNames",""),
+      else if(strncasecmp(tline,CatString3(Module, "UseIconNames",""),
 			    Clength+12)==0) UseIconNames=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "ShowTransients",""),
+      else if(strncasecmp(tline,CatString3(Module, "ShowTransients",""),
 			    Clength+14)==0) ShowTransients=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "UpdateInterval",""),
+      else if(strncasecmp(tline,CatString3(Module, "UpdateInterval",""),
                             Clength+14)==0)
                                UpdateInterval=atoi(&tline[Clength+14]);
-      else if(mystrncasecmp(tline,CatString3(Module, "HighlightFocus",""),
+      else if(strncasecmp(tline,CatString3(Module, "HighlightFocus",""),
                             Clength+14)==0) HighlightFocus=True;
-      else if(mystrncasecmp(tline,CatString3(Module, "SwallowModule",""),
+      else if(strncasecmp(tline,CatString3(Module, "SwallowModule",""),
 			    Clength+13)==0) {
 	
 	/* tell fvwm to launch the module for us */
@@ -640,7 +640,7 @@ void ParseConfig(char *file)
 	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
 	}	
 	free(str);
-      } else if(mystrncasecmp(tline,CatString3(Module, "Swallow",""),
+      } else if(strncasecmp(tline,CatString3(Module, "Swallow",""),
 			      Clength+7)==0) {
 	
 	/* tell fvwm to Exec the process for us */
@@ -664,11 +664,11 @@ void ParseConfig(char *file)
 	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
 	}	
 	free(str);
-      } else if(mystrncasecmp(tline,"ButtonWidth",11) == 0) {
+      } else if(strncasecmp(tline,"ButtonWidth",11) == 0) {
 	button_width = atoi(&tline[11]);
-      } else if(mystrncasecmp(tline,"IconPath",8) == 0) {
+      } else if(strncasecmp(tline,"IconPath",8) == 0) {
 	CopyString(&IconPath, &tline[8]);
-      } else if(mystrncasecmp(tline,"PixmapPath",10) == 0) {
+      } else if(strncasecmp(tline,"PixmapPath",10) == 0) {
 	CopyString(&PixmapPath, &tline[10]);
       } else {
 	GoodiesParseConfig(tline, Module);
@@ -993,13 +993,13 @@ void LinkAction(char *string)
 char *temp;
   temp=string;
   while(isspace(*temp)) temp++;
-  if(mystrncasecmp(temp, "Click1", 6)==0)
+  if(strncasecmp(temp, "Click1", 6)==0)
     CopyString(&ClickAction[0],&temp[6]);
-  else if(mystrncasecmp(temp, "Click2", 6)==0)
+  else if(strncasecmp(temp, "Click2", 6)==0)
     CopyString(&ClickAction[1],&temp[6]);
-  else if(mystrncasecmp(temp, "Click3", 6)==0)
+  else if(strncasecmp(temp, "Click3", 6)==0)
     CopyString(&ClickAction[2],&temp[6]);
-  else if(mystrncasecmp(temp, "Enter", 5)==0)
+  else if(strncasecmp(temp, "Enter", 5)==0)
     CopyString(&EnterAction,&temp[5]);
 }
 

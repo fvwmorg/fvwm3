@@ -19,7 +19,8 @@
 
 char *PeekArgument(const char *pstr)
 {
-  char *tok=NULL,*p;
+  char *tok=NULL;
+  const char* p;
   char bc=0,be=0,tmptok[MAX_TOKEN_LENGTH];
   int len=0;
 
@@ -110,7 +111,7 @@ int CmpArgument(const char *pstr,char *tok)
   char *ntok=PeekArgument(pstr);
   if (ntok)
   {
-    rc = mystrcasecmp(tok,ntok);
+    rc = strcasecmp(tok,ntok);
     free(ntok);
   }
   return rc;
@@ -126,7 +127,7 @@ int MatchArgument(const char *pstr,char *tok)
   char *ntok=PeekArgument(pstr);
   if (ntok)
   {
-    rc = (mystrcasecmp(tok,ntok)==0);
+    rc = (strcasecmp(tok,ntok)==0);
     free(ntok);
   }
   return rc;

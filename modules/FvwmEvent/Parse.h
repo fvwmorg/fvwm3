@@ -6,6 +6,9 @@
    Description:		
 
    Modifications:	$Log$
+   Modifications:	Revision 1.3  1998/11/06 02:23:01  steve
+   Modifications:	Loads of code cleanup
+   Modifications:	
    Modifications:	Revision 1.2  1998/10/30 21:19:44  domivogt
    Modifications:	merging for 2.1_pre_beta
    Modifications:	
@@ -32,8 +35,6 @@ char *GetArgument(char **pstr);
 int CmpArgument(const char *pstr,char *tok);
 int MatchArgument(const char *pstr,char *tok);
 #define NukeArgument(pstr) free(GetArgument(pstr))
-
-int mystrncasecmp(char *a, char *b,int n);
 
 
 /*

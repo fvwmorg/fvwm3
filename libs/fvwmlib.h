@@ -9,8 +9,7 @@
 /***********************************************************************
  * Routines for dealing with strings
  ***********************************************************************/
-int mystrcasecmp(char *a, char *b);
-int mystrncasecmp(char *a, char *b,int n);
+
 char *CatString3(char *a, char *b, char *c);
 void CopyString(char **dest, char *source);
 char *stripcpy(char *source);
@@ -48,12 +47,9 @@ char *GetNextTokenIndex(char *action, char *list[], int len, int *index);
 /***********************************************************************
  * Various system related utils
  ***********************************************************************/
-int mygethostname(char *client, int namelen);
+
 int GetFdWidth(void);
-
 char *safemalloc(int);
-
-void sleep_a_little(int n);
 
 /***********************************************************************
  * Stuff for modules to communicate with fvwm

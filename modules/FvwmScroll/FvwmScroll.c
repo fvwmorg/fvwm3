@@ -60,7 +60,7 @@ Window app_win;
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
   FILE *file;
@@ -130,7 +130,7 @@ void main(int argc, char **argv)
     {
       if(strlen(tline)>1)
 	{
-	  if(mystrncasecmp(tline,CatString3(MyName, "Back",""),
+	  if(strncasecmp(tline,CatString3(MyName, "Back",""),
 			   Clength+4)==0)
 	    {
 	      CopyString(&BackColor,&tline[Clength+4]);
@@ -193,7 +193,7 @@ void GetTargetWindow(Window *app_win)
 		       CurrentTime);
       if(val != GrabSuccess)
 	{
-	  sleep_a_little(1000);
+	  usleep(1000);
 	}
       trials++;
     }

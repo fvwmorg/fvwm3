@@ -204,7 +204,7 @@ void RedrawButton(button_info *b,int clean)
   if(b->flags&b_Action) /* If this is a Desk button that takes you to here.. */
     {
       int n=0;
-      while(n<4 && (!b->action[n] || mystrncasecmp(b->action[n],"Desk",4)))
+      while(n<4 && (!b->action[n] || strncasecmp(b->action[n],"Desk",4)))
 	n++;
       if(n<4)
 	{

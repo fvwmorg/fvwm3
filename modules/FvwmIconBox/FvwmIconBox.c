@@ -164,7 +164,7 @@ int save_color_limit;                   /* color limit from config */
   Based on main() from GoodStuff:
   	Copyright 1993, Robert Nation.
 ************************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *display_name = NULL;
   char *temp, *s;
@@ -829,7 +829,7 @@ void RedrawBottomButton(GC rgc, GC sgc)
     Original work from GoodStuff:
       Copyright 1993, Robert Nation.
 ************************************************************************/
-FVWM_INLINE void RelieveWindow(Window win,int x,int y,int w,int h,
+inline void RelieveWindow(Window win,int x,int y,int w,int h,
 		   GC rgc,GC sgc)
 {
   XSegment seg[4];
@@ -1260,22 +1260,22 @@ void SendFvwmPipe(int *fd, char *message,unsigned long window)
 
 Bool ExecIconBoxFunction(char *msg)
 {
-  if (mystrncasecmp(msg, "Next", 4) == 0){
+  if (strncasecmp(msg, "Next", 4) == 0){
     Next();
     return True;
-  }else if (mystrncasecmp(msg, "Prev", 4) == 0){
+  }else if (strncasecmp(msg, "Prev", 4) == 0){
     Prev();
     return True;
-  }else if (mystrncasecmp(msg, "Left", 4) == 0){
+  }else if (strncasecmp(msg, "Left", 4) == 0){
     HScroll(icon_win_x - UWidth); 
     return True;
-  }else if (mystrncasecmp(msg, "Right", 5) == 0){
+  }else if (strncasecmp(msg, "Right", 5) == 0){
     HScroll(icon_win_x + UWidth);
     return True;
-  }else if (mystrncasecmp(msg, "Up", 2) == 0){
+  }else if (strncasecmp(msg, "Up", 2) == 0){
     VScroll(icon_win_y - UHeight);
     return True;
-  }else if (mystrncasecmp(msg, "Down", 4) == 0){
+  }else if (strncasecmp(msg, "Down", 4) == 0){
     VScroll(icon_win_y + UHeight);
     return True;
   }
@@ -1450,7 +1450,7 @@ void ParseOptions(void)
       unsigned width,height;
 
       if(strlen(&tline[0])>1){
-	if (mystrncasecmp(tline,CatString3("*", MyName,
+	if (strncasecmp(tline,CatString3("*", MyName,
 					  "Geometry"),Clength+9)==0){
 	  tmp = &tline[Clength+9];
 	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
@@ -1469,7 +1469,7 @@ void ParseOptions(void)
 	    xneg = 1;
 	  if (flags & YNegative)
 	    yneg = 1;
-	} else if (mystrncasecmp(tline,CatString3("*", MyName,
+	} else if (strncasecmp(tline,CatString3("*", MyName,
 						"MaxIconSize"),Clength+12)==0){
 	  tmp = &tline[Clength+12];
 	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
@@ -1487,68 +1487,68 @@ void ParseOptions(void)
 	    max_icon_width += 4;
 	  }
 	}else if
-	  (mystrncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0)
+	  (strncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0)
 	  CopyString(&font_string,&tline[Clength+5]);
 	else if
-	  (mystrncasecmp(tline,CatString3("*",MyName,"IconFore"),Clength+9)==0)
+	  (strncasecmp(tline,CatString3("*",MyName,"IconFore"),Clength+9)==0)
 	  CopyString(&IconFore,&tline[Clength+9]);
 	else if
-	  (mystrncasecmp(tline,CatString3("*",MyName,"IconBack"),Clength+9)==0)
+	  (strncasecmp(tline,CatString3("*",MyName,"IconBack"),Clength+9)==0)
 	    CopyString(&IconBack,&tline[Clength+9]);
 	else if
-	  (mystrncasecmp(tline,CatString3("*",MyName,"IconHiFore"),Clength+11)==0)
+	  (strncasecmp(tline,CatString3("*",MyName,"IconHiFore"),Clength+11)==0)
 	  CopyString(&ActIconFore,&tline[Clength+11]);
 	else if
-	  (mystrncasecmp(tline,CatString3("*",MyName,"IconHiBack"),Clength+11)==0)
+	  (strncasecmp(tline,CatString3("*",MyName,"IconHiBack"),Clength+11)==0)
 	  CopyString(&ActIconBack,&tline[Clength+11]);
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Fore"),Clength+5)==0) 
 	  CopyString(&Fore,&tline[Clength+5]);
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Back"),Clength+5)==0) 
 	  CopyString(&Back,&tline[Clength+5]);
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Pixmap"),Clength+7)==0) 
 	  CopyString(&IconwinPixmapFile,&tline[Clength+7]);
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Padding"),Clength+8)==0) 
 	  interval = max(0,atoi(&tline[Clength+8]));
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "FrameWidth"),Clength+11)==0){ 
 	  sscanf(&tline[Clength+11], "%d %d", &margin1, &margin2);
 	  margin1 = max(0, margin1);
 	  margin2 = max(0, margin2);
-	}else if (mystrncasecmp(tline,CatString3("*",MyName,
+	}else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Lines"),Clength+6)==0)
 	  Lines = max(1,atoi(&tline[Clength+6]));
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "SBWidth"),Clength+8)==0) 
 	  bar_width = max(5,atoi(&tline[Clength+8]));
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 						"Placement"),Clength+10)==0)
 	  parseplacement(&tline[Clength+10]);
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "SetWMIconSize"),Clength+14)==0)
 	  local_flags |= SETWMICONSIZE;
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "HilightFocusWin"),Clength+16)==0)
 	  m_mask |= M_FOCUS_CHANGE;
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Resolution"),Clength+11)==0){
 	  tmp = &tline[Clength+11];
 	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
-	  if (mystrncasecmp(tmp, "Desk", 4) == 0){
+	  if (strncasecmp(tmp, "Desk", 4) == 0){
 	    m_mask |= M_NEW_DESK;
 	    local_flags |= CURRENT_ONLY;
 	  }
-	}else if (mystrncasecmp(tline,CatString3("*",MyName,
+	}else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Mouse"),Clength+6)==0)
 	  parsemouse(&tline[Clength + 6]);
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Key"),Clength+4)==0)
 	  parsekey(&tline[Clength + 4]);
-	else if (mystrncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "SortIcons"),Clength+10)==0){
 	  tmp = &tline[Clength+10];
 	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
@@ -1557,33 +1557,33 @@ void ParseOptions(void)
 	    sortby = ICONNAME;
 	    return;
 	  }
-	  if (mystrncasecmp(tmp, "WindowName", 10) == 0)
+	  if (strncasecmp(tmp, "WindowName", 10) == 0)
 	    sortby = WINDOWNAME;
-	  else if (mystrncasecmp(tmp, "IconName", 8) == 0)
+	  else if (strncasecmp(tmp, "IconName", 8) == 0)
 	    sortby = ICONNAME;
-	  else if (mystrncasecmp(tmp, "ResClass", 8) == 0)
+	  else if (strncasecmp(tmp, "ResClass", 8) == 0)
 	    sortby = RESCLASS;
-	  else if (mystrncasecmp(tmp, "ResName", 7) == 0)
+	  else if (strncasecmp(tmp, "ResName", 7) == 0)
 	    sortby = RESNAME;
-	}else if (mystrncasecmp(tline,CatString3("*",MyName,
+	}else if (strncasecmp(tline,CatString3("*",MyName,
 					      "HideSC"),Clength+7)==0){
 	  tmp = &tline[Clength+7];
 	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
-	  if (mystrncasecmp(tmp, "Horizontal", 10) == 0)
+	  if (strncasecmp(tmp, "Horizontal", 10) == 0)
 	    local_flags |= HIDE_H;
-	  else if (mystrncasecmp(tmp, "Vertical", 8) == 0)
+	  else if (strncasecmp(tmp, "Vertical", 8) == 0)
 	    local_flags |= HIDE_V;
-	}else if (mystrncasecmp(tline,CatString3("*",MyName,
+	}else if (strncasecmp(tline,CatString3("*",MyName,
 					      ""),Clength+1)==0)
 	  parseicon(&tline[Clength + 1]);
-	else if (mystrncasecmp(tline,"IconPath",8)==0)
+	else if (strncasecmp(tline,"IconPath",8)==0)
 	  CopyString(&iconPath,&tline[8]);
-	else if (mystrncasecmp(tline,"PixmapPath",10)==0)
+	else if (strncasecmp(tline,"PixmapPath",10)==0)
 	  CopyString(&pixmapPath,&tline[10]);
-	else if (mystrncasecmp(tline,"ClickTime",9)==0)
+	else if (strncasecmp(tline,"ClickTime",9)==0)
 	  ClickTime = atoi(&tline[9]);
-	else if (mystrncasecmp(tline,"ColorLimit",10)==0) {
+	else if (strncasecmp(tline,"ColorLimit",10)==0) {
 	  save_color_limit = atoi(&tline[10]);
         }
       }
@@ -1655,22 +1655,22 @@ void parseplacement(char *tline)
 
   sscanf(tline, "%s %s", p, s);
   
-  if (mystrncasecmp(p, "Left", 4) == 0)
+  if (strncasecmp(p, "Left", 4) == 0)
     primary = LEFT;
-  else if (mystrncasecmp(p, "Right", 5) == 0)
+  else if (strncasecmp(p, "Right", 5) == 0)
     primary = RIGHT;	
-  else if (mystrncasecmp(p, "Top", 3) == 0)
+  else if (strncasecmp(p, "Top", 3) == 0)
     primary = TOP;
-  else if (mystrncasecmp(p, "Bottom", 6) == 0)
+  else if (strncasecmp(p, "Bottom", 6) == 0)
     primary = BOTTOM;
 
-  if (mystrncasecmp(s, "Left", 4) == 0)
+  if (strncasecmp(s, "Left", 4) == 0)
     secondary = LEFT;
-  else if (mystrncasecmp(s, "Right", 5) == 0)
+  else if (strncasecmp(s, "Right", 5) == 0)
     secondary = RIGHT;	
-  else if (mystrncasecmp(s, "Top", 3) == 0)
+  else if (strncasecmp(s, "Top", 3) == 0)
     secondary = TOP;
-  else if (mystrncasecmp(s, "Bottom", 6) == 0)
+  else if (strncasecmp(s, "Bottom", 6) == 0)
     secondary = BOTTOM;
 }
 
@@ -1691,11 +1691,11 @@ void parsemouse(char *tline)
   end = tline;
   while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
     end++;
-  if (mystrncasecmp(start, "1", 1) == 0)
+  if (strncasecmp(start, "1", 1) == 0)
     f->mouse = Button1;
-  else if (mystrncasecmp(start, "2", 1) == 0)
+  else if (strncasecmp(start, "2", 1) == 0)
     f->mouse = Button2;
-  else if (mystrncasecmp(start, "3", 1) == 0)
+  else if (strncasecmp(start, "3", 1) == 0)
     f->mouse = Button3;
   /* click or doubleclick */
   tline = end;
@@ -1706,9 +1706,9 @@ void parsemouse(char *tline)
   end = tline;
   while((!isspace(*end))&&(*end!='\n')&&(*end!=0))
     end++;
-  if (mystrncasecmp(start, "Click", 5) == 0)
+  if (strncasecmp(start, "Click", 5) == 0)
     f->type = CLICK;
-  else if (mystrncasecmp(start, "DoubleClick", 11) == 0)
+  else if (strncasecmp(start, "DoubleClick", 11) == 0)
     f->type = DOUBLE_CLICK;
 
   /* actions */
@@ -2535,7 +2535,7 @@ Bool IsClick(int x,int y,unsigned EndMask, XEvent *d)
         (x - xcurrent < 5)&&(x - xcurrent > -5)&&
         (y - ycurrent < 5)&&(y - ycurrent > -5))
     {
-      sleep_a_little(10000);
+      usleep(10000);
       total+=10;
       if(XCheckMaskEvent (dpy,EndMask, d))
 	return True;

@@ -426,7 +426,7 @@ XErrorHandler myErrorHandler(Display *dpy, XErrorEvent *event)
 /**
 *** main()
 **/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *display_name = NULL;
   int i;
@@ -737,8 +737,8 @@ void Loop(void)
 	    RedrawButton(b,0);
 	    if(!(act=GetButtonAction(b,Event.xbutton.button)))
 	      act=GetButtonAction(b,0);
-	    if(mystrncasecmp(act,"popup",5)!=0)
-	    { if (mystrncasecmp(act, "panel", 5) == 0)
+	    if(strncasecmp(act,"popup",5)!=0)
+	    { if (strncasecmp(act, "panel", 5) == 0)
                 Slide(seekpanel(b), b);
 	      break;
             }
@@ -763,7 +763,7 @@ void Loop(void)
 	      act=GetButtonAction(b,0);
 	    if(b && b==CurrentButton && act)
 	      {
-		if(mystrncasecmp(act,"Exec",4)==0)
+		if(strncasecmp(act,"Exec",4)==0)
 		  {
                     /* close all subpanels */
                     PanelIndex = MainPanel->next;
@@ -804,11 +804,11 @@ void Loop(void)
 		    MySendText(fd,tmp,0);
 		    free(tmp);
 		  }
-		else if(mystrncasecmp(act,"DumpButtons",11)==0)
+		else if(strncasecmp(act,"DumpButtons",11)==0)
 		  DumpButtons(UberButton);
-		else if(mystrncasecmp(act,"SaveButtons",11)==0)
+		else if(strncasecmp(act,"SaveButtons",11)==0)
 		  SaveButtons(UberButton);
-		else if(mystrncasecmp(act,"panel",5))
+		else if(strncasecmp(act,"panel",5))
 		  MySendText(fd,act,0);
 	      }
 
@@ -1002,7 +1002,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
       fprintf(stderr,", font \"%s\"",b->font_string);
 #     endif
 
-      if(mystrncasecmp(b->font_string,"none",4)==0)
+      if(strncasecmp(b->font_string,"none",4)==0)
 	b->font=NULL;
       else if(!(b->font=XLoadQueryFont(Dpy,b->font_string)))
 	{
@@ -1017,7 +1017,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 #     ifdef DEBUG_LOADDATA
       fprintf(stderr,", font2 \"%s\"",b->c->font_string);
 #     endif
-      if(mystrncasecmp(b->c->font_string,"none",4)==0)
+      if(strncasecmp(b->c->font_string,"none",4)==0)
 	b->c->font=NULL;
       else if(!(b->c->font=XLoadQueryFont(Dpy,b->c->font_string)))
 	{

@@ -102,7 +102,7 @@ PagerStringList string_list = { NULL, 0, NULL, NULL };
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s, *cptr;
   char *display_name = NULL;
@@ -1069,7 +1069,7 @@ void ParseOptions(void)
       else if (StrEquals(resource, "Font"))
 	{
 	  CopyString(&font_string,arg1);
-	  if(mystrncasecmp(font_string,"none",4) == 0)
+	  if(strncasecmp(font_string,"none",4) == 0)
 	    uselabel = 0;
 	}
       else if (StrEquals(resource, "Fore"))
@@ -1145,7 +1145,7 @@ void ParseOptions(void)
       else if (StrEquals(resource, "SmallFont"))
 	{
 	  CopyString(&smallFont,arg1);
-	  if(mystrncasecmp(smallFont,"none",4) == 0)
+	  if(strncasecmp(smallFont,"none",4) == 0)
             {
               free(smallFont);
               smallFont = NULL;

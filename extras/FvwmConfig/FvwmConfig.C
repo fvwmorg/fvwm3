@@ -11,8 +11,9 @@
 #include "WinButton.h"
 #include "WinInput.h"
 #include "WinColorSelector.h"
+
 extern "C" {
-#include "../../libs/fvwmlib.h"
+#include "fvwmlib.h"
 }
 #include "../../fvwm/module.h"
 
@@ -571,7 +572,3 @@ int main(int argc, char **argv)
     }
   return 0;
 }
-
-
-
-  

@@ -41,7 +41,7 @@ Bool IsClick(int x,int y,unsigned EndMask, XEvent *d)
         (y - ycurrent < 3)&&(y - ycurrent > -3)&&
 	((lastTimestamp - t0) < Scr.ClickTime))
     {
-      sleep_a_little(20000);
+      usleep(20000);
       total+=20;
       if(XCheckMaskEvent (dpy,EndMask, d))
 	{

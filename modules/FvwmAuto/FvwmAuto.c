@@ -22,7 +22,8 @@
 #define FALSE 
 
 #include "config.h"
-#ifdef ISC
+
+#if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif 
 
@@ -32,9 +33,11 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -58,13 +61,6 @@ void DeadPipe(int nonsense)
     exit(0);
 }
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
 
 /***********************************************************************
  *
@@ -72,7 +68,7 @@ void DeadPipe(int nonsense)
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     char      	   *enter_fn="Raise",	/* default */
                    *leave_fn=NULL,
@@ -176,6 +172,8 @@ void main(int argc, char **argv)
 	    last_win = focus_win;	/* switch to wait mode again */
 	}
     }
+    return 0;
 }
+
 
 

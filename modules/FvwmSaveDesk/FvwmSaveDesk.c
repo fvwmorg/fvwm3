@@ -62,7 +62,7 @@ long CurDesk = 1;   /* actual Desktop while being called */
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
   char *display_name = NULL;

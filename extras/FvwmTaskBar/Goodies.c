@@ -1,3 +1,6 @@
+#include "config.h"
+#include "fvwmlib.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -52,36 +55,36 @@ TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, NULL, None };
 
 /* Parse 'goodies' specific resources */
 void GoodiesParseConfig(char *tline, char *Module) {
-  if(mystrncasecmp(tline,CatString3(Module, "BellVolume",""),
+  if(strncasecmp(tline,CatString3(Module, "BellVolume",""),
 				Clength+10)==0) {
     BellVolume = atoi(&tline[Clength+11]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "Mailbox",""),
+  } else if(strncasecmp(tline,CatString3(Module, "Mailbox",""),
 				Clength+11)==0) {
-    if (mystrncasecmp(&tline[Clength+11], "None") == 0) {
+    if (strncasecmp(&tline[Clength+11], "None", 4) == 0) {
       NoMailCheck = True;
     } else {
       UpdateString(&mailpath, &tline[Clength+11]); 
     }
-  } else if(mystrncasecmp(tline,CatString3(Module, "ClockFormat",""),
+  } else if(strncasecmp(tline,CatString3(Module, "ClockFormat",""),
 			  Clength+11)==0) {
     UpdateString(&clockfmt, &tline[Clength+12]);
     clockfmt[strlen(clockfmt)-1] = 0;
-  } else if(mystrncasecmp(tline, CatString3(Module, "StatusFont",""),
+  } else if(strncasecmp(tline, CatString3(Module, "StatusFont",""),
                           Clength+10)==0) {
     CopyString(&statusfont_string,&tline[Clength+11]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "TipsFore",""),
+  } else if(strncasecmp(tline,CatString3(Module, "TipsFore",""),
                                Clength+8)==0) {
     CopyString(&DateFore, &tline[Clength+9]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "TipsBack",""),
+  } else if(strncasecmp(tline,CatString3(Module, "TipsBack",""),
                                Clength+8)==0) {
     CopyString(&DateBack, &tline[Clength+9]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "MailCommand",""),
+  } else if(strncasecmp(tline,CatString3(Module, "MailCommand",""),
                                Clength+11)==0) {
     CopyString(&MailCmd, &tline[Clength+12]);
-  } else if(mystrncasecmp(tline,CatString3(Module, "IgnoreOldMail",""),
+  } else if(strncasecmp(tline,CatString3(Module, "IgnoreOldMail",""),
                                Clength+13)==0) {
     IgnoreOldMail = True;
-  } else if(mystrncasecmp(tline,CatString3(Module, "ShowTips",""),
+  } else if(strncasecmp(tline,CatString3(Module, "ShowTips",""),
                                Clength+8)==0) {
     ShowTips = True;
   }

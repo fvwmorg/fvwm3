@@ -79,7 +79,7 @@ pid_t spawn_xtee(void)
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
 

@@ -6,7 +6,7 @@
 
 #include "types.h"
 
-#ifdef DEBUG			/* For debugging */
+#ifdef MEMDEBUG			/* For debugging */
 #include <unchecked.h>
 #endif
 
@@ -19,7 +19,7 @@ extern char **TabVVar;			/* Tableau des variables du sript */
 extern int TabIdObj[101];
 extern Bloc **TabIObj;
 extern CaseObj *TabCObj;
-#ifdef DEBUG
+#ifdef MEMDEBUG
 extern int __bounds_debug_no_checking;
 #endif
 
@@ -105,12 +105,12 @@ void ParseOptions(void)
   GetConfigLine(fd,&tline);
   while(tline != (char *)0)
     {
-      if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"PixmapPath",10)==0))
+      if((strlen(&tline[0])>1)&&(strncasecmp(tline,"PixmapPath",10)==0))
       {
 	CopyString(&pixmapPath,&tline[10]);
       }
       
-      if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"*FvwmScriptPath",15)==0))
+      if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*FvwmScriptPath",15)==0))
       {
 	CopyString(&ScriptPath,&tline[15]);
       }
@@ -127,7 +127,7 @@ void Xinit(int IsFather)
  int i=16;
 
  /* Connextion au serveur X */
-#ifdef DEBUG
+#ifdef MEMDEBUG
  __bounds_debug_no_checking=True;
 #endif
 
@@ -138,7 +138,7 @@ void Xinit(int IsFather)
   exit(1);
  }
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
  __bounds_debug_no_checking=False;
 #endif
 
@@ -688,7 +688,7 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
 }
 
 /* main procedure */
-void main (int argc, char **argv)
+int main (int argc, char **argv)
 {
   int IsFather;
   int i;

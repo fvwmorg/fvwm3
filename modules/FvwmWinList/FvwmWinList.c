@@ -136,7 +136,7 @@ int ItemCountD(List *list )
     Based on main() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
 
@@ -164,7 +164,7 @@ void main(int argc, char **argv)
   }
 
 
-  if ((argc==7)&&(!mystrcasecmp(argv[6],"Transient"))) Transient=1;
+  if ((argc==7)&&(!strcasecmp(argv[6],"Transient"))) Transient=1;
 
   Fvwm_fd[0] = atoi(argv[1]);
   Fvwm_fd[1] = atoi(argv[2]);
@@ -535,41 +535,41 @@ void ParseConfig()
     {
       if(strlen(tline)>1) 
 	{
-	  if(mystrncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
+	  if(strncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
 	    CopyString(&font_string,&tline[Clength+4]);
-	  else if(mystrncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
+	  else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
 	    CopyString(&ForeColor[0],&tline[Clength+4]);
-	  else if(mystrncasecmp(tline,CatString3(Module,"IconFore",""), Clength+8)==0)
+	  else if(strncasecmp(tline,CatString3(Module,"IconFore",""), Clength+8)==0)
 	    CopyString(&ForeColor[1],&tline[Clength+8]);
-	  else if(mystrncasecmp(tline,CatString3(Module,"FocusFore",""), Clength+9)==0)
+	  else if(strncasecmp(tline,CatString3(Module,"FocusFore",""), Clength+9)==0)
 	    CopyString(&ForeColor[2],&tline[Clength+9]);
-	  else if(mystrncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0)
+	  else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0)
 	    CopyString(&geometry,&tline[Clength+8]);
-	  else if(mystrncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
+	  else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
 	    CopyString(&BackColor[0],&tline[Clength+4]);
-	  else if(mystrncasecmp(tline,CatString3(Module,"IconBack",""), Clength+8)==0)
+	  else if(strncasecmp(tline,CatString3(Module,"IconBack",""), Clength+8)==0)
 	    CopyString(&BackColor[1],&tline[Clength+8]);
-	  else if(mystrncasecmp(tline,CatString3(Module,"FocusBack",""), Clength+9)==0)
+	  else if(strncasecmp(tline,CatString3(Module,"FocusBack",""), Clength+9)==0)
 	    CopyString(&BackColor[2],&tline[Clength+9]);
-	  else if(mystrncasecmp(tline,CatString3(Module, "NoAnchor",""),
+	  else if(strncasecmp(tline,CatString3(Module, "NoAnchor",""),
 				Clength+8)==0) Anchor=0;
-	  else if(mystrncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
+	  else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
 	    LinkAction(&tline[Clength+6]);
-	  else if(mystrncasecmp(tline,CatString3(Module, "UseSkipList",""),
+	  else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
 				Clength+11)==0) UseSkipList=1;
-	  else if(mystrncasecmp(tline,CatString3(Module, "UseIconNames",""),
+	  else if(strncasecmp(tline,CatString3(Module, "UseIconNames",""),
 				Clength+12)==0) UseIconNames=1;
-	  else if(mystrncasecmp(tline,CatString3(Module, "ShowCurrentDesk",""),
+	  else if(strncasecmp(tline,CatString3(Module, "ShowCurrentDesk",""),
 				Clength+15)==0) ShowCurrentDesk=1;
-	  else if(mystrncasecmp(tline,CatString3(Module, "LeftJustify",""),
+	  else if(strncasecmp(tline,CatString3(Module, "LeftJustify",""),
 				Clength+11)==0) LeftJustify=1;
-	  else if(mystrncasecmp(tline,CatString3(Module, "TruncateLeft",""),
+	  else if(strncasecmp(tline,CatString3(Module, "TruncateLeft",""),
 				Clength+12)==0) TruncateLeft=1;
-	  else if(mystrncasecmp(tline,CatString3(Module, "TruncateRight",""),
+	  else if(strncasecmp(tline,CatString3(Module, "TruncateRight",""),
 				Clength+13)==0) TruncateLeft=0;
-          else if(mystrncasecmp(tline,CatString3(Module, "MinWidth",""),
+          else if(strncasecmp(tline,CatString3(Module, "MinWidth",""),
                                 Clength+8)==0) MinWidth=atoi(&tline[Clength+8]);
-          else if(mystrncasecmp(tline,CatString3(Module, "MaxWidth",""),
+          else if(strncasecmp(tline,CatString3(Module, "MaxWidth",""),
                                 Clength+8)==0) MaxWidth=atoi(&tline[Clength+8]);
 	}
       GetConfigLine(Fvwm_fd,&tline);
@@ -790,13 +790,13 @@ void LinkAction(char *string)
 char *temp;
   temp=string;
   while(isspace(*temp)) temp++;
-  if(mystrncasecmp(temp, "Click1", 6)==0)
+  if(strncasecmp(temp, "Click1", 6)==0)
     CopyString(&ClickAction[0],&temp[6]);
-  else if(mystrncasecmp(temp, "Click2", 6)==0)
+  else if(strncasecmp(temp, "Click2", 6)==0)
     CopyString(&ClickAction[1],&temp[6]);
-  else if(mystrncasecmp(temp, "Click3", 6)==0)
+  else if(strncasecmp(temp, "Click3", 6)==0)
     CopyString(&ClickAction[2],&temp[6]);
-  else if(mystrncasecmp(temp, "Enter", 5)==0)
+  else if(strncasecmp(temp, "Enter", 5)==0)
     CopyString(&EnterAction,&temp[5]);
 }
 

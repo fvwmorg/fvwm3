@@ -39,7 +39,8 @@
 #define PROP_SIZE 1024
 
 #include "config.h"
-#ifdef ISC
+
+#if HAVE_SYS_BSDTYPES
 #include <sys/bsdtypes.h> /* Saul */
 #endif 
 
@@ -50,7 +51,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -58,7 +59,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include "../../libs/fvwmlib.h"     
+#include "fvwmlib.h"     
 #include "../../fvwm/module.h"
 
 char *MyName;
@@ -142,7 +143,7 @@ void Loop(int *fvwmfd){
 }
 
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *temp, *s;
   FILE *file;

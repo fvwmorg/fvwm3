@@ -395,7 +395,7 @@ char *GetConfigLine(char *filename, char *match)
 
 void DeadPipe(int sig) { exit(0); }
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 #ifdef USERC
     char match[128];

@@ -73,7 +73,6 @@ MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
-XPMREDUCE = @XPMREDUCE@
 XPMROOT = @XPMROOT@
 readline_CFLAGS = @readline_CFLAGS@
 readline_LIBS = @readline_LIBS@
@@ -83,12 +82,19 @@ socket_LIBS = @socket_LIBS@
 xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
-EXTRA_DIST = color_combos error_codes fvwm-2.xx.lsm fvwm.lsm m4_hacks \
-	   modules.css modules.html modules.tex
+EXTRA_DIST = color_combos error_codes fvwm-2.xx.lsm fvwm.lsm \
+	   m4_hacks black-stone1.jpg fvwm.gif \
+	   txt2html.sh $(HTML)
+
+HTML = docs.html download.html features.html ftp.html index.html \
+     links.html mailinglist.html mod_changes.html mod_concept.html \
+     mod_f2m_communication.html mod_initialization.html \
+     mod_m2f_communication.html mod_security.html modules.html \
+     version.html
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-DIST_COMMON =  Makefile.am Makefile.in
+DIST_COMMON =  README ChangeLog Makefile.am Makefile.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -99,7 +105,7 @@ all: Makefile
 
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -118,7 +124,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign docs/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu docs/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

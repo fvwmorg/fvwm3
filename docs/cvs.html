@@ -30,11 +30,14 @@ that indicates it worked.
 
 Then you can checkout the latest source code with:
 <pre><font color="yellow">
-cvs -z3 -d :pserver:dane@cvs.hpc.uh.edu:/home/cvs/fvwm checkout fvwm
+cvs -z3 -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm checkout fvwm
 </pre></font>
 
 This creates a "fvwm" directory in your current directory.  Under the
 "fvwm" directory you will find the current main branch source code.
+<b>Note:</b> the state of this code fluctuates wildly.  It will
+contain bugs, maybe ones that crash the program; it may not even
+compile for you.  Consider it alpha-quality code.
 
 <H2> <font color="turquoise">Branches</font></h2>
 You can see branches off the main branch by using the "status -v" command:
@@ -52,7 +55,7 @@ tree from the very beginning.  The "README" file is always a good bet.
 To retrieve a branch, you can do the "checkout" shown above with the "-r branch_name"
 argument:
 <pre><font color="yellow">
-cvs -z3 -d :pserver:dane@cvs.hpc.uh.edu:/home/cvs/fvwm checkout -r branch_name fvwm
+cvs -z3 -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm checkout -r branch_name fvwm
 </pre></font>
 
 <H2> <font color="turquoise">Getting Updates</font></h2>
@@ -93,7 +96,8 @@ The latter can be obtained with the following Perl snippet:
 Change 'yourpass' to whatever you want your password to be.
 
 Once you have update access, re-do the "login" command above using your
-CVS user ID and and password, and you are on your way.
+CVS user ID in place of 'anonymous', and your password in place of
+'guest', and you are on your way.
 
 <H2> <font color="turquoise">Starting a Project</font></h2>
 Discuss your ideas on the workers list before you start.

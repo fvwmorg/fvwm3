@@ -1572,7 +1572,7 @@ void MoveWindow(XEvent *Event)
       if(Scr.CurrentDesk == t->desk)
 	{
           XSync(dpy,0);
-          sleep_a_little(5000);
+          usleep(5000);
           XSync(dpy,0);
 	  if(t->flags & ICONIFIED)
 	    XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time); 

@@ -18,10 +18,8 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#ifdef NONONO
-#include <fvwm/fvwmlib.h>
-#endif
-#include "../../fvwm/fvwm.h"
+#include "config.h"
+#include "fvwm/fvwm.h"
 
 #define F_SWALLOWED      1 
 #define F_NOT_SWALLOWED  2
@@ -112,11 +110,3 @@ void PurgeConfigEvents(void);
 void Swallow(unsigned long *body);
 
 XErrorHandler ErrorHandler(Display *d, XErrorEvent *event);
-
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */

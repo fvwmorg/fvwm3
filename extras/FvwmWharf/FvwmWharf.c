@@ -191,7 +191,7 @@ void FindLockMods(void);
  *
  ***********************************************************************
  */
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   char *display_name = NULL;
   int i,j;
@@ -615,7 +615,7 @@ void Loop(void)
                       RedrawPushed(CurrentWin, i, j);
                     }
 		}
-	      if (mystrncasecmp(Buttons[CurrentButton].action,"Folder",6)==0) {
+	      if (strncasecmp(Buttons[CurrentButton].action,"Folder",6)==0) {
                 Window junk;
                 int junk2,junk3,junk4,junk5;
                 XGetGeometry(dpy,main_win,&junk,&x,&y,
@@ -707,7 +707,7 @@ else
 		    SendInfo(fd,(char *)Command,0); 
 		    free(Command);
 		    if (Pushable) {
-			sleep_a_little(50000);
+			usleep(50000);
 			XClearWindow(dpy,Buttons[dummy].IconWin);
 			RedrawUnpushedOutline(CurrentWin, dummy_y, dummy_x);
 		    }
@@ -767,7 +767,7 @@ else
 		  t = time( 0);
 		  bl = -1;
 		  tl = -1;
-		  if(mystrncasecmp(Buttons[CurrentButton].action,"Folder",6)!=0)
+		  if(strncasecmp(Buttons[CurrentButton].action,"Folder",6)!=0)
 		    {
 		      if (LastMapped != -1 && CurrentWin != &main_win)
 			{
@@ -778,7 +778,7 @@ else
 		      SendInfo(fd,Buttons[CurrentButton].action,0);
 		    }		  
 		  if((Buttons[CurrentButton].action)&&
-		     (mystrncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
+		     (strncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
 		    {  
 		      i=4;
 		      while((Buttons[CurrentButton].action[i] != 0)&&
@@ -885,7 +885,7 @@ void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 	XMapWindow(dpy, win);
 	for(cw=isize;cw<=w;cw+=winc) {
 	    cx -= winc;
-	    sleep_a_little(ANIM_DELAY/2);
+	    usleep(ANIM_DELAY/2);
 	    XMoveResizeWindow(dpy,win,cx,y, cw,h);
 	    XSync(dpy,0);
 	}
@@ -894,7 +894,7 @@ void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 	XMoveResizeWindow(dpy,win,x,y, 1, h);
 	XMapWindow(dpy, win);
 	for(cw=isize;cw<=w;cw+=winc) {
-	    sleep_a_little(ANIM_DELAY/2);
+	    usleep(ANIM_DELAY/2);
 	    XMoveResizeWindow(dpy,win,x,y, cw,h);
 	    XSync(dpy,0);
 	}
@@ -905,7 +905,7 @@ void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 	XMapWindow(dpy, win);
 	for(ch=isize;ch<=h;ch+=hinc) {
 	    cy -= hinc;
-	    sleep_a_little(ANIM_DELAY/2);
+	    usleep(ANIM_DELAY/2);
 	    XMoveResizeWindow(dpy,win,x,cy, w, ch);
 	    XSync(dpy,0);
 	}
@@ -914,7 +914,7 @@ void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 	XMoveResizeWindow(dpy,win,x,y, w, 1);
 	XMapWindow(dpy, win);
 	for(ch=isize;ch<=h;ch+=hinc) {
-	    sleep_a_little(ANIM_DELAY/2);
+	    usleep(ANIM_DELAY/2);
 	    XMoveResizeWindow(dpy,win,x,y, w, ch);
 	    XSync(dpy,0);
 	}
@@ -975,7 +975,7 @@ void CloseFolder(int folder)
 	for(cw=w;cw >= fsize; cw-=winc) {
 	    XMoveResizeWindow(dpy,win,cx,y, cw,h);
 	    XSync(dpy,0);
-	    sleep_a_little(ANIM_DELAY);
+	    usleep(ANIM_DELAY);
 	    cx += winc;
 	}
 	break;
@@ -983,7 +983,7 @@ void CloseFolder(int folder)
 	for(cw=w;cw >= fsize; cw-=winc) {
 	    XMoveResizeWindow(dpy,win,x,y, cw,h);
 	    XSync(dpy,0);
-	    sleep_a_little(ANIM_DELAY);
+	    usleep(ANIM_DELAY);
 	}	
 	break;
      case DIR_TOUP:
@@ -991,7 +991,7 @@ void CloseFolder(int folder)
 	for(ch=h;ch >= fsize; ch-=hinc) {
 	    XMoveResizeWindow(dpy,win,x,cy, w,ch);
 	    XSync(dpy,0);
-	    sleep_a_little(ANIM_DELAY);
+	    usleep(ANIM_DELAY);
 	    cy += hinc;
 	}	
 	break;
@@ -999,7 +999,7 @@ void CloseFolder(int folder)
 	for(ch=h;ch >= fsize; ch-=hinc) {
 	    XMoveResizeWindow(dpy,win,x,y, w, ch);
 	    XSync(dpy,0);
-	    sleep_a_little(ANIM_DELAY);
+	    usleep(ANIM_DELAY);
 	}	
 	break;	
      default:
@@ -1538,7 +1538,7 @@ void ParseOptions(char *filename)
       while(isspace(*tline))tline++;
 
       if((strlen(&tline[0])>1)&&
-	 (mystrncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
+	 (strncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
 	{
 	  tmp = &tline[Clength+9];
 	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
@@ -1558,7 +1558,7 @@ void ParseOptions(char *filename)
 	    y = g_y;
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
 	{
 	  len=sscanf(&tline[Clength+5],"%d",&num_rows);
 	  if(len < 1)
@@ -1566,7 +1566,7 @@ void ParseOptions(char *filename)
             ROWS = TRUE;
 	}
       else if((strlen(&tline[0])>1)&&
-	      (mystrncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
+	      (strncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
 	{
 	  len=sscanf(&tline[Clength+8],"%d",&num_columns);
 	  if(len < 1)
@@ -1574,38 +1574,38 @@ void ParseOptions(char *filename)
             ROWS = FALSE;
 	}
       else if((strlen(&tline[0])>1)&&
-              (mystrncasecmp(tline,CatString3("*",MyName,"NoPush"),Clength+5)==0))
+              (strncasecmp(tline,CatString3("*",MyName,"NoPush"),Clength+5)==0))
         {
 	  Pushable = 0;
         } else if((strlen(&tline[0])>1)&&
-              (mystrncasecmp(tline,CatString3("*",MyName,"FullPush"),Clength+9)==0))
+              (strncasecmp(tline,CatString3("*",MyName,"FullPush"),Clength+9)==0))
         {
 	  PushStyle = 1;
         } else if((strlen(&tline[0])>1)&&
-              (mystrncasecmp(tline,CatString3("*",MyName,"NoBorder"),Clength+9)==0))
+              (strncasecmp(tline,CatString3("*",MyName,"NoBorder"),Clength+9)==0))
         {
 	  NoBorder = 1;
         } else if ((strlen(&tline[0])>1)
-	  &&(mystrncasecmp(tline,CatString3("*",MyName,"ForceSize"),Clength+10)==0)) {
+	  &&(strncasecmp(tline,CatString3("*",MyName,"ForceSize"),Clength+10)==0)) {
 	    ForceSize = 1;
         } else if ((strlen(&tline[0])>1)
-	  &&(mystrncasecmp(tline,CatString3("*",MyName,"TextureType"),Clength+12)==0)) {
+	  &&(strncasecmp(tline,CatString3("*",MyName,"TextureType"),Clength+12)==0)) {
 	    if (sscanf(&tline[Clength+12],"%d",&TextureType)<1)
 	      TextureType = TEXTURE_BUILTIN;
 	} else if ((strlen(&tline[0])>1)
-	  &&(mystrncasecmp(tline,CatString3("*",MyName,"MaxColors"),Clength+10)==0)) {
+	  &&(strncasecmp(tline,CatString3("*",MyName,"MaxColors"),Clength+10)==0)) {
 
 	    if (sscanf(&tline[Clength+10],"%d",&MaxColors)<1)
 	      MaxColors = 16;
 	} else if ((strlen(&tline[0])>1)
-	  &&(mystrncasecmp(tline,CatString3("*",MyName,"BgColor"),Clength+8)==0)) {
+	  &&(strncasecmp(tline,CatString3("*",MyName,"BgColor"),Clength+8)==0)) {
 	    char *tmp;
 	    tmp=safemalloc(strlen(tline));
 	    sscanf(&tline[Clength+8],"%s",tmp);
 	    BgColor=GetColor(tmp);
 	    free(tmp);
 	} else if ((strlen(&tline[0])>1)
-	  &&(mystrncasecmp(tline,CatString3("*",MyName,"TextureColor"),Clength+13)==0)) {
+	  &&(strncasecmp(tline,CatString3("*",MyName,"TextureColor"),Clength+13)==0)) {
 	    char *c1, *c2;
 	    XColor color;
 	    XWindowAttributes attributes;
@@ -1644,33 +1644,33 @@ void ParseOptions(char *filename)
 	    free(c1);
 	    free(c2);
 	} else if ((strlen(&tline[0])>1)
-	  &&(mystrncasecmp(tline,CatString3("*",MyName,"Pixmap"),Clength+7)==0)) {
+	  &&(strncasecmp(tline,CatString3("*",MyName,"Pixmap"),Clength+7)==0)) {
 	    CopyString(&BgPixmapFile,&tline[Clength+7]);
 	} else if((strlen(&tline[0])>1)&&
-		  (mystrncasecmp(tline,CatString3("*",MyName,"AnimateMain"),Clength+12)==0))
+		  (strncasecmp(tline,CatString3("*",MyName,"AnimateMain"),Clength+12)==0))
         {
 	    AnimateMain = 1;
         }
 	else if((strlen(&tline[0])>1)&&
-		(mystrncasecmp(tline,CatString3("*",MyName,"Animate"),Clength+8)==0))
+		(strncasecmp(tline,CatString3("*",MyName,"Animate"),Clength+8)==0))
         {
 	    if ((tline[Clength+9]!='M') && (tline[Clength+9]!='m'))
 	      AnimationStyle = 1;
         }
 #ifdef ENABLE_SOUND	
 	else if((strlen(&tline[0])>1)&&
-		(mystrncasecmp(tline,CatString3("*",MyName,"Player"),Clength+7)==0))
+		(strncasecmp(tline,CatString3("*",MyName,"Player"),Clength+7)==0))
         {
 	    CopyString(&SoundPlayer, &tline[Clength+7]);
         } else if((strlen(&tline[0])>1)&&
-		(mystrncasecmp(tline,CatString3("*",MyName,"Sound"),Clength+6)==0))
+		(strncasecmp(tline,CatString3("*",MyName,"Sound"),Clength+6)==0))
         {
 	    bind_sound(&tline[Clength+6]);
 	    SoundActive = 1;
         }
 #endif	
 	 else if((strlen(&tline[0])>1)
-		  &&(mystrncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)
+		  &&(strncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)
 		  && (num_buttons < MAX_BUTTONS))
 	{
 	    /* check if this is a invalid option */
@@ -1679,20 +1679,20 @@ void ParseOptions(char *filename)
 	    else
 	      match_string(&tline[Clength+1]);
 	}
-      else if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"IconPath",8)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"IconPath",8)==0))
 	{
 	  CopyString(&iconPath,&tline[8]);
 	}
-      else if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"PixmapPath",10)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"PixmapPath",10)==0))
 	{
 	  CopyString(&pixmapPath,&tline[10]);
 	}
 #ifdef ENABLE_SOUND	
-      else if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"*AudioDir",9)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*AudioDir",9)==0))
 	{
 	  CopyString(&SoundPath,&tline[9]);
 	} 
-      else if((strlen(&tline[0])>1)&&(mystrncasecmp(tline,"ModulePath",11)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ModulePath",11)==0))
 	{
 	  CopyString(&ModulePath,&tline[11]);
 	}
@@ -1881,7 +1881,7 @@ void match_string(char *tline)
   while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
 #ifdef ENABLE_DND
-  if (mystrncasecmp(tline,"dropexec",8)==0) {
+  if (strncasecmp(tline,"dropexec",8)==0) {
       /* get command to execute for dropped stuff */
 
       if(TOTHEFOLDER==-1) {
@@ -1915,7 +1915,7 @@ void match_string(char *tline)
       ptr[len]=0;
   } else
 #endif        
-  if(mystrncasecmp(tline,"swallow",7)==0 || mystrncasecmp(tline,"maxswallow",10)==0)
+  if(strncasecmp(tline,"swallow",7)==0 || strncasecmp(tline,"maxswallow",10)==0)
     {
       /* Look for swallow "identifier", in which
 	 case Wharf spawns and gobbles up window */
@@ -1928,7 +1928,7 @@ void match_string(char *tline)
 	    (tline[i2] != '"'))
 	i2++;
       actual->maxsize =
-                 mystrncasecmp(tline,"maxswallow",10) == 0 ? 1 : 0;
+                 strncasecmp(tline,"maxswallow",10) == 0 ? 1 : 0;
       if(i2 - i >1)
 	{
 	  actual->hangon = safemalloc(i2-i);
@@ -1948,7 +1948,7 @@ void match_string(char *tline)
 	  len--;
 	}
       ptr = safemalloc(len+6);
-      if(mystrncasecmp(&tline[n],"Module",6)==0)
+      if(strncasecmp(&tline[n],"Module",6)==0)
 	{
 	  ptr[0] = 0;
           actual->module = 1;

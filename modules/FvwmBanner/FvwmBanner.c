@@ -50,15 +50,7 @@
 #include <X11/xpm.h>
 
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
 #include "../../libs/fvwmlib.h"     
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
 
 #include "../../icons/fvwm2_big.xpm"
 #if 0
@@ -228,7 +220,7 @@ int main(int argc, char **argv)
   XMapWindow(dpy,win);
   XSync(dpy,0);
 #if 0
-  sleep_a_little(timeout);
+  usleep(timeout);
 #else
   XSelectInput(dpy,win,ButtonReleaseMask);
   /* Display the window */
@@ -342,7 +334,7 @@ static void parseOptions (int fd[2])
   {
     if (strlen (tline) > 1)
     {
-      if (mystrncasecmp (tline,
+      if (strncasecmp (tline,
 			 CatString3 ("*", myName, "Pixmap"),
 			 clength + 7) ==0)
       {
@@ -357,14 +349,14 @@ static void parseOptions (int fd[2])
 	}
         continue;
       }
-      if (mystrncasecmp (tline,
+      if (strncasecmp (tline,
 			 CatString3 ("*", myName, "Timeout"),
 			 clength + 8) ==0)
       {
         timeout = atoi(&tline[clength+8]) * 1000000;
         continue;
       }
-      if (mystrncasecmp(tline, "PixmapPath",10)==0)
+      if (strncasecmp(tline, "PixmapPath",10)==0)
       {
         CopyString (&pixmapPath, &tline[10]);
         if (pixmapPath[0] == 0)

@@ -160,7 +160,7 @@ static struct functions func_config[] =
 /*
 ** do binary search on func list
 */
-static int func_comp(void *a, void *b)
+static int func_comp(const void *a, const void *b)
 {
   char *key=(char *)a;
   char *f=((struct functions *)b)->keyword;
@@ -283,7 +283,7 @@ int find_func_type(char *action)
     {
       int mlen = strlen(func_config[j].keyword);
       if((mlen == len)
-	 && (mystrncasecmp(action,func_config[j].keyword,mlen)==0))
+	 && (strncasecmp(action,func_config[j].keyword,mlen)==0))
       {
 	  matched=TRUE;
 	  /* found key word */

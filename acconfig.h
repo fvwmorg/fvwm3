@@ -110,9 +110,8 @@
  * "WindowShade" for more information.  */
 #undef WINDOWSHADE
 
-/* FVWM hack for inline keyword: obsoleted by autoconf */
-#define FVWM_INLINE inline
 
+@TOP@
 /*
 ** if you would like to see lots of debug messages from fvwm, for debugging
 ** purposes, uncomment the next line
@@ -125,3 +124,19 @@
 #   define DBUG(x,y) /* no messages */
 #endif
 
+
+@BOTTOM@
+
+#if STDC_HEADERS
+#  include <string.h>
+#else
+#  if ! HAVE_STRCHR
+#    define strchr index
+#    define strrchr rindex
+#  endif
+#endif
+
+#if ! HAVE_MEMCPY
+#  define memcpy(dest,src,len)  bcopy((src),(dest),(len))
+#  define memmove(dest,src,len) bcopy((src),(dest),(len))
+#endif

@@ -15,10 +15,12 @@
 #define XK_MISCELLANY
 #include <sys/types.h>
 #include <sys/time.h>
-#ifdef ISC
+
+#if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 

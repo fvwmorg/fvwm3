@@ -33,14 +33,18 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
-#ifdef ISC /* Saul */
+
+#if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
+
 #include <stdlib.h>
 
 #include "../../fvwm/module.h"
@@ -82,7 +86,7 @@ FILE*	logFile;
 /* #define LOGFILE "/tmp/FvwmBacker.log"*/
 
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 char *temp, *s;
 	char*	displayName = NULL;
@@ -314,7 +318,7 @@ void ParseConfig()
       {
 	if(strlen(tline)>1) 
 	  {
-	    if(mystrncasecmp(tline,line2,strlen(line2))==0)
+	    if(strncasecmp(tline,line2,strlen(line2))==0)
 	      AddCommand(&tline[strlen(line2)]);
 	  }
 	GetConfigLine(Fvwm_fd,&tline);

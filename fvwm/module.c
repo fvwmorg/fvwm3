@@ -23,10 +23,13 @@
 #include <X11/keysym.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#ifdef __STDC__
-#include <stdarg.h>                     /* for Broadcast_v (varargs) */
+
+#if HAVE_STDARG_H
+#  include <stdarg.h>                     /* for Broadcast_v (varargs) */
+#elif HAVE_VARARGS_H
+#  include <varargs.h>
 #else
-#include <varargs.h>
+#  error Need stdarg.h or varargs.h
 #endif
 
 #include "fvwm.h"
@@ -46,7 +49,7 @@ char **pipeName;
 unsigned long *PipeMask;
 struct queue_buff_struct **pipeQueue;
 
-FVWM_INLINE int PositiveWrite(int module, unsigned long *ptr, int size);
+inline int PositiveWrite(int module, unsigned long *ptr, int size);
 void DeleteQueueBuff(int module);
 void AddToQueue(int module, unsigned long *ptr, int size, int done);
 
@@ -314,19 +317,19 @@ int HandleModuleInput(Window w, int channel)
       extern int Context;
       FvwmWindow *tmp_win;
 
-      if(mystrncasecmp(text,"UNLOCK",6)==0) { /* synchronous response */
+      if(strncasecmp(text,"UNLOCK",6)==0) { /* synchronous response */
         return 66;
       }
       
       /* perhaps the module would like us to kill it? */
-      if(mystrncasecmp(text,"KillMe",6)==0) 
+      if(strncasecmp(text,"KillMe",6)==0) 
       {
         KillModule(channel,12);
         return 0;
       }
 
       /* If a module does XUngrabPointer(), it can now get proper Popups */
-      if(mystrncasecmp(text,"popup",5)==0)
+      if(strncasecmp(text,"popup",5)==0)
 	  Event.xany.type = ButtonPress;
       else
 	  Event.xany.type = ButtonRelease;
@@ -450,11 +453,13 @@ void Broadcast_v(unsigned long event_type, unsigned long num_datum,...) {
   body[1] = event_type;
   body[2] = num_datum+HEADER_SIZE;
   body[3] = lastTimestamp;    
-#ifdef __STDC__
+
+#if HAVE_STDARG_H
   va_start(ap,num_datum);               /* init va_list */
 #else
   va_start(ap);
-#endif
+#endif  
+
   for (i=HEADER_SIZE;i < num_datum+HEADER_SIZE; i++) {
     body[i] = va_arg(ap, u_long);       /* copy args */
   }
@@ -546,6 +551,7 @@ void SendName(int module, unsigned long event_type,
   body[HEADER_SIZE] = data1;
   body[HEADER_SIZE+1] = data2;
   body[HEADER_SIZE+2] = data3; 
+  body[l-1] = 0; /* Make sure the last bytes are initialized. */
   strcpy((char *)&body[HEADER_SIZE+3],name);
 
   PositiveWrite(module,(unsigned long *)body, l*sizeof(unsigned long));
@@ -684,7 +690,7 @@ void AddToQueue(int module, unsigned long *ptr, int size, int done)
   c->done = done;
   d = (unsigned long *)safemalloc(size);
   c->data = d;
-  memcpy(d,ptr,size);
+  memcpy((void*)d,(const void*)ptr,size);
 
   e = pipeQueue[module];
   if(e == NULL)

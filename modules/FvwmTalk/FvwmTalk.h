@@ -1,4 +1,5 @@
-#include "../../libs/fvwmlib.h"     
+#include "fvwmlib.h"     
+
 #define ACTION1 1
 #define ACTION2 2
 #define ACTION3 4
@@ -26,12 +27,4 @@ void update_focus(struct list *l, unsigned long);
 void DeadPipe(int nonsense);
 void find_next_event_time(void);
 void process_message(unsigned long type,unsigned long *body);
-
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
 

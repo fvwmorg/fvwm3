@@ -141,21 +141,21 @@ int main(int argc, char **argv)
 
   for (i = 1; i < argc; i++) 
   {
-    if (mystrncasecmp(argv[i],"-debug",6)==0)
+    if (strncasecmp(argv[i],"-debug",6)==0)
     {
       debugging = True;
     }
-    else if (mystrncasecmp(argv[i],"-s",2)==0)
+    else if (strncasecmp(argv[i],"-s",2)==0)
     {
       single = True;
     }
-    else if (mystrncasecmp(argv[i],"-d",2)==0)
+    else if (strncasecmp(argv[i],"-d",2)==0)
     {
       if (++i >= argc)
         usage();
       display_name = argv[i];
     }
-    else if (mystrncasecmp(argv[i],"-f",2)==0)
+    else if (strncasecmp(argv[i],"-f",2)==0)
     {
       if (++i >= argc)
         usage();
@@ -172,7 +172,7 @@ int main(int argc, char **argv)
         fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
       }
     }
-    else if (mystrncasecmp(argv[i],"-cmd",4)==0)
+    else if (strncasecmp(argv[i],"-cmd",4)==0)
     {
       if (++i >= argc)
         usage();
@@ -186,22 +186,22 @@ int main(int argc, char **argv)
         fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
       }
     }
-    else if (mystrncasecmp(argv[i],"-outfile",8)==0)
+    else if (strncasecmp(argv[i],"-outfile",8)==0)
     {
       if (++i >= argc)
         usage();
       output_file = argv[i];
     }
-    else if (mystrncasecmp(argv[i],"-h",2)==0)
+    else if (strncasecmp(argv[i],"-h",2)==0)
     {
       usage();
       exit(0);
     }
-    else if (mystrncasecmp(argv[i],"-blackout",9)==0)
+    else if (strncasecmp(argv[i],"-blackout",9)==0)
     {
       Blackout = True;
     }
-    else if (mystrncasecmp(argv[i], "-version", 8) == 0)
+    else if (strncasecmp(argv[i], "-version", 8) == 0)
     {
       fvwm_msg(INFO,"main", "Fvwm Version %s compiled on %s at %s\n",
               VERSION,__DATE__,__TIME__);
@@ -299,7 +299,7 @@ int main(int argc, char **argv)
   if(strncmp(display_string,"DISPLAY=:",9)==0)
   {
     char client[MAXHOSTNAME], *rdisplay_string;
-    mygethostname(client,MAXHOSTNAME);
+    gethostname(client,MAXHOSTNAME);
     rdisplay_string = safemalloc(len+14 + strlen(client));
     sprintf(rdisplay_string,"HOSTDISPLAY=%s:%s",client,&display_string[9]);
     putenv(rdisplay_string);
@@ -307,7 +307,7 @@ int main(int argc, char **argv)
   else if(strncmp(display_string,"DISPLAY=unix:",13)==0)
   {
     char client[MAXHOSTNAME], *rdisplay_string;
-    mygethostname(client,MAXHOSTNAME);
+    gethostname(client,MAXHOSTNAME);
     rdisplay_string = safemalloc(len+14 + strlen(client));
     sprintf(rdisplay_string,"HOSTDISPLAY=%s:%s",client,
             &display_string[13]);
@@ -1096,6 +1096,7 @@ void InitFvwmDecor(FvwmDecor *fl)
     
     fl->HiReliefGC = NULL;
     fl->HiShadowGC = NULL;
+    fl->TitleHeight = 0;
 
 #ifdef USEDECOR
     fl->tag = NULL;

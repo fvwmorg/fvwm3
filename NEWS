@@ -1,5 +1,5 @@
 Changes in release 2.1.1
-
+* Official home page html added to docs directory.
 
 Changes in release 2.1.0
 * basic autoconfiguration support; see INSTALL.fvwm and INSTALL
@@ -11,7 +11,7 @@ Changes in release 2.1.0
 * FvwmCpp and FvwmM4 no longer define FVWMDIR variable; instead they
   define FVWM_MODULEDIR and FVWM_CONFIGDIR
 * FvwmAnimate added.
-* Official home page html added to docs directory.
+
 
 May 18, 1998
 

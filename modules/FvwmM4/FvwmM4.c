@@ -73,7 +73,7 @@ char *m4_endquote = "'";           /* Right quote characters for m4 */
  *	main - start of module
  *
  ***********************************************************************/
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   Display *dpy;			/* which display are we talking to */
   char *temp, *s;
@@ -127,40 +127,40 @@ void main(int argc, char **argv)
 
   for(i=6;i<argc;i++)
     {
-      if(mystrcasecmp(argv[i],"-m4-prefix") == 0)
+      if(strcasecmp(argv[i],"-m4-prefix") == 0)
 	{
 	  m4_prefix = TRUE;
 	}
-      else if(mystrcasecmp(argv[i],"-m4opt") == 0)
+      else if(strcasecmp(argv[i],"-m4opt") == 0)
 	{
 	  /* leaving this in just in case-- any option starting with '-'
  	     will get passed on to m4 anyway */
 	  strcat(m4_options, argv[++i]);
 	  strcat(m4_options, " ");	    
 	}
-      else if(mystrcasecmp(argv[i],"-m4-squote") == 0)
+      else if(strcasecmp(argv[i],"-m4-squote") == 0)
 	{
 	  m4_startquote = argv[++i];	  
 	  m4_default_quotes = 0;
 	}
-      else if(mystrcasecmp(argv[i],"-m4-equote") == 0)
+      else if(strcasecmp(argv[i],"-m4-equote") == 0)
 	{
 	  m4_endquote = argv[++i];
 	  m4_default_quotes = 0;
 	}
-      else if (mystrcasecmp(argv[i], "-m4prog") == 0)
+      else if (strcasecmp(argv[i], "-m4prog") == 0)
 	{
 	  m4_prog = argv[++i];
 	}
-      else if(mystrcasecmp(argv[i], "-outfile") == 0)
+      else if(strcasecmp(argv[i], "-outfile") == 0)
 	{
 	  strcpy(m4_outfile,argv[++i]);
 	}
-      else if(mystrcasecmp(argv[i], "-debug") == 0)
+      else if(strcasecmp(argv[i], "-debug") == 0)
 	{
 	  m4_debug = 1;
 	}
-      else if (mystrncasecmp(argv[i],"-",1) == 0)
+      else if (strncasecmp(argv[i],"-",1) == 0)
 	{
 	  /* pass on any other arguments starting with '-' to m4 */
 	  strcat(m4_options, argv[i]);
@@ -262,9 +262,9 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
     exit(0377);
   }
     
-  mygethostname(client,MAXHOSTNAME);
+  gethostname(client,MAXHOSTNAME);
   
-  mygetostype  (ostype, sizeof ostype);
+  getostype  (ostype, sizeof ostype);
   
   /* Change the quoting characters, if specified */
   

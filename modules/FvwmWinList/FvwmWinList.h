@@ -1,4 +1,4 @@
-#include "../../libs/fvwmlib.h"       
+#include "fvwmlib.h"       
 
 /* FvwmWinList Module for Fvwm. 
  *
@@ -102,11 +102,3 @@ void FvwmNameMessage(long *body);
 void SetMwmHints(unsigned int value,unsigned int funcs,unsigned int input);
 
 XErrorHandler ErrorHandler(Display *d, XErrorEvent *event);
-
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */

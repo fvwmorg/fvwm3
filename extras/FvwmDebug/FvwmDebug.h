@@ -1,4 +1,6 @@
-#include "../../libs/fvwmlib.h"     
+#include "config.h"
+#include "fvwmlib.h"
+
 /*************************************************************************
  *
  * Subroutine Prototypes
@@ -31,20 +33,18 @@ void list_res_name(unsigned long *body);
 void list_end(void);
 
 
-
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
 #ifdef HAVE_WAITPID
-#define ReapChildrenPid(pid) waitpid(pid, NULL, WNOHANG)
+#  define ReapChildrenPid(pid) waitpid(pid, NULL, WNOHANG)
+#elif HAVE_WAIT4
+#  define ReapChildrenPid(pid) wait4(pid, NULL, WNOHANG, NULL)
 #else
-#define ReapChildrenPid(pid) wait4(pid, NULL, WNOHANG, NULL)
+#  error One of waitpid or wait4 is needed.
 #endif
 
-#ifdef sony_news
-/* XXX: no pid_t defines */
-typedef int pid_t;
-/* XXX: emulate setvbuf() */
-#define setvbuf(a,b,c,d) setlinebuf(a)
+#if HAVE_SETVBUF
+#  if SETVBUF_REVERSED
+#    define setvbuf(stream,buf,mode,size) setvbuf(stream,mode,buf,size)
+#  endif
+#else
+#  define setvbuf(a,b,c,d) setlinebuf(a)
 #endif

@@ -46,7 +46,6 @@ char *safemalloc(int length);
 void DeadPipe(int nonsense);
 void process_message(unsigned long type,unsigned long *body);
 void GetTargetWindow(Window *app_win);
-void sleep_a_little(int n);
 void RedrawWindow(void);
 void change_window_name(char *str);
 Pixel GetColor(char *name);
@@ -64,10 +63,3 @@ void list_class(unsigned long *body);
 void list_res_name(unsigned long *body);
 void list_end(void);
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../fvwm/sun_headers.h"
-#endif
-
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../fvwm/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */

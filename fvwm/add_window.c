@@ -201,7 +201,7 @@ FvwmWindow *AddWindow(Window w)
   if (styles.Decor != NULL) {
       FvwmDecor *fl = &Scr.DefaultDecor;
       for (; fl; fl = fl->next)
-	  if (mystrcasecmp(styles.Decor,fl->tag)==0) {
+	  if (strcasecmp(styles.Decor,fl->tag)==0) {
 	      tmp_win->fl = fl;
 	      break;
 	  }

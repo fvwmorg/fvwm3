@@ -201,7 +201,7 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
 	XGrabServer(dpy);
 	XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
 	XFlush(dpy);
-	sleep_a_little(Animate.delay*1000);
+	usleep(Animate.delay*1000);
 	XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
 	XUngrabServer(dpy);
 	cx+=xstep;
@@ -269,7 +269,7 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
     XGrabServer(dpy);
     XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
     XFlush(dpy);
-    sleep_a_little(Animate.delay * 1000);
+    usleep(Animate.delay * 1000);
     XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
     XUngrabServer(dpy);
     cx += xstep;
@@ -331,7 +331,7 @@ void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int f
 	XGrabServer(dpy);
 	XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
 	XFlush(dpy);
-	sleep_a_little(Animate.delay * 1000);
+	usleep(Animate.delay * 1000);
 	XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
 	XUngrabServer(dpy);
 	cx += xstep;
@@ -369,7 +369,7 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
 	XGrabServer(dpy);
 	XDrawRectangle(dpy, root, DrawGC, (int)cx, (int)cy, (int)cw, (int)ch);
 	XFlush(dpy);
-	sleep_a_little(Animate.delay*1000);
+	usleep(Animate.delay*1000);
 	XDrawRectangle(dpy, root, DrawGC, (int)cx, (int)cy, (int)cw, (int)ch);
 	XUngrabServer(dpy);
 	cx+=xstep;
@@ -423,7 +423,7 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
 	    XDrawLine(dpy, root, DrawGC, (int) cx, ((int) cy + (int) ch), fx,
 			    (fy + fh));
 	    XFlush(dpy);
-	    sleep_a_little(Animate.delay);
+	    usleep(Animate.delay);
 	    XDrawRectangle(dpy, root, DrawGC, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
 	    XDrawRectangle(dpy, root, DrawGC, (int) fx, (int) fy, (int) fw,
@@ -457,7 +457,7 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
 	    XDrawLine(dpy, root, DrawGC, (int) cx, ((int) cy + (int) ch), x,
 			    (y + h));
 	    XFlush(dpy);
-	    sleep_a_little(Animate.delay);
+	    usleep(Animate.delay);
 	    XDrawRectangle(dpy, root, DrawGC, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
 	    XDrawRectangle(dpy, root, DrawGC, x, y, w, h);
@@ -585,7 +585,7 @@ ant_ctr %d\n",
       XDrawSegments(dpy, root, DrawGC, BEG.seg, 4);
       XFlush(dpy);
       if (ant_ctr == 0) {               /* only pause on draw cycle */
-        sleep_a_little(Animate.delay*1000);
+        usleep(Animate.delay*1000);
       }
       if (ants==0) {
         XDrawSegments(dpy, root, DrawGC, BEG.seg, 4);
@@ -636,7 +636,7 @@ static void AnimateClose(int x, int y, int w, int h)
 	for (i=h; i>=2; i-=step) {
 	    XDrawRectangle(dpy, root, DrawGC, x, y, w, i);
 	    XFlush(dpy);
-	    sleep_a_little(ANIM_DELAY2*600);
+	    usleep(ANIM_DELAY2*600);
 	    XDrawRectangle(dpy, root, DrawGC, x, y, w, i);
 	    y+=step/2;
 	}
@@ -649,11 +649,11 @@ static void AnimateClose(int x, int y, int w, int h)
     for (i=w; i>=0; i-=step) {
 	XDrawRectangle(dpy, root, DrawGC, x, y, i, 2);
 	XFlush(dpy);
-	sleep_a_little(ANIM_DELAY2*1000);
+	usleep(ANIM_DELAY2*1000);
 	XDrawRectangle(dpy, root, DrawGC, x, y, i, 2);
 	x+=step/2;
     }
-    sleep_a_little(100000);    
+    usleep(100000);    
     XFlush(dpy);
 }
 #endif
@@ -895,14 +895,14 @@ void ParseConfigLine(char *buf) {
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
   /* Search for MyName (normally *FvwmAnimate) */
-  if (mystrncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
+  if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
     myfprintf((stderr,"Found line for me: %s\n", buf));
     p = buf+MyNameLen;              /* starting point */
     q = NULL;
     if ((e = FindToken(p,table,char *))) { /* config option ? */
-      if ((mystrncasecmp(*e,"Stop",4) != 0)
-          && (mystrncasecmp(*e,"Custom",6) != 0)
-          && (mystrncasecmp(*e,"Save",4) != 0)) { /* no arg commands */
+      if ((strncasecmp(*e,"Stop",4) != 0)
+          && (strncasecmp(*e,"Custom",6) != 0)
+          && (strncasecmp(*e,"Save",4) != 0)) { /* no arg commands */
         p+=strlen(*e);		/* skip matched token */
         q=GetArgument(&p);
         if ((e!=table) && !q) {
@@ -942,9 +942,9 @@ void ParseConfigLine(char *buf) {
       case Effect_arg:                /* Effect */
       case Resize_arg:                /* -or - Resize */
         for (i=0; i < NUM_EFFECTS; i++) {
-          if (mystrncasecmp(q, effects[i].name, strlen(effects[i].name))==0
+          if (strncasecmp(q, effects[i].name, strlen(effects[i].name))==0
               || (effects[i].alias
-                  && mystrncasecmp(q, effects[i].alias,
+                  && strncasecmp(q, effects[i].alias,
                                    strlen(effects[i].alias))==0)) {
             Animate.resize = effects[i].function;
             break;

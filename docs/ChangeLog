@@ -1,3 +1,11 @@
+1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* cvs.html: Fixed the examples of anonymous CVS.  Added a note
+	that the head of the CVS tree is alpha code.
+
+	* Makefile.am: Fixed up the distributed-files list to include all
+	the HTML Dan added yesterday.
+
 1998-11-05  Dan Espen  <dane@mk.bellcore.com>
 
 	* txt2html.sh (outfile): Replaced txt2html.ksh with txt2html.sh.

@@ -238,29 +238,6 @@ static void skip_space (char **p)
     (*p)++;
 }
 
-static char *stripcpy(char *source)
-{
-  char *tmp,*ptr;
-  int len;
-
-  if(source == NULL)
-    return NULL;
-
-  while(isspace(*source))
-    source++;
-  len = strlen(source);
-  tmp = source + len -1;
-  while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=source))
-    {
-      tmp--;
-      len--;
-    }
-  ptr = safemalloc(len+1);
-  strncpy(ptr,source,len);
-  ptr[len]=0;
-  return ptr;
-}
-
 static void add_to_binding (Binding **list, Binding *binding)
 {
   ConsoleDebug (CONFIG, "In add_to_binding:\n");
@@ -319,7 +296,7 @@ static int extract_int (char *p, int *n)
 
 /* I modified this from the fvwm version to stop at commas */
 
-static char *GetNextToken(char *indata,char **token)
+static char *internal_GetNextToken(char *indata,char **token)
 { 
   char *t,*start, *end, *text;
 
@@ -472,7 +449,7 @@ static char *parse_button (char *string, BuiltinArg *arg, int *flag)
   bv->offset = 0;
   bv->base = AbsoluteButton;
 
-  rest = GetNextToken (string, &token);
+  rest = internal_GetNextToken (string, &token);
   if (token == NULL || !strcmp (token, ",")) {
     bv->base = NoButton;
     *flag = 0;
@@ -576,7 +553,7 @@ static Function *parse_function (char **line)
 
   ConsoleDebug (CONFIG, "in parse_function\n");
 
-  ptr = GetNextToken (*line, &name);
+  ptr = internal_GetNextToken (*line, &name);
   if (name == NULL || name[0] == '\0') {
     *line = NULL;
     Free (name);
@@ -596,7 +573,7 @@ static Function *parse_function (char **line)
       ftype->args[j].type = builtin_functions_i->args[j];
       switch (builtin_functions_i->args[j]) {
       case IntArg:
-	ptr = GetNextToken (ptr, &tok);
+	ptr = internal_GetNextToken (ptr, &tok);
 	if (!tok) {
 	  ConsoleMessage ("%s: too few arguments\n",
 			  builtin_functions_i->name);
@@ -614,7 +591,7 @@ static Function *parse_function (char **line)
 	break;
 	
       case StringArg:
-	ptr = GetNextToken (ptr, &ftype->args[j].value.string_value);
+	ptr = internal_GetNextToken (ptr, &ftype->args[j].value.string_value);
 	if (!ftype->args[j].value.string_value || 
 	    !strcmp (ftype->args[j].value.string_value, ",")) {
 	  ConsoleMessage ("%s: too few arguments\n",
@@ -647,7 +624,7 @@ static Function *parse_function (char **line)
 	 * jump offsets at compile time.
 	 */
       case JmpArg:
-	ptr = GetNextToken (ptr, &tok);
+	ptr = internal_GetNextToken (ptr, &tok);
 	if (!tok) {
 	  ConsoleMessage ("%s: too few arguments\n",
 			  builtin_functions_i->name);
@@ -737,7 +714,7 @@ static Function *parse_function_list (char *line)
       f->prev=tail;
       tail = f;
     }
-    p = GetNextToken (line, &token);
+    p = internal_GetNextToken (line, &token);
     if (token && token[0] && strcmp (token, ",") != 0) {
       ConsoleMessage ("Bad function list, comma expected\n");
       Free (token);
@@ -786,13 +763,13 @@ Binding *ParseMouseEntry (char *tline)
 
   /* tline points after the key word "key" */
   ptr = tline;
-  ptr = GetNextToken(ptr,&token);  
+  ptr = internal_GetNextToken(ptr,&token);  
   if(token != NULL) {
     n1 = sscanf(token,"%d",&button);
     Free(token);
   }
 
-  action = GetNextToken(ptr,&token); 
+  action = internal_GetNextToken(ptr,&token); 
   if(token != NULL) {
     n2 = sscanf(token,"%19s",modifiers);
     Free(token);
@@ -841,13 +818,13 @@ static Binding *ParseKeyEntry (char *tline)
   /* tline points after the key word "key" */
   ptr = tline;
 
-  ptr = GetNextToken(ptr,&token);  
+  ptr = internal_GetNextToken(ptr,&token);  
   if(token != NULL) {
     n1 = sscanf(token,"%19s",key);
     Free(token);
   }
   
-  action = GetNextToken(ptr,&token);  
+  action = internal_GetNextToken(ptr,&token);  
   if(token != NULL) {
     n2 = sscanf(token,"%19s",modifiers);
     Free(token);
@@ -1370,7 +1347,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	p = GetNextToken (p, &token);
+	p = internal_GetNextToken (p, &token);
 	if (!token || !token[0]) {
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
@@ -1386,7 +1363,7 @@ void read_in_resources (char *file)
 	    add_to_stringlist (&globals.managers[manager].dontshow, token);
 	  }
 	  Free (token);
-	  p = GetNextToken (p, &token);
+	  p = internal_GetNextToken (p, &token);
 	} while (token && token[0]);
 	if (token)
 	  Free(token);
@@ -1474,7 +1451,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	GetNextToken (p, &token);
+	internal_GetNextToken (p, &token);
 	
 	SET_MANAGER (manager, formatstring,
 		     copy_string (&globals.managers[id].formatstring, token));
@@ -1493,7 +1470,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	GetNextToken (p, &token);
+	internal_GetNextToken (p, &token);
 	
 	SET_MANAGER (manager, iconname,
 		     copy_string (&globals.managers[id].iconname, token));
@@ -1562,7 +1539,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	p = GetNextToken (p, &token);
+	p = internal_GetNextToken (p, &token);
 	if (!token || !token[0]) {
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
@@ -1578,7 +1555,7 @@ void read_in_resources (char *file)
 	    add_to_stringlist (&globals.managers[manager].show, token);
 	  }
 	  Free (token);
-	  p = GetNextToken (p, &token);
+	  p = internal_GetNextToken (p, &token);
 	} while (token && token[0]);
 	if (token)
 	  Free(token);
@@ -1629,7 +1606,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	GetNextToken (p, &token);
+	internal_GetNextToken (p, &token);
 	
 	SET_MANAGER (manager, titlename,
 		     copy_string (&globals.managers[id].titlename, token));

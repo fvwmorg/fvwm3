@@ -5,14 +5,14 @@ bin_PROGRAMS = fvwm2
 EXTRA_DIST = $(man_MANS)
 man_MANS = fvwm2.1
 
-fvwm2_SOURCES = add_window.c alpha_header.h bindings.c borders.c \
+fvwm2_SOURCES = add_window.c bindings.c borders.c \
 builtins.c colormaps.c colors.c complex.c decorations.c \
 events.c focus.c functions.c fvwm.c fvwm.h icons.c \
 menus.c menus.h misc.c misc.h modconf.c module.c module.h move.c \
 parse.h placement.c read.c resize.c screen.h style.c \
-sun_headers.h virtual.c windows.c 
+virtual.c windows.c 
 
-LDADD = @LIBOBJS@ -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
+LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
 	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
 INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)

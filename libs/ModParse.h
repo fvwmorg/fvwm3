@@ -1,3 +1,5 @@
+#ifndef MODPARSE_H
+#define MODPARSE_H
 /*
    File:		ModParse.h
    Date:		Wed Jan 29 21:13:36 1997
@@ -6,6 +8,9 @@
    Description:		
 
    Modifications:	$Log$
+   Modifications:	Revision 1.4  1998/11/06 02:22:53  steve
+   Modifications:	Loads of code cleanup
+   Modifications:	
    Modifications:	Revision 1.3  1998/10/31 11:52:51  steve
    Modifications:	basic autoconfiguration support
    Modifications:	
@@ -25,11 +30,6 @@
    itself for parsing.
 */
 
-
-#ifndef _ModParse_h
-#define _ModParse_h
-
-
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,8 +41,6 @@ char *GetArgument(char **pstr);
 int CmpArgument(const char *pstr,char *tok);
 int MatchArgument(const char *pstr,char *tok);
 #define NukeArgument(pstr) free(GetArgument(pstr))
-
-int mystrncasecmp(char *a, char *b,int n); /* why is this here? */
 
 
 /*
@@ -90,4 +88,4 @@ int XCmpToken();    /* (char *s, char **t); but avoid compiler warning */
                           sizeof(struct entry), CmpToken);
 #endif
 
-#endif /* _ModParse_h */
+#endif /* MODPARSE_H */

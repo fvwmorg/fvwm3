@@ -1,0 +1,27 @@
+1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmWharf/Wharf.h: Made icon_info.depth a signed char, because
+	it is sometimes compared with -1.
+
+	* FvwmDebug/FvwmDebug.h (setvbuf): Checks for HAVE_SETVBUF and
+	SETVBUF_REVERSED.
+
+	* FvwmTaskBar/Makefile.am (INCLUDES):
+	* FvwmPipe/Makefile.am (INCLUDES):
+	* FvwmDebug/Makefile.am (INCLUDES):
+	* FvwmConsole/Makefile.am (INCLUDES): Added xpm_CFLAGS, since
+	xpm.h is included by fvwmlib.h.
+
+Wed Nov  4 01:37:02 1998  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmScript/FvwmScript.c: Change DEBUG to MEMDEBUG where it masks
+	the heap debugging library references, so you don't have to have
+	it to compile fvwm2 with -DDEBUG.
+
+1998-11-04  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmConsole/FvwmConsole.h: Remove bogus Linux system header
+	includes.
+
+	* FvwmCommand/FvwmCommand.h: Remove bogus Linux system header
+	includes.

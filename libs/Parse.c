@@ -2,15 +2,18 @@
 ** Parse.c: routines for parsing in fvwm & modules
 */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "fvwmlib.h"
 
 /*
 ** PeekToken: returns next token from string, leaving string intact
 **            (you should free returned string later)
 **
-** notes - quotes and brakets deonte blocks, which are returned MINUS
+** notes - quotes and brakets denote blocks, which are returned MINUS
 **         the start & end delimiters.  Delims within block may be escaped
 **         with a backslash \ (which is removed when returned).  Backslash
 **         must be escaped too, if you want one... (\\).  Tokens may be up
@@ -18,7 +21,8 @@
 */
 char *PeekToken(const char *pstr)
 {
-  char *tok=NULL,*p;
+  char *tok=NULL;
+  const char* p;
   char bc=0,be=0,tmptok[MAX_TOKEN_LENGTH];
   int len=0;
 
@@ -115,7 +119,7 @@ int CmpToken(const char *pstr,char *tok)
   char *ntok=PeekToken(pstr);
   if (ntok)
   {
-    rc = mystrcasecmp(tok,ntok);
+    rc = strcasecmp(tok,ntok);
     free(ntok);
   }
   return rc;
@@ -131,7 +135,7 @@ int MatchToken(const char *pstr,char *tok)
   char *ntok=PeekToken(pstr);
   if (ntok)
   {
-    rc = (mystrcasecmp(tok,ntok)==0);
+    rc = (strcasecmp(tok,ntok)==0);
     free(ntok);
   }
   return rc;
@@ -305,7 +309,7 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
   if (!tmp)
     return next;
 
-  if (tmp[0] != '*' || mystrncasecmp(tmp+1, module_name, strlen(module_name)))
+  if (tmp[0] != '*' || strncasecmp(tmp+1, module_name, strlen(module_name)))
     {
       *resource = NULL;
       return indata;
@@ -375,7 +379,7 @@ int GetTokenIndex(char *token, char *list[], int len, char **next)
     {
       if (len < 0)
 	l = strlen(list[i]);
-      if (!mystrncasecmp(token, list[i], l))
+      if (!strncasecmp(token, list[i], l))
 	break;
     }
   if (next)

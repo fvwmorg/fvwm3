@@ -1,4 +1,5 @@
-#include "../../libs/fvwmlib.h"
+#include "config.h"
+#include "fvwmlib.h"
 
 /*************************************************************************
  *
@@ -72,7 +73,7 @@ typedef struct icon_info {
     char *file;
     short w, h;
     Pixmap icon, mask;
-    char depth;    
+    signed char depth;    
 } icon_info;
 
 struct button_info
@@ -114,12 +115,7 @@ extern struct folder_info Folders[FOLDER_ARRAY_LN];
 extern char *iconPath;
 extern char *pixmapPath;
 
-#ifdef BROKEN_SUN_HEADERS
-#include "../../afterstep/sun_headers.h"
-#endif
 
-#ifdef NEEDS_ALPHA_HEADER
-#include "../../afterstep/alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
+
 
 

@@ -1,9 +1,10 @@
-#ifdef ISC
+#include "config.h"
+
+#if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> 
 #endif 
 
-
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -12,26 +13,16 @@
 #include <stdlib.h>
 
 #include <stdio.h>
+#include <sys/time.h>
 #include <sys/types.h>
-#if defined linux
-#include <linux/time.h>
-#endif
 #include <sys/un.h>
 #include <sys/socket.h>
 #include <signal.h>
 #include <errno.h>
 #include <string.h>
 
-#include "config.h"
-#include "../../libs/fvwmlib.h"     
+#include "fvwmlib.h"     
 #include "../../fvwm/module.h"
-#if defined (sparc) && !defined (SVR4)
-#include "sunos_headers.h" 
-#include "../../fvwm/sun_headers.h"
-#endif
-
-
-
 
 #define S_NAME "/tmp/FvConSocket"
 #define BUFSIZE 511   /* maximum error message size */

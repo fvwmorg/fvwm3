@@ -19,11 +19,11 @@ char *StartName     = NULL,
 
 
 void StartButtonParseConfig(char *tline, char *Module) {
-  if(mystrncasecmp(tline,CatString3(Module,"StartName",""), Clength+9)==0)
+  if(strncasecmp(tline,CatString3(Module,"StartName",""), Clength+9)==0)
     CopyString(&StartName,&tline[Clength+9]);
-  else if(mystrncasecmp(tline,CatString3(Module,"StartMenu",""), Clength+9)==0)
+  else if(strncasecmp(tline,CatString3(Module,"StartMenu",""), Clength+9)==0)
     CopyString(&StartPopup,&tline[Clength+9]);
-  else if(mystrncasecmp(tline,CatString3(Module,"StartIcon",""), Clength+9)==0)
+  else if(strncasecmp(tline,CatString3(Module,"StartIcon",""), Clength+9)==0)
     CopyString(&StartIconName,&tline[Clength+9]);
 }
 

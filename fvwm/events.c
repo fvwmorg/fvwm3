@@ -38,7 +38,7 @@
 
 #include "config.h"
 
-#ifdef ISC
+#if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h>
 #endif
 

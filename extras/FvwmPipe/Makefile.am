@@ -5,5 +5,8 @@ module_PROGRAMS = FvwmPipe
 FvwmPipe_SOURCES = FvwmPipe.c
 
 LDADD = -L$(top_builddir)/libs -lfvwm 
-INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS)
 
+# FIXME:
+# Despite not using X functions explicitly, the code includes
+# fvwmlib.h, which *does* include X headers and xpm.h!
+INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)

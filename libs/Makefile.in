@@ -75,7 +75,6 @@ MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
-XPMREDUCE = @XPMREDUCE@
 XPMROOT = @XPMROOT@
 readline_CFLAGS = @readline_CFLAGS@
 readline_LIBS = @readline_LIBS@
@@ -88,9 +87,11 @@ xpm_LIBS = @xpm_LIBS@
 noinst_LIBRARIES = libfvwm.a
 
 libfvwm_a_SOURCES = ClientMsg.c GetFont.c Grab.c ModParse.c ModParse.h \
-	Module.c Parse.c Picture.c Strings.c System.c System.h \
-	envvar.c fvwmlib.h safemalloc.c sleep.c wild.c \
+	Module.c Parse.c Picture.c Strings.c System.c \
+	envvar.c fvwmlib.h safemalloc.c wild.c \
 	lang-strings.h XResource.c
+
+libfvwm_a_LIBADD = @LIBOBJS@
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -107,15 +108,16 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-libfvwm_a_LIBADD = 
+libfvwm_a_DEPENDENCIES =  @LIBOBJS@
 libfvwm_a_OBJECTS =  ClientMsg.o GetFont.o Grab.o ModParse.o Module.o \
-Parse.o Picture.o Strings.o System.o envvar.o safemalloc.o sleep.o \
-wild.o XResource.o
+Parse.o Picture.o Strings.o System.o envvar.o safemalloc.o wild.o \
+XResource.o
 AR = ar
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LINK = $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-DIST_COMMON =  Makefile.am Makefile.in
+DIST_COMMON =  Makefile.am Makefile.in gethostname.c strcasecmp.c \
+strerror.c strncasecmp.c usleep.c
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -125,7 +127,8 @@ GZIP = --best
 DEP_FILES =  .deps/ClientMsg.P .deps/GetFont.P .deps/Grab.P \
 .deps/ModParse.P .deps/Module.P .deps/Parse.P .deps/Picture.P \
 .deps/Strings.P .deps/System.P .deps/XResource.P .deps/envvar.P \
-.deps/safemalloc.P .deps/sleep.P .deps/wild.P
+.deps/gethostname.P .deps/safemalloc.P .deps/strcasecmp.P \
+.deps/strerror.P .deps/strncasecmp.P .deps/usleep.P .deps/wild.P
 SOURCES = $(libfvwm_a_SOURCES)
 OBJECTS = $(libfvwm_a_OBJECTS)
 
@@ -134,7 +137,7 @@ all: Makefile $(LIBRARIES)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign libs/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu libs/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -205,7 +208,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign libs/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libs/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

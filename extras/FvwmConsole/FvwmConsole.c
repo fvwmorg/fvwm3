@@ -27,7 +27,7 @@ void CloseSocket();
 void ErrMsg( char *msg );
 void SigHandler();
 
-void main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
   char *tmp, *s;
   char client[120];
   char **eargv;

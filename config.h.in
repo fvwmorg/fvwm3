@@ -1,39 +1,5 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
-
-/* Define to empty if the keyword does not work.  */
-#undef const
-
-/* Define if you don't have vprintf but do have _doprnt.  */
-#undef HAVE_DOPRNT
-
-/* Define if you have the strftime function.  */
-#undef HAVE_STRFTIME
-
-/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
-#undef HAVE_SYS_WAIT_H
-
-/* Define if you have the vprintf function.  */
-#undef HAVE_VPRINTF
-
-/* Define as __inline if that's what the C compiler calls it.  */
-#undef inline
-
-/* Define as the return type of signal handlers (int or void).  */
-#undef RETSIGTYPE
-
-/* Define if the setvbuf function takes the buffering type as its second
-   argument and the buffer pointer as the third, as on System V
-   before release 3.  */
-#undef SETVBUF_REVERSED
-
-/* Define to `unsigned' if <sys/types.h> doesn't define.  */
-#undef size_t
-
-/* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
-
-/* Define if the X Window System is missing or not being used.  */
-#undef X_DISPLAY_MISSING
+/** Compatibility stuff **/
 
 /* Defined by automake: the package and version strings.  */
 #undef PACKAGE
@@ -94,7 +60,6 @@
  * button state as "Inactive."  If not defined, the "ActiveUp" state
  * is used instead.  Disabling this reduces memory usage.  */
 #undef INACTIVE_BTNS
-
   
 /* Enables the "MiniIcon" Style option to specify a small pixmap which
  * can be used as one of the title-bar buttons, shown in window list,
@@ -146,8 +111,58 @@
  * "WindowShade" for more information.  */
 #undef WINDOWSHADE
 
-/* FVWM hack for inline keyword: obsoleted by autoconf */
-#define FVWM_INLINE inline
+
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define if you don't have vprintf but do have _doprnt.  */
+#undef HAVE_DOPRNT
+
+/* Define if you have the strftime function.  */
+#undef HAVE_STRFTIME
+
+/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
+#undef HAVE_SYS_WAIT_H
+
+/* Define if you have the vprintf function.  */
+#undef HAVE_VPRINTF
+
+/* Define as __inline if that's what the C compiler calls it.  */
+#undef inline
+
+/* Define if on MINIX.  */
+#undef _MINIX
+
+/* Define to `long' if <sys/types.h> doesn't define.  */
+#undef off_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define if the system does not provide POSIX.1 features except
+   with this defined.  */
+#undef _POSIX_1_SOURCE
+
+/* Define if you need to in order for stat and other things to work.  */
+#undef _POSIX_SOURCE
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define if the setvbuf function takes the buffering type as its second
+   argument and the buffer pointer as the third, as on System V
+   before release 3.  */
+#undef SETVBUF_REVERSED
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if the X Window System is missing or not being used.  */
+#undef X_DISPLAY_MISSING
 
 /*
 ** if you would like to see lots of debug messages from fvwm, for debugging
@@ -176,14 +191,23 @@
 /* Define if you have the select function.  */
 #undef HAVE_SELECT
 
+/* Define if you have the setvbuf function.  */
+#undef HAVE_SETVBUF
+
 /* Define if you have the socket function.  */
 #undef HAVE_SOCKET
+
+/* Define if you have the strcasecmp function.  */
+#undef HAVE_STRCASECMP
 
 /* Define if you have the strdup function.  */
 #undef HAVE_STRDUP
 
 /* Define if you have the strerror function.  */
 #undef HAVE_STRERROR
+
+/* Define if you have the strncasecmp function.  */
+#undef HAVE_STRNCASECMP
 
 /* Define if you have the strstr function.  */
 #undef HAVE_STRSTR
@@ -221,6 +245,9 @@
 /* Define if you have the <malloc.h> header file.  */
 #undef HAVE_MALLOC_H
 
+/* Define if you have the <stdarg.h> header file.  */
+#undef HAVE_STDARG_H
+
 /* Define if you have the <strings.h> header file.  */
 #undef HAVE_STRINGS_H
 
@@ -232,3 +259,20 @@
 
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
+
+/* Define if you have the <varargs.h> header file.  */
+#undef HAVE_VARARGS_H
+
+#if STDC_HEADERS
+#  include <string.h>
+#else
+#  if ! HAVE_STRCHR
+#    define strchr index
+#    define strrchr rindex
+#  endif
+#endif
+
+#if ! HAVE_MEMCPY
+#  define memcpy(dest,src,len)  bcopy((src),(dest),(len))
+#  define memmove(dest,src,len) bcopy((src),(dest),(len))
+#endif

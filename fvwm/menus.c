@@ -425,7 +425,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
   dkp_timestamp = 0;
   /* Is it okay to treat keysym-s as Ascii? */
   /* No, because the keypad numbers don't work. Use XlookupString */
-  index = XLookupString(Event, &keychar, 1, &keysym, NULL);
+  index = XLookupString(&(Event->xkey), &keychar, 1, &keysym, NULL);
   /* Try to match hot keys */
   if (index == 1 && isgraph((int)keychar) && fControlKey == FALSE) { 
     /* allow any printable character to be a keysym, but be sure control
@@ -740,8 +740,6 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	/* we're on a menu item */
 	fOffMenuAllowed = FALSE;
 	mr = mi->mr;
-	/* get pos hints for item's action */
-	GetPopupOptions(mi,&mops);
 
 	if (mr != menu && mr != mrPopup && mr != MrPopupForMi(mi)) {
 	  /* we're on an item from a prior menu */
@@ -815,6 +813,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	}
 	if (fPopup) {
 	  DBUG("MenuInteraction","Popping up");
+          /* get pos hints for item's action */
+          GetPopupOptions(mi,&mops);
 	  mrPopup = MrPopupForMi(mi);
 	  if (!mrPopup) {
 	    fDoMenu = FALSE;
@@ -919,9 +919,6 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
     } /* while (TRUE) */
 
   DO_RETURN:
-  if (mi) {
-    GetPopupOptions(mi, &mops);
-  }
   if (mrPopup) {
     PopDownMenu(mrPopup);
   }
@@ -953,6 +950,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
       pmiExecuteAction && *pmiExecuteAction && (*pmiExecuteAction)->action) {
     f_type = find_func_type((*pmiExecuteAction)->action);
     if (f_type == F_POPUP || f_type == F_STAYSUP || f_type == F_WINDOWLIST) {
+      GetPopupOptions(mi, &mops);
       if (!(mops.flags & MENU_SELECTINPLACE)) {
 	fIgnorePosHints = TRUE;
       } else {

@@ -21,5 +21,4 @@
 /* Function Prototypes */
 char *safemalloc(int length);
 char *saferealloc(char *ptr, int length);
-void sleep_a_little(int n);
 void UpdateString(char **string,char *value);

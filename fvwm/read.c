@@ -73,7 +73,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   missing_quiet='n';                    /* init */
   rest = GetNextToken(rest,&option);    /* read optional arg */
   if (option != NULL) {                 /* if there is a second arg */
-    if (mystrncasecmp(option,"Quiet",5)==0) { /* is the arg "quiet"? */
+    if (strncasecmp(option,"Quiet",5)==0) { /* is the arg "quiet"? */
       missing_quiet='y';                /* no missing file message wanted */
     } /* end quiet arg */
     free(option);                       /* arg not needed after this */

@@ -4,9 +4,11 @@
 noinst_LIBRARIES = libfvwm.a
 
 libfvwm_a_SOURCES = ClientMsg.c GetFont.c Grab.c ModParse.c ModParse.h \
-	Module.c Parse.c Picture.c Strings.c System.c System.h \
-	envvar.c fvwmlib.h safemalloc.c sleep.c wild.c \
+	Module.c Parse.c Picture.c Strings.c System.c \
+	envvar.c fvwmlib.h safemalloc.c wild.c \
 	lang-strings.h XResource.c
+
+libfvwm_a_LIBADD = @LIBOBJS@
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
 

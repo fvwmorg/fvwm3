@@ -78,30 +78,6 @@ void CopyString(char **dest, char *source)
   (*dest)[len]=0;	  
 }
 
-int mystrcasecmp(register char *s1,register char *s2)
-{
-  while (tolower(*s1) == tolower(*s2))
-  {
-    ++s1;
-    ++s2;
-    if (!*s1 || !*s2)
-      break;
-  }
-  return (tolower(*s1) - tolower(*s2));
-}
-
-int mystrncasecmp(register char *s1,register char *s2,register int n)
-{
-  while ((--n > 0) && (tolower(*s1) == tolower(*s2)))
-  {
-    ++s1;
-    ++s2;
-    if (!*s1 || !*s2)
-      break;
-  }
-  return (tolower(*s1) - tolower(*s2));
-}
-
 /****************************************************************************
  * 
  * Copies a string into a new, malloc'ed string
@@ -137,5 +113,5 @@ int StrEquals(char *s1,char *s2)
     return 1;
   if (!s1 || !s2)
     return 0;
-  return (mystrcasecmp(s1,s2)==0);
+  return (strcasecmp(s1,s2)==0);
 }

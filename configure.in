@@ -1,7 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
+AC_PREREQ(2.12)
 AC_INIT(fvwm/fvwm.c)
-AM_INIT_AUTOMAKE(fvwm, 2.1.0)
+AM_INIT_AUTOMAKE(fvwm, 2.1.1)
 AM_CONFIG_HEADER(config.h)
 
 FVWM_MODULEDIR='${libexecdir}/${PACKAGE}/${VERSION}'
@@ -61,6 +62,10 @@ dnl optional libraries.
 AC_PROG_CC
 AC_PROG_CPP
 
+dnl Help finding POSIX functions on some systems
+AC_ISC_POSIX
+AC_MINIX
+
 dnl Make the C++ compiler optional, for it is only used in a
 dnl module, not for the main code.
 AC_ARG_WITH(cxx,
@@ -97,7 +102,6 @@ if test "$xpm_LIBS"; then
     AC_DEFINE(XPM)
     FVWMBANNER=FvwmBanner AC_SUBST(FVWMBANNER)
     XPMROOT=xpmroot AC_SUBST(XPMROOT)
-    XPMREDUCE=xpm-reduce AC_SUBST(XPMREDUCE)
     FVWMSCRIPT=FvwmScript AC_SUBST(FVWMSCRIPT)
 dnl
     # This one needs BOTH C++ and Xpm
@@ -137,29 +141,38 @@ AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(fcntl.h limits.h malloc.h strings.h unistd.h)
 AC_CHECK_HEADERS(getopt.h sys/select.h sys/systeminfo.h)
 
+AC_CHECK_HEADERS(stdarg.h)
+if test $ac_cv_header_stdarg_h = no; then
+    AC_CHECK_HEADERS(varargs.h)
+fi
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
-dnl AC_TYPE_OFF_T
-dnl AC_TYPE_PID_T
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 dnl AC_HEADER_TIME
 dnl AC_STRUCT_TM
 
 dnl Checks for library functions.
-AC_FUNC_SETVBUF_REVERSED
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(gethostname gettimeofday mkfifo putenv select socket)
-AC_CHECK_FUNCS(strdup strerror strstr strtol sysconf uname waitpid wait4)
+AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket)
+AC_CHECK_FUNCS(strdup strstr strtol sysconf uname waitpid)
 
-AC_REPLACE_FUNCS(usleep)
+if test $ac_cv_func_setvbuf = yes; then
+   AC_FUNC_SETVBUF_REVERSED
+fi
+
+AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strerror usleep)
 AC_SUBST(LIBOBJS)
 
-dnl For reaping children, fvwm needs either waitpid() or wait3()
+dnl For reaping children, fvwm needs either waitpid() or wait3() 
+dnl Some extra modules may need wait4() too
 if test $ac_cv_func_waitpid = no; then
-    AC_CHECK_FUNCS(wait3)
+    AC_CHECK_FUNCS(wait3 wait4)
     if test $ac_cv_func_wait3 = no; then
 	AC_MSG_ERROR(Either waitpid or wait3 function is required)
     fi

@@ -1,5 +1,5 @@
-#ifndef _MISC_
-#define _MISC_
+#ifndef MISC_H
+#define MISC_H
 
 #include <ctype.h>
 #include "menus.h"
@@ -194,9 +194,9 @@ extern void       DrawIconWindow(FvwmWindow *);
 extern void       CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
 
 
-extern FVWM_INLINE void RelieveWindow(FvwmWindow *, Window, 
+extern inline void RelieveWindow(FvwmWindow *, Window, 
 				      int, int, int, int, GC, GC, int);
-extern FVWM_INLINE void RelieveWindowHH(FvwmWindow *,Window,
+extern inline void RelieveWindowHH(FvwmWindow *,Window,
 					int,int,int,int, GC,GC, int, int);
 void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert);
 #define NO_HILITE     0x0000
@@ -207,7 +207,6 @@ void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert);
 #define FULL_HILITE   0x000F
 #define HH_HILITE     0x0010
 
-extern void       sleep_a_little(int);
 void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	      unsigned long context, char *action, int *Module);
 #ifdef  WINDOWSHADE
@@ -356,7 +355,7 @@ void SetColormapFocus(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context, char *action,int* Module);
 void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context, char *action,int* Module);
-FVWM_INLINE void DrawPattern(Window, GC, GC, int, int,int);
+
 Pixel    GetShadow(Pixel);
 Pixel    GetHilite(Pixel);
 
@@ -560,14 +559,5 @@ void CoerceEnterNotifyOnCurrentWindow();
 #define ERR  2
 void fvwm_msg(int type,char *id,char *msg,...);
 
-#ifdef BROKEN_SUN_HEADERS
-#include "sun_headers.h"
-#endif
-#ifdef NEEDS_ALPHA_HEADER
-#include "alpha_header.h"
-#endif /* NEEDS_ALPHA_HEADER */
-#endif /* _MISC_ */
+#endif /* MISC_H */
 
-#ifndef HAVE_USLEEP
-int usleep (unsigned long usec);
-#endif
