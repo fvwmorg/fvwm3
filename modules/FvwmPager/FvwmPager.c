@@ -973,10 +973,21 @@ void list_new_desk(unsigned long *body)
   else if (!fAlwaysCurrentDesk)
   {
     int i;
+    char *name;
+    char line[100];
 
-    i = Scr.CurrentDesk - oldDesk;
-    XStoreName(dpy, Scr.Pager_w, Desks[i].label);
-    XSetIconName(dpy, Scr.Pager_w, Desks[i].label);
+    i = Scr.CurrentDesk - desk1;
+    if (i >= 0 && i < ndesks && Desks[i].label != NULL)
+    {
+      name = Desks[i].label;
+    }
+    else
+    {
+      sprintf(line, "Desk %d", Scr.CurrentDesk);
+      name = &(line[0]);
+    }
+      XStoreName(dpy, Scr.Pager_w, name);
+      XSetIconName(dpy, Scr.Pager_w, name);
   }
 
   MovePage(True);
