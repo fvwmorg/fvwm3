@@ -389,17 +389,15 @@ void setup_window_font(
     if (tmp_win->title_text_y < tmp_win->title_font->ascent)
       tmp_win->title_text_y = tmp_win->title_font->ascent;
     tmp_win->title_g.height = height;
-    tmp_win->corner_width = height + tmp_win->boundary_width;
   }
   else
   {
     height = tmp_win->title_font->height;
     tmp_win->title_text_y = tmp_win->title_font->ascent;
-    tmp_win->corner_width =
-      height + EXTRA_TITLE_FONT_HEIGHT + tmp_win->boundary_width;
     tmp_win->title_g.height =
       tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
   }
+  tmp_win->corner_width = tmp_win->title_g.height + tmp_win->boundary_width;
   if (!HAS_TITLE(tmp_win))
   {
     tmp_win->title_g.height = 0;
@@ -1024,12 +1022,39 @@ void destroy_resize_handle_windows(
   }
 }
 
+static void resize_resize_handle_windows(FvwmWindow *tmp_win)
+{
+        int i;
+
+        tmp_win->corner_width =
+                tmp_win->title_g.height + tmp_win->boundary_width;
+
+        if (HAS_BORDER(tmp_win))
+        {
+                /* Just dump the windows any old place and let SetupFrame take
+                 * care of the mess */
+                for (i = 0; i < 4; i++)
+                {
+                        XResizeWindow(
+                                dpy, tmp_win->corners[i],
+                                tmp_win->corner_width, tmp_win->corner_width);
+                }
+        }
+
+        return;
+}
+
 void change_resize_handle_windows(FvwmWindow *tmp_win)
 {
   if (HAS_BORDER(tmp_win) && tmp_win->sides[0] == None)
     setup_resize_handle_windows(tmp_win);
   else if (!HAS_BORDER(tmp_win) && tmp_win->sides[0] != None)
     destroy_resize_handle_windows(tmp_win, False);
+  else if (tmp_win->corner_width !=
+           tmp_win->title_g.height + tmp_win->boundary_width)
+  {
+    resize_resize_handle_windows(tmp_win);
+  }
 }
 
 void setup_frame_stacking(FvwmWindow *tmp_win)

@@ -1,5 +1,10 @@
 2002-03-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (resize_resize_handle_windows):
+	(change_resize_handle_windows):
+	(setup_window_font):
+	fixed changing the handlewidth style
+
 	* fvwm/update.c (apply_window_updates):
 	* fvwm/geometry.c (update_absolute_geometry):
 	* fvwm/builtins.c (CMD_WindowShade):
