@@ -271,6 +271,56 @@ void ForceDeleteFocus(Bool FocusByMouse)
   MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, True);
 }
 
+/* When a window is unmapped (or destroyed) this function takes care of
+ * adjusting the focus window appropriately. */
+void restore_focus_after_unmap(FvwmWindow *tmp_win)
+{
+  extern FvwmWindow *colormap_win;
+  FvwmWindow *t = NULL;
+  FvwmWindow *set_focus_to = NULL;
+
+  if (tmp_win != Scr.Focus)
+    set_focus_to = tmp_win;
+  if (!set_focus_to &&
+      tmp_win->transientfor != None && tmp_win->transientfor != Scr.Root)
+  {
+    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    {
+      if (t->w == tmp_win->transientfor)
+      {
+	set_focus_to = t;
+	break;
+      }
+    }
+  }
+  if (!set_focus_to && HAS_CLICK_FOCUS(tmp_win))
+  {
+    for (t = tmp_win->next; t != NULL; t = t->next)
+    {
+      if (t->Desk == tmp_win->Desk)
+      {
+	/* If it is on a different desk we have to look for another window */
+	set_focus_to = t;
+	break;
+      }
+    }
+  }
+  if (set_focus_to && set_focus_to != tmp_win &&
+      set_focus_to->Desk == tmp_win->Desk)
+  {
+    /* Don't transfer focus to windows on other desks */
+    SetFocusWindow(set_focus_to, 1);
+  }
+  if(Scr.Focus == tmp_win)
+    DeleteFocus(1);
+  if (tmp_win == Scr.pushed_window)
+    Scr.pushed_window = NULL;
+  if (tmp_win == colormap_win)
+    colormap_win = NULL;
+
+  return;
+}
+
 void SetPointerEventPosition(XEvent *eventp, int x, int y)
 {
   switch (eventp->type)

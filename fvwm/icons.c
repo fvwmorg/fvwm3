@@ -1371,6 +1371,8 @@ void SetMapStateProp(FvwmWindow *tmp_win, int state)
 void iconify_function(F_CMD_ARGS)
 {
   int toggle;
+  int x;
+  int y;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT, ButtonRelease))
     return;
@@ -1405,7 +1407,10 @@ void iconify_function(F_CMD_ARGS)
 	XBell(dpy, 0);
 	return;
       }
-      Iconify(tmp_win,eventp->xbutton.x_root-5,eventp->xbutton.y_root-5);
+      x = 0;
+      y = 0;
+      GetLocationFromEventOrQuery(dpy, Scr.Root, eventp, &x, &y);
+      Iconify(tmp_win, x, y);
     }
   }
 }

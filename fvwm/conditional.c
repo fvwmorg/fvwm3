@@ -784,13 +784,13 @@ void WindowIdFunc(F_CMD_ARGS)
     if (t->w == win)
     {
       /* do it if no conditions or the conditions match */
-      if (!use_condition || MatchesConditionMask(t, &mask))
+      if (action && (!use_condition || MatchesConditionMask(t, &mask)))
         old_execute_function(
 	  action, t, eventp, C_WINDOW, *Module, 0, NULL);
       break;
     }
   }
-  if (!t && !use_condition)
+  if (!t && !use_condition && action)
   {
     exec_func_args_type efa;
 

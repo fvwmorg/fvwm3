@@ -532,7 +532,9 @@ void destroy_function(F_CMD_ARGS)
 
   if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
 		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
+  {
     destroy_window(tmp_win);
+  }
   else
     XKillClient(dpy, tmp_win->w);
   XSync(dpy,0);
@@ -1170,7 +1172,8 @@ void SetDefaultColors(F_CMD_ARGS)
   char *back = NULL;
 
   action = GetNextToken(action, &fore);
-  action = GetNextToken(action, &back);
+  if (action)
+    action = GetNextToken(action, &back);
   if (!back)
     back = strdup("grey");
   if (!fore)
@@ -1929,19 +1932,12 @@ void InitFvwmDecor(FvwmDecor *decor)
     int i;
     DecorFace tmpdf;
 
-    decor->title_height = 0;
-
-#ifdef USEDECOR
-    decor->tag = NULL;
-    decor->next = NULL;
-#endif
+    /* zero out the structures */
+    memset(decor, 0, sizeof (FvwmDecor));
+    memset(&tmpdf, 0, sizeof(DecorFace));
 
     /* initialize title-bar button styles */
-    memset(&tmpdf.style, 0, sizeof(tmpdf.style));
     DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
-#ifdef MULTISTYLE
-    tmpdf.next = NULL;
-#endif
     for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
     {
       int j = 0;
@@ -1950,34 +1946,19 @@ void InitFvwmDecor(FvwmDecor *decor)
 	TB_STATE(decor->buttons[i])[j] = tmpdf;
       }
     }
-
     /* reset to default button set */
     ResetAllButtons(decor);
-
     /* initialize title-bar styles */
-    memset(&TB_FLAGS(decor->titlebar), 0, sizeof(TB_FLAGS(decor->titlebar)));
-
     for (i = 0; i < MaxButtonState; ++i)
     {
-      memset(&TB_STATE(decor->titlebar)[i].style, 0,
-	     sizeof(TB_STATE(decor->titlebar)[i].style));
       DFS_FACE_TYPE(TB_STATE(decor->titlebar)[i].style) = SimpleButton;
-#ifdef MULTISTYLE
-      TB_STATE(decor->titlebar)[i].next = NULL;
-#endif
     }
 
     /* initialize border texture styles */
-    memset(&decor->BorderStyle.active.style, 0,
-	   sizeof(decor->BorderStyle.active.style));
     DFS_FACE_TYPE(decor->BorderStyle.active.style) = SimpleButton;
-    memset(&decor->BorderStyle.inactive.style, 0,
-	   sizeof(decor->BorderStyle.inactive.style));
     DFS_FACE_TYPE(decor->BorderStyle.inactive.style) = SimpleButton;
-#ifdef MULTISTYLE
-    decor->BorderStyle.active.next = NULL;
-    decor->BorderStyle.inactive.next = NULL;
-#endif
+
+    return;
 }
 
 /***********************************************************************
@@ -2436,7 +2417,8 @@ void UnsetEnv(F_CMD_ARGS)
   if (!szVar)
     return;
 
-  szPutenv = stripcpy(szVar);
+  szPutenv = (char *)safemalloc(strlen(szVar) + 2);
+  sprintf(szPutenv, "%s=", szVar);
   putenv(szPutenv);
   add_to_env_list(szVar, szPutenv);
   /* szVar is stored in the env list. do not free it */

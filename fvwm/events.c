@@ -1163,7 +1163,6 @@ void HandleUnmapNotify(void)
   int dstx, dsty;
   Window dumwin;
   XEvent dummy;
-  extern FvwmWindow *colormap_win;
   int    weMustUnmap;
   int    focus_grabbed = 0;
   Bool must_return = False;
@@ -1210,41 +1209,16 @@ void HandleUnmapNotify(void)
 
   if(weMustUnmap)
     XUnmapWindow(dpy, Event.xunmap.window);
-
   if(Tmp_win ==  Scr.Hilite)
   {
     Scr.Hilite = NULL;
   }
   if(Scr.PreviousFocus == Tmp_win)
     Scr.PreviousFocus = NULL;
-
   focus_grabbed = (Tmp_win == Scr.Focus) &&
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
-
-  if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
-  {
-    if(Tmp_win->next)
-    {
-      SetFocusWindow(Tmp_win->next, 1);
-    }
-    else
-    {
-      DeleteFocus(1);
-    }
-  }
-
-  if(Scr.Focus == Tmp_win)
-  {
-    DeleteFocus(1);
-  }
-
-  if(Tmp_win == Scr.pushed_window)
-    Scr.pushed_window = NULL;
-
-  if(Tmp_win == colormap_win)
-    colormap_win = NULL;
-
+  restore_focus_after_unmap(Tmp_win);
   if (!IS_MAPPED(Tmp_win) && !IS_ICONIFIED(Tmp_win))
   {
     return;

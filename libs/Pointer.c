@@ -16,13 +16,13 @@
  */
 
 #include <X11/Xlib.h>
+#include <stdio.h>
 
 /*
  * This function determines the location of the mouse pointer from the event
  * if possible, if not it queries the X server. Returns False if it had to
  * query the server and the call failed.
  */
-#include <stdio.h>
 Bool GetLocationFromEventOrQuery(Display *dpy, Window w, XEvent *eventp,
 				 int *ret_x, int *ret_y)
 {

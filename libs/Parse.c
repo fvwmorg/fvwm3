@@ -146,39 +146,60 @@ char *SkipSpaces(char *indata, char *spaces, int snum)
 static char *CopyToken(char *src, char *dest, char *spaces, int snum,
 		       char *delims, int dnum, char *out_delim)
 {
+  int len = 0;
+
   while ( (*src != 0) && !(isspace((unsigned char)*src) ||
 			   (snum && strchr(spaces, *src)) ||
 			   (dnum && strchr(delims, *src))))
+  {
+    /* Check for qouted text */
+    if (IsQuote(*src))
     {
-      /* Check for qouted text */
-      if (IsQuote(*src))
-	{
-	  char c = *src;
+      char c = *src;
 
+      src++;
+      while((*src != c)&&(*src != 0))
+      {
+	if((*src == '\\' && *(src+1) != 0))
+	  /* Skip over backslashes */
 	  src++;
-	  while((*src != c)&&(*src != 0))
-	    {
-	      if((*src == '\\' && *(src+1) != 0))
-		/* Skip over backslashes */
-		src++;
-	      *(dest++) = *(src++);
-	    }
-	  if(*src == c)
-	    src++;
-	}
-      else
+	if (len < MAX_TOKEN_LENGTH - 1)
 	{
-	  if((*src == '\\' && *(src+1) != 0))
-	    /* Skip over backslashes */
-	    src++;
+	  len++;
 	  *(dest++) = *(src++);
 	}
+	else
+	{
+	  /* token too long, just skip rest of token */
+	  src++;
+	}
+      }
+      if(*src == c)
+	src++;
     }
+    else
+    {
+      if((*src == '\\' && *(src+1) != 0))
+	/* Skip over backslashes */
+	src++;
+      if (len < MAX_TOKEN_LENGTH - 1)
+      {
+	len++;
+	*(dest++) = *(src++);
+      }
+      else
+      {
+	/* token too long, just skip rest of token */
+	src++;
+      }
+    }
+  }
   if (out_delim)
     *out_delim = *src;
   *dest = 0;
   if (*src != 0)
     src++;
+
   return src;
 }
 

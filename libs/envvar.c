@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <string.h>
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -109,8 +111,13 @@ static void strIns(char *s, const char *ins, int idx, int maxstrlen)
     int  l, li, move;
     char *p1, *p2;
 
+if (strlen(s) + 1 >maxstrlen)fprintf(stderr,"+++++++++++++++ si: old string longer than maxlen: %d > %d\n", strlen(s) + 1, maxstrlen);
+if (strlen(s) + strlen(ins) + 1 >maxstrlen)fprintf(stderr,"++++++++++++ si: new string longer than maxlen: %d > %d\n", strlen(s) + strlen(ins) + 1, maxstrlen);
     if (idx > (l = strlen(s)))
+{
 	idx = l;
+fprintf(stderr,"++++++ si: index too big\n");
+}
     li = strlen(ins);
     move = l - idx + 1; /* include '\0' in move */
     p1 = s + l;
@@ -119,14 +126,19 @@ static void strIns(char *s, const char *ins, int idx, int maxstrlen)
 	--p1;
 	--p2;
 	--move;
+fprintf(stderr,"++++++ si: combined string too long\n");
     }
     while (move-- > 0)
 	*p2-- = *p1--;
     p1 = s + idx;
     if (idx + li >= maxstrlen)
-	li = maxstrlen - idx - 1;
-    while (li--)
+    {
+        li = maxstrlen - idx - 1;
+fprintf(stderr,"++++++ si: truncated insert string\n");
+    }
+    while (li-- > 0)
 	*p1++ = *ins++;
+if (p1 > s + maxstrlen) fprintf(stderr,"++++++++++++ si: buffer overrun\n");
     s[maxstrlen - 1] = '\0';
 }
 
@@ -305,6 +317,7 @@ char *envDupExpand(const char *s, int extra)
     /*
      *  calculate length needed.
      */
+//fprintf(stderr,"ede: string = '%s' ", s);
     s2 = s;
     slen = strlen(s);
     bufflen = slen + 1 + extra;
@@ -320,12 +333,14 @@ char *envDupExpand(const char *s, int extra)
 	bufflen = slen + 1;
 
     ret = safemalloc(bufflen);
+//fprintf(stderr," bufflen = %d/%d ", bufflen, bufflen - extra);
 
     /*
      *  now do the real expansion.
      */
     strcpy(ret, s);
     envExpand(ret, bufflen - extra);
+//fprintf(stderr," final len = %d '%s' %s\n", strlen(ret) + 1, ret, (bufflen - extra < strlen(ret) + 1)? "********" : "");
 
     return ret;
 }
@@ -353,7 +368,7 @@ char *envDupExpand(const char *s, int extra)
  *                may be $'s in the string that are not followed by what
  *                is considered a legal variable name introducer. Such
  *                occurrences are skipped.
- *                If nothing is found returns NULL and sets beg and end to 0.  
+ *                If nothing is found returns NULL and sets beg and end to 0.
  *
  *  EXAMPLE       getFirstEnv("echo $HOME/.fvwm2rc", &beg, &end)
  *                returns "/home/username" and beg=5, end=10.

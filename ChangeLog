@@ -1,3 +1,27 @@
+2000-12-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Parse.c (CopyToken):
+	safety checks on token length
+
+	* libs/envvar.c (strIns):
+	ABW fix
+
+	* fvwm/builtins.c (InitFvwmDecor):
+	zero out new decors completely before adding styles to prevent UMRs
+
+	* fvwm/icons.c (iconify_function):
+	x_root and y_root members do not exist for random X events;
+	use library function GetLocationFromEventOrQuery() instead
+
+	* fvwm/builtins.c (UnsetEnv):
+	the UnsetEnv command used putenv() but did not add '=' after the
+	variable name thus causing an ABR
+
+	* fvwm/events.c (HandleUnmapNotify):
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/focus.c (restore_focus_after_unmap):
+	don't give offscreen windows the focus when deleting a window
+
 2000-12-02  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* libs/Picture.c (LoadPicture)

@@ -533,7 +533,7 @@ Pixel GetSimpleColor(char *name)
   XColor color;
   Bool is_illegal_rgb = False;
 
-  color.pixel = 0;
+  memset(&color, 0, sizeof(color));
   /* This is necessary because some X servers coredump when presented a
    * malformed rgb colour name. */
   if (name && strncasecmp(name, "rgb:", 4) == 0)

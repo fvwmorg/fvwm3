@@ -1816,9 +1816,7 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
 void destroy_window(FvwmWindow *tmp_win)
 {
   extern FvwmWindow *ButtonWindow;
-  extern FvwmWindow *colormap_win;
   extern Boolean PPosOverride;
-  Bool focus_set = False;
 
   /*
    * Warning, this is also called by HandleUnmapNotify; if it ever needs to
@@ -1857,58 +1855,24 @@ void destroy_window(FvwmWindow *tmp_win)
   /****** adjust fvwm internal windows ******/
 
   if(tmp_win == Scr.Hilite)
-  {
     Scr.Hilite = NULL;
-  }
-
   if(Scr.PreviousFocus == tmp_win)
     Scr.PreviousFocus = NULL;
   if(Scr.LastScreenFocus == tmp_win)
     Scr.LastScreenFocus = NULL;
-
   if(ButtonWindow == tmp_win)
     ButtonWindow = NULL;
 
   /****** adjust focus ******/
 
-  if (tmp_win == Scr.Focus)
-  {
-    if (tmp_win->transientfor != None && tmp_win->transientfor != Scr.Root)
-    {
-      FvwmWindow *t;
-      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-      {
-	if (t->w == tmp_win->transientfor)
-	  break;
-      }
-      if (t)
-      {
-	SetFocusWindow(t, 1);
-	focus_set = True;
-      }
-    }
-    if (!focus_set)
-    {
-      if(HAS_CLICK_FOCUS(tmp_win))
-      {
-	if(tmp_win->next)
-	  SetFocusWindow(tmp_win->next, 1);
-	else
-	  DeleteFocus(1);
-      }
-      else
-	DeleteFocus(1);
-    }
-  }
+  restore_focus_after_unmap(tmp_win);
 
   /****** adjust fvwm internal windows II ******/
 
+  /* restore_focus_after_unmap takes care of Scr.oushed_window and colormap_win
+   */
   if(tmp_win == Scr.Ungrabbed)
     Scr.Ungrabbed = NULL;
-  if(tmp_win == Scr.pushed_window)
-    Scr.pushed_window = NULL;
-  if(tmp_win == colormap_win)
-    colormap_win = NULL;
 
   /****** destroy auxiliary windows ******/
 

@@ -55,6 +55,7 @@ AddToFunc ImagePath
 + I ImagePath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
 
 + I ImagePath +
++ I ImagePath +:+
 + I ImagePath /usr/local/share/icons/wm-icons:/usr/share/icons/wm-icons:+:/usr/include/X11/bitmaps:/usr/include/X11/pixmaps
 + I ImagePath $HOME/.wm-icons:+
 + I ImagePath +:/usr/share/icons/mini
@@ -1638,6 +1639,7 @@ AddToFunc ModulePath-Func
 + I ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
 + I ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
 + I ModulePath $HOME/bin/fvwm2
++ I ModulePath +:+:+
 + I ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
 + I ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
 + I ModulePath
