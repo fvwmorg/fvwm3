@@ -172,7 +172,8 @@ void ReadConfig (char *ScriptName)
   }
   if (yyin == NULL)
   {
-    fprintf(stderr,"Can't open the script %s\n",s);
+    fprintf(stderr,"[%s][ReadConfig]: <<ERROR>> Can't open the script %s\n",
+	    ModuleName,s);
     exit(1);
   }
   /* On ne redefini pas yyout qui est la sortie standard */
@@ -297,7 +298,8 @@ void Xinit(int IsFather)
   dpy=XOpenDisplay(NULL);
   if (dpy == NULL)
   {
-    fprintf(stderr,"%s: Can't open display %s", ModuleName, XDisplayName(NULL));
+    fprintf(stderr,"[%s]: <<ERROR>> Can't open display %s",
+	    ScriptName, XDisplayName(NULL));
     exit(1);
   }
   screen = DefaultScreen(dpy);
@@ -346,7 +348,8 @@ void LoadIcon(struct XObj *xobj)
     pic = CachePicture(dpy,x11base->win,imagePath,xobj->icon,save_color_limit);
     if (!pic)
     {
-      fprintf(stderr,"Unable to load pixmap %s\n",xobj->icon);
+      fprintf(stderr,"[%s][LoadIcon]: <<WARNING>> Unable to load pixmap %s\n",
+	      ScriptName,xobj->icon);
       xobj->iconPixmap = None;
       xobj->icon_maskPixmap = None;
       return;
@@ -405,7 +408,8 @@ void OpenWindow (void)
 
   /* Specification des parametres utilises par le gestionnaire de fenetre */
   if (XStringListToTextProperty(&x11base->title,1,&Name) == 0)
-    fprintf(stderr,"Can't use icon name\n");
+    fprintf(stderr,"[%s][OpenWindow]: <<WARNING>> Can't use icon name\n",
+	    ScriptName);
   IndicNorm = XAllocSizeHints();
   if (x11base->size.x!=-1)
   {

@@ -158,7 +158,8 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   Window Win1,Win2,WinPop;
   char *str;
   int x,y,hOpt,yMenu,hMenu,wMenu;
-  int oldvalue = 0,newvalue;
+  int oldvalue = 0;
+  int newvalue = 0;
   unsigned long mask;
   unsigned long while_mask;
   XSetWindowAttributes Attr;

@@ -15,6 +15,9 @@ Changes in beta 2.5.0 (not released yet)
 
 * Mouse bindings are activated without a recapture.
 
+* New functions "GetPid", "Parse" and "SendMsgAndGet". The SendMsgAndGet
+  function allows to extend FvwmScript with various programming languages.
+
 Changes in stable 2.4.3 (8-Oct-2001)
 
 * Fixed activation of shape extension.

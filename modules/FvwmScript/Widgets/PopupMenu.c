@@ -167,7 +167,8 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   static XEvent event;
   int x,y,hOpt,yMenu,hMenu;
   int x1,y1,x2,y2,oldy;
-  int oldvalue = 0,newvalue;
+  int oldvalue = 0;
+  int newvalue = 0;
   Window Win1,Win2,WinPop;
   unsigned int modif;
   unsigned long mask;

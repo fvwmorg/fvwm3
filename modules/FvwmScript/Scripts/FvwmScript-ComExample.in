@@ -1,0 +1,208 @@
+WindowTitle {FvwmScript-ComExample}
+WindowSize 360 290
+Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+Begin
+    # set the com name
+    Set $pid = (GetPid)
+    Set $ComName = {ComExample-}$pid
+    # defined when build
+    Set $DATADIR = {xFVWM_DATADIRx}
+    Set $Perl = {xPERLx}
+    # run fvwm-script-ComExample.pl
+    Do {Exec }$Perl{ -w }$DATADIR{/fvwm-script-ComExample.pl --com-name=}$ComName{ &}
+
+    # startup cmd
+    Set $Startup = (SendMsgAndGet $ComName {startup} 1)
+
+    If $Startup == 0 Then
+	Set $tmp = {An error occur at startup!}
+    Else
+	Set $tmp = $Startup
+
+    ChangeTitle 10 $tmp
+End
+
+#----------------------------------------
+# Title
+
+Widget 10
+Property
+    Position 10 10
+    Size 340 20
+    Flags NoReliefString NoFocus
+    Type ItemDraw
+    Title {}
+Main
+Case message of
+ SingleClic :
+ Begin
+ End
+End
+
+Widget 11
+Property
+    Flags NoReliefString
+    Position 10 35
+    Size 340 205
+    Type Rectangle
+Main
+Case message of
+    SingleClic :
+    Begin
+    End
+End
+
+#---------------------------------------
+# count
+
+Widget 20
+Property
+    Flags NoReliefString
+    Position 30 60
+    Size 150 20
+    Type PushButton
+    Title {Send Msg Count}
+Main
+Case message of
+    SingleClic :
+    Begin
+	Set $tmp = (SendMsgAndGet $ComName {count} 1)
+	ChangeTitle 21 $tmp
+    End
+End
+
+Widget 21
+Property
+    Position 190 60
+    Size 150 20
+    Flags NoReliefString NoFocus
+    Type ItemDraw
+    Title {No count Msg Send}
+Main
+Case message of
+ SingleClic :
+ Begin
+ End
+End
+
+#---------------------------------------
+# an unkwon msg
+
+Widget 30
+Property
+    Flags NoReliefString
+    Position 30 100
+    Size 150 20
+    Type PushButton
+    Title {Send An Unkown Msg}
+Main
+Case message of
+    SingleClic :
+    Begin
+	Set $tmp = (SendMsgAndGet $ComName {unkown} 1)
+	Set $tmp = {Returned value: }$tmp
+	ChangeTitle 31 $tmp
+    End
+End
+
+Widget 31
+Property
+    Position 190 100
+    Size 150 20
+    Flags NoReliefString NoFocus
+    Type ItemDraw
+    Title {No unknown Msg Send}
+Main
+Case message of
+ SingleClic :
+ Begin
+ End
+End
+
+#---------------------------------------
+# A "multilines" answer
+
+Widget 40
+Property
+    Flags NoReliefString
+    Position 30 140
+    Size 150 20
+    Type PushButton
+    Title {A "Multilines" Msg}
+Main
+Case message of
+ SingleClic :
+ Begin
+    Set $tmp = (SendMsgAndGet $ComName {multilines} 1)
+    Set $t1 = (Parse $tmp 1)
+    Set $t2 = (Parse $tmp 2)
+    Set $t3 = (Parse $tmp 3)
+    ChangeTitle 41 $t1
+    ChangeTitle 42 $t2
+    ChangeTitle 43 $t3
+  End
+End
+
+Widget 41
+Property
+    Position 190 140
+    Size 150 20
+    Flags NoReliefString NoFocus
+    Type ItemDraw
+    Title {No multiline Msg Send}
+Main
+Case message of
+ SingleClic :
+ Begin
+ End
+End
+
+Widget 42
+Property
+    Position 190 170
+    Size 150 20
+    Flags NoReliefString NoFocus
+    Type ItemDraw
+    Title {No multilines Msg Send}
+Main
+Case message of
+ SingleClic :
+ Begin
+ End
+End
+
+Widget 43
+Property
+    Position 190 200
+    Size 150 20
+    Flags NoReliefString NoFocus
+    Type ItemDraw
+    Title {No multilines Msg Send}
+Main
+Case message of
+ SingleClic :
+ Begin
+ End
+End
+
+#---------------------------------------
+# Quit
+Widget 99
+Property
+    Size 80 20
+    Position 250 250
+    Flags NoReliefString
+    Type PushButton
+    Title {Quit}
+Main
+Case message of
+ SingleClic :
+ Begin
+    # say to fvwm-script-ComExample.pl to exit the 0 says that we do not
+    # need an answer
+    Set $dummy = (SendMsgAndGet $ComName {exit} 0)
+    Quit
+ End
+End

@@ -82,6 +82,9 @@ ReceivFromScript	{ return RECEIVFROMSCRIPT; }
 RemainderOfDiv		{ return REMAINDEROFDIV; }
 GetTime			{ return GETTIME; }
 GetScriptArgument	{ return GETSCRIPTARG; }
+GetPid			{ return GETPID; }
+SendMsgAndGet		{ return SENDMSGANDGET; }
+Parse			{ return PARSE; }
 ^{bl}+ChangePosition	{ return POSITION; }
 ^{bl}+ChangeSize	{ return SIZE; }
 ^{bl}+ChangeTitle	{ return TITLE; }

@@ -525,6 +525,52 @@ This function return the remainder of the division (\fIint1\fP/\fIint2\fP).
 .IP "(GetTime)"
 This function return the time in second.
 
+.TP
+.RI "(GetPid)"
+This function return the process id of the script.
+
+.TP
+.RI "(SendMsgAndGet {" comId "} {" cmd "} " bool ")"
+Send the command
+.I cmd
+with identifier
+.I comId
+to an external
+program ready to communicate with the script using a protocol
+specific to FvwmScript. If
+.I bool
+is 0 FvwmScript does not wait for an
+answer of the external program. In this case the returned value is 1 if
+the message can be send to the external program and 0 if this is not the case.
+If
+.I bool
+is 1, then FvwmScript wait for an answer of the external program
+and the return value is this answer (a line of no more
+than 32000 characters). If the communication fails, the returned value is 0.
+See the section 
+.B A COMMUNICATION PROTOCOL
+for a description of the communication protocol used.
+
+.TP
+.RI "(Parse {" str "} " int ")"
+where
+.I str
+must be a string of the form:
+.EX
+	X1S1X2S2X3S3...SnXn
+.EE
+where the Xi are numbers constituted of four decimal digits and where
+the Si are strings of length exactly Xi. The returned value is the
+string
+.RI "S" int "."
+If
+.I int
+is out of range (e.g., >n) the returned value is the empty string. If
+.I str
+is not of the specified form, the return value is unpredictable
+(but empty in the average). This function is useful to handle
+strings returned by the SendMsgAndGet function.
+
 .SH CONDITIONAL LOOPS
 There is three kind of conditional loops. The instruction "If-Then-Else"
 has the following syntax:
@@ -591,7 +637,75 @@ FvwmScript-Find is an elementary front-end to find.
 FvwmScript-Quit allows to quit fvwm, restart fvwm or some other window
 manager, or shut down and reboot the computer.
 FvwmScript-ScreenDump is a screen dumper. FvwmScript-WidgetDemo is a pure
-example script.
+example script. See the next section for FvwmScript-ComExample.
+
+.SH A COMMUNICATION PROTOCOL
+FvwmScript is a weak (but simple) programming language. If you need to
+deal with a lot of data and/or you need to use complex algorithms you
+should use an external program (in perl for example) and "send" the desired
+informations
+to your FvwmScript script. The first solution is to use the GetOutput function.
+This solution is simple but you should rerun your external program each time
+you need informations from it (and this may cause performances problems).
+The second solution is to use the SendMsgAndGet function which allows
+to extend FvwmScript by any programming language which can deal with
+named pipe (fifo). We shall discuss this solution in this section.
+(A third solutions is to use fvwm-themes-com from the fvwm-themes
+package, but in fact the SendMsgAndGet method is an implementation
+of fvwm-themes-com inside FvwmScript and this gives better performances).
+
+Basically, you start an "external" program (the program for short) from your
+FvwmScript script (the script for short). This
+program runs in the background and you use the SendMsgAndGet function
+in your script to ask questions or to give instructions to the program.
+The program must strictly respect a certain communication protocol.
+First of all there is an identifier
+.I comId
+for the communication, it should contain the process id of the script
+for a good implementation of the protocol (use the GetPid function and
+pass the
+.I comId
+via an option of the program). The protocol uses two fifos, in the FVWM user
+directory, named:
+.RI ".tmp-com-in-" comId " and .tmp-com-out-" comId "."
+The program should create and listen the 
+.RI ".tmp-com-in-" comId
+fifo. Then, when FvwmScript executes a function of the form:
+
+.RI "       Set $answer = (SendMsgAndGet {" comId "} {" cmd "} " bool ")"
+
+FvwmScript writes the
+.I cmd
+on this fifo.
+This way the program can read the
+.IR cmd
+and can execute the appropriate action (it should remove the in fifo
+to support multi-communications). If
+.I bool
+is 0, FvwmScript does not wait for an answer of the program and
+return 1 if the previous actions succeed and 0 if they failed
+(then the program should "go back" to the in fifo). 
+If
+.I bool
+is 1, then FvwmScript waits (20 sec) for an answer of the program and
+in turn returns the answer to the script (not that
+.I bool
+is not passed to the program as it must know which commands need
+an answer). To answer, the program creates the
+.RI ".tmp-com-out-" comId
+fifo and writes on it the answer. The program should wait that
+FvwmScript reads the answer and then it should remove the out fifo
+and go back to the in fifo. The answer should consist of
+one line of no more than 32000 characters (take a look at the Parse
+function to handle multi-lines as one line).
+
+A simple way to understand this protocol and to write scripts and
+programs that use it is to take a look at
+the (not useful) example constituted by FvwmScript-ComExample and
+fvwm-script-ComExample.pl (that you can found in the FVWM data
+directory). Moreover, this implementation of the protocol solves
+questions as: What to do if the script exits for a bad reason?
+What to do if the program exits for a bad reason? ...etc.
 
 .SH BUGS
 FvwmScript crashes if widgets are accessed that have not been defined.

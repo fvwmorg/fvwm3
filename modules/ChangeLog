@@ -1,3 +1,28 @@
+2001-10-16  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Instruction.c:
+	* FvwmScript/FvwmScript.1:
+	* FvwmScript/script.y:
+	* FvwmScript/scanner.l:
+	* FvwmScript/script.c:
+	* FvwmScript/scanner.c:
+	New functions GetPid, Parse and SendMsgAndGet. The SendMsgAndGet
+	function allows to extend FvwmScript with any programming language
+	which can manipulate named pipe.
+
+	* FvwmScript/Scripts/FvwmScript-ComExemple.in (new script):
+	* FvwmScript/Scripts/fvwm-script-ComExemple.pl (new perl script):
+	* FvwmScript/Scripts/Makefile.am:
+	New examples script for the SendMsgAndGet communication protocol
+
+	* FvwmScript/Instruction.c:
+	* FvwmScript/FvwmScript.1:
+	Some code areation and better error messages
+
+	* FvwmScript/Widgets/Menu.c:
+	* FvwmScript/Widgets/PopupMenu.c:
+	More -Wall fixes
+
 2001-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScript/FvwmScript.c (ReadXServer):

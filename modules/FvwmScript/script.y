@@ -364,6 +364,7 @@ int yyerror(char *errmsg)
 %token ADD DIV MULT GETTITLE GETOUTPUT STRCOPY NUMTOHEX HEXTONUM QUIT
 %token LAUNCHSCRIPT GETSCRIPTFATHER SENDTOSCRIPT RECEIVFROMSCRIPT
 %token GET SET SENDSIGN REMAINDEROFDIV GETTIME GETSCRIPTARG
+%token GETPID SENDMSGANDGET PARSE
 %token IF THEN ELSE FOR TO DO WHILE
 %token BEGF ENDF
 %token EQUAL INFEQ SUPEQ INF SUP DIFF
@@ -718,6 +719,9 @@ function: GETVALUE numarg	{ AddFunct(1,1); }
 	| GETSHADOW numarg { AddFunct(19,1); }
 	| GETMINVALUE numarg { AddFunct(20,1); }
 	| GETMAXVALUE numarg { AddFunct(21,1); }
+	| GETPID { AddFunct(22,1); }
+	| SENDMSGANDGET gstrarg gstrarg numarg { AddFunct(23,1); }
+	| PARSE gstrarg numarg { AddFunct(24,1); }
 	;
 
 
