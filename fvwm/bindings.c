@@ -251,13 +251,13 @@ void ParseBindEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void ParseMouseEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                      unsigned long junk, char *tline,int* Module)
 {
-  ParseBindEntry(eventp, w, tmp_win, junk, tline, Module, 0);
+  ParseBindEntry(eventp, w, tmp_win, junk, tline, Module, False);
 }
 
 void ParseKeyEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                    unsigned long junk, char *tline,int* Module)
 {
-  ParseBindEntry(eventp, w, tmp_win, junk, tline, Module, 1);
+  ParseBindEntry(eventp, w, tmp_win, junk, tline, Module, True);
 }
 
 /****************************************************************************

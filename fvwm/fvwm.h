@@ -147,8 +147,10 @@ typedef struct FvwmWindow
 {
     struct FvwmWindow *next;	/* next fvwm window */
     struct FvwmWindow *prev;	/* prev fvwm window */
-    struct FvwmWindow *stack_next;   /* next (lower) fvwm window in stacking order  */
-    struct FvwmWindow *stack_prev;   /* prev (higher) fvwm window in stacking order */
+    struct FvwmWindow *stack_next; /* next (lower) fvwm window in stacking
+				    * order*/
+    struct FvwmWindow *stack_prev; /* prev (higher) fvwm window in stacking
+				    * order */
     Window w;			/* the child window */
     int old_bw;			/* border width before reparenting */
     Window frame;		/* the frame window */
@@ -233,7 +235,7 @@ typedef struct FvwmWindow
     RBW - 11/13/1998 - new flags to supplement the flags word, implemented
     as named bit fields.
 */
-    unsigned      ViewportMoved        : 1;  /*  To prevent double move in MoveViewport.  */
+    unsigned ViewportMoved : 1; /* To prevent double move in MoveViewport. */
 } FvwmWindow;
 
 /* Window mask for Circulate and Direction functions */
@@ -365,7 +367,8 @@ extern Atom _XA_OL_DECOR_RESIZE;
 extern Atom _XA_OL_DECOR_HEADER;
 extern Atom _XA_OL_DECOR_ICON_NAME;
 
+/* include this down here because FvwmWindows must be defined when including
+ * this header file. */
+#include "fvwmdebug.h"
+
 #endif /* _FVWM_ */
-
-
-

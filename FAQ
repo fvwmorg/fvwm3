@@ -94,6 +94,8 @@ INDEX
        43) I'm seeing odd things when trying to preprocess files with
            the FvwmM4/Cpp module...
        44) FvwmButtons Swallow command does not work.
+       45) Is it possible to raise a window when I click into the
+           window itself, not just the border?
 
 ======================================================================
 
@@ -356,21 +358,29 @@ A: Start with a new one or convert your old one.  This can be done by
    TogglePage                                 (obsoleted)
    Wait name                                  <-
    Warp [ name window_name ]                  Next or Prev (not compatible)
-   WindowsDesk new_desk                       <-
+   WindowsDesk new_desk                       (obsoleted, use MoveToDesk)
    WindowList arg1 arg2                       <-
 
    *** New in fvwm-2 **
 
+   AnimatedMove
    Destroy
    DestroyMenu
+   ExecUseShell
    KillModule
    Menu menu-name double-click-action
+   MoveToDesk
+   MoveToPage
    Next [conditions] command
    None [arguments] command
    Prev [conditions] command
    Read filename
    Recapture
+   SnapAttraction
+   SnapGrid
    +
+   (more functions are being added from time to time, so please check
+    the manpage too).
 
 ----------------------------------------------------------------------
 
@@ -892,28 +902,28 @@ A: You can do this, but it's not obvious how.  The button presses
 A: Sure - here's one from Graeme McCaffery:
 
    -----
-     finally I have found out how to run fvwm properly from cde 8-))
-     (thanks to Lars Sodergren)
+     Finally I have found out how to run fvwm properly from cde 8-))
+     (thanks to Lars Sodergren).
 
-     first set your home session in Dtwm. that usually is an empty
+     First set your home session in Dtwm. That usually is an empty
      session, though you could have the cde session manager remember
      what your desktop was like instead of FvwmSaveDesk etc..
 
-     then you have to set two resources in .Xdefaults:
+     Then you have to set two resources in .Xdefaults:
 
-     *wmStartupCommand: /home/orion/spxgm/bin/Fvwm
-     *waitWmTimeout: 1
+       *wmStartupCommand: /home/orion/spxgm/bin/Fvwm
+       *waitWmTimeout: 1
 
-     in this case I run fvwm from a shell script so that library
-     variables etc are set properly for everyone.  the waitWmTimeout
+     In this case I run fvwm from a shell script so that library
+     variables etc are set properly for everyone.  The waitWmTimeout
      tells the seesion manager how long to wait until it starts the
-     window manager. I've set it to 1 second. by default it's 60 secs
+     window manager. I've set it to 1 second. By default it's 60 secs.
 
-     finally you have to quit with
+     Finally you have to quit with
 
-     /usr/dt/bin/dtaction ExitSession  (or whatever your path is for dtaction)
+       /usr/dt/bin/dtaction ExitSession (or whatever your path is for dtaction)
 
-     now you can happily use cde programs and fvwm.
+     Now you can happily use cde programs and fvwm.
    -----
 
 ----------------------------------------------------------------------
@@ -986,3 +996,16 @@ A: You probably forgot to quote the swallow action. Config lines like
      *FvwmButtons(Swallow "FvwmPager" "Module FvwmPager")
 
 ----------------------------------------------------------------------
+
+45) Is it possible to raise a window when I click into the window
+    itself, not just the border?
+
+A: Any version later than 2.0.46 (i.e. 2.1.x or later) has this
+   feature. Currently it is provided through the GlobalOpts command.
+   This will possibly change in the future and be made am option to
+   the Style command:
+
+     GlobalOpts MouseFocusClickRaises
+
+----------------------------------------------------------------------
+

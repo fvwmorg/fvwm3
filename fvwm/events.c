@@ -361,7 +361,6 @@ void HandleKeyPress()
   Event.xkey.keycode =
     XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,Event.xkey.keycode,0));
 
-
   for (key = Scr.AllBindings; key != NULL; key = key->NextBinding)
     {
       if ((key->Button_Key == Event.xkey.keycode) &&
@@ -551,16 +550,16 @@ void HandlePropertyNotify()
       break;
 
     case XA_WM_NORMAL_HINTS:
+DB(("HandlePropertyNotify: XA_WM_NORMAL_HINTS calling GetWindowSizeHints\n"));
+	GetWindowSizeHints (Tmp_win);
+#if 0
+      /*
+      ** ckh - not sure why this next stuff was here, but fvwm 1.xx
+      ** didn't do this, and it seems to cause a bug when changing
+      ** fonts in XTerm
+      */
       {
 	int new_width, new_height;
-
-	GetWindowSizeHints (Tmp_win);
-        /*
-        ** ckh - not sure why this next stuff was here, but fvwm 1.xx
-        ** didn't do this, and it seems to cause a bug when changing
-        ** fonts in XTerm
-        */
-#if 0
 	new_width = Tmp_win->frame_width;
 	new_height = Tmp_win->frame_height;
 	ConstrainSize(Tmp_win, &new_width, &new_height, False);
@@ -568,9 +567,10 @@ void HandlePropertyNotify()
 	   (new_height != Tmp_win->frame_height))
 	  SetupFrame(Tmp_win,Tmp_win->frame_x, Tmp_win->frame_y,
 		     new_width,new_height,False);
-#endif /* 0 */
-	BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
       }
+#endif /* 0 */
+      BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
+DB(("HandlePropertyNotify: XA_WM_NORMAL_HINTS done\n"));
       break;
 
     default:
@@ -1273,6 +1273,8 @@ void HandleConfigureRequest()
   Bool sendEvent=False;
 
   DBUG("HandleConfigureRequest","Routine Entered");
+DB(("HandleConfigureRequest: called for cre->window=0x%x\n",cre->window));
+DB(("HandleConfigureRequest: cre->x=%d, cre->y=%d, cre->width=%d, cre->height=%d, cre->border_width=%d\n", cre->x, cre->y, cre->width, cre->height, cre->border_width));
 
   /*
    * Event.xany.window is Event.xconfigurerequest.parent, so Tmp_win will
@@ -1282,6 +1284,7 @@ void HandleConfigureRequest()
   if (XFindContext (dpy, cre->window, FvwmContext, (caddr_t *) &Tmp_win) ==
       XCNOENT)
     Tmp_win = NULL;
+DB(("HandleConfigureRequest: Tmp_win=0x%x\n",Tmp_win));
 
   /*
    * According to the July 27, 1988 ICCCM draft, we should ignore size and
@@ -1292,6 +1295,8 @@ void HandleConfigureRequest()
   if (!Tmp_win || cre->window == Tmp_win->icon_w ||
       cre->window == Tmp_win->icon_pixmap_w)
   {
+DB(("HandleConfigureRequest: Tmp_win==NULL or icon_w or icon_pixmap_w\n"));
+
     xwcm = cre->value_mask &
       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
     xwc.x = cre->x;
@@ -1300,8 +1305,9 @@ void HandleConfigureRequest()
     {
       Tmp_win->icon_p_height = cre->height+ cre->border_width +
 	cre->border_width;
+DB(("HandleConfigureRequest: new icon_p_height: \n", Tmp_win->icon_p_height));
     }
-    if((Tmp_win)&&((Tmp_win->icon_w == cre->window)))
+    else if((Tmp_win)&&((Tmp_win->icon_w == cre->window)))
     {
       Tmp_win->icon_xl_loc = cre->x;
       Tmp_win->icon_x_loc = cre->x +
@@ -1314,10 +1320,13 @@ void HandleConfigureRequest()
                         Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
                         Tmp_win->icon_w_width,
                         Tmp_win->icon_w_height + Tmp_win->icon_p_height);
+DB(("HandleConfigureRequest: icon_xl_loc=%d, icon_x_loc=%d, icon_y_loc=%d, icon_w_width=%d, icon_w_height=%d\n", Tmp_win->icon_xl_loc, Tmp_win->icon_x_loc, Tmp_win->icon_y_loc, Tmp_win->icon_w_width, Tmp_win->icon_w_height));
     }
     xwc.width = cre->width;
     xwc.height = cre->height;
     xwc.border_width = cre->border_width;
+
+DB(("HandleConfigureRequest: configuring window 0x%x, x=%d, y=%d, width=%d, height=%d, border_width=%d\n",Event.xany.window, xwc.x, xwc.y, xwc.width, xwc.height, xwc.border_width));
     XConfigureWindow(dpy, Event.xany.window, xwcm, &xwc);
 
     if(Tmp_win)
@@ -1329,13 +1338,18 @@ void HandleConfigureRequest()
 	xwc.y = Tmp_win->icon_y_loc - Tmp_win->icon_p_height;
 	xwcm = cre->value_mask & (CWX | CWY);
 	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
+DB(("HandleConfigureRequest: reconfiguring icon pixmap window 0x%x with pixmap window 0x%x, x=%d, y=%d\n", Tmp_win->icon_pixmap_w, xwc.x, xwc.y));
       }
-      xwc.x = Tmp_win->icon_x_loc;
-      xwc.y = Tmp_win->icon_y_loc;
-      xwcm = cre->value_mask & (CWX | CWY);
       if(Tmp_win->icon_w != None)
+      {
+	xwc.x = Tmp_win->icon_x_loc;
+	xwc.y = Tmp_win->icon_y_loc;
+	xwcm = cre->value_mask & (CWX | CWY);
+DB(("HandleConfigureRequest: reconfiguring icon pixmap window 0x%x with pixmap window 0x%x, x=%d, y=%d\n", Tmp_win->icon_w, xwc.x, xwc.y));
         XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
+      }
     }
+DB(("HandleConfigureRequest: finished 1\n"));
     return;
   }
 
@@ -1350,6 +1364,7 @@ void HandleConfigureRequest()
     xwc.stack_mode = cre->detail;
     XConfigureWindow (dpy, Tmp_win->frame,
                       cre->value_mask & (CWSibling | CWStackMode), &xwc);
+DB(("HandleConfigureRequest: reconfiguring frame window 0x%x for CWSibling|CWStackMode (sendEvent enabled)\n", Tmp_win->frame));
     sendEvent = True;
   }
 
@@ -1379,6 +1394,7 @@ void HandleConfigureRequest()
   }
   /* override even if border change */
 
+DB(("HandleConfigureRequest: x=%d, y=%d, width=%d, height=%d\n",x,y,width,height));
   if (cre->value_mask & CWX)
     x = cre->x - Tmp_win->boundary_width;
   if (cre->value_mask & CWY)
@@ -1387,6 +1403,7 @@ void HandleConfigureRequest()
     width = cre->width + 2*Tmp_win->boundary_width;
   if (cre->value_mask & CWHeight)
     height = cre->height+Tmp_win->title_height+2*Tmp_win->boundary_width;
+DB(("HandleConfigureRequest: after override: x=%d, y=%d, width=%d, height=%d\n",x,y,width,height));
 
   /*
    * SetupWindow (x,y) are the location of the upper-left outer corner and
@@ -1395,10 +1412,14 @@ void HandleConfigureRequest()
    * requested client window width; the inner height is the same as the
    * requested client window height plus any title bar slop.
    */
+DB(("HandleConfigureRequest: calling ConstrainSize\n"));
   ConstrainSize(Tmp_win, &width, &height, False);
+DB(("HandleConfigureRequest: after ConstrainSize: width=%d, height=%d\n",width,height));
+DB(("HandleConfigureRequest: calling SetupFrame\n"));
   SetupFrame (Tmp_win, x, y, width, height,sendEvent);
+DB(("HandleConfigureRequest: calling KeepOnTop\n"));
   KeepOnTop();
-
+DB(("HandleConfigureRequest: finished 2\n"));
 }
 
 /***********************************************************************

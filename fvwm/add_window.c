@@ -959,9 +959,14 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 {
   long supplied = 0;
 
+DB(("GetWinowSizeHints: called\n"));
   if (!XGetWMNormalHints (dpy, tmp->w, &tmp->hints, &supplied))
+{DB(("GetWinowSizeHints: XGetWMNormalHints failed\n"));
     tmp->hints.flags = 0;
+}
 
+DB(("GetWinowSizeHints: hints are:\n"));
+if(tmp->hints.flags & PResizeInc)DB(("GetWinowSizeHints: width_inc = %d, height_inc = %d\n",tmp->hints.width_inc,tmp->hints.height_inc));
   /* Beat up our copy of the hints, so that all important field are
    * filled in! */
   if (tmp->hints.flags & PResizeInc)
@@ -980,6 +985,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
    * and vice-versa.
    */
 
+if(!(tmp->hints.flags & PBaseSize) && tmp->hints.flags & PMinSize)DB(("GetWinowSizeHints: base_width = %d, base_height= %d\n",tmp->hints.base_width,tmp->hints.base_height));
   if(!(tmp->hints.flags & PBaseSize))
     {
       if(tmp->hints.flags & PMinSize)
@@ -1053,6 +1059,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
                tmp->w);
     }
   }
+DB_WI_SIZEHINTS("GetWindowSizeHints",tmp);
 }
 
 

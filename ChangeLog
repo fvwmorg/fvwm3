@@ -1,5 +1,19 @@
 1998-12-12  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/add_window.c:
+	* fvwm/resize.c:
+	* fvwm/events.c: added massive debug information
+
+	* libs/debug.c: corrected typo: HAVE_VPRINTF -> HAVE_VFPRINTF
+
+	* fvwm/Makefile.am (fvwm2_SOURCES):
+	* fvwm/fvwm.h:
+	* fvwm/fvwmdebug.h:
+	* fvwm/fvwmdebug.c: added debug stuff (for main module only)
+
+	* fvwm/FAQ: corrected some typos, added FAQ for the
+	click-in-a-window-to-raise-it question.
+
 	* fvwm/fvwm2.1:
 	* BUGS: documented problem with keyboard shortcuts in Xnest
 

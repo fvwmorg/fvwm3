@@ -91,7 +91,7 @@ man_MANS = fvwm2.1
 
 fvwm2_SOURCES = add_window.c bindings.c borders.c \
 builtins.c colormaps.c colors.c complex.c decorations.c \
-events.c focus.c functions.c fvwm.c fvwm.h icons.c \
+events.c focus.c functions.c fvwm.c fvwm.h fvwmdebug.c fvwmdebug.h icons.c \
 menus.c menus.h misc.c misc.h modconf.c module.c module.h move.c \
 parse.h placement.c read.c resize.c screen.h style.c \
 virtual.c windows.c
@@ -118,8 +118,8 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 fvwm2_OBJECTS =  add_window.o bindings.o borders.o builtins.o \
 colormaps.o colors.o complex.o decorations.o events.o focus.o \
-functions.o fvwm.o icons.o menus.o misc.o modconf.o module.o move.o \
-placement.o read.o resize.o style.o virtual.o windows.o
+functions.o fvwm.o fvwmdebug.o icons.o menus.o misc.o modconf.o \
+module.o move.o placement.o read.o resize.o style.o virtual.o windows.o
 fvwm2_LDADD = $(LDADD)
 fvwm2_LDFLAGS = 
 CFLAGS = @CFLAGS@
@@ -134,14 +134,15 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/add_window.P .deps/bindings.P .deps/borders.P \
 .deps/builtins.P .deps/colormaps.P .deps/colors.P .deps/complex.P \
 .deps/decorations.P .deps/events.P .deps/focus.P .deps/functions.P \
-.deps/fvwm.P .deps/icons.P .deps/menus.P .deps/misc.P .deps/modconf.P \
-.deps/module.P .deps/move.P .deps/placement.P .deps/read.P \
-.deps/resize.P .deps/style.P .deps/virtual.P .deps/windows.P
+.deps/fvwm.P .deps/fvwmdebug.P .deps/icons.P .deps/menus.P .deps/misc.P \
+.deps/modconf.P .deps/module.P .deps/move.P .deps/placement.P \
+.deps/read.P .deps/resize.P .deps/style.P .deps/virtual.P \
+.deps/windows.P
 SOURCES = $(fvwm2_SOURCES)
 OBJECTS = $(fvwm2_OBJECTS)
 

@@ -434,7 +434,8 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height,Bool Init)
  *
  ***********************************************************************/
 
-void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp)
+void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp,
+		    Bool roundUp)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 #define _min(a,b) (((a) < (b)) ? (a) : (b))
@@ -443,6 +444,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
     int dwidth = *widthp, dheight = *heightp;
     int constrainx, constrainy;
 
+DB(("ConstrainSize: called to constrain tmp_win=0x%x, width=%d, height=%d, roundUp=%d\n",tmp_win,*widthp,*heightp,roundUp));
     /* roundUp is True if called from an interactive resize */
     if (roundUp)
       {
@@ -472,6 +474,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
     xinc = tmp_win->hints.width_inc;
     yinc = tmp_win->hints.height_inc;
 
+DB(("ConstrainSize: constrainx=%d, constrainy=%d, dwidth=%d, dheight=%d, minWidth=%d, minHeight=%d, baseWidth=%d, baseHeight=%d, maxWidth=%d, maxHeight=%d, xinc=%d, yinc=%d\n",constrainx,constrainy,dwidth,dheight,minWidth,minHeight,baseWidth,baseHeight,maxWidth,maxHeight,xinc,yinc));
     /*
      * First, clamp to min and max values
      */
@@ -480,6 +483,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
 
     if (dwidth > maxWidth) dwidth = maxWidth;
     if (dheight > maxHeight) dheight = maxHeight;
+DB(("ConstrainSize: after clamp: dwidth=%d, dheight=%d\n",dwidth,dheight));
 
 
     /*
@@ -487,6 +491,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
      */
     dwidth = ((dwidth - baseWidth + constrainx) / xinc * xinc) + baseWidth;
     dheight = ((dheight - baseHeight + constrainy) / yinc * yinc) + baseHeight;
+DB(("ConstrainSize: after round: dwidth=%d, dheight=%d\n",dwidth,dheight));
 
 
     /*
@@ -513,6 +518,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
 
     if (tmp_win->hints.flags & PAspect)
       {
+DB(("ConstrainSize: has aspect\n"));
 	if ((minAspectX * dheight > minAspectY * dwidth)&&(xmotion == 0))
 	  {
 	    /* Change width to match */
@@ -520,6 +526,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
 			     xinc);
 	    if (dwidth + delta <= maxWidth)
 	      dwidth += delta;
+DB(("ConstrainSize: aspect 1: dwidth=%d, delta=%d\n",dwidth,delta));
 	  }
 	if (minAspectX * dheight > minAspectY * dwidth)
 	  {
@@ -534,6 +541,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
 		if (dwidth + delta <= maxWidth)
 		  dwidth += delta;
 	      }
+DB(("ConstrainSize: aspect 2: dwidth=%d, delta=%d, dheight=%d\n",dwidth,delta,dheight));
 	  }
 
         if ((maxAspectX * dheight < maxAspectY * dwidth)&&(ymotion == 0))
@@ -542,6 +550,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
                              yinc);
             if (dheight + delta <= maxHeight)
 	      dheight += delta;
+DB(("ConstrainSize: aspect 2: dheight=%d, delta=%d=%d\n",dheight,delta));
 	  }
         if ((maxAspectX * dheight < maxAspectY * dwidth))
 	  {
@@ -556,14 +565,17 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp
 		if (dheight + delta <= maxHeight)
 		  dheight += delta;
 	      }
+DB(("ConstrainSize: aspect 2: dwidth=%d, delta=%d, dheight=%d\n",dwidth,delta,dheight));
 	  }
       }
+DB(("ConstrainSize: after reaspect: dwidth=%d, dheight=%d\n",dwidth,dheight));
 
     /*
      * Fourth, account for border width and title height
      */
     *widthp = dwidth + 2*tmp_win->boundary_width;
     *heightp = dheight + tmp_win->title_height + 2*tmp_win->boundary_width;
+DB(("ConstrainSize: final width=%d, final height=%d\n",*widthp,*heightp));
     return;
 }
 

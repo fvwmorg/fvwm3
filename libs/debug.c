@@ -15,7 +15,7 @@
 
 #include "fvwmlib.h"
 
-#ifndef HAVE_VPRINTF
+#ifndef HAVE_VFPRINTF
 # define VA_PRINTF(fp, lastarg, args) _doprnt((lastarg), (args), (fp))
 #else
 # define VA_PRINTF(fp, lastarg, args) vfprintf((fp), (lastarg), (args))
