@@ -1,5 +1,8 @@
 2002-04-29  olicha  <olivier.chapuis@free.fr>
-	
+
+	* libs/FlocaleCharset.c (FlocaleCharsetSetFlocaleCharset):
+	Fixed a core dump if the charset is not found
+
 	* libs/Flocale.c (FlocaleStringToString2b):
 	Removed some debug code
 

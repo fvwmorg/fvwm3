@@ -513,7 +513,7 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf)
 	else if (flf->font != NULL)
 	{
 		flf->fc = FlocaleCharsetOfFontStruct(dpy, flf->font);
-		if (StrEquals(flf->fc->x, "ISO10646-1"))
+		if (flf->fc != NULL && StrEquals(flf->fc->x, "ISO10646-1"))
 		{
 			flf->utf8 = True;
 		}
