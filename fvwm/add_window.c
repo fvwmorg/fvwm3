@@ -397,7 +397,13 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   XSetWindowBorderWidth (dpy, tmp_win->w,0);
   if (XGetWMIconName (dpy, tmp_win->w, &text_prop))
-    tmp_win->icon_name = (char *)text_prop.value;
+    {
+      tmp_win->icon_name = (char *)text_prop.value;
+    }
+  else
+    {
+      tmp_win->icon_name = NULL;
+    }
   if(tmp_win->icon_name==(char *)NULL)
     tmp_win->icon_name = tmp_win->name;
 

@@ -1,3 +1,8 @@
+1999-04-11  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/add_window.c (AddWindow): Make sure tmp_win->icon_name 
+	gets initialized before being used.
+
 1999-04-10  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/gsfr.h (SET_FOCUS_MODE): 
