@@ -206,6 +206,9 @@ static const struct functions func_config[] =
   {"snapattraction",SetSnapAttraction,F_SNAP_ATT,           0},
   {"snapgrid",     SetSnapGrid,      F_SNAP_GRID,           0},
   {"stick",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
+#ifdef HAVE_STROKE
+  {"stroke",       stroke_binding,   F_STROKE,              0},
+#endif /* HAVE_STROKE */
   {"style",        ProcessNewStyle,  F_STYLE,               0},
   {"title",        Nop_func,         F_TITLE,               0},
   {"titlestyle",   SetTitleStyle,    F_TITLESTYLE,          0},

@@ -80,6 +80,10 @@
 #include "focus.h"
 #include "stack.h"
 #include "move_resize.h"
+#ifdef HAVE_STROKE
+#include <errno.h>
+#include "stroke.h"
+#endif /* HAVE_STROKE */
 
 #ifndef XUrgencyHint
 #define XUrgencyHint            (1L << 8)
@@ -98,6 +102,11 @@ FvwmWindow *Tmp_win;		/* the current fvwm window */
 
 int last_event_type=0;
 Window last_event_window=0;
+
+#ifdef HAVE_STROKE
+int send_motion;
+char sequence[MAX_SEQUENCE+1];
+#endif /* HAVE_STROKE */
 
 #ifdef SHAPE
 extern int ShapeEventBase;
@@ -152,6 +161,18 @@ void InitEventHandlerJumpTable(void)
 #endif /* SHAPE */
   EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
   EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
+#ifdef HAVE_STROKE
+  EventHandlerJumpTable[ButtonRelease] =    HandleButtonRelease;
+  EventHandlerJumpTable[MotionNotify] =     HandleMotionNotify;
+#ifdef HAVE_STROKE
+#ifdef MOUSE_DROPPINGS
+  stroke_init(dpy,DefaultRootWindow(dpy));
+#else /* no MOUSE_DROPPINGS */
+  stroke_init();
+#endif /* MOUSE_DROPPINGS */
+#endif /* HAVE_STROKE */
+#endif /* HAVE_STROKE */
+	
 }
 
 /***********************************************************************
@@ -207,6 +228,9 @@ void DispatchEvent(Bool preserve_Tmp_win)
 void HandleEvents(void)
 {
   DBUG("HandleEvents","Routine Entered");
+#ifdef HAVE_STROKE
+  send_motion = FALSE;
+#endif /* HAVE_STROKE */
   while ( !isTerminated )
     {
       last_event_type = 0;
@@ -420,9 +444,15 @@ void HandleKeyPress(void)
     XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,Event.xkey.keycode,0));
 
   /* Check if there is something bound to the key */
+#ifdef HAVE_STROKE
+  action = CheckBinding(Scr.AllBindings, 0, Event.xkey.keycode,
+			Event.xkey.state, GetUnusedModifiers(), Context,
+			KEY_BINDING);
+#else
   action = CheckBinding(Scr.AllBindings, Event.xkey.keycode,
 			Event.xkey.state, GetUnusedModifiers(), Context,
 			KEY_BINDING);
+#endif /* HAVE_STROKE */
   if (action != NULL)
     {
       ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
@@ -1231,10 +1261,19 @@ void HandleButtonPress(void)
   ButtonWindow = Tmp_win;
 
   /* we have to execute a function or pop up a menu */
+#ifdef HAVE_STROKE
+  stroke_init();
+  send_motion = TRUE;
+  /* need to search for an appropriate mouse binding */
+  action = CheckBinding(Scr.AllBindings, 0, Event.xbutton.button,
+			Event.xbutton.state, GetUnusedModifiers(), Context,
+			MOUSE_BINDING);
+#else
   /* need to search for an appropriate mouse binding */
   action = CheckBinding(Scr.AllBindings, Event.xbutton.button,
 			Event.xbutton.state, GetUnusedModifiers(), Context,
 			MOUSE_BINDING);
+#endif /* HAVE_STROKE */
   if (action != NULL)
     ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
 
@@ -1249,6 +1288,68 @@ void HandleButtonPress(void)
 	      Tmp_win ? Tmp_win->frame : 0);
   ButtonWindow = NULL;
 }
+
+#ifdef HAVE_STROKE
+/***********************************************************************
+ *
+ *  Procedure:
+ *	HandleButtonRelease - ButtonRelease event handler
+ *
+ ************************************************************************/
+void HandleButtonRelease()
+{
+   unsigned int modifier;
+   int stroke;
+   char *action;
+ 
+   DBUG("HandleButtonRelease","Routine Entered");
+  
+   send_motion = FALSE;
+   stroke_trans (sequence); 
+   stroke=atoi(sequence);
+/* DEBUG printfs
+       if (stroke_trans (sequence) == TRUE)
+         printf ("Translation succeeded: "); 
+       else
+         printf ("Translation failed: ");
+       printf ("Sequence=\"%s\"\n",sequence);
+       printf ("Stroke=\"%d\"\n",stroke);
+*/
+ 
+   DBUG("HandleButtonRelease",sequence);
+   
+   Context = GetContext(Tmp_win,&Event, &PressedW);
+
+   /* We currently ignore all modifiers, and contexts, too... */
+   /*  modifier = (Event.xbutton.state & mods_used); */
+ 
+   /* need to search for an appropriate stroke binding */
+   action = CheckBinding(Scr.AllBindings, stroke, Event.xbutton.button,
+		    Event.xbutton.state, GetUnusedModifiers(), Context,
+			STROKE_BINDING);
+   /* got a match, now process it */
+/* DEBUG printfs 
+   printf ("action is %p\n", action);
+*/
+   if (action != NULL)
+     ExecuteFunction(action,Tmp_win, &Event,Context,-1, EXPAND_COMMAND);
+}
+ 
+/***********************************************************************
+ *
+ *  Procedure:
+ *	HandleMotionNotify - MotionNotify event handler
+ *
+ ************************************************************************/
+void HandleMotionNotify()
+{
+  DBUG("HandleMotionNotify","Routine Entered");
+
+  if (send_motion == TRUE)
+    stroke_record (Event.xmotion.x,Event.xmotion.y);
+}
+		
+#endif /* HAVE_STROKE */
 
 /***********************************************************************
  *

@@ -274,13 +274,25 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
                        Mod3Mask|Mod4Mask|Mod5Mask)
 
 /* Possible binding types */
+#ifdef HAVE_STROKE
+#define BindingType     char
+#define STROKE_BINDING  (char)2
+#define KEY_BINDING     (char)1
+#define MOUSE_BINDING   (char)0
+#else
 #define BindingType     Bool
 #define KEY_BINDING     True
 #define MOUSE_BINDING   False
+#endif /* HAVE_STROKE */
 
 typedef struct Binding
 {
+#ifdef HAVE_STROKE
+  BindingType type;       /* Is it a mouse, key, or stroke binding */
+  int Stroke_Seq;         /* stroke sequence */
+#else /* shouldn't it be BindingType always? */
   Bool type;              /* Is it a mouse or key binding 1= mouse; */
+#endif /* HAVE_STROKE */
   int Button_Key;         /* Mouse Button number of Keycode */
   char *key_name;         /* In case of keycode, give the key_name too */
   int Context;            /* Contex is Fvwm context, ie titlebar, frame, etc */
@@ -292,6 +304,16 @@ typedef struct Binding
 
 Bool ParseContext(char *in_context, int *out_context_mask);
 Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask);
+#ifdef HAVE_STROKE
+Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
+		    int stroke, int button, KeySym keysym, char *key_name, 
+			int modifiers, int contexts, void *action, void *action2);
+void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
+		   int stroke, int button, KeySym keysym, int modifiers, int contexts);
+void *CheckBinding(Binding *blist, int stroke, int button_keycode, 
+		   unsigned int modifier, unsigned int dead_modifiers, 
+		   int Context, BindingType type);
+#else
 Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 		    int button, KeySym keysym, char *key_name, int modifiers,
 		    int contexts, void *action, void *action2);
@@ -299,6 +321,7 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 		   int button, KeySym keysym, int modifiers, int contexts);
 void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
 		   unsigned int dead_modifiers, int Context, BindingType type);
+#endif /* HAVE_STROKE */
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		   unsigned int contexts, unsigned int dead_modifiers,
 		   Bool fGrab);

@@ -960,8 +960,15 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
 	return MENU_NOP;
       break;
 
-      /* Nothing special --- Allow other shortcuts */
+#ifndef NO_TEAR_OFF_MENUS
+    case XK_BackSpace:
+fprintf(stderr,"menu torn off\n");
+      return MENU_TEAR_OFF;
+      break;
+#endif
+
     default:
+      /* Nothing special --- Allow other shortcuts */
       /* There are no useful shortcuts, so don't do that.
        * (Dominik Vogt, 11-Nov-1998)
        * Keyboard_shortcuts(event, NULL, ButtonRelease); */
@@ -1140,7 +1147,11 @@ static MenuStatus MenuInteraction(
 	    retval = MENU_POPUP;
 	  if (retval == MENU_POPDOWN ||
 	      retval == MENU_ABORTED ||
-	      retval == MENU_SELECTED)
+	      retval == MENU_SELECTED
+#ifndef NO_TEAR_OFF_MENUS
+	      || retval == MENU_TEAR_OFF
+#endif
+)
 	    goto DO_RETURN;
 	  /* now warp to the new menu-item, if any */
 	  if (mi && (mi != find_entry(NULL, &tmrMi) || pmp->menu != tmrMi))
@@ -1560,6 +1571,13 @@ static MenuStatus MenuInteraction(
       } /* mops.flags.select_in_place */
     }
   }
+#ifndef NO_TEAR_OFF_MENUS
+  else if (retval == MENU_TEAR_OFF)
+  {
+fprintf(stderr,"got MENU_TEAR_OFF\n");
+    AddWindow(MR_WINDOW(pmp->menu), NULL);
+  }
+#endif
   if (mrPopup)
   {
     pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap, pmp);
@@ -2605,8 +2623,8 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   {
     if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
     {
-      XDrawString(dpy, MR_WINDOW(mr), currentGC, MI_LABEL_OFFSET(mi)[i], text_y,
-		  MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
+      XDrawString(dpy, MR_WINDOW(mr), currentGC, MI_LABEL_OFFSET(mi)[i],
+		  text_y, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
     }
     if (mi->hotkey && !MI_IS_TITLE(mi) && mi->hotkey_column == i)
     {

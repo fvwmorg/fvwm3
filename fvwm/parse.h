@@ -149,6 +149,9 @@ enum
   F_COLOR_LIMIT,
   F_ANIMATED_MOVE,
   F_PLACEAGAIN,
+#ifdef HAVE_STROKE
+  F_STROKE,
+#endif /* HAVE_STROKE */
 
   F_END_OF_LIST = 999,
 

@@ -517,6 +517,11 @@ int main(int argc, char **argv)
                SubstructureRedirectMask | KeyPressMask |
                SubstructureNotifyMask|
 	       ColormapChangeMask|
+#ifdef HAVE_STROKE
+	           PointerMotionMask |
+		       Button2MotionMask |
+		       ButtonMotionMask |
+#endif /* HAVE_STROKE */
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
 

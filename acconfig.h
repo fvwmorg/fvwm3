@@ -16,6 +16,9 @@
 /* Define if rplay library is used.  */
 #undef HAVE_RPLAY
 
+/* Define if stroke library is used. */
+#undef HAVE_STROKE
+
 /* Define if readline is available.  */
 #undef HAVE_READLINE
 

@@ -45,7 +45,13 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
   char *action, context[20], modifiers[20], *ptr, *token;
   char key[20] = { '\0' };
   int button = 0;
+#ifdef HAVE_STROKE
+  int stroke = 0;
+#endif /* HAVE_STROKE */
   int n1=0,n2=0,n3=0;
+#ifdef HAVE_STROKE
+  int n4=0;
+#endif /* HAVE_STROKE */
   int i;
   KeySym keysym = NoSymbol;
   int contexts;
@@ -57,10 +63,26 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
   {
     if (type == KEY_BINDING)
       n1 = sscanf(token,"%19s",key);
+#ifdef HAVE_STROKE
+	else if (type == STROKE_BINDING)
+	  n1 = sscanf(token,"%d",&stroke);
+#endif /* HAVE_STROKE */
     else
       n1 = sscanf(token,"%d",&button);
     free(token);
   }
+
+#ifdef HAVE_STROKE
+  if (type == STROKE_BINDING)
+  {
+    ptr = GetNextToken(ptr,&token);
+    if(token != NULL)
+    {
+	  n4 = sscanf(token,"%d",&button);
+	  free(token);
+    }
+  }
+#endif /* HAVE_STROKE */
 
   ptr = GetNextToken(ptr,&token);
   if(token != NULL)
@@ -76,12 +98,16 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
     free(token);
   }
 
+#ifdef HAVE_STROKE
+  if((n1 != 1)||(n2 != 1)||(n3 != 1)||((type == STROKE_BINDING)&&(n4 != 1)))
+#else 
   if((n1 != 1)||(n2 != 1)||(n3 != 1))
+#endif /* HAVE_STROKE */
   {
     fprintf(stderr,"ParseBinding: Syntax error in line %s\n", tline);
     return NULL;
   }
-
+  
   if (ParseContext(context, &contexts))
     fprintf(stderr,"ParseBinding: Illegal context in line %s\n", tline);
   if (ParseModifiers(modifiers, &mods))
@@ -124,10 +150,20 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
   */
   if (!action || action[0] == '-')
   {
+#ifdef HAVE_STROKE
+    if (type == KEY_BINDING)
+      RemoveBinding(dpy, pblist, KEY_BINDING, 0, 0, keysym, mods, contexts);
+	else if (type == STROKE_BINDING)
+	  RemoveBinding(dpy, pblist, STROKE_BINDING, stroke, button, 0, mods, 
+		    contexts);
+    else
+      RemoveBinding(dpy, pblist, MOUSE_BINDING, 0, button, 0, mods, contexts);
+#else
     if (type == KEY_BINDING)
       RemoveBinding(dpy, pblist, KEY_BINDING, 0, keysym, mods, contexts);
     else
       RemoveBinding(dpy, pblist, MOUSE_BINDING, button, 0, mods, contexts);
+#endif /* HAVE_STROKE */
     return NULL;
   }
 
@@ -178,8 +214,13 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
     *buttons_grabbed &= ~(1<<(button-1));
   }
 
+#ifdef HAVE_STROKE
+  return AddBinding(dpy, pblist, type, stroke, button, keysym, key, 
+		    mods, contexts, (void *)(stripcpy(action)), NULL);
+#else
   return AddBinding(dpy, pblist, type, button, keysym, key, mods, contexts,
 		    (void *)(stripcpy(action)), NULL);
+#endif /* HAVE_STROKE */
 }
 
 static void activate_binding(Binding *binding, BindingType type)
@@ -228,6 +269,18 @@ void mouse_binding(F_CMD_ARGS)
 		   &Scr.buttons2grab);
   activate_binding(b, MOUSE_BINDING);
 }
+
+#ifdef HAVE_STROKE
+void stroke_binding(F_CMD_ARGS)
+{
+  Binding *b;
+  
+  b = ParseBinding(dpy, &Scr.AllBindings, action, STROKE_BINDING,
+		   &Scr.nr_left_buttons, &Scr.nr_right_buttons,
+		   &Scr.buttons2grab);
+  activate_binding(b, STROKE_BINDING);
+}
+#endif /* HAVE_STROKE */
 
 /* Removes all unused modifiers from in_modifiers */
 unsigned int MaskUsedModifiers(unsigned int in_modifiers)

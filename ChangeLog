@@ -1,3 +1,19 @@
+1999-06-05  Ke Huang <kh6@cec.wustl.edu>
+   * acconfig.h: added HAVE_STROKE
+   * configure.in: added check for libstroke
+   * fvwm/Makefile.am: added stroke_LIBS and stroke_CFLAGS
+   * fvwm/bindings.c: added stroke_binding, and ifdefs for ParseBinding()
+   * fvwm/bindings.h: added prototypes for strokes
+   * fvwm/events.c: added HandleMotionNotify and HandleButtonRelease
+   * fvwm/events.h: added prototypes
+   * fvwm/functions.c: added stroke command
+   * fvwm/fvwm.c: added MotionMasks for X.
+   * fvwm/parse.h: added F_STROKE
+   * libs/Bindings.c: new prototypes for AddBinding, RemoveBinding, and
+                      CheckBinding
+   * libs/fvwmlib.h: new prototypes, and new defines for BindingType and
+                     Binding struct.
+
 1999-06-06  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (get_xy_from_position_hints): fixed a bug in position

@@ -1,5 +1,9 @@
 Changes in beta release 2.3.4 (June 1999)
 
+* Added support for mouse strokes recognition, uses LibStroke 0.3
+  by Mark Willey(willey@etla.net).
+  (http://www.etla.net/~willey/projects/libstroke/)
+
 Changes in alpha release 2.3.3 (June 1999)
 
 * There can be two mini icons per menu label instead of one now.

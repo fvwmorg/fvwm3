@@ -135,8 +135,13 @@ Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask)
 ** for mouse binding lines though, like when context is a title bar button).
 ** Specify either button or keysym, depending on type.
 */
+#ifdef HAVE_STROKE
+void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
+		   int stroke, int button, KeySym keysym, int modifiers, int contexts)
+#else
 void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 		   int button, KeySym keysym, int modifiers, int contexts)
+#endif /* HAVE_STROKE */
 {
   Binding *temp=*pblist, *temp2, *prev=NULL;
   KeyCode keycode = 0;
@@ -149,9 +154,18 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
     temp2 = temp->NextBinding;
     if (temp->type == type)
     {
+#ifdef HAVE_STROKE
+	  if ((((type == STROKE_BINDING)&&(temp->Button_Key == button)&&
+		    (temp->Stroke_Seq == stroke)) ||
+		   ((type == KEY_BINDING)&&(temp->Button_Key == keycode)) || 
+		   ((type == MOUSE_BINDING)&&(temp->Button_Key == button)) ) &&
+		  (temp->Context == contexts) &&
+		  (temp->Modifier == modifiers))
+#else
       if ((temp->Button_Key == (type == MOUSE_BINDING ? button : keycode)) &&
           (temp->Context == contexts) &&
           (temp->Modifier == modifiers))
+#endif /* HAVE_STROKE */
       {
         /* we found it, remove it from list */
         if (prev) /* middle of list */
@@ -188,9 +202,15 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
  *  memory and has to be freed by the caller.
  *
  ****************************************************************************/
+#ifdef HAVE_STROKE
+Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
+		    int stroke, int button, KeySym keysym, char *key_name, 
+			int modifiers, int contexts, void *action, void *action2)
+#else
 Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 		    int button, KeySym keysym, char *key_name, int modifiers,
 		    int contexts, void *action, void *action2)
+#endif /* HAVE_STROKE */
 {
   int i;
   int min;
@@ -245,6 +265,9 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 	(*pblist) = (Binding *)safemalloc(sizeof(Binding));
 	(*pblist)->type = type;
 	(*pblist)->Button_Key = i;
+#ifdef HAVE_STROKE
+	(*pblist)->Stroke_Seq = stroke;
+#endif /* HAVE_STROKE */
 	if (type == KEY_BINDING && key_name != NULL)
 	  (*pblist)->key_name = stripcpy(key_name);
 	else
@@ -262,8 +285,14 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 
 /* Check if something is bound to a key or button press and return the action
  * to be executed or NULL if not. */
+#ifdef HAVE_STROKE
+void *CheckBinding(Binding *blist, int stroke, int button_keycode, 
+		   unsigned int modifier,unsigned int dead_modifiers, 
+		   int Context, BindingType type)
+#else
 void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
 		   unsigned int dead_modifiers, int Context, BindingType type)
+#endif /* HAVE_STROKE */
 {
   Binding *b;
   unsigned int used_modifiers = ~dead_modifiers;
@@ -272,7 +301,13 @@ void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
 
   for (b = blist; b != NULL; b = b->NextBinding)
     {
+#ifdef HAVE_STROKE
+      if ((((b->Button_Key == button_keycode) && (type != STROKE_BINDING)) ||
+	   ((type == STROKE_BINDING) && (b->Stroke_Seq == stroke) && 
+		(b->Button_Key == button_keycode)) ||
+#else
       if ((b->Button_Key == button_keycode ||
+#endif /* HAVE_STROKE */
 	   (type == MOUSE_BINDING && b->Button_Key == 0))
 	  && (((b->Modifier & used_modifiers) == modifier) ||
 	      (b->Modifier == AnyModifier))
