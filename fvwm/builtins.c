@@ -2553,14 +2553,29 @@ void CMD_Wait(F_CMD_ARGS)
 			}
 			else if (e.type == KeyPress)
 			{
-				/* TODO: should I be using <t> or <exc->w.fw>?
+				/* should I be using <t> or <exc->w.fw>?
+				 * DV: t
 				 */
-				int context = GetContext(&t, t, &e, &nonewin);
+				int context;
+				XClassHint *class;
+				char *name;
+
+				context = GetContext(&t, t, &e, &nonewin);
+				if (t != NULL)
+				{
+					class = &(t->class);
+					name = t->name.name;
+				}
+				else
+				{
+					class = NULL;
+					name = NULL;
+				}
 				escape = CheckBinding(
 					Scr.AllBindings, STROKE_ARG(0)
 					e.xkey.keycode, e.xkey.state,
 					GetUnusedModifiers(), context,
-					BIND_KEYPRESS, &t->class, t->name.name);
+					BIND_KEYPRESS, class, name);
 				if (escape != NULL)
 				{
 					if (!strcasecmp(escape,"escapefunc"))
@@ -4062,7 +4077,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	Bool feed_back = False;
 	int stroke_width = 1;
 	XEvent e;
-	XClassHint tmp, *pClass;
+	XClassHint *class;
 
 
 
@@ -4326,27 +4341,24 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		fvwm_msg(INFO, "StrokeFunc", "stroke sequence: %s (N%s)",
 			 sequence, num_seq);
 	}
-
 	if (abort)
 	{
 		return;
 	}
-
 	if (exc->w.fw == NULL)
 	{
-		tmp.res_class = tmp.res_name = name = "root";
-		pClass = &tmp;
+		class = NULL;
+		name = NULL;
 	}
 	else
 	{
-		pClass = &exc->w.fw->class;
+		class = &exc->w.fw->class;
 		name = exc->w.fw->name.name;
 	}
-
 	/* check for a binding */
 	stroke_action = CheckBinding(
 		Scr.AllBindings, sequence, 0, modifiers, GetUnusedModifiers(),
-		exc->w.wcontext, BIND_STROKE, pClass, name);
+		exc->w.wcontext, BIND_STROKE, class, name);
 
 	/* execute the action */
 	if (stroke_action != NULL)

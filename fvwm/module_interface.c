@@ -611,15 +611,27 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		if (FPending(dpy) &&
 		    FCheckMaskEvent(dpy, KeyPressMask, &tmpevent))
 		{
+			int context;
+			XClassHint *class;
+			char *name;
+
+			context = GetContext(
+				NULL, exc->w.fw, &tmpevent, &targetWindow);
+			if (exc->w.fw != NULL)
+			{
+				class = &(exc->w.fw->class);
+				name = exc->w.fw->name.name;
+			}
+			else
+			{
+				class = NULL;
+				name = NULL;
+			}
 			escape = CheckBinding(
 				Scr.AllBindings, STROKE_ARG(0)
 				tmpevent.xkey.keycode, tmpevent.xkey.state,
-				GetUnusedModifiers(),
-				GetContext(
-					NULL, exc->w.fw, &tmpevent,
-					&targetWindow),
-				BIND_KEYPRESS, &exc->w.fw->class,
-				exc->w.fw->name.name);
+				GetUnusedModifiers(), context, BIND_KEYPRESS,
+				class, name);
 			if (escape != NULL)
 			{
 				if (!strcasecmp(escape,"escapefunc"))

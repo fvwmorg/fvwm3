@@ -243,11 +243,12 @@ static int ParseBinding(
 	char key_string[201] = "", buffer[80], *windowName = NULL, *p;
 	int button = 0;
 	int n1=0,n2=0,n3=0;
-	KeySym keysym = NoSymbol;
 	int context;
 	int modifier;
-	Bool is_unbind_request = False, is_pass_thru = False;
 	int rc;
+	KeySym keysym = NoSymbol;
+	Bool is_unbind_request = False;
+	Bool is_pass_through = False;
 	Bool is_binding_removed = False;
 	Binding *b;
 	Binding *rmlist = NULL;
@@ -268,8 +269,12 @@ static int ParseBinding(
 			if (*p == '\0')
 			{
 				if (!is_silent)
-					fvwm_msg(ERR, "ParseBinding",
-						"Syntax error in line %s - missing ')'", tline);
+				{
+					fvwm_msg(
+						ERR, "ParseBinding",
+						"Syntax error in line %s -"
+						" missing ')'", tline);
+				}
 				return 0;
 			}
 			++p;
@@ -279,8 +284,12 @@ static int ParseBinding(
 		if (*p != '\0')
 		{
 			if (!is_silent)
-				fvwm_msg(ERR, "ParseBinding",
-					"Syntax error in line %s - trailing text after specified window", tline);
+			{
+				fvwm_msg(
+					ERR, "ParseBinding",
+					"Syntax error in line %s - trailing"
+					" text after specified window", tline);
+			}
 			return 0;
 		}
 		token = PeekToken(ptr, &ptr);
@@ -454,8 +463,8 @@ static int ParseBinding(
 
 	if (action)
 	{
-		is_pass_thru = actionIsPassThru(action);
-		if (is_pass_thru)
+		is_pass_through = is_pass_through_action(action);
+		if (is_pass_through)
 		{
 			/* pass-through actions indicate that the event be
 			 * allowed to pass through to the underlying window. */
@@ -472,7 +481,7 @@ static int ParseBinding(
 		}
 	}
 	/* see if it is an unbind request */
-	if (!action || (action[0] == '-' && !is_pass_thru))
+	if (!action || (action[0] == '-' && !is_pass_through))
 	{
 		is_unbind_request = True;
 	}

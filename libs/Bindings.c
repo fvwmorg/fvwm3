@@ -380,28 +380,34 @@ void CollectBindingList(
  * if the binding actually applies to a window based on its
  * name/class/resource.
  */
-Bool bindingAppliesToWindow(Binding *binding, const XClassHint *winClass,
-	const char *winName)
+static Bool does_binding_apply_to_window(
+	Binding *binding, const XClassHint *win_class, const char *win_name)
 {
 	/* If no window name is specified with the binding then that means
 	 * the binding applies to ALL windows. */
 	if (binding->windowName == NULL)
-		return True;
-
-	if (matchWildcards(binding->windowName, winName) == TRUE ||
-	    matchWildcards(binding->windowName, winClass->res_name) == TRUE ||
-	    matchWildcards(binding->windowName, winClass->res_class) == TRUE)
 	{
 		return True;
 	}
+	else if (win_class == NULL || win_name == NULL)
+	{
+		return False;
+	}
+	if (matchWildcards(binding->windowName, win_name) == True ||
+	    matchWildcards(binding->windowName, win_class->res_name) == True ||
+	    matchWildcards(binding->windowName, win_class->res_class) == True)
+	{
+		return True;
+	}
+
 	return False;
 }
 
-Bool __compare_binding(
+static Bool __compare_binding(
 	Binding *b, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier, unsigned int used_modifiers,
-	int Context, binding_t type, const XClassHint *winClass,
-	const char *winName)
+	int Context, binding_t type, const XClassHint *win_class,
+	const char *win_name)
 {
 	if (b->type != type || !(b->Context & Context))
 	{
@@ -412,7 +418,6 @@ Bool __compare_binding(
 	{
 		return False;
 	}
-
 	if (BIND_IS_MOUSE_BINDING(type) &&
 	    (b->Button_Key != button_keycode && b->Button_Key != 0))
 	{
@@ -430,20 +435,20 @@ Bool __compare_binding(
 		return False;
 	}
 #endif
-
-	if (!bindingAppliesToWindow(b, winClass, winName))
+	if (!does_binding_apply_to_window(b, win_class, win_name))
 	{
 		return False;
 	}
+
 	return True;
 }
 
-/* actionIsPassThru() - returns true if the action indicates that the
+/* is_pass_through_action() - returns true if the action indicates that the
  * binding should be ignored by FVWM & passed through to the underlying
  * window.
  * Note: it is only meaningful to check for pass-thru actions on
  * window-specific bindings. */
-Bool actionIsPassThru (const char *action)
+Bool is_pass_through_action(const char *action)
 {
 	/* action should never be NULL. */
 	return (strncmp(action, "--", 2) == 0);
@@ -454,8 +459,8 @@ Bool actionIsPassThru (const char *action)
 void *CheckBinding(
 	Binding *blist, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier,unsigned int dead_modifiers,
-	int Context, binding_t type, const XClassHint *winClass,
-	const char *winName)
+	int Context, binding_t type, const XClassHint *win_class,
+	const char *win_name)
 {
 	Binding *b;
 	unsigned int used_modifiers = ~dead_modifiers;
@@ -464,9 +469,10 @@ void *CheckBinding(
 	modifier &= (used_modifiers & ALL_MODIFIERS);
 	for (b = blist; b != NULL; b = b->NextBinding)
 	{
-	if (__compare_binding(
-		    b, STROKE_ARG(stroke) button_keycode, modifier,
-		    used_modifiers, Context, type, winClass, winName) == True)
+		if (__compare_binding(
+			    b, STROKE_ARG(stroke) button_keycode, modifier,
+			    used_modifiers, Context, type, win_class,
+			    win_name) == True)
 		{
 			/* If this is a global binding, keep searching <blist>
 			 * in the hope of finding a window-specific binding.
@@ -477,7 +483,7 @@ void *CheckBinding(
 				action = b->Action;
 				if (b->windowName)
 				{
-					if (actionIsPassThru(action))
+					if (is_pass_through_action(action))
 					{
 						action = NULL;
 					}
@@ -493,9 +499,9 @@ void *CheckBinding(
 void *CheckTwoBindings(
 	Bool *ret_is_second_binding, Binding *blist, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier,unsigned int dead_modifiers,
-	int Context, binding_t type, const XClassHint *winClass,
-	const char *winName, int Context2, binding_t type2,
-	const XClassHint *winClass2, const char *winName2)
+	int Context, binding_t type, const XClassHint *win_class,
+	const char *win_name, int Context2, binding_t type2,
+	const XClassHint *win_class2, const char *win_name2)
 {
 	Binding *b;
 	unsigned int used_modifiers = ~dead_modifiers;
@@ -506,7 +512,7 @@ void *CheckTwoBindings(
 	{
 		if (__compare_binding(
 			    b, STROKE_ARG(stroke) button_keycode, modifier,
-			    used_modifiers, Context, type, winClass, winName)
+			    used_modifiers, Context, type, win_class, win_name)
 		    == True)
 		{
 			if (action == NULL || b->windowName)
@@ -515,7 +521,7 @@ void *CheckTwoBindings(
 				action = b->Action;
 				if (b->windowName)
 				{
-					if (actionIsPassThru(action))
+					if (is_pass_through_action(action))
 						action = NULL;
 					break;
 				}
@@ -523,8 +529,8 @@ void *CheckTwoBindings(
 		}
 		if (__compare_binding(
 			    b, STROKE_ARG(stroke) button_keycode, modifier,
-			    used_modifiers, Context2, type2, winClass2,
-			    winName2) == True)
+			    used_modifiers, Context2, type2, win_class2,
+			    win_name2) == True)
 		{
 			if (action == NULL || b->windowName)
 			{
@@ -532,8 +538,10 @@ void *CheckTwoBindings(
 				action = b->Action;
 				if (b->windowName)
 				{
-					if (actionIsPassThru(action))
+					if (is_pass_through_action(action))
+					{
 						action = NULL;
+					}
 					break;
 				}
 			}

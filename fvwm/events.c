@@ -1561,18 +1561,14 @@ static Bool __handle_bpress_action(
 static void __handle_bpress_on_root(const exec_context_t *exc)
 {
 	char *action;
-	XClassHint tmp;
 
 	PressedW = None;
 	__handle_bpress_stroke();
 	/* search for an appropriate mouse binding */
-	/* exc->w.fw is always NULL, hence why we use "root". */
-	tmp.res_class = tmp.res_name = "root";
 	action = CheckBinding(
 		Scr.AllBindings, STROKE_ARG(0) exc->x.etrigger->xbutton.button,
 		exc->x.etrigger->xbutton.state, GetUnusedModifiers(), C_ROOT,
-		BIND_BUTTONPRESS, &tmp, tmp.res_class);
-
+		BIND_BUTTONPRESS, NULL, NULL);
 	if (action && *action)
 	{
 		const exec_context_t *exc2;
@@ -1705,36 +1701,33 @@ void HandleButtonPress(const evh_args_t *ea)
 #ifdef HAVE_STROKE
 void HandleButtonRelease(const evh_args_t *ea)
 {
-	char *action, *name;
+	char *action;
+	char *name;
 	int real_modifier;
 	const XEvent *te = ea->exc->x.etrigger;
-	XClassHint	tmp, *pClass;
+	XClassHint *class;
 
 	DBUG("HandleButtonRelease", "Routine Entered");
-
 	send_motion = False;
 	stroke_trans (sequence);
-
 	DBUG("HandleButtonRelease",sequence);
-
 	/*  Allows modifier to work (Only R context works here). */
 	real_modifier = te->xbutton.state - (1 << (7 + te->xbutton.button));
 	if (ea->exc->w.fw == NULL)
 	{
-		tmp.res_class = tmp.res_name = name = "root";
-		pClass = &tmp;
+		class = NULL;
+		name = NULL;
 	}
 	else
 	{
-		pClass = &ea->exc->w.fw->class;
+		class = &ea->exc->w.fw->class;
 		name = ea->exc->w.fw->name.name;
 	}
 	/* need to search for an appropriate stroke binding */
 	action = CheckBinding(
 		Scr.AllBindings, sequence, te->xbutton.button, real_modifier,
 		GetUnusedModifiers(), ea->exc->w.wcontext, BIND_STROKE,
-		pClass, name);
-
+		class, name);
 	/* got a match, now process it */
 	if (action != NULL && (action[0] != 0))
 	{

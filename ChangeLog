@@ -1,3 +1,18 @@
+2004-10-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/bindings.c (ParseBinding):
+	reformatted
+	* libs/Bindings.c (bindingAppliesToWindow):
+	(__compare_binding):
+	* fvwm/module_interface.c (CMD_ModuleSynchronous):
+	* fvwm/builtins.c (CMD_Wait):
+	(CMD_StrokeFunc):
+	* fvwm/events.c (__handle_bpress_on_root):
+	(HandleButtonRelease):
+	fixed crash in window specific binding code
+	fixed handling of root window in window specific binding code
+	renamed some functions
+
 2004-10-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (__update_windowlist):

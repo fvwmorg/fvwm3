@@ -65,13 +65,13 @@ Bool RemoveMatchingBinding(
 void *CheckBinding(
 	Binding *blist, STROKE_ARG(char *stroke) int button_keycode,
 	unsigned int modifier, unsigned int dead_modifiers, int Context,
-	binding_t type, const XClassHint *winClass, const char *winName);
+	binding_t type, const XClassHint *win_class, const char *win_name);
 void *CheckTwoBindings(
 	Bool *ret_is_second_binding, Binding *blist, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier,unsigned int dead_modifiers,
-	int Context, binding_t type, const XClassHint *winClass,
-	const char *winName, int Context2, binding_t type2,
-	const XClassHint *winClass2, const char *winName2);
+	int Context, binding_t type, const XClassHint *win_class,
+	const char *win_name, int Context2, binding_t type2,
+	const XClassHint *win_class2, const char *win_name2);
 void GrabWindowKey(
 	Display *dpy, Window w, Binding *binding, unsigned int contexts,
 	unsigned int dead_modifiers, Bool fGrab);
@@ -91,9 +91,9 @@ void GrabWindowKeyOrButton(
 	Display *dpy, Window w, Binding *binding, unsigned int contexts,
 	unsigned int dead_modifiers, Cursor cursor, Bool fGrab);
 KeySym FvwmStringToKeysym(Display *dpy, char *key);
-Bool bindingAppliesToWindow(Binding *binding, const XClassHint *winClass,
-	const char *winName);
-Bool actionIsPassThru (const char *action);
+Bool bindingAppliesToWindow(Binding *binding, const XClassHint *win_class,
+	const char *win_name);
+Bool is_pass_through_action(const char *action);
 
 
 #endif /* FVWMLIB_BINDINGS_H_H */
