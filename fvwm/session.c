@@ -395,11 +395,13 @@ LoadWindowStates(char *filename)
   int i, pos, pos1;
   unsigned long w;
 
-  if (!filename || !*filename) return;
+  if (!filename || !*filename)
+    return;
 
   setRealStateFilename(filename);
 
-  if ((f = fopen(filename, "r")) == NULL) return;
+  if ((f = fopen(filename, "r")) == NULL)
+    return;
 
 #ifdef FVWM_DEBUG_MSGS
   fprintf(stderr, "\tLoading %s\n", filename);
@@ -663,6 +665,7 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       }
       *do_shade = IS_SHADED(&(matches[i]));
       *do_max = IS_MAXIMIZED(&(matches[i]));
+      SET_ICON_MOVED(ewin, IS_ICON_MOVED(&(matches[i])));
       if (IS_ICONIFIED(&(matches[i])))
       {
 	/*
@@ -670,7 +673,12 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	  for icon placement
 	*/
 	SET_DO_START_ICONIC(ewin, 1);
-	SET_ICON_MOVED(ewin, 1);
+	if (!IS_ICON_MOVED(ewin))
+	{
+	  /* only temporary to initially place the icon */
+	  SET_ICON_MOVED(ewin, 1);
+	  SET_DELETE_ICON_MOVED(ewin, 1);
+	}
       }
       else
       {

@@ -149,24 +149,35 @@ void fvwmlib_get_target_window(
   KeySym keysym;
 
   trials = 0;
-  while((trials <100)&&(val != GrabSuccess))
+  while((trials <10)&&(val != GrabSuccess))
+  {
+    val=XGrabPointer(dpy, Root, True,
+		     ButtonPressMask | ButtonReleaseMask,
+		     GrabModeAsync, GrabModeAsync, Root,
+		     XCreateFontCursor(dpy,XC_crosshair),
+		     CurrentTime);
+    switch (val)
     {
-      val=XGrabPointer(dpy, Root, True,
-                       ButtonPressMask | ButtonReleaseMask,
-		       GrabModeAsync, GrabModeAsync, Root,
-		       XCreateFontCursor(dpy,XC_crosshair),
-		       CurrentTime);
-      if(val != GrabSuccess)
-	{
-	  usleep(1000);
-	}
+    case GrabInvalidTime:
+    case GrabNotViewable:
+      /* give up */
+      trials += 100000;
+      break;
+    case GrabSuccess:
+      break;
+    case AlreadyGrabbed:
+    case GrabFrozen:
+    default:
+      usleep(10000);
       trials++;
+      break;
     }
+  }
   if(val != GrabSuccess)
-    {
-      fprintf(stderr,"%s: Couldn't grab the cursor!\n",MyName);
-      exit(1);
-    }
+  {
+    fprintf(stderr,"%s: Couldn't grab the cursor!\n",MyName);
+    exit(1);
+  }
   XGrabKeyboard(dpy, Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
 
   while (!finished && !canceled)

@@ -15,18 +15,18 @@ New since last update:
 
 Closed since last update:
 
-48, 133, 145, 148, 157, 160, 161, 150
+48, 107, 120, 133, 145, 148, 150, 157, 160, 161
 
 ---------- Summary: ----------------------------------------------
 
  2 to be verified
  2 to be discussed
-23 to do
+21 to do
  3 distribution issues
  9 testing
 ----------------------
-39 open items
-122 items closed
+37 open items
+124 items closed
 161 items in total
 
 ---------- To be verified: ---------------------------------------
@@ -53,18 +53,12 @@ Closed since last update:
  32) Several applications are reported to not resize well under fvwm
      (Datek's "Streamer", CodeWarrior).
      [optional]
-107) "Recapture" while an icon is focused takes several seconds.
-     [reported by Mikhael; confirmed by Dominik]
 116) Fix problem that can cause long icon titles to be expanded
      although the pointer is not over it.
      [reported by Mikhael]
 117) Investigate icons disappearing if icon changes while on a
      different desk.
      [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
-120) Icons are not always sorted properly; there may be
-     gaps after page switching (with IconBox).
-     [reported by Joerg Klemenz on 26-Feb-2000]
-     [confirmed by Dominik (hard to reproduce)]
 122) Investigate FvwmButtons panel problem.
      [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
 123) Bug #378 (FvwmPager interferes with xscreensaver)
@@ -125,11 +119,16 @@ Closed since last update:
      [still unreproducible; not relevant for 2.4]
  48) Finish Windoze 95 like config file.
  90) Icon distribution.
+107) "Recapture" while an icon is focused takes several seconds.
+     [reported by Mikhael; confirmed by Dominik]
+     [workaround implemented]
 110) Running two FvwmAuto modules at one freezes fvwm.
 119) MaxSwallow does not work in FvwmWharf e.g. with
      'xload -g 50x50'.
      [reported by Dominik]
      [not reproducible anymore]
+120) Icons are not always sorted properly; there may be
+     gaps after page switching (with IconBox).
 133) Bug #602 (window placement w/ 2.3.15)
 140) Remove "Layer" command?  Instead, the "Layer" styles
      can be applied immediately w/o Recapture.

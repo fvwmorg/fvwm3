@@ -209,6 +209,8 @@ typedef struct
   common_flags_type common;
   unsigned does_wm_delete_window : 1;
   unsigned does_wm_take_focus : 1;
+  unsigned do_delete_icon_moved : 1; /* delete is_icon_moved flag after
+				      * evaluating it for the first time */
   unsigned do_iconify_after_map : 1;
   unsigned do_reuse_destroyed : 1;   /* Reuse this struct, don't free it,
 				      * when destroying/recapturing window. */

@@ -158,6 +158,12 @@
 
 
 /* access to the special flags of a window */
+#define DO_DELETE_ICON_MOVED(fw) \
+                               ((fw)->flags.do_delete_icon_moved)
+#define SET_DELETE_ICON_MOVED(fw,x) \
+                               (fw)->flags.do_delete_icon_moved = !!(x)
+#define SETM_DELETE_ICON_MOVED(fw,x) \
+                               (fw)->flag_mask.do_delete_icon_moved = !!(x)
 #define DO_REUSE_DESTROYED(fw) ((fw)->flags.do_reuse_destroyed)
 #define SET_DO_REUSE_DESTROYED(fw,x) \
           (fw)->flags.do_reuse_destroyed = !!(x)

@@ -135,20 +135,34 @@ Bool GrabEm(int cursor, int grab_context)
 	(val = XGrabPointer(
 	  dpy, grab_win, True, mask, GrabModeAsync, GrabModeAsync, Scr.Root,
 	  Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
+  {
+    switch (val)
     {
-      i++;
+    case GrabInvalidTime:
+    case GrabNotViewable:
+      /* give up */
+      i += 100000;
+      break;
+    case GrabSuccess:
+      break;
+    case AlreadyGrabbed:
+    case GrabFrozen:
+    default:
       /* If you go too fast, other windows may not get a change to release
        * any grab that they have. */
       usleep(10000);
+      i++;
+      break;
     }
+  }
 
   /* If we fall out of the loop without grabbing the pointer, its
      time to give up */
   XSync(dpy,0);
   if(val!=GrabSuccess)
-    {
-      return False;
-    }
+  {
+    return False;
+  }
   GrabPointerState |= grab_context;
   return True;
 }

@@ -879,14 +879,15 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   if(!PPosOverride)
     XFlush(dpy);
 
+  fprintf(stderr,"adding\n");
   /* If the window has never been mapped before ... */
   if(!Tmp_win || (Tmp_win && DO_REUSE_DESTROYED(Tmp_win)))
-    {
-      /* Add decorations. */
-      Tmp_win = AddWindow(Event.xany.window, ReuseWin);
-      if (Tmp_win == NULL)
-	return;
-    }
+  {
+    /* Add decorations. */
+    Tmp_win = AddWindow(Event.xany.window, ReuseWin);
+    if (Tmp_win == NULL)
+      return;
+  }
   /*
    * Make sure at least part of window is on this page
    * before giving it focus...
@@ -919,7 +920,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	case InactiveState:
 	default:
 	  if (Tmp_win->Desk == Scr.CurrentDesk)
-	    {
+	  {
 	      XMapWindow(dpy, Tmp_win->w);
 	      XMapWindow(dpy, Tmp_win->frame);
 	      SET_MAP_PENDING(Tmp_win, 1);
@@ -950,14 +951,14 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	    SET_ICONIFIED_BY_PARENT(Tmp_win, 1);
 	  }
 	  if (Tmp_win->wmhints)
-	    {
-	      Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
-		      Tmp_win->wmhints->icon_y);
-	    }
+	  {
+	    Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
+		    Tmp_win->wmhints->icon_y);
+	  }
 	  else
-	    {
-	      Iconify(Tmp_win, 0, 0);
-	    }
+	  {
+	    Iconify(Tmp_win, 0, 0);
+	  }
 	  break;
 	}
       if(!PPosOverride)
@@ -966,9 +967,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
     }
   /* If no hints, or currently an icon, just "deiconify" */
   else
-    {
-      DeIconify(Tmp_win);
-    }
+  {
+    DeIconify(Tmp_win);
+  }
   if (IS_SHADED(Tmp_win))
   {
     BroadcastPacket(M_WINDOWSHADE, 3, Tmp_win->w, Tmp_win->frame,
@@ -978,6 +979,11 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   /* Just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state. */
   SET_DO_START_ICONIC(Tmp_win, 0);
+  if (DO_DELETE_ICON_MOVED(Tmp_win))
+  {
+    SET_DELETE_ICON_MOVED(Tmp_win, 0);
+    SET_ICON_MOVED(Tmp_win, 0);
+  }
   /* Clean out the global so that it isn't used on additional map events. */
   isIconicState = DontCareState;
   GNOME_SetClientList();

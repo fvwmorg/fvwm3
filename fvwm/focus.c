@@ -123,34 +123,34 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   lastFocusType = FocusByMouse;
 
   if(Scr.NumberOfScreens > 1)
+  {
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		  &JunkX, &JunkY, &JunkX, &JunkY, &JunkMask);
+    if(JunkRoot != Scr.Root)
     {
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &JunkX, &JunkY, &JunkX, &JunkY, &JunkMask);
-      if(JunkRoot != Scr.Root)
-	{
-	  if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed)))
-	    {
-	      /*
-	          RBW - 12/09/1999 - this grab stuff looks way out of sync with
-		  the regular handling - look into this later. I can't test a
-		  multi-head setup just now.
-	      */
-	      /* Need to grab buttons for focus window */
-	      XSync(dpy,0);
-	      for(i=0;i<3;i++)
-		if(Scr.buttons2grab & (1<<i))
-		  {
-		    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
-			      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-			      Scr.FvwmCursors[CRS_SYS]);
-		  }
-	      Scr.Focus = NULL;
-	      Scr.Ungrabbed = NULL;
-	      FOCUS_SET(Scr.NoFocusWin);
-	    }
-	  return;
-	}
+      if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed)))
+      {
+	/*
+	  RBW - 12/09/1999 - this grab stuff looks way out of sync with
+	  the regular handling - look into this later. I can't test a
+	  multi-head setup just now.
+	*/
+	/* Need to grab buttons for focus window */
+	XSync(dpy,0);
+	for(i=0;i<3;i++)
+	  if(Scr.buttons2grab & (1<<i))
+	  {
+	    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
+			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
+			Scr.FvwmCursors[CRS_SYS]);
+	  }
+	Scr.Focus = NULL;
+	Scr.Ungrabbed = NULL;
+	FOCUS_SET(Scr.NoFocusWin);
+      }
+      return;
     }
+  }
 
   if(Fw != NULL && !NoWarp)
   {
@@ -185,70 +185,67 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
       (HAS_CLICK_FOCUS(Scr.Ungrabbed) ||
        DO_RAISE_MOUSE_FOCUS_CLICK(Scr.Ungrabbed)) &&
       (Scr.Ungrabbed != Fw))
-    {
-      /* need to grab all buttons for window that we are about to
-       * unfocus */
-      XSync(dpy,0);
-      for(i=0;i<3;i++)
-	if(Scr.buttons2grab & (1<<i))
-	  XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
-		      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-		      Scr.FvwmCursors[CRS_SYS]);
-      Scr.Ungrabbed = NULL;
-    }
+  {
+    /* need to grab all buttons for window that we are about to
+     * unfocus */
+    XSync(dpy,0);
+    for(i=0;i<3;i++)
+      if(Scr.buttons2grab & (1<<i))
+	XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
+		    ButtonPressMask, GrabModeSync,GrabModeAsync,None,
+		    Scr.FvwmCursors[CRS_SYS]);
+    Scr.Ungrabbed = NULL;
+  }
   /* if we do click to focus, remove the grab on mouse events that
    * was made to detect the focus change */
   if((Fw != NULL)&&(HAS_CLICK_FOCUS(Fw)))
-    {
-      for(i=0;i<3;i++)
-	if(Scr.buttons2grab & (1<<i))
-	  {
-	    XUngrabButton(dpy,(i+1),0,Fw->Parent);
-	    XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Fw->Parent);
-	  }
-      Scr.Ungrabbed = Fw;
-    }
-/*  RBW - allow focus to go to a NoIconTitle icon window so
-    auto-raise will work on it...
-  if((Fw)&&(Fw->flags & ICONIFIED)&&(Fw->icon_w))
-    w= Fw->icon_w;
-*/
+  {
+    for(i=0;i<3;i++)
+      if(Scr.buttons2grab & (1<<i))
+      {
+	XUngrabButton(dpy,(i+1),0,Fw->Parent);
+	XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Fw->Parent);
+      }
+    Scr.Ungrabbed = Fw;
+  }
+  /* RBW - allow focus to go to a NoIconTitle icon window so
+   * auto-raise will work on it... */
   if((Fw)&&(IS_ICONIFIED(Fw)))
+  {
+    if (Fw->icon_w)
     {
-      if (Fw->icon_w)
-        {
-          w = Fw->icon_w;
-        }
-      else if (Fw->icon_pixmap_w)
-        {
-          w = Fw->icon_pixmap_w;
-        }
+      w = Fw->icon_w;
     }
+    else if (Fw->icon_pixmap_w)
+    {
+      w = Fw->icon_pixmap_w;
+    }
+  }
 
   if(Fw && IS_LENIENT(Fw))
-    {
-      FOCUS_SET(w);
-      Scr.Focus = Fw;
-      Scr.UnknownWinFocused = None;
-    }
+  {
+    FOCUS_SET(w);
+    Scr.Focus = Fw;
+    Scr.UnknownWinFocused = None;
+  }
   else if (!Fw || !(Fw->wmhints) || !(Fw->wmhints->flags & InputHint) ||
            Fw->wmhints->input != False)
-    {
-      /* Window will accept input focus */
-      FOCUS_SET(w);
-      Scr.Focus = Fw;
-      Scr.UnknownWinFocused = None;
-    }
+  {
+    /* Window will accept input focus */
+    FOCUS_SET(w);
+    Scr.Focus = Fw;
+    Scr.UnknownWinFocused = None;
+  }
   else if ((Scr.Focus)&&(Scr.Focus->Desk == Scr.CurrentDesk))
-    {
-      /* Window doesn't want focus. Leave focus alone */
-      /* FOCUS_SET(Scr.Hilite->w);*/
-    }
+  {
+    /* Window doesn't want focus. Leave focus alone */
+    /* FOCUS_SET(Scr.Hilite->w);*/
+  }
   else
-    {
-      FOCUS_SET(Scr.NoFocusWin);
-      Scr.Focus = NULL;
-    }
+  {
+    FOCUS_SET(Scr.NoFocusWin);
+    Scr.Focus = NULL;
+  }
 
 
   if ((Fw)&&(WM_TAKES_FOCUS(Fw)))

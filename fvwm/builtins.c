@@ -2340,10 +2340,16 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   if (fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
-  if (BUSY_RECAPTURE & Scr.BusyCursor)
+  /* FIXME: domivogt (1-Jun-2000): For some reason unknown to me the pointer
+   * grab fails if an icon is focused.  So, to prevent fvwm from hanging, do not
+   * use the BUSY_CURSOR in this case.  This is not a proper fix, but I am out
+   * of ideas. */
+  if ((!Scr.Focus || !IS_ICONIFIED(Scr.Focus)) &&
+      (Scr.BusyCursor & BUSY_RECAPTURE))
+  {
     if (GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
-  GrabEm(CRS_WAIT, GRAB_BUSY);
+  }
   XSync(dpy,0);
   MyXGrabServer(dpy);
   XSync(dpy,0);
