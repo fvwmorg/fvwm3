@@ -1,3 +1,7 @@
+Wed Jan 20 01:13:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* INSTALL.fvwm: Removed doubled paragraph.
+
 1999-01-19  Paul D. Smith  <psmith@gnu.org>
 
 	* README: Update new URLs; a few spelling corrections; specify
@@ -5,7 +9,6 @@
 
 1999-01-19  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
-	* configure.in:
 	* README: Changed "care and feeding" info from Brady Montz to the
 	Fvwm Workers.
 

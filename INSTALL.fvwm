@@ -19,10 +19,6 @@ If you prefer to treat the extras as first-class modules, give
 `--enable-extras' option to configure.  Then `make' and `make install'
 will recurse into the `extras' directory.
 
-If you prefer to treat the extras as first-class modules, give the
-`--enable-extras' option to configure.  Then `make' and `make install'
-will recurse into the `extras' directory automatically.
-
 
 What gets installed, and Where
 ==============================
