@@ -733,8 +733,6 @@ void list_configure(unsigned long *body)
 	    DO_STACK_TRANSIENT_PARENT( cfgpacket ) );
     printf( "do_window_list_skip: %d\n",
 	    DO_SKIP_WINDOW_LIST( cfgpacket ) );
-    printf( "focus_mode: %d\n",
-	    GET_FOCUS_MODE( cfgpacket ) );
     printf( "has_depressable_border: %d\n",
 	    HAS_DEPRESSABLE_BORDER( cfgpacket ) );
     printf( "has_mwm_border: %d\n",

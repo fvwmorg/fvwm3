@@ -100,10 +100,6 @@ int fpol_query_allow_set_focus(
 		return FP_DO_FOCUS_BY_FUNCTION(*fpol);
 	case FOCUS_SET_FORCE:
 		return 1;
-	default:
-		/* bug!!! */
-		abort();
-		exit(87);
 	}
 
 	return 0;
@@ -122,6 +118,65 @@ int fpol_query_allow_user_focus(
 	return !!flag;
 }
 
+int fpol_is_policy_changed(
+	focus_policy_t *fpol)
+{
+	if (FP_DO_FOCUS_ENTER(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_UNFOCUS_LEAVE(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_FOCUS_CLICK_CLIENT(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_FOCUS_CLICK_DECOR(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_FOCUS_BY_PROGRAM(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_FOCUS_BY_FUNCTION(*fpol))
+	{
+		return 1;
+	}
+	if (FP_IS_LENIENT(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_RAISE_FOCUSED_CLIENT_CLICK(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_RAISE_FOCUSED_DECOR_CLICK(*fpol))
+	{
+		return 1;
+	}
+	if (FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(*fpol))
+	{
+		return 1;
+	}
+	if (FP_USE_MOUSE_BUTTONS(*fpol))
+	{
+		return 1;
+	}
+	if (FP_USE_MODIFIERS(*fpol))
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 #if 0
 /*** to do: ***/
 
@@ -129,8 +184,8 @@ Write style flags;
 
 unsigned do_focus_enter : 1;
 unsigned do_unfocus_leave : 1;
-/*!!!*/unsigned do_focus_click_client : 1;
-/*!!!*/unsigned do_focus_click_decor : 1;
+unsigned do_focus_click_client : 1;
+unsigned do_focus_click_decor : 1;
 unsigned do_focus_by_program : 1;
 unsigned do_focus_by_function : 1;
 unsigned do_warp_pointer_on_focus_func : 1;

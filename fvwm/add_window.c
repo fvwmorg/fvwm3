@@ -2907,15 +2907,6 @@ void destroy_window(FvwmWindow *fw)
 	}
 	focus_grab_buttons_on_layer(fw->layer);
 
-	/****** adjust fvwm internal windows II ******/
-
-	/* restore_focus_after_unmap takes care of Scr.pushed_window and the
-	 * colormap window */
-	if (fw == Scr.Ungrabbed)
-	{
-		Scr.Ungrabbed = NULL;
-	}
-
 	/****** destroy auxiliary windows ******/
 
 	destroy_auxiliary_windows(fw, True);

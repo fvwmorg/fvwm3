@@ -36,12 +36,6 @@
 	(fw)->flags.common.s.do_not_pass_click_focus_click = !!(x)
 #define SETM_DO_NOT_PASS_CLICK_FOCUS_CLICK(fw,x) \
 	(fw)->flag_mask.common.s.do_not_pass_click_focus_click = !!(x)
-#define DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw) \
-	((fw)->flags.common.s.do_ignore_mouse_focus_click_motion)
-#define SET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw,x) \
-	(fw)->flags.common.s.do_ignore_mouse_focus_click_motion = !!(x)
-#define SETM_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw,x) \
-	(fw)->flag_mask.common.s.do_ignore_mouse_focus_click_motion = !!(x)
 #define DO_RAISE_TRANSIENT(fw) \
 	((fw)->flags.common.s.do_raise_transient)
 #define DO_RESIZE_OPAQUE(fw) \
@@ -186,26 +180,12 @@
 	(fw)->flags.common.is_sticky = !!(x)
 #define SETM_STICKY(fw,x) \
 	(fw)->flag_mask.common.is_sticky = !!(x)
-#define GET_FOCUS_MODE(fw) \
-	((fw)->flags.common.s.focus_mode)
-#define SET_FOCUS_MODE(fw,x) \
-	(fw)->flags.common.s.focus_mode = (x)
-#define SETM_FOCUS_MODE(fw,x) \
-	(fw)->flag_mask.common.s.focus_mode =(x)
-#define HAS_CLICK_FOCUS(fw) \
-	((fw)->flags.common.s.focus_mode == FOCUS_CLICK)
-#define HAS_MOUSE_FOCUS(fw) \
-	((fw)->flags.common.s.focus_mode == FOCUS_MOUSE)
 #define HAS_ICON_FONT(fw) \
 	((fw)->flags.common.has_icon_font)
 #define SET_HAS_ICON_FONT(fw,x) \
 	(fw)->flags.common.has_icon_font = !!(x)
 #define SETM_HAS_ICON_FONT(fw,x) \
 	(fw)->flag_mask.common.has_icon_font = !!(x)
-#define HAS_SLOPPY_FOCUS(fw) \
-	((fw)->flags.common.s.focus_mode == FOCUS_SLOPPY)
-#define HAS_NEVER_FOCUS(fw) \
-	((fw)->flags.common.s.focus_mode == FOCUS_NEVER)
 #define HAS_NO_ICON_TITLE(fw) \
 	((fw)->flags.common.s.has_no_icon_title)
 #define SET_HAS_NO_ICON_TITLE(fw,x) \

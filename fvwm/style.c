@@ -1284,9 +1284,6 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "ClickToFocus"))
 	{
 	  found = True;
-	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_CLICK);
-	  SMSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
-	  SCSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
@@ -1479,9 +1476,6 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "FocusFollowsMouse"))
 	{
 	  found = True;
-	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_MOUSE);
-	  SMSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
-	  SCSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
@@ -2211,9 +2205,6 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "MOUSEFOCUS"))
 	{
 	  found = True;
-	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_MOUSE);
-	  SMSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
-	  SCSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
@@ -2269,16 +2260,16 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "MouseFocusClickIgnoreMotion"))
 	{
 	  found = True;
-	  SFSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
-	  SMSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
-	  SCSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
+	  FPS_IGNORE_FOCUS_CLICK_MOTION(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_IGNORE_FOCUS_CLICK_MOTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_IGNORE_FOCUS_CLICK_MOTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "MouseFocusClickIgnoreMotionOff"))
 	{
 	  found = True;
-	  SFSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 0);
-	  SMSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
-	  SCSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
+	  FPS_IGNORE_FOCUS_CLICK_MOTION(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_IGNORE_FOCUS_CLICK_MOTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_IGNORE_FOCUS_CLICK_MOTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "MAXWINDOWSIZE"))
 	{
@@ -2471,9 +2462,6 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "NEVERFOCUS"))
 	{
 	  found = True;
-	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_NEVER);
-	  SMSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
-	  SCSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
@@ -2735,9 +2723,6 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "SLOPPYFOCUS"))
 	{
 	  found = True;
-	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_SLOPPY);
-	  SMSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
-	  SCSET_FOCUS_MODE(*ptmpstyle, FOCUS_MASK);
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
@@ -3401,15 +3386,9 @@ void check_window_style_change(
 	}
 
 	/*
-	 * focus
-	 * do_not_pass_click_focus_click
-	 * do_not_raise_click_focus_click
-	 * do_raise_mouse_focus_click
+	 * focus policy
 	 */
-	if (SCFOCUS_MODE(*ret_style) ||
-	    !SCDO_NOT_PASS_CLICK_FOCUS_CLICK(*ret_style) ||
-	    FP_DO_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ret_style)) ||
-	    FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ret_style)))
+	if (fpol_is_policy_changed(&SC_FOCUS_POLICY(*ret_style)))
 	{
 		flags->do_setup_focus_policy = True;
 	}

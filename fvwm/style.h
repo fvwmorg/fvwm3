@@ -300,20 +300,6 @@
 	((st).flag_mask.common.s.do_not_pass_click_focus_click = !!(x))
 #define SCSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(st,x) \
 	((st).change_mask.common.s.do_not_pass_click_focus_click = !!(x))
-#define SDO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(sf) \
-	((sf).common.s.do_ignore_mouse_focus_click_motion)
-#define SFDO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(st) \
-	((st).flags.common.s.do_ignore_mouse_focus_click_motion)
-#define SMDO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(st) \
-	((st).flag_mask.common.s.do_ignore_mouse_focus_click_motion)
-#define SCDO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(st) \
-	((st).change_mask.common.s.do_ignore_mouse_focus_click_motion)
-#define SFSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(st,x) \
-	((st).flags.common.s.do_ignore_mouse_focus_click_motion = !!(x))
-#define SMSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(st,x) \
-	((st).flag_mask.common.s.do_ignore_mouse_focus_click_motion = !!(x))
-#define SCSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(st,x) \
-	((st).change_mask.common.s.do_ignore_mouse_focus_click_motion = !!(x))
 #define SDO_RAISE_TRANSIENT(sf) \
 	((sf).common.s.do_raise_transient)
 #define SFDO_RAISE_TRANSIENT(st) \

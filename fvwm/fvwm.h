@@ -273,31 +273,20 @@ typedef struct
 		unsigned do_ewmh_ignore_strut_hints : 1;
 		unsigned do_ewmh_mini_icon_override : 1;
 		unsigned do_ewmh_use_stacking_hints : 1;
-		unsigned do_grab_focus_when_created : 1;
-		unsigned do_grab_focus_when_transient_created : 1;
 		unsigned do_iconify_window_groups : 1;
 		unsigned do_ignore_gnome_hints : 1;
 		unsigned do_ignore_icon_boxes : 1;
-		unsigned do_ignore_mouse_focus_click_motion : 1;
 		unsigned do_ignore_restack : 1;
 		unsigned do_use_window_group_hint : 1;
 		unsigned do_lower_transient : 1;
 		unsigned do_not_show_on_map : 1;
 		unsigned do_not_pass_click_focus_click : 1;
-		unsigned do_not_raise_click_focus_click : 1;
-		unsigned do_raise_mouse_focus_click : 1;
 		unsigned do_raise_transient : 1;
 		unsigned do_resize_opaque : 1;
 		unsigned do_shrink_windowshade : 1;
 		unsigned do_stack_transient_parent : 1;
 		unsigned do_window_list_skip : 1;
 		unsigned ewmh_maximize_mode : 2; /* see ewmh.h */
-#define FOCUS_MOUSE   0x0
-#define FOCUS_CLICK   0x1
-#define FOCUS_SLOPPY  0x2
-#define FOCUS_NEVER   0x3
-#define FOCUS_MASK    0x3
-		unsigned focus_mode : 2;
 		unsigned has_depressable_border : 1;
 		unsigned has_mwm_border : 1;
 		unsigned has_mwm_buttons : 1;

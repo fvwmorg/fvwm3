@@ -822,7 +822,9 @@ MatchWinToSM(
 	SET_DO_SKIP_SHADED_CIRCULATE(
 	  ewin, DO_SKIP_SHADED_CIRCULATE(&(matches[i])));
 	SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
-	SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
+	memcpy(
+		&FW_FOCUS_POLICY(ewin), &FW_FOCUS_POLICY(&matches[i]),
+		sizeof(focus_policy_t));
 	if (matches[i].wm_name)
 	{
 	  free_window_names(ewin, True, False);

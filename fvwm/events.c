@@ -334,7 +334,9 @@ static Bool __handle_focus_raise_click(
 		SetFocusWindow(Fw, True, FOCUS_SET_BY_CLICK_CLIENT);
 	}
 	/* click to focus stuff goes here */
-	else if (Fw && HAS_CLICK_FOCUS(Fw) && Fw != Scr.Ungrabbed)
+	else if (Fw &&
+		 (FP_DO_FOCUS_CLICK_CLIENT(FW_FOCUS_POLICY(Fw)) ||
+		  FP_DO_FOCUS_CLICK_DECOR(FW_FOCUS_POLICY(Fw))))
 	{
 		unsigned was_already_focused;
 
@@ -397,28 +399,24 @@ static Bool __handle_focus_raise_click(
 		}
 	}
 	else if (Fw && Event.xbutton.window == FW_W_PARENT(Fw) &&
-		 (HAS_SLOPPY_FOCUS(Fw) || HAS_MOUSE_FOCUS(Fw) ||
-		  HAS_NEVER_FOCUS(Fw)) &&
+		 (FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(Fw)) ||
+		  fpol_query_allow_user_focus(&FW_FOCUS_POLICY(Fw))) &&
 		 focus_query_click_to_raise(Fw, is_focused, True))
 	{
-		FvwmWindow *tmp = Scr.Ungrabbed;
-
 		/* RBW - Release the Parent grab here (whether we raise or
 		 * not). We have to wait till this point or we would miss the
 		 * raise click, which is not contemporaneous with the focus
-		 * change. Scr.Ungrabbed should always be NULL here. I don't
-		 * know anything useful we could do if it's not, other than
-		 * ignore this window. */
+		 * change. */
 		if (!is_on_top_of_layer(Fw) &&
 		    MaskUsedModifiers(Event.xbutton.state) == 0)
 		{
-			if (!DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(Fw))
+			if (!FP_DO_IGNORE_FOCUS_CLICK_MOTION(
+				    FW_FOCUS_POLICY(Fw)))
 			{
 				/* raise immediately and pass the click to the
 				 * application */
 				RaiseWindow(Fw);
 				focus_grab_buttons(Fw);
-				Scr.Ungrabbed = tmp;
 				XAllowEvents(dpy,ReplayPointer,CurrentTime);
 				XFlush(dpy);
 				UngrabEm(GRAB_PASSIVE);
@@ -472,7 +470,6 @@ static Bool __handle_focus_raise_click(
 					/* raise the window and exit */
 					RaiseWindow(Fw);
 					focus_grab_buttons(Fw);
-					Scr.Ungrabbed = tmp;
 					XFlush(dpy);
 					UngrabEm(GRAB_PASSIVE);
 					return True;
@@ -485,7 +482,6 @@ static Bool __handle_focus_raise_click(
 			}
 		}
 		focus_grab_buttons(Fw);
-		Scr.Ungrabbed = tmp;
 	}
 
 	return False;

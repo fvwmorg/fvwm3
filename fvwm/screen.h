@@ -346,7 +346,6 @@ typedef struct ScreenInfo
 				 * with focus otherwise */
   Window StolenFocusWin;        /* The window that the UnknownWinFocused window
 				 * stole the focus from. */
-  FvwmWindow *Ungrabbed;
   FvwmWindow *focus_in_pending_window;
   int EdgeScrollX;              /* #pixels to scroll on screen edge */
   int EdgeScrollY;              /* #pixels to scroll on screen edge */

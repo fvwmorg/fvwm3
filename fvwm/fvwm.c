@@ -1425,7 +1425,7 @@ static void InitVariables(void)
 	/* create graphics contexts */
 	CreateGCs();
 
-	
+
 	FW_W(&Scr.FvwmRoot) = Scr.Root;
 	Scr.FvwmRoot.next = 0;
 
@@ -1441,9 +1441,6 @@ static void InitVariables(void)
 	Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
 	Scr.BusyCursor = BUSY_NONE;
 	Scr.Hilite = NULL;
-	/* this indicates that the root window was never entered since the
-	 * startup of fvwm. */
-	Scr.Ungrabbed = NULL;
 
 	Scr.DefaultFont = NULL;
 
@@ -1478,7 +1475,7 @@ static void InitVariables(void)
 	Scr.NumBoxes = 0;
 
 	Scr.cascade_x = Scr.cascade_y = 0;
-	/* the last Cascade placed window or NULL, we don't want NULL 
+	/* the last Cascade placed window or NULL, we don't want NULL
 	 * initially */
 	Scr.cascade_window = &Scr.FvwmRoot;
 
@@ -1539,7 +1536,7 @@ static void InitVariables(void)
 	Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;
 	Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
 	Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
-	/* Not the right place for this, should only be called once 
+	/* Not the right place for this, should only be called once
 	 * somewhere .. */
 
 	/* EdgeCommands - no edge commands by default */

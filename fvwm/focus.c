@@ -246,8 +246,14 @@ static Bool __try_other_screen_focus(FvwmWindow *fw)
 {
 	if (fw == NULL && !Scr.flags.is_pointer_on_this_screen)
 	{
-		focus_grab_buttons(Scr.Ungrabbed);
+		FvwmWindow *sf;
+
+		sf = get_focus_window();
 		set_focus_window(NULL);
+		if (sf != NULL)
+		{
+			focus_grab_buttons(sf);
+		}
 		/* DV (25-Nov-2000): Don't give the Scr.NoFocusWin the focus
 		 * here. This would steal the focus from the other screen's
 		 * root window again. */
@@ -301,18 +307,7 @@ static void __set_focus_to_fwin(
 		}
 	}
 
-	/*
-	 * RBW - 1999/12/08 - we have to re-grab the unfocused window here for
-	 * the MouseFocusClickRaises case also, but we can't ungrab the newly
-	 * focused window here, or we'll never catch the raise click. For this
-	 * special case, the newly-focused window is ungrabbed in events.c
-	 * (HandleButtonPress). */
-	if (Scr.Ungrabbed != fw)
-	{
-		/* need to grab all buttons for window that we are about to
-		 * unfocus */
-		focus_grab_buttons(Scr.Ungrabbed);
-	}
+	sf = get_focus_window();
 	if (fw == NULL)
 	{
 		FOCUS_SET(Scr.NoFocusWin);
@@ -362,7 +357,7 @@ static void __set_focus_to_fwin(
 		}
 		Scr.UnknownWinFocused = None;
 	}
-	else if ((sf = get_focus_window()) && sf->Desk == Scr.CurrentDesk)
+	else if (sf && sf->Desk == Scr.CurrentDesk)
 	{
 		/* Window doesn't want focus. Leave focus alone */
 	}
@@ -371,9 +366,6 @@ static void __set_focus_to_fwin(
 		FOCUS_SET(Scr.NoFocusWin);
 		set_focus_window(NULL);
 	}
-	/* Make sure the button grabs on the now focused window are up to date.
-	 */
-	focus_grab_buttons(fw);
 	XFlush(dpy);
 
 	return;
@@ -382,56 +374,21 @@ static void __set_focus_to_fwin(
 static void set_focus_to_fwin(
 	Window w, FvwmWindow *fw, sftfwin_args_t *args)
 {
-	FvwmWindow *ffw_old = get_focus_window();
-	Bool accepts_input_focus = focus_does_accept_input_focus(fw);
-#if 0
-	FvwmWindow *ffw_new;
-#endif
+	FvwmWindow *sf;
 
-	if (!args->do_force && fw == ffw_old)
+	sf = get_focus_window();
+	if (!args->do_force && fw == sf)
 	{
-		if (ffw_old)
-		{
-#if 0
-			/*
-			  RBW - 2001/08/17 - For a MouseFocusClickRaises win,
-			  * we must not drop the grab, since the (potential)
-			  * click hasn't happened yet. */
-			if ((!HAS_SLOPPY_FOCUS(ffw_old) &&
-			     !HAS_MOUSE_FOCUS(ffw_old)) ||
-			    !DO_RAISE_MOUSE_FOCUS_CLICK(ffw_old))
-			{
-				focus_grab_buttons(ffw_old, True);
-			}
-#else
-			focus_grab_buttons(ffw_old);
-#endif
-		}
+		focus_grab_buttons(sf);
 		return;
 	}
 	__set_focus_to_fwin(w, fw, args);
-	if (focus_is_focused(ffw_old))
-	{
-		if (accepts_input_focus)
-		{
-#if 0
-			/*  RBW - Ibid.  */
-			ffw_new = get_focus_window();
-			if (ffw_new)
-			{
-				if ((!HAS_SLOPPY_FOCUS(ffw_new) &&
-				     !HAS_MOUSE_FOCUS(ffw_new)) ||
-				    !DO_RAISE_MOUSE_FOCUS_CLICK(ffw_new))
-				{
-					focus_grab_buttons(ffw_new, True);
-				}
-			}
-#else
-			focus_grab_buttons(get_focus_window());
-#endif
-		}
-		focus_grab_buttons(ffw_old);
-	}
+	/* Make sure the button grabs on the new and the old focused windows
+	 * are up to date. */
+	focus_grab_buttons(fw);
+	focus_grab_buttons(get_focus_window());
+
+	return;
 }
 
 /**************************************************************************
@@ -808,7 +765,6 @@ void focus_grab_buttons(FvwmWindow *fw)
 	if (grab_buttons != fw->grabbed_buttons)
 	{
 		MyXGrabServer(dpy);
-		Scr.Ungrabbed = (do_grab_window) ? NULL : fw;
 		for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
 		{
 			__focus_grab_one_button(fw, i, grab_buttons);

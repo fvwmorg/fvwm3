@@ -1035,9 +1035,9 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
   style->change_mask.has_no_title = 1;
 
   /* ClickToFocus, I do not think we should use NeverFocus */
-  SFSET_FOCUS_MODE(*style, FOCUS_CLICK);
-  SMSET_FOCUS_MODE(*style, FOCUS_MASK);
-  SCSET_FOCUS_MODE(*style, FOCUS_MASK);
+  FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*style), 1);
+  FPS_FOCUS_CLICK_CLIENT(SM_FOCUS_POLICY(*style), 1);
+  FPS_FOCUS_CLICK_CLIENT(SC_FOCUS_POLICY(*style), 1);
   FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*style), 1);
   FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*style), 1);
   FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*style), 1);

@@ -198,10 +198,13 @@ typedef struct
 
 /* ---------------------------- interface functions ------------------------- */
 
-void fpol_init_default_fp(focus_policy_t *fp);
+void fpol_init_default_fp(
+	focus_policy_t *fp);
 int fpol_query_allow_set_focus(
 	focus_policy_t *fpol, fpol_set_focus_by_t set_by_mode);
 int fpol_query_allow_user_focus(
+	focus_policy_t *fpol);
+int fpol_is_policy_changed(
 	focus_policy_t *fpol);
 
 #endif /* FOCUS_POLICY_H */
