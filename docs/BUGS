@@ -10,16 +10,12 @@ from our home page.
 ======================================================================
 
  - No geometry can be specified for FvwmButtons panels.
- - Running fvwm on an XNest X server does not work well.
-   (What does that mean?  I've done it --smr)
  - FvwmSave and FvwmSaveDesk are not up to date.
  - xscreensaver may not be able to allocate a private colormap
  - FvwmButtons and possibly other modules may survive shutdown of the X
    server.
  - AutoHide in FvwmTaskBar does not work well. See 'EdgeThickness' command in
    the manpage.
- - DestroyMenu/DestroyFunc causes a coredump if a function/menu destroys
-   itself.
  - A piperead command may hang if used in .fvwm2rc (if the pipe is never
    closed).
  - StartsOnPage does not work as expected? Please read the manpage carefully.
@@ -43,7 +39,7 @@ applications.
 
 Sending DESTROY window manager options to applications is a bad way to
 close them and should only be used as a last resort.  Strange things
-can happen.  Please try DELETE and CLOSE first.
+can happen.  Please try CLOSE first.
 
 ----------------------------------------------------------------------
 
