@@ -441,7 +441,9 @@ void setup_frame_window(
   Pixmap TexturePixmap = None;
   Pixmap TexturePixmapSave;
 
-  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
+  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask|CWBackingStore;
+
+  pattributes->backing_store = NotUseful;
   pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
   pattributes->colormap = Pcmap;
   pattributes->border_pixel = 0;
@@ -449,10 +451,10 @@ void setup_frame_window(
 			     | LeaveWindowMask);
 
   /* create the frame window, child of root, grandparent of client */
-  tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_g.x,
-				 tmp_win->frame_g.y, tmp_win->frame_g.width,
-				 tmp_win->frame_g.height, 0, Pdepth,
-				 InputOutput, Pvisual, valuemask, pattributes);
+  tmp_win->frame = XCreateWindow(
+      dpy, Scr.Root, tmp_win->frame_g.x, tmp_win->frame_g.y,
+      tmp_win->frame_g.width, tmp_win->frame_g.height, 0, Pdepth, InputOutput,
+      Pvisual, valuemask, pattributes);
   XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
   XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
 

@@ -1,5 +1,11 @@
 1999-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/borders.c (DrawDecorations):
+	don't ever set the background of the frame window
+
+	* fvwm/add_window.c (setup_frame_window):
+	set BackingStoreNotUseful for frame window
+
 	* fvwm/events.c (HandleFocusIn):
 	fixed clicktofocus in pager
 
