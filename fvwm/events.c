@@ -1321,19 +1321,7 @@ void HandleEnterNotify(void)
 	Bool is_tear_off_menu;
 
 	DBUG("HandleEnterNotify","Routine Entered");
-
 ENTER_DBG((stderr, "++++++++ en (%d): 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, (int)Fw, ewp->mode, ewp->detail, Fw?Fw->visible_name:"(none)"));
-
-
-if (ewp->mode == NotifyUngrab && is_initial_ungrab_pending)
-{
-ENTER_DBG((stderr, "en: +++ NotifyUngrab\n"));
-ENTER_DBG((stderr, "en: +++ NU: initial ungrab pending (lgw = NULL)\n"));
-is_initial_ungrab_pending = False;
-xcrossing_last_grab_window = NULL;
-}
-
-
 
 	if (ewp->window == Scr.Root && ewp->subwindow == None &&
 	    ewp->detail == NotifyInferior && ewp->mode == NotifyNormal)
