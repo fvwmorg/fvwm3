@@ -651,21 +651,22 @@ void set_win_iconified (WinData *win, int iconified)
      * all iconified windows to the far left of whereever thae manager would
      * eventually be. */
     if (win->manager->AnimCommand && (win->manager->AnimCommand[0] != 0)
-       && (win->button->w != 0) && (win->button->h !=0) ) {
+	&& (win->button->w != 0) && (win->button->h !=0) )
+    {
+      int abs_x, abs_y;
+      Window junkw;
+
+      XTranslateCoordinates(theDisplay, win->manager->theWindow, theRoot, 
+			    win->button->x, win->button->y, &abs_x, &abs_y,
+			    &junkw);
       if (iconified) {
-        sprintf(string, "%s %d %d %d %d %d %d %d %d",
-                win->manager->AnimCommand,
-                win->x, win->y, win->width, win->height,
-                win->manager->geometry.x + win->button->x,
-                win->manager->geometry.y + win->button->y,
-                win->button->w, win->button->h);
+        sprintf(string, "%s %d %d %d %d %d %d %d %d", win->manager->AnimCommand,
+		win->x, win->y, win->width, win->height,
+		abs_x, abs_y, win->button->w, win->button->h);
       } else {
-        sprintf(string, "%s %d %d %d %d %d %d %d %d",
-                win->manager->AnimCommand,
-                win->manager->geometry.x + win->button->x,
-                win->manager->geometry.y + win->button->y,
-                win->button->w, win->button->h,
-                win->x, win->y, win->width, win->height);
+        sprintf(string, "%s %d %d %d %d %d %d %d %d", win->manager->AnimCommand,
+		abs_x, abs_y, win->button->w, win->button->h,
+		win->x, win->y, win->width, win->height);
       }
       SendText (Fvwm_fd, string, 0);
   
