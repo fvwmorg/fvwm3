@@ -44,6 +44,7 @@
 Bool FRenderExtensionSupported = False;
 int FRenderErrorBase = -10000;
 int FRenderMajorOpCode = -10000;
+int FRenderAlphaDepth = 0;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -53,16 +54,38 @@ void FRenderInit(Display *dpy)
 {
 	int event_basep;
 
-	if (!XRenderSupport)
-		return;
-
-	if (!(FRenderExtensionSupported = XQueryExtension(dpy, "RENDER",
-							  &FRenderMajorOpCode,
-							  &event_basep,
-							  &FRenderErrorBase)))
+	FRenderAlphaDepth = 8;
+	if (!(FRenderExtensionSupported = XQueryExtension(
+		dpy, "RENDER", &FRenderMajorOpCode, &event_basep,
+		&FRenderErrorBase)))
 	{
+		XPixmapFormatValues *pmf;
+		int i,n;
+		int alpha_depth = 0;
+
 		FRenderErrorBase = -10000;
 		FRenderMajorOpCode = -10000;
+		pmf = XListPixmapFormats (dpy, &n);
+		if (pmf)
+		{
+			i = 0;
+			while(i < n)
+			{
+				if (pmf[i].depth == 8)
+				{
+					alpha_depth = 8;
+					i = n-1;
+				}
+				else if (pmf[i].depth >= 8 &&
+					 (pmf[i].depth < alpha_depth ||
+					  alpha_depth == 0))
+				{
+					alpha_depth = pmf[i].depth;
+				}
+				i++;
+			}
+		}
+		FRenderAlphaDepth = alpha_depth;
 	}
 }
 
@@ -80,6 +103,11 @@ int FRenderGetMajorOpCode(void)
 Bool FRenderGetExtensionSupported(void)
 {
 	return FRenderExtensionSupported;
+}
+
+int FRenderGetAlphaDepth(void)
+{
+	return FRenderAlphaDepth;
 }
 
 Bool FRenderGetErrorText(int code, char *msg)

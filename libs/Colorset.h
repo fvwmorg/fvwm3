@@ -27,6 +27,7 @@ typedef struct {
 	Pixel hilite;
 	Pixel shadow;
 	Pixel fgsh;
+	Pixel tint;
 	Pixel icon_tint;
 	Pixmap pixmap;
 	Pixmap shape_mask;
@@ -37,12 +38,12 @@ typedef struct {
 	unsigned int shape_width : 12;
 	unsigned int shape_height : 12;
 	unsigned int shape_type : 2;
+	unsigned int tint_percent : 12;
 	unsigned int do_dither_icon : 1;
 	unsigned int icon_tint_percent : 12;
 	unsigned int icon_alpha : 12;
 #ifdef FVWM_COLORSET_PRIVATE
 	/* fvwm/colorset.c use only */
-	Pixel tint;
 	Pixel fg_tint;
 	Pixel fg_saved;
 	Pixel bg_tint;
@@ -56,7 +57,6 @@ typedef struct {
 	FvwmPicture *picture;
 	Pixel *pixels;
 	int nalloc_pixels;
-	int tint_percent;
 	int fg_tint_percent;
 	int bg_tint_percent;
 	short image_alpha_percent;
@@ -91,6 +91,17 @@ typedef struct {
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_struct *Colorset;
 
+
+/* some macro for transparency */
+#define CSET_IS_TRANSPARENT(cset) \
+    (cset >= 0 && Colorset[cset].pixmap == ParentRelative)
+#define CSET_IS_TRANSPARENT_PR_PURE(cset) \
+    (cset >= 0 && Colorset[cset].pixmap == ParentRelative && \
+     Colorset[cset].tint_percent == 0)
+#define CSET_IS_TRANSPARENT_PR_TINT(cset) \
+    (cset >= 0 && Colorset[cset].pixmap == ParentRelative && \
+     Colorset[cset].tint_percent > 0)
+
 #ifndef FVWM_COLORSET_PRIVATE
 /* Create n new colorsets, fvwm/colorset.c does its own thing (different size)
  */
@@ -114,6 +125,9 @@ void SetWindowBackgroundWithOffset(
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 colorset_struct *colorset, unsigned int depth, GC gc,
 			 Bool clear_area);
+void UpdateBackgroundTransparency(
+	Display *dpy, Window win, int width, int height,
+	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area);
 void SetRectangleBackground(
   Display *dpy, Window win, int x, int y, int width, int height,
   colorset_struct *colorset, unsigned int depth, GC gc);

@@ -1,5 +1,29 @@
-2002-09-01  olicha  <olivier.chapuis@free.fr>
+2002-09-02  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Colorset.c (*):
+	* libs/Colorset.h:
+	* libs/colorset.c (parse_colorset):
+	* libs/PictureGraphics.c (PGrabXImage):
+	(PCreateRenderPixmap):
+	(PGraphicsCreateTransprency):
+	* libs/PictureGraphics.h:
+	An experimental implementation of ParentalRelative tinted background
+
+	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
+	* libs/PictureImageLoader.c (PImageCreatePixmapFromArgbData): 
+	(PImageLoadPng):
+	* libs/PictureGraphics.c (PGraphicsCreateStretchPicture): 
+	* libs/FRenderInit.c (FRenderInit):
+	(FRenderGetAlphaDepth):
+	* libs/FRenderInit.h:
+	Fixed alpha blending for xserver without depth 8 pixmap
+	(maybe a tmp fix)
+
+	* fvwm/fvwm.1.in
+	typo
+
+2002-09-01  olicha  <olivier.chapuis@free.fr>
+	
 	* NEWS:
 	Colorset and alpha blending news
 

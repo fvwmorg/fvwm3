@@ -119,6 +119,10 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 	Display *dpy, Window win, FvwmPicture *src,
 	int dest_width, int dest_height, GC gc, GC mono_gc, GC alpha_gc);
 
+Pixmap PGraphicsCreateTransprency(
+	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
+	int x, int y, int width, int height);
+
 /* never used ! */
 Pixmap PGraphicsCreateDitherPixmap(
 	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,

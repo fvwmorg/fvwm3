@@ -700,7 +700,12 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 
 	pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, Pdepth);
 	mask = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 1);
-	alpha = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 8);
+	if (FRenderGetAlphaDepth())
+	{
+		alpha = XCreatePixmap(
+			dpy, Scr.NoFocusWin, width, height,
+			FRenderGetAlphaDepth());
+	}
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, Scr.Root, (unsigned char *)list, start, width, height,
 		pixmap, mask, alpha, &have_alpha, fpa) || pixmap == None)
@@ -747,7 +752,8 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 		{
 			GC my_gc = fvwmlib_XCreateGC(dpy, alpha, 0, 0);
 			na = CreateStretchPixmap(dpy, alpha, width, height,
-						 8, wanted_w, wanted_h,
+						 FRenderGetAlphaDepth(),
+						 wanted_w, wanted_h,
 						 my_gc);
 			XFreePixmap(dpy, alpha);
 			XFreeGC(dpy, my_gc);

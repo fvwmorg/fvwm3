@@ -1,3 +1,8 @@
+2002-09-02  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIdent/FvwmIdent.c (*):
+	Implement tinted parental relativity
+
 2002-09-01  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTheme/FvwmTheme.1:

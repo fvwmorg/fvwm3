@@ -473,7 +473,7 @@ static void parse_pixmap_tint(
 	{
 		fvwm_msg(WARN, name,
 			 "Tint must have two arguments a color and an integer");
-		tint_percent = -1;
+		tint_percent = 0;
 		return;
 	}
 	*has_tint_changed = True;
@@ -740,7 +740,7 @@ void parse_colorset(int n, char *line)
 				reset_cs_pixmap(cs, gc);
 				XSetClipMask(dpy, gc, None);
 			}
-			cs->tint_percent = -1;
+			cs->tint_percent = 0;
 			cs->color_flags &= ~TINT_SUPPLIED;
 			break;
 		case 29: /* fgTint */
@@ -1518,6 +1518,8 @@ void alloc_colorset(int n)
 			ncs->hilite = GetColor(white);
 			ncs->shadow = GetColor(black);
 			ncs->fgsh = GetColor(white);
+			ncs->tint = GetColor(black);
+			ncs->icon_tint = GetColor(black);
 			ncs->pixmap = XCreatePixmapFromBitmapData(
 				dpy, Scr.NoFocusWin,
 				&g_bits[4 * (nColorsets % 3)], 4, 4,
@@ -1533,9 +1535,10 @@ void alloc_colorset(int n)
 			ncs->hilite = GetHilite(ncs->bg);
 			ncs->shadow = GetShadow(ncs->bg);
 			ncs->fgsh = GetForeShadow(ncs->fg, ncs->bg);
+			ncs->tint = GetColor(black);
+			ncs->icon_tint = GetColor(black);
 		}
-		ncs->tint = ncs->fg_tint = ncs->bg_tint = ncs->icon_tint =
-			GetColor(black);
+		ncs->fg_tint = ncs->bg_tint = GetColor(black);
 		/* set flags for fg contrast, bg average */
 		/* in case just a pixmap is given */
 		ncs->color_flags = FG_CONTRAST | BG_AVERAGE;
@@ -1543,8 +1546,9 @@ void alloc_colorset(int n)
 		ncs->fg_alpha = 100;
 		ncs->image_alpha_percent = 100;
 		ncs->icon_alpha = 100;
+		ncs->tint_percent = 0;
 		ncs->icon_tint_percent = 0;
-		ncs->fg_tint_percent = ncs->bg_tint_percent = -1;
+		ncs->fg_tint_percent = ncs->bg_tint_percent = 0;
 		ncs->dither = (Pdepth <= 8)? True:False;
 		nColorsets++;
 	}

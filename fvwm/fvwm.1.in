@@ -3187,7 +3187,7 @@ to the default.
 This command is obsolete. See the
 .I -color-limit
 option to fvwm.
-.\"
+.\"end
 .\"Specifies a
 .\".I limit
 .\"on the colors used in pixmaps used by fvwm. Zero (the default)

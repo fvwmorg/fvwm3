@@ -219,9 +219,9 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	*depth = Pdepth;
 	*pixmap = XCreatePixmap(dpy, Root, w, h, Pdepth);
 	*mask = XCreatePixmap(dpy, Root, w, h, 1);
-	if (!(fpa.mask & FPAM_NO_ALPHA))
+	if (!(fpa.mask & FPAM_NO_ALPHA) && FRenderGetAlphaDepth())
 	{
-		*alpha = XCreatePixmap(dpy, Root, w, h, 8);
+		*alpha = XCreatePixmap(dpy, Root, w, h, FRenderGetAlphaDepth());
 	}
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, Root, (unsigned char *)data, 0, w, h, *pixmap, *mask,
@@ -503,7 +503,8 @@ Bool PImageCreatePixmapFromArgbData(
 	Pixel back = WhitePixel(dpy, DefaultScreen(dpy));
 	Pixel fore = BlackPixel(dpy, DefaultScreen(dpy));
 	int a;
-	Bool use_alpha_pix = (alpha != None && !(fpa.mask & FPAM_NO_ALPHA));
+	Bool use_alpha_pix = (alpha != None && !(fpa.mask & FPAM_NO_ALPHA)
+		&& FRenderGetAlphaDepth());
 	int alpha_limit = 0;
 	int no_color_limit = !!(fpa.mask & FPAM_NO_COLOR_LIMIT);
 	int do_dither = !!((fpa.mask & FPAM_DITHER) && Pdepth <= 16 &&
@@ -565,7 +566,8 @@ Bool PImageCreatePixmapFromArgbData(
 	if (use_alpha_pix)
 	{
 		a_image = XCreateImage(
-			dpy, Pvisual, 8, ZPixmap, 0, 0, width, height,
+			dpy, Pvisual, FRenderGetAlphaDepth(), ZPixmap,
+			0, 0, width, height,
 			Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
 		a_image->data = safemalloc(a_image->bytes_per_line * height);
 	}

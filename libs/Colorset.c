@@ -68,15 +68,17 @@ void AllocColorset(int n)
 /*****************************************************************************
  * DumpColorset() returns a char * to the colorset contents in printable form
  *****************************************************************************/
-static char csetbuf[184];
+static char csetbuf[256];
 char *DumpColorset(int n, colorset_struct *cs)
 {
   sprintf(csetbuf,
 	  "Colorset "
-	  "%x %lx %lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %x %x %x %x",
-	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->fgsh, cs->icon_tint,
-	  cs->pixmap, cs->shape_mask, cs->fg_alpha, cs->width, cs->height,
-	  cs->pixmap_type, cs->shape_width, cs->shape_height, cs->shape_type,
+	  "%x %lx %lx %lx %lx %lx %lx %lx %lx %lx "
+	  "%x %x %x %x %x %x %x %x %x %x %x",
+	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->fgsh, cs->tint,
+	  cs->icon_tint, cs->pixmap, cs->shape_mask,
+	  cs->fg_alpha, cs->width, cs->height, cs->pixmap_type,
+	  cs->shape_width, cs->shape_height, cs->shape_type, cs->tint_percent,
 	  cs->do_dither_icon, cs->icon_tint_percent, cs->icon_alpha);
   return csetbuf;
 }
@@ -88,12 +90,12 @@ int LoadColorset(char *line)
 {
   colorset_struct *cs;
   unsigned int n, chars;
-  Pixel fg, bg, hilite, shadow, fgsh, icon_tint;
+  Pixel fg, bg, hilite, shadow, fgsh, tint, icon_tint;
   Pixmap pixmap;
   Pixmap shape_mask;
   unsigned int fg_alpha, width, height, pixmap_type;
   unsigned int shape_width, shape_height, shape_type;
-  unsigned int do_dither_icon, icon_tint_percent, icon_alpha;
+  unsigned int tint_percent, do_dither_icon, icon_tint_percent, icon_alpha;
 
   if (line == NULL)
     return -1;
@@ -101,12 +103,14 @@ int LoadColorset(char *line)
     return -1;
   line += chars;
   if (sscanf(line,
-	     "%lx %lx %lx %lx %lx %lx %lx %lx " 
-	     "%x %x %x %x %x %x %x %x %x %x",
-	     &fg, &bg, &hilite, &shadow, &fgsh, &icon_tint, &pixmap, &shape_mask,
+	     "%lx %lx %lx %lx %lx %lx %lx %lx %lx " 
+	     "%x %x %x %x %x %x %x %x %x %x %x",
+	     &fg, &bg, &hilite, &shadow, &fgsh, &tint, &icon_tint, &pixmap,
+	     &shape_mask,
 	     &fg_alpha, &width, &height, &pixmap_type, &shape_width,
-	     &shape_height, &shape_type, &do_dither_icon, &icon_tint_percent,
-	     &icon_alpha) != 18)
+	     &shape_height, &shape_type, &tint_percent, &do_dither_icon,
+	     &icon_tint_percent,
+	     &icon_alpha) != 20)
     return -1;
 
   AllocColorset(n);
@@ -116,6 +120,7 @@ int LoadColorset(char *line)
   cs->hilite = hilite;
   cs->shadow = shadow;
   cs->fgsh = fgsh;
+  cs->tint = tint;
   cs->icon_tint = icon_tint;
   cs->pixmap = pixmap;
   cs->shape_mask = shape_mask;
@@ -126,6 +131,7 @@ int LoadColorset(char *line)
   cs->shape_width = shape_width;
   cs->shape_height = shape_height;
   cs->shape_type = shape_type;
+  cs->tint_percent = tint_percent;
   cs->do_dither_icon = do_dither_icon;
   cs->icon_tint_percent = icon_tint_percent;
   cs->icon_alpha = icon_alpha;
@@ -216,16 +222,9 @@ void SetWindowBackgroundWithOffset(
 	}
 	else
 	{
-		if (colorset->pixmap == ParentRelative)
-		{
-			pixmap = ParentRelative;
-		}
-		else
-		{
-			pixmap = CreateBackgroundPixmap(
-				dpy, win, width, height, colorset, depth, gc,
-				False);
-		}
+
+		pixmap = CreateBackgroundPixmap(
+			dpy, win, width, height, colorset, depth, gc, False);
 		if (x_off != 0 || y_off != 0)
 		{
 			Pixmap p2;
@@ -246,11 +245,33 @@ void SetWindowBackgroundWithOffset(
 			{
 				XClearArea(dpy, win, 0, 0, width, height, True);
 			}
-			if (colorset->pixmap != ParentRelative)
+			if (pixmap != ParentRelative)
 			{
 				XFreePixmap(dpy, pixmap);
 			}
 		}
+	}
+
+	return;
+}
+
+void UpdateBackgroundTransparency(
+	Display *dpy, Window win, int width, int height,
+	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area)
+{
+	if (colorset->pixmap != ParentRelative)
+	{
+		return;
+	}
+	else if (colorset->tint_percent > 0)
+	{
+		SetWindowBackgroundWithOffset(
+			dpy, win, 0, 0, width, height, colorset, depth, gc,
+			True);
+	}
+	else
+	{
+		XClearArea(dpy, win, 0,0,0,0, clear_area);
 	}
 
 	return;
@@ -282,9 +303,28 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   Bool cs_stretch_x;
   Bool cs_stretch_y;
 
-  if (colorset->pixmap == ParentRelative && !is_shape_mask)
+  
+  if (colorset->pixmap == ParentRelative && !is_shape_mask &&
+      colorset->tint_percent > 0)
   {
-    return ParentRelative;
+	  FvwmRenderAttributes fra;
+
+	  fra.mask = FRAM_DEST_IS_A_WINDOW | FRAM_HAVE_TINT;
+	  fra.tint = colorset->tint;
+	  fra.tint_percent = colorset->tint_percent;
+	  XGrabServer(dpy);
+	  pixmap = PGraphicsCreateTransprency(
+		  dpy, win, &fra, gc, 0, 0, width, height);
+	  XUngrabServer(dpy);
+	  if (pixmap == None)
+	  {
+		  return ParentRelative;
+	  }
+	  return pixmap;
+  }
+  else if (colorset->pixmap == ParentRelative && !is_shape_mask)
+  {
+	  return ParentRelative;
   }
   if (!is_shape_mask)
   {

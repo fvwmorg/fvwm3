@@ -22,6 +22,7 @@
 #define F_RENDER_INIT_H
 
 void FRenderInit(Display *dpy);
+int FRenderGetAlphaDepth(void);
 int FRenderGetErrorCodeBase(void);
 int FRenderGetMajorOpCode(void);
 Bool FRenderGetErrorText(int code, char *msg);

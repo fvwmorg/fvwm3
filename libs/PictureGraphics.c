@@ -248,6 +248,67 @@ void PGrabImageErrorHandler(void)
 }
 
 static
+XImage *PGrabXImage(
+	Display *dpy, Drawable d, int x, int y, int w, int h, Bool d_is_a_window)
+{
+
+	Bool try_to_grab = True;
+	XWindowAttributes   xwa;
+	XErrorHandler saved_eh = NULL;
+	XImage *xim = NULL;
+
+	PGrabImageError = 0;
+	if (d_is_a_window)
+	{
+		XGrabServer(dpy);
+		XGetWindowAttributes(dpy, d, &xwa);
+		XSync(dpy, False);
+			
+		if (xwa.map_state != IsViewable &&
+		    xwa.backing_store == NotUseful)
+		{
+			try_to_grab = False;
+#if 0
+			fprintf(stderr, "Bad attribute! %i,%i\n",
+				xwa.map_state != IsViewable,
+				xwa.backing_store == NotUseful);
+#endif
+		}
+		else
+		{
+			saved_eh = XSetErrorHandler(
+				(XErrorHandler) PGrabImageErrorHandler);
+#if 0
+			fprintf(stderr, "Attribute ok! %i,%i\n",
+				xwa.map_state != IsViewable,
+				xwa.backing_store == NotUseful);
+#endif
+		}
+	}
+	if (try_to_grab)
+	{
+		xim = XGetImage(dpy, d, x, y, w, h, AllPlanes, ZPixmap);
+		if (PGrabImageError)
+		{
+#if 0
+			fprintf(stderr, "XGetImage error during the grab\n");
+#endif
+			xim = NULL;
+		}
+		if (d_is_a_window)
+		{
+			XSetErrorHandler((XErrorHandler) saved_eh);	
+		}
+	}
+
+	if (d_is_a_window)
+	{
+		XUngrabServer(dpy);
+	}
+	return xim;
+}
+
+static
 Pixmap PCreateRenderPixmap(
 	Display *dpy, Window win, Pixmap pixmap, Pixmap mask, Pixmap alpha,
 	int depth, int added_alpha_percent, Pixel tint, int tint_percent,
@@ -278,6 +339,7 @@ Pixmap PCreateRenderPixmap(
 
 	*new_mask = None;
 	*new_do_repeat = do_repeat;
+
 	if (depth != Pdepth)
 	{
 		pixmap_copy = XCreatePixmap(dpy, win, src_w, src_h, Pdepth);
@@ -307,9 +369,18 @@ Pixmap PCreateRenderPixmap(
 	}
 	src_pix = (pixmap_copy)? pixmap_copy:pixmap;
 
-	if (!(pixmap_im =
-	      XGetImage(dpy, src_pix, src_x, src_y, src_w, src_h, AllPlanes,
-			ZPixmap)))
+	if (src_pix == ParentRelative)
+	{
+		pixmap_im = PGrabXImage(
+			dpy, d, dest_x, dest_y, dest_w, dest_h, d_is_a_window);
+	}
+	else
+	{
+		pixmap_im = XGetImage(
+			dpy, src_pix, src_x, src_y, src_w, src_h,
+			AllPlanes, ZPixmap);
+	}
+	if (!pixmap_im)
 	{
 		error = True;
 		goto bail;
@@ -331,57 +402,8 @@ Pixmap PCreateRenderPixmap(
 
 	if (alpha != None || added_alpha_percent < 100)
 	{
-		Bool try_to_grab = True;
-		XWindowAttributes   xwa;
-		XErrorHandler saved_eh = NULL;
-
-		PGrabImageError = 0;
-		if (d_is_a_window)
-		{
-			XGrabServer(dpy);
-			XGetWindowAttributes(dpy, d, &xwa);
-			XSync(dpy, False);
-			
-			if (xwa.map_state != IsViewable &&
-			    xwa.backing_store == NotUseful)
-			{
-				try_to_grab = False;
-#if 0
-				fprintf(stderr, "Bad attribute! %i,%i\n",
-					xwa.map_state != IsViewable,
-					xwa.backing_store == NotUseful);
-#endif
-			}
-			else
-			{
-				saved_eh = XSetErrorHandler(
-					(XErrorHandler) PGrabImageErrorHandler);
-#if 0
-				fprintf(stderr, "Attribute ok! %i,%i\n",
-					xwa.map_state != IsViewable,
-					xwa.backing_store == NotUseful);
-#endif
-			}
-		}
-		if (try_to_grab)
-		{
-			dest_im = XGetImage(
-				dpy, d, dest_x, dest_y, dest_w, dest_h,
-				AllPlanes, ZPixmap);
-			if (PGrabImageError)
-			{
-				dest_im = NULL;
-			}
-			if (d_is_a_window)
-			{
-				XSetErrorHandler((XErrorHandler) saved_eh);	
-			}
-		}
-	
-		if (d_is_a_window)
-		{
-			XUngrabServer(dpy);
-		}
+		dest_im = PGrabXImage(
+			dpy, d, dest_x, dest_y, dest_w, dest_h, d_is_a_window);
 	}
 
 	if (dest_im && do_repeat && (dest_w > src_w || dest_h > src_h))
@@ -1080,7 +1102,8 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 	if (src->alpha)
 	{
 		alpha = CreateStretchPixmap(
-			dpy, src->alpha, src->width, src->height, 8,
+			dpy, src->alpha, src->width, src->height, 
+			FRenderGetAlphaDepth(),
 			dest_width, dest_height, alpha_gc);
 	}
 
@@ -1100,6 +1123,83 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 	q->nalloc_pixels = 0;
 
 	return q;
+}
+
+Pixmap PGraphicsCreateTransprency(
+	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
+	int x, int y, int width, int height)
+{
+	Pixmap r, dp;
+	XID junk;
+	XID root;
+	int dummy, sx, sy, sw, sh;
+	int gx = x, gy = y, gh = height, gw = width;
+
+	XSetWindowBackgroundPixmap(dpy, win, ParentRelative);
+	XClearArea(dpy, win, x, y, width, height, False);
+	XSync(dpy, False);
+#if 1
+	if (!XGetGeometry(
+		dpy, win, &root, (int *)&junk, (int *)&junk,
+		(unsigned int *)&sw, (unsigned int *)&sh,
+		(unsigned int *)&junk, (unsigned int *)&junk))
+	{
+		return None;
+	}
+#endif
+	XTranslateCoordinates(
+		dpy, win, root, x, y, &sx, &sy, &junk);
+#if 0
+	
+	fprintf(stderr,"O: %i,%i\n", sx,sy);
+#endif
+	if (sx >= DisplayWidth(dpy, DefaultScreen(dpy)))
+	{
+		return None;
+	}
+	if (sy >= DisplayHeight(dpy, DefaultScreen(dpy)))
+	{
+		return None;
+	}
+	if (sx < 0)
+	{
+		gx = gx - sx;
+		gw = width + sx;
+		sx = 0;
+		if (gw <= 0)
+		{
+			return None;
+		}
+	}
+	if (sy < 0)
+	{
+		gy = gy - sy;
+		gh = height + sy;
+		sy = 0;
+		if (gw <= 0)
+		{
+			return None;
+		}
+	}
+	if (sx + gw > DisplayWidth(dpy, DefaultScreen(dpy)))
+	{
+		gw = DisplayWidth(dpy, DefaultScreen(dpy)) - sx;
+	}
+	if (sy + gh > DisplayHeight(dpy, DefaultScreen(dpy)))
+	{
+		gh = DisplayHeight(dpy, DefaultScreen(dpy)) - sy;
+	}
+#if 0
+	fprintf(stderr,"%i,%i,%i,%i / %i,%i / %i,%i / %lu\n",
+		gx,gy,gw,gh,sx,sy,x,y,root);
+#endif
+	r = PCreateRenderPixmap(
+		dpy, win, ParentRelative, None, None, Pdepth, 100, fra->tint,
+		fra->tint_percent,
+		True, win,
+		gc, None, None, gx, gy, gw, gh, gx, gy, gw, gh,
+		False, &dummy, &dummy, &dummy, &dp);
+	return r;
 }
 
 /* never tested and used ! */
