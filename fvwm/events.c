@@ -1387,16 +1387,19 @@ void HandleButtonPress(void)
 
   Context = GetContext(Tmp_win,&Event, &PressedW);
   LocalContext = Context;
-  if (Context == C_TITLE)
-    DrawDecorations(
-      Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
-  else if (Context & (C_LALL | C_RALL))
-    DrawDecorations(
-      Tmp_win, DRAW_BUTTONS, (Scr.Hilite == Tmp_win), True, PressedW);
-  else
-    DrawDecorations(
-      Tmp_win, DRAW_FRAME, (Scr.Hilite == Tmp_win),
-      (HAS_DEPRESSABLE_BORDER(Tmp_win) && HAS_BORDER(Tmp_win)), None);
+  if (Tmp_win)
+  {
+    if (Context == C_TITLE)
+      DrawDecorations(
+        Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
+    else if (Context & (C_LALL | C_RALL))
+      DrawDecorations(
+        Tmp_win, DRAW_BUTTONS, (Scr.Hilite == Tmp_win), True, PressedW);
+    else
+      DrawDecorations(
+        Tmp_win, DRAW_FRAME, (Scr.Hilite == Tmp_win),
+        (HAS_DEPRESSABLE_BORDER(Tmp_win) && HAS_BORDER(Tmp_win)), None);
+  }
 
   ButtonWindow = Tmp_win;
 
@@ -1421,18 +1424,21 @@ void HandleButtonPress(void)
 
   OldPressedW = PressedW;
   PressedW = None;
-  if (Context == C_TITLE)
-    DrawDecorations(
-      ButtonWindow, DRAW_TITLE, (Scr.Hilite == ButtonWindow), True, None);
-  else if (Context & (C_LALL | C_RALL))
-    DrawDecorations(
-      ButtonWindow, DRAW_BUTTONS, (Scr.Hilite == ButtonWindow), True,
-      OldPressedW);
-  else
-    DrawDecorations(
-      ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow),
-      (HAS_DEPRESSABLE_BORDER(Tmp_win) && HAS_BORDER(Tmp_win)),
-      (Tmp_win) ? Tmp_win->decor_w : 0);
+  if (Tmp_win)
+  {
+    if (Context == C_TITLE)
+      DrawDecorations(
+        ButtonWindow, DRAW_TITLE, (Scr.Hilite == ButtonWindow), True, None);
+    else if (Context & (C_LALL | C_RALL))
+      DrawDecorations(
+        ButtonWindow, DRAW_BUTTONS, (Scr.Hilite == ButtonWindow), True,
+        OldPressedW);
+    else
+      DrawDecorations(
+        ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow),
+        (HAS_DEPRESSABLE_BORDER(Tmp_win) && HAS_BORDER(Tmp_win)),
+        (Tmp_win) ? Tmp_win->decor_w : 0);
+  }
   ButtonWindow = NULL;
 }
 
