@@ -2356,6 +2356,7 @@ FvwmWindow *AddWindow(
 	{
 		XEvent e;
 
+		memset(&e, 0, sizeof(e));
 		FWarpPointer(
 			dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 			Scr.MyDisplayHeight,
@@ -2363,6 +2364,7 @@ FvwmWindow *AddWindow(
 			fw->frame_g.y + (fw->frame_g.height>>1));
 		e.xany.type = ButtonPress;
 		e.xbutton.button = 1;
+		e.xbutton.state = Button1Mask;
 		e.xbutton.x_root = fw->frame_g.x + (fw->frame_g.width>>1);
 		e.xbutton.y_root = fw->frame_g.y + (fw->frame_g.height>>1);
 		e.xbutton.x = (fw->frame_g.width>>1);

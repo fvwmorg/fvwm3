@@ -658,6 +658,7 @@ static void ExecuteModuleCommand(Window w, int module, char *text)
 	exec_context_changes_t ecc;
 	int flags;
 
+	memset(&e, 0, sizeof(e));
 	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&ecc.w.fw) == XCNOENT)
 	{
 		ecc.w.fw = NULL;
@@ -669,7 +670,7 @@ static void ExecuteModuleCommand(Window w, int module, char *text)
 	 */
 	if (FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
-		    &e.xbutton.x_root, &e.xbutton.y_root, &JunkMask) ==
+		    &e.xbutton.x_root, &e.xbutton.y_root, &e.xbutton.state) ==
 	    False)
 	{
 		/* pointer is not on this screen */
@@ -688,10 +689,12 @@ static void ExecuteModuleCommand(Window w, int module, char *text)
 	if (StrEquals(text, "popup"))
 	{
 		e.xbutton.type = ButtonPress;
+		e.xbutton.state |= Button1Mask;
 	}
 	else
 	{
 		e.xbutton.type = ButtonRelease;
+		e.xbutton.state &= (~(Button1Mask));
 	}
 	e.xbutton.x = 0;
 	e.xbutton.y = 0;

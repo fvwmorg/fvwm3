@@ -4560,7 +4560,7 @@ static mloop_ret_code_t __mloop_get_event(
 			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
 				    &e.xkey.x_root, &e.xkey.y_root,
-				    &JunkX, &JunkY, &JunkMask) == False)
+				    &JunkX, &JunkY, &e.xkey.state) == False)
 			{
 				/* pointer is on a different screen */
 				e.xkey.x_root = 0;

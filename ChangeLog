@@ -1,3 +1,14 @@
+2004-11-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (__mloop_get_event):
+	* fvwm/functions.c (execute_complex_function):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/module_interface.c (ExecuteModuleCommand):
+	* fvwm/move_resize.c (__move_loop):
+	(__resize_window):
+	properly set the "state" member of faked motion and key events;
+	fixes broken "nosnap" feature
+
 2004-10-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/bindings.c (ParseBinding):

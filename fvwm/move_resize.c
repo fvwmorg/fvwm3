@@ -2154,6 +2154,7 @@ Bool __move_loop(
 				e2.xmotion.time = fev_get_evtime();
 				e2.xmotion.x_root = x;
 				e2.xmotion.y_root = y;
+				e2.xmotion.state = JunkMask;
 				e2.xmotion.same_screen = True;
 				e = e2;
 				fev_fake_event(&e);
@@ -2163,7 +2164,6 @@ Bool __move_loop(
 				/* pointer is on a different screen,
 				 * ignore event */
 			}
-
 		}
 
 		/* Handle a limited number of key press events to allow
@@ -2303,12 +2303,12 @@ Bool __move_loop(
 			{
 				continue;
 			}
-			if (!(e.xkey.state & Mod1Mask))
+			if (!(e.xmotion.state & Mod1Mask))
 			{
 				nosnap_enabled = True;
 			}
 			do_snap = nosnap_enabled &&
-				(e.xkey.state & Mod1Mask) ? False : True;
+				(e.xmotion.state & Mod1Mask) ? False : True;
 			xl = e.xmotion.x_root;
 			yt = e.xmotion.y_root;
 			if (xl > 0 && xl < Scr.MyDisplayWidth - 1)
@@ -3455,6 +3455,7 @@ static Bool __resize_window(F_CMD_ARGS)
 				e2.xmotion.time = fev_get_evtime();
 				e2.xmotion.x_root = x;
 				e2.xmotion.y_root = y;
+				e2.xmotion.state = JunkMask;
 				e2.xmotion.same_screen = True;
 				ev = e2;
 				fev_fake_event(&ev);
@@ -3483,6 +3484,7 @@ static Bool __resize_window(F_CMD_ARGS)
 				e2.xmotion.time = fev_get_evtime();
 				e2.xmotion.x_root = x;
 				e2.xmotion.y_root = y;
+				e2.xmotion.state = JunkMask;
 				e2.xmotion.same_screen = True;
 				ev = e2;
 				fev_fake_event(&ev);

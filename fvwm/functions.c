@@ -1118,6 +1118,12 @@ static void execute_complex_function(
 	if (d.type == ButtonPress)
 	{
 		d.type = ButtonRelease;
+		if (d.xbutton.button > 0 &&
+		    d.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
+		{
+			d.xbutton.state &=
+				(~(Button1Mask >> (d.xbutton.button - 1)));
+		}
 	}
 
 #ifdef BUGGY_CODE
