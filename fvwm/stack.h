@@ -19,6 +19,8 @@
 #define DEBUG_STACK_RING 1
 #ifdef DEBUG_STACK_RING
 void verify_stack_ring_consistency(void);
+#else
+#define verify_stack_ring_consistency()
 #endif
 void remove_window_from_stack_ring(FvwmWindow *t);
 void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win);
@@ -51,6 +53,7 @@ Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *t);
 #define MARK_RAISE 0
 #define MARK_LOWER 1
 #define MARK_ALL   2
+#define MARK_CLEAR 3
 #define MARK_ALL_LAYERS -1
 void mark_transient_subtree(
 	FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons,

@@ -1,5 +1,16 @@
 2002-09-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c (__raise_or_lower_recursion):
+	(RaiseOrLowerWindow):
+	split into two functions
+	renamed to __raise_or_lower_window
+	(mark_transient_subtree):
+	new flag MARK_CLEAR
+	(position_new_window_in_stack_ring):
+	(RaiseWindow):
+	(LowerWindow):
+	cleaned up stacking code
+
 	* fvwm/menus.c (paint_menu):
 	fixed a minor drawing problem with menu item reliefs
 
