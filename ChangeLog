@@ -1,3 +1,7 @@
+1998-11-08  Paul D. Smith  <psmith@gnu.org>
+
+	* fvwm/icons.c (GetXPMFile): Free pixmap after use.
+
 1998-11-07  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/menus.c (MenuInteraction): fixed bug with non-animated
