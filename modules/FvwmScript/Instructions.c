@@ -568,8 +568,16 @@ static char *GetScriptArg (int *NbArg,long *TabArg)
  val1=atoi(str);
  free(str);
 
- str=(char*)calloc(strlen(x11base->TabArg[val1])+1,sizeof(char));
- str=strcpy(str,x11base->TabArg[val1]);
+ if (x11base->TabArg[val1] != NULL)
+ {
+   str=(char*)calloc(strlen(x11base->TabArg[val1])+1,sizeof(char));
+   str=strcpy(str,x11base->TabArg[val1]);
+ }
+ else
+ {
+   str=(char*)calloc(1,sizeof(char));
+   str=strcpy(str,"");
+ }
 
  return str;
 }
