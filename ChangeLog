@@ -1,3 +1,29 @@
+2002-03-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual.c (MoveViewport):
+	don't send useless M_NEW_PAGE packets
+
+	* fvwm/frame.c:
+	* fvwm/borders.c:
+	started work on new button/title drawing code
+
+	* fvwm/events.c (HandleExpose):
+	don't handle expose on the title bar
+
+	* fvwm/borders.c:
+	* fvwm/frame.c (frame_get_sidebar_geometry):
+	* fvwm/fvwm.h (FvwmWindow):
+	replaced border_state with decor_state
+
+	* libs/defaults.h (NR_RIGHT_BUTTONS):
+	added a comment
+
+	* fvwm/events.h:
+	* fvwm/events.c (HandleExpose):
+
+	* fvwm/frame.c (frame_setup_border):
+	hide sidebars if they are too small, i.e. 0 pixels
+
 2002-03-20  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.c (FlocaleFreeNameProperty):
@@ -9,6 +35,25 @@
 	RightTitleRotatedCW is a default
 
 2002-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/frame.c (frame_get_sidebar_geometry):
+	window corners are always at least the border width thick
+
+	* fvwm/geometry.c (update_absolute_geometry):
+	fixed south/east shading
+
+	* fvwm/frame.c (frame_move_resize_step):
+	did the best I could to prevent rxvt from flashing in the background
+	colour
+
+	* fvwm/add_window.c (get_default_window_attributes):
+	(get_default_window_attributes):
+	(setup_resize_handle_windows):
+	* fvwm/borders.c (border_get_border_gcs):
+	applied -visual fix by Hippo
+
+	* fvwm/cursor.c (CMD_CursorStyle):
+	fixed endless loop
 
 	* fvwm/frame.c (frame_get_title_bar_dimensions):
 	fixed order of right buttons

@@ -84,12 +84,6 @@ typedef struct
 	} flags;
 } mr_args_internal;
 
-typedef struct
-{
-        rectangle title_g;
-        rectangle button_g[NUMBER_OF_BUTTONS];
-} frame_title_layout_type;
-
 /* ---------------------------- forward declarations ------------------------ */
 
 /* ---------------------------- local variables ----------------------------- */
@@ -106,7 +100,7 @@ static struct
 /* ---------------------------- local functions ----------------------------- */
 
 /*!!!remove*/
-static void print_g(char *text, rectangle *g)
+void print_g(char *text, rectangle *g)
 {
 	if (g == NULL)
 	{
@@ -213,10 +207,20 @@ static void frame_setup_border(
 	     part <<= 1)
 	{
 		border_get_part_geometry(fw, part, &sidebar_g, &part_g, &w);
-		xwc.x = part_g.x;
-		xwc.y = part_g.y;
-		xwc.width = part_g.width;
-		xwc.height = part_g.height;
+		if (part_g.width <= 0 || part_g.height <= 0)
+		{
+			xwc.x = -1;
+			xwc.y = -1;
+			xwc.width = 1;
+			xwc.height = 1;
+		}
+		else
+		{
+			xwc.x = part_g.x;
+			xwc.y = part_g.y;
+			xwc.width = part_g.width;
+			xwc.height = part_g.height;
+		}
 		if (diff_g != NULL)
 		{
 			if (part == PART_BORDER_NE || part == PART_BORDER_E ||
@@ -236,7 +240,158 @@ static void frame_setup_border(
 	return;
 }
 
-static void frame_get_title_bar_dimensions(
+static void frame_setup_title_bar(
+	FvwmWindow *fw, rectangle *frame_g, window_parts setup_parts,
+	rectangle *diff_g)
+{
+        frame_title_layout_type title_layout;
+        int i;
+
+	if (!HAS_TITLE(fw))
+	{
+		return;
+	}
+        frame_get_title_bar_dimensions(fw, frame_g, diff_g, &title_layout);
+        /* configure buttons */
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		if (FW_W_BUTTON(fw, i) != None && (setup_parts & PART_BUTTONS))
+		{
+                        XMoveResizeWindow(
+                                dpy, FW_W_BUTTON(fw, i),
+                                title_layout.button_g[i].x,
+                                title_layout.button_g[i].y,
+                                title_layout.button_g[i].width,
+                                title_layout.button_g[i].height);
+		}
+	}
+        /* configure title */
+        if (setup_parts & PART_TITLE)
+        {
+                XMoveResizeWindow(
+                        dpy, FW_W_TITLE(fw),
+                        title_layout.title_g.x, title_layout.title_g.y,
+                        title_layout.title_g.width,
+                        title_layout.title_g.height);
+        }
+
+	return;
+}
+
+static void frame_setup_window_internal(
+	FvwmWindow *fw, rectangle *frame_g, Bool do_send_configure_notify,
+	Bool do_force)
+{
+	frame_move_resize_args mr_args;
+	Bool is_resized = False;
+	Bool is_moved = False;
+	rectangle new_g;
+
+	new_g = *frame_g;
+	/* sanity checks */
+	if (new_g.width < 1)
+	{
+		new_g.width = 1;
+	}
+	if (new_g.height < 1)
+	{
+		new_g.height = 1;
+	}
+	/* set some flags */
+	if (new_g.width != fw->frame_g.width ||
+	    new_g.height != fw->frame_g.height)
+	{
+		is_resized = True;
+	}
+	if (new_g.x != fw->frame_g.x || new_g.y != fw->frame_g.y)
+	{
+		is_moved = True;
+	}
+	/* setup the window */
+	if (is_resized || do_force)
+	{
+		mr_args = frame_create_move_resize_args(
+			fw, (do_force) ? FRAME_MR_FORCE_SETUP : FRAME_MR_SETUP,
+                        NULL, &new_g, 0);
+		frame_move_resize(fw, mr_args);
+		frame_free_move_resize_args(mr_args);
+		fw->frame_g = *frame_g;
+	}
+	else if (is_moved)
+	{
+		/* inform the application of the change
+		 *
+		 * According to the July 27, 1988 ICCCM draft, we should send a
+		 * synthetic ConfigureNotify event to the client if the window
+		 * was moved but not resized. */
+		XMoveWindow(dpy, FW_W_FRAME(fw), frame_g->x, frame_g->y);
+		fw->frame_g = *frame_g;
+		do_send_configure_notify = True;
+	}
+	/* must not send events to shaded windows because this might cause them
+	 * to look at their current geometry */
+	if (do_send_configure_notify && !IS_SHADED(fw))
+	{
+		SendConfigureNotify(
+			fw, new_g.x, new_g.y, new_g.width, new_g.height, 0,
+			True);
+	}
+	/* get things updated */
+	XFlush(dpy);
+	/* inform the modules of the change */
+	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
+
+	return;
+}
+
+/* ---------------------------- interface functions ------------------------- */
+
+/* Initialise structures local to frame.c */
+void frame_init(void)
+{
+	XSetWindowAttributes xswa;
+	unsigned long valuemask;
+	int i;
+
+	xswa.override_redirect = True;
+	xswa.backing_store = NotUseful;
+	xswa.save_under = False;
+	xswa.win_gravity = UnmapGravity;
+	xswa.background_pixmap = None;
+	valuemask = CWOverrideRedirect | CWSaveUnder | CWBackingStore |
+		CWBackPixmap | CWWinGravity;
+	hide_wins.parent = Scr.Root;
+	for (i = 0; i < 4; i++)
+	{
+		hide_wins.w[i] = XCreateWindow(
+			dpy, Scr.Root, -1, -1, 1, 1, 0, CopyFromParent,
+			InputOutput, CopyFromParent, valuemask, &xswa);
+		if (hide_wins.w[i] == None)
+		{
+			fvwm_msg(ERR, "frame_init",
+				 "Could not create internal windows. Exiting");
+			MyXUngrabServer(dpy);
+			exit(1);
+		}
+	}
+
+	return;
+}
+
+void frame_destroyed_frame(
+	Window frame_w)
+{
+	if (hide_wins.parent == frame_w)
+	{
+		/* Oops, the window containing the hide windows was destroyed!
+		 * Let it die and create them from scratch. */
+		frame_init();
+	}
+
+	return;
+}
+
+void frame_get_title_bar_dimensions(
 	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
         frame_title_layout_type *title_layout)
 {
@@ -425,162 +580,12 @@ static void frame_get_title_bar_dimensions(
         return;
 }
 
-static void frame_setup_title_bar(
-	FvwmWindow *fw, rectangle *frame_g, window_parts setup_parts,
-	rectangle *diff_g)
-{
-        frame_title_layout_type title_layout;
-        int i;
-
-	if (!HAS_TITLE(fw))
-	{
-		return;
-	}
-        frame_get_title_bar_dimensions(fw, frame_g, diff_g, &title_layout);
-        /* configure buttons */
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
-	{
-		if (FW_W_BUTTON(fw, i) != None && (setup_parts & PART_BUTTONS))
-		{
-                        XMoveResizeWindow(
-                                dpy, FW_W_BUTTON(fw, i),
-                                title_layout.button_g[i].x,
-                                title_layout.button_g[i].y,
-                                title_layout.button_g[i].width,
-                                title_layout.button_g[i].height);
-		}
-	}
-        /* configure title */
-        if (setup_parts & PART_TITLE)
-        {
-                XMoveResizeWindow(
-                        dpy, FW_W_TITLE(fw),
-                        title_layout.title_g.x, title_layout.title_g.y,
-                        title_layout.title_g.width,
-                        title_layout.title_g.height);
-        }
-
-	return;
-}
-
-static void frame_setup_window_internal(
-	FvwmWindow *fw, rectangle *frame_g, Bool do_send_configure_notify,
-	Bool do_force)
-{
-	frame_move_resize_args mr_args;
-	Bool is_resized = False;
-	Bool is_moved = False;
-	rectangle new_g;
-
-	new_g = *frame_g;
-	/* sanity checks */
-	if (new_g.width < 1)
-	{
-		new_g.width = 1;
-	}
-	if (new_g.height < 1)
-	{
-		new_g.height = 1;
-	}
-	/* set some flags */
-	if (new_g.width != fw->frame_g.width ||
-	    new_g.height != fw->frame_g.height)
-	{
-		is_resized = True;
-	}
-	if (new_g.x != fw->frame_g.x || new_g.y != fw->frame_g.y)
-	{
-		is_moved = True;
-	}
-	/* setup the window */
-	if (is_resized || do_force)
-	{
-		mr_args = frame_create_move_resize_args(
-			fw, (do_force) ? FRAME_MR_FORCE_SETUP : FRAME_MR_SETUP,
-                        NULL, &new_g, 0);
-		frame_move_resize(fw, mr_args);
-		frame_free_move_resize_args(mr_args);
-		fw->frame_g = *frame_g;
-	}
-	else if (is_moved)
-	{
-		/* inform the application of the change
-		 *
-		 * According to the July 27, 1988 ICCCM draft, we should send a
-		 * synthetic ConfigureNotify event to the client if the window
-		 * was moved but not resized. */
-		XMoveWindow(dpy, FW_W_FRAME(fw), frame_g->x, frame_g->y);
-		fw->frame_g = *frame_g;
-		do_send_configure_notify = True;
-	}
-	/* must not send events to shaded windows because this might cause them
-	 * to look at their current geometry */
-	if (do_send_configure_notify && !IS_SHADED(fw))
-	{
-		SendConfigureNotify(
-			fw, new_g.x, new_g.y, new_g.width, new_g.height, 0,
-			True);
-	}
-	/* get things updated */
-	XFlush(dpy);
-	/* inform the modules of the change */
-	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
-
-	return;
-}
-
-/* ---------------------------- interface functions ------------------------- */
-
-/* Initialise structures local to frame.c */
-void frame_init(void)
-{
-	XSetWindowAttributes xswa;
-	unsigned long valuemask;
-	int i;
-
-	xswa.override_redirect = True;
-	xswa.backing_store = NotUseful;
-	xswa.save_under = False;
-	xswa.win_gravity = UnmapGravity;
-	xswa.background_pixmap = None;
-	valuemask = CWOverrideRedirect | CWSaveUnder | CWBackingStore |
-		CWBackPixmap | CWWinGravity;
-	hide_wins.parent = Scr.Root;
-	for (i = 0; i < 4; i++)
-	{
-		hide_wins.w[i] = XCreateWindow(
-			dpy, Scr.Root, -1, -1, 1, 1, 0, CopyFromParent,
-			InputOutput, CopyFromParent, valuemask, &xswa);
-		if (hide_wins.w[i] == None)
-		{
-			fvwm_msg(ERR, "frame_init",
-				 "Could not create internal windows. Exiting");
-			MyXUngrabServer(dpy);
-			exit(1);
-		}
-	}
-
-	return;
-}
-
-void frame_destroyed_frame(
-	Window frame_w)
-{
-	if (hide_wins.parent == frame_w)
-	{
-		/* Oops, the window containing the hide windows was destroyed!
-		 * Let it die and create them from scratch. */
-		frame_init();
-	}
-
-	return;
-}
-
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
 	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks)
 {
 	int min_w;
+	size_borders b;
 
 	ret_g->x = 0;
 	ret_g->y = 0;
@@ -595,11 +600,11 @@ void frame_get_sidebar_geometry(
 	/* get the corner size */
 	if (borderstyle == NULL)
 	{
-		if (fw->border_state.parts_drawn & PART_X_HANDLES)
+		if (fw->decor_state.parts_drawn & PART_X_HANDLES)
 		{
 			*ret_has_x_marks = True;
 		}
-		if (fw->border_state.parts_drawn & PART_Y_HANDLES)
+		if (fw->decor_state.parts_drawn & PART_Y_HANDLES)
 		{
 			*ret_has_y_marks = True;
 		}
@@ -623,17 +628,18 @@ void frame_get_sidebar_geometry(
 		ret_g->y = frame_g->height / 3;
 		*ret_has_x_marks = False;
 	}
+	get_window_borders_no_title(fw, &b);
+	if (ret_g->x < b.top_left.width)
+	{
+		ret_g->x = b.top_left.width;
+	}
+	if (ret_g->y < b.top_left.height)
+	{
+		ret_g->y = b.top_left.height;
+	}
 	/* length of the side bars */
 	ret_g->width = frame_g->width - 2 * ret_g->x;
-	if (ret_g->width < 1)
-	{
-		ret_g->width = 1;
-	}
 	ret_g->height = frame_g->height - 2 * ret_g->y;
-	if (ret_g->height < 1)
-	{
-		ret_g->height = 1;
-	}
 
 	return;
 }
@@ -679,7 +685,7 @@ int frame_window_id_to_context(
 {
 	int context = C_ROOT;
 
-	*ret_num = 0;
+	*ret_num = -1;
 	if (fw == NULL || w == None)
 	{
 		return C_ROOT;
@@ -1034,6 +1040,7 @@ static void frame_move_resize_step(
 	XSetWindowAttributes xswa;
 	Bool dummy;
         Bool is_setup;
+        Bool is_client_resizing = False;
         Bool do_force_static_gravity = False;
         int do_force;
 	int i;
@@ -1047,7 +1054,11 @@ static void frame_move_resize_step(
 
 	/* preparations */
         is_setup = (mra->mode == FRAME_MR_FORCE_SETUP ||
-                    mra->mode == FRAME_MR_SETUP);
+		   mra->mode == FRAME_MR_SETUP) ? True : False;
+	if (is_setup == True || mra->mode == FRAME_MR_OPAQUE)
+	{
+		is_client_resizing = True;
+	}
         do_force = (mra->mode == FRAME_MR_FORCE_SETUP);
 	i = mra->current_step;
 	mra->next_g = mra->start_g;
@@ -1089,6 +1100,7 @@ static void frame_move_resize_step(
 		w[0] = hide_wins.w[3];
 		w[1] = FW_W_PARENT(fw);
 		XRestackWindows(dpy, w, 2);
+fprintf(stderr,"raise\n");
 	}
 	else if (flags.do_hide_parent)
 	{
@@ -1110,14 +1122,14 @@ static void frame_move_resize_step(
                 grav.client_grav = StaticGravity;
                 frame_set_decor_gravities(fw, &grav);
         }
+	/* draw the border and the titlebar */
+	draw_decorations_with_geom(
+		fw, PART_ALL, (mra->w_with_focus != None) ? True : False,
+		do_force, CLEAR_NONE, &mra->current_g, &mra->next_g);
 	/* setup the border */
-	draw_clipped_decorations_with_geom(
-		fw, PART_FRAME, (mra->w_with_focus != None) ? True : False,
-		do_force, None, NULL, CLEAR_NONE, &mra->current_g,
-                &mra->next_g);
 	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP)
 	{
-		setup_parts = PART_FRAME;
+		setup_parts = PART_ALL;
 	}
 	else
 	{
@@ -1144,37 +1156,28 @@ static void frame_move_resize_step(
 	{
 		h = 1;
 	}
-        switch (mra->mode)
-        {
-        case FRAME_MR_SETUP:
-        case FRAME_MR_FORCE_SETUP:
-        case FRAME_MR_OPAQUE:
+	/* setup the parent, the frame and the client window */
+	if (is_client_resizing)
+	{
 		XMoveResizeWindow(dpy, FW_W(fw), 0, 0, w, h);
-                /* DV: This XSync prevents flashing, no idea why.  XFlush does
-                 * not work here. */
-                XSync(dpy, 0);
-                XMoveResizeWindow(
-                        dpy, FW_W_PARENT(fw), mra->b_g.top_left.width,
-                        mra->b_g.top_left.height, w, h);
-                break;
-        case FRAME_MR_SHRINK:
-        case FRAME_MR_SCROLL:
-                XResizeWindow(dpy, FW_W_PARENT(fw), w, h);
-                break;
-        }
-	/* setup the frame */
-        XMoveResizeWindow(
-                dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
-                mra->next_g.width, mra->next_g.height);
+		/* reduces flickering */
+		if (is_setup == True)
+		{
+			usleep(1000);
+		}
+		XSync(dpy, 0);
+	}
+	XMoveResizeWindow(
+		dpy, FW_W_PARENT(fw), mra->b_g.top_left.width,
+		mra->b_g.top_left.height, w, h);
+	XMoveResizeWindow(
+		dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
+		mra->next_g.width, mra->next_g.height);
         /* restore the old gravities */
         if (do_force_static_gravity == True)
         {
                 frame_set_decor_gravities(fw, &mra->grav);
         }
-	/*!!! remove when title/buttons are drawn in the window background */
-	draw_clipped_decorations_with_geom(
-		fw, setup_parts, (mra->w_with_focus != None) ? True : False,
-		True, None, NULL, CLEAR_NONE, &mra->current_g, &mra->next_g);
 	/* finish hiding the parent */
 	if (flags.do_hide_parent)
 	{
@@ -1182,6 +1185,7 @@ static void frame_move_resize_step(
 		XChangeWindowAttributes(
 			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
 		/*!!! update the hidden position of the client and parent*/
+fprintf(stderr,"lowered\n");
 		XLowerWindow(dpy, FW_W_PARENT(fw));
 		XMapWindow(dpy, FW_W_PARENT(fw));
 	}
@@ -1203,8 +1207,10 @@ void frame_move_resize(
 	int i;
 
 	mra = (mr_args_internal *)mr_args;
+#if 0
 	print_g("start", &mra->start_g);
 	print_g("end  ", &mra->end_g);
+#endif
 	/* animation */
 	for (i = 1; i <= mra->anim_steps; i++, frame_next_move_resize_args(mra))
 	{

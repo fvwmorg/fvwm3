@@ -370,7 +370,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	}
 
 	/* redefine all the windows using cursors */
-	for (fw2 = Scr.FvwmRoot.next; fw2; fw = fw->next)
+	for (fw2 = Scr.FvwmRoot.next; fw2; fw2 = fw2->next)
 	{
 		for (i=0;i<4;i++)
 		{

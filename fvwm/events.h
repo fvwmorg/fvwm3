@@ -21,7 +21,7 @@
 #define XEVMASK_DECORW  (ExposureMask | ButtonPressMask | ButtonReleaseMask | \
 			 KeyPressMask)
 #define XEVMASK_TITLEW  (ButtonPressMask | ButtonReleaseMask | \
-			 ExposureMask | OwnerGrabButtonMask | \
+			 OwnerGrabButtonMask | \
 			 ButtonMotionMask | PointerMotionMask)
 #define XEVMASK_BUTTONW XEVMASK_TITLEW
 #define XEVMASK_PARENTW (SubstructureRedirectMask)

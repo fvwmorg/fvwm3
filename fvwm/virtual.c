@@ -991,11 +991,11 @@ void MoveViewport(int newx, int newy, Bool grab)
   }
   Scr.Vx = newx;
   Scr.Vy = newy;
-  BroadcastPacket(
-    M_NEW_PAGE, 5, Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
   if (deltax || deltay)
   {
+    BroadcastPacket(
+      M_NEW_PAGE, 5, Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
     /*
      * RBW - 11/13/1998	 - new:	 chase the chain bidirectionally, all at once!

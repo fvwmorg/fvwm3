@@ -603,10 +603,15 @@ typedef struct FvwmWindow
 	window_flags flags;
 	struct
 	{
-		unsigned parts_drawn : 10;
-		unsigned parts_lit : 10;
-		unsigned parts_inverted : 10;
-	} border_state;
+		unsigned buttons_drawn : NUMBER_OF_BUTTONS;
+		unsigned buttons_lit : NUMBER_OF_BUTTONS;
+		unsigned buttons_inverted : NUMBER_OF_BUTTONS;
+		unsigned buttons_toggled : NUMBER_OF_BUTTONS;
+		unsigned parts_drawn : 12;
+		unsigned parts_lit : 12;
+		unsigned parts_inverted : 12;
+		unsigned parts_toggled : 12;
+	} decor_state;
 	int nr_left_buttons;
 	int nr_right_buttons;
 #define BUTTON_INDEX(b) (((b) == 0) ? (NUMBER_OF_BUTTONS - 1) : ((b) - 1))

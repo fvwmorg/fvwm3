@@ -45,6 +45,12 @@ typedef struct
 	int client_grav;
 } frame_decor_gravities_type;
 
+typedef struct
+{
+        rectangle title_g;
+        rectangle button_g[NUMBER_OF_BUTTONS];
+} frame_title_layout_type;
+
 /* details are hidden in frame.c */
 typedef void *frame_move_resize_args;
 
@@ -62,6 +68,9 @@ void frame_update_move_resize_args(
 	frame_move_resize_args mr_args, rectangle *end_g);
 void frame_free_move_resize_args(
 	frame_move_resize_args mr_args);
+void frame_get_title_bar_dimensions(
+	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
+        frame_title_layout_type *title_layout);
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
 	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks);

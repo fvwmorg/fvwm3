@@ -531,7 +531,7 @@ void update_absolute_geometry(FvwmWindow *fw)
                 case DIR_SW:
                 case DIR_S:
                 case DIR_SE:
-                        dest_g->y += fw->frame_g.height - dest_g->height;
+                        dest_g->y += fw->frame_g.height - frame_g.height;
                         /* fall through */
                 case DIR_NW:
                 case DIR_N:
@@ -544,7 +544,7 @@ void update_absolute_geometry(FvwmWindow *fw)
                 case DIR_NE:
                 case DIR_E:
                 case DIR_SE:
-                        dest_g->x += fw->frame_g.width - dest_g->width;
+                        dest_g->x += fw->frame_g.width - frame_g.width;
                         /* fall through */
                 case DIR_NW:
                 case DIR_W:

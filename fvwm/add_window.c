@@ -1173,10 +1173,13 @@ void get_default_window_attributes(
 		pattributes->background_pixmap = None;
 	}
 
-	*pvaluemask |= CWBackingStore | CWCursor | CWSaveUnder;
+	*pvaluemask |= CWBackingStore | CWCursor | CWSaveUnder | CWBorderPixel |
+		CWColormap;
 	pattributes->backing_store = NotUseful;
 	pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
 	pattributes->save_under = False;
+	pattributes->border_pixel = 0;
+	pattributes->colormap = Pcmap;
 
 	return;
 }
@@ -1407,10 +1410,13 @@ void setup_resize_handle_windows(FvwmWindow *fw)
 	{
 		return;
 	}
-	valuemask = CWEventMask | CWBackingStore | CWSaveUnder | CWWinGravity;
+	valuemask = CWEventMask | CWBackingStore | CWSaveUnder | CWWinGravity |
+		CWBorderPixel | CWColormap;
 	attributes.event_mask = XEVMASK_BORDERW;
 	attributes.backing_store = NotUseful;
 	attributes.save_under = False;
+	attributes.border_pixel = 0;
+	attributes.colormap = Pcmap;
 	/* Just dump the windows any old place and let frame_setup_window take
 	 * care of the mess */
 	for (i = 0; i < 4; i++)

@@ -21,6 +21,9 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
+
+#define NPARTS_KEEP_STATE 12
+
 /* ---------------------------- global macros ------------------------------- */
 
 /* ---------------------------- type definitions ---------------------------- */
@@ -38,14 +41,16 @@ typedef enum
 	PART_BORDER_NE = 0x20,
 	PART_BORDER_SW = 0x40,
 	PART_BORDER_SE = 0x80,
-	PART_X_HANDLES = 0x100,
-	PART_Y_HANDLES = 0x200,
-	PART_TITLE     = 0x400,
-	PART_BUTTONS   = 0x800,
+	PART_TITLE     = 0x100,
+	PART_BUTTONS   = 0x200,
+	PART_X_HANDLES = 0x400,
+	PART_Y_HANDLES = 0x800,
+	/* combinations of the above values */
 	PART_SIDES     = 0x0f,
 	PART_CORNERS   = 0xf0,
 	PART_FRAME     = 0xff,
-	PART_HANDLES   = 0x300,
+	PART_TITLEBAR  = 0x300,
+	PART_HANDLES   = 0xc00,
 	PART_ALL       = 0xfff
 } window_parts;
 
@@ -66,13 +71,9 @@ void border_get_part_geometry(
 	FvwmWindow *fw, window_parts part, rectangle *sidebar_g,
 	rectangle *ret_g, Window *ret_w);
 int get_button_number(int context);
-void draw_clipped_decorations_with_geom(
+void draw_decorations_with_geom(
 	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
-	Window expose_win, XRectangle *rclip, clear_window_parts clear_parts,
-	rectangle *old_g, rectangle *new_g);
-void draw_clipped_decorations(
-	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
-	Window expose_win, XRectangle *rclip, clear_window_parts clear_parts);
+	clear_window_parts clear_parts, rectangle *old_g, rectangle *new_g);
 void DrawDecorations(
 	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
 	Window expose_win, clear_window_parts clear_parts);

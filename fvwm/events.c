@@ -809,7 +809,6 @@ void HandleClientMessage(void)
 void HandleExpose(void)
 {
 	XRectangle r;
-	window_parts draw_parts;
 
 #if 0
 	/* This doesn't work well. Sometimes, the expose count is zero although
@@ -836,27 +835,6 @@ void HandleExpose(void)
 		/* refresh the contents of the torn out menu */
 		menu_expose(&Event, NULL);
 	}
-	/* redraw the decorations */
-	if (Event.xany.window == FW_W_TITLE(Fw))
-	{
-		draw_parts = PART_TITLE;
-	}
-	else
-	{
-		draw_parts = PART_BUTTONS;
-	}
-	if (FftSupport && Fw->title_font &&
-	    Fw->title_font->fftf.fftfont != NULL &&
-	    draw_parts == PART_TITLE)
-	{
-	  draw_clipped_decorations(
-		Fw, draw_parts, (Scr.Hilite == Fw), True,
-		Event.xany.window, NULL, CLEAR_ALL);
-	  return;
-	}
-	draw_clipped_decorations(
-		Fw, draw_parts, (Scr.Hilite == Fw), True,
-		Event.xany.window, &r, CLEAR_ALL);
 
 	return;
 }

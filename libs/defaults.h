@@ -261,8 +261,10 @@
 
 
 /*** decorations ***/
+/* The number of left and right buttons must be equal.  A maximum of 32 buttons
+ * can be handled (16 left and 16 right). */
 #define NR_LEFT_BUTTONS			   5
-#define NR_RIGHT_BUTTONS		   5
+#define NR_RIGHT_BUTTONS		   NR_LEFT_BUTTONS
 #define NUMBER_OF_BUTTONS		   (NR_LEFT_BUTTONS + NR_RIGHT_BUTTONS)
 
 

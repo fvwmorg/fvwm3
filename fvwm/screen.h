@@ -160,7 +160,7 @@ typedef struct DecorFace
   } flags;
 } DecorFace;
 
-enum ButtonState
+typedef enum
 {
   BS_All = -1,
   BS_ActiveUp,
@@ -170,7 +170,7 @@ enum ButtonState
   BS_ToggledActiveDown,
   BS_ToggledInactive,
   BS_MaxButtonState
-};
+} ButtonState;
 
 typedef enum
 {
