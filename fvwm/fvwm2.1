@@ -3600,6 +3600,53 @@ to only consider the windows with
 style.)
 
 .TP
+.BI "XSync "
+When
+.B XSync
+is called, the X function with the same name is used to send all
+pending X requests to the server.  This command is intended for
+debugging only.
+
+.TP
+.BI "XSynchronize [" bool "]"
+The
+.B XSynchronize
+command controls wether X requests are sent to the X server
+immediately or not.  Normally, requests are sent in larger batches
+to save unnecessary commulication.  To send requests immediately,
+use "True" as the argument, to disable this use "False" or to
+toggle between both methods use "Toggle" or omit the
+.B bool
+argument.  Fvwm defaults to synchronized requests when started
+with the
+.B \-debug
+option.  This command is intended for debugging only.
+
+.BI "Iconify [" bool "]"
+Iconifies a window if it is not already iconified or de-iconifies
+it if it is already iconified.  The optional argument
+.I bool
+is a boolean argument.  "True" means only iconification is
+allowed, while "False" forces de-iconification.  Using "toggle"
+switches between iconified and de-iconified states.
+
+There are a number of
+.B Style
+options which influence the appearance and behavior of icons (e.g.
+.IR StickyIcon ", " NoIcon ).
+
+For backwards compatibility, the optional argument may also be a
+positive number instead of "True", or a negative number instead of
+"False".  Note that this syntax is obsolete, and will be removed
+in the future.
+
+When
+.B XSync
+is called, the X function with the same name is used to send all
+pending X requests to the server.  This command is intended for
+debugging only.
+
+.TP
 .BI "+"
 Used to continue adding to the last specified decor, function or
 menu. See the discussion for

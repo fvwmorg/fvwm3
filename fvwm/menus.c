@@ -21,7 +21,6 @@
  *     copyright remains in the source code and all documentation
  ****************************************************************************/
 
-
 /***********************************************************************
  *
  * fvwm menu code
@@ -675,6 +674,90 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
   return;
 }
 
+/*
+ * Functions dealing with tear off menus
+ */
+
+void menu_tear_off(MenuRoot *mr)
+{
+	XEvent ev;
+	XSizeHints menusizehints;
+	XClassHint menuclasshints;
+	XTextProperty menunametext;
+	char *list[] ={ NULL, NULL };
+	char *t;
+
+	/* size hints */
+	menusizehints.flags =
+		PBaseSize | PMinSize | PMaxSize | USPosition;
+	menusizehints.base_width  = 0;
+	menusizehints.base_height = 0;
+	menusizehints.min_width = MR_WIDTH(mr);
+	menusizehints.min_height = MR_HEIGHT(mr);
+	menusizehints.max_width = MR_WIDTH(mr);
+	menusizehints.max_height = MR_HEIGHT(mr);
+
+	/* class, resource and names */
+	menuclasshints.res_name = safestrdup(MR_NAME(mr));
+	menuclasshints.res_class = safestrdup("fvwm_menu");
+	for (t = menuclasshints.res_name; t != NULL && *t != 0; t++)
+	{
+	  /* replace tabs in the title with spaces */
+	  if (*t == '\t')
+	  {
+	    *t = ' ';
+	  }
+	}
+	list[0] = menuclasshints.res_name;
+	menunametext.value = NULL;
+	XStringListToTextProperty(list, 1, &menunametext);
+
+	/* set all properties */
+	XSetWMProperties(
+		dpy,MR_WINDOW(mr), &menunametext, &menunametext, NULL, 0,
+		&menusizehints, NULL, &menuclasshints);
+
+	/* free memory */
+	if (menunametext.value != NULL)
+	{
+		XFree(menunametext.value);
+	}
+	free(menuclasshints.res_class);
+	free(menuclasshints.res_name);
+
+	/* manage the window */
+	ev.type = MapRequest;
+	ev.xmaprequest.send_event = True;
+	ev.xmaprequest.display = dpy;
+	ev.xmaprequest.parent = Scr.Root;
+	ev.xmaprequest.window = MR_WINDOW(mr);
+	Event = ev;
+	HandleMapRequestKeepRaised(None, NULL, True);
+
+	return;
+}
+
+void menu_close_tear_off_menu(FvwmWindow *tmp_win)
+{
+	MenuRoot *mr;
+	MenuParameters mp;
+	FvwmWindow *t = NULL;
+	int context = C_ROOT;
+
+	if (XFindContext(
+		    dpy, tmp_win->w, MenuContext, (caddr_t *)&mr) == XCNOENT)
+	{
+		return;
+	}
+	memset(&mp, 0, sizeof(mp));
+	mp.menu = mr;
+	mp.pTmp_win = &t;
+	mp.pcontext = &context;
+	pop_menu_down(&mr, &mp);
+
+	return;
+}
+
 /****************************************************************************
  *
  * Initiates a menu pop-up
@@ -866,7 +949,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   {
     pmret->rc = MENU_ABORTED;
   }
-  if (!fWasAlreadyPopped)
+  if (!fWasAlreadyPopped && pmret->rc != MENU_TEAR_OFF)
   {
     /* popping down the menu may destroy the menu via the dynamic popdown
      * action! */
@@ -876,7 +959,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   XFlush(dpy);
 
   if (!pmp->flags.is_submenu && x_start >= 0 && y_start >= 0 &&
-      pmret->flags.is_key_press)
+      pmret->flags.is_key_press && pmret->rc != MENU_TEAR_OFF)
   {
     /* warp pointer back to where invoked if this was brought up
      * with a keypress and we're returning from a top level menu,
@@ -1004,9 +1087,7 @@ typedef enum
   SA_CONTINUE,
   SA_WARPBACK,
   SA_SELECT,
-#ifdef TEAR_OFF_MENUS
   SA_TEAROFF,
-#endif
   SA_ABORT
 } shortcut_action;
 
@@ -1273,12 +1354,9 @@ static void menuShortcuts(
     saction = SA_LAST;
     break;
 
-#ifdef TEAR_OFF_MENUS
   case XK_BackSpace:
-fprintf(stderr,"menu torn off\n");
     saction = SA_TEAROFF;
     break;
-#endif
 
   default:
     break;
@@ -1441,11 +1519,9 @@ fprintf(stderr,"menu torn off\n");
     pmret->rc = MENU_ABORTED;
     return;
 
-#ifdef TEAR_OFF_MENUS
   case SA_TEAROFF:
     pmret->rc = MENU_TEAR_OFF;
     return;
-#endif
 
   case SA_NONE:
   default:
@@ -1507,7 +1583,6 @@ static void MenuInteraction(
   MenuRoot *tmrMi = NULL;
   MenuRoot *mrPopup = NULL;
   MenuRoot *mrMiPopup = NULL;
-  MenuRoot *mrNeedsPainting = NULL;
   MenuRoot *mrPopdown = NULL;
 
   int x_init = 0;
@@ -1876,9 +1951,7 @@ static void MenuInteraction(
       case MENU_POPDOWN:
       case MENU_ABORTED:
       case MENU_DOUBLE_CLICKED:
-#ifdef TEAR_OFF_MENUS
       case MENU_TEAR_OFF:
-#endif
 	goto DO_RETURN;
       case MENU_NEWITEM:
       case MENU_POPUP:
@@ -1946,12 +2019,7 @@ static void MenuInteraction(
 
     case Expose:
       /* grab our expose events, let the rest go through */
-      if((XFindContext(dpy, Event.xany.window, MenuContext,
-		       (caddr_t *)&mrNeedsPainting) != XCNOENT))
-      {
-	flush_accumulate_expose(Event.xany.window, &Event);
-	paint_menu(mrNeedsPainting, &Event, (*pmp->pTmp_win));
-      }
+      menu_expose(&Event, (*pmp->pTmp_win));
       /* we want to dispatch this too so window decorations get redrawn
        * after being obscured by menus. */
       /* We need to preserve the Tmp_win here! Note that handling an Expose
@@ -2581,12 +2649,9 @@ static void MenuInteraction(
       last_saved_pos_hints.pos_hints.screen_origin_y = pmp->screen_origin_y;
     } /* a menu was selected */
     break;
-#ifdef TEAR_OFF_MENUS
   case MENU_TEAR_OFF:
-fprintf(stderr,"got MENU_TEAR_OFF\n");
-    AddWindow(MR_WINDOW(pmp->menu), NULL);
+    menu_tear_off(pmp->menu);
     break;
-#endif
   default:
     break;
   }
@@ -3923,6 +3988,21 @@ static void draw_separator(Window w, GC TopGC, GC BottomGC, int x1, int y1,
 {
   XDrawLine(dpy, w, TopGC   , x1,	    y1,	 x2,	      y2);
   XDrawLine(dpy, w, BottomGC, x1-extra_off, y1+1,x2+extra_off,y2+1);
+}
+
+void menu_expose(XEvent *event, FvwmWindow *fw)
+{
+	MenuRoot *mr = NULL;
+
+	if ((XFindContext(
+		     dpy, event->xany.window, MenuContext, (caddr_t *)&mr) !=
+	     XCNOENT))
+	{
+		flush_accumulate_expose(event->xany.window, event);
+		paint_menu(mr, event, fw);
+	}
+
+	return;
 }
 
 /***********************************************************************

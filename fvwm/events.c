@@ -95,6 +95,7 @@
 #include "virtual.h"
 #include "decorations.h"
 #include "schedule.h"
+#include "menus.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -891,46 +892,53 @@ void HandleClientMessage(void)
  ***********************************************************************/
 void HandleExpose(void)
 {
-  XRectangle r;
+	XRectangle r;
+	draw_window_parts draw_parts;
 
 #if 0
-  /* This doesn't work well. Sometimes, the expose count is zero although
-   * dozens of expose events are pending.  This happens all the time during
-   * a shading animation.  SImply flush expose events unconditionally. */
-  if (Event.xexpose.count != 0||1)
-  {
-    flush_accumulate_expose(Event.xexpose.window, &Event);
-  }
+	/* This doesn't work well. Sometimes, the expose count is zero although
+	 * dozens of expose events are pending.  This happens all the time
+	 * during a shading animation.  Simply flush expose events
+	 * unconditionally. */
+	if (Event.xexpose.count != 0)
+	{
+		flush_accumulate_expose(Event.xexpose.window, &Event);
+	}
 #else
-  flush_accumulate_expose(Event.xexpose.window, &Event);
+	flush_accumulate_expose(Event.xexpose.window, &Event);
 #endif
-  r.x = Event.xexpose.x;
-  r.y = Event.xexpose.y;
-  r.width = Event.xexpose.width;
-  r.height = Event.xexpose.height;
-  if (Tmp_win)
-  {
-    draw_window_parts draw_parts;
+	if (Tmp_win == NULL)
+	{
+		return;
+	}
+	r.x = Event.xexpose.x;
+	r.y = Event.xexpose.y;
+	r.width = Event.xexpose.width;
+	r.height = Event.xexpose.height;
+	if (IS_TEAR_OFF_MENU(Tmp_win) && Event.xany.window == Tmp_win->w)
+	{
+		/* refresh the contents of the torn out menu */
+		menu_expose(&Event, NULL);
+	}
+	/* redraw the decorations */
+	if (Event.xany.window == Tmp_win->title_w)
+	{
+		draw_parts = DRAW_TITLE;
+	}
+	else if (Event.xany.window == Tmp_win->decor_w ||
+		 Event.xany.window == Tmp_win->frame)
+	{
+		draw_parts = DRAW_FRAME;
+	}
+	else
+	{
+		draw_parts = DRAW_BUTTONS;
+	}
+	draw_clipped_decorations(
+		Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True,
+		Event.xany.window, &r, CLEAR_ALL);
 
-    if (Event.xany.window == Tmp_win->title_w)
-    {
-      draw_parts = DRAW_TITLE;
-    }
-    else if (Event.xany.window == Tmp_win->decor_w ||
-	     Event.xany.window == Tmp_win->frame)
-    {
-      draw_parts = DRAW_FRAME;
-    }
-    else
-    {
-      draw_parts = DRAW_BUTTONS;
-    }
-    draw_clipped_decorations(
-      Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True, Event.xany.window,
-      &r, CLEAR_ALL);
-  }
-
-  return;
+	return;
 }
 
 
@@ -1013,9 +1021,10 @@ void HandleMapRequest(void)
     XMapWindow (dpy, Event.xmaprequest.window);
     return;
   }
-  HandleMapRequestKeepRaised(None, NULL);
+  HandleMapRequestKeepRaised(None, NULL, False);
 }
-void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
+void HandleMapRequestKeepRaised(
+	Window KeepRaised, FvwmWindow *ReuseWin, Bool is_menu)
 {
   extern long isIconicState;
   extern Bool isIconifiedByParent;
@@ -1061,7 +1070,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   if (!Tmp_win || (Tmp_win && DO_REUSE_DESTROYED(Tmp_win)))
   {
     /* Add decorations. */
-    Tmp_win = AddWindow(Event.xany.window, ReuseWin);
+    Tmp_win = AddWindow(Event.xany.window, ReuseWin, is_menu);
     if (Tmp_win == NULL)
       return;
     is_new_window = True;
@@ -1226,6 +1235,11 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
        * down here.  Rather do some unnecessary work in this function. */
       focus_grab_buttons(sf, True);
     }
+  }
+  if (is_menu)
+  {
+    SET_MAPPED(Tmp_win, 1);
+    SET_MAP_PENDING(Tmp_win, 0);
   }
 
   /* Just to be on the safe side, we make sure that STARTICONIC
@@ -1410,10 +1424,11 @@ void HandleUnmapNotify(void)
     weMustUnmap = 1;
     if (XFindContext(dpy, Event.xany.window,
 		     FvwmContext, (caddr_t *)&Tmp_win) == XCNOENT)
+    {
       Tmp_win = NULL;
+      return;
+    }
   }
-  if (!Tmp_win)
-    return;
   if (Event.xunmap.window == Tmp_win->frame)
   {
     SET_DEICONIFY_PENDING(Tmp_win , 0);
@@ -1489,8 +1504,11 @@ void HandleUnmapNotify(void)
     {
       RestoreWithdrawnLocation (Tmp_win, False, Scr.Root);
     }
-    XRemoveFromSaveSet (dpy, Event.xunmap.window);
-    XSelectInput (dpy, Event.xunmap.window, NoEventMask);
+    if (!IS_TEAR_OFF_MENU(Tmp_win))
+    {
+      XRemoveFromSaveSet (dpy, Event.xunmap.window);
+      XSelectInput (dpy, Event.xunmap.window, NoEventMask);
+    }
     XSync(dpy, 0);
     MyXUngrabServer(dpy);
   }
@@ -1525,8 +1543,15 @@ void HandleReparentNotify(void)
   {
     /* window was reparented by someone else, destroy the frame */
     SetMapStateProp(Tmp_win, WithdrawnState);
-    XRemoveFromSaveSet(dpy, Event.xreparent.window);
-    XSelectInput (dpy, Event.xreparent.window, NoEventMask);
+    if (!IS_TEAR_OFF_MENU(Tmp_win))
+    {
+      XRemoveFromSaveSet(dpy, Event.xreparent.window);
+      XSelectInput (dpy, Event.xreparent.window, NoEventMask);
+    }
+    else
+    {
+      XSelectInput (dpy, Event.xreparent.window, XEVMASK_MENUW);
+    }
     discard_events(XEVMASK_FRAMEW);
     destroy_window(Tmp_win);
     EWMH_ManageKdeSysTray(Event.xreparent.window, Event.type);
@@ -3441,4 +3466,42 @@ void WaitForButtonsUp(Bool do_handle_expose)
   MyXUngrabServer(dpy);
 
   return;
+}
+
+void CMD_XSync(F_CMD_ARGS)
+{
+	XSync(dpy, 0);
+
+	return;
+}
+
+void sync_server(int toggle)
+{
+	static Bool synced = False;
+
+	if (toggle == -1)
+	{
+		toggle = (synced == False);
+	}
+	if (toggle == 1)
+	{
+		synced = True;
+	}
+	else
+	{
+		synced = False;
+	}
+	XSynchronize(dpy, synced);
+
+	return;
+}
+
+void CMD_XSynchronize(F_CMD_ARGS)
+{
+	int toggle;
+
+	toggle = ParseToggleArgument(action, NULL, -1, 0);
+	sync_server(toggle);
+
+	return;
 }

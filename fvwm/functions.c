@@ -269,6 +269,8 @@ static const func_type func_config[] =
   CMD_ENTRY("xineramaslssize", CMD_XineramaSlsSize, F_XINERAMASLSSIZE, 0),
   CMD_ENTRY("xorpixmap", CMD_XorPixmap, F_XOR, 0),
   CMD_ENTRY("xorvalue", CMD_XorValue, F_XOR, 0),
+  CMD_ENTRY("xsync", CMD_XSync, F_XSYNC, 0),
+  CMD_ENTRY("xsynchronize", CMD_XSynchronize, F_XSYNCHRONIZE, 0),
   {"",0,0,0}
 };
 

@@ -616,18 +616,33 @@ Bool is_function_allowed(
         switch(function)
         {
         case F_DELETE:
+		if (IS_TEAR_OFF_MENU(t))
+		{
+		  /* always allow this on tear off menus */
+		  break;
+		}
                 if (!WM_DELETES_WINDOW(t))
 		{
                         return False;
 		}
                 /* fall through to close clause */
         case F_CLOSE:
+		if (IS_TEAR_OFF_MENU(t))
+		{
+		  /* always allow this on tear off menus */
+		  break;
+		}
                 if (!(functions & MWM_FUNC_CLOSE))
 		{
                         return False;
 		}
                 break;
         case F_DESTROY: /* shouldn't destroy always be allowed??? */
+		if (IS_TEAR_OFF_MENU(t))
+		{
+		  /* always allow this on tear off menus */
+		  break;
+		}
                 if (!(functions & MWM_FUNC_CLOSE))
 		{
                         return False;

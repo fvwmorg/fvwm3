@@ -181,5 +181,7 @@ void CMD_XineramaSls(F_CMD_ARGS);
 void CMD_XineramaSlsSize(F_CMD_ARGS);
 void CMD_XorPixmap(F_CMD_ARGS);
 void CMD_XorValue(F_CMD_ARGS);
+void CMD_XSync(F_CMD_ARGS);
+void CMD_XSynchronize(F_CMD_ARGS);
 
 #endif /* COMMANDS_H */

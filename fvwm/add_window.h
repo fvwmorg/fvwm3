@@ -48,7 +48,7 @@ void change_mini_icon(FvwmWindow *tmp_win, window_style *pstyle);
 void change_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle);
 
 void FetchWmProtocols(FvwmWindow *);
-FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
+FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu);
 void GetWindowSizeHints(FvwmWindow *);
 void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 void destroy_window(FvwmWindow *);

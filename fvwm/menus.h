@@ -699,6 +699,7 @@ extern MenuInfo Menus;
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
+void menu_close_tear_off_menu(FvwmWindow *tmp_win);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
 char *get_menu_options(
   char *action, Window w, FvwmWindow *tmp_win, XEvent *e, MenuRoot *mr,
@@ -710,5 +711,6 @@ void UpdateAllMenuStyles(void);
 void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
 void ParentalMenuRePaint(void);
+void menu_expose(XEvent *event, FvwmWindow *fw);
 
 #endif /* _MENUS_ */

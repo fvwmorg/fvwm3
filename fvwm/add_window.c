@@ -1458,7 +1458,7 @@ void setup_key_and_button_grabs(FvwmWindow *tmp_win)
  *	AddWindow - add a new window to the fvwm list
  *
  ***********************************************************************/
-FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
+FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
 {
   /* new fvwm window structure */
   register FvwmWindow *tmp_win = NULL;
@@ -1527,6 +1527,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   sflags = SGET_FLAGS_POINTER(style);
   SET_TRANSIENT(
     tmp_win, !!XGetTransientForHint(dpy, tmp_win->w, &tmp_win->transientfor));
+  if (is_menu)
+  {
+    SET_TEAR_OFF_MENU(tmp_win, 1);
+  }
   tmp_win->decor = NULL;
   setup_style_and_decor(tmp_win, &style, &buttons);
 
@@ -1664,11 +1668,22 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /****** select events ******/
   valuemask = CWEventMask | CWDontPropagate;
-  attributes.event_mask = XEVMASK_CLIENTW;
+  if (IS_TEAR_OFF_MENU(tmp_win))
+  {
+    attributes.event_mask = XEVMASK_TEAR_OFF_MENU;
+  }
+  else
+  {
+    attributes.event_mask = XEVMASK_CLIENTW;
+  }
   attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
   XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
-  /******  ******/
-  XAddToSaveSet(dpy, tmp_win->w);
+  /****** make sure the window is not destroyed when fvwm dies ******/
+  if (!IS_TEAR_OFF_MENU(tmp_win))
+  {
+    /* menus were created by fvwm itself, don't add them to the save set */
+    XAddToSaveSet(dpy, tmp_win->w);
+  }
 
   /****** arrange the frame ******/
   ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
@@ -2600,7 +2615,7 @@ void CaptureOneWindow(
     SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
     destroy_window(fw);
     Event.xmaprequest.window = w;
-    HandleMapRequestKeepRaised(keep_on_top_win, fw);
+    HandleMapRequestKeepRaised(keep_on_top_win, fw, False);
     if (!fFvwmInStartup)
     {
       SET_MAP_PENDING(fw, 0);
@@ -2782,7 +2797,7 @@ void CaptureAllWindows(Bool is_recapture)
       {
         XUnmapWindow(dpy, children[i]);
         Event.xmaprequest.window = children[i];
-        HandleMapRequestKeepRaised(None, NULL);
+        HandleMapRequestKeepRaised(None, NULL, False);
       }
     }
     Scr.flags.windows_captured = 1;

@@ -1,5 +1,32 @@
 2002-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/builtins.c (CMD_Delete):
+	(CMD_Close):
+	(CMD_Destroy):
+	don't crash fvwm when trying to close a tear off menu
+
+	* fvwm/decorations.c (is_function_allowed):
+	* fvwm/menus.c (menu_expose):
+	(do_menu):
+	* fvwm/events.c (HandleReparentNotify):
+	(HandleUnmapNotify):
+	* fvwm/add_window.c (AddWindow):
+	(AddWindow):
+	* fvwm/fvwm.h (struct):
+	* fvwm/add_window.c (CaptureAllWindows):
+	(CaptureOneWindow):
+	* fvwm/events.h (flush_property_notify):
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	started work on tear off menus
+
+	* fvwm/fvwm.c (main):
+	* fvwm/events.c (CMD_Sync):
+	(CMD_Synchronize):
+	* fvwm/commands.h (CMD_Synchronize):
+	* fvwm/functions.h (enum):
+	* fvwm/functions.c (func_config):
+	new commands XSync and XSynchronize for debugging
+
 	* fvwm/conditional.c (CreateConditionMask):
 	(MatchesConditionMask):
 	* fvwm/builtins.c (CMD_State):
@@ -11,7 +38,7 @@
 	new condition "State"
 
 	* libs/queue.c:
-	dixed core dump
+	fixed core dump
 
 2002-01-30  Dominik Vogt  <dominik.vogt@gmx.de>
 

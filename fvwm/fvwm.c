@@ -564,7 +564,9 @@ int main(int argc, char **argv)
 
   XSync(dpy, 0);
   if(debugging)
-    XSynchronize(dpy,1);
+  {
+	  sync_server(1);
+  }
 
   SetupICCCM2 (replace_wm);
   XSetErrorHandler(CatchRedirectError);

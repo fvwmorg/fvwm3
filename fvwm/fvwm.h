@@ -298,6 +298,7 @@ typedef struct
 					* function execution. */
   unsigned is_size_inc_set : 1;
   unsigned is_style_deleted : 1;
+  unsigned is_tear_off_menu : 1; /* the window is a torn out fvwm menu */
   unsigned is_transient : 1; /* is it a transient window? */
   unsigned is_window_drawn_once : 1;
   unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/

@@ -197,6 +197,8 @@ enum
   F_XINERAMASLS,
   F_XINERAMASLSSIZE,
   F_XOR,
+  F_XSYNC,
+  F_XSYNCHRONIZE,
 
   /* functions that need a window to operate on */
   F_ADD_BUTTON_STYLE,

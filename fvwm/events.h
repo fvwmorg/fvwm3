@@ -37,6 +37,9 @@
                          VisibilityChangeMask | ButtonMotionMask)
 #define XEVMASK_MENUW   (ExposureMask | EnterWindowMask | \
                          KeyPressMask | KeyReleaseMask)
+#define XEVMASK_TEAR_OFF_MENU \
+  (ExposureMask | KeyPressMask | KeyReleaseMask | \
+   EnterWindowMask | LeaveWindowMask | StructureNotifyMask)
 #define XEVMASK_PANFW   (ButtonPressMask | ButtonReleaseMask | \
  		         KeyReleaseMask | KeyPressMask | \
                          EnterWindowMask | LeaveWindowMask | \
@@ -67,7 +70,8 @@ void HandleFocusIn(void);
 void HandleFocusOut(void);
 void HandleDestroyNotify(void);
 void HandleMapRequest(void);
-void HandleMapRequestKeepRaised(Window keepraised, FvwmWindow *ReuseWin);
+void HandleMapRequestKeepRaised(
+	Window keepraised, FvwmWindow *ReuseWin, Bool is_menu);
 void HandleMapNotify(void);
 void HandleUnmapNotify(void);
 void HandleMotionNotify(void);
@@ -89,5 +93,6 @@ void WaitForButtonsUp(Bool do_handle_expose);
 int discard_events(long event_mask);
 int discard_window_events(Window w, long event_mask);
 int flush_property_notify(Atom atom, Window w);
+void sync_server(int toggle);
 
 #endif /* _EVENTS_ */
