@@ -56,19 +56,19 @@ The currently recognized fvwm commands:
   EdgeResistance        - control viewport scrolling and window move over edge
   EdgeScroll            - control how much of the viewport is scrolled if any
   EdgeThickness         - control how closely to edge to run command/scrolling
-  Emulate               -
-  EscapeFunc            -
-  EwmhBaseStruts        -
-  EwmhNumberOfDesktops  -
-  Exec                  -
-  ExecUseShell          -
-  FakeClick             -
-  FlipFocus             -
-  Focus                 -
-  Function              -
-  GlobalOpts            -
-  GnomeButton           -
-  GnomeShowDesks        -
+  Emulate               - generally emulate MWM, Win, Fvwm
+  EscapeFunc            - Abort a wait or ModuleSynchonous command
+  EwmhBaseStruts        - Define restricted areas of the screen
+  EwmhNumberOfDesktops  - For ewmh pager, define number of desktops
+  Exec                  - Execute an external command
+  ExecUseShell          - The shell to use to execute an external command
+  FakeClick             - Generate a mouse click
+  FlipFocus             - Focus a window change windowlist order
+  Focus                 - Give focus to a window
+  Function              - Execute an Fvwm function
+  GlobalOpts            - Obsolete option setting, replaced by Style *
+  GnomeButton           - Pass mouse button presses on root to gnome program
+  GnomeShowDesks        - 
   GotoDesk              -
   GotoDeskAndPage       -
   GotoPage              -
