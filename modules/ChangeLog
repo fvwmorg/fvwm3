@@ -1,3 +1,10 @@
+2003-04-06  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/ReadXServer.c (ReadXServer): 
+	* FvwmForm/FvwmForm.c (Restart): 
+	* FvwmForm/FvwmForm.h: Fix core dump.  When tabbing field to field,
+	always position cursor at front of input field.
+
 2003-04-05  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/FvwmForm.c (RedrawItem): Fixed input fields not getting cleared

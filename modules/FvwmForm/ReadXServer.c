@@ -320,11 +320,9 @@ void ReadXServer ()
 	  goto redraw_newcursor;
 	case '\020':                    /* ^P previous field */
 	  old_item = CF.cur_input;
-	  old_item->input.o_cursor = CF.rel_cursor;
 	  CF.cur_input = old_item->input.prev_input; /* new current input fld */
 	  RedrawItem(old_item, 1, NULL);
-	  CF.rel_cursor = old_item->input.o_cursor;
-	  CF.abs_cursor = CF.rel_cursor - old_item->input.left;
+	  CF.rel_cursor = CF.abs_cursor = 0; /* home cursor in new input field */
 	  goto redraw;
 	  break;
 	case '\t':
@@ -444,7 +442,6 @@ void ReadXServer ()
 	case ButtonPress:
 	  if (item->type == I_INPUT) {
 	    old_item = CF.cur_input;
-	    old_item->input.o_cursor = CF.rel_cursor;
 	    CF.cur_input = item;
 	    RedrawItem(old_item, 1, NULL);
 	    {
@@ -594,11 +591,9 @@ static int process_tabtypes(unsigned char * buf) {
 	item = item->header.next) {/* find next input item */
     if (item->type == I_INPUT) {
       old_item = CF.cur_input;
-      old_item->input.o_cursor = CF.rel_cursor;
       CF.cur_input = item;
       RedrawItem(old_item, 1, NULL);
-      CF.rel_cursor = item->input.o_cursor;
-      CF.abs_cursor = CF.rel_cursor - item->input.left;
+      CF.rel_cursor = CF.abs_cursor = 0; /* home cursor in new input field */
       return (1);                       /* cause redraw */
     }
   }
@@ -620,10 +615,8 @@ static int process_tabtypes(unsigned char * buf) {
        item = item->header.next) {/* all items */
     if (item->type == I_INPUT) {
       old_item = CF.cur_input;
-      old_item->input.o_cursor = CF.rel_cursor;
       CF.cur_input = item;
       RedrawItem(old_item, 1, NULL);
-      CF.rel_cursor = item->input.o_cursor;
       CF.abs_cursor = CF.rel_cursor - item->input.left;
       return (1);                       /* goto redraw */
     }

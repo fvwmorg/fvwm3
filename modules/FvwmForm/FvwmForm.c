@@ -1456,7 +1456,6 @@ static void Restart ()
       item->input.n = strlen(item->input.init_value);
       strcpy(item->input.value, item->input.init_value);
       item->input.left = 0;
-      item->input.o_cursor = 0;
       break;
     case I_CHOICE:
       item->choice.on = item->choice.init_on;

@@ -107,7 +107,6 @@ typedef union _item {
     char *blanks;          /* blank string */
     int size;              /* input field size */
     int left;              /* position of the left-most displayed char */
-    int o_cursor;          /* store relative cursor position */
     union _item *next_input;            /* a ring of input fields */
     union _item *prev_input;            /* for tabbing */
     int value_history_count;            /* count of input history */
