@@ -74,6 +74,7 @@ int label_h = 0;
 DeskInfo *Desks;
 int Wait = 0;
 XErrorHandler FvwmErrorHandler(Display *, XErrorEvent *);
+extern Bool is_transient;
 
 
 /* assorted gray bitmaps for decorative borders */
@@ -259,6 +260,19 @@ void initialize_pager(void)
 		       + m + label_h + 1)-2;
     }
 
+  if (is_transient)
+    {
+      if (window_w + window_x > Scr.MyDisplayWidth)
+	{
+	  window_x = 0;
+	  xneg = 1;
+	}
+      if (window_h + window_y > Scr.MyDisplayHeight)
+	{
+	  window_y = 0;
+	  yneg = 1;
+	}
+    }
   if(xneg)
     {
       sizehints.win_gravity = NorthEastGravity;
@@ -673,22 +687,7 @@ void DispatchEvent(XEvent *Event)
       HandleExpose(Event);
       break;
     case ButtonRelease:
-      if((Event->xbutton.button == 1)||
-	 (Event->xbutton.button == 2))
-	{
-	  for(i=0;i<ndesks;i++)
-	    {
-	      if(Event->xany.window == Desks[i].w)
-		SwitchToDeskAndPage(i,Event);
-	      if(Event->xany.window == Desks[i].title_w)
-		SwitchToDesk(i);
-	    }
-	  if(Event->xany.window == icon_win)
-	    {
-	      IconSwitchPage(Event);
-	    }
-	}
-      else if (Event->xbutton.button == 3)
+      if (Event->xbutton.button == 3 || is_transient)
 	{
 	  for(i=0;i<ndesks;i++)
 	    {
@@ -704,6 +703,28 @@ void DispatchEvent(XEvent *Event)
 	      XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
 	      Scroll(icon_w, icon_h, x, y, -1);
+	    }
+	  if (is_transient)
+	    {
+	      XUngrabPointer(dpy,CurrentTime);
+	      MyXUngrabServer(dpy);
+	      XSync(dpy,0);
+	      exit(0);
+	    }
+	}
+      else if((Event->xbutton.button == 1)||
+	 (Event->xbutton.button == 2))
+	{
+	  for(i=0;i<ndesks;i++)
+	    {
+	      if(Event->xany.window == Desks[i].w)
+		SwitchToDeskAndPage(i,Event);
+	      if(Event->xany.window == Desks[i].title_w)
+		SwitchToDesk(i);
+	    }
+	  if(Event->xany.window == icon_win)
+	    {
+	      IconSwitchPage(Event);
 	    }
 	}
       break;
@@ -746,7 +767,7 @@ void DispatchEvent(XEvent *Event)
     case MotionNotify:
       while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event));
 
-      if(Event->xmotion.state == Button3MotionMask)
+      if(Event->xmotion.state == Button3MotionMask || is_transient)
 	{
 	  for(i=0;i<ndesks;i++)
 	    {

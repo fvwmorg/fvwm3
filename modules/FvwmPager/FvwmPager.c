@@ -108,6 +108,7 @@ Pixel win_hi_back_pix = -1;
 Pixel win_hi_fore_pix = -1;
 char fAlwaysCurrentDesk = 0;
 PagerStringList string_list = { NULL, 0, NULL, NULL, NULL };
+Bool is_transient = False;
 
 static volatile sig_atomic_t isTerminated = False;
 
@@ -125,6 +126,11 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   int itemp,i;
   char line[100];
+  short opt_num;
+  Window JunkRoot, JunkChild;
+  int JunkX, JunkY;
+  unsigned JunkMask;
+  int val;
 
   /* Save our program  name - for error messages */
   temp = argv[0];
@@ -139,15 +145,6 @@ int main(int argc, char **argv)
     {
       fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
 	      VERSION);
-      exit(1);
-    }
-  if(argc < 8)
-    {
-      fprintf(stderr,"%s Version %s requires two arguments: %s n m\n",
-	      MyName,VERSION,MyName);
-      fprintf(stderr,"   where desktops n through m are displayed\n");
-      fprintf(stderr,
-	      "   if n and m are \"*\" the current desktop is displayed\n");
       exit(1);
     }
 
@@ -183,22 +180,39 @@ int main(int argc, char **argv)
 
   fd_width = GetFdWidth();
 
-  desk1 = atoi(argv[6]);
-  desk2 = atoi(argv[7]);
-
-  if(desk2 < desk1)
+  opt_num = 6;
+  if (argc >= 7 && StrEquals(argv[opt_num], "-transient"))
     {
-      itemp = desk1;
-      desk1 = desk2;
-      desk2 = itemp;
+      opt_num++;
+      is_transient = True;
     }
-  ndesks = desk2 - desk1 + 1;
-  if (StrEquals(argv[6], "*") && StrEquals(argv[7], "*"))
+
+  if (argc < opt_num + 1)
+    {
+      desk1 = Scr.CurrentDesk;
+      desk2 = Scr.CurrentDesk;
+    }
+  else if (StrEquals(argv[opt_num], "*"))
     {
       desk1 = Scr.CurrentDesk;
       desk2 = Scr.CurrentDesk;
       fAlwaysCurrentDesk = 1;
     }
+  else
+    {
+      desk1 = atoi(argv[opt_num]);
+      if (argc == opt_num+1)
+	desk2 = desk1;
+      else
+	desk2 = atoi(argv[opt_num+1]);
+      if(desk2 < desk1)
+	{
+	  itemp = desk1;
+	  desk1 = desk2;
+	  desk2 = itemp;
+	}
+    }
+  ndesks = desk2 - desk1 + 1;
 
   Desks = (DeskInfo *)safemalloc(ndesks*sizeof(DeskInfo));
   for(i=0;i<ndesks;i++)
@@ -259,8 +273,18 @@ int main(int argc, char **argv)
   fprintf(stderr,"[main]: calling ParseOptions\n");
 #endif
   ParseOptions();
+  if (is_transient)
+    {
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &window_x, &window_y, &JunkX, &JunkY, &JunkMask);
+      usposition = 1;
+      usposition = 1;
+      xneg = 0;
+      yneg = 0;
+    }
 #ifdef DEBUG
-  fprintf(stderr,"[main]: back from calling ParseOptions, calling init pager\n");
+  fprintf(stderr,
+	  "[main]: back from calling ParseOptions, calling init pager\n");
 #endif
 
   if (PagerFore == NULL)
@@ -304,6 +328,31 @@ int main(int argc, char **argv)
   fprintf(stderr,"[main]: back from getting window list, looping\n");
 #endif
 
+  if (is_transient)
+    {
+      XEvent Event;
+
+      XSync(dpy,0);
+      while (i < 1000 &&
+	     XGrabPointer(dpy, Scr.Root, True,
+			  ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
+			  PointerMotionMask|EnterWindowMask|LeaveWindowMask,
+			  GrabModeAsync, GrabModeAsync, Scr.Pager_w,
+			  None, CurrentTime) != GrabSuccess)
+	{
+	  i++;
+	  /* If you go too fast, other windows may not get a change to release
+	   * any grab that they have. */
+	  usleep(1000);
+	}
+      XSync(dpy,0);
+
+      Event.xany.type = ButtonPress;
+      Event.xbutton.state = 0;
+      Event.xbutton.button = 3;
+      Event.xany.window == Desks[0].w;
+      DispatchEvent(&Event);
+    }
   Loop(fd);
   return 0;
 }
@@ -989,7 +1038,7 @@ void list_restack(unsigned long *body, unsigned long length)
   Window target_w;
   Window *wins;
   int i, j, d;
-  
+
   wins = (Window *) safemalloc (length * sizeof (Window));
   /* first restack in the icon view */
   j = 0;
@@ -1024,7 +1073,7 @@ void list_restack(unsigned long *body, unsigned long length)
          {
            if (t->PagerView != None)
             {
-             wins[j++] = t->PagerView; 
+             wins[j++] = t->PagerView;
             }
          }
        }

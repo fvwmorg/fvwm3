@@ -5,8 +5,17 @@
 .SH NAME
 FvwmPager \- the FVWM Pager module
 .SH SYNOPSIS
+\fBFvwmPager\fP [ \fI-transient\fP ] [ \fIfirst desk\fP [ \fIlast desk\fP ] ]
 FvwmPager is spawned by fvwm, so no command line invocation will work.
-From within the .fvwmrc file, FvwmPager is spawned as follows:
+
+All desks with desk numbers between \fIfirst desk\fP and \fIlast desk\fP are
+displayed. If \fIast desk\fI is omitted only the \fIfirst desk\fP is shown.
+If both desk numbers are omitted, the current desk is used instead. If you
+use an asterisk '*' in place of \fIfirst desk\fP the pager will always show
+the current desktop, even when you switch desks.
+
+Example lines fo put in your .fvwm2rc:
+
 .nf
 .sp
 Module FvwmPager 0 3
@@ -15,7 +24,7 @@ Module FvwmPager 0 3
 or
 .nf
 .sp
-Module FvwmPager * *
+Module FvwmPager *
 .sp
 .fi
 or from within an fvwm pop-up menu:
@@ -33,19 +42,37 @@ AddToMenu Module-Popup "Modules"      Title
 or
 .nf
 .sp
-+                      "Pager"        Module FvwmPager * *
++                      "Pager"        Module FvwmPager *
 .sp
 .fi
-where "0" is the first desktop to show, and "3" is the last and
-"*" is the current dektop.  In the second format (with two asterisks)
-the current desk is always visible in the pager (and it is also the
-only one).
+
+If the pager is started with the \fI-transient\fP option the mouse pointer
+stays within the pager window and the desktop view is moved with the
+pointer. The next time a button is released the pager is closed. Note that
+this option does only work if the window style of the pager window is
+'sticky' (see fvwm2 man page). You should use the 'StaysOnTop' style too.
+
+Example:
+
+.nf
+.sp
+Style FvwmPager Sticky, StaysOnTop
+*FvwmPagerRows       1
+*FvwmPagerColumns    1
+Mouse 3 R C Module FvwmPager -transient
+.sp
+.fi
+
+With this in your .fvwm2rc, if you press control and button 3 in the root
+window the pager pops up under the mouse and while the viewport moves with
+the mouse.
+
 
 .SH DESCRIPTION
 The FvwmPager module shows a miniature view of the Fvwm desktops which
 are specified in the command line. This is a useful reminder of where
 your active windows are. Windows in the pager are shown in the same
-color as their fvwm decorations. 
+color as their fvwm decorations.
 
 The pager can be used to change your viewport into the current
 desktop, to change desktops, or to move windows around.
@@ -61,8 +88,8 @@ button, but your viewport will not change. If you drag the window
 out of the pager and onto your desktop, a full size image of
 the window will appear for you to place. There is no way to
 pick up a full size image of the window and move it into the pager,
-however. Since some mice do not have button 2, I have made provisions to drag 
-windows in the pager by using pressing modifier-1 (usually Alt) and dragging 
+however. Since some mice do not have button 2, I have made provisions to drag
+windows in the pager by using pressing modifier-1 (usually Alt) and dragging
 with button 3.
 
 Clicking mouse button 3 on a location will cause the viewport to move
@@ -90,11 +117,11 @@ by Robert Nation.
 Copyright 1994, Robert Nation. No guarantees or warranties or anything
 are provided or implied in any way whatsoever. Use this program at your
 own risk. Permission to use this program for any purpose is given,
-as long as the copyright is kept intact. 
+as long as the copyright is kept intact.
 
 
 .SH INITIALIZATION
-During initialization, \fIFvwmPager\fP will eventually search a 
+During initialization, \fIFvwmPager\fP will eventually search a
 configuration file which describes the time-outs and actions to take.
 The configuration file is the same file that fvwm used during initialization.
 
@@ -118,7 +145,7 @@ and looks for certain configuration options:
 
 .IP "*FvwmPagerGeometry \fIgeometry\fP"
 Completely or partially specifies the pager windows location and
-geometry, in standard X11 notation. 
+geometry, in standard X11 notation.
 In order to maintain an undistorted aspect ratio, you might
 want to leave out either the width or height dimension of the
 geometry specification
@@ -132,14 +159,14 @@ Tells fvwm how many columnss of desks to use when laying out the pager
 window.
 
 .IP "*FvwmPagerIconGeometry \fIgeometry\fP"
-Specifies a size (optional) and location (optional) for the pager's icon 
+Specifies a size (optional) and location (optional) for the pager's icon
 window. Since there is no easy way for FvwmPager to determine the height of the
 icon's label, you will have to make an allowance for the icon  label height
 when using negative y-coordinates in the icon location specification (used to
 specify a location relative to the bottom instead of the top of the screen).
 
 .IP "*FvwmPagerStartIconic"
-Causes the pager to start iconified. 
+Causes the pager to start iconified.
 
 .IP "*FvwmPagerNoStartIconic"
 Causes the pager to start normally.  Useful for cancelling the effect
@@ -157,7 +184,7 @@ Causes the pager to hide the labels of all but the current desk. This
 turns off label hilighting.
 
 .IP "*FvwmPagerNoShapeLabels"
-Causes the pager to show the labels of all visible desks. 
+Causes the pager to show the labels of all visible desks.
 Useful for cancelling the effect of the \fIShapeLabels\fP option.
 
 .IP "*FvwmPagerFont \fIfont-name\fP"
@@ -218,7 +245,7 @@ to desktops, i.e.
 Assigns the color \fIcolor\fP to desk \fIdesk\fP (or the current desk if
 desk is "*") in the pager window. This replaces the background color for
 the particular \fIdesk\fP.  This only works when the pager is full sized.
-When Iconified, the pager uses the color specified by *FvwmPagerBack.  
+When Iconified, the pager uses the color specified by *FvwmPagerBack.
 .sp
 \fBTIP:\fP	Try using *FvwmPagerDeskColor in conjunction with
 FvwmCpp (or FvwmM4) and FvwmBacker to assign identical
@@ -230,7 +257,7 @@ Use \fIpixmap\fP as background for the pager.
 .IP "*FvwmPagerDeskPixmap \fIdesk pixmap\fP"
 Assigns the pixmap \fIcolor\fP to desk \fIdesk\fP (or the current desk if
 desk is "*") in the pager window. This replaces the background pixmap for
-the particular \fIdesk\fP.  
+the particular \fIdesk\fP.
 .sp
 \fBTIP:\fP Try using *FvwmPagerDeskPixmap in conjunction with FvwmCpp
 (or FvwmM4) and FvwmBacker to assign identical pixmaps to your various
@@ -285,7 +312,7 @@ The same as \fI*FvwmPagerWindowLabelFormat\fP, it just specifies the string to
 display in the balloons.
 
 .SH AUTHOR
-Robert Nation 
+Robert Nation
 .br
 DeskColor patch contributed by Alan Wild
 .br

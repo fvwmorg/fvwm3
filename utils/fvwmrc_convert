@@ -30,24 +30,26 @@
 # of Austin Donnelly <and1000@debian.org>, 1 Mar 1999
 # Further major corrections by Julian Gilbey <jdg@debian.org>, 3 Mar 1999
 
-echo "fvwmrc-to-fvwm2rc"
+echo "fvwmrc-to-fvwm2rc" >&2
 
 # Point this to your gawk/nawk/awk exec:
 AWK=/usr/bin/awk
 
 if [ ! -x $AWK ];then
-   echo "$AWK missing, cannot run"
+   echo "$AWK missing, cannot run" >&2
    exit 1
 fi
 source=${1:-$HOME/.fvwmrc}
 dest=${2:-$HOME/.fvwm2rc}
 if [ "$dest" != "-" ] ;then
-	echo "Output to $dest"
+	echo "Output to $dest" >&2
 	if [ -f $dest ] ; then
-	  mv $dest $dest.bak
-	  echo "Saving existing $dest as $dest.bak"
+	  echo "Saving existing $dest as $dest.bak" >&2
+	  cp -p $dest $dest.bak || { echo "Couldn't save; aborting" >&2; exit 1; }
+	else
+	  cp -p $source $dest 2>/dev/null  # try to preserve permissions
 	fi
-	exec >$dest
+	exec >$dest || { echo "Couldn't write to $dest, aborting" >&2; exit 1; }
 	TTY=`tty`
 	if [ ! -w "$TTY" ] ;then
 	  TTY=/dev/stderr
@@ -61,7 +63,7 @@ fi
 
 cat $source | $AWK '
 BEGIN   {
-        printf ("# Trying to compile an old .fvwrc to the  new fvwm-2.0 Format\n");
+        printf ("# Trying to compile an old .fvwrc to the new fvwm-2.xx Format\n");
 	TRUE=1; FALSE=0;
 
 	IGNORECASE=TRUE;
@@ -98,7 +100,9 @@ BEGIN   {
 }
 	
 ################ Rename common items ##############
-/Restart/ && /fvwm/             { gsub("fvwm", "fvwm2"); } # try and leave paths alone
+/Restart/ && /fvwm/             {
+	gsub("fvwm", "fvwm2"); gsub("fvwm22","fvwm2"); # try to leave paths alone
+}
 /GoodStuff/                     { gsub("GoodStuff", "FvwmButtons"); }
 
 ############ Chop off trailing "&" from Exec commands ##########

@@ -1567,11 +1567,15 @@ void Done(int restart, char *command)
        * not sleep, but this is adequate for now */
       sleep(1);
       ReapChildren();
-      execvp(command,my_argv);
+      if (command)
+	execvp(command,my_argv);
     }
-    fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (restarting '%s' instead)",
-             command,
-             g_argv[0]);
+    if (command)
+    {
+      fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (restarting '%s' instead)",
+	       command, g_argv[0]);
+      perror("  system error description");
+    }
     execvp(g_argv[0], g_argv);    /* that _should_ work */
     fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]);
   }

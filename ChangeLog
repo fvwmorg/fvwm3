@@ -1,4 +1,26 @@
+1999-03-11  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/functions.h: removed ONE_AND_A_HALF_CLICKS
+	* fvwm/functions.c (ComplexFunction2): applied fix for click vs.
+	doubleclick distinction by Dan D Niles, removed ONE_AND_A_HALF_CLICKS
+
+	* fvwm/fvwm.c (Done): print system error message if Restart fails
+
+	* fvwm/fvwm2.1 (Restart): updated syntax
+
+	* fvwm/fvwm.c (Done): Suppress error message when Restart is used
+	without arguments, just restart fvwm
+
+	* utils/fvwmrc_convert: patches by Julian Gilbey
+
+	* fvwm/menus.c (menuShortcuts): applied patch: convert menu shortcuts
+	to lowercase before comparing with hotkey
+
+	* fvwm/fvwm2.1 (viewport): added hint about newline quoting
+
 1999-03-10  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (Popup): clarification on recursive menus
 
 	* fvwm/menus.c (MenuInteraction): fixed PopupAsSubmenu option;
 	definitely should test my code before committing
@@ -433,8 +455,8 @@ Wed Mar  3 21:05:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	pipes in child processes.
 
 	* fvwm/misc.c: put ifdef around fvwm_msg; allows VMS port to
-	define its own version of this routine.  
-	
+	define its own version of this routine.
+
 1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
 
 	* fvwm/fvwm.h: add 'extern' keyword to Bool fFvwmInStartup,

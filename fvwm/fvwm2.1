@@ -374,6 +374,10 @@ files as you go.
 Lines beginning with '#' will be ignored by \fIfvwm2\fP.  Lines
 starting with '*' are expected to contain module configuration
 commands (rather than configuration commands for \fIfvwm2\fP itself).
+Like in shell scripts embedded newlines in a Configuration file line
+can be quoted by preceding them with a backslash. All lines linked
+in this fashion are treated as a single line. The newline itself is
+ignored.
 
 Fvwm2 makes no distinction between configuration commands and built-in
 commands, so anything mentioned in the built-in commands section  can
@@ -1639,9 +1643,9 @@ the rectangle defined by <\fIgeometry\fP> in X geometry format.  Width and heigh
 .in -.3i
 .in -.5i
 
-If the context-rectangle is omitted "Mouse" is the default.
-Note that not all of these make sense under all circumstances
-(e.g. "Icon" if the pointer is on a menu).
+If the context-rectangle is omitted or illegal (e.e. "item" on a window),
+"Mouse" is the default. Note that not all of these make sense under all
+circumstances (e.g. "Icon" if the pointer is on a menu).
 
 The offset values \fIx\fP and \fIy\fP specify how far the menu is
 moved from it's default position. By default, the numeric value given
@@ -2231,8 +2235,10 @@ AddToMenu RootMenu "Root Menu" Title
 Popup differs from Menu in that pop-ups do not stay up if the user
 simply clicks.  These are Twm style popup-menus, which are a little
 hard on the wrist.  Menu provides Motif or Microsoft-Windows style
-menus which will stay up on a click action.  See menu for an explanation
-of the interactive behaviour of menus.
+menus which will stay up on a click action.  See \fIMenu\fP command
+for an explanation of the interactive behaviour of menus.  Note that
+a menu can be open only once, so a menu may not use itself or any of
+its predecessors as a sub menu.
 
 
 .IP "Prev (\fIconditions\fP) \fIcommand\fP"
@@ -2297,12 +2303,12 @@ of x and y are percent-of-screen, unless a letter "p" is appended to
 each coordinate, in which case the location is specified in pixels.
 
 
-.IP "Restart  \fIWindowManagerName\fP "
-Causes \fIfvwm2\fP to restart itself if WindowManagerName is "fvwm2",
-or to switch to an alternate window manager if WindowManagerName is
-other than "fvwm2".  If the window manager is not in your default
-search path, then you should use the full path name for
-\fIWindowManagerName\fP.
+.IP "Restart [ \fIWindowManagerName\fP ]"
+Causes \fIfvwm2\fP to restart itself if \fIWindowManagerName\fP is
+"fvwm2" or left blank, or to switch to an alternate window manager
+if \fIWindowManagerName\fP is other than "fvwm2".  If the window
+manager is not in your default search path, then you should use the
+full path name for \fIWindowManagerName\fP.
 
 This command should not have a trailing ampersand or any command line
 arguments and should not make use of any environmental variables.  Of

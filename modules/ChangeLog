@@ -1,3 +1,15 @@
+1999-03-11  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (DispatchEvent):
+	(initialize_pager):
+	* FvwmPager/FvwmPager.c (main): added '-transient option' that allows
+	to call the pager with a single click, move the viewport and close it
+	again.
+
+	* FvwmPager/FvwmPager.c (main): changed syntax of pager. May now be
+	called with 'FvwmPager *' and 'FvwmPager *' (treated like
+	'FvwmPager * *'
+
 1999-03-09  Andrew T. Veliath  <andrewtv@usa.net>
 
 	* FvwmRearrange/FvwmRearrange.c: Add GPL header and reformat some
@@ -164,7 +176,7 @@ Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
 
 	* FvwmWinList/FvwmWinList.c (RedrawWindow): add XFlush() call in
-	RedrawWindow(), for VMS port.  Ifdef this if it causes problems. 
+	RedrawWindow(), for VMS port.  Ifdef this if it causes problems.
 
 	* FvwmPager/FvwmPager.c (My_XNextEvent): allow bypassing the test
 	for too many missed XEvents; needed for VMS port.
@@ -877,7 +889,7 @@ Tue Mar  9 21:02:03 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 
 Mon Mar  8 17:21:09 1999  Steve ROBBINS  <stever@lear.bic.mni.mcgill.ca>
 
-	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmTaskBar/FvwmTaskBar.c:
 	(RedrawWindow): removed C++-style // comments.
 
 1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>

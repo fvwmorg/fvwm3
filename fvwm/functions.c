@@ -803,7 +803,9 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
     }
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 		&x,&y,&JunkX, &JunkY, &JunkMask);
-
+  /* Take the click which started this fuction off the
+   * Event queue.  -DDN- Dan D Niles dniles@iname.com */
+  XCheckMaskEvent(dpy, ButtonPressMask, &d);
 
   /* Wait and see if we have a click, or a move */
   /* wait for0ever, see if the user releases the button */
@@ -816,12 +818,6 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
   /* If it was a click, wait to see if its a double click */
   if((HaveDoubleClick) && (type == CLICK) &&
      (IsClick(x,y,ButtonPressMask, &d, True)))
-    {
-      type = ONE_AND_A_HALF_CLICKS;
-      ev = &d;
-    }
-  if((HaveDoubleClick) && (type == ONE_AND_A_HALF_CLICKS) &&
-     (IsClick(x,y,ButtonReleaseMask, &d, True)))
     {
       type = DOUBLE_CLICK;
       ev = &d;

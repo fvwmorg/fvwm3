@@ -870,13 +870,13 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
 
   if (s1 == &Scr.FvwmRoot)
    {
-      t = s1->stack_next;  
+      t = s1->stack_next;
       /* t has been moved to the top of stack */
 
-      BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t); 
-      if (t->stack_next == s2) 
+      BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
+      if (t->stack_next == s2)
         {
-          /* avoid sending empty RESTACK packet */ 
+          /* avoid sending empty RESTACK packet */
           return;
         }
    }
@@ -885,29 +885,29 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
       t = s1;
    }
   for (t2 = t, num = 1 ; t2 != s2; t2 = t2->stack_next, num++) ;
-  
+
   length = HEADER_SIZE + 3*num;
-  body = (unsigned long *) safemalloc (length*sizeof(unsigned long)); 
+  body = (unsigned long *) safemalloc (length*sizeof(unsigned long));
 
   bp = body;
   *(bp++) = START_FLAG;
   *(bp++) = M_RESTACK;
   *(bp++) = length;
   *(bp++) = lastTimestamp;
-  for (t2 = t; t2 != s2; t2 = t2->stack_next) 
+  for (t2 = t; t2 != s2; t2 = t2->stack_next)
    {
       *(bp++) = t2->w;
       *(bp++) = t2->frame;
       *(bp++) = (unsigned long)t2;
    }
-   for (i = 0; i < npipes; i++) 
+   for (i = 0; i < npipes; i++)
      PositiveWrite(i, body, length*sizeof(unsigned long));
 
    free (body);
 }
 
-/* 
-   Raise t and its transients to the top of its layer. 
+/*
+   Raise t and its transients to the top of its layer.
    For the pager to work properly it is necessary that
    RaiseWindow *always* sends a proper M_RESTACK packet,
    even if the stacking order didn't change.
@@ -919,13 +919,13 @@ void RaiseWindow(FvwmWindow *t)
   int i, count;
   XWindowChanges changes;
   Window *wins;
-  
+
   Scr.LastWindowRaised = t;
-  
+
   /* detach t early, so it doesn't make trouble in the loops */
   t->stack_prev->stack_next = t->stack_next;
   t->stack_next->stack_prev = t->stack_prev;
-  
+
   count = 1;
   if ((t->flags & ICONIFIED) && (!(t->flags & SUPPRESSICON)))
     {
@@ -953,7 +953,7 @@ void RaiseWindow(FvwmWindow *t)
           /* unplug it */
           t2->stack_next->stack_prev = t2->stack_prev;
           t2->stack_prev->stack_next = t2->stack_next;
-	  
+
           /* put it above tmp_s */
           t2->stack_next = &tmp_s;
           t2->stack_prev = tmp_s.stack_prev;
@@ -976,7 +976,7 @@ void RaiseWindow(FvwmWindow *t)
 #ifndef DONT_RAISE_TRANSIENTS
   /* insert all transients between r and s. */
   r->stack_next = tmp_r.stack_next;
-  r->stack_next->stack_prev = r; 
+  r->stack_next->stack_prev = r;
   s->stack_prev = tmp_s.stack_prev;
   s->stack_prev->stack_next = s;
 #endif /* DONT_RAISE_TRANSIENTS */
@@ -986,9 +986,9 @@ void RaiseWindow(FvwmWindow *t)
   t->stack_prev = s->stack_prev;
   t->stack_prev->stack_next = t;
   t->stack_next->stack_prev = t;
-  
+
   wins = (Window*) safemalloc (count * sizeof (Window));
-  
+
   i = 0;
   for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
     {
@@ -1020,18 +1020,18 @@ void RaiseWindow(FvwmWindow *t)
 
   XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
   XRestackWindows (dpy, wins, count);
-  
+
   /* send out (one or more) M_RESTACK packets for windows between r and s */
   BroadcastRestack (r, s);
 
   free (wins);
-  
+
   /* This should be unnecessary, since we never
      do an unguarded XRaiseWindow */
   raisePanFrames();
 }
 
-  
+
 void LowerWindow(FvwmWindow *t)
 {
   FvwmWindow *s;
@@ -1049,11 +1049,11 @@ void LowerWindow(FvwmWindow *t)
     }
 
   if (s == t->stack_next)
-    { 
+    {
       return;
     }
-  
-  
+
+
   t->stack_prev->stack_next = t->stack_next;
   t->stack_next->stack_prev = t->stack_prev;
 

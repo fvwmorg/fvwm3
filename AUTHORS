@@ -20,6 +20,9 @@ hilight/shadow calc from scwm as a library routine, updated web docs.
 Will French:
 $d, $x and $y macros for functions.
 
+Julian Gilbey:
+Fixes in the fvwmrc_convert script.
+
 German Gomez Garcia:
 Named MenuStyles.
 
@@ -111,7 +114,6 @@ Grant McDorman
 Henry R. McTague
 Brady Montz
 Robert Nation
-Dan Niles
 Ludvig A. Norin
 Bill Oswald
 Carsten Paeth
