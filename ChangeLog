@@ -12,7 +12,7 @@
 	* fvwm/menus.c (MakeMenu): bugfix: Titles in newmenu patch drawn too
 	far right.
 
-	* fvwm/**: Applied newmenu patch by German Garcia.
+	* fvwm/**: Applied newmenu patch by German Gomez Garcia.
 
 1998-11-18  Paul D. Smith  <psmith@gnu.org>
 
