@@ -49,6 +49,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
 void GetWindowSizeHints(FvwmWindow *);
 void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 void destroy_window(FvwmWindow *);
-void RestoreWithdrawnLocation (FvwmWindow *tmp, Bool restart, Window parent);
+void RestoreWithdrawnLocation(
+  FvwmWindow *tmp, Bool is_restart_or_recapture, Window parent);
 
 #endif /* ADD_WINDOW_H */

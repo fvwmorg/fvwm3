@@ -51,8 +51,9 @@ extern void Done(int, char *) __attribute__((__noreturn__));
 extern void setInitFunctionName(int n, const char *name);
 extern const char *getInitFunctionName(int n);
 extern void CaptureOneWindow(
-  FvwmWindow *fw, Window window, Window keep_on_top_win, Window parent_win);
-extern void CaptureAllWindows(void);
+  FvwmWindow *fw, Window window, Window keep_on_top_win, Window parent_win,
+  Bool is_recapture);
+extern void CaptureAllWindows(Bool is_recapture);
 
 extern XGCValues Globalgcv;
 extern unsigned long Globalgcm;

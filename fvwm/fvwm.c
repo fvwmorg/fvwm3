@@ -786,7 +786,7 @@ void StartupStuff(void)
 #define startFuncName "StartFunction"
   const char *initFuncName;
 
-  CaptureAllWindows();
+  CaptureAllWindows(False);
   /* Turn off the SM stuff after the initial capture so that new windows will
    * not be matched by accident. */
   if (Restarting)
@@ -847,7 +847,8 @@ void StartupStuff(void)
  ***********************************************************************/
 
 void CaptureOneWindow(
-  FvwmWindow *fw, Window window, Window keep_on_top_win, Window parent_win)
+  FvwmWindow *fw, Window window, Window keep_on_top_win, Window parent_win,
+  Bool is_recapture)
 {
   Window w;
   unsigned long data[1];
@@ -905,7 +906,7 @@ void CaptureOneWindow(
     XSelectInput(dpy, fw->w, 0);
     w = fw->w;
     XUnmapWindow(dpy, fw->frame);
-    RestoreWithdrawnLocation(fw, False, parent_win);
+    RestoreWithdrawnLocation(fw, is_recapture, parent_win);
     SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
     destroy_window(fw);
     Event.xmaprequest.window = w;
@@ -991,7 +992,7 @@ static void hide_screen(
   return;
 }
 
-void CaptureAllWindows(void)
+void CaptureAllWindows(Bool is_recapture)
 {
   int i,j;
   unsigned int nchildren;
@@ -1062,7 +1063,8 @@ void CaptureAllWindows(void)
     {
       if (XFindContext(dpy, children[i], FvwmContext, (caddr_t *)&tmp)!=XCNOENT)
       {
-        CaptureOneWindow(tmp, children[i], keep_on_top_win, parent_win);
+        CaptureOneWindow(
+	  tmp, children[i], keep_on_top_win, parent_win, is_recapture);
       }
     }
     hide_screen(False, NULL, NULL);

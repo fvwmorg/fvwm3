@@ -2076,7 +2076,8 @@ void destroy_window(FvwmWindow *tmp_win)
  *  Puts windows back where they were before fvwm took over
  *
  ************************************************************************/
-void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
+void RestoreWithdrawnLocation(
+  FvwmWindow *tmp, Bool is_restart_or_recapture, Window parent)
 {
   int w2,h2;
   unsigned int mask;
@@ -2119,7 +2120,7 @@ void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
    * half off the screen. (RN)
    */
 
-  if (!restart)
+  if (!is_restart_or_recapture)
   {
     /* Don't mess with it if its partially on the screen now */
     if (unshaded_g.x < 0 || unshaded_g.y < 0 ||
@@ -2128,16 +2129,16 @@ void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
     {
       w2 = (unshaded_g.width >> 1);
       h2 = (unshaded_g.height >> 1);
-      if (( xwc.x < -w2) || (xwc.x > (Scr.MyDisplayWidth - w2)))
+      if ( xwc.x < -w2 || xwc.x > Scr.MyDisplayWidth - w2)
       {
 	xwc.x = xwc.x % Scr.MyDisplayWidth;
-	if ( xwc.x < -w2 )
+	if (xwc.x < -w2)
 	  xwc.x += Scr.MyDisplayWidth;
       }
-      if ((xwc.y < -h2) || (xwc.y > (Scr.MyDisplayHeight  -h2)))
+      if (xwc.y < -h2 || xwc.y > Scr.MyDisplayHeight - h2)
       {
 	xwc.y = xwc.y % Scr.MyDisplayHeight;
-	if ( xwc.y < -h2 )
+	if (xwc.y < -h2)
 	  xwc.y += Scr.MyDisplayHeight;
       }
     }
@@ -2154,6 +2155,9 @@ void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
   }
 
   XConfigureWindow(dpy, tmp->w, mask, &xwc);
-  if(!restart)
+  if (!is_restart_or_recapture)
+  {
+    /* must be initial capture */
     XSync(dpy,0);
+  }
 }

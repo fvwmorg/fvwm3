@@ -1,5 +1,13 @@
 2001-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (RestoreWithdrawnLocation):
+	* fvwm/fvwm.c (CaptureAllWindows):
+	(CaptureOneWindow):
+	(StartupStuff):
+	* fvwm/externs.h:
+	* fvwm/builtins.c (do_recapture):
+	fixed windows migrating to current page on recapture
+
 	* fvwm/menus.c (MenuInteraction):
 	minor posting fix
 
