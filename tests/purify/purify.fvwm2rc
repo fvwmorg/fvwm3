@@ -61,8 +61,7 @@ Log "Test FvwmBanner"
 
 *FvwmBannerTimeout 9182743120348908713204
 *FvwmBannerTimeout 1000
-*FvwmBannerTimeout 1000
-*FvwmBannerTimeout 1000
+*FvwmBannerTimeout 10
 
 Module
 Module
@@ -681,8 +680,9 @@ Log "Test Exec"
 
 Exec
 Exec  	 	 	""
-Exec ls
-Exec ls -l
+Exec echo "Test of exec using echo"
+Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
+
 
 Log "Test Old GLOBAL OPTIONS, now styles"
 
@@ -1701,6 +1701,7 @@ ModulePath
 ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22
 
 Log "Test cleanup"
+AddToFunc test_func
  + "I" beep
  + "I" Echo ------------ ok ------------
  + "I" quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
