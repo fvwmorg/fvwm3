@@ -5535,8 +5535,8 @@ Stroke 415963     3  R  N  Exec exec netscape
 You may prefer to use the numeric pad grid since you have such a
 grid on your machine. Here an example:
 .EX
-Stroke N78963314   3  R  N  FvwmForm FvwmForm-QuitVerify
-Stroke N789633147  3  R  N  FvwmForm FvwmForm-QuitVerify
+Stroke N78963214   3  R  N  FvwmForm FvwmForm-QuitVerify
+Stroke N789632147  3  R  N  FvwmForm FvwmForm-QuitVerify
 .EE
 This example starts the "QuitVerify" form if you draw a box that
 begins in the top left corner.
