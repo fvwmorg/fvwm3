@@ -31,9 +31,17 @@
 extern int w,h,x,y,xneg,yneg; /* used in ParseConfigLine */
 extern char *config_file;
 
+/* contains the character that terminated the last string from seekright */
+static char terminator = '\0';
+
 /* ----------------------------------- macros ------------------------------ */
 
-#define trimleft(s) {while((s) && (*(s)==' '||*(s)=='\t'||*(s)=='\n'))(s)++;}
+char *trimleft(char *s)
+{
+  while (s && isspace(*s))
+    s++;
+  return s;
+}
 
 /**
 *** seekright()
@@ -47,7 +55,7 @@ char *seekright(char **s)
   char *token = NULL;
   char *line = *s;
 
-  line = DoGetNextToken(line, &token, NULL, "),", NULL);
+  line = DoGetNextToken(line, &token, NULL, "),", &terminator);
   if (*s != NULL && line == NULL)
     line = strchr(*s, '\0');
   *s = line;
@@ -67,7 +75,7 @@ int ParseBack(char **ss)
 
   while(*s && *s!=')')
     {
-      trimleft(s);
+      s = trimleft(s);
       if(*s==',')
 	s++;
       else switch(GetTokenIndex(s,opts,-1,&s))
@@ -133,7 +141,7 @@ void ParseTitle(char **ss, byte *flags, byte *mask)
 
   while(*s && *s!=')')
     {
-      trimleft(s);
+      s = trimleft(s);
       if(*s==',')
 	s++;
       else switch(GetTokenIndex(s,titleopts,-1,&s))
@@ -180,7 +188,7 @@ void ParseSwallow(char **ss,byte *flags,byte *mask)
 
   while(*s && *s!=')')
     {
-      trimleft(s);
+      s = trimleft(s);
       if(*s==',')
 	s++;
       else switch(GetTokenIndex(s,swallowopts,-1,&s))
@@ -259,7 +267,7 @@ void ParseContainer(char **ss,button_info *b)
 
   while(*s && *s!=')')
     {
-      trimleft(s);
+      s = trimleft(s);
       if(*s==',')
 	s++;
       else switch(GetTokenIndex(s,conts,-1,&s))
@@ -283,7 +291,7 @@ void ParseContainer(char **ss,button_info *b)
 	  s=t;
 	  break;
 	case 4: /* Back */
-	  trimleft(s);
+	  s = trimleft(s);
 	  if(*s=='(' && s++)
 	    if(ParseBack(&s))
 	      b->c->flags|=b_IconBack;
@@ -292,12 +300,15 @@ void ParseContainer(char **ss,button_info *b)
 	  if(b->c->back)
 	    b->c->flags|=b_Back;
 	  else
-	    b->c->flags&=~b_IconBack;
+	    b->c->flags&=~(b_IconBack|b_Back);
 	  break;
 	case 5: /* Fore */
 	  if (b->c->fore) free(b->c->fore);
 	  b->c->fore=seekright(&s);
-	  b->c->flags|=b_Fore;
+	  if(b->c->fore)
+	    b->c->flags|=b_Fore;
+	  else
+	    b->c->flags&=~b_Fore;
 	  break;
 	case 6: /* Padding */
 	  i=strtol(s,&t,10);
@@ -317,7 +328,7 @@ void ParseContainer(char **ss,button_info *b)
 	    fprintf(stderr,"%s: Illegal padding argument\n",MyName);
 	  break;
 	case 7: /* Title - flags */
-	  trimleft(s);
+	  s = trimleft(s);
 	  if(*s=='(' && s++)
 	    {
 	      b->c->justify=0;
@@ -337,7 +348,7 @@ void ParseContainer(char **ss,button_info *b)
 	    }
 	  break;
 	case 8: /* Swallow - flags */
-	  trimleft(s);
+	  s = trimleft(s);
 	  if(*s=='(' && s++)
 	    {
 	      b->c->swallow=0;
@@ -403,7 +414,7 @@ void match_string(button_info **uberb,char *s)
   int i,j,x,y;
   char *t,*o;
   b=alloc_button(ub,(ub->c->num_buttons)++);
-  trimleft(s);
+  s = trimleft(s);
 
   if(*s=='(' && s++)
     {
@@ -411,7 +422,7 @@ void match_string(button_info **uberb,char *s)
 		    "swallow","action","container","end","nosize","size",
 		    "panel", "left", "right", "center",
 		    NULL};
-      trimleft(s);
+      s = trimleft(s);
       while(*s && *s!=')')
 	{
 	  if((*s>='0' && *s<='9') || *s=='+' || *s=='-')
@@ -430,15 +441,15 @@ void match_string(button_info **uberb,char *s)
 		  if(flags&YNegative) b->BPosY=-1-y;
 		  free(geom);
 		}
-	      trimleft(s);
+	      s = trimleft(s);
 	      continue;
 	    }
 	  if(*s==',' && s++)
-	    trimleft(s);
+	    s = trimleft(s);
 	  switch(GetTokenIndex(s,opts,-1,&s))
 	    {
 	    case 0: /* Back */
-	      trimleft(s);
+	      s = trimleft(s);
 	      if(*s=='(' && s++)
 		if(ParseBack(&s))
 		  b->flags|=b_IconBack;
@@ -447,25 +458,31 @@ void match_string(button_info **uberb,char *s)
 	      if(b->back)
 		b->flags|=b_Back;
 	      else
-		b->flags&=~b_IconBack;
+		b->flags&=~(b_IconBack|b_Back);
 	      break;
 
 	    case 1: /* Fore */
 	      if(b->flags&b_Fore && b->fore) free(b->fore);
 	      b->fore=seekright(&s);
-	      b->flags|=b_Fore;
+	      if(b->fore)
+		b->flags|=b_Fore;
+	      else
+		b->flags&=~b_Fore;
 	      break;
 
 	    case 2: /* Font */
 	      if(b->flags&b_Font && b->font_string) free(b->font_string);
 	      b->font_string=seekright(&s);
-	      b->flags|=b_Font;
+	      if(b->font)
+		b->flags|=b_Font;
+	      else
+		b->flags&=~b_Font;
 	      break;
 
 	      /* --------------------------- Title ------------------------- */
 
 	    case 3: /* Title */
-	      trimleft(s);
+	      s = trimleft(s);
 	      if(*s=='(' && s++)
 		{
 		  b->justify=0;
@@ -477,6 +494,8 @@ void match_string(button_info **uberb,char *s)
 	      t=seekright(&s);
 	      if(t && (t[0]!='-' || t[1]!=0))
 		{
+		  if (b->title)
+		    free(b->title);
 		  b->title=t;
 #ifdef DEBUG_PARSER
 		  fprintf(stderr,"PARSE: Title \"%s\"\n",b->title);
@@ -496,6 +515,8 @@ void match_string(button_info **uberb,char *s)
 	      t=seekright(&s);
 	      if(t && (t[0]!='-' && t[1]!=0))
 		{
+		  if (b->icon_file)
+		    free(b->icon_file);
 		  b->icon_file=t;
 		  b->IconWin=None;
 		  b->flags|=b_Icon;
@@ -544,7 +565,7 @@ void match_string(button_info **uberb,char *s)
 	      /* -------------------------- swallow ------------------------ */
 
 	    case 7: /* Swallow */
-	      trimleft(s);
+	      s = trimleft(s);
 	      b->swallow=0;
 	      b->swallow_mask=0;
 	      if(*s=='(' && s++)
@@ -553,6 +574,8 @@ void match_string(button_info **uberb,char *s)
 	      o=seekright(&s);
 	      if(t)
 		{
+		  if (b->hangon)
+		    free(b->hangon);
 		  b->hangon=t;
 		  b->flags|=b_Hangon;
 		  b->flags|=b_Swallow;
@@ -563,6 +586,8 @@ void match_string(button_info **uberb,char *s)
 		    {
 		      if(!(buttonSwallow(b)&b_UseOld))
 			SendText(fd,o,0);
+		      if (b->spawn)
+			free(b->spawn);
 		      b->spawn=o;  /* Might be needed if respawning sometime */
 		    }
       		}
@@ -577,7 +602,7 @@ void match_string(button_info **uberb,char *s)
 	      /* --------------------------- action ------------------------ */
 
 	    case 8: /* Action */
-	      trimleft(s);
+	      s = trimleft(s);
 	      i=0;
 	      if(*s=='(')
 		{
@@ -606,7 +631,7 @@ void match_string(button_info **uberb,char *s)
 	      b->flags&=b_Frame|b_Back|b_Fore|b_Padding|b_Action;
 	      MakeContainer(b);
 	      *uberb=b;
-	      trimleft(s);
+	      s = trimleft(s);
 	      if(*s=='(' && s++)
 		ParseContainer(&s,b);
 	      break;
@@ -643,23 +668,25 @@ void match_string(button_info **uberb,char *s)
 	      /* --------------------------- panel ------------------------ */
 
 	    case 13: /* Panel */
-	      trimleft(s);
+	      s = trimleft(s);
 	      if(*s=='(')
 	      {
 		s++;
 		t = seekright(&s);
-		while(*s && *s!=')')
+		if (terminator != ')')
+		  while(*s && *s!=')')
+		    s++;
+		if(*s==')')
 		  s++;
-		if(*s==')')s++;
+		if      (strncasecmp(t,"right",5)==0) t = "panel-r";
+		else if (strncasecmp(t,"left" ,4)==0) t = "panel-l";
+		else if (strncasecmp(t,"down" ,4)==0) t = "panel-d";
+		else                                  t = "panel-u";
 	      }
-	      if      (strncasecmp(t,"right",5)==0) t = "panel-r";
-	      else if (strncasecmp(t,"left" ,4)==0) t = "panel-l";
-	      else if (strncasecmp(t,"down" ,4)==0) t = "panel-d";
-	      else                                  t = "panel-u";
-	      AddButtonAction(b,0,strdup(t));
+	      AddButtonAction(b, 0, (t)? t : strdup(""));
 	      b->IconWin = None;
 	      t = seekright(&s);
-	      b->hangon = strdup(t);  /* which panel to popup */
+	      b->hangon = (t)? t : strdup("");  /* which panel to popup */
 	      break;
 
 	    case 14: /* Left */
@@ -684,12 +711,12 @@ void match_string(button_info **uberb,char *s)
 		free(t);
 	      break;
 	    }
-	  trimleft(s);
+	  s = trimleft(s);
 	}
       if (s && *s)
 	{
 	  s++;
-	  trimleft(s);
+	  s = trimleft(s);
 	}
     }
 
@@ -729,7 +756,7 @@ void match_string(button_info **uberb,char *s)
 	free(temp);
     }
 
-  trimleft(s);
+  s = trimleft(s);
 
   /* Swallow hangon command */
   if(strncasecmp(s,"swallow",7)==0)
@@ -748,10 +775,14 @@ void match_string(button_info **uberb,char *s)
       {
         s+=6;
       }
+      if (b->hangon)
+	free(b->hangon);
       b->hangon=seekright(&s);
+      if (!b->hangon)
+	b->hangon = strdup("");
       b->flags|=(b_Swallow|b_Hangon);
       b->swallow|=1;
-      trimleft(s);
+      s = trimleft(s);
       if(!(b->swallow&b_NoHints))
 	b->hints=(XSizeHints*)mymalloc(sizeof(XSizeHints));
       if(*s)
@@ -825,13 +856,13 @@ void ParseConfigLine(button_info **ubb,char *s)
       if(i>0) ub->c->framew=j;
       break;
     case 8:/* File */
-      trimleft(s);
+      s = trimleft(s);
       if (config_file)
 	free(config_file);
       config_file=seekright(&s);
       break;
     case 9:/* Pixmap */
-      trimleft(s);
+      s = trimleft(s);
       if (strncasecmp(s,"none",4)==0)
 	ub->c->flags|=b_TransBack;
       else
@@ -839,7 +870,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       ub->c->flags|=b_IconBack;
       break;
     case 10:/* Panel */
-      trimleft(s);
+      s = trimleft(s);
       CurrentPanel->next = (panel_info *) mymalloc(sizeof(panel_info));
       CurrentPanel = CurrentPanel->next;
       CurrentPanel->next = NULL;
@@ -860,7 +891,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       ParseBoxSize(&s, &ub->c->flags);
       break;
     default:
-      trimleft(s);
+      s = trimleft(s);
       match_string(ubb,s);
       break;
     }
@@ -899,8 +930,10 @@ void ParseConfigFile(button_info *ub)
 	    }
 	  t++;
 	}
-      t=s;trimleft(t);
-      if(*t)ParseConfigLine(&ub,t);
+      t = s;
+      t = trimleft(t);
+      if(*t)
+	ParseConfigLine(&ub,t);
     }
 
   fclose(f);

@@ -184,11 +184,15 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     return;
   }
-  ii = 0;
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  /* get the windowlist starting from the current window (if any)*/
+  if ((t = Scr.Focus) == NULL) t = Scr.FvwmRoot.next;
+  for (ii = 0; ii < numWindows; ii++)
   {
     windowList[ii] = t;
-    ii++;
+    if (t->next)
+      t = t->next;
+    else
+      t = Scr.FvwmRoot.next;
   }
 
   /* Do alphabetic sort */

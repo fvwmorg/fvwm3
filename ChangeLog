@@ -1,3 +1,7 @@
+1998-11-24  Dominik Vogt  <dominik_vogt@hp.com>
+
+        * fvwm/windows.c (do_windowList): applied alt-tab patch by Tim Phipps
+
 1998-11-24  Paul D. Smith  <psmith@gnu.org>
 
 	* fvwm/functions.c (FindBuiltinFunction): Cast the return value

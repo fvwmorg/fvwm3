@@ -42,7 +42,7 @@
 #define b_Container  0x00000001 /* Contains several buttons */
 #define b_Font       0x00000002 /* Has personal font data */
 #define b_Fore       0x00000004 /* Has personal text color */
-#define b_Back       0x00000008 /* Has personal background color (or "none")*/ 
+#define b_Back       0x00000008 /* Has personal background color (or "none")*/
 #define b_Padding    0x00000010 /* Has personal padding data */
 #define b_Frame      0x00000020 /* Has personal framewidth */
 #define b_Title      0x00000040 /* Contains title */
@@ -111,7 +111,7 @@ struct container_info_struct
   Picture *backicon;       /* b_Back && b_IconBack */
   ushort minx,miny;        /* b_Size */
 };
-  
+
 struct button_info_struct
 {
   /* required fields */

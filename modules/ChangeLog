@@ -3,6 +3,21 @@
 	* FvwmCpp/FvwmCpp.1: Don't use multi-word values with .IP.  Use .TP.
 	* FvwmM4/FvwmM4.1: Ditto.
 
+1998-11-24  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/TODO: updated
+
+	* FvwmButtons/button.c (alloc_button): uninitialised fields bug fixed
+
+	* FvwmButtons/parse.c (trimleft): replaced macro trimleft by a function
+	trimleft.
+	(seekright): patch mo make panels with direction work.
+	(match_string): fixed broken panels with direction, fixed memory leak.
+	(ParseContainer): fixed parsing bugs in Fore/Back
+	(match_string): fixed parsing bugs in Back/Fore/Font
+	(match_string): fixed memory leak in 'title', 'frame', 'swallow'
+	(match_string): fixed memory leak/coredump in 'swallow module'
+
 1998-11-24  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmForm/FvwmForm.c: Clean up headers that are already included

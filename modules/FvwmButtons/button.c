@@ -322,7 +322,8 @@ button_info *alloc_button(button_info *ub,int num)
   b=(button_info*)mymalloc(sizeof(button_info));
   ub->c->buttons[num]=b;
 
-  b->flags = b->flags = 0;
+  memset((void *)b, 0, sizeof(*b));
+  b->flags = 0;
   b->swallow = 0;
   b->BWidth = b->BHeight = 1;
   b->BPosX = b->BPosY = 0;
@@ -413,7 +414,8 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
     {
       if (b->flags&b_PosFixed || !(ub->c->flags&b_SizeSmart) || y<0)
 	{
-	  fprintf(stderr,"%s: Button out of vertical range. Quitting.\n",MyName);
+	  fprintf(stderr,"%s: Button out of vertical range. Quitting.\n",
+		  MyName);
 	  fprintf(stderr,"Button=%d num_rows=%d BPosY=%d\n",
 		  i,c->num_rows,b->BPosY);
 	  exit(1);
