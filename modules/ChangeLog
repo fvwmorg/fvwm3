@@ -1,9 +1,20 @@
 2002-11-13  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmIconBox/FvwmIconBox.c:
+	(Loop): 
+	(HScroll):
+	(VScroll):
+	(process_message):
+	(RedrawWindow):
+	(RedrawIcons):
+	(RedrawIcon):
+	* FvwmIconBox/FvwmIconBox.h:
+	Clip drawing and new transparent stuff
+
 	* FvwmForm/FvwmForm.c (ParseActiveMessage):
 	Fixed colorset changes
 
-	*  FvwmForm/FvwmForm.c (UpdateRootTransapency):
+	* FvwmForm/FvwmForm.c (UpdateRootTransapency):
 	(process_message):
 	(DoCommand):
 	(RedrawFrame): 

@@ -64,6 +64,8 @@
 #include "fvwm/fvwm.h"
 #include "libs/PictureGraphics.h"
 #include "libs/PictureUtils.h"
+#include "libs/Rectangles.h"
+
 #include "FvwmIconBox.h"
 
 
@@ -339,40 +341,58 @@ void Loop(void)
   int tw, th;
   int diffx, diffy;
   int oldw, oldh;
+  int ex, ey, ex2, ey2;
 
   while( !isTerminated )
     {
       if(My_XNextEvent(dpy,&Event))
+      {
+	switch(Event.type)
 	{
-	  switch(Event.type)
-	    {
-	    case Expose:
-	      if(Event.xexpose.count == 0){
+	case Expose:
+		ex = Event.xexpose.x;
+		ey = Event.xexpose.y;
+		ex2 = Event.xexpose.x + Event.xexpose.width;
+		ey2 = Event.xexpose.y + Event.xexpose.height;
+		while (FCheckTypedWindowEvent(
+			dpy, Event.xany.window, Expose, &Event))
+		{
+			ex = min(ex, Event.xexpose.x);
+			ey = min(ey, Event.xexpose.y);
+			ex2 = max(ex2, Event.xexpose.x + Event.xexpose.width);
+			ey2 = max(ey2 , Event.xexpose.y + Event.xexpose.height);
+		}
+		Event.xexpose.x = ex;
+		Event.xexpose.y = ey;
+		Event.xexpose.width = ex2 - ex;
+		Event.xexpose.height = ey2 - ey;  
 		if (Event.xany.window == main_win)
 		{
-			RedrawWindow();
+			RedrawWindow(&Event);
 		}
 		else
 		{
-		  tmp = Head;
-		  while(tmp != NULL){
-		    if (Event.xany.window == tmp->icon_pixmap_w){
-		      RedrawIcon(tmp, 1);
-		      break;
-		    }else if(Event.xany.window == tmp->IconWin){
-		      RedrawIcon(tmp, 2);
-		      break;
-		    }
-		    tmp = tmp->next;
-		  }
+			tmp = Head;
+			while(tmp != NULL)
+			{
+				if (Event.xany.window == tmp->icon_pixmap_w)
+				{
+					RedrawIcon(tmp, 1, &Event);
+					break;
+				}
+				else if (Event.xany.window == tmp->IconWin)
+				{
+					RedrawIcon(tmp, 2, &Event);
+					break;
+				}
+				tmp = tmp->next;
+			}
 		}
-	      }
-	      break;
+		break;
 
-	    case ConfigureNotify:
+	case ConfigureNotify:
 	      if (Event.xconfigure.window == icon_win &&
-		  (colorset < 0 ||
-		   Colorset[colorset].pixmap != ParentRelative))
+		  !CSET_IS_TRANSPARENT(colorset))
 	      {
 		/* needs this event for transparency */
 		break;
@@ -423,19 +443,28 @@ void Loop(void)
 		  change_colorset(colorset);
 		else {
 		  XClearWindow(dpy,main_win);
-		  RedrawWindow();
+		  RedrawWindow(NULL);
 		}
 	      }
-	      else if (ready &&
+	      else if (ready && CSET_IS_TRANSPARENT(colorset) &&
 		       (Event.xconfigure.send_event ||
-			Event.xconfigure.window == icon_win) && colorset >= 0 &&
-		       Colorset[colorset].pixmap == ParentRelative)
+			Event.xconfigure.window == icon_win))
 	      {
-		/* moved */
-		XClearArea(dpy, icon_win, 0,0,0,0, False);
-		/* XClearArea(dpy, icon_win, 0,0,0,0, True); is not enough
-		 * when you unshade */
-		RedrawWindow();
+		      /* moved */
+		      if (!CSET_IS_TRANSPARENT_PR_PURE(colorset))
+		      {
+			      SetWindowBackground(
+				      dpy, icon_win, icon_win_width,
+				      icon_win_height,
+				      &Colorset[(colorset)],
+				      Pdepth, NormalGC, False);
+			      XClearArea(dpy, icon_win, 0,0,0,0, False);
+		      }
+		      else
+		      {
+			      XClearArea(dpy, icon_win, 0,0,0,0, False);
+		      }
+		      /* RedrawWindow(NULL);*/
 	      }
 	      break;
 	    case KeyPress:
@@ -520,8 +549,8 @@ void Loop(void)
 		if ((exhilite = Hilite) != tmp){
 		  Hilite = tmp;
 		  if (exhilite != NULL)
-		    RedrawIcon(exhilite, redraw_flag);
-		  RedrawIcon(tmp, redraw_flag);
+		    RedrawIcon(exhilite, redraw_flag, NULL);
+		  RedrawIcon(tmp, redraw_flag, NULL);
 		}
 	      break;
 
@@ -529,7 +558,7 @@ void Loop(void)
 	      if ((tmp = Search(Event.xcrossing.window)) != NULL &&
 		  tmp == Hilite){
 		Hilite = NULL;
-		RedrawIcon(tmp, redraw_flag);
+		RedrawIcon(tmp, redraw_flag, NULL);
 	      }
 	      if (!(local_flags & HIDE_H) && Event.xbutton.window ==
 		  l_button && Pressed == l_button){
@@ -604,7 +633,7 @@ void Loop(void)
 		  }
 		  AdjustIconWindow(tmp, i);
 		  if (max_icon_height != 0)
-		  RedrawIcon(tmp, 1);
+		  RedrawIcon(tmp, 1, NULL);
 		}
 		break;
 	      }
@@ -632,6 +661,8 @@ void HScroll(int x)
     if (!(local_flags & HIDE_H))
       RedrawHScrollbar();
   }
+  if (CSET_IS_TRANSPARENT_PR_PURE(colorset))
+	  XClearWindow(dpy, icon_win);
 }
 
 void VScroll(int y)
@@ -648,6 +679,8 @@ void VScroll(int y)
     if (!(local_flags & HIDE_V))
       RedrawVScrollbar();
   }
+  if (CSET_IS_TRANSPARENT_PR_PURE(colorset))
+	  XClearWindow(dpy, icon_win);
 }
 
 struct icon_info *Search(Window w)
@@ -668,12 +701,14 @@ struct icon_info *Search(Window w)
  * Draw the window
  *
  ***********************************************************************/
-void RedrawWindow(void)
+void RedrawWindow(XEvent *evp)
 {
   XEvent dummy;
 
-  while (FCheckTypedWindowEvent(dpy, main_win, Expose, &dummy));
-
+  if (!evp)
+  {
+	  while (FCheckTypedWindowEvent(dpy, main_win, Expose, &dummy));
+  }
   RelieveRectangle(dpy, main_win, margin1, margin1, Width + 3,
 		   Height + 3, ShadowGC, ReliefGC, 2);
   if (!(local_flags & HIDE_H))
@@ -703,27 +738,32 @@ void RedrawWindow(void)
   }
 
   /* icons */
-  RedrawIcons();
+  if (!evp)
+  {
+	  RedrawIcons(NULL);
+  }
 }
 
-void RedrawIcons(void)
+void RedrawIcons(XEvent *evp)
 {
   struct icon_info *tmp;
 
   tmp = Head;
   while(tmp != NULL){
     if (window_cond(tmp))
-      RedrawIcon(tmp, redraw_flag);
+      RedrawIcon(tmp, redraw_flag, evp);
     tmp = tmp->next;
   }
 }
 
-void RedrawIcon(struct icon_info *item, int f)
+void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 {
 	int hr, len;
 	int diff, lm ,w, h, tw;
 	char label[256];
 	int cs;
+	XRectangle inter;
+	Region region = None;
 
 	hr = icon_relief/2;
 
@@ -761,8 +801,29 @@ void RedrawIcon(struct icon_info *item, int f)
 	{
 		if (item->iconPixmap != None && item->icon_pixmap_w != None)
 		{
-			if (item->icon_depth == 1 || IS_PIXMAP_OURS(item) ||
-			    Pdefault)
+			Bool do_draw = True;
+
+			if (evp)
+			{
+				if (!frect_get_intersection(
+					evp->xexpose.x, evp->xexpose.y, 
+					evp->xexpose.width, evp->xexpose.height,
+					hr, hr, item->icon_w, item->icon_h,
+					&inter))
+				{
+					do_draw = False;
+				}
+			}
+			else
+			{
+				inter.x = hr;
+				inter.y = hr;
+				inter.width = item->icon_w;
+				inter.height = item->icon_h;
+			}
+			if (do_draw &&
+			    (item->icon_depth == 1 || IS_PIXMAP_OURS(item) ||
+			     Pdefault))
 			{
 				FvwmRenderAttributes fra;
 
@@ -776,7 +837,22 @@ void RedrawIcon(struct icon_info *item, int f)
 				    (cs >= 0 &&
 				     Colorset[cs].icon_alpha_percent < 100))
 				{
-					XClearWindow(dpy, item->icon_pixmap_w);
+					if (evp)
+					{
+						XClearArea(
+							dpy, item->icon_pixmap_w,
+							evp->xexpose.x,
+							evp->xexpose.y, 
+							evp->xexpose.width,
+							evp->xexpose.height,
+							False);
+					}
+					else
+					{
+						XClearWindow(
+							dpy,
+							item->icon_pixmap_w);
+					}
 				}
 				PGraphicsRenderPixmaps(
 					dpy, item->icon_pixmap_w,
@@ -787,16 +863,19 @@ void RedrawIcon(struct icon_info *item, int f)
 					&fra,
 					item->icon_pixmap_w,
 					NormalGC, None, None,
-					0, 0, item->icon_w, item->icon_h,
-					hr, hr, 0, 0, False);
+					inter.x - hr, inter.y - hr,
+					inter.width, inter.height,
+					inter.x, inter.y,
+					inter.width, inter.height, False);
 			}
-			else
+			else if (do_draw)
 			{
 				XCopyArea(dpy, item->iconPixmap,
 					  item->icon_pixmap_w,
 					  DefaultGC(dpy, screen),
-					  0, 0,
-					  item->icon_w, item->icon_h, 0, 0);
+					  inter.x - hr, inter.y - hr,
+					  inter.width, inter.height,
+					  inter.x, inter.y);
 			}
 		}
 
@@ -836,7 +915,21 @@ void RedrawIcon(struct icon_info *item, int f)
 		{
 			strcpy(label, item->name);
 		}
-
+		if (evp)
+		{
+			inter.x = evp->xexpose.x;
+			inter.y = evp->xexpose.y;
+			inter.width = evp->xexpose.width;
+			inter.height = evp->xexpose.height;
+			region = XCreateRegion();
+			XUnionRectWithRegion (&inter, region, region);
+			FwinString->flags.has_clip_region = True;
+			FwinString->clip_region = region;
+		}
+		else
+		{
+			FwinString->flags.has_clip_region = False;
+		}
 		len = strlen(label);
 		tw = FlocaleTextWidth(Ffont, label, len);
 		diff = max_icon_width + icon_relief - tw;
@@ -865,7 +958,18 @@ void RedrawIcon(struct icon_info *item, int f)
 					  item->x + min(0, (diff - 8))/2,
 					  item->y + h,
 					  max(tw + 8, w), 6 + Ffont->height);
-			XClearWindow(dpy, item->IconWin);
+			if (evp)
+			{
+				XClearArea(
+					dpy, item->IconWin,
+					evp->xexpose.x, evp->xexpose.y, 
+					evp->xexpose.width, evp->xexpose.height,
+					False);
+			}
+			else
+			{
+				XClearWindow(dpy, item->IconWin);
+			}
 			FlocaleDrawString(dpy, Ffont, FwinString, 0);
 			RelieveRectangle(dpy, item->IconWin, 0, 0,
 					 max(tw + 8, w) - 1,
@@ -877,12 +981,28 @@ void RedrawIcon(struct icon_info *item, int f)
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x, item->y + h,
 					  w, 6 + Ffont->height);
-			XClearWindow(dpy, item->IconWin);
+			if (evp)
+			{
+				XClearArea(
+					dpy, item->IconWin,
+					evp->xexpose.x, evp->xexpose.y, 
+					evp->xexpose.width, evp->xexpose.height,
+					False);
+			}
+			else
+			{
+				XClearWindow(dpy, item->IconWin);
+			}
 			FlocaleDrawString(dpy, Ffont, FwinString, 0);
 			RelieveRectangle(dpy, item->IconWin, 0, 0,
 					 w - 1, 5 + Ffont->height,
 					 IconReliefGC, IconShadowGC, 2);
 		}
+		if (region)
+		{
+			XDestroyRegion(region);
+		}
+		FwinString->flags.has_clip_region = False;
 	}
 
 	if (Hilite == item)
@@ -1434,11 +1554,11 @@ static void change_colorset(int color)
 		  {
 			  if (tmp == Hilite && do_update_icon_hi)
 			  {
-				  RedrawIcon(tmp,redraw_flag);
+				  RedrawIcon(tmp,redraw_flag,NULL);
 			  }
 			  if (tmp != Hilite && do_update_icon)
 			  {
-				  RedrawIcon(tmp,redraw_flag);
+				  RedrawIcon(tmp,redraw_flag,NULL);
 			  }
 		  }
 		  tmp = tmp->next;
@@ -1549,9 +1669,9 @@ void Next(void)
     return;
 
   if (old != NULL)
-    RedrawIcon(old, redraw_flag);
+    RedrawIcon(old, redraw_flag,NULL);
   if (new != NULL)
-    RedrawIcon(new, redraw_flag);
+    RedrawIcon(new, redraw_flag,NULL);
 
   i=0;
   if (new->x < icon_win_x){
@@ -1595,9 +1715,9 @@ void Prev(void)
     return;
 
   if (old != NULL)
-    RedrawIcon(old, redraw_flag);
+    RedrawIcon(old, redraw_flag,NULL);
   if (new != NULL)
-    RedrawIcon(new, redraw_flag);
+    RedrawIcon(new, redraw_flag,NULL);
 
   i=0;
   if (new->x < icon_win_x){
@@ -2455,7 +2575,7 @@ void process_message(unsigned long type, unsigned long *body)
 	&& window_cond(tmp) && SortItem(tmp) == True)
       AdjustIconWindows();
     if (tmp->IconWin != None && window_cond(tmp))
-      RedrawIcon(tmp, 2);
+      RedrawIcon(tmp, 2, NULL);
     break;
   case M_DEFAULTICON:
     str = (char *)safemalloc(strlen((char *)&body[3])+1);
@@ -2467,7 +2587,7 @@ void process_message(unsigned long type, unsigned long *body)
   case M_ICONIFY:
   case M_DEICONIFY:
     if (ready && (tmp = SetFlag(body[0], type)) != NULL)
-      RedrawIcon(tmp, 2);
+      RedrawIcon(tmp, 2, NULL);
     if (tmp && window_cond(tmp)) animate(tmp,body);
     SendUnlockNotification(fd);
     break;
@@ -2482,9 +2602,9 @@ void process_message(unsigned long type, unsigned long *body)
     old = Hilite;
     Hilite = tmp;
     if (old != NULL)
-      RedrawIcon(old, redraw_flag);
+      RedrawIcon(old, redraw_flag, NULL);
     if (tmp != NULL)
-      RedrawIcon(tmp, redraw_flag);
+      RedrawIcon(tmp, redraw_flag, NULL);
     break;
   case M_NEW_DESK:
     if (CurrentDesk != body[0])
@@ -2561,7 +2681,7 @@ void process_message(unsigned long type, unsigned long *body)
   break;
   case MX_PROPERTY_CHANGE:
     if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND &&
-	(colorset > -1 && Colorset[colorset].pixmap == ParentRelative) &&
+	(CSET_IS_TRANSPARENT_PR(colorset)) &&
 	((!Swallowed && body[2] == 0) || (Swallowed && body[2] == icon_win)))
     {
       XClearArea(dpy, icon_win, 0,0,0,0, False);
