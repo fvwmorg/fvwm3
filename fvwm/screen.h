@@ -55,9 +55,6 @@
 
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3
-#define MAX_WINDOW_WIDTH 32767
-#define MAX_WINDOW_HEIGHT 32767
-
 
 /* Cursor types */
 #define POSITION 0		/* upper Left corner cursor */
@@ -336,6 +333,9 @@ typedef struct ScreenInfo
   int VyMax;
   int Vx;                       /* Current loc for top left of virt desk */
   int Vy;
+  int MaxWindowWidth;
+  int MaxWindowHeight;
+  int shade_anim_steps;
 
   int ClickTime;               /*Max button-click delay for Function built-in*/
   int ScrollResistance;        /* resistance to scrolling in desktop */

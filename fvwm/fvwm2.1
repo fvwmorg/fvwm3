@@ -436,8 +436,8 @@ Ops".
 .IP "AddButtonStyle \fIbutton\fP [ \fIstate\fP ] [ \fIstyle\fP ] [-- \fI[!]flag ...\fP]"
 Adds a button style to \fIbutton\fP.  \fIbutton\fP can be a button
 number, or one of "All," "Left," or "Right."  \fIstate\fP can be
-"ActiveUp," "ActiveDown", "Inactive", 
-"ToggledActiveUp," "ToggledActiveDown" or "ToggledInactive." 
+"ActiveUp," "ActiveDown", "Inactive",
+"ToggledActiveUp," "ToggledActiveDown" or "ToggledInactive."
 If \fIstate\fP is omitted, then the style is added to every state.  If the
 button style and flags are enclosed in parentheses, then multiple state
 definitions can be placed on a single line.  Flags for additional button
@@ -469,8 +469,8 @@ states and a Vector button style is drawn on top of all state.
 
 .IP "AddTitleStyle [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
 Adds a title style to the title bar.  \fIstate\fP should be one of
-"ActiveUp," "ActiveDown", "Inactive", 
-"ToggledActiveUp," "ToggledActiveDown" or "ToggledInactive." 
+"ActiveUp," "ActiveDown", "Inactive",
+"ToggledActiveUp," "ToggledActiveDown" or "ToggledInactive."
 If \fIstate\fP is omitted,
 then the style is added to every state.  If the style and flags are
 enclosed in parentheses, then multiple state definitions can be placed
@@ -807,14 +807,14 @@ which have one of the MWMDecorMaximize, MWMDecorShade or MWMDecorStick
 hints, if the window is maximized, shaded or sticky, respectively.
 .EX
 AddToDecor Default
- + ButtonStyle 6 All               Vector 4 50x25@1 85x75@0 15x75@0 50x25@1 
- + ButtonStyle 6 ToggledActiveUp   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0 
- + ButtonStyle 6 ToggledActiveDown Vector 4 50x75@0 85x25@1 15x25@0 50x75@0 
- + ButtonStyle 6 ToggledInactive   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0 
+ + ButtonStyle 6 All               Vector 4 50x25@1 85x75@0 15x75@0 50x25@1
+ + ButtonStyle 6 ToggledActiveUp   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
+ + ButtonStyle 6 ToggledActiveDown Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
+ + ButtonStyle 6 ToggledInactive   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
  + ButtonStyle 6 - MWMDecorShade
 Mouse 0 6 N WindowShade
 .EE
-If \fIstate\fP is ActiveUp, ActiveDown, Inactive, or a toggled variant, 
+If \fIstate\fP is ActiveUp, ActiveDown, Inactive, or a toggled variant,
 that particular button state is set.  If \fIstate\fP is omitted, every state
 is set. Specifying a style destroys the current style (use AddButtonStyle to
 avoid this).
@@ -879,7 +879,7 @@ button is pressed, the relief is inverted.  Because of this, to obtain
 a sunken ActiveDown state you must specify the opposite of the desired
 relief (i.e. to obtain a pressed-in look which is raised, specify Sunk
 for ActiveDown).  This behavior is consistent, but may seem confusing
-at first.  The same applies to the toggled states. 
+at first.  The same applies to the toggled states.
 
 Button styles are classified as non-destructive, partially destructive,
 or fully destructive.  Non-destructive styles do not affect the image.
@@ -1011,7 +1011,7 @@ this button will be hidden.  When the window is shaded, the vector
 pattern on the button looks pressed in.
 
 "MWMDecorStick" should be assigned to title bar buttons which make
-the window sticky.  When the window is sticky, the vector pattern on 
+the window sticky.  When the window is sticky, the vector pattern on
 the button looks pressed in.
 
 
@@ -1089,7 +1089,7 @@ keyboard focus.
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
 "!Visible", "Layer [ n ]", "Sticky", "!Sticky", "Maximized",
-"!Maximized", "Shaded", "!Shaded", "Transient", "!Transient", 
+"!Maximized", "Shaded", "!Shaded", "Transient", "!Transient",
 "CurrentDesk", "CurrentPage",
 and "CurrentPageAnyDesk".  In addition, the condition
 may include a window name to match to.  The window name may include
@@ -1765,6 +1765,17 @@ If the letter "p" is appended to each coordinate (horizontal and/or
 vertical), then the scroll amount will be measured in pixels.
 
 
+.IP "MaxWindowSize [ \fIwidth\fP \fIheight\fP ]"
+Tells \fIfvwm2\fP the maximum width and height of a window when it is
+initially created.  The values are the percentage of the total screen
+area.  If the letter "p" is appended to wither of the values, the
+numbers are interpreted as pixels. This command is useful to force
+large application windows to be fully visible.  Neither \fIheight\fP
+nor \fIwidth\fP may be less than 100 pixels.  If you omit the
+parameters or their values are invalid, both limits are set to 32767
+pixels (which is the default).
+
+
 .IP "Menu \fImenu-name\fP [ \fIposition\fP ] [ \fIdouble-click-action\fP ]"
 Causes a previously defined menu to be popped up in a "sticky" manner.
 That is, if the user invokes the menu with a click action instead of a
@@ -2390,14 +2401,15 @@ inserted.  If it looks like Nop "", then a separator line is inserted.
 Can also be used as the double-click action for Menu.
 
 
-.IP "OpaqueMoveSize \fIpercentage\fP"
+.IP "OpaqueMoveSize [ \fIpercentage\fP ]"
 Tells \fIfvwm2\fP the maximum size window with which opaque window
 movement should be used.  The percentage is percent of the total
 screen area.  With "OpaqueMoveSize 0" all windows will be moved using the
 traditional rubber-band outline.  With "OpaqueMoveSize 100" all windows
-will be move as solid windows.  The default is "OpaqueMoveSize 5", which
+will be moved as solid windows.  The default is "OpaqueMoveSize 5", which
 allows small windows to be moved in an opaque manner but large windows
-are moved as rubber-bands.
+are moved as rubber-bands.  If \fIpercentage\fP is omitted or invalid
+the default value is set.
 
 
 .IP "Pick \fIcommand\fP"
@@ -3261,26 +3273,29 @@ to signifiy 'on', and '2' to signify 'off'. Note that this syntax
 is obsolete, and will be removed in the future.
 
 
-.IP "WindowShadeAnimate \fIsteps\fP"
+.IP "WindowShadeAnimate [ \fIsteps\fP ]"
 Selects the number of steps for animation when shading a window with
 \fIWindowShade\fP. If the number has a trailing "p" it sets the number of
 pixels to use as the step size instead of a fixed number of steps.
-0 disables the animation.
+0 disables the animation.  This happens too if the argument is omitted
+or invalid.
 
 
-.IP "XORpixmap \fIpixmap\fP"
+.IP "XORpixmap [ \fIpixmap\fP ]"
 Selects the pixmap with which bits are XOR'ed when doing rubber-band
 window moving or resizing.  This will use up colormap entries (see
 \fIColorLimit\fP), but has a better chance of making the rubber-band
 visible if \fIXORvalue\fP does not give good results.  An example pixmap
 \fIresize.rainbow.xpm\fP is provided with the source distribution.
-To turn the XorPixmap off again use the \fIXORvalue\fP command.
+To turn the XorPixmap off again use the \fIXORvalue\fP command or omit
+the \fIpixmap\fP argument.
 
 
-.IP "XORvalue \fInumber\fP"
+.IP "XORvalue [ \fInumber\fP ]"
 Changes the value with which bits are XOR'ed when doing rubber-band
 window moving or resizing.  Setting this value is a trial-and-error
-process.
+process. The default value is 0. It is set if the given \fInumber\fP
+is omitted or invalid.
 
 
 .IP "+"

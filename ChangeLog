@@ -1,3 +1,33 @@
+1999-05-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (setShadeAnim): rewrote and fixed buggy parsing
+
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/fvwm.c (InitVariables): moved static global shade_anim_steps to
+	screen structure.
+
+	* fvwm/builtins.c (SetOpaque): invalid argument returns to default
+	(setShadeAnim): fixed memory leak
+
+	* fvwm/builtins.c (SetOpaque):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/defaults.h (DEFAULT_OPAQUE_MOVE_SIZE): use new constant
+
+	* fvwm/builtins.c (SetXORPixmap): omit pixmap name to return to default
+	(SetXOR): invalid parameter returns to default
+
+	* fvwm/fvwm.c (InitVariables):
+
+	* fvwm/defaults.h: moved MAX_WINDOW_WIDTH and MAX_WINDOW_HEIGHT to
+	defaults.h and renamed them to DEFAULT_...
+
+	* fvwm/add_window.c (GetWindowSizeHints):
+	* fvwm/builtins.c(SetMaxWindowSize):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/parse.h (enum):
+	* fvwm/functions.c (func_config):
+	implemented MaxWindowSize command.
+
 1999-05-25  Ben Mansell  <ben.mansell@deathsdoor.com>
 
 	* fvwm/misc.h:

@@ -43,8 +43,6 @@
 #include "move_resize.h"
 #include "defaults.h"
 
-static int shade_anim_steps=0;
-
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *fl);
 
@@ -374,10 +372,10 @@ void WindowShade(F_CMD_ARGS)
     toggle = (IS_SHADED(tmp_win)) ? 0 : 1;
 
   /* calcuate the step size */
-  if (shade_anim_steps > 0)
-    step = tmp_win->orig_g.height/shade_anim_steps;
-  else if (shade_anim_steps < 0) /* if it's -ve it means pixels */
-    step = -shade_anim_steps;
+  if (Scr.shade_anim_steps > 0)
+    step = tmp_win->orig_g.height/Scr.shade_anim_steps;
+  else if (Scr.shade_anim_steps < 0) /* if it's -ve it means pixels */
+    step = -Scr.shade_anim_steps;
   if (step <= 0)  /* We don't want an endless loop, do we? */
     step = 1;
 
@@ -396,7 +394,7 @@ void WindowShade(F_CMD_ARGS)
     SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_g.width, new_height,
                True, True);
 
-    if (shade_anim_steps != 0) {
+    if (Scr.shade_anim_steps != 0) {
       h = tmp_win->title_g.height+tmp_win->boundary_width;
       if (Scr.go.WindowShadeScrolls)
         XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
@@ -433,7 +431,7 @@ void WindowShade(F_CMD_ARGS)
     /* shade window */
     SET_SHADED(tmp_win, 1);
 
-    if (shade_anim_steps != 0) {
+    if (Scr.shade_anim_steps != 0) {
       XLowerWindow(dpy, tmp_win->w);
       h = tmp_win->frame_g.height;
       y = 0;
@@ -1130,8 +1128,7 @@ void SetXOR(F_CMD_ARGS)
 
   if(GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
-    fvwm_msg(ERR,"SetXOR","XORValue requires 1 argument");
-    return;
+    val = 0;
   }
 
   gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
@@ -1175,7 +1172,8 @@ void SetXORPixmap(F_CMD_ARGS)
   action = GetNextToken(action, &PixmapName);
   if(PixmapName == NULL)
   {
-    fvwm_msg(ERR,"SetXORPixmap","XORPixmap requires 1 argument");
+    /* return to default value. */
+    SetXOR(eventp, w, tmp_win, context, "0", Module);
     return;
   }
 
@@ -1218,11 +1216,12 @@ void SetOpaque(F_CMD_ARGS)
 
   if(GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
-    fvwm_msg(ERR,"SetOpaque","OpaqueMoveSize requires 1 argument");
-    return;
+    Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
   }
-
-  Scr.OpaqueSize = val;
+  else
+  {
+    Scr.OpaqueSize = val;
+  }
 }
 
 
@@ -4107,28 +4106,19 @@ void set_animation(F_CMD_ARGS)
 void setShadeAnim(F_CMD_ARGS)
 {
   int n = 0;
-  int val;
-  char *opt;
+  int val = 0;
+  int unit = 0;
 
-  action = GetNextToken(action, &opt);
-  if (opt) {
-    if ((val = strlen(opt))) {
-      if (opt[val - 1] == 'p') {
-        opt[val - 1] = '\0';
-        n = sscanf(opt, "%d", &val);
-        val = -val; /* negative values mean pixels */
-      } else {
-        n = sscanf(opt, "%d", &val);
-      }
-      if (n == 1) {
-        shade_anim_steps = val;
-        return;
-      }
-    }
+  n = GetOnePercentArgument(action, &val, &unit);
+  if (n != 1 || val < 0)
+  {
+    Scr.shade_anim_steps = 0;
+    return;
   }
 
-  /* doh! something is wrong */
-  fvwm_msg(ERR,"setShadeAnim","WindowShadeAnimate requires 1 argument");
+  /* we have a 'pixel' suffix if unit != 0; negative values mean pixels */
+  Scr.shade_anim_steps = (unit != 0) ? -val : val;
+
   return;
 }
 
@@ -4227,4 +4217,28 @@ void SetDefaultLayers(F_CMD_ARGS)
          }
        free (top);
     }
+}
+
+void SetMaxWindowSize(F_CMD_ARGS)
+{
+  int val1, val2, val1_unit, val2_unit;
+
+  if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
+  {
+    Scr.MaxWindowWidth = DEFAULT_MAX_WINDOW_WIDTH;
+    Scr.MaxWindowHeight = DEFAULT_MAX_WINDOW_HEIGHT;
+    return;
+  }
+  Scr.MaxWindowWidth = val1 * val1_unit / 100;
+  Scr.MaxWindowHeight = val2 * val2_unit / 100;
+  if (Scr.MaxWindowWidth < DEFAULT_MIN_MAX_WINDOW_WIDTH)
+  {
+    Scr.MaxWindowWidth = DEFAULT_MIN_MAX_WINDOW_WIDTH;
+  }
+  if (Scr.MaxWindowHeight < DEFAULT_MIN_MAX_WINDOW_HEIGHT)
+  {
+    Scr.MaxWindowHeight = DEFAULT_MIN_MAX_WINDOW_HEIGHT;
+  }
+
+  return;
 }

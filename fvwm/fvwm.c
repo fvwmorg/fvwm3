@@ -1575,6 +1575,10 @@ static void InitVariables(void)
   Scr.VyMax = 2*Scr.MyDisplayHeight;
 
   Scr.Vx = Scr.Vy = 0;
+  Scr.MaxWindowWidth = DEFAULT_MAX_WINDOW_WIDTH;
+  Scr.MaxWindowHeight = DEFAULT_MAX_WINDOW_HEIGHT;
+
+  Scr.shade_anim_steps = 0;
 
   Scr.SizeWindow = None;
 
@@ -1589,7 +1593,7 @@ static void InitVariables(void)
   Scr.SnapMode = 0;
   Scr.SnapGridX = 1;
   Scr.SnapGridY = 1;
-  Scr.OpaqueSize = 5;
+  Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
   Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
   /* ClickTime is set to the positive value upon entering the event loop. */
   Scr.ClickTime = -DEFAULT_CLICKTIME;
@@ -1772,7 +1776,7 @@ void Done(int restart, char *command)
       fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (restarting '%s' instead)",
 	       command, g_argv[0]);
       perror("  system error description");
-      
+
       execvp(g_argv[0], my_argv);    /* that _should_ work */
       fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (trying again)", g_argv[0]);
       perror("  system error description");

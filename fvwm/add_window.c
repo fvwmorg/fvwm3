@@ -275,14 +275,14 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   memcpy(&(tmp_win->flags), sflags, sizeof(common_flags_type));
   /* find a suitable icon pixmap */
-  
+
   if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
     {
       if (SHAS_ICON(sflags) && (SICON_OVERRIDE(sflags) == ICON_OVERRIDE))
         {
           tmp_win->icon_bitmap_file = SGET_ICON_NAME(style);
         }
-      else 
+      else
         {
           tmp_win->icon_bitmap_file = NULL;
         }
@@ -293,7 +293,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
         {
           tmp_win->icon_bitmap_file = SGET_ICON_NAME(style);
         }
-      else 
+      else
         {
           tmp_win->icon_bitmap_file = NULL;
         }
@@ -991,19 +991,19 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     {
       if(tmp->hints.max_width < tmp->hints.min_width)
         {
-	  tmp->hints.max_width = MAX_WINDOW_WIDTH;
+	  tmp->hints.max_width = Scr.MaxWindowWidth;
           broken_hints = True;
         }
       if(tmp->hints.max_height < tmp->hints.min_height)
         {
-	  tmp->hints.max_height = MAX_WINDOW_HEIGHT;
+	  tmp->hints.max_height = Scr.MaxWindowHeight;
           broken_hints = True;
         }
     }
   else
     {
-      tmp->hints.max_width = MAX_WINDOW_WIDTH;
-      tmp->hints.max_height = MAX_WINDOW_HEIGHT;
+      tmp->hints.max_width = Scr.MaxWindowWidth;
+      tmp->hints.max_height = Scr.MaxWindowHeight;
     }
 
   /*
@@ -1029,8 +1029,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
           /* In this case, doing the aspect ratio calculation
 	     for window_size - base_size as prescribed by the
              ICCCM is going to fail.
-             Resetting the flag disables the use of base_size 
-	     in aspect ratio calculation while it is still used 
+             Resetting the flag disables the use of base_size
+	     in aspect ratio calculation while it is still used
 	     for grid sizing.
            */
           tmp->hints.flags &= ~PBaseSize;
@@ -1088,25 +1088,25 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     */
 
     /* We also ignore people who put negative entries into
-     * their aspect ratios. They deserve it. 
-     *  
-     * We cast to double here, since the values may be large. 
+     * their aspect ratios. They deserve it.
+     *
+     * We cast to double here, since the values may be large.
      */
     if ((maxAspectX < 0) || (maxAspectY < 0) ||
-        (minAspectX < 0) || (minAspectY < 0) || 
-        (((double)minAspectX * (double)maxAspectY) > 
+        (minAspectX < 0) || (minAspectY < 0) ||
+        (((double)minAspectX * (double)maxAspectY) >
          ((double)maxAspectX * (double)minAspectY)))
      {
-        broken_hints = True;      
+        broken_hints = True;
         tmp->hints.flags &= ~PAspect;
         fvwm_msg (WARN, "GetWindowSizeHints",
                  "%s window %#lx has broken aspect ratio: %d/%d - %d/%d\n",
                   tmp->name, tmp->w, minAspectX, minAspectY, maxAspectX,
 	  	maxAspectY);
      }
-    else 
+    else
      {
-       /* protect against overflow */ 
+       /* protect against overflow */
        if ((maxAspectX > 65536) || (maxAspectY > 65536))
          {
             double ratio = (double) maxAspectX / (double) maxAspectY;
@@ -1119,8 +1119,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
               {
                  maxAspectX = 65536 * ratio;
                  maxAspectY = 65536;
-              } 
-         }  
+              }
+         }
        if ((minAspectX > 65536) || (minAspectY > 65536))
          {
             double ratio = (double) minAspectX / (double) minAspectY;
@@ -1133,8 +1133,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
               {
                  minAspectX = 65536 * ratio;
                  minAspectY = 65536;
-              } 
-         }  
+              }
+         }
      }
   }
 

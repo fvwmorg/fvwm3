@@ -163,6 +163,7 @@ static const struct functions func_config[] =
   {"layer",        change_layer,     F_LAYER,               FUNC_NEEDS_WINDOW},
   {"lower",        lower_function,   F_LOWER,               FUNC_NEEDS_WINDOW},
   {"maximize",     Maximize,         F_MAXIMIZE,            FUNC_NEEDS_WINDOW},
+  {"maxwindowsize",SetMaxWindowSize, F_MAXWINDOWSIZE,       0},
   {"menu",         staysup_func,     F_STAYSUP,             0},
   {"menustyle",    SetMenuStyle,     F_MENUSTYLE,           0},
   {"module",       executeModule,    F_MODULE,              0},
@@ -337,7 +338,7 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 		    out[j++] = arguments[n][k];
 		  i++;
 		}
-            else if (addto == 1) 
+            else if (addto == 1)
         {
 		out[j++] = '$';
         }

@@ -227,7 +227,7 @@ typedef struct
 #define NO_ACTIVE_ICON_OVERRIDE 0
 #define ICON_OVERRIDE           1
 #define NO_ICON_OVERRIDE        2
-#define ICON_OVERRIDE_MASK      3 
+#define ICON_OVERRIDE_MASK      3
 } style_flags;
 
 /* only style.c and add_window.c are allowed to access this struct!! */
