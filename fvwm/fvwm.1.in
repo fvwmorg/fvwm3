@@ -162,7 +162,7 @@ focus when the pointer moves into the root window.  The
 .I NeverFocus
 policy is provided for use with windows into which one never types
 (e.g. xclock, oclock, xbiff, xeyes, tuxeyes) - for example, if a
-SloppyFocus terminal window has focus, moving the cursor over a
+SloppyFocus terminal window has focus, moving the pointer over a
 .I NeverFocus
 decoration window won't deprive the terminal of focus.
 
@@ -577,14 +577,14 @@ This is not to be confused with Xinerama support.
 .SH XINERAMA SUPPORT
 
 Fvwm supports the Xinerama extension of newer X servers which
-is similar to multi head support (multiple screens) but allows to
+is similar to multi head support (multiple screens) but allows for
 move windows between screens.  If Xinerama support has been
 compiled into fvwm, it is used whenever fvwm runs on an X server
 that supports and uses multiple screens via Xinerama.  Without
 this option, the whole desktop is treated as one big screen.  For
 example, menus might pop up right between two screens.  The
 .BI EdgeResistance
-command allows to specify an explicit resistance value for moving
+command allows for specifying an explicit resistance value for moving
 windows over the screen edge between two Xinerama screens.
 Xinerama support can be enabled or disabled on the fly or from the
 configuration file with the
@@ -593,7 +593,7 @@ command.  Many modules and commands work nicely with Xinerama
 displays.
 
 Everywhere where a geometry in the usual X format can be supplied,
-fvwm's Xinerama extension allows to specify a screen in addition
+fvwm's Xinerama extension allows for specifying a screen in addition
 to the geometry (or even the screen alone).  To do this, a '@' is
 added to the end of the geometry string followed by either the
 screen number or a letter.  A number is taken as the number of the
@@ -965,7 +965,7 @@ AddToFunc EWMHActivateWindowFunc I Iconify Off
 + I Raise
 + I WarpToWindow 50 50
 .EE
-additionally warps the cursor to the center of the window.
+additionally warps the pointer to the center of the window.
 
 The
 .SM EWMH
@@ -1405,7 +1405,7 @@ return.  Holding down the
 key causes the pointer movement to go in larger steps and holding
 down the
 .SM control
-key causes the cursor movement to go in smaller steps. Standard
+key causes the pointer movement to go in smaller steps. Standard
 emacs and vi cursor movement controls (
 .SM n,
 .SM p,
@@ -3701,7 +3701,7 @@ instead of the upper left corner.
 .BI "EscapeFunc"
 By default the key sequence
 .SM Ctrl-Alt-Escape
-allows to escape from a
+allows for escaping from a
 .B Wait
 pause and from a locked
 .B ModuleSynchronous
@@ -3709,7 +3709,7 @@ command.  The
 .B EscapeFunc
 command used with the
 .B Key
-command allows to configure this key sequence.  An example:
+command allows for configuring this key sequence.  An example:
 .EX
 Key Escape A MC -
 Key Escape A  S EscapeFunc
@@ -4607,7 +4607,7 @@ command) otherwise it is lowered.
 \fB]] | [\fP\fIbottomright\fP \
 \fB|\fP \fIbr x y\fP\
 \fB]\fP"
-Allows to resize a window.  If called from somewhere in a window
+Allows for resizing a window.  If called from somewhere in a window
 or its border, then that window is resized.  If called from the
 root window then the user is allowed to select the target window.
 
