@@ -149,13 +149,21 @@ int ParseBinding(
     else
     {
       n1 = sscanf(token, "%d", &button);
-      if (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS)
+      if (button < 0)
       {
 	if (!is_silent)
 	  fvwm_msg(ERR, "ParseBinding",
 	    "Illegal mouse button in line %s", tline);
 	free(token);
 	return 0;
+      }
+      if (button > NUMBER_OF_MOUSE_BUTTONS)
+      {
+	if (!is_silent)
+	  fvwm_msg(WARN, "ParseBinding",
+	    "Got mouse button %d when the maximum is %d.\n  You can't bind "
+	     "complex function to this button.  To suppress the warning, use:"
+	     "\n  Silent Mouse %s", button, NUMBER_OF_MOUSE_BUTTONS, tline);
       }
     }
     free(token);
