@@ -159,6 +159,8 @@ typedef struct MenuLook
   GC MenuStippleGC;
   GC MenuReliefGC;
   GC MenuShadowGC;
+  GC MenuActiveReliefGC;
+  GC MenuActiveShadowGC;
   ColorPair MenuColors;
   ColorPair MenuActiveColors;
   ColorPair MenuStippleColors;
@@ -246,6 +248,10 @@ typedef struct MenuStyle
 #define MST_MENU_ACTIVE_GC(m)         ((m)->s->ms->look.MenuActiveGC)
 #define ST_MENU_ACTIVE_BACK_GC(s)     ((s)->look.MenuActiveBackGC)
 #define MST_MENU_ACTIVE_BACK_GC(m)    ((m)->s->ms->look.MenuActiveBackGC)
+#define ST_MENU_ACTIVE_RELIEF_GC(s)   ((s)->look.MenuActiveReliefGC)
+#define MST_MENU_ACTIVE_RELIEF_GC(m)  ((m)->s->ms->look.MenuActiveReliefGC)
+#define ST_MENU_ACTIVE_SHADOW_GC(s)   ((s)->look.MenuActiveShadowGC)
+#define MST_MENU_ACTIVE_SHADOW_GC(m)  ((m)->s->ms->look.MenuActiveShadowGC)
 #define ST_MENU_STIPPLE_GC(s)         ((s)->look.MenuStippleGC)
 #define MST_MENU_STIPPLE_GC(m)        ((m)->s->ms->look.MenuStippleGC)
 #define ST_MENU_RELIEF_GC(s)          ((s)->look.MenuReliefGC)

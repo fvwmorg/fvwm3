@@ -1,3 +1,11 @@
+2000-02-06  Darren Stuart Embry  <dsembr01@slug.louisville.edu>
+
+	* fvwm/menus.h (MenuLook):
+	* fvwm/menus.c (paint_item):
+	(FreeMenuStyle):
+	(UpdateMenuStyle):
+	ActiveColorstyle relief and shadow colors are now used in menus.
+
 2000-02-08  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* fvwm/module_interface.c (PositiveWrite)
@@ -8,7 +16,7 @@
 	* fvwm/virtual.c (checkPanFrames):
 	Fixed check pan frames if y edgescroll is 0 and x  edgescroll is not
 	0 (and conversely)
-	
+
 2000-02-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/update.c (apply_window_updates):

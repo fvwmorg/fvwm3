@@ -109,6 +109,7 @@ Contents
           all other windows and cannot be lowered by any means. One
           example are the shortcuts of KFM (the KDE file manager).
           What can I do about that?
+    5.12  The StartsOnPage style does not work for me.  Why?
 
 6. Miscellaneous
 
@@ -1416,6 +1417,18 @@ A: Some applications use so called 'override redirect' windows that
    Now the command. Put this anywhere in your .fvwm2rc file:
 
      BugOpts RaiseOverUnmanaged on
+
+----------------------------------------------------------------------
+
+5.12  The StartsOnPage style does not work for me.  Why?
+
+A: Many applications request a specific position where they want to
+   appear (the so called 'program specified position').  Unless fvwm
+   is told explicitly to ignore this, the program specified position
+   overrides the StartsOnPage style.  Use this line in your
+   configuration file:
+
+     Style * NoPPosition
 
 
 ======================================================================

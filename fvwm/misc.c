@@ -239,7 +239,7 @@ void UngrabEm(int ungrab_context)
 {
   Window w;
 
-#ifdef BUSYCURSOR  
+#ifdef BUSYCURSOR
   /* menus.c control itself regarbing */
   if ((GrabPointerState & GRAB_MENU) && !(ungrab_context & GRAB_MENU))
   {

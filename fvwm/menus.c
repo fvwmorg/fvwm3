@@ -2971,6 +2971,10 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   /* Hilight 3D */
   if (is_item_selected && relief_thickness > 0)
   {
+    if (MST_HAS_MENU_CSET(mr)) {
+      ReliefGC = MST_MENU_ACTIVE_RELIEF_GC(mr);
+      ShadowGC = MST_MENU_ACTIVE_SHADOW_GC(mr);
+    }
     if (MR_HILIGHT_WIDTH(mr) - 2 * relief_thickness > 0)
     {
       /* The relief reaches down into the next item, hence the value for the
@@ -5202,6 +5206,10 @@ static void FreeMenuStyle(MenuStyle *ms)
     XFreeGC(dpy, ST_MENU_ACTIVE_GC(ms));
   if(ST_MENU_ACTIVE_BACK_GC(ms))
     XFreeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms));
+  if(ST_MENU_ACTIVE_RELIEF_GC(ms))
+    XFreeGC(dpy, ST_MENU_ACTIVE_RELIEF_GC(ms));
+  if(ST_MENU_ACTIVE_SHADOW_GC(ms))
+    XFreeGC(dpy, ST_MENU_ACTIVE_SHADOW_GC(ms));
   if(ST_MENU_RELIEF_GC(ms))
     XFreeGC(dpy, ST_MENU_RELIEF_GC(ms));
   if(ST_MENU_STIPPLE_GC(ms))
@@ -5276,6 +5284,8 @@ static void UpdateMenuStyle(MenuStyle *ms)
   Pixel relief_back;
   Pixel active_fore;
   Pixel active_back;
+  Pixel active_relief_fore;
+  Pixel active_relief_back;
   colorset_struct *menu_cs = &Colorset[ST_CSET_MENU(ms)];
   colorset_struct *active_cs = &Colorset[ST_CSET_ACTIVE(ms)];
   colorset_struct *greyed_cs = &Colorset[ST_CSET_GREYED(ms)];
@@ -5317,6 +5327,8 @@ static void UpdateMenuStyle(MenuStyle *ms)
     menu_back = menu_cs->bg;
     relief_fore = menu_cs->hilite;
     relief_back = menu_cs->shadow;
+    active_relief_fore = menu_cs->hilite;
+    active_relief_back = menu_cs->shadow;
   }
   else
   {
@@ -5324,11 +5336,15 @@ static void UpdateMenuStyle(MenuStyle *ms)
     menu_back = ST_MENU_COLORS(ms).back;
     relief_fore = ST_MENU_RELIEF_COLORS(ms).fore;
     relief_back = ST_MENU_RELIEF_COLORS(ms).back;
+    active_relief_fore = ST_MENU_RELIEF_COLORS(ms).fore;
+    active_relief_back = ST_MENU_RELIEF_COLORS(ms).back;
   }
   if (ST_HAS_ACTIVE_CSET(ms))
   {
     active_fore = active_cs->fg;
     active_back = active_cs->bg;
+    active_relief_fore = active_cs->hilite;
+    active_relief_back = active_cs->shadow;
   }
   else
   {
@@ -5367,6 +5383,22 @@ static void UpdateMenuStyle(MenuStyle *ms)
     XChangeGC(dpy, ST_MENU_ACTIVE_GC(ms), gcm, &gcv);
   else
     ST_MENU_ACTIVE_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+
+  /* update active relief gc */
+  gcv.foreground = active_relief_fore;
+  gcv.background = active_relief_back;
+  if(ST_MENU_ACTIVE_RELIEF_GC(ms))
+    XChangeGC(dpy, ST_MENU_ACTIVE_RELIEF_GC(ms), gcm, &gcv);
+  else
+    ST_MENU_ACTIVE_RELIEF_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+
+  /* update active shadow gc */
+  gcv.foreground = active_relief_back;
+  gcv.background = active_relief_fore;
+  if(ST_MENU_ACTIVE_SHADOW_GC(ms))
+    XChangeGC(dpy, ST_MENU_ACTIVE_SHADOW_GC(ms), gcm, &gcv);
+  else
+    ST_MENU_ACTIVE_SHADOW_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update active back gc */
   gcv.foreground = active_back;

@@ -2281,9 +2281,9 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   if (BUSY_RECAPTURE & Scr.BusyCursor)
     if (GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
-#else
   GrabEm(CRS_WAIT, GRAB_BUSY);
 #endif
+  XSync(dpy,0);
   MyXGrabServer(dpy);
   XSync(dpy,0);
   if (fSingle)
@@ -2301,8 +2301,8 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   MyXUngrabServer(dpy);
 #ifdef BUSYCURSOR
   if (need_ungrab)
-#endif
     UngrabEm(GRAB_BUSY);
+#endif
   XSync(dpy, 0);
 }
 
