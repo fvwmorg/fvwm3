@@ -1845,7 +1845,8 @@ static void HandlePanelPress(button_info *b)
   b->newflags.panel_mapped = !is_mapped;
 
   /* make sure the window maps on the current desk */
-  sprintf(cmd, "Silent WindowId 0x%08x MoveToDesk 0", (int)b->PanelWin);
+  sprintf(cmd, "Silent WindowId 0x%08x (!Sticky) MoveToDesk 0",
+	  (int)b->PanelWin);
   SendInfo(fd, cmd, b->PanelWin);
   SlideWindow(Dpy, b->PanelWin,
 	      x1, y1, w1, h1,

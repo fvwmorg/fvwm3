@@ -1,6 +1,11 @@
+2002-06-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (HandlePanelPress):
+	fixed sticky panels in FvwmButtons
+
 2002-06-07  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmTheme/FvwmTheme.1: FONT SHADOW EFFECTS reword. 
+	* FvwmTheme/FvwmTheme.1: FONT SHADOW EFFECTS reword.
 
 2002-06-04  Mikhael Goikhman  <migo@homemail.com>
 
