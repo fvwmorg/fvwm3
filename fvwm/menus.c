@@ -2857,7 +2857,7 @@ static int pop_menu_up(
 	  else if (a_right_x + prev_width <= scr_x + scr_w)
 	    end_x = a_right_x;
 	  else
-	    end_x = 0;
+	    end_x = scr_x;
 	}
 	if (end_x == a_left_x || end_x == 0)
 	{
@@ -2905,8 +2905,6 @@ static int pop_menu_up(
 
 	/* Force the menu onto the screen, but leave at least
 	 * PARENT_MENU_FORCE_VISIBLE_WIDTH pixels of the parent menu visible */
-/*!!! Not sure if I completely understand the logic of these calculations,
- maybe something more should be modified -- D.Yu.B.*/
 	if (x + MR_WIDTH(mr) > scr_x + scr_w)
 	{
 	  int d = x + MR_WIDTH(mr) - (scr_x + scr_w);
@@ -2922,17 +2920,16 @@ static int pop_menu_up(
 	  else if (x > c)
 	    x = c;
 	}
-/*!!! The same comment... -- D.Yu.B.*/
         if (x < scr_x)
 	{
 	  int c = prev_width - PARENT_MENU_FORCE_VISIBLE_WIDTH;
 
 	  if (c < 0)
 	    c = 0;
-	  if (-x > c)
+	  if (scr_x - x > c)
 	    x += c;
 	  else
-	    x = 0;
+	    x = scr_x;
 	}
       } /* else if (non-overlapping menu style) */
     } /* if (x_clipped_overlap && ...) */

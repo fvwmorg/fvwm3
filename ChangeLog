@@ -1,5 +1,8 @@
 2001-07-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (pop_menu_up):
+	fixed calculations that force a menu on screen w/ Xinerama
+
 	* fvwm/move_resize.c (DoSnapAttract):
 	removed some code that slipped in with xinerama patch and broke
 	vertical SnapAttraction
