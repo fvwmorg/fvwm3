@@ -35,8 +35,10 @@ $, = ' ';			# set output field separator
 $\ = "\n";			# set output record separator
 
 # GlobalOpts that became Styles:
-%OPTS = ('SMARTPLACEMENTISREALLYSMART','CleverPlacement',
-	 'SMARTPLACEMENTISNORMAL','SmartPlacement',
+%OPTS = ('SMARTPLACEMENTISREALLYSMART','MinOverlapPlacement',
+	 'SMARTPLACEMENTISNORMAL','TileCascadePlacement',
+ 'ACTIVEPLACEMENTHONORSSTARTSONPAGE','ManualPlacementHonorsStartsOnPage',
+'ACTIVEPLACEMENTIGNORESSTARTSONPAGE', 'ManualPlacementIgnoresStartsOnPage',
 	 'CLICKTOFOCUSDOESNTPASSCLICK', 'ClickToFocusPassesClickOff',
 	 'CLICKTOFOCUSDOESNTRAISE', 'ClickToFocusRaisesOff',
 	 'MOUSEFOCUSCLICKDOESNTRAISE', 'MouseFocusClickRaisesOff',

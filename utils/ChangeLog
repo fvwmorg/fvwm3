@@ -1,3 +1,7 @@
+2001-03-18  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm24_convert.in: Changes in GlobalOpts conversions.
+
 2001-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm24_convert.in (line):
