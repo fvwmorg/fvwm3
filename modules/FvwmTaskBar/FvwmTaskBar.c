@@ -413,12 +413,15 @@ void EndLessLoop(void)
     {
 
       if (FD_ISSET(x_fd, &readset) || XPending(dpy))
+      {
         LoopOnEvents();
+      }
 
       if (FD_ISSET(Fvwm_fd[1], &readset))
+      {
         ReadFvwmPipe();
+      }
     }
-
     DoAlarmAction();
 
     DrawGoodies();
@@ -1495,7 +1498,6 @@ void LoopOnEvents(void)
       /* useful because of dynamic style change */
       if (!Event.xconfigure.send_event)
       {
-	PurgeConfigEvents();
 	break;
       }
       else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
