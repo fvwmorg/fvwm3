@@ -67,7 +67,7 @@ static struct charstring key_modifiers[]=
  * true/false values (bits)
  *
  ****************************************************************************/
-static Bool find_context( const char *string, int *output, 
+static Bool find_context( const char *string, int *output,
 			  struct charstring *table )
 {
     int i;
@@ -242,7 +242,7 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
   int button;
   int n1=0,n2=0,n3=0;
   int i;
-  KeySym keysym;
+  KeySym keysym = NoSymbol;
   int contexts;
   int mods;
 

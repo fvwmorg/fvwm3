@@ -434,20 +434,44 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
        isn't pressed */
     MenuItem *mi;
     char key;
+    int countHotkey = 0;      // Added by MMH mikehan@best.com 2/7/99
+
     /* if this is a letter set it to lower case */
     if (isupper(keychar))
       keychar = tolower((int)keychar) ;
-    /* Search menu for matching hotkey */
-    for (mi = menu->first; mi; mi = mi->next) {
-      key = tolower(mi->chHotkey);
-      if (keychar == key) {
-	*pmiCurrent = mi;
-	if (IS_POPUP_MENU_ITEM(mi))
-	  return MENU_POPUP;
-	else
-	  return MENU_SELECTED;
+
+    /* MMH mikehan@best.com 2/7/99
+     * Multiple hotkeys per menu
+     * Search menu for matching hotkey;
+     * remember how many we found and where we found it */
+    for ( mi = ( miCurrent == menu->last ) ? menu->first : miCurrent->next;
+	  mi != miCurrent;
+	  mi = ( mi == menu->last ) ? menu->first : mi->next )
+    {
+      key = tolower( mi->chHotkey );
+      if ( keychar == key )
+      {
+	if ( ++countHotkey == 1 )
+	  newItem = mi;
+
       }
     }
+    /* For multiple instances of a single hotkey, just move the selection */
+    if ( countHotkey > 1 )
+    {
+      *pmiCurrent = newItem;
+      return MENU_NEWITEM;
+    }
+    /* Do things the old way for unique hotkeys in the menu */
+    else if ( countHotkey = 1 )
+    {
+      *pmiCurrent = newItem;
+      if ( IS_POPUP_MENU_ITEM( newItem ) )
+	return MENU_POPUP;
+      else
+	return MENU_SELECTED;
+    }
+    /* MMH mikehan@best.com 2/7/99 */
   }
 
   switch(keysym)		/* Other special keyboard handling	*/
@@ -2508,27 +2532,6 @@ void MakeMenu(MenuRoot *mr)
   return;
 }
 
-/* FHotKeyUsedBefore
- * Return true if any item already in the menu has
- * used the given hotkey already
- * This means that it doesn't check the last element of the menu
- */
-int FHotKeyUsedBefore(MenuRoot *menu, char ch) {
-  int f = FALSE;
-  MenuItem *currentMenuItem = menu->first;
-  /* we want to stop just before the last item in the menu */
-  while (currentMenuItem != 0 && currentMenuItem->next != 0)
-    {
-    if (currentMenuItem->chHotkey == ch)
-      {
-      f = TRUE;
-      break;
-      }
-    currentMenuItem = currentMenuItem->next;
-    }
-  return f;
-}
-
 
 /***********************************************************************
  * Procedure:
@@ -2848,19 +2851,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       }
       ch = scanForHotkeys(tmp, 1);	/* pete@tecc.co.uk */
       if (ch != '\0')
-	{
-	if (FHotKeyUsedBefore(menu,ch))
-	  {
-	    fvwm_msg(WARN, "AddToMenu",
-		     "Hotkey %c is reused in menu %s; second binding ignored.",
-		     ch, menu->name);
-	    tmp->hotkey = 0;
-	  }
-	else
-	  {
-	    tmp->chHotkey = ch;
-	  }
-	}
+        tmp->chHotkey = ch;
       tmp->strlen = strlen(tmp->item);
     }
   else
@@ -2878,19 +2869,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       if (tmp->hotkey == 0) {
         char ch = scanForHotkeys(tmp, -1);	/* pete@tecc.co.uk */
 	if (ch != '\0')
-	{
-	  if (FHotKeyUsedBefore(menu,ch))
-	  {
-	    fvwm_msg(WARN, "AddToMenu",
-		     "Hotkey %c is reused in menu %s; second binding ignored.",
-		     ch, menu->name);
-	    tmp->hotkey = 0;
-	  }
-	  else
-	  {
-	    tmp->chHotkey = ch;
-	  }
-	}
+	  tmp->chHotkey = ch;
       }
       tmp->strlen2 = strlen(tmp->item2);
     }

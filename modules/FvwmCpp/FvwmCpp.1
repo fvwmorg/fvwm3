@@ -144,7 +144,8 @@ This has usually no impact on functionality but generates
 annoying warning messages.
 The sequence /* is interpreted as the start of a C comment what
 is probably not what you want in a filename. You might want to try
-/?* (for filenames only) or /\\* or "/*" instead.
+/?* (for filenames only) or /\\* or "/*" instead. Depending on
+your preprocessor you may have the same problem with "//".
 Macros are not replaced within single (') or double quotes ("). Use
 backquotes (`) to circumvent this. Fvwm2 accepts backquotes for
 quoting and at least FvwmButtons does too.
@@ -161,6 +162,13 @@ you might get
 and not
 .EX
 "Exec "ls" -l" (one word).
+.EE
+
+If you use gcc you can use this invocation to turn off '//'
+comments:
+
+.EX
+FvwmCpp -Cppprog '/your/path/to/gcc -C -E -' <filename>
 .EE
 
 .SH AUTHOR

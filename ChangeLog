@@ -1,3 +1,22 @@
+1999-02-07 Michael Han <mikehan@best.com>
+
+	* fvwm/menus.c (menuShortcuts): Changed the hotkey handler from a flat
+	once-over the menu to a "smarter" search that locates the next match
+	and distinguishes between unique and non-unique hotkeys, doing a
+	MENU_NEWITEM selection for non-uniques and retaining existing behavior
+	for unique hotkeys.
+	(AddToMenu): Commented out checks to prevent binding of duplicate
+	hotkeys for what I think are obvious reasons.
+	(FHotKeyUsedBefore): Noted that this function is now
+
+1999-03-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (AddToMenu):
+	(MakeMenu):
+	(menuShortcuts): applied multiple menu hotkey patch by Mike Han
+
+	* libs/Bindings.c (ParseBinding): removed UMR
+
 1999-03-30  Hippo
 
 	* fvwm/*: First attempt at getting fvwm to use non-default visual,
@@ -5,7 +24,7 @@
 
 1999-03-29  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/misc.c (RaiseWindow): 
+	* fvwm/misc.c (RaiseWindow):
 	(LowerWindow): Fix oversight in raising/lowering icons:
 	icon_pixmap_w wasn't treated.
 
@@ -29,10 +48,10 @@ Sun Mar 28 22:09:12 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/fvwm.c: added `unused' attribute to sccsid to quiet gcc
 	-Wall.
 
-	* fvwm/virtual.c (get_page_arguments): 
-	* fvwm/builtins.c (Maximize): 
-	* fvwm/borders.c (SetBorder): 
-	* fvwm/bindings.c (ignore_modifiers): 
+	* fvwm/virtual.c (get_page_arguments):
+	* fvwm/builtins.c (Maximize):
+	* fvwm/borders.c (SetBorder):
+	* fvwm/bindings.c (ignore_modifiers):
 	* libs/Bindings.c (GrabWindowButton): removed unused variables.
 
 	* libs/fvwmlib.h: add prototype for GrabAllWindowButtons.
