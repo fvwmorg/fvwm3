@@ -222,6 +222,43 @@ start up modules, xterms, or whatever you'd like have started by
 when exiting or restarting before actually quitting or anything else.
 It could be used to explicitly kill modules, etc.
 
+If \fIfvwm2\fP is run under a session manager, functions SessionInitFunction
+and SessionRestartFunction are executed instead of InitFunction and
+RestartFunction. This helps to define the user's rc file to be good for both
+running under a session manager and without it. Generally it is a bad idea to
+start xterms or other applications in Session* functions. Also someone can
+decide to start different modules when running under a session manager or not.
+For the similar purposes SessionExitFunction is used instead of ExitFunction.
+
+.EX
+DestroyFunc SessionInitFunction
+AddToFunc SessionInitFunction
+ + I Module FvwmBanner
+ + I Module FvwmPager * *
+ + I xsetroot -cursor_name left_ptr -fg red -bg white
+
+DestroyFunc SessionRestartFunction
+AddToFunc SessionRestartFunction
+ + I Module FvwmPager * *
+
+DestroyFunc InitFunction
+AddToFunc InitFunction
+ + I Module FvwmBanner
+ + I Module FvwmPager * *
+ + I Module FvwmTaskBar
+ + I xsetroot -cursor_name left_ptr -fg red -bg white -solid cyan
+ + I Exec xterm
+ + I Exec netscape
+
+DestroyFunc RestartFunction
+AddToFunc RestartFunction
+ + I Module FvwmPager * *
+ + I Module FvwmTaskBar
+.EE
+
+It is possible to include one function into another not to duplicate things,
+but sometimes it is just easier and more readable just to duplicate things.
+
 .SH COMPILATION OPTIONS
 \fIFvwm2\fP has a number of compile-time options to reduce memory usage
 by limiting the use of certain features.  If you

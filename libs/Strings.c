@@ -27,7 +27,7 @@
 #define CHUNK_SIZE 256
 
 
-char* CatString3( char* a, char* b, char* c )
+char* CatString3(const char *a, const char *b, const char *c)
 {
     static char* buffer = NULL;
     static int buffer_len = 0;

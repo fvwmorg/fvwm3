@@ -1,5 +1,10 @@
 Changes in beta release 2.3.5 (July 1999)
 
+* New special functions Session{Init|Restart|Exit}Function are called instead
+  of {Init|Restart|Exit}Function when running under a session manager.
+
+* New form for setting root cursor: FvwmForm FormFvwmRootCursor. .
+
 * Fvwm web files are now in a separate CVS tree.
 
 * All modules except FvwmScript and FvwmGTK share fvwm's visual.

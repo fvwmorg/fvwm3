@@ -75,8 +75,8 @@ typedef enum
 } expand_command_type;
 
 void find_func_type(char *action, short *func_type, unsigned char *flags);
-FvwmFunction *FindFunction(char *function_name);
-extern FvwmFunction *NewFvwmFunction(char *name);
+FvwmFunction *FindFunction(const char *function_name);
+extern FvwmFunction *NewFvwmFunction(const char *name);
 void DestroyFunction(FvwmFunction *func);
 extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
 			  cursor_type, int);

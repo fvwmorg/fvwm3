@@ -9,7 +9,7 @@
  *
  * Returns pointer to static storage, overwritten on the next call.
  **/
-char *CatString3(char* a, char* b, char* c);
+char *CatString3(const char *a, const char *b, const char *c);
 #define CatString2(a,b) CatString3(a,b,NULL)
 
 

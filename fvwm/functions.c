@@ -850,7 +850,7 @@ void AddToFunction(FvwmFunction *func, char *action)
  *	name	- the name of the function
  *
  ***********************************************************************/
-FvwmFunction *NewFvwmFunction(char *name)
+FvwmFunction *NewFvwmFunction(const char *name)
 {
   FvwmFunction *tmp;
 
@@ -914,7 +914,7 @@ void DestroyFunction(FvwmFunction *func)
 
 /* FindFunction expects a token as the input. Make sure you have used
  * GetNextToken before passing a function name to remove quotes */
-FvwmFunction *FindFunction(char *function_name)
+FvwmFunction *FindFunction(const char *function_name)
 {
   FvwmFunction *func;
 

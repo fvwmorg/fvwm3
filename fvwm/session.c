@@ -998,6 +998,9 @@ SessionInit(char *previous_client_id)
   else
     {
       sm_fd = IceConnectionNumber(SmcGetIceConnection(sm_conn));
+      setInitFunctionName(0, "SessionInitFunction");
+      setInitFunctionName(1, "SessionRestartFunction");
+      setInitFunctionName(2, "SessionExitFunction");
     }
 #endif
 }

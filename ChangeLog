@@ -1,3 +1,23 @@
+1999-07-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/Strings.h:
+	* libs/Strings.c (CatString3):
+	* fvwm/functions.h:
+	* fvwm/functions.c (FindFunction, NewFvwmFunction):
+	Fixed char * to be const char *, there are more places to do the same.
+
+	* fvwm/fvwm.h:
+	* fvwm/fvwm.c ({get|set}InitFunctionName): new functions
+	* fvwm/fvwm/session.c (SessionInit): use setInitFunctionName
+	* fvwm/fvwm.c (StartupStuff, Done): use getInitFunctionName
+	* sample.fvwmrc/system.fvwm2rc:
+	* fvwm/ConfigFvwmSetup:
+	* fvwm/fvwm2.1:
+	* NEWS:
+	New special functions Session{Init|Restart|Exit}Function are executed
+	instead of {Init|Restart|Exit}Function when running under a SM.
+	Also mentioned FormFvwmRootCursor. in NEWS and fvwm/ConfigFvwmSetup.
+
 1999-07-02  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in: Don't look for a C++ compiler; we don't	need one

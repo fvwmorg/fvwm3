@@ -722,7 +722,10 @@ int main(int argc, char **argv)
 */
 void StartupStuff(void)
 {
+/* migo - delete
   FvwmFunction *func;
+*/
+  const char *initFuncName;
 
   CaptureAllWindows();
   /* Have to do this here too because preprocessor modules have not run to the
@@ -735,6 +738,14 @@ void StartupStuff(void)
   if (Scr.ClickTime < 0)
     Scr.ClickTime = -Scr.ClickTime;
 
+  /* migo - 03/Jul/1999 - execute [Session]{Init|Restart}Function */
+  initFuncName = getInitFunctionName(Restarting == True);
+  if (FindFunction(initFuncName)) {
+    char *action = strdup(CatString2("Function ", initFuncName));
+    ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND);
+    free(action);
+  }
+/* migo - delete
   if(Restarting)
   {
     func = FindFunction("RestartFunction");
@@ -749,6 +760,7 @@ void StartupStuff(void)
       ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1,
 		      EXPAND_COMMAND);
   }
+*/
 
   /*
      This should be done after the initialization is finished, since
@@ -1714,17 +1726,29 @@ RETSIGTYPE SigDone(int sig)
 /* if restart is true, command must not be NULL... */
 void Done(int restart, char *command)
 {
+/* migo - delete
   FvwmFunction *func;
+*/
+  const char *exitFuncName;
 
   if (!restart)
     {
       MoveViewport(0,0,False);
     }
 
+  /* migo - 03/Jul/1999 - execute [Session]ExitFunction */
+  exitFuncName = getInitFunctionName(2);
+  if (FindFunction(exitFuncName)) {
+    char *action = strdup(CatString2("Function ", exitFuncName));
+    ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND);
+    free(action);
+  }
+/* migo - delete
   func = FindFunction("ExitFunction");
   if(func != NULL)
     ExecuteFunction("Function ExitFunction",NULL,&Event,C_ROOT,-1,
 		    EXPAND_COMMAND);
+*/
 
   /* Close all my pipes */
   ClosePipes();
@@ -2047,3 +2071,19 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
   if (argc == 0 && !errorCode) *errorMsg = "Void command";
   return errorCode? errorCode: argc;
 }
+
+
+/*
+ * setInitFunctionName - sets one of the init, restart or exit function names
+ * getInitFunctionName - gets one of the init, restart or exit function names
+ *
+ * First parameter defines a function type: 0 - init, 1 - restart, 2 - exit.
+ */
+static const char *initFunctionNames[4] = {
+  "InitFunction", "RestartFunction", "ExitFunction", "Nop"
+};
+
+void setInitFunctionName(int n, const char *name)
+  { initFunctionNames[n >= 0 && n < 3? n: 3] = name; }
+const char *getInitFunctionName(int n)
+  { return initFunctionNames[n >= 0 && n < 3? n: 3]; }
