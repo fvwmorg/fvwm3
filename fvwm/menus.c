@@ -2426,25 +2426,6 @@ static void pop_menu_down_and_repaint_parent(
 /***********************************************************************
  *
  *  Procedure:
- *	RelieveHalfRectangle - add relief lines to the sides only of a
- *      rectangular window
- *
- ***********************************************************************/
-static void RelieveHalfRectangle(Window win, int x, int y, int w, int h,
-				 int bw, GC Hilite, GC Shadow)
-{
-  int i;
-  for (i = bw; i-- > 0 ; )
-  {
-    XDrawLine(dpy, win, Hilite, x + i, y, x + i, y + h - 1);
-    XDrawLine(dpy, win, Shadow, x + w - 1 - i, y, x + w - 1 - i, y + h - 1);
-  }
-}
-
-
-/***********************************************************************
- *
- *  Procedure:
  *      paint_item - draws a single entry in a popped up menu
  *
  *      mr - the menu instance that holds the menu item
@@ -2469,7 +2450,6 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   int i;
   int sx1;
   int sx2;
-  int bw = MST_BORDER_WIDTH(mr);
 
   if (!mi)
     return;
@@ -2522,50 +2502,6 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     ReliefGC = MST_MENU_SHADOW_GC(mr);
   else
     ReliefGC = MST_MENU_RELIEF_GC(mr);
-
-  /***************************************************************
-   * Draw the shadows for the absolute outside of the menus
-   * This stuff belongs in here, not in paint_menu, since we only
-   * want to redraw it when we have too (i.e. on expose event)
-   ***************************************************************/
-
-  if (do_redraw_menu_border)
-  {
-    /* Top of the menu */
-    if(mi == MR_FIRST_ITEM(mr))
-    {
-      for (i = bw; i-- ; )
-      {
-	XDrawLine(dpy, MR_WINDOW(mr), ReliefGC, 0, i, MR_WIDTH(mr) - 1 - i, i);
-	if (i > 0)
-	{
-	  XDrawLine(dpy, MR_WINDOW(mr), ShadowGC, MR_WIDTH(mr) - i, i,
-		    MR_WIDTH(mr) - 1, i);
-	}
-      }
-    }
-
-    /* Botton of the menu */
-    if(MI_NEXT_ITEM(mi) == NULL)
-    {
-      for (i = bw; i-- ; )
-      {
-	XDrawLine(dpy, MR_WINDOW(mr), ShadowGC, i, MR_HEIGHT(mr) - 1 - i,
-		  MR_WIDTH(mr) - 1, MR_HEIGHT(mr) - 1 - i);
-	if (i > 0)
-	{
-	  XDrawLine(dpy, MR_WINDOW(mr), ReliefGC, 0, MR_HEIGHT(mr) - 1 - i,
-		    i - 1, MR_HEIGHT(mr) - 1 - i);
-	}
-      }
-    }
-
-    /* Left and right side of the menu. */
-    RelieveHalfRectangle(MR_WINDOW(mr), 0, y_offset, MR_WIDTH(mr),
-			 y_height + ((!MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(mi)) ?
-				     relief_thickness : 0),
-			 bw, ReliefGC, ShadowGC);
-  }
 
   /***************************************************************
    * Hilight the item.
@@ -3043,17 +2979,17 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 
   if (MR_IS_PAINTED(mr) && pevent &&
       (pevent->xexpose.x >= MR_WIDTH(mr) - bw ||
-       pevent->xexpose.x < bw ||
+       pevent->xexpose.x + pevent->xexpose.width <= bw ||
        pevent->xexpose.y >= MR_HEIGHT(mr) - bw ||
-       pevent->xexpose.y < bw))
+       pevent->xexpose.y + pevent->xexpose.height <= bw))
   {
     /* Only the border was obscured. Redraw it centrally instead of redrawing
      * several menu items. */
-    RelieveRectangle(
-      dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1, MR_HEIGHT(mr) - 1,
-      (Pdepth<2) ?
-      MST_MENU_SHADOW_GC(mr) : MST_MENU_RELIEF_GC(mr),
-      MST_MENU_SHADOW_GC(mr), bw);
+    RelieveRectangle(dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
+		     MR_HEIGHT(mr) - 1, (Pdepth < 2)
+					? MST_MENU_SHADOW_GC(mr)
+					: MST_MENU_RELIEF_GC(mr),
+		     MST_MENU_SHADOW_GC(mr), bw);
     return;
   }
   MR_IS_PAINTED(mr) = 1;
@@ -3212,6 +3148,13 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 #endif /* PIXMAP_BUTTONS */
     }
   }
+
+  /* draw the relief */
+  RelieveRectangle(dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
+		   MR_HEIGHT(mr) - 1, (Pdepth < 2)
+				      ? MST_MENU_SHADOW_GC(mr)
+				      : MST_MENU_RELIEF_GC(mr),
+		   MST_MENU_SHADOW_GC(mr), bw);
 
   for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
