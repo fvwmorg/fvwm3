@@ -80,6 +80,7 @@
 #endif /* SHAPE */
 #include "module.h"
 #include "session.h"
+#include "focus.h"
 
 #ifndef XUrgencyHint
 #define XUrgencyHint            (1L << 8)
@@ -1469,7 +1470,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
       (s && (((sw != s->w) ^ IS_ICONIFIED(s)) || (r->Desk != s->Desk))))
   {
     /* one of the relevant windows is unmapped */
-    return;
+    return 0;
   }
 
   switch (stack_mode)
@@ -1516,7 +1517,6 @@ void HandleConfigureRequest(void)
   int x, y, width, height;
   XConfigureRequestEvent *cre = &Event.xconfigurerequest;
   Bool sendEvent=False;
-  FvwmWindow  *FvwmSib;
 
   DBUG("HandleConfigureRequest","Routine Entered");
 

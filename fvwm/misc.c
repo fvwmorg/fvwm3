@@ -42,6 +42,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "module.h"
+#include "focus.h"
 
 FvwmWindow *FocusOnNextTimeStamp = NULL;
 

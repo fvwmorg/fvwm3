@@ -226,16 +226,22 @@ void FreeList(List *list)
 ******************************************************************************/
 void PrintList(List *list)
 {
-Item *temp;
-  ConsoleMessage("List of Items:\n");
-  ConsoleMessage("   %10s %-15s %-15s %-15s %-15s Flgs\n","ID","Name","I-Name",
-    "R-Name","R-Class");
-  ConsoleMessage("   ---------- --------------- --------------- --------------- --------------- ----\n");
-  for(temp=list->head;temp!=NULL;temp=temp->next) {
-    ConsoleMessage("   %10ld %-15.15s %4ld\n",temp->id,
-      (temp->name==NULL) ? "<null>" : temp->name,
-       temp->flags);
-  }
+    Item *temp;
+    ConsoleMessage("List of Items:\n");
+    ConsoleMessage("   %10s %-15s %-15s %-15s %-15s Flgs\n",
+		   "ID","Name","I-Name", "R-Name","R-Class");
+    ConsoleMessage("   ---------- --------------- --------------- --------------- --------------- ----\n");
+    for(temp=list->head;temp!=NULL;temp=temp->next) {
+	int i;
+	unsigned char* p = (unsigned char*)&temp->flags;
+	ConsoleMessage("   %10ld %-15.15s ",
+		       temp->id, 
+		       (temp->name==NULL) ? "<null>" : temp->name);
+	for( i = 0; i < sizeof(temp->flags); ++i ) {
+	    ConsoleMessage( "%x2", *p++ );
+	}
+	ConsoleMessage( "\n" );
+    }
 }
 
 /******************************************************************************

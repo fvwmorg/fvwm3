@@ -1,3 +1,12 @@
+Fri Apr 23 13:22:14 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/List.c (PrintList): fix up printing of flags.  This
+ 	really needs a general solution in libfvwm.  flagstoascii()
+ 	anyone?
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage): initialize cfgpacket
+ 	before dereferencing it.
+
 1999-04-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmGtk/FvwmGtk.c (parse_argument): use new function

@@ -4002,7 +4002,6 @@ void
 new_layer (FvwmWindow *tmp_win, int layer)
 {
   FvwmWindow *t2, *next;
-  Atom a;
 
   if (layer < tmp_win->layer)
     {

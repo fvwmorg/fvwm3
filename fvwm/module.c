@@ -568,7 +568,6 @@ BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
   va_list ap;
   int i;
   unsigned long plen;
-  unsigned long *lp1;
 
   va_start(ap,num_datum);
   plen = make_new_vpacket(body, event_type, num_datum, ap);

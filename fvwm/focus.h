@@ -16,11 +16,34 @@
 #ifndef _FOCUS_
 #define _FOCUS_
 
+/********************************************************************
+ *
+ * Sets the input focus to the indicated window.
+ *
+ **********************************************************************/
 void SetFocus(Window, FvwmWindow *, Bool FocusByMouse);
+
+
+/**************************************************************************
+ *
+ * Moves focus to specified window
+ *
+ *************************************************************************/
 void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action);
+
+/**************************************************************************
+ *
+ * Moves pointer to specified window
+ *
+ *************************************************************************/
 void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit);
+
+/**
+ * These need documentation
+ **/
 void flip_focus_func(F_CMD_ARGS);
 void focus_func(F_CMD_ARGS);
 void warp_func(F_CMD_ARGS);
+Bool IsLastFocusSetByMouse(void);
 
 #endif /* _FOCUS_ */

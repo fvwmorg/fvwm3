@@ -1,3 +1,22 @@
+Fri Apr 23 12:29:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/virtual.c: 
+	* fvwm/misc.c: include focus.h for prototypes.
+
+	* fvwm/focus.c: include bindings.h for prototypes.
+
+	* fvwm/events.c (HandleUnusualStackmodes): non-void functions must
+ 	actually return a value.
+
+	* fvwm/events.c: include focus.h for prototyping.
+
+	* fvwm/focus.h (IsLastFocusSetByMouse): add prototype.  Also added
+ 	some missing documentation for other prototypes.
+
+	* fvwm/module.c (BroadcastNewPacket): 
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/builtins.c (new_layer): removed unused variable.
+
 1999-04-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm2.1: fixed manpage bug (half a line lost)
@@ -8,7 +27,7 @@
 	Don't expand the command line twice when calliing a complex function
 	without the 'Function' builtin.
 
-	* libs/Parse.c (DoPeekToken): fixed parising empty tokens
+	* libs/Parse.c (DoPeekToken): fixed parsing empty tokens
 
 1999-04-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
@@ -42,7 +61,7 @@
 
 	* libs/fvwmlib.h:
 	* libs/Bindings.c (GrabAllWindowKeysAndButtons):
-	New convenience function (a bit faste if everything has to be grabbed)
+	New convenience function (a bit faster if everything has to be grabbed)
 
 1999-04-21  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
@@ -72,9 +91,9 @@
 
 1999-04-21  Hippo
 
-	* libs/Picture.{c,h},fvwm/{add_window,fvwm,icons,menus}.c: Partly fixed
-	-visual Truecolor with different depths,  Client supplied icon pixmaps
-	look ugly and XorPixmap has no effect.
+	* libs/Picture.{c,h},fvwm/{add_window,fvwm,icons,menus}.c: Partly
+ 	fixed -visual Truecolor with different depths, Client supplied
+ 	icon pixmaps look ugly and XorPixmap has no effect.
 
 1999-04-20  Bob Woodside  <proteus@pcnet.com>
 

@@ -297,6 +297,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         AddItem(&windows, cfgpacket);
       break;
     case M_DESTROY_WINDOW:
+      cfgpacket = (void *) body;
       if ((i=DeleteItem(&windows,cfgpacket->w))==-1) break;
       RemoveButton(&buttons,i);
       if (WindowIsUp)

@@ -27,6 +27,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "module.h"
+#include "focus.h"
 
 /*
  * dje 12/19/98
