@@ -1135,6 +1135,10 @@ static void AnimatedMoveAnyWindow(
 				True : False,
 				True, CLEAR_ALL, NULL, NULL);
 		}
+		if (fw && pmrtp == NULL && IS_TEAR_OFF_MENU(fw))
+		{
+			menu_redraw_transparent_tear_off_menu(fw, False);
+		}
 		if (fWarpPointerToo == True)
 		{
 			if (FQueryPointer(
@@ -2374,6 +2378,11 @@ Bool __move_loop(
 						True : False,
 						True, CLEAR_ALL, NULL, NULL);
 				}
+				if (IS_TEAR_OFF_MENU(fw))
+				{
+					menu_redraw_transparent_tear_off_menu(
+						fw, False);
+				}
 				BroadcastConfig(M_CONFIGURE_WINDOW, &fw_copy);
 				FlushAllMessageQueues();
 			}
@@ -2401,6 +2410,7 @@ Bool __move_loop(
 					True : False,
 					True, CLEAR_ALL, NULL, NULL);
 			}
+			menu_redraw_transparent_tear_off_menu(fw, False);
 		}
 		if (bad_window == FW_W(fw))
 		{

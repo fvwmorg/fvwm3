@@ -1,3 +1,24 @@
+2003-08-28  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/move_resize.c (__move_loop):
+	(AnimatedMoveAnyWindow):
+	Updated bg of transparent tear off menu when moved
+
+	* fvwm/events.c (HandlePropertyNotify):
+	Updated ParentRelative tear off menu on bg change
+ 
+	* fvwm/menus.c (UpdateMenuColorset):
+	Updated colorsets of tear off menu when they change, this handle the
+	case of root background change for RootTransparent
+
+	* fvwm/menus.h:
+	* fvwm/menus.c (menu_redraw_pr_tear_off_menu):
+	An utility function for redrawing transparent tear off menu. Maybe
+	we can merge
+	
+	* fvwm/add_window.c (validate_transientfor):
+	Fixed transient for an ewmh desktop
+
 2003-08-27  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FRender.c (FRenderRender):

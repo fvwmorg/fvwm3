@@ -337,6 +337,7 @@ MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool, Bool);
 void menu_enter_tear_off_menu(const exec_context_t *exc);
 void menu_close_tear_off_menu(FvwmWindow *fw);
+Bool menu_redraw_transparent_tear_off_menu(FvwmWindow *fw, Bool pr_only);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
 char *get_menu_options(
 	char *action, Window w, FvwmWindow *fw, XEvent *e, MenuRoot *mr,

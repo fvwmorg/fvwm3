@@ -2800,7 +2800,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		 * background change. This is fixed with Esetroot 9.2 (not yet
 		 * released, 2002-01-14) */
 
-		/* update icon window with some alpha */
+		/* update icon window with some alpha and tear-off menu */
 		FvwmWindow *t;
 
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
@@ -2810,6 +2810,9 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			int b_cs = t->icon_background_cs;
 			Bool draw_picture = False;
 			Bool draw_title = False;
+			
+			/* redraw ParentRelative tear-off menu */
+			menu_redraw_transparent_tear_off_menu(t, True);
 
 			if (!IS_ICONIFIED(t) || IS_ICON_SUPPRESSED(t))
 			{

@@ -2075,7 +2075,7 @@ Bool validate_transientfor(FvwmWindow *fw)
 	Window w;
 
 	w = FW_W_TRANSIENTFOR(fw);
-	if (w == None || w == FW_W(fw))
+	if (w == None || w == FW_W(fw) || w == IS_EWMH_DESKTOP(w))
 	{
 		FW_W_TRANSIENTFOR(fw) = Scr.Root;
 		return False;

@@ -6163,6 +6163,38 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
 	return;
 }
 
+Bool menu_redraw_transparent_tear_off_menu(FvwmWindow *fw, Bool pr_only)
+{
+	MenuRoot *mr;
+	MenuStyle *ms = NULL;
+	int cs;
+
+	if (!(IS_TEAR_OFF_MENU(fw) &&
+	      XFindContext(dpy, FW_W(fw), MenuContext,(caddr_t *)&mr) !=
+	      XCNOENT &&
+	      (ms = MR_STYLE(mr)) &&
+	      ST_HAS_MENU_CSET(ms)))
+	{
+		return False;
+	}
+
+	cs = ST_CSET_MENU(ms);
+
+	if (!CSET_IS_TRANSPARENT(cs) ||
+	    (pr_only && !CSET_IS_TRANSPARENT_PR(cs)))
+	{
+		return False;
+	}
+
+	return UpdateBackgroundTransparency(
+		dpy, MR_WINDOW(mr), MR_WIDTH(mr),
+		MR_HEIGHT(mr),
+		&Colorset[ST_CSET_MENU(ms)],
+		Pdepth,
+		FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
+		True);
+}
+
 /*
  *
  * Initiates a menu pop-up
@@ -7169,6 +7201,7 @@ void UpdateAllMenuStyles(void)
 void UpdateMenuColorset(int cset)
 {
 	MenuStyle *ms;
+	FvwmWindow *t;
 
 	for (ms = menustyle_get_default_style(); ms; ms = ST_NEXT_STYLE(ms))
 	{
@@ -7177,6 +7210,38 @@ void UpdateMenuColorset(int cset)
 		    (ST_HAS_GREYED_CSET(ms) && ST_CSET_GREYED(ms) == cset))
 		{
 			menustyle_update(ms);
+		}
+	}
+
+	
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		MenuRoot *mr = NULL;
+		MenuStyle *ms = NULL;
+
+		if (IS_TEAR_OFF_MENU(t) &&
+		    XFindContext(dpy, FW_W(t), MenuContext, (caddr_t *)&mr) != 
+		    XCNOENT &&
+		    (ms = MR_STYLE(mr)))
+		{
+			if   (ST_HAS_MENU_CSET(ms) &&
+			      ST_CSET_MENU(ms) == cset)
+			{
+				SetWindowBackground(
+					dpy, MR_WINDOW(mr), MR_WIDTH(mr),
+					MR_HEIGHT(mr),
+					&Colorset[ST_CSET_MENU(ms)],
+					Pdepth,
+					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
+					True);
+			}
+			else if ((ST_HAS_ACTIVE_CSET(ms) &&
+				  ST_CSET_ACTIVE(ms) == cset) ||
+				 (ST_HAS_GREYED_CSET(ms) &&
+				  ST_CSET_GREYED(ms) == cset))
+			{
+				paint_menu(mr, NULL, NULL);
+			}
 		}
 	}
 
