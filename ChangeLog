@@ -1,4 +1,29 @@
+2002-09-20  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/menus.c (get_menu_repaint_transparent_parameters):
+	(animated_move_back):
+	(pop_menu_up):
+	(repaint_transparent_menu):
+	* fvwm/move_resize.c (AnimatedMoveOfWindow):
+	(AnimatedMoveAnyWindow):
+	* fvwm/move_resize.h:
+	Support the new colorset transparent options. Fixed greyed item
+	of transparent animated menus
+
 2002-09-19  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/menus.c (get_menu_repaint_transparent_parameters):
+	(animated_move_back):
+	(pop_menu_up):
+	(repaint_transparent_menu):
+	* fvwm/move_resize.c (AnimatedMoveOfWindow):
+	(AnimatedMoveAnyWindow):
+	* fvwm/move_resize.h:
+	Support the new colorset transparent options and fix greyed item
+	of transparent animated menus
+	
+	* fvwm/menus.c (pop_menu_up): 
+	(animated_move_back):
 
 	* libs/Rectangles.c:
 	* libs/Rectangles.h:

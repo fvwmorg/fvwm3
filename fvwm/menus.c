@@ -342,13 +342,27 @@ static MenuItem *warp_pointer_to_item(
  * menu animation functions
  ***************************************************************/
 
+/* prepares the parameters to be passed to AnimatedMoveOfWindow
+ * mr - the menu instance that holds the menu item
+ * fw - the FvwmWindow structure to check against allowed functions */
+static void get_menu_repaint_transparent_parameters(
+	MenuRepaintTransparentParameters *pmrtp, MenuRoot *mr, FvwmWindow *fw)
+{
+	pmrtp->mr = mr;
+	pmrtp->fw = fw;
+
+	return;
+}
+
+
 /* Undo the animation of a menu */
 static void animated_move_back(
 	MenuRoot *mr, Bool do_warp_pointer, FvwmWindow *fw)
 {
+	MenuRepaintTransparentParameters mrtp;
 	int act_x;
 	int act_y;
-
+	
 	if (MR_XANIMATION(mr) == 0)
 	{
 		return;
@@ -357,19 +371,20 @@ static void animated_move_back(
 		    mr, &JunkRoot, &act_x, &act_y, &JunkWidth, &JunkHeight,
 		    &JunkBW, &JunkDepth))
 	{
-		Bool parent_relative_bg = False;
+		Bool transparent_bg = False;
 
 		/* move it back */
 		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
-		    Colorset[ST_CSET_MENU(MR_STYLE(mr))].pixmap ==
-		    ParentRelative)
+		    CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
 		{
-			parent_relative_bg = True;
+			transparent_bg = True;
+			get_menu_repaint_transparent_parameters(
+				&mrtp, mr, fw);
 		}
 		AnimatedMoveOfWindow(
 			MR_WINDOW(mr), act_x, act_y, act_x - MR_XANIMATION(mr),
 			act_y, do_warp_pointer, -1, NULL,
-			(parent_relative_bg)? mr:NULL);
+			(transparent_bg)? &mrtp:NULL);
 		MR_XANIMATION(mr) = 0;
 	}
 
@@ -3579,8 +3594,7 @@ static int pop_menu_up(
 	unsigned int prev_height;
 	unsigned int event_mask;
 	int scr_x, scr_y, scr_w, scr_h;
-	Bool parent_relative_bg = False;
-
+	
 	mr = *pmenu;
 	if (!mr ||
 	    (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) >= MAX_MENU_COPIES))
@@ -3839,6 +3853,8 @@ static int pop_menu_up(
 		int left_x;
 		int right_x;
 		Bool use_left_submenus = MST_USE_LEFT_SUBMENUS(mr);
+		MenuRepaintTransparentParameters mrtp;
+		Bool transparent_bg = False;
 
 		/* check if menus overlap */
 		x_clipped_overlap =
@@ -3960,11 +3976,12 @@ static int pop_menu_up(
 				}
 				MR_XANIMATION(parent_menu) += end_x - prev_x;
 				if (ST_HAS_MENU_CSET(MR_STYLE(parent_menu)) &&
-				    Colorset[ST_CSET_MENU(
-						     MR_STYLE(parent_menu))].
-				    pixmap == ParentRelative)
+				    CSET_IS_TRANSPARENT(
+					    ST_CSET_MENU(MR_STYLE(mr))))
 				{
-					parent_relative_bg = True;
+					transparent_bg = True;
+					get_menu_repaint_transparent_parameters(
+						&mrtp, parent_menu, fw);
 				}
 
 				if (MR_IS_TEAR_OFF_MENU(parent_menu))
@@ -3991,7 +4008,7 @@ static int pop_menu_up(
 				AnimatedMoveOfWindow(
 					w, prev_x, prev_y, end_x, prev_y, True,
 					-1, NULL,
-					(parent_relative_bg)? parent_menu:NULL);
+					(transparent_bg)? &mrtp:NULL);
 			} /* if (MST_IS_ANIMATED(mr)) */
 
 			/*
@@ -6493,20 +6510,42 @@ void menu_expose(XEvent *event, FvwmWindow *fw)
 /***********************************************************************
  *
  *  Procedure:
- *      ParentalMenuRePaint - repaint the menu background if it is tranparent
- *        (ParentRelative) during an animated move.
- *        Called in move_resize.c (AnimatedMoveAnyWindow)
- *      Performance improvement Welcome!
- *
+ *      repaint_transparent_menu - repaint the menu background if it is
+ *      tranparent during an animated move. Called in move_resize.c
+ *      (AnimatedMoveAnyWindow). Performance improvement Welcome!
+ *  ideas: - write the foreground into a pixmap and a mask the first time
+ *          this function is called. Then use these pixmaps to draw
+ *	    the items
+ *         - Use a Buffer if !IS_TRANSPARENT_PR_PURE and if we do not have one
+ *           already
  ***********************************************************************/
-void ParentalMenuRePaint(MenuRoot *mr)
+void repaint_transparent_menu(
+	MenuRepaintTransparentParameters *prtm,
+	Bool first, int x, int y, int end_x, int end_y)
 {
 	MenuItem *mi;
+	MenuRoot *mr;
 	MenuPaintItemParameters mpip;
+	MenuStyle *ms;
 	int h = 0;
 	int s_h = 0;
 	int e_h = 0;
+	Bool last = False;
 
+	mr = prtm->mr;
+	ms = MR_STYLE(mr);
+	if (x == end_x && y == end_y)
+	{
+		last = True;
+	}
+	if (!last && CSET_IS_TRANSPARENT_PR_TINT(ST_CSET_MENU(ms)))
+	{
+		/* too slow ... */
+		return;
+	}
+	SetWindowBackground(
+		dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
+		&Colorset[ST_CSET_MENU(ms)], Pdepth, ST_MENU_GC(ms), False); 
 	/* redraw the background of non active item */
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
@@ -6548,10 +6587,11 @@ void ParentalMenuRePaint(MenuRoot *mr)
 	}
 
 	/* now redraw the items */
-	get_menu_paint_item_parameters(&mpip, mr, NULL, NULL, NULL, True);
+	get_menu_paint_item_parameters(&mpip, mr, NULL, prtm->fw, NULL, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
-		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT(mr))
+		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT(mr) &&
+		    !CSET_IS_TRANSPARENT_PR_TINT(ST_CSET_MENU(ms)))
 		{
 			continue;
 		}

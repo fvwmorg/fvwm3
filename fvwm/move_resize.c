@@ -1040,12 +1040,13 @@ static void InteractiveMove(
 static void AnimatedMoveAnyWindow(
 	FvwmWindow *fw, Window w, int startX, int startY, int endX,
 	int endY, Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
-	MenuRoot *menu_root)
+	MenuRepaintTransparentParameters *pmrtp)
 {
 	int pointerX, pointerY;
 	int currentX, currentY;
 	int lastX, lastY;
 	int deltaX, deltaY;
+	Bool first = True;
 	XEvent evdummy;
 
 	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
@@ -1104,9 +1105,11 @@ static void AnimatedMoveAnyWindow(
 			continue;
 		}
 		XMoveWindow(dpy,w,currentX,currentY);
-		if (menu_root != NULL)
+		if (pmrtp != NULL)
 		{
-			ParentalMenuRePaint(menu_root);
+			repaint_transparent_menu(
+				pmrtp, first,
+				currentX, currentY, endX, endY);
 		}
 		if (fWarpPointerToo == True)
 		{
@@ -1168,14 +1171,17 @@ static void AnimatedMoveAnyWindow(
 		{
 			/* finish the move immediately */
 			XMoveWindow(dpy,w,endX,endY);
-			if (menu_root != NULL)
+			if (pmrtp != NULL)
 			{
-				ParentalMenuRePaint(menu_root);
+				repaint_transparent_menu(
+					pmrtp, first,
+					endX, endY, endX, endY);
 			}
 			break;
 		}
 		lastX = currentX;
 		lastY = currentY;
+		first = False;
 	} while (*ppctMovement != 1.0 && ppctMovement++);
 	MyXUngrabKeyboard(dpy);
 	XFlush(dpy);
@@ -1191,11 +1197,11 @@ static void AnimatedMoveAnyWindow(
 void AnimatedMoveOfWindow(
 	Window w, int startX, int startY, int endX, int endY,
 	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
-	void *menu_root)
+	MenuRepaintTransparentParameters *pmrtp)
 {
 	AnimatedMoveAnyWindow(
 		NULL, w, startX, startY, endX, endY, fWarpPointerToo,
-		cmsDelay, ppctMovement, menu_root);
+		cmsDelay, ppctMovement, pmrtp);
 
 	return;
 }

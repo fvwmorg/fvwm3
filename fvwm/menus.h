@@ -335,6 +335,12 @@ typedef struct
 	} flags;
 } MenuReturn;
 
+typedef struct
+{
+	MenuRoot *mr;
+	FvwmWindow *fw;
+} MenuRepaintTransparentParameters;
+
 #define IS_MENU_RETURN(x) \
   ((x)==MENU_DONE || (x)==MENU_ABORTED || (x)==MENU_SUBMENU_TORN_OFF)
 
@@ -361,7 +367,9 @@ void change_mr_menu_style(MenuRoot *mr, char *stylename);
 void UpdateAllMenuStyles(void);
 void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
-void ParentalMenuRePaint(MenuRoot *mr);
+void repaint_transparent_menu(
+	MenuRepaintTransparentParameters *prtmp,
+	Bool first, int x, int y, int end_x, int end_y);
 void menu_expose(XEvent *event, FvwmWindow *fw);
 
 #endif /* _MENUS_ */
