@@ -462,6 +462,8 @@ void NoneFunc(F_CMD_ARGS);
 void CurrentFunc(F_CMD_ARGS);
 void DirectionFunc(F_CMD_ARGS);
 void WindowIdFunc(F_CMD_ARGS);
+void PickFunc(F_CMD_ARGS);
+void AllFunc(F_CMD_ARGS);
 void ReadFile(F_CMD_ARGS);
 void PipeRead(F_CMD_ARGS);
 void module_zapper(F_CMD_ARGS);

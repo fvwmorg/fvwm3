@@ -3,6 +3,8 @@ Changes in alpha release 2.3.0 (February 1999)
 * Fonts and colors are no longer hard-coded on the FvwmAnimate customization
   form.  FvwmForm can set defaults that the FvwmAnimate form will use.
 
+* New commands All and Pick.
+
 * New command XORPixmap for increased visibility of the rubber band lines and
   general spangly-ness.
   

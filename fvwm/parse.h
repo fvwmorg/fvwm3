@@ -65,6 +65,8 @@ enum {
     F_NEXT,
     F_PREV,
     F_NONE,
+    F_PICK,
+    F_ALL,
     F_STAYSUP,
     F_RECAPTURE,
     F_CONFIG_LIST,

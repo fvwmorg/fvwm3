@@ -68,6 +68,7 @@ static struct functions func_config[] =
 #endif /* USEDECOR */
   {"AddToFunc",    add_item_to_func, F_ADDFUNC,             FUNC_NO_WINDOW},
   {"AddToMenu",    add_item_to_menu, F_ADDMENU,             FUNC_NO_WINDOW},
+  {"All",          AllFunc,          F_ALL,                 FUNC_NO_WINDOW},
   {"AnimatedMove", animated_move_window,F_ANIMATED_MOVE,    FUNC_NEEDS_WINDOW},
   {"Beep",         Bell,             F_BEEP,                FUNC_NO_WINDOW},
 #ifdef BORDERSTYLE
@@ -133,6 +134,7 @@ static struct functions func_config[] =
   {"None",         NoneFunc,         F_NONE,                FUNC_NO_WINDOW},
   {"Nop",          Nop_func,         F_NOP,                 FUNC_NO_WINDOW},
   {"OpaqueMoveSize", SetOpaque,      F_OPAQUE,              FUNC_NO_WINDOW},
+  {"Pick",         PickFunc,         F_PICK,                FUNC_NO_WINDOW},
   {"PipeRead",     PipeRead,         F_READ,                FUNC_NO_WINDOW},
   {"PixmapPath",   setPixmapPath,    F_PIXMAP_PATH,         FUNC_NO_WINDOW},
   {"PopUp",        popup_func,       F_POPUP,               FUNC_NO_WINDOW},

@@ -641,6 +641,11 @@ In all the above cases, the name of the resulting menu is name specified,
 stripped of the substrings between the various delimiters.
 
 
+.IP "All (\fIconditions\fP) \fIcommand\fP"
+Execute \fIcommand\fP on all windows meeting the conditions. 
+Conditions are used exactly as with the Current command.
+
+
 .IP "AnimatedMove \fIx y\fP [ \fIWarp\fP ]"
 
 Move a window in an animated way. Similar to Move command, below.
@@ -2087,6 +2092,13 @@ traditional rubber-band outline.  With "OpaqueMoveSize 100" all windows
 will be move as solid windows.  The default is "OpaqueMoveSize 5", which
 allows small windows to be moved in an opaque manner but large windows
 are moved as rubber-bands.
+
+
+.IP "Pick \fIcommand\fP"
+Pick works like Function if invoked in the context of a window. If 
+invoked in root context, it first asks the user to pick a window and
+then executes the command in the context of that window. This avoids 
+annoying multiple selections with complex functions.
 
 
 .IP "PipeRead \fIcmd option\fP"

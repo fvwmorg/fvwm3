@@ -4510,6 +4510,47 @@ void CurrentFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
 }
 
+void AllFunc(XEvent *eventp, Window junk, FvwmWindow *tmp_win,
+              unsigned long context, char *action,int* Module)
+{
+  FvwmWindow *t, **g;
+  char *restofline;
+  WindowConditionMask mask;
+  char *flags;
+  int num, i;
+
+  flags = CreateFlagString(action, &restofline);
+  DefaultConditionMask(&mask);
+  CreateConditionMask(flags, &mask);
+  mask.useCirculateHit = 1;
+  mask.useCirculateHitIcon = 1;
+
+  num = 0;
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) 
+    {
+       num++;
+    }
+
+  g = (FvwmWindow **) malloc (num * sizeof(FvwmWindow *));
+ 
+  num = 0;
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) 
+    {
+      if (MatchesConditionMask(t, &mask)) 
+	{
+          g[num++] = t;
+        }
+    }
+  
+  for (i = 0; i < num; i++)
+    {
+       ExecuteFunction(restofline,g[i],eventp,C_WINDOW,*Module);
+    }
+
+  free (g);
+  FreeConditionMask(&mask);
+}
+
 static void GetDirectionReference(FvwmWindow *w, int *x, int *y)
 {
   if ((w->flags & ICONIFIED) != 0)
@@ -4649,6 +4690,18 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     ExecuteFunction(restofline, best_window, eventp, C_WINDOW, *Module);
 
   FreeConditionMask(&mask);
+}
+
+/* A very simple function, but handy if you want to call 
+  complex functions from root context without selecting a window
+  for every single function in it. */
+void PickFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+              unsigned long context, char *action,int* Module)
+{
+  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+    return;
+ 
+  ExecuteFunction(action, tmp_win, eventp, C_WINDOW, *Module);
 }
 
 void WindowIdFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,

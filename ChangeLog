@@ -1,5 +1,12 @@
 1999-03-02  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+	* fvwm/builtins.c (PickFunc): 
+	(AllFunc): new functions.
+
+	* fvwm/parse.h: 
+	* fvwm/misc.h: 
+	* fvwm/functions.c (func_config): add entries for Pick and All.
+	
 	* fvwm/session.c (SaveWindowStates): 
 	* fvwm/add_window.c (AddWindow): 
 	* fvwm/move.c (AnimatedMoveAnyWindow): 
