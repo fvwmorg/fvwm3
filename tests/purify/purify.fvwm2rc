@@ -300,6 +300,7 @@ AddToFunc MenuPositioning-Func
  + I Menu Menu-Position Mouse -150p -50p
  + I AddToMenu Menu-Position "Position Root c c"
  + I Menu Menu-Position Root c c
+ + I Next (window0) Focus
  + I AddToMenu Menu-Position "Position window -100m c+0"
  + I All (purify) Menu Menu-Position window -100m c+0
  + I AddToMenu Menu-Position "Position Button1 50+10p 50+10m"
@@ -352,9 +353,9 @@ AddToFunc MenuStyle-Func
  + I MenuStyle * PopupDelay 0, PopdownImmediately
  + I DestroyMenu Main
  + I AddToMenu Main "Main menu - Test MenuStyles"
- + I AddToMenu Main "Popup FvwmStyle" Popup FvwmStyle
- + I AddToMenu Main "Popup MwmStyle" Popup MwmStyle
- + I AddToMenu Main "Popup WinStyle" Popup WinStyle
+ + I AddToMenu Main "%test1.xpm%Popup FvwmStyle" Popup FvwmStyle
+ + I AddToMenu Main "Popup MwmStyle%test.png%" Popup MwmStyle
+ + I AddToMenu Main "Popup WinStyle%xtrek_fed_e.xbm%" Popup WinStyle
  + I AddToMenu Main "Popup XStyle" Popup XStyle item +0 -100m
  + I AddToMenu Main "To complete this test, Popup all the sub-menus"
  + I DestroyMenu FvwmStyle
@@ -443,6 +444,7 @@ AddToFunc BusyCursor-Func
 # Back to the defaults:
  + I BusyCursor DynamicMenu False, ModuleSynchronous False, Read False
  + I BusyCursor Wait False
+ + I BusyCursor * True
 #
  + I BusyCursor blabla
 
@@ -577,6 +579,7 @@ AddToFunc DefaultIcon-Func
  + I DefaultIcon
  + I DefaultIcon test1.xpm
  + I DefaultIcon xtrek_fed_e.xbm
+ + I DefaultIcon test.png
  + I DefaultIcon
  + I Refresh
 
@@ -647,7 +650,6 @@ AddToFunc PrintInfo-Func
 + I PrintInfo dffdghhq 4
 
 # FIXME: Schedule (see DeSchedule above)
-# FIXME: State
 
 # This test tests "Exec" and "Wait" but also creates some windows
 # used in tests afterward.
@@ -678,6 +680,17 @@ AddToFunc CreateWindows-Func
  + I GotoPage 0 0
  + I CursorMove -1000 -1000
  + I CursorMove 95 95
+
+AddTest "Test State" State-Func
+AddToFunc State-Func
+ + I State 1
+ + I State 1 True
+ + I State 1 False
+#
+ + I State 1234
+ + I State -10
+ + I State
+ + I State sdncfekndf klfdvclkfev klfnvfekvflkv,fv,
 
 # Note, there is no test for WindowFont, its obsolete
 
@@ -1265,7 +1278,8 @@ AddToFunc StyleOldGlobalOptions-Func
  + I Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
 
 DestroyFunc StyleAndUpdate
-AddToFunc StyleAndUpdate I Style $*
+AddToFunc StyleAndUpdate I Echo Style $*
++ I Style $*
 + I UpdateStyles
 
 # This group is in the same order that args are listed on the man page:
@@ -1279,6 +1293,7 @@ AddToFunc Style-Func
  + I StyleAndUpdate "window*" HandleWidth  3
  + I StyleAndUpdate "window*" HandleWidth		7
  + I StyleAndUpdate "window*" HandleWidth		7
+ + I All (window*) Iconify
  + I StyleAndUpdate "window*" NoIcon
  + I StyleAndUpdate "window*" NoIcon
  + I StyleAndUpdate "window*" Icon
@@ -1287,6 +1302,17 @@ AddToFunc Style-Func
  + I StyleAndUpdate "window*" Icon jdncjdsnc jdnvcjdfnv jkdvjqdsvn
  + I StyleAndUpdate "window*" Icon test1.xpm
  + I StyleAndUpdate "window*" Icon test1.xpm
+ + I StyleAndUpdate "window1" Icon test.png
+ + I StyleAndUpdate "window1" Icon test.png
+# + I StyleAndUpdate "window2" Icon xtrek_fed_e.xbm
+# + I StyleAndUpdate "window2" Icon xtrek_fed_e.xbm
+ + I StyleAndUpdate IconSize 56 56
+ + I StyleAndUpdate IconSize 10 10 120 120
+ + I StyleAndUpdate IconSize 10 10
+ + I StyleAndUpdate IconSize 10 -1
+ + I StyleAndUpdate IconSize
+ + I All (window*) Iconify
+ + I ButtonStyle 1 MiniIcon
  + I StyleAndUpdate "window*" MiniIcon
  + I StyleAndUpdate "window*" MiniIcon
  + I StyleAndUpdate "window*" MiniIcon -
@@ -1295,16 +1321,44 @@ AddToFunc Style-Func
  + I StyleAndUpdate "window*" MiniIcon jdncjdsnc jdnvcjdfnv jkdvjqdsvn
  + I StyleAndUpdate "window*" MiniIcon test1.xpm
  + I StyleAndUpdate "window*" MiniIcon test1.xpm
+ + I StyleAndUpdate "window1" MiniIcon test.png
+ + I StyleAndUpdate "window1" MiniIcon test.png
+# + I StyleAndUpdate "window2" MiniIcon xtrek_fed_e.xbm
+# + I StyleAndUpdate "window2" MiniIcon xtrek_fed_e.xbm
  + I StyleAndUpdate "window*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
  + I StyleAndUpdate "window*" IconBox 1 5 100 500, IconGrid -0 10
+ + I StyleAndUpdate "window*" IconBox 400 300 100 500, IconGrid -0 10
  + I StyleAndUpdate "window*" NoTitle
  + I StyleAndUpdate "window*" NoTitle
  + I StyleAndUpdate "window*" Title
  + I StyleAndUpdate "window*" Title
  + I StyleAndUpdate "window*" TitleAtBottom
  + I StyleAndUpdate "window*" TitleAtTop
+ + I StyleAndUpdate "window*" TitleAtLef
+ + I StyleAndUpdate "window*" TitleAtRight
+ + I StyleAndUpdate "window*" TitleAtTop
+ + I StyleAndUpdate "window1" TitleAtBottom
+ + I StyleAndUpdate "window2" TitleAtTop
+ + I StyleAndUpdate "window3" TitleAtLef
+ + I StyleAndUpdate "window4" TitleAtRight
+ + I StyleAndUpdate "window*" LeftTitleRotatedCW
+ + I StyleAndUpdate "window*" LeftTitleRotatedCCW
+ + I StyleAndUpdate "window*" RightTitleRotatedCCW
+ + I StyleAndUpdate "window*" RightTitleRotatedCW
+ + I StyleAndUpdate "window*" TopTitleRotated
+ + I StyleAndUpdate "window*" TopTitleNotRotated
+ + I StyleAndUpdate "window*" BottomTitleRotated
+ + I StyleAndUpdate "window*" BottomTitleNotRotated
+ + I StyleAndUpdate "window*" !UseTitleDecorRotation
+ + I StyleAndUpdate "window*" UseTitleDecorRotation
  + I StyleAndUpdate "window*" StippledTitle
  + I StyleAndUpdate "window*" StippledTitleOff
+ + I StyleAndUpdate "window*" IndexedWindowName
+ + I StyleAndUpdate "window*" ExactWindowName
+ + I StyleAndUpdate "window*" IndexedIconName
+ + I StyleAndUpdate "window*" ExactIconName
+ + I StyleAndUpdate "window*" !Borders
+ + I StyleAndUpdate "window*" Borders
  + I StyleAndUpdate "window*" NoHandles
  + I StyleAndUpdate "window*" NoHandles
  + I StyleAndUpdate "window*" Handles
@@ -1317,6 +1371,8 @@ AddToFunc Style-Func
  + I StyleAndUpdate "window*" CirculateSkip
  + I StyleAndUpdate "window*" CirculateHit
  + I StyleAndUpdate "window*" CirculateHit
+ + I StyleAndUpdate "window*" CirculateSkipShaded
+ + I StyleAndUpdate "window*" CirculateHitShaded
  + I StyleAndUpdate "window*" StaysOnTop
  + I StyleAndUpdate "window*" StaysOnTop
  + I StyleAndUpdate "window*" StaysOnBottom
@@ -1327,33 +1383,27 @@ AddToFunc Style-Func
  + I StyleAndUpdate "window*" Sticky
  + I StyleAndUpdate "window*" Slippery
  + I StyleAndUpdate "window*" Slippery
+ + I StyleAndUpdate "window*" StickyAcrossPages
+ + I StyleAndUpdate "window*" !StickyAcrossPages
+ + I StyleAndUpdate "window*" StickyAcrossDesks
+ + I StyleAndUpdate "window*" !StickyAcrossDesks
  + I StyleAndUpdate "window*" StartIconic
  + I StyleAndUpdate "window*" StartIconic
- + I style "window*" StartNormal
- + I style "window*" StartNormal
- + I StyleAndUpdate "window*" Color
- + I StyleAndUpdate "window*" Color
- + I StyleAndUpdate "window*" ForeColor
- + I StyleAndUpdate "window*" ForeColor
- + I StyleAndUpdate "window*" BackColor
- + I StyleAndUpdate "window*" BackColor
-# A GAP (olicha)
- + I StyleAndUpdate "window*" ManualPlacement
- + I StyleAndUpdate "window*" ManualPlacement
- + I StyleAndUpdate "window*" CascadePlacement
- + I StyleAndUpdate "window*" CascadePlacement
- + I StyleAndUpdate "window*" MinOverlapPlacement
- + I StyleAndUpdate "window*" MinOverlapPlacement
- + I StyleAndUpdate "window*" MinOverlapPercentPlacement
- + I StyleAndUpdate "window*" MinOverlapPercentPlacement
- + I StyleAndUpdate "window*" TileManualPlacement
- + I StyleAndUpdate "window*" TileManualPlacement
- + I StyleAndUpdate "window*" TileCascadePlacement
- + I StyleAndUpdate "window*" TileCascadePlacement
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
+ + I StyleAndUpdate "window*" StartNormal
+ + I StyleAndUpdate "window*" StartNormal
 
-
-AddTest "Test StyleHilightForeBack" StyleHilightForeBack-Func
-AddToFunc StyleHilightForeBack-Func
+AddTest "Test Colors Style" ColorsStyle-Func
+AddToFunc ColorsStyle-Func
+ + I Next (window1) Focus
+ + I StyleAndUpdate "window*" Color
+ + I StyleAndUpdate "window*" Color blue/red
+ + I StyleAndUpdate "window*" ForeColor
+ + I StyleAndUpdate "window*" ForeColor green
+ + I StyleAndUpdate "window*" BackColor
+ + I StyleAndUpdate "window*" BackColor brown
  + I StyleAndUpdate "*" HilightFore , HilightBack
  + I StyleAndUpdate "*" HilightFore blue, HilightBack
  + I StyleAndUpdate "*" HilightFore green, HilightBack
@@ -1363,8 +1413,69 @@ AddToFunc StyleHilightForeBack-Func
  + I StyleAndUpdate "*" HilightFore gold2, HilightBack SteelBlue
  + I StyleAndUpdate "*" HilightFore , HilightBack
  + I StyleAndUpdate "*" HilightFore gold2, HilightBack SteelBlue
-
-# Missing tests: HilightColorset, BorderColorset, HilightBorderColorset
+ + I Colorset 1 fg gold2, bg SteelBlue
+ + I Colorset 2 fg gold2, bg green
+ + I Colorset 3 fg gold2, bg red
+ + I Colorset 4 bg average, fg contrast, TiledPixmap test.png
+ + I Colorset 5 bg average, fg contrast, TiledPixmap test1.xpm
+ + I Colorset 6 fg gold2, bg red, HGradient 40 darkblue blue
+ + I StyleAndUpdate "window*" Colorset 0
+ + I StyleAndUpdate "window*" HilightColorset 1
+ + I StyleAndUpdate "window*" BorderColorset 2
+ + I StyleAndUpdate "window*" HilightBorderColorset 3
+ + I StyleAndUpdate "window*" Colorset 0
+ + I StyleAndUpdate "window*" HilightColorset 1
+ + I StyleAndUpdate "window*" BorderColorset 2
+ + I StyleAndUpdate "window*" HilightBorderColorset 3
+ + I StyleAndUpdate "window*" Colorset
+ + I StyleAndUpdate "window*" HilightColorset
+ + I StyleAndUpdate "window*" BorderColorset
+ + I StyleAndUpdate "window*" HilightBorderColorset
+ + I StyleAndUpdate "window*" Colorset -1
+ + I StyleAndUpdate "window*" HilightColorset -1
+ + I StyleAndUpdate "window*" BorderColorset -1
+ + I StyleAndUpdate "window*" HilightBorderColorset -1
+ + I StyleAndUpdate "window*" Colorset kjdsbckjsd
+ + I StyleAndUpdate "window*" HilightColorset ndscbkjds bkjdbcjd
+ + I StyleAndUpdate "window*" BorderColorset nsdc
+ + I StyleAndUpdate "window*" HilightBorderColorset dsncsdcé
+ + I StyleAndUpdate "window*" Colorset 0
+ + I StyleAndUpdate "window*" HilightColorset 1
+ + I StyleAndUpdate "window*" BorderColorset 2
+ + I StyleAndUpdate "window*" HilightBorderColorset 3
+ + I All (window*) Iconify
+ + I Next (window1) Focus
+ + I StyleAndUpdate "window*" IconTitleColorset 4
+ + I StyleAndUpdate "window*" HilightIconTitleColorset 5
+ + I StyleAndUpdate "window*" IconBackgroundColorset 6
+ + I StyleAndUpdate "window*" IconTitleColorset
+ + I StyleAndUpdate "window*" HilightIconTitleColorset
+ + I StyleAndUpdate "window*" IconBackgroundColorset
+ + I StyleAndUpdate "window*" IconTitleColorset -1
+ + I StyleAndUpdate "window*" HilightIconTitleColorset -1
+ + I StyleAndUpdate "window*" IconBackgroundColorset -1
+ + I StyleAndUpdate "window*" IconTitleColorset -1aaaaaaa
+ + I StyleAndUpdate "window*" HilightIconTitleColorset -1zzzzzzzzzz
+ + I StyleAndUpdate "window*" IconBackgroundColorset -1eeeeeeeeee
+ + I StyleAndUpdate "window*" IconTitleColorset 4
+ + I StyleAndUpdate "window*" HilightIconTitleColorset 5
+ + I StyleAndUpdate "window*" IconBackgroundColorset 6
+ + I StyleAndUpdate "window*" IconTitleRelief
+ + I StyleAndUpdate "window*" IconTitleRelief -2
+ + I StyleAndUpdate "window*" IconTitleRelief 10
+ + I StyleAndUpdate "window*" IconTitleRelief ZTTE
+ + I StyleAndUpdate "window*" IconTitleRelief
+ + I StyleAndUpdate "window*" IconBackgroundRelief
+ + I StyleAndUpdate "window*" IconBackgroundRelief -2
+ + I StyleAndUpdate "window*" IconBackgroundRelief 10
+ + I StyleAndUpdate "window*" IconBackgroundRelief ZTTE
+ + I StyleAndUpdate "window*" IconBackgroundRelief
+ + I StyleAndUpdate "window*" IconBackgroundPadding
+ + I StyleAndUpdate "window*" IconBackgroundPadding -2
+ + I StyleAndUpdate "window*" IconBackgroundPadding 10
+ + I StyleAndUpdate "window*" IconBackgroundPadding ZTTE
+ + I StyleAndUpdate "window*" IconBackgroundPadding
+ + I All (window*) Iconify
 
 AddTest "Test StyleFont" StyleFont-Func
 AddToFunc StyleFont-Func
@@ -1392,10 +1503,19 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" StartsOnDesk   0
  + I StyleAndUpdate "window*" StartsOnDesk		0
  + I StyleAndUpdate "window*" StartsOnDesk		0
+ + I StyleAndUpdate "window*" StartsOnDesk 1
+ + I StyleAndUpdate "window*" SkipMapping
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
  + I StyleAndUpdate "window*" StartsOnPage
  + I StyleAndUpdate "window*" StartsOnPage  0
  + I StyleAndUpdate "window*" StartsOnPage  0   0
  + I StyleAndUpdate "window*" StartsOnPage	0	0
+ + I StyleAndUpdate "window*" StartsOnPage	1
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
  + I StyleAndUpdate "window*" StartsAnyWhere
  + I StyleAndUpdate "window*" StartsAnyWhere
 
@@ -1439,6 +1559,8 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" Button
  + I StyleAndUpdate "window*" Button  3
  + I StyleAndUpdate "window*" Button		0
+ + I StyleAndUpdate "window*" Button 2
+ + I StyleAndUpdate "window*" Button 1
  + I StyleAndUpdate "window*" ReizeHintOverride
  + I StyleAndUpdate "window*" NoResizeOverride
  + I StyleAndUpdate "window*" OLDecor
@@ -1451,8 +1573,20 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" StickyIcon
  + I StyleAndUpdate "window*" SlipperyIcon
  + I StyleAndUpdate "window*" SlipperyIcon
+ + I StyleAndUpdate "window*" StickyAcrossPagesIcon
+ + I StyleAndUpdate "window*" StickyAcrossPagesIcon
+ + I StyleAndUpdate "window*" !StickyAcrossPagesIcon
+ + I StyleAndUpdate "window*" !StickyAcrossPagesIcon
+ + I StyleAndUpdate "window*" StickyAcrossDesksIcon
+ + I StyleAndUpdate "window*" StickyAcrossDesksIcon
+ + I StyleAndUpdate "window*" !StickyAcrossDesksIcon
+ + I StyleAndUpdate "window*" !StickyAcrossDesksIcon
+# old names for pacement
  + I StyleAndUpdate "window*" SmartPlacement
  + I StyleAndUpdate "window*" SmartPlacement
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
  + I StyleAndUpdate "window*" CleverPlacement
  + I StyleAndUpdate "window*" DumbPlacement
  + I StyleAndUpdate "window*" DumbPlacement
@@ -1460,20 +1594,53 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" RandomPlacement
  + I StyleAndUpdate "window*" ActivePlacement
  + I StyleAndUpdate "window*" ActivePlacement
+# new one's
  + I StyleAndUpdate "window*" CascadePlacement
  + I StyleAndUpdate "window*" CascadePlacement
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
  + I StyleAndUpdate "window*" ManualPlacement
  + I StyleAndUpdate "window*" ManualPlacement
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
  + I StyleAndUpdate "window*" TileCascadePlacement
  + I StyleAndUpdate "window*" TileCascadePlacement
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
  + I StyleAndUpdate "window*" TileManualPlacement
  + I StyleAndUpdate "window*" TileManualPlacement
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
  + I StyleAndUpdate "window*" MinOverlapPlacement
  + I StyleAndUpdate "window*" MinOverlapPlacement
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
  + I StyleAndUpdate "window*" MinOverlapPercentPlacement
  + I StyleAndUpdate "window*" MinOverlapPercentPlacement
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
+ + I StyleAndUpdate "window*" MinOverlapPlacementPenalties 1 10 5 3 0.2 50000
+ + I StyleAndUpdate "window*" MinOverlapPlacementPenalties -1 aa 0 16 kk
+ + I StyleAndUpdate "window*" MinOverlapPlacementPenalties
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
+ + I StyleAndUpdate "window*" MinOverlapPlacementPenalties
+ + I StyleAndUpdate "window*" MinOverlapPercentPlacementPenalties 12 6 4 1
+ + I StyleAndUpdate "window*" MinOverlapPercentPlacementPenalties -1 aa 0 16
+ + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
+ + I StyleAndUpdate "window*" MinOverlapPercentPlacementPenalties
  + I StyleAndUpdate "window*" DecorateTransient
  + I StyleAndUpdate "window*" DecorateTransient
+# need to map or has a transient window
  + I StyleAndUpdate "window*" NakedTransient
  + I StyleAndUpdate "window*" NakedTransient
  + I StyleAndUpdate "window*" RaiseTransient
@@ -1486,15 +1653,28 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" SkipMapping
  + I StyleAndUpdate "window*" ShowMapping
  + I StyleAndUpdate "window*" ShowMapping
+ + I StyleAndUpdate "window*" ScatterWindowGroups
+ + I StyleAndUpdate "window*" KeepWindowGroupsOnDesk
  + I StyleAndUpdate "window*" UseDecor
  + I StyleAndUpdate "window*" UseDecor
- + I StyleAndUpdate "*indo*" UseStyle
- + I StyleAndUpdate "*indo*" UseStyle
+ + I StyleAndUpdate "*indo*" UseStyle window*
+ + I StyleAndUpdate "*indo*" UseStyle *
  + I StyleAndUpdate "*indo*" NoPPosition
  + I StyleAndUpdate "*indo*" NoPPosition
+# mapping test
  + I StyleAndUpdate "*indo*" UsePPosition
  + I StyleAndUpdate "*indo*" UsePPosition
+ + I StyleAndUpdate "*indo*" NoUSPosition
+# mapping test
+ + I StyleAndUpdate "*indo*" UseUSPosition
+ + I StyleAndUpdate "*indo*" NoTransientPPosition
+# transient mapping test
+ + I StyleAndUpdate "*indo*" UseTransientPPosition
+ + I StyleAndUpdate "*indo*" NoTransientUSPosition
+# transient mapping test
+ + I StyleAndUpdate "*indo*" UseTransientUSPosition,
  + I StyleAndUpdate "window*" UseIconPosition
+# Map Eterm?
  + I StyleAndUpdate "window*" NoIconPosition
  + I StyleAndUpdate "*indo*" Lenience
  + I StyleAndUpdate "*indo*" Lenience
@@ -1521,10 +1701,89 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" GrabFocusOff
  + I StyleAndUpdate "window*" GrabFocusTransient
  + I StyleAndUpdate "window*" GrabFocusTransientOff
+
+ + I StyleAndUpdate "window*" FPFocusClickButtons
+ + I StyleAndUpdate "window*" FPFocusClickModifiers
+ + I StyleAndUpdate "window*" !FPSortWindowlistByFocus
+ + I StyleAndUpdate "window*" FPSortWindowlistByFocus
+ + I StyleAndUpdate "window*" FPClickRaisesFocused
+ + I StyleAndUpdate "window*" !FPClickRaisesFocused
+ + I StyleAndUpdate "window*" FPClickDecorRaisesFocused
+ + I StyleAndUpdate "window*" !FPClickDecorRaisesFocused
+ + I StyleAndUpdate "window*" FPClickIconRaisesFocused
+ + I StyleAndUpdate "window*" !FPClickIconRaisesFocused
+ + I StyleAndUpdate "window*" !FPClickRaisesUnfocused
+ + I StyleAndUpdate "window*" FPClickRaisesUnfocused
+ + I StyleAndUpdate "window*" FPClickDecorRaisesUnfocused
+ + I StyleAndUpdate "window*" !FPClickDecorRaisesUnfocused
+ + I StyleAndUpdate "window*" FPClickIconRaisesUnfocused     
+ + I StyleAndUpdate "window*" !FPClickIconRaisesUnfocused
+ + I StyleAndUpdate "window*" FPClickToFocus  
+ + I StyleAndUpdate "window*" !FPClickToFocus
+ + I StyleAndUpdate "window*" FPClickDecorToFocus
+ + I StyleAndUpdate "window*" !FPClickDecorToFocus
+ + I StyleAndUpdate "window*" FPClickIconToFocus 
+ + I StyleAndUpdate "window*" !FPClickIconToFocus
+ + I StyleAndUpdate "window*" !FPEnterToFocus 
+ + I StyleAndUpdate "window*" FPEnterToFocus
+ + I StyleAndUpdate "window*" !FPLeaveToUnfocus 
+ + I StyleAndUpdate "window*" FPLeaveToUnfocus
+ + I StyleAndUpdate "window*" !FPFocusByProgram
+ + I StyleAndUpdate "window*" FPFocusByProgram
+ + I StyleAndUpdate "window*" !FPFocusByFunction 
+ + I StyleAndUpdate "window*" FPFocusByFunction
+ + I StyleAndUpdate "window*" FPFocusByFunctionWarpPointer 
+ + I StyleAndUpdate "window*" !FPFocusByFunctionWarpPointer
+ + I StyleAndUpdate "window*" FPLenient  
+ + I StyleAndUpdate "window*" !FPLenient
+ + I StyleAndUpdate "window*" !FPPassFocusClick
+ + I StyleAndUpdate "window*" FPPassFocusClick
+ + I StyleAndUpdate "window*" !FPPassRaiseClick 
+ + I StyleAndUpdate "window*" FPPassRaiseClick
+ + I StyleAndUpdate "window*" FPIgnoreFocusClickMotion  
+ + I StyleAndUpdate "window*" !FPIgnoreFocusClickMotion
+ + I StyleAndUpdate "window*" FPIgnoreRaiseClickMotion 
+ + I StyleAndUpdate "window*" !FPIgnoreRaiseClickMotion
+ + I StyleAndUpdate "window*" !FPAllowFocusClickFunction  
+ + I StyleAndUpdate "window*" FPAllowFocusClickFunction
+ + I StyleAndUpdate "window*" !FPAllowRaiseClickFunction    
+ + I StyleAndUpdate "window*" FPAllowRaiseClickFunction
+ + I StyleAndUpdate "window*" FPGrabFocus   
+ + I StyleAndUpdate "window*" !FPGrabFocus
+ + I StyleAndUpdate "window*" !FPGrabFocusTransient
+ + I StyleAndUpdate "window*" FPGrabFocusTransient
+ + I StyleAndUpdate "window*" FPOverrideGrabFocus 
+ + I StyleAndUpdate "window*" !FPOverrideGrabFocus
+ + I StyleAndUpdate "window*" FPReleaseFocus 
+ + I StyleAndUpdate "window*" !FPReleaseFocus
+ + I StyleAndUpdate "window*" !FPReleaseFocusTransient 
+ + I StyleAndUpdate "window*" FPReleaseFocusTransient
+ + I StyleAndUpdate "window*" FPOverrideReleaseFocus  
+ + I StyleAndUpdate "window*" !FPOverrideReleaseFocus
+ + I StyleAndUpdate "window*" StartsLowered
+ + I StyleAndUpdate "window*" StartsRaised
  + I StyleAndUpdate "window*" IgnoreRestack
  + I StyleAndUpdate "window*" AllowRestack
  + I StyleAndUpdate "window*" FixedPosition
  + I StyleAndUpdate "window*" VariablePosition
+ + I StyleAndUpdate "window*" FixedUSPosition
+ + I StyleAndUpdate "window*" VariableUSPosition
+ + I StyleAndUpdate "window*" FixedPPosition
+ + I StyleAndUpdate "window*" VariablePPosition
+ + I StyleAndUpdate "window*" FixedSize
+ + I StyleAndUpdate "window*" VariableSize
+ + I StyleAndUpdate "window*" FixedUSSize
+ + I StyleAndUpdate "window*" VariableUSSize
+ + I StyleAndUpdate "window*" FixedPSize
+ + I StyleAndUpdate "window*" VariablePSize
+ + I StyleAndUpdate "window*" !Closable
+ + I StyleAndUpdate "window*" Closable
+ + I StyleAndUpdate "window*" !Iconifiable
+ + I StyleAndUpdate "window*" Iconifiable
+ + I StyleAndUpdate "window*" !Maximizable
+ + I StyleAndUpdate "window*" Maximizable
+ + I StyleAndUpdate "window*" !AllowMaximizeFixedSize
+ + I StyleAndUpdate "window*" AllowMaximizeFixedSize
  + I StyleAndUpdate "window*" IconOverride
  + I StyleAndUpdate "window*" NoIconOverride
  + I StyleAndUpdate "window*" NoActiveIconOverride
@@ -1535,12 +1794,16 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window3" MaxWindowSize 100 100
  + I StyleAndUpdate "window3" MaxWindowSize 0 0
  + I StyleAndUpdate "window3" MaxWindowSize
+ + I StyleAndUpdate "window*" IconifyWindowGroups
+ + I StyleAndUpdate "window*" IconifyWindowGroupsOff
  + I StyleAndUpdate "window*" ResizeOpaque
  + I StyleAndUpdate "window*" ResizeOutline
  + I StyleAndUpdate "window*" BackingStore
  + I StyleAndUpdate "window*" BackingStoreOff
+ + I StyleAndUpdate "window*" BackingStoreWindowDefault
  + I StyleAndUpdate "window*" Opacity
  + I StyleAndUpdate "window*" ParentalRelativity
+ + I StyleAndUpdate "window*" Opacity
  + I StyleAndUpdate "window*" SaveUnder
  + I StyleAndUpdate "window*" SaveUnderOff
  + I StyleAndUpdate "window*" WindowShadeShrinks
@@ -1548,6 +1811,28 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" WindowShadeSteps 0
  + I StyleAndUpdate "window*" WindowShadeSteps 2
  + I StyleAndUpdate "window*" WindowShadeSteps 2p
+ + I StyleAndUpdate "window*" WindowShadeAlwaysLazy
+ + I StyleAndUpdate "window*" WindowShadeBusy
+ + I StyleAndUpdate "window*" WindowShadeLazy
+ + I StyleAndUpdate "window*" EWMHDonateIcon
+ + I StyleAndUpdate "window*" EWMHDontDonateIcon
+ + I StyleAndUpdate "window*" EWMHDonateMiniIcon
+ + I StyleAndUpdate "window*" EWMHDontDonateMiniIcon
+ + I StyleAndUpdate "window*" EWMHMiniIconOverride
+ + I StyleAndUpdate "window*" EWMHNoMiniIconOverride
+ + I StyleAndUpdate "window*" EWMHUseStackingOrderHints
+ + I StyleAndUpdate "window*" EWMHIgnoreStackingOrderHints
+ + I StyleAndUpdate "window*" EWMHIgnoreStateHints
+ + I StyleAndUpdate "window*" EWMHUseStateHints
+ + I StyleAndUpdate "window*" EWMHIgnoreStrutHints
+ + I StyleAndUpdate "window*" EWMHUseStrutHints
+ + I StyleAndUpdate "window*" EWMHMaximizeIgnoreWorkingArea
+ + I StyleAndUpdate "window*" EWMHMaximizeUseWorkingArea
+ + I StyleAndUpdate "window*" EWMHMaximizeUseDynamicWorkingArea
+ + I StyleAndUpdate "window*" EWMHPlacementIgnoreWorkingArea
+ + I StyleAndUpdate "window*" EWMHPlacementUseWorkingArea
+ + I StyleAndUpdate "window*" EWMHPlacementUseDynamicWorkingArea
+ + I PrintInfo style 36
 
 AddTest "Test DestroyStyle" DestroyStyle
 AddToFunc DestroyStyle-Func
@@ -1560,6 +1845,16 @@ AddToFunc DestroyStyle-Func
 # The man page says not to do this, to-do-2.4 #130
  + I DestroyStyle *
 
+DestroyFunc AddButtonStyleAndUpdate
+AddToFunc AddButtonStyleAndUpdate I Echo AddButtonStyle $*
++ I AddButtonStyle $*
++ I UpdateStyles
+
+DestroyFunc AddTitleStyleAndUpdate
+AddToFunc AddTitleStyleAndUpdate I Echo AddTitleStyle $*
++ I AddTitleStyle $*
++ I UpdateStyles
+
 AddTest "Test AddButtonStyleMisc" AddButtonStyleMisc-Func
 AddToFunc AddButtonStyleMisc-Func
 # Need to add a buttonstyle command to get the buttons
@@ -1567,167 +1862,167 @@ AddToFunc AddButtonStyleMisc-Func
 # Look at putting all these styles in a decor as shown in the man page.
 # The "Toggled" feature needs to be tested, need shaded/maximized/sticky
 # windows with corresponding mwmdecors set.
- + I AddButtonStyle
- + I AddButtonStyle Reset
- + I AddButtonStyle All -- raisED
- + I AddButtonStyle All -- SUNk
- + I AddButtonStyle Left -- flat
- + I AddButtonStyle Left -- flat
- + I AddButtonStyle Right -- !flat
- + I AddButtonStyle Left Activeup -- raised
- + I AddButtonStyle Left Activeup -- raised
- + I AddButtonStyle Left activeDOWN -- sunk
- + I AddButtonStyle Left inactive -- flat
- + I AddButtonStyle Left inactive -- flat
- + I AddButtonStyle Left Activeup -- sunk
- + I AddButtonStyle 1 simple
- + I AddButtonStyle 1 simple
- + I AddButtonStyle 1 default 3
- + I AddButtonStyle 1 default 3
- + I AddButtonStyle 1 solid blaCK
- + I AddButtonStyle 1 solid blaCK
- + I AddButtonStyle 1 simple
+ + I AddButtonStyleAndUpdate
+ + I AddButtonStyleAndUpdate Reset
+ + I AddButtonStyleAndUpdate All -- raisED
+ + I AddButtonStyleAndUpdate All -- SUNk
+ + I AddButtonStyleAndUpdate Left -- flat
+ + I AddButtonStyleAndUpdate Left -- flat
+ + I AddButtonStyleAndUpdate Right -- !flat
+ + I AddButtonStyleAndUpdate Left Activeup -- raised
+ + I AddButtonStyleAndUpdate Left Activeup -- raised
+ + I AddButtonStyleAndUpdate Left activeDOWN -- sunk
+ + I AddButtonStyleAndUpdate Left inactive -- flat
+ + I AddButtonStyleAndUpdate Left inactive -- flat
+ + I AddButtonStyleAndUpdate Left Activeup -- sunk
+ + I AddButtonStyleAndUpdate 1 simple
+ + I AddButtonStyleAndUpdate 1 simple
+ + I AddButtonStyleAndUpdate 1 default 3
+ + I AddButtonStyleAndUpdate 1 default 3
+ + I AddButtonStyleAndUpdate 1 solid blaCK
+ + I AddButtonStyleAndUpdate 1 solid blaCK
+ + I AddButtonStyleAndUpdate 1 simple
 
 AddTest "Test AddButtonStyleGradients" AddButtonStyleGradients-Func
 AddToFunc AddButtonStyleGradients-Func
- + I AddButtonStyle 2 hgradient 16 green red
- + I AddButtonStyle 2 hgradient 16 green red
- + I AddButtonStyle 2 hgradient 16 red blue
- + I AddButtonStyle 2 hgradient 32 red blue
- + I AddButtonStyle 2 hgradient 128 red blue
- + I AddButtonStyle 2 hgradient 2 red blue
- + I AddButtonStyle 2 vgradient 16 green red
- + I AddButtonStyle 2 vgradient 16 green red
- + I AddButtonStyle 2 vgradient 16 red blue
- + I AddButtonStyle 2 vgradient 32 red blue
- + I AddButtonStyle 2 vgradient 128 red blue
- + I AddButtonStyle 2 vgradient 2 red blue
- + I AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
- + I AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
- + I AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
- + I AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
- + I AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
- + I AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
- + I AddButtonStyle ToggledActiveDown VGradient 55
- + I AddButtonStyle ToggledActiveUp VGradient 55 b
- + I AddButtonStyle ToggledInactive VGradient 55 blue
- + I AddButtonStyle ActiveDown VGradient 55 blue
- + I AddButtonStyle ActiveUp VGradient 55 blue r
- + I AddButtonStyle Inactive VGradient 55 blue red
- + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green
- + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green 55 red
- + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green 55 red 21
- + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green 55 red 21 yellow
- + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green 55 red 21 yellow 25
- + I AddButtonStyle ActiveDown VGradient 20 2 blue 45 green -10 red
+ + I AddButtonStyleAndUpdate 2 hgradient 16 green red
+ + I AddButtonStyleAndUpdate 2 hgradient 16 green red
+ + I AddButtonStyleAndUpdate 2 hgradient 16 red blue
+ + I AddButtonStyleAndUpdate 2 hgradient 32 red blue
+ + I AddButtonStyleAndUpdate 2 hgradient 128 red blue
+ + I AddButtonStyleAndUpdate 2 hgradient 2 red blue
+ + I AddButtonStyleAndUpdate 2 vgradient 16 green red
+ + I AddButtonStyleAndUpdate 2 vgradient 16 green red
+ + I AddButtonStyleAndUpdate 2 vgradient 16 red blue
+ + I AddButtonStyleAndUpdate 2 vgradient 32 red blue
+ + I AddButtonStyleAndUpdate 2 vgradient 128 red blue
+ + I AddButtonStyleAndUpdate 2 vgradient 2 red blue
+ + I AddButtonStyleAndUpdate 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddButtonStyleAndUpdate 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddButtonStyleAndUpdate 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I AddButtonStyleAndUpdate 3 VGradient 16 2 Red 20 Blue 80
+ + I AddButtonStyleAndUpdate 3 VGradient 128 2 Red 20 Blue 80
+ + I AddButtonStyleAndUpdate 3 VGradient 2 2 Red 20 Blue 80
+ + I AddButtonStyleAndUpdate 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddButtonStyleAndUpdate 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddButtonStyleAndUpdate 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I AddButtonStyleAndUpdate 3 hGradient 16 2 Red 20 Blue 80
+ + I AddButtonStyleAndUpdate 3 hGradient 128 2 Red 20 Blue 80
+ + I AddButtonStyleAndUpdate 3 hGradient 2 2 Red 20 Blue 80
+ + I AddButtonStyleAndUpdate ToggledActiveDown VGradient 55
+ + I AddButtonStyleAndUpdate ToggledActiveUp VGradient 55 b
+ + I AddButtonStyleAndUpdate ToggledInactive VGradient 55 blue
+ + I AddButtonStyleAndUpdate ActiveDown VGradient 55 blue
+ + I AddButtonStyleAndUpdate ActiveUp VGradient 55 blue r
+ + I AddButtonStyleAndUpdate Inactive VGradient 55 blue red
+ + I AddButtonStyleAndUpdate ActiveDown VGradient 20 3 blue 45 green
+ + I AddButtonStyleAndUpdate ActiveDown VGradient 20 3 blue 45 green 55 red
+ + I AddButtonStyleAndUpdate ActiveDown VGradient 20 3 blue 45 green 55 red 21
+ + I AddButtonStyleAndUpdate ActiveDown VGradient 20 3 blue 45 green 55 red 21 yellow
+ + I AddButtonStyleAndUpdate ActiveDown VGradient 20 3 blue 45 green 55 red 21 yellow 25
+ + I AddButtonStyleAndUpdate ActiveDown VGradient 20 2 blue 45 green -10 red
 
 AddTest "Test AddButtonStyleVectors" AddButtonStyleVectors-Func
 AddToFunc AddButtonStyleVectors-Func
- + I AddButtonStyle Reset
- + I AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
- + I AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
- + I AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I AddButtonStyle 1 5
- + I AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I AddButtonStyle Reset
+ + I AddButtonStyleAndUpdate Reset
+ + I AddButtonStyleAndUpdate 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I AddButtonStyleAndUpdate 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I AddButtonStyleAndUpdate 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ + I AddButtonStyleAndUpdate 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ + I AddButtonStyleAndUpdate 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I AddButtonStyleAndUpdate 1 5
+ + I AddButtonStyleAndUpdate 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I AddButtonStyleAndUpdate Reset
 
 AddTest "Test AddButtonStylePixmaps" AddButtonStylePixmaps-Func
 AddToFunc AddButtonStylePixmaps-Func
- + I AddButtonStyle 1 Pixmap test1.xpm
- + I AddButtonStyle 1 Pixmap test2.xpm
- + I AddButtonStyle 1 TiledPixmap test2.xpm
- + I AddButtonStyle 1 TiledPixmap test2.xpm
- + I AddButtonStyle 1 TiledPixmap test1.xpm
- + I AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
- + I AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
- + I AddButtonStyle 1 Inactive Pixmap test3.xpm
- + I AddButtonStyle 1 Inactive Pixmap test3.xpm
- + I AddButtonStyle 1 Inactive Pixmap
- + I AddButtonStyle 1 MiniIcons
- + I AddButtonStyle 1 miniicons
+ + I AddButtonStyleAndUpdate 1 Pixmap test1.xpm
+ + I AddButtonStyleAndUpdate 1 Pixmap test2.xpm
+ + I AddButtonStyleAndUpdate 1 TiledPixmap test2.xpm
+ + I AddButtonStyleAndUpdate 1 TiledPixmap test2.xpm
+ + I AddButtonStyleAndUpdate 1 TiledPixmap test1.xpm
+ + I AddButtonStyleAndUpdate 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ + I AddButtonStyleAndUpdate 1 Inactive Pixmap nonexistent.xpm
+ + I AddButtonStyleAndUpdate 1 Inactive Pixmap test3.xpm
+ + I AddButtonStyleAndUpdate 1 Inactive Pixmap test3.xpm
+ + I AddButtonStyleAndUpdate 1 Inactive Pixmap
+ + I AddButtonStyleAndUpdate 1 MiniIcons
+ + I AddButtonStyleAndUpdate 1 miniicons
 
 AddTest "Test AddTitleStyle" AddTitleStyle-Func
 AddToFunc AddTitleStyle-Func
 # Need a "toggled" test
 # The TitleStyle should first be cleared with "TitleStyle"
- + I AddTitleStyle
- + I AddTitleStyle -- raisED
- + I AddTitleStyle -- SUNk
- + I AddTitleStyle -- flat
- + I AddTitleStyle -- flat
- + I AddTitleStyle -- !flat
- + I AddTitleStyle Activeup -- raised
- + I AddTitleStyle Activeup -- raised
- + I AddTitleStyle activeDOWN -- sunk
- + I AddTitleStyle inactive -- flat
- + I AddTitleStyle inactive -- flat
- + I AddTitleStyle Activeup -- sunk
- + I AddTitleStyle simple
- + I AddTitleStyle simple
- + I AddTitleStyle default 3
- + I AddTitleStyle default 3
- + I AddTitleStyle solid blaCK
- + I AddTitleStyle solid blaCK
- + I AddTitleStyle simple
+ + I AddTitleStyleAndUpdate
+ + I AddTitleStyleAndUpdate -- raisED
+ + I AddTitleStyleAndUpdate -- SUNk
+ + I AddTitleStyleAndUpdate -- flat
+ + I AddTitleStyleAndUpdate -- flat
+ + I AddTitleStyleAndUpdate -- !flat
+ + I AddTitleStyleAndUpdate Activeup -- raised
+ + I AddTitleStyleAndUpdate Activeup -- raised
+ + I AddTitleStyleAndUpdate activeDOWN -- sunk
+ + I AddTitleStyleAndUpdate inactive -- flat
+ + I AddTitleStyleAndUpdate inactive -- flat
+ + I AddTitleStyleAndUpdate Activeup -- sunk
+ + I AddTitleStyleAndUpdate simple
+ + I AddTitleStyleAndUpdate simple
+ + I AddTitleStyleAndUpdate default 3
+ + I AddTitleStyleAndUpdate default 3
+ + I AddTitleStyleAndUpdate solid blaCK
+ + I AddTitleStyleAndUpdate solid blaCK
+ + I AddTitleStyleAndUpdate simple
 
 AddTest "Test AddTitleStyleGradients" AddTitleStyleGradients-Func
 AddToFunc AddTitleStyleGradients-Func
- + I AddTitleStyle hgradient 16 green red
- + I AddTitleStyle hgradient 16 green red
- + I AddTitleStyle hgradient 16 red blue
- + I AddTitleStyle hgradient 32 red blue
- + I AddTitleStyle hgradient 128 red blue
- + I AddTitleStyle hgradient 2 red blue
- + I AddTitleStyle vgradient 16 green red
- + I AddTitleStyle vgradient 16 green red
- + I AddTitleStyle vgradient 16 red blue
- + I AddTitleStyle vgradient 32 red blue
- + I AddTitleStyle vgradient 128 red blue
- + I AddTitleStyle vgradient 2 red blue
- + I AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I AddTitleStyle VGradient 16 2 Red 20 Blue 80
- + I AddTitleStyle VGradient 128 2 Red 20 Blue 80
- + I AddTitleStyle VGradient 2 2 Red 20 Blue 80
- + I AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I AddTitleStyle hGradient 16 2 Red 20 Blue 80
- + I AddTitleStyle hGradient 128 2 Red 20 Blue 80
- + I AddTitleStyle hGradient 2 2 Red 20 Blue 80
+ + I AddTitleStyleAndUpdate hgradient 16 green red
+ + I AddTitleStyleAndUpdate hgradient 16 green red
+ + I AddTitleStyleAndUpdate hgradient 16 red blue
+ + I AddTitleStyleAndUpdate hgradient 32 red blue
+ + I AddTitleStyleAndUpdate hgradient 128 red blue
+ + I AddTitleStyleAndUpdate hgradient 2 red blue
+ + I AddTitleStyleAndUpdate vgradient 16 green red
+ + I AddTitleStyleAndUpdate vgradient 16 green red
+ + I AddTitleStyleAndUpdate vgradient 16 red blue
+ + I AddTitleStyleAndUpdate vgradient 32 red blue
+ + I AddTitleStyleAndUpdate vgradient 128 red blue
+ + I AddTitleStyleAndUpdate vgradient 2 red blue
+ + I AddTitleStyleAndUpdate VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddTitleStyleAndUpdate VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddTitleStyleAndUpdate VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I AddTitleStyleAndUpdate VGradient 16 2 Red 20 Blue 80
+ + I AddTitleStyleAndUpdate VGradient 128 2 Red 20 Blue 80
+ + I AddTitleStyleAndUpdate VGradient 2 2 Red 20 Blue 80
+ + I AddTitleStyleAndUpdate hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddTitleStyleAndUpdate hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddTitleStyleAndUpdate hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I AddTitleStyleAndUpdate hGradient 16 2 Red 20 Blue 80
+ + I AddTitleStyleAndUpdate hGradient 128 2 Red 20 Blue 80
+ + I AddTitleStyleAndUpdate hGradient 2 2 Red 20 Blue 80
 
 AddTest "Test AddTitleStyleVectorButtons" AddTitleStyleVectorButtons-Func
 AddToFunc AddTitleStyleVectorButtons-Func
- + I AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
- + I AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
- + I AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I AddTitleStyleAndUpdate Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I AddTitleStyleAndUpdate Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I AddTitleStyleAndUpdate 4 50x35@1 65x65@0 35x65@0 50x35@1
+ + I AddTitleStyleAndUpdate 4 50x65@1 35x35@1 65x35@1 50x65@0
+ + I AddTitleStyleAndUpdate 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I AddTitleStyleAndUpdate 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
 
 AddTest "Test AddTitleStylePixmaps" AddTitleStylePixmaps-Func
 AddToFunc AddTitleStylePixmaps-Func
- + I AddTitleStyle Pixmap test1.xpm
- + I AddTitleStyle Pixmap test2.xpm
- + I AddTitleStyle TiledPixmap test2.xpm
- + I AddTitleStyle TiledPixmap test2.xpm
- + I AddTitleStyle TiledPixmap test1.xpm
- + I AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
- + I AddTitleStyle Inactive Pixmap nonexistent.xpm
- + I AddTitleStyle Inactive Pixmap test3.xpm
- + I AddTitleStyle Inactive Pixmap test3.xpm
- + I AddTitleStyle Inactive Pixmap
- + I AddTitleStyle MiniIcons
- + I AddTitleStyle miniicons
+ + I AddTitleStyleAndUpdate Pixmap test1.xpm
+ + I AddTitleStyleAndUpdate Pixmap test2.xpm
+ + I AddTitleStyleAndUpdate TiledPixmap test2.xpm
+ + I AddTitleStyleAndUpdate TiledPixmap test2.xpm
+ + I AddTitleStyleAndUpdate TiledPixmap test1.xpm
+ + I AddTitleStyleAndUpdate ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ + I AddTitleStyleAndUpdate Inactive Pixmap nonexistent.xpm
+ + I AddTitleStyleAndUpdate Inactive Pixmap test3.xpm
+ + I AddTitleStyleAndUpdate Inactive Pixmap test3.xpm
+ + I AddTitleStyleAndUpdate Inactive Pixmap
+ + I AddTitleStyleAndUpdate MiniIcons
+ + I AddTitleStyleAndUpdate miniicons
 
 AddTest "Test AddToDecor" AddToDecor-Func
 AddToFunc AddToDecor-Func
@@ -1756,25 +2051,40 @@ AddToFunc AddToDecor-Func
  + I AddToDecor foo TitleStyle -- flat
  + I AddToDecor foo BorderStyle -- HiddenHandles NoInset
 
+DestroyFunc ButtonStyleAndUpdate
+AddToFunc ButtonStyleAndUpdate I Echo ButtonStyle $*
++ I ButtonStyle $*
++ I UpdateStyles
+
+DestroyFunc TitleStyleAndUpdate
+AddToFunc TitleStyleAndUpdate I Echo TitleStyle $*
++ I TitleStyle $*
++ I UpdateStyles
+
+DestroyFunc BorderStyleAndUpdate
+AddToFunc BorderStyleAndUpdate I Echo BorderStyle $*
++ I BorderStyle $*
++ I UpdateStyles
+
 AddTest "Test BorderStyle" BorderStyle-Func
 AddToFunc BorderStyle-Func
 # Need a test with args in parens
 # Need a ! (negated) test
 # Need a raised/sunk/flat test
- + I BorderStyle
- + I BorderStyle -- HiddenHandles
- + I BorderStyle Active -- !HiddenHandles
- + I BorderStyle Active -- !HiddenHandles
+ + I BorderStyleAndUpdate
+ + I BorderStyleAndUpdate -- HiddenHandles
+ + I BorderStyleAndUpdate Active -- !HiddenHandles
+ + I BorderStyleAndUpdate Active -- !HiddenHandles
 # Clear all states
- + I BorderStyle Simple
+ + I BorderStyleAndUpdate Simple
 # Clear Active state
- + I BorderStyle Active Simple
- + I BorderStyle Inactive -- HiddenHandles NoInset
+ + I BorderStyleAndUpdate Active Simple
+ + I BorderStyleAndUpdate Inactive -- HiddenHandles NoInset
 # Clear NoInset flag
- + I BorderStyle Inactive -- !NoInset
- + I BorderStyle Active TiledPixmap test1.xpm
- + I BorderStyle Inactive TiledPixmap test2.xpm
- + I BorderStyle Active -- HiddenHandles NoInset
+ + I BorderStyleAndUpdate Inactive -- !NoInset
+ + I BorderStyleAndUpdate Active TiledPixmap test1.xpm
+ + I BorderStyleAndUpdate Inactive TiledPixmap test2.xpm
+ + I BorderStyleAndUpdate Active -- HiddenHandles NoInset
 
 AddTest "Test ButtonState" ButtonState-Func
 AddToFunc ButtonState-Func
@@ -1786,90 +2096,90 @@ AddToFunc ButtonState-Func
 # Note to self, resume here, check these to the man page. dje
 AddTest "Test ButtonStyle" ButtonStyle-Func
 AddToFunc ButtonStyle-Func
- + I ButtonStyle
- + I ButtonStyle All -- UseBorderStyle
- + I ButtonStyle All -- UseTitleStyle
- + I ButtonStyle Reset
- + I ButtonStyle All -- raisED
- + I ButtonStyle All -- SUNk
- + I ButtonStyle Left -- flat
- + I ButtonStyle Left -- flat
- + I ButtonStyle Right -- !flat
- + I ButtonStyle Left Activeup -- raised
- + I ButtonStyle Left Activeup -- raised
- + I ButtonStyle Left activeDOWN -- sunk
- + I ButtonStyle Left inactive -- flat
- + I ButtonStyle Left inactive -- flat
- + I ButtonStyle Left Activeup -- sunk
- + I ButtonStyle 1 simple
- + I ButtonStyle 1 simple
- + I ButtonStyle 1 default 3
- + I ButtonStyle 1 default 3
- + I ButtonStyle 1 solid blaCK
- + I ButtonStyle 1 solid blaCK
- + I ButtonStyle 1 simple
+ + I ButtonStyleAndUpdate
+ + I ButtonStyleAndUpdate All -- UseBorderStyle
+ + I ButtonStyleAndUpdate All -- UseTitleStyle
+ + I ButtonStyleAndUpdate Reset
+ + I ButtonStyleAndUpdate All -- raisED
+ + I ButtonStyleAndUpdate All -- SUNk
+ + I ButtonStyleAndUpdate Left -- flat
+ + I ButtonStyleAndUpdate Left -- flat
+ + I ButtonStyleAndUpdate Right -- !flat
+ + I ButtonStyleAndUpdate Left Activeup -- raised
+ + I ButtonStyleAndUpdate Left Activeup -- raised
+ + I ButtonStyleAndUpdate Left activeDOWN -- sunk
+ + I ButtonStyleAndUpdate Left inactive -- flat
+ + I ButtonStyleAndUpdate Left inactive -- flat
+ + I ButtonStyleAndUpdate Left Activeup -- sunk
+ + I ButtonStyleAndUpdate 1 simple
+ + I ButtonStyleAndUpdate 1 simple
+ + I ButtonStyleAndUpdate 1 default 3
+ + I ButtonStyleAndUpdate 1 default 3
+ + I ButtonStyleAndUpdate 1 solid blaCK
+ + I ButtonStyleAndUpdate 1 solid blaCK
+ + I ButtonStyleAndUpdate 1 simple
 
 AddTest "Test ButtonStyleGradients" ButtonStyleGradients-Func
 AddToFunc ButtonStyleGradients-Func
- + I ButtonStyle 2 hgradient 16 green red
- + I ButtonStyle 2 hgradient 16 green red
- + I ButtonStyle 2 hgradient 16 red blue
- + I ButtonStyle 2 hgradient 32 red blue
- + I ButtonStyle 2 hgradient 128 red blue
- + I ButtonStyle 2 hgradient 2 red blue
- + I ButtonStyle 2 vgradient 16 green red
- + I ButtonStyle 2 vgradient 16 green red
- + I ButtonStyle 2 vgradient 16 red blue
- + I ButtonStyle 2 vgradient 32 red blue
- + I ButtonStyle 2 vgradient 128 red blue
- + I ButtonStyle 2 vgradient 2 red blue
- + I ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
- + I ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
- + I ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
- + I ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
- + I ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
- + I ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+ + I ButtonStyleAndUpdate 2 hgradient 16 green red
+ + I ButtonStyleAndUpdate 2 hgradient 16 green red
+ + I ButtonStyleAndUpdate 2 hgradient 16 red blue
+ + I ButtonStyleAndUpdate 2 hgradient 32 red blue
+ + I ButtonStyleAndUpdate 2 hgradient 128 red blue
+ + I ButtonStyleAndUpdate 2 hgradient 2 red blue
+ + I ButtonStyleAndUpdate 2 vgradient 16 green red
+ + I ButtonStyleAndUpdate 2 vgradient 16 green red
+ + I ButtonStyleAndUpdate 2 vgradient 16 red blue
+ + I ButtonStyleAndUpdate 2 vgradient 32 red blue
+ + I ButtonStyleAndUpdate 2 vgradient 128 red blue
+ + I ButtonStyleAndUpdate 2 vgradient 2 red blue
+ + I ButtonStyleAndUpdate 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I ButtonStyleAndUpdate 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I ButtonStyleAndUpdate 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I ButtonStyleAndUpdate 3 VGradient 16 2 Red 20 Blue 80
+ + I ButtonStyleAndUpdate 3 VGradient 128 2 Red 20 Blue 80
+ + I ButtonStyleAndUpdate 3 VGradient 2 2 Red 20 Blue 80
+ + I ButtonStyleAndUpdate 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I ButtonStyleAndUpdate 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I ButtonStyleAndUpdate 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I ButtonStyleAndUpdate 3 hGradient 16 2 Red 20 Blue 80
+ + I ButtonStyleAndUpdate 3 hGradient 128 2 Red 20 Blue 80
+ + I ButtonStyleAndUpdate 3 hGradient 2 2 Red 20 Blue 80
 
 AddTest "Test ButtonStyleVectors" ButtonStyleVectors-Func
 AddToFunc ButtonStyleVectors-Func
- + I ButtonStyle Reset
- + I ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
- + I ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
- + I ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I ButtonStyle 1 5
- + I ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I ButtonStyle Reset
+ + I ButtonStyleAndUpdate Reset
+ + I ButtonStyleAndUpdate 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I ButtonStyleAndUpdate 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I ButtonStyleAndUpdate 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ + I ButtonStyleAndUpdate 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ + I ButtonStyleAndUpdate 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I ButtonStyleAndUpdate 1 5
+ + I ButtonStyleAndUpdate 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I ButtonStyleAndUpdate Reset
 
 AddTest "Test ButtonStylePixmaps" ButtonStylePixmaps-Func
 AddToFunc ButtonStylePixmaps-Func
- + I ButtonStyle 1 Pixmap test1.xpm
- + I ButtonStyle 1 Pixmap test2.xpm
- + I ButtonStyle 1 TiledPixmap test2.xpm
- + I ButtonStyle 1 TiledPixmap test2.xpm
- + I ButtonStyle 1 TiledPixmap test1.xpm
- + I ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
- + I ButtonStyle 1 Inactive Pixmap nonexistent.xpm
- + I ButtonStyle 1 Inactive Pixmap test3.xpm
- + I ButtonStyle 1 Inactive Pixmap test3.xpm
- + I ButtonStyle 1 Inactive Pixmap
- + I ButtonStyle 1 MiniIcons
- + I ButtonStyle 1 miniicons
+ + I ButtonStyleAndUpdate 1 Pixmap test1.xpm
+ + I ButtonStyleAndUpdate 1 Pixmap test2.xpm
+ + I ButtonStyleAndUpdate 1 TiledPixmap test2.xpm
+ + I ButtonStyleAndUpdate 1 TiledPixmap test2.xpm
+ + I ButtonStyleAndUpdate 1 TiledPixmap test1.xpm
+ + I ButtonStyleAndUpdate 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ + I ButtonStyleAndUpdate 1 Inactive Pixmap nonexistent.xpm
+ + I ButtonStyleAndUpdate 1 Inactive Pixmap test3.xpm
+ + I ButtonStyleAndUpdate 1 Inactive Pixmap test3.xpm
+ + I ButtonStyleAndUpdate 1 Inactive Pixmap
+ + I ButtonStyleAndUpdate 1 MiniIcons
+ + I ButtonStyleAndUpdate 1 miniicons
 
 AddTest "Test ButtonStyleDash" ButtonStyleDash-Func
 AddToFunc ButtonStyleDash-Func
- + I ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
- + I ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
- + I ButtonStyle 1 - MWMDecorMax
- + I ButtonStyle 1 - MWMDecorMin
- + I ButtonStyle 1 -
+ + I ButtonStyleAndUpdate 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ + I ButtonStyleAndUpdate 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ + I ButtonStyleAndUpdate 1 - MWMDecorMax
+ + I ButtonStyleAndUpdate 1 - MWMDecorMin
+ + I ButtonStyleAndUpdate 1 -
 
 # ChangeDecor, DestroyDecor, UpdateDecor
 AddTest "Test DecorCommands" DecorCommands-Func
@@ -1904,87 +2214,87 @@ AddToFunc DecorCommands-Func
 
 AddTest "Test TitleStyle_justify" TitleStyle_justify-Func
 AddToFunc TitleStyle_justify-Func
- + I TitleStyle
- + I TitleStyle LEFtJusTiFied
- + I TitleStyle LEFtJusTiFied
- + I TitleStyle   centered
- + I TitleStyle		rightjustified
- + I TitleStyle heIGht 20
- + I TitleStyle heIGht 20
- + I TitleStyle leftjustified height 37
- + I TitleStyle leftjustified height 24
+ + I TitleStyleAndUpdate
+ + I TitleStyleAndUpdate LEFtJusTiFied
+ + I TitleStyleAndUpdate LEFtJusTiFied
+ + I TitleStyleAndUpdate   centered
+ + I TitleStyleAndUpdate		rightjustified
+ + I TitleStyleAndUpdate heIGht 20
+ + I TitleStyleAndUpdate heIGht 20
+ + I TitleStyleAndUpdate leftjustified height 37
+ + I TitleStyleAndUpdate leftjustified height 24
 
 AddTest "Test TitleStyles" TitleStyles-Func
 AddToFunc TitleStyles-Func
- + I TitleStyle -- raisED
- + I TitleStyle -- SUNk
- + I TitleStyle -- flat
- + I TitleStyle -- flat
- + I TitleStyle -- !flat
- + I TitleStyle Activeup -- raised
- + I TitleStyle Activeup -- raised
- + I TitleStyle activeDOWN -- sunk
- + I TitleStyle inactive -- flat
- + I TitleStyle inactive -- flat
- + I TitleStyle Activeup -- sunk
- + I TitleStyle simple
- + I TitleStyle simple
- + I TitleStyle default 3
- + I TitleStyle default 3
- + I TitleStyle solid blaCK
- + I TitleStyle solid blaCK
- + I TitleStyle simple
+ + I TitleStyleAndUpdate -- raisED
+ + I TitleStyleAndUpdate -- SUNk
+ + I TitleStyleAndUpdate -- flat
+ + I TitleStyleAndUpdate -- flat
+ + I TitleStyleAndUpdate -- !flat
+ + I TitleStyleAndUpdate Activeup -- raised
+ + I TitleStyleAndUpdate Activeup -- raised
+ + I TitleStyleAndUpdate activeDOWN -- sunk
+ + I TitleStyleAndUpdate inactive -- flat
+ + I TitleStyleAndUpdate inactive -- flat
+ + I TitleStyleAndUpdate Activeup -- sunk
+ + I TitleStyleAndUpdate simple
+ + I TitleStyleAndUpdate simple
+ + I TitleStyleAndUpdate default 3
+ + I TitleStyleAndUpdate default 3
+ + I TitleStyleAndUpdate solid blaCK
+ + I TitleStyleAndUpdate solid blaCK
+ + I TitleStyleAndUpdate simple
 
 AddTest "Test gradients" gradients-Func
 AddToFunc gradients-Func
- + I TitleStyle hgradient 16 green red
- + I TitleStyle hgradient 16 green red
- + I TitleStyle hgradient 16 red blue
- + I TitleStyle hgradient 32 red blue
- + I TitleStyle hgradient 128 red blue
- + I TitleStyle hgradient 2 red blue
- + I TitleStyle vgradient 16 green red
- + I TitleStyle vgradient 16 green red
- + I TitleStyle vgradient 16 red blue
- + I TitleStyle vgradient 32 red blue
- + I TitleStyle vgradient 128 red blue
- + I TitleStyle vgradient 2 red blue
- + I TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I TitleStyle VGradient 16 2 Red 20 Blue 80
- + I TitleStyle VGradient 128 2 Red 20 Blue 80
- + I TitleStyle VGradient 2 2 Red 20 Blue 80
- + I TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I TitleStyle hGradient 16 2 Red 20 Blue 80
- + I TitleStyle hGradient 128 2 Red 20 Blue 80
- + I TitleStyle hGradient 2 2 Red 20 Blue 80
+ + I TitleStyleAndUpdate hgradient 16 green red
+ + I TitleStyleAndUpdate hgradient 16 green red
+ + I TitleStyleAndUpdate hgradient 16 red blue
+ + I TitleStyleAndUpdate hgradient 32 red blue
+ + I TitleStyleAndUpdate hgradient 128 red blue
+ + I TitleStyleAndUpdate hgradient 2 red blue
+ + I TitleStyleAndUpdate vgradient 16 green red
+ + I TitleStyleAndUpdate vgradient 16 green red
+ + I TitleStyleAndUpdate vgradient 16 red blue
+ + I TitleStyleAndUpdate vgradient 32 red blue
+ + I TitleStyleAndUpdate vgradient 128 red blue
+ + I TitleStyleAndUpdate vgradient 2 red blue
+ + I TitleStyleAndUpdate VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I TitleStyleAndUpdate VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I TitleStyleAndUpdate VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I TitleStyleAndUpdate VGradient 16 2 Red 20 Blue 80
+ + I TitleStyleAndUpdate VGradient 128 2 Red 20 Blue 80
+ + I TitleStyleAndUpdate VGradient 2 2 Red 20 Blue 80
+ + I TitleStyleAndUpdate hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I TitleStyleAndUpdate hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I TitleStyleAndUpdate hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I TitleStyleAndUpdate hGradient 16 2 Red 20 Blue 80
+ + I TitleStyleAndUpdate hGradient 128 2 Red 20 Blue 80
+ + I TitleStyleAndUpdate hGradient 2 2 Red 20 Blue 80
 
 AddTest "Test vector_buttons" vector_buttons-Func
 AddToFunc vector_buttons-Func
- + I TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
- + I TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
- + I TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I TitleStyleAndUpdate Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I TitleStyleAndUpdate Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I TitleStyleAndUpdate 4 50x35@1 65x65@0 35x65@0 50x35@1
+ + I TitleStyleAndUpdate 4 50x65@1 35x35@1 65x35@1 50x65@0
+ + I TitleStyleAndUpdate 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I TitleStyleAndUpdate 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
 
 AddTest "Test pixmaps" pixmaps-Func
 AddToFunc pixmaps-Func
- + I TitleStyle Pixmap test1.xpm
- + I TitleStyle Pixmap test2.xpm
- + I TitleStyle TiledPixmap test2.xpm
- + I TitleStyle TiledPixmap test2.xpm
- + I TitleStyle TiledPixmap test1.xpm
- + I TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
- + I TitleStyle Inactive Pixmap nonexistent.xpm
- + I TitleStyle Inactive Pixmap test3.xpm
- + I TitleStyle Inactive Pixmap test3.xpm
- + I TitleStyle Inactive Pixmap
- + I TitleStyle MiniIcons
- + I TitleStyle miniicons
+ + I TitleStyleAndUpdate Pixmap test1.xpm
+ + I TitleStyleAndUpdate Pixmap test2.xpm
+ + I TitleStyleAndUpdate TiledPixmap test2.xpm
+ + I TitleStyleAndUpdate TiledPixmap test2.xpm
+ + I TitleStyleAndUpdate TiledPixmap test1.xpm
+ + I TitleStyleAndUpdate ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ + I TitleStyleAndUpdate Inactive Pixmap nonexistent.xpm
+ + I TitleStyleAndUpdate Inactive Pixmap test3.xpm
+ + I TitleStyleAndUpdate Inactive Pixmap test3.xpm
+ + I TitleStyleAndUpdate Inactive Pixmap
+ + I TitleStyleAndUpdate MiniIcons
+ + I TitleStyleAndUpdate miniicons
 
 # UpdateDecor test is above in "DecorCommands".
 
@@ -2003,6 +2313,25 @@ AddToFunc pixmaps-Func
 #  + I Desk 0 0 5 7
 #  + I Desk 0 -11111 5 7
 #  + I Desk 0 0
+
+AddTest "Test DesktopName" DesktopName-Func
+AddToFunc DesktopName-Func
+ + I DesktopName 0 www
+ + I DesktopName 1 devel
+ + I DesktopName 2 Games
+ + I DesktopName 3 "éà %ûîïü"
+ + I DesktopName 0 www
+ + I DesktopName 1
+ + I DesktopName 2 Games
+ + I DesktopName 3 "éà %ûîïü"
+ + I DesktopName 10 www
+ + I DesktopName -10 sdhdh
+ + I DesktopName 2 Games
+ + I DesktopName 3 "éà %ûîïü"
+ + I DesktopName www
+ + I DesktopName
+ + I DesktopName 2 Games "éà %ûîïü"
+ + I DesktopName "éà %ûîïü"
 
 AddTest "Test DeskTopSize" DeskTopSize-Func
 AddToFunc DeskTopSize-Func
@@ -2046,10 +2375,94 @@ AddToFunc EdgeScroll-Func
  + I EdgeScroll 75 75
 
 # Need EdgeThickness tests
+AddTest "Test EdgeThickness" EdgeThickness-Func
+AddToFunc EdgeThickness-Func
++ I EdgeThickness
++ I EdgeThickness 0
++ I EdgeThickness 1
++ I EdgeThickness 2
++ I EdgeThickness
++ I EdgeThickness -12
++ I EdgeThickness jksdcnbjk nsddnckjdn kljsncsjknckljs
++ I EdgeThickness 36
++ I EdgeThickness
 
-# Need GotoDesk tests
+AddTest "Test EwmhBaseStruts" EwmhBaseStruts-Func
+AddToFunc EwmhBaseStruts-Func
++ I EwmhBaseStruts
++ I EwmhBaseStruts 25 30 40 10
++ I Next (window1) Maximize
++ I Next (window1) Maximize
++ I Next (window1) Maximize ewmhiwa
++ I Next (window1) Maximize ewmhiwa
++ I EwmhBaseStruts -10 -23 -12 -3
++ I EwmhBaseStruts 1 uu zz 10
++ I EwmhBaseStruts ;d,vnf,ndvdfnvndf,vfd:;fv:fkvfkvklfvnklfnv
++ I EwmhBaseStruts
+
+AddTest "Test EWMHNumberOfDesktops" EWMHNumberOfDesktops-Func
+AddToFunc EWMHNumberOfDesktops-Func
++ I EWMHNumberOfDesktops 4
++ I EWMHNumberOfDesktops 4 8
++ I EWMHNumberOfDesktops 8 1
++ I EWMHNumberOfDesktops
++ I EWMHNumberOfDesktops -1 -7
++ I EWMHNumberOfDesktops sdklcdksv,cdksn,vckdsv
++ I EWMHNumberOfDesktops 4 8
+
+AddTest "Test GotoDesk" GotoDesk-Func
+AddToFunc GotoDesk-Func
++ I GotoDesk 1
++ I GotoDesk 1
++ I GotoDesk prev
++ I GotoDesk 0
++ I GotoDesk -1
++ I GotoDesk 0 36
++ I GotoDesk 0 -28
++ I GotoDesk 0 0
++ I GotoDesk 0 2147483647
++ I GotoDesk 0 -2147483648
++ I GotoDesk 0 0
++ I GotoDesk 1 -8 8
++ I GotoDesk 26 -8 8
++ I GotoDesk -26 -8 8
++ I GotoDesk 0 4 -8 8
++ I GotoDesk 0 26 -8 8
++ I GotoDesk 0 -26 -8 8
++ I GotoDesk 0 0
+#
++ I GotoDesk 0 2147483649
++ I GotoDesk 0 -2147483650
++ I GotoDesk 0 0
++ I GotoDesk 2147483649
++ I GotoDesk -2147483650
++ I GotoDesk 0 4 -8 8 5
++ I GotoDesk dgh
++ I GotoDesk
++ I GotoDesk 0 0
 
 # Need GotoDeskAndPage tests
+AddTest "Test GotoDeskAndPage" GotoDeskAndPage-Func
+AddToFunc GotoDeskAndPage-Func
++ I GotoDeskAndPage 1 0 0
++ I GotoDeskAndPage 1 1 36
++ I GotoDeskAndPage prev
++ I GotoDeskAndPage 0 0 0
++ I GotoDeskAndPage -1 0 0
++ I GotoDeskAndPage 2147483647 0 0
++ I GotoDeskAndPage -2147483648 0 1
++ I GotoDeskAndPage 0 0 0
+#
++ I GotoDeskAndPage 2147483649 0 0
++ I GotoDeskAndPage -2147483650 0 0
++ I GotoDeskAndPage 0 0 -3
++ I GotoDeskAndPage 6 0
++ I GotoDeskAndPage 6 0 7 8 9
++ I GotoDeskAndPage dgh
++ I GotoDeskAndPage
++ I GotoDeskAndPage dgh df df
++ I GotoDeskAndPage a b c d e
++ I GotoDeskAndPage 0 0 0
 
 AddTest "Test GotoPage" GotoPage-Func
 AddToFunc GotoPage-Func
@@ -2071,6 +2484,23 @@ AddToFunc Scroll-Func
  + I Scroll -0 +0
  + I Scroll -50p -50p
  + I Scroll -1000 -1000
+
+# Should update this with an Xinerama setup
+AddTest "Test Xinerama" Xinerama-Func
+AddToFunc Xinerama-Func
+ + I XineramaPrimaryScreen 2
+ + I Xinerama on
+ + I Xinerama off
+ + I XineramaSlsSize 2x1
+ + I XineramaSls On
+ + I XineramaPrimaryScreen 1
+ + I Xinerama On
+ + I XineramaSlsScreens 3 512x768+0+0 512x300+512+0 512 300 512 468
+ + I XineramaSls On
+ + I XineramaPrimaryScreen 1
+ + I Xinerama On
+ + I Xinerama off
+ + I XineramaSls On
 
 # Need to add more "action" tests, actions are I!M|C|H|D
 AddTest "Test AddToFunc_DestroyFunc" AddToFunc_DestroyFunc-Func
@@ -2208,6 +2638,19 @@ AddToFunc UnsetEnv-Func
 
 # Conditional command "All" tested elsewhere.
 
+# FIXME: Any
+
+# FIXME: Break
+
+# CondCase Cond tested with the conditional cmds
+
+DestroyFunc CurrentEchoFunc
+AddToFunc CurrentEchoFunc
++ I Current ($*) Nop
++ I CondCase (Match) Echo Current ($*) Match
++ I CondCase (NoMatch) Echo Current ($*) NoMatch
++ I CondCase (Error) Echo Current ($*) Error
+
 # Need lots more conditions, (visible/iconic, etc.)
 AddTest "Test Current" Current-Func
 AddToFunc Current-Func
@@ -2216,8 +2659,206 @@ AddToFunc Current-Func
  + I current  ()
  + I Current   (*)   focus 97ö.,j1n, mp12l
  + I current		(*)		flipfocus
+ + I next (window6) FlipFocus
+# All One test
+ + I CurrentEchoFunc *
+ + I CurrentEchoFunc !*
+ + I CurrentEchoFunc window*
+ + I CurrentEchoFunc window6
+ + I CurrentEchoFunc !window*
+ + I CurrentEchoFunc !window6
+ + I CurrentEchoFunc AcceptsFocus
+ + I CurrentEchoFunc !AcceptsFocus
+ + I CurrentEchoFunc Focused
+ + I CurrentEchoFunc !Focused
+ + I CurrentEchoFunc HasPointer
+ + I CurrentEchoFunc !HasPointer
+ + I CurrentEchoFunc Iconic
+ + I CurrentEchoFunc !Iconic
+ + I CurrentEchoFunc Visible
+ + I CurrentEchoFunc !Visible
+ + I CurrentEchoFunc Raised
+ + I CurrentEchoFunc !Raised
+ + I CurrentEchoFunc Layer 4
+ + I CurrentEchoFunc Layer 6
+ + I CurrentEchoFunc Layer 2
+ + I CurrentEchoFunc Layer
+ + I CurrentEchoFunc Layer upgff
+ + I CurrentEchoFunc !Layer 4
+ + I CurrentEchoFunc !Layer 6
+ + I CurrentEchoFunc !Layer 2
+ + I CurrentEchoFunc !Layer
+ + I CurrentEchoFunc !Layer upgff
+ + I CurrentEchoFunc State 0
+ + I CurrentEchoFunc State 32
+ + I CurrentEchoFunc State
+ + I CurrentEchoFunc State -12
+ + I CurrentEchoFunc State 45
+ + I CurrentEchoFunc State bvbhvgh
+ + I CurrentEchoFunc !State 0
+ + I CurrentEchoFunc !State 32
+ + I CurrentEchoFunc !State
+ + I CurrentEchoFunc !State -12
+ + I CurrentEchoFunc !State 45
+ + I CurrentEchoFunc !State bvbhvgh
+ + I CurrentEchoFunc Sticky
+ + I CurrentEchoFunc !Sticky
+ + I CurrentEchoFunc FixedSize
+ + I CurrentEchoFunc !FixedSize
+ + I CurrentEchoFunc HasHandles
+ + I CurrentEchoFunc !HasHandles
+ + I CurrentEchoFunc Closable
+ + I CurrentEchoFunc !Closable
+ + I CurrentEchoFunc Iconifiable
+ + I CurrentEchoFunc !Iconifiable
+ + I CurrentEchoFunc Maximizable
+ + I CurrentEchoFunc !Maximizable
+ + I CurrentEchoFunc StickyAcrossPages
+ + I CurrentEchoFunc !StickyAcrossPages
+ + I CurrentEchoFunc StickyAcrossDesks
+ + I CurrentEchoFunc !StickyAcrossDesks
+ + I CurrentEchoFunc Maximized
+ + I CurrentEchoFunc !Maximized
+ + I CurrentEchoFunc Shaded
+ + I CurrentEchoFunc !Shaded
+ + I CurrentEchoFunc Transient
+ + I CurrentEchoFunc !Transient
+ + I CurrentEchoFunc PlacedByButton3
+ + I CurrentEchoFunc !PlacedByButton3
+ + I CurrentEchoFunc PlacedByFvwm
+ + I CurrentEchoFunc !PlacedByFvwm
+ + I CurrentEchoFunc CurrentDesk
+ + I CurrentEchoFunc !CurrentDesk
+ + I CurrentEchoFunc CurrentPage
+ + I CurrentEchoFunc !CurrentPage
+ + I CurrentEchoFunc CurrentScreen
+ + I CurrentEchoFunc !CurrentScreen
+ + I CurrentEchoFunc CurrentGlobalPage
+ + I CurrentEchoFunc !CurrentGlobalPage
+ + I CurrentEchoFunc CurrentPageAnyDesk
+ + I CurrentEchoFunc !CurrentPageAnyDesk
+ + I CurrentEchoFunc CurrentGlobalPageAnyDesk
+ + I CurrentEchoFunc !CurrentGlobalPageAnyDesk
+# All test
+ + I CurrentEchoFunc * \
+ !* \
+ window* \
+ window6 \
+ !window* \
+ !window6 \
+ AcceptsFocus \
+ !AcceptsFocus \
+ Focused \
+ !Focused \
+ HasPointer \
+ !HasPointer \
+ Iconic \
+ !Iconic \
+ Visible \
+ !Visible \
+ Raised \
+ !Raised \
+ Layer 4 \
+ Layer 6 \
+ Layer 2 \
+ !Layer 2\
+ !Layer 4 \
+ !Layer 6 \
+ State 0 \
+ State 32 \
+ !State 0 \
+ !State 32 \
+ !State 45 \
+ Sticky \
+ !Sticky \
+ FixedSize \
+ !FixedSize \
+ HasHandles \
+ !HasHandles \
+ Closable \
+ !Closable \
+ Iconifiable \
+ !Iconifiable \
+ Maximizable \
+ !Maximizable \
+ StickyAcrossPages \
+ !StickyAcrossPages \
+ StickyAcrossDesks \
+ !StickyAcrossDesks \
+ Maximized \
+ !Maximized \
+ Shaded \
+ !Shaded \
+ Transient \
+ !Transient \
+ PlacedByButton3 \
+ !PlacedByButton3 \
+ PlacedByFvwm \
+ !PlacedByFvwm \
+ CurrentDesk \
+ !CurrentDesk \
+ CurrentPage \
+ !CurrentPage \
+ CurrentScreen \
+ !CurrentScreen \
+ CurrentGlobalPage \
+ !CurrentGlobalPage \
+ CurrentPageAnyDesk \
+ !CurrentPageAnyDesk \
+ CurrentGlobalPageAnyDesk \
+ !CurrentGlobalPageAnyDesk
 
-# Need "Direction" test
+DestroyFunc DirectionEchoFunc
+AddToFunc DirectionEchoFunc
++ I Direction $* Nop
++ I CondCase (Match) Echo Direction ($*) Match
++ I CondCase (NoMatch) Echo Direction ($*) NoMatch
++ I Cond (Error) Echo Direction ($*) Error
+
+AddTest "Test Direction" Direction-Func
+AddToFunc Direction-Func
++ I DirectionEchoFunc North
++ I DirectionEchoFunc Northeast
++ I DirectionEchoFunc East
++ I DirectionEchoFunc Southeast
++ I DirectionEchoFunc South
++ I DirectionEchoFunc Southwest
++ I DirectionEchoFunc West
++ I DirectionEchoFunc Northwest
++ I DirectionEchoFunc Center
+#
++ I DirectionEchoFunc FromPointer North
++ I DirectionEchoFunc FromPointer Northeast
++ I DirectionEchoFunc FromPointer East
++ I DirectionEchoFunc FromPointer Southeast
++ I DirectionEchoFunc FromPointer South
++ I DirectionEchoFunc FromPointer Southwest
++ I DirectionEchoFunc FromPointer West
++ I DirectionEchoFunc FromPointer Northwest
++ I DirectionEchoFunc FromPointer Center
+#
++ I DirectionEchoFunc FromPointer North (*)
++ I DirectionEchoFunc FromPointer Northeast (!Sticky)
++ I DirectionEchoFunc FromPointer East (Sticky)
++ I DirectionEchoFunc FromPointer Southeast (Shaded)
++ I DirectionEchoFunc FromPointer South (!Shaded)
++ I DirectionEchoFunc FromPointer Southwest (Iconic)
++ I DirectionEchoFunc FromPointer West (!Iconic)
++ I DirectionEchoFunc FromPointer Northwest (!PlacedByFvwm)
++ I DirectionEchoFunc FromPointer Center (PlacedByFvwm)
+#
++ I DirectionEchoFunc aNort
++ I DirectionEchoFunc
++ I DirectionEchoFunc FromPoir East
++ I DirectionEchoFunc FromPointer gfcfgffg 
+
+
+DestroyFunc NextEchoFunc
+AddToFunc NextEchoFunc
++ I Next ($*) Nop
++ I CondCase (Match) Echo Next ($*) Match: $[w.name]
++ I CondCase (NoMatch) Echo Next ($*) NoMatch
++ I CondCase (Error) Echo Next ($*) Error
 
 # Need more conditions like Current, with exceptions, see man page.
 AddTest "Test Next" Next-Func
@@ -2227,6 +2868,26 @@ AddToFunc Next-Func
  + I Next  ()
  + I next   (*)   focus
  + I next		(*)		flipfocus
+ + I NextEchoFunc CirculateSkip
+ + I NextEchoFunc CirculateHit
+ + I NextEchoFunc !CirculateSkip
+ + I NextEchoFunc !CirculateHit
+ + I NextEchoFunc CirculateSkipIcon
+ + I NextEchoFunc CirculateHitIcon
+ + I NextEchoFunc !CirculateSkipIcon
+ + I NextEchoFunc !CirculateHitIcon
+ + I NextEchoFunc CirculateSkipShaded
+ + I NextEchoFunc CirculateHitShaded
+ + I NextEchoFunc !CirculateSkipShaded
+ + I NextEchoFunc !CirculateHitIconShaded
+ + I NextEchoFunc (sddsddsfd)
+
+DestroyFunc NoneEchoFunc
+AddToFunc NoneEchoFunc
++ I None ($*) Nop
++ I CondCase (Match) Echo None ($*) Match
++ I CondCase (NoMatch) Echo None ($*) NoMatch
++ I CondCase (Error) Echo None ($*) NoMatch
 
 # Needs more conditions like Current
 AddTest "Test None" None-Func
@@ -2236,8 +2897,183 @@ AddToFunc None-Func
  + I none  ()
  + I none   (*)   focus
  + I none		(*)		flipfocus olöiqwehj
+# All One test
+ + I NoneEchoFunc *
+ + I NoneEchoFunc !*
+ + I NoneEchoFunc window*
+ + I NoneEchoFunc window6
+ + I NoneEchoFunc !window*
+ + I NoneEchoFunc !window6
+ + I NoneEchoFunc AcceptsFocus
+ + I NoneEchoFunc !AcceptsFocus
+ + I NoneEchoFunc Focused
+ + I NoneEchoFunc !Focused
+ + I NoneEchoFunc HasPointer
+ + I NoneEchoFunc !HasPointer
+ + I NoneEchoFunc Iconic
+ + I NoneEchoFunc !Iconic
+ + I NoneEchoFunc Visible
+ + I NoneEchoFunc !Visible
+ + I NoneEchoFunc Raised
+ + I NoneEchoFunc !Raised
+ + I NoneEchoFunc Layer 4
+ + I NoneEchoFunc Layer 6
+ + I NoneEchoFunc Layer 2
+ + I NoneEchoFunc Layer
+ + I NoneEchoFunc Layer upgff
+ + I NoneEchoFunc !Layer 4
+ + I NoneEchoFunc !Layer 6
+ + I NoneEchoFunc !Layer 2
+ + I NoneEchoFunc !Layer
+ + I NoneEchoFunc !Layer upgff
+ + I NoneEchoFunc State 0
+ + I NoneEchoFunc State 32
+ + I NoneEchoFunc State
+ + I NoneEchoFunc State -12
+ + I NoneEchoFunc State 45
+ + I NoneEchoFunc State bvbhvgh
+ + I NoneEchoFunc !State 0
+ + I NoneEchoFunc !State 32
+ + I NoneEchoFunc !State
+ + I NoneEchoFunc !State -12
+ + I NoneEchoFunc !State 45
+ + I NoneEchoFunc !State bvbhvgh
+ + I NoneEchoFunc Sticky
+ + I NoneEchoFunc !Sticky
+ + I NoneEchoFunc FixedSize
+ + I NoneEchoFunc !FixedSize
+ + I NoneEchoFunc HasHandles
+ + I NoneEchoFunc !HasHandles
+ + I NoneEchoFunc Closable
+ + I NoneEchoFunc !Closable
+ + I NoneEchoFunc Iconifiable
+ + I NoneEchoFunc !Iconifiable
+ + I NoneEchoFunc Maximizable
+ + I NoneEchoFunc !Maximizable
+ + I NoneEchoFunc StickyAcrossPages
+ + I NoneEchoFunc !StickyAcrossPages
+ + I NoneEchoFunc StickyAcrossDesks
+ + I NoneEchoFunc !StickyAcrossDesks
+ + I NoneEchoFunc Maximized
+ + I NoneEchoFunc !Maximized
+ + I NoneEchoFunc Shaded
+ + I NoneEchoFunc !Shaded
+ + I NoneEchoFunc Transient
+ + I NoneEchoFunc !Transient
+ + I NoneEchoFunc PlacedByButton3
+ + I NoneEchoFunc !PlacedByButton3
+ + I NoneEchoFunc PlacedByFvwm
+ + I NoneEchoFunc !PlacedByFvwm
+ + I NoneEchoFunc CurrentDesk
+ + I NoneEchoFunc !CurrentDesk
+ + I NoneEchoFunc CurrentPage
+ + I NoneEchoFunc !CurrentPage
+ + I NoneEchoFunc CurrentScreen
+ + I NoneEchoFunc !CurrentScreen
+ + I NoneEchoFunc CurrentGlobalPage
+ + I NoneEchoFunc !CurrentGlobalPage
+ + I NoneEchoFunc CurrentPageAnyDesk
+ + I NoneEchoFunc !CurrentPageAnyDesk
+ + I NoneEchoFunc CurrentGlobalPageAnyDesk
+ + I NoneEchoFunc !CurrentGlobalPageAnyDesk
+ + I NoneEchoFunc CirculateSkip
+ + I NoneEchoFunc CirculateHit
+ + I NoneEchoFunc !CirculateSkip
+ + I NoneEchoFunc !CirculateHit
+ + I NoneEchoFunc CirculateSkipIcon
+ + I NoneEchoFunc CirculateHitIcon
+ + I NoneEchoFunc !CirculateSkipIcon
+ + I NoneEchoFunc !CirculateHitIcon
+ + I NoneEchoFunc CirculateSkipShaded
+ + I NoneEchoFunc CirculateHitShaded
+ + I NoneEchoFunc !CirculateSkipShaded
+ + I NoneEchoFunc !CirculateHitIconShaded
+ + I NoneEchoFunc sddsddsfd
+# All test (stupid!)
+ + I NoneEchoFunc * \
+ !* \
+ window* \
+ window6 \
+ !window* \
+ !window6 \
+ AcceptsFocus \
+ !AcceptsFocus \
+ Focused \
+ !Focused \
+ HasPointer \
+ !HasPointer \
+ Iconic \
+ !Iconic \
+ Visible \
+ !Visible \
+ Raised \
+ !Raised \
+ Layer 4 \
+ Layer 6 \
+ Layer 2 \
+ !Layer 2\
+ !Layer 4 \
+ !Layer 6 \
+ State 0 \
+ State 32 \
+ !State 0 \
+ !State 32 \
+ !State 45 \
+ Sticky \
+ !Sticky \
+ FixedSize \
+ !FixedSize \
+ HasHandles \
+ !HasHandles \
+ Closable \
+ !Closable \
+ Iconifiable \
+ !Iconifiable \
+ Maximizable \
+ !Maximizable \
+ StickyAcrossPages \
+ !StickyAcrossPages \
+ StickyAcrossDesks \
+ !StickyAcrossDesks \
+ Maximized \
+ !Maximized \
+ Shaded \
+ !Shaded \
+ Transient \
+ !Transient \
+ PlacedByButton3 \
+ !PlacedByButton3 \
+ PlacedByFvwm \
+ !PlacedByFvwm \
+ CurrentDesk \
+ !CurrentDesk \
+ CurrentPage \
+ !CurrentPage \
+ CurrentScreen \
+ !CurrentScreen \
+ CurrentGlobalPage \
+ !CurrentGlobalPage \
+ CurrentPageAnyDesk \
+ !CurrentPageAnyDesk \
+ CurrentGlobalPageAnyDesk \
+ !CurrentGlobalPageAnyDesk \
+ CirculateSkip \
+ CirculateHit \
+ !CirculateSkip \
+ !CirculateHit \
+ CirculateSkipIcon \
+ CirculateHitIcon \
+ !CirculateSkipIcon \
+ !CirculateHitIcon \
+ CirculateSkipShaded \
+ CirculateHitShaded \
+ !CirculateSkipShaded \
+ !CirculateHitIconShaded \
+ sddsddsfd
 
 # Need "Pick" tests
+
+# FIXME: PointerWindow
 
 AddTest "Test Prev" Prev-Func
 AddToFunc Prev-Func
@@ -2246,6 +3082,10 @@ AddToFunc Prev-Func
  + I prev  ()
  + I prev   (*)   focus
  + I prev		(*)		flipfocus
+
+# FIXME: ScanForWindow
+
+# FIXME: ThisWindow
 
 AddTest "Test WindowId" WindowId-Func
 AddToFunc WindowId-Func
@@ -2258,6 +3098,92 @@ AddToFunc WindowId-Func
  + I WindowID		0x00110011		nop
  + I WindowId root 1 WarpToWindow 50 50
  + I WindowId root WarpToWindow 0 0
+
+# FIXME: NoWindow
+
+AddTest "Test On" On-Func
+AddToFunc On-Func
++ I On (Version 2.5.*) Echo 2.5.x detected
++ I Cond (NoMatch) On (!Version 2.6.*) Echo Future version
++ I Cond (NoMatch) Echo 2.6.x is detected
++ I On (!Version 2.4.*) Echo Not runing 2.4.x
++ I On (Version) Nop
++ I Cond (Match) Echo (Version) -> match
++ I Cond (Match) Echo (Version) -> nomatch
++ I Cond (Match) Echo (Version) -> error
++ I On (!Init) Echo not at init
++ I On (!Start) Echo not at start
++ I On (!ReStart) Echo not at restart
++ I On (!quit) Echo not at quit
++ I On (!exit) Echo not at exit
++ I On (Init) Echo At init -- error
++ I Cond (NoMatch) Echo relly not at init
++ I On (Start) Echo At start -- error
++ I Cond (NoMatch) Echo relly not at start
++ I On (ReStart) Echo At restart -- error
++ I Cond (NoMatch) Echo relly not at restart
++ I On (Exit) Echo At exit -- error
++ I Cond (NoMatch) Echo relly not at exit
++ I On (Quit) Echo At quit -- error
++ I Cond (NoMatch) Echo relly not at quit
+#
++ I On (x xterm) Echo xterm is in path
++ I Cond (NoMatch) Echo xterm is not in path
++ I On (x plouf) Echo plouf is in path
++ I Cond (NoMatch) Echo plouf is not in path
++ I On (x $[HOME]/.fvwm) Echo $[HOME]/.fvwm is traversable
++ I On (!x $[HOME]/.uuuuuuuuuuu) Echo $[HOME]/.uuuuuuuuuu is not traversable
++ I On (x) Echo On (x) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (x) True error (Match)
++ I Cond (Error) Echo  On (x) gives error
++ I On (x          ) Echo On (x) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (x) True error (Match)
++ I Cond (Error) Echo  On (x) gives error
+#
++ I On (r /root) Echo Outch /root is readable
++ I On (!r $[HOME]) Echo Outch $[HOME] is not readable
++ I On (r) Echo On (r) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (r) True error (Match)
++ I Cond (Error) Echo  On (r) gives error
++ I On (r          ) Echo On (r) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (r) True error (Match)
++ I Cond (Error) Echo  On (r      ) gives error
+#
++ I On (w /root) Echo Outch /root is writable
++ I On (!w $[HOME]) Echo Outch $[HOME] is not writable
++ I On (w) Echo On (r) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (w) True error (Match)
++ I Cond (Error) Echo  On (w) gives error
++ I On (w          ) Echo On (w) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (w) True error (Match)
++ I Cond (Error) Echo  On (w         ) gives error
+#
++ I On (!f $[HOME]) Echo Outch $[HOME] is does not exist
++ I On (f $[HOME]/uuuuuuuuuu) Echo Outch $[HOME]/uuuuuuuuuuu exists
++ I On (f) Echo On (r) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (f) True error (Match)
++ I Cond (Error) Echo  On (f) gives error
++ I On (f          ) Echo On (f) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (f) True error (Match)
++ I Cond (Error) Echo  On (f         ) gives error
+#
++ I On (i test.png) Echo  test.png is in imagepath
++ I Cond (NoMatch) Echo  test.png is not in path
++ I Cond (Error) Echo On (i test.png) true error
++ I On (i plouf) Echo plouf is in imagepath
++ I Cond (NoMatch) Echo plouf is not in path
++ I On (i /tmp/test.png) Echo /tmp/test.png is in imagepath
++ I Cond (NoMatch) Echo  /tmp/test.png is not in imagepath -- true error?
++ I Cond (Error) Echo On (i /tmp/test.png) true error
++ I On (i /tmp/uuuu) Echo /tmp/uuuu is in imagepath
++ I Cond (NoMatch) Echo  /tmp/uuuu is not in imagepath
++ I Cond (Error) Echo On (i /tmp/uuuu) true error
++ I On (i) Echo On (i) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (i) True error (Match)
++ I Cond (Error) Echo  On (i) gives error
++ I On (i          ) Echo On (i) True error (NoMatch)
++ I Cond (NoMatch) Echo  On (i) True error (Match)
++ I Cond (Error) Echo  On (i) gives error
 
 AddTest "Test ModuleConfig" ModuleConfig-Func
 AddToFunc ModuleConfig-Func
@@ -2275,6 +3201,8 @@ AddToFunc ModuleConfig-Func
  + I *dummymodule2 qw 124
  + I *xFvwmIconBox: MaxIconSize 48x48
  + I *xFvwmPager: WindowBorderWidth 1
+ + I *xFvwmIconBox: Max*IconSize 48x48
+ + I *xFvwmPager: Windo:wBor:derWidth 1
 
 AddTest "Test DestroyModuleConfig" DestroyModuleConfig-Func
 AddToFunc DestroyModuleConfig-Func
@@ -2505,9 +3433,12 @@ DestroyFunc PurifyInit
 AddToFunc   PurifyInit
  + I ImagePath /tmp
  + I mouse 1 1 a close
+ + I mouse 1 2 a Maximize
  + I mouse 1 t a move
  + I mouse 2 t a lower
  + I mouse 3 t a raiselower
+ + I Exec xterm -geometry 10x5+0-0 -T window0 -n window0 -e sleep 1000
+ + I Wait window0
 # + I CreateWindows-Func
 # + I Menu TestMenu
 
@@ -2515,9 +3446,14 @@ AddToFunc   PurifyInit
 AddToFunc InitFunction
  + I ImagePath /tmp
  + I mouse 1 1 a close
+ + I mouse 1 2 a Maximize
+# + I mouse 1 3 a Stick
+# + I mouse 1 4 a WindowShade
  + I mouse 1 t a move
  + I mouse 2 t a lower
  + I mouse 3 t a raiselower
+ + I Exec xterm -geometry 10x5+0-0 -T window0 -n window0 -e sleep 1000
+ + I Wait window0
  + I Menu TestMenu
 # ... and bind it to a button
 Mouse 1 r a Menu TestMenu

@@ -4047,6 +4047,14 @@ used.
 .I verbose
 can be 1 or 2.
 
+.IR nls
+which prints information on the locale catalogs that fvwm used
+
+.IR style
+which prints information on fvwm styles.
+.I verbose
+can be 1.
+
 .TP
 .BI "Schedule " "delay_ms [command_id] command"
 The

@@ -1,3 +1,18 @@
+2003-05-22  olicha  <olivier.chapuis@free.fr>
+
+	* purify/install.purify:
+	* purify/test.png
+	Added a png icons
+
+	* purify/purify.fvwm2rc:
+	Added icons in menus. Use test.png in various place (need more).
+	Complete styles tests and map some window during styles test to
+	put the styles in action (need more work). Be more agressive
+	with the decoration cmd (TitleStyle -> TitleStyle + UpdateStyles ...).
+	Added DesktopName, EdgeThickness, EwmhBaseStruts, GotoDesk,
+	GotoDeskAndPage, Xinerama*, Cond, CondCase, On and Direction tests.
+	Iproved Current and None.
+
 2003-05-18  olicha  <olivier.chapuis@free.fr>
 
 	* purify/purify.fvwm2rc:

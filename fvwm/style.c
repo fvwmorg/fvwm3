@@ -4013,6 +4013,7 @@ void simplify_style_list(void)
 	{
 		/* repeat until nothing has been done for a complete pass */
 	}
+	__simplify_style_list();
 
 	return;
 }
@@ -4817,4 +4818,25 @@ void CMD_DestroyStyle(F_CMD_ARGS)
 	}
 
 	return;
+}
+
+void print_styles(int verbose)
+{
+	window_style *nptr;
+	int count = 0;
+
+	fprintf(stderr,"Info on fvwm Styles:\n");
+	if (verbose)
+	{
+		fprintf(stderr,"  List of Styles Names:\n");
+	}
+	for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
+	{
+		count++;
+		if (verbose)
+		{
+			fprintf(stderr,"    * %s\n", SGET_NAME(*nptr));
+		}
+	}
+	fprintf(stderr,"  Number of styles: %i\n", count);
 }

@@ -2635,6 +2635,10 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	{
 		FGettextPrintLocalePath(verbose);
 	}
+	else if (StrEquals(subject, "style"))
+	{
+		print_styles(verbose);
+	}
 	else
 	{
 		fvwm_msg(ERR, "PrintInfo",

@@ -562,5 +562,6 @@ void update_icon_title_cs_style(FvwmWindow *fw, window_style *pstyle);
 void update_icon_title_cs_hi_style(FvwmWindow *fw, window_style *pstyle);
 void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle);
 void free_icon_boxes(icon_boxes *ib);
+void print_styles(int verbose);
 
 #endif /* _STYLE_ */
