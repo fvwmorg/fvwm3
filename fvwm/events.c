@@ -1879,6 +1879,11 @@ void HandleEnterNotify(void)
     return;
   }
 
+  sf = get_focus_window();
+  if (sf && HAS_MOUSE_FOCUS(sf))
+  {
+    DeleteFocus(1);
+  }
   if (HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
   {
     SetFocusWindow(Tmp_win, 1);
@@ -1886,7 +1891,7 @@ void HandleEnterNotify(void)
   else if (HAS_NEVER_FOCUS(Tmp_win))
   {
     /* Give the window a chance to grab the buttons needed for raise-on-click */
-    if ((sf = get_focus_window()) != Tmp_win)
+    if (sf != Tmp_win)
     {
       focus_grab_buttons(Tmp_win, False);
       focus_grab_buttons(sf, True);
