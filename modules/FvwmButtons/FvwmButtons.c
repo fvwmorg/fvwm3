@@ -3055,7 +3055,7 @@ void parse_message_line(char *line)
       fprintf(stderr, "%s: button column/row must not be negative\n", MyName);
       return;
     }
-    b = get_xy_button(ub, x, y);
+    b = get_xy_button(ub, y, x);
     if (b == NULL) {
       fprintf(stderr, "%s: button at column %d row %d not found\n", MyName,
 	      x, y);
