@@ -480,7 +480,8 @@ static char *FuncStrCopy(int *NbArg, long *TabArg)
 static char *LaunchScript (int *NbArg,long *TabArg)
 {
  char *arg,*execstr,*str,*scriptarg,*scriptname;
- int leng,i;
+ unsigned long leng;
+ int i;
  Atom MyAtom;
 
  /* Lecture des arguments */
@@ -526,10 +527,10 @@ static char *LaunchScript (int *NbArg,long *TabArg)
  /* Envoi de la commande */
  write(fd[0], &ref, sizeof(Window));
  leng = strlen(execstr);
- write(fd[0], &leng, sizeof(int));
+ write(fd[0], &leng, sizeof(unsigned long));
  write(fd[0], execstr, leng);
  leng = 1;
- write(fd[0], &leng, sizeof(int));
+ write(fd[0], &leng, sizeof(unsigned long));
  free(execstr);
 
  /* Retourne l'id du fils */
@@ -652,7 +653,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
 
 static void Exec (int NbArg,long *TabArg)
 {
- int leng = 0;
+ unsigned long leng = 0;
  char *execstr;
  char *tempstr;
  int i;
@@ -676,10 +677,10 @@ static void Exec (int NbArg,long *TabArg)
 
  write(fd[0], &ref, sizeof(Window));
  leng = strlen(execstr);
- write(fd[0], &leng, sizeof(int));
+ write(fd[0], &leng, sizeof(unsigned long));
  write(fd[0], execstr, leng);
  leng = 1;
- write(fd[0], &leng, sizeof(int));
+ write(fd[0], &leng, sizeof(unsigned long));
  free(execstr);
 }
 
