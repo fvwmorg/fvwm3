@@ -1,0 +1,6 @@
+1998-11-11  Dan Espen  <dane@mk.bellcore.com>
+
+	* xterm-bsd.xpm: Replaced illegally copied xterm-bsd.xpm with a
+	contributed icon from http://www.newsbone.org/~jonas/.
+	There are no copyrights attached to this icon.
+
