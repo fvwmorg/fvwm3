@@ -1,3 +1,7 @@
+1999-08-06  Hippo
+
+	* FvwmWinList/FvwmWinList.c: uses XTranslateCoordinates for positioning
+
 1999-08-05  Brad Giaccio
 
 	* FvwmPager/*: added new config option *FvwmPagerWindowColorsets

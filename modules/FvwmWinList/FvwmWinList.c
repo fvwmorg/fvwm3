@@ -797,40 +797,12 @@ void LoopOnEvents(void)
 
 
 /******************************************************************************
-  find_frame_window - looks for ancestor that is a child of the root
-  Cribbed from FvwmIconMan/x.c - maybe should be in a library
-  Returns the root-child and fills in off_x, off_y to give offset
-******************************************************************************/
-Window find_frame_window (Window win, int *off_x, int *off_y)
-{
-  Window root, parent, *junkw;
-  unsigned int junki;
-  XWindowAttributes attr;
-
-  while (1) {
-    XQueryTree (dpy, win, &root, &parent, &junkw, &junki);
-    if (junkw)
-      XFree (junkw);
-    if (parent == root)
-      break;
-    XGetWindowAttributes (dpy, win, &attr);
-    *off_x += attr.x + attr.border_width;
-    *off_y += attr.y + attr.border_width;
-    win = parent;
-  }
-
-  return win;
-}
-
-/******************************************************************************
   AdjustWindow - Resize the window according to maxwidth by number of buttons
 ******************************************************************************/
 void AdjustWindow(Bool force)
 {
-  int new_width=0,new_height=0,tw,i,total,off_x,off_y;
+  int new_width=0,new_height=0,tw,i,total;
   char *temp;
-  Window frame;
-  XWindowAttributes win_attr, frame_attr;
 
   total = ItemCountD(&windows );
   if (!total)
@@ -893,18 +865,14 @@ void AdjustWindow(Bool force)
   {
     if (Anchor)
     {
-      off_x = off_y = 0;
-      MyXGrabServer(dpy);
-      frame = find_frame_window(win, &off_x, &off_y);
-      XGetWindowAttributes(dpy, frame, &frame_attr);
-      XGetWindowAttributes(dpy, win, &win_attr);
-      win_x = frame_attr.x + frame_attr.border_width + off_x;
-      win_y = frame_attr.y + frame_attr.border_width + off_y;
+      Window child;
 
+      MyXGrabServer(dpy);
+      XTranslateCoordinates(dpy, win, Root, 0, 0, &win_x, &win_y, &child);
       if (win_grav == SouthEastGravity || win_grav == NorthEastGravity)
-        win_x += win_attr.width - new_width;
+        win_x += win_width - new_width;
       if (win_grav == SouthEastGravity || win_grav == SouthWestGravity)
-        win_y += win_attr.height - new_height;
+        win_y += win_height - new_height;
 
       XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height);
       MyXUngrabServer(dpy);
