@@ -365,5 +365,6 @@ Bool IsRectangleOnThisPage(rectangle *rec, int desk);
 void Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
 Bool check_if_fvwm_window_exists(FvwmWindow *fw);
 void SetMaxWindowSize(F_CMD_ARGS);
+int ButtonPosition(int context, FvwmWindow * t);
 
 #endif /* MISC_H */

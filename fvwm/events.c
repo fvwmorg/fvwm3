@@ -163,7 +163,7 @@ void InitEventHandlerJumpTable(void)
 void DispatchEvent(Bool preserve_Tmp_win)
 {
   Window w = Event.xany.window;
-  FvwmWindow *s_Tmp_win;
+  FvwmWindow *s_Tmp_win = NULL;
 
   DBUG("DispatchEvent","Routine Entered");
 
@@ -1019,7 +1019,7 @@ void HandleUnmapNotify(void)
   XEvent dummy;
   extern FvwmWindow *colormap_win;
   int    weMustUnmap;
-  int    focus_grabbed;
+  int    focus_grabbed = 0;
 
   DBUG("HandleUnmapNotify","Routine Entered");
 

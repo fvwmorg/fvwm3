@@ -176,7 +176,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   struct moduleInfoList *t;
   char *message, msg2[32];
   char *match;                          /* matching criteria for module cmds */
-  int match_len;                        /* get length once for efficiency */
+  int match_len = 0;                    /* get length once for efficiency */
   char *ImagePath = GetImagePath();
 
   GetNextToken(action, &match);

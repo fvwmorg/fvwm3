@@ -78,7 +78,7 @@ ScreenInfo Scr;		        /* structures for the screen */
 MenuInfo Menus;                 /* structures for menus */
 Display *dpy;			/* which display are we talking to */
 
-Window BlackoutWin=None;        /* window to hide window captures */
+Window BlackoutWin = None;      /* window to hide window captures */
 Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
 
@@ -682,12 +682,13 @@ void StartupStuff(void)
   FvwmFunction *func;
 
   CaptureAllWindows();
-  MakeMenus();
   /* Have to do this here too because preprocessor modules have not run to the
    * end when HandleEvents is entered from the main loop. */
   checkPanFrames();
 
   fFvwmInStartup = False;
+  /* Must be done after startup is completed! */
+  MakeMenus();
 
   /* Make sure we have the correct click time now. */
   if (Scr.ClickTime < 0)
@@ -827,7 +828,7 @@ void CaptureAllWindows(void)
   else /* must be recapture */
   {
     /* reborder all windows */
-    for(i=0; i<nchildren; i++) 
+    for(i=0; i<nchildren; i++)
     {
       if(XFindContext(dpy, children[i], FvwmContext, (caddr_t *)&tmp)!=XCNOENT)
       {

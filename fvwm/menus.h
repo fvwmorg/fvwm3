@@ -58,15 +58,15 @@
 #ifndef _MENUS_
 #define _MENUS_
 
+#include <libs/fvwmlib.h>
+#include "fvwm.h"
+
 #define MENU_IS_LEFT  0x01
 #define MENU_IS_RIGHT 0x02
 #define MENU_IS_UP    0x04
 #define MENU_IS_DOWN  0x08
 
-#include <libs/fvwmlib.h>
-#include "fvwm.h"
-
-
+#define MAX_ITEM_LABELS  3
 
 /*************************
  * MENU STYLE STRUCTURES *
@@ -100,9 +100,11 @@ typedef struct MenuFeel
       unsigned do_title_warp : 1;
       unsigned do_popup_as_root_menu : 1;
       unsigned do_unmap_submenu_on_popdown : 1;
+      unsigned use_left_submenus : 1;
     } flags;
     int PopupOffsetPercent;
     int PopupOffsetAdd;
+    char *item_format;
 } MenuFeel;
 
 
@@ -138,8 +140,9 @@ typedef struct MenuLook
       unsigned has_triangle_relief : 1;
       unsigned has_side_color : 1;
     } flags;
-    char ReliefThickness;
-    char TitleUnderlines;
+    unsigned char ReliefThickness;
+    unsigned char TitleUnderlines;
+    unsigned char BorderWidth;
     Picture *sidePic;
     Pixel sideColor;
     GC MenuGC;
@@ -153,7 +156,7 @@ typedef struct MenuLook
     ColorPair MenuStippleColors;
     ColorPair MenuRelief;
     MyFont *pStdFont;
-    int EntryHeight;              /* menu entry height */
+    int FontHeight;              /* menu font height */
 } MenuLook;
 
 typedef struct MenuStyle
@@ -163,7 +166,6 @@ typedef struct MenuStyle
     MenuLook look;
     MenuFeel feel;
 } MenuStyle;
-
 
 
 /************************
@@ -181,38 +183,48 @@ typedef struct MenuItem
     struct MenuItem *next;	/* next menu item */
     struct MenuItem *prev;	/* prev menu item */
 
-    char *item;			/* the character string displayed on left*/
-    char *item2;	        /* the character string displayed on right*/
-    short strlen;		/* strlen(item) */
-    short strlen2;		/* strlen(item2) */
+    char *label[MAX_ITEM_LABELS]; /* the strings displayed in the item */
+    unsigned short label_offset[MAX_ITEM_LABELS]; /* witdh of label[i] */
+    unsigned short label_strlen[MAX_ITEM_LABELS]; /* strlen(label[i]) */
 
-    Picture *picture;           /* Pixmap to show  above label*/
+    Picture *picture;           /* Pixmap to show above label*/
     Picture *lpicture;          /* Pixmap to show to left of label */
 
-    short x;			/* x coordinate for text (item) */
-    short x2;			/* x coordinate for text (item2) */
-    short xp;                   /* x coordinate for picture */
-    short y_offset;		/* y coordinate for item */
+    short y_offset;		/* y offset for item */
     short y_height;		/* y height for item */
 
     char *action;		/* action to be performed */
     short func_type;		/* type of built in function */
     short hotkey;		/* Hot key offset (pete@tecc.co.uk).
 				   0 - No hot key
-				   +ve - offset to hot key char in item
+				   +ve - offset to hot key char in label
 				   -ve - offset to hot key char in item2
 				   (offsets have 1 added, so +1 or -1
 				   refer to the *first* character)
 				   */
+    char hotkey_column;         /* The column number the hotkey is defined in*/
     char chHotkey;
     struct
     {
-      unsigned is_separator;
-      unsigned is_title;
-      unsigned is_popup;
-      unsigned is_menu;
+      unsigned is_separator : 1;
+      unsigned is_title : 1;
+      unsigned is_title_centered : 1;
+      unsigned is_popup : 1;
+      unsigned is_menu : 1;
+      unsigned has_text : 1;
+      unsigned has_picture : 1;
+      unsigned is_selectable : 1;
     } flags;
 } MenuItem;
+
+#define MI_IS_SEPARATOR(i)      ((i)->flags.is_separator)
+#define MI_IS_TITLE(i)          ((i)->flags.is_title)
+#define MI_IS_TITLE_CENTERED(i) ((i)->flags.is_title_centered)
+#define MI_IS_POPUP(i)          ((i)->flags.is_popup)
+#define MI_IS_MENU(i)           ((i)->flags.is_menu)
+#define MI_HAS_TEXT(i)          ((i)->flags.has_text)
+#define MI_HAS_PICTURE(i)       ((i)->flags.has_picture)
+#define MI_IS_SELECTABLE(i)     ((i)->flags.is_selectable)
 
 
 
@@ -230,14 +242,18 @@ typedef struct MenuRootStatic
   int copies;                 /* # of copies, 0 if none except this one */
   int usage_count;            /* # of mapped instances */
   char *name;                 /* name of root */
-  short height;               /* height of the menu */
-  short width0;               /* width of the menu-left-picture col */
-  short width;                /* width of the menu for 1st col */
-  short width2;               /* width of the menu for 2nd col */
-  short width3;               /* width of the submenu triangle col */
-  short xoffset;              /* the distance between the left border and the
-                                 * beginning of the menu items */
-  short items;                /* number of items in the menu */
+  unsigned short width;       /* width of the menu */
+  unsigned short height;      /* height of the menu */
+  unsigned short item_width;          /* width of the actual menu item */
+  unsigned short sidepic_x_offset;    /* offset of the sidepic */
+  unsigned short icon_x_offset;       /* offset of the mini icon */
+  unsigned short triangle_x_offset;   /* offset of the submenu triangle col */
+  unsigned short item_text_x_offset;  /* offset of the actual menu item */
+  unsigned short item_text_y_offset;  /* y offset for item text. */
+  unsigned short hilight_x_offset;    /* start of the area to be hilighted */
+  unsigned short hilight_width;       /* width of the area to be hilighted */
+  unsigned short y_offset;            /* y coordinate for item */
+  unsigned short items;               /* number of items in the menu */
   Picture *sidePic;
   Pixel sideColor;
   /* Menu Face    */
@@ -246,6 +262,7 @@ typedef struct MenuRootStatic
   struct
   {
     unsigned has_side_color : 1;
+    unsigned is_left_triangle : 1;
   } flags;
   struct
   {
@@ -255,25 +272,31 @@ typedef struct MenuRootStatic
 } MenuRootStatic;
 
 /* access macros to static menu members */
-#define MR_FIRST_ITEM(m)    ((m)->s->first)
-#define MR_LAST_ITEM(m)     ((m)->s->last)
-#define MR_COPIES(m)        ((m)->s->copies)
-#define MR_MAPPED_COPIES(m) ((m)->s->usage_count)
-#define MR_NAME(m)          ((m)->s->name)
-#define MR_HEIGHT(m)        ((m)->s->height)
-#define MR_WIDTH0(m)        ((m)->s->width0)
-#define MR_WIDTH(m)         ((m)->s->width)
-#define MR_WIDTH2(m)        ((m)->s->width2)
-#define MR_WIDTH3(m)        ((m)->s->width3)
-#define MR_XOFFSET(m)       ((m)->s->xoffset)
-#define MR_ITEMS(m)         ((m)->s->items)
-#define MR_SIDEPIC(m)       ((m)->s->sidePic)
-#define MR_SIDECOLOR(m)     ((m)->s->sideColor)
-#define MR_STYLE(m)         ((m)->s->ms)
+#define MR_BORDER_WIDTH(m)       ((m)->s->ms->look.BorderWidth)
+#define MR_FIRST_ITEM(m)         ((m)->s->first)
+#define MR_LAST_ITEM(m)          ((m)->s->last)
+#define MR_COPIES(m)             ((m)->s->copies)
+#define MR_MAPPED_COPIES(m)      ((m)->s->usage_count)
+#define MR_NAME(m)               ((m)->s->name)
+#define MR_WIDTH(m)              ((m)->s->width)
+#define MR_HEIGHT(m)             ((m)->s->height)
+#define MR_ITEM_WIDTH(m)         ((m)->s->item_width)
+#define MR_SIDEPIC_X_OFFSET(m)   ((m)->s->sidepic_x_offset)
+#define MR_ICON_X_OFFSET(m)      ((m)->s->icon_x_offset)
+#define MR_TRIANGLE_X_OFFSET(m)  ((m)->s->triangle_x_offset)
+#define MR_ITEM_X_OFFSET(m)      ((m)->s->item_text_x_offset)
+#define MR_ITEM_TEXT_Y_OFFSET(m) ((m)->s->item_text_y_offset)
+#define MR_HILIGHT_X_OFFSET(m)   ((m)->s->hilight_x_offset)
+#define MR_HILIGHT_WIDTH(m)      ((m)->s->hilight_width)
+#define MR_ITEMS(m)              ((m)->s->items)
+#define MR_SIDEPIC(m)            ((m)->s->sidePic)
+#define MR_SIDECOLOR(m)          ((m)->s->sideColor)
+#define MR_STYLE(m)              ((m)->s->ms)
 /* flags */
-#define MR_FLAGS(m)         ((m)->s->flags)
-#define MR_DYNAMIC(m)       ((m)->s->dynamic)
-#define MR_HAS_SIDECOLOR(m)         ((m)->s->flags.has_side_color)
+#define MR_FLAGS(m)              ((m)->s->flags)
+#define MR_DYNAMIC(m)            ((m)->s->dynamic)
+#define MR_HAS_SIDECOLOR(m)      ((m)->s->flags.has_side_color)
+#define MR_IS_LEFT_TRIANGLE(m)   ((m)->s->flags.is_left_triangle)
 
 
 /* This struct contains the parts of a root menu that differ in all copies of

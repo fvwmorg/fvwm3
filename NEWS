@@ -1,5 +1,13 @@
 Changes in alpha release 2.3.3 (May 1999)
 
+* Menu enhancements: the layout of the menu items can be controlled in detail
+  with the ItemFormat option for the MenuStyle command. The width of the
+  borders around menus and hilighted items can be controlled with the
+  options BorderWidth and Hilight3DThickness (MenuStyle). Menu behavior can
+  be mirrored with the SumbenusLeft option (hard to describe, it's best to
+  try it out). A menu item can get up to three different labels. The first
+  two are left aligned, the third is right aligned by default.
+
 * Colour gradients may use up to 1000 colours. The old limit was 128 colours.
 
 * New command MaxWindowSize limits the initial dimensions of a window.

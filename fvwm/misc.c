@@ -412,7 +412,7 @@ Bool StashEventTime (XEvent *ev)
   return True;
 }
 
-/*** This function is nowhere used.  
+/*** This function is nowhere used.
      Is it historical cruft or a future direction?  ***/
 
 /* void ComputeActualPosition(int x,int y,int x_unit,int y_unit, */
@@ -926,4 +926,55 @@ Bool check_if_fvwm_window_exists(FvwmWindow *fw)
       return True;
   }
   return False;
+}
+
+/***********************************************************************
+ * change by KitS@bartley.demon.co.uk to correct popups off title buttons
+ *
+ *  Procedure:
+ *ButtonPosition - find the actual position of the button
+ *                 since some buttons may be disabled
+ *
+ *  Returned Value:
+ *The button count from left or right taking in to account
+ *that some buttons may not be enabled for this window
+ *
+ *  Inputs:
+ *      context - context as per the global Context
+ *      t       - the window (FvwmWindow) to test against
+ *
+ ***********************************************************************/
+int ButtonPosition(int context, FvwmWindow * t)
+{
+  int i;
+  int buttons = -1;
+
+  if (context&C_RALL)
+  {
+    for(i=0;i<Scr.nr_right_buttons;i++)
+    {
+      if(t->right_w[i])
+      {
+	buttons++;
+      }
+      /* is this the button ? */
+      if (((1<<i)*C_R1) & context)
+	return(buttons);
+    }
+  }
+  else
+  {
+    for(i=0;i<Scr.nr_left_buttons;i++)
+    {
+      if(t->left_w[i])
+      {
+	buttons++;
+      }
+      /* is this the button ? */
+      if (((1<<i)*C_L1) & context)
+	return(buttons);
+    }
+  }
+  /* you never know... */
+  return 0;
 }
