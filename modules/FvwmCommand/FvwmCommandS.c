@@ -224,7 +224,7 @@ void server (char *name)
 
     ret = fvwmSelect(FD_SETSIZE, &fdrset, &fdwset, 0, timeout);
 
-    if (ret < 0 && errno == EINTR)
+    if (ret < 0)
       continue;
 
     if (timeout && ret == 0) {
@@ -272,6 +272,7 @@ void server (char *name)
         exit(0);
       }
       process_message(packet->type, packet->body);
+      continue;
     }
 
     if (FD_ISSET(FfdC, &fdrset))
@@ -310,6 +311,7 @@ void server (char *name)
 	  cix++;
 	}
       } /* for */
+      continue;
     } /* FD_ISSET */
 
     if (queueing && FD_ISSET(FfdM, &fdwset))
