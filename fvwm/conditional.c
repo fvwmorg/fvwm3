@@ -1131,7 +1131,7 @@ void CMD_Direction(F_CMD_ARGS)
 	direction_cmd(F_PASS_ARGS,False);
 }
 
-void CMD_ScanWindow(F_CMD_ARGS)
+void CMD_ScanForWindow(F_CMD_ARGS)
 {
 	direction_cmd(F_PASS_ARGS,True);
 }

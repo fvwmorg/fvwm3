@@ -139,9 +139,10 @@ on any selected window.
 .IP "SendToModule FvwmProxy Circulate \fIcommand\fP"
 Tell FvwmProxy to run a conditional command and mark the result.
 The imbedded command \fISendToModule FvwmProxy Mark\fP is automatically
-appended after the optional condition, so supplying your own imbedded command
-will probably fail.
-An example argument to Circulate is \fIScanWindow East South (CurrentPage)\fP.
+appended after the optional condition, so supplying your own imbedded
+command will probably fail.
+An example argument to Circulate is
+\fIScanForWindow East South (CurrentPage)\fP.
 If the proxies aren't already shown (such as with the Show command),
 any Circulate command will automatically show the proxies.
 
@@ -154,13 +155,13 @@ selected on a recent show, that proxy is selected.
 If no proxy on this desk was recently selected,
 the leftmost proxy is used.
 This nearly duplicates the functionality of
-Circulate ScanWindow East South (CurrentPage).
+Circulate ScanForWindow East South (CurrentPage).
 .IP "SendToModule FvwmProxy Prev" (temporary)
 If a proxy window is selected, the previous proxy is selected.
 The starting point is the same as with the Next command, except
 that the choice with no recent selection is the rightmost proxy.
 This nearly duplicates the functionality of
-Circulate ScanWindow West North (CurrentPage).
+Circulate ScanForWindow West North (CurrentPage).
 
 .SH SAMPLE CONFIGURATION
 The following are excerpts from a .fvwm2rc file which describe
@@ -169,9 +170,9 @@ FvwmProxy initialization commands:
 .sp
 Key -Meta_L     A   A   SendToModule    FvwmProxy   Hide
 Key Tab         A   M   SendToModule    FvwmProxy   Circulate               \
-                                        ScanWindow  East South (CurrentPage)
+                                        ScanForWindow  East South (CurrentPage)
 Key Tab         A   SM  SendToModule    FvwmProxy   Circulate               \
-                                        ScanWindow  West North (CurrentPage)
+                                        ScanForWindow  West North (CurrentPage)
 .sp
 .fi
 To have the proxies immediately pop up when you hold the Alt key, add

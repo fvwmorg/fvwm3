@@ -9436,7 +9436,7 @@ attribute for iconified windows and "CirculateHitShaded" which
 does the same for shaded windows.
 
 .TP
-.BI "ScanWindow [" FromPointer "] " direction direction2 " [(" conditions ")] "
+.BI "ScanForWindow [" FromPointer "] " direction direction2 " [(" conditions ")] "
 command
 Performs
 .I command
@@ -9455,7 +9455,7 @@ the starting point.  The
 .I direction
 may be one of "North", "Northeast", "East", "Southeast", "South",
 "Southwest", "West", and "Northwest".  Which window
-.B ScanWindow
+.B ScanForWindow
 selects depends first on the position along the primary axis given by
 .IR direction .
 If any windows have the exact same coordinate along the primary
@@ -9467,8 +9467,8 @@ If
 .I direction2
 is not perfectly perpendicular to
 .IR direction ,
-ScanWindow will return a failure.
-When using ScanWindow repeatedly with the same arguments,
+ScanForWindow will return a failure.
+When using ScanForWindow repeatedly with the same arguments,
 it is guaranteed that all windows matching the conditions will eventually
 be found.  If the focus reaches a limit along the primary axis,
 it will wrap around to the opposite side.

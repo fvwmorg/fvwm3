@@ -233,7 +233,7 @@ const func_type func_table[] =
 	CMD_ENT("savequitsession", CMD_SaveQuitSession, F_SAVE_QUIT_SESSION,
 		0, 0, 0),
 	CMD_ENT("savesession", CMD_SaveSession, F_SAVE_SESSION, 0, 0, 0),
-	CMD_ENT("scanwindow", CMD_ScanWindow, F_SCANWINDOW, 0, 0, 0),
+	CMD_ENT("scanforwindow", CMD_ScanForWindow, F_SCANFORWINDOW, 0, 0, 0),
 	CMD_ENT("schedule", CMD_Schedule, F_SCHEDULE, 0, 0, 0),
 	CMD_ENT("scroll", CMD_Scroll, F_SCROLL, 0, 0, 0),
 	CMD_ENT("send_configinfo", CMD_Send_ConfigInfo, F_CONFIG_LIST,

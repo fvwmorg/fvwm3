@@ -1,3 +1,8 @@
+2002-12-12  Jason Weber  <baboon@imonk.com>
+
+	* FvwmProxy/FvwmProxy.1:
+	Rename ScanWindow to ScanForWindow
+
 2002-12-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmProxy/FvwmProxy.c (ProcessMessage):
