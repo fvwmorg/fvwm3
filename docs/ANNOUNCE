@@ -1,9 +1,10 @@
-fvwm is a powerful window manager.  Version 2.5.11 is an alpha
-release that includes new features and bug fixes bug fixes over
-2.5.10.  You are welcome to upgrade and test the new features or
-help stabilizing the code. Please be aware that any features
-introduced in the 2.5.x development versions may be renamed,
-changed or removed without notice before 2.6.0.
+Fvwm is a powerful window manager.  Version 2.5.12 is an alpha
+release that includes a few new features and fixes a bug with
+window styles and window states that was introduced in 2.5.11.
+You are welcome to upgrade and test the new features or help
+stabilizing the code. Please be aware that any features introduced
+in the 2.5.x development versions may be renamed, changed or
+removed without notice before 2.6.0.
 
 This release is available at the home page: http://www.fvwm.org/.
 
@@ -12,71 +13,14 @@ New features:
 
 * New core features:
 
-   - Window-specific key/mouse bindings. (Bindings no longer have
-     to be global.)
-
-   - The default fvwm configuration files are now: ~/.fvwm/config
-     and $FVWM_DATADIR/config. Five previously used config file
-     locations are still searched as usual for backward
-     compatibility.
-
-   - Extended variables:
-      - $[w.desk]
-      - $[w.layer]
-
-   - Maximize command options:
-      - options GrowOnWindowLayer and GrowOnlayers
-
-   - MoveToPage command options:
-      - wrapx and wrapy
-      - nodesklimitx and nodesklimity
-      - new suffix 'w' to allow for window relative movement
-
-   - Style command options: New style options:
-      - State
-      - CenterPlacement
-
-   - Conditional command options:
-      - AnyScreen
-      - Overlapped
-
-   - Fluxbox-like Alt-Button3 resizing with the new Resize options
-     Direction, WarpToBorder and FixedDirection
-
-   - Enhanced "Test (Version >= x.y.z)" option to allow version
-     comparisons.
-
-   - New menu option TearOffImmediately.
-
-   - Solaris' Xinerama support
-
+   - New command EdgeLeaveCommand.
 
 * New module features:
 
-   - FvwmIconMan: ShowNoIcons
-
-   - FvwmWindowMenu: improved
-
-   - FvwmTaskBar: MailDir option
-
-   - FvwmButtons options
-      - ActiveColorset
-      - ActiveIcon
-      - ActiveTitle
-      - PressColorset
-      - PressIcon
-      - PressTitle
-      - SwallowNew option to swallow
-
-* New WindowList tracker and other enhancements in Perl library.
-
-* New option to fvwm-menu-directory: --func-name.
+   - FvwmIconMan: ShowOnlyFocused option.
 
 Bug Fixes:
 ----------
 
-* The option CurrentGlobalPageAnyDesk was accidentally named
-  CurrentGlobbalPageAnyDesk before.
-
-* The Read and PipeRead commands return 1 if the file or command
-  could be read or executed and -1 otherwise.
+* Changing a style no longer clears the window state flags defined
+  with the State command.
