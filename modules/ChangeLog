@@ -1,3 +1,17 @@
+Sat Mar 13 11:52:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/INSTALL: removed obsolete file.
+	* FvwmCommand/ex-grpmv.pl: moved to scripts directory, replacing
+	slightly different version.  Hopefully this is the newer one.
+
+	* FvwmCommand/ex-auto.pl:
+	* FvwmCommand/ex-cascade.pl:
+	* FvwmCommand/focus-Netscape.pl:
+	* FvwmCommand/push-away.pl:
+	* FvwmCommand/test1.pl:
+	* FvwmCommand/test2.sh: removed.  These are all duplicates of the
+	scripts directory.
+
 Sat Mar 13 10:05:52 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmM4/FvwmM4.c: fix bad interaction between -m4-prefix and
