@@ -1,3 +1,7 @@
+1999-03-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* fvwm/builtins.c (SetXOR): added missing semicolon.
+
 1999-03-26  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/misc.c (RaiseWindow): add a hack to raise *all* windows

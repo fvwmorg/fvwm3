@@ -1480,7 +1480,7 @@ void SetXOR(F_CMD_ARGS)
   /* Xlib programming manual suggestion: */
   gcv.foreground = (val)?
     (val):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
-  gcv.fill_style = FillSolid
+  gcv.fill_style = FillSolid;
   gcv.subwindow_mode = IncludeInferiors;
 
   /* modify DrawGC, only create once */
