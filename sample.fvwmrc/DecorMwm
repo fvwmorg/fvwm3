@@ -2,6 +2,7 @@
 # DecorHook DecorMwm "&M. Decor Mwm"
 
 # For decor changing to work, add to DecorBase
+DestroyDecor recreate DecorBase
 AddToDecor DecorBase
 +	TitleStyle	Centered
 +	TitleStyle	ActiveUp (Solid cyan4 -- Raised) \

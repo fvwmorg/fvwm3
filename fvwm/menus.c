@@ -4122,7 +4122,6 @@ void CMD_DestroyMenu(F_CMD_ARGS)
   MenuRoot *mr;
   MenuRoot *mrContinuation;
   Bool do_recreate = False;
-
   char *token;
 
   token = PeekToken(action, &action);

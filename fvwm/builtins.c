@@ -61,6 +61,7 @@
 
 static char *ReadTitleButton(
     char *s, TitleButton *tb, Boolean append, int button);
+static void DestroyFvwmDecor(FvwmDecor *decor);
 
 extern float rgpctMovementDefault[32];
 extern int cpctMovementDefault;
@@ -1935,12 +1936,20 @@ void CMD_DestroyDecor(F_CMD_ARGS)
   char *item;
   FvwmDecor *decor = Scr.DefaultDecor.next;
   FvwmDecor *prev = &Scr.DefaultDecor, *found = NULL;
+  Bool do_recreate = False;
 
-  action = GetNextToken(action, &item);
-  if (!action || !item)
+  item = PeekToken(action, &action);
+  if (!item)
   {
-    if (item)
-      free(item);
+    return;
+  }
+  if (StrEquals(item, "recreate"))
+  {
+    do_recreate = True;
+    item = PeekToken(action, NULL);
+  }
+  if (!item)
+  {
     return;
   }
 
@@ -1957,27 +1966,47 @@ void CMD_DestroyDecor(F_CMD_ARGS)
     }
     prev = decor;
   }
-  free(item);
 
-  if (found && (found != &Scr.DefaultDecor))
+  if (found && (found != &Scr.DefaultDecor || do_recreate))
   {
     FvwmWindow *fw;
 
-    for (fw = Scr.FvwmRoot.next; fw; fw = fw->next)
+    if (!do_recreate)
     {
-      if (fw->decor == found)
+      for (fw = Scr.FvwmRoot.next; fw; fw = fw->next)
       {
-	/* remove the extra title height now because we delete the current decor
-	 * before calling ChangeDecor(). */
-	fw->frame_g.height -= fw->decor->title_height;
-	fw->decor = NULL;
-	old_execute_function(
-	  "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0, NULL);
+	if (fw->decor == found)
+	{
+	  /* remove the extra title height now because we delete the current
+	   * decor before calling ChangeDecor(). */
+	  fw->frame_g.height -= fw->decor->title_height;
+	  fw->decor = NULL;
+	  old_execute_function(
+	    "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0, NULL);
+	}
       }
     }
-    prev->next = found->next;
     DestroyFvwmDecor(found);
-    free(found);
+    if (do_recreate)
+    {
+      int i;
+
+      InitFvwmDecor(found);
+      found->tag = safestrdup(item);
+      Scr.flags.do_need_window_update = 1;
+      found->flags.has_changed = 1;
+      found->flags.has_title_height_changed = 0;
+      found->titlebar.flags.has_changed = 1;
+      for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+      {
+	TB_FLAGS(found->buttons[i]).has_changed = 1;
+      }
+    }
+    else
+    {
+      prev->next = found->next;
+      free(found);
+    }
   }
 }
 
@@ -1988,36 +2017,36 @@ void CMD_DestroyDecor(F_CMD_ARGS)
  ************************************************************************/
 void InitFvwmDecor(FvwmDecor *decor)
 {
-    int i;
-    DecorFace tmpdf;
+  int i;
+  DecorFace tmpdf;
 
-    /* zero out the structures */
-    memset(decor, 0, sizeof (FvwmDecor));
-    memset(&tmpdf, 0, sizeof(DecorFace));
+  /* zero out the structures */
+  memset(decor, 0, sizeof (FvwmDecor));
+  memset(&tmpdf, 0, sizeof(DecorFace));
 
-    /* initialize title-bar button styles */
-    DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
-    for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+  /* initialize title-bar button styles */
+  DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
+  for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+  {
+    int j = 0;
+    for (; j < BS_MaxButtonState; ++j)
     {
-      int j = 0;
-      for (; j < BS_MaxButtonState; ++j)
-      {
-	TB_STATE(decor->buttons[i])[j] = tmpdf;
-      }
+      TB_STATE(decor->buttons[i])[j] = tmpdf;
     }
-    /* reset to default button set */
-    ResetAllButtons(decor);
-    /* initialize title-bar styles */
-    for (i = 0; i < BS_MaxButtonState; ++i)
-    {
-      DFS_FACE_TYPE(TB_STATE(decor->titlebar)[i].style) = SimpleButton;
-    }
+  }
+  /* reset to default button set */
+  ResetAllButtons(decor);
+  /* initialize title-bar styles */
+  for (i = 0; i < BS_MaxButtonState; ++i)
+  {
+    DFS_FACE_TYPE(TB_STATE(decor->titlebar)[i].style) = SimpleButton;
+  }
 
-    /* initialize border texture styles */
-    DFS_FACE_TYPE(decor->BorderStyle.active.style) = SimpleButton;
-    DFS_FACE_TYPE(decor->BorderStyle.inactive.style) = SimpleButton;
+  /* initialize border texture styles */
+  DFS_FACE_TYPE(decor->BorderStyle.active.style) = SimpleButton;
+  DFS_FACE_TYPE(decor->BorderStyle.inactive.style) = SimpleButton;
 
-    return;
+  return;
 }
 
 /***********************************************************************
@@ -2026,7 +2055,7 @@ void InitFvwmDecor(FvwmDecor *decor)
  *	structure, but does not free the FvwmDecor itself
  *
  ************************************************************************/
-void DestroyFvwmDecor(FvwmDecor *decor)
+static void DestroyFvwmDecor(FvwmDecor *decor)
 {
   int i;
   /* reset to default button set (frees allocated mem) */

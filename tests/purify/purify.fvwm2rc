@@ -1567,6 +1567,24 @@ AddToFunc DecorCommands-Func
  + I Style "testw" UseDecor foo, Color white/grey40,HandleWidth 4
  + I ChangeDecor
  + I ChangeDecor foo
+ + I DestroyDecor
+ + I DestroyDecor bar
+ + I DestroyDecor bar
+ + I UpdateDecor
+ + I UpdateDecor foo
+ + I UpdateDecor foo
+ + I Style "testw" UseDecor foo, Color white/grey40,HandleWidth 4
+ + I ChangeDecor
+ + I ChangeDecor foo
+ + I DestroyDecor recreate
+ + I DestroyDecor recreate bar
+ + I DestroyDecor recreate bar
+ + I UpdateDecor
+ + I UpdateDecor foo
+ + I UpdateDecor foo
+ + I Style "testw" UseDecor foo, Color white/grey40,HandleWidth 4
+ + I ChangeDecor
+ + I ChangeDecor foo
 
 AddTest "Test TitleStyle_justify" TitleStyle_justify-Func
 AddToFunc TitleStyle_justify-Func

@@ -2,6 +2,7 @@
 # DecorHook DecorWin95   "&W. Decor Windows"
 # -- Start of Win 95 decor -- (If you like this sort of thing)
 # For decor changing to work, add to DecorBase
+DestroyDecor recreate DecorBase
 AddToDecor      DecorBase
 + TitleStyle      LeftJustified ActiveUp (Solid Navy -- flat) \
                   ActiveDown (Solid Navy -- flat) \

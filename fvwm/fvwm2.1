@@ -5874,7 +5874,7 @@ ChangeDecor CustomDecor1
 .EE
 
 .TP
-.BI "DestroyDecor " decor
+.BI "DestroyDecor [" recreate "] " decor
 Deletes the
 .I decor
 defined with
@@ -5882,11 +5882,16 @@ defined with
 so that subsequent references to it are no longer valid.  Windows
 using this
 .I decor
-revert to the "Default" decor.  If the decor is created again later,
-windows do not use it before the
+revert to the "Default" decor.
+The optional parameter
+.I recreate
+tells fvwm not to throw away the decor completely but to throw
+away only its contents.
+If the decor is created again later, windows do not use it before the
 .I UseDecor
-style is applied again.  The decor named "Default" cannot be
-destroyed.
+style is applied again unless the decor was destroyed with the
+.I recreate
+option.  The decor named "Default" cannot be destroyed.
 .EX
 DestroyDecor CustomDecor1
 .EE

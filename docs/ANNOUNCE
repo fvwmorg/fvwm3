@@ -291,6 +291,7 @@ New command features:
 New styles:
 -----------
 
+ * New option "recreate" to DestroyDecor and DestroyMenu commands.
  * New option None to the IconBox style.
  * New styles IconifyWindowGroupsTogether and
    IconifyWindowGroupsOff.
