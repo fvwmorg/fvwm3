@@ -1,3 +1,8 @@
+2002-08-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	fixed no window context for StartMenu
+
 2002-08-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmButtons/dynamic.c:

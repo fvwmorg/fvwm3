@@ -1410,24 +1410,24 @@ void LoopOnEvents(void)
 	  tmp = module_expand_action(dpy, screen, StartCommand, &r, NULL, NULL);
 	  if (tmp)
 	  {
-	    SendText(Fvwm_fd, tmp, win);
+	    SendText(Fvwm_fd, tmp, 0);
 	    free(tmp);
 	  }
 	  else
 	  {
-	    SendText(Fvwm_fd, StartCommand, win);
+	    SendText(Fvwm_fd, StartCommand, 0);
 	  }
 	}
 	if (StartPopup != NULL)
 	{
 	  tmp = (char *)safemalloc(strlen(StartPopup) + 7);
 	  sprintf(tmp,"Popup %s", StartPopup);
-	  SendText(Fvwm_fd, tmp, win);
+	  SendText(Fvwm_fd, tmp, 0);
 	  free(tmp);
 	}
 	if (StartPopup == NULL && StartCommand == NULL)
 	{
-	  SendText(Fvwm_fd, "Popup StartMenu", win);
+	  SendText(Fvwm_fd, "Popup StartMenu", 0);
 	}
       } else {
 	StartButtonUpdate(NULL, BUTTON_UP);
