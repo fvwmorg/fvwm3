@@ -2457,6 +2457,18 @@ appear unless a mouse binding also exists.
 
 
 .TP
+.B "GnomeButton"
+Used in conjunction with Mouse to pass mouse button presses on the root
+window to a GNOME program (such as GMC).  The following example passes
+presses of mouse buttons 1 and 3 to such a program.
+
+.EX
+Mouse 1 R A GnomeButton
+Mouse 3 R A GnomeButton
+.EE
+
+
+.TP
 .B "Mouse" "\fIButton Context Modifiers Function\fP"
 Defines a mouse binding, or removes the binding if \fIFunction\fP is '-'.
 \fIButton\fP is the mouse button number.  If \fIButton\fP is

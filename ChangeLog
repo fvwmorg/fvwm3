@@ -1,5 +1,8 @@
 1999-09-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm2.1: applied patch for GnomeButton command by Eric
+	Gillespie
+
 	* fvwm/decorations.c (SelectDecor): applied another OL hints patch by
 	Neil Bird
 
