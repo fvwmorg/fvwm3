@@ -511,7 +511,7 @@ void movecursor(F_CMD_ARGS)
   else if (y < pan_y)
     y = pan_y;
 
-  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+  XWarpPointer(dpy, None, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 	       Scr.MyDisplayHeight, x, y);
   return;
 }

@@ -1043,9 +1043,28 @@ static void ParseButton(button_info **uberb,char *s)
 	  s=t;
 	  while(*s && *s!=')')
 	    s++;
-	  if(*s==')')s++;
+	  if(*s==')')
+            s++;
 	}
-	s = GetQuotedString(s, &t, ",)", NULL, NULL, NULL);
+        {
+          char *r;
+          char *u = s;
+
+          s = GetQuotedString(s, &t, ",)", NULL, NULL, NULL);
+          r = s;
+          if (t && r > u + 1)
+          {
+            /* remove unquoted trailing spaces */
+            r -= 2;
+            while (r >= u && isspace(*r))
+              r--;
+            r++;
+            if (isspace(*r))
+            {
+              t[strlen(t) - (s - r - 1)] = 0;
+            }
+          }
+        }
 	if(t)
 	{
 	  AddButtonAction(b,i,t);
