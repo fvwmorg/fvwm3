@@ -219,6 +219,33 @@ void ParseOptions(void)
 	CopyString(&imagePath,&tline[9]);
       else if (strncasecmp(tline,"*FvwmScriptPath",15) == 0)
 	CopyString(&ScriptPath,&tline[15]);
+      else if (strncasecmp(tline,"*FvwmScriptDefaultColorset",26) == 0)
+      {
+	LoadColorset(&tline[26]);
+	x11base->colorset = atoi(&tline[26]);
+      }
+      else if (strncasecmp(tline,"*FvwmScriptDefaultBack",22) == 0)
+      {
+	x11base->colorset = -1;
+	CopyString(&x11base->backcolor, &tline[22]);
+      }
+      else if (strncasecmp(tline,"*FvwmScriptDefaultFore",22) == 0)
+      {
+	x11base->colorset = -1;
+	CopyString(&x11base->forecolor, &tline[22]);
+      }
+      else if (strncasecmp(tline,"*FvwmScriptDefaultHilight",25) == 0)
+      {
+	x11base->colorset = -1;
+	CopyString(&x11base->hilicolor, &tline[25]);
+      }
+      else if (strncasecmp(tline,"*FvwmScriptDefaultShadow",24) == 0)
+      {
+	x11base->colorset = -1;
+	CopyString(&x11base->shadcolor, &tline[24]);
+      }
+      else if (strncasecmp(tline,"*FvwmScriptDefaultFont",22) == 0)
+	CopyString(&x11base->font, &tline[22]);
       else if (strncasecmp(tline,"ColorLimit",10) == 0)
 	save_color_limit = atoi(&tline[10]);
       else if (strncasecmp(tline,"Colorset",8) == 0)
@@ -418,32 +445,23 @@ void BuildGUI(int IsFather)
  int i;
 
 
- if (scriptprop->font==NULL)
-  x11base->font=strdup("fixed");
- else
+ if (scriptprop->font != NULL)
   x11base->font=scriptprop->font;
 
- if (scriptprop->forecolor==NULL)
-  x11base->forecolor=strdup("black");
- else
+ if (scriptprop->forecolor != NULL)
   x11base->forecolor=scriptprop->forecolor;
 
- if (scriptprop->backcolor==NULL)
-  x11base->backcolor=strdup("white");
- else
+ if (scriptprop->backcolor != NULL)
   x11base->backcolor=scriptprop->backcolor;
 
- if (scriptprop->shadcolor==NULL)
-  x11base->shadcolor=strdup("black");
- else
+ if (scriptprop->shadcolor != NULL)
   x11base->shadcolor=scriptprop->shadcolor;
 
- if (scriptprop->hilicolor==NULL)
-  x11base->hilicolor=strdup("black");
- else
+ if (scriptprop->hilicolor != NULL)
   x11base->hilicolor=scriptprop->hilicolor;
 
- x11base->colorset = scriptprop->colorset;
+ if (scriptprop->colorset != -1)
+   x11base->colorset = scriptprop->colorset;
 
  x11base->icon=scriptprop->icon;
 
@@ -916,6 +934,13 @@ int main (int argc, char **argv)
   x11base->TabArg[0]=ModuleName;
   for (i=8-IsFather;i<argc;i++)
     x11base->TabArg[i-7+IsFather]=argv[i];
+  /* Couleurs et fontes par defaut */
+  x11base->font=strdup("fixed");
+  x11base->forecolor=strdup("black");
+  x11base->backcolor=strdup("grey85");
+  x11base->shadcolor=strdup("grey55");
+  x11base->hilicolor=strdup("grey100");
+  x11base->colorset = -1;
 
  ParseOptions();
 

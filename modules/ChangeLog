@@ -1,3 +1,13 @@
+1999-12-28  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/FvwmScript.c (ParseOptions):
+	(main):
+	* FvwmScript/FvwmScript.1
+	New options FvwmScriptDefaultFont, FvwmScriptDefaultBack,
+	FvwmScriptDefaultFore, FvwmScriptDefaultHilight, 
+	FvwmScriptDefaultShadow, and FvwmScriptDefaultColorset
+	
+
 1999-12-27  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmScript/FvwmScript.c (OpenWindow): set class & resource

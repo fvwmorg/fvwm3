@@ -45,6 +45,36 @@ The command to start FvwmScript can be placed on a line by itself,
 if FvwmScript is to be spawned during
 fvwm's initialization, or can be bound to a menu or mouse
 button or keystroke to invoke it later.
+
+.SH CONFIGURATION OPTIONS
+The following options can be placed in the .fvwm2rc file. They are used
+only if the corresponding script commands are not used in the script.
+
+.IP "*FvwmScriptDefaultFont \fIfont\fP"
+Specifies the default font to be used. If not specified with this command 
+or in the script with the Font command, fixed font is assumed.
+
+.IP "*FvwmScriptDefaultFore \fIcolor\fP"
+Specifies the default foreground color to be used. If not specified with 
+this command or in the script with the ForeColor command, black is used.
+
+.IP  "*FvwmScriptDefaultBack \fIcolor\fP"
+Specifies the default background color to be used. If not specified with 
+this command or in the script with the BackColor command, grey85 is used.
+
+.IP  "*FvwmScriptDefaultHilight \fIcolor\fP"
+Specifies the default hilight color to be used. If not specified with 
+this command or in the script with the HilightColor command, grey100 is used.
+
+.IP  "*FvwmScriptDefaultShadow \fIcolor\fP"
+Specifies the default shadow color to be used. If not specified with this 
+command or in the script with the ShadowColor command, grey55 is used.
+
+.IP "*FvwmScriptDefaultColorset \fIcolorset\fP"
+Tells the module to use colorset \fIcolorset\fP as default colorset.
+Please refer to the man page of the FvwmTheme module for details about 
+colorsets.
+
 .SH ANATOMY OF A SCRIPT
 FvwmScript uses a particular programming language. A script is composed of
 four parts. Heading contains general characteristics of the window and
