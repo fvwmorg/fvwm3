@@ -170,9 +170,9 @@ void CursorStyle(F_CMD_ARGS)
 	  return;
 	}
 
-      colors[0].pixel = BlackPixel(dpy, Scr.screen);
-      colors[1].pixel = WhitePixel(dpy, Scr.screen);
-      XQueryColors (dpy, PictureCMap, colors, 2);
+      colors[0].pixel = GetColor("Black");
+      colors[1].pixel = GetColor("White");
+      XQueryColors (dpy, Pcmap, colors, 2);
 
       if (Scr.FvwmCursors[index])
 	XFreeCursor (dpy, Scr.FvwmCursors[index]);
@@ -198,7 +198,7 @@ void CursorStyle(F_CMD_ARGS)
     {
       colors[0].pixel = GetColor (fore);
       colors[1].pixel = GetColor (back);
-      XQueryColors (dpy, PictureCMap, colors, 2);
+      XQueryColors (dpy, Pcmap, colors, 2);
       XRecolorCursor (dpy, Scr.FvwmCursors[index], &(colors[0]), &(colors[1]));
     }
 

@@ -73,7 +73,6 @@ XFontSet fontset;
 #endif
 
 Display *dpy;			/* which display are we talking to */
-Graphics *G;
 int x_fd;
 fd_set_size_t fd_width;
 
@@ -263,8 +262,7 @@ int main(int argc, char **argv)
 	      XDisplayName(display_name));
       exit (1);
     }
-  G = CreateGraphics(dpy);
-  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
+  InitPictureCMap(dpy);
   x_fd = XConnectionNumber(dpy);
 
   fd_width = GetFdWidth();
@@ -691,7 +689,7 @@ void RedrawIcon(struct icon_info *item, int f)
 		   0, 0, item->icon_w, item->icon_h,
 		   hr, hr, plane);
       } else {
-        if (G->usingDefaultVisual || IS_PIXMAP_OURS(item)) {
+        if (Pdefault || IS_PIXMAP_OURS(item)) {
 	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
 		    0, 0, item->icon_w, item->icon_h, hr, hr);
         } else {
@@ -701,9 +699,8 @@ void RedrawIcon(struct icon_info *item, int f)
       }
     }
       
-    if (!(IS_ICON_SHAPED(item)) && (G->usingDefaultVisual
-				    || (item->icon_depth == 1)
-				    || IS_PIXMAP_OURS(item))) {
+    if (!(IS_ICON_SHAPED(item))
+	&& (Pdefault || (item->icon_depth == 1) || IS_PIXMAP_OURS(item))) {
       if (item->icon_w > 0 && item->icon_h > 0)
 	RelieveRectangle(dpy, item->icon_pixmap_w, 0, 0, item->icon_w
 		         +icon_relief - 1,
@@ -1020,7 +1017,7 @@ void CreateWindow(void)
 
   mysizehints.win_gravity = gravity;
 
-  if(G->depth < 2)
+  if(Pdepth < 2)
     {
       back_pix = icon_back_pix = act_icon_fore_pix = GetColor("white");
       fore_pix = icon_fore_pix = act_icon_back_pix = GetColor("black");
@@ -1045,10 +1042,10 @@ void CreateWindow(void)
 
   attributes.background_pixel = back_pix;
   attributes.border_pixel = 0;
-  attributes.colormap = G->cmap;
+  attributes.colormap = Pcmap;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
-			   mysizehints.width, mysizehints.height, 0, G->depth,
-			   InputOutput, G->viz,
+			   mysizehints.width, mysizehints.height, 0, Pdepth,
+			   InputOutput, Pvisual,
 			   CWBackPixel | CWBorderPixel | CWColormap,
 			   &attributes);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
@@ -1206,23 +1203,6 @@ void nocolor(char *a, char *b)
  fprintf(stderr,"%s: can't %s %s\n", MyName, a,b);
 }
 
-
-/************************************************************************
- * GetColor
- * 	Original work from GoodStuff:
- *		Copyright 1993, Robert Nation.
- ***********************************************************************/
-Pixel GetColor(char *name)
-{
-  XColor color;
-
-  color.pixel = 0;
-  if (!XParseColor (dpy, G->cmap, name, &color))
-    nocolor("parse",name);
-  else if(!XAllocColor (dpy, G->cmap, &color))
-    nocolor("alloc",name);
-  return color.pixel;
-}
 
 /************************************************************************
   SendFvwmPipe - Send a message back to fvwm

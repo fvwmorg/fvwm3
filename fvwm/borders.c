@@ -403,7 +403,7 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   {
       attributes.background_pixmap = TexturePixmap;
       valuemask = CWBackPixmap;
-      if (Scr.depth < 2) {
+      if (Pdepth < 2) {
 	  notex_attributes.background_pixmap = BackPixmap;
 	  notex_valuemask = CWBackPixmap;
       } else {
@@ -413,7 +413,7 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   }
   else
 #endif
-  if (Scr.depth < 2)
+  if (Pdepth < 2)
   {
       attributes.background_pixmap = BackPixmap;
       valuemask = CWBackPixmap;
@@ -598,7 +598,7 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     if(t->boundary_width < 2)
     {
       flush_expose (t->frame);
-      if(Scr.depth <2)
+      if(Pdepth <2)
       {
         XSetWindowBackgroundPixmap(dpy,t->frame,BackPixmap);
         XClearWindow(dpy,t->frame);
@@ -980,7 +980,7 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
   /* for mono, we clear an area in the title bar where the window
    * title goes, so that its more legible. For color, no need */
-  if(Scr.depth<2)
+  if(Pdepth<2)
   {
     RelieveRectangle(dpy,t->title_w,0,0,hor_off-3,t->title_g.height - 1,
                      ReliefGC, ShadowGC, rwidth);

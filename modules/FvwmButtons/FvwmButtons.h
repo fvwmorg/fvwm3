@@ -202,7 +202,6 @@ char *mymalloc(int);
 
 extern Display *Dpy;
 extern Window Root;
-extern Graphics *G;
 extern Window MyWindow;
 extern char *MyName;
 extern button_info *UberButton,*CurrentButton;

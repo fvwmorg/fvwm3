@@ -53,6 +53,7 @@
 #endif
 
 #include "libs/Module.h"
+#include "libs/Picture.h"
 #include "FvwmIdent.h"
 
 char *MyName;
@@ -61,7 +62,6 @@ int fd[2];
 
 Display *dpy;			/* which display are we talking to */
 Window Root;
-Graphics *G;
 GC gc;
 XFontStruct *font;
 #ifdef I18N_MB
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
 
-  G = CreateGraphics(dpy);
+  InitPictureCMap(dpy);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
@@ -439,7 +439,7 @@ void list_end(void)
   mysizehints.y = y;
 
 
-  if(G->depth < 2) {
+  if(Pdepth < 2) {
     attributes.background_pixel = GetColor("white");
     fore_pix = GetColor("black");
   } else {
@@ -447,11 +447,11 @@ void list_end(void)
     fore_pix = GetColor(ForeColor);
   }
 
-  attributes.colormap = G->cmap;
+  attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
-			   mysizehints.width, mysizehints.height, 0, G->depth,
-			   InputOutput, G->viz,
+			   mysizehints.width, mysizehints.height, 0, Pdepth,
+			   InputOutput, Pvisual,
 			   CWColormap | CWBackPixel | CWBorderPixel,
 			   &attributes);
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
@@ -862,30 +862,4 @@ void MakeList(void)
       } /* end getsizehints worked */
     }
   }
-}
-
-void nocolor(char *a, char *b)
-{
- fprintf(stderr,"FvwmInitBanner: can't %s %s\n", a,b);
-}
-
-/****************************************************************************
- *
- * Loads a single color
- *
- ****************************************************************************/
-Pixel GetColor(char *name)
-{
-  XColor color;
-
-  color.pixel = 0;
-   if (!XParseColor (dpy, G->cmap, name, &color))
-     {
-       nocolor("parse",name);
-     }
-   else if(!XAllocColor (dpy, G->cmap, &color))
-     {
-       nocolor("alloc",name);
-     }
-  return color.pixel;
 }

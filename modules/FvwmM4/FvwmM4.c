@@ -49,6 +49,7 @@
 #include "libs/Module.h"
 
 #include "FvwmM4.h"
+#include "libs/Picture.h"
 #include "libs/fvwmlib.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
@@ -75,7 +76,6 @@ int  m4_default_quotes;         /* Use default m4 quotes */
 char *m4_startquote = "`";         /* Left quote characters for m4 */
 char *m4_endquote = "'";           /* Right quote characters for m4 */
 
-Graphics *G;
 
 /***********************************************************************
  *
@@ -180,7 +180,7 @@ int main(int argc, char **argv)
     }
 
   /* set up G */
-  G = CreateGraphics(dpy);
+  InitPictureCMap(dpy);
 
   tmp_file = m4_defs(dpy, display_name,m4_options, filename);
 
@@ -354,7 +354,7 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   }
   fputs(MkDef("CLASS", vc), tmpf);
 
-  switch(G->viz->class)
+  switch(Pvisual->class)
   {
     case(StaticGray):
       vc = "StaticGray";
@@ -385,7 +385,7 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   else
     fputs(MkDef("COLOR", "No"), tmpf);
 
-  if (G->viz->class != StaticGray && G->viz->class != GrayScale)
+  if (Pvisual->class != StaticGray && Pvisual->class != GrayScale)
     fputs(MkDef("FVWM_COLOR", "Yes"), tmpf);
   else
     fputs(MkDef("FVWM_COLOR", "No"), tmpf);

@@ -21,7 +21,6 @@
 #endif
 
 extern Display *theDisplay;
-extern Graphics *G;
 extern Window theRoot;
 extern int theScreen;
 

@@ -44,6 +44,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/Picture.h"
 
 #include "FvwmScroll.h"
 
@@ -107,12 +108,12 @@ void CreateWindow(int x,int y, int w, int h)
 
   mysizehints.win_gravity = NorthWestGravity;
 
-  attributes.colormap = G->cmap;
+  attributes.colormap = Pcmap;
   attributes.background_pixel = GetColor(BackColor);
   attributes.border_pixel = 0;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
-			   mysizehints.width, mysizehints.height, 0, G->depth,
-			   InputOutput, G->viz,
+			   mysizehints.width, mysizehints.height, 0, Pdepth,
+			   InputOutput, Pvisual,
 			   CWColormap | CWBackPixel | CWBorderPixel,
 			   &attributes);
 
@@ -128,7 +129,7 @@ void CreateWindow(int x,int y, int w, int h)
   holder_win = XCreateWindow(dpy, main_win, PAD_WIDTH3, PAD_WIDTH3,
 			     mysizehints.width - BAR_WIDTH - PAD_WIDTH3,
 			     mysizehints.height - BAR_WIDTH - PAD_WIDTH3,
-			     0, G->depth, InputOutput, G->viz,
+			     0, Pdepth, InputOutput, Pvisual,
 			     CWColormap | CWBackPixel | CWBorderPixel,
 			     &attributes);
   XMapWindow(dpy,holder_win);
@@ -142,26 +143,6 @@ void CreateWindow(int x,int y, int w, int h)
 
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
  }
-
-/****************************************************************************
- *
- * Loads a single color
- *
- ****************************************************************************/
-Pixel GetColor(char *name)
-{
-  XColor color;
-  color.pixel = 0;
-   if (!XParseColor (dpy, G->cmap, name, &color))
-     {
-       nocolor("parse",name);
-     }
-   else if(!XAllocColor (dpy, G->cmap, &color))
-     {
-       nocolor("alloc",name);
-     }
-  return color.pixel;
-}
 
 /***********************************************************************
  *

@@ -50,6 +50,7 @@
 
 #include "FvwmCpp.h"
 #include "libs/fvwmlib.h"
+#include "libs/Picture.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #include <X11/extensions/shape.h>
@@ -71,7 +72,6 @@ char *cpp_prog = FVWM_CPP;          /* Name of the cpp program */
 char cpp_options[BUFSIZ];
 char cpp_outfile[BUFSIZ]="";
 
-Graphics *G;
 
 /***********************************************************************
  *
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
     }
 
   /* set up G */
-  G = CreateGraphics(dpy);
+  InitPictureCMap(dpy);
 
   tmp_file = cpp_defs(dpy, display_name,cpp_options, filename);
 
@@ -324,7 +324,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   }
   fputs(MkDef("CLASS", vc), tmpf);
 
-  switch(G->viz->class)
+  switch(Pvisual->class)
   {
     case(StaticGray):
       vc = "StaticGray";
@@ -355,7 +355,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   else
     fputs(MkDef("COLOR", "No"), tmpf);
 
-  if (G->viz->class != StaticGray && G->viz->class != GrayScale)
+  if (Pvisual->class != StaticGray && Pvisual->class != GrayScale)
     fputs(MkDef("FVWM_COLOR", "Yes"), tmpf);
   else
     fputs(MkDef("FVWM_COLOR", "No"), tmpf);

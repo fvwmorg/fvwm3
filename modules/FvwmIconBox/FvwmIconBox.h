@@ -86,7 +86,6 @@ extern int itemcmp(struct icon_info *item1, struct icon_info *item2);
 
 
 extern Display *dpy;			/* which display are we talking to */
-extern Graphics *G;
 extern Window Root;
 extern Window main_win;
 extern Window holder_win;

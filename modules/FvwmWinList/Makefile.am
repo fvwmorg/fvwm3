@@ -10,7 +10,7 @@ EXTRA_DIST = $(man_MANS) CHANGELOG config.sample ConfigFvwmWinList
 config_DATA = \
   ConfigFvwmWinList
 
-FvwmWinList_SOURCES = ButtonArray.c ButtonArray.h Colors.c Colors.h \
+FvwmWinList_SOURCES = ButtonArray.c ButtonArray.h \
     FvwmWinList.c FvwmWinList.h List.c List.h \
 		    Mallocs.c Mallocs.h
 FvwmWinList_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a

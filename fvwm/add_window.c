@@ -243,7 +243,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   FetchWmProtocols (tmp_win);
   FetchWmColormapWindows (tmp_win);
   if(!(XGetWindowAttributes(dpy,tmp_win->w,&(tmp_win->attr))))
-    tmp_win->attr.colormap = PictureCMap;
+    tmp_win->attr.colormap = Pcmap;
 
   tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
 
@@ -477,23 +477,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->BackPixel = Scr.StdColors.back;
 
   if(SGET_FORE_COLOR_NAME(style) != NULL) {
-    XColor color;
-
-    if(XParseColor(dpy, PictureCMap, SGET_FORE_COLOR_NAME(style), &color) &&
-       XAllocColor(dpy, PictureCMap, &color))
-      {
-        tmp_win->TextPixel = color.pixel;
-      }
+    tmp_win->TextPixel = GetColor(SGET_FORE_COLOR_NAME(style));
   }
   if(SGET_BACK_COLOR_NAME(style) != NULL) {
-    XColor color;
-
-    if((XParseColor (dpy, PictureCMap, SGET_BACK_COLOR_NAME(style), &color))
-       &&(XAllocColor (dpy, PictureCMap, &color)))
-
-      {
-        tmp_win->BackPixel = color.pixel;
-      }
+    tmp_win->BackPixel = GetColor(SGET_BACK_COLOR_NAME(style));
     tmp_win->ShadowPixel = GetShadow(tmp_win->BackPixel);
     tmp_win->ReliefPixel = GetHilite(tmp_win->BackPixel);
   }
@@ -542,7 +529,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* create windows */
 
   /* mono screens use a stipple pixmap to get greys */
-  if(Scr.depth < 2) {
+  if(Pdepth < 2) {
     valuemask_save = CWBackPixmap;
     if(IS_STICKY(tmp_win))
       attributes.background_pixmap = Scr.sticky_gray_pixmap;
@@ -556,7 +543,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-  attributes.colormap = Scr.cmap;
+  attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
   attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask
 			   | ButtonReleaseMask | EnterWindowMask
@@ -578,8 +565,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* create the frame window, child of root, grandparent of client */
   tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_g.x,
 				 tmp_win->frame_g.y, tmp_win->frame_g.width,
-				 tmp_win->frame_g.height, 0, Scr.depth,
-				 InputOutput, Scr.viz, valuemask, &attributes);
+				 tmp_win->frame_g.height, 0, Pdepth,
+				 InputOutput, Pvisual, valuemask, &attributes);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   /* restore background */
@@ -690,7 +677,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* may look odd with shaped windows if fvwm has shapes disabled */
   valuemask = CWCursor|CWColormap|CWBorderPixel|CWBackPixmap|CWEventMask;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-  attributes.colormap = Scr.cmap;
+  attributes.colormap = Pcmap;
   attributes.background_pixmap = None;
   attributes.event_mask = SubstructureRedirectMask;
   tmp_win->Parent = XCreateWindow (dpy, tmp_win->frame,
@@ -864,7 +851,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   FetchWmProtocols (tmp_win);
   FetchWmColormapWindows (tmp_win);
   if(!(XGetWindowAttributes(dpy,tmp_win->w,&(tmp_win->attr))))
-    tmp_win->attr.colormap = PictureCMap;
+    tmp_win->attr.colormap = Pcmap;
   if(NeedToResizeToo)
     {
       XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,

@@ -213,14 +213,13 @@ void Nop_func(F_CMD_ARGS);
 void SetGlobalOptions(F_CMD_ARGS);
 void Emulate(F_CMD_ARGS);
 void set_mask_function(F_CMD_ARGS);
-Pixel GetColor(char *);
 void FreeColors(Pixel *pixels, int n);
 #ifdef GRADIENT_BUTTONS
 Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels);
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 			      int nsegs, int npixels);
-Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
-			    char type, char *action, unsigned int width,
+Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, char type,
+			    char *action, unsigned int width,
 			    unsigned int height, unsigned int *width_return,
 			    unsigned int *height_return);
 unsigned int ParseGradient(char *gradient, char ***colors_return,

@@ -96,13 +96,13 @@ void CreateIconWindow(int button, Window *win)
      */
   attributes.background_pixel = back_pix;
   attributes.border_pixel = 0;
-  attributes.colormap = G->cmap;
+  attributes.colormap = Pcmap;
   attributes.event_mask = ExposureMask;
   valuemask = CWEventMask | CWBackPixel | CWBorderPixel | CWColormap;
 
   Buttons[button].IconWin =
-    XCreateWindow(dpy, *win, 0, 0, BUTTONWIDTH, BUTTONHEIGHT, 0, G->depth,
-		  InputOutput, G->viz, valuemask, &attributes);
+    XCreateWindow(dpy, *win, 0, 0, BUTTONWIDTH, BUTTONHEIGHT, 0, Pdepth,
+		  InputOutput, Pvisual, valuemask, &attributes);
 
   return;
 #endif
@@ -132,7 +132,7 @@ void ConfigureIconWindow(int button,int row, int column)
     XMoveResizeWindow(dpy, Buttons[button].IconWin, x,y,BUTTONWIDTH,
 		      BUTTONHEIGHT);
     Buttons[button].completeIcon =
-      XCreatePixmap(dpy,main_win, BUTTONWIDTH,BUTTONHEIGHT,G->depth);
+      XCreatePixmap(dpy,main_win, BUTTONWIDTH,BUTTONHEIGHT,Pdepth);
     XCopyArea(dpy, Buttons[BACK_BUTTON].icons[0].icon,
 	      Buttons[button].completeIcon, NormalGC, 0,0,
 	      BUTTONWIDTH,BUTTONHEIGHT, 0,0);
@@ -229,9 +229,9 @@ int GetXPMFile(int button,int ico)
 
     path = findImageFile(Buttons[button].icons[ico].file, imagePath,R_OK);
     if(path == NULL) return 0;
-    xpm_attributes.colormap = G->cmap;
-    xpm_attributes.visual = G->viz;
-    xpm_attributes.depth = G->depth;
+    xpm_attributes.colormap = Pcmap;
+    xpm_attributes.visual = Pvisual;
+    xpm_attributes.depth = Pdepth;
     xpm_attributes.closeness = 40000;
     xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmColormap
 			       | XpmVisual | XpmDepth |XpmCloseness;
@@ -242,7 +242,7 @@ int GetXPMFile(int button,int ico)
     {
 	Buttons[button].icons[ico].w = xpm_attributes.width;
 	Buttons[button].icons[ico].h = xpm_attributes.height;
-	Buttons[button].icons[ico].depth = G->depth;
+	Buttons[button].icons[ico].depth = Pdepth;
 	free(path);
     } else {
 	free(path);
@@ -257,7 +257,7 @@ int GetXPMFile(int button,int ico)
 
 	  BUTTONWIDTH = 64;
 	  BUTTONHEIGHT = 64;
-	  resized = XCreatePixmap(dpy, main_win, 64, 64, G->depth);
+	  resized = XCreatePixmap(dpy, main_win, 64, 64, Pdepth);
 	  XCopyArea(dpy, Buttons[button].icons[ico].icon,
 		    resized, NormalGC, 0, 0, 64, 64, 0, 0);
 	  XFreePixmap(dpy, Buttons[button].icons[ico].icon);
@@ -283,9 +283,9 @@ int GetXPMData(int button, char **data)
 
   if( button != BACK_BUTTON )
 	return 0;
-  xpm_attributes.colormap = G->cmap;
-  xpm_attributes.visual = G->viz;
-  xpm_attributes.depth = G->depth;
+  xpm_attributes.colormap = Pcmap;
+  xpm_attributes.visual = Pvisual;
+  xpm_attributes.depth = Pdepth;
   xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmColormap
 			     | XpmVisual | XpmDepth;
   if(XpmCreatePixmapFromData(dpy, main_win, data,
@@ -295,7 +295,7 @@ int GetXPMData(int button, char **data)
     {
       BUTTONWIDTH = Buttons[button].icons[0].w = xpm_attributes.width;
       BUTTONHEIGHT = Buttons[button].icons[0].h = xpm_attributes.height;
-      Buttons[button].icons[0].depth = G->depth;
+      Buttons[button].icons[0].depth = Pdepth;
     }
    else {
        return 0;
@@ -316,7 +316,7 @@ int GetXPMData(int button, char **data)
 int GetXPMGradient(int button, int from[3], int to[3], int maxcols,
 		   int type)
 {
-    Buttons[button].icons[0].icon=XCreatePixmap(dpy,main_win,64,64, G->depth);
+    Buttons[button].icons[0].icon=XCreatePixmap(dpy,main_win,64,64, Pdepth);
     Buttons[button].icons[0].mask=None;
     Buttons[button].icons[0].w = 64;
     Buttons[button].icons[0].h = 64;
@@ -324,7 +324,7 @@ int GetXPMGradient(int button, int from[3], int to[3], int maxcols,
 	BUTTONWIDTH = 64;
 	BUTTONHEIGHT = 64;
     }
-    Buttons[button].icons[0].depth = G->depth;
+    Buttons[button].icons[0].depth = Pdepth;
     switch (type) {
      case TEXTURE_GRADIENT:
 	if (!DrawDegradeRelief(dpy, Buttons[button].icons[0].icon, 0,0,64,64,
@@ -374,12 +374,12 @@ int GetSolidXPM(int button, Pixel pixel)
 	BUTTONWIDTH = 64;
 	BUTTONHEIGHT = 64;
     }
-    Buttons[button].icons[0].icon=XCreatePixmap(dpy,main_win,64,64, G->depth);
+    Buttons[button].icons[0].icon=XCreatePixmap(dpy,main_win,64,64, Pdepth);
     Buttons[button].icons[0].mask=None;
     XFillRectangle(dpy,Buttons[button].icons[0].icon,gc,0,0,64,64);
     Buttons[button].icons[0].w = 64;
     Buttons[button].icons[0].h = 64;
-    Buttons[button].icons[0].depth = G->depth;
+    Buttons[button].icons[0].depth = Pdepth;
     XFreeGC(dpy,gc);
     DrawOutline(Buttons[button].icons[0].icon,64,64);
 

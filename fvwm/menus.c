@@ -2246,7 +2246,7 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 	ih = MR_HEIGHT(mr) - iy;
       /* grab image */
       MR_STORED_ITEM(mr).stored =
-	XCreatePixmap(dpy, Scr.NoFocusWin, mw, ih, Scr.depth);
+	XCreatePixmap(dpy, Scr.NoFocusWin, mw, ih, Pdepth);
       XCopyArea(
 	dpy, MR_WINDOW(mr), MR_STORED_ITEM(mr).stored,
 	MST_MENU_GC(mr), MST_BORDER_WIDTH(mr), iy, mw, ih, 0, 0);
@@ -2518,7 +2518,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
 
   ShadowGC = MST_MENU_SHADOW_GC(mr);
-  if(Scr.depth<2)
+  if(Pdepth<2)
     ReliefGC = MST_MENU_SHADOW_GC(mr);
   else
     ReliefGC = MST_MENU_RELIEF_GC(mr);
@@ -2766,7 +2766,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     x = menu_middle_x_offset(mr) - MI_PICTURE(mi)->width / 2;
     y = y_offset + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
 
-    if(MI_PICTURE(mi)->depth == Scr.depth) /* pixmap */
+    if(MI_PICTURE(mi)->depth == Pdepth) /* pixmap */
     {
       Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
       Globalgcv.clip_mask = MI_PICTURE(mi)->mask;
@@ -2810,7 +2810,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 	  (MI_HEIGHT(mi) + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0) -
 	   MI_MINI_ICON(mi)[i]->height) / 2;
       }
-      if(MI_MINI_ICON(mi)[i]->depth == Scr.depth) /* pixmap */
+      if(MI_MINI_ICON(mi)[i]->depth == Pdepth) /* pixmap */
       {
 	Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
 	Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->mask;
@@ -2859,7 +2859,7 @@ static void paint_side_pic(MenuRoot *mr)
   else
     return;
 
-  if(Scr.depth < 2)
+  if(Pdepth < 2)
   {
     ReliefGC = MST_MENU_SHADOW_GC(mr);
   }
@@ -2899,7 +2899,7 @@ static void paint_side_pic(MenuRoot *mr)
     yt = MR_HEIGHT(mr) - bw - sidePic->height;
   }
 
-  if(sidePic->depth == Scr.depth) /* pixmap */
+  if(sidePic->depth == Pdepth) /* pixmap */
   {
     Globalgcv.clip_mask = sidePic->mask;
     Globalgcv.clip_x_origin = MR_SIDEPIC_X_OFFSET(mr);
@@ -3051,7 +3051,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
      * several menu items. */
     RelieveRectangle(
       dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1, MR_HEIGHT(mr) - 1,
-      (Scr.depth<2) ?
+      (Pdepth<2) ?
       MST_MENU_SHADOW_GC(mr) : MST_MENU_RELIEF_GC(mr),
       MST_MENU_SHADOW_GC(mr), bw);
     return;
@@ -3087,7 +3087,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  register int dw;
 
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr),
-			       GRADIENT_PIXMAP_THICKNESS, Scr.depth);
+			       GRADIENT_PIXMAP_THICKNESS, Pdepth);
 	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 	  dw = (float) (bounds.width / ST_FACE(ms).u.grad.npixels) + 1;
 	  for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
@@ -3112,7 +3112,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  register int dh;
 
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), GRADIENT_PIXMAP_THICKNESS,
-			       MR_HEIGHT(mr), Scr.depth);
+			       MR_HEIGHT(mr), Pdepth);
 	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 	  dh = (float) (bounds.height / ST_FACE(ms).u.grad.npixels) + 1;
 	  for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
@@ -4033,7 +4033,7 @@ static void make_menu_window(MenuRoot *mr)
   valuemask = CWBackPixel | CWEventMask | CWCursor | CWColormap
     | CWBorderPixel | CWSaveUnder;
   attributes.border_pixel = 0;
-  attributes.colormap = Scr.cmap;
+  attributes.colormap = Pcmap;
   attributes.background_pixel = MST_MENU_COLORS(mr).back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
   attributes.cursor = Scr.FvwmCursors[CRS_MENU];
@@ -4048,8 +4048,8 @@ static void make_menu_window(MenuRoot *mr)
   if (h == 0)
     h = 1;
   MR_WINDOW(mr) = XCreateWindow(dpy, Scr.Root, 0, 0, w, h,
-				(unsigned int) 0, Scr.depth, InputOutput,
-				Scr.viz, valuemask, &attributes);
+				(unsigned int) 0, Pdepth, InputOutput,
+				Pvisual, valuemask, &attributes);
   XSaveContext(dpy,MR_WINDOW(mr),MenuContext,(caddr_t)mr);
 }
 
@@ -5057,7 +5057,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
     ST_MENU_ACTIVE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
   if (!ST_HAS_STIPPLE_FORE(ms))
     ST_MENU_STIPPLE_COLORS(ms).fore = ST_MENU_COLORS(ms).back;
-  if(Scr.depth > 2)
+  if(Pdepth > 2)
   {                 /* if not black and white */
     ST_MENU_RELIEF_COLORS(ms).back = GetShadow(ST_MENU_COLORS(ms).back);
     ST_MENU_RELIEF_COLORS(ms).fore = GetHilite(ST_MENU_COLORS(ms).back);
@@ -5112,7 +5112,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   else
     ST_MENU_ACTIVE_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  if(Scr.depth < 2)
+  if(Pdepth < 2)
   {
     gcv.fill_style = FillStippled;
     gcv.stipple = Scr.gray_bitmap;

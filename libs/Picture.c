@@ -70,19 +70,35 @@ static double c400_distance(XColor *, XColor *);
 
 
 static Picture *PictureList=NULL;
-Visual *PictureVisual;
-Colormap PictureCMap;
-unsigned int PictureDepth;
-Display *PictureSaveDisplay;            /* Save area for display pointer */
+Bool Pdefault;
+Visual *Pvisual;
+Colormap Pcmap;
+unsigned int Pdepth;
+Display *Pdpy;            /* Save area for display pointer */
 
+void InitPictureCMap(Display *dpy) {
+  char *envp;
 
-/* This routine called during fvwm and some modules initialization */
-void SavePictureCMap(Display *dpy, Visual *viz, Colormap cmap, int depth)
-{
-  PictureSaveDisplay = dpy;                       /* save for later */
-  PictureVisual = viz;
-  PictureCMap = cmap;
-  PictureDepth = depth;
+  Pdpy = dpy;
+  /* if fvwm has not set this env-var it is using the default visual */
+  if ((envp = getenv("FVWM_VISUALID")) != NULL) {
+    /* convert the env-vars to a visual and colormap */
+    int viscount;
+    XVisualInfo vizinfo, *xvi;
+
+    sscanf(envp, "%lx", &vizinfo.visualid);
+    xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
+    Pvisual = xvi->visual;
+    Pdepth = xvi->depth;
+    sscanf(getenv("FVWM_COLORMAP"), "%lx", &Pcmap);
+    Pdefault = False;
+  } else {
+    int screen = DefaultScreen(dpy);
+    Pvisual = DefaultVisual(dpy, screen);
+    Pdepth = DefaultDepth(dpy, screen);
+    Pcmap = DefaultColormap(dpy, screen);
+    Pdefault = True;
+  }
 }
 
 
@@ -135,9 +151,9 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
 
 #ifdef XPM
   /* Try to load it as an X Pixmap first */
-  xpm_attributes.visual = PictureVisual;
-  xpm_attributes.colormap = PictureCMap;
-  xpm_attributes.depth = PictureDepth;
+  xpm_attributes.visual = Pvisual;
+  xpm_attributes.colormap = Pcmap;
+  xpm_attributes.depth = Pdepth;
   xpm_attributes.closeness=40000; /* Allow for "similar" colors */
   xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmCloseness
 			     | XpmVisual | XpmColormap | XpmDepth;
@@ -150,7 +166,7 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
     if (rc == XpmSuccess) {
       p->width = my_image.width;
       p->height = my_image.height;
-      p->depth = PictureDepth;
+      p->depth = Pdepth;
       XpmFreeXpmImage(&my_image);
       return p;
     }
@@ -415,7 +431,7 @@ static void c200_substitute_color(char **my_color, int color_limit)
 static void c300_color_to_rgb(char *c_color, XColor *rgb_space)
 {
   int rc;
-  rc=XParseColor(PictureSaveDisplay, PictureCMap, c_color, rgb_space);
+  rc=XParseColor(Pdpy, Pcmap, c_color, rgb_space);
   if (rc==0) {
     fprintf(stderr,"color_to_rgb: can't parse color %s, rc %d\n", c_color, rc);
     return;
@@ -434,3 +450,14 @@ static double c400_distance(XColor *target_ptr, XColor *base_ptr)
   return dst;
 }
 #endif /* XPM */
+
+Pixel GetColor(char *name)
+{
+  XColor color;
+  color.pixel = 0;
+   if (!XParseColor (Pdpy, Pcmap, name, &color))
+     fprintf(stderr, "Cannot parse color %s\n", name);
+   else if(!XAllocColor (Pdpy, Pcmap, &color))
+     fprintf(stderr, "Cannot alloc color %s\n", name);
+  return color.pixel;
+}

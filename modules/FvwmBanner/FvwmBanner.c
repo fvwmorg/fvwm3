@@ -80,7 +80,6 @@ static int MyNameLen;
 int timeout = 3000000; /* default time of 3 seconds */
 
 Display *dpy;			/* which display are we talking to */
-Graphics *G;
 Window Root;
 int screen;
 int x_fd;
@@ -151,8 +150,7 @@ int main(int argc, char **argv)
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
 
-  G = CreateGraphics(dpy);
-  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
+  InitPictureCMap(dpy);
   parseOptions(fd);
 
   /* chick in the neck situation:
@@ -161,10 +159,10 @@ int main(int argc, char **argv)
    */
   attr.background_pixmap = None;
   attr.border_pixel = 0;
-  attr.colormap = G->cmap;
+  attr.colormap = Pcmap;
   attr.override_redirect = no_wm;
-  win = XCreateWindow(dpy, Root, -20, -20, 10, 10, 0, G->depth, InputOutput,
-		      G->viz,
+  win = XCreateWindow(dpy, Root, -20, -20, 10, 10, 0, Pdepth, InputOutput,
+		      Pvisual,
 		      CWColormap|CWBackPixmap|CWBorderPixel|CWOverrideRedirect,
 		      &attr);
 
@@ -264,9 +262,9 @@ void GetXPMData(char **data)
   view.attributes.valuemask = XpmReturnPixels | XpmCloseness | XpmExtensions
 			      | XpmVisual | XpmColormap | XpmDepth;
   view.attributes.closeness = 40000 /* Allow for "similar" colors */;
-  view.attributes.visual = G->viz;
-  view.attributes.colormap = G->cmap;
-  view.attributes.depth = G->depth;
+  view.attributes.visual = Pvisual;
+  view.attributes.colormap = Pcmap;
+  view.attributes.depth = Pdepth;
   if(XpmCreatePixmapFromData(dpy, win, data, &view.pixmap, &view.mask,
 			     &view.attributes)!=XpmSuccess)
   {
@@ -281,9 +279,9 @@ void GetXPMFile(char *file, char *path)
   view.attributes.valuemask = XpmReturnPixels | XpmCloseness | XpmExtensions
 			      | XpmVisual | XpmColormap | XpmDepth;
   view.attributes.closeness = 40000 /* Allow for "similar" colors */;
-  view.attributes.visual = G->viz;
-  view.attributes.colormap = G->cmap;
-  view.attributes.depth = G->depth;
+  view.attributes.visual = Pvisual;
+  view.attributes.colormap = Pcmap;
+  view.attributes.depth = Pdepth;
 
   if (file)
     full_file = findImageFile(file,path,R_OK);

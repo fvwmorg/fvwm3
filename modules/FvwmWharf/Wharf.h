@@ -62,7 +62,6 @@ void RedrawUnpushedOutline(Window *win, int i,int j);
 void RedrawPushedOutline(Window *win, int i, int j);
 void CreateShadowGC(void);
 extern Display *dpy;			/* which display are we talking to */
-extern Graphics *G;
 extern Window Root;
 extern Window main_win;
 extern int screen;

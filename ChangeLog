@@ -1,6 +1,10 @@
 1997-07-01  Hippo
 
-	* libs/Picture.c: Removed InitPictureCmap()
+	* {fvwm,libs}/Makefile.am: Reordered .c file for faster parallel makes.
+	* libs/ModGraph.c: merged with Picture.c.
+	* libs/Picture.c: Rewrote InitPictureCmap(), removed SavePictureCMap
+	  Added GetColor().
+	* {fvwm/modules}/* Fixes due to the above, removed lots of GetColor()s.
 
 1999-07-01  Paul D. Smith  <psmith@gnu.org>
 

@@ -43,7 +43,6 @@ int fd[2];
 Display *dpy;			/* which display are we talking to */
 Window Root;
 int screen;
-Graphics *G;
 GC reliefGC, shadowGC;
 int x_fd;
 int ScreenWidth, ScreenHeight;
@@ -117,8 +116,7 @@ int main(int argc, char **argv)
   ScreenWidth = DisplayWidth(dpy,screen);
 
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
-  G = CreateGraphics(dpy);
-  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
+  InitPictureCMap(dpy);
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */

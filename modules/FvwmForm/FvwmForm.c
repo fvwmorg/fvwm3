@@ -111,8 +111,6 @@
 #undef IamTheMain
 
 /* prototypes */
-static Pixel MyGetColor(char *color,char *Myname,int bw);
-static void nocolor(char *, char *,char *);
 static void AssignDrawTable(Item *);
 static void AddItem();
 static void PutDataInForm(char *);
@@ -414,8 +412,8 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
     return;
   }
   if (dt->dt_used == 0) {               /* if nothing allocated */
-    dt->dt_colors[c_fg] = MyGetColor(dt->dt_color_names[c_fg],MyName+1,0);
-    dt->dt_colors[c_bg] = MyGetColor(dt->dt_color_names[c_bg],MyName+1,1);
+    dt->dt_colors[c_fg] = GetColor(dt->dt_color_names[c_fg]);
+    dt->dt_colors[c_bg] = GetColor(dt->dt_color_names[c_bg]);
 
     xgcv.foreground = dt->dt_colors[c_fg];
     xgcv.background = dt->dt_colors[c_bg];
@@ -427,15 +425,13 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
   if (this_item->type == I_TEXT) {      /* If no shadows needed */
     return;
   }
-  dt->dt_colors[c_item_fg] = MyGetColor(dt->dt_color_names[c_item_fg],
-                                        MyName+1,0);
-  dt->dt_colors[c_item_bg] = MyGetColor(dt->dt_color_names[c_item_bg],
-                                        MyName+1,1);
+  dt->dt_colors[c_item_fg] = GetColor(dt->dt_color_names[c_item_fg]);
+  dt->dt_colors[c_item_bg] = GetColor(dt->dt_color_names[c_item_bg]);
   xgcv.foreground = dt->dt_colors[c_item_fg];
   xgcv.background = dt->dt_colors[c_item_bg];
   xgcv.font = dt->dt_font;
   dt->dt_item_GC = XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
-  if (G->depth < 2) {
+  if (Pdepth < 2) {
     dt->dt_colors[c_itemlo] = BlackPixel(dpy, screen);
     dt->dt_colors[c_itemhi] = WhitePixel(dpy, screen);
   } else {
@@ -1257,11 +1253,10 @@ static void OpenWindows ()
 
   xc_ibeam = XCreateFontCursor(dpy, XC_xterm);
   xc_hand = XCreateFontCursor(dpy, XC_hand2);
-  xcf.pixel = WhitePixel(dpy, screen);
-  XQueryColor(dpy, PictureCMap, &xcf);
-  xcb.pixel = CF.screen_background =
-    MyGetColor(screen_background_color,MyName+1,0);
-  XQueryColor(dpy, PictureCMap, &xcb);
+  xcf.pixel = GetColor("White");
+  XQueryColor(dpy, Pcmap, &xcf);
+  xcb.pixel = CF.screen_background = GetColor(screen_background_color);
+  XQueryColor(dpy, Pcmap, &xcb);
   XRecolorCursor(dpy, xc_ibeam, &xcf, &xcb);
 
   /* the frame window first */
@@ -1282,9 +1277,9 @@ static void OpenWindows ()
              screen_background_color));
   xswa.background_pixel = CF.screen_background;
   xswa.border_pixel = 0;
-  xswa.colormap = G->cmap;
+  xswa.colormap = Pcmap;
   CF.frame = XCreateWindow(dpy, root, x, y, CF.max_width, CF.total_height, 0,
-			   G->depth, InputOutput, G->viz,
+			   Pdepth, InputOutput, Pvisual,
 			   CWColormap | CWBackPixel | CWBorderPixel, &xswa);
   XSelectInput(dpy, CF.frame,
                KeyPressMask | ExposureMask | StructureNotifyMask);
@@ -1577,8 +1572,7 @@ int main (int argc, char **argv)
   if (ref == 0) ref = None;
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
-  G = CreateGraphics(dpy);
-  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
+  InitPictureCMap(dpy);
 
   fd_x = XConnectionNumber(dpy);
 
@@ -1609,34 +1603,5 @@ int main (int argc, char **argv)
 
 void DeadPipe(int nonsense) {
   exit(0);
-}
-
-/*
- * *************************************************************************
- * Returns color Pixel value for a named color.  Similar to all the other
- * color allocation  subroutines, except it handles  black  and white and
- * gets the module name as input for error messages.
- *
- * Would make a generic subroutine if dpy,  screen, scr_depth are handled
- * somehow.
- * *************************************************************************
- */
-static Pixel MyGetColor(char *name, char *ModName, int bw)
-{
-  XColor color;
-
-  if (G->depth < 2) {
-    return (bw ? WhitePixel(dpy, screen) : BlackPixel(dpy, screen));
-  }
-  color.pixel = 0;
-  if (!XParseColor (dpy, G->cmap, name, &color))
-    nocolor("parse",name,ModName);
-  else if(!XAllocColor (dpy, G->cmap, &color))
-    nocolor("alloc",name,ModName);
-  return color.pixel;
-}
-
-static void nocolor(char *a, char *b, char *ModName) {
- fprintf(stderr,"%s: can't %s %s\n", ModName, a,b);
 }
 

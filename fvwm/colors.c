@@ -76,27 +76,6 @@ void CreateGCs(void)
 
 /****************************************************************************
  *
- * Loads a single color
- *
- ****************************************************************************/
-Pixel GetColor(char *name)
-{
-  XColor color;
-
-  color.pixel = 0;
-  if (!XParseColor (dpy, PictureCMap, name, &color))
-    {
-      nocolor("parse",name);
-    }
-  else if(!XAllocColor (dpy, PictureCMap, &color))
-    {
-      nocolor("alloc",name);
-    }
-  return color.pixel;
-}
-
-/****************************************************************************
- *
  * Free an array of colours (n colours), never free black
  *
  ****************************************************************************/
@@ -108,7 +87,7 @@ void FreeColors(Pixel *pixels, int n)
   for (i = 0; i < n; i++)
   {
     if (pixels[i] != 0)
-      XFreeColors(dpy, PictureCMap, pixels + i, 1, 0);
+      XFreeColors(dpy, Pcmap, pixels + i, 1, 0);
   }
 }
 
@@ -170,12 +149,12 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
                npixels);
       return NULL;
     }
-    if (!s_from || !XParseColor(dpy, PictureCMap, s_from,
+    if (!s_from || !XParseColor(dpy, Pcmap, s_from,
 				&from)) {
 	nocolor("parse", s_from);
 	return NULL;
     }
-    if (!s_to || !XParseColor(dpy, PictureCMap, s_to, &to)) {
+    if (!s_to || !XParseColor(dpy, Pcmap, s_to, &to)) {
 	nocolor("parse", s_to);
 	return NULL;
     }
@@ -187,7 +166,7 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
     c.flags = DoRed | DoGreen | DoBlue;
     for (; i < npixels; ++i)
     {
-	if (!XAllocColor(dpy, PictureCMap, &c))
+	if (!XAllocColor(dpy, Pcmap, &c))
 	    got_all = 0;
 	pixels[ i ] = c.pixel;
 	c.red = (unsigned short) (r += dr);
@@ -208,8 +187,8 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
  * types are HVDBSCRY for Horizontal, Vertical, Diagonal, Back-diagonal, Square,
  * Circular, Radar and Yin/Yang respectively (in order of bloatiness)
  */
-Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
-			    char type, char *action, unsigned int width,
+Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, char type,
+			    char *action, unsigned int width,
 			    unsigned int height, unsigned int *width_return,
 			    unsigned int *height_return)
 {
@@ -281,13 +260,13 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
   }
 
   /* create a pixmap to use */
-  pixmap = XCreatePixmap(dpy, d, width, height, depth);
+  pixmap = XCreatePixmap(dpy, d, width, height, Pdepth);
   if (pixmap == None)
     return None;
 
   /* create an XImage structure */
-  image = XCreateImage(dpy, Scr.viz, depth, ZPixmap, 0, 0, width, height,
-		       depth > 16 ? 32 : (depth > 8 ? 16 : 8), 0);
+  image = XCreateImage(dpy, Pvisual, Pdepth, ZPixmap, 0, 0, width, height,
+		       Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
   if (!image){
     fvwm_msg(ERR, me, "%cGradient couldn't get image", type);
     XFreePixmap(dpy, pixmap);

@@ -2,7 +2,7 @@ Changes in beta release 2.3.5 (July 1999)
 
 * Fvwm web files are now in a separate CVS tree.
 
-* Fvwm and all modules except FvwmScroll now share the same visual and colormap
+* All modules except FvwmScript and FvwmGTK share fvwm's visual.
  
 * The behaviour of the Raised and Visible flags for Next, Circulate, ...
   commands has been changed. They now do what their names suggest, i.e.

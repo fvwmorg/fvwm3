@@ -109,7 +109,6 @@ int   x_fd;
 
 /* X related things */
 Display *dpy;
-Graphics *G;
 Window  Root, win;
 int     screen;
 Pixel   back, fore;
@@ -1159,8 +1158,7 @@ void StartMeUp()
 	      XDisplayName(""));
       exit (1);
    }
-   G = CreateGraphics(dpy);
-   SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
+   InitPictureCMap(dpy);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);
    Root = RootWindow(dpy, screen);
@@ -1247,7 +1245,7 @@ void StartMeUp()
    win_x = hints.x;
    win_y = hints.y;
 
-   if(G->depth < 2) {
+   if(Pdepth < 2) {
      back = GetColor("white");
      fore = GetColor("black");
    } else {
@@ -1257,9 +1255,10 @@ void StartMeUp()
 
    attr.background_pixel = back;
    attr.border_pixel = 0;
-   attr.colormap = G->cmap;
-   win=XCreateWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,0,G->depth,
-		     InputOutput,G->viz,CWBackPixel|CWBorderPixel|CWColormap,&attr);
+   attr.colormap = Pcmap;
+   win=XCreateWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,0,Pdepth,
+		     InputOutput,Pvisual,CWBackPixel|CWBorderPixel|CWColormap,
+		     &attr);
 
    wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
    XSetWMProtocols(dpy,win,&wm_del_win,1);
@@ -1284,7 +1283,7 @@ void StartMeUp()
    gcval.graphics_exposures = False;
    graph = XCreateGC(dpy,win,gcmask,&gcval);
 
-   if(G->depth < 2)
+   if(Pdepth < 2)
      gcval.foreground = GetShadow(fore);
    else
      gcval.foreground = GetShadow(back);
@@ -1312,7 +1311,7 @@ void StartMeUp()
    gcval.tile       = XCreatePixmapFromBitmapData(dpy, win, (char *)gray_bits,
 						  gray_width, gray_height,
 						  gcval.foreground,
-						  gcval.background,G->depth);
+						  gcval.background,Pdepth);
    checkered = XCreateGC(dpy, win, gcmask, &gcval);
 
    XSelectInput(dpy,win,(ExposureMask | KeyPressMask | PointerMotionMask |

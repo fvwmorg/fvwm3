@@ -218,13 +218,13 @@ color_mult (unsigned short *red,
 static Pixel
 adjust_pixel_brightness(Pixel pixel, double factor)
 {
-  extern Colormap PictureCMap;
-  extern Display *PictureSaveDisplay;
+  extern Colormap Pcmap;
+  extern Display *Pdpy;
   XColor c;
   c.pixel = pixel;
-  XQueryColor (PictureSaveDisplay, PictureCMap, &c);
+  XQueryColor (Pdpy, Pcmap, &c);
   color_mult(&c.red, &c.green, &c.blue, factor);
-  XAllocColor (PictureSaveDisplay, PictureCMap, &c);
+  XAllocColor (Pdpy, Pcmap, &c);
 
   return c.pixel;
 }

@@ -277,14 +277,14 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif
       /* Only modules need to know these */
       putenv(CatString2("FVWM_USERHOME=", user_home_dir));
-      if (!Scr.usingDefaultVisual) {
+      if (!Pdefault) {
         char *visualid, *colormap;
 
         visualid = safemalloc(32);
-	sprintf(visualid, "FVWM_VISUALID=%lx", XVisualIDFromVisual(Scr.viz));
+	sprintf(visualid, "FVWM_VISUALID=%lx", XVisualIDFromVisual(Pvisual));
 	putenv(visualid);
 	colormap = safemalloc(32);
-	sprintf(colormap, "FVWM_COLORMAP=%lx", Scr.cmap);
+	sprintf(colormap, "FVWM_COLORMAP=%lx", Pcmap);
 	putenv(colormap);
       }
 

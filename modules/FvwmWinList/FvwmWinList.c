@@ -79,7 +79,6 @@
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
 #include "List.h"
-#include "Colors.h"
 #include "Mallocs.h"
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
@@ -94,7 +93,6 @@ int x_fd;
 
 /* X related things */
 Display *dpy;
-Graphics *G;
 Window Root, win;
 int screen,ScreenWidth,ScreenHeight;
 Pixel back[MAX_COLOUR_SETS], fore[MAX_COLOUR_SETS];
@@ -931,7 +929,7 @@ void MakeMeWindow(void)
 
 
   for (i = 0; i != MAX_COLOUR_SETS; i++)
-  if(G->depth < 2)
+  if(Pdepth < 2)
   {
     back[i] = GetColor("white");
     fore[i] = GetColor("black");
@@ -944,9 +942,9 @@ void MakeMeWindow(void)
 
   attr.background_pixel = back[0];
   attr.border_pixel = 0;
-  attr.colormap = G->cmap;
+  attr.colormap = Pcmap;
   win=XCreateWindow(dpy, Root, hints.x, hints.y, hints.width, hints.height, 0,
-		    G->depth, InputOutput, G->viz,
+		    Pdepth, InputOutput, Pvisual,
 		    CWBackPixel | CWBorderPixel | CWColormap, &attr);
 
   wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
@@ -980,7 +978,7 @@ void MakeMeWindow(void)
     gcmask=GCForeground|GCBackground|GCFont;
     graph[i]=XCreateGC(dpy,win,gcmask,&gcval);
 
-    if(G->depth < 2)
+    if(Pdepth < 2)
       gcval.foreground=GetShadow(fore[i]);
     else
       gcval.foreground=GetShadow(back[i]);
@@ -1037,8 +1035,7 @@ void StartMeUp(void)
       XDisplayName(""));
     exit (1);
   }
-  G = CreateGraphics(dpy);
-  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
+  InitPictureCMap(dpy);
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);

@@ -48,7 +48,6 @@
 
 extern ScreenInfo Scr;
 extern Display *dpy;
-extern Graphics *G;
 
 Pixel back_pix, fore_pix, hi_pix;
 Pixel focus_pix;
@@ -139,14 +138,14 @@ extern void ExitPager(void);
 void initialize_viz_pager(void)
 {
   XSetWindowAttributes attr;
-  if (G->usingDefaultVisual)
+  if (Pdefault)
     Scr.Pager_w = Scr.Root;
   else {
     attr.background_pixel = 0;
     attr.border_pixel = 0;
-    attr.colormap = G->cmap;
-    Scr.Pager_w = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, G->depth,
-				InputOutput, G->viz,
+    attr.colormap = Pcmap;
+    Scr.Pager_w = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth,
+				InputOutput, Pvisual,
 				CWBackPixel|CWBorderPixel|CWColormap,&attr);
   }
 }
@@ -287,17 +286,17 @@ void initialize_pager(void)
   	win_hi_fore_pix	= GetColor (WindowHiFore);
   }
   /* Load pixmaps for mono use */
-  if(G->depth<2)
+  if(Pdepth<2)
     {
       Scr.gray_pixmap =
 	XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,g_bits, g_width,g_height,
-				    fore_pix,back_pix,G->depth);
+				    fore_pix,back_pix,Pdepth);
       Scr.light_gray_pixmap =
 	XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,l_g_bits,l_g_width,l_g_height,
-				    fore_pix,back_pix,G->depth);
+				    fore_pix,back_pix,Pdepth);
       Scr.sticky_gray_pixmap =
 	XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,s_g_bits,s_g_width,s_g_height,
-				    fore_pix,back_pix,G->depth);
+				    fore_pix,back_pix,Pdepth);
     }
 
 
@@ -391,7 +390,7 @@ void initialize_pager(void)
   valuemask = (CWBackPixel | CWBorderPixel | CWColormap | CWEventMask);
   attributes.background_pixel = back_pix;
   attributes.border_pixel = fore_pix;
-  attributes.colormap = G->cmap;
+  attributes.colormap = Pcmap;
   attributes.event_mask = (StructureNotifyMask);
   sizehints.width = window_w;
   sizehints.height = window_h;
@@ -405,8 +404,8 @@ void initialize_pager(void)
   /* destroy the temp window first, don't worry if it's the Root */
   XDestroyWindow(dpy, Scr.Pager_w);
   Scr.Pager_w = XCreateWindow (dpy, Scr.Root, window_x, window_y, window_w,
-			       window_h, (unsigned int) 1, G->depth,
-			       InputOutput, G->viz, valuemask, &attributes);
+			       window_h, (unsigned int) 1, Pdepth,
+			       InputOutput, Pvisual, valuemask, &attributes);
   XSetWMProtocols(dpy,Scr.Pager_w,&wm_del_win,1);
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
@@ -431,7 +430,7 @@ void initialize_pager(void)
   icon_w = (icon_w / (n+1)) *(n+1)+n;
   icon_h = (icon_h / (m+1)) *(m+1)+m;
   icon_win = XCreateWindow (dpy, Scr.Root, window_x, window_y, icon_w, icon_h,
-			    (unsigned int) 1, G->depth, InputOutput, G->viz,
+			    (unsigned int) 1, Pdepth, InputOutput, Pvisual,
 			    valuemask, &attributes);
   XGrabButton(dpy, 1, AnyModifier, icon_win,
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
@@ -570,14 +569,14 @@ void initialize_pager(void)
   MiniIconGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
 
   gcv.foreground = hi_pix;
-  if(G->depth < 2)
+  if(Pdepth < 2)
     {
       gcv.foreground = fore_pix;
       gcv.background = back_pix;
     }
   HiliteGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
 
-  if((G->depth < 2)||(fore_pix == hi_pix))
+  if((Pdepth < 2)||(fore_pix == hi_pix))
     gcv.foreground = back_pix;
   else
     gcv.foreground = fore_pix;
@@ -665,8 +664,8 @@ void initialize_pager(void)
 
     /* now create the window */
     balloon.w = XCreateWindow(dpy, Scr.Root, 0, 0, /* coords set later */
-			      1, balloon.height, balloon.border, G->depth,
-			      InputOutput, G->viz, valuemask, &attributes);
+			      1, balloon.height, balloon.border, Pdepth,
+			      InputOutput, Pvisual, valuemask, &attributes);
 
     /* set font */
     gcv.font = balloon.font->fid;
@@ -742,28 +741,6 @@ void UpdateWindowShape ()
  * Loads a single color
  *
  ****************************************************************************/
-Pixel GetColor(char *name)
-{
-  XColor color;
-
-  color.pixel = 0;
-   if (!XParseColor (dpy, G->cmap, name, &color))
-     {
-       nocolor("parse",name);
-     }
-   else if(!XAllocColor (dpy, G->cmap, &color))
-     {
-       nocolor("alloc",name);
-     }
-  return color.pixel;
-}
-
-
-void nocolor(char *a, char *b)
-{
-  fprintf(stderr,"%s: can't %s %s\n", MyName, a,b);
-}
-
 /****************************************************************************
  *
  * Decide what to do about received X events
@@ -1617,7 +1594,7 @@ void Hilight(PagerWindow *t, int on)
 
   if(!t)return;
 
-  if(G->depth < 2)
+  if(Pdepth < 2)
     {
       if(on)
 	{

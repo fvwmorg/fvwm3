@@ -261,10 +261,6 @@ typedef struct ScreenInfo
   GC StdGC;
   GC StdReliefGC;
   GC StdShadowGC;
-  Bool usingDefaultVisual;
-  Visual *viz;
-  unsigned int depth;
-  Colormap cmap;
   unsigned int bestTileWidth;
   unsigned int bestTileHeight;
   /* this structure defines the default background, used by modules that have

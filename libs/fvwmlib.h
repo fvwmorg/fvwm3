@@ -201,15 +201,6 @@ typedef struct _Background {
   Pixmap pixmap;
 } Background;
 
-typedef struct GraphicsThing {
-  Bool usingDefaultVisual;
-  Visual *viz;
-  unsigned int depth;
-  Colormap cmap;
-} Graphics;
-
-Graphics *CreateGraphics(Display *dpy);
-
 void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width);
 

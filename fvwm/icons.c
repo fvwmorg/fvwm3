@@ -130,8 +130,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   /* this does not happen if fvwm is using a non-default visual (with
      private colormap) and the client has supplied a pixmap (not a bitmap) */
   if ((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_height > 0)
-      && (Scr.usingDefaultVisual || (tmp_win->iconDepth == 1)
-          || IS_PIXMAP_OURS(tmp_win))) {
+      && (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win))) {
     tmp_win->icon_p_width += 4;
     tmp_win->icon_p_height += 4;
   }
@@ -146,7 +145,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   /* create the icon title window */
   valuemask = CWColormap | CWBorderPixel
               | CWBackPixel | CWCursor | CWEventMask;
-  attributes.colormap = Scr.cmap;
+  attributes.colormap = Pcmap;
   attributes.background_pixel = Scr.StdColors.back;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.border_pixel = 0;
@@ -158,21 +157,20 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     tmp_win->icon_w = XCreateWindow(dpy, Scr.Root, def_x,
 				    def_y + tmp_win->icon_p_height,
 				    tmp_win->icon_w_width,
-				    tmp_win->icon_w_height, 0, Scr.depth,
-				    InputOutput, Scr.viz, valuemask,
+				    tmp_win->icon_w_height, 0, Pdepth,
+				    InputOutput, Pvisual, valuemask,
 				    &attributes);
 
   /* create a window to hold the picture */
   if((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_width > 0)
      && (tmp_win->icon_p_height > 0)) {
       /* use fvwm's visuals in these cases */
-      if (Scr.usingDefaultVisual || (tmp_win->iconDepth == 1)
-          || IS_PIXMAP_OURS(tmp_win))
+      if (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win))
 	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
 					       tmp_win->icon_p_width,
 					       tmp_win->icon_p_height, 0,
-					       Scr.depth, InputOutput,
-					       Scr.viz, valuemask, &attributes);
+					       Pdepth, InputOutput,
+					       Pvisual, valuemask, &attributes);
       else {
         /* client supplied icon pixmap and fvwm is using another visual */
         /* use it as the background pixmap, don't try to put relief on it
@@ -206,8 +204,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if (ShapesSupported && IS_ICON_SHAPED(tmp_win)) {
   /* when fvwm is using the non-default visual client supplied icon pixmaps
    * are drawn in a window with no relief */
-    int off = (Scr.usingDefaultVisual || (tmp_win->iconDepth == 1)
-   	       || IS_PIXMAP_OURS(tmp_win)) ? 2 : 0;
+    int off = (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win))
+	      ? 2 : 0;
     XShapeCombineMask(dpy, tmp_win->icon_pixmap_w, ShapeBounding, off, off,
 		      tmp_win->icon_maskPixmap, ShapeSet);
   }
@@ -261,7 +259,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 
   if(Scr.Hilite == tmp_win)
     {
-      if(Scr.depth < 2) {
+      if(Pdepth < 2) {
 	Relief = Scr.DefaultDecor.HiShadowGC;
 	Shadow = Scr.DefaultDecor.HiShadowGC;
 	TextColor = Scr.DefaultDecor.HiColors.fore;
@@ -275,7 +273,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     }
   else
     {
-      if(Scr.depth < 2)
+      if(Pdepth < 2)
 	{
 	  Relief = Scr.StdReliefGC;
 	  Shadow = Scr.StdShadowGC;
@@ -358,8 +356,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 
   /* only relieve unshaped icons that share fvwm's visual */
   if ((tmp_win->iconPixmap != None) && !IS_ICON_SHAPED(tmp_win)
-      && (Scr.usingDefaultVisual || (tmp_win->iconDepth == 1)
-	  || IS_PIXMAP_OURS(tmp_win)))
+      && (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win)))
     RelieveRectangle(dpy, tmp_win->icon_pixmap_w, 0, 0,
 		       tmp_win->icon_p_width - 1, tmp_win->icon_p_height - 1,
 	               Relief, Shadow, 2);
@@ -372,7 +369,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 		 Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
 		 tmp_win->icon_p_height - 4, 2, 2, 1);
     } else {
-      if (Scr.usingDefaultVisual || IS_PIXMAP_OURS(tmp_win)) {
+      if (Pdefault || IS_PIXMAP_OURS(tmp_win)) {
         /* it's a pixmap that need copying */
 	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
 		  Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
@@ -768,9 +765,9 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   path = findImageFile(tmp_win->icon_bitmap_file, NULL, R_OK);
   if(path == NULL)return;
 
-  xpm_attributes.visual = PictureVisual;
-  xpm_attributes.colormap = PictureCMap;
-  xpm_attributes.depth = PictureDepth;
+  xpm_attributes.visual = Pvisual;
+  xpm_attributes.colormap = Pcmap;
+  xpm_attributes.depth = Pdepth;
   xpm_attributes.closeness = 40000; /* Allow for "similar" colors */
   xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmCloseness
 			     | XpmVisual | XpmColormap | XpmDepth;
@@ -797,7 +794,7 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   tmp_win->icon_p_width = my_image.width;
   tmp_win->icon_p_height = my_image.height;
   SET_PIXMAP_OURS(tmp_win, 1);
-  tmp_win->iconDepth = Scr.depth;
+  tmp_win->iconDepth = Pdepth;
 
 #ifdef SHAPE
   if (ShapesSupported && tmp_win->icon_maskPixmap)

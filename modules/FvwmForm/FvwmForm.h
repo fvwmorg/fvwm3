@@ -212,7 +212,6 @@ EXTERN char preload_yorn;
 EXTERN Item *item;                             /* current during parse */
 EXTERN Item *cur_sel, *cur_button;             /* current during parse */
 EXTERN Display *dpy;
-EXTERN Graphics *G;
 EXTERN int fd_x;                  /* fd for X connection */
 EXTERN Window root, ref;
 EXTERN int screen;

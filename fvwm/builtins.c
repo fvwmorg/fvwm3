@@ -1281,7 +1281,7 @@ void SetHiColor(F_CMD_ARGS)
 
   action = GetNextToken(action,&hifore);
   GetNextToken(action,&hiback);
-  if(Scr.depth > 2)
+  if(Pdepth > 2)
   {
     if(hifore)
     {
@@ -1507,7 +1507,7 @@ static void ApplyDefaultFontAndColors(void)
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
     SetWindowBackground(dpy, Scr.SizeWindow, wid, hei,
-			Scr.bg, Scr.depth, Scr.StdGC);
+			Scr.bg, Pdepth, Scr.StdGC);
     if(Scr.gs.EmulateMWM)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,
@@ -1583,9 +1583,9 @@ void SetDefaultBackground(F_CMD_ARGS)
 
       pic = CachePicture(dpy, Scr.NoFocusWin, NULL, name, Scr.ColorLimit);
 
-      if (pic && pic->depth == Scr.depth) {
+      if (pic && pic->depth == Pdepth) {
 	Pixmap pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, pic->width,
-				      pic->height, Scr.depth);
+				      pic->height, Pdepth);
 
 	XCopyArea(dpy, pic->picture, pixmap, Scr.StdGC, 0, 0, pic->width,
 		  pic->height, 0, 0);
@@ -1608,10 +1608,9 @@ void SetDefaultBackground(F_CMD_ARGS)
     } else if (StrEquals(type + 1, "Gradient")) {
       unsigned int width, height;
       char vtype = type[0];
-      Pixmap pixmap = CreateGradientPixmap(dpy, Scr.NoFocusWin, Scr.depth,
-					   Scr.ScratchGC3, vtype, action,
-					   Scr.bestTileWidth,Scr.bestTileHeight,
-					   &width, &height);
+      Pixmap pixmap = CreateGradientPixmap(dpy, Scr.NoFocusWin, Scr.ScratchGC3,
+					   vtype, action, Scr.bestTileWidth,
+					   Scr.bestTileHeight, &width, &height);
       if (pixmap) {
 	if (Scr.bg->type.bits.is_pixmap)
 	  XFreePixmap(dpy, Scr.bg->pixmap);
@@ -3872,9 +3871,9 @@ void SetColorLimit(F_CMD_ARGS)
   /* from X.h:
    * Note that the statically allocated ones are even numbered and the
    * dynamically changeable ones are odd numbered */
-  if (!(Scr.viz->class & 1))
+  if (!(Pvisual->class & 1))
     return;
-  if (Scr.depth > 20) {               /* if more than 20 bit color */
+  if (Pdepth > 20) {               /* if more than 20 bit color */
     return;                             /* ignore the limit */
   }
   if (GetIntegerArguments(action, NULL, &val, 1) != 1)

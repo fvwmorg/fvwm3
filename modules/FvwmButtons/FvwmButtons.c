@@ -99,7 +99,6 @@ void RedrawWindow(button_info*);
 void RecursiveLoadData(button_info*,int*,int*);
 void CreateWindow(button_info*,int,int);
 void nocolor(const char *a, const char *b) __attribute__((__noreturn__));
-Pixel GetColor(char *name);
 int My_XNextEvent(Display *dpy, XEvent *event);
 void process_message(unsigned long type,unsigned long *body);
 extern void send_clientmessage (Display *disp, Window w, Atom a,
@@ -120,7 +119,6 @@ void Slide(panel_info *, button_info *);
 
 Display *Dpy;
 Window Root;
-Graphics *G;
 GC trans_gc = NULL;
 Window MyWindow;
 char *MyName;
@@ -636,8 +634,7 @@ int main(int argc, char **argv)
 	      XDisplayName(NULL));
       exit (1);
     }
-  G = CreateGraphics(Dpy);
-  SavePictureCMap(Dpy, G->viz, G->cmap, G->depth);
+  InitPictureCMap(Dpy);
 
   x_fd=XConnectionNumber(Dpy);
   fd_width=GetFdWidth();
@@ -1504,18 +1501,18 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 	    (ushort)fore_pix,(ushort)back_pix);
 # endif
 
-  xswa.colormap = G->cmap;
+  xswa.colormap = Pcmap;
   xswa.border_pixel = 0;
   xswa.background_pixmap = None;
   MyWindow = XCreateWindow(Dpy,Root,mysizehints.x,mysizehints.y,
-			   mysizehints.width,mysizehints.height,0,G->depth,
-			   InputOutput,G->viz,
+			   mysizehints.width,mysizehints.height,0,Pdepth,
+			   InputOutput,Pvisual,
 			   CWColormap|CWBackPixmap|CWBorderPixel,&xswa);
 
 # ifdef DEBUG_INIT
   fprintf(stderr,"colors...");
 # endif
-  if(G->depth < 2) {
+  if(Pdepth < 2) {
     back_pix = GetColor("white");
     fore_pix = GetColor("black");
     hilite_pix = back_pix;
@@ -1618,9 +1615,9 @@ int PleaseAllocColor(XColor *color)
   xpm[1]=buf;
   attr.valuemask=XpmCloseness|XpmVisual|XpmColormap|XpmDepth;
   attr.closeness=40000; /* value used by fvwm and fvwmlib */
-  attr.visual = G->viz;
-  attr.colormap = G->cmap;
-  attr.depth = G->depth;
+  attr.visual = Pvisual;
+  attr.colormap = Pcmap;
+  attr.depth = Pdepth;
 
   if(XpmCreateImageFromData(Dpy,xpm,&dummy1,&dummy2,&attr)!=XpmSuccess)
     {
@@ -1642,22 +1639,6 @@ void nocolor(const char *a, const char *b)
 {
   fprintf(stderr,"%s: Can't %s %s, quitting, sorry...\n", MyName, a,b);
   exit(1);
-}
-
-/**
-*** GetColor()
-*** Loads a single color
-**/
-Pixel GetColor(char *name)
-{
-  XColor color;
-
-  color.pixel = 0;
-  if (!XParseColor (Dpy, G->cmap, name, &color))
-    nocolor("parse",name);
-  else if(!MyAllocColor(Dpy,G->cmap,&color))
-    nocolor("alloc",name);
-  return color.pixel;
 }
 
 

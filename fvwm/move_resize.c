@@ -959,7 +959,7 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
                  Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
     }
 
-  if(Scr.depth >= 2)
+  if(Pdepth >= 2)
     RelieveRectangle(dpy,Scr.SizeWindow,0,0,
                      Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
                      Scr.StdFont.height + SIZE_VINDENT*2 - 1,
@@ -1545,7 +1545,7 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
                  Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
     }
 
-  if(Scr.depth >= 2)
+  if(Pdepth >= 2)
     RelieveRectangle(dpy,Scr.SizeWindow,0,0,
                      Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
                      Scr.StdFont.height + SIZE_VINDENT*2 - 1,

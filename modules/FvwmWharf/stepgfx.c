@@ -22,7 +22,7 @@
 #include <stdlib.h>
 extern Window main_win;
 #include "libs/fvwmlib.h"
-extern Graphics *G;
+#include "libs/Picture.h"
 
 /* Masks to apply to color components when allocating colors
  * you may want to set them to 0xffff if your display supports 16bpp+
@@ -574,7 +574,7 @@ int MakeShadowColors(Display *dpy, int from[3], int to[3],
 	color.red = (short)(rv<0?0:rv);
 	color.green = (short)(gv<0?0:gv);
 	color.blue = (short)(bv<0?0:bv);
-	if (XAllocColor(dpy, G->cmap ,&color))
+	if (XAllocColor(dpy, Pcmap ,&color))
 	  *dark = color.pixel;
 	else
 	  return 0;
@@ -595,7 +595,7 @@ int MakeShadowColors(Display *dpy, int from[3], int to[3],
 	color.red = (unsigned short)(rv>65535.0 ? 65535.0:rv);
 	color.green = (unsigned short)(gv>65535.0 ? 65535.0:gv);
 	color.blue = (unsigned short)(bv>65535.0 ? 65535.0:bv);
-	if (XAllocColor(dpy, G->cmap, &color))
+	if (XAllocColor(dpy, Pcmap, &color))
 	  *light = color.pixel;
 	else
 	  return 0;

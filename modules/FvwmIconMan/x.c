@@ -29,7 +29,6 @@ static int shapeEventBase, shapeErrorBase;
 #endif
 
 Display *theDisplay;
-Graphics *G;
 Window theRoot;
 int theScreen;
 
@@ -60,11 +59,11 @@ static int lookup_color (char *name, Pixel *ans)
   XColor color;
 
   color.pixel = 0;
-  if (!XParseColor (theDisplay, G->cmap, name, &color)) {
+  if (!XParseColor (theDisplay, Pcmap, name, &color)) {
     ConsoleDebug(X11, "Could not parse color '%s'\n", name);
     return 0;
   }
-  else if(!XAllocColor (theDisplay, G->cmap, &color)) {
+  else if(!XAllocColor (theDisplay, Pcmap, &color)) {
     ConsoleDebug(X11, "Could not allocate color '%s'\n", name);
     return 0;
   }
@@ -392,7 +391,7 @@ static int load_default_context_fore (WinManager *man, int i)
 {
   int j = 0;
 
-  if (G->depth > 2)
+  if (Pdepth > 2)
     j = 1;
 
   ConsoleDebug (X11, "Loading: %s\n", contextDefaults[i].backcolor[j]);
@@ -404,7 +403,7 @@ static int load_default_context_back (WinManager *man, int i)
 {
   int j = 0;
 
-  if (G->depth > 2)
+  if (Pdepth > 2)
     j = 1;
 
   ConsoleDebug (X11, "Loading: %s\n", contextDefaults[i].backcolor[j]);
@@ -564,7 +563,7 @@ void X_init_manager (int man_id)
 		      contextDefaults[i].name);
     }
 
-    if (G->depth > 2) {
+    if (Pdepth > 2) {
       man->shadowcolor[i] = GetShadow(man->backcolor[i]);
       man->hicolor[i] = GetHilite(man->backcolor[i]);
 #if 0
@@ -743,7 +742,7 @@ void create_manager_window (int man_id)
   winattr.border_pixel = man->forecolor[PLAIN_CONTEXT];
   winattr.backing_store = WhenMapped;
   winattr.bit_gravity = man->gravity;
-  winattr.colormap = G->cmap;
+  winattr.colormap = Pcmap;
   winattr.event_mask = ExposureMask | PointerMotionMask | EnterWindowMask |
     LeaveWindowMask | KeyPressMask | StructureNotifyMask;
 
@@ -754,7 +753,7 @@ void create_manager_window (int man_id)
 
   man->theWindow = XCreateWindow(theDisplay, theRoot, sizehints.x, sizehints.y,
 				 man->geometry.width, man->geometry.height,
-				 0, G->depth, InputOutput, G->viz, winattrmask,
+				 0, Pdepth, InputOutput, Pvisual, winattrmask,
 				 &winattr);
 #ifdef SHAPE
   XShapeSelectInput (theDisplay, man->theWindow, ShapeNotifyMask);
@@ -792,7 +791,7 @@ void create_manager_window (int man_id)
     gcval.background = man->forecolor[i];
     man->flatContext[i] = XCreateGC (theDisplay, man->theWindow,
 						 gcmask, &gcval);
-    if (G->depth > 2) {
+    if (Pdepth > 2) {
       gcmask = GCForeground | GCBackground;
       gcval.foreground = man->hicolor[i];
       gcval.background = man->backcolor[i];
@@ -832,13 +831,12 @@ void init_display (void)
     ShutMeDown (1);
   }
   XSetErrorHandler (handle_error);
-  G = CreateGraphics(theDisplay);
-  SavePictureCMap (theDisplay, G->viz, G->cmap, G->depth);
+  InitPictureCMap (theDisplay);
   x_fd = XConnectionNumber (theDisplay);
   theScreen = DefaultScreen (theDisplay);
   theRoot = RootWindow (theDisplay, theScreen);
 #ifdef TEST_MONO
-  G->depth = 2;
+  Pdepth = 2;
 #endif
   globals.screenx = DisplayWidth (theDisplay, theScreen);
   globals.screeny = DisplayHeight (theDisplay, theScreen);

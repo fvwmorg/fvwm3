@@ -351,7 +351,6 @@ extern GlobalData globals;
 extern int Fvwm_fd[2];
 extern int x_fd;
 extern Display *theDisplay;
-extern Graphics *G;
 extern char *Module;
 extern int ModuleLen;
 extern ContextDefaults contextDefaults[];

@@ -29,14 +29,15 @@ typedef struct PictureThing
     unsigned int count;
 } Picture;
 
-extern Visual *PictureVisual;
-extern Colormap PictureCMap;
-extern unsigned int PictureDepth;
-extern Display *PictureSaveDisplay;     /* Save area for display pointer */
+extern Bool Pdefault;
+extern Visual *Pvisual;
+extern Colormap Pcmap;
+extern unsigned int Pdepth;
+extern Display *Pdpy;     /* Save area for display pointer */
 
 
 /* This routine called during fvwm and some modules initialization */
-void SavePictureCMap(Display *dpy, Visual *viz, Colormap cmap, int depth);
+void InitPictureCMap(Display *dpy);
 
 
 /** Returns current setting of the image path **/
@@ -84,3 +85,5 @@ void color_reduce_pixmap(XpmImage* image, int colourLimit);
 #endif
 
 #endif
+
+Pixel GetColor(char *name);

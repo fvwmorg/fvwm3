@@ -73,7 +73,6 @@ PagerWindow *Start = NULL;
 PagerWindow *FocusWin = NULL;
 
 Display *dpy;			/* which display are we talking to */
-Graphics *G;
 int x_fd;
 fd_set_size_t fd_width;
 
@@ -276,8 +275,7 @@ int main(int argc, char **argv)
       exit (1);
     }
   x_fd = XConnectionNumber(dpy);
-  G = CreateGraphics(dpy);
-  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
+  InitPictureCMap(dpy);
 
   Scr.screen = DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);
@@ -1430,7 +1428,7 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "Fore"))
 	{
-	  if(G->depth > 1)
+	  if(Pdepth > 1)
 	    {
 	      if (PagerFore)
 		free(PagerFore);
@@ -1439,7 +1437,7 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "Back"))
 	{
-	  if(G->depth > 1)
+	  if(Pdepth > 1)
 	    {
 	      if (PagerBack)
 		free(PagerBack);
@@ -1561,7 +1559,7 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "Pixmap"))
 	{
-	  if(G->depth > 1)
+	  if(Pdepth > 1)
 	    {
 	      if (PixmapBack) {
 		DestroyPicture (dpy, PixmapBack);
@@ -1580,7 +1578,7 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "HilightPixmap"))
 	{
-	  if(G->depth > 1)
+	  if(Pdepth > 1)
 	    {
 	      if (HilightPixmap) {
 		DestroyPicture (dpy, HilightPixmap);
@@ -1608,7 +1606,7 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "Hilight"))
 	{
-	  if(G->depth > 1)
+	  if(Pdepth > 1)
 	    {
 	      if (HilightC)
 		free(HilightC);
@@ -1670,7 +1668,7 @@ void ParseOptions(void)
         }
       else if (StrEquals(resource, "WindowColors"))
 	{
-	  if (G->depth > 1)
+	  if (Pdepth > 1)
 	    {
 	      if (WindowFore)
 		free(WindowFore);
@@ -1730,7 +1728,7 @@ void ParseOptions(void)
 
       else if (StrEquals(resource, "BalloonBack"))
 	{
-	  if (G->depth > 1)
+	  if (Pdepth > 1)
 	    {
 	      if (BalloonBack)
 		free(BalloonBack);
@@ -1740,7 +1738,7 @@ void ParseOptions(void)
 
       else if (StrEquals(resource, "BalloonFore"))
 	{
-	  if (G->depth > 1)
+	  if (Pdepth > 1)
 	    {
 	      if (BalloonFore)
 		free(BalloonFore);

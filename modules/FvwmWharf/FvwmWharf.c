@@ -69,7 +69,9 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include "libs/fvwmlib.h"
 #include "libs/Module.h"
+#include "libs/Picture.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
@@ -118,7 +120,6 @@ int PlayerChannel[2];
 char *MyName;
 
 Display *dpy;
-Graphics *G;
 int x_fd;
 fd_set_size_t fd_width;
 int ROWS = False;
@@ -260,7 +261,7 @@ int main(int argc, char **argv)
 	      XDisplayName(display_name));
       exit (1);
     }
-  G = CreateGraphics(dpy);
+  InitPictureCMap(dpy);
   x_fd = XConnectionNumber(dpy);
 
   fd_width = GetFdWidth();
@@ -1321,7 +1322,7 @@ void CreateShadowGC(void)
   XGCValues gcv;
   unsigned long gcm;
 
-    if(G->depth < 2)
+    if(Pdepth < 2)
     {
       back_pix = GetColor("white");
       fore_pix = GetColor("black");
@@ -1364,14 +1365,14 @@ void CreateVizWindow(void)
 {
   XSetWindowAttributes attr;
 
-  if (G->usingDefaultVisual)
+  if (Pdefault)
     main_win = Root;
   else {
     attr.background_pixel = 0;
     attr.border_pixel = 0;
-    attr.colormap = G->cmap;
-    main_win = XCreateWindow(dpy,Root,-10,-10,10,10,0,G->depth,InputOutput,
-			     G->viz,CWBackPixel|CWBorderPixel|CWColormap,&attr);
+    attr.colormap = Pcmap;
+    main_win = XCreateWindow(dpy,Root,-10,-10,10,10,0,Pdepth,InputOutput,
+			     Pvisual,CWBackPixel|CWBorderPixel|CWColormap,&attr);
   }
 }
 
@@ -1452,11 +1453,11 @@ void CreateWindow(void)
 
   attr.background_pixel = back_pix;
   attr.border_pixel = 0;
-  attr.colormap = G->cmap;
+  attr.colormap = Pcmap;
   XDestroyWindow(dpy, main_win);
   main_win = XCreateWindow(dpy,Root,mysizehints.x,mysizehints.y,
 			   mysizehints.width,mysizehints.height,
-			   0,G->depth,InputOutput,G->viz,
+			   0,Pdepth,InputOutput,Pvisual,
 			   CWBackPixel|CWBorderPixel|CWColormap,&attr);
 
   for(i=0;i<num_folders;i++)
@@ -1477,8 +1478,8 @@ void CreateWindow(void)
 	  Folders[i].rows = 1;
 	}
       Folders[i].win = XCreateWindow(dpy, Root,0,0,BUTTONWIDTH*Folders[i].rows,
-				     BUTTONHEIGHT*Folders[i].cols,0,G->depth,
-				     InputOutput,G->viz,
+				     BUTTONHEIGHT*Folders[i].cols,0,Pdepth,
+				     InputOutput,Pvisual,
 				     CWBackPixel|CWBorderPixel|CWColormap,&attr);
       XSetWMNormalHints(dpy,Folders[i].win,&mysizehints);
       XSelectInput(dpy, Folders[i].win, MW_EVENTS);
@@ -1490,33 +1491,6 @@ void CreateWindow(void)
 
   XSelectInput(dpy, main_win, MW_EVENTS);
   change_window_name(MyName);
-}
-
-
-void nocolor(char *a, char *b)
-{
- fprintf(stderr,"%s: can't %s %s\n", MyName, a,b);
-}
-
-/****************************************************************************
- *
- * Loads a single color
- *
- ****************************************************************************/
-Pixel GetColor(char *name)
-{
-  XColor color;
-
-  color.pixel = 0;
-   if (!XParseColor (dpy, G->cmap, name, &color))
-     {
-       nocolor("parse",name);
-     }
-   else if(!XAllocColor (dpy, G->cmap, &color))
-     {
-       nocolor("alloc",name);
-     }
-  return color.pixel;
 }
 
 /************************************************************************
@@ -1657,18 +1631,18 @@ void ParseOptions(char *filename)
 		ToColor[1]=0;
 		ToColor[2]=0;
 	    }
-	    if (!XParseColor (dpy, G->cmap, c1, &color))
+	    if (!XParseColor (dpy, Pcmap, c1, &color))
 	    {
-		nocolor("parse",c1);
+		fprintf(stderr, "Cannot parse %s\n", c1);
 		TextureType=TEXTURE_BUILTIN;
 	    } else {
 		FromColor[0]=color.red;
 		FromColor[1]=color.green;
 		FromColor[2]=color.blue;
 	    }
-	    if (!XParseColor (dpy, G->cmap, c2, &color))
+	    if (!XParseColor (dpy, Pcmap, c2, &color))
 	    {
-		nocolor("parse",c2);
+		fprintf(stderr, "Cannot parse %s\n", c2);
 		TextureType=TEXTURE_BUILTIN;
 	    } else {
 		ToColor[0]=color.red;

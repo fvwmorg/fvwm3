@@ -38,7 +38,6 @@
 #define MAILCHECK_DEFAULT 10
 
 extern Display *dpy;
-extern Graphics *G;
 extern Window Root, win;
 extern int win_width, win_height, win_y, win_border,
        ScreenWidth, ScreenHeight, RowHeight;
@@ -183,10 +182,10 @@ void InitGoodies() {
   if (Mailcheck > 0) {
     mailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					  minimail_width, minimail_height,
-					  fore,back, G->depth);
+					  fore,back, Pdepth);
     wmailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					   minimail_width, minimail_height,
-					   fore,GetColor("white"), G->depth);
+					   fore,GetColor("white"), Pdepth);
 
     goodies_width += minimail_width + 7;
   }
@@ -368,13 +367,13 @@ void CreateTipWindow(int x, int y, int w, int h) {
   Pixmap pchk;
   winattr.background_pixel = GetColor(DateBack);
   winattr.border_pixel = GetColor("black");
-  winattr.colormap = G->cmap;
+  winattr.colormap = Pcmap;
   winattr.override_redirect = True;
   winattr.save_under = True;
   winattr.event_mask = ExposureMask;
 
-  Tip.win = XCreateWindow(dpy, Root, x, y, w+4, h+4, 0, G->depth, InputOutput,
-			  G->viz, winattrmask, &winattr);
+  Tip.win = XCreateWindow(dpy, Root, x, y, w+4, h+4, 0, Pdepth, InputOutput,
+			  Pvisual, winattrmask, &winattr);
   gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
   gcval.graphics_exposures = False;
   gcval.foreground = GetColor(DateFore);

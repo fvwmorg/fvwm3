@@ -8,17 +8,17 @@ man_MANS = fvwm2.1
 
 config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 
-fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c borders.h \
-	builtins.c colormaps.c \
-	colormaps.h colors.c cursor.c cursor.h decorations.c defaults.h \
-	events.c events.h focus.c focus.h \
-	functions.c functions.h fvwm.c fvwm.h fvwmdebug.c fvwmdebug.h \
-	gnome.c gnome.h icccm2.c icons.c icons.h menus.c menus.h misc.c \
-	misc.h modconf.c module_interface.c module_interface.h \
-	move_resize.c move_resize.h \
-	placement.c read.c read.h repeat.h repeat.c screen.h \
-	session.c session.h stack.c stack.h \
-	style.c	style.h virtual.c virtual.h window_flags.h windowlist.c
+## .c file in largest first order to speed up parallel makes
+fvwm2_SOURCES = bindings.h focus.h menus.h screen.h borders.h functions.h \
+		misc.h session.h colormaps.h fvwm.h module_interface.h \
+		stack.h cursor.h fvwmdebug.h move_resize.h style.h defaults.h \
+		gnome.h read.h virtual.h events.h icons.h repeat.h \
+		window_flags.h menus.c builtins.c events.c fvwm.c \
+		move_resize.c borders.c style.c add_window.c icons.c \
+		module_interface.c virtual.c functions.c session.c misc.c \
+		placement.c gnome.c decorations.c stack.c colors.c \
+		windowlist.c focus.c bindings.c colormaps.c cursor.c icccm2.c \
+		modconf.c read.c fvwmdebug.c repeat.c
 
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
