@@ -480,6 +480,7 @@ typedef struct FvwmWindow
   short visual_corner_width;
 
   rectangle title_g;
+  short title_top_height;     /* title height/0 for top/bottom titles */
   rectangle icon_g;           /* geometry of the icon window */
   int icon_xl_loc;            /* icon label window x coordinate */
   int icon_t_width;           /* width of the icon title window */

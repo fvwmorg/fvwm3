@@ -77,6 +77,7 @@ static void apply_window_updates(
   short buttons;
   Bool is_style_initialised = False;
 
+  t->title_top_height = (HAS_BOTTOM_TITLE(t)) ? 0 : t->title_g.height;
   if (flags->do_update_window_grabs)
   {
     focus_grab_buttons(t, False);

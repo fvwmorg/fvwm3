@@ -326,6 +326,8 @@ void setup_window_font(
   {
     tmp_win->title_g.height = 0;
   }
+  tmp_win->title_top_height =
+    (HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height;
 
   return;
 }

@@ -1091,10 +1091,12 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   {
     tmp_win->title_g.y =
       h - tmp_win->boundary_width - tmp_win->title_g.height;
+    tmp_win->title_top_height = 0;
   }
   else
   {
     tmp_win->title_g.y = tmp_win->boundary_width;
+    tmp_win->title_top_height = tmp_win->title_g.height;
   }
   tmp_win->title_g.x = tmp_win->boundary_width;
 
@@ -1494,10 +1496,7 @@ void SetupFrame(
   if (tmp_win->attr.height <= 1 || tmp_win->attr.width <= 1)
     is_order_reversed = 0;
   px = tmp_win->boundary_width;
-  if (HAS_BOTTOM_TITLE(tmp_win))
-    py = tmp_win->boundary_width;
-  else
-    py = tmp_win->title_g.height + tmp_win->boundary_width;
+  py = tmp_win->boundary_width + tmp_win->title_top_height;
   dx = 0;
   dy = 0;
   if (is_order_reversed && decor_gravity == SouthEastGravity)
@@ -1773,8 +1772,8 @@ void SetShape(FvwmWindow *tmp_win, int w)
 
       XShapeCombineShape(
 	dpy, tmp_win->frame, ShapeBounding, tmp_win->boundary_width,
-	((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height) +
-	tmp_win->boundary_width, tmp_win->w, ShapeBounding, ShapeSet);
+	tmp_win->title_top_height + tmp_win->boundary_width, tmp_win->w,
+	ShapeBounding, ShapeSet);
       if (tmp_win->title_w)
 	{
 	  /* windows w/ titles */

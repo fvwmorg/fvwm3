@@ -2057,11 +2057,12 @@ void HandleConfigureRequest(void)
   if (cre->window == Tmp_win->w)
   {
 #if 0
-fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d)\n",
+fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
         cre->x, (int)(cre->value_mask & CWX),
         cre->y, (int)(cre->value_mask & CWY),
         cre->width, (int)(cre->value_mask & CWWidth),
-        cre->height, (int)(cre->value_mask & CWHeight));
+        cre->height, (int)(cre->value_mask & CWHeight),
+	(int)Tmp_win->w, (Tmp_win->name) ? Tmp_win->name : "");
 #endif
     /* Don't modify frame_XXX fields before calling SetupWindow! */
     dx = 0;
@@ -2080,7 +2081,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d)\n",
       dx = cre->x - Tmp_win->frame_g.x - Tmp_win->boundary_width;
     if (cre->value_mask & CWY)
       dy = cre->y - Tmp_win->frame_g.y - Tmp_win->boundary_width -
-	Tmp_win->title_g.height;
+	Tmp_win->title_top_height;
     if (cre->value_mask & CWWidth)
       dw = cre->width - (Tmp_win->frame_g.width - 2 * Tmp_win->boundary_width);
 
@@ -2298,7 +2299,7 @@ void SendConfigureNotify(
     client_event.xconfigure.window = tmp_win->w;
     client_event.xconfigure.x = x + tmp_win->boundary_width;
     client_event.xconfigure.y = y + tmp_win->boundary_width +
-      ((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height);
+      tmp_win->title_top_height;
     client_event.xconfigure.width = w - 2 * tmp_win->boundary_width;
     client_event.xconfigure.height = h -
       2 * tmp_win->boundary_width - tmp_win->title_g.height;

@@ -1,3 +1,18 @@
+2001-01-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/add_window.c (setup_window_font):
+	* fvwm/events.c (SendConfigureNotify):
+	(HandleConfigureRequest):
+	* fvwm/builtins.c (WindowShade):
+	* fvwm/borders.c (SetupFrame):
+	(SetShape):
+	* fvwm/fvwm.h (FvwmWindow):
+	simplified bottom title code a bit to make to prevent futurew bugs
+
+	* fvwm/events.c (HandleConfigureRequest):
+	fixed configure requests for windows with bottom titles
+
 2001-01-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1: typos

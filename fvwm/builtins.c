@@ -148,12 +148,9 @@ void WindowShade(F_CMD_ARGS)
   bwl = tmp_win->boundary_width;
   bwr = tmp_win->boundary_width;
   bw = bwl + bwr;
-  bht = tmp_win->boundary_width;
-  bhb = tmp_win->boundary_width;
-  if (HAS_BOTTOM_TITLE(tmp_win))
-    bhb += tmp_win->title_g.height;
-  else
-    bht += tmp_win->title_g.height;
+  bht = tmp_win->boundary_width + tmp_win->title_top_height;
+  bhb = tmp_win->boundary_width +
+    tmp_win->title_g.height - tmp_win->title_top_height;;
   bh = bht + bhb;
   cw = big_g.width - bw;
   ch = big_g.height - bh;
