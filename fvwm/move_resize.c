@@ -816,6 +816,8 @@ static Bool resize_move_window(F_CMD_ARGS)
 	int dx;
 	int dy;
 	size_borders b;
+	FvwmWindow *fw = exc->w.fw;
+	Window w = exc->w.w;
 
 	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
 	{
@@ -1288,12 +1290,13 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	Bool fPointer = False;
 	int dx;
 	int dy;
+	FvwmWindow *fw = exc->w.fw;
+	Window w;
 
 	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
 	{
 		return;
 	}
-
 	/* gotta have a window */
 	w = FW_W_FRAME(fw);
 	if (IS_ICONIFIED(fw))
@@ -2779,6 +2782,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	Bool called_from_title = False;
 	frame_move_resize_args mr_args = NULL;
 	long evmask;
+	FvwmWindow *fw = exc->w.fw;
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
@@ -3681,6 +3685,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	int  scr_x, scr_y, scr_w, scr_h;
 	int sx, sy, sw, sh;
 	rectangle new_g;
+	FvwmWindow *fw = exc->w.fw;
 
 	if (!is_function_allowed(F_MAXIMIZE, NULL, fw, True, False))
 	{
@@ -3950,6 +3955,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	rectangle normal_g;
 	rectangle max_g;
 	Bool was_resized;
+	FvwmWindow *fw = exc->w.fw;
 
 	/* keep a copy of the old geometry */
 	normal_g = fw->normal_g;
@@ -3975,6 +3981,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 	rectangle normal_g;
 	rectangle max_g;
 	Bool was_resized;
+	FvwmWindow *fw = exc->w.fw;
 
 	/* keep a copy of the old geometry */
 	normal_g = fw->normal_g;
@@ -3999,6 +4006,8 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 
 void handle_stick(F_CMD_ARGS, int toggle)
 {
+	FvwmWindow *fw = exc->w.fw;
+
 	if ((toggle == 1 && IS_STICKY(fw)) || (toggle == 0 && !IS_STICKY(fw)))
 	{
 		return;

@@ -85,10 +85,9 @@
  */
 
 /* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS fvwm_cond_func_rc *cond_rc, \
-	const exec_context_t *exc, Window w, FvwmWindow *fw, \
-	unsigned long context, char *action
-#define F_PASS_ARGS cond_rc, exc, w, fw, context, action
+#define F_CMD_ARGS \
+	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action
+#define F_PASS_ARGS cond_rc, exc, action
 #define FUNC_FLAGS_TYPE unsigned char
 
 /* access macros */

@@ -1,5 +1,33 @@
 2002-09-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (DeferExecution):
+	(__execute_function):
+	(execute_complex_function):
+	cleaned up and optimized exec_context handling
+
+	* fvwm/schedule.c:
+	* fvwm/menucmd.c:
+	* fvwm/update.c:
+	* fvwm/windowlist.c:
+	* fvwm/conditional.c:
+	* fvwm/focus.c:
+	* fvwm/functions.c:
+	* fvwm/placement.c:
+	* fvwm/colorset.c:
+	* fvwm/stack.c:
+	* fvwm/virtual.c:
+	* fvwm/module_interface.c:
+	* fvwm/icons.c:
+	* fvwm/builtins.c:
+	* fvwm/add_window.c:
+	* fvwm/move_resize.c:
+	* fvwm/fvwm.h (F_CMD_ARGS):
+	(F_PASS_ARGS):
+	completely removed the builtin command arguments fw, w, and context
+
+	* fvwm/functions.c (DeferExecution):
+	fixed core dump
+
 	* fvwm/stack.c (BroadcastRestack):
 	removed global lastTimestamp
 

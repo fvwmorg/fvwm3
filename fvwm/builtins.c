@@ -1812,6 +1812,8 @@ void CMD_CursorMove(F_CMD_ARGS)
 
 void CMD_Delete(F_CMD_ARGS)
 {
+	FvwmWindow * const fw = exc->w.fw;
+
 	if (!is_function_allowed(F_DELETE, NULL, fw, True, True))
 	{
 		XBell(dpy, 0);
@@ -1845,6 +1847,8 @@ void CMD_Delete(F_CMD_ARGS)
 
 void CMD_Destroy(F_CMD_ARGS)
 {
+	FvwmWindow * const fw = exc->w.fw;
+
 	if (IS_TEAR_OFF_MENU(fw))
 	{
 		CMD_Delete(F_PASS_ARGS);
@@ -1871,6 +1875,8 @@ void CMD_Destroy(F_CMD_ARGS)
 
 void CMD_Close(F_CMD_ARGS)
 {
+	FvwmWindow * const fw = exc->w.fw;
+
 	if (IS_TEAR_OFF_MENU(fw))
 	{
 		CMD_Delete(F_PASS_ARGS);
@@ -2002,9 +2008,11 @@ void CMD_Refresh(F_CMD_ARGS)
 
 void CMD_RefreshWindow(F_CMD_ARGS)
 {
+	FvwmWindow * const fw = exc->w.fw;
+
 	refresh_window(
-		(context == C_ICON) ? FW_W_ICON_TITLE(fw) : FW_W_FRAME(fw),
-		True);
+		(exc->w.wcontext == C_ICON) ?
+		FW_W_ICON_TITLE(fw) : FW_W_FRAME(fw), True);
 
 	return;
 }
@@ -2570,6 +2578,7 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 	int extra_height;
 	FvwmDecor *decor = &Scr.DefaultDecor;
 	FvwmDecor *found = NULL;
+	FvwmWindow * const fw = exc->w.fw;
 
 	item = PeekToken(action, &action);
 	if (!action || !item)
@@ -3695,7 +3704,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	/* check for a binding */
 	stroke_action = CheckBinding(
 		Scr.AllBindings, sequence, 0, modifiers, GetUnusedModifiers(),
-		context, STROKE_BINDING);
+		exc->w.wcontext, STROKE_BINDING);
 
 	/* execute the action */
 	if (stroke_action != NULL)
@@ -3724,6 +3733,7 @@ void CMD_State(F_CMD_ARGS)
 	unsigned int state;
 	int toggle;
 	int n;
+	FvwmWindow * const fw = exc->w.fw;
 
 	n = GetIntegerArguments(action, &action, &state, 1);
 	if (n <= 0)

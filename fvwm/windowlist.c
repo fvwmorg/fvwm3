@@ -205,6 +205,8 @@ void CMD_WindowList(F_CMD_ARGS)
 	Bool first_desk = True;
 	Bool empty_menu = True;
 	Bool was_get_menu_opts_called = False;
+	FvwmWindow * const fw = exc->w.fw;
+	const Window w = exc->w.w;
 
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));

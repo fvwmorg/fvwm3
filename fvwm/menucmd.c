@@ -68,6 +68,8 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	MenuReturn mret;
 	FvwmWindow *fw2;
 	int tc;
+	FvwmWindow * const fw = exc->w.fw;
+	const Window w = exc->w.w;
 
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));

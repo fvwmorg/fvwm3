@@ -1150,6 +1150,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	XWindowAttributes attr;
 	Bool do_move_animated = False;
 	Bool do_place_icon = False;
+	FvwmWindow * const fw = exc->w.fw;
 
 	if (!XGetWindowAttributes(dpy, FW_W(fw), &attr))
 	{

@@ -189,6 +189,7 @@ static void select_cmd(F_CMD_ARGS)
 	char *restofline;
 	char *flags;
 	WindowConditionMask mask;
+	FvwmWindow * const fw = exc->w.fw;
 
 	if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
 	{
@@ -766,7 +767,10 @@ void CMD_Current(F_CMD_ARGS)
 
 void CMD_PointerWindow(F_CMD_ARGS)
 {
-	fw = get_pointer_fvwm_window();
+	exec_context_changes_t ecc;
+
+	ecc.w.fw = get_pointer_fvwm_window();
+	exc = exc_clone_context(exc, &ecc, ECC_FW);
 	select_cmd(F_PASS_ARGS);
 
 	return;
@@ -864,6 +868,7 @@ void CMD_Direction(F_CMD_ARGS)
 	float ty;
 	WindowConditionMask mask;
 	Bool is_pointer_relative;
+	FvwmWindow * const fw = exc->w.fw;
 
 	/* Parse the direction. */
 	tmp = PeekToken(action, &action);

@@ -1876,6 +1876,7 @@ void CMD_GotoPage(F_CMD_ARGS)
 void CMD_MoveToDesk(F_CMD_ARGS)
 {
 	int desk;
+	FvwmWindow * const fw = exc->w.fw;
 
 	desk = GetDeskNumber(action);
 	if (desk == fw->Desk)

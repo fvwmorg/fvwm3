@@ -124,7 +124,7 @@ static void execute_complex_function(
  *
  ***********************************************************************/
 static Bool DeferExecution(
-	const exec_context_t **ret_exc, const exec_context_t *exc,
+	exec_context_changes_t *ret_ecc, exec_context_change_mask_t *ret_mask,
 	cursor_t cursor, int trigger_evtype, int FinishEvent,
 	int do_allow_unmanaged)
 {
@@ -132,22 +132,21 @@ static Bool DeferExecution(
 	int finished = 0;
 	Window dummy;
 	Window original_w;
-	exec_context_changes_t ecc;
-	exec_context_change_mask_t mask = 0;
-	XEvent e;
+	static XEvent e;
+	Window w;
+	int wcontext;
+	FvwmWindow *fw;
 
-	*ret_exc = NULL;
-	ecc.w.fw = exc->w.fw;
-	ecc.w.w = exc->w.w;
-	ecc.w.wcontext = exc->w.wcontext;
-	original_w = ecc.w.w;
-
-	if (ecc.w.wcontext == C_UNMANAGED && do_allow_unmanaged)
+	fw = ret_ecc->w.fw;
+	w = ret_ecc->w.w;
+	original_w = w;
+	wcontext = ret_ecc->w.wcontext;
+	if (wcontext == C_UNMANAGED && do_allow_unmanaged)
 	{
 		return False;
 	}
-	if (ecc.w.wcontext != C_ROOT && ecc.w.wcontext != C_NO_CONTEXT &&
-	    ecc.w.fw != NULL && ecc.w.wcontext != C_EWMH_DESKTOP)
+	if (wcontext != C_ROOT && wcontext != C_NO_CONTEXT && fw != NULL &&
+	    wcontext != C_EWMH_DESKTOP)
 	{
 		if (FinishEvent == ButtonPress ||
 		    (FinishEvent == ButtonRelease &&
@@ -191,8 +190,7 @@ static Bool DeferExecution(
 				MyXUngrabKeyboard(dpy);
 				return True;
 			}
-			Keyboard_shortcuts(
-				&e, NULL, NULL, NULL, FinishEvent);
+			Keyboard_shortcuts(&e, NULL, NULL, NULL, FinishEvent);
 		}
 		if (e.type == FinishEvent)
 		{
@@ -222,60 +220,67 @@ static Bool DeferExecution(
 	MyXUngrabKeyboard(dpy);
 	UngrabEm(GRAB_NORMAL);
 
-	ecc.x.etrigger = &e;
-	ecc.w.w = e.xany.window;
-	mask |= ECC_ETRIGGER | ECC_FW | ECC_W | ECC_WCONTEXT;
-	if ((ecc.w.w == Scr.Root || ecc.w.w == Scr.NoFocusWin) &&
+	w = e.xany.window;
+	ret_ecc->x.etrigger = &e;
+	*ret_mask |= ECC_ETRIGGER | ECC_W | ECC_WCONTEXT;
+	if ((w == Scr.Root || w == Scr.NoFocusWin) &&
 	    e.xbutton.subwindow != None)
 	{
-		ecc.w.w = e.xbutton.subwindow;
-		e.xany.window = ecc.w.w;
+		w = e.xbutton.subwindow;
+		e.xany.window = w;
 	}
-	if (ecc.w.w == Scr.Root || IS_EWMH_DESKTOP(ecc.w.w))
+	if (w == Scr.Root || IS_EWMH_DESKTOP(w))
 	{
-		ecc.w.wcontext = C_ROOT;
+		ret_ecc->w.w = w;
+		ret_ecc->w.wcontext = C_ROOT;
 		XBell(dpy, 0);
 		return True;
 	}
-	if (XFindContext(
-		    dpy, ecc.w.w, FvwmContext, (caddr_t *)ecc.w.fw) == XCNOENT)
+	*ret_mask |= ECC_FW;
+	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)fw) == XCNOENT)
 	{
-		ecc.w.fw = NULL;
+		ret_ecc->w.fw = NULL;
+		ret_ecc->w.w = w;
+		ret_ecc->w.wcontext = C_ROOT;
 		XBell(dpy, 0);
 		return (True);
 	}
-	if (ecc.w.w == FW_W_PARENT(ecc.w.fw))
+	if (w == FW_W_PARENT(fw))
 	{
-		ecc.w.w = FW_W(ecc.w.fw);
+		w = FW_W(fw);
 	}
-	if (original_w == FW_W_PARENT(ecc.w.fw))
+	if (original_w == FW_W_PARENT(fw))
 	{
-		original_w = FW_W(ecc.w.fw);
+		original_w = FW_W(fw);
 	}
 	/* this ugly mess attempts to ensure that the release and press
 	 * are in the same window. */
-	if (ecc.w.w != original_w && original_w != Scr.Root &&
+	if (w != original_w && original_w != Scr.Root &&
 	    original_w != None && original_w != Scr.NoFocusWin &&
 	    !IS_EWMH_DESKTOP(original_w))
 	{
-		if (ecc.w.w != FW_W_FRAME(ecc.w.fw) ||
-		    original_w != FW_W(ecc.w.fw))
+		if (w != FW_W_FRAME(fw) || original_w != FW_W(fw))
 		{
-			ecc.w.wcontext = C_ROOT;
+			ret_ecc->w.fw = fw;
+			ret_ecc->w.w = w;
+			ret_ecc->w.wcontext = C_ROOT;
 			XBell(dpy, 0);
 			return True;
 		}
 	}
 
-	if (IS_EWMH_DESKTOP(FW_W(ecc.w.fw)))
+	if (IS_EWMH_DESKTOP(FW_W(fw)))
 	{
-		ecc.w.wcontext = C_ROOT;
+		ret_ecc->w.fw = fw;
+		ret_ecc->w.w = w;
+		ret_ecc->w.wcontext = C_ROOT;
 		XBell(dpy, 0);
 		return True;
 	}
-	ecc.w.wcontext = GetContext(NULL, ecc.w.fw, &e, &dummy);
-	/* return new exec_context_t */
-	*ret_exc = exc_clone_context(exc, &ecc, mask);
+	wcontext = GetContext(NULL, fw, &e, &dummy);
+	ret_ecc->w.fw = fw;
+	ret_ecc->w.w = w;
+	ret_ecc->w.wcontext = C_ROOT;
 
 	return False;
 }
@@ -558,29 +563,31 @@ static void __execute_function(
 	}
 	else
 	{
+		const exec_context_t *exc2;
+		exec_context_changes_t ecc;
+		exec_context_change_mask_t mask;
+
+		mask = (w != exc->w.w) ? ECC_W : 0;
+		ecc.w.fw = exc->w.fw;
+		ecc.w.w = w;
+		ecc.w.wcontext = exc->w.wcontext;
 		if (bif && bif->func_type != F_FUNCTION)
 		{
 			char *runaction;
 			Bool rc = False;
-			const exec_context_t *exc2;
 
-			exc2 = exc;
 			runaction = SkipNTokens(expaction, 1);
 			if (bif->flags & FUNC_NEEDS_WINDOW)
 			{
 				rc = DeferExecution(
-					&exc2, exc, bif->cursor,
-					exc2->x.etrigger->type, bif->evtype,
+					&ecc, &mask, bif->cursor,
+					exc->x.etrigger->type, bif->evtype,
 					(bif->flags & FUNC_ALLOW_UNMANAGED));
 			}
 			if (rc == False)
 			{
-				bif->action(
-					cond_rc, exc2, w, exc2->w.fw,
-					exc2->w.wcontext, runaction);
-			}
-			if (exc2 != NULL && exc2 != exc)
-			{
+				exc2 = exc_clone_context(exc, &ecc, mask);
+				bif->action(cond_rc, exc2, runaction);
 				exc_destroy_context(exc2);
 			}
 		}
@@ -598,13 +605,13 @@ static void __execute_function(
 			{
 				runaction = expaction;
 			}
+			exc2 = exc_clone_context(exc, &ecc, mask);
 			execute_complex_function(
 				cond_rc, exc, runaction, &desperate);
 			if (!bif && desperate)
 			{
 				if (executeModuleDesperate(
-					    cond_rc, exc, w, exc->w.fw,
-					    exc->w.wcontext, runaction) == -1 &&
+					    cond_rc, exc, runaction) == -1 &&
 				    *function != 0 && !set_silent)
 				{
 					fvwm_msg(
@@ -613,6 +620,7 @@ static void __execute_function(
 						function);
 				}
 			}
+			exc_destroy_context(exc2);
 		}
 	}
 
@@ -774,8 +782,7 @@ static void __run_complex_function_items(
 }
 
 static void cf_cleanup(
-	unsigned int *depth, char **arguments, const exec_context_t *exc,
-	const exec_context_t *exc2)
+	unsigned int *depth, char **arguments)
 {
 	int i;
 
@@ -790,10 +797,6 @@ static void cf_cleanup(
 		{
 			free(arguments[i]);
 		}
-	}
-	if (exc2 != NULL && exc2 != exc)
-	{
-		exc_destroy_context(exc2);
 	}
 
 	return;
@@ -821,11 +824,15 @@ static void execute_complex_function(
 	FvwmFunction *func;
 	static unsigned int depth = 0;
 	const exec_context_t *exc2;
-	const exec_context_t *exc3;
 	exec_context_changes_t ecc;
+	exec_context_change_mask_t mask;
 	int trigger_evtype;
+	XEvent *te;
 
-	exc2 = exc;
+	mask = 0;
+	ecc.w.fw = exc->w.fw;
+	ecc.w.w = exc->w.w;
+	ecc.w.wcontext = exc->w.wcontext;
 	/* find_complex_function expects a token, not just a quoted string */
 	func_name = PeekToken(action, &taction);
 	if (!func_name)
@@ -878,13 +885,14 @@ static void execute_complex_function(
 	}
 	/* In case we want to perform an action on a button press, we
 	 * need to fool other routines */
-	if (exc->x.etrigger->type == ButtonPress)
+	te = exc->x.etrigger;
+	if (te->type == ButtonPress)
 	{
 		trigger_evtype = ButtonRelease;
 	}
 	else
 	{
-		trigger_evtype = exc->x.etrigger->type;
+		trigger_evtype = te->type;
 	}
 	func->use_depth++;
 
@@ -906,24 +914,19 @@ static void execute_complex_function(
 	if (ImmediateNeedsTarget)
 	{
 		if (DeferExecution(
-			    &exc2, exc, CRS_SELECT, trigger_evtype, ButtonPress,
-			    do_allow_unmanaged_immediate))
+			    &ecc, &mask, CRS_SELECT, trigger_evtype,
+			    ButtonPress, do_allow_unmanaged_immediate))
 		{
 			func->use_depth--;
-			cf_cleanup(&depth, arguments, exc, exc2);
+			cf_cleanup(&depth, arguments);
 			return;
 		}
 		NeedsTarget = False;
 	}
 	else
 	{
-		ecc.w.w = (exc2->w.fw) ? FW_W_FRAME(exc->w.fw) : None;
-		exc3 = exc_clone_context(exc2, &ecc, ECC_W);
-		if (exc2 != NULL && exc2 != exc)
-		{
-			exc_destroy_context(exc2);
-		}
-		exc2 = exc3;
+		ecc.w.w = (ecc.w.fw) ? FW_W_FRAME(ecc.w.fw) : None;
+		mask |= ECC_W;
 	}
 
 	/* we have to grab buttons before executing immediate actions because
@@ -933,11 +936,13 @@ static void execute_complex_function(
 	{
 		func->use_depth--;
 		XBell(dpy, 0);
-		cf_cleanup(&depth, arguments, exc, exc2);
+		cf_cleanup(&depth, arguments);
 		return;
 	}
+	exc2 = exc_clone_context(exc, &ecc, mask);
 	__run_complex_function_items(
 		&cond_func_rc, CF_IMMEDIATE, func, exc2, arguments);
+	exc_destroy_context(exc2);
 	for (fi = func->first_item; fi != NULL && cond_func_rc != COND_RC_BREAK;
 	     fi = fi->next_item)
 	{
@@ -964,7 +969,7 @@ static void execute_complex_function(
 	if (!Persist || cond_func_rc == COND_RC_BREAK)
 	{
 		func->use_depth--;
-		cf_cleanup(&depth, arguments, exc, exc2);
+		cf_cleanup(&depth, arguments);
 		UngrabEm(GRAB_NORMAL);
 		return;
 	}
@@ -974,22 +979,23 @@ static void execute_complex_function(
 	if (NeedsTarget)
 	{
 		if (DeferExecution(
-			    &exc2, exc, CRS_SELECT, trigger_evtype, ButtonPress,
-			    do_allow_unmanaged))
+			    &ecc, &mask, CRS_SELECT, trigger_evtype,
+			    ButtonPress, do_allow_unmanaged))
 		{
 			func->use_depth--;
-			cf_cleanup(&depth, arguments, exc, exc2);
+			cf_cleanup(&depth, arguments);
 			UngrabEm(GRAB_NORMAL);
 			return;
 		}
 	}
 
-	switch (exc2->x.etrigger->xany.type)
+	te = (mask & ECC_ETRIGGER) ? ecc.x.etrigger : exc->x.etrigger;
+	switch (te->xany.type)
 	{
 	case ButtonPress:
 	case ButtonRelease:
-		x = exc2->x.etrigger->xbutton.x_root;
-		y = exc2->x.etrigger->xbutton.y_root;
+		x = te->xbutton.x_root;
+		y = te->xbutton.y_root;
 		/* Take the click which started this fuction off the
 		 * Event queue.  -DDN- Dan D Niles dniles@iname.com */
 		FCheckMaskEvent(dpy, ButtonPressMask, &d);
@@ -1036,21 +1042,12 @@ static void execute_complex_function(
 		type = CF_HOLD;
 	}
 
-
 	/* some functions operate on button release instead of presses. These
 	 * gets really weird for complex functions ... */
 	if (d.type == ButtonPress)
 	{
 		d.type = ButtonRelease;
 	}
-	ecc.x.etrigger = &d;
-	ecc.w.w = (exc2->w.fw) ? FW_W_FRAME(exc->w.fw) : None;
-	exc3 = exc_clone_context(exc2, &ecc, ECC_ETRIGGER | ECC_W);
-	if (exc2 != NULL && exc2 != exc)
-	{
-		exc_destroy_context(exc2);
-	}
-	exc2 = exc3;
 
 #ifdef BUGGY_CODE
 	/* domivogt (11-Apr-2000): The pointer ***must not*** be ungrabbed
@@ -1060,11 +1057,16 @@ static void execute_complex_function(
 	 * ButtonMotion as user input to select text. */
 	UngrabEm(GRAB_NORMAL);
 #endif
+	ecc.x.etrigger = &d;
+	ecc.w.w = (ecc.w.fw) ? FW_W_FRAME(ecc.w.fw) : None;
+	mask |= ECC_ETRIGGER | ECC_W;
+	exc2 = exc_clone_context(exc2, &ecc, mask);
 	__run_complex_function_items(
 		&cond_func_rc, type, func, exc2, arguments);
+	exc_destroy_context(exc2);
 	/* This is the right place to ungrab the pointer (see comment above). */
 	func->use_depth--;
-	cf_cleanup(&depth, arguments, exc, exc2);
+	cf_cleanup(&depth, arguments);
 	UngrabEm(GRAB_NORMAL);
 
 	return;

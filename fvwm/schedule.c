@@ -255,6 +255,7 @@ void CMD_Schedule(F_CMD_ARGS)
 	int id;
 	int *pid;
 	int n;
+	FvwmWindow * const fw = exc->w.fw;
 
 	/* get the time to execute */
 	n = GetIntegerArguments(action, &action, &ms, 1);

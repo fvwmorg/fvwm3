@@ -1613,14 +1613,14 @@ Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
 
 void CMD_Raise(F_CMD_ARGS)
 {
-	RaiseWindow(fw);
+	RaiseWindow(exc->w.fw);
 
 	return;
 }
 
 void CMD_Lower(F_CMD_ARGS)
 {
-	LowerWindow(fw);
+	LowerWindow(exc->w.fw);
 
 	return;
 }
@@ -1628,6 +1628,7 @@ void CMD_Lower(F_CMD_ARGS)
 void CMD_RaiseLower(F_CMD_ARGS)
 {
 	Bool ontop;
+	FvwmWindow * const fw = exc->w.fw;
 
 	ontop = is_on_top_of_layer_ignore_rom(fw);
 	if (ontop)
@@ -1646,12 +1647,12 @@ void CMD_Layer(F_CMD_ARGS)
 {
 	int n, layer, val[2];
 	char *token;
+	FvwmWindow * const fw = exc->w.fw;
 
 	if (fw == NULL)
 	{
 		return;
 	}
-
 	token = PeekToken(action, NULL);
 	if (StrEquals("default", token))
 	{

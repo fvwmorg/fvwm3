@@ -786,8 +786,7 @@ void HandleClientMessage(const evh_args_t *ea)
 	}
 
 	if (te->xclient.message_type == _XA_WM_CHANGE_STATE &&
-	    fw && te->xclient.data.l[0] == IconicState &&
-	    !IS_ICONIFIED(fw))
+	    fw && te->xclient.data.l[0] == IconicState && !IS_ICONIFIED(fw))
 	{
 		const exec_context_t *exc2;
 		exec_context_changes_t ecc;;
@@ -2214,6 +2213,7 @@ void HandleMapRequestKeepRaised(
 		win_opts = &win_opts_bak;
 	}
 	ew = ea->exc->x.etrigger->xmaprequest.window;
+fprintf(stderr,"hmrkr: ew 0x%08x excw 0x%08x\n",(int)ew, (int)ea->exc->w.w);
 	if (ReuseWin == NULL)
 	{
 		if (XFindContext(dpy, ew, FvwmContext, (caddr_t *)&fw) ==
@@ -3090,14 +3090,24 @@ void dispatch_event(XEvent *e)
 	XFlush(dpy);
 	if (w == Scr.Root)
 	{
-		if ((e->type == ButtonPress || e->type == ButtonRelease) &&
-		    e->xbutton.subwindow != None)
+		switch (e->type)
 		{
-			w = e->xbutton.subwindow;
+		case ButtonPress:
+		case ButtonRelease:
+			if (e->xbutton.subwindow != None)
+			{
+				w = e->xbutton.subwindow;
+			}
+		case MapRequest:
+			w = e->xmaprequest.window;
+fprintf(stderr,"de: xmr window 0x%08x\n",(int)w);
+			break;
+		default:
+			break;
 		}
 	}
 	if (w == Scr.Root ||
-	    XFindContext(dpy, w, FvwmContext, (caddr_t *) &fw) == XCNOENT)
+	    XFindContext(dpy, w, FvwmContext, (caddr_t *)&fw) == XCNOENT)
 	{
 		fw = NULL;
 	}
@@ -3106,10 +3116,12 @@ void dispatch_event(XEvent *e)
 	{
 		evh_args_t ea;
 		exec_context_changes_t ecc;
+		Window dummyw;
 
 		ecc.type = EXCT_EVENT;
 		ecc.x.etrigger = e;
-		ecc.w.wcontext = GetContext(&fw, fw, e, &ecc.w.w);
+		ecc.w.wcontext = GetContext(&fw, fw, e, &dummyw);
+		ecc.w.w = w;
 		ecc.w.fw = fw;
 		ea.exc = exc_create_context(
 			&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W |

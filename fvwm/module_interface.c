@@ -211,6 +211,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 	char *token;
 	extern char *ModulePath;
 	Window win;
+	FvwmWindow * const fw = exc->w.fw;
 
 	args = (char **)safemalloc(7 * sizeof(char *));
 
@@ -315,7 +316,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 	sprintf(arg2,"%d",app_to_fvwm[1]);
 	sprintf(arg3,"%d",fvwm_to_app[0]);
 	sprintf(arg5,"%lx",(unsigned long)win);
-	sprintf(arg6,"%lx",(unsigned long)context);
+	sprintf(arg6,"%lx",(unsigned long)exc->w.wcontext);
 	args[0] = arg1;
 	args[1] = arg2;
 	args[2] = arg3;
@@ -1528,6 +1529,7 @@ void CMD_SendToModule(F_CMD_ARGS)
 	char *module,*str;
 	unsigned long data0, data1, data2;
 	int i;
+	FvwmWindow * const fw = exc->w.fw;
 
 	/* FIXME: Without this, popup menus can't be implemented properly in
 	 *  modules.  Olivier: Why ? */

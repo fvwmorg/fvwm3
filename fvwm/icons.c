@@ -1980,6 +1980,7 @@ void SetMapStateProp(const FvwmWindow *fw, int state)
 void CMD_Iconify(F_CMD_ARGS)
 {
 	int toggle;
+	FvwmWindow * const fw = exc->w.fw;
 
 	toggle = ParseToggleArgument(action, NULL, -1, 0);
 	if (toggle == -1)

@@ -619,6 +619,7 @@ static void __activate_window_by_command(
 	int cy;
 	Bool do_not_warp;
 	sftfwin_args_t sf_args;
+	FvwmWindow * const fw = exc->w.fw;
 
 	sf_args.do_allow_force_broadcast = 1;
 	sf_args.is_focus_by_focus_cmd = !!is_focus_by_focus_cmd;
@@ -1209,7 +1210,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 	int val1, val2;
 
 	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
-	if (context != C_UNMANAGED)
+	if (exc->w.wcontext != C_UNMANAGED)
 	{
 		if (n == 2)
 		{
@@ -1234,8 +1235,8 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 			unsigned int wh;
 
 			if (!XGetGeometry(
-				    dpy, w, &JunkRoot, &wx, &wy, &ww, &wh,
-				    &JunkBW, &JunkDepth))
+				    dpy, exc->w.w, &JunkRoot, &wx, &wy, &ww,
+				    &wh, &JunkBW, &JunkDepth))
 			{
 				return;
 			}
@@ -1264,7 +1265,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 				y += wh;
 			}
 		}
-		FWarpPointer(dpy, None, w, 0, 0, 0, 0, x, y);
+		FWarpPointer(dpy, None, exc->w.w, 0, 0, 0, 0, x, y);
 	}
 
 	return;

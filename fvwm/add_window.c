@@ -356,6 +356,8 @@ static int MappedNotOverride(
 
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
+	FvwmWindow *fw = exc->w.fw;
+
 	MyXGrabServer(dpy);
 	if (fSingle)
 	{
@@ -2303,9 +2305,7 @@ FvwmWindow *AddWindow(
 			exc2 = exc_clone_context(
 				exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 			SET_STICKY(fw, 0);
-			handle_stick(
-				NULL, exc2, exc2->w.w, exc2->w.fw, C_FRAME, "",
-				1);
+			handle_stick(NULL, exc2, "", 1);
 			exc_destroy_context(exc2);
 		}
 	}
@@ -2334,7 +2334,7 @@ FvwmWindow *AddWindow(
 		ecc.w.wcontext = C_WINDOW;
 		exc2 = exc_clone_context(
 			exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_WCONTEXT);
-		CMD_Resize(NULL, exc2 , FW_W(fw), fw, C_WINDOW, "");
+		CMD_Resize(NULL, exc2, "");
 		exc_destroy_context(exc2);
 	}
 

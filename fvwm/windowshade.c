@@ -76,6 +76,7 @@ void CMD_WindowShade(F_CMD_ARGS)
 	char *naction;
 	Bool do_force_shading;
 	Bool has_dir;
+	FvwmWindow * const fw = exc->w.fw;
 
 	if (IS_ICONIFIED(fw))
 	{
