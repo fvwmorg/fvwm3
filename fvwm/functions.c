@@ -1414,7 +1414,7 @@ void execute_function(exec_func_args_type *efa)
     {
       if (executeModuleDesperate(
 	efa->cond_rc, efa->eventp, w, efa->fw, efa->context, runaction,
-	&efa->module) == -1 && *function != 0)
+	&efa->module) == -1 && *function != 0 && !set_silent)
       {
 	fvwm_msg(
 	  ERR, "execute_function", "No such command '%s'", function);
