@@ -1,3 +1,9 @@
+1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmEvent/FvwmEvent.c:
+	* FvwmAnimate/FvwmAnimate.c: use GetNextSimpleOption instead of
+	GetNextOption
+
 1999-04-08  Hippo
 
 	* FvwmDebug/FvwmDebug.{c,h}: added decode for M_NEW_LOOK packet

@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /* File: session.h
  *
  * Description:
@@ -12,7 +27,7 @@
 
 
 /*
-**  Load and save the 'global', ie not window-related, state of FVWM 
+**  Load and save the 'global', ie not window-related, state of FVWM
 **  into a file.
 */
 void LoadGlobalState(char *filename);
@@ -20,7 +35,7 @@ int SaveGlobalState(FILE *f);
 
 
 /*
-**  Load and save window states.  
+**  Load and save window states.
 */
 void LoadWindowStates(char *filename);
 int SaveWindowStates(FILE *f);
@@ -32,13 +47,13 @@ int SaveWindowStates(FILE *f);
 **    t->w
 **    t->name
 **    t->class
-**    t->tmpflags.NameChanged 
+**    t->tmpflags.NameChanged
 **  to have meaningful values. The shade and maximize flags are set
 **  if the window should start out as shaded or maximized, respecively.
-**  The dimensions returned in x, y, w, h should be used when the 
-**  window is to be maximized. 
+**  The dimensions returned in x, y, w, h should be used when the
+**  window is to be maximized.
  */
-void MatchWinToSM(FvwmWindow *t, int *x, int *y, int *w, int *h, 
+void MatchWinToSM(FvwmWindow *t, int *x, int *y, int *w, int *h,
                   int *shade, int *maximize);
 
 
@@ -49,7 +64,7 @@ void MatchWinToSM(FvwmWindow *t, int *x, int *y, int *w, int *h,
 void SessionInit(char *client_id);
 
 
-/* 
+/*
 **  The file number of the session manager connection or -1
 **  if no session manager was found.
  */

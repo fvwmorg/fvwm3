@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -7,6 +22,7 @@
 #include <unistd.h>
 
 #include "fvwm.h"
+#include "icons.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -693,7 +709,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	  if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
 	     IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
 	     !IS_ICON_UNMAPPED(t))
-	    AutoPlace(t);
+	    AutoPlaceIcon(t);
 	}
 
     }
@@ -804,7 +820,7 @@ void changeDesks(int desk)
       if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
 	 IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
 	 !IS_ICON_UNMAPPED(t))
-	AutoPlace(t);
+	AutoPlaceIcon(t);
     }
 
   if((FocusWin)&&(HAS_CLICK_FOCUS(FocusWin)))
@@ -850,7 +866,7 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
 	  tmp_win->Desk = desk;
 	  /* If its an icon, auto-place it */
 	  if(IS_ICONIFIED(tmp_win))
-	    AutoPlace(tmp_win);
+	    AutoPlaceIcon(tmp_win);
 	  MapIt(tmp_win);
 	}
       else

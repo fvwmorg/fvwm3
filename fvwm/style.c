@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /****************************************************************************
  * Changed 10/06/97 by dje:
  * Change single IconBox into chain of IconBoxes.
@@ -30,994 +45,53 @@
 
 #include "style.h"
 #include "fvwm.h"
+#include "fvwmlib.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
 
-static window_style *all_styles = NULL; /* list of window names with attributes */
-
-static int Get_TBLR(char *, unsigned char *); /* prototype */
-static void add_style_to_list(window_style **style_list,
-                              window_style *new_style); /* prototype */
-
-/* A macro for skipping over white space */
-#define SKIPSPACE \
-   while(isspace(*restofline))restofline++;
-
-/* A macro for checking the command with a caseless compare */
-#define ITIS(THIS) \
-  strncasecmp(restofline,THIS,sizeof(THIS)-1)==0
-
-/* A macro for skipping over the command without counting it's size */
-#define SKIP(THIS) \
-  restofline += sizeof(THIS)-1
-
-/* A macro for getting a non-quoted operand */
-#define GETWORD \
-  SKIPSPACE; \
-  tmp = restofline; \
-  len = 0; \
-  while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&& \
-        (*tmp != '\n')&&(!isspace(*tmp))) { \
-    tmp++; \
-    len++; \
-  }
-
-/* A macro for getting a quoted operand */
-#define GETQUOTEDWORD \
-  is_quoted = 0; \
-  SKIPSPACE; \
-  if (*restofline == '"') { \
-    is_quoted = 1; \
-    ++restofline; \
-  } \
-  tmp = restofline; \
-  len = 0; \
-  while (tmp && *tmp && \
-         ((!is_quoted&&(*tmp != ',')&&(*tmp != '\n')&&(!isspace(*tmp))) \
-          || (is_quoted&&(*tmp != '\n')&&(*tmp != '"')))) \
-    { \
-      tmp++; \
-      len++; \
-    } \
-    if (tmp && (*tmp == '"')) ++tmp;
-
-/* Process a style command.  First built up in a temp area.
-   If valid, added to the list in a malloced area. */
-void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
-		     unsigned long context, char *text, int *Module)
-{
-  char *line;
-  char *restofline;
-  char *tmp;
-  window_style *add_style;
-  /* work area for button number */
-  int butt;
-  int num,i;
-  /*  RBW - 11/02/1998  */
-  int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
-  /**/
-
-  /* temp area to build name list */
-  window_style tmpstyle;
-  int len = 0;
-  /* which current boxes to chain to */
-  icon_boxes *which = 0;
-  /* for parsing args with quotes */
-  int is_quoted;
-
-  /* init temp window_style area */
-  memset(&tmpstyle, 0, sizeof(window_style));
-  /* default uninitialised layer */
-  tmpstyle.layer = -9;
-
-  restofline = GetNextToken(text, &tmpstyle.name); /* parse style name */
-  /* in case there was no argument! */
-  if((tmpstyle.name == NULL)||(restofline == NULL))
-    {
-      /* If no name, or blank cmd */
-      if (tmpstyle.name)
-        free(tmpstyle.name);
-      return;                             /* drop it. */
-    }
-
-  SKIPSPACE;                            /* skip over white space */
-  line = restofline;
-
-  if(restofline == NULL)
-    {
-      free(tmpstyle.name);
-      return;
-    }
-  while((*restofline != 0)&&(*restofline != '\n'))
-  {
-    SKIPSPACE;                          /* skip white space */
-    /* It might make more sense to capture the whole word, fix its
-       case, and use strcmp, but there aren't many caseless compares
-       because of this "switch" on the first letter. */
-    switch (tolower(restofline[0]))
-    {
-      case 'a':
-        if(ITIS("ACTIVEPLACEMENT"))
-        {
-          SKIP("ACTIVEPLACEMENT");
-          tmpstyle.flags.do_place_random = 0;
-          tmpstyle.flag_mask.do_place_random = 1;
-        }
-        break;
-      case 'b':
-        if(ITIS("BACKCOLOR"))
-        {
-          SKIP("BACKCOLOR");
-          GETWORD;
-          if(len > 0)
-          {
-            tmpstyle.back_color_name = safemalloc(len+1);
-            strncpy(tmpstyle.back_color_name, restofline, len);
-            tmpstyle.back_color_name[len] = 0;
-            tmpstyle.flags.has_color_back = 1;
-            tmpstyle.flag_mask.has_color_back = 1;
-          }
-          restofline = tmp;
-        }
-        else if (ITIS("BUTTON"))
-        {
-          SKIP("BUTTON");
-          butt = -1; /* just in case sscanf fails */
-          sscanf(restofline,"%d",&butt);
-          GETWORD;
-          restofline = tmp;
-          SKIPSPACE;
-          if (butt == 0) butt = 10;
-          if (butt > 0 && butt <= 10)
-            tmpstyle.off_buttons |= (1<<(butt-1));
-        }
-        else if(ITIS("BorderWidth"))
-        {
-          SKIP("BorderWidth");
-          tmpstyle.flags.has_border_width = 1;
-          tmpstyle.flag_mask.has_border_width = 1;
-          sscanf(restofline, "%d", &tmpstyle.border_width);
-          GETWORD;
-          restofline = tmp;
-          SKIPSPACE;
-        }
-        break;
-      case 'c':
-        if(ITIS("COLOR"))
-        {
-          SKIP("COLOR");
-          SKIPSPACE;
-          tmp = restofline;
-          len = 0;
-          while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                (*tmp != '\n')&&(*tmp != '/')&&(!isspace(*tmp)))
-          {
-            tmp++;
-            len++;
-          }
-          if(len > 0)
-          {
-            tmpstyle.fore_color_name = safemalloc(len+1);
-            strncpy(tmpstyle.fore_color_name, restofline, len);
-            tmpstyle.fore_color_name[len] = 0;
-            tmpstyle.flags.has_color_fore = 1;
-            tmpstyle.flag_mask.has_color_fore = 1;
-          }
-
-          while(isspace(*tmp))
-            tmp++;
-          if(*tmp == '/')
-          {
-            tmp++;
-            while(isspace(*tmp))
-              tmp++;
-            restofline = tmp;
-            len = 0;
-            while((tmp != NULL)&&(*tmp != 0)&&(*tmp != ',')&&
-                  (*tmp != '\n')&&(*tmp != '/')&&(!isspace(*tmp)))
-            {
-              tmp++;
-              len++;
-            }
-            if(len > 0)
-            {
-              tmpstyle.back_color_name = safemalloc(len+1);
-              strncpy(tmpstyle.back_color_name, restofline, len);
-              tmpstyle.back_color_name[len] = 0;
-              tmpstyle.flags.has_color_back = 1;
-              tmpstyle.flag_mask.has_color_back = 1;
-            }
-          }
-          restofline = tmp;
-        }
-        else if(ITIS("CirculateSkipIcon"))
-        {
-          SKIP("CirculateSkipIcon");
-          tmpstyle.flags.common.do_circulate_skip_icon = 1;
-          tmpstyle.flag_mask.common.do_circulate_skip_icon = 1;
-        }
-        else if(ITIS("CirculateHitIcon"))
-        {
-          SKIP("CirculateHitIcon");
-          tmpstyle.flags.common.do_circulate_skip_icon = 0;
-          tmpstyle.flag_mask.common.do_circulate_skip_icon = 1;
-        }
-        else if(ITIS("CLICKTOFOCUS"))
-        {
-          SKIP("CLICKTOFOCUS");
-          tmpstyle.flags.common.focus_mode = FOCUS_CLICK;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 1;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-        }
-        else if(ITIS("CirculateSkip"))
-        {
-          SKIP("CirculateSkip");
-          tmpstyle.flags.common.do_circulate_skip = 1;
-          tmpstyle.flag_mask.common.do_circulate_skip = 1;
-        }
-        else if(ITIS("CirculateHit"))
-        {
-          SKIP("CirculateHit");
-          tmpstyle.flags.common.do_circulate_skip = 0;
-          tmpstyle.flag_mask.common.do_circulate_skip = 1;
-        }
-        break;
-      case 'd':
-        if(ITIS("DecorateTransient"))
-        {
-          SKIP("DecorateTransient");
-          tmpstyle.flags.do_decorate_transient = 1;
-          tmpstyle.flag_mask.do_decorate_transient = 1;
-        }
-        else if(ITIS("DUMBPLACEMENT"))
-        {
-          SKIP("DUMBPLACEMENT");
-          tmpstyle.flags.do_place_smart = 0;
-          tmpstyle.flag_mask.do_place_smart = 1;
-        }
-        break;
-      case 'e':
-        break;
-      case 'f':
-        if(ITIS("FORECOLOR"))
-        {
-          SKIP("FORECOLOR");
-          GETWORD;
-          if(len > 0)
-          {
-            tmpstyle.fore_color_name = safemalloc(len+1);
-            strncpy(tmpstyle.fore_color_name, restofline, len);
-            tmpstyle.fore_color_name[len] = 0;
-            tmpstyle.flags.has_color_fore = 1;
-            tmpstyle.flag_mask.has_color_fore = 1;
-          }
-          restofline = tmp;
-        }
-        else if(ITIS("FVWMBUTTONS"))
-        {
-          SKIP("FVWMBUTTONS");
-          tmpstyle.flags.common.has_mwm_buttons = 0;
-          tmpstyle.flag_mask.common.has_mwm_buttons = 1;
-        }
-        else if(ITIS("FVWMBORDER"))
-        {
-          SKIP("FVWMBORDER");
-          tmpstyle.flags.common.has_mwm_border = 0;
-          tmpstyle.flag_mask.common.has_mwm_border = 1;
-        }
-        else if(ITIS("FocusFollowsMouse"))
-        {
-          SKIP("FocusFollowsMouse");
-          tmpstyle.flags.common.focus_mode = FOCUS_MOUSE;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-        }
-        break;
-      case 'g':
-        if(ITIS("GrabFocusOff"))
-        {
-          SKIP("GRABFOCUSOFF");
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-        }
-        else if(ITIS("GrabFocus"))
-        {
-          SKIP("GRABFOCUS");
-          tmpstyle.flags.common.do_grab_focus_when_created = 1;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-        }
-        break;
-      case 'h':
-        if(ITIS("HINTOVERRIDE"))
-        {
-          SKIP("HINTOVERRIDE");
-          tmpstyle.flags.common.has_mwm_override = 1;
-          tmpstyle.flag_mask.common.has_mwm_override = 1;
-        }
-        else if(ITIS("HANDLES"))
-        {
-          SKIP("HANDLES");
-          tmpstyle.flags.has_no_border = 0;
-          tmpstyle.flag_mask.has_no_border = 1;
-        }
-        else if(ITIS("HandleWidth"))
-        {
-          SKIP("HandleWidth");
-          tmpstyle.flags.has_handle_width = 1;
-          tmpstyle.flag_mask.has_handle_width = 1;
-          sscanf(restofline, "%d", &tmpstyle.handle_width);
-          GETWORD;
-          restofline = tmp;
-          SKIPSPACE;
-        }
-        break;
-      case 'i':
-        if(ITIS("IconTitle"))
-        {
-          SKIP("IconTitle");
-          tmpstyle.flags.common.has_no_icon_title = 0;
-          tmpstyle.flag_mask.common.has_no_icon_title = 1;
-        }
-        else if(ITIS("IconBox"))
-        {
-          icon_boxes *IconBoxes = 0;
-          SKIP("IconBox");              /* Skip over word "IconBox" */
-          IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
-          memset(IconBoxes, 0, sizeof(icon_boxes)); /* clear it */
-          IconBoxes->IconGrid[0] = 3;   /* init grid x */
-          IconBoxes->IconGrid[1] = 3;   /* init grid y */
-          /* try for 4 numbers x y x y */
-          num = sscanf(restofline,"%d%d%d%d",
-                       &IconBoxes->IconBox[0],
-                       &IconBoxes->IconBox[1],
-                       &IconBoxes->IconBox[2],
-                       &IconBoxes->IconBox[3]);
-          if (num == 4) {               /* if 4 numbers */
-            for(i=0;i<num;i++) {
-              SKIPSPACE;
-              if (*restofline == '-') { /* If leading minus sign */
-                if (i == 0 || i == 2) { /* if a width */
-                  IconBoxes->IconBox[i] += Scr.MyDisplayWidth;
-                } else {                  /* it must be a height */
-                  IconBoxes->IconBox[i] += Scr.MyDisplayHeight;
-                } /* end width/height */
-              } /* end leading minus sign */
-              while((!isspace(*restofline))&&(*restofline!= 0)&&
-                    (*restofline != ',')&&(*restofline != '\n'))
-                restofline++;
-            }
-            /* Note: here there is no test for valid co-ords, use geom */
-          } else {
-	    /* Not 4 numeric args dje */
-	    /* bigger than =32767x32767+32767+32767 */
-            char geom_string[25];
-            int geom_flags;
-	    /* read in 1 word w/o advancing */
-            GETWORD;
-            if(len > 0 && len < 24) {
-	      /* if word found, not too long */
-	      /* copy and null term */
-              strncpy(geom_string,restofline,len);
-	      /* null terminate it */
-              geom_string[len] = 0;
-              geom_flags=XParseGeometry(geom_string,
-                                        &IconBoxes->IconBox[0],
-                                        &IconBoxes->IconBox[1], /* x/y */
-                                        &IconBoxes->IconBox[2],
-                                        &IconBoxes->IconBox[3]); /* width/ht */
-              if (IconBoxes->IconBox[2] == 0) { /* zero width ind invalid */
-                fvwm_msg(ERR,"ProcessNewStyle",
-                "IconBox requires 4 numbers or geometry! Invalid string <%s>.",
-                         geom_string);
-                free(IconBoxes);        /* Drop the box */
-                IconBoxes = 0;          /* forget about it */
-              } else {                  /* got valid iconbox geom */
-                if (geom_flags&XNegative) {
-                  IconBoxes->IconBox[0] = Scr.MyDisplayWidth /* screen width */
-                    + IconBoxes->IconBox[0] /* neg x coord */
-                    - IconBoxes->IconBox[2] -2; /* width - 2 */
-                }
-                if (geom_flags&YNegative) {
-                  IconBoxes->IconBox[1] = Scr.MyDisplayHeight /* scr height */
-                    + IconBoxes->IconBox[1] /* neg y coord */
-                    - IconBoxes->IconBox[3] -2; /* height - 2 */
-                }
-                IconBoxes->IconBox[2] +=
-                  IconBoxes->IconBox[0]; /* x + wid = right x */
-                IconBoxes->IconBox[3] +=
-                  IconBoxes->IconBox[1]; /* y + height = bottom y */
-              } /* end icon geom worked */
-            } else {                    /* no word or too long */
-              fvwm_msg(ERR,"ProcessNewStyle",
-                       "IconBox requires 4 numbers or geometry! Too long (%d).",
-                       len);
-              free(IconBoxes);          /* Drop the box */
-              IconBoxes = 0;            /* forget about it */
-            } /* end word found, not too long */
-            restofline = tmp;           /* got word, move past it */
-          } /* end not 4 args */
-          /* If we created an IconBox, put it in the chain. */
-          if (IconBoxes != 0) {         /* If no error */
-            if (tmpstyle.IconBoxes == 0) { /* If first one */
-              tmpstyle.IconBoxes = IconBoxes; /* chain to root */
-            } else {                    /* else not first one */
-              which->next = IconBoxes;  /* add to end of chain */
-            } /* end not first one */
-            which = IconBoxes;          /* new current box. save for grid */
-          } /* end no error */
-        } /* end iconbox parameter */
-        else if(ITIS("ICONGRID")) {
-          SKIP("ICONGRID");
-          SKIPSPACE;                    /* skip whitespace after keyword */
-          /* The grid always affects the prior iconbox */
-          if (which == 0) {             /* If no current box */
-            fvwm_msg(ERR,"ProcessNewStyle",
-                     "IconGrid must follow an IconBox in same Style command");
-          } else {                      /* have a place to grid */
-            num = sscanf(restofline,"%hd%hd", /* 2 shorts */
-                         &which->IconGrid[0],
-                         &which->IconGrid[1]);
-            if (num != 2
-                || which->IconGrid[0] < 1
-                || which->IconGrid[1] < 1) {
-              fvwm_msg(ERR,"ProcessNewStyle",
-                "IconGrid needs 2 numbers > 0. Got %d numbers. x=%d y=%d!",
-                       num, (int)which->IconGrid[0], (int)which->IconGrid[1]);
-              which->IconGrid[0] = 3;   /* reset grid x */
-              which->IconGrid[1] = 3;   /* reset grid y */
-            } else {                    /* it worked */
-              GETWORD;                  /* swallow word */
-              restofline = tmp;
-              GETWORD;                  /* swallow word */
-              restofline = tmp;
-            } /* end bad grid */
-          } /* end place to grid */
-        } else if(ITIS("ICONFILL")) {   /* direction to fill iconbox */
-          SKIP("ICONFILL");
-          SKIPSPACE;                    /* skip whitespace after keyword */
-          /* The fill always affects the prior iconbox */
-          if (which == 0) {             /* If no current box */
-            fvwm_msg(ERR,"ProcessNewStyle",
-                     "IconFill must follow an IconBox in same Style command");
-          } else {                      /* have a place to fill */
-            unsigned char IconFill_1;   /* first  type direction parsed */
-            unsigned char IconFill_2;   /* second type direction parsed */
-            GETWORD;                    /* read in word for length */
-            if (Get_TBLR(restofline,&IconFill_1) == 0) { /* top/bot/lft/rgt */
-              fvwm_msg(ERR,"ProcessNewStyle",
-                "IconFill must be followed by T|B|R|L, found %.*s.",
-                       len, restofline); /* its wrong */
-            } else {                    /* first word valid */
-              restofline = tmp;         /* swallow it */
-              SKIPSPACE;                /* skip space between words */
-              GETWORD;                  /* read in second word */
-              if (Get_TBLR(restofline,&IconFill_2) == 0) {/* top/bot/lft/rgt */
-                fvwm_msg(ERR,"ProcessNewStyle",
-                         "IconFill must be followed by T|B|R|L, found %.*s.",
-                         len, restofline); /* its wrong */
-              } else if ((IconFill_1&ICONFILLHRZ)==(IconFill_2&ICONFILLHRZ)) {
-                fvwm_msg(ERR,"ProcessNewStyle",
-                 "IconFill must specify a horizontal and vertical direction.");
-              } else {                  /* Its valid! */
-                which->IconFlags |= IconFill_1; /* merge in flags */
-                IconFill_2 &= ~ICONFILLHRZ; /* ignore horiz in 2nd arg */
-                which->IconFlags |= IconFill_2; /* merge in flags */
-              } /* end second word valid */
-            } /* end first word valid */
-            restofline = tmp;           /* swallow first or second word */
-          } /* end have a place to fill */
-        } /* end iconfill */
-        else if(ITIS("ICON"))
-        {
-          SKIP("ICON");
-          GETWORD;
-          if(len > 0)
-          {
-            tmpstyle.icon_name = safemalloc(len+1);
-            strncpy(tmpstyle.icon_name, restofline, len);
-            tmpstyle.icon_name[len] = 0;
-            tmpstyle.flags.has_icon = 1;
-            tmpstyle.flag_mask.has_icon = 1;
-          }
-	  tmpstyle.flags.common.is_icon_suppressed = 0;
-	  tmpstyle.flag_mask.common.is_icon_suppressed = 1;
-          restofline = tmp;
-        }
-        break;
-      case 'j':
-        break;
-      case 'k':
-        break;
-      case 'l':
-        if(ITIS("LENIENCE"))
-        {
-          SKIP("LENIENCE");
-          tmpstyle.flags.common.is_lenient = 1;
-          tmpstyle.flag_mask.common.is_lenient = 1;
-        }
-        else if (ITIS("LAYER"))
-          {
-            SKIP("LAYER");
-            sscanf(restofline, "%d", &tmpstyle.layer);
-            if(tmpstyle.layer < 0)
-              {
-                fvwm_msg(ERR, "ProcessNewStyle",
-                         "Layer must be non-negative." );
-		/* mark layer unset */
-		tmpstyle.layer = -9;
-              }
-            GETWORD;
-            restofline = tmp;
-            SKIPSPACE;
-          }
-        break;
-      case 'm':
-        if(ITIS("MWMBUTTONS"))
-        {
-          SKIP("MWMBUTTONS");
-          tmpstyle.flags.common.has_mwm_buttons = 1;
-          tmpstyle.flag_mask.common.has_mwm_buttons = 1;
-        }
-#ifdef MINI_ICONS
-        else if (ITIS("MINIICON"))
-        {
-          SKIP("MINIICON");
-          GETWORD;
-          if(len > 0)
-          {
-            tmpstyle.mini_icon_name = safemalloc(len+1);
-            strncpy(tmpstyle.mini_icon_name, restofline, len);
-            tmpstyle.mini_icon_name[len] = 0;
-            tmpstyle.flags.has_mini_icon = 1;
-            tmpstyle.flag_mask.has_mini_icon = 1;
-          }
-          restofline = tmp;
-        }
-#endif
-        else if(ITIS("MWMBORDER"))
-        {
-          SKIP("MWMBORDER");
-          tmpstyle.flags.common.has_mwm_border = 1;
-          tmpstyle.flag_mask.common.has_mwm_border = 1;
-        }
-        else if(ITIS("MWMDECOR"))
-        {
-          SKIP("MWMDECOR");
-          tmpstyle.flags.has_mwm_decor = 1;
-          tmpstyle.flag_mask.has_mwm_decor = 1;
-        }
-        else if(ITIS("MWMFUNCTIONS"))
-        {
-          SKIP("MWMFUNCTIONS");
-          tmpstyle.flags.has_mwm_functions = 1;
-          tmpstyle.flag_mask.has_mwm_functions = 1;
-        }
-        else if(ITIS("MOUSEFOCUS"))
-        {
-          SKIP("MOUSEFOCUS");
-          tmpstyle.flags.common.focus_mode = FOCUS_MOUSE;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-        }
-        break;
-      case 'n':
-        if(ITIS("NoIconTitle"))
-        {
-          SKIP("NoIconTitle");
-          tmpstyle.flags.common.has_no_icon_title = 1;
-          tmpstyle.flag_mask.common.has_no_icon_title = 1;
-        }
-        else if(ITIS("NOICON"))
-        {
-          SKIP("NOICON");
-          tmpstyle.flags.common.is_icon_suppressed = 1;
-          tmpstyle.flag_mask.common.is_icon_suppressed = 1;
-        }
-        else if(ITIS("NOTITLE"))
-        {
-          SKIP("NOTITLE");
-          tmpstyle.flags.has_no_title = 1;
-          tmpstyle.flag_mask.has_no_title = 1;
-        }
-        else if(ITIS("NoPPosition"))
-        {
-          SKIP("NoPPosition");
-          tmpstyle.flags.use_no_pposition = 1;
-          tmpstyle.flag_mask.use_no_pposition = 1;
-        }
-        else if(ITIS("NakedTransient"))
-        {
-          SKIP("NakedTransient");
-          tmpstyle.flags.do_decorate_transient = 0;
-          tmpstyle.flag_mask.do_decorate_transient = 1;
-        }
-        else if(ITIS("NODECORHINT"))
-        {
-          SKIP("NODECORHINT");
-          tmpstyle.flags.has_mwm_decor = 0;
-          tmpstyle.flag_mask.has_mwm_decor = 1;
-        }
-        else if(ITIS("NOFUNCHINT"))
-        {
-          SKIP("NOFUNCHINT");
-          tmpstyle.flags.has_mwm_functions = 0;
-          tmpstyle.flag_mask.has_mwm_functions = 1;
-        }
-        else if(ITIS("NOOVERRIDE"))
-        {
-          SKIP("NOOVERRIDE");
-          tmpstyle.flags.common.has_mwm_override = 0;
-          tmpstyle.flag_mask.common.has_mwm_override = 1;
-        }
-        else if(ITIS("NOHANDLES"))
-        {
-          SKIP("NOHANDLES");
-          tmpstyle.flags.has_no_border = 1;
-          tmpstyle.flag_mask.has_no_border = 1;
-        }
-        else if(ITIS("NOLENIENCE"))
-        {
-          SKIP("NOLENIENCE");
-          tmpstyle.flags.common.is_lenient = 0;
-          tmpstyle.flag_mask.common.is_lenient = 1;
-        }
-        else if (ITIS("NOBUTTON"))
-        {
-          SKIP("NOBUTTON");
-
-          butt = -1; /* just in case sscanf fails */
-          sscanf(restofline, "%d", &butt);
-          GETWORD;
-          SKIPSPACE;
-
-          if (butt == 0)
-            butt = 10;
-          if (butt > 0 && butt <= 10)
-            tmpstyle.on_buttons |= (1<<(butt-1));
-          restofline = tmp;
-        }
-        else if(ITIS("NOOLDECOR"))
-        {
-          SKIP("NOOLDECOR");
-          tmpstyle.flags.has_ol_decor = 0;
-          tmpstyle.flag_mask.has_ol_decor = 1;
-        }
-        break;
-      case 'o':
-        if(ITIS("OLDECOR"))
-        {
-          SKIP("OLDECOR");
-          tmpstyle.flags.has_ol_decor = 1;
-          tmpstyle.flag_mask.has_ol_decor = 1;
-        }
-        break;
-      case 'p':
-        break;
-      case 'q':
-        break;
-      case 'r':
-        if(ITIS("RANDOMPLACEMENT"))
-        {
-          SKIP("RANDOMPLACEMENT");
-          tmpstyle.flags.do_place_random = 1;
-          tmpstyle.flag_mask.do_place_random = 1;
-        }
-        break;
-      case 's':
-        if(ITIS("SMARTPLACEMENT"))
-        {
-          SKIP("SMARTPLACEMENT");
-          tmpstyle.flags.do_place_smart = 1;
-          tmpstyle.flag_mask.do_place_smart = 1;
-        }
-        else if(ITIS("SkipMapping"))
-        {
-          SKIP("SkipMapping");
-          tmpstyle.flags.common.do_not_show_on_map = 1;
-          tmpstyle.flag_mask.common.do_not_show_on_map = 1;
-        }
-        else if(ITIS("ShowMapping"))
-        {
-          SKIP("ShowMapping");
-          tmpstyle.flags.common.do_not_show_on_map = 0;
-          tmpstyle.flag_mask.common.do_not_show_on_map = 1;
-        }
-        else if(ITIS("StickyIcon"))
-        {
-          SKIP("StickyIcon");
-          tmpstyle.flags.common.is_icon_sticky = 1;
-          tmpstyle.flag_mask.common.is_icon_sticky = 1;
-        }
-        else if(ITIS("SlipperyIcon"))
-        {
-          SKIP("SlipperyIcon");
-          tmpstyle.flags.common.is_icon_sticky = 0;
-          tmpstyle.flag_mask.common.is_icon_sticky = 1;
-        }
-        else if(ITIS("SLOPPYFOCUS"))
-        {
-          SKIP("SLOPPYFOCUS");
-          tmpstyle.flags.common.focus_mode = FOCUS_SLOPPY;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-        }
-        else if(ITIS("StartIconic"))
-        {
-          SKIP("StartIconic");
-          tmpstyle.flags.common.do_start_iconic = 1;
-          tmpstyle.flag_mask.common.do_start_iconic = 1;
-        }
-        else if(ITIS("StartNormal"))
-        {
-          SKIP("StartNormal");
-          tmpstyle.flags.common.do_start_iconic = 0;
-          tmpstyle.flag_mask.common.do_start_iconic = 1;
-        }
-        else if(ITIS("StaysOnTop"))
-        {
-          SKIP("StaysOnTop");
-          tmpstyle.layer = Scr.OnTopLayer;
-        }
-        else if(ITIS("StaysPut"))
-        {
-          SKIP("StaysPut");
-          tmpstyle.layer = Scr.StaysPutLayer;
-        }
-        else if(ITIS("Sticky"))
-        {
-          SKIP("Sticky");
-          tmpstyle.flags.common.is_sticky = 1;
-          tmpstyle.flag_mask.common.is_sticky = 1;
-        }
-        else if(ITIS("Slippery"))
-        {
-          SKIP("Slippery");
-          tmpstyle.flags.common.is_sticky = 0;
-          tmpstyle.flag_mask.common.is_sticky = 1;
-        }
-        else if(ITIS("STARTSONDESK"))
-        {
-          SKIP("STARTSONDESK");
-          /*  RBW - 11/02/1998  */
-          spargs = sscanf(restofline, "%d", &tmpno1);
-          if (spargs == 1)
-            {
-              tmpstyle.flags.use_start_on_desk = 1;
-              tmpstyle.flag_mask.use_start_on_desk = 1;
-              /*  RBW - 11/20/1998 - allow for the special case of -1  */
-              tmpstyle.start_desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
-            }
-          else
-            {
-              fvwm_msg(ERR,"ProcessNewStyle",
-                       "bad StartsOnDesk arg: %s", restofline);
-            }
-          /**/
-          GETWORD;
-          restofline = tmp;
-          SKIPSPACE;
-        }
-       /*  RBW - 11/02/1998
-           StartsOnPage is like StartsOnDesk-Plus
-       */
-       else if(ITIS("STARTSONPAGE"))
-         {
-           SKIP("STARTSONPAGE");
-           spargs = sscanf(restofline,"%d %d %d", &tmpno1, &tmpno2, &tmpno3);
-
-          if (spargs == 1 || spargs == 3)
-            {
-	      /* We have a desk no., with or without page. */
-              /* RBW - 11/20/1998 - allow for the special case of -1 */
-	      /* Desk is now actual + 1 */
-              tmpstyle.start_desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
-              /*  Bump past desk no.    */
-              GETWORD;
-              restofline = tmp;
-              SKIPSPACE;
-            }
-
-          if (spargs == 2 || spargs == 3)
-            {
-              if (spargs == 3)
-                {
-                  /*  RBW - 11/20/1998 - allow for the special case of -1  */
-                  tmpstyle.start_page_x = (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
-                  tmpstyle.start_page_y = (tmpno3 > -1) ? tmpno3 + 1 : tmpno3;
-                }
-              else
-                {
-                  tmpstyle.start_page_x = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
-                  tmpstyle.start_page_y = (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
-                }
-              /*  Bump past next 2 args.    */
-              GETWORD;
-              restofline = tmp;
-              SKIPSPACE;
-              GETWORD;
-              restofline = tmp;
-              SKIPSPACE;
-
-            }
-          if (spargs < 1 || spargs > 3)
-            {
-              fvwm_msg(ERR,"ProcessNewStyle",
-                       "bad StartsOnPage args: %s", restofline);
-            }
-          else
-            {
-              tmpstyle.flags.use_start_on_desk = 1;
-              tmpstyle.flag_mask.use_start_on_desk = 1;
-            }
-
-         }
-       /**/
-        else if(ITIS("STARTSANYWHERE"))
-        {
-          SKIP("STARTSANYWHERE");
-          tmpstyle.flags.use_start_on_desk = 0;
-          tmpstyle.flag_mask.use_start_on_desk = 1;
-        }
-        else if (ITIS("STARTSLOWERED"))
-        {
-          SKIP("STARTSLOWERED");
-          tmpstyle.flags.do_start_lowered = 1;
-          tmpstyle.flag_mask.do_start_lowered = 1;
-        }
-        else if (ITIS("STARTSRAISED"))
-        {
-          SKIP("STARTSRAISED");
-          tmpstyle.flags.do_start_lowered = 0;
-          tmpstyle.flag_mask.do_start_lowered = 1;
-        }
-        break;
-      case 't':
-        if(ITIS("TITLE"))
-        {
-          SKIP("TITLE");
-          tmpstyle.flags.has_no_title = 0;
-          tmpstyle.flag_mask.has_no_title = 1;
-        }
-        break;
-      case 'u':
-        if(ITIS("UsePPosition"))
-        {
-          SKIP("UsePPosition");
-          tmpstyle.flags.use_no_pposition = 0;
-          tmpstyle.flag_mask.use_no_pposition = 1;
-        }
-#ifdef USEDECOR
-        if(ITIS("UseDecor"))
-        {
-          SKIP("UseDecor");
-          GETQUOTEDWORD;
-          if (len > 0)
-          {
-            tmpstyle.decor_name = safemalloc(len+1);
-            strncpy(tmpstyle.decor_name, restofline, len);
-            tmpstyle.decor_name[len] = 0;
-          }
-          restofline = tmp;
-        }
-#endif
-        else if(ITIS("UseStyle"))
-        {
-          SKIP("UseStyle");
-          GETQUOTEDWORD;
-          if (len > 0) {
-            int hit = 0;
-            /* changed to accum multiple Style definitions (veliaa@rpi.edu) */
-            for (add_style = all_styles; add_style;
-		 add_style = add_style->next ) {
-              if (!strncasecmp(restofline,add_style->name,len)) {
-		/* match style */
-                if (!hit)
-                {
-		  /* first match */
-                  char *save_name;
-                  save_name = tmpstyle.name;
-		  /* copy everything */
-                  memcpy((void*)&tmpstyle, (const void*)add_style,
-			 sizeof(window_style));
-		  /* except the next pointer */
-                  tmpstyle.next = NULL;
-		  /* and the name */
-                  tmpstyle.name = save_name;
-		  /* set not first match */
-                  hit = 1;
-                }
-                else
-                {
-		  merge_styles(&tmpstyle, add_style);
-                } /* end hit/not hit */
-              } /* end found matching style */
-            } /* end looking at all styles */
-
-	    /* move forward one word */
-            restofline = tmp;
-            if (!hit) {
-              tmp=safemalloc(500);
-              strcat(tmp,"UseStyle: ");
-              strncat(tmp,restofline-len,len);
-              strcat(tmp," style not found!");
-              fvwm_msg(ERR,"ProcessNewStyle",tmp);
-              free(tmp);
-            }
-          } /* if (len > 0) */
-          while(isspace(*restofline)) restofline++;
-        }
-        break;
-      case 'v':
-        break;
-      case 'w':
-        if(ITIS("WindowListSkip"))
-        {
-          SKIP("WindowListSkip");
-	  tmpstyle.flags.common.do_window_list_skip = 1;
-	  tmpstyle.flag_mask.common.do_window_list_skip = 1;
-        }
-        else if(ITIS("WindowListHit"))
-        {
-          SKIP("WindowListHit");
-	  tmpstyle.flags.common.do_window_list_skip = 0;
-	  tmpstyle.flag_mask.common.do_window_list_skip = 1;
-        }
-        break;
-      case 'x':
-        break;
-      case 'y':
-        break;
-      case 'z':
-        break;
-      default:
-        break;
-    }
-
-    SKIPSPACE;
-    if(*restofline == ',')
-      restofline++;
-    else if((*restofline != 0)&&(*restofline != '\n'))
-    {
-      fvwm_msg(ERR,"ProcessNewStyle",
-               "bad style command: %s", restofline);
-      /* Can't return here since all malloced memory will be lost. Ignore rest
-       * of line instead. */
-      break;
-    }
-  } /* end while still stuff on command */
-
-  /* capture default icons */
-  if(StrEquals(tmpstyle.name, "*"))
-  {
-    if(tmpstyle.flags.has_icon == 1)
-      Scr.DefaultIcon = tmpstyle.icon_name;
-    tmpstyle.flags.has_icon = 0;
-    tmpstyle.flag_mask.has_icon = 0;
-    tmpstyle.icon_name = NULL;
-  }
-  /* add temp name list to list */
-  add_style_to_list(&all_styles, &tmpstyle);
-}
+/* list of window names with attributes */
+static window_style *all_styles = NULL;
+static window_style *last_style_in_list = NULL;
 
 /* Check word after IconFill to see if its "Top,Bottom,Left,Right" */
-static int Get_TBLR(char *restofline,unsigned char *IconFill) {
-  *IconFill = 0;                        /* init */
-  if (ITIS("B") || ITIS("BOT")|| ITIS("BOTTOM")) {
-    *IconFill |= ICONFILLBOT; /* turn on bottom bit */
-    *IconFill |= ICONFILLHRZ; /* turn on vertical */
-  } else if (ITIS("T") || ITIS("TOP")) { /* else if its "top" */
-    *IconFill |= ICONFILLHRZ; /* turn on vertical */
-  } else if (ITIS("R") || ITIS("RGT") || ITIS("RIGHT")) {
-    *IconFill |= ICONFILLRGT; /* turn on right bit */
-  } else if (!(ITIS("L") || ITIS("LFT") || ITIS("LEFT"))) { /* "left" */
-    return 0;                           /* anything else is bad */
+static int Get_TBLR(char *token, unsigned char *IconFill) {
+  /* init */
+  if (StrEquals(token, "B") ||
+      StrEquals(token, "BOT")||
+      StrEquals(token, "BOTTOM"))
+  {
+    /* turn on bottom and verical */
+    *IconFill |= ICONFILLBOT;
+    *IconFill |= ICONFILLHRZ;
   }
-  return 1;                             /* return OK */
+  else if (StrEquals(token, "T") ||
+	   StrEquals(token, "TOP"))
+  {
+    /* turn on vertical */
+    *IconFill |= ICONFILLHRZ;
+  }
+  else if (StrEquals(token, "R") ||
+	   StrEquals(token, "RGT") ||
+	   StrEquals(token, "RIGHT"))
+  {
+    /* turn on right bit */
+    *IconFill |= ICONFILLRGT;
+  }
+  else if (StrEquals(token, "L") ||
+	   StrEquals(token, "LFT") ||
+	   StrEquals(token, "LEFT"))
+  {
+    *IconFill = 0;
+  }
+  else
+  {
+    /* anything else is bad */
+    return 0;
+  }
+
+  /* return OK */
+  return 1;
 }
 
 /***********************************************************************
@@ -1083,45 +157,44 @@ void merge_styles(window_style *merged_style, window_style *add_style)
       merge_flags[i] &= (add_flags[i] | ~add_mask[i]);
       merge_mask[i] |= add_mask[i];
     }
-  merged_style->on_buttons |= add_style->on_buttons; /* combine buttons */
+  /* combine buttons */
+  merged_style->on_buttons |= add_style->on_buttons;
   merged_style->on_buttons &= ~(add_style->off_buttons);
 
   /* Note, only one style cmd can define a windows iconboxes,
    * the last one encountered. */
-  if(add_style->IconBoxes != NULL) {         /* If style has iconboxes */
-    merged_style->IconBoxes = add_style->IconBoxes; /* copy it */
+  if(add_style->IconBoxes != NULL) {
+    /* If style has iconboxes */
+    /* copy it */
+    merged_style->IconBoxes = add_style->IconBoxes;
   }
   if (add_style->layer != -9) {
     merged_style->layer = add_style->layer;
   }
-  return;                               /* return */
+  return;
 }
 
-static void add_style_to_list(window_style **style_list,
-                              window_style *new_style)
+static void add_style_to_list(window_style *new_style)
 {
   window_style *nptr;
-  window_style *lastptr = NULL;
 
   /* This used to contain logic that returned if the style didn't contain
-     anything.  I don't see why we should bother. dje. */
-
-  /* used to merge duplicate entries, but that is no longer
+   * anything.  I don't see why we should bother. dje.
+   *
+   * used to merge duplicate entries, but that is no longer
    * appropriate since conficting styles are possible, and the
    * last match should win! */
 
-  /* seems like a pretty inefficient way to keep track of the end
-     of the list, but how long can the style list be? dje */
-  for (nptr = *style_list; nptr != NULL; nptr = nptr->next) {
-    lastptr=nptr;                       /* find end of style list */
-  }
-
-  nptr = (window_style *)safemalloc(sizeof(window_style)); /* malloc area */
-  memcpy((void*)nptr, (const void*)new_style, sizeof(window_style)); /* copy term area into list */
-  if(lastptr != NULL)                   /* If not first entry in list */
-    lastptr->next = nptr;               /* chain this entry to the list */
-  else                                  /* else first entry in list */
-    *style_list = nptr;                /* set the list root pointer. */
+  nptr = (window_style *)safemalloc(sizeof(window_style));
+  /* copy term area into list */
+  memcpy((void*)nptr, (const void*)new_style, sizeof(window_style));
+  if(last_style_in_list != NULL)
+    /* not first entry in list chain this entry to the list */
+    last_style_in_list->next = nptr;
+  else
+    /* first entry in list set the list root pointer. */
+    all_styles = nptr;
+  last_style_in_list = nptr;
 } /* end function */
 
 /***********************************************************************
@@ -1148,8 +221,10 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
 {
   window_style *nptr;
 
-  memset(styles, 0, sizeof(window_style)); /* clear callers return area */
-  styles->layer = Scr.StaysPutLayer; /* initialize to default layer */
+  /* clear callers return area */
+  memset(styles, 0, sizeof(window_style));
+  /* initialize to default layer */
+  styles->layer = Scr.StaysPutLayer;
   /* look thru all styles in order defined. */
   for (nptr = all_styles; nptr != NULL; nptr = nptr->next) {
     /* If name/res_class/res_name match, merge */
@@ -1193,4 +268,943 @@ int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len)
 	return 1;
     }
   return 0;
+}
+
+
+/* Process a style command.  First built up in a temp area.
+   If valid, added to the list in a malloced area. */
+void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
+		     unsigned long context, char *action, int *Module)
+{
+  char *line;
+  char *option;
+  char *token;
+  char *rest;
+  window_style *add_style;
+  /* work area for button number */
+  int butt;
+  int num;
+  int i;
+  /*  RBW - 11/02/1998  */
+  int tmpno[3] = { -1, -1, -1 };
+  int val[4];
+  int spargs = 0;
+  Bool found;
+/**/
+  /* temp area to build name list */
+  window_style tmpstyle;
+  /* which current boxes to chain to */
+  icon_boxes *which = 0;
+
+  /* init temp window_style area */
+  memset(&tmpstyle, 0, sizeof(window_style));
+  /* default uninitialised layer */
+  tmpstyle.layer = -9;
+
+  /* parse style name */
+  action = GetNextToken(action, &tmpstyle.name);
+  /* in case there was no argument! */
+  if(tmpstyle.name == NULL)
+    return;
+  if(action == NULL)
+    {
+#if 0
+      free(tmpstyle.name);
+#endif
+      return;
+    }
+  while (isspace(*action))
+    action++;
+  line = action;
+
+  while (action && *action && *action != '\n')
+  {
+    action = GetNextFullOption(action, &option);
+    if (!option)
+      break;
+    token = PeekToken(option, &rest);
+    if (!token)
+    {
+#if 0
+      free(option);
+#endif
+      break;
+    }
+
+    /* It might make more sense to capture the whole word, fix its
+     * case, and use strcmp, but there aren't many caseless compares
+     * because of this "switch" on the first letter. */
+    found = False;
+    found = True;
+    switch (tolower(token[0]))
+    {
+      case 'a':
+        if(StrEquals(token, "ACTIVEPLACEMENT"))
+        {
+	  found = True;
+          tmpstyle.flags.do_place_random = 0;
+          tmpstyle.flag_mask.do_place_random = 1;
+        }
+        break;
+
+      case 'b':
+        if(StrEquals(token, "BACKCOLOR"))
+        {
+	  found = True;
+	  GetNextToken(rest, &token);
+          if (token)
+          {
+            tmpstyle.back_color_name = token;
+            tmpstyle.flags.has_color_back = 1;
+            tmpstyle.flag_mask.has_color_back = 1;
+          }
+        }
+        else if (StrEquals(token, "BUTTON"))
+        {
+	  found = True;
+          butt = -1;
+	  GetIntegerArguments(rest, NULL, &butt, 1);
+          if (butt == 0)
+	    butt = 10;
+          if (butt > 0 && butt <= 10)
+            tmpstyle.off_buttons |= (1<<(butt-1));
+        }
+        else if(StrEquals(token, "BorderWidth"))
+        {
+	  found = True;
+	  if (GetIntegerArguments(rest, NULL, &tmpstyle.border_width, 1))
+	  {
+	    tmpstyle.flags.has_border_width = 1;
+	    tmpstyle.flag_mask.has_border_width = 1;
+	  }
+        }
+        break;
+
+      case 'c':
+        if(StrEquals(token, "COLOR"))
+        {
+	  char c = 0;
+
+	  found = True;
+	  rest = DoGetNextToken(rest, &token, NULL, ",/", &c);
+	  if (token == NULL)
+	    break;
+	  tmpstyle.fore_color_name = token;
+	  tmpstyle.flags.has_color_fore = 1;
+	  tmpstyle.flag_mask.has_color_fore = 1;
+
+	  if (c != '/')
+	  {
+	    /* skip over '/' */
+	    while (rest && *rest && isspace(*rest) && *rest != ',' &&
+		   *rest != '/')
+	      rest++;
+	    if (*rest == '/')
+	      rest++;
+	  }
+	  GetNextToken(rest, &token);
+	  if (!token)
+	    break;
+	  tmpstyle.back_color_name = token;
+	  tmpstyle.flags.has_color_back = 1;
+	  tmpstyle.flag_mask.has_color_back = 1;
+	  break;
+        }
+        else if(StrEquals(token, "CirculateSkipIcon"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_circulate_skip_icon = 1;
+          tmpstyle.flag_mask.common.do_circulate_skip_icon = 1;
+        }
+        else if(StrEquals(token, "CirculateHitIcon"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_circulate_skip_icon = 0;
+          tmpstyle.flag_mask.common.do_circulate_skip_icon = 1;
+        }
+        else if(StrEquals(token, "CLICKTOFOCUS"))
+        {
+	  found = True;
+          tmpstyle.flags.common.focus_mode = FOCUS_CLICK;
+          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
+          tmpstyle.flags.common.do_grab_focus_when_created = 1;
+          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+        }
+        else if(StrEquals(token, "CirculateSkip"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_circulate_skip = 1;
+          tmpstyle.flag_mask.common.do_circulate_skip = 1;
+        }
+        else if(StrEquals(token, "CirculateHit"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_circulate_skip = 0;
+          tmpstyle.flag_mask.common.do_circulate_skip = 1;
+        }
+        break;
+
+      case 'd':
+        if(StrEquals(token, "DecorateTransient"))
+        {
+	  found = True;
+          tmpstyle.flags.do_decorate_transient = 1;
+          tmpstyle.flag_mask.do_decorate_transient = 1;
+        }
+        else if(StrEquals(token, "DUMBPLACEMENT"))
+        {
+	  found = True;
+          tmpstyle.flags.do_place_smart = 0;
+          tmpstyle.flag_mask.do_place_smart = 1;
+        }
+        break;
+
+      case 'e':
+        break;
+
+      case 'f':
+        if(StrEquals(token, "FORECOLOR"))
+        {
+	  found = True;
+	  GetNextToken(rest, &token);
+          if (token)
+          {
+            tmpstyle.fore_color_name = token;
+            tmpstyle.flags.has_color_fore = 1;
+            tmpstyle.flag_mask.has_color_fore = 1;
+          }
+        }
+        else if(StrEquals(token, "FVWMBUTTONS"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_mwm_buttons = 0;
+          tmpstyle.flag_mask.common.has_mwm_buttons = 1;
+        }
+        else if(StrEquals(token, "FVWMBORDER"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_mwm_border = 0;
+          tmpstyle.flag_mask.common.has_mwm_border = 1;
+        }
+        else if(StrEquals(token, "FocusFollowsMouse"))
+        {
+	  found = True;
+          tmpstyle.flags.common.focus_mode = FOCUS_MOUSE;
+          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
+          tmpstyle.flags.common.do_grab_focus_when_created = 0;
+          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+        }
+        break;
+
+      case 'g':
+        if(StrEquals(token, "GrabFocusOff"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_grab_focus_when_created = 0;
+          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+        }
+        else if(StrEquals(token, "GrabFocus"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_grab_focus_when_created = 1;
+          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+        }
+        break;
+
+      case 'h':
+        if(StrEquals(token, "HINTOVERRIDE"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_mwm_override = 1;
+          tmpstyle.flag_mask.common.has_mwm_override = 1;
+        }
+        else if(StrEquals(token, "HANDLES"))
+        {
+	  found = True;
+          tmpstyle.flags.has_no_border = 0;
+          tmpstyle.flag_mask.has_no_border = 1;
+        }
+        else if(StrEquals(token, "HandleWidth"))
+        {
+	  found = True;
+	  if (GetIntegerArguments(rest, NULL, &tmpstyle.handle_width, 1))
+	  {
+	    tmpstyle.flags.has_handle_width = 1;
+	    tmpstyle.flag_mask.has_handle_width = 1;
+	  }
+        }
+        break;
+
+      case 'i':
+        if(StrEquals(token, "IconTitle"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_no_icon_title = 0;
+          tmpstyle.flag_mask.common.has_no_icon_title = 1;
+        }
+        else if(StrEquals(token, "IconBox"))
+        {
+          icon_boxes *IconBoxes = 0;
+
+	  found = True;
+          IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
+	  /* clear it */
+          memset(IconBoxes, 0, sizeof(icon_boxes));
+	  /* init grid x */
+          IconBoxes->IconGrid[0] = 3;
+	  /* init grid y */
+          IconBoxes->IconGrid[1] = 3;
+
+          /* try for 4 numbers x y x y */
+	  num = GetIntegerArguments(rest, NULL, val, 4);
+
+	  /* if 4 numbers */
+          if (num == 4) {
+            for(i = 0; i < 4; i++) {
+	      /* make sure the value fits into a short */
+	      if (val[i] < -32768)
+		val[i] = -32768;
+	      if (val[i] > 32767)
+		val[i] = 32767;
+	      IconBoxes->IconBox[i] = val[i];
+	      /* If leading minus sign */
+	      token = PeekToken(rest, &rest);
+              if (token[0] == '-') {
+		/* if a width */
+                if (i == 0 || i == 2) {
+                  IconBoxes->IconBox[i] += Scr.MyDisplayWidth;
+                } else {
+                  /* it must be a height */
+                  IconBoxes->IconBox[i] += Scr.MyDisplayHeight;
+                } /* end width/height */
+              } /* end leading minus sign */
+            }
+            /* Note: here there is no test for valid co-ords, use geom */
+          } else {
+	    /* Not 4 numeric args dje */
+	    /* bigger than =32767x32767+32767+32767 */
+            int geom_flags;
+	    int l;
+	    /* read in 1 word w/o advancing */
+	    token = PeekToken(rest, NULL);
+	    if (!token)
+	      break;
+	    l = strlen(token);
+	    if (l > 0 && l < 24) {
+	      /* if word found, not too long */
+              geom_flags=XParseGeometry(token,
+                                        &IconBoxes->IconBox[0],
+					/* x/y */
+                                        &IconBoxes->IconBox[1],
+                                        &IconBoxes->IconBox[2],
+					/* width/ht */
+                                        &IconBoxes->IconBox[3]);
+              if (IconBoxes->IconBox[2] == 0) {
+		/* zero width ind invalid */
+                fvwm_msg(ERR,"ProcessNewStyle",
+                "IconBox requires 4 numbers or geometry! Invalid string <%s>.",
+                         token);
+		/* Drop the box */
+#if 0
+                free(IconBoxes);
+#endif
+		/* forget about it */
+                IconBoxes = 0;
+              } else {
+		/* got valid iconbox geom */
+                if (geom_flags & XNegative) {
+                  IconBoxes->IconBox[0] =
+		    /* screen width */
+		    Scr.MyDisplayWidth
+		    /* neg x coord */
+                    + IconBoxes->IconBox[0]
+		    /* width - 2 */
+                    - IconBoxes->IconBox[2] -2;
+                }
+                if (geom_flags & YNegative) {
+                  IconBoxes->IconBox[1] =
+		    /* scr height */
+		    Scr.MyDisplayHeight
+		    /* neg y coord */
+                    + IconBoxes->IconBox[1]
+		    /* height - 2 */
+                    - IconBoxes->IconBox[3] -2;
+                }
+		/* x + wid = right x */
+                IconBoxes->IconBox[2] += IconBoxes->IconBox[0];
+		/* y + height = bottom y */
+                IconBoxes->IconBox[3] += IconBoxes->IconBox[1];
+              } /* end icon geom worked */
+            } else {
+	      /* no word or too long */
+              fvwm_msg(ERR, "ProcessNewStyle",
+                       "IconBox requires 4 numbers or geometry! Too long (%d).",
+                       l);
+	      /* Drop the box */
+#if 0
+              free(IconBoxes);
+#endif
+	      /* forget about it */
+              IconBoxes = 0;
+            } /* end word found, not too long */
+          } /* end not 4 args */
+          /* If we created an IconBox, put it in the chain. */
+          if (IconBoxes != 0) {
+	    /* no error */
+            if (tmpstyle.IconBoxes == 0) {
+	      /* first one, chain to root */
+	      tmpstyle.IconBoxes = IconBoxes;
+            } else {
+	      /* else not first one, add to end of chain */
+              which->next = IconBoxes;
+            } /* end not first one */
+	    /* new current box. save for grid */
+            which = IconBoxes;
+          } /* end no error */
+        } /* end iconbox parameter */
+        else if(StrEquals(token, "ICONGRID")) {
+	  found = True;
+          /* The grid always affects the prior iconbox */
+          if (which == 0) {
+	    /* If no current box */
+            fvwm_msg(ERR,"ProcessNewStyle",
+                     "IconGrid must follow an IconBox in same Style command");
+          } else {
+	    /* have a place to grid */
+	    /* 2 shorts */
+
+	    num = GetIntegerArguments(rest, NULL, val, 2);
+            if (num != 2 || val[0] < 1 || val[1] < 1) {
+              fvwm_msg(ERR,"ProcessNewStyle",
+                "IconGrid needs 2 numbers > 0. Got %d numbers. x=%d y=%d!",
+                       num, val[0], val[1]);
+	      /* reset grid */
+              which->IconGrid[0] = 3;
+              which->IconGrid[1] = 3;
+            } else {
+	      for (i = 0; i < 2; i++)
+	      {
+		/* make sure the value fits into a short */
+		if (val[i] > 32767)
+		  val[i] = 32767;
+		which->IconGrid[i] = val[i];
+	      }
+            } /* end bad grid */
+          } /* end place to grid */
+        } else if(StrEquals(token, "ICONFILL")) {
+	  found = True;
+	  /* direction to fill iconbox */
+          /* The fill always affects the prior iconbox */
+          if (which == 0) {
+            /* If no current box */
+            fvwm_msg(ERR,"ProcessNewStyle",
+                     "IconFill must follow an IconBox in same Style command");
+          } else {
+	    /* have a place to fill */
+	    /* first  type direction parsed */
+            unsigned char IconFill_1;
+	    /* second type direction parsed */
+            unsigned char IconFill_2;
+	    token = PeekToken(rest, &rest);
+	    /* top/bot/lft/rgt */
+            if (Get_TBLR(token, &IconFill_1) == 0) {
+	      /* its wrong */
+              fvwm_msg(ERR,"ProcessNewStyle",
+		       "IconFill must be followed by T|B|R|L, found %s.",
+                       token);
+            } else {
+	      /* first word valid */
+	      /* read in second word */
+	      token = PeekToken(rest, &rest);
+	      /* top/bot/lft/rgt */
+              if (Get_TBLR(token, &IconFill_2) == 0) {
+		/* its wrong */
+                fvwm_msg(ERR,"ProcessNewStyle",
+                         "IconFill must be followed by T|B|R|L, found %s.",
+                         token);
+              } else if ((IconFill_1&ICONFILLHRZ)==(IconFill_2&ICONFILLHRZ)) {
+                fvwm_msg(ERR,"ProcessNewStyle",
+                 "IconFill must specify a horizontal and vertical direction.");
+              } else {
+		/* Its valid! */
+		/* merge in flags */
+                which->IconFlags |= IconFill_1;
+		/* ignore horiz in 2nd arg */
+                IconFill_2 &= ~ICONFILLHRZ;
+		/* merge in flags */
+                which->IconFlags |= IconFill_2;
+              } /* end second word valid */
+            } /* end first word valid */
+          } /* end have a place to fill */
+        } /* end iconfill */
+        else if(StrEquals(token, "ICON"))
+        {
+	  found = True;
+	  GetNextToken(rest, &token);
+          if(token)
+          {
+            tmpstyle.icon_name = token;
+            tmpstyle.flag_mask.has_icon = 1;
+          }
+	  tmpstyle.flags.common.is_icon_suppressed = 0;
+	  tmpstyle.flag_mask.common.is_icon_suppressed = 1;
+        }
+        break;
+
+      case 'j':
+        break;
+
+      case 'k':
+        break;
+
+      case 'l':
+        if(StrEquals(token, "LENIENCE"))
+        {
+	  found = True;
+          tmpstyle.flags.common.is_lenient = 1;
+          tmpstyle.flag_mask.common.is_lenient = 1;
+        }
+        else if (StrEquals(token, "LAYER"))
+        {
+	  found = True;
+	  GetIntegerArguments(rest, NULL, &tmpstyle.layer, 1);
+	  if(tmpstyle.layer < 0)
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "Layer must be positive or zero." );
+	    /* mark layer unset */
+	    tmpstyle.layer = -9;
+	  }
+	}
+        break;
+
+      case 'm':
+        if(StrEquals(token, "MWMBUTTONS"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_mwm_buttons = 1;
+          tmpstyle.flag_mask.common.has_mwm_buttons = 1;
+        }
+#ifdef MINI_ICONS
+        else if (StrEquals(token, "MINIICON"))
+        {
+	  found = True;
+	  GetNextToken(rest, &token);
+	  if (token)
+          {
+            tmpstyle.mini_icon_name = token;
+            tmpstyle.flags.has_mini_icon = 1;
+            tmpstyle.flag_mask.has_mini_icon = 1;
+          }
+        }
+#endif
+        else if(StrEquals(token, "MWMBORDER"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_mwm_border = 1;
+          tmpstyle.flag_mask.common.has_mwm_border = 1;
+        }
+        else if(StrEquals(token, "MWMDECOR"))
+        {
+	  found = True;
+          tmpstyle.flags.has_mwm_decor = 1;
+          tmpstyle.flag_mask.has_mwm_decor = 1;
+        }
+        else if(StrEquals(token, "MWMFUNCTIONS"))
+        {
+	  found = True;
+          tmpstyle.flags.has_mwm_functions = 1;
+          tmpstyle.flag_mask.has_mwm_functions = 1;
+        }
+        else if(StrEquals(token, "MOUSEFOCUS"))
+        {
+	  found = True;
+          tmpstyle.flags.common.focus_mode = FOCUS_MOUSE;
+          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
+          tmpstyle.flags.common.do_grab_focus_when_created = 0;
+          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+        }
+        break;
+
+      case 'n':
+        if(StrEquals(token, "NoIconTitle"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_no_icon_title = 1;
+          tmpstyle.flag_mask.common.has_no_icon_title = 1;
+        }
+        else if(StrEquals(token, "NOICON"))
+        {
+	  found = True;
+          tmpstyle.flags.common.is_icon_suppressed = 1;
+          tmpstyle.flag_mask.common.is_icon_suppressed = 1;
+        }
+        else if(StrEquals(token, "NOTITLE"))
+        {
+	  found = True;
+          tmpstyle.flags.has_no_title = 1;
+          tmpstyle.flag_mask.has_no_title = 1;
+        }
+        else if(StrEquals(token, "NoPPosition"))
+        {
+	  found = True;
+          tmpstyle.flags.use_no_pposition = 1;
+          tmpstyle.flag_mask.use_no_pposition = 1;
+        }
+        else if(StrEquals(token, "NakedTransient"))
+        {
+	  found = True;
+          tmpstyle.flags.do_decorate_transient = 0;
+          tmpstyle.flag_mask.do_decorate_transient = 1;
+        }
+        else if(StrEquals(token, "NODECORHINT"))
+        {
+	  found = True;
+          tmpstyle.flags.has_mwm_decor = 0;
+          tmpstyle.flag_mask.has_mwm_decor = 1;
+        }
+        else if(StrEquals(token, "NOFUNCHINT"))
+        {
+	  found = True;
+          tmpstyle.flags.has_mwm_functions = 0;
+          tmpstyle.flag_mask.has_mwm_functions = 1;
+        }
+        else if(StrEquals(token, "NOOVERRIDE"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_mwm_override = 0;
+          tmpstyle.flag_mask.common.has_mwm_override = 1;
+        }
+        else if(StrEquals(token, "NOHANDLES"))
+        {
+	  found = True;
+          tmpstyle.flags.has_no_border = 1;
+          tmpstyle.flag_mask.has_no_border = 1;
+        }
+        else if(StrEquals(token, "NOLENIENCE"))
+        {
+	  found = True;
+          tmpstyle.flags.common.is_lenient = 0;
+          tmpstyle.flag_mask.common.is_lenient = 1;
+        }
+        else if (StrEquals(token, "NOBUTTON"))
+        {
+	  found = True;
+          butt = -1;
+	  GetIntegerArguments(rest, NULL, &butt, 1);
+          if (butt == 0)
+	    butt = 10;
+          if (butt > 0 && butt <= 10)
+            tmpstyle.on_buttons |= (1<<(butt-1));
+        }
+        else if(StrEquals(token, "NOOLDECOR"))
+        {
+	  found = True;
+          tmpstyle.flags.has_ol_decor = 0;
+          tmpstyle.flag_mask.has_ol_decor = 1;
+        }
+        break;
+
+      case 'o':
+        if(StrEquals(token, "OLDECOR"))
+        {
+	  found = True;
+          tmpstyle.flags.has_ol_decor = 1;
+          tmpstyle.flag_mask.has_ol_decor = 1;
+        }
+        break;
+
+      case 'p':
+        break;
+
+      case 'q':
+        break;
+
+      case 'r':
+        if(StrEquals(token, "RANDOMPLACEMENT"))
+        {
+	  found = True;
+          tmpstyle.flags.do_place_random = 1;
+          tmpstyle.flag_mask.do_place_random = 1;
+        }
+        break;
+
+      case 's':
+        if(StrEquals(token, "SMARTPLACEMENT"))
+        {
+	  found = True;
+          tmpstyle.flags.do_place_smart = 1;
+          tmpstyle.flag_mask.do_place_smart = 1;
+        }
+        else if(StrEquals(token, "SkipMapping"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_not_show_on_map = 1;
+          tmpstyle.flag_mask.common.do_not_show_on_map = 1;
+        }
+        else if(StrEquals(token, "ShowMapping"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_not_show_on_map = 0;
+          tmpstyle.flag_mask.common.do_not_show_on_map = 1;
+        }
+        else if(StrEquals(token, "StickyIcon"))
+        {
+	  found = True;
+          tmpstyle.flags.common.is_icon_sticky = 1;
+          tmpstyle.flag_mask.common.is_icon_sticky = 1;
+        }
+        else if(StrEquals(token, "SlipperyIcon"))
+        {
+	  found = True;
+          tmpstyle.flags.common.is_icon_sticky = 0;
+          tmpstyle.flag_mask.common.is_icon_sticky = 1;
+        }
+        else if(StrEquals(token, "SLOPPYFOCUS"))
+        {
+	  found = True;
+          tmpstyle.flags.common.focus_mode = FOCUS_SLOPPY;
+          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
+          tmpstyle.flags.common.do_grab_focus_when_created = 0;
+          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+        }
+        else if(StrEquals(token, "StartIconic"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_start_iconic = 1;
+          tmpstyle.flag_mask.common.do_start_iconic = 1;
+        }
+        else if(StrEquals(token, "StartNormal"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_start_iconic = 0;
+          tmpstyle.flag_mask.common.do_start_iconic = 1;
+        }
+        else if(StrEquals(token, "StaysOnTop"))
+        {
+	  found = True;
+          tmpstyle.layer = Scr.OnTopLayer;
+        }
+        else if(StrEquals(token, "StaysPut"))
+        {
+	  found = True;
+          tmpstyle.layer = Scr.StaysPutLayer;
+        }
+        else if(StrEquals(token, "Sticky"))
+        {
+	  found = True;
+          tmpstyle.flags.common.is_sticky = 1;
+          tmpstyle.flag_mask.common.is_sticky = 1;
+        }
+        else if(StrEquals(token, "Slippery"))
+        {
+	  found = True;
+          tmpstyle.flags.common.is_sticky = 0;
+          tmpstyle.flag_mask.common.is_sticky = 1;
+        }
+        else if(StrEquals(token, "STARTSONDESK"))
+        {
+	  found = True;
+	  /*  RBW - 11/02/1998  */
+	  spargs = GetIntegerArguments(rest, NULL, tmpno, 1);
+          if (spargs == 1)
+            {
+              tmpstyle.flags.use_start_on_desk = 1;
+              tmpstyle.flag_mask.use_start_on_desk = 1;
+              /*  RBW - 11/20/1998 - allow for the special case of -1  */
+              tmpstyle.start_desk = (tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
+            }
+          else
+            {
+              fvwm_msg(ERR,"ProcessNewStyle",
+                       "bad StartsOnDesk arg: %s", rest);
+            }
+          /**/
+        }
+	/*  RBW - 11/02/1998
+	 *  StartsOnPage is like StartsOnDesk-Plus
+	 */
+	else if(StrEquals(token, "STARTSONPAGE"))
+	{
+	  found = True;
+	  spargs = GetIntegerArguments(rest, NULL, tmpno, 3);
+	  if (spargs == 1 || spargs == 3)
+	  {
+	    /* We have a desk no., with or without page. */
+	    /* RBW - 11/20/1998 - allow for the special case of -1 */
+	    /* Desk is now actual + 1 */
+	    tmpstyle.start_desk = (tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
+	  }
+	  if (spargs == 2 || spargs == 3)
+	  {
+	    if (spargs == 3)
+	    {
+	      /*  RBW - 11/20/1998 - allow for the special case of -1  */
+	      tmpstyle.start_page_x =
+		(tmpno[1] > -1) ? tmpno[1] + 1 : tmpno[1];
+	      tmpstyle.start_page_y =
+		(tmpno[2] > -1) ? tmpno[2] + 1 : tmpno[2];
+	    }
+	    else
+	    {
+	      tmpstyle.start_page_x =
+		(tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
+	      tmpstyle.start_page_y =
+		(tmpno[1] > -1) ? tmpno[1] + 1 : tmpno[1];
+	    }
+	  }
+	  if (spargs < 1 || spargs > 3)
+	  {
+	    fvwm_msg(ERR,"ProcessNewStyle",
+		     "bad StartsOnPage args: %s", rest);
+	  }
+	  else
+	  {
+	    tmpstyle.flags.use_start_on_desk = 1;
+	    tmpstyle.flag_mask.use_start_on_desk = 1;
+	  }
+	}
+	/**/
+	else if(StrEquals(token, "STARTSANYWHERE"))
+	{
+	  found = True;
+	  tmpstyle.flags.use_start_on_desk = 0;
+	  tmpstyle.flag_mask.use_start_on_desk = 1;
+	}
+        else if (StrEquals(token, "STARTSLOWERED"))
+        {
+	  found = True;
+          tmpstyle.flags.do_start_lowered = 1;
+          tmpstyle.flag_mask.do_start_lowered = 1;
+        }
+        else if (StrEquals(token, "STARTSRAISED"))
+        {
+	  found = True;
+          tmpstyle.flags.do_start_lowered = 0;
+          tmpstyle.flag_mask.do_start_lowered = 1;
+        }
+        break;
+
+      case 't':
+        if(StrEquals(token, "TITLE"))
+        {
+	  found = True;
+          tmpstyle.flags.has_no_title = 0;
+          tmpstyle.flag_mask.has_no_title = 1;
+        }
+        break;
+
+      case 'u':
+        if(StrEquals(token, "UsePPosition"))
+        {
+	  found = True;
+          tmpstyle.flags.use_no_pposition = 0;
+          tmpstyle.flag_mask.use_no_pposition = 1;
+        }
+#ifdef USEDECOR
+        if(StrEquals(token, "UseDecor"))
+        {
+	  found = True;
+	  GetNextToken(rest, &token);
+	  if (token)
+            tmpstyle.decor_name = token;
+        }
+#endif
+        else if(StrEquals(token, "UseStyle"))
+        {
+	  found = True;
+	  token = PeekToken(rest, &rest);
+          if (token) {
+            int hit = 0;
+            /* changed to accum multiple Style definitions (veliaa@rpi.edu) */
+            for (add_style = all_styles; add_style;
+		 add_style = add_style->next ) {
+              if (StrEquals(token, add_style->name)) {
+		/* match style */
+                if (!hit)
+                {
+		  /* first match */
+                  char *save_name;
+                  save_name = tmpstyle.name;
+		  /* copy everything */
+                  memcpy((void*)&tmpstyle, (const void*)add_style,
+			 sizeof(window_style));
+		  /* except the next pointer */
+                  tmpstyle.next = NULL;
+		  /* and the name */
+                  tmpstyle.name = save_name;
+		  /* set not first match */
+                  hit = 1;
+                }
+                else
+                {
+		  merge_styles(&tmpstyle, add_style);
+                } /* end hit/not hit */
+              } /* end found matching style */
+            } /* end looking at all styles */
+
+	    /* move forward one word */
+            if (!hit) {
+              fvwm_msg(ERR,"ProcessNewStyle", "UseStyle: %s style not found",
+		       token);
+            }
+          } /* if (len > 0) */
+        }
+        break;
+
+      case 'v':
+        break;
+
+      case 'w':
+        if(StrEquals(token, "WindowListSkip"))
+        {
+	  found = True;
+	  tmpstyle.flags.common.do_window_list_skip = 1;
+	  tmpstyle.flag_mask.common.do_window_list_skip = 1;
+        }
+        else if(StrEquals(token, "WindowListHit"))
+        {
+	  found = True;
+	  tmpstyle.flags.common.do_window_list_skip = 0;
+	  tmpstyle.flag_mask.common.do_window_list_skip = 1;
+        }
+        break;
+
+      case 'x':
+        break;
+
+      case 'y':
+        break;
+
+      case 'z':
+        break;
+
+      default:
+        break;
+    }
+
+    if (found == False)
+    {
+      fvwm_msg(ERR,"ProcessNewStyle", "bad style command: %s", option);
+      /* Can't return here since all malloced memory will be lost. Ignore rest
+       * of line instead. */
+#if 0
+      free(option);
+#endif
+      break;
+    }
+    free(option);
+  } /* end while still stuff on command */
+
+  /* capture default icons */
+  if(StrEquals(tmpstyle.name, "*"))
+  {
+    if(tmpstyle.flags.has_icon == 1)
+      Scr.DefaultIcon = tmpstyle.icon_name;
+    tmpstyle.flags.has_icon = 0;
+    tmpstyle.flag_mask.has_icon = 0;
+    tmpstyle.icon_name = NULL;
+  }
+  /* add temp name list to list */
+  add_style_to_list(&tmpstyle);
 }

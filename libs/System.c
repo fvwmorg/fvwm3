@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /*
 ** System.c: code for dealing with various OS system call variants
 */
@@ -58,13 +73,13 @@ void setPath( char** p_path, const char* newpath, int free_old_path )
     /** Leave room for the old path, if we find a '+' in newpath **/
     *p_path = envDupExpand( stripped_path, found_plus ? oldlen : 0 );
     free( stripped_path );
-    
+
     if ( found_plus ) {
 	char* p = strchr( *p_path, '+' );
 	memmove( p+oldlen, p+1, strlen(p+1) );
 
 	/* copy oldlen+1 bytes to include the trailing NUL */
-	strncpy( p, oldpath, oldlen+1 ); 
+	strncpy( p, oldpath, oldlen+1 );
     }
 
     if ( free_old_path )
@@ -81,7 +96,7 @@ void setPath( char** p_path, const char* newpath, int free_old_path )
  * Oh well.
  *
  ****************************************************************************/
-char* searchPath( const char* pathlist, const char* filename, 
+char* searchPath( const char* pathlist, const char* filename,
 		  const char* suffix, int type )
 {
     char *path;
@@ -92,7 +107,7 @@ char* searchPath( const char* pathlist, const char* filename,
 
     l = (pathlist) ? strlen(pathlist) : 0;
     l += (suffix) ? strlen(suffix) : 0;
-    
+
     /* +1 for extra / and +1 for null termination */
     path = safemalloc( strlen(filename) + l + 2 );
     *path = '\0';
@@ -127,7 +142,7 @@ char* searchPath( const char* pathlist, const char* filename,
 	    if (access(path, type) == 0)
 		return path;
 	}
-	
+
 	/* Point to next element of the path */
 	if(dir_end == NULL)
 	    break;

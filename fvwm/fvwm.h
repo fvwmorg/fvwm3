@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #ifndef FVWM_H
 #define FVWM_H
 
@@ -37,6 +52,9 @@
  * fvwm include file
  ***********************************************************************/
 
+#define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
+unsigned long context,char *action, int *Module
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
@@ -46,8 +64,6 @@
 
 #include "gsfr.h"
 
-#define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
-unsigned long context,char *action, int *Module
 
 #ifndef WithdrawnState
 #define WithdrawnState 0
@@ -78,6 +94,22 @@ unsigned long context,char *action, int *Module
 
 #define NULLSTR ((char *) NULL)
 
+/*
+  For 1 style statement, there can be any number of IconBoxes.
+  The name list points at the first one in the chain.
+ */
+typedef struct icon_boxes_struct {
+  struct icon_boxes_struct *next;       /* next icon_boxes or zero */
+  int IconBox[4];                       /* x/y x/y for iconbox */
+  short IconGrid[2];                    /* x incr, y incr */
+  unsigned char IconFlags;               /* some bits */
+  /* IconFill only takes 3 bits.  Defaults are top, left, vert co-ord first */
+  /* eg: t l = 0,0,0; l t = 0,0,1; b r = 1,1,0 */
+#define ICONFILLBOT (1<<0)
+#define ICONFILLRGT (1<<1)
+#define ICONFILLHRZ (1<<2)
+} icon_boxes;
+
 typedef struct MyFont
 {
   XFontStruct *font;		/* font structure */
@@ -98,22 +130,6 @@ typedef struct ColorPair
 #ifdef USEDECOR
 struct FvwmDecor;		/* definition in screen.h */
 #endif
-
-/*
-  For 1 style statement, there can be any number of IconBoxes.
-  The name list points at the first one in the chain.
- */
-typedef struct icon_boxes_struct {
-  struct icon_boxes_struct *next;       /* next icon_boxes or zero */
-  int IconBox[4];                       /* x/y x/y for iconbox */
-  short IconGrid[2];                    /* x incr, y incr */
-  unsigned char IconFlags;               /* some bits */
-  /* IconFill only takes 3 bits.  Defaults are top, left, vert co-ord first */
-  /* eg: t l = 0,0,0; l t = 0,0,1; b r = 1,1,0 */
-#define ICONFILLBOT (1<<0)
-#define ICONFILLRGT (1<<1)
-#define ICONFILLHRZ (1<<2)
-} icon_boxes;
 
 typedef struct
 {

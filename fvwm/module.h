@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #ifndef MODULE_H
 #define MODULE_H
 
@@ -35,7 +50,7 @@ extern struct queue_buff_struct **pipeQueue;
 #define M_MAP                (1<<16)
 
 /* It turns out this is defined by <sys/stream.h> on Solaris 2.6.
-   I suspect that simply redefining this will lead to trouble; 
+   I suspect that simply redefining this will lead to trouble;
    at some point, these should probably be renamed (FVWM_MSG_ERROR?). */
 #ifdef M_ERROR
 #  undef M_ERROR

@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /****************************************************************************
  * This module is all new
  * by Rob Nation
@@ -92,18 +107,18 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     /* parse options */
     while (line && *line)
     {
-      line = GetNextOption(line, &tok);
+      line = GetNextSimpleOption(line, &tok);
       if (!tok)
 	break;
 
       if (StrEquals(tok,"Function"))
       {
-        line = GetNextOption(line, &func);
+        line = GetNextSimpleOption(line, &func);
       }
       else if (StrEquals(tok,"Desk"))
       {
 	free(tok);
-        line = GetNextOption(line, &tok);
+        line = GetNextSimpleOption(line, &tok);
 	if (tok)
 	{
 	  desk = atoi(tok);
@@ -167,12 +182,12 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       else if (StrEquals(tok, "Layers"))
       {
 	free(tok);
-        line = GetNextOption(line, &tok);
+        line = GetNextSimpleOption(line, &tok);
 	if (tok)
         {
           low_layer = high_layer = atoi(tok);
 	  free(tok);
-          line = GetNextOption(line, &tok);
+          line = GetNextSimpleOption(line, &tok);
 	  if (tok)
           {
             high_layer = atoi(tok);

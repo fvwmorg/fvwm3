@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #ifndef MISC_H
 #define MISC_H
 
@@ -42,12 +57,6 @@ struct config
    Globalgcm = GCFont | GCForeground | GCBackground; \
    XChangeGC(dpy,Scr.ScratchGC3,Globalgcm,&Globalgcv); \
 }
-
-#ifdef NO_ICONS
-#define ICON_HEIGHT 1
-#else
-#define ICON_HEIGHT (Scr.IconFont.height+6)
-#endif
 
 extern XGCValues Globalgcv;
 extern unsigned long Globalgcm;
@@ -120,9 +129,6 @@ extern void       PrevPage(void);
 extern void       moveLoop(FvwmWindow *,int,int,int,int,int *,int *,Bool,Bool);
 
 extern void       Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
-extern void       RedoIconName(FvwmWindow *);
-extern void       DrawIconWindow(FvwmWindow *);
-extern void       CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
 
 void Maximize(F_CMD_ARGS);
 void WindowShade(F_CMD_ARGS);
@@ -143,7 +149,6 @@ extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
 extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
 				 int xmotion, int ymotion);
 extern void       SetShape(FvwmWindow *, int);
-extern void       AutoPlace(FvwmWindow *);
 void executeModule(F_CMD_ARGS);
 extern void       SetFocus(Window,FvwmWindow *, Bool FocusByMouse);
 extern void       CheckAndSetFocus(void);
@@ -153,8 +158,6 @@ extern void       match_string(struct config *, char *, char *, FILE *);
 extern void       no_popup(char *ptr);
 extern void       KillModule(int channel, int place);
 extern void       ClosePipes(void);
-extern void       GetIconWindow(FvwmWindow *tmp_win);
-extern void       GetIconBitmap(FvwmWindow *tmp_win);
 /*  RBW - 11/02/1998  */
 extern int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y,
 			  int pdeltax, int pdeltay);
@@ -184,11 +187,8 @@ void move_window_to_page(F_CMD_ARGS);
 void set_animation(F_CMD_ARGS);
 void resize_window(F_CMD_ARGS);
 void CreateIconWindow(FvwmWindow *, int, int);
-void SetMapStateProp(FvwmWindow *, int);
 void SetStickyProp(FvwmWindow *, int, int, int);
 void SetClientProp(FvwmWindow *);
-void Iconify(FvwmWindow *, int, int);
-void DeIconify(FvwmWindow *);
 void show_panner(void);
 void WaitForButtonsUp(void);
 void FocusOn(FvwmWindow *t,Bool FocusByMouse);

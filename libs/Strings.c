@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /*
 ** Strings.c: various routines for dealing with strings
 */
@@ -43,13 +58,13 @@ char *CatString3(char *a, char *b, char *c)
 
 /***************************************************************************
  * A simple routine to copy a string, stripping spaces and mallocing
- * space for the new string 
+ * space for the new string
  ***************************************************************************/
 void CopyString(char **dest, char *source)
 {
   int len;
   char *start;
-  
+
   if (source == NULL)
     {
       *dest = NULL;
@@ -66,7 +81,7 @@ void CopyString(char **dest, char *source)
     len++;
     source++;
   }
-  
+
   source--;
   while((isspace(*source))&&(*source != 0)&&(len >0))
   {
@@ -75,15 +90,15 @@ void CopyString(char **dest, char *source)
   }
   *dest = safemalloc(len+1);
   strncpy(*dest,start,len);
-  (*dest)[len]=0;	  
+  (*dest)[len]=0;
 }
 
 /****************************************************************************
- * 
+ *
  * Copies a string into a new, malloc'ed string
  * Strips leading spaces and trailing spaces and new lines
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 char *stripcpy( const char *source )
 {
     const char* tmp;
@@ -108,7 +123,7 @@ char *stripcpy( const char *source )
     ptr[len]=0;
     return ptr;
 }
-  
+
 int StrEquals(char *s1,char *s2)
 {
   if (!s1 && !s2)

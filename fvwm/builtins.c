@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /****************************************************************************
  * This module is all original code
  * by Rob Nation
@@ -16,6 +31,7 @@
 
 #include "fvwm.h"
 #include "style.h"
+#include "icons.h"
 #include "functions.h"
 #include "menus.h"
 #include "misc.h"
@@ -755,48 +771,6 @@ void PlaceAgain_func(F_CMD_ARGS)
   return;
 }
 
-
-void iconify_function(F_CMD_ARGS)
-{
-  int toggle;
-
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT, ButtonRelease))
-    return;
-
-  toggle = ParseToggleArgument(action, NULL, -1, 0);
-  if (toggle == -1)
-  {
-    if (GetIntegerArguments(action, NULL, &toggle, 1) > 0)
-      {
-	if (toggle > 0)
-	  toggle = 1;
-	else if (toggle < 0)
-	  toggle = 0;
-	else
-	  toggle = -1;
-      }
-  }
-  if (toggle == -1)
-    toggle = (IS_ICONIFIED(tmp_win)) ? 0 : 1;
-
-  if (IS_ICONIFIED(tmp_win))
-  {
-    if (toggle == 0)
-      DeIconify(tmp_win);
-  }
-  else
-  {
-    if (toggle == 1)
-    {
-      if(check_if_function_allowed(F_ICONIFY,tmp_win,True,0) == 0)
-      {
-	XBell(dpy, 0);
-	return;
-      }
-      Iconify(tmp_win,eventp->xbutton.x_root-5,eventp->xbutton.y_root-5);
-    }
-  }
-}
 
 void raise_function(F_CMD_ARGS)
 {
@@ -3934,8 +3908,8 @@ void SetGlobalOptions(F_CMD_ARGS)
   char *opt;
 
   /* fvwm_msg(DBG,"SetGlobalOptions","init action == '%s'\n",action); */
-  for (action = GetNextOption(action, &opt); opt;
-       action = GetNextOption(action, &opt))
+  for (action = GetNextSimpleOption(action, &opt); opt;
+       action = GetNextSimpleOption(action, &opt))
   {
     /* fvwm_msg(DBG,"SetGlobalOptions"," opt == '%s'\n",opt); */
     /* fvwm_msg(DBG,"SetGlobalOptions"," remaining == '%s'\n",
@@ -4025,7 +3999,8 @@ void SetGlobalOptions(F_CMD_ARGS)
     }
     else
       fvwm_msg(ERR,"SetGlobalOptions","Unknown Global Option '%s'",opt);
-    if (opt) /* should never be null, but checking anyways... */
+    /* should never be null, but checking anyways... */
+    if (opt)
       free(opt);
   }
   if (opt)

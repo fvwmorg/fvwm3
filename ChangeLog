@@ -1,5 +1,41 @@
 1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Parse.c (GetNextSimpleOption):
+	(GetNextFullOption): replaced GetNextOption with these two functions
+	the latter one returns multiple tokens up to the next ',' while the
+	first one only reads a single token
+
+	* fvwm/gnome.c (GNOME_SetDeskNames): removed unused variable i
+
+	* fvwm/style.c:
+	(ProcessNewStyle): Rewrote parsing to get rid of those horrible macros.
+	This saves 3696 bytes in the executable (gcc, i686). Macros with more
+	than a single command should be forbidden!!!
+
+	* fvwm/fvwm.h:
+	* fvwm/misc.h:
+	* fvwm/builtins.c:
+	* fvwm/icons.c:
+	* fvwm/icons.h:
+	moved icon related code and definitions to icons.[ch]
+
+	* fvwm/events.c:
+	* fvwm/virtual.c:
+	* fvwm/icons.c (AutoPlace): renamed to AutoPlaceIcon
+
+	* fvwm/icons.h: new file
+
+	* libs/**.[ch]:
+	* fvwm/**.[ch]:
+	added GPL copyright notice
+
+	* fvwm/style.c (add_style_to_list): some speedup when using many
+	styles
+
+	* fvwm/add_window.c (AddWindow): replaced calloc with safemalloc
+
+	* fvwm/style.c: reformatted comments
+
 	* fvwm/gsfr.h (SET_ICON_OURS):
 	* fvwm/style.c (ProcessNewStyle):
 	fixed missing icons

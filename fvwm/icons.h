@@ -13,30 +13,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdlib.h>
-#include <stdio.h>
+#ifndef _ICONS_
+#define _ICONS_
 
-/***********************************************************************
- *
- *  Procedure:
- *	safemalloc - mallocs specified space or exits if there's a
- *		     problem
- *
- ***********************************************************************/
-char *safemalloc(int length)
-{
-  char *ptr;
+#ifdef NO_ICONS
+#define ICON_HEIGHT 1
+#else
+#define ICON_HEIGHT (Scr.IconFont.height+6)
+#endif
 
-  if(length <= 0)
-    length = 1;
-
-  ptr = malloc(length);
-  if(ptr == (char *)0)
-    {
-      fprintf(stderr,"malloc of %d bytes failed. Exiting\n",length);
-      exit(1);
-    }
-  return ptr;
-}
+void AutoPlaceIcon(FvwmWindow *);
+void RedoIconName(FvwmWindow *);
+void DrawIconWindow(FvwmWindow *);
+void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
+void GetIconWindow(FvwmWindow *tmp_win);
+void GetIconBitmap(FvwmWindow *tmp_win);
+void Iconify(FvwmWindow *, int, int);
+void DeIconify(FvwmWindow *);
+void SetMapStateProp(FvwmWindow *, int);
+void iconify_function(F_CMD_ARGS);
 
 
+#endif /* _ICONS_ */

@@ -551,7 +551,6 @@ GNOME_SetDeskNames(void)
   Atom atom_set;
   XTextProperty text;
   char *names[1];
-  int i;
 
   atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_NAMES, False);
 

@@ -182,7 +182,7 @@ char	*events[MAX_MESSAGES+MAX_BUILTIN] =
 };
 
 /* pointers to function args */
-int action_arg[MAX_MESSAGES+MAX_BUILTIN] = 
+int action_arg[MAX_MESSAGES+MAX_BUILTIN] =
 {
 	-1,
 	0,
@@ -221,7 +221,7 @@ int action_arg[MAX_MESSAGES+MAX_BUILTIN] =
 	-1,
 	-1
 };
-  
+
 
 /* define the action table  */
 char	*action_table[MAX_MESSAGES+MAX_BUILTIN];
@@ -441,7 +441,7 @@ INFO("\n");
 	    if ((e= FindToken(p,table,char *))) /* config option ? */
 	    {
                 p+=strlen(*e);		/* skip matched token */
-		p = GetNextOption( p, &q );
+		p = GetNextSimpleOption( p, &q );
 
 		switch (e - (char**)table)
 		{
@@ -471,9 +471,9 @@ INFO("<-\n");
 	    }
 	    else  /* test for isspace(*p) ??? */
 	    {
-		p = GetNextOption( p, &event );
-		p = GetNextOption( p, &action );
-		
+		p = GetNextSimpleOption( p, &event );
+		p = GetNextSimpleOption( p, &action );
+
 INFO(event);
 INFO("  ");
 INFO(action);

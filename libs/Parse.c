@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /*
 ** Parse.c: routines for parsing in fvwm & modules
 */
@@ -186,7 +201,7 @@ char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
   {
     *token = NULL;
     return NULL;
-  }  
+  }
   else
     *token = tmptok;
   return end;
@@ -203,6 +218,7 @@ char *PeekToken(char *indata, char **outdata)
   *outdata = DoPeekToken(indata, &token, NULL, NULL, NULL);
   return token;
 }
+
 
 /* Tries to seek up to n tokens in indata. Returns the number of tokens
  * actually found (up to a maximum of n). */
@@ -256,7 +272,7 @@ int XCmpToken(const char *s, const char **t)
     if ((*s=='\0' && (ispunct(*w) || isspace(*w)))||
 	(*w=='\0' && (ispunct(*s) || isspace(*s))) )
 	return 0;			/* 1st word equal */
-    else 
+    else
 	return toupper(*s)-toupper(*w);	/* smaller/greater */
 }
 
@@ -320,9 +336,16 @@ char *GetNextToken(char *indata, char **token)
   return DoGetNextToken(indata, token, NULL, NULL, NULL);
 }
 
-char *GetNextOption(char *indata, char **token)
+/* fetch next token and stop at next ',' */
+char *GetNextSimpleOption(char *indata, char **option)
 {
-  return DoGetNextToken(indata, token, NULL, ",", NULL);
+  return DoGetNextToken(indata, option, NULL, ",", NULL);
+}
+
+/* read multiple tokens up to next ',' or end of line */
+char *GetNextFullOption(char *indata, char **option)
+{
+  return GetQuotedString(indata, option, ",\n", NULL, NULL, NULL);
 }
 
 char *SkipNTokens(char *indata, unsigned int n)
@@ -448,7 +471,8 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
  **************************************************************************/
 int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
 {
-  return GetSuffixedIntegerArguments(action, ret_action, retvals, num, NULL, NULL);
+  return GetSuffixedIntegerArguments(action, ret_action, retvals, num, NULL,
+				     NULL);
 }
 
 
