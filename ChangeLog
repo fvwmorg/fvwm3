@@ -1,3 +1,8 @@
+1999-06-20  Chris Rankin  <rankinc@zipworld.com.au>
+
+    * modules/FvwmPager/FvwmPager.c: Changed signal handling to use
+    the fvwmsignal modules.
+
 1999-06-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.c (main): 
