@@ -111,7 +111,9 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int tc;
   int show_listskip = 0; /* do not show listskip by default */
   Bool use_hotkey = True;
-
+  KeyCode old_sor_keycode;
+  char sor_default_keyname[8] = { 'M', 'e', 't', 'a', '_', 'L' };
+  char *sor_keyname = sor_default_keyname;
   /* Condition vars. */
   Bool use_condition = False;
   WindowConditionMask mask;
@@ -154,7 +156,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       {
 	use_hotkey = False;
       }
-      if (StrEquals(tok,"Function"))
+      else if (StrEquals(tok,"Function"))
       {
         opts = GetNextSimpleOption(opts, &func);
       }
@@ -265,6 +267,13 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
             high_layer = atoi(tok);
           }
         }
+      }
+      else if (StrEquals(tok, "SelectOnRelease"))
+      {
+	if (sor_keyname != sor_default_keyname)
+	  free(sor_keyname);
+	sor_keyname = NULL;
+        opts = GetNextSimpleOption(opts, &sor_keyname);
       }
       else if (!opts || !*opts)
 	default_action = strdup(tok);
@@ -492,6 +501,21 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   /* Use the WindowList menu style is there is one */
   change_mr_menu_style(mr, "WindowList");
 
+  /* Activate select_on_release style */
+  old_sor_keycode = MST_SELECT_ON_RELEASE_KEY(mr);
+  if (sor_keyname &&
+      (!MST_SELECT_ON_RELEASE_KEY(mr) || sor_keyname != sor_default_keyname))
+  {
+    KeyCode keycode = 0;
+
+    if (sor_keyname)
+    {
+      keycode = XKeysymToKeycode(dpy, FvwmStringToKeysym(dpy, sor_keyname));
+    }
+    MST_SELECT_ON_RELEASE_KEY(mr) =
+      XKeysymToKeycode(dpy, FvwmStringToKeysym(dpy, sor_keyname));
+  }
+
   mp.menu = mr;
   mp.parent_menu = NULL;
   mp.parent_item = NULL;
@@ -510,6 +534,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   mp.ret_paction = &ret_action;
 
   do_menu(&mp, &mret);
+  /* Restore old menu style */
+  MST_SELECT_ON_RELEASE_KEY(mr) = old_sor_keycode;
   if (ret_action)
     free(ret_action);
   DestroyMenu(mr, False);

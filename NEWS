@@ -11,6 +11,7 @@ Changes in beta release 2.3.14 (not released yet)
   WindowshadeSteps window style.
 
 * New MenuStyle option SelectOnRelease to better emulate Alt-Tab.
+  Same option for WindowList command.
 
 Changes in beta release 2.3.13 (January 2000)
 
