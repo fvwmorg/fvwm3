@@ -171,13 +171,7 @@ int main(int argc, char **argv)
   setlocale(LC_CTYPE, "");
 #endif
   /* Save our program  name - for error messages */
-  temp = argv[0];
-  s=strrchr(argv[0], '/');
-  if (s != NULL)
-    temp = s + 1;
-
-  MyName = safemalloc(strlen(temp)+2);
-  strcpy(MyName, temp);
+  MyName = GetFileNameFromPath(argv[0]);
 
   if(argc  < 6)
     {
@@ -245,6 +239,18 @@ int main(int argc, char **argv)
       do_ignore_next_button_release = True;
     }
 
+  /* Check for an alias */
+  if (argc >= opt_num + 1)
+    { 
+      if (strspn(argv[opt_num], "0123456789") != strlen(argv[opt_num]) &&
+	  !StrEquals(argv[opt_num], "*"))
+	{
+	  free(MyName);
+	  MyName=strdup(argv[opt_num]);
+	  opt_num++;
+	}
+    }
+      
   if (argc < opt_num + 1)
     {
       desk1 = Scr.CurrentDesk;

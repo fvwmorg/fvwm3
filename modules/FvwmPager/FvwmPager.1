@@ -5,7 +5,7 @@
 .SH NAME
 FvwmPager \- the FVWM Pager module
 .SH SYNOPSIS
-\fBFvwmPager\fP [ \fI-transient\fP ] [ \fIfirst desk\fP [ \fIlast desk\fP ] ]
+\fBFvwmPager\fP [ \fI-transient\fP ] [ \fIname\fP ] [ \fIfirst desk\fP [ \fIlast desk\fP ] ]
 FvwmPager is spawned by fvwm, so no command line invocation will work.
 
 All desks with desk numbers between \fIfirst desk\fP and \fIlast desk\fP are
@@ -128,11 +128,16 @@ During initialization, \fIFvwmPager\fP will eventually search a
 configuration file which describes the time-outs and actions to take.
 The configuration file is the same file that fvwm used during initialization.
 
-If the FvwmPager executable is linked to another name, i.e. ln -s
-FvwmPager OtherPager, then another module called OtherPager can be
-started, with a completely different configuration than FvwmPager,
-simply by changing the keyword  FvwmPager to OtherPager. This way multiple
-pager programs can be used.
+To use FvwmPager with several different configurations, you can
+invoke FvwmPager with an optional parameter, which it will use
+as its \fIname\fP instead (e.g "Module FvwmPager OtherPager").
+OtherPager will then read only the lines in the configuration file
+starting with "*OtherPager", and not the lines belonging to FvwmPager.
+This way multiple pager programs can be used.
+
+Note: the old way to use the FvwmPager with several different configurations
+is to link the executable to another name, i.e. ln -s 
+FvwmPager OtherPager. This may work, but this method is not supported. 
 
 .SH KEYBOARD FOCUS CONTROL
 You can direct the keyboard focus to any window on the current desktop
