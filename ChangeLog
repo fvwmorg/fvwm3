@@ -1,3 +1,20 @@
+Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
+
+	* fvwm/functions.c (func_config): Oops, put EdgeThickness command
+	in right place in command table.  Really thought I tested that.
+
+	* fvwm/fvwm.h: Remove #defines for PAN_FRAME_THICKNESS
+	and SCROLL_REGION.
+
+	* fvwm/misc.h: Add prototype for setEdgeThickness, and a macro
+	for the args to any fvwm2 command.
+
+	* NEWS:
+	* fvwm/fvwm2.1: 
+	* fvwm/functions.c (func_config):
+	* fvwm/virtual.c (setEdgeThickness): Add new command, "EdgeThickness
+	0 | 1 | 2".
+
 1998-12-18  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/placement.c (PlaceWindow): Removed checks for IconicState property

@@ -100,6 +100,7 @@ static struct functions func_config[] =
   {"Echo",         echo_func,        F_ECHO,                FUNC_NO_WINDOW},
   {"EdgeResistance",SetEdgeResistance,F_EDGE_RES,           FUNC_NO_WINDOW},
   {"EdgeScroll",   SetEdgeScroll,    F_EDGE_SCROLL,         FUNC_NO_WINDOW},
+  {"EdgeThickness", setEdgeThickness, F_NOP,                FUNC_NO_WINDOW},
   {"Exec",         exec_function,    F_EXEC,                FUNC_NO_WINDOW},
   {"ExecUseSHELL", exec_setup,       F_EXEC_SETUP,          FUNC_NO_WINDOW},
   {"FlipFocus",    flip_focus_func,  F_FLIP_FOCUS,          FUNC_NEEDS_WINDOW},
@@ -127,7 +128,6 @@ static struct functions func_config[] =
   {"None",         NoneFunc,         F_NONE,                FUNC_NO_WINDOW},
   {"Nop",          Nop_func,         F_NOP,                 FUNC_NOP},
   {"OpaqueMoveSize", SetOpaque,      F_OPAQUE,              FUNC_NO_WINDOW},
-  {"EdgeThickness", setEdgeThickness, F_NOP,                FUNC_NO_WINDOW},
   {"PipeRead",     PipeRead,         F_READ,                FUNC_NO_WINDOW},
 #ifdef XPM
   {"PixmapPath",   setPixmapPath,    F_PIXMAP_PATH,         FUNC_NO_WINDOW},
