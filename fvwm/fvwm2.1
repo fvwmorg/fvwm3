@@ -3462,7 +3462,8 @@ the window asking it to gracefully remove itself.  If the window does
 not understand the delete window protocol then the window is
 destroyed as with the
 .B Destroy
-command.
+command.  Note: if the window accepts the delete window protocol but
+does not close itself in response, the window will not be deleted.
 
 .TP
 .BI "Delete"
@@ -6145,7 +6146,7 @@ This built-in is intended to be used in fvwm functions only.  It
 causes execution of a function to pause until a new window with the
 title
 .I windowname
-appears. Fvwm remains fully functional during a wait.  This is
+appears.  Fvwm remains fully functional during a wait.  This is
 particularly useful in the "InitFunction" if you are trying to
 start windows on specific desktops:
 .EX

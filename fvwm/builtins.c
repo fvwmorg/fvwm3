@@ -706,6 +706,40 @@ void wait_func(F_CMD_ARGS)
   extern FvwmWindow *Tmp_win;
   char *wait_string, *rest;
 
+#if 1
+  /* try to get a single token */
+  rest = GetNextToken(action, &wait_string);
+  if (wait_string)
+  {
+    while (*rest && isspace((unsigned char)*rest))
+      rest++;
+    if (*rest)
+    {
+      int i;
+      char *temp;
+
+fprintf(stderr,"more tokens\n");
+      /* nope, multiple tokens - try old syntax */
+
+      /* strip leading and trailing whitespace */
+      temp = action;
+      while (*temp && isspace((unsigned char)*temp))
+        temp++;
+fprintf(stderr,"temp='%s'\n", temp);
+      wait_string = strdup(temp);
+      for (i = strlen(wait_string) - 1; i >= 0 && isspace(wait_string[i]); i--)
+      {
+        wait_string[i] = 0;
+      }
+fprintf(stderr,"ws='%s'\n", wait_string);
+    }
+  }
+  else
+  {
+    wait_string = strdup("");
+  }
+fprintf(stderr,"waiting for '%s'\n", wait_string);
+#else
   rest = GetNextToken(action, &wait_string);
   if (!wait_string)
     return;
@@ -717,6 +751,7 @@ void wait_func(F_CMD_ARGS)
     free(wait_string);
     return;
   }
+#endif
 
   while(!done)
   {
@@ -732,12 +767,14 @@ void wait_func(F_CMD_ARGS)
       DispatchEvent(False);
       if(Event.type == MapNotify)
       {
+        if (!*wait_string)
+          done = True;
         if((Tmp_win)&&(matchWildcards(wait_string, Tmp_win->name)==True))
           done = True;
-        if((Tmp_win)&&(Tmp_win->class.res_class)&&
+        else if((Tmp_win)&&(Tmp_win->class.res_class)&&
            (matchWildcards(wait_string, Tmp_win->class.res_class)==True))
           done = True;
-        if((Tmp_win)&&(Tmp_win->class.res_name)&&
+        else if((Tmp_win)&&(Tmp_win->class.res_name)&&
            (matchWildcards(wait_string, Tmp_win->class.res_name)==True))
           done = True;
       }

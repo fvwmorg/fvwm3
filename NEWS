@@ -38,6 +38,8 @@ Changes in beta release 2.3.17 (not released yet)
 
 Changes in beta release 2.3.16 (April 2000)
 
+* Wait command supports quoted window names.
+
 * Fixed the annoying rxvt text selection problem that was present
   since 2.3.10.
 
