@@ -75,6 +75,11 @@ the panel.  With the opposite option \fIStayUpOnSelect\fP the panel never
 closes when pressing anything inside it.  The default is to close the panel
 if the action executed begins with 'Exec'.
 
+.IP "*FvwmButtonsColorset \fIcolorset\fP"
+Tells the module to use colorset \fIcolorset\fP for the window
+background.  Please refer to the man page of the FvwmTheme
+module for details about colorsets.
+
 .IP "*FvwmButtonsColumns \fIcolumns\fP"
 Specifies the number of columns of buttons to be created. If unspecified,
 the number of columns will be set to the number of buttons requested,
@@ -191,6 +196,24 @@ and a shadow color will also be calculated from this.
 .IP "  Center"
 The contents of the button is centered on the button. This is the default but
 may be changed by \fILeft\fP or \fIRight\fP.
+
+.IP "  Colorset \fIcolorset\fP"
+The given colorset can be applied to a container, a swallowed application
+and a simple button.  To apply it to a button or container, simply put
+the option in a line with a button or container description.  Drawing
+backgrounds for individual buttons and containers with colorsets requires
+a lot of communication with the X server.  So if you are not content
+with the drawing speed of dozens of buttons with colorset backgrounds,
+do not use colorsets here.  Setting colorsets as the background of
+swallowed applications does not suffer from this restriction but depends
+entirely on the swallowed application.  It may work as you wish, but
+since it involves fiddling with other applications' windows there is
+no guarantee for anything.  I have tested three applications:
+xosview works nicely with a colorset background, xload works only
+with a VGradient or solid background and an analog xclock leaves a
+trail painted in the background colour after its hands.
+Please refer to the man page of the FvwmTheme module for details
+about colorsets.
 
 .IP "  Container [(\fIoptions\fP)]"
 Specifies that this button will contain a miniature buttonbox, more or less
