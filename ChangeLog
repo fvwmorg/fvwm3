@@ -1,5 +1,10 @@
 2001-05-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm2.1:
+	added default menu binding to description
+
+2001-05-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* fvwm/functions.c (DeferExecution):
 	fixed keyboard lockup
 
