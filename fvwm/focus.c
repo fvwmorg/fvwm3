@@ -800,10 +800,6 @@ Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
 			 * focus. */
 			return True;
 		}
-		else
-		{
-			return False;
-		}
 	}
 	else
 	{
@@ -812,10 +808,6 @@ Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
 		     !FP_DO_OVERRIDE_GRAB_FOCUS(FW_FOCUS_POLICY(focus_win))))
 		{
 			return True;
-		}
-		else
-		{
-			return False;
 		}
 	}
 
@@ -878,12 +870,12 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 
 void focus_grab_buttons(FvwmWindow *fw)
 {
-        return __focus_grab_buttons(fw, False);
+        __focus_grab_buttons(fw, False);
 }
 
 void focus_grab_buttons_client_entered(FvwmWindow *fw)
 {
-        return __focus_grab_buttons(fw, True);
+        __focus_grab_buttons(fw, True);
 }
 
 void focus_grab_buttons_on_layer(int layer)
