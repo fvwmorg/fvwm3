@@ -443,6 +443,8 @@ static Bool setup_window_structure(
 			*pfw, HAS_EWMH_INIT_SHADED_STATE(savewin));
 		SET_HAS_EWMH_INIT_STICKY_STATE(
 			*pfw, HAS_EWMH_INIT_STICKY_STATE(savewin));
+                CLEAR_USER_STATES(*pfw, ~0);
+                SET_USER_STATES(*pfw, GET_USER_STATES(savewin));
 	}
 
 	(*pfw)->cmap_windows = (Window *)NULL;
