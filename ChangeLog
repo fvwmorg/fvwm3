@@ -1,5 +1,7 @@
 1998-11-18  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/move.c (moveLoop): Applied SnapAttraction update patch
+
 	* fvwm/resize.c (resize_window):  fixed bug that prevented moving from
 	a mouse button from working with ClickToFocus
 

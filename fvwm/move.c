@@ -364,7 +364,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  nyt = yt;
 	  while(tmp)
 	    {
-	      if (tmp_win != tmp && (tmp_win->Desk == tmp->Desk))
+	      if (tmp_win != tmp && !(tmp->flags&ICONIFIED) &&
+		  (tmp_win->Desk == tmp->Desk))
 		{
 		  if(!((tmp->frame_y + tmp->frame_height) < (yt) ||
 		       (tmp->frame_y) > (yt + Height) ))
@@ -475,7 +476,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
          nyt = yt;
          while(tmp)
 	 {
-	   if (tmp_win != tmp && (tmp_win->Desk == tmp->Desk))
+	   if (tmp_win != tmp && !(tmp->flags&ICONIFIED) &&
+	       (tmp_win->Desk == tmp->Desk))
 	   {
 	     if(!(   (tmp->frame_y + tmp->frame_height) < (yt) ||
 		     (tmp->frame_y) > (yt + Height) ))
