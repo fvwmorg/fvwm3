@@ -3,6 +3,9 @@
 	* fvwm24_convert.in:
 	use a correct form $ENV{'HOME'} not $$HOME
 
+	* fvwm-config.1:
+	created the man page
+
 2001-06-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* make_fvwmdist.sh:

@@ -2263,6 +2263,7 @@ AddToMenu   FvwmManPage "FVWM Man Pages" Title
 + "%mini.book1.xpm%FvwmWharf"           ViewManPage FvwmWharf
 + "%mini.book1.xpm%FvwmWinList"         ViewManPage FvwmWinList
 + "" Nop
++ "%mini.book1.xpm%fvwm-config"         ViewManPage fvwm-config
 + "%mini.book1.xpm%fvwmbug"             ViewManPage fvwmbug
 + "%mini.book1.xpm%fvwmrc_convert"      ViewManPage fvwmrc_convert
 + "%mini.book1.xpm%fvwm24_convert"      ViewManPage fvwm24_convert

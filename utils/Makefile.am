@@ -7,7 +7,7 @@ bin_SCRIPTS = fvwm-config fvwmbug fvwm-menu-xlock fvwm-menu-directory \
 ## Don't build and install xselection, there is a better xselection package.
 EXTRA_PROGRAMS = xpmroot xselection
 
-man_MANS = xpmroot.1 fvwmbug.1 fvwmrc_convert.1 fvwm24_convert.1 \
+man_MANS = xpmroot.1 fvwm-config.1 fvwmbug.1 fvwmrc_convert.1 fvwm24_convert.1 \
 	fvwm-menu-xlock.1 fvwm-menu-directory.1 \
 	fvwm-menu-desktop.1 fvwm-menu-headlines.1
 EXTRA_DIST = fvwmrc_convert fvwm24_convert.in quantize_pixmaps $(man_MANS)

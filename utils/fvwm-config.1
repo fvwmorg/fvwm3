@@ -1,0 +1,135 @@
+.\" @(#)fvwm-config 8 Jul 2001
+.de EX          \"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi   
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.ta .3i .6i .9i 1.2i 1.5i 1.8i
+.TH FVWM-CONFIG 1 "8 July 2001"
+.UC
+.SH NAME
+fvwm-config \- query an existing FVWM installation
+.SH SYNOPSIS
+\fBfvwm-config\fP
+[\fI--help\fP]
+[\fI--version\fP]
+[\fI--info\fP]
+[\fI--prefix\fP]
+[\fI--exec-prefix\fP]
+[\fI--bindir\fP]
+[\fI--datadir\fP]
+[\fI--libexecdir\fP]
+[\fI--sysconfdir\fP]
+[\fI--mandir\fP]
+[\fI--fvwm-moduledir\fP]
+[\fI--fvwm-datadir\fP]
+[\fI--default-imagepath\fP]
+[\fI--default-userdir\fP]
+[\fI--fvwm-exe\fP]
+[\fI--supports\fP]
+[\fI--supports-<feature>\fP]
+.SH DESCRIPTION
+.B fvwm-config
+is a shell script that provides an information about the FVWM version,
+installation directories, built-in paths and supported features.
+.SH OPTIONS
+.B fvwm-config
+prints to the standard output in all options.
+Both short and long GNU-like option names may be used.
+.TP
+.B -h --help
+prints the short usage
+.TP
+.B -v --version
+prints the version
+.TP
+.B -i --info
+prints the full info page
+.TP
+.B -P --prefix
+prints the installation prefix
+.TP
+.B -E --exec-prefix
+prints the installation exec-prefix
+.TP
+.B -B --bindir
+prints the installation bindir
+.TP
+.B -D --datadir
+prints the installation datadir
+.TP
+.B -L --libexecdir
+prints the installation libexecdir
+.TP
+.B -S --sysconfdir
+prints the installation sysconfdir
+.TP
+.B -M --mandir
+prints the installation mandir
+.TP
+.B -m --fvwm-moduledir
+prints FVWM_MODULEDIR, where the modules are installed
+.TP
+.B -d --fvwm-datadir
+prints FVWM_DATADIR, where the system wide configs are installed
+.TP
+.B -I --default-imagepath
+prints the built-in ImagePath
+.TP
+.B -U --default-userdir
+prints the default FVWM_USERDIR, note: $HOME is not expanded
+.TP
+.B -e --fvwm-exe
+prints the fvwm executable name (in bindir)
+.TP
+.B -s --supports
+lists all supported features, one per line
+.TP
+.B --supports-\fI<feature>\fP
+prints nothing, returns: 0 if the
+.I <feature>
+is supported, 100 if not, 200 if unknown.
+All or supported feature names may be found using
+.IR --info " or " --supports .
+.SH USAGE
+Here are some real life usages.
+
+FvwmScript-Setup95 checks for the gnome-wm support:
+.EX
+if fvwm-config --supports-gnome-wm; then echo 1; else echo 0; fi
+.EE
+
+.I fvwm-themes
+package checks for the correct
+.I fvwm
+version installed using:
+.EX
+fvwm-config --version
+.EE
+and tries to use the same installation directories:
+.EX
+fvwm-config --bindir --mandir --fvwm-datadir
+.EE
+
+A way to find the full path to the fvwm executable:
+.EX
+echo `fvwm-config --bindir`/`fvwm-config --fvwm-exe`
+.EE
+
+For a more human readable output, try:
+.EX
+fvwm-config --info
+.EE
+.SH COPYING
+.B fvwm-config
+is a part of fvwm package and distributed by the same terms, see GNU GPL.
+.SH AUTHOR
+Mikhael Goikhman <migo@homemail.com>
