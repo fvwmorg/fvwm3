@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Querying fvwm installation. Author: Mikhael Goikhman.
+
 PACKAGE="@PACKAGE@"
 VERSION="@VERSION@"
 script=`basename $0`
@@ -26,6 +28,9 @@ Options:
 	[-c]	[--configdir]
 	[-I]	[--default-imagepath]
 	[-U]	[--default-userhome]
+
+	[-s]	[--supports] - list supported features, one per line
+	[--supports-<feature>] - return: 0 (yes), 100 (no), 200 (unknown)
 EOF
 	exit $1
 }
@@ -46,13 +51,15 @@ configdir="@FVWM_CONFIGDIR@"
 imagepath="@FVWM_IMAGEPATH@"
 userhome='$HOME'
 
+with_readline=@with_readline@
+with_rplay=@with_rplay@
+with_stroke=@with_stroke@
+with_xpm=@with_xpm@
+with_gtk=@with_gtk@
+with_sm=@with_sm@
+
 while test $# -gt 0; do
 	case "$1" in
-		-*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
-		*) optarg= ;;
-	esac
-
-	case $1 in
 		--help|-help|-h)
 			usage 0 ;;
 
@@ -89,6 +96,23 @@ while test $# -gt 0; do
 		--default-userhome|-default-userhome|-U)
 			echo "$userhome" ;;
 
+		--supports|-supports|-s)
+			test "$with_readline" = "yes" && echo "readline"
+			test "$with_rplay"    = "yes" && echo "rplay"
+			test "$with_stroke"   = "yes" && echo "stroke"
+			test "$with_xpm"      = "yes" && echo "xpm"
+			test "$with_gtk"      = "yes" && echo "gtk"
+			test "$with_sm"       = "yes" && echo "sm"
+			;;
+
+		--supports-*)
+			feature=`echo "$1" | sed 's/^--supports-//'`
+			with=`eval echo '$'with_"$feature"`
+			test "$with" = "yes" && exit 0
+			test "$with" = "no"  && exit 100
+			exit 200
+			;;
+
 		--info|-info|-i)
 			echo "Package: $PACKAGE"
 			echo "Version: $VERSION"
@@ -106,6 +130,19 @@ while test $# -gt 0; do
 			echo "	Configuration directory: $configdir"
 			echo "	Default ImagePath: $imagepath"
 			echo "	Default UserHome: $userhome"
+			echo ""
+			echo "Support for features:"
+			echo "	readline: $with_readline"
+			echo "	rplay: $with_rplay"
+			echo "	stroke: $with_stroke"
+			echo "	xpm: $with_xpm"
+			echo "	gtk: $with_gtk"
+			echo "	sm (session management): $with_sm"
+			;;
+
+		*)
+			echo "$script: unknown parameter [$1]" 1>&2
+			exit 1
 			;;
 
 	esac

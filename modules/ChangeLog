@@ -9,7 +9,7 @@
 	* FvwmForm/ReadXServer.c: Fix array bounds write error during
 	editing of line recalled with meta <.
 
-2000-03-26  olicha	<olivier.chapuis@free.fr>
+2000-03-26  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instructions.c (Exec):
 	Fixed Do instruction again
@@ -19,7 +19,7 @@
 	* FvwmButtons/parse.c (ParseButton):
 	fixed 'Action' option with trailing spaces
 
-2000-03-24  olicha	<olivier.chapuis@free.fr>
+2000-03-24  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instructions.c (Exec):
 	Fixed core dump with Do instruction with > 256 chars.
@@ -37,7 +37,7 @@
 
 	* FvwmDragWell/fvwmDragWell.*: support for transpency
 
-2000-03-10  olicha	<olivier.chapuis@free.fr>
+2000-03-10  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/x_pager.c (change_colorset):
 	Fixed labels colorset changes. Note: there is still a problem
@@ -48,19 +48,19 @@
 	* FvwmTheme/FvwmTheme.c: freed pixmaps hang around for a while to
 	prevent modules quiting when lots of colorsets are changed quickly
 
-2000-03-09  olicha	<olivier.chapuis@free.fr>
+2000-03-09  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmButtons/draw.c (RedrawButton):
 	Fixed individual button Colorset for shaped swallowed apps
 
-2000-03-08  olicha	<olivier.chapuis@free.fr>
+2000-03-08  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmButtons/draw.c (RedrawButton):
 	Fixed individual button Colorset
 	* FvwmScript/Scripts/TerminalSettings.fss
 	Now this script works
 
-2000-03-08  olicha	<olivier.chapuis@free.fr>
+2000-03-08  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/x_pager.c (initialize_pager):
 	Fixed hilight desk title drawing GC
@@ -79,12 +79,12 @@
 	* FvwmIconMan/x.c (create_manager_window):
 	applied colorset fix by Mike Han
 
-2000-02-11  olicha	<olivier.chapuis@free.fr>
+2000-02-11  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFvwmBaseConfig
 	Replaced GlobalOpts by the new corresponding styles.
 
-2000-02-06  olicha	<olivier.chapuis@free.fr>
+2000-02-06  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	Removed debug code
@@ -93,7 +93,7 @@
 	* FvwmScript/Widgets/*:
 	Removed unused XSetBackground.
 
-2000-02-06  olicha	<olivier.chapuis@free.fr>
+2000-02-06  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	Fixed iconification of a sticky window after a desk switch
@@ -108,7 +108,7 @@
 	* FvwmGtk/FvwmGtk.1:
 	fixed typo again
 
-2000-01-30  olicha	<olivier.chapuis@free.fr>
+2000-01-30  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFvwmScreenSetup:
 	A write to file fix
@@ -121,7 +121,7 @@
 	* FvwmGtk/FvwmGtk.1:
 	fixed typo
 
-2000-01-28 olicha	<olivier.chapuis@free.fr>
+2000-01-28  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/FvwmPager.c (main):
 	* FvwmPager/FvwmPager.1:
@@ -155,7 +155,7 @@
 	simplified protocol
 	removed dead pipe error message
 
-2000-01-26 olicha	<olivier.chapuis@free.fr>
+2000-01-26  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFvwmBellSetup:
 	* FvwmScript/Scripts/ScriptFvwmKeyboardSetup:

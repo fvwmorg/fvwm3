@@ -2,41 +2,41 @@
 #
 # .fvwm2rc example configuration file for Windows 95 like look and feel
 #
-# The better way to install this configuration file is to create an
-# empty directory ~/.fvwm (or ~/fvwm or ...) and to run fvwm in your
-# .xinitrc (or Xclient, or .xsession ...) as
+# The suggested way to install this configuration file is to create an
+# empty directory ~/.fvwm (or ~/fvwm-95) and to run fvwm in your
+# .xinitrc (or Xclient, or .xsession ...) as:
 #
-#		env FVWM_USERHOME=~/.fvwm fvwm2 
+#		env FVWM_USERHOME=~/.fvwm fvwm2
 #
-# Then, run, via the root menu, the "Setup95 Script".
+# Then, run the "Setup95 Script" from the root menu.
 #
-# You "need" the fvwm_icons distribution installed. The default directory 
-# for these icons is /usr/include/X11/pixmaps. If they are installed in an 
+# You "need" the fvwm_icons distribution installed. The default directory
+# for these icons is /usr/include/X11/pixmaps. If they are installed in an
 # other directory use the ImagePath command below or set this directory via
 # the Setup95 Script.
 #
-# For that the "sounds effect" works without effort you  need the 
-# fvwm_sounds distribution installed and an .au player. The Setup95 Script 
+# For the "sound effects" to work without much effort you need the
+# fvwm_sounds distribution installed and an .au player. The Setup95 Script
 # allows you to set the installation directory of this distribution as
-# your sound player. By hands edit the *FvwmEvent commands. Note that if
-# you use rplay, the rplayd daemon must run.
+# your sound player. Manually edit the *FvwmEvent commands. Note that if
+# you use rplay, the rplayd daemon must be run.
 #
-# The Setup95 Script ask you to choose between two looks, one
-# close to Windows and the other one more close to a "classical" FVWM look.
-# For switching from the windows look to the fvwm one by hands, comment the 
-# x lines that follows the #WIN x lines and uncomment the x lines that 
+# The Setup95 Script ask you to choose between two looks, one is close
+# to Windows and the other one more is close to a "classical" FVWM look.
+# For switching from the windows look to the fvwm one by hands, comment the
+# x lines that follows the #WIN x lines and uncomment the x lines that
 # follow the #FVWM x lines.
 
 # I've tried to use very common apps (like xmh or netscape) so that this
 # configuration file is as universal as possible. However, you surely need
-# to edit the menus definitions, the windows options and the BarButtons 
-# configuration to get your preferred applications. Currently, the Setup95 
+# to edit the menus definitions, the windows options and the BarButtons
+# configuration to get your preferred applications. Currently, the Setup95
 # Script asks you to set your preferred terminal, editor and file manager
 # (The x lines that follows #PREF x are edited by the setup script to do so).
- 
+
 # I have a laptop so I have added one laptop option. If you answer yes
 # to the Setup95 question: "do you have a laptop?" you will have xapm
-# in your BarButtons. To get it by hands just uncomment the line that
+# in your BarButtons. To get it by hand, just uncomment the line that
 # follows #LAPTOP.
 #
 # GNOME and KDE menus: FVWM has a perl script that can build GNOME and
@@ -243,17 +243,17 @@ MenuStyle winops VerticalItemSpacing 1 2, VerticalTitleSpacing 1 2
 #
 #=============================================================================#
 
-# WARNING !!!!!
-# If you use Settings-->Fvwm Config-->Base Config to configure your 
+# WARNING!!!!!
+# If you use Settings-->Fvwm Config-->Base Config to configure your
 # major operating modes then all the commands of this section is
 # over read via the last line of this section. So, either comment the
 # last line of this section or you can remove all the lines of this
-# section but the last one. 
-# If you use Base Config and application dependent styles that are set in 
-# this section (via Base Config) you may use a file, say styles, to define 
-# these application dependent styles and then replace "I Nop" by 
-# "I Read styles" in the functions BaseConfigOkFunc and BaseConfigApplyFunc 
-# below. This way Base Config will not destroy your application specific 
+# section but the last one.
+# If you use Base Config and application dependent styles that are set in
+# this section (via Base Config) you may use a file, say, styles, to define
+# these application dependent styles and then replace "I Nop" by
+# "I Read styles" in the functions BaseConfigOkFunc and BaseConfigApplyFunc
+# below. This way Base Config will not destroy your application specific
 # styles when you use it.
 
 #WIN 1  To have more WIN-like behavior
@@ -2786,9 +2786,9 @@ Style "QuitVerify"	NoHandles
 # * Why this FAQ does not contain my question?
 # * What are the default bindings?
 # * This file is too long to be easily edited!
-# * Is Sample-95 support theme?
+# * Does Sample-95 support themes?
 # * Can I use Sample-95 with GNOME?
-# * How can I load a saved setting before starting fvwm?
+# * How can I load saved settings before starting fvwm?
 # * Can I use WindowMaker and AfterStep applets with FVWM?
 # * Who wrote this configuration file?
 #
@@ -2810,7 +2810,7 @@ Style "QuitVerify"	NoHandles
 # Mouse 1 on the root window:	 main menu
 # Mouse 2 on the root window:	 window operations menu
 # Mouse 3 on the root window:	 Window List of all normal applications
-# Ctl-Mouse3 on the root window: Window List of all normal applications
+# Ctrl-Mouse3 on the root window: Window List of all normal applications
 #
 # If you have build the config for gnome-session
 # Alt-Mouse x inside a window: as Mouse x on the root window
@@ -2822,7 +2822,7 @@ Style "QuitVerify"	NoHandles
 # Mouse 1 on the title: Raise, Move for a drag, shade for a double click
 # Mouse 1 on the borders: Resize the window (and Raise)
 # Mouse 1 on an icon: Move or deiconify for a double click
-# Ctl-Mouse 1 on the borders: As mouse 1 on the title
+# Ctrl-Mouse 1 on the borders: As mouse 1 on the title
 # Mouse 2 on the title or the borders: window operations menu
 # Mouse 2 on an icon: deiconify
 # Mouse 3 on the title/borders/icon: Raise or Lower
@@ -2833,7 +2833,7 @@ Style "QuitVerify"	NoHandles
 # - Left button:
 # Mouse 1: Window operation menu, double click: close
 # Mouse 2: Group operations menu
-# Mouse 3: Quick Move window menu 
+# Mouse 3: Quick Move window menu
 # - Close button (right button)
 # Mouse 1: Close
 # Mouse 2: Close all the windows with the same class
@@ -2847,16 +2847,16 @@ Style "QuitVerify"	NoHandles
 # Mouse 2: Iconify all the windows with the same class
 # Mouse 3: Shade all the windows with the same class
 #
-# Key bindings (any where):
+# Key bindings (anywhere):
 # ------------
 # 
 # Shift-Left/Right/Up/Down: scroll Left/Right/Up/Down by 1 page
 # Alt-Left/Right/Up/Down: scroll Left/Right/Up/Down by 1/10 page
 #
-# Shift-Ctlt-Left/Right/Up/Down: move the pointer by 1% of a page
-# Alt-Ctlt-Left/Right/Up/Down: move the pointer by 1O% of a page
+# Shift-Ctrl-Left/Right/Up/Down: move the pointer by 1% of a page
+# Alt-Ctrl-Left/Right/Up/Down: move the pointer by 1O% of a page
 # 
-# Alt-Ctl-PageUp/PageDown: scroll by one desktop page
+# Alt-Ctrl-PageUp/PageDown: scroll by one desktop page
 #
 # Shift-Alt-F1: Main menu
 # Shift-Alt-F2: Window operations menu
@@ -2868,13 +2868,13 @@ Style "QuitVerify"	NoHandles
 # Shift-Alt-F8: Shade
 # Shift-Alt-F9: Stick
 # Shift-Alt-F10: Maximize
-# Shift-Alt-F11: Identify 
+# Shift-Alt-F11: Identify
 #
-# Alt-Tab realesed at once: previous (normal) window
-# Alt-Tab: WindowList of (normal) window and warp to the selected window 
-#	   when realesed
+# Alt-Tab released at once: previous (normal) window
+# Alt-Tab: WindowList of (normal) window and warp to the selected window
+#	   when released
 # 
-# Ctl-Alt-Tab: WindowList of the skiped window
+# Ctrl-Alt-Tab: WindowList of the skiped window
 #
 # Stroke bindings:
 # ---------------
@@ -2910,7 +2910,7 @@ Style "QuitVerify"	NoHandles
 #
 #                  ----------------------------------------
 #
-# * Is Sample-95 support themes?
+# * Does Sample-95 support themes?
 #
 # No. But, it is possible to hack the configuration to have an "elementary" 
 # themes engine. The basic idea is to use FvwmTheme to propagate the colors 
@@ -2922,7 +2922,7 @@ Style "QuitVerify"	NoHandles
 #
 # If you want a powerful themes engine do not use Sample-95, it is not the
 # aim of this configuration. There are a powerful themes engine which is 
-# under fast development: fvwm-themes (http://fvwm-themes.source-forge.com/).
+# under fast development: fvwm-themes (http://fvwm-themes.source-forge.net/).
 #
 #                  ----------------------------------------
 #
@@ -2947,9 +2947,9 @@ Style "QuitVerify"	NoHandles
 #
 #                  ----------------------------------------
 #
-# * How can I load a saved setting before starting fvwm?
+# * How can I load saved settings before starting fvwm?
 #
-# Say that you want to use setting 1 under a normal fvwm session, setting 2
+# Say, you want to use setting 1 under a normal fvwm session, setting 2
 # under a gnome-session and setting 3 under a normal fvwm session but the
 # shell test FOO is true. Then, your .xinitrc/.xsession file can look 
 # as follows (where $1 is the "first" argument given to startx, or by kdm or 
@@ -2990,23 +2990,22 @@ Style "QuitVerify"	NoHandles
 # * Can I use WindowMaker and AfterStep applets with FVWM?
 #
 # Yes most WM and AS applets are FVWM compliant. Moreover, sample-95 provides 
-# a  FvwmButtons for you called WinMakerAppButtons. Of course you have to 
+# a FvwmButtons for you called WinMakerAppButtons. Of course, you have to
 # edit the configuration of this buttons to put your preferred applets. Note
 # that you have an applets panel under the 3 first applets. These panels are
 # special: Mouse 1 (on the background of the applet) start the panel (or only
 # map it if it is already started) if it is not out. If the panel is out,
-# Mouse 1 unmaps it (but the panel applets are alive). The special thing is 
-# that Mouse 3 *kill* the panel: this can save your cpu. 
+# Mouse 1 unmaps it (but the panel applets are alive). The special thing is
+# that Mouse 3 *kills* the panel: this can save your cpu.
 #
 #                  ----------------------------------------
 #
 # * Who wrote this configuration file?
 #
 # The starting point is "the" fvwm95 configuration file. Then, domivogt do
-# some work on it and in particular do so that it works fine with fvwm-2.4.x. 
-# Then,  olicha do a lot of work on it and in particular wrote the Setup95 
-# Script and rewrote all the "Settings" stuff. Some ideas come from 
-# fvwm-themes (thanks to the fvww-themes workers, and in particular migo). 
-# Probably, some others fvwm-workers have added improvement but do not take 
+# some work on it and in particular do so that it works fine with fvwm-2.4.x.
+# Then, olicha did a lot of work on it and in particular wrote the Setup95
+# Script and rewrote all the "Settings" stuff. Some ideas came from
+# fvwm-themes (thanks to the fvww-themes workers, and in particular migo).
+# Probably, some others fvwm-workers have added improvement but do not take
 # the time to update this answer.
-# 
