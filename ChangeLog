@@ -1,24 +1,36 @@
+2002-12-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/colorset.c (parse_colorset):
+	* fvwm/icons.c (DrawIconPixmapWindow):
+	* fvwm/focus.c (_SetFocusWindow):
+	(_ReturnFocusWindow):
+	(_DeleteFocus):
+	(_ForceDeleteFocus):
+	(__activate_window_by_command):
+	patches to prevent UMR messages in memory debuggers
+
 2002-12-11  Jason Weber <baboon@imonk.com>
 
 	* fvwm/fvwm.1.in: Added ScanWindow
 
-	* fvwm/conditional.c (CMD_Direction CMD_ScanWindow direction_cmd):
+	* fvwm/conditional.c (CMD_Direction, CMD_ScanWindow, direction_cmd):
 	* fvwm/commands.h:
 	* fvwm/functable.c:
-		Generalized CMD_Direction into direction_cmd.
-		Pipe CMD_Direction and CMD_ScanWindow into direction_cmd.
-		Replace Cycle prefix with secondary direction argument.
+	Generalized CMD_Direction into direction_cmd.
+	Pipe CMD_Direction and CMD_ScanWindow into direction_cmd.
+	Replace Cycle prefix with secondary direction argument.
 
 2002-12-10  Dan Espen  <dane@mk.telcordia.com>
 
-	* fvwm/fvwm.1.in: Applied Mikhaels quote fix.
+	* fvwm/fvwm.1.in: Applied Mikhael's quote fix.
 
 2002-12-05  Marcus Lundblad <ml@update.uu.se>
 	* fvwm/conditional.c (CreateConditionMask):
 	Implemented conditional "FixedSize" and "HasHandles"
 	* fvwm/fvwm.1.in
 	Documented conditional options "FixedSize" and "HasHandles".
-	
+
 2002-12-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/placement.c (PlaceWindow):

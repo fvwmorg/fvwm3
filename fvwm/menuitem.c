@@ -466,6 +466,7 @@ void menuitem_paint(
 	}
 
 	MI_WAS_DESELECTED(mi) = False;
+	memset(&fra, 0, sizeof(fra));
 	fra.mask = 0;
 
 	/* Hilight 3D */

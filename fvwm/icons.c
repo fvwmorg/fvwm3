@@ -1009,6 +1009,7 @@ void DrawIconPixmapWindow(
 			FvwmRenderAttributes fra;
 			Bool draw_icon = True;
 
+			memset(&fra, 0, sizeof(fra));
 			fra.mask = FRAM_DEST_IS_A_WINDOW;
 			if (cs >= 0)
 			{

@@ -1339,7 +1339,7 @@ static void DispatchEvent(XEvent *pEvent)
 		proxy = FindProxy(window);
 		if(proxy)
 		{
-#if FALSE
+#if 0
 			/* TODO setup from Fvwm config */
 			if(pEvent->xbutton.button==Button1)
 				XRaiseWindow(dpy,proxy->window);

@@ -621,6 +621,7 @@ static void __activate_window_by_command(
 	sftfwin_args_t sf_args;
 	FvwmWindow * const fw = exc->w.fw;
 
+	memset(&sf_args, 0, sizeof(sf_args));
 	sf_args.do_allow_force_broadcast = 1;
 	sf_args.is_focus_by_flip_focus_cmd = is_focus_by_flip_focus_cmd;
 	sf_args.set_by = FOCUS_SET_BY_FUNCTION;
@@ -919,6 +920,7 @@ void _SetFocusWindow(
 {
 	sftfwin_args_t sf_args;
 
+	memset(&sf_args, 0, sizeof(sf_args));
 	sf_args.do_allow_force_broadcast = !!do_allow_force_broadcast;
 	sf_args.is_focus_by_flip_focus_cmd = 0;
 	sf_args.do_forbid_warp = 0;
@@ -941,6 +943,7 @@ void _ReturnFocusWindow(FvwmWindow *fw)
 {
 	sftfwin_args_t sf_args;
 
+	memset(&sf_args, 0, sizeof(sf_args));
 	sf_args.do_allow_force_broadcast = 1;
 	sf_args.is_focus_by_flip_focus_cmd = 0;
 	sf_args.do_forbid_warp = 1;
@@ -956,6 +959,7 @@ void _DeleteFocus(Bool do_allow_force_broadcast)
 {
 	sftfwin_args_t sf_args;
 
+	memset(&sf_args, 0, sizeof(sf_args));
 	sf_args.do_allow_force_broadcast = !!do_allow_force_broadcast;
 	sf_args.is_focus_by_flip_focus_cmd = 0;
 	sf_args.do_forbid_warp = 0;
@@ -971,6 +975,7 @@ void _ForceDeleteFocus(void)
 {
 	sftfwin_args_t sf_args;
 
+	memset(&sf_args, 0, sizeof(sf_args));
 	sf_args.do_allow_force_broadcast = 1;
 	sf_args.is_focus_by_flip_focus_cmd = 0;
 	sf_args.do_forbid_warp = 0;

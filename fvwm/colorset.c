@@ -1511,6 +1511,7 @@ void parse_colorset(int n, char *line)
 		FvwmRenderAttributes fra;
 		Pixmap temp, mask, alpha;
 
+		memset(&fra, 0, sizeof(fra));
 		temp = XCreatePixmap(dpy, win, cs->width, cs->height, Pdepth);
 		if (cs->picture != NULL)
 		{
