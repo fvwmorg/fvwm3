@@ -816,8 +816,12 @@ typedef struct FvwmWindow
 	/* memory for the initial _NET_WM_STATE */
 	unsigned long ewmh_hint_desktop;
 
-	/* multi purpose scratch pointer */
-	void *pscratch;
+	/* multi purpose scratch structure */
+	struct
+	{
+		void *p;
+		int i;
+	} scratch;
 } FvwmWindow;
 
 /* ---------------------------- exported variables (globals) ---------------- */
