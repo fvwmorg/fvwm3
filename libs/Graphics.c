@@ -251,7 +251,7 @@ Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
       free(pixels);
       return NULL;
     }
-    for (j = 0; j < n; ++j)
+    for (j = 0; ((j < n) && ((curpixel + j) < npixels)); ++j)
       pixels[curpixel + j] = p[j];
     perc += clen[i];
     curpixel += n;
