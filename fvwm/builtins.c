@@ -263,8 +263,8 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   }
   else
   {
-    cx = t->frame_x + t->frame_width/2 + t->bw;
-    cy = t->frame_y + t->frame_height/2 + t->bw;
+    cx = t->frame_x + t->frame_width/2;
+    cy = t->frame_y + t->frame_height/2;
   }
 
   dx = (cx + Scr.Vx)/Scr.MyDisplayWidth*Scr.MyDisplayWidth;
@@ -281,13 +281,13 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   else
   {
     if (x_unit != Scr.MyDisplayWidth)
-      x = t->frame_x + t->bw + warp_x;
+      x = t->frame_x + warp_x;
     else
-      x = t->frame_x + t->bw + (t->frame_width - 1) * warp_x / 100;
+      x = t->frame_x + (t->frame_width - 1) * warp_x / 100;
     if (y_unit != Scr.MyDisplayHeight)
-      y = t->frame_y + t->bw + warp_y;
+      y = t->frame_y + warp_y;
     else
-      y = t->frame_y + t->bw + (t->frame_height - 1) * warp_y / 100;
+      y = t->frame_y + (t->frame_height - 1) * warp_y / 100;
   }
   if (warp_x >= 0 && warp_y >= 0) {
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
@@ -422,7 +422,7 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   tmp_win->frame_x,
 		   tmp_win->frame_y,
 		   tmp_win->frame_width,
-                   tmp_win->title_height+tmp_win->boundary_width-tmp_win->bw,
+                   tmp_win->title_height+tmp_win->boundary_width,
 		   False);
         BroadcastPacket(M_WINDOWSHADE, 3,
                         tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);

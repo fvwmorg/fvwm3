@@ -73,7 +73,7 @@ void DB_WI_TITLE(char *label, FvwmWindow *fw)
 
 void DB_WI_BORDER(char *label, FvwmWindow *fw)
 {
-  fprintf(stderr, "%s: FvwmWindow=0x%x, bw=%d, old_bw=%d, boundary_width=%d, corner_width=%d\n", label?label:"", fw, fw->bw, fw->old_bw, fw->boundary_width, fw->corner_width);
+  fprintf(stderr, "%s: FvwmWindow=0x%x, old_bw=%d, boundary_width=%d, corner_width=%d\n", label?label:"", fw, fw->old_bw, fw->boundary_width, fw->corner_width);
   return;
 }
 

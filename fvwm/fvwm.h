@@ -218,7 +218,7 @@ typedef struct FvwmWindow
       noborder : 1;
       icon : 1;
       startsondesk : 1;
-      bw : 1;
+      bw : 1;            /* what are these for ??? */
       nobw : 1;
       fore_color : 1;
       back_color : 1;
