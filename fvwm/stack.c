@@ -315,7 +315,7 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower, Bool allow_re
      * The following is a hack to raise X windows over native windows
      * which is needed for some (all ?) X servers running under windows NT.
      */
-    if (Scr.go.RaiseHackNeeded)
+    if (Scr.bo.RaiseHackNeeded)
     {
       Window junk;
       Window *tops;
@@ -338,6 +338,7 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower, Bool allow_re
     }
   }
 }
+
 static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
 {
   inner_RaiseOrLowerWindow(t, do_lower, True);

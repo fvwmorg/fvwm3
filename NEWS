@@ -1,5 +1,10 @@
 Changes in beta release 2.3.8 (September? 1999)
 
+* New command BugOpts allows to enable various former bug fixing compile
+  time options to be changed at run time.
+
+* FvwmWharf supports colorsets.
+
 * A new special fvwm function StartFunction is introduced. It is supposed to
   be used to start modules and for other start commands. This function is
   executed before InitFunction and RestartFunction and anyone can take out
@@ -533,7 +538,7 @@ Changes in alpha release 2.1-pre-beta AKA 2.0.47
 	    M_LOCKONSEND flag (from Afterstep).
 	34. Modules can now be interactively configured with the M_SENDCONFIG
 	    flag.
-	35. Dominik Vogt <dominik_vogt@hp.com> is temporarily the new
+	35. Dominik Vogt <dominik.vogt@fvwm.org> is temporarily the new
 	    maintainer.
 	36. Added menu positioning patch and lots of bugfixes in the menu code.
 	37. Improved FvwmButtons to recognize button geometries and did some

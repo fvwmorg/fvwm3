@@ -1651,9 +1651,21 @@ static void InitVariables(void)
      "Network Computing Devices Inc."
         is the ServerVendor string of the PCXware X server under Windows.
   */
-  Scr.go.RaiseHackNeeded =
+  Scr.bo.RaiseHackNeeded =
     (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0) ||
     (strcmp (ServerVendor (dpy), "Network Computing Devices Inc.") == 0);
+
+#ifdef MODALITY_IS_EVIL
+  Scr.bo.ModalityIsEvil = 1;
+#else
+  Scr.bo.ModalityIsEvil = 0;
+#endif
+#ifdef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
+  Scr.bo.DisableConfigureNotify = 1;
+#else
+  Scr.bo.DisableConfigureNotify = 0;
+#endif
+
   Scr.gs.EmulateMWM = DEFAULT_EMULATE_MWM;
   Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;
   Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
@@ -1934,21 +1946,22 @@ void SaveDesktopState()
 
 void SetMWM_INFO(Window window)
 {
-#ifdef MODALITY_IS_EVIL
   struct mwminfo
   {
     long flags;
     Window win;
   }  motif_wm_info;
 
-  /* Set Motif WM_INFO atom to make motif relinquish
-   * broken handling of modal dialogs */
-  motif_wm_info.flags     = 2;
-  motif_wm_info.win = window;
+  if (Scr.bo.ModalityIsEvil)
+  {
+    /* Set Motif WM_INFO atom to make motif relinquish
+     * broken handling of modal dialogs */
+    motif_wm_info.flags = 2;
+    motif_wm_info.win = window;
 
-  XChangeProperty(dpy,Scr.Root,_XA_MOTIF_WM,_XA_MOTIF_WM,32,
-		  PropModeReplace,(char *)&motif_wm_info,2);
-#endif
+    XChangeProperty(dpy,Scr.Root,_XA_MOTIF_WM,_XA_MOTIF_WM,32,
+		    PropModeReplace,(char *)&motif_wm_info,2);
+  }
 }
 
 

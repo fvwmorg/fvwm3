@@ -2490,11 +2490,11 @@ void SetGlobalOptions(F_CMD_ARGS)
     }
     else if (StrEquals(opt,"RAISEOVERNATIVEWINDOWS"))
     {
-      Scr.go.RaiseHackNeeded = True;
+      Scr.bo.RaiseHackNeeded = True;
     }
     else if (StrEquals(opt,"IGNORENATIVEWINDOWS"))
     {
-      Scr.go.RaiseHackNeeded = False;
+      Scr.bo.RaiseHackNeeded = False;
     }
     else
       fvwm_msg(ERR,"SetGlobalOptions","Unknown Global Option '%s'",opt);
@@ -2504,6 +2504,95 @@ void SetGlobalOptions(F_CMD_ARGS)
   }
   if (opt)
     free(opt);
+}
+
+void SetBugOptions(F_CMD_ARGS)
+{
+  char *opt;
+  char delim;
+  int toggle;
+
+  /* fvwm_msg(DBG,"SetGlobalOptions","init action == '%s'\n",action); */
+  while (action)
+  {
+    action = DoGetNextToken(action, &opt, NULL, ",", &delim);
+    if (!opt)
+    {
+      /* no more options */
+      return;
+    }
+    if (delim == '\n' || delim == ',')
+    {
+      /* missing toggle argument */
+      toggle = 2;
+    }
+    else
+    {
+      toggle = ParseToggleArgument(action, &action, 1, False);
+    }
+
+    if (StrEquals(opt, "ModalityIsEvil"))
+    {
+      switch (toggle)
+      {
+      case -1:
+	Scr.bo.ModalityIsEvil ^= 1;
+	break;
+      case 0:
+      case 1:
+	Scr.bo.ModalityIsEvil = toggle;
+	break;
+      default:
+#ifdef MODALITY_IS_EVIL
+	Scr.bo.ModalityIsEvil = 1;
+#else
+	Scr.bo.ModalityIsEvil = 0;
+#endif
+	break;
+      }
+    }
+    else if (StrEquals(opt, "RaiseOverNativeWindows"))
+    {
+      switch (toggle)
+      {
+      case -1:
+	Scr.bo.RaiseHackNeeded ^= 1;
+	break;
+      case 0:
+      case 1:
+	Scr.bo.RaiseHackNeeded = toggle;
+	break;
+      default:
+	Scr.bo.RaiseHackNeeded = 0;
+	break;
+      }
+    }
+    else if (StrEquals(opt, "FlickeringMoveWorkaround"))
+    {
+      switch (toggle)
+      {
+      case -1:
+	Scr.bo.DisableConfigureNotify ^= 1;
+	break;
+      case 0:
+      case 1:
+	Scr.bo.DisableConfigureNotify = toggle;
+	break;
+      default:
+#ifdef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
+	Scr.bo.DisableConfigureNotify = 1;
+#else
+	Scr.bo.DisableConfigureNotify = 0;
+#endif
+	break;
+      }
+    }
+    else
+    {
+      fvwm_msg(ERR,"SetButOptions","Unknown Bug Option '%s'",opt);
+    }
+    free(opt);
+  }
 }
 
 void Emulate(F_CMD_ARGS)

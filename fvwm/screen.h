@@ -330,8 +330,13 @@ typedef struct ScreenInfo
     unsigned MouseFocusClickRaises : 1;
     unsigned StipledTitles : 1;
     unsigned WindowShadeScrolls : 1;
-    unsigned RaiseHackNeeded : 1;
   } go; /* global options */
+  struct
+  {
+    unsigned ModalityIsEvil : 1;
+    unsigned RaiseHackNeeded : 1;
+    unsigned DisableConfigureNotify : 1;
+  } bo; /* bug workaround control options */
   struct
   {
     unsigned EmulateMWM : 1;

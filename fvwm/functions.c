@@ -118,6 +118,7 @@ static const struct functions func_config[] =
 #ifdef BORDERSTYLE
   {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,         0},
 #endif /* BORDERSTYLE */
+  {"bugopts",      SetBugOptions,    F_BUG_OPTS,            0},
   {"buttonstate",  cmd_button_state, F_BUTTON_STATE,        0},
   {"buttonstyle",  ButtonStyle,      F_BUTTON_STYLE,        0},
 #ifdef USEDECOR

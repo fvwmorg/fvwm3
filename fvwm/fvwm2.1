@@ -1471,6 +1471,34 @@ still kill all copies of fvwm.
 .SS MISCELLANEOUS COMMANDS
 
 .TP
+.B "BugOpts" "[\fIoption [\fIbool\fP]\fP], ..."
+This command controls several workarounds for bugs in third party
+programs.  The individual options are separated by commas.  The
+optional argument \fIbool\fP is a boolean argument and controls
+if the bug workaround is enabled or not.  It can either be
+'True' or 'False' to turn the option on or off, or 'toggle' to
+switch is back and forth.  If \fIbool\fP is omitted, the default
+setting is restored.
+
+The \fIModalityIsEvil\fP option controls if motif applications have the
+ability to have modal dialogs (dialogs that force you to close them
+first before you can do anything else).  The default is to not allow
+applications to have modal dialogs.  Use this option with care.
+
+\fIRaiseOverNativeWindows\fP makes fvwm try to raise the windows
+it manages over native windows of the X servers host system. This
+is needed for some (all ?) X servers running under Windows NT. Fvwm
+tries to detect if it is running under such an X server and
+initializes the flag accordingly.  This is the same option as it
+is listed under the GlobalOpts command.
+
+\fIFlickeringMoveWorkaround\fP disables so called 'ConfigurNotify'
+events that are usually sent to an application while it is moved.
+If some windows flicker annoyingly while being moved, this option
+may help you.  Note that if this problem occurs its not a fvwm bug,
+its the fault of the application.
+
+.TP
 .B "ClickTime" "[\fIdelay\fP]"
 Specifies the maximum delay (in milliseconds) between a button press
 and a button release for the Function built-in to consider the action

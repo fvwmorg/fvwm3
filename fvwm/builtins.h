@@ -49,6 +49,7 @@ void quit_screen_func(F_CMD_ARGS);
 void echo_func(F_CMD_ARGS);
 void Nop_func(F_CMD_ARGS);
 void SetGlobalOptions(F_CMD_ARGS);
+void SetBugOptions(F_CMD_ARGS);
 void Emulate(F_CMD_ARGS);
 void destroy_fvwmfunc(F_CMD_ARGS);
 void add_another_item(F_CMD_ARGS);

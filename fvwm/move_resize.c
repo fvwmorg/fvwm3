@@ -273,7 +273,6 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
       XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
 		   pointerX,pointerY);
     }
-#ifndef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
     if (tmp_win && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their
@@ -302,7 +301,6 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
                client_event.xconfigure.width,client_event.xconfigure.height);
 #endif
     }
-#endif
     XFlush(dpy);
     if (tmp_win)
     {
@@ -1013,7 +1011,6 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       if(!opaque_move)
 	MoveOutline(xl, yt, Width - 1, Height - 1);
     }
-#ifndef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
     if (opaque_move && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their
@@ -1042,7 +1039,6 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	       client_event.xconfigure.height);
 #endif
     }
-#endif
     if(opaque_move)
     {
       if (!IS_ICONIFIED(tmp_win))
