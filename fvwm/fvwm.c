@@ -1737,34 +1737,36 @@ void Done(int restart, char *command)
       i=0;
       j=0;
       done = 0;
-      while((g_argv[j] != NULL)&&(i<8))
-      {
-        if(strcmp(g_argv[j],"-s")!=0)
+      if (strstr(command, "fvwm2") != NULL) {
+        /* must be 4 less than the size of my_argv to add 3 args and NULL */
+        while((g_argv[j] != NULL)&&(i<6))
         {
-          my_argv[i] = g_argv[j];
-          i++;
-          j++;
+          if(strcmp(g_argv[j],"-s")!=0)
+          {
+            my_argv[i] = g_argv[j];
+            i++;
+            j++;
+          }
+          else
+            j++;
         }
-        else
-          j++;
-      }
-      if(strstr(command,"fvwm")!= NULL)
         my_argv[i++] = "-s";
 
-      for (j = i - 1; j >= 0; j--)
+        for (j = i - 1; j >= 0; j--)
         {
-           if (strcmp (my_argv[j], "-restore") == 0)
-             break;
+          if (strcmp (my_argv[j], "-restore") == 0)
+            break;
         }
-      if (j >= 0)
-        {
+        if (j >= 0) {
           my_argv[j + 1] = filename;
-        }
-      else
-        {
+        } else {
           my_argv[i++] = "-restore";
           my_argv[i++] = filename;
         }
+      } else {
+        /* This must be divided to args by spaces! */
+        my_argv[i++] = command;
+      }
       while(i<10)
         my_argv[i++] = NULL;
 

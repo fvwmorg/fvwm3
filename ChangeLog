@@ -1,5 +1,7 @@
 1999-05-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/fvwm.c (main): applied restart patch by Mikhael Goikhman
+
 	* fvwm/menus.c (SelectMenuItem): Fixed X error message 54/4/14: No
 	longer try to delete a stored item twice.
 	(MenuInteraction): Do not unselect a popup menu item when we leave the
@@ -9,6 +11,8 @@
 	itself.
 	(MenuInteraction): Only raise the parent menu if it is obscured when
 	moving back with the keyboard.
+	(NewMenuStyle): fixed reversed 'HoldSubmenus' default for fvwm/mwm/win
+	menus.
 
 1999-05-29  Dominik Vogt  <dominik_vogt@gmx.de>
 
