@@ -291,4 +291,25 @@ typedef struct FvwmWindow
 } FvwmWindow;
 /********************************/
 
+----------------------------------------------------------------------
+
+----------------------
+Bob Woodside's To-Do's
+----------------------
+
+  - merge in the 2.0.46 StackingOrder patch
+      - corrects the "sort of" inverted stacking order on Restart bug
+      - speeds up Restart (ymmv)
+      - speeds up page/desk switching (again, ymmv)
+      - adds infrastructure for possible future enhancements, like
+        "raise/lower this window n positions in the stacking order"
+  
+  - investigate re-implementing the 2.0.46 Animated Windowshade patch
+    using the module interface, like FvwmAnimate does for iconification
+
+  - merge (well, probably re-implement) my 2.0.46 patch to cause icon
+    positions to be remembered across a Restart
+
+
+----------------------------------------------------------------------
  
