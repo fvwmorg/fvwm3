@@ -1,5 +1,9 @@
 2004-10-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (__handle_bpress_on_managed):
+	do not draw the decorations pressed in if executing a function is
+	forbidden
+
 	* libs/Parse.c (CopyToken):
 	fixed parsing of delimiters
 

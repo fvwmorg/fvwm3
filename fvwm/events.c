@@ -1612,9 +1612,9 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	XEvent *e;
 
 	e = exc->x.etrigger;
-	PressedW = exc->w.w;
 	/* Now handle click to focus and click to raise. */
 	__handle_focus_raise_click(&f, exc);
+	PressedW = (f.do_forbid_function) ? None : exc->w.w;
 	if (f.do_focus)
 	{
 		if (!__handle_click_to_focus(exc))
