@@ -103,6 +103,7 @@ Window		icon_win;               /* icon window */
 BalloonWindow balloon;            /* balloon window */
 
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
+extern void ExitPager(void);
 
 /***********************************************************************
  *
@@ -406,8 +407,7 @@ void initialize_pager(void)
 				       valuemask,
 				       &attributes);
       attributes.event_mask = (ExposureMask | ButtonReleaseMask |
-			       ButtonPressMask |ButtonMotionMask|
-			       KeyPressMask);
+			       ButtonPressMask |ButtonMotionMask);
       desk_h = window_h - label_h;
 
       valuemask &= ~(CWBackPixel);
@@ -677,6 +677,11 @@ void DispatchEvent(XEvent *Event)
   Window JunkRoot, JunkChild;
   int JunkX, JunkY;
   unsigned JunkMask;
+  char keychar;
+  KeySym keysym;
+  Bool do_move_page = False;
+  short dx = 0;
+  short dy = 0;
 
   switch(Event->xany.type)
     {
@@ -696,12 +701,38 @@ void DispatchEvent(XEvent *Event)
       break;
     case KeyPress:
       if (is_transient)
+      {
+	XLookupString(&(Event->xkey), &keychar, 1, &keysym, NULL);
+	switch(keysym)
 	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  MyXUngrabServer(dpy);
-	  XSync(dpy,0);
-	  exit(0);
+	case XK_Up:
+	  dy = -100;
+	  do_move_page = True;
+	  break;
+	case XK_Down:
+	  dy = 100;
+	  do_move_page = True;
+	  break;
+	case XK_Left:
+	  dx = -100;
+	  do_move_page = True;
+	  break;
+	case XK_Right:
+	  dx = 100;
+	  do_move_page = True;
+	  break;
+	default:
+	  /* does not return */
+	  ExitPager();
+	  break;
 	}
+	if (do_move_page)
+	{
+	  char command[64];
+	  sprintf(command,"Scroll %d %d\n", dx, dy);
+	  SendInfo(fd, command, 0);
+	}
+      }
       break;
     case ButtonRelease:
       if (do_ignore_next_button_release)
@@ -744,10 +775,8 @@ void DispatchEvent(XEvent *Event)
 	}
       if (is_transient)
 	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  MyXUngrabServer(dpy);
-	  XSync(dpy,0);
-	  exit(0);
+	  /* does not return */
+	  ExitPager();
 	}
       break;
     case ButtonPress:
@@ -816,13 +845,8 @@ void DispatchEvent(XEvent *Event)
       if ((Event->xclient.format==32) &&
 	  (Event->xclient.data.l[0]==wm_del_win))
 	{
-	  if (is_transient)
-	    {
-	      XUngrabPointer(dpy,CurrentTime);
-	      MyXUngrabServer(dpy);
-	      XSync(dpy,0);
-	    }
-	  exit(0);
+	  /* does not return */
+	  ExitPager();
 	}
       break;
     }
@@ -1565,8 +1589,10 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk)
 #endif
       /* Make sure we don't get stuck a few pixels fromt the top/left border.
        * Since sx/sy are ints, values between 0 and 1 are rounded down. */
-      if(sx == 0 && x == 0 && Scr.Vx != 0) sx = -1;
-      if(sy == 0 && y == 0 && Scr.Vy != 0) sy = -1;
+      if(sx == 0 && x == 0 && Scr.Vx != 0)
+	sx = -1;
+      if(sy == 0 && y == 0 && Scr.Vy != 0)
+	sy = -1;
 
       sprintf(command,"Scroll %d %d\n",sx,sy);
       SendInfo(fd,command,0);
@@ -1807,10 +1833,8 @@ void MoveWindow(XEvent *Event)
     }
   if (is_transient)
     {
-      XUngrabPointer(dpy,CurrentTime);
-      MyXUngrabServer(dpy);
-      XSync(dpy,0);
-      exit(0);
+      /* does not return */
+      ExitPager();
     }
 }
 
@@ -2139,10 +2163,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     }
   if (is_transient)
     {
-      XUngrabPointer(dpy,CurrentTime);
-      MyXUngrabServer(dpy);
-      XSync(dpy,0);
-      exit(0);
+      /* does not return */
+      ExitPager();
     }
 }
 

@@ -120,6 +120,7 @@ Bool error_occured = False;
 static volatile sig_atomic_t isTerminated = False;
 
 static RETSIGTYPE TerminateHandler(int);
+void ExitPager(void);
 
 /***********************************************************************
  *
@@ -383,13 +384,8 @@ void Loop(int *fd)
 			(unsigned *)&window_w,(unsigned *)&window_h,
 			&border_width,&depth)==0)
 	  {
-	    if (is_transient)
-	      {
-		XUngrabPointer(dpy,CurrentTime);
-		MyXUngrabServer(dpy);
-		XSync(dpy,0);
-	      }
-	    exit(0);
+	    /* does not return */
+	    ExitPager();
 	  }
 	error_occured = False;
       }
@@ -1781,4 +1777,16 @@ PagerStringList *NewPagerStringItem(PagerStringList *last, int desk)
   newitem->bgPixmap = NULL;
 
   return newitem;
+}
+
+void ExitPager(void)
+{
+  if (is_transient)
+  {
+    XUngrabPointer(dpy,CurrentTime);
+    MyXUngrabServer(dpy);
+    XSync(dpy,0);
+  }
+  XUngrabKeyboard(dpy, CurrentTime);
+  exit(0);
 }

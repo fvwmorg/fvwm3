@@ -1,3 +1,11 @@
+1999-06-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/FvwmPager.c (Loop):
+	(ExitPager):
+	* FvwmPager/x_pager.c (DispatchEvent):
+	(MoveWindow):
+	(IconMoveWindow): use new function ExitPager
+
 1999-06-13  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTaskBar/ButtonArray.c (RemoveButton): fixed coredump when
@@ -5,7 +13,7 @@
 
 1999-06-14  Dominik Vogt  <domivotdomivogt@bvstp038.bbn.hp.com>
 
-	* FvwmPager/x_pager.c (DispatchEvent): 
+	* FvwmPager/x_pager.c (DispatchEvent):
 	* FvwmPager/FvwmPager.c (main): Any keystroke exits a transient pager
 
 1999-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -13,7 +21,7 @@
 	* FvwmPager/x_pager.c (Scroll): Center the desktop view around the
 	mouse instead of placing the pointer in the top left corner.
 
-	* FvwmPager/FvwmPager.c (main): 
+	* FvwmPager/FvwmPager.c (main):
 	* FvwmPager/x_pager.c (DispatchEvent): transient pager ignores first
 	button release for improved usability
 

@@ -400,9 +400,7 @@ static void GrabWindowButton(Display *dpy, Window w, Binding *binding,
   if (binding->Action == NULL)
     return;
 
-#if 0
   dead_modifiers &= ~(binding->Modifier & dead_modifiers); /* dje */
-#endif
 
   if((binding->Context & contexts) &&
      ((binding->type == MOUSE_BINDING)
