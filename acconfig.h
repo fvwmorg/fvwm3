@@ -38,6 +38,9 @@
 /* Define if Xft library is used. */
 #undef HAVE_XFT
 
+/* Define if Xft 2 library is used. */
+#undef HAVE_XFT2
+
 /* Define if Xft library can handle utf8 encoding  */
 #undef HAVE_XFT_UTF8
 

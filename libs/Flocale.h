@@ -87,20 +87,6 @@
 #define FLOCALE_DEBUG_CHARSET   0
 #define FLOCALE_DEBUG_ICONV     0
 
-#define MULTIDIR_NONE           0
-#define MULTIDIR_LEFT           (1)
-#define MULTIDIR_UPPER_LEFT     (1<<1)
-#define MULTIDIR_UPPER          (1<<2)
-#define MULTIDIR_UPPER_RIGHT    (1<<3)
-#define MULTIDIR_RIGHT          (1<<4)
-#define MULTIDIR_BOTTOM_RIGHT   (1<<5)
-#define MULTIDIR_BOTTOM         (1<<6)
-#define MULTIDIR_BOTTOM_LEFT    (1<<7)
-#define MULTIDIR_ALL MULTIDIR_LEFT | MULTIDIR_UPPER_LEFT | MULTIDIR_UPPER | \
-                     MULTIDIR_UPPER_RIGHT | MULTIDIR_RIGHT | \
-                     MULTIDIR_BOTTOM_RIGHT | MULTIDIR_BOTTOM  | \
-                     MULTIDIR_BOTTOM_LEFT
-
 #define FLF_MULTIDIR_HAS_UPPER(flf) \
               ((flf->flags.shadow_dir & MULTI_DIR_NW) || \
                (flf->flags.shadow_dir & MULTI_DIR_N) || \
@@ -116,23 +102,28 @@
 #define FLF_MULTIDIR_HAS_RIGHT(x) \
               ((flf->flags.shadow_dir & MULTI_DIR_SE) || \
                (flf->flags.shadow_dir & MULTI_DIR_E) || \
-               (flf->flags.shadow_dir & MULTI_DIR_SW))
+               (flf->flags.shadow_dir & MULTI_DIR_SE))
 
+#define FLF_SHADOW_FULL_SIZE(flf) (flf->shadow_size + flf->shadow_offset)
 #define FLF_SHADOW_HEIGHT(flf) \
- (flf->shadow_size * (FLF_MULTIDIR_HAS_UPPER(flf)+FLF_MULTIDIR_HAS_BOTTOM(flf)))
+ (FLF_SHADOW_FULL_SIZE(flf) * \
+           (FLF_MULTIDIR_HAS_UPPER(flf)+FLF_MULTIDIR_HAS_BOTTOM(flf)))
 #define FLF_SHADOW_WIDTH(flf) \
- (flf->shadow_size * (FLF_MULTIDIR_HAS_LEFT(flf)+FLF_MULTIDIR_HAS_RIGHT(flf)))
-#define FLF_SHADOW_ASCENT(flf) (flf->shadow_size * FLF_MULTIDIR_HAS_UPPER(flf))
-#define FLF_SHADOW_DESCENT(flf) (flf->shadow_size * FLF_MULTIDIR_HAS_BOTTOM(flf))
+ (FLF_SHADOW_FULL_SIZE(flf) * \
+            (FLF_MULTIDIR_HAS_LEFT(flf)+FLF_MULTIDIR_HAS_RIGHT(flf)))
+#define FLF_SHADOW_ASCENT(flf) \
+         (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_UPPER(flf))
+#define FLF_SHADOW_DESCENT(flf) \
+         (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_BOTTOM(flf))
 
 #define FLF_SHADOW_LEFT_SIZE(flf) \
-            (flf->shadow_size * FLF_MULTIDIR_HAS_LEFT(flf))
+            (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_LEFT(flf))
 #define FLF_SHADOW_RIGHT_SIZE(flf) \
-            (flf->shadow_size * FLF_MULTIDIR_HAS_RIGHT(flf))
+            (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_RIGHT(flf))
 #define FLF_SHADOW_UPPER_SIZE(flf) \
-            (flf->shadow_size * FLF_MULTIDIR_HAS_UPPER(flf))
+            (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_UPPER(flf))
 #define FLF_SHADOW_BOTTOM_SIZE(flf) \
-            (flf->shadow_size * FLF_MULTIDIR_HAS_BOTTOM(flf))
+            (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_BOTTOM(flf))
 
 /* ---------------------------- type definitions ---------------------------- */
 
@@ -167,6 +158,7 @@ typedef struct _FlocaleFont
 	int descent;
 	int max_char_width;
 	short shadow_size;
+	short shadow_offset;
 	struct
 	{
 		unsigned shadow_dir : 8;

@@ -1,3 +1,19 @@
+2002-05-27  olicha  <olivier.chapuis@free.fr>
+
+	* acinclude.m4:
+	* acconfig.h:
+	* configure.in:
+	Some Xft2 and fontconfig preparation
+
+	* libs/Flocale.h:
+	* libs/Flocale.c (FlocaleParseShadow):
+	(FlocaleLoadFont):
+	(FlocaleGetShadowTextPosition):
+	Added offset to shadow text
+
+	* libs/Flocale.h:
+	Fixed the position of ne shadow text and remove some unused #define
+
 2002-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/colorset.c (parse_colorset):
