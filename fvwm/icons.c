@@ -653,7 +653,7 @@ void AutoPlaceIcon(FvwmWindow *t)
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons. Neither for icons of windows that are
    * visible on the current page. */
-  if(IS_ICON_STICKY(t)||IS_STICKY(t))
+  if (IS_ICON_STICKY(t) || IS_STICKY(t))
   {
     base_x = 0;
     base_y = 0;
@@ -1501,6 +1501,10 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   if (!(DO_START_ICONIC(tmp_win) && IS_ICON_MOVED(tmp_win)))
   {
     LowerWindow(tmp_win);
+  }
+  if (IS_ICON_STICKY(tmp_win) || IS_STICKY(tmp_win))
+  {
+    tmp_win->Desk = Scr.CurrentDesk;
   }
   if (tmp_win->Desk == Scr.CurrentDesk)
   {
