@@ -41,7 +41,7 @@ int DB_DUMMY_EXPORTED_SYMBOL;
 /* WI stands for 'window info' */
 void DB_WI_WINDOWS(char *label, FvwmWindow *fw)
 {
-  fprintf(stderr, "%s: FvwmWindow=0x%x, next=0x%x, prev=0x%x, stack_next=0x%x, stack_prev=0x%x\n", label?label:"", fw, fw->next, fw->prev, fw->stack_next, fw->stack_prev);
+  fprintf(stderr, "%s: FvwmWindow=0x%x, next=0x%x, prev=0x%x, next stack window=0x%x, prev stack window=0x%x\n", label?label:"", fw, fw->next, fw->prev, get_next_window_in_stack_ring(fw), get_prev_window_in_stack_ring(fw));
   return;
 }
 

@@ -69,6 +69,7 @@ extern Window BalloonView;
 extern unsigned int WindowBorderWidth;
 extern unsigned int MinSize;
 extern Bool WindowBorders3d;
+extern Bool UseSkipList;
 extern Picture *PixmapBack;
 extern Picture *HilightPixmap;
 extern int HilightDesks;
@@ -1721,10 +1722,15 @@ void AddNewWindow(PagerWindow *t)
 	dpy, t->PagerView, w, h, &Colorset[windowcolorset], Pdepth,
 	Scr.NormalGC, True);
     }
-    XMapRaised(dpy, t->PagerView);
+    if (!UseSkipList || !DO_SKIP_WINDOW_LIST(t))
+    {
+      XMapRaised(dpy, t->PagerView);
+    }
   }
   else
+  {
     t->PagerView = None;
+  }
 
   CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
   t->icon_view_width = w;
@@ -1750,7 +1756,15 @@ void AddNewWindow(PagerWindow *t)
       ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
       GrabModeAsync, GrabModeAsync, None, None);
   }
-  XMapRaised(dpy,t->IconView);
+  if (!UseSkipList || !DO_SKIP_WINDOW_LIST(t))
+  {
+    XMapRaised(dpy,t->IconView);
+    t->myflags.is_mapped = 1;
+  }
+  else
+  {
+    t->myflags.is_mapped = 0;
+  }
   Hilight(t,False);
 }
 
@@ -1826,6 +1840,23 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
   int x, y, w, h;
   Bool size_changed;
   Bool position_changed;
+
+  if (UseSkipList && DO_SKIP_WINDOW_LIST(t) && t->myflags.is_mapped)
+  {
+    if (t->PagerView)
+      XUnmapWindow(dpy, t->PagerView);
+    if (t->IconView)
+      XUnmapWindow(dpy, t->IconView);
+    t->myflags.is_mapped = 0;
+  }
+  else if (UseSkipList && !DO_SKIP_WINDOW_LIST(t) && !t->myflags.is_mapped)
+  {
+    if (t->PagerView)
+      XMapRaised(dpy, t->PagerView);
+    if (t->IconView)
+      XMapRaised(dpy, t->IconView);
+    t->myflags.is_mapped = 1;
+  }
 
   CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
   position_changed = (t->pager_view_x != x || t->pager_view_y != y);

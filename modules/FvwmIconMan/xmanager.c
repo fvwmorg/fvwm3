@@ -862,7 +862,18 @@ void set_shape (WinManager *man)
 
     n = man->buttons.num_windows;
     if (n == 0)
-      n = 1;
+    {
+      man->shape.num_rects = 1;
+      rects[0].x = -1;
+      rects[0].y = -1;
+      rects[0].width = 1;
+      rects[0].height = 1;
+      if (man->shape.num_rects != 0) {
+	man->dirty_flags |= SHAPE_CHANGED;
+      }
+      man->shape.rects[0] = rects[0];
+      return;
+    }
 
     if (cols == 0 || n % cols == 0) {
       rects[0].x = 0;

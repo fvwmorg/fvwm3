@@ -477,7 +477,7 @@ KeySym FvwmStringToKeysym(Display *dpy, char *key);
 
 void fvwmlib_keyboard_shortcuts(
     Display *dpy, int screen, XEvent *Event, int x_move_size, int y_move_size,
-    int ReturnEvent);
+    int *x_defect, int *y_defect, int ReturnEvent);
 
 void fvwmlib_get_target_window(
     Display *dpy, int screen, char *MyName, Window *app_win,

@@ -367,6 +367,15 @@ void RedrawButton(button_info *b,int clean)
 
   if(b->flags&b_Title)
   {
+#ifdef I18N_MB
+    if (fontset)
+    {
+      gcv.foreground = fc;
+      gcv.font = font->fid;
+      XChangeGC(Dpy,NormalGC,GCForeground | GCFont,&gcv);
+      DrawTitle(b,MyWindow,NormalGC);
+    }
+#else
     if (font)
     {
       gcv.foreground = fc;
@@ -374,6 +383,7 @@ void RedrawButton(button_info *b,int clean)
       XChangeGC(Dpy,NormalGC,GCForeground | GCFont,&gcv);
       DrawTitle(b,MyWindow,NormalGC);
     }
+#endif
   } /* title */
   else if ((b->flags & b_Panel) && (b->panel_flags.panel_indicator))
   {

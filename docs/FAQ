@@ -2004,6 +2004,9 @@ A: OK, 57 is a joke, we know you don't have 57 buttons, but we've
    buttons in all functions.  This means that some functionality is
    not available with buttons 6 and higher.
 
+   The maximum possible number you can use is 31.  Any higher value
+   will probably not work and possibly even crash fvwm or its modules.
+
 ======================================================================
               7 - Hints and Examples from the Developers
 ======================================================================

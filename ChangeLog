@@ -1,3 +1,50 @@
+2001-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/gnome.c (GNOME_GetStyle):
+	* fvwm/style.c (lookup_style):
+	(check_window_style_change):
+	* fvwm/add_window.c (setup_style_and_decor):
+	fixed GnomeIgnoreHints style for some of the gnome hints
+
+	* fvwm/fvwm.c (StartupStuff):
+	Tried to fix font size problem
+
+	* fvwm/placement.c (PlaceWindow):
+	suppress an X error
+
+	* fvwm/move_resize.c (moveLoop):
+	* libs/Target.c (fvwmlib_keyboard_shortcuts):
+	* fvwm/misc.c (Keyboard_shortcuts):
+	modified keyboard shortcut functions so that it is possible to move
+	windows with the keyboard even if the border is hit.  does not work
+	very nicely with paging
+
+	* libs/Target.c (fvwmlib_keyboard_shortcuts):
+	performance enhancement
+
+	* fvwm/events.c (HandleButtonPress):
+	fixed (?) some problem with passing the raise click in ctf to the app
+
+	* fvwm/add_window.c (Reborder):
+	* fvwm/virtual.c (MoveViewport):
+	(MapDesk):
+	(UnmapDesk):
+	* fvwm/session.c (SaveWindowStates):
+	* fvwm/fvwmdebug.c (DB_WI_WINDOWS):
+	don't access stack_next and stack_prev directly but use the access
+	functions from stack.h
+
+	* fvwm/stack.c (remove_window_from_stack_ring):
+	(add_window_to_stack_ring_after):
+	safety patch
+
+	* fvwm/add_window.c (adjust_fvwm_internal_windows):
+	(destroy_window):
+	when a window becomes scheduled for destruction, remove all traces of it
+	from the fvwm internal variable so its not accessed accidentally when
+	its fields are no longer valid
+
 2001-11-05  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/borders.c:
@@ -120,12 +167,12 @@
 
 	* NEWS:
 	Some FvwmScript news
-	
+
 2001-10-16  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS:
 	Some FvwmScript news
-	
+
 2001-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/bindings.c (activate_binding):

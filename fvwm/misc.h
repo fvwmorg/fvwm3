@@ -46,7 +46,8 @@ Bool UngrabEm(int ungrab_context);
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
-void Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
+void Keyboard_shortcuts(
+  XEvent *Event, FvwmWindow *fw, int *x_defect, int *y_defect, int ReturnEvent);
 Bool check_if_fvwm_window_exists(FvwmWindow *fw);
 int truncate_to_multiple (int x, int m);
 Bool move_into_rectangle(rectangle *move_rec, rectangle *target_rec);

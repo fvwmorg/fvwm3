@@ -1247,7 +1247,7 @@ int DeferExecution(
 	MyXUngrabKeyboard(dpy);
 	return True;
       }
-      Keyboard_shortcuts(eventp, NULL, FinishEvent);
+      Keyboard_shortcuts(eventp, NULL, NULL, NULL, FinishEvent);
     }
     if(eventp->type == FinishEvent)
     {

@@ -394,8 +394,9 @@ SaveWindowStates(FILE *f)
   rectangle save_g;
   int i;
 
-  for (ewin = Scr.FvwmRoot.stack_next; ewin != &Scr.FvwmRoot;
-       ewin = ewin->stack_next)
+  for (ewin = get_next_window_in_stack_ring(&Scr.FvwmRoot);
+       ewin != &Scr.FvwmRoot;
+       ewin = get_next_window_in_stack_ring(ewin))
   {
     Bool is_icon_sticky;
 

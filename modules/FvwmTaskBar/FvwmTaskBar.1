@@ -229,7 +229,14 @@ displayed at the right of the taskbar.
 .IP "*FvwmTaskBar: ClockFormat \fIformat-string\fP"
 This option specifies the time format for the digital clock.
 It is a \fIstrftime(3)\fP compatible format string.
-By default it is "%R".
+By default it is "%R". There is a 24 character limit for string
+expansion. The string depends of locale settings.
+
+.IP "*FvwmTaskBar: DateFormat \fIformat-string\fP"
+This option specifies the date and/or time format for clock tip.
+It is a \fIstrftime(3)\fP compatible format string.
+By default it is "%A, %B %d, %Y". There is 40 characters limit for
+string expansion. The string depends of locale settings now.
 
 .IP "*FvwmTaskBar: UpdateInterval \fIseconds\fP"
 Specifies how often the clock display should be refreshed, so that times of

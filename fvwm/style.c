@@ -786,16 +786,6 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
       merge_styles(styles, nptr, False);
     }
   }
-  if (!DO_IGNORE_GNOME_HINTS(tmp_win))
-  {
-    window_style gnome_style;
-
-    /* use GNOME hints if not overridden by user with GNOMEIgnoreHitns */
-    memset(&gnome_style, 0, sizeof(window_style));
-    GNOME_GetStyle(tmp_win, &gnome_style);
-    merge_styles(&gnome_style, styles, False);
-    memcpy(styles, &gnome_style, sizeof(window_style));
-  }
 
   return;
 }
@@ -2727,6 +2717,19 @@ void check_window_style_change(
     return;
   }
 
+  /*
+   * do_ignore_gnome_hints
+   *
+   * must handle these first because they may alter the style
+   */
+  if (SCDO_IGNORE_GNOME_HINTS(*ret_style) &&
+      !SDO_IGNORE_GNOME_HINTS(ret_style->flags))
+  {
+    GNOME_GetStyle(t, ret_style);
+    /* may need further treatment for some styles */
+    flags->do_update_gnome_styles = True;
+  }
+
   /****** common style flags ******/
 
   /* All static common styles can simply be copied. For some there is
@@ -2738,11 +2741,12 @@ void check_window_style_change(
   for (i = 0; i < sizeof(SFGET_COMMON_STATIC_FLAGS(*ret_style)); i++)
   {
     wf[i] = (wf[i] & ~sc[i]) | (sf[i] & sc[i]);
+    sf[i] = wf[i];
   }
 
   if (IS_STYLE_DELETED(t))
   {
-    /* updfate all styles */
+    /* update all styles */
     memset(flags, 0xff, sizeof(*flags));
     SET_STYLE_DELETED(t, 0);
     return;

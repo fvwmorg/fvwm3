@@ -383,9 +383,11 @@ void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor)
  * shortcuts by warping the pointer.
  *
  ****************************************************************************/
-void Keyboard_shortcuts(XEvent *Event, FvwmWindow *fw, int ReturnEvent)
+void Keyboard_shortcuts(
+  XEvent *Event, FvwmWindow *fw, int *x_defect, int *y_defect, int ReturnEvent)
 {
-  int x_move_size = 0, y_move_size = 0;
+  int x_move_size = 0;
+  int y_move_size = 0;
 
   if (fw)
   {
@@ -393,7 +395,8 @@ void Keyboard_shortcuts(XEvent *Event, FvwmWindow *fw, int ReturnEvent)
     y_move_size = fw->hints.height_inc;
   }
   fvwmlib_keyboard_shortcuts(
-    dpy, Scr.screen, Event, x_move_size, y_move_size, ReturnEvent);
+    dpy, Scr.screen, Event, x_move_size, y_move_size, x_defect, y_defect,
+    ReturnEvent);
 
   return;
 }

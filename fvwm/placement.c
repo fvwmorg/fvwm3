@@ -818,7 +818,10 @@ Bool PlaceWindow(
 	DragWidth = tmp_win->frame_g.width;
 	DragHeight = tmp_win->frame_g.height;
 
-	XMapRaised(dpy, Scr.SizeWindow);
+	if (Scr.SizeWindow != None)
+	{
+	  XMapRaised(dpy, Scr.SizeWindow);
+	}
 	FScreenGetScrRect(NULL, FSCREEN_CURRENT, &mx, &my, NULL, NULL);
 	if (moveLoop(tmp_win, mx, my, DragWidth, DragHeight,
 		     &xl, &yt, False))
@@ -831,7 +834,10 @@ Bool PlaceWindow(
 	  /* ok */
 	  rc = False;
 	}
-	XUnmapWindow(dpy, Scr.SizeWindow);
+	if (Scr.SizeWindow != None)
+	{
+	  XUnmapWindow(dpy, Scr.SizeWindow);
+	}
 	MyXUngrabKeyboard(dpy);
 	MyXUngrabServer(dpy);
 	UngrabEm(GRAB_NORMAL);

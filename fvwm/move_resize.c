@@ -1511,6 +1511,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int yt_orig = 0;
   int cnx = 0;
   int cny = 0;
+  int x_virtual_offset = 0;
+  int y_virtual_offset = 0;
   Bool sent_cn = False;
   Bool do_resize_too = False;
   Bool do_exec_placement_func = False;
@@ -1584,8 +1586,22 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y, False, False, True))
       {
 	/* Fake an event to force window reposition */
-	xl += XOffset;
-	yt += YOffset;
+	if (delta_x)
+	{
+	  x_virtual_offset = 0;
+	}
+	if (XOffset)
+	{
+	  xl += XOffset;
+	}
+	if (delta_y)
+	{
+	  y_virtual_offset = 0;
+	}
+	if (YOffset)
+	{
+	  yt += YOffset;
+	}
 	DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 	Event.type = MotionNotify;
 	Event.xmotion.time = lastTimestamp;
@@ -1625,7 +1641,10 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     /* Handle a limited number of key press events to allow mouseless
      * operation */
     if (Event.type == KeyPress)
-      Keyboard_shortcuts(&Event, tmp_win, ButtonRelease);
+    {
+      Keyboard_shortcuts(
+	&Event, tmp_win, &x_virtual_offset, &y_virtual_offset, ButtonRelease);
+    }
     switch(Event.type)
     {
     case KeyPress:
@@ -1729,8 +1748,22 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       break;
 
     case MotionNotify:
-      xl = Event.xmotion.x_root + XOffset;
-      yt = Event.xmotion.y_root + YOffset;
+      xl = Event.xmotion.x_root;
+      yt = Event.xmotion.y_root;
+      if (xl > 0 && xl < Scr.MyDisplayWidth - 1)
+      {
+	/* pointer was moved away from the left/right border with the mouse,
+	 * reset the virtual x offset */
+	x_virtual_offset = 0;
+      }
+      if (yt > 0 && yt < Scr.MyDisplayHeight - 1)
+      {
+	/* pointer was moved away from the top/bottom border with the mouse,
+	 * reset the virtual y offset */
+	y_virtual_offset = 0;
+      }
+      xl += XOffset + x_virtual_offset;
+      yt += YOffset + y_virtual_offset;
 
       DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
@@ -1769,8 +1802,22 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  yt = Event.xmotion.y_root;
 	  HandlePaging(
 	    dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, False);
-	  xl += XOffset;
-	  yt += YOffset;
+	  if (delta_x)
+	  {
+	    x_virtual_offset = 0;
+	  }
+	  if (XOffset)
+	  {
+	    xl += XOffset;
+	  }
+	  if (delta_y)
+	  {
+	    y_virtual_offset = 0;
+	  }
+	  if (YOffset)
+	  {
+	    yt += YOffset;
+	  }
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 	  if (!delta_x && !delta_y)
 	    /* break from while (paged <= 1) */
@@ -1796,6 +1843,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       /* cannot happen */
       break;
     } /* switch */
+xl += x_virtual_offset;
+yt += y_virtual_offset;
     if (do_move_opaque && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their
@@ -2483,7 +2532,7 @@ void CMD_Resize(F_CMD_ARGS)
     /* Handle a limited number of key press events to allow mouseless
      * operation */
     if(Event.type == KeyPress)
-      Keyboard_shortcuts(&Event, tmp_win, ButtonRelease);
+      Keyboard_shortcuts(&Event, tmp_win, NULL, NULL, ButtonRelease);
     switch(Event.type)
     {
     case ButtonPress:

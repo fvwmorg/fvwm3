@@ -54,6 +54,7 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <stdarg.h>
+#include <locale.h>
 
 #include <unistd.h>
 #include <ctype.h>
@@ -254,6 +255,8 @@ int main(int argc, char **argv)
   const char *temp;
   char *s;
   int i;
+
+  setlocale(LC_ALL, "");
 
   for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
   {

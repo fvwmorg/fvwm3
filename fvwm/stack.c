@@ -168,6 +168,10 @@ void verify_stack_ring_consistency(void)
 /* Remove a window from the stack ring */
 void remove_window_from_stack_ring(FvwmWindow *t)
 {
+  if (IS_SCHEDULED_FOR_DESTROY(t))
+  {
+    return;
+  }
   t->stack_prev->stack_next = t->stack_next;
   t->stack_next->stack_prev = t->stack_prev;
   /* not really necessary, but gives a little more saftey */
@@ -179,6 +183,10 @@ void remove_window_from_stack_ring(FvwmWindow *t)
 /* Add window t to the stack ring after window t */
 void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win)
 {
+  if (IS_SCHEDULED_FOR_DESTROY(t))
+  {
+    return;
+  }
   if (t == add_after_win || t == add_after_win->stack_next)
   {
     /* tried to add the window before or after itself */

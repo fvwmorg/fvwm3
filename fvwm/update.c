@@ -77,6 +77,14 @@ static void apply_window_updates(
   short buttons;
   Bool is_style_initialised = False;
 
+  if (flags->do_update_gnome_styles)
+  {
+    if (!SDO_IGNORE_GNOME_HINTS(pstyle->flags))
+    {
+      GNOME_GetStyle(t, pstyle);
+    }
+  }
+
   t->title_top_height = (HAS_BOTTOM_TITLE(t)) ? 0 : t->title_g.height;
   if (flags->do_update_window_grabs)
   {

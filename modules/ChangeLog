@@ -1,3 +1,26 @@
+2001-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (set_shape):
+	fixed *FvwmIconMan*shaped option whit empty managers
+
+	* FvwmPager/FvwmPager.1 (Note):
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	* FvwmPager/x_pager.c (AddNewWindow):
+	(MoveResizePagerView):
+	new option "UseSkipList" like in several other modules
+
+	* FvwmScript/Instructions.c (ChangeFont):
+	* FvwmButtons/draw.c (RedrawButton):
+	-Wall fixes with I18N_MB
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmTaskBar/Goodies.c (goodyopts):
+	(GoodiesParseConfig):
+	(CreateDateWindow):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	Added patch by Victor Vislobokov for locale dependent time format in
+	the FvwmTaskBar clock popup tip
+
 001-10-28  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/FvwmScript.c:
@@ -18,7 +41,7 @@
 
 2001-10-26  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmForm/FvwmForm.1: 
+	* FvwmForm/FvwmForm.1:
 	* FvwmForm/ReadXServer.c (ReadXServer): Allow for ISO_Left_Tab.
 	Ctrl-p,Ctrl-f, arrow up, down do something useful in forms with 1
 	input field.
@@ -38,7 +61,7 @@
 	* FvwmScript/scanner.c:
 	* FvwmScript/types.h
 	New bloc QuitFunc (bloc executed at exit), new instruction Key
-	for key bindings, new function LastString, new command 
+	for key bindings, new function LastString, new command
 	SendToModule ScriptName SendString id sig str
 
 2001-10-16  Dan Espen  <dane@mk.telcordia.com>

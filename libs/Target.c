@@ -35,7 +35,7 @@
 
 void fvwmlib_keyboard_shortcuts(
     Display *dpy, int screen, XEvent *Event, int x_move_size, int y_move_size,
-    int ReturnEvent)
+    int *x_defect, int *y_defect, int ReturnEvent)
 {
   int x;
   int y;
@@ -117,18 +117,65 @@ void fvwmlib_keyboard_shortcuts(
   default:
     break;
   }
-  XQueryPointer(dpy, RootWindow(dpy, screen), &JunkRoot, &Event->xany.window,
-		&x_root, &y_root, &x, &y, &JunkMask);
   if (x_move || y_move)
   {
+    int x_def_new = 0;
+    int y_def_new = 0;
+
+    XQueryPointer(dpy, RootWindow(dpy, screen), &JunkRoot, &Event->xany.window,
+		  &x_root, &y_root, &x, &y, &JunkMask);
     if (x + x_move < 0)
+    {
+      x_def_new = x + x_move;
       x_move = -x;
+    }
     else if (x + x_move >= DisplayWidth(dpy, DefaultScreen(dpy)))
+    {
+      x_def_new = x + x_move - DisplayWidth(dpy, DefaultScreen(dpy));
       x_move = DisplayWidth(dpy, DefaultScreen(dpy)) - x - 1;
+    }
     if (y + y_move < 0)
+    {
+      y_def_new = y + y_move;
       y_move = -y;
+    }
     else if (y + y_move >= DisplayHeight(dpy, DefaultScreen(dpy)))
+    {
+      y_def_new = y + y_move - DisplayHeight(dpy, DefaultScreen(dpy));
       y_move = DisplayHeight(dpy, DefaultScreen(dpy)) - y - 1;
+    }
+    if (x_defect)
+    {
+      int diff = 0;
+
+      *x_defect += x_def_new;
+      if (*x_defect > 0 && x_move < 0)
+      {
+	diff = min(*x_defect, -x_move);
+      }
+      else if (*x_defect < 0 && x_move > 0)
+      {
+	diff = max(*x_defect, -x_move);
+      }
+      *x_defect -= diff;
+      x_move += diff;
+    }
+    if (y_defect)
+    {
+      int diff = 0;
+
+      *y_defect += y_def_new;
+      if (*y_defect > 0 && y_move < 0)
+      {
+	diff = min(*y_defect, -y_move);
+      }
+      else if (*y_defect < 0 && y_move > 0)
+      {
+	diff = max(*y_defect, -y_move);
+      }
+      *y_defect -= diff;
+      y_move += diff;
+    }
     if (x_move || y_move)
     {
       XWarpPointer(dpy, None, RootWindow(dpy, screen), 0, 0, 0, 0,
@@ -211,7 +258,7 @@ void fvwmlib_get_target_window(
         finished = True;
         break;
       default:
-        fvwmlib_keyboard_shortcuts(dpy, screen, &eventp, 0, 0, 0);
+        fvwmlib_keyboard_shortcuts(dpy, screen, &eventp, 0, 0, NULL, NULL, 0);
         break;
       }
       break;

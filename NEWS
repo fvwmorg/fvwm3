@@ -3,6 +3,9 @@ _+_A HREF="#2.4.4"_-_2.4.4_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
+* New DateFormat option in FvwmTaskBar to change the date format in
+  the clock's popup tip.
+
 * Window titlebars may now be designed using a new powerful TitleStyle
   option MultiPixmap, that enables to specify separate pixmaps for
   different parts of the titlebar: Main, LeftEnd, LeftOfText, UnderText,

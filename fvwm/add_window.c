@@ -465,6 +465,14 @@ void setup_style_and_decor(
 
   /****** window shading ******/
   tmp_win->shade_anim_steps = pstyle->shade_anim_steps;
+
+  /****** GNOME style hints ******/
+  if (!SDO_IGNORE_GNOME_HINTS(pstyle->flags))
+  {
+    GNOME_GetStyle(tmp_win, pstyle);
+  }
+
+  return;
 }
 
 void setup_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)
@@ -1944,6 +1952,22 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
   return;
 }
 
+
+static void adjust_fvwm_internal_windows(FvwmWindow *tmp_win)
+{
+  extern FvwmWindow *ButtonWindow;
+
+  if (tmp_win == Scr.Hilite)
+    Scr.Hilite = NULL;
+  update_last_screen_focus_window(tmp_win);
+  if (ButtonWindow == tmp_win)
+    ButtonWindow = NULL;
+  restore_focus_after_unmap(tmp_win, False);
+
+  return;
+}
+
+
 /***************************************************************************
  *
  * Handles destruction of a window
@@ -1951,7 +1975,6 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
  ****************************************************************************/
 void destroy_window(FvwmWindow *tmp_win)
 {
-  extern FvwmWindow *ButtonWindow;
   extern Bool PPosOverride;
 
   /*
@@ -1961,6 +1984,24 @@ void destroy_window(FvwmWindow *tmp_win)
    */
   if(!tmp_win)
     return;
+
+  /****** remove from window list ******/
+
+  /* first of all, remove the window from the list of all windows! */
+  tmp_win->prev->next = tmp_win->next;
+  if (tmp_win->next != NULL)
+    tmp_win->next->prev = tmp_win->prev;
+
+  /****** also remove it from the stack ring ******/
+
+  /*
+   * RBW - 11/13/1998 - new: have to unhook the stacking order chain also.
+   * There's always a prev and next, since this is a ring anchored on
+   * Scr.FvwmRoot
+   */
+  remove_window_from_stack_ring(tmp_win);
+
+  /****** check if we have to delay window destruction ******/
 
   if (Scr.flags.is_executing_complex_function && !DO_REUSE_DESTROYED(tmp_win))
   {
@@ -1982,25 +2023,12 @@ void destroy_window(FvwmWindow *tmp_win)
     {
       XUnmapWindow(dpy, tmp_win->frame);
     }
+    adjust_fvwm_internal_windows(tmp_win);
     BroadcastPacket(M_DESTROY_WINDOW, 3,
 		    tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
 
     return;
   }
-
-  /****** remove from window list ******/
-
-  /* first of all, remove the window from the list of all windows! */
-  /*
-      RBW - 11/13/1998 - new: have to unhook the stacking order chain also.
-      There's always a prev and next, since this is a ring anchored on
-      Scr.FvwmRoot
-  */
-  remove_window_from_stack_ring(tmp_win);
-
-  tmp_win->prev->next = tmp_win->next;
-  if (tmp_win->next != NULL)
-    tmp_win->next->prev = tmp_win->prev;
 
   /****** unmap the frame ******/
 
@@ -2009,22 +2037,18 @@ void destroy_window(FvwmWindow *tmp_win)
   if(!PPosOverride)
     XSync(dpy,0);
 
-  /****** broadcast ******/
+  /* already done above? */
+  if (!IS_SCHEDULED_FOR_DESTROY(tmp_win))
+  {
+    /****** adjust fvwm internal windows and the focus ******/
 
-  BroadcastPacket(M_DESTROY_WINDOW, 3,
-                  tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
+    adjust_fvwm_internal_windows(tmp_win);
 
-  /****** adjust fvwm internal windows ******/
+    /****** broadcast ******/
 
-  if (tmp_win == Scr.Hilite)
-    Scr.Hilite = NULL;
-  update_last_screen_focus_window(tmp_win);
-  if (ButtonWindow == tmp_win)
-    ButtonWindow = NULL;
-
-  /****** adjust focus ******/
-
-  restore_focus_after_unmap(tmp_win, False);
+    BroadcastPacket(M_DESTROY_WINDOW, 3,
+		    tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
+  }
 
   /****** adjust fvwm internal windows II ******/
 
@@ -2211,18 +2235,19 @@ void RestoreWithdrawnLocation(
  ************************************************************************/
 void Reborder(void)
 {
-  FvwmWindow *tmp;			/* temp fvwm window structure */
+  FvwmWindow *tmp;
 
   /* put a border back around all windows */
   MyXGrabServer (dpy);
 
-  InstallWindowColormaps (&Scr.FvwmRoot);	/* force reinstall */
-/*
-    RBW - 05/15/1998
-    Grab the last window and work backwards: preserve stacking order on restart.
-*/
-  for (tmp = Scr.FvwmRoot.stack_prev; tmp != &Scr.FvwmRoot;
-       tmp = tmp->stack_prev)
+  /* force reinstall */
+  InstallWindowColormaps (&Scr.FvwmRoot);
+
+  /* RBW - 05/15/1998
+   * Grab the last window and work backwards: preserve stacking order on
+   * restart. */
+  for (tmp = get_prev_window_in_stack_ring(&Scr.FvwmRoot); tmp != &Scr.FvwmRoot;
+       tmp = get_prev_window_in_stack_ring(tmp))
   {
     if (!IS_ICONIFIED(tmp) && Scr.CurrentDesk != tmp->Desk)
     {

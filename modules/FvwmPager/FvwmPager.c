@@ -98,6 +98,8 @@ unsigned int WindowBorderWidth = DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
 unsigned int MinSize = 2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH + 1;
 Bool WindowBorders3d = False;
 
+Bool UseSkipList = False;
+
 Picture *PixmapBack = NULL;
 
 char *ImagePath = NULL;
@@ -681,7 +683,7 @@ void list_configure(unsigned long *body)
     t->text = body[22];
     t->back = body[23];
   }
-  if(IS_ICONIFIED(t))
+  if (IS_ICONIFIED(t))
   {
     t->x = t->icon_x;
     t->y = t->icon_y;
@@ -700,12 +702,14 @@ void list_configure(unsigned long *body)
     t->width = t->frame_width;
     t->height = t->frame_height;
   }
-  if(t->desk != cfgpacket->desk)
+  if (t->desk != cfgpacket->desk)
   {
     ChangeDeskForWindow(t, cfgpacket->desk);
   }
   else
+  {
     MoveResizePagerView(t, False);
+  }
 }
 
 /***********************************************************************
@@ -2007,6 +2011,10 @@ void ParseOptions(void)
       if (WindowLabelFormat)
 	free(WindowLabelFormat);
       CopyString(&WindowLabelFormat,arg1);
+    }
+    else if (StrEquals(resource,"UseSkipList"))
+    {
+      UseSkipList = True;
     }
     else if (StrEquals(resource, "MoveThreshold"))
     {

@@ -273,7 +273,7 @@ static char *FuncGetShad(int *NbArg, long *TabArg)
   char *tmp;
   long Id;
   XColor color;
-  
+
   (*NbArg)++;	    /* La fonction GetValue n'a qu'un seul argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
@@ -847,7 +847,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
     free(com_name);
     str=(char*)safecalloc(2,sizeof(char));
     sprintf(str,(err) ? "0" : "1");
-    return str; 
+    return str;
   }
 
   /* get the answer from the receiver.                              *
@@ -944,7 +944,7 @@ static char *FuncParse(int *NbArg,long *TabArg)
     step++;
     i += toklen + 4;
   }
-  
+
   if (end > l || end <= start)
   {
     str=(char*)safecalloc(1,sizeof(char));
@@ -1151,8 +1151,6 @@ static void ChangeFont (int NbArg,long *TabArg)
   int IdItem;
 #ifdef I18N_MB
   char **ml;
-  int mc;
-  char *ds;
   XFontStruct **fs_list;
 #else
   XFontStruct *xfont;
@@ -1773,7 +1771,7 @@ static void Key (int NbArg,long *TabArg)
     str = strcat(str, tmp);
     free(tmp);
   }
-  
+
   tmp = safestrdup(CatString3(widget, " ", sig));
   action = safestrdup(CatString3(tmp, " ", str));
   free(sig);
@@ -1800,9 +1798,9 @@ static void Key (int NbArg,long *TabArg)
     free(action);
     return;
   }
-  
+
   AddBinding(dpy, &BindingsList, KEY_BINDING, STROKE_ARG(0)
-	     0, keysym, key_string, modifier, C_WINDOW, 
+	     0, keysym, key_string, modifier, C_WINDOW,
 	     (void *)action, NULL);
   free(key_string);
   free(in_modifier);

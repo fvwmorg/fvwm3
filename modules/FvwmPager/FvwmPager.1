@@ -126,7 +126,7 @@ as long as the copyright is kept intact.
 
 .SH INITIALIZATION
 During initialization, \fIFvwmPager\fP gets config info from \fBfvwm\fP's
-module configuration database (see 
+module configuration database (see
 .IR fvwm2 (1),
 section
 .BR "MODULE COMMANDS" ).
@@ -387,6 +387,10 @@ The default is 1.
 Specifies that the mini windows should have a 3d borders based on the
 mini window background. This option only works if *FvwmPager: WindowColorsets
 is specified.
+.IP "*FvwmPager: UseSkipList"
+Tells FvwmPager to not show the windows that are using the
+WindowListSkip style.
+
 
 .SH AUTHOR
 Robert Nation

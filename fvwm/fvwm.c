@@ -769,6 +769,9 @@ void StartupStuff(void)
 
   fFvwmInStartup = False;
 
+  /* Make sure the geometry window uses the current font */
+  resize_geometry_window();
+
   /* Make sure we have the correct click time now. */
   if (Scr.ClickTime < 0)
     Scr.ClickTime = -Scr.ClickTime;

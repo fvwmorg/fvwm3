@@ -487,7 +487,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   unsigned char *retval;
   int size;
 
-  if (DO_IGNORE_GNOME_HINTS(fwin))
+  if (SDO_IGNORE_GNOME_HINTS(style->flags))
     return;
   /* Desktop */
   atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
@@ -536,7 +536,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
       */
     }
 
-    if (*(int*)retval & WIN_STATE_FIXED_POSITION)
+    if ((*(int*)retval & WIN_STATE_FIXED_POSITION))
     {
       SFSET_IS_FIXED(*style, 1);
       SMSET_IS_FIXED(*style, 1);

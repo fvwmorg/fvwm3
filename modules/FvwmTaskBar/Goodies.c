@@ -71,6 +71,7 @@ int anymail, unreadmail, newmail, mailcleared = 0;
 int fontheight, clock_width;
 char *mailpath = NULL;
 char *clockfmt = NULL;
+char *datefmt = NULL;
 int BellVolume = DEFAULT_BELL_VOLUME;
 Pixmap mailpix = None;
 Pixmap wmailpix = None;
@@ -165,6 +166,7 @@ static char *goodyopts[] =
   "MailCommand",
   "IgnoreOldMail",
   "ShowTips",
+  "DateFormat",
   NULL
 };
 
@@ -233,6 +235,9 @@ Bool GoodiesParseConfig(char *tline)
     break;
   case 10: /* ShowTips */
     ShowTips = True;
+    break;
+  case 11: /* DateFormat */
+    UpdateString(&datefmt, rest);
     break;
   default:
     /* unknow option */
@@ -389,7 +394,11 @@ void CreateDateWindow(void)
 
   time(&timer);
   tms = localtime(&timer);
-  strftime(str, 40, "%A, %B %d, %Y", tms);
+  if (datefmt) {
+    strftime(str, 40, datefmt, tms);
+  } else {
+    strftime(str, 40, "%A, %B %d, %Y", tms);
+  }
   last_date = tms->tm_mday;
 
   PopupTipWindow(win_width, 0, str);

@@ -1,8 +1,13 @@
+2001-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm24_convert:
+	Print an error message if source file is not writable
+
 2001-10-13  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-menu-desktop.in:
 	One or two fixes
-	
+
 2001-10-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-headlines.in:

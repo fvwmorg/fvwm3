@@ -982,7 +982,7 @@ void MoveViewport(int newx, int newy, Bool grab)
      * domivogt (29-Nov-1999): It's faster to first map windows top to bottom
      * and then unmap windows bottom up.
      */
-    t = Scr.FvwmRoot.stack_next;
+    t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
     while (t != &Scr.FvwmRoot)
     {
       /*
@@ -1038,9 +1038,9 @@ void MoveViewport(int newx, int newy, Bool grab)
 	}
       }
       /*  Bump to next win...	 */
-      t = t->stack_next;
+      t = get_next_window_in_stack_ring(t);
     }
-    t1 = Scr.FvwmRoot.stack_prev;
+    t1 = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
     while (t1 != &Scr.FvwmRoot)
     {
       /*
@@ -1089,7 +1089,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	}
       }
       /*  Bump to next win...	 */
-      t1 = t1->stack_prev;
+      t1 = get_prev_window_in_stack_ring(t1);
     }
     for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
@@ -1140,7 +1140,8 @@ static void UnmapDesk(int desk, Bool grab)
   {
     MyXGrabServer(dpy);
   }
-  for (t = Scr.FvwmRoot.stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
+  for (t = get_prev_window_in_stack_ring(&Scr.FvwmRoot); t != &Scr.FvwmRoot;
+       t = get_prev_window_in_stack_ring(t))
   {
     /* Only change mapping for non-sticky windows */
     if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
@@ -1195,7 +1196,8 @@ static void MapDesk(int desk, Bool grab)
   {
     MyXGrabServer(dpy);
   }
-  for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
+  for (t = get_next_window_in_stack_ring(&Scr.FvwmRoot); t != &Scr.FvwmRoot;
+       t = get_next_window_in_stack_ring(t))
   {
     /* Only change mapping for non-sticky windows */
     if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&

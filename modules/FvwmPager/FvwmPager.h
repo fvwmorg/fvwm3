@@ -75,6 +75,10 @@ typedef struct pager_window
   Pixel text;
   Pixel back;
   window_flags flags;
+  struct
+  {
+    unsigned is_mapped : 1;
+  } myflags;
   Window icon_w;
   Window icon_pixmap_w;
   char *icon_name;
