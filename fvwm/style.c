@@ -1,4 +1,4 @@
-/* This irogram is free software; you can redistribute it and/or modify
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -448,7 +448,11 @@ static void merge_styles(
     /* copy it */
     if (do_free)
     {
+#if 1
+      free_icon_boxes(SGET_ICON_BOXES(*merged_style));
+#else
       remove_icon_boxes_from_style(merged_style);
+#endif
       copy_icon_boxes(
 	&SGET_ICON_BOXES(*merged_style), SGET_ICON_BOXES(*add_style));
     }

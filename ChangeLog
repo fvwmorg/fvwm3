@@ -1,3 +1,9 @@
+2000-11-01  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/style.c (merge_styles):
+	restored a call to free_icon_boxes, since remove_icon_boxes_from_style
+	causes icon boxes not to work
+
 2000-10-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* INSTALL.fvwm:
