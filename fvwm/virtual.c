@@ -31,10 +31,9 @@
  * some servers.
  *
  * 2 is the default.
- *
- * Right now, this logic is only good on the initial read of .fvwm2rc.
  */
 int edge_thickness = 2;
+int last_edge_thickness = 2;
 
 void setEdgeThickness(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		    unsigned long context,char *action, int *Module)
@@ -53,6 +52,7 @@ void setEdgeThickness(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   }
   edge_thickness = val;
+  checkPanFrames();
 }
 
 /***************************************************************************
@@ -205,8 +205,8 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     *yt = y - *delta_y;
 
   /* make sure the pointer isn't warped into the panframes */
-  if(*xl <= edge_thickness) *xl = edge_thickness+1;
-  if(*yt <= edge_thickness) *yt = edge_thickness+1;
+  if(*xl < edge_thickness) *xl = edge_thickness;
+  if(*yt < edge_thickness) *yt = edge_thickness;
   if(*xl >= Scr.MyDisplayWidth - edge_thickness)
     *xl = Scr.MyDisplayWidth - edge_thickness -1;
   if(*yt >= Scr.MyDisplayHeight - edge_thickness)
@@ -247,11 +247,45 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
  ****************************************************************************/
 void checkPanFrames(void)
 {
-  int wrapX = (Scr.flags & EdgeWrapX);
-  int wrapY = (Scr.flags & EdgeWrapY);
+  Bool wrapX = (Scr.flags & EdgeWrapX) && Scr.VxMax;
+  Bool wrapY = (Scr.flags & EdgeWrapY) && Scr.VyMax;
 
   if(!(Scr.flags & WindowsCaptured))
     return;
+
+  /* thickness of 0 means remove the pan frames */
+  if (edge_thickness == 0) {
+    if (Scr.PanFrameTop.isMapped) {
+      XUnmapWindow(dpy,Scr.PanFrameTop.win);
+      Scr.PanFrameTop.isMapped=False;
+    }
+    if (Scr.PanFrameBottom.isMapped) {
+      XUnmapWindow (dpy,Scr.PanFrameBottom.win);
+      Scr.PanFrameBottom.isMapped=False;
+    }
+    if (Scr.PanFrameLeft.isMapped) {
+      XUnmapWindow(dpy,Scr.PanFrameLeft.win);
+      Scr.PanFrameLeft.isMapped=False;
+    }
+    if (Scr.PanFrameRight.isMapped) {
+      XUnmapWindow (dpy,Scr.PanFrameRight.win);
+      Scr.PanFrameRight.isMapped=False;
+    }
+    return;
+  }
+  
+  /* check they are the right size */
+  if (edge_thickness != last_edge_thickness) {
+    XResizeWindow (dpy, Scr.PanFrameTop.win, Scr.MyDisplayWidth, edge_thickness);
+    XResizeWindow (dpy, Scr.PanFrameLeft.win, edge_thickness, Scr.MyDisplayHeight);
+    XMoveResizeWindow (dpy, Scr.PanFrameRight.win,
+                       Scr.MyDisplayWidth - edge_thickness, 0,
+                       edge_thickness, Scr.MyDisplayHeight);
+    XMoveResizeWindow (dpy, Scr.PanFrameBottom.win,
+                       0, Scr.MyDisplayHeight - edge_thickness,
+                       Scr.MyDisplayWidth, edge_thickness);
+    last_edge_thickness = edge_thickness;
+  }
 
   /* Remove Pan frames if paging by edge-scroll is permanently or
    * temporarily disabled */
@@ -343,19 +377,24 @@ void initPanFrames()
 {
   XSetWindowAttributes attributes;    /* attributes for create */
   unsigned long valuemask;
+  int saved_thickness;
 
   /* Not creating the frames disables all subsequent behavior */
-  if (edge_thickness == 0) return;
+  /* TKP. This is bad, it will cause an XMap request on a null window later*/
+  /* if (edge_thickness == 0) return; */
+  saved_thickness = edge_thickness;
+  if (edge_thickness == 0) edge_thickness = 2;
 
   attributes.event_mask =  (EnterWindowMask | LeaveWindowMask |
 			    VisibilityChangeMask);
   valuemask=  (CWEventMask | CWCursor );
 
   attributes.cursor = Scr.FvwmCursors[TOP];
+  /* I know these overlap, it's useful when at (0,0) and the top one is unmapped */
   Scr.PanFrameTop.win =
     XCreateWindow (dpy, Scr.Root,
-		   0,0,
-		   Scr.MyDisplayWidth,edge_thickness,
+		   0, 0,
+		   Scr.MyDisplayWidth, edge_thickness,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly,
 		   CopyFromParent,
@@ -363,31 +402,31 @@ void initPanFrames()
   attributes.cursor = Scr.FvwmCursors[LEFT];
   Scr.PanFrameLeft.win =
     XCreateWindow (dpy, Scr.Root,
-		   0,edge_thickness,
-		   edge_thickness,
-		   Scr.MyDisplayHeight-2*edge_thickness,
+		   0, 0,
+		   edge_thickness, Scr.MyDisplayHeight,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
   attributes.cursor = Scr.FvwmCursors[RIGHT];
   Scr.PanFrameRight.win =
     XCreateWindow (dpy, Scr.Root,
-		   Scr.MyDisplayWidth-edge_thickness,edge_thickness,
-		   edge_thickness,
-		   Scr.MyDisplayHeight-2*edge_thickness,
+		   Scr.MyDisplayWidth - edge_thickness, 0,
+		   edge_thickness, Scr.MyDisplayHeight,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
   attributes.cursor = Scr.FvwmCursors[BOTTOM];
   Scr.PanFrameBottom.win =
     XCreateWindow (dpy, Scr.Root,
-		   0,Scr.MyDisplayHeight-edge_thickness,
-		   Scr.MyDisplayWidth,edge_thickness,
+		   0, Scr.MyDisplayHeight - edge_thickness,
+		   Scr.MyDisplayWidth, edge_thickness,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
   Scr.PanFrameTop.isMapped=Scr.PanFrameLeft.isMapped=
     Scr.PanFrameRight.isMapped= Scr.PanFrameBottom.isMapped=False;
+    
+  edge_thickness = saved_thickness;
 }
 
 
