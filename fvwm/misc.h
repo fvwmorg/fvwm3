@@ -441,7 +441,6 @@ void LoadWindowFont(F_CMD_ARGS);
 #ifdef BORDERSTYLE
 void SetBorderStyle(F_CMD_ARGS);
 #endif
-void OldMenuStyle(F_CMD_ARGS);
 void SetMenuStyle(F_CMD_ARGS);
 void SetTitleStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE

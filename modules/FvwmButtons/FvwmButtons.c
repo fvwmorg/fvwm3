@@ -704,6 +704,7 @@ void Loop(void)
   char buffer[10],*tmp,*act;
   int i,i2,button;
   button_info *ub,*b;
+  panel_info *ppi;
 #ifndef OLD_EXPOSE
   int ex=10000,ey=10000,ex2=0,ey2=0;
 #endif
@@ -910,7 +911,20 @@ void Loop(void)
 	  case ClientMessage:
 	    if(Event.xclient.format==32 &&
 	       Event.xclient.data.l[0]==_XA_WM_DEL_WIN)
-	      DeadPipe(1);
+	      {
+		for (ppi = MainPanel->next; ppi != NULL;
+		     ppi = ppi->next)
+		  {
+		    if (ppi->uber->IconWinParent == Event.xany.window)
+		      {
+			/* Only close the panel */
+			Slide(ppi, NULL);
+			break;
+		      }
+		  }
+		if (ppi == NULL)
+		  DeadPipe(1);
+	      }
 	    break;
 
 	  case PropertyNotify:

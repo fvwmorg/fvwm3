@@ -1,3 +1,33 @@
+1999-01-03  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1: Removed SetMenuStyle, updated MenuStyle (and others)
+
+	* fvwm/fvwm.c (SetRCDefaults): changed SetMenuStyle to MenuStyle
+
+	* fvwm/builtins.c (GetMenuStyleIndex): new function
+	(NewMenuStyle): This is the former SetMenuStyle
+	(SetMenuStyle): Wrapper to decide if a MenuStyle line has the old or
+	the new syntax. Dispatches a call to Old/NewMenuStyle
+	* fvwm/functions.c (func_config): removed SetMenuStyle command;
+	MenuStyle handles the old and the new syntax now
+	* fvwm/parse.h: removed F_SET_MENUSTYLE
+
+1999-01-02  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (SetMenuItemSelected): fixed slow XGetImage (?) Why does
+	fetching a XYPixmap take so long while ZPixmaps are grabbed instantly?
+
+	* fvwm/events.c (HandleButtonPress): removed unnecessary code
+
+	* fvwm/fvwm.h: switched context defines to hex (instead of decimal)
+
+	* fvwm/add_window.c (AddWindow): backed out a patch that caused a mouse
+	binding problem
+
+1998-12-31  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/events.c (My_XNextEvent): applied cleanup patch by Chris Rankin
+
 1998-12-30  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/menus.c (MakeMenu): fixed font-change bug with menus: If a menu

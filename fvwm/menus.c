@@ -1298,7 +1298,7 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
 	ih = mh - iy;
       /* grab image */
       mi->mr->stored_item.image = XGetImage(dpy, mi->mr->w, 0, iy, mw, ih,
-					    AllPlanes, XYPixmap);
+					    AllPlanes, ZPixmap);
       mi->mr->stored_item.y = iy;
     }
     else if (f == False && mi->mr->stored_item.image != None)

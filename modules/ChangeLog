@@ -1,3 +1,9 @@
+1999-01-02  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.c (Loop): Deleting panels doesn't delete
+	FvwmButtons anymore. Destroying a panel still kills it however (and it
+	is the right thing to do).
+
 1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/FvwmButtons.1:

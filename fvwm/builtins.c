@@ -1758,53 +1758,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
 }
 
 
-void OldMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		  unsigned long context, char *action,int* Module)
-{
-  char *buffer, *rest;
-  int i = 0;
-  char *fore, *back, *stipple, *font, *style, *animated;
-
-  rest = GetNextToken(action,&fore);
-  rest = GetNextToken(rest,&back);
-  rest = GetNextToken(rest,&stipple);
-  rest = GetNextToken(rest,&font);
-  rest = GetNextToken(rest,&style);
-  rest = GetNextToken(rest,&animated);
-
-  if(!fore || !back || !stipple || !font || !style)
-    {
-      fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification", action);
-    }
-  else
-    {
-      buffer = (char *)safemalloc(strlen(action) + 100);
-      sprintf(buffer,
-	      "* %s, Foreground %s, Background %s, Greyed %s, Font %s, %s",
-	      style, fore, back, stipple, font,
-	      (animated != NULL && StrEquals(animated, "anim")) ?
-	        "Animation" : "AnimationOff");
-      SetMenuStyle(eventp, w, tmp_win, context, buffer, Module);
-      free(buffer);
-    }
-
-  if(fore != NULL)
-    free(fore);
-  if(back != NULL)
-    free(back);
-  if(stipple != NULL)
-    free(stipple);
-  if(font != NULL)
-    free(font);
-  if(style != NULL)
-    free(style);
-  if(animated != NULL)
-    free(animated);
-}
-
-
-void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module)
+static int GetMenuStyleIndex(char *option)
 {
   char *optlist[] = {
     "fvwm", "mwm", "win",
@@ -1824,6 +1778,12 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     "DoubleClickTime",
     NULL
   };
+  return GetTokenIndex(option, optlist, 0, NULL);
+}
+
+static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		     unsigned long context, char *action,int* Module)
+{
   char *name;
   char *option = NULL;
   char *optstring = NULL;
@@ -1845,7 +1805,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   action = GetNextToken(action, &name);
   if (!name)
     {
-      fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification",action);
+      fvwm_msg(ERR,"NewMenuStyle", "error in %s style specification",action);
       return;
     }
 
@@ -1898,7 +1858,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  nextarg = GetNextToken(args, &arg1);
 	}
 
-      switch((i = GetTokenIndex(option, optlist, 0, NULL)))
+      switch((i = GetMenuStyleIndex(option)))
       {
       case 0: /* fvwm */
       case 1: /* mwm */
@@ -2053,7 +2013,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       case 15: /* Font */
 	if (arg1 != NULL && (xfs = GetFontOrFixed(dpy, arg1)) == NULL)
 	  {
-	    fvwm_msg(ERR,"SetMenuStyle",
+	    fvwm_msg(ERR,"NewMenuStyle",
 		     "Couldn't load font '%s' or 'fixed'\n", arg1);
 	    break;
 	  }
@@ -2089,7 +2049,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  Scr.menus.PopupDelay10ms = (*val+9)/10;
 	if (!is_default_style)
 	{
-	  fvwm_msg(WARN, "SetMenuStyle",
+	  fvwm_msg(WARN, "NewMenuStyle",
 		   "PopupDelay applied to style '%s' will affect all menus",
 		   tmpms->name);
 	}
@@ -2098,7 +2058,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       case 18: /* PopupOffset */
 	if ((n = GetIntegerArguments(args, NULL, val, 2)) == 0)
 	  {
-	    fvwm_msg(ERR,"SetMenuStyle",
+	    fvwm_msg(ERR,"NewMenuStyle",
 		     "PopupOffset requires one or two arguments");
 	  }
 	else
@@ -2162,8 +2122,8 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  Scr.menus.DoubleClickTime = *val;
 	if (!is_default_style)
 	{
-	  fvwm_msg(WARN, "SetMenuStyle",
-		   "DoubleClickTime applied to style '%s' will affect all menus",
+	  fvwm_msg(WARN, "NewMenuStyle",
+		   "DoubleClickTime for style '%s' will affect all menus",
 		   tmpms->name);
 	}
 	break;
@@ -2174,7 +2134,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif
 
       default:
-	fvwm_msg(ERR,"SetMenuStyle", "unknown option '%s'", option);
+	fvwm_msg(ERR,"NewMenuStyle", "unknown option '%s'", option);
 	break;
       } /* switch */
 
@@ -2224,6 +2184,69 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   return;
 }
+
+static void OldMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		  unsigned long context, char *action,int* Module)
+{
+  char *buffer, *rest;
+  int i = 0;
+  char *fore, *back, *stipple, *font, *style, *animated;
+
+  rest = GetNextToken(action,&fore);
+  rest = GetNextToken(rest,&back);
+  rest = GetNextToken(rest,&stipple);
+  rest = GetNextToken(rest,&font);
+  rest = GetNextToken(rest,&style);
+  rest = GetNextToken(rest,&animated);
+
+  if(!fore || !back || !stipple || !font || !style)
+    {
+      fvwm_msg(ERR,"OldMenuStyle", "error in %s style specification", action);
+    }
+  else
+    {
+      buffer = (char *)safemalloc(strlen(action) + 100);
+      sprintf(buffer,
+	      "* %s, Foreground %s, Background %s, Greyed %s, Font %s, %s",
+	      style, fore, back, stipple, font,
+	      (animated != NULL && StrEquals(animated, "anim")) ?
+	        "Animation" : "AnimationOff");
+      NewMenuStyle(eventp, w, tmp_win, context, buffer, Module);
+      free(buffer);
+    }
+
+  if(fore != NULL)
+    free(fore);
+  if(back != NULL)
+    free(back);
+  if(stipple != NULL)
+    free(stipple);
+  if(font != NULL)
+    free(font);
+  if(style != NULL)
+    free(style);
+  if(animated != NULL)
+    free(animated);
+}
+
+
+void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		  unsigned long context, char *action,int* Module)
+{
+  char *option;
+  char *rest;
+  int i;
+
+  GetNextOption(SkipNTokens(action, 1), &option);
+  if (option == NULL || GetMenuStyleIndex(option) != -1)
+    NewMenuStyle(eventp, w, tmp_win, context, action, Module);
+  else
+    OldMenuStyle(eventp, w, tmp_win, context, action, Module);
+  if (option)
+    free(option);
+  return;
+}
+
 
 void ChangeMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                   unsigned long context, char *action,int* Module)
@@ -4699,7 +4722,7 @@ void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
       Scr.go.ActivePlacementHonorsStartsOnPage = False;
     }
     else
-      fvwm_msg(ERR,"GlobalOpts","Unknown Global Option '%s'",opt);
+      fvwm_msg(ERR,"SetGlobalOptions","Unknown Global Option '%s'",opt);
     if (opt) /* should never be null, but checking anyways... */
       free(opt);
   }

@@ -715,19 +715,22 @@ FvwmWindow *AddWindow(Window w)
     {
      /* need to grab all buttons for window that we are about to
        * unhighlight */
-      for(i=0;i<3;i++)
+      for(i=1;i<=3;i++)
 	if(Scr.buttons2grab & (1<<i))
 	  {
 #if 0
-	    XGrabButton(dpy,(i+1),0,tmp_win->frame,True,
+	    XGrabButton(dpy,(i),0,tmp_win->frame,True,
 			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
 			Scr.FvwmCursors[SYS]);
-	    XGrabButton(dpy,(i+1),LockMask,tmp_win->frame,True,
+	    XGrabButton(dpy,(i),LockMask,tmp_win->frame,True,
 			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
 			Scr.FvwmCursors[SYS]);
 #else
             /* should we accept any modifier on this button? */
-	    XGrabButton(dpy,(i+1),AnyModifier,tmp_win->frame,True,
+	    /* domivogt (2-Jan-1999): No. Or at least not like this. In the
+	     * present form no button presses go through to the title bar
+	     * anymore. They are all swallowed by the frame window. */
+	    XGrabButton(dpy,(i),AnyModifier,tmp_win->frame,True,
   			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
   			Scr.FvwmCursors[SYS]);
 #endif

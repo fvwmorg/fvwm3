@@ -698,7 +698,7 @@ void SetRCDefaults()
     "XORValue 0",
     "DefaultFont fixed",
     "DefaultColors black grey",
-    "SetMenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey",
+    "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey",
     "TitleStyle Centered -- Raised",
     "Style \"*\" Color lightgrey/dimgrey, Title",
     "Style \"*\" RandomPlacement, SmartPlacement",

@@ -1,5 +1,8 @@
 Changes in beta release 2.1.7 (December 1998)
 
+* The SetMenuStyle command does not exist anymore. Its functionality has been
+  merged with MenuStyle. MenuStyle supports the old and the new syntax.
+
 Changes in beta release 2.1.6 (December 1998)
 
 * Recapture is now much faster

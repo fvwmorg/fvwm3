@@ -200,12 +200,19 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   /* Since key presses and button presses are grabbed in the frame
    * when we have re-parented windows, we need to find out the real
    * window where the event occured */
+#if 0
+  /* domivogt (2-Jan-1999): Why were button presses treated differently here?
+   * Causes a bug with ClickToFocus. */
   if((e->type == KeyPress)&&(e->xkey.subwindow != None))
     *w = e->xkey.subwindow;
 
   if((e->type == ButtonPress)&&(e->xbutton.subwindow != None)&&
      ((e->xbutton.subwindow == t->w)||(e->xbutton.subwindow == t->Parent)))
     *w = e->xbutton.subwindow;
+#else
+  if(e->xkey.subwindow != None)
+    *w = e->xkey.subwindow;
+#endif
 
   if (*w == Scr.Root)
     Context = C_ROOT;
@@ -1056,35 +1063,31 @@ void HandleButtonPress()
      ((Event.xbutton.state&
        (ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask)) == 0))
   {
-    if(Tmp_win)
-    {
-      SetFocus(Tmp_win->w,Tmp_win,1);
+    SetFocus(Tmp_win->w,Tmp_win,1);
 /* #ifdef CLICKY_MODE_1 */
-      if (Scr.ClickToFocusRaises ||
-          ((Event.xany.window != Tmp_win->w)&&
-           (Event.xbutton.subwindow != Tmp_win->w)&&
-           (Event.xany.window != Tmp_win->Parent)&&
-           (Event.xbutton.subwindow != Tmp_win->Parent)))
+    if (Scr.ClickToFocusRaises ||
+	((Event.xany.window != Tmp_win->w)&&
+	 (Event.xbutton.subwindow != Tmp_win->w)&&
+	 (Event.xany.window != Tmp_win->Parent)&&
+	 (Event.xbutton.subwindow != Tmp_win->Parent)))
 /* #endif */
-      {
-        RaiseWindow(Tmp_win);
-      }
+    {
+      RaiseWindow(Tmp_win);
+    }
 
-      KeepOnTop();
-
-      /* Why is this here? Seems to cause breakage with
-       * non-focusing windows! */
-      if(!(Tmp_win->flags & ICONIFIED))
-      {
-        XSync(dpy,0);
-        /* pass click event to just clicked to focus window? */
-        if (Scr.ClickToFocusPassesClick)
-          XAllowEvents(dpy,ReplayPointer,CurrentTime);
-        else /* don't pass click to just focused window */
-          XAllowEvents(dpy,AsyncPointer,CurrentTime);
-        XSync(dpy,0);
-        return;
-      }
+    KeepOnTop();
+    /* Why is this here? Seems to cause breakage with
+     * non-focusing windows! */
+    if(!(Tmp_win->flags & ICONIFIED))
+    {
+      XSync(dpy,0);
+      /* pass click event to just clicked to focus window? */
+      if (Scr.ClickToFocusPassesClick)
+	XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      else /* don't pass click to just focused window */
+	XAllowEvents(dpy,AsyncPointer,CurrentTime);
+      XSync(dpy,0);
+      return;
     }
   }
   else if ((Tmp_win) && !(Tmp_win->flags & ClickToFocus) &&
@@ -1494,8 +1497,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   extern int fd_width, x_fd;
   fd_set in_fdset,out_fdset;
   Window targetWindow;
-  int i,count;
-  int retval;
+  int i;
 
   DBUG("My_XNextEvent","Routine Entered");
 
@@ -1526,10 +1528,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	{
 	  FD_SET(readPipes[i], &in_fdset);
 	}
-    }
-
-  for(i=0; i<npipes; i++)
-    {
       if(pipeQueue[i]!= NULL)
 	{
 	  FD_SET(writePipes[i], &out_fdset);
@@ -1539,25 +1537,25 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   DBUG("My_XNextEvent","waiting for module input/output");
   XFlush(dpy);
 #ifdef __hpux
-  retval=select(fd_width,(int *)&in_fdset, (int *)&out_fdset,0, NULL);
+  if (select(fd_width,(int *)&in_fdset, (int *)&out_fdset,0, NULL) > 0)
 #else
-  retval=select(fd_width,&in_fdset, &out_fdset, 0, NULL);
+  if (select(fd_width,&in_fdset, &out_fdset, 0, NULL) > 0)
 #endif
+  {
 
   /* Check for module input. */
   for(i=0;i<npipes;i++)
     {
       if(readPipes[i] >= 0)
 	{
-	  if((retval>0)&&(FD_ISSET(readPipes[i], &in_fdset)))
+	  if(FD_ISSET(readPipes[i], &in_fdset))
 	    {
-	      if((count =
-		  read(readPipes[i],&targetWindow, sizeof(Window))) >0)
+	      if( read(readPipes[i],&targetWindow, sizeof(Window)) >0 )
 		{
                   DBUG("My_XNextEvent","calling HandleModuleInput");
 		  HandleModuleInput(targetWindow,i);
 		}
-	      if(count <= 0)
+              else
 		{
                   DBUG("My_XNextEvent","calling KillModule");
 		  KillModule(i,10);
@@ -1566,13 +1564,14 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	}
       if(writePipes[i] >= 0)
 	{
-	  if((retval>0)&&(FD_ISSET(writePipes[i], &out_fdset)))
+	  if(FD_ISSET(writePipes[i], &out_fdset))
 	    {
               DBUG("My_XNextEvent","calling FlushQueue");
 	      FlushQueue(i);
 	    }
 	}
-    }
+    } /* for */
+  }
   DBUG("My_XNextEvent","leaving My_XNextEvent");
   return 0;
 }

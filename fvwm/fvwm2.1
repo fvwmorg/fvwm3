@@ -1089,7 +1089,7 @@ specified. To reset the default font to the built in default, omit
 the argument. The default font is used for menus, window titles,
 icon titles as well as the geometry feedback windows during a move
 or resize operation. To override the default font in a specific
-context, use the \fIWindowFont\fP, \fIIconFont\fP or \fISetMenuStyle\fP
+context, use the \fIWindowFont\fP, \fIIconFont\fP or \fIMenuStyle\fP
 commands.
 
 
@@ -1481,7 +1481,7 @@ drag action, the menu will stay up.  The command
 (or hits the key rapidly twice if the menu is bound to a key) when
 bringing the menu up.
 
-Several other commands affect menu operation.  See \fISetMenuStyle\fP
+Several other commands affect menu operation.  See \fIMenuStyle\fP
 and \fISetAnimation\fP.  When in a menu, keyboard
 shortcuts work as expected.  Cursor keystrokes are also allowed.
 Specifically, Cursor-Down, Ctrl-N, and Ctrl-J all move to the next
@@ -1624,9 +1624,183 @@ Note that the \fIspecial-options\fP do work with a normal menu that has
 no other position arguments.
 .in -.5i
 
-.IP "MenuStyle \fIforecolor backcolor shadecolor font style anim\fP"
-This command is obsolete. The new \fISetMenuStyle\fP should be used
-instead.
+.IP "MenuStyle \fIstylename options\fP"
+Sets a new menu style or changes a previously defined style.
+The \fIstylename\fP is the style name; if it contains spaces or tabs it
+has to be quoted. The name "*" is reserved for the default menu style.
+The default menu style is used for every menu-like object (e.g. the
+window created by the \fIWindowList\fP command) that had not be assigned
+a style using the \fIChangeMenuStyle\fP. See also \fIDestroyMenuStyle\fP.
+When using monochrome color options are ignored.
+
+\fIoptions\fP is a comma separated list containing some of the
+keywords FVWM/MWM/WIN,
+Foreground,
+Background,
+Greyed,
+HilightBack/HilightBackOff,
+ActiveFore/ActiveForeOff,
+Hilight3DThick/Hilight3DThin/Hilight3DOff,
+Animation/AnimationOff,
+Font,
+MenuFace,
+PopupDelay,
+PopupOffset,
+TitleWarp/TitleWarpOff,
+TitleUnderlines0/TitleUnderlines1/TitleUnderlines2,
+SeparatorsLong/SeparatorsShort,
+TrianglesSolid/TrianglesRelief,
+PrepopMenus/PrepopMenusOff,
+DoubleClickTime.
+
+In the above list some options are listed as option pairs or triples
+with a / in between. These options exclude each other.
+
+\fIFVWM\fP, \fIMWM\fP, \fIWIN\fP reset all options to the style with
+the same name in former versions of fvwm2. The default for new menu
+styles is FVWM style. These options override all others except
+Foreground, Background, Greyed, HilightBack, HilightFore and
+PopupDelay, so they should be used only as the first option
+specified for a menu style or to reset the style to defined bahavior.
+The same effect can be created by setting all the other options one
+by one.
+
+\fIMWM\fP and \fIWIN\fP style menus popup sub-menus automatically.
+WIN menus indicate the current menu item by changing the
+background to dark. \fIFVWM\fP sub-menus overlap the parent menu,
+MWM and WIN style menus never overlap the parent menu.
+
+\fIFVWM\fP style is equivalent to HilightBackOff, Hilight3DThin,
+ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
+TitleUnderlines1, SeparatorsShort, TriangleRelief, PrepopMenusOff.
+
+\fIMWM\fP style is equivalent to HilightBackOff, Hilight3DThick,
+ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
+TitleWarpOff, TitleUnderlines2, SeparatorsLong, TriangleRelief,
+PrepopMenus.
+
+\fIWIN\fP style is equivalent to HilightBack, Hilight3DOff,
+ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
+TitleWarpOff, TitleUnderlines1, SeparatorsShort, TriangleSolid,
+PrepopMenus.
+
+\fIForeground\fP and \fIBackground\fP may have a color name as an
+argument. This color is used for menu text or the menu's background.
+You can omit the color name to reset these colors to the built in default.
+
+\fIGreyed\fP may have a color name as an argument. This color is the
+one used to draw a menu-selection which is prohibited (or not
+recommended) by the mwm-hints which an application has specified.
+If the color is omitted the color of "greyed" menu entries is based
+on the background color of the menu.
+
+\fIHilightBack\fP and \fIHilightBackOff\fP switch hilighting the background
+of the selected menu item on and off. A specific background color
+may be used by providing the color name as an argument to
+\fIHilightBack\fP. If you use this option without an argument the
+color is based on the menu's background color.
+
+\fIActiveFore\fP and \fIActiveForeOff\fP switch hilighting the foreground
+of the selected menu item on and off. A specific foreground color
+may be used by providing the color name as an argument to
+ActiveFore. Omitting the color name has the same effet as
+using ActiveForeOff.
+
+\fIHilight3DThick\fP, \fIHilight3DThin\fP and \fIHilight3DOff\fP
+determine if the selected menu item is hilighted with a 3D relief.
+Thick reliefs are two pixels wide, thin reliefs are one pixel wide.
+
+\fIAnimation\fP and \fIAnimationOff\fP turn menu animation on or off.
+When animation is on, sub-menus that don't fit on the screen cause
+the parent menu to be shifted to the left so the sub-menu can be seen.
+
+\fIFont\fP takes a font name as an argument. If a font by this name
+exists it is used for the text of all menu items. If it does not
+exist or if the name is left blank the built in default is used.
+
+\fIMenuFace\fP enforces a fancy background upon the menus. You can
+use the same options for MenuFace as for ButtonStyle plus DGradient,
+(top-left to down-right) and BGradient (down-left to top-right). See
+\fIButtonStyle\fP for more info. If you use MenuFace without arguments
+the style is reverted back to normal.
+
+Some examples of MenuFaces are:
+
+.EX
+MenuFace DGradient 128 2 lightgrey 50 blue 50 white
+MenuFace TiledPixmap texture10.xpm
+MenuFace HGradient 128 2 Red 40 Maroon 60 White
+MenuFace Solid Maroon
+.EE
+
+\fIPopupDelay\fP requires one numeric argument. This value is the
+delay in milliseconds before a sub-menu is popped up when the
+pointer moves over a menu item that has a sub-menu. If the value
+is zero no automatical pop up is done. If the argument is omitted
+the built in default is used. Note that the popup delay has no
+effect if the \fIPrepopMenus\fP option is used since sub-menus pop
+up immediately then.
+
+\fIPrepopMenus\fP and \fIPrepopMenusOff\fP turn prepop menus on and
+off (see PopupDelay)
+
+\fIPopupOffset\fP requires two integer arguments. Both values affect
+where sub-menus are placed relative to the parent menu. If both
+values are zero, the left edge of the sub-menu overlaps the left edge
+of the parent menu. If the first value is non-zero the sub-menu is
+shifted that many pixels to the right (or left if negative). If the
+second value is non-zero the menu is moved by that many percent of
+the parent menu's width to the right or left.
+
+\fITitleWarp\fP and \fITitleWarpOff\fP affect if the pointer warps to
+the menu title when a sub-menu is opened or not. Not that regardless of
+this setting the pointer will not be warped if the menu does not pop up
+under the pointer.
+
+\fITitleUnderlines0\fP, \fITitleUnderlines1\fP and \fITitleUnderlines2\fP
+specify how many lines are drawn below a menu title.
+
+\fISeparatorsLong\fP and \fISeparatorsShort\fP set the length of
+menu separators. Long separators run from the left edge all the
+way to the right edge. Short separators leave a few pixels to
+the edges of the menu.
+
+\fITrianglesSolid\fP and \fITrianglesRelief\fP affect how the
+small triangles for sub-menus is drawn. Solid triangles are
+filled with a color while relief triangles are hollow.
+
+\fIDoubleClickTime\fP requires one numeric argument. This value is the
+time in milliseconds between two mouse clicks in a menu to be
+considered as a double click. The default is 450 milliseconds.
+If the argument is omitted the doucle click time is reset to this
+default.
+
+Examples:
+
+.EX
+MenuStyle * mwm
+MenuStyle * Foreground Black, Background gray40
+MenuStyle * Greyed gray70, ActiveFore White
+MenuStyle * HilightBackOff, Hilight3DOff
+MenuStyle * Font lucidasanstypewriter-14
+MenuStyle * MenuFace DGradient 64 darkgray MidnightBlue
+
+MenuStyle gred mwm
+MenuStyle gred Foreground Yellow, Background Maroon
+MenuStyle gred Greyed Red, ActiveFore Red
+MenuStyle gred HilightBackOff, Hilight3DOff
+MenuStyle gred Font lucidasanstypewriter-12
+MenuStyle gred MenuFace DGradient 64 Red Black
+.EE
+
+Note that all style options could be placed on a single line for each
+style name.
+
+
+.IP "MenuStyle \fIforecolor backcolor shadecolor font style\fP [ \fIanim\fP ]"
+This is the old syntax of the MenuStyle command. It is obsolete and
+may be removed in the future. Please use the new syntax as described
+above.
 
 Sets the menu style.  When using monochrome the colors are ignored.
 The shade-color is the one used to draw a menu-selection which is
@@ -1647,7 +1821,7 @@ The "anim" option is either "anim" or blank.  When this option
 is "anim", sub-menus that don't fit on the screen cause the parent menu
 to be shifted to the left so the sub-menu can be seen.
 
-See also the \fISetMenuStyle\fP and \fISetAnimation\fP commands.
+See also \fISetAnimation\fP command.
 
 .IP "Module \fIModuleName\fP"
 Specifies a module which should be spawned during initialization.  At
@@ -2026,179 +2200,6 @@ with the FvwmM4 module; e.g.  "SetEnv height HEIGHT" will make the FvwmM4-set
 variable "HEIGHT" usable by processes started by fvwm2 as the environment
 variable "$height".  If \fIstringvalue\fP includes whitespace, you should
 enclose it in quotes.
-
-
-.IP "SetMenuStyle \fIstylename options\fP"
-Sets a new menu style or changes a previously defined style.
-The \fIstylename\fP is the style name; if it contains spaces or tabs it
-has to be quoted. The name "*" is reserved for the default menu style.
-The default menu style is used for every menu-like object (e.g. the
-window created by the \fIWindowList\fP command) that had not be assigned
-a style using the \fIChangeMenuStyle\fP. See also \fIDestroyMenuStyle\fP.
-When using monochrome color options are ignored.
-
-\fIoptions\fP is a comma separated list containing some of the
-keywords FVWM/MWM/WIN,
-Foreground,
-Background,
-Greyed,
-HilightBack/HilightBackOff,
-ActiveFore/ActiveForeOff,
-Hilight3DThick/Hilight3DThin/Hilight3DOff,
-Animation/AnimationOff,
-Font,
-MenuFace,
-PopupDelay,
-PopupOffset,
-TitleWarp/TitleWarpOff,
-TitleUnderlines0/TitleUnderlines1/TitleUnderlines2,
-SeparatorsLong/SeparatorsShort,
-TrianglesSolid/TrianglesRelief,
-PrepopMenus/PrepopMenusOff,
-DoubleClickTime.
-
-In the above list some options are listed as option pairs or triples
-with a / in between. These options exclude each other.
-
-\fIFVWM\fP, \fIMWM\fP, \fIWIN\fP reset all options to the style with
-the same name in former versions of fvwm2. The default for new menu
-styles is FVWM style. These options override all others except
-Foreground, Background, Greyed, HilightBack, HilightFore and
-PopupDelay, so they should be used only as the first option
-specified for a menu style or to reset the style to defined bahavior.
-The same effect can be created by setting all the other options one
-by one.
-
-\fIMWM\fP and \fIWIN\fP style menus popup sub-menus automatically.
-WIN menus indicate the current menu item by changing the
-background to dark. \fIFVWM\fP sub-menus overlap the parent menu,
-MWM and WIN style menus never overlap the parent menu.
-
-\fIFVWM\fP style is equivalent to HilightBackOff, Hilight3DThin,
-ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
-TitleUnderlines1, SeparatorsShort, TriangleRelief, PrepopMenusOff.
-
-\fIMWM\fP style is equivalent to HilightBackOff, Hilight3DThick,
-ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
-TitleWarpOff, TitleUnderlines2, SeparatorsLong, TriangleRelief,
-PrepopMenus.
-
-\fIWIN\fP style is equivalent to HilightBack, Hilight3DOff,
-ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
-TitleWarpOff, TitleUnderlines1, SeparatorsShort, TriangleSolid,
-PrepopMenus.
-
-\fIForeground\fP and \fIBackground\fP may have a color name as an
-argument. This color is used for menu text or the menu's background.
-You can omit the color name to reset these colors to the built in default.
-
-\fIGreyed\fP may have a color name as an argument. This color is the
-one used to draw a menu-selection which is prohibited (or not
-recommended) by the mwm-hints which an application has specified.
-If the color is omitted the color of "greyed" menu entries is based
-on the background color of the menu.
-
-\fIHilightBack\fP and \fIHilightBackOff\fP switch hilighting the background
-of the selected menu item on and off. A specific background color
-may be used by providing the color name as an argument to
-\fIHilightBack\fP. If you use this option without an argument the
-color is based on the menu's background color.
-
-\fIActiveFore\fP and \fIActiveForeOff\fP switch hilighting the foreground
-of the selected menu item on and off. A specific foreground color
-may be used by providing the color name as an argument to
-ActiveFore. Omitting the color name has the same effet as
-using ActiveForeOff.
-
-\fIHilight3DThick\fP, \fIHilight3DThin\fP and \fIHilight3DOff\fP
-determine if the selected menu item is hilighted with a 3D relief.
-Thick reliefs are two pixels wide, thin reliefs are one pixel wide.
-
-\fIAnimation\fP and \fIAnimationOff\fP turn menu animation on or off.
-When animation is on, sub-menus that don't fit on the screen cause
-the parent menu to be shifted to the left so the sub-menu can be seen.
-
-\fIFont\fP takes a font name as an argument. If a font by this name
-exists it is used for the text of all menu items. If it does not
-exist or if the name is left blank the built in default is used.
-
-\fIMenuFace\fP enforces a fancy background upon the menus. You can
-use the same options for MenuFace as for ButtonStyle plus DGradient,
-(top-left to down-right) and BGradient (down-left to top-right). See
-\fIButtonStyle\fP for more info. If you use MenuFace without arguments
-the style is reverted back to normal.
-
-Some examples of MenuFaces are:
-
-.EX
-MenuFace DGradient 128 2 lightgrey 50 blue 50 white
-MenuFace TiledPixmap texture10.xpm
-MenuFace HGradient 128 2 Red 40 Maroon 60 White
-MenuFace Solid Maroon
-.EE
-
-\fIPopupDelay\fP requires one numeric argument. This value is the
-delay in milliseconds before a sub-menu is popped up when the
-pointer moves over a menu item that has a sub-menu. If the value
-is zero no automatical pop up is done. If the argument is omitted
-the built in default is used. Note that the popup delay has no
-effect if the \fIPrepopMenus\fP option is used since sub-menus pop
-up immediately then.
-
-\fIPrepopMenus\fP and \fIPrepopMenusOff\fP turn prepop menus on and
-off (see PopupDelay)
-
-\fIPopupOffset\fP requires two integer arguments. Both values affect
-where sub-menus are placed relative to the parent menu. If both
-values are zero, the left edge of the sub-menu overlaps the left edge
-of the parent menu. If the first value is non-zero the sub-menu is
-shifted that many pixels to the right (or left if negative). If the
-second value is non-zero the menu is moved by that many percent of
-the parent menu's width to the right or left.
-
-\fITitleWarp\fP and \fITitleWarpOff\fP affect if the pointer warps to
-the menu title when a sub-menu is opened or not. Not that regardless of
-this setting the pointer will not be warped if the menu does not pop up
-under the pointer.
-
-\fITitleUnderlines0\fP, \fITitleUnderlines1\fP and \fITitleUnderlines2\fP
-specify how many lines are drawn below a menu title.
-
-\fISeparatorsLong\fP and \fISeparatorsShort\fP set the length of
-menu separators. Long separators run from the left edge all the
-way to the right edge. Short separators leave a few pixels to
-the edges of the menu.
-
-\fITrianglesSolid\fP and \fITrianglesRelief\fP affect how the
-small triangles for sub-menus is drawn. Solid triangles are
-filled with a color while relief triangles are hollow.
-
-\fIDoubleClickTime\fP requires one numeric argument. This value is the
-time in milliseconds between two mouse clicks in a menu to be
-considered as a double click. The default is 450 milliseconds.
-If the argument is omitted the doucle click time is reset to this
-default.
-
-Examples:
-
-.EX
-SetMenuStyle * mwm
-SetMenuStyle * Foreground Black, Background gray40
-SetMenuStyle * Greyed gray70, ActiveFore White
-SetMenuStyle * HilightBackOff, Hilight3DOff
-SetMenuStyle * Font lucidasanstypewriter-14
-SetMenuStyle * MenuFace DGradient 64 darkgray MidnightBlue
-
-SetMenuStyle gred mwm
-SetMenuStyle gred Foreground Yellow, Background Maroon
-SetMenuStyle gred Greyed Red, ActiveFore Red
-SetMenuStyle gred HilightBackOff, Hilight3DOff
-SetMenuStyle gred Font lucidasanstypewriter-12
-SetMenuStyle gred MenuFace DGradient 64 Red Black
-.EE
-
-Note that all style options could be placed on a single line for each
-style name.
 
 
 .IP "SnapAttraction \fIproximity behavior\fP"
