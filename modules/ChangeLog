@@ -1,3 +1,13 @@
+Mon May 17 21:35:54 1999  DanEspen  <dje@blue>
+
+	* FvwmBacker/FvwmBacker.c (ParseConfig): Use InitGetConfigLine to
+ 	reduce pipe traffic.
+
+	* FvwmAnimate/FvwmAnimate.c: Use InitGetConfigLine to reduce pipe
+ 	traffic.
+
+	* FvwmForm/FvwmForm.c: Use InitGetConfigLine to reduce pipe traffic.
+
 1999-05-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c: (RedrawWindow): fixed redrawing when

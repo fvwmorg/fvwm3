@@ -879,6 +879,7 @@ static void ParseOptions() {
   char *buf;
 
   myfprintf((stderr,"Reading options\n"));
+  InitGetConfigLine(Channel,MyName);
   while (GetConfigLine(Channel,&buf), buf != NULL) {
     ParseConfigLine(buf);
   } /* end config lines */

@@ -1,3 +1,11 @@
+Mon May 17 21:38:18 1999  DanEspen  <dje@blue>
+
+	* libs/Module.c (GetConfigLine): New function "InitGetConfigLine"
+	so module only gets config lines it wants.
+
+	* fvwm/modconf.c (SendDataToModule): If matching active, only send
+	matching config lines.
+
 1999-05-20  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/icons.c (CreateIconWindow): remove some code which

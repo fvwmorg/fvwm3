@@ -279,6 +279,7 @@ void ParseConfig()
 
   sprintf(line2,"*%sDesk",Module);
 
+  InitGetConfigLine(Fvwm_fd,line2);
   GetConfigLine(Fvwm_fd,&tline);
 
     while(tline != (char *)0)

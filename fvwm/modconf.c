@@ -175,7 +175,14 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   struct moduleInfoList *t;
   char *message, msg2[32];
+  char *match;                          /* matching criteria for module cmds */
+  int match_len;                        /* get length once for efficiency */
   char *ImagePath = GetImagePath();
+
+  GetNextToken(action, &match);
+  if (match) {
+    match_len = strlen(match);
+  }
 
   SendLook(*Module);
 
@@ -200,14 +207,14 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   sprintf(msg2,"MoveThreshold %d\n", Scr.MoveThreshold);
   SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
 
-  t = modlistroot;
-  while(t != NULL)
-  {
+  for (t = modlistroot; t != NULL; t = t->next) {
+    if (match && strncasecmp(t->data,match,match_len)) {
+      continue;
+    }
     SendName(*Module,M_CONFIG_INFO,0,0,0,t->data);
-    t = t->next;
   }
   SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
-
+  free(match);
 }
 
 char *make_look_packet()

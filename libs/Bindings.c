@@ -309,6 +309,7 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		   unsigned int contexts, unsigned int dead_modifiers,
 		   Bool fGrab)
 {
+  static int counter;
   /* remove unnecessary bits from dead_modifiers */
   dead_modifiers &= ~(binding->Modifier & dead_modifiers);
 
@@ -365,6 +366,10 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 {
   if (binding->Action == NULL)
     return;
+
+#if 0
+  dead_modifiers &= ~(binding->Modifier & dead_modifiers); /* dje */
+#endif
 
   if((binding->Context & contexts) && (binding->type == MOUSE_BINDING))
     {

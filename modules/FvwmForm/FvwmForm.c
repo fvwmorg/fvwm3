@@ -624,9 +624,9 @@ static void ReadFormData() {
   char *line_buf;                       /* ptr to curr config line */
   char cmd_buffer[200];
   sprintf(cmd_buffer,"read %s Quiet",CF.file_to_read);
-  SendText(Channel,cmd_buffer,0); /* read data */
-  leading_len = strlen(CF.leading);    /* is this right? dje */
-  SendInfo(Channel,"Send_ConfigInfo",0); /* ask for the config */
+  SendText(Channel,cmd_buffer,0);       /* read data */
+  leading_len = strlen(CF.leading);
+  InitGetConfigLine(Channel, CF.leading); /* ask for certain lines */
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* while there is some */
     if (strncasecmp(line_buf, CF.leading, leading_len) == 0) { /* leading = */
       if (line_buf[strlen(line_buf)-1] == '\n') { /* if line ends with nl */
@@ -822,6 +822,7 @@ static void ReadDefaults ()
     * The customization dialog sends "*FvwmFormDefaultRead n"
     * to start over.
     */
+  InitGetConfigLine(Channel,"*FvwmFormDefault");
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
     ParseDefaults(line_buf);             /* process default config lines 1st */
   }
@@ -831,8 +832,8 @@ static void ReadDefaults ()
   } /* end defaults read already */
   SendText(Channel,"read .FvwmForm Quiet",0); /* read default config */
   SendText(Channel,"*FvwmFormDefaultRead y",0); /* remember you read it */
-  SendInfo(Channel,"Send_ConfigInfo",0); /* trick it into another serving */
 
+  InitGetConfigLine(Channel,"*FvwmFormDefault");
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
     ParseDefaults(line_buf);             /* process default config lines 1st */
   }
@@ -841,8 +842,9 @@ static void ReadDefaults ()
 static void ReadConfig ()
 {
   char *line_buf;                       /* ptr to curr config line */
+  char buffer[200];
 
-  SendInfo(Channel,"Send_ConfigInfo",0); /* trick it into a second serving */
+  InitGetConfigLine(Channel,MyName);
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
     ParseConfigLine(line_buf);          /* process config lines */
   }

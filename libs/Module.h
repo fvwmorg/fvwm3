@@ -112,9 +112,9 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body);
 
 
 /*
-** Called if the pipe is no longer open  
+** Called if the pipe is no longer open
 */
-extern void DeadPipe(int nonsense);  
+extern void DeadPipe(int nonsense);
 
 /************************************************************************
  *
@@ -134,7 +134,11 @@ void SendText(int *fd,char *message,unsigned long window);
  **************************************************************************/
 void SetMessageMask(int *fd, unsigned long mask);
 
-
+/*
+ * Used to ask for subset of module configuration lines.
+ * Allows modules to get configuration lines more than once.
+ */
+void InitGetConfigLine(int *fd, char *match);
 /**
  * Gets a module configuration line from fvwm. Returns NULL if there are
  * no more lines to be had. "line" is a pointer to a char *.

@@ -128,6 +128,19 @@ void SetMessageMask(int *fd, unsigned long mask)
   SendText(fd,set_mask_mesg,0);
 }
 
+/*
+ * Optional routine that sets the matching criteria for config lines
+ * that should be sent to a module by way of the GetConfigLine function.
+ *
+ * If this routine is not called, all module config lines are sent.
+ */
+static int first_pass = 1;
+void InitGetConfigLine(int *fd,char *match) {
+  char buffer[200];
+  first_pass = 0;                       /* make sure get wont do this */
+  sprintf(buffer,"Send_ConfigInfo %s",match);
+  SendInfo(fd,buffer,0);
+}
 /***************************************************************************
  * Gets a module configuration line from fvwm. Returns NULL if there are
  * no more lines to be had. "line" is a pointer to a char *.
@@ -140,7 +153,6 @@ void SetMessageMask(int *fd, unsigned long mask)
  **************************************************************************/
 void GetConfigLine(int *fd, char **tline)
 {
-  static int first_pass = 1;
   int count,done = 0;
   int body_size;
   static char *line = NULL;
