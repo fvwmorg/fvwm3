@@ -380,6 +380,12 @@ Suggested changes to your configuration file:
  - "HilightColor fore/back" becomes
    "Style * Hilightfore fore, HilightBack back"
 
+ - "HilightColorset colorset" becomes
+   "Style * HilightColorset colorset"
+
+ - "WindowShadeAnimate steps" becomes
+   "Style * WindowShadeSteps steps"
+
  - "WindowFont font" becomes
    "Style * Font font"
 

@@ -1,3 +1,10 @@
+2001-03-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm24_convert.in (line):
+	fixed HilightColor conversion
+	added HilightColorset conversion
+	convert WindowShadeAnimate command
+
 2001-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm24_convert.in (line):

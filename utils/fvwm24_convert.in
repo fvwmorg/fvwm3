@@ -112,7 +112,7 @@ line: while ( <IN> ) {
     next line;
   }
 
-  if (/^[ \t]*HILIGHTCOLOR/i) {
+  if (/^[ \t]*HILIGHTCOLOR\s/i) {
     @colors = split("/", $Fld[2], 9999);
     if ($colors[2] eq '') {
       $colors[1] = $Fld[2];
@@ -120,6 +120,16 @@ line: while ( <IN> ) {
     }
     print "Style \"*\" Hilightfore " . $colors[1] . ', HilightBack ' .
       $colors[2];
+    next line;
+  }
+
+  if (/^[ \t]*HILIGHTCOLORSET/i) {
+    print "Style \"*\" HilightColorset " . $Fld[2];
+    next line;
+  }
+
+  if (/^[ \t]*WINDOWSHADEANIMATE/i) {
+    print "Style \"*\" WindowShadeSteps " . $Fld[2];
     next line;
   }
 
