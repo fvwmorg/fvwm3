@@ -2346,7 +2346,6 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
     return;
   }
 
-fprintf(stderr,"destroying menu %s\n", mr->name);
   /* free all items */
   mi = mr->first;
   while(mi != NULL)
