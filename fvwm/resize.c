@@ -45,7 +45,7 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
  * Starts a window resize operation
  *
  ****************************************************************************/
-void resize_window(F_CMD_ARGS);
+void resize_window(F_CMD_ARGS)
 {
   Bool finished = FALSE, done = FALSE, abort = FALSE;
   int x,y,delta_x,delta_y,stashed_x,stashed_y;

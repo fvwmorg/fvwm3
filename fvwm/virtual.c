@@ -35,7 +35,7 @@
 int edge_thickness = 2;
 int last_edge_thickness = 2;
 
-void setEdgeThickness(F_CMD_ARGS);
+void setEdgeThickness(F_CMD_ARGS)
 {
   int val, n;
 
@@ -705,7 +705,7 @@ int GetDeskNumber(char *action)
  * Move to a new desktop
  *
  *************************************************************************/
-void changeDesks_func(F_CMD_ARGS);
+void changeDesks_func(F_CMD_ARGS)
 {
   changeDesks(GetDeskNumber(action));
 }
@@ -817,49 +817,49 @@ void changeDesks(int desk)
  * Move a window to a new desktop
  *
  *************************************************************************/
-void changeWindowsDesk(F_CMD_ARGS);
+void changeWindowsDesk(F_CMD_ARGS)
 {
   int desk;
 
-  if (DeferExecution(eventp,&w,&t,&context,SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
     return;
 
-  if(t == NULL)
+  if(tmp_win == NULL)
     return;
 
   desk = GetDeskNumber(action);
-  if(desk == t->Desk)
+  if(desk == tmp_win->Desk)
     return;
 
   /*
     Set the window's desktop, and map or unmap it as needed.
   */
   /* Only change mapping for non-sticky windows */
-  if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
-     (!(t->flags & STICKY))&&(!(t->flags & ICON_UNMAPPED)))
+  if(!((tmp_win->flags & ICONIFIED)&&(tmp_win->flags & StickyIcon)) &&
+     (!(tmp_win->flags & STICKY))&&(!(tmp_win->flags & ICON_UNMAPPED)))
     {
-      if(t->Desk == Scr.CurrentDesk)
+      if(tmp_win->Desk == Scr.CurrentDesk)
 	{
-	  t->Desk = desk;
-	  UnmapIt(t);
+	  tmp_win->Desk = desk;
+	  UnmapIt(tmp_win);
 	}
       else if(desk == Scr.CurrentDesk)
 	{
-	  t->Desk = desk;
+	  tmp_win->Desk = desk;
 	  /* If its an icon, auto-place it */
-	  if(t->flags & ICONIFIED)
-	    AutoPlace(t);
-	  MapIt(t);
+	  if(tmp_win->flags & ICONIFIED)
+	    AutoPlace(tmp_win);
+	  MapIt(tmp_win);
 	}
       else
-	t->Desk = desk;
+	tmp_win->Desk = desk;
 
     }
-  BroadcastConfig(M_CONFIGURE_WINDOW,t);
+  BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
 }
 
 
-void scroll(F_CMD_ARGS);
+void scroll(F_CMD_ARGS)
 {
   int x,y;
   int val1, val2, val1_unit,val2_unit,n;
@@ -907,7 +907,7 @@ void scroll(F_CMD_ARGS);
   MoveViewport(x,y,True);
 }
 
-void goto_page_func(F_CMD_ARGS);
+void goto_page_func(F_CMD_ARGS)
 {
   int val[2], n, x, y;
 

@@ -279,17 +279,17 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   return;
 }
 
-void move_window(F_CMD_ARGS);
+void move_window(F_CMD_ARGS)
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,FALSE);
 }
 
-void animated_move_window(F_CMD_ARGS);
+void animated_move_window(F_CMD_ARGS)
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,TRUE,FALSE);
 }
 
-void move_window_to_page(F_CMD_ARGS);
+void move_window_to_page(F_CMD_ARGS)
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,TRUE);
 }

@@ -1,3 +1,10 @@
+1999-03-07  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/resize.c, fvwm/move.c, fvwm/virtual.c: Removed some extra ;'s
+	which belongs in a prototype, not the actual function declaration.
+	* fvwm/virtual.c (changeWindowsDesk): s/t/tmp_win/ .. since that's
+	what the function gets as argument.
+
 1999-03-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm2.1 (sub-menu): added description of 'Silent' function
