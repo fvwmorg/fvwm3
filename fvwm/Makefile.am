@@ -55,6 +55,7 @@ fvwm2_SOURCES = add_window.c			\
 	session.c				\
 	session.h				\
 	style.c					\
+	style.h					\
 	virtual.c				\
 	windows.c
 

@@ -30,9 +30,12 @@
 #include <unistd.h>
 
 #include "fvwm.h"
+#include "style.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
+
+static name_list *TheList = NULL; /* list of window names with attributes */
 
 static int Get_TBLR(char *, unsigned char *); /* prototype */
 static void AddToList(name_list *);     /* prototype */
@@ -81,12 +84,8 @@ static void AddToList(name_list *);     /* prototype */
 
 /* Process a style command.  First built up in a temp area.
    If valid, added to the list in a malloced area. */
-void ProcessNewStyle(XEvent *eventp,
-                     Window w,
-                     FvwmWindow *tmp_win,
-                     unsigned long context,
-                     char *text,
-                     int *Module)
+void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
+		     unsigned long context, char *text, int *Module)
 {
   char *line;
   char *restofline,*tmp;
@@ -831,7 +830,7 @@ void ProcessNewStyle(XEvent *eventp,
           if (len > 0) {
 	    int hit = 0;
 	    /* changed to accum multiple Style definitions (veliaa@rpi.edu) */
-            for ( nptr = Scr.TheList; nptr; nptr = nptr->next ) {
+            for ( nptr = TheList; nptr; nptr = nptr->next ) {
               if (!strncasecmp(restofline,nptr->name,len)) { /* match style */
                 if (!hit) {             /* first match */
 		  char *save_name;
@@ -949,6 +948,66 @@ static int Get_TBLR(char *restofline,unsigned char *IconFill) {
   return 1;                             /* return OK */
 }
 
+/***********************************************************************
+ *
+ *  Procedure:
+ * merge_styles - For a matching style, merge name_list to name_list
+ *
+ *  Returned Value:
+ *	merged matching styles in callers name_list.
+ *
+ *  Inputs:
+ *	styles - callers return area
+ *      nptr - matching name_list
+ *
+ *  Note:
+ *      The only trick here is that on and off flags/buttons are
+ *      combined into the on flag/button.
+ *
+ ***********************************************************************/
+
+void merge_styles(name_list *styles, name_list *nptr)
+{
+  if(nptr->value != NULL) styles->value = nptr->value;
+#ifdef MINI_ICONS
+  if(nptr->mini_value != NULL) styles->mini_value = nptr->mini_value;
+#endif
+#ifdef USEDECOR
+  if (nptr->Decor != NULL) styles->Decor = nptr->Decor;
+#endif
+  if(nptr->off_flags & STARTSONDESK_FLAG)
+    /*  RBW - 11/02/1998  */
+    {
+      styles->Desk = nptr->Desk;
+      styles->PageX = nptr->PageX;
+      styles->PageY = nptr->PageY;
+    }
+  if(nptr->off_flags & BW_FLAG)
+    styles->border_width = nptr->border_width;
+  if(nptr->off_flags & FORE_COLOR_FLAG)
+    styles->ForeColor = nptr->ForeColor;
+  if(nptr->off_flags & BACK_COLOR_FLAG)
+    styles->BackColor = nptr->BackColor;
+  if(nptr->off_flags & NOBW_FLAG)
+    styles->resize_width = nptr->resize_width;
+  styles->on_flags |= nptr->off_flags;  /* combine on and off flags */
+  styles->on_flags &= ~(nptr->on_flags);
+  styles->on_buttons |= nptr->off_buttons; /* combine buttons */
+  styles->on_buttons &= ~(nptr->on_buttons);
+  /* Note, only one style cmd can define a windows iconboxes,
+     the last one encountered. */
+  if(nptr->IconBoxes != NULL) {         /* If style has iconboxes */
+    styles->IconBoxes = nptr->IconBoxes; /* copy it */
+  }
+  if (nptr->tmpflags.has_layer) {
+    styles->layer = nptr->layer;
+  }
+  if (nptr->tmpflags.has_starts_lowered) {
+    styles->tmpflags.starts_lowered = nptr->tmpflags.starts_lowered;
+  }
+  return;                               /* return */
+}
+
 static void AddToList(name_list *tname)
 {
   name_list *nptr,*lastptr = NULL;
@@ -962,7 +1021,7 @@ static void AddToList(name_list *tname)
 
   /* seems like a pretty inefficient way to keep track of the end
      of the list, but how long can the style list be? dje */
-  for (nptr = Scr.TheList; nptr != NULL; nptr = nptr->next) {
+  for (nptr = TheList; nptr != NULL; nptr = nptr->next) {
     lastptr=nptr;                       /* find end of style list */
   }
 
@@ -971,6 +1030,45 @@ static void AddToList(name_list *tname)
   if(lastptr != NULL)                   /* If not first entry in list */
     lastptr->next = nptr;               /* chain this entry to the list */
   else                                  /* else first entry in list */
-    Scr.TheList = nptr;                 /* set the list root pointer. */
+    TheList = nptr;                 /* set the list root pointer. */
 } /* end function */
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *	LookInList - look through a list for a window name, or class
+ *
+ *  Returned Value:
+ *	merged matching styles in callers name_list.
+ *
+ *  Inputs:
+ *	tmp_win - FvwWindow structure to match against
+ *	styles - callers return area
+ *
+ *  Changes:
+ *      dje 10/06/97 test for NULL class removed, can't happen.
+ *      use merge subroutine instead of coding merges 3 times.
+ *      Use structure to return values, not many, many args
+ *      and return value.
+ *      Point at iconboxes chain, not single iconboxes elements.
+ *
+ ***********************************************************************/
+void LookInList(  FvwmWindow *tmp_win, name_list *styles)
+{
+  name_list *nptr;
+
+  memset(styles, 0, sizeof(name_list)); /* clear callers return area */
+  styles->layer = Scr.StaysPutLayer; /* initialize to default layer */
+  /* look thru all styles in order defined. */
+  for (nptr = TheList; nptr != NULL; nptr = nptr->next) {
+    /* If name/res_class/res_name match, merge */
+    if (matchWildcards(nptr->name,tmp_win->class.res_class) == TRUE) {
+      merge_styles(styles, nptr);
+    } else if (matchWildcards(nptr->name,tmp_win->class.res_name) == TRUE) {
+      merge_styles(styles, nptr);
+    } else if (matchWildcards(nptr->name,tmp_win->name) == TRUE) {
+      merge_styles(styles, nptr);
+    }
+  }
+  return;
+}

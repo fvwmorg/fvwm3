@@ -1408,7 +1408,6 @@ void InitVariables(void)
 
   /* initialize some lists */
   Scr.AllBindings = NULL;
-  Scr.TheList = NULL;
 
   Scr.functions = NULL;
 

@@ -1,6 +1,28 @@
+1999-04-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/functions.c:
+	* fvwm/builtins.c: include style.h
+
+	* fvwm/fvwm.c (InitVariables): removed initialisation of TheList
+
+	* fvwm/style.c:
+	* fvwm/screen.h (ScreenInfo): moved TheList to style.c (not a global
+	any longer)
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): added style.h
+
+	* fvwm/style.h (name_list_struct):
+	* fvwm/style.c (LookInList):
+	(merge_styles):
+	moved stuff from add_window.c/misc.h to style.[ch] where it belongs.
+
+	* fvwm/styles.h: new file
+
+	* fvwm/functions.c (expand): fixed parsing of empty arguments
+
 1999-04-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* acconfig.h: 
+	* acconfig.h:
 	* INSTALL.fvwm: Finish the removal of the NO_SAVEUNDERS and
 	WINDOWSHADE configure options.
 

@@ -245,7 +245,6 @@ typedef struct ScreenInfo
 				   to zero */
   Cursor FvwmCursors[MAX_CURSORS];
 
-  name_list *TheList;		/* list of window names with attributes */
   char *DefaultIcon;            /* Icon to use when no other icons are found */
 
   ColorPair StdColors; 	/* standard fore/back colors */

@@ -21,47 +21,6 @@
 # error One of waitpid or wait3 is needed.
 #endif
 
-typedef struct name_list_struct
-{
-  struct name_list_struct *next;   /* pointer to the next name */
-  char *name;		  	   /* the name of the window */
-
-/*
- * definitely only part of the style
- */
-
-#ifndef GSFR
-  char *value;                     /* icon name */
-#ifdef MINI_ICONS
-  char *mini_value;                /* mini icon name */
-#endif
-#ifdef USEDECOR
-  char *Decor;
-#endif
-
-  int Desk;                        /* Desktop number */
-/* RBW - 11/02/1998 - page x,y numbers */
-  int PageX;
-  int PageY;
-/**/
-  unsigned long on_flags;
-  unsigned long off_flags;
-  unsigned long on_buttons;
-  unsigned long off_buttons;
-  char *ForeColor;
-  char *BackColor;
-  int layer;
-  struct {
-    unsigned has_layer : 1; /* has layer been set explicitly ? */
-    unsigned starts_lowered : 1;
-    unsigned has_starts_lowered : 1; /* has starts_lowered been set ? */
-  } tmpflags;
-  icon_boxes *IconBoxes;                /* pointer to iconbox(s) */
-  int border_width;
-  int resize_width;
-#endif
-} name_list;
-
 /* used for parsing configuration */
 struct config
 {
@@ -153,7 +112,6 @@ extern char NoResource[];
 #define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
 
-extern void       LookInList(FvwmWindow *, name_list *);
 extern void       MoveOutline(Window, int,int,int,int);
 extern void       AnimatedMoveOfWindow(Window w,int startX,int startY,int endX,
 				       int endY,Bool fWarpPointerToo,
@@ -398,7 +356,6 @@ void setModulePath(F_CMD_ARGS);
 void imagePath_function(F_CMD_ARGS);
 void iconPath_function(F_CMD_ARGS);
 void pixmapPath_function(F_CMD_ARGS);
-void ProcessNewStyle(F_CMD_ARGS);
 void SetHiColor(F_CMD_ARGS);
 void SetDefaultColors(F_CMD_ARGS);
 void LoadDefaultFont(F_CMD_ARGS);

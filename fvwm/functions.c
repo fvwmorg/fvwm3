@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include "fvwm.h"
+#include "style.h"
 #include "functions.h"
 #include "menus.h"
 #include "misc.h"
@@ -315,6 +316,8 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 		    out[j++] = arguments[n][k];
 		  i++;
 		}
+	      else
+		out[j++] = '$';
 	      break;
 	    case 'w':
 	      if(tmp_win)

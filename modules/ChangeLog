@@ -1,3 +1,8 @@
+1999-04-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (Scroll): fixed coredumt with transient pager
+	(patch by Brad Giaccio)
+
 1999-04-06  Tomas Ogren  <stric@ing.umu.se>
 
 	* FvwmGtk/FvwmGtk.c: Remove the libs/ModParse.h include and add some
@@ -63,13 +68,13 @@ Sun Apr  4 12:39:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmTaskBar/FvwmTaskBar.c: add prototype for ParseConfig().
 
 	* FvwmTaskBar/FvwmTaskBar.h: removed static declaration of
-	ParseConfig(). 
+	ParseConfig().
 
-	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmTaskBar/FvwmTaskBar.c:
 	* FvwmTaskBar/FvwmTaskBar.h: moved X11 includes from .c to .h.
 
 	* FvwmTaskBar/Start.c: include Mallocs.h for prototypes.
-	
+
 	* FvwmTaskBar/List.c: include FvwmConfig.h for prototypes.
 
 	* FvwmTaskBar/Goodies.c: include Mallocs.h, Colors.h, and

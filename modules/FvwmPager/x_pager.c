@@ -1531,8 +1531,18 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk)
       if(y > window_h)
 	y = window_h;
 
-      sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/window_w- Scr.Vx)) /
-	Scr.MyDisplayWidth;
+      sx = 0;
+      sy = 0;
+      if(window_w != 0)
+	sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/window_w- Scr.Vx)) /
+	  Scr.MyDisplayWidth;
+      if(window_h != 0)
+	sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/window_h - Scr.Vy)) /
+	  Scr.MyDisplayHeight;
+#ifdef DEBUG
+      fprintf(stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
+	      y, sx,sy);
+#endif
       sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/window_h - Scr.Vy)) /
 	Scr.MyDisplayHeight;
       /* Make sure we don't get stuck a few pixels fromt the top/left border.
@@ -1668,7 +1678,7 @@ void MoveWindow(XEvent *Event)
       /*
 	This is erroneous and causes the icon_w to stay
 	 on the old page. fvwm is clever enough to figure
-	 out that the window t->w is iconified. 
+	 out that the window t->w is iconified.
       */
       if(t->flags & ICONIFIED)
 	SendInfo(fd,"Silent Move",t->icon_w);

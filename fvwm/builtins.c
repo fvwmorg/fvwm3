@@ -15,6 +15,7 @@
 #include <X11/keysym.h>
 
 #include "fvwm.h"
+#include "style.h"
 #include "functions.h"
 #include "menus.h"
 #include "misc.h"
