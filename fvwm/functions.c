@@ -4,6 +4,11 @@
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
+1999-01-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/functions.c (FindBuiltinFunction): fixed coredump when passed
+	a NULL pointer
+
  ****************************************************************************/
 
 /***********************************************************************
@@ -196,6 +201,9 @@ static struct functions *FindBuiltinFunction(char *func)
   static int func_config_size=0;
 
   if (!func)
+    return NULL;
+
+  if (!func || func[0] == 0)
     return NULL;
 
   if (!func_config_size)

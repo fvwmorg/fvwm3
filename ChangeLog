@@ -539,6 +539,12 @@ Wed Jan 20 01:13:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: Test for siginterrupt().
 
+1999-01-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (PaintEntry): long separators reached into the border
+	of the menu to the right, but not on the left
+	(AddToMenu): AddToMenu could not be used to enter separators
+
 1999-01-16  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* configure.in: Nuke cached values before retrying check for

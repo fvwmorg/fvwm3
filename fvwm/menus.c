@@ -1720,11 +1720,11 @@ void PaintEntry(MenuItem *mi)
   /* see if it's an actual separator (titles are also separators) */
   if(mi->fIsSeparator && !IS_TITLE_MENU_ITEM(mi) && !IS_LABEL_MENU_ITEM(mi))
     {
-      int d = (mr->ms->look.f.LongSeparators) ? 3 : 0;
+      int d = (mr->ms->look.f.LongSeparators) ? 4 : 6;
 
       DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+5-d,
 		    y_offset-1+HEIGHT_SEPARATOR/2,
-		    mr->width-6+d,y_offset-1+HEIGHT_SEPARATOR/2,1);
+		    mr->width-d,y_offset-1+HEIGHT_SEPARATOR/2,1);
     }
   if(mi->next == NULL)
     DrawSeparator(mr->w,ShadowGC,ShadowGC,mr->xoffset+1,mr->height-2,
@@ -2709,7 +2709,8 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
   char *token2 = NULL;
   char *option = NULL;
 
-  if ((item == NULL || *item == 0) && fNoPlus)
+  if ((item == NULL || *item == 0) && (action == NULL || *action == 0) &&
+      fNoPlus)
     return;
   /* empty items screw up our menu when painted, so we replace them with a
    * separator */
