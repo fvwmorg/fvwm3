@@ -1,3 +1,8 @@
+2004-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmGtk/Makefile.am:
+	fixed FvwmGtk.1 installation
+
 2004-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):

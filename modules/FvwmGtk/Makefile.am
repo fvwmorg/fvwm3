@@ -5,7 +5,12 @@ moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = @FVWMGTK@
 EXTRA_PROGRAMS = FvwmGtk
 
-man_MANS = @MANFVWMGTK@
+# DV: For some reason, using man_MANS does not work here: automake does not
+# generate an install rule for man pages unless one of them is an existing file
+# name.  Use a hand made rule to install the man page instead.
+#man_MANS = @MANFVWMGTK@
+man_onedir = $(DESTDIR)$(mandir)/man1
+man_one_DATA = @MANFVWMGTK@
 EXTRA_DIST = FvwmGtk.1
 
 GTK_CFLAGS = @GTK_CFLAGS@

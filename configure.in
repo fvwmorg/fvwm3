@@ -981,6 +981,8 @@ fi
 
 dnl ********* GTK, IMLIB, GNOME
 dnl Check the availability of gtk
+FVWMGTK=""
+MANFVWMGTK=""
 AC_ARG_ENABLE(
 	gtk,
 	[  --disable-gtk           do not build modules using gtk library],
@@ -1001,6 +1003,8 @@ else
 	with_gtk=no
 	problem_gtk=": Explicitly disabled"
 fi
+AC_SUBST(FVWMGTK)
+AC_SUBST(MANFVWMGTK)
 
 dnl Check the availability of gdk-imlib
 AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(GDK_IMLIB),)

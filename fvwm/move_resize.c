@@ -3721,6 +3721,8 @@ static void unmaximize_fvwm_window(
 	}
 	frame_setup_window(
 		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
+	border_draw_decorations(
+		fw, PART_ALL, (Scr.Hilite == fw), True, CLEAR_ALL, NULL, NULL);
 	if (IS_EWMH_FULLSCREEN(fw))
 	{
 		SET_EWMH_FULLSCREEN(fw, False);

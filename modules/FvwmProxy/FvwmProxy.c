@@ -87,7 +87,6 @@ static GC sh_gc;
 static GC miniIconGC;
 static Window rootWindow;
 static Window focusWindow;
-static FILE *errorFile;
 static XTextProperty windowName;
 static int deskNumber=0;
 static int mousex,mousey;
@@ -112,17 +111,12 @@ static int proxyHeight=PROXY_HEIGHT;
 static int proxySeparation=PROXY_SEPARATION;
 
 static char commandBuffer[256];
-static char *logfilename=NULL;
 #if 0
 static char *show_command;
 static char *hide_command;
 static char *mark_command;
 static char *select_command;
 static char *abort_command;
-#endif
-
-#if STARTUP_DEBUG
-static char startupText[10000];
 #endif
 
 typedef enum
@@ -138,7 +132,7 @@ typedef enum
 	PROXY_ACTION_LAST = PROXY_ACTION_CLICK + NUMBER_OF_BUTTONS
 } proxy_action_t;
 
-char *ClickAction[PROXY_ACTION_LAST];
+char *action_list[PROXY_ACTION_LAST];
 
 static int (*originalXErrorHandler)(Display *,XErrorEvent *);
 static int (*originalXIOErrorHandler)(Display *);
@@ -159,61 +153,61 @@ static void LinkAction(char *string)
 		i = sscanf(string, "%d", &b);
 		if (i > 0 && b >=1 && b <= NUMBER_OF_MOUSE_BUTTONS)
 		{
-			if (ClickAction[PROXY_ACTION_CLICK + b - 1] != NULL)
+			if (action_list[PROXY_ACTION_CLICK + b - 1] != NULL)
 			{
-				free(ClickAction[PROXY_ACTION_CLICK + b - 1]);
+				free(action_list[PROXY_ACTION_CLICK + b - 1]);
 			}
-			ClickAction[PROXY_ACTION_CLICK + b - 1] =
+			action_list[PROXY_ACTION_CLICK + b - 1] =
 				safestrdup(string);
 		}
 	}
 	else if(StrEquals(token, "Select"))
 	{
-		if (ClickAction[PROXY_ACTION_SELECT] != NULL)
+		if (action_list[PROXY_ACTION_SELECT] != NULL)
 		{
-			free(ClickAction[PROXY_ACTION_SELECT]);
+			free(action_list[PROXY_ACTION_SELECT]);
 		}
-		ClickAction[PROXY_ACTION_SELECT] = safestrdup(string);
+		action_list[PROXY_ACTION_SELECT] = safestrdup(string);
 	}
 	else if(StrEquals(token, "Show"))
 	{
-		if (ClickAction[PROXY_ACTION_SHOW] != NULL)
+		if (action_list[PROXY_ACTION_SHOW] != NULL)
 		{
-			free(ClickAction[PROXY_ACTION_SHOW]);
+			free(action_list[PROXY_ACTION_SHOW]);
 		}
-		ClickAction[PROXY_ACTION_SHOW] = safestrdup(string);
+		action_list[PROXY_ACTION_SHOW] = safestrdup(string);
 	}
 	else if(StrEquals(token, "Hide"))
 	{
-		if (ClickAction[PROXY_ACTION_HIDE] != NULL)
+		if (action_list[PROXY_ACTION_HIDE] != NULL)
 		{
-			free(ClickAction[PROXY_ACTION_HIDE]);
+			free(action_list[PROXY_ACTION_HIDE]);
 		}
-		ClickAction[PROXY_ACTION_HIDE] = safestrdup(string);
+		action_list[PROXY_ACTION_HIDE] = safestrdup(string);
 	}
 	else if(StrEquals(token, "Abort"))
 	{
-		if (ClickAction[PROXY_ACTION_ABORT] != NULL)
+		if (action_list[PROXY_ACTION_ABORT] != NULL)
 		{
-			free(ClickAction[PROXY_ACTION_ABORT]);
+			free(action_list[PROXY_ACTION_ABORT]);
 		}
-		ClickAction[PROXY_ACTION_ABORT] = safestrdup(string);
+		action_list[PROXY_ACTION_ABORT] = safestrdup(string);
 	}
 	else if(StrEquals(token, "Mark"))
 	{
-		if (ClickAction[PROXY_ACTION_MARK] != NULL)
+		if (action_list[PROXY_ACTION_MARK] != NULL)
 		{
-			free(ClickAction[PROXY_ACTION_MARK]);
+			free(action_list[PROXY_ACTION_MARK]);
 		}
-		ClickAction[PROXY_ACTION_MARK] = safestrdup(string);
+		action_list[PROXY_ACTION_MARK] = safestrdup(string);
 	}
 	else if(StrEquals(token, "Unmark"))
 	{
-		if (ClickAction[PROXY_ACTION_UNMARK] != NULL)
+		if (action_list[PROXY_ACTION_UNMARK] != NULL)
 		{
-			free(ClickAction[PROXY_ACTION_UNMARK]);
+			free(action_list[PROXY_ACTION_UNMARK]);
 		}
-		ClickAction[PROXY_ACTION_UNMARK] = safestrdup(string);
+		action_list[PROXY_ACTION_UNMARK] = safestrdup(string);
 	}
 
 	return;
@@ -248,16 +242,20 @@ static Bool parse_options(void)
 	mark_command = safestrdup(CMD_MARK);
 	select_command = safestrdup(CMD_SELECT);
 #endif
-	memset(ClickAction, 0, sizeof(ClickAction));
-	ClickAction[PROXY_ACTION_SELECT] = strdup(CMD_SELECT);
-	ClickAction[PROXY_ACTION_CLICK + 0] = strdup(CMD_CLICK1);
+	memset(action_list, 0, sizeof(action_list));
+	action_list[PROXY_ACTION_SELECT] = strdup(CMD_SELECT);
+	action_list[PROXY_ACTION_CLICK + 0] = strdup(CMD_CLICK1);
 	if (NUMBER_OF_MOUSE_BUTTONS > 2)
 	{
-		ClickAction[PROXY_ACTION_CLICK + 2] = strdup(CMD_CLICK3);
+		action_list[PROXY_ACTION_CLICK + 2] = strdup(CMD_CLICK3);
 	}
 	for(m=0;m<PROXY_ACTION_LAST;m++)
-		if(ClickAction[m]==NULL)
-			ClickAction[m] = strdup(CMD_DEFAULT);
+	{
+		if(action_list[m]==NULL)
+		{
+			action_list[m] = strdup(CMD_DEFAULT);
+		}
+	}
 
 	InitGetConfigLine(fd, CatString3("*", MyName, 0));
 	for (GetConfigLine(fd, &tline); tline != NULL;
@@ -283,12 +281,6 @@ static Bool parse_options(void)
 		/* dump leading whitespace */
 		while(*tline==' ' || *tline=='\t')
 			tline++;
-#if STARTUP_DEBUG
-		strcat(startupText,resource);
-		strcat(startupText," |");
-		strcat(startupText,tline);
-		strcat(startupText,"|\n");
-#endif
 		if(!strncasecmp(resource,"Action",6))
 		{
 			LinkAction(tline);
@@ -314,14 +306,6 @@ static Bool parse_options(void)
 				free(font_name);
 			}
 			font_name = safestrdup(tline);
-		}
-		else if (StrEquals(resource, "LogFile"))
-		{
-			if (logfilename != NULL)
-			{
-				free(logfilename);
-			}
-			logfilename = safestrdup(tline);
 		}
 		else if (StrEquals(resource, "ShowMiniIcons"))
 		{
@@ -371,7 +355,6 @@ static Bool parse_options(void)
 		{
 			parse_cmd(&select_command, next);
 		}
-
 		else if (StrEquals(resource, "ProxyGeometry"))
 		{
 			flags = FScreenParseGeometry(
@@ -446,29 +429,21 @@ static int myXErrorHandler(Display *display,XErrorEvent *error_event)
 	XGetErrorDatabaseText(display,"XRequest",
 		request_number,buffer,function,messagelen);
 
-	fprintf(errorFile,"non-fatal X error as follows, display 0x%x"
+	fprintf(stderr, "non-fatal X error as follows, display 0x%x"
 		" op %d:%d \"%s\" serial %u error %d\n",
 		(unsigned int)display,
 		error_event->request_code,error_event->minor_code,
 		function,(unsigned int)error_event->serial,
 		error_event->error_code);
-#if 0
-	/* !!!calling X routines from error handlers is not allowed! */
-	XGetErrorText(display,error_event->error_code,buffer,messagelen);
-	fprintf(errorFile,"  %s\n",buffer);
-#endif
 
 	return 0;
 }
 
 static int myXIOErrorHandler(Display *display)
 {
-	fprintf(errorFile,"fatal IO Error on display 0x%x\n",
+	fprintf(stderr, "fatal IO Error on display 0x%x\n",
 		(unsigned int)display);
-
 	originalXIOErrorHandler(display);
-
-	fprintf(errorFile,"original X IO handler should not have returned\n");
 
 	/* should never get this far */
 	return 0;
@@ -758,7 +733,6 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 			rc = True;
 			if(proxyWidth-dx<proxyHeight-dy)
 			{
-				fprintf(errorFile,"Adjust X\n");
 				if(proxy->proxyx<other->proxyx)
 				{
 					other->proxyx=
@@ -774,7 +748,6 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 			}
 			else
 			{
-				fprintf(errorFile,"Adjust y\n");
 				if(proxy->proxyy<other->proxyy)
 				{
 					other->proxyy=
@@ -972,7 +945,7 @@ static void StartProxies(void)
 	enterProxy=NULL;
 	selectProxy=NULL;
 
-	send_command_to_fvwm(ClickAction[PROXY_ACTION_SHOW], None);
+	send_command_to_fvwm(action_list[PROXY_ACTION_SHOW], None);
 	are_windows_shown = 1;
 	CloseWindows();
 	ReshuffleWindows();
@@ -1001,10 +974,10 @@ static void MarkProxy(ProxyWindow *new_proxy)
 		}
 	}
 	if (old_proxy != NULL)
-		send_command_to_fvwm(ClickAction[PROXY_ACTION_UNMARK],
+		send_command_to_fvwm(action_list[PROXY_ACTION_UNMARK],
 				old_proxy->window);
 	if (selectProxy != NULL)
-		send_command_to_fvwm(ClickAction[PROXY_ACTION_MARK],
+		send_command_to_fvwm(action_list[PROXY_ACTION_MARK],
 				selectProxy->window);
 
 	return;
@@ -1028,10 +1001,10 @@ static void SelectProxy(void)
 
 	HideProxies();
 	if(selectProxy)
-		send_command_to_fvwm(ClickAction[PROXY_ACTION_SELECT],
+		send_command_to_fvwm(action_list[PROXY_ACTION_SELECT],
 				selectProxy->window);
 
-	send_command_to_fvwm(ClickAction[PROXY_ACTION_HIDE], None);
+	send_command_to_fvwm(action_list[PROXY_ACTION_HIDE], None);
 
 	for(proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 		if(proxy==selectProxy)
@@ -1048,7 +1021,7 @@ static void SelectProxy(void)
 static void AbortProxies(boid)
 {
 	HideProxies();
-	send_command_to_fvwm(ClickAction[PROXY_ACTION_ABORT], None);
+	send_command_to_fvwm(action_list[PROXY_ACTION_ABORT], None);
 	selectProxy = NULL;
 
 	return;
@@ -1155,8 +1128,6 @@ static void ProcessMessage(FvwmPacket* packet)
 	case M_FOCUS_CHANGE:
 	{
 		focusWindow=bh->w;
-/*		fprintf(errorFile,"M_FOCUS_CHANGE 0x%x\n",(int)focusWindow);
-*/
 	}
 	case M_STRING:
 	{
@@ -1165,7 +1136,6 @@ static void ProcessMessage(FvwmPacket* packet)
 		char *next;
 		int prev;
 
-		fprintf(errorFile, "M_STRING \"%s\"\n", message);
 		token = PeekToken(message, &next);
 		prev=(StrEquals(token, "Prev"));
 		if(StrEquals(token, "Next") || prev)
@@ -1195,7 +1165,7 @@ static void ProcessMessage(FvwmPacket* packet)
 				if(!newSelect)
 					newSelect=first;
 				while(newSelect!=lastSelect &&
-					newSelect->desk!=deskNumber)
+				      newSelect->desk!=deskNumber)
 				{
 					if(prev)
 						newSelect=newSelect->prev;
@@ -1220,9 +1190,6 @@ static void ProcessMessage(FvwmPacket* packet)
 
 			strcpy(commandBuffer,next);
 			strcat(commandBuffer," SendToModule FvwmProxy Mark");
-
-			fprintf(errorFile, "0x%x:0x%x Circulate \"%s\"\n",
-				(int)selectProxy,(int)w,commandBuffer);
 			if(next)
 				SendFvwmPipe(fd,commandBuffer,w);
 		}
@@ -1263,9 +1230,6 @@ static void ProcessMessage(FvwmPacket* packet)
 			{
 				focusWindow=bh->w;
 				proxy = FindProxy(bh->w);
-				fprintf(errorFile,
-					"Mark proxy 0x%x win 0x%x\n",
-					(int)proxy,(int)bh->w);
 			}
 			MarkProxy(proxy);
 		}
@@ -1287,7 +1251,7 @@ static void ProcessMessage(FvwmPacket* packet)
 	}
 	}
 
-	fflush(errorFile);
+	return;
 }
 
 static int My_XNextEvent(Display *dpy,XEvent *event)
@@ -1324,8 +1288,7 @@ static int My_XNextEvent(Display *dpy,XEvent *event)
 			FvwmPacket* packet = ReadFvwmPacket(fd[1]);
 			if(!packet)
 			{
-				fprintf(errorFile,"\nNULL packet: exiting\n");
-				fflush(errorFile);
+				fprintf(stderr, "\nNULL packet: exiting\n");
 				exit(0);
 			}
 
@@ -1357,42 +1320,26 @@ static void DispatchEvent(XEvent *pEvent)
 		proxy = FindProxy(window);
 		if(proxy)
 		{
-#if 0
-			/* TODO setup from Fvwm config */
-			if(pEvent->xbutton.button==Button1)
-				XRaiseWindow(dpy,proxy->window);
-			else if(pEvent->xbutton.button==Button3)
-				XLowerWindow(dpy,proxy->window);
-#else
 			int button=pEvent->xbutton.button;
 			if(button >= 1 && button<=NUMBER_OF_MOUSE_BUTTONS)
 			{
-				fprintf(errorFile,"SendFvwmPipe %s 0x%x %d\n",
-					ClickAction[PROXY_ACTION_CLICK+
-								button-1],
-					(int)proxy->window,button);
-				SendFvwmPipe(fd,
-					ClickAction[PROXY_ACTION_CLICK+
-								button-1],
+				SendFvwmPipe(
+					fd, action_list[
+						PROXY_ACTION_CLICK + button-1],
 					proxy->window);
 			}
-
-#endif
 		}
 		mousex=pEvent->xbutton.x_root;
 		mousey=pEvent->xbutton.y_root;
 		break;
 	case MotionNotify:
 		proxy = FindProxy(window);
-		fprintf(errorFile,"MotionNotify %4d,%4d\n",
-			pEvent->xmotion.x_root,pEvent->xmotion.y_root);
 		dx=pEvent->xbutton.x_root-mousex;
 		dy=pEvent->xbutton.y_root-mousey;
 		if(proxy && proxyMove)
 		{
 			sprintf(commandBuffer,"Silent Move w%dp w%dp",dx,dy);
 			SendText(fd,commandBuffer,proxy->window);
-			fprintf(errorFile,">>> %s\n",commandBuffer);
 		}
 
 		mousex=pEvent->xbutton.x_root;
@@ -1414,12 +1361,11 @@ static void DispatchEvent(XEvent *pEvent)
 		}
 		break;
 	default:
-		fprintf(errorFile,"Unrecognized XEvent %d\n",
-			pEvent->xany.type);
+		fprintf(stderr, "Unrecognized XEvent %d\n", pEvent->xany.type);
 		break;
 	}
 
-	fflush(errorFile);
+	return;
 }
 
 static void Loop(int *fd)
@@ -1442,14 +1388,11 @@ int main(int argc, char **argv)
 {
 	char *titles[1];
 
-#if STARTUP_DEBUG
-	startupText[0]=0;
-#endif
-
 	if (argc < 6)
 	{
-		fprintf(stderr,"FvwmProxy should only be executed by fvwm!\n");
-		fflush(errorFile);
+		fprintf(
+			stderr,
+			"FvwmProxy should only be executed by fvwm!\n");
 		exit(1);
 	}
 
@@ -1498,19 +1441,6 @@ int main(int argc, char **argv)
 
 	if (parse_options() == False)
 		exit(1);
-
-	if(!logfilename)
-		logfilename="/dev/null";
-	errorFile=fopen(logfilename,"a");
-
-	fprintf(errorFile,"FvwmProxy >>>>>>>>> STARTUP\n");
-	fflush(errorFile);
-#if STARTUP_DEBUG
-	fprintf(errorFile,"startup:\n%s-----\n",startupText);
-#endif
-	fprintf(errorFile,"started\n");
-	fflush(errorFile);
-
 	if ((Ffont = FlocaleLoadFont(dpy, font_name, MyName)) == NULL)
 	{
 		fprintf(stderr,"%s: Couldn't load font. Exiting!\n", MyName);

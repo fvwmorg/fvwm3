@@ -7319,7 +7319,7 @@ placed, the
 .I strut
 factor affects the complement of the EWMH working area if the
 window being placed has the
-.I EWMHPlacementUseWoringArea
+.I EWMHPlacementUseWorkingArea
 style and windows with an EWMH strut hint (i.e., a "please don't
 not cover me" hint) if the window being placed has the
 .I EWMHPlacementUseDynamicWorkingArea
