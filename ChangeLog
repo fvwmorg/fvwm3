@@ -1,3 +1,24 @@
+2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	* fvwm/ewmh.c (ewmh_HandleDesktop):
+	* fvwm/style.c (parse_and_set_window_style):
+	(check_window_style_change):
+	* fvwm/events.c (HandleButtonPress):
+	(HandleVisibilityNotify):
+	began GFPR migration of *raises* focus policy flags
+
+	* fvwm/focus.c (focus_is_focusd):
+	new function
+
+	* libs/Bindings.c (AddBinding):
+	fixed handling of "unknown" modifiers in key bindings
+
+	* fvwm/focus.c (focus_grab_buttons):
+	(focus_query_grab_buttons):
+	moved focus policy code into separate function
+
 2002-08-02  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:
@@ -88,7 +109,7 @@
 
 	* fvwm/focus_policy.c:
 	* fvwm/focus_policy.h:
-	new files
+	new files, begin great focus policy rewrite aka GFPR
 
 2002-07-22  Bob Woodside  <dumbledore@woodsway.com>
 

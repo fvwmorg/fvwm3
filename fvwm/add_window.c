@@ -1484,13 +1484,9 @@ static void setup_key_and_button_grabs(FvwmWindow *fw)
 		C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_WINDOW, GetUnusedModifiers(),
 		True);
 	setup_focus_policy(fw);
-	/* Special handling for MouseFocusClickRaises *only*. If a
-	 * MouseFocusClickRaises window was so raised, it is now ungrabbed. If
-	 * it's no longer on top of its layer because of the new window we just
-	 * added, we have to restore the grab so it can be raised again. */
-	if (Scr.Ungrabbed && DO_RAISE_MOUSE_FOCUS_CLICK(Scr.Ungrabbed) &&
-	    (HAS_SLOPPY_FOCUS(Scr.Ungrabbed) || HAS_MOUSE_FOCUS(Scr.Ungrabbed))
-	    && !is_on_top_of_layer(Scr.Ungrabbed))
+	/* We may need to grab the buttons again if the new window received the
+	 * focus and covers the old focused window. */
+	if (Scr.Ungrabbed)
 	{
 		focus_grab_buttons(Scr.Ungrabbed, False);
 	}

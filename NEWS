@@ -37,6 +37,16 @@ Changes in alpha release 2.5.3 (not released yet)
 
 * New styles OverrideGrabFocus and AllowGrabFocus.
 
+* The styles ClickToFocusRaises(Off) and MouseFocusClickRaises(Off)
+  are now different names for the same style.  Configurations that
+  used
+
+    Style * ClickToFocus, ClickToFocusRaises
+    Style * MouseFocusClickRaisesOff
+
+  or vice versa no longer work as like before.  Remove the second
+  line to fix the problem.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -21,14 +22,9 @@
  *     copyright remains in the source code and all documentation
  ****************************************************************************/
 
-/***********************************************************************
- *
- * fvwm focus-setting code
- *
- ***********************************************************************/
+/* ---------------------------- included header files ----------------------- */
 
-#include "config.h"
-
+#include <config.h>
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
@@ -49,6 +45,20 @@
 #include "geometry.h"
 #include "colormaps.h"
 
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
+
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
+
 static Bool lastFocusType;
 /* Last window which Fvwm gave the focus to NOT the window that really has the
  * focus */
@@ -56,10 +66,28 @@ static FvwmWindow *ScreenFocus = NULL;
 /* Window which had focus before the pointer moved to a different screen. */
 static FvwmWindow *LastScreenFocus = NULL;
 
-Bool do_accept_input_focus(FvwmWindow *fw)
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
+
+static void SetPointerEventPosition(XEvent *eventp, int x, int y)
 {
-	return (!fw || !fw->wmhints ||
-		!(fw->wmhints->flags & InputHint) || fw->wmhints->input);
+	switch (eventp->type)
+	{
+	case ButtonPress:
+	case ButtonRelease:
+	case KeyPress:
+	case KeyRelease:
+	case MotionNotify:
+		eventp->xbutton.x_root = x;
+		eventp->xbutton.y_root = y;
+		eventp->xmotion.same_screen = True;
+		break;
+	default:
+		break;
+	}
+
+	return;
 }
 
 /********************************************************************
@@ -331,207 +359,6 @@ static void MoveFocus(
 	}
 }
 
-void SetFocusWindow(
-	FvwmWindow *fw, Bool FocusByMouse, Bool do_allow_force_broadcast)
-{
-	MoveFocus(
-		FW_W(fw), fw, FocusByMouse, False, True,
-		do_allow_force_broadcast);
-}
-
-void ReturnFocusWindow(FvwmWindow *fw, Bool FocusByMouse)
-{
-	MoveFocus(
-		FW_W(fw), fw, FocusByMouse, True, False, True);
-}
-
-void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast)
-{
-	MoveFocus(
-		Scr.NoFocusWin, NULL, FocusByMouse, False, False,
-		do_allow_force_broadcast);
-}
-
-void ForceDeleteFocus(Bool FocusByMouse)
-{
-	MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, True, True);
-}
-
-/* When a window is unmapped (or destroyed) this function takes care of
- * adjusting the focus window appropriately. */
-void restore_focus_after_unmap(
-	FvwmWindow *fw, Bool do_skip_marked_transients)
-{
-	extern FvwmWindow *colormap_win;
-	FvwmWindow *t = NULL;
-	FvwmWindow *set_focus_to = NULL;
-
-	if (fw == get_focus_window())
-	{
-		if (FW_W_TRANSIENTFOR(fw) != None &&
-		    FW_W_TRANSIENTFOR(fw) != Scr.Root)
-		{
-			for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-			{
-				if (FW_W(t) == FW_W_TRANSIENTFOR(fw) &&
-				    t->Desk == fw->Desk &&
-				    (!do_skip_marked_transients ||
-				     !IS_IN_TRANSIENT_SUBTREE(t)))
-				{
-					set_focus_to = t;
-					break;
-				}
-			}
-		}
-		if (!set_focus_to &&
-		    (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw)))
-		{
-			for (t = fw->next; t != NULL; t = t->next)
-			{
-				if (t->Desk == fw->Desk &&
-				    !DO_SKIP_CIRCULATE(t) &&
-				    !(DO_SKIP_ICON_CIRCULATE(t) &&
-				      IS_ICONIFIED(t)) &&
-				    (!do_skip_marked_transients ||
-				     !IS_IN_TRANSIENT_SUBTREE(t)))
-				{
-					/* If it is on a different desk we have
-					 * to look for another window */
-					set_focus_to = t;
-					break;
-				}
-			}
-		}
-		if (set_focus_to && set_focus_to != fw &&
-		    set_focus_to->Desk == fw->Desk)
-		{
-			/* Don't transfer focus to windows on other desks */
-			SetFocusWindow(set_focus_to, True, True);
-		}
-		if (fw == get_focus_window())
-		{
-			DeleteFocus(True, True);
-		}
-	}
-	if (fw == Scr.pushed_window)
-	{
-		Scr.pushed_window = NULL;
-	}
-	if (fw == colormap_win)
-	{
-		InstallWindowColormaps(set_focus_to);
-	}
-
-	return;
-}
-
-void SetPointerEventPosition(XEvent *eventp, int x, int y)
-{
-	switch (eventp->type)
-	{
-	case ButtonPress:
-	case ButtonRelease:
-	case KeyPress:
-	case KeyRelease:
-	case MotionNotify:
-		eventp->xbutton.x_root = x;
-		eventp->xbutton.y_root = y;
-		eventp->xmotion.same_screen = True;
-		break;
-	default:
-		break;
-	}
-
-	return;
-}
-
-/**************************************************************************
- *
- * Moves focus to specified window; only to be called bay Focus and
- * FlipFocus
- *
- *************************************************************************/
-void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
-{
-	int dx,dy;
-	int cx,cy;
-	Bool do_not_warp;
-
-	if (t == NULL || HAS_NEVER_FOCUS(t))
-	{
-		UngrabEm(GRAB_NORMAL);
-		if (t)
-		{
-			/* give the window a chance to take the focus itself */
-			MoveFocus(FW_W(t), t, FocusByMouse, True, False, True);
-		}
-		return;
-	}
-
-	if (!(do_not_warp = StrEquals(PeekToken(action, NULL), "NoWarp")))
-	{
-		if (t->Desk != Scr.CurrentDesk)
-		{
-			goto_desk(t->Desk);
-		}
-
-		if (IS_ICONIFIED(t))
-		{
-			rectangle g;
-			Bool rc;
-
-			rc = get_visible_icon_title_geometry(t, &g);
-			if (rc == False)
-			{
-				get_visible_icon_picture_geometry(t, &g);
-			}
-			cx = g.x + g.width / 2;
-			cy = g.y + g.height / 2;
-		}
-		else
-		{
-			cx = t->frame_g.x + t->frame_g.width/2;
-			cy = t->frame_g.y + t->frame_g.height/2;
-		}
-		dx = (cx + Scr.Vx)/Scr.MyDisplayWidth*Scr.MyDisplayWidth;
-		dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
-		MoveViewport(dx,dy,True);
-
-		/* If the window is still not visible, make it visible! */
-		if (((t->frame_g.x + t->frame_g.height)< 0)||
-		    (t->frame_g.y + t->frame_g.width < 0)||
-		    (t->frame_g.x >Scr.MyDisplayWidth)||
-		    (t->frame_g.y>Scr.MyDisplayHeight))
-		{
-			frame_setup_window(
-				t, 0, 0, t->frame_g.width, t->frame_g.height,
-				False);
-			if (HAS_MOUSE_FOCUS(t) || HAS_SLOPPY_FOCUS(t))
-			{
-				XWarpPointer(
-					dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
-			}
-		}
-	}
-
-	UngrabEm(GRAB_NORMAL);
-	if (t->Desk == Scr.CurrentDesk)
-	{
-		FvwmWindow *sf;
-
-		sf = get_focus_window();
-		MoveFocus(FW_W(t), t, FocusByMouse, do_not_warp, False, True);
-		if (sf != get_focus_window())
-		{
-			/* Ignore EnterNotify event while we are waiting for
-			 * this window to be focused. */
-			Scr.focus_in_pending_window = sf;
-		}
-	}
-
-	return;
-}
-
 /**************************************************************************
  *
  * Moves pointer to specified window
@@ -650,92 +477,244 @@ static void warp_to_fvwm_window(
 	}
 }
 
-
-void CMD_FlipFocus(F_CMD_ARGS)
+static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool is_focused)
 {
-	if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
-		return;
+	Bool flag;
 
-	/* Reorder the window list */
-	FocusOn(fw, TRUE, action);
-}
-
-void CMD_Focus(F_CMD_ARGS)
-{
-	if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
-		return;
-
-	FocusOn(fw, FALSE, action);
-}
-
-void CMD_WarpToWindow(F_CMD_ARGS)
-{
-	int val1_unit, val2_unit, n;
-	int val1, val2;
-
-	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
-	if (context != C_UNMANAGED)
+	if (!is_focused && FP_DO_FOCUS_CLICK_CLIENT(FW_FOCUS_POLICY(fw)))
 	{
-		if (DeferExecution(
-			    eventp, &w, &fw, &context, CRS_SELECT,
-			    ButtonRelease))
-		{
-			return;
-		}
-		if (n == 2)
-		{
-			warp_to_fvwm_window(
-				eventp, fw, val1, val1_unit, val2, val2_unit);
-		}
-		else
-		{
-			warp_to_fvwm_window(eventp, fw, 0, 0, 0, 0);
-		}
+		return True;
+	}
+	if (is_on_top_of_layer(fw))
+	{
+		return False;
+	}
+	if (is_focused)
+	{
+		flag = FP_DO_RAISE_FOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
 	}
 	else
 	{
-		int x = 0;
-		int y = 0;
+		flag = FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
+	}
 
-		if (n == 2)
+	return (flag) ? True : False;
+}
+
+/* ---------------------------- interface functions ------------------------- */
+
+Bool do_accept_input_focus(FvwmWindow *fw)
+{
+	return (!fw || !fw->wmhints ||
+		!(fw->wmhints->flags & InputHint) || fw->wmhints->input);
+}
+
+Bool focus_is_focused(FvwmWindow *fw)
+{
+	return (fw && fw == ScreenFocus);
+}
+
+Bool focus_query_click_to_raise(
+	FvwmWindow *fw, Bool is_focused, Bool is_client_click)
+{
+	Bool flag;
+
+	if (is_focused && is_client_click)
+	{
+		flag = FP_DO_RAISE_FOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
+	}
+	else if (is_focused && !is_client_click)
+	{
+		flag = FP_DO_RAISE_FOCUSED_DECOR_CLICK(FW_FOCUS_POLICY(fw));
+	}
+	else if (!is_focused && is_client_click)
+	{
+		flag = FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
+	}
+	else if (!is_focused && !is_client_click)
+	{
+		flag = FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(FW_FOCUS_POLICY(fw));
+	}
+
+	return (flag) ? True : False;
+}
+
+void SetFocusWindow(
+	FvwmWindow *fw, Bool FocusByMouse, Bool do_allow_force_broadcast)
+{
+	MoveFocus(
+		FW_W(fw), fw, FocusByMouse, False, True,
+		do_allow_force_broadcast);
+}
+
+void ReturnFocusWindow(FvwmWindow *fw, Bool FocusByMouse)
+{
+	MoveFocus(
+		FW_W(fw), fw, FocusByMouse, True, False, True);
+}
+
+void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast)
+{
+	MoveFocus(
+		Scr.NoFocusWin, NULL, FocusByMouse, False, False,
+		do_allow_force_broadcast);
+}
+
+void ForceDeleteFocus(Bool FocusByMouse)
+{
+	MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, True, True);
+}
+
+/* When a window is unmapped (or destroyed) this function takes care of
+ * adjusting the focus window appropriately. */
+void restore_focus_after_unmap(
+	FvwmWindow *fw, Bool do_skip_marked_transients)
+{
+	extern FvwmWindow *colormap_win;
+	FvwmWindow *t = NULL;
+	FvwmWindow *set_focus_to = NULL;
+
+	if (fw == get_focus_window())
+	{
+		if (FW_W_TRANSIENTFOR(fw) != None &&
+		    FW_W_TRANSIENTFOR(fw) != Scr.Root)
 		{
-			int wx;
-			int wy;
-			unsigned int ww;
-			unsigned int wh;
-
-			if (!XGetGeometry(
-				    dpy, w, &JunkRoot, &wx, &wy, &ww, &wh,
-				    &JunkBW, &JunkDepth))
+			for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 			{
-				return;
-			}
-			if (val1_unit != Scr.MyDisplayWidth)
-			{
-				x = val1;
-			}
-			else
-			{
-				x = (ww - 1) * val1 / 100;
-			}
-			if (val2_unit != Scr.MyDisplayHeight)
-			{
-				y = val2;
-			}
-			else
-			{
-				y = (wh - 1) * val2 / 100;
-			}
-			if (x < 0)
-			{
-				x += ww;
-			}
-			if (y < 0)
-			{
-				y += wh;
+				if (FW_W(t) == FW_W_TRANSIENTFOR(fw) &&
+				    t->Desk == fw->Desk &&
+				    (!do_skip_marked_transients ||
+				     !IS_IN_TRANSIENT_SUBTREE(t)))
+				{
+					set_focus_to = t;
+					break;
+				}
 			}
 		}
-		XWarpPointer(dpy, None, w, 0, 0, 0, 0, x, y);
+		if (!set_focus_to &&
+		    (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw)))
+		{
+			for (t = fw->next; t != NULL; t = t->next)
+			{
+				if (t->Desk == fw->Desk &&
+				    !DO_SKIP_CIRCULATE(t) &&
+				    !(DO_SKIP_ICON_CIRCULATE(t) &&
+				      IS_ICONIFIED(t)) &&
+				    (!do_skip_marked_transients ||
+				     !IS_IN_TRANSIENT_SUBTREE(t)))
+				{
+					/* If it is on a different desk we have
+					 * to look for another window */
+					set_focus_to = t;
+					break;
+				}
+			}
+		}
+		if (set_focus_to && set_focus_to != fw &&
+		    set_focus_to->Desk == fw->Desk)
+		{
+			/* Don't transfer focus to windows on other desks */
+			SetFocusWindow(set_focus_to, True, True);
+		}
+		if (fw == get_focus_window())
+		{
+			DeleteFocus(True, True);
+		}
+	}
+	if (fw == Scr.pushed_window)
+	{
+		Scr.pushed_window = NULL;
+	}
+	if (fw == colormap_win)
+	{
+		InstallWindowColormaps(set_focus_to);
+	}
+
+	return;
+}
+
+/**************************************************************************
+ *
+ * Moves focus to specified window; only to be called bay Focus and
+ * FlipFocus
+ *
+ *************************************************************************/
+void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
+{
+	int dx,dy;
+	int cx,cy;
+	Bool do_not_warp;
+
+	if (t == NULL || HAS_NEVER_FOCUS(t))
+	{
+		UngrabEm(GRAB_NORMAL);
+		if (t)
+		{
+			/* give the window a chance to take the focus itself */
+			MoveFocus(FW_W(t), t, FocusByMouse, True, False, True);
+		}
+		return;
+	}
+
+	if (!(do_not_warp = StrEquals(PeekToken(action, NULL), "NoWarp")))
+	{
+		if (t->Desk != Scr.CurrentDesk)
+		{
+			goto_desk(t->Desk);
+		}
+
+		if (IS_ICONIFIED(t))
+		{
+			rectangle g;
+			Bool rc;
+
+			rc = get_visible_icon_title_geometry(t, &g);
+			if (rc == False)
+			{
+				get_visible_icon_picture_geometry(t, &g);
+			}
+			cx = g.x + g.width / 2;
+			cy = g.y + g.height / 2;
+		}
+		else
+		{
+			cx = t->frame_g.x + t->frame_g.width/2;
+			cy = t->frame_g.y + t->frame_g.height/2;
+		}
+		dx = (cx + Scr.Vx)/Scr.MyDisplayWidth*Scr.MyDisplayWidth;
+		dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
+		MoveViewport(dx,dy,True);
+
+		/* If the window is still not visible, make it visible! */
+		if (((t->frame_g.x + t->frame_g.height)< 0)||
+		    (t->frame_g.y + t->frame_g.width < 0)||
+		    (t->frame_g.x >Scr.MyDisplayWidth)||
+		    (t->frame_g.y>Scr.MyDisplayHeight))
+		{
+			frame_setup_window(
+				t, 0, 0, t->frame_g.width, t->frame_g.height,
+				False);
+			if (HAS_MOUSE_FOCUS(t) || HAS_SLOPPY_FOCUS(t))
+			{
+				XWarpPointer(
+					dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
+			}
+		}
+	}
+
+	UngrabEm(GRAB_NORMAL);
+	if (t->Desk == Scr.CurrentDesk)
+	{
+		FvwmWindow *sf;
+
+		sf = get_focus_window();
+		MoveFocus(FW_W(t), t, FocusByMouse, do_not_warp, False, True);
+		if (sf != get_focus_window())
+		{
+			/* Ignore EnterNotify event while we are waiting for
+			 * this window to be focused. */
+			Scr.focus_in_pending_window = sf;
+		}
 	}
 
 	return;
@@ -749,7 +728,6 @@ Bool IsLastFocusSetByMouse(void)
 void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
 {
 	int i;
-	Bool accepts_input_focus;
 	Bool do_grab_window = False;
 	unsigned char grab_buttons = Scr.buttons2grab;
 
@@ -757,30 +735,10 @@ void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
 	{
 		return;
 	}
-	accepts_input_focus = do_accept_input_focus(fw);
-	if (HAS_SLOPPY_FOCUS(fw) || HAS_MOUSE_FOCUS(fw) || HAS_NEVER_FOCUS(fw))
+	do_grab_window = focus_query_grab_buttons(fw, is_focused);
+	if (do_grab_window == True)
 	{
-		if (DO_RAISE_MOUSE_FOCUS_CLICK(fw) &&
-		    (!is_focused || !is_on_top_of_layer(fw)))
-		{
-			grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
-			do_grab_window = True;
-		}
-	}
-	else if (HAS_CLICK_FOCUS(fw))
-	{
-		if (is_focused && !is_on_top_of_layer(fw) &&
-		    DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw) && accepts_input_focus)
-		{
-			/* don't grab */
-		}
-		else if ((!is_focused || !is_on_top_of_layer(fw)) &&
-			 (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw) ||
-			  accepts_input_focus))
-		{
-			grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
-			do_grab_window = True;
-		}
+		grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
 	}
 
 #if 0
@@ -1084,4 +1042,96 @@ Bool focus_query_restore_focus(FvwmWindow *fw)
 	}
 
 	return False;
+}
+
+/* ---------------------------- builtin commands ---------------------------- */
+
+void CMD_FlipFocus(F_CMD_ARGS)
+{
+	if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
+		return;
+
+	/* Reorder the window list */
+	FocusOn(fw, TRUE, action);
+}
+
+void CMD_Focus(F_CMD_ARGS)
+{
+	if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
+		return;
+
+	FocusOn(fw, FALSE, action);
+}
+
+void CMD_WarpToWindow(F_CMD_ARGS)
+{
+	int val1_unit, val2_unit, n;
+	int val1, val2;
+
+	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
+	if (context != C_UNMANAGED)
+	{
+		if (DeferExecution(
+			    eventp, &w, &fw, &context, CRS_SELECT,
+			    ButtonRelease))
+		{
+			return;
+		}
+		if (n == 2)
+		{
+			warp_to_fvwm_window(
+				eventp, fw, val1, val1_unit, val2, val2_unit);
+		}
+		else
+		{
+			warp_to_fvwm_window(eventp, fw, 0, 0, 0, 0);
+		}
+	}
+	else
+	{
+		int x = 0;
+		int y = 0;
+
+		if (n == 2)
+		{
+			int wx;
+			int wy;
+			unsigned int ww;
+			unsigned int wh;
+
+			if (!XGetGeometry(
+				    dpy, w, &JunkRoot, &wx, &wy, &ww, &wh,
+				    &JunkBW, &JunkDepth))
+			{
+				return;
+			}
+			if (val1_unit != Scr.MyDisplayWidth)
+			{
+				x = val1;
+			}
+			else
+			{
+				x = (ww - 1) * val1 / 100;
+			}
+			if (val2_unit != Scr.MyDisplayHeight)
+			{
+				y = val2;
+			}
+			else
+			{
+				y = (wh - 1) * val2 / 100;
+			}
+			if (x < 0)
+			{
+				x += ww;
+			}
+			if (y < 0)
+			{
+				y += wh;
+			}
+		}
+		XWarpPointer(dpy, None, w, 0, 0, 0, 0, x, y);
+	}
+
+	return;
 }

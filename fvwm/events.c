@@ -327,6 +327,7 @@ void HandleButtonPress(void)
 	Bool do_pass_click = True;
 	Bool do_wait_for_button_release = False;
 	Bool has_binding = False;
+	Bool is_focused;
 
 	DBUG("HandleButtonPress","Routine Entered");
 
@@ -372,6 +373,7 @@ void HandleButtonPress(void)
 		UngrabEm(GRAB_PASSIVE);
 		return;
 	}
+	is_focused = focus_is_focused(Fw);
 	if (Fw && HAS_NEVER_FOCUS(Fw))
 	{
 		/* It might seem odd to try to focus a window that never is
@@ -381,11 +383,11 @@ void HandleButtonPress(void)
 		SetFocusWindow(Fw, True, True);
 	}
 	/* click to focus stuff goes here */
-	if (Fw && HAS_CLICK_FOCUS(Fw) && Fw != Scr.Ungrabbed)
+	else if (Fw && HAS_CLICK_FOCUS(Fw) && Fw != Scr.Ungrabbed)
 	{
 		unsigned was_already_focused;
 
-		if (Fw != get_focus_window())
+		if (!is_focused)
 		{
 			SetFocusWindow(Fw, True, True);
 			was_already_focused = 0;
@@ -396,7 +398,7 @@ void HandleButtonPress(void)
 		}
 		/* RBW - 12/09/.1999- I'm not sure we need to check both cases,
 		 * but I'll leave this as is for now.  */
-		if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Fw))
+		if (!focus_query_click_to_raise(Fw, is_focused, True))
 		{
 			/* We can't raise the window immediately because the
 			 * action bound to the click might be "Lower" or
@@ -443,7 +445,7 @@ void HandleButtonPress(void)
 	else if (Fw && Event.xbutton.window == FW_W_PARENT(Fw) &&
 		 (HAS_SLOPPY_FOCUS(Fw) || HAS_MOUSE_FOCUS(Fw) ||
 		  HAS_NEVER_FOCUS(Fw)) &&
-		 DO_RAISE_MOUSE_FOCUS_CLICK(Fw))
+		 focus_query_click_to_raise(Fw, is_focused, True))
 	{
 		FvwmWindow *tmp = Scr.Ungrabbed;
 
@@ -3119,6 +3121,8 @@ void HandleVisibilityNotify(void)
 			SET_FULLY_VISIBLE(Fw, 0);
 			SET_PARTIALLY_VISIBLE(Fw, 0);
 		}
+		/* Make sure the button grabs are up to date */
+		focus_grab_buttons(Fw, focus_is_focused(Fw));
 	}
 
 	return;

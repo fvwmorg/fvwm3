@@ -1308,16 +1308,16 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "ClickToFocusRaises"))
 	{
 	  found = True;
-	  SFSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
-	  SMSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SCSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "ClickToFocusRaisesOff"))
 	{
 	  found = True;
-	  SFSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SMSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SCSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "CirculateSkip"))
 	{
@@ -2193,16 +2193,22 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "MouseFocusClickRaises"))
 	{
 	  found = True;
-	  SFSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
-	  SMSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
-	  SCSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
+	  FPS_RAISE_FOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_FOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "MouseFocusClickRaisesOff"))
 	{
 	  found = True;
-	  SFSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 0);
-	  SMSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
-	  SCSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
+	  FPS_RAISE_FOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_RAISE_FOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "MouseFocusClickIgnoreMotion"))
 	{
@@ -3290,9 +3296,8 @@ void check_window_style_change(
 	 */
 	if (SCFOCUS_MODE(*ret_style) ||
 	    !SCDO_NOT_PASS_CLICK_FOCUS_CLICK(*ret_style) ||
-	    !SCDO_NOT_RAISE_CLICK_FOCUS_CLICK(*ret_style) ||
-	    SCDO_RAISE_MOUSE_FOCUS_CLICK(*ret_style)
-		)
+	    FP_DO_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ret_style)) ||
+	    FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ret_style)))
 	{
 		flags->do_setup_focus_policy = True;
 	}

@@ -426,7 +426,13 @@ int AddBinding(
 	  break;
 	default:
 	  /* key generates the key sym with unknown modifiers depressed -
-	  * can't map that to specific modifiers - trat as no modifiers */
+	   * can't map that to specific modifiers - treat as no modifiers */
+	  if (modifiers != AnyModifier)
+	  {
+	    /* but don't bind it again if already bound with shift, caps-lock
+	     * or no modifiers */
+	    check_bound_mask = 0x7;
+	  }
 	  break;
 	}
 	if ((bind_mask & bound_mask) || (check_bound_mask & bound_mask))

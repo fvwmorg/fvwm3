@@ -580,10 +580,6 @@ void list_configure(const unsigned long *body)
     fprintf(output,"\t\tdo_not_show_on_map: %d\n", DO_NOT_SHOW_ON_MAP(p));
     fprintf(output,"\t\tdo_not_pass_click_focus_click: %d\n",
 	    DO_NOT_PASS_CLICK_FOCUS_CLICK(p));
-    fprintf(output,"\t\tdo_not_raise_click_focus_click: %d\n",
-	    DO_NOT_RAISE_CLICK_FOCUS_CLICK(p));
-    fprintf(output,"\t\tdo_raise_mouse_focus_click: %d\n",
-	    DO_RAISE_MOUSE_FOCUS_CLICK(p));
     fprintf(output,"\t\tdo_raise_transient: %d\n", DO_RAISE_TRANSIENT(p));
     fprintf(output,"\t\tdo_resize_opaque: %d\n", DO_RESIZE_OPAQUE(p));
     fprintf(output,"\t\tdo_shrink_windowshade: %d\n", DO_SHRINK_WINDOWSHADE(p));

@@ -36,24 +36,12 @@
 	(fw)->flags.common.s.do_not_pass_click_focus_click = !!(x)
 #define SETM_DO_NOT_PASS_CLICK_FOCUS_CLICK(fw,x) \
 	(fw)->flag_mask.common.s.do_not_pass_click_focus_click = !!(x)
-#define DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw) \
-	((fw)->flags.common.s.do_not_raise_click_focus_click)
-#define SET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw,x) \
-	(fw)->flags.common.s.do_not_raise_click_focus_click = !!(x)
-#define SETM_DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw,x) \
-	(fw)->flag_mask.common.s.do_not_raise_click_focus_click = !!(x)
 #define DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw) \
 	((fw)->flags.common.s.do_ignore_mouse_focus_click_motion)
 #define SET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw,x) \
 	(fw)->flags.common.s.do_ignore_mouse_focus_click_motion = !!(x)
 #define SETM_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw,x) \
 	(fw)->flag_mask.common.s.do_ignore_mouse_focus_click_motion = !!(x)
-#define DO_RAISE_MOUSE_FOCUS_CLICK(fw) \
-	((fw)->flags.common.s.do_raise_mouse_focus_click)
-#define SET_DO_RAISE_MOUSE_FOCUS_CLICK(fw,x) \
-	(fw)->flags.common.s.do_raise_mouse_focus_click = !!(x)
-#define SETM_DO_RAISE_MOUSE_FOCUS_CLICK(fw,x) \
-	(fw)->flag_mask.common.s.do_raise_mouse_focus_click = !!(x)
 #define DO_RAISE_TRANSIENT(fw) \
 	((fw)->flags.common.s.do_raise_transient)
 #define DO_RESIZE_OPAQUE(fw) \

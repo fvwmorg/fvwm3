@@ -88,10 +88,10 @@ void fpol_init_default_fp(focus_policy_t *fp)
 /*!!!*/unsigned do_focus_by_program : 1;
 /*!!!*/unsigned do_focus_by_function : 1;
 unsigned is_lenient : 1;
-/*!!!*/unsigned do_raise_focused_client_click : 1;
-/*!!!*/unsigned do_raise_unfocused_client_click : 1;
-/*!!!*/unsigned do_raise_focused_decor_click : 1;
-/*!!!*/unsigned do_raise_unfocused_decor_click : 1;
+unsigned do_raise_focused_client_click : 1;
+unsigned do_raise_unfocused_client_click : 1;
+unsigned do_raise_focused_decor_click : 1;
+unsigned do_raise_unfocused_decor_click : 1;
 /*!!!*/unsigned use_mouse_buttons : NUMBER_OF_MOUSE_BUTTONS;
 /*!!!*/unsigned use_modifiers : 8;
 /*!!!*/unsigned do_pass_focus_click : 1;

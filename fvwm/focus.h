@@ -48,6 +48,9 @@ Bool IsLastFocusSetByMouse(void);
 void focus_grab_buttons(FvwmWindow *fw, Bool is_focused);
 void focus_grab_buttons_on_pointer_window(void);
 Bool do_accept_input_focus(FvwmWindow *fw);
+Bool focus_is_focused(FvwmWindow *fw);
+Bool focus_query_click_to_raise(
+	FvwmWindow *Fw, Bool is_focused, Bool is_client_click);
 
 FvwmWindow *get_focus_window(void);
 void set_focus_window(FvwmWindow *fw);

@@ -723,10 +723,6 @@ void list_configure(unsigned long *body)
 	    DO_NOT_SHOW_ON_MAP( cfgpacket ) );
     printf( "do_not_pass_click_focus_click: %d\n",
 	    DO_NOT_PASS_CLICK_FOCUS_CLICK( cfgpacket ) );
-    printf( "do_not_raise_click_focus_click: %d\n",
-	    DO_NOT_RAISE_CLICK_FOCUS_CLICK( cfgpacket ) );
-    printf( "do_raise_mouse_focus_click: %d\n",
-	    DO_RAISE_MOUSE_FOCUS_CLICK( cfgpacket ) );
     printf( "do_raise_transient: %d\n",
 	    DO_RAISE_TRANSIENT( cfgpacket ) );
     printf( "do_resize_opaque: %d\n",

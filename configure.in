@@ -563,10 +563,10 @@ if test "x$found_lib_iconv" = "xyes" -o "x$found_sys_iconv" = "xyes"; then
 fi
 
 if test "x$found_iconv" = "xno"; then
-   AC_MSG_WARN([*** ]) 
+   AC_MSG_WARN([*** ])
    AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv])
    AC_MSG_WARN([*** Please install libiconv ftp://ftp.gnu.org/pub/gnu/libiconv/])
-   AC_MSG_WARN([*** ]) 
+   AC_MSG_WARN([*** ])
 fi
 
 if test "x$found_iconv" = "xyes"; then
