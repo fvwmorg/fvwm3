@@ -32,10 +32,10 @@ Existing packet types are listed in the file libs/Module.h:
 <font color="yellow"><PRE>
 #define <A href="#M_NEW_PAGE">M_NEW_PAGE</A>             (1)
 #define <A href="#M_NEW_DESK">M_NEW_DESK</A>             (1&lt;&lt;1)
-#define <A href="#M_ADD_WINDOW">M_OLD_ADD_WINDOW</A>       (1&lt;&lt;2)
+#define M_OLD_ADD_WINDOW       (1&lt;&lt;2)
 #define <A href="#M_RAISE_WINDOW">M_RAISE_WINDOW</A>         (1&lt;&lt;3)
 #define <A href="#M_LOWER_WINDOW">M_LOWER_WINDOW</A>         (1&lt;&lt;4)
-#define <A href="#M_CONFIGURE_WINDOW">M_OLD_CONFIGURE_WINDOW</A> (1&lt;&lt;5)
+#define M_OLD_CONFIGURE_WINDOW (1&lt;&lt;5)
 #define <A href="#M_FOCUS_CHANGE">M_FOCUS_CHANGE</A>         (1&lt;&lt;6)
 #define <A href="#M_DESTROY_WINDOW">M_DESTROY_WINDOW</A>       (1&lt;&lt;7)
 #define <A href="#M_ICONIFY">M_ICONIFY</A>              (1&lt;&lt;8)
@@ -59,8 +59,8 @@ Existing packet types are listed in the file libs/Module.h:
 #define <A href="#M_LOCKONSEND">M_LOCKONSEND</A>           (1&lt;&lt;26)
 #define <A href="#M_SENDCONFIG">M_SENDCONFIG</A>           (1&lt;&lt;27)
 #define <A href="#M_RESTACK">M_RESTACK</A>              (1&lt;&lt;28)
-#define <A href="#M_NEW_LOOK">M_ADD_WINDOW</A>           (1&lt;&lt;29)
-#define <A href="#M_NEW_LOOK">M_CONFIGURE_WINDOW</A>     (1&lt;&lt;30)
+#define <A href="#M_ADD_WINDOW">M_ADD_WINDOW</A>           (1&lt;&lt;29)
+#define <A href="#M_CONFIGURE_WINDOW">M_CONFIGURE_WINDOW</A>     (1&lt;&lt;30)
 </PRE></font>
 
 <P>
@@ -371,23 +371,6 @@ It contains a list of windows, each one being given by its
 three identifiers. The meaning is that the first window keeps its
 position in the stacking order and all subsequent windows are restacked
 below it (like XRestackWindows). 
-<H2><A NAME="M_NEW_LOOK">M_NEW_LOOK</A></H2>
-This packet contains information on the graphics used by fvwm. It is sent every
-time a DefaultFont, DefaultColors or HilightColor is executed. The first three
-integers in the body are the visualID, colormap and depth used by fvwm. The
-next integer is the GContext used by fvwm to draw rubberband lines.  The rest of the
-packet body is made up of a number (currently two) of colorset structures. In
-the current implementation the first colorset is set by DefaultColors and
-DefaultFont, the second is set by HilightColor.  Each colorset structure
-consists of six integers: an information field; a background pixmap id;
-foreground, relief and shadow GContexts; and a Font. The information field consists
-of the following C struct<pre>
-struct {
-  Bool repaint_needed : 1;
-  Bool pixmap : 1;
-  pixmap_width : 12;
-  pixmap_height : 12;
-}
 </pre>
 <P>
     <hr>
