@@ -85,7 +85,9 @@ static Pixel fore_pix;
 static Window main_win;
 static Window app_win;
 
-static EventMask mw_events = ExposureMask | ButtonReleaseMask | KeyReleaseMask;
+static EventMask mw_events =
+  ExposureMask | ButtonPressMask | KeyPressMask |
+  ButtonReleaseMask | KeyReleaseMask;
 
 static Atom wm_del_win;
 
@@ -385,6 +387,8 @@ void list_end(void)
   unsigned int JunkMask;
   int x,y;
   XSetWindowAttributes attributes;
+  int is_key_pressed = 0;
+  int is_button_pressed = 0;
 #ifdef I18N_MB
   char **ml;
   int mc;
@@ -519,9 +523,26 @@ void list_end(void)
           while (XCheckTypedEvent(dpy, Expose, &Event)) ;
 	  RedrawWindow();
 	  break;
+        case KeyPress:
+	  is_key_pressed = 1;
+fprintf(stderr, "\t[FvwmIdent] KeyPress\n");
+	  break;
+        case ButtonPress:
+	  is_button_pressed = 1;
+fprintf(stderr, "\t[FvwmIdent] ButtonPress\n");
+	  break;
         case KeyRelease:
+fprintf(stderr, "\t[FvwmIdent] %d KeyRelease\n", is_key_pressed);
+	  if (is_key_pressed)
+	    exit(0);
+	  else
+	    break;
         case ButtonRelease:
-	  exit(0);
+fprintf(stderr, "\t[FvwmIdent] %d ButtonRelease\n", is_button_pressed);
+	  if (is_button_pressed)
+	    exit(0);
+	  else
+	    break;
         case ClientMessage:
 	  if (Event.xclient.format==32 && Event.xclient.data.l[0]==wm_del_win)
 	    exit(0);
