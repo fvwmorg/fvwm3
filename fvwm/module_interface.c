@@ -1122,25 +1122,19 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
   if((pipeOn[module]<0)||(!((PipeMask[module]) & ptr[1])))
     return -1;
 
-  /*
-   * fvwm   recapture has the x  server grabbed while  iconify events are
-   * simulated.  Right now (01/24/99), the only module using lock on send
-   * is FvwmAnimate which always  does  a grab of  its  own.  To avoid  a
-   * deadlock, iconify events are not sent to a lock on send module while
-   * the server is grabbed.   In the future, it might  make sense to send
-   * the fact that the server is  grabbed to the  lock on send module, or
-   * in some other way get finer control.
-   */
+  /* a dirty hack to prevent FvwmAnimate triggering during Recapture */
+  /* would be better to send RecaptureStart and RecaptureEnd messages */
   if ((PipeMask[module] & M_LOCKONSEND) /* module uses lock on send */
       && (myxgrabcount != 0)            /* and server grabbed */
       && (ptr[1] & M_ICONIFY)) {        /* and its an iconify event */
     return -1;                          /* don't send it */
   }
+  
   AddToQueue(module,ptr,size,0);
-  /* dje, from afterstep, for FvwmAnimate,
-     allows the module to synchronize with fvwm.
-     */
-  if (PipeMask[module] & M_LOCKONSEND) {
+
+  /* dje, from afterstep, for FvwmAnimate, allows modules to sync with fvwm. */
+  /* this is disabled when the server is grabbed, otherwise deadlocks happen */
+  if ((PipeMask[module] & M_LOCKONSEND) && !myxgrabcount) {
     Window targetWindow;
     int e;
 

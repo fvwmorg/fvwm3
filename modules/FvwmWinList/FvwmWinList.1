@@ -143,6 +143,13 @@ currently supported \fIaction\fPs are: Click1, Click2, Click3.  The currently
 supported \fIresponse\fPs are any fvwm built-in commands, including modules
 and functions.
 
+.IP "*FvwmWinNoIconAction \fIaction\fP"
+Tells FvwmWinList to do \fIaction\fP is when a NoIcon style window is 
+iconified or deiconified. Relevant coordinates are appended to \fIaction\fP so
+that the icon can be traced to an FvwmWinList button. An example action
+is  "*FvwmWinListNoIconAction SendToModule FvwmAnimate animate". A blank or null
+action turns this feature off.
+
 .SH SAMPLE CONFIGURATION
 The following are excepts from a .fvwmrc file which describe FvwmWinList
 initialization commands:
@@ -173,6 +180,8 @@ Mouse 3   R   A   Module "FvwmWinList" FvwmWinList Transient
 # A flat list in most recently focused order
 #*FvwmWinListFollowWindowList
 #*FvwmWinListBorderReliefWidth 0
+# pretend to be a taskbar
+*FvwmWinListNoIconAction SendToModule FvwmAnimate animate
 
 .sp
 .fi
@@ -181,6 +190,7 @@ Mouse 3   R   A   Module "FvwmWinList" FvwmWinList Transient
 Mike Finger (mfinger@mermaid.micro.umn.edu)
             (Mike_Finger@atk.com)
             (doodman on IRC, check the #linux channel)
+
 Various Patches by
    John Heidemann <johnh@ficus.CS.UCLA.EDU> and
    Jason L Tibbitts <tibbs@tcamc.uh.edu>.

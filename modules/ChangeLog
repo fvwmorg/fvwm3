@@ -1,3 +1,8 @@
+1999-09-06  Hippo
+
+	* FvwmWinList/FvwmWinList.c: new config option *FvwmWinListNoIconAction
+	to allow FvwmWinList to animate iconification of NoIcon windows
+
 1999-09-06  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmWharf/FvwmWharf.1:

@@ -104,6 +104,7 @@ XFontStruct *ButtonFont;
 XFontSet ButtonFontset;
 #endif
 int fontheight;
+int buttonheight;
 static Atom wm_del_win;
 Atom MwmAtom = None;
 
@@ -130,6 +131,8 @@ long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
 
 static RETSIGTYPE TerminateHandler(int sig);
+
+static char *AnimCommand = NULL;
 
 /***************************************************************************
  * TerminateHandler - reentrant signal handler that ends the main event loop
@@ -246,14 +249,22 @@ int main(int argc, char **argv)
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
 
-  SetMessageMask(Fvwm_fd,M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME |
-                 M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME |
-                 M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST |
-                 M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_WINDOW_NAME |
 #ifdef MINI_ICONS
-                 M_MINI_ICON |
+#define MESSAGE_MASK M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME \
+		     | M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME \
+		     | M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST \
+		     | M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_STRING \
+		     | M_WINDOW_NAME | M_CONFIG_INFO | M_SENDCONFIG
+#else
+#define MESSAGE_MASK M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME \
+		     | M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME \
+		     | M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST \
+		     | M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_STRING \
+		     | M_WINDOW_NAME | M_CONFIG_INFO | M_SENDCONFIG \
+		     | M_MINI_ICON
 #endif
-                 M_STRING | M_CONFIG_INFO | M_SENDCONFIG);
+
+  SetMessageMask(Fvwm_fd, MESSAGE_MASK);
 
   SendFvwmPipe("Send_WindowList",0);
 
@@ -330,6 +341,20 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
   Picture p;
 
+  /* only M_ICONIFY, M_DEICONIFY need synchronous behaviour so send unlock
+   * immediately for all other messages */
+  /* would be better to have a SetSyncMask like SetMessageMask that just lists
+   * the messages that fvwm will treat as synchronous */
+  switch(type)
+  {
+    case M_ICONIFY:
+    case M_DEICONIFY:
+      break;
+    default:
+      SendText(Fvwm_fd, "Unlock 1", 0);
+      break;
+  }
+  
   switch(type)
   {
     case M_ADD_WINDOW:
@@ -396,18 +421,45 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     case M_DEICONIFY:
     case M_ICONIFY:
-      if ((i=FindItem(&windows,body[0]))==-1) break;
-      flagitem=ItemFlags(&windows,body[0]);
-      if (type==M_DEICONIFY && !(IS_ICONIFIED(flagitem))) break;
-      if (type==M_ICONIFY && (IS_ICONIFIED(flagitem))) break;
-      SET_ICONIFIED(flagitem, (IS_ICONIFIED(flagitem)?False:True));
+      /* fwvm is will wait for an Unlock message before continuing
+       * be careful when changing this construct, make sure unlock happens */
+      if ((i = FindItem(&windows, body[0])) != -1) {
+	flagitem = ItemFlags(&windows, body[0]);
+	if ((type == M_DEICONIFY && IS_ICONIFIED(flagitem))
+	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem))) {
+	  if (IS_ICON_SUPPRESSED(flagitem) && AnimCommand
+	      && (AnimCommand[0] != 0)) {
+	    char buff[256];
+	    Window child;
+	    int x, y;
 
-      string=ItemName(&windows,i);
-      name=makename(string, (IS_ICONIFIED(flagitem)?True:False));
-      if (UpdateButton(&buttons,i,name,-1)!=-1) redraw=1;
-      if (i!=current_focus||(IS_ICONIFIED(flagitem)))
-        if (UpdateButtonSet(&buttons,i,(IS_ICONIFIED(flagitem)) ? 1 : 0)!=-1) redraw=1;
-      free(name);
+	    /* find out where our button is */
+	    XTranslateCoordinates(dpy, win, Root, 0, i * buttonheight,
+				  &x, &y, &child);
+	    /* tell FvwmAnimate to animate to our button */
+	    if (IS_ICONIFIED(flagitem)) {
+	      snprintf(buff, 256, "%s %d %d %d %d %d %d %d %d", AnimCommand,
+		       x, y, win_width, buttonheight,
+		       body[7], body[8], body[9], body[10]);
+	    } else {
+	      snprintf(buff, 256, "%s %d %d %d %d %d %d %d %d", AnimCommand,
+		       body[7], body[8], body[9], body[10],
+		       x, y, win_width, buttonheight);
+	    }
+	    SendText(Fvwm_fd, buff, 0);
+	  }
+	  SET_ICONIFIED(flagitem, !IS_ICONIFIED(flagitem));
+	  string = ItemName(&windows, i);
+	  name = makename(string, IS_ICONIFIED(flagitem));
+	  if (UpdateButton(&buttons, i, name, -1) != -1) redraw = 1;
+	  if (i != current_focus || (IS_ICONIFIED(flagitem)))
+	    if (UpdateButtonSet(&buttons, i, (IS_ICONIFIED(flagitem)) ? 1 : 0)
+		!= -1)
+	      redraw = 1;
+	  free(name);
+	}
+      }
+      SendText(Fvwm_fd, "Unlock 1", 0);
       break;
     case M_FOCUS_CHANGE:
       redraw = 1;
@@ -427,7 +479,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         RadioButton(&buttons,-1);
       break;
     case M_END_WINDOWLIST:
-      if (!WindowIsUp) MakeMeWindow();
+      if (!WindowIsUp) {
+	MakeMeWindow();
+	/* setting lock on send before the map causes a lock up */
+	SetMessageMask(Fvwm_fd, MESSAGE_MASK | M_LOCKONSEND);
+      }
       redraw = 1;
       break;
     case M_NEW_DESK:
@@ -666,9 +722,13 @@ ParseConfigLine(char *tline)
 			 Clength + 16) == 0)
       Follow = True;
     else if (strncasecmp(tline, CatString3(Module, "ButtonFrameWidth", ""),
-			 Clength + 16) == 0)
+			 Clength + 16) == 0) {
       ReliefWidth = atoi(&tline[Clength + 16]);
-    else if (strncasecmp(tline, CatString3(Module, "Colorset", ""),
+      buttonheight = fontheight + 3 + 2 * ReliefWidth;
+    } else if (strncasecmp(tline, CatString3(Module, "NoIconAction", ""),
+			 Clength + 12) == 0) {
+      CopyString(&AnimCommand, &tline[Clength + 12]);
+    } else if (strncasecmp(tline, CatString3(Module, "Colorset", ""),
 			 Clength + 8) == 0)
       colorset[0] = atoi(&tline[Clength + 8]);
     else if (strncasecmp(tline, CatString3(Module, "IconColorset", ""),
@@ -835,7 +895,7 @@ void AdjustWindow(Bool force)
   }
   new_width=max(new_width, MinWidth);
   new_width=min(new_width, MaxWidth);
-  new_height=(total * (fontheight + 3 + 2 * ReliefWidth));
+  new_height=(total * buttonheight);
   if (force || (WindowIsUp && (new_height != win_height
 			       || new_width != win_width))) {
     for (i = 0; i != MAX_COLOUR_SETS; i++) {
@@ -852,8 +912,7 @@ void AdjustWindow(Bool force)
 	if (pixmap[i])
 	  XFreePixmap(dpy, pixmap[i]);
 	if (Colorset[cset].pixmap) {
-	  pixmap[i] = CreateBackgroundPixmap(dpy, win, new_width,
-					     fontheight + 3 + 2 * ReliefWidth,
+	  pixmap[i] = CreateBackgroundPixmap(dpy, win, new_width, buttonheight,
 					     &Colorset[cset], Pdepth,
 					     background[i], False);
 	  XSetTile(dpy, background[i], pixmap[i]);
@@ -1140,6 +1199,7 @@ void StartMeUp(void)
 #endif
 
   fontheight = ButtonFont->ascent+ButtonFont->descent;
+  buttonheight = fontheight + 3 + 2 * ReliefWidth;
 
   win_width=XTextWidth(ButtonFont,"XXXXXXXXXXXXXXX",10);
 
