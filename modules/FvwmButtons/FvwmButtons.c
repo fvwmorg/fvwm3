@@ -1179,7 +1179,8 @@ void Loop(void)
 	    act=GetButtonAction(b,0);
 	  if (b && b == CurrentButton && act)
 	  {
-	    if(strncasecmp(act,"Exec",4)==0)
+	    if (strncasecmp(act,"Exec",4) == 0 &&
+		isspace(act[4]))
 	    {
 
 	      /* Look for Exec "identifier", in which case the button

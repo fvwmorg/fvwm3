@@ -553,6 +553,7 @@ Action \fIcommand\fP or alternatively Swallow "\fIhangon\fP" \fIcommand\fP.
 .IP "The \fIcommand\fP"
 Any fvwm command is recognized by FvwmButtons.
 See fvwm2(1) for more infomation.
+
 The Exec command has a small extension when used in Actions,
 its syntax is:
 .nf
@@ -560,6 +561,13 @@ its syntax is:
   Exec ["hangon"] command
 .sp
 .fi
+Example:
+.nf
+.sp
+  *FvwmButtons(Action Exec "xload" xload)
+.sp
+.fi
+The hangon string must be enclosed in double quotes.
 When FvwmButtons finds such an Exec command, the button remains
 pushed in until a window whose name or class matches the
 quoted portion of the command is encountered. This is intended to
@@ -568,6 +576,7 @@ will be performed. If the quoted portion
 contains no characters, then the button will pop out immediately.
 Note that users can continue pressing the button, and re-executing the
 command, even when it looks "pressed in."
+
 .IP "Quoting"
 Any string which contains whitespace must be quoted. Contrary to
 earlier versions commands no longer need to be quoted. In this

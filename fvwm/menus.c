@@ -342,7 +342,9 @@ static void animated_move_back(MenuRoot *mr, Bool do_warp_pointer)
  ***********************************************************************/
 static MenuItem *find_entry(
   int *px_offset /*NULL means don't return this value */,
-  MenuRoot **pmr /*NULL means don't return this value */)
+  MenuRoot **pmr /*NULL means don't return this value */,
+  /* values passed in from caller it XQueryPointer was already called there */
+  Window p_child, int p_rx, int p_ry)
 {
   MenuItem *mi;
   MenuRoot *mr;
@@ -358,8 +360,20 @@ static MenuItem *find_entry(
   if (pmr)
     *pmr = NULL;
 
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &Child,
-		&root_x,&root_y, &JunkX, &JunkY, &JunkMask);
+  if (p_rx < 0)
+  {
+    if (!XQueryPointer(dpy, Scr.Root, &JunkRoot, &Child,
+		       &root_x, &root_y, &JunkX, &JunkY, &JunkMask))
+    {
+      return NULL;
+    }
+  }
+  else
+  {
+    root_x = p_rx;
+    root_y = p_ry;
+    Child = p_child;
+  }
   if (XFindContext(dpy, Child, MenuContext, (caddr_t *)&mr) == XCNOENT)
   {
     return NULL;
@@ -368,8 +382,11 @@ static MenuItem *find_entry(
   if (pmr)
     *pmr = mr;
   /* now get position in that child window */
-  XQueryPointer(dpy, Child, &JunkRoot, &JunkChild,
-		&root_x,&root_y, &x, &y, &JunkMask);
+  if (!XTranslateCoordinates(
+	dpy, Scr.Root, Child, root_x, root_y, &x, &y, &JunkChild))
+  {
+    return NULL;
+  }
 
   r = MST_RELIEF_THICKNESS(mr);
   /* look for the entry that the mouse is in */
@@ -1289,10 +1306,10 @@ fprintf(stderr,"menu torn off\n");
     break;
 
   case SA_WARPBACK:
-    /*Warp the pointer back into the menu. */
+    /* Warp the pointer back into the menu. */
     XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
 		 menu_middle_x_offset(mr), my - menu_y);
-    *pmiCurrent = find_entry(NULL, NULL);
+    *pmiCurrent = find_entry(NULL, NULL, None, -1, -1);
     pmret->rc = MENU_NEWITEM;
     break;
 
@@ -1573,7 +1590,7 @@ static void MenuInteraction(
     switch(Event.type)
     {
     case ButtonRelease:
-      mi = find_entry(&x_offset, &mrMi);
+      mi = find_entry(&x_offset, &mrMi, None, -1, -1);
       /* hold the menu up when the button is released
        * for the first time if released OFF of the menu */
       if(pmp->flags.is_sticky && !flags.is_motion_first)
@@ -1688,7 +1705,7 @@ static void MenuInteraction(
 	int l_x_offset;
 
 	pmret->flags.is_menu_posted = 0;
-	l_mi = find_entry(&l_x_offset, &l_mrMi);
+	l_mi = find_entry(&l_x_offset, &l_mrMi, None, -1, -1);
 	if (l_mrMi != NULL)
 	{
 	  if (pmp->menu != l_mrMi)
@@ -1753,22 +1770,26 @@ static void MenuInteraction(
       break;
 
     case MotionNotify:
+    {
+      int p_rx = -1;
+      int p_ry = -1;
+      Window p_child = None;
+
       if (flags.has_mouse_moved == False)
       {
-	int x_root, y_root;
-	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		      &x_root,&y_root, &JunkX, &JunkY, &JunkMask);
-	if(x_root - x_init > Scr.MoveThreshold ||
-	   x_init - x_root > Scr.MoveThreshold ||
-	   y_root - y_init > Scr.MoveThreshold ||
-	   y_init - y_root > Scr.MoveThreshold)
+	XQueryPointer(dpy, Scr.Root, &JunkRoot, &p_child,
+		      &p_rx, &p_ry, &JunkX, &JunkY, &JunkMask);
+	if (p_rx - x_init > Scr.MoveThreshold ||
+	    x_init - p_rx > Scr.MoveThreshold ||
+	    p_ry - y_init > Scr.MoveThreshold ||
+	    y_init - p_ry > Scr.MoveThreshold)
 	{
 	  /* global variable remember that this isn't just
 	   * a click any more since the pointer moved */
 	  flags.has_mouse_moved = True;
 	}
       }
-      mi = find_entry(&x_offset, &mrMi);
+      mi = find_entry(&x_offset, &mrMi, p_child, p_rx, p_ry);
       if (pmret->flags.is_menu_posted && mrMi != pmret->menu)
       {
 	/* ignore mouse movement outside a posted menu */
@@ -1780,6 +1801,7 @@ static void MenuInteraction(
 	flags.is_motion_first = True;
       flags.is_motion_faked = False;
       break;
+    }
 
     case Expose:
       /* grab our expose events, let the rest go through */
@@ -2136,7 +2158,7 @@ static void MenuInteraction(
 	{
 	  if (MR_PARENT_MENU(mrPopup) == pmp->menu)
 	  {
-	    mi = find_entry(NULL, &mrMi);
+	    mi = find_entry(NULL, &mrMi, None, -1, -1);
 	    if (mi && mrMi == mrPopup)
 	    {
 	      flags.do_menu = True;
@@ -2228,7 +2250,7 @@ static void MenuInteraction(
        * original place to unobscure the current menu;	this happens only when
        * using animation */
       if (mrPopup && MR_XANIMATION(mrPopup) &&
-	  (tmi = find_entry(NULL, &tmrMi))  &&
+	  (tmi = find_entry(NULL, &tmrMi, None, -1, -1))  &&
 	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
       {
 	animated_move_back(mrPopup, False);
@@ -2337,7 +2359,7 @@ static void MenuInteraction(
       {
 	warp_pointer_to_item(pmp->parent_menu,
 			     MR_SELECTED_ITEM(pmp->parent_menu), False);
-	tmi = find_entry(NULL, &tmrMi);
+	tmi = find_entry(NULL, &tmrMi, None, -1, -1);
 	if (pmp->parent_menu != tmrMi && MR_XANIMATION(pmp->menu) == 0)
 	{
 	  /* Warping didn't take us to the correct menu, i.e. the spot we want
@@ -2897,7 +2919,7 @@ static int pop_menu_up(
   {
     MenuItem *mi;
 
-    mi = find_entry(NULL, &mrMi);
+    mi = find_entry(NULL, &mrMi, None, -1, -1);
     if (mi && mrMi == mr && mi != MR_FIRST_ITEM(mrMi))
     {
       /* pointer is on an item of the popup */
