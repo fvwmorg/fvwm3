@@ -1,3 +1,8 @@
+1999-11-24  Brad Giaccio  <bgiaccio@psrw.com>
+	* FvwmIconMan/xmanager.c (resize_manager):
+	if using a colorset gradient or pixmap it is now resized when 
+	then the manager changes sizes
+ 
 1999-11-24  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.1
