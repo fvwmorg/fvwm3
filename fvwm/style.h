@@ -97,6 +97,8 @@
 	((sf)->has_placement_penalty)
 #define SHAS_PLACEMENT_PERCENTAGE_PENALTY(sf) \
 	((sf)->has_placement_percentage_penalty)
+#define SCR_MOTION_METHOD(sf) \
+	((sf)->ws_cr_motion_method)
 
 /* access the various copies of the common flags structure. */
 #define SCF(st) \

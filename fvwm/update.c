@@ -278,8 +278,8 @@ static void apply_window_updates(
 				gravity_add_decoration(
 					NorthWestGravity, t, &t->max_g,
 					&naked_g);
-				/* prevent random paging when unmaximizing after
-				 * e.g.the border width has changed */
+				/* prevent random paging when unmaximizing
+				 * after e.g.the border width has changed */
 				new_off_x = t->normal_g.x - t->max_g.x;
 				new_off_y = t->normal_g.y - t->max_g.y;
 				t->max_offset.x += new_off_x - off_x;
@@ -604,6 +604,25 @@ static void apply_window_updates(
 		}
 	}
 	t->shade_anim_steps = pstyle->shade_anim_steps;
+	if (flags->do_update_cr_motion_method)
+	{
+		switch (SCR_MOTION_METHOD(&pstyle->flags))
+		{
+		case WS_CR_MOTION_METHOD_AUTO:
+			if (WAS_CR_MOTION_METHOD_DETECTED(t))
+			{
+				/* method was already detected, keep it */
+				break;
+			}
+			/* fall through */
+		case WS_CR_MOTION_METHOD_USE_GRAV:
+		case WS_CR_MOTION_METHOD_STATIC_GRAV:
+			SET_CR_MOTION_METHOD(
+				t, SCR_MOTION_METHOD(&pstyle->flags));
+			SET_CR_MOTION_METHOD_DETECTED(t, 0);
+			break;
+		}
+	}
 
 	return;
 }

@@ -1,5 +1,13 @@
 2003-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
+	* fvwm/add_window.c (setup_style_and_decor):
+	* fvwm/style.h:
+	* fvwm/style.c (style_parse_one_style_option):
+	(check_window_style_change):
+	new style MoveWindowByProgramMethod
+
 	* libs/PictureImageLoader.c (PImageLoadXpm):
 	use RETSIGTYPE and SIGNAL_RETURN for all signal handlers
 

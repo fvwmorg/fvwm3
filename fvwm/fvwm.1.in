@@ -5967,7 +5967,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR EWMHMaximizeIgnoreWorkingArea " / " EWMHMaximizeUseWorkingArea " / "
 .IR EWMHMaximizeUseDynamicWorkingArea ,
 .IR EWMHPlacementIgnoreWorkingArea " / " EWMHPlacementUseWorkingArea
-.IR EWMHPlacementUseDynamicWorkingArea .
+.IR EWMHPlacementUseDynamicWorkingArea ,
+.IR MoveWindowByProgramMethod .
 
 .\" +++++++++++++++ general notes
 In the above list some options are listed as
@@ -6795,6 +6796,33 @@ styles.  The
 .I FixedPSize
 style may screw up window dimensions for some applications.  Don't
 use this style in this case.
+
+.IR MoveWindowByProgramMethod
+affects how fvwm reacts to requests by the application to move its
+windows.  By default, fvwm tries to detect which method to use,
+but it sometimes detects the wrong method.  You may come across a
+window that travels across the screen by a few pixels when the
+application resizes it, moves to a screen border with the frame
+decorations off screen, that remembers its position for the next
+time it starts but appears in a slighly shifted position, or that
+attepmts to become full screen but has the.  Try out both options,
+.IR UseGravity " and " IgnoreGravity
+on the window (and that window only) and see if that helps.  By
+default, fvwm uses the
+.I AutoDetect
+method.  Once the method was detected, it is never changed again.
+As long as fvwm can not detect the proper method, it uses
+.IR IgnoreGravity .
+To force fvwm to retry the detection, use one of the other two
+options first and then use
+.I AutoDetect
+again.
+
+Note:  This option was introduced to alleviate a problem with the
+ICCCM2 specification.  The ICCCM2 clearly states that the
+.I UseGravity
+option should be used, but traditionally applications ignored this
+rule.
 
 .IR Closable
 enables the functions

@@ -75,6 +75,7 @@ Development Rules of the Road
     fvwm<->module communication protocol). Moving features in
     modules helps to keep fvwm itself clean and efficient.
 
+ 8) See CONVENTIONS for more details.
 
         ** Of course, compile and test before committing! **
 

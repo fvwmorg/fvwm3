@@ -1,0 +1,240 @@
+This document tries to list all the conventions that the fvwm
+developers adhere to, either by consensus through discussion,
+common practice or unspoken agreement.  It is hopefully useful for
+the fvwm development newbie.  Do not take these 'rules' as
+religious duties.  All of this can be discussed if need be.  If
+you add items to or modify items in this list, add your name and
+the resoning for the change.
+
+! = This rule *must* be followed
+* = Less strict rules
+o = Suggestions
+
+
+A. Programming Languages
+
+ ! The following programming languages are allowed:
+
+    - ANSI C
+    - Perl
+    - Portable /bin/sh scripts for examples.
+
+   All other languages - specifically C++ - are not allowed since
+   they cause portability problems.
+   [dv]
+
+B. New Code Files
+
+ * There are templates for new code files in the fvwm directory.
+   Try to always use them as they provide a clean structure of the
+   header and code files.  Please honour the section titles.  For
+   example, put all static functions (and only static functions)
+   under the "local functions" section.
+   [dv]
+
+ ! All .c files *must* have
+
+     #include "config.h"
+
+   as the first non-comment line.  Otherwise the settings made by
+   the configure script may not be used.  This can cause random
+   problems.
+   [dv]
+
+ * Add a comment "/* -*-c-*- */" at the beginning to tell (x)emacs
+   it is a C source file even if it was renamed to something like
+   foo.c.bak.
+   [dv]
+
+C. File Names
+
+ * The names of the code files in the fvwm directory are in lower
+   case.
+   [dv]
+
+ * Files in the libs directory may begin with a capital 'F'.  This
+   letter is reserver for wrapper files for third party libraries
+   or modules.  For example, FShape is an abstraction of the
+   XSpahe X server extension and FBidi is a wrapper for the
+   fribidi library.  Do not use the 'F' for other purposes.
+   [dv]
+
+D. Copyright Notices
+
+ * A copy of the GPL should be at the beginning of all code files
+   (.c) and scripts, but not at the beginning of header files
+   (.h).
+   [dv]
+
+E. Code Formatting
+
+ * Follow the Linux Kernel Coding Rules.  Specifically:
+   [dv]
+
+ * Indent with TABS only.  The TAB width is eight spaces.
+
+   Reasoning:  This limits the space available for nesting blocks
+   in functions.  For long functions, it is easier to read.  Also,
+   a properly formatted file can be read with any editor as long
+   as it has at least 80 columns and a TAB width of 8 or less.
+   [dv]
+
+ o Always place curly braces on a separate line.  In some cases,
+   placing braces on the same line as other code confuses
+   (x)emacs.
+   [dv]
+
+ * Use no more than 79 columns per line.  If you have trouble to
+   fit the code in 79 characters, think how you could move some of
+   it to a separate function.
+   Note:  Due to a bug in xemacs, it is sometimes not possible to
+   start the editor window with 80 columns.  It comes up either
+   with 79 or 81 columns.  Hence the rule to no use 80 columns per
+   line.
+   [dv]
+
+ * Try to keep functions short.  A function should not consist of
+   more than one or two screen pages.
+
+   Reasoning:  Improves readability.
+   [dv]
+
+ * Always keep code maintenance in mind.  Break down complex
+   expressions into a series of smaller expressions and leave the
+   optimising work to the compiler.  It is of utmost importance
+   that your code is easy to understand.
+   [dv]
+
+F. Coding
+
+ ! Global variables are forbidden.  Full stop.
+   [dv]
+
+ * Chose meaningful function and variable names.  But keep in mind
+   that C guarantees only 32 character to be used.
+   [dv]
+
+ * Flag variables should always begin with auxiliary verbs.  For
+   example:  is_new, do_restart, has_this, use_that, etc.
+
+   Reasoning:  when you look at the flag variable out of context,
+   you immediately recognise it as a flag.  If you name a flag for
+   example restart or new, this may not be clear without looking
+   up the definition.
+   [dv]
+
+ o The names of locval helper funtions with limited functionality
+   may begin with two underscores.  For example
+   "__local_function".  These funtions *must* be declared static
+   and *must not* be ever exported.
+
+   Reasoning:  this is a visual aid for code maintenance.  When
+   you encounter a function with such a name you know that it
+   contains limited local functionality.
+   [dv]
+
+ * Comment your code liberately, but do not explain the obvious.
+   It is often better to chose meaningful function and variable
+   names.
+
+G. Formatting text files
+
+ * Indent text files with spaces and do not use more than 79
+   colums.  Do not use TABs in text files.
+   [dv]
+
+ * Some of the supplementary text files in the distribution are
+   regulary posted to mailing lists.  According to the most strict
+   version of the Nettiquette I found, no more than 67 columns
+   must be used in these files.  These files are
+
+    - NEWS
+    - FAQ
+    - ANNOUNCE
+
+   Note:  (x)emacs auto-fill-mode is very useful to do this.
+   [dv]
+
+ o You may add the literal string "-*-text-*-" in the first line
+   of the file to tell (x)emacs that it is a text file.
+   [dv]
+
+ ! If you are unsure about your knowledge of the English language,
+   ask for help on the mailing list when you write documentation.
+   [dv]
+
+ o In English, the full stop ('.') or colon (':') is usually
+   followed by two spaces instead of one.
+
+   Reasoning:  Improves readability.
+   [dv]
+
+H. Release Management
+
+ * New patches may be tried out in the development versions (with
+   an odd second digit in the version number).  Features may be
+   changed, renamed or removed at any time.
+   [dv]
+
+ ! In the stable versions, features can not easily be changed or
+   removed.  For backwards compatibility think of the least
+   disrupting way of doing changes.
+   [dv]
+
+ * As you may conclude from above two items, try to never add
+   experimental features close to the next stable release.  Once
+   the feature is made availabe in a stable version, it becomes
+   virtually impossible to back it out or change its syntax.
+   [dv]
+
+I. Maintaining the NEWS
+
+ * In the development versions, only new, removed and changed
+   features must be mentioned in the NEWS.
+   [dv]
+
+ * There is currently some discussion whether features that were
+   added in a prior development release and are renamed or removed
+   later, before the next stable release, should be deleted from
+   the NEWS or not.
+   [dv]
+
+ ! In the stable versions, all changes to any file *must* be
+   mentioned in the NEWS.  This is important since the NEWS file
+   is sent as part of the release announcement.  Users must be
+   able to judge whether they want the new release or not.
+   [dv]
+
+J. Maintaining the ChangeLog
+
+ ! The ChangeLog is meant to ease code maintenance.  With proper
+   and detailed entries, the ChangeLog can dramatically reduce the
+   time needed to find problems and fix bugs.
+   [dv]
+
+ ! Every change *must* be ChangeLog'ed as detailed as possible.
+   To generate a ChangeLog entry while you are coding, press "C-x
+   4 a" in (x)emacs.
+   [dv]
+
+ ! If at all possible, put *all* names of modified files and
+   functions in the ChangeLog.
+   [dv]
+
+ * Please do not use wildcards in the ChangeLog entries.  If you
+   modified fvwm.c and fvwm.h, do not write "fvwm.[ch]" or
+   "fvwm.{c,h}" or "fvwm.*".
+
+   Reasoning:  wildcards make it virtually impossible to grep
+   through the ChangeLog.
+   [dv]
+
+K. Maintaining Man Pages
+
+ ! Every feature must be described with all options in the man
+   page.
+   [dv]
+
+ * The man page has its own formatting rules.  See fvwm/fvwm.1.in
+   for details.
+   [dv]

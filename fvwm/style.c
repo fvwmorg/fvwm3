@@ -1918,16 +1918,17 @@ static Bool style_parse_one_style_option(
 			ps->flags.manual_placement_honors_starts_on_page = on;
 			ps->flag_mask.manual_placement_honors_starts_on_page =
 				1;
-			ps->change_mask.manual_placement_honors_starts_on_page =
-				1;
+			ps->change_mask.manual_placement_honors_starts_on_page
+				= 1;
 		}
-		else if (StrEquals(token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
+		else if (StrEquals(
+				 token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
 		{
 			ps->flags.manual_placement_honors_starts_on_page = !on;
 			ps->flag_mask.manual_placement_honors_starts_on_page =
 				1;
-			ps->change_mask.manual_placement_honors_starts_on_page =
-				1;
+			ps->change_mask.manual_placement_honors_starts_on_page
+				= 1;
 		}
 		else if (StrEquals(token, "AllowRestack"))
 		{
@@ -2062,13 +2063,13 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.placement_mode |= PLACE_CLEVER;
 			ps->change_mask.placement_mode |= PLACE_CLEVER;
 		}
-		else if (StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
+		else if (StrEquals(token, "CaptureHonorsStartsOnPage"))
 		{
 			ps->flags.capture_honors_starts_on_page = on;
 			ps->flag_mask.capture_honors_starts_on_page = 1;
 			ps->change_mask.capture_honors_starts_on_page = 1;
 		}
-		else if (StrEquals(token, "CAPTUREIGNORESSTARTSONPAGE"))
+		else if (StrEquals(token, "CaptureIgnoresStartsonPage"))
 		{
 			ps->flags.capture_honors_starts_on_page = !on;
 			ps->flag_mask.capture_honors_starts_on_page = 1;
@@ -2079,14 +2080,16 @@ static Bool style_parse_one_style_option(
 			*val = -1;
 			GetIntegerArguments(rest, NULL, val, 1);
 			if (*val < 0)
+			{
 				*val = -1;
+			}
 			SSET_COLORSET(*ps, *val);
 			alloc_colorset(*val);
 			ps->flags.use_colorset = (*val >= 0);
 			ps->flag_mask.use_colorset = 1;
 			ps->change_mask.use_colorset = 1;
 		}
-		else if (StrEquals(token, "COLOR"))
+		else if (StrEquals(token, "Color"))
 		{
 			char c = 0;
 			char *next;
@@ -2376,7 +2379,8 @@ static Bool style_parse_one_style_option(
 			{
 				fvwm_msg(
 					ERR, "style_parse_one_style_option",
-					"ForeColor Style needs color argument");
+					"ForeColor Style needs color argument"
+					);
 			}
 		}
 		else if (StrEquals(token, "FVWMBUTTONS"))
@@ -2448,7 +2452,8 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "GrabFocusTransientOff"))
 		{
-			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCF(*ps)), !on);
+			FPS_GRAB_FOCUS_TRANSIENT(
+				S_FOCUS_POLICY(SCF(*ps)), !on);
 			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCM(*ps)), 1);
 			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
@@ -2797,7 +2802,8 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "Layer"))
 		{
 			*val = -1;
-			if (GetIntegerArguments(rest, NULL, val, 1) && *val < 0)
+			if (GetIntegerArguments(rest, NULL, val, 1) &&
+			    *val < 0)
 			{
 				fvwm_msg(ERR, "style_parse_one_style_option",
 					 "Layer must be positive or zero.");
@@ -2837,21 +2843,22 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.placement_mode = PLACE_MASK;
 			ps->change_mask.placement_mode = PLACE_MASK;
 		}
-		else if (StrEquals(token, "MANUALPLACEMENTHONORSSTARTSONPAGE"))
+		else if (StrEquals(token, "ManualPlacementHonorsStartsOnPage"))
 		{
 			ps->flags.manual_placement_honors_starts_on_page = on;
 			ps->flag_mask.manual_placement_honors_starts_on_page =
 				1;
-			ps->change_mask.manual_placement_honors_starts_on_page =
-				1;
+			ps->change_mask.manual_placement_honors_starts_on_page
+				= 1;
 		}
-		else if (StrEquals(token, "MANUALPLACEMENTIGNORESSTARTSONPAGE"))
+		else if (StrEquals(
+				 token, "ManualPlacementIgnoresStartsOnPage"))
 		{
 			ps->flags.manual_placement_honors_starts_on_page = !on;
 			ps->flag_mask.manual_placement_honors_starts_on_page =
 				1;
-			ps->change_mask.manual_placement_honors_starts_on_page =
-				1;
+			ps->change_mask.manual_placement_honors_starts_on_page
+				= 1;
 		}
 	        else if (StrEquals(token, "Maximizable"))
 		{
@@ -2949,13 +2956,13 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.has_placement_percentage_penalty = 1;
 			ps->change_mask.has_placement_percentage_penalty = 1;
 		}
-		else if (StrEquals(token, "MWMBUTTONS"))
+		else if (StrEquals(token, "MwmButtons"))
 		{
 			S_SET_HAS_MWM_BUTTONS(SCF(*ps), on);
 			S_SET_HAS_MWM_BUTTONS(SCM(*ps), 1);
 			S_SET_HAS_MWM_BUTTONS(SCC(*ps), 1);
 		}
-		else if (StrEquals(token, "MINIICON"))
+		else if (StrEquals(token, "MiniIcon"))
 		{
 			if (!FMiniIconsSupported)
 			{
@@ -2972,23 +2979,24 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(ERR, "style_parse_one_style_option",
-					 "MiniIcon Style requires an Argument");
+				fvwm_msg(
+					ERR, "style_parse_one_style_option",
+					"MiniIcon Style requires an Argument");
 			}
 		}
-		else if (StrEquals(token, "MWMBORDER"))
+		else if (StrEquals(token, "MwmBorder"))
 		{
 			S_SET_HAS_MWM_BORDER(SCF(*ps), on);
 			S_SET_HAS_MWM_BORDER(SCM(*ps), 1);
 			S_SET_HAS_MWM_BORDER(SCC(*ps), 1);
 		}
-		else if (StrEquals(token, "MWMDECOR"))
+		else if (StrEquals(token, "MwmDecor"))
 		{
 			ps->flags.has_mwm_decor = on;
 			ps->flag_mask.has_mwm_decor = 1;
 			ps->change_mask.has_mwm_decor = 1;
 		}
-		else if (StrEquals(token, "MWMFUNCTIONS"))
+		else if (StrEquals(token, "MwmFunctions"))
 		{
 			ps->flags.has_mwm_functions = on;
 			ps->flag_mask.has_mwm_functions = 1;
@@ -3028,7 +3036,7 @@ static Bool style_parse_one_style_option(
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
 				S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
-		else if (StrEquals(token, "MAXWINDOWSIZE"))
+		else if (StrEquals(token, "MaxWindowSize"))
 		{
 			int val1;
 			int val2;
@@ -3068,6 +3076,27 @@ static Bool style_parse_one_style_option(
 			ps->flags.has_max_window_size = 1;
 			ps->flag_mask.has_max_window_size = 1;
 			ps->change_mask.has_max_window_size = 1;
+		}
+		else if (StrEquals(token, "MoveWindowByProgramMethod"))
+		{
+			int i;
+			char *methodlist[] = {
+				"AutoDetect",
+				"UseGravity",
+				"IgnoreGravity",
+				NULL
+			};
+
+			i = GetTokenIndex(rest, methodlist, 0, NULL);
+			if (i == -1)
+			{
+				i = WS_CR_MOTION_METHOD_AUTO;
+			}
+			SCR_MOTION_METHOD(&ps->flags) = i;
+			SCR_MOTION_METHOD(&ps->flag_mask) =
+				WS_CR_MOTION_METHOD_MASK;
+			SCR_MOTION_METHOD(&ps->change_mask) =
+				WS_CR_MOTION_METHOD_MASK;
 		}
 		else
 		{
@@ -4100,7 +4129,8 @@ void lookup_style(FvwmWindow *fw, window_style *styles)
 		{
 			merge_styles(styles, nptr, False);
 		}
-		else if (matchWildcards(SGET_NAME(*nptr),fw->name.name) == TRUE)
+		else if (matchWildcards(
+				 SGET_NAME(*nptr), fw->name.name) == TRUE)
 		{
 			merge_styles(styles, nptr, False);
 		}
@@ -4137,11 +4167,9 @@ void check_window_style_change(
 		return;
 	}
 
-	/*
-	 * do_ignore_gnome_hints
+	/* do_ignore_gnome_hints
 	 *
-	 * must handle these first because they may alter the style
-	 */
+	 * must handle these first because they may alter the style */
 	if (S_DO_IGNORE_GNOME_HINTS(SCC(*ret_style)) &&
 	    !S_DO_IGNORE_GNOME_HINTS(SCF(*ret_style)))
 	{
@@ -4176,10 +4204,8 @@ void check_window_style_change(
 		sf[i] = wf[i];
 	}
 
-	/*
-	 * is_sticky
-	 * is_icon_sticky
-	 */
+	/* is_sticky
+	 * is_icon_sticky */
 	if (S_IS_STICKY_ACROSS_PAGES(SCC(*ret_style)) ||
 	    S_IS_STICKY_ACROSS_DESKS(SCC(*ret_style)))
 	{
@@ -4196,20 +4222,16 @@ void check_window_style_change(
 		flags->do_update_stick_icon = True;
 	}
 
-	/*
-	 * focus policy
-	 */
+	/* focus policy */
 	if (fpol_is_policy_changed(&S_FOCUS_POLICY(SCC(*ret_style))))
 	{
 		flags->do_setup_focus_policy = True;
 	}
 
-	/*
-	 * is_left_title_rotated_cw
+	/* is_left_title_rotated_cw
 	 * is_right_title_rotated_cw
 	 * is_top_title_rotated
-	 * is_bottom_title_rotated
-	 */
+	 * is_bottom_title_rotated */
 	if (S_IS_LEFT_TITLE_ROTATED_CW(SCC(*ret_style)) ||
 	    S_IS_RIGHT_TITLE_ROTATED_CW(SCC(*ret_style)) ||
 	    S_IS_TOP_TITLE_ROTATED(SCC(*ret_style)) ||
@@ -4218,62 +4240,48 @@ void check_window_style_change(
 		flags->do_update_title_text_dir = True;
 	}
 
-	/*
-	 * title_dir
-	 */
+	/* title_dir */
 	if (S_TITLE_DIR(SCC(*ret_style)))
 	{
 		flags->do_update_title_dir = True;
 	}
 
-	/*
-	 * use_title_decor_rotation
-	 */
+	/* use_title_decor_rotation */
 	if (S_USE_TITLE_DECOR_ROTATION(SCC(*ret_style)))
 	{
 		flags->do_update_rotated_title = True;
 	}
 
-	/*
-	 * has_mwm_border
-	 * has_mwm_buttons
-	 */
+	/* has_mwm_border
+	 * has_mwm_buttons */
 	if (S_HAS_MWM_BORDER(SCC(*ret_style)) ||
 	    S_HAS_MWM_BUTTONS(SCC(*ret_style)))
 	{
 		flags->do_redecorate = True;
 	}
 
-	/*
-	 * has_icon_font
-	 */
+	/* has_icon_font */
 	if (S_HAS_ICON_FONT(SCC(*ret_style)))
 	{
 		flags->do_update_icon_font = True;
 	}
 
-	/*
-	 * has_window_font
-	 */
+	/* has_window_font */
 	if (S_HAS_WINDOW_FONT(SCC(*ret_style)))
 	{
 		flags->do_update_window_font = True;
 	}
 
-	/*
-	 * has_stippled_title
-	 */
+	/* has_stippled_title */
 	if (S_HAS_STIPPLED_TITLE(SCC(*ret_style)))
 	{
 		flags->do_redraw_decoration = True;
 	}
 
-	/*
-	 * has_no_icon_title
+	/* has_no_icon_title
 	 * is_icon_suppressed
 	 *
-	 * handled below
-	 */
+	 * handled below */
 
 	/*** private style flags ***/
 
@@ -4301,19 +4309,15 @@ void check_window_style_change(
 	 *   handling the 'usestyle' style
 	 */
 
-	/*
-	 * do_window_list_skip
-	 */
+	/* do_window_list_skip */
 	if (S_DO_WINDOW_LIST_SKIP(SCC(*ret_style)))
 	{
 		flags->do_update_modules_flags = True;
 		flags->do_update_ewmh_state_hints = True;
 	}
 
-	/*
-	 * has_icon
-	 * icon_override
-	 */
+	/* has_icon
+	 * icon_override */
 	if (ret_style->change_mask.has_icon ||
 	    S_ICON_OVERRIDE(SCC(*ret_style)))
 	{
@@ -4321,11 +4325,9 @@ void check_window_style_change(
 		flags->do_update_icon = True;
 	}
 
-	/*
-	 * has_icon_background_padding
+	/* has_icon_background_padding
 	 * has_icon_background_relief
-	 * has_icon_title_relief
-	 */
+	 * has_icon_title_relief */
 	if (ret_style->change_mask.has_icon_background_padding ||
 	    ret_style->change_mask.has_icon_background_relief ||
 	    ret_style->change_mask.has_icon_title_relief)
@@ -4333,10 +4335,8 @@ void check_window_style_change(
 		flags->do_update_icon = True;
 	}
 
-	/*
-	 * has_no_icon_title
-	 * is_icon_suppressed
-	 */
+	/* has_no_icon_title
+	 * is_icon_suppressed */
 	if (S_HAS_NO_ICON_TITLE(SCC(*ret_style)) ||
 	    S_IS_ICON_SUPPRESSED(SCC(*ret_style)))
 	{
@@ -4346,36 +4346,28 @@ void check_window_style_change(
 		flags->do_update_modules_flags = True;
 	}
 
-	/*
-	 * has_icon_size_limits
-	 */
+	/* has_icon_size_limits */
 	if (ret_style->change_mask.has_icon_size_limits)
 	{
 		flags->do_update_icon_size_limits = True;
 		flags->do_update_icon = True;
 	}
 
-	/*
-	 *   has_icon_boxes
-	 */
+	/*   has_icon_boxes */
 	if (ret_style->change_mask.has_icon_boxes)
 	{
 		flags->do_update_icon_boxes = True;
 		flags->do_update_icon = True;
 	}
 
-	/*
-	 * do_ewmh_donate_icon
-	 */
+	/* do_ewmh_donate_icon */
 	if (S_DO_EWMH_DONATE_ICON(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_icon = True;
 	}
 
-	/*
-	 * has_mini_icon
-	 * do_ewmh_mini_icon_override
-	 */
+	/* has_mini_icon
+	 * do_ewmh_mini_icon_override */
 	if (FMiniIconsSupported && (ret_style->change_mask.has_mini_icon ||
 	    S_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ret_style))))
 	{
@@ -4384,29 +4376,23 @@ void check_window_style_change(
 		flags->do_redecorate = True;
 	}
 
-	/*
-	 * do_ewmh_donate_mini_icon
-	 */
+	/* do_ewmh_donate_mini_icon */
 	if (FMiniIconsSupported && S_DO_EWMH_DONATE_MINI_ICON(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_mini_icon = True;
 	}
 
-	/*
-	 * has_max_window_size
-	 */
+	/* has_max_window_size */
 	if (ret_style->change_mask.has_max_window_size)
 	{
 		flags->do_resize_window = True;
 		flags->do_update_ewmh_allowed_actions = True;
 	}
 
-	/*
-	 * has_color_back
+	/* has_color_back
 	 * has_color_fore
 	 * use_colorset
-	 * use_border_colorset
-	 */
+	 * use_border_colorset */
 	if (ret_style->change_mask.has_color_fore ||
 	    ret_style->change_mask.has_color_back ||
 	    ret_style->change_mask.use_colorset ||
@@ -4414,12 +4400,10 @@ void check_window_style_change(
 	{
 		flags->do_update_window_color = True;
 	}
-	/*
-	 * has_color_back_hi
+	/* has_color_back_hi
 	 * has_color_fore_hi
 	 * use_colorset_hi
-	 * use_border_colorset_hi
-	 */
+	 * use_border_colorset_hi */
 	if (ret_style->change_mask.has_color_fore_hi ||
 	    ret_style->change_mask.has_color_back_hi ||
 	    ret_style->change_mask.use_colorset_hi ||
@@ -4428,67 +4412,51 @@ void check_window_style_change(
 		flags->do_update_window_color_hi = True;
 	}
 
-	/*
-	 * use_icon_title_colorset
-	 */
+	/* use_icon_title_colorset */
 	if (ret_style->change_mask.use_icon_title_colorset)
 	{
 		flags->do_update_icon_title_cs = True;
 	}
 
-	/*
-	 * use_icon_title_colorset_hi
-	 */
+	/* use_icon_title_colorset_hi */
 	if (ret_style->change_mask.use_icon_title_colorset_hi)
 	{
 		flags->do_update_icon_title_cs_hi = True;
 	}
 
-	/*
-	 * use_icon_title_colorset
-	 */
+	/* use_icon_title_colorset */
 	if (ret_style->change_mask.use_icon_title_colorset)
 	{
 		flags->do_update_icon_title_cs = True;
 	}
 
-	/*
-	 * use_icon_background_colorset
-	 */
+	/* use_icon_background_colorset */
 	if (ret_style->change_mask.use_icon_background_colorset)
 	{
 		flags->do_update_icon_background_cs = True;
 	}
 
-	/*
-	 * has_decor
-	 */
+	/* has_decor */
 	if (ret_style->change_mask.has_decor)
 	{
 		flags->do_redecorate = True;
 		flags->do_update_window_font_height = True;
 	}
 
-	/*
-	 * has_no_title
-	 */
+	/* has_no_title */
 	if (ret_style->change_mask.has_no_title)
 	{
 		flags->do_redecorate = True;
 		flags->do_update_window_font = True;
 	}
 
-	/*
-	 * do_decorate_transient
-	 */
+	/* do_decorate_transient */
 	if (ret_style->change_mask.do_decorate_transient)
 	{
 		flags->do_redecorate_transient = True;
 	}
 
-	/*
-	 * has_ol_decor
-	 */
+	/* has_ol_decor */
 	if (ret_style->change_mask.has_ol_decor)
 	{
 		/* old decor overrides 'has_no_icon_title'! */
@@ -4498,15 +4466,13 @@ void check_window_style_change(
 		flags->do_redecorate = True;
 	}
 
-	/*
-	 * has_no_border
+	/* has_no_border
 	 * has_border_width
 	 * has_handle_width
 	 * has_mwm_decor
 	 * has_mwm_functions
 	 * has_no_handles
-	 * is_button_disabled
-	 */
+	 * is_button_disabled */
 	if (S_HAS_NO_BORDER(SCC(*ret_style)) ||
 	    ret_style->change_mask.has_border_width ||
 	    ret_style->change_mask.has_handle_width ||
@@ -4533,62 +4499,48 @@ void check_window_style_change(
 		flags->do_refresh = True;
 	}
 
-	/*
-	 * has_placement_penalty
-	 * has_placement_percentage_penalty
-	 */
+	/* has_placement_penalty
+	 * has_placement_percentage_penalty */
 	if (ret_style->change_mask.has_placement_penalty ||
 	    ret_style->change_mask.has_placement_percentage_penalty)
 	{
 		flags->do_update_placement_penalty = True;
 	}
 
-	/*
-	 * do_ewmh_ignore_strut_hints
-	 */
+	/* do_ewmh_ignore_strut_hints */
 	if (S_DO_EWMH_IGNORE_STRUT_HINTS(SCC(*ret_style)))
 	{
 		flags->do_update_working_area = True;
 	}
 
-	/*
-	 * do_ewmh_ignore_state_hints
-	 */
+	/* do_ewmh_ignore_state_hints */
 	if (S_DO_EWMH_IGNORE_STATE_HINTS(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_state_hints = True;
 		flags->do_update_modules_flags = True;
 	}
 
-	/*
-	 * do_ewmh_use_staking_hints
-	 */
+	/* do_ewmh_use_staking_hints */
 	if (S_DO_EWMH_USE_STACKING_HINTS(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_stacking_hints = True;
 	}
 
-	/*
-	 *  use_indexed_window_name
-	 */
+	/*  use_indexed_window_name */
 	if (S_USE_INDEXED_WINDOW_NAME(SCC(*ret_style)))
 	{
 		flags->do_update_visible_window_name = True;
 		flags->do_redecorate = True;
 	}
 
-	/*
-	 *  use_indexed_icon_name
-	 */
+	/*  use_indexed_icon_name */
 	if (S_USE_INDEXED_ICON_NAME(SCC(*ret_style)))
 	{
 		flags->do_update_visible_icon_name = True;
 		flags->do_update_icon_title = True;
 	}
 
-	/*
-	 *  is_fixed
-	 */
+	/*  is_fixed */
 	if (S_IS_FIXED(SCC(*ret_style)) ||
 	    S_IS_FIXED_PPOS(SCC(*ret_style)) ||
 	    S_IS_SIZE_FIXED(SCC(*ret_style)) ||
@@ -4596,6 +4548,12 @@ void check_window_style_change(
 	    S_HAS_OVERRIDE_SIZE(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_allowed_actions = True;
+	}
+
+	/* cr_motion_method */
+	if (SCR_MOTION_METHOD(&ret_style->change_mask))
+	{
+		flags->do_update_cr_motion_method = True;
 	}
 
 	return;
@@ -4810,12 +4768,34 @@ void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle)
 {
 	if (SUSE_ICON_BACKGROUND_COLORSET(&pstyle->flags))
 	{
-		fw->icon_background_cs = SGET_ICON_BACKGROUND_COLORSET(*pstyle);
+		fw->icon_background_cs =
+			SGET_ICON_BACKGROUND_COLORSET(*pstyle);
 	}
 	else
 	{
 		fw->icon_background_cs = -1;
 	}
+}
+
+void print_styles(int verbose)
+{
+	window_style *nptr;
+	int count = 0;
+
+	fprintf(stderr,"Info on fvwm Styles:\n");
+	if (verbose)
+	{
+		fprintf(stderr,"  List of Styles Names:\n");
+	}
+	for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
+	{
+		count++;
+		if (verbose)
+		{
+			fprintf(stderr,"    * %s\n", SGET_NAME(*nptr));
+		}
+	}
+	fprintf(stderr,"  Number of styles: %i\n", count);
 }
 
 /* ---------------------------- builtin commands --------------------------- */
@@ -4870,25 +4850,4 @@ void CMD_DestroyStyle(F_CMD_ARGS)
 	}
 
 	return;
-}
-
-void print_styles(int verbose)
-{
-	window_style *nptr;
-	int count = 0;
-
-	fprintf(stderr,"Info on fvwm Styles:\n");
-	if (verbose)
-	{
-		fprintf(stderr,"  List of Styles Names:\n");
-	}
-	for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
-	{
-		count++;
-		if (verbose)
-		{
-			fprintf(stderr,"    * %s\n", SGET_NAME(*nptr));
-		}
-	}
-	fprintf(stderr,"  Number of styles: %i\n", count);
 }

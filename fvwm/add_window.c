@@ -1754,6 +1754,12 @@ void setup_style_and_decor(
 		GNOME_GetStyle(fw, pstyle);
 	}
 
+	/* ConfigureNotify motion method */
+	if (SCR_MOTION_METHOD(&pstyle->flag_mask))
+	{
+		CR_MOTION_METHOD(fw) = SCR_MOTION_METHOD(&pstyle->flags);
+	}
+
 	return;
 }
 
@@ -3223,8 +3229,8 @@ void RestoreWithdrawnLocation(
 	 * this happens.  The XTranslateCoordinates call above will set the
 	 * window coordinates to either be larger than the screen, or negative.
 	 * This will result in the window being placed in odd, or even
-	 * unviewable locations when the window is remapped.  The following code
-	 * forces the "relative" location to be within the bounds of the
+	 * unviewable locations when the window is remapped.  The following
+	 * code forces the "relative" location to be within the bounds of the
 	 * display.
 	 *
 	 * gpw -- 11/11/93
