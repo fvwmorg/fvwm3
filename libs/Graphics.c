@@ -315,9 +315,10 @@ Pixel *AllocNonlinearGradient(
     {
       fprintf(stderr,
 	      "BUG: (AllocNonlinearGradient): "
-	      "seg_end_colors[nsegs - 1] > npixels - 1\n");
-      abort();
-      exit(1);
+	      "seg_end_colors[nsegs - 1] (%d) > npixels - 1 (%d)."
+              " Gradient drawing aborted\n",
+              seg_end_colors[nsegs - 1], npixels - 1);
+      return NULL;
     }
     /* take care of rounding errors */
     seg_end_colors[nsegs - 1] = npixels - 1;
@@ -348,22 +349,22 @@ Pixel *AllocNonlinearGradient(
 	pixels[curpixel + j] = p[j];
       curpixel += n - 1;
     }
-    if (curpixel != seg_end_colors[i])
-    {
-      fprintf(stderr,
-	      "BUG: (AllocNonlinearGradient): "
-	      "i = %d, curpixel = %d, seg_end_colors[i] = %d\n", i, curpixel,
-	      seg_end_colors[i]);
-      abort();
-      exit(1);
-    }
     if (p)
     {
       free(p);
       p = NULL;
     }
+    if (curpixel != seg_end_colors[i])
+    {
+      fprintf(stderr,
+	      "BUG: (AllocNonlinearGradient): "
+              "nsegs %d, i %d, curpixel %d, seg_end_colors[i] = %d,"
+              " npixels %d, n %d\n",
+              nsegs, i, curpixel,
+              seg_end_colors[i],npixels,n);
+      return NULL;
+    }
   }
-
   return pixels;
 }
 
