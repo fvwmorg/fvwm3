@@ -1,3 +1,7 @@
+2001-03-04  Dan Espen  <dane@mk.telcordia.com>
+
+	* tests/FvwmButtons/FvwmButtons.sh: Framework for tests.
+
 2001-03-02  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1 (FakeClick): Add example.  Style changes focusing on
