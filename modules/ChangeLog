@@ -1,3 +1,17 @@
+2003-05-28  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmTaskBar/Start.c (StartButtonInit):
+	Fixed no launch buttons if there are defined before the Start button
+	New option NoDefaultStartButton
+
+	* FvwmTaskBar/Goodies.c (CreateOrUpdateGoodyGC):
+	(GoodiesParseConfig): 
+	(InitGoodies):
+	(DrawGoodies):
+	If both clock format and date format are 0 do not draw any clock space
+	If no goodies do not draw the goodies box
+
 2003-05-27  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmIdent/FvwmIdent.c:

@@ -37,6 +37,8 @@ Changes in development release 2.5.7 (not released yet)
   context, so PassId is not needed anymore, and all prefixes
   "WindowId $0" may be removed in user event handlers.
 
+* New FvwmTaskBar option NoDefaultStartButton.
+ 
 -------------------------------------------------------------------
 
 Changes in development release 2.5.6 (28-Feb-2003)

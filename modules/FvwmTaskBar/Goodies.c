@@ -65,6 +65,7 @@ int goodies_fontheight, clock_width;
 char *mailpath = NULL;
 char *clockfmt = NULL;
 char *datefmt = NULL;
+Bool do_display_clock = True;
 int BellVolume = DEFAULT_BELL_VOLUME;
 Pixmap mailpix = None;
 Pixmap wmailpix = None;
@@ -137,8 +138,15 @@ static void CreateOrUpdateGoodyGC(void)
       PictureBlackPixel(), PictureWhitePixel(), Pdepth);
     goodies_width += minimail_width + 7;
   }
-  else
+  else if (do_display_clock)
+  {
     goodies_width += 3;
+  }
+  else
+  {
+	  goodies_width += 0;	  
+  }
+
 }
 
 Bool change_goody_colorset(int cset, Bool force)
@@ -207,6 +215,11 @@ Bool GoodiesParseConfig(char *tline)
     break;
   case 3: /* ClockFormat */
     UpdateString(&clockfmt, rest);
+    do_display_clock = True;
+    if (clockfmt && clockfmt[0] == '\0' && datefmt && datefmt[0] == '\0')
+    {
+	    do_display_clock = False;
+    } 
     break;
   case 4: /* StatusFont */
     CopyStringWithQuotes(&statusfont_string, rest);
@@ -235,6 +248,11 @@ Bool GoodiesParseConfig(char *tline)
     break;
   case 11: /* DateFormat */
     UpdateString(&datefmt, rest);
+    do_display_clock = True;
+    if (clockfmt && clockfmt[0] == '\0' && datefmt && datefmt[0] == '\0')
+    {
+	    do_display_clock = False;
+    }
     break;
   default:
     /* unknow option */
@@ -257,31 +275,42 @@ void LoadGoodiesFont(void)
 
 void InitGoodies(void)
 {
-  struct passwd *pwent;
-  char tmp[1024];
+	struct passwd *pwent;
+	char tmp[1024];
 
-  if (mailpath == NULL) {
-    strcpy(tmp, DEFAULT_MAIL_PATH);
-    pwent = getpwuid(getuid());
-    strcat(tmp, (char *) (pwent->pw_name));
-    UpdateString(&mailpath, tmp);
-  }
+	if (mailpath == NULL)
+	{
+		strcpy(tmp, DEFAULT_MAIL_PATH);
+		pwent = getpwuid(getuid());
+		strcat(tmp, (char *) (pwent->pw_name));
+		UpdateString(&mailpath, tmp);
+	}
 
-  CreateOrUpdateGoodyGC();
-  if (clockfmt)
-  {
-    struct tm *tms;
-    static time_t timer;
-    static char str[24];
-    time(&timer);
-    tms = localtime(&timer);
-    strftime(str, 24, clockfmt, tms);
-    clock_width = FlocaleTextWidth(FStatusFont, str, strlen(str)) + 4;
-  }
-  else
-    clock_width = FlocaleTextWidth(FStatusFont, "XX:XX", 5) + 4;
-  goodies_width += clock_width;
-  stwin_width = goodies_width;
+	CreateOrUpdateGoodyGC();
+	if (clockfmt)
+	{
+		if (!do_display_clock)
+		{
+			clock_width = 0;
+		}
+		else
+		{
+			struct tm *tms;
+			static time_t timer;
+			static char str[24];
+			time(&timer);
+			tms = localtime(&timer);
+			strftime(str, 24, clockfmt, tms);
+			clock_width = FlocaleTextWidth(
+				FStatusFont, str, strlen(str)) + 4;
+		}
+	}
+	else
+	{
+		clock_width = FlocaleTextWidth(FStatusFont, "XX:XX", 5) + 4;
+	}
+	goodies_width += clock_width;
+	stwin_width = goodies_width;
 }
 
 void Draw3dBox(Window wn, int x, int y, int w, int h, XRectangle *bounding)
@@ -324,6 +353,10 @@ void DrawGoodies(XEvent *evp)
 	int h = RowHeight;
 	Region t_region;
 
+	if (goodies_width == 0)
+	{
+		return;
+	}
 	if (evp)
 	{
 		if (!frect_get_intersection(

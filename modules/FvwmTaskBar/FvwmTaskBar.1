@@ -363,6 +363,11 @@ To invoke different menus for different mouse clicks, use this syntax:
 This option specifies the name of the icon to display at the left of the Start
 button.
 
+.IP "*FvwmTaskBar: NoDefaultStartButton"
+This option removes the defaults start button if no start button configuration
+options are given. It is useful to remove the start button. Note that this is
+the default if you use the Button configuration option.
+
 .SH SAMPLE CONFIGURATION
 The following are excepts from a .fvwm2rc file which describe FvwmTaskBar
 initialization commands:
@@ -440,3 +445,4 @@ auto hide turned on.
 These people have contributed to \fBFvwmTaskBar\fP:
 
 .IP "\fIDanny Dulai\fP <nirva@ishiboo.com>"
+.IP "\fIfvwm workers\fP <fvwm-workers@fvwm.org>"
