@@ -887,6 +887,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
 	 "[%s][GetMsgAndGet]: <<WARNING>>: No out fifo %s for comunication %s\n",
 	 ScriptName,out_fifo,com_name);
 	err = 1;
+	break;
       }
     }
   }

@@ -132,9 +132,11 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
   for (is_finished = 0; is_finished == 0; )
   {
 #ifdef ICONV_ARG_USE_CONST
-  nconv = iconv(cd, (const char **)&inptr, &insize, &outp, &outbytes_remaining);
+    nconv =
+      iconv(cd, (const char **)&inptr, &insize, &outp, &outbytes_remaining);
 #else
-  nconv = iconv(cd, (char **)&inptr,&insize, &outp, &outbytes_remaining);
+    nconv =
+      iconv(cd, (char **)&inptr,&insize, &outp, &outbytes_remaining);
 #endif
     is_finished = 1;
     if (nconv == (size_t) - 1)
@@ -156,6 +158,12 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 	is_finished = 0;
         break;
       }
+      case EILSEQ:
+	fvwm_msg(ERR, "convert_charsets",
+                 "Invalid byte sequence during conversion from %s to %s\n",
+                 in_charset,out_charset);
+        have_error = 1;
+	break;
       default:
         fvwm_msg(ERR, "convert_charsets",
                  "Error during conversion from %s to %s\n",

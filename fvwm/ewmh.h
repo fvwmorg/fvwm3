@@ -43,7 +43,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin);
 void EWMH_SetWMState(FvwmWindow *fwin);
 
 int EWMH_IsKdeSysTrayWindow(Window w);
-void EWMH_ManageKdeSysTray(Window w, Bool is_destroy);
+void EWMH_ManageKdeSysTray(Window w, int type);
 void EWMH_SetClientList(void);
 void EWMH_SetClientListStacking(void);
 void EWMH_UpdateWorkArea(void);
