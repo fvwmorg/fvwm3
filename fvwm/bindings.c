@@ -341,8 +341,8 @@ void CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
   modifier &= ~mods_unused;
   for (key = Scr.AllBindings; key != NULL; key = key->NextBinding)
     {
-      if ((key->Button_Key == keycode) &&
-	  ((key->Modifier == (modifier&(~LockMask)))||
+      if ((key->Button_Key == keycode || (IsMouse && key->Button_Key == 0)) &&
+	  ((key->Modifier == MaskUsedModifiers(modifier))||
 	   (key->Modifier == AnyModifier)) &&
 	  (key->Context & Context)&&
 	  (key->IsMouse == IsMouse))

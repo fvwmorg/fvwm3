@@ -210,7 +210,6 @@ void Maximize(F_CMD_ARGS)
     return;
   }
   toggle = ParseToggleArgument(action, &action, -1, 0);
-fprintf(stderr,"action = %s, toggle = %d\n", action, toggle);
   if (((toggle == 1) && (tmp_win->flags & MAXIMIZED)) ||
       ((toggle == 0) && !(tmp_win->flags & MAXIMIZED)))
     return;
@@ -954,10 +953,11 @@ void stick_function(F_CMD_ARGS)
   }
   else
   {
+    tmp_win->flags |= STICKY;
     move_window_doit(eventp, w, tmp_win, context, "", Module, FALSE, TRUE);
     /* move_window_doit resets the STICKY flag, so we must set it after the
      * call! */
-    tmp_win->flags |=STICKY;
+    tmp_win->flags |= STICKY;
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   SetTitleBar(tmp_win,(Scr.Hilite==tmp_win),True);
@@ -2470,7 +2470,7 @@ void SetBorderStyle(F_CMD_ARGS)
 	    else
 		bf = &fl->BorderStyle.inactive;
 	    while (isspace(*action)) ++action;
-	    if ('(' != *action) {
+	    if (*action != '(') {
 		if (!*action) {
 		    fvwm_msg(ERR,"SetBorderStyle",
 			     "error in %s border specification", parm);
@@ -2478,6 +2478,7 @@ void SetBorderStyle(F_CMD_ARGS)
 		    return;
 		}
 		free(parm);
+		while (isspace(*action)) ++action;
 		if (ReadButtonFace(action, &tmpbf,-1,True)) {
 		    FreeButtonFace(dpy, bf);
 		    *bf = tmpbf;
@@ -3395,6 +3396,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 		     "missing parenthesis: %s", s);
 	    return NULL;
 	}
+	while (isspace(*s)) ++s;
 	len = end - s + 1;
 	spec = safemalloc(len);
 	strncpy(spec, s, len - 1);

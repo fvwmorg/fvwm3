@@ -883,44 +883,50 @@ void scroll(F_CMD_ARGS)
 
   if(((val1 <= -100000)||(val1 >= 100000))&&(x>Scr.VxMax))
     {
-      x = 0;
-      y += Scr.MyDisplayHeight;
+      int xpixels = (Scr.VxMax / Scr.MyDisplayWidth + 1) * Scr.MyDisplayWidth;
+      x %= xpixels;
+      y += Scr.MyDisplayHeight * (1+((x-Scr.VxMax-1)/xpixels));
       if(y > Scr.VyMax)
-	y=0;
+        y %= (Scr.VyMax / Scr.MyDisplayHeight + 1) * Scr.MyDisplayHeight;
     }
   if(((val1 <= -100000)||(val1 >= 100000))&&(x<0))
     {
       x = Scr.VxMax;
       y -= Scr.MyDisplayHeight;
       if(y < 0)
-	y=Scr.VyMax;
+        y=Scr.VyMax;
     }
   if(((val2 <= -100000)||(val2>= 100000))&&(y>Scr.VyMax))
     {
-      y = 0;
-      x += Scr.MyDisplayWidth;
+      int ypixels = (Scr.VyMax / Scr.MyDisplayHeight + 1) *
+	Scr.MyDisplayHeight;
+      y %= ypixels;
+      x += Scr.MyDisplayWidth * (1+((y-Scr.VyMax-1)/ypixels));
       if(x > Scr.VxMax)
-	x=0;
+        x %= (Scr.VxMax / Scr.MyDisplayWidth + 1) * Scr.MyDisplayWidth;
     }
   if(((val2 <= -100000)||(val2>= 100000))&&(y<0))
     {
       y = Scr.VyMax;
       x -= Scr.MyDisplayWidth;
       if(x < 0)
-	x=Scr.VxMax;
+        x=Scr.VxMax;
     }
   MoveViewport(x,y,True);
 }
 
-Bool get_page_arguments(char *action, unsigned int *page_x,
-			unsigned int *page_y)
+Bool get_page_arguments(char *action, int *page_x, int *page_y)
 {
   int val[2];
   int suffix[2];
   int n;
   char *token;
+  char *taction;
+  Bool xwrap = False;
+  Bool ywrap = False;
+  Bool wrapped;
 
-  GetNextToken(action, &token);
+  taction = GetNextToken(action, &token);
   if (token == NULL)
     {
       *page_x = Scr.Vx;
@@ -935,14 +941,41 @@ Bool get_page_arguments(char *action, unsigned int *page_x,
       free(token);
       return True;
     }
+  if (StrEquals(token, "xwrap"))
+    {
+      xwrap = True;
+    }
+  else if (StrEquals(token, "ywrap"))
+    {
+      ywrap = True;
+    }
+  else if (StrEquals(token, "xywrap"))
+    {
+      xwrap = True;
+      ywrap = True;
+    }
   free(token);
+  if (xwrap || ywrap)
+    {
+      GetNextToken(taction, &token);
+      if (token == NULL)
+	{
+	  *page_x = Scr.Vx;
+	  *page_y = Scr.Vy;
+	  return True;
+	}
+      action = taction;
+      free(token);
+    }
+
   if (GetSuffixedIntegerArguments(action, NULL, val, 2, "p", suffix) != 2)
     return False;
-  if (val[0] >= 0)
+
+  if (val[0] >= 0 || suffix[0] == 1)
     *page_x = val[0] * Scr.MyDisplayWidth;
   else
     *page_x = (val[0]+1) * Scr.MyDisplayWidth + Scr.VxMax;
-  if (val[1] >= 0)
+  if (val[1] >= 0 || suffix[1] == 1)
     *page_y = val[1] * Scr.MyDisplayHeight;
   else
     *page_y = (val[1]+1) * Scr.MyDisplayHeight + Scr.VyMax;
@@ -967,8 +1000,8 @@ Bool get_page_arguments(char *action, unsigned int *page_x,
 
 void goto_page_func(F_CMD_ARGS)
 {
-  unsigned int x;
-  unsigned int y;
+  int x;
+  int y;
 
   if (!get_page_arguments(action, &x, &y))
     {

@@ -380,8 +380,7 @@ int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 
 void goto_page_func(F_CMD_ARGS);
-Bool get_page_arguments(char *action, unsigned int *page_x,
-			unsigned int *page_y);
+Bool get_page_arguments(char *action, int *page_x, int *page_y);
 
 void wait_func(F_CMD_ARGS);
 void flip_focus_func(F_CMD_ARGS);

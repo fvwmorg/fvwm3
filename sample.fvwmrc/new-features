@@ -49,8 +49,8 @@ HilightColor #ffffff #1ea819
 # State is either Active or Inactive 
 # The commands below set the borders to solid colors 
 #
-BorderStyle Active Solid #1ea819 -- NoInset HiddenHandles
-BorderStyle Inactive Solid #11236b -- NoInset HiddenHandles
+BorderStyle Active -- NoInset HiddenHandles
+BorderStyle Inactive -- NoInset HiddenHandles
 
 # TitleStyle 
 #

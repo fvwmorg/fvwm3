@@ -1,6 +1,7 @@
-1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+1999-03-19  Fred Maciel  <fred-m@crl.hitachi.co.jp>
 
-	* FAQ (5.5): added some comment about IgnoreModifiers command
+	* docs/FAQ: spell corrections and better explanation for
+	FvwmM4/Cpp odd behavior.
 
 Sat Mar 20 15:19:37 1999  DanEspen  <dje@blue>
 

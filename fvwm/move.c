@@ -175,7 +175,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   int n;
   int x,y;
   unsigned int width, height;
-  unsigned int page_x, page_y;
+  int page_x, page_y;
   Bool fWarp = FALSE;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE,ButtonPress))

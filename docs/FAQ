@@ -34,7 +34,7 @@ Contents
           system rc file and then the user's rc file, how would I do
           that?
      2.6  I'm a sysadmin, and if I wanted fvwm to look for all of
-          it's rc files in a hidden directory, say ~/.fvwm, much like
+          its rc files in a hidden directory, say ~/.fvwm, much like
           CDE does, how could I do that?
 
 3. Features, Configuration, Functions & Commands
@@ -99,7 +99,7 @@ Contents
 
 6. Miscellaneous
 
-     6.1  What exactly is the differenct between a DESK, a PAGE, and
+     6.1  What exactly is the difference between a DESK, a PAGE, and
           the SCREEN?
      6.2  I'd really like {NeXT, Win95, etc} look and feel.  Are you
           going to support that?
@@ -135,7 +135,7 @@ Contents
 
 A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
    Virtual Window Manager".  Rob Nation (the original Author of FVWM)
-   doesn't really remember what the F stood for origninally, so we
+   doesn't really remember what the F stood for origninaly, so we
    have several potential answers:
 
      Feeble, Fabulous, Famous, Fast, Foobar, Fantastic, Flexible,
@@ -143,7 +143,7 @@ A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
      Funky, Fred's (who the heck is Fred?), Freakin', Flawed,
      Father-of-all, Feivel (the mouse from "An American Tail"), etc.
 
-   Just pick your favorite (hey, there's another one!), which will of
+   Just pick your Favorite (hey, there's another one!), which will of
    course change depending on your mood and whether or not you've run
    across any bugs recently.  I prefer Fabulous or Fantastic myself,
    although I often use F!@#$% or Freakin' while debugging...
@@ -306,7 +306,7 @@ A: Some people find this annoying, but let me say that I did that for
           people at the same site would rather stay at 1.xx
         - fvwm2 coredumps usually if it tries to read in a 1.xx rc
           file because the syntax is pretty different and completely
-          incompatable
+          incompatible
         - when people ask questions, if they explicitly mention their
           .fvwm2rc file I know that they are running one of the 2.xx
           versions, since they rarely mention exactly what version
@@ -437,11 +437,11 @@ A: Well, you could probably do something like this:
 
 ----------------------------------------------------------------------
 
-2.6  I'm a sysadmin, and if I wanted fvwm to look for all of it's rc
+2.6  I'm a sysadmin, and if I wanted fvwm to look for all of its rc
      files in a hidden directory, say ~/.fvwm, much like CDE does, how
      could I do that?
 
-A: This could be probably done similarily to Q2.5 above.  The system rc
+A: This could be probably done similarly to Q2.5 above.  The system rc
    file in the "sysconfdir" could do something like:
 
         Read .fvwm/Init      quiet
@@ -585,7 +585,7 @@ A: Hm.  This one is a little tougher.  It could be done, but many
    but I don't want to code to anything specific to one of the newer
    X11 versions like this.  You could try using Xse, which is a
    program to interface to XSendEvent, available at ftp.x.org.  It
-   could probably be used in a smiliar manner to xcb above (or in
+   could probably be used in a simliar manner to xcb above (or in
    conjunction with it).  If anyone comes up with good examples for
    this, please send it to the fvwm mailing list for inclusion here.
 
@@ -609,7 +609,7 @@ A: You can't directly with fvwm, but there may be a solution that is
 
 3.7  Will FVWM ever support a separate colormap for each desktop?
 
-A: Doubtful, althougth I'd like to see it too.  I believe that it'd be
+A: Doubtful, although I'd like to see it too.  I believe that it'd be
    possible to change the default colormap whenever you switch desks,
    which would give programs started when that desk is active that
    colormap, how would you deal with windows being moved across desks?
@@ -619,8 +619,8 @@ A: Doubtful, althougth I'd like to see it too.  I believe that it'd be
    pre-allocated in all of the colormaps, or something like that.
 
    While this all *might* be technically possible, I don't feel that
-   it's really feasable right now (too much code bloat and
-   complexity), especially since most color hog programs (ie Netscape)
+   it's really feasible right now (too much code bloat and
+   complexity), especially since most color hog programs (i.e. Netscape)
    allow you to have them install private colormaps.
 
    I may explore this a little at some point in the future though.
@@ -852,10 +852,10 @@ A: From the FvwmButtons man page:
 
        If command is an fvwm Exec command, then the button
        will remain pushed in until a window whose name or
-       class matches the qouted portion of the command is
+       class matches the quoted portion of the command is
        encountered.  This is intended to provide visual
        feedback to the user that the action he has requested
-       will be performed.  If the qouted portion contains no
+       will be performed.  If the quoted portion contains no
        characters, then the button will pop out immediately.
        Note that users can continue pressing the button, and
        re-executing the command, even when it looks "pressed
@@ -904,12 +904,18 @@ A: Yup, I imagine that you might be.  Things like the InitFunction not
    getting their Borders & Style options set, etc.
 
    The reason for all this is because of the fact that FvwmM4 is a
-   module.  Fvwm won't be looking at the commands comming back from
+   module.  Fvwm won't be looking at the commands coming back from
    the module until after it hits the mainloop of the code, AFTER the
-   startup is all done and it's already tried to execute the
+   startup is all done and it has already tried to execute the
    InitFunction.
 
-   So, some solutions I've been thinking about:
+   There are two possible solutions:
+
+        - Start all your applications inside an InitFunction, or
+        - Put a Recapture in the end of your .fvwm2rc
+
+   This problem may be corrected in Fvwm in the future. Here are
+   some solutions I've been thinking about:
 
         - Create an exec or script that will invoke whatever
           preprocessor you want appropriately and run that via
@@ -929,7 +935,7 @@ A: Yup, I imagine that you might be.  Things like the InitFunction not
 
 4.4  I heard about this FvwmFileMgr module.  Where can I find it?
 
-A: The FvwmFileMgr module dissappeared because a file manager doesn't
+A: The FvwmFileMgr module disappeared because a file manager doesn't
    need to be integrated with a window manager and something like xfm
    does a much better job.  I recommend you pick that up instead (from
    ftp.x.org or your favorite mirror).
@@ -974,7 +980,7 @@ A: People are always requesting or suggestion new features (many of
    please don't let this dissuade you from submitting them.  We like to
    get new ideas and we're always curious to see how someone would
    implement a given feature, even if we never plan to put it in fvwm.
-   Also, we may choose to reimplement any patches submitted, which may
+   Also, we may choose to re-implement any patches submitted, which may
    change the syntax, functionality, etc.  Please don't take offense
    from that, as we mean no offense and we generally have a good reason
    (at least by our way of thinking) for our actions...
@@ -992,7 +998,7 @@ A: Creating a patch -
            This will generate an empty ChangeLog entry in the right
            file (there are several ChangeLogs).  Add a description of
            what you did.  Do this each time you change a function or
-           file (for changes outside of funtions).  You should update
+           file (for changes outside of functions).  You should update
            the AUTHORS and NEWS files too if appropriate.
            Please take the time to add the ChangeLog entries, it makes
            our work a lot easier.
@@ -1009,7 +1015,7 @@ A: Creating a patch -
 
         Mail it to the fvwm-workers mailing list <fvwm-workers@fvwm.org>.
 
-	If your patch is large you should compress it (preferrably
+	If your patch is large you should compress it (preferably
         with gzip).  Should it still be larger than 25k you might want
         to to place it on a web page and email the URL to the mailing
         list or ask on the fvwm-workers list first.
@@ -1034,7 +1040,7 @@ A: Please enter a DETAILED description of your problem in our web-based
    By detailed we mean more than just "my window isn't behaving right" or
    "I found a bug":
 
-        - Describe the problem as best you can, preferrably with
+        - Describe the problem as best you can, preferably with
           suggestions on how to reproduce it easily
         - If applicable, include information from:
                 xwininfo (preferably w/ the -all option)
@@ -1107,11 +1113,11 @@ A: The flickering is caused by fvwm constantly redrawing the menus
 
    For the speed problem both suggestions above might help too.
    Another thing to try is to turn hilighting of the active menu
-   item other than by forground color off.  Put these lines in your
+   item other than by foreground color off.  Put these lines in your
    .fvwm2rc after the menu styles have been defined:
 
      MenuStyle <stylename> Hilight3DOff, HilightBackOff
-     MenuStyle <Stylename> ActiveFore <preferred color>
+     MenuStyle <Stylename> ActiveFore <prefered color>
 
 ----------------------------------------------------------------------
 
@@ -1178,7 +1184,7 @@ A: Many OSes swap the program from memory via the image on the disk,
                           6 - Miscellaneous
 ======================================================================
 
-6.1  What exactly is the differenct between a DESK, a PAGE, and the
+6.1  What exactly is the difference between a DESK, a PAGE, and the
      SCREEN?
 
 A: Our naming convention is sometimes a source of confusion, and when
@@ -1368,7 +1374,7 @@ A: This has come up a few times, so I thought I'd put it here too.
 7.5  A more efficient MWM menu style.
 
    Perhaps you have noticed that with the MWM menu style your sub
-   menus are shown as soon as the pointer enters their menu item.  Even
+   menus are shown as soon as the pointer enters their menu itemi, even
    if you just want to scroll down the list.  You can prevent this with
    the 'PopupDelay' and 'PopupDelayed' options of the MenuStyle
    command:

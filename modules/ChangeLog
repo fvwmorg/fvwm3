@@ -1,5 +1,8 @@
 1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmPager/x_pager.c (InsertExpand):
+	(GetBalloonLabel): Replaced macro INSERT by function InsertExpand.
+
 	* FvwmPager/x_pager.c (DispatchEvent):
 	(FvwmErrorHandler): added misssing XUngrab... to fix 'transient' option
 	with mouse button 2

@@ -2243,6 +2243,19 @@ void MapBalloonWindow (XEvent *event)
 }
 
 
+static void InsertExpand(char **dest, char *s)
+{
+  int len = strlen(*dest) + strlen(s) + 1;
+  char *tmp = *dest;
+
+  *dest = (char *)safemalloc(len);
+  strcpy(*dest, tmp);
+  free(tmp);
+  strcat(*dest, s);
+  return;
+}
+
+
 /* Generate the BallonLabel from the format string
    -- disching@fmi.uni-passau.de */
 char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
@@ -2255,41 +2268,34 @@ char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
 
   buffer[1] = '\0';
 
-#define INSERT(s) while (strlen(s)+strlen(dest)+1>allocSize) { \
-                    dest = realloc(dest,allocSize+enlargeSize); \
-                    allocSize += enlargeSize; \
-                  } \
-                  strcat(dest,s)
-
   while (*pos) {
     if (*pos=='%' && *(pos+1)!='\0') {
       pos++;
       switch (*pos) {
       case 'i':
-        INSERT(pw->icon_name);
+        InsertExpand(&dest, pw->icon_name);
         break;
       case 't':
-        INSERT(pw->window_name);
+        InsertExpand(&dest, pw->window_name);
         break;
       case 'r':
-        INSERT(pw->res_name);
+        InsertExpand(&dest, pw->res_name);
         break;
       case 'c':
-        INSERT(pw->res_class);
+        InsertExpand(&dest, pw->res_class);
         break;
       case '%':
         buffer[0] = '%';
-        INSERT(buffer);
+        InsertExpand(&dest, buffer);
         break;
       default:;
       }
     } else {
       buffer[0] = *pos;
-      INSERT(buffer);
+      InsertExpand(&dest, buffer);
     }
     pos++;
   }
-#undef INSERT
   return dest;
 }
 
