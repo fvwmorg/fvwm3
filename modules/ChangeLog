@@ -1,5 +1,7 @@
 1999-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmPager/FvwmPager.c (ParseOptions): rewrote some redundant code
+
 	* FvwmButtons/parse.c (ParsePanel):
 	* FvwmButtons/draw.c (RedrawButton): fixed panel option 'indicator'
 	without arguments

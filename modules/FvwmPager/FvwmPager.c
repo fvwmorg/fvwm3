@@ -1540,20 +1540,19 @@ void ParseOptions(void)
       {
 	window_x = g_x;
 	usposition = 1;
+        if (flags & XNegative)
+        {
+          xneg = 1;
+        }
       }
       if (flags & YValue)
       {
 	window_y = g_y;
 	usposition = 1;
-      }
-      if (flags & XNegative)
-      {
-	xneg = 1;
-      }
-      if (flags & YNegative)
-      {
-	window_y = g_y;
-	yneg = 1;
+        if (flags & YNegative)
+        {
+          yneg = 1;
+        }
       }
     }
     else if (StrEquals(resource, "IconGeometry"))
