@@ -251,7 +251,7 @@ sub send ($$;$$) {
 			$self->debug("Can't send [$line]\n", 0);
 			next;
 		}
-		$self->debug("send: [$line]", 1);
+		$self->debug("sent: [$line]", 1);
 		my $len = length $line;
 		$self->{ostream}->print(
 			pack("lla${len}l", $winId, $len, $line, $continue)
@@ -361,7 +361,7 @@ sub processPacket ($;$$) {
 	if ($self->{debug}) {
 		my $msg = "got " . $event->name;
 		$msg .= " [" . $event->argValues->[-1] . "]"
-			if $event->isTextBased;
+			if @{$event->argTypes} && $event->argTypes->[-1] == FVWM::EventNames::string();
 		$self->debug($msg, 1);
 	}
 

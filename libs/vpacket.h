@@ -84,10 +84,10 @@ typedef struct MiniIconPacket
 	unsigned long int  width;
 	unsigned long int  height;
 	unsigned long int  depth;
-	unsigned long int  picture;
-	unsigned long int  mask;
-	unsigned long int  alpha;
-	char *name;
+	Pixmap             picture;
+	Pixmap             mask;
+	Pixmap             alpha;
+	char               name[1];
 } MiniIconPacket;
 
 #endif /* _VPACKET_ */

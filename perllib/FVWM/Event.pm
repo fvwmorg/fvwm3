@@ -15,7 +15,6 @@
 package FVWM::Event;
 
 use strict;
-use FVWM::Constants;
 use FVWM::EventNames;
 
 sub new ($$$) {
@@ -26,10 +25,8 @@ sub new ($$$) {
 	my $isSpecial = defined $argValues? 0: 1;
 	my $isExtended = $type & M_EXTENDED_MSG? 1: 0;
 
-	my $eventInfo = $class->eventTypeInfo($isSpecial? "faked": $type);
-
 	$argValues ||= [];
-	$argValues = [ unpack($eventInfo->{'format'}, $argValues) ]
+	$argValues = eventArgValues($isSpecial? "faked": $type, $argValues)
 		unless ref($argValues);
 
 	my $self = {
@@ -39,13 +36,9 @@ sub new ($$$) {
 		propagationAllowed => 1,
 		isSpecial => $isSpecial,
 		isExtended => $isExtended,
-		eventInfo => $eventInfo,
 	};
 
 	bless $self, $class;
-
-   # strip everything past the first null (or newline) if needed
-   $argValues->[@$argValues - 1] =~ s/\n*\0.*//s if $self->isTextBased;
 
 	return $self;
 }
@@ -55,33 +48,14 @@ sub type ($) {
 	return $self->{'type'};
 }
 
-sub typeToBinary ($;$) {
-	my $this = shift;
-	my $type = shift;
-	$type = (ref($this)? $this->{'type'}: "no-event-type")
-		unless defined $type;
-
-	return $type unless $type =~ /^\d+$/;
-	return sprintf("%b", $type);
+sub argNames ($) {
+	my $self = shift;
+	return eventArgNames($self->type);
 }
 
-# class method
-sub eventTypeInfo ($$) {
-	my $class = shift;
-	my $type = shift || "no-event-type";
-	my $eventInfo = $FVWM::EventNames::EVENTS_INFO->{$type};
-	die "Unsupported event type (" . $class->typeToBinary($type) . ")"
-		unless defined $eventInfo;
-	return $eventInfo;
-}
-
-sub argNames ($;$) {
-	my $this = shift;
-	my $type = shift;
-	my $eventInfo = ref($this)?
-		$this->{'eventInfo'}: $this->eventTypeInfo($type);
-
-	return $eventInfo->{'names'};
+sub argTypes ($) {
+	my $self = shift;
+	return eventArgTypes($self->type);
 }
 
 sub argValues ($) {
@@ -89,34 +63,15 @@ sub argValues ($) {
 	return $self->{'argValues'};
 }
 
-sub constructArgs ($) {
-	my $self = shift;
-	my $names = $self->argNames;
-	my $values = $self->argValues;
-	my $i = 0;
-	my $suffix = "";
-	$suffix = "1" if @$values > @$names;
-	my %args = map {
-		if ($i == $names) { $i = 0; $suffix++; }
-		(($names->[$i++] || "unknown") . $suffix, $_)
-	} @$values;
-	$self->{'args'} = { %args };
-}
-
 sub args ($) {
 	my $self = shift;
-	$self->constructArgs unless defined $self->{'args'};
+	$self->{'args'} ||= eventArgs($self->type, $self->argValues);
 	return $self->{'args'};
 }
 
 sub isExtended ($) {
 	my $self = shift;
 	return $self->{'isExtended'};
-}
-
-sub isTextBased ($) {
-	my $self = shift;
-	return $self->{'eventInfo'}->{'format'} =~ /a\*$/? 1: 0;
 }
 
 sub name ($) {
@@ -132,7 +87,7 @@ sub name ($) {
 		}
 	}
 	my $name = $FVWM::Event::EVENT_TYPE_NAMES->{$type};
-	$name = "*unknown-event-" . $self->typeToBinary . "*"
+	$name = "*unknown-event-" . sprintf("%b", $self->type) . "*"
 		unless defined $name;
 	return $name;
 }
@@ -209,23 +164,25 @@ these arguments as received from the I<fvwm> pipe.
 
 Returns event's type (usually long integer).
 
-=item B<typeToBinary> [I<type>]
-
-Returns the binary representation of the event type. This may be used either
-as class method (in which case additional parameter should be given) or as
-object method.
-
-=item B<argNames> [I<type>]
+=item B<argNames>
 
 Returns an array ref of the event argument names.
-May be also used as class method if additional parameter is given.
 
-    print foreach @{$event->argNames});
-    print join(', ', @{FVWM::Event->argNames(M_ADD_WINDOW)}), "\n";
+    print "$_ " foreach @{$event->argNames});
 
 Note that this array of names is statical and may be not synchronized
-in some cases with the actual argument values described in the following
-two methods.
+in some cases with the actual argument values described in the two methods
+below.
+
+=item B<argTypes>
+
+Returns an array ref of the event argument types.
+
+    print "$_ " foreach @{$event->argTypes});
+
+Note that this array of types is statical and may be not synchronized
+in some cases with the actual argument values described in the two methods
+below.
 
 =item B<argValues>
 
@@ -254,13 +211,6 @@ extended event types (with the highest bit set) it is now possible to have
 point is that only event types of the same category may be masked (or-ed)
 together. This method returns 1 or 0 depending on whether the event is
 extended or not.
-
-=item B<isTextBased>
-
-If the last argument of the event is text the event is text based. For
-convenience, everything past the first null (or newline) is automatically
-stripped from the text based packets, so the event handlers should not do
-this every time.
 
 =item B<name>
 

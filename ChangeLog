@@ -1,3 +1,8 @@
+2002-09-20  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/vpacket.h:
+	fixed incorrect MiniIconPacket definition: s/char *name/char name[1]/
+
 2002-09-20  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/icons.c (GetIconPicture):

@@ -1,3 +1,10 @@
+2002-09-20  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Event.pm:
+	* FVWM/EventNames.pm:
+	* FVWM/Module.pm.in:
+	reworked internal FVWM::Event implementation
+
 2002-09-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* perllib/FVWM/Module.pm.in:

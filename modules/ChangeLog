@@ -1,3 +1,8 @@
+2002-09-20  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmGtk/FvwmGtk.c:
+	reindented; use MiniIconPacket again
+
 2002-09-18  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/x_pager.c (DrawGrid): 
