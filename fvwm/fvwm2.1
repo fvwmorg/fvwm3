@@ -771,8 +771,8 @@ AddToMenu JpgMenu foo title
 AddToFunc MakeJpgMenu
 + I DestroyMenu recreate JpgMenu
 + I AddToMenu JpgMenu Pictures Title
-+ I PipeRead 'for i in "$HOME"/Pictures/*.jpg; \\
-  do echo AddToMenu JpgMenu \"`basename "$i"`\" Exec xv \""$i"\"; done'
++ I PipeRead 'for i in $HOME/Pictures/*.jpg; \\
+  do echo AddToMenu JpgMenu "`basename $i`" Exec xv $i; done'
 .EE
 
 The keyword \fIMissingSubmenuFunc\fP has a similar meaning. It is

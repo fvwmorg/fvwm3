@@ -1,3 +1,8 @@
+1999-11-20  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm2.1 (Note): Fixed up the PipeRead example so the whole
+	example gets displayed. Removed unnecessary quoting.
+
 1999-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (handle_window_style_change):
