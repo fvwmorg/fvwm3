@@ -43,11 +43,11 @@ AM_CFLAGS = \
 ## Create compatibility symlinks if available
 
 install-exec-local:
-	rm -f $(bindir)/fvwm2
-	$(LN_S) fvwm $(bindir)/fvwm2 || \
+	@rm -f $(bindir)/fvwm2
+	@$(LN_S) fvwm $(bindir)/fvwm2 || \
 		echo "Minor warning: $(bindir)/fvwm2 symlink was not created"
 
 install-data-local:
-	rm -f $(mandir)/fvwm2.1
-	$(LN_S) fvwm.1 $(mandir)/fvwm2.1 || \
+	@rm -f $(mandir)/fvwm2.1
+	@$(LN_S) fvwm.1 $(mandir)/fvwm2.1 || \
 		echo "Minor warning: $(mandir)/fvwm2.1 symlink was not created"
