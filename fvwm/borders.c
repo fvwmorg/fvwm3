@@ -285,8 +285,8 @@ static enum ButtonState get_button_state(Bool onoroff, Bool toggled, Window w)
 void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		Window expose_win)
 {
-  RedrawBorder (t, onoroff, force, Mapped, expose_win);
-  SetTitleBar (t,onoroff, False);
+  RedrawBorder(t, onoroff, force, Mapped, expose_win);
+  SetTitleBar(t,onoroff, False);
 }
 
 
@@ -319,6 +319,9 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   if(!t)
     return;
 
+  if(HAS_NEVER_FOCUS(t))
+    onoroff = False;
+
 /* get the border style bits */
 #ifdef BORDERSTYLE
       borderflags = onoroff
@@ -343,7 +346,9 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     /* are we using textured borders? */
     if ((GetDecor(t,BorderStyle.active.style)
 	 & ButtonFaceTypeMask) == TiledPixmapButton)
-	TexturePixmap = GetDecor(t,BorderStyle.active.u.p->picture);
+    {
+      TexturePixmap = GetDecor(t,BorderStyle.active.u.p->picture);
+    }
 #endif
 
     Scr.Hilite = t;
@@ -369,7 +374,9 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
     if ((GetDecor(t,BorderStyle.inactive.style)
 	 & ButtonFaceTypeMask) == TiledPixmapButton)
-	TexturePixmap = GetDecor(t,BorderStyle.inactive.u.p->picture);
+    {
+      TexturePixmap = GetDecor(t,BorderStyle.inactive.u.p->picture);
+    }
 #endif
 
     TextColor =t->TextPixel;
@@ -401,15 +408,18 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   if (TexturePixmap)
   {
-      attributes.background_pixmap = TexturePixmap;
-      valuemask = CWBackPixmap;
-      if (Pdepth < 2) {
-	  notex_attributes.background_pixmap = BackPixmap;
-	  notex_valuemask = CWBackPixmap;
-      } else {
-	  notex_attributes.background_pixel = BackColor;
-	  notex_valuemask = CWBackPixel;
-      }
+    attributes.background_pixmap = TexturePixmap;
+    valuemask = CWBackPixmap;
+    if (Pdepth < 2)
+    {
+      notex_attributes.background_pixmap = BackPixmap;
+      notex_valuemask = CWBackPixmap;
+    }
+    else
+    {
+      notex_attributes.background_pixel = BackColor;
+      notex_valuemask = CWBackPixel;
+    }
   }
   else
 #endif
@@ -434,158 +444,169 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
   if(HAS_TITLE(t))
   {
+#if 0
+    /* domivogt (9-Jul-1999): causes bug: title bar inherits tiled background
+     * pixmap from borderstyle */
     if (NewColor)
-      change_window_color(t->title_w, valuemask, &attributes);
+    {
+      change_window_color(t->title_w, notex_valuemask, &attributes);
+    }
+#endif
     for(i=0;i<Scr.nr_left_buttons;++i)
     {
-	if(t->left_w[i] != None)
-	{
-	  int stateflags = GetDecor(t,left_buttons[i].flags);
-	  Bool toggled =
-	    (HAS_MWM_BUTTONS(t) &&
-	     ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
-	      (stateflags & MWMDecorShade && IS_SHADED(t)) ||
-	      (stateflags & MWMDecorStick && IS_STICKY(t))));
-	  enum ButtonState bs = get_button_state(onoroff, toggled, t->left_w[i]);
-	  ButtonFace *bf = &GetDecor(t,left_buttons[i].state[bs]);
+      if(t->left_w[i] != None)
+      {
+	int stateflags = GetDecor(t,left_buttons[i].flags);
+	Bool toggled =
+	  (HAS_MWM_BUTTONS(t) &&
+	   ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
+	    (stateflags & MWMDecorShade && IS_SHADED(t)) ||
+	    (stateflags & MWMDecorStick && IS_STICKY(t))));
+	enum ButtonState bs = get_button_state(onoroff, toggled, t->left_w[i]);
+	ButtonFace *bf = &GetDecor(t,left_buttons[i].state[bs]);
 #if !(defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE))
-	    if (NewColor)
-	      change_window_color(t->left_w[i], valuemask, &attributes);
+	if (NewColor)
+	  change_window_color(t->left_w[i], valuemask, &attributes);
 #endif
-	    if(flush_expose(t->left_w[i])||(expose_win == t->left_w[i])||
-	       (expose_win == None)
+	if(flush_expose(t->left_w[i])||(expose_win == t->left_w[i])||
+	   (expose_win == None)
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-	       || NewColor
+	   || NewColor
 #endif
-		)
-	    {
-		int inverted = PressedW == t->left_w[i];
+	  )
+	{
+	  int inverted = PressedW == t->left_w[i];
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-		if (bf->style & UseBorderStyle)
-		    XChangeWindowAttributes(dpy, t->left_w[i],
-					    valuemask, &attributes);
-		else
-		    XChangeWindowAttributes(dpy, t->left_w[i], notex_valuemask,
-					    &notex_attributes);
-		XClearWindow(dpy, t->left_w[i]);
+	  if (bf->style & UseBorderStyle)
+	  {
+	    XChangeWindowAttributes(dpy, t->left_w[i],
+				    valuemask, &attributes);
+	  }
+	  else
+	  {
+	    XChangeWindowAttributes(dpy, t->left_w[i], notex_valuemask,
+				    &notex_attributes);
+	  }
+	  XClearWindow(dpy, t->left_w[i]);
 #endif
 #ifdef EXTENDED_TITLESTYLE
-		if (bf->style & UseTitleStyle) {
-		    ButtonFace *tsbf = &GetDecor(t,titlebar.state[bs]);
+	  if (bf->style & UseTitleStyle)
+	  {
+	    ButtonFace *tsbf = &GetDecor(t,titlebar.state[bs]);
 #ifdef MULTISTYLE
-		    for (; tsbf; tsbf = tsbf->next)
+	    for (; tsbf; tsbf = tsbf->next)
 #endif
-			DrawButton(t, t->left_w[i],
-				   t->title_g.height, t->title_g.height,
-				   tsbf, ReliefGC, ShadowGC,
-				   inverted,
-				   GetDecor(t,left_buttons[i].flags));
-		}
+	      DrawButton(t, t->left_w[i],
+			 t->title_g.height, t->title_g.height,
+			 tsbf, ReliefGC, ShadowGC,
+			 inverted,
+			 GetDecor(t,left_buttons[i].flags));
+	  }
 #endif /* EXTENDED_TITLESTYLE */
 #ifdef MULTISTYLE
-		for (; bf; bf = bf->next)
+	  for (; bf; bf = bf->next)
 #endif
-		    DrawButton(t, t->left_w[i],
-			       t->title_g.height, t->title_g.height,
-			       bf, ReliefGC, ShadowGC,
-			       inverted, GetDecor(t,left_buttons[i].flags));
+	    DrawButton(t, t->left_w[i],
+		       t->title_g.height, t->title_g.height,
+		       bf, ReliefGC, ShadowGC,
+		       inverted, GetDecor(t,left_buttons[i].flags));
 
-		if (!(GetDecor(t,left_buttons[i].state[bs].style) &
-		      FlatButton)) {
-		    if (GetDecor(t,left_buttons[i].state[bs].style) &
-			SunkButton)
-			RelieveRectangle(dpy,t->left_w[i],0,0,
-				         t->title_g.height - 1,
-					 t->title_g.height - 1,
-				         (inverted ? ReliefGC : ShadowGC),
-				         (inverted ? ShadowGC : ReliefGC),
-					 rwidth);
-		    else
-			RelieveRectangle(dpy,t->left_w[i],0,0,
-				         t->title_g.height - 1,
-					 t->title_g.height - 1,
-				         (inverted ? ShadowGC : ReliefGC),
-				         (inverted ? ReliefGC : ShadowGC),
-					 rwidth);
-		}
-	    }
+	  if (!(GetDecor(t,left_buttons[i].state[bs].style) &
+		FlatButton)) {
+	    if (GetDecor(t,left_buttons[i].state[bs].style) &
+		SunkButton)
+	      RelieveRectangle(dpy,t->left_w[i],0,0,
+			       t->title_g.height - 1,
+			       t->title_g.height - 1,
+			       (inverted ? ReliefGC : ShadowGC),
+			       (inverted ? ShadowGC : ReliefGC),
+			       rwidth);
+	    else
+	      RelieveRectangle(dpy,t->left_w[i],0,0,
+			       t->title_g.height - 1,
+			       t->title_g.height - 1,
+			       (inverted ? ShadowGC : ReliefGC),
+			       (inverted ? ReliefGC : ShadowGC),
+			       rwidth);
+	  }
 	}
+      }
     }
     for(i=0;i<Scr.nr_right_buttons;++i)
     {
-	if(t->right_w[i] != None)
-	{
-	  int stateflags = GetDecor(t,right_buttons[i].flags);
-	  Bool toggled =
-	    (HAS_MWM_BUTTONS(t) &&
-	     ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
-	      (stateflags & MWMDecorShade && IS_SHADED(t)) ||
-	      (stateflags & MWMDecorStick && IS_STICKY(t))));
-	    enum ButtonState bs = get_button_state(onoroff, toggled, t->right_w[i]);
-	    ButtonFace *bf = &GetDecor(t,right_buttons[i].state[bs]);
+      if(t->right_w[i] != None)
+      {
+	int stateflags = GetDecor(t,right_buttons[i].flags);
+	Bool toggled =
+	  (HAS_MWM_BUTTONS(t) &&
+	   ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
+	    (stateflags & MWMDecorShade && IS_SHADED(t)) ||
+	    (stateflags & MWMDecorStick && IS_STICKY(t))));
+	enum ButtonState bs = get_button_state(onoroff, toggled, t->right_w[i]);
+	ButtonFace *bf = &GetDecor(t,right_buttons[i].state[bs]);
 #if !(defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE))
-	    if (NewColor)
-	      change_window_color(t->right_w[i], valuemask, &attributes);
+	if (NewColor)
+	  change_window_color(t->right_w[i], valuemask, &attributes);
 #endif
-	    if(flush_expose(t->right_w[i])||(expose_win==t->right_w[i])||
-	       (expose_win == None)
+	if(flush_expose(t->right_w[i])||(expose_win==t->right_w[i])||
+	   (expose_win == None)
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-	       || NewColor
+	   || NewColor
 #endif
-		)
-	    {
-		int inverted = PressedW == t->right_w[i];
+	  )
+	{
+	  int inverted = PressedW == t->right_w[i];
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-		if (bf->style & UseBorderStyle)
-		    XChangeWindowAttributes(dpy, t->right_w[i],
-					    valuemask, &attributes);
-		else
-		    XChangeWindowAttributes(dpy, t->right_w[i],
-					    notex_valuemask,
-					    &notex_attributes);
-		XClearWindow(dpy, t->right_w[i]);
+	  if (bf->style & UseBorderStyle)
+	    XChangeWindowAttributes(dpy, t->right_w[i],
+				    valuemask, &attributes);
+	  else
+	    XChangeWindowAttributes(dpy, t->right_w[i],
+				    notex_valuemask,
+				    &notex_attributes);
+	  XClearWindow(dpy, t->right_w[i]);
 #endif
 #ifdef EXTENDED_TITLESTYLE
-		if (bf->style & UseTitleStyle) {
-		    ButtonFace *tsbf = &GetDecor(t,titlebar.state[bs]);
+	  if (bf->style & UseTitleStyle) {
+	    ButtonFace *tsbf = &GetDecor(t,titlebar.state[bs]);
 #ifdef MULTISTYLE
-		    for (; tsbf; tsbf = tsbf->next)
+	    for (; tsbf; tsbf = tsbf->next)
 #endif
-			DrawButton(t, t->right_w[i],
-				   t->title_g.height, t->title_g.height,
-				   tsbf, ReliefGC, ShadowGC,
-				   inverted,
-				   GetDecor(t,right_buttons[i].flags));
-		}
+	      DrawButton(t, t->right_w[i],
+			 t->title_g.height, t->title_g.height,
+			 tsbf, ReliefGC, ShadowGC,
+			 inverted,
+			 GetDecor(t,right_buttons[i].flags));
+	  }
 #endif /* EXTENDED_TITLESTYLE */
 #ifdef MULTISTYLE
-		for (; bf; bf = bf->next)
+	  for (; bf; bf = bf->next)
 #endif
-		    DrawButton(t, t->right_w[i],
-			       t->title_g.height, t->title_g.height,
-			       bf, ReliefGC, ShadowGC,
-			       inverted, GetDecor(t,right_buttons[i].flags));
+	    DrawButton(t, t->right_w[i],
+		       t->title_g.height, t->title_g.height,
+		       bf, ReliefGC, ShadowGC,
+		       inverted, GetDecor(t,right_buttons[i].flags));
 
-		if (!(GetDecor(t,right_buttons[i].state[bs].style) &
-		      FlatButton)) {
-		    if (GetDecor(t,right_buttons[i].state[bs].style) &
-			SunkButton)
-			RelieveRectangle(dpy,t->right_w[i],0,0,
-				        t->title_g.height - 1,
-					 t->title_g.height - 1,
-				        (inverted ? ReliefGC : ShadowGC),
-				        (inverted ? ShadowGC : ReliefGC),
-					 rwidth);
-		    else
-			RelieveRectangle(dpy,t->right_w[i],0,0,
-                                         t->title_g.height - 1,
-					 t->title_g.height - 1,
-				         (inverted ? ShadowGC : ReliefGC),
-				         (inverted ? ReliefGC : ShadowGC),
-					 rwidth);
-		}
-	    }
+	  if (!(GetDecor(t,right_buttons[i].state[bs].style) &
+		FlatButton)) {
+	    if (GetDecor(t,right_buttons[i].state[bs].style) &
+		SunkButton)
+	      RelieveRectangle(dpy,t->right_w[i],0,0,
+			       t->title_g.height - 1,
+			       t->title_g.height - 1,
+			       (inverted ? ReliefGC : ShadowGC),
+			       (inverted ? ShadowGC : ReliefGC),
+			       rwidth);
+	    else
+	      RelieveRectangle(dpy,t->right_w[i],0,0,
+			       t->title_g.height - 1,
+			       t->title_g.height - 1,
+			       (inverted ? ShadowGC : ReliefGC),
+			       (inverted ? ReliefGC : ShadowGC),
+			       rwidth);
+	  }
 	}
+      }
     }
   }
 
@@ -966,9 +987,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 	  ? &GetDecor(t,BorderStyle.active)
 	  : &GetDecor(t,BorderStyle.inactive);
 
-      if ((tb_style & UseBorderStyle)
-	  && ((bf->style & ButtonFaceTypeMask) == TiledPixmapButton))
-	  XSetWindowBackgroundPixmap(dpy,t->title_w,bf->u.p->picture);
+      if ((tb_style & UseBorderStyle) &&
+	  ((bf->style & ButtonFaceTypeMask) == TiledPixmapButton))
+      {
+	XSetWindowBackgroundPixmap(dpy,t->title_w,bf->u.p->picture);
+      }
   }
 #endif /* PIXMAP_BUTTONS && BORDERSTYLE */
   XClearWindow(dpy,t->title_w);
@@ -1022,15 +1045,16 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
       }
 #endif /* EXTENDED_TITLESTYLE */
 
-      if (!(tb_style & FlatButton)) {
-	  if (tb_style & SunkButton)
-	      RelieveRectangle(dpy,t->title_w,0,0,
-	                       t->title_g.width - 1,t->title_g.height - 1,
-			       ShadowGC, ReliefGC, rwidth);
-	  else
-	      RelieveRectangle(dpy,t->title_w,0,0,
-	                       t->title_g.width - 1,t->title_g.height - 1,
-	                       ReliefGC, ShadowGC, rwidth);
+      if (!(tb_style & FlatButton))
+      {
+	if (tb_style & SunkButton)
+	  RelieveRectangle(dpy,t->title_w,0,0,
+			   t->title_g.width - 1,t->title_g.height - 1,
+			   ShadowGC, ReliefGC, rwidth);
+	else
+	  RelieveRectangle(dpy,t->title_w,0,0,
+			   t->title_g.width - 1,t->title_g.height - 1,
+			   ReliefGC, ShadowGC, rwidth);
       }
 
       if(t->name != (char *)NULL)

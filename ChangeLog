@@ -1,3 +1,14 @@
+1999-07-11  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/borders.c (RedrawBorder): Prevent NeverFocus windows from being
+	hilighted
+
+1999-07-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/borders.c (RedrawBorder): fixed bug: title bar inherited tiled
+	background pixmap from borderstyle
+
+	* fvwm/move_resize.c (moveLoop): removed debug fprintf
 1999-07-13  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/session.c (LoadWindowStates): Replaced all sscanf "%4000s"
@@ -52,6 +63,7 @@ Sun Jul 11 11:16:15 1999  DanEspen  <dje@blue>
 	(MaximizeHeight):
 	(MaximizeWidth):
 	* fvwm/move_resize.c (ConstrainSize):
+	(moveLoop):
 	* fvwm/style.c (ProcessNewStyle):
 	* fvwm/fvwm.h (struct):
 	* fvwm/fvwm.c (InstallSignals):

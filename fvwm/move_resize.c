@@ -798,7 +798,6 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      break;
 	    }
 	case ButtonRelease:
-fprintf(stderr,"br: x=%d, y=%d\n", Event.xbutton.x_root, Event.xbutton.y_root);
 	  if(!opaque_move)
 	    MoveOutline(Scr.Root, 0, 0, 0, 0);
 	  xl2 = Event.xbutton.x_root + XOffset;
@@ -834,7 +833,6 @@ fprintf(stderr,"br: x=%d, y=%d\n", Event.xbutton.x_root, Event.xbutton.y_root);
 	  break;
 
 	case MotionNotify:
-fprintf(stderr,"mn: x=%d, y=%d\n", Event.xbutton.x_root, Event.xbutton.y_root);
 	  xl = Event.xmotion.x_root + XOffset;
 	  yt = Event.xmotion.y_root + YOffset;
 
@@ -1505,7 +1503,7 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
     {
       /* round up to nearest OK size to keep pointer inside rubberband */
       ConstrainSize(tmp_win, &drag->width, &drag->height, True, *xmotionp,
-		     *ymotionp);
+		    *ymotionp);
       if (*xmotionp == 1)
 	drag->x = orig->x + orig->width - drag->width;
       if (*ymotionp == 1)
@@ -1670,10 +1668,14 @@ void ConstrainSize(
     /*
      * Step 2a: Check that we didn't violate min and max.
      */
-    if (dwidth < minWidth) dwidth += xinc;
-    if (dheight < minHeight) dheight += yinc;
-    if (dwidth > maxWidth) dwidth -= xinc;
-    if (dheight > maxHeight) dheight -= yinc;
+    if (dwidth < minWidth)
+      dwidth += xinc;
+    if (dheight < minHeight)
+      dheight += yinc;
+    if (dwidth > maxWidth)
+      dwidth -= xinc;
+    if (dheight > maxHeight)
+      dheight -= yinc;
 
     /*
      * Third, adjust for aspect ratio

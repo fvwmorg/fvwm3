@@ -1572,7 +1572,9 @@ treated as clicks on the root window.
 This command affects how miscellaneous things are done by fvwm2.
 For example where the move/resize feedback window appears depends
 on this command. To have more MWM- or WIN-like behavior you can call
-Emulate with "MWM" or "WIN" as its argument.
+Emulate with "MWM" or "WIN" as its argument.  With "mwm" resize and
+move feedback windows are in the center of the screen, instead of
+the upper left corner.
 
 
 .IP "Exec \fIcommand\fP"
@@ -2453,16 +2455,13 @@ Sets the menu style.  When using monochrome the colors are ignored.
 The shade-color is the one used to draw a menu-selection which is
 prohibited (or not recommended) by the mwm-hints which an application
 has specified.  The style option is either "fvwm" "mwm" or "win",
-which changes the appearance and operation of the menus
-and where the feedback window appears during resizes and moves.
+which changes the appearance and operation of the menus.
 
 "mwm" and "win" style menus popup sub-menus automatically.
 "win" menus indicate the current menu item by changing the
 background to black.
 "fvwm" sub-menus overlap the parent menu, "mwm" and "win" style menus
 never overlap the parent menu.
-"mwm" resize and move feedback windows are in the center of the
-screen, instead of the upper left corner.
 
 The "anim" option is either "anim" or blank.  When this option
 is "anim", sub-menus that don't fit on the screen cause the parent menu
