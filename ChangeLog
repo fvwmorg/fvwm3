@@ -1,3 +1,7 @@
+1999-12-01  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/Makefile.am: Added geometry.h to fvwm2_SOURCES.
+
 1999-11-30  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in (dmalloc): Allow the user to add --enable-dmalloc

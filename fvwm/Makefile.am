@@ -21,7 +21,7 @@ fvwm2_SOURCES = bindings.h focus.h menus.h screen.h borders.h functions.h \
 		placement.c gnome.c decorations.c stack.c colors.c \
 		windowlist.c focus.c bindings.c colormaps.c cursor.c icccm2.c \
 		modconf.c read.c fvwmdebug.c repeat.c conditional.c \
-		geometry.c
+		geometry.c geometry.h
 
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
