@@ -1,3 +1,10 @@
+2003-04-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FAQ (Q 4.7):
+	explain how to control FvwmButtons with key presses
+	(Q 7.17):
+	official autohide implementation
+
 2003-04-19  Mikhael Goikhman  <migo@homemail.com>
 
 	* ANNOUNCE:
@@ -11,8 +18,8 @@
 
 2003-04-07  Uwe Pross  <uwe.pross@gmx.net>
 
-	* FAQ: 
-	Removed spaces before heading in the answer section. 
+	* FAQ:
+	Removed spaces before heading in the answer section.
 
 2003-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
 

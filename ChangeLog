@@ -1,3 +1,36 @@
+2003-04-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menucmd.c (menu_func):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/menus.h:
+	* fvwm/menus.c (is_double_click):
+	(pop_menu_up):
+	(pop_menu_down):
+	(pop_menu_down_and_repaint_parent):
+	(__mloop_get_event_timeout_loop):
+	(__mloop_get_event):
+	(__mloop_handle_event):
+	(__mloop_select_item):
+	(__mloop_make_popup):
+	(__mloop_get_mi_actions):
+	(__mloop_do_popup):
+	(__mloop_do_menu):
+	(__mloop_handle_action_with_mi):
+	(__mloop_handle_action_without_mi):
+	(__mloop_exit):
+	(menu_enter_tear_off_menu):
+	(menu_close_tear_off_menu):
+	(do_menu):
+	replaced the pfw and pcontext members of the MenuParameters structure
+	with an execution context pointer
+	(_menu_execute_function):
+	wrapper function to simplyfy command execution from within menus
+	(do_menu):
+	fixed warping pointer to first menu item when invoked with the mouse
+
+	* fvwm/execcontext.c:
+	removed debug code
+
 2003-04-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/XError.c:

@@ -272,12 +272,8 @@ typedef struct
 	MenuRoot *menu;
 	MenuRoot *parent_menu;
 	MenuItem *parent_item;
-	const exec_context_t *exc;
-	/*!!!remove these for (replaced by exc) */
-	FvwmWindow **pfw;
+	const exec_context_t **pexc;
 	FvwmWindow *tear_off_root_menu_window;
-	int *pcontext;
-	/*!!!*/
 	char **ret_paction;
 	XEvent *event_propagate_to_submenu;
 	MenuOptions *pops;

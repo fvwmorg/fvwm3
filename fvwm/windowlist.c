@@ -224,7 +224,6 @@ void CMD_WindowList(F_CMD_ARGS)
 	int low_layer = 0;  /* show all layers by default */
 	int high_layer = INT_MAX;
 	int max_label_width = 0;
-	int tc;
 	int show_listskip = 0; /* do not show listskip by default */
 	Bool use_hotkey = True;
 	KeyCode old_sor_keycode;
@@ -1056,11 +1055,7 @@ void CMD_WindowList(F_CMD_ARGS)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = mr;
-	mp.exc = exc;
-	t = exc->w.fw;
-	mp.pfw = &t;
-	tc = exc->w.wcontext;
-	mp.pcontext = &tc;
+	mp.pexc = &exc;
 	mp.flags.has_default_action = (default_action && *default_action != 0);
 	mp.flags.is_sticky = 1;
 	mp.flags.is_submenu = 0;

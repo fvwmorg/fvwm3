@@ -2,14 +2,15 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-Last updated 20 Oct 2002 for unstable release 2.5.4 and stable release 2.4.12.
+Last updated 20 Oct 2002 for unstable release 2.5.4 and stable
+release 2.4.12.
 
 Contents
 
 0. *The* most frequently asked question :)
 
-     0.1  A few minutes after fvwm is started my keyboard and mouse
-          bindings stop working.  What can I do?
+     0.1  A few minutes after fvwm is started my keyboard and
+          mouse bindings stop working.  What can I do?
 
 1. About Fvwm
 
@@ -18,8 +19,8 @@ Contents
      1.3  Any WWW Sites about FVWM?
      1.4  Where do I ask questions about FVWM?
      1.5  What are the differences between FVWM 1.xx and 2.xx?
-     1.6  What's the relative memory usage for the various window managers
-          out there?
+     1.6  What's the relative memory usage for the various window
+          managers out there?
      1.7  Why the rename of the various files (fvwm2, .fvwm2rc,
           fvwm2.man)?
      1.8  When will fvwm release X.Y.Z be ready?
@@ -30,119 +31,137 @@ Contents
           machine.  Can I still install and run it?
      2.2  I'm trying to use fvwm under CDE/COSE, but encountering
           difficulties.  Any suggestions?
-     2.3  I'm trying to compile FVWM under SunOS using cc, but the compiler
-          is having lots of problems.  What gives?
+     2.3  I'm trying to compile FVWM under SunOS using cc, but the
+          compiler is having lots of problems.  What gives?
      2.4  I want colored icons, but they won't work.  Why not?
-          When I run configure, it reports "no" to "Have XPM support?"  How
-          can I get XPM support?
+          When I run configure, it reports "no" to "Have XPM
+          support?"  How can I get XPM support?
      2.5  I'm a sysadmin, and if I wanted to force fvwm to read a
-          system rc file and then the user's rc file, how would I do
-          that?
+          system rc file and then the user's rc file, how would I
+          do that?
      2.6  I'm a sysadmin, and if I wanted fvwm to look for all of
-          its rc files in a hidden directory, say ~/.fvwm, much like
-          CDE does, how could I do that?
+          its rc files in a hidden directory, say ~/.fvwm, much
+          like CDE does, how could I do that?
      2.7  How can I use FVWM with GNOME?
 
 3. Features, Configuration, Functions & Commands
 
-     3.1  I use FVWM on a RedHat Linux system and can't figure out how to
-          change my FVWM configuration.  I've read the FVWM man page but when
-          I edit my .fvwm2rc nothing seems to happen.  What's going on ?
+     3.1  I use FVWM on a RedHat Linux system and can't figure out
+          how to change my FVWM configuration.  I've read the FVWM
+          man page but when I edit my .fvwm2rc nothing seems to
+          happen.  What's going on?
      3.2  Is it possible to raise a window when I click into the
           window itself, not just the border?
      3.3  How do I get Alt-Tab behavior like another GUI?
-     3.4  What's the difference between the Focus and FlipFocus commands?
-     3.5  You can bind mouse movements to keystrokes, how about mouse
-          presses?
-     3.6  I'd like to bind a key to paste/use the current selection,
-          how can I do that?
-     3.7  Will FVWM ever support a separate colormap for each desktop?
-     3.8  I really like the horizontal bars that appear on the title bars of
-          sticky windows.  Can I get those on other windows as well?
-     3.9  How do I set the Sun keyboard key xxxx to an FVWM command?
-          Or more generally, I'm having problems defining key
-          bindings for FVWM - what can I do?
-    3.10  My .fvwmrc from version 1.xx no longer works.  What do I do?
+     3.4  What's the difference between the Focus and FlipFocus
+          commands?
+     3.5  You can bind mouse movements to keystrokes, how about
+          mouse presses?
+     3.6  I'd like to bind a key to paste/use the current
+          selection, how can I do that?
+     3.7  Will FVWM ever support a separate colormap for each
+          desktop?
+     3.8  I really like the horizontal bars that appear on the
+          title bars of sticky windows.  Can I get those on other
+          windows as well?
+     3.9  How do I set the Sun keyboard key xxxx to an FVWM
+          command? Or more generally, I'm having problems defining
+          key bindings for FVWM - what can I do?
+    3.10  My .fvwmrc from version 1.xx no longer works.  What do I
+          do?
     3.11  What happened to the FVWM 1.xx 'include' command?
     3.12  How do I get window titles on sub windows of ...
-    3.13  I just upgraded to version >= 2.3.2, and my configuration settings
-	  disappeared!  How do I get them back?
-    3.14  Some applications (e.g. Eterm) don't use the icon I defined for them.
-          Why?
-    3.15  I don't like the gaps in my icon box when I de-iconify an
-          application.  Is there some kind of auto arrange function?
-    3.16  How do I set up an fvwm menu item that shuts down my Linux machine?
-    3.17  Although the Recapture command is obsolete, do I still need it to
-          apply certain style changes?
-    3.18  When my specific window (or all windows) pops up, I want it to
-          get focus/be moved/be resized/be closed/be shaded...  How?
-    3.19  When my specific window (or all windows) is closed, I want to
-          switch desks/wrap to my app X/popup a menu/start app X...  How?
-    3.20  I have a multi head setup (multiple screens used under X).  How
-          can I tell fvwm to use different configurations for the screens?
+    3.13  I just upgraded to version >= 2.3.2, and my
+          configuration settings disappeared!  How do I get them
+          back?
+    3.14  Some applications (e.g. Eterm) don't use the icon I
+          defined for them. Why?
+    3.15  I don't like the gaps in my icon box when I de-iconify
+          an application.  Is there some kind of auto arrange
+          function?
+    3.16  How do I set up an fvwm menu item that shuts down my
+          Linux machine?
+    3.17  Although the Recapture command is obsolete, do I still
+          need it to apply certain style changes?
+    3.18  When my specific window (or all windows) pops up, I want
+          it to get focus/be moved/be resized/be closed/be
+          shaded...  How?
+    3.19  When my specific window (or all windows) is closed, I
+          want to switch desks/wrap to my app X/popup a menu/start
+          app X...  How?
+    3.20  I have a multi head setup (multiple screens used under
+          X).  How can I tell fvwm to use different configurations
+          for the screens?
     3.21  How do I maximize a window but not cover up FvwmTaskBar?
 
 4. Modules
 
-     4.1  I'm using FvwmButtons (or GoodStuff in 1.xx), and sometimes the
-          buttons stay depressed, and other times they don't.  Why is that?
-     4.2  When having FvwmButtons swallow an app, is it possible to
-          have button presses assigned to actions as well?  For
-          instance, I'd like to swallow xload and have a button press
-          pop up an xterm, or swallow xbiff and have a button press
-          bring up the list of messages.
-     4.3  I'm seeing odd things when trying to preprocess files with
-          the FvwmM4/Cpp module...
-     4.4  I heard about this FvwmFileMgr module.  Where can I find it?
-     4.5  I used to use GoodStuff in FVWM 1.xx, but it's not in the 2.xx
-          distribution.  What do I use now?
-     4.6  I want to have the sub panels in FvwmButtons not at their default
-          position near the button but somewhere else on the screen.  Is this
-          possible?
+     4.1  I'm using FvwmButtons (or GoodStuff in 1.xx), and
+          sometimes the buttons stay depressed, and other times
+          they don't.  Why is that?
+     4.2  When having FvwmButtons swallow an app, is it possible
+          to have button presses assigned to actions as well?  For
+          instance, I'd like to swallow xload and have a button
+          press pop up an xterm, or swallow xbiff and have a
+          button press bring up the list of messages.
+     4.3  I'm seeing odd things when trying to preprocess files
+          with the FvwmM4/Cpp module...
+     4.4  I heard about this FvwmFileMgr module.  Where can I find
+          it?
+     4.5  I used to use GoodStuff in FVWM 1.xx, but it's not in
+          the 2.xx distribution.  What do I use now?
+     4.6  I want to have the sub panels in FvwmButtons not at
+          their default position near the button but somewhere
+          else on the screen.  Is this possible?
+     4.7  How can I open a sub panel or push buttons in
+          FvwmButtons with a keyboard shortcut?
 
 5. Development, Known Problems & Bug Reports
 
-     5.1  I'd really like to see neat feature XYZ in FVWM.
-          Wouldn't that be cool?  I even have a patch.  When can it
-          be added?
+     5.1  I'd really like to see neat feature XYZ in
+          FVWM. Wouldn't that be cool?  I even have a patch.  When
+          can it be added?
      5.2  How do I create/submit/apply patches?
      5.3  How do I submit a bug report?
-     5.4  I have a window that is behaving unexpectedly under FVWM, but just
-          fine under (whatever other window manager), or I have just some
-          random bug.  What do I do?
+     5.4  I have a window that is behaving unexpectedly under
+          FVWM, but just fine under (whatever other window
+          manager), or I have just some random bug.  What do I do?
      5.5  Why do NumLock, CapsLock and ScrollLock interfere with
           ClickToFocus and/or my mouse bindings?
-     5.6  Menus with gradient backgrounds flicker or are very slow.
-     5.7  Why won't the StartIconic style work with {Netscape, etc.}?
+     5.6  Menus with gradient backgrounds flicker or are very
+          slow.
+     5.7  Why won't the StartIconic style work with {Netscape,
+          etc.}?
      5.8  How do I capture the output (e.g. errors) of fvwm?
-     5.9  I try to run some program under FVWM, but it dies with an
-          X11 error like BadAccess.  The same program works just fine
-          under MWM or OLWM.  What's going on?
-    5.10  Every time I update my install, my currently running fvwm
-          session dies.  Why is that?
-    5.11  After I restart fvwm certain windows or icons raise above
-          all other windows and cannot be lowered by any means.  One
-          example are the shortcuts of KFM (the KDE file manager).
-          What can I do about that?
+     5.9  I try to run some program under FVWM, but it dies with
+          an X11 error like BadAccess.  The same program works
+          just fine under MWM or OLWM.  What's going on?
+    5.10  Every time I update my install, my currently running
+          fvwm session dies.  Why is that?
+    5.11  After I restart fvwm certain windows or icons raise
+          above all other windows and cannot be lowered by any
+          means.  One example are the shortcuts of KFM (the KDE
+          file manager).  What can I do about that?
     5.12  The StartsOnPage style does not work for me.  Why?
     5.13  Some modules can not be started when I restart fvwm.
     5.14  I'm running Rational Rose and fvwm ignores its windows.
-    5.15  Although I use the WindowListSkip style for my modules they
-          still show up in FvwmIconMan, FvwmWinList etc.
+    5.15  Although I use the WindowListSkip style for my modules
+          they still show up in FvwmIconMan, FvwmWinList etc.
 
 6. Miscellaneous
 
-     6.1  What exactly is the difference between a DESK, a PAGE, and
-          the SCREEN?
-     6.2  I'd really like {NeXT, Win95, etc} look and feel.  Are you
-          going to support that?
+     6.1  What exactly is the difference between a DESK, a PAGE,
+          and the SCREEN?
+     6.2  I'd really like {NeXT, Win95, etc} look and feel.  Are
+          you going to support that?
      6.3  Where can I get more XPMs for icons?
      6.4  Linux XF86 virtual screen size & fvwm interaction...
-     6.5  I know this question doesn't have to do with FVWM, but what
-          happened to to rxvt and rclock which Rob Nation used to
-          support?  Where can I find them now?
+     6.5  I know this question doesn't have to do with FVWM, but
+          what happened to to rxvt and rclock which Rob Nation
+          used to support?  Where can I find them now?
      6.6  How do I set the background with fvwm?
-     6.7  When I use Fvwm, my XYZ isn't the right color.  Whats wrong?
+     6.7  When I use Fvwm, my XYZ isn't the right color.  Whats
+          wrong?
      6.8  I just got a mouse with 57 buttons.  How do I make Fvwm
           use them?
 
@@ -150,10 +169,11 @@ Contents
 
      7.1  An easy way to test new configurations.
      7.2  Using shell commands for configuration.
-     7.3  How to start applications on a page or desk other than the
-          current.
-     7.4  How to start applications on a page or desk other than the
-          current without moving the viewport to the new page or desk.
+     7.3  How to start applications on a page or desk other than
+          the current.
+     7.4  How to start applications on a page or desk other than
+          the current without moving the viewport to the new page
+          or desk.
      7.5  A more efficient MWM menu style.
      7.6  Placing menus on the screen.
      7.7  Are you flipping pages by accident when moving the mouse
@@ -166,9 +186,9 @@ Contents
     7.13  Starting applications by clicking on an icon (also known
           as "docking" applications).
     7.14  Positioning a window using arithmetic.
-    7.15  Hiding the mouse pointer
-    7.16  Finding the mouse pointer
-
+    7.15  Hiding the mouse pointer.
+    7.16  Finding the mouse pointer.
+    7.17  Autohiding FvwmButtons or other windows.
 
 ======================================================================
                 0 - The most frequently asked question
@@ -1397,6 +1417,51 @@ A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
 A: Yes, but not with the current implementation of the panels.  Please
    read question 7.12 for instructions.
 
+----------------------------------------------------------------------
+
+4.7  How can I open a sub panel or push buttons in FvwmButtons
+     with a keyboard shortcut?
+
+A: FvwmButtons does not support keyboard shortcuts itself.  Since
+   fvwm version 2.3.24 the FakeClick command can be used to
+   simulate a click in the FvwmButtons window:
+
+   fvwm-2.3.24 or later:
+
+     DestroyFunc press_fvwmbuttons
+     AddToFunc press_fvwmbuttons
+     + I Next (FvwmButtons, CirculateHit) WarpToWindow $1 $2
+     + I FakeClick depth 2 press $0 release $0
+
+   fvwm-2.5.1 or later (moves the pointer back to the original
+   position):
+
+     AddToFunc press_fvwmbuttons
+     + I SetEnv px $[pointer.x]
+     + I SetEnv py $[pointer.y]
+     + I Next (FvwmButtons, CirculateHit) WarpToWindow $1 $2
+     + I FakeClick depth 2 press $0 release $0
+     + I WindowId root WarpToWindow $[px]p $[py]p
+
+   With this function, you can warp the pointer to the desired
+   button to press and simulate a click.  Call it with
+
+     press_fvwmbuttons btn xoff yoff
+                         ^    ^    ^
+                         |    |    |___ y offset of the button
+                         |    |________ x offset of the button
+                         |_____________ button to press
+
+   For example, if the button of a panel is at 30% of FvwmButtons'
+   width and 10% of its height and you want to simulate mouse
+   button 1, issue
+
+    press_fvwmbuttons 1 30 10
+
+   You can bind this to a key.  For example:
+
+     Key f1 a n press_fvwmbuttons 1 30 10
+
 ======================================================================
             5 - Development, Known Problems & Bug Reports
 ======================================================================
@@ -2389,8 +2454,8 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 7.13  Starting applications by clicking on an icon (also known as
       "docking" applications).
 
-   Normally an icon represents a minimized application.
-   If you want to turn that around, and launch applications by clicking
+   Normally an icon represents a minimized application.  If you
+   want to turn that around, and launch applications by clicking
    on icons we can't stop you.  Heres a way to do that using
    FvwmButtons:
 
@@ -2412,8 +2477,9 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
      Launcher RXVT xterm.xpm "rxvt -bg black" "-g +0+0"
      Launcher XV   xv.xpm    "xv"   "-g +0+100"
 
-   Also, GNOME and KDE have desktop icon applications gmc and kfm, which
-   enable this functionality.  These applications may be run under FVWM.
+   Also, GNOME and KDE have desktop icon applications gmc and kfm,
+   which enable this functionality.  These applications may be run
+   under FVWM.
 
 ----------------------------------------------------------------------
 
@@ -2439,7 +2505,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
 ----------------------------------------------------------------------
 
-7.15  Hiding the mouse pointer
+7.15  Hiding the mouse pointer.
 
     Some users don't like the mouse pointer getting in the way of
     what they are looking at.  You might want to search for and
@@ -2448,12 +2514,52 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
 ----------------------------------------------------------------------
 
-7.16  Finding the mouse pointer
+7.16  Finding the mouse pointer.
 
     Sometimes its hard to see the mouse pointer.
     Heres a way to find it:
 
-    Key Super_L A A Exec xmessage -name "SmallBlob" -bg red -fg white\
-      -nearmouse -timeout 1 'I am here!'
+    Key Super_L A A Exec xmessage -name "SmallBlob" -bg red \
+      -fg white -nearmouse -timeout 1 'I am here!'
     Style SmallBlob UsePPosition, NoTitle, NoHandles, BorderWidth 10
 
+----------------------------------------------------------------------
+
+7.17  Autohiding FvwmButtons or other windows.
+
+    Some applications have a feature usually called "autohiding"
+    which allows to withdraw a window to a location where it does
+    not use precious desktop space.  It is possible to write some
+    small functions in fvwm that can hide any window you like:
+
+    fvwm-2.5.7 or later:
+
+      # The autohiding functions
+      AddToFunc autohide
+      + I ThisWindow ($0) Deschedule $[w.id]
+      + I ThisWindow ($0) ThisWindow (shaded) WindowShade off
+      + I Cond (!Match) All ($0, !shaded) autohide_hide $1 $2
+
+      AddToFunc autohide_hide
+      + I Schedule $0 $[w.id] WindowShade $1
+      + I Schedule $0 $[w.id] Deschedule $[w.id]
+
+      # Start FvwmAuto
+      AddToFunc StartFunction
+      + I Module FvwmAuto FvwmAutohide -menter enter_handler
+
+      # Add the windows you want to autohide
+      AddToFunc enter_handler
+      + I autohide FvwmButtons 500 S
+      #            ^           ^   ^
+      #            |           |   |___  Shade direction (optional)
+      #            |           |_______  Hide delay (milliseconds)
+      #            |___________________  Unique window name/resource
+
+    Simply add any windows you like to the enter_handler function
+    as in the example above.  The autohide function is called with
+    two or three parameters.  The first one is the window's name
+    or class, which must be unique.  The second is the delay in
+    milliseconds before the window is hidden after the pointer
+    leaves it, and the last - optional - one indicates the
+    direction in which it is hidden (N, S, E, W, NW, NE, SW or SE).

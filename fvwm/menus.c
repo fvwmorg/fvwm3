@@ -215,6 +215,34 @@ static MenuInfo Menus;
 
 /* ---------------------------- local functions ----------------------------- */
 
+static void __menu_execute_function(const exec_context_t **pexc, char *action)
+{
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
+	int old_emf;
+
+	ecc.w.w = ((*pexc)->w.fw) ? FW_W((*pexc)->w.fw) : None;
+	exc = exc_clone_context(*pexc, &ecc, ECC_W);
+	old_emf = Scr.flags.is_executing_menu_function;
+	Scr.flags.is_executing_menu_function = 1;
+	execute_function(NULL, exc, action, FUNC_DONT_EXPAND_COMMAND);
+	Scr.flags.is_executing_menu_function = old_emf;
+	exc_destroy_context(exc);
+	/* See if the window has been deleted */
+	if (!check_if_fvwm_window_exists((*pexc)->w.fw))
+	{
+		ecc.w.fw = NULL;
+		ecc.w.w = None;
+		ecc.w.wcontext = 0;
+		exc = exc_clone_context(
+			*pexc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		exc_destroy_context(*pexc);
+		*pexc = exc;
+	}
+
+	return;
+}
+
 static Bool menu_get_geometry(
 	MenuRoot *mr,
 	Window *root_return, int *x_return, int *y_return,
@@ -1226,7 +1254,7 @@ static Bool is_double_click(
 	Time t0, MenuItem *mi, MenuParameters *pmp, MenuReturn *pmret,
 	double_keypress *pdkp, Bool has_mouse_moved)
 {
-	if (pmp->exc->x.elast->type == KeyPress)
+	if ((*pmp->pexc)->x.elast->type == KeyPress)
 	{
 		return False;
 	}
@@ -3577,10 +3605,9 @@ static int do_menus_overlap(
  ***********************************************************************/
 static int pop_menu_up(
 	MenuRoot **pmenu, MenuParameters *pmp, MenuRoot *parent_menu,
-	MenuItem *parent_item,
-	FvwmWindow **pfw, int *pcontext, int x, int y, Bool prefer_left_submenu,
-	Bool do_warp_to_item, MenuOptions *pops, Bool *ret_overlap,
-	Window popdown_window)
+	MenuItem *parent_item, const exec_context_t **pexc, int x, int y,
+	Bool prefer_left_submenu, Bool do_warp_to_item, MenuOptions *pops,
+	Bool *ret_overlap, Window popdown_window)
 {
 	Bool do_warp_to_title = False;
 	int x_overlap = 0;
@@ -3616,9 +3643,6 @@ static int pop_menu_up(
 		saved_pos_hints pos_hints;
 		Bool is_busy_grabbed = False;
 		int mapped_copies = MR_MAPPED_COPIES(mr);
-		const exec_context_t *exc;
-		exec_context_changes_t ecc;
-		int old_emf;
 
 		/* save variables that we still need but that may be
 		 * overwritten */
@@ -3629,30 +3653,13 @@ static int pop_menu_up(
 			is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
 		}
 		/* Execute the action */
-		ecc.w.fw = *pfw;
-		ecc.w.w = (*pfw) ? FW_W(*pfw) : None;
-		ecc.w.wcontext = *pcontext;
-		exc = exc_clone_context(
-			pmp->exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
-		old_emf = Scr.flags.is_executing_menu_function;
-		Scr.flags.is_executing_menu_function = 1;
-		execute_function(
-			NULL, exc, MR_POPUP_ACTION(mr),
-			FUNC_DONT_EXPAND_COMMAND);
-		Scr.flags.is_executing_menu_function = old_emf;
-		exc_destroy_context(exc);
+		__menu_execute_function(pmp->pexc, MR_POPUP_ACTION(mr));
 		if (is_busy_grabbed)
 		{
 			UngrabEm(GRAB_BUSYMENU);
 		}
 		/* restore the stuff we saved */
 		last_saved_pos_hints = pos_hints;
-		/* See if the window has been deleted */
-		if (!check_if_fvwm_window_exists(*pfw))
-		{
-			*pfw = NULL;
-			*pcontext = 0;
-		}
 		if (mapped_copies == 0)
 		{
 			/* Now let's see if the menu still exists. It may have
@@ -3681,12 +3688,12 @@ static int pop_menu_up(
 		 * empty from the start. */
 		return False;
 	}
-	fw = *pfw;
+	fw = (*pexc)->w.fw;
 	if (fw && !check_if_fvwm_window_exists(fw))
 	{
 		fw = NULL;
 	}
-	context = *pcontext;
+	context = (*pexc)->w.wcontext;
 
 	/***************************************************************
 	 * Create a new menu instance (if necessary)
@@ -4250,7 +4257,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 	XFlush(dpy);
 	if ((mi = MR_SELECTED_ITEM(*pmr)) != NULL)
 	{
-		select_menu_item(*pmr, mi, False, (*pmp->pfw));
+		select_menu_item(*pmr, mi, False, (*pmp->pexc)->w.fw);
 	}
 	if (MR_STORED_PIXELS(*pmr).d_pixels != NULL)
 	{
@@ -4269,33 +4276,14 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 	{
 		/* Finally execute the popdown action (if defined). */
 		saved_pos_hints pos_hints;
-		const exec_context_t *exc;
-		exec_context_changes_t ecc;
-		int old_emf;
 
 		/* save variables that we still need but that may be
 		 * overwritten */
 		pos_hints = last_saved_pos_hints;
 		/* Execute the action */
-		ecc.w.fw = *pmp->pfw;
-		ecc.w.w = (*pmp->pfw) ? FW_W(*pmp->pfw) : None;
-		ecc.w.wcontext = *pmp->pcontext;
-		exc = exc_clone_context(
-			pmp->exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
-		old_emf = Scr.flags.is_executing_menu_function;
-		Scr.flags.is_executing_menu_function = 1;
-		execute_function(
-			NULL, exc, MR_POPDOWN_ACTION(*pmr),
-			FUNC_DONT_EXPAND_COMMAND);
-		Scr.flags.is_executing_menu_function = old_emf;
-		exc_destroy_context(exc);
+		__menu_execute_function(pmp->pexc, MR_POPDOWN_ACTION(*pmr));
 		/* restore the stuff we saved */
 		last_saved_pos_hints = pos_hints;
-		if (!check_if_fvwm_window_exists(*(pmp->pfw)))
-		{
-			*(pmp->pfw) = NULL;
-			*(pmp->pcontext) = 0;
-		}
 	}
 
 	return;
@@ -4341,7 +4329,7 @@ static void pop_menu_down_and_repaint_parent(
 			    &parent_width, &parent_height, &JunkBW, &JunkDepth))
 		{
 			pop_menu_down(pmr, pmp);
-			paint_menu(parent, NULL, (*pmp->pfw));
+			paint_menu(parent, NULL, (*pmp->pexc)->w.fw);
 		}
 		else
 		{
@@ -4373,7 +4361,7 @@ static void pop_menu_down_and_repaint_parent(
 					parent_height - event.xexpose.y;
 			}
 			flush_accumulate_expose(MR_WINDOW(parent), &event);
-			paint_menu(parent, &event, (*pmp->pfw));
+			paint_menu(parent, &event, (*pmp->pexc)->w.fw);
 		}
 	}
 	else
@@ -4420,7 +4408,7 @@ static void __mloop_get_event_timeout_loop(
 	MenuParameters *pmp,
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
 {
-	XEvent e = *pmp->exc->x.elast;
+	XEvent e = *(*pmp->pexc)->x.elast;
 
 	while (!FPending(dpy) || !FCheckMaskEvent(dpy, msi->event_mask, &e))
 	{
@@ -4520,7 +4508,7 @@ static mloop_ret_code_t __mloop_get_event(
 	MenuParameters *pmp, MenuReturn *pmret,
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
 {
-	XEvent e = *pmp->exc->x.elast;
+	XEvent e = *(*pmp->pexc)->x.elast;
 
 	in->mif.do_popup_and_warp = False;
 	in->mif.do_popup_now = False;
@@ -4544,7 +4532,7 @@ static mloop_ret_code_t __mloop_get_event(
 			pmret->rc = MENU_PROPAGATE_EVENT;
 			return MENU_MLOOP_RET_END;
 		}
-		if (pmp->exc->x.elast->type == KeyPress)
+		if ((*pmp->pexc)->x.elast->type == KeyPress)
 		{
 			/* since the pointer has been warped since the key was
 			 * pressed, fake a different key press position */
@@ -4640,14 +4628,14 @@ static mloop_ret_code_t __mloop_handle_event(
 	MenuRoot *tmrMi;
 
 	pmret->rc = MENU_NOP;
-	switch (pmp->exc->x.elast->type)
+	switch ((*pmp->pexc)->x.elast->type)
 	{
 	case ButtonRelease:
 		med->mi = find_entry(
 			pmp, &med->x_offset, &med->mrMi,
-			pmp->exc->x.elast->xbutton.subwindow,
-			pmp->exc->x.elast->xbutton.x_root,
-			pmp->exc->x.elast->xbutton.y_root);
+			(*pmp->pexc)->x.elast->xbutton.subwindow,
+			(*pmp->pexc)->x.elast->xbutton.x_root,
+			(*pmp->pexc)->x.elast->xbutton.y_root);
 		/* hold the menu up when the button is released
 		 * for the first time if released OFF of the menu */
 		if (pmp->flags.is_sticky && !in->mif.is_motion_first)
@@ -4658,7 +4646,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		}
 		if (med->mi != NULL)
 		{
-			if (pmp->exc->x.elast->xbutton.button == 2 &&
+			if ((*pmp->pexc)->x.elast->xbutton.button == 2 &&
 			    MI_IS_TITLE(med->mi))
 			{
 				pmret->rc = MENU_TEAR_OFF;
@@ -4758,7 +4746,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		return MENU_MLOOP_RET_LOOP;
 
 	case KeyRelease:
-		if (pmp->exc->x.elast->xkey.keycode !=
+		if ((*pmp->pexc)->x.elast->xkey.keycode !=
 		    MST_SELECT_ON_RELEASE_KEY(pmp->menu))
 		{
 			return MENU_MLOOP_RET_LOOP;
@@ -4794,7 +4782,7 @@ static mloop_ret_code_t __mloop_handle_event(
 				}
 			}
 			med->mi = MR_SELECTED_ITEM(pmp->menu);
-			e = *pmp->exc->x.elast;
+			e = *(*pmp->pexc)->x.elast;
 			e.xkey.x_root = med->x_offset;
 			e.xkey.y_root = menuitem_middle_y_offset(
 				med->mi, MR_STYLE(pmp->menu));
@@ -4803,7 +4791,7 @@ static mloop_ret_code_t __mloop_handle_event(
 
 		/* now handle the actual key press */
 		menuShortcuts(
-			pmp->menu, pmp, pmret, pmp->exc->x.elast, &med->mi,
+			pmp->menu, pmp, pmret, (*pmp->pexc)->x.elast, &med->mi,
 			pdkp);
 		if (pmret->rc != MENU_NOP)
 		{
@@ -4880,7 +4868,8 @@ static mloop_ret_code_t __mloop_handle_event(
 		}
 		med->mi = find_entry(
 			pmp, &med->x_offset, &med->mrMi, p_child, p_rx, p_ry);
-		if (pmret->flags.is_menu_posted && med->mrMi != pmret->target_menu)
+		if (pmret->flags.is_menu_posted &&
+		    med->mrMi != pmret->target_menu)
 		{
 			/* ignore mouse movement outside a posted menu */
 			med->mrMi = NULL;
@@ -4898,18 +4887,18 @@ static mloop_ret_code_t __mloop_handle_event(
 	case Expose:
 		/* grab our expose events, let the rest go through */
 		XFlush(dpy);
-		menu_expose(pmp->exc->x.elast, (*pmp->pfw));
+		menu_expose((*pmp->pexc)->x.elast, (*pmp->pexc)->w.fw);
 		/* we want to dispatch this too so that icons and maybe tear off
 		 * get redrawn after being obscured by menus. */
-		dispatch_event(pmp->exc->x.elast);
+		dispatch_event((*pmp->pexc)->x.elast);
 		return MENU_MLOOP_RET_LOOP;
 
 	case ClientMessage:
-		if (pmp->exc->x.elast->xclient.format == 32 &&
-		    pmp->exc->x.elast->xclient.data.l[0] ==
+		if ((*pmp->pexc)->x.elast->xclient.format == 32 &&
+		    (*pmp->pexc)->x.elast->xclient.data.l[0] ==
 		    _XA_WM_DELETE_WINDOW &&
 		    pmp->tear_off_root_menu_window != NULL &&
-		    pmp->exc->x.elast->xclient.window == FW_W_PARENT(
+		    (*pmp->pexc)->x.elast->xclient.window == FW_W_PARENT(
 			    pmp->tear_off_root_menu_window))
 		{
 			/* handle deletion of tear out menus */
@@ -4937,14 +4926,14 @@ static mloop_ret_code_t __mloop_handle_event(
 	case UnmapNotify:
 		/* should never happen, but does not hurt */
 		if (pmp->tear_off_root_menu_window != NULL &&
-		    pmp->exc->x.elast->xunmap.window ==
+		    (*pmp->pexc)->x.elast->xunmap.window ==
 		    FW_W(pmp->tear_off_root_menu_window))
 		{
 			/* handle deletion of tear out menus */
 			pmret->rc = MENU_KILL_TEAR_OFF_MENU;
 			/* extra safety: pass event back to main event loop to
 			 * make sure the is destroyed */
-			FPutBackEvent(dpy, pmp->exc->x.elast);
+			FPutBackEvent(dpy, (*pmp->pexc)->x.elast);
 			return MENU_MLOOP_RET_END;
 		}
 		break;
@@ -4955,7 +4944,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		 * structures.  Anyway, no events should ever get here except
 		 * to tear off menus and these must be handled individually. */
 #if 0
-		dispatch_event(pmp->exc->x.elast);
+		dispatch_event((*pmp->pexc)->x.elast);
 #endif
 		break;
 	}
@@ -4986,10 +4975,10 @@ static void __mloop_select_item(
 		}
 		select_menu_item(
 			pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			(*pmp->pfw));
+			(*pmp->pexc)->w.fw);
 	}
 	/* highlight the new item; sets MR_SELECTED_ITEM(pmp->menu) too */
-	select_menu_item(pmp->menu, med->mi, True, (*pmp->pfw));
+	select_menu_item(pmp->menu, med->mi, True, (*pmp->pexc)->w.fw);
 
 	return;
 }
@@ -5075,9 +5064,9 @@ static mloop_ret_code_t __mloop_make_popup(
 		/* Note that we don't care if popping up the menu works. If it
 		 * doesn't we'll catch it below. */
 		pop_menu_up(
-			&in->mrPopup, pmp, pmp->menu, med->mi, pmp->pfw,
-			pmp->pcontext, x, y, prefer_left_submenus,
-			in->mif.do_popup_and_warp, pops, pdoes_submenu_overlap,
+			&in->mrPopup, pmp, pmp->menu, med->mi, pmp->pexc, x, y,
+			prefer_left_submenus, in->mif.do_popup_and_warp, pops,
+			pdoes_submenu_overlap,
 			(in->mrPopdown) ? MR_WINDOW(in->mrPopdown) : None);
 		in->mi_with_popup = med->mi;
 		in->mi_wants_popup = NULL;
@@ -5146,7 +5135,7 @@ static mloop_ret_code_t __mloop_get_mi_actions(
 	}
 	else if (med->mi && MI_IS_POPUP(med->mi))
 	{
-		if (pmp->exc->x.elast->type == ButtonPress && is_double_click(
+		if ((*pmp->pexc)->x.elast->type == ButtonPress && is_double_click(
 			    msi->t0, med->mi, pmp, pmret, pdkp,
 			    in->mif.has_mouse_moved))
 		{
@@ -5221,7 +5210,7 @@ static mloop_ret_code_t __mloop_do_popup(
 	{
 		/* draw the parent menu if it is not already drawn */
 		flush_expose(MR_WINDOW(pmp->menu));
-		paint_menu(pmp->menu, NULL, (*pmp->pfw));
+		paint_menu(pmp->menu, NULL, (*pmp->pexc)->w.fw);
 	}
 	/* get pos hints for item's action */
 	get_popup_options(pmp, med->mi, pops);
@@ -5235,9 +5224,6 @@ static mloop_ret_code_t __mloop_do_popup(
 		char *menu_name;
 		char *action;
 		char *missing_action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
-		const exec_context_t *exc;
-		exec_context_changes_t ecc;
-		int old_emf;
 
 		menu_name = PeekToken(
 			SkipNTokens(MI_ACTION(med->mi), 1), NULL);
@@ -5270,17 +5256,7 @@ static mloop_ret_code_t __mloop_do_popup(
 			is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
 		}
 		/* Execute the action */
-		ecc.w.fw = *pmp->pfw;
-		ecc.w.w = (*pmp->pfw) ? FW_W(*pmp->pfw) : None;
-		ecc.w.wcontext = *pmp->pcontext;
-		exc = exc_clone_context(
-			pmp->exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
-		old_emf = Scr.flags.is_executing_menu_function;
-		Scr.flags.is_executing_menu_function = 1;
-		execute_function(
-			NULL, exc, action, FUNC_DONT_EXPAND_COMMAND);
-		Scr.flags.is_executing_menu_function = old_emf;
-		exc_destroy_context(exc);
+		__menu_execute_function(pmp->pexc, action);
 		if (is_complex_function)
 		{
 			free(action);
@@ -5288,12 +5264,6 @@ static mloop_ret_code_t __mloop_do_popup(
 		if (is_busy_grabbed)
 		{
 			UngrabEm(GRAB_BUSYMENU);
-		}
-		/* restore the stuff we saved */
-		if (!check_if_fvwm_window_exists(*(pmp->pfw)))
-		{
-			*(pmp->pfw) = NULL;
-			*(pmp->pcontext) = 0;
 		}
 		/* Let's see if the menu exists now. */
 		mrMiPopup = mr_popup_for_mi(pmp->menu, med->mi);
@@ -5369,13 +5339,11 @@ static mloop_ret_code_t __mloop_do_menu(
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = in->mrPopup;
-	mp.exc = pmp->exc;
+	mp.pexc = pmp->pexc;
 	mp.parent_menu = pmp->menu;
 	mp.parent_item = med->mi;
-	mp.pfw = pmp->pfw;
 	mp.tear_off_root_menu_window = pmp->tear_off_root_menu_window;
 	MR_IS_TEAR_OFF_MENU(in->mrPopup) = 0;
-	mp.pcontext = pmp->pcontext;
 	mp.flags.has_default_action = False;
 	mp.flags.is_already_mapped = in->mif.is_submenu_mapped;
 	mp.flags.is_sticky = False;
@@ -5387,7 +5355,7 @@ static mloop_ret_code_t __mloop_do_menu(
 	mp.screen_origin_y = pmp->screen_origin_y;
 	if (in->mif.do_propagate_event_into_submenu)
 	{
-		e = *pmp->exc->x.elast;
+		e = *(*pmp->pexc)->x.elast;
 		mp.event_propagate_to_submenu = &e;
 	}
 	else
@@ -5483,7 +5451,7 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 		in->mrPopup = in->mrPopdown;
 		in->mrPopdown = NULL;
 		*pdoes_submenu_overlap = *pdoes_popdown_submenu_overlap;
-		select_menu_item(pmp->menu, med->mi, True, (*pmp->pfw));
+		select_menu_item(pmp->menu, med->mi, True, (*pmp->pexc)->w.fw);
 	}
 	mrMiPopup = mr_popup_for_mi(pmp->menu, med->mi);
 	/* check what has to be done with the item */
@@ -5535,7 +5503,7 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 	    (tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1))  &&
 	    (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
 	{
-		animated_move_back(in->mrPopup, False, (*pmp->pfw));
+		animated_move_back(in->mrPopup, False, (*pmp->pexc)->w.fw);
 	}
 	/* now check whether we should animate the current real menu
 	 * over to the right to unobscure the prior menu; only a very
@@ -5547,7 +5515,7 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 	    pointer_in_passive_item_area(med->x_offset, med->mrMi))
 	{
 		/* we have to see if we need menu to be moved */
-		animated_move_back(pmp->menu, True, (*pmp->pfw));
+		animated_move_back(pmp->menu, True, (*pmp->pexc)->w.fw);
 		if (in->mrPopdown)
 		{
 			if (in->mrPopdown != in->mrPopup)
@@ -5601,7 +5569,7 @@ static mloop_ret_code_t __mloop_handle_action_without_mi(
 		{
 			select_menu_item(
 				pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-				(*pmp->pfw));
+				(*pmp->pexc)->w.fw);
 			pop_menu_down_and_repaint_parent(
 				&in->mrPopup, pdoes_submenu_overlap, pmp);
 			in->mi_with_popup = NULL;
@@ -5627,7 +5595,7 @@ static mloop_ret_code_t __mloop_handle_action_without_mi(
 	{
 		select_menu_item(
 			pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			(*pmp->pfw));
+			(*pmp->pexc)->w.fw);
 	}
 
 	return MENU_MLOOP_RET_NORMAL;
@@ -5791,7 +5759,7 @@ static void __mloop_exit(
 	{
 		select_menu_item(
 			pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			(*pmp->pfw));
+			(*pmp->pexc)->w.fw);
 	}
 	if (pmret->rc == MENU_SUBMENU_TORN_OFF)
 	{
@@ -6080,8 +6048,6 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 void menu_enter_tear_off_menu(const exec_context_t *exc)
 {
 	MenuRoot *mr;
-	FvwmWindow *fw2;
-	int context;
 	char *ret_action = NULL;
 	MenuOptions mops;
 	MenuParameters mp;
@@ -6103,13 +6069,9 @@ void menu_enter_tear_off_menu(const exec_context_t *exc)
 	memset(&mret, 0, sizeof(MenuReturn));
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = mr;
-	mp.exc = exc2;
-	fw2 = NULL;
-	mp.pfw = &fw2;
+	mp.pexc = &exc2;
 	mp.tear_off_root_menu_window = exc->w.fw;
 	MR_IS_TEAR_OFF_MENU(mr) = 1;
-	context = C_ROOT;
-	mp.pcontext = &context;
 	mp.flags.has_default_action = 0;
 	mp.flags.is_already_mapped = True;
 	mp.flags.is_sticky = False;
@@ -6126,8 +6088,8 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
 {
 	MenuRoot *mr;
 	MenuParameters mp;
-	FvwmWindow *t = NULL;
-	int context = C_ROOT;
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
 
 	if (XFindContext(
 		    dpy, FW_W(fw), MenuContext, (caddr_t *)&mr) == XCNOENT)
@@ -6136,9 +6098,13 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
 	}
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = mr;
-	mp.pfw = &t;
-	mp.pcontext = &context;
+	ecc.w.fw = NULL;
+	ecc.w.w = None;
+	ecc.w.wcontext = C_ROOT;
+	exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+	mp.pexc = &exc;
 	pop_menu_down(&mr, &mp);
+	exc_destroy_context(exc);
 	DestroyMenu(mr, False, False);
 
 	return;
@@ -6229,7 +6195,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		pmp->screen_origin_x = pmp->pops->pos_hints.screen_origin_x;
 		pmp->screen_origin_y = pmp->pops->pos_hints.screen_origin_y;
 	}
-	if (pmp->pops->flags.do_not_warp)
+	if (!pmp->pops->flags.do_warp_title)
 	{
 		do_warp = False;
 	}
@@ -6289,9 +6255,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		 * nicely. It might also move parent_menu out of the way. */
 		if (!pop_menu_up(
 			    &(pmp->menu), pmp, pmp->parent_menu, NULL,
-			    pmp->pfw, pmp->pcontext, x, y,
-			    prefer_left_submenus, do_warp, pmp->pops, NULL,
-			    None))
+			    pmp->pexc, x, y, prefer_left_submenus, do_warp,
+			    pmp->pops, NULL, None))
 		{
 			XBell(dpy, 0);
 			UngrabEm(GRAB_MENU);
@@ -6331,8 +6296,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		if (pmp->flags.is_triggered_by_keypress)
 		{
 			/* we have a real key event */
-			dkp.keystate = pmp->exc->x.etrigger->xkey.state;
-			dkp.keycode = pmp->exc->x.etrigger->xkey.keycode;
+			dkp.keystate = (*pmp->pexc)->x.etrigger->xkey.state;
+			dkp.keycode = (*pmp->pexc)->x.etrigger->xkey.keycode;
 		}
 		dkp.timestamp =
 			(key_press && pmp->flags.has_default_action) ? t0 : 0;
@@ -6426,9 +6391,9 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			FWarpPointer(
 				dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 				Scr.MyDisplayHeight, x_start, y_start);
-			if (pmp->exc->x.elast->type == KeyPress)
+			if ((*pmp->pexc)->x.elast->type == KeyPress)
 			{
-				XEvent e = *pmp->exc->x.elast;
+				XEvent e = *(*pmp->pexc)->x.elast;
 
 				e.xkey.x_root = x_start;
 				e.xkey.y_root = y_start;
@@ -6451,34 +6416,15 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		{
 			if (pmret->rc == MENU_DONE)
 			{
-				int old_emf;
-
-				old_emf = Scr.flags.is_executing_menu_function;
 				if (pmp->ret_paction && *(pmp->ret_paction))
 				{
-					const exec_context_t *exc;
-					exec_context_changes_t ecc;
-
 					indirect_depth++;
 					/* Execute the action */
-					ecc.w.fw = *pmp->pfw;
-					ecc.w.w = (*pmp->pfw) ?
-						FW_W(*pmp->pfw) : None;
-					ecc.w.wcontext = *pmp->pcontext;
-					exc = exc_clone_context(
-						pmp->exc, &ecc, ECC_FW | ECC_W |
-						ECC_WCONTEXT);
-					Scr.flags.is_executing_menu_function =
-						1;
-					execute_function(
-						NULL, exc, *pmp->ret_paction,
-						FUNC_DONT_EXPAND_COMMAND);
-					Scr.flags.is_executing_menu_function =
-						old_emf;
-					exc_destroy_context(exc);
+					__menu_execute_function(
+						pmp->pexc, *pmp->ret_paction);
+					*(pmp->ret_paction) = NULL;
 					indirect_depth--;
 					free(*(pmp->ret_paction));
-					*(pmp->ret_paction) = NULL;
 				}
 				last_saved_pos_hints.flags.
 					do_ignore_pos_hints = False;

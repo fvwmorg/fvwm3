@@ -40,8 +40,11 @@
 
 /* ---------------------------- local variables ----------------------------- */
 
-exec_context_t *x[256];
-int nx = 0;
+#undef DEBUG_EXECCONTEXT
+#ifdef DEBUG_EXECCONTEXT
+static exec_context_t *x[256];
+static int nx = 0;
+#endif
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -91,14 +94,17 @@ static void __exc_change_context(
 const exec_context_t *exc_create_null_context(void)
 {
 	exec_context_t *exc;
-/*int i;*/
+#ifdef DEBUG_EXECCONTEXT
+	int i;
+#endif
 
 	exc = (exec_context_t *)safecalloc(1, sizeof(exec_context_t));
-/*fprintf(stderr, "xxx+0 ");
-for(i=0;i<nx;i++)fprintf(stderr,"  ");*/
+#ifdef DEBUG_EXECCONTEXT
+fprintf(stderr, "xxx+0 ");
+for(i=0;i<nx;i++)fprintf(stderr,"  ");
 x[nx]=exc;nx++;
-/*
-fprintf(stderr, "0x%08x\n", (int)exc);*/
+fprintf(stderr, "0x%08x\n", (int)exc);
+#endif
 	exc->type = EXCT_NULL;
 	fev_make_null_event(&exc->private_data.te, dpy);
 	exc->x.etrigger = &exc->private_data.te;
@@ -113,7 +119,9 @@ const exec_context_t *exc_create_context(
 {
 	exec_context_t *exc;
 
-if (!(mask & ECC_TYPE))abort();
+#ifdef DEBUG_EXECCONTEXT
+if (!(mask & ECC_TYPE)) abort();
+#endif
 	exc = (exec_context_t *)exc_create_null_context();
 	__exc_change_context(exc, ecc, mask);
 
@@ -125,15 +133,17 @@ const exec_context_t *exc_clone_context(
 	exec_context_change_mask_t mask)
 {
 	exec_context_t *exc;
-/*int i;*/
+#ifdef DEBUG_EXECCONTEXT
+int i;
+#endif
 
 	exc = (exec_context_t *)safemalloc(sizeof(exec_context_t));
-/*fprintf(stderr, "xxx+= ");
+#ifdef DEBUG_EXECCONTEXT
+fprintf(stderr, "xxx+= ");
 for(i=0;i<nx;i++)fprintf(stderr,"  ");
-*/
 x[nx]=exc;nx++;
-/*fprintf(stderr, "0x%08x\n", (int)exc);
-*/
+fprintf(stderr, "0x%08x\n", (int)exc);
+#endif
 	memcpy(exc, excin, sizeof(*exc));
 	__exc_change_context(exc, ecc, mask);
 
@@ -143,14 +153,14 @@ x[nx]=exc;nx++;
 void exc_destroy_context(
 	const exec_context_t *exc)
 {
-/*int i;
+#ifdef DEBUG_EXECCONTEXT
+int i;
 if (nx == 0||x[nx-1] != exc)abort();
-*/
 nx--;
-/*fprintf(stderr, "xxx-- ");
+fprintf(stderr, "xxx-- ");
 for(i=0;i<nx;i++)fprintf(stderr,"  ");
 fprintf(stderr, "0x%08x\n", (int)exc);
-*/
+#endif
 	free((exec_context_t *)exc);
 
 	return;

@@ -66,8 +66,6 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	char *menu_name = NULL;
 	MenuParameters mp;
 	MenuReturn mret;
-	FvwmWindow *fw2;
-	int tc;
 	FvwmWindow * const fw = exc->w.fw;
 	const Window w = exc->w.w;
 
@@ -103,11 +101,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = menu;
-	mp.exc = exc;
-	fw2 = exc->w.fw;
-	mp.pfw = &fw2;
-	tc = exc->w.wcontext;
-	mp.pcontext = &tc;
+	mp.pexc = &exc;
 	MR_IS_TEAR_OFF_MENU(menu) = 0;
 	mp.flags.has_default_action = (action != NULL);
 	mp.flags.is_sticky = fStaysUp;
