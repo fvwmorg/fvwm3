@@ -12,7 +12,6 @@ AddToFunc FvwmProxyMarkFunc
 + I SetEnv FvwmProxy_S $w
 
 AddToFunc FvwmProxySelectFunc
-+ I echo $w
 + I WindowId $w Iconify off
 + I WindowId $w FlipFocus
 + I WindowId $w Raise
@@ -20,20 +19,12 @@ AddToFunc FvwmProxySelectFunc
 + I UnsetEnv FvwmProxy_S
 
 AddToFunc FvwmProxy_Mark
-+ I None WindowId $w
 + I SendToModule FvwmProxy mark $w
 
 AddToFunc FvwmProxy_Circulate
 + I WindowId $[FvwmProxy_S] $0 $1 FvwmProxy_Mark
 + I CondCase (Error) $0 $1 FvwmProxy_Mark
 
-# !!!This shouldn't be the default.  It's too dangerous and annoying for people
-# who actually use the tab key.
-#Key Meta_L	A N	SendToModule	FvwmProxy	Show
-#Key -Meta_L	A A	SendToModule	FvwmProxy	Hide
-
-# Rather, default to 'fixed' and let user change it
-#*FvwmProxy: Font		-*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
 *FvwmProxy: ShowMiniIcons	true
 *FvwmProxy: EnterSelect		true
 *FvwmProxy: ProxyMove		false
