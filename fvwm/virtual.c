@@ -968,6 +968,11 @@ void MoveViewport(int newx, int newy, Bool grab)
     }
   }
   checkPanFrames();
+  if (Scr.Focus)
+  {
+    /* regrab buttons for focused window in case it is now obscured */
+    focus_grab_buttons(Scr.Focus, True);
+  }
 
   /* do this with PanFrames too ??? HEDU */
   while(XCheckTypedEvent(dpy,MotionNotify,&Event))

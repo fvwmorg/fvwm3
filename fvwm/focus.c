@@ -561,7 +561,6 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     return;
   }
   accepts_input_focus = do_accept_input_focus(tmp_win);
-
   if ((HAS_SLOPPY_FOCUS(tmp_win) || HAS_MOUSE_FOCUS(tmp_win) ||
        HAS_NEVER_FOCUS(tmp_win)) &&
       DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win) &&
