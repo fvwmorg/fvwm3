@@ -12,10 +12,14 @@ my @trackerNames = qw(
 );
 
 foreach my $name (@trackerNames) {
-	my $params = $name eq "ModuleConfig"? { ModuleName => "FvwmIdent" }:
-		$name eq "Scheduler"? { ModuleName => $0 }: undef;
+	my %params = ();
+	%params = ( ModuleName => $0 ) if $name eq "Scheduler";
+	%params = (
+		ModuleName => "FvwmIdent",
+		DefaultConfig => { Font => 'missing' }
+	) if $name eq "ModuleConfig";
 
-	my $tracker = $module->track($name, $params);
+	my $tracker = $module->track($name, %params);
 	if ($name eq "Scheduler") {
 		$tracker->schedule(30, sub {
 			my $oldTimeout = $_[0]->{seconds};

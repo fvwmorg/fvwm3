@@ -700,22 +700,22 @@ int ProcessXEvent(int x, int y)
 						main_width, main_height);
 					do_eat_expose = True;
 				}
-                                else if (colorset == -1)
-                                     {
-                                        do_eat_expose = True;
-                                     }
-				     else if (UpdateBackgroundTransparency(
-						 dpy, main_win, main_width,
-						 main_height,
-						 &Colorset[(colorset)], Pdepth,
-						 gc, True) == True)
-			                {
-					        do_eat_expose = True;
-			                }
+				else if (colorset == -1)
+				{
+					do_eat_expose = True;
+				}
+				else if (UpdateBackgroundTransparency(
+					dpy, main_win, main_width,
+					main_height,
+					&Colorset[(colorset)], Pdepth,
+					gc, True) == True)
+				{
+					do_eat_expose = True;
+				}
 				if (do_eat_expose == True)
 				{
 					while (FCheckTypedEvent(
-						       dpy, Expose, &Event))
+						dpy, Expose, &Event))
 					{
 						/* nothing */
 					}
@@ -1409,14 +1409,20 @@ static int
 ErrorHandler(Display *d, XErrorEvent *event)
 {
 #if 0
-  if (event->error_code == BadPixmap)
-    return 0;
-  if (event->error_code == BadDrawable)
-    return 0;
-  if (FRenderGetErrorCodeBase() + FRenderBadPicture == event->error_code)
-    return 0;
+	if (event->error_code == BadPixmap)
+	{
+		return 0;
+	}
+	if (event->error_code == BadDrawable)
+	{
+		return 0;
+	}
+	if (event->error_code == FRenderGetErrorCodeBase() + FRenderBadPicture)
+	{
+		return 0;
+	}
 #endif
 
-  PrintXErrorAndCoredump(d, event, MyName);
-  return 0;
+	PrintXErrorAndCoredump(d, event, MyName);
+	return 0;
 }

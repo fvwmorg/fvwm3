@@ -24,26 +24,43 @@ sub observables ($) {
 	];
 }
 
-sub new ($$;$) {
+sub new ($$%) {
 	my $class = shift;
 	my $module = shift;
-	my $params = shift || {};
+	my %params = @_;
 
 	my $self = $class->FVWM::Tracker::new($module);
 
-	$self->{isHash} = ($params->{ConfigType} || 'hash') eq 'hash';
-	$self->{moduleName} = $params->{ModuleName} || $self->{module}->name;
-	# asis, spacefree, lowerkeys, upperkeys
-	$self->{filter} = $params->{LineFilter} || 'spacefree';
+	$self->{isHash} = 1;
+	$self->{moduleName} = $self->{module}->name;
+	$self->{filter} = 'spacefree';
+	$self->{defaultConfig} = {};
+
+	return $self->init(%params);
+}
+
+sub init ($%) {
+	my $self = shift;
+	my %params = @_;
+
+	if ($params{ConfigType}) {
+		$self->{isHash} = $params{ConfigType} eq 'hash';
+		$self->{defaultConfig} = $self->{isHash}? {}: [];
+	}
+	$self->{moduleName} = $params{ModuleName} if $params{ModuleName};
+	$self->{filter} = $params{LineFilter} if $params{LineFilter};
+	$self->{defaultConfig} = $params{DefaultConfig}
+		if ref($self->{defaultConfig}) eq ref($params{DefaultConfig});
 
 	return $self;
 }
 
-
 sub start ($) {
 	my $self = shift;
 
-	$self->{data} = $self->{isHash}? {}: [];
+	my $default = $self->{defaultConfig};
+	$self->{data} = $self->{isHash}? { %$default }: [ @$default ];
+
 	$self->addHandler(M_CONFIG_INFO, sub {
 		my $event = $_[1];
 		$self->calculateInternals($event->args);

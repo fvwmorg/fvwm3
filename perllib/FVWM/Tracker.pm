@@ -210,8 +210,8 @@ __END__
 
 =head1 DESCRIPTION
 
-Tracker is an object that automatically listens to the corresponding
-fvwm events and gathers an information dynamically until it is stopped.
+Tracker is an object that automatically listens to certain fvwm events and
+gathers an information dynamically until it is stopped.
 
 It also defines high level events for a caller to observe.
 
@@ -227,7 +227,7 @@ Using B<FVWM::Module> $module object (preferably):
 Or directly (B<FVWM::Module> $module object is still needed):
 
   my $tracker = new FVWM::Tracker::TrackerName($module, @params);
-  my $initialInfo = $tracker->start;
+  my $initialData = $tracker->start;
   $tracker->observe("HighLevelTrackerEvent", sub { shift->data });
   $tracker->observe("HighLevelTrackerEvent2", sub { shift->stop });
 

@@ -24,16 +24,16 @@ sub observables ($) {
 	];
 }
 
-sub new ($$;$) {
+sub new ($$%) {
    my $class = shift;
    my $module = shift;
-   my $params = shift || {};
+   my %params = @_;
 
    my $self = $class->FVWM::Tracker::new($module);
 
 	$self->{randomBaseNumber} = 8000000 + int(rand(900000));
 	$self->{sentStringPrefix} = "FVWM::Tracker::Scheduler alarm ";
-   $self->{moduleName} = $params->{ModuleName} || $self->{module}->name;
+   $self->{moduleName} = $params{ModuleName} || $self->{module}->name;
 
    return $self;  
 }
