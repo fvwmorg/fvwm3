@@ -465,7 +465,7 @@ static void InteractiveMove(
     InstallRootColormap();
   else
     InstallFvwmColormap();
-  /* warp the pointer to the cursor position from before menu appeared*/
+  /* warp the pointer to the cursor position from before menu appeared */
   /* domivogt (17-May-1999): an XFlush should not hurt anyway, so do it
    * unconditionally to remove the external */
   XFlush(dpy);
@@ -483,12 +483,16 @@ static void InteractiveMove(
     GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &DragX, &DragY);
   }
 
+  MyXGrabServer(dpy);
   if (!XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
 		    (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
 		    &JunkBW,  &JunkDepth))
   {
+    MyXUngrabServer(dpy);
     return;
   }
+  XGrabKeyboard(
+    dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
   if (do_start_at_pointer)
   {
     origDragX = DragX;
@@ -511,19 +515,16 @@ static void InteractiveMove(
       do_move_opaque = True;
     }
   }
-
   if (do_move_opaque)
   {
-    XGrabKeyboard(
-      dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+    MyXUngrabServer(dpy);
   }
   else
   {
     Scr.flags.is_wire_frame_displayed = True;
-    MyXGrabServer(dpy);
   }
 
-  if((!do_move_opaque)&&(IS_ICONIFIED(tmp_win)))
+  if (!do_move_opaque && IS_ICONIFIED(tmp_win))
     XUnmapWindow(dpy,w);
 
   XOffset = origDragX - DragX;
@@ -537,27 +538,25 @@ static void InteractiveMove(
   else
     UninstallFvwmColormap();
 
-  if(!do_move_opaque)
+  if (!do_move_opaque)
   {
     /* Throw away some events that dont interest us right now. */
     discard_events(EnterWindowMask|LeaveWindowMask);
     Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
   }
-  else
-  {
-    XUngrabKeyboard(dpy, CurrentTime);
-  }
+  XUngrabKeyboard(dpy, CurrentTime);
+
+  return;
 }
 
 
 /* Perform the movement of the window. ppctMovement *must* have a 1.0 entry
  * somewhere in ins list of floats, and movement will stop when it hits a 1.0
  * entry */
-static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
-				  int startY, int endX, int endY,
-				  Bool fWarpPointerToo, int cmsDelay,
-				  float *ppctMovement )
+static void AnimatedMoveAnyWindow(
+  FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
+  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement)
 {
   int pointerX, pointerY;
   int currentX, currentY;
@@ -1886,7 +1885,7 @@ void CMD_Resize(F_CMD_ARGS)
 		 &JunkX, &JunkY, &px, &py, &button_mask);
   button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 
-  if(check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
+  if (!check_if_function_allowed(F_RESIZE, tmp_win, True, NULL))
   {
     XBell(dpy, 0);
     return;
@@ -1952,39 +1951,40 @@ void CMD_Resize(F_CMD_ARGS)
     return;
   }
 
-  if (!do_resize_opaque)
-  {
-    Scr.flags.is_wire_frame_displayed = True;
-    MyXGrabServer(dpy);
-  }
-  else
-  {
-    XGrabKeyboard(
-      dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-  }
-
   /* handle problems with edge-wrapping while resizing */
   edge_wrap_x = Scr.flags.edge_wrap_x;
   edge_wrap_y = Scr.flags.edge_wrap_y;
   Scr.flags.edge_wrap_x = 0;
   Scr.flags.edge_wrap_y = 0;
 
+  if (!do_resize_opaque)
+  {
+    MyXGrabServer(dpy);
+  }
+  if (!XGetGeometry(
+	dpy, (Drawable) ResizeWindow, &JunkRoot, &drag->x, &drag->y,
+	(unsigned int *)&drag->width, (unsigned int *)&drag->height,
+	&JunkBW, &JunkDepth))
+  {
+    UngrabEm(GRAB_NORMAL);
+    if (!do_resize_opaque)
+    {
+      MyXUngrabServer(dpy);
+    }
+    return;
+  }
   if (IS_SHADED(tmp_win))
   {
     SET_MAXIMIZED(tmp_win, was_maximized);
     get_unshaded_geometry(tmp_win, drag);
     SET_MAXIMIZED(tmp_win, 0);
   }
-  else
+  if (!do_resize_opaque)
   {
-    if (!XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
-		      &drag->x, &drag->y, (unsigned int *)&drag->width,
-		      (unsigned int *)&drag->height, &JunkBW,&JunkDepth))
-    {
-      UngrabEm(GRAB_NORMAL);
-      return;
-    }
+    Scr.flags.is_wire_frame_displayed = True;
   }
+  XGrabKeyboard(
+    dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
 
   *orig = *drag;
   start_g = *drag;
@@ -2358,10 +2358,7 @@ void CMD_Resize(F_CMD_ARGS)
     Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
   }
-  else
-  {
-    XUngrabKeyboard(dpy, CurrentTime);
-  }
+  XUngrabKeyboard(dpy, CurrentTime);
   xmotion = 0;
   ymotion = 0;
   WaitForButtonsUp(True);

@@ -1,3 +1,13 @@
+2001-04-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (InteractiveMove):
+	(CMD_Resize):
+	grab keyboard during wire frame moves too so that keyboard input is not
+	passed to a window below; fixed moving window frames with the keyboard
+	same for resizing
+	fixed X freeze when window disappeared before the server was grabbed
+	check if a shaded window still exists too
+
 2001-04-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1 (Example):
