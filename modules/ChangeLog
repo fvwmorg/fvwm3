@@ -1,6 +1,7 @@
 1999-04-28  Hippo
 
 	* FvwmScroll/*.c: uses ModGraph.c, does dynamic color changing.
+	* FvwmIdent/FvwmIdent.c: updated for changed SetWindowBackground().
 
 1999-04-27  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 

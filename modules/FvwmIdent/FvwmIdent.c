@@ -425,7 +425,8 @@ void list_end(void)
 			   InputOutput, G->viz,
 			   CWColormap | CWBackPixmap | CWBorderPixel,
 			   &attributes);
-  SetWindowBackground(dpy, main_win, &(G->bg), &(G->bgtype));
+  SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
+		      &(G->bg), &(G->bgtype));
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
@@ -483,7 +484,8 @@ void list_end(void)
       if (tline != NULL && (strlen(tline) > 1)) {
 	if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
 	  if (ParseGraphics(dpy, tline, G)) {
-	    SetWindowBackground(dpy, main_win, &(G->bg), &(G->bgtype));
+	    SetWindowBackground(dpy, main_win, mysizehints.width,
+				mysizehints.height, &(G->bg), &(G->bgtype));
 	  }
 	}
       }
