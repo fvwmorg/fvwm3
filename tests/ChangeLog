@@ -1,0 +1,5 @@
+2001-03-11  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmButtons/FvwmButtons.sh: no double ;; after trap.
+	Added positioning test.  Other clean up.
+
