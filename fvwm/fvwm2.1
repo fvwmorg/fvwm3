@@ -1198,13 +1198,15 @@ resize windows across the edge of the current screen.  By making the
 first parameter to EdgeResistance 10000 this type of motion is
 impossible.  With EdgeResistance less than 10000 but greater than 0
 moving over pages becomes difficult but not impossible.
-
+See also, EdgeThickness.
 
 .IP "EdgeScroll \fIhorizontal vertical\fP"
 Specifies the percentage of a page to scroll when the cursor hits the
 edge of a page.  A trailing "p" changes the interpretation to mean "pixels".
 If you don't want any paging or scrolling when you hit the edge of a
-page include "EdgeScroll 0 0" in your .fvwm2rc file. If you want whole
+page include "EdgeScroll 0 0" in your .fvwm2rc file,
+or possibly better, set the EdgeThickness to zero.
+See the EdgeThickness command. If you want whole
 pages, use "EdgeScroll 100 100".  Both horizontal and vertical should
 be positive numbers.
 
@@ -1212,6 +1214,27 @@ If the horizontal and vertical percentages are multiplied by 1000 then
 scrolling will wrap around at the edge of the desktop.  If "EdgeScroll
 100000 100000" is used \fIfvwm\fP will scroll by whole pages, wrapping
 around at the edge of the desktop.
+
+.IP "EdgeThickness \fI0 | 1 | 2\fP"
+This is the width or height of the invisible window that fvwm2 creates
+on the edges of the screen that are used for the edgescrolling feature.
+
+A value of  zero completely disables  mouse edge scrolling, even while
+dragging a window.
+
+1 gives the  smallest pan frames,  which seem to  work best  except on
+some servers.
+
+2 is the default.
+
+Pan frames of 1 or 2 pixels can sometimes be confusing, for example,
+if you drag a window over the edge of the screen, so that it stradles
+aa pan frame, clicks on the window, near the edge of the screen are
+treated as clicks on the root window.
+
+Right now, this logic is only good on the initial read of .fvwm2rc.
+You may get undefined behavior if you issue this command after fvwm2 is
+running.
 
 .IP "Exec \fIcommand\fP"
 Executes \fIcommand\fP.  You should not use an ampersand ``&'' at the

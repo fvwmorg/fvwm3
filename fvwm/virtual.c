@@ -13,6 +13,48 @@
 #include "screen.h"
 #include "module.h"
 
+/*
+ * dje 12/19/98
+ *
+ * Testing with edge_thickness of 1  showed that some XServers don't
+ * care for 1 pixel windows, causing EdgeScrolling  not to work with some
+ * servers.  One  bug report was for SUNOS  4.1.3_U1.  We didn't find out
+ * the exact  cause of the problem.  Perhaps  no enter/leave  events were
+ * generated.
+ *
+ * Allowed: 0,1,or 2 pixel pan frames.
+ *
+ * 0   completely disables mouse  edge scrolling,  even  while dragging a
+ * window.
+ *
+ * 1 gives the  smallest pan frames,  which seem to  work best  except on
+ * some servers.
+ *
+ * 2 is the default.
+ *
+ * Right now, this logic is only good on the initial read of .fvwm2rc.
+ */
+int edge_thickness = 2;
+
+void setEdgeThickness(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		    unsigned long context,char *action, int *Module)
+{
+  int val, n;
+
+  n = GetIntegerArguments(action, NULL, &val, 1);
+  if(n != 1) {
+    fvwm_msg(ERR,"setEdgeThickness",
+             "EdgeThickness requires 1 numeric argument, found %d args",n);
+    return;
+  }
+  if (val < 0 || val > 2) {             /* check range */
+    fvwm_msg(ERR,"setEdgeThickness",
+             "EdgeThickness arg must be between 0 and 2, found %d",val);
+    return;
+  }
+  edge_thickness = val;
+}
+
 /***************************************************************************
  *
  * Check to see if the pointer is on the edge of the screen, and scroll/page
@@ -32,9 +74,11 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
   /* need to move the viewport */
   if(( Scr.VxMax == 0 ||
-       (*xl >= SCROLL_REGION && *xl < Scr.MyDisplayWidth  - SCROLL_REGION)) &&
+       (*xl >= edge_thickness &&
+        *xl < Scr.MyDisplayWidth  - edge_thickness)) &&
      ( Scr.VyMax == 0 ||
-       (*yt >= SCROLL_REGION && *yt < Scr.MyDisplayHeight - SCROLL_REGION)))
+       (*yt >= edge_thickness &&
+        *yt < Scr.MyDisplayHeight - edge_thickness)))
     return;
 
   total = 0;
@@ -72,8 +116,10 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	}
       /* check actual pointer location since PanFrames can get buried under
          a window being moved or resized - mab */
-      if(( x >= SCROLL_REGION )&&( x < Scr.MyDisplayWidth-SCROLL_REGION )&&
-         ( y >= SCROLL_REGION )&&( y < Scr.MyDisplayHeight-SCROLL_REGION ))
+      if(( x >= edge_thickness )&&
+         ( x < Scr.MyDisplayWidth-edge_thickness )&&
+         ( y >= edge_thickness )&&
+         ( y < Scr.MyDisplayHeight-edge_thickness ))
            return ;
     }
 
@@ -84,16 +130,16 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   /* and/or move the cursor back to the approximate correct location */
   /* that is, the same place on the virtual desktop that it */
   /* started at */
-  if( x<SCROLL_REGION)
+  if( x<edge_thickness)
     *delta_x = -HorWarpSize;
-  else if ( x >= Scr.MyDisplayWidth-SCROLL_REGION)
+  else if ( x >= Scr.MyDisplayWidth-edge_thickness)
     *delta_x = HorWarpSize;
   else
     *delta_x = 0;
   if (Scr.VxMax == 0) *delta_x = 0;
-  if( y<SCROLL_REGION)
+  if( y<edge_thickness)
     *delta_y = -VertWarpSize;
-  else if ( y >= Scr.MyDisplayHeight-SCROLL_REGION)
+  else if ( y >= Scr.MyDisplayHeight-edge_thickness)
     *delta_y = VertWarpSize;
   else
     *delta_y = 0;
@@ -159,12 +205,12 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     *yt = y - *delta_y;
 
   /* make sure the pointer isn't warped into the panframes */
-  if(*xl <= SCROLL_REGION) *xl = SCROLL_REGION+1;
-  if(*yt <= SCROLL_REGION) *yt = SCROLL_REGION+1;
-  if(*xl >= Scr.MyDisplayWidth - SCROLL_REGION)
-    *xl = Scr.MyDisplayWidth - SCROLL_REGION -1;
-  if(*yt >= Scr.MyDisplayHeight - SCROLL_REGION)
-    *yt = Scr.MyDisplayHeight - SCROLL_REGION -1;
+  if(*xl <= edge_thickness) *xl = edge_thickness+1;
+  if(*yt <= edge_thickness) *yt = edge_thickness+1;
+  if(*xl >= Scr.MyDisplayWidth - edge_thickness)
+    *xl = Scr.MyDisplayWidth - edge_thickness -1;
+  if(*yt >= Scr.MyDisplayHeight - edge_thickness)
+    *yt = Scr.MyDisplayHeight - edge_thickness -1;
 
   if((*delta_x != 0)||(*delta_y!=0))
     {
@@ -298,6 +344,9 @@ void initPanFrames()
   XSetWindowAttributes attributes;    /* attributes for create */
   unsigned long valuemask;
 
+  /* Not creating the frames disables all subsequent behavior */
+  if (edge_thickness == 0) return;
+
   attributes.event_mask =  (EnterWindowMask | LeaveWindowMask |
 			    VisibilityChangeMask);
   valuemask=  (CWEventMask | CWCursor );
@@ -306,7 +355,7 @@ void initPanFrames()
   Scr.PanFrameTop.win =
     XCreateWindow (dpy, Scr.Root,
 		   0,0,
-		   Scr.MyDisplayWidth,PAN_FRAME_THICKNESS,
+		   Scr.MyDisplayWidth,edge_thickness,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly,
 		   CopyFromParent,
@@ -314,26 +363,26 @@ void initPanFrames()
   attributes.cursor = Scr.FvwmCursors[LEFT];
   Scr.PanFrameLeft.win =
     XCreateWindow (dpy, Scr.Root,
-		   0,PAN_FRAME_THICKNESS,
-		   PAN_FRAME_THICKNESS,
-		   Scr.MyDisplayHeight-2*PAN_FRAME_THICKNESS,
+		   0,edge_thickness,
+		   edge_thickness,
+		   Scr.MyDisplayHeight-2*edge_thickness,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
   attributes.cursor = Scr.FvwmCursors[RIGHT];
   Scr.PanFrameRight.win =
     XCreateWindow (dpy, Scr.Root,
-		   Scr.MyDisplayWidth-PAN_FRAME_THICKNESS,PAN_FRAME_THICKNESS,
-		   PAN_FRAME_THICKNESS,
-		   Scr.MyDisplayHeight-2*PAN_FRAME_THICKNESS,
+		   Scr.MyDisplayWidth-edge_thickness,edge_thickness,
+		   edge_thickness,
+		   Scr.MyDisplayHeight-2*edge_thickness,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
   attributes.cursor = Scr.FvwmCursors[BOTTOM];
   Scr.PanFrameBottom.win =
     XCreateWindow (dpy, Scr.Root,
-		   0,Scr.MyDisplayHeight-PAN_FRAME_THICKNESS,
-		   Scr.MyDisplayWidth,PAN_FRAME_THICKNESS,
+		   0,Scr.MyDisplayHeight-edge_thickness,
+		   Scr.MyDisplayWidth,edge_thickness,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
@@ -354,8 +403,6 @@ void MoveViewport(int newx, int newy, Bool grab)
   int PageTop, PageLeft;
   int PageBottom, PageRight;
   int txl, txr, tyt, tyb;
-  int i1  =  0;
-  int i2  =  0;
 
   if(grab)
     MyXGrabServer(dpy);
@@ -539,7 +586,6 @@ void MoveViewport(int newx, int newy, Bool grab)
  **************************************************************************/
 int GetDeskNumber(char *action)
 {
-int i;
   int n;
   int m;
   int desk;
@@ -619,8 +665,6 @@ int i;
 void changeDesks_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context,char *action, int *Module)
 {
-  int n,val1, val1_unit, val2, val2_unit;
-
   changeDesks(GetDeskNumber(action));
 }
 

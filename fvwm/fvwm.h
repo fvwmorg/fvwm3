@@ -45,10 +45,6 @@
 #define WithdrawnState 0
 #endif
 
-/* use PanFrames! this replaces the 3 pixel margin with PanFrame windows
-it should not be an option, once it works right. HEDU 2/2/94 */
-#define PAN_FRAME_THICKNESS 1
-
 /* the maximum number of mouse buttons fvwm knows about */
 /* don't think that upping this to 5 will make everything
  * hunky-dory with 5 button mouses */
@@ -69,9 +65,6 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 # define HEIGHT_EXTRA 4		/* Extra height for texts in popus */
 # define HEIGHT_EXTRA_TITLE 4	/* Extra height for underlining title */
 # define HEIGHT_SEPARATOR 4	/* Height of separator lines */
-
-#define SCROLL_REGION PAN_FRAME_THICKNESS /* region around screen edge that */
-                                /* triggers scrolling */
 
 #ifndef TRUE
 #define TRUE	1

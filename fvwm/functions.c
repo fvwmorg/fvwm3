@@ -44,7 +44,12 @@ Bool desperate;
  * find_func_type which is called from menus.c. Some work has to be done
  * before it can be removed.
  * Dominik Vogt 21/11/98
-
+ *
+ * My   mistake. However,  they  are  no  longer  used for their original
+ * purpose, and  the   use menus.c is  putting   them to  seems  somewhat
+ * unnecessary.  I'm  going to use  F_NOP for EdgeThickness,  and see
+ * how that goes.
+ * dje 12/19/98.
  */
 static struct functions func_config[] =
 {
@@ -122,6 +127,7 @@ static struct functions func_config[] =
   {"None",         NoneFunc,         F_NONE,                FUNC_NO_WINDOW},
   {"Nop",          Nop_func,         F_NOP,                 FUNC_NOP},
   {"OpaqueMoveSize", SetOpaque,      F_OPAQUE,              FUNC_NO_WINDOW},
+  {"EdgeThickness", setEdgeThickness, F_NOP,                FUNC_NO_WINDOW},
   {"PipeRead",     PipeRead,         F_READ,                FUNC_NO_WINDOW},
 #ifdef XPM
   {"PixmapPath",   setPixmapPath,    F_PIXMAP_PATH,         FUNC_NO_WINDOW},

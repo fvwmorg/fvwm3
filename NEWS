@@ -1,6 +1,8 @@
 Changes in beta release 2.1.6 (December 1998)
 
 * Recapture is now much faster
+* New command "EdgeThickness" to control the size of the pan frames, and
+  a new way to turn off mouse edgescrolling.
 
 Changes in beta release 2.1.5 (December 1998)
 

@@ -137,6 +137,20 @@ extern char NoName[];
 extern char NoClass[];
 extern char NoResource[];
 
+/* Start of function prototype area.
+   I wonder if there is any sequence to this stuff.
+
+   Fvwm trivia: There were 97 commands in the fvwm command table
+   when the F_CMD_ARGS macro was written.
+   dje 12/19/98.
+   */
+
+/* Macro for args passed to fvwm commands...
+   For now, this macro is only used within this file. dje 12/19/98
+*/
+#define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
+unsigned long context,char *action, int *Module
+
 extern void       LookInList(FvwmWindow *, name_list *);
 extern void       MoveOutline(Window, int,int,int,int);
 extern void       AnimatedMoveOfWindow(Window w,int startX,int startY,int endX,
@@ -207,11 +221,9 @@ void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert);
 #define FULL_HILITE   0x000F
 #define HH_HILITE     0x0010
 
-void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	      unsigned long context, char *action, int *Module);
+void Maximize(F_CMD_ARGS);
 #ifdef  WINDOWSHADE
-void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context, char *action, int *Module);
+void WindowShade(F_CMD_ARGS);
 #endif
 extern void       RaiseWindow(FvwmWindow *t);
 extern void       LowerWindow(FvwmWindow *t);
@@ -225,8 +237,7 @@ extern void       SetTimer(int);
 extern int        flush_expose(Window w);
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 		     unsigned long context, int Module);
-void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int *Module);
+void do_windowList(F_CMD_ARGS);
 extern void       RaiseThisWindow(int);
 extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
 extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
@@ -234,8 +245,7 @@ extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
 extern void       HandlePaging(int, int, int *, int *, int *, int *,Bool);
 extern void       SetShape(FvwmWindow *, int);
 extern void       AutoPlace(FvwmWindow *);
-void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int* Module);
+void executeModule(F_CMD_ARGS);
 extern void       SetFocus(Window,FvwmWindow *, Bool FocusByMouse);
 extern void       CheckAndSetFocus(void);
 extern void       initModules(void);
@@ -264,29 +274,21 @@ void BroadcastName(unsigned long event_type, unsigned long data1,
 		   unsigned long data2, unsigned long data3, const char *name);
 void SendName(int channel, unsigned long event_type, unsigned long data1,
 	      unsigned long data2, unsigned long data3, const char *name);
-void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                     unsigned long context, char *action,int* Module);
+void SendStrToModule(F_CMD_ARGS);
 void DeadPipe(int nonsense);
 void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
 void SelectDecor(FvwmWindow *, unsigned long, int,int);
 extern Bool PopUpMenu(MenuRoot *, int, int);
-void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action, int *Module);
+void ComplexFunction(F_CMD_ARGS);
 extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *, int, int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
-void move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context,char *action, int *Module);
-void animated_move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			  unsigned long context,char *action, int *Module);
-void move_window_to_page(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			 unsigned long context,char *action, int *Module);
-void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int* Module);
-void set_menudelay(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int* Module);
-void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context,char *action, int *Module);
+void move_window(F_CMD_ARGS);
+void animated_move_window(F_CMD_ARGS);
+void move_window_to_page(F_CMD_ARGS);
+void set_animation(F_CMD_ARGS);
+void set_menudelay(F_CMD_ARGS);
+void resize_window(F_CMD_ARGS);
 void CreateIconWindow(FvwmWindow *, int, int);
 void SetMapStateProp(FvwmWindow *, int);
 void SetStickyProp(FvwmWindow *, int, int, int);
@@ -310,10 +312,8 @@ int check_allowed_function(MenuItem *mi);
 int check_allowed_function2(int function, FvwmWindow *t);
 void ReInstallActiveColormap(void);
 void ParsePopupEntry(char *,FILE *, char **, int *);
-void ParseMouseEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *tline,int* Module);
-void ParseKeyEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *tline,int* Module);
+void ParseMouseEntry(F_CMD_ARGS);
+void ParseKeyEntry(F_CMD_ARGS);
 void SetOneStyle(char *text,FILE *,char **,int *);
 void ParseStyle(char *text,FILE *,char **,int *);
 void assign_string(char *text, FILE *fd, char **arg,int *);
@@ -323,32 +323,21 @@ void SetInts(char *text, FILE *fd, char **arg,int *);
 void SetBox(char *text, FILE *fd, char **arg,int *);
 void set_func(char *, FILE *, char **,int *);
 void copy_config(FILE **config_fd);
-void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int *Module);
-void SetEdgeResistance(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int *Module);
-void CursorStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                 unsigned long context, char *action,int* Module);
-void ButtonStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context, char *action,int *Module);
+void SetEdgeScroll(F_CMD_ARGS);
+void SetEdgeResistance(F_CMD_ARGS);
+void CursorStyle(F_CMD_ARGS);
+void ButtonStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE
-void AddButtonStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context, char *action,int *Module);
+void AddButtonStyle(F_CMD_ARGS);
 #endif
 #ifdef USEDECOR
-void add_item_to_decor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int *Module);
-void ChangeDecor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context, char *action,int *Module);
-void DestroyDecor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		  unsigned long context, char *action,int *Module);
+void add_item_to_decor(F_CMD_ARGS);
+void ChangeDecor(F_CMD_ARGS);
+void DestroyDecor(F_CMD_ARGS);
 #endif
-void UpdateDecor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int *Module);
-void SetColormapFocus(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int* Module);
-void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int* Module);
+void UpdateDecor(F_CMD_ARGS);
+void SetColormapFocus(F_CMD_ARGS);
+void SetColorLimit(F_CMD_ARGS);
 
 #define UP 1
 #define DOWN 0
@@ -371,42 +360,26 @@ void InteractiveMove(Window *w, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
 
 MenuRoot *FindPopup(char *action);
 
-void Bell(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,char *action, int *Module);
-void scroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,char *action, int *Module);
-void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,char *action, int *Module);
-void iconify_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,char *action, int *Module);
-void raise_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context, char *action, int *Module);
-void lower_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context, char *action, int *Module);
-void destroy_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,char *action, int *Module);
-void delete_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context,char *action, int *Module);
-void close_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context,char *action, int *Module);
-void restart_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module);
-void exec_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action, int *Module);
-void exec_setup(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                unsigned long context, char *action, int *Module);
-void refresh_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module);
-void refresh_win_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module);
-void stick_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context, char *action, int *Module);
+void Bell(F_CMD_ARGS);
+void scroll(F_CMD_ARGS);
+void movecursor(F_CMD_ARGS);
+void iconify_function(F_CMD_ARGS);
+void raise_function(F_CMD_ARGS);
+void lower_function(F_CMD_ARGS);
+void destroy_function(F_CMD_ARGS);
+void delete_function(F_CMD_ARGS);
+void close_function(F_CMD_ARGS);
+void restart_function(F_CMD_ARGS);
+void exec_function(F_CMD_ARGS);
+void exec_setup(F_CMD_ARGS);
+void refresh_function(F_CMD_ARGS);
+void refresh_win_function(F_CMD_ARGS);
+void stick_function(F_CMD_ARGS);
 
-void changeDesks_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,char *action, int *Module);
+void setEdgeThickness(F_CMD_ARGS);
+void changeDesks_func(F_CMD_ARGS);
 void changeDesks(int desk);
-void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		       unsigned long context, char *action, int *Module);
+void changeWindowsDesk(F_CMD_ARGS);
 
 int GetMoveArguments(char *action, int x, int y, int w, int h,
                      int *pfinalX, int *pfinalY, Bool *fWarp);
@@ -415,39 +388,23 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 
-void goto_page_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context, char *action, int *Module);
+void goto_page_func(F_CMD_ARGS);
 
-void wait_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context,char *action, int *Module);
-void flip_focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action, int *Module);
-void focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action, int *Module);
-void warp_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action, int *Module);
-void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			unsigned long context, char *action,int *Module);
-void send_list_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			unsigned long context, char *action,int *Module);
-void popup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int *Module);
-void staysup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int *Module);
-void quit_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context, char *action,int *Module);
-void quit_screen_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context, char *action,int *Module);
-void echo_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context, char *action,int *Module);
-void raiselower_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int *Module);
-void Nop_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
-	      char *action, int *Module);
-void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                      unsigned long context, char *action,int* Module);
-void set_mask_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module);
+void wait_func(F_CMD_ARGS);
+void flip_focus_func(F_CMD_ARGS);
+void focus_func(F_CMD_ARGS);
+void warp_func(F_CMD_ARGS);
+void SendDataToModule(F_CMD_ARGS);
+void send_list_func(F_CMD_ARGS);
+void popup_func(F_CMD_ARGS);
+void staysup_func(F_CMD_ARGS);
+void quit_func(F_CMD_ARGS);
+void quit_screen_func(F_CMD_ARGS);
+void echo_func(F_CMD_ARGS);
+void raiselower_func(F_CMD_ARGS);
+void Nop_func(F_CMD_ARGS);
+void SetGlobalOptions(F_CMD_ARGS);
+void set_mask_function(F_CMD_ARGS);
 void DestroyMenu(MenuRoot *mr);
 void     GetColors(void);
 Pixel    GetColor(char *);
@@ -461,96 +418,52 @@ void     nocolor(char *note, char *name);
 void     MakeMenus(void);
 void GetMenuXPMFile(char *name, MenuItem *it);
 void GetMenuBitmapFile(char *name, MenuItem *it);
-void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,
-		      char *action, int *Module);
-void destroy_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,
-		      char *action, int *Module);
-void ModuleConfig(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,
-		      char *action, int *Module);
-void add_another_item(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,
-		      char *action, int *Module);
-void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,
-		      char *action, int *Module);
-void setModulePath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module);
-void setIconPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module);
-void setPixmapPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module);
+void add_item_to_menu(F_CMD_ARGS);
+void destroy_menu(F_CMD_ARGS);
+void ModuleConfig(F_CMD_ARGS);
+void add_another_item(F_CMD_ARGS);
+void add_item_to_func(F_CMD_ARGS);
+void setModulePath(F_CMD_ARGS);
+void setIconPath(F_CMD_ARGS);
+void setPixmapPath(F_CMD_ARGS);
 
-void ProcessNewStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
-	  char *action, int *Module);
-void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
-void SetMenuColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
-void ChangeMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                unsigned long context, char *action,int* Module);
-void DestroyMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                unsigned long context, char *action,int* Module);
-void LoadIconFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
-void LoadWindowFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
+void ProcessNewStyle(F_CMD_ARGS);
+void SetHiColor(F_CMD_ARGS);
+void SetMenuColor(F_CMD_ARGS);
+void ChangeMenuStyle(F_CMD_ARGS);
+void DestroyMenuStyle(F_CMD_ARGS);
+void LoadIconFont(F_CMD_ARGS);
+void LoadWindowFont(F_CMD_ARGS);
 #ifdef BORDERSTYLE
-void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context, char *action,int* Module);
+void SetBorderStyle(F_CMD_ARGS);
 #endif
-void SetMenuStyle1(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
-void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
-void SetTitleStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int* Module);
+void SetMenuStyle1(F_CMD_ARGS);
+void SetMenuStyle(F_CMD_ARGS);
+void SetTitleStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE
-void AddTitleStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int* Module);
+void AddTitleStyle(F_CMD_ARGS);
 #endif
-void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module);
-void SetOpaque(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context, char *action,int* Module);
-void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context, char *action,int* Module);
-void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context, char *action,int* Module);
-void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			unsigned long context, char *action,int* Module);
-void SetSnapGrid(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			unsigned long context, char *action,int* Module);
-void NextFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	      unsigned long context, char *action,int* Module);
-void PrevFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	      unsigned long context, char *action,int* Module);
-void NoneFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	      unsigned long context, char *action,int* Module);
-void CurrentFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
- 	      unsigned long context, char *action,int* Module);
-void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-	       unsigned long context, char *action, int *Module);
-void WindowIdFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module);
-void ReadFile(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
-void PipeRead(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
-void module_zapper(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
+void SetDeskSize(F_CMD_ARGS);
+void SetOpaque(F_CMD_ARGS);
+void SetXOR(F_CMD_ARGS);
+void SetClick(F_CMD_ARGS);
+void SetSnapAttraction(F_CMD_ARGS);
+void SetSnapGrid(F_CMD_ARGS);
+void NextFunc(F_CMD_ARGS);
+void PrevFunc(F_CMD_ARGS);
+void NoneFunc(F_CMD_ARGS);
+void CurrentFunc(F_CMD_ARGS);
+void DirectionFunc(F_CMD_ARGS);
+void WindowIdFunc(F_CMD_ARGS);
+void ReadFile(F_CMD_ARGS);
+void PipeRead(F_CMD_ARGS);
+void module_zapper(F_CMD_ARGS);
 char *expand(char *input, char *arguments[], FvwmWindow *tmp_win);
-void Recapture(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module);
+void Recapture(F_CMD_ARGS);
 void HandleHardFocus(FvwmWindow *t);
-void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                      unsigned long context, char *action,int* Module);
-void AddModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module);
-void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-	    unsigned long context, char *action,int* Module);
+void DestroyModConfig(F_CMD_ARGS);
+void AddModConfig(F_CMD_ARGS);
+void SetEnv(F_CMD_ARGS);
 
 void CoerceEnterNotifyOnCurrentWindow();
 
