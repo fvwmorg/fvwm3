@@ -252,7 +252,7 @@ uninstall-local-yes:
 	for dom in $$all_domains; do \
 	  for cat in $$catalogs; do \
 	    cat=`basename $$cat`; \
-	    lang=`echo $@ | sed -e 's/\.gmo$$//'`; \
+	    lang=`echo $$cat | sed -e 's/\.gmo$$//'`; \
 	    for lc in LC_MESSAGES $(EXTRA_LOCALE_CATEGORIES); do \
 	      rm -f $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo; \
 	    done; \
