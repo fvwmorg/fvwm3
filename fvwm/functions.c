@@ -1054,7 +1054,7 @@ static void execute_complex_function(
 	case ButtonRelease:
 		x = te->xbutton.x_root;
 		y = te->xbutton.y_root;
-		button = eventp->xbutton.button;
+		button = te->xbutton.button;
 		/* Take the click which started this fuction off the
 		 * Event queue.  -DDN- Dan D Niles dniles@iname.com */
 		FCheckMaskEvent(dpy, ButtonPressMask, &d);

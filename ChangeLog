@@ -1,5 +1,9 @@
 2004-05-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleEnterNotify):
+	fixed endless loop of edge commands when doing something that grabs
+	the pointer
+
 	* fvwm/functions.c (CheckActionType):
 	(execute_complex_function):
 	double clicks no longer work when pressing different buttons

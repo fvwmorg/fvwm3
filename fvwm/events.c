@@ -1981,7 +1981,12 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		{
 			edge_command = Scr.PanFrameRight.command;
 		}
-		if (edge_command)
+		if (edge_command && ewp->mode == NotifyUngrab &&
+		    ewp->detail == NotifyAncestor)
+		{
+			/* nothing */
+		}
+		else if (edge_command)
 		{
 			execute_function(NULL, ea->exc, edge_command, 0);
 		}
