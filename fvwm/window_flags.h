@@ -33,6 +33,7 @@
           (fw)->flags.common.do_circulate_skip_icon = !!(x)
 #define SETM_DO_SKIP_ICON_CIRCULATE(fw,x) \
           (fw)->flag_mask.common.do_circulate_skip_icon = !!(x)
+#define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.do_raise_transient)
 #define DO_NOT_SHOW_ON_MAP(fw)  \
           ((fw)->flags.common.do_not_show_on_map)
 #define DO_SKIP_WINDOW_LIST(fw) \
@@ -159,9 +160,17 @@
 #define SETM_VIEWPORT_MOVED(fw,x) \
           (fw)->flag_mask.is_viewport_moved = !!(x)
 #define IS_VIEWPORT_MOVED(fw)  ((fw)->flags.is_viewport_moved)
-#define IS_VISIBLE(fw)         ((fw)->flags.is_visible)
-#define SET_VISIBLE(fw,x)      (fw)->flags.is_visible = !!(x)
-#define SETM_VISIBLE(fw,x)     (fw)->flag_mask.is_visible = !!(x)
+#define IS_FULLY_VISIBLE(fw)   ((fw)->flags.is_fully_visible)
+#define SET_FULLY_VISIBLE(fw,x) \
+          (fw)->flags.is_fully_visible = !!(x)
+#define SETM_FULLY_VISIBLE(fw,x) \
+          (fw)->flag_mask.is_fully_visible = !!(x)
+#define IS_PARTIALLY_VISIBLE(fw) \
+          ((fw)->flags.is_partially_visible)
+#define SET_PARTIALLY_VISIBLE(fw,x) \
+          (fw)->flags.is_partially_visible = !!(x)
+#define SETM_PARTIALLY_VISIBLE(fw,x) \
+          (fw)->flag_mask.is_partially_visible = !!(x)
 #define IS_WINDOW_BEING_MOVED_OPAQUE(fw) \
                                ((fw)->flags.is_window_being_moved_opaque)
 #define SET_WINDOW_BEING_MOVED_OPAQUE(fw,x) \

@@ -279,7 +279,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       putenv(CatString2("FVWM_USERHOME=", user_home_dir));
       if (!Scr.usingDefaultVisual) {
         char *visualid, *colormap;
-        
+
         visualid = safemalloc(32);
 	sprintf(visualid, "FVWM_VISUALID=%lx", XVisualIDFromVisual(Scr.viz));
 	putenv(visualid);
@@ -670,7 +670,7 @@ static void BroadcastNewPacket(unsigned long event_type,
   old_flags |= IS_ICONIFIED(t)			? i : 0; i<<=1; \
   old_flags |= IS_TRANSIENT(t)			? i : 0; i<<=1; \
   old_flags |= False /* Raised */		? i : 0; i<<=1; \
-  old_flags |= IS_VISIBLE(t)			? i : 0; i<<=1; \
+  old_flags |= IS_FULLY_VISIBLE(t)		? i : 0; i<<=1; \
   old_flags |= IS_ICON_OURS(t)			? i : 0; i<<=1; \
   old_flags |= IS_PIXMAP_OURS(t)		? i : 0; i<<=1; \
   old_flags |= IS_ICON_SHAPED(t)		? i : 0; i<<=1; \

@@ -998,7 +998,9 @@ void resize_window(F_CMD_ARGS)
   Window ResizeWindow;
   Bool fButtonAbort = False;
   Bool fForceRedraw = False;
-  int val1, val2, val1_unit,val2_unit,n;
+  int n;
+  int values[2];
+  int suffix[2];
   unsigned int button_mask = 0;
   rectangle sdrag;
   rectangle sorig;
@@ -1011,7 +1013,7 @@ void resize_window(F_CMD_ARGS)
   int px;
   int py;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_MOVE, ButtonPress))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_RESIZE, ButtonPress))
     return;
 
   if (tmp_win == NULL)
@@ -1027,7 +1029,6 @@ void resize_window(F_CMD_ARGS)
       XBell(dpy, 0);
       return;
     }
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 
   was_maximized = IS_MAXIMIZED(tmp_win);
   SET_MAXIMIZED(tmp_win, 0);
@@ -1036,15 +1037,36 @@ void resize_window(F_CMD_ARGS)
   if(IS_ICONIFIED(tmp_win))
     return;
 
+  /* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
+  n = GetSuffixedIntegerArguments(action, NULL, values, 2, "pc", suffix);
   if(n == 2)
     {
-      drag->width = val1*val1_unit/100;
-      drag->height = val2*val2_unit/100;
+      int unit_table[3];
+
+      /* convert the value/suffix pairs to pixels */
+      unit_table[0] = Scr.MyDisplayWidth;
+      unit_table[1] = 100;
+      unit_table[2] = 100 * tmp_win->hints.width_inc;
+      drag->width = SuffixToPercentValue(values[0], suffix[0], unit_table);
+      if (suffix[0] == 2)
+      {
+	/* account for base width */
+	drag->width += tmp_win->hints.base_width;
+      }
+      unit_table[0] = Scr.MyDisplayHeight;
+      unit_table[2] = 100 * tmp_win->hints.height_inc;
+      drag->height = SuffixToPercentValue(values[1], suffix[1], unit_table);
+      if (suffix[1] == 2)
+      {
+	/* account for base height */
+	drag->height += tmp_win->hints.base_height;
+      }
+
       drag->width += (2*tmp_win->boundary_width);
       drag->height += (tmp_win->title_g.height + 2*tmp_win->boundary_width);
 
       /* size will be less or equal to requested */
-      ConstrainSize (tmp_win, &drag->width, &drag->height, False, xmotion,
+      ConstrainSize(tmp_win, &drag->width, &drag->height, False, xmotion,
 		     ymotion);
       if (IS_SHADED(tmp_win))
 	{

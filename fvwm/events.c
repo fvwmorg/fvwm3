@@ -1339,7 +1339,7 @@ void HandleButtonPress(void)
            (Event.xbutton.window == Tmp_win->frame) &&
 	   Scr.go.MouseFocusClickRaises)
   {
-    if (CanBeRaised(Tmp_win) &&
+    if (!IS_FULLY_VISIBLE(Tmp_win) &&
         MaskUsedModifiers(Event.xbutton.state) == 0 &&
         GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
     {
@@ -1927,9 +1927,20 @@ void HandleVisibilityNotify(void)
   if(Tmp_win && Tmp_win->frame == last_event_window)
     {
       if(vevent->state == VisibilityUnobscured)
-	SET_VISIBLE(Tmp_win, 1);
+      {
+	SET_FULLY_VISIBLE(Tmp_win, 1);
+	SET_PARTIALLY_VISIBLE(Tmp_win, 1);
+      }
+      else if (vevent->state == VisibilityPartiallyObscured)
+      {
+	SET_FULLY_VISIBLE(Tmp_win, 0);
+	SET_PARTIALLY_VISIBLE(Tmp_win, 1);
+      }
       else
-	SET_VISIBLE(Tmp_win, 0);
+      {
+	SET_FULLY_VISIBLE(Tmp_win, 0);
+	SET_PARTIALLY_VISIBLE(Tmp_win, 0);
+      }
     }
 }
 

@@ -471,6 +471,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.do_place_smart = 0;
           tmpstyle.flag_mask.do_place_smart = 1;
         }
+        else if(StrEquals(token, "DONTRAISETRANSIENT"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_raise_transient = 0;
+          tmpstyle.flag_mask.common.do_raise_transient = 1;
+        }
         break;
 
       case 'e':
@@ -1008,6 +1014,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           tmpstyle.flags.common.has_override_size = 1;
           tmpstyle.flag_mask.common.has_override_size = 1;
+        }
+        else if(StrEquals(token, "RAISETRANSIENT"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_raise_transient = 1;
+          tmpstyle.flag_mask.common.do_raise_transient = 1;
         }
         break;
 

@@ -3091,13 +3091,23 @@ static void CreateConditionMask(char *flags, WindowConditionMask *mask)
       }
     else if(StrEquals(condition,"Visible"))
       {
-	SET_VISIBLE(mask, 1);
-	SETM_VISIBLE(mask, 1);
+	SET_PARTIALLY_VISIBLE(mask, 1);
+	SETM_PARTIALLY_VISIBLE(mask, 1);
       }
     else if(StrEquals(condition,"!Visible"))
       {
-	SET_VISIBLE(mask, 0);
-	SETM_VISIBLE(mask, 1);
+	SET_PARTIALLY_VISIBLE(mask, 0);
+	SETM_PARTIALLY_VISIBLE(mask, 1);
+      }
+    else if(StrEquals(condition,"Raised"))
+      {
+	SET_FULLY_VISIBLE(mask, 1);
+	SETM_FULLY_VISIBLE(mask, 1);
+      }
+    else if(StrEquals(condition,"!Raised"))
+      {
+	SET_FULLY_VISIBLE(mask, 0);
+	SETM_FULLY_VISIBLE(mask, 1);
       }
     else if(StrEquals(condition,"Sticky"))
       {

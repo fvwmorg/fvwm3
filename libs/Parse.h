@@ -32,6 +32,7 @@ char *GetModuleResource(char *indata, char **resource, char *module_name);
 int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
 				int num, char *suffixlist,
 				int ret_suffixnum[]);
+int SuffixToPercentValue(int value, int suffix, int unit_table[]);
 int GetIntegerArguments(char *action, char**ret_action, int retvals[],int num);
 int GetTokenIndex(char *token, char *list[], int len, char **next);
 char *GetNextTokenIndex(char *action, char *list[], int len, int *index);

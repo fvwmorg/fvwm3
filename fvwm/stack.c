@@ -95,8 +95,51 @@ void RaiseWindow(FvwmWindow *t)
   int i, count;
   XWindowChanges changes;
   Window *wins;
+  Bool must_raise_transients = False;
 
-  /* detach t early, so it doesn't make trouble in the loops */
+  if (DO_RAISE_TRANSIENT(t))
+    {
+      Bool scanning_above_window = True;
+      FvwmWindow *q;
+
+      for (q = Scr.FvwmRoot.stack_next; q != &Scr.FvwmRoot; q = q->stack_next)
+	{
+	  if (t->layer < q->layer)
+	    {
+	      /* We're not interested in higher layers. */
+	      continue;
+	    }
+	  if (t->layer > q->layer)
+	    {
+	      /* We are at the end of this layer. Stop scanning windows. */
+	      break;
+	    }
+	  else if (t == q)
+	    {
+	      /* We found our window. All further transients are below it. */
+	      scanning_above_window = False;
+	    }
+	  else if (IS_TRANSIENT(q) && (q->transientfor == t->w))
+	    {
+	      /* found a transient */
+	      if (!scanning_above_window)
+		{
+		  /* It's below the window, so it must be raised. */
+		  must_raise_transients = True;
+		  break;
+		}
+	    }
+	  else if (scanning_above_window)
+	    {
+	      /* The window is not raised, so itself and all transients will
+	       * be raised. */
+	      must_raise_transients = True;
+	      break;
+	    }
+	}
+    }
+
+  /* detach t, so it doesn't make trouble in the loops */
   remove_window_from_stack_ring(t);
 
   count = 1;
@@ -105,34 +148,35 @@ void RaiseWindow(FvwmWindow *t)
       count += 2;
     }
 
-#ifndef DONT_RAISE_TRANSIENTS
-  /* collect the transients in a temp list */
-  tmp_s.stack_prev = &tmp_r;
-  tmp_r.stack_next = &tmp_s;
-  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+  if (must_raise_transients)
     {
-      next = t2->stack_next;
-      if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
-	  (t2->layer == t->layer))
-        {
-          /* t2 is a transient to raise */
-          count++;
-          if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
-            {
-	      count += 2;
-            }
+      /* collect the transients in a temp list */
+      tmp_s.stack_prev = &tmp_r;
+      tmp_r.stack_next = &tmp_s;
+      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+	{
+	  next = t2->stack_next;
+	  if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
+	      (t2->layer == t->layer))
+	    {
+	      /* t2 is a transient to raise */
+	      count++;
+	      if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
+		{
+		  count += 2;
+		}
 
-          /* unplug it */
-	  remove_window_from_stack_ring(t2);
+	      /* unplug it */
+	      remove_window_from_stack_ring(t2);
 
-          /* put it above tmp_s */
-          t2->stack_next = &tmp_s;
-          t2->stack_prev = tmp_s.stack_prev;
-          t2->stack_next->stack_prev = t2;
-          t2->stack_prev->stack_next = t2;
+	      /* put it above tmp_s */
+	      t2->stack_next = &tmp_s;
+	      t2->stack_prev = tmp_s.stack_prev;
+	      t2->stack_next->stack_prev = t2;
+	      t2->stack_prev->stack_next = t2;
+	    }
 	}
     }
-#endif /* DONT_RAISE_TRANSIENTS */
 
   /* now find the place to reinsert t and friends */
   for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
@@ -144,13 +188,14 @@ void RaiseWindow(FvwmWindow *t)
     }
   r = s->stack_prev;
 
-#ifndef DONT_RAISE_TRANSIENTS
-  /* insert all transients between r and s. */
-  r->stack_next = tmp_r.stack_next;
-  r->stack_next->stack_prev = r;
-  s->stack_prev = tmp_s.stack_prev;
-  s->stack_prev->stack_next = s;
-#endif /* DONT_RAISE_TRANSIENTS */
+  if (must_raise_transients)
+    {
+      /* insert all transients between r and s. */
+      r->stack_next = tmp_r.stack_next;
+      r->stack_next->stack_prev = r;
+      s->stack_prev = tmp_s.stack_prev;
+      s->stack_prev->stack_next = s;
+    }
 
   /* don't forget t itself */
   add_window_to_stack_ring_after(t, s->stack_prev);
@@ -500,24 +545,6 @@ void BroadcastRestackThisWindow(FvwmWindow *t)
   return;
 }
 
-/* return false if the only windows above tmp_win in the same
-   layer are its own transients
-*/
-Bool
-CanBeRaised (FvwmWindow *tmp_win)
-{
-  FvwmWindow *t;
-
-  for (t = tmp_win->stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
-    {
-      if (t->layer > tmp_win->layer)
-	return False;
-      if (!IS_TRANSIENT(t) || (t->transientfor != tmp_win->w))
-	return True;
-    }
-  return False;
-}
-
 /* ----------------------------- layer code -------------------------------- */
 
 /* returns 0 if s and t are on the same layer, <1 if t is on a lower layer and
@@ -556,22 +583,23 @@ new_layer (FvwmWindow *tmp_win, int layer)
     }
   else if (layer > tmp_win->layer)
     {
-#ifndef DONT_RAISE_TRANSIENTS
-      /* this could be done much more efficiently */
-      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+      if (DO_RAISE_TRANSIENT(tmp_win))
 	{
-	  next = t2->stack_next;
-	  if ((IS_TRANSIENT(t2)) &&
-	      (t2->transientfor == tmp_win->w) &&
-	      (t2 != tmp_win) &&
-	      (t2->layer >= tmp_win->layer) &&
-              (t2->layer < layer))
+	  /* this could be done much more efficiently */
+	  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
 	    {
-	      t2->layer = layer;
-	      LowerWindow(t2);
+	      next = t2->stack_next;
+	      if ((IS_TRANSIENT(t2)) &&
+		  (t2->transientfor == tmp_win->w) &&
+		  (t2 != tmp_win) &&
+		  (t2->layer >= tmp_win->layer) &&
+		  (t2->layer < layer))
+		{
+		  t2->layer = layer;
+		  LowerWindow(t2);
+		}
 	    }
 	}
-#endif
       tmp_win->layer = layer;
       LowerWindow(tmp_win);
     }
@@ -619,7 +647,7 @@ void raiselower_func(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
-  if (IS_VISIBLE(tmp_win) || !CanBeRaised(tmp_win))
+  if (IS_FULLY_VISIBLE(tmp_win))
     {
       LowerWindow(tmp_win);
     }

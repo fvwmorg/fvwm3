@@ -1,4 +1,42 @@
+1999-07-01  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/module_interface.c:
+	* fvwm/events.c (HandleVisibilityNotify):
+	(HandleButtonPress):
+
+	* fvwm/builtins.c (CreateConditionMask):
+	* fvwm/fvwm.h:
+	* fvwm/window_flags.h:
+	rewrote VISIBLE flag and added RAISED flag again. Now they do what they
+	sound like (close enhancement request #21)
+
+	* fvwm/stack.c (CanBeRaised):
+	(raiselower_func):
+	* fvwm/events.c (HandleButtonPress): removed function CanBeRaised to
+	improve raising of windows with transients.
+
+	* fvwm/stack.c (RaiseWindow): improved raising of windows with
+	transients
+	(CanBeRaised): always raise windows with transients and the
+	RaiseTransient style
+
 1999-06-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.c (SetRCDefaults):
+	* fvwm/ConfigFvwmDefaults: moved style default to ConfigFvwmDefaults
+
+	* fvwm/stack.c (new_layer):
+	(RaiseWindow):
+	* fvwm/fvwm.h (style_flags):
+	* fvwm/style.c (ProcessNewStyle): new styles RaiseTransient (default)
+	and DontRaiseTransient, avoids problem described in bug #290
+
+	* fvwm/move_resize.c (resize_window): use RESIZE cursor, implemented
+	'c' size unit (client defined steps)
+
+	* fvwm/functions.c (execute_complex_function):
+	* fvwm/functions.h (cfunc_action_type): implemented 'H'old trigger for
+	complex functions
 
 	* fvwm/move_resize.c (ConstrainSize):
 	* fvwm/add_window.c (GetWindowSizeHints): handle MaxWindowSize in
@@ -4350,7 +4388,7 @@ Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	bug.
 
 	* fvwm/{{builtins,functions,fvwm}.c,fvwm2.1,misc.h}: XORPixmap.
-	Eat this Enlightenment 8-).  Actually it's meantt to improve the
+	Eat this Enlightenment 8-).  Actually it's meant to improve the
 	visibility of rubberband lines in PsuedoColor displays (use Colorlimit
 	first) but it looks great on TrueColor.  It plays nicely with XORValue
 	and I don't think it leaks pixmaps.

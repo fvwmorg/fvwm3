@@ -141,6 +141,7 @@ typedef struct
   unsigned do_grab_focus_when_created : 1;
   unsigned do_grab_focus_when_transient_created : 1;
   unsigned do_not_show_on_map : 1;
+  unsigned do_raise_transient : 1;
   unsigned do_start_iconic : 1;
   unsigned do_window_list_skip : 1;
 #define FOCUS_MOUSE   0x0
@@ -191,7 +192,8 @@ typedef struct
   unsigned is_pixmap_ours : 1; /* is the icon pixmap ours to free? */
   unsigned is_transient : 1; /* is it a transient window? */
   unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/
-  unsigned is_visible : 1; /* is the window fully visible */
+  unsigned is_fully_visible : 1; /* is the window fully visible */
+  unsigned is_partially_visible : 1; /* is the window partially visible */
   unsigned is_window_being_moved_opaque : 1;
   unsigned is_window_shaded : 1;
 } window_flags;

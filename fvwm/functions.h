@@ -57,10 +57,15 @@ struct functions
 #define FUNC_DONT_REPEAT  0x02
 
 /* Types of events for the FUNCTION builtin */
-#define MOTION                'm'
-#define IMMEDIATE             'i'
-#define CLICK                 'c'
-#define DOUBLE_CLICK          'd'
+typedef enum
+{
+  CF_IMMEDIATE =      'i',
+  CF_MOTION =         'm',
+  CF_HOLD =           'h',
+  CF_CLICK =          'c',
+  CF_DOUBLE_CLICK =   'd',
+  CF_TIMEOUT =        '-'
+} cfunc_action_type;
 
 /* for fExpand parameter of ExecuteFunction */
 typedef enum

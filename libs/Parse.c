@@ -398,7 +398,7 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
  * This function uses GetNextToken to parse action for up to num integer
  * arguments. The number of values actually found is returned.
  * If ret_action is non-NULL, a pointer to the next token is returned there.
- * The suffixlist parameter points to a string off possible suffixes for the
+ * The suffixlist parameter points to a string of possible suffixes for the
  * integer values. The index of the matched suffix is returned in
  * ret_suffixnum (0 = no suffix, 1 = first suffix in suffixlist ...).
  *
@@ -452,6 +452,23 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
     *ret_action = action;
 
   return i;
+}
+
+/****************************************************************************
+ *
+ * This function converts the suffix/number pairs returned by
+ * GetSuffixedIntegerArguments into pixels. The unit_table is an array of
+ * integers that determine the factor to multiply with in hundredths of
+ * pixels. I.e. a unit of 100 means: translate the value into pixels,
+ * 50 means divide value by 2 to get the number of pixels and so on.
+ * The unit used is determined by the suffix which is taken as the index
+ * into the table. No size checking of the unit_table is done, so make sure
+ * it is big enough before calling this function.
+ *
+ **************************************************************************/
+int SuffixToPercentValue(int value, int suffix, int unit_table[])
+{
+  return (value * unit_table[suffix]) / 100;
 }
 
 /****************************************************************************
@@ -619,6 +636,7 @@ int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
     free(tok2);
   return n;
 }
+
 
 /* Parses the next token in action and returns 1 if it is "yes", "true", "y",
  * "t" or "on", zero if it is "no", "false", "n", "f" or "off" and -1 if it is

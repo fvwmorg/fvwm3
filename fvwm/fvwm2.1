@@ -580,10 +580,11 @@ The quoted portion of the function tells what kind of action will
 trigger the command which follows it.  "I" stands for Immediate, and is
 executed as soon as the function is invoked.  "M" stands for Motion, i.e.
 if the user starts moving the mouse.  "C" stands for Click, i.e., if the
-user presses and releases the mouse in a short period of time
-(ClickTime milliseconds).  "D" stands for double-click.  The action "I"
-will cause an action to be performed on the button-press, if the
-function is invoked with prior knowledge of which window to act on.
+user presses and releases the mouse.  "H" stands for Hold, i.e. if the
+user presses a mouse button and holds it down for more that ClickTime
+milliseconds.  "D" stands for double-click. The action "I" will cause
+an action to be performed on the button-press, if the function is
+invoked with prior knowledge of which window to act on.
 
 The special symbols $d, $w, $x, $y and $0 through $9 are available in the
 ComplexFunctions or Macros, or whatever you want to call them.  Within
@@ -1183,10 +1184,10 @@ keyboard focus.
 .IP "Current (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
-"!Visible", "Layer [ n ]", "Sticky", "!Sticky", "Maximized",
-"!Maximized", "Shaded", "!Shaded", "Transient", "!Transient",
-"CurrentDesk", "CurrentPage",
-and "CurrentPageAnyDesk".  In addition, the condition
+"!Visible", "Raised", "!Raised", "Layer [ n ]", "Sticky", "!Sticky",
+"Maximized", "!Maximized", "Shaded", "!Shaded", "Transient", "!Transient",
+"CurrentDesk", "CurrentPage", and "CurrentPageAnyDesk".
+In addition, the condition
 may include a window name to match to.  The window name may include
 the wildcards * and ?.  The window name, icon name, class, and
 resource will be considered when attempting to find a match.  The
@@ -2812,6 +2813,14 @@ If the optional arguments x and y are provided, then the window will
 be resized so that its dimensions are \fIx\fP by \fIy\fP).  The units
 of x and y are percent-of-screen, unless a letter "p" is appended to
 each coordinate, in which case the location is specified in pixels.
+With a "c" suffix the unit defined by the client application (hence the
+c) is used. So you can say
+
+.EX
+Resize 80c 24c
+.EE
+
+to make a terminal window just big enough for 80x24 characters.
 
 
 .IP "Restart [ \fIWindowManagerName\fP [ \fIparams\fP ] ]"
@@ -3044,7 +3053,9 @@ MWMFunctions/NoFuncHint, HintOverride/NoOverride, NoButton/Button,
 ResizeHintOverride/NoResizeOverride,
 OLDecor/NoOLDecor, StickyIcon/SlipperyIcon,
 SmartPlacement/DumbPlacement, RandomPlacement/ActivePlacement,
-DecorateTransient/NakedTransient, SkipMapping/ShowMapping, UseDecor,
+DecorateTransient/NakedTransient,
+RaiseTransient/DontRaiseTransient,
+SkipMapping/ShowMapping, UseDecor,
 UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
 ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse/NeverFocus,
 StartsLowered/StartsRaised, GrabFocus/GrabFocusOff,
@@ -3066,6 +3077,12 @@ decorations. \fINakedTransient\fP (the default) causes transient windows
 not to be given the standard decorations. You can only bind keys or mouse
 buttons to the sides and the client window of an undecorated window
 ('S' and 'W' contexts in bindings, see \fIMouse\fP and \fIKey\fP commands).
+
+A window with the \fIRaiseTransient\fP style that has transient windows
+will raise all its transients when it is raised. If it is already
+raised but still below some transients it will be raised above them.
+The \fIDontRaiseTransient\fP style disables this behaviour. The window
+is raised and lowered as any other window without transients.
 
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use. Icons specified this way override pixmap icons, but

@@ -402,11 +402,13 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
  * clicking, but is moving the cursor
  *
  ****************************************************************************/
-static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
+static cfunc_action_type CheckActionType(
+  int x, int y, unsigned EndMask, XEvent *d, Bool may_time_out)
 {
   int xcurrent,ycurrent,total = 0;
   Time t0;
   int dist;
+  Bool is_button_pressed = False;
   extern Time lastTimestamp;
 
   xcurrent = x;
@@ -414,17 +416,21 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
   t0 = lastTimestamp;
   dist = Scr.MoveThreshold;
 
-  while(((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
-	 !may_time_out) &&
-	x - xcurrent < dist && xcurrent - x < dist &&
-	y - ycurrent < dist && ycurrent - y < dist)
+  while ((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
+	 !may_time_out)
     {
+      if (!(x - xcurrent < dist && xcurrent - x < dist &&
+	    y - ycurrent < dist && ycurrent - y < dist))
+      {
+	return CF_MOTION;
+      }
+
       usleep(20000);
       total+=20;
       if(XCheckMaskEvent (dpy,EndMask, d))
 	{
 	  StashEventTime(d);
-	    return True;
+	  return CF_CLICK;
 	}
       if(XCheckMaskEvent (dpy,ButtonMotionMask|PointerMotionMask, d))
 	{
@@ -432,9 +438,13 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
 	  ycurrent = d->xmotion.y_root;
 	  StashEventTime(d);
 	}
+      else if (may_time_out && XCheckMaskEvent (dpy,ButtonPressMask, d))
+	{
+	  is_button_pressed = True;
+	}
     }
 
-  return False;
+  return (is_button_pressed) ? CF_HOLD : CF_TIMEOUT;
 }
 
 
@@ -938,11 +948,12 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 				     expand_command_type expand_cmd)
 {
   static unsigned int cfunc_depth = 0;
-  char type = MOTION;
+  cfunc_action_type type = CF_MOTION;
   char c;
   FunctionItem *fi;
   Bool Persist = False;
   Bool HaveDoubleClick = False;
+  Bool HaveHold = False;
   Bool NeedsTarget = False;
   char *arguments[10], *taction;
   char* func_name;
@@ -980,23 +991,29 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
       /* c is already lowercase here */
       c = fi->condition;
       NeedsTarget = (fi->flags & FUNC_NEEDS_WINDOW) ? True : False;
-      if(c==DOUBLE_CLICK)
-	{
-	  HaveDoubleClick = True;
-	  Persist = True;
-	}
-      else if(c == IMMEDIATE)
-	{
-	  if(tmp_win)
-	    w = tmp_win->frame;
-	  else
-	    w = None;
-	  taction = expand(fi->action,arguments,tmp_win);
-	  ExecuteFunction(taction,tmp_win,eventp,context,-2,EXPAND_COMMAND);
-	  free(taction);
-	}
-      else
+      switch (c)
+      {
+      case CF_IMMEDIATE:
+	if(tmp_win)
+	  w = tmp_win->frame;
+	else
+	  w = None;
+	taction = expand(fi->action,arguments,tmp_win);
+	ExecuteFunction(taction,tmp_win,eventp,context,-2,EXPAND_COMMAND);
+	free(taction);
+	break;
+      case CF_DOUBLE_CLICK:
+	HaveDoubleClick = True;
 	Persist = True;
+	break;
+      case CF_HOLD:
+	HaveHold = True;
+	Persist = True;
+	break;
+      default:
+	Persist = True;
+	break;
+      }
       fi = fi->next_item;
     }
 
@@ -1044,19 +1061,34 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 
   /* Wait and see if we have a click, or a move */
   /* wait forever, see if the user releases the button */
-  if(IsClick(x,y,ButtonReleaseMask,&d,False))
+  type = CheckActionType(x, y, ButtonReleaseMask, &d, HaveHold);
+  if (type == CF_CLICK)
     {
       ev = &d;
-      type = CLICK;
+      /* If it was a click, wait to see if its a double click */
+      if(HaveDoubleClick)
+	{
+	  type = CheckActionType(x,y,ButtonReleaseMask,&d, True);
+	  switch (type)
+	  {
+	  case CF_CLICK:
+	  case CF_HOLD:
+	    type = CF_DOUBLE_CLICK;
+	    ev = &d;
+	    break;
+	  case CF_MOTION:
+	    ev = &d;
+	  case CF_TIMEOUT:
+	    type = CF_CLICK;
+	    break;
+	  }
+	}
+    }
+  else if (type == CF_TIMEOUT)
+    {
+      type = CF_HOLD;
     }
 
-  /* If it was a click, wait to see if its a double click */
-  if((HaveDoubleClick) && (type == CLICK) &&
-     (IsClick(x,y,ButtonPressMask|ButtonReleaseMask, &d, True)))
-    {
-      type = DOUBLE_CLICK;
-      ev = &d;
-    }
   /* some functions operate on button release instead of
    * presses. These gets really weird for complex functions ... */
   if(ev->type == ButtonPress)

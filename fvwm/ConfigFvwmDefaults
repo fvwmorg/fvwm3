@@ -25,3 +25,6 @@ AddToFunc UrgencyFunc I Iconify -1
 AddToFunc UrgencyDoneFunc I Nop
 # Alt-Tab:
 Key Tab A M WindowList Root c c NoDeskSort
+# Default styles
+Style * GrabFocusTransient, RandomPlacement, SmartPlacement, RaiseTransient
+Style * Title, MouseFocus, GrabFocusOff
