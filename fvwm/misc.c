@@ -232,7 +232,7 @@ void UngrabEm(int ungrab_context)
 ** id -> name of function, or other identifier
 */
 static char *fvwm_msg_strings[] =
-{ "<<DEBUG>>", "", "", "<<WARING>>", "<<ERROR>>" };
+{ "<<DEBUG>>", "", "", "<<WARNING>>", "<<ERROR>>" };
 void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 {
   va_list args;
