@@ -258,7 +258,8 @@ XChar2b *FlocaleStringToString2b(
 				/* a blanck char ... */
 				str2b[j].byte1 = 0x21;
 				str2b[j].byte2 = 0x21;
-			} 
+				i++;
+			}
 			else if (i+1 < len)
 			{
 				str2b[j].byte1 = str[i++];
@@ -271,7 +272,7 @@ XChar2b *FlocaleStringToString2b(
 				i++;
 			}
 			j++;
-		}       
+		}
 	}
 	*nl = j;
 	if (free_str)
@@ -682,20 +683,38 @@ FlocaleFont *FlocaleGetFontSet(
 	Display *dpy, char *fontname, char *encoding, char *module)
 {
 	static int mc_errors = 0;
+	static XOM om = NULL;
 	FlocaleFont *flf = NULL;
 	XFontSet fontset = NULL;
-	char **ml;
-	int mc,i;
+	char **ml = NULL;
+	int mc=0,i;
 	char *ds;
 	XFontSetExtents *fset_extents;
 	char *fn, *hints = NULL;
 
 	hints = GetQuotedString(fontname, &fn, "/", NULL, NULL, NULL);
+	if (om == NULL)
+	{
+		om = XOpenOM(dpy, NULL, NULL, NULL);
+	}
+	if (om)
+	{
+		if (!(fontset = 
+		      (XFontSet) XCreateOC(om, XNBaseFontName, fn, NULL)))
+		{
+			
+			if (fn != NULL)
+				free(fn);
+			return NULL;
+		}
+	} else
 	if (!(fontset = XCreateFontSet(dpy, fn, &ml, &mc, &ds)))
 	{
 		if (fn != NULL)
 			free(fn);
 		return NULL;
+		if (mc > 0 && ml)
+			XFreeStringList(ml);
 	}
 
 	if (mc > 0)
@@ -738,6 +757,24 @@ FlocaleFont *FlocaleGetFontSet(
 	flf->max_char_width = fset_extents->max_logical_extent.width;
 	if (fn != NULL)
 		free(fn);
+
+#define FLOCALE_DEBUG_FONTSET 0
+#if FLOCALE_DEBUG_FONTSET
+	{
+		XFontStruct **fs;
+		char **name;
+		int m;
+
+		if ((m=XFontsOfFontSet(flf->fontset, &fs, &name)) > 0)
+		{
+			for(i= 0; i<m; i++)
+			{
+				fprintf(stderr, "fs %i: %s\n",
+					i, name[i]);
+			}
+		}
+	}
+#endif
 
 	return flf;
 }

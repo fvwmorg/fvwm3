@@ -1,3 +1,8 @@
+2002-07-05  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c (FlocaleStringToString2b):
+	Fixed crash with big5-0 FontStruct
+
 2002-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menucmd.c (menu_func):
