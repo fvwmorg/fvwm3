@@ -456,7 +456,32 @@ static void merge_styles(
   {
     SSET_BORDER_COLORSET_HI(*merged_style,SGET_BORDER_COLORSET_HI(*add_style));
   }
-
+  if (add_style->flags.has_placement_penalty)
+  {
+    SSET_NORMAL_PLACEMENT_PENALTY(
+      *merged_style, SGET_NORMAL_PLACEMENT_PENALTY(*add_style));
+    SSET_ONTOP_PLACEMENT_PENALTY(
+      *merged_style, SGET_ONTOP_PLACEMENT_PENALTY(*add_style));
+    SSET_ICON_PLACEMENT_PENALTY(
+      *merged_style, SGET_ICON_PLACEMENT_PENALTY(*add_style));
+    SSET_STICKY_PLACEMENT_PENALTY(
+      *merged_style, SGET_STICKY_PLACEMENT_PENALTY(*add_style));
+    SSET_BELOW_PLACEMENT_PENALTY(
+      *merged_style, SGET_BELOW_PLACEMENT_PENALTY(*add_style));
+    SSET_EWMH_STRUT_PLACEMENT_PENALTY(
+      *merged_style, SGET_EWMH_STRUT_PLACEMENT_PENALTY(*add_style));
+  }
+  if (add_style->flags.has_placement_percentage_penalty)
+  {
+    SSET_99_PLACEMENT_PERCENTAGE_PENALTY(
+      *merged_style, SGET_99_PLACEMENT_PERCENTAGE_PENALTY(*add_style));
+    SSET_95_PLACEMENT_PERCENTAGE_PENALTY(
+      *merged_style, SGET_95_PLACEMENT_PERCENTAGE_PENALTY(*add_style));
+    SSET_85_PLACEMENT_PERCENTAGE_PENALTY(
+      *merged_style, SGET_85_PLACEMENT_PERCENTAGE_PENALTY(*add_style));
+    SSET_75_PLACEMENT_PERCENTAGE_PENALTY(
+      *merged_style, SGET_75_PLACEMENT_PERCENTAGE_PENALTY(*add_style));
+  }
   /* merge the style flags */
 
   /*** ATTENTION:
@@ -1251,7 +1276,24 @@ void CMD_Style(F_CMD_ARGS)
         break;
 
       case 'e':
-	found = EWMH_CMD_Style(token, ptmpstyle);
+	if (StrEquals(token, "ExtendedWindowName"))
+        {
+	  found = True;
+	  SFSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
+	  SMSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
+	  SCSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
+        }
+	else if (StrEquals(token, "ExtendedIconName"))
+        {
+	  found = True;
+	  SFSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
+	  SMSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
+	  SCSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
+        }
+	else
+	{
+	  found = EWMH_CMD_Style(token, ptmpstyle);
+	}
         break;
 
       case 'f':
@@ -2159,6 +2201,77 @@ void CMD_Style(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.use_parent_relative = 1;
 	  ptmpstyle->change_mask.use_parent_relative = 1;
         }
+        else if (StrEquals(token, "PlacementOverlapPenalties"))
+        {
+	  float f[6] = {-1, -1, -1, -1, -1, -1};
+	  Bool bad = False;
+
+	  found = True;
+	  num = 0;
+	  if (rest != NULL)
+	  {
+	    num = sscanf(rest, "%f %f %f %f %f %f",
+			 &f[0], &f[1], &f[2], &f[3], &f[4], &f[5]);
+	    for(i=0; i < num; i++)
+	    {
+	      if (f[i] < 0)
+		bad = True;
+	    }
+	  }
+	  if (bad)
+	  {
+	    fvwm_msg(ERR, "CMD_Style",
+	      "Bad argument to PlacementOverlapPenalties: %s", rest);
+	    break;
+	  }
+	  SSET_NORMAL_PLACEMENT_PENALTY(*ptmpstyle, 1);
+	  SSET_ONTOP_PLACEMENT_PENALTY(*ptmpstyle, PLACEMENT_AVOID_ONTOP);
+	  SSET_ICON_PLACEMENT_PENALTY(*ptmpstyle, PLACEMENT_AVOID_ICON);
+	  SSET_STICKY_PLACEMENT_PENALTY(*ptmpstyle, PLACEMENT_AVOID_STICKY);
+	  SSET_BELOW_PLACEMENT_PENALTY(*ptmpstyle, PLACEMENT_AVOID_BELOW);
+	  SSET_EWMH_STRUT_PLACEMENT_PENALTY(
+	    *ptmpstyle, PLACEMENT_AVOID_EWMH_STRUT);
+	  for(i=0; i < num; i++)
+	  {
+	    (*ptmpstyle).placement_penalty[i] = f[i];
+	  }
+	  ptmpstyle->flags.has_placement_penalty = 1;
+	  ptmpstyle->flag_mask.has_placement_penalty = 1;
+	  ptmpstyle->change_mask.has_placement_penalty = 1;
+	}
+	else if (StrEquals(token, "PlacementOverlapPercentPenalties"))
+        {
+	  Bool bad = False;
+
+	  found = True;
+	  num = GetIntegerArguments(rest, NULL, val, 4);
+	  for(i=0; i < num; i++)
+	  {
+	    if (val[i] < 0)
+	      bad = True;
+	  }
+	  if (bad)
+	  {
+	    fvwm_msg(ERR, "CMD_Style",
+	      "Bad argument to PlacementOverlapPercentagePenalties: %s", rest);
+	    break;
+	  }
+	  SSET_99_PLACEMENT_PERCENTAGE_PENALTY(
+	    *ptmpstyle, PLACEMENT_AVOID_COVER_99);
+	  SSET_95_PLACEMENT_PERCENTAGE_PENALTY(
+	    *ptmpstyle, PLACEMENT_AVOID_COVER_95);
+	  SSET_85_PLACEMENT_PERCENTAGE_PENALTY(
+	    *ptmpstyle, PLACEMENT_AVOID_COVER_85);
+	  SSET_75_PLACEMENT_PERCENTAGE_PENALTY(
+	    *ptmpstyle, PLACEMENT_AVOID_COVER_75);
+	  for(i=0; i < num; i++)
+	  {
+	    (*ptmpstyle).placement_percentage_penalty[i] = val[i];
+	  }
+	  ptmpstyle->flags.has_placement_percentage_penalty = 1;
+	  ptmpstyle->flag_mask.has_placement_percentage_penalty = 1;
+	  ptmpstyle->change_mask.has_placement_percentage_penalty = 1;
+	}
         break;
 
       case 'q':
@@ -2471,6 +2584,20 @@ void CMD_Style(F_CMD_ARGS)
 	  SMSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	  SCSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	}
+	else if (StrEquals(token, "SimpleWindowName"))
+        {
+	  found = True;
+	  SFSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 0);
+	  SMSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
+	  SCSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
+        }
+	else if (StrEquals(token, "SimpleIconName"))
+        {
+	  found = True;
+	  SFSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 0);
+	  SMSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
+	  SCSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
+        }
         break;
 
       case 't':
@@ -2859,6 +2986,7 @@ void check_window_style_change(
    *   capture_honors_starts_on_page
    *   recapture_honors_starts_on_page
    *   use_layer
+   *   ewmh_placement_mode
    */
 
   /* not implemented yet:
@@ -3034,6 +3162,50 @@ void check_window_style_change(
     flags->do_update_frame_attributes = True;
   }
 
+  /*
+   * has_placement_penalty
+   * has_placement_percentage_penalty
+   */
+  if (ret_style->change_mask.has_placement_penalty ||
+      ret_style->change_mask.has_placement_percentage_penalty)
+  {
+    flags->do_update_placement_penalty = True;
+  }
+
+  /*
+   * do_ewmh_ignore_strut_hints
+   */
+  if (SCDO_EWMH_IGNORE_STRUT_HINTS(*ret_style))
+  {
+    flags->do_update_working_area = True;
+  }
+
+  /*
+   * do_ewmh_use_staking_hints
+   */
+  if (SCDO_EWMH_USE_STACKING_HINTS(*ret_style))
+  {
+    flags->do_update_ewmh_stacking_hints = True;
+  }
+
+  /*
+   *  use_extended_window_name
+   */
+  if (SCUSE_EXTENDED_WINDOW_NAME(*ret_style))
+  {
+    flags->do_update_window_name = True;
+    flags->do_redecorate = True;
+  }
+
+  /*
+   *  use_extended_icon_name
+   */
+  if (SCUSE_EXTENDED_ICON_NAME(*ret_style))
+  {
+    flags->do_update_icon_name = True;
+    flags->do_update_icon_title = True;
+  }
+  
   return;
 }
 

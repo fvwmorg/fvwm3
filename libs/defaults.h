@@ -139,7 +139,7 @@
 #define WINDOW_TITLE_STICKY_GAP           10 /* pixels */
 
 /*** window placement (MinOverlap(Percent)Placement) ***/
-
+/** Now these values are configurable by using styles **/
 /* The following factors represent the amount of area that these types of
  * windows are counted as.  For example, by default the area of ONTOP windows
  * is counted 5 times as much as normal windows.  So CleverPlacement will
@@ -155,9 +155,10 @@
 #define PLACEMENT_AVOID_STICKY		   1.0
 #define PLACEMENT_AVOID_ONTOP		   5
 #define PLACEMENT_AVOID_ICON              10
-/* used in MinOverlapPercentPlacement to forbid complete covering (99%, 95%
+#define PLACEMENT_AVOID_EWMH_STRUT        50
+/* used in MinOverlap*Placement to forbid complete covering (99%, 95%
    85% and 75%) of windows */
-#define PLACEMENT_AVOID_COVER_99          12
+#define PLACEMENT_AVOID_COVER_99           12
 #define PLACEMENT_AVOID_COVER_95           6
 #define PLACEMENT_AVOID_COVER_85           4
 #define PLACEMENT_AVOID_COVER_75           1

@@ -1282,6 +1282,7 @@ void new_layer(FvwmWindow *tmp_win, int layer)
   {
     s->layer = layer;
     GNOME_SetLayer(tmp_win);
+    EWMH_SetWMState(tmp_win);
   }
   /* move the windows without modifying their stacking order */
   restack_windows(list_head.stack_next->stack_prev, target, count, (count > 1));
@@ -1424,8 +1425,6 @@ void CMD_Layer(F_CMD_ARGS)
     layer = 0;
   }
   new_layer(tmp_win, layer);
-
-  EWMH_SetWMState(tmp_win);
 
 #ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();

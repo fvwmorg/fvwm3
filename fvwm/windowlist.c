@@ -65,9 +65,9 @@ static int globalFlags;
 static int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
 {
   if(globalFlags & SHOW_ICONNAME)
-    return strcasecmp((*a)->icon_name,(*b)->icon_name);
+    return strcasecmp((*a)->visible_icon_name,(*b)->visible_icon_name);
   else
-    return strcasecmp((*a)->name,(*b)->name);
+    return strcasecmp((*a)->visible_name,(*b)->visible_name);
 }
 static int winCompareReverse(const  FvwmWindow **a, const  FvwmWindow **b)
 {
@@ -401,9 +401,9 @@ void CMD_WindowList(F_CMD_ARGS)
         }
 
         if(flags & SHOW_ICONNAME)
-          name = t->icon_name;
+          name = t->visible_icon_name;
         else
-          name = t->name;
+          name = t->visible_name;
 
         if (!name)
           name = "NULL_NAME";

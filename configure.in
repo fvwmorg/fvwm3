@@ -76,7 +76,7 @@ AC_PROG_CC
 AC_PROG_CPP
 
 dnl added -Wall for gcc, what about for others?
-if test "$GCC" = "yes"; then
+if test "x$GCC" = "xyes"; then
   CFLAGS="$CFLAGS -Wall"
 fi
 

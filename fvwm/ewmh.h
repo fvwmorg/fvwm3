@@ -22,6 +22,12 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
 void CMD_EwmhBaseStrut(F_CMD_ARGS);
 Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
 
+/* for maximize and placement ewmh style */
+#define EWMH_IGNORE_WORKING_AREA      0
+#define EWMH_USE_WORKING_AREA         1
+#define EWMH_USE_DYNAMIC_WORKING_AREA 2
+#define EWMH_WORKING_AREA_MASK        3
+
 #ifdef HAVE_EWMH
 /* Extended window manager hints support */
 
@@ -38,9 +44,11 @@ int EWMH_IsKdeSysTrayWindow(Window w);
 void EWMH_ManageKdeSysTray(Window w, Bool is_destroy);
 void EWMH_SetClientList(void);
 void EWMH_SetClientListStacking(void);
+void EWMH_UpdateWorkArea(void);
 void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
 				  int *x, int *y, int *h, int *w, int func);
-
+float EWMH_GetStrutIntersection(int x11, int y11, int x12, int y12,
+				Bool use_percent);
 void EWMH_SetFrameStrut(FvwmWindow *fwin);
 
 int EWMH_GetIconGeometry(FvwmWindow *fwin, rectangle *icon_rect);
@@ -90,7 +98,9 @@ int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_ManageKdeSysTray(x,y);
 #define EWMH_SetClientList()
 #define EWMH_SetClientListStacking()
+#define EWMH_UpdateWorkArea()
 #define EWMH_GetWorkAreaIntersection(x,y,z,t,u,v)
+#define EWMH_GetStrutIntersection(x,y,z,t,u) 0
 #define EWMH_SetFrameStrut(x)
 #define EWMH_GetIconGeometry(x,y) 0
 

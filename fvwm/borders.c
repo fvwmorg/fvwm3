@@ -51,6 +51,7 @@
 #include "icons.h"
 #include "module_interface.h"
 #include "libs/Colorset.h"
+#include "add_window.h"
 
 typedef struct
 {
@@ -510,7 +511,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *window, DecorFace *df)
 {
   Window       title_win;
   GC           gc;
-  const char  *title;
+  char        *title;
   Picture    **pm;
   short        stretch_flags;
   int          title_width, title_height, text_width, text_offset, text_y_pos;
@@ -521,7 +522,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *window, DecorFace *df)
   gc = Scr.TitleGC;
   XSetClipMask(dpy, gc, None);
   title_win = window->title_w;
-  title = window->name;
+  title = window->visible_name;
   title_width = window->title_g.width;
   title_height = window->title_g.height;
 
@@ -1362,12 +1363,13 @@ static void RedrawTitle(
   flush_expose(t->title_w);
 #endif
 
-  if (t->name != (char *)NULL)
+  if (t->visible_name != (char *)NULL)
   {
 #ifdef I18N_MB /* cannot use macro here, rewriting... */
-    w = XmbTextEscapement(t->title_font.fontset,t->name, strlen(t->name));
+    w = XmbTextEscapement(t->title_font.fontset, t->visible_name,
+			  strlen(t->visible_name));
 #else
-    w = XTextWidth(t->title_font.font, t->name, strlen(t->name));
+    w = XTextWidth(t->title_font.font, t->visible_name, strlen(t->visible_name));
 #endif
     if (w > t->title_g.width - 12)
       w = t->title_g.width - 4;
@@ -1446,14 +1448,15 @@ static void RedrawTitle(
     XDrawLine(
       dpy, t->title_w, sgc, hor_off + w + 1, 0, hor_off + w + 1,
       t->title_g.height);
-    if(t->name != (char *)NULL)
+    if(t->visible_name != (char *)NULL)
 #ifdef I18N_MB
       XmbDrawString(dpy, t->title_w, t->title_font.fontset,
 		    Scr.TitleGC, hor_off,
-		    t->title_font.y + 1, t->name, strlen(t->name));
+		    t->title_font.y + 1,
+		    t->visible_name, strlen(t->visible_name));
 #else
       XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
-                  t->title_font.y + 1, t->name, strlen(t->name));
+                  t->title_font.y + 1, t->visible_name, strlen(t->visible_name));
 #endif
   }
   else
@@ -1516,18 +1519,19 @@ static void RedrawTitle(
 #endif
     {
 #ifdef I18N_MB
-    if(t->name != (char *)NULL)
+    if(t->visible_name != (char *)NULL)
       XmbDrawString(dpy, t->title_w, t->title_font.fontset,
 		    Scr.TitleGC, hor_off,
-		    t->title_font.y + 1, t->name, strlen(t->name));
+		    t->title_font.y + 1,
+		    t->visible_name, strlen(t->visible_name));
 #else
-    if(t->name != (char *)NULL)
+    if(t->visible_name != (char *)NULL)
       XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
-		  t->title_font.y + 1, t->name, strlen(t->name));
+		  t->title_font.y + 1, t->visible_name, strlen(t->visible_name));
 #endif
     }
   }
-
+  
   /*
    * draw the 'sticky' lines
    */

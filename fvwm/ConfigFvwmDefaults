@@ -38,6 +38,7 @@ Key Tab A M WindowList Root c c NoDeskSort
 Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
 Style * TileCascadePlacement, Title, MouseFocus, GrabFocusOff
 Style * UseIconPosition
+Style * EWMHPlacementUseDynamicWorkingArea, EWMHMaximizeUseDynamicWorkingArea
 # Basic Mouse controls:
 Mouse 1 T  A FuncFvwmRaiseLowerX Move
 Mouse 1 FS A FuncFvwmRaiseLowerX Resize

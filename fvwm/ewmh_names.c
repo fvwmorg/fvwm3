@@ -222,15 +222,15 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 
   if (is_icon_name)
   {
-    tmp_str = fwin->icon_name;
+    tmp_str = fwin->visible_icon_name;
   }
   else
   {
-    tmp_str = fwin->name;
+    tmp_str = fwin->visible_name;
   }
 
   if (tmp_str == NULL)
-    return;
+    return; /* should never happen */
 
   val = (unsigned char *)charset_to_utf8(tmp_str, strlen(tmp_str));
 
@@ -279,24 +279,29 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
   }
 
   if (ev != NULL)
+  {
+    /* client message */
     free_window_names(fwin, False, True);
+  }
 
   fwin->icon_name = tmp_str;
+
+  SET_HAS_EWMH_WM_ICON_NAME(fwin, 1);
+  SET_WAS_ICON_NAME_PROVIDED(fwin, 1);
 
   if (ev == NULL)
   {
     /* return now for setup */
-    SET_HAS_EWMH_WM_NAME(fwin, 1);
     return 1;
   }
 
   if (fwin->icon_name && strlen(fwin->icon_name) > MAX_ICON_NAME_LEN)
-      fwin->icon_name[MAX_ICON_NAME_LEN] = 0;
-  SET_WAS_ICON_NAME_PROVIDED(fwin, 1);
+    fwin->icon_name[MAX_ICON_NAME_LEN] = 0;
 
+  setup_visible_name(fwin, True);
   EWMH_SetVisibleName(fwin, True);
   BroadcastName(M_ICON_NAME,fwin->w,fwin->frame,
-		(unsigned long)fwin,fwin->icon_name);
+		(unsigned long)fwin, fwin->icon_name);
   RedoIconName(fwin);
   return 1;
 }
@@ -328,20 +333,22 @@ int EWMH_WMName(EWMH_CMD_ARGS)
     free_window_names(fwin, True, False);
 
   fwin->name = tmp_str;
+  SET_HAS_EWMH_WM_NAME(fwin, 1);
 
   if (ev == NULL)
   {
-    SET_HAS_EWMH_WM_NAME(fwin, 1);
     return 1;
   }
 
   if (fwin->name && strlen(fwin->name) > MAX_WINDOW_NAME_LEN)
-      fwin->icon_name[MAX_WINDOW_NAME_LEN] = 0;
+      fwin->name[MAX_WINDOW_NAME_LEN] = 0;
+
+  setup_visible_name(fwin, False);
   SET_NAME_CHANGED(fwin, 1);
 
   EWMH_SetVisibleName(fwin, False);
   BroadcastName(M_WINDOW_NAME,fwin->w,fwin->frame,
-		(unsigned long)fwin,fwin->name);
+		(unsigned long)fwin, fwin->visible_name);
   /* fix the name in the title bar */
   if(!IS_ICONIFIED(fwin))
     DrawDecorations(fwin, DRAW_TITLE, (Scr.Hilite == fwin), True, None);
@@ -349,6 +356,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
   if (!WAS_ICON_NAME_PROVIDED(fwin))
   {
     fwin->icon_name = fwin->name;
+    setup_visible_name(fwin, True);
     BroadcastName(M_ICON_NAME,fwin->w,fwin->frame,
 		  (unsigned long)fwin,fwin->icon_name);
     EWMH_SetVisibleName(fwin, True);

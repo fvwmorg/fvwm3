@@ -232,9 +232,15 @@ typedef struct
     unsigned is_icon_suppressed : 1;
     unsigned is_lenient : 1;
     unsigned use_icon_position_hint : 1;
+    unsigned use_extended_window_name : 1;
+    unsigned use_extended_icon_name : 1;
     unsigned do_ewmh_mini_icon_override : 1;
     unsigned do_ewmh_donate_icon : 1;
     unsigned do_ewmh_donate_mini_icon : 1;
+    unsigned do_ewmh_use_stacking_hints : 1;
+    unsigned do_ewmh_ignore_strut_hints : 1;
+    unsigned do_ewmh_ignore_state_hints : 1;
+    unsigned ewmh_maximize_mode : 2;
   } s;
 } common_flags_type;
 
@@ -309,7 +315,7 @@ typedef struct
 #define EWMH_TRUE_ICON   1 /* the application does provide an ewmh icon */
 #define EWMH_FVWM_ICON   2 /* the ewmh icon has been set by fvwm */
   unsigned has_ewmh_wm_icon_hint : 2;
-  unsigned has_ewmh_mini_icon : 1; /* says if the app have a ewmh icon of
+  unsigned has_ewmh_mini_icon : 1; /* says if the app have an ewmh icon of
 				    * acceptable size for a mini icon in its
 				    * list of icons */
   unsigned use_ewmh_icon : 1; /* the ewmh icon is used as icon pixmap */     
@@ -367,6 +373,7 @@ typedef struct
 #define PLACE_MINOVERLAP        0x7
 #define PLACE_MASK              0x7
   unsigned placement_mode : 3;
+  unsigned ewmh_placement_mode : 2;
   unsigned do_save_under : 1;
   unsigned do_start_lowered : 1;
   unsigned has_border_width : 1;
@@ -409,6 +416,8 @@ typedef struct
   unsigned manual_placement_honors_starts_on_page : 1;
   unsigned capture_honors_starts_on_page : 1;
   unsigned recapture_honors_starts_on_page : 1;
+  unsigned has_placement_penalty : 1;
+  unsigned has_placement_percentage_penalty : 1;
 } style_flags;
 
 /* only style.c and add_window.c are allowed to access this struct!! */
@@ -448,6 +457,9 @@ typedef struct window_style
   int max_window_height;
   int shade_anim_steps;
   icon_boxes *icon_boxes;
+  float norm_placement_penalty;
+  float placement_penalty[6];
+  int placement_percentage_penalty[4];
   style_flags flags;
   style_flags flag_mask;
   style_flags change_mask;
@@ -465,6 +477,10 @@ typedef struct FvwmWindow
   char **name_list;           /* window name list */
   char **icon_name_list;      /* icon name list */
 #endif
+  char *visible_name;
+  char *visible_icon_name;
+  int name_count;
+  int icon_name_count;
   struct FvwmWindow *next;    /* next fvwm window */
   struct FvwmWindow *prev;    /* prev fvwm window */
   struct FvwmWindow *stack_next; /* next (lower) fvwm window in stacking
@@ -555,15 +571,18 @@ typedef struct FvwmWindow
   int max_window_height;
   int shade_anim_steps;
   unsigned char grabbed_buttons;
+  float placement_penalty[6];
+  int placement_percentage_penalty[4];
 
   Atom ewmh_window_type;
   rectangle ewmh_icon_geometry;
   ewmh_strut strut;            /* for computing the working area */
-  ewmh_strut dyn_strut;        /* for dynamic working area */
+  ewmh_strut dyn_strut;        /* for the dynamic working area */
   int ewmh_icon_height;
   int ewmh_icon_width;
   int ewmh_mini_icon_height;
   int ewmh_mini_icon_width;
+  int ewmh_hint_layer;
 
   void *pscratch;             /* multi purpose scratch pointer */
 } FvwmWindow;

@@ -80,7 +80,7 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 
 void CMD_EwmhBaseStrut(F_CMD_ARGS)
 {
-  int val[3];
+  int val[4];
 
   if (GetIntegerArguments(action, NULL, val, 4) != 4 ||
       val[0] < 0 || val[1] < 0 || val[2] < 0 || val[3] < 0)
@@ -137,7 +137,28 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
     SMSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
     SCSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
   }
-  if (StrEquals(token, "EWMHMiniIconOverride"))
+  else if (StrEquals(token, "EWMHMaximizeIgnoreWorkingArea"))
+  {
+    found = True;
+    SFSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_IGNORE_WORKING_AREA);
+    SMSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+    SCSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+  }
+  else if (StrEquals(token, "EWMHMaximizeUseWorkingArea"))
+  {
+    found = True;
+    SFSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_USE_WORKING_AREA);
+    SMSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+    SCSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+  }
+  else if (StrEquals(token, "EWMHMaximizeUseDynamicWorkingArea"))
+  {
+    found = True;
+    SFSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_USE_DYNAMIC_WORKING_AREA);
+    SMSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+    SCSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+  }
+  else if (StrEquals(token, "EWMHMiniIconOverride"))
   {
     found = True;
     SFSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
@@ -151,7 +172,69 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
     SMSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
     SCSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
   }
-
+  else if (StrEquals(token, "EWMHPlacementIgnoreWorkingArea"))
+  {
+    found = True;
+    ptmpstyle->flags.ewmh_placement_mode = EWMH_IGNORE_WORKING_AREA;
+    ptmpstyle->flag_mask.ewmh_placement_mode = EWMH_WORKING_AREA_MASK;
+    ptmpstyle->change_mask.ewmh_placement_mode = EWMH_WORKING_AREA_MASK;
+  }
+  else if (StrEquals(token, "EWMHPlacementUseWorkingArea"))
+  {
+    found = True;
+    ptmpstyle->flags.ewmh_placement_mode = EWMH_USE_WORKING_AREA;
+    ptmpstyle->flag_mask.ewmh_placement_mode = EWMH_WORKING_AREA_MASK;
+    ptmpstyle->change_mask.ewmh_placement_mode = EWMH_WORKING_AREA_MASK;
+  }
+  else if (StrEquals(token, "EWMHPlacementUseDynamicWorkingArea"))
+  {
+    found = True;
+    ptmpstyle->flags.ewmh_placement_mode = EWMH_USE_DYNAMIC_WORKING_AREA;
+    ptmpstyle->flag_mask.ewmh_placement_mode = EWMH_WORKING_AREA_MASK;
+    ptmpstyle->change_mask.ewmh_placement_mode = EWMH_WORKING_AREA_MASK;
+  }
+  else if (StrEquals(token, "EWMHUseStackingOrderHints"))
+  {
+    found = True;
+    SFSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
+    SMSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
+    SCSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHIgnoreStackingOrderHints"))
+  {
+    found = True;
+    SFSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 0);
+    SMSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
+    SCSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHUseStateHints"))
+  {
+    found = True;
+    SFSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 0);
+    SMSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
+    SCSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHIgnoreStateHints"))
+  {
+    found = True;
+    SFSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
+    SMSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
+    SCSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHUseStrutHints"))
+  {
+    found = True;
+    SFSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 0);
+    SMSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
+    SCSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHIgnoreStrutHints"))
+  {
+    found = True;
+    SFSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
+    SMSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
+    SCSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
+  }
   return found;
 }
 
@@ -185,6 +268,18 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
   {
     found = True;
   }
+  else if (StrEquals(token, "EWMHMaximizeIgnoreWorkingArea"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHMaximizeUseWorkingArea"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHMaximizeUseDynamicWorkingArea"))
+  {
+    found = True;
+  }
   else if (StrEquals(token, "EWMHMiniIconOverride"))
   {
     found = True;
@@ -193,7 +288,42 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
   {
     found = True;
   }
-
+  else if (StrEquals(token, "EWMHPlacementIgnoreWorkingArea"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHPlacementUseWorkingArea"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHPlacementUseDynamicWorkingArea"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHUseStackingOrderHints"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHIgnoreStackingOrderHints"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHUseStateHints"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHIgnoreStateHints"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHUseStrutHints"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHIgnoreStrutHints"))
+  {
+    found = True;
+  }
   return found;
 }
 

@@ -232,8 +232,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if (!HAS_NO_ICON_TITLE(tmp_win))
   {
     tmp_win->icon_t_width =
-      XTextWidth(tmp_win->icon_font.font, tmp_win->icon_name,
-		 strlen(tmp_win->icon_name));
+      XTextWidth(tmp_win->icon_font.font, tmp_win->visible_icon_name,
+		 strlen(tmp_win->visible_icon_name));
     tmp_win->icon_g.height = ICON_HEIGHT(tmp_win);
   }
   else
@@ -534,8 +534,8 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 #endif
 		 Scr.TitleGC, x,
 		 tmp_win->icon_g.height - tmp_win->icon_font.height +
-		 tmp_win->icon_font.y - 3, tmp_win->icon_name,
-		 strlen(tmp_win->icon_name));
+		 tmp_win->icon_font.y - 3, tmp_win->visible_icon_name,
+		 strlen(tmp_win->visible_icon_name));
     RelieveRectangle(dpy, tmp_win->icon_w, 0, 0, tmp_win->icon_g.width - 1,
 		     ICON_HEIGHT(tmp_win) - 1, Relief, Shadow, 2);
     if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
@@ -709,8 +709,8 @@ void RedoIconName(FvwmWindow *tmp_win)
     tmp_win->icon_t_width = 0;
   else
     tmp_win->icon_t_width =
-      XTextWidth(tmp_win->icon_font.font,tmp_win->icon_name,
-                 strlen(tmp_win->icon_name));
+      XTextWidth(tmp_win->icon_font.font, tmp_win->visible_icon_name,
+                 strlen(tmp_win->visible_icon_name));
   /* clear the icon window, and trigger a re-draw via an expose event */
   if (IS_ICONIFIED(tmp_win))
   {
@@ -1615,8 +1615,8 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     else
     {
       tmp_win->icon_t_width =
-        XTextWidth(tmp_win->icon_font.font,tmp_win->icon_name,
-                   strlen(tmp_win->icon_name));
+        XTextWidth(tmp_win->icon_font.font,tmp_win->visible_icon_name,
+                   strlen(tmp_win->visible_icon_name));
       tmp_win->icon_p_width = tmp_win->icon_t_width + 6 + 4;
       tmp_win->icon_g.width = tmp_win->icon_p_width;
     }

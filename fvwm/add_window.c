@@ -142,6 +142,7 @@ Bool setup_window_structure(
     (*ptmp_win)->ewmh_mini_icon_height = savewin->ewmh_mini_icon_height;
     (*ptmp_win)->ewmh_icon_width = savewin->ewmh_icon_width;
     (*ptmp_win)->ewmh_icon_height = savewin->ewmh_icon_height;
+    (*ptmp_win)->ewmh_hint_layer = savewin->ewmh_hint_layer;
   }
 
   (*ptmp_win)->cmap_windows = (Window *)NULL;
@@ -229,12 +230,131 @@ static void get_name_property(
 }
 #endif
 
+void setup_window_name_count(FvwmWindow *tmp_win)
+{
+  FvwmWindow *t;
+  int count = 0;
+  Bool done = False;
+
+  if (!tmp_win->name)
+    done = True;
+
+  while (!done)
+  {
+    done = True;
+    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    {
+      if (t == tmp_win)
+	continue;
+      if (t->name && strcmp(t->name, tmp_win->name) == 0 &&
+	   t->name_count == count)
+      {
+	count++;
+	done = False;
+      }
+    }
+  }
+  tmp_win->name_count = count;
+}
+
+void setup_icon_name_count(FvwmWindow *tmp_win)
+{
+  FvwmWindow *t;
+  int count = 0;
+  Bool done = False;
+
+  if (!tmp_win->icon_name)
+    done = True;
+
+  while (!done)
+  {
+    done = True;
+    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    {
+      if (t == tmp_win)
+	continue;
+      if (t->icon_name && strcmp(t->icon_name, tmp_win->icon_name) == 0 &&
+	  t->icon_name_count == count)
+      {
+	count++;
+	done = False;
+      }
+    }
+  }
+  tmp_win->icon_name_count = count;
+}
+
+void setup_visible_name(FvwmWindow *tmp_win, Bool is_icon)
+{
+  char *ext_name;
+  char *name;
+  int count;
+  int len;
+
+  if (tmp_win == NULL)
+    return; /* should never happen */
+
+  if (is_icon)
+  {
+    if (tmp_win->visible_icon_name != NULL &&
+	tmp_win->visible_icon_name != tmp_win->icon_name &&
+	tmp_win->visible_icon_name != tmp_win->name &&
+	tmp_win->visible_icon_name != NoName)
+    {
+      free(tmp_win->visible_icon_name);
+      tmp_win->visible_icon_name = NULL;
+    }
+    name = tmp_win->icon_name;
+    setup_icon_name_count(tmp_win);
+    count = tmp_win->icon_name_count;
+  }
+  else
+  {
+    if (tmp_win->visible_name != NULL &&
+	tmp_win->visible_name != tmp_win->name &&
+	tmp_win->visible_name != NoName)
+    {
+      free(tmp_win->visible_name);
+      tmp_win->visible_name = NULL;
+    }
+    name = tmp_win->name;
+    setup_window_name_count(tmp_win);
+    count = tmp_win->name_count;
+  }
+
+  if (name == NULL)
+  {
+    return; /* should never happen */
+  }
+
+  if (count > 998)
+    count = 998;
+
+  if (count != 0 &&
+      ((is_icon && USE_EXTENDED_ICON_NAME(tmp_win)) ||
+       (!is_icon && USE_EXTENDED_WINDOW_NAME(tmp_win))))
+  {
+    len = strlen(name);
+    count++;
+    ext_name = (char *)safemalloc(len + 6);
+    sprintf(ext_name,"%s (%d)", name, count);
+  }
+  else
+    ext_name = name;
+
+  if (is_icon)
+    tmp_win->visible_icon_name = ext_name;
+  else
+    tmp_win->visible_name = ext_name;
+}
+
 void setup_window_name(FvwmWindow *tmp_win)
 {
   if (!EWMH_WMName(tmp_win, NULL, NULL))
+  {
       GET_NAME_PROPERTY(XGetWMName, tmp_win->w, &(tmp_win->name),
 			&(tmp_win->name_list));
-  EWMH_SetVisibleName(tmp_win, False);
+  }
 
   if (debugging)
     fvwm_msg(DBG,"setup_window_name","Assigned name %s'",tmp_win->name);
@@ -648,6 +768,37 @@ Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
       tmp_win, &pstyle->flags, SGET_START_DESK(*pstyle),
       SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle),
       SGET_START_SCREEN(*pstyle), PLACE_INITIAL);
+}
+
+void setup_placement_penalty(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  int i;
+
+  if (!SHAS_PLACEMENT_PENALTY(&pstyle->flags))
+  {
+    SSET_NORMAL_PLACEMENT_PENALTY(*pstyle, 1);
+    SSET_ONTOP_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_ONTOP);
+    SSET_ICON_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_ICON);
+    SSET_STICKY_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_STICKY);
+    SSET_BELOW_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_BELOW);
+    SSET_EWMH_STRUT_PLACEMENT_PENALTY(*pstyle, PLACEMENT_AVOID_EWMH_STRUT);
+  }
+  if (!SHAS_PLACEMENT_PERCENTAGE_PENALTY(&pstyle->flags))
+  {
+    SSET_99_PLACEMENT_PERCENTAGE_PENALTY(*pstyle, PLACEMENT_AVOID_COVER_99);
+    SSET_95_PLACEMENT_PERCENTAGE_PENALTY(*pstyle, PLACEMENT_AVOID_COVER_95);
+    SSET_85_PLACEMENT_PERCENTAGE_PENALTY(*pstyle, PLACEMENT_AVOID_COVER_85);
+    SSET_75_PLACEMENT_PERCENTAGE_PENALTY(*pstyle, PLACEMENT_AVOID_COVER_75);
+  }
+  for(i = 0; i < 6; i++)
+  {
+    tmp_win->placement_penalty[i] = (*pstyle).placement_penalty[i];
+  }
+  for(i = 0; i < 4; i++)
+  {
+    tmp_win->placement_percentage_penalty[i] =
+      (*pstyle).placement_percentage_penalty[i];
+  }
 }
 
 void get_default_window_attributes(
@@ -1114,6 +1265,8 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
     tmp_win->icon_name = tmp_win->name;
     SET_WAS_ICON_NAME_PROVIDED(tmp_win, 0);
   }
+  setup_visible_name(tmp_win, True);
+
 
   /* wait until the window is iconified and the icon window is mapped
    * before creating the icon window
@@ -1344,6 +1497,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   setup_window_font(tmp_win, &style, False);
   setup_icon_font(tmp_win, &style, False);
 
+  /***** visible window name ****/
+  setup_visible_name(tmp_win, False);
+  EWMH_SetVisibleName(tmp_win, False);
+
   /****** state setup ******/
   setup_icon_boxes(tmp_win, &style);
   SET_ICONIFIED(tmp_win, 0);
@@ -1384,6 +1541,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->old_bw = tmp_win->attr.border_width;
   XSetWindowBorderWidth(dpy, tmp_win->w, 0);
 
+  /***** placement penalities *****/
+  setup_placement_penalty(tmp_win, &style);
   /*
    * MatchWinToSM changes tmp_win->attr and the stacking order.
    * Thus it is important have this call *after* PlaceWindow and the
@@ -1550,7 +1709,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /****** window colormap ******/
   InstallWindowColormaps(colormap_win);
 
- /****** ewmh setup *******/
+  /****** ewmh setup *******/
   EWMH_WindowInit(tmp_win);
 
   /****** gnome setup ******/
@@ -1952,15 +2111,49 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
   if (!tmp)
     return;
 
+  if (nukename && tmp->visible_name &&
+      tmp->visible_name != tmp->name &&
+      tmp->visible_name != NoName)
+  {
+    free(tmp->visible_name);
+    tmp->visible_name = NULL;
+  }
+  if (nukeicon && tmp->visible_icon_name &&
+      tmp->visible_icon_name != tmp->name &&
+      tmp->visible_icon_name != tmp->icon_name &&
+      tmp->visible_icon_name != NoName)
+  {
+    free(tmp->visible_icon_name);
+    tmp->visible_icon_name = NULL;
+  }
   if (nukename && tmp->name)
   {
+#ifdef CODE_WITH_LEAK_I_THINK
     if (tmp->name != tmp->icon_name && tmp->name != NoName)
       FREE_TEXT_PROPERTY(&(tmp->name), &(tmp->name_list));
+#else
+    if (tmp->icon_name == tmp->name)
+      tmp->icon_name = NoName;
+    if (tmp->visible_icon_name == tmp->name)
+      tmp->visible_icon_name = tmp->icon_name;
+    if (tmp->name != NoName)
+    {
+      FREE_TEXT_PROPERTY(&(tmp->name), &(tmp->name_list));
+      tmp->visible_name = NULL;
+    }
+#endif
   }
   if (nukeicon && tmp->icon_name)
   {
+#ifdef CODE_WITH_LEAK_I_THINK
     if ((tmp->name != tmp->icon_name || nukename) && tmp->icon_name != NoName)
+#else
+    if ((tmp->name != tmp->icon_name) && tmp->icon_name != NoName)
+#endif
+    {
       FREE_TEXT_PROPERTY(&(tmp->icon_name), &(tmp->icon_name_list));
+      tmp->visible_icon_name = NULL;
+    }
   }
 
   return;

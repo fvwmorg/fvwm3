@@ -113,6 +113,18 @@
           (fw)->flags.common.s.use_icon_position_hint = !!(x)
 #define SETM_USE_ICON_POSITION_HINT(fw,x) \
           (fw)->flag_mask.common.s.use_icon_position_hint = !!(x)
+#define USE_EXTENDED_WINDOW_NAME(fw) \
+          ((fw)->flags.common.s.use_extended_window_name)
+#define SET_USE_EXTENDED_WINDOW_NAME(fw,x) \
+          (fw)->flags.common.s.use_extended_window_name = !!(x)
+#define SETM_USE_EXTENDED_WINDOW_NAME(fw,x) \
+          (fw)->flag_mask.common.s.use_extended_window_name = !!(x)
+#define USE_EXTENDED_ICON_NAME(fw) \
+          ((fw)->flags.common.s.use_extended_icon_name)
+#define SET_USE_EXTENDED_ICON_NAME(fw,x) \
+          (fw)->flags.common.s.use_extended_icon_name = !!(x)
+#define SETM_USE_EXTENDED_ICON_NAME(fw,x) \
+          (fw)->flag_mask.common.s.use_extended_icon_name = !!(x)
 #define DO_EWMH_MINI_ICON_OVERRIDE(fw) \
           ((fw)->flags.common.s.do_ewmh_mini_icon_override)
 #define SET_DO_EWMH_MINI_ICON_OVERRIDE(fw,x) \
@@ -131,6 +143,30 @@
           (fw)->flags.common.s.do_ewmh_donate_mini_icon = !!(x)
 #define SETM_DO_EWMH_DONATE_MINI_ICON(fw,x) \
           (fw)->flag_mask.common.s.do_ewmh_donate_mini_icon = !!(x)
+#define DO_EWMH_USE_STACKING_HINTS(fw) \
+          ((fw)->flags.common.s.do_ewmh_use_stacking_hints)
+#define SET_DO_EWMH_USE_STACKING_HINTS(fw,x) \
+          (fw)->flags.common.s.do_ewmh_use_stacking_hints = !!(x)
+#define SETM_DO_EWMH_USE_STACKING_HINTS(fw,x) \
+          (fw)->flag_mask.common.s.do_ewmh_use_stacking_hints = !!(x)
+#define DO_EWMH_IGNORE_STRUT_HINTS(fw) \
+          ((fw)->flags.common.s.do_ewmh_ignore_strut_hints)
+#define SET_DO_EWMH_IGNORE_STRUT_HINTS(fw,x) \
+          (fw)->flags.common.s.do_ewmh_ignore_strut_hints = !!(x)
+#define SETM_DO_EWMH_IGNORE_STRUT_HINTS(fw,x) \
+          (fw)->flag_mask.common.s.do_ewmh_ignore_strut_hints = !!(x)
+#define DO_EWMH_IGNORE_STATE_HINTS(fw) \
+          ((fw)->flags.common.s.do_ewmh_ignore_state_hints)
+#define SET_DO_EWMH_IGNORE_STATE_HINTS(fw,x) \
+          (fw)->flags.common.s.do_ewmh_ignore_state_hints = !!(x)
+#define SETM_DO_EWMH_IGNORE_STATE_HINTS(fw,x) \
+          (fw)->flag_mask.common.s.do_ewmh_ignore_state_hints = !!(x)
+#define EWMH_MAXIMIZE_MODE(fw) \
+          ((fw)->flags.common.s.ewmh_maximize_mode)
+#define SET_EWMH_MAXIMIZE_MODE(fw,x) \
+          (fw)->flags.common.s.ewmh_maximize_mode = (x)
+#define SETM_EWMH_MAXIMIZE_MODE(fw,x) \
+          (fw)->flag_mask.common.s.ewmh_maximize_mode = (x)
 #define IS_ICON_SUPPRESSED(fw) \
           ((fw)->flags.common.s.is_icon_suppressed)
 #define SET_ICON_SUPPRESSED(fw,x)  \

@@ -4611,6 +4611,8 @@ is a comma separated list containing one or more of the keywords
 .IR NoTitle " / " Title ,
 .IR TitleAtBottom " / " TitleAtTop ,
 .IR StippledTitle " / " StippledTitleOff ,
+.IR ExtendedWindowName " / " SimpleWindowName ,
+.IR ExtendedIconName " / " SimpleIconName ,
 .IR NoHandles " / " Handles ,
 .IR WindowListSkip " / " WindowListHit ,
 .IR CirculateSkip " / " CirculateHit ,
@@ -4644,6 +4646,8 @@ is a comma separated list containing one or more of the keywords
 .IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
 .IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
 .IR TileCascadePlacement ,
+.IR PlacementOverlapPenalties ,
+.IR PlacementOverlapPercentPenalties ,
 .IR DecorateTransient " / " NakedTransient ,
 .IR RaiseTransient " / " DontRaiseTransient ,
 .IR LowerTransient " / " DontLowerTransient ,
@@ -4680,7 +4684,14 @@ is a comma separated list containing one or more of the keywords
 .IR WindowShadeSteps ,
 .IR EWMHDonateIcon " / " EWMHDontDonateIcon ,
 .IR EWMHDonateMiniIcon " / " EWMHDontDonateMiniIcon ,
-.IR EWMHMiniIconOverride " / " EWMHNoMiniIconOverride .
+.IR EWMHMiniIconOverride " / " EWMHNoMiniIconOverride ,
+.IR EWMHUseStackingOrderHints " / " EWMHIgnoreStackingOrderHints ,
+.IR EWMHIgnoreStateHints " / " EWMHUseStateHints ,
+.IR EWMHIgnoreStrutHints " / " EWMHUseStrutHints ,
+.IR EWMHMaximizeIgnoreWorkingArea " / " EWMHMaximizeUseWorkingArea " / "
+.IR EWMHMaximizeUseDynamicWorkingArea ,
+.IR EWMHPlacementIgnoreWorkingArea " / " EWMHPlacementUseWorkingArea
+.IR EWMHPlacementUseDynamicWorkingArea .
 
 .\" +++++++++++++++ general notes
 In the above list some options are listed as
@@ -4832,6 +4843,32 @@ command is used.  To revert back to the default, use the style
 without the name argument.  These styles replace the older
 .BR WindowFont " and " IconFont
 commands.
+
+The
+.I ExtendedWindowName
+style cause fvwm to use as window title name a string of the form
+.EX
+.IR name " (" i ") "
+.EE
+where
+.I name
+is the exact window name and
+.I i
+is an integer which intends to represent the
+.I i "th"
+window with
+.I name
+as window name.
+.I SimpleWindowName
+restor the default which is to use the exact window name.
+.I ExtendedIconName
+and
+.I SimpleIconName
+work exactly as the
+.I ExtendedIconName
+and
+.I SimpleIconName
+styles but for the icons titles.
 
 .\" +++++++++++++++ styles affecting title buttons
 .TP
@@ -5188,9 +5225,12 @@ as the fall-back method.
 
 .I MinOverlapPlacement
 automatically places new windows in a location in which the
-overlapping area in pixels of other windows is minimal.  This
-placement policy especially tries to avoid overlapping icons and
-windows on higher layers.
+overlapping area in pixels of other windows is minimal.
+By default this placement policy especially tries to avoid
+overlapping icons and windows on higher layers.
+This can be configured with the
+.IR PlacementOverlapPenalities
+style.
 
 .I MinOverlapPercentPlacement
 is similar to
@@ -5199,6 +5239,79 @@ but tries to minimize the overlapped percentages of other windows
 instead of the overlapped area in pixels.  This placement policy
 tries to avoid covering other windows completely and tries even
 harder not to cover small windows.
+This can be configured with the
+.IR PlacementOverlapPenalities " and " PlacementOverlapPercentPenalities
+styles.
+
+.I PlacementOverlapPenalities
+takes at most 6 positive or null decimal arguments:
+.EX
+.I norm ontop icon sticky below strut
+.EE
+if some remaining arguments are missing there are reseted to
+the default which is:
+.EX
+1 5 10 1 0.05 50
+.EE
+This style allows to configure the
+.IR MinOverlapPlacement " and " MinOverlapPercentPlacement
+placement policy.
+The
+.I norm
+factor concerns normal windows, the
+.I ontop
+factor concerns windows with a greater layer than the placed window, the
+.I icon
+factor concerns icons, the
+.I below
+factor concerns windows with a smaller layer than the placed window, the
+.I strut
+factor concerns the complement of the EWMH working area if the placed
+window has the
+.I EWMHPlacementUseWoringArea
+style and windows with an EWMH strut hint (i.e., a "please does not cover me"
+hint) if the placed window has the
+.I EWMHPlacementUseDynamicWoringArea
+style.
+These factors represent the amount of area that these types of
+windows (or area) are counted as, when a new window
+is placed.
+For example, by default the area of ontop windows is counted 5 times
+as much as normal windows.  So
+.IR MinOverlapPlacement " and "  MinOverlapPercentPlacement
+will cover 5 times as much area of another window before it will cover an ontop
+window.  To treat ontop windows the same as other windows, set this to 1.
+To really, really avoid putting windows under ontop windows, set this to a
+high value, say 1000. This style concerns the window already mapped and
+not the window which is currently placed. There is one exception to this
+rule: in the case of the placed window has the
+.I EWMHPlacementUseWoringArea
+style the
+.I strut
+factor concerns the placed window.
+
+.I PlacementOverlapPercentPenalities
+takes at most 4 positive or null integer arguments:
+.EX
+.I cover_100 cover_95 cover_85 cover_75
+.EE
+if some remaining arguments are missing there are reseted to the default
+which is:
+.EX
+12 6 4 1
+.EE
+This style allows to configure the
+.I MinOverlapPercentPlacement
+placement policy only and is similar to the
+.I PlacementOverlapPenalities
+style. The
+.I cover_xx
+factor is used when the placed window cover at least
+.I xx
+percent of the window. This factor is added to the factor determined
+by the
+.IR PlacementOverlapPenalities
+style.
 
 .I ManualPlacement
 (aka active placement). The user is required to place every new
@@ -5522,6 +5635,11 @@ Style * StackTransientParent
 .\" +++++++++++++++ Extended WM Hints styles
 .TP
 .B Extended Window Manager Hints Styles
+To understand some terminologies used in this sub section you should
+read the
+.B EXTENDED WINDOW MANAGER HINTS
+section.
+
 .I EWMHDonateIcon
 instructs fvwm to set the application ewmh icon hint with the icon that
 is used by fvwm if the application does not provide such hint
@@ -5547,6 +5665,50 @@ provided by the
 style.
 .I EWMHNoMiniIconOverride
 restores the default.
+
+.I EWMHUseStackingOrderHints
+causes fvwm to use EWMH hints which change the window layer (such a hint
+is used by KDE and is not standard).
+.I EWMHIgnoreStackingOrderHints
+causes fvwm to ignore such hints.
+
+An application can ask for some reserved space on the desktop by a hint.
+In the EWMH terminology such a hint is called a strut and it is
+used to compute the working area and may be
+used for window placement and in the maximize command.
+.I EWMHIgnoreStrutHints
+causes fvwm to ignore such hints, as
+.IR EWMHUseStrutHints ,
+causes fvwm to use it which is the default.
+
+.I EWMHIgnoreStateHints
+causes fvwm to ignore initial EWMH state hints when a new window
+is mapped. The default
+.I EWMHUseStateHints
+causes fvwm to accept such hints.
+
+.I EWMHMaximizeIgnoreWorkingArea
+causes fvwm to ignore the EWMH working area when it executes a
+.I Maximize
+command. With
+.I EWMHMaximizeUseWorkingArea
+the EWMH working area is used as with
+.I EWMHMaximizeUseDynamicWorkingArea
+the EWMH dynamic working area is used (the default).
+
+.I EWMHPlacementIgnoreWorkingArea
+causes fvwm to ignore the EWMH working area when it places (or place again)
+a window. With
+.I EWMHPlacementUseWorkingArea
+the EWMH working area is take in account as with
+.I EWMHPlacementUseDynamicWorkingArea
+the EWMH dynamic working area is taken in account (the default).
+Note that with the
+.IR MinOverlapPlacement " and " MinOverlapPercentPlacement
+placement policy, the way the EWMH (dynamic) working area is taken
+in account is configurable with the
+.I PlacementOverlapPenalties
+style.
 
 .\" +++++++++++++++ miscellaneous
 .TP

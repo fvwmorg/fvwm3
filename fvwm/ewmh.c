@@ -668,6 +668,8 @@ void ewmh_ComputeAndSetWorkArea(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
+    if (DO_EWMH_IGNORE_STRUT_HINTS(t))
+      continue;
     left = max(left, t->strut.left);
     right = max(right, t->strut.right);
     top = max(top, t->strut.top);
@@ -702,6 +704,8 @@ void ewmh_HandleDynamicWorkArea(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
+    if (DO_EWMH_IGNORE_STRUT_HINTS(t))
+      continue;
     dyn_left = max(dyn_left, t->dyn_strut.left);
     dyn_right = max(dyn_right, t->dyn_strut.right);
     dyn_top = max(dyn_top, t->dyn_strut.top);
@@ -724,8 +728,14 @@ void ewmh_HandleDynamicWorkArea(void)
   }
 }
 
+void EWMH_UpdateWorkArea(void)
+{
+  ewmh_ComputeAndSetWorkArea();
+  ewmh_HandleDynamicWorkArea();
+}
+
 void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
-				  int *x, int *y, int *w, int *h, int func)
+				  int *x, int *y, int *w, int *h, int type)
 {
   int nx,ny,nw,nh;
   int area_x = Scr.work_area.x;
@@ -734,9 +744,14 @@ void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
   int area_h = Scr.work_area.height;
   Bool is_dynamic = False;
 
-  switch(func)
+  switch(type)
   {
-    case F_MAXIMIZE:
+    case EWMH_IGNORE_WORKING_AREA:
+      return;
+      break;
+    case EWMH_USE_WORKING_AREA:
+      break;
+    case EWMH_USE_DYNAMIC_WORKING_AREA:
       is_dynamic = True;
       break;
     default:
@@ -760,6 +775,64 @@ void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
   *y = ny;
   *w = nw;
   *h = nh;
+}
+
+float get_intersection(int x11, int y11, int x12, int y12,
+		       int x21, int y21, int x22, int y22,
+		       Bool use_percent)
+{
+  float ret = 0;
+  int xl, xr, yt, yb;
+
+  if (x11 < x22 && x12 > x21 && y11 < y22 && y12 > y21)
+  {
+    xl = max(x11, x21);
+    xr = min(x12, x22);
+    yt = max(y11, y21);
+    yb = min(y12, y22);
+    ret = (xr - xl) * (yb - yt);
+  }
+  if (use_percent && 
+      (x22 - x21) * (y22 - y21) != 0 && (x12 - x11) * (y12 - y11) != 0)
+  {
+    ret = 100 * max(ret / ((x22 - x21) * (y22 - y21)),
+		    ret / ((x12 - x11) * (y12 - y11)));
+  }
+  return ret;
+}
+
+float EWMH_GetStrutIntersection(
+	int x11, int y11, int x12, int y12, Bool use_percent)
+{
+  float ret = 0;
+  int x21, y21, x22, y22;
+
+  /* left */
+  x21 = 0;
+  y21 = 0;
+  x22 = Scr.work_area.x;
+  y22 = Scr.MyDisplayHeight;
+  ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent); 
+  /* right */
+  x21 = Scr.work_area.x + Scr.work_area.width;
+  y21 = 0;
+  x22 = Scr.MyDisplayWidth;
+  y22 = Scr.MyDisplayHeight;
+  ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
+  /* top */
+  x21 = 0;
+  y21 = 0;
+  x22 = Scr.MyDisplayWidth;
+  y22 = Scr.work_area.y;
+  ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
+  /* bottom */
+  x21 = 0;
+  y21 = Scr.work_area.y + Scr.work_area.height;
+  x22 = Scr.MyDisplayWidth;
+  y22 = Scr.MyDisplayHeight;
+  ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
+
+  return ret;
 }
 
 /* ************************************************************************* *
@@ -996,7 +1069,8 @@ int ksmserver_workarround(FvwmWindow *fwin)
 void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
 {
   ewmh_HandleWindowType(fwin, style);
-  ewmh_WMState(fwin, NULL, style);
+  if (!DO_EWMH_IGNORE_STATE_HINTS(fwin))
+    ewmh_WMState(fwin, NULL, style);
 }
 
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */
@@ -1141,11 +1215,34 @@ void EWMH_Init(void)
 void EWMH_ExitStuff(void)
 {
   FvwmWindow *t;
+  int sl;
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
     if (HAS_EWMH_WM_ICON_HINT(t) == EWMH_FVWM_ICON)
       EWMH_DeleteWmIcon(t, True, True);
+    /* restore the wm_state stays on top hints */
+    if (t->ewmh_hint_layer == t->layer && t->layer == Scr.TopLayer)
+    {
+      /* window is stays on top by a hint, wm_state is ok */
+      set_layer(t, Scr.DefaultLayer);
+    }
+    else if (t->layer >= Scr.TopLayer && t->ewmh_hint_layer < Scr.TopLayer)
+    {
+      /* wm_state has stays on top, but no stays on top hint */
+      sl = t->layer;
+      set_layer(t, Scr.DefaultLayer);
+      EWMH_SetWMState(t);
+      set_layer(t, sl);
+    }
+    else if (t->ewmh_hint_layer == Scr.TopLayer && t->layer < Scr.TopLayer)
+    {
+      /* no stay on top wm_state, but window has stays on top hint */
+      sl = t->layer;
+      set_layer(t, Scr.TopLayer);
+      EWMH_SetWMState(t);
+      set_layer(t, sl);
+    }
   }
 
 }

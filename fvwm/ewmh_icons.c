@@ -44,7 +44,7 @@ int ewmh_WMIcon(EWMH_CMD_ARGS)
   CARD32 *list = NULL;
   CARD32 *new_list = NULL;
   CARD32 *dummy = NULL;
-  unsigned int size;
+  unsigned int size = 0;
 
   if (ev != NULL && HAS_EWMH_WM_ICON_HINT(fwin) == EWMH_FVWM_ICON)
   {
@@ -112,7 +112,7 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
   CARD32 *list = NULL;
   CARD32 *new_list = NULL;
   CARD32 *dummy = NULL;
-  unsigned int size;
+  unsigned int size = 0;
   Bool icon_too = False;
 
   if (HAS_EWMH_WM_ICON_HINT(fwin) == EWMH_TRUE_ICON)
@@ -191,6 +191,14 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
   Pixmap mask = None;
   XImage *image;
   XImage *m_image;
+  int save_icon_p_width = 0;
+  int save_icon_p_height = 0;
+  int save_icon_depth = 0;
+  Pixmap save_icon_pixmap = None;
+  Pixmap save_icon_mask = None;
+  Bool is_pixmap_ours = False;
+  Bool is_icon_ours = False;
+  Bool is_icon_shaped = False;
   Bool destroy_icon_pix = False;
 
   s = *orig_size / sizeof(CARD32);
@@ -210,15 +218,30 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
   }
   else
   {
-    if (fwin->iconPixmap == None)
-    {
-      GetIcon(fwin, True);
+    save_icon_p_width = fwin->icon_p_width;
+    save_icon_p_height = fwin->icon_p_height;
+    save_icon_depth = fwin->iconDepth;
+    save_icon_pixmap = fwin->iconPixmap;
+    save_icon_mask = fwin->icon_maskPixmap;
+    is_pixmap_ours = IS_PIXMAP_OURS(fwin);
+    is_icon_ours = IS_ICON_OURS(fwin);
+    is_icon_shaped = IS_ICON_SHAPED(fwin);
+    GetIcon(fwin, True);
+    if (IS_PIXMAP_OURS(fwin))
       destroy_icon_pix = True;
-    }
     pixmap = fwin->iconPixmap;
     mask = fwin->icon_maskPixmap;
     width = fwin->icon_p_width;
     height = fwin->icon_p_height;
+
+    fwin->icon_p_width = save_icon_p_width;
+    fwin->icon_p_height = save_icon_p_height;
+    fwin->iconDepth = save_icon_depth;
+    fwin->iconPixmap = save_icon_pixmap;
+    fwin->icon_maskPixmap = save_icon_mask;
+    SET_ICON_OURS(fwin, is_icon_ours);
+    SET_PIXMAP_OURS(fwin, is_pixmap_ours);
+    SET_ICON_SHAPED(fwin, is_icon_shaped);
   }
 
   if (pixmap == None)
@@ -263,16 +286,13 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
     fvwm_msg(ERR, "EWMH_SetWmIconFromPixmap","cannot create XImage\n");
     if (destroy_icon_pix)
     {
-      if (IS_PIXMAP_OURS(fwin))
-	XFreePixmap(dpy, fwin->iconPixmap);
-      fwin->iconPixmap = None;
-      if (IS_PIXMAP_OURS(fwin) && fwin->icon_maskPixmap != None)
-	XFreePixmap(dpy, fwin->icon_maskPixmap);
-      fwin->icon_maskPixmap = None;
-      SET_PIXMAP_OURS(fwin, 0);
+      XFreePixmap(dpy, pixmap);
+      if (mask != None)
+	XFreePixmap(dpy, mask);
     }
     return NULL;
   }
+
   m_image = XGetImage(dpy, mask, 0, 0, width, height, AllPlanes, ZPixmap);
 
   *orig_size = (height*width + 2 + keep_length) * sizeof(CARD32);
@@ -419,13 +439,9 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 
   if (destroy_icon_pix)
   {
-    if (IS_PIXMAP_OURS(fwin))
-      XFreePixmap(dpy, fwin->iconPixmap);
-    fwin->iconPixmap = None;
-    if (IS_PIXMAP_OURS(fwin) && fwin->icon_maskPixmap != None)
-      XFreePixmap(dpy, fwin->icon_maskPixmap);
-    fwin->icon_maskPixmap = None;
-    SET_PIXMAP_OURS(fwin, 0);
+    XFreePixmap(dpy, pixmap);
+    if (mask != None)
+      XFreePixmap(dpy, mask);
   }
 
   XDestroyImage(image);

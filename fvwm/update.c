@@ -61,6 +61,7 @@
 #include "add_window.h"
 #include "module_interface.h"
 #include "focus.h"
+#include "stack.h"
 
 static void init_style(
   FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle, short *pbuttons)
@@ -141,6 +142,17 @@ static void apply_window_updates(
     }
   }
 #endif
+  if (flags->do_update_window_name)
+  {
+    setup_visible_name(t, False);
+    EWMH_SetVisibleName(t, False);
+  }
+
+  if (flags->do_update_icon_name)
+  {
+    setup_visible_name(t, True);
+    EWMH_SetVisibleName(t, True);
+  }
 
   if (flags->do_update_window_font || flags->do_update_window_font_height)
   {
@@ -312,6 +324,27 @@ static void apply_window_updates(
   {
     EWMH_DoUpdateWmIcon(
       t, flags->do_update_ewmh_mini_icon, flags->do_update_ewmh_icon);
+  }
+  if (flags->do_update_placement_penalty)
+  {
+    setup_placement_penalty(t, pstyle);
+  }
+  if (flags->do_update_working_area)
+  {
+    EWMH_UpdateWorkArea();
+  }
+  if (flags->do_update_ewmh_stacking_hints)
+  {
+    if (DO_EWMH_USE_STACKING_HINTS(t))
+    {
+      if (t->ewmh_hint_layer > 0 && t->layer != t->ewmh_hint_layer)
+	new_layer(t, t->ewmh_hint_layer);
+    }
+    else
+    {
+      if (t->ewmh_hint_layer > 0)
+	new_layer(t, Scr.DefaultLayer);
+    }
   }
   t->shade_anim_steps = pstyle->shade_anim_steps;
 

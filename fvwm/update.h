@@ -32,6 +32,7 @@ typedef struct
   unsigned do_update_icon_font : 1;
   unsigned do_update_icon_placement : 1;
   unsigned do_update_icon_title : 1;
+  unsigned do_update_icon_name : 1;
   unsigned do_update_mini_icon : 1;
   unsigned do_update_ewmh_mini_icon : 1;
   unsigned do_update_list_skip : 1;
@@ -41,8 +42,12 @@ typedef struct
   unsigned do_update_window_color_hi : 1;
   unsigned do_update_window_font : 1;
   unsigned do_update_window_font_height : 1;
+  unsigned do_update_window_name : 1;
   unsigned do_update_window_grabs : 1;
   unsigned do_update_modules_flags : 1;
+  unsigned do_update_placement_penalty : 1;
+  unsigned do_update_working_area : 1;
+  unsigned do_update_ewmh_stacking_hints : 1;
 } update_win;
 
 void destroy_scheduled_windows(void);

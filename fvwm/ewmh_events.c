@@ -372,6 +372,8 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 {
   if (ev == NULL && style == NULL)
   {
+    if (fwin->ewmh_hint_layer == 0)
+      fwin->ewmh_hint_layer = -1;
     if (fwin->layer >= Scr.TopLayer)
       return True;
     return False;
@@ -379,31 +381,34 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 
   if (ev == NULL && style != NULL)
   {
-    if (!style->change_mask.use_layer)
+    if (fwin->ewmh_hint_layer != -1)
     {
-      SSET_LAYER(*style, Scr.TopLayer);
-      style->flags.use_layer = 1;
-      style->flag_mask.use_layer = 1;
-      style->change_mask.use_layer = 1;
+      fwin->ewmh_hint_layer = Scr.TopLayer;
+      if (!style->change_mask.use_layer && DO_EWMH_USE_STACKING_HINTS(fwin))
+      {
+	SSET_LAYER(*style, Scr.TopLayer);
+	style->flags.use_layer = 1;
+	style->flag_mask.use_layer = 1;
+	style->change_mask.use_layer = 1;
+      }
     }
     return 0;
   }
 
+  if (ev != NULL)
   {
     /* client message */
     int bool_arg = ev->xclient.data.l[0];
-    char cmd[256];
 
     if ((bool_arg == NET_WM_STATE_TOGGLE && fwin->layer < Scr.TopLayer) ||
 	bool_arg == NET_WM_STATE_ADD)
     {
-      sprintf(cmd,"Layer 0 %d", Scr.TopLayer);
+      new_layer(fwin, Scr.TopLayer);
     }
     else
     {
-      sprintf(cmd,"Layer 0 %d", Scr.DefaultLayer);
+      new_layer(fwin, Scr.DefaultLayer);
     }
-    old_execute_function(cmd, fwin, ev, C_WINDOW, -1, 0, NULL);
   }
   return 0;
 }
@@ -545,12 +550,15 @@ Bool EWMH_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
        (ewmh_atom *)ewmh_GetEwmhAtomByAtom(ev->xclient.message_type,
 					   EWMH_ATOM_LIST_CLIENT_ROOT)) != NULL)
   {
+#if 0
+    fprintf(stderr, "NW: 0x%lx, 0x%lx\n", ev->xany.window, ev->xclient.window);
+#endif
     if (ewmh_a->action != None)
       ewmh_a->action(fwin, ev, NULL);
     return True;
   }
 
-  if (ev->xclient.window == None)
+  if (fwin == NULL || ev->xclient.window == None)
     return False;
 
 
@@ -558,6 +566,9 @@ Bool EWMH_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
        (ewmh_atom *)ewmh_GetEwmhAtomByAtom(ev->xclient.message_type,
 					   EWMH_ATOM_LIST_CLIENT_WIN)) != NULL)
   {
+#if 0
+    fprintf(stderr, "WW: 0x%lx, 0x%lx\n", ev->xany.window, ev->xclient.window);
+#endif
     if (ewmh_a->action != None)
       ewmh_a->action(fwin, ev, NULL);
     return True;

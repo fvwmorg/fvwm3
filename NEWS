@@ -3,9 +3,9 @@ _+_A HREF="#2.4.4"_-_2.4.4_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
-* Fvwm respect the extended window manager hints specification (use
-  --enable-ewmh for that). This allows fvwm to work with KDE version
-  >= 2 and GNOME version 2.
+* Fvwm respect the extended window manager hints specification.
+  This allows fvwm to work with KDE version >= 2 and GNOME version 2.
+  This support is configurable with some new styles and new commands.
 
 * New DateFormat option in FvwmTaskBar to change the date format in
   the clock's popup tip.
@@ -14,6 +14,11 @@ Changes in beta release 2.5.0 (not released yet)
   option MultiPixmap, that enables to specify separate pixmaps for
   different parts of the titlebar: Main, LeftEnd, LeftOfText, UnderText,
   RightOfText, RightEnd and more.
+
+* New styles PlacementOverlapPenalties and PlacementOverlapPercentPenalties.
+
+* New styles ExtendedWindowName / SimpleWindowName and ExtendedIconName /
+  SimpleIconName.
 
 _+_A NAME="2.4.4"_-_
 Changes in stable release 2.4.4 (not released yet)

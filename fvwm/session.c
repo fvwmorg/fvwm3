@@ -313,7 +313,7 @@ char *get_version_string()
   /* migo (14-Mar-2001): it is better to manually update a version string
    * in the stable branch, othervise saving sessions becomes useless */
   /*return CatString3(VERSION, ", ",__DATE__);*/
-  return "2.5-2";
+  return "2.5-3";
 }
 
 /*
@@ -392,6 +392,7 @@ SaveWindowStates(FILE *f)
   FvwmWindow *ewin;
   rectangle save_g;
   int i;
+  int layer;
 
   for (ewin = get_next_window_in_stack_ring(&Scr.FvwmRoot);
        ewin != &Scr.FvwmRoot;
@@ -466,7 +467,12 @@ SaveWindowStates(FILE *f)
       ewin->hints.win_gravity,
       ewin->max_offset.x, ewin->max_offset.y);
     fprintf(f, "  [DESK] %i\n", ewin->Desk);
-    fprintf(f, "  [LAYER] %i\n", get_layer(ewin));
+    /* set the layer to the default layer if the layer has been set by 
+     * an ewmh hint */
+    layer = get_layer(ewin);
+    if (layer == ewin->ewmh_hint_layer && layer > 0)
+      layer = Scr.DefaultLayer;
+    fprintf(f, "  [LAYER] %i\n", layer);
     fprintf(f, "  [FLAGS] ");
     for (i = 0; i < sizeof(window_flags); i++)
       fprintf(f, "%02x ", (int)(((unsigned char *)&(ewin->flags))[i]));
@@ -772,11 +778,9 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
 	if (matches[i].wm_name)
 	{
-	  if (ewin->name)
-	  {
-	    free(ewin->name);
-	  }
+	  free_window_names(ewin, True, False);
 	  ewin->name = matches[i].wm_name;
+	  setup_visible_name(ewin, False);
 	}
       }
       SET_PLACED_WB3(ewin,IS_PLACED_WB3(&(matches[i])));
@@ -818,7 +822,6 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       SET_STICKY(ewin, IS_STICKY(&(matches[i])));
       ewin->Desk = (IS_STICKY(ewin)) ? Scr.CurrentDesk : matches[i].desktop;
       set_layer(ewin, matches[i].layer);
-
       /* this is not enough to fight fvwms attempts to
 	 put icons on the current page */
       ewin->icon_g.x = matches[i].icon_x;

@@ -3148,6 +3148,7 @@ void CMD_Maximize(F_CMD_ARGS)
   Bool do_force_maximize = False;
   Bool is_screen_given = False;
   int  scr_x, scr_y, scr_w, scr_h;
+  int sx, sy, sw, sh;
   rectangle new_g;
   FvwmWindow *sf;
 
@@ -3220,16 +3221,20 @@ void CMD_Maximize(F_CMD_ARGS)
     FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
   }
 
+  sx = scr_x;
+  sy = scr_y;
+  sw = scr_w;
+  sh = scr_h;      
   EWMH_GetWorkAreaIntersection(tmp_win,
-			       &scr_x, &scr_y, &scr_w, &scr_h,
-			       F_MAXIMIZE);
+			       &sx, &sy, &sw, &sh,
+			       EWMH_MAXIMIZE_MODE(tmp_win));
 #if 0
   fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
           page_x, page_y, scr_x, scr_y, scr_w, scr_h);
 #endif
 
   /* parse first parameter */
-  val1_unit = scr_w;
+  val1_unit = sw;
   token = PeekToken(action, &taction);
   if (token && StrEquals(token, "grow"))
   {
@@ -3255,24 +3260,24 @@ void CMD_Maximize(F_CMD_ARGS)
     if (GetOnePercentArgument(token, &val1, &val1_unit) == 0)
     {
       val1 = 100;
-      val1_unit = scr_w;
+      val1_unit = sw;
     }
     else if (val1 < 0)
     {
       /* handle negative offsets */
-      if (val1_unit == scr_w)
+      if (val1_unit == sw)
       {
 	val1 = 100 + val1;
       }
       else
       {
-	val1 = scr_w + val1;
+	val1 = sw + val1;
       }
     }
   }
 
   /* parse second parameter */
-  val2_unit = scr_h;
+  val2_unit = sh;
   token = PeekToken(taction, NULL);
   if (token && StrEquals(token, "grow"))
   {
@@ -3298,21 +3303,37 @@ void CMD_Maximize(F_CMD_ARGS)
     if (GetOnePercentArgument(token, &val2, &val2_unit) == 0)
     {
       val2 = 100;
-      val2_unit = scr_h;
+      val2_unit = sh;
     }
     else if (val2 < 0)
     {
       /* handle negative offsets */
-      if (val2_unit == scr_h)
+      if (val2_unit == sh)
       {
 	val2 = 100 + val2;
       }
       else
       {
-	val2 = scr_h + val2;
+	val2 = sh + val2;
       }
     }
   }
+
+  if (!grow_left && !grow_right)
+  {
+    scr_x = sx;
+    scr_w = sw;
+  }
+  if (!grow_up && !grow_down)
+  {
+    scr_y = sy;
+    scr_h = sh;
+  }
+
+#if 0
+  fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
+          page_x, page_y, scr_x, scr_y, scr_w, scr_h);
+#endif
 
   if (IS_MAXIMIZED(tmp_win) && !do_force_maximize)
   {

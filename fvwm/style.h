@@ -39,6 +39,7 @@
 #define SHAS_OL_DECOR(sf)             ((sf)->has_ol_decor)
 #define SIS_BUTTON_DISABLED(sf)       ((sf)->is_button_disabled)
 #define SPLACEMENT_MODE(sf)           ((sf)->placement_mode)
+#define SEWMH_PLACEMENT_MODE(sf)      ((sf)->ewmh_placement_mode)
 #define SUSE_BACKING_STORE(sf)        ((sf)->use_backing_store)
 #define SUSE_PARENT_RELATIVE(sf)      ((sf)->use_parent_relative)
 #define SUSE_COLORSET(sf)             ((sf)->use_colorset)
@@ -60,11 +61,9 @@
   ((sf)->capture_honors_starts_on_page)
 #define SRECAPTURE_HONORS_STARTS_ON_PAGE(sf) \
   ((sf)->recapture_honors_starts_on_page)
-
-
-
-
-
+#define SHAS_PLACEMENT_PENALTY(sf) ((sf)->has_placement_penalty)
+#define SHAS_PLACEMENT_PERCENTAGE_PENALTY(sf) \
+  ((sf)->has_placement_percentage_penalty)
 
 
 /* access to common flags */
@@ -350,7 +349,20 @@
 #define SFSET_USE_ICON_POSITION_HINT(st,x) ((st).flags.common.s.use_icon_position_hint = !!(x))
 #define SMSET_USE_ICON_POSITION_HINT(st,x) ((st).flag_mask.common.s.use_icon_position_hint = !!(x))
 #define SCSET_USE_ICON_POSITION_HINT(st,x) ((st).change_mask.common.s.use_icon_position_hint = !!(x))
-
+#define SUSE_EXTENDED_WINDOW_NAME(sf) ((sf).common.s.use_extended_window_name)
+#define SFUSE_EXTENDED_WINDOW_NAME(st) ((st).flags.common.s.use_extended_window_name)
+#define SMUSE_EXTENDED_WINDOW_NAME(st) ((st).flag_mask.common.s.use_extended_window_name)
+#define SCUSE_EXTENDED_WINDOW_NAME(st) ((st).change_mask.common.s.use_extended_window_name)
+#define SFSET_USE_EXTENDED_WINDOW_NAME(st,x) ((st).flags.common.s.use_extended_window_name = !!(x))
+#define SMSET_USE_EXTENDED_WINDOW_NAME(st,x) ((st).flag_mask.common.s.use_extended_window_name = !!(x))
+#define SCSET_USE_EXTENDED_WINDOW_NAME(st,x) ((st).change_mask.common.s.use_extended_window_name = !!(x))
+#define SUSE_EXTENDED_ICON_NAME(sf) ((sf).common.s.use_extended_icon_name)
+#define SFUSE_EXTENDED_ICON_NAME(st) ((st).flags.common.s.use_extended_icon_name)
+#define SMUSE_EXTENDED_ICON_NAME(st) ((st).flag_mask.common.s.use_extended_icon_name)
+#define SCUSE_EXTENDED_ICON_NAME(st) ((st).change_mask.common.s.use_extended_icon_name)
+#define SFSET_USE_EXTENDED_ICON_NAME(st,x) ((st).flags.common.s.use_extended_icon_name = !!(x))
+#define SMSET_USE_EXTENDED_ICON_NAME(st,x) ((st).flag_mask.common.s.use_extended_icon_name = !!(x))
+#define SCSET_USE_EXTENDED_ICON_NAME(st,x) ((st).change_mask.common.s.use_extended_icon_name = !!(x))
 #define SDO_EWMH_MINI_ICON_OVERRIDE(sf) ((sf).common.s.do_ewmh_mini_icon_override)
 #define SFDO_EWMH_MINI_ICON_OVERRIDE(st) ((st).flags.common.s.do_ewmh_mini_icon_override)
 #define SMDO_EWMH_MINI_ICON_OVERRIDE(st) ((st).flag_mask.common.s.do_ewmh_mini_icon_override)
@@ -358,7 +370,6 @@
 #define SFSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) ((st).flags.common.s.do_ewmh_mini_icon_override = !!(x))
 #define SMSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) ((st).flag_mask.common.s.do_ewmh_mini_icon_override = !!(x))
 #define SCSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) ((st).change_mask.common.s.do_ewmh_mini_icon_override = !!(x))
-
 #define SDO_EWMH_DONATE_ICON(sf) ((sf).common.s.do_ewmh_donate_icon)
 #define SFDO_EWMH_DONATE_ICON(st) ((st).flags.common.s.do_ewmh_donate_icon)
 #define SMDO_EWMH_DONATE_ICON(st) ((st).flag_mask.common.s.do_ewmh_donate_icon)
@@ -366,7 +377,6 @@
 #define SFSET_DO_EWMH_DONATE_ICON(st,x) ((st).flags.common.s.do_ewmh_donate_icon = !!(x))
 #define SMSET_DO_EWMH_DONATE_ICON(st,x) ((st).flag_mask.common.s.do_ewmh_donate_icon = !!(x))
 #define SCSET_DO_EWMH_DONATE_ICON(st,x) ((st).change_mask.common.s.do_ewmh_donate_icon = !!(x))
-
 #define SDO_EWMH_DONATE_MINI_ICON(sf) ((sf).common.s.do_ewmh_donate_mini_icon)
 #define SFDO_EWMH_DONATE_MINI_ICON(st) ((st).flags.common.s.do_ewmh_donate_mini_icon)
 #define SMDO_EWMH_DONATE_MINI_ICON(st) ((st).flag_mask.common.s.do_ewmh_donate_mini_icon)
@@ -374,9 +384,34 @@
 #define SFSET_DO_EWMH_DONATE_MINI_ICON(st,x) ((st).flags.common.s.do_ewmh_donate_mini_icon = !!(x))
 #define SMSET_DO_EWMH_DONATE_MINI_ICON(st,x) ((st).flag_mask.common.s.do_ewmh_donate_mini_icon = !!(x))
 #define SCSET_DO_EWMH_DONATE_MINI_ICON(st,x) ((st).change_mask.common.s.do_ewmh_donate_mini_icon = !!(x))
-
-
-
+#define SDO_EWMH_USE_STACKING_HINTS(sf) ((sf).common.s.do_ewmh_use_stacking_hints)
+#define SFDO_EWMH_USE_STACKING_HINTS(st) ((st).flags.common.s.do_ewmh_use_stacking_hints)
+#define SMDO_EWMH_USE_STACKING_HINTS(st) ((st).flag_mask.common.s.do_ewmh_use_stacking_hints)
+#define SCDO_EWMH_USE_STACKING_HINTS(st) ((st).change_mask.common.s.do_ewmh_use_stacking_hints)
+#define SFSET_DO_EWMH_USE_STACKING_HINTS(st,x) ((st).flags.common.s.do_ewmh_use_stacking_hints = !!(x))
+#define SMSET_DO_EWMH_USE_STACKING_HINTS(st,x) ((st).flag_mask.common.s.do_ewmh_use_stacking_hints = !!(x))
+#define SCSET_DO_EWMH_USE_STACKING_HINTS(st,x) ((st).change_mask.common.s.do_ewmh_use_stacking_hints = !!(x))
+#define SDO_EWMH_IGNORE_STRUT_HINTS(sf) ((sf).common.s.do_ewmh_ignore_strut_hints)
+#define SFDO_EWMH_IGNORE_STRUT_HINTS(st) ((st).flags.common.s.do_ewmh_ignore_strut_hints)
+#define SMDO_EWMH_IGNORE_STRUT_HINTS(st) ((st).flag_mask.common.s.do_ewmh_ignore_strut_hints)
+#define SCDO_EWMH_IGNORE_STRUT_HINTS(st) ((st).change_mask.common.s.do_ewmh_ignore_strut_hints)
+#define SFSET_DO_EWMH_IGNORE_STRUT_HINTS(st,x) ((st).flags.common.s.do_ewmh_ignore_strut_hints = !!(x))
+#define SMSET_DO_EWMH_IGNORE_STRUT_HINTS(st,x) ((st).flag_mask.common.s.do_ewmh_ignore_strut_hints = !!(x))
+#define SCSET_DO_EWMH_IGNORE_STRUT_HINTS(st,x) ((st).change_mask.common.s.do_ewmh_ignore_strut_hints = !!(x))
+#define SDO_EWMH_IGNORE_STATE_HINTS(sf) ((sf).common.s.do_ewmh_ignore_state_hints)
+#define SFDO_EWMH_IGNORE_STATE_HINTS(st) ((st).flags.common.s.do_ewmh_ignore_state_hints)
+#define SMDO_EWMH_IGNORE_STATE_HINTS(st) ((st).flag_mask.common.s.do_ewmh_ignore_state_hints)
+#define SCDO_EWMH_IGNORE_STATE_HINTS(st) ((st).change_mask.common.s.do_ewmh_ignore_state_hints)
+#define SFSET_DO_EWMH_IGNORE_STATE_HINTS(st,x) ((st).flags.common.s.do_ewmh_ignore_state_hints = !!(x))
+#define SMSET_DO_EWMH_IGNORE_STATE_HINTS(st,x) ((st).flag_mask.common.s.do_ewmh_ignore_state_hints = !!(x))
+#define SCSET_DO_EWMH_IGNORE_STATE_HINTS(st,x) ((st).change_mask.common.s.do_ewmh_ignore_state_hints = !!(x))
+#define SEWMH_MAXIMIZE_MODE(sf) ((sf).common.s.ewmh_maximize_mode)
+#define SFEWMH_MAXIMIZE_MODE(st) ((st).flags.common.s.ewmh_maximize_mode)
+#define SMEWMH_MAXIMIZE_MODE(st) ((st).flag_mask.common.s.ewmh_maximize_mode)
+#define SCEWMH_MAXIMIZE_MODE(st) ((st).change_mask.common.s.ewmh_maximize_mode)
+#define SFSET_EWMH_MAXIMIZE_MODE(st,x) ((st).flags.common.s.ewmh_maximize_mode = (x))
+#define SMSET_EWMH_MAXIMIZE_MODE(st,x) ((st).flag_mask.common.s.ewmh_maximize_mode = (x))
+#define SCSET_EWMH_MAXIMIZE_MODE(st,x) ((st).change_mask.common.s.ewmh_maximize_mode = (x))
 
 
 
@@ -443,7 +478,34 @@
 #define SSET_WINDOW_SHADE_STEPS(s,x)  ((s).shade_anim_steps = (x))
 #define SGET_ICON_BOXES(s)            ((s).icon_boxes)
 #define SSET_ICON_BOXES(s,x)          ((s).icon_boxes = (x))
-
+#define SGET_NORMAL_PLACEMENT_PENALTY(s)       ((s).placement_penalty[0])
+#define SGET_ONTOP_PLACEMENT_PENALTY(s)        ((s).placement_penalty[1])
+#define SGET_ICON_PLACEMENT_PENALTY(s)         ((s).placement_penalty[2])
+#define SGET_STICKY_PLACEMENT_PENALTY(s)       ((s).placement_penalty[3])
+#define SGET_BELOW_PLACEMENT_PENALTY(s)        ((s).placement_penalty[4])
+#define SGET_EWMH_STRUT_PLACEMENT_PENALTY(s)   ((s).placement_penalty[5])
+#define SSET_NORMAL_PLACEMENT_PENALTY(s,x)     ((s).placement_penalty[0] = (x))
+#define SSET_ONTOP_PLACEMENT_PENALTY(s,x)      ((s).placement_penalty[1] = (x))
+#define SSET_ICON_PLACEMENT_PENALTY(s,x)       ((s).placement_penalty[2] = (x))
+#define SSET_STICKY_PLACEMENT_PENALTY(s,x)     ((s).placement_penalty[3] = (x))
+#define SSET_BELOW_PLACEMENT_PENALTY(s,x)      ((s).placement_penalty[4] = (x))
+#define SSET_EWMH_STRUT_PLACEMENT_PENALTY(s,x) ((s).placement_penalty[5] = (x))
+#define SGET_99_PLACEMENT_PERCENTAGE_PENALTY(s) \
+                                    ((s).placement_percentage_penalty[0])
+#define SGET_95_PLACEMENT_PERCENTAGE_PENALTY(s) \
+                                    ((s).placement_percentage_penalty[1])
+#define SGET_85_PLACEMENT_PERCENTAGE_PENALTY(s) \
+                                    ((s).placement_percentage_penalty[2])
+#define SGET_75_PLACEMENT_PERCENTAGE_PENALTY(s) \
+                                    ((s).placement_percentage_penalty[3])
+#define SSET_99_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
+                                    ((s).placement_percentage_penalty[0] = (x))
+#define SSET_95_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
+                                    ((s).placement_percentage_penalty[1] = (x))
+#define SSET_85_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
+                                    ((s).placement_percentage_penalty[2] = (x))
+#define SSET_75_PLACEMENT_PERCENTAGE_PENALTY(s,x) \
+                                    ((s).placement_percentage_penalty[3] = (x))
 
 /* function prototypes */
 void lookup_style(FvwmWindow *tmp_win, window_style *styles);

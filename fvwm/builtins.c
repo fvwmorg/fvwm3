@@ -2015,7 +2015,7 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
   Picture **pm;
   char *token;
   Bool stretched;
-  int pm_id, i;
+  int pm_id, i = 0;
 
   df->style.face_type = MultiPixmap;
   df->u.multi_pixmaps = pm =
