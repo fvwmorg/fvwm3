@@ -1,3 +1,8 @@
+2004-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (__mloop_handle_action_with_mi):
+	do not "post" a submenu menu item it the submenu does not exist
+
 2004-10-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (__handle_bpress_on_managed):

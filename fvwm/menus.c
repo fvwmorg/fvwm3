@@ -4842,7 +4842,6 @@ static mloop_ret_code_t __mloop_handle_event(
 					pmret->rc = MENU_POPUP;
 					break;
 				case MDP_IGNORE:
-					/*!!!*/
 					pmret->rc = MENU_NOP;
 					return MENU_MLOOP_RET_NORMAL;
 				case MDP_CLOSE:
@@ -5532,6 +5531,10 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 	    pmret->target_menu == NULL)
 	{
 		pmret->target_menu = in->mrPopup;
+	}
+	else if (pmret->flags.is_menu_posted && in->mrPopup == NULL)
+	{
+		pmret->flags.is_menu_posted = 0;
 	}
 	if (in->mif.do_menu)
 	{
