@@ -13,25 +13,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
-** Graphics.c: misc convenience functions for drawing stuff
-*/
+/* Graphics.c: misc convenience functions for drawing stuff
+ */
 
 #include "libs/fvwmlib.h"
 
 #include <X11/Xlib.h>
+#include <stdio.h>
 
-/****************************************************************************
- *
- * Draws the relief pattern around a window
+
+/* Draws the relief pattern around a window
  * Draws a line_width wide rectangle from (x,y) to (x+w,y+h) i.e w+1 wide, h+1 high
  * Draws end points assuming CAP_NOT_LAST style in GC
  * Draws anit-clockwise in case CAP_BUTT is the style and the end points overlap
  * Top and bottom lines come out full length, the sides come out 1 pixel less
  * This is so FvwmBorder windows have a correct bottom edge and the sticky lines
  * look like just lines
- ****************************************************************************/
-void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
+ */
+void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width)
 {
   XSegment* seg = (XSegment*)safemalloc(sizeof(XSegment) * line_width);
@@ -42,42 +41,44 @@ void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
     seg[i].x1 = x+i; seg[i].y1 = y+i;
     seg[i].x2 = x+i; seg[i].y2 = y+h-i;
   }
-  XDrawSegments(dpy, win, ReliefGC, seg, i);
+  XDrawSegments(dpy, d, ReliefGC, seg, i);
   /* bottom */
   for (i = 0; (i < line_width) && (i <= h / 2); i++) {
     seg[i].x1 = x+i;   seg[i].y1 = y+h-i;
     seg[i].x2 = x+w-i; seg[i].y2 = y+h-i;
   }
-  XDrawSegments(dpy, win, ShadowGC, seg, i);
+  XDrawSegments(dpy, d, ShadowGC, seg, i);
   /* right */
   for (i = 0; (i < line_width) && (i <= w / 2); i++) {
     seg[i].x1 = x+w-i; seg[i].y1 = y+h-i;
     seg[i].x2 = x+w-i; seg[i].y2 = y+i;
   }
-  XDrawSegments(dpy, win, ShadowGC, seg, i);
+  XDrawSegments(dpy, d, ShadowGC, seg, i);
   /* draw top segments */
   for (i = 0; (i < line_width) && (i <= h / 2); i++) {
     seg[i].x1 = x+w-i; seg[i].y1 = y+i;
     seg[i].x2 = x+i;   seg[i].y2 = y+i;
   }
-  XDrawSegments(dpy, win, ReliefGC, seg, i);
+  XDrawSegments(dpy, d, ReliefGC, seg, i);
   free(seg);
 }
 
-/***************************************************************************
- * sets a window background according to the back_bits flags
- **************************************************************************/
+
+/* sets a window background according to the back_bits flags
+ */
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 Background *bg, unsigned int depth, GC gc)
 {
   Pixmap pixmap;
 
-  /* only does pixel type backgrounds as yet */
   if (!bg->type.bits.is_pixmap)
+    /* it's a pixel */
     XSetWindowBackground(dpy, win, (Pixel)bg->pixmap);
   else if (!bg->type.bits.stretch_h && !bg->type.bits.stretch_v)
+    /* it's a tiled pixmap */
     XSetWindowBackgroundPixmap(dpy, win, bg->pixmap);
   else if (!bg->type.bits.stretch_h) {
+    /* it's an HGradient */
     pixmap = CreateStretchYPixmap(dpy, bg->pixmap, bg->type.bits.w,
 				  bg->type.bits.h, depth, height, gc);
     if (pixmap) {
@@ -85,6 +86,7 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
       XFreePixmap(dpy, pixmap);
     }
   } else if (!bg->type.bits.stretch_v) {
+    /* it's a VGradient */
     pixmap = CreateStretchXPixmap(dpy, bg->pixmap, bg->type.bits.w,
 				 bg->type.bits.h, depth, width, gc);
     if (pixmap) {
@@ -92,6 +94,7 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
       XFreePixmap(dpy, pixmap);
     }
   } else {
+    /* It's a full window pixmap */
     pixmap = CreateStretchPixmap(dpy, bg->pixmap, bg->type.bits.w,
 				 bg->type.bits.h, depth, width, height, gc);
     if (pixmap) {
@@ -103,63 +106,56 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
   XClearArea(dpy, win, 0, 0, width, height, True);
 }
 
-/****************************************************************************
- *
- * Creates a pixmap that is a horizontally stretched version of the input
- * pixmap
- ****************************************************************************/
 
+/* Creates a pixmap that is a horizontally stretched version of the input
+ * pixmap
+ */
 Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			    unsigned int src_height, unsigned int src_depth,
 			    unsigned int dest_width, GC gc)
 {
-  Pixmap pixmap;
   int i;
-  
-  pixmap = XCreatePixmap(dpy, src, dest_width, src_height, src_depth);
+  Pixmap pixmap = XCreatePixmap(dpy, src, dest_width, src_height, src_depth);
+
   if (pixmap)
-    for (i = 1; i <= dest_width; i++)
-      XCopyArea(dpy, src, pixmap, gc, ((i * src_width) / dest_width) - 1, 0,
+    for (i = 0; i < dest_width; i++)
+      XCopyArea(dpy, src, pixmap, gc, (i * src_width) / dest_width, 0,
 		1, src_height, i, 0);
   
   return pixmap;
 }
-/****************************************************************************
- *
- * Creates a pixmap that is a vertically stretched version of the input
- * pixmap
- ****************************************************************************/
 
+
+/* Creates a pixmap that is a vertically stretched version of the input
+ * pixmap
+ */
 Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			    unsigned int src_height, unsigned int src_depth,
 			    unsigned int dest_height, GC gc)
 {
-  Pixmap pixmap;
   int i;
-  
-  pixmap = XCreatePixmap(dpy, src, src_width, dest_height, src_depth);
+  Pixmap pixmap = XCreatePixmap(dpy, src, src_width, dest_height, src_depth);
+
   if (pixmap)
-    for (i = 1; i <= dest_height; i++)
-      XCopyArea(dpy, src, pixmap, gc, 0, ((i * src_height) / dest_height) - 1,
+    for (i = 0; i < dest_height; i++)
+      XCopyArea(dpy, src, pixmap, gc, 0, (i * src_height) / dest_height,
 		src_width, 1, 0, i);
   
   return pixmap;
 }
-/****************************************************************************
- *
- * Creates a pixmap that is a stretched version of the input
- * pixmap
- ****************************************************************************/
 
+
+/* Creates a pixmap that is a stretched version of the input
+ * pixmap
+ */
 Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			    unsigned int src_height, unsigned int src_depth,
 			    unsigned int dest_width, unsigned int dest_height,
 			    GC gc)
 {
-  Pixmap pixmap = None, temp_pixmap;
-  
-  temp_pixmap = CreateStretchXPixmap(dpy, src, src_width, src_height, src_depth,
-				     dest_width, gc);
+  Pixmap pixmap = None;
+  Pixmap temp_pixmap = CreateStretchXPixmap(dpy, src, src_width, src_height,
+					    src_depth, dest_width, gc);
   if (temp_pixmap) {
     pixmap = CreateStretchYPixmap(dpy, temp_pixmap, dest_width, src_height,
 				  src_depth, dest_height, gc);

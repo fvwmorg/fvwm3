@@ -224,7 +224,7 @@ Graphics *CreateGraphics(void);
 void InitGraphics(Display *dpy, Graphics *graphics);
 Bool ParseGraphics(Display *dpy, char *line, Graphics *graphics);
 
-void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
+void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width);
 
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
