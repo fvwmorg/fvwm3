@@ -1,3 +1,7 @@
+1999-03-12  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (main): fixed coredump
+
 Fri Mar 12 08:56:41 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmPager/x_pager.c (ShapeLabels): define ShapeLabels to 0 if
