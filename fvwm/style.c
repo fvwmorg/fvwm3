@@ -408,6 +408,7 @@ static void merge_style_list(void)
       merge_styles(prev, temp, True);
       SSET_NEXT_STYLE(*prev, SGET_NEXT_STYLE(*temp));
       free_style(temp);
+      free(temp);
       temp = prev;
     }
   }
