@@ -21,6 +21,8 @@ Changes in beta release 2.4.1 (not released yet)
 
 * New option "screen" for Maximize command.
 
+* New condition "PlacedByFvwm"
+
 * New Geometry option for FvwmForm.
 
 * New Screen resolution and ShowOnlyIcons options for FvwmIconMan.
