@@ -410,6 +410,7 @@ int main(int argc, char **argv)
     exit(1);
   }
 
+  Scr.viz = DefaultVisual(dpy, Scr.screen);
 
 #ifdef SHAPE
   ShapesSupported=XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
@@ -529,7 +530,7 @@ int main(int argc, char **argv)
 						  SIZE_VINDENT*2),
 				  (unsigned int) 0, 0,
 				  (unsigned int) CopyFromParent,
-				  (Visual *) CopyFromParent,
+				  Scr.viz,
 				  valuemask, &attributes);
 
 #ifndef NON_VIRTUAL

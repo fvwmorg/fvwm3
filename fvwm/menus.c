@@ -2503,7 +2503,7 @@ void MakeMenu(MenuRoot *mr)
   mr->w = XCreateWindow (dpy, Scr.Root, 0, 0, (unsigned int) (mr->width),
 			 (unsigned int) mr->height, (unsigned int) 0,
 			 CopyFromParent, (unsigned int) InputOutput,
-			 (Visual *) CopyFromParent,
+			 Scr.viz,
 			 valuemask, &attributes);
   XSaveContext(dpy,mr->w,MenuContext,(caddr_t)mr);
 

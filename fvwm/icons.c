@@ -143,7 +143,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       XCreateWindow(dpy, Scr.Root, final_x, final_y+tmp_win->icon_p_height,
                     tmp_win->icon_w_width, tmp_win->icon_w_height,0,
                     CopyFromParent,
-                    CopyFromParent,CopyFromParent,valuemask,&attributes);
+                    CopyFromParent,Scr.viz,valuemask,&attributes);
 
   if((tmp_win->flags & ICON_OURS)&&(tmp_win->icon_p_width>0)&&
      (tmp_win->icon_p_height>0))
@@ -151,7 +151,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       tmp_win->icon_pixmap_w =
 	XCreateWindow(dpy, Scr.Root, final_x, final_y, tmp_win->icon_p_width,
 		      tmp_win->icon_p_height, 0, CopyFromParent,
-		      CopyFromParent,CopyFromParent,valuemask,&attributes);
+		      CopyFromParent,Scr.viz,valuemask,&attributes);
     }
   else
     {

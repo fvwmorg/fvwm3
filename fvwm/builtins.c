@@ -1048,7 +1048,7 @@ void refresh_function(F_CMD_ARGS)
 		     (unsigned int) Scr.MyDisplayHeight,
 		     (unsigned int) 0,
 		     CopyFromParent, (unsigned int) CopyFromParent,
-		     (Visual *) CopyFromParent, valuemask,
+		     Scr.viz, valuemask,
 		     &attributes);
   XMapWindow (dpy, w);
   XDestroyWindow (dpy, w);
@@ -1076,7 +1076,7 @@ void refresh_win_function(F_CMD_ARGS)
 		     (unsigned int) Scr.MyDisplayHeight,
 		     (unsigned int) 0,
 		     CopyFromParent, (unsigned int) CopyFromParent,
-		     (Visual *) CopyFromParent, valuemask,
+		     Scr.viz, valuemask,
 		     &attributes);
   XMapWindow (dpy, w);
   XDestroyWindow (dpy, w);

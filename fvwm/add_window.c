@@ -485,7 +485,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,tmp_win->frame_y,
 		   tmp_win->frame_width, tmp_win->frame_height,
 		   0,CopyFromParent, InputOutput,
-		   CopyFromParent,
+		   Scr.viz,
 		   valuemask,
 		   &attributes);
 
