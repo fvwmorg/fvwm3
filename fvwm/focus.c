@@ -232,7 +232,6 @@ void SetPointerEventPosition(XEvent *eventp, int x, int y)
   case KeyPress:
   case KeyRelease:
   case MotionNotify:
-    eventp->type = ButtonPress;
     eventp->xbutton.x_root = x;
     eventp->xbutton.y_root = y;
     break;
