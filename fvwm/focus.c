@@ -425,12 +425,10 @@ static void warp_to_fvwm_window(
 	{
 		return;
 	}
-
 	if (t->Desk != Scr.CurrentDesk)
 	{
 		goto_desk(t->Desk);
 	}
-
 	if (IS_ICONIFIED(t))
 	{
 		rectangle g;
@@ -449,12 +447,12 @@ static void warp_to_fvwm_window(
 		cx = t->frame_g.x + t->frame_g.width/2;
 		cy = t->frame_g.y + t->frame_g.height/2;
 	}
-
 	dx = (cx + Scr.Vx) / Scr.MyDisplayWidth * Scr.MyDisplayWidth;
 	dy = (cy + Scr.Vy) / Scr.MyDisplayHeight * Scr.MyDisplayHeight;
-
-	MoveViewport(dx,dy,True);
-
+	if (dx != Scr.Vx || dy != Scr.Vy)
+	{
+		MoveViewport(dx,dy,True);
+	}
 	if (IS_ICONIFIED(t))
 	{
 		rectangle g;
@@ -510,7 +508,6 @@ static void warp_to_fvwm_window(
 	}
 	FWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
 	RaiseWindow(t);
-
 	/* If the window is still not visible, make it visible! */
 	if (t->frame_g.x + t->frame_g.width  < 0 ||
 	    t->frame_g.y + t->frame_g.height < 0 ||
