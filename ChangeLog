@@ -1,3 +1,9 @@
+2000-09-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (AddToFunction):
+	* fvwm/module_interface.c (SendStrToModule):
+	-Wall fixes
+
 2000-09-02  Mikhael Goikhman  migo@homemail.com
 
 	* fvwm/functions.c (AddToFunc):
@@ -52,7 +58,7 @@
 	* fvwm/fvwm2.1
 	* AUTHORS
 	Applied J. Zellner <johannes@zellner.org> StrokeWidth patch
-	
+
 2000-07-21  Mikhael Goikhman  migo@homemail.com
 
 	* acinclude.m4:

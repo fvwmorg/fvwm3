@@ -1195,7 +1195,7 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
   for (i=0;i<npipes;i++)
   {
-    if((pipeName[i] != NULL)&&(matchWildcards(module,pipeName[i]))
+    if ((pipeName[i] != NULL && matchWildcards(module,pipeName[i]))
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
       || (pipeAlias[i] && matchWildcards(module, pipeAlias[i]))
 #endif

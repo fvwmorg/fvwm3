@@ -1266,11 +1266,12 @@ void AddToFunction(FvwmFunction *func, char *action)
   if (isupper(condition))
     condition = tolower(condition);
 
-  if (token[1] != '\0' || condition != CF_IMMEDIATE
-      && condition != CF_MOTION && condition != CF_HOLD
-      && condition != CF_CLICK && condition != CF_DOUBLE_CLICK)
+  if (token[1] != '\0' ||
+      (condition != CF_IMMEDIATE && condition != CF_MOTION &&
+       condition != CF_HOLD && condition != CF_CLICK &&
+       condition != CF_DOUBLE_CLICK))
   {
-    fvwm_msg(  
+    fvwm_msg(
       ERR, "AddToFunction",
       "Got '%s' instead of a valid function specifier", token);
     free(token);
