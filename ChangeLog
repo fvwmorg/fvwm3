@@ -1,3 +1,10 @@
+2001-02-20  Michael Han  <mikehan@mikehan.com>
+
+    * configure.in:
+    * libs/fvwmlib.h:
+    * libs/mkstemp.c:
+    Added replacement function mkstemp() based on glibc-2.2.2 code
+
 2001-02-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction):
