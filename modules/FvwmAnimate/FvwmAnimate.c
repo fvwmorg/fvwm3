@@ -40,7 +40,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#define XLIB_ILLEGAL_ACCESS
 #include "config.h"
 
 #include <stdlib.h>
@@ -56,7 +55,7 @@
 #include <limits.h>                     /* For time() */
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
-#include "libs/ModGraph.c"
+#include "libs/ModGraph.h"
 #include "FvwmAnimate.h"
 
 #define AS_PI 3.14159265358979323846
