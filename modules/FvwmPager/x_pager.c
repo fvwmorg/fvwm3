@@ -1664,9 +1664,16 @@ void MoveWindow(XEvent *Event)
 			    x, y, &x1, &y1, &dumwin);
       XUngrabPointer(dpy,CurrentTime);
       XSync(dpy,0);
+#if 0
+      /*
+	This is erroneous and causes the icon_w to stay
+	 on the old page. fvwm is clever enough to figure
+	 out that the window t->w is iconified. 
+      */
       if(t->flags & ICONIFIED)
 	SendInfo(fd,"Silent Move",t->icon_w);
       else
+#endif
 	SendInfo(fd,"Silent Move",t->w);
       return;
     }
