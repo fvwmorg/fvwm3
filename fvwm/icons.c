@@ -1237,11 +1237,7 @@ void DeIconify(FvwmWindow *tmp_win)
   /* now de-iconify transients */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-#if 1
     if (t == tmp_win || IS_IN_TRANSIENT_SUBTREE(t))
-#else
-    if ((t==tmp_win)||((IS_TRANSIENT(t)) && (t->transientfor == tmp_win->w)))
-#endif
     {
       SET_IN_TRANSIENT_SUBTREE(t, 0);
       SET_MAPPED(t, 1);
@@ -1307,7 +1303,7 @@ void DeIconify(FvwmWindow *tmp_win)
 			(unsigned long)t,
 			t->icon_g.x, t->icon_g.y,
 			t->icon_p_width,
-			t->icon_p_height+t->icon_g.height);
+			t->icon_p_height + t->icon_g.height);
       }
       if(t->Desk == Scr.CurrentDesk)
       {
@@ -1379,11 +1375,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   /* iconify transients first */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-#if 1
     if (t == tmp_win || IS_IN_TRANSIENT_SUBTREE(t))
-#else
-    if ((t==tmp_win)||((IS_TRANSIENT(t)) && (t->transientfor == tmp_win->w)))
-#endif
     {
       SET_IN_TRANSIENT_SUBTREE(t, 0);
       SET_ICON_ENTERED(t, 0);

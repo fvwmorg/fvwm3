@@ -512,7 +512,7 @@ void process_message( FvwmPacket* packet )
       list_iconify(body);
       break;
     case M_DEICONIFY:
-      list_deiconify(body);
+      list_deiconify(body, length);
       break;
     case M_RES_CLASS:
     case M_RES_NAME:
@@ -1055,7 +1055,7 @@ void list_iconify(unsigned long *body)
  *
  ***********************************************************************/
 
-void list_deiconify(unsigned long *body)
+void list_deiconify(unsigned long *body, unsigned long length)
 {
   PagerWindow *t;
   Window target_w;
@@ -1063,31 +1063,36 @@ void list_deiconify(unsigned long *body)
   target_w = body[0];
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
-    {
-      t = t->next;
-    }
-  if(t== NULL)
-    {
-      return;
-    }
+  {
+    t = t->next;
+  }
+  if (t == NULL)
+  {
+    return;
+  }
   else
+  {
+    SET_ICONIFIED(t, False);
+    if (length >= 11 + FvwmPacketHeaderSize)
     {
-      SET_ICONIFIED(t, False);
       t->frame_x = body[7];
       t->frame_y = body[8];
       t->frame_width = body[9];
       t->frame_height = body[10];
-      t->x = body[7];
-      t->y = body[8];
-      t->width = body[9];
-      t->height = body[10];
-
-      /* if deiconifying main pager window turn balloons on or off */
-      if ( t->w == Scr.Pager_w )
-	ShowBalloons = ShowPagerBalloons;
-
-      MoveResizePagerView(t, True);
     }
+    t->x = t->frame_x;
+    t->y = t->frame_y;
+    t->width = t->frame_width;
+    t->height = t->frame_height;
+
+    /* if deiconifying main pager window turn balloons on or off */
+    if ( t->w == Scr.Pager_w )
+      ShowBalloons = ShowPagerBalloons;
+
+    MoveResizePagerView(t, True);
+  }
+
+  return;
 }
 
 

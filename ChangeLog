@@ -1,3 +1,9 @@
+2001-02-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (Iconify):
+	(DeIconify):
+	cleaned up
+
 2001-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised):

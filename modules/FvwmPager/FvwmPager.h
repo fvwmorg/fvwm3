@@ -166,7 +166,7 @@ void list_raise(unsigned long *body);
 void list_lower(unsigned long *body);
 void list_unknown(unsigned long *body);
 void list_iconify(unsigned long *body);
-void list_deiconify(unsigned long *body);
+void list_deiconify(unsigned long *body, unsigned long length);
 void list_window_name(unsigned long *body,unsigned long type);
 void list_icon_name(unsigned long *body);
 void list_class(unsigned long *body);
