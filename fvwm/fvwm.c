@@ -536,7 +536,7 @@ int main(int argc, char **argv)
      windows have it */
   /* do this before any RC parsing as some GC's are created from this window
    * rather than the root window */
-  attributes.event_mask = KeyPressMask|FocusChangeMask;
+  attributes.event_mask = NO_FOCUS_WIN_EVMASK;
   attributes.override_redirect = True;
   attributes.colormap = Pcmap;
   attributes.background_pixmap = None;

@@ -122,7 +122,13 @@ style, Improved(?) mouse paging, RaiseTransient and LowerTransient styles,
 nicer cursors, helped with colorset implementation, variables for FvwmButtons
 actions, fvwm-cats page, ported &%!#?-95 like config file from fvwm95, cleanup
 of gradient drawing code, rewrite of opaque resize patch for 2.3.8,
-HideSizeWindow command.
+HideSizeWindow command, enhanced CursorStyle command, TitleAtBottom style,
+patches to obsolete Recapture command (styles apply immediately), new old styles
+BackingStore/BackingStoreOff and SaveUnder/SaveUnderOff, more WindowList
+enhancements, look of sticky icons, WindowList menu style, PointerKey command,
+several FvwmTheme options, FvwmTheme parsing, styles Font and IconFont,
+introduced the decor_w, smooth window shading, smooth (well, sort of) opaque
+resizing, many many more bugfixes.
 
 A.J. Weber:
 SnapAttraction patch.

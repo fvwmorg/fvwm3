@@ -771,7 +771,9 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   }
   if (!fFailedPopup)
   {
+    XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_MENU_EVMASK);
     MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title);
+    XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_EVMASK);
   }
   else
   {
@@ -855,6 +857,14 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   unsigned int menu_height;
   int items_to_move;
   Bool fSkipSection = False;
+
+  if (event->type == KeyRelease)
+  {
+    /* This function is only called with a KeyRelease event if the user released
+     * the 'select' key (s)he configured. */
+    pmret->rc = MENU_SELECTED;
+    return;
+  }
 
   /* handle double-keypress */
   if (pdkp->timestamp &&
@@ -1406,7 +1416,8 @@ static void MenuInteraction(
 	  while (!XPending(dpy) ||
 		 !XCheckMaskEvent(
 		   dpy, ButtonPressMask|ButtonReleaseMask|ExposureMask|
-		   KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
+		   KeyReleaseMask|KeyPressMask|VisibilityChangeMask|
+		   ButtonMotionMask,
 		   &Event))
 	  {
 	    usleep(10000 /* 10 ms*/);
@@ -1428,7 +1439,8 @@ static void MenuInteraction(
 	  /* block until there is an event */
 	  XMaskEvent(dpy,
 		     ButtonPressMask|ButtonReleaseMask|ExposureMask |
-		     KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
+		     KeyReleaseMask|KeyPressMask|VisibilityChangeMask|
+		     ButtonMotionMask,
 		     &Event);
 	  flags.is_popped_up_by_timeout = False;
 	}
@@ -1504,6 +1516,11 @@ static void MenuInteraction(
 
     case VisibilityNotify:
       continue;
+
+    case KeyRelease:
+      if (Event.xkey.keycode != MST_SELECT_ON_RELEASE_KEY(pmp->menu))
+	continue;
+      /* fall through to KeyPress */
 
     case KeyPress:
       /* Handle a key press events to allow mouseless operation */
@@ -4368,6 +4385,7 @@ static void make_menu_window(MenuRoot *mr)
   attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
     Colorset[MST_CSET_MENU(mr)].bg : MST_MENU_COLORS(mr).back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
+attributes.event_mask |= KeyPressMask|KeyReleaseMask;
   attributes.cursor = Scr.FvwmCursors[CRS_MENU];
   attributes.save_under = True;
 
@@ -5469,6 +5487,7 @@ static int GetMenuStyleIndex(char *option)
     "VerticalItemSpacing",
     "VerticalTitleSpacing",
     "MenuColorset", "ActiveColorset", "GreyedColorset",
+    "SelectOnRelease",
     NULL
   };
   return GetTokenIndex(option, optlist, 0, NULL);
@@ -5491,6 +5510,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   int n;
   FvwmFont new_font;
   int i;
+  KeyCode keycode;
 
   action = GetNextToken(action, &name);
   if (!name)
@@ -5978,6 +5998,14 @@ static void NewMenuStyle(F_CMD_ARGS)
 	AllocColorset(*val);
       }
       has_gc_changed = True;
+      break;
+    case 49: /* SelectOnRelease */
+      keycode = 0;
+      if (arg1)
+      {
+	keycode = XKeysymToKeycode(dpy, FvwmStringToKeysym(dpy, arg1));
+      }
+      ST_SELECT_ON_RELEASE_KEY(tmpms) = keycode;
       break;
 
 #if 0

@@ -185,30 +185,15 @@ int ParseBinding(
     fvwm_msg(WARN,"ParseBinding","Illegal modifier in line %s", tline);
 
   if (type == KEY_BINDING)
-    {
-      /*
-       * Don't let a 0 keycode go through, since that means AnyKey to the
-       * XGrabKey call.
-       */
-      keysym = XStringToKeysym(key);
-      if (keysym == NoSymbol)
-      {
-        char c = 'X';
-        char d = 'X';
-
-        /* If the key name is in the form '<letter><digits>...' it's probably
-         * something like 'f10'. Convert the letter to upper case and try
-         * again. */
-        sscanf(key, "%c%c", &c, &d);
-        if (islower(c) && isdigit(d))
-        {
-          key[0] = toupper(key[0]);
-          keysym = XStringToKeysym(key);
-        }
-      }
-      if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)
-        return 0;
-    }
+  {
+    keysym = FvwmStringToKeysym(dpy, key);
+    /*
+     * Don't let a 0 keycode go through, since that means AnyKey to the
+     * XGrabKey call.
+     */
+    if (keysym == 0)
+      return 0;
+  }
 
   /*
   ** strip leading whitespace from action if necessary

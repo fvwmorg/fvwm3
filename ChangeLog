@@ -1,5 +1,18 @@
 2000-01-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.h:
+	* libs/Bindings.c (FvwmStringToKeysym):
+	* fvwm/bindings.c (ParseBinding):
+	* fvwm/icccm2.c (SetupICCCM2):
+	* fvwm/fvwm.h (NO_FOCUS_WIN_MENU_EVMASK):
+	* fvwm/fvwm.c (main):
+	* fvwm/menus.c (do_menu):
+	(menuShortcuts):
+	(MenuInteraction):
+	(NewMenuStyle):
+	new menu style SelectOnRelease to better emulate Alt-Tab
+	new library function FvwmStringToKeysym
+
 	* fvwm/add_window.c (setup_style_and_decor):
 	* fvwm/style.c (check_window_style_change):
 	fixed core dump w/ ol_decor and noicontitle

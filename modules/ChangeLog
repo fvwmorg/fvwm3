@@ -1,3 +1,11 @@
+2000-01-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/FvwmPager.c (list_deiconify):
+	fixed deiconify packet handling
+
+	* FvwmGtk/FvwmGtk.1:
+	fixed typo
+
 2000-01-26 olicha	<olivier.chapuis@free.fr>
 
 	* FvwmPager/FvwmPager.c (main):
@@ -7,7 +15,7 @@
 2000-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/xmanager.c (draw_manager):
-	fixed drawing of empty region introduced with 'transparency' patches
+	fixed drawing of empty region bug introduced with 'transparency' patches
 
 	* FvwmIconMan/fvwm.c (ProcessMessage):
 	fixed usage of 'focus' colours when followfocus is false

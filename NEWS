@@ -3,9 +3,13 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.14 (not released yet)
 
+* New MenuStyle option SelectOnRelease to better emulate Alt-Tab.
+
 Changes in beta release 2.3.13 (January 2000)
 
 * New FvwmTheme option 'Transparent'.
+
+* New style option 'IconFont'.
 
 * New style option 'Font' replaces the old WindowFont command.
 

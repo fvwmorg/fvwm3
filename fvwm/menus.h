@@ -97,6 +97,7 @@ typedef struct MenuFeel
   int PopupOffsetPercent;
   int PopupOffsetAdd;
   char *item_format;
+  KeyCode select_on_release_key;
 } MenuFeel;
 
 
@@ -292,6 +293,8 @@ typedef struct MenuStyle
 #define MST_POPUP_OFFSET_ADD(m)       ((m)->s->ms->feel.PopupOffsetAdd)
 #define ST_ITEM_FORMAT(s)             ((s)->feel.item_format)
 #define MST_ITEM_FORMAT(m)            ((m)->s->ms->feel.item_format)
+#define ST_SELECT_ON_RELEASE_KEY(s)   ((s)->feel.select_on_release_key)
+#define MST_SELECT_ON_RELEASE_KEY(m)  ((m)->s->ms->feel.select_on_release_key)
 
 
 

@@ -82,6 +82,9 @@ unsigned long context,char *action, int *Module
 #define WithdrawnState 0
 #endif
 
+#define NO_FOCUS_WIN_EVMASK KeyPressMask|FocusChangeMask
+#define NO_FOCUS_WIN_MENU_EVMASK KeyPressMask|KeyReleaseMask|FocusChangeMask
+
 /* the maximum number of mouse buttons fvwm knows about */
 /* don't think that upping this to 5 will make everything
  * hunky-dory with 5 button mouses */

@@ -406,6 +406,7 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
 				 unsigned int contexts,
 				 unsigned int dead_modifiers,
 				 Cursor cursor, Bool fGrab);
+KeySym FvwmStringToKeysym(Display *dpy, char *key);
 
 /***********************************************************************
  * Target.c

@@ -568,3 +568,39 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
   XSync(dpy, 0);
   return;
 }
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	FvwmStringToKeysym
+ *
+ *  Like XStringToKeysym, but allows some typos and does some additional
+ *  error checking.
+ *
+ ***********************************************************************/
+KeySym FvwmStringToKeysym(Display *dpy, char *key)
+{
+  KeySym keysym;
+
+  keysym = XStringToKeysym(key);
+  if (keysym == NoSymbol)
+  {
+    char c = 'X';
+    char d = 'X';
+
+    /* If the key name is in the form '<letter><digits>...' it's probably
+     * something like 'f10'. Convert the letter to upper case and try
+     * again. */
+    sscanf(key, "%c%c", &c, &d);
+    if (islower(c) && isdigit(d))
+    {
+      d = key[0];
+      key[0] = toupper(c);
+      keysym = XStringToKeysym(key);
+      key[0] = d;
+    }
+  }
+  if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)
+    return 0;
+  return keysym;
+}

@@ -525,7 +525,7 @@ void process_message( FvwmPacket* packet )
       list_colorset(body);
       break;
     default:
-      list_unknown(body);
+      /* ignore unknown packet */
       break;
     }
 }
@@ -994,17 +994,6 @@ void list_lower(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_unknow - handles an unrecognized packet.
- *
- ***********************************************************************/
-void list_unknown(unsigned long *body)
-{
-  /*  fprintf(stderr,"Unknown packet type\n");*/
-}
-
-/***********************************************************************
- *
- *  Procedure:
  *	list_iconify - displays packet contents to stderr
  *
  ***********************************************************************/
@@ -1032,13 +1021,16 @@ void list_iconify(unsigned long *body)
       t->icon_width = body[5];
       t->icon_height = body[6];
       SET_ICONIFIED(t, True);
-      t->x = t->icon_x;
-      t->y = t->icon_y;
       if(IS_ICON_SUPPRESSED(t))
-	{
-	  t->x = -10000;
-	  t->y = -10000;
-	}
+      {
+	t->x = -32768;
+	t->y = -32768;
+      }
+      else
+      {
+	t->x = t->icon_x;
+	t->y = t->icon_y;
+      }
       t->width = t->icon_width;
       t->height = t->icon_height;
 
@@ -1076,14 +1068,14 @@ void list_deiconify(unsigned long *body)
   else
     {
       SET_ICONIFIED(t, False);
-      t->x = t->frame_x;
-      t->y = t->frame_y;
-      t->width = t->frame_width;
-      t->height = t->frame_height;
       t->frame_x = body[7];
       t->frame_y = body[8];
       t->frame_width = body[9];
       t->frame_height = body[10];
+      t->x = body[7];
+      t->y = body[8];
+      t->width = body[9];
+      t->height = body[10];
 
       /* if deiconifying main pager window turn balloons on or off */
       if ( t->w == Scr.Pager_w )

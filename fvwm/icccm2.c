@@ -120,7 +120,7 @@ SetupICCCM2 (Bool replace_wm)
   }
 
   /* restore NoFocusWin event mask */
-  attr.event_mask = KeyPressMask|FocusChangeMask;
+  attr.event_mask = NO_FOCUS_WIN_EVMASK;
   XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
 }
 
