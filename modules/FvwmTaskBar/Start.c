@@ -34,7 +34,6 @@ extern FlocaleFont *FButtonFont, *FSelButtonFont;
 extern char *Module;
 extern int Clength;
 extern char *ImagePath;
-extern int ColorLimit;
 
 Button *StartButton;
 Bool NoDefaultStartButton = False;

@@ -1560,7 +1560,6 @@ void parse_window_geometry(char *geom, int is_button_geometry)
 /**
 *** ParseOptions()
 **/
-extern int save_color_limit;            /* global for xpm color limiting */
 void ParseConfiguration(button_info *ub)
 {
   char *s;
@@ -1568,7 +1567,6 @@ void ParseConfiguration(button_info *ub)
   {
     NULL, /* filled out below */
     "imagepath",
-    "colorlimit",
     "colorset",
     XINERAMA_CONFIG_STRING,
     NULL
@@ -1595,14 +1593,11 @@ void ParseConfiguration(button_info *ub)
 	free(imagePath);
       CopyString(&imagePath,rest);
       break;
-    case 2:                         /* colorlimit */
-      sscanf(rest, "%d", &save_color_limit);
-      break;
-    case 3:
+    case 2:
       /* store colorset sent by fvwm */
       LoadColorset(rest);
       break;
-    case 4:
+    case 3:
       /* Xinerama state */
       FScreenConfigureModule(rest);
       break;

@@ -90,6 +90,9 @@ int Iconcolorset = -1;
 int IconHicolorset = -1;
 Bool UseSkipList = False;
 Bool Swallowed = False;
+Window SwallowerWin = False;
+Bool Shaded = False;
+Bool SwallowerShaded = False;
 
 /* same strings as in misc.c */
 char NoClass[] = "NoClass";
@@ -190,7 +193,6 @@ int sortby = UNSORT;
 
 char* AnimCommand = NULL;
 
-int save_color_limit = 0;                   /* color limit from config */
 static Bool have_double_click = False;
 static Bool is_dead_pipe = False;
 
@@ -1117,6 +1119,18 @@ void animate(struct icon_info *item, unsigned long *body)
     int abs_x, abs_y;
     Window junkw;
 
+    /* do not animate if shaded */
+    if (Swallowed)
+    {
+	    if (SwallowerShaded)
+	    {
+		    return;
+	    }
+    }
+    else if (Shaded)
+    {
+	    return;
+    }
     /* check to see if the centre of the icon is displayed in the iconbox */
     XTranslateCoordinates(dpy, icon_win, main_win, item->x + (item->icon_w/2),
 			  item->y + (item->icon_h/2), &abs_x, &abs_y, &junkw);
@@ -2229,10 +2243,6 @@ void ParseOptions(void)
       {
 	ClickTime = atoi(&tline[9]);
       }
-      else if (strncasecmp(tline,"ColorLimit",10)==0)
-      {
-	save_color_limit = atoi(&tline[10]);
-      }
     }
     GetConfigLine(fd,&tline);
   }
@@ -2535,6 +2545,14 @@ void process_message(unsigned long type, unsigned long *body)
   switch(type)
   {
   case M_CONFIGURE_WINDOW:
+    if (cfgpacket->w == main_win)
+    {
+	    Shaded = IS_SHADED(cfgpacket);
+    }
+    if (SwallowerWin && cfgpacket->w == SwallowerWin)
+    {
+	    SwallowerShaded = IS_SHADED(cfgpacket);
+    }
     if (ready)
     {
       tmp = Head;
@@ -2819,7 +2837,23 @@ void process_message(unsigned long type, unsigned long *body)
     }
     else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == icon_win)
     {
-      Swallowed = body[1];
+	    char *str;
+	    
+	    Swallowed = body[1];
+	    str = (char *)&body[3];
+
+	    if (Swallowed && str)
+	    {
+		    unsigned long u;
+		    if (sscanf(str,"%lu",&u) == 1)
+		    {
+			    SwallowerWin = (Window)u;
+		    }
+		    else
+		    {
+			    SwallowerWin = 0;
+		    }
+	    }
     }
     break;
   default:

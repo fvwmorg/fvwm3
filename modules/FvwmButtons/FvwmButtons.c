@@ -171,11 +171,10 @@ button_info *UberButton=NULL;
 int dpw;
 int dph;
 
-int save_color_limit;                   /* Color limit, if any */
-
 Bool do_allow_bad_access = False;
 Bool was_bad_access = False;
 Bool swallowed = False;
+Window swallower_win = 0;
 
 /* ------------------------------ Misc functions ----------------------------*/
 
@@ -2578,7 +2577,35 @@ void process_message(unsigned long type,unsigned long *body)
     }
     else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == MyWindow)
     {
-      swallowed = body[1];
+	    char *str;
+	    unsigned long u;
+	    Window s,swin;
+	    char cmd[256];
+	    button_info *b,*ub=UberButton;
+	    int button=-1;
+
+	    str = (char *)&body[3];
+	    swallowed = body[1];
+	    if (swallowed && str && sscanf(str,"%lu",&u) == 1)
+	    {
+		    swallower_win = (Window)u;
+	    }
+	    else
+	    {
+		    swallower_win = 0;
+	    }
+	    /* update the swallower */
+	    s = ((swallower_win && swallowed)? swallower_win:MyWindow);
+	    while(NextButton(&ub, &b, &button, 0))
+	    {
+		    swin = SwallowedWindow(b);
+		    if((buttonSwallowCount(b)==3) && swin)
+		    {
+			    sprintf(cmd,"PropertyChange %u %u %lu %lu",
+				    MX_PROPERTY_CHANGE_SWALLOW, 1, swin, s);
+			    SendText(fd,cmd,0);
+		    }
+	    }
     }
     break;
   case M_STRING:
@@ -3007,8 +3034,9 @@ void swallow(unsigned long *body)
 	  /* if we swallow a module we send an avertisment */
 	  char cmd[256];
 
-	  sprintf(cmd,"PropertyChange %u %u %lu",
-		  MX_PROPERTY_CHANGE_SWALLOW, 1, SwallowedWindow(b));
+	  sprintf(cmd,"PropertyChange %u %u %lu %lu",
+		  MX_PROPERTY_CHANGE_SWALLOW, 1, SwallowedWindow(b),
+		  (swallower_win)? swallower_win:MyWindow);
 	  SendText(fd,cmd,0);
 	}
 	if ((b->flags & b_Colorset) &&  !(b->swallow & b_FvwmModule))

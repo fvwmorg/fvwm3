@@ -240,7 +240,6 @@ extern int WindowButtonsRightMargin;
 char *ImagePath = NULL;
 char *XineramaConfig = NULL;
 static int fscreen = 0;
-int ColorLimit = 0;
 
 static void ParseConfig( void );
 static void ParseConfigLine(char *tline);
@@ -1027,7 +1026,6 @@ static char *configopts[] =
   "imagepath",
   "colorset",
   XINERAMA_CONFIG_STRING,
-  "ColorLimit",
   NULL
 };
 
@@ -1108,9 +1106,6 @@ static void ParseConfigLine(char *tline)
 	free(XineramaConfig);
       }
       CopyString(&XineramaConfig, rest);
-      break;
-    case 3: /* ColorLimit */
-      sscanf(rest, "%d", &ColorLimit);
       break;
     default:
       /* unknown option */

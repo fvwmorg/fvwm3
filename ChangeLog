@@ -1,3 +1,14 @@
+2003-08-25  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/misc.c (GrabEm):
+	Fixed fvwm freeze if GRAB_FREEZE_CURSOR fail repeatedly
+	
+	* fvwm/modconf.c (send_color_limit):
+	ifndefed color limit config info message which is not used anymore
+
+	* fvwm/colorset.c (parse_colorset):
+	Added a note on average bg
+
 2003-08-23  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/style.c (print_styles):

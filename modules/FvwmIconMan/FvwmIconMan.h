@@ -184,6 +184,7 @@ typedef struct win_data {
 	Ulong desknum;
 	long x, y, width, height;
 	rectangle icon_g;
+	rectangle real_g; /* geometry of the client possibliy shaded */
 	Ulong app_id;
 	/* Ulong fvwm_flags; */
 	window_flags flags;
@@ -325,6 +326,7 @@ typedef struct win_manager {
 	/* fvwm state */
 	int we_are_drawing, configures_expected;
 	Bool swallowed;
+	Window swallower_win;
 	struct
 	{
 		unsigned is_shaded : 1;
@@ -395,3 +397,5 @@ extern void print_managers (void);
 
 extern WinManager *find_windows_manager (Window win);
 extern int win_in_viewport (WinData *win);
+extern WinData *id_to_win(Ulong id);
+

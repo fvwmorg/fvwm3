@@ -56,7 +56,6 @@
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 
-extern int save_color_limit;
 extern Bool do_allow_bad_access;
 extern Bool was_bad_access;
 extern char *MyName;

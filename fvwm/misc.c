@@ -218,11 +218,11 @@ Bool GrabEm(int cursor, int grab_context)
 		default:
 			/* If you go too fast, other windows may not get a
 			 * chance to release any grab that they have. */
+			i++;
 			if (grab_context == GRAB_FREEZE_CURSOR)
 			{
 				break;
 			}
-			i++;
 			if (i < rep)
 			{
 				usleep(1000 * TIME_BETWEEN_GRAB_ATTEMPTS);

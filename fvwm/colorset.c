@@ -1076,10 +1076,15 @@ void parse_colorset(int n, char *line)
 
 		if (cs->color_flags & BG_AVERAGE)
 		{
-			average_pix =
-			   (cs->picture != NULL &&
-			    cs->picture->picture != None) ?
-				cs->picture->picture : cs->pixmap;
+			if (cs->picture != NULL && cs->picture->picture != None)
+			{
+				average_pix = cs->picture->picture;
+			}
+			else if (cs->pixmap != ParentRelative)
+			{
+				average_pix = cs->pixmap;
+			}
+
 			if (average_pix == root_pic.pixmap)
 			{
 				int w,h;
@@ -1123,6 +1128,9 @@ void parse_colorset(int n, char *line)
 
 			has_bg_changed = True;
 			/* create an array to store all the pixmap colors in */
+			/* Note: this may allocate a lot of memory:
+			 * cs->width * cs->height * 12 and then the rest of the
+			 * procedure can take a lot of times */
 			colors = (XColor *)safemalloc(
 				cs->width * cs->height * sizeof(XColor));
 			/* get the pixmap and mask into an image */

@@ -68,6 +68,7 @@
 #include "libs/gravity.h"
 #include "libs/FRender.h"
 #include "libs/FRenderInterface.h"
+#include "libs/fvwmrect.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
@@ -162,6 +163,8 @@ struct
 	unsigned is_shaded : 1;
 	unsigned needs_resize_after_unshade : 1;
 } flags = { 0, 0 };
+
+rectangle cfg_g = { 0, 0, 0, 0 }; /* win geometry from M_CONFIGURE_WINDOW */
 
 static RETSIGTYPE TerminateHandler(int sig);
 
@@ -413,9 +416,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       cfgpacket = (void *) body;
       /* We get the win_borders only when WinList  map it self, this is ok
        *  since we need it only after an unmap */
-#ifdef COMPLEX_WINDOW_PLACEMENT
       if (cfgpacket->w == win)
       {
+	cfg_g.x = cfgpacket->frame_x;
+	cfg_g.y = cfgpacket->frame_y;
+	cfg_g.width = cfgpacket->frame_width;
+	cfg_g.height = cfgpacket->frame_height;
+#ifdef COMPLEX_WINDOW_PLACEMENT
 	win_border_x = win_border_y = cfgpacket->border_width;
 	if (((win_grav == NorthWestGravity || win_grav == NorthEastGravity)
 	     && HAS_TITLE_DIR(cfgpacket, DIR_N)) ||
@@ -431,8 +438,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	{
 	  win_border_x +=  cfgpacket->title_height;
 	}
-      }
 #endif
+      }
       if ((i = FindItem(&windows,cfgpacket->w))!=-1)
       {
 	flagitem=ItemFlags(&windows,cfgpacket->w);
@@ -509,30 +516,55 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     case M_ICONIFY:
       /* fwvm will wait for an Unlock message before continuing
        * be careful when changing this construct, make sure unlock happens */
-      if ((i = FindItem(&windows, body[0])) != -1) {
+      if ((i = FindItem(&windows, body[0])) != -1)
+      {
 	flagitem = ItemFlags(&windows, body[0]);
 	if ((type == M_DEICONIFY && IS_ICONIFIED(flagitem))
-	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem))) {
+	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem)))
+	{
 	  if (IS_ICON_SUPPRESSED(flagitem) && IsItemIndexVisible(&windows,i)
-	      && AnimCommand && WindowState && AnimCommand[0] != 0) {
+	      && AnimCommand && WindowState && AnimCommand[0] != 0)
+	  {
 	    char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	    Window child;
-	    int x, y;
+	    int x, y, w, h;
 
 	    /* find out where our button is */
 	    j = FindItemVisible(&windows, body[0]);
-	    XTranslateCoordinates(dpy, win, Root, 0, j * buttonheight,
-				  &x, &y, &child);
+	    XTranslateCoordinates(
+		    dpy, win, Root, 0, j * buttonheight, &x, &y, &child);
+	    w = win_width;
+	    h = buttonheight;
+	    if (flags.is_shaded)
+	    {
+		    if (w > cfg_g.width - win_border_x)
+		    {
+			    w = 1;
+		    }
+		    if (h > cfg_g.height - win_border_y)
+		    {
+			    h = 1;
+		    }
+		    if (x < cfg_g.x || x > cfg_g.x + cfg_g.width)
+		    {
+			    x = cfg_g.x + win_border_x;
+		    }
+		    if (y < cfg_g.y || y > cfg_g.y + cfg_g.height)
+		    {
+			    y = cfg_g.y + win_border_y;
+		    }
+
+	    }
 	    /* tell FvwmAnimate to animate to our button */
 	    if (IS_ICONIFIED(flagitem)) {
-	      sprintf(buff, "%s %d %d %d %d %d %d %d %d", AnimCommand,
-		      x, y, win_width, buttonheight,
-		      (int)body[7], (int)body[8], (int)body[9],
-		      (int)body[10]);
+		    sprintf(buff, "%s %d %d %d %d %d %d %d %d", AnimCommand,
+			    x, y, w, h, (int)body[7], (int)body[8],
+			    (int)body[9], (int)body[10]);
 	    } else {
-	      sprintf(buff, "%s %d %d %d %d %d %d %d %d", AnimCommand,
-		      (int)body[7], (int)body[8], (int)body[9], (int)body[10],
-		      x, y, win_width, buttonheight);
+		    sprintf(buff, "%s %d %d %d %d %d %d %d %d", 
+			    AnimCommand, (int)body[7], (int)body[8],
+			    (int)body[9], (int)body[10],
+			    x, y, w, h);
 	    }
 	    SendText(Fvwm_fd, buff, 0);
 	  }

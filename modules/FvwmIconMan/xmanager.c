@@ -691,45 +691,105 @@ void set_win_picture(WinData *win, Pixmap picture, Pixmap mask, Pixmap alpha,
 
 void set_win_iconified(WinData *win, int iconified)
 {
-  /* This change has become necessary because with colorsets we don't know
-   * the background colour of the button (gradient background). Thus the button
-   * has to be redrawn completely, we can not just draw the square in the
-   * background colour. */
-   char string[256];
+	/* This change has become necessary because with colorsets we don't
+	 * know the background colour of the button (gradient background).
+	 * Thus the button has to be redrawn completely, we can not just draw
+	 * the square in the background colour. */
+	char string[256];
+	WinData *man_data = NULL;
+	Bool do_animate = True;
 
-  if (win->button != NULL && (win->iconified != iconified) ) {
-    /* we check the win->button width and height because they will only
-     * be == zero on init, and if we didn't check we would get animations of
-     * all iconified windows to the far left of whereever thae manager would
-     * eventually be. */
-    if (win->manager->AnimCommand && (win->manager->AnimCommand[0] != 0)
-	&& IS_ICON_SUPPRESSED(win) && (win->button->w != 0)
-	&& (win->button->h !=0) )
-    {
-      int abs_x, abs_y;
-      Window junkw;
+	if (win->button != NULL && (win->iconified != iconified) )
+	{
+		if (win->manager->flags.is_shaded)
+		{
+			man_data = id_to_win(win->manager->theWindow);
+			if (!man_data->geometry_set)
+			{
+				do_animate = False;
+			}
+		}
+		else if (win->manager->swallowed)
+		{
+			if (win->manager->swallower_win &&
+			    (man_data =
+			     id_to_win(win->manager->swallower_win)) &&
+			    man_data->geometry_set)
+			{
+				/* ok */
+				if (!IS_SHADED(man_data))
+				{
+					/* animate as usual */
+					man_data = NULL;
+				}
+			}
+			else
+			{
+				do_animate = False;
+			}
+		}
+		/* we check the win->button width and height because they
+		 * will only be == zero on init, and if we didn't check we
+		 * would get animations of all iconified windows to the far
+		 * left of whereever thae manager would eventually be. */
+		if (do_animate && win->manager->AnimCommand &&
+		    (win->manager->AnimCommand[0] != 0)
+		    && IS_ICON_SUPPRESSED(win) && (win->button->w != 0)
+		    && (win->button->h !=0))
+		{
+			int abs_x, abs_y, w, h;
+			Window junkw;
 
-      XTranslateCoordinates(theDisplay, win->manager->theWindow, theRoot,
-			    win->button->x, win->button->y, &abs_x, &abs_y,
-			    &junkw);
-      if (iconified)
-      {
-	sprintf(string, "%s %d %d %d %d %d %d %d %d",
-		win->manager->AnimCommand,
-		(int)win->x, (int)win->y, (int)win->width, (int)win->height,
-		abs_x, abs_y, win->button->w, win->button->h);
-      } else {
-	sprintf(string, "%s %d %d %d %d %d %d %d %d",
-		win->manager->AnimCommand,
-		abs_x, abs_y, win->button->w, win->button->h,
-		(int)win->x, (int)win->y, (int)win->width, (int)win->height);
-      }
-      SendText(fvwm_fd, string, 0);
-
-    }
-    win->button->drawn_state.dirty_flags |= ICON_STATE_CHANGED;
-  }
-  win->iconified = iconified;
+			XTranslateCoordinates(
+				theDisplay, win->manager->theWindow,
+				theRoot, win->button->x, win->button->y,
+				&abs_x, &abs_y, &junkw);
+			w = win->button->w;
+			h = win->button->h;
+			if (man_data)
+			{
+				if (w > man_data->real_g.width)
+				{
+					w = 1;
+				}
+				if (h > man_data->real_g.height)
+				{
+					h = 1;
+				}
+				if (abs_x < man_data->real_g.x ||
+				    abs_x > man_data->real_g.x +
+				    man_data->real_g.width)
+				{
+					abs_x = man_data->real_g.x;
+				}
+				if (abs_y < man_data->real_g.y ||
+				    abs_y > man_data->real_g.y +
+				    man_data->real_g.height)
+				{
+					abs_y = man_data->real_g.y;
+				}
+			}
+			if (iconified)
+			{
+				sprintf(string, "%s %d %d %d %d %d %d %d %d",
+					win->manager->AnimCommand,
+					(int)win->x, (int)win->y,
+					(int)win->width, (int)win->height,
+					abs_x, abs_y, w, h);
+			}
+			else
+			{
+				sprintf(string, "%s %d %d %d %d %d %d %d %d",
+					win->manager->AnimCommand,
+					abs_x, abs_y, w, h,
+					(int)win->x, (int)win->y,
+					(int)win->width, (int)win->height);
+			}
+			SendText(fvwm_fd, string, 0);
+		}
+		win->button->drawn_state.dirty_flags |= ICON_STATE_CHANGED;
+	}
+	win->iconified = iconified;
 }
 
 void set_win_state(WinData *win, int state)

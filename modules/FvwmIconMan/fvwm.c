@@ -57,6 +57,7 @@ typedef struct {
 
 typedef struct {
 	Ulong arg, toggle, id;
+	Uchar str[4];
 } m_property_data;
 
 typedef struct {
@@ -163,7 +164,7 @@ int win_in_viewport(WinData *win)
 }
 
 
-static WinData *id_to_win(Ulong id)
+WinData *id_to_win(Ulong id)
 {
 	WinData *win;
 
@@ -191,6 +192,35 @@ static void set_win_configuration(WinData *win, FvwmPacketBody *body)
 	win->geometry_set = 1;
 	memcpy(&(win->flags), &(body->add_config_data.flags),
 		sizeof(win->flags));
+	{
+		int wb_x = body->add_config_data.border_width;
+		int wb_y = body->add_config_data.border_width;
+		int t_w = 2*wb_x;
+		int t_h = 2*wb_y;
+
+		if (HAS_TITLE_DIR(win, DIR_N))
+		{
+			wb_y += body->add_config_data.title_height;
+			t_h += body->add_config_data.title_height;
+		}
+		else if (HAS_TITLE_DIR(win, DIR_W))
+		{
+			wb_x += body->add_config_data.title_height;
+			t_w += body->add_config_data.title_height;
+		}
+		if (HAS_TITLE_DIR(win, DIR_S))
+		{
+			t_h += body->add_config_data.title_height;
+		}
+		if (HAS_TITLE_DIR(win, DIR_E))
+		{
+			t_w += body->add_config_data.title_height;	
+		}
+		win->real_g.x = win->x + wb_x;
+		win->real_g.y = win->y + wb_y;
+		win->real_g.width = win->width - t_w;
+		win->real_g.height = win->height - t_h;
+	}
 }
 
 static void handle_config_info(unsigned long *body)
@@ -612,6 +642,19 @@ static void property_change(FvwmPacketBody *body)
 		man != NULL)
 	{
 		man->swallowed = body->property_data.toggle;
+		if (man->swallowed && body->property_data.str)
+		{
+			unsigned long u;
+
+			if (sscanf(body->property_data.str,"%lu",&u) == 1)
+			{
+				man->swallower_win = (Window)u;
+			}
+			else
+			{
+				man->swallower_win = 0;
+			}
+		}
 	}
 }
 

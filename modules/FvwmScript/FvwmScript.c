@@ -83,7 +83,6 @@ char *Scrapt;
 Atom propriete,type;
 static Atom wm_del_win;
 char *imagePath = NULL;
-int save_color_limit = 0;                   /* color limit from config */
 static Bool is_dead_pipe = False;
 KeySym shift_tab_ks;  /* shift-Tab keysym */
 char *LastString = NULL;  /* last string send by a SendString ot Key cmd */
@@ -272,8 +271,6 @@ void ParseOptions(void)
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultFont",22) == 0)
 	CopyStringWithQuotes(&x11base->font,&tline[22]);
-      else if (strncasecmp(tline,"ColorLimit",10) == 0)
-	save_color_limit = atoi(&tline[10]);
       else if (strncasecmp(tline,"Colorset",8) == 0)
 	LoadColorset(&tline[8]);
       else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
