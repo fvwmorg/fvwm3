@@ -2904,12 +2904,8 @@ void destroy_window(FvwmWindow *fw)
 	/* already done above? */
 	if (!IS_SCHEDULED_FOR_DESTROY(fw))
 	{
-		/****** adjust fvwm internal windows and the focus ******/
-
+		SET_SCHEDULED_FOR_DESTROY(fw, 1);
 		adjust_fvwm_internal_windows(fw);
-
-		/****** broadcast ******/
-
 		BroadcastPacket(M_DESTROY_WINDOW, 3,
 				FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw);
 		EWMH_DestroyWindow(fw);

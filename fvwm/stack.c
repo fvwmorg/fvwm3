@@ -1392,6 +1392,11 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 	FvwmWindow *t;
 	Bool ontop = True;
 
+	if (IS_SCHEDULED_FOR_DESTROY(fw))
+	{
+		/* stack ring members are no longer valid */
+		return False;
+	}
 	for (t = fw->stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
 	{
 		if (t->layer > fw->layer)

@@ -4124,9 +4124,46 @@ fprintf(stderr," %d (%d %d %dx%d)\n", i, x,y,wid,hei);
 }
 #endif
 
+void print_mod_inices(void)
+{
+	XKeyEvent e;
+	KeySym ks;
+	char *s;
+	int i;
+
+	e.type =KeyPress;
+	e.serial = 0;
+	e.display = dpy;
+	e.window = Scr.Root;
+	e.root = Scr.Root;
+	e.subwindow = None;
+	e.time = 0;
+	e.x = 0;
+	e.y = 0;
+	e.x_root = 0;
+	e.y_root = 0;
+	e.state = 127;
+	e.keycode = 24;
+	e.same_screen = True;
+
+	for (i = 0; i < 0x10000; i++)
+	{
+		ks = XLookupKeysym(&e, i);
+		if (ks == NoSymbol)
+		{
+			continue;
+		}
+		s = XKeysymToString(ks);
+		fprintf(stderr, "index %d, ks 0x%x '%s'\n", i, (int)ks, s);
+	}
+
+	return;
+}
+
 void CMD_XSync(F_CMD_ARGS)
 {
 	XSync(dpy, 0);
+print_mod_inices();
 
 	return;
 }

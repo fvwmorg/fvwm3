@@ -1,3 +1,10 @@
+2002-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c (is_on_top_of_layer_ignore_rom):
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/focus.c (focus_grab_buttons):
+	fixed core dump
+
 2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (focus_force_refresh_focus):

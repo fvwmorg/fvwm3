@@ -532,12 +532,15 @@ static FvwmWindow *__restore_focus_after_unmap(
 			}
 		}
 	}
-	DeleteFocus(True, True);
 	if (set_focus_to && set_focus_to != fw &&
 	    set_focus_to->Desk == fw->Desk)
 	{
 		/* Don't transfer focus to windows on other desks */
 		SetFocusWindow(set_focus_to, True, True);
+	}
+	if (focus_is_focused(fw))
+	{
+		DeleteFocus(True, True);
 	}
 
 	return set_focus_to;
@@ -815,8 +818,9 @@ void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
 	Bool do_grab_window = False;
 	unsigned char grab_buttons = Scr.buttons2grab;
 
-	if (!fw)
+	if (!fw || IS_SCHEDULED_FOR_DESTROY(fw))
 	{
+		/* It's pointless to grab buttons on dying windows */
 		return;
 	}
 	do_grab_window = focus_query_grab_buttons(fw, is_focused);
