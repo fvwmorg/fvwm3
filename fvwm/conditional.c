@@ -1599,18 +1599,22 @@ void CMD_Test(F_CMD_ARGS)
 	while (condition)
 	{
 		char *cond;
-		Bool on;
+		Bool reverse;
 
 		cond = condition;
-		on = 1;
+		reverse = 0;
 		if (*cond == '!')
 		{
-			on = 0;
+			reverse = 1;
 			cond++;
 		}
 		if (StrEquals(cond, "True"))
 		{
 			match = True;
+		}
+		else if (StrEquals(cond, "False"))
+		{
+			match = False;
 		}
 		else if (StrEquals(cond, "Version"))
 		{
@@ -1698,8 +1702,13 @@ void CMD_Test(F_CMD_ARGS)
 				error = True;
 			}
 		}
+		else
+		{
+			/* unrecognized condition */
+			error = 1;
+		}
 
-		if (!on)
+		if (reverse)
 		{
 			match = !match;
 		}

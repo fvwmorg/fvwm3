@@ -790,7 +790,7 @@ AddToFunc SessionRestartFunction
 .EE
 You don't need to define all special functions if some are empty.
 Also note, all these special functions may be emulated now using
-.B StartFunction " and " ExitFunction,
+.BR StartFunction " and " ExitFunction,
 like this:
 .EX
 DestroyFunc StartFunction
@@ -10133,43 +10133,70 @@ given.
 .RB "See " Conditions " section below for a list of contitions."
 
 .TP
-.BI "Test [(" on-conditions ")] " command
+.BI "Test [(" test-conditions ")] " command
 Performs
 .I command
 if the all
-.I on-conditions
+.I test-conditions
 are satisfied.  The
-.I on-conditions
-are a list of keywords with possible arguments from the list below
+.I test-conditions
+are keywords with possible arguments from the list below
 and are separated by commas or whitespace.  They include
 .IR "Version pattern" ,
 .IR Start ,
 .IR Init ,
 .IR Restart ,
 .IR Exit ,
-.IR Quit and
-.IR ToRestart .
-An on-condition prefixed with "!" is reverted.
+.IR Quit " and"
+.IR ToRestart ,
+.IR True ,
+.IR False ,
+.IR F ,
+.IR R ,
+.IR W ,
+.IR X ,
+.IR I .
+A test-condition prefixed with "!" is reverted.
 
 The
 .I "Version pattern"
-on-condition is fulfilled if the pattern matches the version
+test-condition is fulfilled if the pattern matches the version
 number of the fvwm executable.  The wildcards '*' (any number of
 random characters) and '?' (one random character) may be used in
 the pattern.  The
 .I Start
-on-condition is the same as either
+test-condition is the same as either
 .IR Init " or " Restart .
 It is only true on startup or restart prior and during
 .B StartFunction
 execution.
 The
 .I Exit
-on-condition is the same as either
+test-condition is the same as either
 .IR Quit " or " ToRestart .
 It is only valid on shutdown during
 .B ExitFunction
 function execution.
+
+The
+.I True
+and
+.I False
+test-conditions are, well, unconditionally true and false.
+
+Additionally, if a test-condition name is not recognized, the Error
+return code is set and the command is not executed.
+
+The
+.IR "F file" ,
+.IR "R file" ,
+.IR "W file" ,
+.IR "X file" " and"
+.IR "I file"
+test-conditions test for existance of the given [F]ile (possibly
+with [R]ead/[W]rite permissions), or the e[X]ecutable (in $PATH),
+or the [I]mage (in ImagePath).
+
 Example:
 .EX
 AddToFunc StartFunction I Test (Init) Exec exec xterm
@@ -10178,6 +10205,9 @@ AddToFunc VerifyVersion
 + I Test (Version 2.5.*) Echo 2.5.x detected
 + I TestRc (NoMatch) Test (!Version 2.6.*) Echo Future version
 + I TestRc (NoMatch) Echo 2.6.x is detected
+
+Test (f $[FVWM_USERDIR]/local-config) Read local-config
+Test (x xterm-utf16) Exec exec xterm-utf16
 .EE
 
 .TP
