@@ -1,6 +1,18 @@
 Fvwm 2.4.1 is a bug fix release for version 2.4.0.  It also
 introduces full Xinerama support and a few other new features.
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This release is dedicated to the victims of the terrorist attacks
+in New York, Washington D.C and Pittsburgh on 11th of September,
+2001.
+
+  Dominik Vogt
+
+and all other users and developers of fvwm.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 New features and improvements:
 ------------------------------
 
