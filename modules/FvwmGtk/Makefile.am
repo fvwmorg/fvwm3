@@ -24,11 +24,8 @@ FvwmGtk_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm \
-	$(GTK_LIBS) $(GDK_IMLIB_LIBS)
+        $(GTK_LIBS) $(GDK_IMLIB_LIBS) \
+	$(GNOME_LIBDIR) $(GNOMEUI_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) \
-    $(GTK_CFLAGS) $(GDK_IMLIB_CFLAGS)
-
-
-
-
+    $(GTK_CFLAGS) $(GDK_IMLIB_CFLAGS) $(GNOME_INCLUDEDIR)

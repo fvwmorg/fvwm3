@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
-AM_INIT_AUTOMAKE(fvwm, 2.3.9)
+AM_INIT_AUTOMAKE(fvwm, 2.3.10)
 AM_CONFIG_HEADER(config.h)
 
 FVWM_MODULEDIR='${libexecdir}/${PACKAGE}/${VERSION}'
@@ -339,6 +339,8 @@ fi
 
 dnl Check the availability of gdk-imlib
 AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(IMLIB),)
+
+GNOME_INIT_HOOK
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile utils/fvwmbug.sh

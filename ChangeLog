@@ -1,5 +1,7 @@
 1999-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.10
+
 	* fvwm/fvwm2.1: added example of nesting decors
 
 1999-10-07  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -318,7 +320,7 @@
 
 1999-09-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* configure.in: changed version to 2.3.8
+	* configure.in: changed version to 2.3.9
 
 	* fvwm/events.c (HandlePropertyNotify): fixed bug with xterm:
 	<maximize, change font, normalize> got the window size wrong

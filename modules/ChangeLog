@@ -1,3 +1,8 @@
+1999-10-07  Eric Gillespie Jr.  <epg@pobox.com>
+
+	* FvwmGtk/FvwmGtk.c: Include <gnome.h> if Gnome is installed.
+	(main): Calls gnome_init instead of gtk_init if Gnome is installed.
+
 1999-10-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWinList/ButtonArray.c (ButtonPicture):

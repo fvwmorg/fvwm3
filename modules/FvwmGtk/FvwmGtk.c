@@ -25,8 +25,13 @@
 
 #include <X11/Xlib.h>
 
+#ifdef NEED_GNOMESUPPORT_H
+#include <gnome.h>
+#else
 #include <glib.h>
 #include <gtk/gtk.h>
+#endif
+
 #ifdef IMLIB
 #include <gdk_imlib.h>
 #endif
@@ -477,7 +482,13 @@ main (int argc, char **argv)
   gtk_widget_push_visual (gdk_imlib_get_visual ());
   gtk_widget_push_colormap (gdk_imlib_get_colormap ());
 #endif
+
+#ifdef NEED_GNOMESUPPORT_H
+  gnome_init ("FvwmGtk", VERSION, argc, argv);
+  gnome_client_disconnect(gnome_master_client());
+#else
   gtk_init (&argc, &argv);
+#endif
 
   widgets = g_hash_table_new (g_str_hash, g_str_equal);
 
