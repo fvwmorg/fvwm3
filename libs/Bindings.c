@@ -456,11 +456,16 @@ void *CheckBinding(
 				b, STROKE_ARG(stroke) button_keycode, modifier,
 			    used_modifiers, Context, type, winClass, winName) == True)
 		{
-			action = b->Action;
-			/* If this is a global binding, keep searching <blist> in the
-			 * hope of finding a window-specific binding. */
-			if (b->windowName)
-				break;
+			/* If this is a global binding, keep searching <blist>
+			 * in the hope of finding a window-specific binding.
+			 * If we don't find a win-specific binding, we use the
+			 * _first_ matching global binding we hit. */
+			if (action == NULL || b->windowName)
+			{
+				action = b->Action;
+				if (b->windowName)
+					break;
+			}
 		}
 	}
 
@@ -485,21 +490,25 @@ void *CheckTwoBindings(
 			    b, STROKE_ARG(stroke) button_keycode, modifier,
 			    used_modifiers, Context, type, winClass, winName) == True)
 		{
-			*ret_is_second_binding = False;
-			action = b->Action;
-			if (b->windowName)
-				break;
+			if (action == NULL || b->windowName)
+			{
+				*ret_is_second_binding = False;
+				action = b->Action;
+				if (b->windowName)
+					break;
+			}
 		}
 		if (__compare_binding(
 			    b, STROKE_ARG(stroke) button_keycode, modifier,
 			    used_modifiers, Context2, type2, winClass2, winName2) == True)
 		{
-			if (action && !b->windowName)
-				continue;
-			*ret_is_second_binding = True;
-			action = b->Action;
-			if (b->windowName)
-				break;
+			if (action == NULL || b->windowName)
+			{
+				*ret_is_second_binding = True;
+				action = b->Action;
+				if (b->windowName)
+					break;
+			}
 		}
 	}
 

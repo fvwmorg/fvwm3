@@ -1,3 +1,12 @@
+2004-06-10  Scott Smedley  <scottie7@tpg.com.au>
+
+	* fvwm/builtins.c:
+	* fvwm/events.c:
+	* libs/Bindings.c:
+	Active _last_ matching binding. (ie. same behaviour as before
+	win-specific bindings patch.)
+	bugfix: segfault when looking up stroke bindings in root context.
+
 2004-06-07  Scott Smedley  <scottie7@tpg.com.au>
 
 	* fvwm/bindings.c:

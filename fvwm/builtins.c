@@ -4056,7 +4056,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	int modifiers = exc->x.etrigger->xbutton.state;
 	int start_event_type = exc->x.etrigger->type;
 	char sequence[STROKE_MAX_SEQUENCE + 1];
-	char *stroke_action;
+	char *stroke_action, *name;
 	char *opt = NULL;
 	Bool finish_on_release = True;
 	KeySym keysym;
@@ -4075,6 +4075,9 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	Bool feed_back = False;
 	int stroke_width = 1;
 	XEvent e;
+	XClassHint tmp, *pClass;
+
+
 
 	if (!GrabEm(CRS_STROKE, GRAB_NORMAL))
 	{
@@ -4342,11 +4345,21 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		return;
 	}
 
+	if (exc->w.fw == NULL)
+	{
+		tmp.res_class = tmp.res_name = name = "root";
+		pClass = &tmp;
+	}
+	else
+	{
+		pClass = &exc->w.fw->class;
+		name = exc->w.fw->name.name;
+	}
+
 	/* check for a binding */
 	stroke_action = CheckBinding(
 		Scr.AllBindings, sequence, 0, modifiers, GetUnusedModifiers(),
-		exc->w.wcontext, BIND_STROKE, &exc->w.fw->class,
-		exc->w.fw->name.name);
+		exc->w.wcontext, BIND_STROKE, pClass, name);
 
 	/* execute the action */
 	if (stroke_action != NULL)

@@ -1604,9 +1604,10 @@ void HandleButtonPress(const evh_args_t *ea)
 #ifdef HAVE_STROKE
 void HandleButtonRelease(const evh_args_t *ea)
 {
-	char *action;
+	char *action, *name;
 	int real_modifier;
 	const XEvent *te = ea->exc->x.etrigger;
+	XClassHint	tmp, *pClass;
 
 	DBUG("HandleButtonRelease", "Routine Entered");
 
@@ -1617,11 +1618,21 @@ void HandleButtonRelease(const evh_args_t *ea)
 
 	/*  Allows modifier to work (Only R context works here). */
 	real_modifier = te->xbutton.state - (1 << (7 + te->xbutton.button));
+	if (ea->exc->w.fw == NULL)
+	{
+		tmp.res_class = tmp.res_name = name = "root";
+		pClass = &tmp;
+	}
+	else
+	{
+		pClass = &ea->exc->w.fw->class;
+		name = ea->exc->w.fw->name.name;
+	}
 	/* need to search for an appropriate stroke binding */
 	action = CheckBinding(
 		Scr.AllBindings, sequence, te->xbutton.button, real_modifier,
 		GetUnusedModifiers(), ea->exc->w.wcontext, BIND_STROKE,
-		&ea->exc->w.fw->class, ea->exc->w.fw->name.name);
+		pClass, name);
 
 	/* got a match, now process it */
 	if (action != NULL && (action[0] != 0))
