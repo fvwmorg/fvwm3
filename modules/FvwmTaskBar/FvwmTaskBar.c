@@ -481,7 +481,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	hints.max_width   = win_width;
 	XSetWMNormalHints(dpy,win,&hints);
 
-	
  	if (!AutoHide)
 	{
 	  XResizeWindow(dpy, win, win_width, win_height);
@@ -489,6 +488,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	}
 	else
 	  XMoveResizeWindow(dpy, win, win_x, win_y, win_width, win_height);
+
+	UpdateArray(&buttons, -1, -1,
+		    win_width - stwin_width - 8 - StartButtonWidth -10,-1, -1);
+	ArrangeButtonArray (&buttons);
       }
       break;
     }
