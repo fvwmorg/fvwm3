@@ -438,56 +438,6 @@ typedef struct FvwmWindow
   int max_window_height;
 } FvwmWindow;
 
-RETSIGTYPE SigDone(int);
-RETSIGTYPE Restart(int nonsense);
-extern void Done(int, char *) __attribute__((__noreturn__));
-extern void setInitFunctionName(int n, const char *name);
-extern const char *getInitFunctionName(int n);
-extern void CaptureOneWindow(FvwmWindow *fw, Window window);
-extern void CaptureAllWindows(void);
-
-extern int master_pid;
-extern Display *dpy;
-extern XContext FvwmContext;
-extern Bool fFvwmInStartup;
-extern Bool DoingCommandLine;
-#ifdef BUSYCURSOR
-extern int GrabPointerState;
-#endif
-extern Boolean ShapesSupported;
-extern Window JunkRoot, JunkChild;
-extern int JunkX, JunkY;
-extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
-extern char *user_home_dir;
-extern Atom _XA_MIT_PRIORITY_COLORS;
-extern Atom _XA_WM_CHANGE_STATE;
-extern Atom _XA_WM_STATE;
-extern Atom _XA_WM_COLORMAP_WINDOWS;
-extern Atom _XA_WM_PROTOCOLS;
-extern Atom _XA_WM_TAKE_FOCUS;
-extern Atom _XA_WM_SAVE_YOURSELF;
-extern Atom _XA_WM_DELETE_WINDOW;
-extern Atom _XA_WM_DESKTOP;
-extern Atom _XA_OL_WIN_ATTR;
-extern Atom _XA_OL_WT_BASE;
-extern Atom _XA_OL_WT_CMD;
-extern Atom _XA_OL_WT_HELP;
-extern Atom _XA_OL_WT_NOTICE;
-extern Atom _XA_OL_WT_OTHER;
-extern Atom _XA_OL_DECOR_ADD;
-extern Atom _XA_OL_DECOR_DEL;
-extern Atom _XA_OL_DECOR_CLOSE;
-extern Atom _XA_OL_DECOR_RESIZE;
-extern Atom _XA_OL_DECOR_HEADER;
-extern Atom _XA_OL_DECOR_ICON_NAME;
-extern Atom _XA_WM_WINDOW_ROLE;
-extern Atom _XA_WM_CLIENT_LEADER;
-extern Atom _XA_SM_CLIENT_ID;
-extern Atom _XA_WIN_SX;
-extern Atom _XA_MANAGER;
-extern Atom _XA_ATOM_PAIR;
-extern Atom _XA_WM_COLORMAP_NOTIFY;
-
 /* include this down here because FvwmWindows must be defined when including
  * this header file. */
 #include "fvwmdebug.h"

@@ -30,6 +30,7 @@
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
+#include "externs.h"
 #include "libs/Colorset.h"
 #include "bindings.h"
 #include "misc.h"

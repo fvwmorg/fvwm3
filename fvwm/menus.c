@@ -59,6 +59,7 @@
 
 #include <libs/fvwmlib.h>
 #include "fvwm.h"
+#include "externs.h"
 #include "events.h"
 #include "menus.h"
 #include "cursor.h"

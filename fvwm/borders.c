@@ -36,6 +36,7 @@
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
+#include "externs.h"
 #include "cursor.h"
 #include "functions.h"
 #include "bindings.h"
@@ -1339,7 +1340,7 @@ void SetupFrame(
   ymove_sign = SIGN(y - tmp_win->frame_g.y);
   xsize_sign = SIGN(w - tmp_win->frame_g.width);
   ysize_sign = SIGN(h - tmp_win->frame_g.height);
-#undef SIGN(x)
+#undef SIGN
 
   if (HAS_BOTTOM_TITLE(tmp_win))
   {

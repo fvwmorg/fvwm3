@@ -33,6 +33,7 @@
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
+#include "externs.h"
 #include "cursor.h"
 #include "functions.h"
 #include "bindings.h"

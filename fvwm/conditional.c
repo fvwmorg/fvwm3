@@ -27,6 +27,7 @@
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
+#include "externs.h"
 #include "cursor.h"
 #include "functions.h"
 #include "bindings.h"
@@ -539,8 +540,8 @@ void DirectionFunc(F_CMD_ARGS)
   int his_cy;
   int offset = 0;
   int distance = 0;
-  double score;
-  double best_score;
+  int score;
+  int best_score;
   FvwmWindow *window;
   FvwmWindow *best_window;
   int dir;
@@ -650,7 +651,11 @@ void DirectionFunc(F_CMD_ARGS)
       continue;
 
     /* Calculate score for this window.  The smaller the better. */
-    score = 1024 * offset * distance + 2 * distance + 2 * offset;
+    score = distance + offset;
+    /* windows more than 45 degrees off the direction are heavily penalized
+     * and will only be chosen if nothing else within a million pixels */
+    if (offset > distance)
+      score += 1000000;
     if (best_score == -1 || score < best_score)
     {
       best_window = window;

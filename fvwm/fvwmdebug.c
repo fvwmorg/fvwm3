@@ -29,6 +29,7 @@
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
+#include "externs.h"
 #include <stdio.h>
 
 /* Don't put this into the #ifdef, since some compilers don't like completely

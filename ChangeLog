@@ -1,3 +1,8 @@
+2000-01-25  Hippo
+
+	* fvwm/fvwm.h: split into fvwm.h and externs.h for FvwmIdent
+	* fvwm/*.c: added #include "externs.h"
+
 2000-01-23  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised): Fix problem with
