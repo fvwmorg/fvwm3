@@ -252,6 +252,33 @@ static enum ButtonState get_button_state(
   }
 }
 
+/* called twice by RedrawBorder */
+static void draw_frame_relief(
+  FvwmWindow *t, GC rgc, GC sgc, int w_shout, int w_hi, int w_shin)
+{
+  if (w_shout > 0)
+  {
+    RelieveRectangle(
+      dpy, t->decor_w, 0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
+      sgc, sgc, w_shout);
+  }
+  if (w_hi > 0)
+  {
+    RelieveRectangle(
+      dpy, t->decor_w, w_shout, w_shout, t->frame_g.width - 1 - 2 * w_shout,
+      t->frame_g.height - 1 - 2 * w_shout, rgc, sgc, w_hi);
+  }
+  if (w_shin > 0)
+  {
+    int height = t->frame_g.height - (t->boundary_width * 2 ) + 1;
+
+    RelieveRectangle(
+      dpy, t->decor_w, t->boundary_width - 1, t->boundary_width - 1,
+      t->frame_g.width - (t->boundary_width * 2 ) + 1, height, sgc,
+      HAS_MWM_BORDER(t) ? rgc : sgc, w_shin);
+  }
+}
+
 /****************************************************************************
  *
  * Redraws the windows borders
@@ -266,6 +293,9 @@ static void RedrawBorder(
   GC sgc;
   DecorFaceStyle *borderstyle;
   Bool is_reversed = False;
+  int w_shout;
+  int w_hi;
+  int w_shin;
 
   /*
    * draw the border; resize handles are InputOnly so draw in the decor_w and
@@ -344,49 +374,48 @@ static void RedrawBorder(
    * draw the inside relief
    */
 
-  if (t->boundary_width > 2 + !DFS_HAS_NO_INSET(*borderstyle))
+  if (HAS_MWM_BORDER(t))
   {
-    /* Don't draw a relief if the relief would cover the complete border. This
-     * ensures that the border has the correct colour. */
-    if (HAS_MWM_BORDER(t))
+    w_shout = 0;
+    w_hi = 2;
+    w_shin = 1;
+  }
+  else
+  {
+    w_shout = 1;
+    w_hi = 2;
+    w_shin = 2;
+  }
+  if (DFS_HAS_NO_INSET(*borderstyle))
+  {
+    w_shin = 0;
+  }
+  /* reduce size of relief until at leas one pixel of the original colour is
+   * visible. */
+  while (w_shout + w_hi + w_shin >= t->boundary_width)
+  {
+    if (w_shin > 1)
     {
-      RelieveRectangle(
-	dpy, t->decor_w, 0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
-	rgc, sgc, 2);
+      w_shin--;
     }
-    else
+    else if (w_hi > 1)
     {
-      /* FVWMBorder style has an extra line of shadow on top and left */
-      if (t->boundary_width > 4 + !DFS_HAS_NO_INSET(*borderstyle))
-      {
-	RelieveRectangle(
-	  dpy, t->decor_w, 1, 1, t->frame_g.width - 2, t->frame_g.height - 2,
-	  rgc, sgc, 2);
-      }
-      RelieveRectangle(
-	dpy, t->decor_w, 0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
-	sgc, sgc, 1);
+      w_hi--;
+    }
+    else if (w_shin > 0)
+    {
+      w_shin--;
+    }
+    else if (w_shout > 0)
+    {
+      w_shout--;
+    }
+    else if (w_hi > 0)
+    {
+      w_hi--;
     }
   }
-
-  if(t->boundary_width > 2 && !DFS_HAS_NO_INSET(*borderstyle))
-  {
-    int height = t->frame_g.height - (t->boundary_width * 2 ) + 1;
-
-    /* draw a single pixel band for MWMBorders and the top FvwmBorder line */
-    RelieveRectangle(
-      dpy, t->decor_w, t->boundary_width - 1, t->boundary_width - 1,
-      t->frame_g.width - (t->boundary_width * 2 ) + 1, height, sgc,
-      HAS_MWM_BORDER(t) ? rgc : sgc, 1);
-    /* draw the rest of FvwmBorder Inset */
-    if (!HAS_MWM_BORDER(t))
-    {
-      RelieveRectangle(
-	dpy, t->decor_w, t->boundary_width - 2, t->boundary_width - 2,
-	t->frame_g.width - (t->boundary_width * 2) + 4, height + 3, sgc,
-	rgc, 2);
-    }
-  }
+  draw_frame_relief(t, rgc, sgc, w_shout, w_hi, w_shin);
 
   /*
    * draw the handle marks
@@ -508,101 +537,90 @@ static void RedrawBorder(
    * mind the esoterics, feel the thin-ness */
   if (HAS_BORDER(t) && HAS_DEPRESSABLE_BORDER(t))
   {
+    XRectangle r;
+    Bool is_pressed = False;
+
     if (PressedW == t->sides[0])
     {
       /* top */
-      RelieveRectangle(
-	dpy, t->decor_w, t->corner_width, 1,
-	t->frame_g.width - 2 * t->corner_width - 1,
-	t->boundary_width - 2, sgc, rgc, cd->relief_width);
+      r.x = t->corner_width;
+      r.y = 1;
+      r.width = t->frame_g.width - 2 * t->corner_width;
+      r.height = t->boundary_width - 1;
+      is_pressed = True;
     }
+
     else if (PressedW == t->sides[1])
     {
       /* right */
-      RelieveRectangle(
-	dpy, t->decor_w,
-	t->frame_g.width - t->boundary_width + cd->relief_width - 1,
-	t->corner_width, t->boundary_width - 2,
-	t->frame_g.height - 2 * t->corner_width - 1,
-	sgc, rgc, cd->relief_width);
+      r.x = t->frame_g.width - t->boundary_width;
+      r.y = t->corner_width;
+      r.width = t->boundary_width - 1;
+      r.height = t->frame_g.height - 2 * t->corner_width;
+      is_pressed = True;
     }
     else if (PressedW == t->sides[2])
     {
       /* bottom */
-      RelieveRectangle(
-	dpy, t->decor_w, t->corner_width,
-	t->frame_g.height - t->boundary_width + cd->relief_width - 1,
-	t->frame_g.width - 2 * t->corner_width - 1,
-	t->boundary_width - 2, sgc, rgc, cd->relief_width);
+      r.x = t->corner_width;
+      r.y = t->frame_g.height - t->boundary_width;
+      r.width = t->frame_g.width - 2 * t->corner_width;
+      r.height = t->boundary_width - 1;
+      is_pressed = True;
     }
     else if (PressedW == t->sides[3])
     {
       /* left */
-      RelieveRectangle(
-	dpy, t->decor_w, 1, t->corner_width, t->boundary_width - 2,
-	t->frame_g.height - 2 * t->corner_width - 1, sgc, rgc,
-	cd->relief_width);
+      r.x = 1;
+      r.y = t->corner_width;
+      r.width = t->boundary_width - 1;
+      r.height = t->frame_g.height - 2 * t->corner_width;
+      is_pressed = True;
     }
     else if (PressedW == t->corners[0])
     {
       /* top left */
-      /* drawn as two relieved rectangles, this will have to change if
-       * the title bar and buttons ever get to be InputOnly windows */
-      RelieveRectangle(
-	dpy, t->decor_w, t->boundary_width - cd->relief_width,
-	t->boundary_width - cd->relief_width,
-	t->corner_width - t->boundary_width + cd->relief_width,
-	t->corner_width - t->boundary_width + cd->relief_width - 1, rgc, sgc,
-	cd->relief_width);
-      RelieveRectangle(
-	dpy, t->decor_w, 1, 1, t->corner_width - 2, t->corner_width - 2,
-	sgc, rgc, cd->relief_width);
+      r.x = 1;
+      r.y = 1;
+      r.width = t->corner_width - 1;
+      r.height = t->corner_width - 1;
+      is_pressed = True;
     }
     else if (PressedW == t->corners[1])
     {
       /* top right */
-      RelieveRectangle(
-	dpy, t->decor_w,
-	t->frame_g.width - t->corner_width + cd->relief_width - 2,
-	t->boundary_width - cd->relief_width,
-	t->corner_width - t->boundary_width + cd->relief_width,
-	t->corner_width - t->boundary_width + cd->relief_width - 1, rgc, sgc,
-	cd->relief_width);
-      RelieveRectangle(
-	dpy, t->decor_w, t->frame_g.width - t->corner_width, 1,
-	t->corner_width - 3 + cd->relief_width, t->corner_width - 2, sgc,
-	rgc, cd->relief_width);
+      r.x = t->frame_g.width - t->corner_width;
+      r.y = 1;
+      r.width = t->corner_width - 1;
+      r.height = t->corner_width - 1;
+      is_pressed = True;
     }
     else if (PressedW == t->corners[2])
     {
       /* bottom left */
-      RelieveRectangle(
-	dpy, t->decor_w, t->boundary_width - cd->relief_width,
-	t->frame_g.height - t->corner_width + cd->relief_width -2,
-	t->corner_width - t->boundary_width + cd->relief_width,
-	t->corner_width - t->boundary_width + cd->relief_width, rgc, sgc,
-	cd->relief_width);
-      RelieveRectangle(
-	dpy, t->decor_w, 1, t->frame_g.height - t->corner_width,
-	t->corner_width - 2, t->corner_width - 3 + cd->relief_width, sgc,
-	rgc, cd->relief_width);
+      r.x = 1;
+      r.y = t->frame_g.height - t->corner_width;
+      r.width = t->corner_width - 1;
+      r.height = t->corner_width - 1;
+      is_pressed = True;
     }
     else if (PressedW == t->corners[3])
     {
       /* bottom right */
-      RelieveRectangle(
-	dpy, t->decor_w,
-	t->frame_g.width - t->corner_width + cd->relief_width - 2,
-	t->frame_g.height - t->corner_width + cd->relief_width - 2,
-	t->corner_width - t->boundary_width + cd->relief_width,
-	t->corner_width - t->boundary_width + cd->relief_width, rgc, sgc,
-	cd->relief_width);
-      RelieveRectangle(
-	dpy, t->decor_w, t->frame_g.width - t->corner_width,
-	t->frame_g.height - t->corner_width,
-	t->corner_width - 3 + cd->relief_width,
-	t->corner_width - 3 + cd->relief_width, sgc, rgc,
-	cd->relief_width);
+      r.x = t->frame_g.width - t->corner_width;
+      r.y = t->frame_g.height - t->corner_width;
+      r.width = t->corner_width - 1;
+      r.height = t->corner_width - 1;
+      is_pressed = True;
+    }
+
+    if (is_pressed == True)
+    {
+      XSetClipRectangles(dpy, sgc, 0, 0, &r, 1, Unsorted);
+      XSetClipRectangles(dpy, rgc, 0, 0, &r, 1, Unsorted);
+      draw_frame_relief(t, sgc, rgc, w_shout, w_hi, w_shin);
+      XSetClipMask(dpy, sgc, None);
+      XSetClipMask(dpy, rgc, None);
     }
   }
 }

@@ -1,3 +1,9 @@
+1999-11-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/Goodies.c:
+	(CreateTipWindow):
+	added #ifdef SHAPE
+
 1999-11-30  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Goodies.c (ShowTipWindow):

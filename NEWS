@@ -1,5 +1,7 @@
 Changes in beta release 2.3.10
 
+* Fixed build problem without shape extension.
+
 * New FvwmIconBox option: FvwmIconBoxUseSkipList.
 
 * FvwmBacker is page aware.

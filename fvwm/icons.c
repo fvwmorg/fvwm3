@@ -1083,7 +1083,9 @@ void DeIconify(FvwmWindow *tmp_win)
     }
   }
 
+#if 0
   RaiseWindow(tmp_win); /* moved dje */
+#endif
 
   if(HAS_CLICK_FOCUS(tmp_win))
     FocusOn(tmp_win, TRUE, "");
