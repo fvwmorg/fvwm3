@@ -11,11 +11,6 @@ FVWM_CONFIGDIR='${sysconfdir}'
 AC_SUBST(FVWM_MODULEDIR)
 AC_SUBST(FVWM_CONFIGDIR)
 
-AC_ARG_ENABLE(extras,
-[  --enable-extras         build the extra modules by default])
-test "$enable_extras" = "yes" && EXTRA_MODULES=extras
-test -z "$enable_extras" && enable_extras=no
-AC_SUBST(EXTRA_MODULES)
 
 dnl Various configure-time options
 dnl
@@ -222,11 +217,6 @@ if test "$xpm_LIBS"; then
     FVWMBANNER=FvwmBanner AC_SUBST(FVWMBANNER)
     XPMROOT=xpmroot AC_SUBST(XPMROOT)
     FVWMSCRIPT=FvwmScript AC_SUBST(FVWMSCRIPT)
-
-    # This one needs BOTH C++ and Xpm
-    if test "$with_cxx" = yes; then
-	FVWMCONFIG=FvwmConfig AC_SUBST(FVWMCONFIG)
-    fi
   else
     xpm_LIBS=
     xpm_CFLAGS=
@@ -278,7 +268,7 @@ AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
              [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
-extras/Makefile utils/Makefile docs/Makefile
+utils/Makefile docs/Makefile
 icons/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl
 modules/FvwmAnimate/Makefile
@@ -287,7 +277,10 @@ modules/FvwmAuto/Makefile
 modules/FvwmBacker/Makefile
 modules/FvwmBanner/Makefile
 modules/FvwmButtons/Makefile
+modules/FvwmCommand/Makefile
+modules/FvwmConsole/Makefile
 modules/FvwmCpp/Makefile
+modules/FvwmDebug/Makefile
 modules/FvwmEvent/Makefile
 modules/FvwmForm/Makefile
 modules/FvwmIconBox/Makefile
@@ -298,22 +291,15 @@ modules/FvwmPager/Makefile
 modules/FvwmRearrange/Makefile
 modules/FvwmSave/Makefile
 modules/FvwmSaveDesk/Makefile
+modules/FvwmScript/Makefile
+modules/FvwmScript/Scripts/Makefile
+modules/FvwmScript/Scripts/some_nice_icons/Makefile
+modules/FvwmScript/Widgets/Makefile
 modules/FvwmScroll/Makefile
 modules/FvwmTalk/Makefile
+modules/FvwmTaskBar/Makefile
+modules/FvwmWharf/Makefile
 modules/FvwmWinList/Makefile
-dnl
-extras/FvwmCommand/Makefile
-extras/FvwmConfig/Makefile
-extras/FvwmConsole/Makefile
-extras/FvwmDebug/Makefile
-extras/FvwmGoodStuff/Makefile
-extras/FvwmPipe/Makefile
-extras/FvwmScript/Makefile
-extras/FvwmScript/Scripts/Makefile
-extras/FvwmScript/Scripts/some_nice_icons/Makefile
-extras/FvwmScript/Widgets/Makefile
-extras/FvwmTaskBar/Makefile
-extras/FvwmWharf/Makefile
 )
 
 echo "
@@ -321,7 +307,6 @@ Configuration:
 
   FVWM Version:             $VERSION
 
-  Build extra modules?      $enable_extras
   Have ReadLine support?    $with_readline
   Have RPlay support?	    $with_rplay
   Have XPM support? 	    $with_xpm$xpm_problem

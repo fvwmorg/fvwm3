@@ -853,3 +853,308 @@ Tue Nov 10 07:13:07 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmEvent/Makefile.am (INCLUDES): Added rplay_CFLAGS.
 
 	* FvwmAudio/Makefile.am (INCLUDES): Added rplay_CFLAGS.
+
+
+
+Tue Mar  9 21:02:03 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
+
+	* Entries from here on are from the `extras' directory prior to
+	the merge with modules on Tue Mar  9 21:02:03 1999.
+
+
+Mon Mar  8 17:21:09 1999  Steve ROBBINS  <stever@lear.bic.mni.mcgill.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c: 
+	(RedrawWindow): removed C++-style // comments.
+
+1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWharf/FvwmWharf.c (main):
+	* fvwmperl/fvwmmod.pl (GetConfigInfo):
+	* fvwmperl/FvwmForm.pl (parseline):
+	* fvwmpython/Manual/fvwm_man.html:
+	* fvwmpython/Fvwm.py (FvwmModule.callback):
+	(FvwmModule.callback):
+	(FvwmModule.set_mask):
+	* fvwmperl/MiniPerl.pl:
+	* fvwmperl/FvwmDebug.pl:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmConfig/FvwmConfig.C (main):
+	* FvwmCommand/scripts/focus-link.pl (init):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* fvwmperl/fvwmmod.doc:
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
+	* FvwmDebug/FvwmDebug.c (main):
+	(list_end):
+	Rerenamed builtin functions
+	  Send_ConfigInfo <- SendConfigInfo
+	  Send_WindowList <- SendWindowList
+	  set_mask        <- SetMask
+
+1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWharf/FvwmWharf.c (main):
+	* fvwmperl/fvwmmod.pl (GetConfigInfo):
+	* fvwmperl/FvwmForm.pl (parseline):
+	* fvwmpython/Manual/fvwm_man.html:
+	* fvwmpython/Fvwm.py (FvwmModule.callback):
+	(FvwmModule.callback):
+	(FvwmModule.set_mask):
+	* fvwmperl/MiniPerl.pl:
+	* fvwmperl/FvwmDebug.pl:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmConfig/FvwmConfig.C (main):
+	* FvwmCommand/scripts/focus-link.pl (init):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* fvwmperl/fvwmmod.doc:
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
+	* FvwmDebug/FvwmDebug.c (main):
+	(list_end):
+	Renamed builtin functions
+	  Send_ConfigInfo -> SendConfigInfo
+	  Send_WindowList -> SendWindowList
+	  set_mask        -> SetMask
+
+1999-03-04  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	(RedrawWindow): applied AutoFocus patch
+
+Thu Mar  4 01:41:47 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/icons.c:
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmScript/FvwmScript.c (LoadIcon):
+	* FvwmGoodStuff/icons.c: replace findIconFile with findImageFile.
+
+Thu Mar  4 00:36:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/Scripts/system.fvwmrc: removed Icon, Pixmap, and
+	Module Paths.
+
+Thu Mar  4 00:34:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/Start.c: replaced IconPath by ImagePath.
+
+Wed Mar  3 23:56:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/FvwmScript.c (LoadIcon):
+	* FvwmScript/Widgets/Tools.h:
+	* FvwmWharf/Wharf.h:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmWharf/FvwmWharf.1:
+	* FvwmWharf/icons.c:
+	* FvwmGoodStuff/icons.c (GetXPMFile):
+	* FvwmGoodStuff/FvwmGoodStuff.1:
+	* FvwmGoodStuff/FvwmGoodStuff.h:
+	* FvwmGoodStuff/FvwmGoodStuff.c: replaced iconPath and pixmapPath
+	by imagePath.
+
+Sun Feb 28 12:10:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/ButtonArray.h: include libs/Picture.h for Picture
+	defintion.
+
+Sun Feb 28 11:02:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/Start.c:
+	* FvwmTaskBar/FvwmTaskBar.c: removed all traces of PixmapPath; use
+	IconPath only.
+
+1999-02-15  Bob Woodside <proteus@pcnet.com>
+
+	* FvwmConsole/FvwmConsole.h: Switched the order of the includes for
+	un.h and sockets.h, to correct a compile failure under Linux 2.2.1.
+
+1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c (RelieveWindow):
+	* FvwmGoodStuff/FvwmGoodStuff.h: removed inline from declaration of
+	RelieveWindow
+
+1999-01-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmConfig/WinBase.C: Removed include of strings.h, moved
+	include of config.h to top.
+
+1999-01-13  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine): Made argument just
+	"char", since "unsigned char" caused problems on systems with
+	signed chars.
+
+	* FvwmConsole/FvwmConsole.c: Removed non-constant pointer from
+	initializer of xterm_a.
+
+Sun Jan 10 23:13:45 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c (main): Inserted parentheses
+	around && within ||.
+
+Sun Jan 10 23:06:00 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmDebug/FvwmDebug.c: Removed unused variables.
+
+Sun Jan 10 21:11:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* FvwmPipe/FvwmPipe.c (main):
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
+	* FvwmDebug/FvwmDebug.c (main): Fixed "control reaches end of
+	non-void function" bug.
+
+Sun Jan 10 15:14:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/Colors.c:
+	* FvwmGoodStuff/FvwmGoodStuff.c (GetHilite): Removed min & max
+	macros; they are already in config.h.
+
+Sun Jan 10 15:11:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/FvwmCommand.c:
+	* FvwmCommand/FvwmCommand.h: Replaced select() code conditional on
+	__hpux with code that uses SELECT_TYPE_ARG234.
+
+Sun Jan 10 15:08:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/FvwmCommand.h: Replaced __linux with HAVE_GETOPT_H.
+
+Sun Jan 10 15:05:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/icons.c:
+	* FvwmGoodStuff/icons.c: Replaced NeXT with HAVE_FNCTL_H.
+
+Sun Jan 10 15:03:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmWharf/FvwmWharf.c: Replaced messy set of symbols with
+	HAVE_SYS_SELECT_H.
+
+Sun Jan 10 15:01:37 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmGoodStuff/FvwmGoodStuff.c: Replaced symbol ISC with
+	HAVE_SYS_BSDTYPES_H.
+
+1999-01-08  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmTaskBar/**: some general cleanup
+
+	* FvwmTaskBar/FvwmTaskBar.c (ErrorHandler): added missing return value
+
+	* FvwmTaskBar/FvwmTaskBar.c (ReadFvwmPipe):
+	(ProcessMessage):
+	* FvwmTaskBar/ButtonArray.c (ButtonNew):
+	(DrawButtonArray):
+	(LocateButton):
+	removed unused variables
+
+	* FvwmTaskBar/Goodies.c: Applied a RedHat bugfix for "mailbox"
+
+1999-01-06  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmConsole/Makefile.am: Use X_EXTRA_LIBS instead of socket_LIBS.
+
+1998-12-02  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCommand/Makefile.am: Put FvwmCommand into bindir, not the
+	module directory.  FvwmCommandS still goes in the module dir.
+
+1998-12-02  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmTaskBar/FvwmTaskBar.h: Update prototype for ParseConfig.
+
+	* FvwmTaskBar/FvwmTaskBar.1: Update config file reading note, bugs
+	info, and remove references to fvwm95.
+
+	* FvwmTaskBar/FvwmTaskBar.c: Use GetConfigLine to read the config.
+
+1998-11-24  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmScript/types.h: Remove headers that are duplicated (and
+	better tested for by autoconf) in the config.h file.
+
+	* FvwmConsole/FvwmConsole.h: Move sys/types.h include nearer the
+	top, before sys/select.h.
+
+1998-11-20  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c (CreateWindow): border size bugfix
+
+Tue Nov 10 10:23:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript: Added the yacc & lex output (scanner.c, script.c and
+	script.h) to the CVS tree, so you can build without having these
+	tools.  Removed the old version of the yacc/lex input (the
+	Compilers subdirectory).
+
+Tue Nov 10 10:05:05 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/Makefile.am (EXTRA_DIST): Added script.h.
+
+Tue Nov 10 08:44:34 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript: Copied the yacc & lex source files from the Compiler
+	subdirectory, and changed the makefile to build the .c and .h
+	files from scanner.l and script.y.
+
+Mon Nov  9 18:56:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Makefile.am (SUBDIRS): Removed fvwmperl, since this version is
+	known to be obsolete.  Removed fvwmpython on suspicion of being
+	obsolete.
+
+1998-11-06  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmWharf/Makefile.am (FvwmWharf_DEPENDENCIES):
+	* FvwmTaskBar/Makefile.am (FvwmTaskBar_DEPENDENCIES):
+	* FvwmScript/Makefile.am (FvwmScript_DEPENDENCIES):
+	* FvwmPipe/Makefile.am (FvwmPipe_DEPENDENCIES):
+	* FvwmGoodStuff/Makefile.am (FvwmGoodStuff_DEPENDENCIES):
+	* FvwmCommand/Makefile.am (FvwmCommand_DEPENDENCIES,FvwmCommandS_DEPENDENCIES):
+	* FvwmConfig/Makefile.am (FvwmConfig_DEPENDENCIES):
+	* FvwmConsole/Makefile.am (FvwmConsole_DEPENDENCIES,FvwmConsoleC_DEPENDENCIES):
+	* FvwmDebug/Makefile.am (FvwmDebug_DEPENDENCIES):
+	Added a dependency on libfvwm.a.
+
+	* FvwmConsole/FvwmConsole.h: Remove reference to internal Linux
+	include files.
+
+1998-11-05  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmScript/FvwmScript.c: Change DEBUG surrounding bounds checker
+	code to MEMDEBUG, so you don't need the special library to enable
+	debugging.
+
+	* FvwmCommand/FvwmCommand.h: Remove reference to internal Linux
+	include files.
+	* FvwmCommand/FvwmCommand.c: Include getopt.h.
+
+	* FvwmScript/Instructions.c (RemainderOfDiv): If the host doesn't
+	have div(), just return an error message.
+
+1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmWharf/Wharf.h: Made icon_info.depth a signed char, because
+	it is sometimes compared with -1.
+
+	* FvwmDebug/FvwmDebug.h (setvbuf): Checks for HAVE_SETVBUF and
+	SETVBUF_REVERSED.
+
+	* FvwmTaskBar/Makefile.am (INCLUDES):
+	* FvwmPipe/Makefile.am (INCLUDES):
+	* FvwmDebug/Makefile.am (INCLUDES):
+	* FvwmConsole/Makefile.am (INCLUDES): Added xpm_CFLAGS, since
+	xpm.h is included by fvwmlib.h.

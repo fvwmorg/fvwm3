@@ -1,0 +1,22 @@
+This is a port of the AfterStep
+wharf module to an fvwm2 module.
+
+You should install this directory
+in the modules subdirectory of the
+fvwm source directory.
+
+I have only build this on a SUN
+running solaris 2.
+
+I don't think it will build if you enable the
+audio extensions. It should build but I have
+no idea if it works if you enable the
+drag and drop extenstions. I am not sure
+if all the textures work. Swallow does seem
+to work.
+
+I am happy to attempt to maintain this.
+If you find/fix any bugs or fox the
+man page,
+
+pdg@uow.edu.au

@@ -1,0 +1,17 @@
+0. Restore the files under fvwm/modules
+
+1. Change the current directory to FvwmConsole
+
+2. Modify your Imakefile
+
+   Comment out the line, '#define HAVE_READLINE', if you don't
+   have GNU readline library.
+
+   If you have Perl 5.002 or later and want to use FvwmConsoleC.pl
+   editor, insert '#define HAVE_PERL5.002
+
+3. Run 'xmkmf;make'.
+
+4. Run 'make install'.
+
+5. Run 'make install.man' to install man pages.

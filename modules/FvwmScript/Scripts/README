@@ -1,0 +1,28 @@
+The directory ./Examples contains some examples of what can we do with
+FvwmScript:
+
+	- BellSetup: desk accessory to modify bell. This script
+requires xsetup.
+	- Buttons: buttons panel wich can replace FvwmButtons. 
+This script support popup menu and requires xload, xclock, 
+FvwmPager, TkDesk and some icons wich are located in ./some_nice_icons.
+	- Date: desk accessory to setup date and time, requires
+xclock and date.
+	- KeyboardSetup: desk accessory to setup keyboard, requires
+xsetup.
+	- Quit: scritp to confirm "Logout" or "Restart computer"
+	- ScreenSetup: desk accessory to customize background display
+and screen saver.
+	- fvwmrc: my preferred fvwm config wich use all the six scripts.
+
+
+N.B. BellSetup, KeyBoardSetup and ScreenSetup save preferences to 
+~/.xinit-fvwmrc. If you want to load these preferences at every startup,
+you have to include the line ".xinit-fvwmrc" in your .xinitrc before
+the line "fvwm".
+
+I hope that FvwmScript will interest you. In any case, please send me a short email and
+tell me what you think about FvwmScript.
+
+Frederic Cordier
+e-mail f-cord96@bat710.univ-lyon1.fr

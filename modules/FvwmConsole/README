@@ -1,0 +1,24 @@
+     FvwmConsole allows the user to type fvwm  commands  into
+     xterm,  and  have  them executed immediately. These commands
+     are usually specfified in the .fvwmrc file, or are bound  to
+     menu/mouse  items  as  specified in that file. This tools is
+     particularly useful for testing new configuration ideas,  or
+     for implementing temporary changes to your environment.
+
+     GNU readline library is called to edit command line.
+     A perl script is supplied as an alternative command editor
+     for those who don't have the readline library.
+
+     Any comments will be appreciated.
+
+     Feb '97
+
+
+
+	 Thanks to Makoto `MAR_kun' MATSUSHITA for advice and testing
+               Paul D Smith for fixes
+
+	 Toshi Isogai  isogai@kentek.com
+	 
+
+    

@@ -1,0 +1,7 @@
+Bugs detected with Bounds Checking:
+
+	FvwmScript.c:146	XOpenDisplay
+	FvwmScript.c:231	XAllocNamedColor, XParseColor
+				Only works with colors named "#??????"
+	FvwmScript.c:315	XSetWMProtocols
+	PushButton.c:31		XCreateFontCursor

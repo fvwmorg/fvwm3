@@ -1,0 +1,19 @@
+Installation
+
+0. Un-tar the tar file under fvwm2/extras directory.
+
+1. Edit Imake file to specify directory names to install
+   function collection files.
+
+2. Make Makefile by,
+	xmkmf
+
+3. Compile source files,
+	make
+
+4. To install binary files,
+	make install
+
+5. To install man page,
+	make install.man 
+
