@@ -61,15 +61,16 @@ done
 
 wrong_dir=1
 if [ -r "$CHECK_FILE" ] ; then
-  if grep "$CHECK_STRING1" "$CHECK_FILE" ; then
-    if grep "$CHECK_STRING2" "$CHECK_FILE" ; then
+  if grep "$CHECK_STRING1" "$CHECK_FILE" > /dev/null 2> /dev/null ; then
+    if grep "$CHECK_STRING2" "$CHECK_FILE" > /dev/null 2> /dev/null ; then
       wrong_dir=0
-    fi > /dev/null 2> /dev/null
-  fi > /dev/null 2> /dev/null
-fi > /dev/null 2> /dev/null
+    fi
+  fi
+fi
 
 if [ $wrong_dir = 1 ] ; then
   echo "The fvwm sources are not present in the current directory."
+  echo "Looked for AUTHORS containing \"fvwm\" and \"Robert Nation\". exit."
   exit 11;
 fi
 
