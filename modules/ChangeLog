@@ -2,6 +2,14 @@
 
 	* FvwmWinList/FvwmWinList.1: updated man page
 
+1999-10-14  Hippo
+
+	* FvwmScript/Makefile.am: removed automatic lex and yacc stage, use
+	make syntax if you want to change the script language.
+	* FvwmScript/BUGS: removed (lack of info makes it useless).
+	* FvwmScript/README: new file with build instructions.
+	* FvwmScript/FvwmScript.c: replaced a macro with equivalent.
+
 1999-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmGtk/Makefile.am: applied patch to build fvwm without gnome
