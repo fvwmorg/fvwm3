@@ -1,5 +1,15 @@
 2002-02-01  Dan Espen  <dane@mk.telcordia.com>
 
+	* FvwmWinList/FvwmWinList.1: 
+	* FvwmScroll/FvwmScroll.1: 
+	* FvwmScript/FvwmScript.1: 
+	* FvwmSave/FvwmSave.1: 
+	* FvwmPager/FvwmPager.1: 
+	* FvwmM4/FvwmM4.1: 
+	* FvwmIconMan/FvwmIconMan.1: 
+	* FvwmDragWell/FvwmDragWell.1: 
+	* FvwmCpp/FvwmCpp.1: .fvwmrc -> .fvwm2rc
+
 	* FvwmButtons/FvwmButtons.1: Language fix.
 
 2002-01-31  olicha  <olivier.chapuis@free.fr>

@@ -1,3 +1,10 @@
+2002-02-01  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm-menu-xlock.1: 
+	* fvwm-menu-headlines.1: 
+	* fvwm-menu-directory.1: 
+	* fvwm-menu-desktop.1: fvwmrc -> .fvwm2rc
+
 2002-01-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm24_convert.in:
