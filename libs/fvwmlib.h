@@ -174,6 +174,14 @@ void send_clientmessage (Display *disp, Window w, Atom a, Time timestamp);
 /* not really a wrapper, but useful and X related */
 void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName);
 
+/*
+ * This function determines the location of the mouse pointer from the event
+ * if possible, if not it queries the X server. Returns False if it had to
+ * query the server and the call failed.
+ */
+Bool GetLocationFromEventOrQuery(Display *dpy, Window w, XEvent *eventp,
+				 int *ret_x, int *ret_y);
+
 /***********************************************************************
  * Wrappers around Xrm routines (XResources.c)
  ***********************************************************************/
