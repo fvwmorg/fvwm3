@@ -1,3 +1,9 @@
+2001-06-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (destroy_icon_font):
+	check if icon_font == default font before deleting the icon_font,
+	not if title_font == default font
+
 2001-06-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/style.c (CMD_Style):

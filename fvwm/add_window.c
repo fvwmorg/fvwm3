@@ -344,7 +344,7 @@ void setup_window_font(
 static void destroy_icon_font(FvwmWindow *tmp_win)
 {
   if (IS_ICON_FONT_LOADED(tmp_win) && !USING_DEFAULT_ICON_FONT(tmp_win) &&
-      tmp_win->title_font.font != Scr.DefaultFont.font)
+      tmp_win->icon_font.font != Scr.DefaultFont.font)
   {
     FreeFvwmFont(dpy, &(tmp_win->icon_font));
   }
