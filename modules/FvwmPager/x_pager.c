@@ -1288,6 +1288,13 @@ void ReConfigure(void)
 	{
 	  continue;
 	}
+	if (HilightDesks)
+	{
+	  if(i == Scr.CurrentDesk - desk1)
+	    XMoveResizeWindow(dpy, Desks[i].CPagerWin, x,y,w,h);
+	  else
+	    XMoveResizeWindow(dpy, Desks[i].CPagerWin, -32768, -32768,w,h);
+	}
 	draw_desk_background(i);
       }
     }
