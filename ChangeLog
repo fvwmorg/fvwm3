@@ -1,3 +1,8 @@
+2000-11-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS, configure.in:
+	changed version to 2.3.23
+
 2000-11-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:
