@@ -223,7 +223,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
   DoSetFocus(w, Fw, FocusByMouse, False);
 }
 
-SetPointerEventPosition(XEvent *eventp, int x, int y)
+void SetPointerEventPosition(XEvent *eventp, int x, int y)
 {
   switch (eventp->type)
   {

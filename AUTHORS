@@ -121,7 +121,8 @@ improved transient FvwmPager, improved transient window handling, MaxWindowSize
 style, Improved(?) mouse paging, RaiseTransient and LowerTransient styles,
 nicer cursors, helped with colorset implementation, variables for FvwmButtons
 actions, fvwm-cats page, ported &%!#?-95 like config file from fvwm95, cleanup
-of gradient drawing code, rewrite of opaque resize patch for 2.3.8.
+of gradient drawing code, rewrite of opaque resize patch for 2.3.8,
+HideSizeWindow command.
 
 A.J. Weber:
 SnapAttraction patch.

@@ -77,6 +77,7 @@
 #include "builtins.h"
 #include "decorations.h"
 #include "libs/Colorset.h"
+#include "style.h"
 
 /* Used to parse command line of clients for specific desk requests. */
 /* Todo: check for multiple desks. */
@@ -492,20 +493,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   SET_ICON_UNMAPPED(tmp_win, 0);
   SET_MAXIMIZED(tmp_win, 0);
 
-  tmp_win->TextPixel = Colorset[Scr.DefaultColorset].fg;
-  tmp_win->ReliefPixel = Colorset[Scr.DefaultColorset].hilite;
-  tmp_win->ShadowPixel = Colorset[Scr.DefaultColorset].shadow;
-  tmp_win->BackPixel = Colorset[Scr.DefaultColorset].bg;
-
-  if(SGET_FORE_COLOR_NAME(style) != NULL) {
-    tmp_win->TextPixel = GetColor(SGET_FORE_COLOR_NAME(style));
-  }
-  if(SGET_BACK_COLOR_NAME(style) != NULL) {
-    tmp_win->BackPixel = GetColor(SGET_BACK_COLOR_NAME(style));
-    tmp_win->ShadowPixel = GetShadow(tmp_win->BackPixel);
-    tmp_win->ReliefPixel = GetHilite(tmp_win->BackPixel);
-  }
-
+  update_window_color_style(tmp_win, &style);
 
   /* add the window to the end of the fvwm list */
   tmp_win->next = Scr.FvwmRoot.next;

@@ -21,24 +21,25 @@
 /* access to the common flags of a window */
 /* call these with a pointer to a style_flags struct */
 #define SDO_FLIP_TRANSIENT(sf) \
-                                      ((sf)->common.do_flip_transient)
-#define SDO_GRAB_FOCUS(sf)            ((sf)->common.do_grab_focus_when_created)
+                                      ((sf)->common.s.do_flip_transient)
+#define SDO_GRAB_FOCUS(sf)            \
+          ((sf)->common.s.do_grab_focus_when_created)
 #define SDO_GRAB_FOCUS_TRANSIENT(sf)  \
-          ((sf)->common.do_grab_focus_when_transient_created)
-#define SDO_LOWER_TRANSIENT(sf)       ((sf)->common.do_lower_transient)
-#define SDO_RAISE_TRANSIENT(sf)       ((sf)->common.do_raise_transient)
-#define SDO_RESIZE_OPAQUE(sf)         ((sf)->common.do_resize_opaque)
-#define SDO_SKIP_CIRCULATE(sf)        ((sf)->common.do_circulate_skip)
-#define SDO_SKIP_CIRCULATE_ICON(sf)   ((sf)->common.circulate_skip_icon)
-#define SDO_NOT_SHOW_ON_MAP(sf)       ((sf)->common.do_not_show_on_map)
-#define SDO_SKIP_WINDOW_LIST(sf)      ((sf)->common.do_window_list_skip)
+          ((sf)->common.s.do_grab_focus_when_transient_created)
+#define SDO_LOWER_TRANSIENT(sf)       ((sf)->common.s.do_lower_transient)
+#define SDO_RAISE_TRANSIENT(sf)       ((sf)->common.s.do_raise_transient)
+#define SDO_RESIZE_OPAQUE(sf)         ((sf)->common.s.do_resize_opaque)
+#define SDO_SKIP_CIRCULATE(sf)        ((sf)->common.s.do_circulate_skip)
+#define SDO_SKIP_CIRCULATE_ICON(sf)   ((sf)->common.s.circulate_skip_icon)
+#define SDO_NOT_SHOW_ON_MAP(sf)       ((sf)->common.s.do_not_show_on_map)
+#define SDO_SKIP_WINDOW_LIST(sf)      ((sf)->common.s.do_window_list_skip)
 #define SDO_STACK_TRANSIENT_PARENT(sf) \
-                                      ((sf)->common.do_stack_transient_parent)
-#define SDO_START_ICONIC(sf)          ((sf)->common.do_start_iconic)
+          ((sf)->common.s.do_stack_transient_parent)
+#define SDO_START_ICONIC(sf)          ((sf)->common.s.do_start_iconic)
 #define SIS_BUTTON_DISABLED(sf)       ((sf)->is_button_disabled)
-#define SIS_ICON_STICKY(sf)           ((sf)->common.is_icon_sticky)
-#define SIS_ICON_SUPPRESSED(sf)       ((sf)->common.is_icon_suppressed)
-#define SIS_LENIENT(sf)               ((sf)->common.is_lenient)
+#define SIS_ICON_STICKY(sf)           ((sf)->common.s.is_icon_sticky)
+#define SIS_ICON_SUPPRESSED(sf)       ((sf)->common.s.is_icon_suppressed)
+#define SIS_LENIENT(sf)               ((sf)->common.s.is_lenient)
 #define SIS_STICKY(sf)                ((sf)->common.is_sticky)
 #define SHAS_CLICK_FOCUS(sf)          \
           ((sf)->common.focus_mode == FOCUS_CLICK)
@@ -46,11 +47,12 @@
           ((sf)->common.focus_mode == FOCUS_MOUSE)
 #define SHAS_SLOPPY_FOCUS(sf)         \
           ((sf)->common.focus_mode == FOCUS_SLOPPY)
-#define SHAS_NO_ICON_TITLE(sf)        ((sf)->common.has_no_icon_title)
-#define SHAS_MWM_BORDER(sf)           ((sf)->common.has_mwm_border)
-#define SHAS_MWM_BUTTONS(sf)          ((sf)->common.has_mwm_buttons)
-#define SHAS_MWM_OVERRIDE_HINTS(sf)   ((sf)->common.has_mwm_override)
-#define SHAS_OVERRIDE_SIZE_HINTS(sf)  ((sf)->common.has_override_size)
+#define SHAS_NO_ICON_TITLE(sf)        ((sf)->common.s.has_no_icon_title)
+#define SHAS_MWM_BORDER(sf)           ((sf)->common.s.has_mwm_border)
+#define SHAS_MWM_BUTTONS(sf)          ((sf)->common.s.has_mwm_buttons)
+#define SHAS_MWM_OVERRIDE_HINTS(sf)   ((sf)->common.s.has_mwm_override)
+#define SHAS_OVERRIDE_SIZE_HINTS(sf)  ((sf)->common.s.has_override_size)
+#define SUSE_COLORSET(sf)             ((sf)->use_colorset)
 
 /* access to the special flags of a style */
 /* call these with a pointer to a style_flags struct */
@@ -98,6 +100,7 @@
 #endif
 #define SGET_FORE_COLOR_NAME(style)   ((style).fore_color_name)
 #define SGET_BACK_COLOR_NAME(style)   ((style).back_color_name)
+#define SGET_COLORSET(style)          ((style).colorset)
 #define SGET_FLAGS_POINTER(style)     (&((style).flags))
 #define SGET_BORDER_WIDTH(style)      ((style).border_width)
 #define SGET_HANDLE_WIDTH(style)      ((style).handle_width)
@@ -117,5 +120,7 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles);
 int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len);
 void reset_style_changes(void);
 void handle_style_changes(void);
+void update_style_colorset(int colorset);
+void update_window_color_style(FvwmWindow *tmp_win, window_style *style);
 
 #endif /* _STYLE_ */

@@ -34,6 +34,7 @@ void move_window_to_page(F_CMD_ARGS);
 void SetMoveSmoothness(F_CMD_ARGS);
 void SetMoveThreshold(F_CMD_ARGS);
 void SetOpaque(F_CMD_ARGS);
+void HideSizeWindow(F_CMD_ARGS);
 void SetSnapAttraction(F_CMD_ARGS);
 void SetSnapGrid(F_CMD_ARGS);
 void SetXOR(F_CMD_ARGS);

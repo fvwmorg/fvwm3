@@ -112,7 +112,7 @@ void ClosePipes(void)
     }
 }
 
-static int do_execute_module(F_CMD_ARGS)
+static int do_execute_module(F_CMD_ARGS, Bool desperate)
 {
   int fvwm_to_app[2],app_to_fvwm[2];
   int i,val,nargs = 0;
@@ -151,8 +151,15 @@ static int do_execute_module(F_CMD_ARGS)
 
   if(arg1 == NULL)
     {
-      fvwm_msg(ERR,"executeModule",
-	       "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
+      /* If this function is called in 'desparate' mode this means fvwm is
+       * trying a module name as a last resort.  In this case the error message
+       * is inappropriate because it was most likely a typo in a command, not
+       * a module name. */
+      if (!desperate)
+      {
+	fvwm_msg(ERR,"executeModule",
+		 "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
+      }
       free(cptr);
       return -1;
     }
@@ -314,9 +321,14 @@ static int do_execute_module(F_CMD_ARGS)
   return ret_pipe;
 }
 
+int executeModuleDesperate(F_CMD_ARGS)
+{
+  return do_execute_module(eventp, w, tmp_win, context, action, Module, True);
+}
+
 void executeModule(F_CMD_ARGS)
 {
-  do_execute_module(eventp, w, tmp_win, context, action, Module);
+  do_execute_module(eventp, w, tmp_win, context, action, Module, False);
   return;
 }
 
@@ -369,7 +381,8 @@ void executeModuleSync(F_CMD_ARGS)
     return;
   }
 
-  pipe_slot = do_execute_module(eventp, w, tmp_win, context, action, Module);
+  pipe_slot =
+    do_execute_module(eventp, w, tmp_win, context, action, Module, False);
   if (pipe_slot == -1)
   {
     /* executing the module failed, just return */

@@ -70,6 +70,7 @@ extern struct queue_buff_struct **pipeQueue;
 
 void module_zapper(F_CMD_ARGS);
 void executeModule(F_CMD_ARGS);
+int executeModuleDesperate(F_CMD_ARGS);
 void executeModuleSync(F_CMD_ARGS);
 void initModules(void);
 int HandleModuleInput(Window w, int channel, char *expect);

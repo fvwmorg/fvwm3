@@ -268,8 +268,8 @@ static enum ButtonState get_button_state(Bool onoroff, Bool toggled, Window w)
  * Redraws the windows borders and the title bar
  *
  ****************************************************************************/
-void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
-		Window expose_win)
+void SetBorder(FvwmWindow *t, Bool onoroff, int force,Bool Mapped,
+	       Window expose_win)
 {
   RedrawBorder(t, onoroff, force, Mapped, expose_win);
   SetTitleBar(t,onoroff, False);
@@ -281,8 +281,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
  * Redraws the windows borders
  *
  ****************************************************************************/
-void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
-		   Window expose_win)
+void RedrawBorder(FvwmWindow *t, Bool onoroff,int force,Bool Mapped,
+		  Window expose_win)
 {
   int i;
   GC ReliefGC,ShadowGC;
@@ -979,7 +979,6 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 	  ? &GetDecor(t,BorderStyle.active)
 	  : &GetDecor(t,BorderStyle.inactive);
 
-/*!!!*/
       if (DFS_USE_BORDER_STYLE(*tb_style) &&
 	  DFS_FACE_TYPE(df->style) == TiledPixmapButton)
       {

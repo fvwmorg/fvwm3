@@ -122,7 +122,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
     cond_flags = CreateFlagString(action, &restofline);
     if (cond_flags)
-      {
+    {
       /* Create window mask */
       use_condition = True;
       DefaultConditionMask(&mask);
@@ -136,7 +136,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
       /* Relocate action */
       action = restofline;
-      }
+    }
 
 
     /* parse options */
@@ -354,7 +354,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           name = t->icon_name;
         else
           name = t->name;
-        t_hot = safemalloc(strlen(name) + strlen(tname) + 48);
+        t_hot = safemalloc(strlen(name) + 48);
 
         if(flags & SHOW_INFONOTGEO)
           sprintf(t_hot, "&%c.  ", scut);         /* Generate label */
@@ -373,15 +373,13 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           }
           else
             strcat(tname, "(");
-          strcat(tname, name);
-          if(IS_ICONIFIED(t))
-            strcat(tname, ")");
           strcat(t_hot,"\t");
           strcat(t_hot,tname);
+	  strcat(t_hot, name);
+	  if(IS_ICONIFIED(t))
+	    strcat(t_hot, ")");
         }
-
-
-        if (flags & SHOW_GEOMETRY)
+	else if (flags & SHOW_GEOMETRY)
         {
           tname[0]=0;
           if(IS_ICONIFIED(t))

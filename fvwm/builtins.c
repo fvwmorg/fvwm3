@@ -534,7 +534,6 @@ void refresh_function(F_CMD_ARGS)
   XFlush (dpy);
 }
 
-
 void refresh_win_function(F_CMD_ARGS)
 {
   XSetWindowAttributes attributes;
@@ -1065,6 +1064,7 @@ void HandleColorset(F_CMD_ARGS)
     ApplyDefaultFontAndColors();
   }
   UpdateMenuColorset(n);
+  update_style_colorset(n);
 }
 
 
@@ -2432,12 +2432,6 @@ void SetEnv(F_CMD_ARGS)
   free(szValue);
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *	Reborder - Removes fvwm border windows
- *
- ************************************************************************/
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
   XEvent event;

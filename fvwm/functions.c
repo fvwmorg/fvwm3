@@ -114,7 +114,7 @@ static const struct functions func_config[] =
 #ifdef USEDECOR
   {"addtodecor",   add_item_to_decor,F_ADD_DECOR,	    0},
 #endif /* USEDECOR */
-  {"addtofunc",    add_item_to_func, F_ADDFUNC,             0},
+  {"addtofunc",    add_item_to_func, F_ADDFUNC,             FUNC_ADD_TO},
   {"addtomenu",    add_item_to_menu, F_ADDMENU,             0},
   {"all",          AllFunc,          F_ALL,                 0},
   {"animatedmove", animated_move_window,F_ANIMATED_MOVE,    FUNC_NEEDS_WINDOW},
@@ -171,6 +171,7 @@ static const struct functions func_config[] =
   {"gotodesk",     changeDesks_func, F_DESK,                0},
   {"gotodeskandpage",  gotoDeskAndPage_func, F_DESK,        0},
   {"gotopage",     goto_page_func,   F_GOTO_PAGE,           0},
+  {"hidesizewindow",HideSizeWindow,  F_HIDESIZEWINDOW,      0},
   {"hilightcolor", SetHiColor,       F_HICOLOR,             0},
   {"iconfont",     LoadIconFont,     F_ICONFONT,            0},
   {"iconify",      iconify_function, F_ICONIFY,             FUNC_NEEDS_WINDOW},
@@ -343,18 +344,18 @@ static int expand_extended_var(char *var_name, char *output)
   }
 }
 
-static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
+static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
+		    Bool addto)
 {
   int l,i,l2,n,k,j,m;
   int xlen;
   char *out;
-  int addto = 0; /*special cas if doing addtofunc */
   char *var;
 
   l = strlen(input);
   l2 = l;
 
-  if(strncasecmp(input, "AddToFunc", 9) == 0 || input[0] == '+')
+  if(input[0] == '+' && Scr.last_added_item.type == ADDED_FUNCTION)
   {
     addto = 1;
   }
@@ -453,6 +454,12 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
       switch (input[i+1])
       {
       case '[':
+	if (addto)
+	{
+	  /* Don't expand these in an 'AddToFunc' command */
+	  out[j++] = input[i];
+	  break;
+	}
 	/* extended variables */
 	var = &input[i+2];
 	m = i + 2;
@@ -781,6 +788,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     }
   skip = taction - Action;
 
+#if 0
   if (expand_cmd == EXPAND_COMMAND)
     expaction = expand(Action, arguments, tmp_win);
   else
@@ -789,24 +797,56 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   j=0;
 
   action = GetNextToken(taction,&function);
+  if (!function)
+    function = strdup("");
   bif = FindBuiltinFunction(function);
   if (expand_cmd == EXPAND_COMMAND && func_depth <= 1)
   {
     must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
   }
   if (bif)
-    {
-      bif->action(eventp,w,tmp_win,context,action,&Module);
-    }
-  else
-    {
-      Bool desperate = 1;
+  {
+    bif->action(eventp,w,tmp_win,context,action,&Module);
+  }
+#else
+  GetNextToken(taction, &function);
+  if (!function)
+    function = strdup("");
+  bif = FindBuiltinFunction(function);
 
-      execute_complex_function(eventp,w,tmp_win,context,taction, &Module,
-			       &desperate, DONT_EXPAND_COMMAND);
-      if(desperate)
-	  executeModule(eventp,w,tmp_win,context,taction, &Module);
+  if (expand_cmd == EXPAND_COMMAND)
+    expaction = expand(Action, arguments, tmp_win,
+		       (bif) ? !!(bif->flags & FUNC_ADD_TO) : False);
+  else
+    expaction = Action;
+  taction = expaction + skip;
+  j=0;
+  action = SkipNTokens(taction, 1);
+  if (expand_cmd == EXPAND_COMMAND && func_depth <= 1)
+  {
+    must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
+  }
+  if (bif)
+  {
+    bif->action(eventp,w,tmp_win,context,action,&Module);
+  }
+#endif
+  else
+  {
+    Bool desperate = 1;
+
+    execute_complex_function(eventp,w,tmp_win,context,taction, &Module,
+			     &desperate, DONT_EXPAND_COMMAND);
+    if(desperate)
+    {
+      if (executeModuleDesperate(
+	eventp,w,tmp_win,context,taction, &Module) == -1)
+      {
+	fvwm_msg(ERR, "ExecuteFunction",
+		 "No such command '%s'", function);
+      }
     }
+  }
 
   /* Only wait for an all-buttons-up condition after calls from
    * regular built-ins, not from complex-functions, menus or modules. */
@@ -1234,7 +1274,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	  w = tmp_win->frame;
 	else
 	  w = None;
-	taction = expand(fi->action,arguments,tmp_win);
+	taction = expand(fi->action,arguments,tmp_win,False);
 	ExecuteFunction(taction,tmp_win,eventp,context,-2,EXPAND_COMMAND);
 	free(taction);
 	break;
@@ -1353,7 +1393,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	    w = tmp_win->frame;
 	  else
 	    w = None;
-	  taction = expand(fi->action,arguments,tmp_win);
+	  taction = expand(fi->action,arguments,tmp_win,False);
 	  ExecuteFunction(taction,tmp_win,ev,context,-2,expand_cmd);
 	  free(taction);
 	}

@@ -16,8 +16,8 @@
 #ifndef _BORDERS_H
 #define _BORDERS_H
 
-void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
-void RedrawBorder (FvwmWindow *, Bool,Bool,Bool, Window);
+void SetBorder (FvwmWindow *, Bool,int,Bool, Window);
+void RedrawBorder (FvwmWindow *, Bool,int,Bool, Window);
 void SetTitleBar(FvwmWindow *, Bool,Bool);
 void SetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
 void SetShape(FvwmWindow *, int);

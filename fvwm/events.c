@@ -961,24 +961,24 @@ void HandleMapRequest(void)
 void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 {
   extern long isIconicState;
+  extern Bool isIconifiedByParent;
   extern Boolean PPosOverride;
   Bool OnThisPage = False;
 
   Event.xany.window = Event.xmaprequest.window;
 
   if (ReuseWin == NULL)
+  {
+    if(XFindContext(dpy, Event.xany.window, FvwmContext,
+		    (caddr_t *)&Tmp_win)==XCNOENT)
     {
-      if(XFindContext(dpy, Event.xany.window, FvwmContext,
-		      (caddr_t *)&Tmp_win)==XCNOENT)
-	{
-	  Tmp_win = NULL;
-	}
+      Tmp_win = NULL;
     }
+  }
   else
-    {
-      Tmp_win = ReuseWin;
-    }
-
+  {
+    Tmp_win = ReuseWin;
+  }
 
   if(!PPosOverride)
     XFlush(dpy);
@@ -1053,6 +1053,11 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	  break;
 
 	case IconicState:
+	  if (isIconifiedByParent)
+	  {
+	    isIconifiedByParent = False;
+	    SET_ICONIFIED_BY_PARENT(Tmp_win, 1);
+	  }
 	  if (Tmp_win->wmhints)
 	    {
 	      Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
@@ -1644,6 +1649,7 @@ void HandleConfigureRequest(void)
   unsigned int width, height;
   int h;
   XConfigureRequestEvent *cre = &Event.xconfigurerequest;
+  Bool do_send_event = False;
 
   DBUG("HandleConfigureRequest","Routine Entered");
 
@@ -1756,12 +1762,24 @@ void HandleConfigureRequest(void)
       y = cre->y - Tmp_win->boundary_width - Tmp_win->title_g.height;
     if (cre->value_mask & CWWidth)
       width = cre->width + 2*Tmp_win->boundary_width;
-    if (cre->value_mask & CWHeight &&
+
+    if (cre->value_mask & CWHeight)
+    {
+      if (cre->height < (WINDOW_FREAKED_OUT_HEIGHT - Tmp_win->title_g.height -
+			 2 * Tmp_win->boundary_width))
+      {
+	height = cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
+      }
+      else
+      {
 	/* patch to ignore height changes to astronomically large windows
-	 * (needed for XEmacs 20.4) */
-	cre->height < (WINDOW_FREAKED_OUT_HEIGHT - Tmp_win->title_g.height -
-		       2 * Tmp_win->boundary_width))
-      height = cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
+	 * (needed for XEmacs 20.4); don't care if the window is shaded here -
+	 * we won't use 'height' in this case anyway */
+	height = Tmp_win->frame_g.height;
+	/* inform the buggy app about the size that *we* want */
+	do_send_event = True;
+      }
+    }
 
     /*
      * SetupWindow (x,y) are the location of the upper-left outer corner and
@@ -1875,10 +1893,12 @@ void HandleConfigureRequest(void)
 	}
     }
 
-#if 0
+#if 1
   /* This causes some ddd windows not to be drawn properly. Reverted back to
    * the old method in SetupFrame. */
-  if (sendEvent)
+  /* domivogt (15-Oct-1999): enabled this to work around buggy apps that
+   * ask for a nonsense height and expect that they really get it. */
+  if (do_send_event)
     {
       XEvent client_event;
       client_event.type = ConfigureNotify;

@@ -249,6 +249,7 @@ typedef struct
   unsigned has_no_title : 1;
   unsigned has_ol_decor : 1;
   unsigned is_button_disabled : 10;
+  unsigned use_colorset : 1;
   unsigned use_layer : 1;
   unsigned use_no_pposition : 1;
   unsigned use_start_on_desk : 1;
@@ -277,6 +278,7 @@ typedef struct window_style
 #endif
   char *fore_color_name; /* ForeColor */
   char *back_color_name; /* BackColor */
+  int colorset;
   int border_width;
   int layer;
   int handle_width; /* resize_width */
@@ -387,10 +389,8 @@ typedef struct FvwmWindow
 
     int default_layer;
     int layer;
-
     int max_window_width;
     int max_window_height;
-
 } FvwmWindow;
 
 /* Window mask for Circulate and Direction functions */
@@ -474,7 +474,6 @@ typedef struct WindowConditionMask {
 #define BUTTON10  512
 
 
-extern void Reborder(void);
 RETSIGTYPE SigDone(int);
 RETSIGTYPE Restart(int nonsense);
 extern void Done(int, char *) __attribute__((__noreturn__));

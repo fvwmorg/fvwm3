@@ -55,6 +55,7 @@ struct functions
 /* Bits for the function flag byte. */
 #define FUNC_NEEDS_WINDOW 0x01
 #define FUNC_DONT_REPEAT  0x02
+#define FUNC_ADD_TO       0x04
 
 /* Types of events for the FUNCTION builtin */
 typedef enum
@@ -130,6 +131,7 @@ enum
   F_GLOBAL_OPTS,
   F_GOTO_PAGE,
   F_HICOLOR,
+  F_HIDESIZEWINDOW,
   F_ICONFONT,
   F_ICON_PATH,
   F_IGNORE_MODIFIERS,

@@ -202,11 +202,12 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
 
   XOffset = origDragX - DragX;
   YOffset = origDragY - DragY;
-  XMapRaised(dpy,Scr.SizeWindow);
+  if (!Scr.gs.do_hide_position_window)
+    XMapRaised(dpy,Scr.SizeWindow);
   moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
 	   do_move_opaque,False);
-
-  XUnmapWindow(dpy,Scr.SizeWindow);
+  if (!Scr.gs.do_hide_position_window)
+    XUnmapWindow(dpy,Scr.SizeWindow);
   if (Scr.bo.InstallRootCmap)
     UninstallRootColormap();
   else
@@ -776,8 +777,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int vy = Scr.Vy;
   int xl_orig;
   int yt_orig;
-  int cnx;
-  int cny;
+  int cnx = 0;
+  int cny = 0;
   Bool sent_cn = False;
 
   /* make a copy of the tmp_win structure for sending to the pager */
@@ -1123,6 +1124,8 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
   char str [100];
   int offset;
 
+  if (Scr.gs.do_hide_position_window)
+    return;
   (void) sprintf (str, " %+-4d %+-4d ", x, y);
   if(Init)
   {
@@ -1185,6 +1188,39 @@ void SetOpaque(F_CMD_ARGS)
     Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
   else
     Scr.OpaqueSize = val;
+}
+
+
+static char *hide_options[] =
+{
+  "none",
+  "move",
+  "resize",
+  NULL
+};
+
+void HideSizeWindow(F_CMD_ARGS)
+{
+  char *token = PeekToken(action, NULL);
+
+  Scr.gs.do_hide_position_window = 0;
+  Scr.gs.do_hide_resize_window = 0;
+  switch(GetTokenIndex(token, hide_options, 0, NULL))
+  {
+  case 0:
+    break;
+  case 1:
+    Scr.gs.do_hide_position_window = 1;
+    break;
+  case 2:
+    Scr.gs.do_hide_resize_window = 1;
+    break;
+  default:
+    Scr.gs.do_hide_position_window = 1;
+    Scr.gs.do_hide_resize_window = 1;
+    break;
+  }
+  return;
 }
 
 
@@ -1531,7 +1567,8 @@ void resize_window(F_CMD_ARGS)
   ymotion=xmotion=0;
 
   /* pop up a resize dimensions window */
-  XMapRaised(dpy, Scr.SizeWindow);
+  if (!Scr.gs.do_hide_resize_window)
+    XMapRaised(dpy, Scr.SizeWindow);
   DisplaySize(tmp_win, orig->width, orig->height,True,True);
 
   if((PressedW != Scr.Root)&&(PressedW != None))
@@ -1842,7 +1879,8 @@ void resize_window(F_CMD_ARGS)
     MoveOutline(0, 0, 0, 0);
 
   /* pop down the size window */
-  XUnmapWindow(dpy, Scr.SizeWindow);
+  if (!Scr.gs.do_hide_resize_window)
+    XUnmapWindow(dpy, Scr.SizeWindow);
 
   if(!abort)
   {
@@ -1978,6 +2016,8 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
   static int last_width = 0;
   static int last_height = 0;
 
+  if (Scr.gs.do_hide_resize_window)
+    return;
   if (resetLast)
   {
     last_width = 0;

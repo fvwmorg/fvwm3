@@ -149,6 +149,7 @@ Boolean ShapesSupported=False;
 #endif
 
 long isIconicState = 0;
+Bool isIconifiedByParent = False;
 extern XEvent Event;
 Bool Restarting = False;
 int fd_width, x_fd;
@@ -808,6 +809,8 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
       if(prop != NULL)
       {
 	isIconicState = *(long *)prop;
+	isIconifiedByParent =
+	  (isIconicState == IconicState) ? IS_ICONIFIED_BY_PARENT(fw) : 0;
 	XFree(prop);
       }
     }
@@ -1706,7 +1709,7 @@ static void InitVariables(void)
  *	Reborder - Removes fvwm border windows
  *
  ************************************************************************/
-void Reborder(void)
+static void Reborder(void)
 {
   FvwmWindow *tmp;			/* temp fvwm window structure */
 
@@ -1778,8 +1781,6 @@ void Done(int restart, char *command)
     Reborder();
   }
 
-  CloseICCCM2();
-
   if (restart)
   {
     Bool doPreserveState = True;
@@ -1808,11 +1809,10 @@ void Done(int restart, char *command)
       Restart code), but this works for now.
     */
     MoveViewport(0,0,False);
-    Reborder ();
+    Reborder();
 
     /* Really make sure that the connection is closed and cleared! */
-    XSelectInput(dpy, Scr.Root, 0 );
-    XSync(dpy, 0);
+    CloseICCCM2();
     XCloseDisplay(dpy);
 
     /* really need to destroy all windows, explicitly,
@@ -1877,6 +1877,7 @@ void Done(int restart, char *command)
   }
   else
   {
+    CloseICCCM2();
     XCloseDisplay(dpy);
   }
   exit(0);

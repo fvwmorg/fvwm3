@@ -492,12 +492,29 @@ static double c400_distance(XColor *target_ptr, XColor *base_ptr)
 Pixel GetSimpleColor(char *name)
 {
   XColor color;
-  color.pixel = 0;
+  Bool is_illegal_rgb = False;
 
-  if (!XParseColor (Pdpy, Pcmap, name, &color))
+  color.pixel = 0;
+  /* This is necessary because some X servers coredump when presented a
+   * malformed rgb colour name. */
+  if (name && strncasecmp(name, "rgb:", 4) == 0)
+  {
+    int i;
+    char *s;
+
+    for (i = 0, s = name + 4; *s; s++)
+    {
+      if (*s == '/')
+	i++;
+    }
+    if (i != 2)
+      is_illegal_rgb = True;
+  }
+
+  if (is_illegal_rgb ||
+      !XParseColor (Pdpy, Pcmap, name, &color) ||
+      !XAllocColor (Pdpy, Pcmap, &color))
     fprintf(stderr, "Cannot parse color %s\n", name);
-  else if(!XAllocColor (Pdpy, Pcmap, &color))
-    fprintf(stderr, "Cannot alloc color %s\n", name);
   return color.pixel;
 }
 static char *colorset_names[] =

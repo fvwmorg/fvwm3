@@ -1,5 +1,8 @@
 Changes in beta release 2.3.10
 
+* New command HideSizeWindow to hide the size/position when moving or
+  resizing windows.
+
 * New options for the WindowList command: UseListSkip and OnlySkipList.
 
 * New FvwmPager option SolidSeparators

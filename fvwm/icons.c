@@ -995,6 +995,15 @@ void DeIconify(FvwmWindow *tmp_win)
   if(!tmp_win)
     return;
 
+  while (IS_ICONIFIED_BY_PARENT(tmp_win))
+  {
+    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    {
+      if (t != tmp_win && tmp_win->transientfor == t->w)
+	tmp_win = t;
+    }
+  }
+
   /* AS dje  RaiseWindow(tmp_win); */
   /* now de-iconify transients */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
@@ -1099,7 +1108,6 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     SetFocus(tmp_win->next->w,tmp_win->next,1);
   }
 
-
   /* iconify transients first */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
@@ -1126,7 +1134,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
       {
 	SET_DEICONIFY_PENDING(t, 1);
       }
-      else if(t != tmp_win)
+      else
       {
 	SET_ICONIFIED(t, 1);
 	SET_ICON_UNMAPPED(t, 1);
@@ -1142,6 +1150,11 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
       }
     } /* if */
   } /* for */
+
+  /* necessary during a recapture */
+  if (IS_ICONIFIED_BY_PARENT(tmp_win))
+    return;
+
   if (tmp_win->icon_w == None)
   {
     if(IS_ICON_MOVED(tmp_win))

@@ -49,6 +49,9 @@
 #include "misc.h"
 #include "screen.h"
 #include "gnome.h"
+#include "builtins.h"
+#include "libs/Colorset.h"
+#include "borders.h"
 
 /* list of window names with attributes */
 static window_style *all_styles = NULL;
@@ -285,6 +288,10 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
   if (add_style->flags.use_layer)
   {
     merged_style->layer = add_style->layer;
+  }
+  if (add_style->flags.use_colorset)
+  {
+    merged_style->colorset = add_style->colorset;
   }
   merged_style->has_style_changed |= add_style->has_style_changed;
   return;
@@ -618,6 +625,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             ptmpstyle->flags.has_color_back = 1;
             ptmpstyle->flag_mask.has_color_back = 1;
             ptmpstyle->change_mask.has_color_back = 1;
+	    ptmpstyle->flags.use_colorset = 0;
+	    ptmpstyle->flag_mask.use_colorset = 1;
+	    ptmpstyle->change_mask.use_colorset = 1;
           }
         }
         else if (StrEquals(token, "BUTTON"))
@@ -661,28 +671,73 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  ptmpstyle->flag_mask.capture_honors_starts_on_page = 1;
 	  ptmpstyle->change_mask.capture_honors_starts_on_page = 1;
 	}
+        else if(StrEquals(token, "COLORSET"))
+	{
+	  found = True;
+          *val = -1;
+	  GetIntegerArguments(rest, NULL, val, 1);
+	  ptmpstyle->colorset = *val;
+	  ptmpstyle->flags.use_colorset = (*val >= 0);
+	  ptmpstyle->flag_mask.use_colorset = 1;
+	  ptmpstyle->change_mask.use_colorset = 1;
+	}
         else if(StrEquals(token, "COLOR"))
         {
 	  char c = 0;
+	  char *next;
 
 	  found = True;
-	  rest = DoGetNextToken(rest, &token, NULL, ",/", &c);
+	  next = GetNextToken(rest, &token);
 	  if (token == NULL)
 	    break;
+	  if (strncasecmp(token, "rgb:", 4) == 0)
+	  {
+	    char *s;
+	    int i;
+
+	    /* spool to third '/' */
+	    for (i = 0, s = token + 4; *s && i < 3; s++)
+	    {
+	      if (*s == '/')
+		i++;
+	    }
+	    s--;
+	    if (i == 3)
+	    {
+	      *s = 0;
+	      /* spool to third '/' in original string too */
+	      for (i = 0, s = rest; *s && i < 3; s++)
+	      {
+		if (*s == '/')
+		  i++;
+	      }
+	      next = s - 1;
+	    }
+	  }
+	  else
+	  {
+	    free(token);
+	    next = DoGetNextToken(rest, &token, NULL, ",/", &c);
+	  }
+	  rest = next;
 	  ptmpstyle->fore_color_name = token;
 	  ptmpstyle->flags.has_color_fore = 1;
 	  ptmpstyle->flag_mask.has_color_fore = 1;
 	  ptmpstyle->change_mask.has_color_fore = 1;
+	  ptmpstyle->flags.use_colorset = 0;
+	  ptmpstyle->flag_mask.use_colorset = 1;
+	  ptmpstyle->change_mask.use_colorset = 1;
 
+	  /* skip over '/' */
 	  if (c != '/')
 	  {
-	    /* skip over '/' */
 	    while (rest && *rest && isspace((unsigned char)*rest) &&
 		   *rest != ',' && *rest != '/')
 	      rest++;
 	    if (*rest == '/')
 	      rest++;
 	  }
+
 	  GetNextToken(rest, &token);
 	  if (!token)
 	    break;
@@ -819,6 +874,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             ptmpstyle->flags.has_color_fore = 1;
             ptmpstyle->flag_mask.has_color_fore = 1;
             ptmpstyle->change_mask.has_color_fore = 1;
+	    ptmpstyle->flags.use_colorset = 0;
+	    ptmpstyle->flag_mask.use_colorset = 1;
+	    ptmpstyle->change_mask.use_colorset = 1;
           }
         }
         else if(StrEquals(token, "FVWMBUTTONS"))
@@ -1820,6 +1878,7 @@ static void handle_window_style_change(FvwmWindow *t)
   char *wf;
   char *sf;
   char *sc;
+  Bool do_redraw_window = False;
 
   lookup_style(t, &style);
   if (style.has_style_changed == 0)
@@ -1855,6 +1914,19 @@ static void handle_window_style_change(FvwmWindow *t)
     }
   }
 
+  if (style.change_mask.has_color_fore || style.change_mask.has_color_back)
+  {
+    do_redraw_window = True;
+    update_window_color_style(t, &style);
+  }
+
+  if (do_redraw_window)
+  {
+    FvwmWindow *u = Scr.Hilite;
+
+    SetBorder(t, (Scr.Hilite == t), 2, True, None);
+    Scr.Hilite = u;
+  }
 fprintf(stderr,"updated style for window %s\n", t->name);
   return;
 }
@@ -1886,4 +1958,50 @@ fprintf(stderr,"updating styles\n");
   reset_style_changes();
 
   return;
+}
+
+void update_style_colorset(int colorset)
+{
+  window_style *temp;
+
+  for (temp = all_styles; temp != NULL; temp = temp->next)
+  {
+    if (SUSE_COLORSET(&temp->flags) && SGET_COLORSET(*temp) == colorset)
+    {
+      temp->has_style_changed = 1;
+      temp->change_mask.use_colorset = 1;
+      Scr.flags.has_any_style_changed = 1;
+    }
+  }
+}
+
+void update_window_color_style(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  int cs = Scr.DefaultColorset;
+
+  if (SUSE_COLORSET(&pstyle->flags))
+  {
+    cs = SGET_COLORSET(*pstyle);
+  }
+
+  if(SGET_FORE_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
+  {
+    tmp_win->TextPixel = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
+  }
+  else
+  {
+    tmp_win->TextPixel = Colorset[cs % nColorsets].fg;
+  }
+  if(SGET_BACK_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
+  {
+    tmp_win->BackPixel = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
+    tmp_win->ShadowPixel = GetShadow(tmp_win->BackPixel);
+    tmp_win->ReliefPixel = GetHilite(tmp_win->BackPixel);
+  }
+  else
+  {
+    tmp_win->ReliefPixel = Colorset[cs % nColorsets].hilite;
+    tmp_win->ShadowPixel = Colorset[cs % nColorsets].shadow;
+    tmp_win->BackPixel = Colorset[cs % nColorsets].bg;
+  }
 }

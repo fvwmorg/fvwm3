@@ -393,6 +393,8 @@ typedef struct ScreenInfo
     unsigned EmulateWIN : 1;
     unsigned use_active_down_buttons : 1;
     unsigned use_inactive_buttons : 1;
+    unsigned do_hide_position_window : 1;
+    unsigned do_hide_resize_window : 1;
   } gs; /* global style structure */
   struct
   {

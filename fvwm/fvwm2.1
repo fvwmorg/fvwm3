@@ -2050,11 +2050,12 @@ Hitting Alt-Tab once it brings up the window list, if you hit it
 twice the focus is flipped between the current and the last focused
 window.
 
-The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
-<funcname>", "Desk <desknum>", "CurrentDesk", "NoIcons", "Icons",
-"OnlyIcons", "NoNormal", "Normal", "OnlyNormal", "NoSticky", "Sticky",
-"OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "Layer m [n]",
-"UseListSkip", "OnlyListSkip", "NoDeskSort", "UseIconName", "Alphabetic",
+The \fIoptions\fP passed to WindowList can be "NoGeometry",
+"NoGeometryWithInfo", "Function <funcname>", "Desk <desknum>",
+"CurrentDesk", "NoIcons", "Icons", "OnlyIcons", "NoNormal",
+"Normal", "OnlyNormal", "NoSticky", "Sticky", "OnlySticky",
+"NoOnTop", "OnTop", "OnlyOnTop", "Layer m [n]", "UseListSkip",
+"OnlyListSkip", "NoDeskSort", "UseIconName", "Alphabetic",
 "NotAlphabetic".
 
 (Note - normal means not iconic, sticky, or ontop)
@@ -2095,6 +2096,15 @@ Options are the same, except they are required, since it doesn't make
 sense to have a user move the window interactively and animatedly. If
 the optional argument \fIWarp\fP is specified the pointer is warped with
 the window.
+
+
+.TP
+.B "HideSizeWindow" "[None|Move|Resize]"
+Hides the position or size window that is usually shown when a window
+is moved or resized interactively.  To switch it of only for move
+respectively resize operations the optional parameters \fIMove\fP and
+\fIResize\fP can be used.  To switch both on again use the \fINone\fP
+option.
 
 
 .TP
@@ -3209,7 +3219,7 @@ Layer,
 StaysOnTop / StaysOnBottom / StaysPut,
 Sticky / Slippery,
 StartIconic / StartNormal,
-Color, ForeColor, BackColor,
+Color, ForeColor, BackColor, Colorset,
 StartsOnDesk / StartsOnPage / StartsAnyWhere,
 ActivePlacementHonorsStartsOnPage / ActivePlacementIgnoresStartsOnPage,
 CaptureHonorsStartsOnPage / CaptureIgnoresStartsOnPage,
@@ -3565,6 +3575,22 @@ and the second is the window decoration's normal background color.
 The two colors are separated with a slash.  If the use of a slash
 causes problems then the separate ForeColor and BackColor options can
 be used.
+
+\fIColorset\fP takes the colorset number as its sole argument and
+overrides the colors set with \fIColors\fP.  Instead the
+corresponding colors from the colorset are used.  Note that all
+other features of a colorset are unsupported yet.
+
+.B "DefaultColors" "[\fI foreground background\fP] | [\fI Colorset num\fP]"
+\fIDefaultColors\fP sets the default forground and background
+colors used in miscellaneous windows created by fvwm, for example
+in the geometry feedback windows during a move or resize operation.
+If you don't want to change one color or the other, use - as its
+color name.  To revert to the builtin default colors omit both
+color names.  Note that the default colors are not used in menus,
+window titles or icon titles. You can also use a colorset for these
+windows DefaultColors Colorset <num>, see FvwmTheme.
+
 
 \fIUseDecor\fP accepts one argument: the name of a decor created with
 AddToDecor.  If UseDecor is not specified, the "Default" decor is
