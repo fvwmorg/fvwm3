@@ -4,7 +4,8 @@
 ## Make sure we have a current version of automake
 AUTOMAKE_OPTIONS = 1.4
 
-SUBDIRS = libs \
+SUBDIRS = \
+	libs \
 	fvwm \
 	modules \
 	bin \
@@ -16,7 +17,7 @@ SUBDIRS = libs \
 	$(POSUB) \
 	tests
 
-EXTRA_DIST = config.rpath  \
+EXTRA_DIST = \
 	INSTALL.fvwm \
 	vms/README \
 	vms/config.h \

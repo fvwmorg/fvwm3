@@ -99,7 +99,7 @@ AC_ARG_ENABLE(dmalloc,
   [ac_cv_dmalloc="no"])
 
 AC_ARG_ENABLE(efence,
-nt/  [  --enable-efence         enable support for the efence debugging library],
+  [  --enable-efence         enable support for the efence debugging library],
   [ac_cv_efence="$enableval"],
   [ac_cv_efence="no"])
 
