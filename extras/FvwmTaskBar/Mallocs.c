@@ -19,6 +19,8 @@
  * as long as the copyright is kept intact. */
 
 #include "config.h"
+#include "fvwmlib.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

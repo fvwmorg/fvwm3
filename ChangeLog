@@ -1,3 +1,8 @@
+Sun Jan 10 18:11:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/module.c (HandleModuleInput): Removed unnecessary cast of
+	integer to pointer.
+
 1999-01-09  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/events.c (HandleConfigureRequest): added resynchronization of

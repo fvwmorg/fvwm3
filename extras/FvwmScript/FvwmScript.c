@@ -88,7 +88,7 @@ void ReadConfig (char *ScriptName)
   yyparse();
   /* Fermeture du script */
 
-  close((int)yyin);
+  fclose(yyin);
 }
 
 /* Quitter par l'option Delete du bouton de la fenetre */

@@ -1,3 +1,14 @@
+Sun Jan 10 18:17:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconMan/winlist.c (check_win_complete): 
+	* FvwmIconMan/FvwmIconMan.c (copy_string): 
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/icons.c: 
+	* FvwmButtons/output.c: Cast pointers to unsigned long, rather
+	than ints or shorts (!) to suppress warnings on 64 bit machines.
+	These were all in debugging fprintf() calls, so it shouldn't upset
+	anyone. 
+
 Sun Jan 10 14:45:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmIdent/ChangeLog: Removed and merged single entry into this file.

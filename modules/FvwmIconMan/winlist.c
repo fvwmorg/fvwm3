@@ -258,7 +258,7 @@ int check_win_complete (WinData *p)
   ConsoleDebug (WINLIST, "\t(x, y): (%d, %d)\n", p->x, p->y);
   ConsoleDebug (WINLIST, "\tapp_id: 0x%x %d\n", p->app_id, p->app_id_set);
   ConsoleDebug (WINLIST, "\tdesknum: %d\n", p->desknum);
-  ConsoleDebug (WINLIST, "\tmanager: 0x%x\n", (int)p->manager);
+  ConsoleDebug (WINLIST, "\tmanager: 0x%lx\n", (unsigned long)p->manager);
 
   if (p->geometry_set &&
       p->resname &&

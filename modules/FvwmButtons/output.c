@@ -33,16 +33,16 @@ void DumpButtons(button_info *b)
   if(b!=UberButton)
     {
       int button=buttonNum(b);
-      fprintf(stderr,"0x%06x(%ix%i@(%i,%i),0x%04x): ",
-	      (ushort)b,b->BWidth,b->BHeight,
+      fprintf(stderr,"0x%lx(%ix%i@(%i,%i),0x%04x): ",
+	      (unsigned long)b,b->BWidth,b->BHeight,
 	      buttonXPos(b,button),buttonYPos(b,button),b->flags);
     }
   else
-    fprintf(stderr,"0x%06x(%ix%i@,0x%04x): ",(ushort)b,
+    fprintf(stderr,"0x%lx(%ix%i@,0x%04x): ",(unsigned long)b,
 	    b->BWidth,b->BHeight,b->flags);
     
   if(b->flags&b_Font)
-    fprintf(stderr,"Font(%s,%i) ",b->font_string,(int)b->font);
+    fprintf(stderr,"Font(%s,0x%lx) ",b->font_string,(unsigned long)b->font);
   if(b->flags&b_Padding)
     fprintf(stderr,"Padding(%i,%i) ",b->xpad,b->ypad);
   if(b->flags&b_Frame)
@@ -79,7 +79,7 @@ void DumpButtons(button_info *b)
 	      b->c->ypad);
 */
       while(i<b->c->num_buttons)
-	fprintf(stderr,"0x%06x ",(ushort)b->c->buttons[i++]);
+	fprintf(stderr,"0x%lx ",(unsigned long)b->c->buttons[i++]);
       fprintf(stderr,"}\n");
       i=0;
       while(i<b->c->num_buttons)

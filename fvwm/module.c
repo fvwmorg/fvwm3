@@ -281,8 +281,8 @@ int HandleModuleInput(Window w, int channel)
 
   if(size >255)
     {
-      fvwm_msg(ERR,"HandleModuleInput",
-               "Module command is too big (%d)",(void *)size);
+      fvwm_msg(ERR, "HandleModuleInput",
+               "Module command is too big (%d)", size);
       size=255;
     }
 

@@ -29,7 +29,7 @@ static RETSIGTYPE TerminateHandler(int);
 char *copy_string (char **target, char *src)
 {
   int len = strlen (src);
-  ConsoleDebug (CORE, "copy_string: 1: 0x%x\n", (unsigned)*target);
+  ConsoleDebug (CORE, "copy_string: 1: 0x%lx\n", (unsigned long)*target);
 
   if (*target)
     Free (*target);
