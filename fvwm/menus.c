@@ -3063,7 +3063,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
       MR_IS_BACKGROUND_SET(mr) = True;
     }
   }
-  if (ms)
+  else if (ms)
   {
     register int type;
 

@@ -54,6 +54,40 @@
 static window_style *all_styles = NULL;
 static window_style *last_style_in_list = NULL;
 
+#define SAFEFREE( p )  {if (p)  free(p);}
+
+
+static void free_icon_boxes(icon_boxes *ib)
+{
+  icon_boxes *temp;
+
+  for ( ; ib != NULL; ib = temp)
+  {
+    temp = ib->next;
+    free(ib);
+  }
+}
+
+static void copy_icon_boxes(icon_boxes **pdest, icon_boxes *src)
+{
+  icon_boxes *last = NULL;
+  icon_boxes *temp;
+
+  *pdest = NULL;
+  /* copy the icon boxes */
+  for ( ; src != NULL; src = src->next)
+  {
+    temp = (icon_boxes *)safemalloc(sizeof(icon_boxes));
+    memcpy(temp, src, sizeof(icon_boxes));
+    temp->next = NULL;
+    if (last != NULL)
+      last->next = temp;
+    else
+      *pdest = temp;
+    last = temp;
+  }
+}
+
 /* Check word after IconFill to see if its "Top,Bottom,Left,Right" */
 static int Get_TBLR(char *token, unsigned char *IconFill) {
   /* init */
@@ -102,8 +136,10 @@ static int Get_TBLR(char *token, unsigned char *IconFill) {
  *      merged matching styles in callers window_style.
  *
  *  Inputs:
- *      styles - callers return area
- *      nptr - matching window_style
+ *      merged_style - style resulting from the merge
+ *      add_style    - the style to be added into the merge_style
+ *      do_free      - free allocated parts of merge_style that are replaced
+ +                     from ad_style
  *
  *  Note:
  *      The only trick here is that on and off flags/buttons are
@@ -111,7 +147,8 @@ static int Get_TBLR(char *token, unsigned char *IconFill) {
  *
  ***********************************************************************/
 
-void merge_styles(window_style *merged_style, window_style *add_style)
+static void merge_styles(window_style *merged_style, window_style *add_style,
+			 Bool do_free)
 {
   int i;
   char *merge_flags;
@@ -119,31 +156,92 @@ void merge_styles(window_style *merged_style, window_style *add_style)
   char *merge_mask;
   char *add_mask;
 
-  if(add_style->icon_name != NULL)
-    merged_style->icon_name = add_style->icon_name;
+  if (add_style->flag_mask.has_icon)
+  {
+    if (do_free)
+    {
+      SAFEFREE(merged_style->icon_name);
+      merged_style->icon_name =
+	(add_style->icon_name) ? strdup(add_style->icon_name) : NULL;
+    }
+    else
+    {
+      merged_style->icon_name = add_style->icon_name;
+    }
+  }
 #ifdef MINI_ICONS
-  if(add_style->mini_icon_name != NULL)
-    merged_style->mini_icon_name = add_style->mini_icon_name;
+  if (add_style->flag_mask.has_mini_icon)
+  {
+    if (do_free)
+    {
+      SAFEFREE(merged_style->mini_icon_name);
+      merged_style->mini_icon_name =
+	(add_style->mini_icon_name) ? strdup(add_style->mini_icon_name) : NULL;
+    }
+    else
+    {
+      merged_style->mini_icon_name = add_style->mini_icon_name;
+    }
+  }
 #endif
 #ifdef USEDECOR
-  if (add_style->decor_name != NULL)
-    merged_style->decor_name = add_style->decor_name;
+  if (add_style->flag_mask.has_decor)
+  {
+    if (do_free)
+    {
+      SAFEFREE(merged_style->decor_name);
+      merged_style->decor_name =
+	(add_style->decor_name) ? strdup(add_style->decor_name) : NULL;
+    }
+    else
+    {
+      merged_style->decor_name = add_style->decor_name;
+    }
+  }
 #endif
   if(add_style->flags.use_start_on_desk)
-    /*  RBW - 11/02/1998  */
+  /*  RBW - 11/02/1998  */
+  {
+    merged_style->start_desk = add_style->start_desk;
+    merged_style->start_page_x = add_style->start_page_x;
+    merged_style->start_page_y = add_style->start_page_y;
+  }
+  if (add_style->flag_mask.has_color_fore)
+  {
+    if (do_free)
     {
-      merged_style->start_desk = add_style->start_desk;
-      merged_style->start_page_x = add_style->start_page_x;
-      merged_style->start_page_y = add_style->start_page_y;
+      SAFEFREE(merged_style->fore_color_name);
+      merged_style->fore_color_name =
+	(add_style->fore_color_name) ?
+	strdup(add_style->fore_color_name) : NULL;
     }
+    else
+    {
+      merged_style->fore_color_name = add_style->fore_color_name;
+    }
+  }
+  if (add_style->flag_mask.has_color_back)
+  {
+    if (do_free)
+    {
+      SAFEFREE(merged_style->back_color_name);
+      merged_style->back_color_name =
+	(add_style->back_color_name) ?
+	strdup(add_style->back_color_name) : NULL;
+    }
+    else
+    {
+      merged_style->back_color_name = add_style->back_color_name;
+    }
+  }
   if(add_style->flags.has_border_width)
+  {
     merged_style->border_width = add_style->border_width;
-  if(add_style->flags.has_color_fore)
-    merged_style->fore_color_name = add_style->fore_color_name;
-  if(add_style->flags.has_color_back)
-    merged_style->back_color_name = add_style->back_color_name;
+  }
   if(add_style->flags.has_handle_width)
+  {
     merged_style->handle_width = add_style->handle_width;
+  }
   if(add_style->flags.has_max_window_size)
   {
     merged_style->max_window_width = add_style->max_window_width;
@@ -156,33 +254,77 @@ void merge_styles(window_style *merged_style, window_style *add_style)
   merge_mask = (char *)&(merged_style->flag_mask);
   add_mask = (char *)&(add_style->flag_mask);
   for (i = 0; i < sizeof(style_flags); i++)
-    {
-      merge_flags[i] |= (add_flags[i] & add_mask[i]);
-      merge_flags[i] &= (add_flags[i] | ~add_mask[i]);
-      merge_mask[i] |= add_mask[i];
-    }
+  {
+    merge_flags[i] |= (add_flags[i] & add_mask[i]);
+    merge_flags[i] &= (add_flags[i] | ~add_mask[i]);
+    merge_mask[i] |= add_mask[i];
+  }
   /* combine buttons */
   merged_style->on_buttons |= add_style->on_buttons;
   merged_style->on_buttons &= ~(add_style->off_buttons);
 
   /* Note, only one style cmd can define a windows iconboxes,
    * the last one encountered. */
-  if(add_style->IconBoxes != NULL) {
+  if(add_style->IconBoxes != NULL)
+  {
     /* If style has iconboxes */
     /* copy it */
-    merged_style->IconBoxes = add_style->IconBoxes;
+    if (do_free)
+    {
+      free_icon_boxes(merged_style->IconBoxes);
+      copy_icon_boxes(&merged_style->IconBoxes, add_style->IconBoxes);
+    }
+    else
+    {
+      merged_style->IconBoxes = add_style->IconBoxes;
+    }
   }
-  if (add_style->layer != -9) {
+  if (add_style->layer != -9)
+  {
     merged_style->layer = add_style->layer;
   }
   return;
 }
 
+static void free_style(window_style *style)
+{
+  /* Free contents of style */
+  SAFEFREE( style->name );
+  SAFEFREE( style->back_color_name );
+  SAFEFREE( style->fore_color_name );
+  SAFEFREE( style->mini_icon_name );
+  SAFEFREE( style->decor_name );
+  SAFEFREE( style->icon_name );
+  free_icon_boxes( style->IconBoxes );
+
+  return;
+}
+
+static void merge_style_list(void)
+{
+  window_style *temp;
+  window_style *prev = NULL;
+
+  /* not first entry in list, look for styles with the same name */
+  for (temp = all_styles; temp != NULL; prev = temp, temp = temp->next)
+  {
+    if (prev && StrEquals(prev->name, temp->name))
+    {
+      /* merge style into previous style with same name */
+      if (last_style_in_list == temp)
+	last_style_in_list = prev;
+      merge_styles(prev, temp, True);
+      prev->next = temp->next;
+      free_style(temp);
+      temp = prev;
+    }
+  }
+
+  return;
+}
 
 static void add_style_to_list(window_style *new_style)
 {
-  window_style *nptr;
-
   /* This used to contain logic that returned if the style didn't contain
    * anything.  I don't see why we should bother. dje.
    *
@@ -190,20 +332,22 @@ static void add_style_to_list(window_style *new_style)
    * appropriate since conficting styles are possible, and the
    * last match should win! */
 
-  nptr = (window_style *)safemalloc(sizeof(window_style));
-  /* copy term area into list */
-  memcpy((void*)nptr, (const void*)new_style, sizeof(window_style));
   if(last_style_in_list != NULL)
+  {
     /* not first entry in list chain this entry to the list */
-    last_style_in_list->next = nptr;
+    last_style_in_list->next = new_style;
+  }
   else
+  {
     /* first entry in list set the list root pointer. */
-    all_styles = nptr;
-  last_style_in_list = nptr;
+    all_styles = new_style;
+  }
+  last_style_in_list = new_style;
+  merge_style_list();
+
+  return;
 } /* end function */
 
-
-#define SAFEFREE( p )  {if (p)  free(p);}
 
 static void remove_all_of_style_from_list(char *style_ref)
 {
@@ -231,15 +375,7 @@ static void remove_all_of_style_from_list(char *style_ref)
         /* Middle of list */
         lptr->next = nptr;
       }
-
-      /* Free contents of style */
-      SAFEFREE( tmp_ptr->name );
-      SAFEFREE( tmp_ptr->back_color_name );
-      SAFEFREE( tmp_ptr->fore_color_name );
-      SAFEFREE( tmp_ptr->mini_icon_name );
-      SAFEFREE( tmp_ptr->decor_name );
-      SAFEFREE( tmp_ptr->icon_name );
-
+      free_style(tmp_ptr);
       /* Free style */
       free( tmp_ptr );
     }
@@ -270,6 +406,8 @@ void ProcessDestroyStyle( XEvent *eventp, Window w, FvwmWindow *tmp_win,
   /* Do it */
   remove_all_of_style_from_list( name );
   free( name );
+  /* compact the current list of styles */
+  merge_style_list();
 }
 
 
@@ -306,29 +444,20 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
   GNOME_GetStyle (tmp_win, styles);
 #endif
   /* look thru all styles in order defined. */
-#if 0
-fprintf(stderr,"trying to match n='%s', r='%s', c='%s'\n", tmp_win->name, tmp_win->class.res_name, tmp_win->class.res_class);
-#endif
-  for (nptr = all_styles; nptr != NULL; nptr = nptr->next) {
+  for (nptr = all_styles; nptr != NULL; nptr = nptr->next)
+  {
     /* If name/res_class/res_name match, merge */
-#if 0
-fprintf(stderr, "style='%s'\n", nptr->name);
-#endif
-    if (matchWildcards(nptr->name,tmp_win->class.res_class) == TRUE) {
-#if 0
-fprintf(stderr,"matched class\n");
-#endif
-      merge_styles(styles, nptr);
-    } else if (matchWildcards(nptr->name,tmp_win->class.res_name) == TRUE) {
-#if 0
-fprintf(stderr,"matched resource\n");
-#endif
-      merge_styles(styles, nptr);
-    } else if (matchWildcards(nptr->name,tmp_win->name) == TRUE) {
-#if 0
-fprintf(stderr,"matched name\n");
-#endif
-      merge_styles(styles, nptr);
+    if (matchWildcards(nptr->name,tmp_win->class.res_class) == TRUE)
+    {
+      merge_styles(styles, nptr, False);
+    }
+    else if (matchWildcards(nptr->name,tmp_win->class.res_name) == TRUE)
+    {
+      merge_styles(styles, nptr, False);
+    }
+    else if (matchWildcards(nptr->name,tmp_win->name) == TRUE)
+    {
+      merge_styles(styles, nptr, False);
     }
   }
   return;
@@ -387,27 +516,28 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
   Bool found;
 /**/
   /* temp area to build name list */
-  window_style tmpstyle;
+  window_style *ptmpstyle;
   /* which current boxes to chain to */
   icon_boxes *which = 0;
 
+  ptmpstyle = (window_style *)safemalloc(sizeof(window_style));
   /* init temp window_style area */
-  memset(&tmpstyle, 0, sizeof(window_style));
+  memset(ptmpstyle, 0, sizeof(window_style));
   /* default uninitialised layer */
-  tmpstyle.layer = -9;
+  ptmpstyle->layer = -9;
   /* default StartsOnPage behavior for initial capture */
-  tmpstyle.flags.capture_honors_starts_on_page = 1;
+  ptmpstyle->flags.capture_honors_starts_on_page = 1;
 
   /* parse style name */
-  action = GetNextToken(action, &tmpstyle.name);
+  action = GetNextToken(action, &ptmpstyle->name);
   /* in case there was no argument! */
-  if(tmpstyle.name == NULL)
+  if(ptmpstyle->name == NULL)
     return;
   if(action == NULL)
-    {
-      free(tmpstyle.name);
-      return;
-    }
+  {
+    free(ptmpstyle->name);
+    return;
+  }
   while (isspace((unsigned char)*action))
     action++;
   line = action;
@@ -435,26 +565,26 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "ACTIVEPLACEMENT"))
         {
 	  found = True;
-          tmpstyle.flags.do_place_random = 0;
-          tmpstyle.flag_mask.do_place_random = 1;
+          ptmpstyle->flags.do_place_random = 0;
+          ptmpstyle->flag_mask.do_place_random = 1;
         }
 	else if(StrEquals(token, "ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
 	{
 	  found = True;
-	  tmpstyle.flags.active_placement_honors_starts_on_page = 1;
-	  tmpstyle.flag_mask.active_placement_honors_starts_on_page = 1;
+	  ptmpstyle->flags.active_placement_honors_starts_on_page = 1;
+	  ptmpstyle->flag_mask.active_placement_honors_starts_on_page = 1;
 	}
 	else if(StrEquals(token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
-	  tmpstyle.flags.active_placement_honors_starts_on_page = 0;
-	  tmpstyle.flag_mask.active_placement_honors_starts_on_page = 1;
+	  ptmpstyle->flags.active_placement_honors_starts_on_page = 0;
+	  ptmpstyle->flag_mask.active_placement_honors_starts_on_page = 1;
 	}
         else if(StrEquals(token, "AllowRestack"))
         {
           found = True;
-          tmpstyle.flags.common.ignore_restack = 0;
-          tmpstyle.flag_mask.common.ignore_restack = 1;
+          ptmpstyle->flags.common.ignore_restack = 0;
+          ptmpstyle->flag_mask.common.ignore_restack = 1;
         }
         break;
 
@@ -465,9 +595,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  GetNextToken(rest, &token);
           if (token)
           {
-            tmpstyle.back_color_name = token;
-            tmpstyle.flags.has_color_back = 1;
-            tmpstyle.flag_mask.has_color_back = 1;
+            ptmpstyle->back_color_name = token;
+            ptmpstyle->flags.has_color_back = 1;
+            ptmpstyle->flag_mask.has_color_back = 1;
           }
         }
         else if (StrEquals(token, "BUTTON"))
@@ -478,15 +608,15 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           if (butt == 0)
 	    butt = 10;
           if (butt > 0 && butt <= 10)
-            tmpstyle.off_buttons |= (1<<(butt-1));
+            ptmpstyle->off_buttons |= (1<<(butt-1));
         }
         else if(StrEquals(token, "BorderWidth"))
         {
 	  found = True;
-	  if (GetIntegerArguments(rest, NULL, &tmpstyle.border_width, 1))
+	  if (GetIntegerArguments(rest, NULL, &ptmpstyle->border_width, 1))
 	  {
-	    tmpstyle.flags.has_border_width = 1;
-	    tmpstyle.flag_mask.has_border_width = 1;
+	    ptmpstyle->flags.has_border_width = 1;
+	    ptmpstyle->flag_mask.has_border_width = 1;
 	  }
         }
         break;
@@ -495,14 +625,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	if(StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
 	{
 	  found = True;
-	  tmpstyle.flags.capture_honors_starts_on_page = 1;
-	  tmpstyle.flag_mask.capture_honors_starts_on_page = 1;
+	  ptmpstyle->flags.capture_honors_starts_on_page = 1;
+	  ptmpstyle->flag_mask.capture_honors_starts_on_page = 1;
 	}
 	else if(StrEquals(token, "CAPTUREIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
-	  tmpstyle.flags.capture_honors_starts_on_page = 0;
-	  tmpstyle.flag_mask.capture_honors_starts_on_page = 1;
+	  ptmpstyle->flags.capture_honors_starts_on_page = 0;
+	  ptmpstyle->flag_mask.capture_honors_starts_on_page = 1;
 	}
         else if(StrEquals(token, "COLOR"))
         {
@@ -512,9 +642,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  rest = DoGetNextToken(rest, &token, NULL, ",/", &c);
 	  if (token == NULL)
 	    break;
-	  tmpstyle.fore_color_name = token;
-	  tmpstyle.flags.has_color_fore = 1;
-	  tmpstyle.flag_mask.has_color_fore = 1;
+	  ptmpstyle->fore_color_name = token;
+	  ptmpstyle->flags.has_color_fore = 1;
+	  ptmpstyle->flag_mask.has_color_fore = 1;
 
 	  if (c != '/')
 	  {
@@ -528,87 +658,87 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  GetNextToken(rest, &token);
 	  if (!token)
 	    break;
-	  tmpstyle.back_color_name = token;
-	  tmpstyle.flags.has_color_back = 1;
-	  tmpstyle.flag_mask.has_color_back = 1;
+	  ptmpstyle->back_color_name = token;
+	  ptmpstyle->flags.has_color_back = 1;
+	  ptmpstyle->flag_mask.has_color_back = 1;
 	  break;
         }
         else if(StrEquals(token, "CirculateSkipIcon"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_circulate_skip_icon = 1;
-          tmpstyle.flag_mask.common.do_circulate_skip_icon = 1;
+          ptmpstyle->flags.common.do_circulate_skip_icon = 1;
+          ptmpstyle->flag_mask.common.do_circulate_skip_icon = 1;
         }
         else if(StrEquals(token, "CirculateHitIcon"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_circulate_skip_icon = 0;
-          tmpstyle.flag_mask.common.do_circulate_skip_icon = 1;
+          ptmpstyle->flags.common.do_circulate_skip_icon = 0;
+          ptmpstyle->flag_mask.common.do_circulate_skip_icon = 1;
         }
         else if(StrEquals(token, "CLICKTOFOCUS"))
         {
 	  found = True;
-          tmpstyle.flags.common.focus_mode = FOCUS_CLICK;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 1;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flags.common.focus_mode = FOCUS_CLICK;
+          ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->flags.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "CirculateSkip"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_circulate_skip = 1;
-          tmpstyle.flag_mask.common.do_circulate_skip = 1;
+          ptmpstyle->flags.common.do_circulate_skip = 1;
+          ptmpstyle->flag_mask.common.do_circulate_skip = 1;
         }
         else if(StrEquals(token, "CirculateHit"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_circulate_skip = 0;
-          tmpstyle.flag_mask.common.do_circulate_skip = 1;
+          ptmpstyle->flags.common.do_circulate_skip = 0;
+          ptmpstyle->flag_mask.common.do_circulate_skip = 1;
         }
         break;
 
       case 'd':
         if(StrEquals(token, "DepressableBorder"))
-	  {
+	{
 	  found = True;
-          tmpstyle.flags.common.has_depressable_border = 1;
-          tmpstyle.flag_mask.common.has_depressable_border = 1;
-	  }
+          ptmpstyle->flags.common.has_depressable_border = 1;
+          ptmpstyle->flag_mask.common.has_depressable_border = 1;
+	}
         else if(StrEquals(token, "DecorateTransient"))
         {
 	  found = True;
-          tmpstyle.flags.do_decorate_transient = 1;
-          tmpstyle.flag_mask.do_decorate_transient = 1;
+          ptmpstyle->flags.do_decorate_transient = 1;
+          ptmpstyle->flag_mask.do_decorate_transient = 1;
         }
         else if(StrEquals(token, "DUMBPLACEMENT"))
         {
 	  found = True;
-          tmpstyle.flags.do_place_smart = 0;
-          tmpstyle.flag_mask.do_place_smart = 1;
+          ptmpstyle->flags.do_place_smart = 0;
+          ptmpstyle->flag_mask.do_place_smart = 1;
         }
         else if(StrEquals(token, "DontFlipTransient"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_flip_transient = 0;
-          tmpstyle.flag_mask.common.do_flip_transient = 1;
+          ptmpstyle->flags.common.do_flip_transient = 0;
+          ptmpstyle->flag_mask.common.do_flip_transient = 1;
         }
         else if(StrEquals(token, "DONTRAISETRANSIENT"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_raise_transient = 0;
-          tmpstyle.flag_mask.common.do_raise_transient = 1;
+          ptmpstyle->flags.common.do_raise_transient = 0;
+          ptmpstyle->flag_mask.common.do_raise_transient = 1;
         }
         else if(StrEquals(token, "DONTLOWERTRANSIENT"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_lower_transient = 0;
-          tmpstyle.flag_mask.common.do_lower_transient = 1;
+          ptmpstyle->flags.common.do_lower_transient = 0;
+          ptmpstyle->flag_mask.common.do_lower_transient = 1;
         }
         else if(StrEquals(token, "DontStackTransientParent"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_stack_transient_parent = 0;
-          tmpstyle.flag_mask.common.do_stack_transient_parent = 1;
+          ptmpstyle->flags.common.do_stack_transient_parent = 0;
+          ptmpstyle->flag_mask.common.do_stack_transient_parent = 1;
         }
         break;
 
@@ -617,22 +747,22 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 
       case 'f':
         if(StrEquals(token, "FirmBorder"))
-	  {
+	{
 	  found = True;
-          tmpstyle.flags.common.has_depressable_border = 0;
-          tmpstyle.flag_mask.common.has_depressable_border = 1;
-	  }
+          ptmpstyle->flags.common.has_depressable_border = 0;
+          ptmpstyle->flag_mask.common.has_depressable_border = 1;
+	}
         else if(StrEquals(token, "FixedPosition"))
-	  {
-	    found = True;
-            tmpstyle.flags.common.is_fixed = 1;
-            tmpstyle.flag_mask.common.is_fixed = 1;
-	  }
+	{
+	  found = True;
+	  ptmpstyle->flags.common.is_fixed = 1;
+	  ptmpstyle->flag_mask.common.is_fixed = 1;
+	}
         else if(StrEquals(token, "FlipTransient"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_flip_transient = 1;
-          tmpstyle.flag_mask.common.do_flip_transient = 1;
+          ptmpstyle->flags.common.do_flip_transient = 1;
+          ptmpstyle->flag_mask.common.do_flip_transient = 1;
         }
         else if(StrEquals(token, "FORECOLOR"))
         {
@@ -640,30 +770,30 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  GetNextToken(rest, &token);
           if (token)
           {
-            tmpstyle.fore_color_name = token;
-            tmpstyle.flags.has_color_fore = 1;
-            tmpstyle.flag_mask.has_color_fore = 1;
+            ptmpstyle->fore_color_name = token;
+            ptmpstyle->flags.has_color_fore = 1;
+            ptmpstyle->flag_mask.has_color_fore = 1;
           }
         }
         else if(StrEquals(token, "FVWMBUTTONS"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_mwm_buttons = 0;
-          tmpstyle.flag_mask.common.has_mwm_buttons = 1;
+          ptmpstyle->flags.common.has_mwm_buttons = 0;
+          ptmpstyle->flag_mask.common.has_mwm_buttons = 1;
         }
         else if(StrEquals(token, "FVWMBORDER"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_mwm_border = 0;
-          tmpstyle.flag_mask.common.has_mwm_border = 1;
+          ptmpstyle->flags.common.has_mwm_border = 0;
+          ptmpstyle->flag_mask.common.has_mwm_border = 1;
         }
         else if(StrEquals(token, "FocusFollowsMouse"))
         {
 	  found = True;
-          tmpstyle.flags.common.focus_mode = FOCUS_MOUSE;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flags.common.focus_mode = FOCUS_MOUSE;
+          ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->flags.common.do_grab_focus_when_created = 0;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
         }
         break;
 
@@ -671,26 +801,26 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "GrabFocusOff"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flags.common.do_grab_focus_when_created = 0;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "GrabFocus"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_grab_focus_when_created = 1;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flags.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "GrabFocusTransientOff"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_grab_focus_when_transient_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_transient_created = 1;
+          ptmpstyle->flags.common.do_grab_focus_when_transient_created = 0;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_transient_created = 1;
         }
         else if(StrEquals(token, "GrabFocusTransient"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_grab_focus_when_transient_created = 1;
-          tmpstyle.flag_mask.common.do_grab_focus_when_transient_created = 1;
+          ptmpstyle->flags.common.do_grab_focus_when_transient_created = 1;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_transient_created = 1;
         }
         break;
 
@@ -698,22 +828,22 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "HINTOVERRIDE"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_mwm_override = 1;
-          tmpstyle.flag_mask.common.has_mwm_override = 1;
+          ptmpstyle->flags.common.has_mwm_override = 1;
+          ptmpstyle->flag_mask.common.has_mwm_override = 1;
         }
         else if(StrEquals(token, "HANDLES"))
         {
 	  found = True;
-          tmpstyle.flags.has_no_border = 0;
-          tmpstyle.flag_mask.has_no_border = 1;
+          ptmpstyle->flags.has_no_border = 0;
+          ptmpstyle->flag_mask.has_no_border = 1;
         }
         else if(StrEquals(token, "HandleWidth"))
         {
 	  found = True;
-	  if (GetIntegerArguments(rest, NULL, &tmpstyle.handle_width, 1))
+	  if (GetIntegerArguments(rest, NULL, &ptmpstyle->handle_width, 1))
 	  {
-	    tmpstyle.flags.has_handle_width = 1;
-	    tmpstyle.flag_mask.has_handle_width = 1;
+	    ptmpstyle->flags.has_handle_width = 1;
+	    ptmpstyle->flag_mask.has_handle_width = 1;
 	  }
         }
         break;
@@ -722,26 +852,29 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	if(StrEquals(token, "IconOverride"))
 	{
 	  found = True;
-	  tmpstyle.flags.icon_override = ICON_OVERRIDE;
-	  tmpstyle.flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	  ptmpstyle->flags.icon_override = ICON_OVERRIDE;
+	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
         else if(StrEquals(token, "IgnoreRestack"))
         {
 	  found = True;
-	  tmpstyle.flags.common.ignore_restack = 1;
-	  tmpstyle.flag_mask.common.ignore_restack = 1;
+	  ptmpstyle->flags.common.ignore_restack = 1;
+	  ptmpstyle->flag_mask.common.ignore_restack = 1;
         }
         else if(StrEquals(token, "IconTitle"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_no_icon_title = 0;
-          tmpstyle.flag_mask.common.has_no_icon_title = 1;
+          ptmpstyle->flags.common.has_no_icon_title = 0;
+          ptmpstyle->flag_mask.common.has_no_icon_title = 1;
         }
         else if(StrEquals(token, "IconBox"))
         {
           icon_boxes *IconBoxes = NULL;
 
 	  found = True;
+	  /* free old icon boxes (if any) */
+	  free_icon_boxes(ptmpstyle->IconBoxes);
+	  ptmpstyle->IconBoxes = NULL;
           IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
 	  /* clear it */
           memset(IconBoxes, 0, sizeof(icon_boxes));
@@ -841,9 +974,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           /* If we created an IconBox, put it in the chain. */
           if (IconBoxes != 0) {
 	    /* no error */
-            if (tmpstyle.IconBoxes == 0) {
+            if (ptmpstyle->IconBoxes == 0) {
 	      /* first one, chain to root */
-	      tmpstyle.IconBoxes = IconBoxes;
+	      ptmpstyle->IconBoxes = IconBoxes;
             } else {
 	      /* else not first one, add to end of chain */
               which->next = IconBoxes;
@@ -932,12 +1065,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
 	  GetNextToken(rest, &token);
 
-          tmpstyle.icon_name = token;
-          tmpstyle.flags.has_icon = (token != NULL);
-          tmpstyle.flag_mask.has_icon = 1;
+          ptmpstyle->icon_name = token;
+          ptmpstyle->flags.has_icon = (token != NULL);
+          ptmpstyle->flag_mask.has_icon = 1;
 
-	  tmpstyle.flags.common.is_icon_suppressed = 0;
-	  tmpstyle.flag_mask.common.is_icon_suppressed = 1;
+	  ptmpstyle->flags.common.is_icon_suppressed = 0;
+	  ptmpstyle->flag_mask.common.is_icon_suppressed = 1;
         }
         break;
 
@@ -951,26 +1084,26 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "LENIENCE"))
         {
 	  found = True;
-          tmpstyle.flags.common.is_lenient = 1;
-          tmpstyle.flag_mask.common.is_lenient = 1;
+          ptmpstyle->flags.common.is_lenient = 1;
+          ptmpstyle->flag_mask.common.is_lenient = 1;
         }
         else if (StrEquals(token, "LAYER"))
         {
 	  found = True;
-	  GetIntegerArguments(rest, NULL, &tmpstyle.layer, 1);
-	  if(tmpstyle.layer < 0)
+	  GetIntegerArguments(rest, NULL, &ptmpstyle->layer, 1);
+	  if(ptmpstyle->layer < 0)
 	  {
 	    fvwm_msg(ERR, "ProcessNewStyle",
 		     "Layer must be positive or zero." );
 	    /* mark layer unset */
-	    tmpstyle.layer = -9;
+	    ptmpstyle->layer = -9;
 	  }
 	}
         else if(StrEquals(token, "LOWERTRANSIENT"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_lower_transient = 1;
-          tmpstyle.flag_mask.common.do_lower_transient = 1;
+          ptmpstyle->flags.common.do_lower_transient = 1;
+          ptmpstyle->flag_mask.common.do_lower_transient = 1;
         }
         break;
 
@@ -978,8 +1111,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "MWMBUTTONS"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_mwm_buttons = 1;
-          tmpstyle.flag_mask.common.has_mwm_buttons = 1;
+          ptmpstyle->flags.common.has_mwm_buttons = 1;
+          ptmpstyle->flag_mask.common.has_mwm_buttons = 1;
         }
 #ifdef MINI_ICONS
         else if (StrEquals(token, "MINIICON"))
@@ -988,37 +1121,37 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  GetNextToken(rest, &token);
 	  if (token)
           {
-            tmpstyle.mini_icon_name = token;
-            tmpstyle.flags.has_mini_icon = 1;
-            tmpstyle.flag_mask.has_mini_icon = 1;
+            ptmpstyle->mini_icon_name = token;
+            ptmpstyle->flags.has_mini_icon = 1;
+            ptmpstyle->flag_mask.has_mini_icon = 1;
           }
         }
 #endif
         else if(StrEquals(token, "MWMBORDER"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_mwm_border = 1;
-          tmpstyle.flag_mask.common.has_mwm_border = 1;
+          ptmpstyle->flags.common.has_mwm_border = 1;
+          ptmpstyle->flag_mask.common.has_mwm_border = 1;
         }
         else if(StrEquals(token, "MWMDECOR"))
         {
 	  found = True;
-          tmpstyle.flags.has_mwm_decor = 1;
-          tmpstyle.flag_mask.has_mwm_decor = 1;
+          ptmpstyle->flags.has_mwm_decor = 1;
+          ptmpstyle->flag_mask.has_mwm_decor = 1;
         }
         else if(StrEquals(token, "MWMFUNCTIONS"))
         {
 	  found = True;
-          tmpstyle.flags.has_mwm_functions = 1;
-          tmpstyle.flag_mask.has_mwm_functions = 1;
+          ptmpstyle->flags.has_mwm_functions = 1;
+          ptmpstyle->flag_mask.has_mwm_functions = 1;
         }
         else if(StrEquals(token, "MOUSEFOCUS"))
         {
 	  found = True;
-          tmpstyle.flags.common.focus_mode = FOCUS_MOUSE;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flags.common.focus_mode = FOCUS_MOUSE;
+          ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->flags.common.do_grab_focus_when_created = 0;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "MAXWINDOWSIZE"))
 	{
@@ -1049,10 +1182,10 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  {
 	    val2 = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 	  }
-	  tmpstyle.max_window_width = val1;
-	  tmpstyle.max_window_height = val2;
-	  tmpstyle.flags.has_max_window_size = 1;
-	  tmpstyle.flag_mask.has_max_window_size = 1;
+	  ptmpstyle->max_window_width = val1;
+	  ptmpstyle->max_window_height = val2;
+	  ptmpstyle->flags.has_max_window_size = 1;
+	  ptmpstyle->flag_mask.has_max_window_size = 1;
 	}
         break;
 
@@ -1060,80 +1193,80 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	if(StrEquals(token, "NoActiveIconOverride"))
 	{
 	  found = True;
-	  tmpstyle.flags.icon_override = NO_ACTIVE_ICON_OVERRIDE;
-	  tmpstyle.flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	  ptmpstyle->flags.icon_override = NO_ACTIVE_ICON_OVERRIDE;
+	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
 	else if(StrEquals(token, "NoIconOverride"))
 	{
 	  found = True;
-	  tmpstyle.flags.icon_override = NO_ICON_OVERRIDE;
-	  tmpstyle.flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	  ptmpstyle->flags.icon_override = NO_ICON_OVERRIDE;
+	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
         else if(StrEquals(token, "NoIconTitle"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_no_icon_title = 1;
-          tmpstyle.flag_mask.common.has_no_icon_title = 1;
+          ptmpstyle->flags.common.has_no_icon_title = 1;
+          ptmpstyle->flag_mask.common.has_no_icon_title = 1;
         }
         else if(StrEquals(token, "NOICON"))
         {
 	  found = True;
-          tmpstyle.flags.common.is_icon_suppressed = 1;
-          tmpstyle.flag_mask.common.is_icon_suppressed = 1;
+          ptmpstyle->flags.common.is_icon_suppressed = 1;
+          ptmpstyle->flag_mask.common.is_icon_suppressed = 1;
         }
         else if(StrEquals(token, "NOTITLE"))
         {
 	  found = True;
-          tmpstyle.flags.has_no_title = 1;
-          tmpstyle.flag_mask.has_no_title = 1;
+          ptmpstyle->flags.has_no_title = 1;
+          ptmpstyle->flag_mask.has_no_title = 1;
         }
         else if(StrEquals(token, "NoPPosition"))
         {
 	  found = True;
-          tmpstyle.flags.use_no_pposition = 1;
-          tmpstyle.flag_mask.use_no_pposition = 1;
+          ptmpstyle->flags.use_no_pposition = 1;
+          ptmpstyle->flag_mask.use_no_pposition = 1;
         }
         else if(StrEquals(token, "NakedTransient"))
         {
 	  found = True;
-          tmpstyle.flags.do_decorate_transient = 0;
-          tmpstyle.flag_mask.do_decorate_transient = 1;
+          ptmpstyle->flags.do_decorate_transient = 0;
+          ptmpstyle->flag_mask.do_decorate_transient = 1;
         }
         else if(StrEquals(token, "NODECORHINT"))
         {
 	  found = True;
-          tmpstyle.flags.has_mwm_decor = 0;
-          tmpstyle.flag_mask.has_mwm_decor = 1;
+          ptmpstyle->flags.has_mwm_decor = 0;
+          ptmpstyle->flag_mask.has_mwm_decor = 1;
         }
         else if(StrEquals(token, "NOFUNCHINT"))
         {
 	  found = True;
-          tmpstyle.flags.has_mwm_functions = 0;
-          tmpstyle.flag_mask.has_mwm_functions = 1;
+          ptmpstyle->flags.has_mwm_functions = 0;
+          ptmpstyle->flag_mask.has_mwm_functions = 1;
         }
         else if(StrEquals(token, "NOOVERRIDE"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_mwm_override = 0;
-          tmpstyle.flag_mask.common.has_mwm_override = 1;
+          ptmpstyle->flags.common.has_mwm_override = 0;
+          ptmpstyle->flag_mask.common.has_mwm_override = 1;
         }
         else if(StrEquals(token, "NORESIZEOVERRIDE"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_override_size = 0;
-          tmpstyle.flag_mask.common.has_override_size = 1;
+          ptmpstyle->flags.common.has_override_size = 0;
+          ptmpstyle->flag_mask.common.has_override_size = 1;
         }
         else if(StrEquals(token, "NOHANDLES"))
         {
 	  found = True;
-          tmpstyle.flags.has_no_border = 1;
-          tmpstyle.flag_mask.has_no_border = 1;
+          ptmpstyle->flags.has_no_border = 1;
+          ptmpstyle->flag_mask.has_no_border = 1;
         }
         else if(StrEquals(token, "NOLENIENCE"))
         {
 	  found = True;
-          tmpstyle.flags.common.is_lenient = 0;
-          tmpstyle.flag_mask.common.is_lenient = 1;
+          ptmpstyle->flags.common.is_lenient = 0;
+          ptmpstyle->flag_mask.common.is_lenient = 1;
         }
         else if (StrEquals(token, "NOBUTTON"))
         {
@@ -1143,21 +1276,21 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           if (butt == 0)
 	    butt = 10;
           if (butt > 0 && butt <= 10)
-            tmpstyle.on_buttons |= (1<<(butt-1));
+            ptmpstyle->on_buttons |= (1<<(butt-1));
         }
         else if(StrEquals(token, "NOOLDECOR"))
         {
 	  found = True;
-          tmpstyle.flags.has_ol_decor = 0;
-          tmpstyle.flag_mask.has_ol_decor = 1;
+          ptmpstyle->flags.has_ol_decor = 0;
+          ptmpstyle->flag_mask.has_ol_decor = 1;
         }
         else if(StrEquals(token, "NEVERFOCUS"))
         {
 	  found = True;
-          tmpstyle.flags.common.focus_mode = FOCUS_NEVER;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flags.common.focus_mode = FOCUS_NEVER;
+          ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->flags.common.do_grab_focus_when_created = 0;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
         }
         break;
 
@@ -1165,8 +1298,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "OLDECOR"))
         {
 	  found = True;
-          tmpstyle.flags.has_ol_decor = 1;
-          tmpstyle.flag_mask.has_ol_decor = 1;
+          ptmpstyle->flags.has_ol_decor = 1;
+          ptmpstyle->flag_mask.has_ol_decor = 1;
         }
         break;
 
@@ -1180,44 +1313,44 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "RAISETRANSIENT"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_raise_transient = 1;
-          tmpstyle.flag_mask.common.do_raise_transient = 1;
+          ptmpstyle->flags.common.do_raise_transient = 1;
+          ptmpstyle->flag_mask.common.do_raise_transient = 1;
         }
         else if(StrEquals(token, "RANDOMPLACEMENT"))
         {
 	  found = True;
-          tmpstyle.flags.do_place_random = 1;
-          tmpstyle.flag_mask.do_place_random = 1;
+          ptmpstyle->flags.do_place_random = 1;
+          ptmpstyle->flag_mask.do_place_random = 1;
         }
 	else if(StrEquals(token, "RECAPTUREHONORSSTARTSONPAGE"))
 	{
 	  found = True;
-	  tmpstyle.flags.recapture_honors_starts_on_page = 1;
-	  tmpstyle.flag_mask.recapture_honors_starts_on_page = 1;
+	  ptmpstyle->flags.recapture_honors_starts_on_page = 1;
+	  ptmpstyle->flag_mask.recapture_honors_starts_on_page = 1;
 	}
 	else if(StrEquals(token, "RECAPTUREIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
-	  tmpstyle.flags.recapture_honors_starts_on_page = 0;
-	  tmpstyle.flag_mask.recapture_honors_starts_on_page = 1;
+	  ptmpstyle->flags.recapture_honors_starts_on_page = 0;
+	  ptmpstyle->flag_mask.recapture_honors_starts_on_page = 1;
 	}
         else if(StrEquals(token, "RESIZEHINTOVERRIDE"))
         {
 	  found = True;
-          tmpstyle.flags.common.has_override_size = 1;
-          tmpstyle.flag_mask.common.has_override_size = 1;
+          ptmpstyle->flags.common.has_override_size = 1;
+          ptmpstyle->flag_mask.common.has_override_size = 1;
         }
         else if(StrEquals(token, "ResizeOpaque"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_resize_opaque = 1;
-          tmpstyle.flag_mask.common.do_resize_opaque = 1;
+          ptmpstyle->flags.common.do_resize_opaque = 1;
+          ptmpstyle->flag_mask.common.do_resize_opaque = 1;
         }
         else if(StrEquals(token, "ResizeOutline"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_resize_opaque = 0;
-          tmpstyle.flag_mask.common.do_resize_opaque = 1;
+          ptmpstyle->flags.common.do_resize_opaque = 0;
+          ptmpstyle->flag_mask.common.do_resize_opaque = 1;
         }
         break;
 
@@ -1225,85 +1358,85 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "SMARTPLACEMENT"))
         {
 	  found = True;
-          tmpstyle.flags.do_place_smart = 1;
-          tmpstyle.flag_mask.do_place_smart = 1;
+          ptmpstyle->flags.do_place_smart = 1;
+          ptmpstyle->flag_mask.do_place_smart = 1;
         }
         else if(StrEquals(token, "SkipMapping"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_not_show_on_map = 1;
-          tmpstyle.flag_mask.common.do_not_show_on_map = 1;
+          ptmpstyle->flags.common.do_not_show_on_map = 1;
+          ptmpstyle->flag_mask.common.do_not_show_on_map = 1;
         }
         else if(StrEquals(token, "ShowMapping"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_not_show_on_map = 0;
-          tmpstyle.flag_mask.common.do_not_show_on_map = 1;
+          ptmpstyle->flags.common.do_not_show_on_map = 0;
+          ptmpstyle->flag_mask.common.do_not_show_on_map = 1;
         }
         else if(StrEquals(token, "StackTransientParent"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_stack_transient_parent = 1;
-          tmpstyle.flag_mask.common.do_stack_transient_parent = 1;
+          ptmpstyle->flags.common.do_stack_transient_parent = 1;
+          ptmpstyle->flag_mask.common.do_stack_transient_parent = 1;
         }
         else if(StrEquals(token, "StickyIcon"))
         {
 	  found = True;
-          tmpstyle.flags.common.is_icon_sticky = 1;
-          tmpstyle.flag_mask.common.is_icon_sticky = 1;
+          ptmpstyle->flags.common.is_icon_sticky = 1;
+          ptmpstyle->flag_mask.common.is_icon_sticky = 1;
         }
         else if(StrEquals(token, "SlipperyIcon"))
         {
 	  found = True;
-          tmpstyle.flags.common.is_icon_sticky = 0;
-          tmpstyle.flag_mask.common.is_icon_sticky = 1;
+          ptmpstyle->flags.common.is_icon_sticky = 0;
+          ptmpstyle->flag_mask.common.is_icon_sticky = 1;
         }
         else if(StrEquals(token, "SLOPPYFOCUS"))
         {
 	  found = True;
-          tmpstyle.flags.common.focus_mode = FOCUS_SLOPPY;
-          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
-          tmpstyle.flags.common.do_grab_focus_when_created = 0;
-          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->flags.common.focus_mode = FOCUS_SLOPPY;
+          ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->flags.common.do_grab_focus_when_created = 0;
+          ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "StartIconic"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_start_iconic = 1;
-          tmpstyle.flag_mask.common.do_start_iconic = 1;
+          ptmpstyle->flags.common.do_start_iconic = 1;
+          ptmpstyle->flag_mask.common.do_start_iconic = 1;
         }
         else if(StrEquals(token, "StartNormal"))
         {
 	  found = True;
-          tmpstyle.flags.common.do_start_iconic = 0;
-          tmpstyle.flag_mask.common.do_start_iconic = 1;
+          ptmpstyle->flags.common.do_start_iconic = 0;
+          ptmpstyle->flag_mask.common.do_start_iconic = 1;
         }
         else if(StrEquals(token, "StaysOnBottom"))
         {
 	  found = True;
-          tmpstyle.layer = Scr.BottomLayer;
+          ptmpstyle->layer = Scr.BottomLayer;
         }
         else if(StrEquals(token, "StaysOnTop"))
         {
 	  found = True;
-          tmpstyle.layer = Scr.TopLayer;
+          ptmpstyle->layer = Scr.TopLayer;
         }
         else if(StrEquals(token, "StaysPut"))
         {
 	  found = True;
-          tmpstyle.layer = Scr.DefaultLayer;
+          ptmpstyle->layer = Scr.DefaultLayer;
         }
         else if(StrEquals(token, "Sticky"))
         {
 	  found = True;
-          tmpstyle.flags.common.is_sticky = 1;
-          tmpstyle.flag_mask.common.is_sticky = 1;
+          ptmpstyle->flags.common.is_sticky = 1;
+          ptmpstyle->flag_mask.common.is_sticky = 1;
         }
         else if(StrEquals(token, "Slippery"))
         {
 	  found = True;
-          tmpstyle.flags.common.is_sticky = 0;
-          tmpstyle.flag_mask.common.is_sticky = 1;
+          ptmpstyle->flags.common.is_sticky = 0;
+          ptmpstyle->flag_mask.common.is_sticky = 1;
         }
         else if(StrEquals(token, "STARTSONDESK"))
         {
@@ -1311,17 +1444,17 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  /*  RBW - 11/02/1998  */
 	  spargs = GetIntegerArguments(rest, NULL, tmpno, 1);
           if (spargs == 1)
-            {
-              tmpstyle.flags.use_start_on_desk = 1;
-              tmpstyle.flag_mask.use_start_on_desk = 1;
-              /*  RBW - 11/20/1998 - allow for the special case of -1  */
-              tmpstyle.start_desk = (tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
-            }
+	  {
+	    ptmpstyle->flags.use_start_on_desk = 1;
+	    ptmpstyle->flag_mask.use_start_on_desk = 1;
+	    /*  RBW - 11/20/1998 - allow for the special case of -1  */
+	    ptmpstyle->start_desk = (tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
+	  }
           else
-            {
-              fvwm_msg(ERR,"ProcessNewStyle",
-                       "bad StartsOnDesk arg: %s", rest);
-            }
+	  {
+	    fvwm_msg(ERR,"ProcessNewStyle",
+		     "bad StartsOnDesk arg: %s", rest);
+	  }
           /**/
         }
 	/*  RBW - 11/02/1998
@@ -1336,23 +1469,23 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    /* We have a desk no., with or without page. */
 	    /* RBW - 11/20/1998 - allow for the special case of -1 */
 	    /* Desk is now actual + 1 */
-	    tmpstyle.start_desk = (tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
+	    ptmpstyle->start_desk = (tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
 	  }
 	  if (spargs == 2 || spargs == 3)
 	  {
 	    if (spargs == 3)
 	    {
 	      /*  RBW - 11/20/1998 - allow for the special case of -1  */
-	      tmpstyle.start_page_x =
+	      ptmpstyle->start_page_x =
 		(tmpno[1] > -1) ? tmpno[1] + 1 : tmpno[1];
-	      tmpstyle.start_page_y =
+	      ptmpstyle->start_page_y =
 		(tmpno[2] > -1) ? tmpno[2] + 1 : tmpno[2];
 	    }
 	    else
 	    {
-	      tmpstyle.start_page_x =
+	      ptmpstyle->start_page_x =
 		(tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
-	      tmpstyle.start_page_y =
+	      ptmpstyle->start_page_y =
 		(tmpno[1] > -1) ? tmpno[1] + 1 : tmpno[1];
 	    }
 	  }
@@ -1363,40 +1496,40 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  }
 	  else
 	  {
-	    tmpstyle.flags.use_start_on_desk = 1;
-	    tmpstyle.flag_mask.use_start_on_desk = 1;
+	    ptmpstyle->flags.use_start_on_desk = 1;
+	    ptmpstyle->flag_mask.use_start_on_desk = 1;
 	  }
 	}
 	else if(StrEquals(token, "STARTSONPAGEINCLUDESTRANSIENTS"))
 	{
 	  found = True;
-	  tmpstyle.flags.use_start_on_page_for_transient = 1;
-	  tmpstyle.flag_mask.use_start_on_page_for_transient = 1;
+	  ptmpstyle->flags.use_start_on_page_for_transient = 1;
+	  ptmpstyle->flag_mask.use_start_on_page_for_transient = 1;
 	}
 	else if(StrEquals(token, "STARTSONPAGEIGNORESTRANSIENTS"))
 	{
 	  found = True;
-	  tmpstyle.flags.use_start_on_page_for_transient = 0;
-	  tmpstyle.flag_mask.use_start_on_page_for_transient = 1;
+	  ptmpstyle->flags.use_start_on_page_for_transient = 0;
+	  ptmpstyle->flag_mask.use_start_on_page_for_transient = 1;
 	}
 	/**/
 	else if(StrEquals(token, "STARTSANYWHERE"))
 	{
 	  found = True;
-	  tmpstyle.flags.use_start_on_desk = 0;
-	  tmpstyle.flag_mask.use_start_on_desk = 1;
+	  ptmpstyle->flags.use_start_on_desk = 0;
+	  ptmpstyle->flag_mask.use_start_on_desk = 1;
 	}
         else if (StrEquals(token, "STARTSLOWERED"))
         {
 	  found = True;
-          tmpstyle.flags.do_start_lowered = 1;
-          tmpstyle.flag_mask.do_start_lowered = 1;
+          ptmpstyle->flags.do_start_lowered = 1;
+          ptmpstyle->flag_mask.do_start_lowered = 1;
         }
         else if (StrEquals(token, "STARTSRAISED"))
         {
 	  found = True;
-          tmpstyle.flags.do_start_lowered = 0;
-          tmpstyle.flag_mask.do_start_lowered = 1;
+          ptmpstyle->flags.do_start_lowered = 0;
+          ptmpstyle->flag_mask.do_start_lowered = 1;
         }
         break;
 
@@ -1404,8 +1537,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "TITLE"))
         {
 	  found = True;
-          tmpstyle.flags.has_no_title = 0;
-          tmpstyle.flag_mask.has_no_title = 1;
+          ptmpstyle->flags.has_no_title = 0;
+          ptmpstyle->flag_mask.has_no_title = 1;
         }
         break;
 
@@ -1413,16 +1546,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "UsePPosition"))
         {
 	  found = True;
-          tmpstyle.flags.use_no_pposition = 0;
-          tmpstyle.flag_mask.use_no_pposition = 1;
+          ptmpstyle->flags.use_no_pposition = 0;
+          ptmpstyle->flag_mask.use_no_pposition = 1;
         }
 #ifdef USEDECOR
         if(StrEquals(token, "UseDecor"))
         {
 	  found = True;
+	  SAFEFREE(ptmpstyle->decor_name);
 	  GetNextToken(rest, &token);
-	  if (token)
-            tmpstyle.decor_name = token;
+	  ptmpstyle->decor_name = token;
+          ptmpstyle->flags.has_decor = (token != NULL);
+          ptmpstyle->flag_mask.has_decor = (token != NULL);
         }
 #endif
         else if(StrEquals(token, "UseStyle"))
@@ -1440,20 +1575,20 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                 {
 		  /* first match */
                   char *save_name;
-                  save_name = tmpstyle.name;
+                  save_name = ptmpstyle->name;
 		  /* copy everything */
-                  memcpy((void*)&tmpstyle, (const void*)add_style,
+                  memcpy((void*)ptmpstyle, (const void*)add_style,
 			 sizeof(window_style));
 		  /* except the next pointer */
-                  tmpstyle.next = NULL;
+                  ptmpstyle->next = NULL;
 		  /* and the name */
-                  tmpstyle.name = save_name;
+                  ptmpstyle->name = save_name;
 		  /* set not first match */
                   hit = 1;
                 }
                 else
                 {
-		  merge_styles(&tmpstyle, add_style);
+		  merge_styles(ptmpstyle, add_style, True);
                 } /* end hit/not hit */
               } /* end found matching style */
             } /* end looking at all styles */
@@ -1471,8 +1606,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "VariablePosition"))
 	  {
 	    found = True;
-            tmpstyle.flags.common.is_fixed = 0;
-            tmpstyle.flag_mask.common.is_fixed = 1;
+            ptmpstyle->flags.common.is_fixed = 0;
+            ptmpstyle->flag_mask.common.is_fixed = 1;
 	  }
         break;
 
@@ -1480,14 +1615,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "WindowListSkip"))
         {
 	  found = True;
-	  tmpstyle.flags.common.do_window_list_skip = 1;
-	  tmpstyle.flag_mask.common.do_window_list_skip = 1;
+	  ptmpstyle->flags.common.do_window_list_skip = 1;
+	  ptmpstyle->flag_mask.common.do_window_list_skip = 1;
         }
         else if(StrEquals(token, "WindowListHit"))
         {
 	  found = True;
-	  tmpstyle.flags.common.do_window_list_skip = 0;
-	  tmpstyle.flag_mask.common.do_window_list_skip = 1;
+	  ptmpstyle->flags.common.do_window_list_skip = 0;
+	  ptmpstyle->flag_mask.common.do_window_list_skip = 1;
         }
         break;
 
@@ -1512,24 +1647,24 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 
       /* No, I think we /can/ return here.
        * In fact, /not/ bombing out leaves a half-done style in the list!
-       * N.Bird 07-Sep-1999
-       */
-      free(tmpstyle.name);
-      free(option);
-      return;
+       * N.Bird 07-Sep-1999 */
+
+      /* domivogt (01-Oct-1999): Which is exactly what we want! Why should all
+       * the styles be thrown away if a single one is mis-spelled? Let's just
+       * continue parsing styles. */
     }
     free(option);
   } /* end while still stuff on command */
 
   /* capture default icons */
-  if(StrEquals(tmpstyle.name, "*"))
+  if(StrEquals(ptmpstyle->name, "*"))
   {
-    if(tmpstyle.flags.has_icon == 1)
-      Scr.DefaultIcon = tmpstyle.icon_name;
-    tmpstyle.flags.has_icon = 0;
-    tmpstyle.flag_mask.has_icon = 0;
-    tmpstyle.icon_name = NULL;
+    if(ptmpstyle->flags.has_icon == 1)
+      Scr.DefaultIcon = ptmpstyle->icon_name;
+    ptmpstyle->flags.has_icon = 0;
+    ptmpstyle->flag_mask.has_icon = 0;
+    ptmpstyle->icon_name = NULL;
   }
   /* add temp name list to list */
-  add_style_to_list(&tmpstyle);
+  add_style_to_list(ptmpstyle);
 }

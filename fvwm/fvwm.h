@@ -230,6 +230,7 @@ typedef struct
   unsigned has_border_width : 1;
   unsigned has_color_back : 1;
   unsigned has_color_fore : 1;
+  unsigned has_decor : 1;
   unsigned has_handle_width : 1;
   unsigned has_icon : 1;
   unsigned has_max_window_size : 1;

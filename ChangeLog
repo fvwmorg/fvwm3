@@ -1,3 +1,28 @@
+1999-10-01  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/style.c: (merge_styles):
+	fixed several bugs in style preference (with 'Style * Icon ...' before
+	'Style xterm NoIcon', the 'Icon' style would have won.)
+
+	* fvwm/style.c: (ProcessDestroyStyle):
+	(remove_all_of_style_from_list):
+	(add_style_to_list):
+	adjacent styles in the style list with the same name are merged
+
+	* fvwm/style.c (merge_styles): can merge styles without leaking memory
+	or causing coredumps with 'destroy_style'.
+
+	* fvwm/style.c (free_icon_boxes): new function
+	(merge_styles): now static
+	(copy_icon_boxes): new function
+	(free_style): new function
+	(merge_style_list): new function
+
+1999-09-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (paint_menu): fixed ManuFace MenuStyle interfering with
+	Colorset MenuStyle
+
 1999-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Target.c: new file
