@@ -248,13 +248,10 @@ Disables the pixmap button style.  You must have Xpm support to use
 color pixmaps.  See the man page button style entries for "Pixmap" and
 "TiledPixmap" for usage information.
 
-  --disable-saveunder		disable saveunders for pop-up menus
+  --disable-gradient-buttons    disable gradient button style
 
-Tells the WM not to request save unders for pop-up menus.  A quick
-test using monochrome X11 shows that save unders cost about 4 kbytes
-RAM, but saves a lot of window redraws if you have windows that take a
-while to refresh.  For a color display, I assume the cost is more like
-4 kbytes x 8 = 32 kbytes (256 color).
+Disables the gradient button style.  See the man page button style
+entries for "HGradient" and "VGradient" for usage information.
 
   --disable-shape		disable shape extensions
 
@@ -287,9 +284,3 @@ memory penalty for each additionally defined decor.
 
 Disables the vector button style.  This button type is considered
 "standard," so it is recommended that you leave it in.
-
-  --disable-windowshade		disable WindowShade function
-
-Disables the WindowShade function.  This function "rolls" the window
-up so only the title-bar remains.  See the man page entry for
-"WindowShade" for more information.

@@ -20,14 +20,6 @@
  * Use with care.  */
 #undef MODALITY_IS_EVIL
 
-/* Tells the WM not to request save unders for pop-up
- * menus. A quick test using monochrome X11 shows that save
- * unders cost about 4Kbytes RAM, but saves a lot of
- * window redraws if you have windows that take a while
- * to refresh. For xcolor, I assume the cost is more like
- * 4Kbytesx8 = 32kbytes (256 color).  */
-#undef NO_SAVEUNDERS
-
 /* Define if you want the Shaped window extensions.
  * Shaped window extensions seem to increase the window managers RSS
  * by about 60 Kbytes. They provide for leaving a title-bar on the window
@@ -104,11 +96,6 @@
  * the man page entries for AddToDecor and DestroyDecor.  There is a
  * slight memory penalty for each additionally defined decor.  */
 #undef USEDECOR
-
-/* Enables the WindowShade function.  This function "rolls" the window
- * up so only the title-bar remains.  See the man page entry for
- * "WindowShade" for more information.  */
-#undef WINDOWSHADE
 
 /* Enables session management functionality. */
 #undef SESSION

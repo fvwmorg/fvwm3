@@ -1,3 +1,9 @@
+1999-04-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* acconfig.h: 
+	* INSTALL.fvwm: Finish the removal of the NO_SAVEUNDERS and
+	WINDOWSHADE configure options.
+
 1999-04-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/functions.c (expand): some clean up
