@@ -1,7 +1,13 @@
+1999-10-24  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/ReadXServer.c (ReadXServer): Fix problem causes by the usage
+	of XDrawString when typing more characters than an input field can
+	hold.
+
 1999-10-24  Chris Rankin
 
 	* FvwmSaveDesk, FvwmSave, FvwmDebug, FvwmIdent: removed duplicate
-      prototypes
+	prototypes
 	* FvwmIconMan: some Wall fixes; also put "const" in a few places
 
 1999-10-22  Douglas Straub

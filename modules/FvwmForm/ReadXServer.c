@@ -291,24 +291,16 @@ void ReadXServer ()
 	}
       redraw_newcursor:
 	{
-	  int x, dy;
-	  x = BOX_SPC + TEXT_SPC
-            + FontWidth(CF.cur_input->header.dt_ptr->dt_font_struct) *
-            ((old_cursor > 0) ? old_cursor - 1 : old_cursor) - 1;
-	  dy = CF.cur_input->header.size_y - 1;
 	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
                          CF.cur_input->header.dt_ptr->dt_colors[c_item_bg]);
-          /* clear from the (old_cursor - 1) to the rest of the line */
-          /* For some reason, you have to clear one more pixel than the line
-             cursor takes or the bottom of the input box has a pixel drop.
-             dje 9/3/99 */
-	  XClearArea(dpy, CF.cur_input->header.win, x, BOX_SPC,
-		     CF.cur_input->header.size_x - BOX_SPC -2 - x,
-		     dy - 2 * BOX_SPC + 1, False);
-          myfprintf((stderr,"clearing %d/%d %d/%d\n",
-                         x, BOX_SPC,
-                         CF.cur_input->header.size_x - BOX_SPC -2 - x,
-                         dy - BOX_SPC + 1));
+          /* Since XDrawString is being used, I changed this to clear the
+             entire input field.  dje 10/24/99. */
+	  XClearArea(dpy, CF.cur_input->header.win,
+                     BOX_SPC + TEXT_SPC - 1, BOX_SPC,
+		     CF.cur_input->header.size_x
+                     - (2 * BOX_SPC) - 2 - TEXT_SPC,
+		     (CF.cur_input->header.size_y - 1)
+                     - 2 * BOX_SPC + 1, False);
 	}
       redraw:
 	{
@@ -318,18 +310,6 @@ void ReadXServer ()
                          CF.cur_input->header.dt_ptr->dt_colors[c_item_fg]);
 	  if (len > CF.cur_input->input.size)
 	    len = CF.cur_input->input.size;
-	  else
-	    XDrawString(dpy, CF.cur_input->header.win,
-                             CF.cur_input->header.dt_ptr->dt_item_GC,
-			     BOX_SPC + TEXT_SPC +
-			     FontWidth(CF.cur_input->header.dt_ptr->
-                                       dt_font_struct)
-                             * len,
-			     BOX_SPC + TEXT_SPC +
-                             CF.cur_input->header.dt_ptr->dt_font_struct->
-                             ascent,
-			     CF.cur_input->input.blanks,
-			     CF.cur_input->input.size - len);
 	  XDrawString(dpy, CF.cur_input->header.win,
                            CF.cur_input->header.dt_ptr->dt_item_GC,
 			   BOX_SPC + TEXT_SPC,
