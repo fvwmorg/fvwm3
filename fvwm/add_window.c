@@ -829,6 +829,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #ifdef GNOME
   /* set GNOME hints on the window from flags set on tmp_win */
   GNOME_SetHints(tmp_win);
+  GNOME_SetLayer(tmp_win);
+  GNOME_SetDesk(tmp_win);
 #endif
 
   return (tmp_win);

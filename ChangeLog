@@ -1,3 +1,8 @@
+1999-04-25  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/add_window.c (AddWindow): update not only the _WIN_STATE,
+	but also _WIN_WORKSPACE and _WIN_LAYER.
+
 1999-04-24  Bob Woodside  <proteus@pcnet.com>
 	* fvwm/Makefile.am: added stack.c & stack.h.
 
