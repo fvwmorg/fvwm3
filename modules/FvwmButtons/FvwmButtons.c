@@ -982,8 +982,9 @@ void Loop(void)
       case KeyRelease:
       case ButtonRelease:
 	b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+	act = GetButtonAction(b,Event.xbutton.button);
 
-	if (b && (b->flags & b_Panel))
+	if (b && !act && (b->flags & b_Panel))
 	{
 	  HandlePanelPress(b);
 	  if (b->newflags.panel_mapped == 0)
@@ -998,10 +999,10 @@ void Loop(void)
 	      XWithdrawWindow(Dpy, MyWindow, screen);
 	    }
 	  }
-	}
+	} /* panel */
 	else
 	{
-	  if(!(act=GetButtonAction(b,Event.xbutton.button)))
+	  if (!act)
 	    act=GetButtonAction(b,0);
 	  if(b && b==CurrentButton && act)
 	  {
@@ -1083,7 +1084,7 @@ void Loop(void)
 	    free(act);
 	    act = NULL;
 	  }
-	}
+	} /* !panel */
 
 	b=CurrentButton;
 	CurrentButton=NULL;
@@ -1191,7 +1192,7 @@ void Loop(void)
 	      p = expand_action(b->spawn, NULL);
 	      if (p)
 	      {
-		MySendText(fd,b->spawn,0);
+		MySendText(fd, p, 0);
 		free(p);
 	      }
 	      RedrawButton(b,1);

@@ -93,7 +93,6 @@ static XrmOptionDescRec table [] = {
 };
 
 void FetchWmProtocols(FvwmWindow *);
-FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
 void GetWindowSizeHints(FvwmWindow *);
 
 
@@ -564,8 +563,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* stash valuemask bits in case BorderStyle TiledPixmap overwrites */
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   TexturePixmapSave = attributes.background_pixmap;
-  if ((GetDecor(tmp_win, BorderStyle.inactive.style) & ButtonFaceTypeMask)
-      == TiledPixmapButton)
+  if (DFS_FACE_TYPE(GetDecor(tmp_win, BorderStyle.inactive.style)) ==
+      TiledPixmapButton)
     TexturePixmap = GetDecor(tmp_win,BorderStyle.inactive.u.p->picture);
   if (TexturePixmap) {
     attributes.background_pixmap = TexturePixmap;
@@ -606,6 +605,13 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     for(i = 4; i >= 0; i--) {
       if((i < Scr.nr_left_buttons) && (tmp_win->left_w[i] > 0)) {
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
+	/* domivogt (2-Oct-199): There used to be some code to set the button
+	 * background pixmap based on the border style if 'useborderstyle' was
+	 * set. But the variable checked for the flag didn't ever set the flag.
+	 * This is done when the button is drawn anyway. */
+	valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
+	attributes.background_pixmap = TexturePixmapSave;
+#if 0
         if (TexturePixmap
 	    && GetDecor(tmp_win,left_buttons[i].flags) & UseBorderStyle) {
 	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixel|
@@ -616,6 +622,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	    CWEventMask;
           attributes.background_pixmap = TexturePixmapSave;
         }
+#endif
 #endif
         tmp_win->left_w[i] = XCreateWindow (dpy, tmp_win->frame,
 					    tmp_win->title_g.height * i, 0,
@@ -629,8 +636,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
       if((i < Scr.nr_right_buttons) && (tmp_win->right_w[i] > 0)) {
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
+	/* see comment for left buttons above */
+	valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
+          attributes.background_pixmap = TexturePixmapSave;
+#if 0
         if (TexturePixmap
-	    && GetDecor(tmp_win,right_buttons[i].flags) & UseBorderStyle) {
+	    && GetDecor(tmp_win,right_buttons[i].flags) & UseBorderStyle{
 	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixel|
 	    CWEventMask;
           attributes.background_pixmap = TexturePixmap;
@@ -639,6 +650,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	    CWEventMask;
           attributes.background_pixmap = TexturePixmapSave;
         }
+#endif
 #endif
         tmp_win->right_w[i] = XCreateWindow (dpy, tmp_win->frame,
 					     tmp_win->title_g.width

@@ -1175,14 +1175,15 @@ RETSIGTYPE Restart(int sig)
  *
  ************************************************************************/
 
-void LoadDefaultLeftButton(ButtonFace *bf, int i)
+void LoadDefaultLeftButton(DecorFace *df, int i)
 {
 #ifndef VECTOR_BUTTONS
-    bf->style = SimpleButton;
+    df->style = SimpleButton;
 #else
-    struct vector_coords *v = &bf->u.vector;
+    struct vector_coords *v = &df->u.vector;
 
-    bf->style = VectorButton;
+    memset(&df->style, 0, sizeof(df->style));
+    DFS_FACE_TYPE(df->style) = VectorButton;
     switch (i % 5)
     {
     case 0:
@@ -1271,14 +1272,15 @@ void LoadDefaultLeftButton(ButtonFace *bf, int i)
  *		assumes associated button memory is already free
  *
  ************************************************************************/
-void LoadDefaultRightButton(ButtonFace *bf, int i)
+void LoadDefaultRightButton(DecorFace *df, int i)
 {
 #ifndef VECTOR_BUTTONS
-    bf->style = SimpleButton;
+    df->style = SimpleButton;
 #else
-    struct vector_coords *v = &bf->u.vector;
+    struct vector_coords *v = &df->u.vector;
 
-    bf->style = VectorButton;
+    memset(&df->style, 0, sizeof(df->style));
+    DFS_FACE_TYPE(df->style) = VectorButton;
     switch (i % 5)
     {
     case 0:
@@ -1368,17 +1370,17 @@ void LoadDefaultRightButton(ButtonFace *bf, int i)
  *		assumes associated button memory is already free
  *
  ************************************************************************/
-void LoadDefaultButton(ButtonFace *bf, int i)
+void LoadDefaultButton(DecorFace *df, int i)
 {
     int n = i / 2;
     if ((n * 2) == i) {
 	if (--n < 0) n = 4;
-	LoadDefaultRightButton(bf, n);
+	LoadDefaultRightButton(df, n);
     } else
-	LoadDefaultLeftButton(bf, n);
+	LoadDefaultLeftButton(df, n);
 }
 
-extern void FreeButtonFace(Display *dpy, ButtonFace *bf);
+extern void FreeDecorFace(Display *dpy, DecorFace *df);
 
 /***********************************************************************
  *
@@ -1394,24 +1396,26 @@ void ResetAllButtons(FvwmDecor *fl)
     for (leftp=fl->left_buttons, rightp=fl->right_buttons;
          i < 5;
          ++i, ++leftp, ++rightp) {
-      ButtonFace *lface, *rface;
+      DecorFace *lface, *rface;
       int j;
 
-      leftp->flags = 0;
-      rightp->flags = 0;
+      memset(&TB_FLAGS(*leftp), 0, sizeof(TB_FLAGS(*leftp)));
+      TB_JUSTIFICATION(*leftp) = JUST_CENTER;
+      memset(&TB_FLAGS(*rightp), 0, sizeof(TB_FLAGS(*rightp)));
+      TB_JUSTIFICATION(*rightp) = JUST_CENTER;
 
-      lface = leftp->state;
-      rface = rightp->state;
+      lface = TB_STATE(*leftp);
+      rface = TB_STATE(*rightp);
 
-      FreeButtonFace(dpy, lface);
-      FreeButtonFace(dpy, rface);
+      FreeDecorFace(dpy, lface);
+      FreeDecorFace(dpy, rface);
 
       LoadDefaultLeftButton(lface++, i);
       LoadDefaultRightButton(rface++, i);
 
       for (j = 1; j < MaxButtonState; ++j, ++lface, ++rface) {
-        FreeButtonFace(dpy, lface);
-        FreeButtonFace(dpy, rface);
+        FreeDecorFace(dpy, lface);
+        FreeDecorFace(dpy, rface);
 
 	LoadDefaultLeftButton(lface, i);
 	LoadDefaultRightButton(rface, i);
@@ -1420,9 +1424,9 @@ void ResetAllButtons(FvwmDecor *fl)
 
     /* standard MWM decoration hint assignments (veliaa@rpi.edu)
        [Menu]  - Title Bar - [Minimize] [Maximize] */
-    fl->left_buttons[0].flags |= MWMDecorMenu;
-    fl->right_buttons[1].flags |= MWMDecorMinimize;
-    fl->right_buttons[0].flags |= MWMDecorMaximize;
+    TB_MWM_DECOR_FLAGS(fl->left_buttons[0]) |= MWMDecorMenu;
+    TB_MWM_DECOR_FLAGS(fl->right_buttons[1]) |= MWMDecorMinimize;
+    TB_MWM_DECOR_FLAGS(fl->right_buttons[0]) |= MWMDecorMaximize;
 }
 
 /***********************************************************************
@@ -1438,27 +1442,30 @@ void DestroyFvwmDecor(FvwmDecor *fl)
   ResetAllButtons(fl);
   for (i = 0; i < 3; ++i)
   {
-      int j = 0;
-      for (; j < MaxButtonState; ++j)
-	  FreeButtonFace(dpy, &fl->titlebar.state[i]);
+    int j = 0;
+    for (; j < MaxButtonState; ++j)
+      FreeDecorFace(dpy, &TB_STATE(fl->titlebar)[i]);
   }
 #ifdef BORDERSTYLE
-  FreeButtonFace(dpy, &fl->BorderStyle.active);
-  FreeButtonFace(dpy, &fl->BorderStyle.inactive);
+  FreeDecorFace(dpy, &fl->BorderStyle.active);
+  FreeDecorFace(dpy, &fl->BorderStyle.inactive);
 #endif
 #ifdef USEDECOR
-  if (fl->tag) {
-      free(fl->tag);
-      fl->tag = NULL;
+  if (fl->tag)
+  {
+    free(fl->tag);
+    fl->tag = NULL;
   }
 #endif
-  if (fl->HiReliefGC != NULL) {
-      XFreeGC(dpy, fl->HiReliefGC);
-      fl->HiReliefGC = NULL;
+  if (fl->HiReliefGC != NULL)
+  {
+    XFreeGC(dpy, fl->HiReliefGC);
+    fl->HiReliefGC = NULL;
   }
-  if (fl->HiShadowGC != NULL) {
-      XFreeGC(dpy, fl->HiShadowGC);
-      fl->HiShadowGC = NULL;
+  if (fl->HiShadowGC != NULL)
+  {
+    XFreeGC(dpy, fl->HiShadowGC);
+    fl->HiShadowGC = NULL;
   }
   if (fl->WindowFont.font != NULL)
     XFreeFont(dpy, fl->WindowFont.font);
@@ -1472,7 +1479,7 @@ void DestroyFvwmDecor(FvwmDecor *fl)
 void InitFvwmDecor(FvwmDecor *fl)
 {
     int i;
-    ButtonFace tmpbf;
+    DecorFace tmpdf;
 
     fl->HiReliefGC = NULL;
     fl->HiShadowGC = NULL;
@@ -1491,35 +1498,45 @@ void InitFvwmDecor(FvwmDecor *fl)
 #endif
 
     /* initialize title-bar button styles */
-    tmpbf.style = SimpleButton;
+    memset(&tmpdf.style, 0, sizeof(tmpdf.style));
+    DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 #ifdef MULTISTYLE
-    tmpbf.next = NULL;
+    tmpdf.next = NULL;
 #endif
-    for (i = 0; i < 5; ++i) {
-	int j = 0;
-	for (; j < MaxButtonState; ++j) {
-	    fl->left_buttons[i].state[j] =
-		fl->right_buttons[i].state[j] =  tmpbf;
-	}
+    for (i = 0; i < 5; ++i)
+    {
+      int j = 0;
+      for (; j < MaxButtonState; ++j)
+      {
+	TB_STATE(fl->left_buttons[i])[j] =
+	  TB_STATE(fl->right_buttons[i])[j] =  tmpdf;
+      }
     }
 
     /* reset to default button set */
     ResetAllButtons(fl);
 
     /* initialize title-bar styles */
-    fl->titlebar.flags = 0;
+    memset(&TB_FLAGS(fl->titlebar), 0, sizeof(TB_FLAGS(fl->titlebar)));
 
-    for (i = 0; i < MaxButtonState; ++i) {
-	fl->titlebar.state[i].style = SimpleButton;
+    for (i = 0; i < MaxButtonState; ++i)
+    {
+      memset(&TB_STATE(fl->titlebar)[i].style, 0,
+	     sizeof(TB_STATE(fl->titlebar)[i].style));
+      DFS_FACE_TYPE(TB_STATE(fl->titlebar)[i].style) = SimpleButton;
 #ifdef MULTISTYLE
-	fl->titlebar.state[i].next = NULL;
+      TB_STATE(fl->titlebar)[i].next = NULL;
 #endif
     }
 
 #ifdef BORDERSTYLE
     /* initialize border texture styles */
-    fl->BorderStyle.active.style = SimpleButton;
-    fl->BorderStyle.inactive.style = SimpleButton;
+    memset(&fl->BorderStyle.active.style, 0,
+	   sizeof(fl->BorderStyle.active.style));
+    DFS_FACE_TYPE(fl->BorderStyle.active.style) = SimpleButton;
+    memset(&fl->BorderStyle.inactive.style, 0,
+	   sizeof(fl->BorderStyle.inactive.style));
+    DFS_FACE_TYPE(fl->BorderStyle.inactive.style) = SimpleButton;
 #ifdef MULTISTYLE
     fl->BorderStyle.active.next = NULL;
     fl->BorderStyle.inactive.next = NULL;

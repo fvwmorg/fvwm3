@@ -873,8 +873,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 
 	  found = True;
 	  /* free old icon boxes (if any) */
-	  free_icon_boxes(ptmpstyle->IconBoxes);
-	  ptmpstyle->IconBoxes = NULL;
           IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
 	  /* clear it */
           memset(IconBoxes, 0, sizeof(icon_boxes));

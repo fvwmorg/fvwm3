@@ -68,8 +68,8 @@ typedef struct
   int isMapped;
 } PanFrame;
 
-
-typedef enum {
+typedef enum
+{
     /* button types */
 #ifdef VECTOR_BUTTONS
     VectorButton                ,
@@ -86,72 +86,90 @@ typedef enum {
     MiniIconButton              ,
 #endif
     SolidButton
-    /* max button is 15 (0xF) */
-} ButtonFaceStyle;
+} DecorFaceType;
 
-#define ButtonFaceTypeMask      0x000F
+typedef enum
+{
+  JUST_CENTER = 0,
+  JUST_LEFT = 1,
+  JUST_TOP = 1,
+  JUST_RIGHT = 2,
+  JUST_BOTTOM = 2,
+  JUST_MASK = 3
+} JustificationType;
 
-/* button style flags (per-state) */
-enum {
-
-    /* specific style flags */
-    /* justification bits (3.17 -> 4 bits) */
-    HOffCenter                  = (1<<12),
-    HRight                      = (1<<5),
-    VOffCenter                  = (1<<6),
-    VBottom                     = (1<<7),
-
-    /* general style flags */
+typedef struct
+{
+  DecorFaceType face_type : 3;
+  struct
+  {
+    JustificationType h_justification : 2;
+    JustificationType v_justification : 2;
+#define DFS_BUTTON_IS_UP   0
+#define DFS_BUTTON_IS_FLAT 1
+#define DFS_BUTTON_IS_SUNK 2
+#define DFS_BUTTON_MASK    3
+    unsigned int button_relief : 2;
+    /* not used in border styles */
 #ifdef EXTENDED_TITLESTYLE
-    UseTitleStyle               = (1<<8),
+    unsigned int use_title_style : 1;
 #endif
 #ifdef BORDERSTYLE
-    UseBorderStyle              = (1<<9),
+    unsigned int use_border_style : 1;
+    /* only used in border styles */
+    unsigned int has_hidden_handles : 1;
+    unsigned int has_no_inset : 1;
 #endif
-    FlatButton                  = (1<<10),
-    SunkButton                  = (1<<11)
-    /* 12 use above! */
-};
+  } flags;
+} DecorFaceStyle;
 
-#ifdef BORDERSTYLE
-/* border style flags (uses ButtonFace) */
-enum {
-    HiddenHandles               = (1<<8),
-    NoInset                     = (1<<9)
-};
-#endif
+#define DFS_FACE_TYPE(dfs)          ((dfs).face_type)
+#define DFS_FLAGS(dfs)              ((dfs).flags)
+#define DFS_H_JUSTIFICATION(dfs)    ((dfs).flags.h_justification)
+#define DFS_V_JUSTIFICATION(dfs)    ((dfs).flags.v_justification)
+#define DFS_BUTTON_RELIEF(dfs)      ((dfs).flags.button_relief)
+#define DFS_USE_TITLE_STYLE(dfs)    ((dfs).flags.use_title_style)
+#define DFS_USE_BORDER_STYLE(dfs)   ((dfs).flags.use_border_style)
+#define DFS_HAS_HIDDEN_HANDLES(dfs) ((dfs).flags.has_hidden_handles)
+#define DFS_HAS_NO_INSET(dfs)       ((dfs).flags.has_no_inset)
 
-typedef struct ButtonFace {
-    ButtonFaceStyle style;
-    union {
+typedef struct DecorFace
+{
+  DecorFaceStyle style;
+  union
+  {
 #ifdef PIXMAP_BUTTONS
-	Picture *p;
+    Picture *p;
 #endif
-	Pixel back;
+    Pixel back;
 #ifdef GRADIENT_BUTTONS
-	struct {
-	    int npixels;
-	    Pixel *pixels;
-	    char gradient_type;
-	} grad;
+    struct
+    {
+      int npixels;
+      Pixel *pixels;
+      char gradient_type;
+    }
+    grad;
 #endif
 #ifdef VECTOR_BUTTONS
-    struct vector_coords {
+    struct vector_coords
+    {
       int num;
       int *x;
       int *y;
       unsigned long line_style;
     } vector;
 #endif
-    } u;
+  } u;
 
 #ifdef MULTISTYLE
-    struct ButtonFace *next;
+  struct DecorFace *next;
 #endif
-} ButtonFace;
+} DecorFace;
 
 /* button style flags (per title button) */
-enum {
+enum
+{
   /* MWM function hint button assignments */
   MWMDecorMenu                = (1<<0),
   MWMDecorMinimize            = (1<<1),
@@ -160,60 +178,90 @@ enum {
   MWMDecorStick               = (1<<4)
 };
 
-enum ButtonState {
-    ActiveUp,
+enum ButtonState
+{
+  ActiveUp,
 #ifdef ACTIVEDOWN_BTNS
-    ActiveDown,
+  ActiveDown,
 #endif
 #ifdef INACTIVE_BTNS
-    Inactive,
+  Inactive,
 #endif
-    ToggledActiveUp,
+  ToggledActiveUp,
 #ifdef ACTIVEDOWN_BTNS
-    ToggledActiveDown,
+  ToggledActiveDown,
 #endif
 #ifdef INACTIVE_BTNS
-    ToggledInactive,
+  ToggledInactive,
 #endif
-    MaxButtonState
+  MaxButtonState
 };
 
-typedef struct {
-    int flags;
-    ButtonFace state[MaxButtonState];
+typedef enum
+{
+  MWM_DECOR_MENU     = 0x1,
+  MWM_DECOR_MINIMIZE = 0x2,
+  MWM_DECOR_MAXIMIZE = 0x4,
+  MWM_DECOR_SHADE    = 0x8,
+  MWM_DECOR_STICK    = 0x10
+} mwm_flags;
+
+typedef struct
+{
+  JustificationType just : 2;
+  struct
+  {
+    mwm_flags mwm_decor_flags : 5;
+  } flugs;
+  DecorFace styte[MaxButtonState];
 } TitleButton;
 
-typedef struct FvwmDecor {
+#define TB_FLAGS(tb)              ((tb).flugs)
+#define TB_STATE(tb)              ((tb).styte)
+#define TB_JUSTIFICATION(tb)      ((tb).just)
+#define TB_MWM_DECOR_FLAGS(tb)    ((tb).flugs.mwm_decor_flags)
+#define TB_HAS_MWM_DECOR_MENU(tb)     \
+  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_MENU))
+#define TB_HAS_MWM_DECOR_MINIMIZE(tb) \
+  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_MINIMIZE))
+#define TB_HAS_MWM_DECOR_MAXIMIZE(tb) \
+  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_MAXIMIZE))
+#define TB_HAS_MWM_DECOR_SHADE(tb)    \
+  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_SHADE))
+#define TB_HAS_MWM_DECOR_STICK(tb)    \
+  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_STICK))
+
+typedef struct FvwmDecor
+{
 #ifdef USEDECOR
-    char *tag;			/* general style tag */
+  char *tag;			/* general style tag */
 #endif
-    ColorPair HiColors;		/* standard fore/back colors */
-    ColorPair HiRelief;
-    GC HiReliefGC;		/* GC for highlighted window relief */
-    GC HiShadowGC;		/* GC for highlighted window shadow */
+  ColorPair HiColors;		/* standard fore/back colors */
+  ColorPair HiRelief;
+  GC HiReliefGC;		/* GC for highlighted window relief */
+  GC HiShadowGC;		/* GC for highlighted window shadow */
 
-    int TitleHeight;            /* height of the title bar window */
-    MyFont WindowFont;          /* font structure for window titles */
+  int TitleHeight;            /* height of the title bar window */
+  MyFont WindowFont;          /* font structure for window titles */
 
-    /* titlebar buttons */
-    TitleButton left_buttons[5];
-    TitleButton right_buttons[5];
-    TitleButton titlebar;
+  /* titlebar buttons */
+  TitleButton left_buttons[5];
+  TitleButton right_buttons[5];
+  TitleButton titlebar;
 #ifdef BORDERSTYLE
-    struct BorderStyle
-    {
-	ButtonFace active, inactive;
-    } BorderStyle;
+  struct BorderStyle
+  {
+    DecorFace active, inactive;
+  } BorderStyle;
 #endif
 #ifdef USEDECOR
-    struct FvwmDecor *next;	/* additional user-defined styles */
+  struct FvwmDecor *next;	/* additional user-defined styles */
 #endif
 } FvwmDecor;
 
 
 typedef struct ScreenInfo
 {
-
   unsigned long screen;
   int NumberOfScreens;          /* number of screens on display */
   int MyDisplayWidth;		/* my copy of DisplayWidth(dpy, screen) */
@@ -374,9 +422,9 @@ typedef struct ScreenInfo
 #endif
 
 /* some protos for the decoration structures */
-void LoadDefaultLeftButton(ButtonFace *bf, int i);
-void LoadDefaultRightButton(ButtonFace *bf, int i);
-void LoadDefaultButton(ButtonFace *bf, int i);
+void LoadDefaultLeftButton(DecorFace *bf, int i);
+void LoadDefaultRightButton(DecorFace *bf, int i);
+void LoadDefaultButton(DecorFace *bf, int i);
 void ResetAllButtons(FvwmDecor *fl);
 void InitFvwmDecor(FvwmDecor *fl);
 void DestroyFvwmDecor(FvwmDecor *fl);

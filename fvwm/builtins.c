@@ -857,88 +857,90 @@ void SetTitleStyle(F_CMD_ARGS)
   {
     if (StrEquals(parm,"centered"))
     {
-      fl->titlebar.flags &= ~HOffCenter;
+      TB_JUSTIFICATION(fl->titlebar) = JUST_CENTER;
     }
     else if (StrEquals(parm,"leftjustified"))
     {
-      fl->titlebar.flags |= HOffCenter;
-      fl->titlebar.flags &= ~HRight;
+      TB_JUSTIFICATION(fl->titlebar) = JUST_LEFT;
     }
     else if (StrEquals(parm,"rightjustified"))
     {
-      fl->titlebar.flags |= HOffCenter | HRight;
+      TB_JUSTIFICATION(fl->titlebar) = JUST_RIGHT;
     }
 #ifdef EXTENDED_TITLESTYLE
     else if (StrEquals(parm,"height"))
     {
-	int height, next;
-	if ( sscanf(action, "%d%n", &height, &next) > 0
-	     && height > 4
-	     && height <= 256)
-	{
-	    int x,y,w,h,extra_height;
-	    FvwmWindow *tmp = Scr.FvwmRoot.next, *hi = Scr.Hilite;
+      int height, next;
+      if ( sscanf(action, "%d%n", &height, &next) > 0
+	   && height > 4
+	   && height <= 256)
+      {
+	int x,y,w,h,extra_height;
+	FvwmWindow *tmp = Scr.FvwmRoot.next, *hi = Scr.Hilite;
 
-	    extra_height = fl->TitleHeight;
-	    fl->TitleHeight = height;
-	    extra_height -= fl->TitleHeight;
+	extra_height = fl->TitleHeight;
+	fl->TitleHeight = height;
+	extra_height -= fl->TitleHeight;
 
 #ifdef I18N_MB
-	    fl->WindowFont.y = fl->WindowFont.font->ascent
-		+ (height - (fl->WindowFont.height + 3)) / 2;
+	fl->WindowFont.y = fl->WindowFont.font->ascent
+	  + (height - (fl->WindowFont.height + 3)) / 2;
 #else
-	    fl->WindowFont.y = fl->WindowFont.font->ascent
-		+ (height - (fl->WindowFont.font->ascent
-			     + fl->WindowFont.font->descent + 3)) / 2;
+	fl->WindowFont.y = fl->WindowFont.font->ascent
+	  + (height - (fl->WindowFont.font->ascent
+		       + fl->WindowFont.font->descent + 3)) / 2;
 #endif
-	    if (fl->WindowFont.y < fl->WindowFont.font->ascent)
-		fl->WindowFont.y = fl->WindowFont.font->ascent;
+	if (fl->WindowFont.y < fl->WindowFont.font->ascent)
+	  fl->WindowFont.y = fl->WindowFont.font->ascent;
 
-	    tmp = Scr.FvwmRoot.next;
-	    hi = Scr.Hilite;
-	    while(tmp)
-	    {
-		if (!HAS_TITLE(tmp)
+	tmp = Scr.FvwmRoot.next;
+	hi = Scr.Hilite;
+	while(tmp)
+	{
+	  if (!HAS_TITLE(tmp)
 #ifdef USEDECOR
-		    || (tmp->fl != fl)
+	      || (tmp->fl != fl)
 #endif
-		    ) {
-		    tmp = tmp->next;
-		    continue;
-		}
-		x = tmp->frame_g.x;
-		y = tmp->frame_g.y;
-		w = tmp->frame_g.width;
-		h = tmp->frame_g.height-extra_height;
-		tmp->frame_g.x = 0;
-		tmp->frame_g.y = 0;
-		tmp->frame_g.height = 0;
-		tmp->frame_g.width = 0;
-		SetupFrame(tmp,x,y,w,h,True,False);
-		SetTitleBar(tmp,True,True);
-		SetTitleBar(tmp,False,True);
-		tmp = tmp->next;
-	    }
-	    SetTitleBar(hi,True,True);
+	    ) {
+	    tmp = tmp->next;
+	    continue;
+	  }
+	  x = tmp->frame_g.x;
+	  y = tmp->frame_g.y;
+	  w = tmp->frame_g.width;
+	  h = tmp->frame_g.height-extra_height;
+	  tmp->frame_g.x = 0;
+	  tmp->frame_g.y = 0;
+	  tmp->frame_g.height = 0;
+	  tmp->frame_g.width = 0;
+	  SetupFrame(tmp,x,y,w,h,True,False);
+	  SetTitleBar(tmp,True,True);
+	  SetTitleBar(tmp,False,True);
+	  tmp = tmp->next;
 	}
-	else
-	    fvwm_msg(ERR,"SetTitleStyle",
-		     "bad height argument (height must be from 5 to 256)");
-	action += next;
+	SetTitleBar(hi,True,True);
+	}
+      else
+	fvwm_msg(ERR,"SetTitleStyle",
+		 "bad height argument (height must be from 5 to 256)");
+      action += next;
     }
     else
     {
-	if (!(action = ReadTitleButton(prev, &fl->titlebar, False, -1))) {
-	    free(parm);
-	    break;
-	}
+      if (!(action = ReadTitleButton(prev, &fl->titlebar, False, -1)))
+      {
+	free(parm);
+	break;
+      }
     }
 #else /* ! EXTENDED_TITLESTYLE */
-    else if (strcmp(parm,"--")==0) {
-	if (!(action = ReadTitleButton(prev, &fl->titlebar, False, -1))) {
-	    free(parm);
-	    break;
-	}
+    else if (strcmp(parm,"--")==0)
+    {
+      if (!(action = ReadTitleButton(prev, &fl->titlebar, False, -1)))
+      {
+	free(parm);
+	break;
+      }
     }
 #endif /* EXTENDED_TITLESTYLE */
     free(parm);
@@ -1356,58 +1358,60 @@ void LoadWindowFont(F_CMD_ARGS)
   free(font);
 }
 
-void FreeButtonFace(Display *dpy, ButtonFace *bf)
+void FreeDecorFace(Display *dpy, DecorFace *df)
 {
-    switch (bf->style)
-    {
+  switch (DFS_FACE_TYPE(df->style))
+  {
 #ifdef GRADIENT_BUTTONS
-    case GradientButton:
-	/* - should we check visual is not TrueColor before doing this?
+  case GradientButton:
+    /* - should we check visual is not TrueColor before doing this?
 
-	   XFreeColors(dpy, PictureCMap,
-		    bf->u.grad.pixels, bf->u.grad.npixels,
-		    AllPlanes); */
-	free(bf->u.grad.pixels);
-	bf->u.grad.pixels = NULL;
-	break;
+       XFreeColors(dpy, PictureCMap,
+       df->u.grad.pixels, df->u.grad.npixels,
+       AllPlanes); */
+    free(df->u.grad.pixels);
+    df->u.grad.pixels = NULL;
+    break;
 #endif
 
 #ifdef PIXMAP_BUTTONS
-    case PixmapButton:
-    case TiledPixmapButton:
-	if (bf->u.p)
-	    DestroyPicture(dpy, bf->u.p);
-	bf->u.p = NULL;
-	break;
+  case PixmapButton:
+  case TiledPixmapButton:
+    if (df->u.p)
+      DestroyPicture(dpy, df->u.p);
+    df->u.p = NULL;
+    break;
 #endif
 
 #ifdef VECTOR_BUTTONS
-    case VectorButton:
-      if (bf->u.vector.x)
-	{
-	  free (bf->u.vector.x);
-	  bf->u.vector.x = NULL;
-	}
-      if (bf->u.vector.y)
-	{
-	  free (bf->u.vector.y);
-	  bf->u.vector.y = NULL;
-	}
-      break;
+  case VectorButton:
+    if (df->u.vector.x)
+    {
+      free (df->u.vector.x);
+      df->u.vector.x = NULL;
+    }
+    if (df->u.vector.y)
+    {
+      free (df->u.vector.y);
+      df->u.vector.y = NULL;
+    }
+    break;
 #endif
 
-    default:
-	break;
-    }
+  default:
+    break;
+  }
 #ifdef MULTISTYLE
-    /* delete any compound styles */
-    if (bf->next) {
-	FreeButtonFace(dpy, bf->next);
-	free(bf->next);
-    }
-    bf->next = NULL;
+  /* delete any compound styles */
+  if (df->next)
+  {
+    FreeDecorFace(dpy, df->next);
+    free(df->next);
+  }
+  df->next = NULL;
 #endif
-    bf->style = SimpleButton;
+  memset(&df->style, 0, sizeof(df->style));
+  DFS_FACE_TYPE(df->style) = SimpleButton;
 }
 
 /*****************************************************************************
@@ -1415,7 +1419,7 @@ void FreeButtonFace(Display *dpy, ButtonFace *bf)
  * Reads a button face line into a structure (veliaa@rpi.edu)
  *
  ****************************************************************************/
-Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
+Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 {
   int offset;
   char style[256], *file;
@@ -1426,7 +1430,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
   if (sscanf(s, "%256s%n", style, &offset) < 1)
   {
     if (verbose)
-      fvwm_msg(ERR, "ReadButtonFace", "error in face `%s'", s);
+      fvwm_msg(ERR, "ReadDecorFace", "error in face `%s'", s);
     return False;
   }
 
@@ -1434,12 +1438,13 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
   {
     s += offset;
 
-    FreeButtonFace(dpy, bf);
+    FreeDecorFace(dpy, df);
 
     /* determine button style */
     if (strncasecmp(style,"Simple",6)==0)
     {
-      bf->style = SimpleButton;
+      memset(&df->style, 0, sizeof(df->style));
+      DFS_FACE_TYPE(df->style) = SimpleButton;
     }
     else if (strncasecmp(style,"Default",7)==0)
     {
@@ -1449,7 +1454,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
       {
 	if (button == -1)
 	{
-	  if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+	  if(verbose)fvwm_msg(ERR,"ReadDecorFace",
 			      "need default button number to load");
 	  return False;
 	}
@@ -1457,10 +1462,10 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
       }
       s += offset;
       if ((b > 0) && (b <= 10))
-	LoadDefaultButton(bf, b);
+	LoadDefaultButton(df, b);
       else
       {
-	if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+	if(verbose)fvwm_msg(ERR,"ReadDecorFace",
 			    "button number out of range: %d", b);
 	return False;
       }
@@ -1471,7 +1476,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
     {
       /* normal coordinate list button style */
       int i, num_coords, num, line_style;
-      struct vector_coords *vc = &bf->u.vector;
+      struct vector_coords *vc = &df->u.vector;
 
       /* get number of points */
       if (strncasecmp(style,"Vector",6)==0)
@@ -1483,7 +1488,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 
       if((num != 1)||(num_coords>32)||(num_coords<2))
       {
-	if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+	if(verbose)fvwm_msg(ERR,"ReadDecorFace",
 			    "Bad button style (2) in line: %s",action);
 	return False;
       }
@@ -1501,7 +1506,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		     &line_style, &offset);
 	if(num != 3)
 	{
-	  if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+	  if(verbose)fvwm_msg(ERR,"ReadDecorFace",
 			      "Bad button style (3) in line %s",
 			      action);
 	  return False;
@@ -1512,7 +1517,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	}
 	s += offset;
       }
-      bf->style = VectorButton;
+      memset(&df->style, 0, sizeof(df->style));
+      DFS_FACE_TYPE(df->style) = VectorButton;
     }
 #endif
     else if (strncasecmp(style,"Solid",5)==0)
@@ -1520,14 +1526,15 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
       s = GetNextToken(s, &file);
       if (file)
       {
-	bf->style = SolidButton;
-	bf->u.back = GetColor(file);
+	memset(&df->style, 0, sizeof(df->style));
+	DFS_FACE_TYPE(df->style) = SolidButton;
+	df->u.back = GetColor(file);
 	free(file);
       }
       else
       {
 	if(verbose)
-	  fvwm_msg(ERR,"ReadButtonFace",
+	  fvwm_msg(ERR,"ReadDecorFace",
 		   "no color given for Solid face type: %s", action);
 	return False;
       }
@@ -1543,7 +1550,9 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	return False;
 
       /* translate the gradient string into an array of colors etc */
-      npixels = ParseGradient(s, &s_colors, &perc, &nsegs);
+      npixels = ParseGradient(s, &s, &s_colors, &perc, &nsegs);
+      while (*s && isspace(*s))
+	s++;
       if (npixels <= 0)
 	return False;
       /* grab the colors */
@@ -1551,10 +1560,11 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
       if (pixels == None)
 	return False;
 
-      bf->u.grad.pixels = pixels;
-      bf->u.grad.npixels = npixels;
-      bf->style = GradientButton;
-      bf->u.grad.gradient_type = toupper(style[0]);
+      df->u.grad.pixels = pixels;
+      df->u.grad.npixels = npixels;
+      memset(&df->style, 0, sizeof(df->style));
+      DFS_FACE_TYPE(df->style) = GradientButton;
+      df->u.grad.gradient_type = toupper(style[0]);
     }
 #endif /* GRADIENT_BUTTONS */
 #ifdef PIXMAP_BUTTONS
@@ -1562,13 +1572,13 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	     || strncasecmp(style,"TiledPixmap",11)==0)
     {
       s = GetNextToken(s, &file);
-      bf->u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
+      df->u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
 			     file,Scr.ColorLimit);
-      if (bf->u.p == NULL)
+      if (df->u.p == NULL)
       {
 	if (file)
 	{
-	  if(verbose)fvwm_msg(ERR,"ReadButtonFace",
+	  if(verbose)fvwm_msg(ERR,"ReadDecorFace",
 			      "couldn't load pixmap %s", file);
 	  free(file);
 	}
@@ -1580,29 +1590,32 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	file = NULL;
       }
 
+      memset(&df->style, 0, sizeof(df->style));
       if (strncasecmp(style,"Tiled",5)==0)
-	bf->style = TiledPixmapButton;
+	DFS_FACE_TYPE(df->style) = TiledPixmapButton;
       else
-	bf->style = PixmapButton;
+	DFS_FACE_TYPE(df->style) = PixmapButton;
     }
 #ifdef MINI_ICONS
-    else if (strncasecmp (style, "MiniIcon", 8) == 0) {
-      bf->style = MiniIconButton;
+    else if (strncasecmp (style, "MiniIcon", 8) == 0)
+    {
+      memset(&df->style, 0, sizeof(df->style));
+      DFS_FACE_TYPE(df->style) = MiniIconButton;
 #if 0
 /* Have to remove this again. This is all so badly written there is no chance
  * to prevent a coredump and a memory leak the same time without a rewrite of
  * large parts of the code. */
-      if (bf->u.p)
-	DestroyPicture(dpy, bf->u.p);
+      if (df->u.p)
+	DestroyPicture(dpy, df->u.p);
 #endif
-      bf->u.p = NULL; /* pixmap read in when the window is created */
+      df->u.p = NULL; /* pixmap read in when the window is created */
     }
 #endif
 #endif /* PIXMAP_BUTTONS */
     else
     {
-      if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-			  "unknown style %s: %s", style, action);
+      if(verbose)
+	fvwm_msg(ERR,"ReadDecorFace", "unknown style %s: %s", style, action);
       return False;
     }
   }
@@ -1618,138 +1631,110 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
     {
       int set = 1;
 
-      if (*tok == '!') { /* flag negate */
+      if (*tok == '!')
+      { /* flag negate */
 	set = 0;
 	++tok;
       }
       if (StrEquals(tok,"Clear"))
       {
-	if (set)
-	  bf->style &= ButtonFaceTypeMask;
-	else
-	  bf->style |= ~ButtonFaceTypeMask; /* ? */
+	memset(&DFS_FLAGS(df->style), (set) ? 0 : 0xff,
+	       sizeof(DFS_FLAGS(df->style)));
+	/* ? what is set == 0 good for ? */
       }
       else if (StrEquals(tok,"Left"))
       {
 	if (set)
-	{
-	  bf->style |= HOffCenter;
-	  bf->style &= ~HRight;
-	} else
-	  bf->style |= HOffCenter | HRight;
+	  DFS_H_JUSTIFICATION(df->style) = JUST_LEFT;
+	else
+	  DFS_H_JUSTIFICATION(df->style) = JUST_RIGHT;
       }
       else if (StrEquals(tok,"Right"))
       {
 	if (set)
-	  bf->style |= HOffCenter | HRight;
-	else {
-	  bf->style |= HOffCenter;
-	  bf->style &= ~HRight;
-	}
+	  DFS_H_JUSTIFICATION(df->style) = JUST_RIGHT;
+	else
+	  DFS_H_JUSTIFICATION(df->style) = JUST_LEFT;
       }
       else if (StrEquals(tok,"Centered"))
       {
-	bf->style &= ~HOffCenter;
-	bf->style &= ~VOffCenter;
+	DFS_H_JUSTIFICATION(df->style) = JUST_CENTER;
+	DFS_V_JUSTIFICATION(df->style) = JUST_CENTER;
       }
       else if (StrEquals(tok,"Top"))
       {
 	if (set)
-	{
-	  bf->style |= VOffCenter;
-	  bf->style &= ~VBottom;
-	}
+	  DFS_V_JUSTIFICATION(df->style) = JUST_TOP;
 	else
-	  bf->style |= VOffCenter | VBottom;
+	  DFS_V_JUSTIFICATION(df->style) = JUST_BOTTOM;
       }
       else if (StrEquals(tok,"Bottom"))
       {
 	if (set)
-	  bf->style |= VOffCenter | VBottom;
+	  DFS_V_JUSTIFICATION(df->style) = JUST_BOTTOM;
 	else
-	{
-	  bf->style |= VOffCenter;
-	  bf->style &= ~VBottom;
-	}
+	  DFS_V_JUSTIFICATION(df->style) = JUST_TOP;
       }
       else if (StrEquals(tok,"Flat"))
       {
 	if (set)
-	{
-	  bf->style &= ~SunkButton;
-	  bf->style |= FlatButton;
-	}
-	else
-	  bf->style &= ~FlatButton;
+	  DFS_BUTTON_RELIEF(df->style) = DFS_BUTTON_IS_FLAT;
+	else if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
+	  DFS_BUTTON_RELIEF(df->style) = DFS_BUTTON_IS_UP;
       }
       else if (StrEquals(tok,"Sunk"))
       {
 	if (set)
-	{
-	  bf->style &= ~FlatButton;
-	  bf->style |= SunkButton;
-	}
-	else
-	  bf->style &= ~SunkButton;
+	  DFS_BUTTON_RELIEF(df->style) = DFS_BUTTON_IS_SUNK;
+	else if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_SUNK)
+	  DFS_BUTTON_RELIEF(df->style) = DFS_BUTTON_IS_UP;
       }
       else if (StrEquals(tok,"Raised"))
       {
 	if (set)
-	{
-	  bf->style &= ~FlatButton;
-	  bf->style &= ~SunkButton;
-	}
+	  DFS_BUTTON_RELIEF(df->style) = DFS_BUTTON_IS_UP;
 	else
-	{
-	  bf->style |= SunkButton;
-	  bf->style &= ~FlatButton;
-	}
+	  DFS_BUTTON_RELIEF(df->style) = DFS_BUTTON_IS_SUNK;
       }
 #ifdef EXTENDED_TITLESTYLE
       else if (StrEquals(tok,"UseTitleStyle"))
       {
 	if (set)
 	{
-	  bf->style |= UseTitleStyle;
+	  DFS_USE_TITLE_STYLE(df->style) = 1;
 #ifdef BORDERSTYLE
-	  bf->style &= ~UseBorderStyle;
+	  DFS_USE_BORDER_STYLE(df->style) = 0;
 #endif
 	}
 	else
-	  bf->style &= ~UseTitleStyle;
+	  DFS_USE_TITLE_STYLE(df->style) = 0;
       }
 #endif
 #ifdef BORDERSTYLE
       else if (StrEquals(tok,"HiddenHandles"))
       {
-	if (set)
-	  bf->style |= HiddenHandles;
-	else
-	  bf->style &= ~HiddenHandles;
+	DFS_HAS_HIDDEN_HANDLES(df->style) = !!set;
       }
       else if (StrEquals(tok,"NoInset"))
       {
-	if (set)
-	  bf->style |= NoInset;
-	else
-	  bf->style &= ~NoInset;
+	DFS_HAS_NO_INSET(df->style) = !!set;
       }
       else if (StrEquals(tok,"UseBorderStyle"))
       {
 	if (set)
 	{
-	  bf->style |= UseBorderStyle;
+	  DFS_USE_BORDER_STYLE(df->style) = 1;
 #ifdef EXTENDED_TITLESTYLE
-	  bf->style &= ~UseTitleStyle;
+	  DFS_USE_TITLE_STYLE(df->style) = 0;
 #endif
 	}
 	else
-	  bf->style &= ~UseBorderStyle;
+	  DFS_USE_BORDER_STYLE(df->style) = 0;
       }
 #endif
       else
 	if(verbose)
-	  fvwm_msg(ERR,"ReadButtonFace",
+	  fvwm_msg(ERR,"ReadDecorFace",
 		   "unknown button face flag %s -- line: %s",
 		   tok, action);
       if (set)
@@ -1772,94 +1757,111 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
  ****************************************************************************/
 char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 {
-    char *end = NULL, *spec;
-    ButtonFace tmpbf;
-    enum ButtonState bs = MaxButtonState;
-    int i = 0, all = 0, pstyle = 0;
+  char *end = NULL, *spec;
+  DecorFace tmpdf;
+  enum ButtonState bs = MaxButtonState;
+  int i = 0, all = 0, pstyle = 0;
 
-    while(isspace((unsigned char)*s))++s;
-    for (; i < MaxButtonState; ++i)
-	if (strncasecmp(button_states[i],s,
-			  strlen(button_states[i]))==0) {
-	    bs = i;
-	    break;
-	}
-    if (bs != MaxButtonState)
-	s += strlen(button_states[bs]);
-    else
-	all = 1;
-    while(isspace((unsigned char)*s))++s;
-    if ('(' == *s) {
-	int len;
-	pstyle = 1;
-	if (!(end = strchr(++s, ')'))) {
-	    fvwm_msg(ERR,"ReadTitleButton",
-		     "missing parenthesis: %s", s);
-	    return NULL;
-	}
-	while (isspace((unsigned char)*s)) ++s;
-	len = end - s + 1;
-	spec = safemalloc(len);
-	strncpy(spec, s, len - 1);
-	spec[len - 1] = 0;
-    } else
-	spec = s;
+  while(isspace((unsigned char)*s))++s;
+  for (; i < MaxButtonState; ++i)
+    if (strncasecmp(button_states[i],s,
+		    strlen(button_states[i]))==0)
+    {
+      bs = i;
+      break;
+    }
+  if (bs != MaxButtonState)
+    s += strlen(button_states[bs]);
+  else
+    all = 1;
+  while(isspace((unsigned char)*s))++s;
+  if ('(' == *s)
+  {
+    int len;
+    pstyle = 1;
+    if (!(end = strchr(++s, ')')))
+    {
+      fvwm_msg(ERR,"ReadTitleButton",
+	       "missing parenthesis: %s", s);
+      return NULL;
+    }
+    while (isspace((unsigned char)*s)) ++s;
+    len = end - s + 1;
+    spec = safemalloc(len);
+    strncpy(spec, s, len - 1);
+    spec[len - 1] = 0;
+  }
+  else
+    spec = s;
 
-    while(isspace((unsigned char)*spec))++spec;
-    /* setup temporary in case button read fails */
-    tmpbf.style = SimpleButton;
+  while(isspace((unsigned char)*spec))
+    ++spec;
+  /* setup temporary in case button read fails */
+  memset(&DFS_FLAGS(tmpdf.style), 0, sizeof(DFS_FLAGS(tmpdf.style)));
+  DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
+
 #ifdef MULTISTYLE
-    tmpbf.next = NULL;
+  tmpdf.next = NULL;
 #endif
 #ifdef MINI_ICONS
 #ifdef PIXMAP_BUTTONS
-    tmpbf.u.p = NULL;
+  tmpdf.u.p = NULL;
 #endif
 #endif
 
-    if (strncmp(spec, "--",2)==0) {
-	/* only change flags */
-	if (ReadButtonFace(spec, &tb->state[all ? 0 : bs],button,True) && all) {
-	    for (i = 0; i < MaxButtonState; ++i)
-		ReadButtonFace(spec, &tb->state[i],-1,False);
+  if (strncmp(spec, "--",2)==0)
+  {
+    /* only change flags */
+    if (ReadDecorFace(spec, &TB_STATE(*tb)[(all) ? 0 : bs], button, True)
+	&& all)
+    {
+      for (i = 0; i < MaxButtonState; ++i)
+	ReadDecorFace(spec, &TB_STATE(*tb)[i],-1,False);
+    }
+  }
+  else if (ReadDecorFace(spec, &tmpdf,button,True))
+  {
+    int b = all ? 0 : bs;
+#ifdef MULTISTYLE
+    if (append)
+    {
+      DecorFace *tail = &TB_STATE(*tb)[b];
+      while (tail->next) tail = tail->next;
+      tail->next = (DecorFace *)safemalloc(sizeof(DecorFace));
+      *tail->next = tmpdf;
+      if (all)
+	for (i = 1; i < MaxButtonState; ++i)
+	{
+	  tail = &TB_STATE(*tb)[i];
+	  while (tail->next) tail = tail->next;
+	  tail->next = (DecorFace *)safemalloc(sizeof(DecorFace));
+	  memset(&DFS_FLAGS(tail->next->style), 0,
+		 sizeof(DFS_FLAGS(tail->next->style)));
+	  DFS_FACE_TYPE(tail->next->style) = SimpleButton;
+	  tail->next->next = NULL;
+	  ReadDecorFace(spec, tail->next, button, False);
 	}
     }
-    else if (ReadButtonFace(spec, &tmpbf,button,True)) {
-	int b = all ? 0 : bs;
-#ifdef MULTISTYLE
-	if (append) {
-	    ButtonFace *tail = &tb->state[b];
-	    while (tail->next) tail = tail->next;
-	    tail->next = (ButtonFace *)safemalloc(sizeof(ButtonFace));
-	    *tail->next = tmpbf;
-	    if (all)
-		for (i = 1; i < MaxButtonState; ++i) {
-		    tail = &tb->state[i];
-		    while (tail->next) tail = tail->next;
-		    tail->next = (ButtonFace *)safemalloc(sizeof(ButtonFace));
-		    tail->next->style = SimpleButton;
-		    tail->next->next = NULL;
-		    ReadButtonFace(spec, tail->next, button, False);
-		}
-	}
-	else {
+    else
+    {
 #endif
-	    FreeButtonFace(dpy, &tb->state[b]);
-	    tb->state[b] = tmpbf;
-	    if (all)
-		for (i = 1; i < MaxButtonState; ++i)
-		    ReadButtonFace(spec, &tb->state[i],button,False);
+      FreeDecorFace(dpy, &TB_STATE(*tb)[b]);
+      TB_STATE(*tb)[b] = tmpdf;
+      if (all)
+	for (i = 1; i < MaxButtonState; ++i)
+	  ReadDecorFace(spec, &TB_STATE(*tb)[i],button,False);
 #ifdef MULTISTYLE
-	}
+    }
 #endif
 
-    }
-    if (pstyle) {
-	free(spec);
-	++end;
-	while(isspace((unsigned char)*end))++end;
-    }
-    return end;
+  }
+  if (pstyle)
+  {
+    free(spec);
+    ++end;
+    while(isspace((unsigned char)*end))++end;
+  }
+  return end;
 }
 
 
@@ -2071,178 +2073,225 @@ void UpdateDecor(F_CMD_ARGS)
  * Changes a button decoration style (changes by veliaa@rpi.edu)
  *
  ****************************************************************************/
-#define SetButtonFlag(flag)	do {				\
-    int i;							\
-								\
-    if (multi) {						\
-	if (multi & 1)						\
-	    for (i = 0; i < 5; ++i) {				\
-		if (set)					\
-		    fl->left_buttons[i].flags |= (flag);	\
-		else						\
-		    fl->left_buttons[i].flags &= ~(flag);	\
-	    }							\
-	if (multi & 2)						\
-	    for (i = 0; i < 5; ++i) {				\
-		if (set)					\
-		    fl->right_buttons[i].flags |= (flag);	\
-		else						\
-		    fl->right_buttons[i].flags &= ~(flag);	\
-	    }							\
-    } else {							\
-	if (set)						\
-	    tb->flags |= (flag);				\
-	else							\
-	    tb->flags &= ~(flag);				\
-    }								\
-} while (0)
+static void SetMWMButtonFlag(
+  mwm_flags flag, int multi, int set, FvwmDecor *fl, TitleButton *tb)
+{
+  int i;
+
+  if (multi)
+  {
+    if (multi & 1)
+    {
+      for (i = 0; i < 5; ++i)
+      {
+	if (set)
+	  TB_MWM_DECOR_FLAGS(fl->left_buttons[i]) |= flag;
+	else
+	  TB_MWM_DECOR_FLAGS(fl->left_buttons[i]) &= ~flag;
+      }
+    }
+    if (multi & 2)
+    {
+      for (i = 0; i < 5; ++i)
+      {
+	if (set)
+	  TB_MWM_DECOR_FLAGS(fl->right_buttons[i]) |= flag;
+	else
+	  TB_MWM_DECOR_FLAGS(fl->right_buttons[i]) &= ~flag;
+      }
+    }
+  }
+  else
+  {
+    if (set)
+      TB_MWM_DECOR_FLAGS(*tb) |= flag;
+    else
+      TB_MWM_DECOR_FLAGS(*tb) &= ~flag;
+  }
+
+  return;
+}
 
 void ButtonStyle(F_CMD_ARGS)
 {
-    int button = 0,n;
-    int multi = 0;
-    char *text = action, *prev;
-    char *parm = NULL;
-    TitleButton *tb = NULL;
+  int button = 0,n;
+  int multi = 0;
+  char *text = action, *prev;
+  char *parm = NULL;
+  TitleButton *tb = NULL;
 #ifdef USEDECOR
-    FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-    FvwmDecor *fl = &Scr.DefaultDecor;
+  FvwmDecor *fl = &Scr.DefaultDecor;
 #endif
 
-    text = GetNextToken(text, &parm);
-    if (parm && isdigit(*parm))
-	button = atoi(parm);
+  text = GetNextToken(text, &parm);
+  if (parm && isdigit(*parm))
+    button = atoi(parm);
 
-    if ((parm == NULL) || (button > 10) || (button < 0)) {
-	fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
-	if (parm)
-	  free(parm);
-	return;
+  if ((parm == NULL) || (button > 10) || (button < 0))
+  {
+    fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
+    if (parm)
+      free(parm);
+    return;
+  }
+
+  if (!isdigit(*parm))
+  {
+    if (StrEquals(parm,"left"))
+      multi = 1; /* affect all left buttons */
+    else if (StrEquals(parm,"right"))
+      multi = 2; /* affect all right buttons */
+    else if (StrEquals(parm,"all"))
+      multi = 3; /* affect all buttons */
+    else
+    {
+      /* we're either resetting buttons or
+	 an invalid button set was specified */
+      if (StrEquals(parm,"reset"))
+	ResetAllButtons(fl);
+      else
+	fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s",
+		 action);
+      free(parm);
+      return;
     }
+  }
+  free(parm);
+  if (multi == 0)
+  {
+    /* a single button was specified */
+    if (button==10)
+      button=0;
+    /* which arrays to use? */
+    n=button/2;
+    if((n*2) == button)
+    {
+      /* right */
+      n = n - 1;
+      if(n<0)n=4;
+      tb = &fl->right_buttons[n];
+    }
+    else
+    {
+      /* left */
+      tb = &fl->left_buttons[n];
+    }
+  }
 
-    if (!isdigit(*parm)) {
-	if (StrEquals(parm,"left"))
-	    multi = 1; /* affect all left buttons */
-	else if (StrEquals(parm,"right"))
-	    multi = 2; /* affect all right buttons */
-	else if (StrEquals(parm,"all"))
-	    multi = 3; /* affect all buttons */
-	else {
-	    /* we're either resetting buttons or
-	       an invalid button set was specified */
-	    if (StrEquals(parm,"reset"))
-		ResetAllButtons(fl);
-	    else
-		fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s",
-			 action);
-	    free(parm);
-	    return;
+  prev = text;
+  text = GetNextToken(text,&parm);
+  while(parm)
+  {
+    if (strcmp(parm,"-")==0)
+    {
+      char *tok;
+      text = GetNextToken(text, &tok);
+      while (tok)
+      {
+	int set = 1;
+
+	if (*tok == '!')
+	{
+	  /* flag negate */
+	  set = 0;
+	  ++tok;
 	}
+	if (StrEquals(tok,"Clear"))
+	{
+	  int i;
+	  if (multi)
+	  {
+	    if (multi & 1)
+	    {
+	      for (i=0; i<5; ++i)
+	      {
+		TB_JUSTIFICATION(fl->left_buttons[i]) =
+		  (set) ? JUST_CENTER : JUST_RIGHT;
+		memset(&TB_FLAGS(fl->left_buttons[i]), (set) ? 0 : 0xff,
+		       sizeof(TB_FLAGS(fl->left_buttons[i])));
+		/* ? not very useful if set == 0 ? */
+	      }
+	    }
+	    if (multi & 2)
+	    {
+	      for (i=0; i<5; ++i)
+	      {
+		TB_JUSTIFICATION(fl->right_buttons[i]) =
+		  (set) ? JUST_CENTER : JUST_RIGHT;
+		memset(&TB_FLAGS(fl->right_buttons[i]), (set) ? 0 : 0xff,
+		       sizeof(TB_FLAGS(fl->right_buttons[i])));
+		/* ? not very useful if set == 0 ? */
+	      }
+	    }
+	  }
+	  else
+	  {
+	    TB_JUSTIFICATION(*tb) = (set) ? JUST_CENTER : JUST_RIGHT;
+	    memset(&TB_FLAGS(*tb), (set) ? 0 : 0xff, sizeof(TB_FLAGS(*tb)));
+	    /* ? not very useful if set == 0 ? */
+	  }
+	}
+	else if (StrEquals(tok, "MWMDecorMenu"))
+	{
+	  SetMWMButtonFlag(MWM_DECOR_MENU, multi, set, fl, tb);
+	}
+	else if (StrEquals(tok, "MWMDecorMin"))
+	{
+	  SetMWMButtonFlag(MWM_DECOR_MINIMIZE, multi, set, fl, tb);
+	}
+	else if (StrEquals(tok, "MWMDecorMax"))
+	{
+	  SetMWMButtonFlag(MWM_DECOR_MAXIMIZE, multi, set, fl, tb);
+	}
+	else if (StrEquals(tok, "MWMDecorShade"))
+	{
+	  SetMWMButtonFlag(MWM_DECOR_SHADE, multi, set, fl, tb);
+	}
+	else if (StrEquals(tok, "MWMDecorStick"))
+	{
+	  SetMWMButtonFlag(MWM_DECOR_STICK, multi, set, fl, tb);
+	}
+	else
+	{
+	  fvwm_msg(ERR, "ButtonStyle",
+		   "unknown title button flag %s -- line: %s",
+		   tok, text);
+	}
+	if (set)
+	  free(tok);
+	else
+	  free(tok - 1);
+	text = GetNextToken(text, &tok);
+      }
+      free(parm);
+      break;
+    }
+    else
+    {
+      if (multi)
+      {
+	int i;
+	if (multi&1)
+	  for (i=0;i<5;++i)
+	    text = ReadTitleButton(prev, &fl->left_buttons[i],
+				   False, i*2+1);
+	if (multi&2)
+	  for (i=0;i<5;++i)
+	    text = ReadTitleButton(prev, &fl->right_buttons[i],
+				   False, i*2);
+      }
+      else if (!(text = ReadTitleButton(prev, tb, False, button)))
+      {
+	free(parm);
+	break;
+      }
     }
     free(parm);
-    if (multi == 0) {
-	/* a single button was specified */
-	if (button==10) button=0;
-	/* which arrays to use? */
-	n=button/2;
-	if((n*2) == button)
-	{
-	    /* right */
-	    n = n - 1;
-	    if(n<0)n=4;
-	    tb = &fl->right_buttons[n];
-	}
-	else {
-	    /* left */
-	    tb = &fl->left_buttons[n];
-	}
-    }
-
     prev = text;
     text = GetNextToken(text,&parm);
-    while(parm)
-    {
-	if (strcmp(parm,"-")==0) {
-	    char *tok;
-	    text = GetNextToken(text, &tok);
-	    while (tok)
-	    {
-		int set = 1;
-
-		if (*tok == '!') { /* flag negate */
-		    set = 0;
-		    ++tok;
-		}
-		if (StrEquals(tok,"Clear")) {
-		    int i;
-		    if (multi) {
-			if (multi&1) {
-			    for (i=0;i<5;++i)
-				if (set)
-				    fl->left_buttons[i].flags = 0;
-				else
-				    fl->left_buttons[i].flags = ~0;
-			}
-			if (multi&2) {
-			    for (i=0;i<5;++i) {
-				if (set)
-				    fl->right_buttons[i].flags = 0;
-				else
-				    fl->right_buttons[i].flags = ~0;
-			    }
-			}
-		    } else {
-			if (set)
-			    tb->flags = 0;
-			else
-			    tb->flags = ~0;
-		    }
-		}
-                else if (strncasecmp(tok,"MWMDecorMenu",12)==0) {
-		  SetButtonFlag(MWMDecorMenu);
-		} else if (strncasecmp(tok,"MWMDecorMin",11)==0) {
-		  SetButtonFlag(MWMDecorMinimize);
-                } else if (strncasecmp(tok,"MWMDecorMax",11)==0) {
-		  SetButtonFlag(MWMDecorMaximize);
-                } else if (strncasecmp(tok,"MWMDecorShade",13)==0) {
-		  SetButtonFlag(MWMDecorShade);
-                } else if (strncasecmp(tok,"MWMDecorStick",13)==0) {
-		  SetButtonFlag(MWMDecorStick);
-		} else {
-		  fvwm_msg(ERR, "ButtonStyle",
-			   "unknown title button flag %s -- line: %s",
-			   tok, text);
-		}
-		if (set)
-		  free(tok);
-		else
-		  free(tok - 1);
-		text = GetNextToken(text, &tok);
-	    }
-	    free(parm);
-	    break;
-	} else {
-	    if (multi) {
-		int i;
-		if (multi&1)
-		    for (i=0;i<5;++i)
-			text = ReadTitleButton(prev, &fl->left_buttons[i],
-					       False, i*2+1);
-		if (multi&2)
-		    for (i=0;i<5;++i)
-			text = ReadTitleButton(prev, &fl->right_buttons[i],
-					       False, i*2);
-	    }
-	    else if (!(text = ReadTitleButton(prev, tb, False, button))) {
-		free(parm);
-		break;
-	    }
-	}
-	free(parm);
-	prev = text;
-	text = GetNextToken(text,&parm);
-    }
+  }
 }
 
 #ifdef MULTISTYLE
@@ -2253,114 +2302,114 @@ void ButtonStyle(F_CMD_ARGS)
  ****************************************************************************/
 void AddButtonStyle(F_CMD_ARGS)
 {
-    int button = 0,n;
-    int multi = 0;
-    char *text = action, *prev;
-    char *parm = NULL;
-    TitleButton *tb = NULL;
+  int button = 0,n;
+  int multi = 0;
+  char *text = action, *prev;
+  char *parm = NULL;
+  TitleButton *tb = NULL;
 #ifdef USEDECOR
-    FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-    FvwmDecor *fl = &Scr.DefaultDecor;
+  FvwmDecor *fl = &Scr.DefaultDecor;
 #endif
 
-    text = GetNextToken(text, &parm);
-    if (parm && isdigit(*parm))
-	button = atoi(parm);
+  text = GetNextToken(text, &parm);
+  if (parm && isdigit(*parm))
+    button = atoi(parm);
 
-    if ((parm == NULL) || (button > 10) || (button < 0)) {
-	fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
-	if (parm)
-	  free(parm);
-	return;
+  if ((parm == NULL) || (button > 10) || (button < 0)) {
+    fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
+    if (parm)
+      free(parm);
+    return;
+  }
+
+  if (!isdigit(*parm)) {
+    if (StrEquals(parm,"left"))
+      multi = 1; /* affect all left buttons */
+    else if (StrEquals(parm,"right"))
+      multi = 2; /* affect all right buttons */
+    else if (StrEquals(parm,"all"))
+      multi = 3; /* affect all buttons */
+    else {
+      /* we're either resetting buttons or
+	 an invalid button set was specified */
+      if (StrEquals(parm,"reset"))
+	ResetAllButtons(fl);
+      else
+	fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s",
+		 action);
+      free(parm);
+      return;
     }
+  }
+  free(parm);
+  if (multi == 0) {
+    /* a single button was specified */
+    if (button==10) button=0;
+    /* which arrays to use? */
+    n=button/2;
+    if((n*2) == button)
+    {
+      /* right */
+      n = n - 1;
+      if(n<0)n=4;
+      tb = &fl->right_buttons[n];
+    }
+    else {
+      /* left */
+      tb = &fl->left_buttons[n];
+    }
+  }
 
-    if (!isdigit(*parm)) {
-	if (StrEquals(parm,"left"))
-	    multi = 1; /* affect all left buttons */
-	else if (StrEquals(parm,"right"))
-	    multi = 2; /* affect all right buttons */
-	else if (StrEquals(parm,"all"))
-	    multi = 3; /* affect all buttons */
-	else {
-	    /* we're either resetting buttons or
-	       an invalid button set was specified */
-	    if (StrEquals(parm,"reset"))
-		ResetAllButtons(fl);
-	    else
-		fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s",
-			 action);
-	    free(parm);
-	    return;
-	}
+  prev = text;
+  text = GetNextToken(text,&parm);
+  while(parm)
+  {
+    if (multi) {
+      int i;
+      if (multi&1)
+	for (i=0;i<5;++i)
+	  text = ReadTitleButton(prev, &fl->left_buttons[i], True,
+				 i*2+1);
+      if (multi&2)
+	for (i=0;i<5;++i)
+	  text = ReadTitleButton(prev, &fl->right_buttons[i], True,
+				 i*2);
+    }
+    else if (!(text = ReadTitleButton(prev, tb, True, button))) {
+      free(parm);
+      break;
     }
     free(parm);
-    if (multi == 0) {
-	/* a single button was specified */
-	if (button==10) button=0;
-	/* which arrays to use? */
-	n=button/2;
-	if((n*2) == button)
-	{
-	    /* right */
-	    n = n - 1;
-	    if(n<0)n=4;
-	    tb = &fl->right_buttons[n];
-	}
-	else {
-	    /* left */
-	    tb = &fl->left_buttons[n];
-	}
-    }
-
     prev = text;
     text = GetNextToken(text,&parm);
-    while(parm)
-    {
-	if (multi) {
-	    int i;
-	    if (multi&1)
-		for (i=0;i<5;++i)
-		    text = ReadTitleButton(prev, &fl->left_buttons[i], True,
-					   i*2+1);
-	    if (multi&2)
-		for (i=0;i<5;++i)
-		    text = ReadTitleButton(prev, &fl->right_buttons[i], True,
-					   i*2);
-	}
-	else if (!(text = ReadTitleButton(prev, tb, True, button))) {
-	    free(parm);
-	    break;
-	}
-	free(parm);
-	prev = text;
-	text = GetNextToken(text,&parm);
-    }
+  }
 }
 #endif /* MULTISTYLE */
 
 
 void SetEnv(F_CMD_ARGS)
 {
-    char *szVar = NULL;
-    char *szValue = NULL;
-    char *szPutenv = NULL;
+  char *szVar = NULL;
+  char *szValue = NULL;
+  char *szPutenv = NULL;
 
-    action = GetNextToken(action,&szVar);
-    if (!szVar)
-      return;
-    action = GetNextToken(action,&szValue);
-    if (!szValue)
-      {
-	free(szVar);
-	return;
-      }
-
-    szPutenv = safemalloc(strlen(szVar)+strlen(szValue)+2);
-    sprintf(szPutenv,"%s=%s",szVar,szValue);
-    putenv(szPutenv);
+  action = GetNextToken(action,&szVar);
+  if (!szVar)
+    return;
+  action = GetNextToken(action,&szValue);
+  if (!szValue)
+  {
     free(szVar);
-    free(szValue);
+    return;
+  }
+
+  szPutenv = safemalloc(strlen(szVar)+strlen(szValue)+2);
+  sprintf(szPutenv,"%s=%s",szVar,szValue);
+  putenv(szPutenv);
+  free(szVar);
+  free(szValue);
 }
 
 /***********************************************************************

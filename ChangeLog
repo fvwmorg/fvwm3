@@ -1,3 +1,32 @@
+1999-10-02  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/style.c (ProcessNewStyle): fixed multiple icon boxes broken with
+	latest style changes
+
+	* fvwm/builtins.c (ReadDecorFace): use new signature of ParseGradient
+	fixed ...style flags after gradient specs
+
+	* fvwm/menus.c (ReadMenuFace): use new signature of ParseGradient
+
+	* libs/Graphics.c (ParseGradient): function returns rest of line
+
+	* fvwm/builtins.c (SetTitleStyle):
+	(ReadTitleButton):
+	(SetMWMButtonFlag):
+	(ButtonStyle):
+	(FreeDecorFace):
+	(ReadDecorFace):
+	* fvwm/borders.c (DrawButton):
+	(RedrawBorder):
+	(SetBorderStyle):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/builtins.c (SetTitleStyle):
+	* fvwm/screen.h (DecorFace):
+	GSFR for TitleStyle, BorderStyle, ButtonStyle
+	general flag cleanup and several bugfixes
+	removed code that was never called
+
 1999-10-01  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Colorset.c (DumpColorset):

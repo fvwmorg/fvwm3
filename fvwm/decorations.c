@@ -433,9 +433,9 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       /* disable any buttons with the MWMDecorMenu flag */
       int i;
       for (i = 0; i < 5; ++i) {
-        if (GetDecor(t,left_buttons[i].flags)&MWMDecorMenu)
+	if (TB_HAS_MWM_DECOR_MENU(GetDecor(t,left_buttons[i])))
           t->left_w[i] = None;
-        if (GetDecor(t,right_buttons[i].flags)&MWMDecorMenu)
+	if (TB_HAS_MWM_DECOR_MENU(GetDecor(t,right_buttons[i])))
           t->right_w[i] = None;
       }
     }
@@ -446,10 +446,11 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       /* disable any buttons with the MWMDecorMinimize/MWMDecorShaded flag */
       int i;
       for (i = 0; i < 5; ++i) {
-        if (GetDecor(t,left_buttons[i].flags)&(MWMDecorMinimize|MWMDecorShade))
+	if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t,left_buttons[i])) ||
+	    TB_HAS_MWM_DECOR_SHADE(GetDecor(t,left_buttons[i])))
           t->left_w[i] = None;
-        if (GetDecor(t,right_buttons[i].flags)&(MWMDecorMinimize|
-						MWMDecorShade))
+	if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t,right_buttons[i])) ||
+	    TB_HAS_MWM_DECOR_SHADE(GetDecor(t,right_buttons[i])))
           t->right_w[i] = None;
       }
     }
@@ -460,9 +461,9 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       /* disable any buttons with the MWMDecorMaximize flag */
       int i;
       for (i = 0; i < 5; ++i) {
-        if (GetDecor(t,left_buttons[i].flags)&MWMDecorMaximize)
+	if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t,left_buttons[i])))
           t->left_w[i] = None;
-        if (GetDecor(t,right_buttons[i].flags)&MWMDecorMaximize)
+	if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t,right_buttons[i])))
           t->right_w[i] = None;
       }
     }

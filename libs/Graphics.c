@@ -393,7 +393,7 @@ Pixel *AllocAllGradientColors(char *color_names[], int perc[],
  * returns the number of colors asked for (No. allocated may be less due
  * to the ColorLimit command).  A return of 0 indicates an error
  */
-unsigned int ParseGradient(char *gradient, char ***colors_return,
+unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
 			   int **perc_return, int *nsegs_return)
 {
   char *item;
@@ -403,6 +403,8 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
   int nsegs, i, sum;
 
   /* get the number of colors specified */
+  if (rest)
+    *rest = gradient;
 
   if (GetIntegerArguments(gradient, &gradient, &npixels, 1) != 1 ||
       npixels < 2)
@@ -418,6 +420,8 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
     fprintf(stderr, "Incomplete gradient style\n");
     if (item)
       free(item);
+    if (rest)
+      *rest = gradient;
     return 0;
   }
 
@@ -471,6 +475,8 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
 	  free(s_colors[i]);
       free(s_colors);
       free(perc);
+      if (rest)
+	*rest = gradient;
       return 0;
     }
   }
@@ -485,6 +491,8 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
   *colors_return = s_colors;
   *perc_return = perc;
   *nsegs_return = nsegs;
+  if (rest)
+    *rest = gradient;
   return npixels;
 }
 
@@ -787,7 +795,7 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
   int *perc, nsegs;
 
   /* translate the gradient string into an array of colors etc */
-  if (!(ncolors = ParseGradient(action, &colors, &perc, &nsegs))) {
+  if (!(ncolors = ParseGradient(action, NULL, &colors, &perc, &nsegs))) {
     fprintf(stderr, "Can't parse gradient: %s\n", action);
     return None;
   }

@@ -4839,7 +4839,7 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
       return False;
 
     /* translate the gradient string into an array of colors etc */
-    npixels = ParseGradient(s, &s_colors, &perc, &nsegs);
+    npixels = ParseGradient(s, NULL, &s_colors, &perc, &nsegs);
     if (npixels <= 0)
       return False;
     /* grab the colors */

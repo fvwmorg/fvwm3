@@ -248,7 +248,7 @@ Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 Pixel *AllocAllGradientColors(char *color_names[], int perc[],
 			      int nsegs, int ncolors);
 
-unsigned int ParseGradient(char *gradient, char ***colors_return,
+unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
 			   int **perc_return, int *nsegs_return);
 
 Bool CalculateGradientDimensions(Display *dpy, Drawable d, int ncolors,
