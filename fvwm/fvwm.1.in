@@ -9576,7 +9576,7 @@ Performs
 .I command
 (typically
 .BR Focus )
-on the next window which satisfies all
+on the previous window which satisfies all
 .IR conditions .
 If the command is running in a window context, it starts looking
 for a matching window from there.  Otherwise it starts at the
