@@ -262,7 +262,7 @@ for the window borders and menus.
 can be "StaticGray", "GrayScale", "StaticColor", "PseudoColor",
 "TrueColor" or "DirectColor".
 .TP
-.BR "-I" " | " "-visualid "
+.BR "-I" " | " "--visualid "
 .I id
 Causes fvwm to use
 .I id
@@ -3367,7 +3367,7 @@ to the default.
 .TP
 .BI "ColorLimit " limit
 This command is obsolete. See the
-.I -color-limit
+.I --color-limit
 option to fvwm.
 .\"Specifies a
 .\".I limit
