@@ -280,10 +280,6 @@ static void DrawPicture(
 static void DrawWindow(
 	ProxyWindow *proxy, int x,int y,int w,int h)
 {
-	int direction;
-	int ascent;
-	int descent;
-	XCharStruct overall;
 	int edge, top;
 	int cset;
 	int text_width;
@@ -307,9 +303,6 @@ static void DrawWindow(
 	{
 		edge = w / 2;
 	}
-#if 0
-	top=h - Ffont->descent - 4;
-#endif
 	top=(h+ Ffont->ascent - Ffont->descent)/2;	/* center */
 	top+=8;				                /* HACK tweak */
 

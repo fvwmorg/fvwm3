@@ -1,5 +1,8 @@
 2002-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmProxy/FvwmProxy.c (DrawWindow):
+	removed unsused variables
+
 	* FvwmIconMan/FvwmIconMan.h:
 	* FvwmIconMan/fvwm.c (ProcessMessage):
 	(win_in_viewport):
