@@ -1689,10 +1689,12 @@ void CursorStyle(F_CMD_ARGS)
   /* Do the menus for good measure */
   SetMenuCursor(Scr.FvwmCursors[MENU]);
 
+#ifndef NON_VIRTUAL
   SafeDefineCursor(Scr.PanFrameTop.win, Scr.FvwmCursors[TOP_EDGE]);
   SafeDefineCursor(Scr.PanFrameBottom.win, Scr.FvwmCursors[BOTTOM_EDGE]);
   SafeDefineCursor(Scr.PanFrameLeft.win, Scr.FvwmCursors[LEFT_EDGE]);
   SafeDefineCursor(Scr.PanFrameRight.win, Scr.FvwmCursors[RIGHT_EDGE]);
+#endif
 }
 
 
