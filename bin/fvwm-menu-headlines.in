@@ -314,8 +314,14 @@ unless (defined $fakeFile) {
 	my $iaddr = inet_aton($host) || dieNet("Can't resolve host $host");
 	my $paddr = sockaddr_in($port, $iaddr);
 	my $proto = getprotobyname('tcp');
-	socket(SOCK, PF_INET, SOCK_STREAM, $proto) &&
-		connect(SOCK, $paddr) || dieNet("Can't connect host $host");
+
+	local $SIG{ALRM} = sub { die "timeout\n"; };
+	alarm($timeout);
+	eval {
+		socket(SOCK, PF_INET, SOCK_STREAM, $proto) &&
+		connect(SOCK, $paddr)
+	} || dieNet("Can't connect host $host");
+	alarm(0);
 	select(SOCK); $| = 1; select(STDOUT);
 
 	# do http request

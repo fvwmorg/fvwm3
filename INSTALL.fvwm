@@ -1,6 +1,6 @@
                                                                 -*- text -*-
 If you only need an information about all supported features skip to the
-"Optional libraries used by FVWM" and "Compile-time Options" sections.
+"Supported Features" and the following sections.
 
 VMS users: ignore this file, and follow the instructions in vms/README
 instead.
@@ -133,6 +133,46 @@ You can tell configure what cpp to use by setting the FVWM_CPP
 environment variable before invoking configure:
 
   $ FVWM_CPP=/my/special/cpp ./configure
+
+
+Supported Features
+==================
+
+FVWM has several compile time features that may be switched on and off
+using ./configure. To query what your installed fvwm supports run one of:
+
+  % fvwm-config --info
+  % fvwm-config --supports
+
+Please run './configure --help' to see a list of all option.
+The sections below explain these options.
+
+  Line shown by configure              Feature name  ./configure options
+---------------------------------------------------------------------------
+  With Asian bi-direct. text support?  bidi          --disable-bidi
+  With Extended Window Manager Hints?  ewmh          --disable-ewmh
+  With GNOME Window Manager Hints?     gnome-hints   --disable-gnome-hints
+  With GTK required for FvwmGtk?       gtk           --with-gtk
+  With GDK image support in FvwmGtk?   gdk-imlib     --with-imlib-*
+  With GNOME libs support in FvwmGtk?  gnome-libs    --with-gnome
+  With PNG image support?              png           --with-png-*
+  With ReadLine sup. in FvwmConsole?   readline      --with-readline-*
+  With RPlay support in FvwmEvent?     rplay         --with-rpm-*
+  With Shaped window support?          shape         --disable-shape
+  With Session Management support?     sm            --disable-sm
+  With Mouse strokes (gestures)?       stroke        --with-stroke-*
+  With Xinerama multi-head support?    xinerama      --disable-xinerama
+  With Xft anti-alias font support?    xft           --enable-xft --with-xft-*
+  With XPM image support?              xpm           --with-xpm-*
+  With Xrender image support?          xrender       --disable-xrender
+  Perl library directory:              perllib       --disable-perllib
+
+None of these features are essential, but some are nice to have.
+It is safe *not* to compile in the following features:
+  bidi        (not needed if you don't plan to read Arabic and Hebrew)
+  gnome-libs  (really not needed, used only in FvwmGtk for minor things)
+  rplay       (really not needed, used only in FvwmEvent for internal sound)
+  xinerama    (not needed if you or your users have only one monitor)
 
 
 Optional libraries used by FVWM
@@ -323,7 +363,22 @@ is run under a session manager like xsm or gnome-session.
 This option disables session management support completely.
 
 
-  --disable-xft                  disable anti-aliased text rendering support
+  --disable-compound-text       disable compound text conversion
+  ~~~~~~~~~~~~~~~~~~~~~~~
+
+International application may encode its window and icon name using a
+special encoding (COMPOUND_TEXT) even with a non multibyte charset.
+Basically, this happen if the window title contains non ASCII characters
+(or only non ISO-8859-1 characters, this depends on the locale). By default,
+FVWM converts these names into STRING encoded in the current locale. In the
+pure ISO-8859-1 environment such conversion is rarely needed. Some shared
+libraries are loaded at the FVWM startup when compound text is enabled.
+This option disable this conversion. Note that --enable-multibyte causes to
+ignore this option and you should try to use --enable-multibyte if you have
+problems with the window titles.
+
+
+  --disable-xft                 disable anti-aliased text rendering
   ~~~~~~~~~~~~~
 
 FVWM can use the Xft library to perform anti-aliased text rendering in any
@@ -343,6 +398,7 @@ This option disables Xft support completely.
 FVWM uses the Xrender library for alpha-blend rendering and tinting. This
 library is contained in XFree version >= 4.0 and others recent X package.
 This option disables Xrender support completely.
+
 
   --disable-shape               disable shape extensions
   ~~~~~~~~~~~~~~~

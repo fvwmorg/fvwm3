@@ -64,12 +64,14 @@ with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
 with_perllib=@with_perllib@
+with_png=@with_png@
 with_readline=@with_readline@
 with_rplay=@with_rplay@
 with_shape=@with_shape@
 with_sm=@with_sm@
 with_stroke=@with_stroke@
 with_xinerama=@with_xinerama@
+with_xft=@with_xft@
 with_xpm=@with_xpm@
 with_xrender=@with_xrender@
 
@@ -128,12 +130,14 @@ while test $# -gt 0; do
 			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
 			test "$with_gnomelibs"  = "yes" && echo "gnome-libs"
 			test "$with_perllib"    = "yes" && echo "perllib"
+			test "$with_png"        = "yes" && echo "png"
 			test "$with_readline"   = "yes" && echo "readline"
 			test "$with_rplay"      = "yes" && echo "rplay"
 			test "$with_shape"      = "yes" && echo "shape"
 			test "$with_sm"         = "yes" && echo "sm"
 			test "$with_stroke"     = "yes" && echo "stroke"
 			test "$with_xinerama"   = "yes" && echo "xinerama"
+			test "$with_xft"        = "yes" && echo "xft"
 			test "$with_xpm"        = "yes" && echo "xpm"
 			test "$with_xrender"    = "yes" && echo "xrender"
 			;;
@@ -176,12 +180,14 @@ while test $# -gt 0; do
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
 			echo "	perllib (Perl library installed): $with_perllib"
+			echo "	png: $with_png"
 			echo "	readline: $with_readline"
 			echo "	rplay: $with_rplay"
 			echo "	shape (shaped windows): $with_shape"
 			echo "	sm (session management): $with_sm"
-			echo "	stroke: $with_stroke"
-			echo "	xinerama: $with_xinerama"
+			echo "	stroke (mouse gestures): $with_stroke"
+			echo "	xinerama (multi-head): $with_xinerama"
+			echo "	xft (FreeType anti-alias font): $with_xft"
 			echo "	xpm: $with_xpm"
 			echo "	xrender (XFree86 Xrender extention): $with_xrender"
 			;;

@@ -266,7 +266,7 @@ AC_ARG_ENABLE(xft,
     problem_xft=": Explicitly disabled"
   fi ],
   [
-    problem_xft=": not specified, check"
+    with_xft="not specified, check"
   ]
 )
 
@@ -975,8 +975,8 @@ test -z "$FVWM_PERLLIB" && my_plldir="(Not installed) $my_plldir"
 
 case "$with_gtk" in
   yes) fvwmgtk_msg="
-  With GDK Imlib support in FvwmGtk?  $with_gdkimlib$problem_gdkimlib
-  With GNOME support in FvwmGtk?      $with_gnomelibs$problem_gnomelibs" ;;
+  With GDK image support in FvwmGtk?  $with_gdkimlib$problem_gdkimlib
+  With GNOME libs support in FvwmGtk? $with_gnomelibs$problem_gnomelibs" ;;
   no) fvwmgtk_msg="" ;;
 esac
 
@@ -991,22 +991,22 @@ FVWM Configuration:
   Data files:  $my_datdir
   Perl lib:    $my_plldir
 
-  With Bi-directional text support?   $with_bidi$problem_bidi
+  With Asian bi-direct. text support? $with_bidi$problem_bidi
   With Extended Window Manager Hints? $with_ewmh$problem_ewmh
   With GNOME Window Manager Hints?    $with_gnomehints$problem_gnomehints
-  With GTK support for FvwmGtk?       $with_gtk$problem_gtk$fvwmgtk_msg
+  With GTK required for FvwmGtk?      $with_gtk$problem_gtk$fvwmgtk_msg
   With PNG image support?             $with_png$problem_png
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
   With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
   With Shaped window support?         $with_shape$problem_shape
   With Session Management support?    $with_sm$problem_sm
-  With Stroke support?                $with_stroke$problem_stroke
-  With Xinerama support?              $with_xinerama$problem_xinerama
+  With Mouse strokes (gestures)?      $with_stroke$problem_stroke
+  With Xinerama multi-head support?   $with_xinerama$problem_xinerama
   With Xft anti-alias font support?   $with_xft$problem_xft
-  With Xrender image support?         $with_xrender$problem_xrender
   With XPM image support?             $with_xpm$problem_xpm
+  With Xrender image support?         $with_xrender$problem_xrender
 
-See INSTALL.fvwm for the complete description of what this may mean."
+See INSTALL.fvwm for the description of what this may mean."
 
 case "$with_xinerama_emulation" in
   yes) echo "  Xinerama emulation enabled." ;;

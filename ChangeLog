@@ -1,3 +1,10 @@
+2002-06-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	reworded supported feature listing, fixed the default xft detection
+	* INSTALL.fvwm:
+	added the "Supported Features" section
+
 2002-06-19  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/colorset.h:

@@ -1,3 +1,10 @@
+2002-06-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-headlines.in:
+	added timeout on initial connection
+	* fvwm-config.in:
+	added png and xft reporting
+
 2002-06-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-desktop.1:
