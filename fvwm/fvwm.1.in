@@ -2552,7 +2552,7 @@ versions of fvwm.  The default for new menu styles is
 .I Fvwm
 style.  These options override all others except
 .IR Foreground ", " Background ", " Greyed ", " HilightBack ", "
-.IR HilightFore " and " PopupDelay ,
+.IR ActiveFore " and " PopupDelay ,
 so they should be used only as the first option specified for a
 menu style or to reset the style to defined behavior.  The same
 effect can be created by setting all the other options one by one.
