@@ -90,7 +90,6 @@ int main(int argc, char **argv)
     fprintf(stderr,"%s: can't open display %s", name, XDisplayName(NULL));
     exit (1);
   }
-  XSynchronize(dpy, True);
   InitPictureCMap(dpy);
 
   /* This module allocates resouces that othe rmodules may rely on.

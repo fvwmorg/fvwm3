@@ -1086,7 +1086,6 @@ void SetDefaultColorset(F_CMD_ARGS)
 {
   char *cset = NULL;
 
-fprintf(stderr, "DefaultColorset %s\n", action);
   action = GetNextToken(action, &cset);
   if (!cset)
     return;
@@ -1104,7 +1103,6 @@ void SetDefaultColors(F_CMD_ARGS)
   char *fore = NULL;
   char *back = NULL;
 
-fprintf(stderr, "DefaultColors %s\n", action);
   action = GetNextToken(action, &fore);
   action = GetNextToken(action, &back);
   if (!back)
