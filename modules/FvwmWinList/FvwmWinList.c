@@ -106,7 +106,7 @@ Atom MwmAtom = None;
 
 /* Module related information */
 char *Module;
-int WindowIsUp=0,win_width=5,win_height=5,win_grav,win_x,win_y,win_title,win_border;
+int WindowState=0,win_width=5,win_height=5,win_grav,win_x,win_y,win_title,win_border_x=0,win_border_y=0;
 int Clength,Transient=0,Pressed=0,ButPressed,Checked=0;
 int MinWidth=DEFMINWIDTH,MaxWidth=DEFMAXWIDTH;
 ButtonArray buttons;
@@ -328,7 +328,7 @@ void ReadFvwmPipe(void)
 ******************************************************************************/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
-  int redraw=0,i;
+  int redraw=0,i,j;
   Item *flagitem;
   char *name,*string;
   static int current_focus=-1;
@@ -373,7 +373,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       cfgpacket = (void *) body;
       if ((i=DeleteItem(&windows,cfgpacket->w))==-1) break;
       RemoveButton(&buttons,i);
-      if (WindowIsUp)
+      if (WindowState)
         AdjustWindow(False);
 
       redraw=1;
@@ -401,6 +401,15 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     case M_ICON_NAME:
       if ((type==M_ICON_NAME && !UseIconNames) ||
           (type==M_WINDOW_NAME && UseIconNames)) break;
+      /* We get the win_borders only when WinList  map it self, this is ok 
+       *  since we need it only after an unmap */
+      if (!strcmp((char *)&body[3],&Module[1]))
+      {
+	win_border_x = body[10];
+	win_border_y = body[10];
+	if (win_grav == NorthWestGravity || win_grav == NorthEastGravity)
+	  win_border_y +=  body[9];
+      }
       if ((i=UpdateItemName(&windows,body[0],(char *)&body[3]))==-1) break;
       string=(char *)&body[3];
       flagitem = ItemFlags(&windows,body[0]);
@@ -414,7 +423,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         UpdateButtonDesk(&buttons,i,ItemDesk(&windows, body[0]));
       }
       free(name);
-      if (WindowIsUp) AdjustWindow(False);
+      if (WindowState) AdjustWindow(False);
       redraw=1;
       break;
     case M_DEICONIFY:
@@ -425,14 +434,18 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	flagitem = ItemFlags(&windows, body[0]);
 	if ((type == M_DEICONIFY && IS_ICONIFIED(flagitem))
 	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem))) {
-	  if (IS_ICON_SUPPRESSED(flagitem) && AnimCommand
+	  if (IS_ICON_SUPPRESSED(flagitem) && AnimCommand && WindowState
 	      && (AnimCommand[0] != 0)) {
 	    char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	    Window child;
 	    int x, y;
 
 	    /* find out where our button is */
-	    XTranslateCoordinates(dpy, win, Root, 0, i * buttonheight,
+	    if (ShowCurrentDesk) 
+	      j = FindItemDesk(&windows, body[0],CurrentDesk);
+	    else 
+	      j = i;
+	    XTranslateCoordinates(dpy, win, Root, 0, j * buttonheight,
 				  &x, &y, &child);
 	    /* tell FvwmAnimate to animate to our button */
 	    if (IS_ICONIFIED(flagitem)) {
@@ -472,14 +485,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         RadioButton(&buttons,i);
         if (Follow && i) { /* rearrange order */
           ReorderList(&windows,i,body[2]);
-          if (WindowIsUp) ReorderButtons(&buttons,i,body[2]);
+          if (WindowState) ReorderButtons(&buttons,i,body[2]);
         }
       }
       else
         RadioButton(&buttons,-1);
       break;
     case M_END_WINDOWLIST:
-      if (!WindowIsUp)
+      if (!WindowState)
 	MakeMeWindow();
       redraw = 1;
       break;
@@ -496,7 +509,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
   }
 
-  if (redraw && WindowIsUp==1) RedrawWindow(False);
+  if (redraw && WindowState==1) RedrawWindow(False);
 }
 
 /******************************************************************************
@@ -737,7 +750,7 @@ ParseConfigLine(char *tline)
     else if (strncasecmp(tline, "Colorset", 8) == 0) {
       int cset = LoadColorset(&tline[8]);
 
-      if (WindowIsUp && (cset >= 0)) {
+      if (WindowState && (cset >= 0)) {
 	int i;
 
 	for (i = 0; i != MAX_COLOUR_SETS; i++) {
@@ -813,7 +826,8 @@ void LoopOnEvents(void)
           RedrawWindow(True);
         break;
       case ConfigureNotify:
-        /* if send_event is true it means the user has moved the window
+        /* if send_event is true it means the user has moved the window or
+	 * that winlist has mapped itself,
          * take note of the new position. If it is false it comes from the
          * Xserver and the coordinates are always (0,0) - ignore it */
         if (Event.xconfigure.send_event) {
@@ -880,10 +894,10 @@ void AdjustWindow(Bool force)
   total = ItemCountD(&windows );
   if (!total)
   {
-    if (WindowIsUp==1)
+    if (WindowState==1)
     {
       XUnmapWindow(dpy,win);
-      WindowIsUp=2;
+      WindowState=2;
     }
     return;
   }
@@ -914,7 +928,7 @@ void AdjustWindow(Bool force)
   new_width=max(new_width, MinWidth);
   new_width=min(new_width, MaxWidth);
   new_height=(total * buttonheight);
-  if (force || (WindowIsUp && (new_height != win_height
+  if (force || (WindowState && (new_height != win_height
 			       || new_width != win_width))) {
     for (i = 0; i != MAX_COLOUR_SETS; i++) {
       int cset = colorset[i];
@@ -941,14 +955,35 @@ void AdjustWindow(Bool force)
       }
     }
   }
-  if (WindowIsUp && (new_height!=win_height  || new_width!=win_width))
+  if (WindowState && (new_height!=win_height  || new_width!=win_width))
   {
     if (Anchor)
     {
-      if (win_grav == SouthEastGravity || win_grav == NorthEastGravity)
-        win_x += win_width - new_width;
-      if (win_grav == SouthEastGravity || win_grav == SouthWestGravity)
-        win_y += win_height - new_height;
+      /* compensate for fvwm borders when going from unmapped to mapped */
+      int map_x_adjust = (WindowState - 1) * win_border_x;
+      int map_y_adjust = (WindowState - 1) * win_border_y;
+
+      switch (win_grav) {
+	case NorthWestGravity:
+	case SouthWestGravity:
+	  win_x -= map_x_adjust;
+	  break;
+	case NorthEastGravity:
+	case SouthEastGravity:
+	  win_x += win_width - new_width + map_x_adjust;
+	  break;
+      }
+
+      switch (win_grav) {
+	case NorthWestGravity:
+	case NorthEastGravity:
+	  win_y -= map_y_adjust;
+	  break;
+	case SouthEastGravity:
+	case SouthWestGravity:
+	  win_y += win_height - new_height + map_y_adjust;
+	  break;
+      }
       XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height);
     }
     else
@@ -958,10 +993,10 @@ void AdjustWindow(Bool force)
   UpdateArray(&buttons,-1,-1,new_width,-1);
   if (new_height>0) win_height = new_height;
   if (new_width>0) win_width = new_width;
-  if (WindowIsUp==2)
+  if (WindowState==2)
   {
     XMapWindow(dpy,win);
-    WindowIsUp=1;
+    WindowState=1;
   }
 }
 
@@ -1150,8 +1185,8 @@ void MakeMeWindow(void)
   if (ItemCountD(&windows) > 0)
   {
     XMapRaised(dpy,win);
-    WindowIsUp=1;
-  } else WindowIsUp=2;
+    WindowState=1;
+  } else WindowState=2;
 
   if (Transient)
   {
@@ -1222,7 +1257,7 @@ void ShutMeDown(void)
   FreeList(&windows);
   FreeAllButtons(&buttons);
 /*  XFreeGC(dpy,graph);*/
-  if (WindowIsUp) XDestroyWindow(dpy,win);
+  if (WindowState) XDestroyWindow(dpy,win);
   XCloseDisplay(dpy);
 }
 

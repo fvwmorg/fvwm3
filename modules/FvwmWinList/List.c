@@ -134,7 +134,8 @@ int FindItemDesk(List *list, long id, long desk)
   Item *temp;
   int i;
 
-  for(i=0,temp=list->head;temp!=NULL && (temp->id!=id || temp->desk != desk) ;i++,temp=temp->next);
+  for(i=0,temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next) 
+    if (temp->desk == desk) i++;
   if (temp==NULL) return -1;
   return i;
 }
