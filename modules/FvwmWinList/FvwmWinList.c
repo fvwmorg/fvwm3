@@ -501,24 +501,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 }
 
 
-/***********************************************************************
-  Detected a broken pipe - time to exit
-    Based on DeadPipe() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
- **********************************************************************/
-void DeadPipe(int nonsense)
-{
-  /* ShutMeDown(1); */
-  /*
-   * do not call ShutMeDown, it may make X calls which are not allowed
-   * in a signal hander.
-   *
-   * THIS IS NO LONGER A SIGNAL HANDLER - we may now shut down gracefully
-   * NOTE: ShutMeDown will now be called automatically by exit().
-   */
-  exit(1);
-}
-
 /******************************************************************************
   RedrawWindow - Update the needed lines and erase any old ones
 ******************************************************************************/
@@ -783,8 +765,14 @@ void LoopOnEvents(void)
          * take note of the new position. If it is false it comes from the
          * Xserver and the coordinates are always (0,0) - ignore it */
         if (Event.xconfigure.send_event) {
+          int i;
           win_x = Event.xconfigure.x;
           win_y = Event.xconfigure.y;
+          for (i = 0; i < MAX_COLOUR_SETS; i++)
+            if (colorset[i] >= 0 && Colorset[colorset[i]].pixmap == ParentRelative)
+            {
+              XClearArea(dpy, win, 0, 0, 0, 0, True);
+            }
         }
         break;
       case KeyPress:
@@ -1077,8 +1065,7 @@ void MakeMeWindow(void)
       }
     }
 
-  /* set a NULL background to prevent annoying flashes when using colorsets */
-  attr.background_pixmap = None;
+  attr.background_pixmap = ParentRelative;
   attr.border_pixel = 0;
   attr.colormap = Pcmap;
   win=XCreateWindow(dpy, Root, hints.x, hints.y, hints.width, hints.height, 0,
@@ -1140,7 +1127,8 @@ void MakeMeWindow(void)
     gcmask=GCForeground;
     background[i]=XCreateGC(dpy,win,gcmask,&gcval);
 
-    if ((colorset[i] >= 0) && Colorset[colorset[i]].pixmap) {
+    if ((colorset[i] >= 0) && Colorset[colorset[i]].pixmap
+        && Colorset[colorset[i]].pixmap != ParentRelative) {
       pixmap[i] = CreateBackgroundPixmap(dpy, win, win_width, buttonheight,
 					 &Colorset[colorset[i]], Pdepth,
 					 background[i], False);

@@ -49,6 +49,7 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Colorset.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
@@ -70,6 +71,7 @@ extern Display *dpy;
 extern Window win;
 extern GC shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 extern GC graph[MAX_COLOUR_SETS],background[MAX_COLOUR_SETS];
+extern int colorset[MAX_COLOUR_SETS];
 extern Pixmap pixmap[MAX_COLOUR_SETS];
 extern int LeftJustify, TruncateLeft, ShowFocus;
 
@@ -404,7 +406,11 @@ void DoButton(Button *button, int x, int y, int w, int h)
 
   Fontheight=ButtonFont->ascent+ButtonFont->descent;
 
-  XFillRectangle(dpy,win,background[set],x,y,w,h+1);
+  /* handle transparency by clearing button, otherwise paint with background */
+  if (colorset[set] >= 0 && Colorset[colorset[set]].pixmap == ParentRelative)
+    XClearArea(dpy,win,x,y,w,h+1, False);
+  else
+    XFillRectangle(dpy,win,background[set],x,y,w,h+1);
 
   if ((button->p.picture != 0)/* &&
       (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)*/) {
