@@ -1,3 +1,8 @@
+Sun Apr 11 15:17:47 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmM4/Makefile.am (AM_CFLAGS): 
+	* FvwmCpp/Makefile.am (AM_CFLAGS): fixed definition of FVWM_CONFIGDIR.
+
 1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmEvent/FvwmEvent.c:
