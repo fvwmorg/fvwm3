@@ -1097,25 +1097,36 @@ void Loop(void)
 	CurrentButton = b =
 	  select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
 
-	if(!b || !(b->flags&b_Action) ||
-	   ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
-	    (act=GetButtonAction(b,0)) == NULL))
+	act = NULL;
+	if (!(b->flags & b_Panel) &&
+	    (!b || !(b->flags&b_Action) ||
+	     ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
+	      (act=GetButtonAction(b,0)) == NULL)))
 	{
 	  CurrentButton=NULL;
 	  break;
 	}
-
 	RedrawButton(b,0);
-	if(strncasecmp(act,"popup",5)!=0)
+	if (!act)
 	{
-	  free(act);
-	  act = NULL;
+	  break;
+	}
+	if (act && strncasecmp(act,"popup",5) != 0)
+	{
+	  if (act)
+	  {
+	    free(act);
+	    act = NULL;
+	  }
 	  break;
 	}
 	else /* i.e. action is Popup */
+	{
 	  XUngrabPointer(Dpy,CurrentTime); /* And fall through */
+	}
 	free(act);
 	act = NULL;
+	/* fall through */
 
       case KeyRelease:
       case ButtonRelease:
@@ -1735,6 +1746,7 @@ static void HandlePanelPress(button_info *b)
   Bool is_mapped;
   XWindowAttributes xwa;
   char cmd[64];
+  button_info *tmp;
 
   if (XGetWindowAttributes(Dpy, b->PanelWin, &xwa))
     is_mapped = (xwa.map_state == IsViewable);
@@ -1851,7 +1863,6 @@ static void HandlePanelPress(button_info *b)
 
   /* redraw our button */
   b->newflags.panel_mapped = !is_mapped;
-  RedrawButton(b, 1);
 
   /* make sure the window maps on the current desk */
   sprintf(cmd, "Silent WindowId 0x%08x MoveToDesk 0", (int)b->PanelWin);
@@ -1865,13 +1876,15 @@ static void HandlePanelPress(button_info *b)
   {
     XUnmapWindow(Dpy, b->PanelWin);
   }
+  tmp = CurrentButton;
+  CurrentButton = NULL;
+  RedrawButton(b, 1);
+  CurrentButton = tmp;
   XSync(Dpy, 0);
   /* Give fvwm a chance to update the window.  Otherwise the window may end up
    * too small.  This doesn't prevent this completely, but makes it much less
    * likely. */
   usleep(250000);
-
-  RedrawButton(b, 1);
 
   return;
 }

@@ -200,7 +200,8 @@ void RedrawButton(button_info *b,int clean)
   */
 #endif
   XGCValues gcv;
-  int rev=0;
+  int rev = 0;
+  int rev_xor = 0;
   Pixel fc;
   Pixel bc;
   Pixel hc;
@@ -235,11 +236,22 @@ void RedrawButton(button_info *b,int clean)
 
   /* ----------------------------------------------------------------------- */
 
-  if((b->flags & b_Hangon && b->flags & b_Swallow) || b == CurrentButton ||
-     (b->flags & b_Panel && b->newflags.panel_mapped))
+  if (b->flags & b_Panel)
   {
-    /* Hanging swallow or held down by user or mapped panel */
-    rev=1;
+    if ((b->newflags.panel_mapped))
+    {
+      rev = 1;
+    }
+    if (b == CurrentButton)
+    {
+      rev_xor = 1;
+    }
+  }
+  else if (((b->flags & b_Hangon) && (b->flags & b_Swallow)) ||
+	   b == CurrentButton)
+  {
+    /* Hanging swallow or held down by user */
+    rev = 1;
   }
   if ((b->flags & b_Panel) && !(b->flags&b_Title))
   {
@@ -261,7 +273,7 @@ void RedrawButton(button_info *b,int clean)
     }
   }
 
-  RelieveButton(MyWindow,f,x,y,BW,BH,hc,sc,rev);
+  RelieveButton(MyWindow,f,x,y,BW,BH,hc,sc,rev ^ rev_xor);
 
   /* ----------------------------------------------------------------------- */
 
