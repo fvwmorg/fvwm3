@@ -3678,6 +3678,7 @@ void lookup_style(FvwmWindow *fw, window_style *styles)
 		memcpy(styles, &gnome_style, sizeof(window_style));
 	}
 	EWMH_GetStyle(fw, styles);
+
 	return;
 }
 

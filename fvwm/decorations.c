@@ -540,7 +540,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		SET_HAS_HANDLES(t, 1);
 		used_width = handle_width;
 	}
-	SET_HAS_NO_BORDER(t, HAS_NO_BORDER(t) || used_width <= 0);
+	SET_HAS_NO_BORDER(t, SHAS_NO_BORDER(*sflags) || used_width <= 0);
 	if (HAS_NO_BORDER(t))
 	{
 		used_width = 0;

@@ -371,19 +371,19 @@
 #define SCSET_FOCUS_MODE(st,x) \
 	((st).change_mask.common.s.focus_mode = (x))
 #define SHAS_NO_BORDER(sf) \
-	((sf).common.s.has_no_border)
+	((sf).common.has_no_border)
 #define SFHAS_NO_BORDER(st) \
-	((st).flags.common.s.has_no_border)
+	((st).flags.common.has_no_border)
 #define SMHAS_NO_BORDER(st) \
-	((st).flag_mask.common.s.has_no_border)
+	((st).flag_mask.common.has_no_border)
 #define SCHAS_NO_BORDER(st) \
-	((st).change_mask.common.s.has_no_border)
+	((st).change_mask.common.has_no_border)
 #define SFSET_HAS_NO_BORDER(st,x) \
-	((st).flags.common.s.has_no_border = !!(x))
+	((st).flags.common.has_no_border = !!(x))
 #define SMSET_HAS_NO_BORDER(st,x) \
-	((st).flag_mask.common.s.has_no_border = !!(x))
+	((st).flag_mask.common.has_no_border = !!(x))
 #define SCSET_HAS_NO_BORDER(st,x) \
-	((st).change_mask.common.s.has_no_border = !!(x))
+	((st).change_mask.common.has_no_border = !!(x))
 #define SHAS_DEPRESSABLE_BORDER(sf) \
 	((sf).common.s.has_depressable_border)
 #define SFHAS_DEPRESSABLE_BORDER(st) \

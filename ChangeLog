@@ -1,5 +1,13 @@
 2002-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	moved common.s.has_no_border window flag to common.has_no_border to
+	fix windows getting stuck without a border once the HandleWidth or
+	BorderWidth was set to 0 and then increased again
+
 	* fvwm/fvwm.1.in:
 	removed reference to BUGS and TODO
 

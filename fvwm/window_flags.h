@@ -270,11 +270,11 @@
 #define SETM_DO_REUSE_DESTROYED(fw,x) \
 	(fw)->flag_mask.do_reuse_destroyed = !!(x)
 #define HAS_NO_BORDER(fw) \
-	((fw)->flags.common.s.has_no_border)
+	((fw)->flags.common.has_no_border)
 #define SET_HAS_NO_BORDER(fw,x) \
-	(fw)->flags.common.s.has_no_border = !!(x)
+	(fw)->flags.common.has_no_border = !!(x)
 #define SETM_HAS_NO_BORDER(fw,x) \
-	(fw)->flag_mask.common.s.has_no_border = !!(x)
+	(fw)->flag_mask.common.has_no_border = !!(x)
 #define HAS_HANDLES(fw) \
 	((fw)->flags.has_handles)
 #define SET_HAS_HANDLES(fw,x) \

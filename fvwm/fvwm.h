@@ -258,6 +258,7 @@ typedef struct
 	/* common flags (former flags in bits 0-12) */
 	unsigned is_sticky : 1;
 	unsigned has_icon_font : 1;
+	unsigned has_no_border : 1;
 	unsigned has_window_font : 1;
 	unsigned title_dir : 2;
 	/* static flags that do not change dynamically after the window has been
@@ -290,7 +291,6 @@ typedef struct
 		unsigned has_mwm_border : 1;
 		unsigned has_mwm_buttons : 1;
 		unsigned has_mwm_override : 1;
-		unsigned has_no_border : 1;
 		unsigned has_no_icon_title : 1;
 		unsigned has_override_size : 1;
 		unsigned has_stippled_title : 1;
