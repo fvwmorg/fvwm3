@@ -8,9 +8,6 @@
 
 #include <setjmp.h>
 #include <errno.h>
-#ifdef HAVE_SYS_SELECT
-#  include <sys/select.h>
-#endif
 #include "fvwmsignal.h"
 
 #define true   1
