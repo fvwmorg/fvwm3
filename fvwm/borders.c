@@ -251,8 +251,8 @@ static enum ButtonState get_button_state(
   }
 }
 
-static const char ulgc[] = { 1, 0, 0, 0xff, 2, 1, 1 };
-static const char brgc[] = { 1, 1, 2, 0xff, 0, 0, 1 };
+static const char ulgc[] = { 1, 0, 0, 0x7f, 2, 1, 1 };
+static const char brgc[] = { 1, 1, 2, 0x7f, 0, 0, 1 };
 
 /* called twice by RedrawBorder */
 static void draw_frame_relief(
@@ -279,7 +279,7 @@ static void draw_frame_relief(
 
   for (i = 0; i < 7; i++)
   {
-    if (ulgc[i] != 0xff && w[i] > 0)
+    if (ulgc[i] != 0x7f && w[i] > 0)
     {
       RelieveRectangle(
 	dpy, t->decor_w, offset, offset, width, height, gc[(int)ulgc[i]],
