@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
-AM_INIT_AUTOMAKE(fvwm, 2.3.11)
+AM_INIT_AUTOMAKE(fvwm, 2.3.12)
 AM_CONFIG_HEADER(config.h)
 
 FVWM_MODULEDIR='${libexecdir}/${PACKAGE}/${VERSION}'
