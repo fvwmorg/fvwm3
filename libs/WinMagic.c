@@ -35,24 +35,34 @@
  * start position itself, 50.0 is halfway between start and end position and
  * 100.0 is the end position. Values smaller than 0.0 or bigger than 100.0 are
  * allowed too. The do_flush flag determines of all requests are sent to the
- * X server immediately (True) or not (False). */
+ * X server immediately (True) or not (False). The use_hints detrmines if the
+ * min size and resize hints are used */
 void SlideWindow(
   Display *dpy, Window win,
   int s_x, int s_y, unsigned int s_w, unsigned int s_h,
   int e_x, int e_y, unsigned int e_w, unsigned int e_h,
-  int steps, int delay_ms, float *ppctMovement, Bool do_sync)
+  int steps, int delay_ms, float *ppctMovement, 
+  Bool do_sync, Bool use_hints)
 {
-  int x;
-  int y;
-  int w;
-  int h;
-  int i = 0;
+  int x = 0;
+  int y = 0;
+  int w = 0;
+  int h = 0;
+  int g_w = 0; 
+  int g_h = 0;  /* -Wall fixes :o( */
+  int min_w = 1;
+  int min_h = 1;
+  int inc_w = 1;
+  int inc_h = 1;
+  int i;
   unsigned int us;
   Bool is_mapped;
   Bool keep_x1 = False;
   Bool keep_x2 = False;
   Bool keep_y1 = False;
   Bool keep_y2 = False;
+  XSizeHints hints;
+  long dummy;
 
   /* check limits */
   if (delay_ms > 10000)
@@ -94,6 +104,25 @@ void SlideWindow(
 
   is_mapped = False;
 
+  /* Get the mini (re)size hints and do some check consistency */
+  if (use_hints && XGetWMNormalHints(dpy, win, &hints, &dummy))
+  {
+    if (hints.flags & PMinSize)
+    {
+      if (hints.min_width >= 1 && hints.min_width <= max(e_w,s_w))
+	min_w = hints.min_width;
+      if (hints.min_height >= 1 && hints.min_height <= max(e_h,s_h))
+	min_h = hints.min_height;
+    }
+    if (hints.flags & PResizeInc)
+    {
+      if (hints.width_inc >= 1 && hints.width_inc <= max(e_w,s_w))
+	inc_w = hints.width_inc;
+      if (hints.height_inc >= 1 && hints.width_inc <= max(e_h,s_h)) 
+	inc_h = hints.height_inc;
+    }
+  }
+  
   if (s_x == e_x)
     keep_x1 = True;
   if (s_y == e_y)
@@ -121,17 +150,23 @@ void SlideWindow(
     w = s_w + (int)(e_w - s_w) * i / steps;
     h = s_h + (int)(e_h - s_h) * i / steps;
 
+    /* take the resize inc in account */
+    g_w = w - ((w - min_w) % inc_w);
+    x += w-g_w;
+    g_h = h - ((h - min_h) % inc_h);
+    y += h-g_h;
+
     /* prevent annoying flickering */
     if (keep_x1)
       x = s_x;
     if (keep_y1)
       y = s_y;
     if (keep_x2)
-      w = s_x + s_w - x;
+      g_w = s_x + s_w - x;
     if (keep_y2)
-      h = s_y + s_h - y;
-
-    if (w == 0 || h == 0)
+      g_h = s_y + s_h - y;
+    
+    if (w < min_w || h < min_h)
     {
       /* don't show zero width/height windows */
       if (is_mapped)
@@ -142,7 +177,7 @@ void SlideWindow(
     }
     else
     {
-      XMoveResizeWindow(dpy, win, x, y, w, h);
+      XMoveResizeWindow(dpy, win, x, y, g_w, g_h);
       if (!is_mapped)
       {
 	XMapWindow(dpy, win);
@@ -153,13 +188,25 @@ void SlideWindow(
     /* make sure everything is updated */
     if (do_sync)
       XSync(dpy, 0);
-    if (us && i < steps)
+    if (us && i < steps && is_mapped)
     {
       /* don't sleep after the last step */
       usleep(us);
     }
-  }
+  } /* for */
 
+  /* if hints and asked size are not agree try respect the caller */
+  if (e_w > 0 && e_h > 0 && (!is_mapped || g_w != w || g_h != w))
+  {
+    XMoveResizeWindow(dpy, win, x, y, w, h);
+    if (!is_mapped)
+    {
+      XMapWindow(dpy, win);
+      XMapSubwindows(dpy, win);
+    }
+    if (do_sync)
+      XSync(dpy, 0);
+  }
   return;
 }
 

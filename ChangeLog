@@ -1,3 +1,9 @@
+1999-12-09  olicha   <olivier.chapuis@free.fr>
+
+	* libs/WinMagic.c (SlideWindow):
+	* libs/fvwmlib.h:
+	Minimum size and resize hints can be use by SlideWindow
+	
 1999-12-09  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/add_window.c (setup_focus_policy):

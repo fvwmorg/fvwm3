@@ -1710,7 +1710,8 @@ static void HandlePanelPress(button_info *b)
   SlideWindow(Dpy, b->PanelWin,
 	      x1, y1, w1, h1,
 	      x2, y2, w2, h2,
-	      steps, b->slide_delay_ms, NULL, b->panel_flags.smooth);
+	      steps, b->slide_delay_ms, NULL, b->panel_flags.smooth,
+	      (b->swallow&b_NoHints) ? 0 : 1);
   XSync(Dpy, 0);
   /* Give fvwm a chance to update the window.  Otherwise the window may end up
    * too small.  This doesn't prevent this completely, but makes it much less

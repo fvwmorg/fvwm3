@@ -309,8 +309,12 @@ smoother this way, but most applications will appear
 to grow from the button instead of sliding out.  Also, without
 the \fIsmooth\fP option the animation may be delayed a bit.
 
+Note that if the Hints option is enabled (which is the default) the 
+animation steps may depend of the applications.
+
 The \fInoborder\fP option tells FvwmButtons to ignore the borders
-of the window when calculating positions for the animation.
+of the window when calculating positions for the animation (equivalent
+to set noplr and noptb in the position option).
 
 With the \fIindicator\fP option set, FvwmButtons will draw a small
 triangle in the button that will open a panel.  The triangle points
