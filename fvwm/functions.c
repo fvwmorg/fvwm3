@@ -158,7 +158,9 @@ static struct functions func_config[] =
   {"WindowFont",   LoadWindowFont,   F_WINDOWFONT,          FUNC_NO_WINDOW},
   {"WindowId",     WindowIdFunc,     F_WINDOWID,            FUNC_NO_WINDOW},
   {"WindowList",   do_windowList,    F_WINDOWLIST,          FUNC_NO_WINDOW},
+/*
   {"WindowsDesk",  changeWindowsDesk,F_CHANGE_WINDOWS_DESK, FUNC_NEEDS_WINDOW},
+*/
 #ifdef WINDOWSHADE
   {"WindowShade",  WindowShade,      F_WINDOW_SHADE,        FUNC_NEEDS_WINDOW},
 #endif /* WINDOWSHADE */

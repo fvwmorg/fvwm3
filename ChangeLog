@@ -1,3 +1,16 @@
+1998-12-09  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/virtual.c (GetDeskNumber): changed parsing to restore old
+	behavior of Desk cmd with a single arg, fixed handling of 4 args.
+
+	* fvwm/functions.c: removed WindowsDesk command.
+
+	* modules/FvwmPager/x_pager.c: changed to use MoveToDesk
+	instead of WindowsDesk command.
+
+	* fvwm/fvwm2.1: clarified description of Desk cmd, documented
+	WindowsDesk as obsolete.
+
 1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c (add_item_to_decor): a little clean up

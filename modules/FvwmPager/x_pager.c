@@ -1449,7 +1449,7 @@ void MoveWindow(XEvent *Event)
 	  XMoveWindow(dpy,t->w,Scr.MyDisplayWidth+Scr.VxMax,
 		      Scr.MyDisplayHeight+Scr.VyMax);
 	  XSync(dpy,0);
-	  sprintf(command,"WindowsDesk %d", NewDesk);
+	  sprintf(command,"MoveToDesk 0 %d", NewDesk);
 	  SendInfo(fd,command,t->w);
 	  t->desk = NewDesk;
 	}
@@ -1529,7 +1529,7 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    {
-	      sprintf(command,"WindowsDesk %d", NewDesk + desk1);
+	      sprintf(command,"MoveToDesk 0 %d", NewDesk + desk1);
 	      SendInfo(fd,command,t->w);
 	      t->desk = NewDesk + desk1;
 	    }

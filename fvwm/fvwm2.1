@@ -1068,18 +1068,28 @@ causing the application to exit.
 
 
 .IP "Desk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
-Changes to another desktop (workspace, room).
+Switches the current viewport to another desktop (workspace, room).
+
+The command takes 1, 2, 3, or 4 arguments. A single argument is
+interpreted as a relative desk number. Two arguments are understood
+as a relative and an absolute desk number. Three arguments specify
+a relative desk and the minimum and maximum of the allowable range.
+Four arguments specify the relative, absolute, minimum and maximum
+values. (Desktop numbers can be negative.)
 
 If \fIarg1\fP is non zero then the next desktop number will be the
-current desktop number plus \fIarg1\fP.  Desktop numbers can be
-negative.
+current desktop number plus \fIarg1\fP.
 
 If \fIarg1\fP is zero then the new desktop number will be \fIarg2\fP.
+(If \fIarg2\fP is not present, then the command has no effect.)
 
 If \fImin\fP and \fImax\fP are given, the new desktop number will
 be no smaller than min and no bigger than max. Values out of this
 range are truncated (if you gave an absolute desk number) or wrapped
 around (if you gave a relative desk number).
+
+The syntax is the same as for \IMoveToDesk\P, which moves a window
+to a different desktop.
 
 The number of active desktops is determined dynamically.  Only
 desktops which contain windows or are currently being displayed are
@@ -1676,8 +1686,9 @@ See also the "AnimatedMove" command, above.
 .IP "MoveToDesk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
 Moves the selected window to another desktop (workspace, room).
 
-The arguments are the same as for the \fPDesk\P command. MoveToDesk
-does the same as the WindowsDesk command.
+The arguments are the same as for the \fIDesk\fP command. MoveToDesk
+is a replacement for the old WindowsDesk command, which can no longer
+be used.
 
 
 .IP "MoveToPage [\fIx y\fP]"
@@ -2427,10 +2438,14 @@ WindowList OnlyIcons, Sticky, OnTop, Geometry
 (Note - the "Only" options essentially wipe out all other ones...)
 
 
-.IP "WindowsDesk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
+.IP "WindowsDesk \fIarg1\fP [ \fIarg2\fP ]"
 Moves the selected window to another desktop (workspace, room).
 
-The arguments are the same as for the \fPDesk\P command.
+This command is obsolete, and must be replaced by \fIMoveToDesk\fP,
+the arguments for which are the same as for the \fIDesk\fP command.
+\fINote:\fP You cannot simply change the name of the command: the
+syntax has changed. If you used "WindowsDesk n" to move a window to
+desk n, you will have to change it to "MoveToDesk 0 n".
 
 
 .IP "WindowShade [ \fIopt\fP ]"

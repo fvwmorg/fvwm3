@@ -521,14 +521,16 @@ void MoveViewport(int newx, int newy, Bool grab)
 
 /**************************************************************************
  *
- * Parse arguments for "Desk" and "WindowsDesk":
+ * Parse arguments for "Desk" and "MoveToDesk" (formerly "WindowsDesk"):
  *
  * (nil)       : desk number = current desk
- * n           : desk number = n
- * 0 n         : desk number = n
  * n           : desk number = current desk + n
+ * 0 n         : desk number = n
+ * n x         : desk number = current desk + n
  * 0 n min max : desk number = n, but limit to min/max
  * n min max   : desk number = current desk + n, but wrap around at desk #min
+ *               or desk #max
+ * n x min max : desk number = current desk + n, but wrap around at desk #min
  *               or desk #max
  *
  * The current desk number is returned if not enough parameters could be
@@ -548,21 +550,33 @@ int i;
   if (n <= 0)
     return Scr.CurrentDesk;
   if (n == 1)
-    return val[0];
+    return Scr.CurrentDesk + val[0];
+
   desk = Scr.CurrentDesk;
+  m = 0;
+
   if (val[0] == 0)
     {
       /* absolute desk number */
       desk = val[1];
-      m = 2;
     }
   else
     {
       /* relative desk number */
       desk += val[0];
+    }
+
+  if (n == 3)
+    {
       m = 1;
     }
-  if (n >= m + 2)
+  if (n == 4)
+    {
+      m = 2;
+    }
+
+
+  if (n > 2)
     {
       /* handle limits */
       if (val[m] <= val[m+1])
@@ -572,11 +586,13 @@ int i;
 	}
       else
 	{
+          /*  min > max is nonsense, so swap 'em.  */
 	  min = val[m+1];
 	  max = val[m];
 	}
       if (desk < min)
 	{
+          /*  Relative move outside of range, wrap around.  */
 	  if (val[0] < 0)
 	    desk = max;
 	  else
@@ -584,6 +600,7 @@ int i;
 	}
       else if (desk > max)
 	{
+          /*  Relative move outside of range, wrap around.  */
 	  if (val[0] > 0)
 	    desk = min;
 	  else
