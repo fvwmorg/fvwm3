@@ -676,23 +676,23 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
 KeySym FvwmStringToKeysym(Display *dpy, char *key)
 {
   KeySym keysym;
+  char *s;
 
   keysym = XStringToKeysym(key);
   if (keysym == NoSymbol)
   {
-    char c = 'X';
-    char d = 'X';
-
-    /* If the key name is in the form '<letter><digits>...' it's probably
-     * something like 'f10'. Convert the letter to upper case and try
-     * again. */
-    sscanf(key, "%c%c", &c, &d);
-    if (islower(c) && isdigit(d))
+    /* If the key name begins with a letter and does not match any key name
+     * supported by X, try the same name with the case switched for the first
+     * letter. */
+    if (*key && isalpha(*key))
     {
-      d = key[0];
-      key[0] = toupper(c);
-      keysym = XStringToKeysym(key);
-      key[0] = d;
+      s = alloca(strlen(key) + 1);
+      strcpy(s, key);
+      if (islower(s[0]))
+	s[0] = toupper(s[0]);
+      else
+	s[0] = tolower(s[0]);
+      keysym = XStringToKeysym(s);
     }
   }
   if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)

@@ -24,6 +24,10 @@ Changes in beta release 2.4.1 (not released yet)
 
 * New option "screen" for Maximize command.
 
+* New option ReverseOrder for WindowList command.
+
+* The default Alt-Tab binding works more intuitive.
+
 * New condition "PlacedByFvwm"
 
 * New Geometry option for FvwmForm.

@@ -1,5 +1,20 @@
 2001-09-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Bindings.c (FvwmStringToKeysym):
+	try both cases of the first letter of a key name
+
+	* fvwm/ConfigFvwmDefaults:
+	* fvwm/windowlist.c (winCompareReverse):
+	(CMD_WindowList):
+	new WindowList option ReverseOrder; use the new option in the default
+	Alt-Tab binding. This makes it possible to hit Alt-Tab repeatedly to
+	cycle through the whole window list. The old behaviour only toggled
+	between two windows. Also, a simple Alt-Tab can be used to switch to
+	the next window instead of Alt-Tab-Tab.
+
+	* libs/FScreen.c (FScreenInit):
+	fixed a Xinerama crash
+
 	* configure.in:
 	print a verbose error message and exit if X11 headers and libraries
 	are not found

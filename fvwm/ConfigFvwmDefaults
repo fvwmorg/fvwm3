@@ -26,7 +26,7 @@ AddToFunc UrgencyFunc I Iconify off
 + I WarpToWindow 5p 5p
 AddToFunc UrgencyDoneFunc I Nop
 # Alt-Tab:
-Key Tab A M WindowList Root c c NoDeskSort
+Key Tab A M WindowList Root c c NoDeskSort, ReverseOrder
 # Default styles
 Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
 Style * TileCascadePlacement, Title, MouseFocus, GrabFocusOff

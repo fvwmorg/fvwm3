@@ -309,7 +309,7 @@ void FScreenInit(Display *dpy)
       total_screens_xi = count;
       screens_xi = (XineramaScreenInfo *)
 	safemalloc(sizeof(XineramaScreenInfo) * (1 + count));
-      memcpy(screens + 1, info, sizeof(XineramaScreenInfo) * count);
+      memcpy(screens_xi + 1, info, sizeof(XineramaScreenInfo) * count);
       XFree(info);
     }
     else

@@ -930,7 +930,7 @@ The following commands are built-in to fvwm:
 .EX
 Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
-Key Tab A M WindowList Root c c NoDeskSort
+Key Tab A M WindowList Root c c NoDeskSort, ReverseOrder
 Key Escape A MC EscapeFunc
 Mouse 0 R N Menu MenuFvwmRoot
 Mouse 1 TS A FuncFvwmRaiseLowerX Move
@@ -3304,6 +3304,7 @@ passed to WindowList can be
 .IR "Layer m [n]" ,
 .IR UseListSkip " / " OnlyListSkip ,
 .IR NoDeskSort ,
+.IR ReverseOrder ,
 .IR UseIconName ,
 .IR Alphabetic " / " NotAlphabetic ,
 .IR NoHotkeys ,
@@ -3333,7 +3334,9 @@ WindowList Function IFunc, NoSticky, \\
 If you use the
 .IB "Layer m " [ "n" ]
 option, only windows in layers between m and n are displayed. n
-defaults to m.
+defaults to m.  With the
+.I ReverseOrder
+option the order of the windows in the list is reversed.
 
 If you wanted to use the
 .B WindowList

@@ -53,6 +53,7 @@ fvwm, would like to express their sympathies to those affected:
   Olivier Chapuis
   Paul D. Smith
   Pavel Riha
+  Pete Forman
   Peter Bak Nielsen
   Peter Miller
   Rainer Köhler
@@ -99,6 +100,10 @@ New features and improvements:
    similar to the old styles NoPPosition and UsePPosition.
 
 ** New option "screen" for Maximize command.
+
+** New option ReverseOrder for WindowList command.
+
+** The default Alt-Tab binding works more intuitive.
 
 ** New condition "PlacedByFvwm"
 

@@ -69,6 +69,10 @@ static int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
   else
     return strcasecmp((*a)->name,(*b)->name);
 }
+static int winCompareReverse(const  FvwmWindow **a, const  FvwmWindow **b)
+{
+  return -winCompare(a, b);
+}
 
 
 /*
@@ -116,6 +120,7 @@ void CMD_WindowList(F_CMD_ARGS)
   char *sor_keyname = sor_default_keyname;
   /* Condition vars. */
   Bool use_condition = False;
+  Bool do_reverse_sort_order = False;
   WindowConditionMask mask;
   char *cond_flags;
 
@@ -179,6 +184,8 @@ void CMD_WindowList(F_CMD_ARGS)
         flags &= ~SHOW_ALPHABETIC;
       else if (StrEquals(tok,"Alphabetic"))
         flags |= SHOW_ALPHABETIC;
+      else if (StrEquals(tok,"ReverseOrder"))
+        do_reverse_sort_order = True;
       else if (StrEquals(tok,"NoDeskSort"))
         flags |= NO_DESK_SORT;
       else if (StrEquals(tok,"UseIconName"))
@@ -313,7 +320,10 @@ void CMD_WindowList(F_CMD_ARGS)
     t = Scr.FvwmRoot.next;
   for (ii = 0; ii < numWindows; ii++)
   {
-    windowList[ii] = t;
+    if (do_reverse_sort_order)
+      windowList[numWindows - ii - 1] = t;
+    else
+      windowList[ii] = t;
     if (t->next)
       t = t->next;
     else
@@ -322,8 +332,18 @@ void CMD_WindowList(F_CMD_ARGS)
 
   /* Do alphabetic sort */
   if (flags & SHOW_ALPHABETIC)
-    qsort(windowList,numWindows,sizeof(t),
-	  (int(*)(const void*,const void*))winCompare);
+  {
+    if (do_reverse_sort_order)
+    {
+      qsort(windowList,numWindows,sizeof(t),
+	    (int(*)(const void*,const void*))winCompareReverse);
+    }
+    else
+    {
+      qsort(windowList,numWindows,sizeof(t),
+	    (int(*)(const void*,const void*))winCompare);
+    }
+  }
 
   while(next_desk != INT_MAX)
   {
