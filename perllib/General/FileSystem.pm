@@ -242,7 +242,7 @@ sub saveFile ($$;$) {
 	my ($fileName, $fileContentRef, $createDirs) = @_;
 
 	if ($fileName !~ m=^[/\\]|\w:\\=) {
-		$fileName .= $SAVE_FILE_DIR;
+		$fileName = "$SAVE_FILE_DIR/$fileName";
 	}
 	printLog("Saving  file $fileName") if $DEBUG_ENABLED;
 	die("saveFile: No SCALAR ref parameter\n")

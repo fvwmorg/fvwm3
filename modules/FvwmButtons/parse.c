@@ -600,7 +600,7 @@ static void ParseContainer(char **ss,button_info *b)
     case 2: /* Font */
       if (b->c->font_string)
         free(b->c->font_string);
-      b->font_string = my_get_font(&s);
+      b->c->font_string = my_get_font(&s);
       if(b->c->font_string)
       {
 	b->c->flags|=b_Font;
@@ -766,7 +766,7 @@ static void ParseContainer(char **ss,button_info *b)
 *** ParseButton()
 ***
 *** parse a buttonconfig string.
-*** *FvwmButtons(option[ options]) title iconname command
+*** *FvwmButtons: (option[ options]) title iconname command
 **/
 /*#define DEBUG_PARSER*/
 static void ParseButton(button_info **uberb,char *s)

@@ -1,3 +1,8 @@
+2002-05-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmButtons/parse.c (ParseContainer):
+	fixed specifying Font in Container
+
 2002-05-29  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Widgets/Makefile.am:

@@ -1,3 +1,8 @@
+2002-05-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* General/FileSystem.pm:
+	fixed saving a file without a path
+
 2002-05-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* perllib/FVWM/Module.pm.in:
