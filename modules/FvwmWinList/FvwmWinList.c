@@ -359,8 +359,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       cfgpacket = (void *) body;
       if ((i = FindItem(&windows,cfgpacket->w))!=-1)
       {
-	if(UpdateItemDesk(&windows, i, cfgpacket->desk) > 0)
+	if(UpdateItemDesk(&windows, cfgpacket->w, cfgpacket->desk) > 0)
         {
+          UpdateButtonDesk(&buttons, i, cfgpacket->desk);
           AdjustWindow(False);
           RedrawWindow(True);
         }
@@ -401,7 +402,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     case M_ICON_NAME:
       if ((type==M_ICON_NAME && !UseIconNames) ||
           (type==M_WINDOW_NAME && UseIconNames)) break;
-      /* We get the win_borders only when WinList  map it self, this is ok 
+      /* We get the win_borders only when WinList  map it self, this is ok
        *  since we need it only after an unmap */
       if (!strcmp((char *)&body[3],&Module[1]))
       {
@@ -441,9 +442,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	    int x, y;
 
 	    /* find out where our button is */
-	    if (ShowCurrentDesk) 
+	    if (ShowCurrentDesk)
 	      j = FindItemDesk(&windows, body[0],CurrentDesk);
-	    else 
+	    else
 	      j = i;
 	    XTranslateCoordinates(dpy, win, Root, 0, j * buttonheight,
 				  &x, &y, &child);

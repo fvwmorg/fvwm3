@@ -1163,7 +1163,7 @@ static void get_gcs (WinManager *man, int state, int iconified,
 
   default:
     ConsoleMessage ("Internal error in draw_button\n");
-    break;
+    return;
   }
 
   if (((man->rev == REVERSE_ICON) && iconified)
