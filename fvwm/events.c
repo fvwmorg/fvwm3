@@ -2050,6 +2050,7 @@ void HandleMapRequest(void)
 {
 	DBUG("HandleMapRequest","Routine Entered");
 
+fprintf(stderr,"hmr:\n");
 	if (fFvwmInStartup)
 	{
 		/* Just map the damn thing, decorations are added later

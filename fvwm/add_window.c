@@ -2342,6 +2342,15 @@ FvwmWindow *AddWindow(
 		SET_SHADED_DIR(fw, state_args.shade_dir);
 		frame_free_move_resize_args(fw, mr_args);
 	}
+	if (!IS_SHADED(fw) && !IS_ICONIFIED(fw))
+	{
+		/* TK always wants some special treatment: If the window is
+		 * simply mapped, the tk menus come up at funny Y coordinates.
+		 * Tell it it's geometry *again* to work around this problem. */
+		SendConfigureNotify(
+			fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
+			fw->frame_g.height, 0, False);
+	}
 	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
 			  &JunkHeight, &JunkBW,  &JunkDepth))
 	{
@@ -2351,6 +2360,7 @@ FvwmWindow *AddWindow(
 		destroy_window(fw);
 		fw = NULL;
 	}
+
 
 	return fw;
 }
