@@ -2810,7 +2810,8 @@ static void draw_move_resize_grid(int x, int  y, int  width, int height)
   int nrects = 0;
   XRectangle rects[10];
 
-  if (x == move_resize_grid.geom.x &&
+  if (move_resize_grid.flags.is_enabled &&
+      x == move_resize_grid.geom.x &&
       y == move_resize_grid.geom.y &&
       width == move_resize_grid.geom.width &&
       height == move_resize_grid.geom.height)

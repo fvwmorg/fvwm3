@@ -1,5 +1,8 @@
 2001-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (draw_move_resize_grid):
+	fixed drawing of resize grid when invoked from button or key press
+
 	* fvwm/placement.c (PlaceWindow):
 	rewrote a condition to improve readability
 	fixed StartsOn... w/ SkipMapping
