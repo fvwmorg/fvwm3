@@ -1484,12 +1484,6 @@ static void setup_key_and_button_grabs(FvwmWindow *fw)
 		C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_WINDOW, GetUnusedModifiers(),
 		True);
 	setup_focus_policy(fw);
-	/* We may need to grab the buttons again if the new window received the
-	 * focus and covers the old focused window. */
-	if (Scr.Ungrabbed)
-	{
-		focus_grab_buttons(Scr.Ungrabbed, False);
-	}
 
 	return;
 }
@@ -1973,7 +1967,7 @@ void change_mini_icon(FvwmWindow *fw, window_style *pstyle)
 
 void setup_focus_policy(FvwmWindow *fw)
 {
-	focus_grab_buttons(fw, False);
+	focus_grab_buttons(fw);
 
 	return;
 }
@@ -2894,6 +2888,7 @@ void destroy_window(FvwmWindow *fw)
 			M_DESTROY_WINDOW, 3, FW_W(fw), FW_W_FRAME(fw),
 			(unsigned long)fw);
 		EWMH_DestroyWindow(fw);
+		focus_grab_buttons_on_layer(fw->layer);
 		return;
 	}
 
@@ -2910,6 +2905,7 @@ void destroy_window(FvwmWindow *fw)
 				FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw);
 		EWMH_DestroyWindow(fw);
 	}
+	focus_grab_buttons_on_layer(fw->layer);
 
 	/****** adjust fvwm internal windows II ******/
 

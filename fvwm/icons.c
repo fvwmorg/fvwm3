@@ -1754,10 +1754,6 @@ void DeIconify(FvwmWindow *fw)
 #if 1
 	RaiseWindow(fw); /* moved dje */
 #endif
-	if (sf)
-	{
-		focus_grab_buttons(sf, True);
-	}
 	if (sf == fw)
 	{
 		/* update the focus to make sure the application knows its
@@ -1772,6 +1768,7 @@ void DeIconify(FvwmWindow *fw)
 	{
 		SetFocusWindow(fw, True, FOCUS_SET_FORCE);
 	}
+	focus_grab_buttons_on_layer(fw->layer);
 	GNOME_SetWinArea(fw);
 
 	return;
@@ -1952,10 +1949,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 			XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
 		}
 	}
-	if ((sf = get_focus_window()))
-	{
-		focus_grab_buttons(sf, True);
-	}
+	focus_grab_buttons_on_layer(fw->layer);
 
 	return;
 }

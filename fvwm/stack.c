@@ -798,7 +798,7 @@ void RaiseWindow(FvwmWindow *t)
 	BroadcastPacket(
 		M_RAISE_WINDOW, 3, FW_W(t), FW_W_FRAME(t), (unsigned long)t);
 	RaiseOrLowerWindow(t, False, True, False);
-	focus_grab_buttons_on_pointer_window();
+	focus_grab_buttons_on_layer(t->layer);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
 #endif
@@ -810,14 +810,14 @@ void LowerWindow(FvwmWindow *t)
 	BroadcastPacket(
 		M_LOWER_WINDOW, 3, FW_W(t), FW_W_FRAME(t), (unsigned long)t);
 	RaiseOrLowerWindow(t, True, True, False);
-	focus_grab_buttons_on_pointer_window();
+	focus_grab_buttons_on_layer(t->layer);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
 #endif
 	return;
 }
 
-static Bool intersect (
+static Bool intersect(
 	int x0, int y0, int w0, int h0, int x1, int y1, int w1, int h1)
 {
 	return !((x0 >= x1 + w1) || (x0 + w0 <= x1) ||
@@ -895,8 +895,8 @@ Bool HandleUnusualStackmodes(
 		}
 		break;
 	case Opposite:
-		restack = (HandleUnusualStackmodes (TopIf, r, rw, s, sw) ||
-			   HandleUnusualStackmodes (BottomIf, r, rw, s, sw));
+		restack = (HandleUnusualStackmodes(TopIf, r, rw, s, sw) ||
+			   HandleUnusualStackmodes(BottomIf, r, rw, s, sw));
 		break;
 	}
 	/*  DBUG("HandleUnusualStackmodes", "\t---> %d\n", restack);*/
@@ -1071,9 +1071,11 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 	}
 	for (t2 = t, num = 1 ; t2 != s2 && t != &Scr.FvwmRoot;
 	     t2 = t2->stack_next, num++)
+	{
 		;
+	}
 	length = FvwmPacketHeaderSize + 3*num;
-	body = (unsigned long *) safemalloc (length*sizeof(unsigned long));
+	body = (unsigned long *)safemalloc(length*sizeof(unsigned long));
 
 	bp = body;
 	*(bp++) = START_FLAG;
@@ -1315,10 +1317,14 @@ void new_layer(FvwmWindow *fw, int layer)
 	FvwmWindow list_head;
 	int add_after_layer;
 	int count;
+	int old_layer;
 
 	fw = get_transientfor_top_fvwmwindow(fw);
 	if (layer == fw->layer)
+	{
 		return;
+	}
+	old_layer = fw->layer;
 	list_head.stack_next = &list_head;
 	list_head.stack_prev = &list_head;
 	count = collect_transients_recursive(
@@ -1367,6 +1373,8 @@ void new_layer(FvwmWindow *fw, int layer)
 	/* move the windows without modifying their stacking order */
 	restack_windows(
 		list_head.stack_next->stack_prev, target, count, (count > 1));
+	focus_grab_buttons_on_layer(layer);
+	focus_grab_buttons_on_layer(old_layer);
 
 	return;
 }
@@ -1488,7 +1496,8 @@ void CMD_Layer(F_CMD_ARGS)
 	int n, layer, val[2];
 	char *token;
 
-	if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
+	if (DeferExecution(
+		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
 	{
 		return;
 	}

@@ -53,7 +53,9 @@ void restore_focus_after_unmap(
  * These need documentation
  **/
 Bool IsLastFocusSetByMouse(void);
-void focus_grab_buttons(FvwmWindow *fw, Bool is_focused);
+void focus_grab_buttons(FvwmWindow *fw);
+void focus_grab_buttons_on_layer(int layer);
+void focus_grab_buttons_all(void);
 void focus_grab_buttons_on_pointer_window(void);
 Bool focus_does_accept_input_focus(FvwmWindow *fw);
 Bool focus_is_focused(FvwmWindow *fw);

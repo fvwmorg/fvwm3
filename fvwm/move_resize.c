@@ -1293,6 +1293,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		__move_icon(fw, FinalX, FinalY, x, y, do_animate, fWarp);
 		XFlush(dpy);
 	}
+	focus_grab_buttons_on_layer(fw->layer);
 
 	return;
 }
@@ -3721,7 +3722,6 @@ void CMD_Maximize(F_CMD_ARGS)
 	int  scr_x, scr_y, scr_w, scr_h;
 	int sx, sy, sw, sh;
 	rectangle new_g;
-	FvwmWindow *sf;
 
 	if (DeferExecution(
 		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
@@ -3984,10 +3984,6 @@ void CMD_Maximize(F_CMD_ARGS)
 		/* now maximize it */
 		maximize_fvwm_window(fw, &new_g);
 	}
-	if ((sf = get_focus_window()))
-	{
-		focus_grab_buttons(sf, True);
-	}
 	EWMH_SetWMState(fw, False);
 	GNOME_SetWinArea(fw);
 
@@ -4072,8 +4068,6 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 
 void handle_stick(F_CMD_ARGS, int toggle)
 {
-	FvwmWindow *sf;
-
 	if ((toggle == 1 && IS_STICKY(fw)) || (toggle == 0 && !IS_STICKY(fw)))
 	{
 		return;
@@ -4106,10 +4100,6 @@ void handle_stick(F_CMD_ARGS, int toggle)
 	border_draw_decorations(
 		fw, PART_TITLE | PART_BUTTONS, (Scr.Hilite==fw), True,
 		CLEAR_ALL, NULL, NULL);
-	if ((sf = get_focus_window()))
-	{
-		focus_grab_buttons(sf, True);
-	}
 	EWMH_SetWMState(fw, False);
 	EWMH_SetWMDesktop(fw);
 	GNOME_SetHints(fw);

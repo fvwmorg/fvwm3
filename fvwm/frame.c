@@ -352,7 +352,7 @@ static void frame_setup_titlebar(
 	return;
 }
 
-static void frame_setup_window_internal(
+static void __frame_setup_window(
 	FvwmWindow *fw, rectangle *frame_g, Bool do_send_configure_notify,
 	Bool do_force, Bool is_application_request)
 {
@@ -1742,7 +1742,6 @@ void frame_free_move_resize_args(
 	FvwmWindow *fw, frame_move_resize_args mr_args)
 {
 	mr_args_internal *mra;
-	FvwmWindow *sf;
 
 	mra = (mr_args_internal *)mr_args;
 	SET_HAS_HANDLES(fw, mra->flags.had_handles);
@@ -1778,12 +1777,7 @@ void frame_free_move_resize_args(
 			fw, &mra->grav,
 			(mra->flags.do_set_bit_gravity) ? 2 : 0);
 	}
-	/* In case the window geometry now overlaps the focused window. */
-	sf = get_focus_window();
-	if (sf != NULL)
-	{
-		focus_grab_buttons(sf, True);
-	}
+	focus_grab_buttons_on_layer(fw->layer);
 	/* free the memory */
 	free(mr_args);
 
@@ -1851,7 +1845,7 @@ void frame_setup_window(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	frame_setup_window_internal(
+	__frame_setup_window(
 		fw, &g, do_send_configure_notify, False, False);
 
 	return;
@@ -1867,7 +1861,7 @@ void frame_setup_window_app_request(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	frame_setup_window_internal(
+	__frame_setup_window(
 		fw, &g, do_send_configure_notify, False, True);
 
 	return;
@@ -1883,7 +1877,7 @@ void frame_force_setup_window(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	frame_setup_window_internal(
+	__frame_setup_window(
 		fw, &g, do_send_configure_notify, True, False);
 
 	return;

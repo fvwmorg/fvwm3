@@ -102,7 +102,7 @@ static void SetPointerEventPosition(XEvent *eventp, int x, int y)
 /********************************************************************
  * Helper functions for setting the focus
  ********************************************************************/
-void __try_program_focus(Window w, FvwmWindow *fw)
+static void __try_program_focus(Window w, FvwmWindow *fw)
 {
 	extern Time lastTimestamp;
 
@@ -115,7 +115,7 @@ void __try_program_focus(Window w, FvwmWindow *fw)
 	return;
 }
 
-Bool __try_forbid_user_focus(Window w, FvwmWindow *fw)
+static Bool __try_forbid_user_focus(Window w, FvwmWindow *fw)
 {
 	if (fw == NULL ||
 	    fpol_query_allow_user_focus(&FW_FOCUS_POLICY(fw)) == True)
@@ -138,7 +138,8 @@ Bool __try_forbid_user_focus(Window w, FvwmWindow *fw)
 	return True;
 }
 
-Bool __check_allow_focus(Window w, FvwmWindow *fw, fpol_set_focus_by_t set_by)
+static Bool __check_allow_focus(
+	Window w, FvwmWindow *fw, fpol_set_focus_by_t set_by)
 {
 	FvwmWindow *sf;
 
@@ -163,7 +164,7 @@ Bool __check_allow_focus(Window w, FvwmWindow *fw, fpol_set_focus_by_t set_by)
 	return False;
 }
 
-void __update_windowlist(
+static void __update_windowlist(
 	FvwmWindow *fw, fpol_set_focus_by_t set_by,
 	int is_focus_by_focus_cmd)
 {
@@ -241,11 +242,11 @@ void __update_windowlist(
 	return;
 }
 
-Bool __try_other_screen_focus(FvwmWindow *fw)
+static Bool __try_other_screen_focus(FvwmWindow *fw)
 {
 	if (fw == NULL && !Scr.flags.is_pointer_on_this_screen)
 	{
-		focus_grab_buttons(Scr.Ungrabbed, False);
+		focus_grab_buttons(Scr.Ungrabbed);
 		set_focus_window(NULL);
 		/* DV (25-Nov-2000): Don't give the Scr.NoFocusWin the focus
 		 * here. This would steal the focus from the other screen's
@@ -293,7 +294,7 @@ static void __set_focus_to_fwin(
 				w = Scr.NoFocusWin;
 			}
 		}
-		else if (!IsRectangleOnThisPage(&(fw->frame_g),fw->Desk))
+		else if (!IsRectangleOnThisPage(&(fw->frame_g), fw->Desk))
 		{
 			fw = NULL;
 			w = Scr.NoFocusWin;
@@ -310,7 +311,7 @@ static void __set_focus_to_fwin(
 	{
 		/* need to grab all buttons for window that we are about to
 		 * unfocus */
-		focus_grab_buttons(Scr.Ungrabbed, False);
+		focus_grab_buttons(Scr.Ungrabbed);
 	}
 	if (fw == NULL)
 	{
@@ -319,9 +320,6 @@ static void __set_focus_to_fwin(
 		XFlush(dpy);
 		return;
 	}
-	/* Make sure the button grabs on the now focused window are up to date.
-	 */
-	focus_grab_buttons(fw, True);
 	/* RBW - allow focus to go to a NoIconTitle icon window so
 	 * auto-raise will work on it. */
 	if (IS_ICONIFIED(fw))
@@ -373,6 +371,9 @@ static void __set_focus_to_fwin(
 		FOCUS_SET(Scr.NoFocusWin);
 		set_focus_window(NULL);
 	}
+	/* Make sure the button grabs on the now focused window are up to date.
+	 */
+	focus_grab_buttons(fw);
 	XFlush(dpy);
 
 	return;
@@ -403,7 +404,7 @@ static void set_focus_to_fwin(
 				focus_grab_buttons(ffw_old, True);
 			}
 #else
-			focus_grab_buttons(ffw_old, True);
+			focus_grab_buttons(ffw_old);
 #endif
 		}
 		return;
@@ -426,10 +427,10 @@ static void set_focus_to_fwin(
 				}
 			}
 #else
-			focus_grab_buttons(get_focus_window(), True);
+			focus_grab_buttons(get_focus_window());
 #endif
 		}
-		focus_grab_buttons(ffw_old, False);
+		focus_grab_buttons(ffw_old);
 	}
 }
 
@@ -551,10 +552,16 @@ static void warp_to_fvwm_window(
 	}
 }
 
-static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool is_focused)
+static Bool focus_query_grab_buttons(FvwmWindow *fw)
 {
 	Bool flag;
+	Bool is_focused;
 
+	if (fw->Desk != Scr.CurrentDesk)
+	{
+		return False;
+	}
+	is_focused = focus_is_focused(fw);
 	if (!is_focused && FP_DO_FOCUS_CLICK_CLIENT(FW_FOCUS_POLICY(fw)))
 	{
 		return True;
@@ -782,36 +789,23 @@ static void __focus_grab_one_button(
 
 /* ---------------------------- interface functions ------------------------- */
 
-void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
+void focus_grab_buttons(FvwmWindow *fw)
 {
 	int i;
 	Bool do_grab_window = False;
 	int grab_buttons = Scr.buttons2grab;
 
-	if (!fw || IS_SCHEDULED_FOR_DESTROY(fw))
+	if (fw == NULL || IS_SCHEDULED_FOR_DESTROY(fw))
 	{
 		/* It's pointless to grab buttons on dying windows */
 		return;
 	}
-	do_grab_window = focus_query_grab_buttons(fw, is_focused);
+	do_grab_window = focus_query_grab_buttons(fw);
 	if (do_grab_window == True)
 	{
 		grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
 	}
-
-#if 0
-	/*
-	  RBW - If we've come here to grab and all buttons are already grabbed,
-	  or to ungrab and none is grabbed, then we've nothing to do.
-	*/
-	if ((!is_focused && grab_buttons == fw->grabbed_buttons) ||
-	    (is_focused && ((fw->grabbed_buttons & grab_buttons) == 0)))
-	{
-		return;
-	}
-#else
 	if (grab_buttons != fw->grabbed_buttons)
-#endif
 	{
 		MyXGrabServer(dpy);
 		Scr.Ungrabbed = (do_grab_window) ? NULL : fw;
@@ -820,6 +814,34 @@ void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
 			__focus_grab_one_button(fw, i, grab_buttons);
 		} /* for */
 		MyXUngrabServer (dpy);
+	}
+
+	return;
+}
+
+void focus_grab_buttons_on_layer(int layer)
+{
+	FvwmWindow *fw;
+
+	for (fw = Scr.FvwmRoot.stack_next; fw->layer >= layer;
+	     fw = fw->stack_next)
+	{
+		if (fw->layer == layer)
+		{
+			focus_grab_buttons(fw);
+		}
+	}
+
+	return;
+}
+
+void focus_grab_buttons_all(void)
+{
+	FvwmWindow *fw;
+
+	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
+	{
+		focus_grab_buttons(fw);
 	}
 
 	return;
@@ -1047,7 +1069,7 @@ void focus_grab_buttons_on_pointer_window(void)
 		/* pointer is not over a window */
 		return;
 	}
-	focus_grab_buttons(fw, focus_is_focused(fw));
+	focus_grab_buttons(fw);
 
 	return;
 }

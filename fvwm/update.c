@@ -112,7 +112,7 @@ static void apply_window_updates(
 	}
 	if (flags->do_update_window_grabs)
 	{
-		focus_grab_buttons(t, False);
+		focus_grab_buttons(t);
 	}
 	if (IS_TRANSIENT(t) && flags->do_redecorate_transient)
 	{
@@ -675,7 +675,7 @@ void flush_window_updates(void)
 		SetFocusWindow(focus_fw, False, FOCUS_SET_FORCE);
 		if (Scr.flags.has_mouse_binding_changed)
 		{
-			focus_grab_buttons(focus_fw, True);
+			focus_grab_buttons(focus_fw);
 		}
 	}
 	else

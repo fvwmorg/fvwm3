@@ -141,7 +141,6 @@ typedef struct
 /* ---------------------------- local variables ----------------------------- */
 
 static int Button = 0;
-static Window last_event_window=0;
 static FvwmWindow *xcrossing_last_grab_window = NULL;
 STROKE_CODE(static int send_motion);
 STROKE_CODE(static char sequence[STROKE_MAX_SEQUENCE + 1]);
@@ -372,7 +371,7 @@ static Bool __handle_focus_raise_click(
 				RaiseWindow(Fw);
 				SET_SCHEDULED_FOR_RAISE(Fw, 0);
 			}
-			focus_grab_buttons(Fw, (Fw == get_focus_window()));
+			focus_grab_buttons(Fw);
 			XFlush(dpy);
 			/* Pass click event to just clicked to focus window? Do
 			 * not swallow the click if the window didn't accept
@@ -418,7 +417,7 @@ static Bool __handle_focus_raise_click(
 				/* raise immediately and pass the click to the
 				 * application */
 				RaiseWindow(Fw);
-				focus_grab_buttons(Fw, True);
+				focus_grab_buttons(Fw);
 				Scr.Ungrabbed = tmp;
 				XAllowEvents(dpy,ReplayPointer,CurrentTime);
 				XFlush(dpy);
@@ -472,7 +471,7 @@ static Bool __handle_focus_raise_click(
 				{
 					/* raise the window and exit */
 					RaiseWindow(Fw);
-					focus_grab_buttons(Fw, True);
+					focus_grab_buttons(Fw);
 					Scr.Ungrabbed = tmp;
 					XFlush(dpy);
 					UngrabEm(GRAB_PASSIVE);
@@ -485,7 +484,7 @@ static Bool __handle_focus_raise_click(
 				}
 			}
 		}
-		focus_grab_buttons(Fw, True);
+		focus_grab_buttons(Fw);
 		Scr.Ungrabbed = tmp;
 	}
 
@@ -624,7 +623,7 @@ void HandleButtonPress(void)
 	}
 	if (do_regrab_buttons)
 	{
-		focus_grab_buttons(Fw, (Fw == get_focus_window()));
+		focus_grab_buttons(Fw);
 	}
 
 	OldPressedW = PressedW;
@@ -804,10 +803,8 @@ void HandleConfigureRequest(void)
 
 	DBUG("HandleConfigureRequest","Routine Entered");
 
-	/*
-	 * Event.xany.window is Event.xconfigurerequest.parent, so Fw will
-	 * be wrong
-	 */
+	/* Event.xany.window is Event.xconfigurerequest.parent, so Fw will
+	 * be wrong */
 	/* mash parent field */
 	Event.xany.window = cre->window;
 	if (XFindContext (dpy, cre->window, FvwmContext, (caddr_t *) &Fw) ==
@@ -1357,13 +1354,6 @@ ENTER_DBG((stderr, "++++++++ en (%d): 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ec
 	{
 		EnterSubWindowColormap(Event.xany.window);
 	}
-	if (Scr.focus_in_pending_window != NULL)
-	{
-ENTER_DBG((stderr, "en: exit: fipw\n"));
-		/* Ignore EnterNotify event while we are waiting for a window to
-		 * receive focus via Focus or FlipFocus commands. */
-		return;
-	}
 	if (Scr.flags.is_wire_frame_displayed)
 	{
 ENTER_DBG((stderr, "en: exit: iwfd\n"));
@@ -1372,7 +1362,6 @@ ENTER_DBG((stderr, "en: exit: iwfd\n"));
 		 * up. */
 		return;
 	}
-
 	if (Fw)
 	{
 		if (ewp->window != FW_W_FRAME(Fw) &&
@@ -1388,6 +1377,14 @@ ENTER_DBG((stderr, "en: exit: iwfd\n"));
 ENTER_DBG((stderr, "en: exit: funny window\n"));
 			return;
 		}
+	}
+	if (Scr.focus_in_pending_window != NULL)
+	{
+ENTER_DBG((stderr, "en: exit: fipw\n"));
+		/* Ignore EnterNotify event while we are waiting for a window to
+		 * receive focus via Focus or FlipFocus commands. */
+		focus_grab_buttons(Fw);
+		return;
 	}
 	if (ewp->mode == NotifyGrab)
 	{
@@ -1444,6 +1441,7 @@ ENTER_DBG((stderr, "en: exit: NU: is last grab window\n"));
 ENTER_DBG((stderr, "en: exit: NU: last grab window = NULL\n"));
 					xcrossing_last_grab_window = NULL;
 				}
+				focus_grab_buttons(Fw);
 				return;
 			}
 		}
@@ -1468,7 +1466,7 @@ ENTER_DBG((stderr, "en: exit: NU: last grab window = NULL\n"));
 	{
 		StashEventTime(&d);
 		if (d.xcrossing.mode == NotifyNormal &&
-		    d.xcrossing.detail!=NotifyInferior)
+		    d.xcrossing.detail != NotifyInferior)
 		{
 ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			return;
@@ -1507,6 +1505,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		{
 			InstallWindowColormaps(NULL);
 		}
+		focus_grab_buttons(lf);
 		return;
 	}
 	else
@@ -1516,10 +1515,10 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 
 	/* an EnterEvent in one of the PanFrameWindows activates the Paging or
 	   an EdgeCommand */
-	if (ewp->window==Scr.PanFrameTop.win
-	    || ewp->window==Scr.PanFrameLeft.win
-	    || ewp->window==Scr.PanFrameRight.win
-	    || ewp->window==Scr.PanFrameBottom.win)
+	if (ewp->window==Scr.PanFrameTop.win ||
+	    ewp->window==Scr.PanFrameLeft.win ||
+	    ewp->window==Scr.PanFrameRight.win ||
+	    ewp->window==Scr.PanFrameBottom.win)
 	{
 
 		/* check for edge commands */
@@ -1591,6 +1590,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 ENTER_DBG((stderr, "en: delete focus\n"));
 		DeleteFocus(True);
 	}
+	focus_grab_buttons(Fw);
 	if (FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(Fw)))
 	{
 ENTER_DBG((stderr, "en: set mousey focus\n"));
@@ -1604,12 +1604,11 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 		 * applications that want to handle it themselves. */
 		focus_force_refresh_focus(Fw);
 	}
-	else if (sf != Fw && !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(Fw)))
+	else if (sf != Fw)
 	{
 		/* Give the window a chance to grab the buttons needed for
 		 * raise-on-click */
-		focus_grab_buttons(Fw, False);
-		focus_grab_buttons(sf, True);
+		focus_grab_buttons(sf);
 	}
 
 	/* We get an EnterNotify with mode == UnGrab when fvwm releases the
@@ -1693,7 +1692,7 @@ void HandleFocusIn(void)
 	Bool is_unmanaged_focused = False;
 	static Window last_focus_w = None;
 	static Window last_focus_fw = None;
-	static Bool is_never_focused = True;
+	static Bool was_nothing_ever_focused = True;
 
 	DBUG("HandleFocusIn","Routine Entered");
 
@@ -1757,13 +1756,13 @@ void HandleFocusIn(void)
 		fc = GetColor(DEFAULT_FORE_COLOR);
 		bc = GetColor(DEFAULT_BACK_COLOR);
 	}
-	else if (Fw != Scr.Hilite
+	else if (Fw != Scr.Hilite ||
 		 /* domivogt (16-May-2000): This check is necessary to force
 		  * sending a M_FOCUS_CHANGE packet after an unmanaged window
 		  * was focused. Otherwise fvwm would believe that Scr.Hilite
 		  * was still focused and not send any info to the modules. */
-		 || last_focus_fw == None
-		 || IS_FOCUS_CHANGE_BROADCAST_PENDING(Fw))
+		 last_focus_fw == None ||
+		 IS_FOCUS_CHANGE_BROADCAST_PENDING(Fw))
 	{
 		do_force_broadcast = IS_FOCUS_CHANGE_BROADCAST_PENDING(Fw);
 		SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 0);
@@ -1794,7 +1793,7 @@ void HandleFocusIn(void)
 	{
 		return;
 	}
-	if (is_never_focused || last_focus_fw == None ||
+	if (was_nothing_ever_focused || last_focus_fw == None ||
 	    focus_w != last_focus_w || focus_fw != last_focus_fw ||
 	    do_force_broadcast)
 	{
@@ -1808,12 +1807,12 @@ void HandleFocusIn(void)
 		}
 		last_focus_w = focus_w;
 		last_focus_fw = focus_fw;
-		is_never_focused = False;
+		was_nothing_ever_focused = False;
 	}
 	if ((sf = get_focus_window()) != ffw_old)
 	{
-		focus_grab_buttons(sf, True);
-		focus_grab_buttons(ffw_old, False);
+		focus_grab_buttons(sf);
+		focus_grab_buttons(ffw_old);
 	}
 
 	return;
@@ -2009,7 +2008,6 @@ void HandleMapNotify(void)
 		}
 		return;
 	}
-
 	/* Except for identifying over-ride redirect window mappings, we
 	 * don't need or want windows associated with the
 	 * SubstructureNotifyMask */
@@ -2017,7 +2015,6 @@ void HandleMapNotify(void)
 	{
 		return;
 	}
-
 	SET_MAP_PENDING(Fw, 0);
 	/* don't map if the event was caused by a de-iconify */
 	if (IS_ICONIFY_PENDING(Fw))
@@ -2083,6 +2080,7 @@ void HandleMapNotify(void)
 		Iconify(Fw, &win_opts);
 		SET_ICONIFY_AFTER_MAP(Fw, 0);
 	}
+	focus_grab_buttons_on_layer(Fw->layer);
 
 	return;
 }
@@ -2258,10 +2256,8 @@ void HandleMapRequestKeepRaised(
 					/* make sure the old focused window
 					 * still has grabbed all necessary
 					 * buttons. */
-					if ((sf = get_focus_window()))
-					{
-						focus_grab_buttons(sf, True);
-					}
+					focus_grab_buttons(
+						get_focus_window());
 				}
 			}
 			else
@@ -2318,25 +2314,12 @@ void HandleMapRequestKeepRaised(
 		BroadcastPacket(M_WINDOWSHADE, 3, FW_W(Fw), FW_W_FRAME(Fw),
 				(unsigned long)Fw);
 	}
-
-	if (!IS_ICONIFIED(Fw) && (sf = get_focus_window()) &&
-	    sf != Fw && !is_on_top_of_layer(sf))
+	/* If the newly mapped window overlaps the focused window, make sure
+	 * ClickToFocusRaises and MouseFocusClickRaises work again. */
+	sf = get_focus_window();
+	if (sf != NULL)
 	{
-		if (Fw->Desk == Scr.CurrentDesk &&
-		    Fw->frame_g.x + Fw->frame_g.width > sf->frame_g.x &&
-		    sf->frame_g.x + sf->frame_g.width > Fw->frame_g.x &&
-		    Fw->frame_g.y + Fw->frame_g.height > sf->frame_g.y &&
-		    sf->frame_g.y + sf->frame_g.height > Fw->frame_g.y)
-		{
-			/* The newly mapped window overlaps the focused window.
-			 * Make sure ClickToFocusRaises and
-			 * MouseFocusClickRaises work again.
-			 * Note: There are many conditions under which we do
-			 * not have to call focus_grab_buttons(), but it is not
-			 * worth the effort to write them down here.  Rather do
-			 * some unnecessary work in this function. */
-			focus_grab_buttons(sf, True);
-		}
+		focus_grab_buttons(sf);
 	}
 	if (win_opts->flags.is_menu)
 	{
@@ -3118,18 +3101,16 @@ void HandleUnmapNotify(void)
  ************************************************************************/
 void HandleVisibilityNotify(void)
 {
-	XVisibilityEvent *vevent = (XVisibilityEvent *) &Event;
-
 	DBUG("HandleVisibilityNotify","Routine Entered");
 
-	if (Fw && FW_W_FRAME(Fw) == last_event_window)
+	if (Fw && Event.xvisibility.window == FW_W_FRAME(Fw))
 	{
-		if (vevent->state == VisibilityUnobscured)
+		if (Event.xvisibility.state == VisibilityUnobscured)
 		{
 			SET_FULLY_VISIBLE(Fw, 1);
 			SET_PARTIALLY_VISIBLE(Fw, 1);
 		}
-		else if (vevent->state == VisibilityPartiallyObscured)
+		else if (Event.xvisibility.state == VisibilityPartiallyObscured)
 		{
 			SET_FULLY_VISIBLE(Fw, 0);
 			SET_PARTIALLY_VISIBLE(Fw, 1);
@@ -3140,7 +3121,7 @@ void HandleVisibilityNotify(void)
 			SET_PARTIALLY_VISIBLE(Fw, 0);
 		}
 		/* Make sure the button grabs are up to date */
-		focus_grab_buttons(Fw, focus_is_focused(Fw));
+		focus_grab_buttons(Fw);
 	}
 
 	return;
@@ -3227,7 +3208,6 @@ void DispatchEvent(Bool preserve_Fw)
 		Fw = NULL;
 	}
 	last_event_type = Event.type;
-	last_event_window = w;
 	if (EventHandlerJumpTable[Event.type])
 	{
 		(*EventHandlerJumpTable[Event.type])();

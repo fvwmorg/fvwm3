@@ -1030,7 +1030,6 @@ void MoveViewport(int newx, int newy, Bool grab)
 	int PageTop, PageLeft;
 	int PageBottom, PageRight;
 	int txl, txr, tyt, tyb;
-	FvwmWindow *sf = get_focus_window();
 
 	if (grab)
 	{
@@ -1205,15 +1204,11 @@ void MoveViewport(int newx, int newy, Bool grab)
 		}
 	}
 	checkPanFrames();
-	if ((sf = get_focus_window()))
-	{
-		/* regrab buttons for focused window in case it is now
-		 * obscured */
-		focus_grab_buttons(sf, True);
-	}
+	/* regrab buttons in case something got obscured or unobscured */
+	focus_grab_buttons_all();
 
 	/* do this with PanFrames too ??? HEDU */
-	while (XCheckTypedEvent(dpy,MotionNotify,&Event))
+	while (XCheckTypedEvent(dpy, MotionNotify, &Event))
 	{
 		StashEventTime(&Event);
 	}
@@ -1241,6 +1236,7 @@ void goto_desk(int desk)
 		UnmapDesk(Scr.CurrentDesk, True);
 		Scr.CurrentDesk = desk;
 		MapDesk(desk, True);
+		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
@@ -1304,6 +1300,7 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 		}
 		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 	}
+	focus_grab_buttons_on_layer(fw->layer);
 	EWMH_SetWMDesktop(fw);
 	GNOME_SetDeskCount();
 	GNOME_SetDesk(fw);
@@ -1813,6 +1810,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		prev_desk_and_page_desk = Scr.CurrentDesk;
 		Scr.CurrentDesk = val[0];
 		MapDesk(val[0], True);
+		focus_grab_buttons_all();
 		BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
@@ -1829,7 +1827,6 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	{
 		BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
 	}
-
 	EWMH_SetCurrentDesktop();
 	GNOME_SetCurrentDesk();
 	GNOME_SetDeskCount();
