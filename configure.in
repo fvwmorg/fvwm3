@@ -171,7 +171,7 @@ else
   dnl We can't call smr_CHECK_LIB twice here without having the usage twice...
   dnl smr_CHECK_LIB(readline, , , readline, readline/history.h, -lncurses)
   dnl if test "$readline_LIBS"; then
-  AC_CHECK_LIB(readline, readline)
+  AC_CHECK_LIB(readline, readline, , , -lncurses)
   if test "$ac_cv_lib_readline_readline" = yes; then
     AC_CHECK_HEADERS(readline/history.h)
     if test "$ac_cv_header_readline_history_h" = yes; then
