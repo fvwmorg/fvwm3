@@ -16,6 +16,7 @@
 #ifndef BUILTINS_H
 #define BUILTINS_H
 
+void refresh_window(Window w, Bool window_update);
 void ApplyDefaultFontAndColors(void);
 void InitFvwmDecor(FvwmDecor *decor);
 void reset_decor_changes(void);

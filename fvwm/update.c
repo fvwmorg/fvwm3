@@ -466,6 +466,13 @@ static void apply_window_updates(
 				Scr.Hilite->hicolors.back);
 		}
 	}
+	if (flags->do_refresh)
+	{
+		if (!IS_ICONIFIED(t))
+		{
+			refresh_window(FW_W_FRAME(t), False);
+		}
+	}
 	t->shade_anim_steps = pstyle->shade_anim_steps;
 
 	return;

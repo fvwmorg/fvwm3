@@ -3353,6 +3353,13 @@ void check_window_style_change(
     flags->do_update_frame_attributes = True;
   }
 
+  if (ret_style->change_mask.use_parent_relative &&
+      ret_style->flags.use_parent_relative)
+  {
+    /* needed only for Opacity -> ParentalRelativity */
+    flags->do_refresh = True;
+  }
+
   /*
    * has_placement_penalty
    * has_placement_percentage_penalty

@@ -171,38 +171,6 @@ static void add_to_env_list(char *var, char *env)
 	return;
 }
 
-static void refresh_window(Window w)
-{
-	XSetWindowAttributes attributes;
-	unsigned long valuemask;
-
-	valuemask = CWOverrideRedirect | CWBackingStore | CWSaveUnder |
-		CWBackPixmap;
-	attributes.override_redirect = True;
-	attributes.save_under = False;
-	attributes.background_pixmap = None;
-	attributes.backing_store = NotUseful;
-	w = XCreateWindow(dpy,
-			  w,
-			  0, 0,
-			  (unsigned int) Scr.MyDisplayWidth,
-			  (unsigned int) Scr.MyDisplayHeight,
-			  (unsigned int) 0,
-			  CopyFromParent, (unsigned int) CopyFromParent,
-			  CopyFromParent, valuemask,
-			  &attributes);
-	XMapWindow(dpy, w);
-	if (Scr.flags.do_need_window_update)
-	{
-		flush_window_updates();
-	}
-	XDestroyWindow(dpy, w);
-	XSync(dpy, 0);
-	handle_all_expose();
-
-	return;
-}
-
 /** Prepend rather than replace the image path.
     Used for obsolete PixmapPath and IconPath **/
 static void obsolete_imagepaths( const char* pre_path )
@@ -879,6 +847,38 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 }
 
 /* ---------------------------- interface functions ------------------------- */
+
+void refresh_window(Window w, Bool window_update)
+{
+	XSetWindowAttributes attributes;
+	unsigned long valuemask;
+
+	valuemask = CWOverrideRedirect | CWBackingStore | CWSaveUnder |
+		CWBackPixmap;
+	attributes.override_redirect = True;
+	attributes.save_under = False;
+	attributes.background_pixmap = None;
+	attributes.backing_store = NotUseful;
+	w = XCreateWindow(dpy,
+			  w,
+			  0, 0,
+			  (unsigned int) Scr.MyDisplayWidth,
+			  (unsigned int) Scr.MyDisplayHeight,
+			  (unsigned int) 0,
+			  CopyFromParent, (unsigned int) CopyFromParent,
+			  CopyFromParent, valuemask,
+			  &attributes);
+	XMapWindow(dpy, w);
+	if (Scr.flags.do_need_window_update && window_update)
+	{
+		flush_window_updates();
+	}
+	XDestroyWindow(dpy, w);
+	XSync(dpy, 0);
+	handle_all_expose();
+
+	return;
+}
 
 void ApplyDefaultFontAndColors(void)
 {
@@ -1880,7 +1880,7 @@ void CMD_Exec(F_CMD_ARGS)
 
 void CMD_Refresh(F_CMD_ARGS)
 {
-	refresh_window(Scr.Root);
+	refresh_window(Scr.Root, True);
 
 	return;
 }
@@ -1892,7 +1892,8 @@ void CMD_RefreshWindow(F_CMD_ARGS)
 		return;
 	}
 	refresh_window(
-		(context == C_ICON) ? FW_W_ICON_TITLE(fw) : FW_W_FRAME(fw));
+		(context == C_ICON) ? FW_W_ICON_TITLE(fw) : FW_W_FRAME(fw),
+		True);
 
 	return;
 }

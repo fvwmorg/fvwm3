@@ -1,3 +1,12 @@
+2002-05-11  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/builtins.h:
+	* fvwm/builtins.c (refresh_window):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
+	* fvwm/style.c (check_window_style_change):
+	ParentalRelativity style is now dynamic
+
 2002-05-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menuitem.c (menuitem_paint):
