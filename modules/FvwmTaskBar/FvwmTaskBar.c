@@ -138,10 +138,11 @@ int  win_width    = 5,
      win_grav,
      win_x,
      win_y,
-     win_border,
+     win_border = 4,
      win_has_title = 0,
      win_has_bottom_title = 0,
      win_title_height = 0,
+     win_is_shaded = 0,
      button_width = DEFAULT_BTN_WIDTH,
      Clength,
      ButPressed   = -1,
@@ -369,6 +370,7 @@ void EndLessLoop(void)
     XFlush(dpy);
     if ( fvwmSelect(fd_width, &readset, NULL, NULL, &tv) > 0 )
     {
+      
       if (FD_ISSET(x_fd, &readset) || XPending(dpy))
         LoopOnEvents();
 
@@ -441,7 +443,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
        the hints in StartMeup; it is a good idea). So "we have to" modify
        the win_width here by modifying the WMNormalHints. Moreover, 1. we want
        that the TaskBar width with its border is execately the screen width
-       2. be carful with dynamic "border width" change */
+       2. be carful with dynamic style change */
     if (cfgpacket->w == win)
     {
       if (win_border != (int)cfgpacket->border_width ||
@@ -461,14 +463,26 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	if (AutoStick)
 	{
 	  win_x = win_border;
-	  if (win_y > Midline)
-	    win_y = ScreenHeight - 
-	      (AutoHide ? 2 - win_title_height*win_has_bottom_title : 
-	       win_height + win_border);
+	  if (!win_is_shaded) {
+	    if (win_y > Midline)
+	      win_y = ScreenHeight - 
+		(AutoHide ? 2 - win_title_height*win_has_bottom_title : 
+		 win_height + win_border);
+	    else
+	      win_y = AutoHide ? 2 + win_title_height*win_has_bottom_title 
+		- win_height : win_border + win_title_height;
+	  }
 	  else
-	    win_y = AutoHide ? 2 + win_title_height*win_has_bottom_title 
-	      - win_height : win_border + win_title_height;
+	  {
+	   if (win_y > Midline)
+	    win_y = ScreenHeight - win_border - 
+	      (win_has_bottom_title)*win_height;
+	  else
+	     win_y = win_title_height + win_border - 
+	       (win_has_bottom_title)*win_height;
+	  }
 	}
+
 	XGetWMNormalHints(dpy,win,&hints,&dumy);
 	hints.min_width   = win_width;
 	hints.base_width  = win_width;
@@ -483,6 +497,32 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	UpdateArray(&buttons, -1, -1,
 		    win_width - stwin_width - 8 - StartButtonWidth -10,-1, -1);
 	ArrangeButtonArray (&buttons);
+      }
+      if (AutoStick && win_is_shaded != IS_SHADED(cfgpacket))
+      {
+	win_is_shaded = IS_SHADED(cfgpacket);
+	if (win_is_shaded) 
+	{
+	   if (win_y > Midline)
+	    win_y = ScreenHeight - win_border - 
+	      (win_has_bottom_title)*win_height;
+	  else
+	     win_y = win_title_height + win_border - 
+	       (win_has_bottom_title)*win_height;
+	}
+	else
+	{
+	  if (win_y > Midline)
+	    win_y = ScreenHeight - win_border - win_height;
+	  else
+	    win_y = win_title_height + win_border;
+	  if (AutoHide)
+	  {
+	    WindowState = 1;
+	    SetAlarm(HIDE_TASK_BAR);
+	  }
+	}
+	XMoveWindow(dpy, win, win_x, win_y);
       }
       break;
     }
@@ -1267,7 +1307,7 @@ void LoopOnEvents(void)
 	}
         if (Event.xconfigure.height != win_height) {
 	  AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
-	  if (AutoHide)
+	  if (AutoHide && !win_is_shaded)
 	  {
 	    if (win_y > Midline)
 	      win_y = ScreenHeight - 2 +
@@ -1643,7 +1683,7 @@ void StartMeUp(void)
    NRows = 1;
    RowHeight = fontheight + 8;
 
-   win_border = 4; /* default border width */
+   /* win_border = 7; default border width */
    win_height = RowHeight+(RowsNumber-1)*(RowHeight+2);
    win_width = ScreenWidth - (win_border << 1);
 
@@ -1905,7 +1945,7 @@ void HideTaskBar()
 
   ClearAlarm();
   /* do not hide if the taskbar is already hiden */
-  if (WindowState == -1)
+  if (WindowState == -1 || win_is_shaded)
     return;
 
   if (FocusInWin)

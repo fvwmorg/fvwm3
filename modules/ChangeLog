@@ -1,3 +1,10 @@
+2000-05-24  olicha <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	Fixed shading with an AutoHide/Stick
+
+	* FvwmTaskBar/Goodies.c (PopupTipWindow): Fixed tips position
+	
 2000-05-20  olicha <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFvwmSetup95.in

@@ -52,7 +52,7 @@ extern int Fvwm_fd[2];
 extern int screen;
 extern char *Module;
 extern int win_width, win_height, win_y, win_border,
-       ScreenWidth, ScreenHeight, RowHeight;
+       ScreenWidth, ScreenHeight, RowHeight, Midline;
 extern Pixel back, fore;
 extern int colorset;
 extern int Clength;
@@ -436,7 +436,8 @@ void PopupTipWindow(int px, int py, const char *text)
   XTranslateCoordinates(dpy, win, Root, px, py, &newx, &newy, &child);
 
   Tip.x = newx;
-  if (win_y == win_border)
+/*   if (win_y == win_border) */
+  if (win_y < Midline)
     Tip.y = newy + RowHeight;
   else
     Tip.y = newy - Tip.th -2;
