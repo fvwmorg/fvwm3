@@ -386,6 +386,7 @@ void DoButton(
 	/* The margin we want between the relief/text/pixmaps */
 #define INNER_MARGIN 2
 
+	h += 1;
 	if (evp)
 	{
 		if (!frect_get_intersection(
@@ -566,7 +567,8 @@ void DoButton(
 	XDestroyRegion(t_region);
 
 	/* Draw relief last */
-	RelieveRectangle(dpy,win,x,y,w-1,h,topgc,bottomgc,button->reliefwidth);
+	RelieveRectangle(
+	  dpy,win,x,y,w-1,h-1,topgc,bottomgc,button->reliefwidth);
 
 	button->needsupdate=0;
 }

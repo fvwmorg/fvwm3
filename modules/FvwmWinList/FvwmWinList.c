@@ -561,7 +561,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 			    x, y, w, h, (int)body[7], (int)body[8],
 			    (int)body[9], (int)body[10]);
 	    } else {
-		    sprintf(buff, "%s %d %d %d %d %d %d %d %d", 
+		    sprintf(buff, "%s %d %d %d %d %d %d %d %d",
 			    AnimCommand, (int)body[7], (int)body[8],
 			    (int)body[9], (int)body[10],
 			    x, y, w, h);
