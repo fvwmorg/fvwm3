@@ -1,3 +1,18 @@
+2001-05-01  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/misc.c:
+	added missing #include <time.h> needed for FVWM_DEBUG_TIME
+
+	* configure.in:
+	* acconfig.h:
+	* fvwm/functions.c (execute_function):
+	* INSTALL.fvwm:
+	added --enable-command-log configure option using FVWM_COMMAND_LOG
+	for logging all executed commands, this also enables reporting times
+
+	* INSTALL:
+	restored previous underlying style using '='
+
 2001-04-28  Dan Espen  <dane@mk.telcordia.com>
 
 	* libs/Graphics.c (AllocNonlinearGradient): Removed aborts from

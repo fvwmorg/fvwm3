@@ -107,6 +107,15 @@
 #   define DBUG(x,y) /* no messages */
 #endif
 
+
+/* Produces a log of all executed commands and their times on stderr. */
+#undef FVWM_COMMAND_LOG
+
+#ifdef FVWM_COMMAND_LOG
+#   define FVWM_DEBUG_TIME 1
+#endif
+
+
 /**
  * The next few defines are options that are only changed from their values
  * shown here on systems that _don't_ use the configure script.

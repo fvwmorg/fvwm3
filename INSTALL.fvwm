@@ -6,7 +6,7 @@ This file details only configuration options peculiar to FVWM.  Please
 read the generic instructions in INSTALL first.
 
 Important Note!
----------------
+===============
 
 The `configure' script keeps a cache of information it discovers, so
 that subsequent invocations of `configure' will be faster.
@@ -28,7 +28,7 @@ Or you may feel more comfortable with a complete cleaning:
 
 
 What gets installed, and where
-------------------------------
+==============================
 
 * fvwm2 is installed into ${prefix}/bin
 * a couple of utilities are also installed into ${prefix}/bin; this includes
@@ -65,7 +65,7 @@ install-strip', which will continue past the failures.
 
 
 Configuration File
-------------------
+==================
 
 FVWM configures itself at runtime by reading one or more configuration
 files.  The default location for the system-wide configuration (named
@@ -90,9 +90,9 @@ users home directory to create the users starting .fvwm2rc.
 See the fvwm2 man page under "INITIALIZATION".
 
 C++
----
+===
 
-This section is irrelevant for fvwm 2.3 and 2.4 series, there are no
+This section is irrelevant for the fvwm 2.3 and 2.4 series, there are no
 modules using C++ anymore.  It is left for historical reasons.
 
 FVWM proper does not need C++ to compile.  However, some modules are
@@ -105,7 +105,7 @@ doesn't do the right thing, specify one or the other of these flags:
 
 
 CPP
----
+===
 
 One of FVWM's modules, FvwmCpp, requires a C preprocessor program.  The
 configuration will look in various common places for cpp.  If one is not
@@ -120,7 +120,7 @@ environment variable before invoking configure:
 
 
 Optional libraries used by FVWM
--------------------------------
+===============================
 
 FVWM can optionally be compiled to use the following libraries: Xpm, rplay,
 readline, LibStroke.  By default, these are probed for, and used if found.
@@ -175,7 +175,7 @@ Only one version of the --with-foo-library flag may be specified.
 
 
 Optional libraries used by FvwmGtk
-----------------------------------
+==================================
 
 FvwmGtk module requires GTK and optionally Imlib and GNOME libraries.
 
@@ -191,7 +191,7 @@ Run './configure --help' for more information about configure options.
 
 
 Shared Libraries in Non-standard Places
----------------------------------------
+=======================================
 
 Note that at this time, autoconf and FVWM don't handle systems which
 require a runtime library path separate from the link path very
@@ -211,7 +211,7 @@ In the future, FVWM's configuration may perform this step automatically.
 
 
 Compile-time Options
---------------------
+====================
 
 FVWM has several options selectable only at compile time.
 These are intended to keep FVWM's memory footprint small, by compiling
@@ -251,13 +251,23 @@ This option is good if you need a full control over exact directory names:
 If you switch this option between builds, you need "make clean"!
 
 
-  --enable-debug-msgs		enable debugging messages
+  --enable-debug-msgs           enable debugging messages
   -------------------
 
 If you would like to see lots of debug messages from FVWM, for
 debugging purposes, enable this option.  When reporting bugs, please
 do not send the debug output.  It is almost never useful in this
 situation.
+
+
+  --enable-command-log          enable command logging
+  -------------------
+
+If you would like to see all commands executed and their times, enable
+this option.  Remember, when using this, the command time offset is given
+in the system ticks, and it only means anything for commands executed in
+one batch; for example, after startup the command time offset may freely
+reach hours.
 
 
   --disable-gnome               disable GNOME window manager hints
@@ -286,7 +296,7 @@ and does not work in all places.  If you have access to a multibyte system
 and want to extend this support, contact the fvwm-workers@fvwm.org list.
 
 
-  --disable-shape		disable shape extensions
+  --disable-shape               disable shape extensions
   ---------------
 
 Shaped window extensions are enabled by default; this option will
@@ -323,7 +333,7 @@ In any case, the default behaviour may be overriden dynamically using:
 Most of users should not enable this option.
 
 
-  --disable-modality		disable modal dialogs for applications
+  --disable-modality            disable modal dialogs for applications
   ------------------
 
 Disables motif applications ability to have modal dialogs by default.

@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <time.h>
 
 /* To add timing info to debug output, #define this: */
 #ifdef FVWM_DEBUG_TIME
@@ -304,8 +305,8 @@ void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
   time_val = (unsigned int)times(&not_used_tms); /* get clock ticks */
   time_taken = time_val - prev_time;
   prev_time = time_val;
-  sprintf(buffer, "%.2d:%.2d:%.2d %ld",
-          t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec,time_taken);
+  sprintf(buffer, "%.2d:%.2d:%.2d %6ld",
+          t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec, time_taken);
 #endif
 
   if (Scr.NumberOfScreens > 1)

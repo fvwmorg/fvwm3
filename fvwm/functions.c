@@ -939,6 +939,11 @@ void execute_function(exec_func_args_type *efa)
     /* a comment */
     return;
   }
+
+#ifdef FVWM_COMMAND_LOG
+  fvwm_msg(INFO, "LOG", "%s", efa->action);
+#endif
+
   /* Note: the module config command, "*" can not be handled by the
    * regular command table because there is no required white space after
    * the asterisk. */
