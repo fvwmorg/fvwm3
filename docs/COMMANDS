@@ -1,4 +1,4 @@
-The currently recognized fvwm 2.6 commands:
+The recognized commands for fvwm 2.5.6 (from cvs) as of 12-Jan-2003:
 
   #                     - Comment line (ignored)
   *                     - Module configuration line (no space after asterisk)
@@ -8,13 +8,12 @@ The currently recognized fvwm 2.6 commands:
   AddToDecor            - Add a decor definition (will be obsolete)
   AddToFunc             - Add a function definition
   AddToMenu             - Add a menu definition
-  Alias                 - Replace a builtin command (not really implemented)
   All                   - Operate on all windows matching the given condition
   AnimatedMove          - Like Move, but uses animation to move windows
   Any                   - Operate if there is any window matching the condition
   Beep                  - Produce a bell
-  Break                 - Stop executing the current (but not parent) function
   BorderStyle           - Define a window border look (will be reworked)
+  Break                 - Stop executing the current (but not parent) function
   BugOpts               - Set some application bug workarounds
   BusyCursor            - Show/don't show the wait cursor in certain operations
   ButtonState           - Disable some titlebar button states (not recommended)
@@ -65,6 +64,7 @@ The currently recognized fvwm 2.6 commands:
   FakeClick             - Generate a mouse click
   FlipFocus             - Focus a window without rotating windowlist order
   Focus                 - Give focus to a window
+  FocusStyle            - Configure focus and raise policy for windows
   Function              - Execute a user defined function, see AddToFunc
   GlobalOpts            - (obsolete, use corresponding Style * instead)
   GnomeButton           - Pass mouse button presses on root to GNOME program
@@ -83,6 +83,7 @@ The currently recognized fvwm 2.6 commands:
   Key                   - Bind or unbind a key to an fvwm action
   KillModule            - Stops an fvwm module
   Layer                 - Change the layer of a window
+  LocalePath            - Directories/domains to search for locale data
   Lower                 - Lower a window within a layer
   Maximize              - Toggle maximal-size status of a window
   Menu                  - Display (post) a menu
@@ -129,9 +130,11 @@ The currently recognized fvwm 2.6 commands:
   ResizeMaximize        - Resize a window and mark window as maximized
   ResizeMove            - Resize and move in one operation
   ResizeMoveMaximize    - Resize and move in one operation and mark maximized
+  RestackTransients     - Regroup the window transients in the stack
   Restart               - Restart itself or replace with another window manager
   SaveQuitSession       - Cause session manager to save and shutdown fvwm
   SaveSession           - Cause session manager to save the session
+  ScanForWindow         - Operate on the matching window in the given direction
   Schedule              - Run an fvwm command after a delay
   Scroll                - Scroll the desktop viewport
   Send_ConfigInfo       - Internal, used for module communication
@@ -156,7 +159,6 @@ The currently recognized fvwm 2.6 commands:
   ThisWindow            - Operate on the context window if it meets conditions
   Title                 - Insert title into a menu
   TitleStyle            - Control window title
-  Unalias               - Restores a builtin command (not really implemented)
   UnsetEnv              - Remove an environment variable
   UpdateDecor           - Update window decor (obsolete and not needed anymore)
   UpdateStyles          - Cause styles to update while still in a function

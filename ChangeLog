@@ -1,3 +1,8 @@
+2003-01-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/functable.c:
+	added a short description together with the commands
+
 2003-01-12  Marcus Lundblad  <ml@update.uu.se>
 
 	* NEWS:
