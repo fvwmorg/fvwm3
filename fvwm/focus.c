@@ -62,7 +62,9 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 {
   extern Time lastTimestamp;
 
+#if 0
 fprintf(stderr,"focusing %s\n", Fw?Fw->name:"(none)");
+#endif
   if (Fw && HAS_NEVER_FOCUS(Fw))
   {
     if (WM_TAKES_FOCUS(Fw))
@@ -76,7 +78,9 @@ fprintf(stderr,"focusing %s\n", Fw?Fw->name:"(none)");
       /* make sure the window is not hilighted */
       DrawDecorations(Fw, DRAW_ALL, False, False, None);
     }
-fprintf(stderr,"  no: never focus\n");
+#if 0
+//fprintf(stderr,"  no: never focus\n");
+#endif
     return;
   }
 
@@ -85,7 +89,9 @@ fprintf(stderr,"  no: never focus\n");
       Scr.Focus && Scr.Focus->Desk == Scr.CurrentDesk)
   {
     /* window doesn't want focus */
-fprintf(stderr,"  no: does not want focus\n");
+#if 0
+//fprintf(stderr,"  no: does not want focus\n");
+#endif
     return;
   }
 
@@ -149,7 +155,9 @@ fprintf(stderr,"  no: does not want focus\n");
       focus_grab_buttons(Scr.Ungrabbed, False);
       Scr.Focus = NULL;
       FOCUS_SET(Scr.NoFocusWin);
-fprintf(stderr,"  no: root\n");
+#if 0
+//fprintf(stderr,"  no: root\n");
+#endif
       return;
     }
   }
@@ -227,13 +235,17 @@ fprintf(stderr,"  no: root\n");
   {
     /* Window doesn't want focus. Leave focus alone */
     /* FOCUS_SET(Scr.Hilite->w);*/
-fprintf(stderr,"  no: does not want focus II\n");
+#if 0
+//fprintf(stderr,"  no: does not want focus II\n");
+#endif
   }
   else
   {
     FOCUS_SET(Scr.NoFocusWin);
     Scr.Focus = NULL;
-fprintf(stderr,"  no: nope\n");
+#if 0
+//fprintf(stderr,"  no: nope\n");
+#endif
   }
 
   if ((Fw)&&(WM_TAKES_FOCUS(Fw)))
@@ -489,7 +501,9 @@ Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     Scr.Ungrabbed = (do_grab) ? NULL : tmp_win;
     if (do_grab)
       XSync(dpy, 0);
-fprintf(stderr,"%sgrabbing buttons for %s\n", do_grab?"":"un", tmp_win->name);
+#if 0
+//fprintf(stderr,"%sgrabbing buttons for %s\n", do_grab?"":"un", tmp_win->name);
+#endif
     for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
       if (!(Scr.buttons2grab & (1<<i)))

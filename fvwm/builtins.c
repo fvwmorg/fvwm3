@@ -1303,12 +1303,16 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
   /* always free the vector buttons */
   if (df->vector.x)
   {
+#if 0
     free (df->vector.x);
+#endif
     df->vector.x = NULL;
   }
   if (df->vector.y)
   {
+#if 0
     free (df->vector.y);
+#endif
     df->vector.y = NULL;
   }
 #ifdef MULTISTYLE
