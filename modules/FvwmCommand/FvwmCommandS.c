@@ -259,10 +259,18 @@ void server ( char *name ) {
 /*
  * close  fifos and pipes
  */
-void close_pipes(void) {
-  close (Fd[0]);
-  close (Fd[1]);
-  close_fifos();
+void close_pipes(void)
+{
+  static char is_closed = 0;
+
+  /* prevent that this is executed twice */
+  if (!is_closed)
+  {
+    close (Fd[0]);
+    close (Fd[1]);
+    close_fifos();
+    is_closed = 1;
+  }
 }
 
 void close_fifos(void) {
