@@ -208,7 +208,7 @@ void ReConfigureIcons(Bool do_reconfigure_desk_only);
 void IconSwitchPage(XEvent *Event);
 void IconMoveWindow(XEvent *Event,PagerWindow *t);
 void HandleEnterNotify(XEvent *Event);
-void HandleExpose(XEvent *Event, Bool redraw_subwindows);
+void HandleExpose(XEvent *Event);
 void MoveStickyWindows(void);
 void MapBalloonWindow(PagerWindow *t, Bool is_icon_view);
 void UnmapBalloonWindow();

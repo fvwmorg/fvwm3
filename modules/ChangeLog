@@ -1,3 +1,25 @@
+2001-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (BorderIconWindow):
+	(BorderWindow):
+	(draw_window_border):
+	(LabelIconWindow):
+	(LabelWindow):
+	(do_label_window):
+	(PictureIconWindow):
+	(PictureWindow):
+	(do_picture_window):
+	(ChangeDeskForWindow):
+	(Hilight):
+	(change_colorset):
+	(AddNewWindow):
+	reduced code duplication
+	(ReConfigureIcons):
+	(MoveResizePagerView):
+	cleaned up, take care of icons larger than 1000 pixels
+	(DispatchEvent):
+	fixed redrawing of the icon window; too many Expose events were eaten
+
 2001-08-28  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmAnimate/FvwmAnimate.c: Catch iterations less than 1 and

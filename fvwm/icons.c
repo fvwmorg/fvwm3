@@ -859,7 +859,6 @@ void AutoPlaceIcon(FvwmWindow *t)
 	/* reverse step */
         dim[2].step = 0 - dim[2].step;
       } /* end fill from right */
-fprintf(stderr,"box: x %d-%d y %d-%d\n", dim[2].start_at, dim[2].end_at, dim[1].start_at, dim[1].end_at);
       for (i=1;i<=2;i++)
       {
 	/* for dimensions 1 and 2 */
@@ -993,8 +992,6 @@ fprintf(stderr,"box: x %d-%d y %d-%d\n", dim[2].start_at, dim[2].end_at, dim[1].
 	/* Grid outer value & direction */
         dim[1].start_at += dim[1].step;
       } /* end while room outer dimension */
-fprintf(stderr,"box2: x %d-%d y %d-%d\n", dim[2].start_at, dim[2].end_at, dim[1].start_at, dim[1].end_at);
-fprintf(stderr,"icon loc: %d %d\n", real_x, real_y);
     } /* end for all icon boxes, or found space */
     if(!loc_ok && !loc_ok_wrong_screen)
       /* If icon never found a home just leave it */

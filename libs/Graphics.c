@@ -37,9 +37,15 @@
 void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width)
 {
-  XSegment* seg = (XSegment*)safemalloc(sizeof(XSegment) * line_width);
+  XSegment* seg;
   int i;
 
+  if (w <= 0 || h <= 0)
+  {
+    fprintf(stderr,"RelieveRectangle: called with w = %d, h = %d\n", w, h);
+    return;
+  }
+  seg = (XSegment*)safemalloc(sizeof(XSegment) * line_width);
   /* left side, from 0 to the lesser of line_width & just over half w */
   for (i = 0; (i < line_width) && (i <= w / 2); i++) {
     seg[i].x1 = x+i; seg[i].y1 = y+i;

@@ -103,6 +103,8 @@ Bug fixes:
 ** Fixed parsing double quotes in FvwmPager's Font and SmallFont options.
    Fixed FvwmPager crash with certain font strings.
 
+** Fixed drawing of the grid lines in an iconified FvwmPager window.
+
 ** Fixed button grabbing problem for buttons > 3 in FvwmTaskBar.
 
 ** Fixed some exotic problems with window gravity and resizing windows.
