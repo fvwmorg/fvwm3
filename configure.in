@@ -61,6 +61,7 @@ AC_MSG_RESULT($val)
 
 dnl GNOME WM Hints
 AM_CONDITIONAL(GNOME, test "x$enable_gnome" = "xyes")
+with_gnome=$enable_gnome
 
 dnl Minimal checks for programs: enough to enable checking for
 dnl optional libraries.
@@ -390,6 +391,7 @@ AC_SUBST(with_rplay)
 AC_SUBST(with_stroke)
 AC_SUBST(with_xpm)
 AC_SUBST(with_gtk)
+AC_SUBST(with_gnome)
 AC_SUBST(with_sm)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
@@ -447,14 +449,15 @@ mv config.status-t config.status
 echo "
 Configuration:
 
-  FVWM Version:                    $VERSION
+  FVWM Version:                      $VERSION
 
-  Have ReadLine support?           $with_readline
-  Have RPlay support?              $with_rplay
-  Have Stroke support?             $with_stroke
-  Have XPM support?                $with_xpm$xpm_problem
-  Have GTK support?                $with_gtk
-  Have Session Management support? $with_sm
+  Have ReadLine support?             $with_readline
+  Have RPlay support?                $with_rplay
+  Have Stroke support?               $with_stroke
+  Have XPM support?                  $with_xpm$xpm_problem
+  Have GTK support?                  $with_gtk
+  Have GNOME Window Manager support? $with_gnome
+  Have Session Management support?   $with_sm
 "
 
 case "$ac_cv_dmalloc" in

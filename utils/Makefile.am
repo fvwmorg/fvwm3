@@ -48,7 +48,7 @@ fvwmbug: fvwmbug.sh
 	@rm -f $@
 	BUILDER=$${USER-$${LOGNAME-`whoami`}} && \
 	sed -e 's,xCCx,$(CC),'  -e 's,xCFLAGSx,$(CFLAGS),' \
-	    -e 's,xprefixx,$(prefix),' -e 's,xsysconfdirx,$(sysconfdir),' \
+	    -e 's,xprefixx,$(prefix),' -e 's,xdatadirx,$(datadir),' \
 	    -e 's,xlibexecdirx,$(libexecdir),' -e "s,xBUILDERx,$$BUILDER," \
 	    fvwmbug.sh > $@
 

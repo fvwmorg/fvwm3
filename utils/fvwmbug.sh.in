@@ -65,8 +65,8 @@ else
 fi
 
 
-: ${FVWM_DATADIR=@FVWM_DATADIR@}
-: ${FVWM_MODULEDIR=@FVWM_MODULEDIR@}
+: ${FVWM_DATADIR=xdatadirx/fvwm}
+: ${FVWM_MODULEDIR=xlibexecdirx/fvwm}
 : ${FVWM_USERDIR=unset}
 
 
@@ -80,13 +80,11 @@ uname output: $UN
 Compiler: xCCx
 Compilation CFLAGS: xCFLAGSx
 prefix: xprefixx
-sysconfdir: xsysconfdirx
-libexecdir: xlibexecdirx
 
-FVWM Version: @VERSION@
-FVWM_DATADIR: $FVWM_DATADIR
-FVWM_MODULEDIR: $FVWM_MODULEDIR
-FVWM_USERDIR: $FVWM_USERDIR
+FVWM Version:	@VERSION@
+FVWM_MODULEDIR:	$FVWM_MODULEDIR
+FVWM_DATADIR:	$FVWM_DATADIR
+FVWM_USERDIR:	$FVWM_USERDIR
 
 Description:
 	[Detailed description of the problem, suggestion, or complaint.]

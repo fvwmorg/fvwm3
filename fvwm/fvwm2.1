@@ -6045,8 +6045,8 @@ is not found.
 Example:
 .EX
 AddToMenu HomeDirMenu
-PipeRead 'for i in $HOME;
-  do echo "+ $i Exec vi $i"; done'
+PipeRead 'for i in $HOME/*; \\
+  do echo "+ $i Exec xterm -e vi $i"; done'
 .EE
 
 .TP

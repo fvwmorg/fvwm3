@@ -1,3 +1,9 @@
+2000-05-04  Mikhael Goikhman  migo@homemail.com
+
+	* configure.in: added GNOME support info,
+	$with_gnome is now awailable for auto-generated stuff.
+	* fvwm/fvwm2.1: fixed PipeRead usage example
+
 2000-05-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/placement.c (PlaceWindow):
