@@ -1,3 +1,9 @@
+2001-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (PlaceWindow):
+	fixed manual placement on Xinerama screens other than the one with the
+	top left corner of the total screen
+
 2001-11-27  olicha  <olivier.chapuis@free.fr>
 
 	* configure.in:
@@ -19,12 +25,12 @@
 
 	* fvwm/Makefile.am:
 	Fixed (?) iconv_LIBS
-	
+
 2001-11-26  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/functions.c (expand):
 	Fixed n, c, r expansion
-	
+
 2001-11-25  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Clean up ewmh stuff.
@@ -81,7 +87,7 @@
 
 	* fvwm/ewmh_names.c (convert_charsets):
 	Fixed infinite loop
-	
+
 2001-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ewmh_names.c (convert_charsets):

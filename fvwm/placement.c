@@ -832,7 +832,7 @@ Bool PlaceWindow(
 	{
 	  XMapRaised(dpy, Scr.SizeWindow);
 	}
-	FScreenGetScrRect(NULL, FSCREEN_CURRENT, &mx, &my, NULL, NULL);
+	FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
 	if (moveLoop(tmp_win, mx, my, DragWidth, DragHeight,
 		     &xl, &yt, False))
 	{
