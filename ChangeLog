@@ -1,5 +1,9 @@
 2003-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/icons.c (Iconify):
+	initialise icon position to +0+0 if there is neiter a picture nor a
+	title
+
 	* fvwm/functions.c (DeferExecution):
 	action trigger fix
 

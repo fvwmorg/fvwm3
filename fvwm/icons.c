@@ -2545,15 +2545,12 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 	{
 		AutoPlaceIcon(fw, win_opts, True);
 	}
-	/* domivogt (1-Mar-2000): The next block is a hack to prevent animation
-	 * if the window has an icon, but neither a pixmap nor a title. */
+	/* domivogt (12-Mar-2003): Clean out the icon geometry if there is no
+	 * icon.  Necessary to initialise the values and to suppress animation
+	 * if there is no icon. */
 	if (HAS_NO_ICON_TITLE(fw) && FW_W_ICON_PIXMAP(fw) == None)
 	{
-		fw->icon_g.picture_w_g.width = 0;
-		fw->icon_g.picture_w_g.height = 0;
-		fw->icon_g.title_w_g.width = 0;
-		fw->icon_g.title_w_g.height = 0;
-		fw->icon_g.title_text_width = 0;
+		memset(&fw->icon_g, 0, sizeof(fw->icon_g));
 	}
 	SET_ICONIFIED(fw, 1);
 	SET_ICON_UNMAPPED(fw, 0);
