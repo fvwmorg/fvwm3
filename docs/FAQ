@@ -2325,3 +2325,6 @@ A: Under this heading we've had questions about FvwmForm being all
      # Examples:
      Launcher RXVT xterm.xpm "rxvt -bg black" "-g +0+0"
      Launcher XV   xv.xpm    "xv"   "-g +0+100"
+
+Also, GNOME and KDE have  stand-alone applications gmc and kfm,  which
+enable this functionality. These applications may be run under FVWM.
