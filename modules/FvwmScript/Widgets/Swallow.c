@@ -126,7 +126,7 @@ void CheckForHangon(struct XObj *xobj,unsigned long *body)
 {
   char *cbody;
 
-  cbody=(char*)calloc(100,sizeof(char));
+  cbody=(char*)calloc(strlen((char *)&body[3]) + 1,sizeof(char));
   sprintf(cbody,"%s",(char *)&body[3]);
   if(strcmp(cbody,xobj->title)==0)
   {

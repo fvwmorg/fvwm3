@@ -1,3 +1,8 @@
+2002-07-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmScript/Widgets/Swallow.c (CheckForHangon):
+	fixed a FvwmScript crash with Swallow widget and very long window names
+
 2002-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (SpawnSome):
