@@ -608,7 +608,8 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
       else
       {
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-	XSetWindowBackgroundPixmap(dpy,t->frame,TexturePixmap);
+	if (TexturePixmap != None)
+	  XSetWindowBackgroundPixmap(dpy,t->frame,TexturePixmap);
 #endif
         XClearWindow(dpy,t->frame);
       }

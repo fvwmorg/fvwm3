@@ -70,12 +70,17 @@ void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 /* Creates a pixmap that is a horizontally stretched version of the input
  * pixmap
  */
-Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
-			    unsigned int src_height, unsigned int src_depth,
-			    unsigned int dest_width, GC gc)
+Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, int src_width,
+			    int src_height, int src_depth,
+			    int dest_width, GC gc)
 {
   int i;
-  Pixmap pixmap = XCreatePixmap(dpy, src, dest_width, src_height, src_depth);
+  Pixmap pixmap;
+  
+  if (src_width < 0 || src_height < 0 || dest_width < 0)
+  	return None;
+  
+  pixmap = XCreatePixmap(dpy, src, dest_width, src_height, src_depth);
 
   if (pixmap)
     for (i = 0; i < dest_width; i++)
@@ -89,12 +94,17 @@ Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 /* Creates a pixmap that is a vertically stretched version of the input
  * pixmap
  */
-Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, unsigned int src_width,
-			    unsigned int src_height, unsigned int src_depth,
-			    unsigned int dest_height, GC gc)
+Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, int src_width,
+			    int src_height, int src_depth,
+			    int dest_height, GC gc)
 {
   int i;
-  Pixmap pixmap = XCreatePixmap(dpy, src, src_width, dest_height, src_depth);
+  Pixmap pixmap;
+
+  if (src_height < 0 || src_depth < 0 || dest_height < 0)
+  	return None;
+  
+  pixmap = XCreatePixmap(dpy, src, src_width, dest_height, src_depth);
 
   if (pixmap)
     for (i = 0; i < dest_height; i++)
@@ -108,13 +118,18 @@ Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 /* Creates a pixmap that is a stretched version of the input
  * pixmap
  */
-Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
-			    unsigned int src_height, unsigned int src_depth,
-			    unsigned int dest_width, unsigned int dest_height,
+Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, int src_width,
+			    int src_height, int src_depth,
+			    int dest_width, int dest_height,
 			    GC gc)
 {
   Pixmap pixmap = None;
-  Pixmap temp_pixmap = CreateStretchXPixmap(dpy, src, src_width, src_height,
+  Pixmap temp_pixmap;
+  
+  if (src_width < 0 || src_height < 0 || src_depth < 0 || dest_width < 0)
+  	return;
+
+  temp_pixmap = CreateStretchXPixmap(dpy, src, src_width, src_height,
 					    src_depth, dest_width, gc);
   if (temp_pixmap)
   {
@@ -130,13 +145,18 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 /* Creates a pixmap that is a tiled version of the input pixmap (input pixmap
  * must be depth 1).
  */
-Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, unsigned int src_width,
-			     unsigned int src_height, unsigned int dest_width,
-			     unsigned int dest_height, GC gc)
+Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, int src_width,
+			     int src_height, int dest_width,
+			     int dest_height, GC gc)
 {
   int x;
   int y;
-  Pixmap pixmap = XCreatePixmap(dpy, src, dest_width, dest_height, 1);
+  Pixmap pixmap;
+  
+  if (src_width < 0 || src_height < 0 || dest_width < 0 || dest_height < 0)
+  	return None;
+
+  pixmap = XCreatePixmap(dpy, src, dest_width, dest_height, 1);
 
   if (pixmap)
   {
@@ -536,12 +556,12 @@ Bool CalculateGradientDimensions(
  * None the gradient is drawn into it. The d_width, d_height, d_x and d_y
  * describe the traget rectangle within the drawable. */
 Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
-			      int type, unsigned g_width, unsigned g_height,
+			      int type, int g_width, int g_height,
 			      int ncolors, Pixel *pixels,
 			      Drawable in_drawable,
 			      int d_x, int d_y,
-			      unsigned int d_width,
-			      unsigned int d_height)
+			      int d_width,
+			      int d_height)
 {
   Pixmap pixmap = None;
   XImage *image;
@@ -552,6 +572,9 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
   int t_y;
   unsigned int t_width;
   unsigned int t_height;
+
+  if (g_height < 0 || g_width < 0 || d_width < 0 || d_height < 0)
+  	return None;
 
   if (in_drawable == None)
   {

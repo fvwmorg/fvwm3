@@ -1794,7 +1794,7 @@ you may omit \fIfontname\fP.
 
 
 .TP
-.B "WindowList" "[\fIposition\fP] [\fIoptions\fP] [\fIdouble-click-action\fP]"
+.B "WindowList" "[(\fIconditions\fP)] [\fIposition\fP] [\fIoptions\fP] [\fIdouble-click-action\fP]"
 Generates a pop-up menu (and pops it up) in which the title and
 geometry of each of the windows currently on the desk top are shown.
 The format of the geometry part is:
@@ -1815,6 +1815,14 @@ AddToFunc WindowListFunc
 .EE
 You can Destroy the builtin WindowListFunc and create your own if
 these defaults do not suit you.
+
+The \fIconditions\fP can be used to exclude certain windows from
+the window list.  Please refer to the \fICurrent\fP command for
+details.  Only windows that match the given conditions are displayed
+in the window list.  The \fIoptions\fP below work vice versa:
+windows that would otherwise not be included in the window list
+can be selected with them.  The \fIcontitions\fP always override
+the \fIoptions\fP.
 
 The \fIposition\fP arguments are the same as for \fIMenu\fP. The
 command \fIdouble-click-action\fP will be invoked if the user

@@ -243,8 +243,13 @@ static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
   XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
   XRestackWindows (dpy, wins, count);
 
-  /* send out (one or more) M_RESTACK packets for windows between r and s */
-  BroadcastRestack (r, s);
+  if (do_move_transients)
+    /* send out M_RESTACK for all windows, to make sure we don't forget
+     * anything. */
+    BroadcastRestack (Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+  else
+    /* send out (one or more) M_RESTACK packets for windows between r and s */
+    BroadcastRestack (r, s);
 
   free (wins);
 

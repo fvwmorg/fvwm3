@@ -115,22 +115,25 @@ void server ( char *name ) {
   int  ix,cix;
 
   if( name == NULL ) {
+    char *dpy_name;
+
     /* default name */
     home = getenv("HOME");
+    if (!home)  home = "";
     f_stem = safemalloc( strlen(home) + strlen(F_NAME) + MAXHOSTNAME + 4);
     strcpy (f_stem, home);
     if (f_stem[strlen(f_stem)-1] != '/') {
       strcat (f_stem, "/");
     }
     strcat (f_stem, F_NAME);
+
     /* Make it unique */
-    gethostname(hostname,32);
-    strcpy( client, getenv("DISPLAY") );
-    if (!client[0]  ||  ':' == client[0])
-    {
-      sprintf( client, "%s%s", hostname, client );
-    }
     strcat (f_stem, "-");
+    gethostname(hostname,32);
+    dpy_name = getenv("DISPLAY");
+    if (!dpy_name)  dpy_name = ":0";
+    if (!dpy_name[0]  ||  ':' == dpy_name[0])
+      strcat( f_stem, hostname );  /* Put hostname before dpy if not there */
     strcat (f_stem, client);
   }else{
     f_stem = name;

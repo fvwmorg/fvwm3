@@ -258,6 +258,9 @@ static void fix_manager_size (WinManager *man, int w, int h)
   XSizeHints size;
   long mask;
 
+  if (man->geometry.dir & GROW_FIXED)
+    return;
+
   XGetWMNormalHints (theDisplay, man->theWindow, &size, &mask);
   size.min_width = w;
   size.max_width = w;

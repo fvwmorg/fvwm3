@@ -40,6 +40,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "stack.h"
+#include "conditional.h"
 
 extern FvwmWindow *Tmp_win;
 extern FvwmWindow *ButtonWindow;
@@ -103,12 +104,39 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int high_layer = INT_MAX;
   int tc;
 
+  /* Condition vars. */
+  Bool use_condition = False;
+  WindowConditionMask mask;
+  char *cond_flags, *restofline;
+
+
   memset(&(mops.flags), 0, sizeof(mops.flags));
   if (action && *action)
   {
     /* parse postitioning args */
     action = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
     line = action;
+
+    /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
+    cond_flags = CreateFlagString(action, &restofline);
+    if (cond_flags)
+      {
+      /* Create window mask */
+      use_condition = True;
+      DefaultConditionMask(&mask);
+
+      /* override for Current [] */
+      mask.my_flags.use_circulate_hit = 1;
+      mask.my_flags.use_circulate_hit_icon = 1;
+
+      CreateConditionMask(cond_flags, &mask);
+      free(cond_flags);
+
+      /* Relocate action */
+      action = restofline;
+      }
+
+
     /* parse options */
     while (line && *line)
     {
@@ -129,11 +157,6 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  desk = atoi(tok);
 	  flags &= ~SHOW_ALLDESKS;
 	}
-      }
-      else if (StrEquals(tok,"CurrentDesk"))
-      {
-        desk = Scr.CurrentDesk;
-        flags &= ~SHOW_ALLDESKS;
       }
       else if (StrEquals(tok,"NotAlphabetic"))
         flags &= ~SHOW_ALPHABETIC;
@@ -281,6 +304,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       if(((t->Desk == next_desk) || (flags & NO_DESK_SORT)) &&
          (!(DO_SKIP_WINDOW_LIST(t))))
       {
+	if (use_condition && !MatchesConditionMask(t, &mask))
+	  continue; /* doesn't match specified condition */
         if (!(flags & SHOW_ICONIC) && (IS_ICONIFIED(t)))
           continue; /* don't want icons - skip */
         if (!(flags & SHOW_STICKY) && (IS_STICKY(t)))
@@ -410,4 +435,6 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		    EXPAND_COMMAND);
   if (default_action != NULL)
     free(default_action);
+  if (use_condition)
+    FreeConditionMask(&mask);
 }

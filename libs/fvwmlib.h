@@ -202,22 +202,22 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
 void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width);
 
-Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
-			    unsigned int src_height, unsigned int src_depth,
-			    unsigned int dest_width, GC gc);
+Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, int src_width,
+			    int src_height, int src_depth,
+			    int dest_width, GC gc);
 
-Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, unsigned int src_width,
-			    unsigned int src_height, unsigned int src_depth,
-			    unsigned int dest_height, GC gc);
+Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, int src_width,
+			    int src_height, int src_depth,
+			    int dest_height, GC gc);
 
-Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
-			    unsigned int src_height, unsigned int src_depth,
-			    unsigned int dest_width, unsigned int dest_height,
+Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, int src_width,
+			    int src_height, int src_depth,
+			    int dest_width, int dest_height,
 			    GC gc);
 
-Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, unsigned int src_width,
-			     unsigned int src_height, unsigned int dest_width,
-			     unsigned int dest_height, GC gc);
+Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, int src_width,
+			     int src_height, int dest_width,
+			     int dest_height, GC gc);
 
 
 /**** gradient stuff ****/
@@ -253,12 +253,12 @@ Bool CalculateGradientDimensions(Display *dpy, Drawable d, int ncolors,
 				 unsigned int *height_ret);
 
 Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
-			      int type, unsigned g_width, unsigned g_height,
+			      int type, int g_width, int g_height,
 			      int ncolors, Pixel *pixels,
 			      Drawable in_drawable,
 			      int d_x, int d_y,
-			      unsigned int d_width,
-			      unsigned int d_height);
+			      int d_width,
+			      int d_height);
 
 Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
 				      int type, char *action,

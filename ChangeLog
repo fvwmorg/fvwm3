@@ -1,3 +1,19 @@
+1999-08-26  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move_resize.c (resize_window): disabled warping when resizing,
+	except when clicking on the border.
+
+	* fvwm/fvwm2.1:
+	* fvwm/conditional.h:
+	* fvwm/conditional.c:
+	* fvwm/windowlist.c (do_windowList): applied patch by Neil Bird:
+	windowlist accepts conditional arguments like Next or Prev
+
+1999-08-25  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/borders.c (RedrawBorder): fixed border drawing with HandleWidth
+	1
+
 1999-08-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/menus.c (AddToMenu): fixed bad allocation and fvwm hang for

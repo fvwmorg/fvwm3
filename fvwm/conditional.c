@@ -53,8 +53,9 @@
  * characters.  The start of the rest of the line is put in restptr.
  * Note that the returned string is allocated here and it must be
  * freed when it is not needed anymore.
+ * NOTE - exported via .h
  **********************************************************************/
-static char *CreateFlagString(char *string, char **restptr)
+char *CreateFlagString(char *string, char **restptr)
 {
   char *retval;
   char *c;
@@ -107,8 +108,9 @@ static char *CreateFlagString(char *string, char **restptr)
 /**********************************************************************
  * The name field of the mask is allocated in CreateConditionMask.
  * It must be freed.
+ * NOTE - exported via .h
  **********************************************************************/
-static void FreeConditionMask(WindowConditionMask *mask)
+void FreeConditionMask(WindowConditionMask *mask)
 {
   if (mask->my_flags.needs_name)
     free(mask->name);
@@ -116,8 +118,10 @@ static void FreeConditionMask(WindowConditionMask *mask)
     free(mask->name - 1);
 }
 
-/* Assign the default values for the window mask */
-static void DefaultConditionMask(WindowConditionMask *mask)
+/* Assign the default values for the window mask
+ * NOTE - exported via .h
+ */
+void DefaultConditionMask(WindowConditionMask *mask)
 {
   memset(mask, 0, sizeof(WindowConditionMask));
   mask->layer = -2; /* -2  means no layer condition, -1 means current */
@@ -126,8 +130,9 @@ static void DefaultConditionMask(WindowConditionMask *mask)
 /**********************************************************************
  * Note that this function allocates the name field of the mask struct.
  * FreeConditionMask must be called for the mask when the mask is discarded.
+ * NOTE - exported via .h
  **********************************************************************/
-static void CreateConditionMask(char *flags, WindowConditionMask *mask)
+void CreateConditionMask(char *flags, WindowConditionMask *mask)
 {
   char *condition;
   char *prev_condition = NULL;
@@ -267,8 +272,9 @@ static void CreateConditionMask(char *flags, WindowConditionMask *mask)
 /**********************************************************************
  * Checks whether the given window matches the mask created with
  * CreateConditionMask.
+ * NOTE - exported via .h
  **********************************************************************/
-static Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
+Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
   Bool fMatchesName;
   Bool fMatchesIconName;

@@ -1541,10 +1541,17 @@ void resize_window(F_CMD_ARGS)
     int tx;
     int ty;
 
-    /* Now find the place to warp to. We Simply use the sectors drawn when we
+    /* Now find the place to warp to. We simply use the sectors drawn when we
      * start resizing the window. */
-    tx = orig->width / 3 - 1;
-    ty = orig->height / 3 - 1;
+#if 0
+    tx = orig->width / 10 - 1;
+    ty = orig->height / 10 - 1;
+#else
+    tx = 0;
+    ty = 0;
+#endif
+    tx = max(tmp_win->boundary_width, tx);
+    ty = max(tmp_win->boundary_width, ty);
     if (px >= 0 && dx >= 0 && py >= 0 && dy >= 0)
     {
       if (px < tx)
@@ -1568,6 +1575,7 @@ void resize_window(F_CMD_ARGS)
 	  xmotion = 1;
 	  wx = 0;
 	  wy = orig->height/2;
+	  wy = py;
 	}
       }
       else if (dx < tx)
@@ -1591,6 +1599,7 @@ void resize_window(F_CMD_ARGS)
 	  xmotion = -1;
 	  wx = orig->width - 1;
 	  wy = orig->height/2;
+	  wy = py;
 	}
       }
       else
@@ -1600,12 +1609,14 @@ void resize_window(F_CMD_ARGS)
 	  ymotion = 1;
 	  wx = orig->width/2;
 	  wy = 0;
+	  wx = px;
 	}
 	else if (dy < ty)
 	{
 	  ymotion = -1;
 	  wx = orig->width/2;
 	  wy = orig->height -1;
+	  wx = px;
 	}
       }
     }

@@ -80,6 +80,7 @@
 #define b_PosFixed   0x00080000 /* User provided button position */
 #define b_SizeSmart  0x00100000 /* Improved button box sizing */
 #define b_Colorset   0x00200000 /* use colorset instead of fore/back colours */
+#define b_ColorsetParent 0x00400000 /* Parent has a colorset background */
 
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */

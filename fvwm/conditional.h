@@ -25,4 +25,14 @@ void WindowIdFunc(F_CMD_ARGS);
 void PickFunc(F_CMD_ARGS);
 void AllFunc(F_CMD_ARGS);
 
+
+/* Condition matching routines
+ * Originally exported for WindowList - N.Bird 24/08/99
+ */
+extern char *CreateFlagString(char *string, char **restptr);
+extern void DefaultConditionMask(WindowConditionMask *mask);
+extern void CreateConditionMask(char *flags, WindowConditionMask *mask);
+extern void FreeConditionMask(WindowConditionMask *mask);
+extern Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask);
+
 #endif /* CONDITIONAL_H */

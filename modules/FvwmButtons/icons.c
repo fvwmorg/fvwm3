@@ -117,13 +117,11 @@ void CreateIconWindow(button_info *b)
   {
     /* bitmap icon */
     XGCValues gcv;
-    unsigned long gcm=0;
     Pixmap temp;
 
-    gcm = GCForeground | GCBackground;
     gcv.background=buttonBack(b);
     gcv.foreground=buttonFore(b);
-    XChangeGC(Dpy,NormalGC,gcm,&gcv);
+    XChangeGC(Dpy,NormalGC,GCForeground | GCBackground,&gcv);
 
 #ifdef SHAPE
     XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
@@ -200,13 +198,11 @@ void CreateBackIconWindow(button_info *b)
   if(b->icon->depth==0)
   {
     XGCValues gcv;
-    unsigned long gcm=0;
     Pixmap temp;
 
-    gcm = GCForeground | GCBackground;
     gcv.background=buttonBack(b);
     gcv.foreground=buttonFore(b);
-    XChangeGC(Dpy,NormalGC,gcm,&gcv);
+    XChangeGC(Dpy,NormalGC,GCForeground | GCBackground,&gcv);
 
 #ifdef SHAPE
     XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,

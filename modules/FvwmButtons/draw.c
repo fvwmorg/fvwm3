@@ -64,31 +64,30 @@
 void RelieveButton(Window wn,int width,int x,int y,int w,int h,Pixel relief,
 		   Pixel shadow,int rev)
 {
-  unsigned long gcm=0;
   XGCValues gcv;
   GC swapGC, reliefGC, shadowGC;
 
   if(!width)
     return;
 
-  gcm=GCForeground;
   gcv.foreground=relief;
-  XChangeGC(Dpy,NormalGC,gcm,&gcv);
+  XChangeGC(Dpy,NormalGC,GCForeground,&gcv);
   reliefGC=NormalGC;
 
-  gcm=GCForeground;
   gcv.foreground=shadow;
-  XChangeGC(Dpy,ShadowGC,gcm,&gcv);
+  XChangeGC(Dpy,ShadowGC,GCForeground,&gcv);
   shadowGC=ShadowGC;
 
   if(width<0)
   {
     width=-width;
-    swapGC=reliefGC;reliefGC=shadowGC;shadowGC=swapGC;
+    rev = !rev;
   }
   if(rev)
   {
-    swapGC=reliefGC;reliefGC=shadowGC;shadowGC=swapGC;
+    swapGC=reliefGC;
+    reliefGC=shadowGC;
+    shadowGC=swapGC;
   }
 
   RelieveRectangle(Dpy,wn,x,y,w-1,h-1,reliefGC,shadowGC,width);
@@ -124,6 +123,10 @@ void MakeButton(button_info *b)
   /* Check if parent container has an icon as background */
   if (b->parent->c->flags&b_IconBack || b->parent->c->flags&b_IconParent)
     b->flags|=b_IconParent;
+
+  /* Check if parent container has a colorset definition as background */
+  if (b->parent->c->flags&b_Colorset)
+    b->flags|=b_ColorsetParent;
 
   font = buttonFont(b);
 
@@ -190,7 +193,6 @@ void RedrawButton(button_info *b,int clean)
   */
 #endif
   XGCValues gcv;
-  unsigned long gcm=0;
   int rev=0;
 
   BW = buttonWidth(b);
@@ -228,9 +230,8 @@ void RedrawButton(button_info *b,int clean)
 
   if(clean && BW>2*f && BH>2*f)
   {
-    gcm = GCForeground;
     gcv.foreground=buttonBack(b);
-    XChangeGC(Dpy,NormalGC,gcm,&gcv);
+    XChangeGC(Dpy,NormalGC,GCForeground,&gcv);
 
     if(b->flags&b_Container)
     {
@@ -249,11 +250,11 @@ void RedrawButton(button_info *b,int clean)
       if(h2)
 	XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
     }
-#if 0
     else if(!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
-	    !(b->flags&b_Swallow))
+	    !(b->flags&b_Swallow) && !(b->flags&b_ColorsetParent))
+    {
       XFillRectangle(Dpy,MyWindow,NormalGC,x+f,y+f,BW-2*f,BH-2*f);
-#endif
+    }
   }
 
   /* ----------------------------------------------------------------------- */
@@ -262,10 +263,9 @@ void RedrawButton(button_info *b,int clean)
   {
     if (font)
     {
-      gcm = GCForeground | GCFont;
       gcv.foreground=buttonFore(b);
       gcv.font = font->fid;
-      XChangeGC(Dpy,NormalGC,gcm,&gcv);
+      XChangeGC(Dpy,NormalGC,GCForeground | GCFont,&gcv);
       DrawTitle(b,MyWindow,NormalGC);
     }
   }

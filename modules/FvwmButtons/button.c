@@ -386,6 +386,12 @@ button_info *alloc_button(button_info *ub,int num)
   b->h=1;
   b->bw=1;
 
+  if(b->parent != NULL)
+  {
+    if (b->parent->c->flags&b_Colorset)
+      b->flags=b_ColorsetParent;
+  }
+
   return(b);
 }
 
@@ -406,10 +412,11 @@ void MakeContainer(button_info *b)
   b->c->ypos=0;
   if(b->parent != NULL)
   {
+    b->c->flags=0;
     if (b->parent->c->flags&b_IconBack || b->parent->c->flags&b_IconParent)
       b->c->flags=b_IconParent;
-    else
-      b->c->flags=0;
+    if (b->parent->c->flags&b_Colorset)
+      b->c->flags=b_ColorsetParent;
   }
   else /* This applies to the UberButton */
   {

@@ -1,3 +1,26 @@
+1999-08-26  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/button.c (alloc_button):
+	* FvwmButtons/draw.c (RedrawButton):
+	(MakeButton): fix drawing of plain buttons without colour sets
+
+	* FvwmButtons/button.c (MakeContainer):
+
+	* FvwmIconMan/x.c (create_manager_window):
+	(create_manager_window):
+	* FvwmIconMan/xmanager.c (fix_manager_size):
+	* FvwmIconMan/x.c (create_manager_window): IconMan can be resized
+	vertically (if it is configured not to grow in any direction).
+	fixed pixmap colour set backgrounds when resizing vertically
+
+	* FvwmButtons/icons.c:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/draw.c: some very small performance enhancements
+
+	* FvwmCommand/FvwmCommand.c:
+	* FvwmCommand/FvwmCommandS.c: applied fix by Neil Bird: FvwmCommand
+	does not work if $HOME or $DISPLAY is not set
+
 1999-08-24  Hippo
 
 	* FvwmTheme/FvwmTheme.c: can specify the background color as "average"

@@ -163,7 +163,7 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
   Pixmap mask = None;
   XID junk;
 
-  if (0 ==width || 0 == height)
+  if (0 == width || 0 == height)
     XGetGeometry(dpy, win, &junk, (int *)&junk, (int *)&junk, &width, &height,
 		 (unsigned int *)&junk, (unsigned int *)&junk);
 

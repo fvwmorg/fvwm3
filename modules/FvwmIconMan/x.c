@@ -291,23 +291,46 @@ void xevent_loop (void)
       ConsoleDebug (X11, "\tborderwidth = %d\n",
 		    theEvent.xconfigure.border_width);
       ConsoleDebug (X11, "\tsendevent = %d\n", theEvent.xconfigure.send_event);
-      
-      if ( man->geometry.width != theEvent.xconfigure.width || 
+
+      if (man->geometry.dir & GROW_FIXED)
+      {
+	man->geometry.rows =
+	  theEvent.xconfigure.height / man->geometry.boxheight;
+	man->geometry.cols =
+	  (man->buttons.num_windows - 1) / man->geometry.rows + 1;
+      }
+      if ( man->geometry.width != theEvent.xconfigure.width ||
            man->geometry.height != theEvent.xconfigure.height) {
-        man->geometry.width = theEvent.xconfigure.width; 
+        man->geometry.width = theEvent.xconfigure.width;
         man->geometry.height = theEvent.xconfigure.height;
+      ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n",
+		    man->geometry.x, man->geometry.y,
+		    man->geometry.width, man->geometry.height);
         if (man->colorsets[DEFAULT] != -1) {
-          SetWindowBackground(theDisplay, man->theWindow, 
-                              man->geometry.width, man->geometry.height,
-                              &Colorset[man->colorsets[DEFAULT] % nColorsets],
-                              Pdepth, man->backContext[DEFAULT]);
+	  if (man->pixmap[DEFAULT])
+	    XFreePixmap(theDisplay, man->pixmap[DEFAULT]);
+	  if (Colorset[man->colorsets[DEFAULT] % nColorsets].pixmap) {
+	    man->pixmap[DEFAULT] =
+	      CreateBackgroundPixmap(
+		theDisplay, man->theWindow, man->geometry.width,
+		man->geometry.height,
+		&Colorset[man->colorsets[DEFAULT] % nColorsets],
+		Pdepth, man->backContext[DEFAULT], False);
+	    XSetTile(theDisplay, man->backContext[DEFAULT],
+		     man->pixmap[DEFAULT]);
+	    XSetFillStyle(theDisplay, man->backContext[DEFAULT], FillTiled);
+	  } else {
+	    man->pixmap[DEFAULT] = None;
+	    XSetFillStyle(theDisplay, man->backContext[DEFAULT], FillSolid);
+	  }
         }
-        force_manager_redraw(man);
       }
 
-#if 0
       set_manager_width (man, theEvent.xconfigure.width);
       ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
+      force_manager_redraw(man);
+
+#if 0
       draw_manager (man);
 
       /* pointer may not be in the same box as before */
@@ -752,8 +775,16 @@ void create_manager_window (int man_id)
   sizehints.base_height = sizehints.height = man->geometry.height;
   sizehints.min_width = 0;
   sizehints.max_width = globals.screenx;
-  sizehints.min_height = man->geometry.height;
-  sizehints.max_height = man->geometry.height;
+  if (man->geometry.dir & GROW_FIXED)
+  {
+    sizehints.min_height = 0;
+    sizehints.max_height = globals.screeny;
+  }
+  else
+  {
+    sizehints.min_height = man->geometry.height;
+    sizehints.max_height = man->geometry.height;
+  }
   sizehints.win_gravity = man->gravity;
   sizehints.flags |= PBaseSize | PMinSize | PMaxSize | PWinGravity;
   sizehints.x = man->geometry.x;
@@ -783,6 +814,7 @@ void create_manager_window (int man_id)
 				 man->geometry.width, man->geometry.height,
 				 0, Pdepth, InputOutput, Pvisual, winattrmask,
 				 &winattr);
+  XSetWMNormalHints(theDisplay, man->theWindow, &sizehints);
 #ifdef SHAPE
   XShapeSelectInput (theDisplay, man->theWindow, ShapeNotifyMask);
 #endif
@@ -845,10 +877,6 @@ void create_manager_window (int man_id)
       man->pixmap[i] = None;
       XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
     }
-  }
-  if (man->pixmap[DEFAULT]) {
-    /* set Background explicitlly since ConfigureNotify checks for a change in size*/
-    XSetWindowBackgroundPixmap(theDisplay, man->theWindow, man->pixmap[DEFAULT]);
   }
 
   set_window_properties (man->theWindow, man->titlename,
