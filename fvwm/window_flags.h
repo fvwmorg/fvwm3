@@ -301,6 +301,11 @@
           (fw)->flags.is_window_being_moved_opaque = !!(x)
 #define SETM_WINDOW_BEING_MOVED_OPAQUE(fw,x) \
           (fw)->flag_mask.is_window_being_moved_opaque = !!(x)
+#define IS_WINDOW_BORDER_DRAWN(fw)     ((fw)->flags.is_window_border_drawn)
+#define SET_WINDOW_BORDER_DRAWN(fw,x)  \
+          (fw)->flags.is_window_border_drawn = !!(x)
+#define SETM_WINDOW_BORDER_DRAWN(fw,x) \
+          (fw)->flag_mask.is_window_border_drawn = !!(x)
 #define IS_WINDOW_FONT_LOADED(fw)     ((fw)->flags.is_window_font_loaded)
 #define SET_WINDOW_FONT_LOADED(fw,x)  (fw)->flags.is_window_font_loaded = !!(x)
 #define SETM_WINDOW_FONT_LOADED(fw,x) \

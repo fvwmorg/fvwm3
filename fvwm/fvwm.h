@@ -292,6 +292,8 @@ typedef struct
   unsigned is_window_drawn_once : 1;
   unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/
   unsigned is_window_being_moved_opaque : 1;
+  unsigned is_window_border_drawn : 1; /* 0 at first, set to 1 after border has
+					* been drawn once */
   unsigned is_window_font_loaded : 1;
   unsigned is_window_shaded : 1;
   unsigned using_default_icon_font : 1;

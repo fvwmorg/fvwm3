@@ -1525,9 +1525,11 @@ void draw_clipped_decorations(
   {
     get_common_decorations(
       &cd, t, draw_parts, has_focus, force, expose_win, TRUE);
-    if (!rclip)
+    if (!rclip || !IS_WINDOW_BORDER_DRAWN(t))
     {
       change_window_background(t->decor_w, cd.valuemask, &cd.attributes);
+      SET_WINDOW_BORDER_DRAWN(t, 1);
+      rclip = NULL;
     }
     RedrawBorder(&cd, t, has_focus, force, expose_win, rclip);
   }
