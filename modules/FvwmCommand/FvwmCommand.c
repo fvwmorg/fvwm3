@@ -36,8 +36,6 @@ static int  Fdr, Fdw;  /* file discriptor for fifo */
 static FILE *Frun;     /* File contains pid */
 static struct stat stat_buf;
 static char *Fr_name;
-static int  Pfd;
-static char *getline();
 static fd_set fdset;
 
 static struct timeval Tv;
@@ -46,7 +44,6 @@ static int  Opt_monitor;
 static int  Opt_info;
 static int  Opt_Serv;
 static int  Opt_flags;
-static FILE *Fp;
 
 volatile sig_atomic_t  Bg;  /* FvwmCommand in background */
 

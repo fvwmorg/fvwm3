@@ -26,7 +26,6 @@ void LowerWindow(FvwmWindow *t);
 Bool HandleUnusualStackmodes(unsigned int stack_mode,
 			     FvwmWindow *r, Window rw,
 			     FvwmWindow *sib, Window sibw);
-void ResyncFvwmStackRing(void);
 void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2);
 void BroadcastRestackThisWindow(FvwmWindow *t);
 

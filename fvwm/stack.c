@@ -39,6 +39,8 @@
 
 static void RaiseOrLowerWindow(
   FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window);
+static void ResyncFvwmStackRing(void);
+static void ResyncXStackingOrder(void);
 
 /* Remove a window from the stack ring */
 void remove_window_from_stack_ring(FvwmWindow *t)
@@ -408,35 +410,37 @@ static void RaiseOrLowerWindow(
     */
     add_window_to_stack_ring_after(t, s->stack_prev);
 
-    wins = (Window*) safemalloc (count * sizeof (Window));
-
-    i = 0;
-    for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
-    {
-      if (i >= count)
-      {
-	fvwm_msg (ERR, "RaiseOrLowerWindow", "more transients than expected");
-	break;
-      }
-      wins[i++] = t2->frame;
-      if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
-      {
-	if(t2->icon_w != None)
-	  wins[i++] = t2->icon_w;
-	if(t2->icon_pixmap_w != None)
-	  wins[i++] = t2->icon_pixmap_w;
-      }
-    }
-
     if (is_new_window && IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
     {
       /* now that the new transient is properly positioned in the stack ring,
        * raise/lower it again so that its parent is raised/lowered too */
       RaiseOrLowerWindow(t, do_lower, True, False);
+      /* make sure the stacking order is correct - may be the sledge-hammer
+       * method, but the recursion ist too hard to understand. */
+      ResyncXStackingOrder();
       return;
     }
     else
     {
+      wins = (Window*) safemalloc (count * sizeof (Window));
+      i = 0;
+      for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
+      {
+	if (i >= count)
+	{
+	  fvwm_msg (ERR, "RaiseOrLowerWindow", "more transients than expected");
+	  break;
+	}
+	wins[i++] = t2->frame;
+	if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
+	{
+	  if(t2->icon_w != None)
+	    wins[i++] = t2->icon_w;
+	  if(t2->icon_pixmap_w != None)
+	    wins[i++] = t2->icon_pixmap_w;
+	}
+      }
+
       changes.sibling = s->frame;
       if (changes.sibling != None)
       {
@@ -449,8 +453,8 @@ static void RaiseOrLowerWindow(
 	flags = CWStackMode;
       }
 
-      XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
       XRestackWindows (dpy, wins, count);
+      XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
 
       /* send out (one or more) M_RESTACK packets for windows between r and s */
       BroadcastRestack (r, s);
@@ -460,7 +464,6 @@ static void RaiseOrLowerWindow(
 	 * anything. */
 	BroadcastRestack (Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
       }
-
       free (wins);
     }
   }
@@ -655,7 +658,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
     to determine exactly where they ended up in the stacking order.
     - Based on code from Matthias Clasen.
 */
-void ResyncFvwmStackRing (void)
+static void ResyncFvwmStackRing (void)
 {
   Window root, parent, *children;
   unsigned int nchildren, i;
@@ -671,47 +674,76 @@ void ResyncFvwmStackRing (void)
 
   t2 = &Scr.FvwmRoot;
   for (i = 0; i < nchildren; i++)
+  {
+    for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next)
     {
-      for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next)
+      if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
+      {
+	if (t1->icon_w == children[i] || t1->icon_pixmap_w == children[i])
 	{
-          if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
-            {
-	      if (t1->icon_w == children[i])
-	        {
-	          break;
-	        }
-              else if (t1->icon_pixmap_w == children[i])
-	        {
-	          break;
-	        }
-            }
-          else
-            {
-	      if (t1->frame == children[i])
-	        {
-	          break;
-	        }
-            }
+	  break;
 	}
-
-      if (t1 != NULL && t1 != t2)
+      }
+      else
+      {
+	if (t1->frame == children[i])
 	{
-          /*
-              Move the window to its new position, working from the bottom up
-              (that's the way XQueryTree presents the list).
-          */
-	  /* Pluck from chain. */
-	  remove_window_from_stack_ring(t1);
-	  add_window_to_stack_ring_after(t1, t2->stack_prev);
-          t2 = t1;
+	  break;
 	}
+      }
     }
+
+    if (t1 != NULL && t1 != t2)
+    {
+      /*
+       * Move the window to its new position, working from the bottom up
+       * (that's the way XQueryTree presents the list).
+       */
+      /* Pluck from chain. */
+      remove_window_from_stack_ring(t1);
+      add_window_to_stack_ring_after(t1, t2->stack_prev);
+      t2 = t1;
+    }
+  }
 
   MyXUngrabServer (dpy);
 
   XFree (children);
 }
 
+/* same as above but synchronizes the stacking order in X from the stack ring.
+ */
+static void ResyncXStackingOrder(void)
+{
+  Window *wins;
+  FvwmWindow *t;
+  int count;
+  int i;
+
+  for (count = 0, t = Scr.FvwmRoot.next; t != None; count++, t = t->next)
+    ;
+  if (count > 0)
+  {
+    wins = (Window *)safemalloc(3 * count * sizeof (Window));
+
+    for (i = 0, t = Scr.FvwmRoot.stack_next; count--; t = t->stack_next)
+    {
+      wins[i++] = t->frame;
+      if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
+      {
+	if (t->icon_w != None)
+	  wins[i++] = t->icon_w;
+	if (t->icon_pixmap_w != None)
+	  wins[i++] = t->icon_pixmap_w;
+      }
+    }
+    XRestackWindows(dpy, wins, i);
+    free(wins);
+    /* send out M_RESTACK for all windows, to make sure we don't forget
+     * anything. */
+    BroadcastRestack(Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+  }
+}
 
 
 /* send RESTACK packets for all windows between s1 and s2 */

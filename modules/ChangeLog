@@ -1,3 +1,8 @@
+2000-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmCommand/FvwmCommand.c:
+	removed unsuded symbols
+
 2000-06-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmCommand/Makefile.am:
@@ -14,7 +19,7 @@
 	* FvwmIconBox/FvwmIconBox.c:
 	Fixed modules config commands parsing problems caused by the new
 	ModuleConfig implementation.
-	
+
 2000-06-22  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* FvwmPager/x_pager.c: revert mini-window size calculation, and
@@ -26,7 +31,7 @@
 	* FvwmScript/FvwmScript.1:
 	* FvwmScript/scanner.{c,l}:
 	* FvwmScript/script.{c,h,y}:
-	Added missing GetMinValue and GetMaxValue instruction	
+	Added missing GetMinValue and GetMaxValue instruction
 
 2000-06-20  Mikhael Goikhman  <migo@homemail.com>
 
@@ -38,7 +43,7 @@
 	* FvwmPager/x_pager.c: tune the mini-window height and width
 	  calculations to be identical to their previous values. However,
 	  still guarantee that the values are consistent. (I.e. restore
-	  the off-by-one error.) 
+	  the off-by-one error.)
 
 2000-06-17  Chris Rankin  <rankinc@zipworld.com.au>
 
