@@ -1,5 +1,9 @@
 2000-10-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (ExecuteFunction):
+	* fvwm/style.c (ProcessNewStyle):
+	fixed memory leaks
+
 	* libs/Bindings.c (MatchBindingExactly):
 	(RemoveMatchingBinding):
 	fixed removal of binding broken with last patch

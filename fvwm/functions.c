@@ -846,6 +846,7 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
   const func_type *bif;
   Bool set_silent;
   Bool must_free_string = False;
+  Bool must_free_function = False;
 
   if (!action)
   {
@@ -962,6 +963,7 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
       tmp++;
     *tmp = 0;
     bif = FindBuiltinFunction(function);
+    must_free_function = True;
   }
   else
   {
@@ -1040,6 +1042,10 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
   if (must_free_string)
   {
     free(expaction);
+  }
+  if (must_free_function)
+  {
+    free(function);
   }
 
   func_depth--;

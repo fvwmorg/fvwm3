@@ -834,10 +834,14 @@ void ProcessNewStyle(F_CMD_ARGS)
   action = GetNextToken(action, &SGET_NAME(*ptmpstyle));
   /* in case there was no argument! */
   if(SGET_NAME(*ptmpstyle) == NULL)
+  {
+    free(ptmpstyle);
     return;
+  }
   if(action == NULL)
   {
     free(SGET_NAME(*ptmpstyle));
+    free(ptmpstyle);
     return;
   }
   while (isspace((unsigned char)*action))
