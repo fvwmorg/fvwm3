@@ -2487,7 +2487,7 @@ DestroyMenuStyle pixamp1
 .EE
 
 .TP
-".B "Menu \fImenu-name\fP \
+.B "Menu \fImenu-name\fP \
 [\fIposition\fP\
 ] [\fIdouble-click-action\fP\
 ]"
