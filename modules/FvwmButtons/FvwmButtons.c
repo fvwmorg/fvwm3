@@ -2171,7 +2171,8 @@ static void recursive_change_colorset(container_info *c, int colorset)
     {
       /* swallowed window */
       if ((buttonSwallowCount(b) == 3) && (b->flags & b_Swallow) &&
-	  (b->IconWin != None) && (buttonColorset(b) == colorset))
+	  (b->flags & b_Colorset) && (b->IconWin != None) &&
+          (buttonColorset(b) == colorset))
       {
 	/* re-apply colorset to window background */
 	change_swallowed_window_colorset(b, True);
