@@ -882,9 +882,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 	      XMapWindow(dpy, Tmp_win->frame);
 	      SET_MAP_PENDING(Tmp_win, 1);
 	      SetMapStateProp(Tmp_win, NormalState);
-	      if((!Scr.Focus) ||
-		 (!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
-		 (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)))
+	      if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
+		 (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
+		  Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
 		{
                   if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
                     {
@@ -993,7 +993,8 @@ void HandleMapNotify(void)
                     Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
 
   if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
-     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)))
+     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
+      Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
     {
       if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
         {
@@ -1069,6 +1070,10 @@ void HandleUnmapNotify(void)
 
   if(Scr.PreviousFocus == Tmp_win)
     Scr.PreviousFocus = NULL;
+
+  if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
+     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
+      Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
 
   focus_grabbed = (Tmp_win == Scr.Focus) &&
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||

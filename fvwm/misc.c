@@ -89,6 +89,7 @@ void Destroy(FvwmWindow *Tmp_win)
   extern FvwmWindow *ButtonWindow;
   extern FvwmWindow *colormap_win;
   extern Boolean PPosOverride;
+  Bool focus_set = False;
 
   /*
    * Warning, this is also called by HandleUnmapNotify; if it ever needs to
@@ -128,17 +129,34 @@ void Destroy(FvwmWindow *Tmp_win)
   if(ButtonWindow == Tmp_win)
     ButtonWindow = NULL;
 
-  if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
+  if (Tmp_win->transientfor != None && Tmp_win->transientfor != Scr.Root)
     {
-      if(Tmp_win->next)
+      FvwmWindow *t;
+      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+      {
+	if (t->w == Tmp_win->transientfor)
+	  break;
+      }
+      if (t)
+      {
+	HandleHardFocus(t);
+	focus_set = True;
+      }
+    }
+  if (!focus_set)
+    {
+      if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
 	{
-	  HandleHardFocus(Tmp_win->next);
+	  if(Tmp_win->next)
+	    {
+	      HandleHardFocus(Tmp_win->next);
+	    }
+	  else
+	    SetFocus(Scr.NoFocusWin, NULL,1);
 	}
-      else
+      else if(Scr.Focus == Tmp_win)
 	SetFocus(Scr.NoFocusWin, NULL,1);
     }
-  else if(Scr.Focus == Tmp_win)
-    SetFocus(Scr.NoFocusWin, NULL,1);
 
   if(Tmp_win == FocusOnNextTimeStamp)
     FocusOnNextTimeStamp = NULL;

@@ -1,5 +1,13 @@
 1999-05-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	(HandleMapNotify): only grab focus for transients when their top window
+	is focused
+
+	* fvwm/events.c (HandleMapRequestKeepRaised): another focus fix
+
+	* fvwm/misc.c (Destroy): focus returns to 'parent' of transient windows
+
 	* fvwm/menus.c (MenuInteraction):
 	(do_menu):
 	(MenuInteraction): fixed destroying in dynamicpopdownaction; fixed a
