@@ -332,7 +332,7 @@ typedef struct ScreenInfo
     Bool ClickToFocusPassesClick : 1;
     Bool ClickToFocusRaises : 1;
     Bool MouseFocusClickRaises : 1;
-    Bool StipledTitles : 1a;
+    Bool StipledTitles : 1;
     Bool WindowShadeScrolls : 1;
   } go; /* global options */
   struct
