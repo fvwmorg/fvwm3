@@ -2161,6 +2161,10 @@ FvwmWindow *AddWindow(
 		    dpy, w, &JunkRoot, &JunkX, &JunkY, &JunkWidth, &JunkHeight,
 		    &JunkBW,  &JunkDepth) == 0)
 	{
+		if (Scr.bo.DisplayNewWindowNames)
+		{
+			fvwm_msg(INFO, "AddWindow", "new window disappeared");
+		}
 		free(fw);
 		MyXUngrabServer(dpy);
 		return NULL;
@@ -2176,6 +2180,17 @@ FvwmWindow *AddWindow(
 	sflags = SGET_FLAGS_POINTER(style);
 	if (SIS_UNMANAGED(sflags))
 	{
+		if (Scr.bo.DisplayNewWindowNames)
+		{
+			fvwm_msg(
+				INFO, "AddWindow", "new window is unmanaged:\n"
+				"  name:      %s\n"
+				"  icon name: (unknown)\n"
+				"  resource:  %s\n"
+				"  class:     %s",
+				fw->name.name, fw->class.res_name,
+				fw->class.res_class);
+		}
 		free_window_names(fw, True, True);
 		free(fw);
 		MyXUngrabServer(dpy);
@@ -2205,6 +2220,18 @@ FvwmWindow *AddWindow(
 	/***** visible window name ****/
 	setup_visible_name(fw, False);
 	EWMH_SetVisibleName(fw, False);
+	if (Scr.bo.DisplayNewWindowNames)
+	{
+		fvwm_msg(
+			INFO, "AddWindow", "new window:\n"
+			"  name:      %s\n"
+			"  icon name: %s\n"
+			"  resource:  %s\n"
+			"  class:     %s",
+			fw->name.name, (fw->icon_name.name == NULL) ?
+			"(unknown)" : fw->icon_name.name, fw->class.res_name,
+			fw->class.res_class);
+	}
 
 	/****** state setup ******/
 	setup_icon_boxes(fw, &style);

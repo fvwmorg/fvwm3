@@ -3606,6 +3606,22 @@ void CMD_BugOpts(F_CMD_ARGS)
 		{
 			/* work is done in EWMH_BugOpts */
 		}
+		else if (StrEquals(opt, "DisplayNewWindowNames"))
+		{
+			switch (toggle)
+			{
+			case -1:
+				Scr.bo.DisplayNewWindowNames ^= 1;
+				break;
+			case 0:
+			case 1:
+				Scr.bo.DisplayNewWindowNames = toggle;
+				break;
+			default:
+				Scr.bo.DisplayNewWindowNames = 0;
+				break;
+			}
+		}
 		else
 		{
 			fvwm_msg(ERR, "SetBugOptions",

@@ -490,6 +490,7 @@ typedef struct ScreenInfo
 		unsigned RaiseOverUnmanaged : 1;
 		unsigned FlickeringQtDialogsWorkaround : 1;
 		unsigned EWMHIconicStateWorkaround : 1;
+		unsigned DisplayNewWindowNames : 1;
 	} bo; /* bug workaround control options */
 	struct
 	{

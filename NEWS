@@ -16,6 +16,8 @@ Changes in development release 2.5.9 (not released yet)
 
 * New binding context 'U' for unmanaged windows, similar to 'R'oot.
 
+* New option DisplayNewWindowNames to the BugOpts command.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.8 (31-Oct-2003)

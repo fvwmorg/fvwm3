@@ -1,3 +1,10 @@
+2004-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/builtins.c (CMD_BugOpts):
+	new BugOpts option DisplayNewWindowNames intended for debugging
+
 2004-02-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Bindings.c (FvwmStringToKeysym):

@@ -3539,6 +3539,15 @@ This violates
 compliance but should not cause big problems.
 By default this option is off.
 
+With the
+.I DisplayNewWindowNames
+enabled, fvwm prints the name, icon name (if available), resource
+and class of new windows to the console.  This can help in finding
+the correct strings to use in the
+.B Style
+command.
+
+
 .TP
 .BI "BusyCursor [" "Option bool" "], " ...
 This command controls the cursor during the execution of certain
