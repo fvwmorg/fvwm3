@@ -190,6 +190,8 @@ XColor *GetShadowColor(Pixel);
 XColor *GetHiliteColor(Pixel);
 Pixel GetShadow(Pixel);
 Pixel GetHilite(Pixel);
+XColor *GetForeShadowColor(Pixel background);
+Pixel GetForeShadow(Pixel background);
 
 /* This function converts the colour stored in a colorcell (pixel) into the
  * string representation of a colour.  The output is printed at the

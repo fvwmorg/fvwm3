@@ -93,6 +93,7 @@ typedef struct
 	GC shadow_gc;
 	Pixel fore_color;
 	Pixel back_color;
+	int cs;
 	Pixmap back_pixmap;
 	XSetWindowAttributes attributes;
 	unsigned long valuemask;
@@ -519,6 +520,7 @@ static void get_common_decorations(
 {
 	DecorFace *df;
 	color_quad *draw_colors;
+	int cs = -1;
 
 	df = border_get_border_style(t, has_focus);
 	if (has_focus)
@@ -534,10 +536,12 @@ static void get_common_decorations(
 		if (is_border)
 		{
 			draw_colors = &(t->border_hicolors);
+			cs = t->border_cs_hi;
 		}
 		else
 		{
 			draw_colors = &(t->hicolors);
+			cs = t->cs_hi;
 		}
 	}
 	else
@@ -559,14 +563,17 @@ static void get_common_decorations(
 		if (is_border)
 		{
 			draw_colors = &(t->border_colors);
+			cs = t->border_cs;
 		}
 		else
 		{
 			draw_colors = &(t->colors);
+			cs = t->cs;
 		}
 	}
 	cd->fore_color = draw_colors->fore;
 	cd->back_color = draw_colors->back;
+	cd->cs = cs;
 	if (do_change_gcs)
 	{
 		Globalgcv.foreground = draw_colors->hilight;
@@ -2064,6 +2071,11 @@ static void border_get_titlebar_draw_descr(
 	{
 		tdd->fstr.x = tdd->offset;
 		tdd->fstr.y = fw->title_text_offset + 1;
+	}
+	if (td->cd->cs >= 0)
+	{
+		tdd->fstr.colorset = &Colorset[td->cd->cs];
+		tdd->fstr.flags.has_colorset = 1;
 	}
 	tdd->fstr.gc = Scr.TitleGC;
 

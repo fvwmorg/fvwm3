@@ -68,12 +68,12 @@ void AllocColorset(int n)
 /*****************************************************************************
  * DumpColorset() returns a char * to the colorset contents in printable form
  *****************************************************************************/
-static char csetbuf[160];
+static char csetbuf[176];
 char *DumpColorset(int n, colorset_struct *cs)
 {
   sprintf(csetbuf,
-	  "Colorset %x %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
-	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->pixmap,
+	  "Colorset %x %lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
+	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->fgsh, cs->pixmap,
 	  cs->shape_mask, cs->width, cs->height, cs->pixmap_type,
 	  cs->shape_width, cs->shape_height, cs->shape_type);
   return csetbuf;
@@ -86,7 +86,7 @@ int LoadColorset(char *line)
 {
   colorset_struct *cs;
   unsigned int n, chars;
-  Pixel fg, bg, hilite, shadow;
+  Pixel fg, bg, hilite, shadow, fgsh;
   Pixmap pixmap;
   Pixmap shape_mask;
   unsigned int width, height, pixmap_type;
@@ -97,16 +97,19 @@ int LoadColorset(char *line)
   if (sscanf(line, "%x%n", &n, &chars) < 1)
     return -1;
   line += chars;
-  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
-	     &fg, &bg, &hilite, &shadow, &pixmap, &shape_mask, &width, &height,
-	     &pixmap_type, &shape_width, &shape_height, &shape_type) != 12)
+  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
+	     &fg, &bg, &hilite, &shadow, &fgsh, &pixmap, &shape_mask, &width,
+	     &height, &pixmap_type, &shape_width, &shape_height,
+	     &shape_type) != 13)
     return -1;
+
   AllocColorset(n);
   cs = &Colorset[n];
   cs->fg = fg;
   cs->bg = bg;
   cs->hilite = hilite;
   cs->shadow = shadow;
+  cs->fgsh = fgsh;
   cs->pixmap = pixmap;
   cs->shape_mask = shape_mask;
   cs->width = width;

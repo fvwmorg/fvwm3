@@ -48,7 +48,7 @@
 #include <X11/Xatom.h>
 
 #include "defaults.h"
-#include "libs/fvwmlib.h"
+#include "fvwmlib.h"
 #include "safemalloc.h"
 #include "Strings.h"
 #include "Parse.h"
@@ -56,6 +56,8 @@
 #include "Flocale.h"
 #include "FlocaleCharset.h"
 #include "FBidi.h"
+#include "FftInterface.h"
+#include "Colorset.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -78,6 +80,7 @@ static Bool FlocaleSeted = False;
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- local functions ----------------------------- */
+
 
 static
 XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
@@ -149,34 +152,265 @@ XChar2b *FlocaleStringToString2b(unsigned char *str, int len, int *nl)
 
 static
 void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
-				 GC gc, int x, int y, char *str, int len,
-				 Bool image)
+				 GC gc, int x, int y, Pixel fg, Pixel fgsh,
+				 Bool has_fg_pixels, FlocaleWinString *fws,
+				 int len, Bool image)
 {
+	int i;
+
 	if (flf->utf8 || flf->mb)
 	{
 		XChar2b *str2b;
 		int nl;
 
 		if (flf->utf8)
-			str2b = FlocaleUtf8ToUnicodeStr2b(str, len, &nl);
+			str2b = FlocaleUtf8ToUnicodeStr2b(fws->str, len, &nl);
 		else
-			str2b = FlocaleStringToString2b(str, len, &nl);
+			str2b = FlocaleStringToString2b(fws->str, len, &nl);
 		if (str2b != NULL)
 		{
 			if (image)
+			{
+				/* rotated drawing */
 				XDrawImageString16(dpy, d, gc, x, y, str2b, nl);
+			}
 			else
+			{
+				/* normal drawing */
+				if (flf->shadow_size > 0 && has_fg_pixels)
+				{
+					XSetForeground(dpy, gc, fgsh);
+					for(i=1; i <= flf->shadow_size; i++)
+					{
+						XDrawString16(dpy, d, gc,
+							      x+i, y+i,
+							      str2b, nl);
+					}
+					XSetForeground(dpy, gc, fg);
+				}
 				XDrawString16(dpy, d, gc, x, y, str2b, nl);
+			}
 			free(str2b);
 		}
 	}
 	else
 	{
 		if (image)
-			XDrawImageString(dpy, d, gc, x, y, str, len);
+		{
+			/* rotated drawing */
+			XDrawImageString(dpy, d, gc, x, y, fws->str, len);
+		}
 		else
-			XDrawString(dpy, d, gc, x, y, str, len);
+		{
+			if (flf->shadow_size > 0 && has_fg_pixels)
+			{
+				XSetForeground(dpy, gc, fgsh);
+				for(i=1; i <= flf->shadow_size; i++)
+				{
+					XDrawString(dpy, d, gc, x+i, y+i,
+						    fws->str, len);
+				}
+				XSetForeground(dpy, gc, fg);
+			}
+			XDrawString(dpy, d, gc, x, y, fws->str, len);
+		}
 	}
+}
+
+static
+void FlocaleRotateDrawString(
+	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, Pixel fg,
+	Pixel fgsh, Bool has_fg_pixels, int len)
+{
+	static GC my_gc, font_gc;
+	int j, i, xpfg, ypfg, xpsh, ypsh, xpsh_sign, ypsh_sign;
+	unsigned char *normal_data, *rotated_data;
+	unsigned int normal_w, normal_h, normal_len;
+	unsigned int rotated_w, rotated_h, rotated_len;
+	char val;
+	int width, height;
+	XImage *image, *rotated_image;
+	Pixmap canvas_pix, rotated_pix;
+
+	if (fws->str == NULL || len < 1)
+		return;
+	if (fws->flags.text_rotation == TEXT_ROTATED_0)
+		return; /* should not happen */
+
+	my_gc = fvwmlib_XCreateGC(dpy, fws->win, 0, NULL);
+	XCopyGC(dpy, fws->gc, GCForeground|GCBackground, my_gc);
+
+	/* width and height */
+	width = FlocaleTextWidth(flf, fws->str, len) - flf->shadow_size;
+	height = flf->height - flf->shadow_size;
+
+	if (width < 1) width = 1;
+	if (height < 1) height = 1;
+
+	/* glyph width and height of the normal text */
+	normal_w = width;
+	normal_h = height;
+
+	/* width in bytes */
+	normal_len = (normal_w - 1) / 8 + 1;
+
+	/* create and clear the canvas */
+	canvas_pix = XCreatePixmap(dpy, fws->win, width, height, 1);
+	font_gc = fvwmlib_XCreateGC(dpy, canvas_pix, 0, NULL);
+	XSetBackground(dpy, font_gc, 0);
+	XSetForeground(dpy, font_gc, 0);
+	XFillRectangle(dpy, canvas_pix, font_gc, 0, 0, width, height);
+
+	/* draw the character center top right on canvas */
+	XSetForeground(dpy, font_gc, 1);
+	if (flf->font != NULL)
+	{
+		XSetFont(dpy, font_gc, flf->font->fid);
+		FlocaleFontStructDrawString(dpy, flf, canvas_pix, font_gc, 0,
+					    flf->height - flf->descent,
+					    fg, fgsh, has_fg_pixels,
+					    fws, len, True);
+	}
+	else if (FlocaleMultibyteSupport && flf->fontset != None)
+	{
+		XmbDrawString(
+			dpy, canvas_pix, flf->fontset, font_gc, 0,
+			flf->height - flf->descent, fws->str, len);
+	}
+
+	/* reserve memory for the first XImage */
+	normal_data = (unsigned char *)safemalloc(normal_len * normal_h);
+
+	/* create depth 1 XImage */
+	if ((image = XCreateImage(dpy, Pvisual, 1, XYBitmap,
+		0, (char *)normal_data, normal_w, normal_h, 8, 0)) == NULL)
+	{
+		return;
+	}
+	image->byte_order = image->bitmap_bit_order = MSBFirst;
+
+	/* extract character from canvas */
+	XGetSubImage(
+		dpy, canvas_pix, 0, 0, normal_w, normal_h,
+		1, XYPixmap, image, 0, 0);
+	image->format = XYBitmap;
+
+	/* width, height of the rotated text */
+	if (fws->flags.text_rotation == TEXT_ROTATED_180)
+	{
+		rotated_w = normal_w;
+		rotated_h = normal_h;
+	}
+	else /* vertical text */
+	{
+		rotated_w = normal_h;
+		rotated_h = normal_w;
+	}
+
+	/* width in bytes */
+	rotated_len = (rotated_w - 1) / 8 + 1;
+
+	/* reserve memory for the rotated image */
+	rotated_data = (unsigned char *)safecalloc(rotated_h * rotated_len, 1);
+
+	/* create the rotated X image */
+	if ((rotated_image = XCreateImage(
+		dpy, Pvisual, 1, XYBitmap, 0, (char *)rotated_data,
+		rotated_w, rotated_h, 8, 0)) == NULL)
+	{
+		return;
+	}
+
+	rotated_image->byte_order = rotated_image->bitmap_bit_order = MSBFirst;
+
+	/* map normal text data to rotated text data */
+	for (j = 0; j < rotated_h; j++)
+	{
+		for (i = 0; i < rotated_w; i++)
+		{
+			/* map bits ... */
+			if (fws->flags.text_rotation == TEXT_ROTATED_270)
+				val = normal_data[
+					i * normal_len +
+					(normal_w - j - 1) / 8
+				] & (128 >> ((normal_w - j - 1) % 8));
+
+			else if (fws->flags.text_rotation == TEXT_ROTATED_180)
+				val = normal_data[
+					(normal_h - j - 1) * normal_len +
+					(normal_w - i - 1) / 8
+				] & (128 >> ((normal_w - i - 1) % 8));
+
+			else /* TEXT_ROTATED_90 */
+				val = normal_data[
+					(normal_h - i - 1) * normal_len +
+					j / 8
+				] & (128 >> (j % 8));
+
+			if (val)
+				rotated_data[j * rotated_len + i / 8] |=
+					(128 >> (i % 8));
+		}
+	}
+
+	/* create the character's bitmap  and put the image on it */
+	rotated_pix = XCreatePixmap(dpy, fws->win, rotated_w, rotated_h, 1);
+	XPutImage(
+		dpy, rotated_pix, font_gc, rotated_image, 0, 0, 0, 0,
+		rotated_w, rotated_h);
+
+	/* free the image and data  */
+	XDestroyImage(image);
+	XDestroyImage(rotated_image);
+
+	/* free pixmap and GC */
+	XFreePixmap(dpy, canvas_pix);
+	XFreeGC(dpy, font_gc);
+
+	/* suitable offset: FIXME the "1" should be fws->x but ... */
+	if (fws->flags.text_rotation == TEXT_ROTATED_270) /* CCW */
+	{
+		xpfg = 1;
+		ypfg = fws->y + flf->shadow_size;
+		xpsh_sign = 1;
+		ypsh_sign = -1;
+	}
+	else if (fws->flags.text_rotation == TEXT_ROTATED_180)
+	{
+		xpfg = 1 + flf->shadow_size;
+		ypfg = fws->y + flf->shadow_size;
+		xpsh_sign = -1;
+		ypsh_sign = -1;
+	}
+	else /* fws->flags.text_rotation == TEXT_ROTATED_90 (CW) */
+	{
+		xpfg = 1 + flf->shadow_size;
+		ypfg = fws->y;
+		xpsh_sign = -1;
+		ypsh_sign = 1;
+	}
+
+	/* write the image on the window */
+	XSetFillStyle(dpy, my_gc, FillStippled);
+	XSetStipple(dpy, my_gc, rotated_pix);
+	if (flf->shadow_size > 0 && has_fg_pixels)
+	{
+		XSetForeground(dpy, my_gc, fgsh);
+		for(i = 1; i <= flf->shadow_size; i++)
+		{
+			xpsh = xpfg + (xpsh_sign*i);
+			ypsh = ypfg + (ypsh_sign*i);
+			XSetTSOrigin(dpy, my_gc, xpsh, ypsh);
+			XFillRectangle(dpy, fws->win, my_gc, xpsh, ypsh,
+				       rotated_w, rotated_h);
+		}
+		XSetForeground(dpy, my_gc, fg);
+	}
+	XSetTSOrigin(dpy, my_gc, xpfg, ypfg);
+	XFillRectangle(dpy, fws->win, my_gc, xpfg, ypfg, rotated_w, rotated_h);
+
+	XFreePixmap(dpy, rotated_pix);
+	XFreeGC(dpy, my_gc);
 }
 
 static
@@ -381,181 +615,6 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 }
 
 static
-void FlocaleRotateDrawString(
-	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int len)
-{
-	static GC my_gc, font_gc;
-	int j, i, xp, yp;
-	unsigned char *normal_data, *rotated_data;
-	unsigned int normal_w, normal_h, normal_len;
-	unsigned int rotated_w, rotated_h, rotated_len;
-	char val;
-	int width, height;
-	XImage *image, *rotated_image;
-	Pixmap canvas_pix, rotated_pix;
-
-	if (fws->str == NULL || len < 1)
-		return;
-	if (fws->flags.text_rotation == TEXT_ROTATED_0)
-		return; /* should not happen */
-
-	my_gc = fvwmlib_XCreateGC(dpy, fws->win, 0, NULL);
-	XCopyGC(dpy, fws->gc, GCForeground|GCBackground, my_gc);
-
-	/* width and height */
-	width = FlocaleTextWidth(flf, fws->str, len);
-	height = flf->height;
-
-	if (width < 1) width = 1;
-	if (height < 1) height = 1;
-
-	/* glyph width and height of the normal text */
-	normal_w = width;
-	normal_h = height;
-
-	/* width in bytes */
-	normal_len = (normal_w - 1) / 8 + 1;
-
-	/* create and clear the canvas */
-	canvas_pix = XCreatePixmap(dpy, fws->win, width, height, 1);
-	font_gc = fvwmlib_XCreateGC(dpy, canvas_pix, 0, NULL);
-	XSetBackground(dpy, font_gc, 0);
-	XSetForeground(dpy, font_gc, 0);
-	XFillRectangle(dpy, canvas_pix, font_gc, 0, 0, width, height);
-
-	/* draw the character center top right on canvas */
-	XSetForeground(dpy, font_gc, 1);
-	if (flf->font != NULL)
-	{
-		XSetFont(dpy, font_gc, flf->font->fid);
-		FlocaleFontStructDrawString(dpy, flf, canvas_pix, font_gc, 0,
-					    flf->height - flf->descent,
-					    fws->str, len, True);
-	}
-	else if (FlocaleMultibyteSupport && flf->fontset != None)
-	{
-		XmbDrawString(
-			dpy, canvas_pix, flf->fontset, font_gc, 0,
-			flf->height - flf->descent, fws->str, len);
-	}
-
-	/* reserve memory for the first XImage */
-	normal_data = (unsigned char *)safemalloc(normal_len * normal_h);
-
-	/* create depth 1 XImage */
-	if ((image = XCreateImage(dpy, Pvisual, 1, XYBitmap,
-		0, (char *)normal_data, normal_w, normal_h, 8, 0)) == NULL)
-	{
-		return;
-	}
-	image->byte_order = image->bitmap_bit_order = MSBFirst;
-
-	/* extract character from canvas */
-	XGetSubImage(
-		dpy, canvas_pix, 0, 0, normal_w, normal_h,
-		1, XYPixmap, image, 0, 0);
-	image->format = XYBitmap;
-
-	/* width, height of the rotated text */
-	if (fws->flags.text_rotation == TEXT_ROTATED_180)
-	{
-		rotated_w = normal_w;
-		rotated_h = normal_h;
-	}
-	else /* vertical text */
-	{
-		rotated_w = normal_h;
-		rotated_h = normal_w;
-	}
-
-	/* width in bytes */
-	rotated_len = (rotated_w - 1) / 8 + 1;
-
-	/* reserve memory for the rotated image */
-	rotated_data = (unsigned char *)safecalloc(rotated_h * rotated_len, 1);
-
-	/* create the rotated X image */
-	if ((rotated_image = XCreateImage(
-		dpy, Pvisual, 1, XYBitmap, 0, (char *)rotated_data,
-		rotated_w, rotated_h, 8, 0)) == NULL)
-	{
-		return;
-	}
-
-	rotated_image->byte_order = rotated_image->bitmap_bit_order = MSBFirst;
-
-	/* map normal text data to rotated text data */
-	for (j = 0; j < rotated_h; j++)
-	{
-		for (i = 0; i < rotated_w; i++)
-		{
-			/* map bits ... */
-			if (fws->flags.text_rotation == TEXT_ROTATED_270)
-				val = normal_data[
-					i * normal_len +
-					(normal_w - j - 1) / 8
-				] & (128 >> ((normal_w - j - 1) % 8));
-
-			else if (fws->flags.text_rotation == TEXT_ROTATED_180)
-				val = normal_data[
-					(normal_h - j - 1) * normal_len +
-					(normal_w - i - 1) / 8
-				] & (128 >> ((normal_w - i - 1) % 8));
-
-			else /* TEXT_ROTATED_90 */
-				val = normal_data[
-					(normal_h - i - 1) * normal_len +
-					j / 8
-				] & (128 >> (j % 8));
-
-			if (val)
-				rotated_data[j * rotated_len + i / 8] |=
-					(128 >> (i % 8));
-		}
-	}
-
-	/* create the character's bitmap  and put the image on it */
-	rotated_pix = XCreatePixmap(dpy, fws->win, rotated_w, rotated_h, 1);
-	XPutImage(
-		dpy, rotated_pix, font_gc, rotated_image, 0, 0, 0, 0,
-		rotated_w, rotated_h);
-
-	/* free the image and data  */
-	XDestroyImage(image);
-	XDestroyImage(rotated_image);
-
-	/* free pixmap and GC */
-	XFreePixmap(dpy, canvas_pix);
-	XFreeGC(dpy, font_gc);
-
-	/* suitable offset: FIXME */
-	if (fws->flags.text_rotation == TEXT_ROTATED_270)
-	{
-		xp = 1;
-		yp = fws->y;
-	}
-	else if (fws->flags.text_rotation == TEXT_ROTATED_180)
-	{
-		xp = fws->x;
-		yp = fws->y;
-	}
-	else /* fws->flags.text_rotation == TEXT_ROTATED_90 */
-	{
-		xp = 1;
-		yp = fws->y;
-	}
-
-	/* write the image on the window */
-	XSetFillStyle(dpy, my_gc, FillStippled);
-	XSetStipple(dpy, my_gc, rotated_pix);
-	XSetTSOrigin(dpy, my_gc, xp, yp);
-	XFillRectangle(dpy, fws->win, my_gc, xp, yp, rotated_w, rotated_h);
-
-	XFreePixmap(dpy, rotated_pix);
-	XFreeGC(dpy, my_gc);
-}
-
-static
 void FlocaleSetlocaleForX(
 	int category, const char *locale, const char *module)
 {
@@ -627,6 +686,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	Bool ask_default = False;
 	char *t;
 	char *str,*fn = NULL;
+	int shadow_size = 0;
 
 	/* removing quoting for modules */
 	if (fontname && (t = strchr("\"'`", *fontname)))
@@ -664,11 +724,42 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	}
 
 	/* not cached load the font as a ";" separated list */
-	str = GetQuotedString(fontname, &fn, ";", NULL, NULL, NULL);
+
+	/* first see if we have a shadow relief */
+	if (strlen(fontname) > 12 &&
+	    strncasecmp("shadowsize=", fontname, 11) == 0)
+	{
+		str = GetQuotedString(fontname+11, &fn, ":", NULL, NULL, NULL);
+		if (!(fn && *fn) ||
+		    !GetIntegerArguments(fn, NULL,&shadow_size, 1))
+		{
+			shadow_size = 0;
+			fprintf(stderr,"[%s][FlocaleGetFont]: WARNING -- bad "
+				"shadow size description in font:\n\t'%s'\n",
+				(module)? module: "FVWM", fontname);
+		}
+		if (fn && *fn)
+		{
+			str = GetQuotedString(str, &fn, ";", NULL, NULL, NULL);
+		}
+		if (!fn || !*fn)
+		{
+			fn = (FlocaleMultibyteSupport) ?
+				FLOCALE_MB_FALLBACK_FONT : FLOCALE_FALLBACK_FONT;
+		}
+		fprintf(stderr,"SHADOW: %i, fn: '%s', rest: '%s'\n",
+			shadow_size, fn, str);
+	}
+	else
+	{
+		str = GetQuotedString(fontname, &fn, ";", NULL, NULL, NULL);
+	}
+
 	while (!flf && (fn && *fn))
 	{
 		flf = FlocaleGetFontOrFontSet(dpy, fn, fontname, module);
-		if (fn != NULL)
+		if (fn != NULL && fn != FLOCALE_MB_FALLBACK_FONT &&
+		    fn != FLOCALE_FALLBACK_FONT)
 		{
 			free(fn);
 			fn = NULL;
@@ -678,7 +769,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			str = GetQuotedString(str, &fn, ";", NULL, NULL, NULL);
 		}
 	}
-	if (fn != NULL)
+	if (fn != NULL && fn != FLOCALE_MB_FALLBACK_FONT &&
+	    fn != FLOCALE_FALLBACK_FONT)
 	{
 		free(fn);
 	}
@@ -749,13 +841,18 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	
 	if (flf != NULL)
 	{
+		flf->shadow_size = shadow_size;
+		flf->height += shadow_size;
+		/* add the shadow to ascent or descent ? */
+		flf->descent += shadow_size;
+		flf->max_char_width += shadow_size;
 		if (flf->fc == FlocaleCharsetGetUnknownCharset())
 		{
 			fprintf(stderr,"[%s][FlocaleLoadFont]: "
 				"WARNING -- Unkown charset for font\n\t'%s'\n",
 				(module)? module: "FVWM", flf->name);
 		}
-			flf->next = FlocaleFontList;
+		flf->next = FlocaleFontList;
 		FlocaleFontList = flf;
 	}
 
@@ -845,88 +942,98 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
  * Width and Drawing Text
  * ***************************************************************************/
 void FlocaleDrawString(
-	Display *dpy, FlocaleFont *flf, FlocaleWinString *fstring,
+	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws,
 	unsigned long flags)
 {
-	int len;
+	int len, i;
 	char *str1 = NULL;  /* if Bidi used: original string */
 	char *str2 = NULL;  /* if Bidi used: converted string */
 	Bool is_rtl;
 	const char *bidi_charset;
+	Pixel fg = 0, fgsh = 0;
+	Bool has_fg_pixels = False;
 
 	is_rtl = False;
-	if (!fstring || !fstring->str)
+	if (!fws || !fws->str)
 	{
 		return;
 	}
 
 	if (flags & FWS_HAVE_LENGTH)
 	{
-		len = fstring->len;
+		len = fws->len;
 	}
 	else
 	{
-		len = strlen(fstring->str);
+		len = strlen(fws->str);
 	}
 
 	/* check whether we should apply Bidi filter to text */
 	bidi_charset = FlocaleGetBidiCharset(dpy, flf);
 	if (bidi_charset)
 	{
-		str2 = FBidiConvert(fstring->str, bidi_charset, &is_rtl);
+		str2 = FBidiConvert(fws->str, bidi_charset, &is_rtl);
 	}
 	if (str2)
 	{
-		str1 = fstring->str;
-		fstring->str = str2;
+		str1 = fws->str;
+		fws->str = str2;
 	}
 
-	if (fstring->flags.text_rotation != TEXT_ROTATED_0 &&
+	/* get the pixels */
+	if (fws->flags.has_colorset)
+	{
+		fg = fws->colorset->fg;
+		fgsh = fws->colorset->fgsh;
+		has_fg_pixels = True;
+	}
+	else if (fws->flags.has_fore_colors)
+	{
+		fg = fws->fg;
+		fgsh = fws->fgsh;
+		has_fg_pixels = True;
+	}
+	fprintf(stderr,"PIXEL %lx,%lx,%i,%i\n", fg,fgsh, has_fg_pixels,
+		fws->flags.has_colorset);
+	if (fws->flags.text_rotation != TEXT_ROTATED_0 &&
 	    flf->fftf.fftfont == NULL)
 	{
-		FlocaleRotateDrawString(dpy, flf, fstring, len);
+		FlocaleRotateDrawString(
+			    dpy, flf, fws, fg, fgsh, has_fg_pixels, len);
 	}
 	else if (FftSupport && flf->fftf.fftfont != NULL)
 	{
-		int x, y;
-		switch(fstring->flags.text_rotation)
-		{
-		case TEXT_ROTATED_270:
-			y = fstring->y +
-				FftTextWidth(&flf->fftf, fstring->str, len);
-			x = fstring->x;
-			break;
-		case TEXT_ROTATED_180:
-			y = fstring->y;
-			x = fstring->x +
-				FftTextWidth(&flf->fftf, fstring->str, len);
-			break;
-		case TEXT_ROTATED_90:
-		default:
-			y = fstring->y;
-			x = fstring->x;
-			break;
-		}
 		FftDrawString(
-			dpy, fstring->win, &flf->fftf, fstring->gc, x, y,
-			fstring->str, len, fstring->flags.text_rotation);
+			    dpy, flf, fws, fg, fgsh, has_fg_pixels, len, flags);
 	}
 	else if (FlocaleMultibyteSupport && flf->fontset != None)
 	{
+		if (flf->shadow_size > 0 && has_fg_pixels)
+		{
+			    XSetForeground(dpy, fws->gc, fgsh);
+			    for(i=1; i <= flf->shadow_size; i++)
+			    {
+				    XmbDrawString(
+					  dpy, fws->win, flf->fontset, fws->gc,
+					  fws->x + i, fws->y + i, fws->str, len);
+			    }
+			    XSetForeground(dpy, fws->gc, fg);
+		}
 		XmbDrawString(
-			dpy, fstring->win, flf->fontset, fstring->gc,
-			fstring->x, fstring->y, fstring->str, len);
+			dpy, fws->win, flf->fontset, fws->gc,
+			fws->x, fws->y, fws->str, len);
 	}
 	else if (flf->font != None)
 	{
-		FlocaleFontStructDrawString(dpy, flf, fstring->win, fstring->gc,
-					    fstring->x, fstring->y,
-					    fstring->str, len, False);
+		FlocaleFontStructDrawString(dpy, flf, fws->win, fws->gc,
+					    fws->x, fws->y,
+					    fg, fgsh, has_fg_pixels,
+					    fws, len, False);
 	}
 
 	if (str2)
 	{
-		fstring->str = str1;
+		fws->str = str1;
 		free(str2);
 	}
 
@@ -935,6 +1042,8 @@ void FlocaleDrawString(
 
 int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 {
+	int result = 0;
+
 	if (!str || sl == 0)
 		return 0;
 
@@ -945,18 +1054,18 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	}
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{
-		return FftTextWidth(&flf->fftf, str, sl);
+		result = FftTextWidth(&flf->fftf, str, sl);
 	}
-	if (FlocaleMultibyteSupport && flf->fontset != None)
+	else if (FlocaleMultibyteSupport && flf->fontset != None)
 	{
-		return XmbTextEscapement(flf->fontset, str, sl);
+		result = XmbTextEscapement(flf->fontset, str, sl);
 	}
-	if (flf->font != None)
+	else if (flf->font != None)
 	{
 		if (flf->utf8 || flf->mb)
 		{
 			XChar2b *str2b;
-			int nl, l = 0;
+			int nl;
 
 			if (flf->utf8)
 				str2b = FlocaleUtf8ToUnicodeStr2b(str, sl, &nl);
@@ -964,18 +1073,17 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 				str2b = FlocaleStringToString2b(str, sl, &nl);
 			if (str2b != NULL)
 			{
-				l = XTextWidth16(flf->font, str2b, nl);
+				result = XTextWidth16(flf->font, str2b, nl);
 				free(str2b);
 			}
-			return l;
 		}
 		else
 		{
-			return XTextWidth(flf->font, str, sl);
+			result = XTextWidth(flf->font, str, sl);
 		}
 	}
 
-	return 0;
+	return result + flf->shadow_size;
 }
 
 void FlocaleAllocateWinString(FlocaleWinString **pfws)

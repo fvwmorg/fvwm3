@@ -39,7 +39,8 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libs $(xpm_CFLAGS) $(stroke_CFLAGS) \
 AM_CFLAGS = \
 	-DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\" \
 	-DFVWM_DATADIR=\"$(FVWM_DATADIR)\" \
-	-DFVWM_CONFDIR=\"$(FVWM_CONFDIR)\"
+	-DFVWM_CONFDIR=\"$(FVWM_CONFDIR)\" \
+	-DFVWM_COLORSET_PRIVATE=1
 
 ## Create compatibility symlinks if available
 

@@ -3483,88 +3483,104 @@ void update_style_colorset(int colorset)
 /* Update fore and back colours for a specific window */
 void update_window_color_style(FvwmWindow *fw, window_style *pstyle)
 {
-  int cs = Scr.DefaultColorset;
+	int cs = Scr.DefaultColorset;
 
-  if (SUSE_COLORSET(&pstyle->flags))
-  {
-    cs = SGET_COLORSET(*pstyle);
-  }
-  if(SGET_FORE_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
-  {
-    fw->colors.fore = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
-  }
-  else
-  {
-    fw->colors.fore = Colorset[cs].fg;
-  }
-  if(SGET_BACK_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
-  {
-    fw->colors.back = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
-    fw->colors.shadow = GetShadow(fw->colors.back);
-    fw->colors.hilight = GetHilite(fw->colors.back);
-  }
-  else
-  {
-    fw->colors.hilight = Colorset[cs].hilite;
-    fw->colors.shadow = Colorset[cs].shadow;
-    fw->colors.back = Colorset[cs].bg;
-  }
-  if (SUSE_BORDER_COLORSET(&pstyle->flags))
-  {
-    cs = SGET_BORDER_COLORSET(*pstyle);
-    fw->border_colors.hilight = Colorset[cs].hilite;
-    fw->border_colors.shadow = Colorset[cs].shadow;
-    fw->border_colors.back = Colorset[cs].bg;
-  }
-  else
-  {
-    fw->border_colors.hilight = fw->colors.hilight;
-    fw->border_colors.shadow = fw->colors.shadow;
-    fw->border_colors.back = fw->colors.back;
-  }
+	if (SUSE_COLORSET(&pstyle->flags))
+	{
+		cs = SGET_COLORSET(*pstyle);
+		fw->cs = cs;
+	}
+	else
+	{
+		fw->cs = -1;
+	}
+	if(SGET_FORE_COLOR_NAME(*pstyle) != NULL &&
+	   !SUSE_COLORSET(&pstyle->flags))
+	{
+		fw->colors.fore = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
+	}
+	else
+	{
+		fw->colors.fore = Colorset[cs].fg;
+	}
+	if(SGET_BACK_COLOR_NAME(*pstyle) != NULL &&
+	   !SUSE_COLORSET(&pstyle->flags))
+	{
+		fw->colors.back = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
+		fw->colors.shadow = GetShadow(fw->colors.back);
+		fw->colors.hilight = GetHilite(fw->colors.back);
+	}
+	else
+	{
+		fw->colors.hilight = Colorset[cs].hilite;
+		fw->colors.shadow = Colorset[cs].shadow;
+		fw->colors.back = Colorset[cs].bg;
+	}
+	if (SUSE_BORDER_COLORSET(&pstyle->flags))
+	{
+		cs = SGET_BORDER_COLORSET(*pstyle);
+		fw->border_cs = cs;
+		fw->border_colors.hilight = Colorset[cs].hilite;
+		fw->border_colors.shadow = Colorset[cs].shadow;
+		fw->border_colors.back = Colorset[cs].bg;
+	}
+	else
+	{
+		fw->border_cs = -1;
+		fw->border_colors.hilight = fw->colors.hilight;
+		fw->border_colors.shadow = fw->colors.shadow;
+		fw->border_colors.back = fw->colors.back;
+	}
 }
 
 void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 {
-  int cs = Scr.DefaultColorset;
+	int cs = Scr.DefaultColorset;
 
-  if (SUSE_COLORSET_HI(&pstyle->flags))
-  {
-    cs = SGET_COLORSET_HI(*pstyle);
-  }
-  if(SGET_FORE_COLOR_NAME_HI(*pstyle) != NULL &&
-     !SUSE_COLORSET_HI(&pstyle->flags))
-  {
-    fw->hicolors.fore = GetColor(SGET_FORE_COLOR_NAME_HI(*pstyle));
-  }
-  else
-  {
-    fw->hicolors.fore = Colorset[cs].fg;
-  }
-  if(SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL &&
-     !SUSE_COLORSET_HI(&pstyle->flags))
-  {
-    fw->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
-    fw->hicolors.shadow = GetShadow(fw->hicolors.back);
-    fw->hicolors.hilight = GetHilite(fw->hicolors.back);
-  }
-  else
-  {
-    fw->hicolors.hilight = Colorset[cs].hilite;
-    fw->hicolors.shadow = Colorset[cs].shadow;
-    fw->hicolors.back = Colorset[cs].bg;
-  }
-  if (SUSE_BORDER_COLORSET_HI(&pstyle->flags))
-  {
-    cs = SGET_BORDER_COLORSET_HI(*pstyle);
-    fw->border_hicolors.hilight = Colorset[cs].hilite;
-    fw->border_hicolors.shadow = Colorset[cs].shadow;
-    fw->border_hicolors.back = Colorset[cs].bg;
-  }
-  else
-  {
-    fw->border_hicolors.hilight = fw->hicolors.hilight;
-    fw->border_hicolors.shadow = fw->hicolors.shadow;
-    fw->border_hicolors.back = fw->hicolors.back;
-  }
+	if (SUSE_COLORSET_HI(&pstyle->flags))
+	{
+		cs = SGET_COLORSET_HI(*pstyle);
+		fw->cs_hi = cs;
+	}
+	else
+	{
+		fw->cs_hi = -1;
+	}
+	if(SGET_FORE_COLOR_NAME_HI(*pstyle) != NULL &&
+	   !SUSE_COLORSET_HI(&pstyle->flags))
+	{
+		fw->hicolors.fore = GetColor(SGET_FORE_COLOR_NAME_HI(*pstyle));
+	}
+	else
+	{
+		fw->hicolors.fore = Colorset[cs].fg;
+	}
+	if(SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL &&
+	   !SUSE_COLORSET_HI(&pstyle->flags))
+	{
+		fw->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
+		fw->hicolors.shadow = GetShadow(fw->hicolors.back);
+		fw->hicolors.hilight = GetHilite(fw->hicolors.back);
+	}
+	else
+	{
+		fw->hicolors.hilight = Colorset[cs].hilite;
+		fw->hicolors.shadow = Colorset[cs].shadow;
+		fw->hicolors.back = Colorset[cs].bg;
+	}
+	if (SUSE_BORDER_COLORSET_HI(&pstyle->flags))
+	{
+		cs = SGET_BORDER_COLORSET_HI(*pstyle);
+		fw->border_cs_hi = cs;
+		fw->border_hicolors.hilight = Colorset[cs].hilite;
+		fw->border_hicolors.shadow = Colorset[cs].shadow;
+		fw->border_hicolors.back = Colorset[cs].bg;
+	}
+	else
+	{
+		fw->border_cs_hi = -1;
+		fw->border_hicolors.hilight = fw->hicolors.hilight;
+		fw->border_hicolors.shadow = fw->hicolors.shadow;
+		fw->border_hicolors.back = fw->hicolors.back;
+	}
 }

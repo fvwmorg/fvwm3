@@ -165,16 +165,6 @@ typedef struct
 
 /* ---------------------------- interface functions ------------------------- */
 
-void FftGetFontHeights(
-	FftFontType *fftf, int *height, int *ascent, int *descent);
-void FftGetFontWidths(
-	FftFontType *fftf, int *max_char_width);
-FftFontType *FftGetFont(Display *dpy, char *fontname);
-void FftDrawString(
-	Display *dpy, Window win, FftFontType *fftf, GC gc, int x,
-	int y, char *str, int len, int is_vertical_string);
-int FftTextWidth(FftFontType *fftf, char *str, int len);
-
 /* ---------------------------- global definitions -------------------------- */
 
 #if FftSupport

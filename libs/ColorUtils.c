@@ -288,6 +288,22 @@ Pixel GetHilite(Pixel background)
   return colorp->pixel;
 }
 
+/* FIXME: As GetShadow{Color} at the prsent time */
+XColor *GetForeShadowColor(Pixel background)
+{
+  return GetShadowOrHiliteColor(
+    background, PCT_LIGHT_BOTTOM, PCT_DARK_BOTTOM, DARKNESS_FACTOR);
+}
+
+Pixel GetForeShadow(Pixel background)
+{
+  XColor *colorp;
+
+  colorp = GetShadowColor(background);
+  XAllocColor (Pdpy, Pcmap, colorp);
+  return colorp->pixel;
+}
+
 /* This function converts the colour stored in a colorcell (pixel) into the
  * string representation of a colour.  The output is printed at the
  * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if

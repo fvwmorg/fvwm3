@@ -56,6 +56,7 @@ extern FlocaleWinString *FwinString;
 extern int button_width;
 extern int iconcolorset;
 extern int focuscolorset;
+extern int colorset;
 extern int NoBrightFocus;
 extern int ThreeDfvwm;
 extern char *FocusBackColor;
@@ -212,106 +213,128 @@ Button *ButtonNew(const char *title, FvwmPicture *p, int state, int count)
    ------------------------------------------------------------------------- */
 void ButtonDraw(Button *button, int x, int y, int w, int h)
 {
-  char *t3p = "...\0";
-  int state, x3p, newx;
-  int search_len;
-  FlocaleFont *Ffont;
-  XGCValues gcv;
-  unsigned long gcm;
-  GC *drawgc;
+	char *t3p = "...\0";
+	int state, x3p, newx;
+	int search_len;
+	FlocaleFont *Ffont;
+	XGCValues gcv;
+	unsigned long gcm;
+	GC *drawgc;
+	int cs;
 
-  if (button == NULL)
-    return;
-  button->needsupdate = 0;
-  state = button->state;
-  Draw3dRect(win, x, y, w, h, state, !!(button->iconified));
-  if (button->iconified)
-    drawgc = &icongraph;
-  else if (state == BUTTON_BRIGHT)
-    drawgc = &focusgraph;
-  else
-    drawgc = &graph;
+	if (button == NULL)
+	{
+		return;
+	}
+	button->needsupdate = 0;
+	state = button->state;
+	Draw3dRect(win, x, y, w, h, state, !!(button->iconified));
+	if (button->iconified)
+	{
+		drawgc = &icongraph;
+		cs = iconcolorset;
+	}
+	else if (state == BUTTON_BRIGHT)
+	{
+		drawgc = &focusgraph;
+		cs = focuscolorset;
+	}
+	else
+	{
+		drawgc = &graph;
+		cs = colorset;
+	}
 
-  if (state != BUTTON_UP) { x++; y++; }
+	if (state != BUTTON_UP) { x++; y++; }
 
-  if (state == BUTTON_BRIGHT || button == StartButton)
-  {
-    Ffont = FSelButtonFont;
-  }
-  else
-  {
-    Ffont = FButtonFont;
-  }
+	if (state == BUTTON_BRIGHT || button == StartButton)
+	{
+		Ffont = FSelButtonFont;
+	}
+	else
+	{
+		Ffont = FButtonFont;
+	}
 
-  if (Ffont->font != NULL)
-  {
-    gcm = GCFont;
-    gcv.font = Ffont->font->fid;
-    XChangeGC(dpy, *drawgc, gcm, &gcv);
-  }
+	if (Ffont->font != NULL)
+	{
+		gcm = GCFont;
+		gcv.font = Ffont->font->fid;
+		XChangeGC(dpy, *drawgc, gcm, &gcv);
+	}
 
-  newx = 4;
-  w3p = FlocaleTextWidth(Ffont, t3p, 3);
+	newx = 4;
+	w3p = FlocaleTextWidth(Ffont, t3p, 3);
 
-  if (button->p.picture != 0)
-  {
-    /* clip pixmap to fit inside button */
-    int pheight = min(button->p.height, h-2);
-    int offset = (button->p.height > h) ? 0 : ((h - button->p.height) >> 1);
-    int pwidth = min(button->p.width, w-5);
+	if (button->p.picture != 0)
+	{
+		/* clip pixmap to fit inside button */
+		int pheight = min(button->p.height, h-2);
+		int offset = (button->p.height > h) ?
+			0 : ((h - button->p.height) >> 1);
+		int pwidth = min(button->p.width, w-5);
 
-    PGraphicsCopyFvwmPicture(dpy, &(button->p), win, hilite,
-			     0, 0, pwidth, pheight,
-			     x+3, y+offset);
-    newx += pwidth+2;
-  }
+		PGraphicsCopyFvwmPicture(dpy, &(button->p), win, hilite,
+					 0, 0, pwidth, pheight,
+					 x+3, y+offset);
+		newx += pwidth+2;
+	}
 
-  if (button->title == NULL)
-    return;
+	if (button->title == NULL)
+	{
+		return;
+	}
 
-  /* see if we have the place for "...", if not for "..", if not for "."
-   * if not return */
-  if ((newx + w3p + 2) >= w)
-  {
-    t3p = "..\0";
-    w3p = FlocaleTextWidth(Ffont, t3p, 2);
-    if ((newx + w3p + 2) >= w)
-    {
-      t3p = ".\0";
-      w3p = FlocaleTextWidth(Ffont, t3p, 1);
-      if ((newx + w3p + 2) >= w)
-	return;
-    }
-  }
+	/* see if we have the place for "...", if not for "..", if not for "."
+	 * if not return */
+	if ((newx + w3p + 2) >= w)
+	{
+		t3p = "..\0";
+		w3p = FlocaleTextWidth(Ffont, t3p, 2);
+		if ((newx + w3p + 2) >= w)
+		{
+			t3p = ".\0";
+			w3p = FlocaleTextWidth(Ffont, t3p, 1);
+			if ((newx + w3p + 2) >= w)
+				return;
+		}
+	}
 
-  search_len = strlen(button->title);
-  FwinString->win = win;
-  FwinString->y = y + FButtonFont->ascent + 4;
-  FwinString->gc = *drawgc;
-  button->truncate = False;
+	search_len = strlen(button->title);
+	FwinString->win = win;
+	FwinString->y = y + FButtonFont->ascent + 4;
+	FwinString->gc = *drawgc;
+	if (cs >= 0)
+	{
+		FwinString->colorset = &Colorset[cs];
+		FwinString->flags.has_colorset = True;
+	}
+	button->truncate = False;
 
-  if (FlocaleTextWidth(Ffont, button->title, search_len) > w-newx-3) {
+	if (FlocaleTextWidth(Ffont, button->title, search_len) > w-newx-3)
+	{
+		x3p = 0;
+		while (search_len >= 0
+		       && ((x3p = newx + FlocaleTextWidth(
+					      Ffont, button->title, search_len))
+			   > w-w3p-3))
+		{
+			search_len--;
+		}
+		FwinString->str = t3p;
+		FwinString->x = x + x3p;
+		FlocaleDrawString(dpy, Ffont, FwinString, 0);
+		button->truncate = True;
+	}
 
-    x3p = 0;
-    while (search_len >= 0
-	   && ((x3p = newx + FlocaleTextWidth(Ffont, button->title, search_len))
-	       > w-w3p-3))
-      search_len--;
-
-    FwinString->str = t3p;
-    FwinString->x = x + x3p;
-    FlocaleDrawString(dpy, Ffont, FwinString, 0);
-    button->truncate = True;
-  }
-
-  /* Only print as much of the title as will fit.  */
-  if (search_len)
-  {
-    FwinString->str = button->title;
-    FwinString->x = x + newx;
-    FwinString->len = search_len;
-    FlocaleDrawString(dpy, Ffont, FwinString, FWS_HAVE_LENGTH);
-  }
+	/* Only print as much of the title as will fit.  */
+	if (search_len)
+	{
+		FwinString->str = button->title;
+		FwinString->x = x + newx;
+		FwinString->len = search_len;
+		FlocaleDrawString(dpy, Ffont, FwinString, FWS_HAVE_LENGTH);
+	}
 }
 
 

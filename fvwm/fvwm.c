@@ -38,9 +38,11 @@
 #  include <pwd.h>
 #endif
 
+#define FVWM_COLORSET_PRIVATE
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/PictureBase.h"
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
 #include "libs/FRenderInit.h"

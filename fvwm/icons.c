@@ -480,293 +480,340 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
  ****************************************************************************/
 void DrawIconWindow(FvwmWindow *fw)
 {
-  GC Shadow;
-  GC Relief;
-  Pixel TextColor;
-  Pixel BackColor;
-  color_quad *draw_colors;
-  int is_expanded = IS_ICON_ENTERED(fw);
-  FlocaleWinString fstr;
+	GC Shadow;
+	GC Relief;
+	Pixel TextColor;
+	Pixel BackColor;
+	color_quad *draw_colors;
+	int cs;
+	int is_expanded = IS_ICON_ENTERED(fw);
+	FlocaleWinString fstr;
 
-  if (IS_ICON_SUPPRESSED(fw))
-    return;
-
-  if (FW_W_ICON_TITLE(fw) != None)
-    flush_expose(FW_W_ICON_TITLE(fw));
-  if (FW_W_ICON_PIXMAP(fw) != None)
-    flush_expose(FW_W_ICON_PIXMAP(fw));
-
-  if (Scr.Hilite == fw)
-    draw_colors = &(fw->hicolors);
-  else
-    draw_colors = &(fw->colors);
-  if (Pdepth < 2 && Scr.Hilite != fw)
-  {
-    Relief = Scr.StdReliefGC;
-    Shadow = Scr.StdShadowGC;
-  }
-  else
-  {
-    if (Pdepth < 2 && Scr.Hilite == fw)
-      Relief = Scr.ScratchGC2;
-    else
-    {
-      Globalgcv.foreground = draw_colors->hilight;
-      Globalgcm = GCForeground;
-      XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
-      Relief = Scr.ScratchGC1;
-    }
-    Globalgcv.foreground = draw_colors->shadow;
-    XChangeGC(dpy,Scr.ScratchGC2, Globalgcm, &Globalgcv);
-    Shadow = Scr.ScratchGC2;
-  }
-  TextColor = draw_colors->fore;
-  BackColor = draw_colors->back;
-
-  if (FW_W_ICON_TITLE(fw) != None)
-  {
-    int x_title;
-    int x_title_min = 0;
-    int w_title = fw->icon_g.title_text_width;
-    int x_title_w = fw->icon_g.picture_w_g.x;
-    int w_title_w = fw->icon_g.picture_w_g.width;
-    int x_stipple = ICON_RELIEF_WIDTH;
-    int w_title_text_gap = 0;
-    int w_stipple = 0;
-    int is_sticky = (IS_STICKY(fw) || IS_ICON_STICKY(fw));
-    int use_unexpanded_size = 1;
-
-    if (is_expanded && FW_W_ICON_PIXMAP(fw) != None)
-    {
-      int sx;
-      int sy;
-      int sw;
-      int sh;
-
-      use_unexpanded_size = 0;
-      w_title_text_gap = ICON_TITLE_TEXT_GAP_EXPANDED;
-      x_title_min = w_title_text_gap + ICON_RELIEF_WIDTH;
-      if (is_sticky)
-      {
-	w_stipple = ICON_TITLE_STICK_MIN_WIDTH;
-	x_title_min += w_stipple + ICON_TITLE_TO_STICK_EXTRA_GAP;
-      }
-      /* resize the icon name window */
-      w_title_w = w_title + 2 * x_title_min;
-      if (w_title_w <= fw->icon_g.picture_w_g.width)
-      {
-	/* the expanded title is smaller, so do not expand at all */
-	is_expanded = 1;
-	w_stipple = 0;
-	use_unexpanded_size = 1;
-      }
-      else
-      {
-	x_title_w = fw->icon_g.picture_w_g.x -
-	  (w_title_w - fw->icon_g.picture_w_g.width) / 2;
-	FScreenGetScrRect(NULL, FSCREEN_CURRENT, &sx, &sy, &sw, &sh);
-	/* start keep label on screen. dje 8/7/97 */
-	if (x_title_w < sx) {  /* if new loc neg (off left edge) */
-	  x_title_w = sx;      /* move to edge */
-	} else {                         /* if not on left edge */
-	  /* if (new loc + width) > screen width (off edge on right) */
-	  if ((x_title_w + w_title_w) >
-	      sx + sw) {      /* off right */
-	    /* position up against right edge */
-	    x_title_w = sx + sw - w_title_w;
-	  }
-	  /* end keep label on screen. dje 8/7/97 */
+	if (IS_ICON_SUPPRESSED(fw))
+	{
+		return;
 	}
-      }
-    }
-    if (use_unexpanded_size)
-    {
-      w_title_text_gap = ICON_TITLE_TEXT_GAP_COLLAPSED;
-      x_title_min = w_title_text_gap + ICON_RELIEF_WIDTH;
-      /* resize the icon name window */
-      if (FW_W_ICON_PIXMAP(fw) != None)
-      {
-	w_title_w = fw->icon_g.picture_w_g.width;
-	x_title_w = fw->icon_g.picture_w_g.x;
-      }
-      else
-      {
-	w_title_w = fw->icon_g.title_w_g.width;
-	x_title_w = fw->icon_g.title_w_g.x;
-      }
-    }
-    fw->icon_g.title_w_g.width = w_title_w;
-    fw->icon_g.title_w_g.x = x_title_w;
 
-    /* set up TitleGC for drawing the icon label */
-    if (fw->icon_font != NULL)
-      NewFontAndColor(fw->icon_font, TextColor, BackColor);
+	if (FW_W_ICON_TITLE(fw) != None)
+	{
+		flush_expose(FW_W_ICON_TITLE(fw));
+	}
+	if (FW_W_ICON_PIXMAP(fw) != None)
+	{
+		flush_expose(FW_W_ICON_PIXMAP(fw));
+	}
 
-    fw->icon_g.title_w_g.height = ICON_HEIGHT(fw);
-    XMoveResizeWindow(
-      dpy, FW_W_ICON_TITLE(fw), fw->icon_g.title_w_g.x,
-      fw->icon_g.title_w_g.y, w_title_w, ICON_HEIGHT(fw));
-    XSetWindowBackground(dpy, FW_W_ICON_TITLE(fw), BackColor);
-    XClearWindow(dpy,FW_W_ICON_TITLE(fw));
+	if (Scr.Hilite == fw)
+	{
+		draw_colors = &(fw->hicolors);
+		cs = fw->cs_hi;
+	}
+	else
+	{
+		draw_colors = &(fw->colors);
+		cs = fw->cs;
+	}
+	if (Pdepth < 2 && Scr.Hilite != fw)
+	{
+		Relief = Scr.StdReliefGC;
+		Shadow = Scr.StdShadowGC;
+	}
+	else
+	{
+		if (Pdepth < 2 && Scr.Hilite == fw)
+			Relief = Scr.ScratchGC2;
+		else
+		{
+			Globalgcv.foreground = draw_colors->hilight;
+			Globalgcm = GCForeground;
+			XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
+			Relief = Scr.ScratchGC1;
+		}
+		Globalgcv.foreground = draw_colors->shadow;
+		XChangeGC(dpy,Scr.ScratchGC2, Globalgcm, &Globalgcv);
+		Shadow = Scr.ScratchGC2;
+	}
+	TextColor = draw_colors->fore;
+	BackColor = draw_colors->back;
 
-    /* text position */
-    x_title = (w_title_w - w_title) / 2;
-    if (x_title < x_title_min)
-      x_title = x_title_min;
-    if (is_sticky)
-    {
-      XRectangle r;
+	if (FW_W_ICON_TITLE(fw) != None)
+	{
+		int x_title;
+		int x_title_min = 0;
+		int w_title = fw->icon_g.title_text_width;
+		int x_title_w = fw->icon_g.picture_w_g.x;
+		int w_title_w = fw->icon_g.picture_w_g.width;
+		int x_stipple = ICON_RELIEF_WIDTH;
+		int w_title_text_gap = 0;
+		int w_stipple = 0;
+		int is_sticky = (IS_STICKY(fw) || IS_ICON_STICKY(fw));
+		int use_unexpanded_size = 1;
 
-      if (w_stipple == 0)
-      {
-	w_stipple = ((w_title_w - 2 * (x_stipple + w_title_text_gap) -
-		      w_title) + 1) / 2;
-      }
-      if (w_stipple < ICON_TITLE_STICK_MIN_WIDTH)
-      {
-	w_stipple = ICON_TITLE_STICK_MIN_WIDTH;
-      }
-      if (x_title < x_stipple + w_stipple + w_title_text_gap)
-      {
-	x_title = x_stipple + w_stipple + w_title_text_gap;
-      }
-      r.x = x_title;
-      r.y = 0;
-      r.width = w_title_w - 2 * x_title;
-      if (r.width < 1)
-	r.width = 1;
-      r.height = ICON_HEIGHT(fw);
-      XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, &r, 1, Unsorted);
-    }
-    memset(&fstr, 0, sizeof(fstr));
-    fstr.str = fw->visible_icon_name;
-    fstr.win =  FW_W_ICON_TITLE(fw);
-    fstr.gc = Scr.TitleGC;
-    fstr.x = x_title;
-    fstr.y = fw->icon_g.title_w_g.height -
-      fw->icon_font->height +
-      fw->icon_font->ascent + ICON_TITLE_VERT_TEXT_OFFSET;
-    FlocaleDrawString(dpy, fw->icon_font, &fstr, 0);
-    RelieveRectangle(
-	    dpy, FW_W_ICON_TITLE(fw), 0, 0, w_title_w - 1,
-	    ICON_HEIGHT(fw) - 1, Relief, Shadow, ICON_RELIEF_WIDTH);
-    if (is_sticky)
-    {
-      /* an odd number of lines every 4 pixels */
-      int num = (ICON_HEIGHT(fw) / ICON_TITLE_STICK_VERT_DIST / 2) * 2 - 1;
-      int min = ICON_HEIGHT(fw) / 2 - num * 2 + 1;
-      int max = ICON_HEIGHT(fw) / 2 + num * 2 -
-	      ICON_TITLE_STICK_VERT_DIST + 1;
-      int i;
+		if (is_expanded && FW_W_ICON_PIXMAP(fw) != None)
+		{
+			int sx;
+			int sy;
+			int sw;
+			int sh;
 
-      for(i = min; w_stipple > 0 && i <= max; i += ICON_TITLE_STICK_VERT_DIST)
-      {
-	RelieveRectangle(
-	  dpy, FW_W_ICON_TITLE(fw), x_stipple, i, w_stipple - 1, 1, Shadow,
-	  Relief, ICON_TITLE_STICK_HEIGHT);
-	RelieveRectangle(
-	  dpy, FW_W_ICON_TITLE(fw), w_title_w - x_stipple - w_stipple, i,
-	  w_stipple - 1, 1, Shadow, Relief, ICON_TITLE_STICK_HEIGHT);
-      }
-      XSetClipMask(dpy, Scr.TitleGC, None);
-    }
-  }
+			use_unexpanded_size = 0;
+			w_title_text_gap = ICON_TITLE_TEXT_GAP_EXPANDED;
+			x_title_min = w_title_text_gap + ICON_RELIEF_WIDTH;
+			if (is_sticky)
+			{
+				w_stipple = ICON_TITLE_STICK_MIN_WIDTH;
+				x_title_min += w_stipple +
+					ICON_TITLE_TO_STICK_EXTRA_GAP;
+			}
+			/* resize the icon name window */
+			w_title_w = w_title + 2 * x_title_min;
+			if (w_title_w <= fw->icon_g.picture_w_g.width)
+			{
+				/* the expanded title is smaller, so do not *
+				 * expand at all */
+				is_expanded = 1;
+				w_stipple = 0;
+				use_unexpanded_size = 1;
+			}
+			else
+			{
+				x_title_w = fw->icon_g.picture_w_g.x -
+					(w_title_w -
+					 fw->icon_g.picture_w_g.width) / 2;
+				FScreenGetScrRect(NULL, FSCREEN_CURRENT,
+						  &sx, &sy, &sw, &sh);
+				/* start keep label on screen. dje 8/7/97 */
+				if (x_title_w < sx) {
+					/* if new loc neg (off left edge) */
+					x_title_w = sx;      /* move to edge */
+				}
+				else
+				{
+					/* if not on left edge */
+					/* if (new loc + width) > screen width 
+					 * (off edge on right) */
+					if ((x_title_w + w_title_w) >sx + sw) {
+						/* off right */
+						/* position up against right edge */
+						x_title_w = sx + sw - w_title_w;
+					}
+					/* end keep label on screen. dje 8/7/97 */
+				}
+			}
+		}
+		if (use_unexpanded_size)
+		{
+			w_title_text_gap = ICON_TITLE_TEXT_GAP_COLLAPSED;
+			x_title_min = w_title_text_gap + ICON_RELIEF_WIDTH;
+			/* resize the icon name window */
+			if (FW_W_ICON_PIXMAP(fw) != None)
+			{
+				w_title_w = fw->icon_g.picture_w_g.width;
+				x_title_w = fw->icon_g.picture_w_g.x;
+			}
+			else
+			{
+				w_title_w = fw->icon_g.title_w_g.width;
+				x_title_w = fw->icon_g.title_w_g.x;
+			}
+		}
+		fw->icon_g.title_w_g.width = w_title_w;
+		fw->icon_g.title_w_g.x = x_title_w;
 
-  if (FW_W_ICON_PIXMAP(fw) != None)
-  {
-    XMoveWindow(
-	    dpy, FW_W_ICON_PIXMAP(fw), fw->icon_g.picture_w_g.x,
-	    fw->icon_g.picture_w_g.y);
-  }
+		/* set up TitleGC for drawing the icon label */
+		if (fw->icon_font != NULL)
+			NewFontAndColor(fw->icon_font, TextColor, BackColor);
 
-  /* only relieve unshaped icons that share fvwm's visual */
-  if ((fw->iconPixmap != None) && !IS_ICON_SHAPED(fw)
-      && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
-  {
-	  RelieveRectangle(
-			   dpy, FW_W_ICON_PIXMAP(fw), 0, 0,
-			   fw->icon_g.picture_w_g.width - 1,
-			   fw->icon_g.picture_w_g.height - 1,
-			   Relief, Shadow,
-			   ICON_RELIEF_WIDTH);
-  }
+		fw->icon_g.title_w_g.height = ICON_HEIGHT(fw);
+		XMoveResizeWindow(
+			dpy, FW_W_ICON_TITLE(fw), fw->icon_g.title_w_g.x,
+			fw->icon_g.title_w_g.y, w_title_w, ICON_HEIGHT(fw));
+		XSetWindowBackground(dpy, FW_W_ICON_TITLE(fw), BackColor);
+		XClearWindow(dpy,FW_W_ICON_TITLE(fw));
 
-  /* need to locate the icon pixmap */
-  if (fw->iconPixmap != None)
-  {
-    if (fw->iconDepth == 1)
-    {
-      /* it's a bitmap */
-      XCopyPlane(
-	dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw), Scr.TitleGC, 0, 0,
-	fw->icon_g.picture_w_g.width - 2 * ICON_RELIEF_WIDTH,
-	fw->icon_g.picture_w_g.height - 2 * ICON_RELIEF_WIDTH,
-	ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH, 1);
-    }
-    else
-    {
-      if (Pdefault || IS_PIXMAP_OURS(fw))
-      {
-	      if (fw->icon_alphaPixmap)
-	      {
-		      XClearWindow(dpy, FW_W_ICON_PIXMAP(fw));
-		      XSetWindowBackgroundPixmap(dpy, FW_W_ICON_PIXMAP(fw),
-						 ParentRelative);
-	      }
-	      PGraphicsCopyPixmaps(dpy, fw->iconPixmap, None,
-				   fw->icon_alphaPixmap,
-				   Pdepth,
-				   FW_W_ICON_PIXMAP(fw), Scr.TitleGC, 0, 0, 
-				   fw->icon_g.picture_w_g.width - 2 *
-				   ICON_RELIEF_WIDTH,
-				   fw->icon_g.picture_w_g.height - 2 *
-				   ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH,
-				   ICON_RELIEF_WIDTH);
-      }
-      else
-      {
-        /* it's a client pixmap and fvwm is not using the root visual
-         * The icon window has no 3d border so copy to (0,0)
-         * install the root colormap temporarily to help the Exceed server */
-        if (Scr.bo.InstallRootCmap)
-          InstallRootColormap();
-	XCopyArea(
-	  dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw),
-	  DefaultGC(dpy, Scr.screen), 0, 0, fw->icon_g.picture_w_g.width,
-	  fw->icon_g.picture_w_g.height, 0, 0);
-	if (Scr.bo.InstallRootCmap)
-	  UninstallRootColormap();
-      }
-    }
-  }
+		/* text position */
+		x_title = (w_title_w - w_title) / 2;
+		if (x_title < x_title_min)
+			x_title = x_title_min;
+		if (is_sticky)
+		{
+			XRectangle r;
 
-  if (is_expanded)
-  {
-    if (FW_W_ICON_TITLE(fw) != None)
-    {
-      XRaiseWindow(dpy, FW_W_ICON_TITLE(fw));
-      raisePanFrames();
-    }
-  }
-  else
-  {
-    XWindowChanges xwc;
-    int mask;
-    xwc.sibling = FW_W_FRAME(fw);
-    xwc.stack_mode = Below;
-    mask = CWSibling|CWStackMode;
-    if (FW_W_ICON_TITLE(fw) != None)
-    {
-      XConfigureWindow(dpy, FW_W_ICON_TITLE(fw), mask, &xwc);
-    }
-    if (FW_W_ICON_PIXMAP(fw) != None)
-    {
-      XConfigureWindow(dpy, FW_W_ICON_PIXMAP(fw), mask, &xwc);
-    }
-  }
-  /* wait for pending EnterNotify/LeaveNotify events to suppress race condition
-   * w/ expanding/collapsing icon titles */
-  XFlush(dpy);
+			if (w_stipple == 0)
+			{
+				w_stipple = ((w_title_w - 2 *
+					      (x_stipple + w_title_text_gap) -
+					      w_title) + 1) / 2;
+			}
+			if (w_stipple < ICON_TITLE_STICK_MIN_WIDTH)
+			{
+				w_stipple = ICON_TITLE_STICK_MIN_WIDTH;
+			}
+			if (x_title < x_stipple + w_stipple + w_title_text_gap)
+			{
+				x_title = x_stipple + w_stipple +
+					w_title_text_gap;
+			}
+			r.x = x_title;
+			r.y = 0;
+			r.width = w_title_w - 2 * x_title;
+			if (r.width < 1)
+				r.width = 1;
+			r.height = ICON_HEIGHT(fw);
+			XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, &r, 1,
+					   Unsorted);
+		}
+		memset(&fstr, 0, sizeof(fstr));
+		fstr.str = fw->visible_icon_name;
+		fstr.win =  FW_W_ICON_TITLE(fw);
+		fstr.gc = Scr.TitleGC;
+		if (cs >= 0)
+		{
+			fstr.colorset = &Colorset[cs];
+			fstr.flags.has_colorset = 1;
+		}
+		fstr.x = x_title;
+		fstr.y = fw->icon_g.title_w_g.height -
+			fw->icon_font->height +
+			fw->icon_font->ascent + ICON_TITLE_VERT_TEXT_OFFSET;
+		FlocaleDrawString(dpy, fw->icon_font, &fstr, 0);
+		RelieveRectangle(
+			dpy, FW_W_ICON_TITLE(fw), 0, 0, w_title_w - 1,
+			ICON_HEIGHT(fw) - 1, Relief, Shadow, ICON_RELIEF_WIDTH);
+		if (is_sticky)
+		{
+			/* an odd number of lines every 4 pixels */
+			int num = (ICON_HEIGHT(fw) /
+				   ICON_TITLE_STICK_VERT_DIST / 2) * 2 - 1;
+			int min = ICON_HEIGHT(fw) / 2 - num * 2 + 1;
+			int max = ICON_HEIGHT(fw) / 2 + num * 2 -
+				ICON_TITLE_STICK_VERT_DIST + 1;
+			int i;
+
+			for(i = min; w_stipple > 0 && i <= max;
+			    i += ICON_TITLE_STICK_VERT_DIST)
+			{
+				RelieveRectangle(
+					dpy, FW_W_ICON_TITLE(fw), x_stipple,
+					i, w_stipple - 1, 1, Shadow,
+					Relief, ICON_TITLE_STICK_HEIGHT);
+				RelieveRectangle(
+					dpy, FW_W_ICON_TITLE(fw),
+					w_title_w - x_stipple - w_stipple, i,
+					w_stipple - 1, 1, Shadow, Relief,
+					ICON_TITLE_STICK_HEIGHT);
+			}
+			XSetClipMask(dpy, Scr.TitleGC, None);
+		}
+	}
+
+	if (FW_W_ICON_PIXMAP(fw) != None)
+	{
+		XMoveWindow(
+			dpy, FW_W_ICON_PIXMAP(fw), fw->icon_g.picture_w_g.x,
+			fw->icon_g.picture_w_g.y);
+	}
+
+	/* only relieve unshaped icons that share fvwm's visual */
+	if ((fw->iconPixmap != None) && !IS_ICON_SHAPED(fw)
+	    && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
+	{
+		RelieveRectangle(dpy, FW_W_ICON_PIXMAP(fw), 0, 0,
+				 fw->icon_g.picture_w_g.width - 1,
+				 fw->icon_g.picture_w_g.height - 1,
+				 Relief, Shadow,
+				 ICON_RELIEF_WIDTH);
+	}
+
+	/* need to locate the icon pixmap */
+	if (fw->iconPixmap != None)
+	{
+		if (fw->iconDepth == 1)
+		{
+			/* it's a bitmap */
+			XCopyPlane(
+			      dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw),
+			      Scr.TitleGC, 0, 0,
+			      fw->icon_g.picture_w_g.width - 2 *
+			      ICON_RELIEF_WIDTH,
+			      fw->icon_g.picture_w_g.height - 2 *
+			      ICON_RELIEF_WIDTH,
+			      ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH, 1);
+		}
+		else
+		{
+			if (Pdefault || IS_PIXMAP_OURS(fw))
+			{
+				if (fw->icon_alphaPixmap)
+				{
+					XClearWindow(dpy, FW_W_ICON_PIXMAP(fw));
+					XSetWindowBackgroundPixmap(
+							    dpy,
+							    FW_W_ICON_PIXMAP(fw),
+							    ParentRelative);
+				}
+				PGraphicsCopyPixmaps(
+						dpy, fw->iconPixmap, None,
+						fw->icon_alphaPixmap,
+						Pdepth,
+						FW_W_ICON_PIXMAP(fw),
+						Scr.TitleGC, 0, 0, 
+						fw->icon_g.picture_w_g.width -
+						2 *
+						ICON_RELIEF_WIDTH,
+						fw->icon_g.picture_w_g.height -
+						2 *
+						ICON_RELIEF_WIDTH,
+						ICON_RELIEF_WIDTH,
+						ICON_RELIEF_WIDTH);
+			}
+			else
+			{
+				/* it's a client pixmap and fvwm is not using 
+				 * the root visual The icon window has no 3d
+				 * border so copy to (0,0) install the root
+				 * colormap temporarily to help the Exceed
+				 * server */
+				if (Scr.bo.InstallRootCmap)
+					InstallRootColormap();
+				XCopyArea(
+				     dpy, fw->iconPixmap, FW_W_ICON_PIXMAP(fw),
+				     DefaultGC(dpy, Scr.screen), 0, 0,
+				     fw->icon_g.picture_w_g.width,
+				     fw->icon_g.picture_w_g.height, 0, 0);
+				if (Scr.bo.InstallRootCmap)
+					UninstallRootColormap();
+			}
+		}
+	}
+
+	if (is_expanded)
+	{
+		if (FW_W_ICON_TITLE(fw) != None)
+		{
+			XRaiseWindow(dpy, FW_W_ICON_TITLE(fw));
+			raisePanFrames();
+		}
+	}
+	else
+	{
+		XWindowChanges xwc;
+		int mask;
+		xwc.sibling = FW_W_FRAME(fw);
+		xwc.stack_mode = Below;
+		mask = CWSibling|CWStackMode;
+		if (FW_W_ICON_TITLE(fw) != None)
+		{
+			XConfigureWindow(dpy, FW_W_ICON_TITLE(fw), mask, &xwc);
+		}
+		if (FW_W_ICON_PIXMAP(fw) != None)
+		{
+			XConfigureWindow(dpy, FW_W_ICON_PIXMAP(fw), mask, &xwc);
+		}
+	}
+	/* wait for pending EnterNotify/LeaveNotify events to suppress race
+	 * condition w/ expanding/collapsing icon titles */
+	XFlush(dpy);
 }
 
 /***********************************************************************

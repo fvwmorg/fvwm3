@@ -781,7 +781,12 @@ void DrawItems(Drawable d)
 	fontheight = Ffont->height;
 	FwinString->win = d;
 	FwinString->gc = gc;
-
+	
+	if (colorset >= 0)
+	{
+		FwinString->colorset = &Colorset[colorset];
+		FwinString->flags.has_colorset = True;
+	}
 	while(cur != NULL)
 	{
 		/* first column */

@@ -322,6 +322,8 @@ void menuitem_paint(
 	GC ReliefGC;
 	GC on_gc;
 	GC off_gc;
+	int on_cs = -1, off_cs = -1;
+	/*Pixel fg, fgsh;*/
 	short relief_thickness = ST_RELIEF_THICKNESS(ms);
 	Bool is_item_selected;
 	Bool xft_redraw = False;
@@ -565,23 +567,37 @@ void menuitem_paint(
 		    MI_FUNC_TYPE(mi), MI_LABEL(mi)[0], mpip->fw, True, False))
 	{
 		on_gc = ST_MENU_ACTIVE_GC(ms);
+		if (ST_HAS_ACTIVE_CSET(ms))
+		{
+			on_cs = ST_CSET_ACTIVE(ms);
+		}
 		if (ST_DO_HILIGHT(ms) && !ST_HAS_ACTIVE_FORE(ms) &&
 		    !ST_HAS_ACTIVE_CSET(ms) && is_item_selected)
 		{
 			/* Use a lighter color for highlighted windows menu
 			 * items if the background is hilighted */
 			on_gc = ST_MENU_RELIEF_GC(ms);
+			on_cs = -1;
 		}
 	}
 	else
 	{
 		/* should be a shaded out word, not just re-colored. */
 		on_gc = ST_MENU_STIPPLE_GC(ms);
+		if (ST_HAS_GREYED_CSET(ms))
+		{
+			on_cs = ST_CSET_GREYED(ms);
+		}
 	}
 	off_gc = ST_MENU_GC(ms);
+	if (ST_HAS_MENU_CSET(ms))
+	{
+		off_cs = ST_CSET_MENU(ms);
+	}
 	if (!is_item_selected)
 	{
 		on_gc = off_gc;
+		on_cs = off_cs;
 	}
 
 
@@ -594,6 +610,7 @@ void menuitem_paint(
 	}
 	fws->win = mpip->w;
 	fws->y = text_y;
+	fws->flags.has_colorset = False;
 	for (i = MAX_MENU_ITEM_LABELS; i-- > 0; )
 	{
 		if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
@@ -603,11 +620,21 @@ void menuitem_paint(
 			{
 				/* label is in hilighted area */
 				fws->gc = on_gc;
+				if (on_cs >= 0)
+				{
+					fws->colorset = &Colorset[on_cs];
+					fws->flags.has_colorset = True;
+				}
 			}
 			else
 			{
 				/* label is in unhilighted area */
 				fws->gc = off_gc;
+				if (off_cs >= 0)
+				{
+					fws->colorset = &Colorset[off_cs];
+					fws->flags.has_colorset = True;
+				}
 			}
 			fws->str = MI_LABEL(mi)[i];
 			fws->x = MI_LABEL_OFFSET(mi)[i];

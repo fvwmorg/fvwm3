@@ -477,52 +477,59 @@ void resize_geometry_window(void)
 static void DisplayPosition(
   FvwmWindow *tmp_win, XEvent *eventp, int x, int y,int Init)
 {
-  char str[100];
-  int offset;
-  fscreen_scr_arg fscr;
-  FlocaleWinString fstr;
+	char str[100];
+	int offset;
+	fscreen_scr_arg fscr;
+	FlocaleWinString fstr;
 
-  if (Scr.gs.do_hide_position_window)
-    return;
-  position_geometry_window(eventp);
-  /* Translate x,y into local screen coordinates, in case Xinerama is used. */
-  fscr.xypos.x = x;
-  fscr.xypos.y = y;
-  FScreenTranslateCoordinates(
-    NULL, FSCREEN_GLOBAL, &fscr, FSCREEN_XYPOS, &x, &y);
-  (void)sprintf(str, GEOMETRY_WINDOW_POS_STRING, x, y);
-  if (Init)
-  {
-    XClearWindow(dpy, Scr.SizeWindow);
-  }
-  else
-  {
-    /* just clear indside the relief lines to reduce flicker */
-    XClearArea(dpy,Scr.SizeWindow, GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
-	       Scr.SizeStringWidth, Scr.DefaultFont->height, False);
-  }
+	if (Scr.gs.do_hide_position_window)
+		return;
+	position_geometry_window(eventp);
+	/* Translate x,y into local screen coordinates,
+	 * in case Xinerama is used. */
+	fscr.xypos.x = x;
+	fscr.xypos.y = y;
+	FScreenTranslateCoordinates(
+		NULL, FSCREEN_GLOBAL, &fscr, FSCREEN_XYPOS, &x, &y);
+	(void)sprintf(str, GEOMETRY_WINDOW_POS_STRING, x, y);
+	if (Init)
+	{
+		XClearWindow(dpy, Scr.SizeWindow);
+	}
+	else
+	{
+		/* just clear indside the relief lines to reduce flicker */
+		XClearArea(dpy, Scr.SizeWindow,
+			   GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
+			   Scr.SizeStringWidth, Scr.DefaultFont->height, False);
+	}
 
-  if (Pdepth >= 2)
-  {
-    RelieveRectangle(
-      dpy, Scr.SizeWindow, 0, 0,
-      Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
-      Scr.DefaultFont->height + GEOMETRY_WINDOW_BW * 2 - 1,
-      Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
-  }
-  offset = (Scr.SizeStringWidth -
-	    FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
-  offset += GEOMETRY_WINDOW_BW;
+	if (Pdepth >= 2)
+	{
+		RelieveRectangle(
+			dpy, Scr.SizeWindow, 0, 0,
+			Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
+			Scr.DefaultFont->height + GEOMETRY_WINDOW_BW * 2 - 1,
+			Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
+	}
+	offset = (Scr.SizeStringWidth -
+		  FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
+	offset += GEOMETRY_WINDOW_BW;
 
-  memset(&fstr, 0, sizeof(fstr));
-  fstr.str = str;
-  fstr.win = Scr.SizeWindow;
-  fstr.gc = Scr.StdGC;
-  fstr.x = offset;
-  fstr.y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
-  FlocaleDrawString(dpy, Scr.DefaultFont, &fstr, 0);
+	memset(&fstr, 0, sizeof(fstr));
+	if (Scr.DefaultColorset >= 0)
+	{
+		fstr.colorset = &Colorset[Scr.DefaultColorset];
+		fstr.flags.has_colorset = True;
+	}
+	fstr.str = str;
+	fstr.win = Scr.SizeWindow;
+	fstr.gc = Scr.StdGC;
+	fstr.x = offset;
+	fstr.y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
+	FlocaleDrawString(dpy, Scr.DefaultFont, &fstr, 0);
 
-  return;
+	return;
 }
 
 
@@ -599,6 +606,11 @@ static void DisplaySize(
 		  FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
 	offset += GEOMETRY_WINDOW_BW;
 	memset(&fstr, 0, sizeof(fstr));
+	if (Scr.DefaultColorset >= 0)
+	{
+		fstr.colorset = &Colorset[Scr.DefaultColorset];
+		fstr.flags.has_colorset = True;
+	}
 	fstr.str = str;
 	fstr.win = Scr.SizeWindow;
 	fstr.gc = Scr.StdGC;

@@ -27,6 +27,7 @@ typedef struct {
   Pixel bg;
   Pixel hilite;
   Pixel shadow;
+  Pixel fgsh;
   Pixmap pixmap;
   Pixmap shape_mask;
   unsigned int width : 12;
@@ -58,14 +59,16 @@ typedef struct {
 #define SHAPE_TILED 0
 #define SHAPE_STRETCH 1
 #define SHAPE_STRETCH_ASPECT 2
+
 #ifdef FVWM_COLORSET_PRIVATE
 #define FG_SUPPLIED 0x1
 #define BG_SUPPLIED 0x2
 #define HI_SUPPLIED 0x4
 #define SH_SUPPLIED 0x8
-#define FG_CONTRAST 0x10
-#define BG_AVERAGE  0x20
-#define TINT_SUPPLIED  0x40
+#define FGSH_SUPPLIED 0x10
+#define FG_CONTRAST 0x20
+#define BG_AVERAGE  0x40
+#define TINT_SUPPLIED  0x80
 #endif
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */

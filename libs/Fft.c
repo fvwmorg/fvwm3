@@ -27,6 +27,7 @@
 #include "Strings.h"
 #include "Flocale.h"
 #include "Fft.h"
+#include "FftInterface.h"
 #include "PictureBase.h"
 
 /* ---------------------------- local definitions --------------------------- */
@@ -235,63 +236,95 @@ FftFontType *FftGetFont(Display *dpy, char *fontname)
 }
 
 void FftDrawString(
-	Display *dpy, Window win, FftFontType *fftf, GC gc, int x, int y,
-	char *str, int len, int rotation)
+	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws,
+	Pixel fg, Pixel fgsh, Bool has_fg_pixels, int len, unsigned long flags)
 {
 	FftDraw *fftdraw = NULL;
 	XGCValues vr;
-	XColor xfg;
-	FftColor fft_fg;
+	XColor xfg, xfgsh;
+	FftColor fft_fg, fft_fgsh;
+	FftFontType *fftf;
 	FftFont *uf;
+	int x,y,xsh_sign,ysh_sign,i;
 
 	if (!FftSupport)
 	{
 		return;
 	}
-	if (rotation == TEXT_ROTATED_90)
+
+	fftf = &flf->fftf;
+	if (fws->flags.text_rotation == TEXT_ROTATED_90)
 	{
 		if (fftf->fftfont_rotated_90 == NULL)
 		{
 			fftf->fftfont_rotated_90 =
-				FftGetRotatedFont(dpy, fftf->fftfont, rotation);
+				FftGetRotatedFont(dpy, fftf->fftfont,
+						  fws->flags.text_rotation);
 		}
 		uf = fftf->fftfont_rotated_90;
+		y = fws->y;
+		x = fws->x;
+		xsh_sign = -1;
+		ysh_sign = 1;
 	}
-	else if (rotation == TEXT_ROTATED_180)
+	else if (fws->flags.text_rotation == TEXT_ROTATED_180)
 	{
 		if (fftf->fftfont_rotated_180 == NULL)
 		{
 			fftf->fftfont_rotated_180 =
-				FftGetRotatedFont(dpy, fftf->fftfont, rotation);
+				FftGetRotatedFont(dpy, fftf->fftfont,
+						  fws->flags.text_rotation);
 		}
 		uf = fftf->fftfont_rotated_180;
+		y = fws->y;
+		x = fws->x + FftTextWidth(&flf->fftf, fws->str, len);
+		xsh_sign = 1;
+		ysh_sign = 1;
 	}
-	else if (rotation == TEXT_ROTATED_270)
+	else if (fws->flags.text_rotation == TEXT_ROTATED_270)
 	{
 		if (fftf->fftfont_rotated_270 == NULL)
 		{
 			fftf->fftfont_rotated_270 =
-				FftGetRotatedFont(dpy, fftf->fftfont, rotation);
+				FftGetRotatedFont(dpy, fftf->fftfont,
+						  fws->flags.text_rotation);
 		}
 		uf = fftf->fftfont_rotated_270;
+		y = fws->y + FftTextWidth(&flf->fftf, fws->str, len)
+			+ flf->shadow_size;
+		x = fws->x;
+		xsh_sign = 1;
+		ysh_sign = -1;
 	}
 	else
 	{
 		uf = fftf->fftfont;
+		y = fws->y;
+		x = fws->x;
+		xsh_sign = 1;
+		ysh_sign = 1;
 	}
 
 	if (uf == NULL)
 		return;
 
-	fftdraw = FftDrawCreate(dpy, (Drawable)win, Pvisual, Pcmap);
-	if (XGetGCValues(dpy, gc, GCForeground, &vr))
+	fftdraw = FftDrawCreate(dpy, (Drawable)fws->win, Pvisual, Pcmap);
+	if (has_fg_pixels)
+	{
+		xfg.pixel = fg;
+		xfgsh.pixel = fgsh;
+	}
+	else if (fws->gc &&
+		 XGetGCValues(dpy, fws->gc, GCForeground, &vr))
 	{
 		xfg.pixel = vr.foreground;
 	}
 	else
 	{
+#if 0
 		fprintf(stderr, "[fvwmlibs][FftDrawString]: ERROR --"
 			" cannot found color\n");
+#endif
 		xfg.pixel = WhitePixel(dpy, fftscreen);
 	}
 
@@ -301,28 +334,69 @@ void FftDrawString(
 	fft_fg.color.blue = xfg.blue;
 	fft_fg.color.alpha = 0xffff;
 	fft_fg.pixel = xfg.pixel;
+	if (flf->shadow_size > 0 && has_fg_pixels)
+	{
+		XQueryColor(dpy, Pcmap, &xfgsh);
+		fft_fgsh.color.red = xfgsh.red;
+		fft_fgsh.color.green = xfgsh.green;
+		fft_fgsh.color.blue = xfgsh.blue;
+		fft_fgsh.color.alpha = 0xffff;
+		fft_fgsh.pixel = xfgsh.pixel;
+	}
 
 	if (FftUtf8Support && fftf->utf8)
 	{
-		FftDrawStringUtf8(
-			fftdraw, &fft_fg, uf, x, y, (FftChar8 *) str, len);
+		if (flf->shadow_size > 0 && has_fg_pixels)
+		{
+			for(i=1; i <= flf->shadow_size; i++)
+			{
+				FftDrawStringUtf8(
+					  fftdraw, &fft_fgsh, uf,
+					  x + (xsh_sign*i), y + (ysh_sign*i),
+					  (FftChar8 *)fws->str, len);
+			}
+		}
+		FftDrawStringUtf8(fftdraw, &fft_fg, uf, x, y,
+				  (FftChar8 *)fws->str, len);
 	}
 	else if (fftf->utf8)
 	{
 		FftChar16 *new;
 		int nl;
 
-		new = FftUtf8ToFftString16((unsigned char *)str, len, &nl);
+		new = FftUtf8ToFftString16((unsigned char *)fws->str, len, &nl);
 		if (new != NULL)
 		{
+			if (flf->shadow_size > 0 && has_fg_pixels)
+			{
+				for(i=1; i <= flf->shadow_size; i++)
+				{	
+					FftDrawString16(
+						fftdraw, &fft_fgsh, uf,
+						x + (xsh_sign*i),
+						y + (ysh_sign*i),
+						new, nl);
+				}
+			}
 			FftDrawString16(fftdraw, &fft_fg, uf, x, y, new, nl);
 			free(new);
 		}
 	}
 	else
 	{
+		if (flf->shadow_size > 0 && has_fg_pixels)
+		{
+			for(i=1; i <= flf->shadow_size; i++)
+			{
+				FftDrawString8(
+				       fftdraw, &fft_fgsh, uf,
+				       x + (xsh_sign*i), y + (ysh_sign*i),
+				       (unsigned char *)fws->str, len);
+			}
+		}
 		FftDrawString8(
-			fftdraw, &fft_fg, uf, x, y, (unsigned char *)str, len);
+			       fftdraw, &fft_fg, uf, x, y, 
+			       (unsigned char *)fws->str, len);
 	}
 	FftDrawDestroy (fftdraw);
 }

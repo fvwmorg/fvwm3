@@ -25,15 +25,16 @@
 /* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
-#define FVWM_COLORSET_PRIVATE
+
 #include "libs/fvwmlib.h"
+#include "libs/PictureBase.h"
+#include "colorset.h"
 #include "externs.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
 #include "misc.h"
 #include "screen.h"
-#include "colorset.h"
 #include "module_interface.h"
 #include "commands.h"
 #include "libs/FShape.h"
@@ -95,6 +96,8 @@ static char *csetopts[] =
 	"Shadow",
 	"Shade",
 	"sh",
+
+	"fgsh",
 
 	/* these strings are used inside the cases in the switch below! */
 	"Pixmap",
@@ -515,12 +518,14 @@ void parse_colorset(int n, char *line)
 	char *bg = NULL;
 	char *hi = NULL;
 	char *sh = NULL;
+	char *fgsh = NULL;
 	char *tint = NULL;
 	Bool have_pixels_changed = False;
 	Bool has_fg_changed = False;
 	Bool has_bg_changed = False;
 	Bool has_sh_changed = False;
 	Bool has_hi_changed = False;
+	Bool has_fgsh_changed = False;
 	Bool has_tint_changed = False;
 	Bool has_pixmap_changed = False;
 	Bool has_shape_changed = False;
@@ -585,24 +590,28 @@ void parse_colorset(int n, char *line)
 			get_simple_color(args, &sh, cs, SH_SUPPLIED, 0, NULL);
 			has_sh_changed = True;
 			break;
-		case 12: /* TiledPixmap */
-		case 13: /* Pixmap */
-		case 14: /* AspectPixmap */
+		case 12: /* fgsh */
+			get_simple_color(args, &fgsh, cs, FGSH_SUPPLIED, 0,NULL);
+			has_fgsh_changed = True;
+			break;
+		case 13: /* TiledPixmap */
+		case 14: /* Pixmap */
+		case 15: /* AspectPixmap */
 			has_pixmap_changed = True;
 			free_colorset_background(cs);
 			parse_pixmap(win, gc, cs, i, args, &pixmap_is_a_bitmap);
 			break;
-		case 15: /* Shape */
-		case 16: /* TiledShape */
-		case 17: /* AspectShape */
+		case 16: /* Shape */
+		case 17: /* TiledShape */
+		case 18: /* AspectShape */
 			parse_shape(win, cs, i, args, &has_shape_changed);
 			break;
-		case 18: /* Plain */
+		case 19: /* Plain */
 			has_pixmap_changed = True;
 			pixmap_is_a_bitmap = False;
 			free_colorset_background(cs);
 			break;
-		case 19: /* NoShape */
+		case 20: /* NoShape */
 			has_shape_changed = True;
 			if (cs->shape_mask)
 			{
@@ -610,7 +619,7 @@ void parse_colorset(int n, char *line)
 				cs->shape_mask = None;
 			}
 			break;
-		case 20: /* Transparent */
+		case 21: /* Transparent */
 
 			/* This is only allowable when the root depth == fvwm
 			 * visual depth otherwise bad match errors happen,
@@ -629,13 +638,13 @@ void parse_colorset(int n, char *line)
 			cs->pixmap = ParentRelative;
 			cs->pixmap_type = PIXMAP_STRETCH;
 			break;
-		case 21: /* Tint */
-		case 22: /* TintMask */
+		case 22: /* Tint */
+		case 23: /* TintMask */
 			parse_tint(win, gc, cs, i, args, &tint,
 				   &has_tint_changed,
 				   &has_pixmap_changed);
 			break;
-		case 23: /* NoTint */
+		case 24: /* NoTint */
 			has_pixmap_changed = True;
 			/* restore the pixmap */
 			if (cs->picture != NULL && cs->pixmap)
@@ -1013,6 +1022,53 @@ void parse_colorset(int n, char *line)
 	} /* has_sh_changed */
 
 	/*
+	 * ---------- change the shadow foreground colour ----------
+	 */
+	if (has_fgsh_changed || has_fg_changed)
+	{
+		has_fgsh_changed = 1;
+		if ((cs->color_flags & FGSH_SUPPLIED) && fgsh != NULL)
+		{
+			/* user specified colour */
+			if (privateCells)
+			{
+				MyXParseColor(fgsh, &color);
+				color.pixel = cs->fgsh;
+				XStoreColor(dpy, Pcmap, &color);
+			}
+			else
+			{
+				Pixel old_fgsh = cs->fgsh;
+
+				XFreeColors(dpy, Pcmap, &cs->fgsh, 1, 0);
+				cs->fgsh = GetColor(fgsh);
+				if (old_fgsh != cs->fgsh)
+					have_pixels_changed = True;
+			}
+		} /* user specified */
+		else if (fgsh == NULL)
+		{
+			if (privateCells)
+			{
+				XColor *colorp;
+
+				colorp = GetForeShadowColor(cs->fg);
+				colorp->pixel = cs->fgsh;
+				XStoreColor(dpy, Pcmap, colorp);
+			}
+			else
+			{
+				Pixel old_fgsh = cs->fgsh;
+
+				XFreeColors(dpy, Pcmap, &cs->fgsh, 1, 0);
+				cs->fgsh = GetForeShadow(cs->fg);
+				if (old_fgsh != cs->fgsh)
+					have_pixels_changed = True;
+			}
+		}
+	} /* has_fgsh_changed */
+
+	/*
 	 * ------- change the masked out parts of the background pixmap -------
 	 */
 	if (cs->picture != NULL &&
@@ -1153,6 +1209,10 @@ void parse_colorset(int n, char *line)
         {
 		free(sh);
         }
+	if (fgsh)
+        {
+		free(fgsh);
+        }
 	if (tint)
         {
 		free(tint);
@@ -1189,8 +1249,8 @@ void alloc_colorset(int n)
 
 		/* try to allocate private colormap entries if required */
 		if (privateCells && XAllocColorCells(
-			/* grab four writeable cells */
-			dpy, Pcmap, False, NULL, 0, &(ncs->fg), 4))
+			/* grab 5 writeable cells */
+			dpy, Pcmap, False, NULL, 0, &(ncs->fg), 5))
 		{
 			XColor color;
 			XColor *colorp;
@@ -1210,6 +1270,10 @@ void alloc_colorset(int n)
 			/* calculate and set the shadow */
 			colorp = GetShadowColor(ncs->bg);
 			colorp->pixel = ncs->shadow;
+			XStoreColor(dpy, Pcmap, colorp);
+			/* calculate and set the fg shadow */
+			colorp = GetForeShadowColor(ncs->fg);
+			colorp->pixel = ncs->fgsh;
 			XStoreColor(dpy, Pcmap, colorp);
 			/* set the tint color */
 			MyXParseColor(black, &color);
@@ -1232,6 +1296,7 @@ void alloc_colorset(int n)
 				ncs->bg = GetColor(white);
 				ncs->hilite = GetColor(white);
 				ncs->shadow = GetColor(black);
+				ncs->fgsh = GetColor(white);
 				ncs->tint = GetColor(black);
 				ncs->pixmap = XCreatePixmapFromBitmapData(
 					dpy, Scr.NoFocusWin,
@@ -1247,6 +1312,7 @@ void alloc_colorset(int n)
 				ncs->bg = GetColor(gray);
 				ncs->hilite = GetHilite(ncs->bg);
 				ncs->shadow = GetShadow(ncs->bg);
+				ncs->fgsh = GetForeShadow(ncs->fg);
 				ncs->tint = GetColor(black);
 			}
 			/* set flags for fg contrast, bg average */

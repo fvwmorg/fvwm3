@@ -754,6 +754,11 @@ typedef struct FvwmWindow
 	color_quad border_colors;
 	color_quad border_hicolors;
 
+	int cs;
+	int cs_hi;
+	int border_cs; 
+	int border_cs_hi;
+
 	unsigned long buttons;
 	/* zero or more iconboxes */
 	icon_boxes *IconBoxes;

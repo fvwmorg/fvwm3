@@ -28,6 +28,7 @@
 
 #include "fvwmlib.h"
 #include "Fft.h"
+#include "Colorset.h"
 /* FlocaleCharset.h and Ficonv.h should not be included */
 
 /* ---------------------------- global definitions -------------------------- */
@@ -117,6 +118,7 @@ typedef struct _FlocaleFont
 	Bool utf8;              /* if true the font is an iso10646-1 and utf8
 				 * encoding is assumed */
 	Bool mb;                /* if true the font is a 2 bytes font */
+	short shadow_size;      /* relief tickness */
 	int height;		/* height of the font: ascent + descent */
 	int ascent;
 	int descent;
@@ -127,6 +129,9 @@ typedef struct
 {
 	char *str;
 	GC gc;
+	Pixel fg;
+	Pixel fgsh;
+	colorset_struct *colorset;
 	Window win;
 	int x;
 	int y;
@@ -134,6 +139,8 @@ typedef struct
 	struct
 	{
 		unsigned text_rotation : 2;
+		unsigned has_colorset : 1;
+		unsigned has_fore_colors : 1;
 	} flags;
 } FlocaleWinString;
 

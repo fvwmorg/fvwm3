@@ -313,6 +313,11 @@ void DrawGoodies(void)
   FwinString->str = str;
   FwinString->x = win_width - stwin_width + 4;
   FwinString->y = ((RowHeight - fontheight) >> 1) + FStatusFont->ascent;
+  if (colorset >= 0)
+  {
+    FwinString->colorset = &Colorset[colorset];
+    FwinString->flags.has_colorset = True;
+  }
   FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
 
   if (!do_check_mail)
@@ -397,8 +402,15 @@ void RedrawTipWindow(void)
     FwinString->str = Tip.text;
     FwinString->x = 3;
     FwinString->y = Tip.th-4;
+    if (tipscolorset >= 0)
+    {
+       FwinString->colorset = &Colorset[tipscolorset];
+       FwinString->flags.has_colorset = True;
+    }
     if (FftSupport && FStatusFont->fftf.fftfont != NULL)
-      XClearArea(dpy, Tip.win, 0, 0, Tip.w, Tip.h, False);
+    {
+       XClearArea(dpy, Tip.win, 0, 0, Tip.w, Tip.h, False);
+    }
     FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
     XRaiseWindow(dpy, Tip.win);
   }

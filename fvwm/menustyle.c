@@ -16,10 +16,6 @@
 
 /* ---------------------------- included header files ----------------------- */
 
-#include <config.h>
-#include <stdio.h>
-
-
 #include "config.h"
 
 #include <stdio.h>

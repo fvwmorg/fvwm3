@@ -1,3 +1,38 @@
+2002-05-17  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/style.c (update_window_color_style):
+	(update_window_color_hi_style):
+	* fvwm/move_resize.c (DisplayPosition):
+	(DisplaySize):
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/borders.c (get_common_decorations):
+	(border_get_titlebar_draw_descr): 
+	* fvwm/fvwm.h:
+	* fvwm/icons.c (DrawIconWindow):
+	Pass the colorset to text drawing via the FlocaleWinString structure
+
+	* libs/fvwmlib.h:
+	* libs/ColorUtils.c (GetForeShadowColor): 
+	(GetForeShadow):
+	* fvwm/colorset.c (parse_colorset):
+	* libs/Colorset.h:
+	* libs/Colorset.c (DumpColorset):
+	(LoadColorset):
+	Added fgsh colorset and two new functions GetForeShadowColor and
+	GetForeShadow which should be modified
+
+	* libs/Makefile.am: 
+	* libs/Fft.h:
+	* libs/FftInterface.h (new file):
+	* libs/Fft.c (FftDrawString):
+	* libs/Flocale.h:
+	* libs/Flocale.c (FlocaleFontStructDrawString):
+	(FlocaleRotateDrawString):
+	(FlocaleDrawString):
+	(FlocaleTextWidth):
+	(FlocaleLoadFont):
+	Implemented text shadow rendering
+
 2002-05-11  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/builtins.h:
