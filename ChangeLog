@@ -1,3 +1,7 @@
+1999-03-21  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/builtins.c: Fixed various compiler warnings.
+
 Sat Mar 20 15:22:02 1999  DanEspen  <dje@blue>
 
 	* fvwm/builtins.c (SetColorLimit): Ignore ColorLimit if display

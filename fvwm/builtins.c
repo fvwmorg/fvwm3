@@ -302,7 +302,7 @@ void Maximize(F_CMD_ARGS)
  ***********************************************************************/
 void WindowShade(F_CMD_ARGS)
 {
-    int h, y, step, old_h;
+    int h, y, step=1, old_h;
     int new_x, new_y, new_width, new_height;
     int toggle;
 
@@ -728,8 +728,6 @@ void iconify_function(F_CMD_ARGS)
 
 void raise_function(F_CMD_ARGS)
 {
-  name_list styles;                     /* place for merged styles */
-
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
 
@@ -1114,8 +1112,6 @@ void echo_func(F_CMD_ARGS)
 
 void raiselower_func(F_CMD_ARGS)
 {
-  name_list styles;
-
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
 
@@ -1525,7 +1521,7 @@ static void SafeDefineCursor(Window w, Cursor cursor)
 void CursorStyle(F_CMD_ARGS)
 {
   char *cname=NULL, *newcursor=NULL;
-  char *errpos = NULL, *arg = NULL, *path = NULL;
+  char *errpos = NULL, *path = NULL;
   char *fore = NULL, *back = NULL;
   XColor colors[2];
   int index,nc,i;
@@ -1888,7 +1884,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   char *option = NULL;
   char *optstring = NULL;
   char *nextarg;
-  char *args;
+  char *args = NULL;
   char *arg1;
   MenuStyle *ms;
   MenuStyle *tmpms;
@@ -4634,8 +4630,8 @@ void DirectionFunc(F_CMD_ARGS)
   int his_x;
   int his_y;
   int score;
-  int offset;
-  int distance;
+  int offset = 0;
+  int distance = 0;
   int best_score;
   FvwmWindow *window;
   FvwmWindow *best_window;
@@ -5052,13 +5048,13 @@ void set_animation(F_CMD_ARGS)
 /* set the number or size of shade animation steps, N => steps, Np => pixels */
 void setShadeAnim(F_CMD_ARGS)
 {
-  int val_unit,n = 0;
+  int n = 0;
   int val;
   char *opt;
 
   action = GetNextToken(action, &opt);
   if (opt) {
-    if (val = strlen(opt)) {
+    if ((val = strlen(opt))) {
       if (opt[val - 1] == 'p') {
         opt[val - 1] = '\0';
         n = sscanf(opt, "%d", &val);
