@@ -160,9 +160,12 @@ int  win_width    = 5,
 			 *  0 hidden -> not hidden (for the events loop) */
      FocusInWin = 0;    /* 1 if the Taskbar has the focus */
 
+static int auto_stick_y = 0;
+
 static volatile sig_atomic_t AlarmSet = NOT_SET;
 static volatile sig_atomic_t tip_window_alarm = False;
 static volatile sig_atomic_t hide_taskbar_alarm = False;
+static volatile sig_atomic_t stick_taskbar_alarm = False;
 
 
 int UpdateInterval = 30;
@@ -237,11 +240,12 @@ static void ParseConfigLine(char *tline);
 static void ShutMeDown(void);
 static RETSIGTYPE TerminateHandler(int sig);
 static RETSIGTYPE Alarm(int sig);
-static void SetAlarm(int event);
-static void ClearAlarm(void);
+static void SetAlarm(tb_alarm_t event);
+static void ClearAlarm(tb_alarm_t event);
 static void DoAlarmAction(void);
 static int ErrorHandler(Display*, XErrorEvent*);
 static Bool change_colorset(int cset, Bool force);
+static void WarpTaskBar(int y);
 int IsItemIndexIconSuppressed(List *list, int i);
 
 /******************************************************************************
@@ -413,9 +417,7 @@ void EndLessLoop(void)
     {
 
       if (FD_ISSET(x_fd, &readset) || XPending(dpy))
-      {
-	LoopOnEvents();
-      }
+        LoopOnEvents();
 
       if (FD_ISSET(Fvwm_fd[1], &readset))
       {
@@ -1196,16 +1198,17 @@ static void ParseConfigLine(char *tline)
 static RETSIGTYPE
 Alarm(int nonsense)
 {
-
-  switch(AlarmSet)
+  if (AlarmSet & SHOW_TIP)
   {
-  case SHOW_TIP:
     tip_window_alarm = True;
-    break;
-
-  case HIDE_TASK_BAR:
-      hide_taskbar_alarm = True;
-    break;
+  }
+  if (AlarmSet & HIDE_TASK_BAR)
+  {
+    hide_taskbar_alarm = True;
+  }
+  if (AlarmSet & STICK_TASK_BAR)
+  {
+    stick_taskbar_alarm = True;
   }
 
   AlarmSet = NOT_SET;
@@ -1226,7 +1229,12 @@ DoAlarmAction(void)
     hide_taskbar_alarm = False;
     HideTaskBar();
   }
-  else if (tip_window_alarm)
+  if (stick_taskbar_alarm)
+  {
+    stick_taskbar_alarm = False;
+    WarpTaskBar(auto_stick_y);
+  }
+  if (tip_window_alarm)
   {
     tip_window_alarm = False;
     if (AutoHide && WindowState == 0)
@@ -1295,7 +1303,7 @@ void CheckForTip(int x, int y)
       SetAlarm(SHOW_TIP);
   }
   else {
-    ClearAlarm();
+    ClearAlarm(SHOW_TIP);
     if (Tip.open) ShowTipWindow(0);
   }
 }
@@ -1485,7 +1493,7 @@ void LoopOnEvents(void)
 
     case LeaveNotify:
       NewTimestamp = Event.xcrossing.time;
-      ClearAlarm();
+      ClearAlarm(SHOW_TIP);
       if (Tip.open)
 	ShowTipWindow(0);
 
@@ -1561,7 +1569,8 @@ void LoopOnEvents(void)
 	  redraw = 1;
 	if (AutoStick)
 	{
-	  WarpTaskBar(Event.xconfigure.y, 0);
+	  SetAlarm(STICK_TASK_BAR);
+	  auto_stick_y = Event.xconfigure.y;
 	}
 	else
 	{
@@ -2126,12 +2135,12 @@ PropMwmHints prop;
 /***********************************************************************
  WarpTaskBar -- Enforce AutoStick feature
  ***********************************************************************/
-void WarpTaskBar(int y, Bool force)
+static void WarpTaskBar(int y)
 {
   /* The tests on y are really useful ! */
   if (!AutoHide &&
       ((y != screen_g.y + screen_g.height - win_height - win_border &&
-	y !=  screen_g.y + win_border) || force)) {
+	y !=  screen_g.y + win_border))) {
     if (y > Midline)
     {
       win_y = screen_g.height - win_height - win_border;
@@ -2148,12 +2157,7 @@ void WarpTaskBar(int y, Bool force)
 
   if (AutoHide)
      SetAlarm(HIDE_TASK_BAR);
-
-  /* Prevent oscillations caused by race with
-     time delayed TaskBarHide().  Is there any way
-     to prevent these Xevents from being sent
-     to the server in the first place? */
-  PurgeConfigEvents();
+  ClearAlarm(STICK_TASK_BAR);
 }
 
 /***********************************************************************
@@ -2181,7 +2185,7 @@ void RevealTaskBar()
   int new_win_y;
   int inc_y = 2;
 
-  ClearAlarm();
+  ClearAlarm(HIDE_TASK_BAR);
    /* do not reveal if the taskbar is already revealed */
   if (WindowState >= 0)
     return;
@@ -2223,7 +2227,7 @@ void HideTaskBar()
   int d_x, d_y, wx, wy;
   unsigned int mask;
 
-  ClearAlarm();
+  ClearAlarm(HIDE_TASK_BAR);
   /* do not hide if the taskbar is already hiden */
   if (WindowState == -1 || win_is_shaded)
     return;
@@ -2277,10 +2281,10 @@ void HideTaskBar()
  SetAlarm -- Schedule a timeout event
  ************************************************************************/
 static void
-SetAlarm(int event)
+SetAlarm(tb_alarm_t event)
 {
   alarm(0);  /* remove a race-condition */
-  AlarmSet = event;
+  AlarmSet |= event;
   alarm(1);
 }
 
@@ -2288,22 +2292,13 @@ SetAlarm(int event)
  ClearAlarm -- Disable timeout events
  ************************************************************************/
 static void
-ClearAlarm(void)
+ClearAlarm(tb_alarm_t event)
 {
-  AlarmSet = NOT_SET;
-  alarm(0);
-}
-
-/***********************************************************************
- PurgeConfigEvents -- Wait for and purge ConfigureNotify events.
- ************************************************************************/
-void PurgeConfigEvents(void)
-{
-  XEvent Event;
-
-  XPeekEvent(dpy, &Event);
-  while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event))
-    ;
+  AlarmSet &= ~event;
+  if (AlarmSet == 0)
+  {
+    alarm(0);
+  }
 }
 
 /************************************************************************

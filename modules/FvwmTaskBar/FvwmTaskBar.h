@@ -91,42 +91,45 @@ typedef PropMotifWmHints        PropMwmHints;
 #define PROP_MWM_HINTS_ELEMENTS       PROP_MOTIF_WM_HINTS_ELEMENTS
 
 /* Alarm Events */
-#define NOT_SET        0
-#define SHOW_TIP       1
-#define HIDE_TASK_BAR  2
+typedef enum
+{
+	NOT_SET = 0,
+	SHOW_TIP = 1,
+	HIDE_TASK_BAR = 2,
+	STICK_TASK_BAR = 4
+} tb_alarm_t;
 
 /*************************************************************************
   Subroutine Prototypes
 **************************************************************************/
-extern void EndLessLoop(void);
-extern void ReadFvwmPipe(void);
-extern void ProcessMessage(unsigned long type,unsigned long *body);
-extern void DeadPipe(int nonsense)  __attribute__((noreturn));
+void EndLessLoop(void);
+void ReadFvwmPipe(void);
+void ProcessMessage(unsigned long type,unsigned long *body);
+void DeadPipe(int nonsense)  __attribute__((noreturn));
 /*
-extern void Alarm(int nonsense);
-extern void SetAlarm(int event);
-extern void ClearAlarm(void);
+void Alarm(int nonsense);
+void SetAlarm(int event);
+void ClearAlarm(void);
 */
-extern void CheckForTip(int x, int y);
-extern void MakeMeWindow(void);
-extern void WaitForExpose(void);
-extern void RedrawWindow(int force);
-extern void StartMeUp(void);
-extern void ConsoleMessage(char *fmt,...);
-extern void LoopOnEvents(void);
-extern void AdjustWindow(int width, int height);
-extern void ChangeWindowName(char *str);
-extern void LinkAction(const char *string);
-extern void AddToSkipList(char *string);
-extern int InSkipList(char *string);
-extern void PrintSkipList(void);
-extern void FvwmNameMessage(long *body);
-extern void SetMwmHints(unsigned int value,
-			unsigned int funcs,unsigned int input);
-extern void RevealTaskBar(void);
-extern void HideTaskBar(void);
-extern void WarpTaskBar(int x, Bool force);
-extern void PurgeConfigEvents(void);
-extern void redraw_buttons(void);
+void CheckForTip(int x, int y);
+void MakeMeWindow(void);
+void WaitForExpose(void);
+void RedrawWindow(int force);
+void StartMeUp(void);
+void ConsoleMessage(char *fmt,...);
+void LoopOnEvents(void);
+void AdjustWindow(int width, int height);
+void ChangeWindowName(char *str);
+void LinkAction(const char *string);
+void AddToSkipList(char *string);
+int InSkipList(char *string);
+void PrintSkipList(void);
+void FvwmNameMessage(long *body);
+void SetMwmHints(
+	unsigned int value, unsigned int funcs,unsigned int input);
+void RevealTaskBar(void);
+void HideTaskBar(void);
+void PurgeConfigEvents(void);
+void redraw_buttons(void);
 
 #endif
