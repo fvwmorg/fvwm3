@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include "FvwmIconMan.h"
 #include "readconfig.h"
+#include "xmanager.h"
 #include <libs/defaults.h>
 #include <libs/fvwmlib.h>
 #include <libs/FScreen.h>
@@ -1907,3 +1908,71 @@ void read_in_resources (char *file)
   close_config_file();
 }
 
+void process_dynamic_config_line(char *line)
+{
+	int manager = 0;
+	char *token;
+	extern void remanage_winlist();
+
+	/* don't support dynamic config for transient */
+	if (globals.transient)
+	{
+		return;
+	}
+
+	line += ModuleLen;
+	line = GetNextToken(line, &token);
+	if (token && isdigit(*token))
+	{
+		if (extract_int(token, &manager) == 0
+			|| manager <= 0 || manager > globals.num_managers)
+		{
+			manager = 0;
+		}
+		free(token);
+		line = GetNextToken(line, &token);
+	}
+
+	if (!token)
+	{
+		return;
+	}
+	manager--;
+
+	/* currently support only "resolution" */
+	if (strcasecmp(token, "resolution") == 0)
+	{
+		int value;
+		line = GetNextToken(line, &token);
+		if (!token)
+		{
+			return;
+		}
+		if (!strcasecmp(token, "global"))
+			value = SHOW_GLOBAL;
+		else if (!strcasecmp(token, "desk"))
+			value = SHOW_DESKTOP;
+		else if (!strcasecmp(token, "page"))
+			value = SHOW_PAGE;
+		else if (!strcasecmp(token, "screen"))
+			value = SHOW_SCREEN;
+		else if (!strcasecmp(token, "!desk"))
+			value = NO_SHOW_DESKTOP;
+		else if (!strcasecmp(token, "!page"))
+			value = NO_SHOW_PAGE;
+		else if (!strcasecmp(token, "!screen"))
+			value = NO_SHOW_SCREEN;
+		else
+		{
+			fprintf(
+				stderr, "%s: unknown resolution %s.\n",
+				MyName, token);
+			free(token);
+			return;
+		}
+		free(token);
+
+		SET_MANAGER(manager, res, value);
+		remanage_winlist();
+	}
+}

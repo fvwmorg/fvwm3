@@ -24,7 +24,6 @@
 #include "xmanager.h"
 #include "libs/PictureGraphics.h"
 
-extern char *MyName;
 extern FlocaleWinString *FwinString;
 
 /* button dirty bits: */

@@ -221,23 +221,28 @@ static void set_win_configuration (WinData *win, FvwmPacketBody *body)
 
 static void handle_config_info (unsigned long *body)
 {
-  char *tline, *token;
+  char *tline, *token, *rest;
   int color;
+  extern void process_dynamic_config_line(char *line);
 
   tline = (char*)&(body[3]);
-  token = PeekToken(tline, &tline);
+  token = PeekToken(tline, &rest);
   if (StrEquals(token, "Colorset"))
   {
-    color = LoadColorset(tline);
+    color = LoadColorset(rest);
     change_colorset(color);
   }
   else if (StrEquals(token, XINERAMA_CONFIG_STRING))
   {
-    FScreenConfigureModule(tline);
+    FScreenConfigureModule(rest);
   }
   else if (StrEquals(token, "IgnoreModifiers"))
   {
-    sscanf(tline, "%d", &mods_unused);
+    sscanf(rest, "%d", &mods_unused);
+  }
+  else if (strncasecmp(tline, Module, ModuleLen) == 0)
+  {
+    process_dynamic_config_line(tline);
   }
 }
 
@@ -503,20 +508,24 @@ static void iconify (FvwmPacketBody *body, int dir)
   check_in_window (win);
 }
 
-/* only used by new_desk */
+/* only used by remanage_winlist */
 
-static void update_win_in_hashtab (void *arg)
+static void update_win_in_hashtab(void *arg)
 {
-  WinData *p = (WinData *)arg;
-  check_in_window (p);
+	WinData *p = (WinData *)arg;
+	check_in_window(p);
+}
+
+void remanage_winlist()
+{
+        walk_hashtab(update_win_in_hashtab);
+        draw_managers();
 }
 
 static void new_desk (FvwmPacketBody *body)
 {
-  globals.desknum = body->new_desk_data.desknum;
-  walk_hashtab (update_win_in_hashtab);
-
-  draw_managers ();
+	globals.desknum = body->new_desk_data.desknum;
+	remanage_winlist();
 }
 
 static void sendtomodule (FvwmPacketBody *body)

@@ -1,3 +1,19 @@
+2002-06-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/fvwm.c (handle_config_info):
+	* FvwmIconMan/fvwm.c (new remanage_winlist):
+	* FvwmIconMan/readconfig.c (new process_dynamic_config_line):
+	* FvwmIconMan/x.c:
+	* FvwmIconMan/xmanager.c:
+	FvwmIconMan may now change resolution dynamically, just issue
+	"*FvwmIconMan: resolution desk" while FvwmIconMan is running
+
+	* FvwmScript/libyywrap.c:
+	* FvwmScript/scanner.c:
+	removed $Header
+
 2002-06-03  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/script.y:

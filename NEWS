@@ -32,6 +32,12 @@ text with the background.
 * New FvwmButtons option ActionOnPress enables execution of action
   on press rather than on release for any specific button.
 
+* Improved CascadePlacement, the last used position is reused if
+  the last placed window does not exist any more.
+
+* FvwmIconMan may now change the resolution dynamically, just issue
+  "*FvwmIconMan: resolution page" while FvwmIconMan is running.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)

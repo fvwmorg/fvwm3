@@ -31,7 +31,6 @@ Display *theDisplay;
 Window theRoot;
 int theScreen;
 static Atom _XA_WM_DEL_WIN;
-extern char *MyName;
 
 static enum {
   NOT_GRABBED = 0,
