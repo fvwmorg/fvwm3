@@ -1,3 +1,11 @@
+1999-05-26  Chris Rankin  <rankinc@zipworld.com.au>
+
+    * libs/fvwmsignal.c: added <sys/select.h> header
+    * fvwm/events.c:     removed <sys/select.h>, <signal.h> header
+    * modules/FvwmButtons/FvwmButtons.c
+    Replaced select() with fvwmSelect() in FvwmButtons, altered signal
+    installation and fixed some invalid C prototypes.
+
 1999-05-26  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 
 	* fvwm/session.c (LoadGlobalState): 
