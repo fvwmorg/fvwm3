@@ -1,3 +1,10 @@
+Sat May  1 01:52:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmForm/FvwmForm.c: patch of 27 April causes format/arg
+ 	mismatches on machines where "sizeof" is an int (the original code
+ 	causes mismatches where "sizeof" is a long).  Sigh.  Give up and
+ 	cast "sizeof" arguments to int.
+
 1999-04-29  Hippo
 
 	* FvwmBacker/*: Removed select() calls and unused #include's

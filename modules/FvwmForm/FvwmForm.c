@@ -341,8 +341,8 @@ static void ct_InputFont(char *cp) {
 static void ct_Line(char *cp) {
   cur_line->next=calloc(sizeof(struct _line),1); /* malloc new line */
   if (cur_line->next == 0) {
-    fprintf(stderr, "%s: Malloc for line, (%ld bytes) failed. exiting.\n",
-            MyName+1, sizeof(struct _line));
+    fprintf(stderr, "%s: Malloc for line, (%d bytes) failed. exiting.\n",
+            MyName+1, (int)sizeof(struct _line));
     exit (1);
   }
   cur_line = cur_line->next;            /* new current line */
@@ -468,8 +468,8 @@ static void AssignDrawTable(Item *adt_item) {
   new_dt = malloc(sizeof(struct _drawtable)); /* get one */
   if (new_dt == 0) {                /* malloc failed? */
     fprintf(stderr,
-            "%s: Malloc for DrawTable, (%ld bytes) failed. exiting.\n",
-            MyName+1, sizeof(struct _drawtable));
+            "%s: Malloc for DrawTable, (%d bytes) failed. exiting.\n",
+            MyName+1, (int)sizeof(struct _drawtable));
     exit (1);                           /* give up */
   }
   new_dt->dt_next = 0;                  /* new end of list */
@@ -501,8 +501,8 @@ static void AddItem() {
   save_item = (Item *)item;             /* save current item */
   item = calloc(sizeof(Item),1);        /* get a new item */
   if (item == 0) {                      /* if out of mem */
-    fprintf(stderr, "%s: Malloc for item, (%ld bytes) failed. exiting.\n",
-            MyName+1, sizeof(Item));
+    fprintf(stderr, "%s: Malloc for item, (%d bytes) failed. exiting.\n",
+            MyName+1, (int)sizeof(Item));
     exit (1);                           /* give up */
   }
   if (save_item == 0) {                 /* if first item */
@@ -786,9 +786,9 @@ static void ct_Command(char *cp) {
                        sizeof(char *) *
                        cur_button->button.button_array_size);
     if (cur_button->button.commands == 0) {
-      fprintf(stderr,"%s: realloc button array size %ld failed\n",
+      fprintf(stderr,"%s: realloc button array size %d failed\n",
               MyName+1, cur_button->button.button_array_size *
-              sizeof(char *));
+              (int)sizeof(char *));
       exit (1);
     }
   }

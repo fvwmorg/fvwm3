@@ -145,7 +145,7 @@ LoadGlobalState(char *filename)
 	     to the file containing the true session state. */
 	  if (!strcmp(s1, "[SESSION_STATE]"))
 	    {
-	      sscanf(s, "%*s %s", &s2);
+	      sscanf(s, "%*s %s", s2);
 	      set_sm_properties (sm_conn, s2, SmRestartIfRunning);
 	      if (last_used_filename) free (last_used_filename);
 	      last_used_filename = strdup (s2);
@@ -724,8 +724,10 @@ static void
 set_sm_properties (SmcConn sm_conn, char *filename, char hint)
 {
   SmProp prop1, prop2, prop3, prop4, prop5, prop6, *props[6];
-  SmPropValue prop1val, prop2val, prop3val, prop4val, prop5val, prop6val;
-  char discardCommand[80];
+  SmPropValue prop1val, prop2val, prop3val, prop4val;
+#ifdef XSM_BUGGY_DISCARD_COMMAND
+  SmPropValue prop6val;
+#endif
   struct passwd *pwd;
   char *user_id;
   int numVals, i, priority = 30;
