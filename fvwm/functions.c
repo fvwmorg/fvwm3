@@ -35,6 +35,7 @@
 #include <X11/Intrinsic.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Parse.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -847,19 +848,26 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
   Bool set_silent;
   Bool must_free_string = False;
 
+  if (!action)
+  {
+    /* impossibly short command */
+    return;
+  }
+  /* ignore whitespace at the beginning of all config lines */
+  action = SkipSpaces(action, NULL, 0);
   if (!action || action[0] == 0 || action[1] == 0)
   {
     /* impossibly short command */
-    return;                             /* done */
+    return;
   }
   if (action[0] == '#')
   {
     /* a comment */
-    return;                             /* done */
+    return;
   }
   /* Note: the module config command, "*" can not be handled by the
-     regular command table because there is no required white space after
-     the asterisk. */
+   * regular command table because there is no required white space after
+   * the asterisk. */
   if (action[0] == '*')
   {
 #ifdef USEDECOR

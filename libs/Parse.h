@@ -15,6 +15,7 @@ char *SkipQuote(char *s, const char *qlong, const char *qstart,
 		const char *qend);
 char *GetQuotedString(char *sin, char **sout, const char *delims,
 		      const char *qlong, const char *qstart, const char *qend);
+char *SkipSpaces(char *indata, char *spaces, int snum);
 char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
 		  char *out_delim);
 char *PeekToken(char *indata, char **token);

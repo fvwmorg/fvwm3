@@ -1286,6 +1286,13 @@ void HandleButtonPress(void)
     XSync(dpy,0);
     return;
   }
+  if (Tmp_win && HAS_NEVER_FOCUS(Tmp_win))
+  {
+    /* It might seem odd to try to focus a window that never is given focus by
+     * fvwm, but the window might want to take focus itself, and SetFocus will
+     * tell it to do so in this case instead of giving it focus. */
+    SetFocus(Tmp_win->w, Tmp_win, 1);
+  }
   /* click to focus stuff goes here */
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
@@ -1339,15 +1346,9 @@ void HandleButtonPress(void)
       DrawDecorations(Tmp_win, DRAW_ALL, True, True, PressedW);
     }
   }
-  else if (Tmp_win && HAS_NEVER_FOCUS(Tmp_win))
-  {
-    /* It might seem odd to try to focus a window that never is given focus by
-     * fvwm, but the window might want to take focus itself, and SetFocus will
-     * tell it to do so in this case instead of giving it focus. */
-    SetFocus(Tmp_win->w, Tmp_win, 1);
-  }
   else if (Tmp_win && Event.xbutton.window == Tmp_win->Parent &&
-	   (HAS_SLOPPY_FOCUS(Tmp_win) || HAS_MOUSE_FOCUS(Tmp_win)) &&
+	   (HAS_SLOPPY_FOCUS(Tmp_win) || HAS_MOUSE_FOCUS(Tmp_win) ||
+	    HAS_NEVER_FOCUS(Tmp_win)) &&
 	   DO_RAISE_MOUSE_FOCUS_CLICK(Tmp_win))
   {
     FvwmWindow *tmp = Scr.Ungrabbed;
@@ -1583,9 +1584,18 @@ void HandleEnterNotify(void)
     return;
   }
 
-  if(HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
+  if (HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
+  }
+  else if (HAS_NEVER_FOCUS(Tmp_win))
+  {
+    /* Give the window a chance to grab the buttons needed for raise-on-click */
+    if (Scr.Focus != Tmp_win)
+    {
+      focus_grab_buttons(Tmp_win, False);
+      focus_grab_buttons(Scr.Focus, True);
+    }
   }
   else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == Scr.Focus &&
 	   do_accept_input_focus(Tmp_win))

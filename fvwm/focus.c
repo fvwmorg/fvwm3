@@ -468,17 +468,16 @@ Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
   }
   accepts_input_focus = do_accept_input_focus(tmp_win);
 
-  if ((HAS_SLOPPY_FOCUS(tmp_win) || HAS_MOUSE_FOCUS(tmp_win)) &&
+  if ((HAS_SLOPPY_FOCUS(tmp_win) || HAS_MOUSE_FOCUS(tmp_win) ||
+       HAS_NEVER_FOCUS(tmp_win)) &&
       DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win) &&
       (!is_focused || !is_on_top_of_layer(tmp_win)))
   {
-    /* do it */
     do_grab = True;
   }
   else if (HAS_CLICK_FOCUS(tmp_win) && !is_focused &&
 	   (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(tmp_win) || accepts_input_focus))
   {
-    /* do it */
     do_grab = True;
   }
 

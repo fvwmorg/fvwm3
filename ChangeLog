@@ -1,5 +1,17 @@
 2000-09-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleButtonPress):
+	(HandleEnterNotify):
+	* fvwm/focus.c (focus_grab_buttons):
+	MouseFocusClickRaises applies to NeverFocus windows too.
+
+	* libs/Parse.c (SkipSpaces):
+	removed static prefix
+
+	* fvwm/functions.c (ExecuteFunction):
+	whitespace ate the start of module config and comment lines are ignored
+	this helps cut-and-past with module configs
+
 	* fvwm/focus.c (focus_grab_buttons):
 	removed redundant code
 

@@ -124,7 +124,7 @@ char *GetQuotedString(char *sin, char **sout, const char *delims,
  * neither a whitespace character nor contained in the string 'spaces'. snum
  * is the number of characters in 'spaces'. You must not pass a NULL pointer
  * in indata. */
-static char *SkipSpaces(char *indata, char *spaces, int snum)
+char *SkipSpaces(char *indata, char *spaces, int snum)
 {
   while (*indata != 0 && (isspace((unsigned char)*indata) ||
 			  (snum && strchr(spaces, *indata))))
