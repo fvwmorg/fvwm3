@@ -353,12 +353,39 @@ smr_CHECK_LIB(png, png, for coloured or shaped icons,
     png_read_info, png.h, -lz -lm,)
 
 if test "$png_LIBS"; then
+  dnl Check for proper version of Png
+  problem_png=""
+  AC_MSG_CHECKING(for libpng 1.0.4a or better)
+  my_CPPFLAGS="$CPPFLAGS"
+  my_LIBS="$LIBS"
+  CPPFLAGS="$CPPFLAGS $png_CFLAGS"
+  LIBS="$LIBS $png_LIBS -lz -lm"
+  AC_TRY_RUN([#include <png.h>
+   int main(int c, char **v) {
+   return c == 1 ? 0 : (PNG_LIBPNG_VER < 10005) ? 2 : 0 ;}],
+    [./conftest dummy_arg; png_status=$?;
+     if test "$png_status" = "0"; then
+       with_png=yes;
+     else
+       with_png=no;
+       if test "$png_status" = "2"; then
+	 problem_png=": png library version is too old!"
+       else
+	 problem_png=": Internal png detection logic error!"
+       fi
+     fi],
+   [with_png=no])
+  AC_MSG_RESULT($with_png)
+  CPPFLAGS="$my_CPPFLAGS"
+  LIBS="$my_LIBS"
+fi
+
+if test "$with_png" = "yes"; then
   AC_DEFINE(HAVE_PNG)
   png_LIBS="-lpng -lz"
-  with_png=yes
   problem_png=""
 else
-  with_png=no
+  with_png=no  
 fi
 AC_SUBST(png_LIBS)
 AC_SUBST(png_CFLAGS)

@@ -1,3 +1,8 @@
+2002-04-09  olicha  <olivier.chapuis@free.fr>
+
+	* configure.in: 
+	Check for libpng libpng 1.0.4a or better
+
 2002-04-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/add_window.c (setup_title_geometry):
