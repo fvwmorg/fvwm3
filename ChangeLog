@@ -1,3 +1,8 @@
+1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/builtins.c (Maximize): make windows go back to their 
+	original location upon unmaximization again. 
+
 1999-05-11  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.h (style_flags): new member icon_override. 

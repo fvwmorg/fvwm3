@@ -232,8 +232,8 @@ void Maximize(F_CMD_ARGS)
       {
 	if (IsRectangleOnThisPage(&(tmp_win->orig_g), tmp_win->Desk))
 	{
-	  new_x = tmp_win->frame_g.x;
-	  new_y = tmp_win->frame_g.y;
+	  new_x = tmp_win->orig_g.x;
+	  new_y = tmp_win->orig_g.y;
 	}
 	else
 	{
@@ -929,14 +929,14 @@ void raiselower_func(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
 
-  if(!CanBeRaised (tmp_win) || IS_VISIBLE(tmp_win))
-  {
-    LowerWindow(tmp_win);
-  }
+  if (IS_VISIBLE(tmp_win) || !CanBeRaised(tmp_win))
+    {
+      LowerWindow(tmp_win);
+    }
   else
-  {
-    RaiseWindow(tmp_win);
-  }
+    {
+      RaiseWindow(tmp_win);
+    }
 }
 
 void SetEdgeScroll(F_CMD_ARGS)
