@@ -1,3 +1,8 @@
+Fri Apr 16 16:32:54 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/FormFvwmSetup.in: save .fvwm2rc in user home dir with
+	the dot.
+
 1999-04-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (Loop):

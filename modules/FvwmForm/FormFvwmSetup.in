@@ -12,21 +12,7 @@ DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.PadVText 0
 *FormFvwmSetup.Text    "Use this form to create your fvwm2rc configuration file."
 *FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    "By default, the file created is $HOME/.fvwm2rc."
-*FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    "If you create a $HOME/.fvwm directory, and restart,"
-*FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    "or if you had a .fvwm directory during fvwm2 startup,"
-*FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    "the file created is $HOME/.fvwm/fvwm2rc."
-*FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    ""
-*FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    "If you didn't have a '.fvwm' directory when fvwm2 started,"
-*FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    "you must create that directory and restart before fvwm2 or"
-*FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    "this form will start using it."
+*FormFvwmSetup.Text    "The file created is $HOME/.fvwm2rc or $FVWM_USERHOME/.fvwm2rc."
 *FormFvwmSetup.Line    left
 *FormFvwmSetup.Text    ""
 *FormFvwmSetup.Line    left
@@ -35,16 +21,9 @@ DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.Text    "editor to suit your own needs."
 *FormFvwmSetup.Line    left
 *FormFvwmSetup.Text    ""
-*FormFvwmSetup.Line    center
-*FormFvwmSetup.Button  continue    "F1 - Create Config Dir" F1
-*FormFvwmSetup.Command   !/bin/mkdir .fvwm
-*FormFvwmSetup.Button  quit    "F3 - Restart fvwm2" F3
-*FormFvwmSetup.Command   Restart fvwm2
-*FormFvwmSetup.Line    center
-*FormFvwmSetup.Text    "-or-"
 *FormFvwmSetup.Line    left
 *FormFvwmSetup.Selection meth multiple
-*FormFvwmSetup.Choice  BASIC BASIC on "Create a starting fvwm2rc file"
+*FormFvwmSetup.Choice  BASIC BASIC on "Create a starting .fvwm2rc file"
 *FormFvwmSetup.Line    left
 *FormFvwmSetup.Text    ""
 *FormFvwmSetup.Line    left
@@ -74,7 +53,7 @@ DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.Button  quit    "Return - Dismiss" ^M
 *FormFvwmSetup.Command   Nop
 *FormFvwmSetup.Button  continue    "F2 - Copy Config File(s)" F2
-*FormFvwmSetup.Command   $(BASIC?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmSetup ${FVWM_USERHOME}fvwm2rc)
+*FormFvwmSetup.Command   $(BASIC?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmSetup ${FVWM_USERHOME}.fvwm2rc)
 *FormFvwmSetup.Command   $(BAK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmBacker  ${FVWM_USERHOME}FvwmBacker)
 *FormFvwmSetup.Command   $(BUT?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmButtons ${FVWM_USERHOME}FvwmButtons)
 *FormFvwmSetup.Command   $(BOX?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIconBox ${FVWM_USERHOME}FvwmIconBox)
