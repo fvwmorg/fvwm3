@@ -1302,10 +1302,19 @@ void ReConfigureIcons(void)
     h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/
       (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
 
+    /* adjust size and position to keep visible and on page */
     if (w < MinSize)
+    {
+      if (t->x > (Scr.MyDisplayWidth / 2))
+        x -= MinSize - w;
       w = MinSize;
+    }
     if (h < MinSize)
+    {
+      if (t->y > (Scr.MyDisplayHeight / 2))
+        y -= MinSize - h;
       h = MinSize;
+    }
 
     t->icon_view_width      = w;
     t->icon_view_height     = h;
@@ -1575,9 +1584,17 @@ void AddNewWindow(PagerWindow *t)
     / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
 
   if (w < MinSize)
+  {
+    if (t->x > (Scr.MyDisplayWidth / 2))
+      x -= MinSize - w;
     w = MinSize;
+  }
   if (h < MinSize)
+  {
+    if (t->y > (Scr.MyDisplayHeight / 2))
+      y -= MinSize - h;
     h = MinSize;
+  }
 
   t->pager_view_width = w;
   t->pager_view_height = h;
@@ -1612,9 +1629,17 @@ void AddNewWindow(PagerWindow *t)
     / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
 
   if (w < MinSize)
+  {
+    if (t->x > (Scr.MyDisplayWidth / 2))
+      x -= MinSize - w;
     w = MinSize;
+  }
   if (h < MinSize)
+  {
+    if (t->y > (Scr.MyDisplayHeight / 2))
+      y -= MinSize - h;
     h = MinSize;
+  }
 
   t->icon_view_width = w;
   t->icon_view_height = h;
@@ -1674,9 +1699,17 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   h = (Scr.Vy + t->y + t->height) * (desk_h - m)
     / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
   if (w < MinSize)
+  {
+    if (t->x > (Scr.MyDisplayWidth / 2))
+      x -= MinSize - w;
     w = MinSize;
+  }
   if (h < MinSize)
+  {
+    if (t->y > (Scr.MyDisplayHeight / 2))
+      y -= MinSize - h;
     h = MinSize;
+  }
   if ((t->pager_view_width != w) || (t->pager_view_height != h)) {
     t->pager_view_width = w;
     t->pager_view_height = h;
@@ -1715,9 +1748,17 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   h = (Scr.Vy + t->y + t->height) * (icon_h - m)
     / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
   if (w < MinSize)
+  {
+    if (t->x > (Scr.MyDisplayWidth / 2))
+      x -= MinSize - w;
     w = MinSize;
+  }
   if (h < MinSize)
+  {
+    if (t->y > (Scr.MyDisplayHeight / 2))
+      y -= MinSize - h;
     h = MinSize;
+  }
   if ((t->icon_view_width != w) || (t->icon_view_height != h)) {
     t->icon_view_width = w;
     t->icon_view_height = h;
@@ -1760,9 +1801,17 @@ void MoveResizePagerView(PagerWindow *t)
   h = (Scr.Vy + t->y + t->height) * (desk_h - m)
       / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
   if (w < MinSize)
+  {
+    if (t->x > (Scr.MyDisplayWidth / 2))
+      x -= MinSize - w;
     w = MinSize;
+  }
   if (h < MinSize)
+  {
+    if (t->y > (Scr.MyDisplayHeight / 2))
+      y -= MinSize - h;
     h = MinSize;
+  }
 
   if (t->pager_view_width != w || t->pager_view_height != h) {
     t->pager_view_width = w;
@@ -1798,9 +1847,17 @@ void MoveResizePagerView(PagerWindow *t)
   h = (Scr.Vy + t->y + t->height) * (icon_h - m)
       / (Scr.VyMax + Scr.MyDisplayHeight) - y +m1;
   if (w < MinSize)
+  {
+    if (t->x > (Scr.MyDisplayWidth / 2))
+      x -= MinSize - w;
     w = MinSize;
+  }
   if (h < MinSize)
+  {
+    if (t->y > (Scr.MyDisplayHeight / 2))
+      y -= MinSize - h;
     h = MinSize;
+  }
 
   if (t->icon_view_width != w || t->icon_view_height != h) {
     t->icon_view_width = w;
