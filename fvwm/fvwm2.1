@@ -623,18 +623,31 @@ down. This way you can implement dynamic menus. It is even possible for
 the menu to destroy itself with \fIDestroyMenu\fP and the rebuild from
 scratch. When the menu has been destroyed (unless you used the
 "recreate" option when destroying the menu), do not forget to add the
-dynamic action again. Example:
+dynamic action again.
+
+Example (File browser):
 
 .EX
-AddToMenu dynamicmenu "Dynamic menu" title
-+ dynamicpopupaction Function makedynamicmenu
-+ dynamicpopidownaction Beep
+# You will find the shell script fvwm_make_browse_menu.sh in the utils
+# directory of the distribution.
 
-AddToFunc makedynamicmenu
-+ i destroymenu dynamicmenu
-+ i addtomenu dynamicmenu "Dynamic menu" title
-+ i addtomenu dynamicmenu dynamicpopupaction Function makedynamicmenu
-+ I PipeRead 'for i in `/bin/ls -F $HOME/dynamic`; do echo -e AddToMenu dynamicmenu "$i" Exec xterm -e vi "$i"; done'
+AddToMenu BrowseMenu
++ DynamicPopupAction Piperead fvwm_make_browse_menu.sh
+
+.EE
+
+Example (Picture menu):
+
+.EX
+# Build a menu of all .jpg files in $HOME/Pictures
+
+AddToMenu JpgMenu foo title
++ DynamicPopupAction Function MakeJpgMenu
+
+AddToFunc MakeJpgMenu
++ I DestroyMenu recreate JpgMenu
++ I AddToMenu JpgMenu Pictures Title
++ I PipeRead 'for i in "$HOME"/Pictures/*.jpg; do echo AddToMenu JpgMenu \"`basename "$i"`\" Exec xv \""$i"\"; done'
 .EE
 
 Titles can be used within the menu. If you add the option \fItop\fP behind

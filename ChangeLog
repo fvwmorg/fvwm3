@@ -1,5 +1,14 @@
 1999-05-06  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/menus.c (FPopupMenu): dynamic menus don't need an item initially
+
+	* utils/Makefile.am: make BuildXLockMenu executable
+
+	* configure.in (xpm_problem): removed FvwmAudio Makefile
+
+	* fvwm/menus.c (DestroyMenu): fixed 'recreate'
+	(DestroyMenu): fixed memory leak when destroying dynamic menus
+
 	* utils/BuildXLockMenu: applied documentation patch
 
 	* fvwm/windowlist.c (do_windowList):

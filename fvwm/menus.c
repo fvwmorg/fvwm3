@@ -234,7 +234,8 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
   }
   else {
     fWasAlreadyPopped = TRUE;
-    if (key_press) MiWarpPointerToItem(menu->first, TRUE /* skip Title */);
+    if (key_press)
+      MiWarpPointerToItem(menu->first, TRUE /* skip Title */);
   }
   fWarpPointerToTitle = FALSE;
 
@@ -1175,10 +1176,11 @@ Bool FPopupMenu(MenuRoot **pmenu, MenuRoot *menuPrior, int x, int y,
   int x_overlap, x_clipped_overlap;
   MenuItem *mi = NULL;
   MenuRoot *menu = *pmenu;
+  Bool has_popup_action = False;
 
   DBUG("FPopupMenu","called");
-  if ((!menu)||(menu->w == None)||(menu->items == 0)||
-      (menu->flags.f.is_in_use)) {
+  if ((!menu)||(menu->w == None)||(menu->flags.f.is_in_use))
+  {
     fWarpPointerToTitle = FALSE;
     return False;
   }
@@ -1189,6 +1191,7 @@ Bool FPopupMenu(MenuRoot **pmenu, MenuRoot *menuPrior, int x, int y,
     char *menu_name;
     FvwmWindow *save_Tmp_win;
 
+    has_popup_action = True;
     /* Save the current window in case the popup action modifies it */
     save_Tmp_win = Tmp_win;
     /* Save the menu name */
@@ -1196,16 +1199,26 @@ Bool FPopupMenu(MenuRoot **pmenu, MenuRoot *menuPrior, int x, int y,
     /* Execute the action */
     ExecuteFunction(menu->dynamic.popup_action, Tmp_win, &Event, Context, -1,
 		    DONT_EXPAND_COMMAND);
+    /* Restore the current window */
+    Tmp_win = save_Tmp_win;
     /* Now let's see if the menu still exists. It may have been destroyed and
      * recreated, so we have to look for a menu with the saved name. */
     *pmenu = FindPopup(menu_name);
-    menu = *pmenu;
     free(menu_name);
-    if(menu == NULL)
-      /* Duh, the menu deleted itself. */
-      return False;
-    /* Restore the current window */
-    Tmp_win = save_Tmp_win;
+    menu = *pmenu;
+  }
+
+  if(menu == NULL || menu->first == NULL || menu->items == 0)
+  {
+    /* The menu deleted itself or all its items or it has been empty from the
+     * start. */
+    fWarpPointerToTitle = FALSE;
+    return False;
+  }
+  if (has_popup_action)
+  {
+    /* recalculate preferred position in case the menu changed its size */
+    GetPreferredPopupPosition(menu,&x,&y);
   }
 
   menu->mrDynamicPrev = menuPrior;
@@ -2320,6 +2333,7 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
   if(mr == NULL)
     return;
 
+  /* seek menu in master list */
   tmp = Menus.all;
   prev = NULL;
   while((tmp != NULL)&&(tmp != mr))
@@ -2328,20 +2342,17 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
       tmp = tmp->next;
     }
   if(tmp != mr)
+    /* no such menu */
     return;
 
   if (mr->flags.f.is_in_use)
   {
+    /* can't destroy a menu while in use */
     fvwm_msg(ERR,"DestroyMenu", "Menu %s is in use", mr->name);
     return;
   }
 
-  if(prev == NULL)
-    Menus.all = mr->next;
-  else
-    prev->next = mr->next;
-
-  /* need to free the window list ? */
+  /* free all items */
   mi = mr->first;
   while(mi != NULL)
   {
@@ -2366,28 +2377,21 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
   }
   else
   {
-    free(mr->name);
+    /* unlink menu from list */
+    if(prev == NULL)
+      Menus.all = mr->next;
+    else
+      prev->next = mr->next;
 
+    if (mr->dynamic.popup_action)
+      free(mr->dynamic.popup_action);
+    if (mr->dynamic.popdown_action)
+      free(mr->dynamic.popdown_action);
+    free(mr->name);
     XDestroyWindow(dpy,mr->w);
     XDeleteContext(dpy, mr->w, MenuContext);
-
     if (mr->sidePic)
       DestroyPicture(dpy, mr->sidePic);
-
-#if 0
-    /* Hey, we can't just destroy the menu face here. Another menu may need it
-     */
-    if (mr->ms != Scr.DefaultMenuStyle && mr->ms) /* I'm a bit paranoid about
-						     segfaults :) */
-      {
-	FreeGC(dpy,mr->ms->look.MenuReliefGC);
-	XFreeGC(dpy,mr->ms->look.MenuShadowGC);
-	XFreeGC(dpy,mr->ms->look.MenuActiveGC);
-	XFreeGC(dpy,mr->ms->look.MenuGC);
-	free( mr->ms );
-      }
-#endif
-
     free(mr);
   }
 }

@@ -1,3 +1,13 @@
+1999-05-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmCommand/FvwmCommand.c: new report level '-1' for no reports, made
+	this the default because it is much faster
+
+	* Makefile.am (SUBDIRS): FvwmAudio is no longer built
+
+	* FvwmEvent/Makefile.am: use an FvwmAudio shell script to invoke
+	FvwmEvent -audio
+
 Wed May  5 23:51:00 1999  DanEspen  <dje@blue>
 
 	* FvwmForm/FormFvwmForm.: Put slash and dot back on output file.
@@ -2020,5 +2030,3 @@ Mon Nov  9 18:56:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmAnimate/FvwmAnimate.c: Fixed bug where AnimateResizeLine was
 	drawing 5 segments when it only wanted 4.
-
-

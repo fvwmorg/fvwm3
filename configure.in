@@ -293,7 +293,6 @@ utils/Makefile docs/Makefile
 icons/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl
 modules/FvwmAnimate/Makefile
-modules/FvwmAudio/Makefile
 modules/FvwmAuto/Makefile
 modules/FvwmBacker/Makefile
 modules/FvwmBanner/Makefile

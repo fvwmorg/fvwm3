@@ -4,9 +4,9 @@
  * Fvwm2 command input interface.
  *
  * Copyright 1998, Toshi Isogai.
- * Use this program at your own risk. 
+ * Use this program at your own risk.
  * Permission to use this program for any purpose is given,
- * as long as the copyright is kept intact. 
+ * as long as the copyright is kept intact.
  *
  */
 
@@ -16,14 +16,14 @@
 
 int  Fdr, Fdw;  /* file discriptor for fifo */
 FILE *Frun;     /* File contains pid */
-char *Fr_name;  
+char *Fr_name;
 int  Pfd;
 char *getline();
 fd_set fdset;
 
 struct timeval Tv;
 int  Opt_reply; /* wait for replay */
-int  Opt_monitor;     
+int  Opt_monitor;
 int  Opt_info;
 int  Opt_Serv;
 int  Opt_flags;
@@ -31,8 +31,8 @@ FILE *Fp;
 int  Rc;  /* return code */
 int  Bg;  /* FvwmCommand in background */
 
-void err_msg( char *msg ); 
-void err_quit( char *msg ); 
+void err_msg( char *msg );
+void err_quit( char *msg );
 void sendit( char *cmd );
 void receive( void );
 void sig_ttin ( int );
@@ -58,7 +58,7 @@ void spawn_child( void );
 
 /*******************************************************
  *
- * send command to and receive message from the server 
+ * send command to and receive message from the server
  *
  *******************************************************/
 int main ( int argc, char *argv[]) {
@@ -73,16 +73,16 @@ int main ( int argc, char *argv[]) {
   struct timeval tv2;
   extern char *optarg;
   extern int  optind, opterr, optopt;
-  
-  signal (SIGINT, sig_quit);  
-  signal (SIGHUP, sig_quit);  
-  signal (SIGQUIT, sig_quit);  
-  signal (SIGTERM, sig_quit);  
+
+  signal (SIGINT, sig_quit);
+  signal (SIGHUP, sig_quit);
+  signal (SIGQUIT, sig_quit);
+  signal (SIGTERM, sig_quit);
   signal (SIGTTIN, sig_ttin);
   signal (SIGTTOU, sig_ttin);
 
   Opt_reply = 0;
-  Opt_info = 1;
+  Opt_info = -1;
   f_stem = NULL;
   sf_stem = NULL;
   Opt_monitor = 0;
@@ -100,10 +100,10 @@ int main ( int argc, char *argv[]) {
       usage();
       exit(0);
       break;
-    case 'f': 
+    case 'f':
       f_stem = optarg;
       break;
-    case 'F': 
+    case 'F':
       Opt_flags = atoi (optarg);
       break;
     case 'S':
@@ -157,18 +157,18 @@ int main ( int argc, char *argv[]) {
     if (fgets (cmd, 20, Frun) != NULL) {
       fprintf (stderr, "\nFvwmCommand lock file  %sR is detected. "
 	       "This may indicate another FvwmCommand is running. "
-	       "It appears to be running under process ID:\n%s\n", 
+	       "It appears to be running under process ID:\n%s\n",
 	       f_stem, cmd );
       fprintf (stderr, "You may either kill the process or run FvwmCommand "
 	       "with another FIFO set using option -S and -f. "
-	       "If the process doesn't exist, simply remove file:\n%sR\n\n", 
+	       "If the process doesn't exist, simply remove file:\n%sR\n\n",
 	       f_stem);
       exit(1);
     }
     fclose (Frun);
     unlink (Fr_name);
   }
-	       
+
   if( Opt_Serv ) {
     sprintf (cmd,"%s '%sS %s'", argv[0], MYNAME, sf_stem);
     system (cmd);
@@ -180,7 +180,7 @@ int main ( int argc, char *argv[]) {
   }else {
       err_quit ("writing lock file");
   }
-    
+
   Fdr = Fdw = -1;
   count = 0;
   while ((Fdr=open (fm_name, O_RDONLY)) < 0) {
@@ -207,35 +207,35 @@ int main ( int argc, char *argv[]) {
     tv2.tv_sec = 0;
     tv2.tv_usec = 5;
     FD_ZERO(&fdset);
-    FD_SET(STDIN_FILENO, &fdset); 
+    FD_SET(STDIN_FILENO, &fdset);
     ncnt = select(FD_SETSIZE,SELECT_TYPE_ARG234 &fdset, 0, 0, &tv2);
     if( ncnt && (fgets( cmd, 1, stdin )==0 || cmd[0] == 0)) {
       Bg = 1;
     }
 
     /* line buffer stdout for coprocess */
-    setvbuf( stdout, NULL, _IOLBF, 0); 
+    setvbuf( stdout, NULL, _IOLBF, 0);
 
     /* send arguments first */
     for( ;i < argc; i++ ) {
       strncpy( cmd, argv[i], MAX_COMMAND_SIZE-2 );
       sendit( cmd );
     }
-		
+
 
     while(1) {
       FD_ZERO(&fdset);
       FD_SET(Fdr, &fdset);
       if( Bg == 0 ) {
-	FD_SET(STDIN_FILENO, &fdset); 
+	FD_SET(STDIN_FILENO, &fdset);
       }
       ncnt = select(FD_SETSIZE,SELECT_TYPE_ARG234 &fdset, 0, 0, NULL);
-			
+
       /* message from fvwm */
       if (FD_ISSET(Fdr, &fdset)){
 	process_message();
       }
-      
+
       if( Bg == 0 ) {
       /* command input */
 	if( FD_ISSET(STDIN_FILENO, &fdset) ) {
@@ -255,7 +255,8 @@ int main ( int argc, char *argv[]) {
     for( ;i < argc; i++ ) {
       strncpy( cmd, argv[i], MAX_COMMAND_SIZE-2 );
       sendit( cmd );
-      receive();
+      if (Opt_info >= 0)
+	receive();
     }
   }
   close_fifos();
@@ -288,7 +289,7 @@ void sig_quit (int dummy) {
 
 void sig_ttin( int  dummy ) {
   Bg = 1;
-  signal( SIGTTIN, SIG_IGN ); 
+  signal( SIGTTIN, SIG_IGN );
 }
 
 /************************************/
@@ -310,10 +311,10 @@ void err_msg( char *msg ) {
 /*************************************/
 void sendit( char *cmd ) {
   int clen;
-	
+
   if( cmd[0] != '\0'  ) {
     clen = strlen(cmd);
-		
+
     /* add cr */
     if( cmd[clen-1] != '\n' ) {
       strcat(cmd, "\n");
@@ -335,16 +336,16 @@ void receive () {
     FD_SET( Fdr, &fdset);
     ncnt = select(FD_SETSIZE, SELECT_TYPE_ARG234 &fdset, 0, 0, NULL);
   }
-		
+
 
   while (1){
     tv.tv_sec = Tv.tv_sec;
     tv.tv_usec = Tv.tv_usec;
     FD_ZERO(&fdset);
     FD_SET(Fdr, &fdset);
-    
+
     ncnt = select(FD_SETSIZE, SELECT_TYPE_ARG234 &fdset, 0, 0, &tv);
-    
+
     if( ncnt < 0 ) {
       err_quit("receive");
       break;
@@ -366,39 +367,41 @@ void receive () {
 void usage(void) {
   fprintf (stderr, "Usage: %s [OPTION] [COMMAND]...\n", MYNAME);
   fprintf (stderr, "Send commands to fvwm2 via %sS\n\n", MYNAME);
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "  -F <flag info>      0 - no flag info\n");
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "                      2 - full flag info (default)\n");
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "  -S <file name>      "
 	   "invoke another %s server with fifo <file name>\n",
 	   MYNAME);
-  fprintf (stderr, 
-	   "  -f <file name>      use fifo <file name> to connect to %sS\n", 
+  fprintf (stderr,
+	   "  -f <file name>      use fifo <file name> to connect to %sS\n",
 	   MYNAME);
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "  -i <info level>     0 - error only\n" );
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "                      1 - above and config info (default)\n" );
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "                      2 - above and static info\n" );
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "                      3 - above and dynamic info\n" );
-  fprintf (stderr, 
+  fprintf (stderr,
+	   "                     -1 - none (default, much faster)\n" );
+  fprintf (stderr,
 	   "  -m                  monitor fvwm2 message transaction\n");
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "  -r                  "
 	   "wait for a reply (overrides waiting time)\n");
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "  -v                  print version number\n");
-  fprintf (stderr, 
+  fprintf (stderr,
 	   "  -w <micro sec>      waiting time for the reponse from fvwm\n");
   fprintf (stderr, "\nDefault fifo names are ~/.%sC and ~/.%sM\n",
 	   MYNAME, MYNAME);
   fprintf (stderr, "Default waiting time is 500,000 us\n");
 }
- 
+
 /*
  * read fifo
  */
@@ -424,7 +427,7 @@ int read_f (int fd, char *p, int len) {
  */
 void process_message( void ) {
   unsigned long type, length, body[24*SOL];
-	
+
   read_f( Fdr, (char*)&type, SOL);
   read_f( Fdr, (char*)&length, SOL);
   read_f( Fdr, (char*)body, length );
@@ -448,46 +451,46 @@ void process_message( void ) {
     case M_RES_NAME:
       list(body, "resource");
       break;
-					
+
     case M_END_WINDOWLIST:
       list_string("end windowlist");
       break;
-					
+
     case M_ICON_FILE:
       list(body, "icon file");
       break;
     case M_ICON_LOCATION:
       list_icon_loc(body);
       break;
-					
+
     case M_END_CONFIG_INFO:
       list_string("end configinfo");
       break;
-			
+
     case M_DEFAULTICON:
       list(body, "default icon");
       break;
-			
+
     case M_MINI_ICON:
       list_mini_icon( body );
       break;
-			
+
     case M_CONFIG_INFO:
       printf( "%s", (char *)&body[3] );
       break;
-				
+
     default:
       if( Opt_info >=2 ) {
-				
+
 	switch(type) {
-			
+
 	case M_CONFIGURE_WINDOW:
 	  list_configure( body);
 	  break;
 	case M_STRING:
 	  list(body, "string");
 	  break;
-			
+
 	default:
 	  if( Opt_info >= 3 ) {
 	    switch( type ) {
@@ -538,7 +541,7 @@ void process_message( void ) {
   }
 }
 
-        			
+
 /**********************************
  *
  *  print configuration info
@@ -612,7 +615,7 @@ void list_configure(unsigned long *body) {
 	  body[0], "min size", body[15], body[16]);
   printf( "0x%08lx %-20s width %ld, height %ld\n",
 	  body[0], "max size", body[17], body[18]);
-	
+
 
   switch(body[21]) {
   case ForgetGravity:
@@ -682,7 +685,7 @@ void list_mini_icon(unsigned long *body) {
 
 /*************************************************************************
  *
- * print info  message body[3] 
+ * print info  message body[3]
  *
  ************************************************************************/
 void list( unsigned long *body, char *text ) {
@@ -699,7 +702,7 @@ void list( unsigned long *body, char *text ) {
 void list_new_page(unsigned long *body) {
 
   printf( "           %-20s x %ld, y %ld, desk %ld, max x %ld, max y %ld\n",
-	  "new page", 
+	  "new page",
 	  body[0], body[0], body[2], body[3], body[4]);
 }
 
@@ -709,7 +712,7 @@ void list_new_page(unsigned long *body) {
  *
  ************************************************************************/
 void list_new_desk(unsigned long *body) {
-  
+
   printf( "           %-20s %ld\n",  "new desk", body[0] );
 }
 
@@ -729,7 +732,7 @@ void list_string (char *str) {
  ************************************************************************/
 void list_header(unsigned long *body, char *text) {
 
-  printf("0x%08lx %s\n", body[0], text); 
+  printf("0x%08lx %s\n", body[0], text);
 
 }
 

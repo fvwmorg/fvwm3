@@ -1,15 +1,24 @@
 Changes in alpha release 2.3.2 (April 1999)
 
+* The FvwmCommand module is now much faster and can thus comfortably be used in
+  shell scripts. The tradeoff is that it does not report errors any more. To
+  get the old behaviour run FvwmCommand with the '-i 1' option.
+
+* Dynamic menus are provided by the special menu items 'DynamicPopupAction' and
+  'DynamicPopdownAction'. See manpage on 'AddToMenu' for details.
+
 * System-wide config files are now in ${sysconfdir}/fvwm
   (i.e. /usr/local/etc/fvwm by default) as many files are now installed there.
 
 Changes in alpha release 2.3.1 (April 1999)
 
+* Daily snapshots of the development sources available on our web page.
+
 * FixedPosition style: disables moving the window.
 
 * IgnoreRestack style: forbids clients to change their own stacking
   order position.
- 
+
 * The NoWarp option to the Focus command allow focusing window on a different
   page without switching to that page.
 
