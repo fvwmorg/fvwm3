@@ -1,10 +1,17 @@
+2003-04-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (main):
+	* FvwmButtons/parse.c (parse_window_geometry):
+	(ParseConfigLine):
+	fixed Xinerama handling of ButtonGeometry option in FvwmButtons
+
 2003-04-23  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (StartMeUp):
 	* FvwmTaskBar/Start.c (StartButtonInit):
 	Fixed some minor memory leaks
 
-	* FvwmTaskBar/ButtonArray.c (ButtonDraw): 
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw):
 	Fixed a Region leaks when a buttons has no title
 
 2003-04-22  Mikhael Goikhman  <migo@homemail.com>

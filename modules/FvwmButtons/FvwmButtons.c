@@ -788,8 +788,7 @@ int main(int argc, char **argv)
   /* parse the geometry string */
   if (geom_option_argc != 0)
   {
-    parse_window_geometry(argv[geom_option_argc]);
-    has_button_geometry = 0;
+    parse_window_geometry(argv[geom_option_argc], 0);
   }
 
   /* Don't quit if only a subpanel is empty */
