@@ -346,10 +346,25 @@ static int menustyle_get_styleopt_index(char *option)
 		"PopdownImmediately", "PopdownDelayed",
 		"PopdownDelay",
 		"PopupActiveArea",
+		"HilightRelief", "HilightReliefOff",
 		NULL
 	};
 
 	return GetTokenIndex(option, optlist, 0, NULL);
+}
+
+static void change_or_make_gc(GC *gc, unsigned long gcm, XGCValues *gcv)
+{
+	if (*gc != None)
+	{
+		XChangeGC(dpy, *gc, gcm, gcv);
+	}
+	else
+	{
+		*gc = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, gcv);
+	}
+
+	return;
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -368,37 +383,37 @@ void menustyle_free(MenuStyle *ms)
 		return;
 	}
 	menustyle_free_face(&ST_FACE(ms));
-	if (ST_MENU_GC(ms))
+	if (FORE_GC(ST_MENU_INACTIVE_GCS(ms)))
 	{
-		XFreeGC(dpy, ST_MENU_GC(ms));
+		XFreeGC(dpy, FORE_GC(ST_MENU_INACTIVE_GCS(ms)));
 	}
-	if (ST_MENU_ACTIVE_GC(ms))
+	if (FORE_GC(ST_MENU_ACTIVE_GCS(ms)))
 	{
-		XFreeGC(dpy, ST_MENU_ACTIVE_GC(ms));
+		XFreeGC(dpy, FORE_GC(ST_MENU_ACTIVE_GCS(ms)));
 	}
-	if (ST_MENU_ACTIVE_BACK_GC(ms))
+	if (BACK_GC(ST_MENU_ACTIVE_GCS(ms)))
 	{
-		XFreeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms));
+		XFreeGC(dpy, BACK_GC(ST_MENU_ACTIVE_GCS(ms)));
 	}
-	if (ST_MENU_ACTIVE_RELIEF_GC(ms))
+	if (HILIGHT_GC(ST_MENU_ACTIVE_GCS(ms)))
 	{
-		XFreeGC(dpy, ST_MENU_ACTIVE_RELIEF_GC(ms));
+		XFreeGC(dpy, HILIGHT_GC(ST_MENU_ACTIVE_GCS(ms)));
 	}
-	if (ST_MENU_ACTIVE_SHADOW_GC(ms))
+	if (SHADOW_GC(ST_MENU_ACTIVE_GCS(ms)))
 	{
-		XFreeGC(dpy, ST_MENU_ACTIVE_SHADOW_GC(ms));
+		XFreeGC(dpy, SHADOW_GC(ST_MENU_ACTIVE_GCS(ms)));
 	}
-	if (ST_MENU_RELIEF_GC(ms))
+	if (HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms)))
 	{
-		XFreeGC(dpy, ST_MENU_RELIEF_GC(ms));
+		XFreeGC(dpy, HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms)));
 	}
 	if (ST_MENU_STIPPLE_GC(ms))
 	{
 		XFreeGC(dpy, ST_MENU_STIPPLE_GC(ms));
 	}
-	if (ST_MENU_SHADOW_GC(ms))
+	if (SHADOW_GC(ST_MENU_INACTIVE_GCS(ms)))
 	{
-		XFreeGC(dpy, ST_MENU_SHADOW_GC(ms));
+		XFreeGC(dpy, SHADOW_GC(ST_MENU_INACTIVE_GCS(ms)));
 	}
 	if (ST_SIDEPIC(ms))
 	{
@@ -450,14 +465,9 @@ void menustyle_update(MenuStyle *ms)
 {
 	XGCValues gcv;
 	unsigned long gcm;
-	Pixel menu_fore;
-	Pixel menu_back;
-	Pixel relief_fore;
-	Pixel relief_back;
-	Pixel active_fore;
-	Pixel active_back;
-	Pixel active_relief_fore;
-	Pixel active_relief_back;
+	color_quad c_inactive;
+	color_quad c_active;
+	color_quad c_stipple;
 	colorset_struct *menu_cs = &Colorset[ST_CSET_MENU(ms)];
 	colorset_struct *active_cs = &Colorset[ST_CSET_ACTIVE(ms)];
 	colorset_struct *greyed_cs = &Colorset[ST_CSET_GREYED(ms)];
@@ -469,14 +479,13 @@ void menustyle_update(MenuStyle *ms)
 		return;
 	}
 	ST_IS_UPDATED(ms) = 1;
-
 	/* calculate colors based on foreground */
-	if (!ST_DO_HILIGHT_FORE(ms) || !ST_HAS_ACTIVE_FORE(ms))
+	if (!ST_HAS_ACTIVE_FORE(ms))
 	{
 		ST_MENU_ACTIVE_COLORS(ms).fore = ST_MENU_COLORS(ms).fore;
 	}
 	/* calculate colors based on background */
-	if (!ST_DO_HILIGHT_BACK(ms) || !ST_HAS_ACTIVE_BACK(ms))
+	if (!ST_HAS_ACTIVE_BACK(ms))
 	{
 		ST_MENU_ACTIVE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
 	}
@@ -501,55 +510,59 @@ void menustyle_update(MenuStyle *ms)
 			GetColor(DEFAULT_HILIGHT_COLOR);
 	}
 	ST_MENU_STIPPLE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
-
-	/* calculate some pixel values for convenience reasons */
+	/* prepare colours for changing the gcs */
 	if (ST_HAS_MENU_CSET(ms))
 	{
-		menu_fore = menu_cs->fg;
-		menu_back = menu_cs->bg;
-		relief_fore = menu_cs->hilite;
-		relief_back = menu_cs->shadow;
-		active_relief_fore = menu_cs->hilite;
-		active_relief_back = menu_cs->shadow;
+		c_inactive.fore = menu_cs->fg;
+		c_inactive.back = menu_cs->bg;
+		c_inactive.hilight = menu_cs->hilite;
+		c_inactive.shadow = menu_cs->shadow;
 	}
 	else
 	{
-		menu_fore = ST_MENU_COLORS(ms).fore;
-		menu_back = ST_MENU_COLORS(ms).back;
-		relief_fore = ST_MENU_RELIEF_COLORS(ms).fore;
-		relief_back = ST_MENU_RELIEF_COLORS(ms).back;
-		active_relief_fore = ST_MENU_RELIEF_COLORS(ms).fore;
-		active_relief_back = ST_MENU_RELIEF_COLORS(ms).back;
+		c_inactive.fore = ST_MENU_COLORS(ms).fore;
+		c_inactive.back = ST_MENU_COLORS(ms).back;
+		c_inactive.hilight = ST_MENU_RELIEF_COLORS(ms).fore;
+		c_inactive.shadow = ST_MENU_RELIEF_COLORS(ms).back;
 	}
+	if (ST_HAS_ACTIVE_CSET(ms))
+	{
+		c_active.fore = active_cs->fg;
+		c_active.back = active_cs->bg;
+		c_active.hilight = active_cs->hilite;
+		c_active.shadow = active_cs->shadow;
+	}
+	else
+	{
+		c_active.fore = ST_MENU_ACTIVE_COLORS(ms).fore;
+		c_active.back = ST_MENU_ACTIVE_COLORS(ms).back;
+		c_active.hilight = ST_MENU_RELIEF_COLORS(ms).fore;
+		c_active.shadow = ST_MENU_RELIEF_COLORS(ms).back;
+	}
+	if (ST_HAS_GREYED_CSET(ms))
+	{
+		c_stipple.fore = greyed_cs->fg;
+		c_stipple.back = greyed_cs->fg;
+	}
+	else
+	{
+		c_stipple.fore = ST_MENU_STIPPLE_COLORS(ms).fore;
+		c_stipple.back = ST_MENU_STIPPLE_COLORS(ms).back;
+	}
+	/* override hilighting colours if necessary */
 	if (!ST_DO_HILIGHT_FORE(ms))
 	{
-		active_fore = menu_fore;
-	}
-	else if (ST_HAS_ACTIVE_CSET(ms))
-	{
-		active_fore = active_cs->fg;
-	}
-	else
-	{
-		active_fore = (ST_HAS_ACTIVE_FORE(ms)) ?
-			ST_MENU_ACTIVE_COLORS(ms).fore : menu_fore;
+		c_active.fore = c_inactive.fore;
 	}
 	if (!ST_DO_HILIGHT_BACK(ms))
 	{
-		active_back = menu_back;
+		c_active.back = c_inactive.back;
 	}
-	else if (ST_HAS_ACTIVE_CSET(ms))
+	if (!ST_DO_HILIGHT_RELIEF(ms))
 	{
-		active_back = active_cs->bg;
-		active_relief_fore = active_cs->hilite;
-		active_relief_back = active_cs->shadow;
+		c_active.hilight = c_inactive.hilight;
+		c_active.shadow = c_inactive.shadow;
 	}
-	else
-	{
-		active_back = (ST_HAS_ACTIVE_BACK(ms)) ?
-			ST_MENU_ACTIVE_COLORS(ms).back : menu_back;
-	}
-
 	/* make GC's */
 	gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
 	if (ST_PSTDFONT(ms)->font != NULL)
@@ -559,125 +572,51 @@ void menustyle_update(MenuStyle *ms)
 	}
 	gcv.function = GXcopy;
 	gcv.line_width = 0;
-
-	/* update relief gc */
-	gcv.foreground = relief_fore;
-	gcv.background = relief_back;
-	if (ST_MENU_RELIEF_GC(ms))
-	{
-		XChangeGC(dpy, ST_MENU_RELIEF_GC(ms), gcm, &gcv);
-	}
-	else
-	{
-		ST_MENU_RELIEF_GC(ms) =
-			fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	}
-
-	/* update shadow gc */
-	gcv.foreground = relief_back;
-	gcv.background = relief_fore;
-	if (ST_MENU_SHADOW_GC(ms))
-	{
-		XChangeGC(dpy, ST_MENU_SHADOW_GC(ms), gcm, &gcv);
-	}
-	else
-	{
-		ST_MENU_SHADOW_GC(ms) =
-			fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	}
-
-	/* update active gc */
-	gcv.foreground = active_fore;
-	gcv.background = active_back;
-	if (ST_MENU_ACTIVE_GC(ms))
-	{
-		XChangeGC(dpy, ST_MENU_ACTIVE_GC(ms), gcm, &gcv);
-	}
-	else
-	{
-		ST_MENU_ACTIVE_GC(ms) =
-			fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	}
-
-	/* update active relief gc */
-	gcv.foreground = active_relief_fore;
-	gcv.background = active_relief_back;
-	if (ST_MENU_ACTIVE_RELIEF_GC(ms))
-	{
-		XChangeGC(dpy, ST_MENU_ACTIVE_RELIEF_GC(ms), gcm, &gcv);
-	}
-	else
-	{
-		ST_MENU_ACTIVE_RELIEF_GC(ms) =
-			fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	}
-
-	/* update active shadow gc */
-	gcv.foreground = active_relief_back;
-	gcv.background = active_relief_fore;
-	if (ST_MENU_ACTIVE_SHADOW_GC(ms))
-	{
-		XChangeGC(dpy, ST_MENU_ACTIVE_SHADOW_GC(ms), gcm, &gcv);
-	}
-	else
-	{
-		ST_MENU_ACTIVE_SHADOW_GC(ms) =
-			fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	}
-
-	/* update active back gc */
-	gcv.foreground = active_back;
-	gcv.background = active_fore;
-	if (ST_MENU_ACTIVE_BACK_GC(ms))
-	{
-		XChangeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms), gcm, &gcv);
-	}
-	else
-	{
-		ST_MENU_ACTIVE_BACK_GC(ms) =
-			fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	}
-
-	/* update menu gc */
-	gcv.foreground = menu_fore;
-	gcv.background = menu_back;
-	if (ST_MENU_GC(ms))
-	{
-		XChangeGC(dpy, ST_MENU_GC(ms), gcm, &gcv);
-	}
-	else
-	{
-		ST_MENU_GC(ms) =
-			fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	}
-
-	/* update stipple gc */
+	/* update inactive menu gcs */
+	gcv.foreground = c_inactive.fore;
+	gcv.background = c_inactive.back;
+	change_or_make_gc(&FORE_GC(ST_MENU_INACTIVE_GCS(ms)), gcm, &gcv);
+	BACK_GC(ST_MENU_INACTIVE_GCS(ms)) = FORE_GC(ST_MENU_INACTIVE_GCS(ms));
+	gcv.foreground = c_inactive.hilight;
+	gcv.background = c_inactive.shadow;
+	change_or_make_gc(&HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms)), gcm, &gcv);
+	gcv.foreground = c_inactive.shadow;
+	gcv.background = c_inactive.hilight;
+	change_or_make_gc(&SHADOW_GC(ST_MENU_INACTIVE_GCS(ms)), gcm, &gcv);
+	/* update active menu gcs */
+	gcv.foreground = c_active.fore;
+	gcv.background = c_active.back;
+	change_or_make_gc(&FORE_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
+	gcv.foreground = c_active.back;
+	gcv.background = c_active.fore;
+	change_or_make_gc(&BACK_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
+	gcv.foreground = c_active.hilight;
+	gcv.background = c_active.shadow;
+	change_or_make_gc(&HILIGHT_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
+	gcv.foreground = c_active.shadow;
+	gcv.background = c_active.hilight;
+	change_or_make_gc(&SHADOW_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
+	/* update stipple menu gcs */
+	SHADOW_GC(ST_MENU_STIPPLE_GCS(ms)) =
+		SHADOW_GC(ST_MENU_INACTIVE_GCS(ms));
 	if (Pdepth < 2)
 	{
 		gcv.fill_style = FillStippled;
 		gcv.stipple = Scr.gray_bitmap;
 		/* no need to reset fg/bg, FillStipple wins */
 		gcm |= GCStipple | GCFillStyle;
-	}
-	else if (ST_HAS_GREYED_CSET(ms))
-	{
-		gcv.foreground = greyed_cs->fg;
-		gcv.background = greyed_cs->bg;
+		HILIGHT_GC(ST_MENU_STIPPLE_GCS(ms)) =
+			SHADOW_GC(ST_MENU_INACTIVE_GCS(ms));
 	}
 	else
 	{
-		gcv.foreground = ST_MENU_STIPPLE_COLORS(ms).fore;
-		gcv.background = ST_MENU_STIPPLE_COLORS(ms).back;
+		gcv.foreground = c_stipple.fore;
+		gcv.background = c_stipple.back;
+		HILIGHT_GC(ST_MENU_STIPPLE_GCS(ms)) =
+			HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms));
 	}
-	if (ST_MENU_STIPPLE_GC(ms))
-	{
-		XChangeGC(dpy, ST_MENU_STIPPLE_GC(ms), gcm, &gcv);
-	}
-	else
-	{
-		ST_MENU_STIPPLE_GC(ms) =
-			fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-	}
+	change_or_make_gc(&FORE_GC(ST_MENU_STIPPLE_GCS(ms)), gcm, &gcv);
+	BACK_GC(ST_MENU_STIPPLE_GCS(ms)) = BACK_GC(ST_MENU_INACTIVE_GCS(ms));
 
 	return;
 }
@@ -795,6 +734,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_HAS_LONG_SEPARATORS(tmpms) = 0;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
 				ST_DO_HILIGHT_BACK(tmpms) = 0;
+				ST_DO_HILIGHT_FORE(tmpms) = 0;
 			}
 			else if (i == 1)
 			{
@@ -809,6 +749,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_HAS_LONG_SEPARATORS(tmpms) = 1;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
 				ST_DO_HILIGHT_BACK(tmpms) = 0;
+				ST_DO_HILIGHT_FORE(tmpms) = 0;
 			}
 			else /* i == 2 */
 			{
@@ -823,10 +764,14 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_HAS_LONG_SEPARATORS(tmpms) = 0;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 0;
 				ST_DO_HILIGHT_BACK(tmpms) = 1;
+				ST_DO_HILIGHT_FORE(tmpms) = 1;
 			}
 
 			/* common settings */
-			ST_DO_HILIGHT_FORE(tmpms) = 1;
+			ST_CSET_MENU(tmpms) = -1;
+			ST_CSET_ACTIVE(tmpms) = -1;
+			ST_CSET_GREYED(tmpms) = -1;
+			ST_DO_HILIGHT_RELIEF(tmpms) = 0;
 			ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
 			ST_ACTIVE_AREA_PERCENT(tmpms) =
 				DEFAULT_MENU_POPUP_NOW_RATIO;
@@ -953,7 +898,6 @@ void menustyle_parse_style(F_CMD_ARGS)
 			}
 			if (arg1 == NULL)
 			{
-
 				ST_HAS_ACTIVE_FORE(tmpms) = 0;
 			}
 			else
@@ -1244,6 +1188,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			    *val < 0)
 			{
 				ST_HAS_MENU_CSET(tmpms) = 0;
+				ST_CSET_MENU(tmpms) = -1;
 			}
 			else
 			{
@@ -1258,6 +1203,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			    *val < 0)
 			{
 				ST_HAS_ACTIVE_CSET(tmpms) = 0;
+				ST_CSET_ACTIVE(tmpms) = -1;
 			}
 			else
 			{
@@ -1273,6 +1219,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			    *val < 0)
 			{
 				ST_HAS_GREYED_CSET(tmpms) = 0;
+				ST_CSET_GREYED(tmpms) = -1;
 			}
 			else
 			{
@@ -1324,6 +1271,16 @@ void menustyle_parse_style(F_CMD_ARGS)
 			{
 				ST_ACTIVE_AREA_PERCENT(tmpms) = *val;
 			}
+			break;
+
+		case 54: /* HilightRelief */
+			ST_DO_HILIGHT_RELIEF(tmpms) = 1;
+			has_gc_changed = True;
+			break;
+
+		case 55: /* HilightReliefOff */
+			ST_DO_HILIGHT_RELIEF(tmpms) = 0;
+			has_gc_changed = True;
 			break;
 
 #if 0
@@ -1496,6 +1453,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		       &ST_MENU_ACTIVE_COLORS(origms).back, sizeof(Pixel));
 	}
 	ST_DO_HILIGHT_BACK(destms) = ST_DO_HILIGHT_BACK(origms);
+	ST_DO_HILIGHT_RELIEF(destms) = ST_DO_HILIGHT_RELIEF(origms);
 
 	/* ActiveFore */
 	if (ST_HAS_ACTIVE_FORE(destms))

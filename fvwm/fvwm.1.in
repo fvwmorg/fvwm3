@@ -2426,7 +2426,7 @@ style menus never overlap the parent menu.
 
 .I Fvwm
 style is equivalent to HilightBackOff, Hilight3DThin,
-ActiveFore, ActiveBack,
+ActiveForeOff, ActiveBackOff,
 AnimationOff, Font, MenuFace, PopupOffset 0 67,
 TitleWarp, TitleUnderlines1, SeparatorsShort, TrianglesRelief,
 PopupDelayed, PopdownDelayed, PopupAsSubmenu, HoldSubmenus,
@@ -2435,7 +2435,7 @@ PopupActiveArea 75.
 
 .I Mwm
 style is equivalent to HilightBackOff, Hilight3DThick,
-ActiveFore, ActiveBack,
+ActiveForeOff, ActiveBackOff,
 AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately, PopdownDelayed, PopupAsSubmenu, HoldSubmenus,
@@ -2478,6 +2478,11 @@ the menu's background color.  The
 .I ActiveColorset
 option overrides the specified color.
 
+.IR HilightRelief " and " HilightReliefOff
+switch hilighting the relief around the selected menu item on and
+off.  This works only in conjunction when the
+.I ActiveColorset
+menu style is used.
 
 .I ActiveFore " and " ActiveForeOff
 switch hilighting the foreground of the selected menu item on and

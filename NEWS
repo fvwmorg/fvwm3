@@ -72,7 +72,10 @@ Changes in *experimental* release 2.5.4 (not released yet)
   and SelectColorset are now strictly respected.
 
 * The HilightBack and ActiveFore menu styles are independent of
-  each other.
+  each other.  HilightBack without using ActiveFore does no longer
+  hilight the item text.
+
+* New MenuStyle options HilightRelief and HilightReliefOff.
 
 -------------------------------------------------------------------
 

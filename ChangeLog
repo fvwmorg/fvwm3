@@ -2,6 +2,15 @@
 
 	* fvwm/menuitem.c (menuitem_paint):
 	* fvwm/menustyle.c (menustyle_parse_style):
+	* fvwm/menus.c (paint_side_pic):
+	(paint_menu):
+	(select_menu_item):
+	(repaint_transparent_menu):
+	* fvwm/menustyle.h (MenuLook):
+	cleaned up menu drawing code, fixed last patch
+
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/menustyle.c (menustyle_parse_style):
 	fixed HilightBack default
 
 	* fvwm/bindings.c (binding_cmd):

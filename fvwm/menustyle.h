@@ -35,10 +35,12 @@
 /* look */
 #define ST_FACE(s)                    ((s)->look.face)
 #define MST_FACE(m)                   ((m)->s->ms->look.face)
-#define ST_DO_HILIGHT_BACK(s)              ((s)->look.flags.do_hilight_back)
-#define MST_DO_HILIGHT_BACK(m)             ((m)->s->ms->look.flags.do_hilight_back)
-#define ST_DO_HILIGHT_FORE(s)              ((s)->look.flags.do_hilight_fore)
-#define MST_DO_HILIGHT_FORE(m)             ((m)->s->ms->look.flags.do_hilight_fore)
+#define ST_DO_HILIGHT_BACK(s)         ((s)->look.flags.do_hilight_back)
+#define MST_DO_HILIGHT_BACK(m)        ((m)->s->ms->look.flags.do_hilight_back)
+#define ST_DO_HILIGHT_FORE(s)         ((s)->look.flags.do_hilight_fore)
+#define MST_DO_HILIGHT_FORE(m)        ((m)->s->ms->look.flags.do_hilight_fore)
+#define ST_DO_HILIGHT_RELIEF(s)       ((s)->look.flags.do_hilight_relief)
+#define MST_DO_HILIGHT_RELIEF(m)      ((m)->s->ms->look.flags.do_hilight_relief)
 #define ST_HAS_ACTIVE_FORE(s)         ((s)->look.flags.has_active_fore)
 #define MST_HAS_ACTIVE_FORE(m)        ((m)->s->ms->look.flags.has_active_fore)
 #define ST_HAS_ACTIVE_BACK(s)         ((s)->look.flags.has_active_back)
@@ -90,22 +92,18 @@
 #define MST_SIDEPIC(m)                ((m)->s->ms->look.side_picture)
 #define ST_SIDE_COLOR(s)              ((s)->look.side_color)
 #define MST_SIDE_COLOR(m)             ((m)->s->ms->look.side_color)
-#define ST_MENU_GC(s)                 ((s)->look.MenuGC)
-#define MST_MENU_GC(m)                ((m)->s->ms->look.MenuGC)
-#define ST_MENU_ACTIVE_GC(s)          ((s)->look.MenuActiveGC)
-#define MST_MENU_ACTIVE_GC(m)         ((m)->s->ms->look.MenuActiveGC)
-#define ST_MENU_ACTIVE_BACK_GC(s)     ((s)->look.MenuActiveBackGC)
-#define MST_MENU_ACTIVE_BACK_GC(m)    ((m)->s->ms->look.MenuActiveBackGC)
-#define ST_MENU_ACTIVE_RELIEF_GC(s)   ((s)->look.MenuActiveReliefGC)
-#define MST_MENU_ACTIVE_RELIEF_GC(m)  ((m)->s->ms->look.MenuActiveReliefGC)
-#define ST_MENU_ACTIVE_SHADOW_GC(s)   ((s)->look.MenuActiveShadowGC)
-#define MST_MENU_ACTIVE_SHADOW_GC(m)  ((m)->s->ms->look.MenuActiveShadowGC)
+#define ST_MENU_ACTIVE_GCS(s)         ((s)->look.active_gcs)
+#define MST_MENU_ACTIVE_GCS(m)        ((m)->s->ms->look.active_gcs)
+#define ST_MENU_INACTIVE_GCS(s)       ((s)->look.inactive_gcs)
+#define MST_MENU_INACTIVE_GCS(m)      ((m)->s->ms->look.inactive_gcs)
+#define ST_MENU_STIPPLE_GCS(s)        ((s)->look.stipple_gcs)
+#define MST_MENU_STIPPLE_GCS(m)       ((m)->s->ms->look.stipple_gcs)
+#define FORE_GC(g)                    ((g).fore_gc)
+#define BACK_GC(g)                    ((g).back_gc)
+#define HILIGHT_GC(g)                 ((g).hilight_gc)
+#define SHADOW_GC(g)                  ((g).shadow_gc)
 #define ST_MENU_STIPPLE_GC(s)         ((s)->look.MenuStippleGC)
 #define MST_MENU_STIPPLE_GC(m)        ((m)->s->ms->look.MenuStippleGC)
-#define ST_MENU_RELIEF_GC(s)          ((s)->look.MenuReliefGC)
-#define MST_MENU_RELIEF_GC(m)         ((m)->s->ms->look.MenuReliefGC)
-#define ST_MENU_SHADOW_GC(s)          ((s)->look.MenuShadowGC)
-#define MST_MENU_SHADOW_GC(m)         ((m)->s->ms->look.MenuShadowGC)
 #define ST_MENU_COLORS(s)             ((s)->look.MenuColors)
 #define MST_MENU_COLORS(m)            ((m)->s->ms->look.MenuColors)
 #define ST_MENU_ACTIVE_COLORS(s)      ((s)->look.MenuActiveColors)
@@ -216,6 +214,14 @@ typedef struct MenuFace
 	char gradient_type;
 } MenuFace;
 
+typedef struct
+{
+	GC fore_gc;
+	GC back_gc;
+	GC hilight_gc;
+	GC shadow_gc;
+} gc_quad_t;
+
 typedef struct MenuLook
 {
 	MenuFace face;
@@ -223,6 +229,7 @@ typedef struct MenuLook
 	{
 		unsigned do_hilight_back : 1;
 		unsigned do_hilight_fore : 1;
+		unsigned do_hilight_relief : 1;
 		unsigned has_active_fore : 1;
 		unsigned has_active_back : 1;
 		unsigned has_stipple_fore : 1;
@@ -255,14 +262,10 @@ typedef struct MenuLook
 	} cset;
 	FvwmPicture *side_picture;
 	Pixel side_color;
-	GC MenuGC;
-	GC MenuActiveGC;
-	GC MenuActiveBackGC;
+	gc_quad_t inactive_gcs;
+	gc_quad_t active_gcs;
+	gc_quad_t stipple_gcs;
 	GC MenuStippleGC;
-	GC MenuReliefGC;
-	GC MenuShadowGC;
-	GC MenuActiveReliefGC;
-	GC MenuActiveShadowGC;
 	ColorPair MenuColors;
 	ColorPair MenuActiveColors;
 	ColorPair MenuStippleColors;

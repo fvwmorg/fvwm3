@@ -2796,11 +2796,11 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 	if (Pdepth < 2)
 	{
 		/* ? */
-		gc = MST_MENU_SHADOW_GC(mr);
+		gc = SHADOW_GC(MST_MENU_INACTIVE_GCS(mr));
 	}
 	else
 	{
-		gc = MST_MENU_GC(mr);
+		gc = FORE_GC(MST_MENU_INACTIVE_GCS(mr));
 	}
 
 	if (sidePic->height > MR_HEIGHT(mr) - 2 * bw)
@@ -3156,8 +3156,9 @@ static void paint_menu(
 		RelieveRectangle(
 			dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
 			MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
-			MST_MENU_SHADOW_GC(mr) : MST_MENU_RELIEF_GC(mr),
-			MST_MENU_SHADOW_GC(mr), bw);
+			SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)) :
+			HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
+			SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)), bw);
 		{
 			return;
 		}
@@ -3171,7 +3172,7 @@ static void paint_menu(
 			SetWindowBackground(
 				dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
 				&Colorset[ST_CSET_MENU(ms)], Pdepth,
-				ST_MENU_GC(ms), True);
+				FORE_GC(ST_MENU_INACTIVE_GCS(ms)), True);
 			MR_IS_BACKGROUND_SET(mr) = True;
 		}
 	}
@@ -3207,10 +3208,10 @@ static void paint_menu(
 	} /* if (ms) */
 	/* draw the relief */
 	RelieveRectangle(dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
-			 MR_HEIGHT(mr) - 1, (Pdepth < 2)
-			 ? MST_MENU_SHADOW_GC(mr)
-			 : MST_MENU_RELIEF_GC(mr),
-			 MST_MENU_SHADOW_GC(mr), bw);
+			 MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
+			 SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)) :
+			 HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
+			 SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)), bw);
 	/* paint the menu items */
 	get_menu_paint_item_parameters(&mpip, mr, NULL, fw, pevent, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
@@ -3315,7 +3316,8 @@ static void select_menu_item(
 						dpy, Scr.NoFocusWin, mw, ih,
 						Pdepth);
 				XSetGraphicsExposures(
-					dpy, MST_MENU_GC(mr), True);
+					dpy, FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
+					True);
 				XSync(dpy, 0);
 				while (FCheckTypedEvent(dpy, NoExpose, &e))
 				{
@@ -3324,8 +3326,8 @@ static void select_menu_item(
 				XCopyArea(
 					dpy, MR_WINDOW(mr),
 					MR_STORED_ITEM(mr).stored,
-					MST_MENU_GC(mr), MST_BORDER_WIDTH(mr),
-					iy, mw, ih, 0, 0);
+					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
+					MST_BORDER_WIDTH(mr), iy, mw, ih, 0, 0);
 				XSync(dpy, 0);
 				if (FCheckTypedEvent(dpy, NoExpose, &e))
 				{
@@ -3343,7 +3345,8 @@ static void select_menu_item(
 					MR_STORED_ITEM(mr).y = 0;
 				}
 				XSetGraphicsExposures(
-					dpy, MST_MENU_GC(mr), False);
+					dpy, FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
+					False);
 			}
 			else if (select == False &&
 				 MR_STORED_ITEM(mr).width != 0)
@@ -3351,8 +3354,9 @@ static void select_menu_item(
 				/* ungrab image */
 				XCopyArea(
 					dpy, MR_STORED_ITEM(mr).stored,
-					MR_WINDOW(mr), MST_MENU_GC(mr), 0, 0,
-					MR_STORED_ITEM(mr).width,
+					MR_WINDOW(mr),
+					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
+					0, 0, MR_STORED_ITEM(mr).width,
 					MR_STORED_ITEM(mr).height,
 					MST_BORDER_WIDTH(mr),
 					MR_STORED_ITEM(mr).y);
@@ -6546,7 +6550,8 @@ void repaint_transparent_menu(
 	}
 	SetWindowBackground(
 		dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
-		&Colorset[ST_CSET_MENU(ms)], Pdepth, ST_MENU_GC(ms), False);
+		&Colorset[ST_CSET_MENU(ms)], Pdepth,
+		FORE_GC(MST_MENU_INACTIVE_GCS(mr)), False);
 	/* redraw the background of non active item */
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
@@ -6560,8 +6565,7 @@ void repaint_transparent_menu(
 				XClearArea(
 					dpy, MR_WINDOW(mr),
 					MR_ITEM_X_OFFSET(mr), MI_Y_OFFSET(mi),
-					left,
-					MI_HEIGHT(mi) +
+					left, MI_HEIGHT(mi) +
 					MST_RELIEF_THICKNESS(mr), 0);
 			}
 			h = MI_HEIGHT(mi);

@@ -318,12 +318,20 @@ void menuitem_paint(
 	int y;
 	int lit_x_start;
 	int lit_x_end;
+#if 0
 	GC ShadowGC;
 	GC ReliefGC;
 	GC on_gc;
 	GC off_gc;
 	GC text_gc;
-	int on_cs = -1, off_cs = -1;
+	int on_cs = -1;
+	int off_cs = -1;
+#else
+	gc_quad_t gcs;
+	gc_quad_t off_gcs;
+	int cs = -1;
+	int offff_cs;
+#endif
 	FvwmRenderAttributes fra;
 	/*Pixel fg, fgsh;*/
 	short relief_thickness = ST_RELIEF_THICKNESS(ms);
@@ -376,14 +384,31 @@ void menuitem_paint(
 		}
 	}
 
-	ShadowGC = ST_MENU_SHADOW_GC(ms);
-	if (Pdepth<2)
+	offff_cs = ST_CSET_MENU(ms);
+	if (is_item_selected)
 	{
-		ReliefGC = ST_MENU_SHADOW_GC(ms);
+		cs = ST_CSET_ACTIVE(ms);
 	}
 	else
 	{
-		ReliefGC = ST_MENU_RELIEF_GC(ms);
+		cs = offff_cs;
+	}
+	/* Note: it's ok to pass a NULL label to is_function_allowed. */
+	if (!is_function_allowed(
+		    MI_FUNC_TYPE(mi), MI_LABEL(mi)[0], mpip->fw, True, False))
+	{
+		gcs = ST_MENU_STIPPLE_GCS(ms);
+		off_gcs = gcs;
+	}
+	else if (is_item_selected)
+	{
+		gcs = ST_MENU_ACTIVE_GCS(ms);
+		off_gcs = ST_MENU_INACTIVE_GCS(ms);
+	}
+	else
+	{
+		gcs = ST_MENU_INACTIVE_GCS(ms);
+		off_gcs = ST_MENU_INACTIVE_GCS(ms);
 	}
 
 	/***************************************************************
@@ -397,7 +422,8 @@ void menuitem_paint(
 	/* Hilight or clear the background. */
 	lit_x_start = -1;
 	lit_x_end = -1;
-	if (is_item_selected && ST_DO_HILIGHT_BACK(ms))
+	if (is_item_selected &&
+	    (ST_DO_HILIGHT_BACK(ms) || ST_DO_HILIGHT_FORE(ms)))
 	{
 		/* Hilight the background. */
 		if (MDIM_HILIGHT_WIDTH(*dim) - 2 * relief_thickness > 0)
@@ -407,12 +433,15 @@ void menuitem_paint(
 			lit_x_end = lit_x_start + MDIM_HILIGHT_WIDTH(*dim) -
 				2 * relief_thickness;
 			XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
-			XFillRectangle(
-				dpy, mpip->w, ST_MENU_ACTIVE_BACK_GC(ms),
-				lit_x_start, y_offset + relief_thickness,
-				lit_x_end - lit_x_start,
-				y_height - relief_thickness);
-			item_cleared = True;
+			if (ST_DO_HILIGHT_BACK(ms))
+			{
+				XFillRectangle(
+					dpy, mpip->w, gcs.back_gc, lit_x_start,
+					y_offset + relief_thickness,
+					lit_x_end - lit_x_start,
+					y_height - relief_thickness);
+				item_cleared = True;
+			}
 		}
 	}
 	else if ((MI_WAS_DESELECTED(mi) &&
@@ -442,13 +471,11 @@ void menuitem_paint(
 	/* Hilight 3D */
 	if (is_item_selected && relief_thickness > 0)
 	{
-		GC rgc = ReliefGC;
-		GC sgc = ShadowGC;
-		if (ST_HAS_ACTIVE_CSET(ms))
-		{
-			rgc = ST_MENU_ACTIVE_RELIEF_GC(ms);
-			sgc = ST_MENU_ACTIVE_SHADOW_GC(ms);
-		}
+		GC rgc;
+		GC sgc;
+
+		rgc = gcs.hilight_gc;
+		sgc = gcs.shadow_gc;
 		if (ST_IS_ITEM_RELIEF_REVERSED(ms))
 		{
 			GC tgc = rgc;
@@ -495,7 +522,7 @@ void menuitem_paint(
 		{
 			/* It's a separator. */
 			draw_separator(
-				mpip->w, ShadowGC, ReliefGC, sx1,
+				mpip->w, gcs.shadow_gc, gcs.hilight_gc, sx1,
 				y_offset + y_height - MENU_SEPARATOR_HEIGHT,
 				sx2);
 			/* Nothing else to do. */
@@ -517,7 +544,7 @@ void menuitem_paint(
 
 			/* It's a tear off bar. */
 			draw_tear_off_bar(
-				mpip->w, ShadowGC, ReliefGC, tx1,
+				mpip->w, gcs.shadow_gc, gcs.hilight_gc, tx1,
 				y_offset + relief_thickness +
 				MENU_TEAR_OFF_BAR_Y_OFFSET, tx2);
 		}
@@ -537,8 +564,8 @@ void menuitem_paint(
 			if (sx1 < sx2)
 			{
 				draw_separator(
-					mpip->w, ShadowGC, ReliefGC, sx1,
-					y, sx2);
+					mpip->w, gcs.shadow_gc, gcs.hilight_gc,
+					sx1, y, sx2);
 			}
 		}
 		/* Underline the title. */
@@ -551,8 +578,8 @@ void menuitem_paint(
 			{
 				y = y_offset + y_height - MENU_SEPARATOR_HEIGHT;
 				draw_separator(
-					mpip->w, ShadowGC, ReliefGC, sx1,
-					y, sx2);
+					mpip->w, gcs.shadow_gc, gcs.hilight_gc,
+					sx1, y, sx2);
 			}
 			break;
 		default:
@@ -561,57 +588,12 @@ void menuitem_paint(
 				y = y_offset + y_height - 1 -
 					i * MENU_UNDERLINE_HEIGHT;
 				XDrawLine(
-					dpy, mpip->w, ShadowGC, sx1, y,
+					dpy, mpip->w, gcs.shadow_gc, sx1, y,
 					sx2, y);
 			}
 			break;
 		}
 	}
-
-	/* Note: it's ok to pass a NULL label to is_function_allowed. */
-	if (is_function_allowed(
-		    MI_FUNC_TYPE(mi), MI_LABEL(mi)[0], mpip->fw, True, False))
-	{
-		on_gc = ST_MENU_ACTIVE_GC(ms);
-		if (ST_HAS_ACTIVE_CSET(ms))
-		{
-			on_cs = ST_CSET_ACTIVE(ms);
-		}
-		text_gc = on_gc;
-		if (ST_DO_HILIGHT_BACK(ms) && !ST_DO_HILIGHT_FORE(ms) &&
-		    is_item_selected)
-		{
-			/* Use a lighter color for highlighted windows menu
-			 * items if the background is hilighted */
-			on_gc = ST_MENU_RELIEF_GC(ms);
-			on_cs = -1;
-		}
-
-		off_gc = ST_MENU_GC(ms);
-		if (ST_HAS_MENU_CSET(ms))
-		{
-			off_cs = ST_CSET_MENU(ms);
-		}
-	}
-	else
-	{
-		/* should be a shaded out word, not just re-colored. */
-		on_gc = ST_MENU_STIPPLE_GC(ms);
-		if (ST_HAS_GREYED_CSET(ms))
-		{
-			on_cs = ST_CSET_GREYED(ms);
-		}
-
-		off_gc = on_gc;
-		off_cs = on_cs;
-		text_gc = on_gc;
-	}
-	if (!is_item_selected)
-	{
-		on_gc = off_gc;
-		on_cs = off_cs;
-	}
-
 
 	/***************************************************************
 	 * Draw the labels.
@@ -647,27 +629,25 @@ void menuitem_paint(
 		{
 			Bool draw_string = True;
 			int text_width;
+			int tmp_cs;
 
 			if (MI_LABEL_OFFSET(mi)[i] >= lit_x_start &&
 			    MI_LABEL_OFFSET(mi)[i] < lit_x_end)
 			{
 				/* label is in hilighted area */
-				fws->gc = text_gc;
-				if (on_cs >= 0)
-				{
-					fws->colorset = &Colorset[on_cs];
-					fws->flags.has_colorset = True;
-				}
+				fws->gc = gcs.fore_gc;
+				tmp_cs = cs;
 			}
 			else
 			{
 				/* label is in unhilighted area */
-				fws->gc = off_gc;
-				if (off_cs >= 0)
-				{
-					fws->colorset = &Colorset[off_cs];
-					fws->flags.has_colorset = True;
-				}
+				fws->gc = off_gcs.fore_gc;
+				tmp_cs = offff_cs;
+			}
+			if (tmp_cs >= 0)
+			{
+				fws->colorset = &Colorset[tmp_cs];
+				fws->flags.has_colorset = True;
 			}
 			fws->str = MI_LABEL(mi)[i];
 			b.x = fws->x = MI_LABEL_OFFSET(mi)[i];
@@ -742,17 +722,17 @@ void menuitem_paint(
 		    is_item_selected)
 		{
 			/* triangle is in hilighted area */
-			tmp_gc = ReliefGC;
+			tmp_gc = gcs.hilight_gc;
 		}
 		else
 		{
 			/* triangle is in unhilighted area */
-			tmp_gc = ST_MENU_GC(ms);
+			tmp_gc = off_gcs.hilight_gc;
 		}
 		y = y_offset + (y_height - MENU_TRIANGLE_HEIGHT +
 				relief_thickness) / 2;
 		DrawTrianglePattern(
-			dpy, mpip->w, ReliefGC, ShadowGC, tmp_gc,
+			dpy, mpip->w, gcs.hilight_gc, gcs.shadow_gc, tmp_gc,
 			MDIM_TRIANGLE_X_OFFSET(*dim), y, MENU_TRIANGLE_WIDTH,
 			MENU_TRIANGLE_HEIGHT, 0,
 			(mpip->flags.is_left_triangle) ? 'l' : 'r',
@@ -775,13 +755,13 @@ void menuitem_paint(
 		y = y_offset + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
 		if (x >= lit_x_start && x < lit_x_end)
 		{
-			tmp_gc = on_gc;
-			tmp_cs = on_cs;
+			tmp_gc = gcs.fore_gc;
+			tmp_cs = cs;
 		}
 		else
 		{
-			tmp_gc = off_gc;
-			tmp_cs = off_cs;
+			tmp_gc = off_gcs.fore_gc;
+			tmp_cs = offff_cs;
 		}
 		fra.mask = FRAM_DEST_IS_A_WINDOW;
 		if (tmp_cs >= 0)
@@ -792,7 +772,7 @@ void menuitem_paint(
 		b.x = x;
 		b.y = y;
 		b.width = MI_PICTURE(mi)->width;
-		b.height =MI_PICTURE(mi)->height;
+		b.height = MI_PICTURE(mi)->height;
 		if (!item_cleared && mpip->ev)
 		{
 			if (!frect_get_intersection(
@@ -804,7 +784,6 @@ void menuitem_paint(
 				draw_picture = False;
 			}
 		}
-
 		if (draw_picture)
 		{
 			if (!item_cleared && (MI_PICTURE(mi)->alpha != None ||
@@ -857,14 +836,14 @@ void menuitem_paint(
 			    MDIM_ICON_X_OFFSET(*dim)[k] < lit_x_end)
 			{
 				/* icon is in hilighted area */
-				tmp_gc = on_gc;
-				tmp_cs = on_cs;
+				tmp_gc = gcs.fore_gc;
+				tmp_cs = cs;
 			}
 			else
 			{
 				/* icon is in unhilighted area */
-				tmp_gc = off_gc;
-				tmp_cs = off_cs;
+				tmp_gc = off_gcs.fore_gc;
+				tmp_cs = offff_cs;
 			}
 			fra.mask = FRAM_DEST_IS_A_WINDOW;
 			if (tmp_cs >= 0)
@@ -879,7 +858,8 @@ void menuitem_paint(
 			if (!item_cleared && mpip->ev)
 			{
 				if (!frect_get_intersection(
-					mpip->ev->xexpose.x, mpip->ev->xexpose.y,
+					mpip->ev->xexpose.x,
+					mpip->ev->xexpose.y,
 					mpip->ev->xexpose.width,
 					mpip->ev->xexpose.height,
 					b.x, b.y, b.width, b.height, &b))
