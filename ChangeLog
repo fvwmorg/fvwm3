@@ -2869,7 +2869,7 @@ Wed Sep 15 20:44:57 1999  DanEspen  <dje@blue>
 	* fvwm/menus.c (AddToMenu): fixed bad allocation and fvwm hang for
 	menu labels with more than two TABs
 
-1999-08-23  Dominik Vogt  <dominik_vogt@hp.com>
+1999-08-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (ReadMenuFace): fixed missing parsing of gradients
 
@@ -7648,14 +7648,14 @@ Tue Mar  9 18:00:22 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 
 	* ------ beginning of my changes to split functions and menus ------
 
-1999-03-07  Dominik Vogt  <dominik_vogt@hp.com>
+1999-03-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (func_config): changed function names to uppercase
 	(FindBuiltinFunction):
 	(func_comp): functions are converted to uppercase before comparing them
 	to the table entries
 
-1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
+1999-03-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Module.c (GetConfigLine):
 	(SetMessageMask):
@@ -7715,7 +7715,7 @@ Tue Mar  9 18:00:22 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 
 	* fvwm/events.c (HandleConfigureRequest): use BroadcastRestack.
 
-1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
+1999-03-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.h (FvwmWindow): some preparations for GSFR
 
@@ -7743,7 +7743,7 @@ Thu Mar  4 19:18:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	before the obsolete syntax.  I didn't really understand how
 	"Iconify toggle" differs from just "Iconify".
 
-1999-03-04  Dominik Vogt  <dominik_vogt@hp.com>
+1999-03-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (WindowShade):
 	(Maximize):
@@ -8065,7 +8065,7 @@ Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	first) but it looks great on TrueColor.  It plays nicely with XORValue
 	and I don't think it leaks pixmaps.
 
-1999-02-23  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* AUTHORS: updated
 
@@ -8073,7 +8073,7 @@ Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* *: fvwm 2.2 has been released :-))
 
-1999-02-22  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1 (WindowsDesk): some clarification that this command has
 	gone.
@@ -8091,7 +8091,7 @@ Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* sample.fvwmrc/Makefile.am (EXTRA_DIST): added new-features
 
-1999-02-19  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: Updated for 2.2
 
@@ -8099,7 +8099,7 @@ Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/fvwm2.1: swapped 'Read' and 'Recapture'
 
-1999-02-18  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (FPopupMenu): use menu style of parent menu for popup
 	offset instead of own menu style.
@@ -8112,17 +8112,17 @@ Wed Feb 17 08:24:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	not finding the library (or finding the wrong one) if configure is
 	re-run with different options.
 
-1999-02-17  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: updated for 2.1.14
 
-1999-02-16  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/bindings.c (ParseBindEntry): Specifying 'any' modifier and
 	specific modifiers together in a key binding made the whole binding
 	fail to work
 
-1999-02-15  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (FindBuiltinFunction):
 	(ExecuteFunction): NULL pointer coredump fixed
@@ -8132,7 +8132,7 @@ Wed Feb 17 08:24:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/fvwm2.1:  Added a description of the DecorateTransient and
 	NakedTransient Style options to the man page.
 
-1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: Change version to 2.1.13
 
@@ -8154,21 +8154,21 @@ Wed Feb 17 08:24:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/misc.c: Ibid.
 
-1999-02-12  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/bindings.c (ParseBindEntry): fixed key binding bug
 
 	* libs/Module.c (SendText): applied patch by Adam Rice to make fvwm2
 	work with 2.2.x Linux kernels (trivial patch).
 
-1999-02-11  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/misc.c (GetOneMenuPositionArgument): rewrote syntax of menu
 	position hints.
 
 	* fvwm/fvwm2.1: quoting ^, @, * and % added to 'Menu' entry
 
-1999-02-11  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (CreateFlagString): corrected restptr to return NULL
 	on error
@@ -8223,7 +8223,7 @@ Wed Feb 17 08:24:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	last mini-icon, fixed drawing errors with some compilers not
 	auto-casting from float to int very well.
 
-1999-01-28  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (PaintEntry): Prevent menu titles from being hilighted
 	with ActiveFore
@@ -8237,7 +8237,7 @@ Wed Feb 17 08:24:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/menus.c (MenuInteraction):
 	* fvwm/menus.h: changed PrepopMenus -> PopupImmediately
 
-1999-01-27  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction): check for expose events first to
 	ensure the menu is drawn properly before navigating
@@ -8316,7 +8316,7 @@ Wed Jan 20 01:13:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* INSTALL.fvwm: Removed doubled paragraph.
 
-1999-02-09  Dominik Vogt  <dominik_vogt@hp.com>
+1999-02-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (CreateFlagString): corrected restptr to return NULL
 	on error
@@ -8351,7 +8351,7 @@ Wed Jan 20 01:13:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* acconfig.h: Removed #undefs for VERSION & PACKAGE; autoheader
 	from autoconf 1.13 now generates them automatically.
 
-1999-01-19  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction): fixed keyboard shortcut bug
 
@@ -8363,7 +8363,7 @@ Wed Jan 20 01:13:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: Test for siginterrupt().
 
-1999-01-17  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (PaintEntry): long separators reached into the border
 	of the menu to the right, but not on the left
@@ -8389,7 +8389,7 @@ Fri Jan 15 22:10:18 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/fvwm2.1: Corrected the search sequence for startup files.
 
-1999-01-16  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* BUGS: updated for 2.2
 
@@ -8402,7 +8402,7 @@ Fri Jan 15 22:10:18 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* INSTALL.fvwm: Updated to document cpp issues.
 	Updated to document shared library / -R issues.
 
-1999-01-15  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1: marked -blackout option as obsolete
 	moved copyright notice to COPYING file
@@ -8420,7 +8420,7 @@ Fri Jan 15 22:10:18 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	StartsOnDesk windows. Also fixed CleverPlacement bug that sometimes
 	caused windows to be placed entirely outside of the virtual desktop.
 
-1999-01-14  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/resize.c (ConstrainSize): fixed bug: moving a shaded window in
 	FvwmPager screwed up the window's height
@@ -8433,7 +8433,7 @@ Fri Jan 15 22:10:18 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/module.c (HandleModuleInput): fixed parsing with popup
 
-1999-01-13  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/icons.c (AutoPlace): fixed a bug in icon placement (netscape 4.5
 	refused to go into the icon box
@@ -8443,7 +8443,7 @@ Fri Jan 15 22:10:18 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/builtins.c (DirectionFunc): Made variable "dir" an int, to
 	match return type of GetTokenIndex().
 
-1999-01-12  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure: changed readline prototype (char -> char *)
 
@@ -8561,7 +8561,7 @@ Sat Jan  9 08:20:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* utils/xpmroot.c: Removed dead code (yet another version of
 	strcasecmp).
 
-1999-01-07  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* **/*: Applied tons of cosmetic fixes from the Red Hat patches
 	but some real bugfixes too. Sorry Paul (PDS), this one simply has
@@ -8627,7 +8627,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	without FVWM's knowledge, and it breaks normal raising in these cases.
 	It's on the right track, but more work is needed post-2.2.
 
-1999-01-06  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (GetContext): fixed fixed fix for fix (made
 	MouseFocusClickRaises work again).
@@ -8649,7 +8649,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	the stacking order chain reorg to keep StaysOnTop windows at the
 	beginning of the chain.
 
-1998-01-05  Dominik Vogt  <dominik_vogt@hp.com>
+1998-01-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* BUGS: Removed some fixed bugs.
 
@@ -8674,19 +8674,19 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* BUGS: Documented install-strip problem.
 
-1998-01-05  Dominik Vogt  <dominik_vogt@hp.com>
+1998-01-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: Changed version to 2.1.8.
 	* NEWS: Ditto.
 
 	* Released fvwm 2.1.7 beta (CVS tag version-2_1_7).
 
-1999-01-04  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (FPopupMenu): force menus on screen if making them non
 	overlapping moves them partially off screen.
 
-1999-01-03  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction): fixed various bugs in drawing
 	gradient menus when overlapping the parent menu. Fixed bug with
@@ -8717,7 +8717,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	MenuStyle handles the old and the new syntax now
 	* fvwm/parse.h: removed F_SET_MENUSTYLE
 
-1999-01-02  Dominik Vogt  <dominik_vogt@hp.com>
+1999-01-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (SetMenuItemSelected): fixed slow XGetImage (?) Why does
 	fetching a XYPixmap take so long while ZPixmaps are grabbed instantly?
@@ -8729,11 +8729,11 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/add_window.c (AddWindow): backed out a patch that caused a mouse
 	binding problem
 
-1998-12-31  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (My_XNextEvent): applied cleanup patch by Chris Rankin
 
-1998-12-30  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MakeMenu): fixed font-change bug with menus: If a menu
 	has a continuation and then the font is changed (to a smaller one) the
@@ -8763,23 +8763,23 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/builtins.c (SetMenuStyle): fixed TrianglesRelief option
 
-1998-12-28  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (MatchesConditionMask): fixed name matching broken in
 	last patch
 
-1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Parse.c (SkipQuote): fixed coredump (random return value)
 
-1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: Changed version to 2.1.7.
 	* NEWS: Ditto.
 
 	* Released fvwm 2.1.6 beta (CVS tag version-2_1_6).
 
-1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* BUGS: updated for 2.1.6
 
@@ -8798,12 +8798,12 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/menus.h:
 	* fvwm/menus.c: GSFR for menus (just a small test for the real GSFR).
 
-1998-12-26  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move.c (moveLoop): Position in feedback window relative to
 	current page, not the whole desktop
 
-1998-12-24  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (MatchesContitionMask): rewrote the contition so that
 	a mere mortal can read it (costs a few bytes though).
@@ -8812,7 +8812,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/icons.c (DeIconify):
 	(Iconify): bugfix for transient iconification bug
 
-1998-12-23  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (MoveViewport): moved ViewportMoved into new tmpflags
 
@@ -8840,7 +8840,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/defaults.h: new file for default values that may be set
 	throughout the code.
 
-1998-12-22  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (menu_func): default-action does not need to be
 	quoted anymore. Another few lines of code saved :)
@@ -8863,7 +8863,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	documented new commands DefaultFont, DefaultColors, Emulate
 	documented new SetMenuStyle syntax
 
-1998-12-21  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (ReadMenuFace): fixed coredumps: freeing NULL
 	pointers for item and s_colors[i]
@@ -8871,7 +8871,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/fvwm2.1 (Note): updated manpage for FvwmAnimate/FvwmEvent
 
-1998-12-21  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (PaintEntry): Why the hell were the popup triangles
 	placed dynamically? An offset of five pixels from the right edge of
@@ -8881,7 +8881,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/builtins.c (DestroyMenuStyle): it is possible to destroy a used
 	menu style. Menus using it revert back to the default menu style
 
-1998-12-20  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Parse.c (GetTokenIndex): repaired behaviour with (len == 0)
 
@@ -8913,7 +8913,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/move.c (DisplayPosition): removed some of the menu dependencies
 
-1998-12-19  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/icons.c:
 	(CreateIconWindow):
@@ -8955,7 +8955,7 @@ Thu Jan  7 21:44:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/builtins.c (ChangeMenuStyle): fixed memory leaks in parsing
 	(DestroyMenuStyle): cleaned up
 
-1998-12-18  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Parse.c (GetQuotedString):
 	(SkipQuote): new functions for ease of parsing.
@@ -8990,13 +8990,13 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/move.c (moveLoop): Remove some fprintfs left behind by
 	accident.
 
-1998-12-18  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/bindings.c (ParseBindEntry): fixed older patch to combine
 	mouse and key binding parsing. Dos this prevent the key binding
 	problem?
 
-1998-12-17  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/module.c:
 	* fvwm/fvwm.c: applied signal handler patches by Chris Rankin
@@ -9029,7 +9029,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	* DEVELOPERS: Added some notes about the automake $TAR issues.
 
-1998-12-16  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1: Updated manpage for SetMenuStyle: 'next' does not exist
 	anymore.
@@ -9042,7 +9042,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/fvwm2.1 (Note): Document the way menustyle affects the placement
 	of the feedback windows.
 
-1998-12-15  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (MatchesContitionMask): tried to fix transient icons
 	bug with Next [iconic]
@@ -9063,19 +9063,19 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	introducing a new parameter to PopDownMenu: a MenuRoot to search for
 	mrPopup before actually popping down.
 
-1998-12-14  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleConfigureRequest): added ' - Tmp_win->bw' that
 	caused wandering FvwmBorder windows
 
-1998-12-14  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: Changed version to 2.1.5.
 	* NEWS: Ditto.
 
 	Released fvwm 2.1.4 beta (CVS tag version-2_1_4).
 
-1998-12-13  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/read.c (ReadSubFunc): the piperead string was set as the last
 	read filename
@@ -9114,7 +9114,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	* fvwm/resize.c (MoveOutline): removed duplicate code
 
-1998-12-12  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c:
 	* fvwm/resize.c:
@@ -9133,7 +9133,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/fvwm2.1:
 	* BUGS: documented problem with keyboard shortcuts in Xnest
 
-1998-12-11  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1: Documented menu hotkeys
 
@@ -9149,7 +9149,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	get focus" bug - suppressed stashing the event time if an old
 	LeaveNotify was found on the queue.
 
-1998-12-10  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move.c (et al.): Applied updated SnapAttraction patch but put
 	the SnapAttration stuff in a new function called DoSnapAttract to save
@@ -9159,7 +9159,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	* fvwm/fvwm2.1: Clarify the uses and abuses of the Exec function.
 
-1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (ReadButtonFace): Removed MiniIcons memory leak fix.
 	No chance to get this stable without a rewrite of large parts of code.
@@ -9180,7 +9180,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/fvwm2.1: clarified description of Desk cmd, documented
 	WindowsDesk as obsolete.
 
-1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (add_item_to_decor): a little clean up
 	(SetBorderStyle): fix for MiniIcon coredump
@@ -9203,7 +9203,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	(moveLoop): patch to Keyboard_shortcut (was used for other things than
 	move/resize which didn't work well).
 
-1998-12-08  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (menuShortcuts): fixed coredump with isgraph
 
@@ -9223,7 +9223,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	(HandleConfigureRequest):
 	added new parameter fNoConstrain to ConstrainSize function
 
-1998-12-05  Dominik Vogt  <dominik_vogt@hp.com>
+1998-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (ReadButtonFace): fixed memory leak (?)
 	(SetEnv): fixed memory leak
@@ -9290,7 +9290,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	Released fvwm 2.1.3 beta (CVS tag version-2_1_3).
 
-1998-11-30  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.c (main): removed unused option -outfile
 
@@ -9300,7 +9300,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/fvwm.c (StartupStuff): removed old ClickTime patch (the new one
 	is more rigorous).
 
-1998-11-29  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (SetClick):
 	* fvwm/fvwm.c (InitVariables):
@@ -9313,7 +9313,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/fvwm.c: added global flag fFvwmInStartup. This is set to False
 	when the event loop is entered.
 
-1998-11-28  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* TODO: updated
 
@@ -9331,14 +9331,14 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/fvwm.c, fvwm/fvwm2.1: changed GlobalOpts default from
 	ActivePlacementIgnoresStartsOnPage to ActivePlacementHonorsStartsOnPage.
 
-1998-11-27  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1: entry for 'Direction'
 
 	* fvwm/events.c (HandleMapNotify): changed logic for new
 	click-to-focus windows to receive focus (as hinted at by Tim Phipps).
 
-1998-11-26  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (DirectionFunc): implemented ne, se, sw, nw; based
 	scoring function of window centers.
@@ -9361,7 +9361,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	* fvwm/builtins.c (DirectionFunc): fixed coredump (empty direction)
 
-1998-11-24  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
         * fvwm/windows.c (do_windowList): applied alt-tab patch by Tim Phipps
 
@@ -9383,7 +9383,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	*   fvwm/builtins.c  (SetColorLimit):  Check    return  code  from
  	GetIntegerArguments not equal 1 for arg parse failure test.
 
-1998-11-24  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (checkPanFrames): made sure appropriate pan frames
 	are visible (Tim Phipps)
@@ -9411,7 +9411,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	them to Get...PercentArgument(s). GetTwoArguments remains as a wrapper
 	to GetTwoPercentArguments. Added GetRectangleArguments function.
 
-1998-11-23  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/misc.c (GetOneArgument): rewrote function to do something
 	useful
@@ -9427,7 +9427,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/module.c (set_mask_function):
 	replaced GetOneArgument with GetIntegerArguments
 
-1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c: Fixed broken string (contained a newline)
 
@@ -9441,7 +9441,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	* NEWS: Moved stuff from end of old ChangeLog into the NEWS file.
 
-1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/**:
 	* libs/**: removed trailing spaces from the files I touched since 11-20
@@ -9457,7 +9457,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	* FAQ (44): added section for FvwmButtons/Swallow
 
-1998-11-21  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (AddToMenu): fixed uninitialised memory read in item2
 	and s.
@@ -9487,7 +9487,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	* AUTHORS:  added entry.
 
-1998-11-20  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/complex.c (expand): a little speedup
 
@@ -9511,7 +9511,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* configure.in: Version 2.1.2 released (CVS tag = version-2_1_2)
 	and current version bumped to 2.1.3.
 
-1998-11-19  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/envvar.c (strIns): fixed array bounds read viaolation
 
@@ -9532,7 +9532,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	* fvwm/builtins.c (SetMenuStyle): fixed coredump (NULL action
 	referenced with NEXT style).
 
-1998-11-18  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move.c (moveLoop): Applied SnapAttraction update patch
 
@@ -9558,7 +9558,7 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	(CursorStyle): Message was printing already-freed memory; don't
 	free until afterwards.
 
-1998-11-17  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/misc.c (Destroy): applied mini-icon compile patch by Tim Phipps
 
@@ -9571,14 +9571,14 @@ Sun Nov 15 12:24:12 1998  DanEspen  <dje@blue>
 
 	* NEWS: Document shadow/hilite change.
 
-1998-11-15  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (wait_func): Wait builtin can be aborted with
 	Control-Escape.
 	(movecursor): fixed bugs: cursor move didn't work on edge of screen;
 	didn't compile if NON_VIRTUAL is defined
 
-1998-11-14  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (CursorStyle): fixed coredump
 	(echo_func): empty line is ok now
@@ -9619,7 +9619,7 @@ Sat Nov 14 19:56:11 1998  DanEspen  <dje@blue>
 	BradyMontz directory.  This kind of "theme" stuff will be distributed
 	separatly.
 
-1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/misc.c (free_window_names): simplified code
 	(Destroy): fixed memory leaks: icon_maskPixmap and mini_icon were
@@ -9632,7 +9632,7 @@ Sat Nov 14 19:56:11 1998  DanEspen  <dje@blue>
 
 	* fvwm/read.c (ReadSubFunc): coredump fix and a little cleanup
 
-1998-11-11  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (menuShortcuts): removed call of Keyboard_shortcuts
 	(dosn't make sense).
@@ -9645,7 +9645,7 @@ Sat Nov 14 19:56:11 1998  DanEspen  <dje@blue>
 
 	* fvwm/menus.c (FreeMenuItem): function added
 
-1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MakeMenu): Border size fix by Ryomi Murai
 	(PaintEntry): Drawing fixes by Ryomi Murai
@@ -9663,7 +9663,7 @@ Sat Nov 14 19:56:11 1998  DanEspen  <dje@blue>
 
 	* fvwm/fvwm2.1: Documented optional Warp flag for Move/AnimatedMove
 
-1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (SetMenuStyle): fixed memory leak.
 	(SetXOR): fixed memory leak
@@ -9677,7 +9677,7 @@ Sat Nov 14 19:56:11 1998  DanEspen  <dje@blue>
 	memory leak. The manpage doesn't say that the name storage must be
 	free'd, but it does not coredump and is hinted at by other manpages(?)
 
-1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/parse.c (seekright): switched to new syntax of
 	DoGetNextToken.
@@ -9692,7 +9692,7 @@ Mon Nov  9 18:51:19 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* Makefile.am (EXTRA_SUBDIRS): Removed textures from list of SUBDIRS.
 
-1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move.c: Applied the bugfix for the move-lagging-behind
 	problem.
@@ -9703,7 +9703,7 @@ Mon Nov  9 18:51:19 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/fvwm2.1: updated and cleaned up the manpage, reformatted
 	examples to a consistent style
 
-1998-11-08  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/resize.c (resize_window):
 	* fvwm/move.c (moveLoop):
@@ -9727,7 +9727,7 @@ Mon Nov  9 18:51:19 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/icons.c (GetXPMFile): Free pixmap after use.
 
-1998-11-07  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction): fixed bug with non-animated
 	fvwm-menus and <left> in a submenu
@@ -9758,7 +9758,7 @@ Mon Nov  9 18:51:19 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	Changed behaviour of GetNextToken() to fix memory leaks.
 	Some parsing stuff may be instable now (coredumps!)
 
-1998-11-06  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/module.c (executeModule): fixed memory leaks
 
@@ -9983,7 +9983,7 @@ Sat Nov  7 02:01:41 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/misc.c (GetOneMenuPositionArgument): If the returned token
 	is an empty string, don't try to parse it.
 
-1998-11-04  Dominik Vogt <dominik_vogt@hp.com>
+1998-11-04  Dominik Vogt <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1:
 	* fvwm/builtins.c (stick_function):
@@ -10014,14 +10014,14 @@ Wed Nov  4 11:09:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* DEVELOPERS: replaces README.autoconf.
 
-1998-11-04  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandlePropertyNotify): Fixed the fix
 	for TransientFor Bug
 
 	* extras/fvwmperl/*: Added correct copyright notices.
 
-1998-11-03  Dominik Vogt  <dominik_vogt@hp.com>
+1998-11-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandlePropertyNotify):
 	Added bugfix for TransientFor problem by Duane Guingrich.
@@ -10031,7 +10031,7 @@ Wed Nov  4 11:09:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/misc.c (GetPositionArguments):
 	Added MkLinux fix from Mike Tilstra
 
-Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
+Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c:
 	* fvwm/complex.c:
