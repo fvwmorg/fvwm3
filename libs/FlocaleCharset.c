@@ -28,7 +28,6 @@
 #include "Strings.h"
 #include "FlocaleCharset.h"
 #include "Ficonv.h"
-#include "FBidi.h"
 
 /* ---------------------------- local definitions --------------------------- */
 

@@ -22,11 +22,15 @@
 
 /***
  * The main function is
- *   FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl)
+ *   FBidiConvert(
+ *     Display *dpy, const char *logical_str, FlocaleFont *flf, Bool *is_rtl);
  *
  * input:
- *   logical string - it should be a normal 8-bit string for now
+ *   logical string - the original string
  *   string charset - examples: "iso8859-15", "iso8859-8", "iso8859-6", "utf-8"
+ *
+ *   dpy - hopefully it is only a temporary argument
+ *   flf - hopefully it is only a temporary argument
  *
  * output:
  *   visual string is returned (should be free'd), or NULL if not applicable
@@ -35,7 +39,7 @@
  * The is_rtl aggument may be used for 2 purposes. The first is to change the
  * string alignment if there is a free space (but it probably worth not to
  * override the user specified string aligment). The second is to determine
- * where to put ellipses if the string is longer than there is a space.
+ * where to put ellipses if the string is longer than the available space.
  *
  * There are several possible ways to solve the ellipses problem.
  * This is not automated, the caller should choose one or another way.
@@ -95,8 +99,8 @@ Bool FBidiIsApplicable(const char *charset);
 /*
  * Converts the given logical string to visual string for the given charset.
  */
-char *FBidiConvert(Display *dpy, const char *logical_str, FlocaleFont *flf,
-		   Bool *is_rtl);
+char *FBidiConvert(
+	Display *dpy, const char *logical_str, FlocaleFont *flf, Bool *is_rtl);
 
 #else /* !HAVE_BIDI */
 

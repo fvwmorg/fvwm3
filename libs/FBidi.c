@@ -21,14 +21,11 @@
  * See FBidi.h for some comments on this interface.
  */
 
-
 #include "FBidi.h"
 
 #if HAVE_BIDI
 
-#include <X11/Xlib.h>
 #include <fribidi/fribidi.h>
-#include "FlocaleCharset.h"
 
 Bool FBidiIsApplicable(const char *charset)
 {
@@ -39,8 +36,8 @@ Bool FBidiIsApplicable(const char *charset)
 	return True;
 }
 
-char *FBidiConvert(Display *dpy, const char *logical_str, FlocaleFont *flf,
-		   Bool *is_rtl)
+char *FBidiConvert(
+	Display *dpy, const char *logical_str, FlocaleFont *flf, Bool *is_rtl)
 {
 	int str_len = strlen(logical_str);
 	char *visual_str;
@@ -69,11 +66,16 @@ char *FBidiConvert(Display *dpy, const char *logical_str, FlocaleFont *flf,
 	{
 		return NULL;
 	}
-	fribidi_charset = fribidi_parse_charset((char *)fc->bidi);
+
+	fribidi_charset = fribidi_parse_charset(fc->bidi);
 	if (fribidi_charset == FRIBIDI_CHARSET_NOT_FOUND)
 	{
 		return NULL;
 	}
+
+	visual_str = (char *)malloc((str_len + 1) * sizeof(char));
+
+	/* it is possible that we allocate a bit more here, if utf-8 */
 	logical_unicode_str =
 		(FriBidiChar *)malloc((str_len + 1) * sizeof(FriBidiChar));
 
@@ -83,14 +85,12 @@ char *FBidiConvert(Display *dpy, const char *logical_str, FlocaleFont *flf,
 		logical_unicode_str);
 
 	visual_unicode_str =
-		(FriBidiChar *)malloc(str_len * sizeof(FriBidiChar) + 1);
+		(FriBidiChar *)malloc((str_len + 1) * sizeof(FriBidiChar));
 
 	/* apply bidi algorithm, convert logical string to visual string */
 	fribidi_log2vis(
 		logical_unicode_str, str_len, &pbase_dir,
 		visual_unicode_str, NULL, NULL, NULL);
-
-	visual_str = (char *)malloc(str_len * sizeof(char) + 1);
 
 	/* convert from unicode finally */
 	str_len = fribidi_unicode_to_charset(

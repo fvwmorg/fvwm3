@@ -3,6 +3,13 @@
 	* configure.in:
 	fixed detection of fribidi-0.9.0, it is incompatible (not good for us)
 
+	* libs/FBidi.c:
+	* libs/FBidi.h:
+	* libs/Flocale.c:
+	* libs/FlocaleCharset.c:
+	minor modifications, like removed #iclude;
+	fixed core dump with bidi and utf-8
+
 2002-03-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/frame.c (frame_update_hidden_window_pos):

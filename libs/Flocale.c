@@ -719,7 +719,6 @@ void FlocaleDrawString(
 		len = strlen(fstring->str);
 	}
 
-	/* TO FIX: should use charset from font structure */
 	str2 = FBidiConvert(dpy, fstring->str, flf, &is_rtl);
 	if (str2)
 	{
