@@ -353,7 +353,7 @@ fprintf(stderr,"moved icon\n");
                       tmp_win->w, tmp_win->frame,
                       (unsigned long)tmp_win,
                       tmp_win->icon_x_loc, tmp_win->icon_y_loc,
-                      tmp_win->icon_w_width,
+                      tmp_win->icon_p_width,
                       tmp_win->icon_w_height + tmp_win->icon_p_height);
       if (fAnimated) {
         AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,

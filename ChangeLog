@@ -1,3 +1,9 @@
+1999-06-22  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/move_resize.c (move_window_doit): broadcast the
+	icon_p_width, not the icon_w_width to avoid growing icons in
+	the pager.
+
 1999-06-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/move_resize.c (moveLoop): fixed moving icons (didn't communicate
