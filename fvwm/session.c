@@ -32,6 +32,7 @@
 #include "misc.h"
 #include "virtual.h"
 #include "stack.h"
+#include "gnome.h"
 
 extern int master_pid;
 

@@ -49,6 +49,7 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
+#include "gnome.h"
 
 /* list of window names with attributes */
 static window_style *all_styles = NULL;
@@ -791,7 +792,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         {
 	  found = True;
 	  GetNextToken(rest, &token);
-        
+
           tmpstyle.icon_name = token;
           tmpstyle.flags.has_icon = (token != NULL);
           tmpstyle.flag_mask.has_icon = 1;

@@ -70,6 +70,7 @@
 #include "session.h"
 #include "stack.h"
 #include "move_resize.h"
+#include "gnome.h"
 
 /* Used to parse command line of clients for specific desk requests. */
 /* Todo: check for multiple desks. */

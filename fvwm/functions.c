@@ -51,6 +51,7 @@
 #include "move_resize.h"
 #include "virtual.h"
 #include "stack.h"
+#include "gnome.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;

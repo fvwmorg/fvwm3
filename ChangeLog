@@ -1,5 +1,7 @@
 1999-06-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/*.h: include stack.h and gnome.h
+
 	* fvwm/builtins.c (SetSnapAttraction):
 	(SetSnapGrid): Snap... called without arguments returns to default
 	behaviour.

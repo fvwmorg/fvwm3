@@ -43,6 +43,7 @@
 #include "move_resize.h"
 #include "virtual.h"
 #include "defaults.h"
+#include "gnome.h"
 
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *fl);

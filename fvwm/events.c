@@ -81,6 +81,7 @@
 #include "stack.h"
 #include "move_resize.h"
 #include "virtual.h"
+#include "gnome.h"
 #ifdef HAVE_STROKE
 #include <errno.h>
 #include "stroke.h"

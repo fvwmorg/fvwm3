@@ -30,6 +30,7 @@
 #include "stack.h"
 #include "virtual.h"
 #include "defaults.h"
+#include "gnome.h"
 
 
 /* ----------------------------- stack ring code --------------------------- */

@@ -51,7 +51,7 @@
 #include "session.h"
 #include "virtual.h"
 #include "stack.h"
-
+#include "gnome.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
