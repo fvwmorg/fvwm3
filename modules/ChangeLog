@@ -1,5 +1,14 @@
 2004-07-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(handle_new_button):
+	fixed various button drawing problems w/ and w/o hover buttons
+
+	* FvwmButtons/FvwmButtons.c (mymalloc):
+	* FvwmButtons/draw.c (RedrawButton):
+	Fixed core dump with HoverColorset when the pointer enters an empty
+	button
+
 	* FvwmTaskBar/Goodies.c (CreateTipWindow):
 	removed dead code
 

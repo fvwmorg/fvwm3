@@ -219,8 +219,13 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	Bool clear_bg = False;
 	unsigned long iconFlag, otherIconFlag;
 	Bool has_title;
+	Bool is_hovering;
 	FvwmPicture *pic;
 
+	if (b->parent == NULL)
+	{
+		return;
+	}
 	cset = buttonColorset(b);
 	if (cset >= 0)
 	{
@@ -360,6 +365,14 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	has_title = (b->flags & b_Title ? True : False);
 	pic = b->icon;
 	if (b == HoverButton)
+	{
+		is_hovering = True;
+	}
+	else
+	{
+		is_hovering = False;
+	}
+	if (is_hovering == True)
 	{
 		/* If no HoverIcon is specified, we use Icon (if there is
 		   one). */
@@ -505,11 +518,9 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 			{
 				cleaned = True;
 				SetClippedRectangleBackground(
-					Dpy, MyWindow, x+f, y+f, BW-2*f, BH-2*f,
-					&clip,
-					&Colorset[b->colorset],
-					Pdepth,
-					NormalGC);
+					Dpy, MyWindow, x+f, y+f, BW-2*f,
+					BH-2*f, &clip, &Colorset[b->colorset],
+					Pdepth, NormalGC);
 			}
 		}
 		else if (!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
@@ -518,13 +529,14 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 			if (do_draw)
 			{
 				cleaned = True;
-				if (b == HoverButton &&
+				if (is_hovering == True &&
 					UberButton->c->flags & b_HoverColorset)
 				{
 					SetRectangleBackground(Dpy, MyWindow,
 						clip.x, clip.y, clip.width,
 						clip.height,
-						&Colorset[UberButton->c->hoverColorset],
+						&Colorset[UberButton->c->
+							  hoverColorset],
 						Pdepth, NormalGC);
 				}
 				else if (b == CurrentButton &&
@@ -533,7 +545,8 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 					SetRectangleBackground(Dpy, MyWindow,
 						clip.x, clip.y, clip.width,
 						clip.height,
-						&Colorset[UberButton->c->pressColorset],
+						&Colorset[UberButton->c->
+							  pressColorset],
 						Pdepth, NormalGC);
 				}
 				else
@@ -546,8 +559,8 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 		}
 		else if (clear_bg ||
 			 (pev && !buttonBackgroundButton(b,NULL) &&
-			  ((b->flags&b_Title && Ffont && Ffont->fftf.fftfont) ||
-			   (b->flags&b_Icon))))
+			  ((b->flags&b_Title && Ffont &&
+			    Ffont->fftf.fftfont) || (b->flags&b_Icon))))
 		{
 			/* some times we need to clear the real bg.
 			 * The pev expose rectangle can be bigger than the real
@@ -560,13 +573,14 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				XClearArea(Dpy, MyWindow, clip.x,
 					clip.y, clip.width, clip.height,
 					False);
-				if (b == HoverButton &&
+				if (is_hovering == True &&
 					UberButton->c->flags & b_HoverColorset)
 				{
 					SetRectangleBackground(Dpy, MyWindow,
 						clip.x, clip.y, clip.width,
 						clip.height,
-						&Colorset[UberButton->c->hoverColorset],
+						&Colorset[UberButton->c->
+							  hoverColorset],
 						Pdepth, NormalGC);
 				}
 				else if (b == CurrentButton &&
@@ -575,7 +589,8 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 					SetRectangleBackground(Dpy, MyWindow,
 						clip.x, clip.y, clip.width,
 						clip.height,
-						&Colorset[UberButton->c->pressColorset],
+						&Colorset[UberButton->c->
+							  pressColorset],
 						Pdepth, NormalGC);
 				}
 			}

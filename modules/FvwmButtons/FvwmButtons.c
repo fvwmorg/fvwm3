@@ -74,7 +74,7 @@
 #define MW_EVENTS   (ExposureMask |\
 		     StructureNotifyMask |\
 		     ButtonReleaseMask | ButtonPressMask |\
-		     LeaveWindowMask | PointerMotionMask |\
+		     LeaveWindowMask | EnterWindowMask | PointerMotionMask |\
 		     KeyReleaseMask | KeyPressMask | ButtonMotionMask)
 /* SW_EVENTS are for swallowed windows... */
 #define SW_EVENTS   (PropertyChangeMask | StructureNotifyMask |\
@@ -184,7 +184,7 @@ Window swallower_win = 0;
 char *mymalloc(int length)
 {
   int i=length;
-  char *p=safemalloc(length);
+  char *p=safecalloc(1, length);
   while(i)
     p[--i]=255;
   return p;
@@ -925,6 +925,51 @@ static Bool reallyLeaveWindow (const int x, const int y,
 	return True;
 }
 
+static void handle_new_button(button_info *b)
+{
+	button_info *ohb;
+	int redraw_parts;
+	Bool f = is_pointer_in_current_button;
+
+	is_pointer_in_current_button = (CurrentButton && CurrentButton == b);
+	redraw_parts = 0;
+	ohb = HoverButton;
+	if (CurrentButton != NULL)
+	{
+		HoverButton = (is_pointer_in_current_button) ?
+			CurrentButton : NULL;
+		if (is_pointer_in_current_button != f)
+		{
+			redraw_parts = (HoverButton == NULL) ?
+				DRAW_RELIEF : DRAW_FORCE;
+			RedrawButton(CurrentButton, DRAW_FORCE, NULL);
+		}
+	}
+	else if (b != ohb)
+	{
+		HoverButton = b;
+		if (ohb != NULL)
+		{
+			RedrawButton(ohb, DRAW_FORCE, NULL);
+			if (ohb == CurrentButton)
+			{
+				redraw_parts = 0;
+			}
+		}
+		if (b->flags & (b_HoverIcon | b_HoverTitle) ||
+		    UberButton->c->flags & b_HoverColorset)
+		{
+			RedrawButton(b, DRAW_FORCE, NULL);
+			if (b == CurrentButton)
+			{
+				redraw_parts = 0;
+			}
+		}
+	}
+
+	return;
+}
+
 /* -------------------------------- Main Loop -------------------------------*/
 
 /**
@@ -948,20 +993,17 @@ void Loop(void)
   {
     if(My_FNextEvent(Dpy,&Event))
     {
-      if (FShapesSupported)
+      if (FShapesSupported && Event.type == FShapeEventBase + FShapeNotify)
       {
-	if (Event.type == FShapeEventBase + FShapeNotify)
-	{
-	  FShapeEvent *sev = (FShapeEvent *) &Event;
+	FShapeEvent *sev = (FShapeEvent *) &Event;
 
-	  if (sev->kind != FShapeBounding)
-	    return;
-	  if (UberButton->c->flags & b_TransBack)
-	  {
-	    SetTransparentBackground(UberButton, Width, Height);
-	  }
-	  continue;
+	if (sev->kind != FShapeBounding)
+	  return;
+	if (UberButton->c->flags & b_TransBack)
+	{
+	  SetTransparentBackground(UberButton, Width, Height);
 	}
+	continue;
       }
       switch(Event.type)
       {
@@ -1079,51 +1121,42 @@ void Loop(void)
       break;
 
 	case MotionNotify:
-	{
-		Bool f = is_pointer_in_current_button, redraw_relief = False;
 		if (Event.xmotion.x < 0 || Event.xmotion.x >= Width ||
 			Event.xmotion.y < 0 || Event.xmotion.y >= Height)
 		{
+			button_info *hb;
+
+			hb = HoverButton;
+			HoverButton = NULL;
 			/* cursor is outside of FvwmButtons window. */
+			if (CurrentButton != NULL &&
+			    is_pointer_in_current_button == True &&
+			    CurrentButton != hb)
+			{
+				is_pointer_in_current_button = False;
+				RedrawButton(CurrentButton, DRAW_FORCE, NULL);
+			}
+			else if (hb != NULL)
+			{
+				is_pointer_in_current_button = False;
+				RedrawButton(hb, DRAW_FORCE, NULL);
+			}
 			break;
 		}
-
 		/* find out which button the cursor is in now. */
-		b = select_button(UberButton, Event.xmotion.x, Event.xmotion.y);
-
-		is_pointer_in_current_button =
-			(CurrentButton && CurrentButton == b);
-		if (CurrentButton && is_pointer_in_current_button != f)
-		{
-			redraw_relief = True;
-		}
-
-		if (b != HoverButton && CurrentButton == NULL)
-		{
-			if (HoverButton)
-			{
-				button_info *tmp = HoverButton;
-				HoverButton = b;
-				RedrawButton(tmp, DRAW_FORCE, NULL);
-			}
-			if (b->flags & (b_HoverIcon | b_HoverTitle) ||
-				UberButton->c->flags & b_HoverColorset)
-			{
-				HoverButton = b;
-				RedrawButton(b, DRAW_FORCE, NULL);
-				redraw_relief = False;
-			}
-		}
-
-		if (redraw_relief)
-		{
-			RedrawButton(b, DRAW_RELIEF, NULL);
-		}
-	}
+		b = select_button(
+			UberButton, Event.xmotion.x, Event.xmotion.y);
+		handle_new_button(b);
 	break;
 
+	case EnterNotify:
+		/* find out which button the cursor is in now. */
+		b = select_button(
+			UberButton, Event.xcrossing.x, Event.xcrossing.y);
+		handle_new_button(b);
+		break;
+
 	case LeaveNotify:
-	{
 		if (reallyLeaveWindow(Event.xcrossing.x, Event.xcrossing.y,
 			Event.xcrossing.window, NULL))
 		{
@@ -1139,91 +1172,131 @@ void Loop(void)
 			}
 		}
 		break;
-	}
       case KeyPress:
 	XLookupString(&Event.xkey,buffer,10,&keysym,0);
 	if(keysym!=XK_Return && keysym!=XK_KP_Enter && keysym!=XK_Linefeed)
 	  break;                        /* fall through to ButtonPress */
 
       case ButtonPress:
-	if (CurrentButton)
-	{
-	  b = CurrentButton;
-	  CurrentButton = 0;
-	  RedrawButton(b, DRAW_FORCE, NULL);
-	  break;
-	}
-	if (Event.xbutton.state & DEFAULT_ALL_BUTTONS_MASK)
-	{
-	  break;
-	}
-	if (Event.xbutton.window == MyWindow)
-	{
-	  x = Event.xbutton.x;
-	  y = Event.xbutton.y;
-	}
-	else
-	{
-	  Window dummy;
+	      if (Event.xbutton.window == MyWindow)
+	      {
+		      x = Event.xbutton.x;
+		      y = Event.xbutton.y;
+	      }
+	      else
+	      {
+		      Window dummy;
 
-	  XTranslateCoordinates(
-	    Dpy, Event.xbutton.window, MyWindow, Event.xbutton.x,
-	    Event.xbutton.y, &x, &y, &dummy);
-	}
-	CurrentButton = b =
-	  select_button(UberButton, x, y);
-	is_pointer_in_current_button = True;
+		      XTranslateCoordinates(
+			      Dpy, Event.xbutton.window, MyWindow,
+			      Event.xbutton.x, Event.xbutton.y, &x, &y,
+			      &dummy);
+	      }
+	      b = select_button(UberButton, x, y);
+	      if (CurrentButton != NULL)
+	      {
+		      button_info *ohb;
 
-	act = NULL;
-	if (!(b->flags & b_Panel) &&
-	    (!b || !(b->flags&b_Action) ||
-	     ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
-	      (act=GetButtonAction(b,0)) == NULL)))
-	{
-	  CurrentButton=NULL;
-	  break;
-	}
+		      ohb = HoverButton;
+		      if (b->flags & (b_HoverIcon | b_HoverTitle) ||
+			  UberButton->c->flags & b_HoverColorset)
+		      {
+			      HoverButton = b;
+		      }
+		      else
+		      {
+			      HoverButton = NULL;
+		      }
+		      if (ohb != NULL && ohb != HoverButton)
+		      {
+			      RedrawButton(ohb, DRAW_FORCE, NULL);
+		      }
+		      if (HoverButton != NULL)
+		      {
+			      RedrawButton(HoverButton, DRAW_FORCE, NULL);
+		      }
+		      b = CurrentButton;
+		      CurrentButton = 0;
+		      if (b != ohb && b != HoverButton)
+		      {
+			      RedrawButton(b, DRAW_FORCE, NULL);
+		      }
+		      break;
+	      }
+	      if (Event.xbutton.state & DEFAULT_ALL_BUTTONS_MASK)
+	      {
+		      break;
+	      }
+	      CurrentButton = b;
+	      is_pointer_in_current_button = True;
 
-	/* Undraw HoverButton (if there is one). */
-	if (HoverButton)
-	{
-	  /* $b & $HoverButton are always the same button. */
-	  button_info *tmp = HoverButton;
-	  HoverButton = NULL;
-	  RedrawButton(tmp, DRAW_FORCE, NULL);
-	}
-	else
-	  RedrawButton(b, DRAW_FORCE, NULL);
-	if (!act)
-	{
-	  break;
-	}
-	if (act && !(b->flags & b_ActionOnPress) &&
-	    strncasecmp(act, "popup", 5) != 0)
-	{
-	  free(act);
-	  act = NULL;
-	  break;
-	}
-	else /* i.e. action is Popup */
-	{
-	  XUngrabPointer(Dpy,CurrentTime); /* And fall through */
-	}
-	if (act)
-	{
-	  free(act);
-	  act = NULL;
-	}
-	/* fall through */
+	      act = NULL;
+	      if (!(b->flags & b_Panel) &&
+		  (!b || !(b->flags&b_Action) ||
+		   ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
+		    (act=GetButtonAction(b,0)) == NULL)))
+	      {
+		      CurrentButton=NULL;
+		      break;
+	      }
+
+	      /* Undraw HoverButton (if there is one). */
+	      if (HoverButton && HoverButton != b)
+	      {
+		      /* $b & $HoverButton are always the same button. */
+		      button_info *tmp = HoverButton;
+		      HoverButton = NULL;
+		      RedrawButton(tmp, DRAW_FORCE, NULL);
+	      }
+	      else
+		      RedrawButton(b, DRAW_FORCE, NULL);
+	      if (!act)
+	      {
+		      break;
+	      }
+	      if (act && !(b->flags & b_ActionOnPress) &&
+		  strncasecmp(act, "popup", 5) != 0)
+	      {
+		      free(act);
+		      act = NULL;
+		      break;
+	      }
+	      else /* i.e. action is Popup */
+	      {
+		      XUngrabPointer(Dpy,CurrentTime); /* And fall through */
+	      }
+	      if (act)
+	      {
+		      free(act);
+		      act = NULL;
+	      }
+	      /* fall through */
 
       case KeyRelease:
       case ButtonRelease:
 	if (CurrentButton == NULL || !is_pointer_in_current_button)
 	{
-		if (CurrentButton)
-			RedrawButton(CurrentButton, DRAW_FORCE, NULL);
+		if (Event.xbutton.window == MyWindow)
+		{
+			x = Event.xbutton.x;
+			y = Event.xbutton.y;
+		}
+		else
+		{
+			Window dummy;
 
+			XTranslateCoordinates(
+				Dpy, Event.xbutton.window, MyWindow,
+				Event.xbutton.x, Event.xbutton.y, &x, &y,
+				&dummy);
+		}
+		b = select_button(UberButton, x, y);
+		if (CurrentButton)
+		{
+			RedrawButton(CurrentButton, DRAW_FORCE, NULL);
+		}
 		CurrentButton = NULL;
+		handle_new_button(b);
 		break;
 	}
 	if (Event.xbutton.window == MyWindow)
