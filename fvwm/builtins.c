@@ -1048,7 +1048,7 @@ void refresh_function(F_CMD_ARGS)
 		     (unsigned int) Scr.MyDisplayHeight,
 		     (unsigned int) 0,
 		     CopyFromParent, (unsigned int) CopyFromParent,
-		     Scr.viz, valuemask,
+		     CopyFromParent, valuemask,
 		     &attributes);
   XMapWindow (dpy, w);
   XDestroyWindow (dpy, w);
@@ -1076,7 +1076,7 @@ void refresh_win_function(F_CMD_ARGS)
 		     (unsigned int) Scr.MyDisplayHeight,
 		     (unsigned int) 0,
 		     CopyFromParent, (unsigned int) CopyFromParent,
-		     Scr.viz, valuemask,
+		     CopyFromParent, valuemask,
 		     &attributes);
   XMapWindow (dpy, w);
   XDestroyWindow (dpy, w);
@@ -1468,7 +1468,8 @@ void SetXOR(F_CMD_ARGS)
     return;
   }
 
-  gcm = GCFunction|GCLineWidth|GCForeground|GCSubwindowMode;
+  gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
+  gcv.subwindow_mode = IncludeInferiors;
   gcv.function = GXxor;
   gcv.line_width = 0;
   /* use passed in value, or try to calculate appropriate value if 0 */
@@ -1479,10 +1480,15 @@ void SetXOR(F_CMD_ARGS)
   /* Xlib programming manual suggestion: */
   gcv.foreground = (val)?
     (val):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
+  gcv.fill_style = FillSolid
   gcv.subwindow_mode = IncludeInferiors;
-  if (Scr.DrawGC)
-    XFreeGC(dpy, Scr.DrawGC);
-  Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+
+  /* modify DrawGC, only create once */
+  if (!Scr.DrawGC)
+    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  else
+    XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
+
   /* free up XORPixmap if possible */
   if (Scr.DrawPicture) {
     DestroyPicture(dpy, Scr.DrawPicture);
@@ -1520,14 +1526,17 @@ void SetXORPixmap(F_CMD_ARGS)
 
   /* create Graphics context */
   gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
+  gcv.subwindow_mode = IncludeInferiors;
   gcv.function = GXxor;
   gcv.line_width = 0;
   gcv.tile = GCPicture->picture;
   gcv.fill_style = FillTiled;
   gcv.subwindow_mode = IncludeInferiors;
-  if (Scr.DrawGC)
-    XFreeGC(dpy, Scr.DrawGC);
-  Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  /* modify DrawGC, only create once */
+  if (!Scr.DrawGC)
+    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  else
+    XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
 }
 
 void SetOpaque(F_CMD_ARGS)
