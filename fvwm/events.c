@@ -79,7 +79,7 @@
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
-#include "module.h"
+#include "module_interface.h"
 #include "session.h"
 #include "focus.h"
 #include "stack.h"

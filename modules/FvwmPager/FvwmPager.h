@@ -1,5 +1,5 @@
 #include <libs/Picture.h>
-#include <fvwm/vpacket.h>
+#include <libs/vpacket.h>
 
 typedef struct ScreenInfo
 {

@@ -22,7 +22,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "fvwm/module.h"
+#include <libs/Module.h>
 
 #ifndef HAVE_STRERROR
 extern char *sys_errlist[];

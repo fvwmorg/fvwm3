@@ -4,7 +4,7 @@
  *
  *************************************************************************/
 #include "libs/fvwmlib.h"
-#include <fvwm/vpacket.h>
+#include <libs/vpacket.h>
 
 struct icon_info;
 Bool ExecIconBoxFunction(char *msg);

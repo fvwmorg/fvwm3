@@ -66,7 +66,7 @@
 #include <X11/extensions/shape.h>
 #include <X11/Xresource.h>
 #endif /* SHAPE */
-#include "module.h"
+#include "module_interface.h"
 #include "session.h"
 #include "stack.h"
 #include "move_resize.h"

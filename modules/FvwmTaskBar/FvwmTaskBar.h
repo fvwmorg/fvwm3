@@ -23,7 +23,7 @@
 
 #include "config.h"
 #include "fvwm/fvwm.h"
-#include "fvwm/vpacket.h"
+#include "libs/vpacket.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

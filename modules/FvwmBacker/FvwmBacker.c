@@ -35,7 +35,7 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 
-#include "fvwm/module.h"
+#include "libs/Module.h"
 #include "FvwmBacker.h"
 #include "Mallocs.h"
 

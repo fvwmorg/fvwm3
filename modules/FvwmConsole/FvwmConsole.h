@@ -23,7 +23,7 @@
 #include <string.h>
 
 #include <libs/fvwmlib.h>
-#include "fvwm/module.h"
+#include <libs/Module.h>
 
 #define S_NAME  "/.FvConSocket"
 /* Prompts for readline support */

@@ -42,6 +42,7 @@
 #include <X11/Xproto.h>
 */
 
+#include <libs/Module.h>
 #include "FvwmButtons.h"
 #include "button.h"
 

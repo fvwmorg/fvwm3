@@ -27,7 +27,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
-#include "fvwm/module.h"
+#include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 #include "libs/ModGraph.h"

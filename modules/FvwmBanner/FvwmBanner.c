@@ -32,6 +32,7 @@
 
 #include <libs/fvwmlib.h>
 #include <libs/Picture.h>
+#include <libs/Module.h>
 
 
 #include "icons/fvwm2_big.xpm"

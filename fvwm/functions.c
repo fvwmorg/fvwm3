@@ -47,7 +47,7 @@
 #include "screen.h"
 #include "bindings.h"
 #include "repeat.h"
-#include "module.h"
+#include "Module.h"
 #include "move_resize.h"
 
 extern XEvent Event;

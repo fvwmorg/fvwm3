@@ -82,7 +82,7 @@
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
 
-#include "fvwm/module.h"                /* for headersize, etc. */
+#include "libs/Module.h"                /* for headersize, etc. */
 #include "libs/fvwmlib.h"
 
 #include <libs/Picture.h>               /* for InitPictureCMap */

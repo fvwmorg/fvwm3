@@ -13,7 +13,7 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
-#include "module.h"
+#include "module_interface.h"
 #include "stack.h"
 
 

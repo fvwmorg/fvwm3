@@ -33,7 +33,7 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
-#include "module.h"
+#include "Module.h"
 
 
 /* clasen@mathematik.uni-freiburg.de - 03/01/1999 - new

@@ -28,7 +28,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "parse.h"
-#include "module.h"
+#include "Module.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>

@@ -33,7 +33,7 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#include "fvwm/module.h"
+#include "libs/Module.h"
 #include "libs/fvwmlib.h"
 
 #include "fvwm/fvwm.h"

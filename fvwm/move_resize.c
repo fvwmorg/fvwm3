@@ -39,7 +39,7 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
-#include "module.h"
+#include "module_interface.h"
 #include "move_resize.h"
 
 typedef struct geom

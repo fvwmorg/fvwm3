@@ -34,7 +34,7 @@
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
 
-#include "fvwm/module.h"
+#include "libs/Module.h"
 #include "libs/ModGraph.h"
 #include "FvwmIdent.h"
 

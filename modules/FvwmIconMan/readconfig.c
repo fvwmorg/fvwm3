@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "FvwmIconMan.h"
 #include "readconfig.h"
+#include <libs/Module.h>
 
 static char const rcsid[] =
   "$Id$";

@@ -1,3 +1,21 @@
+Sat May  1 10:43:55 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): 
+	* libs/Makefile.am (libfvwm_a_SOURCES): 
+	* fvwm/vpacket.h: moved to libs/vpacket.h, since this file is
+	used only by modules.
+
+	* libs/*: include Module.h rather than fvwm/module.h.
+	* fvwm/*: include module_interface.h rather than module.h.
+	
+	* fvwm/Makefile.am (fvwm2_SOURCES): 
+	* fvwm/module.[ch]: renamed to module_interface.[ch], to avoid
+ 	confusion with libs/Module.[ch].
+
+	* libs/Makefile.am (libfvwm_a_SOURCES): 
+	* libs/Module.h: new file.  Everything a module needs to know in
+ 	order to talk to FVWM.
+
 Sat May  1 01:42:02 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/session.c (LoadGlobalState): fix scanf argument.  Removed 

@@ -58,7 +58,7 @@
 
 #include <stdlib.h>
 
-#include "fvwm/module.h"
+#include "libs/Module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
 
 

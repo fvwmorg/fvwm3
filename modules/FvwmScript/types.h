@@ -1,6 +1,6 @@
 #include "config.h"
 
-#include "fvwm/module.h"
+#include <libs/Module.h>
 #include <libs/fvwmlib.h>
 
 #include <stdio.h>

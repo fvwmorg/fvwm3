@@ -54,7 +54,7 @@
 #include <fcntl.h>                      /* for O_WRONLY */
 #include <sys/times.h>                  /* For timing things time() */
 #include <limits.h>                     /* For time() */
-#include "fvwm/module.h"
+#include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/ModGraph.c"
 #include "FvwmAnimate.h"

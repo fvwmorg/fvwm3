@@ -22,7 +22,7 @@
 
 #include "debug.h"
 #include "fvwm/fvwm.h"
-#include "fvwm/vpacket.h"
+#include "libs/vpacket.h"
 
 #ifndef DEFAULT_ACTION
 #define DEFAULT_ACTION "Iconify"

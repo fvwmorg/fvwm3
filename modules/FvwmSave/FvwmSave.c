@@ -25,7 +25,7 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#include "fvwm/module.h"
+#include "libs/Module.h"
 
 #include "FvwmSave.h"
 

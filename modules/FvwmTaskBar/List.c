@@ -13,7 +13,7 @@
  */
 
 #include "config.h"
-#include "fvwm/module.h"
+#include "libs/Module.h"
 
 #include <stdio.h>
 #include <stdlib.h>

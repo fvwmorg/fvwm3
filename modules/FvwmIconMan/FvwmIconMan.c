@@ -12,7 +12,7 @@
 #include "x.h"
 #include "xmanager.h"
 
-#include "fvwm/module.h"
+#include "libs/Module.h"
 
 
 static int fd_width;

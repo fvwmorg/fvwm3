@@ -45,7 +45,7 @@
 #include <gdk_imlib.h>
 #endif
 
-#include "fvwm/module.h"
+#include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 

@@ -24,8 +24,10 @@
 #endif
 
 #include "libs/fvwmlib.h"
+#include <libs/Module.h>
 #include "fvwm/fvwm.h"
 #include "FvwmPager.h"
+
 
 extern ScreenInfo Scr;
 extern Display *dpy;

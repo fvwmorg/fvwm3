@@ -45,7 +45,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "parse.h"
-#include "module.h"
+#include "Module.h"
 #include "read.h"
 #include "session.h"
 

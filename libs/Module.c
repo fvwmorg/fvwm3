@@ -24,8 +24,8 @@
 
 #include <errno.h>
 
-#include <libs/fvwmlib.h>
-#include <fvwm/module.h>
+#include "fvwmlib.h"
+#include "Module.h"
 
 
 /************************************************************************
@@ -49,7 +49,6 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
 {
   int count,total,count2,body_length;
   char *cbody;
-  extern RETSIGTYPE DeadPipe(int);
 
   errno = 0;
   if((count = read(fd,header,HEADER_SIZE*sizeof(unsigned long))) >0)
@@ -121,11 +120,6 @@ void SendText(int *fd, char *message, unsigned long window)
 }
 
 
-/***************************************************************************
- *
- * Sets the which-message-types-do-I-want mask for modules
- *
- **************************************************************************/
 void SetMessageMask(int *fd, unsigned long mask)
 {
   char set_mask_mesg[50];

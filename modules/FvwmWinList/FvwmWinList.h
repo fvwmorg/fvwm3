@@ -10,7 +10,7 @@
 
 #include <libs/fvwmlib.h>
 #include <fvwm/fvwm.h>
-#include <fvwm/vpacket.h>
+#include <libs/vpacket.h>
 
 /* FvwmWinList Module for Fvwm. 
  *

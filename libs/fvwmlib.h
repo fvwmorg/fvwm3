@@ -146,14 +146,6 @@ char* searchPath( const char* path, const char* filename,
 		  const char* suffix, int type );
 
 
-/***********************************************************************
- * Stuff for modules to communicate with fvwm
- ***********************************************************************/
-int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body);
-void SendText(int *fd,char *message,unsigned long window);
-#define SendInfo SendText
-void GetConfigLine(int *fd, char **tline);
-void SetMessageMask(int *fd, unsigned long mask);
 
 /***********************************************************************
  * Stuff for dealing w/ bitmaps & pixmaps:
