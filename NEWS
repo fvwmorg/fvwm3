@@ -1,7 +1,10 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
-Changes in beta stable 2.4.2 (not released yet)
+Changes in beta stable 2.4.3 (not released yet)
+
+Changes in beta stable 2.4.2 (16-Sep-2001
+)
 
 * Desk and page can be given as X resources in .Xdefaults, for example:
     xterm.desk: 1

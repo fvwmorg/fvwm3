@@ -1,5 +1,10 @@
 2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* NEWS, configure.in:
+	changed version to 2.4.3
+
+2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* configure.in:
 	changed version to 2.4.2
 
