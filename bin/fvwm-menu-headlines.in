@@ -166,6 +166,7 @@ my $commF = undef;
 my $iconT = '';
 my $iconI = '';
 my $iconH = '';
+my $iconE = '';
 my $wmIcons = 0;
 
 my $proxy = undef;
@@ -191,6 +192,7 @@ GetOptions(
 	"icon-title=s" => \$iconT,
 	"icon-item=s"  => \$iconI,
 	"icon-home=s"  => \$iconH,
+	"icon-error=s" => \$iconE,
 	"wm-icons" => \$wmIcons,
 	"proxy=s"  => \$proxy,
 	"frontpage:s" => \$frontpage,
@@ -237,11 +239,13 @@ if ($wmIcons) {
 	$iconT ||= "";
 	$iconI ||= "menu/information.xpm";
 	$iconH ||= "menu/home.xpm";
+	$iconE ||= "menu/choice-no.xpm";
 }
 
 my $iconTStr = $iconT? "%$iconT%": "";
 my $iconIStr = $iconI? "%$iconI%": "";
 my $iconHStr = $iconH? "%$iconH%": "";
+my $iconEStr = $iconE? "%$iconE%": "";
 
 if (defined $proxy && $proxy =~ /^(.+):(\d+)$/) {
 	$proxy = $1;
@@ -264,12 +268,19 @@ my $content = "";
 
 $content .= qq(DestroyMenu $name\n);
 $content .= qq(AddToMenu $name "$iconTStr$title" Title\n);
-local $errorMenuContent = $content . "+ `<msg>` DestroyMenu $name\n";
+local $errorMenuContent = $content;
+
+my $frontpageEntry = "";
+if (defined $frontpage) {
+	my $cmd = expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
+	$frontpageEntry = qq(+ "$iconHStr$siteName Frontpage" $cmd\n);
+	$errorMenuContent .= qq($frontpageEntry\n+ "" Nop\n);
+}
+
+$errorMenuContent .= "+ `$iconEStr<msg>` DestroyMenu $name\n";
 
 if (defined $frontpage && $frontpage !~ /^b/) {
-	my $cmd = expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
-	$content .= qq(+ "$iconHStr$siteName Frontpage" $cmd\n);
-	$content .= qq(+ "" Nop\n);
+	$content .= qq($frontpageEntry\n+ "" Nop\n);
 }
 
 unless (defined $fakeFile) {
@@ -294,7 +305,7 @@ unless (defined $fakeFile) {
 	}
 
 	dieNet("Unexpected HTTP response from http://$siteHost$sitePath", 0)
-		if readLine() !~ m{HTTP/1.1 200 OK}i;
+		if readLine() !~ m{HTTP/1\.\d 200 OK}i;
 
 	# skip http response headers
 	while (readLine() !~ /^\r?\n$/s) {}
@@ -319,9 +330,7 @@ foreach (@$entries) {
 }
 
 if (defined $frontpage && $frontpage =~ /^b/) {
-	my $cmd = expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
-	$content .= qq(+ "" Nop\n);
-	$content .= qq(+ "$iconHStr$siteName Frontpage" $cmd\n);
+	$content .= qq(+ "" Nop\n$frontpageEntry);
 }
 
 if (defined $menuFile) {
@@ -697,6 +706,7 @@ sub showHelp {
 	print "\t--icon-title=XPM menu title icon, default is no\n";
 	print "\t--icon-item=XPM  menu item  icon, default is no\n";
 	print "\t--icon-home=XPM  menu home  icon, default is no\n";
+	print "\t--icon-error=XPM menu error icon, default is no\n";
 	print "\t--wm-icons       define icon names to use with wm-icons\n";
 	print "\t--frontpage[=V]  show frontpage item; values: top, bottom\n";
 	print "\t--proxy=host[:port] specify proxy host and port (80)\n";
@@ -740,6 +750,7 @@ B<fvwm-menu-headlines>
 [ B<--icon-title> icon ]
 [ B<--icon-item> icon ]
 [ B<--icon-home> icon ]
+[ B<--icon-error> icon ]
 [ B<--wm-icons> ]
 [ B<--frontpage> [where] ]
 [ B<--proxy>|B<-p> host:port ]
@@ -771,10 +782,9 @@ B<--site> site - defile a web site, headlines of which to show, this option
 also can be used together with --help to get new defaults.
 Default site: freshmeat.
 
-B<--name>, B<--title>, B<--icon> - define menu name, menu title and menu icon
-accordingly given in the following argument. Default is name
-"MenuHeadlinesFreshmeat", title "Freshmeat Headlines" and no mini-icon
-(equivalent to an empty icon argument).
+B<--name>, B<--title> - define menu name and menu title accordingly given
+in the following argument. Default is name "MenuHeadlinesFreshmeat" and
+title "Freshmeat Headlines".
 
 B<--item>, B<--exec> - define menu item or exec format in the following
 argument (what is shown and what is executed when the item is chosen),
@@ -805,13 +815,14 @@ for example, "Function FuncFvwmShowURL '%u'" not only Exec.
 In fact, --exec="mozilla '%u'" is equivalent
 to --command="Exec mozilla '%u'"
 
-B<--icon-title>, B<--icon-item>, B<--icon-home> - define menu icon for
-title, regular item and home item respectively given in the following argument.
+B<--icon-title>, B<--icon-item>, B<--icon-home>, B<--icon-error> - define
+menu icon for title, regular item, frontpage item and error item respectively
+given in the following argument.
 Default is no menu icons (equivalent to an empty icon argument).
 
 B<--wm-icons> - define icon names suitable for use with wm-icons package.
 Currently this is equivalent to: --icon-title '' --icon-item
-menu/information.xpm --icon-home menu/home.xpm.
+menu/information.xpm --icon-home menu/home.xpm --icon-error menu/choice-no.xpm.
 
 B<--frontpage> [where] - show site fronpage item in the menu too. Optional
 value can be used to specify where this item will be placed in the menu -
@@ -837,7 +848,7 @@ the default timeout is 20 seconds.
 WORK_HOME of this script is ~/.fvwm/.fvwm-menu-headlines.
 It is created if needed.
 
-Option parameters can be specified both using '=' and in the next argument.
+Option parameters can be specified either using '=' or in the next argument.
 Short options are ok if not ambiguous: C<-h>, C<-t>; but be careful with
 short options, what is now unambiguous, can become ambiguous in the next
 versions.

@@ -1,3 +1,8 @@
+2002-06-09  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	catch die in system signal handlers; a more clean shutdown
+
 2002-06-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

@@ -1,13 +1,15 @@
 #!/usr/bin/perl -w
 
+# This is a simple FVWM module written in perl using the supplied perl library.
+# Iconifies new windows, auto-raises windows and terminates itself in 1 minute.
+# Either place this module in FVWM_MODULEDIR or run it using the full path.
+
 use strict;
 use lib `fvwm-config -p | tr -d '\n'`;
 use FVWM::Module;
 
 my $newWindowHandler = sub {
-	my $self = shift;
-	my $type = shift;
-	my @args = @_;
+	my ($self, $type, @args) = @_;
 	#$self->send("Echo M_ADD_WINDOW @args");
 
 	# auto iconify all new windows
@@ -15,21 +17,31 @@ my $newWindowHandler = sub {
 	$self->send("Iconify true", $winId);
 };
 
-my $onExit = sub { $_[0]->send("All (FvwmConsole) Iconify false") };
-
 my $module = new FVWM::Module(
-	Name => "FvwmPerlBasedExample",
-	Mask => M_ADD_WINDOW | M_FOCUS_CHANGE,
+	Name => "FvwmPerlBasedExample",         # used in config and debug
+	Mask => M_ADD_WINDOW | M_FOCUS_CHANGE,  # request two these events
 );
+
+# do some funny harm
 $module->send("Beep");
 $module->send("All (FvwmConsole) Iconify true");
-$module->send("Schedule 60000 KillModule $0");
+
+# undo harm
+my $onExit = sub { $_[0]->send("Beep\nAll (FvwmConsole) Iconify false") };
+
+# auto-exit in 60 seconds; a mere die() in ALRM signal handler is ok too
+local $SIG{ALRM} = sub { $module->terminate(); };
+alarm(60);
 
 # auto-iconify new windows
 $module->addHandler(M_ADD_WINDOW, $newWindowHandler);
-# auto-raise windows
+# auto-raise all windows
 $module->addHandler(M_FOCUS_CHANGE, sub { $_[0]->send("Raise", $_[2]) });
-# this would be our final song if only we were not killed by KillModule...
+# do a clean-up on exit
 $module->addHandler(ON_EXIT, $onExit);
 
+# enter the main event loop
 $module->eventLoop();
+
+# this is only reached when the mutual connection with fvwm is lost
+$module->debug("finished");

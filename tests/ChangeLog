@@ -1,5 +1,10 @@
 2002-05-28  Mikhael Goikhman  <migo@homemail.com>
 
+	* perl/module-example:
+	improved example module and documented all steps
+
+2002-05-28  Mikhael Goikhman  <migo@homemail.com>
+
 	* perl/README:
 	* perl/module-example:
 	* perl/module-gtkwinlist:

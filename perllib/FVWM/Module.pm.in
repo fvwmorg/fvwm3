@@ -101,10 +101,11 @@ sub internalDie ($$) {
 	die $self->name . ": $msg Exiting.\n";
 }
 
-sub debug ($$) {
+sub debug ($$;$) {
 	my $self = shift;
-	return unless $self->{debug};
 	my $msg = shift;
+	my $level = shift || 0;
+	return if $self->{debug} < $level;
 	$msg =~ s/\n$//s;
 	print STDERR $self->name . ": $msg\n";
 }
@@ -172,6 +173,10 @@ sub new ($@) {
 	$self->{context} = $context;
 	$self->{argv} = [@argv];
 
+	# a module may need this
+	autoflush STDOUT;
+	autoflush STDERR;
+
 	$self->{ostream} = new IO::File ">&$outFd"
 		or die "$name: Can't write to file descriptor (&$outFd)\n";
 	$self->{istream} = new IO::File "<&$inFd"
@@ -197,20 +202,20 @@ sub new ($@) {
 	return $self;
 }
 
-sub destroy ($) {
+sub disconnect ($) {
 	my $self = shift;
-	if (defined $self->{ostream}) {
+	if (defined $self->{ostream} && $self->{ostream}->opened) {
 		$self->send("Nop", 0, 0);
 		close $self->{ostream};
 	}
-	if (defined $self->{istream}) {
+	if (defined $self->{istream} && $self->{istream}->opened) {
 		close $self->{istream};
 	}
 }
 
 sub DESTROY ($) {
 	my $self = shift;
-	$self->destroy;
+	$self->disconnect;
 }
 
 sub name ($;$) {
@@ -304,7 +309,11 @@ sub send ($$;$$) {
 		}
 		next if $line =~ /^\s*$/;
 
-		$self->debug("send: [$line]");
+		unless ($self->{ostream}->opened) {
+			$self->debug("Can't send [$line]\n", 0);
+			next;
+		}
+		$self->debug("send: [$line]", 1);
 		my $len = length $line;
 		$self->{ostream}->print(
 			pack("lla${len}l", $winId, $len, $line, $continue)
@@ -415,7 +424,7 @@ sub processPacket ($;$$) {
 	if ($self->{debug}) {
 		my $msg = "got " . $self->getPacketName($type);
 		$msg .= " [$args[@args - 1]]" if $self->isPacketTextBased($type);
-		$self->debug($msg);
+		$self->debug($msg, 1);
 	}
 
 	$self->{shouldSendUnlock} = 1 if $type &
@@ -434,10 +443,11 @@ sub eventLoop ($) {
 	$self->sendReady;
 
 	while (1) {
-		$self->processPacket($self->readPacket) || last;
+		# catch all possible exceptions, for example from alarm() handler
+		eval { $self->processPacket($self->readPacket) } || last;
 	}
 	$self->invokeHandler(ON_EXIT);
-	$self->destroy;
+	$self->disconnect;
 }
 
 sub addHandler ($$$) {
