@@ -966,7 +966,6 @@ void list_new_desk(unsigned long *body)
     {
       change_colorset(change_highcs);
     }
-
     XClearWindow(dpy, Desks[0].w);
     XClearWindow(dpy, Desks[0].title_w);
   } /* if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk) */
@@ -986,8 +985,8 @@ void list_new_desk(unsigned long *body)
       sprintf(line, "Desk %d", Scr.CurrentDesk);
       name = &(line[0]);
     }
-      XStoreName(dpy, Scr.Pager_w, name);
-      XSetIconName(dpy, Scr.Pager_w, name);
+    XStoreName(dpy, Scr.Pager_w, name);
+    XSetIconName(dpy, Scr.Pager_w, name);
   }
 
   MovePage(True);
@@ -1402,8 +1401,6 @@ void list_config_info(unsigned long *body)
 
 void list_property_change(unsigned long *body)
 {
-  int i;
-
   if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND)
   {
 
@@ -1414,14 +1411,7 @@ void list_property_change(unsigned long *body)
     }
     if (BalloonView != None)
     {
-      for(i=0;i<ndesks;i++)
-      {
-	if (Desks[i].ballooncolorset > -1 &&
-	    Colorset[Desks[i].ballooncolorset].pixmap == ParentRelative)
-	{
-	  XClearArea(dpy, Desks[i].balloon.w, 0, 0, 0, 0, True);
-	}
-      }
+      XClearArea(dpy, Scr.balloon_w, 0, 0, 0, 0, True);
     }
   }
   else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == Scr.Pager_w)
@@ -2184,6 +2174,17 @@ void ParseOptions(void)
     else if (StrEquals(resource, "BalloonYOffset"))
     {
       sscanf(arg1, "%d", &BalloonYOffset);
+      if (BalloonYOffset <= 0)
+      {
+	fprintf(stderr,
+		"%s: Warning:"
+		" you're not allowed BalloonYOffset 0; defaulting to +3\n",
+		MyName);
+	/* we don't allow yoffset of 0 because it allows direct transit from
+	 * pager window to balloon window, setting up a LeaveNotify/EnterNotify
+	 * event loop */
+	BalloonYOffset = 3;
+      }
     }
     else if (StrEquals(resource,"BalloonStringFormat"))
     {

@@ -27,13 +27,19 @@ typedef struct ScreenInfo
 
   Window Root;
   Window Pager_w;
+  Window label_w;
+  Window balloon_w;
 
   Font PagerFont;        /* font struct for window labels in pager (optional)*/
 
   GC NormalGC;           /* used for window names and setting backgrounds */
   GC MiniIconGC;         /* used for clipping mini-icons */
   GC whGC, wsGC, ahGC, asGC; /* used for 3d shadows on mini-windows */
+  GC label_gc;
+  GC balloon_gc;
 
+  int balloon_desk;
+  char *balloon_label;   /* the label displayed inside the balloon */
   char  *Hilite;         /* the fvwm window that is highlighted
 			  * except for networking delays, this is the
 			  * window which REALLY has the focus */
@@ -101,36 +107,28 @@ typedef struct pager_window
   struct pager_window *next;
 } PagerWindow;
 
-
 typedef struct balloon_window
 {
-  Window w;              /* ID of balloon window */
-  PagerWindow *pw;       /* pager window it's associated with */
   FlocaleFont *Ffont;
-  char *label;           /* the label displayed inside the balloon */
   int height;            /* height of balloon window based on font */
-  int border;            /* border width */
-  int yoffset;           /* pixels above (<0) or below (>0) pager win */
 } BalloonWindow;
-
 
 typedef struct desk_info
 {
   Window w;
   Window title_w;
   Window CPagerWin;
-  BalloonWindow balloon;
   FvwmPicture *bgPixmap;                /* Pixmap used as background. */
+  BalloonWindow balloon;
   int colorset;
   int highcolorset;
   int ballooncolorset;
   char *Dcolor;
   char *label;
-  GC NormalGC;                  /* used for desk labels */
+  GC NormalGC;
   GC DashedGC;                  /* used the the pages boundary lines */
   GC HiliteGC;                  /* used for hilighting the active desk */
   GC rvGC;                      /* used for drawing hilighted desk title */
-  GC BalloonGC;
 } DeskInfo;
 
 typedef struct pager_string_list

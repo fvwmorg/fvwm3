@@ -119,65 +119,142 @@ int LoadColorset(char *line)
   cs->shape_width = shape_width;
   cs->shape_height = shape_height;
   cs->shape_type = shape_type;
+
   return n;
+}
+
+/* scrolls a pixmap by x_off/y_off pixels, wrapping around at the edges. */
+Pixmap ScrollPixmap(
+	Display *dpy, Pixmap p, GC gc, int x_off, int y_off, int width,
+	int height, unsigned int depth)
+{
+	GC tgc;
+	XGCValues xgcv;
+	Pixmap p2;
+
+	if (p == None || p == ParentRelative || (x_off == 0 && y_off == 0))
+	{
+		return p;
+	}
+	tgc = fvwmlib_XCreateGC(dpy, p, 0, &xgcv);
+	if (tgc == None)
+	{
+		return p;
+	}
+	XCopyGC(dpy, gc, GCFunction | GCPlaneMask| GCSubwindowMode |
+		GCClipXOrigin | GCClipYOrigin | GCClipMask, tgc);
+	xgcv.tile = p;
+	xgcv.ts_x_origin = x_off;
+	xgcv.ts_y_origin = y_off;
+	xgcv.fill_style = FillTiled;
+	XChangeGC(
+		dpy, tgc, GCTile | GCTileStipXOrigin | GCTileStipYOrigin |
+		GCFillStyle, &xgcv);
+	p2 = XCreatePixmap(dpy, p, width, height, depth);
+	if (p2 == None)
+	{
+		return p;
+	}
+	XFillRectangle(dpy, p2, tgc, 0, 0, width, height);
+	XFreeGC(dpy, tgc);
+
+	return p2;
 }
 
 /* sets a window background from a colorset
  * if width or height are zero the window size is queried
  */
-void SetWindowBackground(Display *dpy, Window win, int width, int height,
-			 colorset_struct *colorset, unsigned int depth, GC gc,
-			 Bool clear_area)
+void SetWindowBackgroundWithOffset(
+	Display *dpy, Window win, int x_off, int y_off, int width, int height,
+	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area)
 {
-  Pixmap pixmap = None;
-  Pixmap mask = None;
-  XID junk;
+	Pixmap pixmap = None;
+	Pixmap mask = None;
+	XID junk;
 
-  if (0 == width || 0 == height)
-  {
-    if (!XGetGeometry(
-      dpy, win, &junk, (int *)&junk, (int *)&junk, (unsigned int *)&width,
-      (unsigned int *)&height, (unsigned int *)&junk, (unsigned int *)&junk))
-    {
-      return;
-    }
-  }
+	if (0 == width || 0 == height)
+	{
+		if (!XGetGeometry(
+			    dpy, win, &junk, (int *)&junk, (int *)&junk,
+			    (unsigned int *)&width, (unsigned int *)&height,
+			    (unsigned int *)&junk, (unsigned int *)&junk))
+		{
+			return;
+		}
+	}
 
-  if (FHaveShapeExtension && colorset->shape_mask)
-  {
-    mask = CreateBackgroundPixmap(
-      dpy, 0, width, height, colorset, 1, None, True);
-    if (mask != None)
-    {
-      FShapeCombineMask(dpy, win, FShapeBounding, 0, 0, mask, FShapeSet);
-      XFreePixmap(dpy, mask);
-    }
-  }
-  if (!colorset->pixmap)
-  {
-    /* use the bg pixel */
-    XSetWindowBackground(dpy, win, colorset->bg);
-    if (clear_area)
-      XClearArea(dpy, win, 0, 0, width, height, True);
-  }
-  else
-  {
-    if (colorset->pixmap == ParentRelative)
-      pixmap = ParentRelative;
-    else
-      pixmap = CreateBackgroundPixmap(
-	dpy, win, width, height, colorset, depth, gc, False);
-    if (pixmap)
-    {
-      XSetWindowBackgroundPixmap(dpy, win, pixmap);
-      if (clear_area)
-	XClearArea(dpy, win, 0, 0, width, height, True);
-      if (colorset->pixmap != ParentRelative)
-	XFreePixmap(dpy, pixmap);
-    }
-  }
+	if (FHaveShapeExtension && colorset->shape_mask)
+	{
+		mask = CreateBackgroundPixmap(
+			dpy, 0, width, height, colorset, 1, None, True);
+		if (mask != None)
+		{
+			FShapeCombineMask(
+				dpy, win, FShapeBounding, 0, 0, mask,
+				FShapeSet);
+			XFreePixmap(dpy, mask);
+		}
+	}
+	if (!colorset->pixmap)
+	{
+		/* use the bg pixel */
+		XSetWindowBackground(dpy, win, colorset->bg);
+		if (clear_area)
+		{
+			XClearArea(dpy, win, 0, 0, width, height, True);
+		}
+	}
+	else
+	{
+		if (colorset->pixmap == ParentRelative)
+		{
+			pixmap = ParentRelative;
+		}
+		else
+		{
+			pixmap = CreateBackgroundPixmap(
+				dpy, win, width, height, colorset, depth, gc,
+				False);
+		}
+		if (x_off != 0 || y_off != 0)
+		{
+			Pixmap p2;
 
-  return;
+fprintf(stderr,"xoyy %d yoff %d\n", x_off, y_off);
+			p2 = ScrollPixmap(
+				dpy, pixmap, gc, x_off, y_off, width, height,
+				depth);
+			if (p2 != None && p2 != ParentRelative && p2 != pixmap)
+			{
+				XFreePixmap(dpy, pixmap);
+				pixmap = p2;
+			}
+		}
+		if (pixmap)
+		{
+			XSetWindowBackgroundPixmap(dpy, win, pixmap);
+			if (clear_area)
+			{
+				XClearArea(dpy, win, 0, 0, width, height, True);
+			}
+			if (colorset->pixmap != ParentRelative)
+			{
+				XFreePixmap(dpy, pixmap);
+			}
+		}
+	}
+
+	return;
+}
+
+void SetWindowBackground(
+	Display *dpy, Window win, int width, int height,
+	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area)
+{
+	SetWindowBackgroundWithOffset(
+		dpy, win, 0, 0, width, height, colorset, depth, gc, clear_area);
+
+	return;
 }
 
 /* create a pixmap suitable for plonking on the background of a window */

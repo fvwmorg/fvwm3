@@ -1,4 +1,30 @@
+2002-07-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (ReConfigure):
+	fixed flickering of hilit desk title when moving pager
+	(draw_desk_background):
+	(initialize_pager):
+	fixed initial drawing of pager label background on inactive desks
+	(change_colorset):
+	(draw_desk_background):
+	fixed drawing of background colour sets w/ top labels in the pager
+
 2002-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	(list_property_change):
+	* FvwmPager/x_pager.c (initialize_pager):
+	(DrawInBalloonWindow):
+	(change_colorset):
+	(HandleExpose):
+	(MapBalloonWindow):
+	(UnmapBalloonWindow):
+	(change_colorset):
+	* FvwmPager/FvwmPager.h (ScreenInfo):
+	cleaned up and simplified balloon drawing code
+
+	* FvwmPager/x_pager.c (initialize_pager):
+	fixed initial drawing of multi desk pagers
 
 	* FvwmButtons/FvwmButtons.c (CheckForHangon):
 	allow wildcards in "hangon" strings
