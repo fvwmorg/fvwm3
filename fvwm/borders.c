@@ -73,7 +73,6 @@ static void change_window_color(Window w, unsigned long valuemask,
 {
   XChangeWindowAttributes(dpy, w, valuemask, attributes);
   XClearWindow(dpy, w);
-fprintf(stderr, "change window color\n");
 }
 
 /* rules to get button state */
@@ -120,8 +119,6 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   int rwidth; /* relief width */
   Bool shaded;
 
-fprintf(stderr,"SetBorder %d %d %d %#lx\n", 
-	onoroff, force, Mapped, expose_win);
   if(!t)
     return;
 
@@ -197,9 +194,6 @@ fprintf(stderr,"SetBorder %d %d %d %#lx\n",
     XChangeGC(dpy,Scr.ScratchGC2,Globalgcm,&Globalgcv);
     ShadowGC = Scr.ScratchGC2;
   }
-
-if (NewColor)
-  fprintf(stderr, "new color\n");
 
   /* MWMBorder style means thin 3d effects */
   rwidth = (HAS_MWM_BORDER(t) ? 1 : 2);
