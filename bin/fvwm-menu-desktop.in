@@ -128,7 +128,7 @@ my $LANG      = $ENV{LANG} || "";      # Internationalization support :o)
 my $UTF8      = 0;                     # KDE2 use UTF-8
 my $UTF8_TR   = "";                    # charset type for UTF-8 translation
 my $UNICONV   = "";                    # use a convert tool for UTF8 tr
-my $UNICONV_EXEC = "iconv";            # iconv or uniconv
+my $UNICONV_EXEC = "";                 # iconv, uniconv or internal
 my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
 my $CHECK     = 1;                     # we check by default
 my $MENU_DESTROY = '';
@@ -434,10 +434,21 @@ if ($UTF8) {
 }
 
 if ($UNICONV ne "") {
+	# check whether internal method is available
+	if ($UNICONV_EXEC eq "" || $UNICONV_EXEC eq "internal") {
+		eval "use Encode 'from_to';";
+		if ($UNICONV_EXEC eq "internal" && $@) {
+			die "You don't have a good perl version to use" .
+				" 'internal' unicode conversion:\n$@";
+		}
+		$UNICONV_EXEC = $@? "iconv": "internal";
+	}
+	# setup unicode conversion
 	if ($UNICONV_EXEC eq "iconv") {
 		die "iconv not found in your path\n" 
 			unless check_app("iconv");
 		$UTF8_TR = q{
+			$tmpLabel =~ s/'/'\\\\''/g;
 			open(U, "echo '$tmpLabel' | iconv -f UTF8 -t $UNICONV |");
 			while (<U>) { chomp; $tmpLabel = $_ }
 			close(U);
@@ -446,12 +457,15 @@ if ($UNICONV ne "") {
 		die "uniconv not found in your path\n" 
 			unless check_app("uniconv");
 		$UTF8_TR = q{
+			$tmpLabel =~ s/'/'\\\\''/g;
 			open(U, "echo '$tmpLabel' | uniconv -I UTF8 -O $UNICONV |");
 			while (<U>) { chomp; $tmpLabel = $_ }
 			close(U);
 		};
+	} elsif ($UNICONV_EXEC eq "internal") {
+		$UTF8_TR = 'from_to($tmpLabel, "utf-8", "$UNICONV")';
 	} else {
-		die "--uniconv argument must be iconv or uniconv\n";
+		die "--uniconv argument must be iconv, uniconv or internal\n";
 	}
 	$UTF8 = 1;
 }
@@ -1030,8 +1044,8 @@ sub get_info {
 	if ( $TRAN && $tran_mini_icon ne '' ) {
 		$mini_icon = "$TRAN_MINI_ICONS$tran_mini_icon";
 	} elsif ( $mini_icon ne '' ) {
-	  $mini_icon =  "$MINI_ICONS_DIR$mini_icon";
-		if ( $mini_icon =~ /\.png$/ ) { $mini_icon =  "$PNG_ICONS$mini_icon" }
+		$mini_icon = "$MINI_ICONS_DIR$mini_icon";
+		if ( $mini_icon =~ /\.png$/ ) { $mini_icon = "$PNG_ICONS$mini_icon" }
 		else { $mini_icon =  "$MINI_ICONS_DIR$mini_icon" }
 	}
 

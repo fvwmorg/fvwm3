@@ -430,18 +430,21 @@ is not satisfied, then this option is equivalent to \-\-lang en. For other
 languages/charsets use the \-\-uniconv option. The advantage of this option
 as compared to the following option is that it is fast.
 .IP "\fB\-\-uniconv\fR \fIcharset\fR"
-Use iconv (default) or uniconv to translate utf8 desktop entries into an
-appropriate "charset". You can choose between one of these tools with the
-\-\-uniconv-exec option. iconv comes with glibc >= 2.1.1 and uniconv comes with
-the utf8 editor yudit. Type "iconv --list" or "man uniconv" for the list
-of supported charsets. Of course you must also use the appropriate font using 
-the MenuStyle command. Also, $LANG (or --lang xx) must be compatible with the
-charset. Note that with this option fvwm-menu-desktop is very slow: 
-you probably need to use the --time-limit option and you should redirect 
-the result into a file and read this file in your FVWM configuration.
+Use iconv, uniconv or internal method to translate utf8 desktop entries
+into an appropriate "charset". You can choose between one of the supported
+tools using \-\-uniconv-exec option. iconv comes with glibc >= 2.1.1 and
+uniconv comes with the utf8 editor yudit. Type "iconv --list" or "man
+uniconv" for the list of supported charsets. Of course you must also use the
+appropriate font using the MenuStyle command. Also, $LANG (or --lang xx)
+must be compatible with the charset. Note, if you don't use an internal
+method, fvwm-menu-desktop is very slow with this option: you probably need
+to use the --time-limit option and you should redirect the result into a
+file and read this file in your FVWM configuration.
 .IP "\fB\-\-uniconv-exec\fR \fIexec\fR"
-Where exec is either iconv or uniconv. Allows to choose the program which 
-perform the UTF8 translation in the case of the \-\-uniconv option.
+Where exec is either iconv or uniconv or internal. Allows to choose the
+program which perform the UTF8 translation in the case of the \-\-uniconv
+option. The internal method is only available with perl 5.8.0 and better.
+The default is either internal (if available) or iconv.
 .IP "\fB\-\-menu-style\fR \fIname\fR"
 By default the generated FVWM menus use the default MenuStyle (i.e., the
 MenuStyle "*"). You can specify another MenuStyle name using this option.

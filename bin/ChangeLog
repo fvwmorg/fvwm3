@@ -1,3 +1,9 @@
+2002-11-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-desktop.in:
+	* fvwm-menu-desktop.1:
+	--uniconv now uses perl internal convertion if possible (much faster)
+
 2002-11-28  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-config.1:
