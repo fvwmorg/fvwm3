@@ -97,6 +97,7 @@ FftFont *FftGetRotatedFont(
 {
 	FftPattern *vert_pat;
 	FftMatrix m;
+	int dummy;
 
 	if (f == NULL)
 		return NULL;
@@ -105,7 +106,7 @@ FftFont *FftGetRotatedFont(
 	if (vert_pat == NULL)
 		return NULL;
 
-	FftPatternDel (vert_pat, XFT_MATRIX);
+	dummy = FftPatternDel(vert_pat, XFT_MATRIX);
 
 	if (text_dir == TEXT_DIR_TOP_TO_BOTTOM)
 	{

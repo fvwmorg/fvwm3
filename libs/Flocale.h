@@ -24,12 +24,13 @@
 #include "config.h"
 
 #include <X11/Xlocale.h>
+#include <X11/Xutil.h>
 
 #include "Fft.h"
 
 /* ---------------------------- global definitions -------------------------- */
 
-#ifdef COMPUND_TEXT
+#ifdef COMPOUND_TEXT
 #define FlocaleCompoundText 1
 #else
 #define FlocaleCompoundText 0

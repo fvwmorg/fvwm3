@@ -1,5 +1,12 @@
 2002-03-15  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Flocale.h:
+	* libs/Fft.c (is_utf8_encoding):
+	Compilation fixes
+
+	* libs/Flocale.h:
+	s/COMPUND_TEXT/COMPOUND_TEXT
+
 	* fvwm/fvwm2.1:
 	Removed matrix xft specification doc as now it is use internally by
 	fvwm
