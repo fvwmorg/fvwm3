@@ -1,3 +1,11 @@
+1999-09-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/stack.c (inner_RaiseOrLowerWindow): -Wall fix
+	(raise_over_unmanaged): reindented
+
+	* fvwm/move_resize.c (resize_window): fixed broken comment that got
+	checked in
+
 1999-09-20  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/events.c (HandleButtonPress): Dropped the raise on window

@@ -1795,7 +1795,7 @@ void resize_window(F_CMD_ARGS)
   /* pop down the size window */
   XUnmapWindow(dpy, Scr.SizeWindow);
 
-  if(!abort /*&& !do_resize_opaque !!!*/)
+  if(!abort)
   {
     /* size will be >= to requested */
     ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
