@@ -676,6 +676,12 @@ sub get_info {
 		# kde gives sometimes a mini-icon hint
 		if ( /^MiniIcon=(.*)$/ ) { $mini_icon = substr($1,rindex($1,'/')+1) }
 
+		# kde2 give just the name of the icons and use png icons
+		# try a more general fix.
+		my $tmp = "xpm";
+		$tmp = "png" if $TRAN;
+		$icon = "$icon.$tmp" if $icon !~/\....$/;
+		$mini_icon = "$icon.$tmp" if $icon !~/\....$/;
 	}
 
 	close(DESC);

@@ -56,7 +56,7 @@ fvwm-menu-desktop
 [ \fB\-\-time\-limit\fR \fINUM\fR ]
 
 .SH DESCRIPTION
-This is a perl script which parses Gnome or KDE menus definitions to build
+This is a perl script which parses GNOME or KDE menus definitions to build
 corresponding FVWM or FvwmGtk menus. The script can also
 build icon and mini\-icon style commands for the applications.
 
@@ -74,7 +74,8 @@ AddToMenu Utilities "KDE System Menu" Popup kde\-sys
  ...
 PipeRead 'fvwm-menu-desktop --desktop kde-sys'
 .EE
-If you want mini\-icons in the menu and if the KDE mini\-icons are in "mini/"
+If you use KDE version 1 (see below for KDE2) and you want mini\-icons 
+in the menu and if the KDE mini\-icons are in "mini/"
 relative to your FVWM ImagePath add the option \-\-enable-mini\-icons.
 (if the KDE mini\-icons are in some other place
 use the \-\-mini\-icons\-path option, e.g., they are in your
@@ -90,11 +91,11 @@ AddToMenu kde\-user
 + DynamicPopupAction PipeRead 'fvwm-menu-desktop --desktop kde-user --enable-mini-icons [--destroy-type dynamic] [other options]'
 .EE
 
-For Gnome it is natural to use FvwmGtk
-menus. The following example builds "all" Gnome menus (with some
+For GNOME it is natural to use FvwmGtk
+menus. The following example builds "all" GNOME menus (with some
 mini\-icons in the system menu). You need to specify the
-Gnome installation prefix if it is not /usr (with the
-option \-\-install\-prefix). Moreover, the Gnome icons need to be in your
+GNOME installation prefix if it is not /usr (with the
+option \-\-install\-prefix). Moreover, the GNOME icons need to be in your
 ImagePath and the non .png mini\-icons you use for the user\-menu
 need to be in mini/ (if not, use the \-\-png\-icons\-path option and
 the \-\-mini\-icons\-path option, respectively).
@@ -126,11 +127,15 @@ You can specify FvwmGtk alias: Module FvwmGtk MyGnomeMenu.
 In this case you must pass an additional parameter to fvwm-menu-desktop:
 --fvwmgtk-alias MyGnomeMenu.
 
-Of course you can build FVWM (i.e., no FvwmGtk) Gnome menus.
-The problem with FVWM menus is .png icons. However, if you
-have the fvwm2gnome (mini-)icons you can build FVWM Gnome menus
-and style commands with Gnome icons (see the option \-\-enable-tran-mini\-icons
-and \-\-enable\-tran\-style).
+Of course you can build FVWM (i.e., no FvwmGtk) GNOME menus.
+GNOME and KDE2 use PNG icons which are not suported by FVWM menu.
+However, if you have XPM version of the GNOME or of the KDE2 (mini-)icons 
+you can build FVWM menus and style commands with these icons using the 
+option \-\-enable-tran-mini\-icons and \-\-enable\-tran\-style. The
+FVWM Themes package (http://fvwm-themes.sourceforge.net/) conatins
+an utility, fvwm-themes-images, which can convert automatically 
+(with the help of ImageMagick) all GNOME and KDE2 icons to XPM
+icons.
 
 You can build sub menus using the \-\-dir options. However,
 if you want to use more than one submenu
@@ -175,16 +180,16 @@ Show the help and exit.
 .IP "\fB\-\-version\fR"
 Show the version and exit.
 .IP "\fB\-\-install-prefix\fR \fIDIR\fR"
-The prefix of Gnome or KDE installation. Default
-is /usr for Gnome (other common prefixes: /usr/local, /opt/gnome).
+The prefix of GNOME or KDE installation. Default
+is /usr for GNOME (other common prefixes: /usr/local, /opt/gnome).
 For KDE the default is $KDEDIR and you probably do not need
 to use this option.
 .IP "\fB\-\-desktop\fR \fINAME\fR"
-Use gnome\-sys for the Gnome system menu (this is the default),
+Use gnome\-sys for the GNOME system menu (this is the default),
 gnome\-user for
-the Gnome user menu, gnome\-redhat for the AnotherLevel
+the GNOME user menu, gnome\-redhat for the AnotherLevel
 menu of Red Hat, kde\-sys for the KDE system menu and kde\-user for
-the KDE user menu. It may be useful to use KDE or Gnome as a flag with
+the KDE user menu. It may be useful to use KDE or GNOME as a flag with
 the \-\-dir option.
 .IP "\fB\-\-type\fR \fINAME\fR"
 If NAME is fvwm, a native FVWM menu will be built (this is
@@ -195,7 +200,7 @@ The name for then FvwmGtk module to use instead of default FvwmGtk.
 Define the menu title of the top menu. Default
 is "Gnome System Menu" for gnome\-sys, "Gnome User Menu" for
 gnome\-user, "Gnome Red Hat Menu" for gnome\-redhat. For KDE the
-default is given by KDE itself (or are similar to Gnome title).
+default is given by KDE itself (or are similar to GNOME title).
 .IP "\fB\-\-name\fR \fINAME\fR"
 Define the menu name of the top menu. Default is the \-\-desktop
 name if you use one above.
@@ -213,10 +218,11 @@ the \-\-mini\-icons\-path and the \-\-png\-icons\-path to specify
 the good paths. By using the \-\-icon-* options below you
 can control mini\-icons in menus.
 .IP "\fB\-\-enable\-tran\-mini\-icons\fR"
-This option applies only to fvwm menus and is
-useful to build Gnome menus with the fvwm2gnome mini\-icons.
+This option applies only to fvwm menus and is useful to build GNOME or KDE2 
+menus with mini\-icons (and if you have XPM version of the GNOME or KDE2
+PNG icons).
 If this option is used any
-Gnome icon hint (/gnome/icons/)foo.png is translated to path/foo.xpm
+icon hint foo.png is translated to path/foo.xpm
 where path is determined by the \-\-tran\-mini\-icons\-path option
 (xpm icons are used as with the previous option).
 .IP "\fB\-\-mini\-icons\-path\fR \fIDIR\fR"
@@ -239,10 +245,10 @@ which work similarly.
 
 In these options \fIlaw\fR may be \fIno\fR, \fIdh\fR, \fIre\fR or \fIow\fR.
 \fIno\fR means "do not use mini\-icon" (this does not affect side pic).
-\fIdh\fR means "use only the mini\-icons Gnome/KDE hints".
-\fIre\fR means "use mini\-icons Gnome/KDE hints but if it is empty
+\fIdh\fR means "use only the mini\-icons GNOME/KDE hints".
+\fIre\fR means "use mini\-icons GNOME/KDE hints but if it is empty
 use the specified mini\-icon".
-\fIow\fR means "override the mini\-icons Gnome/KDE hints by the specified
+\fIow\fR means "override the mini\-icons GNOME/KDE hints by the specified
 mini\-icon".
 
 The path to the specified icons is given by the
@@ -252,12 +258,12 @@ specify the icon, the path is computed). For the sidepic you need to
 give the complete relative path from your ImagePath.
 
 Note that for the FVWM menu (without the \-\-enable\-tran\-mini\-icons option)
-a .png icon Gnome hint is
+a .png icon hint is
 considered as an empty hint, so for the system menu use no=dh and re=ow
-(you may use .xpm icons in the Gnome user menu). If
+(you may use .xpm icons in a user menu). If
 the \-\-tran\-mini\-icons\-path option is set with a complete path,
-then if the .xpm icon which corresponds  to a .png icon Gnome hint
-does not exist, the icon Gnome hint is considered as empty.
+then if the .xpm icon which corresponds  to a .png icon hint
+does not exist, the icon hint is considered as empty.
 
 
 \fIplace\fR, \fIsidepic\fR and \fIcolor\fR
@@ -317,7 +323,7 @@ wm-icons package. Currently this is equavalent to:
 Build icons and mini\-icons style commands for the applications in the built
 menu.
 .IP "\fB\-\-style\-tran\fR"
-Only useful with FvwmGtk Gnome menus. Make translation as the
+Only useful with FvwmGtk GNOME or KDE2 menus. Make translation as the
 enable\-tran\-mini\-icon option but only for style
 (not for mini\-icons menus).
 .IP "\fB\-\-icon-style\fR \fImini\-icon\fR:\fIicon\fR:\fIlaw\fR:\fIaddstyle\fR"
@@ -334,7 +340,8 @@ are gnome\-default.xpm.
 The paths to mini\-icons are the same as those for the menus. The
 path to the icons is computed from the mini\-icons path: they are one
 directory up to the corresponding mini\-icons path (so the "defaults"
-are "" and this is consistent with KDE and fvwm2gnome).
+are "" and this is consistent with KDE1 and XPM icons builded by 
+fvwm-themes-images).
 .IP "\fB\-\-icons\-path\fR \fIDIR\fR"
 Not useful in a normal situation.
 Define the directory of the icons. Default is one directory up from
@@ -355,9 +362,9 @@ description of the sub menus. You may change the prefix using the
 present option.
 .IP "\fB\-\-dir\fR \fIDIR\fR"
 Set the directory where fvwm-menu-desktop
-looks for a Gnome/KDE menu description to \fIDIR\fR.
+looks for a GNOME/KDE menu description to \fIDIR\fR.
 The name of the menu is 'desktop\-name' and the title is 'desktop' name
-where 'desktop' is either Gnome or
+where 'desktop' is either GNOME or
 KDE (if fvwm-menu-desktop can't find which desktop is concerned, you can
 help with the \-\-desktop option) and where 'name' is the name of the
 right directory of \fIDIR\fR (or a hint of the desktop for the title).
@@ -381,7 +388,7 @@ destroyed.
 Define complete X terminal command to run applications in it if needed.
 Default is 'xterm -e'.
 .IP "\fB\-\-lang\fR \fINAME\fR"
-Default is the value of $LANG. Useful if your language is not Gnome/KDE
+Default is the value of $LANG. Useful if your language is not GNOME/KDE
 compliant and you prefer a non-English compliant
 language.
 .IP "\fB\-\-[no]check-app\fR"
