@@ -130,6 +130,50 @@ struct FvwmDecor;
 
 /* ---------------------------- type definitions ---------------------------- */
 
+/* This structure carries information about the initial window state and
+ * placement.  This information is gathered at various places: the (re)capture
+ * code, AddToWindow(), HandleMapRequestRaised(), ewmh_events.c and others.
+ *
+ * initial_state
+ *   The initial window state.  By default it carries the value DontCareState.
+ *   Other states can be set if
+ *    - an icon is recaptured or restarted with session management
+ *    - the StartIconic style is set
+ *    - GNOME, EWMH, foobar hints demand that the icon starts iconic
+ *   The final value is calculated in HandleMapRequestRaised().
+ *
+ * do_override_ppos
+ *   This flag is used in PlaceWindow().  If it is set, the position requested
+ *   by the program is ignored unconditionally.  This is used during the initial
+ *   capture and later recapture operations.
+ *
+ * is_iconified_by_parent
+ *   Preserves the information if the window is a transient window that was
+ *   iconified along with its transientfor window.  Set when the window is
+ *   recaptured and used in HandleMapRequestRaised() to set the according
+ *   window state flag.  Deleted afterwards.
+ *
+ * is_menu
+ *   Set in menus.c or in the recapture code if the new window is a tear off
+ *   menu.  Such windows get special treatment in AddWindow() and events.c.
+ *
+ * is_recapture
+ *   Set for the initial capture and later recaptures.
+ *
+ * default_icon_x/y
+ *   The icon position that was requested by the application in the icon
+ *   position hint.  May be overridden by a style (0/0 then).  Set in
+ *   HandleMapRequestRaised() and used in the icon placement code.
+ *
+ * initial_icon_x/y
+ *   The icon position that is forced during a restart with SM.  If set it
+ *   overrides all other methods of icon placement.  Set by session.c and used
+ *   in the icon placement code.
+ *
+ * use_initial_icon_xy
+ *   If set, the initial_icon_x/y values are used.  Other wise they are
+ *   ignored.
+ */
 typedef struct
 {
 	long initial_state;
@@ -138,6 +182,7 @@ typedef struct
 		unsigned do_override_ppos : 1;
 		unsigned is_iconified_by_parent : 1;
 		unsigned is_menu : 1;
+		unsigned is_recapture : 1;
 		unsigned use_initial_icon_xy : 1;
 	} flags;
 	int initial_icon_x;

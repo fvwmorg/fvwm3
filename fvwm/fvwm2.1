@@ -170,8 +170,8 @@ manager. Should not be used by a user.
 Causes fvwm to use
 .I config_command
 instead of
-.RB "'Read"
-.IR ".fvwm2rc'"
+.RB "'" "Read"
+.IR ".fvwm2rc" "'"
 as its initialization command.  (Note that up to 10
 .BR \-f " and " \-cmd
 parameters can be given, and they are executed in the order
@@ -5063,13 +5063,16 @@ Note: windows that have no name (WM_NAME) are given a name of
 res_class) are given class "NoClass" and those that don't have a
 resource (WM_CLASS, res_name) are given resource "NoResource".
 
-.I options
-is a comma separated list containing one or more of the keywords
+.I options is a comma separated list containing one or more of the
+following keywords.  Each group of style names is separated by
+slashes ('/').  The last style in these groups is the default.
 .IR BorderWidth ", " HandleWidth ,
 .IR NoIcon " / " Icon ", " MiniIcon ,
 .IR IconBox ", " IconGrid ", " IconFill ,
 .IR NoTitle " / " Title ,
-.IR TitleAtBottom " / " TitleAtTop ,
+.IR TitleAtBottom " / " TitleAtLeft " / " TitleAtRight " / " TitleAtTop ,
+.IR LeftTitleRotatedCW " / " LeftTitleRotatedCCW,
+.IR RightTitleRotatedCCW " / " RightTitleRotatedCW,
 .IR StippledTitle " / " StippledTitleOff ,
 .IR IndexedWindowName " / " ExactWindowName ,
 .IR IndexedIconName " / " ExactIconName ,
@@ -5109,9 +5112,9 @@ is a comma separated list containing one or more of the keywords
 .IR PlacementOverlapPenalties ,
 .IR PlacementOverlapPercentPenalties ,
 .IR DecorateTransient " / " NakedTransient ,
-.IR RaiseTransient " / " DontRaiseTransient ,
-.IR LowerTransient " / " DontLowerTransient ,
-.IR StackTransientParent " / " DontStackTransientParent ,
+.IR DontRaiseTransient " / " RaiseTransient ,
+.IR DontLowerTransient " / " LowerTransient ,
+.IR DontStackTransientParent " / " StackTransientParent ,
 .IR SkipMapping " / " ShowMapping ,
 .IR ScatterWindowGroups " / " KeepWindowGroupsOnDesk ,
 .IR UseDecor ,
@@ -5130,7 +5133,7 @@ is a comma separated list containing one or more of the keywords
 .IR MouseFocusClickIgnoreMotion " / " MouseFocusClickIgnoreMotionOff,
 .IR StartsLowered " / " StartsRaised ,
 .IR GrabFocus " / " GrabFocusOff ,
-.IR GrabFocusTransient " / " GrabFocusTransientOff ,
+.IR GrabFocusTransientOff " / " GrabFocusTransient ,
 .IR IgnoreRestack " / " AllowRestack ,
 .IR FixedPosition " / " VariablePosition ,
 .IR FixedUSPosition " / " VariableUSPosition ,
@@ -5261,15 +5264,26 @@ options determine if the window has a title-bar or not.  By
 default all windows have a title-bar.
 
 Windows with the
-.I TitleAtBottom
-style have a title-bar below the window instead of above as
-usual. The
+.IR TitleAtBottom ", " TitleAtLeft " or " TitleAtRight
+style have a title-bar below, to the left or to the right of the
+window instead of above as usual.  The
 .I TitleAtTop
 style restores the default placement.  Even if the window has the
 .I NoTitle
 style set, this affects the
 .I WindowShade
-command.
+command.  Titles on the left or right side of the windows are be
+augmented by the following styles:
+
+Normally, the text in titles on the left side of a window is
+rotated counterclockwise by 90 degrees from the normal upright
+position and 90 degrees clockwise for titles on the right side.
+It can also be rotated in the opposite directions with
+.IR LeftTitleRotatedCW " if " TitleAtLeft
+is used, and with
+.IR RightTitleRotatedCCW " if " TitleAtRight
+is used.  The defaults can be restored with
+.IR LeftTitleRotatedCCW " and " RightTitleRotatedCW .
 
 With the
 .I StippledTitle

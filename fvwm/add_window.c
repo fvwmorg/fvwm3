@@ -152,6 +152,7 @@ static void CaptureOneWindow(
 		memset(&win_opts, 0, sizeof(win_opts));
 		win_opts.initial_state = DontCareState;
 		win_opts.flags.do_override_ppos = 1;
+		win_opts.flags.is_recapture = 1;
 		if (IS_ICONIFIED(fw))
 		{
 			win_opts.initial_state = IconicState;
@@ -1973,7 +1974,7 @@ FvwmWindow *AddWindow(
 	fw = tmpfw;
 
 	/****** safety check, window might disappear before we get to it ******/
-	if (!win_opts->flags.do_override_ppos &&
+	if (!win_opts->flags.is_recapture &&
 	    XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
 			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
 	{
@@ -3096,6 +3097,7 @@ void CaptureAllWindows(Bool is_recapture)
 	}
 	memset(&win_opts, 0, sizeof(win_opts));
 	win_opts.flags.do_override_ppos = 1;
+	win_opts.flags.is_recapture = 1;
 	if (!(Scr.flags.windows_captured)) /* initial capture? */
 	{
 		/*

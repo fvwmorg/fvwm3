@@ -1839,16 +1839,14 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         break;
 
       case 'l':
-	if (StrEquals(token, "LeftTitleRotatedClockWise") ||
-            StrEquals(token, "LeftTitleRotatedCW"))
+	if (StrEquals(token, "LeftTitleRotatedCW"))
 	{
 	  found = True;
 	  SFSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	  SMSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	  SCSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	}
-	else if (StrEquals(token, "LeftTitleRotatedCounterClockWise") ||
-                 StrEquals(token, "LeftTitleRotatedCCW"))
+	else if (StrEquals(token, "LeftTitleRotatedCCW"))
 	{
 	  found = True;
 	  SFSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 0);
@@ -2371,16 +2369,14 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
 	  SCSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
         }
-	else if (StrEquals(token, "RightTitleRotatedClockWise") ||
-                 StrEquals(token, "RightTitleRotatedCW"))
+	else if (StrEquals(token, "RightTitleRotatedCW"))
 	{
 	  found = True;
 	  SFSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	  SMSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	  SCSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	}
-	else if (StrEquals(token, "RightTitleRotatedCounterClockWise") ||
-                 StrEquals(token, "RightTitleRotatedCCW"))
+	else if (StrEquals(token, "RightTitleRotatedCCW"))
 	{
 	  found = True;
 	  SFSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 0);
@@ -2682,16 +2678,14 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_TITLE_DIR(*ptmpstyle, 1);
 	  SCSET_TITLE_DIR(*ptmpstyle, 1);
         }
-	else if (StrEquals(token, "TitleLeft") ||
-		 StrEquals(token, "TitleAtLeft"))
+	else if (StrEquals(token, "TitleAtLeft"))
         {
 	  found = True;
 	  SFSET_TITLE_DIR(*ptmpstyle, DIR_W);
 	  SMSET_TITLE_DIR(*ptmpstyle, 1);
 	  SCSET_TITLE_DIR(*ptmpstyle, 1);
         }
-        else if (StrEquals(token, "TitleRight") ||
-		 StrEquals(token, "TitleAtRight"))
+        else if (StrEquals(token, "TitleAtRight"))
         {
 	  found = True;
 	  SFSET_TITLE_DIR(*ptmpstyle, DIR_E);

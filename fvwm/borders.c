@@ -2538,7 +2538,8 @@ void border_draw_decorations(
 		return;
 	}
 	memset(&cd, 0, sizeof(cd));
-	if (do_force == True)
+	/* can't compare with True here, old code calls this with value "2" */
+	if (do_force != False)
 	{
 		force_parts = draw_parts;
 	}
@@ -2620,7 +2621,7 @@ void border_redraw_decorations(
 	 * If we do, some updates are not applied and when the window becomes
 	 * visible again, the X Server may not redraw the window. */
 	border_draw_decorations(
-		fw, PART_ALL, (Scr.Hilite == fw), 2, CLEAR_ALL, NULL, NULL);
+		fw, PART_ALL, (Scr.Hilite == fw), True, CLEAR_ALL, NULL, NULL);
 	Scr.Hilite = u;
 
 	return;
