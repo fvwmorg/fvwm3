@@ -14,7 +14,7 @@ subscribes to the FVWM mailing lists and various other people all over
 the world.
 
 If you have any questions, concerns, bug reports, enhancement
-requests, etc, *PLEASE* read the FAQ, BUGS, TO-DO and man files first,
+requests, etc, *PLEASE* read the FAQ, BUGS, TODO and man files first,
 otherwise known as RTFM, then try the FVWM mailing list.  You could
 also check the official WWW page (see the FAQ for its URL) and the
 mailing list archives found there.
@@ -24,5 +24,5 @@ on the situation)
 
 For info on compiling, check out the INSTALL file.
 
-For known bugs, check out the BUGS, FAQ and TO-DO files.
+For known bugs, check out the BUGS, FAQ and TODO files.
 

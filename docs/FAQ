@@ -198,11 +198,9 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    high degree of Motif mwm compatibility.  All relevant discussion is
    encouraged.  Posting of binaries or irrelevant discussion is
    strongly frowned upon.  Posting of short patches (less than 200
-   lines) is acceptable, but all patches should be sent to the FVWM
-   maintainer for inspection and possible inclusion in the
-   distribution.  The current maintainer is:
-
-   the fvwm-workers list.  See our web page for instructions.
+   lines) is acceptable, but all patches should also be sent to the
+   fvwm-workers list (see Q24, below) for inspection and possible
+   inclusion in the distribution.
 
 
    Instructions
@@ -408,14 +406,15 @@ A: Start with a new one or convert your old one.  This can be done by
    random bug.  What do I do?
 
 A: First, check your rc file and your .Xdefaults to make sure that
-   something blatantly obvious in there isn't causing the problem,
-   plus *PLEASE PLEASE PLEASE* check the FAQ, BUGS, TODO, and man
-   pages (i.e. RTFM).  Perhaps even the official WWW page and the
+   something blatantly obvious in there isn't causing the problem.
+   Second, *PLEASE PLEASE PLEASE* check the FAQ, BUGS, TODO, and man
+   pages (i.e. RTFM).  Finally, check the official WWW page and the
    mailing list archives (which have a search facility) stored there.
 
-   If you still can't figure it out, send a DETAILED description of
-   the problem to the FVWM mailing list.  By detailed I mean more than
-   just "my window isn't behaving right" or "I found a bug":
+   If you still can't figure it out, enter a DETAILED description of
+   the problem in our (web-based, see Q3) bug-tracking system.  By
+   detailed we mean more than just "my window isn't behaving right" or
+   "I found a bug":
 
         - Describe the problem as best you can, preferrably with
           suggestions on how to reproduce it easily
@@ -502,7 +501,11 @@ A: Yes. Put the line "GlobalOpts StipledTitles" in your .fvwm2rc.
     find libXpm or the compiler can't find the include file X11/xpm.h.
     Why is that?
 
-A: You need to have the Xpm (X Pixmap) library on your system.  You
+A: With autoconf, this should no longer happen.  If you have *any*
+   compile or link errors, it is a bug; please report it.
+
+   (The old answer:)
+   You need to have the Xpm (X Pixmap) library on your system.  You
    can find the source for it at ftp.x.org in /contrib/libraries (or
    at its home page http://www.inria.fr/koala/lehors/xpm.html) to
    compile and install it by hand, or you can find some "standard"
@@ -635,21 +638,20 @@ A: This is not our primary mission, but we think fvwm2 does a pretty
 
 A: Creating a patch -
 
-        1) Update the ChangeLog file. If you use (x)emacs, move the
-           cursor into the function you changed and hit <ctrl>-4 a.
+        1) Copy the original file(s) to the same name with the
+           additional extension of .orig (or something like that).
+        2) Update the ChangeLog file. If you use (x)emacs, move the
+           cursor into the function you changed and hit <ctrl>-x 4 a.
            This will generate an empty ChangeLog entry in the right
            file (there are several ChangeLogs). Add a description of
-           what you did. Repeat this for all changed functions or
-           files (for changes outside of funtions). You should update
+           what you did. Do this each time you change a function or 
+           file (for changes outside of funtions). You should update
            the AUTHORS and NEWS files too if appropriate.
            Please take the time to add the ChangeLog entries, it makes
            our work a lot easier.
-        2) Copy the originial file(s) to the same name with the
-           additional extension of .orig (or something like that).
-           Don't forget the ChangeLog.
-        3) Then run diff with either the -c (context) or -u (unified)
+        3) Run diff with either the -c (context) or -u (unified)
            switch on the sets of files, with the .orig file FIRST.  I
-           prefer unifified diff's because they are smaller, but
+           prefer unified diff's because they are smaller, but
            sometimes they aren't as readable (and some diff versions
            don't support unified diffs), so either context or unified
            diffs are fine (but please, no "plain" diffs).
@@ -658,18 +660,22 @@ A: Creating a patch -
 
    Submitting a patch -
 
-        Just mail it to the fvwm or fvwm-workers mailing list, is the
-        best way I guess. If your patch is large you should compress
-        it (preferrably with gzip). Should it still be larger than
-        25k you might want to to place it on a web page and email thei
-        URL to the mailing list or ask on the fvwm-workers list first.
-        Oh, and be sure to read the last paragraph of #16 above...
+        Mail it to the fvwm-workers mailing list <fvwm-workers@hpc.uh.edu>.
+
+	If your patch is large you should compress it (preferrably
+        with gzip). Should it still be larger than 25k you might want
+        to to place it on a web page and email the URL to the mailing
+        list or ask on the fvwm-workers list first.
+
+	Be sure to read the answer to Q16.
+
+	Don't forget the ChangeLog.
 
    Applying a patch -
 
         Get a copy of the program 'patch' from your favorite source,
-        such as prep.ai.mit.edu in /pub/gnu, compile it, and then
-        follow it's directions (generally just cd into the appropriate
+        such as ftp.gnu.org in /pub/gnu, compile it, and then follow
+        its directions (generally just cd into the appropriate
         directory and run 'patch < patchfile').
 
 ----------------------------------------------------------------------
@@ -812,10 +818,15 @@ A: The error message usually looks something like this:
 32) I want to use FVWM, but I don't have root access on my machine.
     Can I still install and run it?
 
-A: Oh yes.  FVWM doesn't need to be "properly" installed by root to be
-   run.  All you really have to do is copy the binaries to one of your
-   local directories to run it out of and make sure that the paths in
-   your ~/.fvwm2rc file are correct.
+A: Very easily, using the '--prefix' flag at configure time.  
+
+   Suppose your home directory is /home/sam.  After unpacking the
+   fvwm2 sources, do "./configure --prefix=/home/sam [other options as
+   needed]'.  Now, after building ("make") and installing ("make
+   install"), you will find the binaries in /home/sam/bin, the
+   manpages in /home/sam/man, etc.  The modules will be in
+   /home/sam/libexec, and fvwm2 binary will have this module path
+   built in.
 
 ----------------------------------------------------------------------
 
@@ -927,13 +938,13 @@ A: Sure - here's one from Graeme McCaffery:
 
 40) How do I capture the output (eg errors) of fvwm?
 
-A: A couple of different ideas spring to mind:
-        - XSession, which is handy for other reasons
-        - FvwmTalk will show them
-        - pipe the output of fvwm to something like 'notifier' when
-          invoking it
-        - XConsole (or xterm/rxvt -C) might catch them, depending on
-          your X11 setup
+A: Errors are reported to the standard error file.  You can redirect
+   standard error to a file when fvwm2 is started: "fvwm2 2>
+   fvwm-errors".  X sessions started by xdm often redirect errors to a
+   file named ".xsession-errors".
+
+   Alternatively, FvwmConsole or FvwmTalk modules will display error
+   messages.
 
 ----------------------------------------------------------------------
 
@@ -987,7 +998,7 @@ A: Yup, I imagine that you might be.  Things like the InitFunction not
 45) Is it possible to raise a window when I click into the window
     itself, not just the border?
 
-A: Any version later than 2.0.46 (i.e. 2.1.x or later) has this
+A: Any version later than 2.0.46 (i.e. 2.1.0 or later) has this
    feature. Currently it is provided through the GlobalOpts command.
    This will possibly change in the future and be made an option to
    the Style command:
@@ -1122,9 +1133,11 @@ A: Both of these commands change the keyboard focus to the target
 49) Why won't the StartIconic style work with {Netscape, etc.}?
 
 A: The application won't allow it. This has only been observed with
-Netscape. When Netscape starts up, FVWM starts the main window in the
-iconic state. Netscape immediately issues another MapRequest, to which
-the window manager must respond by de-iconifying the window, according
-to the ICCCM rules. (Netscape can be persuaded to start iconic, however,
-by invoking it with the -iconic command line flag.)
+   Netscape. When Netscape starts up, FVWM starts the main window in
+   the iconic state. Netscape immediately issues another MapRequest,
+   to which the window manager must respond by de-iconifying the
+   window, according to the ICCCM rules. (Netscape can be persuaded to
+   start iconic, however, by invoking it with the -iconic command line
+   flag.)
+   
 ----------------------------------------------------------------------
