@@ -30,6 +30,9 @@ Changes in development release 2.5.8 (not released yet)
 * Added support for new BBC headlines in fvwm-menu-headlines, this
   replaces the old BBC-Worlds and BBC-SciTech headlines.
 
+* Fvwm now handles what Unicode calls "combining characters" (ie. marks
+  drawn on top of other characters)
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.7 (30-May-2003)
