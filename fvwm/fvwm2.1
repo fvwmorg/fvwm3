@@ -14,38 +14,38 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FVWM 2.xx "late 20th century"
+.TH FVWM2 2.xx "late 20th century"
 .UC
 .SH NAME
 fvwm2 \- F(?) Virtual Window Manager (version 2.xx) for X11
 .SH SYNOPSIS
-\fBfvwm\fP [ \fIoptions\fP ]
+\fBfvwm2\fP [ \fIoptions\fP ]
 .SH DESCRIPTION
-\fIFvwm\fP is a window manager for X11.  It is a derivative of
+\fIFvwm2\fP is a window manager for X11.  It is a derivative of
 \fItwm\fP, redesigned to minimize memory consumption, provide a 3-D
 look to window frames, and provide a simple virtual desktop.  Version
 2.xx uses only slightly more memory than 1.xx, mostly due to some
 global options being able to be window specific now.
 
-Fvwm provides both a large virtual desktop and multiple disjoint
+Fvwm2 provides both a large virtual desktop and multiple disjoint
 desktops which can be used separately or together.  The virtual desktop
 allows you to pretend that your video screen is really quite large,
 and you can scroll around within the desktop.  The multiple disjoint
 desktops allow you to pretend that you really have several screens to
 work at, but each screen is completely unrelated to the others.
 
-Fvwm provides keyboard accelerators which allow you to perform most
+Fvwm2 provides keyboard accelerators which allow you to perform most
 window-manager functions, including moving and resizing windows, and
 operating the window-manager's menus, using keyboard shortcuts.
 
-Fvwm has also blurred the distinction between configuration commands
+Fvwm2 has also blurred the distinction between configuration commands
 and built-in commands that most window-managers make.  Configuration
 commands typically set fonts, colors, menu contents, key and mouse
 function bindings, while built-in commands typically do things like
-raise and lower windows.  Fvwm makes no such distinction, and allows,
+raise and lower windows.  Fvwm2 makes no such distinction, and allows,
 to the extent that is practical, anything to be changed at any time.
 
-Other noteworthy differences between Fvwm and other X11 window managers
+Other noteworthy differences between Fvwm2 and other X11 window managers
 are the introduction of the SloppyFocus and per-window focus methods.
 SloppyFocus is focus-follows-mouse, but focus is not removed from
 windows when the mouse leaves a window and enters the root window.
@@ -55,17 +55,17 @@ xgraph, xclock, xbiff, etc) click-to-focus, so that your terminal
 window doesn't lose focus unnecessarily.
 
 .SH COPYRIGHTS
-Since \fIfvwm\fP is derived from \fItwm\fP code it shares \fItwm\fP's
+Since \fIfvwm2\fP is derived from \fItwm\fP code it shares \fItwm\fP's
 copyrights.  Since nearly every line of twm code has been changed, the
 twm copyright has been removed from most of the individual code files.
 I do still recognize the influence of twm code in the overall package,
-so fvwm's copyright is still considered to be the same as twm's.
+so fvwm2's copyright is still considered to be the same as twm's.
 
 Please consult the COPYING file that has come with your distribution
 for details.
 
 .SH ANATOMY OF A WINDOW
-\fIFvwm\fP puts a decorative border around most windows.  This border
+\fIFvwm2\fP puts a decorative border around most windows.  This border
 consists of a bar on each side and a small "L" shaped section on each
 corner.  There is an additional top bar called the title bar which is
 used to display the name of the window.  In addition, there are up to
@@ -88,7 +88,7 @@ them.  See the section on the "Mouse" configuration parameter below.
 
 
 .SH THE VIRTUAL DESKTOP
-\fIFvwm\fP provides multiple virtual desktops for users who wish to
+\fIFvwm2\fP provides multiple virtual desktops for users who wish to
 use them.  The screen is a viewport onto a desktop which may be larger
 than the screen.  Several distinct desktops can be accessed (concept:
 one desktop for each project, or one desktop for each application,
@@ -108,7 +108,7 @@ the window manager to operate.  Windows may also be listed, along with
 their geometries, in a window list, accessible as a pop-up menu, or as
 a separate window, called the FvwmWinList (another module).
 
-Fvwm keeps the windows on the desktop in a "layered" stacking order;
+Fvwm2 keeps the windows on the desktop in a "layered" stacking order;
 a window in a lower layer will never obscure a window in a higher layer.
 The layer of a window can be changed by using the Layer built-in command.
 
@@ -158,7 +158,7 @@ you always invoke the application from the same page.
 
 A better way to place windows on a different page or desk from the
 currently mapped viewport is to use the StartsOnPage style specification
-(the successor to the older StartsOnDesk style) in the .fvwm2 configuration
+(the successor to the older StartsOnDesk style) in the .fvwm2rc configuration
 file. The placement is consistent: it does not depend on your current location
 on the virtual desktop.
 
@@ -187,18 +187,18 @@ XTerm*Page: 3 2 1
 .EE
 
 .SH INITIALIZATION
-During initialization, \fIfvwm\fP will search for a configuration file
+During initialization, \fIfvwm2\fP will search for a configuration file
 which describes key and button bindings, and a few other things.  The
-format of these files will be described later.  First, \fIfvwm\fP will
+format of these files will be described later.  First, \fIfvwm2\fP will
 search for a file named .fvwm2rc in the user's home directory, then in
 ${sysconfdir} (typically /usr/local/etc).
 Failing that, it will look for system.fvwm2rc in ${sysconfdir} for
-system-wide defaults.  If that file is not found, \fIfvwm\fP will be
+system-wide defaults.  If that file is not found, \fIfvwm2\fP will be
 basically useless.
 
-\fIFvwm\fP will set two environment variables which will be inherited
+\fIFvwm2\fP will set two environment variables which will be inherited
 by its children.  These are $DISPLAY which describes the display on
-which \fIfvwm\fP is running.  $DISPLAY may be unix:0.0 or :0.0, which
+which \fIfvwm2\fP is running.  $DISPLAY may be unix:0.0 or :0.0, which
 doesn't work too well when passed through rsh to another machine, so
 $HOSTDISPLAY will also be set and will use a network-ready description
 of the display.  $HOSTDISPLAY will always use the TCP/IP transport
@@ -206,26 +206,26 @@ protocol (even for a local connection) so $DISPLAY should be used for
 local connections, as it may use Unix-domain sockets, which are
 faster.
 
-\fIFvwm\fP has a two special functions for initialization:
+\fIFvwm2\fP has a two special functions for initialization:
 InitFunction and RestartFunction, which are executed during
 Initialization and Restarts (respectively).  These may be customized
 in the user's rc file via the AddToFunc facility (described later) to
 start up modules, xterms, or whatever you'd like have started by
-\fIfvwm\fP.
+\fIfvwm2\fP.
 
-\fIFvwm\fP also has a special exit function: ExitFunction, executed
+\fIFvwm2\fP also has a special exit function: ExitFunction, executed
 when exiting or restarting before actually quitting or anything else.
 It could be used to explicitly kill modules, etc.
 
 .SH COMPILATION OPTIONS
-\fIFvwm\fP has a number of compile-time options to reduce memory usage
+\fIFvwm2\fP has a number of compile-time options to reduce memory usage
 by limiting the use of certain features.  If you
 have trouble using a certain command or feature, check to see if
 support for it was included at compile time.  Optional features are
 described in the config.h file.
 
 .SH ICONS
-The basic \fIFvwm\fP configuration uses monochrome bitmap icons,
+The basic \fIFvwm2\fP configuration uses monochrome bitmap icons,
 similar to \fItwm\fP.  If XPM extensions are compiled in, then color
 icons similar to ctwm, MS-Windows, or the Macintosh icons can be used.
 In order to use these options you will need the XPM package, as
@@ -236,38 +236,38 @@ color icons, which are very spiffy.
 
 .SH MODULES
 A module is a separate program which runs as a separate Unix process
-but transmits commands to \fIfvwm\fP to execute.  Users can write
+but transmits commands to \fIfvwm2\fP to execute.  Users can write
 their own modules to do any weird or bizarre manipulations without
-bloating or affecting the integrity of \fIfvwm\fP itself.
+bloating or affecting the integrity of \fIfvwm2\fP itself.
 
-Modules MUST be spawned by \fIfvwm\fP so that it can set up two pipes for
-\fIfvwm\fP and the module to communicate with.  The pipes will already be
+Modules MUST be spawned by \fIfvwm2\fP so that it can set up two pipes for
+\fIfvwm2\fP and the module to communicate with.  The pipes will already be
 open for the module when it starts and the file descriptors for the
 pipes are provided as command line arguments.
 
-Modules can be spawned during \fIfvwm\fP at any time during the X
+Modules can be spawned during \fIfvwm2\fP at any time during the X
 session by use of the Module built-in command.  Modules can exist for
 the duration of the X session, or can perform a single task and exit.
-If the module is still active when \fIfvwm\fP is told to quit, then
-\fIfvwm\fP will close the communication pipes and wait to receive a
+If the module is still active when \fIfvwm2\fP is told to quit, then
+\fIfvwm2\fP will close the communication pipes and wait to receive a
 SIGCHLD from the module, indicating that it has detected the pipe
 closure and has exited.  If modules fail to detect the pipe closure
-\fIfvwm\fP will exit after approximately 30 seconds anyway.  The
+\fIfvwm2\fP will exit after approximately 30 seconds anyway.  The
 number of simultaneously executing modules is limited by the operating
 system's maximum number of simultaneously open files, usually between
 60 and 256.
 
-Modules simply transmit text commands to the \fIfvwm\fP built-in
+Modules simply transmit text commands to the \fIfvwm2\fP built-in
 command engine.  Text commands are formatted just as in the case of a
 mouse binding in the .fvwm2rc setup file.  Certain auxiliary
 information is also transmitted, as in the sample module FvwmButtons.
 The FvwmButtons module is documented in its own man page.
 
 .SH ICCCM COMPLIANCE
-\fIFvwm\fP attempts to be ICCCM 2.0 compliant.  In addition, ICCCM
+\fIFvwm2\fP attempts to be ICCCM 2.0 compliant.  In addition, ICCCM
 states that it should be possible for applications to receive ANY
 keystroke, which is not consistent with the keyboard shortcut approach
-used in \fIfvwm\fP and most other window managers. In particular you
+used in \fIfvwm2\fP and most other window managers. In particular you
 cannot have the same keyboard shortcuts working with your fvwm2 and
 another fvwm2 running within Xnest (a nested X server). The same problem
 exists with mouse bindings.
@@ -280,8 +280,8 @@ WM_HINTS(WM_HINTS):
 should not be given the keyboard input focus by the window manager.
 These windows can take the input focus by themselves, however.  A
 number of applications set this property, and yet expect the
-window-manager to give them the keyboard focus anyway, so fvwm
-provides a window-style, "Lenience", which will allow fvwm to overlook
+window-manager to give them the keyboard focus anyway, so fvwm2
+provides a window-style, "Lenience", which will allow fvwm2 to overlook
 this ICCCM rule.
 
 The differences between ICCCM 1.1 and 2.0 include the ability to 
@@ -310,12 +310,12 @@ AddToFunc UrgencyDoneFunc
 .SH M4 PREPROCESSING
 .PP
 M4 pre-processing is handled by a module in fvwm-2.0.  To get more
-details, try man FvwmM4.  In short, if you want fvwm to parse your
+details, try man FvwmM4.  In short, if you want fvwm2 to parse your
 files with m4, then replace the word "Read" with "FvwmM4" in
-your .fvwm2rc file (if it appears at all), and start fvwm with the
+your .fvwm2rc file (if it appears at all), and start fvwm2 with the
 command
 .EX
-fvwm -cmd "FvwmM4 .fvwm2rc"
+fvwm2 -cmd "FvwmM4 .fvwm2rc"
 .EE
 
 .SH CPP PREPROCESSING
@@ -331,12 +331,12 @@ number of milliseconds after it receives focus, by using the
 auto-raise module, FvwmAuto.
 
 .SH OPTIONS
-These are the command line options that are recognized by \fIfvwm\fP:
+These are the command line options that are recognized by \fIfvwm2\fP:
 .IP "\fB-blackout\fP"
 The screen is blacked out during window recaptures and startup. This option
 is provided for backwards compatibility only.
 .IP "\fB-cmd\fP \fIconfig_command\fP"
-Causes \fIfvwm\fP to use \fIconfig_command\fP instead of "Read .fvwm2rc"
+Causes \fIfvwm2\fP to use \fIconfig_command\fP instead of "Read .fvwm2rc"
 as its initialization command.
 (Note that up to 10 \fB-f\fP and \fB-cmd\fP parameters can be given,
 and they are executed in the order specified.)
@@ -345,24 +345,24 @@ Manage the display called "displayname" instead of the name obtained from
 the environment variable $DISPLAY.
 .IP "\fB-debug\fP"
 Puts X transactions in synchronous mode, which dramatically slows things
-down, but guarantees that \fIfvwm\fP's internal error messages are correct.
-Also causes \fIfvwm\fP to output debug messages while running.
+down, but guarantees that \fIfvwm2\fP's internal error messages are correct.
+Also causes \fIfvwm2\fP to output debug messages while running.
 .IP "\fB-f\fP \fIconfig_file\fP"
-Causes \fIfvwm\fP to Read \fIconfig_file\fP instead of ".fvwm2rc"
+Causes \fIfvwm2\fP to Read \fIconfig_file\fP instead of ".fvwm2rc"
 as its initialization file.  This is equivalent to
 \fB-cmd\fP "Read \fIconfig_file\fP".
 .IP "\fB-h\fP"
 A short usage description is printed.
 .IP "\fB-s\fP"
-On a multi-screen display, run \fIfvwm\fP only on the screen named in
+On a multi-screen display, run \fIfvwm2\fP only on the screen named in
 the $DISPLAY environment variable or provided through the -d
-option. Normally, \fIfvwm\fP will attempt to start up on all screens
+option. Normally, \fIfvwm2\fP will attempt to start up on all screens
 of a multi-screen display.
 .IP "\fB-version\fP"
-Print the version of \fIfvwm\fP to stderr.
+Print the version of \fIfvwm2\fP to stderr.
 .IP "\fB-clientId\fP"
 .IP "\fB-restore\fP"
-These options are used by the session manager when restarting fvwm.
+These options are used by the session manager when restarting fvwm2.
 
 .SH CONFIGURATION FILES
 The configuration file is used to describe mouse and button bindings,
@@ -371,35 +371,35 @@ initialization configuration file is typically called ".fvwm2rc".  By
 using the "Read" built-in, it is easy to read in new configuration
 files as you go.
 
-Lines beginning with '#' will be ignored by \fIfvwm\fP.  Lines
+Lines beginning with '#' will be ignored by \fIfvwm2\fP.  Lines
 starting with '*' are expected to contain module configuration
-commands (rather than configuration commands for \fIfvwm\fP itself).
+commands (rather than configuration commands for \fIfvwm2\fP itself).
 
-Fvwm makes no distinction between configuration commands and built-in
+Fvwm2 makes no distinction between configuration commands and built-in
 commands, so anything mentioned in the built-in commands section  can
-be placed on a line by itself for fvwm to execute as it reads the
+be placed on a line by itself for fvwm2 to execute as it reads the
 configuration file, or it can be placed as an executable command in a
 menu or bound to a mouse button or a keyboard key.  It is left as an
 exercise for the user to decide which function make sense for
 initialization and which ones make sense for run-time.
 
 .SH BUILT IN FUNCTIONS
-\fIFvwm\fP supports a set of built-in functions which can be bound to
-keyboard or mouse buttons.  If fvwm expects to find a built-in function
+\fIFvwm2\fP supports a set of built-in functions which can be bound to
+keyboard or mouse buttons.  If fvwm2 expects to find a built-in function
 in a command, but fails, it will check to see if the specified command
 should have been "Function (rest of command)" or "Module (rest of
 command)".  This allows complex functions or modules to be invoked in a
 manner which is fairly transparent to the configuration file.
 
-Example: the .fvwm2rc file contains the line "HelpMe".  Fvwm will look
+Example: the .fvwm2rc file contains the line "HelpMe".  Fvwm2 will look
 for a built-in command called "HelpMe", and will fail. Next it will
 look for a user-defined complex function called "HelpMe".  If no such
-user defined function exists, Fvwm will try to execute a module called
+user defined function exists, Fvwm2 will try to execute a module called
 "HelpMe".
 
 In previous versions of fvwm, quoting was critical and irrational in
 the .fvwmrc file.  As of fvwm-2, most of this has been cleared up.
-Quotes are required only when needed to make fvwm consider two or more
+Quotes are required only when needed to make fvwm2 consider two or more
 words to be a single argument.  Unnecessary quoting is allowed.  If you
 want a quote character in your text, you must escape it by using the
 backslash character.  For example, if you have a pop-up menu called
@@ -435,7 +435,7 @@ Initially for this example all button states are set to a pixmap.  The
 second line replaces the ActiveDown state with a gradient (it
 overrides the pixmap assigned to it in the line before, which assigned
 the same style to every state).  Then, the UseTitleStyle flag is set
-for all buttons, which causes \fIfvwm\fP to draw any styles set with
+for all buttons, which causes \fIfvwm2\fP to draw any styles set with
 TitleStyle before drawing the buttons.  Finally, AddButtonStyle is
 used to place additional pixmaps for both ActiveUp and ActiveDown
 states and a Vector button style is drawn on top of all state.
@@ -907,7 +907,7 @@ separated by a space.  If an "!" is prefixed to the flag then the flag
 behavior is negated.  The special flag "Clear" clears any existing
 flags.
 
-The following flags are usually used to tell fvwm which buttons should
+The following flags are usually used to tell fvwm2 which buttons should
 be affected by MWM function hints.  This is not done automatically
 since you might have buttons bound to complex functions, for instance.
 
@@ -961,8 +961,8 @@ destroyed.
 
 
 .IP "ColorLimit \fIlimit\fP"
-Specifies a limit  on the colors used in  pixmaps used  by fvwm.  Zero
-(the   default)  sets no     limit.   Fvwm uses  pixmaps  for  icons,
+Specifies a limit  on the colors used in  pixmaps used  by fvwm2.  Zero
+(the   default)  sets no     limit.   Fvwm2 uses  pixmaps  for  icons,
 mini-icons, and pixmap borders and titles.  This command limits pixmap
 colors  to a set  of colors that  starts out with  common colors.  The
 current  list contains about 60 colors  and  starts with white, black,
@@ -978,7 +978,7 @@ controlled by this command.
 
 
 .IP "ColormapFocus \fIFollowsMouse\fP|\fIFollowsFocus\fP"
-By default, fvwm installs the colormap of the window that the cursor
+By default, fvwm2 installs the colormap of the window that the cursor
 is in.  If you use ColormapFocus FollowsFocus, then the installed
 colormap will be the one for the window that currently has the
 keyboard focus.
@@ -1118,7 +1118,7 @@ The defaults are shown in parenthesis above.
 
 .IP "DefaultColors [ \fI foreground background\fP ]"
 \fIDefaultColors\fP sets the default forground and background
-colors used in miscellaneous windows created by fvwm, for example
+colors used in miscellaneous windows created by fvwm2, for example
 in the geometry feedback windows during a move or resize operation.
 If you don't want to change one color or the other, use - as its
 color name. To revert to the builtin default colors omit both
@@ -1199,7 +1199,7 @@ DestroyDecor "CustomDecor1"
 .IP "DestroyFunc"
 Deletes a function, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a function during an
-fvwm session.  The function can be rebuilt using AddToFunc.
+fvwm2 session.  The function can be rebuilt using AddToFunc.
 .EX
 DestroyFunc "PrintFunction"
 .EE
@@ -1208,7 +1208,7 @@ DestroyFunc "PrintFunction"
 .IP "DestroyMenu"
 Deletes a menu, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a menu during an
-fvwm session.  The menu can be rebuilt using AddToMenu.
+fvwm2 session.  The menu can be rebuilt using AddToMenu.
 .EX
 DestroyMenu "Utilities"
 .EE
@@ -1223,7 +1223,7 @@ DestroyMenuStyle pixamp1
 .IP "DestroyModuleConfig"
 Deletes module configuration entries, so that new configuration lines
 may be entered instead.  You can use this to change the the way a
-module runs during an fvwm session without restarting.  Wildcards can
+module runs during an fvwm2 session without restarting.  Wildcards can
 be used for portions of the name as well.
 .EX
 DestroyModuleConfig FvwmFormFore
@@ -1255,7 +1255,7 @@ the mouse over the edge of the screen and how hard it should be to
 move a window over the edge of the screen.
 
 The first parameter tells how milliseconds the pointer must spend on
-the screen edge before \fIfvwm\fP will move the viewport.  This is
+the screen edge before \fIfvwm2\fP will move the viewport.  This is
 intended for people who use "EdgeScroll 100 100" but find themselves
 accidentally flipping pages when they don't want to.
 
@@ -1284,7 +1284,7 @@ be positive numbers.
 
 If the horizontal and vertical percentages are multiplied by 1000 then
 scrolling will wrap around at the edge of the desktop.  If "EdgeScroll
-100000 100000" is used \fIfvwm\fP will scroll by whole pages, wrapping
+100000 100000" is used \fIfvwm2\fP will scroll by whole pages, wrapping
 around at the edge of the desktop.
 
 .IP "EdgeThickness \fI0\fP|\fI1\fP|\fI2\fP"
@@ -1310,7 +1310,7 @@ running.
 
 
 .IP "Emulate \fIfvwm\fP|\fImwm\fP|\fIwin\fP"
-This command affects how miscellaneous things are done by fvwm.
+This command affects how miscellaneous things are done by fvwm2.
 For example where the move/resize feedback window appears depends
 on this command. To have more MWM- or WIN-like behavior you can call
 Emulate with "MWM" or "WIN" as its argument.
@@ -1319,7 +1319,7 @@ Emulate with "MWM" or "WIN" as its argument.
 .IP "Exec \fIcommand\fP"
 Executes \fIcommand\fP.  You should not use an ampersand ``&'' at the
 end of the command.  You probably want to use an additional ``exec'' at
-the beginning of \fIcommand\fP.  Without that, the shell that fvwm
+the beginning of \fIcommand\fP.  Without that, the shell that fvwm2
 invokes to run your command will stay until the command exits.  In
 effect, you'll have twice as many processes running as you need.
 Note that some shells are smart enough to avoid this, but it never hurts
@@ -1374,14 +1374,14 @@ Used to bind a previously defined function to a key or mouse button.
 
 The following example binds mouse button 1 to a function called
 "Move-or-Raise", whose definition was provided as an example earlier
-in this man page.  After performing this binding \fIfvwm\fP will
+in this man page.  After performing this binding \fIfvwm2\fP will
 execute to move-or-raise function whenever button 1 is pressed in a
 window title-bar.
 .EX
 Mouse 1 T A Function Move-or-Raise
 .EE
 The keyword "Function" may be omitted if "FunctionName" does not
-coincide with an fvwm built-in function name
+coincide with an fvwm2 built-in function name
 
 
 .IP "GlobalOpts [ \fIoptions\fP ]"
@@ -1405,14 +1405,14 @@ GlobalOpts ClickToFocusDoesntPassClick, \\
 
 RecaptureHonorsStartsOnPage causes a window to be placed according to, or
 revert to, the StartsOnPage desk and page specification on Restart or
-Recapture. RecaptureIgnoresStartsOnPage causes fvwm to respect the current
+Recapture. RecaptureIgnoresStartsOnPage causes fvwm2 to respect the current
 window position on Restart or Recapture. The default is
 RecaptureIgnoresStartsOnPage.
 
 CaptureHonorsStartsOnPage causes the initial capture (of an already
 existing window) at startup to place the window according to the
 StartsOnPage desk and page specification. CaptureIgnoresStartsOnPage
-causes fvwm to ignore these settings (including StartsOnDesk) on
+causes fvwm2 to ignore these settings (including StartsOnDesk) on
 initial capture. The default is CaptureHonorsStartsOnPage.
 
 ActivePlacementIgnoresStartsOnPage suppresses StartsOnPage or StartsOnDesk
@@ -1421,7 +1421,7 @@ effect when a window is created. This prevents you from interactively
 placing a window and then wondering where it disappeared to, because it got
 placed on a different desk or page. ActivePlacementHonorsStartsOnPage
 allows this to happen anyway. The option has no effect if SkipMapping is
-not in effect, because fvwm will switch to the proper desk/page to perform
+not in effect, because fvwm2 will switch to the proper desk/page to perform
 interactive placement. The default is ActivePlacementHonorsStartsOnPage,
 which matches the way StartsOnDesk handled the situation.
 
@@ -1440,7 +1440,7 @@ window which currently has the keyboard focus.
 
 
 .IP "IconFont [ \fIfontname\fP ]"
-Makes \fIfvwm\fP use font \fIfontname\fP for icon labels. To reset
+Makes \fIfvwm2\fP use font \fIfontname\fP for icon labels. To reset
 this font to the default font (see \fIDefaultFont\fP) you may omit
 \fIfontname\fP.
 
@@ -1467,7 +1467,7 @@ to force all m4 directives to have a prefix of "m4_" (see the
 
 
 .IP "Key \fIkeyname Context Modifiers Function\fP"
-Binds a keyboard key to a specified \fIfvwm\fP built-in function, or
+Binds a keyboard key to a specified \fIfvwm2\fP built-in function, or
 removes the binding if \fIFunction\fP is '-'.  Definition is the same
 as for a mouse binding except that the mouse button number is replaced
 with a key name.  The \fIkeyname\fP is one of the entries from
@@ -1950,7 +1950,7 @@ See also \fISetAnimation\fP command.
 
 .IP "Module \fIModuleName\fP"
 Specifies a module which should be spawned during initialization.  At
-the current time the available modules (included with fvwm) are
+the current time the available modules (included with fvwm2) are
 FvwmAnimate (fancy animation of (de)iconification) FvwmAudio (makes
 sounds to go with window manager actions), FvwmAuto
 (an auto raise module), FvwmBacker (to change the background when you
@@ -1961,8 +1961,8 @@ with cpp), FvwmEvent (trigger various actions by events), FvwmForm
 (like the twm icon manager), FvwmIdent (to get window info), FvwmM4
 (to preprocess your .fvwm2rc with m4), FvwmPager (a mini version of
 the desktop), FvwmSave (saves the desktop state in .xinitrc style),
-FvwmSaveDesk (saves the desktop state in fvwm commands), FvwmScroll
-(puts scrollbars on any window), FvwmTalk (to interactively run fvwm
+FvwmSaveDesk (saves the desktop state in fvwm2 commands), FvwmScroll
+(puts scrollbars on any window), FvwmTalk (to interactively run fvwm2
 commands), and FvwmWinList (a window list), FvwmAnimate (produces
 animation effects when a window is iconified or deiconifed).
 .\" Note: The "Optional Module Name" description is missing.
@@ -1978,7 +1978,7 @@ built-in and function names.
 
 
 .IP "ModulePath"
-Specifies a colon separated list of paths for \fIfvwm\fP to search
+Specifies a colon separated list of paths for \fIfvwm2\fP to search
 when looking for a module to load.  Individual directories do not need
 trailing slashes.  Environment variables can be used here as well (i.e.
 $HOME or ${HOME}).  The builtin module path is available via the
@@ -2004,7 +2004,7 @@ a modifier of SM will apply when both the Meta and Shift keys are
 down.  X11 modifiers mod1 through mod5 are represented as the digits
 1 through 5.
 
-\fIFunction\fP is one of \fIfvwm\fP's built-in functions.
+\fIFunction\fP is one of \fIfvwm2\fP's built-in functions.
 
 The title bar buttons are numbered with odd numbered buttons on the
 left side of the title bar and even numbers on the right.
@@ -2107,7 +2107,7 @@ Can also be used as the double-click action for Menu.
 
 
 .IP "OpaqueMoveSize \fIpercentage\fP"
-Tells \fIfvwm\fP the maximum size window with which opaque window
+Tells \fIfvwm2\fP the maximum size window with which opaque window
 movement should be used.  The percentage is percent of the total
 screen area.  With "OpaqueMoveSize 0" all windows will be moved using the
 traditional rubber-band outline.  With "OpaqueMoveSize 100" all windows
@@ -2124,7 +2124,7 @@ annoying multiple selections with complex functions.
 
 
 .IP "PipeRead \fIcmd option\fP"
-Causes fvwm to read commands output from the program named
+Causes fvwm2 to read commands output from the program named
 \fIcmd\fP.  Useful for building up dynamic menu entries based on a
 directories contents, for example.
 
@@ -2216,11 +2216,11 @@ satisfies all \fIconditions\fP.  Conditions are the same as for \fINext\fP.
 
 
 .IP "Quit"
-Exits fvwm, generally causing X to exit too.
+Exits fvwm2, generally causing X to exit too.
 
 
 .IP "QuitScreen"
-Causes fvwm to stop managing the screen on which the command was issued.
+Causes fvwm2 to stop managing the screen on which the command was issued.
 
 
 .IP "Raise"
@@ -2238,13 +2238,13 @@ Alternately raises and lowers a window.
 
 
 .IP "Read \fIfilename\fP [ \fIoption\fP ]"
-Causes fvwm to read commands from the file named \fIfilename\fP.
+Causes fvwm2 to read commands from the file named \fIfilename\fP.
 If the option following the filename is "Quiet", no message is
 produced if the file is not found.
 
 
 .IP "Recapture"
-Causes fvwm to recapture all of its windows.  This ensures that the
+Causes fvwm2 to recapture all of its windows.  This ensures that the
 latest style parameters will be used.  The recapture operation is
 visually disturbing.
 
@@ -2273,7 +2273,7 @@ each coordinate, in which case the location is specified in pixels.
 
 
 .IP "Restart  \fIWindowManagerName\fP "
-Causes \fIfvwm\fP to restart itself if WindowManagerName is "fvwm2",
+Causes \fIfvwm2\fP to restart itself if WindowManagerName is "fvwm2",
 or to switch to an alternate window manager if WindowManagerName is
 other than "fvwm2".  If the window manager is not in your default
 search path, then you should use the full path name for
@@ -2284,9 +2284,9 @@ arguments and should not make use of any environmental variables.  Of
 the following examples, the first two are sure losers, but the third
 is OK:
 .EX
-Key F1 R N Restart fvwm &
-Key F1 R N Restart $(HOME)/bin/fvwm
-Key F1 R N Restart /home/nation/bin/fvwm
+Key F1 R N Restart fvwm2 &
+Key F1 R N Restart $(HOME)/bin/fvwm2
+Key F1 R N Restart /home/nation/bin/fvwm2
 .EE
 
 .IP "Scroll \fIhorizonal vertical\fP"
@@ -2301,7 +2301,7 @@ of the desktop.
 
 If the horizontal and vertical percentages are multiplied by 1000 then
 scrolling will wrap around at the edge of the desktop.  If "Scroll
-100000 0" is executed over and over \fIfvwm\fP will move to the next
+100000 0" is executed over and over \fIfvwm2\fP will move to the next
 desktop page on each execution and will wrap around at the edge of the
 desktop, so that every page is hit in turn.
 
@@ -2422,11 +2422,11 @@ ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
-entries that have them describes the \fIfvwm\fP default behavior and
-can be used if you want to change the \fIfvwm\fP default behavior.
+entries that have them describes the \fIfvwm2\fP default behavior and
+can be used if you want to change the \fIfvwm2\fP default behavior.
 
 \fIDecorateTransient\fP causes transient windows, which are normally
-left undecorated, to be given the usual \fIfvwm\fP decorations (title
+left undecorated, to be given the usual \fIfvwm2\fP decorations (title
 bar, buttons, etc.). Note that some pop-up windows, such as the xterm
 menus, are not managed by the window manager and still do not receive
 decorations. \fINakedTransient\fP (the default) causes transient windows
@@ -2453,7 +2453,7 @@ IconBox -80x200-1-1
 .EE
 Which would place an 80 by 240 pixel iconbox in the lower right hand
 corner of the screen.
-The iconbox is a region of the screen where fvwm
+The iconbox is a region of the screen where fvwm2
 attempts to put icons for any matching window, as long as they do not
 overlap other icons.
 Multiple icon boxes can be defined as overflow areas.  When the first
@@ -2502,7 +2502,7 @@ Style "*" IconBox -80x240-1-1, IconFill b r
 
 \fIMiniIcon\fP specifies a pixmap to use as the miniature icon for the
 window.  This miniature icon can be drawn in a title-bar button (see
-ButtonStyle), and can be used by various fvwm modules (FvwmWinList,
+ButtonStyle), and can be used by various fvwm2 modules (FvwmWinList,
 FvwmIconMan, and FvwmTaskBar). It takes the name of a pixmap as an
 argument.
 
@@ -2550,15 +2550,15 @@ information.
 
 \fIMWMBorder\fP makes the 3-D bevel more closely match mwm's.
 
-\fIMWMDecor\fP makes fvwm attempt to recognize and respect the mwm
+\fIMWMDecor\fP makes fvwm2 attempt to recognize and respect the mwm
 decoration hints that applications occasionally use.
 
-\fIMWMFunctions\fP makes fvwm attempt to recognize and respect the mwm
+\fIMWMFunctions\fP makes fvwm2 attempt to recognize and respect the mwm
 prohibited operations hints that applications occasionally use.
-HintOverride makes fvwm shade out operations that mwm would prohibit,
+HintOverride makes fvwm2 shade out operations that mwm would prohibit,
 but it lets you perform the operation anyway.
 
-\fIOLDecor\fP makes fvwm attempt to recognize and respect the olwm and olvwm
+\fIOLDecor\fP makes fvwm2 attempt to recognize and respect the olwm and olvwm
 hints that many older XView and OLIT applications use.
 
 \fIColor\fP takes two arguments.  The first is the window-label text color
@@ -2578,10 +2578,10 @@ for a window can be reassigned with ChangeDecor.
 you can have unrelated window names easily inherit similar traits
 without retyping.  For example: 'Style "rxvt" UseStyle "XTerm"'.
 
-\fISkipMapping\fP tells fvwm not to switch to the desk the window is on when
+\fISkipMapping\fP tells fvwm2 not to switch to the desk the window is on when
 it gets mapped initially (useful with StartsOnDesk or StartsOnPage).
 
-\fILenience\fP instructs fvwm to ignore the convention in the ICCCM which
+\fILenience\fP instructs fvwm2 to ignore the convention in the ICCCM which
 states that if an application sets the input field of the wm_hints
 structure to False, then it never wants the window manager to give it
 the input focus.  The only application that I know of which needs this
@@ -2589,16 +2589,16 @@ is sxpm, and that is a silly bug with a trivial fix and has no overall
 effect on the program anyway.  Rumor is that some older applications
 have problems too.
 
-\fIClickToFocus\fP instructs fvwm to give the focus to the window when it is
+\fIClickToFocus\fP instructs fvwm2 to give the focus to the window when it is
 clicked in.  The default \fIMouseFocus\fP (or its alias
-\fIFocusFollowsMouse\fP) tells fvwm to give the window the focus as soon as
+\fIFocusFollowsMouse\fP) tells fvwm2 to give the window the focus as soon as
 the pointer enters the window, and take it away when the pointer leaves the
 window. \fISloppyFocus\fP is similar, but doesn't give up the focus if the
 pointer leaves the window to pass over the root window or a ClickToFocus
 window (unless you click on it, that is), which makes it possible to
 move the mouse out of the way without losing focus.
 
-\fINoPPosition\fP instructs fvwm to ignore the PPosition field when adding
+\fINoPPosition\fP instructs fvwm2 to ignore the PPosition field when adding
 new windows.  Adherence to the PPosition field is required for some
 applications, but if you don't have one of those its a real headache.
 
@@ -2616,7 +2616,7 @@ possible worlds use both RandomPlacement and SmartPlacement.
 
 An example:
 .EX
-# Change default fvwm behavior to no title-
+# Change default fvwm2 behavior to no title-
 # bars on windows! Also define a default icon.
 Style "*"           NoTitle,                 \\
                     Icon unknown1.xpm,       \\
@@ -2742,9 +2742,9 @@ window style options as Recapture does.
 
 
 .IP "Wait \fIname\fP"
-This built-in is intended to be used in \fIfvwm\fP functions only.  It
+This built-in is intended to be used in \fIfvwm2\fP functions only.  It
 causes execution of a function to pause until a new window name
-\fIname\fP appears. \fIFvwm\fP remains fully functional during a wait.
+\fIname\fP appears. \fIFvwm2\fP remains fully functional during a wait.
 This is particularly useful in the InitFunction if you are trying to
 start windows on specific desktops:
 .EX
@@ -2770,7 +2770,7 @@ numbers).
 
 
 .IP "WindowFont [ \fIfontname\fP ]"
-Makes \fIfvwm\fP use font \fIfontname\fP instead of "fixed" for window
+Makes \fIfvwm2\fP use font \fIfontname\fP instead of "fixed" for window
 title-bars. To reset this font to the default font (see \fIDefaultFont\fP)
 you may omit \fIfontname\fP.
 
@@ -2909,16 +2909,16 @@ Standard emacs and vi cursor movement controls (^n, ^p, ^f, ^b, and
 
 
 .SH SUPPLIED CONFIGURATION
-A sample configuration file, .fvwm2rc, is supplied with the \fIfvwm\fP
+A sample configuration file, .fvwm2rc, is supplied with the \fIfvwm2\fP
 distribution.  It is well commented and can be used as a source of
-examples for \fIfvwm\fP configuration.
+examples for \fIfvwm2\fP configuration.
 
 
 .SH USE ON MULTI-SCREEN DISPLAYS
-If the -s command line argument is not given, \fIfvwm\fP will
+If the -s command line argument is not given, \fIfvwm2\fP will
 automatically start up on every screen on the specified display.
-After \fIfvwm\fP starts each screen is treated independently.
-Restarts of \fIfvwm\fP need to be performed separately on each screen.
+After \fIfvwm2\fP starts each screen is treated independently.
+Restarts of \fIfvwm2\fP need to be performed separately on each screen.
 The use of EdgeScroll 0 0 is strongly recommended for multi-screen
 displays.
 
@@ -2926,52 +2926,52 @@ You may need to quit on each screen to quit from the X session
 completely.
 
 .SH SESSION MANAGEMENT
-Fvwm supports session management according to the X Session Management
+Fvwm2 supports session management according to the X Session Management
 Protocol. It saves and restores window position, size, stacking order, 
 desk, stickyness, shadedness, maximizedness, iconifiedness for all windows.
 Furthermore, some global state is saved.
 
-Note that fvwm doesn't save any information regarding styles, decors, 
+Note that fvwm2 doesn't save any information regarding styles, decors, 
 functions or menus. If you change anything wrt. to these resources during 
 a session (eg by issuing Style commands via the FvwmTalk module), these 
 changes will be lost after saving and restarting the session. To 
 become permanent, such changes have to be added to the config file.
 
 Note further that the current implementation has the following
-anomaly when used on a multi-screen display: Starting fvwm
+anomaly when used on a multi-screen display: Starting fvwm2
 for the first time, it will manage all screens by forking a copy
 of itself for each screen. Every copy knows its parent and issuing
-a Quit command to any instance of fvwm will kill the master and
-thus all copies of fvwm. When you save and restart the session,
-the session manager brings up a copy of fvwm on each screen, but
+a Quit command to any instance of fvwm2 will kill the master and
+thus all copies of fvwm2. When you save and restart the session,
+the session manager brings up a copy of fvwm2 on each screen, but
 this time they are started as individual instances managing one
 screen only. Thus a Quit will now kill only the copy it was sent
 to. I don't think this is a very serious problem, since with session
 management, you are supposed to quit a session through the session
 manager anyway. If it is really needed, "Exec exec killall fvwm2" will
-still kill all copies of fvwm.
+still kill all copies of fvwm2.
 
 
 .SH ENVIRONMENT
 .TP
 DISPLAY
-Fvwm starts on this display unless the
+Fvwm2 starts on this display unless the
 .I -display
 option is given.
 .TP
 FVWM_MODULEDIR
-Set by \fIfvwm\fP to the directory containing the standard \fIfvwm\fP
+Set by \fIfvwm2\fP to the directory containing the standard \fIfvwm2\fP
 modules.
 .TP
 SESSION_MANAGER
-Fvwm tries to contact this session manager.
+Fvwm2 tries to contact this session manager.
 .TP
 SM_SAVE_DIR
-if this is set, fvwm saves its session data in this directory. Otherwise
+if this is set, fvwm2 saves its session data in this directory. Otherwise
 it uses $HOME.
 
 .SH BUGS
-As of fvwm 2.2 there were exactly 46.144 unidentified bugs.
+As of fvwm2 2.2 there were exactly 46.144 unidentified bugs.
 Identified bugs have mostly been fixed, though.  Since then 12.25 bugs
 have been fixed.  Assuming that there are at least 10 unidentified
 bugs for every identified one, that leaves us with 46.144 - 12.25 + 10
@@ -2985,7 +2985,7 @@ rate of bug discovery we should expect to achieve this point in
 children....
 
 Known bugs can be found in the BUGS file in the distribution, in
-the fvwm bug tracking system (accessible from the fvwm home page) and
+the fvwm2 bug tracking system (accessible from the fvwm2 home page) and
 in the TO-DO list.
 
 Bug reports can be sent to the FVWM workers' mailing list (see the FAQ).
@@ -2993,6 +2993,6 @@ Bug reports can be sent to the FVWM workers' mailing list (see the FAQ).
 .SH AUTHOR
 Robert Nation with help from many people, based on \fItwm\fP code,
 which was written by Tom LaStrange.  After Robert Nation came Charles Hines,
-followed by Brady Montz. Currently fvwm is maintained by a number of people
+followed by Brady Montz. Currently fvwm2 is maintained by a number of people
 on the fvwm-workers mailing list (Dan Espen, Steve Robbins, Paul Smith,
 Jason Tibbitts, Dominik Vogt, Bob Woodside and others).
