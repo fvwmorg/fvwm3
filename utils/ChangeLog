@@ -1,3 +1,9 @@
+2002-01-21  olicha  <olivier.chapuis@free.fr>
+
+	* xpmroot.c (main):
+	* xpmroot.1:
+	Removed the -np option and uncomment the -fe and -d documentation
+
 2002-01-19  Dan Espen  <dane@mk.telcordia.com>
 
 	* xpmroot.1: Language check done, options still commented out.

@@ -45,6 +45,8 @@
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
@@ -122,7 +124,8 @@ Window		root;
 int			screen;
 int MyDisplayHeight;
 int MyDisplayWidth;
-
+Atom XA_XSETROOT_ID;
+unsigned char *XsetrootData = NULL;
 
 int main(int argc, char **argv)
 {
@@ -164,7 +167,7 @@ int main(int argc, char **argv)
   root = RootWindow(dpy, screen);
   MyDisplayHeight = DisplayHeight(dpy, screen);
   MyDisplayWidth = DisplayWidth(dpy, screen);
-
+  XA_XSETROOT_ID = XInternAtom(dpy, "_XSETROOT_ID", False);
   /* allocate default colorset */
   AllocColorset(0);
   FShapeInit(dpy);
@@ -216,25 +219,129 @@ void ReadFvwmPipe()
   else
     ProcessMessage( packet->type, packet->body );
 }
-  
+
+/* If one can explain why the "if 0" code causes a memory leak I will be
+ * happy (olicha 2001-01-17) */
+void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
+{
+  unsigned char	*retval;
+  Atom	type_ret;
+  unsigned long	 bytes_after, num_ret;
+  long length;
+  int  format_ret;
+  void *data;
+  int ok;
+
+  retval = NULL;
+  length = 0x7fffffff;
+  ok = XGetWindowProperty(dpy, win, to_get, 0,
+			  length,
+			  True, type,
+			  &type_ret,
+			  &format_ret,
+			  &num_ret,
+			  &bytes_after,
+			  &retval);
+
+  if ((ok == Success) && (retval) && (num_ret > 0) && (format_ret > 0))
+  {
+    data = safemalloc(num_ret * (format_ret >> 3));
+    if (data)
+      memcpy(data, retval, num_ret * (format_ret >> 3));
+    XFree(retval);
+    *size = num_ret * (format_ret >> 3);
+    return data;
+  }
+  if (retval)
+    XFree(retval);
+  return NULL;
+}
+
+void SetXsetRoot(Pixmap RootPix)
+{
+  Atom type;
+  int format;
+  unsigned long length, after;
+  unsigned char *data;
+
+  (void)XGetWindowProperty(dpy, root, XA_XSETROOT_ID, 0L, 1L, True,
+			   AnyPropertyType,
+			   &type, &format, &length, &after, &data);
+  if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0
+      && *((Pixmap *)data) != None)
+  {
+    XKillClient(dpy, *((Pixmap *)data));
+  }
+  XChangeProperty(dpy, root, XA_XSETROOT_ID, XA_PIXMAP, 32, PropModeReplace,
+		  (unsigned char *) &RootPix, 1);
+}
+
 void SetDeskPageBackground(const Command *c)
 {
+  int status = 0;
+  pid_t pid;
   current_colorset = -1;
+
   switch (c->type)
   {
   case 1:
     /* Process a solid color request */
-    XSetWindowBackground(dpy, root, c->solidColor);
-    XClearWindow(dpy, root);
-    XFlush(dpy);
+    pid = fork ();
+    if (pid == 0)
+    {
+      /* This is the child process */
+      XSetWindowBackground(dpy, root, c->solidColor);
+      XClearWindow(dpy, root);
+      SetXsetRoot(None);
+      XFlush(dpy);
+      exit(0);
+    }
+    else if (pid < 0)
+    {
+      /* The fork failed.  Report failure */
+      status = -1;
+    }
+    else
+    {
+      /* This is the parent process.  Wait for the child to complete.  */
+      if (waitpid (pid, &status, 0) != pid)
+	status = -1;
+    }
+    if (status == -1)
+    {
+      fprintf(stderr,"%s: fork fail for -solid color\n", Module);
+    }
     break;
 
   case 2:
     current_colorset = c->colorset;
-    SetWindowBackground(
-      dpy, root, MyDisplayWidth, MyDisplayHeight, &Colorset[c->colorset],
-      DefaultDepth(dpy, screen), DefaultGC(dpy, screen), True);
-    XFlush(dpy);
+    /* Process a solid color request */
+    pid = fork ();
+    if (pid == 0)
+    {
+      /* This is the child process */
+      SetWindowBackground(
+	dpy, root, MyDisplayWidth, MyDisplayHeight, &Colorset[c->colorset],
+	DefaultDepth(dpy, screen), DefaultGC(dpy, screen), True);
+      SetXsetRoot(None);
+      XFlush(dpy);
+      exit(0);
+    }
+    else if (pid < 0)
+    {
+      /* The fork failed.  Report failure.  */
+      status = -1;
+    }
+    else
+    {
+      /* This is the parent process.  Wait for the child to complete.  */
+      if (waitpid (pid, &status, 0) != pid)
+	status = -1;
+    }
+    if (status == -1)
+    {
+      fprintf(stderr,"%s: fork fail for Colorset\n", Module);
+    }
     break;
 
   case 0:

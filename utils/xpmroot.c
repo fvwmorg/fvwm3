@@ -21,7 +21,7 @@ int screen;
 Window root;
 char *display_name = NULL;
 void SetRootWindow(char *tline);
-Pixmap rootXpm;
+Pixmap rootXpm = None;
 
 int main(int argc, char **argv)
 {
@@ -31,7 +31,6 @@ int main(int argc, char **argv)
   unsigned char *data;
   int i = 1;
   Bool FreeEsetroot = False;
-  Bool NotPermanent = False;
   Bool Dummy = False;
 
   if(argc < 2)
@@ -57,14 +56,9 @@ int main(int argc, char **argv)
     {
       FreeEsetroot = True;
     }
-    else if (strcasecmp(argv[i],"-np") == 0)
-    {
-      NotPermanent = True;
-    }
     else if (strcasecmp(argv[i],"-d") == 0)
     {
       Dummy = True;
-      NotPermanent = True;
     }
     else
     {
@@ -75,7 +69,6 @@ int main(int argc, char **argv)
   if (Dummy || strcasecmp(argv[argc-1],"-d") == 0)
   {
     Dummy = True;
-    NotPermanent = True;
   }
   else
   {
@@ -97,22 +90,17 @@ int main(int argc, char **argv)
     e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
     (void)XGetWindowProperty(dpy, root, e_prop, 0L, 1L, True, AnyPropertyType,
 			     &type, &format, &length, &after, &data);
-    if ((type == XA_PIXMAP) && (format == 32) && (length == 1) && (after == 0)
-	&& *((Pixmap *)data) != None)
+    if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0)
     {
       XKillClient(dpy, *((Pixmap *)data));
     }
     XDeleteProperty(dpy, root, e_prop);
   }
 
-  if (NotPermanent)
+  if (!Dummy)
   {
-    if (rootXpm != None)
-      XFreePixmap(dpy, rootXpm);
-    rootXpm = None;
-  }
-  else
-  {
+    if (data != NULL)
+      XFree(data);
     XSetCloseDownMode(dpy, RetainPermanent);
   }
   XChangeProperty(dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,

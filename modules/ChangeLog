@@ -1,3 +1,11 @@
+2002-01-21  Olivier Chapuis  <olivier@snoopy.parislyon>
+
+	* FvwmBacker/FvwmBacker.c (SetDeskPageBackground):
+	(SetXsetRoot):
+	Fork when FvwmBacker set itself the background (with a solid color
+	or with a Colorset). This reduces (a little) memory usage and allows
+	to handle the _XSETROOT_ID property
+
 2002-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmEvent/FvwmEvent.c (main):
