@@ -1,3 +1,9 @@
+2002-05-02  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw):
+	* FvwmTaskBar/List.c (UpdateItemPicture): 
+	Fixed problems with Xft fonts and FvwmPicture update
+
 2002-05-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):

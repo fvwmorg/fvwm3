@@ -379,6 +379,15 @@ void UpdateItemPicture(List *list, int n, FvwmPicture *p)
     temp->p.height  = p->height;
     temp->p.depth   = p->depth;
   }
+  else
+  {
+    temp->p.picture = None;
+    temp->p.mask    = None;
+    temp->p.alpha   = None;
+    temp->p.width   = 0;
+    temp->p.height  = 0;
+    temp->p.depth   = 0;
+  }
 }
 
 /******************************************************************************

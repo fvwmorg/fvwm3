@@ -212,7 +212,7 @@ Button *ButtonNew(const char *title, FvwmPicture *p, int state, int count)
    ------------------------------------------------------------------------- */
 void ButtonDraw(Button *button, int x, int y, int w, int h)
 {
-  char *t3p = "...";
+  char *t3p = "...\0";
   int state, x3p, newx;
   int search_len;
   FlocaleFont *Ffont;
