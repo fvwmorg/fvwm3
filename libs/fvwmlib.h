@@ -432,7 +432,6 @@ Window fvwmlib_client_window(Display *dpy, Window input);
 #endif
 
 /* Set up mtrace from glibc 2.1.x for x > ?  */
-#define MTRACE_DEBUGGING 1
 #ifdef MTRACE_DEBUGGING
 #include <mcheck.h>
 #endif
