@@ -357,9 +357,9 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         t_hot = safemalloc(strlen(name) + 48);
 
         if(flags & SHOW_INFONOTGEO)
-          sprintf(t_hot, "&%c.  ", scut);         /* Generate label */
+          sprintf(t_hot, "&%c. ", scut);         /* Generate label */
         else
-          sprintf(t_hot, "&%c.  %s", scut, name); /* Generate label */
+          sprintf(t_hot, "&%c. %s", scut, name); /* Generate label */
 
         if (scut++ == '9') scut = 'A';	/* Next shortcut key */
 
@@ -384,7 +384,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           tname[0]=0;
           if(IS_ICONIFIED(t))
             strcpy(tname, "(");
-          sprintf(loc,"%d(%d):",t->Desk, get_layer(t));
+          sprintf(loc," %d(%d):",t->Desk, get_layer(t));
           strcat(tname,loc);
 
           dheight = t->frame_g.height - t->title_g.height -2*t->boundary_width;
