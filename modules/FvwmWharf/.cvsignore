@@ -3,3 +3,4 @@ Makefile.in
 FvwmWharf
 .deps
 TAGS
+.gdb_history

@@ -6,3 +6,4 @@ FvwmCommand.sh
 FvwmCommand.pm
 .deps
 TAGS
+.gdb_history

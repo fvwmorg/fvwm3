@@ -3,3 +3,4 @@ Makefile.in
 FvwmButtons
 .deps
 TAGS
+.gdb_history

@@ -3,3 +3,4 @@ Makefile.in
 FvwmGtk
 .deps
 TAGS
+.gdb_history

@@ -3,3 +3,4 @@ Makefile.in
 FvwmIconMan
 .deps
 TAGS
+.gdb_history

@@ -3,3 +3,4 @@ Makefile.in
 FvwmAuto
 .deps
 TAGS
+.gdb_history
