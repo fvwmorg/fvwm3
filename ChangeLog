@@ -1,5 +1,7 @@
 1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/builtins.c: Fixed broken string (contained a newline)
+
 	* extras/FvwmCommand/FvwmCommand.c: fixed >= comparison on pointer
 
 	* modules/FvwmButtons/FvwmButtons.c: fixed pager breakage bug

@@ -2930,9 +2930,9 @@ Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
             Pixel *pixels;
 
             if (!(s = GetNextToken(s, &item)) || (item == NULL)) {
-                if(verbose)fvwm_msg(ERR,"ReadMenuFace",
-                                    "expected number of colors to allocate in gr
-adient");
+                if(verbose)
+                  fvwm_msg(ERR,"ReadMenuFace",
+                           "expected number of colors to allocate in gradient");
                 return False;
             }
             npixels = atoi(item); free(item);
