@@ -1,3 +1,13 @@
+1999-06-26  Chris Rankin  <rankinc@zipworld.com.au>
+
+    * FvwmForm/FvwmForm.c: new signal handling
+    * FvwmGtk/FvwmGtk.c: removed unused headers "signal.h" and "sys/select.h"
+
+1999-06-26  Chris Rankin  <rankinc@zipworld.com.au>
+
+    * FvwmWinList/ButtonArray.c: Set array->head correctly when
+      deleting first button in array.
+
 1999-06-25  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmGtk/FvwmGtk.c (main): exit properly when called with the
