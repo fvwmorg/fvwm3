@@ -1,3 +1,7 @@
+2002-08-28  Hippo
+	* FvwmIconBox/icons.c:
+	Fixed core dump
+	
 2002-08-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS: mention new FvwmButtons additions and TitleStyle MultiPixmap

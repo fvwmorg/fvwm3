@@ -236,9 +236,15 @@ void AdjustIconWindow(struct icon_info *item, int n)
  ****************************************************************************/
 void GetIconFromFile(struct icon_info *item)
 {
-	char *path = NULL;
+	char *path = PictureFindImageFile(item->icon_file, imagePath, R_OK);
 	FvwmPictureAttributes fpa;
 
+	if (NULL == path)
+	{
+		fprintf(stderr, "[FvwmIconBox] cannot find %s on ImagePath %s\n",
+			item->icon_file, imagePath);
+		return;
+	}
 	fpa.mask = FPAM_NO_ALLOC_PIXELS; /* olicha why ? */
 	if (Iconcolorset >= 0 && Colorset[Iconcolorset].do_dither_icon)
 	{
