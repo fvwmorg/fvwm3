@@ -1,3 +1,37 @@
+2001-11-24  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/add_window (setup_icon):
+	(setup_window_structure):
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/ewmh.h:
+	* fvwm/ewmh_conf.c (EWMH_CMD_Style):
+	* fvwm/ewmh_icons.c (ewmh_WMIcon):
+	(EWMH_DoUpdateWmIcon):
+	(ewmh_SetWmIconFromPixmap):
+	(EWMH_DeleteWmIcon):
+	(EWMH_SetIconFromWMIcon):
+	* fvwm/ewmh_intern.h:
+	* fvwm/fvwm.h:
+	* fvwm/icons.c (GetIcon):
+	* fvwm/session.c (get_version_string):
+	* fvwm/style.{c,h} (CMD_Style):
+	(check_window_style_change)
+	* fvwm/update.{c,h} (apply_window_updates):
+	* fvwm/window_flags.h:
+	New style EWMHMiniIconOverride / EWMHNoMiniIconOverride,
+	EWMHDonateMiniIcon / EWMHDontDonateMiniIcon,
+	EWMHDonateIcon / EWMHDontDonateIcon,
+	Some ewmh icon code simplification.
+	Ewmh icons priority: just after icon window.
+
+	* fvwm/ewmh.{c,h} (EWMH_ExitStuff):
+	* fvwm/session.c (SaveWindowStates):
+	(LoadWindowStates):
+	(MatchWinToSM):
+	* fvwm/fvwm.c (Done):
+	Delete the ewmh icons we set ourself. Some ewmh session states do not
+	need to be saved/restored anymore
+
 2001-11-23  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh_names.c (convert_charsets):

@@ -1560,6 +1560,7 @@ void Done(int restart, char *command)
     Reborder();
   }
 
+  EWMH_ExitStuff();
   if (restart)
   {
     Bool doPreserveState = True;

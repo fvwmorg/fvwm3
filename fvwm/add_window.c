@@ -137,8 +137,7 @@ Bool setup_window_structure(
     SET_SHADED(*ptmp_win, IS_SHADED(savewin));
     SET_PLACED_WB3(*ptmp_win,IS_PLACED_WB3(savewin));
     SET_PLACED_BY_FVWM(*ptmp_win, IS_PLACED_BY_FVWM(savewin));
-    SET_HAS_EWMH_ICON(*ptmp_win, HAS_EWMH_ICON(savewin));
-    SET_HAS_EWMH_MINI_ICON(*ptmp_win, HAS_EWMH_MINI_ICON(savewin));
+    SET_HAS_EWMH_WM_ICON_HINT(*ptmp_win, HAS_EWMH_WM_ICON_HINT(savewin));
     (*ptmp_win)->ewmh_mini_icon_width = savewin->ewmh_mini_icon_width;
     (*ptmp_win)->ewmh_mini_icon_height = savewin->ewmh_mini_icon_height;
     (*ptmp_win)->ewmh_icon_width = savewin->ewmh_icon_width;
@@ -1077,7 +1076,6 @@ ICON_DBG((stderr,"si: iwh ignored '%s'\n", tmp_win->name));
     {
 ICON_DBG((stderr,"si: using iwh '%s'\n", tmp_win->name));
       tmp_win->icon_bitmap_file = NULL;
-      SET_HAS_EWMH_ICON(tmp_win, EWMH_WINDOW_ICON);
     }
   }
   else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))

@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#ifdef HAVE_EWMH
-
 #include <stdio.h>
 
 #include <X11/Xlib.h>
@@ -37,6 +35,7 @@
 #include "ewmh.h"
 #include "ewmh_intern.h"
 
+#ifdef HAVE_EWMH
 /* ************************************************************************* *
  * CMDS
  * ************************************************************************* */
@@ -102,6 +101,59 @@ void CMD_EwmhBaseStrut(F_CMD_ARGS)
     ewmh_HandleDynamicWorkArea();
   }
 }
+/* ************************************************************************* *
+ * Styles
+ * ************************************************************************* */
+
+Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
+{
+  int found = False;
+
+  if (StrEquals(token, "EWMHDonateIcon"))
+  {
+    found = True;
+    SFSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
+    SMSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
+    SCSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHDonateMiniIcon"))
+  {
+    found = True;
+    SFSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
+    SMSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
+    SCSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHDontDonateIcon"))
+  {
+    found = True;
+    SFSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 0);
+    SMSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
+    SCSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHDontDonateMiniIcon"))
+  {
+    found = True;
+    SFSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 0);
+    SMSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
+    SCSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
+  }
+  if (StrEquals(token, "EWMHMiniIconOverride"))
+  {
+    found = True;
+    SFSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
+    SMSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
+    SCSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
+  }
+  else if (StrEquals(token, "EWMHNoMiniIconOverride"))
+  {
+    found = True;
+    SFSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 0);
+    SMSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
+    SCSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
+  }
+
+  return found;
+}
 
 #else /* HAVE_EWMH */
 
@@ -111,6 +163,38 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 
 void CMD_EwmhBaseStrut(F_CMD_ARGS)
 {
+}
+
+Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
+{
+  int found = False;
+
+  if (StrEquals(token, "EWMHDonateIcon"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHDonateMiniIcon"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHDontDonateIcon"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHDontDonateMiniIcon"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHMiniIconOverride"))
+  {
+    found = True;
+  }
+  else if (StrEquals(token, "EWMHNoMiniIconOverride"))
+  {
+    found = True;
+  }
+
+  return found;
 }
 
 #endif /* HAVE_EWMH */

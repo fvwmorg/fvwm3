@@ -122,16 +122,23 @@ static void apply_window_updates(
     handle_stick(&Event, t->frame, t, C_FRAME, "", 0, SFIS_STICKY(*pstyle));
   }
 #ifdef MINI_ICONS
-  if (flags->do_update_mini_icon && HAS_EWMH_MINI_ICON(t) == EWMH_FVWM_ICON)
+  if (flags->do_update_mini_icon)
   {
-    unsigned int sd;
-    char *dummy;
-
-    change_mini_icon(t, pstyle);
-    sd = 0;
-    dummy = (char *)EWMH_SetWmIconFromPixmap(t, NULL, &sd, True, True);
-    if (dummy != NULL)
-      free(dummy);
+    if (!HAS_EWMH_MINI_ICON(t) || DO_EWMH_MINI_ICON_OVERRIDE(t))
+    {
+      change_mini_icon(t, pstyle);
+    }
+    else
+    {
+      if (EWMH_SetIconFromWMIcon(t, NULL, 0, True))
+	SET_HAS_EWMH_MINI_ICON(t, True);
+      else
+      {
+	/* "should" not happen */
+	SET_HAS_EWMH_MINI_ICON(t, False);
+	change_mini_icon(t, pstyle);
+      }
+    }
   }
 #endif
 
@@ -267,6 +274,7 @@ static void apply_window_updates(
     change_icon(t, pstyle);
     flags->do_update_icon_placement = True;
     flags->do_update_icon_title = False;
+    flags->do_update_ewmh_icon = True;
   }
   if (flags->do_update_icon_title)
   {
@@ -299,6 +307,11 @@ static void apply_window_updates(
   if (flags->do_update_modules_flags)
   {
     BroadcastConfig(M_CONFIGURE_WINDOW,t);
+  }
+  if (flags->do_update_ewmh_mini_icon || flags->do_update_ewmh_icon)
+  {
+    EWMH_DoUpdateWmIcon(
+      t, flags->do_update_ewmh_mini_icon, flags->do_update_ewmh_icon);
   }
   t->shade_anim_steps = pstyle->shade_anim_steps;
 

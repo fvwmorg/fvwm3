@@ -147,6 +147,10 @@ int ewmh_WMStrut(EWMH_CMD_ARGS);
 
 /* ewmh_icon */
 int ewmh_WMIcon(EWMH_CMD_ARGS);
+CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
+				 CARD32 *orig_icon,
+				 unsigned int *orig_size,
+				 Bool is_mini_icon);
 
 /* debugging */
 #ifdef EWMH_DEBUG

@@ -1251,6 +1251,7 @@ void CMD_Style(F_CMD_ARGS)
         break;
 
       case 'e':
+	found = EWMH_CMD_Style(token, ptmpstyle);
         break;
 
       case 'f':
@@ -2897,7 +2898,6 @@ void check_window_style_change(
     flags->do_update_modules_flags = True;
   }
 
-
   /*
    *   has_icon_boxes
    */
@@ -2907,14 +2907,32 @@ void check_window_style_change(
     flags->do_update_icon = True;
   }
 
+  /*
+   * do_ewmh_donate_icon
+   */
+  if (SCDO_EWMH_DONATE_ICON(*ret_style))
+  {
+    flags->do_update_ewmh_icon = True;
+  }
+
 #if MINI_ICONS
   /*
    * has_mini_icon
+   * do_ewmh_mini_icon_override
    */
-  if (ret_style->change_mask.has_mini_icon)
+  if (ret_style->change_mask.has_mini_icon || SCDO_EWMH_MINI_ICON_OVERRIDE(*ret_style))
   {
     flags->do_update_mini_icon = True;
+    flags->do_update_ewmh_mini_icon = True;
     flags->do_redecorate = True;
+  }
+
+  /*
+   * do_ewmh_donate_mini_icon
+   */
+  if (SCDO_EWMH_DONATE_MINI_ICON(*ret_style))
+  {
+    flags->do_update_ewmh_mini_icon = True;
   }
 #endif
 

@@ -351,9 +351,29 @@
 #define SMSET_USE_ICON_POSITION_HINT(st,x) ((st).flag_mask.common.s.use_icon_position_hint = !!(x))
 #define SCSET_USE_ICON_POSITION_HINT(st,x) ((st).change_mask.common.s.use_icon_position_hint = !!(x))
 
+#define SDO_EWMH_MINI_ICON_OVERRIDE(sf) ((sf).common.s.do_ewmh_mini_icon_override)
+#define SFDO_EWMH_MINI_ICON_OVERRIDE(st) ((st).flags.common.s.do_ewmh_mini_icon_override)
+#define SMDO_EWMH_MINI_ICON_OVERRIDE(st) ((st).flag_mask.common.s.do_ewmh_mini_icon_override)
+#define SCDO_EWMH_MINI_ICON_OVERRIDE(st) ((st).change_mask.common.s.do_ewmh_mini_icon_override)
+#define SFSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) ((st).flags.common.s.do_ewmh_mini_icon_override = !!(x))
+#define SMSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) ((st).flag_mask.common.s.do_ewmh_mini_icon_override = !!(x))
+#define SCSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) ((st).change_mask.common.s.do_ewmh_mini_icon_override = !!(x))
 
+#define SDO_EWMH_DONATE_ICON(sf) ((sf).common.s.do_ewmh_donate_icon)
+#define SFDO_EWMH_DONATE_ICON(st) ((st).flags.common.s.do_ewmh_donate_icon)
+#define SMDO_EWMH_DONATE_ICON(st) ((st).flag_mask.common.s.do_ewmh_donate_icon)
+#define SCDO_EWMH_DONATE_ICON(st) ((st).change_mask.common.s.do_ewmh_donate_icon)
+#define SFSET_DO_EWMH_DONATE_ICON(st,x) ((st).flags.common.s.do_ewmh_donate_icon = !!(x))
+#define SMSET_DO_EWMH_DONATE_ICON(st,x) ((st).flag_mask.common.s.do_ewmh_donate_icon = !!(x))
+#define SCSET_DO_EWMH_DONATE_ICON(st,x) ((st).change_mask.common.s.do_ewmh_donate_icon = !!(x))
 
-
+#define SDO_EWMH_DONATE_MINI_ICON(sf) ((sf).common.s.do_ewmh_donate_mini_icon)
+#define SFDO_EWMH_DONATE_MINI_ICON(st) ((st).flags.common.s.do_ewmh_donate_mini_icon)
+#define SMDO_EWMH_DONATE_MINI_ICON(st) ((st).flag_mask.common.s.do_ewmh_donate_mini_icon)
+#define SCDO_EWMH_DONATE_MINI_ICON(st) ((st).change_mask.common.s.do_ewmh_donate_mini_icon)
+#define SFSET_DO_EWMH_DONATE_MINI_ICON(st,x) ((st).flags.common.s.do_ewmh_donate_mini_icon = !!(x))
+#define SMSET_DO_EWMH_DONATE_MINI_ICON(st,x) ((st).flag_mask.common.s.do_ewmh_donate_mini_icon = !!(x))
+#define SCSET_DO_EWMH_DONATE_MINI_ICON(st,x) ((st).change_mask.common.s.do_ewmh_donate_mini_icon = !!(x))
 
 
 

@@ -569,6 +569,7 @@ ICON_DBG((stderr,"hpn: iph changed (%d) '%s'\n", !!(int)(Tmp_win->wmhints->flags
     {
 ICON_DBG((stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(Tmp_win->wmhints->flags & IconWindowHint), Tmp_win->name));
       has_icon_window_hint_changed = True;
+      SET_USE_EWMH_ICON(Tmp_win, False);
     }
     increase_icon_hint_count(Tmp_win);
     if (has_icon_window_hint_changed || has_icon_pixmap_hint_changed)
@@ -604,7 +605,6 @@ ICON_DBG((stderr,"hpn: first iph ignored '%s'\n", Tmp_win->name));
 	else if (has_icon_window_hint_changed)
 	{
 	  ICON_DBG((stderr,"hpn: using iwh '%s'\n", Tmp_win->name));
-	  SET_HAS_EWMH_ICON(Tmp_win, EWMH_WINDOW_ICON);
 	  has_icon_changed = True;
 	}
 	else
@@ -619,7 +619,7 @@ ICON_DBG((stderr,"hpn: using hint '%s'\n", Tmp_win->name));
 	has_icon_changed = True;
       }
 
-      if (HAS_EWMH_ICON(Tmp_win) == EWMH_TRUE_ICON)
+      if (USE_EWMH_ICON(Tmp_win))
 	has_icon_changed = False;
 
       if (has_icon_changed)

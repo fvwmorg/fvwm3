@@ -42,7 +42,6 @@
 #include "icccm2.h"
 #include "virtual.h"
 #include "geometry.h"
-#include "ewmh.h"
 #ifdef SESSION
 #include <X11/SM/SMlib.h>
 #endif
@@ -64,8 +63,6 @@ typedef struct _match
   int                 x_max, y_max, w_max, h_max;
   int                 width_defect_max, height_defect_max;
   int                 max_x_offset, max_y_offset;
-  int                 ewmh_mini_icon_width, ewmh_mini_icon_height;
-  int                 ewmh_icon_width, ewmh_icon_height;
   int                 desktop;
   int                 layer;
   int                 used;
@@ -316,7 +313,7 @@ char *get_version_string()
   /* migo (14-Mar-2001): it is better to manually update a version string
    * in the stable branch, othervise saving sessions becomes useless */
   /*return CatString3(VERSION, ", ",__DATE__);*/
-  return "2.5-1";
+  return "2.5-2";
 }
 
 /*
@@ -468,12 +465,6 @@ SaveWindowStates(FILE *f)
       ewin->icon_g.y + ((!is_icon_sticky) ? Scr.Vy : 0),
       ewin->hints.win_gravity,
       ewin->max_offset.x, ewin->max_offset.y);
-    fprintf(
-      f, "  [EWMH] %i %i %i %i\n",
-      ewin->ewmh_mini_icon_width,
-      ewin->ewmh_mini_icon_height,
-      ewin->ewmh_icon_width,
-      ewin->ewmh_icon_height);
     fprintf(f, "  [DESK] %i\n", ewin->Desk);
     fprintf(f, "  [LAYER] %i\n", get_layer(ewin));
     fprintf(f, "  [FLAGS] ");
@@ -579,14 +570,6 @@ LoadWindowStates(char *filename)
 	     &(matches[num_match - 1].gravity),
 	     &(matches[num_match - 1].max_x_offset),
 	     &(matches[num_match - 1].max_y_offset));
-    }
-    else if (!strcmp(s1, "[EWMH]"))
-    {
-      sscanf(s, "%*s %i %i %i %i",
-	     &(matches[num_match - 1].ewmh_mini_icon_width),
-	     &(matches[num_match - 1].ewmh_mini_icon_height),
-	     &(matches[num_match - 1].ewmh_icon_width),
-	     &(matches[num_match - 1].ewmh_icon_height));
     }
     else if (!strcmp(s1, "[DESK]"))
     {
@@ -798,8 +781,6 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       }
       SET_PLACED_WB3(ewin,IS_PLACED_WB3(&(matches[i])));
       SET_PLACED_BY_FVWM(ewin,IS_PLACED_BY_FVWM(&(matches[i])));
-      SET_HAS_EWMH_ICON(ewin, HAS_EWMH_ICON(&(matches[i])));
-      SET_HAS_EWMH_MINI_ICON(ewin, HAS_EWMH_MINI_ICON(&(matches[i])));
       *do_shade = IS_SHADED(&(matches[i]));
       *do_max = IS_MAXIMIZED(&(matches[i]));
       SET_ICON_MOVED(ewin, IS_ICON_MOVED(&(matches[i])));
@@ -848,10 +829,6 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	ewin->icon_g.x -= Scr.Vx;
 	ewin->icon_g.y -= Scr.Vy;
       }
-      ewin->ewmh_mini_icon_width = matches[i].ewmh_mini_icon_width;
-      ewin->ewmh_mini_icon_height = matches[i].ewmh_mini_icon_height;
-      ewin->ewmh_icon_width = matches[i].ewmh_icon_width;
-      ewin->ewmh_icon_height = matches[i].ewmh_icon_height;
       return True;
     }
   }

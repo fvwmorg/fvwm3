@@ -20,6 +20,7 @@
 
 void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
 void CMD_EwmhBaseStrut(F_CMD_ARGS);
+Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
 
 #ifdef HAVE_EWMH
 /* Extended window manager hints support */
@@ -50,18 +51,19 @@ void EWMH_DestroyWindow(FvwmWindow *fwin);
 void EWMH_WindowDestroyed(void);
 
 void EWMH_Init(void);
+void EWMH_ExitStuff(void);
+
+/* ewmh_conf.c */
 
 /* ewmh_events.c */
 Bool EWMH_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev);
 void EWMH_ProcessPropertyNotify(FvwmWindow *fwin, XEvent *ev);
 
 /* ewmh_icon.c */
-CARD32 *EWMH_SetWmIconFromPixmap(FvwmWindow *fwin,
-				 CARD32 *orig_icon,
-				 unsigned int *orig_size,
-				 Bool is_mini_icon, Bool external_call);
+void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
 int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size, 
 			   Bool is_mini_icon);
+void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
 
 /* ewmh_name.c */
 #ifdef HAVE_ICONV
@@ -97,14 +99,18 @@ int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_DestroyWindow(x)
 #define EWMH_WindowDestroyed()
 #define EWMH_Init()
+#define EWMH_ExitStuff()
+
+/* ewmh_conf.c */
 
 /* ewmh_events.c */
 #define EWMH_ProcessClientMessage(x, y) 0
 #define EWMH_ProcessPropertyNotify(x, y)
 
 /* ewmh_icon.c */
-#define EWMH_SetWmIconFromPixmap(x,y,z,t,u) NULL
-#define EWMH_SetIconFromWMIcon(x,y,z,t)   0
+#define EWMH_DoUpdateWmIcon(x,y,z)
+#define EWMH_DeleteWmIcon(x,y,z)
+#define EWMH_SetIconFromWMIcon(x,y,z,t) 0
 
 /* ewmh_name.c */
 #define EWMH_SetVisibleName(x,y)

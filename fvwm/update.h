@@ -27,11 +27,13 @@ typedef struct
   unsigned do_update_frame_attributes : 1;
   unsigned do_update_gnome_styles : 1;
   unsigned do_update_icon : 1;
+  unsigned do_update_ewmh_icon : 1;
   unsigned do_update_icon_boxes : 1;
   unsigned do_update_icon_font : 1;
   unsigned do_update_icon_placement : 1;
   unsigned do_update_icon_title : 1;
   unsigned do_update_mini_icon : 1;
+  unsigned do_update_ewmh_mini_icon : 1;
   unsigned do_update_list_skip : 1;
   unsigned do_update_stick : 1;
   unsigned do_update_stick_icon : 1;

@@ -174,10 +174,10 @@ ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
       break;
     case 3:
       /* try an ewmh icon */
-      if (HAS_EWMH_ICON(tmp_win) == EWMH_TRUE_ICON)
+      if (HAS_EWMH_WM_ICON_HINT(tmp_win) == EWMH_TRUE_ICON)
       {
-	int ds = 0;
-	ds = EWMH_SetIconFromWMIcon(tmp_win, NULL, ds, False);
+	if (EWMH_SetIconFromWMIcon(tmp_win, NULL, 0, False))
+	  SET_USE_EWMH_ICON(tmp_win, True);
       }
 ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
       break;
@@ -673,7 +673,7 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", tmp_win->name));
     SET_ICONIFIED(tmp_win, 1);
     BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
     SET_ICONIFIED(tmp_win, 0);
-    
+
     if (!IS_ICON_SUPPRESSED(tmp_win))
     {
       LowerWindow(tmp_win);

@@ -1037,7 +1037,7 @@ void EWMH_WindowDestroyed(void)
 }
 
 /* ************************************************************************* *
- * Init Stuff
+ * Init Stuff 
  * ************************************************************************* */
 
 int set_all_atom_in_list(ewmh_atom *list)
@@ -1135,8 +1135,22 @@ void EWMH_Init(void)
   EWMH_SetClientListStacking();
 }
 
+/* ************************************************************************* *
+ * Exit Stuff 
+ * ************************************************************************* */
+void EWMH_ExitStuff(void)
+{
+  FvwmWindow *t;
+
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    if (HAS_EWMH_WM_ICON_HINT(t) == EWMH_FVWM_ICON)
+      EWMH_DeleteWmIcon(t, True, True);
+  }
+
+}
+
 #ifdef EWMH_DEBUG
-fqfqf;
 void EWMH_DLOG(char *msg, ...)
 {
   va_list args;
