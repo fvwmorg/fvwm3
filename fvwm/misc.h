@@ -270,6 +270,8 @@ void flip_focus_func(F_CMD_ARGS);
 void focus_func(F_CMD_ARGS);
 void warp_func(F_CMD_ARGS);
 void SendDataToModule(F_CMD_ARGS);
+void SendLook(int module);
+void BroadcastLook(void);
 void send_list_func(F_CMD_ARGS);
 void popup_func(F_CMD_ARGS);
 void staysup_func(F_CMD_ARGS);

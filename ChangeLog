@@ -1,3 +1,8 @@
+1999-04-19  Hippo
+
+	* fvwm/module.c,modconf.c Replaced M_NEW_LOOK packet with config line:
+	Default_graphics
+
 1999-04-19  Bob Woodside  <proteus@pcnet.com>
 
 	* modules/FvwmIconBox/FvwmIconBox.c: GSFR.

@@ -778,29 +778,6 @@ const FvwmWindow **t1 = &t;
 }
 
 
-#define LOOKPACKET \
-	10,\
-	XVisualIDFromVisual(Scr.viz),\
-	Scr.cmap,\
-	Scr.depth,\
-	Scr.DrawGC ? XGContextFromGC(Scr.DrawGC) : 0,\
-	0,\
-	Scr.StdColors.back,\
-	Scr.StdGC ? XGContextFromGC(Scr.StdGC) : 0,\
-	Scr.StdReliefGC ? XGContextFromGC(Scr.StdReliefGC) : 0,\
-	Scr.StdShadowGC ? XGContextFromGC(Scr.StdShadowGC) : 0,\
-	Scr.StdFont.font ? Scr.StdFont.font->fid : 0
-
-void SendLook(int module)
-{
-}
-
-
-void BroadcastLook()
-{
-}
-
-
 static unsigned long *
 make_named_packet(int *len, unsigned long event_type, const char *name,
                   int num, ...)

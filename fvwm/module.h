@@ -125,7 +125,5 @@ void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data7, unsigned long data8,
 		       const char *name);
 void FlushOutputQueues(void);
-void SendLook(int module);
-void BroadcastLook(void);
 int PositiveWrite(int module, unsigned long *ptr, int size);
 #endif /* MODULE_H */

@@ -177,6 +177,8 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *message, msg2[32];
   char *ImagePath = GetImagePath();
 
+  SendLook(*Module);
+  
   if (ImagePath && strlen(ImagePath))
   {
     message=safemalloc(strlen(ImagePath)+12);
@@ -204,7 +206,38 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
   SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
 
-  /* can't send new_look packet first, it gets eaten by GetConfigLine() */
-  SendLook(*Module);
-  
+}
+
+char *make_look_packet()
+{
+  char *message = safemalloc(10 * (sizeof(long) * 2 + 1) + 18);
+  sprintf(message, "Default_graphics %lx %lx %x %lx %lx %lx %lx %lx %lx %lx\n",
+ 	  XVisualIDFromVisual(Scr.viz),
+	  Scr.cmap,
+	  Scr.depth,
+	  Scr.DrawGC ? XGContextFromGC(Scr.DrawGC) : 0,
+	  (long)0,
+	  Scr.StdColors.back,
+	  Scr.StdGC ? XGContextFromGC(Scr.StdGC) : 0,
+	  Scr.StdReliefGC ? XGContextFromGC(Scr.StdReliefGC) : 0,
+	  Scr.StdShadowGC ? XGContextFromGC(Scr.StdShadowGC) : 0,
+	  Scr.StdFont.font ? Scr.StdFont.font->fid : 0);
+  return message;
+}
+
+void SendLook(int module)
+{
+  char *message = make_look_packet();
+
+  SendName(module,M_CONFIG_INFO,0,0,0,message);
+  free(message);
+}
+
+
+void BroadcastLook()
+{
+  char *message = make_look_packet();
+
+  BroadcastName(M_CONFIG_INFO,0,0,0,message);
+  free(message);
 }
