@@ -1038,30 +1038,21 @@ void RaiseWindow(FvwmWindow *t)
   raisePanFrames();
 
 #ifdef EXCEED_HACK
-  /* 
-   * Someone with access to an Exceed X server, please replace
-   * "The XFree86 Project, Inc" by the proper string identifying
-   * the Exceed X Server (you can find this with xdpyinfo).
-   */
   if (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0)
     {
-      Window tmp;
+      Window junk;
       Window *tops;
       int i, num;
+      Bool found = False;
 
       /* get *all* toplevels (even including override_redirects) */ 
-      XQueryTree (dpy, Scr.Root, &tmp, &tmp, &tops, &num);
+      XQueryTree (dpy, Scr.Root, &junk, &junk, &tops, &num);
       
-      /* revert to top-to-bottom order */
-      for (i = 0; i < num / 2; i++)
-	{
-	  tmp = tops [i];
-	  tops [i] = tops [num - 1 - i]; 
-	  tops [num - 1 - i] = tmp;
-	}
-      
-      XRaiseWindow (dpy, tops[0]);
-      XRestackWindows (dpy, tops, num);
+      /* raise from tmp_win upwards to get them above NT windows */
+      for (i = 0; i < num; i++) {
+        if (tops[i] == t->frame) found = True;
+        if (found) XRaiseWindow (dpy, tops[i]);
+      }
       
       XFree (tops);
     }
