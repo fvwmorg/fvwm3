@@ -403,7 +403,8 @@ void menuitem_paint(
 			XFillRectangle(
 				dpy, mpip->w, ST_MENU_ACTIVE_BACK_GC(ms),
 				lit_x_start, y_offset + relief_thickness,
-				lit_x_end, y_height - relief_thickness);
+				lit_x_end - lit_x_start,
+                                y_height - relief_thickness);
 		}
 	}
 	else if (xft_redraw ||
