@@ -1744,7 +1744,6 @@ void Done(int restart, char *command)
 
   if (restart)
   {
-    char* filename = strdup( CatString2(user_home_dir, "/.fvwm_restart") );
     int native = 0;  /* native restart of this executable */
 
     SaveDesktopState();
@@ -1756,9 +1755,8 @@ void Done(int restart, char *command)
       && strcmp(getBasename(command), getBasename(g_argv[0])) == 0
     ) native = 1;
 
-    if (native) {
-      RestartInSession (filename); /* won't return under SM */
-    }
+    if (native)
+      RestartInSession(restore_filename); /* won't return under SM */
 
     /* 
       RBW - 06/08/1999 - without this, windows will wander to other pages on
@@ -1859,10 +1857,10 @@ void usage(void)
 {
 #if 0
   fvwm_msg(INFO,"usage","\nFvwm Version %s Usage:\n\n",VERSION);
-  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n",g_argv[0]);
+  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-visualId id] [-visual class]\n",g_argv[0]);
 #else
   fprintf(stderr,"\nFvwm Version %s Usage:\n\n",VERSION);
-  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
+  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-visualId id] [-visual class]\n\n",g_argv[0]);
 #endif
   exit( 1 );
 }
@@ -1950,9 +1948,9 @@ void UnBlackoutScreen(void)
  * getBasename - similar to basename(1).
  */
 const char *getBasename(const char *filename) {
-  const char *fptr = filename + strlen(filename);
   const char sep = '/';
-  while (fptr > filename && *(fptr-1) != sep) fptr--;
+  const char *fptr = strrchr(filename, sep);
+  fptr = fptr? fptr + 1: filename;
   return fptr;
 }
 

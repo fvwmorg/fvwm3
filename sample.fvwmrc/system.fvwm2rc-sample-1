@@ -204,8 +204,8 @@ AddToMenu Module-Popup	"Modules"	Title
 
 AddToMenu Quit-Verify 	"Really Quit Fvwm?" Title	
 +		      	"Yes, Really Quit"  Quit	
-+                       "Restart Fvwm2"     Restart fvwm2
-+		      	"Restart Fvwm"	    Restart fvwm
++                       "Restart Fvwm2"     Restart
++		      	"Restart Fvwm"	    Restart fvwm -s
 +		      	"Start twm"         Restart twm
 +		      	"Start mwm"    	    Restart mwm
 +	      	      	"Start olwm"        Restart /usr/openwin/bin/olwm

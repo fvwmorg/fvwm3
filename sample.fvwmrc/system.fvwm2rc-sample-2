@@ -268,7 +268,7 @@ AddToMenu Window-Ops2   "Move"          Move-or-Raise
 +                       "Print"         PrintFunction
 
 AddToMenu FvwmCommands	"Fvwm Commands" Title
-+	                "Restart Fvwm2" Restart fvwm2
++	                "Restart Fvwm2" Restart
 +			"Fvwm Setup"	Popup FvwmSetup
 + 			"Fvwm Modules"  Popup FvwmModules
 +	                "" Nop

@@ -80,8 +80,7 @@ char *duplicate(char *s)
  * config files and session save files. The proper way
  * to do this may be to extend the config file format
  * to allow the specification of everything we need
- * to save here. Then the option "-restore xyz" could
- * be replaced by "-f xyz".
+ * to save here.
  */
 static int
 SaveGlobalState(FILE *f)
@@ -790,7 +789,6 @@ set_sm_properties (SmcConn sm_conn, char *filename, char hint)
   for (i = 0; i < g_argc; i++)
     {
       if (strcmp (g_argv[i], "-clientId") == 0 ||
-	  strcmp (g_argv[i], "-restore") == 0 ||
 	  strcmp (g_argv[i], "-d") == 0)
 	{
 	  i++;
@@ -814,12 +812,6 @@ set_sm_properties (SmcConn sm_conn, char *filename, char hint)
 
   prop5.vals[numVals].value = (SmPointer) sm_client_id;
   prop5.vals[numVals++].length = strlen (sm_client_id);
-
-  prop5.vals[numVals].value = (SmPointer) "-restore";
-  prop5.vals[numVals++].length = 8;
-
-  prop5.vals[numVals].value = (SmPointer) filename;
-  prop5.vals[numVals++].length = strlen (filename);
 
   prop5.num_vals = numVals;
 

@@ -453,7 +453,7 @@ AddToMenu "Utilities" "Utilities" Title
 +              "Refresh" Refresh
 +              "Quit X" Popup Quit-Verify
 
-AddToMenu "Quit-Verify" "Restart WM" Restart fvwm2
+AddToMenu "Quit-Verify" "Restart WM" Restart
 +              "Yes, Really Quit" Quit
 +              "" Nop
 +              "No, Don't Quit" Nop

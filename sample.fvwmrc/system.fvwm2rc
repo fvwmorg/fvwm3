@@ -194,8 +194,8 @@ AddToMenu Module-Popup	"FvwmModules"	Title
 AddToMenu Quit-Verify 	"Really Quit Fvwm?" Title	
 +		      	"Yes, Really Quit"  Quit	
 +		      	""		    Nop	
-+                       "Restart Fvwm2"     Restart fvwm2
-+		      	"Restart Fvwm"	    Restart fvwm
++                       "Restart Fvwm2"     Restart
++		      	"Restart Fvwm"	    Restart fvwm -s
 +		      	""		    Nop	
 +		      	"Start twm"         Restart twm
 +		      	"Start ctwm"        Restart ctwm

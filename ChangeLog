@@ -1,3 +1,19 @@
+1999-06-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* sample.fvwmrc/new-features:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/system.fvwm2rc-sample-1:
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
+	Replaced "Restart fvwm2" with "Restart" and "Restart fvwm" with
+	"Restart fvwm -s" anywhere.
+
+	* fvwm/fvwm.c (Done, getBasename):
+	Some code clean-up.
+
+	* fvwm/fvwm.c:
+	* fvwm/session.c:
+	Removed all references to "-restore".
+
 1999-06-18  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm.c (SetRCDefaults): added FvwmConsole to builtin menu
