@@ -67,6 +67,7 @@
 #define MENU_IS_DOWN  0x08
 
 #define MAX_ITEM_LABELS  3
+#define MAX_MINI_ICONS   2
 
 /*************************
  * MENU STYLE STRUCTURES *
@@ -188,10 +189,10 @@ typedef struct MenuItem
     unsigned short label_strlen[MAX_ITEM_LABELS]; /* strlen(label[i]) */
 
     Picture *picture;           /* Pixmap to show above label*/
-    Picture *lpicture;          /* Pixmap to show to left of label */
+    Picture *lpicture[MAX_MINI_ICONS]; /* Pics to show left/right of label */
 
     short y_offset;		/* y offset for item */
-    short y_height;		/* y height for item */
+    short height;		/* y height for item */
 
     char *action;		/* action to be performed */
     short func_type;		/* type of built in function */
@@ -219,6 +220,20 @@ typedef struct MenuItem
     } flags;
 } MenuItem;
 
+#define MI_NEXT_ITEM(i)         ((i)->next)
+#define MI_PREV_ITEM(i)         ((i)->prev)
+#define MI_LABEL(i)             ((i)->label)
+#define MI_LABEL_OFFSET(i)      ((i)->label_offset)
+#define MI_LABEL_STRLEN(i)      ((i)->label_strlen)
+#define MI_PICTURE(i)           ((i)->picture)
+#define MI_MINI_ICON(i)         ((i)->lpicture)
+#define MI_Y_OFFSET(i)          ((i)->y_offset)
+#define MI_HEIGHT(i)            ((i)->height)
+#define MI_ACTION(i)            ((i)->action)
+#define MI_FUNC_TYPE(i)         ((i)->func_type)
+#define MI_HOTKEY(i)            ((i)->hotkey)
+#define MI_HOTKEY_COLUMN(i)     ((i)->hotkey_column)
+#define MI_CHHOTKEY(i)          ((i)->chHotkey)
 /* flags */
 #define MI_IS_SEPARATOR(i)      ((i)->flags.is_separator)
 #define MI_IS_TITLE(i)          ((i)->flags.is_title)
@@ -251,7 +266,7 @@ typedef struct MenuRootStatic
   unsigned short height;      /* height of the menu */
   unsigned short item_width;          /* width of the actual menu item */
   unsigned short sidepic_x_offset;    /* offset of the sidepic */
-  unsigned short icon_x_offset;       /* offset of the mini icon */
+  unsigned short icon_x_offset[MAX_MINI_ICONS]; /* offsets of the mini icons */
   unsigned short triangle_x_offset;   /* offset of the submenu triangle col */
   unsigned short item_text_x_offset;  /* offset of the actual menu item */
   unsigned short item_text_y_offset;  /* y offset for item text. */
@@ -383,7 +398,9 @@ typedef struct
 {
   int x;                  /* suggested x position */
   int y;                  /* suggested y position */
+  int x_offset;           /* additional offset to x */
   float x_factor;         /* to take menu width into account (0, -1 or -0.5) */
+  float context_x_factor; /* additional offset factor to x */
   float y_factor;         /* same with height */
   Bool is_relative;       /* FALSE if referring to absolute screen position */
 } MenuPosHints;

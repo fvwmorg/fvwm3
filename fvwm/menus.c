@@ -85,8 +85,8 @@
 #define MAX_ITEM_LABELS              3
 
 /* Default item formats for left and right submenus. */
-#define DEFAULT_ITEM_FORMAT          "%.4s%.1|%.5i%.5l%.5l%.5r%2.3>%1|"
-#define DEFAULT_LEFT_ITEM_FORMAT     "%.1|%3.7<%.5i%.5l%.5l%r%1|%4s"
+#define DEFAULT_ITEM_FORMAT          "%.4s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
+#define DEFAULT_LEFT_ITEM_FORMAT     "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
 
 #define GRADIENT_PIXMAP_THICKNESS    5
 
@@ -197,6 +197,9 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 			     FvwmWindow *fw);
 static MenuRoot *copy_menu_root(MenuRoot *menu);
 static void make_menu_window(MenuRoot *mr);
+static void get_xy_from_position_hints(
+  MenuPosHints *ph, int width, int height, int context_width,
+  Bool do_reverse_x, int *ret_x, int *ret_y);
 
 
 /***************************************************************
@@ -215,7 +218,7 @@ static int item_middle_y_offset(MenuRoot *mr, MenuItem *mi)
   if (!mi)
     return MR_BORDER_WIDTH(mr);
   r = (MI_IS_SELECTABLE(mi)) ? MR_STYLE(mr)->look.ReliefThickness : 0;
-  return mi->y_offset + (mi->y_height + r) / 2;
+  return MI_Y_OFFSET(mi) + (MI_HEIGHT(mi) + r) / 2;
 }
 
 static int menu_middle_x_offset(MenuRoot *mr)
@@ -396,8 +399,8 @@ static MenuItem *find_entry(
 
     a = (mi->prev && MI_IS_SELECTABLE(mi->prev)) ? r : 0;
     b = (mi->next && MI_IS_SELECTABLE(mi->next)) ? r : 0;
-    if (y >= mi->y_offset - a &&
-	y < mi->y_offset + mi->y_height + b -
+    if (y >= MI_Y_OFFSET(mi) - a &&
+	y < MI_Y_OFFSET(mi) + MI_HEIGHT(mi) + b -
 	((MI_IS_SELECTABLE(mi)) ? MR_STYLE(mr)->look.ReliefThickness : 0))
     {
       break;
@@ -496,9 +499,10 @@ static Bool is_submenu_mapped(MenuRoot *parent_menu, MenuItem *parent_item)
   if (menu == NULL)
     return False;
 
+  if (MR_WINDOW(menu) == None)
+    return False;
   XGetWindowAttributes(dpy, MR_WINDOW(menu), &win_attribs);
-  return (MR_WINDOW(menu) == None) ?
-    False : (win_attribs.map_state == IsViewable);
+  return (win_attribs.map_state == IsViewable);
 }
 
 /* Returns a menu root that a given menu item pops up */
@@ -1475,11 +1479,6 @@ static MenuStatus MenuInteraction(
     } /* while (True) */
 
   DO_RETURN:
-  if (mrPopup)
-  {
-    pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap, pmp);
-    mrPopup = NULL;
-  }
   if (retval == MENU_POPDOWN)
   {
     if (MR_SELECTED_ITEM(pmp->menu))
@@ -1515,25 +1514,40 @@ static MenuStatus MenuInteraction(
       get_popup_options(pmp->menu, mi, &mops);
       if (mops.flags.select_in_place)
       {
-	if (mops.flags.has_poshints)
+	MenuRoot *submenu;
+	XWindowAttributes win_attribs;
+
+	last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = True;
+	last_saved_pos_hints.pos_hints.x_offset = 0;
+	last_saved_pos_hints.pos_hints.x_factor = 0;
+	last_saved_pos_hints.pos_hints.context_x_factor = 0;
+	last_saved_pos_hints.pos_hints.y_factor = 0;
+	last_saved_pos_hints.pos_hints.is_relative = False;
+	submenu = mr_popup_for_mi(pmp->menu, mi);
+	if (submenu &&
+	    MR_WINDOW(submenu) != None &&
+	    XGetWindowAttributes(dpy, MR_WINDOW(submenu), &win_attribs) &&
+	    win_attribs.map_state == IsViewable &&
+	    XGetGeometry(dpy, MR_WINDOW(submenu), &JunkRoot,
+			 &last_saved_pos_hints.pos_hints.x,
+			 &last_saved_pos_hints.pos_hints.y,
+			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+	{
+	  /* The submenu is mapped, just take its position and put it in the
+	   * position hints. */
+	}
+	else if (mops.flags.has_poshints)
 	{
 	  last_saved_pos_hints.pos_hints = mops.pos_hints;
 	}
 	else
 	{
 	  Bool dummy;
-	  MenuRoot *submenu;
 
-	  submenu = mr_popup_for_mi(pmp->menu, mi);
 	  get_prefered_popup_position(
 	    pmp->menu, submenu, &last_saved_pos_hints.pos_hints.x,
 	    &last_saved_pos_hints.pos_hints.y, &dummy);
-	  last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = True;
-	  last_saved_pos_hints.pos_hints.x_factor = 0;
-	  last_saved_pos_hints.pos_hints.y_factor = 0;
-	  last_saved_pos_hints.pos_hints.is_relative = False;
 	}
-	last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = True;
 	if (mops.flags.select_warp)
 	{
 	  *pdo_warp_to_title = True;
@@ -1544,6 +1558,10 @@ static MenuStatus MenuInteraction(
 	last_saved_pos_hints.flags.do_ignore_pos_hints = True;
       } /* mops.flags.select_in_place */
     }
+  }
+  if (mrPopup)
+  {
+    pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap, pmp);
   }
   return MENU_ADD_BUTTON_IF(flags.is_key_press,retval);
 }
@@ -1719,12 +1737,13 @@ static Bool pop_menu_up(
    * Evaluate position hints
    ***************************************************************/
 
-  /* calculate position from positioning hints if available */
+  /* calculate position from position hints if available */
   if (pops->flags.has_poshints &&
       !last_saved_pos_hints.flags.do_ignore_pos_hints)
   {
-    x = pops->pos_hints.x + pops->pos_hints.x_factor * MR_WIDTH(menu);
-    y = pops->pos_hints.y + pops->pos_hints.y_factor * MR_HEIGHT(menu);
+    get_xy_from_position_hints(
+      &(pops->pos_hints), MR_WIDTH(menu), MR_HEIGHT(menu),
+      (parent_menu) ? MR_WIDTH(parent_menu) : 0, prefer_left_submenu, &x, &y);
   }
 
   /***************************************************************
@@ -2085,8 +2104,8 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 	paint_menu(mr, NULL, fw);
 	flush_expose(MR_WINDOW(mr));
       }
-      iy = mi->y_offset;
-      ih = mi->y_height +
+      iy = MI_Y_OFFSET(mi);
+      ih = MI_HEIGHT(mi) +
 	(MI_IS_SELECTABLE(mi) ? MR_STYLE(mr)->look.ReliefThickness : 0);
       if (iy < 0)
       {
@@ -2363,8 +2382,8 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
 #endif
 
-  y_offset = mi->y_offset;
-  y_height = mi->y_height;
+  y_offset = MI_Y_OFFSET(mi);
+  y_height = MI_HEIGHT(mi);
   if (MI_IS_SELECTABLE(mi))
   {
     text_y = y_offset + MR_ITEM_TEXT_Y_OFFSET(mr);
@@ -2374,16 +2393,19 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     text_y = y_offset + MR_STYLE(mr)->look.pStdFont->y + TITLE_TEXT_Y_OFFSET;
   }
   /* center text vertically if the pixmap is taller */
-  if (mi->picture)
+  if (MI_PICTURE(mi))
   {
-    text_y += mi->picture->height;
+    text_y += MI_PICTURE(mi)->height;
   }
-  if (mi->lpicture)
+  for (i = 0; i < MAX_MINI_ICONS; i++)
   {
-    y = mi->lpicture->height - MR_STYLE(mr)->look.pStdFont->height;
-    if (y > 1)
+    if (MI_MINI_ICON(mi)[i])
     {
-      text_y += y/2;
+      y = MI_MINI_ICON(mi)[i]->height - MR_STYLE(mr)->look.pStdFont->height;
+      if (y > 1)
+      {
+	text_y += y / 2;
+      }
     }
   }
 
@@ -2484,11 +2506,11 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     if (MR_HILIGHT_WIDTH(mr) - 2 * relief_thickness > 0)
     {
       /* The relief reaches down into the next item, hence the value for the
-       * second y coordinate: mi->y_height + 1 */
+       * second y coordinate: MI_HEIGHT(mi) + 1 */
       RelieveRectangle(dpy, MR_WINDOW(mr),
 		       MR_HILIGHT_X_OFFSET(mr), y_offset,
 		       MR_HILIGHT_WIDTH(mr) - 1,
-		       mi->y_height - 1 + relief_thickness,
+		       MI_HEIGHT(mi) - 1 + relief_thickness,
 		       ReliefGC, ShadowGC, relief_thickness);
     }
   }
@@ -2554,7 +2576,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
 
   /* Note: it's ok to pass a NULL label to check_if_function_allowed. */
-  if(check_if_function_allowed(mi->func_type, fw, False, mi->label[0]))
+  if(check_if_function_allowed(mi->func_type, fw, False, MI_LABEL(mi)[0]))
   {
     currentGC = (is_item_selected) ?
       MR_STYLE(mr)->look.MenuActiveGC : MR_STYLE(mr)->look.MenuGC;
@@ -2580,16 +2602,16 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 
   for (i = MAX_ITEM_LABELS; i-- > 0; )
   {
-    if (mi->label[i] && *(mi->label[i]))
+    if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
     {
-      XDrawString(dpy, MR_WINDOW(mr), currentGC, mi->label_offset[i], text_y,
-		  mi->label[i], mi->label_strlen[i]);
+      XDrawString(dpy, MR_WINDOW(mr), currentGC, MI_LABEL_OFFSET(mi)[i], text_y,
+		  MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
     }
     if (mi->hotkey && !MI_IS_TITLE(mi) && mi->hotkey_column == i)
     {
       /* pete@tecc.co.uk: If the item has a hot key, underline it */
-      draw_underline(mr, currentGC, mi->label_offset[i], text_y,
-		     mi->label[i], mi->hotkey - 1);
+      draw_underline(mr, currentGC, MI_LABEL_OFFSET(mi)[i], text_y,
+		     MI_LABEL(mi)[i], mi->hotkey - 1);
     }
   }
 
@@ -2626,66 +2648,77 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
    * Draw the item picture.
    ***************************************************************/
 
-  if(mi->picture)
+  if(MI_PICTURE(mi))
   {
-    x = menu_middle_x_offset(mr) - mi->picture->width / 2;
+    x = menu_middle_x_offset(mr) - MI_PICTURE(mi)->width / 2;
     y = y_offset + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
 
-    if(mi->picture->depth > 0) /* pixmap? */
+    if(MI_PICTURE(mi)->depth > 0) /* pixmap? */
     {
       Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-      Globalgcv.clip_mask = mi->picture->mask;
+      Globalgcv.clip_mask = MI_PICTURE(mi)->mask;
       Globalgcv.clip_x_origin = x;
       Globalgcv.clip_y_origin = y;
       XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
-      XCopyArea(dpy, mi->picture->picture, MR_WINDOW(mr), ReliefGC,
-		0, 0, mi->picture->width, mi->picture->height, x, y);
+      XCopyArea(dpy, MI_PICTURE(mi)->picture, MR_WINDOW(mr), ReliefGC,
+		0, 0, MI_PICTURE(mi)->width, MI_PICTURE(mi)->height, x, y);
       Globalgcm = GCClipMask;
       Globalgcv.clip_mask = None;
       XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
     }
     else
     {
-      XCopyPlane(dpy, mi->picture->picture, MR_WINDOW(mr), currentGC,
-		 0, 0, mi->picture->width, mi->picture->height, x, y, 1);
+      XCopyPlane(dpy, MI_PICTURE(mi)->picture, MR_WINDOW(mr), currentGC,
+		 0, 0, MI_PICTURE(mi)->width, MI_PICTURE(mi)->height, x, y, 1);
     }
   }
 
  /***************************************************************
-  * Draw the mini icon.
+  * Draw the mini icons.
   ***************************************************************/
 
-  if(mi->lpicture)
+  for (i = 0; i < MAX_MINI_ICONS; i++)
   {
-    if(mi->picture && MI_HAS_TEXT(mi))
+    int k;
+
+    /* We need to reverse the mini icon order for left submenu style. */
+    k = (MR_STYLE(mr)->feel.flags.use_left_submenus) ?
+      MAX_MINI_ICONS - 1 - i : i;
+
+    if (MI_MINI_ICON(mi)[i])
     {
-      y = y_offset + mi->y_height - mi->lpicture->height;
-    }
-    else
-    {
-      y = y_offset +
-	(mi->y_height + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0)
-	 - mi->lpicture->height) / 2;
-    }
-    if(mi->lpicture->depth > 0) /* pixmap? */
-    {
-      Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-      Globalgcv.clip_mask = mi->lpicture->mask;
-      Globalgcv.clip_x_origin = MR_ICON_X_OFFSET(mr);
-      Globalgcv.clip_y_origin = y;
-      XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);
-      XCopyArea(dpy, mi->lpicture->picture, MR_WINDOW(mr), ReliefGC,
-		0, 0, mi->lpicture->width, mi->lpicture->height,
-		MR_ICON_X_OFFSET(mr), y);
-      Globalgcm = GCClipMask;
-      Globalgcv.clip_mask = None;
-      XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
-    }
-    else
-    {
-      XCopyPlane(dpy, mi->lpicture->picture, MR_WINDOW(mr), currentGC,
-		 0, 0, mi->lpicture->width, mi->lpicture->height,
-		 MR_ICON_X_OFFSET(mr), y, 1);
+      if(MI_PICTURE(mi) && MI_HAS_TEXT(mi))
+      {
+	y = y_offset + MI_HEIGHT(mi) - MI_MINI_ICON(mi)[i]->height;
+      }
+      else
+      {
+	y = y_offset +
+	  (MI_HEIGHT(mi) + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0) -
+	   MI_MINI_ICON(mi)[i]->height) / 2;
+      }
+      if(MI_MINI_ICON(mi)[i]->depth > 0) /* pixmap? */
+      {
+	Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
+	Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->mask;
+	Globalgcv.clip_x_origin = MR_ICON_X_OFFSET(mr)[k];
+	Globalgcv.clip_y_origin = y;
+	XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);
+	XCopyArea(
+	  dpy, MI_MINI_ICON(mi)[i]->picture, MR_WINDOW(mr), ReliefGC,
+	  0, 0, MI_MINI_ICON(mi)[i]->width, MI_MINI_ICON(mi)[i]->height,
+	  MR_ICON_X_OFFSET(mr)[k], y);
+	Globalgcm = GCClipMask;
+	Globalgcv.clip_mask = None;
+	XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
+      }
+      else
+      {
+	XCopyPlane(
+	  dpy, MI_MINI_ICON(mi)[i]->picture, MR_WINDOW(mr), currentGC,
+	  0, 0, MI_MINI_ICON(mi)[i]->width, MI_MINI_ICON(mi)[i]->height,
+	  MR_ICON_X_OFFSET(mr)[k], y, 1);
+      }
     }
   }
 
@@ -3071,8 +3104,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
     if((MR_STYLE(mr)->look.face.type != SolidMenu &&
 	MR_STYLE(mr)->look.face.type != SimpleMenu) ||
        pevent == NULL ||
-       (pevent->xexpose.y < (mi->y_offset + mi->y_height) &&
-	(pevent->xexpose.y + pevent->xexpose.height) > mi->y_offset))
+       (pevent->xexpose.y < (MI_Y_OFFSET(mi) + MI_HEIGHT(mi)) &&
+	(pevent->xexpose.y + pevent->xexpose.height) > MI_Y_OFFSET(mi)))
     {
       paint_item(mr, mi, fw, True);
     }
@@ -3092,15 +3125,18 @@ static void FreeMenuItem(MenuItem *mi)
     return;
   for (i = 0; i < MAX_ITEM_LABELS; i++)
   {
-    if (mi->label[i] != NULL)
-      free(mi->label[i]);
+    if (MI_LABEL(mi)[i] != NULL)
+      free(MI_LABEL(mi)[i]);
   }
   if (mi->action != NULL)
     free(mi->action);
-  if(mi->picture)
-    DestroyPicture(dpy,mi->picture);
-  if(mi->lpicture)
-    DestroyPicture(dpy,mi->lpicture);
+  if(MI_PICTURE(mi))
+    DestroyPicture(dpy,MI_PICTURE(mi));
+  for (i = 0; i < MAX_MINI_ICONS; i++)
+  {
+    if(MI_MINI_ICON(mi)[i])
+      DestroyPicture(dpy, MI_MINI_ICON(mi)[i]);
+  }
   free(mi);
 }
 
@@ -3309,7 +3345,7 @@ static void size_menu_horizontally(MenuRoot *mr)
   {
     unsigned short label_width[MAX_ITEM_LABELS];
     unsigned short sidepic_width;
-    unsigned short icon_width;
+    unsigned short icon_width[MAX_MINI_ICONS];
     unsigned short picture_width;
     unsigned short triangle_width;
     unsigned short title_width;
@@ -3325,8 +3361,8 @@ static void size_menu_horizontally(MenuRoot *mr)
   int j;
   int d;
   short relief_thickness = MR_STYLE(mr)->look.ReliefThickness;
-  unsigned short *item_order[MAX_ITEM_LABELS + 1 /*icon */ + 1 /* triangle */
-			    + 2 /* relief markers */];
+  unsigned short *item_order[MAX_ITEM_LABELS + MAX_MINI_ICONS +
+			    1 /* triangle */ + 2 /* relief markers */];
   short used_objects = 0;
   short left_objects = 0;
   short right_objects = 0;
@@ -3344,31 +3380,31 @@ static void size_menu_horizontally(MenuRoot *mr)
     {
       max.triangle_width = TRIANGLE_WIDTH;
     }
-    else if (MI_IS_TITLE(mi) && mi->picture == NULL)
+    else if (MI_IS_TITLE(mi) && MI_PICTURE(mi) == NULL)
     {
       Bool is_formatted = False;
 
       /* titles stretch over the whole menu width, so count the maximum
        * separately if the title is unformatted. */
-      for (j = 1; j < MAX_ITEM_LABELS; j++)
+      for (j = 0; j < MAX_ITEM_LABELS; j++)
       {
-	if (mi->label[j] != NULL)
+	if (MI_LABEL(mi)[j] != NULL)
 	{
 	  is_formatted = True;
 	  break;
 	}
 	else
 	{
-	  mi->label_offset[j] = 0;
+	  MI_LABEL_OFFSET(mi)[j] = 0;
 	}
       }
-      if (!is_formatted && mi->label[0] != NULL)
+      if (!is_formatted && MI_LABEL(mi)[0] != NULL)
       {
-	mi->label_strlen[0] = strlen(mi->label[0]);
-	w = XTextWidth(MR_STYLE(mr)->look.pStdFont->font, mi->label[0],
-		       mi->label_strlen[0]);
+	MI_LABEL_STRLEN(mi)[0] = strlen(MI_LABEL(mi)[0]);
+	w = XTextWidth(MR_STYLE(mr)->look.pStdFont->font, MI_LABEL(mi)[0],
+		       MI_LABEL_STRLEN(mi)[0]);
 	/* Negative value is used to indicate a title for now. */
-	mi->label_offset[0] = w;
+	MI_LABEL_OFFSET(mi)[0] = w;
 	MI_IS_TITLE_CENTERED(mi) = True;
 	if (max.title_width < w)
 	  max.title_width = w;
@@ -3376,25 +3412,35 @@ static void size_menu_horizontally(MenuRoot *mr)
       }
     }
 
+
     for (i = 0; i < MAX_ITEM_LABELS; i++)
     {
-      if (mi->label[i])
+      if (MI_LABEL(mi)[i])
       {
-	mi->label_strlen[i] = strlen(mi->label[i]);
-	w = XTextWidth(MR_STYLE(mr)->look.pStdFont->font, mi->label[i],
-		       mi->label_strlen[i]);
-	mi->label_offset[i] = w;
+	MI_LABEL_STRLEN(mi)[i] = strlen(MI_LABEL(mi)[i]);
+	w = XTextWidth(MR_STYLE(mr)->look.pStdFont->font, MI_LABEL(mi)[i],
+		       MI_LABEL_STRLEN(mi)[i]);
+	MI_LABEL_OFFSET(mi)[i] = w;
 	if (max.label_width[i] < w)
 	  max.label_width[i] = w;
       }
     }
-    if(mi->picture && max.picture_width < mi->picture->width)
+    if(MI_PICTURE(mi) && max.picture_width < MI_PICTURE(mi)->width)
     {
-      max.picture_width = mi->picture->width;
+      max.picture_width = MI_PICTURE(mi)->width;
     }
-    if(mi->lpicture && max.icon_width < mi->lpicture->width)
+    for (i = 0; i < MAX_MINI_ICONS; i++)
     {
-      max.icon_width = mi->lpicture->width;
+      int k;
+
+      /* We need to reverse the mini icon order for left submenu style. */
+      k = (MR_STYLE(mr)->feel.flags.use_left_submenus) ?
+	MAX_MINI_ICONS - 1 - i : i;
+
+      if(MI_MINI_ICON(mi)[i] && max.icon_width[k] < MI_MINI_ICON(mi)[i]->width)
+      {
+	max.icon_width[k] = MI_MINI_ICON(mi)[i]->width;
+      }
     }
   }
 
@@ -3410,10 +3456,10 @@ static void size_menu_horizontally(MenuRoot *mr)
   /* Now calculate the offsets for the columns. */
   {
     int x;
-    unsigned char column = 0;
     char *format;
+    unsigned char columns_placed = 0;
+    unsigned char icons_placed = 0;
     Bool sidepic_placed = False;
-    Bool icon_placed = False;
     Bool triangle_placed = False;
     Bool relief_begin_placed = False;
     Bool relief_end_placed = False;
@@ -3422,7 +3468,6 @@ static void size_menu_horizontally(MenuRoot *mr)
     int gap_left;
     int gap_right;
     int chars;
-
 
     format = MR_STYLE(mr)->feel.item_format;
     if (!format)
@@ -3471,15 +3516,15 @@ static void size_menu_horizontally(MenuRoot *mr)
 	case 'c':
 	case 'r':
 	  /* A left, center or right aligned column. */
-	  if (column < MAX_ITEM_LABELS)
+	  if (columns_placed < MAX_ITEM_LABELS)
 	  {
-	    if (max.label_width[column] > 0)
+	    if (max.label_width[columns_placed] > 0)
 	    {
-	      lcr_column[column] = *format;
+	      lcr_column[columns_placed] = *format;
 	      x += gap_left;
-	      label_offset[column] = x;
-	      x += max.label_width[column] + gap_right;
-	      item_order[used_objects++] = &(label_offset[column]);
+	      label_offset[columns_placed] = x;
+	      x += max.label_width[columns_placed] + gap_right;
+	      item_order[used_objects++] = &(label_offset[columns_placed]);
 	      if (is_last_object_left && (*format == 'l'))
 		left_objects++;
 	      else
@@ -3491,7 +3536,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 		  right_objects = 0;
 	      }
 	    }
-	    column++;
+	    columns_placed++;
 	  }
 	  break;
 	case 's':
@@ -3521,22 +3566,24 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  }
 	  break;
 	case 'i':
-	  /* the mini icon */
-	  if (!icon_placed)
+	  /* a mini icon */
+	  if (icons_placed < MAX_MINI_ICONS)
 	  {
-	    icon_placed = True;
-	    if (max.icon_width > 0)
+	    if (max.icon_width[icons_placed] > 0)
 	    {
 	      x += gap_left;
-	      MR_ICON_X_OFFSET(mr) = x;
-	      x += max.icon_width + gap_right;
-	      item_order[used_objects++] = &(MR_ICON_X_OFFSET(mr));
+	      MR_ICON_X_OFFSET(mr)[icons_placed] = x;
+	      x += max.icon_width[icons_placed] + gap_right;
+	      item_order[used_objects++] =
+		&(MR_ICON_X_OFFSET(mr)[icons_placed]);
 	      if (is_last_object_left)
 		left_objects++;
 	      else
 		right_objects++;
+	      icons_placed++;
 	    }
 	  }
+
 	  break;
 	case '|':
 	  if (!relief_begin_placed)
@@ -3618,9 +3665,9 @@ static void size_menu_horizontally(MenuRoot *mr)
     {
       MR_SIDEPIC_X_OFFSET(mr) = 2 * Scr.MyDisplayWidth;
     }
-    if (!icon_placed)
+    for (i = icons_placed; i < MAX_MINI_ICONS; i++)
     {
-      MR_ICON_X_OFFSET(mr) = 2 * Scr.MyDisplayWidth;
+      MR_ICON_X_OFFSET(mr)[i] = 2 * Scr.MyDisplayWidth;
     }
     if (!triangle_placed)
     {
@@ -3670,30 +3717,30 @@ static void size_menu_horizontally(MenuRoot *mr)
   {
     for (i = 0; i < MAX_ITEM_LABELS; i++)
     {
-      if (mi->label[i])
+      if (MI_LABEL(mi)[i])
       {
 	if (!MI_IS_TITLE(mi) || !MI_IS_TITLE_CENTERED(mi))
 	{
 	  switch (lcr_column[i])
 	  {
 	  case 'l':
-	    mi->label_offset[i] = label_offset[i];
+	    MI_LABEL_OFFSET(mi)[i] = label_offset[i];
 	    break;
 	  case 'c':
-	    mi->label_offset[i] = label_offset[i] +
-	      (max.label_width[i] - mi->label_offset[i]) / 2;
+	    MI_LABEL_OFFSET(mi)[i] = label_offset[i] +
+	      (max.label_width[i] - MI_LABEL_OFFSET(mi)[i]) / 2;
 	    break;
 	  case 'r':
-	    mi->label_offset[i] = label_offset[i] + max.label_width[i] -
-	      mi->label_offset[i];
+	    MI_LABEL_OFFSET(mi)[i] = label_offset[i] + max.label_width[i] -
+	      MI_LABEL_OFFSET(mi)[i];
 	    break;
 	  }
 	}
 	else
 	{
 	  /* This is a centered title item (indicated by negative width). */
-	  mi->label_offset[i] =
-	    menu_middle_x_offset(mr) - mi->label_offset[i] / 2;
+	  MI_LABEL_OFFSET(mi)[i] =
+	    menu_middle_x_offset(mr) - MI_LABEL_OFFSET(mi)[i] / 2;
 	}
       }
     } /* for */
@@ -3716,6 +3763,7 @@ static void size_menu_vertically(MenuRoot *mr)
   int cItems;
   short relief_thickness = MR_STYLE(mr)->look.ReliefThickness;
   short simple_entry_height;
+  int i;
 
   MR_ITEM_TEXT_Y_OFFSET(mr) =
     MR_STYLE(mr)->look.pStdFont->y + relief_thickness + ITEM_TEXT_Y_OFFSET;
@@ -3735,65 +3783,68 @@ static void size_menu_vertically(MenuRoot *mr)
     separator_height = (last_item_has_relief) ?
       SEPARATOR_HEIGHT + relief_thickness : SEPARATOR_TOTAL_HEIGHT;
 
-    mi->y_offset = y;
+    MI_Y_OFFSET(mi) = y;
     if(MI_IS_TITLE(mi))
     {
-      mi->y_height = MR_STYLE(mr)->look.pStdFont->height +
+      MI_HEIGHT(mi) = MR_STYLE(mr)->look.pStdFont->height +
 	TITLE_TEXT_Y_OFFSET + TITLE_TEXT_Y_OFFSET2;
       switch (MR_STYLE(mr)->look.TitleUnderlines)
       {
       case 0:
 	if (last_item_has_relief)
-	  mi->y_height += relief_thickness;
+	  MI_HEIGHT(mi) += relief_thickness;
 	break;
       case 1:
 	if(mi != MR_FIRST_ITEM(mr))
 	{
 	  /* Space to draw the separator plus a gap above */
-	  mi->y_height += separator_height;
+	  MI_HEIGHT(mi) += separator_height;
 	}
 	if(mi->next != NULL)
 	{
 	  /* Space to draw the separator */
-	  mi->y_height += SEPARATOR_HEIGHT;
+	  MI_HEIGHT(mi) += SEPARATOR_HEIGHT;
 	}
 	break;
       default:
 	/* Space to draw n underlines. */
-	mi->y_height += UNDERLINE_HEIGHT * MR_STYLE(mr)->look.TitleUnderlines;
+	MI_HEIGHT(mi) += UNDERLINE_HEIGHT * MR_STYLE(mr)->look.TitleUnderlines;
 	if (last_item_has_relief)
-	  mi->y_height += relief_thickness;
+	  MI_HEIGHT(mi) += relief_thickness;
 	break;
       }
     }
     else if (MI_IS_SEPARATOR(mi))
     {
       /* Separator */
-      mi->y_height = separator_height;
+      MI_HEIGHT(mi) = separator_height;
     }
     else
     {
       /* Normal text entry */
       if (MI_HAS_TEXT(mi))
       {
-	mi->y_height = simple_entry_height + relief_thickness;
+	MI_HEIGHT(mi) = simple_entry_height + relief_thickness;
       }
       else
       {
-	mi->y_height = ITEM_TEXT_Y_OFFSET + ITEM_TEXT_Y_OFFSET2 +
+	MI_HEIGHT(mi) = ITEM_TEXT_Y_OFFSET + ITEM_TEXT_Y_OFFSET2 +
 	  relief_thickness;
       }
     }
-    if(mi->picture)
+    if(MI_PICTURE(mi))
     {
-      mi->y_height += mi->picture->height;
+      MI_HEIGHT(mi) += MI_PICTURE(mi)->height;
     }
-    if(mi->lpicture &&
-       mi->y_height < mi->lpicture->height + relief_thickness)
+    for (i = 0; i < MAX_MINI_ICONS; i++)
     {
-      mi->y_height = mi->lpicture->height + relief_thickness;
+      if(MI_MINI_ICON(mi)[i] &&
+	 MI_HEIGHT(mi) < MI_MINI_ICON(mi)[i]->height + relief_thickness)
+      {
+	MI_HEIGHT(mi) = MI_MINI_ICON(mi)[i]->height + relief_thickness;
+      }
     }
-    y += mi->y_height;
+    y += MI_HEIGHT(mi);
     /* this item would have to be the last item, or else
      * we need to add a "More..." entry pointing to a new menu */
     if (y + MR_BORDER_WIDTH(mr) +
@@ -3809,7 +3860,7 @@ static void size_menu_vertically(MenuRoot *mr)
       while (mi->prev != NULL)
       {
 	/* Remove current item. */
-	y -= mi->y_height;
+	y -= MI_HEIGHT(mi);
 	mi = mi->prev;
 	cItems--;
 	if (y + MR_BORDER_WIDTH(mr) + simple_entry_height + 2*relief_thickness
@@ -4023,80 +4074,65 @@ static void scanForColor(char *instring, Pixel *p, Bool *flag, char identifier)
   return;
 }
 
-static void scanForPixmap(char *instring, Picture **p, char identifier)
+static Bool scanForPixmap(char *instring, Picture **p, char identifier)
 {
   char *tstart, *txt, *name;
   int i;
   Picture *pp;
-#ifdef UGLY_WHEN_PIXMAPS_MISSING
-  char *save_instring;
-#endif
 
+  *p = NULL;
   if (!instring)
-    {
-      *p = NULL;
-      return;
-    }
+  {
+    return False;
+  }
 
-#ifdef UGLY_WHEN_PIXMAPS_MISSING
-  /* save instring in case can't find pixmap */
-  save_instring = (char *)safemalloc(strlen(instring)+1);
-  strcpy(save_instring,instring);
-#endif
   name = (char *)safemalloc(strlen(instring)+1);
 
   /* Scan whole string	*/
   for (txt = instring; *txt != '\0'; txt++)
+  {
+    /* A hotkey marker? */
+    if (*txt == identifier)
     {
-      /* A hotkey marker? */
-      if (*txt == identifier)
-	{
-	  /* Just an escaped &	*/
-	  if (txt[1] == identifier)
-	    {
-	      char *tmp;		/* Copy the string down over it	*/
-	      for (tmp = txt; *tmp != '\0'; tmp++)
-		tmp[0] = tmp[1];
-	      continue;		/* ...And skip to the key char		*/
-	    }
-	  /* It's a hot key marker - work out the offset value		*/
-	  tstart = txt;
-	  txt++;
-	  i=0;
-	  while((*txt != identifier)&&(*txt != '\0'))
-	    {
-	      name[i] = *txt;
-	      txt++;
-	      i++;
-	    }
-	  name[i] = 0;
+      /* Just an escaped &	*/
+      if (txt[1] == identifier)
+      {
+	char *tmp;		/* Copy the string down over it	*/
+	for (tmp = txt; *tmp != '\0'; tmp++)
+	  tmp[0] = tmp[1];
+	continue;		/* ...And skip to the key char		*/
+      }
+      /* It's a hot key marker - work out the offset value		*/
+      tstart = txt;
+      txt++;
+      i=0;
+      while ((*txt != identifier)&&(*txt != '\0'))
+      {
+	name[i] = *txt;
+	txt++;
+	i++;
+      }
+      name[i] = 0;
 
-	  /* Next, check for a color pixmap */
-	  pp=CachePicture(dpy,Scr.NoFocusWin,NULL,name,
-			  Scr.ColorLimit);
-	  if(*txt != '\0')
-	    txt++;
-	  while(*txt != '\0')
-	    {
-	      *tstart++ = *txt++;
-	    }
-	  *tstart = 0;
-	  if (pp)
-	    *p = pp;
-	  else
-#ifdef UGLY_WHEN_PIXMAPS_MISSING
-            strcpy(instring,save_instring);
-#else
-  	    fvwm_msg(WARN,"scanForPixmap","Couldn't find pixmap %s",name);
-#endif
-	  break;
-	}
+      /* Next, check for a color pixmap */
+      pp = CachePicture(dpy, Scr.NoFocusWin, NULL, name, Scr.ColorLimit);
+      if (*txt != '\0')
+	txt++;
+      while (*txt != '\0')
+      {
+	*tstart++ = *txt++;
+      }
+      *tstart = 0;
+      if (pp)
+	*p = pp;
+      else
+	fvwm_msg(WARN, "scanForPixmap", "Couldn't find pixmap %s", name);
+      break;
     }
+  }
 
   free(name);
-#ifdef UGLY_WHEN_PIXMAPS_MISSING
-  free(save_instring);
-#endif
+  return (*p != NULL);
 }
 
 /* FollowMenuContinuations
@@ -4142,6 +4178,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
   char *token2 = NULL;
   char *option = NULL;
   int i;
+  short current_mini_icon = 0;
 
   if ((item == NULL || *item == 0) && (action == NULL || *action == 0) &&
       fNoPlus)
@@ -4272,9 +4309,21 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       if (fPixmapsOk)
       {
         if(!tmp->picture)
-          scanForPixmap(tmp->label[i], &tmp->picture, '*');
-        if(!tmp->lpicture)
-          scanForPixmap(tmp->label[i], &tmp->lpicture, '%');
+	{
+	  if (scanForPixmap(tmp->label[i], &tmp->picture, '*'))
+	    MI_HAS_PICTURE(tmp) = True;
+	}
+	while (current_mini_icon < MAX_MINI_ICONS)
+	{
+	  if (scanForPixmap(
+	    tmp->label[i], &(MI_MINI_ICON(tmp)[current_mini_icon]), '%'))
+	  {
+	    current_mini_icon++;
+	    MI_HAS_PICTURE(tmp) = True;
+	  }
+	  else
+	    break;
+	}
       }
       if (tmp->hotkey == 0)
       {
@@ -4295,10 +4344,6 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       }
     }
     tmp->label_strlen[i] = (tmp->label[i]) ? strlen(tmp->label[i]) : 0;
-    if (tmp->picture || tmp->lpicture)
-    {
-      MI_HAS_PICTURE(tmp) = True;
-    }
   } /* for */
 
   /***************************************************************
@@ -5630,13 +5675,54 @@ void add_another_menu_item(char *action)
 }
 
 
+static int float_to_int_with_tolerance(float f)
+{
+  int low;
+
+  low = (int)(f - ROUNDING_ERROR_TOLERANCE);
+  if ((int)f != low)
+    return low;
+  else
+    return (int)(f + ROUNDING_ERROR_TOLERANCE);
+}
+
+static void get_xy_from_position_hints(
+  MenuPosHints *ph, int width, int height, int context_width,
+  Bool do_reverse_x, int *ret_x, int *ret_y)
+{
+  float x_add;
+  float y_add;
+
+  *ret_x = ph->x;
+  *ret_y = ph->y;
+  if (ph->is_relative)
+  {
+    if (do_reverse_x)
+    {
+      *ret_x -= ph->x_offset;
+      x_add =
+	width * (-1.0 - ph->x_factor) +
+	context_width * (1.0 - ph->context_x_factor);
+    }
+    else
+    {
+      *ret_x += ph->x_offset;
+      x_add = width * ph->x_factor + context_width * ph->context_x_factor;
+    }
+    y_add = height * ph->y_factor;
+    *ret_x = ph->x + float_to_int_with_tolerance(x_add);
+    *ret_y = ph->y + float_to_int_with_tolerance(y_add);
+  }
+}
+
 /*****************************************************************************
  * Used by GetMenuOptions
  *
  * The vars are named for the x-direction, but this is used for both x and y
  *****************************************************************************/
-static char *GetOneMenuPositionArgument(
-  char *action, int x, int w, int *pFinalX, float *width_factor)
+static char *get_one_menu_position_argument(
+  char *action, int x, int w, int *pFinalX, int *x_offset, float *width_factor,
+  float *context_width_factor, Bool *is_menu_relative)
 {
   char *token, *orgtoken, *naction;
   char c;
@@ -5651,19 +5737,23 @@ static char *GetOneMenuPositionArgument(
     return action;
   orgtoken = token;
   *pFinalX = x;
+  *x_offset = 0;
   *width_factor = 0.0;
+  *context_width_factor = 0.0;
   if (sscanf(token,"o%d%n", &val, &chars) >= 1)
   {
     fval = val;
     token += chars;
     x_add += fval*factor;
     *width_factor -= fval / 100.0;
+    *context_width_factor += fval / 100.0;
   }
   else if (token[0] == 'c')
   {
     token++;
     x_add += ((float)w) / 2.0;
     *width_factor -= 0.5;
+    *context_width_factor += 0.5;
   }
   while (*token != 0)
   {
@@ -5678,19 +5768,23 @@ static char *GetOneMenuPositionArgument(
 	case 'm':
 	  token++;
 	  *width_factor += fval / 100.0;
+	  *is_menu_relative = True;
 	  break;
 	case 'p':
 	  token++;
-	  x_add += fval;
+	  x_add += val;
+	  *x_offset += val;
 	  break;
 	default:
 	  x_add += fval * factor;
+	  *context_width_factor += fval / 100.0;
 	  break;
 	}
       }
       else
       {
 	x_add += fval * factor;
+	*context_width_factor += fval / 100.0;
       }
     }
     else
@@ -5699,8 +5793,7 @@ static char *GetOneMenuPositionArgument(
       break;
     }
   }
-  *pFinalX += x_add +
-    ((x_add < 0) ? -ROUNDING_ERROR_TOLERANCE : ROUNDING_ERROR_TOLERANCE);
+  *pFinalX += float_to_int_with_tolerance(x_add);
   free(orgtoken);
   return naction;
 }
@@ -5719,13 +5812,24 @@ static char *GetOneMenuPositionArgument(
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuRoot *mr, MenuItem *mi, MenuOptions *pops)
 {
-  char *tok = NULL, *naction = action, *taction;
-  int x, y, button, gflags;
-  unsigned int width, height;
+  char *tok = NULL;
+  char *naction = action;
+  char *taction;
+  int x;
+  int y;
+  int button;
+  int gflags;
+  unsigned int width;
+  unsigned int height;
+  int dummy_int;
+  float dummy_float;
   Window context_window = 0;
   Bool fHasContext, fUseItemOffset;
   Bool fValidPosHints =
     last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
+  /* If this is set we may want to reverse the position hints, so don't sum up
+   * the totals right now. This is useful for the SubmenusLeft style. */
+  Bool unknown_context_direction = False;
 
   last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
   if (pops == NULL)
@@ -5767,12 +5871,14 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       }
       else
 	context_window = w;
-      pops->pos_hints.is_relative = True;
     }
     else if (StrEquals(tok,"menu"))
     {
       if (mi && mr)
+      {
 	context_window = MR_WINDOW(mr);
+	unknown_context_direction = True;
+      }
     }
     else if (StrEquals(tok,"item"))
     {
@@ -5780,6 +5886,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       {
 	context_window = MR_WINDOW(mr);
 	fUseItemOffset = True;
+	unknown_context_direction = True;
       }
     }
     else if (StrEquals(tok,"icon"))
@@ -5859,7 +5966,11 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     }
     else if (StrEquals(tok,"this"))
     {
+      MenuRoot *dummy_mr;
+
       context_window = w;
+      if (XFindContext(dpy, w, MenuContext, (caddr_t *)&dummy_mr) != XCNOENT)
+	unknown_context_direction = True;
     }
     else
     {
@@ -5887,15 +5998,20 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     }
     else if (fUseItemOffset)
     {
-      y += mi->y_offset;
-      height = mi->y_height;
+      y += MI_Y_OFFSET(mi);
+      height = MI_HEIGHT(mi);
     }
 
     /* parse position arguments */
-    taction = GetOneMenuPositionArgument(
-      naction, x, width, &(pops->pos_hints.x), &(pops->pos_hints.x_factor));
-    naction = GetOneMenuPositionArgument(
-      taction, y, height, &(pops->pos_hints.y), &(pops->pos_hints.y_factor));
+    taction = get_one_menu_position_argument(
+      naction, x, width, &(pops->pos_hints.x), &(pops->pos_hints.x_offset),
+      &(pops->pos_hints.x_factor), &(pops->pos_hints.context_x_factor),
+      &pops->pos_hints.is_relative);
+    pops->pos_hints.x = x;
+    naction = get_one_menu_position_argument(
+      taction, y, height, &(pops->pos_hints.y), &dummy_int,
+      &(pops->pos_hints.y_factor), &dummy_float,
+      &pops->pos_hints.is_relative);
     if (naction == taction)
     {
       /* argument is missing or invalid */

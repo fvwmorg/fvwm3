@@ -1,4 +1,8 @@
-Changes in alpha release 2.3.3 (May 1999)
+Changes in beta release 2.3.4 (June 1999)
+
+Changes in alpha release 2.3.3 (June 1999)
+
+* There can be two mini icons per menu label instead of one now.
 
 * Menu enhancements: the layout of the menu items can be controlled in detail
   with the ItemFormat option for the MenuStyle command. The width of the

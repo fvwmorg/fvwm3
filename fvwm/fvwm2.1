@@ -691,8 +691,10 @@ Omits the "Calculator" label, but leaves the picture.
 
 If the menu-label contains a sub-string which is set off by percent signs,
 then the text between the percent signs is expected to be the name of an
-xpm-icon or bitmap-file to insert to the left of the menu label.
-To get a literal '%', insert '%%'. For example
+xpm-icon or bitmap-file (a so called 'mini icon' to insert to the left
+of the menu label. A second mini icon that is drawn at the right side of
+the menu can be given in the same way. To get a literal '%', insert '%%'.
+For example
 .EX
  + Calculator%xcalc.xpm% Exec exec xcalc
 .EE
@@ -2255,26 +2257,30 @@ Note: Only items defined in the format string are visible in the menus.
 I.e. if you don't put a '%s' in there you will not see a side picture,
 even if you use one.
 
+Note: The \fISubmenusLeft\fP style changes the default ItemFormat
+string, but if you set one manually it is not modified.
+
 Examples:
 
 .EX
-MenuStyle * ItemFormat "%.4s%.1|.5i%.5l%.5l%.5r%2.3>%1|"
+MenuStyle * ItemFormat "%.4s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
 .EE
 Is the default string used by fvwm: (side picture + 4 pixels gap)
 (begin of the hilighted area + 1 pixel gap) (mini icon + 5p)
 (first column left aligned + 5p) (second column left aligned + 5p)
-(third column right aligned) (2p + submenu triangle + 3p)
-(1p + end of hilighted area).
+(third column right aligned) (second mini icon + 5p)
+(2p + submenu triangle + 3p) (1p + end of hilighted area).
 .Ex
-MenuStyle * ItemFormat "%.1|%3.7<%.5i%.5l%.5l%r%1|%4s"
+MenuStyle * ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
 .EE
 Is used by fvwm with the \fISubmenusLeft\fP option below.
 
 \fISubmenusLeft\fP mirrors the menu layout and behaviour. Submenus pop up
 to the left, the submenu triangle is drawn left and the mini icon and
 side picture are drawn at the right side of the menu. The default
-is \fISubmenusRight\fP. The position hints of a meny are not affected
-by this setting.
+is \fISubmenusRight\fP. The position hints of a menu are also affected
+by this setting, i.e. position hints using 'item' or 'menu' as context
+rectangle and position hints using 'm' offsets.
 
 Examples:
 

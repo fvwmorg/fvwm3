@@ -1,9 +1,15 @@
 1999-06-05  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/menus.c: Made position hints refering to menus play nicely with
+	SubmenusLeft.
+	Added an additional mini icon to the right of the item.
+	(scanForPixmap): remove UGLY_WHEN_PIXMAPS_MISSING code
+	(size_menu_horizontally): fixed bug in placement of %r and %c columns
+
 	* fvwm/menus.c (pop_menu_up et al.): the side on which sub menus pop up
 	reverses once one menu hit the left or right border
 	(MenuInteraction): fixed key press warping: don't warp if the key press
-	has no meaning (broken in earlier patches=.
+	has no meaning (broken in earlier patches).
 
 	* fvwm/borders.c (SetupFrame): -Wall fix
 
