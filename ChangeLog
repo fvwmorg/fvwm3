@@ -1,3 +1,10 @@
+2003-05-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (CMD_DestroyStyle):
+	do not update windows if no style was deleted
+	(check_window_style_change):
+	fixed update of window styles w/ DestroyStyle
+
 2003-05-18  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/conditional.c (CMD_On):
@@ -5,7 +12,7 @@
 
 	* fvwm/add_window.c (destroy_window):
 	Fixed a memory leak (a FvwmWindow !) when a window is not destroyed
-	but sheduled for destroy. Not sure that the fix is good.
+	but scheduled for destroy. Not sure that the fix is good.
 
 	* fvwm/functions.c (__execute_function):
 	* libs/defaults.h:
@@ -17,7 +24,7 @@
 	Fixed a core dump with a root transparent rotated title
 	Fixed X errors 56 with RootTransparent titlebar and no E pixmap
 
-	* libs/FGettext.c (fgettext_add_one_path): 
+	* libs/FGettext.c (fgettext_add_one_path):
 	(FGettextInit):
 	(FGettextSetLocalePath):
 	Fixed memory leak and chainning
@@ -29,8 +36,8 @@
 	Fixed a mask memory leaks
 
 	* libs/defaults.h:
-	* libs/Flocale.c (FlocaleGetFont): 
-	(FlocaleGetFontSet): 
+	* libs/Flocale.c (FlocaleGetFont):
+	(FlocaleGetFontSet):
 	(FlocaleGetFftFont):
 	Fixed a core dump when a 0 font is given with an encoding hints.
 	Added a default FFT font
@@ -49,7 +56,7 @@
 	Removed inconsistent #if 0 code and comments about leak and MiniIcon
 	decor style.
 
-	* fvwm/menustyle.h: 
+	* fvwm/menustyle.h:
 	* fvwm/menustyle.c (menustyle_free):
 	Fixed a fore stipple gc leak
 

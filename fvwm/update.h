@@ -16,6 +16,9 @@
 #ifndef _UPDATE_
 #define _UPDATE_
 
+/* Ipmortant not:  All the flags below must have a positive syntax.  If a flag
+ * is set, this indicates that something has to happen with the window. */
+
 typedef struct
 {
 	unsigned do_broadcast_focus : 1;

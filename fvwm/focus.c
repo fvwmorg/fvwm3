@@ -543,10 +543,12 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	if (is_focused)
 	{
 		flag = FP_DO_RAISE_FOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
+fprintf(stderr,"fqgb: 0x%08x f %d '%s'\n", (int)fw, flag, fw->visible_name);
 	}
 	else
 	{
 		flag = FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
+fprintf(stderr,"fqgb: 0x%08x u %d '%s'\n", (int)fw, flag, fw->visible_name);
 	}
 
 	return (flag) ? True : False;
@@ -840,7 +842,7 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 
 	if (fw == NULL || IS_SCHEDULED_FOR_DESTROY(fw) || !IS_MAPPED(fw))
 	{
-		/* It is pointless to grab buttons on dying windows.  Buttons
+		/* It is pointless to grab buttons on dieing windows.  Buttons
 		 * can not be grabbed when the window is unmapped. */
 		return;
 	}
@@ -849,6 +851,7 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	if (do_grab_window == True)
 	{
 		grab_buttons |= FP_USE_MOUSE_BUTTONS(FW_FOCUS_POLICY(fw));
+fprintf(stderr,"gb: 0x%x\n", grab_buttons);
 	}
 	if (grab_buttons != fw->grabbed_buttons)
 	{

@@ -4099,24 +4099,28 @@ void check_window_style_change(
 
 	/****** common style flags ******/
 
-	/* All static common styles can simply be copied. For some there is
-	 * additional work to be done below. */
 	wf = (char *)(&FW_COMMON_STATIC_FLAGS(t));
 	sf = (char *)(&SCFS(*ret_style));
-	sc = (char *)(&SCCS(*ret_style));
-	/* copy the static common window flags */
-	for (i = 0; i < sizeof(SCFS(*ret_style)); i++)
-	{
-		wf[i] = (wf[i] & ~sc[i]) | (sf[i] & sc[i]);
-		sf[i] = wf[i];
-	}
-
 	if (IS_STYLE_DELETED(t))
 	{
 		/* update all styles */
 		memset(flags, 0xff, sizeof(*flags));
 		SET_STYLE_DELETED(t, 0);
+		/* copy the static common window flags */
+		for (i = 0; i < sizeof(SCFS(*ret_style)); i++)
+		{
+			wf[i] = sf[i];
+		}
+
 		return;
+	}
+	/* All static common styles can simply be copied. For some there is
+	 * additional work to be done below. */
+	sc = (char *)(&SCCS(*ret_style));
+	for (i = 0; i < sizeof(SCFS(*ret_style)); i++)
+	{
+		wf[i] = (wf[i] & ~sc[i]) | (sf[i] & sc[i]);
+		sf[i] = wf[i];
 	}
 
 	/*
@@ -4794,6 +4798,10 @@ void CMD_DestroyStyle(F_CMD_ARGS)
 	{
 		/* compact the current list of styles */
 		Scr.flags.do_need_style_list_update = 1;
+	}
+	else
+	{
+		return;
 	}
 	/* mark windows for update */
 	for (t = Scr.FvwmRoot.next; t != NULL && t != &Scr.FvwmRoot;
