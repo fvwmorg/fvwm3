@@ -161,23 +161,33 @@ int UpdateItemName(List *list, long id, char *string)
   returns 0, if not changed
   returns -1 if not found
 ******************************************************************************/
-int UpdateItemDesk(List *list, long id, long desk)
+int UpdateItemDesk(List *list, ConfigWinPacket *cfgpacket)
 {
   Item *temp;
-  int i;
 
-  for(i=0,temp=list->head;temp != NULL && temp->id != id ;i++,temp=temp->next);
+  for(temp=list->head;temp != NULL && cfgpacket->w!=temp->id;temp=temp->next);
   if (temp ==NULL ) return -1;
-
-  if(temp->desk != desk)
+  if(temp->desk != cfgpacket->desk)
   {
-    temp->desk = desk;
+    temp->desk = cfgpacket->desk;
     return 1;
   }
 
   return 0;
 }
 
+/******************************************************************************
+  UpdateItemGSFRFlags - Update the GSFR flags
+  returns -1 if not found
+******************************************************************************/
+int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && cfgpacket->w!=temp->id;temp=temp->next);
+  if (temp==NULL) return -1;
+  temp->flags = cfgpacket->flags; 
+  return 0;
+}
 
 /******************************************************************************
   FreeItem - Frees allocated space for an Item
@@ -287,6 +297,39 @@ Item *ItemFlags(List *list, long id)
   for(temp=list->head; temp != NULL && id!=temp->id; temp=temp->next);
 
   return temp;
+}
+
+/******************************************************************************
+  IsItemSticky - Say if an item is sticky
+******************************************************************************/
+int IsItemSticky(List *list, long id)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
+  if (temp==NULL) return -1;
+  return IS_STICKY(temp);
+}
+
+/******************************************************************************
+  IsItemIndexIconSuppressed - Say if an item has a no icon style
+******************************************************************************/
+int IsItemIconSuppressed(List *list, long id)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
+  if (temp==NULL) return -1;
+  return IS_ICON_SUPPRESSED(temp);
+}
+
+/******************************************************************************
+  IsItemIndexSkipWindowList - Say if an item is in the skip list
+******************************************************************************/
+int IsItemSkipWindowList(List *list, long id)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
+  if (temp==NULL) return -1;
+  return DO_SKIP_WINDOW_LIST(temp);
 }
 
 /******************************************************************************

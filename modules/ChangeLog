@@ -1,3 +1,16 @@
+2000-05-25  olicha <olivier.chapuis@free.fr>
+
+	* FvwmWinList/FvwmWinList.c:
+	Rename the OLD_BUGGY_WINDOW_PLACEMENT ifdef by COMPLEX_WINDOW_PLACEMENT
+	and fix it for title at bottom and define it
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	* FvwmWinList/List.{c,h} (UpdateItemGSFRFlags,IsItemSticky,
+	IsItemIconSuppressed,IsItemSkipWindowList):
+	Fixed double animation after a Icon/NoIcon style change
+	Preparation for fixing Stick/Slipery and WindowListSkip/Hit
+	style change.
+
 2000-05-24  olicha <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):

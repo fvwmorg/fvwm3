@@ -52,8 +52,8 @@ extern int FindItem(List *list, long id);
 extern int FindItemDesk(List *list, long id, long desk);
 extern long ItemDesk(List *list, long id);
 extern int UpdateItemName(List *list, long id, char *string);
-extern int UpdateItemDesk(List *list, long id, long desk);
-
+extern int UpdateItemDesk(List *list, ConfigWinPacket *cfgpacket);
+extern int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket);
 extern void FreeItem(Item *ptr);
 extern int DeleteItem(List *list,long id);
 extern void FreeList(List *list);
@@ -61,6 +61,9 @@ extern void PrintList(List *list);
 extern char *ItemName(List *list, int n);
 
 extern Item *ItemFlags(List *list, long id );
+extern int IsItemSticky(List *list, long id);
+extern int IsItemIconSuppressed(List *list, long id);
+extern int IsItemSkipWindowList(List *list, long id);
 
 extern int ItemCount(List *list);
 extern int ItemCountDesk(List *list, long desk);

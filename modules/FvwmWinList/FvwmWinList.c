@@ -67,7 +67,7 @@
 #include "libs/Colorset.h"
 
 #ifdef I18N_MB
-#include <X11/Xlocale.h>
+#include <X 11/Xlocale.h>
 #ifdef __STDC__
 #define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
 #else
@@ -81,6 +81,7 @@
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
 #define SomeButtonDown(a) ((a)&Button1Mask||(a)&Button2Mask||(a)&Button3Mask)
+#define COMPLEX_WINDOW_PLACEMENT
 
 /* File type information */
 FILE *console;
@@ -120,7 +121,7 @@ int win_grav;
 int win_x;
 int win_y;
 int win_title;
-#ifdef OLD_BUGGY_WINDOW_PLACEMENT
+#ifdef COMPLEX_WINDOW_PLACEMENT
 int win_border_x=0;
 int win_border_y=0;
 #endif
@@ -367,8 +368,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       cfgpacket = (void *) body;
       /* We get the win_borders only when WinList  map it self, this is ok
        *  since we need it only after an unmap */
-#ifdef OLD_BUGGY_WINDOW_PLACEMENT
-      if ( cfgpacket->w == win)
+#ifdef COMPLEX_WINDOW_PLACEMENT
+      if (cfgpacket->w == win)
       {
 	win_border_x = win_border_y = cfgpacket->border_width;
 	if (((win_grav == NorthWestGravity || win_grav == NorthEastGravity)
@@ -380,13 +381,15 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 #endif
       if ((i = FindItem(&windows,cfgpacket->w))!=-1)
       {
-	if(UpdateItemDesk(&windows, cfgpacket->w, cfgpacket->desk) > 0)
-        {
+	if(UpdateItemDesk(&windows, cfgpacket) > 0)
+        {	  
           UpdateButtonDesk(&buttons, i, cfgpacket->desk);
           AdjustWindow(False);
           RedrawWindow(True, True);
         }
+	UpdateItemGSFRFlags(&windows, cfgpacket);
 	break;
+	
       }
       if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList)
         AddItem(&windows, cfgpacket);
@@ -450,8 +453,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	flagitem = ItemFlags(&windows, body[0]);
 	if ((type == M_DEICONIFY && IS_ICONIFIED(flagitem))
 	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem))) {
-	  if (IS_ICON_SUPPRESSED(flagitem) && AnimCommand && WindowState
-	      && (AnimCommand[0] != 0)) {
+	  if (IsItemIconSuppressed(&windows, body[0]) && 
+	      AnimCommand && WindowState && (AnimCommand[0] != 0)) {
 	    char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	    Window child;
 	    int x, y;
@@ -963,7 +966,7 @@ void AdjustWindow(Bool force)
   }
   if (WindowState && (new_height!=win_height || new_width!=win_width))
   {
-#ifdef OLD_BUGGY_WINDOW_PLACEMENT
+#ifdef COMPLEX_WINDOW_PLACEMENT
     if (Anchor)
     {
       /* compensate for fvwm borders when going from unmapped to mapped */
@@ -991,8 +994,10 @@ void AdjustWindow(Bool force)
 	  win_y += win_height - new_height + map_y_adjust;
 	  break;
       }
-      XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height);
+      /* XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height); */
     }
+    if (Anchor && WindowState == 2)
+      XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height);
     else
       XResizeWindow(dpy, win, new_width, new_height);
     /* The new code is sooo much simpler :-) */
@@ -1069,7 +1074,7 @@ void MakeMeWindow(void)
   {
     ret=XParseGeometry(geometry,&x,&y,&dummy1,&dummy2);
 
-    if (ret&XValue && ret &YValue)
+    if (ret&XValue && ret&YValue)
     {
       hints.x=x;
       if (ret&XNegative)
@@ -1093,7 +1098,7 @@ void MakeMeWindow(void)
       else  hints.win_gravity=NorthWestGravity;
     }
 
-#ifndef OLD_BUGGY_WINDOW_PLACEMENT
+#ifndef COMPLEX_WINDOW_PLACEMENT
     if (!Anchor)
     {
       if (hints.win_gravity == SouthWestGravity)
