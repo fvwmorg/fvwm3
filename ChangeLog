@@ -1,5 +1,17 @@
 2001-10-30  Mikhael Goikhman  <migo@homemail.com>
 
+	* AUTHORS:
+	* NEWS:
+	* acconfig.h:
+	* configure.in:
+	* fvwm/borders.c:
+	* fvwm/builtins.c:
+	* fvwm/fvwm2.1:
+	* fvwm/screen.h:
+	exclude the TitleStyle MultiPixmap feature (only) before forking
+
+2001-10-30  Mikhael Goikhman  <migo@homemail.com>
+
 	* NEWS:
 	* configure.in:
 	change version string to 2.4.4 before forking

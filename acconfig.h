@@ -77,9 +77,6 @@
 /* NOTE: hard coded to 1 */
 #define USEDECOR 1
 
-/* Enables multi-pixmap themeable titlebars */
-#undef FANCY_TITLEBARS
-
 /* Enables session management functionality. */
 #undef SESSION
 
