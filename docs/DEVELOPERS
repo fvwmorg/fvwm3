@@ -17,12 +17,12 @@ need to execute the following commands from the top of the source
 tree.
 
     automake --add-missing
-    autoconf
+    autoreconf
     autoreconf
 
-(The 'autoconf' invocation is necessary for some reason to get a proper
-Makefile with 'make dist'.  If it is not called, config.h.in is missing
-from the package).
+If the config.h.in file is not present (after the sources have been
+checked out initially), autoreconf has to be called twice due to a bug
+in the autoconf package.
 
 There will be some warnings, which are ignorable as long as you get a
 working configure script: the configure script will fix all those
@@ -161,7 +161,7 @@ Steps: 1. When building a release, update the CVS sources first. For a
           been added to CVS.
        2. Make sure you have XPM, the strokes library and a X server with
           the shape extension.
-       3. Rerun automake --add-missing; autoreconf
+       3. Rerun automake --add-missing; autoreconf; autoreconf
        4. If building a stable release, remove the config.cache file.
        5. Rerun ./configure
        6. make clean
