@@ -214,7 +214,7 @@ Bool get_title_button_geometry(
 		return False;
 	}
 	XTranslateCoordinates(
-		dpy, fw->decor_w, Scr.Root, ret_g->x, ret_g->y, &ret_g->x,
+		dpy, FW_W_FRAME(fw), Scr.Root, ret_g->x, ret_g->y, &ret_g->x,
 		&ret_g->y, &JunkChild);
 
 	return True;

@@ -606,8 +606,13 @@ typedef struct FvwmWindow
 		Window icon_pixmap_w;
 		Window transientfor;
 	} wins;
-Window decor_w;
 	window_flags flags;
+	struct
+	{
+		unsigned parts_drawn : 10;
+		unsigned parts_lit : 10;
+		unsigned parts_inverted : 10;
+	} border_state;
 	int nr_left_buttons;
 	int nr_right_buttons;
 #define BUTTON_INDEX(b) (((b) == 0) ? (NUMBER_OF_BUTTONS - 1) : ((b) - 1))

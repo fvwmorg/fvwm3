@@ -297,4 +297,9 @@
 #define MAX_RESOURCE_LEN   		 200 /* characters */
 #define MAX_CLASS_LEN    		 200 /* characters */
 
+/*** numbered window names ***/
+#define MAX_WINDOW_NAME_NUMBER           999
+#define MAX_WINDOW_NAME_NUMBER_DIGITS      3 /* number/digits of above number */
+
+
 #endif /* _DEFAULTS_ */

@@ -1,10 +1,28 @@
-2002-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
+2002-03-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/frame.c:
+	* fvwm/borders.c:
+	* fvwm/add_window.c (setup_frame_stacking):
+	* fvwm/cursor.c (CMD_CursorStyle):
+	* fvwm/events.c (HandleExpose):
+	(HandleMapNotify):
+	(HandleEnterNotify):
+	(HandleLeaveNotify):
+	(GetContext):
+	* fvwm/geometry.c (get_title_button_geometry):
+	* fvwm/virtual.c (map_window):
 	* fvwm/add_window.c (setup_parent_window):
 	(setup_resize_handle_cursors):
 	(setup_resize_handle_windows):
 	(resize_resize_handle_windows):
 	(change_resize_handle_windows):
+	some progress with new frame layout
+
+	* fvwm/add_window.c (setup_visible_name):
+	fixed off-by-one bug in setup_visible_name
+	maximum window number can be set in defaults.h
+
+2002-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/windowlist.h:
 	* fvwm/virtual.h:

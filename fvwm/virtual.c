@@ -251,7 +251,7 @@ static void map_window(FvwmWindow *t)
   {
     XMapWindow(dpy, FW_W_FRAME(t));
     XMapWindow(dpy, FW_W_PARENT(t));
-    XMapWindow(dpy, t->decor_w);
+    XMapSubwindows(dpy, FW_W_FRAME(t));
 #ifdef ICCCM2_UNMAP_WINDOW_PATCH
     /* this is required by the ICCCM2 */
     XMapWindow(dpy, FW_W(t));

@@ -447,7 +447,6 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
      * (2 shadow) */
     used_width = border_width;
   }
-  SET_HAS_BORDER(t, used_width);
   if(decor & MWM_DECOR_TITLE)
   {
     /*  A title bar with no buttons in it
@@ -459,6 +458,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
     /* A wide border, with corner tiles is desplayed
      * (10 pixels - 2 relief, 2 shadow) */
     SET_HAS_HANDLES(t, 1);
+    used_width = handle_width;
   }
   SET_HAS_BORDER(t, used_width);
   SET_HAS_HANDLES(t, (HAS_BORDER(t) && HAS_HANDLES(t)));

@@ -52,6 +52,9 @@ extern void setInitFunctionName(int n, const char *name);
 extern const char *getInitFunctionName(int n);
 extern void CaptureAllWindows(Bool is_recapture);
 
+extern char NoName[];
+extern char NoClass[];
+extern char NoResource[];
 extern XGCValues Globalgcv;
 extern unsigned long Globalgcm;
 extern Time lastTimestamp;

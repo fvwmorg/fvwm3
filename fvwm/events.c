@@ -841,11 +841,6 @@ void HandleExpose(void)
 	{
 		draw_parts = DRAW_TITLE;
 	}
-	else if (Event.xany.window == Fw->decor_w ||
-		 Event.xany.window == FW_W_FRAME(Fw))
-	{
-		draw_parts = DRAW_FRAME;
-	}
 	else
 	{
 		draw_parts = DRAW_BUTTONS;
@@ -862,6 +857,7 @@ void HandleExpose(void)
 	draw_clipped_decorations(
 		Fw, draw_parts, (Scr.Hilite == Fw), True,
 		Event.xany.window, &r, CLEAR_ALL);
+
 	return;
 }
 
@@ -1242,7 +1238,6 @@ void HandleMapNotify(void)
   if (FW_W_ICON_PIXMAP(Fw) != None)
     XUnmapWindow(dpy, FW_W_ICON_PIXMAP(Fw));
   XMapSubwindows(dpy, FW_W_FRAME(Fw));
-  XMapSubwindows(dpy, Fw->decor_w);
   if (Fw->Desk == Scr.CurrentDesk)
   {
     XMapWindow(dpy, FW_W_FRAME(Fw));
@@ -1268,7 +1263,7 @@ void HandleMapNotify(void)
       is_window_border_minimal(Fw))
   {
     DrawDecorations(
-      Fw, DRAW_ALL, False, True, Fw->decor_w, CLEAR_ALL);
+      Fw, DRAW_ALL, False, True, None, CLEAR_ALL);
   }
   else if (Fw == get_focus_window() && Fw != Scr.Hilite)
   {
@@ -1727,8 +1722,8 @@ void HandleButtonPress(void)
     else
     {
       DrawDecorations(
-        Fw, DRAW_FRAME, (Scr.Hilite == Fw),
-        (HAS_DEPRESSABLE_BORDER(Fw) && PressedW != None),
+        Fw, DRAW_FRAME, (Scr.Hilite == Fw), 0
+        /*!!!(HAS_DEPRESSABLE_BORDER(Fw) && PressedW != None)*/,
 	PressedW, CLEAR_ALL);
     }
   }
@@ -1783,17 +1778,23 @@ void HandleButtonPress(void)
   if (ButtonWindow && check_if_fvwm_window_exists(ButtonWindow) && has_binding)
   {
     if (LocalContext == C_TITLE)
+    {
       DrawDecorations(
         ButtonWindow, DRAW_TITLE, (Scr.Hilite == ButtonWindow),
 	True, None, CLEAR_ALL);
+    }
     else if (LocalContext & (C_LALL | C_RALL))
+    {
       DrawDecorations(
         ButtonWindow, DRAW_BUTTONS, (Scr.Hilite == ButtonWindow), True,
         OldPressedW, CLEAR_ALL);
+    }
     else
+    {
       DrawDecorations(
         ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow),
-        HAS_DEPRESSABLE_BORDER(ButtonWindow), None, CLEAR_ALL);
+        0/*!!!HAS_DEPRESSABLE_BORDER(ButtonWindow)*/, None, CLEAR_NONE);
+    }
   }
   ButtonWindow = NULL;
   UngrabEm(GRAB_PASSIVE);
@@ -1892,8 +1893,7 @@ void HandleEnterNotify(void)
   if (Fw)
   {
     if (ewp->window != FW_W_FRAME(Fw) && ewp->window != FW_W_PARENT(Fw) &&
-        ewp->window != FW_W(Fw) && ewp->window != Fw->decor_w &&
-	ewp->window != FW_W_ICON_TITLE(Fw) &&
+        ewp->window != FW_W(Fw) && ewp->window != FW_W_ICON_TITLE(Fw) &&
 	ewp->window != FW_W_ICON_PIXMAP(Fw))
     {
       /* Ignore EnterNotify that received by any of the sub windows
@@ -2110,8 +2110,7 @@ void HandleLeaveNotify(void)
      * event and, for example, grabbing the focus.  This will interfere with
      * functions that transferred the focus to a different window. */
     if (Event.xcrossing.mode == NotifyGrab && Fw &&
-	(Event.xcrossing.window == Fw->decor_w ||
-	 Event.xcrossing.window == FW_W(Fw) ||
+	(Event.xcrossing.window == FW_W(Fw) ||
 	 Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
 	 Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw)))
     {
@@ -3045,7 +3044,7 @@ void HandleEvents(void)
  ************************************************************************/
 int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 {
-  int Context,i;
+  int Context;
 
   Context = C_NO_CONTEXT;
   if (e->type == KeyPress && e->xkey.window == Scr.Root &&
@@ -3080,43 +3079,12 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   {
     return C_ROOT;
   }
-
-  if (e->type == KeyPress && e->xkey.window == FW_W_FRAME(t) &&
-      e->xkey.subwindow == t->decor_w)
-  {
-    /* We can't get keyboard events on the decor_w directly because it is a
-     * sibling of the parent window which gets all keyboard input. So we have
-     * to grab keys on the frame and then translate the coordinates to find out
-     * in which subwindow of the decor_w the event occured. */
-    e->xkey.window = e->xkey.subwindow;
-    XTranslateCoordinates(dpy, FW_W_FRAME(t), t->decor_w, e->xkey.x, e->xkey.y,
-			  &JunkX, &JunkY, &(e->xkey.subwindow));
-  }
-  *w= e->xany.window;
-
+  *w = e->xany.window;
   if (*w == Scr.NoFocusWin)
   {
     return C_ROOT;
   }
-  if (e->type == KeyPress && e->xkey.window == FW_W_FRAME(t) &&
-      e->xkey.subwindow == t->decor_w)
-  {
-    /* We can't get keyboard events on the decor_w directly because it is a
-     * sibling of the parent window which gets all keyboard input. So we have
-     * to grab keys on the frame and then translate the coordinates to find out
-     * in which subwindow of the decor_w the event occured. */
-    e->xkey.window = e->xkey.subwindow;
-    XTranslateCoordinates(dpy, FW_W_FRAME(t), t->decor_w, e->xkey.x, e->xkey.y,
-			  &JunkX, &JunkY, &(e->xkey.subwindow));
-  }
-  *w= e->xany.window;
-
-  if (*w == Scr.NoFocusWin)
-  {
-    return C_ROOT;
-  }
-  if (e->xkey.subwindow != None &&
-      (e->xkey.window == t->decor_w || e->xkey.window == FW_W_PARENT(t)))
+  if (e->xkey.subwindow != None && e->xkey.window == FW_W_PARENT(t))
   {
     *w = e->xkey.subwindow;
   }
@@ -3128,78 +3096,8 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   {
     return C_ROOT;
   }
-  if (t)
-  {
-    if (*w == FW_W_TITLE(t))
-      Context = C_TITLE;
-    else if (Scr.EwmhDesktop &&
-	     (*w == FW_W(Scr.EwmhDesktop) ||
-	      *w == FW_W_PARENT(Scr.EwmhDesktop) ||
-	      *w == FW_W_FRAME(Scr.EwmhDesktop)))
-      Context = C_EWMH_DESKTOP;
-    else if (*w == FW_W(t) || *w == FW_W_PARENT(t) || *w == FW_W_FRAME(t))
-      Context = C_WINDOW;
-    else if (*w == FW_W_ICON_TITLE(t) || *w == FW_W_ICON_PIXMAP(t))
-      Context = C_ICON;
-    else if (*w == t->decor_w)
-      Context = C_SIDEBAR;
-    else if (*w == FW_W_CORNER(t, 0))
-    {
-      Context = C_F_TOPLEFT;
-      Button = 0;
-    }
-    else if (*w == FW_W_CORNER(t, 1))
-    {
-      Context = C_F_TOPRIGHT;
-      Button = 1;
-    }
-    else if (*w == FW_W_CORNER(t, 2))
-    {
-      Context = C_F_BOTTOMLEFT;
-      Button = 2;
-    }
-    else if (*w == FW_W_CORNER(t, 3))
-    {
-      Context = C_F_BOTTOMRIGHT;
-      Button = 3;
-    }
-    else if (*w == FW_W_SIDE(t, 0))
-    {
-      Context = C_SB_TOP;
-      Button = 0;
-    }
-    else if (*w == FW_W_SIDE(t, 1))
-    {
-      Context = C_SB_RIGHT;
-      Button = 1;
-    }
-    else if (*w == FW_W_SIDE(t, 2))
-    {
-      Context = C_SB_BOTTOM;
-      Button = 2;
-    }
-    else if (*w == FW_W_SIDE(t, 3))
-    {
-      Context = C_SB_LEFT;
-      Button = 3;
-    }
-    else
-    {
-      for (i = 0; i < NUMBER_OF_BUTTONS; i++)
-      {
-        if (*w == FW_W_BUTTON(t, i))
-        {
-          if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
-              ( (i & 1) && i / 2 < Scr.nr_right_buttons))
-          {
-            Context = (1 << i) * C_L1;
-            Button = i;
-            break;
-          }
-        }
-      }
-    } /* else */
-  } /* if (t) */
+  Context = frame_window_id_to_context(t, *w, &Button);
+
   return Context;
 }
 
@@ -3209,14 +3107,17 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
  * Removes expose events for a specific window from the queue
  *
  *************************************************************************/
-int flush_expose (Window w)
+int flush_expose(Window w)
 {
-  XEvent dummy;
-  int i=0;
+	XEvent dummy;
+	int i=0;
 
-  while (XCheckTypedWindowEvent(dpy, w, Expose, &dummy))
-    i++;
-  return i;
+	while (XCheckTypedWindowEvent(dpy, w, Expose, &dummy))
+	{
+		i++;
+	}
+
+	return i;
 }
 
 /* same as above, but merges the expose rectangles into a single big one */

@@ -47,12 +47,19 @@ typedef struct
 
 /* ---------------------------- interface functions ------------------------- */
 
+void frame_get_sidebar_geometry(
+	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
+	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks);
+int frame_window_id_to_context(
+	FvwmWindow *fw, Window w, int *ret_num);
+Bool frame_is_decoration_window(
+	FvwmWindow *fw, Window w);
 void frame_resize(
 	FvwmWindow *fw, rectangle *start_g, rectangle *end_g,
-	resize_mode_type mode_x, resize_mode_type mode_y, int anim_steps);
+	resize_mode_type rmode, int anim_steps);
 void frame_get_resize_decor_gravities(
 	decor_gravities_type *ret_grav, direction_type title_dir,
-	resize_mode_type mode_x, resize_mode_type mode_y);
+	resize_mode_type rmode);
 void frame_set_decor_gravities(
 	FvwmWindow *fw, decor_gravities_type *grav);
 void frame_setup_window(

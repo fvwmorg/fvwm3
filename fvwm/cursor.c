@@ -398,8 +398,6 @@ void CMD_CursorStyle(F_CMD_ARGS)
 				FW_W_FRAME(fw2), Scr.FvwmCursors[CRS_DEFAULT]);
 			SafeDefineCursor(
 				FW_W_PARENT(fw2), Scr.FvwmCursors[CRS_DEFAULT]);
-			SafeDefineCursor(
-				fw2->decor_w, Scr.FvwmCursors[CRS_DEFAULT]);
 			if (IS_ICONIFIED(fw2))
 			{
 				if (!HAS_NO_ICON_TITLE(fw2))

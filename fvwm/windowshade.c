@@ -106,8 +106,7 @@ void CMD_WindowShade(F_CMD_ARGS)
 {
 	int toggle;
 	int shade_dir;
-	resize_mode_type resize_mode_x;
-	resize_mode_type resize_mode_y;
+	resize_mode_type resize_mode;
 	rectangle start_g;
 	rectangle end_g;
 
@@ -197,12 +196,10 @@ print_g("end2 ", &end_g);
 	/*
 	 * do the animation
 	 */
-	resize_mode_x = (DO_SHRINK_WINDOWSHADE(fw)) ?
+	resize_mode = (DO_SHRINK_WINDOWSHADE(fw)) ?
 		FRAME_RESIZE_SHRINK : FRAME_RESIZE_SCROLL;
-	resize_mode_y = resize_mode_x;
 	frame_resize(
-		fw, &start_g, &end_g, resize_mode_x, resize_mode_y,
-		fw->shade_anim_steps);
+		fw, &start_g, &end_g, resize_mode, fw->shade_anim_steps);
 
 	/*
 	 * update hints and inform modules
