@@ -1,5 +1,8 @@
 2002-05-20  olicha  <olivier.chapuis@free.fr>
 
+	* libs/PictureImageLoader.c (PImageRGBtoPixel):
+	Fixed blue colour in png image and ewmh icons
+
 	* libs/Flocale.c (FlocaleLoadFont):
 	Removed some debug code
 

@@ -389,7 +389,7 @@ static CARD32 PImageRGBtoPixel(int r, int g, int b)
 	{
 		return (((r << 16) & 0xff0000) |
 			((g << 8 ) & 0x00ff00) |
-			((r      ) & 0x0000ff));
+			((b      ) & 0x0000ff));
 	}
 	if ((rm == 0x7c00) && (gm == 0x3e0) && (bm == 0x1f)) /* 555 */
 	{
