@@ -1,0 +1,49 @@
+Legally, fvwm is distributed under the terms of the GNU General
+Public License. However, the events following the 9th of
+September, 2001 and the multinational war against Iraq that began
+in March 2003, made me reconsider the wisdom of choosing this
+license.  I can not ignore the fact that my work has a part in
+killing people, no matter how small it may be.  After discussing
+this with many people, I decided to add the following "ethical"
+license.
+
+No user of fvwm is forced to agree to the licensing terms.  But
+please keep in mind that fvwm is developed by volunteers in their
+free time.  Blatant violation of this license by many people will
+not only demotivate me and other volunteers, reducing the quality
+of fvwm, but may also end development completely.
+
+Thank you for your attention
+
+Dominik Vogt
+(fvwm developer)
+
+
+        Ethical Use of the Fvwm Window Manager
+        --------------------------------------
+
+1. You, as a user of fvwm, are expected to make a donation to a
+non-government organization that must fulfil one of the following
+conditions:
+
+ * It fights against all forms of war, regardless of the nations
+   involved.
+ * It engages for human rights world-wide, including the country
+   you live in.
+
+The donation can be monetary, human labour, donation in kind or
+any other form that helps.  Any amount is accepted as long int
+lives up to the spirit of this license.  I suggest a donation to
+Amnesty International, but you are free to choose a different
+organization.
+
+2. You are expected to not use fvwm during work related to
+
+ * research of weapon technology,
+ * manufacturing of weapons,
+ * supporting, planning, preparing or executing wars and other
+   military actions.
+
+3. If you feel you can not comply to the terms above, you are
+   kindly asked to choose a different one of the many available
+   window managers.
