@@ -32,15 +32,15 @@
 #define MYNAME   "FvwmCommandS"
 #define MAXHOSTNAME 32
 
-int Fd[2]; /* pipes to fvwm */
-int FfdC; /* command fifo file discriptors */
-int FfdM; /* message fifo file discriptors */
+static int Fd[2]; /* pipes to fvwm */
+static int FfdC; /* command fifo file discriptors */
+static int FfdM; /* message fifo file discriptors */
 
-char *FfdC_name, *FfdM_name; /* fifo names */
+static char *FfdC_name, *FfdM_name; /* fifo names */
 
-ino_t FfdC_ino, FfdM_ino; /* fifo inode numbers */
+static ino_t FfdC_ino, FfdM_ino; /* fifo inode numbers */
 
-char hostname[MAXHOSTNAME];
+static char hostname[MAXHOSTNAME];
 
 int open_fifos(const char *f_stem);
 void close_fifos(void);
@@ -51,7 +51,19 @@ void process_message(unsigned long type,unsigned long *body);
 void relay_packet(unsigned long, unsigned long, unsigned long *);
 void server(char *);
 static RETSIGTYPE sig_handler(int);
-int write_f(int fd, char *p, int len);
+static char *bugger_off = "killme\n";
+
+/* a queue of messages for FvwmCommand to receive */
+typedef struct Q
+{
+  unsigned long length;
+  unsigned long sent;
+  char *body;
+  struct Q *next;
+} Q;
+/* head and tail of the queue */
+static Q *Qstart = NULL;
+static Q *Qlast = NULL;
 
 int main(int argc, char *argv[])
 {
@@ -140,10 +152,15 @@ void server (char *name)
   char *home;
   char *f_stem;
   int  len;
-  fd_set fdset;
+  fd_set fdrset, fdwset;
   char buf[MAX_MODULE_INPUT_TEXT_LEN + 1];  /* command receiving buffer */
   char cmd[MAX_MODULE_INPUT_TEXT_LEN + 1];
   int  ix,cix;
+  struct timeval tv;
+
+  /* timeout for sending messages to FvwmCommand */
+  tv.tv_sec = 10;
+  tv.tv_usec = 0;
 
   if (name == NULL)
   {
@@ -193,15 +210,55 @@ void server (char *name)
 
   while (!isTerminated)
   {
-    FD_ZERO(&fdset);
-    FD_SET(FfdC, &fdset);
-    FD_SET(Fd[1], &fdset);
+    struct timeval *timeout = NULL;
+    int ret;
 
-    if (fvwmSelect(FD_SETSIZE, &fdset, 0, 0, NULL) < 0)
-      if (errno == EINTR)
+    FD_ZERO(&fdrset);
+    FD_ZERO(&fdwset);
+    FD_SET(FfdC, &fdrset);
+    FD_SET(Fd[1], &fdrset);
+    if (Qstart) {
+      FD_SET(FfdM, &fdwset);
+      timeout = &tv;
+    }
+
+    ret = fvwmSelect(FD_SETSIZE, &fdrset, &fdwset, 0, timeout);
+
+    if (ret < 0 && errno == EINTR)
+      continue;
+
+    if (ret == 0) {
+      /* a timeout has occurred, this means the pipe to FvwmCommand is full
+       * dump any messages in the queue that have not been partially sent */
+      Q *q1, *q2;
+
+#ifdef PARANOMIA
+      /* do nothing if there are no messages (should never happen) */
+      if (!Qstart)
         continue;
+#endif
+      q1 = Qstart->next;
 
-    if (FD_ISSET(Fd[1], &fdset))
+      /* if the first message has been partially sent don't remove it */
+      if (!Qstart->sent) {
+        free(Qstart->body);
+        free(Qstart);
+        Qstart = NULL;
+      }
+
+      /* now remove the rest of the message queue */
+      while ((q2 = q1) != NULL) {
+        q1 = q1->next;
+        free(q2->body);
+        free(q2);
+      }
+
+      /* there is either one message left (partially complete) or none */
+      Qlast = Qstart;
+      continue;
+    }
+
+    if (FD_ISSET(Fd[1], &fdrset))
     {
       FvwmPacket* packet = ReadFvwmPacket(Fd[1]);
 
@@ -213,7 +270,7 @@ void server (char *name)
       process_message(packet->type, packet->body);
     }
 
-    if (FD_ISSET(FfdC, &fdset))
+    if (FD_ISSET(FfdC, &fdrset))
     {
       len = read(FfdC, buf, MAX_MODULE_INPUT_TEXT_LEN);
       if (len == 0)
@@ -233,11 +290,11 @@ void server (char *name)
 	{
           cmd[cix] = '\0';
           cix = 0;
-          if (StrEquals(cmd, "killme"))
+          if (StrHasPrefix(bugger_off, cmd))
             /* fvwm will close our pipes when it has processed this */
             SendQuitNotification(Fd);
           else
-	    SendText(Fd,cmd,0);
+	    SendText(Fd, cmd, 0);
         }
 	else if (cix >= MAX_MODULE_INPUT_TEXT_LEN)
 	{
@@ -250,6 +307,25 @@ void server (char *name)
 	}
       } /* for */
     } /* FD_ISSET */
+
+    if (FD_ISSET(FfdM, &fdwset))
+    {
+      int sent;
+      Q *q = Qstart;
+
+      /* send one packet to FvwmCommand, try to send it all but cope
+       * with partial success */
+      sent = write(FfdM, q->body + q->sent, q->length - q->sent);
+      if (sent == q->length - q->sent) {
+        Qstart = q->next;
+        free(q->body);
+        free(q);
+        if (Qstart == NULL)
+          Qlast = NULL;
+      } else if (sent >= 0)
+        q->sent += sent;
+    }
+
   } /* while */
 }
 
@@ -326,7 +402,7 @@ int open_fifos(const char *f_stem)
    * there is no need to wait before creating our own */
   if (FfdC > 0)
   {
-    write_f(FfdC, "killme\n", 9);
+    write(FfdC, bugger_off, strlen(bugger_off));
     close(FfdC);
   }
 
@@ -449,49 +525,32 @@ void err_quit(const char *msg)
 
 /*
  * relay packet to front-end
+ * this is now implemented by simply adding the packet to a queue
+ * and letting the main select loop handle sending from the queue to
+ * the front end. In this way FvwmCommandS is always responsive to commands
+ * from the input pipes. (it will also die a lot faster when fvwm2 quits)
  */
 void relay_packet(unsigned long type, unsigned long length,
                   unsigned long *body)
 {
-  write_f(FfdM, (char*)&type, SOL);
-  write_f(FfdM, (char*)&length, SOL);
-  write_f(FfdM, (char*)body, length);
-}
+  Q *new;
 
-/*
- * write to fifo
- */
-int write_f(int fd, char *p, int len)
-{
-  int i, n;
-  struct timeval tv;
-  int again;
+  if (!length || !body)
+    return;
 
-  again = 0;
-  tv.tv_sec = 0;
-  tv.tv_usec = 50000;
+  new = (Q *)safemalloc(sizeof(Q));
 
-  for (i = 0; i < len; )
-  {
-    n = write(fd, &p[i], len - i);
-    if (n < 0)
-    {
-      if(errno == EINTR)
-      {
-	continue;
-      }
-      else if (errno == EAGAIN)
-      {
-	if (again++ < 5)
-	{
-	  select(0, 0, 0, 0, &tv);
-	  continue;
-	}
-	return -1; /* give up this message */
-      }
-      err_quit("writing fifo");
-    }
-    i += n;
-  }
-  return 0;
+  new->length = length + 2 * SOL;
+  new->sent = 0L;
+  new->body = safemalloc(new->length);
+  memcpy(new->body, &type, SOL);
+  memcpy(new->body + SOL, &length, SOL);
+  memcpy(new->body + 2 * SOL, body, length);
+  new->next = NULL;
+
+  if (Qlast)
+    Qlast->next = new;
+  Qlast = new;
+  if (!Qstart)
+    Qstart = Qlast;
 }

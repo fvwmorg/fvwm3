@@ -1,3 +1,10 @@
+2000-06-08  Hippo
+
+	* FvwmCommand/FvwmCommandS: changed the passing of messages from fvwm
+	to FvwmCommand to use a queue: eliminated partial sending of messages,
+	eliminated delays in handling input from FvwmCommand, now quits when
+	fvwm quits (no more hanging around like a bad smell).
+
 2000-06-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWinList/FvwmWinList.c:
