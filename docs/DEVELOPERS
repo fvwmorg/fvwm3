@@ -213,9 +213,7 @@ Compile tests:
     the output of the compilation run for warnings manually.  It
     is important to use the -O2 option because some versions of
     gcc seem to have a bug: when -Wall is used, but not -O2, no
-    warnings are generated at all.  The only warning that can be
-    ignored is this: "the use of `tempnam' is dangerous, better
-    use `mkstemp'"
+    warnings are generated at all.
   - Fix all warnings and problems, commit the changes and repeat
     the previous step until no more warnings occur.
 
@@ -286,15 +284,14 @@ Increase the version number:
 
 Update fvwm-web:
 
-  - Update the release numbers in fvwm-web/index.html and
-    fvwm-web/download.html.  Generate ChangeLog entries for the
-    changes and commit them to cvs.
-  - Run shell script in fvwm-web called regenerate_pages to update
-    the web pages for NEWS, FAQ and AUTHORS.  It should usually work
-    without parameters for a typical setup (when fvwm and fvwm-web
-    trees are sibling directories), optionally pass a parameter to
-    regenerate_pages - the fvwm location relative to fvwm-web.
-  - Commit these changes.
+  - Update the release numbers at the bottom of definitions.inc file.
+  - If this is the head developement version, then run shell script
+    in fvwm-web called regenerate_pages to update the web pages for
+    NEWS, FAQ and AUTHORS.  It should usually work without parameters
+    for a typical setup (when fvwm and fvwm-web trees are sibling
+    directories), optionally pass a parameter to regenerate_pages -
+    the fvwm location relative to fvwm-web.
+  - Generate ChangeLog entries for all these changes and commit them.
 
 Announce the release:
 

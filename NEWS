@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-2.4.16.
+2.4.17.
 
 -------------------------------------------------------------------
 
@@ -27,14 +27,11 @@ Changes in development release 2.5.8 (not released yet)
 * Fvwm supports tear off menus.  See the "Tear Off Menus" section
   in the man page or press Backspace on any menu to try them out.
 
-* Added support for new BBC headlines in fvwm-menu-headlines, this
-  replaces the old BBC-Worlds and BBC-SciTech headlines.
-
 * Fvwm now handles what Unicode calls "combining characters" (ie. marks
   drawn on top of other characters)
 
-* New commands WindowStyle and DestroyWindowStyle for per window
-  styles
+* New commands WindowStyle and DestroyWindowStyle for individual
+  (per window) styles.
 
 * The conditions !Current... and !Layer now work as expected.
 
@@ -572,6 +569,34 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 * New conditional commands Any and PointerWindow.
 
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.17 (10-Oct-2003)
+
+* Fixed error message for incorrect --with-SOME-library argument.
+
+* It is now possible to suppress title action or title completely
+  in menus created by fvwm-menu-directory.
+
+* Fixed a compile problem on QNX 4.25.
+
+* New configure switch --disable-gtk.
+
+* FvwmGtk.1 is not installed if FvwmGtk is not built.
+
+* The "Visible" condition does no longer select windows on
+  different desks.
+
+* With the styles StartsOnPage, SkipMapping and UsePPosition,
+  windows that request a specific position are still placed on the
+  given page.
+
+* Fixed sending M_NEW_PAGE packets to the modules if the page did
+  not change.
+
+* Added support for new BBC headlines in fvwm-menu-headlines, this
+  replaces the old BBC-Worlds and BBC-SciTech headlines.
 
 -------------------------------------------------------------------
 
