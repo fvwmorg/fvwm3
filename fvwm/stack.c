@@ -459,21 +459,21 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
   }
 
 
-  /*
-      This hack raises the target and all higher FVWM windows over any
-      override_redirect windows that may be above it. This is used to
-      cope with ill-bahaved applications that insist on using long-lived
-      override_redirects.
-  */
-  if (Scr.bo.RaiseOverUnmanaged && ! do_lower)
-    {
-    raise_over_unmanaged(t);
-    }
-
-
   if (!do_lower)
   {
-    raisePanFrames();
+
+
+    /*
+        This hack raises the target and all higher FVWM windows over any
+        override_redirect windows that may be above it. This is used to
+        cope with ill-bahaved applications that insist on using long-lived
+        override_redirects.
+    */
+    if (Scr.bo.RaiseOverUnmanaged)
+      {
+      raise_over_unmanaged(t);
+      }
+
 
     /*
      * The following is a hack to raise X windows over native windows
@@ -505,6 +505,9 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
         XRaiseWindow (dpy, t2->frame);
         }
     }
+
+    /*  This needs to be done after all the raise hacks.  */
+    raisePanFrames();
   }
 }
 

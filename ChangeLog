@@ -1,3 +1,9 @@
+1999-09-23  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/stack.c (inner_RaiseOrLowerWindow): rearranged the raise
+	hacks to insure that raisePanFrames always gets called after we've
+	done our dirty work. My previous version broke this.
+
 1999-09-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/WinMagic.c (GetTopAncestorWindow):
