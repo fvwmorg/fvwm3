@@ -1234,13 +1234,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
   tmp_win = tmptmp_win;
 
-  /****** safety check ******/
+  /****** safety check, window might disappear before we get to it ******/
   if(!PPosOverride &&
      XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
                   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
   {
     free((char *)tmp_win);
-    fvwm_msg(ERR,"AddWindow","Can't get geometry");
     return NULL;
   }
 
@@ -1256,7 +1255,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   {
     free((char *)tmp_win);
     MyXUngrabServer(dpy);
-    fvwm_msg(ERR,"AddWindow","Can't get geometry a second time");
     return NULL;
   }
 
