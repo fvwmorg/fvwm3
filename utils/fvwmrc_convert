@@ -1,16 +1,16 @@
-#!/bin/sh 
+#!/bin/sh
 
 # Some time ago, Martin Kraemer <Martin.Kraemer@mch.sni.de> posted an
 # incomplete script to convert fvwm-1 'rc' files to fvwm-2. I've just
 # recently fixed and enhanced that script; it's complete (or nearly
 # so) now. This should help if you choose to convert.
-# 
+#
 # I've also made a couple of other minor changes to make life easier
 # for our users here: I changed the default initialization from "Read
 # .fvwmrc" to "Read .fvwm2rc" (in fvwm/fvwmc), and I installed fvwm 2
 # as "fvwm2". With these changes, users can easily convert at their
 # leisure.
-# 
+#
 # Herewith the script. It's using GNU awk (gawk), but will run with
 # any "new" awk (nawk on Suns (SunOS 4, Solaris), awk on most other
 # systems). If you do not use gawk, it will be case-sensitive (the
@@ -109,7 +109,7 @@ BEGIN   {
 	print $0;
 	next;
 }
-	
+
 ################ Rename common items ##############
 /Restart/ && /fvwm/             {
 	gsub("fvwm", "fvwm2"); gsub("fvwm22","fvwm2"); # try to leave paths alone
@@ -382,7 +382,7 @@ BEGIN   {
 
 # hack: popup declarations cannot have leading whitespace
 /^Popup/                        {
-        if (inpopup) 
+        if (inpopup)
 	   print "ERROR: EndPopup missing\n" NR $0 >"'$TTY'";
         if (infunction)
 	   print "ERROR: EndFunction missing\n" NR $0 >"'$TTY'";
@@ -424,7 +424,7 @@ BEGIN   {
 /^[ \t]*StubbornIcons[ \t]*/	||
 /^[ \t]*StubbornIconPlacement[ \t]*/ ||
 /^[ \t]*StubbornPlacement[ \t]*/     ||
-/^[ \t]*Cursor[ \t]*/		{ 
+/^[ \t]*Cursor[ \t]*/		{
 	print "#! " $0 " [deleted]";
 	if (warned[$1]==FALSE) {
 	   print "Warning: " $1 " not in Fvwm2, command dropped" >"'$TTY'";

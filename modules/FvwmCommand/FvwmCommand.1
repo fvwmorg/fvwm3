@@ -17,29 +17,29 @@
 .TH FvwmCommand 1 "7 May 1999"
 .UC
 .SH NAME
-FvwmCommand \- FVWM2 command external interface
+FvwmCommand \- FVWM command external interface
 
 .SH SYNOPSIS
 FvwmCommand [-mrvw] [-S name] [-i level] [-f name] [-F level] [command...]
 
 .SH DESCRIPTION
 
-FvwmCommand lets you monitor fvwm2 transaction and issue fvwm2 command 
-from a shell command line or scripts. 
-FvwmCommand takes each argument as a fvwm2 command. Quotes can be 
-used to send commands including spaces. 
+FvwmCommand lets you monitor fvwm transaction and issue fvwm command
+from a shell command line or scripts.
+FvwmCommand takes each argument as a fvwm command. Quotes can be
+used to send commands including spaces.
 .EX
-FvwmCommand 'FvwmPager 0 1' 
+FvwmCommand 'FvwmPager 0 1'
 .EE
 .br
 .SH INVOCATION
-FvwmCommandS should be spawned once by fvwm2, either in .fvwm2rc file,
+FvwmCommandS should be spawned once by fvwm, either in .fvwm2rc file,
 from menu, or from FvwmConsole.
 From then on, FvwmCommand
-can be called from a shell or script to execute fvwm2 commands.
+can be called from a shell or script to execute fvwm commands.
 
 From within .fvwm2rc file:
-.EX 
+.EX
 Module FvwmCommandS
 
     or
@@ -55,12 +55,12 @@ AddToFunc "RestartFunction" "I" Module  FvwmCommandS
 Then, in script file or from shell:
 
 .EX
-FvwmCommand  'popup "Utilities"' 
+FvwmCommand  'popup "Utilities"'
 .EE
 
 .SH OPTIONS
 .IP "\fI-F <level>\fR" 0.4i
-Specifies the level of fvwm2 window flags FvwmCommand outputs.
+Specifies the level of fvwm window flags FvwmCommand outputs.
 .sp
 .RS
 .IP 0 0.4i
@@ -79,10 +79,10 @@ The default FIFO set is ~/.FvwmCommand, in which
 ~/.FvwmCommandC is used to send commands and ~/.FvwmCommandM is to receive
 messages.
 FvwmCommandS must have been invoked with the same <name> as its first argument
-prior to FvwmCommand invocation. 
+prior to FvwmCommand invocation.
 Alternatively, option -S can be used. Refer option -S.
-This option -f is useful when a dedicated connection is necessary 
-to run a background job while another connection is kept for 
+This option -f is useful when a dedicated connection is necessary
+to run a background job while another connection is kept for
 interactive use.
 
 .IP "\fI-i <level>\fR"
@@ -90,9 +90,9 @@ Specifies the level of information that FvwmCommand outputs.
 .sp
 .RS
 .IP 0 0.4i
-Error messages only. 
+Error messages only.
 .EX
-FvwmCommand -i0 FvwmBanner 
+FvwmCommand -i0 FvwmBanner
 .EE
 will show a banner without any output. On the other hand,
 .EX
@@ -100,11 +100,11 @@ FvwmCommand -i 0 foobar
 .EE
 will return,
 .EX
-[FVWM][executeModule]: <<ERROR>> No such module 
+[FVWM][executeModule]: <<ERROR>> No such module
 \'foobar\' in ModulePath '/usr/lib/X11/fvwm2'
 .EE
 
-Note that Fvwm2 doesn't return any error messages in
+Note that Fvwm doesn't return any error messages in
 cases like below since 'windowid' itself is a valid command.
 .sp
 .EX
@@ -127,7 +127,7 @@ Information like below will show up.
 0x01c00014 class                XTerm
 0x01c00014 resource             console
 0x01000003 window               Fvwm Pager
-0x01000003 icon                 
+0x01000003 icon
 0x01000003 class                FvwmModule
 0x01000003 resource             FvwmPager
 0x00c0002c window               emacs: FvwmCommand.man
@@ -135,17 +135,17 @@ Information like below will show up.
 0x00c0002c icon file            xemacs.xpm
 0x00c0002c class                Emacs
 0x00c0002c resource             emacs
-end windowlist      
+end windowlist
 .EE
 The first column shows the window ID number, which can be used in 'windowid' command.
-The second column shows the information types. 
+The second column shows the information types.
 The last column shows the information contents.
-If no information is returned, add -w <time> or -r option. 
+If no information is returned, add -w <time> or -r option.
 This might be needed in heavily loaded systems.
 .IP 2
 Above and static window information.
 .EX
-FvwmCommand -i2 'FvwmPager 0 1' 
+FvwmCommand -i2 'FvwmPager 0 1'
 .EE
 The below is its output.
 .EX
@@ -200,7 +200,7 @@ The below is its output.
 .IP 3
 All information available.
 .EX
-FvwmCommand -i3 'Killmodule Fvwm*'    
+FvwmCommand -i3 'Killmodule Fvwm*'
 .EE
 This will report which windows are closed.
 .EX
@@ -210,8 +210,8 @@ This will report which windows are closed.
 .RE
 
 .IP "\fI-m\fR"
-Monitors fvwm2 window information transaction. FvwmCommand continuously outputs
-information that it receives without exiting. 
+Monitors fvwm window information transaction. FvwmCommand continuously outputs
+information that it receives without exiting.
 This option can be used in a
 background job often combined with -i3 option in order to control windows
 dynamically.
@@ -220,28 +220,28 @@ FvwmCommand -mi3 | grep 'iconify'
 .EE
 It will report when windows are iconified or deiconified.
 .sp
-Note: FvwmCommand does not block buffer its output but many utilities such as 
+Note: FvwmCommand does not block buffer its output but many utilities such as
 grep or sed use block buffer. The output of the next example will not show up
 until either FvwmCommand is terminated or stdout buffer from
 grep is filled.
 .EX
-FvwmCommand -mi3 | grep ' map' | 
+FvwmCommand -mi3 | grep ' map' |
 sed 's/\\(0x[0-9a-f]*\\).*/windowid \\1 move 0 0/'
 .EE
-Instead, use tools with buffer control such as pty or perl. 
+Instead, use tools with buffer control such as pty or perl.
 The below will iconify new windows when opened.
 .EX
 Fvwm -mi3 | perl -ne '
-$|=1; 
+$|=1;
 print "windowid $1 iconify\\n" if /^(0x\\S+) add/;
 \' > ~/\.FvwmCommandC
 .EE
 .IP "\fI-r\fR"
-Waits for a reply before it exits. 
-FvwmCommand exits if no information or error is returned in a fixed amount of 
+Waits for a reply before it exits.
+FvwmCommand exits if no information or error is returned in a fixed amount of
 time period. (Refer option -w.)
 The option -r overrides this time limit and wait for at least one message
-back. 
+back.
 After the initial message, it will wait for another message for the time
 limit.
 This option is useful when the system is too loaded to make any predition
@@ -252,35 +252,35 @@ message to be sent back.
 Invokes another server, FvwmCommandS, with FIFO set <name>.
 .br
 If -f option is not used with this option,
-the invoking FvwmCommand uses the default FIFO to communicate 
+the invoking FvwmCommand uses the default FIFO to communicate
 the default server to invoke a new server.
 .br
 If -f option is used with this option,
-the invoking FvwmCommand uses the default FIFO to communicate 
+the invoking FvwmCommand uses the default FIFO to communicate
 the default server to invoke a new server. Then, switch the FIFO
 set and start communicating the new server.
 .br
-This option -S is useful when a dedicated connection is necessary 
+This option -S is useful when a dedicated connection is necessary
 to run a background
 job while another connection is kept for interactive use.
 
 If the <name> is a relative path name, that is relative from where
-fvwm2 is running, not from where FvwmCommand is invoked.
+fvwm is running, not from where FvwmCommand is invoked.
 
 .IP "\fI-v\fR"
 Returns FvwmCommand version number and exits.
 
 .IP "\fI-w <time>\fR"
 Waits for <time> micro seconds for a message.
-FvwmCommand exits if no information or error is returned in a fixed amount of 
-time period unless option -m is used. 
+FvwmCommand exits if no information or error is returned in a fixed amount of
+time period unless option -m is used.
 The default is 500 ms. This option overrides this default value.
 
 .SH WRAPPER
 .sp
 .sp
 FvwmCommand.sh has bourne shell function definitions
-to keep the syntax similar to fvwm2 configuration file. 
+to keep the syntax similar to fvwm configuration file.
 This file is to be sourced:
 .EX
 \&. FvwmCommand.sh
@@ -288,18 +288,18 @@ This file is to be sourced:
 DesktopSize 5x5
 .EE
 .br
-FvwmCommand.pm is for perl in order 
-to keep the syntax similar to fvwm2 configuration file. 
-Commas can be used to separate Fvwm2 commands' arguments. 
+FvwmCommand.pm is for perl in order
+to keep the syntax similar to fvwm configuration file.
+Commas can be used to separate fvwm commands' arguments.
 .EX
 use FvwmCommand;
-if( $ARGV[0] eq 'home' ) { 
-    Desk 0,0; GotoPage '1 1'; 
-}elsif( $ARGV[0] eq 'jump' ) { 
-    Desk "0 2"; GotoPage 0, 1; 
+if( $ARGV[0] eq 'home' ) {
+    Desk 0,0; GotoPage '1 1';
+}elsif( $ARGV[0] eq 'jump' ) {
+    Desk "0 2"; GotoPage 0, 1;
 }
 .EE
-Although arguments in FvwmCommand are not case sensitive as fvwm2,
+Although arguments in FvwmCommand are not case sensitive as fvwm,
 the functions defined in FvwmCommand.sh and FvwmCommand.pl are case sensitive.
 
 
@@ -310,11 +310,11 @@ is not running.
 FvwmCommand error in opening message fifo
 --No such file or directory--
 .EE
-Fvwm2 modules don't return error messages to fvwm2 but output on 
+Fvwm modules don't return error messages to fvwm but output on
 stderr. These error messages will not be shown as FvwmCommand messages.
 
 .SH SEE ALSO
-fvwm2
+fvwm
 
 .SH AUTHOR
 Toshi Isogai  isogai@ucsub.colorado.edu

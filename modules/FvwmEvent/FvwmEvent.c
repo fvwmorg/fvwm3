@@ -380,7 +380,7 @@ void execute_event(short event, unsigned long *body)
 	      sprintf(buf,"%s %s", cmd_line, action_table[event]);
 	    INFO(buf);
 	    INFO("\n");
-	    SendText(fd,buf,0);		/* let fvwm2 execute the function */
+	    SendText(fd,buf,0);		/* let fvwm execute the function */
 	    last_time = now;
 	  }
 	free(buf);

@@ -27,7 +27,7 @@ types which it manages. For example, the user may have one manager which lists
 only emacs windows, and another which lists everything else. You may also
 specify what resolution each icon manager uses, for example, one icon manager
 may manage windows on all desks, and another may manage only those on the
-current desk, or page. If you have applied the MiniIcons patch to fvwm2, then
+current desk, or page. If you have applied the MiniIcons patch to fvwm, then
 FvwmIconMan can display the miniature icons for its managed windows. The
 managers may have a maximum number of columns (and so grows vertically), a
 maximum number of rows (and then grows horizontally), or stay at a fixed size,
@@ -147,7 +147,7 @@ specified height is 0, then the button height is determined from the font
 size. X and Y coordinates are ignored.
 
 .IP "*FvwmIconMan*[id*]drawicons \fIvalue\fP"
-If your version of fvwm2 is capable of using MiniIcons, then this option
+If your version of fvwm is capable of using MiniIcons, then this option
 determines if FvwmIconMan displays the MiniIcons. Otherwise, it generates
 an error message.  "true" means that MiniIcons are shown for iconified
 windows, "false" that MiniIcons are never shown, and "always" that MiniIcons
@@ -462,7 +462,7 @@ Same as previous, but using the label instruction.
 .PP
 In addition to being bound to keys and mice, actions can be sent from fvwm to
 FvwmIconMan via the SendToModule command. Don't quote the command when using
-SendToModule. Also, due to a bug in the current version of fvwm2, don't quote
+SendToModule. Also, due to a bug in the current version of fvwm, don't quote
 FvwmIconMan either.
 
 .SH SAMPLE CONFIGURATIONS

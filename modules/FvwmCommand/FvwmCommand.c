@@ -1,7 +1,7 @@
 /* $Id$
  * $Source$
  *
- * Fvwm2 command input interface.
+ * Fvwm command input interface.
  *
  * Copyright 1998, Toshi Isogai.
  * Use this program at your own risk.
@@ -395,7 +395,7 @@ void receive () {
  *******************************/
 void usage(void) {
   fprintf (stderr, "Usage: %s [OPTION] [COMMAND]...\n", MYNAME);
-  fprintf (stderr, "Send commands to fvwm2 via %sS\n\n", MYNAME);
+  fprintf (stderr, "Send commands to fvwm via %sS\n\n", MYNAME);
   fprintf (stderr,
 	   "  -F <flag info>      0 - no flag info\n");
   fprintf (stderr,
@@ -418,7 +418,7 @@ void usage(void) {
   fprintf (stderr,
 	   "                     -1 - none (default, much faster)\n" );
   fprintf (stderr,
-	   "  -m                  monitor fvwm2 message transaction\n");
+	   "  -m                  monitor fvwm message transaction\n");
   fprintf (stderr,
 	   "  -r                  "
 	   "wait for a reply (overrides waiting time)\n");

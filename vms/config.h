@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------------------------------------------------------------
-    File     : config.h for Fvwm2
+    File     : config.h for Fvwm
     Author   : Fabien Villard (Villard_F@Decus.Fr)
     Date     : 20-JAN-1999
     Descrip  : adapted for VMS from the config.h.in generated automatically from configure.in by autoheader.
@@ -46,6 +46,10 @@
 
 /* Define if readline is available.  */
 #undef HAVE_READLINE
+
+/* Define to enable a workaround if you have applications that redraw
+ * themselves excessively when they are moved opaque. */
+#undef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
 
 /* Define to disable motif applications ability to have modal dialogs. Use with care.  */
 #undef MODALITY_IS_EVIL

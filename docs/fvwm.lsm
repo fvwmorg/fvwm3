@@ -2,7 +2,7 @@ Begin3
 Title:          FVWM (F? Virtual Window Manager)
 Version:        2.2
 Entered-date:   19FEB99
-Description:    FVWM2 is an ICCCM-compliant X window manager providing a 3D
+Description:    FVWM is an ICCCM-compliant X window manager providing a 3D
                 look for window decorations, multiple discontiguous virtual
                 desktops, a high degree of configurability, and an external
                 module interface for implementing functional extensions.

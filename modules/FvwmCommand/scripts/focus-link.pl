@@ -27,7 +27,7 @@
 # DESCRIPTION
 #    This is a user programmable window focus script.
 #    It requires FvwmCommand version 1.5 or later.
-#    FvwmCommandS must be invoked from fvwm2 prior to this command.
+#    FvwmCommandS must be invoked from fvwm prior to this command.
 #
 #    This script can be invoked from a shell or from .fvwm2rc. For example.
 #
@@ -37,7 +37,7 @@
 #   + "I" Exec sh -c "sleep 2;$HOME/scripts/focus-link.pl & "
 #
 #    Sleep is used in order to avoid un-necessary reaction during initial
-#    window creation. A shell is invoked to avoid fvwm2 itself sleeps for
+#    window creation. A shell is invoked to avoid fvwm itself sleeps for
 #    2 seconds.
 #
 #    Default behavior is listed below.
@@ -126,7 +126,7 @@ sub user_function {
 init();
 
 
-#package Fvwm2FocusLink;
+#package FvwmFocusLink;
 #require Exporter;
 #@ISA = qw(Exporter);
 #

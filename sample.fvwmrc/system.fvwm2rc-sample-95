@@ -612,7 +612,7 @@ AddToMenu Module-Popup \
 #!!!use configure here
 DestroyMenu Documents
 AddToMenu Documents \
-  FVWM2%mini.win95.xpm%		Exec netscape \
+  FVWM%mini.win95.xpm%		Exec netscape \
 					/usr/local/lib/X11/fvwm95/index.html
 
 
@@ -762,10 +762,10 @@ AddToMenu "Background-Animation" \
 #------------------------------------------------------------------------------
 DestroyMenu "Shutdown"
 AddToMenu "Shutdown" \
-  "Quit fvwm2%mini-exclam.xpm%"	Module FvwmForm QuitVerify
+  "Quit fvwm%mini-exclam.xpm%"	Module FvwmForm QuitVerify
 + ""					Nop
 + "Restart%mini-turn.xpm%"		Restart
-+ "Start fvwm2%mini.fvwm.xpm%"		Restart fvwm2
++ "Start fvwm%mini.fvwm.xpm%"		Restart fvwm2
 + "Start olvwm%mini-olwm.xpm%"		Restart olvwm
 + "Start Afterstep%mini-olwm.xpm%"	Restart afterstep
 + "Start Enlightenment%mini-paint.xpm%"	Restart enlightenment
@@ -801,7 +801,7 @@ AddToMenu "Utilities@utilities-menu.xpm@^#808080^" \
 + ""					Nop
 + "Refresh Screen%mini-ray.xpm%"	Refresh
 + ""					Nop
-+ "Exit Fvwm2%mini-stop.xpm%"		Module FvwmForm QuitVerify
++ "Exit Fvwm%mini-stop.xpm%"		Module FvwmForm QuitVerify
 
 #------------------------------------------------------------------------------
 #--------- FoX
@@ -1166,7 +1166,7 @@ Style "MiniButtons"  NoTitle,NoHandles,Sticky,StaysOnTop,WindowListSkip\
 *FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 *FvwmPagerHilight #c3c3c3
 #*FvwmPagerGeometry -1500-1500
-*FvwmPagerLabel 0 Fvwm2
+*FvwmPagerLabel 0 Fvwm
 *FvwmPagerLabel 1 Development
 *FvwmPagerLabel 2 Internet
 *FvwmPagerLabel 3 Misc
@@ -1253,7 +1253,7 @@ Style "FvwmWharf"  NoTitle, NoHandles, Sticky, WindowListSkip,\
 *FvwmWharf gimp 	wilber.xpm 	Exec gimp
 *FvwmWharf GV 		gv.xpm  	Exec ghostviewv
 *FvwmWharf kill   	bomb_3d.xpm     Destroy
-*FvwmWharf pager nil MaxSwallowModule "Fvwm2" Module FvwmPager 0 0
+*FvwmWharf pager nil MaxSwallowModule "Fvwm" Module FvwmPager 0 0
 *FvwmWharf xload nil  MaxSwallow "xload" nice -16 \
 		xload -nolabel -update 4  -bg grey59 -geometry -1500-1500
 #*FvwmWharf xsysinfo nil  MaxSwallow "xsysinfo" xsysinfo

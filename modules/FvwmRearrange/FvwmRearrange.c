@@ -470,37 +470,6 @@ int parse_line(char *s, char ***args)
 	return count;
 }
 
-#ifdef FVWM1
-char *GetConfigLine(char *filename, char *match)
-{
-	FILE *f = fopen(filename, "r");
-	if (f) {
-		int l = strlen(match), found = 0;
-		char line[256], *s = line;
-		line[0] = 0;
-		s = fgets(line, 256, f);
-		while (s && !found) {
-			if (strncmp(line, match, l) == 0) {
-				found = 1;
-				break;
-			}
-			s = fgets(line, 256, f);
-		}
-		fclose(f);
-		if (found) {
-			char *ret;
-			int l2 = strlen(line);
-			ret = (char *)safemalloc(sizeof(char) * l2);
-			strcpy(ret, line);
-			if (ret[l2 - 1] == '\n')
-				ret[l2 - 1] = 0;
-			return ret;
-		} else
-			return NULL;
-	} else
-		return NULL;
-}
-#endif /* FVWM1 */
 #endif /* USERC */
 
 
@@ -524,11 +493,7 @@ int main(int argc, char *argv[])
 
 	if (argc < 6) {
 		fprintf(stderr,
-#ifdef FVWM1
 			"%s: module should be executed by fvwm only\n",
-#else
-			"%s: module should be executed by fvwm2 only\n",
-#endif
 			argv0);
 		exit(-1);
 	}
@@ -553,16 +518,6 @@ int main(int argc, char *argv[])
 	strcpy(match, "*");
 	strcat(match, argv0);
 	len = strlen(match);
-#ifdef FVWM1
-	if ((config_line = GetConfigLine(argv[3], match))) {
-		char **args = NULL;
-		config_line_count = parse_line(config_line, &args);
-		parse_args("config args",
-			   config_line_count, args, 0);
-		free(config_line);
-		free(args);
-	}
-#else
         InitGetConfigLine(fd,match);
 	GetConfigLine(fd, &config_line);
 	while (config_line != NULL) {
@@ -578,7 +533,6 @@ int main(int argc, char *argv[])
 		}
 		GetConfigLine(fd, &config_line);
 	}
-#endif /* FVWM1 */
 #endif /* USERC */
 
 	if (strcmp(argv0, "FvwmCascade") &&
@@ -594,26 +548,9 @@ int main(int argc, char *argv[])
 	}
 	parse_args("module args", argc, argv, 6);
 
-#ifdef FVWM1
-	{
-		char msg[256];
-		sprintf(msg, "SET_MASK %lu\n",(unsigned long)(
-			M_CONFIGURE_WINDOW|
-			M_END_WINDOWLIST
-			));
-		SendInfo(fd,msg,0);
-
-#ifdef FVWM1_MOVENULL
-		/* avoid interactive placement in fvwm version 1 */
-		if (!ofsx) ++ofsx;
-		if (!ofsy) ++ofsy;
-#endif
-	}
-#else
 	SetMessageMask(fd,
 		       M_CONFIGURE_WINDOW |
 		       M_END_WINDOWLIST);
-#endif
 
 	if (FvwmTile) {
 		if (!maxx) maxx = dwidth;

@@ -176,7 +176,7 @@ typedef struct _form {
   unsigned long screen_background;
   Item *cur_input;                      /* current input during parse and run */
   Item *first_input;                    /* forms first input item during parse*/
-  Item *last_error;                     /* fvwm2 error message display area */
+  Item *last_error;                     /* fvwm error message display area */
   DrawTable *roots_dt;                  /* root draw tables linklist */
   int abs_cursor;
   int rel_cursor;

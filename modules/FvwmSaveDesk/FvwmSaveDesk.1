@@ -13,25 +13,25 @@ layout as a definition of extra lines for the function InitFunction
 into the file
 .I .fvwm2desk
 in your home directory. As explain in the other documation, this
-function is called at startup of fvwm2.
+function is called at startup of fvwm.
 You have to include this file in
 .I .fvwm2rc
 after the definition of the Function Initfunction.
 You can do this by using the module
 .I FvwmM4
-or 
+or
 .I FvwmCpp.
 
 Your applications must supply certain hints to the X window system.
 .I Emacs
 and \fINetscape\fP, for example, does not, so FvwmSaveDesk can't get any
-information from it.  
- 
+information from it.
+
 Also, FvwmSaveDesk assumes that certain command line options are
 globally accepted by applications, which may not be the case.
 
 .SH SETUP USING FVWMM4 MODULE
-The M4 Macro processor substitutes its macros even in the middle of a 
+The M4 Macro processor substitutes its macros even in the middle of a
 word. Because of that you may have problems with predefined macros
 such as include or define. To avoid this the GNU M4 has an extra
 option to prefix all builtins with 'm4_'. FvwmM4 can be called with
@@ -64,12 +64,12 @@ Simply add the following line to the end of .fvwm2rc:
 .sp
 .fi
 .SH INVOCATION
-FvwmSaveDesk can be invoked by adding it to a menu or binding it to a 
+FvwmSaveDesk can be invoked by adding it to a menu or binding it to a
 mouse button or keystoke in
-the 
+the
 .I .fvwm2rc
 file.
-Fvwm2 will search directory specified in the ModulePath
+Fvwm will search directory specified in the ModulePath
 configuration option to locate FvwmSaveDesk.
 
 To insert it to a menu, add the line

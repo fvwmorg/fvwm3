@@ -1,10 +1,10 @@
-# This file gets installed in the "sysconfdir" during fvwm2
+# This file gets installed in the "sysconfdir" during fvwm
 # installation.  Do not remove or change this file.
 
 #  Modification History
 
 #  Created on 03/21/99 by DanEspen (dje):
-#  - FvwmDefaults file.  Contains fvwm2 defaults, and enough to help out
+#  - FvwmDefaults file.  Contains fvwm defaults, and enough to help out
 #  the new user with no configuration file.
 #  This picks up from where the builtin table in fvwm.c SetUpRCDefaults ends.
 
@@ -17,7 +17,7 @@ AddToFunc WindowListFunc I WindowId $0 Iconify off
 + I WindowId $0 FlipFocus
 + I WindowId $0 Raise
 + I WindowId $0 WarpToWindow 5p 5p
-# Also in fvwm2 man page.
+# Also in fvwm man page.
 AddToFunc UrgencyFunc I Iconify off
 + I FlipFocus
 + I Raise

@@ -37,7 +37,7 @@ Module FvwmConsole -g 40x10 -fg black -bg green3
 The option -e can be used to choose an alternate front-end:
 
 .RS
-Module FvwmConsole -e /usr/X11/lib/fvwm2/FvwmConsoleC.pl
+Module FvwmConsole -e FvwmConsoleC.pl
 .RE
 
 (see \fIFvwmConsoleC.pl\fP(1)).
@@ -57,13 +57,13 @@ There are a few options.  If the GNU readline library is available, it
 can be used.
 .PP
 If Perl5 is installed, FvwmConsoleC.pl can be used as a command editor.
-This can be accomplished by either copying FvwmConsoleC.pl 
+This can be accomplished by either copying FvwmConsoleC.pl
 to fvwmlib directory as FvwmConsoleC or
 invoking FvwmConsole with -e option.
 For example:
 
 .RS
-Module FvwmConsole -e /usr/lib/X11/fvwm2/FvwmConsoleC.pl
+Module FvwmConsole -e FvwmConsoleC.pl
 .RE
 
 If neither one is installed, a simple input reading function which
@@ -71,7 +71,7 @@ doesn't have editing capabilities is used.
 .P
 GNU readline and FvwmConsoleC.pl have some frequent used commands
 in common as default.
-These commands are similar to emacs. 
+These commands are similar to emacs.
 For more details, refer GNU readline man and info pages, and
 FvwmConsoleC.pl man page.
 
@@ -95,7 +95,7 @@ Cntl-F
 .TP
 Cntl-H
 - backspace
-.TP 
+.TP
 Cntl-K
 - erase to the end of line
 .TP
@@ -136,10 +136,10 @@ typing "quit" at the FvwmConsole command line will cause fvwm to exit.
 .SH COPYRIGHTS
 Copyright 1996, Toshi Isogai. No guarantees or warranties are provided.
 Use this program at your own risk. Permission to use this program for
-any purpose is given, as long as the copyright is kept intact. 
+any purpose is given, as long as the copyright is kept intact.
 
 .SH SEE ALSO
 \fIxterm\fP(1), \fIFvwmConsoleC.pl\fP(1), GNU Readline library
 
 .SH AUTHOR
-Toshi Isogai  
+Toshi Isogai

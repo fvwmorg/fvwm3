@@ -1,11 +1,11 @@
-# FormFvwmSetup. - Setup Text for fvwm2
+# FormFvwmSetup. - Setup Text for fvwm
 # Caution, during install, this file goes thru sed, a trailing newline
 # is required.
 DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.WarpPointer
 # Layout
 *FormFvwmSetup.Line    center
-*FormFvwmSetup.Text    "fvwm2 - Create Configuration"
+*FormFvwmSetup.Text    "fvwm - Create Configuration"
 *FormFvwmSetup.Line    left
 *FormFvwmSetup.Text    " "
 *FormFvwmSetup.Line    left
@@ -63,5 +63,5 @@ DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.Command   $(SCR?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmScroll  ${FVWM_USERHOME})
 *FormFvwmSetup.Command   $(TSK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmTaskBar ${FVWM_USERHOME})
 *FormFvwmSetup.Command   $(WIN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmWinList ${FVWM_USERHOME})
-*FormFvwmSetup.Button  quit    "F3 - Restart fvwm2"
+*FormFvwmSetup.Button  quit    "F3 - Restart fvwm"
 *FormFvwmSetup.Command   Restart fvwm2

@@ -204,8 +204,6 @@ int main(int argc, char **argv)
   if ( user_home_dir == NULL )
     user_home_dir = "."; /* give up and use current dir */
 
-fprintf(stderr,"\nargc = %d\n", argc);
-for (i = 1; i < argc; i++) fprintf(stderr, "argv[%d] = %s\n", i, argv[i]);
   for (i = 1; i < argc; i++)
   {
     if (strncasecmp(argv[i],"-debug",6)==0)

@@ -28,7 +28,7 @@
 /* Draws the relief pattern around a window
  * Draws a line_width wide rectangle from (x,y) to (x+w,y+h) i.e w+1 wide, h+1 high
  * Draws end points assuming CAP_NOT_LAST style in GC
- * Draws anit-clockwise in case CAP_BUTT is the style and the end points overlap
+ * Draws anti-clockwise in case CAP_BUTT is the style and the end points overlap
  * Top and bottom lines come out full length, the sides come out 1 pixel less
  * This is so FvwmBorder windows have a correct bottom edge and the sticky lines
  * look like just lines
@@ -81,7 +81,7 @@ Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
     for (i = 0; i < dest_width; i++)
       XCopyArea(dpy, src, pixmap, gc, (i * src_width) / dest_width, 0,
 		1, src_height, i, 0);
-  
+
   return pixmap;
 }
 
@@ -100,7 +100,7 @@ Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, unsigned int src_width,
     for (i = 0; i < dest_height; i++)
       XCopyArea(dpy, src, pixmap, gc, 0, (i * src_height) / dest_height,
 		src_width, 1, 0, i);
-  
+
   return pixmap;
 }
 
@@ -116,12 +116,13 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
   Pixmap pixmap = None;
   Pixmap temp_pixmap = CreateStretchXPixmap(dpy, src, src_width, src_height,
 					    src_depth, dest_width, gc);
-  if (temp_pixmap) {
+  if (temp_pixmap)
+  {
     pixmap = CreateStretchYPixmap(dpy, temp_pixmap, dest_width, src_height,
 				  src_depth, dest_height, gc);
     XFreePixmap(dpy, temp_pixmap);
   }
-  
+
   return pixmap;
 }
 
@@ -133,43 +134,58 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
  ****************************************************************************/
 Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
 {
-    Pixel *pixels;
-    XColor from, to, c;
-    int r, dr, g, dg, b, db;
-    int i = 0, got_all = 1;
+  Pixel *pixels;
+  XColor from, to, c;
+  int r, dr, g, dg, b, db;
+  int i;
+  int got_all = 1;
+  int div;
 
-    if (npixels < 1) {
-      fprintf(stderr, "AllocLinearGradient: Invalid number of pixels: %d\n",
-	      npixels);
-      return NULL;
-    }
-    if (!s_from || !XParseColor(Pdpy, Pcmap, s_from, &from)) {
-	fprintf(stderr, "Cannot parse color %s\n", s_from ? s_from : "<blank>");
-	return NULL;
-    }
-    if (!s_to || !XParseColor(Pdpy, Pcmap, s_to, &to)) {
-	fprintf(stderr, "Cannot parse color %s\n", s_to ? s_to : "<blank>");
-	return NULL;
-    }
-    c = from;
-    r = from.red; dr = (to.red - from.red) / npixels;
-    g = from.green; dg = (to.green - from.green) / npixels;
-    b = from.blue; db = (to.blue - from.blue) / npixels;
-    pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
-    c.flags = DoRed | DoGreen | DoBlue;
-    for (; i < npixels; ++i)
-    {
-	if (!XAllocColor(Pdpy, Pcmap, &c))
-	    got_all = 0;
-	pixels[ i ] = c.pixel;
-	c.red = (unsigned short) (r += dr);
-	c.green = (unsigned short) (g += dg);
-	c.blue = (unsigned short) (b += db);
-    }
-    if (!got_all) {
-	fprintf(stderr, "Cannot alloc color gradient %s to %s\n", s_from, s_to);
-    }
-    return pixels;
+  if (npixels < 1)
+  {
+    fprintf(stderr, "AllocLinearGradient: Invalid number of pixels: %d\n",
+	    npixels);
+    return NULL;
+  }
+  if (!s_from || !XParseColor(Pdpy, Pcmap, s_from, &from))
+  {
+    fprintf(stderr, "Cannot parse color %s\n", s_from ? s_from : "<blank>");
+    return NULL;
+  }
+  if (!s_to || !XParseColor(Pdpy, Pcmap, s_to, &to))
+  {
+    fprintf(stderr, "Cannot parse color %s\n", s_to ? s_to : "<blank>");
+    return NULL;
+  }
+  /* divisor must not be zero, hence this calculation */
+  div = (npixels == 1) ? 1 : npixels - 1;
+  c = from;
+  /* red part and step width */
+  r = from.red;
+  dr = (to.red - from.red) / div;
+  /* green part and step width */
+  g = from.green;
+  dg = (to.green - from.green) / div;
+  /* blue part and step width */
+  b = from.blue;
+  db = (to.blue - from.blue) / div;
+  pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
+  c.flags = DoRed | DoGreen | DoBlue;
+  for (i = 0; i < npixels; ++i)
+  {
+    if (!XAllocColor(Pdpy, Pcmap, &c))
+      got_all = 0;
+    pixels[ i ] = c.pixel;
+    c.red = (unsigned short) (r += dr);
+    c.green = (unsigned short) (g += dg);
+    c.blue = (unsigned short) (b += db);
+  }
+  if (!got_all)
+  {
+    fprintf(stderr, "Cannot alloc color gradient %s to %s\n", s_from, s_to);
+  }
+
+  return pixels;
 }
 
 /****************************************************************************
@@ -180,33 +196,45 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 			      int nsegs, int npixels)
 {
-    Pixel *pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
-    int i = 0, curpixel = 0, perc = 0;
-    if (nsegs < 1) {
-	fprintf(stderr, "Gradients must specify at least one segment\n");
-	free(pixels);
-	return NULL;
-    }
-    for (; i < npixels; i++)
-	pixels[i] = 0;
+  Pixel *pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
+  int i;
+  int curpixel = 0, perc = 0;
 
-    for (i = 0; (i < nsegs) && (curpixel < npixels) && (perc <= 100); ++i) {
-	Pixel *p;
-	int j = 0, n = clen[i] * npixels / 100;
-	p = AllocLinearGradient(s_colors[i], s_colors[i + 1], n);
-	if (!p) {
-	    free(pixels);
-	    return NULL;
-	}
-	for (; j < n; ++j)
-	    pixels[curpixel + j] = p[j];
-	perc += clen[i];
-	curpixel += n;
-	free(p);
+  if (nsegs < 1)
+  {
+    fprintf(stderr, "Gradients must specify at least one segment\n");
+    free(pixels);
+    return NULL;
+  }
+  for (i = 0; i < npixels; i++)
+    pixels[i] = 0;
+
+  for (i = 0; (i < nsegs) && (curpixel < npixels) && (perc <= 100); ++i)
+  {
+    Pixel *p;
+    int j, n = clen[i] * npixels / 100;
+
+    if (i == nsegs - 1)
+    {
+      /* last segment, need to allocate the final colour too. */
+      n++;
     }
-    for (i = curpixel; i < npixels; ++i)
-      pixels[i] = pixels[i - 1];
-    return pixels;
+    p = AllocLinearGradient(s_colors[i], s_colors[i + 1], n);
+    if (!p)
+    {
+      free(pixels);
+      return NULL;
+    }
+    for (j = 0; j < n; ++j)
+      pixels[curpixel + j] = p[j];
+    perc += clen[i];
+    curpixel += n;
+    free(p);
+  }
+  for (i = curpixel; i < npixels; ++i)
+    pixels[i] = pixels[i - 1];
+
+  return pixels;
 }
 
 /* groks a gradient string and creates arrays of colors and percentages

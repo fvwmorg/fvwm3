@@ -1,5 +1,5 @@
 /*
- * FvwmGtk - gtk menus and dialogs for fvwm2
+ * FvwmGtk - gtk menus and dialogs for fvwm
  *
  * Copyright (c) 1999 Matthias Clasen <clasen@mathematik.uni-freiburg.de>
  *

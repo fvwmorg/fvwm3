@@ -7,13 +7,13 @@ Changes on 1.3
        remote chance of connecting to somebody else's fvwm (this
        could be interesting).
     2. command history is kept in a file from the previous session.
-    3. The maximum command length is now 1000, up from 255. 
-       This should be used with fvwm2 with this limit (greater than 
-       but not equal to 2.0.45). Long module path and such can be 
+    3. The maximum command length is now 1000, up from 255.
+       This should be used with fvwm with this limit (greater than
+       but not equal to 2.0.45). Long module path and such can be
        input now.
-    4. FvwmConsoleC.pl (1.2) looks slightly smoother. (08/22/97)	
+    4. FvwmConsoleC.pl (1.2) looks slightly smoother. (08/22/97)
 
-	With patch from Paul D Smith 
+	With patch from Paul D Smith
 
 	1. changed ADD_INCLUDE variable to EXTRA_INCLUDES in Imakefile.
     2. changed the man page. It makes sense now!
@@ -24,9 +24,9 @@ Changes on 1.3
 
     With patch from Al Bolduc (08/28/97)
 
-    1. runs on BSD/OS which has another element in the sockaddr_un 
+    1. runs on BSD/OS which has another element in the sockaddr_un
        structure.
-       
+
 Changes on 1.2
 -- 08/22/96 ---
 

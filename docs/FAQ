@@ -75,7 +75,7 @@ and type shutdown -h now...)
 I know this is probably not a pure FVWM question, and I appologize
 if this is the wrong place to ask.  But, I'm looking for suggestions
 on how to implement this.  Preferably, she would just have to click
-a button or menu item (in X, with fvwm2) to cleanly bring the system
+a button or menu item (in X, with fvwm) to cleanly bring the system
 down.
 
 4. Modules
@@ -351,7 +351,7 @@ A: This is always a difficult question to answer.  We work on fvwm on
 A: Very easily, using the '--prefix' flag at configure time.
 
    Suppose your home directory is /home/sam.  After unpacking the
-   fvwm2 sources, do "./configure --prefix=/home/sam [other options as
+   fvwm sources, do "./configure --prefix=/home/sam [other options as
    needed]'.  Now, after building ("make") and installing ("make
    install"), you will find the binaries in /home/sam/bin, the
    man pages in /home/sam/man, etc.  The modules will be in
@@ -590,7 +590,7 @@ A: Both of these commands change the keyboard focus to the target
 
    If you have several windows on a desk and you want to set the
    circulation order for the Next and Prev commands you should focus on
-   the windows using the mouse or FlipFocus in the order you want.  Fvwm2
+   the windows using the mouse or FlipFocus in the order you want.  Fvwm
    will learn the order and use it for the Next and Prev commands.  If
    you subsequently use the mouse to focus or FlipFocus the order will
    be lost.
@@ -1304,7 +1304,7 @@ A: The application won't allow it.  This has only been observed with
 5.8  How do I capture the output (eg errors) of fvwm?
 
 A: Errors are reported to the standard error file.  You can redirect
-   standard error to a file when fvwm2 is started: "fvwm2 2>
+   standard error to a file when fvwm is started: "fvwm2 2>
    fvwm-errors".  X sessions started by xdm often redirect errors to a
    file named ".xsession-errors".
 
@@ -1417,7 +1417,7 @@ A: Our naming convention is sometimes a source of confusion, and when
 6.2  I'd really like {OpenWindows, NeXT, Win95, Mac, etc} look and
      feel.  Are you going to support that?
 
-A: This is not our primary mission, but we think fvwm2 does a pretty
+A: This is not our primary mission, but we think fvwm does a pretty
    good job of producing these appearances.
 
 ----------------------------------------------------------------------
@@ -1459,14 +1459,14 @@ A: This has come up a few times, so I thought I'd put it here too.
 
 7.1  An easy way to test new configurations.
 
-   Did you know that you do not need to restart X or fvwm2 to see what
+   Did you know that you do not need to restart X or fvwm to see what
    most configuration commands do? There are several modules
-   that allow you to issue fvwm2 commands at any time.  Among
+   that allow you to issue fvwm commands at any time.  Among
    these are FvwmCommand, "FvwmForm FormFvwmTalk." and FvwmConsole.
    Personally I use FvwmCommand and FvwmConsole.
 
    When you run FvwmConsole you get a shell like window where you can
-   type configuration commands that are sent to fvwm2.  Just add an
+   type configuration commands that are sent to fvwm.  Just add an
    entry to some menu that starts it:
 
      AddToMenu main_menu
@@ -1532,7 +1532,7 @@ A: This has come up a few times, so I thought I'd put it here too.
    $HOME/.fvwm2/backgrounds.  The suffix .bg.* is removed.  When I
    select an item the file is displayed in the background using xv.
    Furthermore the path and filename are stored in
-   $HOME/.fvwm2/background.  When I start my next fvwm2 session the
+   $HOME/.fvwm2/background.  When I start my next fvwm session the
    filename is fetched from there so I get the background from my last
    session.
 
@@ -1657,7 +1657,7 @@ A: This has come up a few times, so I thought I'd put it here too.
 
      SnapGrid 8
 
-   in your .fvwm2rc tells fvwm2 to use a grid of 8 pixels to place
+   in your .fvwm2rc tells fvwm to use a grid of 8 pixels to place
    windows and icons.  Try it and see if you like it.
 
    Hint: It might be a good idea to use a divisor of your desktop

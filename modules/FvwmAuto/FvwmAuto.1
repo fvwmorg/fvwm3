@@ -33,7 +33,7 @@ AddToMenu Modules "Modules"      Title
 +                 "Banner"       Module FvwmBanner
 +                 "Pager"        Module FvwmPager 0 3
 .EE
-.fi             
+.fi
 The \fITimeout\fP argument is required. It specifies how long a window must
 retain the keyboard input focus before the command is executed. The
 delay is measured in milliseconds, and any integer 0 or greater is
@@ -44,7 +44,7 @@ acceptable.
 window gets the input focus, \fILeaveCommand\fP is executed
 \fITimeout\fP milliseconds after the window has lost focus.
 
-"Raise" is the default for \fIEnterCommand\fP, but any fvwm2 function
+"Raise" is the default for \fIEnterCommand\fP, but any fvwm function
 is allowed. I would not use "Close" or "Destroy" with a low timeout,
 though.
 The \fILeaveCommand\fP can be handy for a tidy desktop. Experiment with:

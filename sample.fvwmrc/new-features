@@ -1,16 +1,16 @@
 ##############################
-# Sample .fvwm2rc file 
+# Sample .fvwm2rc file
 # Configured by Jay Kuri
 # 2/9/99
 ##############################
 
-# Paths 
-#	Paths are given as a list of directories, seperated by colons 
+# Paths
+#	Paths are given as a list of directories, seperated by colons
 #
 # ImagePath 	A list of directories where images (bitmaps, pixmaps,
 #		etc) can be found.
 #
-# ModulePath	A list of directories where fvwm2 modules are stored.
+# ModulePath	A list of directories where fvwm modules are stored.
 #		The compiled-in setting will contain all modules
 #		distributed with fvwm, so you only set this if you
 #		add your own modules in another directory.
@@ -18,7 +18,7 @@
 ImagePath	/usr/X11R6/include/X11/pixmaps/:$HOME/xpms:$HOME/pixmaps
 #ModulePath	$FVWM_MODULEDIR:$HOME/fvwm-modules
 
-# set XORvalue to something visible.  This sets the coloration of the 
+# set XORvalue to something visible.  This sets the coloration of the
 # 'rubber-band' window-borders when moving and resizing windows.
 XORvalue 208
 
@@ -43,18 +43,18 @@ HilightColor #ffffff #1ea819
 
 
 # BorderStyle
-# 
+#
 # This sets how the border of windows will be displayed.
 # Format:  BorderStyle [state] [style] [ -- [!flag] ... ]
-# State is either Active or Inactive 
-# The commands below set the borders to solid colors 
+# State is either Active or Inactive
+# The commands below set the borders to solid colors
 #
 BorderStyle Active -- NoInset HiddenHandles
 BorderStyle Inactive -- NoInset HiddenHandles
 
-# TitleStyle 
+# TitleStyle
 #
-# This option sets the style of the window title-bar 
+# This option sets the style of the window title-bar
 # We set the Active style to a Green vertical gradient,
 # the Active (pushed down) style to the reverse of the green gradient
 # and the Inactive style to a blue vertical gradient
@@ -66,7 +66,7 @@ TitleStyle ActiveDown Vgradient 16 #065414 #1ea819 -- flat
 TitleStyle Inactive Vgradient 16 #11236b #03092b -- flat
 
 # The Second Variation of TitleStyle:
-# 
+#
 # Format: TitleStyle [ justification ] [ height num ]
 #
 TitleStyle LeftJustified height 18
@@ -83,12 +83,12 @@ TitleStyle LeftJustified height 18
 #
 # the 'button' is the number of the button you are defining, it can be
 # a number from 0-9 or the word 'all' which means apply the style to all
-# buttons.  
+# buttons.
 # Even button numbers are on the right, while odd button numbers are on the
 # left. The lower numbers are on the outside:  13579	title	86420
-#		
+#
 # First, we set all buttons to start with the same style we are using for
-# the title.  Then we define the pixmaps we use as our buttons using 
+# the title.  Then we define the pixmaps we use as our buttons using
 # AddButtonStyle.
 ButtonStyle All -- UseTitleStyle flat
 AddButtonStyle 1 Pixmap button.xpm
@@ -100,11 +100,11 @@ AddButtonStyle 8 Pixmap button-close.xpm
 # MenuStyle
 #
 # MenuStyle is perhaps the most complicated configuration option. For this
-# reason we suggest you read the fvwm2 man page.  However, using the 
-# MenuStyle definition below, we will attempt to give you an idea of how to 
+# reason we suggest you read the fvwm2 man page.  However, using the
+# MenuStyle definition below, we will attempt to give you an idea of how to
 # use it.
 #
-# Format: MenuStyle stylename options 
+# Format: MenuStyle stylename options
 #
 # The StyleName is a name to indicate which menustyle you are defining.  All
 # of the menus get the '*' by default. (you can change the menu style a menu
@@ -117,8 +117,8 @@ AddButtonStyle 8 Pixmap button-close.xpm
 # ActiveFore sets the foreground color of the currently selected menu-item
 #
 # ForeGround sets the foreground color of non-selected menu-items
-# 
-# Popupoffset sets the offset of child-menus.  
+#
+# Popupoffset sets the offset of child-menus.
 #   Format: Popupoffset pixels percent
 #	We set the percent to 100, making the child-menus pop-up to the right
 #	of the existing menus.
@@ -126,10 +126,10 @@ AddButtonStyle 8 Pixmap button-close.xpm
 # MenuFace sets the background of the menu using the 'fancy' options.
 # 	Menuface is another complicated one so again, check the man-page,
 #	but I'll explain the one here:
-#	This menuface command sets the background of the menus to a 
+#	This menuface command sets the background of the menus to a
 #	   Horizontal gradient using 64 colors, with one pair of colors,
 #	   from the color #758591 to the color #102030.
-#	
+#
 # Animation turns menu animations on.  If you pop-up a submenu on the right
 # 	edge of the screen, the menu will move over so it is fully visible.
 #
@@ -139,14 +139,14 @@ MenuStyle * MenuFace HGradient 64 1 #758591 100 #102030, Animation
 
 
 # Set up some desktop options
-# 
-# Desktop [Horizontal]x[vertical]  Defines the virtual desktop size, 
+#
+# Desktop [Horizontal]x[vertical]  Defines the virtual desktop size,
 #	1x1 = one physical screen size (no virtual desktop
 DesktopSize	1x1
 
 # EdgeResistance scrolling moving
 #   Sets how hard it is to change the desktop viewport
-#   scrolling is in milliseconds 
+#   scrolling is in milliseconds
 #   moving is in pixels (how far a window's edge must move to move off-screen
 #
 # These values don't much matter in this configuration as our viewport
@@ -173,12 +173,12 @@ OpaqueMoveSize 50
 # They allow you to change the way windows are placed, decorated and treated
 # in general.  You can give different options to different windows, so that
 # your xterms may be decorated differently than, say, your netscape window.
-# 
+#
 # The format of the style commands are:
 # 	Style windowname options
 #
 # The windowname is the window's name class or resource string that you want
-# this option to affect.  You can use wildcards (such as * or ?), thus 
+# this option to affect.  You can use wildcards (such as * or ?), thus
 # "*" specifies options for all windows.
 # The options that you can specify with the Style command are many and varied
 # and really warrant a look at the fvwm2 man page.
@@ -197,7 +197,7 @@ Style "*" NakedTransient
 
 # Some Fvwm-Related Styles
 Style "Fvwm*"	NoTitle, NoHandles, Sticky, WindowListSkip
-Style "FvwmWinList"	NoTitle 
+Style "FvwmWinList"	NoTitle
 Style "FvwmPager"	BorderWidth 0
 
 # My own settings
@@ -209,10 +209,10 @@ Style "*Dialog_popup" WindowListSkip
 Style "*Download" WindowListSkip,NoTitle
 
 # Resources for Modules
-# 
+#
 # Resources are usually of the form
 # *ModulenameOption value
-# 
+#
 # Resources are used to configure fvwm modules. See the man page for each
 # module to find out what resources you can set
 #
@@ -222,7 +222,7 @@ Style "*Download" WindowListSkip,NoTitle
 *FvwmPagerFore #484058
 *FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 *FvwmPagerHilight #908090
-*FvwmPagerDeskTopScale 64 
+*FvwmPagerDeskTopScale 64
 *FvwmPagerGeometry -0-0
 *FvwmPagerLabel 0 Pager
 *FvwmPagerSmallFont 5x8
@@ -256,13 +256,13 @@ Style "*Download" WindowListSkip,NoTitle
 *SshCommand	Nop
 
 # Function definitions
-# 
+#
 # Functions let you define more complex events than fvwm provides
 #  in it's default configuration.  It allows you to do multiple things
 #  when something happens... for example.  The following function
 #  can be used on the titlebar of a window, and will allow you to move,
-#  raise or windowshade a window when you move, click, or doubleclick 
-#  the titlebar, respectively. 
+#  raise or windowshade a window when you move, click, or doubleclick
+#  the titlebar, respectively.
 AddToFunc "Move-or-Raise" "M" Move
 +              "M" Raise
 +              "C" Raise
@@ -296,10 +296,10 @@ AddToFunc "Maximize_func" "M" Maximize 0 100
 +              "D" Maximize 100 100
 
 # Popup menus
-# 
-# Now we start defining menus.  The Window-popups are used for 
+#
+# Now we start defining menus.  The Window-popups are used for
 # window-operations.
-# 
+#
 # Application and root-menu definitions come later
 AddToMenu "Window-Popup" "Window Ops" Title
 +              "Move" Function Move-or-Raise
@@ -331,8 +331,8 @@ AddToMenu "Window-ops-Popup" "Move" Function Move-or-Raise
 
 
 # Key bindings
-#   
-#  Now we set-up some hot-keys.  
+#
+#  Now we set-up some hot-keys.
 #  The format for Key-bindings is:
 #
 #  Key keyname context modifier function
@@ -343,9 +343,9 @@ AddToMenu "Window-ops-Popup" "Move" Function Move-or-Raise
 #     S for Shift, M for Meta, C for Control, or A for any. You can combine
 #     these, so things like SM (shift-Meta) are valid.
 #
-Key F3 W M Iconify 
-Key F3 I M Iconify 
-Key F4 W M Close 
+Key F3 W M Iconify
+Key F3 I M Iconify
+Key F4 W M Close
 Key F11 A C Exec exec xlock -mode swarm &
 Key F9 A M Desk 0 0
 Key F10 A M Desk 0 1
@@ -366,24 +366,24 @@ Key Tab A M Next (CurrentDesk !Iconic) Focus
 Key Tab A SM Prev (CurrentDesk !Iconic) Focus
 
 # Mouse bindings
-# 
+#
 # Mouse bindings work in very much the same way as key bindings
 #
 # Format:  Mouse Button Context Modifiers function
-# 
+#
 Mouse 1 R N Menu "Utilities" Nop
-Mouse 2 R N Menu "Window-Popup" Nop 
+Mouse 2 R N Menu "Window-Popup" Nop
 Mouse 3 R N Module FvwmWinList transient
-Mouse 1 1 N Iconify 
-Mouse 3 1 N Menu "Window-ops-Popup" Nop 
-Mouse 1 2 N Maximize 
+Mouse 1 1 N Iconify
+Mouse 3 1 N Menu "Window-ops-Popup" Nop
+Mouse 1 2 N Maximize
 Mouse 3 2 N Function "Resize-or-Raise"
 Mouse 1 4 N Maximize 0 100
 Mouse 1 6 N Maximize 100 0
-Mouse 1 8 N Delete 
+Mouse 1 8 N Delete
 Mouse 1 T N Function "Move-or-Raise"
 Mouse 1 SF N Function "Resize-or-Raise"
-Mouse 3 T N RaiseLower 
+Mouse 3 T N RaiseLower
 Mouse 1 I N Function "Move-or-Iconify"
 Mouse 3 I N Function "Move-or-Iconify"
 Mouse 2 TSFI N Menu "Window-ops-Popup" Nop
@@ -400,36 +400,36 @@ Mouse 3 S N Function "Move-or-Iconify"
 AddToMenu "Remote-Popup" "somewhere" 	exec xterm -sl 1024 -cr white -fg white -bg \#114433 -T Oneway -e ssh -l me somewhere.com
 +              "generic" FvwmForm Ssh
 
-AddToMenu "Applications-Popup"  "Netscape" Exec /usr/local/bin/netscape 
+AddToMenu "Applications-Popup"  "Netscape" Exec /usr/local/bin/netscape
 +	       "Addressbook" Exec addressbook
-+              "Xdir" Exec xdir 
-+	       "Knews" Exec knews 
++              "Xdir" Exec xdir
++	       "Knews" Exec knews
 
-AddToMenu "Graphics-Popup" "The GIMP" Exec xterm -fg \#30d030 -bg black -T gimpit -geometry 80x5+602+787 -e /usr/local/bin/gimp 
-+              "Tgif" Exec tgif 
-+              "Xpaint" Exec xpaint 
+AddToMenu "Graphics-Popup" "The GIMP" Exec xterm -fg \#30d030 -bg black -T gimpit -geometry 80x5+602+787 -e /usr/local/bin/gimp
++              "Tgif" Exec tgif
++              "Xpaint" Exec xpaint
 +	       "Xmag" Exec xmag
-+              "XView" Exec xv 
-+              "Image Magick" Exec display 
++              "XView" Exec xv
++              "Image Magick" Exec display
 
-AddToMenu "Development-Popup"  "X-gdb" Exec xxgdb 
-+              "ddd" Exec ddd 
-+              "X-man" Exec xman 
+AddToMenu "Development-Popup"  "X-gdb" Exec xxgdb
++              "ddd" Exec ddd
++              "X-man" Exec xman
 
-AddToMenu "Accessories-Popup" "Calculator" Exec xcalc 
-+              "Seyon" Exec seyon -modems /dev/cuaa1 
-+              "Nedit" Exec nedit 
-+	       "Lock" Exec xlock -mode swarm 
+AddToMenu "Accessories-Popup" "Calculator" Exec xcalc
++              "Seyon" Exec seyon -modems /dev/cuaa1
++              "Nedit" Exec nedit
++	       "Lock" Exec xlock -mode swarm
 
-AddToMenu "Games-Popup" "X-kobo" Exec xkobo 
-+              "X-boing" Exec xboing 
-+              "Mahjong" Exec xmj 
-+              "Minesweeper" Exec xmine 
-+              "X-Emeraldia" Exec xemeraldia -noscore 
-+              "Solitaire" Exec tksol 
+AddToMenu "Games-Popup" "X-kobo" Exec xkobo
++              "X-boing" Exec xboing
++              "Mahjong" Exec xmj
++              "Minesweeper" Exec xmine
++              "X-Emeraldia" Exec xemeraldia -noscore
++              "Solitaire" Exec tksol
 
-AddToMenu "Sound-Popup" "X-Mixer" Exec xmmix 
-+              "Xm-CD Player" Exec xmcd 
+AddToMenu "Sound-Popup" "X-Mixer" Exec xmmix
++              "Xm-CD Player" Exec xmcd
 
 AddToMenu "Module-Popup" "FvwmTalk" Module FvwmTalk
 +              "Clean-Up" Module FvwmClean

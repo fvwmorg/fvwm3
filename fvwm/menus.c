@@ -87,7 +87,10 @@
 #define DEFAULT_ITEM_FORMAT          "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
 #define DEFAULT_LEFT_ITEM_FORMAT     "%.1|%3.2<%5i%5l%5l%5r%5i%1|%s"
 
-#define GRADIENT_PIXMAP_THICKNESS    5
+/* This is the tile width or height for V and H gradients. I guess this should
+ * better be a power of two. A value of 5 definitely causes XFree 3.3.3.1 to
+ * screw up the VGradient on an 8 bit display, but 4, 6, 7 etc. work well. */
+#define GRADIENT_PIXMAP_THICKNESS    4
 
 #define DEFAULT_MENU_BORDER_WIDTH    2
 #define MAX_MENU_BORDER_WIDTH        50
@@ -800,7 +803,7 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
   int menu_y;
   unsigned int menu_width;
   unsigned int menu_height;
-  Bool is_up;
+  int items_to_move;
 
   /* handle double-keypress */
   if (pdkp->timestamp &&
@@ -874,166 +877,228 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
     /* MMH mikehan@best.com 2/7/99 */
   }
 
-  is_up = False;
+  items_to_move = 0;
   switch(keysym)		/* Other special keyboard handling	*/
+  {
+  case XK_Escape:		/* Escape key pressed. Abort		*/
+  case XK_Delete:
+  case XK_KP_Separator:
+    return MENU_ABORTED;
+    break;
+
+  case XK_Return:
+  case XK_KP_Enter:
+    return MENU_SELECTED;
+    break;
+
+  case XK_Left:
+  case XK_KP_4:
+    if (MST_USE_LEFT_SUBMENUS(mr))
     {
-    case XK_Escape:		/* Escape key pressed. Abort		*/
-      return MENU_ABORTED;
-      break;
-
-    case XK_Return:
-    case XK_KP_Enter:
-      return MENU_SELECTED;
-      break;
-
-    case XK_Left:
-    case XK_KP_4:
-      if (MST_USE_LEFT_SUBMENUS(mr))
-      {
-	if (miCurrent && MI_IS_POPUP(miCurrent))
-	  return MENU_POPUP;
-      }
-      else
-	return MENU_POPDOWN;
-      break;
-
-    case XK_b: /* back */
-    case XK_h: /* vi left */
-      return MENU_POPDOWN;
-      break;
-
-    case XK_Right:
-    case XK_KP_6:
-      if (!MST_USE_LEFT_SUBMENUS(mr))
-      {
-	if (miCurrent && MI_IS_POPUP(miCurrent))
-	  return MENU_POPUP;
-      }
-      else
-	return MENU_POPDOWN;
-      break;
-
-    case XK_f: /* forward */
-    case XK_l: /* vi right */
       if (miCurrent && MI_IS_POPUP(miCurrent))
 	return MENU_POPUP;
-      break;
+    }
+    else
+      return MENU_POPDOWN;
+    break;
 
-    case XK_Up:
-    case XK_KP_8:
-    case XK_k: /* vi up */
-    case XK_p: /* prior */
-      is_up = True;
-      /* fall through */
-    case XK_Down:
-    case XK_KP_2:
-    case XK_j: /* vi down */
-    case XK_n: /* next */
-      if (!miCurrent)
-      {
-	XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
-		     &menu_width, &menu_height, &JunkBW, &JunkDepth);
-	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		      &mx, &my, &JunkX, &JunkY, &JunkMask);
-	if (my < menu_y + MST_BORDER_WIDTH(mr))
-	{
-	  if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
-	    return MENU_NEWITEM;
-	  else
-	    return MENU_NOP;
-	}
-	else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
-	{
-	  if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
-	    return MENU_NEWITEM;
-	  else
-	    return MENU_NOP;
-	}
-	else
-	{
-	  /*Warp the pointer back into the menu. */
-	  XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
-		       menu_middle_x_offset(mr), my - menu_y);
-	  *pmiCurrent = find_entry(NULL, NULL);
-	  return MENU_NEWITEM;
-	}
-      }
+  case XK_b: /* back */
+  case XK_h: /* vi left */
+    return MENU_POPDOWN;
+    break;
 
-      /* Need isascii here - isgraph might coredump! */
-      if (isascii(keysym) && isgraph(keysym))
-	fControlKey = False; /* don't use control modifier
-				for j or n, since those might
-				be shortcuts too-- C-j, C-n will
-				always work to do a single down */
-      if (is_up)
-      {
-	index = get_selectable_item_index(mr, miCurrent);
-	if (index == 0)
-	  /* wraparound */
-	  index = get_selectable_item_count(mr);
-	else if (fShiftedKey)
-	  index = 0;
-	else
-	  {
-	    index -= (fControlKey?5:1);
-	  }
-      }
-      else
-      {
-	if (fShiftedKey)
-	  index = get_selectable_item_count(mr);
-	else
-	{
-	  index = get_selectable_item_index(mr, miCurrent) +
-	    (fControlKey ? 5 : 1);
-	  /* correct for the case that we're between items */
-	  if (MI_IS_SEPARATOR(miCurrent) || MI_IS_TITLE(miCurrent))
-	    index--;
-	}
-      }
-      newItem = get_selectable_item_from_index(mr, index);
-      if (!is_up)
-      {
-	if (newItem == miCurrent)
-	  newItem = get_selectable_item_from_index(mr, 0);
-      }
-      if (newItem)
-      {
-	*pmiCurrent = newItem;
-	return MENU_NEWITEM;
-      }
-      else
-	return MENU_NOP;
-      break;
-
-    case XK_Page_Up:
-      if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
-	return MENU_NEWITEM;
-      else
-	return MENU_NOP;
-      break;
-
-    case XK_Page_Down:
+  case XK_Insert:
+  case XK_KP_0:
+    /* move to last entry of menu ('More...' if this exists) and try to enter
+     * the menu. */
+    if (MR_CONTINUATION_MENU(mr) != NULL)
+    {
       if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
-	return MENU_NEWITEM;
+      {
+	if (*pmiCurrent && MI_IS_POPUP(*pmiCurrent))
+	  /* enter the submenu */
+	  return MENU_POPUP;
+      }
+    }
+    /* do nothing */
+    *pmiCurrent = miCurrent;
+    return MENU_NOP;
+
+  case XK_Right:
+  case XK_KP_6:
+    if (!MST_USE_LEFT_SUBMENUS(mr))
+    {
+      if (miCurrent && MI_IS_POPUP(miCurrent))
+	return MENU_POPUP;
+    }
+    else
+      return MENU_POPDOWN;
+    break;
+
+  case XK_f: /* forward */
+  case XK_l: /* vi right */
+    if (miCurrent && MI_IS_POPUP(miCurrent))
+      return MENU_POPUP;
+    break;
+
+  case XK_Page_Up:
+  case XK_KP_9:
+    items_to_move = -5;
+    /* fall through */
+  case XK_Up:
+  case XK_KP_8:
+  case XK_k: /* vi up */
+  case XK_p: /* prior */
+    if (items_to_move == 0)
+    {
+      if (fControlKey)
+      {
+	items_to_move = -5;
+      }
+      else if (fShiftedKey)
+      {
+	items_to_move = 0x80000000;
+      }
       else
-	return MENU_NOP;
-      break;
+      {
+	items_to_move = -1;
+      }
+    }
+    /* fall through */
+  case XK_Page_Down:
+  case XK_KP_3:
+    if (items_to_move == 0)
+    {
+      items_to_move = 5;
+    }
+    /* fall through */
+  case XK_Down:
+  case XK_KP_2:
+  case XK_j: /* vi down */
+  case XK_n: /* next */
+    if (items_to_move == 0)
+    {
+      if (fControlKey)
+      {
+	items_to_move = 5;
+      }
+      else if (fShiftedKey)
+      {
+	items_to_move = 0x7fffffff;
+      }
+      else
+      {
+	items_to_move = 1;
+      }
+    }
+    if (!miCurrent)
+    {
+      XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
+		   &menu_width, &menu_height, &JunkBW, &JunkDepth);
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &mx, &my, &JunkX, &JunkY, &JunkMask);
+      if (my < menu_y + MST_BORDER_WIDTH(mr))
+      {
+	if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
+	  return MENU_NEWITEM;
+	else
+	  return MENU_NOP;
+      }
+      else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
+      {
+	if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
+	  return MENU_NEWITEM;
+	else
+	  return MENU_NOP;
+      }
+      else
+      {
+	/*Warp the pointer back into the menu. */
+	XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
+		     menu_middle_x_offset(mr), my - menu_y);
+	*pmiCurrent = find_entry(NULL, NULL);
+	return MENU_NEWITEM;
+      }
+    }
+
+    /* Need isascii here - isgraph might coredump! */
+    if (isascii(keysym) && isgraph(keysym))
+      fControlKey = False; /* don't use control modifier
+			      for j or n, since those might
+			      be shortcuts too-- C-j, C-n will
+			      always work to do a single down */
+    if (items_to_move < 0)
+    {
+      index = get_selectable_item_index(mr, miCurrent);
+      if (index == 0)
+	/* wraparound */
+	index = get_selectable_item_count(mr);
+      else if (items_to_move == 0x80000000)
+	/* move to start */
+	index = 0;
+      else
+      {
+	index += items_to_move;
+      }
+    }
+    else
+    {
+      if (items_to_move == 0x7fffffff)
+	/* move to end */
+	index = get_selectable_item_count(mr);
+      else
+      {
+	index = get_selectable_item_index(mr, miCurrent) + items_to_move;
+	/* correct for the case that we're between items */
+	if (MI_IS_SEPARATOR(miCurrent) || MI_IS_TITLE(miCurrent))
+	  index--;
+      }
+    }
+    newItem = get_selectable_item_from_index(mr, index);
+    if (items_to_move > 0)
+    {
+      if (newItem == miCurrent)
+	newItem = get_selectable_item_from_index(mr, 0);
+    }
+    if (newItem)
+    {
+      *pmiCurrent = newItem;
+      return MENU_NEWITEM;
+    }
+    else
+      return MENU_NOP;
+    break;
+
+  case XK_Home:
+  case XK_KP_7:
+    if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
+      return MENU_NEWITEM;
+    else
+      return MENU_NOP;
+    break;
+
+  case XK_End:
+  case XK_KP_1:
+    if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
+      return MENU_NEWITEM;
+    else
+      return MENU_NOP;
+    break;
 
 #ifdef TEAR_OFF_MENUS
-    case XK_BackSpace:
+  case XK_BackSpace:
 fprintf(stderr,"menu torn off\n");
-      return MENU_TEAR_OFF;
-      break;
+    return MENU_TEAR_OFF;
+    break;
 #endif
 
-    default:
-      /* Nothing special --- Allow other shortcuts */
-      /* There are no useful shortcuts, so don't do that.
-       * (Dominik Vogt, 11-Nov-1998)
-       * Keyboard_shortcuts(event, NULL, ButtonRelease); */
-      break;
-    }
+  default:
+    /* Nothing special --- Allow other shortcuts */
+    /* There are no useful shortcuts, so don't do that.
+     * (Dominik Vogt, 11-Nov-1998)
+     * Keyboard_shortcuts(event, NULL, ButtonRelease); */
+    break;
+  }
 
   return MENU_NOP;
 }
@@ -3047,8 +3112,20 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	{
 	  register int i;
 	  register int dh;
+	  static int best_tile_width = 0;
+	  int junk;
 
-	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), GRADIENT_PIXMAP_THICKNESS,
+	  if (best_tile_width == 0)
+	  {
+	    if (!XQueryBestTile(dpy, Scr.screen, GRADIENT_PIXMAP_THICKNESS,
+				GRADIENT_PIXMAP_THICKNESS,
+				&best_tile_width, &junk))
+	    {
+	      /* call failed, use default and risk a screwed up tile */
+	      best_tile_width = GRADIENT_PIXMAP_THICKNESS;
+	    }
+	  }
+	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), best_tile_width,
 			       MR_HEIGHT(mr), Pdepth);
 	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 	  dh = (float) (bounds.height / ST_FACE(ms).u.grad.npixels) + 1;
@@ -3056,8 +3133,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  {
 	    unsigned short y = i * bounds.height/ST_FACE(ms).u.grad.npixels;
 	    XSetForeground(dpy, pmapgc, ST_FACE(ms).u.grad.pixels[i]);
-	    XFillRectangle(dpy, pmap, pmapgc, 0, y, GRADIENT_PIXMAP_THICKNESS,
-			   dh);
+	    XFillRectangle(dpy, pmap, pmapgc, 0, y, best_tile_width, dh);
 	  }
 	  XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
 	  XFreeGC(dpy,pmapgc);
@@ -4728,6 +4804,7 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
       free(style);
       return False;
     }
+    npixels = 0;
     npixels = atoi(item);
     free(item);
 

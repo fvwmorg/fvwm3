@@ -18,7 +18,7 @@ FvwmForm - input form module for Fvwm
 .SH SYNOPSIS
 \fBModule FvwmForm\fP [ \fIAlias\fP ]
 
-FvwmForm must be spawned by Fvwm.  
+FvwmForm must be spawned by Fvwm.
 If invoked from the command line,
 FvwmForm prints its version number and exits.
 .SH DESCRIPTION
@@ -26,7 +26,7 @@ FvwmForm provides a mechanism to get user input and act accordingly.
 This is achieved by means of a form that the user can fill out,
 and from which the user can select actions he wants Fvwm to take.
 A form consists of five types of items:
-text labels, 
+text labels,
 single-line text inputs,
 mutually-exclusive selections,
 multiple-choice selections,
@@ -79,16 +79,16 @@ is done only the first time FvwmForm is invoked, or after
 "FormFvwmForm" updates the file.
 
 When the file ".FvwmForm" is read,  it is done  by sending the command
-"Read .FvwmForm  Quiet"   to fvwm2.  Because of  the   way the  "read"
+"Read .FvwmForm  Quiet"   to fvwm.  Because of  the   way the  "read"
 command works, the file can  reside in your  home directory, or be  in
-the fvwm2 configuration directory.
+the fvwm configuration directory.
 
-Then FvwmForm reads the rest of the configuration fvwm2 has stored
-up.  Fvwm2 stores configuration on an ongoing basis.  The initial
+Then FvwmForm reads the rest of the configuration fvwm has stored
+up.  Fvwm stores configuration on an ongoing basis.  The initial
 configuration comes from the .fvwm2rc file.  Other sources,
 including "Read" commands can define a form.
 
-When letting FvwmForm and fvwm2 read files, remember that these
+When letting FvwmForm and fvwm read files, remember that these
 files contain commands that can do things, so you should be careful
 about setting permissions on these files.
 
@@ -120,7 +120,7 @@ to show the new defaults.
 An example of what this file might contain after a save is:
 .EX
   # This file created by FvwmForm
-  
+
   *FvwmFormDefaultFont 10x20
   *FvwmFormDefaultInputFont 8x13bold
   *FvwmFormDefaultButtonFont 10x20
@@ -141,7 +141,7 @@ by sending the command "*FvwmFormDefaultRead x". With "x" set to "y" or
 
 .SH CONFIGURATION
 The following commands can be set in the .fvwm2rc file or thru
-any of the other ways that fvwm2 can accept commands.
+any of the other ways that fvwm can accept commands.
 The simplest technique is to create a file in the read-only architecture-independent data directory,
 [PREFIX/share] or your home directory that starts with a period ('.')
 and matches the form alias.
@@ -286,7 +286,7 @@ width of the window.
 .TP 4
 .B *FvwmFormMessage
 Defines a text area on the form that contains the last error message
-from fvwm2.  For purposes of determining form size, the message area
+from fvwm.  For purposes of determining form size, the message area
 is considered to be 80 bytes long.  Its actual length is the same as
 the message received.  If the message exceeds 80 bytes, you can see the
 rest of the message by resizing the form.
@@ -295,7 +295,7 @@ You should not attempt to put any text, buttons or input fields on the
 same line after a message field.  Messages greater than 80 bytes will overlay
 the remainder of the line.
 .TP 4
-.B *FvwmFormPadVText "\fIPixels\fP" 
+.B *FvwmFormPadVText "\fIPixels\fP"
 The number of pixels used as vertical padding between text items, line
 to line.  The default is 6 which looks good on lines containing text
 intermixed with input boxes, choices or buttons.
@@ -347,7 +347,7 @@ FvwmForm  assures only one is selected.
 .TP 4
 .B *FvwmFormButton \fItype\fP "\fIstring\fP" [\fIkey\fP]
 This option specifies an action button.
-The button has \fIstring\fP as a label, 
+The button has \fIstring\fP as a label,
 and excutes a set of Fvwm \fIcommand\fP when it is activated.
 The commands are the following *FvwmFormCommands.
 
@@ -366,7 +366,7 @@ continue
 FvwmForm continues execution after sending the commands.
 .TP 16
 restart
-After sending the commands, 
+After sending the commands,
 FvwmForm resets all the values to the initial ones,
 and then continues execution.
 .TP 16
@@ -417,15 +417,15 @@ Tells FvwmForm to read a data file and extract data from module
 commands that match the "leading" argument and an input
 variable in a form.
 
-This lets a form display current fvwm2 module configuration data.
+This lets a form display current fvwm module configuration data.
 For an example of how this works, examine the file "FormFvwmForm."
 which is installed in read-only architecture-independent data directory,
 [PREFIX/share].
 
 .SH EXAMPLES
-All of the following "examples" are installed in the 
+All of the following "examples" are installed in the
 read-only architecture-independent data directory,
-[PREFIX/share], during fvwm2 installation.
+[PREFIX/share], during fvwm installation.
 
 The following commands create a menu to invoke the examples:
 
@@ -448,12 +448,12 @@ DestroyModuleConfig            FormFvwmQuitVerify.*
 *FormFvwmQuitVerify.Text        "Do you really want to logout?"
 *FormFvwmQuitVerify.Line        expand
 *FormFvwmQuitVerify.Button      quit "Logout" ^M
-*FormFvwmQuitVerify.Command     Quit 
+*FormFvwmQuitVerify.Command     Quit
 *FormFvwmQuitVerify.Button      quit "Cancel" ^[
 *FormFvwmQuitVerify.Command     Nop
 .EE
 .SH EXAMPLE 2 - Remote Login
-This example lets the user type in a hostname, 
+This example lets the user type in a hostname,
 an optional user name,
 and opens an xterm window from the remote host.
 .EX
@@ -512,8 +512,8 @@ DestroyModuleConfig        FormFvwmCapture.*
 .SH EXAMPLE 4 - Talk Form
 This example provides a replacement for the module FvwmTalk.
 There are 2 forms, "FormFvwmTalk." which executes commands,
-or sends commands to fvwm2 for execution, and "FormFvwmTalkHelp."
-which is a help form.  
+or sends commands to fvwm for execution, and "FormFvwmTalkHelp."
+which is a help form.
 
 These 2 forms have names ending in a special character.  This is
 one way to make sure that commands being sent to modules are
@@ -564,11 +564,11 @@ DestroyModuleConfig         FormFvwmTalkHelp.*
 *FormFvwmTalkHelp.Line    left
 *FormFvwmTalkHelp.Text    "shell as a sub-process of the form."
 *FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    "All other commands are sent to fvwm2 for execution."
+*FormFvwmTalkHelp.Text    "All other commands are sent to fvwm for execution."
 *FormFvwmTalkHelp.Line    left
 *FormFvwmTalkHelp.Text    ""
 *FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    "Fvwm2 error messages are shown on the \\"Msg:\\" line."
+*FormFvwmTalkHelp.Text    "Fvwm error messages are shown on the \\"Msg:\\" line."
 *FormFvwmTalkHelp.Line    left
 *FormFvwmTalkHelp.Text    ""
 # Buttons

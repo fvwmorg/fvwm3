@@ -1,3 +1,10 @@
+1999-08-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* Y2K-Compliance:
+	* fvwm.lsm:
+	* FAQ:
+	* BUGS: remaned fvwm2 -> fvwm
+
 1999-08-12  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FAQ (3.16): added question on how to shut down Linux from a menu

@@ -869,7 +869,7 @@ static void ReadDefaults ()
     * Reading .FvwmFormDefault for every form seems slow.
     *
     * This next bit puts a command at the end of the module command
-    * queue in fvwm2 that indicates whether the file has to be read.
+    * queue in fvwm that indicates whether the file has to be read.
     *
     * Read defaults looking for "*FvwmFormDefaultRead"
     * if not there, send read,

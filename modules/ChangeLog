@@ -1,3 +1,34 @@
+1999-08-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* Chandelog:
+	* FvwmWharf/README:
+	* FvwmSaveDesk/FvwmSaveDesk.1:
+	* FvwmSaveDesk/example/fvwm2rc:
+	* FvwmRearrange/FvwmRearrange.c (main):
+	* FvwmIconMan/FvwmIconMan.1:
+	* FvwmGtk/FvwmGtk.1:
+	* FvwmGtk/FvwmGtk.c:
+	* FvwmForm/FvwmForm.c (ReadDefaults):
+	* FvwmForm/FvwmForm.1:
+	* FvwmForm/FormFvwmTalkHelp.:
+	* FvwmForm/FormFvwmSetup.in:
+	* FvwmEvent/FvwmEvent.1:
+	* FvwmCpp/FvwmCpp.1:
+	* FvwmConsole/FvwmConsole.1:
+	* FvwmConsole/Changes:
+	* FvwmCommand/scripts/focus-link.pl:
+	* FvwmCommand/scripts/focus-link.1:
+	* FvwmCommand/scripts/focus-link:
+	* FvwmCommand/findcmd.plK:
+	* FvwmCommand/findcmd:
+	* FvwmCommand/FvwmCommand.c:
+	* FvwmCommand/FvwmCommand.h:
+	* FvwmCommand/FvwmCommand.1:
+	* FvwmBanner/FvwmBanner.1:
+	* FvwmAudio/FvwmAudio.1:
+	* FvwmAuto/FvwmAuto.1:
+	* FvwmAnimate/FvwmAnimate.1: renamed fvwm2 -> fvwm
+
 1999-08-12  Hippo
 
 	* FvwmPager/* New option *FvwmPagerWindowBorderWidth, if +ve looks flat,
@@ -1624,7 +1655,7 @@ Sat Mar  6 10:55:06 1999  DanEspen  <dje@blue>
 
 	* FvwmForm/.FormFvwmTalk.: New form to replace FvwmTalk.
 
-	*  FvwmForm/FvwmForm.c: Added logic to allow  the last fvwm2 error
+	*  FvwmForm/FvwmForm.c: Added logic to allow  the last fvwm error
  	message to be shown on a form.
 
 1999-03-05  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>

@@ -76,7 +76,7 @@ Other configuration files are installed that can be used directly
 from the configuration directory.  See the FvwmForm man page for
 some examples.
 
-For users starting fvwm2 without
+For users starting fvwm without
 a .fvwm2rc file, there are built-in dialogs that can copy files
 from the configuration directory into the users home directory
 to create the users starting .fvwm2rc.  See the fvwm2 man page
@@ -113,8 +113,8 @@ Optional libraries used by FVWM
 ===============================
 
 FVWM can optionally be compiled to use the following libraries: Xpm,
-rplay, readline and LibStroke.  By default, these are probed for, 
-and used if found.  If you want to use any of them, install the library 
+rplay, readline and LibStroke.  By default, these are probed for,
+and used if found.  If you want to use any of them, install the library
 before configuring FVWM.
 
 Xpm allows the use of coloured icons.  See the Xpm web page at
@@ -132,8 +132,8 @@ Readline is used in one module (FvwmConsole) to allow fancy
 command-line editing, a history buffer, etc.  It is GNU software, and
 should be found on any GNU site, such as ftp://ftp.gnu.org/gnu/readline/.
 
-LibStroke allows interpretation by fvwm2 of mouse strokes (i.e., motions
-of the mouse). For more informations see the  LibStroke web page at   
+LibStroke allows interpretation by fvwm of mouse strokes (i.e., motions
+of the mouse). For more informations see the  LibStroke web page at
 http://www.etla.net/~willey/projects/libstroke/ and the fvwm2 man page.
 
 If configure doesn't do the right thing, try one or more of the

@@ -8,7 +8,7 @@ Makefile	make file for my environment (at Princeton, SunOS 4.1.3).
 FvwmForm.1	man page, in nroff format.
 
 You may need to change Makefile slightly for your environment.  Also,
-I do not have access to many different platforms to test this program, 
+I do not have access to many different platforms to test this program,
 so you may need to adjust other things too.
 
 Thank you for using FvwmForm.  Please report bugs to me.
@@ -20,7 +20,7 @@ ztfeng@math.princeton.edu
 ------------------------------------------------------------------
 
 And now,  (January 1998),  we  have FvwmForm 2.0.   (Actually FvwmForm
-doesn't  have a version number,  it shares  the fvwm2 version number.)
+doesn't  have a version number,  it shares  the fvwm version number.)
 In addition to the files above, you will find:
 
 .FormFvwmCapture	Installed Window Capture from man page

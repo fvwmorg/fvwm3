@@ -985,7 +985,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
     return -1;
 
   /*
-   * fvwm2  recapture has the x  server grabbed while  iconify events are
+   * fvwm   recapture has the x  server grabbed while  iconify events are
    * simulated.  Right now (01/24/99), the only module using lock on send
    * is FvwmAnimate which always  does  a grab of  its  own.  To avoid  a
    * deadlock, iconify events are not sent to a lock on send module while

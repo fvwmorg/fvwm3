@@ -1,4 +1,4 @@
-This directory contains files to test fvwm2 (no modules) for memory leaks.
+This directory contains files to test fvwm (no modules) for memory leaks.
 
 Instructions:
 
@@ -11,11 +11,11 @@ Instructions:
  - wait until the six windows have been created and the cursor warps near the
    lower right edge of the screen; the windows redraw and the setup halts;
    now press mouse button 2 to proceed.
- - whenever fvwm2 expects user input, press mouse button 1
+ - whenever fvwm expects user input, press mouse button 1
  - the script will ternimate itself
 
 NOTE: you can safely ignore all error messages, beeps, ...
-   
+
 
 
 commands tested:

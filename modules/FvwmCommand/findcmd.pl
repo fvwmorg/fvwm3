@@ -46,7 +46,7 @@ sub create_pm {
     @cmd = getcmd();
 
     print  "# $pm\n";
-    print  "# Collection of fvwm2 builtin commands for FvwmCommand\n";
+    print  "# Collection of fvwm builtin commands for FvwmCommand\n";
     print  "package FvwmCommand;\nuse Exporter;\n";
     print  "\@ISA=qw(Exporter);\n\@EXPORT=qw(";
     for( $i=0; $i<=$#cmd; $i++) {

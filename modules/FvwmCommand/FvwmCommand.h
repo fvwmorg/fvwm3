@@ -53,7 +53,7 @@ extern char *sys_errlist[];
 #define CMD_CONNECT       "#@connect"
 #define CMD_EXIT          "#@exit\n"
 
-/* number of default arguments when invoked from fvwm2 */
+/* number of default arguments when invoked from fvwm */
 #define FARGS 6
 
 #define SOL  sizeof( unsigned long )

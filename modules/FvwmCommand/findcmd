@@ -17,7 +17,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 echo "# $ff"
-echo "# Collection of fvwm2 builtin commands for FvwmCommand"
+echo "# Collection of fvwm builtin commands for FvwmCommand"
 echo ""
 
 echo "alias FvwmCommand='$1/FvwmCommand'"

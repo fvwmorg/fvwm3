@@ -10,7 +10,7 @@ from our home page.
 ======================================================================
 
  - No geometry can be specified for FvwmButtons panels.
- - Running fvwm2 on an XNest X server does not work well.
+ - Running fvwm on an XNest X server does not work well.
    (What does that mean?  I've done it --smr)
  - FvwmSave and FvwmSaveDesk are not up to date.
  - xscreensaver may not be able to allocate a private colormap
@@ -48,10 +48,10 @@ can happen.  Please try DELETE and CLOSE first.
 ----------------------------------------------------------------------
 
 Some users have seen intermittent problems with XEmacs version 19.13
-not being refreshed correctly after a restart of fvwm2.  If this
+not being refreshed correctly after a restart of fvwm.  If this
 occurs, you should be able to open a new frame and delete the old one.
 I can't debug this, as I don't see this problem.  I don't know if the
-problem is from XEmacs, fvwm2, or something specific to a few user's
+problem is from XEmacs, fvwm, or something specific to a few user's
 setups.
 
 ----------------------------------------------------------------------
@@ -70,8 +70,8 @@ Fvwm attempts to be ICCCM 2 compliant.  In addition, ICCCM
 states that it should be possible for applications to receive ANY
 keystroke, which is not consistent with the keyboard shortcut approach
 used in fvwm and most other window managers. In particular you
-cannot have the same keyboard shortcuts working with your fvwm2 and
-another fvwm2 running within Xnest (a nested X server). The same problem
+cannot have the same keyboard shortcuts working with your fvwm and
+another fvwm running within Xnest (a nested X server). The same problem
 exists with mouse bindings.
 
 ----------------------------------------------------------------------

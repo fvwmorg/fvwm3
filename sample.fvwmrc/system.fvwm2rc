@@ -1,4 +1,4 @@
-# this is a bare bones sample .fvwm2rc/system.fvwm2rc file for fvwm-2.
+# this is a bare bones sample .fvwm2rc/system.fvwm2rc file for fvwm.
 # It should be customized before install.  See other sample .fvwm2rc files
 # for hints, as well as pointers from the various links on the official
 # fvwm web page (see the FAQ).
@@ -119,7 +119,7 @@ AddToMenu Utilities     "Utilities" Title
 +			""		Nop
 +                       "XLock"         Exec exec xlock -mode random
 +			""		Nop
-+                       "Reset X defaults" Exec xrdb -load $HOME/.Xdefaults 
++                       "Reset X defaults" Exec xrdb -load $HOME/.Xdefaults
 
 AddToMenu Misc-Ops "Misc Config Opts" Title
 +                  "Sloppy Focus"        ChangeDefaultFocus SloppyFocus
@@ -136,13 +136,13 @@ AddToMenu Misc-Ops "Misc Config Opts" Title
 +                  "Partial Paging"         EdgeScroll 50 50
 +                  "Full Paging && Edge Wrap" EdgeScroll 100000 100000
 
-AddToMenu Window-Ops	"Window Ops"	Title		
+AddToMenu Window-Ops	"Window Ops"	Title
 +			"Move"		Move
 +			"Resize"	Resize
 +			"Raise"		Raise
-+			"Lower"		Lower 
++			"Lower"		Lower
 +		 	"(De)Iconify"	Iconify
-+			"(Un)Stick"	Stick		
++			"(Un)Stick"	Stick
 +			"(Un)Maximize"	Maximize
 +			""		Nop
 +			"Delete"	Delete
@@ -153,17 +153,17 @@ AddToMenu Window-Ops	"Window Ops"	Title
 
 AddToMenu Window-Ops2	"&Move"		Move
 +			"&Resize"	Resize
-+			"R&aise"	Raise   	
-+			"&Lower"	Lower   	
-+			"(De)&Iconify"	Iconify 	
-+			"(Un)&Stick"	Stick		
++			"R&aise"	Raise
++			"&Lower"	Lower
++			"(De)&Iconify"	Iconify
++			"(Un)&Stick"	Stick
 +                       "(Un)Ma&ximize" Maximize
-+			""		Nop     	
-+			"&Delete"	Delete	
-+			"&Close"	Close
-+			"Destroy"	Destroy 	
 +			""		Nop
-+			"ScrollBar" 	Module FvwmScroll 2 2	
++			"&Delete"	Delete
++			"&Close"	Close
++			"Destroy"	Destroy
++			""		Nop
++			"ScrollBar" 	Module FvwmScroll 2 2
 +			"Print"         PrintFunction
 +                       "Print Reverse" PrintReverseFunction
 
@@ -199,22 +199,22 @@ AddToMenu Module-Popup	"FvwmModules"	Title
 +                       "Form - MyFvwmTalk"  Module FvwmForm MyFvwmTalk
 +                       "Form - QuitVerify"  Module FvwmForm QuitVerify
 
-AddToMenu Quit-Verify 	"Really Quit Fvwm?" Title	
-+		      	"Yes, Really Quit"  Quit	
-+		      	""		    Nop	
-+                       "Restart Fvwm2"     Restart
-+		      	"Restart Fvwm"	    Restart fvwm -s
-+		      	""		    Nop	
+AddToMenu Quit-Verify 	"Really Quit Fvwm?" Title
++		      	"Yes, Really Quit"  Quit
++		      	""		    Nop
++                       "Restart Fvwm"      Restart
++		      	"Restart Fvwm 1.x"  Restart fvwm -s
++		      	""		    Nop
 +		      	"Start twm"         Restart twm
 +		      	"Start ctwm"        Restart ctwm
 +		        "Start tvtwm"       Restart tvtwm
 +		        "Start vtwm"        Restart vtwm
 +		      	"Start mwm"    	    Restart mwm
 +	      	      	"Start olwm"        Restart /usr/openwin/bin/olwm
-+		      	""		    Nop	
++		      	""		    Nop
 +		      	"Start dummy"       Restart xterm
-+		      	""		    Nop	
-+		      	"No, Don't Quit"    Nop	
++		      	""		    Nop
++		      	"No, Don't Quit"    Nop
 
 ######################## Sample Functions ##########################
 
@@ -342,14 +342,14 @@ AddToFunc ChangeDefaultFocus "I" Style "*" $0
 *FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
 *FvwmWinListUseSkipList
 *FvwmWinListGeometry +0-1
-                                      
+
 
 *FvwmBackerDesk 0 -solid steelblue
 *FvwmBackerDesk 1 -solid midnightblue
 
 *FvwmScrollBack grey40
 *FvwmScrollFore green
-	
+
 ############################################################
 ############################################################
 # Note that icons are shown in the module

@@ -22,12 +22,12 @@
  * addressed by  adding   a  small   additive factor  when    brightening
  * colors. If anyone adds that feature, please feed it upstream to me.
  *
- * Feel free to use this code in fvwm2, of course.
+ * Feel free to use this code in fvwm, of course.
  *
  * - Maciej Stachowiak
  *
  * And, of course, history shows, we took him up on the offer.
- * Integrated into fvwm2 by Dan Espen, 11/13/98.
+ * Integrated into fvwm by Dan Espen, 11/13/98.
  */
 
 
@@ -38,12 +38,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.GPL.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -60,9 +60,9 @@
 #define SCALE 65535.0
 #define HALF_SCALE (SCALE / 2)
 typedef enum {
-  R_MAX_G_MIN, R_MAX_B_MIN, 
-  G_MAX_B_MIN, G_MAX_R_MIN, 
-  B_MAX_R_MIN, B_MAX_G_MIN 
+  R_MAX_G_MIN, R_MAX_B_MIN,
+  G_MAX_B_MIN, G_MAX_R_MIN,
+  B_MAX_R_MIN, B_MAX_G_MIN
 } MinMaxState;
 
 
@@ -73,9 +73,9 @@ typedef enum {
 
 /* FIXMS: This can probably be optimized more, examine later. */
 
-static void 
-color_mult (unsigned short *red, 
-	    unsigned short *green, 
+static void
+color_mult (unsigned short *red,
+	    unsigned short *green,
 	    unsigned short *blue, double k)
 {
   if (*red == *green && *red == *blue) {
@@ -129,7 +129,7 @@ color_mult (unsigned short *red,
 	} else {
 	  min = r;
 	  min_max_state = G_MAX_R_MIN;
-	  a = b - r; 
+	  a = b - r;
 	}
       } else {
 	max = b;
@@ -138,7 +138,7 @@ color_mult (unsigned short *red,
 	a = g - r;
       }
     }
-    
+
     delta = max - min;
     a = a / delta;
 
@@ -149,7 +149,7 @@ color_mult (unsigned short *red,
       s = 2.0 * SCALE - (max + min);
     }
     s = delta/s;
-    
+
     l *= k;
     if (l > SCALE) {
       l = SCALE;
@@ -162,7 +162,7 @@ color_mult (unsigned short *red,
     if (l <= HALF_SCALE) {
       max = l * (1 + s);
     } else {
-      max = s * SCALE + l - s * l; 
+      max = s * SCALE + l - s * l;
     }
 
     min = 2 * l - max;
@@ -204,7 +204,7 @@ color_mult (unsigned short *red,
 
     *red = (unsigned short) r;
     *green = (unsigned short) g;
-    *blue = (unsigned short) b;    
+    *blue = (unsigned short) b;
   }
 }
 
@@ -230,7 +230,7 @@ adjust_pixel_brightness(Pixel pixel, double factor)
 }
 
 /*
- * These  are  the original fvwm2  APIs, one  for highlights  and one for
+ * These  are  the original fvwm  APIs, one  for highlights  and one for
  * shadows.   Together, if  used  in a frame    around a rectangle,  they
  * produce a 3d appearance.
  *

@@ -7,7 +7,7 @@
  *   Added .steprc parsing and twisty iconify.
  *
  * Copyright (c) 1998 Dan Espen <dane@mk.bellcore.com>
- *   Changed to run under fvwm2.  Lots of changes made.
+ *   Changed to run under fvwm.  Lots of changes made.
  *   This used to only animate iconify on M_CONFIGURE_WINDOW.
  *   This module no longer reads M_CONFIGURE_WINDOW.
  *   I added args to M_ICONIFY so iconification takes one message.
@@ -700,7 +700,7 @@ int main(int argc, char **argv) {
 
   sprintf(cmd,"read .%s Quiet",MyName+1); /* read quiet modules config */
   SendText(Channel,cmd,0);
-  ParseOptions();                       /* get cmds fvwm2 has parsed */
+  ParseOptions();                       /* get cmds fvwm has parsed */
 
   sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)
           (M_ICONIFY|M_DEICONIFY
@@ -1034,7 +1034,7 @@ static void CreateDrawGC() {
  *
  * When I first wrote this, I thought it might be a good idea to call the
  * menu  "FvwmAnimate", just like  the  module name.   To my surprise,  I
- * found that fvwm2 treats menus just like functions.  In fact I could no
+ * found that fvwm treats menus just like functions.  In fact I could no
  * longer start FvwmAnimate  because it kept  finding the menu instead of
  * the  function.   This  probably should   be fixed, but  for  now,  the
  * generated menu is  called  "MenuFvwmAnimate", or  "Menu<ModuleAlias>".

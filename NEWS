@@ -20,9 +20,9 @@ Changes in beta release 2.3.6 (August 1999)
   If you use another SM, unset this variable or set to something else.
 
 * New module FvwmTheme for creating Colorsets that can be shared with
-  fvwm2 and other modules when they have been modified.
+  fvwm and other modules when they have been modified.
 
-* If you never define an iconbox, or you fill all the iconboxes, fvwm2
+* If you never define an iconbox, or you fill all the iconboxes, fvwm
   has a default icon box that covers the screen, it filled top to bottom,
   then left to right, and has an 80x80 pixel grid.
 
@@ -71,7 +71,7 @@ Changes in alpha release 2.3.5 (July 1999)
 
 Changes in alpha release 2.3.4 (June 1999)
 
-* Fvwm2 is GNOME compliant.
+* Fvwm is GNOME compliant.
 
 * Dynamic menus enhancement: The special menu item name 'MissingSubmenuFunc'
   alows to create submenus on the fly. See manpage on 'AddToMenu' for details.
@@ -122,7 +122,7 @@ Changes in alpha release 2.3.3 (June 1999)
 Changes in alpha release 2.3.2 (May 1999)
 
 * The Meta-Tab binding to invoke the window list as described in the FAQ
-  is  now built-in.  You can  remove it as  described in the fvwm2 man page.
+  is  now built-in.  You can  remove it as  described in the fvwm man page.
 
 * The MoveThreshold command lets the user fine tune the threshold when a click
   becomes a move. It works in FvwmPager too.
@@ -262,7 +262,7 @@ Changes in alpha release 2.3.0 (February 1999)
 * New utility xselection which can be used with PipeRead to feed the
   content of the X Selection as commands to fvwm.
 
-* Fvwm2 can now "take over" from a running (ICCCM 2 compliant) wm.
+* Fvwm can now "take over" from a running (ICCCM 2 compliant) wm.
 
 * FvwmPager can now handle pixmaps as desk backgrounds.
 
@@ -433,7 +433,7 @@ Changes in alpha release 2.1.0 (October 1998)
 * FvwmCpp and FvwmM4 no longer define FVWMDIR variable; instead they
   define FVWM_MODULEDIR and FVWM_CONFIGDIR
 * FvwmAnimate added.
-* Starting with this release, fvwm2 is in a public CVS tree.
+* Starting with this release, fvwm is in a public CVS tree.
 
 Changes in alpha release 2.1-pre-beta AKA 2.0.47
 
@@ -940,7 +940,7 @@ them to the fvwm mailing list.
        1. Fixed FvwmPager to die without causing X server to eat CPU if
           running under FvwmButtons & FvwmButtons dies or is killed
        2. Went to new M.I.P version number system in preparation for first
-          official release (which will be 2.1.0 - until then fvwm2 is still
+          official release (which will be 2.1.0 - until then fvwm is still
           pre-official release)
        3. Small fix to makefile for FvwmConfig
        4. More [icon_]name == NULL checks/fixes

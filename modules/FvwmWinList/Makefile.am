@@ -5,7 +5,7 @@ configdir = @FVWM_CONFIGDIR@
 
 module_PROGRAMS = FvwmWinList
 man_MANS = FvwmWinList.1
-EXTRA_DIST = $(man_MANS) CHANGELOG config.sample ConfigFvwmWinList
+EXTRA_DIST = $(man_MANS) config.sample ConfigFvwmWinList
 
 config_DATA = \
   ConfigFvwmWinList

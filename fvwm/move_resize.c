@@ -1886,12 +1886,11 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
 
   /* place the resize rectangle into the array of rectangles */
   /* interleave them for best visual look */
-
   /* draw the new one, if any */
   if (width || height)
   {
     int i;
-     for (i=0; i < 4; i++)
+    for (i=0; i < 4; i++)
     {
       rects[i * interleave].x = x + i;
       rects[i * interleave].y = y + i;
@@ -1931,6 +1930,8 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
   lasty = y;
   lastWidth = width;
   lastHeight = height;
+
+  return;
 }
 
 

@@ -56,7 +56,7 @@ Style "xload"      NoTitle, NoHandles, Sticky, WindowListSkip
 Style "xbiff"      NoTitle,            Sticky, WindowListSkip
 Style "Maker"      StartsOnDesk 1
 Style "matlab"     StartsOnDesk 3
-Style "signal"     StartsOnDesk 3 
+Style "signal"     StartsOnDesk 3
 Style "rxvt"       Icon  term.xpm
 Style "xterm"      Icon xterm.xpm, Color black/grey
 Style "Appointment" Icon datebook.xpm
@@ -80,8 +80,8 @@ Style "DOS in a BOX"       Icon dosemu.xpm
 # restart, or switch to another WM.
 AddToMenu "Quit-Verify" "Really Quit Fvwm? " Title
 +              "Yes, Really Quit " Quit
-+              "Restart fvwm2 " Restart fvwm2
-+              "Restart fvwm " Restart fvwm
++              "Restart fvwm " Restart fvwm2
++              "Restart fvwm 1.x" Restart fvwm
 +              "Start mwm " Restart mwm
 +              "" Nop
 +              "No, Don't Quit " Nop
@@ -281,10 +281,10 @@ Key F5		W	C	WindowsDesk 4
 #Page Up/Dapge Down keys are used to scroll by one desktop page
 # in any context, press page up/down + control
 # in root context, just pressing page up/down is OK
-# 
+#
 # I prefer the non-wrapping scroll. These are for example purposes only
 #Key Next	A       C       Scroll 100000 0
-#Key Next	R       N       Scroll 100000 0  
+#Key Next	R       N       Scroll 100000 0
 #Key Prior	A       C       Scroll -100000 0
 #Key Prior	R       N       Scroll -100000 0
 

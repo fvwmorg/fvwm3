@@ -1,4 +1,41 @@
+1999-08-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* vms/README:
+	* vms/config.h:
+	* tests/purify/README (Instructions):
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
+	* sample.fvwmrc/system.fvwm2rc-sample-1:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/new-features:
+	* libs/ColorUtils.c:
+
 1999-08-14  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* NEWS:
+	* INSTALL.fvwm:
+	* fvwm/ConfigFvwmDefaults:
+	* fvwm/fvwm2.1:
+	* fvwm/module_interface.c (PositiveWrite): renamed fvwm2 -> fvwm
+
+	* fvwm/fvwm2.1: divided the commad description into sections
+	some format changes
+
+	* fvwm/menus.c: fixed drawing of VGardients on an 8 bit display with
+	XFree 3.3.3.1
+	(menuShortcuts): enhancements to allow one hand menu navigation from
+	the cursor key block and the number block:
+ 	  End: move to last item
+	  Home: move to first item
+	  Page up: up five items
+	  Page down: down five items
+ 	  Delete: abort menu (like escape)
+	  Insert: enter continuation menu
+
+	* libs/Graphics.c (AllocNonlinearGradient):
+	(AllocLinearGradient): fixed gradient colour allocation
+
+	* fvwm/fvwm.c (main): removed debug code
 
 	* fvwm/icons.c (Iconify):
 	* fvwm/events.c (HandleUnmapNotify):

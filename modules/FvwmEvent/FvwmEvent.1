@@ -6,12 +6,12 @@
 \fIFvwmEvent\fP \- the FVWM Event module
 .SH SYNOPSIS
 \fIFvwmEvent\fP is a more versatile replacement for \fIFvwmAudio\fP.
-It can in general be used to hook any \fIfvwm2\fP function or program to any
+It can in general be used to hook any \fIfvwm\fP function or program to any
 window manager event. e.g: Delete unwanted netscape-popups or
 application error popups as they appear, play sounds, log events to a
 file and the like. Be creative, You'll find a use for it.
 
-\fIFvwmEvent\fP is spawned by \fIfvwm2(1)\fP, so no command line invocation will
+\fIFvwmEvent\fP is spawned by \fIfvwm\fP, so no command line invocation will
 work.  From within the \fI.fvwm2rc\fP file, \fIFvwmEvent\fP is spawned as
 follows:
 .nf
@@ -19,7 +19,7 @@ follows:
 Module FvwmEvent
 .sp
 .fi
-or from within an \fIfvwm2\fP pop-up menu:
+or from within an \fIfvwm\fP pop-up menu:
 .nf
 .sp
 DestroyMenu Module-Popup
@@ -33,13 +33,13 @@ AddToMenu Module-Popup "Modules"      Title
 .sp
 .fi
 .SH DESCRIPTION
-The \fIFvwmEvent\fP module communicates with the \fIfvwm2\fP window manager
+The \fIFvwmEvent\fP module communicates with the \fIfvwm\fP window manager
 to bind \fIactions\fP to window manager \fIevents\fP.  Different actions
 may be assigned to distinct window manager events.
 
 \fIFvwmEvent\fP can be used to bind sound files to events like
 \fIFvwmAudio\fP (RiP) did. It can be used for logging event traces to
-a log file, while debugging \fIfvwm2\fP.
+a log file, while debugging \fIfvwm\fP.
 
 \fIFvwmEvent\fP can also have builtin support for the rplay library.
 (heritage of FvwmAudio)
@@ -47,7 +47,7 @@ a log file, while debugging \fIfvwm2\fP.
 .SH INVOCATION
 The invocation method was shown in the synopsis section. No command
 line invocation is possible. \fIFvwmEvent\fP must be invoked by the
-\fIfvwm2\fP window manager. \fIFvwmEvent\fP accepts a single
+\fIfvwm\fP window manager. \fIFvwmEvent\fP accepts a single
 argument:
 
 .IP \-audio
@@ -63,21 +63,21 @@ creating a symlink) enables FvwmAudio compatibility mode.
 .sp
 
 .SH CONFIGURATION OPTIONS
-\fIFvwmEvent\fP reads the same \fI.fvwm2rc\fP file as \fIfvwm2\fP
+\fIFvwmEvent\fP reads the same \fI.fvwm2rc\fP file as \fIfvwm\fP
 reads when it starts up, and looks for certain configuration options:
 
 .IP "*FvwmEventCmd \fIcommand\fP"
-This determines the \fIfvwm2\fP function that is to be called with the
+This determines the \fIfvwm\fP function that is to be called with the
 event parameters. You might want to do one of the following (details below):
 .nf
 .sp
 	#play sounds
 	*FvwmEventCmd \fIbuiltin-rplay\fP
-			
-	#execute distinct fvwm2 functions
+
+	#execute distinct fvwm functions
 	*FvwmEventCmd
-		
-	#execute distinct external programs	
+
+	#execute distinct external programs
 	*FvwmEventCmd exec
 .sp
 .fi
@@ -109,8 +109,8 @@ e.g: the rsynth 'say' command:
 	*FvwmEvent destroy_window "window closed"
 .sp
 .fi
-You can also use \fIfvwm2\fP's builtin \fIEcho\fP command as
-\fIFvwmEventCmd\fP to obtain debug output for \fIfvwm2\fP events quietly.
+You can also use \fIfvwm\fP's builtin \fIEcho\fP command as
+\fIFvwmEventCmd\fP to obtain debug output for \fIfvwm\fP events quietly.
 I used this setup to debug FvwmAuto:
 .nf
 .sp
@@ -172,15 +172,15 @@ e.g. for audio-events:
 	*FvwmEvent dewindowshade beep.au
 .sp
 .fi
-Provided \fIfvwm2\fP supports it (not yet), there's an additional event to
-replace all \fIfvwm2\fP beeps with a sound:
+Provided \fIfvwm\fP supports it (not yet), there's an additional event to
+replace all \fIfvwm\fP beeps with a sound:
 .nf
 .sp
 	*FvwmEvent beep beep.au
 .sp
 .fi
 The toggle_paging event will be supported, as soon, as it's
-resurrected by \fIfvwm2\fP:
+resurrected by \fIfvwm\fP:
 .nf
 .sp
 	*FvwmEvent toggle_paging fwop.au
@@ -230,7 +230,7 @@ Specifies the directory to look for the audio files.  This option is
 ignored when rplay is used.
 
 .SH BUGS
-It's REALLY noisy when \fIfvwm2\fP starts and restarts using an audio player.
+It's REALLY noisy when \fIfvwm\fP starts and restarts using an audio player.
 FvwmEventDelay helps a little bit.
 
 .SH COPYRIGHTS
@@ -240,7 +240,7 @@ Boyns. \fIFvwmAudio\fP simply took Mark's original program and
 extended it to make it generic enough to work with any Audio
 player. Due to different requests to do specific things on specific events,
 \fIFvwmEvent\fP took this one step further and now calls any
-\fIfvwm2\fP function, or builtin-rplay. If \fIfvwm2\fP's Exec function
+\fIfvwm\fP function, or builtin-rplay. If \fIfvwm\fP's Exec function
 is used, any external program can be called with any parameter.
 
 The concept for interfacing this module to the Window Manager, is
