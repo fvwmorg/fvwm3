@@ -1334,9 +1334,9 @@ refer to the section
 .B CONDITIONAL COMMANDS
 below.
 
-.SH BUILTIN KEY AND MOUSE BINDINGS
+.SH BUILT-IN KEY AND MOUSE BINDINGS
 
-The following commands are builtin to fvwm:
+The following commands are built-in to fvwm:
 .EX
 Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
@@ -1353,7 +1353,7 @@ The
 .SM Help
 and
 .SM F1
-keys invoke a builtin menu that fvwm creates.  This is primarily
+keys invoke a built-in menu that fvwm creates.  This is primarily
 for new users that have not created their own configuration
 file. Either key on the root (background) window pops up an menu
 to help you get started.
@@ -2456,7 +2456,7 @@ value reverts the border width to the default.
 .IR Foreground " and " Background
 may have a color name as an argument.  This color is used for menu
 text or the menu's background.  You can omit the color name to
-reset these colors to the builtin default.
+reset these colors to the built-in default.
 
 .I Greyed
 may have a color name as an argument.  This color is the one used
@@ -2542,7 +2542,7 @@ to the left so the sub-menu can be seen.
 .I Font
 takes a font name as an argument.  If a font by this name exists
 it is used for the text of all menu items.  If it does not exist
-or if the name is left blank the builtin default is used.
+or if the name is left blank the built-in default is used.
 
 .I MenuFace
 enforces a fancy background upon the menus.  You can use the same
@@ -2598,7 +2598,7 @@ xinit to start X).
 requires one numeric argument.  This value is the delay in
 milliseconds before a sub-menu is popped up when the pointer moves
 over a menu item that has a sub-menu.  If the value is zero no
-automatic pop up is done.  If the argument is omitted the builtin
+automatic pop up is done.  If the argument is omitted the built-in
 default is used. Note that the popup delay has no effect if the
 .I PopupImmediately
 option is used since sub-menus pop up immediately then.
@@ -2888,7 +2888,7 @@ that may range from -100 to +100.  The first is the gap in pixels
 above a normal menu item (or a menu title), the second is the gap
 in pixels below it.  Negative numbers do not make much sense and
 may screw up the menu completely.  If no arguments are given or
-the given arguments are invalid, the builtin defaults are used:
+the given arguments are invalid, the built-in defaults are used:
 one pixel above the item or title and two below.
 
 .I SubmenusLeft
@@ -3241,7 +3241,7 @@ option to fvwm.
 .\"common screen that exceeds this limit would be 24 bit.
 .\"
 .\"On 8 bit displays, the default color limit is set to the size of
-.\"the builtin table (about 60).  We recommend that you start with
+.\"the built-in table (about 60).  We recommend that you start with
 .\"the default value, and not include this command in your
 .\".IR .fvwm2rc .
 
@@ -3459,7 +3459,7 @@ sets the default foreground and background colors used in
 miscellaneous windows created by fvwm, for example in the geometry
 feedback windows during a move or resize operation. If you don't
 want to change one color or the other, use - as its color name.
-To revert to the builtin default colors omit both color names.
+To revert to the built-in default colors omit both color names.
 Note that the default colors are not used in menus, window titles
 or icon titles.
 
@@ -3484,7 +3484,7 @@ command.
 sets the default font to font
 .IR fontname .
 The default font is used by fvwm whenever no other font has been
-specified.  To reset the default font to the builtin default,
+specified.  To reset the default font to the built-in default,
 omit the argument.  The default font is used for menus, window
 titles, icon titles as well as the geometry feedback windows
 during a move or resize operation.  To override the default font
@@ -3881,7 +3881,7 @@ AddToFunc WindowListFunc
  + I WindowId $0 Raise
  + I WindowId $0 WarpToWindow 5p 5p
 .EE
-You can destroy the builtin "WindowListFunc" and create your own
+You can destroy the built-in "WindowListFunc" and create your own
 if these defaults do not suit you.
 
 The window list menu uses the "WindowList" menu style if it is
@@ -5152,7 +5152,7 @@ that are supposed to work when the pointer is not over the window,
 fvwm assumes the pointer is over the client window (i.e. you have
 to use the 'W' modifier).
 
-The following example binds the builtin window list to pop up
+The following example binds the built-in window list to pop up
 when
 .SM Alt-Ctrl-Shift-F11
 is hit, no matter where the mouse pointer is:
