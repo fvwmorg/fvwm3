@@ -1118,6 +1118,17 @@ static void DoSnapAttract(
   {
     *py = nyt;
   }
+  /* Resist moving windows beyond the edge of the screen */
+  if (((*px + Width) >= Scr.MyDisplayWidth)
+      && ((*px + Width) < Scr.MyDisplayWidth + Scr.MoveResistance))
+    *px = Scr.MyDisplayWidth - Width;
+  if ((*px <= 0) && (*px > -Scr.MoveResistance))
+    *px = 0;
+  if (((*py + Height) >= Scr.MyDisplayHeight)
+      && ((*py + Height) < Scr.MyDisplayHeight + Scr.MoveResistance))
+    *py = Scr.MyDisplayHeight - Height;
+  if ((*py <= 0) && (*py > -Scr.MoveResistance))
+    *py = 0;
 }
 
 /****************************************************************************
@@ -1348,18 +1359,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
         DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
       }
 
-      /* Resist moving windows over the edge of the screen! */
-      if(((xl + Width) >= Scr.MyDisplayWidth)&&
-	 ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
-	xl = Scr.MyDisplayWidth - Width;
-      if((xl <= 0)&&(xl > -Scr.MoveResistance))
-	xl = 0;
-      if(((yt + Height) >= Scr.MyDisplayHeight)&&
-	 ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
-	yt = Scr.MyDisplayHeight - Height;
-      if((yt <= 0)&&(yt > -Scr.MoveResistance))
-	yt = 0;
-
       *FinalX = xl;
       *FinalY = yt;
 
@@ -1372,18 +1371,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       yt = Event.xmotion.y_root + YOffset;
 
       DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-
-      /* Resist moving windows over the edge of the screen! */
-      if(((xl + Width) >= Scr.MyDisplayWidth)&&
-	 ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
-	xl = Scr.MyDisplayWidth - Width;
-      if((xl <= 0)&&(xl > -Scr.MoveResistance))
-	xl = 0;
-      if(((yt + Height) >= Scr.MyDisplayHeight)&&
-	 ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
-	yt = Scr.MyDisplayHeight - Height;
-      if((yt <= 0)&&(yt > -Scr.MoveResistance))
-	yt = 0;
 
       /* check Paging request once and only once after outline redrawn */
       /* redraw after paging if needed - mab */
@@ -1423,7 +1410,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  xl += XOffset;
 	  yt += YOffset;
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-	  if ( (delta_x==0) && (delta_y==0))
+	  if (!delta_x && !delta_y)
 	    /* break from while (paged)*/
 	    break;
 	}
