@@ -55,6 +55,8 @@
 
 extern unsigned long *PipeMask;                /* in module.c */
 
+extern int nColorsets;	/* in libs/Colorset.c */
+
 extern Boolean debugging;
 
 struct moduleInfoList

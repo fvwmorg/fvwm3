@@ -204,7 +204,7 @@ static RETSIGTYPE Alarm(int sig);
 static void SetAlarm(int event);
 static void ClearAlarm(void);
 static int ErrorHandler(Display*, XErrorEvent*);
-static Bool change_colorset(int cset);
+static Bool change_colorset(int cset, Bool force);
 
 /******************************************************************************
   Main - Setup the XConnection,request the window list and loop forever
@@ -591,7 +591,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (strncasecmp(tline, "Colorset", 8) == 0)
       {
 	cset = LoadColorset(tline + 8);
-	if (change_colorset(cset))
+	if (change_colorset(cset, False))
 	{
 	  redraw = 1;
 	}
@@ -1374,7 +1374,7 @@ void AdjustWindow(int width, int height)
   win_height = height;
   win_width = width;
   ArrangeButtonArray(&buttons);
-  change_colorset(nColorsets);
+  change_colorset(0, True);
 }
 
 /******************************************************************************
@@ -1511,16 +1511,16 @@ static void CreateOrUpdateGCs(void)
      checkered = XCreateGC(dpy, win, gcmask, &gcval);
 }
 
-static Bool change_colorset(int cset)
+static Bool change_colorset(int cset, Bool force)
 {
   Bool do_redraw = False;
 
   if (cset < 0)
     return False;
-  if (cset == colorset || cset == iconcolorset || cset == nColorsets)
+  if (force || cset == colorset || cset == iconcolorset)
   {
     CreateOrUpdateGCs();
-    if (cset == colorset || cset == nColorsets)
+    if (force || cset == colorset)
     {
       SetWindowBackground(
 	dpy, win, win_width, win_height, &Colorset[colorset],
@@ -1528,7 +1528,7 @@ static Bool change_colorset(int cset)
     }
     do_redraw = True;
   }
-  do_redraw |= change_goody_colorset(cset);
+  do_redraw |= change_goody_colorset(cset, force);
 
   return do_redraw;
 }

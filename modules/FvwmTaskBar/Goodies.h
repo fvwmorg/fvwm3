@@ -53,6 +53,6 @@ void DestroyTipWindow(void);
 void ShowTipWindow(int open);
 void HandleMouseClick(XEvent event);
 void HandleMailClick(XEvent event);
-Bool change_goody_colorset(int cset);
+Bool change_goody_colorset(int cset, Bool force);
 
 #endif

@@ -679,6 +679,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           *val = -1;
 	  GetIntegerArguments(rest, NULL, val, 1);
 	  SSET_COLORSET(*ptmpstyle, *val);
+	  AllocColorset(*val);
 	  ptmpstyle->flags.use_colorset = (*val >= 0);
 	  ptmpstyle->flag_mask.use_colorset = 1;
 	  ptmpstyle->change_mask.use_colorset = 1;
@@ -2124,7 +2125,7 @@ void update_window_color_style(FvwmWindow *tmp_win, window_style *pstyle)
   }
   else
   {
-    tmp_win->TextPixel = Colorset[cs % nColorsets].fg;
+    tmp_win->TextPixel = Colorset[cs].fg;
   }
   if(SGET_BACK_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
   {
@@ -2134,8 +2135,8 @@ void update_window_color_style(FvwmWindow *tmp_win, window_style *pstyle)
   }
   else
   {
-    tmp_win->ReliefPixel = Colorset[cs % nColorsets].hilite;
-    tmp_win->ShadowPixel = Colorset[cs % nColorsets].shadow;
-    tmp_win->BackPixel = Colorset[cs % nColorsets].bg;
+    tmp_win->ReliefPixel = Colorset[cs].hilite;
+    tmp_win->ShadowPixel = Colorset[cs].shadow;
+    tmp_win->BackPixel = Colorset[cs].bg;
   }
 }

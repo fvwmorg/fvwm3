@@ -1261,8 +1261,10 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-        for ( i = 0; i < NUM_CONTEXTS; i++ )
+        for ( i = 0; i < NUM_CONTEXTS; i++ ) {
 	  SET_MANAGER(manager, colorsets[i], n);
+	  AllocColorset(n);
+	}
       }
       else if (!strcasecmp (option1, "background")) {
 	p = read_next_cmd (READ_ARG);
@@ -1644,6 +1646,7 @@ void read_in_resources (char *file)
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[TITLE_CONTEXT], n);
+	AllocColorset(n);
       }
       else if (!strcasecmp (option1, "focusandselectcolorset")) {
 	p = read_next_cmd (READ_ARG);
@@ -1657,6 +1660,7 @@ void read_in_resources (char *file)
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[FOCUS_SELECT_CONTEXT], n);
+	AllocColorset(n);
       }
       else if (!strcasecmp (option1, "focuscolorset")) {
 	p = read_next_cmd (READ_ARG);
@@ -1670,6 +1674,7 @@ void read_in_resources (char *file)
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[FOCUS_CONTEXT], n);
+	AllocColorset(n);
       }
       else if (!strcasecmp (option1, "selectcolorset")) {
 	p = read_next_cmd (READ_ARG);
@@ -1683,6 +1688,7 @@ void read_in_resources (char *file)
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[SELECT_CONTEXT], n);
+	AllocColorset(n);
       }
       else if (!strcasecmp (option1, "plaincolorset")) {
 	p = read_next_cmd (READ_ARG);
@@ -1696,6 +1702,7 @@ void read_in_resources (char *file)
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[PLAIN_CONTEXT], n);
+	AllocColorset(n);
       }
       else if (!strcasecmp (option1, "usewinlist")) {
 	p = read_next_cmd (READ_ARG);

@@ -549,16 +549,17 @@ Pixel GetColor(char *name)
     if (*(rest + n) != 0)
       /* trailing characters */
       return 0;
+    AllocColorset(cs);
     switch (i)
     {
     case 0:
-      return Colorset[cs % nColorsets].fg;
+      return Colorset[cs].fg;
     case 1:
-      return Colorset[cs % nColorsets].bg;
+      return Colorset[cs].bg;
     case 2:
-      return Colorset[cs % nColorsets].hilite;
+      return Colorset[cs].hilite;
     case 3:
-      return Colorset[cs % nColorsets].shadow;
+      return Colorset[cs].shadow;
     }
   default:
     break;

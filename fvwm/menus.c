@@ -3136,7 +3136,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
     {
       SetWindowBackground(
 	dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
-	&Colorset[ST_CSET_MENU(ms) % nColorsets], Pdepth, ST_MENU_GC(ms),
+	&Colorset[ST_CSET_MENU(ms)], Pdepth, ST_MENU_GC(ms),
 	True);
       MR_IS_BACKGROUND_SET(mr) = True;
     }
@@ -4180,7 +4180,7 @@ static void make_menu_window(MenuRoot *mr)
   attributes.border_pixel = 0;
   attributes.colormap = Pcmap;
   attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
-    Colorset[MST_CSET_MENU(mr) % nColorsets].bg : MST_MENU_COLORS(mr).back;
+    Colorset[MST_CSET_MENU(mr)].bg : MST_MENU_COLORS(mr).back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
   attributes.cursor = Scr.FvwmCursors[CRS_MENU];
   attributes.save_under = True;
@@ -5086,9 +5086,9 @@ static void UpdateMenuStyle(MenuStyle *ms)
   Pixel relief_back;
   Pixel active_fore;
   Pixel active_back;
-  colorset_struct *menu_cs = &Colorset[ST_CSET_MENU(ms) % nColorsets];
-  colorset_struct *active_cs = &Colorset[ST_CSET_ACTIVE(ms) % nColorsets];
-  colorset_struct *greyed_cs = &Colorset[ST_CSET_GREYED(ms) % nColorsets];
+  colorset_struct *menu_cs = &Colorset[ST_CSET_MENU(ms)];
+  colorset_struct *active_cs = &Colorset[ST_CSET_ACTIVE(ms)];
+  colorset_struct *greyed_cs = &Colorset[ST_CSET_GREYED(ms)];
 
   if (ST_USAGE_COUNT(ms) != 0)
   {
@@ -5817,6 +5817,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       {
 	ST_HAS_MENU_CSET(tmpms) = 1;
 	ST_CSET_MENU(tmpms) = *val;
+	AllocColorset(*val);
       }
       has_gc_changed = True;
       break;
@@ -5827,6 +5828,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       {
 	ST_HAS_ACTIVE_CSET(tmpms) = 1;
 	ST_CSET_ACTIVE(tmpms) = *val;
+	AllocColorset(*val);
       }
       has_gc_changed = True;
       break;
@@ -5837,6 +5839,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       {
 	ST_HAS_GREYED_CSET(tmpms) = 1;
 	ST_CSET_GREYED(tmpms) = *val;
+	AllocColorset(*val);
       }
       has_gc_changed = True;
       break;

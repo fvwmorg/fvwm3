@@ -327,8 +327,7 @@ static int expand_extended_var(char *var_name, char *output)
       return 0;
     if (cs < 0)
       return 0;
-    if (nColorsets <= cs)
-      AllocColorset(cs);
+    AllocColorset(cs);
     switch (i)
     {
     case 0:

@@ -87,6 +87,8 @@
 #define MySendText(a,b,c) SendText((a),(b),(c));
 #endif
 
+extern int nColorsets;	/* in libs/Colorsets.c */
+
 /* --------------------------- external functions -------------------------- */
 extern void DumpButtons(button_info*);
 extern void SaveButtons(button_info*);

@@ -66,8 +66,6 @@ typedef struct {
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_struct *Colorset;
-/* this records the size of the array */
-extern int nColorsets;
 
 #ifndef FVWMTHEME_PRIVATE
 /* Create n new colorsets, FvwmTheme does it's own thing (different size) */

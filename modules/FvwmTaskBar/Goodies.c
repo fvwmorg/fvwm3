@@ -137,9 +137,9 @@ static void CreateOrUpdateGoodyGC(void)
   }
 }
 
-Bool change_goody_colorset(int cset)
+Bool change_goody_colorset(int cset, Bool force)
 {
-  if (cset < 0 || (cset != tipscolorset && cset != nColorsets))
+  if (cset < 0 || (cset != tipscolorset && !force))
     return False;
   CreateOrUpdateGoodyGC();
 

@@ -1108,8 +1108,7 @@ void SetDefaultColorset(F_CMD_ARGS)
   Scr.DefaultColorset = atoi(cset);
   if (Scr.DefaultColorset < 0)
     Scr.DefaultColorset = -1;
-  if (Scr.DefaultColorset >= nColorsets)
-    AllocColorset(Scr.DefaultColorset);
+  AllocColorset(Scr.DefaultColorset);
   ApplyDefaultFontAndColors();
 }
 

@@ -289,6 +289,7 @@ static void parse_colorset(char *line)
   XColor color;
   XGCValues xgcv;
   static GC mono_gc = None;
+  static int nColorsets = 0;
 
   /* find out which colorset */
   if (GetIntegerArguments(line, &line, &n, 1) != 1)

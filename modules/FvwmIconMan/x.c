@@ -318,12 +318,12 @@ void xevent_loop (void)
         if (man->colorsets[DEFAULT] != -1) {
 	  if (man->pixmap[DEFAULT])
 	    XFreePixmap(theDisplay, man->pixmap[DEFAULT]);
-	  if (Colorset[man->colorsets[DEFAULT] % nColorsets].pixmap) {
+	  if (Colorset[man->colorsets[DEFAULT]].pixmap) {
 	    man->pixmap[DEFAULT] =
 	      CreateBackgroundPixmap(
 		theDisplay, man->theWindow, man->geometry.width,
 		man->geometry.height,
-		&Colorset[man->colorsets[DEFAULT] % nColorsets],
+		&Colorset[man->colorsets[DEFAULT]],
 		Pdepth, man->backContext[DEFAULT], False);
 	    XSetTile(theDisplay, man->backContext[DEFAULT],
 		     man->pixmap[DEFAULT]);
@@ -592,7 +592,7 @@ void X_init_manager (int man_id)
   for ( i = 0; i < NUM_CONTEXTS; i++ ) {
     man->pixmap[i] = None;
     if (man->colorsets[i] > -1) {
-      man->backcolor[i] = Colorset[man->colorsets[i] % nColorsets].bg;
+      man->backcolor[i] = Colorset[man->colorsets[i]].bg;
     }
     else if (man->backColorName[i]) {
       if (!lookup_color (man->backColorName[i], &man->backcolor[i])) {
@@ -608,7 +608,7 @@ void X_init_manager (int man_id)
     }
 
     if (man->colorsets[i] > -1) {
-      man->forecolor[i] = Colorset[man->colorsets[i] % nColorsets].fg;
+      man->forecolor[i] = Colorset[man->colorsets[i]].fg;
     }
     else if (man->foreColorName[i]) {
       if (!lookup_color (man->foreColorName[i], &man->forecolor[i])) {
@@ -625,8 +625,8 @@ void X_init_manager (int man_id)
 
     if (Pdepth > 2) {
       if (man->colorsets[i] > -1) {
-        man->shadowcolor[i] = Colorset[man->colorsets[i] % nColorsets].shadow;
-        man->hicolor[i] = Colorset[man->colorsets[i] % nColorsets].hilite;
+        man->shadowcolor[i] = Colorset[man->colorsets[i]].shadow;
+        man->hicolor[i] = Colorset[man->colorsets[i]].hilite;
       }
       else
       {
@@ -892,10 +892,10 @@ void create_manager_window (int man_id)
     }
     if (man->pixmap[i])
       XFreePixmap(theDisplay, man->pixmap[i]);
-    if (Colorset[man->colorsets[i] % nColorsets].pixmap) {
+    if (Colorset[man->colorsets[i]].pixmap) {
       man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
                        man->geometry.width, man->geometry.height,
-                       &Colorset[man->colorsets[i] % nColorsets],
+                       &Colorset[man->colorsets[i]],
                        Pdepth, man->backContext[i], False);
       XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
       XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
@@ -960,10 +960,10 @@ void change_colorset(int color) {
     man = &globals.managers[j];
     for ( i = 0; i < NUM_CONTEXTS; i++ ) {
       if(man->colorsets[i] == color) {
-        man->backcolor[i] = Colorset[man->colorsets[i] % nColorsets].bg;
-        man->forecolor[i] = Colorset[man->colorsets[i] % nColorsets].fg;
-        man->shadowcolor[i] = Colorset[man->colorsets[i] % nColorsets].shadow;
-        man->hicolor[i] = Colorset[man->colorsets[i] % nColorsets].hilite;
+        man->backcolor[i] = Colorset[man->colorsets[i]].bg;
+        man->forecolor[i] = Colorset[man->colorsets[i]].fg;
+        man->shadowcolor[i] = Colorset[man->colorsets[i]].shadow;
+        man->hicolor[i] = Colorset[man->colorsets[i]].hilite;
 
         if (i == DEFAULT)
         {
@@ -996,10 +996,10 @@ void change_colorset(int color) {
 
         if (man->pixmap[i])
           XFreePixmap(theDisplay, man->pixmap[i]);
-        if (Colorset[man->colorsets[i] % nColorsets].pixmap) {
+        if (Colorset[man->colorsets[i]].pixmap) {
           man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
                                    man->geometry.width, man->geometry.height,
-                                   &Colorset[man->colorsets[i] % nColorsets],
+                                   &Colorset[man->colorsets[i]],
                                    Pdepth, man->backContext[i], False);
           XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
           XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
