@@ -49,17 +49,16 @@
 
 #include <X11/Xlib.h>
 
-unsigned long NameToPixel(char*, unsigned long);
+unsigned long GetColor(char *color);
 
 typedef struct 
 {
-	int		type;		/* The command type. 			 */
-						/* -1 = no command.              */
-						/*  0 = command to be spawned 	 */
-						/*  1 = a solid color to be set  */
-	char*	cmdStr;		/* The command string (Type 0)   */
-	unsigned long solidColor;
-						/* A solid color after X parsing (Type 1) */
+  int type; /* The command type.
+	     * -1 = no command.
+	     *  0 = command to be spawned
+	     *  1 = a solid color to be set */
+  char*	cmdStr; /* The command string (Type 0)   */
+  unsigned long solidColor; /* A solid color after X parsing (Type 1) */
 } Command;
 
 Command *commands;
@@ -183,12 +182,11 @@ struct timeval tv;
 ******************************************************************************/
 void ReadFvwmPipe()
 {
-  int count,total,count2=0,body_length;
+  int count;
   unsigned long header[HEADER_SIZE],*body;
-  char *cbody;
 
   body = NULL;
-  if(count = ReadFvwmPacket(Fvwm_fd[1],header,&body) > 0)
+  if((count = ReadFvwmPacket(Fvwm_fd[1],header,&body)) > 0)
     {
       ProcessMessage(header[1],body);
       free(body);
@@ -203,9 +201,6 @@ void ReadFvwmPipe()
 ******************************************************************************/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
-  char* color;
-  char* tmp;
-
   if (type==M_NEW_DESK) 
     {
       if (body[0]>DeskCount || commands[body[0]].type == -1) 
@@ -368,7 +363,9 @@ int num;
 			tmp++;
 		*tmp = 0;
 		commands[num].type = 1;
-		commands[num].solidColor = NameToPixel(color, BlackPixel(dpy, screen));
+		commands[num].solidColor = (!color || !*color) ?
+		  BlackPixel(dpy, screen) :
+		  GetColor(color);
 #ifdef LOGFILE
 		fprintf(logFile,"Adding color: %s as number %d to desk %d\n",
 			color,commands[num].solidColor, num);

@@ -58,6 +58,8 @@ Bugfixes:
 
 New stuff:
 
+  - Allow resizing to leave the x/y ratio intact?
+
   - Pin up menus?
   - Multi column menus? (for LONG lists)  Or scrolling menus?
 
