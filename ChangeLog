@@ -1,3 +1,12 @@
+1999-05-10  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (paint_menu_item): take sidepic into account for right
+	justified items
+	(MiWarpPointerToItem): fixed warping to first item after multiple
+	titles or separators
+	(MakeMenu): titles count for complete item width, not just the left
+	column
+
 1999-05-10  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 
 	* fvwm/session.c (SaveWindowStates): save orig_g.[xy] - old_bw
@@ -17,12 +26,12 @@ Sat May  8 14:29:10 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/move_resize.c (ConstrainSize): make sure to stay within
 	min and max.
 
-	* fvwm/add_window.c (GetWindowSizeHints): 
+	* fvwm/add_window.c (GetWindowSizeHints):
 	fix the fix to silently accept min width zero,
 	reject any negative values in aspect ratios, scale the aspect
 	ratios to be <= 65536 to avoid overflows in ConstrainSize.
-	(gcd): removed. 	
-	
+	(gcd): removed.
+
 1999-05-07  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* fvwm/windowlist.c (do_windowList): fix call to do_menu.

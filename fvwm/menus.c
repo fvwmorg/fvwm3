@@ -1078,13 +1078,11 @@ MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle)
   int y;
   int x = MENU_MIDDLE_OFFSET(menu);
 
-  if (fSkipTitle && IS_TITLE_MENU_ITEM(mi) &&
-      /* also don't skip if there is no next item */
-      mi->next != NULL) {
-    mi = mi->next;
-    /* Shouldn't ever have a separator right after a title, but
-       lets skip one if we do, anyway */
-    if (IS_SEPARATOR_MENU_ITEM(mi) && mi->next != NULL)
+  if (fSkipTitle)
+  {
+    while (mi->next != NULL &&
+	   (IS_TITLE_MENU_ITEM(mi) || IS_SEPARATOR_MENU_ITEM(mi)))
+      /* skip separators and titles until the first 'real' item is found */
       mi = mi->next;
   }
 
@@ -1699,6 +1697,13 @@ void paint_menu_item(MenuItem *mi)
   Bool fClear = False;
 #ifdef GRADIENT_BUTTONS
   Bool fGradient;
+  int sw = 0;
+
+  if (mr->sidePic != NULL)
+    sw = mr->sidePic->width + 5;
+  else if (mr->ms->look.sidePic != NULL)
+    sw = mr->ms->look.sidePic->width + 5;
+
 
   switch (mi->mr->ms->look.face.type)
   {
@@ -1776,13 +1781,6 @@ void paint_menu_item(MenuItem *mi)
 
   /* Hilight 3D */
   if (mr->ms->look.ReliefThickness > 0) {
-    int sw = 0;
-
-    if (mr->sidePic != NULL)
-      sw = mr->sidePic->width + 5;
-    else if (mr->ms->look.sidePic != NULL)
-      sw = mr->ms->look.sidePic->width + 5;
-
     if ((mi->state)&&(!mi->fIsSeparator)&&
 	(((*mi->item)!=0 || mi->strlen2) || mi->picture || mi->lpicture))
     {
@@ -1879,7 +1877,7 @@ void paint_menu_item(MenuItem *mi)
 		mi->strlen);
   if(mi->strlen2>0)
     XDrawString(dpy, mr->w,currentGC,
-		mi->x2 + mr->width + mr->xoffset - mr->width3 - 5,text_y,
+		mi->x2 + mr->width + mr->xoffset - mr->width3 - 5- sw, text_y,
 		mi->item2, mi->strlen2);
 
   /* pete@tecc.co.uk: If the item has a hot key, underline it */
@@ -1888,7 +1886,7 @@ void paint_menu_item(MenuItem *mi)
 		  mi->hotkey - 1);
   if (mi->hotkey < 0)
    DrawUnderline(mr, currentGC,
-		 mr->xoffset + mr->width + mi->x2 - mr->width3 - 5, text_y,
+		 mr->xoffset + mr->width + mi->x2 - mr->width3 - 5 - sw,text_y,
 		 mi->item2, -1 - mi->hotkey);
 
   d=(mr->ms->look.EntryHeight-7)/2;
@@ -2447,7 +2445,7 @@ void MakeMenu(MenuRoot *mr)
   MenuItem *cur_prev;
   unsigned long valuemask;
   XSetWindowAttributes attributes;
-  int y,width;
+  int y,width,title_width;
   int cItems;
 
   if(!Scr.flags.windows_captured)
@@ -2475,6 +2473,7 @@ void MakeMenu(MenuRoot *mr)
       DestroyMenu(cont, False);
     }
 
+  title_width = 0;
   mr->width0 = 0;
   mr->width = 0;
   mr->width2 = 0;
@@ -2485,6 +2484,14 @@ void MakeMenu(MenuRoot *mr)
 	mr->width3 = 15;
 
       width = XTextWidth(mr->ms->look.pStdFont->font, cur->item, cur->strlen);
+      if (IS_TITLE_MENU_ITEM(cur))
+      {
+	/* titles stretch over the whole menu width, so count the maximum
+	 * separately */
+	if (width > title_width)
+	  title_width = width;
+	continue;
+      }
       if(cur->picture && width < cur->picture->width)
 	width = cur->picture->width;
       if (width <= 0)
@@ -2507,9 +2514,12 @@ void MakeMenu(MenuRoot *mr)
     }
 
   /* lets first size the window accordingly */
-  mr->width += 10;
   if(mr->width2 > 0)
     mr->width += 5;
+  if (mr->width0 + mr->width + mr->width2 + mr->width3 < title_width)
+    /* make it wide enough for the title */
+    mr->width = title_width - mr->width0 - mr->width2 - mr->width3;
+  mr->width += 10;
 
   /* cur_prev trails one behind cur, since we need to move that
      into a newly-made menu if we run out of space */
