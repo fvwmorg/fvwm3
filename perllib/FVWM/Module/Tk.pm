@@ -19,19 +19,23 @@ use strict;
 
 use FVWM::Module::Toolkit qw(base Tk Tk::Dialog Tk::ROText);
 
-sub new ($$@) {
+sub new ($@) {
 	my $class = shift;
-	$class = ref($class) || $class;
-	my $top = shift;
+	# support the old API with the first top-level argument
+	my $top = shift if @_ && UNIVERSAL::isa($_[0], "Tk::Toplevel");
 	my %params = @_;
 
+	$top = delete $params{TopWindow} if exists $params{TopWindow};
 	my $self = $class->SUPER::new(%params);
 
-	$self->internalDie("No Tk::Toplevel given in constructor")
-		unless UNIVERSAL::isa($top, "Tk::Toplevel");
+	$self->internalDie("TopWindow given in constructor is not Tk::Toplevel")
+		unless $top || UNIVERSAL::isa($top, "Tk::Toplevel");
+	unless ($top) {
+		$top = MainWindow->new;
+		$top->withdraw;
+	}
 
-	$self->{topLevel} = $top;
-	$self->{winId} = $top->id;
+	$self->{topWindow} = $top;
 
 	return $self;
 }
@@ -41,14 +45,14 @@ sub eventLoop ($) {
 	my @params = @_;
 
 	$self->eventLoopPrepared(@params);
-	my $top = $self->{topLevel};
+	my $top = $self->{topWindow};
 	$top->fileevent($self->{istream},
 		readable => sub {
 			unless ($self->processPacket($self->readPacket)) {
-				$self->disconnect;
 				$top->destroy;
+			} else {
+				$self->eventLoopPrepared(@params);
 			}
-			$self->eventLoopPrepared(@params);
 		}
 	);
 	MainLoop;
@@ -60,7 +64,7 @@ sub showError ($$;$) {
 	my $error = shift;
 	my $title = shift || ($self->name . " Error");
 
-	my $top = $self->{topLevel};
+	my $top = $self->{topWindow};
 
 	my $dialog = $top->Dialog(
 		-title => $title,
@@ -80,7 +84,7 @@ sub showMessage ($$;$) {
 	my $msg = shift;
 	my $title = shift || ($self->name . " Message");
 
-	$self->topLevel()->messageBox(
+	$self->{topWindow}->messageBox(
 		-icon => 'info',
 		-type => 'ok',
 		-title => $title,
@@ -95,16 +99,17 @@ sub showDebug ($$;$) {
 
 	my $dialog = $self->{tkDebugDialog};
 
-	if (!$dialog) {
-		if (!defined $self->topLevel()) {
-			# in the constructor, too early to popup a dialog
-			$self->FVWM::Module::showDebug($msg);
-			return;
-		}
+	my $top = $self->{topWindow};
+	unless (defined $top && defined $top->{Configure}) {
+		# in the constructor (too early) or in destructor (too late)
+		$self->FVWM::Module::Toolkit::showDebug($msg, $title);
+		return;
+	}
 
+	if (!$dialog) {
 		# Tk's Dialog widgets are too damn inflexible.
 		# It's less hassle to build one from scratch.
-		$dialog = $self->topLevel()->Toplevel(-title => $title);
+		$dialog = $top->Toplevel(-title => $title);
 		my $scroll = $dialog->Frame()->pack(-expand => 1, -fill => 'both');
 		my $bottom = $dialog->Frame()->pack(-expand => 0, -fill => 'x');
 		my $text = $scroll->Scrolled('ROText',
@@ -141,20 +146,15 @@ sub showDebug ($$;$) {
 		$self->{tkDebugDialog} = $dialog;
 		$self->{tkDebugTextWg} = $text;
 	} else {
-		# this is annoying, the dialog may contain a check box for this
-		$dialog->deiconify();
+		$dialog->deiconify() if $dialog->state() eq 'withdrawn';
 	}
 	my $text = $self->{tkDebugTextWg};
 	$text->insert('end', "$msg\n");
 	$text->see('end');
 }
 
-sub topLevel ($) {
-	return shift->{topLevel};
-}
-
-sub winId ($) {
-	return shift->{winId};
+sub topWindow ($) {
+	return shift->{topWindow};
 }
 
 1;
@@ -167,24 +167,43 @@ FVWM::Module::Tk - FVWM::Module with the Tk widget library attached
 
 =head1 SYNOPSIS
 
-  use lib `fvwm-perllib dir`;
-  use FVWM::Module::Tk;
-  use Tk;
+Name this module TestModuleTk, make it executable and place in ModulePath:
 
-  my $top = new MainWindow;
-  my $module = new FVWM::Module::Tk $top;
+    #!/usr/bin/perl -w
 
-  $module->addHandler(M_CONFIGURE_WINDOW, \&configure_toplevel);
-  $module->addHandler(M_CONFIG_INFO, \&some_other_sub);
+    use lib `fvwm-perllib dir`;
+    use FVWM::Module::Tk;
+    use Tk;  # preferably in this order
 
-  $module->eventLoop;
+    my $top = new MainWindow(-name => "Test");
+    my $id = $top->wrapper->[0];
+
+    my $module = new FVWM::Module::Tk(
+        TopWindow => $top,
+        Mask => M_ICONIFY | M_ERROR,  # Mask may be omitted
+        Debug => 2,
+    );
+    $top->Button(
+        -text => "Close", -command => sub { $top->destroy; }
+    )->pack;
+
+    $module->addDefaultErrorHandler;
+    $module->addHandler(M_ICONIFY, sub {
+        my $id0 = $_[1]->_win_id;
+        $module->send("WindowId $id Iconify off") if $id0 == $id;
+    });
+    $module->track('Scheduler')->schedule(60, sub {
+        $module->showMessage("You run this module for 1 minute")
+    });
+
+    $module->eventLoop;
 
 =head1 DESCRIPTION
 
 The B<FVWM::Module::Tk> package is a sub-class of B<FVWM::Module> that
 overloads the methods B<new>, B<eventLoop>, B<showMessage>, B<showDebug> and
-B<showError> to manage Tk objects as well. It also adds new methods
-B<topLevel> and B<winId>.
+B<showError> to manage Tk objects as well. It also adds new method
+B<topWindow>.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
@@ -196,15 +215,19 @@ are covered here:
 
 =over 8
 
-=item B<new> I<top param-hash>
+=item B<new> I<param-hash>
 
-$module = new FVWM::Module::Tk $top, %params
+$module = new B<FVWM::Module::Tk> I<TopWindow> => $top, %params
 
 Create and return an object of the B<FVWM::Module::Tk> class.
 This B<new> method is identical to the (grand-)parent class method, with the
 exception that a Tk top-level of some sort (MainWindow, TopLevel, Frame,
-etc.) must be passed before the hash of options. The options I<param-hash>
-are the same as specified in L<FVWM::Module>.
+etc.) may be passed in the hash of options using the I<TopWindow> named value.
+Other options in I<param-hash> are the same as described in L<FVWM::Module>.
+
+If no top-level window is specified in the constructor, such dummy window
+is created and immediatelly withdrawn. This top-level window is needed to
+create Tk dialogs.
 
 =item B<eventLoop>
 
@@ -241,13 +264,9 @@ All debug messages are added to the debug window.
 
 Useful for debugging a Tk based module.
 
-=item B<topLevel>
+=item B<topWindow>
 
 Returns the Tk toplevel that this object was created with.
-
-=item B<winId>
-
-A shortcut for $self->topLevel->id, exists for efficiency reasons.
 
 =back
 

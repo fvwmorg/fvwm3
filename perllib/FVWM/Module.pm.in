@@ -93,9 +93,9 @@ sub new ($@) {
 
 	my $name = $0; $name =~ s|.*/||;
 	$name = $params{'Name'} || $name;
-	my $mask = $params{'Mask'} || 0;
+	my $mask = $params{'Mask'};
 	my $xmask = $params{'XMask'};
-	my $syncMask = $params{'SyncMask'} || 0;
+	my $syncMask = $params{'SyncMask'};
 	my $syncXMask = $params{'SyncXMask'};
 
 	# initialize module from argv
@@ -150,6 +150,8 @@ sub new ($@) {
 	$self->{shouldSendReady} = 1;
 	$self->{addMask} = 0;
 	$self->{addXMask} = 0;
+	$self->{maskWasSet} = defined $mask;
+	$self->{xmaskWasSet} = defined $xmask;
 
 	$self->{heldCommandArgs} = [];
 	$self->{syntheticEvents} = [];
@@ -159,9 +161,9 @@ sub new ($@) {
 	# bless here, so die above does not run DESTROY
 	bless $self, $class;
 	$self->name($name);
-	$self->mask($mask);
-	$self->xmask($xmask) if $xmask;
-	$self->syncMask($syncMask);
+	$self->mask($mask || 0, $self->{maskWasSet});
+	$self->xmask($xmask, $self->{xmaskWasSet}) if $xmask;
+	$self->syncMask($syncMask || 0);
 	$self->syncXMask($syncXMask) if $syncXMask;
 	$self->resetHandlers;
 	return $self;
@@ -202,9 +204,12 @@ sub name ($;$) {
 	return $self->{name};
 }
 
-sub mask ($;$) {
+sub mask ($;$$) {
 	my $self = shift;
 	my $mask = shift;
+	my $explicit = shift;
+	$explicit = 1 unless defined $explicit;
+
 	if (defined $mask) {
 		$self->internalDie("mask() can't get extended mask, use xmask()")
 			if $self->isEventExtended($mask);
@@ -212,20 +217,25 @@ sub mask ($;$) {
 		$self->sendMask($mask, $self->{addMask})
 			unless defined $oldMask && $oldMask == $mask;
 		$self->{mask} = $mask;
+		$self->{maskWasSet} = $explicit;
 		return $oldMask;
 	}
 	return $self->{mask} || 0;
 }
 
-sub xmask ($;$) {
+sub xmask ($;$$) {
 	my $self = shift;
 	my $mask = shift;
+	my $explicit = shift;
+	$explicit = 1 unless defined $explicit;
+
 	if (defined $mask) {
 		$mask &= ~M_EXTENDED_MSG;
 		my $oldMask = $self->{xmask};
 		$self->sendMask($mask | M_EXTENDED_MSG, $self->{addXMask})
 			unless defined $oldMask && $oldMask == $mask;
 		$self->{xmask} = $mask;
+		$self->{xmaskWasSet} = $explicit;
 		return $oldMask;
 	}
 	return $self->{xmask} || 0;
@@ -316,7 +326,8 @@ sub send ($$;$$) {
 	my $self = shift;
 	my $text = shift;
 	my $winId = shift || 0;
-	my $continue = @_? shift(): 1;
+	my $continue = shift;
+	$continue = 1 unless defined $continue;
 
 	$self->internalDie("send requires at least text param")
 		unless defined $text;
@@ -528,7 +539,13 @@ sub eventLoopFinished ($@) {
 	my $tracking = shift()? 1: 0;
 
 	$self->debug("exited event loop", 3 + $tracking);
-	$self->disconnect unless $tracking;
+
+	unless ($tracking) {
+		foreach my $tracker (values %{$self->{trackers}}) {
+			$tracker->toBeDisconnected;
+		}
+		$self->disconnect;
+	}
 
 	$self->{isInEventLoop} = 0;
 }
@@ -569,10 +586,11 @@ sub track ($$;$@) {
 	return $tracker;
 }
 
-sub addHandler ($$$) {
+sub addHandler ($$$;$) {
 	my $self = shift;
 	my $type = shift;
 	my $handler = shift;
+	my $isTracking = shift || 0;
 
 	$self->internalDie("addHandler: no handler type") unless defined $type;
 	$self->internalDie("addHandler: no handler code") unless ref($handler) eq 'CODE';
@@ -582,6 +600,14 @@ sub addHandler ($$$) {
 		unless exists $self->{handlers}->{$category}->{$type};
 	push @{$self->{handlers}->{$category}->{$type}}, $handler;
 	my $index = @{$self->{handlers}->{$category}->{$type}} - 1;
+
+	unless ($isTracking) {
+		$self->mask($self->mask | $type, 0)
+			if !$self->{maskWasSet} && $category eq "regular";
+		$self->xmask($self->xmask | $type, 0)
+			if !$self->{xmaskWasSet} && $category eq "extended";
+	}
+
 	return [$type, $index];
 }
 
@@ -632,18 +658,26 @@ FVWM::Module - the base class representing FVWM module
 
 =head1 SYNOPSIS
 
-  use lib `fvwm-perllib dir`;
-  use FVWM::Module;
+    use lib `fvwm-perllib dir`;
+    use FVWM::Module;
 
-  my $module = new FVWM::Module(Mask => M_FOCUS_CHANGE);
+    my $module = new FVWM::Module;
 
-  $module->send("Beep");
+    $module->send("Beep");
 
-  # auto-raise all windows
-  sub autoRaise { $_[0]->send("Raise", $_[1]->_win_id) };
-  $module->addHandler(M_FOCUS_CHANGE, \&autoRaise);
+    # auto-raise all windows
+    sub autoRaise { $_[0]->send("Raise", $_[1]->_win_id) };
+    $module->addHandler(M_FOCUS_CHANGE, \&autoRaise);
 
-  $module->eventLoop;
+    # terminate itself after 5 minutes
+    my $scheduler = $module->track('Scheduler');
+    $scheduler->schedule(5 * 60, sub { $module->terminate; });
+
+    # print the current desk number ($pageTracker is auto updated)
+    my $pageTracker = $module->track("PageInfo");
+    $module->showMessage("Desk: " . $pageTracker->data->{desk_n});
+
+    $module->eventLoop;
 
 =head1 DESCRIPTION
 
@@ -931,8 +965,7 @@ GUI applications, the dummy mode is supported when the module is started
 from the command line. No events are received in this case, but with some
 effort they may be emulated:
 
-    my $event = new FVWM::Event(M_NEW_DESK, [ 2 ]);
-    $module->invokeHandler($event) if $module->isDummy;
+    $module->emulateEvent(M_NEW_DESK, [ 2 ]) if $module->isDummy;
 
 =item B<internalDie> I<msg>
 
@@ -943,8 +976,8 @@ For a clean module exit use B<showError> and B<terminate> instead.
 
 Sets or returns the module name. Called automatically from the constructor.
 
-=item B<mask> [I<mask>]
-=item B<xmask> [I<mask>]
+=item B<mask> [I<mask>] [I<explicit-flag>]
+=item B<xmask> [I<mask>] [I<explicit-flag>]
 
 Sets or returns the module mask. Called automatically from the constructor.
 
@@ -955,6 +988,13 @@ the integer parameter indicates a mask to set and the old mask is returned.
 
 The module only receives the packets matching these 2 module masks (regular
 and extended).
+
+This class is smart to update the minimal module masks automatically if you
+never set them explicitly (either in constructor or using these methods).
+The I<explicit-flag> parameter should not be usually used, it defaults to 1.
+If you set it to 0 then the module is informed to continue to automatically
+update masks on the following B<addHandlers> calls even after the current
+mask setting.
 
 =item B<isInMask> I<type>
 
@@ -1082,6 +1122,7 @@ Randy J. Ray <randy@byz.org>.
 
 =head1 SEE ALSO
 
-For more information, see L<fvwm>, L<FVWM::Module::Gtk> and L<FVWM::Module::Tk>.
+For more information, see L<fvwm>, L<FVWM::Module::Gtk> and L<FVWM::Module::Tk>,
+L<FVWM::Tracker>.
 
 =cut

@@ -120,6 +120,7 @@ FVWM::Module::Toolkit - FVWM::Module with abstract widget toolkit attached
 =head1 SYNOPSIS
 
 Only to be uses to implement concrete toolkit subclasses.
+A new toolkit subclass implementation may look like this:
 
     package FVWM::Module::SomeToolkit;
     # this automatically sets the base class and tries "use SomeToolkit;"
@@ -161,9 +162,9 @@ widget toolkit libraries and to show an error in the external window like
 xmessage if the needed libraries are not available.
 
 This class overloads one method B<addDefaultErrorHandler> and expects
-sub-classes to overload the methods B<showError> and B<showMessage> to use
-native widgets (these 2 methods in this class by themselves overwrite the
-superclass versions by adding a title parameter).
+sub-classes to overload the methods B<showError>, B<showMessage> and
+B<showDebug> to use native widgets (these 3 methods in this class by
+themselves overwrite the superclass versions by adding a title parameter).
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.

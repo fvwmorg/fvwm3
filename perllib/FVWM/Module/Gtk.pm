@@ -95,6 +95,8 @@ sub showDebug ($$;$) {
 	my $dialog = $self->{gtkDebugDialog};
 
 	if (!$dialog) {
+		$self->{gtkDebugString} ||= "";
+
 		$dialog = new Gtk::Dialog;
 		$dialog->set_title($title);
 		$dialog->set_border_width(4);
@@ -102,7 +104,6 @@ sub showDebug ($$;$) {
 
 		my $text = $self->{gtkDebugTextWg} || new Gtk::Text(undef, undef);
 		$text->set_editable(0);
-		$self->{gtkDebugString} ||= "";
 		$text->insert(undef, undef, undef, $self->{gtkDebugString});
 		$dialog->vbox->pack_start($text, 1, 1, 4);
 
@@ -164,22 +165,39 @@ FVWM::Module::Gtk - FVWM::Module with the GTK+ v1 widget library attached
 
 =head1 SYNOPSIS
 
-  use lib `fvwm-perllib dir`;
-  use FVWM::Module::Gtk;
-  use Gtk;
+Name this module TestModuleGtk, make it executable and place in ModulePath:
 
-  my $module = new FVWM::Module::Gtk;
+    #!/usr/bin/perl -w
 
-  init Gtk;
-  my $window = new Gtk::Window -toplevel;;
-  my $label = new Gtk::Label "Hello, world";
-  $window->add($label);
-  $window->show_all;
+    use lib `fvwm-perllib dir`;
+    use FVWM::Module::Gtk;
+    use Gtk;  # preferably in this order
 
-  $module->addHandler(M_CONFIGURE_WINDOW, \&configure_toplevel);
-  $module->addHandler(M_CONFIG_INFO, \&some_other_sub);
+    my $module = new FVWM::Module::Gtk(
+        Debug => 2,
+    );
 
-  $module->eventLoop;
+    init Gtk;
+    my $dialog = new Gtk::Dialog;
+    my $id = $dialog->window->XWINDOW();
+    $dialog->signal_connect("destroy", sub { Gtk->main_quit; });
+    $dialog->set_title("Test");
+    my $button = new Gtk::Button "Close";
+    $button->signal_connect("clicked", sub { $dialog->destroy; });
+    $dialog->action_area->pack_start($button, 1, 1, 0);
+    $dialog->show_all;
+
+    $module->addDefaultErrorHandler;
+    $module->addHandler(M_ICONIFY, sub {
+        my $id0 = $_[1]->_win_id;
+        printf "id = %x, id0 = %x\n", $id, $id0;
+        $module->send("WindowId $id Iconify off") if $id0 == $id;
+    });
+    $module->track('Scheduler')->schedule(60, sub {
+        $module->showMessage("You run this module for 1 minute")
+    });
+
+    $module->eventLoop;
 
 =head1 DESCRIPTION
 

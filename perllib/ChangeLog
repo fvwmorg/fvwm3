@@ -1,3 +1,22 @@
+2003-08-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module/Gtk2.pm:
+	Gtk2 toolkit is now fully supported
+
+	* FVWM/Module/Tk.pm:
+	some changes to Tk API: constructor and Tk only methods redone
+
+	* FVWM/Module.pm.in:
+	* FVWM/Tracker.pm:
+	implement automatic mask updates until the first explicit set (if any),
+	module now call its trackers before going to be disconnected
+	* FVWM/Tracker/Scheduler.pm:
+	deschedule all requested timers when going to be disconnected
+
+	* FVWM/Module/Gtk.pm:
+	* FVWM/Module/Toolkit.pm:
+	updated documentation
+
 2003-07-07  Mikhael Goikhman  <migo@homemail.com>
 
 	* perllib/FVWM/create-commands:

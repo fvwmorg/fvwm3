@@ -75,12 +75,9 @@ sub start ($) {
 
 sub stop ($) {
 	my $self = shift;
-	my $data = $self->{data};
 
 	$self->SUPER::stop;
-	foreach (keys %$data) {
-		$self->deschedule($_);
-	}
+	$self->descheduleAll;
 }
 
 sub sendSchedule ($$) {
@@ -141,6 +138,19 @@ sub reschedule ($;$) {
 	$self->{rescheduledSeconds} = $seconds;
 }
 
+sub descheduleAll ($) {
+	my $self = shift;
+	my $data = $self->{data};
+	foreach (keys %$data) {
+		$self->deschedule($_);
+	}
+}
+
+sub toBeDisconnected ($) {
+	my $self = shift;
+	$self->descheduleAll();
+}
+
 sub data ($;$) { 
 	my $self = shift;
 	my $scheduleId = shift;
@@ -193,6 +203,8 @@ don't expect the alarm method to work at all.
  
 Using B<FVWM::Module> $module object:
 
+    # beep every 40 seconds; exit in 100 seconds
+
     my $scheduler = $module->track("Scheduler");
     $scheduler->schedule(40,
         sub { $module->send("Beep"); $scheduler->reschedule; });
@@ -213,7 +225,7 @@ Returns I<scheduled-id> that may be used in B<deschedule> or B<data>.
 
 =item B<deschedule> I<scheduled-id>
 
-Removes the scheduled callback.
+Removes the scheduled callback identified by I<scheduled-id>.
 
 =item B<reschedule> [I<seconds>]
 
@@ -223,11 +235,19 @@ same callback using the same or different number of I<seconds>.
 This may be useful when defining a periodical callback that should be,
 say, called every 10 minutes (600 seconds).
 
+=item descheduleAll
+
+Removes all previously scheduled callbacks.
+
 =back
 
 =head1 OVERRIDDEN METHODS
 
 =over 4
+
+=item toBeDisconnected
+
+Calls B<descheduleAll>.
 
 =item B<data> [I<sheduled-id>]
 

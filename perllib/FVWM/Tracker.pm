@@ -75,7 +75,7 @@ sub addHandler ($$$) {
 	my $type = shift;
 	my $handler = shift;
 
-	my $handlerId = $self->{module}->addHandler($type, $handler);
+	my $handlerId = $self->{module}->addHandler($type, $handler, 1);
 	$self->{handlerIds}->{$handlerId} = $type;
 	return $handlerId;
 }
@@ -161,6 +161,9 @@ sub restart ($) {
 	my $self = shift;
 	$self->stop;
 	$self->start;
+}
+
+sub toBeDisconnected ($) {
 }
 
 sub data ($) {
@@ -369,6 +372,11 @@ loop in response to I<M_END_CONFIG_INFO> event.
 
 Subclasses may call this method when something wrong happens.
 This is a wrapper to B<FVWM::Module>::B<internalDie>.
+
+=item B<toBeDisconnected>
+
+Does nothing by default. Subclasses may implement this method if something
+should be sent to I<fvwm> just before the module disconnects itself.
 
 =back
 
