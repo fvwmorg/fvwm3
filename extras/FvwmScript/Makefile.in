@@ -89,6 +89,7 @@ module_PROGRAMS = FvwmScript
 
 FvwmScript_SOURCES = FvwmScript.c Instructions.c lex.yy.c libyywrap.c \
 	types.h y.tab.c y.tab.h
+FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmScript.1
 EXTRA_DIST = $(man_MANS) BUGS \
@@ -114,7 +115,6 @@ X_PRE_LIBS = @X_PRE_LIBS@
 FvwmScript_OBJECTS =  FvwmScript.o Instructions.o lex.yy.o libyywrap.o \
 y.tab.o
 FvwmScript_LDADD = $(LDADD)
-FvwmScript_DEPENDENCIES =  Widgets/libWidgets.a
 FvwmScript_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -128,7 +128,7 @@ DIST_COMMON =  INSTALL Makefile.am Makefile.in TODO
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmScript.P .deps/Instructions.P .deps/lex.yy.P \
 .deps/libyywrap.P .deps/y.tab.P
@@ -140,7 +140,7 @@ all: all-recursive all-am
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmScript/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmScript/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -305,7 +305,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmScript/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmScript/Makefile
 	$(mkinstalldirs) $(distdir)/Compiler
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \

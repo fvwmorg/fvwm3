@@ -6,6 +6,7 @@ man_MANS = FvwmAudio.1
 EXTRA_DIST = $(man_MANS) README.say
 
 FvwmAudio_SOURCES = FvwmAudio.c
+FvwmAudio_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm

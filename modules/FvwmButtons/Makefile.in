@@ -88,11 +88,12 @@ man_MANS = FvwmButtons.1
 EXTRA_DIST = $(man_MANS) CHANGES samplebuttonrc BUGS
 
 FvwmButtons_SOURCES = FvwmButtons.c FvwmButtons.h button.c button.h draw.c draw.h icons.c icons.h misc.c misc.h output.c parse.c parse.h
+FvwmButtons_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS) 
+INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
@@ -110,7 +111,6 @@ X_PRE_LIBS = @X_PRE_LIBS@
 FvwmButtons_OBJECTS =  FvwmButtons.o button.o draw.o icons.o misc.o \
 output.o parse.o
 FvwmButtons_LDADD = $(LDADD)
-FvwmButtons_DEPENDENCIES = 
 FvwmButtons_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -124,7 +124,7 @@ DIST_COMMON =  README INSTALL Makefile.am Makefile.in TODO
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmButtons.P .deps/button.P .deps/draw.P \
 .deps/icons.P .deps/misc.P .deps/output.P .deps/parse.P
@@ -136,7 +136,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu modules/FvwmButtons/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign modules/FvwmButtons/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -261,7 +261,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu modules/FvwmButtons/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign modules/FvwmButtons/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

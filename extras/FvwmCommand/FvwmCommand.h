@@ -1,5 +1,5 @@
 #include "config.h"
-#include "fvwmlib.h"     
+#include "fvwmlib.h"
 
 #if HAVE_SYS_SELECT_H
 #include <sys/select.h>
@@ -12,7 +12,7 @@
 #else
 #define	 _select(s, fd, r, w, t) \
 			select(s, fd, r, w, t)
-#endif  
+#endif
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -33,7 +33,7 @@
 #define MAX_COMMAND_SIZE   768
 
 /* number of default arguments when invoked from fvwm */
-#define FARGS 6   
+#define FARGS 6
 
 #define SOL  sizeof( unsigned long )
 

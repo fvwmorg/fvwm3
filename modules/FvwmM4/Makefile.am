@@ -6,6 +6,7 @@ man_MANS = FvwmM4.1
 EXTRA_DIST = $(man_MANS)
 
 FvwmM4_SOURCES = FvwmM4.c FvwmM4.h
+FvwmM4_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm

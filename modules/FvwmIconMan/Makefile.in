@@ -88,11 +88,12 @@ man_MANS = FvwmIconMan.1
 EXTRA_DIST = $(man_MANS) CHANGES
 
 FvwmIconMan_SOURCES = FvwmIconMan.c FvwmIconMan.h debug.c debug.h debuglevels.h functions.c fvwm.c globals.c readconfig.c readconfig.h winlist.c x.c x.h xmanager.c xmanager.h
+FvwmIconMan_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS) 
+INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
@@ -110,7 +111,6 @@ X_PRE_LIBS = @X_PRE_LIBS@
 FvwmIconMan_OBJECTS =  FvwmIconMan.o debug.o functions.o fvwm.o \
 globals.o readconfig.o winlist.o x.o xmanager.o
 FvwmIconMan_LDADD = $(LDADD)
-FvwmIconMan_DEPENDENCIES = 
 FvwmIconMan_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -124,7 +124,7 @@ DIST_COMMON =  README Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmIconMan.P .deps/debug.P .deps/functions.P \
 .deps/fvwm.P .deps/globals.P .deps/readconfig.P .deps/winlist.P \
@@ -137,7 +137,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu modules/FvwmIconMan/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign modules/FvwmIconMan/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -262,7 +262,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu modules/FvwmIconMan/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign modules/FvwmIconMan/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

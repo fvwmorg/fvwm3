@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -39,7 +39,7 @@ char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
 char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
 
 /**************************************************************************
- * 
+ *
  * Releases dynamically allocated space used to store window/icon names
  *
  **************************************************************************/
@@ -47,10 +47,10 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
 {
   if (!tmp)
     return;
-  
-  if (nukename && nukeicon) 
+
+  if (nukename && nukeicon)
     {
-      if (tmp->name == tmp->icon_name) 
+      if (tmp->name == tmp->icon_name)
 	{
 	  if (tmp->name != NoName && tmp->name != NULL)
 	    XFree (tmp->name);
@@ -66,8 +66,8 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
 	    XFree (tmp->icon_name);
 	  tmp->icon_name = NULL;
 	}
-    }   
-  else if (nukename) 
+    }
+  else if (nukename)
     {
       if (tmp->name != tmp->icon_name
           && tmp->name != NoName
@@ -83,17 +83,17 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
 	XFree (tmp->icon_name);
       tmp->icon_name = NULL;
     }
-  
+
   return;
 }
 
 /***************************************************************************
  *
- * Handles destruction of a window 
+ * Handles destruction of a window
  *
  ****************************************************************************/
 void Destroy(FvwmWindow *Tmp_win)
-{ 
+{
   int i;
   extern FvwmWindow *ButtonWindow;
   extern FvwmWindow *colormap_win;
@@ -111,12 +111,12 @@ void Destroy(FvwmWindow *Tmp_win)
 
   if(!PPosOverride)
     XSync(dpy,0);
-  
+
   if(Tmp_win == Scr.Hilite)
     Scr.Hilite = NULL;
-  
-  Broadcast(M_DESTROY_WINDOW,3,Tmp_win->w,Tmp_win->frame,
-	    (unsigned long)Tmp_win,0,0,0,0);
+
+  BroadcastPacket(M_DESTROY_WINDOW, 3,
+                  Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
 
   if(Scr.PreviousFocus == Tmp_win)
     Scr.PreviousFocus = NULL;
@@ -156,10 +156,10 @@ void Destroy(FvwmWindow *Tmp_win)
   XDeleteContext(dpy, Tmp_win->Parent, FvwmContext);
 
   XDeleteContext(dpy, Tmp_win->w, FvwmContext);
-  
+
   if ((Tmp_win->icon_w)&&(Tmp_win->flags & PIXMAP_OURS))
     XFreePixmap(dpy, Tmp_win->iconPixmap);
-  
+
   if (Tmp_win->icon_w)
     {
       XDestroyWindow(dpy, Tmp_win->icon_w);
@@ -186,18 +186,18 @@ void Destroy(FvwmWindow *Tmp_win)
       for(i=0;i<4;i++)
 	XDeleteContext(dpy, Tmp_win->corners[i], FvwmContext);
     }
-  
+
   Tmp_win->prev->next = Tmp_win->next;
   if (Tmp_win->next != NULL)
     Tmp_win->next->prev = Tmp_win->prev;
-  free_window_names (Tmp_win, True, True);		
-  if (Tmp_win->wmhints)					
+  free_window_names (Tmp_win, True, True);
+  if (Tmp_win->wmhints)
     XFree ((char *)Tmp_win->wmhints);
   /* removing NoClass change for now... */
 #if 0
-  if (Tmp_win->class.res_name)  
+  if (Tmp_win->class.res_name)
     XFree ((char *)Tmp_win->class.res_name);
-  if (Tmp_win->class.res_class) 
+  if (Tmp_win->class.res_class)
     XFree ((char *)Tmp_win->class.res_class);
 #else
   if (Tmp_win->class.res_name && Tmp_win->class.res_name != NoResource)
@@ -222,14 +222,14 @@ void Destroy(FvwmWindow *Tmp_win)
 
 /**************************************************************************
  *
- * Removes expose events for a specific window from the queue 
+ * Removes expose events for a specific window from the queue
  *
  *************************************************************************/
 int flush_expose (Window w)
 {
   XEvent dummy;
   int i=0;
-  
+
   while (XCheckTypedWindowEvent (dpy, w, Expose, &dummy))i++;
   return i;
 }
@@ -240,8 +240,8 @@ int flush_expose (Window w)
  *
  *  Procedure:
  *	RestoreWithdrawnLocation
- * 
- *  Puts windows back where they were before fvwm took over 
+ *
+ *  Puts windows back where they were before fvwm took over
  *
  ************************************************************************/
 void RestoreWithdrawnLocation (FvwmWindow *tmp,Bool restart)
@@ -249,12 +249,12 @@ void RestoreWithdrawnLocation (FvwmWindow *tmp,Bool restart)
   int a,b,w2,h2;
   unsigned int bw,mask;
   XWindowChanges xwc;
-  
+
   if(!tmp)
     return;
-  
-  if (XGetGeometry (dpy, tmp->w, &JunkRoot, &xwc.x, &xwc.y, 
-		    &JunkWidth, &JunkHeight, &bw, &JunkDepth)) 
+
+  if (XGetGeometry (dpy, tmp->w, &JunkRoot, &xwc.x, &xwc.y,
+		    &JunkWidth, &JunkHeight, &bw, &JunkDepth))
     {
       XTranslateCoordinates(dpy,tmp->frame,Scr.Root,xwc.x,xwc.y,
 			    &a,&b,&JunkChild);
@@ -262,7 +262,7 @@ void RestoreWithdrawnLocation (FvwmWindow *tmp,Bool restart)
       xwc.y = b + tmp->ydiff;
       xwc.border_width = tmp->old_bw;
       mask = (CWX | CWY|CWBorderWidth);
-      
+
       /* We can not assume that the window is currently on the screen.
        * Although this is normally the case, it is not always true.  The
        * most common example is when the user does something in an
@@ -276,13 +276,13 @@ void RestoreWithdrawnLocation (FvwmWindow *tmp,Bool restart)
        *
        * gpw -- 11/11/93
        *
-       * Unfortunately, this does horrendous things during re-starts, 
-       * hence the "if(restart)" clause (RN) 
+       * Unfortunately, this does horrendous things during re-starts,
+       * hence the "if(restart)" clause (RN)
        *
        * Also, fixed so that it only does this stuff if a window is more than
        * half off the screen. (RN)
        */
-      
+
       if(!restart)
 	{
 	  /* Don't mess with it if its partially on the screen now */
@@ -307,15 +307,15 @@ void RestoreWithdrawnLocation (FvwmWindow *tmp,Bool restart)
 	    }
 	}
       XReparentWindow (dpy, tmp->w,Scr.Root,xwc.x,xwc.y);
-      
+
       if((tmp->flags & ICONIFIED)&&(!(tmp->flags & SUPPRESSICON)))
 	{
-	  if (tmp->icon_w) 
+	  if (tmp->icon_w)
 	    XUnmapWindow(dpy, tmp->icon_w);
-	  if (tmp->icon_pixmap_w) 
-	    XUnmapWindow(dpy, tmp->icon_pixmap_w);	  
+	  if (tmp->icon_pixmap_w)
+	    XUnmapWindow(dpy, tmp->icon_pixmap_w);
 	}
-      
+
       XConfigureWindow (dpy, tmp->w, mask, &xwc);
       if(!restart)
 	XSync(dpy,0);
@@ -333,8 +333,8 @@ Time lastTimestamp = CurrentTime;	/* until Xlib does this for us */
 Bool StashEventTime (XEvent *ev)
 {
   Time NewTimestamp = CurrentTime;
-  
-  switch (ev->type) 
+
+  switch (ev->type)
     {
     case KeyPress:
     case KeyRelease:
@@ -373,7 +373,7 @@ Bool StashEventTime (XEvent *ev)
     lastTimestamp = NewTimestamp;
   if(FocusOnNextTimeStamp)
     {
-      SetFocus(FocusOnNextTimeStamp->w,FocusOnNextTimeStamp,1);      
+      SetFocus(FocusOnNextTimeStamp->w,FocusOnNextTimeStamp,1);
       FocusOnNextTimeStamp = NULL;
     }
   return True;
@@ -423,7 +423,7 @@ void ComputeActualPosition(int x,int y,int x_unit,int y_unit,
 {
   *pfinalX = x*x_unit/100;
   *pfinalY = y*y_unit/100;
-  if (*pfinalX < 0) 
+  if (*pfinalX < 0)
     *pfinalX += Scr.MyDisplayWidth - width;
   if (*pfinalY < 0)
     *pfinalY += Scr.MyDisplayHeight - height;
@@ -457,7 +457,7 @@ int GetOnePositionArgument(char *s1,int x,int w,int *pFinalX,float factor,int ma
   return 1;
 }
 
-/* GetPositionArguments is used for Move, AnimatedMove, maybe more 
+/* GetPositionArguments is used for Move, AnimatedMove, maybe more
  * It lets you specify in all the following ways
  *   20  30          Absolute percent position, from left edge and top
  *  -50  50          Absolute percent position, from right edge and top
@@ -477,7 +477,7 @@ int GetPositionArguments(char *action, int x, int y, int w, int h, int *pFinalX,
   s1 = strtok(action," \t\n");
   s2 = strtok(NULL," \t\n");
   /* DEBUG_FPRINTF((stderr,"GPA: 1=\"%s\", 2=\"%s\"\n",s1,s2)); */
-  
+
   if (s1 == NULL || s2 == NULL)
     return 0;
 
@@ -528,7 +528,7 @@ char *GetOneMenuPositionArgument(char *action,int x,int w,int *pFinalX,
   } else {
     naction = action;
   }
-  free(token); 
+  free(token);
   return naction;
 }
 
@@ -558,7 +558,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     fvwm_msg(ERR,"GetMenuOptions","no MenuOptions pointer passed");
     return action;
   }
-  
+
   taction = action;
   while (action != NULL) {
     /* ^ just to be able to jump to end of loop without 'goto' */
@@ -567,7 +567,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     pops->pos_hints.fRelative = FALSE;
     /* parse context argument (if present) */
     naction = GetNextToken(taction, &tok);
-    
+
     pops->pos_hints.fRelative = TRUE; /* set to FALSE for absolute hints! */
     fUseItemOffset = FALSE;
     fHasContext = TRUE;
@@ -634,11 +634,11 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       /* no context string */
       fHasContext = FALSE;
     }
-    
+
     free(tok);
     if (fHasContext) taction = naction;
     else naction = action;
-    
+
     if (!context_window || !fHasContext
 	|| !XGetGeometry(dpy, context_window, &JunkRoot, &JunkX, &JunkY,
 			 &width, &height, &JunkBW, &JunkDepth)
@@ -652,7 +652,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       y += mi->y_offset;
       height = mi->y_height;
     }
-    
+
     /* parse position arguments */
     taction = GetOneMenuPositionArgument(
       naction, x, width, &(pops->pos_hints.x), &(pops->pos_hints.x_factor));
@@ -682,7 +682,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     pops->pos_hints.fRelative = FALSE;
   }
 
-  action = naction; 
+  action = naction;
   /* parse additional options */
   while (naction && *naction) {
     naction = GetNextToken(action, &tok);
@@ -727,7 +727,7 @@ int GetOneArgument(char *action, int *val1, int *val1_unit)
 
   if(n != 2)
     return 0;
-  
+
   if((c1 == 'p')||(c1 == 'P'))
     *val1_unit = 100;
 
@@ -736,10 +736,10 @@ int GetOneArgument(char *action, int *val1, int *val1_unit)
 
 
 /***************************************************************************
- * 
- * Wait for all mouse buttons to be released 
- * This can ease some confusion on the part of the user sometimes 
- * 
+ *
+ * Wait for all mouse buttons to be released
+ * This can ease some confusion on the part of the user sometimes
+ *
  * Discard superflous button events during this wait period.
  *
  ***************************************************************************/
@@ -753,8 +753,8 @@ void WaitForButtonsUp()
     {
       XAllowEvents(dpy,ReplayPointer,CurrentTime);
       XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &JunkX, &JunkY, &JunkX, &JunkY, &mask);    
-      
+		    &JunkX, &JunkY, &JunkX, &JunkY, &mask);
+
       if((mask&
 	  (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
 	AllUp = True;
@@ -866,7 +866,7 @@ void KeepOnTop()
 
 
 /**************************************************************************
- * 
+ *
  * Unmaps a window on transition to a new desktop
  *
  *************************************************************************/
@@ -896,7 +896,7 @@ void UnmapIt(FvwmWindow *t)
 }
 
 /**************************************************************************
- * 
+ *
  * Maps a window on transition to a new desktop
  *
  *************************************************************************/
@@ -928,8 +928,8 @@ void RaiseWindow(FvwmWindow *t)
 
   /* raise the target, at least */
   count = 1;
-  Broadcast(M_RAISE_WINDOW,3,t->w,t->frame,(unsigned long)t,0,0,0,0);
-  
+  BroadcastPacket(M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
+
   for (t2 = Scr.FvwmRoot.next; t2 != NULL; t2 = t2->next)
     {
       if(t2->flags & ONTOP)
@@ -938,12 +938,12 @@ void RaiseWindow(FvwmWindow *t)
 	 (t2 != t))
 	{
 	  count++;
-	  Broadcast(M_RAISE_WINDOW,3,t2->w,t2->frame,(unsigned long) t2,
-		    0,0,0,0);
+	  BroadcastPacket(M_RAISE_WINDOW, 3,
+                          t2->w, t2->frame,(unsigned long) t2);
 	  if ((t2->flags & ICONIFIED)&&(!(t2->flags & SUPPRESSICON)))
 	    {
 	      count += 2;
-	    }	  
+	    }
 	}
     }
   if ((t->flags & ICONIFIED)&&(!(t->flags & SUPPRESSICON)))
@@ -960,8 +960,8 @@ void RaiseWindow(FvwmWindow *t)
     {
       if(t2->flags & ONTOP)
 	{
-	  Broadcast(M_RAISE_WINDOW,3,t2->w,t2->frame,(unsigned long) t2,
-		    0,0,0,0);
+	  BroadcastPacket(M_RAISE_WINDOW, 3,
+                          t2->w, t2->frame, (unsigned long) t2);
 	  wins[i++] = t2->frame;
 	}
     }
@@ -988,7 +988,7 @@ void RaiseWindow(FvwmWindow *t)
 #endif
   if ((t->flags & ICONIFIED)&&(!(t->flags & SUPPRESSICON)))
   {
-    if(!(t->flags & NOICON_TITLE)) 
+    if(!(t->flags & NOICON_TITLE))
       wins[i++] = t->icon_w;
     if (t->icon_pixmap_w)
       wins[i++] = t->icon_pixmap_w;
@@ -1011,7 +1011,7 @@ void LowerWindow(FvwmWindow *t)
 {
   XLowerWindow(dpy,t->frame);
 
-  Broadcast(M_LOWER_WINDOW,3,t->w,t->frame,(unsigned long)t,0,0,0,0);
+  BroadcastPacket(M_LOWER_WINDOW, 3, t->w, t->frame, (unsigned long)t);
 
   if((t->flags & ICONIFIED)&&(!(t->flags & SUPPRESSICON)))
     {
@@ -1032,12 +1032,12 @@ void HandleHardFocus(FvwmWindow *t)
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 		&JunkX, &JunkY, &x, &y, &JunkMask);
   GrabEm(WAIT);
-  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth, 
-	       Scr.MyDisplayHeight, 
+  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+	       Scr.MyDisplayHeight,
 	       x + 2,y+2);
   XSync(dpy,0);
-  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth, 
-	       Scr.MyDisplayHeight, 
+  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+	       Scr.MyDisplayHeight,
 	       x ,y);
   UngrabEm();
 }

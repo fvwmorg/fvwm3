@@ -10,15 +10,18 @@ module_PROGRAMS = FvwmCommandS FvwmCommand
 FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
 FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h
 
+FvwmCommandS_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmCommand_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+
 man_MANS = FvwmCommand.1
 
 examples = ex-auto.pl ex-cascade.pl ex-grpmv.pl \
-	focus-Netscape.pl push-away.pl test1.pl  
+	focus-Netscape.pl push-away.pl test1.pl
 
 EXTRA_DIST = $(man_MANS) $(examples) \
 	   findcmd findcmd.pl test2.sh
 
-LDADD = -L$(top_builddir)/libs -lfvwm 
+LDADD = -L$(top_builddir)/libs -lfvwm
 
 # FIXME:
 # Despite not using X functions explicitly, the code includes

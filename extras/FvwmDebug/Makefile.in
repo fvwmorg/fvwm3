@@ -85,11 +85,12 @@ xpm_LIBS = @xpm_LIBS@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmDebug
 FvwmDebug_SOURCES = FvwmDebug.c FvwmDebug.h
+FvwmDebug_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmDebug.1
 EXTRA_DIST = $(man_MANS)
 
-LDADD = -L$(top_builddir)/libs -lfvwm 
+LDADD = -L$(top_builddir)/libs -lfvwm
 
 # FIXME:
 # Despite not using X functions explicitly, the code includes
@@ -111,7 +112,6 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 FvwmDebug_OBJECTS =  FvwmDebug.o
 FvwmDebug_LDADD = $(LDADD)
-FvwmDebug_DEPENDENCIES = 
 FvwmDebug_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -125,7 +125,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmDebug.P
 SOURCES = $(FvwmDebug_SOURCES)
@@ -136,7 +136,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmDebug/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmDebug/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -261,7 +261,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmDebug/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmDebug/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

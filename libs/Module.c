@@ -14,7 +14,7 @@
 
 
 /************************************************************************
- * 
+ *
  * Reads a single packet of info from fvwm. Prototype is:
  * unsigned long header[HEADER_SIZE];
  * unsigned long *body;
@@ -27,7 +27,7 @@
  *   > 0 everything is OK.
  *   = 0 invalid packet.
  *   < 0 pipe is dead. (Should never occur)
- *   body is a malloc'ed space which needs to be freed 
+ *   body is a malloc'ed space which needs to be freed
  *
  **************************************************************************/
 int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
@@ -77,7 +77,7 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
 void SendText(int *fd,char *message,unsigned long window)
 {
   int w;
-  
+
   if(message != NULL)
   {
     write(fd[0],&window, sizeof(unsigned long));
@@ -93,8 +93,8 @@ void SendText(int *fd,char *message,unsigned long window)
 }
 
 /***************************************************************************
- * 
- * Sets the which-message-types-do-I-want mask for modules 
+ *
+ * Sets the which-message-types-do-I-want mask for modules
  *
  **************************************************************************/
 void SetMessageMask(int *fd, unsigned long mask)
@@ -106,7 +106,7 @@ void SetMessageMask(int *fd, unsigned long mask)
 }
 
 /***************************************************************************
- * Gets a module configuration line from fvwm. Returns NULL if there are 
+ * Gets a module configuration line from fvwm. Returns NULL if there are
  * no more lines to be had. "line" is a pointer to a char *.
  *
  * Changed 10/19/98 by Dan Espen:
@@ -135,13 +135,13 @@ void GetConfigLine(int *fd, char **tline)
   while(!done)
   {
     count = ReadFvwmPacket(fd[1],header,(unsigned long **)&line);
-    if(count > 0) {
-      *tline = &line[3*sizeof(long)];
-    } else {
+    /* DB(("Packet count is %d", count)); */
+    if (count <= 0)
       *tline = NULL;
-    }
-    if(*tline != NULL) {
+    else {
+      *tline = &line[3*sizeof(long)];
       body_size = header[2]-HEADER_SIZE;
+      /* DB(("Config line (%d): `%s'", body_size, body_size ? *tline : "")); */
       while((body_size > 0)
             && isspace(**tline)) {
         (*tline)++;

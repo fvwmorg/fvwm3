@@ -88,15 +88,18 @@ module_PROGRAMS = FvwmCommandS FvwmCommand
 FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
 FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h
 
+FvwmCommandS_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmCommand_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+
 man_MANS = FvwmCommand.1
 
 examples = ex-auto.pl ex-cascade.pl ex-grpmv.pl \
-	focus-Netscape.pl push-away.pl test1.pl  
+	focus-Netscape.pl push-away.pl test1.pl
 
 EXTRA_DIST = $(man_MANS) $(examples) \
 	   findcmd findcmd.pl test2.sh
 
-LDADD = -L$(top_builddir)/libs -lfvwm 
+LDADD = -L$(top_builddir)/libs -lfvwm
 
 # FIXME:
 # Despite not using X functions explicitly, the code includes
@@ -118,11 +121,9 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 FvwmCommandS_OBJECTS =  FvwmCommandS.o
 FvwmCommandS_LDADD = $(LDADD)
-FvwmCommandS_DEPENDENCIES = 
 FvwmCommandS_LDFLAGS = 
 FvwmCommand_OBJECTS =  FvwmCommand.o
 FvwmCommand_LDADD = $(LDADD)
-FvwmCommand_DEPENDENCIES = 
 FvwmCommand_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -136,7 +137,7 @@ DIST_COMMON =  README INSTALL Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmCommand.P .deps/FvwmCommandS.P
 SOURCES = $(FvwmCommandS_SOURCES) $(FvwmCommand_SOURCES)
@@ -147,7 +148,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmCommand/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmCommand/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -276,7 +277,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmCommand/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmCommand/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

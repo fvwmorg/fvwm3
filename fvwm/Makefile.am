@@ -10,7 +10,9 @@ builtins.c colormaps.c colors.c complex.c decorations.c \
 events.c focus.c functions.c fvwm.c fvwm.h icons.c \
 menus.c menus.h misc.c misc.h modconf.c module.c module.h move.c \
 parse.h placement.c read.c resize.c screen.h style.c \
-virtual.c windows.c 
+virtual.c windows.c
+
+fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
 	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)

@@ -6,6 +6,7 @@ man_MANS = FvwmEvent.1
 EXTRA_DIST = $(man_MANS)
 
 FvwmEvent_SOURCES = FvwmEvent.c Parse.c Parse.h
+FvwmEvent_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm

@@ -1,6 +1,6 @@
 /*
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -33,7 +33,7 @@ Bool NeedToResizeToo;
 /* Animated move stuff added by Greg J. Badros, gjb@cs.washington.edu */
 
 float rgpctMovementDefault[32] = {
-    -.01, 0, .01, .03,.08,.18,.3,.45,.60,.75,.85,.90,.94,.97,.99,1.0 
+    -.01, 0, .01, .03,.08,.18,.3,.45,.60,.75,.85,.90,.94,.97,.99,1.0
     /* must end in 1.0 */
   };
 
@@ -54,9 +54,9 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
   if (ppctMovement == NULL) ppctMovement = rgpctMovementDefault;
   if (cmsDelay < 0)         cmsDelay     = cmsDelayDefault;
 
-  if (startX < 0 || startY < 0) 
+  if (startX < 0 || startY < 0)
     {
-    XGetGeometry(dpy, w, &JunkRoot, &currentX, &currentY, 
+    XGetGeometry(dpy, w, &JunkRoot, &currentX, &currentY,
 		 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
     if (startX < 0) startX = currentX;
     if (startY < 0) startY = currentY;
@@ -86,7 +86,7 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
     /* this didn't work for me -- maybe no longer necessary since
        we warn the user when they use > .5 seconds as a between-frame delay
        time */
-    if (XCheckMaskEvent(dpy, 
+    if (XCheckMaskEvent(dpy,
 			ButtonPressMask|ButtonReleaseMask|
 			KeyPressMask,
 			&Event)) {
@@ -100,7 +100,7 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
     lastY = currentY;
     }
   while (*ppctMovement != 1.0 && ppctMovement++);
- 
+
 }
 
 
@@ -136,7 +136,7 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	w = tmp_win->icon_w;
     }
 
-  XGetGeometry(dpy, w, &JunkRoot, &x, &y, 
+  XGetGeometry(dpy, w, &JunkRoot, &x, &y,
 	       &width, &height, &JunkBW, &JunkDepth);
   if (fMoveToPage)
     {
@@ -168,7 +168,7 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       n = GetPositionArguments(action,x,y,width+tmp_win->bw,
 			       height+tmp_win->bw,&FinalX,&FinalY);
       if (n != 2)
-	InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);      
+	InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);
     }
 
   if (w == tmp_win->frame)
@@ -185,17 +185,18 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       tmp_win->icon_x_loc = FinalX ;
       tmp_win->icon_xl_loc = FinalX -
 	    (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
-      tmp_win->icon_y_loc = FinalY; 
-      Broadcast(M_ICON_LOCATION,7,tmp_win->w,tmp_win->frame,
-		(unsigned long)tmp_win,
-		tmp_win->icon_x_loc,tmp_win->icon_y_loc,
-		tmp_win->icon_w_width, tmp_win->icon_w_height
-		+tmp_win->icon_p_height);
+      tmp_win->icon_y_loc = FinalY;
+      BroadcastPacket(M_ICON_LOCATION, 7,
+                      tmp_win->w, tmp_win->frame,
+                      (unsigned long)tmp_win,
+                      tmp_win->icon_x_loc, tmp_win->icon_y_loc,
+                      tmp_win->icon_w_width,
+                      tmp_win->icon_w_height + tmp_win->icon_p_height);
       if (fAnimated) {
         AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,FinalY+tmp_win->icon_p_height,
 			     TRUE,-1,NULL);
       } else {
-        XMoveWindow(dpy,tmp_win->icon_w, 
+        XMoveWindow(dpy,tmp_win->icon_w,
 		    tmp_win->icon_xl_loc, FinalY+tmp_win->icon_p_height);
       }
       if(tmp_win->icon_pixmap_w != None)
@@ -209,9 +210,9 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  }
 	  XMapWindow(dpy,w);
 	}
-      
+
     }
-  
+
   return;
 }
 
@@ -267,10 +268,10 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       /* block until there is an interesting event */
       XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask | KeyPressMask |
 		 PointerMotionMask | ButtonMotionMask | ExposureMask, &Event);
-      StashEventTime(&Event);      
+      StashEventTime(&Event);
 
       /* discard any extra motion events before a logical release */
-      if (Event.type == MotionNotify) 
+      if (Event.type == MotionNotify)
 	{
 	  while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask |
 				ButtonPressMask |ButtonRelease, &Event))
@@ -381,14 +382,14 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 		  tmp_win->icon_x_loc = xl ;
 		  tmp_win->icon_xl_loc = xl -
 		    (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
-		  tmp_win->icon_y_loc = yt; 
+		  tmp_win->icon_y_loc = yt;
 		  if(tmp_win->icon_pixmap_w != None)
 		    XMoveWindow (dpy, tmp_win->icon_pixmap_w,
 				 tmp_win->icon_x_loc,yt);
                   else if (tmp_win->icon_w != None)
 		    XMoveWindow(dpy, tmp_win->icon_w,tmp_win->icon_xl_loc,
 				yt+tmp_win->icon_p_height);
-		    
+
 		}
 	      else
 		XMoveWindow(dpy,tmp_win->frame,xl,yt);
@@ -447,7 +448,7 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 {
   char str [100];
   int offset;
-  
+
   (void) sprintf (str, " %+-4d %+-4d ", x, y);
   if(Init)
     {
@@ -475,11 +476,11 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 
 /****************************************************************************
  *
- * For menus, move, and resize operations, we can effect keyboard 
+ * For menus, move, and resize operations, we can effect keyboard
  * shortcuts by warping the pointer.
  *
  ****************************************************************************/
-void Keyboard_shortcuts(XEvent *Event, int ReturnEvent)  
+void Keyboard_shortcuts(XEvent *Event, int ReturnEvent)
 {
   int x,y,x_root,y_root;
   int x_move_size,y_move_size,x_move,y_move;
@@ -583,11 +584,11 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
   Window w;
 
   Bool opaque_move = False;
-  
+
   w = *win;
- 
+
   InstallRootColormap();
-  if (menuFromFrameOrWindowOrTitlebar) 
+  if (menuFromFrameOrWindowOrTitlebar)
     {
       /* warp the pointer to the cursor position from before menu appeared*/
       /* FIXGJB: XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, Stashed_X,Stashed_Y); */
@@ -597,7 +598,7 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
 
   DragX = eventp->xbutton.x_root;
   DragY = eventp->xbutton.y_root;
-  /* If this is commented out, then the move starts from the button press 
+  /* If this is commented out, then the move starts from the button press
    * location instead of the current location */
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
       &DragX, &DragY,	&JunkX, &JunkY, &JunkMask);
@@ -609,7 +610,7 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
     }
 
   XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
-	       (unsigned int *)&DragWidth, (unsigned int *)&DragHeight, 
+	       (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
 	       &JunkBW,  &JunkDepth);
 
   if(DragWidth*DragHeight <
@@ -617,7 +618,7 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
     opaque_move = True;
   else
     MyXGrabServer(dpy);
-  
+
   if((!opaque_move)&&(tmp_win->flags & ICONIFIED))
     XUnmapWindow(dpy,w);
 

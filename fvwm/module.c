@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -15,22 +15,16 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
 #include <string.h>
-#include <fcntl.h>
 #include <ctype.h>
-#include <X11/keysym.h>
+#include <stdarg.h>
+#include <errno.h>
+
+#include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
-#if HAVE_STDARG_H
-#  include <stdarg.h>                     /* for Broadcast_v (varargs) */
-#elif HAVE_VARARGS_H
-#  include <varargs.h>
-#else
-#  error Need stdarg.h or varargs.h
-#endif
 
 #include "fvwm.h"
 #include "menus.h"
@@ -81,7 +75,7 @@ void initModules(void)
 void ClosePipes(void)
 {
   int i;
-  for(i=0;i<npipes;i++)   
+  for(i=0;i<npipes;i++)
     {
       if(writePipes[i]>0)
 	{
@@ -157,7 +151,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	free(cptr);
       return;
     }
-  
+
   /* I want one-ended pipes, so I open two two-ended pipes,
    * and close one end of each. I need one ended pipes so that
    * I can detect when the module crashes/malfunctions */
@@ -234,16 +228,16 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif
       /* Mark the pipes close-on exec so other programs
        * won`t inherit them */
-      if (fcntl(readPipes[i], F_SETFD, 1) == -1) 
+      if (fcntl(readPipes[i], F_SETFD, 1) == -1)
 	fvwm_msg(ERR,"executeModule","module close-on-exec failed");
-      if (fcntl(writePipes[i], F_SETFD, 1) == -1) 
+      if (fcntl(writePipes[i], F_SETFD, 1) == -1)
 	fvwm_msg(ERR,"executeModule","module close-on-exec failed");
       for(i=6;i<nargs;i++)
 	{
 	  if(args[i] != 0)
 	    free(args[i]);
 	}
-	
+
       if(cptr != NULL)
 	free(cptr);
     }
@@ -253,7 +247,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       /* this fork execs the module */
       close(fvwm_to_app[1]);
       close(app_to_fvwm[0]);
-      
+
       execvp(arg1,args);
       fvwm_msg(ERR,"executeModule","Execution of module failed: %s",arg1);
       perror("");
@@ -300,9 +294,11 @@ int HandleModuleInput(Window w, int channel)
       KillModule(channel,2);
       return 0;
     }
-  
-  text[n]=0;
+  text[n] = '\0';
+  /* DB(("Module read[%d] (%d): `%s'", n, size, text)); */
+
   n = read(readPipes[channel],&cont, sizeof(cont));
+  /* DB(("Module read[%d] cont = %d", n, cont)); */
   if(n < sizeof(cont))
     {
       KillModule(channel,3);
@@ -320,9 +316,9 @@ int HandleModuleInput(Window w, int channel)
       if(strncasecmp(text,"UNLOCK",6)==0) { /* synchronous response */
         return 66;
       }
-      
+
       /* perhaps the module would like us to kill it? */
-      if(strncasecmp(text,"KillMe",6)==0) 
+      if(strncasecmp(text,"KillMe",6)==0)
       {
         KillModule(channel,12);
         return 0;
@@ -359,7 +355,7 @@ int HandleModuleInput(Window w, int channel)
 	  Event.xbutton.subwindow = None;
 	}
       Context = GetContext(tmp_win,&Event,&w);
-      ExecuteFunction(text,tmp_win,&Event,Context ,channel); 
+      ExecuteFunction(text,tmp_win,&Event,Context ,channel);
     }
   return 0;
 }
@@ -375,7 +371,7 @@ void KillModule(int channel, int place)
 {
   close(readPipes[channel]);
   close(writePipes[channel]);
-  
+
   readPipes[channel] = -1;
   writePipes[channel] = -1;
   pipeOn[channel] = -1;
@@ -388,7 +384,7 @@ void KillModule(int channel, int place)
       free(pipeName[channel]);
       pipeName[channel] = NULL;
     }
-	
+
   return;
 }
 
@@ -398,225 +394,215 @@ void KillModuleByName(char *name)
 
   if(name == NULL)
     return;
-  
+
   while(i<npipes)
     {
       if((pipeName[i] != NULL)&&(matchWildcards(name,pipeName[i])))
 	{
-	  KillModule(i,10);	
+	  KillModule(i,10);
 	}
       i++;
     }
   return;
 }
 
-
-void SendPacket(int module, unsigned long event_type, unsigned long num_datum,
-	       unsigned long data1, unsigned long data2, unsigned long data3, 
-	       unsigned long data4, unsigned long data5, unsigned long data6,
-	       unsigned long data7)
+static unsigned long *
+make_vpacket(unsigned long *body, unsigned long event_type,
+             unsigned long num, va_list ap)
 {
-  unsigned long body[11];
   extern Time lastTimestamp;
+  unsigned long *bp = body;
 
-  body[0] = START_FLAG;
-  body[1] = event_type;
-  body[2] = num_datum+HEADER_SIZE;
-  body[3] = lastTimestamp;    
-  if(num_datum>0)
-    body[HEADER_SIZE] = data1;
-  if(num_datum>1)
-    body[HEADER_SIZE+1] = data2;
-  if(num_datum>2)
-    body[HEADER_SIZE+2] = data3;
-  if(num_datum>3)
-    body[HEADER_SIZE+3] = data4;
-  if(num_datum>4)
-    body[HEADER_SIZE+4] = data5;
-  if(num_datum>5)
-    body[HEADER_SIZE+5] = data6;
-  if(num_datum>6)
-    body[HEADER_SIZE+6] = data7;
-  PositiveWrite(module,body,(num_datum+4)*sizeof(body[0]));
+  *(bp++) = START_FLAG;
+  *(bp++) = event_type;
+  *(bp++) = num+HEADER_SIZE;
+  *(bp++) = lastTimestamp;
+
+  for (; num > 0; --num)
+    *(bp++) = va_arg(ap, unsigned long);
+
+  return body;
 }
 
-/* This was written for the addl. args needed by FvwmAnimate.
-   This varargs function has the desirable trait of taking any
-   number of args.
-   Could/should be universally used. dje 8/28/98 */
-void Broadcast_v(unsigned long event_type, unsigned long num_datum,...) {
-  extern Time lastTimestamp;
-  int i;
-  va_list ap;                           /* for va macros */
-  unsigned long body[MAX_BODY_SIZE+HEADER_SIZE];
-  body[0] = START_FLAG;
-  body[1] = event_type;
-  body[2] = num_datum+HEADER_SIZE;
-  body[3] = lastTimestamp;    
-
-#if HAVE_STDARG_H
-  va_start(ap,num_datum);               /* init va_list */
-#else
-  va_start(ap);
-#endif  
-
-  for (i=HEADER_SIZE;i < num_datum+HEADER_SIZE; i++) {
-    body[i] = va_arg(ap, u_long);       /* copy args */
-  }
-  va_end(ap);                           /* clean up */
-  for(i=0;i<npipes;i++) {
-    PositiveWrite(i,body,(num_datum+4)*sizeof(body[0]));
-  }
-}
-void Broadcast(unsigned long event_type, unsigned long num_datum,
-	       unsigned long data1, unsigned long data2, unsigned long data3, 
-	       unsigned long data4, unsigned long data5, unsigned long data6,
-	       unsigned long data7)
+static unsigned long *
+make_packet(unsigned long *body, unsigned long event_type,
+            unsigned long num, ...)
 {
-  int i;
+  va_list ap;
 
-  for(i=0;i<npipes;i++)
-  {
-    SendPacket(i,event_type,num_datum,
-               data1,data2,data3,data4,data5,data6,data7);
-  }
+  va_start(ap, num);
+  make_vpacket(body, event_type, num, ap);
+  va_end(ap);
+
+  return body;
 }
 
-void SendConfig(int module, unsigned long event_type, FvwmWindow *t)
+void
+SendPacket(int module, unsigned long event_type, unsigned long num_datum, ...)
 {
   unsigned long body[MAX_BODY_SIZE+HEADER_SIZE];
-  extern Time lastTimestamp;
+  va_list ap;
 
-  body[0] = START_FLAG;
-  body[1] = event_type;
-  body[2] = HEADER_SIZE+24;
-  body[3] = lastTimestamp;
-  body[HEADER_SIZE] = t->w;
-  body[HEADER_SIZE+1] = t->frame;
-  body[HEADER_SIZE+2] = (unsigned long)t;
-  body[HEADER_SIZE+3] = t->frame_x;
-  body[HEADER_SIZE+4] = t->frame_y;
-  body[HEADER_SIZE+5] = t->frame_width;
-  body[HEADER_SIZE+6] = t->frame_height;
-  body[HEADER_SIZE+7] = t->Desk;
-  body[HEADER_SIZE+8] = t->flags;
-  body[HEADER_SIZE+9] = t->title_height;
-  body[HEADER_SIZE+10] = t->boundary_width;
-  body[HEADER_SIZE+11] = (t->hints.flags & PBaseSize)?t->hints.base_width:0;
-  body[HEADER_SIZE+12] = (t->hints.flags & PBaseSize)?t->hints.base_height:0;
-  body[HEADER_SIZE+13] = (t->hints.flags & PResizeInc)?t->hints.width_inc:1;
-  body[HEADER_SIZE+14] = (t->hints.flags & PResizeInc)?t->hints.height_inc:1;
-  body[HEADER_SIZE+15] = t->hints.min_width;
-  body[HEADER_SIZE+16] = t->hints.min_height;
-  body[HEADER_SIZE+17] = t->hints.max_width;
-  body[HEADER_SIZE+18] = t->hints.max_height;
-  body[HEADER_SIZE+19] = t->icon_w;
-  body[HEADER_SIZE+20] = t->icon_pixmap_w;
-  body[HEADER_SIZE+21] = t->hints.win_gravity;
-  body[HEADER_SIZE+22] = t->TextPixel;
-  body[HEADER_SIZE+23] = t->BackPixel;
-  
-  PositiveWrite(module,body,(HEADER_SIZE+24)*sizeof(body[0]));
+  va_start(ap, num_datum);
+  make_vpacket(body, event_type, num_datum, ap);
+  va_end(ap);
+
+  PositiveWrite(module, body, (num_datum+HEADER_SIZE)*sizeof(body[0]));
 }
 
-
-void BroadcastConfig(unsigned long event_type, FvwmWindow *t)
+void
+BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 {
+  unsigned long body[MAX_BODY_SIZE+HEADER_SIZE];
+  va_list ap;
   int i;
 
-  for(i=0;i<npipes;i++)   
-  {
-    SendConfig(i,event_type,t);
-  }
+  va_start(ap,num_datum);
+  make_vpacket(body, event_type, num_datum, ap);
+  va_end(ap);
+
+  for (i=0; i<npipes; i++)
+    PositiveWrite(i, body, (num_datum+HEADER_SIZE)*sizeof(body[0]));
 }
 
-void SendName(int module, unsigned long event_type,
-	      unsigned long data1,unsigned long data2, 
-	      unsigned long data3, char *name)
+#define CONFIGARGS(_t) 24,\
+            (_t)->w,\
+            (_t)->frame,\
+            (unsigned long)(_t),\
+            (_t)->frame_x,\
+            (_t)->frame_y,\
+            (_t)->frame_width,\
+            (_t)->frame_height,\
+            (_t)->Desk,\
+            (_t)->flags,\
+            (_t)->title_height,\
+            (_t)->boundary_width,\
+            ((_t)->hints.flags & PBaseSize) ? (_t)->hints.base_width : 0,\
+            ((_t)->hints.flags & PBaseSize) ? (_t)->hints.base_height: 0,\
+            ((_t)->hints.flags & PResizeInc)? (_t)->hints.width_inc  : 1,\
+            ((_t)->hints.flags & PResizeInc)? (_t)->hints.height_inc : 1,\
+            (_t)->hints.min_width,\
+            (_t)->hints.min_height,\
+            (_t)->hints.max_width,\
+            (_t)->hints.max_height,\
+            (_t)->icon_w,\
+            (_t)->icon_pixmap_w,\
+            (_t)->hints.win_gravity,\
+            (_t)->TextPixel,\
+            (_t)->BackPixel
+
+void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 {
-  int l;
+  SendPacket(module, event_type, CONFIGARGS(t));
+}
+
+
+void BroadcastConfig(unsigned long event_type, const FvwmWindow *t)
+{
+  BroadcastPacket(event_type, CONFIGARGS(t));
+}
+
+static unsigned long *
+make_named_packet(int *len, unsigned long event_type, const char *name,
+                  int num, ...)
+{
   unsigned long *body;
-  extern Time lastTimestamp;
+  va_list ap;
 
-  if(name == NULL)
+  /* Packet is the header plus the items plus enough items to hold the name
+     string.  */
+  *len = HEADER_SIZE + num + (strlen(name) / sizeof(unsigned long)) + 1;
+
+  body = (unsigned long *)safemalloc(*len * sizeof(unsigned long));
+  body[*len-1] = 0; /* Zero out end of memory to avoid uninit memory access. */
+
+  va_start(ap, num);
+  make_vpacket(body, event_type, num, ap);
+  va_end(ap);
+
+  strcpy((char *)&body[HEADER_SIZE+num], name);
+  body[2] = *len;
+
+  /* DB(("Packet (%lu): %lu %lu %lu `%s'", *len,
+       body[HEADER_SIZE], body[HEADER_SIZE+1], body[HEADER_SIZE+2], name)); */
+
+  return (body);
+}
+
+void
+SendName(int module, unsigned long event_type,
+         unsigned long data1,unsigned long data2, unsigned long data3,
+         const char *name)
+{
+  unsigned long *body;
+  int l;
+
+  if (name == NULL)
     return;
-  l=strlen(name)/(sizeof(unsigned long))+HEADER_SIZE+4;
-  body = (unsigned long *)safemalloc(l*sizeof(unsigned long));
 
-  body[0] = START_FLAG;
-  body[1] = event_type;
-  body[2] = l;
-  body[3] = lastTimestamp;
-
-  body[HEADER_SIZE] = data1;
-  body[HEADER_SIZE+1] = data2;
-  body[HEADER_SIZE+2] = data3; 
-  body[l-1] = 0; /* Make sure the last bytes are initialized. */
-  strcpy((char *)&body[HEADER_SIZE+3],name);
-
-  PositiveWrite(module,(unsigned long *)body, l*sizeof(unsigned long));
-
+  body = make_named_packet(&l, event_type, name, 3, data1, data2, data3);
+  PositiveWrite(module, body, l*sizeof(unsigned long));
   free(body);
 }
 
-void BroadcastName(unsigned long event_type, unsigned long data1,
-		   unsigned long data2, unsigned long data3, char *name)
+void
+BroadcastName(unsigned long event_type,
+              unsigned long data1, unsigned long data2, unsigned long data3,
+              const char *name)
 {
-  int i;
+  unsigned long *body;
+  int i, l;
 
-  for(i=0;i<npipes;i++)
-    SendName(i,event_type,data1,data2,data3,name);
+  if (name == NULL)
+    return;
+
+  body = make_named_packet(&l, event_type, name, 3, data1, data2, data3);
+
+  for (i=0; i < npipes; i++)
+    PositiveWrite(i, body, l*sizeof(unsigned long));
+
+  free(body);
 }
 
 #ifdef MINI_ICONS
-void SendMiniIcon(int module, unsigned long event_type,
-		  unsigned long data1, unsigned long data2, 
-		  unsigned long data3, unsigned long data4,
-		  unsigned long data5, unsigned long data6,
-		  unsigned long data7, unsigned long data8,
-		  char *name)
+void
+SendMiniIcon(int module, unsigned long event_type,
+             unsigned long data1, unsigned long data2,
+             unsigned long data3, unsigned long data4,
+             unsigned long data5, unsigned long data6,
+             unsigned long data7, unsigned long data8,
+             const char *name)
 {
-  int l;
   unsigned long *body;
-  extern Time lastTimestamp;
+  int l;
 
   if ((name == NULL) || (event_type != M_MINI_ICON))
     return;
-  l = strlen(name)/(sizeof(unsigned long))+HEADER_SIZE+9;
-  body = (unsigned long *)safemalloc(l*sizeof(unsigned long));
 
-  body[0] = START_FLAG;
-  body[1] = event_type;
-  body[2] = l;
-  body[3] = lastTimestamp;
-
-  body[HEADER_SIZE] = data1;
-  body[HEADER_SIZE+1] = data2;
-  body[HEADER_SIZE+2] = data3; 
-  body[HEADER_SIZE+3] = data4; 
-  body[HEADER_SIZE+4] = data5; 
-  body[HEADER_SIZE+5] = data6; 
-  body[HEADER_SIZE+6] = data7; 
-  body[HEADER_SIZE+7] = data8; 
-  strcpy((char *)&body[HEADER_SIZE+8],name);
-
-  PositiveWrite(module,(unsigned long *)body, l*sizeof(unsigned long));
-
+  body = make_named_packet(&l, event_type, name, 8, data1, data2, data3,
+                           data4, data5, data6, data7, data8);
+  PositiveWrite(module, body, l*sizeof(unsigned long));
   free(body);
 }
 
-void BroadcastMiniIcon(unsigned long event_type,
-		       unsigned long data1, unsigned long data2, 
-		       unsigned long data3, unsigned long data4,
-		       unsigned long data5, unsigned long data6,
-		       unsigned long data7, unsigned long data8,
-		       char *name)
+void
+BroadcastMiniIcon(unsigned long event_type,
+                  unsigned long data1, unsigned long data2,
+                  unsigned long data3, unsigned long data4,
+                  unsigned long data5, unsigned long data6,
+                  unsigned long data7, unsigned long data8,
+                  const char *name)
 {
-  int i;
+  unsigned long *body;
+  int i, l;
 
-  for(i=0;i<npipes;i++)
-    SendMiniIcon(i, event_type,
-		 data1, data2, data3, data4, data5, data6, data7, data8, name);
+  body = make_named_packet(&l, event_type, name, 8, data1, data2, data3,
+                           data4, data5, data6, data7, data8);
+
+  for (i=0; i < npipes; i++)
+    PositiveWrite(i, body, l*sizeof(unsigned long));
+
+  free(body);
 }
 #endif /* MINI_ICONS */
 
@@ -639,14 +625,12 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
       SendName(i,M_STRING,0,0,0,str);
     }
   }
-  
+
   free(module);
   free(str);
 }
 
 
-
-#include <sys/errno.h>
 /* This used to be marked "fvwm_inline".  I removed this
    when I added the lockonsend logic.  The routine seems to big to
    want to inline.  dje 9/4/98 */
@@ -755,28 +739,32 @@ void FlushQueue(int module)
 }
 
 
-void send_list_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			unsigned long context, char *action,
-			int *Module)
+void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
+                    unsigned long context, char *action, int *Module)
 {
   FvwmWindow *t;
 
   if(*Module >= 0)
     {
-      SendPacket(*Module,M_NEW_DESK,1,Scr.CurrentDesk,0,0,0,0,0,0);
-      SendPacket(*Module,M_NEW_PAGE,5,Scr.Vx,Scr.Vy,Scr.CurrentDesk,
-		 Scr.VxMax,Scr.VyMax,0,0);
+      SendPacket(*Module, M_NEW_DESK, 1, Scr.CurrentDesk);
+      SendPacket(*Module, M_NEW_PAGE, 5,
+                 Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
+
       if(Scr.Hilite != NULL)
-	SendPacket(*Module,M_FOCUS_CHANGE,5,Scr.Hilite->w,Scr.Hilite->frame,
+	SendPacket(*Module, M_FOCUS_CHANGE, 5,
+                   Scr.Hilite->w,
+                   Scr.Hilite->frame,
 		   (unsigned long)Scr.Hilite,
 		   Scr.DefaultDecor.HiColors.fore,
-		   Scr.DefaultDecor.HiColors.back,
-		   0,0);
+		   Scr.DefaultDecor.HiColors.back);
       else
-	SendPacket(*Module,M_FOCUS_CHANGE,5,0,0,0,Scr.DefaultDecor.HiColors.fore,
-		   Scr.DefaultDecor.HiColors.back,0,0);
+	SendPacket(*Module, M_FOCUS_CHANGE, 5,
+                   0, 0, 0,
+                   Scr.DefaultDecor.HiColors.fore,
+                   Scr.DefaultDecor.HiColors.back);
       if (Scr.DefaultIcon != NULL)
-	SendName(*Module,M_DEFAULTICON,0,0,0,Scr.DefaultIcon);
+	SendName(*Module, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
+
       for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 	  SendConfig(*Module,M_CONFIGURE_WINDOW,t);
@@ -784,26 +772,29 @@ void send_list_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   (unsigned long)t,t->name);
 	  SendName(*Module,M_ICON_NAME,t->w,t->frame,
 		   (unsigned long)t,t->icon_name);
-         if (t->icon_bitmap_file != NULL &&
-	     t->icon_bitmap_file != Scr.DefaultIcon) 
-           SendName(*Module,M_ICON_FILE,t->w,t->frame,
-                    (unsigned long)t,t->icon_bitmap_file);
+
+          if (t->icon_bitmap_file != NULL
+              && t->icon_bitmap_file != Scr.DefaultIcon)
+            SendName(*Module,M_ICON_FILE,t->w,t->frame,
+                     (unsigned long)t,t->icon_bitmap_file);
+
 	  SendName(*Module,M_RES_CLASS,t->w,t->frame,
 		   (unsigned long)t,t->class.res_class);
 	  SendName(*Module,M_RES_NAME,t->w,t->frame,
 		   (unsigned long)t,t->class.res_name);
-	  
+
 	  if((t->flags & ICONIFIED)&&(!(t->flags & ICON_UNMAPPED)))
-	    SendPacket(*Module,M_ICONIFY,7,t->w,t->frame,
+	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
 		       (unsigned long)t,
-		       t->icon_x_loc,t->icon_y_loc,
-		       t->icon_w_width, 
-		       t->icon_w_height+t->icon_p_height);
+		       t->icon_x_loc, t->icon_y_loc,
+		       t->icon_w_width, t->icon_w_height+t->icon_p_height);
+
 	  if((t->flags & ICONIFIED) && (t->flags & ICON_UNMAPPED))
-	    SendPacket(*Module,M_ICONIFY,7,t->w,t->frame,
-		       (unsigned long)t,0,0,0,0);
+	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
+		       (unsigned long)t,
+                       0, 0, 0, 0);
 #ifdef MINI_ICONS
-	  if (t->mini_icon != NULL) 
+	  if (t->mini_icon != NULL)
             SendMiniIcon(*Module, M_MINI_ICON,
                          t->w, t->frame, (unsigned long)t,
                          t->mini_icon->width,
@@ -814,20 +805,21 @@ void send_list_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                          t->mini_pixmap_file);
 #endif
 	}
+
       if(Scr.Hilite == NULL)
-	{
-	  Broadcast(M_FOCUS_CHANGE,5,0,0,0,Scr.DefaultDecor.HiColors.fore,
-		    Scr.DefaultDecor.HiColors.back,0,0);
-	}
-      else 
-	{
-	  Broadcast(M_FOCUS_CHANGE,5,Scr.Hilite->w,
-		    Scr.Hilite->frame,(unsigned long)Scr.Hilite,
-		    Scr.DefaultDecor.HiColors.fore,
-		    Scr.DefaultDecor.HiColors.back,
-		    0,0);
-	}
-      SendPacket(*Module,M_END_WINDOWLIST,0,0,0,0,0,0,0,0);
+	  BroadcastPacket(M_FOCUS_CHANGE, 5,
+                          0, 0, 0,
+                          Scr.DefaultDecor.HiColors.fore,
+                          Scr.DefaultDecor.HiColors.back);
+      else
+	  BroadcastPacket(M_FOCUS_CHANGE, 5,
+                          Scr.Hilite->w,
+                          Scr.Hilite->frame,
+                          (unsigned long)Scr.Hilite,
+                          Scr.DefaultDecor.HiColors.fore,
+                          Scr.DefaultDecor.HiColors.back);
+
+      SendPacket(*Module, M_END_WINDOWLIST, 0);
     }
 }
 void set_mask_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,

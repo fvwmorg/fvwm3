@@ -88,6 +88,7 @@ module_PROGRAMS = FvwmTaskBar
 FvwmTaskBar_SOURCES =  FvwmTaskBar.c List.c ButtonArray.c Mallocs.c \
 	Colors.c Start.c FvwmTaskBar.h ButtonArray.h List.h \
 	Colors.h Mallocs.h Start.h Goodies.c Goodies.h
+FvwmTaskBar_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmTaskBar.1
 EXTRA_DIST = $(man_MANS) fvwm2.README minimail.xbm
@@ -113,7 +114,6 @@ X_PRE_LIBS = @X_PRE_LIBS@
 FvwmTaskBar_OBJECTS =  FvwmTaskBar.o List.o ButtonArray.o Mallocs.o \
 Colors.o Start.o Goodies.o
 FvwmTaskBar_LDADD = $(LDADD)
-FvwmTaskBar_DEPENDENCIES = 
 FvwmTaskBar_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -127,7 +127,7 @@ DIST_COMMON =  README Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/ButtonArray.P .deps/Colors.P .deps/FvwmTaskBar.P \
 .deps/Goodies.P .deps/List.P .deps/Mallocs.P .deps/Start.P
@@ -139,7 +139,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmTaskBar/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmTaskBar/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -264,7 +264,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmTaskBar/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmTaskBar/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

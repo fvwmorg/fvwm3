@@ -89,7 +89,7 @@ noinst_LIBRARIES = libfvwm.a
 libfvwm_a_SOURCES = ClientMsg.c GetFont.c Grab.c ModParse.c ModParse.h \
 	Module.c Parse.c Picture.c Strings.c System.c \
 	envvar.c fvwmlib.h safemalloc.c wild.c \
-	lang-strings.h XResource.c
+	lang-strings.h XResource.c debug.c
 
 libfvwm_a_LIBADD = @LIBOBJS@
 
@@ -111,7 +111,7 @@ X_PRE_LIBS = @X_PRE_LIBS@
 libfvwm_a_DEPENDENCIES =  @LIBOBJS@
 libfvwm_a_OBJECTS =  ClientMsg.o GetFont.o Grab.o ModParse.o Module.o \
 Parse.o Picture.o Strings.o System.o envvar.o safemalloc.o wild.o \
-XResource.o
+XResource.o debug.o
 AR = ar
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -122,13 +122,14 @@ strerror.c strncasecmp.c usleep.c
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/ClientMsg.P .deps/GetFont.P .deps/Grab.P \
 .deps/ModParse.P .deps/Module.P .deps/Parse.P .deps/Picture.P \
-.deps/Strings.P .deps/System.P .deps/XResource.P .deps/envvar.P \
-.deps/gethostname.P .deps/safemalloc.P .deps/strcasecmp.P \
-.deps/strerror.P .deps/strncasecmp.P .deps/usleep.P .deps/wild.P
+.deps/Strings.P .deps/System.P .deps/XResource.P .deps/debug.P \
+.deps/envvar.P .deps/gethostname.P .deps/safemalloc.P \
+.deps/strcasecmp.P .deps/strerror.P .deps/strncasecmp.P .deps/usleep.P \
+.deps/wild.P
 SOURCES = $(libfvwm_a_SOURCES)
 OBJECTS = $(libfvwm_a_OBJECTS)
 
@@ -137,7 +138,7 @@ all: Makefile $(LIBRARIES)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu libs/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign libs/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -208,7 +209,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu libs/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign libs/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

@@ -14,29 +14,29 @@
 #include "module.h"
 
 /***************************************************************************
- * 
+ *
  * Check to see if the pointer is on the edge of the screen, and scroll/page
- * if needed 
+ * if needed
  ***************************************************************************/
-void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt, 
+void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 		  int *delta_x, int *delta_y,Bool Grab)
 {
   int x,y,total;
 
   *delta_x = 0;
   *delta_y = 0;
-  
+
   if((Scr.ScrollResistance >= 10000)||
      ((HorWarpSize ==0)&&(VertWarpSize==0)))
     return;
-  
+
   /* need to move the viewport */
   if(( Scr.VxMax == 0 ||
        (*xl >= SCROLL_REGION && *xl < Scr.MyDisplayWidth  - SCROLL_REGION)) &&
      ( Scr.VyMax == 0 ||
        (*yt >= SCROLL_REGION && *yt < Scr.MyDisplayHeight - SCROLL_REGION)))
     return;
-  
+
   total = 0;
   while(total < Scr.ScrollResistance)
     {
@@ -44,7 +44,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
       total+=10;
 
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		&x, &y, &JunkX, &JunkY, &JunkMask); 
+		&x, &y, &JunkX, &JunkY, &JunkMask);
 
       if(XCheckWindowEvent(dpy,Scr.PanFrameTop.win,
 			   LeaveWindowMask,&Event))
@@ -57,13 +57,13 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	{
 	  StashEventTime(&Event);
 	  return;
-	}	
+	}
       if(XCheckWindowEvent(dpy,Scr.PanFrameLeft.win,
 			   LeaveWindowMask,&Event))
 	{
 	  StashEventTime(&Event);
 	  return;
-	}      
+	}
       if(XCheckWindowEvent(dpy,Scr.PanFrameRight.win,
 			   LeaveWindowMask,&Event))
 	{
@@ -76,10 +76,10 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
          ( y >= SCROLL_REGION )&&( y < Scr.MyDisplayHeight-SCROLL_REGION ))
            return ;
     }
-  
+
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		&x, &y, &JunkX, &JunkY, &JunkMask);   
-  
+		&x, &y, &JunkX, &JunkY, &JunkMask);
+
   /* Move the viewport */
   /* and/or move the cursor back to the approximate correct location */
   /* that is, the same place on the virtual desktop that it */
@@ -98,16 +98,16 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   else
     *delta_y = 0;
   if (Scr.VyMax == 0) *delta_y = 0;
-  
+
   /* Ouch! lots of bounds checking */
-  if(Scr.Vx + *delta_x < 0) 
+  if(Scr.Vx + *delta_x < 0)
     {
       if (!(Scr.flags & EdgeWrapX ))
 	{
 	  *delta_x = -Scr.Vx;
 	  *xl = x - *delta_x;
 	}
-      else 
+      else
 	{
 	  *delta_x += Scr.VxMax + Scr.MyDisplayWidth;
 	  *xl = x + *delta_x % Scr.MyDisplayWidth + HorWarpSize;
@@ -120,7 +120,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	  *delta_x = Scr.VxMax - Scr.Vx;
 	  *xl = x - *delta_x;
 	}
-      else 
+      else
 	{
 	  *delta_x -= Scr.VxMax +Scr.MyDisplayWidth;
 	  *xl = x + *delta_x % Scr.MyDisplayWidth - HorWarpSize;
@@ -128,8 +128,8 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     }
   else
     *xl = x - *delta_x;
-  
-  if(Scr.Vy + *delta_y < 0) 
+
+  if(Scr.Vy + *delta_y < 0)
     {
       if (!(Scr.flags & EdgeWrapY))
 	{
@@ -142,7 +142,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	  *yt = y + *delta_y % Scr.MyDisplayHeight + VertWarpSize;
 	}
     }
-  else if(Scr.Vy + *delta_y > Scr.VyMax) 
+  else if(Scr.Vy + *delta_y > Scr.VyMax)
     {
       if (!(Scr.flags & EdgeWrapY))
 	{
@@ -157,14 +157,14 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     }
   else
     *yt = y - *delta_y;
-  
+
   if(*xl <= SCROLL_REGION) *xl = SCROLL_REGION+1;
   if(*yt <= SCROLL_REGION) *yt = SCROLL_REGION+1;
   if(*xl >= Scr.MyDisplayWidth - SCROLL_REGION)
     *xl = Scr.MyDisplayWidth - SCROLL_REGION -1;
   if(*yt >= Scr.MyDisplayHeight - SCROLL_REGION)
     *yt = Scr.MyDisplayHeight - SCROLL_REGION -1;
-  
+
   if((*delta_x != 0)||(*delta_y!=0))
     {
       if(Grab)
@@ -195,7 +195,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
 /***************************************************************************
  * checkPanFrames hides PanFrames if they are on the very border of the
- * VIRTUELL screen and EdgeWrap for that direction is off. 
+ * VIRTUELL screen and EdgeWrap for that direction is off.
  * (A special cursor for the EdgeWrap border could be nice) HEDU
  ****************************************************************************/
 void checkPanFrames(void)
@@ -211,27 +211,27 @@ void checkPanFrames(void)
   if(Scr.EdgeScrollY == 0)
     {
       XUnmapWindow(dpy,Scr.PanFrameTop.win);
-      Scr.PanFrameTop.isMapped=False;   
+      Scr.PanFrameTop.isMapped=False;
       XUnmapWindow (dpy,Scr.PanFrameBottom.win);
       Scr.PanFrameBottom.isMapped=False;
-    }   
+    }
   if(Scr.EdgeScrollX == 0)
     {
       XUnmapWindow(dpy,Scr.PanFrameLeft.win);
       Scr.PanFrameLeft.isMapped=False;
       XUnmapWindow (dpy,Scr.PanFrameRight.win);
       Scr.PanFrameRight.isMapped=False;
-    }   
+    }
   if((Scr.EdgeScrollX == 0)&&(Scr.EdgeScrollY == 0))
     return;
 
   /* LEFT, hide only if EdgeWrap is off */
-  if (Scr.Vx==0 && Scr.PanFrameLeft.isMapped && (!wrapX)) 
+  if (Scr.Vx==0 && Scr.PanFrameLeft.isMapped && (!wrapX))
     {
       XUnmapWindow(dpy,Scr.PanFrameLeft.win);
       Scr.PanFrameLeft.isMapped=False;
     }
-  else if (Scr.Vx > 0 && Scr.PanFrameLeft.isMapped==False) 
+  else if (Scr.Vx > 0 && Scr.PanFrameLeft.isMapped==False)
     {
       XMapRaised(dpy,Scr.PanFrameLeft.win);
       Scr.PanFrameLeft.isMapped=True;
@@ -242,29 +242,29 @@ void checkPanFrames(void)
       XUnmapWindow (dpy,Scr.PanFrameRight.win);
       Scr.PanFrameRight.isMapped=False;
     }
-  else if (Scr.Vx < Scr.VxMax && Scr.PanFrameRight.isMapped==False) 
+  else if (Scr.Vx < Scr.VxMax && Scr.PanFrameRight.isMapped==False)
     {
       XMapRaised(dpy,Scr.PanFrameRight.win);
       Scr.PanFrameRight.isMapped=True;
     }
   /* TOP, hide only if EdgeWrap is off */
-  if (Scr.Vy==0 && Scr.PanFrameTop.isMapped && (!wrapY)) 
+  if (Scr.Vy==0 && Scr.PanFrameTop.isMapped && (!wrapY))
     {
       XUnmapWindow(dpy,Scr.PanFrameTop.win);
       Scr.PanFrameTop.isMapped=False;
     }
-  else if (Scr.Vy > 0 && Scr.PanFrameTop.isMapped==False) 
+  else if (Scr.Vy > 0 && Scr.PanFrameTop.isMapped==False)
     {
       XMapRaised(dpy,Scr.PanFrameTop.win);
       Scr.PanFrameTop.isMapped=True;
     }
   /* BOTTOM, hide only if EdgeWrap is off */
-  if (Scr.Vy == Scr.VyMax && Scr.PanFrameBottom.isMapped && (!wrapY)) 
+  if (Scr.Vy == Scr.VyMax && Scr.PanFrameBottom.isMapped && (!wrapY))
     {
       XUnmapWindow (dpy,Scr.PanFrameBottom.win);
       Scr.PanFrameBottom.isMapped=False;
     }
-  else if (Scr.Vy < Scr.VyMax && Scr.PanFrameBottom.isMapped==False) 
+  else if (Scr.Vy < Scr.VyMax && Scr.PanFrameBottom.isMapped==False)
     {
       XMapRaised(dpy,Scr.PanFrameBottom.win);
       Scr.PanFrameBottom.isMapped=True;
@@ -289,52 +289,52 @@ void raisePanFrames(void)
 
 /****************************************************************************
  *
- * Creates the windows for edge-scrolling 
+ * Creates the windows for edge-scrolling
  *
  ****************************************************************************/
 void initPanFrames()
 {
   XSetWindowAttributes attributes;    /* attributes for create */
-  unsigned long valuemask; 
-  
-  attributes.event_mask =  (EnterWindowMask | LeaveWindowMask | 
+  unsigned long valuemask;
+
+  attributes.event_mask =  (EnterWindowMask | LeaveWindowMask |
 			    VisibilityChangeMask);
   valuemask=  (CWEventMask | CWCursor );
-  
+
   attributes.cursor = Scr.FvwmCursors[TOP];
-  Scr.PanFrameTop.win = 
-    XCreateWindow (dpy, Scr.Root, 
+  Scr.PanFrameTop.win =
+    XCreateWindow (dpy, Scr.Root,
 		   0,0,
 		   Scr.MyDisplayWidth,PAN_FRAME_THICKNESS,
 		   0,	/* no border */
 		   CopyFromParent, InputOnly,
-		   CopyFromParent, 
+		   CopyFromParent,
 		   valuemask, &attributes);
   attributes.cursor = Scr.FvwmCursors[LEFT];
-  Scr.PanFrameLeft.win = 
-    XCreateWindow (dpy, Scr.Root, 
+  Scr.PanFrameLeft.win =
+    XCreateWindow (dpy, Scr.Root,
 		   0,PAN_FRAME_THICKNESS,
 		   PAN_FRAME_THICKNESS,
 		   Scr.MyDisplayHeight-2*PAN_FRAME_THICKNESS,
 		   0,	/* no border */
-		   CopyFromParent, InputOnly, CopyFromParent, 
+		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
   attributes.cursor = Scr.FvwmCursors[RIGHT];
-  Scr.PanFrameRight.win = 
-    XCreateWindow (dpy, Scr.Root, 
+  Scr.PanFrameRight.win =
+    XCreateWindow (dpy, Scr.Root,
 		   Scr.MyDisplayWidth-PAN_FRAME_THICKNESS,PAN_FRAME_THICKNESS,
 		   PAN_FRAME_THICKNESS,
 		   Scr.MyDisplayHeight-2*PAN_FRAME_THICKNESS,
 		   0,	/* no border */
-		   CopyFromParent, InputOnly, CopyFromParent, 
+		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
   attributes.cursor = Scr.FvwmCursors[BOTTOM];
-  Scr.PanFrameBottom.win = 
-    XCreateWindow (dpy, Scr.Root, 
+  Scr.PanFrameBottom.win =
+    XCreateWindow (dpy, Scr.Root,
 		   0,Scr.MyDisplayHeight-PAN_FRAME_THICKNESS,
 		   Scr.MyDisplayWidth,PAN_FRAME_THICKNESS,
 		   0,	/* no border */
-		   CopyFromParent, InputOnly, CopyFromParent, 
+		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
   Scr.PanFrameTop.isMapped=Scr.PanFrameLeft.isMapped=
     Scr.PanFrameRight.isMapped= Scr.PanFrameBottom.isMapped=False;
@@ -369,7 +369,8 @@ void MoveViewport(int newx, int newy, Bool grab)
 
   Scr.Vx = newx;
   Scr.Vy = newy;
-  Broadcast(M_NEW_PAGE,5,Scr.Vx,Scr.Vy,Scr.CurrentDesk,Scr.VxMax,Scr.VyMax,0,0);
+  BroadcastPacket(M_NEW_PAGE, 5,
+                  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
   if((deltax!=0)||(deltay!=0))
     {
@@ -392,11 +393,12 @@ void MoveViewport(int newx, int newy, Bool grab)
                     XMoveWindow(dpy,t->icon_w,t->icon_x_loc,
                                 t->icon_y_loc+t->icon_p_height);
 		  if(!(t->flags &ICON_UNMAPPED))
-		    Broadcast(M_ICON_LOCATION,7,t->w,t->frame,
-			      (unsigned long)t,
-			      t->icon_x_loc,t->icon_y_loc,
-			      t->icon_w_width, 
-			      t->icon_w_height+t->icon_p_height);
+		    BroadcastPacket(M_ICON_LOCATION, 7,
+                                    t->w, t->frame,
+                                    (unsigned long)t,
+                                    t->icon_x_loc, t->icon_y_loc,
+                                    t->icon_w_width,
+                                    t->icon_w_height+t->icon_p_height);
 		}
 	      SetupFrame (t, t->frame_x+ deltax, t->frame_y + deltay,
 			  t->frame_width, t->frame_height,FALSE);
@@ -418,7 +420,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 
   /* do this with PanFrames too ??? HEDU */
   while(XCheckTypedEvent(dpy,MotionNotify,&Event))
-    StashEventTime(&Event);    
+    StashEventTime(&Event);
   if(grab)
     MyXUngrabServer(dpy);
 }
@@ -499,7 +501,7 @@ int i;
 }
 
 /**************************************************************************
- * 
+ *
  * Move to a new desktop
  *
  *************************************************************************/
@@ -521,7 +523,7 @@ void changeDesks(int desk)
   Scr.CurrentDesk = desk;
   if(Scr.CurrentDesk == oldDesk)
     return;
-  Broadcast(M_NEW_DESK,1,Scr.CurrentDesk,0,0,0,0,0,0);
+  BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
   /* Scan the window list, mapping windows on the new Desk,
    * unmapping windows on the old Desk */
   MyXGrabServer(dpy);
@@ -531,18 +533,18 @@ void changeDesks(int desk)
       if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
 	 (!(t->flags & STICKY))&&(!(t->flags & ICON_UNMAPPED)))
 	{
-	  if(t->Desk == oldDesk) 
+	  if(t->Desk == oldDesk)
 	    {
 	      if (Scr.Focus == t)
 		t->FocusDesk = oldDesk;
 	      else
 		t->FocusDesk = -1;
 	      UnmapIt(t);
-	    } 
-	  else if(t->Desk == Scr.CurrentDesk) 
+	    }
+	  else if(t->Desk == Scr.CurrentDesk)
 	    {
 	      MapIt(t);
-	      if (t->FocusDesk == Scr.CurrentDesk) 
+	      if (t->FocusDesk == Scr.CurrentDesk)
 		{
 		  FocusWin = t;
 		}
@@ -552,7 +554,7 @@ void changeDesks(int desk)
 	{
 	  /* Window is sticky */
 	  t->Desk = Scr.CurrentDesk;
-	  if (Scr.Focus == t) 
+	  if (Scr.Focus == t)
 	    {
 	      t->FocusDesk =oldDesk;
 	      StickyWin = t;
@@ -570,7 +572,7 @@ void changeDesks(int desk)
 	 (!(t->flags & ICON_UNMAPPED)))
 	AutoPlace(t);
     }
-  
+
   if((FocusWin)&&(FocusWin->flags & ClickToFocus))
 #ifndef NO_REMEMBER_FOCUS
     SetFocus(FocusWin->w, FocusWin,0);
@@ -588,7 +590,7 @@ void changeDesks(int desk)
 
 
 /**************************************************************************
- * 
+ *
  * Move to a new desktop
  *
  *************************************************************************/
@@ -596,7 +598,7 @@ void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
 		       unsigned long context,char *action, int *Module)
 {
   int desk;
-  
+
   if (DeferExecution(eventp,&w,&t,&context,SELECT,ButtonRelease))
     return;
 
@@ -628,7 +630,7 @@ void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
 	}
       else
 	t->Desk = desk;
-      
+
     }
   BroadcastConfig(M_CONFIGURE_WINDOW,t);
 }
@@ -646,12 +648,12 @@ void scroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
     x=Scr.Vx + val1*val1_unit/100;
   else
     x = Scr.Vx + (val1/1000)*val1_unit/100;
-  
+
   if((val2 > -100000)&&(val2 < 100000))
     y=Scr.Vy + val2*val2_unit/100;
   else
     y = Scr.Vy + (val2/1000)*val2_unit/100;
-  
+
   if(((val1 <= -100000)||(val1 >= 100000))&&(x>Scr.VxMax))
     {
       x = 0;
@@ -700,7 +702,7 @@ void goto_page_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       fvwm_msg(ERR,"goto_page_func","GotoPage arguments should be unitless");
     }
-  
+
   x=val1*Scr.MyDisplayWidth;
   y=val2*Scr.MyDisplayHeight;
   MoveViewport(x,y,True);

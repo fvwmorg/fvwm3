@@ -1,8 +1,8 @@
 /****************************************************************************
- * 
- * This is all original code by Robert Nation 
+ *
+ * This is all original code by Robert Nation
  * which reads motif mwm window manager
- * hints from a window, and makes necessary adjustments for fvwm. 
+ * hints from a window, and makes necessary adjustments for fvwm.
  *
  * Definitions of the hint structure and the constants are courtesy of
  * mitnits@bgumail.bgu.ac.il (Roman Mitnitski ), who sent this note,
@@ -23,11 +23,11 @@
  *> of the decorations to the mwm). Call it another name, if you are
  *> THAT MUCH concerned.
  *>
- *> You can even use the little piece of code I've passed to you - 
+ *> You can even use the little piece of code I've passed to you -
  *> we are talking about 10M distribution against two pages of code.
  *> Don't be silly.
- *> 
- *> Best wishes. 
+ *>
+ *> Best wishes.
  *> Eli.
  *
  *
@@ -71,7 +71,7 @@ typedef PropMotifWmHints        PropMwmHints;
 #define MWM_FUNC_MOVE           (1L << 2)
 #define MWM_FUNC_MINIMIZE       (1L << 3)
 #define MWM_FUNC_MAXIMIZE       (1L << 4)
-#define MWM_FUNC_CLOSE          (1L << 5)       
+#define MWM_FUNC_CLOSE          (1L << 5)
 
 /* bit definitions for MwmHints.decorations */
 #define MWM_DECOR_ALL                 (1L << 0)
@@ -87,16 +87,16 @@ typedef PropMotifWmHints        PropMwmHints;
 
 /* bit definitions for OL hints; I just
  *  made these up, OL stores hints as atoms */
-#define OL_DECOR_CLOSE                (1L << 0)  
-#define OL_DECOR_RESIZEH              (1L << 1)  
-#define OL_DECOR_HEADER               (1L << 2)  
-#define OL_DECOR_ICON_NAME            (1L << 3)  
+#define OL_DECOR_CLOSE                (1L << 0)
+#define OL_DECOR_RESIZEH              (1L << 1)
+#define OL_DECOR_HEADER               (1L << 2)
+#define OL_DECOR_ICON_NAME            (1L << 3)
 #define OL_DECOR_ALL                  (OL_DECOR_CLOSE | OL_DECOR_RESIZEH | OL_DECOR_HEADER | OL_DECOR_ICON_NAME)
 
 extern FvwmWindow *Tmp_win;
 
 /****************************************************************************
- * 
+ *
  * Reads the property MOTIF_WM_HINTS
  *
  *****************************************************************************/
@@ -120,7 +120,7 @@ void GetMwmHints(FvwmWindow *t)
 }
 
 /****************************************************************************
- * 
+ *
  * Reads the openlook properties _OL_WIN_ATTR, _OL_DECOR_ADD, _OL_DECOR_DEL
  *
  * _OL_WIN_ATTR - the win_type field is the either the first atom if the
@@ -136,11 +136,11 @@ void GetMwmHints(FvwmWindow *t)
  * In addition, if the _OL_WIN_ATTR property is in the three atom format
  * or if the type is _OL_WT_OTHER, then the icon name is not displayed
  * (same behavior as olvwm).
- * 
+ *
  * _OL_DECOR_ADD or _OL_DECOR_DEL - indivdually add or remove minimize
  * button (_OL_DECOR_CLOSE), resize handles (_OL_DECOR_RESIZE), title bar
  * (_OL_DECOR_HEADER), or icon name (_OL_DECOR_ICON_NAME).
- * 
+ *
  * The documentation for the Open Look hints was taken from "Advanced X
  * Window Application Programming", Eric F. Johnson and Kevin Reichard
  * (M&T Books), and the olvwm source code (available at ftp.x.org in
@@ -189,7 +189,7 @@ void GetOlHints(FvwmWindow *t)
 	}
 
       if (hints)
-        XFree(hints);
+        XFree (hints);
     }
 
   if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_ADD, 0L, 20L, False,
@@ -207,7 +207,7 @@ void GetOlHints(FvwmWindow *t)
             t->ol_hints |= OL_DECOR_ICON_NAME;
       }
       if (hints)
-      XFree (hints);
+        XFree (hints);
     }
 
   if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_DEL, 0L, 20L, False,
@@ -225,19 +225,19 @@ void GetOlHints(FvwmWindow *t)
             t->ol_hints &= ~OL_DECOR_ICON_NAME;
       }
       if (hints)
-        XFree(hints);
+        XFree (hints);
     }
 
 }
 
 
 /****************************************************************************
- * 
+ *
  * Interprets the property MOTIF_WM_HINTS, sets decoration and functions
  * accordingly
  *
  *****************************************************************************/
-void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width, 
+void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
 		 int resize_width)
 {
   int decor,i;
@@ -283,14 +283,14 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
     {
       t->functions &= ~(MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE);
     }
-  
+
   if(decor & MWM_DECOR_ALL)
     {
       /* If we get ALL + some other things, that means to use
        * ALL except the other things... */
       decor &= ~MWM_DECOR_ALL;
       decor = (MWM_DECOR_BORDER | MWM_DECOR_RESIZEH | MWM_DECOR_TITLE |
-	       MWM_DECOR_MENU | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE) 
+	       MWM_DECOR_MENU | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE)
 	& (~decor);
     }
 
@@ -333,7 +333,7 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
 
   if ((tflags & NOBORDER_FLAG)||
       ((!(tflags&DECORATE_TRANSIENT_FLAG)) && (t->flags & TRANSIENT)))
-    decor &= ~MWM_DECOR_RESIZEH;      
+    decor &= ~MWM_DECOR_RESIZEH;
 
   if((tflags & MWM_DECOR_FLAG) && (t->flags & TRANSIENT))
     {
@@ -378,11 +378,11 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
        * (10 pixels - 2 relief, 2 shadow) */
       t->flags |= BORDER;
       t->boundary_width = resize_width;
-      t->corner_width = GetDecor(t,TitleHeight) + t->boundary_width; 
+      t->corner_width = GetDecor(t,TitleHeight) + t->boundary_width;
     }
   if(!(decor & MWM_DECOR_MENU))
     {
-      /*  title-bar menu button omitted 
+      /*  title-bar menu button omitted
        * window gets 1 pixel wide black border */
       /* disable any buttons with the MWMDecorMenu flag */
       int i;
@@ -560,11 +560,11 @@ static int check_if_function_allowed(int function,
 }
 
 /****************************************************************************
- * 
+ *
  * Checks the function described in menuItem mi, and sees if it
  * is an allowed function for window Tmp_Win,
  * according to the motif way of life.
- * 
+ *
  * This routine is used to determine whether or not to grey out menu items.
  *
  ****************************************************************************/
@@ -574,7 +574,7 @@ int check_allowed_function(MenuItem *mi)
 }
 
 /****************************************************************************
- * 
+ *
  * Checks the function "function", and sees if it
  * is an allowed function for window t,  according to the motif way of life.
  * This routine is used to decide if we should refuse to perform a function.

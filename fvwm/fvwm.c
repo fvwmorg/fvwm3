@@ -1,7 +1,7 @@
 
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -139,7 +139,7 @@ int main(int argc, char **argv)
 
   DBUG("main","Entered, about to parse args");
 
-  for (i = 1; i < argc; i++) 
+  for (i = 1; i < argc; i++)
   {
     if (strncasecmp(argv[i],"-debug",6)==0)
     {
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
   {
     usage();
   }
-    
+
   DBUG("main","Installing signal handlers");
 
   newhandler (SIGINT);
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 
   ReapChildren();
 
-  if (!(dpy = XOpenDisplay(display_name))) 
+  if (!(dpy = XOpenDisplay(display_name)))
   {
     fvwm_msg(ERR,"main","can't open display %s", XDisplayName(display_name));
     exit (1);
@@ -277,13 +277,13 @@ int main(int argc, char **argv)
 
   x_fd = XConnectionNumber(dpy);
   fd_width = GetFdWidth();
-    
-  if (fcntl(x_fd, F_SETFD, 1) == -1) 
+
+  if (fcntl(x_fd, F_SETFD, 1) == -1)
   {
     fvwm_msg(ERR,"main","close-on-exec failed");
     exit (1);
   }
-	    
+
   /*  Add a DISPLAY entry to the environment, incase we were started
    * with fvwm -display term:0.0
    */
@@ -322,7 +322,7 @@ int main(int argc, char **argv)
   }
 
   Scr.Root = RootWindow(dpy, Scr.screen);
-  if(Scr.Root == None) 
+  if(Scr.Root == None)
   {
     fvwm_msg(ERR,"main","Screen %d is not a valid screen",(char *)Scr.screen);
     exit(1);
@@ -343,8 +343,8 @@ int main(int argc, char **argv)
   XSetErrorHandler((XErrorHandler)CatchRedirectError);
   XSetIOErrorHandler((XIOErrorHandler)CatchFatal);
   XSelectInput(dpy, Scr.Root,
-               LeaveWindowMask| EnterWindowMask | PropertyChangeMask | 
-               SubstructureRedirectMask | KeyPressMask | 
+               LeaveWindowMask| EnterWindowMask | PropertyChangeMask |
+               SubstructureRedirectMask | KeyPressMask |
                SubstructureNotifyMask|
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
@@ -358,7 +358,7 @@ int main(int argc, char **argv)
   InitEventHandlerJumpTable();
   initModules();
 
-  Scr.gray_bitmap = 
+  Scr.gray_bitmap =
     XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
 
 
@@ -383,17 +383,17 @@ int main(int argc, char **argv)
 
   if(Scr.d_depth<2)
   {
-    Scr.gray_pixmap = 
+    Scr.gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,g_bits, g_width,g_height,
                                   Scr.MenuColors.fore,Scr.MenuColors.back,
-                                  Scr.d_depth);	
-    Scr.light_gray_pixmap = 
+                                  Scr.d_depth);
+    Scr.light_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.Root,l_g_bits,l_g_width,l_g_height,
                                   Scr.MenuColors.fore,Scr.MenuColors.back,
                                   Scr.d_depth);
   }
 
-  /* create a window which will accept the keyboard focus when no other 
+  /* create a window which will accept the keyboard focus when no other
      windows have it */
   attributes.event_mask = KeyPressMask|FocusChangeMask;
   attributes.override_redirect = True;
@@ -420,7 +420,7 @@ int main(int argc, char **argv)
   if(!USING_MWM_MENUS)
   {
     Scr.SizeWindow = XCreateWindow (dpy, Scr.Root,
-                                    0, 0, 
+                                    0, 0,
                                     (unsigned int)(Scr.SizeStringWidth +
                                                    SIZE_HINDENT*2),
                                     (unsigned int) (Scr.StdFont.height +
@@ -433,12 +433,12 @@ int main(int argc, char **argv)
   else
   {
     Scr.SizeWindow = XCreateWindow (dpy, Scr.Root,
-                                    Scr.MyDisplayWidth/2 - 
+                                    Scr.MyDisplayWidth/2 -
                                     (Scr.SizeStringWidth +
                                      SIZE_HINDENT*2)/2,
                                     Scr.MyDisplayHeight/2 -
-                                    (Scr.StdFont.height + 
-                                     SIZE_VINDENT*2)/2, 
+                                    (Scr.StdFont.height +
+                                     SIZE_VINDENT*2)/2,
                                     (unsigned int)(Scr.SizeStringWidth +
                                                    SIZE_HINDENT*2),
                                     (unsigned int) (Scr.StdFont.height +
@@ -478,7 +478,7 @@ void StartupStuff(void)
 
   CaptureAllWindows();
   MakeMenus();
-      
+
   if(Restarting)
   {
     mr = FindPopup("RestartFunction");
@@ -531,18 +531,18 @@ void CaptureAllWindows(void)
     /*
     ** weed out icon windows
     */
-    for (i=0;i<nchildren;i++) 
+    for (i=0;i<nchildren;i++)
     {
-      if (children[i]) 
+      if (children[i])
       {
         XWMHints *wmhintsp = XGetWMHints (dpy, children[i]);
-        if (wmhintsp) 
+        if (wmhintsp)
         {
-          if (wmhintsp->flags & IconWindowHint) 
+          if (wmhintsp->flags & IconWindowHint)
           {
-            for (j = 0; j < nchildren; j++) 
+            for (j = 0; j < nchildren; j++)
             {
-              if (children[j] == wmhintsp->icon_window) 
+              if (children[j] == wmhintsp->icon_window)
               {
                 children[j] = None;
                 break;
@@ -573,7 +573,7 @@ void CaptureAllWindows(void)
     tmp = Scr.FvwmRoot.next;
     for(i=0;i<nchildren;i++)
     {
-      if(XFindContext(dpy, children[i], FvwmContext, 
+      if(XFindContext(dpy, children[i], FvwmContext,
                       (caddr_t *)&tmp)!=XCNOENT)
       {
         isIconicState = DontCareState;
@@ -592,12 +592,12 @@ void CaptureAllWindows(void)
         data[0] = (unsigned long) tmp->Desk;
         XChangeProperty (dpy, tmp->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
                          PropModeReplace, (unsigned char *) data, 1);
-        
+
         XSelectInput(dpy, tmp->w, 0);
         w = tmp->w;
         XUnmapWindow(dpy,tmp->frame);
         XUnmapWindow(dpy,w);
-        RestoreWithdrawnLocation (tmp,True); 
+        RestoreWithdrawnLocation (tmp,True);
         Destroy(tmp);
         Event.xmaprequest.window = w;
         HandleMapRequestKeepRaised(BlackoutWin);
@@ -718,7 +718,7 @@ Atom _XA_WM_DELETE_WINDOW;
 Atom _XA_WM_DESKTOP;
 Atom _XA_MwmAtom;
 Atom _XA_MOTIF_WM;
- 
+
 Atom _XA_OL_WIN_ATTR;
 Atom _XA_OL_WT_BASE;
 Atom _XA_OL_WT_CMD;
@@ -734,10 +734,10 @@ Atom _XA_OL_DECOR_ICON_NAME;
 
 void InternUsefulAtoms (void)
 {
-  /* 
+  /*
    * Create priority colors if necessary.
    */
-  _XA_MIT_PRIORITY_COLORS = XInternAtom(dpy, "_MIT_PRIORITY_COLORS", False);   
+  _XA_MIT_PRIORITY_COLORS = XInternAtom(dpy, "_MIT_PRIORITY_COLORS", False);
   _XA_WM_CHANGE_STATE = XInternAtom (dpy, "WM_CHANGE_STATE", False);
   _XA_WM_STATE = XInternAtom (dpy, "WM_STATE", False);
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
@@ -816,9 +816,9 @@ void CreateCursors(void)
 
 /***********************************************************************
  *
- *  LoadDefaultLeftButton -- loads default left button # into 
+ *  LoadDefaultLeftButton -- loads default left button # into
  *		assumes associated button memory is already free
- * 
+ *
  ************************************************************************/
 void LoadDefaultLeftButton(ButtonFace *bf, int i)
 {
@@ -909,7 +909,7 @@ void LoadDefaultLeftButton(ButtonFace *bf, int i)
  *
  *  LoadDefaultRightButton -- loads default left button # into
  *		assumes associated button memory is already free
- * 
+ *
  ************************************************************************/
 void LoadDefaultRightButton(ButtonFace *bf, int i)
 {
@@ -1000,7 +1000,7 @@ void LoadDefaultRightButton(ButtonFace *bf, int i)
  *
  *  LoadDefaultButton -- loads default button # into button structure
  *		assumes associated button memory is already free
- * 
+ *
  ************************************************************************/
 void LoadDefaultButton(ButtonFace *bf, int i)
 {
@@ -1018,28 +1018,40 @@ extern void FreeButtonFace(Display *dpy, ButtonFace *bf);
  *
  *  ResetAllButtons -- resets all buttons to defaults
  *                 destroys existing buttons
- * 
+ *
  ************************************************************************/
 void ResetAllButtons(FvwmDecor *fl)
 {
-    int i = 0;
-    for (; i < 5; ++i) {
-	int j;
+    TitleButton *leftp, *rightp;
+    int i=0;
 
-	FreeButtonFace(dpy, &fl->left_buttons[i].state[0]);
-	FreeButtonFace(dpy, &fl->right_buttons[i].state[0]);
+    for (leftp=fl->left_buttons, rightp=fl->right_buttons;
+         i < 5;
+         ++i, ++leftp, ++rightp) {
+      ButtonFace *lface, *rface;
+      int j;
 
-	LoadDefaultLeftButton(&fl->left_buttons[i].state[0], i);
-	LoadDefaultRightButton(&fl->right_buttons[i].state[0], i);
+      leftp->flags = 0;
+      rightp->flags = 0;
 
-	for (j = 1; j < MaxButtonState; ++j) {
-	    FreeButtonFace(dpy, &fl->left_buttons[i].state[j]);
-	    FreeButtonFace(dpy, &fl->right_buttons[i].state[j]);
+      lface = leftp->state;
+      rface = rightp->state;
 
-	    fl->left_buttons[i].state[j] = fl->left_buttons[i].state[0];
-	    fl->right_buttons[i].state[j] = fl->right_buttons[i].state[0];
-	}
+      FreeButtonFace(dpy, lface);
+      FreeButtonFace(dpy, rface);
+
+      LoadDefaultLeftButton(lface++, i);
+      LoadDefaultRightButton(rface++, i);
+
+      for (j = 1; j < MaxButtonState; ++j, ++lface, ++rface) {
+        FreeButtonFace(dpy, lface);
+        FreeButtonFace(dpy, rface);
+
+        *lface = leftp->state[0];
+        *rface = rightp->state[0];
+      }
     }
+
     /* standard MWM decoration hint assignments (veliaa@rpi.edu)
        [Menu]  - Title Bar - [Minimize] [Maximize] */
     fl->left_buttons[0].flags |= MWMDecorMenu;
@@ -1051,7 +1063,7 @@ void ResetAllButtons(FvwmDecor *fl)
  *
  *  DestroyFvwmDecor -- frees all memory assocated with an FvwmDecor
  *	structure, but does not free the FvwmDecor itself
- * 
+ *
  ************************************************************************/
 void DestroyFvwmDecor(FvwmDecor *fl)
 {
@@ -1087,16 +1099,17 @@ void DestroyFvwmDecor(FvwmDecor *fl)
 /***********************************************************************
  *
  *  InitFvwmDecor -- initializes an FvwmDecor structure to defaults
- * 
+ *
  ************************************************************************/
 void InitFvwmDecor(FvwmDecor *fl)
 {
     int i;
     ButtonFace tmpbf;
-    
+
     fl->HiReliefGC = NULL;
     fl->HiShadowGC = NULL;
     fl->TitleHeight = 0;
+    fl->WindowFont.font = NULL;
 
 #ifdef USEDECOR
     fl->tag = NULL;
@@ -1121,13 +1134,13 @@ void InitFvwmDecor(FvwmDecor *fl)
 		fl->right_buttons[i].state[j] =  tmpbf;
 	}
     }
-    
+
     /* reset to default button set */
     ResetAllButtons(fl);
-    
+
     /* initialize title-bar styles */
     fl->titlebar.flags = 0;
-    
+
     for (i = 0; i < MaxButtonState; ++i) {
 	fl->titlebar.state[i].style = SimpleButton;
 #ifdef MULTISTYLE
@@ -1161,7 +1174,7 @@ void InitVariables(void)
   Scr.AllBindings = NULL;
   Scr.AllMenus = NULL;
   Scr.TheList = NULL;
-  
+
   Scr.DefaultIcon = NULL;
 
 
@@ -1175,11 +1188,11 @@ void InitVariables(void)
   Scr.root_pushes = 0;
   Scr.pushed_window = &Scr.FvwmRoot;
   Scr.FvwmRoot.number_cmap_windows = 0;
-  
+
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-    
+
   Scr.NoBoundaryWidth = 1;
   Scr.BoundaryWidth = BOUNDARY_WIDTH;
   Scr.CornerWidth = CORNER_WIDTH;
@@ -1187,10 +1200,11 @@ void InitVariables(void)
   Scr.Focus = NULL;
   Scr.PreviousFocus = NULL;
   Scr.Ungrabbed = NULL;
-  
-  Scr.StdFont.font = NULL;
 
-#ifndef NON_VIRTUAL  
+  Scr.StdFont.font = NULL;
+  Scr.IconFont.font = NULL;
+
+#ifndef NON_VIRTUAL
   Scr.VxMax = 2*Scr.MyDisplayWidth;
   Scr.VyMax = 2*Scr.MyDisplayHeight;
 #else
@@ -1209,7 +1223,7 @@ void InitVariables(void)
     int aformat;
     unsigned long nitems, bytes_remain;
     unsigned char *prop;
-    
+
     Scr.CurrentDesk = 0;
     if ((XGetWindowProperty(dpy, Scr.Root, _XA_WM_DESKTOP, 0L, 1L, True,
 			    _XA_WM_DESKTOP, &atype, &aformat, &nitems,
@@ -1274,7 +1288,7 @@ void Reborder(void)
   InstallWindowColormaps (&Scr.FvwmRoot);	/* force reinstall */
   for (tmp = Scr.FvwmRoot.next; tmp != NULL; tmp = tmp->next)
   {
-    RestoreWithdrawnLocation (tmp,True); 
+    RestoreWithdrawnLocation (tmp,True);
     XUnmapWindow(dpy,tmp->frame);
     XDestroyWindow(dpy,tmp->frame);
   }
@@ -1346,7 +1360,7 @@ void Done(int restart, char *command)
         my_argv[i++] = "-s";
       while(i<10)
         my_argv[i++] = NULL;
-	
+
       /* really need to destroy all windows, explicitly,
        * not sleep, but this is adequate for now */
       sleep(1);
@@ -1357,7 +1371,7 @@ void Done(int restart, char *command)
              command,
              g_argv[0]);
     execvp(g_argv[0], g_argv);    /* that _should_ work */
-    fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]); 
+    fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]);
   }
   else
   {
@@ -1397,7 +1411,7 @@ XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
   extern int last_event_type;
 
-  /* some errors are acceptable, mostly they're caused by 
+  /* some errors are acceptable, mostly they're caused by
    * trying to update a lost  window */
   if((event->error_code == BadWindow)||(event->request_code == X_GetGeometry)||
      (event->error_code==BadDrawable)||(event->request_code==X_SetInputFocus)||
@@ -1459,12 +1473,12 @@ void SetMWM_INFO(Window window)
     long flags;
     Window win;
   }  motif_wm_info;
-  
-  /* Set Motif WM_INFO atom to make motif relinquish 
+
+  /* Set Motif WM_INFO atom to make motif relinquish
    * broken handling of modal dialogs */
   motif_wm_info.flags     = 2;
   motif_wm_info.win = window;
-  
+
   XChangeProperty(dpy,Scr.Root,_XA_MOTIF_WM,_XA_MOTIF_WM,32,
 		  PropModeReplace,(char *)&motif_wm_info,2);
 #endif
@@ -1474,7 +1488,7 @@ void BlackoutScreen()
 {
   XSetWindowAttributes attributes;
   unsigned long valuemask;
-  
+
   if (Blackout && (BlackoutWin == None) && !debugging)
   {
     DBUG("BlackoutScreen","Blacking out screen during init...");

@@ -7,6 +7,7 @@ module_PROGRAMS = FvwmScript
 
 FvwmScript_SOURCES = FvwmScript.c Instructions.c lex.yy.c libyywrap.c \
 	types.h y.tab.c y.tab.h
+FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmScript.1
 EXTRA_DIST = $(man_MANS) BUGS \

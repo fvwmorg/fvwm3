@@ -85,6 +85,7 @@ xpm_LIBS = @xpm_LIBS@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmWharf
 FvwmWharf_SOURCES = FvwmWharf.c Wharf.h icons.c stepgfx.c stepgfx.h
+FvwmWharf_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmWharf.1
 EXTRA_DIST = $(man_MANS) sample.style \
@@ -110,7 +111,6 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 FvwmWharf_OBJECTS =  FvwmWharf.o icons.o stepgfx.o
 FvwmWharf_LDADD = $(LDADD)
-FvwmWharf_DEPENDENCIES = 
 FvwmWharf_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -124,7 +124,7 @@ DIST_COMMON =  README Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmWharf.P .deps/icons.P .deps/stepgfx.P
 SOURCES = $(FvwmWharf_SOURCES)
@@ -135,7 +135,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmWharf/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmWharf/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -260,7 +260,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmWharf/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmWharf/Makefile
 	$(mkinstalldirs) $(distdir)/ASSound $(distdir)/OffiX
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \

@@ -1,3 +1,26 @@
+1998-11-06  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmWinList/Makefile.am (FvwmWinList_DEPENDENCIES):
+	* FvwmTile/Makefile.am (FvwmTile_DEPENDENCIES):
+	* FvwmTalk/Makefile.am (FvwmTalk_DEPENDENCIES):
+	* FvwmScroll/Makefile.am (FvwmScroll_DEPENDENCIES):
+	* FvwmSaveDesk/Makefile.am (FvwmSaveDesk_DEPENDENCIES):
+	* FvwmSave/Makefile.am (FvwmSave_DEPENDENCIES):
+	* FvwmPager/Makefile.am (FvwmPager_DEPENDENCIES):
+	* FvwmM4/Makefile.am (FvwmM4_DEPENDENCIES):
+	* FvwmIdent/Makefile.am (FvwmIdent_DEPENDENCIES):
+	* FvwmIconMan/Makefile.am (FvwmIconMan_DEPENDENCIES):
+	* FvwmIconBox/Makefile.am (FvwmIconBox_DEPENDENCIES):
+	* FvwmForm/Makefile.am (FvwmForm_DEPENDENCIES):
+	* FvwmEvent/Makefile.am (FvwmEvent_DEPENDENCIES):
+	* FvwmCpp/Makefile.am (FvwmCpp_DEPENDENCIES):
+	* FvwmCascade/Makefile.am (FvwmCascade_DEPENDENCIES):
+	* FvwmButtons/Makefile.am (FvwmButtons_DEPENDENCIES):
+	* FvwmBanner/Makefile.am (FvwmBanner_DEPENDENCIES):
+	* FvwmBacker/Makefile.am (FvwmBacker_DEPENDENCIES):
+	* FvwmAudio/Makefile.am (FvwmAudio_DEPENDENCIES):
+	Added a dependency on libfvwm.a.
+
 1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* FvwmPager/FvwmPager.1:

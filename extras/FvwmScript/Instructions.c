@@ -154,7 +154,7 @@ char *FuncGetOutput(int *NbArg, long *TabArg)
  int maxsize=32000;
  int size;
 
- (*NbArg)++;		
+ (*NbArg)++;
  cmndbuf=CalcArg(TabArg,NbArg);
  (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
@@ -164,7 +164,7 @@ char *FuncGetOutput(int *NbArg, long *TabArg)
  str=CalcArg(TabArg,NbArg);
  index=atoi(str);
  free(str);
- 
+
  if ((strcmp(Command,cmndbuf))||((time(NULL)-TimeCom)>1)||(TimeCom==0))
  {
   if ((f = popen(cmndbuf,"r")) == NULL)
@@ -185,14 +185,14 @@ char *FuncGetOutput(int *NbArg, long *TabArg)
    TimeCom=time(NULL);
   }
  }
- 
+
  /* Recherche de la ligne */
  while ((i<=line)&&(BufCom[j]!='\0'))
  {
   j++;
   if (BufCom[j]=='\n') i++;
  }
- 
+
  /* Recherche du mot */
  if (index!=-1)
  {
@@ -226,7 +226,7 @@ char *FuncGetOutput(int *NbArg, long *TabArg)
   memmove(str,&BufCom[j],k-j);
   str[k-j]='\0';
  }
-  
+
  free(cmndbuf);
  return str;
 }
@@ -237,8 +237,8 @@ char *FuncNumToHex(int *NbArg, long *TabArg)
  char *str;
  int value,nbchar;
  int i,j;
- 
- (*NbArg)++;		
+
+ (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
  value=atoi(str);
  free(str);
@@ -246,7 +246,7 @@ char *FuncNumToHex(int *NbArg, long *TabArg)
  str=CalcArg(TabArg,NbArg);
  nbchar=atoi(str);
  free(str);
- 
+
  str=(char*)calloc(1,nbchar+10);
  sprintf(str,"%X",value);
  j=strlen(str);
@@ -265,14 +265,14 @@ char *FuncHexToNum(int *NbArg, long *TabArg)
 {
  char *str,*str2;
  int k;
- 
- (*NbArg)++;		
+
+ (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
  if (str[0]=='#')
   memmove(str,&str[1],strlen(str));
  k=(int)strtol(str,NULL,16);
  free(str);
- 
+
  str2=(char*)calloc(1,20);
  sprintf(str2,"%d",k);
  return str2;
@@ -282,8 +282,8 @@ char *FuncAdd(int *NbArg, long *TabArg)
 {
  char *str;
  int val1,val2;
- 
- (*NbArg)++;		
+
+ (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
  val1=atoi(str);
  free(str);
@@ -300,8 +300,8 @@ char *FuncMult(int *NbArg, long *TabArg)
 {
  char *str;
  int val1,val2;
- 
- (*NbArg)++;		
+
+ (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
  val1=atoi(str);
  free(str);
@@ -318,8 +318,8 @@ char *FuncDiv(int *NbArg, long *TabArg)
 {
  char *str;
  int val1,val2;
- 
- (*NbArg)++;		
+
+ (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
  val1=atoi(str);
  free(str);
@@ -334,11 +334,14 @@ char *FuncDiv(int *NbArg, long *TabArg)
 
 char *RemainderOfDiv(int *NbArg, long *TabArg)
 {
+#ifndef HAVE_DIV
+ return strdup("Unsupported function: div");
+#else
  char *str;
  int val1,val2;
  div_t res;
 
- (*NbArg)++;		
+ (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
  val1=atoi(str);
  free(str);
@@ -350,6 +353,7 @@ char *RemainderOfDiv(int *NbArg, long *TabArg)
  res=div(val1,val2);
  sprintf(str,"%d",res.rem);
  return str;
+#endif
 }
 
 
@@ -357,8 +361,8 @@ char *FuncStrCopy(int *NbArg, long *TabArg)
 {
  char *str,*strsrc;
  int i1,i2;
- 
- (*NbArg)++;		
+
+ (*NbArg)++;
  strsrc=CalcArg(TabArg,NbArg);
  (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
@@ -370,7 +374,7 @@ char *FuncStrCopy(int *NbArg, long *TabArg)
  i2=atoi(str);
  if (i2<1) i2=1;
  free(str);
- 
+
  if ((i1<=i2)&&(i1<=strlen(strsrc)))
  {
   if (i2>strlen(strsrc)) i2=strlen(strsrc);
@@ -394,7 +398,7 @@ char *LaunchScript (int *NbArg,long *TabArg)
  Atom MyAtom;
 
  /* Lecture des arguments */
- (*NbArg)++;		
+ (*NbArg)++;
  arg=CalcArg(TabArg,NbArg);
 
  str=(char*)calloc(100,sizeof(char));
@@ -473,7 +477,7 @@ char *GetScriptArg (int *NbArg,long *TabArg)
  char *str;
  int val1;
 
- (*NbArg)++;		
+ (*NbArg)++;
  str=CalcArg(TabArg,NbArg);
  val1=atoi(str);
  free(str);
@@ -495,7 +499,7 @@ char *ReceivFromScript (int *NbArg,long *TabArg)
  int format;
  int NbEssai=0;
 
- (*NbArg)++;		
+ (*NbArg)++;
  arg=CalcArg(TabArg,NbArg);
  send=(int)atoi(arg);
  free(arg);
@@ -564,22 +568,22 @@ void Exec (int NbArg,long *TabArg)
   execstr=strcat(execstr,tempstr);
   free(tempstr);
  }
- 
+
  write(fd[0], &ref, sizeof(Window));
  leng = strlen(execstr);
  write(fd[0], &leng, sizeof(int));
  write(fd[0], execstr, leng);
  leng = 1;
  write(fd[0], &leng, sizeof(int));
- 
- 
+
+
  free(execstr);
 }
 
 void HideObj (int NbArg,long *TabArg)
 {
  char *arg[1];
- int IdItem; 
+ int IdItem;
  int i=0;
 
  arg[0]=CalcArg(TabArg,&i);
@@ -594,7 +598,7 @@ void HideObj (int NbArg,long *TabArg)
 void ShowObj (int NbArg,long *TabArg)
 {
  char *arg[1];
- int IdItem; 
+ int IdItem;
  int i=0;
 
  arg[0]=CalcArg(TabArg,&i);
@@ -610,11 +614,11 @@ void ChangeValue (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
- 
+
  arg[0]=CalcArg(TabArg,&i);
  i++;
  arg[1]=CalcArg(TabArg,&i);
- 
+
  tabxobj[TabIdObj[atoi(arg[0])]]->value=atoi(arg[1]);
  /* On redessine l'objet pour le mettre a jour */
  tabxobj[TabIdObj[atoi(arg[0])]]->DrawObj(tabxobj[TabIdObj[atoi(arg[0])]]);
@@ -627,12 +631,12 @@ void ChangeValueMax (int NbArg,long *TabArg)
  int i=0;
  char *arg[2];
  int j;
- 
+
  arg[0]=CalcArg(TabArg,&i);
  j=atoi(arg[0]);
  i++;
  arg[1]=CalcArg(TabArg,&i);
- 
+
  tabxobj[TabIdObj[j]]->value3=atoi(arg[1]);
  /* On redessine l'objet pour le mettre a jour */
  if (tabxobj[TabIdObj[j]]->value>tabxobj[TabIdObj[j]]->value3)
@@ -649,12 +653,12 @@ void ChangeValueMin (int NbArg,long *TabArg)
  int i=0;
  char *arg[2];
  int j;
- 
+
  arg[0]=CalcArg(TabArg,&i);
  i++;
  arg[1]=CalcArg(TabArg,&i);
  j=atoi(arg[0]);
- 
+
  tabxobj[TabIdObj[j]]->value2=atoi(arg[1]);
  /* On redessine l'objet pour le mettre a jour */
  if (tabxobj[TabIdObj[j]]->value<tabxobj[TabIdObj[j]]->value2)
@@ -670,7 +674,7 @@ void ChangePos (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[3];
- int an[3]; 
+ int an[3];
  int IdItem;
 
  arg[0]=CalcArg(TabArg,&i);
@@ -724,7 +728,7 @@ void ChangeSize (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[3];
- int an[3]; 
+ int an[3];
  int IdItem;
 
  arg[0]=CalcArg(TabArg,&i);
@@ -846,7 +850,7 @@ void SetVar (int NbArg,long *TabArg)
 {
  int i;
  char *str,*tempstr;
- 
+
  str=(char*)calloc(sizeof(char),1);
  for (i=1;i<NbArg;i++)
  {
@@ -1094,12 +1098,12 @@ void WriteToFile (int NbArg,long *TabArg)
   arg[1][i]='\n';
   arg[1][i+1]='\0';
  }
-  
+
  sprintf(StrEnd,"#end\n");
  sprintf(StrBegin,"#%s,",ScriptName);
- 
+
  buf=(char*)calloc(1,maxsize);
- 
+
  if (arg[0][0]!='/')
  {
   file=strdup(arg[0]);
@@ -1143,7 +1147,7 @@ void WriteToFile (int NbArg,long *TabArg)
    memmove(&buf[CurrPos],str,strlen(str));
   }
  }
- 
+
  fclose(f);
  f=fopen(arg[0],"w");
  if (f==NULL)
@@ -1153,7 +1157,7 @@ void WriteToFile (int NbArg,long *TabArg)
  }
  fwrite(buf,1,strlen(buf),f);
  fclose(f);
- 
+
  free(arg[0]);
  free(arg[1]);
 }
@@ -1184,7 +1188,7 @@ void SendToScript (int NbArg,long *TabArg)
  R=(char*)calloc(strlen(x11base->TabScriptId[dest])+1,sizeof(char));
  sprintf(R,"%s",x11base->TabScriptId[dest]);
  myatom=XInternAtom(x11base->display,R,True);
- 
+
  if ((BuffSend.NbMsg<40)&&(XGetSelectionOwner(x11base->display,myatom)!=None))
  {
   /* Enregistrement dans le buffer du message */

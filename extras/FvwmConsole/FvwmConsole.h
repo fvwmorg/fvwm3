@@ -1,8 +1,8 @@
 #include "config.h"
 
 #if HAVE_SYS_BSDTYPES_H
-#include <sys/bsdtypes.h> 
-#endif 
+#include <sys/bsdtypes.h>
+#endif
 
 #if HAVE_SYS_SELECT_H
 #include <sys/select.h>
@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "fvwmlib.h"     
+#include "fvwmlib.h"
 #include "../../fvwm/module.h"
 
 #define S_NAME "/tmp/FvConSocket"
@@ -36,7 +36,7 @@
 #define M_PASS M_ERROR
 
 /* number of default arguments when invoked from fvwm */
-#define FARGS 6   
+#define FARGS 6
 
 #define XTERM "xterm"
 

@@ -3,6 +3,7 @@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmGoodStuff
 FvwmGoodStuff_SOURCES = FvwmGoodStuff.c FvwmGoodStuff.h icons.c
+FvwmGoodStuff_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmGoodStuff.1
 EXTRA_DIST = $(man_MANS)

@@ -89,6 +89,9 @@ module_SCRIPTS = FvwmConsoleC.pl
 FvwmConsole_SOURCES = FvwmConsole.c FvwmConsole.h
 FvwmConsoleC_SOURCES = FvwmConsoleC.c FvwmConsole.h getline.c
 
+FvwmConsole_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+FvwmConsoleC_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+
 man_MANS = FvwmConsole.1 FvwmConsoleC.pl.1
 EXTRA_DIST = $(man_MANS) $(module_SCRIPTS) Changes .fvwm2rc.sample
 
@@ -115,11 +118,9 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 FvwmConsole_OBJECTS =  FvwmConsole.o
 FvwmConsole_LDADD = $(LDADD)
-FvwmConsole_DEPENDENCIES = 
 FvwmConsole_LDFLAGS = 
 FvwmConsoleC_OBJECTS =  FvwmConsoleC.o getline.o
 FvwmConsoleC_LDADD = $(LDADD)
-FvwmConsoleC_DEPENDENCIES = 
 FvwmConsoleC_LDFLAGS = 
 SCRIPTS =  $(module_SCRIPTS)
 
@@ -135,7 +136,7 @@ DIST_COMMON =  README INSTALL Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmConsole.P .deps/FvwmConsoleC.P .deps/getline.P
 SOURCES = $(FvwmConsole_SOURCES) $(FvwmConsoleC_SOURCES)
@@ -146,7 +147,7 @@ all: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmConsole/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmConsole/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -294,7 +295,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmConsole/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmConsole/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

@@ -1,5 +1,9 @@
+1998-11-06  Paul D. Smith  <psmith@gnu.org>
+
+	* Makefile.am (FvwmAnimate_DEPENDENCIES): Add a dependency on
+	libfvwm.a.
+
 1998-11-04  Dan Espen  <dane@mk.bellcore.com>
 
-	* FvwmAnimate/FvwmAnimate.c: Fixed bug where AnimateResizeLine was drawing
-	5 segments when it only wanted 4.
-
+	* FvwmAnimate/FvwmAnimate.c: Fixed bug where AnimateResizeLine was
+	drawing 5 segments when it only wanted 4.

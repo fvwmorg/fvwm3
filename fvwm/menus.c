@@ -1,13 +1,13 @@
 /*****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
  ****************************************************************************/
 
 /* Almost a complete rewrite by
-   Greg J. Badros, Apr 6, Apr 16-19, 1997 
+   Greg J. Badros, Apr 6, Apr 16-19, 1997
    gjb@cs.washington.edu
 
    Fixed bugs w/ Escape leaving a menu item highlighted the next
@@ -29,7 +29,7 @@
    (some cosmetic bugs and two or three coredumps). Rewrote large parts
    of MenuInteraction and FPopupMenus.
    */
-    
+
 
 /***********************************************************************
  *
@@ -370,7 +370,7 @@ Bool FMenuMapped(MenuRoot *menu)
   return (win_attribs.map_state == IsViewable);
 }
 
-static 
+static
 MenuItem *MiFromMenuIndex(MenuRoot *mr, int index)
 {
   int i = -1;
@@ -427,7 +427,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
   /* No, because the keypad numbers don't work. Use XlookupString */
   index = XLookupString(&(Event->xkey), &keychar, 1, &keysym, NULL);
   /* Try to match hot keys */
-  if (index == 1 && isgraph((int)keychar) && fControlKey == FALSE) { 
+  if (index == 1 && isgraph((int)keychar) && fControlKey == FALSE) {
     /* allow any printable character to be a keysym, but be sure control
        isn't pressed */
     MenuItem *mi;
@@ -464,14 +464,14 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     case XK_h: /* vi left */
       return MENU_POPDOWN;
       break;
-      
+
     case XK_Right:
     case XK_f: /* forward */
     case XK_l: /* vi right */
       if (IS_POPUP_MENU_ITEM(miCurrent))
 	return MENU_POPUP;
       break;
-      
+
     case XK_Up:
     case XK_k: /* vi up */
     case XK_p: /* prior */
@@ -482,7 +482,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 	  return MENU_NOP;
       }
       if (isgraph(keysym))
-	fControlKey = FALSE; /* don't use control modifier 
+	fControlKey = FALSE; /* don't use control modifier
 				for k or p, since those might
 				be shortcuts too-- C-k, C-p will
 				always work to do a single up */
@@ -499,7 +499,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       if (newItem) {
 	*pmiCurrent = newItem;
 	return MENU_NEWITEM;
-      } else 
+      } else
 	return MENU_NOP;
       break;
 
@@ -532,16 +532,16 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       if (newItem) {
 	*pmiCurrent = newItem;
 	return MENU_NEWITEM;
-      } else 
+      } else
 	return MENU_NOP;
       break;
-      
+
       /* Nothing special --- Allow other shortcuts */
     default:
       Keyboard_shortcuts(Event,ButtonRelease);
       break;
     }
-  
+
   return MENU_NOP;
 }
 
@@ -556,7 +556,7 @@ int c10msDelaysBeforePopup = 15;
  *      return to old sub menus, etc.
  *  Input
  *      sticks = 0, transient style menu, drops on button release
- *      sticks = 1, sticky style, stays up on a click (i.e. initial release 
+ *      sticks = 1, sticky style, stays up on a click (i.e. initial release
  *                  comes soon after initial press.
  *  Returns:
  *      MENU_ERROR on error condition
@@ -615,7 +615,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	while (XCheckMaskEvent(dpy,
 			       ButtonPressMask|ButtonReleaseMask|
 			       ExposureMask|KeyPressMask|VisibilityChangeMask|
-			       ButtonMotionMask, 
+			       ButtonMotionMask,
 			       &Event) == FALSE) {
 	  usleep(MICRO_S_FOR_10MS);
  	  if (c10msDelays++ == c10msDelaysBeforePopup) {
@@ -629,13 +629,13 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  }
 	}
       } else {  /* block until there is an event */
-	XMaskEvent(dpy, 
-		   ButtonPressMask|ButtonReleaseMask|ExposureMask | 
-		   KeyPressMask|VisibilityChangeMask|ButtonMotionMask, 
+	XMaskEvent(dpy,
+		   ButtonPressMask|ButtonReleaseMask|ExposureMask |
+		   KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
 		   &Event);
       }
       /*DBUG("MenuInteraction","mrPopup=%s",mrPopup?mrPopup->name:"(none)");*/
-      
+
       StashEventTime(&Event);
       if (Event.type == MotionNotify) {
 	/* discard any extra motion events before a release */
@@ -647,7 +647,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	{
 	case ButtonRelease:
 	  mi = FindEntry(&x_offset);
-	  /* hold the menu up when the button is released 
+	  /* hold the menu up when the button is released
 	     for the first time if released OFF of the menu */
 	  if(fSticks && !fMotionFirst) {
 	    fReleaseFirst = TRUE;
@@ -658,13 +658,13 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  retval = mi?MENU_SELECTED:MENU_ABORTED;
 	  dkp_timestamp = 0;
 	  goto DO_RETURN;
-	  
+
 	case ButtonPress:
 	  /* if the first event is a button press allow the release to
 	     select something */
 	  fSticks = FALSE;
 	  continue;
-	  
+
 	case VisibilityNotify:
 	  continue;
 
@@ -674,7 +674,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  x_offset = 0;
 	  retval = menuShortcuts(menu,&Event,&mi);
 	  if (retval == MENU_POPDOWN ||
-	      retval == MENU_ABORTED || 
+	      retval == MENU_ABORTED ||
 	      retval == MENU_SELECTED)
 	    goto DO_RETURN;
 	  /* now warp to the new menu-item, if any */
@@ -688,7 +688,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    break;
 	  }
 	  break;
-	  
+
 	case MotionNotify:
 	  if (mouse_moved == FALSE) {
 	    int x_root, y_root;
@@ -706,7 +706,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    fMotionFirst = TRUE;
 	  fFakedMotion = FALSE;
 	  break;
-	  
+
 	case Expose:
 	  /* grab our expose events, let the rest go through */
 	  if((XFindContext(dpy, Event.xany.window,MenuContext,
@@ -722,7 +722,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 				  Tmp_win and messes up our calls to
 				  check_allowed_function for stippling
 				  disallowed menu items */
-	  
+
 	default:
 	  DispatchEvent();
 	  if (s_Tmp_win)
@@ -754,7 +754,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  c10msDelays = 0;
 	  /* we're on the same menu, but a different item,
 	     so we need to unselect the old item */
-	  if (menu->selected) { 
+	  if (menu->selected) {
 	    /* something else was already selected on this menu */
 	    SetMenuItemSelected(menu->selected,FALSE);
 	    if (mrPopup) {
@@ -801,7 +801,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  /* must remove previous popup first */
 	  fPopdown = TRUE;
 	}
-	
+
 	if (fPopdown) {
 	  DBUG("MenuInteraction","Popping down");
 	  /* popdown previous popup */
@@ -858,7 +858,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  }
 	} /* if (fDoMenu) */
 
-	/* Now check whether we can animate the current popup menu 
+	/* Now check whether we can animate the current popup menu
 	   over to the right to unobscure the current menu;  this
 	   happens only when using animation */
 	tmi = FindEntry(NULL);
@@ -866,7 +866,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  (tmi == menu->selected || tmi->mr != menu)) {
 	  int x_popup, y_popup;
 	  DBUG("MenuInteraction","Moving the popup menu back over");
-	  XGetGeometry(dpy, mrPopup->w, &JunkRoot, &x_popup, &y_popup, 
+	  XGetGeometry(dpy, mrPopup->w, &JunkRoot, &x_popup, &y_popup,
 		       &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
 	  /* move it back */
 	  AnimatedMoveOfWindow(mrPopup->w,x_popup,y_popup,
@@ -874,7 +874,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 			       FALSE /* no warp ptr */,-1,NULL);
 	  mrPopup->xanimation = 0;
 	}
-	/* now check whether we should animate the current real menu 
+	/* now check whether we should animate the current real menu
 	   over to the right to unobscure the prior menu; only a very
 	   limited case where this might be helpful and not too disruptive */
 	if (mrPopup == NULL && menuPrior != NULL && USING_FVWM_MENUS &&
@@ -882,7 +882,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  int x_menu, y_menu;
 	  DBUG("MenuInteraction","Moving the menu back over");
 	  /* we have to see if we need menu to be moved */
-	  XGetGeometry( dpy, menu->w, &JunkRoot, &x_menu, &y_menu, 
+	  XGetGeometry( dpy, menu->w, &JunkRoot, &x_menu, &y_menu,
 			&JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
 	  /* move it back */
 	  AnimatedMoveOfWindow(menu->w,x_menu,y_menu,
@@ -894,14 +894,14 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
       } /* if (mi) */
       else {
         /* moved off menu, deselect selected item... */
-        if (menu->selected) { 
+        if (menu->selected) {
           SetMenuItemSelected(menu->selected,FALSE);
           if (mrPopup && fOffMenuAllowed == FALSE) {
 	    int x, y, mx, my;
 	    unsigned int mw, mh;
 	    XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 			   &x, &y, &JunkX, &JunkY, &JunkMask);
-	    XGetGeometry( dpy, menu->w, &JunkRoot, &mx, &my, 
+	    XGetGeometry( dpy, menu->w, &JunkRoot, &mx, &my,
 			  &mw, &mh, &JunkBW, &JunkDepth);
 	    if ((!IS_LEFT_MENU(mrPopup)  && x < mx)    ||
 		(!IS_RIGHT_MENU(mrPopup) && x > mx+mw) ||
@@ -973,7 +973,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   return MENU_ADD_BUTTON_IF(fKeyPress,retval);
 }
 
-static 
+static
 void WarpPointerToTitle(MenuRoot *menu)
 {
   int y = Scr.EntryHeight/2 + 2;
@@ -988,7 +988,7 @@ MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle)
   int y;
   int x = MENU_MIDDLE_OFFSET(menu);
 
-  if (fSkipTitle && IS_TITLE_MENU_ITEM(mi) && 
+  if (fSkipTitle && IS_TITLE_MENU_ITEM(mi) &&
       /* also don't skip if there is no next item */
       mi->next != NULL) {
     mi = mi->next;
@@ -1067,7 +1067,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_LALL))
       {
 	y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
-	x = Tmp_win->frame_x + Tmp_win->boundary_width + 
+	x = Tmp_win->frame_x + Tmp_win->boundary_width +
 	  ButtonPosition(Context,Tmp_win)*Tmp_win->title_height+1;
       }
     if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_RALL))
@@ -1082,7 +1082,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	if(x < Tmp_win->frame_x + Tmp_win->title_x)
 	  x = Tmp_win->frame_x + Tmp_win->title_x;
 	if((x + menu->width) >
-	   (Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width))	
+	   (Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width))
 	  x = Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width-
 	    menu->width +1;
       }
@@ -1175,7 +1175,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	x = (fUseLeft) ? left_x : right_x;
       } /* else if (USING_MWM_MENUS || USING_WIN_MENUS) */
     } /* if (x_clipped_overlap && ...) */
-    
+
     if (x < prev_x)
       menu->flags |= MENU_IS_LEFT;
     if (x + menu->width > prev_x + prev_width)
@@ -1187,7 +1187,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     if (!(menu->flags & (MENU_IS_LEFT | MENU_IS_RIGHT)))
       menu->flags |= MENU_IS_LEFT | MENU_IS_RIGHT;
   } /* if (menuPrior) */
-    
+
   /* popup the menu */
   XMoveWindow(dpy, menu->w, x, y);
   XMapRaised(dpy, menu->w);
@@ -1224,7 +1224,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     DBUG("FPopupMenu","Warping to title");
     WarpPointerToTitle(menu);
   }
-  
+
   return True;
 }
 
@@ -1287,7 +1287,7 @@ void PopDownMenu(MenuRoot *mr)
 {
   MenuItem *mi;
   assert(mr);
-  
+
   mr->flags = 0;
   XUnmapWindow(dpy, mr->w);
 
@@ -1407,18 +1407,18 @@ void PaintEntry(MenuItem *mi)
 		       ReliefGC,ShadowGC);
     RelieveHalfRectangle(mr->w, 0, y_offset, mr->width,
 			 y_height, ReliefGC, ShadowGC);
-  } 
+  }
 
   /* Draw the shadows for the absolute outside of the menus
      This stuff belongs in here, not in PaintMenu, since we only
      want to redraw it when we have too (i.e. on expose event) */
 
   /* Top of the menu */
-  if(mi == mr->first) 
+  if(mi == mr->first)
     DrawSeparator(mr->w,ReliefGC,ReliefGC,0,0, mr->width-1,0,-1);
 
   /* Botton of the menu */
-  if(mi->next == NULL) 
+  if(mi->next == NULL)
     DrawSeparator(mr->w,ShadowGC,ShadowGC,1,mr->height-2,
                   mr->width-2, mr->height-2,1);
 
@@ -1431,7 +1431,7 @@ void PaintEntry(MenuItem *mi)
 		    mr->width-3, y_offset+y_height-2);
 	  XDrawLine(dpy, mr->w, ShadowGC, mr->xoffset+2, y_offset+y_height-4,
 		    mr->width-3, y_offset+y_height-4);
-	}      
+	}
       else if (USING_WIN_MENUS || USING_FVWM_MENUS)
 	{
 	  if(mi->next != NULL)
@@ -1459,10 +1459,10 @@ void PaintEntry(MenuItem *mi)
 	DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+5,y_offset-1+HEIGHT_SEPARATOR/2,
 		      mr->width-6,y_offset-1+HEIGHT_SEPARATOR/2,1);
     }
-  if(mi->next == NULL) 
+  if(mi->next == NULL)
     DrawSeparator(mr->w,ShadowGC,ShadowGC,mr->xoffset+1,mr->height-2,
 		  mr->width-2, mr->height-2,1);
-  if(mi == mr->first) 
+  if(mi == mr->first)
     DrawSeparator(mr->w,ReliefGC,ReliefGC,mr->xoffset,0, mr->width-1,0,-1);
 
   if(check_allowed_function(mi))
@@ -1470,7 +1470,7 @@ void PaintEntry(MenuItem *mi)
     currentGC = Scr.MenuGC;
   else
     /* should be a shaded out word, not just re-colored. */
-    currentGC = Scr.MenuStippleGC;    
+    currentGC = Scr.MenuStippleGC;
 
   if (USING_WIN_MENUS && mi->state && (mi->fIsSeparator == FALSE))
     /* Use a lighter color for highlighted windows menu items for win mode */
@@ -1503,7 +1503,7 @@ void PaintEntry(MenuItem *mi)
       x = (mr->width - mi->picture->width)/2;
       if(mi->lpicture && x < mr->width0 + 5)
 	x = mr->width0+5;
-	
+
       if(mi->picture->depth > 0) /* pixmap? */
 	{
 	  Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
@@ -1531,7 +1531,7 @@ void PaintEntry(MenuItem *mi)
       int lp_offset = 6;
       if(mi->picture && *mi->item != 0)
 	y = y_offset + mi->y_height - mi->lpicture->height-1;
-      else 
+      else
 	y = y_offset + mi->y_height/2 - mi->lpicture->height/2;
       if(mi->lpicture->depth > 0) /* pixmap? */
 	{
@@ -1571,7 +1571,7 @@ void PaintSidePic(MenuRoot *mr)
     return;
 
   if(Scr.d_depth<2)
-    ReliefGC = Scr.MenuShadowGC; 
+    ReliefGC = Scr.MenuShadowGC;
   else
     ReliefGC = Scr.MenuReliefGC;
   TextGC = Scr.MenuGC;
@@ -1583,14 +1583,14 @@ void PaintSidePic(MenuRoot *mr)
     XFillRectangle(dpy, mr->w, Scr.ScratchGC1, 3, 3,
                    mr->sidePic->width, mr->height - 6);
   }
-    
+
   if(mr->sidePic->depth > 0) /* pixmap? */
     {
       Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
       Globalgcv.clip_mask = mr->sidePic->mask;
       Globalgcv.clip_x_origin = 3;
       Globalgcv.clip_y_origin = mr->height - mr->sidePic->height -3;
-      
+
       XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);
       XCopyArea(dpy, mr->sidePic->picture, mr->w,
                 ReliefGC, 0, 0,
@@ -1598,7 +1598,7 @@ void PaintSidePic(MenuRoot *mr)
                 Globalgcv.clip_x_origin, Globalgcv.clip_y_origin);
       Globalgcm = GCClipMask;
       Globalgcv.clip_mask = None;
-      XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);    
+      XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);
     } else {
       XCopyPlane(dpy, mr->sidePic->picture, mr->w,
                  TextGC, 0, 0,
@@ -1620,7 +1620,7 @@ void PaintSidePic(MenuRoot *mr)
  *
  ****************************************************************************/
 static
-void  DrawUnderline(Window w, GC gc, int x, int y, char *txt, int posn) 
+void  DrawUnderline(Window w, GC gc, int x, int y, char *txt, int posn)
 {
   int off1 = XTextWidth(Scr.StdFont.font, txt, posn);
   int off2 = XTextWidth(Scr.StdFont.font, txt, posn + 1) - 1;
@@ -1638,7 +1638,7 @@ void DrawSeparator(Window w, GC TopGC, GC BottomGC,int x1,int y1,int x2,int y2,
   XDrawLine(dpy, w, TopGC   , x1,           y1,  x2,          y2);
   XDrawLine(dpy, w, BottomGC, x1-extra_off, y1+1,x2+extra_off,y2+1);
 }
-    
+
 /****************************************************************************
  *
  *  Draws a little Triangle pattern within a window
@@ -1674,7 +1674,7 @@ void DrawTrianglePattern(Window w,GC GC1,GC GC2,GC GC3,GC gc,int l,int u,int r,i
 void PaintMenu(MenuRoot *mr, XEvent *e)
 {
   MenuItem *mi;
-  
+
   GC ReliefGC;
 
   if(Scr.d_depth<2)
@@ -1724,8 +1724,8 @@ void DestroyMenu(MenuRoot *mr)
     prev->next = mr->next;
 
   XDestroyWindow(dpy,mr->w);
-  XDeleteContext(dpy, mr->w, MenuContext);  
-  
+  XDeleteContext(dpy, mr->w, MenuContext);
+
   if (mr->sidePic)
       DestroyPicture(dpy, mr->sidePic);
 
@@ -1748,10 +1748,10 @@ void DestroyMenu(MenuRoot *mr)
 }
 
 /****************************************************************************
- * 
+ *
  * Generates the windows for all menus
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 void MakeMenus(void)
 {
   MenuRoot *mr;
@@ -1765,10 +1765,10 @@ void MakeMenus(void)
 }
 
 /****************************************************************************
- * 
+ *
  * Generates the window for a menu
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 void MakeMenu(MenuRoot *mr)
 {
   MenuItem *cur;
@@ -1814,11 +1814,11 @@ void MakeMenu(MenuRoot *mr)
   mr->width += 10;
   if(mr->width2 > 0)
     mr->width += 5;
-  
+
   /* cur_prev trails one behind cur, since we need to move that
      into a newly-made menu if we run out of space */
-  for (y=2, cItems = 0, cur = mr->first, cur_prev = NULL; 
-       cur != NULL; 
+  for (y=2, cItems = 0, cur = mr->first, cur_prev = NULL;
+       cur != NULL;
        cur_prev = cur, cur = cur->next, cItems++)
     {
       cur->mr = mr;
@@ -1831,7 +1831,7 @@ void MakeMenu(MenuRoot *mr)
 	    cur->x = (mr->width+mr->width2+mr->width0
 		      - XTextWidth(Scr.StdFont.font, cur->item,
 					     cur->strlen))/2;
-	  
+
 	  if((cur->strlen > 0)||(cur->strlen2>0))
 	    {
 	      if(USING_MWM_MENUS)
@@ -1884,7 +1884,7 @@ void MakeMenu(MenuRoot *mr)
       if (y+Scr.EntryHeight > Scr.MyDisplayHeight &&
 	  cur->next != NULL)
 	{
-	char *szMenuContinuationActionAndName = 
+	char *szMenuContinuationActionAndName =
 	  (char *) safemalloc((8+strlen(mr->name))*sizeof(char));
 	MenuRoot *menuContinuation;
 	if (mr->continuation != NULL) {
@@ -1894,7 +1894,7 @@ void MakeMenu(MenuRoot *mr)
 	strcpy(szMenuContinuationActionAndName,"Popup ");
 	strcat(szMenuContinuationActionAndName, mr->name);
 	strcat(szMenuContinuationActionAndName,"$");
-	/* NewMenuRoot inserts at the head of the list of menus 
+	/* NewMenuRoot inserts at the head of the list of menus
 	   but, we need it at the end */
 	/* (Give it just the name, with is 6 chars passed the action
 	   since strlen("Popup ")==6 ) */
@@ -1927,8 +1927,8 @@ void MakeMenu(MenuRoot *mr)
   mr->height = y+2;
   mr->flags = 0;
   mr->xanimation = 0;
-  
-#ifndef NO_SAVEUNDERS   
+
+#ifndef NO_SAVEUNDERS
   valuemask = (CWBackPixel | CWEventMask | CWCursor | CWSaveUnder);
 #else
   valuemask = (CWBackPixel | CWEventMask | CWCursor);
@@ -1936,12 +1936,12 @@ void MakeMenu(MenuRoot *mr)
   attributes.background_pixel = Scr.MenuColors.back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
   attributes.cursor = Scr.FvwmCursors[MENU];
-#ifndef NO_SAVEUNDERS   
+#ifndef NO_SAVEUNDERS
   attributes.save_under = TRUE;
 #endif
   if(mr->w != None)
     XDestroyWindow(dpy,mr->w);
- 
+
   mr->xoffset = 0;
   if(mr->sidePic) {
     mr->xoffset = mr->sidePic->width + 5;
@@ -1955,7 +1955,7 @@ void MakeMenu(MenuRoot *mr)
 			 (Visual *) CopyFromParent,
 			 valuemask, &attributes);
   XSaveContext(dpy,mr->w,MenuContext,(caddr_t)mr);
-  
+
   return;
 }
 
@@ -1985,30 +1985,30 @@ int FHotKeyUsedBefore(MenuRoot *menu, char ch) {
  * Procedure:
  *	scanForHotkeys - Look for hotkey markers in a MenuItem
  * 							(pete@tecc.co.uk)
- * 
+ *
  * Inputs:
  *	it	- MenuItem to scan
  * 	which 	- +1 to look in it->item1 and -1 to look in it->item2.
  *
  ***********************************************************************/
-char scanForHotkeys(MenuItem *it, int which) 
+char scanForHotkeys(MenuItem *it, int which)
 {
   char *start, *txt;
 
   start = (which > 0) ? it->item : it->item2;	/* Get start of string	*/
-  for (txt = start; *txt != '\0'; txt++) 
+  for (txt = start; *txt != '\0'; txt++)
     {
       /* Scan whole string	*/
-      if (*txt == '&') 
+      if (*txt == '&')
 	{		/* A hotkey marker?			*/
-	  if (txt[1] == '&') 
+	  if (txt[1] == '&')
 	    {	/* Just an escaped &			*/
 	      char *tmp;		/* Copy the string down over it	*/
 	      for (tmp = txt; *tmp != '\0'; tmp++) tmp[0] = tmp[1];
 	      continue;		/* ...And skip to the key char		*/
 	    }
 	  else {
-	    char ch = txt[1]; 
+	    char ch = txt[1];
 	    /* It's a hot key marker - work out the offset value */
 	    it->hotkey = (1 + (txt - start)) * which;
 	    for (; *txt != '\0'; txt++) txt[0] = txt[1];	/* Copy down..	*/
@@ -2021,9 +2021,9 @@ char scanForHotkeys(MenuItem *it, int which)
 }
 
 
-/* Side picture support: this scans for a color int the menu name 
+/* Side picture support: this scans for a color int the menu name
    for colorization */
-void scanForColor(char *instring, Pixel *p, Bool *c, char identifier) 
+void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
 {
   char *tstart, *txt, *save_instring;
   int i;
@@ -2036,14 +2036,14 @@ void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
   strcpy(save_instring,instring);
 
   /* Scan whole string        */
-  for (txt = instring; *txt != '\0'; txt++) 
+  for (txt = instring; *txt != '\0'; txt++)
     {
       /* A hotkey marker? */
-      if (*txt == identifier) 
+      if (*txt == identifier)
       {
         /* Just an escaped '^'  */
-        if (txt[1] == identifier) 
-          {   
+        if (txt[1] == identifier)
+          {
             char *tmp;                /* Copy the string down over it */
             for (tmp = txt; *tmp != '\0'; tmp++) tmp[0] = tmp[1];
             continue;         /* ...And skip to the key char          */
@@ -2062,7 +2062,7 @@ void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
 
         *p = GetColor(name);
         *c = True;
-        
+
         if(*txt != '\0')txt++;
         while(*txt != '\0')
           {
@@ -2075,9 +2075,9 @@ void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
     }
 }
 
-void scanForPixmap(char *instring, Picture **p, char identifier) 
+void scanForPixmap(char *instring, Picture **p, char identifier)
 {
-  char *tstart, *txt, *save_instring;
+  char *tstart, *txt;
   int i;
   Picture *pp;
   char name[100];
@@ -2086,21 +2086,23 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
   extern char *PixmapPath;
 #endif
 
+#ifdef UGLY_WHEN_PIXMAPS_MISSING
+  char *save_instring;
+
   /* save instring in case can't find pixmap */
   save_instring = (char *)safemalloc(strlen(instring)+1);
-#ifdef UGLY_WHEN_PIXMAPS_MISSING
   strcpy(save_instring,instring);
 #endif
 
   /* Scan whole string	*/
-  for (txt = instring; *txt != '\0'; txt++) 
+  for (txt = instring; *txt != '\0'; txt++)
     {
       /* A hotkey marker? */
-      if (*txt == identifier) 
+      if (*txt == identifier)
 	{
 	  /* Just an escaped &	*/
-	  if (txt[1] == identifier) 
-	    {	
+	  if (txt[1] == identifier)
+	    {
 	      char *tmp;		/* Copy the string down over it	*/
 	      for (tmp = txt; *tmp != '\0'; tmp++) tmp[0] = tmp[1];
 	      continue;		/* ...And skip to the key char		*/
@@ -2135,16 +2137,19 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	  else
 	    *p=pp;
 #else
-	  if (pp) 
+	  if (pp)
 	      *p=pp;
 	  else {
   	    fvwm_msg(WARN,"scanForPixmap","Couldn't find pixmap %s",name);
 	  }
 #endif
-          free(save_instring);
-	  return;
+	  break;
 	}
     }
+
+#ifdef UGLY_WHEN_PIXMAPS_MISSING
+  free(save_instring);
+#endif
 }
 
 /* FollowMenuContinuations
@@ -2254,7 +2259,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
     {
       start = end+1;
       while(*end != 0)
-	end++;  
+	end++;
       if(end-start != 0)
 	{
 	  tmp->item2 = safemalloc(end-start+1);
@@ -2336,14 +2341,14 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
  *
  *  Inputs:
  *	name	- the name of the menu root
- *      fFunction - non-zero if we shoot set func to F_FUNCTION, 
+ *      fFunction - non-zero if we shoot set func to F_FUNCTION,
  *                  F_POPUP otherwise
  *
  ***********************************************************************/
 MenuRoot *NewMenuRoot(char *name,int fFunction)
 {
   MenuRoot *tmp;
-  
+
   tmp = (MenuRoot *) safemalloc(sizeof(MenuRoot));
   if(fFunction != 0)
     tmp->func = F_FUNCTION;
@@ -2392,7 +2397,7 @@ int ButtonPosition(int context, FvwmWindow * t)
 {
   int i;
   int buttons = -1;
-  
+
   if (context&C_RALL) {
     for(i=0;i<Scr.nr_right_buttons;i++)
       {

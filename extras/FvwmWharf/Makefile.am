@@ -6,6 +6,7 @@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmWharf
 FvwmWharf_SOURCES = FvwmWharf.c Wharf.h icons.c stepgfx.c stepgfx.h
+FvwmWharf_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmWharf.1
 EXTRA_DIST = $(man_MANS) sample.style \

@@ -7,6 +7,25 @@
 #include <ctype.h>
 
 /***********************************************************************
+ * Generic debugging
+ ***********************************************************************/
+
+#ifndef DEBUG
+# define DB(_x)
+#else
+# ifndef __FILE__
+#  define __FILE__ "?"
+#  define __LINE__ 0
+# endif
+# define DB(_x) do{f_db_info.filenm=__FILE__;f_db_info.lineno=__LINE__;\
+                   f_db_print _x;}while(0)
+struct f_db_info { const char *filenm; unsigned long lineno; };
+extern struct f_db_info f_db_info;
+extern void f_db_print(const char *fmt, ...);
+#endif
+
+
+/***********************************************************************
  * Routines for dealing with strings
  ***********************************************************************/
 
@@ -76,7 +95,7 @@ typedef struct PictureThing
 } Picture;
 
 void InitPictureCMap(Display*,Window);
-Picture *GetPicture(Display* dpy, Window Root, char* IconPath, 
+Picture *GetPicture(Display* dpy, Window Root, char* IconPath,
 		    char* PixmapPath, char* name, int color_limit);
 Picture *CachePicture(Display*,Window,char *iconpath,
                       char *pixmappath,char*,int);

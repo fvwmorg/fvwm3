@@ -36,7 +36,7 @@ smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
 
 dnl FIXME: default value should be derived from computed path to X
 dnl includes.  Actually, this should probably not appear in configure
-dnl at all: it is settable at runtime, and only confuses the issue to 
+dnl at all: it is settable at runtime, and only confuses the issue to
 dnl have it settable here too.
 dnl
 AC_MSG_CHECKING(iconpath)
@@ -73,11 +73,11 @@ AC_ARG_WITH(cxx,
 
 if test "$with_cxx" != no; then
     if test "$with_cxx" -a "$with_cxx" != yes; then
-	CCC=$with_cxx 
+	CCC=$with_cxx
 # disable the cached value before probing
 	unset ac_cv_prog_CXX
 	AC_CHECK_PROGS(CXX, $CCC)
-	test "$CXX" || 
+	test "$CXX" ||
 	    AC_MSG_ERROR(C++ compiler given by --with-cxx not found)
     else
 	AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++)
@@ -95,7 +95,7 @@ AC_PATH_XTRA
 dnl Checking for optional libraries
 dnl Default is to use them if found; can be disable using --without
 
-smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons, 
+smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
     XpmReadFileToXpmImage, X11/xpm.h,
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS], $X_CFLAGS)
 if test "$xpm_LIBS"; then
@@ -109,13 +109,13 @@ dnl
 	FVWMCONFIG=FvwmConfig AC_SUBST(FVWMCONFIG)
     fi
 fi
-AC_SUBST(xpm_LIBS) 
+AC_SUBST(xpm_LIBS)
 AC_SUBST(xpm_CFLAGS)
 
 smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h)
 test "$rplay_LIBS" && AC_DEFINE(HAVE_RPLAY)
-AC_SUBST(rplay_LIBS) 
-AC_SUBST(rplay_CFLAGS) 
+AC_SUBST(rplay_LIBS)
+AC_SUBST(rplay_CFLAGS)
 
 dnl FIXME: should compute availability of termcap
 smr_CHECK_LIB(readline, , , readline, readline/readline.h, -ltermcap)
@@ -138,13 +138,8 @@ AC_PROG_RANLIB
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(fcntl.h limits.h malloc.h strings.h unistd.h)
+AC_CHECK_HEADERS(stdlib.h fcntl.h limits.h malloc.h string.h memory.h unistd.h)
 AC_CHECK_HEADERS(getopt.h sys/select.h sys/systeminfo.h)
-
-AC_CHECK_HEADERS(stdarg.h)
-if test $ac_cv_header_stdarg_h = no; then
-    AC_CHECK_HEADERS(varargs.h)
-fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -159,8 +154,9 @@ dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket)
-AC_CHECK_FUNCS(strdup strstr strtol sysconf uname waitpid)
+AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket waitpid)
+AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
+AC_CHECK_FUNCS(vfprintf)
 
 if test $ac_cv_func_setvbuf = yes; then
    AC_FUNC_SETVBUF_REVERSED
@@ -169,7 +165,7 @@ fi
 AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strerror usleep)
 AC_SUBST(LIBOBJS)
 
-dnl For reaping children, fvwm needs either waitpid() or wait3() 
+dnl For reaping children, fvwm needs either waitpid() or wait3()
 dnl Some extra modules may need wait4() too
 if test $ac_cv_func_waitpid = no; then
     AC_CHECK_FUNCS(wait3 wait4)
@@ -198,15 +194,15 @@ modules/FvwmTalk/Makefile modules/FvwmAudio/Makefile
 modules/FvwmIconBox/Makefile modules/FvwmSaveDesk/Makefile
 modules/FvwmAuto/Makefile modules/FvwmButtons/Makefile
 modules/FvwmIconMan/Makefile modules/FvwmCascade/Makefile
-modules/FvwmTile/Makefile 
+modules/FvwmTile/Makefile
 docs/Makefile icons/Makefile sample.fvwmrc/Makefile
 extras/Makefile textures/Makefile
 extras/FvwmCommand/Makefile extras/FvwmConfig/Makefile
 extras/FvwmConsole/Makefile extras/FvwmDebug/Makefile
 extras/FvwmGoodStuff/Makefile extras/FvwmPipe/Makefile
-extras/FvwmScript/Makefile 
-extras/FvwmScript/Scripts/Makefile 
-extras/FvwmScript/Scripts/some_nice_icons/Makefile 
+extras/FvwmScript/Makefile
+extras/FvwmScript/Scripts/Makefile
+extras/FvwmScript/Scripts/some_nice_icons/Makefile
 extras/FvwmScript/Widgets/Makefile
 extras/FvwmTaskBar/Makefile
 extras/FvwmWharf/Makefile extras/fvwmperl/Makefile

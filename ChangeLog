@@ -1,3 +1,117 @@
+1998-11-06  Paul D. Smith  <psmith@gnu.org>
+
+	* fvwm/Makefile.am (fvwm2_DEPENDENCIES): Add a dependency on libfvwm.a.
+
+	* libs/Picture.c (CachePicture): Free the pathname returned by
+	findIconFile().
+
+	* libs/fvwmlib.h (DB): New debugging/logging definitions.
+
+	* libs/debug.c: New file for a uniform debugging library.
+	* libs/Makefile.am (libfvwm_a_SOURCES): Build it.
+
+	* fvwm/fvwm.c (ResetAllButtons): Rewrote to be a bit faster.  Make
+	sure we reset the button flags in addition to the rest of the button.
+
+	* configure.in: Add missing checks for memmove(), memcpy(), and
+	strchr().  Check also for malloc.h vs. stdlib.h headers, and
+	change to positive check for string.h instead of strings.h--we
+	want to use the former where possible.  Check for vfprintf().
+
+	* acconfig.h: Rework definitions for memmove() and memcpy() (note
+	that some systems (SunOS) have memcpy() but not memmove(), so
+	check them separately).  Rework header inclusion based on
+	tried-and-true methods from GNU make's configuration.
+
+	* fvwm/menus.c (scanForPixmap): Don't define or malloc()
+	save_instring unless we're going to use it
+	(UGLY_WHEN_PIXMAPS_MISSING is defined).  Also, make sure to always
+	free it (we had a bad memory leak here).
+
+1998-11-05  Paul D. Smith  <psmith@gnu.org>
+
+	* configure.in: Check for the div() function (for extras/FvwmScript).
+	Remove check for stdarg.h; we'd need a lot fancier config to allow
+	the use of varargs.h or something else; for now assume we have it.
+
+	* fvwm/module.c (make_vpacket): New function: creates a module
+	packet from a va_list.  This is the most basic function: all
+	packet creating functions will eventually call this one to (at
+	least) fill in the header information.  This is the only place
+	that's done, now.
+	(make_packet): A variadic function that uses make_vpacket() to
+	construct the packet.
+	(SendPacket): A generic function to send a packet to a module.
+	Rewrite to be variadic instead of taking a set number of
+	arguments. Use make_vpacket() to construct the packet.
+	(BroadcastPacket): Renamed from Broadcast(), and removed
+	Broadcase_v() which is now redundant.  A variadic function to
+	broadcast a packet to all modules.  Use make_vpacket() to
+	construct the packet.  Rewrote to construct the packet first, then
+	send the same one to all modules, rather than calling SendPacket()
+	multiple times (each time reconstructing the same packet).
+	(CONFIGARGS): New macro to provide the arguments for the Config
+	packet.
+	(SendConfig): Rewrote to invoke SendPacket() passing the proper
+	config arguments (uses CONFIGARGS).
+	(BroadcastConfig): Rewrote to invoke BroadcastPacket() passing the
+	proper config arguments (uses CONFIGARGS).
+	(make_named_packet): A generic function to construct a packet
+	where the last item is a name (variable length string).  Takes a
+	name and a variable number of arguments.  Uses make_vpacket().
+	(SendName): Use make_named_packet() to construct the packet to
+	send.
+	(BroadcastName): Use make_named_packet() to construct the packet
+	to send.  Only construct it once, then send that same data to each
+	module, rather than reconstructing it each time.
+	(SendMiniIcon): Use make_named_packet() to construct the packet to
+	send.
+	(BroadcastMiniIcon): Use make_named_packet() to construct the packet
+	to send.  Only construct it once, then send that same data to each
+	module, rather than reconstructing it each time.
+	(send_list_func): Remove padding arguments from SendPacket()
+	invocations.
+
+	* fvwm/virtual.c (MoveViewport): Call new BroadcastPacket().
+	(changeDesks): Call new BroadcastPacket().
+
+	* fvwm/move.c (move_window_doit): Call new BroadcastPacket().
+
+	* fvwm/misc.c (Destroy): Call new BroadcastPacket().
+	(RaiseWindow): Call new BroadcastPacket().
+
+	* fvwm/icons.c (AutoPlace): Call new BroadcastPacket().
+	(DeIconify): Call new BroadcastPacket().
+	(Iconify): Call new BroadcastPacket().
+
+	* fvwm/events.c (HandleFocusIn): Call new BroadcastPacket().
+	(HandlePropertyNotify): Call new BroadcastPacket().
+	(HandleMapNotify): Call new BroadcastPacket().
+	(HandleConfigureRequest): Call new BroadcastPacket().
+
+	* fvwm/builtins.c (WindowShade): Call new BroadcastPacket().
+	(SetDeskSize): Call new BroadcastPacket().
+
+	Fix errors found by Purify:
+
+	* fvwm/module.c (SendName): Zero out the end of the message to
+	avoid uninitialized memory reads.
+
+	* fvwm/decorations.c (GetOlHints): Don't free(NULL).  This is OK
+	in ANSI C, but it's not completely portable.
+
+	* libs/Picture.c (CachePicture): Don't look past the end of
+	allocated memory.
+	(LoadPicture): Free pixmaps when we're done with them.
+
+	* fvwm/builtins.c (SetMenuStyle): Free a previous font if it exists.
+	(LoadIconFont): Same.
+	(LoadWindowFont): Same.
+
+	* fvwm/fvwm.c (InitVariables): Initialize Scr.IconFont.
+	(InitFvwmDecor): Set TitleHeight and the font pointer since
+	otherwise they might be used uninitialized (in LoadWindowFont).
+
 1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* libs/XResource.c (MergeCmdLineResources): DEC's compiler claims
@@ -40,7 +154,7 @@
 	* libs/strerror.c:
 	* libs/usleep.c:
 	* libs/strcasecmp.c:
-	* libs/strncasecmp.c: 
+	* libs/strncasecmp.c:
 
 	* libs/Makefile.am: Added the above files.  Each file is compiled
 	into libfvwm only if the system libraries are missing the
@@ -81,35 +195,18 @@
 	* fvwm/menus.c (MenuInteraction): Don't try to call
 	GetPopupOptions() until we know we're looking at a popup menu.
 
-	* libs/Picture.c (LoadPicture): Free pixmaps after we create and
-	translate them and they're no longer needed.
-
 	* fvwm/misc.c (GetOneMenuPositionArgument): If the returned token
 	is an empty string, don't try to parse it.
 
-	* fvwm/module.c (SendName): Zero out the end of the array to avoid
-	uninitialized mem access.
-
-	* libs/Picture.c (CachePicture): Don't look past the end of
-	allocated memory.  If someone proves that this function is slowing
-	down fvwm using some hard profiling, then we can revisit, but in
-	the absence of this information it's not worth the risk.
-
-	* fvwm/decorations.c (GetOlHints): Don't free(NULL).  This is OK
-	under ANSI, but not portable.
-
-	* fvwm/fvwm.c (InitFvwmDecor): Initialize the TitleHeight field to
-	0; otherwise we may use it before it's set (in LoadWindowFont).
-
 1998-11-04  Dominik Vogt <dominik_vogt@hp.com>
 
-	* fvwm/fvwm2.1: 
-	* fvwm/builtins.c (stick_function): 
+	* fvwm/fvwm2.1:
+	* fvwm/builtins.c (stick_function):
 	* fvwm/move.c (move_window_doit):
 	Change for 'Stick' to allow to make windows sticky that are on
 	a different screen.
 
-	* modules/FvwmAudio/FvwmAudio.c: 
+	* modules/FvwmAudio/FvwmAudio.c:
 	* modules/FvwmEvent/FvwmEvent.c: Fixed rplay build problem
 
 	* modules/FvwmEvent/Makefile.in (mkinstalldirs):
@@ -182,7 +279,7 @@ Sun Nov  1 12:52:59 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Sun Nov  1 12:26:01 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* modules/FvwmM4/FvwmM4.c (m4_defs): 
+	* modules/FvwmM4/FvwmM4.c (m4_defs):
 	* modules/FvwmCpp/FvwmCpp.c (cpp_defs): Split FVWMDIR definition
 	into FVWM_MODULEDIR and FVWM_CONFIGDIR.
 
@@ -208,7 +305,7 @@ Sat Oct 31 06:44:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Sat Oct 31 06:02:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* modules/FvwmCpp: 
+	* modules/FvwmCpp:
 	* modules/FvwmM4: Changed FVWMDIR to FVWM_MODULEDIR.
 
 Hey XEmacs, this is -*-text-*- mode
@@ -252,7 +349,7 @@ Hey XEmacs, this is -*-text-*- mode
             maxmimum number of colors fvwm can use for pixmaps from Dan Espen.
 	22. Applied DontFocusOffscreen patch.
 	23. Added StipledTitles globalopt.
-	24. Fix to fvwmrc_convert from Pete Forman. 
+	24. Fix to fvwmrc_convert from Pete Forman.
 	25. Added FvwmEvent module (successor to FvwmAudio). Added notice to
 	    FvwmAudio manpage to start using FvwmEvent.
 	26. Added a usleep() for machines which don't have them. Set
@@ -323,7 +420,7 @@ Hey XEmacs, this is -*-text-*- mode
        17. GetDecor SCO CPP patch from Andrew
        18. Patch from Andrew for MWM buttons functions problems
        19. Fix from Dave Goldberg for NoTitle & MiniIcon conflict
-       20. Move/Resize frame drawing bug patch from Makoto Matsushita 
+       20. Move/Resize frame drawing bug patch from Makoto Matsushita
        21. Patch to FlipFocus (under MouseFocus) from Markus Gutschke
        22. Added patch from Rob Whapham/Thimo Jansen for FvwmPager
            miniicons (plus small enhancements)
@@ -568,10 +665,10 @@ Hey XEmacs, this is -*-text-*- mode
            buttons correctly, though.
        28. Updates to FvwmIconMan from Brady Montz.
        29. Updates to FvwmIconBox from Nobutaka Suzuki.
-       30. Patch from Austin Donnelly for multi-keypress required for 
+       30. Patch from Austin Donnelly for multi-keypress required for
            WindowList problem.
        31. Patch to center text on left pixmaps in menus.
-       32. Patch to allow menus to pop up left if not enough room on right 
+       32. Patch to allow menus to pop up left if not enough room on right
            (currently in ifdef -> define LEFT_MENUS to enable when compiling).
 
 2.0.42
@@ -744,32 +841,32 @@ pl 33 to 34
        1. Applied patches from Frederic Devernay
 	          a. Improved reading of window and icon names
 		  b. improved handling of windows with no class.
-	
+
 pl 32 to 33
        1. More fixes to move/resize window when using m4.
        2. Added Sloppy Focus to FvwmConfig. Made FvwmConfig obtain initial
 	  focus mode from fvwm.
        3. Add SCREEN macro to fvwmm4.
        4. Applied FvwmWinList patches.
-	
+
 pl 31 to 32
        1. Fixed color specification problem for ForeColor and BackCOlor
 	  styles, so things like rgb:rr/gg/bb work again.
        2. Made MWMMenus style take effect on the Size/Resize window
 	  even when using M4. Color selection of the Size/Resize window
 	  is still broken.
-	
+
 pl 30 to 31
        1. Added patch to make FvwmButtons and FvwmPager accept -0
           geometries.
        2. Added code to FvwmConfig to make it read in current values for
 	  colors and desktop sizes as it starts up. Made it handle case
-	  of no more colors in colormap. 
-	
-	
+	  of no more colors in colormap.
+
+
 pl 29 to 30
        1. Added color selection to fvwmconfig
-	
+
 pl 28 to 29
        1. Fixed problem of lost root window key bindings with FvwmM4
        2. Minor adjustments to FvwmConfig. Included a makefile. Compiles
@@ -778,10 +875,10 @@ pl 27 to 28
        1. Patch to FvwmButtons to fix the button-popping out problem.
        1. Added FvwmConfig. Requires g++ version 2.6.3 or thereabouts.
 	  not automatically built or installed. Do it yourself.
-	
+
 pl 26 to 27
        1. Minor fix to FvwmScroll affecting handling of window resizes.
-       2. Fixed core-dump problem (maybe) in pl26	
+       2. Fixed core-dump problem (maybe) in pl26
 pl 25 to 26
        1. Corlormap handling bug fix.
        2. Finally, after years and years of saying, "thats not a
@@ -796,7 +893,7 @@ pl 24 to 25
 	   - Something about usign pager on B&W  display.
 	   - stuff for FvwmIconBox
 	   - stuff for FvwmWinList
-	
+
 pl 23 to 24
        1. Man page updates for style function
        2. Added stuff to over-ride motif modal dialogs. Makes apps
@@ -846,7 +943,7 @@ pl 16 to 17
 	  problems. Also, if WABI comes up with a private colormap, it
 	  is given control of the colormap immediately, since it thinks
 	  that it should have focus.
-	  
+
 pl 15 to 16
        1. Applied patch to make menu short cuts work
        2. Made this menu config work as expected:
@@ -883,7 +980,7 @@ pl 12 to pl 13
 
        1. Added FvwmForm module. It looks like its for 1.24r, but seems
           to work with Fvwm-2.
-       2. Tried to add Tom Feng's GoodStuff patches, but they are 
+       2. Tried to add Tom Feng's GoodStuff patches, but they are
           incompatible with other changes.
 
 pl 11 to pl 12
@@ -897,12 +994,12 @@ pl 10 to pl 11
 	  a window.
        2. Plugged a memory leak (?) in builtins.c. Watch out, maybe I
           broke something instead of fixing it. Not sure.
-       
-       
+
+
 pl 9 to pl 10
        1. Fixed double click on title-button 1 problem. It used to work,
           but only if the mouse was not moved at all. Now, 3 pixels of
-	  mouse movement are allowed, and the double-click action will 
+	  mouse movement are allowed, and the double-click action will
 	  still be performed. After 3 pixels, the double click action is
 	  aborted.
        2. Fixed problem with focus in focus-follows-mouse mode, when
@@ -916,8 +1013,8 @@ pl 9 to pl 10
 	  focus when switching desks, when I really wanted the root window
 	  to get the focus (for keyboard activated menus, etc).
        3. Added a DestroyMenu function.
-	  
-       
+
+
 pl 8 to 9
        1. Fixed misc bugs.
               A. Menus popped up in wrong place when NoButton style was
@@ -958,9 +1055,9 @@ pl2 to 3
           to handle within the program. Modified documentation and the
 	  install stuff in the Imakefile
        5. Fiddled with time-stamp stuff a bit, so that maybe when people
-          change their system clocks, it won't cause everything to stop.  
+          change their system clocks, it won't cause everything to stop.
        6. Fixed a cause of core-dumps in the Next, Prev, None commands.
-       
+
 pl1 to pl2
        1. Assorted trivial bug fixes. Maybe something important too,
           I forgot.
@@ -973,6 +1070,6 @@ pl1 to pl2
        see documentation/modules.tex for more details.
 
        3. Added FvwmM4 module. See its man page.
-       4. Added FvwmCpp module.       
+       4. Added FvwmCpp module.
 
 2.0 The beginning of time.

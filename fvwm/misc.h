@@ -35,8 +35,8 @@ typedef struct name_list_struct
   int PageX;
   int PageY;
 /**/
-  unsigned long on_flags; 
-  unsigned long off_flags; 
+  unsigned long on_flags;
+  unsigned long off_flags;
   int border_width;
   int resize_width;
   char *ForeColor;
@@ -194,7 +194,7 @@ extern void       DrawIconWindow(FvwmWindow *);
 extern void       CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
 
 
-extern inline void RelieveWindow(FvwmWindow *, Window, 
+extern inline void RelieveWindow(FvwmWindow *, Window,
 				      int, int, int, int, GC, GC, int);
 extern inline void RelieveWindowHH(FvwmWindow *,Window,
 					int,int,int,int, GC,GC, int, int);
@@ -253,23 +253,15 @@ extern void       GetIconBitmap(FvwmWindow *tmp_win);
 extern int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y, int pdeltax, int pdeltay);
 /**/
 extern void usage(void);
-void Broadcast_v(unsigned long event_type, unsigned long num_datum,...);
-void Broadcast(unsigned long event_type, unsigned long num_datum,
-	       unsigned long data1, unsigned long data2, 
-	       unsigned long data3, unsigned long data4,
-	       unsigned long data5, unsigned long data6, 
-	       unsigned long data7);
-void BroadcastConfig(unsigned long event_type, FvwmWindow *t);
-void SendPacket(int channel, unsigned long event_type, unsigned long num_datum,
-		unsigned long data1, unsigned long data2, 
-		unsigned long data3, unsigned long data4,
-		unsigned long data5, unsigned long data6, 
-		unsigned long data7);
-void SendConfig(int Module, unsigned long event_type, FvwmWindow *t);
+void BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...);
+void SendPacket(int channel, unsigned long event_type,
+                unsigned long num_datum, ...);
+void BroadcastConfig(unsigned long event_type, const FvwmWindow *t);
+void SendConfig(int Module, unsigned long event_type, const FvwmWindow *t);
 void BroadcastName(unsigned long event_type, unsigned long data1,
-		   unsigned long data2, unsigned long data3, char *name);
-void SendName(int channel, unsigned long event_type,unsigned long data1,
-	      unsigned long data2, unsigned long data3, char *name);
+		   unsigned long data2, unsigned long data3, const char *name);
+void SendName(int channel, unsigned long event_type, unsigned long data1,
+	      unsigned long data2, unsigned long data3, const char *name);
 void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
                      unsigned long context, char *action,int* Module);
 void DeadPipe(int nonsense);

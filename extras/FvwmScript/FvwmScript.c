@@ -58,7 +58,7 @@ extern void InitCom();
 void Debug()
 {
  int i,j;
- 
+
  for (j=1;j<=nbobj;j++)
   for (i=0;i<=TabCObj[TabIdObj[j]].NbCase;i++)
   {
@@ -77,7 +77,7 @@ void ReadConfig (char *ScriptName)
 
   sprintf(s,"%s/%s",ScriptPath,ScriptName);
   yyin=fopen(s,"r");
-  if (yyin == NULL) 
+  if (yyin == NULL)
   {
    fprintf(stderr,"Can't open the script %s",s);
    exit(1);
@@ -109,7 +109,7 @@ void ParseOptions(void)
       {
 	CopyString(&pixmapPath,&tline[10]);
       }
-      
+
       if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*FvwmScriptPath",15)==0))
       {
 	CopyString(&ScriptPath,&tline[15]);
@@ -132,7 +132,7 @@ void Xinit(int IsFather)
 #endif
 
  x11base->display=XOpenDisplay(NULL);
- if (x11base->display==NULL) 
+ if (x11base->display==NULL)
  {
   fprintf(stderr,"Enable to open display.\n");
   exit(1);
@@ -178,19 +178,19 @@ void LoadIcon(struct XObj *xobj)
  if ((xobj->icon)!=NULL)
  {
   path = (char*)findIconFile(xobj->icon, pixmapPath,4);
-  if(path == NULL)return;  
+  if(path == NULL)return;
   XGetWindowAttributes(xobj->display,RootWindow(xobj->display,DefaultScreen(xobj->display)),&root_attr);
   xpm_attributes.colormap = root_attr.colormap;
   xpm_attributes.valuemask = XpmSize | XpmReturnPixels|XpmColormap;
   if(XpmReadFileToPixmap(xobj->display, RootWindow(xobj->display,DefaultScreen(xobj->display)),
   			 path,
 			 &xobj->iconPixmap,
-			 &xobj->icon_maskPixmap, 
-			 &xpm_attributes) == XpmSuccess) 
-    { 
+			 &xobj->icon_maskPixmap,
+			 &xpm_attributes) == XpmSuccess)
+    {
       xobj->icon_w = xpm_attributes.width;
       xobj->icon_h = xpm_attributes.height;
-    } 
+    }
     else
     {
      fprintf(stderr,"Enable to load pixmap %s\n",xobj->icon);
@@ -243,7 +243,7 @@ void OpenWindow ()
  mask=0;
  mask|=CWBackPixel;
  Attr.background_pixel=x11base->TabColor[back].pixel;
- 
+
  x11base->win=XCreateWindow(x11base->display,
 			DefaultRootWindow(x11base->display),
 			x11base->size.x,
@@ -262,7 +262,7 @@ void OpenWindow ()
  XSelectInput(x11base->display,x11base->win,KeyPressMask|ButtonPressMask|
 	ExposureMask|ButtonReleaseMask|EnterWindowMask|LeaveWindowMask|ButtonMotionMask);
  XSelectInput(x11base->display,x11base->root,PropertyChangeMask);
- 
+
  /* Specification des parametres utilises par le gestionnaire de fenetre */
  if (XStringListToTextProperty(&x11base->title,1,&Name)==0)
   fprintf(stderr,"Can't use icon name\n");
@@ -288,7 +288,7 @@ void OpenWindow ()
  XSetWMProperties(x11base->display,x11base->win,&Name,
        &Name,NULL,0,IndicNorm,IndicWM,NULL);
  Scrapt=(char*)calloc(sizeof(char),1);
- 
+
  /* Construction des atomes pour la communication inter-application */
  propriete=XInternAtom(x11base->display,"Prop_selection",False);
  wm_del_win = XInternAtom(x11base->display,"WM_DELETE_WINDOW",False);
@@ -446,7 +446,7 @@ void BuildGUI(int IsFather)
 /***********************************************/
 void SendMsg(struct XObj *xobj,int TypeMsg)
 {
- int i; 
+ int i;
 
  for (i=0;i<=TabCObj[TabIdObj[xobj->id]].NbCase;i++)
   if (TabCObj[TabIdObj[xobj->id]].LstCase[i]==TypeMsg)
@@ -502,7 +502,7 @@ void SendMsgToScript(XEvent event)
    evnt_sel.xselection.property=None;
   }
   XSendEvent(x11base->display,evnt_sel.xselection.requestor,False,0,&evnt_sel);
- } 
+ }
 }
 
 /* read an X event */
@@ -511,7 +511,7 @@ void ReadXServer ()
  static XEvent event,evnt_sel;
  int i;
  char *octet;
- 
+
   while (XEventsQueued(x11base->display, QueuedAfterReading))
   {
     XNextEvent(x11base->display, &event);
@@ -555,7 +555,7 @@ void ReadXServer ()
 	  break;
       case SelectionRequest:
            if (event.xselectionrequest.selection==XA_PRIMARY)
-           { 
+           {
             evnt_sel.type=SelectionNotify;
             evnt_sel.xselection.requestor=event.xselectionrequest.requestor;
             evnt_sel.xselection.selection=event.xselectionrequest.selection;
@@ -658,7 +658,7 @@ void MainLoop ()
    ExecBloc(x11base->periodictasks);
  }
 }
-    
+
 void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
 {
  int i;
@@ -666,7 +666,7 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
  int FisrtArg;
 
  BuffSend.NbMsg=0;			/* Aucun message dans le buffer */
- 
+
  for (i=2;i<98;i++)
   x11base->TabScriptId[i]=NULL;
 
@@ -701,13 +701,13 @@ int main (int argc, char **argv)
    IsFather=(argv[7][0]!=(char)161);
   else
    IsFather=1;
-    
 
-  signal (SIGPIPE, DeadPipe);  
+
+  signal (SIGPIPE, DeadPipe);
   signal (SIGINT, DeadPipe);  /* cleanup on other ways of closing too */
-  signal (SIGHUP, DeadPipe);  
-  signal (SIGQUIT, DeadPipe);  
-  signal (SIGTERM, DeadPipe);  
+  signal (SIGHUP, DeadPipe);
+  signal (SIGQUIT, DeadPipe);
+  signal (SIGTERM, DeadPipe);
 
   if (argc < 6)
   {
@@ -722,7 +722,7 @@ int main (int argc, char **argv)
    if (ref == 0) ref = None;
    fd[0] = atoi(argv[1]);
    fd[1] = atoi(argv[2]);
-   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST| 
+   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST|
 		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
 		 M_END_CONFIG_INFO| M_WINDOW_NAME);
 
@@ -733,14 +733,14 @@ int main (int argc, char **argv)
     x11base->TabArg[i-7+IsFather]=argv[i];
 
   }
-  else 
+  else
   {
     fprintf(stderr,"%s requires only the path of the script.\n", ModuleName);
     exit(1);
   }
 
  ParseOptions();
- 
+
  SendText(fd,"Send_WindowList",0);
 
  ReadConfig(ScriptName);	/* Lecture et analyse du script */

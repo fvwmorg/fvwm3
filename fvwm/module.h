@@ -84,10 +84,10 @@ extern struct queue_buff_struct **pipeQueue;
 void KillModuleByName(char *name);
 void AddToModList(char *tline);
 void BroadcastMiniIcon(unsigned long event_type,
-		       unsigned long data1, unsigned long data2, 
+		       unsigned long data1, unsigned long data2,
 		       unsigned long data3, unsigned long data4,
 		       unsigned long data5, unsigned long data6,
 		       unsigned long data7, unsigned long data8,
-		       char *name);
+		       const char *name);
 
 #endif /* MODULE_H */

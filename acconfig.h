@@ -32,7 +32,7 @@
  * Shaped window extensions seem to increase the window managers RSS
  * by about 60 Kbytes. They provide for leaving a title-bar on the window
  * without a border.
- * If you don't use shaped window extension, you can either make your 
+ * If you don't use shaped window extension, you can either make your
  * shaped windows undecorated, or live with a border and backdrop around
  * all your shaped windows (oclock, xeyes)
  *
@@ -59,7 +59,7 @@
  * button state as "Inactive."  If not defined, the "ActiveUp" state
  * is used instead.  Disabling this reduces memory usage.  */
 #undef INACTIVE_BTNS
-  
+
 /* Enables the "MiniIcon" Style option to specify a small pixmap which
  * can be used as one of the title-bar buttons, shown in window list,
  * utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined
@@ -127,16 +127,30 @@
 
 @BOTTOM@
 
-#if STDC_HEADERS
+#ifdef STDC_HEADERS
+#  include <stdlib.h>
 #  include <string.h>
 #else
-#  if ! HAVE_STRCHR
-#    define strchr index
-#    define strrchr rindex
+#  ifdef HAVE_STRING_H
+#    include <string.h>
+#  else
+#    include <strings.h>
+#  endif
+#  ifdef HAVE_MEMORY_H
+#    include <memory.h>
+#  endif
+#  ifdef HAVE_STDLIB_H
+#    include <stdlib.h>
+#  endif
+#  ifndef HAVE_STRCHR
+#    define strchr(_s,_c)   index((_s),(_c))
+#    define strrchr(_s,_c)  rindex((_s),(_c))
 #  endif
 #endif
 
-#if ! HAVE_MEMCPY
-#  define memcpy(dest,src,len)  bcopy((src),(dest),(len))
-#  define memmove(dest,src,len) bcopy((src),(dest),(len))
+#ifndef HAVE_MEMCPY
+#  define memcpy(_d,_s,_l)  bcopy((_s),(_d),(_l))
+#endif
+#ifndef HAVE_MEMMOVE
+#  define memmove(_d,_s,_l) bcopy((_s),(_d),(_l))
 #endif

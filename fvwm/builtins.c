@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -76,19 +76,19 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
     XBell(dpy, 0);
     return True;
   }
-  
+
   while (!finished)
   {
     done = 0;
     /* block until there is an event */
     XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
                ExposureMask |KeyPressMask | VisibilityChangeMask |
-               ButtonMotionMask| PointerMotionMask/* | EnterWindowMask | 
+               ButtonMotionMask| PointerMotionMask/* | EnterWindowMask |
                                                      LeaveWindowMask*/, eventp);
     StashEventTime(eventp);
 
     if(eventp->type == KeyPress)
-      Keyboard_shortcuts(eventp,FinishEvent);	
+      Keyboard_shortcuts(eventp,FinishEvent);
     if(eventp->type == FinishEvent)
       finished = 1;
     if(eventp->type == ButtonPress)
@@ -100,7 +100,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
       done = 1;
     if(eventp->type == KeyPress)
       done = 1;
-      
+
     if(!done)
     {
       DispatchEvent();
@@ -108,7 +108,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
 
   }
 
-  
+
   *w = eventp->xany.window;
   if(((*w == Scr.Root)||(*w == Scr.NoFocusWin))
      && (eventp->xbutton.subwindow != (Window)0))
@@ -136,7 +136,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
 
   if(original_w == (*tmp_win)->Parent)
     original_w = (*tmp_win)->w;
-  
+
   /* this ugly mess attempts to ensure that the release and press
    * are in the same window. */
   if((*w != original_w)&&(original_w != Scr.Root)&&
@@ -149,9 +149,9 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
       UngrabEm();
       return TRUE;
     }
-  
+
   *context = GetContext(*tmp_win,eventp,&dummy);
-  
+
   UngrabEm();
   return FALSE;
 }
@@ -161,7 +161,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
 
 /**************************************************************************
  *
- * Moves focus to specified window 
+ * Moves focus to specified window
  *
  *************************************************************************/
 void FocusOn(FvwmWindow *t,int DeIconifyOnly)
@@ -230,10 +230,10 @@ void FocusOn(FvwmWindow *t,int DeIconifyOnly)
 }
 
 
-   
+
 /**************************************************************************
  *
- * Moves pointer to specified window 
+ * Moves pointer to specified window
  *
  *************************************************************************/
 void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
@@ -281,7 +281,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
       x = t->frame_x + warp_x;
     else
       x = t->frame_x + (t->frame_width - 1) * warp_x / 100;
-    if (y_unit != Scr.MyDisplayHeight) 
+    if (y_unit != Scr.MyDisplayHeight)
       y = t->frame_y + warp_y;
     else
       y = t->frame_y + (t->frame_height - 1) * warp_y / 100;
@@ -303,7 +303,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 }
 
 
-   
+
 /***********************************************************************
  *
  *  Procedure:
@@ -321,7 +321,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(tmp_win == NULL)
     return;
-  
+
   if(check_allowed_function2(F_MAXIMIZE,tmp_win) == 0
 #ifdef WINDOWSHADE
      || (tmp_win->buttons & WSHADE)
@@ -349,7 +349,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
   else
   {
-    new_width = tmp_win->frame_width;      
+    new_width = tmp_win->frame_width;
     new_height = tmp_win->frame_height;
     new_x = tmp_win->frame_x;
     new_y = tmp_win->frame_y;
@@ -383,7 +383,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  *  WindowShade -- shades or unshades a window (veliaa@rpi.edu)
  *
  *  Args: 1 -- force shade, 2 -- force unshade  No Arg: toggle
- * 
+ *
  ***********************************************************************/
 void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 unsigned long context, char *action, int *Module)
@@ -405,13 +405,13 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
 	tmp_win->buttons &= ~WSHADE;
 	SetupFrame(tmp_win,
-		   tmp_win->frame_x, 
-		   tmp_win->frame_y, 
+		   tmp_win->frame_x,
+		   tmp_win->frame_y,
 		   tmp_win->orig_wd,
 		   tmp_win->orig_ht,
 		   True);
-        Broadcast(M_DEWINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
-                  (unsigned long)tmp_win, 0, 0, 0, 0);
+        BroadcastPacket(M_DEWINDOWSHADE, 3,
+                        tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
     }
     else
     {
@@ -422,8 +422,8 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   tmp_win->frame_width,
 		   tmp_win->title_height + tmp_win->boundary_width,
 		   False);
-        Broadcast(M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
-                  (unsigned long)tmp_win, 0, 0, 0, 0);
+        BroadcastPacket(M_WINDOWSHADE, 3,
+                        tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
     }
 }
 #endif /* WINDOWSHADE */
@@ -439,7 +439,7 @@ MenuRoot *FindPopup(char *action)
   MenuRoot *mr;
 
   GetNextToken(action,&tmp);
-  
+
   if(tmp == NULL)
     return NULL;
 
@@ -456,11 +456,11 @@ MenuRoot *FindPopup(char *action)
   }
   free(tmp);
   return NULL;
-    
+
 }
 
-      
-  
+
+
 void Bell(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
 	  char *action, int *Module)
 {
@@ -495,7 +495,7 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   AddToMenu(mr, item,rest,TRUE /* pixmap scan */, TRUE);
   free(item);
-  
+
   MakeMenu(mr);
   return;
 }
@@ -518,10 +518,10 @@ void add_another_item(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       if(mr == NULL)
 	  return;
       rest = GetNextToken(action,&item);
-      
+
       AddToMenu(mr, item,rest,TRUE /* pixmap scan */, FALSE);
       free(item);
-      
+
       MakeMenu(mr);
   }
 #ifdef USEDECOR
@@ -578,10 +578,10 @@ void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   AddToMenu(mr, item,rest,FALSE,FALSE);
   free(item);
-  
+
   return;
 }
-  
+
 
 void Nop_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
               char *action, int *Module)
@@ -619,7 +619,7 @@ void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long contex
   if(y>= Scr.MyDisplayHeight -2)
   {
     delta_y = Scr.EdgeScrollY;
-    warp_y = Scr.EdgeScrollY - 4;      
+    warp_y = Scr.EdgeScrollY - 4;
   }
   if(x < 2)
   {
@@ -642,13 +642,13 @@ void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long contex
   if((delta_x!=0)||(delta_y!=0))
   {
     MoveViewport(Scr.Vx + delta_x,Scr.Vy+delta_y,True);
-    XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth, 
-                 Scr.MyDisplayHeight, 
+    XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+                 Scr.MyDisplayHeight,
                  x - warp_x,
                  y - warp_y);
   }
 #endif
-  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth, 
+  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 	       Scr.MyDisplayHeight, x + val1*val1_unit/100-warp_x,
 	       y+val2*val2_unit/100 - warp_y);
 }
@@ -661,7 +661,7 @@ void iconify_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int val1;
   int val1_unit,n;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT, 
+  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,
 		     ButtonRelease))
     return;
 
@@ -691,7 +691,7 @@ void raise_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
-      
+
   if(tmp_win)
     RaiseWindow(tmp_win);
 
@@ -709,7 +709,7 @@ void lower_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
 
   LowerWindow(tmp_win);
-  
+
   tmp_win->flags &= ~ONTOP;
 }
 
@@ -724,7 +724,7 @@ void destroy_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     XBell(dpy, 0);
     return;
   }
-  
+
   if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
 		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
     Destroy(tmp_win);
@@ -744,7 +744,7 @@ void delete_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     XBell(dpy, 0);
     return;
   }
-  
+
   if (tmp_win->flags & DoesWmDeleteWindow)
   {
     send_clientmessage (dpy, tmp_win->w, _XA_WM_DELETE_WINDOW, CurrentTime);
@@ -766,7 +766,7 @@ void close_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     XBell(dpy, 0);
     return;
   }
-  
+
   if (tmp_win->flags & DoesWmDeleteWindow)
   {
     send_clientmessage (dpy, tmp_win->w, _XA_WM_DELETE_WINDOW, CurrentTime);
@@ -778,7 +778,7 @@ void close_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   else
     XKillClient(dpy, tmp_win->w);
   XSync(dpy,0);
-}      
+}
 
 void restart_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context, char *action, int *Module)
@@ -1116,7 +1116,7 @@ void raiselower_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   if(tmp_win == NULL)
     return;
-  
+
   if((tmp_win == Scr.LastWindowRaised)||
      (tmp_win->flags & VISIBLE))
   {
@@ -1150,7 +1150,7 @@ void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   ** if edgescroll >1000 and < 100000m
   ** wrap at edges of desktop (a "spherical" desktop)
   */
-  if (val1 >= 1000) 
+  if (val1 >= 1000)
   {
     val1 /= 1000;
     Scr.flags |= EdgeWrapX;
@@ -1159,7 +1159,7 @@ void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     Scr.flags &= ~EdgeWrapX;
   }
-  if (val2 >= 1000) 
+  if (val2 >= 1000)
   {
     val2 /= 1000;
     Scr.flags |= EdgeWrapY;
@@ -1179,7 +1179,7 @@ void SetEdgeResistance(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                        unsigned long context, char *action,int* Module)
 {
   int val1, val2, val1_unit,val2_unit,n;
-  
+
   n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
   if(n != 2)
   {
@@ -1293,7 +1293,8 @@ void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     Scr.VxMax = 0;
   if(Scr.VyMax <0)
     Scr.VyMax = 0;
-  Broadcast(M_NEW_PAGE,5,Scr.Vx,Scr.Vy,Scr.CurrentDesk,Scr.VxMax,Scr.VyMax,0,0);
+  BroadcastPacket(M_NEW_PAGE, 5,
+                  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
   checkPanFrames();
 }
@@ -1365,7 +1366,7 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #else
   FvwmDecor *fl = &Scr.DefaultDecor;
 #endif
-  
+
   action = GetNextToken(action,&hifore);
   GetNextToken(action,&hiback);
   if(Scr.d_depth > 2)
@@ -1384,11 +1385,11 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   else
   {
     fl->HiColors.back  = GetColor(white);
-    fl->HiColors.fore  = GetColor(black); 
+    fl->HiColors.fore  = GetColor(black);
     fl->HiRelief.back  = GetColor(black);
     fl->HiRelief.fore  = GetColor(white);
   }
-  if (hifore) free(hifore); 
+  if (hifore) free(hifore);
   if (hiback) free(hiback);
   gcm = GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth|GCForeground|
     GCBackground;
@@ -1403,7 +1404,7 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     XFreeGC(dpy,fl->HiReliefGC);
   }
-  fl->HiReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
+  fl->HiReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
   gcv.foreground = fl->HiRelief.back;
   gcv.background = fl->HiRelief.fore;
@@ -1411,7 +1412,7 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     XFreeGC(dpy,fl->HiShadowGC);
   }
-  fl->HiShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
+  fl->HiShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
   if((Scr.flags & WindowsCaptured)&&(Scr.Hilite != NULL))
   {
@@ -1497,7 +1498,7 @@ void CursorStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     {
       SafeDefineCursor(fw->right_w[i],Scr.FvwmCursors[SYS]);
     }
-    SafeDefineCursor(fw->title_w, Scr.FvwmCursors[TITLE_CURSOR]);      
+    SafeDefineCursor(fw->title_w, Scr.FvwmCursors[TITLE_CURSOR]);
     fw = fw->next;
   }
 
@@ -1591,23 +1592,25 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     Scr.MenuRelief.back  = GetShadow(Scr.MenuColors.back);
     Scr.MenuRelief.fore  = GetHilite(Scr.MenuColors.back);
     Scr.MenuStippleColors.back = Scr.MenuColors.back;
-    Scr.MenuStippleColors.fore = GetColor(stipple); 
+    Scr.MenuStippleColors.fore = GetColor(stipple);
   }
   else
   {
     Scr.MenuColors.back  = GetColor(white);
-    Scr.MenuColors.fore  = GetColor(black); 
+    Scr.MenuColors.fore  = GetColor(black);
     Scr.MenuRelief.back  = GetColor(black);
     Scr.MenuRelief.fore  = GetColor(white);
     Scr.MenuStippleColors.back = GetColor(white);
     Scr.MenuStippleColors.fore = GetColor(black);
   }
 
+  if (Scr.StdFont.font != NULL)
+    XFreeFont(dpy, Scr.StdFont.font);
   if ((font == NULL)||
       (Scr.StdFont.font = GetFontOrFixed(dpy, font)) == NULL)
   {
     fvwm_msg(ERR,"SetMenuStyle","Couldn't load font '%s' or 'fixed'\n",
-            (font==NULL)?("NULL"):(font));
+             (font==NULL)?("NULL"):(font));
     exit(1);
   }
   Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
@@ -1628,7 +1631,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     XFreeGC(dpy,Scr.MenuReliefGC);
   }
-  Scr.MenuReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
+  Scr.MenuReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
   gcv.foreground = Scr.MenuRelief.back;
   gcv.background = Scr.MenuRelief.fore;
@@ -1636,7 +1639,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     XFreeGC(dpy,Scr.MenuShadowGC);
   }
-  Scr.MenuShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);  
+  Scr.MenuShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
   gcv.foreground = Scr.MenuColors.fore;
   gcv.background = Scr.MenuColors.back;
   if(Scr.MenuGC != NULL)
@@ -1651,7 +1654,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     gcm=GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth|GCForeground|
       GCBackground|GCFont|GCStipple|GCFillStyle;
     Scr.MenuStippleGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-      
+
     gcm=GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth|GCForeground|
       GCBackground|GCFont;
     gcv.fill_style = FillSolid;
@@ -1680,7 +1683,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       XMoveResizeWindow(dpy,Scr.SizeWindow,0, 0, wid,hei);
     }
   }
-  
+
 
   if(Scr.SizeWindow != None)
   {
@@ -1739,7 +1742,7 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    while (isspace(*action)) ++action;
 	    if ('(' != *action) {
 		if (!*action) {
-		    fvwm_msg(ERR,"SetBorderStyle", 
+		    fvwm_msg(ERR,"SetBorderStyle",
 			     "error in %s border specification", parm);
 		    free(parm);
 		    return;
@@ -1753,7 +1756,7 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    }
 	    end = strchr(++action, ')');
 	    if (!end) {
-		fvwm_msg(ERR,"SetBorderStyle", 
+		fvwm_msg(ERR,"SetBorderStyle",
 			 "error in %s border specification", parm);
 		free(parm);
 		return;
@@ -1767,7 +1770,7 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    action = end + 1;
 	}
 	else if (strcmp(parm,"--")==0) {
-	    if (ReadButtonFace(prev, &fl->BorderStyle.active,-1,True)) 
+	    if (ReadButtonFace(prev, &fl->BorderStyle.active,-1,True))
 		ReadButtonFace(prev, &fl->BorderStyle.inactive,-1,False);
 	    free(parm);
 	    break;
@@ -1787,7 +1790,7 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	}
 	free(parm);
 	prev = action;
-	action = GetNextToken(action,&parm);	
+	action = GetNextToken(action,&parm);
     }
 }
 #endif
@@ -1796,7 +1799,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button);
 
 #if defined(MULTISTYLE) && defined(EXTENDED_TITLESTYLE)
 /*****************************************************************************
- * 
+ *
  * Appends a titlestyle (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -1863,9 +1866,9 @@ void SetTitleStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    extra_height = fl->TitleHeight;
 	    fl->TitleHeight = height;
 	    extra_height -= fl->TitleHeight;
-	    
-	    fl->WindowFont.y = fl->WindowFont.font->ascent 
-		+ (height - (fl->WindowFont.font->ascent 
+
+	    fl->WindowFont.y = fl->WindowFont.font->ascent
+		+ (height - (fl->WindowFont.font->ascent
 			     + fl->WindowFont.font->descent + 3)) / 2;
 	    if (fl->WindowFont.y < fl->WindowFont.font->ascent)
 		fl->WindowFont.y = fl->WindowFont.font->ascent;
@@ -1931,6 +1934,8 @@ void LoadIconFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   action = GetNextToken(action,&font);
 
+  if (Scr.IconFont.font != NULL)
+    XFreeFont(dpy, Scr.IconFont.font);
   if ((Scr.IconFont.font = GetFontOrFixed(dpy, font))==NULL)
   {
     fvwm_msg(ERR,"LoadIconFont","Couldn't load font '%s' or 'fixed'\n",
@@ -1973,6 +1978,8 @@ void LoadWindowFont(XEvent *eventp,Window win,FvwmWindow *tmp_win,
 
   if ((newfont = GetFontOrFixed(dpy, font))!=NULL)
   {
+    if (fl->WindowFont.font != NULL)
+      XFreeFont(dpy, fl->WindowFont.font);
     fl->WindowFont.font = newfont;
     fl->WindowFont.height=
       fl->WindowFont.font->ascent+fl->WindowFont.font->descent;
@@ -2006,7 +2013,7 @@ void LoadWindowFont(XEvent *eventp,Window win,FvwmWindow *tmp_win,
       tmp = tmp->next;
     }
     SetTitleBar(hi,True,True);
-    
+
   }
   else
   {
@@ -2024,16 +2031,16 @@ void FreeButtonFace(Display *dpy, ButtonFace *bf)
 #ifdef GRADIENT_BUTTONS
     case HGradButton:
     case VGradButton:
-	/* - should we check visual is not TrueColor before doing this? 
-	   
-	   XFreeColors(dpy, Scr.FvwmRoot.attr.colormap, 
+	/* - should we check visual is not TrueColor before doing this?
+
+	   XFreeColors(dpy, Scr.FvwmRoot.attr.colormap,
 		    bf->u.grad.pixels, bf->u.grad.npixels,
 		    AllPlanes); */
 	free(bf->u.grad.pixels);
 	bf->u.grad.pixels = NULL;
 	break;
 #endif
-	
+
 #ifdef PIXMAP_BUTTONS
     case PixmapButton:
     case TiledPixmapButton:
@@ -2057,7 +2064,7 @@ void FreeButtonFace(Display *dpy, ButtonFace *bf)
 }
 
 /*****************************************************************************
- * 
+ *
  * Reads a button face line into a structure (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2076,7 +2083,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	s += offset;
 
 	FreeButtonFace(dpy, bf);
-	
+
 	/* determine button style */
 	if (strncasecmp(style,"Simple",6)==0)
 	{
@@ -2084,7 +2091,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	}
 	else if (strncasecmp(style,"Default",7)==0) {
 	    int b = -1, n = sscanf(s, "%d%n", &b, &offset);
-	    	    
+
 	    if (n < 1) {
 		if (button == -1) {
 		    if(verbose)fvwm_msg(ERR,"ReadButtonFace",
@@ -2103,10 +2110,10 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    }
 	}
 #ifdef VECTOR_BUTTONS
-	else if (strncasecmp(style,"Vector",6)==0 || 
+	else if (strncasecmp(style,"Vector",6)==0 ||
 		 (strlen(style)<=2 && isdigit(*style)))
-	{    
-	    /* normal coordinate list button style */	    
+	{
+	    /* normal coordinate list button style */
 	    int i, num_coords, num;
 	    struct vector_coords *vc = &bf->vector;
 
@@ -2123,7 +2130,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 				    "Bad button style (2) in line: %s",action);
 		return False;
 	    }
-  
+
 	    vc->num = num_coords;
 
 	    /* get the points */
@@ -2151,7 +2158,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		bf->u.back = GetColor(file);
 	    } else {
 		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				    "no color given for Solid face type: %s", 
+				    "no color given for Solid face type: %s",
 				    action);
 		return False;
 	    }
@@ -2192,16 +2199,16 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
 		perc = (int *)safemalloc(sizeof(int) * nsegs);
 		for (i = 0; i <= nsegs; ++i) {
-		    s =GetNextToken(s, &s_colors[i]);		
+		    s =GetNextToken(s, &s_colors[i]);
 		    if (i < nsegs) {
 			s = GetNextToken(s, &item);
 			if (item)
 			    perc[i] = atoi(item);
-			else 
+			else
 			    perc[i] = 0;
 			free(item);
 		    }
-		} 
+		}
 	    }
 
 	    for (i = 0, sum = 0; i < nsegs; ++i)
@@ -2215,7 +2222,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		free(s_colors);
 		return False;
 	    }
-		
+
 	    if (npixels < 2) npixels = 2;
 	    if (npixels > 128) npixels = 128;
 
@@ -2223,7 +2230,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    for (i = 0; i <= nsegs; ++i)
 		free(s_colors[i]);
 	    free(s_colors);
-	    
+
 	    if (!pixels) {
 		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
 				    "couldn't create gradient");
@@ -2232,7 +2239,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 
 	    bf->u.grad.pixels = pixels;
 	    bf->u.grad.npixels = npixels;
-		
+
 	    if (strncasecmp(style,"H",1)==0)
 		bf->style = HGradButton;
 	    else
@@ -2245,7 +2252,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	{
 	    s = GetNextToken(s, &file);
 	    bf->u.p = CachePicture(dpy, Scr.Root,
-				   IconPath, 
+				   IconPath,
 #ifdef XPM
 				   PixmapPath,
 #else
@@ -2261,7 +2268,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		return False;
 	    }
 	    free(file); file = NULL;
-	
+
 	    if (strncasecmp(style,"Tiled",5)==0)
 		bf->style = TiledPixmapButton;
 	    else
@@ -2280,7 +2287,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    return False;
 	}
     }
-    
+
     /* Process button flags ("--" signals start of flags,
        it is also checked for above) */
     s = GetNextToken(s, &file);
@@ -2308,16 +2315,16 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style &= ~HRight;
 		} else
 		    bf->style |= HOffCenter | HRight;
-	    } 
+	    }
 	    else if (strncasecmp(tok,"Right",5)==0)
 	    {
 		if (set)
 		    bf->style |= HOffCenter | HRight;
 		else {
 		    bf->style |= HOffCenter;
-		    bf->style &= ~HRight;		  
+		    bf->style &= ~HRight;
 		}
-	    } 
+	    }
 	    else if (strncasecmp(tok,"Centered",8)==0) {
 		bf->style &= ~HOffCenter;
 		bf->style &= ~VOffCenter;
@@ -2329,8 +2336,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style &= ~VBottom;
 		} else
 		    bf->style |= VOffCenter | VBottom;
-		  
-	    } 
+	    }
 	    else if (strncasecmp(tok,"Bottom",6)==0)
 	    {
 		if (set)
@@ -2347,7 +2353,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= FlatButton;
 		} else
 		    bf->style &= ~FlatButton;
-	    } 
+	    }
 	    else if (strncasecmp(tok,"Sunk",4)==0)
 	    {
 		if (set) {
@@ -2355,17 +2361,17 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= SunkButton;
 		} else
 		    bf->style &= ~SunkButton;
-	    } 
+	    }
 	    else if (strncasecmp(tok,"Raised",6)==0)
 	    {
 		if (set) {
 		    bf->style &= ~FlatButton;
 		    bf->style &= ~SunkButton;
 		} else {
-		    bf->style |= SunkButton;		  
+		    bf->style |= SunkButton;
 		    bf->style &= ~FlatButton;
 		}
-	    } 
+	    }
 #ifdef EXTENDED_TITLESTYLE
 	    else if (strncasecmp(tok,"UseTitleStyle",13)==0)
 	    {
@@ -2385,7 +2391,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= HiddenHandles;
 		else
 		    bf->style &= ~HiddenHandles;
-	    } 
+	    }
 	    else if (strncasecmp(tok,"NoInset",7)==0)
 	    {
 		if (set)
@@ -2417,7 +2423,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 
 
 /*****************************************************************************
- * 
+ *
  * Reads a title button description (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2437,7 +2443,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 	}
     if (bs != MaxButtonState)
 	s += strlen(button_states[bs]);
-    else 
+    else
 	all = 1;
     while(isspace(*s))++s;
     if ('(' == *s) {
@@ -2477,7 +2483,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 	    while (tail->next) tail = tail->next;
 	    tail->next = (ButtonFace *)safemalloc(sizeof(ButtonFace));
 	    *tail->next = tmpbf;
-	    if (all) 
+	    if (all)
 		for (i = 1; i < MaxButtonState; ++i) {
 		    tail = &tb->state[i];
 		    while (tail->next) tail = tail->next;
@@ -2486,7 +2492,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 		    tail->next->next = NULL;
 		    ReadButtonFace(spec, tail->next, button, False);
 		}
-	} 
+	}
 	else {
 #endif
 	    FreeButtonFace(dpy, &tb->state[b]);
@@ -2497,7 +2503,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 #ifdef MULTISTYLE
 	}
 #endif
-	
+
     }
     if (pstyle) {
 	free(spec);
@@ -2510,7 +2516,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 
 #ifdef USEDECOR
 /*****************************************************************************
- * 
+ *
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2525,7 +2531,7 @@ void AddToDecor(FvwmDecor *fl, char *s)
 }
 
 /*****************************************************************************
- * 
+ *
  * Changes the window's FvwmDecor pointer (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2569,7 +2575,7 @@ void ChangeDecor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 /*****************************************************************************
- * 
+ *
  * Destroys an FvwmDecor (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2593,7 +2599,7 @@ void DestroyDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	    }
 	prev = fl;
     }
-    
+
     if (found && (found != &Scr.DefaultDecor)) {
 	FvwmWindow *fw = Scr.FvwmRoot.next;
 	while(fw != NULL)
@@ -2609,7 +2615,7 @@ void DestroyDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 }
 
 /*****************************************************************************
- * 
+ *
  * Initiates an AddToDecor (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2651,7 +2657,7 @@ void add_item_to_decor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
 
 /*****************************************************************************
- * 
+ *
  * Updates window decoration styles (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2674,7 +2680,7 @@ void UpdateDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	free(item);
     }
 #endif
-    
+
     for (; fw != NULL; fw = fw->next)
     {
 #ifdef USEDECOR
@@ -2697,7 +2703,7 @@ void UpdateDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
 
 /*****************************************************************************
- * 
+ *
  * Changes a button decoration style (changes by veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2736,11 +2742,11 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 #else
     FvwmDecor *fl = &Scr.DefaultDecor;
 #endif
-    
+
     text = GetNextToken(text, &parm);
     if (parm && isdigit(*parm))
 	button = atoi(parm);
-    
+
     if ((parm == NULL) || (button > 10) || (button < 0)) {
 	fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
 	free(parm);
@@ -2764,7 +2770,7 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	    free(parm);
 	    return;
 	}
-    } 
+    }
     free(parm);
     if (multi == 0) {
 	/* a single button was specified */
@@ -2783,18 +2789,18 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	    tb = &fl->left_buttons[n];
 	}
     }
-	
+
     prev = text;
     text = GetNextToken(text,&parm);
     while(parm && parm[0]!='\0')
     {
-	if (strcmp(parm,"-")==0) {		
+	if (strcmp(parm,"-")==0) {
 	    char *tok;
 	    text = GetNextToken(text, &tok);
 	    while (tok && tok[0])
 	    {
 		int set = 1;
-		
+
 		if (*tok == '!') { /* flag negate */
 		    set = 0;
 		    ++tok;
@@ -2859,7 +2865,7 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
 #ifdef MULTISTYLE
 /*****************************************************************************
- * 
+ *
  * Appends a button decoration style (veliaa@rpi.edu)
  *
  ****************************************************************************/
@@ -2876,11 +2882,11 @@ void AddButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 #else
     FvwmDecor *fl = &Scr.DefaultDecor;
 #endif
-    
+
     text = GetNextToken(text, &parm);
     if (parm && isdigit(*parm))
 	button = atoi(parm);
-    
+
     if ((parm == NULL) || (button > 10) || (button < 0)) {
 	fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
 	free(parm);
@@ -2904,7 +2910,7 @@ void AddButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	    free(parm);
 	    return;
 	}
-    } 
+    }
     free(parm);
     if (multi == 0) {
 	/* a single button was specified */
@@ -2970,7 +2976,7 @@ void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 /**************************************************************************
  *
  * Direction = 1 ==> "Next" operation
- * Direction = -1 ==> "Previous" operation 
+ * Direction = -1 ==> "Previous" operation
  * Direction = 0 ==> operation on current window (returns pass or fail)
  *
  **************************************************************************/
@@ -3018,9 +3024,9 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
       fvwm_msg(ERR,"Circulate","Conditionals require closing parenthesis");
       return NULL;
     }
-      
+
     *restofline = t+1;
-      
+
     orig_expr = expression = safemalloc(l+1);
     strncpy(expression,tstart,l);
     expression[l] = 0;
@@ -3099,7 +3105,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
       fw = Scr.Focus;
   }
   else
-    fw = Scr.FvwmRoot.prev;  
+    fw = Scr.FvwmRoot.prev;
 
   while((pass < 3)&&(found == NULL))
   {
@@ -3386,13 +3392,13 @@ void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   int val1;
   int val1_unit,n;
-  
+
   n = GetOneArgument(action, &val1, &val1_unit);
   if(n != 1) {
     fvwm_msg(ERR,"SetColorLimit","ColorLimit requires 1 argument, found %d",n);
     return;
   }
-  
+
   Scr.ColorLimit = (long)val1;
 }
 
@@ -3431,13 +3437,13 @@ void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     rgpctMovementDefault[i++] = 1.0;
   }
 }
- 
+
 void set_menudelay(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   unsigned long context, char *action,int* Module)
 {
   int delay = 0;
   if (sscanf(action,"%d",&delay) == 1 && delay >= 0)
     c10msDelaysBeforePopup = delay/10; /* user enters in ms, we store in 10 ms */
-  else 
+  else
     fvwm_msg(ERR,"SetMenuDelay","Improper ms delay count as argument.");
 }

@@ -6,6 +6,7 @@ man_MANS = FvwmIconMan.1
 EXTRA_DIST = $(man_MANS) CHANGES
 
 FvwmIconMan_SOURCES = FvwmIconMan.c FvwmIconMan.h debug.c debug.h debuglevels.h functions.c fvwm.c globals.c readconfig.c readconfig.h winlist.c x.c x.h xmanager.c xmanager.h
+FvwmIconMan_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
@@ -13,5 +14,5 @@ FvwmIconMan_SOURCES = FvwmIconMan.c FvwmIconMan.h debug.c debug.h debuglevels.h 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS) 
+INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 

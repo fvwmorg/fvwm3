@@ -6,6 +6,7 @@ man_MANS = FvwmAnimate.1
 EXTRA_DIST = $(man_MANS)
 
 FvwmAnimate_SOURCES = FvwmAnimate.c FvwmAnimate.h
+FvwmAnimate_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm

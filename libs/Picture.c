@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -93,7 +93,7 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
   xpm_attributes.closeness=40000; /* Allow for "similar" colors */
   xpm_attributes.valuemask=
     XpmSize | XpmReturnPixels | XpmColormap | XpmCloseness;
-  
+
   rc =XpmReadFileToXpmImage(path, &my_image, NULL);
   if (rc == XpmSuccess) {
     color_reduce_pixmap(&my_image, color_limit);
@@ -103,8 +103,8 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
     if (rc == XpmSuccess) {
       p->width = my_image.width;
       p->height = my_image.height;
-      p->depth = DefaultDepthOfScreen(DefaultScreenOfDisplay(dpy));
       XpmFreeXpmImage(&my_image);
+      p->depth = DefaultDepthOfScreen(DefaultScreenOfDisplay(dpy));
       return p;
     }
     XpmFreeXpmImage(&my_image);
@@ -151,14 +151,15 @@ Picture *CachePicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
     {
       register char *p1, *p2;
 
-      for(p1=path, p2=p->name; *p1 && *p2; ++p1, ++p2)
+      for (p1=path, p2=p->name; *p1 && *p2; ++p1, ++p2)
 	if (*p1 != *p2)
           break;
 
       if(!*p1 && !*p2) /* We have found a picture with the wanted name */
 	{
 	  p->count++; /* Put another weight on the picture */
-	  return p;
+          free(path);
+          return p;
 	}
       p=p->next;
     }
@@ -221,7 +222,7 @@ char *findIconFile(char *icon, char *pathlist, int type)
 
   if(icon != NULL)
     l1 = strlen(icon);
-  else 
+  else
     l1 = 0;
 
   if(pathlist != NULL)
@@ -231,38 +232,38 @@ char *findIconFile(char *icon, char *pathlist, int type)
 
   path = safemalloc(l1 + l2 + 10);
   *path = '\0';
-  if (*icon == '/') 
+  if (*icon == '/')
     {
       /* No search if icon begins with a slash */
       strcpy(path, icon);
       return path;
     }
-     
-  if ((pathlist == NULL) || (*pathlist == '\0')) 
+
+  if ((pathlist == NULL) || (*pathlist == '\0'))
     {
       /* No search if pathlist is empty */
       strcpy(path, icon);
       return path;
     }
- 
+
   /* Search each element of the pathlist for the icon file */
   while ((pathlist)&&(*pathlist))
-    { 
+    {
       dir_end = strchr(pathlist, ':');
       if (dir_end != NULL)
 	{
 	  strncpy(path, pathlist, dir_end - pathlist);
 	  path[dir_end - pathlist] = 0;
 	}
-      else 
+      else
 	strcpy(path, pathlist);
 
       strcat(path, "/");
       strcat(path, icon);
-      if (access(path, type) == 0) 
+      if (access(path, type) == 0)
 	return path;
       strcat(path, ".gz");
-      if (access(path, type) == 0) 
+      if (access(path, type) == 0)
 	return path;
 
       /* Point to next element of the path */
@@ -275,7 +276,7 @@ char *findIconFile(char *icon, char *pathlist, int type)
   free(path);
   return NULL;
 }
- 
+
 
 #ifdef XPM
 /* This structure is used to quickly access the RGB values of the colors */
@@ -431,7 +432,7 @@ static void c300_color_to_rgb(char *c_color, XColor *rgb_space) {
   if (rc==0) {
     fprintf(stderr,"color_to_rgb: can't parse color %s, rc %d\n", c_color, rc);
     return;
-  } 
+  }
 }
 
 /* A macro for squaring things */

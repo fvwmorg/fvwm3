@@ -5,11 +5,12 @@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmDebug
 FvwmDebug_SOURCES = FvwmDebug.c FvwmDebug.h
+FvwmDebug_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmDebug.1
 EXTRA_DIST = $(man_MANS)
 
-LDADD = -L$(top_builddir)/libs -lfvwm 
+LDADD = -L$(top_builddir)/libs -lfvwm
 
 # FIXME:
 # Despite not using X functions explicitly, the code includes

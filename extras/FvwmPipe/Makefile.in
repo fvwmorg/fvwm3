@@ -85,8 +85,9 @@ xpm_LIBS = @xpm_LIBS@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmPipe
 FvwmPipe_SOURCES = FvwmPipe.c
+FvwmPipe_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
-LDADD = -L$(top_builddir)/libs -lfvwm 
+LDADD = -L$(top_builddir)/libs -lfvwm
 
 # FIXME:
 # Despite not using X functions explicitly, the code includes
@@ -108,7 +109,6 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 FvwmPipe_OBJECTS =  FvwmPipe.o
 FvwmPipe_LDADD = $(LDADD)
-FvwmPipe_DEPENDENCIES = 
 FvwmPipe_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -118,7 +118,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmPipe.P
 SOURCES = $(FvwmPipe_SOURCES)
@@ -129,7 +129,7 @@ all: Makefile $(PROGRAMS)
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmPipe/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmPipe/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -215,7 +215,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmPipe/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmPipe/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

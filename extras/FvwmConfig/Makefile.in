@@ -90,11 +90,13 @@ FvwmConfig_SOURCES = FvwmConfig.C WinBase.C WinBase.h WinButton.C \
 	WinInput.h WinRadioButton.C WinRadioButton.h WinSlider.C \
 	WinSlider.h WinText.C WinText.h dead.c
 
+FvwmConfig_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+
 man_MANS = FvwmConfig.1
 EXTRA_DIST = $(man_MANS)
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
-	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) 
+	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
 INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -115,7 +117,6 @@ FvwmConfig_OBJECTS =  FvwmConfig.o WinBase.o WinButton.o \
 WinColorSelector.o WinInput.o WinRadioButton.o WinSlider.o WinText.o \
 dead.o
 FvwmConfig_LDADD = $(LDADD)
-FvwmConfig_DEPENDENCIES = 
 FvwmConfig_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -132,7 +133,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmConfig.P .deps/WinBase.P .deps/WinButton.P \
 .deps/WinColorSelector.P .deps/WinInput.P .deps/WinRadioButton.P \
@@ -145,7 +146,7 @@ all: Makefile $(PROGRAMS) $(MANS)
 .SUFFIXES:
 .SUFFIXES: .C .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmConfig/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign extras/FvwmConfig/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -272,7 +273,7 @@ distdir: $(DISTFILES)
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmConfig/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign extras/FvwmConfig/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \
