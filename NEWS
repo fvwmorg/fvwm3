@@ -1,5 +1,17 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* Lots of changes to FvwmForm:
+  No limits of form size.
+  Fonts and colors can change anywhere in the form.
+  Form appearance can be configured globaly:
+   Form defaults are read from .FvwmForm.
+   There is a built in Default setting/saving dialogue.
+  Forms can be read in directly from a file.
+  Some forms are installed automatically.
+  Tab to previous field.
+  You can control vertical spacing on text so spacing is OK for help panels.
+  A button can execute a synchronous shell command.
+
 Changes in official release 2.2 (February 1999)
 
 Changes in alpha release 2.1.13 (February 1999)
