@@ -26,8 +26,8 @@
  */
 
 #include "FvwmCommand.h"
-#include "../../libs/fvwmlib.h"
-#include "../../libs/fvwmsignal.h"
+#include "libs/fvwmlib.h"
+#include "libs/fvwmsignal.h"
 
 #define MYNAME   "FvwmCommandS"
 #define MAXHOSTNAME 255
@@ -36,8 +36,6 @@ int  Fd[2];  /* pipe to fvwm */
 int  Ffdr;   /* command fifo file discriptors */
 int  Ffdw;   /* message fifo file discriptors */
 char *F_name, *Fc_name, *Fm_name; /* fifo name */
-char Nounlink;   /* don't delete fifo when true */
-char Connect;    /* client is connected */
 
 char client[MAXHOSTNAME];
 char hostname[32];
@@ -58,15 +56,19 @@ int main(int argc, char *argv[])
 {
   char *fifoname;
 
-  if(argc < FARGS)    {
+  if(argc < FARGS)
+  {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",
 	    MYNAME, MYVERSION);
     exit(1);
   }
 
-  if( argc == FARGS+1 ) {
+  if( argc == FARGS+1 )
+  {
     fifoname = argv[FARGS];
-  }else{
+  }
+  else
+  {
     fifoname = NULL;
   }
 
@@ -116,8 +118,6 @@ int main(int argc, char *argv[])
   Fd[0] = atoi(argv[1]);
   Fd[1] = atoi(argv[2]);
 
-  Nounlink = 0;
-
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fd);
 
@@ -128,10 +128,10 @@ int main(int argc, char *argv[])
 /*
  * NOT a signal handler (can't call fprintf in a signal handler)
  */
-void DeadPipe( int dummy ) {
+void DeadPipe( int dummy )
+{
   (void)dummy;
 
-  fprintf(stderr,"%s: dead pipe\n", MYNAME);
   close_pipes();
   exit(0);
 }
@@ -149,16 +149,18 @@ sig_handler(int signo)
 /*
  * setup server and communicate with fvwm and the client
  */
-void server ( char *name ) {
+void server ( char *name )
+{
   char *home;
   char *f_stem;
   int  len;
   fd_set fdset;
-  char buf[MAX_COMMAND_SIZE];  /* command receiving buffer */
-  char cmd[MAX_COMMAND_SIZE];
+  char buf[MAX_MODULE_INPUT_TEXT_LEN + 1];  /* command receiving buffer */
+  char cmd[MAX_MODULE_INPUT_TEXT_LEN + 1];
   int  ix,cix;
 
-  if( name == NULL ) {
+  if( name == NULL )
+  {
     char *dpy_name;
 
     /* default name */
@@ -166,7 +168,8 @@ void server ( char *name ) {
     if (!home)  home = "";
     f_stem = safemalloc( strlen(home) + strlen(F_NAME) + MAXHOSTNAME + 4);
     strcpy (f_stem, home);
-    if (f_stem[strlen(f_stem)-1] != '/') {
+    if (f_stem[strlen(f_stem)-1] != '/')
+    {
       strcat (f_stem, "/");
     }
     strcat (f_stem, F_NAME);
@@ -182,78 +185,82 @@ void server ( char *name ) {
     if (!dpy_name[0]  ||  ':' == dpy_name[0])
       strcat( f_stem, hostname );  /* Put hostname before dpy if not there */
     strcat (f_stem, client);
-  }else{
+  }
+  else
+  {
     f_stem = name;
   }
 
-  if (open_fifos(f_stem) < 0) {
+  if (open_fifos(f_stem) < 0)
+  {
     exit (-1);
   }
   SendText(Fd," ",0); /* tell fvwm that we are here */
 
   cix = 0;
 
-  while ( !isTerminated ){
+  while ( !isTerminated )
+  {
     FD_ZERO(&fdset);
     FD_SET(Ffdr, &fdset);
     FD_SET(Fd[1], &fdset);
 
-    if (fvwmSelect(FD_SETSIZE, &fdset, 0, 0, NULL) < 0) {
-      if (errno == EINTR) {
+    if (fvwmSelect(FD_SETSIZE, &fdset, 0, 0, NULL) < 0)
+    {
+      if (errno == EINTR)
+      {
         continue;
       }
     }
 
-    if (FD_ISSET(Fd[1], &fdset)){
+    if (FD_ISSET(Fd[1], &fdset))
+    {
       FvwmPacket* packet = ReadFvwmPacket(Fd[1]);
-      if ( packet == NULL ) {
+      if ( packet == NULL )
+      {
         close_pipes();
         exit( 0 );
       }
-	  process_message( packet->type, packet->body );
+      process_message( packet->type, packet->body );
     }
 
-    if (FD_ISSET(Ffdr, &fdset)){
-      len = read( Ffdr, buf, MAX_COMMAND_SIZE-1 );
-      if (len == 0) {
+    if (FD_ISSET(Ffdr, &fdset))
+    {
+      len = read( Ffdr, buf, MAX_MODULE_INPUT_TEXT_LEN );
+      if (len == 0)
+      {
         continue;
       }
-      if (len < 0) {
-        if (errno != EAGAIN && errno != EINTR) {
+      if (len < 0)
+      {
+        if (errno != EAGAIN && errno != EINTR)
+	{
           err_quit("reading fifo");
         }
       }
 
-      Connect = 1;
       /* in case of multiple long lines */
-      for (ix=0; ix<len; ix++) {
+      for (ix=0; ix<len; ix++)
+      {
         cmd[cix] = buf[ix];
-        if (cmd[cix] == '\n') {
+        if (cmd[cix] == '\n')
+	{
           cmd[cix+1] = '\0';
           cix = 0;
-          if (!strncmp (cmd, CMD_CONNECT, strlen(CMD_CONNECT))) {
-            /* do nothing */
-          } else if (!strcmp (cmd, CMD_EXIT)) {
-            Connect = 0;
-            break;
-          } else {
-            if (!strcmp (cmd, CMD_KILL_NOUNLINK)) {
-              Nounlink = 1;
-              strcpy (cmd, "killme" );
-            }
-            SendText (Fd,cmd,0);
-          }
-        }else{
-          if (cix >= MAX_COMMAND_SIZE-1) {
-            err_msg ("command too long");
-            cix = 0;
-          } else {
-            cix++;
-          }
+	  SendText (Fd,cmd,0);
         }
-      }
-    }
-  }
+	else if (cix >= MAX_MODULE_INPUT_TEXT_LEN)
+	{
+	  err_msg ("command too long");
+	  cix = 0;
+	}
+	else
+	{
+	  cix++;
+	}
+      } /* for */
+    } /* FD_ISSET */
+  } /* while */
 }
 
 /*
@@ -273,17 +280,16 @@ void close_pipes(void)
   }
 }
 
-void close_fifos(void) {
+void close_fifos(void)
+{
   close (Ffdw);
   close (Ffdr);
-  if (!Nounlink) {
-    strcat (F_name,"C");
-    unlink (F_name);
-    F_name[strlen(F_name)-1] = 'M';
-    unlink (F_name);
-    F_name[strlen(F_name)-1] = 'R';
-    unlink (F_name);
-  }
+  strcat (F_name,"C");
+  unlink (F_name);
+  F_name[strlen(F_name)-1] = 'M';
+  unlink (F_name);
+  F_name[strlen(F_name)-1] = 'R';
+  unlink (F_name);
   free (F_name);
   Ffdr = -1;
   Ffdw = -1;
@@ -292,17 +298,20 @@ void close_fifos(void) {
 /*
  * open fifos
  */
-int open_fifos (const char *f_stem) {
+int open_fifos (const char *f_stem)
+{
   char *fc_name, *fm_name;
 
   /* create 2 fifos */
   fc_name = malloc( strlen(f_stem) + 2 );
-  if (fc_name == NULL) {
+  if (fc_name == NULL)
+  {
     err_msg( "allocating command" );
     return -1;
   }
   fm_name = malloc( strlen(f_stem) + 2 );
-  if (fm_name == NULL) {
+  if (fm_name == NULL)
+  {
     err_msg( "allocating message" );
     return -1;
   }
@@ -311,38 +320,44 @@ int open_fifos (const char *f_stem) {
   strcat(fc_name, "C");
   strcat(fm_name, "M");
 
-  if( (Ffdw = open(fc_name, O_RDWR | O_NONBLOCK ) ) > 0) {
-    write_f( Ffdw, CMD_KILL_NOUNLINK, strlen(CMD_KILL_NOUNLINK) );
+  if( (Ffdw = open(fc_name, O_RDWR | O_NONBLOCK ) ) > 0)
+  {
+    write_f( Ffdw, "#@killme\n", 9);
     close( Ffdw );
   }
 
   unlink( fm_name );
   unlink( fc_name );
 
-  if( mkfifo( fm_name, S_IRUSR | S_IWUSR ) < 0 ) {
+  if( mkfifo( fm_name, S_IRUSR | S_IWUSR ) < 0 )
+  {
     err_msg( fm_name );
     return -1;
   }
-  if( mkfifo( fc_name, S_IRUSR | S_IWUSR ) < 0 ) {
+  if( mkfifo( fc_name, S_IRUSR | S_IWUSR ) < 0 )
+  {
     err_msg( fc_name );
     return -1;
   }
 
   Ffdr = open(fc_name, O_RDWR | O_NONBLOCK | O_TRUNC);
-  if (Ffdr < 0) {
+  if (Ffdr < 0)
+  {
     err_msg( "opening command fifo" );
     return -1;
   }
   free(fc_name);
   Ffdw = open(fm_name, O_RDWR | O_NONBLOCK | O_TRUNC);
-  if (Ffdw < 0) {
+  if (Ffdw < 0)
+  {
     err_msg( "opening message fifo" );
     return -1;
   }
   free(fm_name);
 
   F_name = malloc (strlen (f_stem) + 2);
-  if (F_name == NULL) {
+  if (F_name == NULL)
+  {
     err_msg( "allocating name string" );
     return -1;
   }
@@ -356,11 +371,12 @@ int open_fifos (const char *f_stem) {
  * Process window list messages
  */
 
-void process_message(unsigned long type,unsigned long *body){
+void process_message(unsigned long type,unsigned long *body)
+{
   int  msglen;
 
-  switch(type) {
-
+  switch(type)
+  {
   case M_CONFIGURE_WINDOW:
     relay_packet( type, 24*SOL, body );
     break;
@@ -391,11 +407,9 @@ void process_message(unsigned long type,unsigned long *body){
     relay_packet( type, msglen+1+3*SOL, body );
     break;
 
-
   case M_MINI_ICON:
     relay_packet( type, 6*SOL, body );
     break;
-
 
   case M_NEW_PAGE:
     relay_packet( type, 5*SOL, body );
@@ -436,12 +450,14 @@ void process_message(unsigned long type,unsigned long *body){
  * print error message on stderr and exit
  */
 
-void err_msg( const char *msg ) {
+void err_msg( const char *msg )
+{
   fprintf( stderr, "%s server error in %s, %s\n",
 	   MYNAME, msg, strerror(errno) );
 }
 
-void err_quit( const char *msg ) {
+void err_quit( const char *msg )
+{
   err_msg(msg);
   close_pipes();
   exit(1);
@@ -451,7 +467,8 @@ void err_quit( const char *msg ) {
  * relay packet to front-end
  */
 void relay_packet( unsigned long type,
-		   unsigned long length, unsigned long *body) {
+		   unsigned long length, unsigned long *body)
+{
   write_f( Ffdw, (char*)&type, SOL );
   write_f( Ffdw, (char*)&length, SOL );
   write_f( Ffdw, (char*)body, length );
@@ -460,36 +477,37 @@ void relay_packet( unsigned long type,
 /*
  * write to fifo
  */
-int write_f (int fd, char *p, int len) {
+int write_f (int fd, char *p, int len)
+{
   int    i, n;
   struct timeval tv;
   int    again;
-  static int giveup=0;
 
   again = 0;
   tv.tv_sec = 0;
   tv.tv_usec = 50000;
 
-  for (i=0; i<len; )  {
+  for (i=0; i<len; )
+  {
     n = write (fd, &p[i], len-i);
-    if (n<0) {
-      if( errno==EINTR) {
+    if (n<0)
+    {
+      if( errno==EINTR)
+      {
 	continue;
-      } else if (errno==EAGAIN ) {
-	if (again++ < 5) {
+      }
+      else if (errno==EAGAIN )
+      {
+	if (again++ < 5)
+	{
 	  select(0, 0, 0, 0, &tv);
 	  continue;
-	}else{
-	  if (giveup++ > 20) {
-	    Connect = 0;
-	  }
-	  return -1; /* give up this message */
 	}
+	return -1; /* give up this message */
       }
       err_quit ("writing fifo");
     }
     i += n;
   }
-  giveup = 0;
   return 0;
 }

@@ -83,7 +83,7 @@ void spawn_child( void );
  *
  *******************************************************/
 int main ( int argc, char *argv[]) {
-  char cmd[MAX_COMMAND_SIZE];
+  char cmd[MAX_MODULE_INPUT_TEXT_LEN + 1];
   char *home;
   char *f_stem, *fc_name, *fm_name;
   char *sf_stem;
@@ -279,9 +279,6 @@ int main ( int argc, char *argv[]) {
     sleep(1);
   }
 
-  strcpy (cmd, CMD_CONNECT);
-  sendit (cmd);
-
   i = optind;
   if( Opt_monitor ) {
 
@@ -300,7 +297,7 @@ int main ( int argc, char *argv[]) {
 
     /* send arguments first */
     for( ;i < argc; i++ ) {
-      strncpy( cmd, argv[i], MAX_COMMAND_SIZE-2 );
+      strncpy( cmd, argv[i], MAX_MODULE_INPUT_TEXT_LEN - 1 );
       sendit( cmd );
     }
 
@@ -321,7 +318,7 @@ int main ( int argc, char *argv[]) {
       if( Bg == 0 ) {
         /* command input */
         if( FD_ISSET(STDIN_FILENO, &fdset) ) {
-          if( fgets( cmd, MAX_COMMAND_SIZE-2, stdin ) == 0 ) {
+          if( fgets( cmd, MAX_MODULE_INPUT_TEXT_LEN - 1, stdin ) == 0 ) {
             if( Bg == 0 ) {
               /* other than SIGTTIN */
               break;
@@ -334,7 +331,7 @@ int main ( int argc, char *argv[]) {
     }
   }else {
     for( ;i < argc; i++ ) {
-      strncpy( cmd, argv[i], MAX_COMMAND_SIZE-2 );
+      strncpy( cmd, argv[i], MAX_MODULE_INPUT_TEXT_LEN - 1 );
       sendit( cmd );
       if (Opt_info >= 0)
         receive();
@@ -350,10 +347,6 @@ int main ( int argc, char *argv[]) {
 void close_fifos (void) {
   char cmd[10];
 
-  if (Fdw >= 0) {
-    strcpy (cmd, CMD_EXIT);
-    sendit (cmd);
-  }
   close(Fdr);
   close(Fdw);
   unlink (Fr_name);

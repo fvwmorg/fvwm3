@@ -1,7 +1,16 @@
+2000-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleMapNotify):
+	* fvwm/icons.c (Iconify):
+	(DeIconify):
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	fixed 'hollow' windows when iconifying thrice in a function
+
 2000-01-26 olicha	<olivier.chapuis@free.fr>
 	* fvwm/screen.h: a "-Wall" fix to BUSYCURSOR ifdef
 	* libs/WinMagic.c: corrected a missprint
-	
+
 2000-01-25  Hippo
 
 	* fvwm/fvwm.h: split into fvwm.h and externs.h for FvwmIdent

@@ -41,12 +41,6 @@ extern char *sys_errlist[];
 
 #define F_NAME  ".FvwmCommand"
 
-#define MAX_COMMAND_SIZE   768
-
-#define CMD_KILL_NOUNLINK "#@killme\n"
-#define CMD_CONNECT       "#@connect"
-#define CMD_EXIT          "#@exit\n"
-
 /* number of default arguments when invoked from fvwm */
 #define FARGS 6
 

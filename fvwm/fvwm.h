@@ -202,19 +202,22 @@ typedef struct
   common_flags_type common;
   unsigned does_wm_delete_window : 1;
   unsigned does_wm_take_focus : 1;
+  unsigned do_iconify_after_map : 1;
   unsigned do_reuse_destroyed : 1;   /* Reuse this struct, don't free it,
 				      * when destroying/recapturing window. */
   unsigned has_border : 1; /* Is this decorated with border*/
   unsigned has_title : 1; /* Is this decorated with title */
+  unsigned is_deiconify_pending : 1; /* Sent an XUnmapWindow for deiconifying,
+				      * but didn't receive a UnmapNotify yet.*/
   unsigned is_fully_visible : 1; /* is the window fully visible */
   unsigned is_iconified : 1; /* is it an icon now? */
   unsigned is_iconified_by_parent : 1; /* To prevent iconified transients in a
 					* parent icon from counting for Next */
   unsigned is_icon_entered : 1; /* is the pointer over the icon? */
   unsigned is_icon_font_loaded : 1;
+  unsigned is_icon_moved : 1; /* has the icon been moved by the user? */
   unsigned is_icon_ours : 1; /* is the icon window supplied by the app? */
   unsigned is_icon_shaped : 1; /* is the icon shaped? */
-  unsigned is_icon_moved : 1; /* has the icon been moved by the user? */
   unsigned is_icon_unmapped : 1; /* was the icon unmapped, even though the
 				  * window is still iconified (Transients) */
   unsigned is_mapped : 1; /* is it mapped? */
@@ -228,8 +231,6 @@ typedef struct
   unsigned is_pixmap_ours : 1; /* is the icon pixmap ours to free? */
   unsigned is_transient : 1; /* is it a transient window? */
   unsigned is_window_drawn_once : 1;
-  unsigned is_deiconify_pending : 1; /* Sent an XUnmapWindow for deiconifying,
-				      * but didn't receive a UnmapNotify yet.*/
   unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/
   unsigned is_window_being_moved_opaque : 1;
   unsigned is_window_font_loaded : 1;

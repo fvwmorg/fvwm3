@@ -193,6 +193,10 @@
 #define SET_DEICONIFY_PENDING(fw,x)  (fw)->flags.is_deiconify_pending = !!(x)
 #define SETM_DEICONIFY_PENDING(fw,x) \
           (fw)->flag_mask.is_deiconify_pending = !!(x)
+#define DO_ICONIFY_AFTER_MAP(fw)     ((fw)->flags.do_iconify_after_map)
+#define SET_ICONIFY_AFTER_MAP(fw,x)  (fw)->flags.do_iconify_after_map = !!(x)
+#define SETM_ICONIFY_AFTER_MAP(fw,x) \
+          (fw)->flag_mask.do_iconify_after_map = !!(x)
 #define IS_VIEWPORT_MOVED(fw)  ((fw)->flags.is_viewport_moved)
 #define SET_VIEWPORT_MOVED(fw,x) \
           (fw)->flags.is_viewport_moved = !!(x)

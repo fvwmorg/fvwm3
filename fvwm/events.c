@@ -1226,6 +1226,13 @@ void HandleMapNotify(void)
   SET_MAP_PENDING(Tmp_win, 0);
   SET_ICONIFIED(Tmp_win, 0);
   SET_ICON_UNMAPPED(Tmp_win, 0);
+  if (DO_ICONIFY_AFTER_MAP(Tmp_win))
+  {
+    /* finally, if iconification was requested before the window was mapped,
+     * request it now. */
+    Iconify(Tmp_win, 0, 0);
+    SET_ICONIFY_AFTER_MAP(Tmp_win, 0);
+  }
 }
 
 

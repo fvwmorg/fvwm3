@@ -1039,6 +1039,13 @@ void DeIconify(FvwmWindow *tmp_win)
   if(!tmp_win)
     return;
 
+  if (IS_MAP_PENDING(tmp_win))
+  {
+    /* final state: de-iconified */
+    SET_ICONIFY_AFTER_MAP(tmp_win, 0);
+    return;
+  }
+
   while (IS_ICONIFIED_BY_PARENT(tmp_win))
   {
     for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
@@ -1146,6 +1153,14 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 
   if(!tmp_win)
     return;
+
+  if (IS_MAP_PENDING(tmp_win))
+  {
+    /* final state: iconified */
+    SET_ICONIFY_AFTER_MAP(tmp_win, 1);
+    return;
+  }
+
   XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
   eventMask = winattrs.your_event_mask;
 
