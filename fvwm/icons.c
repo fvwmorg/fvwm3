@@ -14,11 +14,9 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
-#include <string.h>
 
-#ifdef NeXT
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
@@ -26,6 +24,7 @@
 #ifdef XPM
 #include <X11/xpm.h>
 #endif /* XPM */
+
 #include "fvwm.h"
 #include "misc.h"
 #include "parse.h"
@@ -36,9 +35,15 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
+#include <libs/Picture.h>
 
-void GrabIconButtons(FvwmWindow *, Window);
-void GrabIconKeys(FvwmWindow *, Window);
+
+static void GrabIconButtons(FvwmWindow *, Window);
+static void GrabIconKeys(FvwmWindow *, Window);
+static void GetBitmapFile(FvwmWindow *tmp_win);
+static void GetXPMFile(FvwmWindow *tmp_win);
+
+
 
 /****************************************************************************
  *
@@ -607,7 +612,7 @@ void AutoPlace(FvwmWindow *t)
  *	tmp_win - the fvwm window structure to use
  *
  ***********************************************************************/
-void GrabIconButtons(FvwmWindow *tmp_win, Window w)
+static void GrabIconButtons(FvwmWindow *tmp_win, Window w)
 {
   Binding *MouseEntry;
 
@@ -655,7 +660,7 @@ void GrabIconButtons(FvwmWindow *tmp_win, Window w)
  *	tmp_win - the fvwm window structure to use
  *
  ***********************************************************************/
-void GrabIconKeys(FvwmWindow *tmp_win,Window w)
+static void GrabIconKeys(FvwmWindow *tmp_win,Window w)
 {
   Binding *tmp;
   for (tmp = Scr.AllBindings; tmp != NULL; tmp = tmp->NextBinding)
@@ -673,13 +678,12 @@ void GrabIconKeys(FvwmWindow *tmp_win,Window w)
  * Looks for a monochrome icon bitmap file
  *
  ****************************************************************************/
-void GetBitmapFile(FvwmWindow *tmp_win)
+static void GetBitmapFile(FvwmWindow *tmp_win)
 {
   char *path = NULL;
   int HotX,HotY;
-  extern char *IconPath;
 
-  path = findIconFile(tmp_win->icon_bitmap_file, IconPath,R_OK);
+  path = findImageFile(tmp_win->icon_bitmap_file, NULL, R_OK);
 
   if(path == NULL)return;
   if(XReadBitmapFile (dpy, Scr.Root,path,
@@ -700,17 +704,16 @@ void GetBitmapFile(FvwmWindow *tmp_win)
  * Looks for a color XPM icon file
  *
  ****************************************************************************/
-void GetXPMFile(FvwmWindow *tmp_win)
+static void GetXPMFile(FvwmWindow *tmp_win)
 {
 #ifdef XPM
   XWindowAttributes root_attr;
   XpmAttributes xpm_attributes;
-  extern char *PixmapPath;
   char *path = NULL;
   XpmImage my_image;
   int rc;
 
-  path = findIconFile(tmp_win->icon_bitmap_file, PixmapPath,R_OK);
+  path = findImageFile(tmp_win->icon_bitmap_file, NULL, R_OK);
   if(path == NULL)return;
 
   XGetWindowAttributes(dpy,Scr.Root,&root_attr);

@@ -35,6 +35,8 @@
 /* -------------------------------- more  ---------------------------------- */
 
 #include "libs/fvwmlib.h"
+#include "libs/Picture.h"
+
 
 /* ------------------------------- structs --------------------------------- */
 
@@ -177,8 +179,7 @@ extern char *MyName;
 extern button_info *UberButton,*CurrentButton;
 extern panel_info *MainPanel, *CurrentPanel;
 
-extern char *iconPath;
-extern char *pixmapPath;
+extern char *imagePath;
 extern int fd[];
 
 extern int screen;

@@ -1,3 +1,33 @@
+Thu Mar  4 19:31:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmPager/FvwmPager.c: replaced IconPath and PixmapPath code
+	with ImagePath.
+
+Thu Mar  4 01:43:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconBox/icons.c: 
+	* FvwmBanner/FvwmBanner.c (GetXPMFile): replace findIconFile with
+	findImageFile. 
+
+Thu Mar  4 00:39:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmSaveDesk/example/fvwm2rc: removed Pixmap, Icon, and Module
+	paths. 
+
+Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconBox/FvwmIconBox.1: 
+	* FvwmButtons/FvwmButtons.1: 
+	* FvwmBanner/FvwmBanner.c: 
+	* FvwmIconBox/icons.c:
+	* FvwmBanner/FvwmBanner.c: 
+	* FvwmIconBox/FvwmIconBox.h: 
+	* FvwmButtons/FvwmButtons.h: 
+	* FvwmIconBox/icons.c (GetBackPixmap): 
+	* FvwmIconBox/FvwmIconBox.c (ParseOptions): 
+	* FvwmButtons/parse.c (ParseOptions): 
+	* FvwmButtons/FvwmButtons.c: replace IconPath by ImagePath.
+
 1999-03-03  Johan Bengtsson  <johanb@DoCS.UU.SE>
 
 	* FvwmPager: Introduced a well defined order between specific desk
@@ -46,10 +76,24 @@
 	FVWM_CONFIGDIR, which may be different from sysconfdir.  Also,
 	the data files need to be explicitly listed for EXTRA_DIST.
 
+Sun Feb 28 11:49:24 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/ButtonArray.h: 
+	* FvwmPager/FvwmPager.h: 
+	* FvwmIconMan/FvwmIconMan.h: include libs/Picture.h to get Picture
+	definitions. 
+
+Sun Feb 28 10:24:53 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmButtons/parse.c
+	* FvwmButtons/FvwmButtons.c: 
+	* FvwmButtons/FvwmButtons.h: removed all traces of pixmapPath, as
+	it is no longer used.
+
 Sat Feb 27 11:55:27 1999  DanEspen  <dje@blue>
 
-	*  FvwmForm/ReadXServer.c: Add    logic   to  allow  international
-characters, bug id 179.
+	* FvwmForm/ReadXServer.c: Add logic to allow international
+	characters, bug id 179.
 
 1999-02-26  Dan Espen  <dane@mk.bellcore.com>
 

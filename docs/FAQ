@@ -714,7 +714,7 @@ A: Start with a new one or convert your old one.  This can be done by
    Icon windowname bitmap-file                Style (Icon iconname-file)
    IconBox left top right bottom              Style (IconBox l t r b)
    IconFont fontname                          <-
-   IconPath path                              <-
+   IconPath path                              ImagePath path
    Key keyname Context Modifiers Function     <-
    Lenience                                   Style (Lenience)
    MenuBackColor colorname                    MenuStyle (arg2)
@@ -740,7 +740,7 @@ A: Start with a new one or convert your old one.  This can be done by
    PagerBackColor colorname                   (obsoleted, use FvwmPager)
    PagerFont fontname                         (obsoleted, use FvwmPager)
    PagingDefault pagingdefaultvalue           (obsoleted)
-   PixmapPath path                            <-
+   PixmapPath				      ImagePath path
    Popup PopupName                            AddToMenu (not compatible)
    RandomPlacement                            Style (RandomPlacement)
    SaveUnders                                 (obsoleted)

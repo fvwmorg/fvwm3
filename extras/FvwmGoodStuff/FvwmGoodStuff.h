@@ -65,6 +65,5 @@ struct button_info
 
 extern struct button_info Buttons[MAX_BUTTONS];
 
-extern char *iconPath;
-extern char *pixmapPath;
+extern char *imagePath;
 

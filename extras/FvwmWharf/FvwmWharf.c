@@ -149,8 +149,7 @@ int fd[2];
 struct button_info Buttons[BUTTON_ARRAY_LN];
 struct folder_info Folders[FOLDER_ARRAY_LN];
 
-char *iconPath = NULL;
-char *pixmapPath = NULL;
+char *imagePath = NULL;
 
 static Atom wm_del_win;
 Atom _XA_WM_PROTOCOLS;
@@ -302,7 +301,7 @@ int main(int argc, char **argv)
 		int i;
 
 		margv[0]="ASSound";
-		name = findIconFile("ASSound",ModulePath,X_OK);
+		name = findImageFile("ASSound",ModulePath,X_OK);
 		if(name == NULL) {
 		    fprintf(stderr,"Wharf: couldn't find ASSound\n");
 		    SoundActive = 0;
@@ -1676,13 +1675,9 @@ void ParseOptions(char *filename)
 	    else
 	      match_string(&tline[Clength+1]);
 	}
-      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"IconPath",8)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ImagePath",9)==0))
 	{
-	  CopyString(&iconPath,&tline[8]);
-	}
-      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"PixmapPath",10)==0))
-	{
-	  CopyString(&pixmapPath,&tline[10]);
+	  CopyString(&imagePath,&tline[8]);
 	}
 #ifdef ENABLE_SOUND
       else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*AudioDir",9)==0))

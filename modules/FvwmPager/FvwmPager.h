@@ -1,3 +1,5 @@
+#include <libs/Picture.h>
+
 typedef struct ScreenInfo
 {
   unsigned long screen;

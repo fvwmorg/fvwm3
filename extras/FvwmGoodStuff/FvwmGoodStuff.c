@@ -78,8 +78,7 @@ int CurrentButton = -1;
 int fd[2];
 
 struct button_info Buttons[MAX_BUTTONS];
-char *iconPath = NULL;
-char *pixmapPath = NULL;
+char *imagePath = NULL;
 
 static Atom wm_del_win;
 Atom _XA_WM_PROTOCOLS;
@@ -1159,13 +1158,9 @@ void ParseOptions(void)
 	{
 	  match_string(&tline[Clength+1]);
 	}
-      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"IconPath",8)==0))
+      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ImagePath",9)==0))
 	{
-	  CopyString(&iconPath,&tline[8]);
-	}
-      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"PixmapPath",10)==0))
-	{
-	  CopyString(&pixmapPath,&tline[10]);
+	  CopyString(&imagePath,&tline[8]);
 	}
       GetConfigLine(fd,&tline);
     }

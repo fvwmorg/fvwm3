@@ -15,17 +15,14 @@
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#include <unistd.h>
 #include <ctype.h>
 
 #ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 
-#include <stdlib.h>
 #if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
@@ -79,8 +76,7 @@ char *WindowLabelFormat = NULL;
 
 Picture *PixmapBack = NULL;
 
-char *IconPath = NULL;
-char *PixmapPath = NULL;
+char *ImagePath = NULL;
 
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
 char *BalloonTypeString = NULL;
@@ -1113,36 +1109,19 @@ void ParseOptions(void)
 
       resource_string = arg1 = arg2 = NULL;
       
-      if (MatchToken(tline, "IconPath")) {
+      if (MatchToken(tline, "ImagePath")) {
 	  char *tmp;
 
-	  if (IconPath != NULL) {
-	      free(IconPath);
-	      IconPath = NULL;
+	  if (ImagePath != NULL) {
+	      free(ImagePath);
+	      ImagePath = NULL;
 	  }
 	  
 	  free(GetArgument(&tline));
-	  CopyString(&IconPath, tline);
+	  CopyString(&ImagePath, tline);
 
 #ifdef DEBUG
-	  fprintf(stderr, "[ParseOptions]: IconPath = %s\n", IconPath);
-#endif
-	  continue;
-      }
-
-      if (MatchToken(tline, "PixmapPath")) {
-	  char *tmp;
-
-	  if (PixmapPath != NULL) {
-	      free(PixmapPath);
-	      PixmapPath = NULL;
-	  }
-
-	  free(GetArgument(&tline));
-	  CopyString(&PixmapPath, tline);
-
-#ifdef DEBUG
-	  fprintf(stderr, "[ParseOptions]: PixmapPath = %s\n", PixmapPath);
+	  fprintf(stderr, "[ParseOptions]: ImagePath = %s\n", ImagePath);
 #endif
 	  continue;
       }
@@ -1349,7 +1328,7 @@ void ParseOptions(void)
 		      item->next->bgPixmap = NULL;
 		    }
 		  item->next->bgPixmap = CachePicture (dpy, Scr.Root,
-						       IconPath, PixmapPath,
+						       ImagePath,
 						       arg2, 0);
 		}
 	      else
@@ -1357,7 +1336,7 @@ void ParseOptions(void)
 		  /* new Dcolor and desktop */
 		  item = NewPagerStringItem(item, desk);
 		  item->bgPixmap = CachePicture (dpy, Scr.Root,
-						 IconPath, PixmapPath,
+						 ImagePath,
 						 arg2, 0);
 		}
 	      if (desk == Scr.CurrentDesk)
@@ -1369,7 +1348,7 @@ void ParseOptions(void)
 		    }
 		  
 		  Desks[0].bgPixmap = CachePicture (dpy, Scr.Root,
-						    IconPath, PixmapPath,
+						    ImagePath,
 						    arg2, 0);
 		}
 	    }
@@ -1383,7 +1362,7 @@ void ParseOptions(void)
 		  Desks[dNr].bgPixmap = NULL;
 		}
 	      Desks[dNr].bgPixmap = CachePicture (dpy, Scr.Root,
-						  IconPath, PixmapPath,
+						  ImagePath,
 						  arg2, 0);
 	    }
 
@@ -1403,7 +1382,7 @@ void ParseOptions(void)
 	      }
 
 	      PixmapBack = CachePicture (dpy, Scr.Root,
-					 IconPath, PixmapPath,
+					 ImagePath,
 					 arg1, 0);
 #ifdef DEBUG
 		  fprintf(stderr,
@@ -1422,7 +1401,7 @@ void ParseOptions(void)
 	      }
 
 	      HilightPixmap = CachePicture (dpy, Scr.Root,
-					    IconPath, PixmapPath,
+					    ImagePath,
 					    arg1, 0);
 
 #ifdef DEBUG

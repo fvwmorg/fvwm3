@@ -193,11 +193,9 @@ New stuff:
 
   - Make GetConfigLine be more intelligent, to filter out what gets
     sent (for instance, pass module prefix to look for) and be able to
-    ask for PixmapPath, etc instead of sending those w/ all the config
+    ask for ImagePath, etc instead of sending those w/ all the config
     info, so only the modules that need it could ask for it.
     (Note there is some functionality in libs/Parse.c to allow this).
-
-  - Go to just one IconPath instead of PixmapPath too?
 
   - Allow Resize to have units of "what the window resizes by"
   - Bug in:

@@ -1,4 +1,4 @@
-      /****************************************************************************
+/****************************************************************************
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
@@ -34,17 +34,18 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
-#include <string.h>
-#include <stdlib.h>
 #include <ctype.h>
+
 #include <X11/keysym.h>
-#include <sys/types.h>
 #include <sys/time.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+
+#include <fvwmlib.h>
+#include <Picture.h>
+
 
 #ifdef XPM
 /* static function prototypes */
@@ -54,12 +55,11 @@ static void c300_color_to_rgb(char *, XColor *); /* prototype */
 static double c400_distance(XColor *, XColor *); /* prototype */
 #endif
 
-#include "fvwmlib.h"
-
 
 static Picture *PictureList=NULL;
 Colormap PictureCMap;
 Display *PictureSaveDisplay;            /* Save area for display pointer */
+
 
 /* This routine called during fvwm and some modules initialization */
 void InitPictureCMap(Display *dpy,Window Root)
@@ -69,6 +69,42 @@ void InitPictureCMap(Display *dpy,Window Root)
   XGetWindowAttributes(dpy,Root,&root_attr);
   PictureCMap=root_attr.colormap;
 }
+
+
+static char* imagePath = FVWM_IMAGEPATH;
+
+void SetImagePath( char* newpath )
+{
+    if ( strcmp( imagePath, FVWM_IMAGEPATH ) != 0 )
+	free( imagePath );
+    
+    imagePath = newpath;
+}
+
+char* GetImagePath()
+{
+    return imagePath;
+}
+
+/****************************************************************************
+ *
+ * Find the specified image file somewhere along the given path.
+ *
+ * There is a possible race condition here:  We check the file and later
+ * do something with it.  By then, the file might not be accessible.
+ * Oh well.
+ *
+ ****************************************************************************/
+char* findImageFile( char* icon, char* pathlist, int type )
+{
+    if ( pathlist == NULL )
+	pathlist = imagePath;
+
+    return searchPath( pathlist, icon, ".gz", type );
+}
+
+
+
 
 
 Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
@@ -123,70 +159,64 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
   return NULL;
 }
 
-Picture *GetPicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
-		    char *name, int color_limit)
+
+Picture *GetPicture(Display *dpy, Window Root,
+		    char *ImagePath, char *name, int color_limit)
 {
   char *path;
   Picture *p;
 
-  if(!(path=findIconFile(name,PixmapPath,R_OK)))
-    if(!(path=findIconFile(name,IconPath,R_OK)))
+
+  if( !(path=findImageFile(name,ImagePath,R_OK)) )
       return NULL;
   p = LoadPicture(dpy,Root,path, color_limit);
   if (!p)
-    free(path);
+      free(path);
   return p;
 }
 
-Picture *CachePicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
-		      char *name, int color_limit)
+Picture *CachePicture(Display *dpy, Window Root,
+		      char *ImagePath, char *name, int color_limit)
 {
-  char *path;
-  Picture *p=PictureList;
+    char *path;
+    Picture *p=PictureList;
 
-  /* First find the full pathname */
-#ifdef XPM
-  if(!(path=findIconFile(name,PixmapPath,R_OK)))
-    if(!(path=findIconFile(name,IconPath,R_OK)))
-      return NULL;
-#else
-  /* Ignore the given pixmap path when compiled without XPM support */
-  if(!(path=findIconFile(name,IconPath,R_OK)))
-    return NULL;
-#endif
+    /* First find the full pathname */
+    if( !(path=findImageFile(name,ImagePath,R_OK)) )
+	return NULL;
 
-  /* See if the picture is already cached */
-  while(p)
+    /* See if the picture is already cached */
+    while(p)
     {
-      register char *p1, *p2;
+	register char *p1, *p2;
 
-      for (p1=path, p2=p->name; *p1 && *p2; ++p1, ++p2)
-	if (*p1 != *p2)
-          break;
+	for (p1=path, p2=p->name; *p1 && *p2; ++p1, ++p2)
+	    if (*p1 != *p2)
+		break;
 
-      if(!*p1 && !*p2) /* We have found a picture with the wanted name */
+	if(!*p1 && !*p2) /* We have found a picture with the wanted name */
 	{
-	  p->count++; /* Put another weight on the picture */
-	  free(path);
-	  return p;
+	    p->count++; /* Put another weight on the picture */
+	    free(path);
+	    return p;
 	}
-      p=p->next;
+	p=p->next;
     }
 
-  /* Not previously cached, have to load it ourself. Put it first in list */
-  p=LoadPicture(dpy,Root,path, color_limit);
-  if(p)
+    /* Not previously cached, have to load it ourself. Put it first in list */
+    p=LoadPicture(dpy, Root, path, color_limit);
+    if(p)
     {
-      p->next=PictureList;
-      PictureList=p;
+	p->next=PictureList;
+	PictureList=p;
     }
-  else
-    free(path);
-  return p;
+    else
+	free(path);
+    return p;
 }
 
 
-void DestroyPicture(Display *dpy,Picture *p)
+void DestroyPicture(Display *dpy, Picture *p)
 {
   Picture *q=PictureList;
 
@@ -214,67 +244,6 @@ void DestroyPicture(Display *dpy,Picture *p)
 	q->next=p->next; /* link around it */
     }
   free(p);
-}
-
-/****************************************************************************
- *
- * Find the specified icon file somewhere along the given path.
- *
- * There is a possible race condition here:  We check the file and later
- * do something with it.  By then, the file might not be accessible.
- * Oh well.
- *
- ****************************************************************************/
-char *findIconFile(char *icon, char *pathlist, int type)
-{
-  char *path;
-  char *dir_end;
-  int l;
-
-  if (!icon)
-    return NULL;
-
-  l = (pathlist) ? strlen(pathlist) : 0;
-
-  path = safemalloc(strlen(icon) + l + 10);
-  *path = '\0';
-  if (*icon == '/' || pathlist == NULL || *pathlist == '\0')
-    {
-      /* No search if icon begins with a slash */
-      /* No search if pathlist is empty */
-      strcpy(path, icon);
-      return path;
-    }
-
-  /* Search each element of the pathlist for the icon file */
-  while ((pathlist)&&(*pathlist))
-    {
-      dir_end = strchr(pathlist, ':');
-      if (dir_end != NULL)
-	{
-	  strncpy(path, pathlist, dir_end - pathlist);
-	  path[dir_end - pathlist] = 0;
-	}
-      else
-	strcpy(path, pathlist);
-
-      strcat(path, "/");
-      strcat(path, icon);
-      if (access(path, type) == 0)
-	return path;
-      strcat(path, ".gz");
-      if (access(path, type) == 0)
-	return path;
-
-      /* Point to next element of the path */
-      if(dir_end == NULL)
-	pathlist = NULL;
-      else
-	pathlist = dir_end + 1;
-    }
-  /* Hmm, couldn't find the file.  Return NULL */
-  free(path);
-  return NULL;
 }
 
 
@@ -361,8 +330,8 @@ static Color_Info base_array[] = {
 
 /* given an xpm, change colors to colors close to the
    subset above. */
-void
-color_reduce_pixmap(XpmImage *image,int color_limit) {
+void color_reduce_pixmap(XpmImage *image,int color_limit) 
+{
   int i;
   XpmColor *color_table_ptr;
   static char base_init = 'n';
@@ -382,8 +351,8 @@ color_reduce_pixmap(XpmImage *image,int color_limit) {
 }
 
 /* from the color names in the base table, calc rgbs */
-static void
-c100_init_base_table () {
+static void c100_init_base_table () 
+{
   int i;
   for (i=0; i<NColors; i++) {           /* change all base colors to numbers */
     c300_color_to_rgb(base_array[i].c_color, &base_array[i].rgb_space);
@@ -393,7 +362,8 @@ c100_init_base_table () {
 
 /* Replace the color in my_color by the closest matching color
    from base_table */
-void c200_substitute_color(char **my_color, int color_limit) {
+static void c200_substitute_color(char **my_color, int color_limit) 
+{
   int i, limit, minind;
   double mindst=1e20;
   double dst;
@@ -428,7 +398,8 @@ void c200_substitute_color(char **my_color, int color_limit) {
   return;                             /* all done */
  }
 
-static void c300_color_to_rgb(char *c_color, XColor *rgb_space) {
+static void c300_color_to_rgb(char *c_color, XColor *rgb_space) 
+{
   int rc;
   rc=XParseColor(PictureSaveDisplay, PictureCMap, c_color, rgb_space);
   if (rc==0) {
@@ -440,7 +411,8 @@ static void c300_color_to_rgb(char *c_color, XColor *rgb_space) {
 /* A macro for squaring things */
 #define SQUARE(X) ((X)*(X))
 /* RGB Color distance sum of square of differences */
-double c400_distance(XColor *target_ptr, XColor *base_ptr) {
+static double c400_distance(XColor *target_ptr, XColor *base_ptr) 
+{
   register double dst;
   dst = SQUARE((double)(base_ptr->red   - target_ptr->red  )/655.35)
     +   SQUARE((double)(base_ptr->green - target_ptr->green)/655.35)

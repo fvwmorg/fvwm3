@@ -9,7 +9,6 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
-#include <string.h>
 
 #include "fvwmlib.h"
 
@@ -49,7 +48,7 @@
       {
         if (!MergeConfigLineResource(&db, line, MyName, '*'))
         {
-          /* Parse other lines here (e.g. "IconPath") */
+          /* Parse other lines here (e.g. "ImagePath") */
         }
         else
         {

@@ -12,6 +12,8 @@
  *  Things to do:  Convert to C++  (In Progress)
  */
 
+#include <libs/Picture.h>
+
 /* Struct definitions */
 typedef struct button
 {

@@ -7,16 +7,16 @@
 # Paths 
 #	Paths are given as a list of directories, seperated by colons 
 #
-# IconPath 	A list of directories where bitmap icons can be found
+# ImagePath 	A list of directories where images (bitmaps, pixmaps,
+#		etc) can be found.
 #
-# PixmapPath	A list of directories where pixmap (color) icons can be found
+# ModulePath	A list of directories where fvwm2 modules are stored.
+#		The compiled-in setting will contain all modules
+#		distributed with fvwm, so you only set this if you
+#		add your own modules in another directory.
 #
-# ModulePath	A list of directories where fvwm2 modules are stored
-#			(you probably will not need to change this)
-#
-IconPath	/usr/X11R6/include/X11/bitmaps/:$HOME/bitmaps
-PixmapPath	/usr/X11R6/include/X11/pixmaps/:$HOME/xpms:$HOME/pixmaps
-ModulePath	$FVWM_MODULEDIR:$HOME/fvwm-modules
+ImagePath	/usr/X11R6/include/X11/pixmaps/:$HOME/xpms:$HOME/pixmaps
+#ModulePath	$FVWM_MODULEDIR:$HOME/fvwm-modules
 
 # set XORvalue to something visible.  This sets the coloration of the 
 # 'rubber-band' window-borders when moving and resizing windows.

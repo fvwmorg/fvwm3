@@ -1,8 +1,4 @@
 
-ModulePath /usr/lib/X11/fvwm2
-PixmapPath	     /usr/include/X11/pixmaps
-IconPath	     /usr/include/X11/bitmaps
-
 DeskTopSize 1x1
 EdgeScroll 0 0
 EdgeResistance 250 50

@@ -1,3 +1,13 @@
+Thu Mar  4 00:42:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* TODO: removed item about coalescing PixmapPath with IconPath.
+
+Thu Mar  4 00:31:59 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* mod_m2f_communication.html: 
+	* mod_f2m_communication.html: 
+	* FAQ: documented IconPath, PixmapPath change to ImagePath.
+
 Sun Feb 28 08:29:59 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* DEVELOPERS: added Paul Smith's "Rules of the Road".

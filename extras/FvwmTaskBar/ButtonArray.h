@@ -12,6 +12,8 @@
  *  Things to do:  Convert to C++  (In Progress)
  */
 
+#include <libs/Picture.h>
+
 #define DEFAULT_BTN_WIDTH 180
 
 /* Button states */

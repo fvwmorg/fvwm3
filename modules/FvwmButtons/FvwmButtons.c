@@ -19,13 +19,10 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
-#include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/stat.h>
@@ -123,8 +120,7 @@ Atom _XA_WM_PROTOCOLS;
 Atom _XA_WM_NORMAL_HINTS;
 Atom _XA_WM_NAME;
 
-char *iconPath = NULL;
-char *pixmapPath = NULL;
+char *imagePath = NULL;
 
 Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
 GC  NormalGC;
@@ -1028,7 +1024,7 @@ void RedrawWindow(button_info *b)
 **/
 int LoadIconFile(char *s,Picture **p)
 {
-  *p=CachePicture(Dpy,Root,iconPath,pixmapPath,s, save_color_limit);
+  *p=CachePicture(Dpy,Root,imagePath,s, save_color_limit);
   if(*p)
     return 1;
   return 0;

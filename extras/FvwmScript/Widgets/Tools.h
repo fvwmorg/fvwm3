@@ -3,7 +3,7 @@
 extern char *Scrapt;
 extern Atom propriete;
 extern Atom type;
-extern char *pixmapPath;
+extern char *imagePath;
 extern X11base *x11base;
 extern int nbobj;
 extern struct XObj *tabxobj[100];

@@ -983,10 +983,10 @@ extern int save_color_limit;            /* global for xpm color limiting */
 void ParseOptions(button_info *ub)
 {
   char *s;
-  char *items[]={"iconpath","pixmappath","colorlimit",NULL,NULL};
+  char *items[]={"imagepath","colorlimit",NULL,NULL};
 
-  items[3]=mymalloc(strlen(MyName)+2);
-  sprintf(items[3],"*%s",MyName);
+  items[2]=mymalloc(strlen(MyName)+2);
+  sprintf(items[2],"*%s",MyName);
 
   GetConfigLine(fd,&s);
   while(s && s[0])
@@ -996,19 +996,14 @@ void ParseOptions(button_info *ub)
 	case -1:
 	  break;
 	case 0:
-	  if (iconPath)
-	    free(iconPath);
-	  CopyString(&iconPath,s);
+	  if (imagePath)
+	    free(imagePath);
+	  CopyString(&imagePath,s);
 	  break;
-	case 1:
-	  if (pixmapPath)
-	    free(pixmapPath);
-	  CopyString(&pixmapPath,s);
-	  break;
-	case 2:                         /* colorlimit */
+	case 1:                         /* colorlimit */
           sscanf(s,"%d",&save_color_limit);
 	  break;
-	case 3:
+	case 2:
 	  if(s && s[0] && !config_file)
 	    ParseConfigLine(&ub,s);
 	}
@@ -1018,6 +1013,6 @@ void ParseOptions(button_info *ub)
   if(config_file)
     ParseConfigFile(ub);
 
-  free(items[3]);
+  free(items[2]);
   return;
 }

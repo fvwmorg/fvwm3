@@ -6,6 +6,7 @@
 #include "menus.h"
 #include <libs/fvwmlib.h>
 
+
 /************************************************************************
  * ReapChildren - wait() for all dead child processes
  ************************************************************************/
@@ -256,10 +257,7 @@ extern void       match_string(struct config *, char *, char *, FILE *);
 extern void       no_popup(char *ptr);
 extern void       KillModule(int channel, int place);
 extern void       ClosePipes(void);
-extern char       *findIconFile(char *icon, char *pathlist, int mode);
 void find_func_type(char *action, short *func_type, Bool *func_needs_window);
-extern void       GetBitmapFile(FvwmWindow *tmp_win);
-extern void       GetXPMFile(FvwmWindow *tmp_win);
 extern void       GetIconWindow(FvwmWindow *tmp_win);
 extern void       GetIconBitmap(FvwmWindow *tmp_win);
 /*  RBW - 11/02/1998  */
@@ -431,8 +429,9 @@ void ModuleConfig(F_CMD_ARGS);
 void add_another_item(F_CMD_ARGS);
 void add_item_to_func(F_CMD_ARGS);
 void setModulePath(F_CMD_ARGS);
-void setIconPath(F_CMD_ARGS);
-void setPixmapPath(F_CMD_ARGS);
+void imagePath_function(F_CMD_ARGS);
+void iconPath_function(F_CMD_ARGS);
+void pixmapPath_function(F_CMD_ARGS);
 void ProcessNewStyle(F_CMD_ARGS);
 void SetHiColor(F_CMD_ARGS);
 void SetMenuColor(F_CMD_ARGS);

@@ -44,6 +44,7 @@ enum {
     F_ADDFUNC,
     F_STYLE,
     F_EDGE_SCROLL,
+    F_IMAGE_PATH,
     F_PIXMAP_PATH,
     F_ICON_PATH,
     F_MODULE_PATH,

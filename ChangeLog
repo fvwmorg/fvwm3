@@ -1,3 +1,9 @@
+Thu Mar  4 19:18:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/fvwm2.1 (Iconify): re-worded to put the current syntax
+	before the obsolete syntax.  I didn't really understand how
+	"Iconify toggle" differs from just "Iconify".
+
 1999-03-04  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c (WindowShade):
@@ -47,6 +53,39 @@
 	* fvwm/icccm2.c: New file implementing SetupICCCM2,
 	CloseICCCM2, HandleSelectionRequest and HandleSelectionClear.
 	* fvwm/fvwm.h: add prototypes for these plus a couple of Atom's.
+
+Thu Mar  4 01:30:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/module.c (executeModule): search for module using
+	searchPath() rather than searchIcon()!
+
+Thu Mar  4 01:22:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/System.c (searchPath): new function; this is most of the
+	guts of the old findIconFile -- which was used to find more than
+	just icons --- modules, for example!
+
+Thu Mar  4 00:55:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/fvwmlib.h: added prototypes for all replacement functions,
+	conditionally compiled.
+
+Thu Mar  4 00:44:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/fvwm2.1:
+	* libs/XResource.c: 
+	* configure.in: 
+	* fvwm/builtins.c:
+	* fvwm/functions.c:
+	* fvwm/misc.h:
+	* fvwm/modconf.c: replace IconPath by ImagePath; the config
+	command IconPath remains, but is flagged as deprecated.
+
+Wed Mar  3 21:05:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* sample.fvwmrc/system.fvwm2rc-sample-2: 
+	* sample.fvwmrc/new-features: changed PixmapPath and IconPath to
+	ImagePath.
 
 1999-03-03  Tomas Ogren  <stric@ing.umu.se>
 
@@ -140,6 +179,40 @@
 	Fvwm exports FVWM_MODULEDIR to the environment of subprocesses, so
 	running configure in an xterm will always pick up the current
 	module dir.
+
+Sun Feb 28 11:37:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/fvwm2.1: removed all traces of PixmapPath from manpage.
+
+Sun Feb 28 11:25:30 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Strings.c (stripcpy): make sure 'tmp' is valid before
+	dereferencing it; there was a possible problem if function was
+	passed an empty string.
+
+Sun Feb 28 11:03:42 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Picture.h: new file.
+	* libs/fvwmlib.h: moved declarations for Picture.c into Picture.h.
+
+	* libs/Picture.c (GetIconPath,SetIconPath): the icon path variable
+	is now static; these are the accessor functions.
+	* libs/Picture.c (findIconFile,GetPicture,CachePicture): these
+	functions now look at a single path, rather than IconPath and
+	PixmapPath.  The path parameter may be NULL, in which case the
+	default path -- the one set by SetIconPath() -- is used.
+
+	* fvwm/add_window.c: 
+	* fvwm/builtins.c:
+	* fvwm/functions.c:
+	* fvwm/fvwm.h:
+	* fvwm/icons.c:
+	* fvwm/menus.c:
+	* fvwm/misc.h: 
+	* fvwm/modconf.c: 
+	Fixes for the findIconFile(), GetPicture(), and CachePicture()
+	changes.  The PixmapPath command is temporarily retained; it gives
+	a warning, and then calls IconPath.
 
 1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 

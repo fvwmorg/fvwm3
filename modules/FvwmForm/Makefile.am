@@ -5,6 +5,9 @@ configdir = @FVWM_CONFIGDIR@
 
 module_PROGRAMS = FvwmForm
 man_MANS = FvwmForm.1
+
+## NB: Neither _MANS nor _DATA are included by default in
+## distributions! 
 EXTRA_DIST = $(man_MANS) $(config_DATA) Changes
 
 FvwmForm_SOURCES = FvwmForm.c FvwmForm.h DefineMe.c ReadXServer.c \

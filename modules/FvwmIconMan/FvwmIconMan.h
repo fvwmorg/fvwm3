@@ -8,15 +8,13 @@
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
+#include <libs/Picture.h>
+
 #ifndef FVWM_VERSION
 #define FVWM_VERSION 2
 #endif
 
-#ifdef COMPILE_STANDALONE
-#include "fvwmlib.h"
-#else
 #include "libs/fvwmlib.h"
-#endif
 
 #if HAVE_SYS_SELECT_H
 #include <sys/select.h>

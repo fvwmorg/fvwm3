@@ -2593,8 +2593,6 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
   char *tstart, *txt, *name;
   int i;
   Picture *pp;
-  extern char *IconPath;
-  extern char *PixmapPath;
 #ifdef UGLY_WHEN_PIXMAPS_MISSING
   char *save_instring;
 #endif
@@ -2639,7 +2637,7 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	  name[i] = 0;
 
 	  /* Next, check for a color pixmap */
-	  pp=CachePicture(dpy,Scr.Root,IconPath,PixmapPath,name,
+	  pp=CachePicture(dpy,Scr.Root,NULL,name,
 			  Scr.ColorLimit);
 	  if(*txt != '\0')
 	    txt++;

@@ -9,8 +9,7 @@ extern Display *dpy;
 extern Window Root, win;
 extern XFontStruct *ButtonFont;
 extern int Clength;
-extern char *PixmapPath;
-extern char *IconPath;
+extern char *ImagePath;
 Button *StartButton;
 int StartButtonWidth, StartButtonHeight;
 char *StartName     = NULL,
@@ -44,7 +43,7 @@ void StartButtonInit(int height)
   /** FIXME: what should the colour limit be?
       I put in -1, which apparently imposes NO limit.
   **/
-  p = GetPicture(dpy, Root, IconPath, PixmapPath, StartIconName, -1);
+  p = GetPicture(dpy, Root, ImagePath, StartIconName, -1);
 
   StartButton = (Button *)ButtonNew(StartName, p, BUTTON_UP);
   if (p != NULL) pw = p->width+3; else pw = 0;

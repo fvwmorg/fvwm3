@@ -21,9 +21,7 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <string.h>
 #include <ctype.h>
-#include <unistd.h>
 
 #include "fvwm.h"
 #include "menus.h"
@@ -121,7 +119,8 @@ static struct functions func_config[] =
   {"HilightColor", SetHiColor,       F_HICOLOR,             FUNC_NO_WINDOW},
   {"IconFont",     LoadIconFont,     F_ICONFONT,            FUNC_NO_WINDOW},
   {"Iconify",      iconify_function, F_ICONIFY,             FUNC_NEEDS_WINDOW},
-  {"IconPath",     setIconPath,      F_ICON_PATH,           FUNC_NO_WINDOW},
+  {"IconPath",     iconPath_function,F_ICON_PATH,           FUNC_NO_WINDOW},
+  {"ImagePath",    imagePath_function,F_IMAGE_PATH,         FUNC_NO_WINDOW},
   {"Key",          ParseKeyEntry,    F_KEY,                 FUNC_NO_WINDOW},
   {"KillModule",   module_zapper,    F_ZAP,                 FUNC_NO_WINDOW},
   {"Layer",        change_layer,     F_LAYER,               FUNC_NEEDS_WINDOW},
@@ -141,7 +140,7 @@ static struct functions func_config[] =
   {"OpaqueMoveSize", SetOpaque,      F_OPAQUE,              FUNC_NO_WINDOW},
   {"Pick",         PickFunc,         F_PICK,                FUNC_NO_WINDOW},
   {"PipeRead",     PipeRead,         F_READ,                FUNC_NO_WINDOW},
-  {"PixmapPath",   setPixmapPath,    F_PIXMAP_PATH,         FUNC_NO_WINDOW},
+  {"PixmapPath",   pixmapPath_function,F_PIXMAP_PATH,         FUNC_NO_WINDOW},
   {"PopUp",        popup_func,       F_POPUP,               FUNC_NO_WINDOW},
   {"Prev",         PrevFunc,         F_PREV,                FUNC_NO_WINDOW},
   {"Quit",         quit_func,        F_QUIT,                FUNC_NO_WINDOW},

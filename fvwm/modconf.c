@@ -27,12 +27,8 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
-#include <string.h>
-#include <fcntl.h>
 #include <ctype.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 
 #include "fvwm.h"
@@ -41,6 +37,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "module.h"
+#include <libs/Picture.h>
 
 extern unsigned long *PipeMask;                /* in module.c */
 
@@ -164,25 +161,20 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   struct moduleInfoList *t;
   char *message,msg2[32];
-  extern char *IconPath;
-  extern char *PixmapPath;
+  char *ImagePath = GetImagePath();
 
-  if (IconPath && strlen(IconPath))
+  if (ImagePath && strlen(ImagePath))
   {
-    message=safemalloc(strlen(IconPath)+11);
-    sprintf(message,"IconPath %s\n",IconPath);
+    message=safemalloc(strlen(ImagePath)+11);
+    sprintf(message,"ImagePath %s\n",ImagePath);
     SendName(*Module,M_CONFIG_INFO,0,0,0,message);
     free(message);
   }
-#ifdef XPM
-  if (PixmapPath && strlen(PixmapPath))
+#ifdef XPM 
   {
-    message=safemalloc(strlen(PixmapPath)+13);
-    sprintf(message,"PixmapPath %s\n",PixmapPath);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,message);
+    char message[20]; /** Fixme: should not be static size **/
     sprintf(message,"ColorLimit %d\n",Scr.ColorLimit);
     SendName(*Module,M_CONFIG_INFO,0,0,0,message);
-    free(message);
   }
 #endif
   /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to

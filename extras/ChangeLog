@@ -4,6 +4,48 @@
 	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
 	(RedrawWindow): applied AutoFocus patch
 
+Thu Mar  4 01:41:47 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/icons.c: 
+	* FvwmWharf/FvwmWharf.c (main): 
+	* FvwmScript/FvwmScript.c (LoadIcon): 
+	* FvwmGoodStuff/icons.c: replace findIconFile with findImageFile.
+
+Thu Mar  4 00:36:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/Scripts/system.fvwmrc: removed Icon, Pixmap, and
+	Module Paths.
+
+Thu Mar  4 00:34:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmTaskBar/Start.c: replaced IconPath by ImagePath.
+
+Wed Mar  3 23:56:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/FvwmScript.c (LoadIcon): 
+	* FvwmScript/Widgets/Tools.h: 
+	* FvwmWharf/Wharf.h: 
+	* FvwmWharf/FvwmWharf.c: 
+	* FvwmWharf/FvwmWharf.1: 
+	* FvwmWharf/icons.c: 
+	* FvwmGoodStuff/icons.c (GetXPMFile): 
+	* FvwmGoodStuff/FvwmGoodStuff.1: 
+	* FvwmGoodStuff/FvwmGoodStuff.h: 
+	* FvwmGoodStuff/FvwmGoodStuff.c: replaced iconPath and pixmapPath
+	by imagePath.
+
+Sun Feb 28 12:10:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/ButtonArray.h: include libs/Picture.h for Picture
+	defintion. 
+
+Sun Feb 28 11:02:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/Start.c: 
+	* FvwmTaskBar/FvwmTaskBar.c: removed all traces of PixmapPath; use
+	IconPath only.
+
 1999-02-15  Bob Woodside <proteus@pcnet.com>
 
 	* FvwmConsole/FvwmConsole.h: Switched the order of the includes for

@@ -148,8 +148,7 @@ struct iconfile *IconListTail = NULL;
 struct iconfile *DefaultIcon = NULL;
 struct mousefunc *MouseActions = NULL;
 struct keyfunc *KeyActions = NULL;
-char *iconPath = NULL;
-char *pixmapPath = NULL;
+char *imagePath = NULL;
 char *FvwmDefaultIcon = NULL;
 
 static Atom wm_del_win;
@@ -1523,10 +1522,8 @@ void ParseOptions(void)
 	}else if (strncasecmp(tline,CatString3("*",MyName,
 					      ""),Clength+1)==0)
 	  parseicon(&tline[Clength + 1]);
-	else if (strncasecmp(tline,"IconPath",8)==0)
-	  CopyString(&iconPath,&tline[8]);
-	else if (strncasecmp(tline,"PixmapPath",10)==0)
-	  CopyString(&pixmapPath,&tline[10]);
+	else if (strncasecmp(tline,"ImagePath",9)==0)
+	  CopyString(&imagePath,&tline[8]);
 	else if (strncasecmp(tline,"ClickTime",9)==0)
 	  ClickTime = atoi(&tline[9]);
 	else if (strncasecmp(tline,"ColorLimit",10)==0) {

@@ -13,10 +13,9 @@
 #	     directory.  Be sure to update this file after installing
 #	     a new version.
 #
-# Colon seperated unix directory paths for Modules, xpm files, and bitmaps
+# Colon seperated unix directory paths for Modules, and for images
 #ModulePath /usr/local/libexec/fvwm/2.x.y
-#PixmapPath /usr/include/X11/pixmaps:/usr/local/include/X11/pixmaps
-#IconPath   /usr/include/X11/bitmaps
+#ImagePath  /usr/include/X11/pixmaps:/usr/local/include/X11/pixmaps
 
 ############################################################################
 # COLORS and FONTS

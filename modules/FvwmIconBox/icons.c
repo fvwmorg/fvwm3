@@ -205,7 +205,7 @@ void GetBitmapFile(struct icon_info *item)
   char *path = NULL;
   int HotX,HotY;
 
-  path = findIconFile(item->icon_file, iconPath,R_OK);
+  path = findImageFile(item->icon_file, imagePath,R_OK);
   if(path == NULL)return;
 
   if(XReadBitmapFile (dpy, Root,path,(unsigned int *)&item->icon_w, 
@@ -241,7 +241,7 @@ void GetXPMFile(struct icon_info *item)
   int rc;
   XpmImage	my_image;
 
-  path = findIconFile(item->icon_file, pixmapPath,R_OK);
+  path = findImageFile(item->icon_file, imagePath,R_OK);
   if(path == NULL)return;  
 
   XGetWindowAttributes(dpy,Root,&root_attr);
@@ -364,7 +364,7 @@ Bool GetBackPixmap(void)
   if (IconwinPixmapFile == NULL)
     return False;
 
-  if ((path = findIconFile(IconwinPixmapFile, iconPath,R_OK)) != NULL){
+  if ((path = findImageFile(IconwinPixmapFile, imagePath,R_OK)) != NULL){
     if (XReadBitmapFile(dpy, Root,path,(unsigned int *)&w,
 			(unsigned int *)&h, &tmp_bitmap,
 			(int *)&x, (int *)&y)!= BitmapSuccess)
@@ -379,8 +379,8 @@ Bool GetBackPixmap(void)
   }
   
 #ifdef XPM
-  if ( w == 0 && h == 0 && (path = findIconFile(IconwinPixmapFile,
-						pixmapPath,R_OK)) != NULL)
+  if ( w == 0 && h == 0 && (path = findImageFile(IconwinPixmapFile,
+						imagePath,R_OK)) != NULL)
     { 
       XGetWindowAttributes(dpy,Root,&root_attr);
       xpm_attributes.colormap = root_attr.colormap;

@@ -41,13 +41,13 @@ dnl includes.  Actually, this should probably not appear in configure
 dnl at all: it is settable at runtime, and only confuses the issue to
 dnl have it settable here too.
 dnl
-AC_MSG_CHECKING(iconpath)
+AC_MSG_CHECKING(imagepath)
 val="/usr/include/X11/bitmaps:/usr/include/X11/pixmaps"
-AC_ARG_WITH(iconpath,
-[  --with-iconpath=PATH    colon-delimited search path for icons],
+AC_ARG_WITH(imagepath,
+[  --with-imagepath=PATH    colon-delimited search path for images],
 [ case "$withval" in
   no)
-    AC_MSG_ERROR(Can not disable icon path.)
+    AC_MSG_ERROR(Can not disable image path.)
     ;;
   yes)
     ;;
@@ -55,7 +55,7 @@ AC_ARG_WITH(iconpath,
     val="$withval"
     ;;
   esac ])
-AC_DEFINE_UNQUOTED(FVWM_ICONDIR, "$val")
+AC_DEFINE_UNQUOTED(FVWM_IMAGEPATH, "$val")
 AC_MSG_RESULT($val)
 
 

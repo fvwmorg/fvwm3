@@ -4,6 +4,7 @@
  *
  *************************************************************************/
 #include "libs/fvwmlib.h"
+
 struct icon_info;
 Bool ExecIconBoxFunction(char *msg);
 extern void   CreateWindow(void);
@@ -149,8 +150,7 @@ extern struct func *Actions;
 extern struct iconfile *IconListHead;
 extern struct iconfile *IconListTail;
 
-extern char *iconPath;
-extern char *pixmapPath;
+extern char *imagePath;
 
 extern int icon_relief;
 

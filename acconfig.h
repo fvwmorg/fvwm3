@@ -1,7 +1,7 @@
 /** Compatibility stuff **/
 
-/* Where to search for the fvwm icons.  */
-#undef FVWM_ICONDIR
+/* Where to search for images.  */
+#undef FVWM_IMAGEPATH
 
 /* Define if Xpm library is used.  */
 #undef XPM

@@ -16,15 +16,12 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <errno.h>
 
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 
 #include "fvwm.h"
@@ -135,7 +132,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (!cptr)
     return;
 
-  arg1 = findIconFile(cptr,ModulePath,X_OK);
+  arg1 = searchPath( ModulePath, cptr, NULL, X_OK );
   if(arg1 == NULL)
     {
       fvwm_msg(ERR,"executeModule",

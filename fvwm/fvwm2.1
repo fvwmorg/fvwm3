@@ -877,7 +877,7 @@ ButtonStyle 4 ActiveUp (Pixmap up.xpm) \\
 ButtonStyle 4 Inactive Pixmap inactive.xpm
 .EE
 The pixmap specification can be given as an absolute or relative
-pathname (see PixmapPath).  If the pixmap cannot be found, the button
+pathname (see ImagePath).  If the pixmap cannot be found, the button
 style reverts to Simple.  Flags specific to the Pixmap style are
 "Left," "Right," "Top," and "Bottom."  These can be used to justify
 the pixmap (default is centered for both directions).  Pixmap
@@ -1448,26 +1448,27 @@ this font to the default font (see \fIDefaultFont\fP) you may omit
 .IP "Iconify [ \fImode\fP ]"
 Iconifies a window if it is not already iconified or de-iconifies it
 if it is already iconified.  If the optional argument \fImode\fP is
-positive only iconification will be allowed.  If the optional
-argument is negative only de-iconification will be allowed.
+'y', 'yes', 'on', 'true' or 't', only iconification will be allowed,
+while if \fImode\fP is 'n', 'no', 'off', 'false' or 'f', then only
+de-iconification is allowed.  Using 'toggle' switches between between
+iconified and de-iconified state.
 
-Note that this syntax is obsolete. You can use 'y', 'yes', 'on',
-'true' or 't' instead of a positive argument and 'n', 'no', 'off',
-'false' or 'f' instead of a negative argument and 'toggle' to switch
-between iconified and de-iconified state. Numeric arguments may be
-removed in the future.
+For backwards compatibility, the optional argument may also be a
+positive number to signifiy 'on', and negative to signify 'off'.
+Note that this syntax is obsolete, and will be removed in the future.
 
 
-.IP "IconPath \fIpath\fP"
+.IP "ImagePath \fIpath\fP"
+
 Specifies a colon separated list of full path names of directories
-where bitmap (monochrome) icons can be found.  Each path should start
+where images (both monochrome and pixmap) can be found.  Each path should start
 with a slash.  Environment variables can be used here as well (i.e.
 $HOME or ${HOME}).
 
 Note: if the FvwmM4 is used to parse your rc files, then \fIm4\fP may
 want to mangle the word "include" which will frequently show up in the
-IconPath or PixmapPath command.  To fix this add undefine(`include')
-prior to the IconPath command, or better use the '-m4-prefix' option
+ImagePath command.  To fix this add undefine(`include')
+prior to the ImagePath command, or better use the '-m4-prefix' option
 to force all m4 directives to have a prefix of "m4_" (see the
 \fIFvwmM4\fP man page).
 
@@ -2136,13 +2137,6 @@ annoying multiple selections with complex functions.
 Causes fvwm2 to read commands output from the program named
 \fIcmd\fP.  Useful for building up dynamic menu entries based on a
 directories contents, for example.
-
-
-.IP "PixmapPath \fIpath\fP"
-Specifies a colon separated list of full path names of directories
-where pixmap (color) icons can be found.  Each path should start with
-a slash.  Environment variables can be used here as well (i.e.  $HOME
-or ${HOME}).
 
 
 .IP "Popup \fIPopupName\fP [ \fIposition\fP ] [ \fIdefault-action\fP ]"

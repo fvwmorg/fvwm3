@@ -96,7 +96,8 @@ char *stripcpy(char *source)
     source++;
   len = strlen(source);
   tmp = source + len -1;
-  while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=source))
+
+  while( (tmp >= source) && ((isspace(*tmp)) || (*tmp == '\n')) )
     {
       tmp--;
       len--;

@@ -9,11 +9,8 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <signal.h>
-#include <string.h>
 #include <ctype.h>
-#include <unistd.h>
 #include <errno.h>
 #include <X11/keysym.h>
 
@@ -23,6 +20,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "module.h"
+
 
 #ifdef WINDOWSHADE
 static int shade_anim_steps=0;
@@ -538,10 +536,6 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 #endif /* WINDOWSHADE */
 
-/* For Ultrix 4.2 */
-#include <sys/types.h>
-#include <sys/time.h>
-
 
 MenuRoot *FindPopup(char *action)
 {
@@ -606,7 +600,8 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   AddToMenu(mr, item,rest,TRUE /* pixmap scan */, TRUE);
   if (item)
     free(item);
-  /* These lines are correct! We must not release token if the string is empty.
+  /* These lines are correct! We must not release token if the string is
+     empty.  WHY??
    * It cannot be NULL! GetNextToken never returns an empty string! */
   if (*token)
     free(token);
@@ -1472,8 +1467,6 @@ void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 }
 
-extern char *IconPath;
-extern char *PixmapPath;
 
 void SetXORPixmap(XEvent *eventp,Window w,FvwmWindow *tmp_win,
             unsigned long context, char *action,int* Module)
@@ -1491,7 +1484,7 @@ void SetXORPixmap(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 
   /* search for pixmap */
-  GCPicture = CachePicture(dpy, Scr.Root, IconPath, PixmapPath, PixmapName, Scr.ColorLimit);
+  GCPicture = CachePicture(dpy, Scr.Root, NULL, PixmapName, Scr.ColorLimit);
   free(PixmapName);
   if (GCPicture == NULL) {
     fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
@@ -1550,48 +1543,29 @@ void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   checkPanFrames();
 }
 
-#ifdef XPM
-char *PixmapPath = FVWM_ICONDIR;
-#else
-char *PixmapPath = "";
-#endif
-void setPixmapPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                   unsigned long context, char *action,int* Module)
+
+void imagePath_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+			unsigned long context, char *action,int* Module)
 {
-#ifdef XPM
-  static char *ptemp = NULL;
-  char *tmp;
-
-  if(ptemp == NULL)
-    ptemp = PixmapPath;
-
-  if((PixmapPath != ptemp)&&(PixmapPath != NULL))
-    free(PixmapPath);
-  tmp = stripcpy(action);
-  PixmapPath = envDupExpand(tmp, 0);
-  free(tmp);
-#else
-  fvwm_msg(ERR, "setPixmapPath",
-           "XPM support has not been included in this version of Fvwm2.");
-#endif
+    SetImagePath( envDupExpand( stripcpy(action), 0 ) );
 }
 
-char *IconPath = FVWM_ICONDIR;
-void setIconPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                 unsigned long context, char *action,int* Module)
+void iconPath_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		       unsigned long context, char *action,int* Module)
 {
-  static char *ptemp = NULL;
-  char *tmp;
-
-  if(ptemp == NULL)
-    ptemp = IconPath;
-
-  if((IconPath != ptemp)&&(IconPath != NULL))
-    free(IconPath);
-  tmp = stripcpy(action);
-  IconPath = envDupExpand(tmp, 0);
-  free(tmp);
+    fvwm_msg(ERR, "iconPath_function",
+	     "IconPath is deprecated since 2.3.0; use ImagePath instead." );
+    imagePath_function( eventp, w, tmp_win, context, action, Module );
 }
+
+void pixmapPath_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+			 unsigned long context, char *action,int* Module)
+{
+    fvwm_msg(ERR, "pixmapPath_function",
+	     "PixmapPath is deprecated since 2.3.0; use ImagePath instead." );
+    imagePath_function( eventp, w, tmp_win, context, action, Module );
+}
+
 
 char *ModulePath = FVWM_MODULEDIR;
 
@@ -2344,8 +2318,8 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	}
 	if (arg1 != NULL)
 	{
-	  tmpms->look.sidePic = CachePicture(dpy, Scr.Root, IconPath,
-					     PixmapPath, arg1, Scr.ColorLimit);
+	    tmpms->look.sidePic = CachePicture(dpy, Scr.Root, NULL,
+					       arg1, Scr.ColorLimit);
 	  if (!tmpms->look.sidePic)
 	    fvwm_msg(WARN, "NewMenuStyle", "Couldn't find pixmap %s", arg1);
 	}
@@ -3276,9 +3250,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		 || strncasecmp(style,"TiledPixmap",11)==0)
 	{
 	    s = GetNextToken(s, &file);
-	    bf->u.p = CachePicture(dpy, Scr.Root,
-				   IconPath,
-				   PixmapPath,
+	    bf->u.p = CachePicture(dpy, Scr.Root, NULL,
 				   file,Scr.ColorLimit);
 	    if (bf->u.p == NULL)
 	    {
@@ -3767,8 +3739,7 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
     s = GetNextToken(s, &token);
     if (token)
     {
-      mf->u.p = CachePicture(dpy, Scr.Root, IconPath,
-			     PixmapPath,
+      mf->u.p = CachePicture(dpy, Scr.Root, NULL,
 			     token, Scr.ColorLimit);
       if (mf->u.p == NULL)
       {

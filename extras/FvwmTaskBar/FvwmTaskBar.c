@@ -147,8 +147,7 @@ extern char *StartPopup;
 
 Colormap PictureCMap;
 
-char *IconPath   = NULL,
-     *PixmapPath = NULL;
+char *ImagePath   = NULL;
 
 static void ParseConfigLine(char *tline);
 
@@ -678,10 +677,8 @@ static void ParseConfigLine(char *tline) {
     free(str);
   } else if(strncasecmp(tline,"ButtonWidth",11) == 0) {
     button_width = atoi(&tline[11]);
-  } else if(strncasecmp(tline,"IconPath",8) == 0) {
-    CopyString(&IconPath, &tline[8]);
-  } else if(strncasecmp(tline,"PixmapPath",10) == 0) {
-    CopyString(&PixmapPath, &tline[10]);
+  } else if(strncasecmp(tline,"ImagePath",9) == 0) {
+    CopyString(&ImagePath, &tline[8]);
   } else {
     GoodiesParseConfig(tline, Module);
     StartButtonParseConfig(tline, Module);

@@ -46,7 +46,10 @@ Changes in alpha release 2.3.0 (February 1999)
   You can control vertical spacing on text so spacing is OK for help panels.
   A button can execute a synchronous shell command.
 
->>>>>>> 1.36
+* IconPath and PixmapPath are replaced by single ImagePath.  All
+  images, no matter what their format are searched for along the
+  ImagePath.
+
 Changes in official release 2.2 (February 1999)
 
 Changes in alpha release 2.1.13 (February 1999)

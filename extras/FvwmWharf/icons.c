@@ -174,7 +174,7 @@ void GetBitmapFile(int button, int ico)
   char *path = NULL;
   int HotX,HotY;
 
-  path = findIconFile(Buttons[button].icons[ico].file, iconPath,R_OK);
+  path = findImageFile(Buttons[button].icons[ico].file, imagePath,R_OK);
   if(path == NULL)return;
 
   if(XReadBitmapFile (dpy, Root,path,(unsigned int *)&Buttons[button].icons[ico].w,
@@ -209,7 +209,7 @@ int GetXPMFile(int button,int ico)
   XpmAttributes xpm_attributes;
   char *path = NULL;
 
-    path = findIconFile(Buttons[button].icons[ico].file, pixmapPath,R_OK);
+    path = findImageFile(Buttons[button].icons[ico].file, imagePath,R_OK);
     if(path == NULL) return 0;
     XGetWindowAttributes(dpy,Root,&root_attr);    
     xpm_attributes.colormap = root_attr.colormap;

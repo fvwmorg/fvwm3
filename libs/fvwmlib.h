@@ -1,6 +1,8 @@
 #ifndef FVWMLIB_H
 #define FVWMLIB_H
 
+#include "config.h"
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
@@ -40,6 +42,36 @@ extern struct f_db_info f_db_info;
 extern void f_db_print(const char *fmt, ...)
                        __attribute__ ((__format__ (__printf__, 1, 2)));
 #endif
+
+
+/***********************************************************************
+ * Replacements for missing system calls.
+ ***********************************************************************/
+
+#ifndef HAVE_ATEXIT
+int atexit( void(*func)() );
+#endif
+
+#ifndef HAVE_GETHOSTNAME
+int gethostname( char* name, int len );
+#endif
+
+#ifndef HAVE_STRCASECMP
+int strcasecmp( char* s1, char* s2 );
+#endif
+
+#ifndef HAVE_STRNCASECMP
+int strncasecmp( char* s1, char* s2, int len );
+#endif
+
+#ifndef HAVE_STRERROR
+char* strerror( int errNum );
+#endif
+
+#ifndef HAVE_USLEEP
+int usleep( unsigned long usec );
+#endif
+
 
 
 /***********************************************************************
@@ -101,6 +133,10 @@ int GetFdWidth(void);
 int getostype(char *buf, int max);
 char *safemalloc(int);
 
+/* Search along colon-separated path for filename, with optional suffix */
+char* searchPath( char* path, char* filename, char* suffix, int type );
+
+
 /***********************************************************************
  * Stuff for modules to communicate with fvwm
  ***********************************************************************/
@@ -113,30 +149,6 @@ void SetMessageMask(int *fd, unsigned long mask);
 /***********************************************************************
  * Stuff for dealing w/ bitmaps & pixmaps:
  ***********************************************************************/
-typedef struct PictureThing
-{
-  struct PictureThing *next;
-  char *name;
-  Pixmap picture;
-  Pixmap mask;
-  unsigned int depth;
-  unsigned int width;
-  unsigned int height;
-  unsigned int count;
-} Picture;
-
-void InitPictureCMap(Display*,Window);
-Picture *GetPicture(Display* dpy, Window Root, char* IconPath,
-		    char* PixmapPath, char* name, int color_limit);
-Picture *CachePicture(Display*,Window,char *iconpath,
-                      char *pixmappath,char*,int);
-void DestroyPicture(Display*,Picture*);
-
-char *findIconFile(char *icon, char *pathlist, int type);
-#ifdef XPM
-#include <X11/xpm.h>                    /* needed for next prototype */
-void color_reduce_pixmap(XpmImage *, int);
-#endif
 
 Pixel    GetShadow(Pixel);              /* 3d.c */
 Pixel    GetHilite(Pixel);              /* 3d.c */

@@ -112,10 +112,4 @@ struct folder_info
 extern struct button_info Buttons[MAX_BUTTONS+2];
 extern struct folder_info Folders[FOLDER_ARRAY_LN];
 
-extern char *iconPath;
-extern char *pixmapPath;
-
-
-
-
-
+extern char *imagePath;

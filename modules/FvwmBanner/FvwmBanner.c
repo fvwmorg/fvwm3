@@ -6,6 +6,7 @@
  ***************************************************************************/
 
 #include "config.h"
+
 #ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
@@ -13,7 +14,6 @@
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
 
@@ -21,9 +21,7 @@
 #include <sys/select.h>
 #endif
 
-#include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 
 #include <X11/StringDefs.h>
 #include <X11/Intrinsic.h>
@@ -32,8 +30,9 @@
 
 #include <X11/xpm.h>
 
+#include <libs/fvwmlib.h>
+#include <libs/Picture.h>
 
-#include "libs/fvwmlib.h"
 
 #include "icons/fvwm2_big.xpm"
 #if 0
@@ -60,8 +59,8 @@ static void parseOptions (int fd[2]);
 XpmIcon view;
 Window win;
 
-char *pixmapPath = NULL;
-char *pixmapName = NULL;
+char *imagePath = NULL;
+char *imageName = NULL;
 char *myName = NULL;
 
 int timeout = 3000000; /* default time of 3 seconds */
@@ -125,8 +124,8 @@ int main(int argc, char **argv)
   }
 
   if (argc > 6) {
-    pixmapName = safemalloc (strlen (argv[6]) + 1);
-    strcpy (pixmapName, argv[6]);
+    imageName = safemalloc (strlen (argv[6]) + 1);
+    strcpy (imageName, argv[6]);
   }
 
   /* Open the display */
@@ -148,8 +147,8 @@ int main(int argc, char **argv)
   parseOptions(fd);
 
   /* Get the xpm banner */
-  if (pixmapName)
-    GetXPMFile(pixmapName,pixmapPath);
+  if (imageName)
+    GetXPMFile(imageName,imagePath);
   else
 #if 0
     if(d_depth > 4)
@@ -271,7 +270,7 @@ void GetXPMFile(char *file, char *path)
   view.attributes.closeness = 40000 /* Allow for "similar" colors */;
 
   if (file)
-    full_file = findIconFile(file,path,R_OK);
+    full_file = findImageFile(file,path,R_OK);
 
   if (full_file)
   {
@@ -287,7 +286,7 @@ void GetXPMFile(char *file, char *path)
     fprintf(stderr,"FvwmBanner: ERROR reading pixmap file\n");
   }
   else
-    fprintf(stderr,"FvwmBanner: ERROR finding pixmap file in PixmapPath\n");
+    fprintf(stderr,"FvwmBanner: ERROR finding pixmap file in ImagePath\n");
   GetXPMData(fvwm2_big_xpm);
 }
 
@@ -311,13 +310,13 @@ static void parseOptions (int fd[2])
 			 CatString3 ("*", myName, "Pixmap"),
 			 clength + 7) ==0)
       {
-	if (pixmapName == (char *) 0)
+	if (imageName == (char *) 0)
         {
-	  CopyString (&pixmapName, &tline[clength+7]);
-	  if (pixmapName[0] == 0)
+	  CopyString (&imageName, &tline[clength+7]);
+	  if (imageName[0] == 0)
           {
-	    free (pixmapName);
-	    pixmapName = (char *) 0;
+	    free (imageName);
+	    imageName = (char *) 0;
 	  }
 	}
         continue;
@@ -329,13 +328,13 @@ static void parseOptions (int fd[2])
         timeout = atoi(&tline[clength+8]) * 1000000;
         continue;
       }
-      if (strncasecmp(tline, "PixmapPath",10)==0)
+      if (strncasecmp(tline, "ImagePath",9)==0)
       {
-        CopyString (&pixmapPath, &tline[10]);
-        if (pixmapPath[0] == 0)
+        CopyString (&imagePath, &tline[9]);
+        if (imagePath[0] == 0)
         {
-          free (pixmapPath);
-          pixmapPath = (char *) 0;
+          free (imagePath);
+          imagePath = (char *) 0;
         }
         continue;
       }

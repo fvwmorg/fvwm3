@@ -51,7 +51,7 @@ struct XObj *tabxobj[100];
 char *Scrapt;
 Atom propriete,type;
 static Atom wm_del_win;
-char *pixmapPath = NULL;
+char *imagePath = NULL;
 
 extern void InitCom();
 
@@ -105,9 +105,9 @@ void ParseOptions(void)
   GetConfigLine(fd,&tline);
   while(tline != (char *)0)
     {
-      if((strlen(&tline[0])>1)&&(strncasecmp(tline,"PixmapPath",10)==0))
+      if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ImagePath",9)==0))
       {
-	CopyString(&pixmapPath,&tline[10]);
+	CopyString(&imagePath,&tline[9]);
       }
 
       if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*FvwmScriptPath",15)==0))
@@ -177,7 +177,7 @@ void LoadIcon(struct XObj *xobj)
 
  if ((xobj->icon)!=NULL)
  {
-  path = (char*)findIconFile(xobj->icon, pixmapPath,4);
+  path = (char*)findImageFile(xobj->icon, imagePath,4);
   if(path == NULL)return;
   XGetWindowAttributes(xobj->display,RootWindow(xobj->display,DefaultScreen(xobj->display)),&root_attr);
   xpm_attributes.colormap = root_attr.colormap;

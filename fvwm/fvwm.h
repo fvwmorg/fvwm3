@@ -40,6 +40,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
+#include <X11/Intrinsic.h>
+
+#include <libs/Picture.h>
 
 #ifndef WithdrawnState
 #define WithdrawnState 0
@@ -49,8 +52,6 @@
 /* don't think that upping this to 5 will make everything
  * hunky-dory with 5 button mouses */
 #define MAX_BUTTONS 3
-
-#include <X11/Intrinsic.h>
 
 #if RETSIGTYPE != void
 #define SIGNAL_RETURN return 0
