@@ -1,3 +1,14 @@
+2001-11-27  olicha  <olivier.chapuis@free.fr>
+
+	* configure.in:
+	* aclocal.m4:
+	* acconfig.h:
+	* fvwm/ewmh_name.c
+	Check for the second argument of iconv
+
+	* configure.in:
+	Added -Wall to CFLAGS if cc is gcc
+
 2001-11-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

@@ -129,7 +129,11 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 
   for (is_finished = 0; is_finished == 0; )
   {
-    nconv = iconv(cd,(char **)&inptr,&insize,&outp,&outbytes_remaining);
+#ifdef ICONV_ARG_USE_CONST
+  iconv(cd, (const char **)&inptr, &insize, &outp, &outbytes_remaining);
+#else
+  iconv(cd, (char **)&inptr,&insize, &outp, &outbytes_remaining);
+#endif
     is_finished = 1;
     if (nconv == (size_t) - 1)
     {

@@ -953,3 +953,29 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	        GNOME_INCLUDEDIR=
 	fi
 ])
+
+#
+# check if iconv second argument use const char. This is not perfect:
+# Basically if AC_TRY_COMPILE fail for a bad reason (-Werror)
+# ICONV_ARG_USE_CONST is not defined which seems to be the good default.
+#
+AC_DEFUN([ICONV_SECOND_ARG],[
+	AC_MSG_CHECKING(check if second arg of iconv is const)
+	my_CFLAGS=$CFLAGS
+	CFLAGS="$CFLAGS -Werror"
+	AC_TRY_COMPILE(dnl
+[#include <iconv.h>],
+[const char *in; 
+iconv_t cd = 0;
+size_t nconv, insize,outbytes_remaining;
+char *outp;
+nconv = iconv(cd,(const char **)&in, &insize, &outp, &outbytes_remaining);]
+,
+[use_const=yes],
+[use_const=no])
+	AC_MSG_RESULT($use_const)
+	CFLAGS="$my_CPPFLAGS"
+	if test "x$use_const" = "xyes"; then
+		AC_DEFINE(ICONV_ARG_USE_CONST)
+	fi
+])

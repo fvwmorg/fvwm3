@@ -75,6 +75,11 @@ dnl optional libraries.
 AC_PROG_CC
 AC_PROG_CPP
 
+dnl added -Wall for gcc, what about for others?
+if test "$GCC" = "yes"; then
+  CFLAGS="$CFLAGS -Wall"
+fi
+
 dnl Help finding POSIX functions on some systems
 AC_ISC_POSIX
 AC_MINIX
@@ -389,8 +394,8 @@ if test "x$found_iconv" = "xno" -a "x$with_ewmh" = "xyes"; then
 fi
 if test "x$found_iconv" = "xyes"; then
    AC_DEFINE(HAVE_ICONV)
+   ICONV_SECOND_ARG
 fi
-
 
 dnl ******** nl_langinfo and CODESET
 

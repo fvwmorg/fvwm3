@@ -46,6 +46,9 @@
 * native with recent glibc) */
 #undef USE_LIBICONV
 
+/* define if second arg of iconv use const */
+#undef ICONV_ARG_USE_CONST
+
 /* Define if nl_langinfo is available */
 #undef HAVE_CODESET
 
