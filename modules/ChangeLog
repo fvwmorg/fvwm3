@@ -1,3 +1,9 @@
+2000-06-13  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* FvwmCommand/FvwmCommandS.c: Modified the reading of the command pipe
+	  so that the loop exits when there is an error (unless there was no
+	  data found, in which case it continues.)
+
 2000-06-12  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instruction.c (*FuncGetOutput):
