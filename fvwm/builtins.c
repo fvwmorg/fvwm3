@@ -991,17 +991,6 @@ void wait_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif
 }
 
-
-void flip_focus_reorder(FvwmWindow *w)
-{
-  if( w->next ) w->next->prev = w->prev;
-  if( w->prev ) w->prev->next = w->next;
-  w->next = Scr.FvwmRoot.next;
-  w->prev = &Scr.FvwmRoot;
-  if(Scr.FvwmRoot.next)Scr.FvwmRoot.next->prev = w;
-  Scr.FvwmRoot.next = w;
-}
-
 void flip_focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action, int *Module)
 {
@@ -1009,14 +998,7 @@ void flip_focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
 
   /* Reorder the window list */
-  if( Scr.Focus ){
-    flip_focus_reorder(Scr.Focus);
-  }
-  if( tmp_win != Scr.Focus ){
-    flip_focus_reorder(tmp_win);
-  }
-
-  FocusOn(tmp_win,0);
+  FocusOn(tmp_win,TRUE);
 }
 
 
@@ -1026,7 +1008,7 @@ void focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
     return;
 
-  FocusOn(tmp_win,0);
+  FocusOn(tmp_win,FALSE);
 }
 
 
@@ -3755,7 +3737,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
       fw = Scr.Focus;
   }
   else
-    fw = Scr.FvwmRoot.prev;
+    fw = NULL;
 
   while((pass < 3)&&(found == NULL))
   {
@@ -3857,13 +3839,34 @@ void CurrentFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
 }
 
+static void GetDirectionReference(FvwmWindow *w, int *x, int *y)
+{
+  if ((w->flags & ICONIFIED) != 0)
+  {
+    *x = w->icon_x_loc + w->icon_w_width / 2;
+    *y = w->icon_y_loc + w->icon_w_height / 2;
+  }
+  else
+  {
+    *x = w->frame_x + w->frame_width / 2;
+/*!!!*/
+#if 0
+    *y = w->frame_y;
+#else
+    *y = w->frame_y + w->frame_height / 2;
+#endif
+  }
+}
+
 /**********************************************************************
  * Execute a function to the closest window in the given
  * direction.
  **********************************************************************/
 void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-	       unsigned long context, char *action, int *Module)
+		   unsigned long context, char *action, int *Module)
 {
+  char *directions[] = { "North", "East", "South", "West", "NorthEast",
+			 "SouthEast", "SouthWest", "NorthWest", NULL };
   int my_x;
   int my_y;
   int his_x;
@@ -3882,15 +3885,9 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
   /* Parse the direction. */
   action = GetNextToken(action, &tmp);
-  if (StrEquals("North", tmp))
-    dir = 0;
-  else if (StrEquals("East", tmp))
-    dir = 1;
-  else if (StrEquals("South", tmp))
-    dir = 2;
-  else if (StrEquals("West", tmp))
-    dir = 3;
-  else {
+  dir = GetTokenIndex(tmp, directions, 0, NULL);
+  if (dir == -1)
+  {
     fvwm_msg(ERR, "Direction","Invalid direction %s", (tmp)? tmp : "");
     if (tmp)
       free(tmp);
@@ -3908,17 +3905,9 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
   /* If there is a focused window, use that as a starting point.
    * Otherwise we use the pointer as a starting point. */
-  if (tmp_win != NULL) {
-    if ((tmp_win->flags & ICONIFIED) != 0)
-    {
-      my_x = tmp_win->icon_x_loc + tmp_win->icon_w_width / 2;
-      my_y = tmp_win->icon_y_loc + tmp_win->icon_w_height / 2;
-    }
-    else
-    {
-      my_x = tmp_win->frame_x + tmp_win->frame_width / 2;
-      my_y = tmp_win->frame_y;
-    }
+  if (tmp_win != NULL)
+  {
+    GetDirectionReference(tmp_win, &my_x, &my_y);
   }
   else
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
@@ -3930,34 +3919,47 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   best_window = NULL;
   best_score = -1;
   for (window = Scr.FvwmRoot.next; window != NULL; window = window->next) {
-
     /* Skip every window that does not match conditionals.
      * Skip also currently focused window.  That would be too close. :)
      */
-    if (window == tmp_win) continue;
-    if (!MatchesContitionMask(window, &mask)) continue;
+    if (window == tmp_win || !MatchesContitionMask(window, &mask))
+      continue;
 
     /* Calculate relative location of the window. */
-    if ((window->flags & ICONIFIED) != 0) {
-      his_x = window->icon_x_loc + window->icon_w_width / 2;
-      his_y = window->icon_y_loc + window->icon_w_height / 2;
-    }
-    else {
-      his_x = window->frame_x + window->frame_width / 2;
-      his_y = window->frame_y;
-    }
+    GetDirectionReference(window, &his_x, &his_y);
     his_x -= my_x;
     his_y -= my_y;
 
-    /* Arrange so that distance and offset are positive in desired
-     * direction.
+    if (dir > 3)
+    {
+      int tx;
+      /* Rotate the diagonals 45 degrees counterclockwise. To do this,
+       * multiply the matrix /+h +h\ with the vector (x y).
+       *                     \-h +h/
+       * h = sqrt(0.5). We can set h := 1 since absolute distance doesn't
+       * matter here. */
+      tx = his_x + his_y;
+      his_y = -his_x + his_y;
+      his_x = tx;
+    }
+    /* Arrange so that distance and offset are positive in desired direction.
      */
-    if (dir == 0 || dir == 2) {
+    switch (dir)
+    {
+    case 0: /* N */
+    case 2: /* S */
+    case 4: /* NE */
+    case 6: /* SW */
       offset = (his_x < 0) ? -his_x : his_x;
-      distance = (dir == 0) ? -his_y : his_y;
-    } else {
+      distance = (dir == 0 || dir == 4) ? -his_y : his_y;
+      break;
+    case 1: /* E */
+    case 3: /* W */
+    case 5: /* SE */
+    case 7: /* NW */
       offset = (his_y < 0) ? -his_y : his_y;
-      distance = (dir == 3) ? -his_x : his_x;
+      distance = (dir == 3 || dir == 7) ? -his_x : his_x;
+      break;
     }
 
     /* Target must be in given direction. */
@@ -3969,7 +3971,7 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
       best_window = window;
       best_score = score;
     }
-  }
+  } /* for */
 
   if (best_window != NULL)
     ExecuteFunction(restofline, best_window, eventp, C_WINDOW, *Module);

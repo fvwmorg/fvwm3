@@ -1,4 +1,28 @@
+1998-11-27  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/events.c (HandleMapNotify): changed logic for new
+	click-to-focus windows to receive focus (as hited at by Tim Phipps).
+
 1998-11-26  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (DirectionFunc): implemented ne, se, sw, nw; based
+	scoring function of window centers.
+
+	* libs/Parse.c (GetTokenIndex): fixed a coredump with an empty list
+	or token
+
+	* fvmw/**: applied patches by Tim Phipps (see below)
+
+	* fvwm/builtins.c (focus_func): cleaned up
+	(flip_focus_func): cleaned up
+
+	* fvwm/fvwm2.1: changes on FlipFocus/Focus/WindowList
+
+	* fvwm/focus.c (SetFocus): fixed SetFocus so that calling Focus from a
+	function moves the windowlist around to make the target window appears
+	at the top of the windowlist.
+
+	* fvwm/windows.c (do_windowList): Applied alt-tab/unsort windowlist fix
 
 	* fvwm/builtins.c (DirectionFunc): fixed coredump (empty direction)
 

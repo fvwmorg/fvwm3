@@ -1201,8 +1201,10 @@ ExecUseShell /usr/local/bin/tcsh
 
 
 .IP "FlipFocus"
-Toggles focus between the last two focused windows. Note that
-FlipFocus works only as the command argument of \fIPrev\fP.
+Executes a \fIFocus\fP command as if the user had used the pointer to select
+the window.  This command alters the order of the windowlist in the same way
+as clicking in a window to focus, i.e. the target window is removed from the
+windowlist and placed at the start.
 
 
 .IP "Focus"
@@ -1210,6 +1212,8 @@ Moves the viewport or window as needed to make the selected window
 visible.  Sets the keyboard focus to the selected window.  Raises the
 window if needed to make it visible.  Does not warp the pointer into
 the selected window (see WarpToWindow function).  Does not de-iconify.
+This command does not alter the order of the windowlist, it rotates the
+windowlist around so that the target window is at the start.
 
 
 .IP "Function \fI\FunctionName\\fP"
@@ -2382,7 +2386,7 @@ window.
 The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
 <funcname>", "Desk <desknum>", "CurrentDesk", "NoIcons", "Icons",
 "OnlyIcons", "NoNormal", "Normal", "OnlyNormal", "NoSticky", "Sticky",
-"OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "Unsorted", "UseIconName",
+"OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "NoDeskSort", "UseIconName",
 "Alphabetic", "NotAlphabetic".
 
 (Note - normal means not iconic, sticky, or ontop)

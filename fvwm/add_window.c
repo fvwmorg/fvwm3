@@ -378,12 +378,17 @@ FvwmWindow *AddWindow(Window w)
   }
 
 
-  /* add the window into the fvwm list */
+  /* add the window to the end of the fvwm list */
   tmp_win->next = Scr.FvwmRoot.next;
-  if (Scr.FvwmRoot.next != NULL)
-    Scr.FvwmRoot.next->prev = tmp_win;
   tmp_win->prev = &Scr.FvwmRoot;
-  Scr.FvwmRoot.next = tmp_win;
+  while (tmp_win->next != NULL)
+  {
+    tmp_win->prev = tmp_win->next;
+    tmp_win->next = tmp_win->next->next;
+  }
+  /* tmp_win->prev points to the last window in the list, tmp_win->next is NULL.
+     Now fix the last window to point to tmp_win */
+  tmp_win->prev->next = tmp_win;
 
   /*
       RBW - 11/13/1998 - add it into the stacking order chain also.

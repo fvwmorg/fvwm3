@@ -1,3 +1,9 @@
+1998-11-25  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/FvwmPager.c: fixed some memory leaks
+
+	* FvwmPager/x_pager.c: reindented some code
+
 1998-11-25  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmCpp/FvwmCpp.1: Don't use multi-word values with .IP.  Use .TP.

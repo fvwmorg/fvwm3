@@ -358,7 +358,7 @@ int GetTokenIndex(char *token, char *list[], int len, char **next)
   int i;
   int l;
 
-  if (!token && !list)
+  if (!token || !list)
     {
       if (next)
 	*next = NULL;
@@ -383,7 +383,7 @@ int GetTokenIndex(char *token, char *list[], int len, char **next)
 /***************************************************************************
  *
  * This function does roughly the same as GetTokenIndex but reads the
- * token from ste string action with GetNextToken. The index is returned
+ * token from string action with GetNextToken. The index is returned
  * in *index. The return value is a pointer to the character after the
  * token (just like the return value of GetNextToken).
  *

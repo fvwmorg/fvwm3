@@ -32,7 +32,7 @@
 #define SHOW_ICONIC   (1<<3)
 #define SHOW_STICKY   (1<<4)
 #define SHOW_ONTOP    (1<<5)
-#define DONT_SORT     (1<<6)
+#define NO_DESK_SORT  (1<<6)
 #define SHOW_ICONNAME (1<<7)
 #define SHOW_ALPHABETIC (1<<8)
 #define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | SHOW_ICONIC | SHOW_STICKY | SHOW_ONTOP)
@@ -68,7 +68,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int dwidth,dheight;
   char tlabel[50]="";
   int last_desk_done = INT_MIN;
-  int next_desk;
+  int next_desk = 0;
   char *t_hot=NULL;		/* Menu label with hotkey added */
   char scut = '0';		/* Current short cut key */
   char *line=NULL,*tok=NULL;
@@ -117,8 +117,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         flags &= ~SHOW_ALPHABETIC;
       else if (StrEquals(tok,"Alphabetic"))
         flags |= SHOW_ALPHABETIC;
-      else if (StrEquals(tok,"Unsorted"))
-        flags |= DONT_SORT;
+      else if (StrEquals(tok,"NoDeskSort"))
+        flags |= NO_DESK_SORT;
       else if (StrEquals(tok,"UseIconName"))
         flags |= SHOW_ICONNAME;
       else if (StrEquals(tok,"NoGeometry"))
@@ -172,8 +172,6 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   mr=NewMenuRoot(tlabel, False);
   AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
 
-  next_desk = 0;
-
   numWindows = 0;
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
@@ -203,8 +201,9 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   while(next_desk != INT_MAX)
   {
     /* Sort window list by desktop number */
-    if((flags & SHOW_ALLDESKS) && !(flags & DONT_SORT))
+    if((flags & SHOW_ALLDESKS) && !(flags & NO_DESK_SORT))
     {
+      /* run through the windowlist finding the first desk not already processed */
       next_desk = INT_MAX;
       for (ii = 0; ii < numWindows; ii++)
       {
@@ -215,16 +214,20 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     }
     if(!(flags & SHOW_ALLDESKS))
     {
+      /* if only doing one desk and it hasn't been done */
       if(last_desk_done  == INT_MIN)
-        next_desk = desk;
+        next_desk = desk; /* select the desk */
       else
-        next_desk = INT_MAX;
+        next_desk = INT_MAX; /* flag completion */
     }
+    if(flags & NO_DESK_SORT)
+      next_desk = INT_MAX; /* only go through loop once */
+      
     last_desk_done = next_desk;
     for (ii = 0; ii < numWindows; ii++)
     {
       t = windowList[ii];
-      if((t->Desk == next_desk)&&
+      if(((t->Desk == next_desk) || (flags & NO_DESK_SORT)) &&
          (!(t->flags & WINDOWLISTSKIP)))
       {
         if (!(flags & SHOW_ICONIC) && (t->flags & ICONIFIED))
@@ -239,13 +242,13 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
               (t->flags & ONTOP)))
           continue; /* don't want "normal" ones - skip */
 
-        if (++scut == ('9' + 1)) scut = 'A';	/* Next shortcut key */
         if(flags & SHOW_ICONNAME)
           name = t->icon_name;
         else
           name = t->name;
         t_hot = safemalloc(strlen(name) + strlen(tname) + 48);
         sprintf(t_hot, "&%c.  %s", scut, name); /* Generate label */
+        if (scut++ == '9') scut = 'A';	/* Next shortcut key */
 
         if (flags & SHOW_GEOMETRY)
         {

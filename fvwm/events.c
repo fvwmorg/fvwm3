@@ -860,7 +860,7 @@ void HandleMapNotify()
     BroadcastPacket(M_MAP, 3,
                     Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
 
-  if((Tmp_win->flags & ClickToFocus)&&(Scr.Focus)&&
+  if((Tmp_win->flags & ClickToFocus)&&
      ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
     {
       if (OnThisPage)
