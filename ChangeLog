@@ -1,5 +1,9 @@
 2000-09-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.22
+
+2000-09-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* fvwm/functions.c (AddToFunction):
 	* fvwm/module_interface.c (SendStrToModule):
 	-Wall fixes
