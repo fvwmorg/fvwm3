@@ -627,7 +627,9 @@ static void frame_update_hidden_window_pos(
 		mra->b_g.top_left.height,
 		max(1, target_g->width - mra->b_g.total_size.width),
 		max(1, target_g->height - mra->b_g.total_size.height));
-	XMoveWindow(dpy, FW_W(fw), hidden_g.x, hidden_g.y);
+	XMoveResizeWindow(
+		dpy, FW_W(fw), hidden_g.x, hidden_g.y, mra->client_g.width,
+		mra->client_g.height);
 
 	return;
 }

@@ -5633,8 +5633,12 @@ command has two modes of operation: busy and lazy shading.  Busy
 shading can be 50% slower than lazy shading, but the latter can
 look strange under some conditions, for example, if the window
 borders, buttons or the title are filled with a tiled pixmap.
-Also, the window handles are not drawn in lazy mode.  By default,
-fvwm uses lazy mode if there are no bad visual effects (not counting the window handles) and busy mode otherwise.  Use the
+Also, the window handles are not drawn in lazy mode and the border
+relief may only be draw partially right before the window reaches
+the shaded state or tight after leaves the unshaded state. By
+default, fvwm uses lazy mode if there are no bad visual effects
+(not counting the window handles) and busy mode otherwise.  Use
+the
 .I WindowShadeAlwaysLazy " or " WindowShadeBusy
 to force using the lazy or busy mode.  The default setting is restored with
 .IR WindowShadeLazy .
