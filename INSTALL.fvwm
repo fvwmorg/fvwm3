@@ -207,12 +207,14 @@ path separately; the above options won't add it for you.
 A good way to do this is set the LDFLAGS variable before configure
 runs to contain the -R option.  For example:
 
-  $ LDFLAGS=-R/opt/xpm ./configure \
+  $ LDFLAGS="-L/opt/xpm -R/opt/xpm" ./configure \
       --with-xpm-library=/opt/xpm/lib \
       --with-xpm-includes=/opt/xpm/include
 
 In the future, FVWM's configuration may perform this step automatically.
-
+The actual environment variable differs depending on the platform.
+On Solaris 2.6 and later, its LD_OPTIONS, on HPUX11 and later its
+LDOPTS.  Check your "ld" man page for more information.
 
 Compile-time Options
 ====================
@@ -319,32 +321,3 @@ yourself.
 
 Note: if it is compiled in, run time detection is used to make sure
 that the currently running X server supports it.
-
-
-The following configure options are either removed or will be removed soon:
-
-
-  --enable-move-bug-workaround  workaround for flickering windows during move
-  ----------------------------
-
-Try this option only if you have problems during window move.
-This only changes the default behaviour for Move.
-In any case, the default behaviour may be overriden dynamically using:
-
-  Style * FlickeringMoveWorkaround true
-  Style * FlickeringMoveWorkaround false
-
-Most of users should not enable this option.
-
-
-  --disable-modality            disable modal dialogs for applications
-  ------------------
-
-Disables motif applications ability to have modal dialogs by default.
-Without this option the default is to enable modal dialogs.
-In any case, the default may be overriden dynamically using:
-
-  Style * ModalityIsEvil true
-  Style * ModalityIsEvil false
-
-Use with care.
