@@ -1412,6 +1412,7 @@ static void OpenWindows ()
   static XSetWindowAttributes xswa;
   static XWMHints wmh = { InputHint, True };
   static XSizeHints sh = { PPosition | PSize | USPosition | USSize };
+  XClassHint myclasshints;
 
   xc_ibeam = XCreateFontCursor(dpy, XC_xterm);
   xc_hand = XCreateFontCursor(dpy, XC_hand2);
@@ -1452,6 +1453,9 @@ static void OpenWindows ()
   }
   XStoreName(dpy, CF.frame, CF.title);
   XSetWMHints(dpy, CF.frame, &wmh);
+  myclasshints.res_name = MyName+1;
+  myclasshints.res_class = "FvwmForm";
+  XSetClassHint(dpy,CF.frame,&myclasshints);
   sh.x = x, sh.y = y;
   sh.width = CF.max_width, sh.height = CF.total_height;
   XSetWMNormalHints(dpy, CF.frame, &sh);
