@@ -2290,7 +2290,7 @@ void MakeMenu(MenuRoot *mr)
   int y,width;
   int cItems;
 
-  if(!(Scr.flags & WindowsCaptured))
+  if(!Scr.flags.windows_captured)
     return;
 
   /* merge menu continuations into one menu again - needed when changing the

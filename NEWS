@@ -1,6 +1,9 @@
-Changes in alpha release 2.3.0 (February 1999)
+Changes in alpha release 2.3.1 (February 1999)
 
-* New utility xselection which can be used with PipeRead to feed the 
+* New command: Silent. Suppresses user interaction when a window is needed but
+  none is selected.
+
+* New utility xselection which can be used with PipeRead to feed the
   content of the X Selection as commands to fvwm.
 
 * Fvwm2 can now "take over" from a running (ICCCM 2 compliant) wm.
@@ -13,7 +16,7 @@ Changes in alpha release 2.3.0 (February 1999)
 * Shaded windows can be resized.
 
 * Windows can be shaded and maximized.
- 
+
 * Fonts and colors are no longer hard-coded on the FvwmAnimate customization
   form.  FvwmForm can set defaults that the FvwmAnimate form will use.
 
@@ -21,20 +24,20 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * New command XORPixmap for increased visibility of the rubber band lines and
   general spangly-ness.
-  
+
 * New start up sequence: all start up scripts etc. are read before the initial
   capture so windows styles will be correct, no need for a recapture.
-  
+
 * EdgeThickness can resize/hide/show panframes in mid function
 
 * Support for transparent Eterms etc. during opaque/animated moves
 
 * FvwmPager tracks windows during opaque/animated moves.
 
-* Session management. Fvwm talks to a session manager 
+* Session management. Fvwm talks to a session manager
   and saves and restores its state.
 
-* Layers. New commands Layer, DefaultLayers; new Style 
+* Layers. New commands Layer, DefaultLayers; new Style
   option, WindowList option and condition Layer.
 
 * Lots of changes to FvwmForm:

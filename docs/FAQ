@@ -875,8 +875,8 @@ A: You can do this, but it's not obvious how.  The button presses
    Here's an example that someone sent to the mailing list once:
 
    *FvwmButtons(1x4,       \
-     Title,          'System Info' \
-     Swallow,        "xload" 'Exec xload' \
+     Title           'System Info', \
+     Swallow         "xload" 'Exec xload', \
      Action(Mouse 1) 'Exec xosview -cua0 -net 200 -ul -l -geometry 325x325', \
      Action(Mouse 2) 'Exec xcpustate -interval 1 -bg "#a4978e" -fg black', \
      Action(Mouse 3) 'Exec rxvt -fg "khaki" -bg "dark olive green" \
@@ -884,8 +884,8 @@ A: You can do this, but it's not obvious how.  The button presses
 
    And you could come up with something similar for xbiff (untested):
 
-   *FvwmButtons(1x2 \
-     Title 'Check Mail' Swallow "xbiff" 'Exec xbiff' \
+   *FvwmButtons(1x2, \
+     Title 'Check Mail' Swallow "xbiff" 'Exec xbiff', \
      Action(Mouse 1) 'Exec from | xmessage -file -' )
 
    plus you could bind another button (say Mouse 3) to run your
@@ -1014,7 +1014,7 @@ A: Creating a patch -
         to to place it on a web page and email the URL to the mailing
         list or ask on the fvwm-workers list first.
 
-	Be sure to read the answer to Q16.
+	Be sure to read the answer to Q5.1.
 
 	Don't forget the ChangeLog.
 

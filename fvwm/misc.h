@@ -63,19 +63,6 @@ struct config
   int *arg2;
 };
 
-/* used for parsing commands*/
-struct functions
-{
-  char *keyword;
-#ifdef __STDC__
-  void (*action)(XEvent *,Window,FvwmWindow *, unsigned long,char *, int *);
-#else
-  void (*action)();
-#endif
-  short func_type;
-  Bool func_needs_window;
-};
-
 /* values for name_list flags */
 /* The first 13 items are mapped directly into the FvwmWindow structures
  * flag value, so they MUST correspond to the first 13 entries in fvwm.h */
@@ -147,9 +134,7 @@ extern char NoResource[];
    dje 12/19/98.
    */
 
-/* Macro for args passed to fvwm commands...
-   For now, this macro is only used within this file. dje 12/19/98
-*/
+/* Macro for args passed to fvwm commands... */
 #define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
 
@@ -273,7 +258,8 @@ void SelectDecor(FvwmWindow *, unsigned long, int,int);
 extern Bool PopUpMenu(MenuRoot *, int, int);
 void ComplexFunction(F_CMD_ARGS);
 void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
-extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *, int, int);
+extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
+			  int, int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
 void move_window(F_CMD_ARGS);
 void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -434,7 +420,6 @@ void ChangeMenuStyle(F_CMD_ARGS);
 void DestroyMenuStyle(F_CMD_ARGS);
 void SetDefaultColors(F_CMD_ARGS);
 void LoadDefaultFont(F_CMD_ARGS);
-void ApplyIconFont(void);
 void LoadIconFont(F_CMD_ARGS);
 void LoadWindowFont(F_CMD_ARGS);
 #ifdef BORDERSTYLE

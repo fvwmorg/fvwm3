@@ -35,8 +35,7 @@
 int edge_thickness = 2;
 int last_edge_thickness = 2;
 
-void setEdgeThickness(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context,char *action, int *Module)
+void setEdgeThickness(F_CMD_ARGS);
 {
   int val, n;
 
@@ -148,7 +147,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   /* Ouch! lots of bounds checking */
   if(Scr.Vx + *delta_x < 0)
     {
-      if (!(Scr.flags & EdgeWrapX ))
+      if (!(Scr.flags.edge_wrap_x))
 	{
 	  *delta_x = -Scr.Vx;
 	  *xl = x - *delta_x;
@@ -161,7 +160,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     }
   else if(Scr.Vx + *delta_x > Scr.VxMax)
     {
-      if (!(Scr.flags & EdgeWrapX))
+      if (!(Scr.flags.edge_wrap_x))
 	{
 	  *delta_x = Scr.VxMax - Scr.Vx;
 	  *xl = x - *delta_x;
@@ -177,7 +176,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
   if(Scr.Vy + *delta_y < 0)
     {
-      if (!(Scr.flags & EdgeWrapY))
+      if (!(Scr.flags.edge_wrap_y))
 	{
 	  *delta_y = -Scr.Vy;
 	  *yt = y - *delta_y;
@@ -190,7 +189,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     }
   else if(Scr.Vy + *delta_y > Scr.VyMax)
     {
-      if (!(Scr.flags & EdgeWrapY))
+      if (!(Scr.flags.edge_wrap_y))
 	{
 	  *delta_y = Scr.VyMax - Scr.Vy;
 	  *yt = y - *delta_y;
@@ -247,10 +246,10 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
  ****************************************************************************/
 void checkPanFrames(void)
 {
-  Bool wrapX = (Scr.flags & EdgeWrapX) && Scr.VxMax;
-  Bool wrapY = (Scr.flags & EdgeWrapY) && Scr.VyMax;
+  Bool wrapX = (Scr.flags.edge_wrap_x) && Scr.VxMax;
+  Bool wrapY = (Scr.flags.edge_wrap_x) && Scr.VyMax;
 
-  if(!(Scr.flags & WindowsCaptured))
+  if(!(Scr.flags.windows_captured))
     return;
 
   /* thickness of 0 means remove the pan frames */
@@ -273,11 +272,13 @@ void checkPanFrames(void)
     }
     return;
   }
-  
+
   /* check they are the right size */
   if (edge_thickness != last_edge_thickness) {
-    XResizeWindow (dpy, Scr.PanFrameTop.win, Scr.MyDisplayWidth, edge_thickness);
-    XResizeWindow (dpy, Scr.PanFrameLeft.win, edge_thickness, Scr.MyDisplayHeight);
+    XResizeWindow (dpy, Scr.PanFrameTop.win, Scr.MyDisplayWidth,
+		   edge_thickness);
+    XResizeWindow (dpy, Scr.PanFrameLeft.win, edge_thickness,
+		   Scr.MyDisplayHeight);
     XMoveResizeWindow (dpy, Scr.PanFrameRight.win,
                        Scr.MyDisplayWidth - edge_thickness, 0,
                        edge_thickness, Scr.MyDisplayHeight);
@@ -425,7 +426,7 @@ void initPanFrames()
 		   valuemask, &attributes);
   Scr.PanFrameTop.isMapped=Scr.PanFrameLeft.isMapped=
     Scr.PanFrameRight.isMapped= Scr.PanFrameBottom.isMapped=False;
-    
+
   edge_thickness = saved_thickness;
 }
 
@@ -704,8 +705,7 @@ int GetDeskNumber(char *action)
  * Move to a new desktop
  *
  *************************************************************************/
-void changeDesks_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,char *action, int *Module)
+void changeDesks_func(F_CMD_ARGS);
 {
   changeDesks(GetDeskNumber(action));
 }
@@ -817,8 +817,7 @@ void changeDesks(int desk)
  * Move a window to a new desktop
  *
  *************************************************************************/
-void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
-		       unsigned long context,char *action, int *Module)
+void changeWindowsDesk(F_CMD_ARGS);
 {
   int desk;
 
@@ -860,8 +859,7 @@ void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
 }
 
 
-void scroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
-	    char *action, int *Module)
+void scroll(F_CMD_ARGS);
 {
   int x,y;
   int val1, val2, val1_unit,val2_unit,n;
@@ -909,8 +907,7 @@ void scroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
   MoveViewport(x,y,True);
 }
 
-void goto_page_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context,char *action, int *Module)
+void goto_page_func(F_CMD_ARGS);
 {
   int val[2], n, x, y;
 

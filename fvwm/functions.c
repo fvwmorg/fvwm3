@@ -161,6 +161,7 @@ static struct functions func_config[] =
   {"SETANIMATION", set_animation,    F_SET_ANIMATION,	    FUNC_NO_WINDOW},
   {"SETENV",       SetEnv,           F_SETENV,              FUNC_NO_WINDOW},
   {"SET_MASK",     set_mask_function,F_SET_MASK,            FUNC_NO_WINDOW},
+  {"SILENT",       NULL,             F_SILENT,              FUNC_NO_WINDOW},
   {"SNAPATTRACTION",SetSnapAttraction,F_SNAP_ATT,           FUNC_NO_WINDOW},
   {"SNAPGRID",     SetSnapGrid,      F_SNAP_GRID,           FUNC_NO_WINDOW},
   {"STICK",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
@@ -248,9 +249,11 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   Window w;
   int matched,j;
   char *function;
-  char *action, *taction;
+  char *action, *taction, *expaction;
   char *arguments[10];
   struct functions *bif;
+  int func_type;
+  Bool set_silent;
 
   if (!Action || Action[0] == 0 || Action[1] == 0)
   {
@@ -282,19 +285,42 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
      (eventp->xany.window != tmp_win->w))
     w = eventp->xbutton.subwindow;
 
-  taction = expand(Action,arguments,tmp_win);
-  action = GetNextToken(taction,&function);
-  if (!function)
-    return;
+  taction = expaction = expand(Action,arguments,tmp_win);
   j=0;
   matched = FALSE;
+  func_type = F_NOP;
+  set_silent = 0;
 
-  bif = FindBuiltinFunction(function);
-  if (bif)
+  do
   {
-    matched = TRUE;
-    bif->action(eventp,w,tmp_win,context,action,&Module);
-  }
+    action = GetNextToken(taction,&function);
+    if (!function)
+      {
+	if (set_silent)
+	  Scr.flags.silent_functions = 0;
+	return;
+      }
+    bif = FindBuiltinFunction(function);
+    if (bif)
+      {
+	func_type = bif->func_type;
+	if (func_type == F_SILENT)
+	  {
+	    taction = action;
+	    free(function);
+	    if (Scr.flags.silent_functions == 0)
+	      {
+		set_silent = 1;
+		Scr.flags.silent_functions = 1;
+	      }
+	  }
+	else
+	  {
+	    matched = TRUE;
+	    bif->action(eventp,w,tmp_win,context,action,&Module);
+	  }
+      }
+  } while (func_type == F_SILENT);
 
   if(!matched)
     {
@@ -312,9 +338,138 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 
   if (function)
     free(function);
-  if(taction != NULL)
-    free(taction);
+  if(expaction != NULL)
+    free(expaction);
+  if (set_silent)
+    Scr.flags.silent_functions = 0;
+
   return;
+}
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	DeferExecution - defer the execution of a function to the
+ *	    next button press if the context is C_ROOT
+ *
+ *  Inputs:
+ *      eventp  - pointer to XEvent to patch up
+ *      w       - pointer to Window to patch up
+ *      tmp_win - pointer to FvwmWindow Structure to patch up
+ *	context	- the context in which the mouse button was pressed
+ *	func	- the function to defer
+ *	cursor	- the cursor to display while waiting
+ *      finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
+ *                    terminate on.
+ *
+ ***********************************************************************/
+int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
+		   unsigned long *context, int cursor, int FinishEvent)
+
+{
+  int done;
+  int finished = 0;
+  Window dummy;
+  Window original_w;
+
+  original_w = *w;
+
+  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(tmp_win != NULL))
+  {
+    if((FinishEvent == ButtonPress)||((FinishEvent == ButtonRelease) &&
+                                      (eventp->type != ButtonPress)))
+    {
+      return FALSE;
+    }
+  }
+  if (Scr.flags.silent_functions)
+  {
+    return True;
+  }
+  if(!GrabEm(cursor))
+  {
+    XBell(dpy, 0);
+    return True;
+  }
+
+  while (!finished)
+  {
+    done = 0;
+    /* block until there is an event */
+    XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+               ExposureMask |KeyPressMask | VisibilityChangeMask |
+               ButtonMotionMask| PointerMotionMask
+	       /* | EnterWindowMask | LeaveWindowMask*/, eventp);
+    StashEventTime(eventp);
+
+    if(eventp->type == KeyPress)
+      Keyboard_shortcuts(eventp, NULL, FinishEvent);
+    if(eventp->type == FinishEvent)
+      finished = 1;
+    if(eventp->type == ButtonPress)
+    {
+      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      done = 1;
+    }
+    if(eventp->type == ButtonRelease)
+      done = 1;
+    if(eventp->type == KeyPress)
+      done = 1;
+
+    if(!done)
+    {
+      DispatchEvent();
+    }
+
+  }
+
+
+  *w = eventp->xany.window;
+  if(((*w == Scr.Root)||(*w == Scr.NoFocusWin))
+     && (eventp->xbutton.subwindow != (Window)0))
+  {
+    *w = eventp->xbutton.subwindow;
+    eventp->xany.window = *w;
+  }
+  if (*w == Scr.Root)
+  {
+    *context = C_ROOT;
+    XBell(dpy, 0);
+    UngrabEm();
+    return TRUE;
+  }
+  if (XFindContext (dpy, *w, FvwmContext, (caddr_t *)tmp_win) == XCNOENT)
+  {
+    *tmp_win = NULL;
+    XBell(dpy, 0);
+    UngrabEm();
+    return (TRUE);
+  }
+
+  if(*w == (*tmp_win)->Parent)
+    *w = (*tmp_win)->w;
+
+  if(original_w == (*tmp_win)->Parent)
+    original_w = (*tmp_win)->w;
+
+  /* this ugly mess attempts to ensure that the release and press
+   * are in the same window. */
+  if((*w != original_w)&&(original_w != Scr.Root)&&
+     (original_w != None)&&(original_w != Scr.NoFocusWin))
+    if(!((*w == (*tmp_win)->frame)&&
+         (original_w == (*tmp_win)->w)))
+    {
+      *context = C_ROOT;
+      XBell(dpy, 0);
+      UngrabEm();
+      return TRUE;
+    }
+
+  *context = GetContext(*tmp_win,eventp,&dummy);
+
+  UngrabEm();
+  return FALSE;
 }
 
 
@@ -355,22 +510,6 @@ void find_func_type(char *action, short *func_type, Bool *func_needs_window)
     *func_needs_window = False;
   return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /***********************************************************************
@@ -567,17 +706,14 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d)
  * Builtin which determines if the button press was a click or double click...
  *
  ****************************************************************************/
-void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action, int *Module)
+void ComplexFunction(F_CMD_ARGS)
 {
   Bool desperate = 0;
 
   ComplexFunction2(eventp, w, tmp_win, context, action, Module, &desperate);
 }
 
-void ComplexFunction2(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module,
-		      Bool *desperate)
+void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 {
   char type = MOTION;
   char c;

@@ -45,13 +45,11 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
  * Starts a window resize operation
  *
  ****************************************************************************/
-void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int *Module)
+void resize_window(F_CMD_ARGS);
 {
   Bool finished = FALSE, done = FALSE, abort = FALSE;
   int x,y,delta_x,delta_y,stashed_x,stashed_y;
   Window ResizeWindow;
-  Bool flags;
   Bool fButtonAbort = False;
   int val1, val2, val1_unit,val2_unit,n;
   unsigned int button_mask = 0;
@@ -61,6 +59,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   geom *orig = &sorig;
   int ymotion=0, xmotion = 0;
   int was_maximized;
+  unsigned edge_wrap_x;
+  unsigned edge_wrap_y;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
     return;
@@ -99,14 +99,14 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       ConstrainSize (tmp_win, &drag->width, &drag->height, False, xmotion,
 		     ymotion);
 #ifdef WINDOWSHADE
-      if (tmp_win->buttons & WSHADE) 
+      if (tmp_win->buttons & WSHADE)
 	{
 	  tmp_win->orig_wd = drag->width;
 	  tmp_win->orig_ht = drag->height;
  	  SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,
 		      drag->width, tmp_win->frame_height,FALSE);
-	} 
-      else 
+	}
+      else
 #endif
       SetupFrame (tmp_win, tmp_win->frame_x,
 		  tmp_win->frame_y ,drag->width, drag->height,FALSE);
@@ -128,21 +128,23 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
 
   /* handle problems with edge-wrapping while resizing */
-  flags = Scr.flags;
-  Scr.flags &= ~(EdgeWrapX|EdgeWrapY);
+  edge_wrap_x = Scr.flags.edge_wrap_x;
+  edge_wrap_y = Scr.flags.edge_wrap_y;
+  Scr.flags.edge_wrap_x = 0;
+  Scr.flags.edge_wrap_y = 0;
 
 #ifdef WINDOWSHADE
-  if (tmp_win->buttons & WSHADE) 
+  if (tmp_win->buttons & WSHADE)
     {
       drag->x = tmp_win->frame_x;
       drag->y = tmp_win->frame_y;
       drag->width = tmp_win->frame_width;
-      if (was_maximized) 
+      if (was_maximized)
         drag->height = tmp_win->maximized_ht;
-      else 
+      else
         drag->height = tmp_win->orig_ht;
-    } 
-  else 
+    }
+  else
 #endif
   XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
 	       &drag->x, &drag->y, (unsigned int *)&drag->width,
@@ -332,7 +334,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   ymotion = 0;
   WaitForButtonsUp();
 
-  Scr.flags |= flags & (EdgeWrapX|EdgeWrapY);
+  Scr.flags.edge_wrap_x = edge_wrap_x;
+  Scr.flags.edge_wrap_y = edge_wrap_y;
   return;
 }
 
@@ -658,10 +661,10 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
   if (lastWidth || lastHeight)
     interleave += 1;
   offset = interleave >> 1;
-    
+
   /* place the resize rectangle into the array of rectangles */
   /* interleave them for best visual look */
-  
+
   /* draw the new one, if any */
   if (width || height)
   {
@@ -680,7 +683,7 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
     rects[4 * interleave].width = (width-6)/3;
     rects[4 * interleave].height = (height-6);
   }
-  
+
   /* undraw the old one, if any */
     if (lastWidth || lastHeight)
     {
@@ -701,7 +704,7 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
     }
 
   XDrawRectangles(dpy,Scr.Root,Scr.DrawGC,rects,interleave * 5);
-  
+
       lastx = x;
       lasty = y;
       lastWidth = width;

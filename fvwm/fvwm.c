@@ -644,7 +644,7 @@ void CaptureAllWindows(void)
 
   PPosOverride = True;
 
-  if (!(Scr.flags & WindowsCaptured)) /* initial capture? */
+  if (!(Scr.flags.windows_captured)) /* initial capture? */
   {
     /*
     ** weed out icon windows
@@ -683,7 +683,7 @@ void CaptureAllWindows(void)
         HandleMapRequestKeepRaised (BlackoutWin);
       }
     }
-    Scr.flags |= WindowsCaptured;
+    Scr.flags.windows_captured = 1;
   }
   else /* must be recapture */
   {
@@ -1352,8 +1352,9 @@ void InitVariables(void)
   Scr.StdShadowGC = 0;
   Scr.DrawGC = 0;
   Scr.DrawPicture = NULL;
-  Scr.hasIconFont = False;
-  Scr.hasWindowFont = False;
+
+  /* zero all flags */
+  memset(&Scr.flags, 0, sizeof(Scr.flags));
 
   Scr.OnTopLayer = 6;
   Scr.StaysPutLayer = 4;

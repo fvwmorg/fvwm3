@@ -19,7 +19,7 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
-#ifdef SHAPE 
+#ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif
 
@@ -135,10 +135,13 @@ void initialize_pager(void)
   XGCValues gcv;
   unsigned long gcm;
 
-#if 0
+#if 1
   /* I don't think that this is necessary - just let pager die */
+  /* domivogt (07-mar-1999): But it is! A window being moved in the pager
+   * might die at any moment causing the Xlib calls to generate BadMatch
+   * errors. Without an error handler the pager will die! */
   XSetErrorHandler((XErrorHandler)FvwmErrorHandler);
-#endif /* 0 */
+#endif /* 1 */
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
 
@@ -159,7 +162,7 @@ void initialize_pager(void)
 
 #ifdef SHAPE
   /* Check that shape extension exists. */
-   if (ShapeLabels)		
+   if (ShapeLabels)
      {
        int s1, s2;
        ShapeLabels = (XShapeQueryExtension (dpy, &s1, &s2) ? 1 : 0);
@@ -370,7 +373,7 @@ void initialize_pager(void)
       valuemask = (CWBorderPixel | CWEventMask);
       valuemask |= CWBackPixel;
 
-      attributes.background_pixel = 
+      attributes.background_pixel =
 	(Desks[i].Dcolor ? GetColor(Desks[i].Dcolor) : back_pix);
 
 
@@ -392,7 +395,7 @@ void initialize_pager(void)
 	{
 	  valuemask |= CWBackPixmap;
 	  attributes.background_pixmap = Desks[i].bgPixmap->picture;
-	} 
+	}
       else if (Desks[i].Dcolor)
 	{
 	  valuemask |= CWBackPixel;
@@ -403,7 +406,7 @@ void initialize_pager(void)
 	  valuemask |= CWBackPixmap;
 	  attributes.background_pixmap = PixmapBack->picture;
 	}
-      else 
+      else
 	{
 	  valuemask |= CWBackPixel;
 	  attributes.background_pixel = back_pix;
@@ -416,13 +419,13 @@ void initialize_pager(void)
 				 valuemask, &attributes);
 
 
-      if (HilightDesks) 
+      if (HilightDesks)
 	{
 	  valuemask &= ~(CWBackPixel | CWBackPixmap);
 
 	  attributes.event_mask = 0;
 
-	  if (HilightPixmap) 
+	  if (HilightPixmap)
 	    {
 	      valuemask |= CWBackPixmap;
 	      attributes.background_pixmap = HilightPixmap->picture;
@@ -432,7 +435,7 @@ void initialize_pager(void)
 	      valuemask |= CWBackPixel;
 	      attributes.background_pixel = hi_pix;
 	    }
-      
+
 	  w = (window_w - n)/(n+1);
 	  h = (window_h - label_h - m)/(m+1);
 	  Desks[i].CPagerWin=XCreateWindow(dpy,Desks[i].w,-1000, -1000, w, h,0,
@@ -568,7 +571,7 @@ void UpdateWindowShape ()
 
   shape_count =
     ndesks + ((Scr.CurrentDesk < desk1 || Scr.CurrentDesk >desk2) ? 0 : 1);
-  
+
   shape = alloca (shape_count * sizeof (XRectangle));
 
   if (shape == NULL)
@@ -577,7 +580,7 @@ void UpdateWindowShape ()
   cnt = 0;
   y_pos = (LabelsBelow ? 0 : label_h);
 
-  for (i = 0; i < Rows; ++i) 
+  for (i = 0; i < Rows; ++i)
     {
       x_pos = 0;
       for (j = 0; j < Columns; ++j)
@@ -588,11 +591,11 @@ void UpdateWindowShape ()
 	      shape[cnt].y = y_pos;
 	      shape[cnt].width = desk_w + 1;
 	      shape[cnt].height = desk_h + 2;
-	      
+
 	      if (cnt == Scr.CurrentDesk - desk1)
 		{
 		  shape[ndesks].x = x_pos;
-		  shape[ndesks].y = 
+		  shape[ndesks].y =
 		    (LabelsBelow ? y_pos + desk_h + 2 : y_pos - label_h);
 		  shape[ndesks].width = desk_w;
 		  shape[ndesks].height = label_h + 2;
@@ -866,14 +869,14 @@ void ReConfigure(void)
 	      y_pos = (LabelsBelow ? 0 : label_h - 1);
 	      XMoveResizeWindow(dpy,Desks[i].w,-1, y_pos,
 				desk_w,desk_h);
-	      if (HilightDesks) 
+	      if (HilightDesks)
 		{
 		  if(i == Scr.CurrentDesk - desk1)
 		    XMoveResizeWindow(dpy, Desks[i].CPagerWin, x,y,w,h);
 		  else
 		    XMoveResizeWindow(dpy, Desks[i].CPagerWin, -1000,-100,w,h);
 		}
-	      
+
 	      XClearArea(dpy,Desks[i].w, 0, 0, desk_w,
 			 desk_h,True);
 	      if(uselabel)
@@ -1069,18 +1072,18 @@ void DrawIconGrid(int erase)
   MaxW = (Scr.VxMax + Scr.MyDisplayWidth);
   MaxH = Scr.VyMax + Scr.MyDisplayHeight;
 
-  if(erase) 
+  if(erase)
     {
       int tmp=(Scr.CurrentDesk - desk1);
 
-      if ((tmp < 0) || (tmp >= ndesks)) 
+      if ((tmp < 0) || (tmp >= ndesks))
 	{
-	  if (PixmapBack) 
+	  if (PixmapBack)
 	    XSetWindowBackgroundPixmap(dpy, icon_win,PixmapBack->picture);
-	  else 
+	  else
 	    XSetWindowBackground(dpy, icon_win, back_pix);
-	} 
-      else 
+	}
+      else
 	{
 	  if (Desks[tmp].bgPixmap)
 	    XSetWindowBackgroundPixmap(dpy, icon_win,Desks[tmp].bgPixmap->picture);
@@ -1088,7 +1091,7 @@ void DrawIconGrid(int erase)
 	    XSetWindowBackground(dpy, icon_win, GetColor(Desks[tmp].Dcolor));
 	  else if (PixmapBack)
 	    XSetWindowBackgroundPixmap(dpy, icon_win, PixmapBack->picture);
-	  else 
+	  else
 	    XSetWindowBackground(dpy, icon_win, back_pix);
 	}
 
@@ -1124,14 +1127,14 @@ void DrawIconGrid(int erase)
   x = (icon_w-n)* Scr.Vx/(Scr.VxMax+Scr.MyDisplayWidth) +n1;
   y = (icon_h-m)*Scr.Vy/(Scr.VyMax+Scr.MyDisplayHeight) +m1;
 
-  if (HilightDesks) 
+  if (HilightDesks)
     {
-      if (HilightPixmap) 
+      if (HilightPixmap)
 	{
 	  XCopyArea (dpy, HilightPixmap->picture, icon_win,
 		     HiliteGC, 0, 0, w, h, x, y);
-	} 
-      else 
+	}
+      else
 	{
 	  XFillRectangle (dpy, icon_win, HiliteGC, x, y, w, h);
 	}
@@ -1617,7 +1620,7 @@ void MoveWindow(XEvent *Event)
 	  XMoveWindow(dpy,t->w,Scr.MyDisplayWidth+Scr.VxMax,
 		      Scr.MyDisplayHeight+Scr.VyMax);
 	  XSync(dpy,0);
-	  sprintf(command,"MoveToDesk 0 %d", NewDesk);
+	  sprintf(command,"Silent MoveToDesk 0 %d", NewDesk);
 	  SendInfo(fd,command,t->w);
 	  t->desk = NewDesk;
 	}
@@ -1633,9 +1636,9 @@ void MoveWindow(XEvent *Event)
       XUngrabPointer(dpy,CurrentTime);
       XSync(dpy,0);
       if(t->flags & ICONIFIED)
-	SendInfo(fd,"Move",t->icon_w);
+	SendInfo(fd,"Silent Move",t->icon_w);
       else
-	SendInfo(fd,"Move",t->w);
+	SendInfo(fd,"Silent Move",t->w);
       return;
     }
   else
@@ -1691,7 +1694,7 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    {
-	      sprintf(command,"MoveToDesk 0 %d", NewDesk + desk1);
+	      sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);
 	      SendInfo(fd,command,t->w);
 	      t->desk = NewDesk + desk1;
 	    }
@@ -1711,7 +1714,7 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    MoveResizePagerView(t);
-	  SendInfo(fd,"Raise",t->w);
+	  SendInfo(fd,"Silent Raise",t->w);
 	}
       if(Scr.CurrentDesk == t->desk)
 	{
@@ -1729,7 +1732,7 @@ void MoveWindow(XEvent *Event)
     and such.
 */
 #if 0
-            SendInfo(fd, "Focus", t->icon_w);
+            SendInfo(fd, "Silent Focus", t->icon_w);
 #else
             XSetInputFocus (dpy, t->icon_w, RevertToParent,
               Event->xbutton.time);
@@ -1738,7 +1741,7 @@ void MoveWindow(XEvent *Event)
 	  else
             {
 #if 0
-	    SendInfo(fd, "Focus", t->w);
+	    SendInfo(fd, "Silent Focus", t->w);
 #else
             XSetInputFocus (dpy, t->w, RevertToParent,
               Event->xbutton.time);
@@ -1761,7 +1764,7 @@ void MoveWindow(XEvent *Event)
  ************************************************************************/
 XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
-#if 0
+#if 1
   Window root;
   unsigned border_width, depth;
   int x,y;
@@ -1776,9 +1779,10 @@ XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
   return 0;
 #else
   /* really should just exit here... */
+  /* domivogt (07-mar-1999): No, not really. See comment above. */
   fprintf(stderr,"%s: XError!  Bagging out!\n",MyName);
   exit(0);
-#endif /* 0 */
+#endif /* 1 */
 }
 
 
@@ -2082,7 +2086,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     MoveWindow.
 */
 #if 0
-          SendInfo(fd, "Focus", t->icon_w);
+          SendInfo(fd, "Silent Focus", t->icon_w);
 #else
           XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time);
 #endif
@@ -2090,7 +2094,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
       else
         {
 #if 0
-          SendInfo(fd, "Focus", t->w);
+          SendInfo(fd, "Silent Focus", t->w);
 #else
           XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
 #endif
@@ -2204,7 +2208,7 @@ void MapBalloonWindow (XEvent *event)
 }
 
 
-/* Generate the BallonLabel from the format string 
+/* Generate the BallonLabel from the format string
    -- disching@fmi.uni-passau.de */
 char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
 {

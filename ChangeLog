@@ -1,5 +1,63 @@
 1999-03-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/fvwm2.1 (sub-menu): added description of 'Silent' function
+
+	* fvwm/functions.c (ExecuteFunction):
+	(DeferExecution): implemented silent_functions flags
+
+	* fvwm/builtins.c (SetHiColor):
+	(SetEdgeScroll):
+	(LoadWindowFont):
+	(ApplyDefaultFontAndColors):
+	(LoadIconFont):
+	* fvwm/virtual.c (checkPanFrames):
+	(HandlePaging):
+	* fvwm/session.c (SaveGlobalState):
+	(LoadGlobalState):
+	* fvwm/resize.c (resize_window):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/fvwm.c (InitVariables):
+	(CaptureAllWindows):
+	* fvwm/menus.c (MakeMenu):
+	use new Scr.flags structure
+
+	* fvwm/screen.h (ScreenInfo): introduced flags structure and
+	silent_functions flag. Removed old unsigned long flags.
+
+	* fvwm/misc.h (struct functions): moved struct to functions.h
+
+	* fvwm/functions.c (func_config): added 'Silent' command.
+
+	* fvwm/virtual.c (setEdgeThickness):
+	(scroll):
+	(changeWindowsDesk):
+	(goto_page_func):
+	* fvwm/resize.c (resize_window):
+	* fvwm/move.c (move_window_doit):
+	(move_window):
+	(animated_move_window):
+	(move_window_to_page):
+	* fvwm/functions.c (func_config):
+	changed argument list to use F_CMD_ARGS
+
+	* fvwm/functions.c (DeferExecution): moved function from builtins.c
+	to functions.c
+
+	* fvwm/screen.h: removed ApplyWindowFont
+
+	* fvwm/misc.h: removed ApplyIconFont
+
+	* fvwm/builtins.c: Replaced argument list for builtins with macro
+	F_CMD_ARGS (makes it easier to change this in the future).
+
+	* fvwm/builtins.c (SafeDefineCursor): now static
+	(FindMenuStyle): dito
+	(ApplyIconFont): dito
+	(ApplyWindowFont): dito
+
+	* fvwm/move.c (InteractiveMove): fixed interactive move that was broken
+	since fix for module input.
+
 	* fvwm/menus.c (MakeMenu): fixed typo
 
 	* ------ end of my changes to split functions and menus ------
@@ -100,7 +158,7 @@
 1999-03-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/add_window.c (merge_styles): fix Layer option handling.
-	
+
 	* fvwm/misc.c (BroadcastRestack): Reworked to send just one
 	variable-size packet containing all windows. This is necessary
 	to make the pager work properly. It seems ok to send packets
@@ -335,7 +393,8 @@ Wed Mar  3 21:05:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	them.
 
 	* fvwm/move.c: Fixed opaque/animated moves to not crash shaded windows,
-	removed	#ifndef NO_ETERM_SUPPORT, might want to make it a configure option.
+	removed	#ifndef NO_ETERM_SUPPORT, might want to make it a configure
+	option.
 
 1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 

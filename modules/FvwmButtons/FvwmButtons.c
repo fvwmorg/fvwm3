@@ -787,6 +787,7 @@ void Loop(void)
 	    XLookupString(&Event.xkey,buffer,10,&keysym,0);
 	    if(keysym!=XK_Return && keysym!=XK_KP_Enter && keysym!=XK_Linefeed)
 	      break;	                /* fall through to ButtonPress */
+
 	  case ButtonPress:
             PanelIndex = MainPanel;
             b = NULL;
@@ -796,11 +797,12 @@ void Loop(void)
                 UberButton = PanelIndex->uber;
                 MyWindow   = UberButton->IconWinParent;
                 if (Event.xany.window == MyWindow)
+		{
 		  CurrentButton = b =
 		    select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+		}
               }
-            while (!b && PanelIndex->next && (PanelIndex = PanelIndex->next))
-	      ;
+            while (!b && PanelIndex->next && (PanelIndex = PanelIndex->next));
 
 	    if(!b || !(b->flags&b_Action) ||
 	       ((act=GetButtonAction(b,Event.xbutton.button)) == NULL &&
@@ -1531,31 +1533,40 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
   static int miss_counter = 0;
   unsigned long *body;
 
+fprintf(stderr, "mxne in\n");
   if(XPending(Dpy))
     {
       XNextEvent(Dpy,event);
 #     ifdef DEBUG_EVENTS
       DebugEvents(event);
 #     endif
+fprintf(stderr, "mxne out 1\n");
       return 1;
     }
+fprintf(stderr, "mxne 1\n");
 
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
+fprintf(stderr, "mxne 2\n");
   if (select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL) > 0)
   {
 
+fprintf(stderr, "mxne 3\n");
   if(FD_ISSET(x_fd, &in_fdset))
     {
+fprintf(stderr, "mxne 4\n");
       if(XPending(Dpy))
 	{
+fprintf(stderr, "mxne 5\n");
 	  XNextEvent(Dpy,event);
+fprintf(stderr, "mxne 6\n");
 	  miss_counter = 0;
 #         ifdef DEBUG_EVENTS
 	  DebugEvents(event);
 #         endif
+fprintf(stderr, "mxne out 2\n");
 	  return 1;
 	}
       else
@@ -1564,16 +1575,22 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
 	DeadPipe(0);
     }
 
+fprintf(stderr, "mxne 7\n");
   if(FD_ISSET(fd[1], &in_fdset))
     {
+fprintf(stderr, "mxne 8\n");
       if((count = ReadFvwmPacket(fd[1], header, &body)) > 0)
 	{
+fprintf(stderr, "mxne 9\n");
 	  process_message(header[1],body);
 	  free(body);
 	}
+fprintf(stderr, "mxne 10\n");
     }
+fprintf(stderr, "mxne 11\n");
 
   }
+fprintf(stderr, "mxne out 3\n");
   return 0;
 }
 

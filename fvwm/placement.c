@@ -35,7 +35,7 @@ int test_fit(FvwmWindow *t, int test_x, int test_y, int aoimin, int pdeltax, int
 void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay);
 /**/
 
-/* With the advent of layers, the meaning of ONTOP in the following 
+/* With the advent of layers, the meaning of ONTOP in the following
    explanation has changed to mean any window in a higher layer. */
 
 /* The following factors represent the amount of area that these types of
@@ -458,7 +458,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
           Honor the flag unless...
           it's a restart or recapture, and that option's disallowed...
       */
-      if (PPosOverride && (Restarting || (Scr.flags & WindowsCaptured)) &&
+      if (PPosOverride && (Restarting || (Scr.flags.windows_captured)) &&
 	  !Scr.go.RecaptureHonorsStartsOnPage)
         {
           HonorStartsOnPage  =  False;
@@ -466,7 +466,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
      /*
           it's a cold start window capture, and that's disallowed...
       */
-      if (PPosOverride && (!Restarting && !(Scr.flags & WindowsCaptured)) &&
+      if (PPosOverride && (!Restarting && !(Scr.flags.windows_captured)) &&
 	  !Scr.go.CaptureHonorsStartsOnPage)
         {
           HonorStartsOnPage  =  False;
@@ -600,7 +600,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
       /*  RBW - allow StartsOnPage to go through, even if iconic.  */
       ( ((!((tmp_win->wmhints)&&
 	    (tmp_win->wmhints->flags & StateHint)&&
-	    (tmp_win->wmhints->initial_state == IconicState))) 
+	    (tmp_win->wmhints->initial_state == IconicState)))
 	 || (HonorStartsOnPage)) ) )
   {
     /* Get user's window placement, unless RandomPlacement is specified */

@@ -22,6 +22,18 @@ typedef struct FvwmFunction
   unsigned int use_depth;
 } FvwmFunction;
 
+/* used for parsing commands*/
+struct functions
+{
+  char *keyword;
+#ifdef __STDC__
+  void (*action)(XEvent *,Window,FvwmWindow *, unsigned long,char *, int *);
+#else
+  void (*action)();
+#endif
+  short func_type;
+  Bool func_needs_window;
+};
 
 #define FUNC_NO_WINDOW False
 #define FUNC_NEEDS_WINDOW True

@@ -1,3 +1,10 @@
+1999-03-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (FvwmErrorHandler): switched on X error handler
+	to fix coredump when window dies during a move.
+	(MoveWindow): prefix pager commands with 'silent'
+	(IconMoveWindow): prefix pager commands with 'silent'
+
 1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmForm/FvwmForm.c (ReadDefaults):

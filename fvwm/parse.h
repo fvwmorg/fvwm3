@@ -93,6 +93,7 @@ enum {
     F_EMULATE,
     F_SHADE_ANIMATE,
     F_LAYER,
+    F_SILENT,
 
     F_RESIZE = 100,
     F_RAISE,

@@ -296,7 +296,6 @@ typedef struct ScreenInfo
   int EdgeScrollX;              /* #pixels to scroll on screen edge */
   int EdgeScrollY;              /* #pixels to scroll on screen edge */
   unsigned char buttons2grab;   /* buttons to grab in click to focus mode */
-  unsigned long flags;
   int NumBoxes;
   int randomx;                  /* values used for randomPlacement */
   int randomy;
@@ -340,8 +339,16 @@ typedef struct ScreenInfo
     Bool EmulateMWM : 1;
     Bool EmulateWIN : 1;
   } gs; /* global style structure */
-  Bool hasIconFont;
-  Bool hasWindowFont;
+  struct
+  {
+    unsigned has_icon_font : 1;
+    unsigned has_window_font : 1;
+    unsigned silent_functions : 1;
+    unsigned windows_captured : 1;
+    unsigned edge_wrap_x : 1;
+    unsigned edge_wrap_y : 1;
+    unsigned animated_menus : 1;
+  } flags;
 } ScreenInfo;
 
 /*
@@ -364,15 +371,5 @@ void InitFvwmDecor(FvwmDecor *fl);
 void DestroyFvwmDecor(FvwmDecor *fl);
 
 extern ScreenInfo Scr;
-
-/* for the flags value - these used to be seperate Bool's */
-#define WindowsCaptured            (1)
-#define EdgeWrapX                 (64) /* Should EdgeScroll wrap around? */
-#define EdgeWrapY                (128)
-#define AnimatedMenus           (1024)
-
-/* Have to declare this here because FvwmDecor isn't declared in misc.h when
- * this gets parsed :( */
-void ApplyWindowFont(FvwmDecor *fl);
 
 #endif /* _SCREEN_ */

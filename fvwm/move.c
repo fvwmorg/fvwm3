@@ -42,9 +42,10 @@ int cmsDelayDefault = 10; /* milliseconds */
 /* Perform the movement of the window. ppctMovement *must* have a 1.0 entry
  * somewhere in ins list of floats, and movement will stop when it hits a 1.0
  * entry */
-void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX, int startY,
-                           int endX, int endY, Bool fWarpPointerToo,
-                           int cmsDelay, float *ppctMovement )
+void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
+			   int startY, int endX, int endY,
+			   Bool fWarpPointerToo, int cmsDelay,
+			   float *ppctMovement )
 {
   int pointerX, pointerY;
   int currentX, currentY;
@@ -82,21 +83,26 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX, int startY
       XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
 		   pointerX,pointerY);
     }
-    if (tmp_win 
+    if (tmp_win
 #ifdef WINDOWSHADE
         && !(tmp_win->buttons & WSHADE)
 #endif
 )
-    { /* send configure notify event for windows that care about their location */
+    {
+      /* send configure notify event for windows that care about their
+       * location */
       XEvent client_event;
       client_event.type = ConfigureNotify;
       client_event.xconfigure.display = dpy;
       client_event.xconfigure.event = tmp_win->w;
       client_event.xconfigure.window = tmp_win->w;
       client_event.xconfigure.x = currentX + tmp_win->boundary_width;
-      client_event.xconfigure.y = currentY + tmp_win->title_height + tmp_win->boundary_width;
-      client_event.xconfigure.width = tmp_win->frame_width - 2 * tmp_win->boundary_width;
-      client_event.xconfigure.height = tmp_win->frame_height - 2 * tmp_win->boundary_width - tmp_win->title_height;
+      client_event.xconfigure.y = currentY + tmp_win->title_height +
+	tmp_win->boundary_width;
+      client_event.xconfigure.width = tmp_win->frame_width -
+	2 * tmp_win->boundary_width;
+      client_event.xconfigure.height = tmp_win->frame_height -
+	2 * tmp_win->boundary_width - tmp_win->title_height;
       client_event.xconfigure.border_width = 0;
       /* Real ConfigureNotify events say we're above title window, so ... */
       /* what if we don't have a title ????? */
@@ -104,7 +110,8 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX, int startY
       client_event.xconfigure.override_redirect = False;
       XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
 #ifdef FVWM_DEBUG_MSGS
-      fvwm_msg(DBG,"AnimatedMoveAnyWindow","Sent ConfigureNotify (w == %d, h == %d)",
+      fvwm_msg(DBG,"AnimatedMoveAnyWindow",
+	       "Sent ConfigureNotify (w == %d, h == %d)",
                client_event.xconfigure.width,client_event.xconfigure.height);
 #endif
     }
@@ -115,7 +122,7 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX, int startY
       BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
       FlushOutputQueues();
     }
-    
+
     usleep(cmsDelay*1000); /* usleep takes microseconds */
 #ifdef GJB_ALLOW_ABORTING_ANIMATED_MOVES
     /* this didn't work for me -- maybe no longer necessary since
@@ -147,12 +154,13 @@ void AnimatedMoveOfWindow(Window w, int startX, int startY,
 }
 
 /* used for moving client windows */
-void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX, int startY,
-                             int endX, int endY, Bool fWarpPointerToo,
-                             int cmsDelay, float *ppctMovement)
+void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
+			    int startY, int endX, int endY,
+			    Bool fWarpPointerToo, int cmsDelay,
+			    float *ppctMovement)
 {
-  AnimatedMoveAnyWindow(tmp_win, w, startX, startY, endX, endY, fWarpPointerToo,
-                        cmsDelay, ppctMovement);
+  AnimatedMoveAnyWindow(tmp_win, w, startX, startY, endX, endY,
+			fWarpPointerToo, cmsDelay, ppctMovement);
 }
 
 
@@ -161,9 +169,7 @@ void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX, int start
  * Start a window move operation
  *
  ****************************************************************************/
-void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int* Module,
-		      Bool fAnimated, Bool fMoveToPage)
+void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 {
   int FinalX, FinalY;
   int n;
@@ -273,20 +279,17 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   return;
 }
 
-void move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context, char *action,int* Module)
+void move_window(F_CMD_ARGS);
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,FALSE);
 }
 
-void animated_move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			  unsigned long context, char *action,int* Module)
+void animated_move_window(F_CMD_ARGS);
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,TRUE,FALSE);
 }
 
-void move_window_to_page(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			 unsigned long context, char *action,int* Module)
+void move_window_to_page(F_CMD_ARGS);
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,TRUE);
 }
@@ -405,7 +408,7 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
                (*py + self.h) < 0) && (Scr.SnapMode & 8))
             {
               dist = abs(Scr.MyDisplayWidth - (*px + self.w));
-              
+
               if(dist < closestRight)
 		{
 		  closestRight = dist;
@@ -414,13 +417,13 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 		     ((*px + self.w) < Scr.MyDisplayWidth +
                       Scr.SnapAttraction))
 		    nxl = Scr.MyDisplayWidth - self.w;
-                  
+
 		  if(((*px + self.w) >= Scr.MyDisplayWidth -
                       Scr.SnapAttraction)&&
 		     ((*px + self.w) < Scr.MyDisplayWidth))
 		    nxl = Scr.MyDisplayWidth - self.w;
                 }
-              
+
               dist = abs(*px);
 
 	      if(dist < closestLeft)
@@ -435,7 +438,7 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 		    nxl = 0;
                 }
             }
-          
+
 	  if(!((other.x + other.w) < (*px) || (other.x) > (*px + self.w)))
 	    {
 	      dist = abs(other.y - (*py + self.h));
@@ -466,7 +469,7 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
               && (Scr.SnapMode & 8))
             {
               dist = abs(Scr.MyDisplayHeight - (*py + self.h));
-              
+
 	      if(dist < closestBottom)
 		{
 		  closestBottom = dist;
@@ -478,9 +481,9 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
                      ((*py + self.h) < Scr.MyDisplayHeight))
                     nyt = Scr.MyDisplayHeight - self.h;
                 }
-              
+
               dist = abs(- *py);
-              
+
               if(dist < closestTop)
 		{
                   closestTop = dist;
@@ -490,7 +493,7 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 		  if((*py <=  Scr.SnapAttraction)&&
 		     (*py > 0))
 		    nyt = 0;
-                  
+
                 }
             }
 	}
@@ -538,7 +541,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
-  
+
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
@@ -740,25 +743,31 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
            && !(tmp_win->buttons & WSHADE)
 #endif
           )
-        { /* send configure notify event for windows that care about their location */
+        {
+	  /* send configure notify event for windows that care about their
+	   * location */
           XEvent client_event;
           client_event.type = ConfigureNotify;
           client_event.xconfigure.display = dpy;
           client_event.xconfigure.event = tmp_win->w;
           client_event.xconfigure.window = tmp_win->w;
           client_event.xconfigure.x = xl + tmp_win->boundary_width;
-          client_event.xconfigure.y = yt + tmp_win->title_height + tmp_win->boundary_width;
+          client_event.xconfigure.y = yt + tmp_win->title_height +
+	    tmp_win->boundary_width;
           client_event.xconfigure.width = Width - 2 * tmp_win->boundary_width;
-          client_event.xconfigure.height = Height - 2 * tmp_win->boundary_width - tmp_win->title_height;
+          client_event.xconfigure.height = Height -
+	    2 * tmp_win->boundary_width - tmp_win->title_height;
           client_event.xconfigure.border_width = 0;
-          /* Real ConfigureNotify events say we're above title window, so ... */
+          /* Real ConfigureNotify events say we're above title window, so... */
           /* what if we don't have a title ????? */
           client_event.xconfigure.above = tmp_win->frame;
           client_event.xconfigure.override_redirect = False;
-          XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
+          XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask,
+		     &client_event);
 #ifdef FVWM_DEBUG_MSGS
           fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
-                   client_event.xconfigure.width,client_event.xconfigure.height);
+                   client_event.xconfigure.width,
+		   client_event.xconfigure.height);
 #endif
 	}
       if(opaque_move) { /* no point in doing this if server grabbed */
@@ -923,7 +932,8 @@ void Keyboard_shortcuts(XEvent *Event, FvwmWindow *w, int ReturnEvent)
 }
 
 
-void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY, XEvent *eventp)
+void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
+		     int *FinalY, XEvent *eventp)
 {
   int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
   int XOffset, YOffset;
@@ -940,7 +950,9 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
       XFlush(dpy);
     }
 
-  if (eventp->type == ButtonPress)
+  /* Although a move is usually done with a button depressed we have to check
+   * for ButtonRelease too since the event may be faked. */
+  if (eventp->type == ButtonPress || eventp->type == ButtonRelease)
     {
       DragX = eventp->xbutton.x_root;
       DragY = eventp->xbutton.y_root;

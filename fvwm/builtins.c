@@ -15,6 +15,7 @@
 #include <X11/keysym.h>
 
 #include "fvwm.h"
+#include "functions.h"
 #include "menus.h"
 #include "misc.h"
 #include "parse.h"
@@ -28,6 +29,8 @@ static int shade_anim_steps=0;
 
 static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose);
 static void FreeMenuFace(Display *dpy, MenuFace *mf);
+static void ApplyIconFont(void);
+static void ApplyWindowFont(FvwmDecor *fl);
 
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
@@ -40,130 +43,6 @@ static char  *button_states[MaxButtonState]={
     "Inactive",
 #endif
 };
-
-/***********************************************************************
- *
- *  Procedure:
- *	DeferExecution - defer the execution of a function to the
- *	    next button press if the context is C_ROOT
- *
- *  Inputs:
- *      eventp  - pointer to XEvent to patch up
- *      w       - pointer to Window to patch up
- *      tmp_win - pointer to FvwmWindow Structure to patch up
- *	context	- the context in which the mouse button was pressed
- *	func	- the function to defer
- *	cursor	- the cursor to display while waiting
- *      finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
- *                    terminate on.
- *
- ***********************************************************************/
-int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
-		   unsigned long *context, int cursor, int FinishEvent)
-
-{
-  int done;
-  int finished = 0;
-  Window dummy;
-  Window original_w;
-
-  original_w = *w;
-
-  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(tmp_win != NULL))
-  {
-    if((FinishEvent == ButtonPress)||((FinishEvent == ButtonRelease) &&
-                                      (eventp->type != ButtonPress)))
-    {
-      return FALSE;
-    }
-  }
-  if(!GrabEm(cursor))
-  {
-    XBell(dpy, 0);
-    return True;
-  }
-
-  while (!finished)
-  {
-    done = 0;
-    /* block until there is an event */
-    XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-               ExposureMask |KeyPressMask | VisibilityChangeMask |
-               ButtonMotionMask| PointerMotionMask/* | EnterWindowMask |
-                                                     LeaveWindowMask*/, eventp);
-    StashEventTime(eventp);
-
-    if(eventp->type == KeyPress)
-      Keyboard_shortcuts(eventp, NULL, FinishEvent);
-    if(eventp->type == FinishEvent)
-      finished = 1;
-    if(eventp->type == ButtonPress)
-    {
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
-      done = 1;
-    }
-    if(eventp->type == ButtonRelease)
-      done = 1;
-    if(eventp->type == KeyPress)
-      done = 1;
-
-    if(!done)
-    {
-      DispatchEvent();
-    }
-
-  }
-
-
-  *w = eventp->xany.window;
-  if(((*w == Scr.Root)||(*w == Scr.NoFocusWin))
-     && (eventp->xbutton.subwindow != (Window)0))
-  {
-    *w = eventp->xbutton.subwindow;
-    eventp->xany.window = *w;
-  }
-  if (*w == Scr.Root)
-  {
-    *context = C_ROOT;
-    XBell(dpy, 0);
-    UngrabEm();
-    return TRUE;
-  }
-  if (XFindContext (dpy, *w, FvwmContext, (caddr_t *)tmp_win) == XCNOENT)
-  {
-    *tmp_win = NULL;
-    XBell(dpy, 0);
-    UngrabEm();
-    return (TRUE);
-  }
-
-  if(*w == (*tmp_win)->Parent)
-    *w = (*tmp_win)->w;
-
-  if(original_w == (*tmp_win)->Parent)
-    original_w = (*tmp_win)->w;
-
-  /* this ugly mess attempts to ensure that the release and press
-   * are in the same window. */
-  if((*w != original_w)&&(original_w != Scr.Root)&&
-     (original_w != None)&&(original_w != Scr.NoFocusWin))
-    if(!((*w == (*tmp_win)->frame)&&
-         (original_w == (*tmp_win)->w)))
-    {
-      *context = C_ROOT;
-      XBell(dpy, 0);
-      UngrabEm();
-      return TRUE;
-    }
-
-  *context = GetContext(*tmp_win,eventp,&dummy);
-
-  UngrabEm();
-  return FALSE;
-}
-
-
-
 
 /**************************************************************************
  *
@@ -314,8 +193,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
  *	(Un)Maximize a window.
  *
  ***********************************************************************/
-void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	      unsigned long context, char *action, int *Module)
+void Maximize(F_CMD_ARGS)
 {
   int new_width, new_height,new_x,new_y;
   int val1, val2, val1_unit,val2_unit,n;
@@ -423,8 +301,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  *              windowshade animation goes off. Default = 0.
  *
  ***********************************************************************/
-void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context, char *action, int *Module)
+void WindowShade(F_CMD_ARGS)
 {
     int h, y, step, old_h;
     int new_x, new_y, new_width, new_height;
@@ -537,8 +414,7 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif /* WINDOWSHADE */
 
 
-void Bell(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
-	  char *action, int *Module)
+void Bell(F_CMD_ARGS)
 {
   XBell(dpy, 0);
 }
@@ -549,8 +425,7 @@ static FvwmDecor *last_decor = NULL, *cur_decor = NULL;
 #endif
 static MenuRoot *last_menu=NULL;
 static FvwmFunction *last_func=NULL;
-void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module)
+void add_item_to_menu(F_CMD_ARGS)
 {
   MenuRoot *mr;
   MenuRoot *mrPrior;
@@ -584,9 +459,7 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void add_another_item(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,
-		      char *action, int *Module)
+void add_another_item(F_CMD_ARGS)
 {
 #ifdef USEDECOR
   extern void AddToDecor(FvwmDecor *, char *);
@@ -621,9 +494,7 @@ void add_another_item(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif /* USEDECOR */
 }
 
-void destroy_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                  unsigned long context,
-                  char *action, int *Module)
+void destroy_menu(F_CMD_ARGS)
 {
   MenuRoot *mr;
   MenuRoot *mrContinuation;
@@ -645,8 +516,7 @@ void destroy_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   return;
 }
 
-void destroy_fvwmfunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module)
+void destroy_fvwmfunc(F_CMD_ARGS)
 {
   FvwmFunction *func;
   char *token;
@@ -664,8 +534,7 @@ void destroy_fvwmfunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   return;
 }
 
-void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module)
+void add_item_to_func(F_CMD_ARGS)
 {
   FvwmFunction *func;
   char *token;
@@ -685,16 +554,14 @@ void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void Nop_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
-	      unsigned long context, char *action, int *Module)
+void Nop_func(F_CMD_ARGS)
 {
 
 }
 
 
-void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action, int *Module)
-{
+void movecursor(F_CMD_ARGS)
+ {
   int x = 0, y = 0;
   int val1, val2, val1_unit, val2_unit;
 #ifndef NON_VIRTUAL
@@ -772,9 +639,7 @@ void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void iconify_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,char *action, int *Module)
-
+void iconify_function(F_CMD_ARGS)
 {
   int toggle;
 
@@ -816,8 +681,7 @@ void iconify_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 }
 
-void raise_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context, char *action, int *Module)
+void raise_function(F_CMD_ARGS)
 {
   name_list styles;                     /* place for merged styles */
 
@@ -827,8 +691,7 @@ void raise_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   RaiseWindow(tmp_win);
 }
 
-void lower_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context,char *action, int *Module)
+void lower_function(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT, ButtonRelease))
     return;
@@ -836,8 +699,7 @@ void lower_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   LowerWindow(tmp_win);
 }
 
-void destroy_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module)
+void destroy_function(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY, ButtonRelease))
     return;
@@ -856,8 +718,7 @@ void destroy_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   XSync(dpy,0);
 }
 
-void delete_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context,char *action, int *Module)
+void delete_function(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY,ButtonRelease))
     return;
@@ -878,8 +739,7 @@ void delete_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   XSync(dpy,0);
 }
 
-void close_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context,char *action, int *Module)
+void close_function(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY,ButtonRelease))
     return;
@@ -903,14 +763,12 @@ void close_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   XSync(dpy,0);
 }
 
-void restart_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module)
+void restart_function(F_CMD_ARGS)
 {
   Done(1, action);
 }
 
-void exec_setup(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                unsigned long context,char *action, int *Module)
+void exec_setup(F_CMD_ARGS)
 {
   char *arg=NULL;
   static char shell_set = 0;
@@ -933,8 +791,7 @@ void exec_setup(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 }
 
-void exec_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context,char *action, int *Module)
+void exec_function(F_CMD_ARGS)
 {
   char *cmd=NULL;
 
@@ -975,8 +832,7 @@ void exec_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   return;
 }
 
-void refresh_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action, int *Module)
+void refresh_function(F_CMD_ARGS)
 {
   XSetWindowAttributes attributes;
   unsigned long valuemask;
@@ -1004,8 +860,7 @@ void refresh_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void refresh_win_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                          unsigned long context, char *action, int *Module)
+void refresh_win_function(F_CMD_ARGS)
 {
   XSetWindowAttributes attributes;
   unsigned long valuemask;
@@ -1033,8 +888,7 @@ void refresh_win_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void stick_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context, char *action, int *Module)
+void stick_function(F_CMD_ARGS)
 {
   int toggle;
 
@@ -1059,8 +913,7 @@ void stick_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   SetTitleBar(tmp_win,(Scr.Hilite==tmp_win),True);
 }
 
-void wait_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context,char *action, int *Module)
+void wait_func(F_CMD_ARGS)
 {
   Bool done = False;
   extern FvwmWindow *Tmp_win;
@@ -1097,8 +950,7 @@ void wait_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif
 }
 
-void flip_focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action, int *Module)
+void flip_focus_func(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
     return;
@@ -1108,8 +960,7 @@ void flip_focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action, int *Module)
+void focus_func(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
     return;
@@ -1118,8 +969,7 @@ void focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void warp_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-               unsigned long context, char *action, int *Module)
+void warp_func(F_CMD_ARGS)
 {
    int val1_unit, val2_unit, n;
    int val1, val2;
@@ -1136,9 +986,7 @@ void warp_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-static void menu_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int *Module,
-		      Bool fStaysUp)
+static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 {
   extern int menuFromFrameOrWindowOrTitlebar;
   MenuRoot *menu;
@@ -1180,36 +1028,31 @@ static void menu_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 /* the function for the "Popup" command */
-void popup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int *Module)
+void popup_func(F_CMD_ARGS)
 {
   menu_func(eventp, w, tmp_win, context, action, Module, False);
 }
 
 /* the function for the "Menu" command */
-void staysup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int *Module)
+void staysup_func(F_CMD_ARGS)
 {
   menu_func(eventp, w, tmp_win, context, action, Module, True);
 }
 
 
-void quit_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context, char *action,int *Module)
+void quit_func(F_CMD_ARGS)
 {
   if (master_pid != getpid())
     kill(master_pid, SIGTERM);
   Done(0,NULL);
 }
 
-void quit_screen_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                      unsigned long context, char *action,int *Module)
+void quit_screen_func(F_CMD_ARGS)
 {
   Done(0,NULL);
 }
 
-void echo_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-               unsigned long context, char *action,int *Module)
+void echo_func(F_CMD_ARGS)
 {
   unsigned int len;
 
@@ -1224,8 +1067,7 @@ void echo_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   fvwm_msg(INFO,"Echo",action);
 }
 
-void raiselower_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int *Module)
+void raiselower_func(F_CMD_ARGS)
 {
   name_list styles;
 
@@ -1243,8 +1085,7 @@ void raiselower_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 }
 
-void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                   unsigned long context, char *action,int* Module)
+void SetEdgeScroll(F_CMD_ARGS)
 {
   int val1, val2, val1_unit,val2_unit,n;
 
@@ -1262,20 +1103,20 @@ void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (val1 >= 1000)
   {
     val1 /= 1000;
-    Scr.flags |= EdgeWrapX;
+    Scr.flags.edge_wrap_x = 1;
   }
   else
   {
-    Scr.flags &= ~EdgeWrapX;
+    Scr.flags.edge_wrap_x = 0;
   }
   if (val2 >= 1000)
   {
     val2 /= 1000;
-    Scr.flags |= EdgeWrapY;
+    Scr.flags.edge_wrap_y = 1;
   }
   else
   {
-    Scr.flags &= ~EdgeWrapY;
+    Scr.flags.edge_wrap_y = 0;
   }
 
   Scr.EdgeScrollX = val1*val1_unit/100;
@@ -1284,8 +1125,7 @@ void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   checkPanFrames();
 }
 
-void SetEdgeResistance(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                       unsigned long context, char *action,int* Module)
+void SetEdgeResistance(F_CMD_ARGS)
 {
   int val[2];
 
@@ -1299,8 +1139,7 @@ void SetEdgeResistance(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   Scr.MoveResistance = val[1];
 }
 
-void SetColormapFocus(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                      unsigned long context, char *action,int* Module)
+void SetColormapFocus(F_CMD_ARGS)
 {
   if (MatchToken(action,"FollowsFocus"))
   {
@@ -1318,8 +1157,7 @@ void SetColormapFocus(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 }
 
-void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+void SetClick(F_CMD_ARGS)
 {
   int val;
 
@@ -1339,8 +1177,7 @@ void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		       unsigned long context, char *action,int* Module)
+void SetSnapAttraction(F_CMD_ARGS)
 {
   int val;
   char *token;
@@ -1403,8 +1240,7 @@ void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   free(token);
 }
 
-void SetSnapGrid(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		 unsigned long context, char *action,int* Module)
+void SetSnapGrid(F_CMD_ARGS)
 {
   int val[2];
 
@@ -1423,8 +1259,7 @@ void SetSnapGrid(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-            unsigned long context, char *action,int* Module)
+void SetXOR(F_CMD_ARGS)
 {
   int val;
   XGCValues gcv;
@@ -1459,8 +1294,7 @@ void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void SetXORPixmap(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-            unsigned long context, char *action,int* Module)
+void SetXORPixmap(F_CMD_ARGS)
 {
   char *PixmapName;
   Picture *GCPicture;
@@ -1499,8 +1333,7 @@ void SetXORPixmap(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 }
 
-void SetOpaque(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	       unsigned long context, char *action,int* Module)
+void SetOpaque(F_CMD_ARGS)
 {
   int val;
 
@@ -1514,8 +1347,7 @@ void SetOpaque(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                 unsigned long context, char *action,int* Module)
+void SetDeskSize(F_CMD_ARGS)
 {
   int val[2];
 
@@ -1535,22 +1367,19 @@ void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void imagePath_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			unsigned long context, char *action,int* Module)
+void imagePath_function(F_CMD_ARGS)
 {
     SetImagePath( envDupExpand( stripcpy(action), 0 ) );
 }
 
-void iconPath_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		       unsigned long context, char *action,int* Module)
+void iconPath_function(F_CMD_ARGS)
 {
     fvwm_msg(ERR, "iconPath_function",
 	     "IconPath is deprecated since 2.3.0; use ImagePath instead." );
     imagePath_function( eventp, w, tmp_win, context, action, Module );
 }
 
-void pixmapPath_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			 unsigned long context, char *action,int* Module)
+void pixmapPath_function(F_CMD_ARGS)
 {
     fvwm_msg(ERR, "pixmapPath_function",
 	     "PixmapPath is deprecated since 2.3.0; use ImagePath instead." );
@@ -1560,8 +1389,7 @@ void pixmapPath_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
 char *ModulePath = FVWM_MODULEDIR;
 
-void setModulePath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                   unsigned long context, char *action,int* Module)
+void setModulePath(F_CMD_ARGS)
 {
     static int need_to_free = 0;
     char *tmp;
@@ -1576,8 +1404,7 @@ void setModulePath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int* Module)
+void SetHiColor(F_CMD_ARGS)
 {
   XGCValues gcv;
   unsigned long gcm;
@@ -1636,7 +1463,7 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
   fl->HiShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
-  if((Scr.flags & WindowsCaptured)&&(Scr.Hilite != NULL))
+  if((Scr.flags.windows_captured)&&(Scr.Hilite != NULL))
   {
     hilight = Scr.Hilite;
     SetBorder(Scr.Hilite,False,True,True,None);
@@ -1645,13 +1472,12 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void SafeDefineCursor(Window w, Cursor cursor)
+static void SafeDefineCursor(Window w, Cursor cursor)
 {
   if (w) XDefineCursor(dpy,w,cursor);
 }
 
-void CursorStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                 unsigned long context, char *action,int* Module)
+void CursorStyle(F_CMD_ARGS)
 {
   char *cname=NULL, *newcursor=NULL;
   int index,nc,i;
@@ -1737,7 +1563,7 @@ void CursorStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
 }
 
-MenuStyle *FindMenuStyle(char *name)
+static MenuStyle *FindMenuStyle(char *name)
 {
   MenuStyle *ms = Scr.menus.DefaultStyle;
 
@@ -1790,8 +1616,7 @@ static void FreeMenuStyle(MenuStyle *ms)
   free(ms);
 }
 
-void DestroyMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module)
+void DestroyMenuStyle(F_CMD_ARGS)
 {
   MenuStyle *ms = NULL;
   char *name = NULL;
@@ -1946,8 +1771,7 @@ static int GetMenuStyleIndex(char *option)
   return GetTokenIndex(option, optlist, 0, NULL);
 }
 
-static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module)
+static void NewMenuStyle(F_CMD_ARGS)
 {
   char *name;
   char *option = NULL;
@@ -2386,8 +2210,7 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   return;
 }
 
-static void OldMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		  unsigned long context, char *action,int* Module)
+static void OldMenuStyle(F_CMD_ARGS)
 {
   char *buffer, *rest;
   char *fore, *back, *stipple, *font, *style, *animated;
@@ -2430,8 +2253,7 @@ static void OldMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		  unsigned long context, char *action,int* Module)
+void SetMenuStyle(F_CMD_ARGS)
 {
   char *option;
 
@@ -2446,8 +2268,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void ChangeMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module)
+void ChangeMenuStyle(F_CMD_ARGS)
 {
   char *name = NULL, *menuname = NULL;
   MenuStyle *ms = NULL;
@@ -2497,8 +2318,7 @@ void FreeButtonFace(Display *dpy, ButtonFace *bf);
  *  Sets the border style (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		    unsigned long context, char *action,int* Module)
+void SetBorderStyle(F_CMD_ARGS)
 {
     char *parm = NULL, *prev = action;
 #ifdef USEDECOR
@@ -2593,8 +2413,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button);
  * Appends a titlestyle (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void AddTitleStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                   unsigned long context, char *action,int *Module)
+void AddTitleStyle(F_CMD_ARGS)
 {
 #ifdef USEDECOR
     FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
@@ -2616,8 +2435,7 @@ void AddTitleStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 #endif /* MULTISTYLE && EXTENDED_TITLESTYLE */
 
-void SetTitleStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                   unsigned long context, char *action,int* Module)
+void SetTitleStyle(F_CMD_ARGS)
 {
   char *parm=NULL, *prev = action;
 #ifdef USEDECOR
@@ -2774,13 +2592,13 @@ static void ApplyDefaultFontAndColors(void)
     }
   }
 
-  if (Scr.hasIconFont == False)
+  if (Scr.flags.has_icon_font == 0)
   {
     Scr.IconFont.font = Scr.StdFont.font;
     ApplyIconFont();
   }
 
-  if (Scr.hasWindowFont == False)
+  if (Scr.flags.has_window_font == 0)
   {
     Scr.DefaultDecor.WindowFont.font = Scr.StdFont.font;
     ApplyWindowFont(&Scr.DefaultDecor);
@@ -2795,8 +2613,7 @@ static void ApplyDefaultFontAndColors(void)
   MakeMenus();
 }
 
-void SetDefaultColors(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int* Module)
+void SetDefaultColors(F_CMD_ARGS)
 {
   char *fore = NULL;
   char *back = NULL;
@@ -2829,8 +2646,7 @@ void SetDefaultColors(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   ApplyDefaultFontAndColors();
 }
 
-void LoadDefaultFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module)
+void LoadDefaultFont(F_CMD_ARGS)
 {
   char *font;
   XFontStruct *xfs = NULL;
@@ -2860,7 +2676,7 @@ void LoadDefaultFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   ApplyDefaultFontAndColors();
 }
 
-void ApplyIconFont(void)
+static void ApplyIconFont(void)
 {
   FvwmWindow *tmp;
 
@@ -2880,8 +2696,7 @@ void ApplyIconFont(void)
   }
 }
 
-void LoadIconFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module)
+void LoadIconFont(F_CMD_ARGS)
 {
   char *font;
   XFontStruct *newfont;
@@ -2889,11 +2704,11 @@ void LoadIconFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   action = GetNextToken(action,&font);
   if (!font)
   {
-    if (Scr.hasIconFont == True)
+    if (Scr.flags.has_icon_font == 1)
     {
       /* reset to default font */
       XFreeFont(dpy, Scr.IconFont.font);
-      Scr.hasIconFont = False;
+      Scr.flags.has_icon_font = 0;
     }
     Scr.IconFont.font = Scr.StdFont.font;
     ApplyIconFont();
@@ -2902,9 +2717,9 @@ void LoadIconFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if ((newfont = GetFontOrFixed(dpy, font))!=NULL)
   {
-    if (Scr.IconFont.font != NULL && Scr.hasIconFont == True)
+    if (Scr.IconFont.font != NULL && Scr.flags.has_icon_font == 1)
       XFreeFont(dpy, Scr.IconFont.font);
-    Scr.hasIconFont = True;
+    Scr.flags.has_icon_font = 1;
     Scr.IconFont.font = newfont;
     ApplyIconFont();
   }
@@ -2915,7 +2730,7 @@ void LoadIconFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   free(font);
 }
 
-void ApplyWindowFont(FvwmDecor *fl)
+static void ApplyWindowFont(FvwmDecor *fl)
 {
   FvwmWindow *tmp,*hi;
   int x,y,w,h,extra_height;
@@ -2956,8 +2771,7 @@ void ApplyWindowFont(FvwmDecor *fl)
   SetTitleBar(hi,True,True);
 }
 
-void LoadWindowFont(XEvent *eventp,Window win,FvwmWindow *tmp_win,
-                    unsigned long context, char *action,int* Module)
+void LoadWindowFont(F_CMD_ARGS)
 {
   char *font;
   XFontStruct *newfont;
@@ -2971,10 +2785,10 @@ void LoadWindowFont(XEvent *eventp,Window win,FvwmWindow *tmp_win,
   if (!font)
   {
     /* reset to default font */
-    if (Scr.hasWindowFont)
+    if (Scr.flags.has_window_font)
     {
       XFreeFont(dpy, Scr.DefaultDecor.WindowFont.font);
-      Scr.hasWindowFont = False;
+      Scr.flags.has_window_font = 0;
       fl->WindowFont.font = Scr.StdFont.font;
       ApplyWindowFont(&Scr.DefaultDecor);
     }
@@ -2984,10 +2798,10 @@ void LoadWindowFont(XEvent *eventp,Window win,FvwmWindow *tmp_win,
   if ((newfont = GetFontOrFixed(dpy, font))!=NULL)
   {
     if (fl->WindowFont.font != NULL &&
-	(fl != &Scr.DefaultDecor || Scr.hasWindowFont == True))
+	(fl != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
       XFreeFont(dpy, fl->WindowFont.font);
     if (fl == &Scr.DefaultDecor)
-      Scr.hasWindowFont = True;
+      Scr.flags.has_window_font = 1;
     fl->WindowFont.font = newfont;
     ApplyWindowFont(fl);
   }
@@ -3788,8 +3602,7 @@ void AddToDecor(FvwmDecor *fl, char *s)
  * Changes the window's FvwmDecor pointer (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void ChangeDecor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int *Module)
+void ChangeDecor(F_CMD_ARGS)
 {
     char *item;
     int x,y,width,height,old_height,extra_height;
@@ -3836,8 +3649,7 @@ void ChangeDecor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  * Destroys an FvwmDecor (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void DestroyDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		 unsigned long context, char *action,int* Module)
+void DestroyDecor(F_CMD_ARGS)
 {
     char *item;
     FvwmDecor *fl = Scr.DefaultDecor.next;
@@ -3882,8 +3694,7 @@ void DestroyDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
  * Initiates an AddToDecor (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void add_item_to_decor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int* Module)
+void add_item_to_decor(F_CMD_ARGS)
 {
     FvwmDecor *fl, *found = NULL;
     char *item = NULL, *s = action;
@@ -3928,8 +3739,7 @@ void add_item_to_decor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
  * Updates window decoration styles (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void UpdateDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		 unsigned long context, char *action,int* Module)
+void UpdateDecor(F_CMD_ARGS)
 {
     FvwmWindow *fw = Scr.FvwmRoot.next;
 #ifdef USEDECOR
@@ -3996,8 +3806,7 @@ void UpdateDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
                  else \
                    tb->flags &= ~(a); } while (0)
 
-void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                 unsigned long context, char *action,int* Module)
+void ButtonStyle(F_CMD_ARGS)
 {
     int button = 0,n;
     int multi = 0;
@@ -4147,8 +3956,7 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
  * Appends a button decoration style (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void AddButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		    unsigned long context, char *action,int* Module)
+void AddButtonStyle(F_CMD_ARGS)
 {
     int button = 0,n;
     int multi = 0;
@@ -4218,10 +4026,12 @@ void AddButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	    int i;
 	    if (multi&1)
 		for (i=0;i<5;++i)
-		    text = ReadTitleButton(prev, &fl->left_buttons[i], True, i*2+1);
+		    text = ReadTitleButton(prev, &fl->left_buttons[i], True,
+					   i*2+1);
 	    if (multi&2)
 		for (i=0;i<5;++i)
-		    text = ReadTitleButton(prev, &fl->right_buttons[i], True, i*2);
+		    text = ReadTitleButton(prev, &fl->right_buttons[i], True,
+					   i*2);
 	}
 	else if (!(text = ReadTitleButton(prev, tb, True, button))) {
 	    free(parm);
@@ -4235,8 +4045,7 @@ void AddButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 #endif /* MULTISTYLE */
 
 
-void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-	    unsigned long context, char *action,int* Module)
+void SetEnv(F_CMD_ARGS)
 {
     char *szVar = NULL;
     char *szValue = NULL;
@@ -4581,8 +4390,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   return found;
 }
 
-void PrevFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+void PrevFunc(F_CMD_ARGS)
 {
   FvwmWindow *found;
   char *restofline;
@@ -4595,8 +4403,7 @@ void PrevFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
 }
 
-void NextFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+void NextFunc(F_CMD_ARGS)
 {
   FvwmWindow *found;
   char *restofline;
@@ -4609,8 +4416,7 @@ void NextFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
 }
 
-void NoneFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+void NoneFunc(F_CMD_ARGS)
 {
   FvwmWindow *found;
   char *restofline;
@@ -4622,8 +4428,7 @@ void NoneFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
 }
 
-void CurrentFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+void CurrentFunc(F_CMD_ARGS)
 {
   FvwmWindow *found;
   char *restofline;
@@ -4635,8 +4440,7 @@ void CurrentFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
 }
 
-void AllFunc(XEvent *eventp, Window junk, FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+void AllFunc(F_CMD_ARGS)
 {
   FvwmWindow *t, **g;
   char *restofline;
@@ -4694,8 +4498,7 @@ static void GetDirectionReference(FvwmWindow *w, int *x, int *y)
  * Execute a function to the closest window in the given
  * direction.
  **********************************************************************/
-void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-		   unsigned long context, char *action, int *Module)
+void DirectionFunc(F_CMD_ARGS)
 {
   char *directions[] = { "North", "East", "South", "West", "NorthEast",
 			 "SouthEast", "SouthWest", "NorthWest", NULL };
@@ -4818,10 +4621,9 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 }
 
 /* A very simple function, but handy if you want to call
-  complex functions from root context without selecting a window
-  for every single function in it. */
-void PickFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+ * complex functions from root context without selecting a window
+ * for every single function in it. */
+void PickFunc(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
@@ -4829,8 +4631,7 @@ void PickFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   ExecuteFunction(action, tmp_win, eventp, C_WINDOW, *Module);
 }
 
-void WindowIdFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module)
+void WindowIdFunc(F_CMD_ARGS)
 {
   FvwmWindow *found=NULL,*t;
   char *num;
@@ -4860,8 +4661,7 @@ void WindowIdFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 }
 
 
-void module_zapper(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                   unsigned long context, char *action,int* Module)
+void module_zapper(F_CMD_ARGS)
 {
   char *condition;
 
@@ -4878,8 +4678,7 @@ void module_zapper(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
  *	Reborder - Removes fvwm border windows
  *
  ************************************************************************/
-void Recapture(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-               unsigned long context, char *action,int* Module)
+void Recapture(F_CMD_ARGS)
 {
   XEvent event;
 
@@ -4902,8 +4701,7 @@ void Recapture(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   XSync(dpy, 0);
 }
 
-void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                      unsigned long context, char *action,int* Module)
+void SetGlobalOptions(F_CMD_ARGS)
 {
   char *opt;
 
@@ -4998,8 +4796,7 @@ void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     free(opt);
 }
 
-void Emulate(XEvent *eventp, Window junk, FvwmWindow *tmp_win,
-	     unsigned long context, char *action, int* Module)
+void Emulate(F_CMD_ARGS)
 {
   char *style;
 
@@ -5028,8 +4825,7 @@ void Emulate(XEvent *eventp, Window junk, FvwmWindow *tmp_win,
   return;
 }
 
-void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                   unsigned long context, char *action,int* Module)
+void SetColorLimit(F_CMD_ARGS)
 {
   int val;
 
@@ -5049,8 +4845,7 @@ extern int cmsDelayDefault;
 
 
 /* set animation parameters */
-void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-			  unsigned long context, char *action,int* Module)
+void set_animation(F_CMD_ARGS)
 {
   char *opt;
   int delay;
@@ -5090,8 +4885,7 @@ void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 #ifdef WINDOWSHADE
-void setShadeAnim (XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int* Module)
+void setShadeAnim(F_CMD_ARGS)
 {
     int val_unit,n = 0;
     int val;
@@ -5109,8 +4903,7 @@ void setShadeAnim (XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 #endif /* WINDOWSHADE */
 
-void change_layer(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		  unsigned long context, char *action,int* Module)
+void change_layer(F_CMD_ARGS)
 {
   int n, layer, val[2];
   FvwmWindow *t2, *next;
@@ -5174,8 +4967,7 @@ void change_layer(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     }
 }
 
-void SetDefaultLayers(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int* Module)
+void SetDefaultLayers(F_CMD_ARGS)
 {
   char *tok = NULL;
   int i;

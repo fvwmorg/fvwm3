@@ -2358,6 +2358,24 @@ variable "$height".  If \fIstringvalue\fP includes whitespace, you should
 enclose it in quotes.
 
 
+.IP "Silent \fIcommand\fP"
+A number of builtin functions require a window to operate on. If no
+window was selected when such a function is invoked the user is asked
+to select a window. Sometimes this behavior is unwanted, for example
+if the function was called by a module and the window that was
+selected at first does not exist anymore. You can prevent this by
+putting \FISilent\fP in front of the \fIcommand\fP. If a function that needs
+a window is called with \fISilent\fP without a window selected, it simply
+returns without doing anything. If \fISilent\fP is used on a user defined
+function it affects all function and sub function calls until the
+original function exits.
+
+Examples:
+.EX
+Silent Move 0 0
+Silent User_defined_function
+.EE
+
 .IP "SnapAttraction \fIproximity\fP [ \fIbehavior\fP ] [ \fIScreen\fP ]"
 If during an interactive move the window (or icon) comes within \fIproximity\fP
 pixels of another the window (or icon) will be moved to make the borders
@@ -2394,8 +2412,8 @@ and \fISnapAttraction\fP in effect will result in the window being moved to be
 adjacent to the nearest window border (if within snap proximity) or grid
 position.  In other words, the window will move the shortest distance possible
 to satisfy both \fISnapGrid\fP and \fISnapAttraction\fP.  Note that the X and
-Y coordinates are not coupled.  For example, a window may snap to another window
-on the X axis while snapping to a grid point on the Y axis.
+Y coordinates are not coupled.  For example, a window may snap to another
+window on the X axis while snapping to a grid point on the Y axis.
 
 .IP "Stick [ \fImode\fP ]"
 If the \fImode\fP argument is empty or 'toggle', the Stick command makes

@@ -1,4 +1,4 @@
-/* 
+/*
  This file is strongly based on the corresponding files from
  twm and enlightenment.
  */
@@ -15,7 +15,7 @@
 #include <X11/Xatom.h>
 #include "screen.h"
 #include "misc.h"
- 
+
 #include <X11/SM/SMlib.h>
 
 extern int master_pid;
@@ -31,9 +31,9 @@ typedef struct _match
     int                wm_command_count;
     char               **wm_command;
     int                 x, y, w, h, icon_x, icon_y;
-    int                 x_max, y_max, w_max, h_max; 
-    int                 desktop; 
-    int                 layer; 
+    int                 x_max, y_max, w_max, h_max;
+    int                 desktop;
+    int                 layer;
     int                 used;
     int                 shaded, name_changed;
     unsigned long       flags;
@@ -64,7 +64,7 @@ char *duplicate(char *s)
    It is a bit ugly to have a separate file format for
    config files and session save files. The proper way
    to do this may be to extend the config file format
-   to allow the specification of everything we need 
+   to allow the specification of everything we need
    to save here. Then the option "-restore xyz" could
    be replaced by "-f xyz".
  */
@@ -73,28 +73,28 @@ SaveGlobalState(FILE *f)
 {
   fprintf(f, "[GLOBAL]\n");
   fprintf(f, "  [DESKTOP] %i\n", Scr.CurrentDesk);
-  fprintf(f, "  [VIEWPORT] %i %i %i %i\n", 
+  fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
           Scr.Vx, Scr.Vy, Scr.VxMax, Scr.VyMax);
-  fprintf(f, "  [SCROLL] %i %i %i %i %i %i\n", 
-	  Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollResistance, 
+  fprintf(f, "  [SCROLL] %i %i %i %i %i %i\n",
+	  Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollResistance,
 	  Scr.MoveResistance,
-	  !!(Scr.flags & EdgeWrapX), !!(Scr.flags & EdgeWrapY));
-  fprintf(f, "  [SNAP] %i %i %i %i\n", 
+	  !!(Scr.flags.edge_wrap_x), !!(Scr.flags.edge_wrap_y));
+  fprintf(f, "  [SNAP] %i %i %i %i\n",
 	  Scr.SnapAttraction, Scr.SnapMode, Scr.SnapGridX, Scr.SnapGridY);
-  fprintf(f, "  [MISC] %i %i %i %i %i %i %i %i\n", 
+  fprintf(f, "  [MISC] %i %i %i %i %i %i %i %i\n",
 	  Scr.ClickTime, Scr.ColormapFocus,
-	  Scr.ColorLimit, Scr.SmartPlacementIsClever, 
+	  Scr.ColorLimit, Scr.SmartPlacementIsClever,
 	  Scr.ClickToFocusPassesClick, Scr.ClickToFocusRaises,
 	  Scr.MouseFocusClickRaises, Scr.StipledTitles);
   fprintf(f, "  [STYLE] %i %i %i %i %i %i\n",
 	  Scr.go.ModifyUSP, Scr.go.CaptureHonorsStartsOnPage,
-	  Scr.go.RecaptureHonorsStartsOnPage, 
+	  Scr.go.RecaptureHonorsStartsOnPage,
 	  Scr.go.ActivePlacementHonorsStartsOnPage,
           Scr.gs.EmulateMWM, Scr.gs.EmulateWIN);
   return 1;
 }
 
-void 
+void
 LoadGlobalState(char *filename)
 {
    FILE               *f;
@@ -109,7 +109,7 @@ LoadGlobalState(char *filename)
            i1 = 0; i2 = 0; i3 = 0; i4 = 0; i5 = 0; i6 = 0;
            i7 = 0; i8 = 0;
 	   sscanf(s, "%4000s", s1);
-	   if (!strcmp(s1, "[DESKTOP]")) 
+	   if (!strcmp(s1, "[DESKTOP]"))
              {
 	       sscanf(s, "%*s %i", &i1);
                changeDesks(i1);
@@ -123,15 +123,16 @@ LoadGlobalState(char *filename)
              }
            else if (!strcmp(s1, "[SCROLL]"))
              {
-               sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
-               Scr.EdgeScrollX = i1; 
+               sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5,
+		      &i6);
+               Scr.EdgeScrollX = i1;
                Scr.EdgeScrollY = i2;
                Scr.ScrollResistance = i3;
                Scr.MoveResistance = i4;
-               if (i5) Scr.flags |= EdgeWrapX;
-               else Scr.flags &= ~EdgeWrapX;
-               if (i6) Scr.flags |= EdgeWrapY;
-               else Scr.flags &= ~EdgeWrapY;
+               if (i5) Scr.flags.edge_wrap_x = 1;
+               else Scr.flags.edge_wrap_x = 0;
+               if (i6) Scr.flags.edge_wrap_y = 1;
+               else Scr.flags.edge_wrap_y = 0;
              }
            else if (!strcmp(s1, "[SNAP]"))
              {
@@ -161,8 +162,8 @@ LoadGlobalState(char *filename)
                Scr.go.CaptureHonorsStartsOnPage = i2;
                Scr.go.RecaptureHonorsStartsOnPage = i3;
                Scr.go.ActivePlacementHonorsStartsOnPage = i4;
-               Scr.gs.EmulateMWM = i5; 
-               Scr.gs.EmulateWIN = i6; 
+               Scr.gs.EmulateMWM = i5;
+               Scr.gs.EmulateWIN = i6;
              }
          }
       fclose(f);
@@ -171,7 +172,7 @@ LoadGlobalState(char *filename)
 
 char *
 GetWindowRole (window)
-     
+
      Window window;
 
 {
@@ -221,7 +222,7 @@ GetClientID (window)
 	if (prop)
 	    XFree (prop);
     }
-    
+
     return client_id;
 }
 
@@ -235,24 +236,24 @@ SaveWindowStates(FILE *f)
   FvwmWindow              *ewin;
   int                 i, x, y, xmax, ymax;
 
-  for (ewin=Scr.FvwmRoot.stack_next; ewin!=&Scr.FvwmRoot; ewin=ewin->stack_next) 
+  for (ewin=Scr.FvwmRoot.stack_next; ewin!=&Scr.FvwmRoot; ewin=ewin->stack_next)
     {
       fprintf(f, "[CLIENT]\n");
-      
+
       client_id = GetClientID(ewin->w);
-      if (client_id) 
+      if (client_id)
 	{
 	  fprintf(f, "  [CLIENT_ID] %s\n", client_id);
 	  XFree(client_id);
 	}
-      
+
       window_role = GetWindowRole(ewin->w);
-      if (window_role) 
+      if (window_role)
 	{
 	  fprintf(f, "  [WINDOW_ROLE] %s\n", window_role);
 	  XFree(window_role);
 	}
-      else 
+      else
 	{
 	  if (ewin->class.res_class)
 	    fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_name);
@@ -260,11 +261,11 @@ SaveWindowStates(FILE *f)
 	    fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_class);
 	  if (ewin->name)
 	    fprintf(f, "  [WM_NAME] %s\n", ewin->name);
-	  
+
 	  wm_command = NULL;
 	  wm_command_count = 0;
 	  XGetCommand (dpy, ewin->w, &wm_command, &wm_command_count);
-	  
+
 	  if (wm_command && (wm_command_count > 0))
 	    {
 	      fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
@@ -274,15 +275,15 @@ SaveWindowStates(FILE *f)
 	      XFreeStringList (wm_command);
 	    }
 	} /* !window_role */
-      
-      
-      /* 
-	 We want to save absolute coordinates for the desk; 
+
+
+      /*
+	 We want to save absolute coordinates for the desk;
 	 I hope the calculation makes sense... everything
 	 would be much easier, if the frame/orig positions
 	 would be absolute.
       */
-      i = 0; 
+      i = 0;
       xmax = Scr.Vx + ewin->frame_x;
       while (xmax < 0) {
 	xmax += Scr.MyDisplayWidth;
@@ -290,11 +291,11 @@ SaveWindowStates(FILE *f)
       }
       i += xmax / Scr.MyDisplayWidth;
       x = i * Scr.MyDisplayWidth
-	+ (ewin->orig_x % Scr.MyDisplayWidth) 
+	+ (ewin->orig_x % Scr.MyDisplayWidth)
 	- ewin->old_bw;
       if (x < 0) x += Scr.MyDisplayWidth;
-      
-      i = 0; 
+
+      i = 0;
       ymax = Scr.Vy + ewin->frame_y;
       while (ymax < 0) {
 	ymax += Scr.MyDisplayHeight;
@@ -302,15 +303,15 @@ SaveWindowStates(FILE *f)
       }
       i += ymax / Scr.MyDisplayHeight;
       y = i * Scr.MyDisplayHeight
-	+ (ewin->orig_y % Scr.MyDisplayHeight) 
+	+ (ewin->orig_y % Scr.MyDisplayHeight)
 	- ewin->old_bw;
       if (y < 0) y += Scr.MyDisplayHeight;
-      
+
       fprintf(f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i\n",
 	      x, y,
-	      ewin->orig_wd - 2*ewin->boundary_width , 
-	      ewin->orig_ht - 2*ewin->boundary_width 
-	      - ewin->title_height, 
+	      ewin->orig_wd - 2*ewin->boundary_width ,
+	      ewin->orig_ht - 2*ewin->boundary_width
+	      - ewin->title_height,
 	      xmax, ymax,
             ewin->frame_width,
             ewin->maximized_ht,
@@ -319,13 +320,13 @@ SaveWindowStates(FILE *f)
 	      Scr.Vy + ewin->icon_y_loc);
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
-      fprintf(f, "  [FLAGS] %lu %i %i\n", ewin->flags, 
+      fprintf(f, "  [FLAGS] %lu %i %i\n", ewin->flags,
 #ifdef WINDOWSHADE
-	      !!(ewin->buttons & WSHADE), 
-#else 
+	      !!(ewin->buttons & WSHADE),
+#else
               0,
 #endif
-ewin->tmpflags.NameChanged); 
+ewin->tmpflags.NameChanged);
     }
   return 1;
 }
@@ -370,10 +371,10 @@ LoadWindowStates(char *filename)
                matches[num_match - 1].name_changed = 0;
                matches[num_match - 1].flags = 0;
                matches[num_match - 1].used = 0;
-             } 
+             }
            else if (!strcmp(s1, "[GEOMETRY]"))
              {
-	       sscanf(s, "%*s %i %i %i %i %i %i %i %i %i %i", 
+	       sscanf(s, "%*s %i %i %i %i %i %i %i %i %i %i",
 		      &(matches[num_match - 1].x),
 		      &(matches[num_match - 1].y),
 		      &(matches[num_match - 1].w),
@@ -386,12 +387,12 @@ LoadWindowStates(char *filename)
 		      &(matches[num_match - 1].icon_y));
              }
            else if (!strcmp(s1, "[DESK]"))
-             { 
+             {
                sscanf(s, "%*s %i",
 		      &(matches[num_match - 1].desktop));
              }
            else if (!strcmp(s1, "[LAYER]"))
-             { 
+             {
                sscanf(s, "%*s %i",
 		      &(matches[num_match - 1].layer));
              }
@@ -431,17 +432,17 @@ LoadWindowStates(char *filename)
 	   else if (!strcmp(s1, "[WM_COMMAND]"))
 	     {
 	       sscanf(s, "%*s %i", &matches[num_match - 1].wm_command_count);
-	       matches[num_match - 1].wm_command = 
+	       matches[num_match - 1].wm_command =
 		 (char **) malloc (matches[num_match - 1].wm_command_count *
 				   sizeof (char *));
 	       pos = 0;
-	       for (i = 0; i < matches[num_match - 1].wm_command_count; i++) 
+	       for (i = 0; i < matches[num_match - 1].wm_command_count; i++)
 		 {
 		   sscanf (s+pos, "%s%n", s1, &pos);
 		   matches[num_match - 1].wm_command[i] = duplicate (s1);
 		 }
 	     }
-	   
+
 	 }
        fclose(f);
      }
@@ -468,22 +469,22 @@ Bool matchWin(FvwmWindow *w, Match *m)
       /* client_id's match */
 
       window_role = GetWindowRole(w->w);
-      
+
       if (window_role || m->window_role)
-        { 
+        {
           /* We have or had a window role, base decision on it */
 
           found = xstreq(window_role, m->window_role);
-        } 
-      else 
+        }
+      else
 	{
-          /* Compare res_class, res_name and WM_NAME, unless the 
+          /* Compare res_class, res_name and WM_NAME, unless the
              user has changed WM_NAME */
-            
+
 	  if (xstreq(w->class.res_name, m->res_name) &&
 	      xstreq(w->class.res_class, m->res_class) &&
-	      (m->name_changed || 
-               w->tmpflags.NameChanged || 
+	      (m->name_changed ||
+               w->tmpflags.NameChanged ||
                xstreq(w->name, m->wm_name)))
             {
               if (client_id)
@@ -496,25 +497,25 @@ Bool matchWin(FvwmWindow *w, Match *m)
 	        {
                   /* for non-SM-aware clients we also compare WM_COMMAND */
 	          XGetCommand (dpy, w->w, &wm_command, &wm_command_count);
-	      
-	          if (wm_command_count == m->wm_command_count) 
+
+	          if (wm_command_count == m->wm_command_count)
 		    {
 		      for (i = 0; i < wm_command_count; i++)
 		        {
 		          if (strcmp (wm_command[i], m->wm_command[i]) != 0)
 			    break;
 		        }
-            
+
                       if (i == wm_command_count)
                         {
                           found = 1;
-                        }    
+                        }
 		    } /* if (wm_command_count ==... */
 		} /* else no client id */
 	    } /* if res_class, res_name and wm_name agree */
 	} /* else no window roles */
     } /* if client_id's agree */
-  
+
   if (client_id)
     XFree (client_id);
 
@@ -533,10 +534,10 @@ Bool matchWin(FvwmWindow *w, Match *m)
    attr.x, .y, .width, .height entries. It also changes the
    stack_before pointer to return information about the
    desired stacking order. It expects the stacking order
-   to be set up correctly beforehand! 
+   to be set up correctly beforehand!
  */
 void
-MatchWinToSM(FvwmWindow *ewin, 
+MatchWinToSM(FvwmWindow *ewin,
              int *x_max, int *y_max, int *w_max, int *h_max,
              int *do_shade, int *do_max)
 {
@@ -549,25 +550,25 @@ MatchWinToSM(FvwmWindow *ewin,
      {
        if (!matches[i].used && matchWin(ewin, &matches[i]))
 	     {
-               
+
 	       matches[i].used = 1;
                *do_shade = matches[i].shaded;
                *do_max = !!(matches[i].flags & MAXIMIZED);
 	       if (matches[i].flags & ICONIFIED) {
-                 /* 
-                    ICON_MOVED is necessary to make fvwm use icon_[xy]_loc 
+                 /*
+                    ICON_MOVED is necessary to make fvwm use icon_[xy]_loc
                     for icon placement
-                 */   
+                 */
                  ewin->flags |= STARTICONIC|ICON_MOVED;
-               } else { 
+               } else {
                  ewin->flags &= ~STARTICONIC;
                }
 #define FLAG(x) if(matches[i].flags&x) ewin->flags|=x; else ewin->flags&=~x
                FLAG(WINDOWLISTSKIP);
                FLAG(SUPPRESSICON);
                FLAG(NOICON_TITLE);
-               FLAG(Lenience); 
-               FLAG(StickyIcon); 
+               FLAG(Lenience);
+               FLAG(StickyIcon);
                FLAG(CirculateSkipIcon);
                FLAG(CirculateSkip);
                FLAG(ClickToFocus);
@@ -579,10 +580,10 @@ MatchWinToSM(FvwmWindow *ewin,
                   a page boundary */
                ewin->attr.x = matches[i].x - Scr.Vx;
                ewin->attr.y = matches[i].y - Scr.Vy;
-               
+
                *x_max = matches[i].x_max - Scr.Vx;
                *y_max = matches[i].y_max - Scr.Vy;
-               *w_max = matches[i].w_max; 
+               *w_max = matches[i].w_max;
                *h_max = matches[i].h_max;
 
 	       if (matches[i].flags & STICKY) {
@@ -595,16 +596,16 @@ MatchWinToSM(FvwmWindow *ewin,
                  ewin->flags &= ~STICKY;
 		 ewin->Desk = matches[i].desktop;
                }
-              
+
                ewin->layer = matches[i].layer;
-  
+
                ewin->attr.width = matches[i].w;
                ewin->attr.height = matches[i].h;
- 
-               /* this is not enough to fight fvwms attempts to 
+
+               /* this is not enough to fight fvwms attempts to
                   put icons on the current page */
                ewin->icon_x_loc = matches[i].icon_x - Scr.Vx;
-               ewin->icon_y_loc = matches[i].icon_y - Scr.Vy; 
+               ewin->icon_y_loc = matches[i].icon_y - Scr.Vy;
 
                /* Find the window to stack this one below. */
 
@@ -614,7 +615,7 @@ MatchWinToSM(FvwmWindow *ewin,
 
                  if (matches[j].used) {
 
-                   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) { 
+                   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
                      if (matchWin(t, &matches[j])) {
                        ewin->stack_next->stack_prev = ewin->stack_prev;
                        ewin->stack_prev->stack_next = ewin->stack_next;
@@ -626,7 +627,7 @@ MatchWinToSM(FvwmWindow *ewin,
                        return;
                      }
                    }
-                 } 
+                 }
                }
 	       return;
 	     }
@@ -649,42 +650,42 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
   int numVals, i;
   static int first_time = 1;
   struct passwd       *pwd;
-  
+
   pwd = getpwuid(getuid());
 
-  if (first_time) 
+  if (first_time)
     {
       char hint = SmRestartIfRunning;
       char *user_id = pwd->pw_name;
-      
+
       prop1.name = SmProgram;
       prop1.type = SmARRAY8;
       prop1.num_vals = 1;
       prop1.vals = &prop1val;
       prop1val.value = g_argv[0];
       prop1val.length = strlen (g_argv[0]);
-      
+
       prop2.name = SmUserID;
       prop2.type = SmARRAY8;
       prop2.num_vals = 1;
       prop2.vals = &prop2val;
       prop2val.value = (SmPointer) user_id;
       prop2val.length = strlen (user_id);
-      
+
       prop3.name = SmRestartStyleHint;
       prop3.type = SmCARD8;
       prop3.num_vals = 1;
       prop3.vals = &prop3val;
       prop3val.value = (SmPointer) &hint;
       prop3val.length = 1;
-      
+
       props[0] = &prop1;
       props[1] = &prop2;
       props[2] = &prop3;
-      
+
       SmcSetProperties (smc_conn, 3, props);
-      
-      first_time = 0; 
+
+      first_time = 0;
   }
 
   path = getenv ("SM_SAVE_DIR");
@@ -695,7 +696,7 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
 
   if ((filename = tempnam (path, ".fvwm")) == NULL)
     goto bad;
-  
+
   if (!(cfg_file = fopen (filename, "w")))
     goto bad;
 
@@ -706,7 +707,7 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
   prop1.type = SmLISTofARRAY8;
 
   prop1.vals = (SmPropValue *) malloc ((g_argc + 7) * sizeof (SmPropValue));
-  
+
   if (!prop1.vals)
     {
       success = False;
@@ -714,7 +715,7 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
     }
 
   numVals = 0;
-  
+
   for (i = 0; i < g_argc; i++)
     {
       if (strcmp (g_argv[i], "-clientId") == 0 ||
@@ -727,16 +728,16 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
 	  prop1.vals[numVals++].length = strlen (g_argv[i]);
 	}
     }
-  
+
   prop1.vals[numVals].value = (SmPointer) "-d";
   prop1.vals[numVals++].length = 2;
-  
+
   prop1.vals[numVals].value = (SmPointer) XDisplayString (dpy);
   prop1.vals[numVals++].length = strlen (XDisplayString (dpy));
-  
+
   prop1.vals[numVals].value = (SmPointer) "-s";
   prop1.vals[numVals++].length = 2;
-  
+
   prop1.vals[numVals].value = (SmPointer) "-clientId";
   prop1.vals[numVals++].length = 9;
 
@@ -758,7 +759,7 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
   prop2.vals = &prop2val;
   prop2val.value = (SmPointer) discardCommand;
   prop2val.length = strlen (discardCommand);
-  
+
   props[0] = &prop1;
   props[1] = &prop2;
 
@@ -770,7 +771,7 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
   sent_save_done = 1;
 
   if (cfg_file) fclose (cfg_file);
-  
+
   if (filename) free (filename);
 }
 
@@ -784,7 +785,7 @@ callback_save_yourself(SmcConn smc_conn, SmPointer client_data,
       SmcSaveYourselfDone (smc_conn, False);
       sent_save_done = 1;
     }
-  else 
+  else
     sent_save_done = 0;
 }
 
@@ -793,7 +794,7 @@ callback_die(SmcConn smc_conn, SmPointer client_data)
 {
    SmcCloseConnection(smc_conn, 0, NULL);
    sm_fd = -1;
-   
+
    if (master_pid != getpid())
       kill(master_pid, SIGTERM);
    Done(0, NULL);
@@ -807,7 +808,7 @@ callback_save_complete(SmcConn smc_conn, SmPointer client_data)
 static void
 callback_shutdown_cancelled(SmcConn smc_conn, SmPointer client_data)
 {
-  if (!sent_save_done) 
+  if (!sent_save_done)
     {
       SmcSaveYourselfDone(smc_conn, False);
       sent_save_done = 1;
@@ -822,35 +823,35 @@ SessionInit(char *previous_client_id)
   char                error_string_ret[4096] = "";
   static SmPointer    context;
   SmcCallbacks        callbacks;
-  
+
   InstallIOErrorHandler();
 
   callbacks.save_yourself.callback = callback_save_yourself;
   callbacks.die.callback = callback_die;
   callbacks.save_complete.callback = callback_save_complete;
   callbacks.shutdown_cancelled.callback = callback_shutdown_cancelled;
-  
+
   callbacks.save_yourself.client_data =
     callbacks.die.client_data =
     callbacks.save_complete.client_data =
     callbacks.shutdown_cancelled.client_data = (SmPointer) NULL;
-  
+
   sm_conn = SmcOpenConnection(NULL, &context, SmProtoMajor, SmProtoMinor,
 			      SmcSaveYourselfProcMask | SmcDieProcMask |
 			      SmcSaveCompleteProcMask |
 			      SmcShutdownCancelledProcMask,
 			      &callbacks, previous_client_id, &sm_client_id,
 			      4096, error_string_ret);
-  
+
   if (!sm_conn)
     {
-      /* 
+      /*
          Don't annoy users which don't use a session manager
-       */ 
+       */
       if (previous_client_id)
         {
-           fvwm_msg(ERR, "SessionInit", 
-	            "While connecting to session manager:\n%s.", 
+           fvwm_msg(ERR, "SessionInit",
+	            "While connecting to session manager:\n%s.",
                      error_string_ret);
         }
       sm_fd = -1;
@@ -871,7 +872,7 @@ ProcessICEMsgs(void)
    status = IceProcessMessages(SmcGetIceConnection(sm_conn), NULL, NULL);
    if (status == IceProcessMessagesIOError)
      {
-        fvwm_msg(ERR, "ProcessICEMSGS", 
+        fvwm_msg(ERR, "ProcessICEMSGS",
                  "Connection to session manager lost\n");
 	sm_conn = NULL;
 	sm_fd = -1;
