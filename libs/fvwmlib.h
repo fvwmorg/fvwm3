@@ -207,6 +207,7 @@ typedef struct _Background {
 } Background;
 
 typedef struct GraphicsThing {
+  Bool usingDefaultVisual;
   Visual *viz;
   unsigned int depth;
   Colormap cmap;

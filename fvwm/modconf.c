@@ -226,8 +226,12 @@ static char *make_look_packet(void)
 
 void SendLook(int module)
 {
-  char *message = make_look_packet();
-
+  char *message;
+  
+  if (Scr.usingDefaultVisual)
+    return;
+    
+  message = make_look_packet();
   SendName(module,M_CONFIG_INFO,0,0,0,message);
   free(message);
 }

@@ -261,6 +261,7 @@ typedef struct ScreenInfo
   GC StdGC;
   GC StdReliefGC;
   GC StdShadowGC;
+  Bool usingDefaultVisual;
   Visual *viz;
   unsigned int depth;
   Colormap cmap;

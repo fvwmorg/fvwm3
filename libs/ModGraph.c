@@ -28,6 +28,7 @@ Graphics *CreateGraphics(Display *dpy) {
   G->viz = DefaultVisual(dpy, screen);
   G->cmap = DefaultColormap(dpy, screen);
   G->depth = DefaultDepth(dpy, screen);
+  G->usingDefaultVisual = True;
   return G;
 }
 
@@ -40,13 +41,17 @@ void ParseGraphics(Display *dpy, char *line, Graphics *G) {
   VisualID vid;
   Colormap cmap;
 
+  /* ignore it if not the first time */
+  if (!G->usingDefaultVisual)
+    return;
+
   /* bail out on short lines */
   if (strlen(line) < (size_t)(DEFGRAPHLEN + 2 * DEFGRAPHNUM))
     return;
 
   if (sscanf(line + DEFGRAPHLEN + 1, "%lx %lx\n", &vid, &cmap) != DEFGRAPHNUM)
     return;
-    
+
   /* if this is the first one grab a visual to use */
   vizinfo.visualid = vid;
   xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
@@ -55,5 +60,5 @@ void ParseGraphics(Display *dpy, char *line, Graphics *G) {
   G->viz = xvi->visual;
   G->depth = xvi->depth;
   G->cmap = cmap;
-
+  G->usingDefaultVisual = False;
 }

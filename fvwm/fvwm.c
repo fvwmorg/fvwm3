@@ -459,6 +459,7 @@ int main(int argc, char **argv)
       XFree(vizinfo);
       /* have to have a colormap for non-default visual windows */
       Scr.cmap = XCreateColormap(dpy, Scr.Root, Scr.viz, AllocNone);
+      Scr.usingDefaultVisual = False;
     } else {
       fvwm_msg(ERR, "main","Cannot find visual class %d", visualClass);
       visualClass = -1;
@@ -480,6 +481,7 @@ int main(int argc, char **argv)
       XFree(vizinfo);
       /* have to have a colormap for non-default visual windows */
       Scr.cmap = XCreateColormap(dpy, Scr.Root, Scr.viz, AllocNone);
+      Scr.usingDefaultVisual = False;
     } else {
       fvwm_msg(ERR, "main", "VisualId 0x%x is not valid ", visualId);
       visualId = -1;
@@ -491,6 +493,7 @@ int main(int argc, char **argv)
     Scr.viz = DefaultVisual(dpy, Scr.screen);
     Scr.depth = DefaultDepth(dpy, Scr.screen);
     Scr.cmap = DefaultColormap(dpy, Scr.screen);
+    Scr.usingDefaultVisual = True;
   }
 
 #ifdef SHAPE
