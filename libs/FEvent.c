@@ -39,6 +39,14 @@
 
 /* ---------------------------- local types -------------------------------- */
 
+typedef struct
+{
+	Bool (*predicate) (Display *display, XEvent *event, XPointer arg);
+	XPointer arg;
+	XEvent event;
+	Bool found;
+} fev_check_peek_args;
+
 /* ---------------------------- forward declarations ----------------------- */
 
 /* ---------------------------- local variables ---------------------------- */
@@ -99,6 +107,24 @@ static void fev_update_last_timestamp(const XEvent *ev)
 	}
 
 	return;
+}
+
+static Bool fev_check_peek_pred(
+	Display *display, XEvent *event, XPointer arg)
+{
+	fev_check_peek_args *cpa = (fev_check_peek_args *)arg;
+
+	if (cpa->found == True)
+	{
+		return False;
+	}
+	cpa->found = cpa->predicate(display, event, cpa->arg);
+	if (cpa->found == True)
+	{
+		cpa->event = *event;
+	}
+
+	return False;
 }
 
 /* ---------------------------- interface functions (privileged access) ----- */
@@ -305,6 +331,31 @@ Bool FCheckMaskEvent(
 		*event_return = fev_event;
 		fev_update_last_timestamp(event_return);
 	}
+
+	return rc;
+}
+
+Bool FCheckPeekIfEvent(
+	Display *display, XEvent *event_return,
+	Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
+	XPointer arg)
+{
+	int rc;
+	fev_check_peek_args cpa;
+
+	fev_event_old = fev_event;
+
+	cpa.predicate = predicate;
+	cpa.arg = arg;
+	cpa.found = False;
+	XCheckIfEvent(display, &fev_event, fev_check_peek_pred, (char *)&cpa);
+	rc = cpa.found;
+	if (rc == True)
+	{
+		*event_return = cpa.event;
+	}
+	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }

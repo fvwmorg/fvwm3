@@ -790,7 +790,7 @@ static inline int __merge_cr_moveresize(
 		evh_args_t ea2;
 		exec_context_changes_t ecc;
 
-		FPeekIfEvent(dpy, &e, test_resizing_event, (char *)&args);
+		FCheckPeekIfEvent(dpy, &e, test_resizing_event, (char *)&args);
 		ecre = &e.xconfigurerequest;
 		if (args.ret_does_match == False)
 		{
@@ -1235,7 +1235,7 @@ static Bool __test_for_motion(int x0, int y0)
 			/* the pointer has moved */
 			return True;
 		}
-		if (FPeekIfEvent(dpy, &e, __predicate_button_click, args))
+		if (FCheckPeekIfEvent(dpy, &e, __predicate_button_click, args))
 		{
 			/* click in the future */
 			return False;
@@ -4242,15 +4242,17 @@ int flush_property_notify(Atom atom, Window w)
 	args.w = w;
 	args.event_type = PropertyNotify;
 	for (count = 0;
-	     FPeekIfEvent(
+	     FCheckPeekIfEvent(
 		     dpy, &e, test_typed_window_event, (char *)&args); count++)
 	{
+		Bool rc;
+
 		if (e.xproperty.atom != atom)
 		{
 			break;
 		}
 		/* remove the event from the queue */
-		FCheckIfEvent(
+		rc = FCheckIfEvent(
 			dpy, &e, test_typed_window_event, (char *)&args);
 	}
 

@@ -66,6 +66,10 @@ Bool FCheckIfEvent(
 	XPointer arg);
 Bool FCheckMaskEvent(
 	Display *display, long event_mask, XEvent *event_return);
+Bool FCheckPeekIfEvent(
+        Display *display, XEvent *event_return,
+        Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
+        XPointer arg);
 Bool FCheckTypedEvent(
 	Display *display, int event_type, XEvent *event_return);
 Bool FCheckTypedWindowEvent(

@@ -547,7 +547,7 @@ int HandlePaging(
 			add_time = 0;
 			return 0;
 		}
-		else if (FPeekIfEvent(dpy, &e, test_button_event, NULL))
+		else if (FCheckPeekIfEvent(dpy, &e, test_button_event, NULL))
 		{
 			is_timestamp_valid = False;
 			add_time = 0;
