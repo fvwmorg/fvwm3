@@ -1,5 +1,12 @@
 2001-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/borders.c (RedrawTitle):
+	(RedrawButtons):
+	(DrawButton):
+	(draw_clipped_decorations):
+	vastly improved speed of window motion with pixmap backgrounds in
+	titles and buttons
+
 	* fvwm/builtins.c (ReadTitleButton):
 	* fvwm/fvwm.c (DestroyAllButtons):
 	(ResetAllButtons):
@@ -420,10 +427,10 @@
 
 2001-02-20  Michael Han  <mikehan@mikehan.com>
 
-    * configure.in:
-    * libs/fvwmlib.h:
-    * libs/mkstemp.c:
-    Added replacement function mkstemp() based on glibc-2.2.2 code
+	* configure.in:
+	* libs/fvwmlib.h:
+	* libs/mkstemp.c:
+	Added replacement function mkstemp() based on glibc-2.2.2 code
 
 2001-02-20  Dominik Vogt  <dominik.vogt@gmx.de>
 

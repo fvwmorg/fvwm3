@@ -80,6 +80,26 @@ unsigned long Globalgcm;
 
 extern Window PressedW;
 
+/* used by several drawing functions */
+static void ClipClear(Window win, XRectangle *rclip, Bool do_flush_expose)
+{
+  if (rclip)
+  {
+    XClearArea(
+      dpy, win, rclip->x, rclip->y, rclip->width, rclip->height, False);
+  }
+  else
+  {
+    if (do_flush_expose)
+    {
+      flush_expose(win);
+    }
+    XClearWindow(dpy, win);
+  }
+
+  return;
+}
+
 /***********************************************************************
  * change by KitS@bartley.demon.co.uk to correct popups off title buttons
  *
@@ -187,37 +207,33 @@ static void clip_button_pixmap(
  *  Redraws buttons (veliaa@rpi.edu)
  *
  ****************************************************************************/
-static void DrawButton(FvwmWindow *t, Window win, int w, int h,
-		       DecorFace *df, GC ReliefGC, GC ShadowGC,
-		       Boolean inverted, mwm_flags stateflags,
-		       int left1right0, XRectangle *rclip)
+static void DrawButton(
+  FvwmWindow *t, Window win, int w, int h, DecorFace *df, GC ReliefGC,
+  GC ShadowGC, Bool is_lowest, mwm_flags stateflags, int left1right0,
+  XRectangle *rclip, Pixmap *pbutton_background_pixmap)
 {
   register DecorFaceType type = DFS_FACE_TYPE(df->style);
   Picture *p;
   int border = 0;
-  int width, height, x, y;
+  int x;
+  int y;
+  int width;
+  int height;
 
   /* Note: it is assumed that ReliefGC and ShadowGC are already clipped with
    * the rclip rectangle when this function is called. */
-
   switch (type)
   {
   case SimpleButton:
     break;
 
   case SolidButton:
-    XSetWindowBackground(dpy, win, df->u.back);
-    if (rclip)
+    if (pbutton_background_pixmap)
     {
-      XClearArea(
-	dpy, win, rclip->x, rclip->y, rclip->width, rclip->height,
-	False);
+      XSetWindowBackground(dpy, win, df->u.back);
+      *pbutton_background_pixmap = None;
     }
-    else
-    {
-      flush_expose(win);
-      XClearWindow(dpy, win);
-    }
+    ClipClear(win, rclip, True);
     break;
 
   case VectorButton:
@@ -240,7 +256,9 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
   case PixmapButton:
   case TiledPixmapButton:
     if (type == PixmapButton || type == TiledPixmapButton)
+    {
       p = df->u.p;
+    }
     else
     {
       if (!t->mini_icon)
@@ -256,11 +274,42 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
       border = 0;
     else
       border = HAS_MWM_BORDER(t) ? 1 : 2;
+    x = border;
+    y = border;
     width = w - border * 2;
     height = h - border * 2;
 
-    x = border;
-    y = border;
+    if (is_lowest && !p->mask && pbutton_background_pixmap)
+    {
+      if (type == TiledPixmapButton ||
+	  (p->width >= width && p->height >= height))
+      {
+	/* better performance: set a background pixmap if possible, i.e. if the
+	 * decoration is the lowest one in the button and it has no transparent
+	 * parts and it is tiled or bigger than the button */
+	if (*pbutton_background_pixmap != df->u.p->picture)
+	{
+	  *pbutton_background_pixmap = df->u.p->picture;
+	  XSetWindowBackgroundPixmap(dpy, win, df->u.p->picture);
+	  ClipClear(win, rclip, True);
+	}
+	else
+	{
+	  ClipClear(win, rclip, True);
+	}
+	break;
+      }
+    }
+    else if (pbutton_background_pixmap && *pbutton_background_pixmap != None)
+    {
+      XSetWindowBackgroundPixmap(dpy, win, None);
+      if (pbutton_background_pixmap)
+      {
+	*pbutton_background_pixmap = None;
+	flush_expose(win);
+	XClearWindow(dpy, win);
+      }
+    }
     if (type != TiledPixmapButton)
     {
       if (DFS_H_JUSTIFICATION(df->style) == JUST_RIGHT)
@@ -552,16 +601,7 @@ static void RedrawBorder(
       (DFS_HAS_NO_INSET(*borderstyle) ||
        DFS_HAS_HIDDEN_HANDLES(*borderstyle)))
   {
-    if (rclip)
-    {
-      XClearArea(
-	dpy, t->decor_w, rclip->x, rclip->y, rclip->width, rclip->height,
-	False);
-    }
-    else
-    {
-      XClearWindow(dpy, t->decor_w);
-    }
+    ClipClear(t->decor_w, rclip, False);
   }
 
   /*
@@ -946,6 +986,8 @@ static void RedrawButtons(
   Window expose_win, XRectangle *rclip)
 {
   int i;
+  Bool is_lowest = True;
+  Pixmap *pass_bg_pixmap;
 
   /* Note: the rclip rectangle is not used in this function. Buttons are usually
    * so small that it makes not much sense to limit drawing to a clip rectangle.
@@ -973,47 +1015,66 @@ static void RedrawButtons(
       if(flush_expose(t->button_w[i]) || expose_win == t->button_w[i] ||
 	 expose_win == None || cd->flags.has_color_changed)
       {
-	int inverted = PressedW == t->button_w[i];
+	int is_inverted = (PressedW == t->button_w[i]);
+
 	if (DFS_USE_BORDER_STYLE(df->style))
 	{
 	  XChangeWindowAttributes(
 	    dpy, t->button_w[i], cd->valuemask, &cd->attributes);
+	  t->button_background_pixmap[i] = df->u.p->picture;
+	  if (df->u.p->picture)
+	  {
+	    pass_bg_pixmap = NULL;
+	  }
+	  else
+	  {
+	    pass_bg_pixmap = &t->button_background_pixmap[i];
+	  }
 	}
 	else
 	{
 	  XChangeWindowAttributes(
 	    dpy, t->button_w[i], cd->notex_valuemask, &cd->notex_attributes);
+	  t->button_background_pixmap[i] = None;
+	  pass_bg_pixmap = &t->button_background_pixmap[i];
 	}
 	XClearWindow(dpy, t->button_w[i]);
 	if (DFS_USE_TITLE_STYLE(df->style))
 	{
 	  DecorFace *tsdf = &TB_STATE(GetDecor(t, titlebar))[bs];
+
+	  is_lowest = True;
 #ifdef MULTISTYLE
 	  for (; tsdf; tsdf = tsdf->next)
 #endif
 	  {
 	    DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
-		       tsdf, cd->relief_gc, cd->shadow_gc, inverted,
-		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1, NULL);
+		       tsdf, cd->relief_gc, cd->shadow_gc, is_lowest,
+		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1, NULL,
+		       pass_bg_pixmap);
+	    is_lowest = False;
 	  }
 	}
+	is_lowest = True;
 #ifdef MULTISTYLE
 	for (; df; df = df->next)
 #endif
 	{
 	  DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
-		     df, cd->relief_gc, cd->shadow_gc, inverted,
-		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1, NULL);
+		     df, cd->relief_gc, cd->shadow_gc, is_lowest,
+		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1, NULL,
+		     pass_bg_pixmap);
+	  is_lowest = False;
 	}
 
 	{
-	  Bool reverse = inverted;
+	  Bool reverse = is_inverted;
 
 	  switch (DFS_BUTTON_RELIEF(
 	    TB_STATE(GetDecor(t, buttons[i]))[bs].style))
 	  {
 	  case DFS_BUTTON_IS_SUNK:
-	    reverse = !inverted;
+	    reverse = !is_inverted;
 	  case DFS_BUTTON_IS_UP:
 	    RelieveRectangle(
 	      dpy, t->button_w[i], 0, 0, t->title_g.height - 1,
@@ -1044,6 +1105,7 @@ static void RedrawTitle(
   int i;
   enum ButtonState title_state;
   DecorFaceStyle *tb_style;
+  Pixmap *pass_bg_pixmap;
   GC rgc = cd->relief_gc;
   GC sgc = cd->shadow_gc;
   Bool reverse = False;
@@ -1112,21 +1174,21 @@ static void RedrawTitle(
 	DFS_FACE_TYPE(df->style) == TiledPixmapButton)
     {
       XSetWindowBackgroundPixmap(dpy, t->title_w, df->u.p->picture);
+      t->title_background_pixmap = df->u.p->picture;
+      pass_bg_pixmap = NULL;
+    }
+    else
+    {
+      pass_bg_pixmap = &t->title_background_pixmap;
     }
   }
+  ClipClear(t->title_w, rclip, False);
   if (rclip)
   {
-    XClearArea(
-      dpy, t->title_w, rclip->x, rclip->y, rclip->width, rclip->height,
-      False);
     XSetClipRectangles(dpy, rgc, 0, 0, rclip, 1, Unsorted);
     XSetClipRectangles(dpy, sgc, 0, 0, rclip, 1, Unsorted);
     XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, rclip, 1, Unsorted);
     is_clipped = True;
-  }
-  else
-  {
-    XClearWindow(dpy, t->title_w);
   }
 
   /*
@@ -1163,6 +1225,8 @@ static void RedrawTitle(
   {
     DecorFace *df = &TB_STATE(GetDecor(t, titlebar))[title_state];
     /* draw compound titlebar (veliaa@rpi.edu) */
+    Bool is_lowest = True;
+
     if (PressedW == t->title_w)
     {
 #ifdef MULTISTYLE
@@ -1171,7 +1235,8 @@ static void RedrawTitle(
       {
 	DrawButton(
 	  t, t->title_w, t->title_g.width, t->title_g.height, df, sgc,
-	  rgc, True, 0, 1, rclip);
+	  rgc, is_lowest, 0, 1, rclip, pass_bg_pixmap);
+	is_lowest = False;
       }
     }
     else
@@ -1182,7 +1247,8 @@ static void RedrawTitle(
       {
 	DrawButton(
 	  t, t->title_w, t->title_g.width, t->title_g.height, df, rgc,
-	  sgc, False, 0, 1, rclip);
+	  sgc, is_lowest, 0, 1, rclip, pass_bg_pixmap);
+	is_lowest = False;
       }
     }
     /*
@@ -1532,8 +1598,12 @@ void draw_clipped_decorations(
   {
     if (!do_redraw_title || !rclip)
     {
-      change_window_background(
-	t->title_w, cd.notex_valuemask, &cd.notex_attributes);
+      if (t->title_background_pixmap == None || force)
+      {
+	change_window_background(
+	  t->title_w, cd.notex_valuemask, &cd.notex_attributes);
+	t->title_background_pixmap = None;
+      }
     }
   }
   if (do_redraw_buttons)
