@@ -119,7 +119,7 @@ void CMD_WindowList(F_CMD_ARGS)
   WindowConditionMask mask;
   char *cond_flags;
 
-  memset(&(mops.flags), 0, sizeof(mops.flags));
+  memset(&mops, 0, sizeof(mops));
   memset(&mret, 0, sizeof(MenuReturn));
   if (action && *action)
   {

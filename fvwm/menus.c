@@ -7314,10 +7314,6 @@ char *get_menu_options(
    * the totals right now. This is useful for the SubmenusLeft style. */
 
   fXineramaRoot = False;
-  if (!pops->pos_hints.has_screen_origin)
-  {
-    /* find out the Xinerama screen on which to open the menu */
-  }
   last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
   if (pops == NULL)
   {
@@ -7328,6 +7324,19 @@ char *get_menu_options(
   taction = action;
   memset(&(pops->flags), 0, sizeof(pops->flags));
   pops->flags.has_poshints = 0;
+  if (!action)
+  {
+    if (!pops->pos_hints.has_screen_origin)
+    {
+      if (!GetLocationFromEventOrQuery(
+	    dpy, None, e, &pops->pos_hints.screen_origin_x,
+	    &pops->pos_hints.screen_origin_y))
+      {
+	pops->pos_hints.screen_origin_x = 0;
+	pops->pos_hints.screen_origin_y = 0;
+      }
+    }
+  }
   while (action != NULL)
   {
     /* ^ just to be able to jump to end of loop without 'goto' */
