@@ -6570,13 +6570,13 @@ window is closed.  Otherwise no window or the window under the
 pointer will receive the focus.
 
 .IR ClickToFocusPassesClickOff " and " ClickToFocusPassesClick
-controls if a mouse click to focus a window using the
-.I ClickToFocus
-model is sent to the application or not.  Similarly,
+controls whether a mouse click to focus a window is sent to the
+application or not.  Similarly,
 .I ClickToFocusRaisesOff/MouseFocusClickRaisesOff
 and
 .I ClickToFocusRaises/MouseFocusClickRaises
-control if the window is raised.
+control if the window is raised (but depending on the focus
+model).
 
 Note: in fvwm versions prior to
 2.5.3, the "Click..." options applied only to windows with
