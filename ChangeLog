@@ -1,3 +1,9 @@
+1999-03-29  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/misc.c (RaiseWindow): 
+	(LowerWindow): Fix oversight in raising/lowering icons:
+	icon_pixmap_w wasn't treated.
+
 1999-03-29  Hippo
 
 	* fvwm/{builtins,colors,fvwm,icccm2,menus}.c: All GC's are now created

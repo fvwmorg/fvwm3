@@ -1006,9 +1006,9 @@ void RaiseWindow(FvwmWindow *t)
       wins[i++] = t2->frame;
       if ((t2->flags & ICONIFIED) && (!(t2->flags & SUPPRESSICON)))
 	{
-	  if(!(t2->flags & NOICON_TITLE))
+	  if(t2->icon_w != None)
 	    wins[i++] = t2->icon_w;
-	  if(!(t2->icon_pixmap_w))
+	  if(t2->icon_pixmap_w != None)
 	    wins[i++] = t2->icon_pixmap_w;
 	}
     }
@@ -1115,8 +1115,10 @@ void LowerWindow(FvwmWindow *t)
 
   if((t->flags & ICONIFIED)&&(!(t->flags & SUPPRESSICON)))
     {
-      XConfigureWindow(dpy, t->icon_w, flags, &changes);
-      XConfigureWindow(dpy, t->icon_pixmap_w, flags, &changes);
+      if (t->icon_w != None)
+	XConfigureWindow(dpy, t->icon_w, flags, &changes);
+      if (t->icon_pixmap_w != None)
+	XConfigureWindow(dpy, t->icon_pixmap_w, flags, &changes);
     }
 
   BroadcastRestack (t->stack_prev, t->stack_next);
