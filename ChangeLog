@@ -1,3 +1,13 @@
+2000-05-10  Michael Han  <mikehan@best.com
+
+	* modules/FvwmDebug/FvwmDebug.1:
+	* modules/FvwmDebug/FvwmDebug.h:
+	* modules/FvwmDebug/FvwmDebug.c:
+	FvwmDebug now has -v flag for optional flag output
+	FvwmDebug now directs to arbitrary files
+	FvwmDebug reads add/configure packets by casting to ConfigWinPacket
+	Lots of cleanup in FvwmDebug, reducing the number of functions
+
 2000-05-10  Paul D. Smith  <psmith@gnu.org>
 
 	* vms/vms.c (VMS_msg): Put va_start/va_end close for cleanliness.

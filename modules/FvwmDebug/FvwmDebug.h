@@ -25,27 +25,16 @@ void Loop(const int *fd);
 void DeadPipe(int nonsense) __attribute__((noreturn));
 void process_message(unsigned long type, const unsigned long *body);
 
-void list_old_add(const unsigned long *body);
 void list_old_configure(const unsigned long *body);
-void list_destroy(const unsigned long *body);
-void list_focus(const unsigned long *body);
-void list_toggle(const unsigned long *body);
 void list_new_page(const unsigned long *body);
 void list_new_desk(const unsigned long *body);
-void list_raise(const unsigned long *body);
-void list_lower(const unsigned long *body);
+void list_focus(const unsigned long *body);
+void list_winid(const unsigned long *body);
 void list_unknown(const unsigned long *body);
-void list_iconify(const unsigned long *body);
-void list_icon_loc(const unsigned long *body);
-void list_deiconify(const unsigned long *body);
-void list_map(const unsigned long *body);
+void list_icon(const unsigned long *body);
 void list_window_name(const unsigned long *body);
-void list_icon_name(const unsigned long *body);
-void list_class(const unsigned long *body);
-void list_res_name(const unsigned long *body);
-void list_look(const unsigned long *body);
-void list_end(void);
-void list_add(const unsigned long *body);
+void list_restack(const unsigned long *body);
+void list_error(const unsigned long *body);
 void list_configure(const unsigned long *body);
 
 

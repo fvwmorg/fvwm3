@@ -29,11 +29,19 @@ and "end Send_WindowList" message.
 
 .SH INVOCATION
 FvwmDebug can be invoked by inserting the line 'Module FvwmDebug' in
-the .fvwmrc file. This can be placed on a line by itself, if FvwmDebug
+the .fvwm2rc file. This can be placed on a line by itself, if FvwmDebug
 is to be spawned during fvwm's initialization, or can be bound to a
 menu or mouse button or keystroke to invoke it later. Fvwm will search
 directory specified in the ModulePath configuration option to attempt
 to locate FvwmDebug.
+
+You may optionally use the following arguments when invoking FvwmDebug:
+
+.IP \-v
+Enables verbose output of window flag data
+
+.IP filename
+Sends output to an arbitrary file instead of stderr
 
 .SH CONFIGURATION OPTIONS
 There are no configuration options.
