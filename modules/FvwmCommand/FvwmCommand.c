@@ -34,7 +34,7 @@
 #define MAXHOSTNAME 32
 
 static int  Fdr, Fdw;  /* file discriptor for fifo */
-static FILE *Frun;     /* File contains pid */
+static int  Fdrun;     /* file discriptor for run file */
 static struct stat stat_buf;
 static char *Fr_name;
 static fd_set fdset;
@@ -128,8 +128,9 @@ int main ( int argc, char *argv[])
   }
 #else
 #ifdef USE_BSD_SIGNALS
-  fvwmSetSignalMask( sigmask(SIGINT) | sigmask(SIGHUP) |
-		     sigmask(SIGQUIT) | sigmask(SIGTERM) );
+  fvwmSetSignalMask(
+	  sigmask(SIGINT) | sigmask(SIGHUP) | sigmask(SIGQUIT) |
+	  sigmask(SIGTERM) | sigmask(SIGPIPE));
 #endif
   signal(SIGINT, sig_quit);
   signal(SIGHUP, sig_quit);
@@ -269,22 +270,30 @@ int main ( int argc, char *argv[])
   strcpy(Fr_name,f_stem);
   strcat(Fr_name, "R");
 
-  if ((Frun = fopen (Fr_name,"r" )) !=NULL)
+  Fdrun = open(Fr_name, O_WRONLY | O_CREAT | O_EXCL, 0600);
+  if (Fdrun < 0)
   {
-    if (fgets (cmd, 20, Frun) != NULL)
+    FILE *f;
+
+    if ((f = fopen (Fr_name,"r" )) != NULL)
     {
+      *cmd = 0;
+      fgets(cmd, 20, f);
+      fclose(f);
       fprintf (stderr, "\nFvwmCommand lock file %sR is detected. "
 	       "This may indicate another FvwmCommand is running. "
 	       "It appears to be running under process ID:\n%s\n",
-	       f_stem, cmd );
+	       f_stem, (*cmd) ? cmd : "(unknown)" );
       fprintf (stderr, "You may either kill the process or run FvwmCommand "
 	       "with another FIFO set using option -S and -f. "
 	       "If the process doesn't exist, simply remove file:\n%sR\n\n",
 	       f_stem);
       exit(1);
     }
-    fclose (Frun);
-    unlink (Fr_name);
+    else
+    {
+      err_quit ("writing lock file");
+    }
   }
 
   if( Opt_Serv )
@@ -293,14 +302,12 @@ int main ( int argc, char *argv[])
     system (cmd);
   }
 
-  if ((Frun = fopen (Fr_name,"w" )) != NULL)
   {
-    fprintf (Frun, "%d\n", (int) getpid());
-    fclose (Frun);
-  }
-  else
-  {
-      err_quit ("writing lock file");
+    char buf[64];
+
+    sprintf(buf, "%d\n", (int)getpid());
+    write(Fdrun, buf, strlen(buf));
+    close(Fdrun);
   }
 
   Fdr = Fdw = -1;
@@ -435,6 +442,7 @@ sig_ttin(int dummy)
 
   Bg = 1;
   signal(SIGTTIN, SIG_IGN);
+  signal(SIGTTOU, SIG_IGN);
   SIGNAL_RETURN;
 }
 
