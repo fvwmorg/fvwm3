@@ -2831,13 +2831,39 @@ static int pop_menu_up(
 			fscreen_scr_arg fscr;
 
 			get_title_gravity_factors(fw, &gx, &gy);
-			x = button_g.x + (gx == 1) * button_g.width -
-				(gx == -1) * MR_WIDTH(mr);
-			y = button_g.y + (gy == 1) * button_g.height -
-				(gy == -1) * MR_HEIGHT(mr);
 			cx = button_g.x + button_g.width / 2;
 			cy = button_g.y + button_g.height / 2;
-
+			if (gx != 0)
+			{
+				x = button_g.x +
+					(gx == 1) * button_g.width -
+					(gx == -1) * MR_WIDTH(mr);
+			}
+			if (gy != 0)
+			{
+				y= button_g.y +
+					(gy == 1) * button_g.height -
+					(gy == -1) * MR_HEIGHT(mr);
+			}
+			if (gx == 0 && x < button_g.x)
+			{
+				x = button_g.x;
+			}
+			else if (gx == 0 && x + MR_WIDTH(mr) >=
+				 button_g.x + button_g.width)
+			{
+				x = button_g.x + button_g.width - MR_WIDTH(mr);
+			}
+			if (gy == 0 && y < button_g.y)
+			{
+				y = button_g.y;
+			}
+			else if (gy == 0 && y + MR_HEIGHT(mr) >=
+				 button_g.y + button_g.height)
+			{
+				y = button_g.y + button_g.height -
+					MR_HEIGHT(mr);
+			}
 			pops->pos_hints.has_screen_origin = True;
 			fscr.xypos.x = cx;
 			fscr.xypos.y = cy;

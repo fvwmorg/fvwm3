@@ -91,5 +91,6 @@ FvwmWindow *get_pointer_fvwm_window(void);
 Time get_server_time(void);
 void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...);
 void set_last_added_item(last_added_item_type type, void *item);
+void print_g(char *text, rectangle *g);
 
 #endif /* MISC_H */

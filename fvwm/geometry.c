@@ -200,6 +200,8 @@ Bool get_title_button_geometry(
 		ret_g->width = 0;
 		ret_g->height = 0;
 		get_title_geometry(fw, ret_g);
+		ret_g->x += fw->frame_g.x;
+		ret_g->y += fw->frame_g.y;
 
 		return True;
 

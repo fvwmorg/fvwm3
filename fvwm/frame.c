@@ -225,7 +225,7 @@ static void frame_get_titlebar_dimensions_only(
 			bs->top_left.height :
 			frame_g->height - bs->bottom_right.height -
 			fw->title_thickness;
-                ret_titlebar_g->x = bs->top_left.width;
+		ret_titlebar_g->x = bs->top_left.width;
 		ret_titlebar_g->width = frame_g->width - bs->total_size.width;
 		ret_titlebar_g->height = fw->title_thickness;
 		break;
@@ -235,7 +235,7 @@ static void frame_get_titlebar_dimensions_only(
 			bs->top_left.width :
 			frame_g->width - bs->bottom_right.width -
 			fw->title_thickness;
-                ret_titlebar_g->y = bs->top_left.height;
+		ret_titlebar_g->y = bs->top_left.height;
 		ret_titlebar_g->width = fw->title_thickness;
 		ret_titlebar_g->height =
 			frame_g->height - bs->total_size.height;
@@ -307,36 +307,36 @@ static void frame_setup_titlebar(
 	FvwmWindow *fw, rectangle *frame_g, window_parts setup_parts,
 	rectangle *diff_g)
 {
-        frame_title_layout_type title_layout;
-        int i;
+	frame_title_layout_type title_layout;
+	int i;
 
 	if (!HAS_TITLE(fw))
 	{
 		return;
 	}
-        frame_get_titlebar_dimensions(fw, frame_g, diff_g, &title_layout);
-        /* configure buttons */
+	frame_get_titlebar_dimensions(fw, frame_g, diff_g, &title_layout);
+	/* configure buttons */
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
 		if (FW_W_BUTTON(fw, i) != None && (setup_parts & PART_BUTTONS))
 		{
-                        XMoveResizeWindow(
-                                dpy, FW_W_BUTTON(fw, i),
-                                title_layout.button_g[i].x,
-                                title_layout.button_g[i].y,
-                                title_layout.button_g[i].width,
-                                title_layout.button_g[i].height);
+			XMoveResizeWindow(
+				dpy, FW_W_BUTTON(fw, i),
+				title_layout.button_g[i].x,
+				title_layout.button_g[i].y,
+				title_layout.button_g[i].width,
+				title_layout.button_g[i].height);
 		}
 	}
-        /* configure title */
-        if (setup_parts & PART_TITLE)
-        {
-                XMoveResizeWindow(
-                        dpy, FW_W_TITLE(fw),
-                        title_layout.title_g.x, title_layout.title_g.y,
-                        title_layout.title_g.width,
-                        title_layout.title_g.height);
-        }
+	/* configure title */
+	if (setup_parts & PART_TITLE)
+	{
+		XMoveResizeWindow(
+			dpy, FW_W_TITLE(fw),
+			title_layout.title_g.x, title_layout.title_g.y,
+			title_layout.title_g.width,
+			title_layout.title_g.height);
+	}
 
 	return;
 }
@@ -375,7 +375,7 @@ static void frame_setup_window_internal(
 	{
 		mr_args = frame_create_move_resize_args(
 			fw, (do_force) ? FRAME_MR_FORCE_SETUP : FRAME_MR_SETUP,
-                        NULL, &new_g, 0, DIR_NONE);
+			NULL, &new_g, 0, DIR_NONE);
 		frame_move_resize(fw, mr_args);
 		frame_free_move_resize_args(fw, mr_args);
 		fw->frame_g = *frame_g;
@@ -521,18 +521,15 @@ static void frame_set_decor_gravities(
 	valuemask2 = CWWinGravity | CWBitGravity;
 	xcwa.win_gravity = grav->client_grav;
 	xcwa.bit_gravity = grav->client_grav;
-	XChangeWindowAttributes(dpy, FW_W(fw), valuemask2, &xcwa);
+	XChangeWindowAttributes(dpy, FW_W(fw), valuemask, &xcwa);
 	xcwa.win_gravity = grav->parent_grav;
-	xcwa.bit_gravity = grav->parent_grav;
 	XChangeWindowAttributes(dpy, FW_W_PARENT(fw), valuemask, &xcwa);
-	valuemask = CWWinGravity;
 	if (!HAS_TITLE(fw))
 	{
 		return;
 	}
 	xcwa.win_gravity = grav->title_grav;
-	xcwa.win_gravity = grav->title_grav;
-	XChangeWindowAttributes(dpy, FW_W_TITLE(fw), valuemask2, &xcwa);
+	XChangeWindowAttributes(dpy, FW_W_TITLE(fw), valuemask, &xcwa);
 	xcwa.win_gravity = grav->lbutton_grav;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
@@ -543,6 +540,7 @@ static void frame_set_decor_gravities(
 		}
 	}
 	xcwa.win_gravity = grav->rbutton_grav;
+	xcwa.bit_gravity = grav->rbutton_grav;
 	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i))
@@ -663,7 +661,7 @@ static rectangle *frame_get_hidden_pos(
 		-mra->client_g.width + mra->parent_s.width : 0;
 		ret_hidden_g->y = (dir_y == DIR_S) ?
 			-mra->client_g.height + mra->parent_s.height : 0;
-		target_g = &mra->current_g;
+		target_g = &mra->next_g;
 	}
 	else
 	{
@@ -756,7 +754,7 @@ static void frame_move_resize_step(
 	window_parts setup_parts;
 	XSetWindowAttributes xswa;
 	Bool dummy;
-        Bool do_force_static_gravity = False;
+	Bool do_force_static_gravity = False;
 	int i;
 	struct
 	{
@@ -780,18 +778,20 @@ static void frame_move_resize_step(
 	mra->flags.is_hidden =
 		(frame_is_parent_hidden(fw, &mra->next_g) == True);
 	flags.do_hide_parent =
-		(!mra->flags.was_hidden && mra->flags.is_hidden);
+		((!mra->flags.was_hidden || mra->flags.do_force) &&
+		 mra->flags.is_hidden);
 	flags.do_unhide_parent =
-		(mra->flags.was_hidden && !mra->flags.is_hidden);
-        if (mra->flags.is_setup && mra->dstep_g.x == 0 && mra->dstep_g.y == 0 &&
-            mra->dstep_g.width == 0 && mra->dstep_g.height == 0)
-        {
-                /* The caller has already set the frame geometry.  Use
-                 * StaticGravity so the sub windows are not moved to funny
-                 * places later. */
-                do_force_static_gravity = True;
-                mra->flags.do_force = 1;
-        }
+		((mra->flags.was_hidden || mra->flags.do_force) &&
+		 !mra->flags.is_hidden);
+	if (mra->flags.is_setup && mra->dstep_g.x == 0 && mra->dstep_g.y == 0 &&
+	    mra->dstep_g.width == 0 && mra->dstep_g.height == 0)
+	{
+		/* The caller has already set the frame geometry.  Use
+		 * StaticGravity so the sub windows are not moved to funny
+		 * places later. */
+		do_force_static_gravity = True;
+		mra->flags.do_force = 1;
+	}
 	/*
 	 * resize everything
 	 */
@@ -836,21 +836,22 @@ static void frame_move_resize_step(
 		XChangeWindowAttributes(
 			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
 	}
-        if (do_force_static_gravity == True)
-        {
-                frame_decor_gravities_type grav;
-                grav.decor_grav = StaticGravity;
-                grav.title_grav = StaticGravity;
-                grav.lbutton_grav = StaticGravity;
-                grav.rbutton_grav = StaticGravity;
-                grav.parent_grav = StaticGravity;
-                grav.client_grav = StaticGravity;
-                frame_set_decor_gravities(fw, &grav);
-        }
+	if (do_force_static_gravity == True)
+	{
+		frame_decor_gravities_type grav;
+
+		grav.decor_grav = StaticGravity;
+		grav.title_grav = StaticGravity;
+		grav.lbutton_grav = StaticGravity;
+		grav.rbutton_grav = StaticGravity;
+		grav.parent_grav = StaticGravity;
+		grav.client_grav = StaticGravity;
+		frame_set_decor_gravities(fw, &grav);
+	}
 	/* setup the title bar and the border */
 	setup_parts = PART_TITLE;
 	if (mra->curr_titlebar_compression != mra->next_titlebar_compression ||
-            mra->mode == FRAME_MR_FORCE_SETUP)
+	    mra->mode == FRAME_MR_FORCE_SETUP)
 	{
 		setup_parts |= PART_BUTTONS;
 	}
@@ -863,9 +864,16 @@ static void frame_move_resize_step(
 	/* setup the parent, the frame and the client window */
 	if (mra->flags.is_client_resizing)
 	{
-		XMoveResizeWindow(
-			dpy, FW_W(fw), 0, 0, mra->parent_s.width,
-			mra->parent_s.height);
+		if (!mra->flags.is_hidden)
+		{
+			XMoveResizeWindow(
+				dpy, FW_W(fw), 0, 0, mra->parent_s.width,
+				mra->parent_s.height);
+		}
+		else
+		{
+			XMoveWindow(dpy, FW_W(fw), 0, 0);
+		}
 		/* reduces flickering */
 		if (mra->flags.is_setup == True)
 		{
@@ -943,11 +951,11 @@ static void frame_move_resize_step(
 			dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0,
 			Scr.NoFocusWin, FShapeBounding, FShapeSet);
 	}
-        /* restore the old gravities */
-        if (do_force_static_gravity == True)
-        {
-                frame_set_decor_gravities(fw, &mra->grav);
-        }
+	/* restore the old gravities */
+	if (do_force_static_gravity == True)
+	{
+		frame_set_decor_gravities(fw, &mra->grav);
+	}
 	/* finish hiding the parent */
 	if (flags.do_hide_parent)
 	{
@@ -1033,119 +1041,119 @@ void frame_destroyed_frame(
 
 void frame_get_titlebar_dimensions(
 	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
-        frame_title_layout_type *title_layout)
+	frame_title_layout_type *title_layout)
 {
-        size_borders b;
-        int i;
+	size_borders b;
+	int i;
 	int tb_length;
 	int tb_thick;
-        int tb_x;
-        int tb_y;
-        int tb_w;
-        int tb_h;
+	int tb_x;
+	int tb_y;
+	int tb_w;
+	int tb_h;
 	int b_length;
-        int b_w;
-        int b_h;
+	int b_w;
+	int b_h;
 	int t_length;
-        int t_w;
-        int t_h;
-        int br_sub;
-        int nbuttons;
-        int nbuttons_big;
-        int *padd_coord;
+	int t_w;
+	int t_h;
+	int br_sub;
+	int nbuttons;
+	int nbuttons_big;
+	int *padd_coord;
 	int *b_l;
 
 	if (!HAS_TITLE(fw))
 	{
 		return;
 	}
-        get_window_borders_no_title(fw, &b);
+	get_window_borders_no_title(fw, &b);
 	if (HAS_VERTICAL_TITLE(fw))
 	{
-                tb_length = frame_g->height - b.total_size.height;
-        }
-        else
-        {
+		tb_length = frame_g->height - b.total_size.height;
+	}
+	else
+	{
 		tb_length = frame_g->width - b.total_size.width;
-        }
-        /* find out the length of the title and the buttons */
-        tb_thick = fw->title_thickness;
-        nbuttons = fw->nr_left_buttons + fw->nr_right_buttons;
-        nbuttons_big = 0;
-        b_length = tb_thick;
-        t_length = tb_length - nbuttons * b_length;
-        if (nbuttons > 0 && t_length < MIN_WINDOW_TITLE_LENGTH)
-        {
-                int diff = MIN_WINDOW_TITLE_LENGTH - t_length;
-                int pixels = diff / nbuttons;
+	}
+	/* find out the length of the title and the buttons */
+	tb_thick = fw->title_thickness;
+	nbuttons = fw->nr_left_buttons + fw->nr_right_buttons;
+	nbuttons_big = 0;
+	b_length = tb_thick;
+	t_length = tb_length - nbuttons * b_length;
+	if (nbuttons > 0 && t_length < MIN_WINDOW_TITLE_LENGTH)
+	{
+		int diff = MIN_WINDOW_TITLE_LENGTH - t_length;
+		int pixels = diff / nbuttons;
 
-                b_length -= pixels;
-                t_length += nbuttons * pixels;
-                nbuttons_big = nbuttons - (MIN_WINDOW_TITLE_LENGTH - t_length);
-                t_length = MIN_WINDOW_TITLE_LENGTH;
-        }
-        if (b_length < MIN_WINDOW_TITLEBUTTON_LENGTH)
-        {
-                /* don't draw the buttons */
-                nbuttons = 0;
-                nbuttons_big = 0;
-                b_length = 0;
-                t_length = tb_length;
-        }
-        if (t_length < 0)
-        {
-                t_length = 0;
-        }
-        fw->title_length = t_length;
-        /* prepare variables */
+		b_length -= pixels;
+		t_length += nbuttons * pixels;
+		nbuttons_big = nbuttons - (MIN_WINDOW_TITLE_LENGTH - t_length);
+		t_length = MIN_WINDOW_TITLE_LENGTH;
+	}
+	if (b_length < MIN_WINDOW_TITLEBUTTON_LENGTH)
+	{
+		/* don't draw the buttons */
+		nbuttons = 0;
+		nbuttons_big = 0;
+		b_length = 0;
+		t_length = tb_length;
+	}
+	if (t_length < 0)
+	{
+		t_length = 0;
+	}
+	fw->title_length = t_length;
+	/* prepare variables */
 	if (HAS_VERTICAL_TITLE(fw))
 	{
-                tb_y = b.top_left.height;
-                br_sub = (diff_g != NULL) ? diff_g->height : 0;
-                if (GET_TITLE_DIR(fw) == DIR_W)
-                {
-                        tb_x = b.top_left.width;
-                }
-                else
-                {
-                        tb_x = frame_g->width - b.bottom_right.width -
-                                tb_thick;
-                        if (diff_g != NULL)
-                        {
-                                tb_x -= diff_g->width;
-                        }
-                }
-                padd_coord = &tb_y;
-                b_w = tb_thick;
-                b_h = b_length;
-                t_w = tb_thick;
-                t_h = t_length;
+		tb_y = b.top_left.height;
+		br_sub = (diff_g != NULL) ? diff_g->height : 0;
+		if (GET_TITLE_DIR(fw) == DIR_W)
+		{
+			tb_x = b.top_left.width;
+		}
+		else
+		{
+			tb_x = frame_g->width - b.bottom_right.width -
+				tb_thick;
+			if (diff_g != NULL)
+			{
+				tb_x -= diff_g->width;
+			}
+		}
+		padd_coord = &tb_y;
+		b_w = tb_thick;
+		b_h = b_length;
+		t_w = tb_thick;
+		t_h = t_length;
 		b_l = &b_h;
 		tb_w = tb_thick;
 		tb_h = tb_length;
 	}
 	else
 	{
-                tb_x = b.top_left.width;
-                br_sub = (diff_g != NULL) ? diff_g->width : 0;
-                if (GET_TITLE_DIR(fw) == DIR_N)
-                {
-                        tb_y = b.top_left.height;
-                }
-                else
-                {
-                        tb_y = frame_g->height - b.bottom_right.height -
-                                tb_thick;
-                        if (diff_g != NULL)
-                        {
-                                tb_y -= diff_g->height;
-                        }
-                }
-                padd_coord = &tb_x;
-                b_w = b_length;
-                b_h = tb_thick;
-                t_w = t_length;
-                t_h = tb_thick;
+		tb_x = b.top_left.width;
+		br_sub = (diff_g != NULL) ? diff_g->width : 0;
+		if (GET_TITLE_DIR(fw) == DIR_N)
+		{
+			tb_y = b.top_left.height;
+		}
+		else
+		{
+			tb_y = frame_g->height - b.bottom_right.height -
+				tb_thick;
+			if (diff_g != NULL)
+			{
+				tb_y -= diff_g->height;
+			}
+		}
+		padd_coord = &tb_x;
+		b_w = b_length;
+		b_h = tb_thick;
+		t_w = t_length;
+		t_h = tb_thick;
 		b_l = &b_w;
 		tb_w = tb_length;
 		tb_h = tb_thick;
@@ -1154,83 +1162,83 @@ void frame_get_titlebar_dimensions(
 	title_layout->titlebar_g.y = tb_y;
 	title_layout->titlebar_g.width = tb_w;
 	title_layout->titlebar_g.height = tb_h;
-        /* configure left buttons */
+	/* configure left buttons */
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
 			continue;
 		}
-                if (b_length <= 0)
-                {
-                        title_layout->button_g[i].x = -1;
-                        title_layout->button_g[i].y = -1;
-                        title_layout->button_g[i].width = 1;
-                        title_layout->button_g[i].height = 1;
-                }
-                else
-                {
-                        title_layout->button_g[i].x = tb_x;
-                        title_layout->button_g[i].y = tb_y;
-                        title_layout->button_g[i].width = b_w;
-                        title_layout->button_g[i].height = b_h;
-                }
-                *padd_coord += b_length;
-                nbuttons_big--;
-                if (nbuttons_big == 0)
-                {
-                        b_length--;
+		if (b_length <= 0)
+		{
+			title_layout->button_g[i].x = -1;
+			title_layout->button_g[i].y = -1;
+			title_layout->button_g[i].width = 1;
+			title_layout->button_g[i].height = 1;
+		}
+		else
+		{
+			title_layout->button_g[i].x = tb_x;
+			title_layout->button_g[i].y = tb_y;
+			title_layout->button_g[i].width = b_w;
+			title_layout->button_g[i].height = b_h;
+		}
+		*padd_coord += b_length;
+		nbuttons_big--;
+		if (nbuttons_big == 0)
+		{
+			b_length--;
 			(*b_l)--;
-                }
+		}
 	}
-        /* configure title */
-        if (t_length == 0)
-        {
-                title_layout->title_g.x = -1;
-                title_layout->title_g.y = -1;
-                title_layout->title_g.width = 1;
-                title_layout->title_g.height = 1;
-        }
-        else
-        {
-                title_layout->title_g.x = tb_x;
-                title_layout->title_g.y = tb_y;
-                title_layout->title_g.width = t_w;
-                title_layout->title_g.height = t_h;
-        }
-        *padd_coord += t_length;
-        /* configure right buttons */
-        *padd_coord -= br_sub;
+	/* configure title */
+	if (t_length == 0)
+	{
+		title_layout->title_g.x = -1;
+		title_layout->title_g.y = -1;
+		title_layout->title_g.width = 1;
+		title_layout->title_g.height = 1;
+	}
+	else
+	{
+		title_layout->title_g.x = tb_x;
+		title_layout->title_g.y = tb_y;
+		title_layout->title_g.width = t_w;
+		title_layout->title_g.height = t_h;
+	}
+	*padd_coord += t_length;
+	/* configure right buttons */
+	*padd_coord -= br_sub;
 	for (i = 1 + ((NUMBER_OF_BUTTONS - 1) / 2) * 2; i >= 0; i -= 2)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
 			continue;
 		}
-                if (b_length <= 0)
-                {
-                        title_layout->button_g[i].x = -1;
-                        title_layout->button_g[i].y = -1;
-                        title_layout->button_g[i].width = 1;
-                        title_layout->button_g[i].height = 1;
-                }
-                else
-                {
-                        title_layout->button_g[i].x = tb_x;
-                        title_layout->button_g[i].y = tb_y;
-                        title_layout->button_g[i].width = b_w;
-                        title_layout->button_g[i].height = b_h;
-                }
-                *padd_coord += b_length;
-                nbuttons_big--;
-                if (nbuttons_big == 0)
-                {
-                        b_length--;
+		if (b_length <= 0)
+		{
+			title_layout->button_g[i].x = -1;
+			title_layout->button_g[i].y = -1;
+			title_layout->button_g[i].width = 1;
+			title_layout->button_g[i].height = 1;
+		}
+		else
+		{
+			title_layout->button_g[i].x = tb_x;
+			title_layout->button_g[i].y = tb_y;
+			title_layout->button_g[i].width = b_w;
+			title_layout->button_g[i].height = b_h;
+		}
+		*padd_coord += b_length;
+		nbuttons_big--;
+		if (nbuttons_big == 0)
+		{
+			b_length--;
 			(*b_l)--;
-                }
+		}
 	}
 
-        return;
+	return;
 }
 
 void frame_get_sidebar_geometry(
@@ -1400,11 +1408,11 @@ int frame_window_id_to_context(
  *     The window to move or resize.
  *   mr_mode
  *     The mode of operation:
- *       FRAME_MR_SETUP: setup the frame
- *       FRAME_MR_FORCE_SETUP: same, but forces all updates
- *       FRAME_MR_OPAQUE: resize the frame in an opaque fashion
- *       FRAME_MR_SHRINK: shrink the client window (useful for shading only)
- *       FRAME_MR_SCROLL: scroll the client window (useful for shading only)
+ *	 FRAME_MR_SETUP: setup the frame
+ *	 FRAME_MR_FORCE_SETUP: same, but forces all updates
+ *	 FRAME_MR_OPAQUE: resize the frame in an opaque fashion
+ *	 FRAME_MR_SHRINK: shrink the client window (useful for shading only)
+ *	 FRAME_MR_SCROLL: scroll the client window (useful for shading only)
  *   start_g
  *     The initial geometry of the frame.  If a NULL pointer is passed, the
  *     frame_g member of the window is used instead.
@@ -1412,10 +1420,10 @@ int frame_window_id_to_context(
  *     The desired new geometry of the frame.
  *   anim_steps
  *     The number of animation steps in between
- *       = 0: The operation is finished in a single step.
- *       > 0: The given number of steps are drawn in between.
- *       < 0: Each step resizes the window by the given number of pixels.
- *            (the sign of the number is flipped first).
+ *	 = 0: The operation is finished in a single step.
+ *	 > 0: The given number of steps are drawn in between.
+ *	 < 0: Each step resizes the window by the given number of pixels.
+ *	      (the sign of the number is flipped first).
  *     This argument is used only with FRAME_MR_SHRINK and FRAME_MR_SCROLL.
  */
 frame_move_resize_args frame_create_move_resize_args(
@@ -1429,6 +1437,7 @@ frame_move_resize_args frame_create_move_resize_args(
 	int diff;
 
 	mra = (mr_args_internal *)safecalloc(1, sizeof(mr_args_internal));
+	memset(mra, 0, sizeof(*mra));
 	mra->mode = mr_mode;
 	get_client_geometry(fw, &mra->client_g);
 	mra->shade_dir = (direction_type)shade_dir;
@@ -1476,24 +1485,24 @@ frame_move_resize_args frame_create_move_resize_args(
 		{
 			mra->anim_steps = anim_steps;
 		}
+		mra->anim_steps++;
 		break;
 	case FRAME_MR_FORCE_SETUP:
 	case FRAME_MR_SETUP:
 	case FRAME_MR_OPAQUE:
 	default:
-		mra->anim_steps = 0;
+		mra->anim_steps = 1;
 		break;
 	}
-        mra->flags.is_setup =
+	mra->flags.is_setup =
 		(mra->mode == FRAME_MR_FORCE_SETUP ||
 		 mra->mode == FRAME_MR_SETUP);
-        mra->flags.do_force = (mra->mode == FRAME_MR_FORCE_SETUP);
+	mra->flags.do_force = (mra->mode == FRAME_MR_FORCE_SETUP);
 	mra->flags.is_client_resizing =
 		(mra->flags.is_setup || mra->mode == FRAME_MR_OPAQUE);
 	mra->flags.do_update_shape =
 		(FShapesSupported && mra->flags.is_client_resizing == False &&
 		 fw->wShaped);
-	mra->anim_steps++;
 
 	return (frame_move_resize_args)mra;
 }
@@ -1562,13 +1571,16 @@ void frame_move_resize(
 	FvwmWindow *fw, frame_move_resize_args mr_args)
 {
 	mr_args_internal *mra;
-	Bool is_grabbed;
+	Bool is_grabbed = False;
 	int i;
 
 	mra = (mr_args_internal *)mr_args;
 	/* freeze the cursor shape; otherwise it may flash to a different shape
 	 * during the animation */
-	is_grabbed = GrabEm(0, GRAB_FREEZE_CURSOR);
+	if (mra->anim_steps > 1)
+	{
+		is_grabbed = GrabEm(None, GRAB_FREEZE_CURSOR);
+	}
 	/* animation */
 	for (i = 1; i <= mra->anim_steps; i++, frame_next_move_resize_args(mra))
 	{
@@ -1586,24 +1598,24 @@ void frame_move_resize(
 /***********************************************************************
  *
  *  Procedure:
- *      frame_setup_window - set window sizes
+ *	frame_setup_window - set window sizes
  *
  *  Inputs:
- *      fw - the FvwmWindow pointer
- *      x       - the x coordinate of the upper-left outer corner of the frame
- *      y       - the y coordinate of the upper-left outer corner of the frame
- *      w       - the width of the frame window w/o border
- *      h       - the height of the frame window w/o border
+ *	fw - the FvwmWindow pointer
+ *	x	- the x coordinate of the upper-left outer corner of the frame
+ *	y	- the y coordinate of the upper-left outer corner of the frame
+ *	w	- the width of the frame window w/o border
+ *	h	- the height of the frame window w/o border
  *
  *  Special Considerations:
- *      This routine will check to make sure the window is not completely
- *      off the display, if it is, it'll bring some of it back on.
+ *	This routine will check to make sure the window is not completely
+ *	off the display, if it is, it'll bring some of it back on.
  *
- *      The fw->frame_XXX variables should NOT be updated with the
- *      values of x,y,w,h prior to calling this routine, since the new
- *      values are compared against the old to see whether a synthetic
- *      ConfigureNotify event should be sent.  (It should be sent if the
- *      window was moved but not resized.)
+ *	The fw->frame_XXX variables should NOT be updated with the
+ *	values of x,y,w,h prior to calling this routine, since the new
+ *	values are compared against the old to see whether a synthetic
+ *	ConfigureNotify event should be sent.  (It should be sent if the
+ *	window was moved but not resized.)
  *
  ************************************************************************/
 void frame_setup_window(

@@ -234,7 +234,10 @@ static void apply_window_updates(
 			new_g = &t->normal_g;
 		}
 		get_relative_geometry(&frame_g, new_g);
-
+		if (IS_SHADED(t))
+		{
+			get_shaded_geometry(t, &frame_g, new_g);
+		}
 		flags->do_setup_frame = True;
 		flags->do_redraw_decoration = True;
 	}

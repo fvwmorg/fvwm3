@@ -564,4 +564,20 @@ Time get_server_time(void)
 	return xev.xproperty.time;
 }
 
+void print_g(char *text, rectangle *g)
+{
+	fprintf(stderr,"%s: ", (text != NULL) ? text : "");
+	if (g == NULL)
+	{
+		fprintf(stderr, "(null)\n");
+
+		return;
+	}
+	fprintf(stderr,"%4d %4d %4dx%4d (%4d - %4d, %4d - %4d)\n",
+		g->x, g->y, g->width, g->height,
+		g->x, g->x + g->width, g->y, g->y + g->height);
+
+	return;
+}
+
 /* ---------------------------- builtin commands ---------------------------- */

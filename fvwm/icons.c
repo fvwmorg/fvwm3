@@ -1630,7 +1630,9 @@ void DeIconify(FvwmWindow *fw)
        * in case it was stuck or unstuck while iconified. */
       tmp = Scr.Hilite;
       Scr.Hilite = t;
-      border_draw_decorations(t, PART_ALL, False, True, CLEAR_ALL, NULL, NULL);
+      border_draw_decorations(
+	      t, PART_ALL, (sf == t) ? True : False, True, CLEAR_ALL, NULL,
+	      NULL);
       Scr.Hilite = tmp;
     }
   }

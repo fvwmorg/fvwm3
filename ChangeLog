@@ -1,4 +1,34 @@
+2002-03-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (DeIconify):
+	fiexd fucoused window not hilighting after deiconification
+
 2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (apply_window_updates):
+	windows are not unshaded when the decoration layout changes
+
+	* fvwm/frame.c (frame_create_move_resize_args):
+	fixed excessive redrawing
+	(frame_get_hidden_pos):
+	fixed parent geometry when window is hidden
+
+	* fvwm/add_window.c (setup_frame_stacking):
+	fixed stacking of right buttons
+
+	* fvwm/frame.c (frame_set_decor_gravities):
+	fixed title and button bit gravities
+
+	* fvwm/add_window.c (setup_frame_stacking):
+	(change_auxiliary_windows):
+	fixed "button" style
+
+	* fvwm/geometry.c (get_title_button_geometry):
+	* fvwm/menus.c (pop_menu_up):
+	fixed menu placement relative to window titles
+
+	* libs/Flocale.c (FlocaleDrawString):
+	fixed compiler warning w/o fribidi
 
 	* fvwm/virtual.c (MoveViewport):
 	(MapDesk):

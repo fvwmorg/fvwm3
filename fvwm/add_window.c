@@ -1539,8 +1539,11 @@ void setup_frame_stacking(FvwmWindow *fw)
 	 *  - Side handles
 	 */
 	n = 0;
-	w[n] = FW_W_PARENT(fw);
-	n++;
+	if (!IS_SHADED(fw))
+	{
+		w[n] = FW_W_PARENT(fw);
+		n++;
+	}
 	if (HAS_TITLE(fw))
 	{
 		for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
@@ -1551,7 +1554,7 @@ void setup_frame_stacking(FvwmWindow *fw)
 				n++;
 			}
 		}
-		for (i = 2 * (NUMBER_OF_BUTTONS / 2); i >= 0; i -= 2)
+		for (i = 2 * NR_RIGHT_BUTTONS - 1; i > 0; i -= 2)
 		{
 			if (FW_W_BUTTON(fw, i) != None)
 			{
@@ -1580,6 +1583,11 @@ void setup_frame_stacking(FvwmWindow *fw)
 			w[n] = FW_W_SIDE(fw, i);
 			n++;
 		}
+	}
+	if (IS_SHADED(fw))
+	{
+		w[n] = FW_W_PARENT(fw);
+		n++;
 	}
 	XRestackWindows(dpy, w, n);
 
@@ -1709,6 +1717,7 @@ void change_auxiliary_windows(FvwmWindow *fw, short buttons)
 	change_button_windows(fw, valuemask_save, &attributes, buttons);
 	change_resize_handle_windows(fw);
 	setup_frame_stacking(fw);
+	XMapSubwindows (dpy, FW_W_FRAME(fw));
 
 	return;
 }

@@ -17,7 +17,7 @@
  */
 
 /* FlocaleRotateDrawString is strongly inspired by some part of xvertext
- * taken from wmx */ 
+ * taken from wmx */
 /* Here the copyright for this function: */
 /* xvertext, Copyright (c) 1992 Alan Richardson (mppa3@uk.ac.sussex.syma)
  *
@@ -282,7 +282,7 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	int width, height;
 	XImage *image, *rotated_image;
 	Pixmap canvas_pix, rotated_pix;
-  
+
 	if (fws->str == NULL || len < 1)
 		return;
 	if (fws->flags.text_rotation == TEXT_ROTATED_0)
@@ -353,7 +353,7 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	else /* vertical text */
 	{
 		bit_w = vert_h;
-		bit_h = vert_w; 
+		bit_h = vert_w;
 	}
 
 	/* width in bytes ... */
@@ -384,7 +384,8 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 
 			else if (fws->flags.text_rotation == TEXT_ROTATED_180)
 				val = vertdata[
-					(vert_h-j-1)*vert_len + (vert_w-i-1)/8] &
+					(vert_h-j-1)*vert_len +
+					(vert_w-i-1)/8] &
 					(128>>((vert_w-i-1)%8));
 
 			else /* TEXT_ROTATED_90 */
@@ -402,7 +403,7 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	rotated_pix = XCreatePixmap(dpy, fws->win, bit_w, bit_h, 1);
 	XPutImage(dpy, rotated_pix, font_gc, rotated_image,
 		  0, 0, 0, 0, bit_w, bit_h);
-  
+
 	/* free the image and data  */
 	XDestroyImage(image);
 	XDestroyImage(rotated_image);
@@ -742,8 +743,11 @@ void FlocaleDrawString(
 	char *str1 = NULL, *str2;
 	Bool is_rtl;
 
+	is_rtl = False;
 	if (!fstring || !fstring->str)
+	{
 		return;
+	}
 
 	if (flags & FWS_HAVE_LENGTH)
 	{
