@@ -95,6 +95,7 @@ int screen,ScreenWidth,ScreenHeight;
 Pixel back[MAX_COLOUR_SETS], fore[MAX_COLOUR_SETS];
 GC  graph[MAX_COLOUR_SETS],shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 GC  background[MAX_COLOUR_SETS];
+Pixmap win_bg = None;
 XFontStruct *ButtonFont;
 #ifdef I18N_MB
 XFontSet ButtonFontset;
@@ -688,6 +689,11 @@ ParseConfigLine(char *tline)
 
 	for (i = 0; i != MAX_COLOUR_SETS; i++) {
 	  if (colorset[i] == cset) {
+	    if (win_bg == None && Colorset[cset].pixmap == ParentRelative)
+	    {
+	      win_bg = ParentRelative;
+	      XSetWindowBackgroundPixmap(dpy, win, win_bg);
+	    }
 	    AdjustWindow(True);
 	    RedrawWindow(True);
 	    break;
@@ -1080,7 +1086,17 @@ void MakeMeWindow(void)
       }
     }
 
-  attr.background_pixmap = ParentRelative;
+  /* FvwmWinList paints the entire window and does not rely on the xserver to
+   * render the background. Setting the background_pixmap to None prevents the
+   * server from doing anything on expose events. The exception is when one of
+   * the colorsets is transparent whihc requires help from the server */
+  for (i = 0; i != MAX_COLOUR_SETS; i++)
+    if (colorset[i] >= 0 && Colorset[colorset[i]].pixmap == ParentRelative)
+    {
+      win_bg = ParentRelative;
+      break;
+    }
+  attr.background_pixmap = win_bg;
   attr.border_pixel = 0;
   attr.colormap = Pcmap;
   win=XCreateWindow(dpy, Root, hints.x, hints.y, hints.width, hints.height, 0,
