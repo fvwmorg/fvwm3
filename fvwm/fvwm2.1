@@ -119,7 +119,8 @@ This option is provided for backward compatibility only.  Blacking out
 the screen during startup is not necessary anymore.
 .TP
 .BI "-clientId " id
-This option is used when fvwm is restarted by the session manager.
+This option is used when fvwm is started by a session manager.
+Should not be used by a user.
 .TP
 .BI "-cmd " config_command
 Causes fvwm to use
@@ -162,7 +163,8 @@ unless the other wm is
 2.0 compliant.
 .TP
 .BI "-restore " state_file
-This option is used when fvwm is restarted by the session manager.
+This option is used when fvwm is started by a session manager.
+Should not be used by a user.
 .TP
 .BI "-s"
 On a multi-screen display, run fvwm only on the screen named in the
@@ -3041,9 +3043,9 @@ is specified the pointer is warped with the window.
 .BI "HideGeometryWindow [" Never | Move | Resize "]"
 Hides the position or size window that is usually shown when a window
 is moved or resized interactively.  To switch it off only for move
-respectively resize operations the optional parameters
+or resize operations the optional parameters
 .IR Move " and " Resize
-can be used.  To switch both on again use the
+can be used respectively.  To switch both on again use the
 .I Never
 option.
 
