@@ -33,7 +33,15 @@ extern struct queue_buff_struct **pipeQueue;
 #define M_END_WINDOWLIST     (1<<14)
 #define M_ICON_LOCATION      (1<<15)
 #define M_MAP                (1<<16)
+
+/* It turns out this is defined by <sys/stream.h> on Solaris 2.6.
+   I suspect that simply redefining this will lead to trouble; 
+   at some point, these should probably be renamed (FVWM_MSG_ERROR?). */
+#ifdef M_ERROR
+#  undef M_ERROR
+#endif
 #define M_ERROR              (1<<17)
+
 #define M_CONFIG_INFO        (1<<18)
 #define M_END_CONFIG_INFO    (1<<19)
 #define M_ICON_FILE          (1<<20)
