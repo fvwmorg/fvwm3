@@ -851,7 +851,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 {
   extern long isIconicState;
   extern Bool isIconifiedByParent;
-  extern Boolean PPosOverride;
+  extern Bool PPosOverride;
   Bool OnThisPage = False;
 
   Event.xany.window = Event.xmaprequest.window;

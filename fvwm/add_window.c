@@ -1177,7 +1177,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   style_flags *sflags;
   short buttons;
   extern FvwmWindow *colormap_win;
-  extern Boolean PPosOverride;
+  extern Bool PPosOverride;
 #ifdef I18N_MB
   char **list;
   int num;
@@ -1853,7 +1853,7 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
 void destroy_window(FvwmWindow *tmp_win)
 {
   extern FvwmWindow *ButtonWindow;
-  extern Boolean PPosOverride;
+  extern Bool PPosOverride;
 
   /*
    * Warning, this is also called by HandleUnmapNotify; if it ever needs to

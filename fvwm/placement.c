@@ -513,7 +513,7 @@ Bool PlaceWindow(
   Bool use_wm_placement = True;
   extern Bool Restarting;
 /**/
-  extern Boolean PPosOverride;
+  extern Bool PPosOverride;
 
   yt = 0;
 
