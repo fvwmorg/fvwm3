@@ -1398,6 +1398,9 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
       gcm |= GCFont;
     }
   NormalGC = XCreateGC(Dpy, Root, gcm, &gcv);
+
+  free(myclasshints.res_class);
+  free(myclasshints.res_name);
 }
 
 /* ----------------------------- color functions --------------------------- */

@@ -1,3 +1,8 @@
+1999-01-04  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (FPopupMenu): force menus on screen if making them non
+	overlapping moves them partially off screen.
+
 1999-01-03  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/menus.c (MenuInteraction): fixed various bugs in drawing

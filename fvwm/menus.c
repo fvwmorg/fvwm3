@@ -1284,6 +1284,36 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	else
 	  fUseLeft = FALSE;
 	x = (fUseLeft) ? left_x : right_x;
+	/* force the menu onto the screen; prefer to have the left border
+	 * visible if the menu is wider than the screen. But leave at least
+	 * 20 pixels of the parent menu visible */
+
+	if (x + menu->width >= Scr.MyDisplayWidth - 2)
+	{
+	  int d = x + menu->width - Scr.MyDisplayWidth + 3;
+	  int c;
+
+	  if (prev_width >= 20)
+	    c = prev_x + 20;
+	  else
+	    c = prev_x + prev_width;
+
+	  if (x - c >= d || x <= prev_x)
+	    x -= d;
+	  else if (x > c)
+	    x = c;
+	}
+	if (x < 0)
+	{
+	  int c = prev_width - 20;
+
+	  if (c < 0)
+	    c = 0;
+	  if (-x > c)
+	    x += c;
+	  else
+	    x = 0;
+	}
       } /* else if (non-overlapping menu style) */
     } /* if (x_clipped_overlap && ...) */
 

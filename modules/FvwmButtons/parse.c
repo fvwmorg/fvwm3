@@ -1016,5 +1016,6 @@ void ParseOptions(button_info *ub)
   if(config_file)
     ParseConfigFile(ub);
 
+  free(items[3]);
   return;
 }
