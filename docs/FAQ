@@ -1058,17 +1058,28 @@ A: Eterm provides its own icon and fvwm does not know if it is a plain
 3.15  I don't like the gaps in my icon box when I de-iconify an
       application.  Is there some kind of auto arrange function?
 
-A: Assuming you are using the IconBox option of the Style command this
-   can be done with a tricky fvwm function.  Put the DeiconifyAndRearrange
-   function below in your configuration file:
+A: Assuming you are using the IconBox option of the Style command
+   this can be done with a tricky fvwm function.  Put the
+   DeiconifyAndRearrange function below in your configuration file:
+
+     AddToFunc DeiconifyAndRearrange
+      + C Iconify off
+      + C All (CurrentPage Iconic) PlaceAgain Icon
+
+   This works with fvwm-2.5.3 and later.  Older fvwm releases can
+   achieve the same effect with
 
      AddToFunc DeiconifyAndRearrange
       + C Iconify off
       + C All (CurrentPage Iconic) RecaptureWindow
 
-   And then replace all places where you call the Iconify builtin
-   function to de-iconify an icon with a call to the new function.  For
-   example replace
+   However, as the Recapture and RecaptureWindow commands may be
+   removed in the future, please use PlaceAgain instead of
+   Recapture if possible.
+
+   Also, replace all places where you call the Iconify builtin
+   function to de-iconify an icon with a call to the new function.
+   For example, replace
 
      AddToFunc IconFunc
       + C Iconify off

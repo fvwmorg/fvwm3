@@ -29,5 +29,8 @@ Bool moveLoop(FvwmWindow *fw, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque);
 void handle_stick(F_CMD_ARGS, int toggle);
 void resize_geometry_window(void);
+void __move_icon(
+	FvwmWindow *fw, int x, int y, int old_x, int old_y,
+	Bool do_move_animated, Bool do_warp_pointer);
 
 #endif /* _MOVE_RESIZE_ */

@@ -959,7 +959,7 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
     if (!IS_ICON_SUPPRESSED(fw))
     {
       LowerWindow(fw);
-      AutoPlaceIcon(fw, NULL);
+      AutoPlaceIcon(fw, NULL, True);
       if (fw->Desk == Scr.CurrentDesk)
       {
 	if (FW_W_ICON_TITLE(fw))
@@ -1002,7 +1002,9 @@ void RedoIconName(FvwmWindow *fw)
  *      AutoPlace - Find a home for an icon
  *
  ************************************************************************/
-void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
+void AutoPlaceIcon(
+	FvwmWindow *t, initial_window_options_type *win_opts,
+	Bool do_move_immediately)
 {
   int base_x, base_y;
   int width,height;
@@ -1384,7 +1386,7 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
     broadcast_icon_geometry(t, True);
     do_move_icon = True;
   }
-  if (do_move_icon)
+  if (do_move_icon && do_move_immediately)
   {
     move_icon_to_position(t);
   }
@@ -1916,7 +1918,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 	if (win_opts->initial_state != IconicState ||
 	    (!IS_ICON_MOVED(fw) && !win_opts->flags.use_initial_icon_xy))
 	{
-		AutoPlaceIcon(fw, win_opts);
+		AutoPlaceIcon(fw, win_opts, True);
 	}
 	/* domivogt (1-Mar-2000): The next block is a hack to prevent animation
 	 * if the window has an icon, but neither a pixmap nor a title. */

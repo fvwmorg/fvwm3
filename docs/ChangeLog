@@ -1,3 +1,8 @@
+2002-07-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FAQ (3.15):
+	Updated new DeiconifyAndRearrange function using PlaceAgain
+
 2002-06-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* docs/DEVELOPERS:

@@ -1072,12 +1072,73 @@ void AnimatedMoveFvwmWindow(
  * Start a window move operation
  *
  ****************************************************************************/
-static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
+void __move_icon(
+	FvwmWindow *fw, int x, int y, int old_x, int old_y,
+	Bool do_move_animated, Bool do_warp_pointer)
+{
+	rectangle gt;
+	rectangle gp;
+	Bool has_icon_title;
+	Bool has_icon_picture;
+	Window tw;
+	int tx;
+	int ty;
+
+	set_icon_position(fw, x, y);
+	broadcast_icon_geometry(fw, False);
+	has_icon_title = get_visible_icon_title_geometry(fw, &gt);
+	has_icon_picture = get_visible_icon_picture_geometry(fw, &gp);
+	if (has_icon_picture)
+	{
+		tw = FW_W_ICON_PIXMAP(fw);
+		tx = gp.x;
+		ty = gp.y;
+	}
+	else if (has_icon_title)
+	{
+		tw = FW_W_ICON_TITLE(fw);
+		tx = gt.x;
+		ty = gt.y;
+	}
+	else
+	{
+		return;
+	}
+	if (do_move_animated)
+	{
+		AnimatedMoveOfWindow(
+			tw, -1, -1, tx, ty, do_warp_pointer, -1, NULL, NULL);
+	}
+	else
+	{
+		XMoveWindow(dpy, FW_W_ICON_TITLE(fw), tx, ty);
+		if (do_warp_pointer)
+		{
+			XWarpPointer(
+				dpy, None, None, 0, 0, 0, 0, x - old_x,
+				y - old_y);
+		}
+	}
+	if (has_icon_picture)
+	{
+		if (has_icon_title)
+		{
+			XMoveWindow(dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
+			XMapWindow(dpy, FW_W_ICON_TITLE(fw));
+		}
+		XMapWindow(dpy, tw);
+	}
+
+	return;
+}
+
+static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 {
 	int FinalX = 0;
 	int FinalY = 0;
 	int n;
-	int x,y;
+	int x;
+	int y;
 	unsigned int width, height;
 	int page_x, page_y;
 	Bool fWarp = False;
@@ -1086,7 +1147,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
 	int dy;
 
 	if (DeferExecution(
-		    eventp,&w,&fw,&context,
+		    eventp, &w, &fw, &context,
 		    (mode == MOVE_NORMAL) ? CRS_MOVE : CRS_SELECT, ButtonPress))
 	{
 		return;
@@ -1229,62 +1290,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
 	}
 	else /* icon window */
 	{
-		rectangle gt;
-		rectangle gp;
-		Bool has_icon_title;
-		Bool has_icon_picture;
-
-		set_icon_position(fw, FinalX, FinalY);
-		broadcast_icon_geometry(fw, False);
-		has_icon_title = get_visible_icon_title_geometry(fw, &gt);
-		has_icon_picture = get_visible_icon_picture_geometry(fw, &gp);
-		if (has_icon_picture)
-		{
-			if (do_animate)
-			{
-				AnimatedMoveOfWindow(
-					FW_W_ICON_PIXMAP(fw), -1, -1, gp.x,
-					gp.y, fWarp, -1, NULL, NULL);
-			}
-			else
-			{
-				XMoveWindow(
-					dpy, FW_W_ICON_PIXMAP(fw), gp.x, gp.y);
-				if (fWarp)
-				{
-					XWarpPointer(
-						dpy, None, None, 0, 0, 0, 0,
-						FinalX - x, FinalY - y);
-				}
-			}
-			if (has_icon_title)
-			{
-				XMoveWindow(
-					dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
-				XMapWindow(dpy, FW_W_ICON_TITLE(fw));
-			}
-			XMapWindow(dpy, w);
-		}
-		else if (has_icon_title)
-		{
-			if (do_animate)
-			{
-				AnimatedMoveOfWindow(
-					FW_W_ICON_TITLE(fw), -1, -1, gt.x,
-					gt.y, fWarp, -1, NULL, NULL);
-			}
-			else
-			{
-				XMoveWindow(
-					dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
-				if (fWarp)
-				{
-					XWarpPointer(
-						dpy, None, None, 0, 0, 0, 0,
-						FinalX - x, FinalY - y);
-				}
-			}
-		}
+		__move_icon(fw, FinalX, FinalY, x, y, do_animate, fWarp);
 		XFlush(dpy);
 	}
 
@@ -1293,28 +1299,28 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
 
 void CMD_Move(F_CMD_ARGS)
 {
-	move_window_doit(F_PASS_ARGS, False, MOVE_NORMAL);
+	__move_window(F_PASS_ARGS, False, MOVE_NORMAL);
 
 	return;
 }
 
 void CMD_AnimatedMove(F_CMD_ARGS)
 {
-	move_window_doit(F_PASS_ARGS, True, MOVE_NORMAL);
+	__move_window(F_PASS_ARGS, True, MOVE_NORMAL);
 
 	return;
 }
 
 void CMD_MoveToPage(F_CMD_ARGS)
 {
-	move_window_doit(F_PASS_ARGS, False, MOVE_PAGE);
+	__move_window(F_PASS_ARGS, False, MOVE_PAGE);
 
 	return;
 }
 
 void CMD_MoveToScreen(F_CMD_ARGS)
 {
-	move_window_doit(F_PASS_ARGS, False, MOVE_SCREEN);
+	__move_window(F_PASS_ARGS, False, MOVE_SCREEN);
 
 	return;
 }
@@ -4090,8 +4096,8 @@ void handle_stick(F_CMD_ARGS, int toggle)
 		if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
 		{
 			action = "";
-			move_window_doit(F_PASS_ARGS, FALSE, MOVE_PAGE);
-			/* move_window_doit resets the STICKY flag, so we must
+			__move_window(F_PASS_ARGS, FALSE, MOVE_PAGE);
+			/* __move_window resets the STICKY flag, so we must
 			 * set it after the call! */
 			SET_STICKY(fw, 1);
 		}

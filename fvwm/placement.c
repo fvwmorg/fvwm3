@@ -1141,7 +1141,7 @@ Bool PlaceWindow(
   return rc;
 }
 
-
+#include "icons.h"
 void CMD_PlaceAgain(F_CMD_ARGS)
 {
 	char *token;
@@ -1150,7 +1150,8 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	window_style style;
 	rectangle attr_g;
 	XWindowAttributes attr;
-	initial_window_options_type win_opts;
+	Bool do_move_animated = False;
+	Bool do_place_icon = False;
 
 	if (DeferExecution(
 		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
@@ -1161,27 +1162,53 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	{
 		return;
 	}
-	memset(&win_opts, 0, sizeof(win_opts));
-	lookup_style(fw, &style);
-	attr_g.x = attr.x;
-	attr_g.y = attr.y;
-	attr_g.width = attr.width;
-	attr_g.height = attr.height;
-	PlaceWindow(
-		fw, &style.flags, &attr_g, SGET_START_DESK(style),
-		SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style),
-		SGET_START_SCREEN(style), PLACE_AGAIN, &win_opts);
-
-	/* Possibly animate the movement */
-	token = PeekToken(action, NULL);
-	if (token && StrEquals("Anim", token))
+	while ((token = PeekToken(action, &action)) != NULL)
 	{
-		ppctMovement = NULL;
+		if (StrEquals("Anim", token))
+		{
+			ppctMovement = NULL;
+			do_move_animated = True;
+		}
+		else if (StrEquals("icon", token))
+		{
+			do_place_icon = True;
+		}
 	}
+	if (IS_ICONIFIED(fw) && do_place_icon)
+	{
+		rectangle new_g;
+		rectangle old_g;
 
-	AnimatedMoveFvwmWindow(
-		fw, FW_W_FRAME(fw), -1, -1, attr_g.x, attr_g.y, False, -1,
-		ppctMovement);
+		if (IS_ICON_SUPPRESSED(fw))
+		{
+			return;
+		}
+		get_icon_geometry(fw, &old_g);
+		SET_ICON_MOVED(fw, 0);
+		AutoPlaceIcon(fw, NULL, False);
+		get_icon_geometry(fw, &new_g);
+		__move_icon(
+			fw, new_g.x, new_g.y, old_g.x, old_g.y,
+			do_move_animated, False);
+	}
+	else
+	{
+		initial_window_options_type win_opts;
+
+		memset(&win_opts, 0, sizeof(win_opts));
+		lookup_style(fw, &style);
+		attr_g.x = attr.x;
+		attr_g.y = attr.y;
+		attr_g.width = attr.width;
+		attr_g.height = attr.height;
+		PlaceWindow(
+			fw, &style.flags, &attr_g, SGET_START_DESK(style),
+			SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style),
+			SGET_START_SCREEN(style), PLACE_AGAIN, &win_opts);
+		AnimatedMoveFvwmWindow(
+			fw, FW_W_FRAME(fw), -1, -1, attr_g.x, attr_g.y, False,
+			-1, ppctMovement);
+	}
 
 	return;
 }

@@ -25,6 +25,8 @@ Changes in alpha release 2.5.3 (not released yet)
 
 * The "hangon" strings in FvwmButtons support wildcards.
 
+* New option "Icon" to PlaceAgain command.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

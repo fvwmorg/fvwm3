@@ -1,3 +1,22 @@
+2002-07-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (CMD_PlaceAgain):
+	* fvwm/move_resize.c (move_window_doit):
+	(__move_icon):
+	* fvwm/virtual.c (MapDesk):
+	(MoveViewport):
+	(do_move_window_to_desk):
+	* fvwm/icons.c (AutoPlaceIcon):
+	(ChangeIconPixmap):
+	(Iconify):
+	some cleanup in movement code
+	new option "Icon" to PlaceAgain command
+	adapted documentation accordingly
+
+	* fvwm/move_resize.c (move_window_doit):
+	(__move_window):
+	renamed function
+
 2002-07-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Flocale.c (FlocaleRotateDrawString):
