@@ -1,7 +1,12 @@
+2002-08-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (paint_menu_gradient_background):
+	fixed drawing of SidePic menu background when not using SideColor
+
 2002-08-28  Hippo
 	* FvwmIconBox/icons.c:
 	Fixed core dump
-	
+
 2002-08-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS: mention new FvwmButtons additions and TitleStyle MultiPixmap

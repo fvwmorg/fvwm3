@@ -2982,14 +2982,6 @@ static Bool paint_menu_gradient_background(
 			r.y = bw;
 			r.width = MR_WIDTH(mr) - 2 * bw;
 			r.height = MR_HEIGHT(mr) - 2 * bw;
-			if (sidePic)
-			{
-				r.width -= sidePic->width;
-				if (MR_SIDEPIC_X_OFFSET(mr) == bw)
-				{
-					r.x += sidePic->width;
-				}
-			}
 		}
 		XSetClipRectangles(dpy, Scr.TransMaskGC, 0, 0, &r, 1, Unsorted);
 		numLines = MR_WIDTH(mr) + MR_HEIGHT(mr) - 2 * bw;
