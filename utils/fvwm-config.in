@@ -1,0 +1,115 @@
+#!/bin/sh
+
+PACKAGE="@PACKAGE@"
+VERSION="@VERSION@"
+script=`basename $0`
+
+usage()
+{
+	cat <<EOF
+This script is a part of $PACKAGE-$VERSION package.
+
+Usage: $script [OPTIONS]
+Options:
+	[-h]	[--help]
+	[-v]	[--version]
+	[-i]	[--info]
+
+	[-P]	[--prefix]
+	[-E]	[--exec-prefix]
+	[-B]	[--bindir]
+	[-L]	[--libexecdir]
+	[-S]	[--sysconfdir]
+	[-M]	[--mandir]
+
+	[-m]	[--moduledir]
+	[-c]	[--configdir]
+	[-I]	[--default-imagepath]
+	[-U]	[--default-userhome]
+EOF
+	exit $1
+}
+
+if test $# -eq 0; then
+	usage 1 1>&2
+fi
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="@bindir@"
+libexecdir="@libexecdir@"
+sysconfdir="@sysconfdir@"
+mandir="@mandir@"
+
+moduledir="@FVWM_MODULEDIR@"
+configdir="@FVWM_CONFIGDIR@"
+imagepath="@FVWM_IMAGEPATH@"
+userhome='$HOME'
+
+while test $# -gt 0; do
+	case "$1" in
+		-*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+		*) optarg= ;;
+	esac
+
+	case $1 in
+		--help|-help|-h)
+			usage 0 ;;
+
+		--version|-version|-v)
+			echo "$VERSION" ;;
+
+		--prefix|-prefix|-P)
+			echo "$prefix" ;;
+
+		--exec-prefix|-exec-prefix|-E)
+			echo "$exec_prefix" ;;
+
+		--bindir|-bindir|-B)
+			echo "$bindir" ;;
+
+		--libexecdir|-libexecdir|-L)
+			echo "$libexecdir" ;;
+
+		--sysconfdir|-sysconfdir|-S)
+			echo "$sysconfdir" ;;
+
+		--mandir|-mandir|-M)
+			echo "$mandir" ;;
+
+		--moduledir|-moduledir|-m)
+			echo "$moduledir" ;;
+
+		--configdir|-configdir|-c)
+			echo "$configdir" ;;
+
+		--default-imagepath|-default-imagepath|-I)	
+			echo "$imagepath" ;;
+
+		--default-userhome|-default-userhome|-U)
+			echo "$userhome" ;;
+
+		--info|-info|-i)
+			echo "Package: $PACKAGE"
+			echo "Version: $VERSION"
+			echo ""
+			echo "Instalation options:"
+			echo "	prefix: $prefix"
+			echo "	exec-prefix: $exec_prefix"
+			echo "	bindir: $bindir"
+			echo "	libexecdir: $libexecdir"
+			echo "	sysconfdir: $sysconfdir"
+			echo "	mandir: $mandir"
+			echo ""
+			echo "Compiled-in paths:"
+			echo "	Module directory: $moduledir"
+			echo "	Configuration directory: $configdir"
+			echo "	Default ImagePath: $imagepath"
+			echo "	Default UserHome: $userhome"
+			;;
+
+	esac
+	shift
+done
+
+exit 0

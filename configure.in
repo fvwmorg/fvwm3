@@ -53,6 +53,8 @@ AC_ARG_WITH(imagepath,
     ;;
   esac ])
 AC_DEFINE_UNQUOTED(FVWM_IMAGEPATH, "$val")
+FVWM_IMAGEPATH="$val"
+AC_SUBST(FVWM_IMAGEPATH)
 AC_MSG_RESULT($val)
 
 dnl GNOME WM Hints
@@ -381,7 +383,7 @@ esac
 
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
-utils/Makefile utils/fvwmbug.sh
+utils/Makefile utils/fvwm-config utils/fvwmbug.sh
 utils/fvwm-menu-xlock utils/fvwm-menu-directory
 utils/fvwm-menu-desktop utils/fvwm-menu-headlines
 docs/Makefile sample.fvwmrc/Makefile tests/Makefile

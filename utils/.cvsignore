@@ -3,6 +3,7 @@ Makefile.in
 .deps
 xpmroot
 xselection
+fvwm-config
 fvwm-menu-xlock
 fvwm-menu-directory
 fvwm-menu-desktop

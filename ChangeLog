@@ -1,3 +1,8 @@
+2000-04-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in: added generation of utils/fvwm-config, the default
+	ImagePath $FVWM_IMAGEPATH is now available for auto-generated stuff.
+
 2000-04-03  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/events.c (HandleMapRequestKeepRaised): remove debug statement.

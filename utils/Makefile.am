@@ -1,7 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
 bin_PROGRAMS = @XPMROOT@ xselection
-bin_SCRIPTS = fvwmbug fvwm-menu-xlock fvwm-menu-directory \
+bin_SCRIPTS = fvwm-config fvwmbug fvwm-menu-xlock fvwm-menu-directory \
 	fvwm-menu-desktop fvwm-menu-headlines
 
 EXTRA_PROGRAMS = xpmroot
