@@ -539,7 +539,7 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
   case M_END_WINDOWLIST:
     ConsoleDebug (FVWM, "DEBUG::M_END_WINDOWLIST\n");
     ConsoleDebug (FVWM,
-		  ">>>>>>>>>>>>>>>>>>>>>>>End window list<<<<<<<<<<<<<<<\n");
+		  "+++++ End window list +++++\n");
     if (globals.focus_win && globals.focus_win->button) {
 	globals.focus_win->manager->focus_button = globals.focus_win->button;
     }

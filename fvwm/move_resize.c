@@ -904,21 +904,18 @@ static void DoSnapAttract(
       case 1:  /* SameType */
 	if (IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
 	{
-	  tmp = tmp->next;
 	  continue;
 	}
 	break;
       case 2:  /* Icons */
 	if (!IS_ICONIFIED(tmp) || !IS_ICONIFIED(tmp_win))
 	{
-	  tmp = tmp->next;
 	  continue;
 	}
 	break;
       case 3:  /* Windows */
 	if (IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
 	{
-	  tmp = tmp->next;
 	  continue;
 	}
 	break;
