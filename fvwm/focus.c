@@ -95,7 +95,7 @@ static void SetPointerEventPosition(XEvent *eventp, int x, int y)
  * Sets the input focus to the indicated window.
  *
  **********************************************************************/
-static void DoSetFocus(
+static void __set_focus_to_fwin(
 	Window w, FvwmWindow *fw, Bool FocusByMouse, Bool NoWarp,
 	Bool do_allow_force_broadcast)
 {
@@ -239,12 +239,9 @@ static void DoSetFocus(
 		 * unfocus */
 		focus_grab_buttons(Scr.Ungrabbed, False);
 	}
-	/* if we do click to focus, remove the grab on mouse events that
-	 * was made to detect the focus change */
-	if (fw && HAS_CLICK_FOCUS(fw))
-	{
-		focus_grab_buttons(fw, True);
-	}
+	/* Make sure the button grabs on the now focused window are up to date.
+	 */
+	focus_grab_buttons(fw, True);
 	/* RBW - allow focus to go to a NoIconTitle icon window so
 	 * auto-raise will work on it... */
 	if (fw && IS_ICONIFIED(fw))
@@ -308,7 +305,7 @@ static void MoveFocus(
 	Bool do_allow_force_broadcast)
 {
 	FvwmWindow *ffw_old = get_focus_window();
-	Bool accepts_input_focus = do_accept_input_focus(fw);
+	Bool accepts_input_focus = focus_does_accept_input_focus(fw);
 #if 0
 	FvwmWindow *ffw_new;
 #endif
@@ -334,7 +331,8 @@ static void MoveFocus(
 		}
 		return;
 	}
-	DoSetFocus(w, fw, FocusByMouse, NoWarp, do_allow_force_broadcast);
+	__set_focus_to_fwin(
+		w, fw, FocusByMouse, NoWarp, do_allow_force_broadcast);
 	if (get_focus_window() != ffw_old)
 	{
 		if (accepts_input_focus)
@@ -501,9 +499,53 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool is_focused)
 	return (flag) ? True : False;
 }
 
+static FvwmWindow *__restore_focus_after_unmap(
+	FvwmWindow *fw, Bool do_skip_marked_transients)
+{
+	FvwmWindow *t = NULL;
+	FvwmWindow *set_focus_to = NULL;
+
+	t = focus_get_transientfor_fwin(fw);
+	if (t != NULL &&
+	    FP_DO_RELEASE_FOCUS_TRANSIENT(FW_FOCUS_POLICY(fw)) &&
+	    !FP_DO_OVERRIDE_RELEASE_FOCUS(FW_FOCUS_POLICY(fw)) &&
+	    t->Desk == fw->Desk &&
+	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(t)))
+	{
+		set_focus_to = t;
+	}
+	else if (t == NULL && FP_DO_RELEASE_FOCUS(FW_FOCUS_POLICY(fw)))
+	{
+		for (t = fw->next; t != NULL && set_focus_to == NULL;
+		     t = t->next)
+		{
+			if (!FP_DO_OVERRIDE_RELEASE_FOCUS(
+				    FW_FOCUS_POLICY(fw)) &&
+			    t->Desk == fw->Desk && !DO_SKIP_CIRCULATE(t) &&
+			    !(DO_SKIP_ICON_CIRCULATE(t) && IS_ICONIFIED(t)) &&
+			    (!do_skip_marked_transients ||
+			     !IS_IN_TRANSIENT_SUBTREE(t)))
+			{
+				/* If it is on a different desk we have to look
+				 * for another window */
+				set_focus_to = t;
+			}
+		}
+	}
+	DeleteFocus(True, True);
+	if (set_focus_to && set_focus_to != fw &&
+	    set_focus_to->Desk == fw->Desk)
+	{
+		/* Don't transfer focus to windows on other desks */
+		SetFocusWindow(set_focus_to, True, True);
+	}
+
+	return set_focus_to;
+}
+
 /* ---------------------------- interface functions ------------------------- */
 
-Bool do_accept_input_focus(FvwmWindow *fw)
+Bool focus_does_accept_input_focus(FvwmWindow *fw)
 {
 	return (!fw || !fw->wmhints ||
 		!(fw->wmhints->flags & InputHint) || fw->wmhints->input);
@@ -539,6 +581,105 @@ Bool focus_query_click_to_raise(
 	return (flag) ? True : False;
 }
 
+/* Takes as input the window that wants the focus and the one that currently
+ * has the focus and returns if the new window should get it. */
+Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
+{
+	if (fw == NULL)
+	{
+		return False;
+	}
+	focus_win = get_focus_window();
+	if (focus_win != NULL &&
+	    FP_DO_OVERRIDE_GRAB_FOCUS(FW_FOCUS_POLICY(focus_win)))
+	{
+		/* Don't steal the focus from the current window */
+		return False;
+	}
+	if (IS_TRANSIENT(fw) && !XGetGeometry(
+		    dpy, FW_W_TRANSIENTFOR(fw), &JunkRoot, &JunkX, &JunkY,
+		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+	{
+		/* Gee, the transientfor does not exist! These evil application
+		 * programmers must hate us a lot ;-) */
+		FW_W_TRANSIENTFOR(fw) = Scr.Root;
+	}
+	if (IS_TRANSIENT(fw) && FW_W_TRANSIENTFOR(fw) != Scr.Root)
+	{
+		if (focus_win != NULL &&
+		    FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(fw)) &&
+		    FW_W(focus_win) == FW_W_TRANSIENTFOR(fw))
+		{
+			/* it's a transient and its transientfor currently has
+			 * focus. */
+			return True;
+		}
+		else
+		{
+			return False;
+		}
+	}
+	else
+	{
+		if (FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(fw)) &&
+		    (focus_win == NULL ||
+		     !FP_DO_OVERRIDE_GRAB_FOCUS(FW_FOCUS_POLICY(focus_win))))
+		{
+			return True;
+		}
+		else
+		{
+			return False;
+		}
+	}
+
+	return False;
+}
+
+/* Returns true if the focus has to be restored to a different window after
+ * unmapping. */
+Bool focus_query_close_release_focus(FvwmWindow *fw)
+{
+	if (fw == NULL || fw != get_focus_window())
+	{
+		return False;
+	}
+	if (!IS_TRANSIENT(fw) &&
+	    (FW_W_TRANSIENTFOR(fw) == Scr.Root ||
+	     FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(fw))))
+	{
+		return True;
+	}
+	else if (IS_TRANSIENT(fw) &&
+		 FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(fw)))
+	{
+		return True;
+	}
+
+	return False;
+}
+
+FvwmWindow *focus_get_transientfor_fwin(FvwmWindow *fw)
+{
+	FvwmWindow *t;
+
+	if (fw == NULL || !IS_TRANSIENT(fw))
+	{
+		return NULL;
+	}
+	if (FW_W_TRANSIENTFOR(fw) == None || FW_W_TRANSIENTFOR(fw) == Scr.Root)
+	{
+		return NULL;
+	}
+	for (t = Scr.FvwmRoot.next;
+	     t != NULL && FW_W(t) != FW_W_TRANSIENTFOR(fw); t = t->next)
+	{
+		/* nothing to do here */
+	}
+
+	return t;
+}
+
 void SetFocusWindow(
 	FvwmWindow *fw, Bool FocusByMouse, Bool do_allow_force_broadcast)
 {
@@ -571,55 +712,12 @@ void restore_focus_after_unmap(
 	FvwmWindow *fw, Bool do_skip_marked_transients)
 {
 	extern FvwmWindow *colormap_win;
-	FvwmWindow *t = NULL;
 	FvwmWindow *set_focus_to = NULL;
 
-	if (fw == get_focus_window())
+	if (focus_is_focused(fw))
 	{
-		if (FW_W_TRANSIENTFOR(fw) != None &&
-		    FW_W_TRANSIENTFOR(fw) != Scr.Root)
-		{
-			for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-			{
-				if (FW_W(t) == FW_W_TRANSIENTFOR(fw) &&
-				    t->Desk == fw->Desk &&
-				    (!do_skip_marked_transients ||
-				     !IS_IN_TRANSIENT_SUBTREE(t)))
-				{
-					set_focus_to = t;
-					break;
-				}
-			}
-		}
-		if (!set_focus_to &&
-		    (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw)))
-		{
-			for (t = fw->next; t != NULL; t = t->next)
-			{
-				if (t->Desk == fw->Desk &&
-				    !DO_SKIP_CIRCULATE(t) &&
-				    !(DO_SKIP_ICON_CIRCULATE(t) &&
-				      IS_ICONIFIED(t)) &&
-				    (!do_skip_marked_transients ||
-				     !IS_IN_TRANSIENT_SUBTREE(t)))
-				{
-					/* If it is on a different desk we have
-					 * to look for another window */
-					set_focus_to = t;
-					break;
-				}
-			}
-		}
-		if (set_focus_to && set_focus_to != fw &&
-		    set_focus_to->Desk == fw->Desk)
-		{
-			/* Don't transfer focus to windows on other desks */
-			SetFocusWindow(set_focus_to, True, True);
-		}
-		if (fw == get_focus_window())
-		{
-			DeleteFocus(True, True);
-		}
+		set_focus_to = __restore_focus_after_unmap(
+			fw, do_skip_marked_transients);
 	}
 	if (fw == Scr.pushed_window)
 	{
@@ -927,7 +1025,7 @@ void refresh_focus(FvwmWindow *fw)
 {
 	Bool do_refresh = False;
 
-	if (fw == NULL || fw != get_focus_window() || HAS_NEVER_FOCUS(fw))
+	if (fw == NULL || !focus_is_focused(fw))
 	{
 		/* only refresh the focus on the currently focused window */
 		return;
@@ -964,84 +1062,6 @@ void refresh_focus(FvwmWindow *fw)
 	}
 
 	return;
-}
-
-/* Takes as input the window that wants the focus and the one that currently
- * has the focus and returns if the new window should get it. */
-Bool focus_query_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
-{
-	if (fw == NULL)
-	{
-		return False;
-	}
-	focus_win = get_focus_window();
-	if (focus_win != NULL &&
-	    FP_DO_OVERRIDE_GRAB_FOCUS(FW_FOCUS_POLICY(focus_win)))
-	{
-		/* Don't steal the focus from the current window */
-		return False;
-	}
-	if (IS_TRANSIENT(fw) && !XGetGeometry(
-		    dpy, FW_W_TRANSIENTFOR(fw), &JunkRoot, &JunkX, &JunkY,
-		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
-	{
-		/* Gee, the transientfor does not exist! These evil application
-		 * programmers must hate us a lot ;-) */
-		FW_W_TRANSIENTFOR(fw) = Scr.Root;
-	}
-	if (IS_TRANSIENT(fw) && FW_W_TRANSIENTFOR(fw) != Scr.Root)
-	{
-		if (focus_win != NULL &&
-		    FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(fw)) &&
-		    FW_W(focus_win) == FW_W_TRANSIENTFOR(fw))
-		{
-			/* it's a transient and its transientfor currently has
-			 * focus. */
-			return True;
-		}
-		else
-		{
-			return False;
-		}
-	}
-	else
-	{
-		if (FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(fw)) &&
-		    (focus_win == NULL ||
-		     !FP_DO_OVERRIDE_GRAB_FOCUS(FW_FOCUS_POLICY(focus_win))))
-		{
-			return True;
-		}
-		else
-		{
-			return False;
-		}
-	}
-
-	return False;
-}
-
-/* Returns true if the focus has to be restored to a different window after
- * unmapping. */
-Bool focus_query_restore_focus(FvwmWindow *fw)
-{
-	if (fw == NULL || fw != get_focus_window())
-	{
-		return False;
-	}
-	if (!IS_TRANSIENT(fw) &&
-	    (FW_W_TRANSIENTFOR(fw) == Scr.Root ||
-	     FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(fw))))
-	{
-		return True;
-	}
-	else if (IS_TRANSIENT(fw) &&
-		 FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(fw)))
-	{
-		return True;
-	}
-
-	return False;
 }
 
 /* ---------------------------- builtin commands ---------------------------- */

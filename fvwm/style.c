@@ -1290,6 +1290,9 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "ClickToFocusPassesClick"))
 	{
@@ -2189,6 +2192,9 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_RELEASE_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "MouseFocusClickRaises"))
 	{
@@ -2421,6 +2427,9 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_RELEASE_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "NoBorder"))
 	{
@@ -2657,6 +2666,9 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "StartIconic"))
 	{

@@ -107,8 +107,8 @@ unsigned do_raise_unfocused_decor_click : 1;
 unsigned do_open_grab_focus : 1;
 unsigned do_open_grab_focus_transient : 1;
 unsigned do_override_grab_focus : 1;
-/*!!!*/unsigned do_close_releases_focus : 1;
-/*!!!*/unsigned do_close_releases_focus_transient : 1;
-/*!!!*/unsigned do_override_release_focus : 1;
+unsigned do_close_releases_focus : 1;
+unsigned do_close_releases_focus_transient : 1;
+unsigned do_override_release_focus : 1;
 /*!!!*/unsigned do_sort_windowlist_by : 1;
 #endif

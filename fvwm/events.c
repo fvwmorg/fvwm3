@@ -1584,7 +1584,7 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 		}
 	}
 	else if (HAS_CLICK_FOCUS(Fw) && Fw == get_focus_window() &&
-		 do_accept_input_focus(Fw))
+		 focus_does_accept_input_focus(Fw))
 	{
 		/* We have to refresh the focus window here in case we left the
 		 * focused fvwm window.  Motif apps may lose the input focus
@@ -2042,7 +2042,7 @@ void HandleMapNotify(void)
 	}
 
 	if (is_on_this_page &&
-	    focus_query_grab_focus(Fw, get_focus_window()) == True)
+	    focus_query_open_grab_focus(Fw, get_focus_window()) == True)
 	{
 		SetFocusWindow(Fw, True, True);
 	}
@@ -2218,7 +2218,7 @@ void HandleMapRequestKeepRaised(
 				{
 					do_grab_focus = False;
 				}
-				else if (focus_query_grab_focus(
+				else if (focus_query_open_grab_focus(
 						 Fw, get_focus_window()) ==
 					 True)
 				{
@@ -3025,7 +3025,7 @@ void HandleUnmapNotify(void)
 	{
 		Scr.Hilite = NULL;
 	}
-	focus_grabbed = focus_query_restore_focus(Fw);
+	focus_grabbed = focus_query_close_release_focus(Fw);
 	restore_focus_after_unmap(Fw, False);
 	if (!IS_MAPPED(Fw) && !IS_ICONIFIED(Fw))
 	{

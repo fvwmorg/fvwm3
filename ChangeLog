@@ -1,5 +1,27 @@
 2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (parse_and_set_window_style):
+	* fvwm/focus.c (DoSetFocus):
+	(focus_get_transientfor_fwin):
+	(__restore_focus_after_unmap):
+	(MoveFocus):
+	(refresh_focus):
+	more GFPR work
+	(DoSetFocus):
+	(__set_focus_to_fwin):
+	function renamed
+
+	* fvwm/conditional.c (MatchesConditionMask):
+	* fvwm/focus.c (focus_query_open_grab_focus):
+	(focus_query_close_restore_focus):
+	(focus_does_accept_input_focus):
+	(MoveFocus):
+	* fvwm/events.c (HandleUnmapNotify):
+	(HandleEnterNotify):
+	(HandleMapNotify):
+	(HandleMapRequestKeepRaised):
+	renamed some functions
+
 	* libs/defaults.h:
 	* fvwm/focus_policy.c:
 	* fvwm/focus_policy.h:
