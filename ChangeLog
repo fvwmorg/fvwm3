@@ -1,3 +1,8 @@
+2001-02-26  Dan Espen  <dane@mk.telcordia.com>
+
+	* NEWS:  Update  news with 2.2.5,  identify   2.2.5 as  the latest
+ 	stable release.
+
 2001-02-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleUnmapNotify):

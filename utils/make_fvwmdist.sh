@@ -211,3 +211,6 @@ fi
 echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
 echo " . Notify fvwm-owner@fvwm.org of the upload"
 echo " . Update the version numbers in fvwm-web/download.html"
+echo " . If releasing the stable branch, update NEWS in the beta branch to"
+echo "   identify the latest stable release and describe the changes."
+echo " . Use fvwm-web generated/txt2html.sh to update the NEWS file."

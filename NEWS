@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
+_+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
 Changes in beta release 2.3.29 (not released yet)
 
@@ -665,9 +665,24 @@ Changes in alpha release 2.3.0 (February 1999)
   images, no matter what their format are searched for along the
   ImagePath.
 
-_+_A NAME="2.2.4"_-_
-Changes in official release 2.2.4 (November 1999)
+_+_A NAME="2.2.5"_-_
+Changes in official release 2.2.5 (February 2001)
 _+_/A_-_
+
+* When fvwm is run remotely, startup is noticably faster.
+
+* Fixed the description of Focus in the man page.
+
+* Fixed a compile problem with Slackware 7.1.
+
+* Security fix related to .fvwm2rc being searched in the current directory
+  when $HOME is not set.
+
+* A small fix in the code for SmartPlacement.
+
+* Core dump fix in pixmap code.
+
+Changes in official release 2.2.4 (November 1999)
 
 * Fixed HP-UX 10.20 build problems.
 
