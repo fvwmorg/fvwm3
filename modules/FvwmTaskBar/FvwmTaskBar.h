@@ -23,6 +23,7 @@
 
 #include "config.h"
 #include "fvwm/fvwm.h"
+#include "fvwm/vpacket.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -33,6 +34,9 @@
 
 #define F_SWALLOWED      1
 #define F_NOT_SWALLOWED  2
+
+#define F_ICONIFIED	(1<<2)
+
 
 /* Motif  window hints */
 typedef struct

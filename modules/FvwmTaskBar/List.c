@@ -18,9 +18,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "FvwmTaskBar.h"
 #include "List.h"
 #include "Mallocs.h"
-#include "FvwmTaskBar.h"
 
 
 /******************************************************************************
@@ -35,15 +35,20 @@ void InitList(List *list)
 /******************************************************************************
   AddItem - Allocates spaces for and appends an item to the list
 ******************************************************************************/
-void AddItem(List *list, long id,long flags)
+void AddItem(List *list,  long id, long flags, ConfigWinPacket *cfgpacket)
 {
 Item *new;
   new=(Item *)safemalloc(sizeof(Item));
   new->id=id;
   new->name=NULL;
-  new->flags=flags;
-  new->next=NULL;
+  new->tb_flags=flags;
 
+  /* If this was M_ADD_WINDOW or M_CONFIGURE_WINDOW, we have real flags  */
+  if (cfgpacket != NULL)  {
+    memcpy(&new->flags, &cfgpacket->flags, sizeof(new->flags));
+    }
+
+  new->next=NULL;
   if (list->tail==NULL) list->head=list->tail=new;
   else {
    list->tail->next=new;
@@ -62,7 +67,7 @@ void AddItemName(List *list, char *string, long flags) {
   new->id = 0L;
   new->name = NULL;
   UpdateString(&new->name, string);
-  new->flags = flags;
+  new->tb_flags = flags;
   new->next = NULL;
 
   if (list->tail == NULL) list->head = list->tail = new;
@@ -120,7 +125,7 @@ Item *temp;
 int i;
   for(i=0,temp=list->head;temp!=NULL && id!=temp->id;i++,temp=temp->next);
   if (temp==NULL) return -1;
-  if (flags!=-1) temp->flags=flags;
+  if (flags!=-1) temp->tb_flags=flags;
   return i;
 }
 
@@ -134,7 +139,7 @@ int UpdateNameItem(List *list, char *string, long id, long flags) {
   if (temp==NULL) return -1;
   else {
     if (id != -1) temp->id = id;
-    if (flags != -1) temp->flags = flags;
+    if (flags != -1) temp->tb_flags = flags;
     return i;
   }
 }
@@ -204,7 +209,7 @@ void PrintList(List *list)
   for(temp=list->head;temp!=NULL;temp=temp->next) {
     ConsoleMessage("   %10ld %-15.15s %4d\n",temp->id,
 		   (temp->name==NULL) ? "<null>" : temp->name,
-		   temp->flags);
+		   temp->tb_flags);
   }
 }
 
@@ -228,7 +233,7 @@ long ItemFlags(List *list, long id)
 Item *temp;
   for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
-  else return temp->flags;
+  else return temp->tb_flags;
 }
 
 /******************************************************************************
@@ -240,12 +245,14 @@ Item *temp;
 int j;
   for(temp=list->head, j=0;temp!=NULL && j!=i;temp=temp->next,j++);
   if (temp==NULL) return -1;
-  else return temp->flags;
+  else return temp->tb_flags;
 }
 
+/* RBW- never used... */
 /******************************************************************************
   XorFlags - Exclusive of the flags with the specified value.
 ******************************************************************************/
+/*
 long XorFlags(List *list, int n, long value)
 {
 Item *temp;
@@ -257,6 +264,7 @@ long ret;
   temp->flags^=value;
   return ret;
 }
+*/
 
 /******************************************************************************
   ItemCount - Return the number of items inthe list
@@ -285,9 +293,12 @@ void CopyItem(List *dest, List *source, int n)
 {
 Item *temp;
 int i;
+ConfigWinPacket cfgpkt;
+
   for(i=0,temp=source->head;temp!=NULL && i<n;i++,temp=temp->next);
   if (temp==NULL) return;
-  AddItem(dest,temp->id,temp->flags);
+  memcpy(&cfgpkt.flags, &temp->flags, sizeof(cfgpkt.flags));
+  AddItem(dest, temp->id, temp->tb_flags, &cfgpkt);
   UpdateItemName(dest,temp->id,temp->name);
   DeleteItem(source,temp->id);
 }

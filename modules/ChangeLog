@@ -1,5 +1,12 @@
 1999-04-20  Bob Woodside  <proteus@pcnet.com>
 
+	* modules/FvwmTaskbar/FvwmTaskBar.c: GSFR.
+	* modules/FvwmTaskbar/FvwmTaskBar.h: Ibid.
+	* modules/FvwmTaskBar/List.c: Ibid.
+	* modules/FvwmTaskBar/List.h: Ibid.
+
+1999-04-20  Bob Woodside  <proteus@pcnet.com>
+
 	* modules/FvwmWinList/FvwmWinList.c: GSFR.
 	* modules/FvwmWinList/FvwmWinList.h: Ibid.
 	* modules/FvwmWinList/List.c: Ibid.

@@ -16,7 +16,13 @@
 typedef struct item {
   long id;
   char *name;
-  long flags;
+  /*
+     caveat - these flags do not even resemble the old FvwmWindow flags.
+     They are strictly internal to this module.
+  */
+  long tb_flags;
+  /* The new, post-gsfr flags - for possible future use.  */
+  window_flags flags;
   struct item *next;
 } Item;
 
@@ -27,7 +33,7 @@ typedef struct {
 
 /* Function Prototypes */
 void InitList(List *list);
-void AddItem(List *list, long id, long flags);
+void AddItem(List *list, long id, long flags, ConfigWinPacket *cfgpacket);
 void AddItemName(List *list, char *string, long flags);
 int FindItem(List *list, long id);
 int FindNameItem(List *list, char *string);

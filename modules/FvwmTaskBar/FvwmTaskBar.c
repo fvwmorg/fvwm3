@@ -3,8 +3,21 @@
  * (Much reworked version of FvwmWinList)
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
+ *
  * Minor hack by TKP to enable autohide to work with pages (leaves 2 pixels
  * visible so that the 1 pixel panframes don't get in the way)
+ * 
+ * Merciless hack by RBW for the Great Style Flag Rewrite - 04/20/1999.
+ * This module slightly abused the old flags word, inventing new meanings for
+ * certain bits. Therefore, I'm leaving all that infrastructure alone, only
+ * changing the private flag word's name and insuring that it contains a bit
+ * for the ICONIFIED state,which is all the module cares about once the flags
+ * are added to its Item struct. The Item field is renamed to tb_flags.
+ * For possible future use, I'm adding a field to the struct to carry the *real*
+ * flags, called, oddly enough, flags. This is necessary in order to use the
+ * standard macros for testing and manipulating the bitfields. The real flags
+ * are not presently used.
+ *
  *
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any contained here for any purpose, as long
@@ -315,15 +328,16 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 {
   int redraw=-1;
   int i;
-  long flags;
   char *string;
   Picture p;
+  struct ConfigWinPacket  *cfgpacket;
+  unsigned long tb_flags;
 
   switch(type) {
   case M_FOCUS_CHANGE:
     i = FindItem(&windows, body[0]);
     if (win != body[0]) { /* This case is handled in LoopOnEvents() */
-      if (ItemFlags(&windows, body[0]) & ICONIFIED) i = -1;
+      if (ItemFlags(&windows, body[0]) & F_ICONIFIED) i = -1;
       RadioButton(&buttons, i, BUTTON_BRIGHT);
       ButPressed = i;
       ButReleased = -1;
@@ -337,10 +351,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
        actual border width differ. Don't assign win_width here so
        Window redraw and rewarping gets handled by XEvent
        ConfigureNotify code. */
-    if (!ShowTransients && (body[8] & TRANSIENT)) break;
-    if (body[0] == win) {
-      if (win_border != (int)body[10]) {
-	win_x = win_border = (int)body[10];
+    cfgpacket = (ConfigWinPacket *) body;
+    if (!ShowTransients && (IS_TRANSIENT(cfgpacket))) break;
+    if (cfgpacket->w == win) {
+      if (win_border != (int)cfgpacket->border_width) {
+	win_x = win_border = (int)cfgpacket->border_width;
 
         if (win_y > Midline)
           win_y = ScreenHeight - (AutoHide ? 2 : win_height + win_border);
@@ -354,9 +369,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     }
 
-    if (FindItem(&windows,body[0]) != -1) break;
-    if (!(body[8] & WINDOWLISTSKIP) || !UseSkipList) {
-      AddItem(&windows, body[0], body[8]);
+    if (FindItem(&windows, cfgpacket->w) != -1) break;
+    if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList) {
+      AddItem(&windows,
+        cfgpacket->w,
+        IS_ICONIFIED(cfgpacket) ? F_ICONIFIED : 0,
+        cfgpacket);
     }
     break;
 
@@ -407,16 +425,16 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_DEICONIFY:
   case M_ICONIFY:
     if ((i = FindItem(&windows, body[0])) == -1) break;
-    flags = ItemFlags(&windows, body[0]);
-    if (type == M_DEICONIFY && !(flags & ICONIFIED)) break;
-    if (type == M_ICONIFY   &&   flags & ICONIFIED) break;
-    flags ^= ICONIFIED;
+    tb_flags = ItemFlags(&windows, body[0]);
+    if (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED)) break;
+    if (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED) break;
+    tb_flags ^= F_ICONIFIED;
     if (type == M_ICONIFY && i == ButReleased) {
       RadioButton(&buttons, -1, BUTTON_UP);
       ButReleased = ButPressed = -1;
       redraw = 0;
     }
-    UpdateItemFlags(&windows, body[0], flags);
+    UpdateItemFlags(&windows, body[0], tb_flags);
     break;
 
   case M_END_WINDOWLIST:
@@ -996,10 +1014,10 @@ char *makename(char *string,long flags)
   char *ptr;
 
   ptr=safemalloc(strlen(string)+3);
-  if (flags&ICONIFIED) strcpy(ptr,"(");
+  if (flags&F_ICONIFIED) strcpy(ptr,"(");
   else strcpy(ptr,"");
   strcat(ptr,string);
-  if (flags&ICONIFIED) strcat(ptr,")");
+  if (flags&F_ICONIFIED) strcat(ptr,")");
   return ptr;
 }
 

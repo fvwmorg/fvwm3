@@ -72,7 +72,8 @@ A.J. Weber:
 SnapAttraction patch.
 
 Bob Woodside:
-StartsOnPage style, Stacking Order chain.
+StartsOnPage style, Stacking Order chain, new variable module packets,
+GSFR for the modules.
 
 Tomas Ogren:
 Animated windowshading, "adaptive maximize", various bugfixes.
