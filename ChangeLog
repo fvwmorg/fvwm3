@@ -1,5 +1,8 @@
 1999-08-20  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/borders.c: removed debug code causing title bars not to draw
+	properly with less that 20 bitplanes :-)
+
 	* libs/Graphics.c (IsGradientTypeSupported): new convenience function
 
 	* fvwm/builtins.c (ReadButtonFace):
