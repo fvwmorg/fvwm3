@@ -1819,6 +1819,10 @@ static void MenuInteraction(
 	  f = *pdo_warp_to_title;
 	  t = lastTimestamp;
 	  menu_name = PeekToken(SkipNTokens(MI_ACTION(mi), 1), NULL);
+          if (!menu_name)
+          {
+            menu_name = "";
+          }
 	  is_complex_function =
 	    (FindFunction(MR_MISSING_SUBMENU_FUNC(pmp->menu)) != NULL);
 	  if (is_complex_function)
@@ -2300,7 +2304,10 @@ static int pop_menu_up(
     /* Now let's see if the menu still exists. It may have been destroyed and
      * recreated, so we have to look for a menu with the saved name. */
     *pmenu = FindPopup(menu_name);
-    free(menu_name);
+    if (menu_name)
+    {
+      free(menu_name);
+    }
     mr = *pmenu;
     if (mr)
     {

@@ -152,12 +152,28 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 	}
     }
 
-  if((Fw != NULL)&&
-     (!IsRectangleOnThisPage(&(Fw->frame_g),Fw->Desk))&&(!NoWarp))
+  if(Fw != NULL && !NoWarp)
+  {
+    if (IS_ICONIFIED(Fw))
+    {
+      rectangle r;
+
+      r.x = Fw->icon_g.x;
+      r.y = Fw->icon_g.y;
+      r.width = Fw->icon_g.width;
+      r.height = Fw->icon_p_height + Fw->icon_g.height;
+      if (!IsRectangleOnThisPage(&r, Fw->Desk))
+      {
+        Fw = NULL;
+        w = Scr.NoFocusWin;
+      }
+    }
+    else if (!IsRectangleOnThisPage(&(Fw->frame_g),Fw->Desk))
     {
       Fw = NULL;
       w = Scr.NoFocusWin;
     }
+  }
 
   /*
       RBW - 1999/12/08 - we have to re-grab the unfocused window here for the

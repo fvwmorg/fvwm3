@@ -9,7 +9,8 @@
 	fixed a bug created when FVWM_DATADIR was added to m4 options
 		-  sprintf(m4_options, "-I '%s'", FVWM_DATADIR);
 		+  sprintf(m4_options, "-I '%s' ", FVWM_DATADIR);
-	the missing space after the ' caused the next option in the commandline to be ignored
+	the missing space after the ' caused the next option in the commandline
+	to be ignored
 
 
 2000-05-04  Mikhael Goikhman  migo@homemail.com

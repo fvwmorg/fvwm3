@@ -1,3 +1,12 @@
+2000-05-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/focus.c (DoSetFocus):
+	fixed setting focus to an icon after moving it to another page
+
+	* fvwm/menus.c (MenuInteraction):
+	(pop_menu_up):
+	fixed core dump if 'Popup ""' was used in DynamicPopupAction
+
 2000-05-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* ChangeLog:
