@@ -1,3 +1,8 @@
+2002-04-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmTheme/FvwmTheme.1:
+	restored a correct example
+
 2002-04-05  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents): 
