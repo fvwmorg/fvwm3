@@ -1229,22 +1229,22 @@ static void usage(void)
 	fprintf(stderr, "\nfvwm %s Usage:\n\n", VERSION);
 	fprintf(stderr, "  %s"
 		" [-d dpy]"
-		" [-debug]"
+		" [--debug]"
 		" [-f config_file]"
 		" [-cmd config_cmd]"
 		" [-s]"
 		" [--version]"
 		" [-h]"
-		" [-replace]"
-		" [-clientId id]"
-		" [-restore file]"
-		" [-visualId id]"
-		" [-visual class]"
-		" [-color-limit num]"
-		" [-strict-color-limit]"
-		" [-allocate-pallet]"
-		" [-static-pallet]"
-		" [-named-pallet]"
+		" [--replace]"
+		" [--clientId id]"
+		" [--restore file]"
+		" [--visualId id]"
+		" [--visual class]"
+		" [--color-limit num]"
+		" [--strict-color-limit]"
+		" [--allocate-palette]"
+		" [--static-palette]"
+		" [--named-palette]"
 		"\n\n",g_argv[0]);
 	exit(1);
 }
@@ -1865,18 +1865,18 @@ int main(int argc, char **argv)
 		{
 			colorLimitop.strict = True;
 		}
-		else if (StrEquals(argv[i], "-allocate-pallet") ||
-			 StrEquals(argv[i], "--allocate-pallet"))
+		else if (StrEquals(argv[i], "-allocate-palette") ||
+			 StrEquals(argv[i], "--allocate-palette"))
 		{
 			colorLimitop.allocate = True;
 		}
-		else if (StrEquals(argv[i], "-static-pallet") ||
-			 StrEquals(argv[i], "--static-pallet"))
+		else if (StrEquals(argv[i], "-static-palette") ||
+			 StrEquals(argv[i], "--static-palette"))
 		{
 			colorLimitop.not_dynamic = True;
 		}
-		else if (StrEquals(argv[i], "-named-pallet") ||
-			 StrEquals(argv[i], "--named-pallet"))
+		else if (StrEquals(argv[i], "-named-palette") ||
+			 StrEquals(argv[i], "--named-palette"))
 		{
 			colorLimitop.use_named_table = True;
 		}

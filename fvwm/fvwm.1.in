@@ -104,9 +104,9 @@ fvwm \- @FVWMNAMELONG@ for X11
 .RB [ \-color\-limit
 .IR       cl ]
 .RB [ \-strict-color-limit ]
-.RB [ \-visual-pallet ]
-.RB [ \-allocate-pallet ]
-.RB [ \-static-pallet ]
+.RB [ \-visual-palette ]
+.RB [ \-allocate-palette ]
+.RB [ \-static-palette ]
 .SH DESCRIPTION
 
 Fvwm is a window manager for X11.  It is designed to minimize
@@ -280,7 +280,7 @@ page of xdpyinfo for a list of supported visuals.
 Specifies a
 .I limit
 on the colours used in image, gradient and possibly simple colours
-used by fvwm. In fact, fvwm (and all the modules) uses a pallet with
+used by fvwm. In fact, fvwm (and all the modules) uses a palette with
 at most
 .I limit
 colours. This option is only useful with screens that display 256
@@ -289,16 +289,16 @@ DirectColor). The default depends on your X server and how you run
 fvwm. In most case this default is reasonable. The
 .B -color-limit
 option should be used only if you encounter problems with colours.  By
-default, fvwm tries to detect "large" pre-allocated pallets. If such a
-pallet is detected fvwm uses it and a priori the
+default, fvwm tries to detect "large" pre-allocated palettes. If such a
+palette is detected fvwm uses it and a priori the
 .B -color-limit
 must not be used. Moreover, in this case the
-.BR "-allocate-pallet " and " -static-pallet"
+.BR "-allocate-palette " and " -static-palette"
 options are forced. Note that XFree-4.2 pre-allocate 244 colours (if
 you use a driver with Render support) leaving only a few free
 colours. This may leads to some colours problems (and nothing can be
 done). XFree-4.3 or better pre-allocate only 85 colours.  If no
-pre-allocated pallet is auto detected the defaults are as follow: 
+pre-allocated palette is auto detected the defaults are as follow:
 .EX
             | depth 8 (256 colors)| depth 4 (16 colors)
 ------------|---------------------|--------------------
@@ -346,7 +346,7 @@ visually disturbing (see the
 command for a better control of the colour maps switching). The second
 method is to limit the number of colours that the applications used.
 Again, some applications have options to specify a given colour limit.
-With fvwm you may try various value as 61 (a special "visual" pallet),
+With fvwm you may try various value as 61 (a special "visual" palette),
 56 (a 4x4x3 colour cubes plus 6 grey), 29 (a 3x3x3 color cube plus 2
 grey), 10 or 9. Also, you may use in addition the
 .B -strict-color-limit
@@ -354,7 +354,7 @@ option.  However, limiting the number colours is not the definitive
 solution. The definitive solution is to try to do so that applications
 which use a lot of colours use the same colours. This is a
 difficult task as there are no formal standard for this goal.
-However, some toolkits as QT and GTK use colour cubes as pallet.
+However, some toolkits as QT and GTK use colour cubes as palette.
 So, the idea is to configure your applications/toolkits to all
 use the same colour cube. Moreover, you can use the colours in
 this colour cube in your X resources configuration files and/or
@@ -369,38 +369,38 @@ to the colour cube.
 You can use the
 .BI "PrintInfo " Colors " " [1]
 command to get information on your fvwm colours setting. In particular,
-this command prints the pallet used by fvwm in rgb format (the last integer
+this command prints the palette used by fvwm in rgb format (the last integer
 gives the number of times fvwm has allocated the colors).
 .TP
 .B -strict-color-limit
 If the screens display 256 colors (or less) and has a dynamic visual,
-causes fvwm to use its pallet for all the colours. By default, the
-pallet is used only for image and gradient.
+causes fvwm to use its palette for all the colours. By default, the
+palette is used only for image and gradient.
 .TP
-.B -visual-pallet
+.B -visual-palette
 If the screens display 256 colors (or less) and has a dynamic visual,
-causes fvwm to use a pallet designed for limiting the "visual" colour distance
-between the point of the pallet. Moreover, for a better colours sharing,
+causes fvwm to use a palette designed for limiting the "visual" colour distance
+between the point of the palette. Moreover, for a better colours sharing,
 if possible colours with a name in the X rgb data base is used
 for defining the colours (with the hope that applications and images will
 prefer to use named colours). If the
 .B -color-limit
-option is not used this pallet has 61 colours. This pallet is also
+option is not used this palette has 61 colours. This palette is also
 automatically selected if  61 or 9 is used as argument to the
 .B -color-limit
 option.
 .TP
-.B -allocate-pallet
+.B -allocate-palette
 If the screens display 256 colors (or less) and has a dynamic visual
-causes fvwm to allocate all the colors of its pallet at start up
+causes fvwm to allocate all the colors of its palette at start up
 for reserving these colours for future use. This option forces the
-.B -static-pallet
-option. By default, fvwm allocates (reserves) a colour in its pallet only
+.B -static-palette
+option. By default, fvwm allocates (reserves) a colour in its palette only
 if it needs this colour.
 .TP
-.B -static-pallet
+.B -static-palette
 If the screens display 256 colors (or less) and has a dynamic visual
-causes fvwm to never free the colours in its pallet. By default, when fvwm does
+causes fvwm to never free the colours in its palette. By default, when fvwm does
 not need any more a given colour it frees this colour so that a new colour
 can be used. This option may speed up image loading and save a few
 bits of memory.
@@ -3945,7 +3945,7 @@ which prints information about the colors used by fvwm. This useful
 on screens which can only display 256 (or less) colors at once.
 If
 .I verbose
-is one or greater the pallet used by fvwm is printed.
+is one or greater the palette used by fvwm is printed.
 If you have a limited color palette, and you run out of colors,
 this command might be helpful.
 

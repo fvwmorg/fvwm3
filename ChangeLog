@@ -1,3 +1,10 @@
+2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.1.in:
+	* fvwm/fvwm.c (usage):
+	(main):
+	pallet -> palette
+
 2002-11-04  olicha  <olivier.chapuis@free.fr>
 
 	* configure.in:
@@ -23,7 +30,7 @@
 	* fvwm/fvwm.1.in
 	New options -strict-color-limit, -allocate-pallet, -static-pallet,
 	-named-pallet. -color-limit now take only integer argument.
-	
+
 
 2002-11-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
