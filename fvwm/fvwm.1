@@ -903,7 +903,7 @@ By using the
 built-in, it is easy to read in new configuration files as you go.
 
 Lines beginning with '#' are ignored by fvwm.  Lines starting with
-'*' are expected to contain module configuration commands (rather
+\'*' are expected to contain module configuration commands (rather
 than configuration commands for fvwm itself). Like in shell
 scripts embedded newlines in a configuration file line can be
 quoted by preceding them with a backslash.  All lines linked in
@@ -1812,7 +1812,7 @@ selects an item that is the only one with this hot-key.
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
 image file to insert in the menu.  To get a literal
-'*', insert "**".  For example
+\'*', insert "**".  For example
 .EX
  + Calculator*xcalc.xpm* Exec exec xcalc
 .EE
@@ -4917,7 +4917,7 @@ describes where the binding applies.  Valid contexts are 'R' for
 the root window, 'W' for an application window, 'D' for a desktop
 application (as kdesktop or Nautilus desktop), 'T' for a window
 title-bar, 'S' for a window side, top, or bottom bar, '[', ']',
-'-' and '_' for the left, rigth, top or bottom side only, 'F' for
+\'-' and '_' for the left, rigth, top or bottom side only, 'F' for
 a window frame (the corners), '<', '^', '>' and 'v' for the top
 left, top right, bottom right or bottom left corner, 'I' for an
 Icon window, or '0' through '9' for title-bar buttons, or any
@@ -5641,7 +5641,7 @@ the
 .I scr-spec
 argument specifies the Xinerama screen on which the IconBox is
 defined.  It can be the usual screen Xinerama specification, 'p',
-'c', 'g', a screen number or the additional 'w' for the screen
+\'c', 'g', a screen number or the additional 'w' for the screen
 where the window center is located.  This is only useful with
 multiple Xinerama screens.
 The "l t r b" specification is more flexible than an X11 geometry.
@@ -6188,7 +6188,7 @@ the global screen.  For those standard Xt programs which
 understand this usage, the starting desk/page can also be
 specified via a resource (e.g., "-xrm '*fvwmscreen: c'").
 ('fvwmscreen' was chosen because some applications already use
-'.screen' for other purposes.)
+\'.screen' for other purposes.)
 
 .I StartsOnPageIncludesTransients
 causes the
@@ -6294,7 +6294,7 @@ decorations.
 (the default) causes transient windows not to be given the
 standard decorations. You can only bind keys or mouse buttons to
 the sides and the client window of an undecorated window ('S' and
-'W' contexts in bindings, see
+\'W' contexts in bindings, see
 .BR Mouse " and " Key
 commands).
 
@@ -7788,7 +7788,7 @@ the primary screen's number.  Instead, the letter 'c' indicates to
 use the curent screen (containing the pointer) whenever the
 primary screen is used.  This may be very confusing under some
 circumstances.  With
-'g', the global screen is used as the primary screen, effectively
+\'g', the global screen is used as the primary screen, effectively
 disabling the primary screen.  Calling this function with any
 other argument (including none) resets the primary screen to 0.
 
