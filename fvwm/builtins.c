@@ -2677,6 +2677,10 @@ void SetBugOptions(F_CMD_ARGS)
 #endif
 	break;
       }
+      if (Scr.bo.ModalityIsEvil)
+      {
+        SetMWM_INFO(Scr.NoFocusWin);
+      }
     }
     else if (StrEquals(opt, "RaiseOverNativeWindows"))
     {

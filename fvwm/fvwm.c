@@ -2126,6 +2126,11 @@ void SetMWM_INFO(Window window)
     long flags;
     Window win;
   }  motif_wm_info;
+  static char set_yorn='n';
+
+  if(set_yorn=='y') {
+    return;
+  }
 
   if (Scr.bo.ModalityIsEvil)
   {
@@ -2133,9 +2138,9 @@ void SetMWM_INFO(Window window)
      * broken handling of modal dialogs */
     motif_wm_info.flags = 2;
     motif_wm_info.win = window;
-
     XChangeProperty(dpy,Scr.Root,_XA_MOTIF_WM,_XA_MOTIF_WM,32,
 		    PropModeReplace,(unsigned char *)&motif_wm_info,2);
+    set_yorn='y';
   }
 }
 
