@@ -1,7 +1,7 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
-Changes in beta release 2.5.0 (16-Sep-2001)
+Changes in beta stable 2.4.2 (not released yet)
 
 * Desk and page can be given as X resources in .Xdefaults, for example:
     xterm.desk: 1
@@ -145,10 +145,6 @@ Changes in stable release 2.4.1 (15-Sep-2001)
 
 * Fixed shading/unshading shaped windows and windows without title
   and border.
-
-_+_A NAME="2.4.0"_-_
-Changes in stable release 2.4.0 (1-Jul-2001)
-_+_/A_-_
 
 Changes in beta release 2.3.33 (22-Jun-2001)
 
