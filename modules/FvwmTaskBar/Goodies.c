@@ -33,6 +33,7 @@
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
 #include "libs/Module.h"
+#include "libs/Rectangles.h"
 #include "Goodies.h"
 #include "FvwmTaskBar.h"
 #include "Mallocs.h"
@@ -282,79 +283,141 @@ void InitGoodies(void)
   stwin_width = goodies_width;
 }
 
-void Draw3dBox(Window wn, int x, int y, int w, int h)
+void Draw3dBox(Window wn, int x, int y, int w, int h, XRectangle *bounding)
 {
-  XClearArea(dpy, wn, x, y, w, h, False);
+	XRectangle r;
 
-  XDrawLine(dpy, win, shadow, x, y, x+w-2, y);
-  XDrawLine(dpy, win, shadow, x, y, x, y+h-2);
+	if (bounding)
+	{
+		r.x = bounding->x;
+		r.y = bounding->y;
+		r.width = bounding->width;
+		r.height = bounding->height;
+	}
+	else
+	{
+		r.x = x;
+		r.y = y;
+		r.width = w;
+		r.height = h;
+	}
+	XClearArea(dpy, wn, r.x, r.y, r.width, r.height, False);
 
-  XDrawLine(dpy, win, hilite, x, y+h-1, x+w-1, y+h-1);
-  XDrawLine(dpy, win, hilite, x+w-1, y+h-1, x+w-1, y);
+	XDrawLine(dpy, win, shadow, x, y, x+w-2, y);
+	XDrawLine(dpy, win, shadow, x, y, x, y+h-2);
+
+	XDrawLine(dpy, win, hilite, x, y+h-1, x+w-1, y+h-1);
+	XDrawLine(dpy, win, hilite, x+w-1, y+h-1, x+w-1, y);
 }
 
-void DrawGoodies(void)
+void DrawGoodies(XEvent *evp)
 {
-  struct tm *tms;
-  static char str[40];
-  static time_t timer;
-  static int last_mail_check = -1;
+	XRectangle rect;
+	struct tm *tms;
+	static char str[40];
+	static time_t timer;
+	static int last_mail_check = -1;
+	int x = win_width - stwin_width;
+	int y = 0;
+	int w = stwin_width;
+	int h = RowHeight;
+	Region t_region;
 
-  time(&timer);
-  tms = localtime(&timer);
-  if (clockfmt) {
-    strftime(str, 24, clockfmt, tms);
-    if (str[0] == '0') str[0]=' ';
-  } else {
-    strftime(str, 15, "%R", tms);
-  }
+	if (evp)
+	{
+		if (!frect_get_intersection(
+			x, y, w, h,
+			evp->xexpose.x, evp->xexpose.y,
+			evp->xexpose.width, evp->xexpose.height,
+			&rect))
+		{
+			return;
+		}
+	}
+	else
+	{
+		rect.x = x;
+		rect.y = y;
+		rect.width = w;
+		rect.height = h;
+	}
+	time(&timer);
+	tms = localtime(&timer);
+	if (clockfmt)
+	{
+		strftime(str, 24, clockfmt, tms);
+		if (str[0] == '0') str[0]=' ';
+	}
+	else
+	{
+		strftime(str, 15, "%R", tms);
+	}
 
-  Draw3dBox(win, win_width - stwin_width, 0, stwin_width, RowHeight);
-  FwinString->win = win;
-  FwinString->gc = statusgc;
-  FwinString->str = str;
-  FwinString->x = win_width - stwin_width + 4;
-  FwinString->y = ((RowHeight - goodies_fontheight) >> 1) + FStatusFont->ascent;
-  if (colorset >= 0)
-  {
-    FwinString->colorset = &Colorset[colorset];
-    FwinString->flags.has_colorset = True;
-  }
-  else
-  {
-    FwinString->flags.has_colorset = False;
-  }
-  FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
+	Draw3dBox(win, x, y, w, h, &rect);
+	t_region = XCreateRegion();
+	XUnionRectWithRegion (&rect, t_region, t_region);
+	FwinString->win = win;
+	FwinString->gc = statusgc;
+	FwinString->str = str;
+	FwinString->x = x + 4;
+	FwinString->y = ((RowHeight - goodies_fontheight) >> 1) +
+		FStatusFont->ascent;
+	FwinString->flags.has_clip_region = True;
+	FwinString->clip_region = t_region;
+	if (colorset >= 0)
+	{
+		FwinString->colorset = &Colorset[colorset];
+		FwinString->flags.has_colorset = True;
+	}
+	else
+	{
+		FwinString->flags.has_colorset = False;
+	}
+	FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
+	FwinString->flags.has_clip_region = False;
+	XDestroyRegion(t_region);
 
-  if (!do_check_mail)
-    return;
-  if (timer - last_mail_check >= mailcheck_interval)
-  {
-    cool_get_inboxstatus();
-    last_mail_check = timer;
-    if (newmail)
-      XBell(dpy, BellVolume);
-  }
+	if (!do_check_mail)
+	{
+		return;
+	}
+	if (timer - last_mail_check >= mailcheck_interval)
+	{
+		cool_get_inboxstatus();
+		last_mail_check = timer;
+		if (newmail)
+			XBell(dpy, BellVolume);
+	}
 
-  if (!mailcleared && (unreadmail || newmail))
-    XCopyArea(dpy, wmailpix, win, statusgc, 0, 0,
-	      minimail_width, minimail_height,
-	      win_width - stwin_width + clock_width + 3,
-	      ((RowHeight - minimail_height) >> 1));
-  else if (!IgnoreOldMail /*&& !mailcleared*/ && anymail)
-    XCopyArea(dpy, mailpix, win, statusgc, 0, 0,
-	      minimail_width, minimail_height,
-	      win_width - stwin_width + clock_width + 3,
-	      ((RowHeight - minimail_height) >> 1));
+	if (!mailcleared && (unreadmail || newmail))
+	{
+		XCopyArea(dpy, wmailpix, win, statusgc, 0, 0,
+			  minimail_width, minimail_height,
+			  win_width - stwin_width + clock_width + 3,
+			  ((RowHeight - minimail_height) >> 1));
+	}
+	else if (!IgnoreOldMail /*&& !mailcleared*/ && anymail)
+	{
+		XCopyArea(dpy, mailpix, win, statusgc, 0, 0,
+			  minimail_width, minimail_height,
+			  win_width - stwin_width + clock_width + 3,
+			  ((RowHeight - minimail_height) >> 1));
+	}
 
-  if (Tip.open) {
-    if (Tip.type == DATE_TIP)
-      if (tms->tm_mday != last_date) /* reflect date change */
-	CreateDateWindow(); /* This automatically deletes any old window */
-    last_date = tms->tm_mday;
-    RedrawTipWindow();
-  }
-
+	if (Tip.open)
+	{
+		if (Tip.type == DATE_TIP)
+		{
+			if (tms->tm_mday != last_date)
+			{
+				/* reflect date change */
+				CreateDateWindow(); /* This automatically
+						     * deletes any old window */
+			}
+		}
+		last_date = tms->tm_mday;
+		RedrawTipWindow();
+	}
 }
 
 int MouseInClock(int x, int y)

@@ -431,7 +431,7 @@ void EndLessLoop(void)
     }
     DoAlarmAction();
 
-    DrawGoodies();
+    DrawGoodies(NULL);
   } /* while */
 }
 
@@ -856,9 +856,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
   case MX_PROPERTY_CHANGE:
     if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
-	colorset > -1 && Colorset[colorset].pixmap == ParentRelative)
+	CSET_IS_TRANSPARENT_PR(colorset))
     {
-      redraw = 1;
+	    SetWindowBackground(
+		    dpy, win, win_width, win_height,
+		    &Colorset[colorset],
+		    Pdepth, graph, True);
+	    redraw = 1;
     }
     break;
 
@@ -982,7 +986,7 @@ void RedrawWindow(int force, XEvent *evp)
 			XClearArea(
 				dpy, win, 0, 0, win_width, win_height, False);
 		}
-		DrawGoodies();
+		DrawGoodies(evp);
 	}
 	DrawButtonArray(&buttons, force, evp);
 	StartButtonDraw(force, evp);
@@ -1685,6 +1689,10 @@ void HandleEvents(
 		{
 			AdjustWindow(
 				evp->xconfigure.width, evp->xconfigure.height);
+			SetWindowBackground(
+				dpy, win, win_width, win_height,
+				&Colorset[colorset],
+				Pdepth, graph, True);
 			*redraw = 1;
 		}
 		/* useful because of dynamic style change */
@@ -1696,7 +1704,15 @@ void HandleEvents(
 		{
 			if (CSET_IS_TRANSPARENT(colorset))
 			{
+				SetWindowBackground(
+					dpy, win, win_width, win_height,
+					&Colorset[colorset],
+					Pdepth, graph, True);
 				*redraw = 1;
+			}
+			else if (CheckRootTransparentButtons(&buttons))
+			{
+				*redraw = 0;
 			}
 			if (AutoStick)
 			{
@@ -1713,7 +1729,7 @@ void HandleEvents(
 	break;
 	} /* switch evp->type */
 
-	XSync(dpy,0); /* needed (tips) */ 
+	XSync(dpy,0); /* needed (tips) */
 }
 
 /******************************************************************************
@@ -1741,7 +1757,7 @@ void LoopOnEvents(void)
 		DoAlarmAction();
 		if (NewTimestamp - lasttime > UpdateInterval*1000L)
 		{
-			DrawGoodies();
+			DrawGoodies(NULL);
 			lasttime = NewTimestamp;
 		}
 	}

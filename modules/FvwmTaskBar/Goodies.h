@@ -42,7 +42,7 @@ typedef struct {
 Bool GoodiesParseConfig(char *tline);
 void LoadGoodiesFont(void);
 void InitGoodies(void);
-void DrawGoodies(void);
+void DrawGoodies(XEvent *evp);
 int MouseInClock(int x, int y);
 int MouseInMail(int x, int y);
 void CreateDateWindow(void);

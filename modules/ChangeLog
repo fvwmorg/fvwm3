@@ -1,3 +1,16 @@
+2002-11-12  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/Goodies.c (DrawGoodies):
+	(Draw3dBox):
+	* FvwmTaskBar/FvwmTaskBar.c (HandleEvents):
+	(ProcessMessage):
+	(RedrawWindow):
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw):
+	(DrawButtonArray):
+	(CheckRootTransparentButtons):
+	* FvwmTaskBar/ButtonArray.h:
+	Finished Clip redrawing and added full transparent support
+
 2002-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmProxy/FvwmProxy.c:

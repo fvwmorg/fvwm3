@@ -76,104 +76,141 @@ extern int NRows, RowHeight;
  *************************************************************************/
 
 /* Draws a 3D rectangle */
-void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
-		Bool iconified)
+void Draw3dRect(
+	Window wn, int x, int y, int w, int h, XRectangle *bounding,
+	int state, Bool iconified)
 {
-  colorset_t *cset = &Colorset[0];  /* initialize to avoid warning */
-  int d = 1;
+	colorset_t *cset = &Colorset[0];  /* initialize to avoid warning */
+	int d = 1;
+	XRectangle r,inter;
+	Bool draw;
 
-  if (ThreeDfvwm)
-    d = 2;
+	if (ThreeDfvwm)
+	{
+		d = 2;
+	}
+	if (bounding)
+	{
+		r.x = bounding->x;
+		r.y = bounding->y;
+		r.width = bounding->width;
+		r.height = bounding->height;
+	}
+	else
+	{
+		r.x = x;
+		r.y = y;
+		r.width = w;
+		r.height = h;
+	}
+	XClearArea (dpy, wn, r.x, r.y, r.width, r.height, False);
+	if (iconified)
+	{
+		draw = frect_get_intersection(
+			x + d, y + d, w - 3, h - 3,
+			r.x, r.y, r.width, r.height, &inter);
+		if (iconcolorset >= 0)
+		{
+			cset = &Colorset[iconcolorset];
+		}
+		if (iconcolorset >= 0 && (cset->pixmap || cset->shape_mask)
+		    && draw)
+		{
+			/* we have a colorset background */
+			SetClippedRectangleBackground(
+				dpy, win, x + d, y + d, w - 3, h - 3, &inter,
+				cset, Pdepth, icongraph);
+		}
+		else if (draw)
+		{
+			XFillRectangle (
+				dpy, wn, iconbackgraph,
+				inter.x, inter.y, inter.width, inter.height);
+		}
+		XDrawLine (dpy, wn, iconhilite, x, y, x+w-2, y);
+		XDrawLine (dpy, wn, iconhilite, x, y, x, y+h-2);
+		if (ThreeDfvwm)
+		{
+			XDrawLine (dpy, wn, iconhilite, x, y+1, x+w-2, y+1);
+			XDrawLine (dpy, wn, iconhilite, x+1, y, x+1, y+h-2);
+		}
+		XDrawLine (dpy, wn, iconshadow,  x+1, y+h-2, x+w-2, y+h-2);
+		XDrawLine (dpy, wn, iconshadow,  x+w-2, y+h-2, x+w-2, y+1);
+		XDrawLine (dpy, wn, blackgc, x, y+h-1, x+w-1, y+h-1);
+		XDrawLine (dpy, wn, blackgc, x+w-1, y+h-1, x+w-1, y);
+		return;
+	}
 
-  XClearArea (dpy, wn, x, y, w, h, False);
-  if (iconified)
-  {
-    if (iconcolorset >= 0)
-      cset = &Colorset[iconcolorset];
-    if (iconcolorset >= 0 && (cset->pixmap || cset->shape_mask))
-    {
-      /* we have a colorset background */
-      SetRectangleBackground(dpy, win, x + d, y + d, w - 3, h - 3, cset,
-			     Pdepth, icongraph);
-    }
-    else
-    {
-      XFillRectangle (dpy, wn, iconbackgraph, x + d, y + d, w - 3, h - 3);
-    }
-    XDrawLine (dpy, wn, iconhilite, x, y, x+w-2, y);
-    XDrawLine (dpy, wn, iconhilite, x, y, x, y+h-2);
-    if (ThreeDfvwm)
-    {
-      XDrawLine (dpy, wn, iconhilite, x, y+1, x+w-2, y+1);
-      XDrawLine (dpy, wn, iconhilite, x+1, y, x+1, y+h-2);
-    }
-    XDrawLine (dpy, wn, iconshadow,  x+1, y+h-2, x+w-2, y+h-2);
-    XDrawLine (dpy, wn, iconshadow,  x+w-2, y+h-2, x+w-2, y+1);
-    XDrawLine (dpy, wn, blackgc, x, y+h-1, x+w-1, y+h-1);
-    XDrawLine (dpy, wn, blackgc, x+w-1, y+h-1, x+w-1, y);
-    return;
-  }
+	switch (state)
+	{
+	case BUTTON_UP:
+		XDrawLine (dpy, wn, hilite, x, y, x+w-2, y);
+		XDrawLine (dpy, wn, hilite, x, y, x, y+h-2);
+		if (ThreeDfvwm)
+		{
+			XDrawLine (dpy, wn, hilite, x, y+1, x+w-2, y+1);
+			XDrawLine (dpy, wn, hilite, x+1, y, x+1, y+h-2);
+		}
+		XDrawLine (dpy, wn, shadow,  x+1, y+h-2, x+w-2, y+h-2);
+		XDrawLine (dpy, wn, shadow,  x+w-2, y+h-2, x+w-2, y+1);
+		XDrawLine (dpy, wn, blackgc, x, y+h-1, x+w-1, y+h-1);
+		XDrawLine (dpy, wn, blackgc, x+w-1, y+h-1, x+w-1, y);
+		break;
+	case BUTTON_BRIGHT:
+		draw = frect_get_intersection(
+				x + 2, y + 2, w - 4 + (2 - d), h - 4 + (2 - d),
+				r.x, r.y, r.width, r.height, &inter);
+		if (focuscolorset >= 0)
+			cset = &Colorset[focuscolorset];
+		if (focuscolorset >= 0 && (cset->pixmap || cset->shape_mask) &&
+		    draw)
+		{
+			/* we have a colorset background */
+			SetClippedRectangleBackground(
+				dpy, win, x + 2, y + 2, w - 4 + (2 - d),
+				h - 4 + (2 - d), &inter, cset, Pdepth,
+				focusgraph);
+		}
+		else if (draw)
+		{
+			XFillRectangle (
+				dpy, wn, focusbackgraph, inter.x, inter.y,
+				inter.width, inter.height);
+		}
+		if (!NoBrightFocus)
+			XFillRectangle (
+				dpy, wn, checkered, inter.x, inter.y,
+				inter.width, inter.height);
+		XDrawLine (dpy, wn, blackgc, x, y, x+w-2, y);
+		XDrawLine (dpy, wn, blackgc, x, y, x, y+h-2);
 
-  switch (state)
-  {
-  case BUTTON_UP:
-    XDrawLine (dpy, wn, hilite, x, y, x+w-2, y);
-    XDrawLine (dpy, wn, hilite, x, y, x, y+h-2);
-    if (ThreeDfvwm)
-    {
-      XDrawLine (dpy, wn, hilite, x, y+1, x+w-2, y+1);
-      XDrawLine (dpy, wn, hilite, x+1, y, x+1, y+h-2);
-    }
-    XDrawLine (dpy, wn, shadow,  x+1, y+h-2, x+w-2, y+h-2);
-    XDrawLine (dpy, wn, shadow,  x+w-2, y+h-2, x+w-2, y+1);
-    XDrawLine (dpy, wn, blackgc, x, y+h-1, x+w-1, y+h-1);
-    XDrawLine (dpy, wn, blackgc, x+w-1, y+h-1, x+w-1, y);
-    break;
-  case BUTTON_BRIGHT:
-    if (focuscolorset >= 0)
-      cset = &Colorset[focuscolorset];
-    if (focuscolorset >= 0 && (cset->pixmap || cset->shape_mask))
-    {
-      /* we have a colorset background */
-      SetRectangleBackground(dpy, win, x + 2, y + 2, w - 4 + (2 - d),
-			     h - 4 + (2 - d), cset, Pdepth, focusgraph);
-    }
-    else
-    {
-      XFillRectangle (dpy, wn, focusbackgraph, x + 2, y + 2,
-		      w - 4 + (2 - d), h - 4 + (2 - d));
-    }
-    if (!NoBrightFocus)
-      XFillRectangle (dpy, wn, checkered, x + 2, y + 2,
-		      w - 4 + (2 - d), h - 4 + (2 - d));
-    XDrawLine (dpy, wn, blackgc, x, y, x+w-2, y);
-    XDrawLine (dpy, wn, blackgc, x, y, x, y+h-2);
+		XDrawLine (dpy, wn, focusshadow, x, y+1, x+w-2, y+1);
+		XDrawLine (dpy, wn, focusshadow, x+1, y, x+1, y+h-2);
+		if (ThreeDfvwm)
+		{
+			XDrawLine (
+				dpy, wn, focushilite,  x+1, y+h-2, x+w-2, y+h-2);
+			XDrawLine (
+				dpy, wn, focushilite,  x+w-2, y+h-2, x+w-2, y+1);
+		}
+		XDrawLine (dpy, wn, focushilite, x, y+h-1, x+w-1, y+h-1);
+		XDrawLine (dpy, wn, focushilite, x+w-1, y+h-1, x+w-1, y);
+		break;
+	case BUTTON_DOWN:
+		XDrawLine (dpy, wn, blackgc, x, y, x+w-2, y);
+		XDrawLine (dpy, wn, blackgc, x, y, x, y+h-2);
 
-    XDrawLine (dpy, wn, focusshadow, x, y+1, x+w-2, y+1);
-    XDrawLine (dpy, wn, focusshadow, x+1, y, x+1, y+h-2);
-    if (ThreeDfvwm)
-    {
-      XDrawLine (dpy, wn, focushilite,  x+1, y+h-2, x+w-2, y+h-2);
-      XDrawLine (dpy, wn, focushilite,  x+w-2, y+h-2, x+w-2, y+1);
-    }
-    XDrawLine (dpy, wn, focushilite, x, y+h-1, x+w-1, y+h-1);
-    XDrawLine (dpy, wn, focushilite, x+w-1, y+h-1, x+w-1, y);
-    break;
-  case BUTTON_DOWN:
-    XDrawLine (dpy, wn, blackgc, x, y, x+w-2, y);
-    XDrawLine (dpy, wn, blackgc, x, y, x, y+h-2);
-
-    XDrawLine (dpy, wn, shadow, x, y+1, x+w-2, y+1);
-    XDrawLine (dpy, wn, shadow, x+1, y, x+1, y+h-2);
-    if (ThreeDfvwm)
-    {
-      XDrawLine (dpy, wn, hilite,  x+1, y+h-2, x+w-2, y+h-2);
-      XDrawLine (dpy, wn, hilite,  x+w-2, y+h-2, x+w-2, y+1);
-    }
-    XDrawLine (dpy, wn, hilite, x, y+h-1, x+w-1, y+h-1);
-    XDrawLine (dpy, wn, hilite, x+w-1, y+h-1, x+w-1, y);
-    break;
-  }
+		XDrawLine (dpy, wn, shadow, x, y+1, x+w-2, y+1);
+		XDrawLine (dpy, wn, shadow, x+1, y, x+1, y+h-2);
+		if (ThreeDfvwm)
+		{
+			XDrawLine (dpy, wn, hilite,  x+1, y+h-2, x+w-2, y+h-2);
+			XDrawLine (dpy, wn, hilite,  x+w-2, y+h-2, x+w-2, y+1);
+		}
+		XDrawLine (dpy, wn, hilite, x, y+h-1, x+w-1, y+h-1);
+		XDrawLine (dpy, wn, hilite, x+w-1, y+h-1, x+w-1, y);
+		break;
+	}
 }
 
 
@@ -222,7 +259,8 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 	unsigned long gcm;
 	GC *drawgc;
 	int cs;
-	XRectangle rect;
+	XRectangle rect,inter;
+	Region t_region;
 
 	if (button == NULL)
 	{
@@ -248,7 +286,8 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 	}
 	button->needsupdate = 0;
 	state = button->state;
-	Draw3dRect(win, x, y, w, h, state, !!(button->iconified));
+	Draw3dRect(
+		win, x, y, w, h, &rect, state, !!(button->iconified));
 	if (button->iconified)
 	{
 		drawgc = &icongraph;
@@ -301,9 +340,19 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 			fra.mask |= FRAM_HAVE_ICON_CSET;
 			fra.colorset = &Colorset[cs];
 		}
-		PGraphicsRenderPicture(
-			dpy, win, &(button->p), &fra, win, *drawgc, None, None,
-			0, 0, pwidth, pheight, x+3, y+offset, 0, 0, False);
+		if (frect_get_intersection(
+			rect.x, rect.y, rect.width, rect.height,
+			x+3, y+offset, pwidth, pheight, &inter))
+		{
+			PGraphicsRenderPicture(
+				dpy, win, &(button->p), &fra, win,
+				*drawgc, None, None,
+				(inter.x > (x+3))? inter.x - (x+3):0,
+				(inter.y > (y+offset))? inter.y - (y+offset):0,
+				inter.width, inter.height,
+				inter.x /*x+3*/, inter.y /*y+offset*/,
+				inter.width, inter.height, False);
+		}
 		newx += pwidth+2;
 	}
 
@@ -311,7 +360,9 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 	{
 		return;
 	}
-
+	
+	t_region = XCreateRegion();
+	XUnionRectWithRegion (&rect, t_region, t_region);
 	/* see if we have the place for "...", if not for "..", if not for "."
 	 * if not return */
 	if ((newx + w3p + 2) >= w)
@@ -332,6 +383,8 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 	FwinString->y = y + Ffont->ascent + (RowHeight - Ffont->height)/2;
 	FwinString->gc = *drawgc;
 	FwinString->flags.has_colorset = False;
+	FwinString->flags.has_clip_region = True;
+	FwinString->clip_region = t_region;
 	if (cs >= 0)
 	{
 		FwinString->colorset = &Colorset[cs];
@@ -363,6 +416,8 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 		FwinString->len = search_len;
 		FlocaleDrawString(dpy, Ffont, FwinString, FWS_HAVE_LENGTH);
 	}
+	FwinString->flags.has_clip_region = False;
+	XDestroyRegion(t_region);
 }
 
 
@@ -667,6 +722,32 @@ void RadioButton(ButtonArray *array, int butnum, int state)
       }
     }
   }
+}
+/* -------------------------------------------------------------------------
+   
+   ------------------------------------------------------------------------- */
+Bool CheckRootTransparentButtons(ButtonArray *array)
+{
+	Button *button;
+	Bool r = 0;
+
+	if (!CSET_IS_TRANSPARENT_ROOT(iconcolorset) &&
+	    !CSET_IS_TRANSPARENT_ROOT(focuscolorset))
+	{
+		return r;
+	}
+	for(button=array->head; button!=NULL; button=button->next)
+	{
+		if ((button->iconified &&
+		     CSET_IS_TRANSPARENT_ROOT(iconcolorset)) ||
+		    (button->state == BUTTON_BRIGHT &&
+		     CSET_IS_TRANSPARENT_ROOT(focuscolorset)))
+		{
+			r = True;
+			button->needsupdate = 1;
+		}
+	}
+	return r;
 }
 
 /* -------------------------------------------------------------------------

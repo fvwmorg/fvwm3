@@ -56,8 +56,9 @@ typedef struct
 
 /* Function Prototypes */
 
-void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
-		Bool iconified);
+void Draw3dRect(
+	Window wn, int x, int y, int w, int h, XRectangle *bounding, int state,
+	Bool iconified);
 Button *ButtonNew(const char *title, FvwmPicture *p, int state, int count);
 int ButtonUpdate(Button *button, const char *title, int state);
 char *ButtonName(Button *button);
@@ -74,6 +75,7 @@ void FreeAllButtons(ButtonArray *array);
 void DoButton(ButtonArray *array, Button *ptr, int x, int y, int w, int h);
 void DrawButtonArray(ButtonArray *array, int all, XEvent *evp);
 void RadioButton(ButtonArray *array, int butnum, int state);
+Bool CheckRootTransparentButtons(ButtonArray *array);
 int WhichButton(ButtonArray *array, int x, int y);
 int LocateButton(ButtonArray *array, int xp,  int yp,
 				     int *xb, int *yb,
