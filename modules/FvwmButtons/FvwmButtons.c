@@ -2387,11 +2387,9 @@ void process_message(unsigned long type,unsigned long *body)
   {
   case M_NEW_DESK:
     new_desk = body[0];
-    RedrawWindow(NULL);
     break;
   case M_END_WINDOWLIST:
     SpawnSome();
-    RedrawWindow(NULL);
     break;
   case M_MAP:
     swallow(body);
@@ -2407,7 +2405,7 @@ void process_message(unsigned long type,unsigned long *body)
   case M_ADD_WINDOW:
   case M_CONFIGURE_WINDOW:
     cfgpacket = (void *) body;
-    if ( cfgpacket->w == MyWindow)
+    if (cfgpacket->w == MyWindow)
     {
       button_lborder = button_rborder = button_tborder = button_bborder
 	= cfgpacket->border_width;
