@@ -612,49 +612,59 @@ dnl Check if Xsetlocale() is available or not.
 AC_CHECK_LIB(X11, XOpenOM, AC_DEFINE(HAVE_XOUTPUT_METHOD),, $X_LIBS -lX11)
 
 dnl ******** iconv
-found_iconv=no
-found_lib_iconv=no
-found_sys_iconv=no
+with_iconv=no
+with_iconv_type=no
+with_lib_iconv=no
+with_sys_iconv=no
+problem_iconv=": Explicitly disabled"
 
-dnl * first check for gnu libiconv
-$UNSET ac_cv_header_libiconv_h
-$UNSET ac_cv_lib_libiconv_libiconv_open
-smr_CHECK_LIB(iconv, ,if not found sys iconv is used,
-              libiconv_open, iconv.h)
-if test x"$iconv_LIBS" != x; then
-   AC_DEFINE(USE_LIBICONV)
-   found_lib_iconv=yes
-fi
-AC_SUBST(iconv_LIBS)
-AC_SUBST(iconv_CFLAGS)
+AC_ARG_ENABLE(iconv,
+  [  --disable-iconv         disable support for iconv character conversion],
+  [ac_cv_iconv="$enableval"],
+  [ac_cv_iconv="yes"])
 
-dnl * check for system iconv
-AC_CHECK_FUNC(iconv_open, found_sys_iconv=yes)
+if test x"$ac_cv_iconv" != xno; then
+  dnl * first check for gnu libiconv
+  $UNSET ac_cv_header_libiconv_h
+  $UNSET ac_cv_lib_libiconv_libiconv_open
+  smr_CHECK_LIB(
+  	iconv, , if not found sys iconv is used, libiconv_open, iconv.h)
+  if test x"$iconv_LIBS" != x; then
+     AC_DEFINE(USE_LIBICONV)
+     with_lib_iconv=yes
+  fi
+  AC_SUBST(iconv_LIBS)
+  AC_SUBST(iconv_CFLAGS)
 
-if test x"$found_lib_iconv" = xyes -a x"$found_sys_iconv" = xyes; then
-   AC_MSG_WARN([***  Both system iconv and libiconv found: use libiconv])
-   AC_MSG_WARN([***  Use --with-iconv-library=no to use the system iconv])
-fi
+  dnl * check for system iconv
 
-dnl * libiconv found check for libcharset to get the good iconv charset
-if test x"$found_lib_iconv" = xyes; then
-   CHECK_LIBCHARSET
-fi
+  AC_CHECK_FUNC(iconv_open, with_sys_iconv=yes)
 
-if test x"$found_lib_iconv" = xyes -o x"$found_sys_iconv" = xyes; then
-   found_iconv=yes
-fi
+  if test x"$with_lib_iconv" = xyes -a x"$with_sys_iconv" = xyes; then
+     AC_MSG_WARN([***  Both system iconv and libiconv found: use libiconv])
+     AC_MSG_WARN([***  Use --with-iconv-library=no to use the system iconv])
+  fi
 
-if test x"$found_iconv" = xno; then
-   AC_MSG_WARN([*** ])
-   AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv])
-   AC_MSG_WARN([*** Please install libiconv ftp://ftp.gnu.org/pub/gnu/libiconv/])
-   AC_MSG_WARN([*** ])
-fi
+  dnl * libiconv found check for libcharset to get the good iconv charset
+  if test x"$with_lib_iconv" = xyes; then
+     CHECK_LIBCHARSET
+  fi
 
-if test x"$found_iconv" = xyes; then
-   AC_DEFINE(HAVE_ICONV)
-   ICONV_SECOND_ARG
+  test x"$with_lib_iconv" = xyes -o x"$with_sys_iconv" = xyes && with_iconv=yes
+  test x"$with_lib_iconv" = xyes && with_iconv_type="library"
+  test x"$with_sys_iconv" = xyes && with_iconv_type="system"
+
+  if test x"$with_iconv" = xno; then
+    AC_MSG_WARN([*** ])
+    AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv])
+    AC_MSG_WARN([*** Please install libiconv ftp://ftp.gnu.org/pub/gnu/libiconv/])
+    AC_MSG_WARN([*** ])
+  fi
+
+  if test x"$with_iconv" = xyes; then
+     AC_DEFINE(HAVE_ICONV)
+     ICONV_SECOND_ARG
+  fi
 fi
 
 
@@ -1191,15 +1201,16 @@ FVWM Configuration:
   Locale msg:  $my_localedir $INST_LINGUAS
 
   With Asian bi-direct. text support? $with_bidi$problem_bidi
-  With Gettext Native Lang Support?   $with_gettext$problem_gettext
+  With Gettext Native Lang support?   $with_gettext$problem_gettext
   With GTK+ required for FvwmGtk?     $with_gtk$problem_gtk$fvwmgtk_msg
+  With Iconv support?                 $with_iconv_type$problem_iconv
+  With Mouse strokes (gestures)?      $with_stroke$problem_stroke
   With PNG image support?             $with_png$problem_png
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
   With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
   With Shaped window support?         $with_shape$problem_shape
   With Shared memory for XImage?      $with_shm$problem_shm
   With Session Management support?    $with_sm$problem_sm
-  With Mouse strokes (gestures)?      $with_stroke$problem_stroke
   With Xinerama multi-head support?   $with_xinerama$problem_xinerama
   With Xft anti-alias font support?   $with_xft$problem_xft
   With XPM image support?             $with_xpm$problem_xpm

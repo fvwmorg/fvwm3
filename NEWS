@@ -7,6 +7,8 @@ Changes in development release 2.5.9 (not release yet)
 
 * New MenuStyle options PopupIgnore and PopupClose.
 
+* New configure option --disable-iconv to disable iconv support.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.8 (31-Oct-2003)

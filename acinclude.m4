@@ -1503,7 +1503,7 @@ AC_DEFUN([AM_GNU_FGETTEXT],
   dnl the pbs is that we can detect this stuff but in fact the included
   dnl libintl.h is from gettext
   dnl Moreover, we do not try to use other implementation, but we may try
-  dnl one day 
+  dnl one day
   $UNSET ac_cv_header_intl_h
   $UNSET ac_cv_func_gettext
   $UNSET ac_cv_func_bindtextdomain
@@ -1523,7 +1523,7 @@ AC_DEFUN([AM_GNU_FGETTEXT],
     AC_TRY_LINK([
       #include <libintl.h>
       ],
-      [const char *c; c = gettext("foo");], 
+      [const char *c; c = gettext("foo");],
       found_gettext=yes;problem_gettext=" (libc)", found_gettext=no)
     AC_MSG_RESULT($found_gettext)
   else
@@ -1554,7 +1554,7 @@ AC_DEFUN([AM_GNU_FGETTEXT],
           AC_TRY_LINK([
           #include <libintl.h>
           ],
-          [const char *c; c = gettext("foo");], 
+          [const char *c; c = gettext("foo");],
           found_gettext=yes;problem_gettext=" (intl library)", found_gettext=no)
           AC_MSG_RESULT($found_gettext)
         fi
@@ -1667,7 +1667,7 @@ AC_DEFUN([AM_PO_SUBDIRS],
   #if test "%UNSET%" != "$LINGUAS"; then
   # FIXME: How to check if LINGUAS has been *set* to ""
   if test -n "$LINGUAS"; then
-    AC_MSG_RESULT([$LINGUAS])  
+    AC_MSG_RESULT([$LINGUAS])
   else
     AC_MSG_RESULT([all])
   fi

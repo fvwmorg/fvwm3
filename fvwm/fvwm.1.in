@@ -7059,8 +7059,8 @@ and
 .I Destroy
 to be performed on the windows. This is on by default.
 The opposite,
-.IR !Closable
-,inhibits the window to be closed.
+.IR !Closable ,
+inhibits the window to be closed.
 
 .IR Iconifiable
 enables the function
@@ -7068,8 +7068,8 @@ enables the function
 to be performed on the windows.
 This is on by default.
 The opposite,
-.IR !Iconifiable
-,inhibits the window from being iconified.
+.IR !Iconifiable ,
+inhibits the window from being iconified.
 
 .IR Maximizable
 enables the function
@@ -7077,8 +7077,8 @@ enables the function
 to be performed on the windows.
 This is on by default.
 The opposite,
-.IR !Maximizable
-,inhibits the window from being maximized.
+.IR !Maximizable ,
+inhibits the window from being maximized.
 
 .IR AllowMaximizeFixedSize
 enables the function
@@ -7089,8 +7089,8 @@ has been disabled either using the style
 or throuth WM hints,
 This on by default.
 The opposite,
-.IR !AllowMaximizeFixedSize
-,inibits all widows that are not resizable from being maximized.
+.IR !AllowMaximizeFixedSize ,
+inibits all windows that are not resizable from being maximized.
 
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and maximum
