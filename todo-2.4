@@ -1,0 +1,330 @@
+Items with highest priority / most severe problems:
+
+ - Please take a look at the issues under 'to be discussed'.  Let
+   us make a decision if these will be done or not fast.
+ - Verify if #150 is really fixed.
+ - Should remove the problems that have been fixed for a long
+   time from this list?
+
+New since last update:
+
+none :-)
+
+Closed since last update:
+
+132, 144, 150, 151, 154, 155
+
+---------- Summary: ----------------------------------------------
+
+ 1 to be verified
+ 7 to be discussed
+30 to do
+ 5 distribution issues
+ 9 testing
+----------------------
+52 open items
+106 items done
+158 items in total
+
+---------- To be verified: ---------------------------------------
+
+110) Running two FvwmAuto modules at one freezes fvwm.
+     [reported by Olivier on 15-Apr-2000]
+     [patch supposed by Tim]
+
+---------- To be discussed ---------------------------------------
+
+ 14) Figure out what the problem with Amaya is.
+     [reported on 3-Jun-1999 by Rob Urban <urban@spielwiese.de>]
+     [still unreproducible; remove from the list?]
+ 16) Try to fix the 'netscape stuck on page' problem.
+     [reported on 17-May-1999 by <jason@sdf.lonestar.org>]
+     [still unreproducible; remove from the list?]
+ 90) Icon distribution.
+     [Is there anything we have to do, e.g. add links from the web
+     pages or the FAQ or ...]
+140) Remove "Layer" command?  Instead, the "Layer" styles
+     can be applied immediately w/o Recapture.
+     [2 votes against vs 1 vote for removing]
+141) Remove "MoveSmoothness" command?  I wrote it back when
+     window motion was very jerky due to excessive network
+     traffic, but I guess it's not very useful.
+142) Remove copyright disclaimers from individual files
+     (smaller tarball).
+     [saves only 15k tarball size]
+153) Investigate/reduce excessive colour allocation traffic
+     on startup.
+     [reported by Dan]
+
+---------- To do: ------------------------------------------------
+
+ 17) Fix the bug that causes icons to lose management (bug #352).
+     [couldn't reproduce this yet; can anybody who has netcool
+     event manager try it?]
+ 32) Several applications are reported to not resize well under fvwm
+     (Datek's "Streamer", CodeWarrior).
+     [optional]
+107) "Recapture" while an icon is focused takes several seconds.
+     [reported by Mikhael; confirmed by Dominik]
+116) Fix problem that can cause long icon titles to be expanded
+     although the pointer is not over it.
+     [reported by Mikhael]
+117) Investigate icons disappearing if icon changes while on a
+     different desk.
+     [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
+118) Investigate "FvwmPager & StaysOnTop" bug (#543).
+     [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
+     [in progress, reproduced by Mike Han]
+119) MaxSwallow does not work in FvwmWharf e.g. with
+     'xload -g 50x50'.
+     [reported by Dominik]
+120) Icons are not always sorted properly; there may be
+     gaps after page switching (with IconBox).
+     [reported by Joerg Klemenz on 26-Feb-2000]
+     [confirmed by Dominik (hard to reproduce)]
+121) Investigate FvwmPager core dump.
+     [reported by Wing Tung Leung <tg@skynet.be> on 20-Feb-2000]
+122) Investigate FvwmButtons panel problem.
+     [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
+123) Bug #378 (FvwmPager interferes with xscreensaver)
+124) Bug #477 (closing xbuffy popup window nukes focus)
+125) Bug #479 (windows migrating to page 0 0 during restart)
+126) Bug #489 (icons migrating on restart, ident does not work)
+127) Bug #511 (xpp subwindows not drawn properly)
+128) Bug #564 (pasting text goes to window with the mouse, not
+     the focused window).
+129) Bug #560
+130) Fix bounds error with 'DestroyStyle *' in
+     update_window_color_hi_style().
+     [reported by Ben Winslow <rain@insane.loonybin.net>]
+     [not reproduced yet]
+133) Bug #602 (window placement w/ 2.3.15): investigate and
+     fix or close.
+134) Investigate DecWindows ConfigureRequest/Notify race
+     condition.
+     [reported by Fabien Viallard on 19-Apr-2000]
+138) Bug #593 (key bindings w/ Motif)
+     [confirmed by Dominik]
+     [Brad?]
+139) Fix TaskBar tips drawing.
+     [reported by gregory@mcst.ru (Gregory A. Shimansky) on
+     14-Apr-2000]
+143) Bug #603 (TaskBar bugs): investigate and possibly fix.
+145) Modules lose focus when a Netscape transient is opened
+     (ClickToFocus).  Probably the same as (138).
+     [reported by gregory@mcst.ru (Gregory A. Shimansky) on
+     1-May-2000]
+     [confirmed by Dominik]
+146) Bug #542 (Winch signals).
+148) Losing focus when entering root window bug.
+     [reported by Elliot Sowadsky on 29-Dec-1999]
+     [suggested fix: Lenience style; does not help :-(]
+152) Investigate/fix fvwm freeze on Exceed.
+     [various reporters, but no usable feedback yet]
+156) xterm client window cursor corrupted.
+     [reported by Nagi Aboulenein on 2-Nov-1999]
+157) Stack ring still broken sometimes.
+     [Mike Han/Dominik]
+158) IS_NAME_CHANGED flag still broken?
+     [Mikhael?]
+ 
+---------- Distribution issues: ----------------------------------
+
+ 9)  Set up RPM packages.
+     [???; Jason?]
+ 12) Set up bzip2 tarballs.
+     [optional]
+ 48) Finish Windoze 95 like config file.
+     [Olivier]
+ 62) Write a new announcement.
+     [in progress]
+
+---------- Testing: ----------------------------------------------
+
+ 33) Test the GNOME patches.
+ 34) Update and run the purify script again (and update it).
+ 35) Test the strokes patch.
+ 36) Test the new menu styles (ItemFormat!)
+ 92) Test new session management code.
+ 94) Test colour set support in modules and fvwm.
+ 95) Test new panel implementation in FvwmButtons.
+105) Test binding code.
+106) Test window position code.
+ 
+========== Done: =================================================
+
+ 1)  Document the GNOME stuff (man page still missing).
+ 2)  Add screen shots to web page.
+ 3)  Add link to fvwm cats page to web page.
+ 4)  Add link to Mikhael' wm-icons page.
+ 5)  Update the links on our home page.
+ 6)  Remove several configure options.
+ 7)  Create an I18N fvwm package (from 2.2 or so).
+     [see #100]
+ 8)  Add an explanation about the various packages and where to
+     discuss them to the web page.
+     (stable, unstable (alpha), snapshots, ftp source tree, CVS).
+ 10) Remove 'PopupAsRootMenu' menu style (?).
+     [rejected]
+ 11) Add FvwmKb module?
+     [delayed until after 2.4]
+ 13) Use a 'busy' pointer during startup.
+ 15) Get restart straight (sometimes an application vanishes over restarts)
+ 18) Check if there are still growing windows as reported for 2.13.
+     [bug #184 reported by Michael Hughes <mhughes@bridge.com>]
+     [no bug; doesn't happen for 2.2 and up]
+ 19) Fix: KFM windows stay on top of normal fvwm windows.
+     [done]
+ 20) Check why no icon can be set for Eterm.
+     [reported on 8-May-1999 by Amir Chossrow Akhavan <amir@phy.ucsf.EDU>]
+     [no fix? or should we rather break 'xterm +ai'?]
+ 21) Fix the bug with eterm and transparent background (I think rxvt has
+     the same problem.
+     [Eterm bug fixed, rxvt doesn't work very well with transparent
+     background. I've reported to the rxvt mailing list]
+ 22) Investigate bug #290. (windows cannot be raised over others sometimes).
+     [mail thread from April; confirmed by me (Dominik)]
+     [fixed; there is a new style and the behaviour is a bit more intuitive]
+ 23) Check if bug #312 is still there.
+ 24) Investigate bug #314.
+ 25) Investigate dying pager on desk-to-desk transfers (bug #358 et al.)
+     [fixed; only in 2.2.2, caused by missing X error handler]
+ 26) Investigate bug #315. (Recapture doesn't work perfectly for changing the
+     default decor).
+     [mainly a documentation problem; man page was updated]
+ 27) Check if bug #334 is still a problem.
+ 28) Investigate FvemEvent core dumps.
+     [fixed in 2.2.3, no bug in 2.3.4]
+ 29) Fix the pager bugs I reported recently.
+ 30) Fix the broken size hints of FvwmWinList (in fvwm itself).
+ 31) 'Maximize grow grow' works only on the current page.
+ 37) Fix interaction of moving with autoraising icon titles.
+ 38) Investigate bug #389. (StartsOnDesk does not work)
+     [configuration problem, added a warning to the code]
+ 39) Investigate bug #390
+ 40) Investigate bug #394. (Overlapping pages)
+     [no bug; doesn't happen after a recompile]
+ 41) Fix hanging fvwm when moving GNOME menu bars (bug #395).
+ 42) Get bitmap icons working again.
+ 43) Several pager bugs (bug #379).
+ 44) Fix TaskBar crash caused by latest patch in RemoveButton().
+ 45) Remove the web pages from the distribution.
+ 46) Titlebars should not inherit the pixmap from the border style.
+ 47) Verify the TaskBar clock update problem.
+     [given up; I think I could reproduce the problem - it was a
+     configuration mistake, but the reporter didn't care to answer
+     if my suggestion helped; Dominik]
+ 49) Implement a 'H'old trigger for complex functions.
+ 50) Implement a 'ButtonGeometry' option for FvwmButtons.
+ 51) Fix constraining the window size when a window is maximized or
+     larger than MaxWindowSize when mapped.
+ 52) Allow to resize in client resize increment steps.
+ 53) Decide what to do with overlapping moved icons.
+     [will be ignored]
+ 54) Find a better solution for raising/lowering of transients.
+ 55) FvwmGtk can't be killed with 'KillModule'.
+ 56) Mini icons may overlap menu titles.
+ 57) Fix autohiding and TaskBar tips.
+ 58) DeskTopSize is not honoured upon a restart (the old one is reused).
+     [use Restart --dont-preserve-state]
+ 59) Get Raise/Lower of transients straight.
+     [duplicate of item 54]
+ 60) Make MaxWindowSize a style (don't release a command that will
+     change anyway).
+ 61) Get SidecPics working again.
+ 63) Fix stacking order in pager.
+ 64) Install the new web pages.
+ 65) Fix "maximize true ..." when a window is already maximized.
+ 66) Fix ddd problems.
+     [fixed as far as possible; bug reported to ddd list]
+ 67) Add a Windoze95 like screenshot to the web page.
+ 68) Investigate 'Xlib: sequence lost' message.
+     [went away with a newer snapshot]
+ 69) Fix window moving. Several people have reported that moving windows
+     is slow or the windows don't follow the pointer well. This is really
+     a big problem.
+ 70) Fix resize. On one hand it's not nice that you can drag the window
+     border off screen, on the other hand it doesn't hurt if the shadow
+     of the border is not on screen.
+ 71) Fix drawing of window titles.
+ 72) Finish implementing colour sets for modules.
+     [item split up]
+ 73) Remove 'panel' feature from FvwmButtons and re-implement it in a
+     less disruptive way.
+ 74) To fix: icons are not preserved over a Quit - Start for fvwm
+ 75) Implement colour sets in FvwmWharf.
+ 76) Implement colour sets in FvwmTaskBar.
+ 77) Implement colour sets in menu styles.
+ 78) Implement colour sets in window styles.
+     [only colours used yet]
+ 79) Implement colour sets in FvwmConsole?
+     [rejected]
+ 80) Implement colour sets in FvwmScript
+ 81) Change the way in which fvwm 'posts' menus with a click.
+ 82) Introduce a 'transient' option for FvwmButtons. This is needed
+     to replicate the old panel behaviour.
+ 83) Fix FvwmIconMan crashes introduced by colour set support(?)
+     [doesn't happen anymore]
+ 84) Implement colour sets in FvwmBacker.
+ 85) Add 'geometry' panel option in FvwmButtons.
+     I think it's not worth the effort because it's similarly
+     complicated as the menu position hints if I want to do it right.
+     I can't see an easy solution that does something useful fast.
+     [future enhancement]
+ 86) Finish code for setting backgrounds of other applications with
+     colour sets.
+ 87) Describe what to do for colour set support in the module docs.
+ 88) Investigate 'pager out of sync' problem
+     [fixed]
+ 89) Make FvwmScript use the same visual as fvwm (prerequisite for 80)
+ 91) Fix Xpm version problem (bug #463).
+ 93) Finish 'CREATING PANELS' section in FvwmButtons man page.
+ 96) Make flat titlestyle work again.
+ 97) Rewrite FvwmTheme 'Colorset' syntax ala MenuStyle.
+ 98) Allow using colours from colour sets in fvwm commands.
+ 99) Make HilightColors command colour set aware.
+100) Remove I18N patches since author seems to have lost interest
+     in finishing the patch.
+     [leave it in, started to rewrite patch in a better way]
+101) Finish current work on style changes w/o recapture in a
+     consistent way. This doesn't necessarily mean that the
+     feature has to be complete before 2.4.
+102) Patch 'UseDecor' and 'UseStyle' styles and various ...Style
+     commands to apply without a recapture.
+     [finished except UseStyle]
+103) Add recent bug reports to to-do list.
+104) Fix FvwmCommandS core dumps on X server shutdown.
+108) FvwmPager desk separators are not updated if their colour set
+     is changed (*FvwmPagerColorset).
+109) FvwmIconMan titles don't seem to work.
+111) Fix position hints not working with menus invoked
+     from a menu like this: 'addtomenu foo foo menu foo root c c'
+112) Fix desk flipping with
+       shade-iconify-move_to_other_page-deiconify-unshade
+     (and equivalent bug with maximize instead of shade).
+113) FvwmForm sets no class/resource.
+114) FvwmIdent sets no class/resource.
+115) FvwmWharf sets no class/resource.
+131) Sticky windows move to the top in the pager view if the desk is
+     changed.
+132) Tru64 sizeof(unsigned long) problem
+135) FvwmWinList doesn't handle negative geometries properly
+     with TitleAtBottom.
+136) Implement a FlushUpdates command to apply style changes
+     within a function?
+     [nope; enhanced Refresh/RefreshWindow instead]
+137) Bug #550 (FvwmAuto raises after 'lower')
+144) Bug #604 (ActivePlacements doesn't work if FvwmAnimate
+     is running).
+     [Style * DumbPlacement fixes it]
+147) Investigate/fix missing windows in pager after Recapture.
+     [reported by Paul (PDS) on 06-Jan-2000]
+149) "date" command confuses keyboard focus.
+150) Mini windows in pager can reach into adjacent pages
+     because of the min size of 3x3 pixels.
+151) Colours in FvwmIconMan screwed up.
+154) Investigate/fix move lockups.
+     [Reported by Brad]
+     [did not happoen for several months; fix if it shows up again]
+155) Remove busycursor configure option.
+
