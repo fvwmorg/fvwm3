@@ -3,19 +3,15 @@ dnl
 AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
 
-dnl for development versions
-RELDATELONG="not released yet"
-RELDATESHORT="not released yet"
-RELDATENUM="not released yet"
-RELISDEVEL="-devel"
-dnl for released versions
-dnl RELDATELONG="25 August 2002"
-dnl RELDATESHORT="25-Aug-2002"
-dnl RELDATENUM="2002-08-25"
-dnl RELISDEVEL=""
+dnl should be 1 only for the release
+ISRELEASED=0
+version=2.5.4
+VERSIONINFO=""
 
-AM_INIT_AUTOMAKE(fvwm, 2.5.4${RELISDEVEL})
-AM_CONFIG_HEADER(config.h)
+dnl date of the released version (please pad a day with zero in the last 2)
+RELDATELONG="25 August 2002"
+RELDATESHORT="25-Aug-2002"
+RELDATENUM="2002-08-25"
 
 dnl constant variable settings
 FVWMNAMEUCASE="FVWM"
@@ -29,6 +25,31 @@ FVWMLIST="fvwm@fvwm.org"
 FVWMWORKERSLIST="fvwm-workers@fvwm.org"
 FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
 
+if test x"$ISRELEASED" = x0; then
+	VERSIONINFO=" (from cvs)"
+	RELDATELONG="(not released yet)"
+	RELDATESHORT="(not released yet)"
+	RELDATENUM="(not released yet)"
+#	# migo: unfortunately this nice idea can't work, it is not updated.
+#	# I will think more about this, maybe autoconf-2.50+ has a solution.
+#	if test -d CVS/ -a -f CVS/Entries && \
+#		date +%Y-%m-%d -d 'Wed Sep  4 12:36:50 2002' >/dev/null 2>&1
+#	then
+#		# this is not the exact date, but better than the current date
+#		for file in CVS/Entries */CVS/Entries; do
+#			changelog_date="`cat $file | grep /ChangeLog/ \
+#				| cut -d/ -f4`"
+#			test x"$changelog_date" != x && \
+#			date +%Y-%m-%d -d "$changelog_date" >>changelog_dates
+#		done
+#		changelog_date=`cat changelog_dates | sort -r -u | head -1`
+#		VERSIONINFO=" (from cvs $changelog_date)"
+#		rm -f changelog_dates
+#	fi
+fi
+
+AC_DEFINE_UNQUOTED(VERSIONINFO, "$VERSIONINFO")
+AC_SUBST(VERSIONINFO)
 AC_SUBST(RELDATELONG)
 AC_SUBST(RELDATESHORT)
 AC_SUBST(RELDATENUM)
@@ -42,6 +63,9 @@ AC_SUBST(FVWMALTFTPDIR)
 AC_SUBST(FVWMLIST)
 AC_SUBST(FVWMWORKERSLIST)
 AC_SUBST(FVWMWORKERSLISTLONG)
+
+AM_INIT_AUTOMAKE(fvwm, ${version})
+AM_CONFIG_HEADER(config.h)
 
 dnl installation paths
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
@@ -998,7 +1022,7 @@ cat >config.status-t <<EOF
 #! /bin/sh
 
 # Original config.status is patched to satisfy processing *.in with 'make -j'.
-# This bug seems to be fixed in autoconf-2.50.
+# This bug seems to be partially fixed in autoconf-2.50 (not in all places).
 UNIQUE_POSTFIX=\$\$
 
 EOF
@@ -1024,7 +1048,7 @@ esac
 echo "
 FVWM Configuration:
 
-  Version:     $VERSION
+  Version:     $VERSION$VERSIONINFO
 
   Executables: $my_bindir
   Man pages:   $my_mandir

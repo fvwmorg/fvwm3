@@ -1189,7 +1189,7 @@ static void InitVariables(void)
 
 static void usage(void)
 {
-	fprintf(stderr, "\nFVWM version %s Usage:\n\n",VERSION);
+	fprintf(stderr, "\nfvwm %s Usage:\n\n", VERSION);
 	fprintf(stderr, "  %s"
 		" [-d dpy]"
 		" [-debug]"
@@ -1216,8 +1216,8 @@ static void setVersionInfo(void)
 	int support_len;
 
 	/* Set version information string */
-	sprintf(version_str, "fvwm version %s compiled on %s at %s",
-		VERSION, __DATE__, __TIME__);
+	sprintf(version_str, "fvwm %s%s compiled on %s at %s",
+		VERSION, VERSIONINFO, __DATE__, __TIME__);
 	Fvwm_VersionInfo = safestrdup(version_str);
 
 	sprintf(license_str,
@@ -1225,7 +1225,7 @@ static void setVersionInfo(void)
 		"You may\nredistribute copies of fvwm under "
 		"the terms of the GNU General Public License.\n"
 		"For more information about these matters, see the file "
-		"named COPYING.\n");
+		"named COPYING.");
 	Fvwm_LicenseInfo = safestrdup(license_str);
 
 #ifdef HAVE_READLINE
@@ -1807,8 +1807,8 @@ int main(int argc, char **argv)
 		else if (StrEquals(argv[i], "-version") ||
 			 StrEquals(argv[i], "--version"))
 		{
-			printf("%s\n%s\n%s\n", Fvwm_VersionInfo,
-			       Fvwm_LicenseInfo, Fvwm_SupportInfo);
+			printf("%s\n%s\n\n%s\n", Fvwm_VersionInfo,
+			       Fvwm_SupportInfo, Fvwm_LicenseInfo);
 			exit(0);
 		}
 		else if (StrEquals(argv[i], "-color-limit"))

@@ -230,7 +230,7 @@ void server ( void )
   send(Ns, C_END, strlen(C_END), 0);
   strcpy( ver, MyName);
   strcat( ver, " version " );
-  strcat( ver, VERSION);
+  strcat( ver, VERSION VERSIONINFO);
   strcat( ver, "\n" );
   send(Ns, ver, strlen(ver), 0 );
 

@@ -1,6 +1,9 @@
 /* Suffix for config filenames */
 #define FVWMRC ".fvwm2rc"
 
+/* Additional version information, like date */
+#define VERSIONINFO ""
+
 /* Define if gdk-imlib is used */
 #undef GDK_IMLIB
 

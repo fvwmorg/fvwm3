@@ -36,26 +36,26 @@ The currently recognized fvwm commands:
   DefaultColors         - set colors for the feedback window (will be obsolete)
   DefaultColorset       - set colors for the Move/Resize feedback window
   DefaultFont           - the default font to use (mainly for feedback window)
-  DefaultIcon           - 
-  DefaultLayers         - 
-  Delete                - 
-  Deschedule            - 
-  Desk                  - 
-  DesktopName           - 
-  DesktopSize           - 
-  Destroy               - 
-  DestroyDecor          - 
-  DestroyFunc           - 
-  DestroyMenu           - 
-  DestroyMenuStyle      - 
-  DestroyModuleConfig   - 
-  DestroyStyle          - 
-  Direction             - 
-  Echo                  - 
-  EdgeCommand           - 
-  EdgeResistance        - 
-  EdgeScroll            - 
-  EdgeThickness         - 
+  DefaultIcon           - the default icon to use for iconified windows
+  DefaultLayers         - set StaysOnBottom, StaysPut, StaysOnTop layer numbers
+  Delete                - try to delete a window using the X delete protocol
+  Deschedule            - remove commands sheduled earlier using Schedule
+  Desk                  - (obsolete, use GotoDesk instead)
+  DesktopName           - define the desktop names used in WindowList, modules
+  DesktopSize           - set virtual desktop size in units of physical pages
+  Destroy               - kills a window without any warning to an application
+  DestroyDecor          - delete decor defined by AddToDecor (will be obsolete)
+  DestroyFunc           - delete function defined using AddToFunc
+  DestroyMenu           - delete menu defined using AddToMenu
+  DestroyMenuStyle      - delete menu style defined using MenuStyle
+  DestroyModuleConfig   - delete matching module config lines defined using "*"
+  DestroyStyle          - delete style defined using Style
+  Direction             - operate on the next window in the specified direction
+  Echo                  - print message to stderr, mainly for debugging
+  EdgeCommand           - bind command to one or another screen edge
+  EdgeResistance        - control viewport scrolling and window move over edge
+  EdgeScroll            - control how much of the viewport is scrolled if any
+  EdgeThickness         - control how closely to edge to run command/scrolling
   Emulate               - 
   EscapeFunc            - 
   EwmhBaseStrut         - 
