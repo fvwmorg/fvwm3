@@ -104,3 +104,7 @@ Users should consider removing any alt-tab binding they have over
 the builtin binding.
 
 The Colorlimit command can be removed.
+
+The FvwmGoodStuff module is obsoleted by FvwmButtons.
+If you are using FvwmGoodStuff, you need to recode this part
+of your configuration.
