@@ -1,5 +1,12 @@
-Sat Mar 13 12:48:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+Sat Mar 13 14:29:41 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
+	* FvwmConsole/FvwmConsoleC.pl: replaced by FvwmConsoleC.pl.in
+	* FvwmConsole/Makefile.am: generate FvwmConsoleC.pl from
+	corresponding .in file, substituting perl path.
+
+	* FvwmConsole/changepath.sh
+	* FvwmConsole/INSTALL: removed obsolete files.
+	
 	* FvwmCommand/findcmd:
 	* FvwmCommand/findcmd.pl: rewritten as filters, so as not to be
 	dependent on finding ../../fvwm/command.c.  The makefile now takes
@@ -12,7 +19,7 @@ Sat Mar 13 11:52:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmCommand/INSTALL: removed obsolete file.
 	* FvwmCommand/ex-grpmv.pl: moved to scripts directory, replacing
-	slightly different version.  Hopefully this is the newer one.
+	slightly different version.  Hopefully this is the up-to-date one.
 
 	* FvwmCommand/ex-auto.pl:
 	* FvwmCommand/ex-cascade.pl:

@@ -1,3 +1,9 @@
+Sat Mar 13 11:17:48 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* DEVELOPERS: added note about implementing features in modules
+	rather than mainline code (from Matthias Clasen).  Added note
+	about using JitterBug.
+
 1999-03-12  Paul D. Smith  <psmith@gnu.org>
 
 	* Makefile.am (HTML): Removed version.html.

@@ -1,7 +1,5 @@
-			Living with CVS and Autoconf                 -*-text-*-
-			----------------------------
-
-These notes are intended for code developers.
+			Notes for Developers                         -*-text-*-
+			--------------------
 
 You will need to install several GNU tools to be able to use the cvs
 sources.  If you do not have these tools available, build from the tar
@@ -62,8 +60,28 @@ Rules of the Road
     Otherwise, concensus will probably have it installed on the main
     branch.
 
+ 7) Before adding a new feature think twice if it could perhaps
+    be implemented as a module (perhaps after some extension 
+    of the fvwm<->module communication protocol). Moving features
+    in modules helps to keep fvwm itself clean and efficient.
+
 
         ** Of course, compile and test before committing! **
+
+
+Doing the JitterBug
+-------------------
+
+If you haven't already noticed them, now is the time to visit our bug
+tracking pages: http://www.fvwm.org/cgi-bin/fvwm-bug.  Anybody can
+submit or view bug reports there.
+
+Developers with CVS write access can update the bug database.  To do
+so, you have to go to the Jitterbug page, but then tack a ".private"
+on to the end of the URL.  Then you'll be asked to authenticate.  The
+username and password are the same as you use for the CVS repository.
+
+You'll probably want to bookmark that page.
 
 
 Changing a Makefile
@@ -140,8 +158,9 @@ all the directories enabled, else the files don't make it into the
 distribution tar file.
 
 Similarly, you need to have actually built everything before packing
-the distribution, hence step #2.  Among other things, this puts into
-the Makefile.in's the proper dependency information.
+the distribution, hence step 2.  Among other things, this generates
+the proper dependency information for insertion into Makefile.in's
+generated in step 3.
 
 Step 3 will create the tar file, then unpack it and attempt a build &
 install (to a scratch directory, not /usr/local).  This makes sure

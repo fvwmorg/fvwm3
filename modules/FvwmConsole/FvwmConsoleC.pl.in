@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#! xPERLx
 #    $0 - Front end of FvwmConsole
 #    FvwmConsole server must be running
 

@@ -147,22 +147,16 @@ AC_ARG_WITH([$1]-includes,
         AC_MSG_ERROR(argument must be a directory)
     fi])
 
-dnl This bit of logic comes from autoconf's AC_PROG_CC macro.  We need
-dnl to put the given include directory into CPPFLAGS temporarily, but
-dnl then restore CPPFLAGS to its old value.
-dnl
-smr_test_CPPFLAGS="${CPPFLAGS+set}"
-smr_save_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS ${[$1]_CFLAGS}"
-
+    dnl We need to put the given include directory into CPPFLAGS temporarily, but
+    dnl then restore CPPFLAGS to its old value.
+    dnl
+    smr_save_CPPFLAGS="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS ${[$1]_CFLAGS}"
     ifelse($3, , , CPPFLAGS="$CPPFLAGS [$3]")
+
     AC_CHECK_HEADERS($2)
 
-if test "$smr_test_CPPFLAGS" = set; then
     CPPFLAGS=$smr_save_CPPFLAGS
-else
-    unset CPPFLAGS
-fi
 ])
 
 

@@ -1,9 +1,8 @@
 ## Process this file with automake to create Makefile.in
 
-## Notes: Imakefile used "changepath.sh" script to install proper path
-## to perl interpreter in script.  This has been dropped.
-
+PERL = @PERL@
 moduledir = @FVWM_MODULEDIR@
+
 module_PROGRAMS = FvwmConsole FvwmConsoleC
 module_SCRIPTS = FvwmConsoleC.pl
 
@@ -13,8 +12,14 @@ FvwmConsoleC_SOURCES = FvwmConsoleC.c FvwmConsole.h getline.c
 FvwmConsole_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 FvwmConsoleC_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
+FvwmConsoleC.pl: FvwmConsoleC.pl.in
+	rm -f $@
+	sed -e 's,xPERLx,$(PERL),' $< > $@-t
+	mv $@-t $@
+	chmod +x $@
+
 man_MANS = FvwmConsole.1 FvwmConsoleC.pl.1
-EXTRA_DIST = $(man_MANS) $(module_SCRIPTS) Changes .fvwm2rc.sample
+EXTRA_DIST = FvwmConsoleC.pl.in $(man_MANS) Changes .fvwm2rc.sample
 
 # Use X_EXTRA_LIBS to get socket(), etc.
 LDADD = -L$(top_builddir)/libs -lfvwm $(readline_LIBS) $(X_EXTRA_LIBS)

@@ -1,3 +1,12 @@
+Sat Mar 13 11:04:48 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* configure.in: added check for perl. Re-ordered to put tests for
+	optional libraries near the beginning, so we can fail early if
+	desired library is not found.
+
+	* acinclude.m4 (smr_ARG_WITHINCLUDES): removed `unset', as it is
+	said to be unportable.
+
 1999-03-13  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* vms/*: updates from Fabien.
