@@ -1,7 +1,7 @@
 
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -26,8 +26,6 @@ static int dragx;       /* all these variables are used */
 static int dragy;       /* in resize operations */
 static int dragWidth;
 static int dragHeight;
-static int constrainx;
-static int constrainy;
 
 static int origx;
 static int origy;
@@ -45,7 +43,7 @@ extern Window PressedW;
  *
  ****************************************************************************/
 void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		   unsigned long context, char *action,int *Module) 
+		   unsigned long context, char *action,int *Module)
 {
   Bool finished = FALSE, done = FALSE, abort = FALSE;
   int x,y,delta_x,delta_y,stashed_x,stashed_y;
@@ -59,7 +57,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
 
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		 &JunkX, &JunkY, &JunkX, &JunkY, &button_mask);    
+		 &JunkX, &JunkY, &JunkX, &JunkY, &button_mask);
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
 
   if(check_allowed_function2(F_RESIZE,tmp_win) == 0
@@ -87,20 +85,20 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
 
   ResizeWindow = tmp_win->frame;
-  
+
   if(n == 2)
     {
       dragWidth = val1*val1_unit/100;
       dragHeight = val2*val2_unit/100;
       dragWidth += (2*tmp_win->boundary_width);
       dragHeight += (tmp_win->title_height + 2*tmp_win->boundary_width);
- 
-      constrainx = constrainy = 0; /* size will be less or equal to requested */
-      ConstrainSize (tmp_win, &dragWidth, &dragHeight);
-      SetupFrame (tmp_win, tmp_win->frame_x, 
+
+      /* size will be less or equal to requested */
+      ConstrainSize (tmp_win, &dragWidth, &dragHeight, True);
+      SetupFrame (tmp_win, tmp_win->frame_x,
 		  tmp_win->frame_y ,dragWidth, dragHeight,FALSE);
-      
-      ResizeWindow = None; 
+
+      ResizeWindow = None;
       return;
     }
 
@@ -108,8 +106,6 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
      outside the pointer.  If the outline is always inside the pointer and
      there is another PointerFocus window underneath the pointer at the end of
      the resize the focus will be changed to the window underneath - bad karma */
-  constrainx = tmp_win->hints.width_inc - 1;
-  constrainy = tmp_win->hints.height_inc - 1;
 
   InstallRootColormap();
 
@@ -127,7 +123,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   Scr.flags &= ~(EdgeWrapX|EdgeWrapY);
 
   XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
-	       &dragx, &dragy, (unsigned int *)&dragWidth, 
+	       &dragx, &dragy, (unsigned int *)&dragWidth,
 	       (unsigned int *)&dragHeight, &JunkBW,&JunkDepth);
 
   dragx += tmp_win->bw;
@@ -177,7 +173,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	}
     }
   /* draw the rubber-band window */
-  MoveOutline (Scr.Root, dragx - tmp_win->bw, dragy - tmp_win->bw, 
+  MoveOutline (Scr.Root, dragx - tmp_win->bw, dragy - tmp_win->bw,
 	       dragWidth + 2 * tmp_win->bw,
 	       dragHeight + 2 * tmp_win->bw);
   /* kick off resizing without requiring any motion if invoked with a key press */
@@ -185,7 +181,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
                     &stashed_x,&stashed_y,&JunkX, &JunkY, &JunkMask);
-      DoResize(stashed_x, stashed_y, tmp_win);  
+      DoResize(stashed_x, stashed_y, tmp_win);
     }
   else
     stashed_x = stashed_y = -1;
@@ -197,12 +193,12 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 ButtonMotionMask | PointerMotionMask | ExposureMask,  &Event);
       StashEventTime(&Event);
 
-      if (Event.type == MotionNotify) 
+      if (Event.type == MotionNotify)
 	/* discard any extra motion events before a release */
 	while(XCheckMaskEvent(dpy, ButtonMotionMask |	ButtonReleaseMask |
 			      PointerMotionMask,&Event))
 	  {
-	    StashEventTime(&Event);      
+	    StashEventTime(&Event);
 	    if (Event.type == ButtonRelease) break;
 	  }
 
@@ -256,7 +252,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  y = Event.xmotion.y_root;
 	  /* resize before paging request to prevent resize from lagging
 	   * mouse - mab */
-	  DoResize(x, y, tmp_win);  
+	  DoResize(x, y, tmp_win);
 	  /* need to move the viewport */
 	  HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&x,&y,
 		       &delta_x,&delta_y,False);
@@ -284,7 +280,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      dragWidth + 2 * tmp_win->bw, dragHeight + 2 * tmp_win->bw);
 
 	}
-    } 
+    }
 
   /* erase the rubber-band */
   MoveOutline(Scr.Root, 0, 0, 0, 0);
@@ -294,12 +290,12 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(!abort)
     {
-      ConstrainSize (tmp_win, &dragWidth, &dragHeight);
-      SetupFrame (tmp_win, dragx - tmp_win->bw, 
+      ConstrainSize (tmp_win, &dragWidth, &dragHeight, False);
+      SetupFrame (tmp_win, dragx - tmp_win->bw,
 		  dragy - tmp_win->bw, dragWidth, dragHeight,FALSE);
     }
   UninstallRootColormap();
-  ResizeWindow = None; 
+  ResizeWindow = None;
   MyXUngrabServer(dpy);
   UngrabEm();
   xmotion = 0;
@@ -343,7 +339,7 @@ void DoResize(int x_root, int y_root, FvwmWindow *tmp_win)
       action = 1;
       ymotion = -1;
     }
-  
+
   if ((x_root <= origx)||
       ((xmotion == 1)&&(x_root < origx + origWidth - 1)))
     {
@@ -360,15 +356,15 @@ void DoResize(int x_root, int y_root, FvwmWindow *tmp_win)
       action = 1;
       xmotion = -1;
     }
-  
-  if (action) 
+
+  if (action)
     {
-      ConstrainSize (tmp_win, &dragWidth, &dragHeight);
+      ConstrainSize (tmp_win, &dragWidth, &dragHeight, False);
       if (xmotion == 1)
 	dragx = origx + origWidth - dragWidth;
       if (ymotion == 1)
 	dragy = origy + origHeight - dragHeight;
-      
+
       MoveOutline(Scr.Root, dragx - tmp_win->bw,dragy - tmp_win->bw,
 		  dragWidth + 2 * tmp_win->bw, dragHeight + 2 * tmp_win->bw);
     }
@@ -395,21 +391,21 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height,Bool Init)
 
   if (last_width == width && last_height == height)
     return;
-  
+
   last_width = width;
   last_height = height;
-  
+
   dheight = height - tmp_win->title_height - 2*tmp_win->boundary_width;
   dwidth = width - 2*tmp_win->boundary_width;
-  
+
   dwidth -= tmp_win->hints.base_width;
   dheight -= tmp_win->hints.base_height;
   dwidth /= tmp_win->hints.width_inc;
   dheight /= tmp_win->hints.height_inc;
-  
+
   (void) sprintf (str, " %4d x %-4d ", dwidth, dheight);
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
-    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;  
+    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
   if(Init)
     {
       XClearWindow(dpy,Scr.SizeWindow);
@@ -438,23 +434,37 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height,Bool Init)
  *
  *      The general algorithm, especially the aspect ratio stuff, is
  *      borrowed from uwm's CheckConsistency routine.
- * 
+ *
  ***********************************************************************/
 
-void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp)
+void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool fNoConstrain)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 #define _min(a,b) (((a) < (b)) ? (a) : (b))
     int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
     int baseWidth, baseHeight;
     int dwidth = *widthp, dheight = *heightp;
+    int constrainx, constrainy;
 
+    /* Dominik Vogt (08-Dec-1998): a dirty hack to fix the growing windows problem.
+     * fNoConstrain is True if called from 'resize_window' with two arguments and
+     * nowhere else. */
+    if (fNoConstrain)
+      {
+	constrainx = 0;
+	constrainy = 0;
+      }
+    else
+      {
+	constrainx = tmp_win->hints.width_inc - 1;
+	constrainy = tmp_win->hints.height_inc - 1;
+      }
     dwidth -= 2 *tmp_win->boundary_width;
     dheight -= (tmp_win->title_height + 2*tmp_win->boundary_width);
 
     minWidth = tmp_win->hints.min_width;
     minHeight = tmp_win->hints.min_height;
-    
+
     baseWidth = tmp_win->hints.base_width;
     baseHeight = tmp_win->hints.base_height;
 
@@ -466,24 +476,24 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp)
 
     xinc = tmp_win->hints.width_inc;
     yinc = tmp_win->hints.height_inc;
-    
+
     /*
      * First, clamp to min and max values
      */
     if (dwidth < minWidth) dwidth = minWidth;
     if (dheight < minHeight) dheight = minHeight;
-    
+
     if (dwidth > maxWidth) dwidth = maxWidth;
     if (dheight > maxHeight) dheight = maxHeight;
-    
-    
+
+
     /*
      * Second, fit to base + N * inc (<= or >= depending on resize type)
      */
     dwidth = ((dwidth - baseWidth + constrainx) / xinc * xinc) + baseWidth;
     dheight = ((dheight - baseHeight + constrainy) / yinc * yinc) + baseHeight;
-    
-    
+
+
     /*
      * Third, adjust for aspect ratio
      */
@@ -503,7 +513,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp)
      *
      * minAspectX * dheight > minAspectY * dwidth
      * maxAspectX * dheight < maxAspectY * dwidth
-     * 
+     *
      */
 
     if (tmp_win->hints.flags & PAspect)
@@ -513,7 +523,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp)
 	    /* Change width to match */
 	    delta = makemult(minAspectX * dheight / minAspectY - dwidth,
 			     xinc);
-	    if (dwidth + delta <= maxWidth) 
+	    if (dwidth + delta <= maxWidth)
 	      dwidth += delta;
 	  }
 	if (minAspectX * dheight > minAspectY * dwidth)
@@ -523,14 +533,14 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp)
 	    if (dheight - delta >= minHeight)
 	      dheight -= delta;
 	    else
-	      {	
+	      {
 		delta = makemult(minAspectX*dheight / minAspectY - dwidth,
 				 xinc);
-		if (dwidth + delta <= maxWidth) 
+		if (dwidth + delta <= maxWidth)
 		  dwidth += delta;
 	      }
 	  }
-	
+
         if ((maxAspectX * dheight < maxAspectY * dwidth)&&(ymotion == 0))
 	  {
             delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
@@ -542,7 +552,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp)
 	  {
 	    delta = makemult(dwidth - maxAspectX*dheight/maxAspectY,
 			     xinc);
-	    if (dwidth - delta >= minWidth) 
+	    if (dwidth - delta >= minWidth)
 		dwidth -= delta;
 	    else
 	      {
@@ -586,9 +596,9 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
 
   if (x == lastx && y == lasty && width == lastWidth && height == lastHeight)
     return;
-    
+
   /* undraw the old one, if any */
-  if (lastWidth || lastHeight)	
+  if (lastWidth || lastHeight)
     {
       rects[0].x = lastx;
       rects[0].y = lasty;
@@ -612,14 +622,14 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
       rects[4].height = (lastHeight-6);
       XDrawRectangles(dpy,Scr.Root,Scr.DrawGC,rects,5);
     }
-  
+
   lastx = x;
   lasty = y;
   lastWidth = width;
   lastHeight = height;
-  
+
   /* draw the new one, if any */
-  if (lastWidth || lastHeight)	
+  if (lastWidth || lastHeight)
     {
       rects[0].x = lastx;
       rects[0].y = lasty;
@@ -641,7 +651,7 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
       rects[4].y = lasty+3;
       rects[4].width = (lastWidth-6)/3;
       rects[4].height = (lastHeight-6);
-      XDrawRectangles(dpy,Scr.Root,Scr.DrawGC,rects,5);      
+      XDrawRectangles(dpy,Scr.Root,Scr.DrawGC,rects,5);
     }
 }
 

@@ -229,7 +229,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   unsigned long context, char *action,int *Module);
 extern void       RaiseThisWindow(int);
 extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
-extern void       ConstrainSize (FvwmWindow *, int *, int *);
+extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool fNoConstrain);
 extern void       HandlePaging(int, int, int *, int *, int *, int *,Bool);
 extern void       SetShape(FvwmWindow *, int);
 extern void       AutoPlace(FvwmWindow *);

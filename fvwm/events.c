@@ -563,7 +563,7 @@ void HandlePropertyNotify()
 #if 0
 	new_width = Tmp_win->frame_width;
 	new_height = Tmp_win->frame_height;
-	ConstrainSize(Tmp_win, &new_width, &new_height);
+	ConstrainSize(Tmp_win, &new_width, &new_height, False);
 	if((new_width != Tmp_win->frame_width)||
 	   (new_height != Tmp_win->frame_height))
 	  SetupFrame(Tmp_win,Tmp_win->frame_x, Tmp_win->frame_y,
@@ -1388,7 +1388,7 @@ void HandleConfigureRequest()
    * requested client window width; the inner height is the same as the
    * requested client window height plus any title bar slop.
    */
-  ConstrainSize(Tmp_win, &width, &height);
+  ConstrainSize(Tmp_win, &width, &height, False);
   SetupFrame (Tmp_win, x, y, width, height,sendEvent);
   KeepOnTop();
 

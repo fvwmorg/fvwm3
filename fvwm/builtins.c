@@ -374,7 +374,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       new_width = Scr.MyDisplayWidth-2;
     }
     tmp_win->flags |= MAXIMIZED;
-    ConstrainSize (tmp_win, &new_width, &new_height);
+    ConstrainSize (tmp_win, &new_width, &new_height, False);
     SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE);
     SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
   }

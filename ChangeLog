@@ -1,3 +1,21 @@
+1998-12-08  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/resize.c:
+	Removed globals constrainx/constrainy. Calculate them in ConstrainSize when
+	needed. This fixes the growing windows bug. Had to change the signature of
+	ConstrainSize.
+
+	* fvwm/misc.h:
+	* fvwm/resize.c (resize_window):
+	(DoResize):
+	(ConstrainSize):
+	* fvwm/add_window.c (AddWindow):
+	(AddWindow):
+	* fvwm/builtins.c (Maximize):
+	* fvwm/events.c (HandlePropertyNotify):
+	(HandleConfigureRequest):
+	added new parameter fNoConstrain to ConstrainSize function
+
 1998-12-05  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c (ReadButtonFace): fixed memory leak (?)

@@ -257,7 +257,7 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height+
     2*tmp_win->boundary_width;
 
-  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
+  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False);
 
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
@@ -408,7 +408,7 @@ FvwmWindow *AddWindow(Window w)
   tmp_win->frame_width = tmp_win->attr.width+2*tmp_win->boundary_width;
   tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height+
     2*tmp_win->boundary_width;
-  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
+  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False);
 
   valuemask = CWBorderPixel | CWCursor | CWEventMask;
   if(Scr.d_depth < 2)
@@ -1054,6 +1054,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     }
   }
 }
+
 
 
 /***********************************************************************
