@@ -1,3 +1,108 @@
+1998-12-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* ------ end of my changes for MenuStyle rework ------
+
+	* fvwm/fvwm2.1: a little cleanup on 'Style'
+
+1998-12-21  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (ReadMenuFace): fixed coredumps: freeing NULL
+	pointers for item and s_colors[i]
+	(ReadMenuFace): fixed memory leak: perc not freed
+
+	* fvwm/fvwm2.1 (Note): updated manpage for FvwmAnimate/FvwmEvent
+
+1998-12-21  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (PaintEntry): Why the hell were the popup tringles
+	placed dynamically? An offset of five pixels from the right edge of
+	the menu siply has to do. The dynamic placement might put the tringle
+	over the text of the menu item.
+
+	* fvwm/builtins.c (DestroyMenuStyle): it is possible to destroy a used
+	menu style. Menus using it revert back to the default menu style
+
+1998-12-20  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* libs/Parse.c (GetTokenIndex): repaired behaviour with (len == 0)
+
+	* fvwm/menus.c:
+	DELAY_POPUP_MENUS macro removed
+	switched to new MenuFace structure
+	replaced c10msDelaysBeforePopup by menu-specific value PopupDelay10ms
+	(MenuInteraction): fixed bug: mouse movement considered only if moved
+	in x and y direction by more that three pixels
+
+	* fvwm/resize.c (DisplaySize):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/builtins.c:
+	* fvwm/fvwm.c (main):
+	* fvwm/move.c: removed some menu dependencies
+
+	* fvwm/builtins.c (SetGlobalStyle): new command
+
+	* fvwm/builtins.c (SetGlobalOptions):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/screen.h (ScreenInfo): moved global options into 'go' structure
+	created 'gs' structure for global styles
+
+	* fvwm/builtins.c:
+	* fvwm/functions.c (func_config):
+	* fvwm/parse.h:
+	* fvwm/misc.h: new command GlobalStyle
+
+	* fvwm/move.c (DisplayPosition): removed some of the menu dependencies
+
+1998-12-19  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/icons.c:
+	(CreateIconWindow):
+	(DrawIconWindow):
+	removed dependencies to menu code
+
+	* fvwm/fvwm2.1: documented DefaultFont command
+	updated syntax for IconFont and WIndowFont
+
+	* fvwm/builtins.c (ReadMenuFace): static now
+	(FreeMenuFaceStyle): changes for new MenuStyle syntax
+	(ReadMenuFace): fixed coredump: Pixmap/TiledPixmap without pixmap name
+	(ReadMenuFace): fixem meory leaks
+	(ReadMenuFace): fixed coredump: incomplete gradients freed
+
+	* fvwm/menus.h: new structures MenuLookStyle and MenuFeelStyle,
+	modified MenuFace.
+
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/screen.h (ScreenInfo): added StdGC, StdReliefGC and StdShadowGC.
+
+	* fvwm/fvwm.c (main): modified logic for creation of SizeWindow
+	(SetRCDefaults): 'DefaultFont' replaces 'WindowFont' and 'IconFont'
+	in list of initial config commands
+
+	* fvwm/screen.h: added ApplyWindowFont declaration
+	(ScreenInfo): new hasIconFont and hasWindowFont
+
+	* fvwm/parse.h:
+	* fvwm/functions.c (func_config): Added 'DefaultFont' and
+	'DefaultColors'
+
+	* fvwm/builtins.c (ApplyIconFont):
+	(LoadIconFont):
+	(ApplyWindowFont):
+	(LoadWindowFont): moved calculations based on the font into separate
+	functions so that 'SetDefaultFont' may do this too.
+
+	* fvwm/builtins.c (ChangeMenuStyle): fixed memory leaks in parsing
+	(DestroyMenuStyle): cleaned up
+
+1998-12-18  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* libs/Parse.c (GetQuotedString):
+	(SkipQuote): new functions for ease of parsing.
+
+	* ------ beginning of my changes for MenuStyle rework ------
+
 Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 
 	* fvwm/functions.c (func_config): Oops, put EdgeThickness command
@@ -10,16 +115,16 @@ Sun Dec 20 09:34:19 1998  DanEspen  <dje@blue>
 	for the args to any fvwm2 command.
 
 	* NEWS:
-	* fvwm/fvwm2.1: 
+	* fvwm/fvwm2.1:
 	* fvwm/functions.c (func_config):
 	* fvwm/virtual.c (setEdgeThickness): Add new command, "EdgeThickness
 	0 | 1 | 2".
 
 1998-12-18  Bob Woodside  <proteus@pcnet.com>
 
-	* fvwm/placement.c (PlaceWindow): Removed checks for IconicState property
-	that prevented StartsOnPage from working when an app was started with
-	the -iconic argument.
+	* fvwm/placement.c (PlaceWindow): Removed checks for IconicState
+	property that prevented StartsOnPage from working when an app was
+	started with the -iconic argument.
 
 1998-12-18  Dan Espen  <dane@mk.bellcore.com>
 

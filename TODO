@@ -16,7 +16,7 @@ Cleanups:
   - Modules should be installed with 'install-exec', rather than
     'install-data' target.  This requires putting 'exec' in the
     automake variable for the module directory; i.e. moduledir -->
-    moduleexecdir? 
+    moduleexecdir?
   - Make fvwmlib a shared lib?
 
 ----------------------------------------------------------------------
@@ -156,7 +156,7 @@ New stuff:
     size, gradients, etc)?
 
   - Implement (or at least investigate) dynamic loading of functions
-    on systems that support it?  
+    on systems that support it?
         AIX - load
         Linux - dld (gnu) or dlopen (ELF)
         SunOS, Solaris, OSF - dlopen
@@ -287,7 +287,7 @@ typedef struct FvwmWindow
 ----------------------
 Bob Woodside's To-Do's
 ----------------------
-  
+
   - investigate re-implementing the 2.0.46 Animated Windowshade patch
     using the module interface, like FvwmAnimate does for iconification
 
@@ -296,4 +296,4 @@ Bob Woodside's To-Do's
 
 
 ----------------------------------------------------------------------
- 
+

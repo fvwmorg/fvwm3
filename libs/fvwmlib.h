@@ -65,6 +65,10 @@ int matchWildcards(char *pattern, char *string);
 #define IsBlockEnd(c,cs) (((c) == ']' && (cs) == '[') || ((c) == '}' && (cs) == '{') || ((c) == ')' && (cs) == '('))
 #define MAX_TOKEN_LENGTH 255
 
+char *SkipQuote(char *s, const char *qlong, const char *qstart,
+		const char *qend);
+char *GetQuotedString(char *sin, char **sout, const char *delims,
+		      const char *qlong, const char *qstart, const char *qend);
 char *PeekToken(const char *pstr);
 char *GetToken(char **pstr);
 int CmpToken(const char *pstr,char *tok);

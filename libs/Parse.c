@@ -9,6 +9,97 @@
 #include <stdlib.h>
 #include "fvwmlib.h"
 
+/* If the string s begins with a quote chracter SkipQuote returns a pointer
+ * to the first unquoted character or to the final '\0'. If it does not, a
+ * pointer to the next character in the string is returned.
+ * There are three possible types of quoting: a backslash quotes the next
+ * character only. Long quotes like " " or ' ' quoting everything in
+ * between and quote pairs like ( ) or { }.
+ *
+ * precedence:
+ *
+ * 1) Backslashes are honoured always, even inside long or pair quotes.
+ * 2) long quotes do quote quoting pair characters but not simple quotes. All
+ *    long quotes can quote all other types of long quotes).
+ * 3) pair quotes none of the above. Text between a pair of quotes is treated
+ *    as a single token.
+ *
+ * qlong   - string of long quoted (defaults to "'` )
+ * qstart  - string of pair quote start characters (defaults to empty string)
+ * qend    - string of pair quote end characters (defaults to empty string)
+ *
+ * The defaults are used if NULL is passed for the corresponding string.
+ */
+char *SkipQuote(char *s, const char *qlong, const char *qstart,
+		const char *qend)
+{
+  char *t;
+
+  if (s == NULL || *s == 0)
+    return s;
+  if (!qlong)
+    qlong = "\"'`";
+  if (!qstart)
+    qstart = "";
+  if (!qend)
+    qend = "";
+
+  if (*s == '\\' && s[1] != 0)
+    return s+2;
+  else if (*qlong && (t = strchr(qlong, *s)))
+    {
+      char c = *t;
+
+      s++;
+      while(*s && *s != c)
+	{
+	  /* Skip over escaped text, ie \quote */
+	  if(*s == '\\' && *(s+1) != 0)
+	    s++;
+	  s++;
+	}
+      if(*s == c)
+	s++;
+    }
+  else if (*qstart && (t = strchr(qstart, *s)))
+    {
+      char c = *((t - qstart) + qend);
+
+      while (*s && *s != c)
+	s = SkipQuote(s, qlong, "", "");
+      return (*s == *t) ? ++s : s;
+    }
+  else
+    return ++s;
+}
+
+/* Returns a string up to the first character from the string delims in a
+ * malloc'd area just like GetNextToken. Quotes are not removed from the
+ * returned string. The returned string is stored in *sout, the return value
+ * of this call is a pointer to the first character after the delimiter or
+ * to the terminating '\0'. Quoting is handled like in SkipQuote. */
+char *GetQuotedString(char *sin, char **sout, const char *delims,
+		      const char *qlong, const char *qstart, const char *qend)
+{
+  char *t = sin;
+  unsigned int len;
+
+  if (!sout || !sin)
+    return NULL;
+
+  while (*t && !strchr(delims, *t))
+    t = SkipQuote(t, qlong, qstart, qend);
+  len = t - sin;
+  *sout = (char *)safemalloc(len + 1);
+  memcpy(*sout, sin, len * sizeof(char));
+  (*sout)[len] = 0;
+  if (*t)
+    t++;
+
+  return t;
+}
+
+
 /*
 ** PeekToken: returns next token from string, leaving string intact
 **            (you should free returned string later)
@@ -357,6 +448,7 @@ int GetTokenIndex(char *token, char *list[], int len, char **next)
 {
   int i;
   int l;
+  int k;
 
   if (!token || !list)
     {
@@ -367,8 +459,11 @@ int GetTokenIndex(char *token, char *list[], int len, char **next)
   l = (len) ? len : strlen(token);
   for (i = 0; list[i] != NULL; i++)
     {
+      k = strlen(list[i]);
       if (len < 0)
-	l = strlen(list[i]);
+	l = k;
+      if (len == 0 && k != l)
+	continue;
       if (!strncasecmp(token, list[i], l))
 	break;
     }

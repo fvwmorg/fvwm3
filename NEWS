@@ -4,6 +4,12 @@ Changes in beta release 2.1.6 (December 1998)
 * New command "EdgeThickness" to control the size of the pan frames, and
   a new way to turn off mouse edgescrolling.
 
+* new commands DefaultFont, DefaultColors and Emulate
+
+* SetMenuStyle was completely rewritten to get a 'Style'-like syntax.
+
+* Removed SetMenuDelay command.
+
 Changes in beta release 2.1.5 (December 1998)
 
 * SnapAttraction works for windows and/or icons. New command SnapGrid.
