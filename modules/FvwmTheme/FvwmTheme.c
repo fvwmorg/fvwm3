@@ -337,12 +337,11 @@ static void parse_colorset(char *line)
     token = PeekToken(line, &line);
 #ifdef SHAPE
     /* set the flags */
-    cs->shape_tile = 0;
-    cs->shape_keep_aspect = 0;
+    cs->shape_type = SHAPE_STRETCH;
     if (i == 1)
-      cs->shape_tile = 1;
+      cs->shape_type = SHAPE_TILED;
     else if (i == 2)
-      cs->shape_keep_aspect = 1;
+      cs->shape_type = SHAPE_STRETCH_ASPECT;
 
     /* try to load the shape mask */
     if (token)
@@ -467,8 +466,12 @@ static void parse_colorset(char *line)
 		  cs->height, 0, 0);
       }
       DestroyPicture(dpy, picture);
-      cs->keep_aspect = (type == 2);
-      cs->stretch_x = cs->stretch_y = (type != 0);
+      if (type == 2)
+        cs->pixmap_type = PIXMAP_STRETCH_ASPECT;
+      else if (type == 1)
+        cs->pixmap_type = PIXMAP_STRETCH;
+      else
+        cs->pixmap_type = PIXMAP_TILED;
       break;
     default:
       /* test for ?Gradient */
@@ -490,9 +493,12 @@ static void parse_colorset(char *line)
 	CreateGradientPixmapFromString(dpy, win, gc, type, line, &w, &h);
       cs->width = w;
       cs->height = h;
-      cs->keep_aspect = False;
-      cs->stretch_x = !(type == V_GRADIENT);
-      cs->stretch_y = !(type == H_GRADIENT);
+      if (type == V_GRADIENT)
+        cs->pixmap_type = PIXMAP_STRETCH_Y;
+      else if (type == H_GRADIENT)
+        cs->pixmap_type = PIXMAP_STRETCH_X;
+      else
+        cs->pixmap_type = PIXMAP_STRETCH;
     }
   }
 

@@ -75,11 +75,10 @@ char *DumpColorset(unsigned int n)
   colorset_struct *cs = &Colorset[n];
 
   sprintf(csetbuf,
-	  "Colorset %x %lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %x",
-	  n, cs->fg,
-	  cs->bg, cs->hilite, cs->shadow, cs->pixmap, cs->mask, cs->shape_mask,
-	  cs->width, cs->height, cs->stretch_x, cs->stretch_y,
-	  cs->keep_aspect, cs->shape_tile, cs->shape_keep_aspect);
+	  "Colorset %x %lx %lx %lx %lx %lx %lx %lx %x %x %x %x",
+	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->pixmap, cs->mask,
+	  cs->shape_mask, cs->width, cs->height, cs->pixmap_type,
+	  cs->shape_type);
   return csetbuf;
 }
 
@@ -94,18 +93,16 @@ static int LoadColorsetConditional(char *line, Bool free)
   Pixmap pixmap;
   Pixmap mask;
   Pixmap shape_mask;
-  unsigned int width, height, stretch_x, stretch_y, keep_aspect;
-  unsigned int shape_tile, shape_keep_aspect;
+  unsigned int width, height, pixmap_type, shape_type;
 
   if (line == NULL)
     return -1;
   if (sscanf(line, "%x%n", &n, &chars) != 1)
     return -1;
   line += chars;
-  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %x",
+  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %lx %x %x %x %x",
 	     &fg, &bg, &hilite, &shadow, &pixmap, &mask, &shape_mask, &width,
-	     &height, &stretch_x, &stretch_y, &keep_aspect, &shape_tile,
-	     &shape_keep_aspect) != 14)
+	     &height, &pixmap_type, &shape_type) != 11)
     return -1;
   AllocColorset(n);
   cs = &Colorset[n];
@@ -137,11 +134,8 @@ static int LoadColorsetConditional(char *line, Bool free)
   cs->shape_mask = shape_mask;
   cs->width = width;
   cs->height = height;
-  cs->stretch_x = stretch_x;
-  cs->stretch_y = stretch_y;
-  cs->keep_aspect = keep_aspect;
-  cs->shape_tile = shape_tile;
-  cs->shape_keep_aspect = shape_keep_aspect;
+  cs->pixmap_type = pixmap_type;
+  cs->shape_type = shape_type;
   return n;
 }
 inline int LoadColorset(char *line)
@@ -209,18 +203,20 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   static GC solid_gc = None;
   int cs_width;
   int cs_height;
-  unsigned int cs_keep_aspect;
-  unsigned int cs_stretch_x;
-  unsigned int cs_stretch_y;
+  Bool cs_keep_aspect;
+  Bool cs_stretch_x;
+  Bool cs_stretch_y;
 
   if (!is_shape_mask)
   {
     cs_pixmap = colorset->pixmap;
     cs_width = colorset->width;
     cs_height = colorset->height;
-    cs_keep_aspect = colorset->keep_aspect;
-    cs_stretch_x = colorset->stretch_x;
-    cs_stretch_y = colorset->stretch_y;
+    cs_keep_aspect = (colorset->pixmap_type == PIXMAP_STRETCH_ASPECT);
+    cs_stretch_x = (colorset->pixmap_type == PIXMAP_STRETCH_X)
+		   || (colorset->pixmap_type == PIXMAP_STRETCH);
+    cs_stretch_y = (colorset->pixmap_type == PIXMAP_STRETCH_Y)
+		   || (colorset->pixmap_type == PIXMAP_STRETCH);
   }
   else
   {
@@ -246,9 +242,9 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
     {
       return None;
     }
-    cs_keep_aspect = colorset->shape_keep_aspect;
-    cs_stretch_x = !(colorset->shape_tile);
-    cs_stretch_y = !(colorset->shape_tile);
+    cs_keep_aspect = (colorset->shape_type == SHAPE_STRETCH_ASPECT);
+    cs_stretch_x = !(colorset->shape_type == SHAPE_TILED);
+    cs_stretch_y = !(colorset->shape_type == SHAPE_TILED);
   }
 
   if (cs_pixmap == None)
@@ -343,6 +339,11 @@ void SetRectangleBackground(
   Pixmap clipmask = None;
   GC clip_gc = None;
 #endif
+  Bool keep_aspect = (colorset->pixmap_type == PIXMAP_STRETCH_ASPECT);
+  Bool stretch_x = (colorset->pixmap_type == PIXMAP_STRETCH_X)
+		   || (colorset->pixmap_type == PIXMAP_STRETCH);
+  Bool stretch_y = (colorset->pixmap_type == PIXMAP_STRETCH_Y)
+		   || (colorset->pixmap_type == PIXMAP_STRETCH);
 
   /* minimize gc creation by remembering the last requested depth */
   if (last_gc != None && depth != last_depth)
@@ -385,20 +386,20 @@ void SetRectangleBackground(
   {
     pixmap = CreateBackgroundPixmap(
       dpy, win, width, height, colorset, depth, gc, False);
-    if (colorset->keep_aspect)
+    if (keep_aspect)
     {
       /* nothing to do */
     }
-    if (colorset->stretch_x || colorset->stretch_y)
+    if (stretch_x || stretch_y)
     {
-      if (!colorset->stretch_x && colorset->width != width)
+      if (stretch_x && colorset->width != width)
       {
 	pixmap2 = CreateStretchXPixmap(
 	  dpy, pixmap, colorset->width, height, depth, width, gc);
 	XFreePixmap(dpy, pixmap);
 	pixmap = pixmap2;
       }
-      if (!colorset->stretch_y && colorset->height != height)
+      if (stretch_y && colorset->height != height)
       {
 	pixmap2 = CreateStretchYPixmap(
 	  dpy, pixmap, width, colorset->height, depth, width, gc);

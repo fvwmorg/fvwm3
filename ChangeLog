@@ -1,3 +1,8 @@
+1999-09-28  Hippo
+
+	* libs/Colorset.{h,c}, modules/FvwmTheme/FvwmTheme.c: simplified
+	the colorset structure to allow for expansion.
+
 1999-09-27 Olivier Chapuis <olivier.chapuis@free.fr>
 	
 	* FvwmM4/FvwmM4.c (m4_defs): 

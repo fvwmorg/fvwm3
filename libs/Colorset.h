@@ -32,12 +32,27 @@ typedef struct {
   Pixmap shape_mask;
   unsigned int width : 12;
   unsigned int height : 12;
+  unsigned int pixmap_type: 3;
+  unsigned int shape_type : 2;
+/*
   unsigned int stretch_x : 1;
   unsigned int stretch_y : 1;
   unsigned int keep_aspect : 1;
   unsigned int shape_tile : 1;
   unsigned int shape_keep_aspect : 1;
+*/
 } colorset_struct;
+
+#define PIXMAP_TILED 0
+#define PIXMAP_STRETCH_X 1
+#define PIXMAP_STRETCH_Y 2
+#define PIXMAP_STRETCH 3
+#define PIXMAP_STRETCH_ASPECT 4
+
+#define SHAPE_TILED 0
+#define SHAPE_STRETCH 1
+#define SHAPE_STRETCH_ASPECT 2
+
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_struct *Colorset;
