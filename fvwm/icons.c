@@ -790,8 +790,8 @@ void AutoPlaceIcon(FvwmWindow *t)
 #define HRZ_FILL icon_boxes_ptr->IconFlags & ICONFILLHRZ
 
     /* needed later */
-    fscr.xypos.x = t->frame_g.x + t->frame_g.width / 2;
-    fscr.xypos.y = t->frame_g.y + t->frame_g.height / 2;
+    fscr.xypos.x = t->frame_g.x + (t->frame_g.width / 2) - base_x;
+    fscr.xypos.y = t->frame_g.y + (t->frame_g.height / 2) - base_y;
     /* unnecessary copy of width */
     width = t->icon_p_width;
     /* total height */
@@ -810,8 +810,11 @@ void AutoPlaceIcon(FvwmWindow *t)
         break;
       }
       /* get the screen dimensions for the icon box */
+      if (icon_boxes_ptr->IconScreen == FSCREEN_CURRENT)
+	fscr.mouse_ev = NULL;
       FScreenGetScrRect(
-	&fscr, icon_boxes_ptr->IconScreen,
+	&fscr,
+        icon_boxes_ptr->IconScreen,
 	&ref.x, &ref.y, &ref.width, &ref.height);
       dim[1].screen_offset = ref.y;
       dim[1].screen_dimension = ref.height;

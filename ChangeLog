@@ -1,3 +1,9 @@
+2001-10-03  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/icons.c (AutoPlaceIcon):
+	Fixed a core dump with @c and fixed icon placement if the icon should
+	not be on the current page
+
 2001-10-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/icons.c (AutoPlaceIcon):
