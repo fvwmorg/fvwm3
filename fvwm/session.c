@@ -67,15 +67,15 @@ typedef struct _match
 }
 Match;
 
-int                 sm_fd = -1;
-
 #ifdef SESSION
+int sm_fd = -1;
 static char *client_id = NULL;
+static char *sm_client_id = NULL;
 #endif
-static char         *sm_client_id = NULL;
-static int          num_match = 0;
-static Match        *matches = NULL;
-static Bool         sent_save_done = 0;
+
+static int num_match = 0;
+static Match *matches = NULL;
+static Bool sent_save_done = 0;
 
 extern Bool Restarting;
 
@@ -279,11 +279,6 @@ GetWindowRole(Window window)
   }
 
   return NULL;
-}
-
-void SetClientID(char *new_id)
-{
-;                                       /* put something in function */
 }
 
 static char *
@@ -829,6 +824,10 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 }
 
 #ifdef SESSION
+void SetClientID(char *new_id)
+{
+}
+
 static void
 callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
 {
@@ -1152,9 +1151,8 @@ ProcessICEMsgs(void)
       sm_conn = NULL;
       sm_fd = -1;
     }
-#endif
-;                                       /* put something in function */
 }
+#endif
 
 
 /* ------------------------------------------------------------------------ */
