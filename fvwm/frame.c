@@ -916,6 +916,26 @@ static void frame_mrs_hide_unhide_parent(
 	return;
 }
 
+static void frame_mrs_hide_unhide_parent2(
+	FvwmWindow *fw, mr_args_internal *mra)
+{
+	XSetWindowAttributes xswa;
+
+	/* finish hiding the parent */
+	if (mra->step_flags.do_hide_parent)
+	{
+		xswa.win_gravity = mra->grav.parent_grav;
+		XChangeWindowAttributes(
+			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
+		/* update the hidden position of the client */
+		frame_update_hidden_window_pos(fw, mra, False);
+		XLowerWindow(dpy, FW_W_PARENT(fw));
+		XMapWindow(dpy, FW_W_PARENT(fw));
+	}
+
+	return;
+}
+
 static void frame_mrs_setup_draw_decorations(
 	FvwmWindow *fw, mr_args_internal *mra)
 {
@@ -984,6 +1004,8 @@ static void frame_mrs_resize_move_windows(
 			XMoveResizeWindow(
 				dpy, FW_W(fw), 0, 0, mra->parent_s.width,
 				mra->parent_s.height);
+			mra->client_g.width = mra->parent_s.width;
+			mra->client_g.height = mra->parent_s.height;
 		}
 		else
 		{
@@ -1075,25 +1097,6 @@ static void frame_mrs_resize_move_windows(
 	return;
 }
 
-static void frame_mrs_hide_unhide_parent2(
-	FvwmWindow *fw, mr_args_internal *mra)
-{
-	XSetWindowAttributes xswa;
-
-	/* finish hiding the parent */
-	if (mra->step_flags.do_hide_parent)
-	{
-		xswa.win_gravity = mra->grav.parent_grav;
-		XChangeWindowAttributes(
-			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
-		/* update the hidden position of the client */
-		frame_update_hidden_window_pos(fw, mra, False);
-		XLowerWindow(dpy, FW_W_PARENT(fw));
-		XMapWindow(dpy, FW_W_PARENT(fw));
-	}
-
-	return;
-}
 static void frame_move_resize_step(
 	FvwmWindow *fw, mr_args_internal *mra)
 {
@@ -1712,6 +1715,7 @@ frame_move_resize_args frame_create_move_resize_args(
 {
 	mr_args_internal *mra;
 	Bool dummy;
+	Bool rc;
 	int whdiff;
 	int xydiff;
 	int diff;
@@ -1747,7 +1751,22 @@ frame_move_resize_args frame_create_move_resize_args(
 	mra->w_with_focus = (fw == get_focus_window()) ? FW_W(fw) : None;
 
 	/* calculate various geometries */
-	get_client_geometry(fw, &mra->client_g);
+	rc = XGetGeometry(
+		dpy, FW_W(fw), &JunkRoot, &mra->client_g.x, &mra->client_g.y,
+		&mra->client_g.width, &mra->client_g.height, &JunkBW,
+		&JunkDepth);
+	if (rc == True)
+	{
+		rc = XTranslateCoordinates(
+			dpy, FW_W_PARENT(fw), Scr.Root, mra->client_g.x,
+			mra->client_g.y, &mra->client_g.x, &mra->client_g.y,
+			&JunkChild);
+	}
+	if (rc == False)
+	{
+		/* Can only happen if the window died */
+		get_client_geometry(fw, &mra->client_g);
+	}
 	get_window_borders(fw, &mra->b_g);
 	get_window_borders_no_title(fw, &mra->b_no_title_g);
 	mra->start_g = (start_g != NULL) ? *start_g : fw->frame_g;
@@ -2000,8 +2019,7 @@ void frame_setup_window(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	__frame_setup_window(
-		fw, &g, do_send_configure_notify, False, False);
+	__frame_setup_window(fw, &g, do_send_configure_notify, False, False);
 
 	return;
 }
@@ -2016,8 +2034,7 @@ void frame_setup_window_app_request(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	__frame_setup_window(
-		fw, &g, do_send_configure_notify, False, True);
+	__frame_setup_window(fw, &g, do_send_configure_notify, False, True);
 
 	return;
 }
@@ -2032,8 +2049,7 @@ void frame_force_setup_window(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	__frame_setup_window(
-		fw, &g, do_send_configure_notify, True, False);
+	__frame_setup_window(fw, &g, do_send_configure_notify, True, False);
 
 	return;
 }

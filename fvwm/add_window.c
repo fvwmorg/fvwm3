@@ -2546,111 +2546,111 @@ void FetchWmProtocols(FvwmWindow *tmp)
  *
  */
 
-void GetWindowSizeHints(FvwmWindow *tmp)
+void GetWindowSizeHints(FvwmWindow *fw)
 {
 	long supplied = 0;
 	char *broken_cause ="";
 	XSizeHints orig_hints;
 
-	if (HAS_OVERRIDE_SIZE_HINTS(tmp) ||
-	    !XGetWMNormalHints(dpy, FW_W(tmp), &tmp->hints, &supplied))
+	if (HAS_OVERRIDE_SIZE_HINTS(fw) ||
+	    !XGetWMNormalHints(dpy, FW_W(fw), &fw->hints, &supplied))
 	{
-		tmp->hints.flags = 0;
+		fw->hints.flags = 0;
 		memset(&orig_hints, 0, sizeof(orig_hints));
 	}
 	else
 	{
-		memcpy(&orig_hints, &tmp->hints, sizeof(orig_hints));
+		memcpy(&orig_hints, &fw->hints, sizeof(orig_hints));
 	}
 
 	/* Beat up our copy of the hints, so that all important field are
 	 * filled in! */
-	if (tmp->hints.flags & PResizeInc)
+	if (fw->hints.flags & PResizeInc)
 	{
-		SET_SIZE_INC_SET(tmp, 1);
-		if (tmp->hints.width_inc <= 0)
+		SET_SIZE_INC_SET(fw, 1);
+		if (fw->hints.width_inc <= 0)
 		{
-			if (tmp->hints.width_inc < 0 ||
-			    (tmp->hints.width_inc == 0 &&
-			     (tmp->hints.flags & PMinSize) &&
-			     (tmp->hints.flags & PMaxSize) &&
-			     tmp->hints.min_width != tmp->hints.max_width))
+			if (fw->hints.width_inc < 0 ||
+			    (fw->hints.width_inc == 0 &&
+			     (fw->hints.flags & PMinSize) &&
+			     (fw->hints.flags & PMaxSize) &&
+			     fw->hints.min_width != fw->hints.max_width))
 			{
 				broken_cause = "width_inc";
 			}
-			tmp->hints.width_inc = 1;
-			SET_SIZE_INC_SET(tmp, 0);
+			fw->hints.width_inc = 1;
+			SET_SIZE_INC_SET(fw, 0);
 		}
-		if (tmp->hints.height_inc <= 0)
+		if (fw->hints.height_inc <= 0)
 		{
-			if (tmp->hints.height_inc < 0 ||
-			    (tmp->hints.height_inc == 0 &&
-			     (tmp->hints.flags & PMinSize) &&
-			     (tmp->hints.flags & PMaxSize) &&
-			     tmp->hints.min_height != tmp->hints.max_height))
+			if (fw->hints.height_inc < 0 ||
+			    (fw->hints.height_inc == 0 &&
+			     (fw->hints.flags & PMinSize) &&
+			     (fw->hints.flags & PMaxSize) &&
+			     fw->hints.min_height != fw->hints.max_height))
 			{
 				if (!*broken_cause)
 				{
 					broken_cause = "height_inc";
 				}
 			}
-			tmp->hints.height_inc = 1;
-			SET_SIZE_INC_SET(tmp, 0);
+			fw->hints.height_inc = 1;
+			SET_SIZE_INC_SET(fw, 0);
 		}
 	}
 	else
 	{
-		SET_SIZE_INC_SET(tmp, 0);
-		tmp->hints.width_inc = 1;
-		tmp->hints.height_inc = 1;
+		SET_SIZE_INC_SET(fw, 0);
+		fw->hints.width_inc = 1;
+		fw->hints.height_inc = 1;
 	}
 
-	if (tmp->hints.flags & PMinSize)
+	if (fw->hints.flags & PMinSize)
 	{
-		if (tmp->hints.min_width < 0 && !*broken_cause)
+		if (fw->hints.min_width < 0 && !*broken_cause)
 		{
 			broken_cause = "min_width";
 		}
-		if (tmp->hints.min_height < 0 && !*broken_cause)
+		if (fw->hints.min_height < 0 && !*broken_cause)
 		{
 			broken_cause = "min_height";
 		}
 	}
 	else
 	{
-		if (tmp->hints.flags & PBaseSize)
+		if (fw->hints.flags & PBaseSize)
 		{
-			tmp->hints.min_width = tmp->hints.base_width;
-			tmp->hints.min_height = tmp->hints.base_height;
+			fw->hints.min_width = fw->hints.base_width;
+			fw->hints.min_height = fw->hints.base_height;
 		}
 		else
 		{
-			tmp->hints.min_width = 1;
-			tmp->hints.min_height = 1;
+			fw->hints.min_width = 1;
+			fw->hints.min_height = 1;
 		}
 	}
-	if (tmp->hints.min_width <= 0)
+	if (fw->hints.min_width <= 0)
 	{
-		tmp->hints.min_width = 1;
+		fw->hints.min_width = 1;
 	}
-	if (tmp->hints.min_height <= 0)
+	if (fw->hints.min_height <= 0)
 	{
-		tmp->hints.min_height = 1;
+		fw->hints.min_height = 1;
 	}
 
-	if (tmp->hints.flags & PMaxSize)
+	if (fw->hints.flags & PMaxSize)
 	{
-		if (tmp->hints.max_width < tmp->hints.min_width)
+		if (fw->hints.max_width < fw->hints.min_width)
 		{
-			tmp->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+			fw->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
 			if (!*broken_cause)
 			{
 				broken_cause = "max_width";
 			}
 		}
-		if (tmp->hints.max_height < tmp->hints.min_height)
+		if (fw->hints.max_height < fw->hints.min_height)
 		{
-			tmp->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+			fw->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 			if (!*broken_cause)
 			{
 				broken_cause = "max_height";
@@ -2659,8 +2659,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 	}
 	else
 	{
-		tmp->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
-		tmp->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+		fw->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+		fw->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 	}
 
 	/*
@@ -2668,26 +2668,26 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 	 * and vice-versa.
 	 */
 
-	if (tmp->hints.flags & PBaseSize)
+	if (fw->hints.flags & PBaseSize)
 	{
-		if (tmp->hints.base_width < 0)
+		if (fw->hints.base_width < 0)
 		{
-			tmp->hints.base_width = 0;
+			fw->hints.base_width = 0;
 			if (!*broken_cause)
 			{
 				broken_cause = "base_width";
 			}
 		}
-		if (tmp->hints.base_height < 0)
+		if (fw->hints.base_height < 0)
 		{
-			tmp->hints.base_height = 0;
+			fw->hints.base_height = 0;
 			if (!*broken_cause)
 			{
 				broken_cause = "base_height";
 			}
 		}
-		if ((tmp->hints.base_width > tmp->hints.min_width) ||
-		    (tmp->hints.base_height > tmp->hints.min_height))
+		if ((fw->hints.base_width > fw->hints.min_width) ||
+		    (fw->hints.base_height > fw->hints.min_height))
 		{
 			/* In this case, doing the aspect ratio calculation
 			   for window_size - base_size as prescribed by the
@@ -2696,7 +2696,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 			   in aspect ratio calculation while it is still used
 			   for grid sizing.
 			*/
-			tmp->hints.flags &= ~PBaseSize;
+			fw->hints.flags &= ~PBaseSize;
 #if 0
 			/* Keep silent about this, since the Xlib manual
 			 * actually recommends making min <= base <= max ! */
@@ -2706,37 +2706,37 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 	}
 	else
 	{
-		if (tmp->hints.flags & PMinSize)
+		if (fw->hints.flags & PMinSize)
 		{
-			tmp->hints.base_width = tmp->hints.min_width;
-			tmp->hints.base_height = tmp->hints.min_height;
+			fw->hints.base_width = fw->hints.min_width;
+			fw->hints.base_height = fw->hints.min_height;
 		}
 		else
 		{
-			tmp->hints.base_width = 0;
-			tmp->hints.base_height = 0;
+			fw->hints.base_width = 0;
+			fw->hints.base_height = 0;
 		}
 	}
 
-	if (!(tmp->hints.flags & PWinGravity))
+	if (!(fw->hints.flags & PWinGravity))
 	{
-		tmp->hints.win_gravity = NorthWestGravity;
+		fw->hints.win_gravity = NorthWestGravity;
 	}
 
-	if ((tmp->hints.flags & PMaxSize) &&
-	    ((tmp->hints.flags & PMinSize) || (tmp->hints.flags & PBaseSize)))
+	if ((fw->hints.flags & PMaxSize) &&
+	    ((fw->hints.flags & PMinSize) || (fw->hints.flags & PBaseSize)))
 	{
-		if (tmp->hints.max_width < tmp->hints.base_width)
+		if (fw->hints.max_width < fw->hints.base_width)
 		{
-			tmp->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+			fw->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
 			if (!*broken_cause)
 			{
 				broken_cause = "max_width";
 			}
 		}
-		if (tmp->hints.max_height < tmp->hints.base_height)
+		if (fw->hints.max_height < fw->hints.base_height)
 		{
-			tmp->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+			fw->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 			if (!*broken_cause)
 			{
 				broken_cause = "max_height";
@@ -2744,15 +2744,15 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 		}
 	}
 
-	if (tmp->hints.flags & PAspect)
+	if (fw->hints.flags & PAspect)
 	{
 		/*
 		** check to make sure min/max aspect ratios look valid
 		*/
-#define maxAspectX tmp->hints.max_aspect.x
-#define maxAspectY tmp->hints.max_aspect.y
-#define minAspectX tmp->hints.min_aspect.x
-#define minAspectY tmp->hints.min_aspect.y
+#define maxAspectX fw->hints.max_aspect.x
+#define maxAspectY fw->hints.max_aspect.y
+#define minAspectX fw->hints.min_aspect.x
+#define minAspectY fw->hints.min_aspect.y
 
 
 		/*
@@ -2785,7 +2785,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 			{
 				broken_cause = "aspect ratio";
 			}
-			tmp->hints.flags &= ~PAspect;
+			fw->hints.flags &= ~PAspect;
 			fvwm_msg(
 				WARN, "GetWindowSizeHints",
 				"The applicaton window (window id %#lx)\n"
@@ -2798,7 +2798,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 				"    application owner.  "
 				"There is no need to notify "
 				"fvwm-workers@fvwm.org.\n",
-				FW_W(tmp), tmp->name.name, minAspectX,
+				FW_W(fw), fw->name.name, minAspectX,
 				minAspectY, maxAspectX, maxAspectY);
 		}
 		else
@@ -2858,8 +2858,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 			"  min_aspect = %d/%d, max_aspect = %d/%d\n"
 			"  base_width = %d, base_height = %d\n"
 			"  win_gravity = %d\n",
-			FW_W(tmp), tmp->name.name, broken_cause,
-			HAS_OVERRIDE_SIZE_HINTS(tmp),
+			FW_W(fw), fw->name.name, broken_cause,
+			HAS_OVERRIDE_SIZE_HINTS(fw),
 			orig_hints.flags,
 			orig_hints.min_width, orig_hints.min_height,
 			orig_hints.max_width, orig_hints.max_height,
