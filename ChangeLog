@@ -1,3 +1,11 @@
+1999-06-17  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* fvwm/builtins.c (ReadTitleButton): fixed compile error if MINI_ICONS
+	is defined but not PIXMAP_BUTTONS
+
+	* fvwm/borders.c (RedrawBorder): fixed compile error if BORDERSTYLE
+	is not compiled in
+
 1999-06-17  Dominik Vogt  <domimik.vogt@gmx.de>
 
 	* fvwm/fvwm.c (Done): applied another restart patch by Mikhael

@@ -458,11 +458,11 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #endif
 
         /* draw the inside relief */
-        if(
+        if(t->boundary_width > 2
 #ifdef BORDERSTYLE
-           !(borderflags & NoInset)
+           && !(borderflags & NoInset)
 #endif
-           && t->boundary_width > 2)
+	   )
         {
           int height = t->frame_g.height - (t->boundary_width * 2 ) + 1;
           /* Inset for shaded windows goes to the bottom */

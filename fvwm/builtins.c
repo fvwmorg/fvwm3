@@ -2620,7 +2620,9 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     tmpbf.next = NULL;
 #endif
 #ifdef MINI_ICONS
+#ifdef PIXMAP_BUTTONS
     tmpbf.u.p = NULL;
+#endif
 #endif
 
     if (strncmp(spec, "--",2)==0) {
