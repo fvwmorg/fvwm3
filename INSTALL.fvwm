@@ -125,8 +125,8 @@ with XPM even after reading this, try Question 2.4 in the FVWM FAQ.
 
 Rplay is used in a few modules (FvwmEvent, for one) for playing sounds
 without invoking an external program.  This library appears to have
-been orphaned in November, 1996.  The latest version we know about is
-rplay 3.2.0beta6, available at ftp://ftp.x.org/contrib/audio/rplay.
+been orphaned in November, 1996.  The latest version is available at
+http://rplay.doit.org/dist/.
 
 Readline is used in one module (FvwmConsole) to allow fancy
 command-line editing, a history buffer, etc.  It is GNU software, and
