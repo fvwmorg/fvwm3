@@ -532,22 +532,7 @@ int HandlePaging(
 
 	do
 	{
-		if (FPending(dpy) > 0 &&
-		    (FCheckWindowEvent(
-			    dpy, Scr.PanFrameTop.win, LeaveWindowMask, pev) ||
-		     FCheckWindowEvent(
-			     dpy, Scr.PanFrameBottom.win, LeaveWindowMask,
-			     pev) ||
-		     FCheckWindowEvent(
-			     dpy, Scr.PanFrameLeft.win, LeaveWindowMask, pev) ||
-		     FCheckWindowEvent(
-			     dpy, Scr.PanFrameRight.win, LeaveWindowMask, pev)))
-		{
-			is_timestamp_valid = False;
-			add_time = 0;
-			return 0;
-		}
-		else if (FCheckPeekIfEvent(dpy, &e, test_button_event, NULL))
+		if (FCheckPeekIfEvent(dpy, &e, test_button_event, NULL))
 		{
 			is_timestamp_valid = False;
 			add_time = 0;

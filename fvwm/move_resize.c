@@ -3383,12 +3383,13 @@ static Bool __resize_window(F_CMD_ARGS)
 		if (rc == -1)
 		{
 			FMaskEvent(
-				dpy, evmask | EnterNotify | LeaveNotify, &ev);
+				dpy,
+				evmask | EnterWindowMask | LeaveWindowMask,
+				&ev);
 		}
 		if (ev.type == MotionNotify ||
 		    ev.type == EnterNotify || ev.type == LeaveNotify)
 		{
-			XEvent new_event;
 			Bool is_motion;
 
 			is_motion = (ev.type == MotionNotify) ? True : False;
@@ -3398,11 +3399,12 @@ static Bool __resize_window(F_CMD_ARGS)
 			 * moves very fast and suddenly stops in the corner of
 			 * the screen.  Handle EnterNotify/LeaveNotify events
 			 * too to get an idea where the pointer might be. */
-			while (FCheckMaskEvent(
-				       dpy, ButtonMotionMask |
-				       PointerMotionMask | ButtonReleaseMask |
-				       ButtonPressMask  | EnterNotify |
-				       LeaveNotify, &new_event))
+			while (
+				FCheckMaskEvent(
+					dpy, ButtonMotionMask |
+					PointerMotionMask | ButtonReleaseMask |
+					ButtonPressMask | EnterWindowMask |
+					LeaveWindowMask, &ev) == True)
 			{
 				if (ev.type == ButtonRelease ||
 				    ev.type == ButtonPress ||
