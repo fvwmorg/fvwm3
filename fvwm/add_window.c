@@ -1277,16 +1277,20 @@ static void destroy_icon(FvwmWindow *fw)
 				XFreePixmap(dpy, fw->icon_alphaPixmap);
 			}
 		}
-		XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);
 		XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
+		XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);
 		XFlush(dpy);
-	}
-	if ((IS_ICON_OURS(fw))&&(FW_W_ICON_PIXMAP(fw) != None))
-	{
-		XDestroyWindow(dpy, FW_W_ICON_PIXMAP(fw));
 	}
 	if (FW_W_ICON_PIXMAP(fw) != None)
 	{
+		if (IS_ICON_OURS(fw))
+		{
+			XDestroyWindow(dpy, FW_W_ICON_PIXMAP(fw));
+		}
+		else
+		{
+			XUnmapWindow(dpy, FW_W_ICON_PIXMAP(fw));
+		}
 		XDeleteContext(dpy, FW_W_ICON_PIXMAP(fw), FvwmContext);
 	}
 	clear_icon(fw);

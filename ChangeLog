@@ -1,3 +1,9 @@
+2002-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (destroy_icon):
+	fixed duplicate icon pixmap when switching from NoIconOverride to
+	IconOverride
+
 2002-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/icons.c:
