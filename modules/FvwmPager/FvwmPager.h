@@ -19,13 +19,12 @@
 typedef struct ScreenInfo
 {
   unsigned long screen;
-  int d_depth;	        /* copy of DefaultDepth(dpy, screen) */
   int MyDisplayWidth;	/* my copy of DisplayWidth(dpy, screen) */
   int MyDisplayHeight;  /* my copy of DisplayHeight(dpy, screen) */
 
   char *FvwmRoot;	/* the head of the fvwm window list */
-  Window Root;		/* the root window */
 
+  Window Root;
   Window Pager_w;
 
   Font PagerFont;        /* font struct for window labels in pager (optional)*/
@@ -124,9 +123,6 @@ typedef struct pager_string_list
   Picture *bgPixmap;		/* Pixmap used as background. */
 } PagerStringList;
 
-#define ON 1
-#define OFF 0
-
 /*************************************************************************
  *
  * Subroutine Prototypes
@@ -192,7 +188,3 @@ void MoveStickyWindows(void);
 void MapBalloonWindow(XEvent *);
 void UnmapBalloonWindow(void);
 void DrawInBalloonWindow(void);
-
-
-
-

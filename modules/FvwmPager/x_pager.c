@@ -48,6 +48,7 @@
 
 extern ScreenInfo Scr;
 extern Display *dpy;
+extern Graphics *G;
 
 Pixel back_pix, fore_pix, hi_pix;
 Pixel focus_pix;
@@ -265,17 +266,17 @@ void initialize_pager(void)
   	win_hi_fore_pix	= GetColor (WindowHiFore);
   }
   /* Load pixmaps for mono use */
-  if(Scr.d_depth<2)
+  if(G->depth<2)
     {
       Scr.gray_pixmap =
-	XCreatePixmapFromBitmapData(dpy,Scr.Root,g_bits, g_width,g_height,
-				    fore_pix,back_pix,Scr.d_depth);
+	XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,g_bits, g_width,g_height,
+				    fore_pix,back_pix,G->depth);
       Scr.light_gray_pixmap =
-	XCreatePixmapFromBitmapData(dpy,Scr.Root,l_g_bits,l_g_width,l_g_height,
-				    fore_pix,back_pix,Scr.d_depth);
+	XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,l_g_bits,l_g_width,l_g_height,
+				    fore_pix,back_pix,G->depth);
       Scr.sticky_gray_pixmap =
-	XCreatePixmapFromBitmapData(dpy,Scr.Root,s_g_bits,s_g_width,s_g_height,
-				    fore_pix,back_pix,Scr.d_depth);
+	XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,s_g_bits,s_g_width,s_g_height,
+				    fore_pix,back_pix,G->depth);
     }
 
 
@@ -366,9 +367,10 @@ void initialize_pager(void)
   if(usposition)
     sizehints.flags |= USPosition;
 
-  valuemask = (CWBackPixel | CWBorderPixel | CWEventMask);
+  valuemask = (CWBackPixel | CWBorderPixel | CWColormap | CWEventMask);
   attributes.background_pixel = back_pix;
   attributes.border_pixel = fore_pix;
+  attributes.colormap = G->cmap;
   attributes.event_mask = (StructureNotifyMask);
   sizehints.width = window_w;
   sizehints.height = window_h;
@@ -380,10 +382,8 @@ void initialize_pager(void)
   sizehints.base_height = Rows*(m + label_h+1) - 1;
 
   Scr.Pager_w = XCreateWindow (dpy, Scr.Root, window_x, window_y, window_w,
-			       window_h, (unsigned int) 1,
-			       CopyFromParent, InputOutput,
-			       (Visual *) CopyFromParent,
-			       valuemask, &attributes);
+			       window_h, (unsigned int) 1, G->depth,
+			       InputOutput, G->viz, valuemask, &attributes);
   XSetWMProtocols(dpy,Scr.Pager_w,&wm_del_win,1);
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
@@ -407,11 +407,8 @@ void initialize_pager(void)
 
   icon_w = (icon_w / (n+1)) *(n+1)+n;
   icon_h = (icon_h / (m+1)) *(m+1)+m;
-  icon_win = XCreateWindow (dpy, Scr.Root, window_x, window_y,
-			    icon_w,icon_h,
-			    (unsigned int) 1,
-			    CopyFromParent, InputOutput,
-			    (Visual *) CopyFromParent,
+  icon_win = XCreateWindow (dpy, Scr.Root, window_x, window_y, icon_w, icon_h,
+			    (unsigned int) 1, G->depth, InputOutput, G->viz,
 			    valuemask, &attributes);
   XGrabButton(dpy, 1, AnyModifier, icon_win,
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
@@ -465,8 +462,7 @@ void initialize_pager(void)
       x = w*i;
       y = 0;
 
-      valuemask = (CWBorderPixel | CWEventMask);
-      valuemask |= CWBackPixel;
+      valuemask = (CWBackPixel | CWBorderPixel | CWColormap | CWEventMask);
 
       attributes.background_pixel =
 	(Desks[i].Dcolor ? GetColor(Desks[i].Dcolor) : back_pix);
@@ -474,11 +470,9 @@ void initialize_pager(void)
 
       attributes.border_pixel = fore_pix;
       attributes.event_mask = (ExposureMask | ButtonReleaseMask);
-      Desks[i].title_w = XCreateWindow(dpy,Scr.Pager_w, x, y, w, h,1,
-				       CopyFromParent,
-				       InputOutput,CopyFromParent,
-				       valuemask,
-				       &attributes);
+      Desks[i].title_w = XCreateWindow(dpy, Scr.Pager_w, x, y, w, h, 1,
+				       CopyFromParent, InputOutput,
+				       CopyFromParent, valuemask, &attributes);
       attributes.event_mask = (ExposureMask | ButtonReleaseMask |
 			       ButtonPressMask |ButtonMotionMask);
       desk_h = window_h - label_h;
@@ -508,9 +502,8 @@ void initialize_pager(void)
 	}
 
 
-      Desks[i].w = XCreateWindow(dpy,Desks[i].title_w, x, y, w, desk_h ,1,
-				 CopyFromParent,
-				 InputOutput,CopyFromParent,
+      Desks[i].w = XCreateWindow(dpy, Desks[i].title_w, x, y, w, desk_h, 1,
+				 CopyFromParent, InputOutput, CopyFromParent,
 				 valuemask, &attributes);
 
 
@@ -533,10 +526,9 @@ void initialize_pager(void)
 
 	  w = (window_w - n)/(n+1);
 	  h = (window_h - label_h - m)/(m+1);
-	  Desks[i].CPagerWin=XCreateWindow(dpy,Desks[i].w,-1000, -1000, w, h,0,
-					   CopyFromParent,
-					   InputOutput,CopyFromParent,
-					   valuemask,
+	  Desks[i].CPagerWin=XCreateWindow(dpy,Desks[i].w, -1000, -1000, w, h,
+					   0, CopyFromParent, InputOutput,
+					   CopyFromParent, valuemask,
 					   &attributes);
 	  XMapRaised(dpy,Desks[i].CPagerWin);
 	}
@@ -551,22 +543,22 @@ void initialize_pager(void)
   gcv.background = back_pix;
 
   gcv.font =  font->fid;
-  NormalGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-  MiniIconGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  NormalGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
+  MiniIconGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
 
   gcv.foreground = hi_pix;
-  if(Scr.d_depth < 2)
+  if(G->depth < 2)
     {
       gcv.foreground = fore_pix;
       gcv.background = back_pix;
     }
-  HiliteGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  HiliteGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
 
-  if((Scr.d_depth < 2)||(fore_pix == hi_pix))
+  if((G->depth < 2)||(fore_pix == hi_pix))
     gcv.foreground = back_pix;
   else
     gcv.foreground = fore_pix;
-  rvGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  rvGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
 
   if(windowFont != NULL)
     {
@@ -574,21 +566,22 @@ void initialize_pager(void)
       gcv.foreground = focus_fore_pix;
       gcv.background = focus_pix;
       gcv.font =  windowFont->fid;
-      StdGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+      StdGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
     }
 
   gcm = gcm | GCLineStyle;
   gcv.foreground = fore_pix;
   gcv.background = back_pix;
   gcv.line_style = LineOnOffDash;
-  DashedGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  DashedGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
 
 
   /* create balloon window
      -- ric@giccs.georgetown.edu */
   if ( ShowBalloons ) {
 
-    valuemask = CWOverrideRedirect | CWEventMask | CWBackPixel | CWBorderPixel;
+    valuemask = CWOverrideRedirect | CWEventMask | CWBackPixel | CWBorderPixel
+		| CWColormap;
 
     /* tell WM to ignore this window */
     attributes.override_redirect = True;
@@ -648,16 +641,9 @@ void initialize_pager(void)
     }
 
     /* now create the window */
-    balloon.w = XCreateWindow(dpy, Scr.Root,
-                              0, 0,            /* coords set later */
-                              1,               /* width set later */
-                              balloon.height,
-                              balloon.border,
-                              CopyFromParent,
-                              InputOutput,
-                              CopyFromParent,
-                              valuemask,
-                              &attributes);
+    balloon.w = XCreateWindow(dpy, Scr.Root, 0, 0, /* coords set later */
+			      1, balloon.height, balloon.border, G->depth,
+			      InputOutput, G->viz, valuemask, &attributes);
 
     /* set font */
     gcv.font = balloon.font->fid;
@@ -736,15 +722,13 @@ void UpdateWindowShape ()
 Pixel GetColor(char *name)
 {
   XColor color;
-  XWindowAttributes attributes;
 
-  XGetWindowAttributes(dpy,Scr.Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color))
+   if (!XParseColor (dpy, G->cmap, name, &color))
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color))
+   else if(!XAllocColor (dpy, G->cmap, &color))
      {
        nocolor("alloc",name);
      }
@@ -1467,7 +1451,7 @@ void AddNewWindow(PagerWindow *t)
 				  valuemask,&attributes);
       XMapRaised(dpy,t->IconView);
     }
-  Hilight(t,OFF);
+  Hilight(t,False);
 }
 
 
@@ -1610,7 +1594,7 @@ void Hilight(PagerWindow *t, int on)
 
   if(!t)return;
 
-  if(Scr.d_depth < 2)
+  if(G->depth < 2)
     {
       if(on)
 	{

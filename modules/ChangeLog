@@ -216,6 +216,7 @@
 	* FvwmForm/FvwmForm.c:		ditto
 	* FvwmIconMan/FvwmForm.c:	ditto
 	* FvwmIconBox/*			ditto
+	* FvwmPager/*			ditto
 
 1999-06-24  Dominik Vogt  <dominik_vogt@gmx.de>
 

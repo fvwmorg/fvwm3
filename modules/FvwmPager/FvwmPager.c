@@ -22,9 +22,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define TRUE 1
-#define FALSE 0
-
 #include "config.h"
 
 #include <stdio.h>
@@ -76,6 +73,7 @@ PagerWindow *Start = NULL;
 PagerWindow *FocusWin = NULL;
 
 Display *dpy;			/* which display are we talking to */
+Graphics *G;
 int x_fd;
 fd_set_size_t fd_width;
 
@@ -278,18 +276,12 @@ int main(int argc, char **argv)
       exit (1);
     }
   x_fd = XConnectionNumber(dpy);
+  G = CreateGraphics(dpy);
+  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
 
-  Scr.screen= DefaultScreen(dpy);
+  Scr.screen = DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);
-
-  if(Scr.Root == None)
-    {
-      fprintf(stderr,"%s: Screen %d is not valid ", MyName, (int)Scr.screen);
-      exit(1);
-    }
-  Scr.d_depth = DefaultDepth(dpy, Scr.screen);
-
-  InitPictureCMap(dpy, Scr.Root);
+  Scr.Pager_w = None;
 
 #ifdef DEBUG
   fprintf(stderr,"[main]: Connection to X server established.\n");
@@ -389,8 +381,8 @@ int main(int argc, char **argv)
 	   * any grab that they have. */
 	  usleep(1000);
 	}
-      XGrabKeyboard(dpy, Scr.Root, True, GrabModeAsync, GrabModeAsync,
-		    CurrentTime);
+      XGrabKeyboard(dpy, Scr.Root, True, GrabModeAsync,
+		    GrabModeAsync, CurrentTime);
       XSync(dpy,0);
     }
   Loop(fd);
@@ -656,9 +648,9 @@ void list_configure(unsigned long *body)
       else
 	MoveResizePagerView(t);
       if(FocusWin == t)
-	Hilight(t,ON);
+	Hilight(t,True);
       else
-	Hilight(t,OFF);
+	Hilight(t,False);
     }
 }
 
@@ -730,9 +722,9 @@ void list_focus(unsigned long *body)
       FocusWin = t;
 
       if(temp != NULL)
-	Hilight(temp,OFF);
+	Hilight(temp,False);
       if(FocusWin != NULL)
-	Hilight(FocusWin,ON);
+	Hilight(FocusWin,True);
     }
 }
 
@@ -755,8 +747,8 @@ void list_new_page(unsigned long *body)
     }
   MovePage();
   MoveStickyWindows();
-  Hilight(FocusWin,OFF);
-  Hilight(FocusWin,ON);
+  Hilight(FocusWin,False);
+  Hilight(FocusWin,True);
 }
 
 /***********************************************************************
@@ -862,8 +854,8 @@ void list_new_desk(unsigned long *body)
   DrawGrid(oldDesk - desk1,1);
   DrawGrid(Scr.CurrentDesk - desk1,1);
   MoveStickyWindows();
-  Hilight(FocusWin,OFF);
-  Hilight(FocusWin,ON);
+  Hilight(FocusWin,False);
+  Hilight(FocusWin,True);
 }
 
 /***********************************************************************
@@ -1016,9 +1008,9 @@ void list_deiconify(unsigned long *body)
 
       MoveResizePagerView(t);
       if(FocusWin == t)
-	Hilight(t,ON);
+	Hilight(t,True);
       else
-	Hilight(t,OFF);
+	Hilight(t,False);
     }
 }
 
@@ -1169,7 +1161,8 @@ void list_end(void)
   Window root, parent, *children;
   PagerWindow *ptr;
 
-  if(!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren))
+  if(!XQueryTree(dpy, Scr.Root, &root, &parent, &children,
+		 &nchildren))
     return;
 
   for(i=0; i<nchildren;i++)
@@ -1436,7 +1429,7 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "Fore"))
 	{
-	  if(Scr.d_depth > 1)
+	  if(G->depth > 1)
 	    {
 	      if (PagerFore)
 		free(PagerFore);
@@ -1445,7 +1438,7 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "Back"))
 	{
-	  if(Scr.d_depth > 1)
+	  if(G->depth > 1)
 	    {
 	      if (PagerBack)
 		free(PagerBack);
@@ -1520,7 +1513,7 @@ void ParseOptions(void)
 		      DestroyPicture(dpy, item->next->bgPixmap);
 		      item->next->bgPixmap = NULL;
 		    }
-		  item->next->bgPixmap = CachePicture (dpy, Scr.Root,
+		  item->next->bgPixmap = CachePicture (dpy, Scr.Pager_w,
 						       ImagePath,
 						       arg2, 0);
 		}
@@ -1528,7 +1521,7 @@ void ParseOptions(void)
 		{
 		  /* new Dcolor and desktop */
 		  item = NewPagerStringItem(item, desk);
-		  item->bgPixmap = CachePicture (dpy, Scr.Root,
+		  item->bgPixmap = CachePicture (dpy, Scr.Pager_w,
 						 ImagePath,
 						 arg2, 0);
 		}
@@ -1540,7 +1533,7 @@ void ParseOptions(void)
 		      Desks[0].bgPixmap = NULL;
 		    }
 
-		  Desks[0].bgPixmap = CachePicture (dpy, Scr.Root,
+		  Desks[0].bgPixmap = CachePicture (dpy, Scr.Pager_w,
 						    ImagePath,
 						    arg2, 0);
 		}
@@ -1554,7 +1547,7 @@ void ParseOptions(void)
 		  DestroyPicture(dpy, Desks[dNr].bgPixmap);
 		  Desks[dNr].bgPixmap = NULL;
 		}
-	      Desks[dNr].bgPixmap = CachePicture (dpy, Scr.Root,
+	      Desks[dNr].bgPixmap = CachePicture (dpy, Scr.Pager_w,
 						  ImagePath,
 						  arg2, 0);
 	    }
@@ -1567,14 +1560,14 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "Pixmap"))
 	{
-	  if(Scr.d_depth > 1)
+	  if(G->depth > 1)
 	    {
 	      if (PixmapBack) {
 		DestroyPicture (dpy, PixmapBack);
 		PixmapBack = NULL;
 	      }
 
-	      PixmapBack = CachePicture (dpy, Scr.Root,
+	      PixmapBack = CachePicture (dpy, Scr.Pager_w,
 					 ImagePath,
 					 arg1, 0);
 #ifdef DEBUG
@@ -1586,14 +1579,14 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "HilightPixmap"))
 	{
-	  if(Scr.d_depth > 1)
+	  if(G->depth > 1)
 	    {
 	      if (HilightPixmap) {
 		DestroyPicture (dpy, HilightPixmap);
 		HilightPixmap = NULL;
 	      }
 
-	      HilightPixmap = CachePicture (dpy, Scr.Root,
+	      HilightPixmap = CachePicture (dpy, Scr.Pager_w,
 					    ImagePath,
 					    arg1, 0);
 
@@ -1614,7 +1607,7 @@ void ParseOptions(void)
 	}
       else if (StrEquals(resource, "Hilight"))
 	{
-	  if(Scr.d_depth > 1)
+	  if(G->depth > 1)
 	    {
 	      if (HilightC)
 		free(HilightC);
@@ -1676,7 +1669,7 @@ void ParseOptions(void)
         }
       else if (StrEquals(resource, "WindowColors"))
 	{
-	  if (Scr.d_depth > 1)
+	  if (G->depth > 1)
 	    {
 	      if (WindowFore)
 		free(WindowFore);
@@ -1736,7 +1729,7 @@ void ParseOptions(void)
 
       else if (StrEquals(resource, "BalloonBack"))
 	{
-	  if (Scr.d_depth > 1)
+	  if (G->depth > 1)
 	    {
 	      if (BalloonBack)
 		free(BalloonBack);
@@ -1746,7 +1739,7 @@ void ParseOptions(void)
 
       else if (StrEquals(resource, "BalloonFore"))
 	{
-	  if (Scr.d_depth > 1)
+	  if (G->depth > 1)
 	    {
 	      if (BalloonFore)
 		free(BalloonFore);
