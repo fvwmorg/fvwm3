@@ -63,10 +63,11 @@ static char *MkDef(char *name, char *def);
 static char *MkNum(char *name,int def);
 static char *m4_defs(Display *display, const char *host, char *m4_options, char *config_file);
 #define MAXHOSTNAME 255
-#define EXTRA 50
+#define EXTRA 56
 
 int  m4_enable;                 /* use m4? */
 int  m4_prefix;                 /* Do GNU m4 prefixing (-P) */
+int  m4_prefix_defines;		/* Add "m4_" to the names of the defines */
 char m4_options[BUFSIZ];        /* Command line options to m4 */
 char m4_outfile[BUFSIZ] = "";   /* The output filename for m4 */
 char *m4_prog = "m4";           /* Name of the m4 program */
@@ -105,6 +106,7 @@ int main(int argc, char **argv)
 
   m4_enable = True;
   m4_prefix = False;
+  m4_prefix_defines = False;
   sprintf(m4_options, "-I '%s' ", FVWM_DATADIR);
   m4_default_quotes = 1;
 
@@ -137,6 +139,10 @@ int main(int argc, char **argv)
       if(strcasecmp(argv[i],"-m4-prefix") == 0)
 	{
 	  m4_prefix = TRUE;
+	}
+      else if(strcasecmp(argv[i],"-m4-prefix-defines") == 0)
+	{
+	  m4_prefix_defines = TRUE;
 	}
       else if(strcasecmp(argv[i],"-m4opt") == 0)
 	{
@@ -505,6 +511,8 @@ static char *MkDef(char *name, char *def)
   else
     strcpy(cp, "define(");
 
+  if (m4_prefix_defines)
+    strcat(cp, "m4_");
   strcat(cp, name);
 
   /* Tack on "," and 2 sets of starting quotes */

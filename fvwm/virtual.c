@@ -62,6 +62,9 @@ static int last_edge_thickness = 2;
 static unsigned int prev_page_x = 0;
 static unsigned int prev_page_y = 0;
 static int prev_desk = 0;
+static int prev_desk_and_page_desk = 0;
+static unsigned int prev_desk_and_page_page_x = 0;
+static unsigned int prev_desk_and_page_page_y = 0;
 
 /**************************************************************************
  *
@@ -957,6 +960,9 @@ void MoveViewport(int newx, int newy, Bool grab)
   {
     prev_page_x = Scr.Vx;
     prev_page_y = Scr.Vy;
+    prev_desk_and_page_page_x = Scr.Vx;
+    prev_desk_and_page_page_y = Scr.Vy;
+    prev_desk_and_page_desk = Scr.CurrentDesk;
   }
   Scr.Vx = newx;
   Scr.Vy = newy;
@@ -1279,6 +1285,9 @@ void goto_desk(int desk)
   if (Scr.CurrentDesk != desk)
   {
     prev_desk = Scr.CurrentDesk;
+    prev_desk_and_page_desk = Scr.CurrentDesk;
+    prev_desk_and_page_page_x = Scr.Vx;
+    prev_desk_and_page_page_y = Scr.Vy;
     UnmapDesk(Scr.CurrentDesk, True);
     Scr.CurrentDesk = desk;
     MapDesk(desk, True);
@@ -1317,22 +1326,27 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 
   if (MatchToken(action, "prev"))
   {
-    val[0] = prev_desk;
-    val[1] = prev_page_x;
-    val[2] = prev_page_y;
+    val[0] = prev_desk_and_page_desk;
+    val[1] = prev_desk_and_page_page_x;
+    val[2] = prev_desk_and_page_page_y;
   }
   else if (GetIntegerArguments(action, NULL, val, 3) != 3)
+  {
     return;
+  }
 
   is_new_desk = (Scr.CurrentDesk != val[0]);
   if (is_new_desk)
   {
     UnmapDesk(Scr.CurrentDesk, True);
   }
+  prev_desk_and_page_page_x = Scr.Vx;
+  prev_desk_and_page_page_y = Scr.Vy;
   MoveViewport(val[1] * Scr.MyDisplayWidth, val[2] * Scr.MyDisplayHeight, True);
   if (is_new_desk)
   {
     prev_desk = Scr.CurrentDesk;
+    prev_desk_and_page_desk = Scr.CurrentDesk;
     Scr.CurrentDesk = val[0];
     MapDesk(val[0], True);
     BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);

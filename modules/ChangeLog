@@ -1,3 +1,8 @@
+2001-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmM4/FvwmM4.c (main):
+	applied patch by Sidik Isani to fix problewm with environment variables
+
 2001-09-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/draw.c (DrawTitle):

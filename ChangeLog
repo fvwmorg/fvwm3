@@ -1,5 +1,11 @@
 2001-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/virtual.c (MoveViewport):
+	(goto_desk):
+	(CMD_GotoDeskAndPage):
+	(CMD_GotoPage):
+	GotoDeskAndPage records its own history of last visited desk/page
+
 	* libs/FScreen.c (FScreenInit):
 	fixed a memory allocation bug pointed out by Giuseppe Della Ricca
 
