@@ -1395,7 +1395,7 @@ void MySendFvwmPipe(int *fd, char *message, unsigned long window)
       /* keep going */
 
       w = 1;
-      write(fd[0], &w, sizeof(int));
+      write(fd[0], &w, sizeof(w));
     }
     if (temp_msg != hold) free(temp_msg);
     else break;
