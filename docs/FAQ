@@ -498,11 +498,9 @@ A: RedHat Linux installs the X server accompanied (by default) by a
      itself, not just the border?
 
 A: Any version later than 2.0.46 (i.e. 2.1.0 or later) has this
-   feature.  Currently it is provided through the GlobalOpts command.
-   This will possibly change in the future and be made an option to
-   the Style command:
+   feature:
 
-     GlobalOpts MouseFocusClickRaises
+     Style * MouseFocusClickRaises
 
 ----------------------------------------------------------------------
 
@@ -688,7 +686,7 @@ A: Doubtful, although I'd like to see it too.  I believe that it'd be
 3.8  I really like the horizontal bars that appear on the title bars of
      sticky windows.  Can I get those on other windows as well?
 
-A: Yes.  Put the line "GlobalOpts StipledTitles" in your .fvwm2rc.
+A: Yes.  Put the line "Style * StipledTitle" in your .fvwm2rc.
    Note that this is a purposely undocumented feature since it
    will eventually be made a Style option.  If you use this,
    it is guaranteed to stop working some day.
@@ -1625,10 +1623,7 @@ A: The official home for rxvt is:
    on page 0 1 (desk 1).  You will probably want to use these options
    too:
 
-     GlobalOpts RecaptureHonorsStartsOnPage, CaptureHonorsStartsOnPage
-
-   Note that the GlobalOpts command will be removed some day in the
-   future and this options will become style flags.
+     Style * RecaptureHonorsStartsOnPage, CaptureHonorsStartsOnPage
 
    If you want to start applications on a different page in the
    background without switching to this page, use the 'SkipMapping'
