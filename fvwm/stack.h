@@ -26,7 +26,7 @@ void LowerWindow(FvwmWindow *t);
 Bool HandleUnusualStackmodes(unsigned int stack_mode,
 			     FvwmWindow *r, Window rw,
 			     FvwmWindow *sib, Window sibw);
-void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2);
+void BroadcastRestackAllWindows(void);
 void BroadcastRestackThisWindow(FvwmWindow *t);
 
 int compare_window_layers(FvwmWindow *t, FvwmWindow *s);

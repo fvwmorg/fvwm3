@@ -26,6 +26,7 @@
  * FVWM sends packets of this type to modules.
  **/
 
+
 typedef struct {
     unsigned long start_pattern;       /* always holds START_FLAG value */
     unsigned long type;                /* one of the M_xxx values, below */

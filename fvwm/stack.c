@@ -41,6 +41,7 @@ static void RaiseOrLowerWindow(
   FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window);
 static void ResyncFvwmStackRing(void);
 static void ResyncXStackingOrder(void);
+static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2);
 
 /* debugging function */
 static void dump_stack_ring(void)
@@ -556,12 +557,12 @@ static void RaiseOrLowerWindow(
       XRestackWindows (dpy, wins, count);
 
       /* send out (one or more) M_RESTACK packets for windows between r and s */
-      BroadcastRestack (r, s);
+      BroadcastRestack(r, s);
       if (do_move_transients && tmp_r.stack_next != &tmp_r)
       {
 	/* send out M_RESTACK for all windows, to make sure we don't forget
 	 * anything. */
-	BroadcastRestack (Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+	BroadcastRestackAllWindows();
       }
       free (wins);
     }
@@ -843,22 +844,30 @@ static void ResyncXStackingOrder(void)
     free(wins);
     /* send out M_RESTACK for all windows, to make sure we don't forget
      * anything. */
-    BroadcastRestack(Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+    BroadcastRestackAllWindows();
   }
 }
 
 
 /* send RESTACK packets for all windows between s1 and s2 */
-void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
+static void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
 {
   FvwmWindow *t, *t2;
   int num, i;
   unsigned long *body, *bp, length;
   extern Time lastTimestamp;
 
+  if (s2 == &Scr.FvwmRoot)
+  {
+    s2 = s2->stack_prev;
+    if (s2 == &Scr.FvwmRoot)
+      return;
+  }
   if (s1 == &Scr.FvwmRoot)
   {
     t = s1->stack_next;
+    if (t == &Scr.FvwmRoot)
+      return;
     /* t has been moved to the top of stack */
 
     BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
@@ -872,9 +881,14 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
   {
     t = s1;
   }
-  for (t2 = t, num = 1 ; t2 != s2; t2 = t2->stack_next, num++)
+  if (s1 == s2)
+  {
+    /* A useful M_RESTACK packet must contain at least two windows. */
+    return;
+  }
+  for (t2 = t, num = 1 ; t2 != s2 && t != &Scr.FvwmRoot;
+       t2 = t2->stack_next, num++)
     ;
-
   length = FvwmPacketHeaderSize + 3*num;
   body = (unsigned long *) safemalloc (length*sizeof(unsigned long));
 
@@ -883,7 +897,7 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
   *(bp++) = M_RESTACK;
   *(bp++) = length;
   *(bp++) = lastTimestamp;
-  for (t2 = t; t2 != s2; t2 = t2->stack_next)
+  for (t2 = t; num != 0; num--, t2 = t2->stack_next)
   {
     *(bp++) = t2->w;
     *(bp++) = t2->frame;
@@ -891,16 +905,22 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
   }
   for (i = 0; i < npipes; i++)
     PositiveWrite(i, body, length*sizeof(unsigned long));
-
-  free (body);
+  free(body);
   verify_stack_ring_consistency();
+
+  return;
+}
+
+void BroadcastRestackAllWindows(void)
+{
+  BroadcastRestack(Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+  return;
 }
 
 /* send RESTACK packets for t, t->stack_prev and t->stack_next */
 void BroadcastRestackThisWindow(FvwmWindow *t)
 {
   BroadcastRestack(t->stack_prev, t->stack_next);
-  verify_stack_ring_consistency();
   return;
 }
 

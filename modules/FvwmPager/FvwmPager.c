@@ -1205,43 +1205,43 @@ void list_restack(unsigned long *body, unsigned long length)
   wins = (Window *) safemalloc (length * sizeof (Window));
   /* first restack in the icon view */
   j = 0;
-  for (i = 0; i < (length - 4); i+=3)
+  for (i = 0; i < (length - FvwmPacketHeaderSize); i += 3)
   {
     target_w = body[i];
     t = Start;
     while((t!= NULL)&&(t->w != target_w))
-     {
-       t = t->next;
-     }
+    {
+      t = t->next;
+    }
     if (t != NULL)
-     {
-       wins[j++] = t->IconView;
-     }
-   }
-   XRestackWindows(dpy, wins, j);
+    {
+      wins[j++] = t->IconView;
+    }
+  }
+  XRestackWindows(dpy, wins, j);
 
   /* now restack each desk separately, since they have separate roots */
   for (d = 0; d < ndesks; d++)
-   {
-     j = 0;
-     for (i = 0; i < (length - 4); i+=3)
+  {
+    j = 0;
+    for (i = 0; i < (length - 4); i+=3)
+    {
+      target_w = body[i];
+      t = Start;
+      while((t!= NULL)&&((t->w != target_w)||(t->desk != d+desk1)))
       {
-        target_w = body[i];
-        t = Start;
-        while((t!= NULL)&&((t->w != target_w)||(t->desk != d+desk1)))
-         {
-            t = t->next;
-         }
-        if (t != NULL)
-         {
-           if (t->PagerView != None)
-            {
-             wins[j++] = t->PagerView;
-            }
-         }
-       }
-      XRestackWindows(dpy, wins, j);
+	t = t->next;
+      }
+      if (t != NULL)
+      {
+	if (t->PagerView != None)
+	{
+	  wins[j++] = t->PagerView;
+	}
+      }
     }
+    XRestackWindows(dpy, wins, j);
+  }
   free (wins);
 }
 

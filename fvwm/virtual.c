@@ -1109,7 +1109,7 @@ void goto_desk(int desk)
      * stack them.  So we have to tell it ecplicitly where they go :-(
      * This should be fixed in the pager, but right now the pager doesn't
      * maintain the stacking order. */
-    BroadcastRestack(Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+    BroadcastRestackAllWindows();
     GNOME_SetCurrentDesk();
     GNOME_SetDeskCount();
   }
@@ -1162,7 +1162,7 @@ void gotoDeskAndPage_func(F_CMD_ARGS)
      * stack them.  So we have to tell it ecplicitly where they go :-(
      * This should be fixed in the pager, but right now the pager doesn't
      * maintain the stacking order. */
-    BroadcastRestack(Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+    BroadcastRestackAllWindows();
   }
   else
   {

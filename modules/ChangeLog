@@ -1,3 +1,10 @@
+2000-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/FvwmScript.c:
+	reindented
+	(BuildGUI):
+	fixed memory leaks
+
 2000-11-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/winlist.c (free_windata):
