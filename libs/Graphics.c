@@ -16,7 +16,7 @@
 /* Graphics.c: misc convenience functions for drawing stuff
  */
 
-#include "fvwm/defaults.h"
+#include "defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 
@@ -158,11 +158,17 @@ Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, unsigned int src_width,
  * Allocates a linear color gradient (veliaa@rpi.edu)
  *
  ****************************************************************************/
-Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
+Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
+			   int skip_first_color)
 {
   Pixel *pixels;
   XColor from, to, c;
-  int r, dr, g, dg, b, db;
+  int r;
+  float dr;
+  int g;
+  float dg;
+  int b;
+  float db;
   int i;
   int got_all = 1;
   int div;
@@ -188,23 +194,23 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
   c = from;
   /* red part and step width */
   r = from.red;
-  dr = (to.red - from.red) / div;
+  dr = (float)(to.red - from.red) / (float)div;
   /* green part and step width */
   g = from.green;
-  dg = (to.green - from.green) / div;
+  dg = (float)(to.green - from.green) / (float)div;
   /* blue part and step width */
   b = from.blue;
-  db = (to.blue - from.blue) / div;
+  db = (float)(to.blue - from.blue) / (float)div;
   pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
   c.flags = DoRed | DoGreen | DoBlue;
-  for (i = 0; i < npixels; ++i)
+  for (i = skip_first_color; i < npixels; ++i)
   {
+    c.red   = (unsigned short)(r + (i * dr + 0.5));
+    c.green = (unsigned short)(g + (i * dg + 0.5));
+    c.blue  = (unsigned short)(b + (i * db + 0.5));
     if (!XAllocColor(Pdpy, Pcmap, &c))
       got_all = 0;
     pixels[ i ] = c.pixel;
-    c.red = (unsigned short) (r += dr);
-    c.green = (unsigned short) (g += dg);
-    c.blue = (unsigned short) (b += db);
   }
   if (!got_all)
   {
@@ -224,41 +230,90 @@ Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 {
   Pixel *pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
   int i;
-  int curpixel = 0, perc = 0;
+  int curpixel = 0;
+  int *seg_end_colors;
+  int seg_sum = 0;
+  float color_sum = 0.0;
 
-  if (nsegs < 1)
+  if (nsegs < 1 || npixels < 2)
   {
-    fprintf(stderr, "Gradients must specify at least one segment\n");
+    fprintf(stderr,
+	    "Gradients must specify at least one segment and two colors\n");
     free(pixels);
     return NULL;
   }
   for (i = 0; i < npixels; i++)
     pixels[i] = 0;
 
-  for (i = 0; (i < nsegs) && (curpixel < npixels) && (perc <= 100); ++i)
-  {
-    Pixel *p;
-    int j, n = clen[i] * npixels / 100;
+  /* get total length of all segments */
+  for (i = 0; i < nsegs; i++)
+    seg_sum += clen[i];
 
-    if (i == nsegs - 1)
-    {
-      /* last segment, need to allocate the final colour too. */
-      n++;
-    }
-    p = AllocLinearGradient(s_colors[i], s_colors[i + 1], n);
-    if (!p)
-    {
-      free(pixels);
-      return NULL;
-    }
-    for (j = 0; ((j < n) && ((curpixel + j) < npixels)); ++j)
-      pixels[curpixel + j] = p[j];
-    perc += clen[i];
-    curpixel += n;
-    free(p);
+  /* calculate the index of a segment's las color */
+  seg_end_colors = alloca(nsegs * sizeof(int));
+  if (nsegs == 1)
+  {
+    seg_end_colors[0] = npixels - 1;
   }
-  for (i = curpixel; i < npixels; ++i)
-    pixels[i] = pixels[i - 1];
+  else
+  {
+    for (i = 0; i < nsegs; i++)
+    {
+      color_sum += (float)(clen[i] * (npixels - 1)) / (float)(seg_sum);
+      seg_end_colors[i] = (int)(color_sum + 0.5);
+    }
+    if (seg_end_colors[nsegs - 1] > npixels - 1)
+    {
+      fprintf(stderr,
+	      "BUG: (AllocNonlinearGradient): "
+	      "seg_end_colors[nsegs - 1] > npixels - 1\n");
+      abort();
+      exit(1);
+    }
+    /* take care of rounding errors */
+    seg_end_colors[nsegs - 1] = npixels - 1;
+  }
+
+  for (i = 0; i < nsegs; ++i)
+  {
+    Pixel *p = NULL;
+    int j;
+    int n;
+    int skip_first_color = (curpixel != 0);
+
+    if (i == 0)
+      n = seg_end_colors[0] + 1;
+    else
+      n = seg_end_colors[i] - seg_end_colors[i - 1] + 1;
+
+    if (n > 1)
+    {
+      p = AllocLinearGradient(
+	s_colors[i], s_colors[i + 1], n, skip_first_color);
+      if (!p && (n - skip_first_color) != 0)
+      {
+	free(pixels);
+	return NULL;
+      }
+      for (j = skip_first_color; j < n; ++j)
+	pixels[curpixel + j] = p[j];
+      curpixel += n - 1;
+    }
+    if (curpixel != seg_end_colors[i])
+    {
+      fprintf(stderr,
+	      "BUG: (AllocNonlinearGradient): "
+	      "i = %d, curpixel = %d, seg_end_colors[i] = %d\n", i, curpixel,
+	      seg_end_colors[i]);
+      abort();
+      exit(1);
+    }
+    if (p)
+    {
+      free(p);
+      p = NULL;
+    }
+  }
 
   return pixels;
 }
@@ -277,49 +332,54 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
   int nsegs, i, sum;
 
   /* get the number of colors specified */
-  if (!(gradient = GetNextToken(gradient, &item)) || (item == NULL)) {
-    fprintf(stderr, "ParseGradient: expected number of colors to allocate\n");
-    if (item)
-      free(item);
+
+  if (GetIntegerArguments(gradient, &gradient, &npixels, 1) != 1 ||
+      npixels < 2)
+  {
+    fprintf(stderr, "ParseGradient: illegal number of colors in gradient\n");
     return 0;
   }
-  npixels = atoi(item);
-  free(item);
 
   /* get the starting color or number of segments */
-  if (!(gradient = GetNextToken(gradient, &item)) || (item == NULL)) {
+  gradient = GetNextToken(gradient, &item);
+  if (!gradient || !item)
+  {
     fprintf(stderr, "Incomplete gradient style\n");
     if (item)
       free(item);
     return 0;
   }
 
-  if (!(isdigit(*item))) {
+  if (GetIntegerArguments(item, NULL, &nsegs, 1) != 1)
+  {
     /* get the end color of a simple gradient */
     s_colors = (char **)safemalloc(sizeof(char *) * 2);
     perc = (int *)safemalloc(sizeof(int));
     nsegs = 1;
     s_colors[0] = item;
-    gradient = GetNextToken(gradient, &s_colors[1]);
+    gradient = GetNextToken(gradient, &item);
+    s_colors[1] = item;
     perc[0] = 100;
-  } else {
-    /* get a list of colors and percentages */
-    nsegs = atoi(item);
+  }
+  else
+  {
     free(item);
+    /* get a list of colors and percentages */
     if (nsegs < 1)
       nsegs = 1;
     if (nsegs > MAX_GRADIENT_SEGMENTS)
       nsegs = MAX_GRADIENT_SEGMENTS;
     s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
     perc = (int *)safemalloc(sizeof(int) * nsegs);
-    for (i = 0; i <= nsegs; i++) {
+    for (i = 0; i <= nsegs; i++)
+    {
       gradient = GetNextToken(gradient, &s_colors[i]);
-      if (i < nsegs) {
-        gradient = GetNextToken(gradient, &item);
-	if (item) {
-	  perc[i] = atoi(item);
-	  free(item);
-	} else {
+      if (i < nsegs)
+      {
+	if (GetIntegerArguments(gradient, &gradient, &perc[i], 1) != 1 ||
+	    perc[i] <= 0)
+	{
+	  /* illegal size */
 	  perc[i] = 0;
 	}
       }
@@ -328,23 +388,27 @@ unsigned int ParseGradient(char *gradient, char ***colors_return,
 
   /* sanity check */
   for (i = 0, sum = 0; i < nsegs; ++i)
+  {
+    int old_sum = sum;
     sum += perc[i];
-
-  if (sum != 100) {
-    fprintf(stderr, "ParseGradient: multi gradient lengths must sum to 100");
-    for (i = 0; i <= nsegs; ++i)
-    if (s_colors[i])
-      free(s_colors[i]);
-    free(s_colors);
-    free(perc);
-    return 0;
+    if (sum < old_sum)
+    {
+      /* integer overflow */
+      fprintf(stderr, "ParseGradient: multi gradient overflow");
+      for (i = 0; i <= nsegs; ++i)
+	if (s_colors[i])
+	  free(s_colors[i]);
+      free(s_colors);
+      free(perc);
+      return 0;
+    }
   }
 
   /* sensible limits */
   if (npixels < 2)
     npixels = 2;
-  if (npixels > MAX_GRADIENT_SEGMENTS)
-    npixels = MAX_GRADIENT_SEGMENTS;
+  if (npixels > MAX_GRADIENT_COLORS)
+    npixels = MAX_GRADIENT_COLORS;
 
   /* send data back */
   *colors_return = s_colors;

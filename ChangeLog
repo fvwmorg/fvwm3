@@ -1,5 +1,23 @@
 1999-08-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Module.c (SendFinishedStartupNotification): new service function
+	for modules
+
+	* libs/Graphics.c (AllocLinearGradient): partially rewritten, fixed
+	bugs in colour allocation
+
+	* libs/Graphics.c (ParseGradient): use new default macro
+	MAX_GRADIENT_COLORS
+	(ParseGradient): Rewrote gradient parsing. It is now legal to use
+	'percentages' in multi gradients that don't add to 100
+
+	* libs/defaults.h: file moved to library
+
+	* libs/Graphics.c (AllocLinearGradient): colour calculation is 100%
+	accurate
+
+	* fvwm/fvwm2.1: fixed .TH header
+
 	* fvwm/module_interface.c (do_execute_module): store pipe number in
 	a variable before returning, that fixes the ModuleSynchronous command
 

@@ -122,6 +122,9 @@ int main(int argc, char **argv)
    * wait for ConfigureWindow packets */
   SendInfo(fd,"Send_WindowList",0);
 
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
   Loop(fd);
   return 0;
 }

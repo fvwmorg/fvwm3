@@ -1000,7 +1000,7 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
   /* for mono, we clear an area in the title bar where the window
    * title goes, so that its more legible. For color, no need */
-  if(Pdepth<2)
+  if(Pdepth<20)
   {
     RelieveRectangle(dpy,t->title_w,0,0,hor_off-3,t->title_g.height - 1,
                      ReliefGC, ShadowGC, rwidth);

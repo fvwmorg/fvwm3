@@ -124,6 +124,9 @@ int main(int argc, char *argv[]){
 	ErrMsg("exec");
   }
 
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(Fd);
+
   server();
   return (0);
 }

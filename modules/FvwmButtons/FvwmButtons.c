@@ -555,7 +555,8 @@ int myErrorHandler(Display *dpy, XErrorEvent *event)
      (event->error_code==BadDrawable)||(event->request_code==X_GrabButton))
     return 0 ;
 
-  fprintf(stderr,"%s: Cause of next X Error.\n",MyName);
+  PrintXErrorAndCoredump(dpy, event, MyName);
+
   /* return (*oldErrorHandler)(dpy,event); */
   return 0;
 }
@@ -831,6 +832,10 @@ int main(int argc, char **argv)
   ** it is safe(r) to install the clean-up handlers ...
   */
   atexit(DeadPipeCleanup);
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
   Loop();
 
   return 0;

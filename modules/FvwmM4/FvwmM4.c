@@ -182,6 +182,9 @@ int main(int argc, char **argv)
   /* set up G */
   InitPictureCMap(dpy);
 
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
   tmp_file = m4_defs(dpy, display_name,m4_options, filename);
 
   sprintf(read_string,"read %s\n",tmp_file);

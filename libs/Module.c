@@ -78,6 +78,17 @@ FvwmPacket* ReadFvwmPacket( int fd )
 
 /************************************************************************
  *
+ * SendFinishedStartupNotification - informs fvwm that the module has
+ * finished its startup procedures and is fully operational now.
+ *
+ ***********************************************************************/
+void SendFinishedStartupNotification(int *fd)
+{
+  SendText(fd, "FINISHED_STARTUP", 0);
+}
+
+/************************************************************************
+ *
  * SendText - Sends arbitrary text/command back to fvwm
  *
  ***********************************************************************/

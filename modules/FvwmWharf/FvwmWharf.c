@@ -441,6 +441,10 @@ Solid:
    * will tell us the current desktop and paging status, needed to
    * indent buttons correctly */
   SendText(fd,"Send_WindowList",0);
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
   Loop();
   return 0;
 }

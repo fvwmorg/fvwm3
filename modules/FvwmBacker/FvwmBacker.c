@@ -145,6 +145,8 @@ char *temp, *s;
   */
   SendInfo(Fvwm_fd,"Send_WindowList",0);
 
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(Fvwm_fd);
 
   /* Recieve all messages from Fvwm */
   EndLessLoop();

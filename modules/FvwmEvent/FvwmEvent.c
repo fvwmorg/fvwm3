@@ -270,8 +270,8 @@ int main(int argc, char **argv)
     config();				/* configure events */
     execute_event(BUILTIN_STARTUP, NULL);	/* Startup event */
 
-    SendText(fd,"Nop",0);		/* what for ? */
-
+    /* tell fvwm we're running */
+    SendFinishedStartupNotification(fd);
 
     /* main loop */
 

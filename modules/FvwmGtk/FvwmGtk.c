@@ -505,6 +505,10 @@ main (int argc, char **argv)
 
   gtk_input_add_full (fvwm_fd[1], GDK_INPUT_READ, read_fvwm_pipe,
                       NULL, NULL, NULL);
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fvwm_fd);
+
   gtk_main ();
   return 0;
 }

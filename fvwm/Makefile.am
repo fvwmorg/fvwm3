@@ -11,7 +11,7 @@ config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 ## .c file in largest first order to speed up parallel makes
 fvwm2_SOURCES = bindings.h focus.h menus.h screen.h borders.h functions.h \
 		misc.h session.h colormaps.h fvwm.h module_interface.h \
-		stack.h cursor.h fvwmdebug.h move_resize.h style.h defaults.h \
+		stack.h cursor.h fvwmdebug.h move_resize.h style.h \
 		gnome.h read.h virtual.h events.h icons.h repeat.h \
 		conditional.h placement.h windowlist.h modconf.h add_window.h \
 		colors.h builtins.h decorations.h icccm2.h \

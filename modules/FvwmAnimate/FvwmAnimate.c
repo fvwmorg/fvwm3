@@ -710,6 +710,7 @@ int main(int argc, char **argv) {
   SendText(Channel,"Nop",0);
   DefineMe();
   running = 'y';                        /* out of initialization phase */
+  SendFinishedStartupNotification(Channel); /* tell fvwm we're running */
   Loop();                               /* start running */
   exit (0);                             /* Never gets here! */
 }

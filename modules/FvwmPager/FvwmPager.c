@@ -401,6 +401,10 @@ int main(int argc, char **argv)
 		    GrabModeAsync, CurrentTime);
       XSync(dpy,0);
     }
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
   Loop(fd);
 #ifdef DEBUG
   if (debug_term_signal)
@@ -773,8 +777,6 @@ void list_new_page(unsigned long *body)
 void list_new_desk(unsigned long *body)
 {
   int oldDesk;
-  int cs1 = -1;
-  int cs2 = -1;
 
   oldDesk = Scr.CurrentDesk;
   Scr.CurrentDesk = (long)body[0];

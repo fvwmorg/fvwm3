@@ -295,6 +295,9 @@ int main(int argc, char **argv)
   SendFvwmPipe(fd,"Send_WindowList",0);
   atexit(CleanUp);
 
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
   Loop();
 #ifdef FVWM_DEBUG_MSGS
   if ( debug_term_signal )
@@ -694,11 +697,11 @@ void RedrawIcon(struct icon_info *item, int f)
 		    0, 0, item->icon_w, item->icon_h, hr, hr);
         } else {
 	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, DefaultGC(dpy, screen),
-		    0, 0, item->icon_w, item->icon_h, 0, 0);        
+		    0, 0, item->icon_w, item->icon_h, 0, 0);
 	}
       }
     }
-      
+
     if (!(IS_ICON_SHAPED(item))
 	&& (Pdefault || (item->icon_depth == 1) || IS_PIXMAP_OURS(item))) {
       if (item->icon_w > 0 && item->icon_h > 0)
@@ -2703,17 +2706,9 @@ char *stripcpy2(char *source)
 static int
 myErrorHandler(Display *dpy, XErrorEvent *event)
 {
-  char msg[256];
-
   if (event->error_code == BadWindow)
     return 0;
 
-  XGetErrorText(dpy, event->error_code, msg, 256);
-
-  fprintf(stderr, "Error in %s:  %s \n", MyName, msg);
-  fprintf(stderr, "Major opcode of failed request:  %d \n",
-	  event->request_code);
-  fprintf(stderr, "Resource id of failed request:  0x%lx \n",
-	  event->resourceid);
+  PrintXErrorAndCoredump(dpy, event, MyName);
   return 0;
 }

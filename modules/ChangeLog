@@ -1,5 +1,39 @@
 1999-08-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmWinList/FvwmWinList.c (ErrorHandler):
+	(main):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTheme/FvwmTheme.c (error_handler):
+	* FvwmTaskBar/FvwmTaskBar.c (ErrorHandler):
+	(main):
+	* FvwmScroll/FvwmScroll.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* FvwmSaveDesk/FvwmSaveDesk.c (main):
+	* FvwmSave/FvwmSave.c (main):
+	* FvwmM4/FvwmM4.c (m4_defs):
+	* FvwmCpp/FvwmCpp.c (cpp_defs):
+	* FvwmRearrange/FvwmRearrange.c (main):
+	* FvwmPager/x_pager.c (FvwmErrorHandler):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	(myErrorHandler):
+	* FvwmGtk/FvwmGtk.c (main):
+	* FvwmForm/FvwmForm.c (main):
+	* FvwmEvent/FvwmEvent.c (main):
+	* FvwmDebug/FvwmDebug.c (main):
+	* FvwmConsole/FvwmConsole.c (main):
+	* FvwmCommand/FvwmCommandS.c (main):
+	* FvwmButtons/FvwmButtons.c (myErrorHandler):
+	(main):
+	* FvwmBacker/FvwmBacker.c (main):
+	* FvwmAuto/FvwmAuto.c (main):
+	* FvwmAnimate/FvwmAnimate.c (main):
+	* FvwmIconMan/x.c (handle_error):
+	modules use new service function PrintXErrorAndCoredump
+	all modules use function SendFinishStartupNotification to tell fvwm
+	they are running
+
 	* FvwmTheme/FvwmTheme.1 (INVOCATION): updated for ModuleSynchronous
 	command
 

@@ -140,6 +140,8 @@ int main(int argc, char **argv)
   fd_width = GetFdWidth();
   sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)(M_FOCUS_CHANGE));
   SendInfo(fd,mask_mesg,0);
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
 
   while(1)
   {
@@ -198,7 +200,7 @@ int main(int argc, char **argv)
       }
       /* switch to wait mode again */
       last_win = focus_win;
-      have_new_window = 0; 
+      have_new_window = 0;
     }
   }
   return 0;

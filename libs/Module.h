@@ -31,9 +31,9 @@ typedef struct {
     unsigned long type;                /* one of the M_xxx values, below */
     unsigned long size;                /* number of unsigned longs in
 					  entire packet, *including* header */
-    unsigned long timestamp;           /* last time stamp received from the 
+    unsigned long timestamp;           /* last time stamp received from the
 					  X server, in milliseconds */
-    unsigned long body[1];             /* variable size -- use 
+    unsigned long body[1];             /* variable size -- use
 					  FvwmPacketBodySize to get size */
 } FvwmPacket;
 
@@ -110,6 +110,14 @@ FvwmPacket* ReadFvwmPacket( int fd );
 
 /************************************************************************
  *
+ * SendFinishedStartupNotification - informs fvwm that the module has
+ * finished its startup procedures and is fully operational now.
+ *
+ ***********************************************************************/
+void SendFinishedStartupNotification(int *fd);
+
+/************************************************************************
+ *
  * SendText - Sends arbitrary text/command back to fvwm
  *
  ***********************************************************************/
@@ -160,7 +168,7 @@ typedef struct {
     int user_argc;             /* number of user-specified arguments */
     char** user_argv;          /* vector of user-specified arguments */
 } ModuleArgs;
-    
+
 
 ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias );
 

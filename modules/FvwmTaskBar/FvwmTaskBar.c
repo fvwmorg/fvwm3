@@ -301,6 +301,9 @@ int main(int argc, char **argv)
    * wait for ConfigureWindow packets */
   SendFvwmPipe("Send_WindowList",0);
 
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(Fvwm_fd);
+
   /* Receive all messages from Fvwm */
   EndLessLoop();
 #ifdef FVWM_DEBUG_MSGS
@@ -1636,11 +1639,6 @@ void PurgeConfigEvents(void) {
 static int
 ErrorHandler(Display *d, XErrorEvent *event)
 {
-  char errmsg[256];
-
-  XGetErrorText(d, event->error_code, errmsg, sizeof(errmsg));
-  ConsoleMessage("%s failed request: %s\n", Module, errmsg);
-  ConsoleMessage("Major opcode: 0x%x, resource id: 0x%x\n",
-                  event->request_code, event->resourceid);
+  PrintXErrorAndCoredump(d, event, Module);
   return 0;
 }

@@ -160,6 +160,10 @@ int main(int argc, char **argv)
   fd_width = GetFdWidth();
 
   GrabWindow(app_win);
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
   Loop(app_win);
   return 0;
 }

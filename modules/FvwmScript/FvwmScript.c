@@ -882,10 +882,13 @@ int main (int argc, char **argv)
 #endif
 #endif
 
- BuildGUI(IsFather);			/* Construction des boutons et de la fenetre */
+  BuildGUI(IsFather);			/* Construction des boutons et de la fenetre */
 
- ReadFvwmScriptArg(argc,argv,IsFather);
+  ReadFvwmScriptArg(argc,argv,IsFather);
 
- MainLoop();
- return 0;
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
+  MainLoop();
+  return 0;
 }

@@ -208,6 +208,10 @@ int main(int argc, char **argv)
   XMapWindow(dpy,win);
   XSync(dpy,0);
   XSelectInput(dpy,win,ButtonReleaseMask);
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
+
   /* Display the window */
   value.tv_usec = timeout % 1000000;
   value.tv_sec = timeout / 1000000;

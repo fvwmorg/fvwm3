@@ -2206,8 +2206,8 @@ XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 #else
   /* really should just exit here... */
   /* domivogt (07-mar-1999): No, not really. See comment above. */
-  fprintf(stderr,"%s: XError!  Bagging out!\n",MyName);
-  exit(0);
+  PrintXErrorAndCoredump(dpy, event, MyName);
+  return 0;
 #endif /* 1 */
 }
 

@@ -171,6 +171,9 @@ void MyXUngrabServer(Display *disp);
 
 void send_clientmessage (Display *disp, Window w, Atom a, Time timestamp);
 
+/* not really a wrapper, but useful and X related */
+void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName);
+
 /***********************************************************************
  * Wrappers around Xrm routines (XResources.c)
  ***********************************************************************/
@@ -208,7 +211,8 @@ Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			     unsigned int src_height, unsigned int dest_width,
 			     unsigned int dest_height, GC gc);
 
-Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels);
+Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
+			   int skip_first_color);
 
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 			      int nsegs, int npixels);

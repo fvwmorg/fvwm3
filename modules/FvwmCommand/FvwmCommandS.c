@@ -80,6 +80,9 @@ int main(int argc, char *argv[])
 
   Nounlink = 0;
 
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(Fd);
+
   server( fifoname );
   exit(1);
 }

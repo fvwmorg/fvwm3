@@ -18,6 +18,7 @@
 #include "readconfig.h"
 #include "x.h"
 #include "xmanager.h"
+#include "libs/fvwmlib.h"
 
 static char const rcsid[] =
   "$Id$";
@@ -840,12 +841,9 @@ void create_manager_window (int man_id)
 
 static int handle_error (Display *d, XErrorEvent *ev)
 {
-  ConsoleMessage ("X Error:\n");
-  ConsoleMessage ("         error code: %d\n", ev->error_code);
-  ConsoleMessage ("         request code: %d\n", ev->request_code);
-  ConsoleMessage ("         minor code: %d\n", ev->minor_code);
-  ConsoleMessage ("Leaving a core dump now\n");
-  abort();
+  extern char *MyName;
+  /* does not return */
+  PrintXErrorAndCoredump(d, ev, MyName);
   return 0;
 }
 

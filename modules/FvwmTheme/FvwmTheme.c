@@ -105,8 +105,8 @@ int main(int argc, char **argv)
   /* get the initial configuration options */
   parse_config();
 
-  /* tell fvwm that we're up and running */
-  SendText(fd, "FINISHED_STARTUP", 0);
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(fd);
 
   /* garbage collect */
   alloca(0);
@@ -442,9 +442,8 @@ static void parse_config(void) {
     parse_config_line(line);
 }
 
-static int error_handler(Display *d, XErrorEvent *e) {
-  char msg[256];
-
+static int error_handler(Display *d, XErrorEvent *e)
+{
   /* Attempting to free colors or pixmaps that were not allocated by this
    * module or were never allocated at all does not cause problems */
   if (((X_FreeColors == e->request_code) && (BadAccess == e->error_code))
@@ -452,12 +451,8 @@ static int error_handler(Display *d, XErrorEvent *e) {
     return 0;
 
   /* other errors cause diagnostic output and stop execution */
-  XGetErrorText(d, e->error_code, msg, sizeof(msg));
-  fprintf(stderr, "%s: X error: %s\n", name, msg);
-  fprintf(stderr, "Major opcode of failed request: %d \n", e->request_code);
-  fprintf(stderr, "Resource id of failed request: 0x%lx \n", e->resourceid);
-
-  exit(0);
+  PrintXErrorAndCoredump(d, e, name);
+  return 0;
 }
 
 static void set_signals(void) {

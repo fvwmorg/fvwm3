@@ -259,6 +259,10 @@ int main(int argc, char **argv)
 
   /* Recieve all messages from Fvwm */
   atexit(ShutMeDown);
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(Fvwm_fd);
+
   MainEventLoop();
 #ifdef FVWM_DEBUG_MSGS
   if ( debug_term_signal )
@@ -1212,12 +1216,7 @@ PropMwmHints prop;
 ************************************************************************/
 int ErrorHandler(Display *d, XErrorEvent *event)
 {
-    char errmsg[256];
-
-    XGetErrorText(d, event->error_code, errmsg, sizeof(errmsg));
-    ConsoleMessage("%s failed request: %s\n", Module, errmsg);
-    ConsoleMessage("Major opcode: 0x%x, resource id: 0x%lx\n",
-		   event->request_code, (unsigned long)event->resourceid);
+    PrintXErrorAndCoredump(d, event, Module);
     return 0;
 }
 

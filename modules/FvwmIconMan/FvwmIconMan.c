@@ -33,6 +33,7 @@ static char *IM_VERSION = "1.3";
 static char const rcsid[] =
   "$Id$";
 
+char *MyName;
 
 static RETSIGTYPE TerminateHandler(int);
 
@@ -165,7 +166,7 @@ static void main_loop (void)
 
 int main (int argc, char **argv)
 {
-  char *temp, *s;
+  char *s;
   int i;
 
 #ifdef ELECTRIC_FENCE
@@ -206,10 +207,10 @@ int main (int argc, char **argv)
   init_globals();
   init_winlists();
 
-  temp = argv[0];
+  MyName = argv[0];
   s = strrchr (argv[0], '/');
   if (s != NULL)
-    temp = s + 1;
+    MyName = s + 1;
 
   if((argc != 6) && (argc != 7)) {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
@@ -290,6 +291,9 @@ int main (int argc, char **argv)
 		 M_STRING);
 
   SendInfo (Fvwm_fd, "Send_WindowList", 0);
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(Fvwm_fd);
 
   main_loop();
 

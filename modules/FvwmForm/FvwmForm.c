@@ -1697,6 +1697,7 @@ int main (int argc, char **argv)
           (M_SENDCONFIG|M_CONFIG_INFO|M_ERROR|M_STRING));
   SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
   OpenWindows();                        /* create initial window */
+  SendFinishedStartupNotification(Channel);/* tell fvwm we're running */
   MainLoop();                           /* start */
 
   return 0;                             /* */
