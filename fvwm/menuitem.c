@@ -212,22 +212,19 @@ MenuItem *menuitem_clone(MenuItem *mi)
 }
 
 /* Calculate the size of the various parts of the item.  The sizes are returned
- * through mips.
- *
- * Note: funtion was formerly named menuitem_get_size which collides with
- * a global name on IRIX 6.5. */
-void menuitem_get_item_size(
-	MenuItem *mi, MenuItemPartSizes *mips, FlocaleFont *font,
+ * through mipst. */
+void menuitem_get_size(
+	MenuItem *mi, MenuItemPartSizesT *mipst, FlocaleFont *font,
 	Bool do_reverse_icon_order)
 {
 	int i;
 	int j;
 	unsigned short w;
 
-	memset(mips, 0, sizeof(MenuItemPartSizes));
+	memset(mipst, 0, sizeof(MenuItemPartSizesT));
 	if (MI_IS_POPUP(mi))
 	{
-		mips->triangle_width = MENU_TRIANGLE_WIDTH;
+		mipst->triangle_width = MENU_TRIANGLE_WIDTH;
 	}
 	else if (MI_IS_TITLE(mi) && !MI_HAS_PICTURE(mi))
 	{
@@ -255,9 +252,9 @@ void menuitem_get_item_size(
 				font, MI_LABEL(mi)[0], MI_LABEL_STRLEN(mi)[0]);
 			MI_LABEL_OFFSET(mi)[0] = w;
 			MI_IS_TITLE_CENTERED(mi) = True;
-			if (mips->title_width < w)
+			if (mipst->title_width < w)
 			{
-				mips->title_width = w;
+				mipst->title_width = w;
 			}
 			return;
 		}
@@ -271,15 +268,15 @@ void menuitem_get_item_size(
 			w = FlocaleTextWidth(
 				font, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
 			MI_LABEL_OFFSET(mi)[i] = w;
-			if (mips->label_width[i] < w)
+			if (mipst->label_width[i] < w)
 			{
-				mips->label_width[i] = w;
+				mipst->label_width[i] = w;
 			}
 		}
 	}
-	if (MI_PICTURE(mi) && mips->picture_width < MI_PICTURE(mi)->width)
+	if (MI_PICTURE(mi) && mipst->picture_width < MI_PICTURE(mi)->width)
 	{
-		mips->picture_width = MI_PICTURE(mi)->width;
+		mipst->picture_width = MI_PICTURE(mi)->width;
 	}
 	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
 	{
@@ -290,7 +287,7 @@ void menuitem_get_item_size(
 			/* Reverse mini icon order for left submenu style. */
 			k = (do_reverse_icon_order == True) ?
 				MAX_MENU_ITEM_MINI_ICONS - 1 - i : i;
-			mips->icon_width[k] = MI_MINI_ICON(mi)[i]->width;
+			mipst->icon_width[k] = MI_MINI_ICON(mi)[i]->width;
 		}
 	}
 

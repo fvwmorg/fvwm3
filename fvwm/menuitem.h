@@ -112,7 +112,7 @@ typedef struct
 	unsigned short picture_width;
 	unsigned short triangle_width;
 	unsigned short title_width;
-} MenuItemPartSizes;
+} MenuItemPartSizesT;
 
 typedef struct
 {
@@ -138,8 +138,8 @@ typedef struct
 MenuItem *menuitem_clone(MenuItem *mi);
 MenuItem *menuitem_create(void);
 void menuitem_free(MenuItem *mi);
-void menuitem_get_item_size(
-	MenuItem *mi, MenuItemPartSizes *mips, FlocaleFont *font,
+void menuitem_get_size(
+	MenuItem *mi, MenuItemPartSizesT *mips, FlocaleFont *font,
 	Bool do_reverse_icon_order);
 void menuitem_paint(
 	MenuItem *mi, MenuPaintItemParameters *mpip);

@@ -107,7 +107,7 @@ typedef struct
 	struct
 	{
 		unsigned short sidepic_width;
-		MenuItemPartSizes i;
+		MenuItemPartSizesT i;
 	} max;
 	struct
 	{
@@ -1561,14 +1561,11 @@ static void clone_menu_item_list(
 /* ---------------------------- MenuRoot maintenance functions ------------- */
 
 /* Extract interesting values from the item format string that are needed by
- * the size_menu_... functions.
- *
- * Note: funtion was formerly named calculate_item_sizes which collides with
- * a global name on IRIX 6.5. */
-static void _calculate_item_sizes(MenuSizingParameters *msp)
+ * the size_menu_... functions. */
+static void calculate_item_sizes(MenuSizingParameters *msp)
 {
 	MenuItem *mi;
-	MenuItemPartSizes mips;
+	MenuItemPartSizesT mips;
 	int i;
 	Bool do_reverse_icon_order =
 		(MST_USE_LEFT_SUBMENUS(msp->menu)) ? True : False;
@@ -1577,7 +1574,7 @@ static void _calculate_item_sizes(MenuSizingParameters *msp)
 	/* Calculate the widths for all columns of all items. */
 	for (mi = MR_FIRST_ITEM(msp->menu); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
-		menuitem_get_item_size(
+		menuitem_get_size(
 			mi, &mips, MST_PSTDFONT(msp->menu),
 			do_reverse_icon_order);
 		/* adjust maximums */
@@ -2430,7 +2427,7 @@ static void make_menu(MenuRoot *mr)
 	{
 		memset(&msp, 0, sizeof(MenuSizingParameters));
 		msp.menu = mr;
-		_calculate_item_sizes(&msp);
+		calculate_item_sizes(&msp);
 		/* Call size_menu_horizontally first because it calculated
 		 * some values used by size_menu_vertically. */
 		size_menu_horizontally(&msp);
