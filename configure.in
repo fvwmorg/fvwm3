@@ -89,7 +89,7 @@ xpm_problem=": Xpm library or header not found!"
 if test "$xpm_LIBS"; then
   dnl Check for proper version of Xpm -- from XEmacs 21.x configure.in
   xpm_problem=""
-  AC_MSG_CHECKING(for Xpm 3.4f or better)
+  AC_MSG_CHECKING(for Xpm 3.4g or better)
   my_CPPFLAGS="$CPPFLAGS"
   my_LIBS="$LIBS"
   CPPFLAGS="$CPPFLAGS $xpm_CFLAGS $X_CFLAGS"
@@ -98,7 +98,7 @@ if test "$xpm_LIBS"; then
    int main(int c, char **v) {
    return c == 1 ? 0 :
      XpmIncludeVersion != XpmLibraryVersion() ? 1 :
-     XpmIncludeVersion < 30406 ? 2 : 0 ;}],
+     XpmIncludeVersion < 30407 ? 2 : 0 ;}],
     [./conftest dummy_arg; xpm_status=$?;
      if test "$xpm_status" = "0"; then
        with_xpm=yes;
