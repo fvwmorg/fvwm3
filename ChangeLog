@@ -1,3 +1,9 @@
+2002-06-03  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/module_interface.c (make_named_packet):
+	Fixed an write out of memory bug. This complete Mikhail Kruk patch
+	related to named module packet
+
 2002-06-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (focus_grab_buttons):

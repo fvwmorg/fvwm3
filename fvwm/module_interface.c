@@ -1132,7 +1132,8 @@ make_named_packet(int *len, unsigned long event_type, const char *name,
   make_vpacket(body, event_type, num, ap);
   va_end(ap);
 
-  strcpy((char *)&body[FvwmPacketHeaderSize+num], name);
+  strncpy((char *)&body[FvwmPacketHeaderSize+num], name,
+	  (*len - FvwmPacketHeaderSize - num)*sizeof(unsigned long) - 1);
   body[2] = *len;
 
 #if 0
