@@ -1,0 +1,95 @@
+#!/bin/zsh
+# sorry, zsh only for now (3.0.5)
+
+emulate zsh
+myname=`basename $0`
+log=archive/automated_tests/$myname.log
+
+if [ ! -x ./$myname ] ; then
+  echo please run $myname from archive/automated_tests
+  exit 1
+fi
+cd ../..
+rm -f "$log"* > /dev/null 2>&1
+
+clean_up ()
+{
+  make clean > /dev/null 2>&1
+  make distclean > /dev/null 2>&1
+  for i in `find . -name .deps -type d` ; do rm -rf $i; done > /dev/null 2>&1
+  for i in `find . -name Makefile` ; do rm -f $i; done > /dev/null 2>&1
+  for i in `find . -name "*.o"` ; do rm -f $i; done > /dev/null 2>&1
+}
+
+disable_options ()
+{
+  typeset -i k
+  optlist=""
+  while [ ! "$1" = "" ]; do
+    optlist="$optlist --disable-${opt[$1]}"
+    shift
+  done
+  k=0
+  while [ ! "${opt[$k]}" = "" ]; do
+    echo $optlist | grep -q -- "--disable-${opt[$k]}" ||
+      optlist="$optlist --enable-${opt[$k]}"
+    k=$k+1
+  done
+}
+
+reverse_options ()
+{
+  optlist=`echo $optlist |
+           sed -e 's/--enable-/--xyz-/g' |
+           sed -e 's/--disable-/--enable-/g' |
+           sed -e 's/--xyz-/--disable-/g'`
+}
+
+build ()
+{
+  clean_up
+  echo "\n\n++++++++++ checking configure with options $optlist\n" >> $log
+  echo "./configure --enable-extras $optlist\n\n" > $log.$1
+  if nice ./configure --enable-extras $optlist >> $log.$1 2>&1; then
+    echo ok >> $log
+  else
+    echo FAILED >> $log
+  fi
+  echo "\nbuilding\n" >> $log
+  if nice make > $log.$1 2>&1; then
+    echo ok >> $log
+  else
+    echo FAILED >> $log
+  fi
+}
+
+typeset -i n
+
+# get the option list
+
+n=0
+grep smr_SWITCH configure.in | grep -v debug-msgs |
+sed -e 's/^smr_SWITCH.//g' |
+cut -f 1 -d "," |
+while read option; do
+  opt[$n]=$option
+  n=$n+1;
+done
+
+# now do the tests
+
+disable_options
+reverse_options
+build all_disabled
+
+n=0
+while [ ! "${opt[$n]}" = "" ]; do
+  disable_options ${opt[$n]}
+  build ${opt[$n]}_off
+  reverse_options
+  build ${opt[$n]}_on
+  n=$n+1
+done
+
+disable_options
+build all_enabled
