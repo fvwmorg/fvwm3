@@ -33,17 +33,17 @@ What gets installed, and Where
 * a couple of utilities (xpmroot, etc) are also installed in ${prefix}/bin
 * all the modules (and extra modules) are installed
   into ${libexecdir}/fvwm/${VERSION}
-* some configuration files are installed into ${sysconfdir}
+* some configuration files are installed into ${sysconfdir}/fvwm
 
 Where VERSION is the version string of FVWM, typically something like
 "2.2.0".  No other files are installed.  There are sample
-system.fvwm2rc files which you may copy manually to ${sysconfdir} ---
+system.fvwm2rc files which you may copy manually to ${sysconfdir}/fvwm ---
 see below.
 
 Unless you used configure options,
 
 * ${prefix} is /usr/local.
-* ${sysconfdir} is ${prefix}/etc/fvwm,
+* ${sysconfdir} is ${prefix}/etc,
 * ${libexecdir} is ${prefix}/libexec
 
 Thus the default locations are: /usr/local/bin,

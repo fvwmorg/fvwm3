@@ -1,3 +1,8 @@
+1999-05-13  Dan Espen  <dane@mk.bellcore.com>
+
+	* INSTALL.fvwm (Configuration File): Clear up distinction between
+	$sysconfdir and $sysconfdir/fvwm.
+
 1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/menus.c (do_menu): set *ret_paction to NULL after 
@@ -7,7 +12,7 @@
 1999-05-12  Dan Espen  <dane@mk.bellcore.com>
 
 	* INSTALL.fvwm (Configuration File): Some clarification on config files
-	that are installed.  Ssysconfdir is ${prefix}/etc/fvwm.
+	that are installed.  $sysconfdir is ${prefix}/etc/fvwm.
 
 	* fvwm/fvwm2.1 (INITIALIZATION): Correct typo and facts about
 	startup.
