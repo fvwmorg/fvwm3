@@ -1434,7 +1434,6 @@ A: FVWM spawns itself into all found screens unless -s command line
 
 3.21  How do I maximize a window but not cover up FvwmTaskBar?
 
-
 A: Instead of Maximize use "Maximize 100 -30p" where 30 is the width
    of your FvwmTaskBar.
 
