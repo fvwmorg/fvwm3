@@ -380,7 +380,7 @@ int main(int argc, char **argv)
             *cp = '\0';		/* truncate at display part */
         }
         sprintf(message + strlen(message), ".%d", myscreen);
-        dpy = XOpenDisplay(message);
+        Pdpy = dpy = XOpenDisplay(message);
         Scr.screen = myscreen;
         Scr.NumberOfScreens = ScreenCount(dpy);
 
