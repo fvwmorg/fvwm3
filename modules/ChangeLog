@@ -1,3 +1,10 @@
+1999-11-24  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.1
+	* FvwmTaskBar/ConfigFvwmTaskBar
+	Replaced FvwmTaskBarGeometry +0-1 by FvwmTaskBarGeometry +0-0 since
+	now the position computation take the real border width in account
+
 1999-11-24  Hippo
 
 	* FvwmIconMan/*.c: fixed HilightFocusWin, fixed colorset stretching

@@ -6,7 +6,7 @@ DestroyModuleConfig FvwmTaskBar*
 *FvwmTaskBarFore black
 *FvwmTaskBarTipsBack bisque
 *FvwmTaskBarTipsFore black
-*FvwmTaskBarGeometry +0-1
+*FvwmTaskBarGeometry +0-0
 *FvwmTaskBarFont -adobe-helvetica-medium-r-*-*-14-*-*-*-*-*-*-*
 *FvwmTaskBarSelFont -adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
 *FvwmTaskBarStatusFont fixed
