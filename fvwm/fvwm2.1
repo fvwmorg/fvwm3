@@ -3521,12 +3521,11 @@ above settings are the default.
 If during an interactive move the window or icon comes within
 .I proximity
 pixels of another the window or icon, it is moved to make the borders
-adjoin.  The default of -1 means that no snapping happens.  A setting of
-0 does indeed snap when the distance is zero pixels.  This is relevant when
-the
+adjoin.  The default of 0 means that no snapping happens.  Calling this
+command without arguments reinstates the default settings.
+Please refer also to the
 .B SnapGrid
-command is used.  Calling this command without arguments reinstates
-the default settings.
+command.
 
 The
 .I behavior

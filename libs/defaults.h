@@ -160,7 +160,7 @@
 
 /*** movement ***/
 #define DEFAULT_OPAQUE_MOVE_SIZE	   5 /* percent of window area */
-#define DEFAULT_SNAP_ATTRACTION		  -1
+#define DEFAULT_SNAP_ATTRACTION		   0
 #define DEFAULT_SNAP_ATTRACTION_MODE	   0
 #define DEFAULT_SNAP_GRID_X		   1 /* pixels */
 #define DEFAULT_SNAP_GRID_Y		   1 /* pixels */

@@ -55,6 +55,12 @@
 /* ----- move globals ----- */
 extern XEvent Event;
 
+#define SNAP_NONE    0x00
+#define SNAP_WINDOWS 0x01
+#define SNAP_ICONS   0x02
+#define SNAP_SAME    0x04
+#define SNAP_SCREEN  0x08
+
 /* Animated move stuff added by Greg J. Badros, gjb@cs.washington.edu */
 
 float rgpctMovementDefault[32] = {
@@ -864,13 +870,12 @@ static void DoSnapAttract(
   FvwmWindow *tmp;
 
   /* resist based on window edges */
-  tmp = Scr.FvwmRoot.next;
   closestTop = Scr.SnapAttraction;
   closestBottom = Scr.SnapAttraction;
   closestRight = Scr.SnapAttraction;
   closestLeft = Scr.SnapAttraction;
-  nxl = -1;
-  nyt = -1;
+  nxl = -99999;
+  nyt = -99999;
   self.x = *px;
   self.y = *py;
   self.width = Width;
@@ -879,41 +884,53 @@ static void DoSnapAttract(
   {
     self.height += tmp_win->icon_g.height;
   }
-  while(Scr.SnapAttraction >= 0 && tmp)
+
+  /*
+   * snap attraction
+   */
+  /* snap to other windows */
+  if ((Scr.SnapMode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) &&
+      Scr.SnapAttraction > 0)
   {
-    switch (Scr.SnapMode)
+    for (tmp = Scr.FvwmRoot.next; tmp; tmp = tmp->next)
     {
-    case 1:  /* SameType */
-      if( IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
+      if (tmp_win->Desk != tmp->Desk || tmp_win == tmp)
       {
-	tmp = tmp->next;
 	continue;
       }
-      break;
-    case 2:  /* Icons */
-      if( !IS_ICONIFIED(tmp) || !IS_ICONIFIED(tmp_win))
+      /* check snapping type */
+      switch (Scr.SnapMode)
       {
-	tmp = tmp->next;
-	continue;
+      case 1:  /* SameType */
+	if (IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
+	{
+	  tmp = tmp->next;
+	  continue;
+	}
+	break;
+      case 2:  /* Icons */
+	if (!IS_ICONIFIED(tmp) || !IS_ICONIFIED(tmp_win))
+	{
+	  tmp = tmp->next;
+	  continue;
+	}
+	break;
+      case 3:  /* Windows */
+	if (IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
+	{
+	  tmp = tmp->next;
+	  continue;
+	}
+	break;
+      case 0:  /* All */
+      default:
+	/* NOOP */
+	break;
       }
-      break;
-    case 3:  /* Windows */
-      if( IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
+      /* get other window dimensions */
+      if (IS_ICONIFIED(tmp))
       {
-	tmp = tmp->next;
-	continue;
-      }
-      break;
-    case 0:  /* All */
-    default:
-      /* NOOP */
-      break;
-    }
-    if (tmp_win != tmp && (tmp_win->Desk == tmp->Desk))
-    {
-      if(IS_ICONIFIED(tmp))
-      {
-	if(tmp->icon_p_height > 0)
+	if (tmp->icon_p_height > 0)
 	{
 	  other.width = tmp->icon_p_width;
 	  other.height = tmp->icon_p_height;
@@ -937,196 +954,205 @@ static void DoSnapAttract(
 	other.x = tmp->frame_g.x;
 	other.y = tmp->frame_g.y;
       }
-      if(!((other.y + (int)other.height) < (*py) ||
-	   (other.y) > (*py + (int)self.height) ))
+
+      /* snap horizontally */
+      if (!((other.y + (int)other.height) < (*py) ||
+	    (other.y) > (*py + (int)self.height) ))
       {
 	dist = abs(other.x - (*px + (int)self.width));
-	if(dist < closestRight)
+	if (dist < closestRight)
 	{
 	  closestRight = dist;
-	  if(((*px + (int)self.width) >= other.x)&&
-	     ((*px + (int)self.width) < other.x+Scr.SnapAttraction))
+	  if (((*px + (int)self.width) >= other.x) &&
+	      ((*px + (int)self.width) < other.x + Scr.SnapAttraction))
 	  {
 	    nxl = other.x - (int)self.width;
 	  }
-	  if(((*px + (int)self.width) >= other.x - Scr.SnapAttraction)&&
-	     ((*px + (int)self.width) < other.x))
+	  if (((*px + (int)self.width) >= other.x - Scr.SnapAttraction) &&
+	      ((*px + (int)self.width) < other.x))
 	  {
 	    nxl = other.x - (int)self.width;
 	  }
 	}
 	dist = abs(other.x + (int)other.width - *px);
-	if(dist < closestLeft)
+	if (dist < closestLeft)
 	{
 	  closestLeft = dist;
-	  if((*px <= other.x + (int)other.width)&&
-	     (*px > other.x + (int)other.width - Scr.SnapAttraction))
+	  if ((*px <= other.x + (int)other.width) &&
+	      (*px > other.x + (int)other.width - Scr.SnapAttraction))
 	  {
 	    nxl = other.x + (int)other.width;
 	  }
-	  if((*px <= other.x + (int)other.width + Scr.SnapAttraction)&&
-	     (*px > other.x + (int)other.width))
+	  if ((*px <= other.x + (int)other.width + Scr.SnapAttraction) &&
+	      (*px > other.x + (int)other.width))
 	  {
 	    nxl = other.x + (int)other.width;
 	  }
 	}
-      }
-      /* ScreenEdges - SJL */
-      if(!(Scr.MyDisplayHeight < (*py) ||
-	   (*py + (int)self.height) < 0) && (Scr.SnapMode & 8))
-      {
-	dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
-
-	if(dist < closestRight)
-	{
-	  closestRight = dist;
-
-	  if(((*px + (int)self.width) >= Scr.MyDisplayWidth)&&
-	     ((*px + (int)self.width) < Scr.MyDisplayWidth +
-	      Scr.SnapAttraction))
-	    {
-	    nxl = Scr.MyDisplayWidth - (int)self.width;
-	  }
-
-	  if(((*px + (int)self.width) >= Scr.MyDisplayWidth -
-	      Scr.SnapAttraction)&&
-	     ((*px + (int)self.width) < Scr.MyDisplayWidth))
-	  {
-	    nxl = Scr.MyDisplayWidth - (int)self.width;
-	  }
-	}
-
-	dist = abs(*px);
-
-	if(dist < closestLeft)
-	{
-	  closestLeft = dist;
-
-	  if((*px <= 0)&&
-	     (*px > - Scr.SnapAttraction))
-	  {
-	    nxl = 0;
-	  }
-	  if((*px <= Scr.SnapAttraction)&&
-	     (*px > 0))
-	  {
-	    nxl = 0;
-	  }
-	}
-      }
-
-      if(!((other.x + (int)other.width) < (*px) ||
-	   (other.x) > (*px + (int)self.width)))
+      } /* horizontally */
+      /* snap vertically */
+      if (!((other.x + (int)other.width) < (*px) ||
+	    (other.x) > (*px + (int)self.width)))
       {
 	dist = abs(other.y - (*py + (int)self.height));
-	if(dist < closestBottom)
+	if (dist < closestBottom)
 	{
 	  closestBottom = dist;
-	  if(((*py + (int)self.height) >= other.y)&&
-	     ((*py + (int)self.height) < other.y+Scr.SnapAttraction))
+	  if (((*py + (int)self.height) >= other.y) &&
+	      ((*py + (int)self.height) < other.y + Scr.SnapAttraction))
 	  {
 	    nyt = other.y - (int)self.height;
 	  }
-	  if(((*py + (int)self.height) >= other.y - Scr.SnapAttraction)&&
-	     ((*py + (int)self.height) < other.y))
+	  if (((*py + (int)self.height) >= other.y - Scr.SnapAttraction) &&
+	      ((*py + (int)self.height) < other.y))
 	  {
 	    nyt = other.y - (int)self.height;
 	  }
 	}
 	dist = abs(other.y + (int)other.height - *py);
-	if(dist < closestTop)
+	if (dist < closestTop)
 	{
 	  closestTop = dist;
-	  if((*py <= other.y + (int)other.height)&&
-	     (*py > other.y + (int)other.height - Scr.SnapAttraction))
+	  if ((*py <= other.y + (int)other.height) &&
+	      (*py > other.y + (int)other.height - Scr.SnapAttraction))
 	  {
 	    nyt = other.y + (int)other.height;
 	  }
-	  if((*py <= other.y + (int)other.height + Scr.SnapAttraction)&&
-	     (*py > other.y + (int)other.height))
+	  if ((*py <= other.y + (int)other.height + Scr.SnapAttraction) &&
+	      (*py > other.y + (int)other.height))
 	  {
 	    nyt = other.y + (int)other.height;
 	  }
 	}
-      }
-      /* ScreenEdges - SJL */
-      if (!(Scr.MyDisplayWidth < (*px) || (*px + (int)self.width) < 0 )
-	  && (Scr.SnapMode & 8))
-      {
-	dist = abs(Scr.MyDisplayHeight - (*py + (int)self.height));
+      } /* vertically */
+    } /* for */
+  } /* snap to other windows */
 
-	if(dist < closestBottom)
-	{
-	  closestBottom = dist;
-	  if(((*py + (int)self.height) >= Scr.MyDisplayHeight)&&
-	     ((*py + (int)self.height) < Scr.MyDisplayHeight +
-	      Scr.SnapAttraction))
-	  {
-	    nyt = Scr.MyDisplayHeight - (int)self.height;
-	  }
-	  if(((*py + (int)self.height) >= Scr.MyDisplayHeight -
-	      Scr.SnapAttraction)&&
-	     ((*py + (int)self.height) < Scr.MyDisplayHeight))
-	  {
-	    nyt = Scr.MyDisplayHeight - (int)self.height;
-	  }
-	}
-
-	dist = abs(- *py);
-
-	if(dist < closestTop)
-	{
-	  closestTop = dist;
-	  if((*py <= 0)&&(*py > - Scr.SnapAttraction))
-	  {
-	    nyt = 0;
-	  }
-	  if((*py <=  Scr.SnapAttraction)&&(*py > 0))
-	  {
-	    nyt = 0;
-	  }
-
-	}
-      }
-    }
-    tmp = tmp->next;
-  }
-  /* Snap grid handling */
-  if(nxl == -1)
+  /* snap to screen egdes */
+  if ((Scr.SnapMode & SNAP_SCREEN) && Scr.SnapAttraction > 0)
   {
-    if(*px != *px / Scr.SnapGridX * Scr.SnapGridX)
+    /* horizontally */
+    /* vertically */
+    if (!(Scr.MyDisplayWidth < (*px) || (*px + (int)self.width) < 0))
+    {
+      dist = abs(Scr.MyDisplayHeight - (*py + (int)self.height));
+      if (dist < closestBottom)
+      {
+	closestBottom = dist;
+	if (((*py + (int)self.height) >= Scr.MyDisplayHeight) &&
+	    ((*py + (int)self.height) < Scr.MyDisplayHeight +
+	     Scr.SnapAttraction))
+	{
+	  nyt = Scr.MyDisplayHeight - (int)self.height;
+	}
+	if (((*py + (int)self.height) >= Scr.MyDisplayHeight -
+	     Scr.SnapAttraction) &&
+	    ((*py + (int)self.height) < Scr.MyDisplayHeight))
+	{
+	  nyt = Scr.MyDisplayHeight - (int)self.height;
+	}
+      }
+      dist = abs(*py);
+      if (dist < closestTop)
+      {
+	closestTop = dist;
+	if ((*py <= 0)&&(*py > - Scr.SnapAttraction))
+	{
+	  nyt = 0;
+	}
+	if ((*py <=  Scr.SnapAttraction)&&(*py > 0))
+	{
+	  nyt = 0;
+	}
+      }
+    } /* horizontally */
+    if (!(Scr.MyDisplayHeight < (*py) || (*py + (int)self.height) < 0))
+    {
+      dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
+      if (dist < closestRight)
+      {
+	closestRight = dist;
+
+	if (((*px + (int)self.width) >= Scr.MyDisplayWidth) &&
+	    ((*px + (int)self.width) < Scr.MyDisplayWidth +
+	     Scr.SnapAttraction))
+	{
+	  nxl = Scr.MyDisplayWidth - (int)self.width;
+	}
+
+	if (((*px + (int)self.width) >= Scr.MyDisplayWidth -
+	     Scr.SnapAttraction) &&
+	    ((*px + (int)self.width) < Scr.MyDisplayWidth))
+	{
+	  nxl = Scr.MyDisplayWidth - (int)self.width;
+	}
+      }
+      dist = abs(*px);
+      if (dist < closestLeft)
+      {
+	closestLeft = dist;
+
+	if ((*px <= 0) &&
+	    (*px > - Scr.SnapAttraction))
+	{
+	  nxl = 0;
+	}
+	if ((*px <= Scr.SnapAttraction) &&
+	    (*px > 0))
+	{
+	  nxl = 0;
+	}
+      }
+    } /* vertically */
+  } /* snap to screen edges */
+
+  if (nxl != -99999)
+  {
+    *px = nxl;
+  }
+  if (nyt != -99999)
+  {
+    *py = nyt;
+  }
+
+  /*
+   * Snap grid handling
+   */
+  if (Scr.SnapGridX > 1 && nxl == -99999)
+  {
+    if (*px != *px / Scr.SnapGridX * Scr.SnapGridX)
     {
       *px = (*px + ((*px >= 0) ? Scr.SnapGridX : -Scr.SnapGridX) / 2) /
 	Scr.SnapGridX * Scr.SnapGridX;
     }
   }
-  else
+  if (Scr.SnapGridY > 1 && nyt == -99999)
   {
-    *px = nxl;
-  }
-  if(nyt == -1)
-  {
-    if(*py != *py / Scr.SnapGridY * Scr.SnapGridY)
+    if (*py != *py / Scr.SnapGridY * Scr.SnapGridY)
     {
       *py = (*py + ((*py >= 0) ? Scr.SnapGridY : -Scr.SnapGridY) / 2) /
 	Scr.SnapGridY * Scr.SnapGridY;
     }
   }
-  else
+
+  /*
+   * Resist moving windows beyond the edge of the screen
+   */
+  if (Scr.MoveResistance > 0)
   {
-    *py = nyt;
+    if (((*px + Width) >= Scr.MyDisplayWidth)
+	&& ((*px + Width) < Scr.MyDisplayWidth + Scr.MoveResistance))
+      *px = Scr.MyDisplayWidth - Width;
+    if ((*px <= 0) && (*px > -Scr.MoveResistance))
+      *px = 0;
+    if (((*py + Height) >= Scr.MyDisplayHeight)
+	&& ((*py + Height) < Scr.MyDisplayHeight + Scr.MoveResistance))
+      *py = Scr.MyDisplayHeight - Height;
+    if ((*py <= 0) && (*py > -Scr.MoveResistance))
+      *py = 0;
   }
-  /* Resist moving windows beyond the edge of the screen */
-  if (((*px + Width) >= Scr.MyDisplayWidth)
-      && ((*px + Width) < Scr.MyDisplayWidth + Scr.MoveResistance))
-    *px = Scr.MyDisplayWidth - Width;
-  if ((*px <= 0) && (*px > -Scr.MoveResistance))
-    *px = 0;
-  if (((*py + Height) >= Scr.MyDisplayHeight)
-      && ((*py + Height) < Scr.MyDisplayHeight + Scr.MoveResistance))
-    *py = Scr.MyDisplayHeight - Height;
-  if ((*py <= 0) && (*py > -Scr.MoveResistance))
-    *py = 0;
+
+  return;
 }
 
 /****************************************************************************
@@ -1224,6 +1250,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 			    KeyPressMask | PointerMotionMask |
 			    ButtonMotionMask | ExposureMask, &Event))
     {
+#if 1
       if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y, False, False, True))
       {
 	/* Fake an event to force window reposition */
@@ -1236,12 +1263,14 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	Event.xmotion.y_root = yt - YOffset;
 	break;
       }
+#endif
     }
     StashEventTime(&Event);
 
     /* discard any extra motion events before a logical release */
     if (Event.type == MotionNotify)
     {
+#if 1
       XEvent new_event;
 
       /*** logic borrowed from icewm ***/
@@ -1260,6 +1289,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  Event = new_event;
 	}
       }
+#endif
       /*** end of code borrowed from icewm ***/
       StashEventTime(&Event);
 
@@ -1360,7 +1390,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx || vy != Scr.Vy)
       {
 	/* only snap if the window actually moved! */
+#if 1
         DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+#endif
       }
 
       *FinalX = xl;
@@ -1374,7 +1406,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       xl = Event.xmotion.x_root + XOffset;
       yt = Event.xmotion.y_root + YOffset;
 
+#if 1
       DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+#endif
 
       /* check Paging request once and only once after outline redrawn */
       /* redraw after paging if needed - mab */
@@ -1413,7 +1447,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, False);
 	  xl += XOffset;
 	  yt += YOffset;
+#if 1
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+#endif
 	  if (!delta_x && !delta_y)
 	    /* break from while (paged <= 1) */
 	    break;
@@ -1611,10 +1647,11 @@ void SetSnapAttraction(F_CMD_ARGS)
   int val;
   char *token;
 
-  if(GetIntegerArguments(action, &action, &val, 1) != 1)
+  if (GetIntegerArguments(action, &action, &val, 1) != 1)
   {
     Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
     Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
+fprintf(stderr,"sa1: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
     return;
   }
   Scr.SnapAttraction = val;
@@ -1622,37 +1659,42 @@ void SetSnapAttraction(F_CMD_ARGS)
   {
     Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
   }
+  if (val == 0)
+  {
+fprintf(stderr,"sa2: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
+    return;
+  }
 
-  action = GetNextToken(action, &token);
+  token = PeekToken(action, &action);
   if (token == NULL)
   {
+fprintf(stderr,"sa3: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
     return;
   }
 
   Scr.SnapMode = -1;
   if (StrEquals(token,"All"))
   {
-    Scr.SnapMode = 0;
+    Scr.SnapMode = SNAP_ICONS | SNAP_WINDOWS;
   }
   else if (StrEquals(token,"SameType"))
   {
-    Scr.SnapMode = 1;
+    Scr.SnapMode = SNAP_SAME;
   }
   else if (StrEquals(token,"Icons"))
   {
-    Scr.SnapMode = 2;
+    Scr.SnapMode = SNAP_ICONS;
   }
   else if (StrEquals(token,"Windows"))
   {
-    Scr.SnapMode = 3;
+    Scr.SnapMode = SNAP_WINDOWS;
   }
-
   if (Scr.SnapMode != -1)
   {
-    free(token);
-    action = GetNextToken(action, &token);
+    token = PeekToken(action, &action);
     if (token == NULL)
     {
+fprintf(stderr,"sa4: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
       return;
     }
   }
@@ -1661,16 +1703,16 @@ void SetSnapAttraction(F_CMD_ARGS)
     Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
   }
 
-  if (StrEquals(token,"Screen"))
+  if (StrEquals(token, "Screen"))
   {
-    Scr.SnapMode += 8;
+    Scr.SnapMode |= SNAP_SCREEN;
   }
   else
   {
     fvwm_msg(ERR,"SetSnapAttraction", "Invalid argument: %s", token);
   }
 
-  free(token);
+fprintf(stderr,"sa5: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
 }
 
 void SetSnapGrid(F_CMD_ARGS)
@@ -2595,6 +2637,7 @@ void MoveOutline(int x, int  y, int  width, int height)
   if (nrects > 0)
   {
     XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, nrects);
+    XSync(dpy, 0);
   }
   lastx = x;
   lasty = y;
