@@ -82,6 +82,27 @@ void clear_icon(FvwmWindow *tmp_win)
 	return;
 }
 
+int get_visible_icon_window_count(FvwmWindow *tmp_win)
+{
+	int count = 0;
+
+	if (tmp_win == NULL || !IS_ICONIFIED(tmp_win) ||
+	    IS_ICON_SUPPRESSED(tmp_win))
+	{
+		return 0;
+	}
+	if (tmp_win->icon_pixmap_w != None)
+	{
+		count++;
+	}
+	if (tmp_win->icon_title_w != None)
+	{
+		count++;
+	}
+
+	return count;
+}
+
 static void setup_icon_title_size(FvwmWindow *tmp_win)
 {
   if (HAS_NO_ICON_TITLE(tmp_win))

@@ -1,6 +1,15 @@
+2002-01-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	(restack_windows):
+	(collect_transients_recursive):
+	* fvwm/icons.c (get_visible_icon_window_count):
+	fixed stack ring corruption with icons that have either no picture or
+	no title
+
 2002-01-28  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm/ewmh_names.c (charset_to_utf8): 
+	* fvwm/ewmh_names.c (charset_to_utf8):
 	(utf8_to_charset):
 	(EWMH_SetVisibleName):
 	(get_charset):
@@ -8,11 +17,11 @@
 	set the ewmh visible (icon) name only if the fvwm visible name is
 	different from the ICCCM (icon) window name, limit the number of
 	conversions error messages to 10
-	
+
 2002-01-28  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/functions.c (func_config):
-	* fvwm/commands.h: 
+	* fvwm/commands.h:
 	* fvwm/builtins.c (CMD_PropertyChange):
 	New undocumented command PropertyChange to send MX_PROPERTY_CHANGE
 	messages
