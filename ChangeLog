@@ -1,3 +1,7 @@
+1999-03-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	**/*: applied Gnome patch by Jay Painter
+
 1999-02-07 Michael Han <mikehan@best.com>
 
 	* fvwm/menus.c (menuShortcuts): Changed the hotkey handler from a flat

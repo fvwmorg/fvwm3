@@ -27,6 +27,7 @@
 #include "screen.h"
 #include "module.h"
 
+
 static char *expand(char *input, char *arguments[],FvwmWindow *tmp_win);
 static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d,Bool may_time_out);
 
@@ -116,6 +117,9 @@ static struct functions func_config[] =
   {"FOCUS",        focus_func,       F_FOCUS,               FUNC_NEEDS_WINDOW},
   {"FUNCTION",     ComplexFunction,  F_FUNCTION,            FUNC_NO_WINDOW},
   {"GLOBALOPTS",   SetGlobalOptions, F_GLOBAL_OPTS,         FUNC_NO_WINDOW},
+#ifdef GNOME
+  {"GNOMEButton",  GNOME_ButtonFunc, F_MOUSE,               FUNC_NO_WINDOW},
+#endif /* GNOME */
   {"GOTOPAGE",     goto_page_func,   F_GOTO_PAGE,           FUNC_NO_WINDOW},
   {"HILIGHTCOLOR", SetHiColor,       F_HICOLOR,             FUNC_NO_WINDOW},
   {"ICONFONT",     LoadIconFont,     F_ICONFONT,            FUNC_NO_WINDOW},

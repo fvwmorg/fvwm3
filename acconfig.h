@@ -20,6 +20,9 @@ char *alloca ();
 /* Suffix for config filenames */
 #define FVWMRC ".fvwm2rc"
 
+/* define if GNOME WM hints are enabled */
+#undef GNOME
+
 /* Where to search for images.  */
 #undef FVWM_IMAGEPATH
 

@@ -612,6 +612,11 @@ void MoveViewport(int newx, int newy, Bool grab)
     StashEventTime(&Event);
   if(grab)
     MyXUngrabServer(dpy);
+
+#ifdef GNOME
+  /* update GNOME pager */
+  GNOME_SetCurrentArea();
+#endif
 }
 
 /**************************************************************************

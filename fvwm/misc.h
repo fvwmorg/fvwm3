@@ -491,6 +491,38 @@ void ProcessICEMsgs(void);
 void MatchWinToSM(FvwmWindow *t, int *, int *, int *, int *, int *, int *);
 #endif
 
+#ifdef GNOME
+/* GNOME window manager hints support */
+
+/* initalization */
+void GNOME_Init();
+
+/* client messages; setting hints on a window comes through this mechanism */
+int  GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev);
+
+/* hook into .fvwm2rc functions */
+void GNOME_ButtonFunc(
+         XEvent *eventp, 
+	 Window w,
+	 FvwmWindow *fwin, 
+	 unsigned long context, 
+	 char *action, 
+	 int *Module);
+
+/* get hints on a window; sets parameters in a FvwmWindow */
+void GNOME_GetHints(FvwmWindow *fwin);
+
+/* set hints on a window from parameters in FvwmWindow */
+void GNOME_SetHints(FvwmWindow *fwin);
+
+/* update public window manager information */
+void GNOME_SetCurrentArea();
+void GNOME_SetCurrentDesk();
+void GNOME_SetClientList();
+
+#endif /* GNOME */
+
+
 #endif /* MISC_H */
 
 

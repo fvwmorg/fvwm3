@@ -675,6 +675,14 @@ void HandleClientMessage()
 
   DBUG("HandleClientMessage","Routine Entered");
 
+#ifdef GNOME
+  /* Process GNOME Messages */
+  if (GNOME_ProcessClientMessage(Tmp_win, &Event))
+    {
+      return;
+    }
+#endif
+
   if ((Event.xclient.message_type == _XA_WM_CHANGE_STATE)&&
       (Tmp_win)&&(Event.xclient.data.l[0]==IconicState)&&
       !(Tmp_win->flags & ICONIFIED))
@@ -758,6 +766,10 @@ void HandleDestroyNotify()
   DBUG("HandleDestroyNotify","Routine Entered");
 
   Destroy(Tmp_win);
+
+#ifdef GNOME
+  GNOME_SetClientList();
+#endif
 }
 
 
@@ -909,6 +921,10 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
   /* just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state */
   Tmp_win->flags &= ~STARTICONIC;
+#endif
+
+#ifdef GNOME
+  GNOME_SetClientList();
 #endif
 }
 
@@ -1144,6 +1160,10 @@ void HandleUnmapNotify()
   MyXUngrabServer(dpy);
 
   XFlush (dpy);
+
+#ifdef GNOME
+  GNOME_SetClientList();
+#endif
 }
 
 

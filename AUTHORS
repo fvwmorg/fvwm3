@@ -30,6 +30,9 @@ Fixes in the fvwmrc_convert script.
 German Gomez Garcia:
 Named MenuStyles.
 
+Jay Painter:
+Gnome support (thanks, Jay!).
+
 Chris Rankin:
 Rework of signal handlers (fvwm, FvwmButtons, FvwmIconMan, FvwmPager and
 FvwmEvent).

@@ -43,7 +43,6 @@
 
 #define MAXHOSTNAME 255
 
-
 #ifndef lint
 static char sccsid[] __attribute__((__unused__))
     = "@(#)fvwm.c " VERSION " " __DATE__ " fvwm";
@@ -565,6 +564,10 @@ int main(int argc, char **argv)
 
 #ifdef SESSION
   SessionInit(client_id);
+#endif
+
+#ifdef GNOME
+  GNOME_Init();
 #endif
 
   HandleEvents();

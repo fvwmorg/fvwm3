@@ -51,6 +51,7 @@
 #endif /* SHAPE */
 #include "module.h"
 
+
 /* Used to parse command line of clients for specific desk requests. */
 /* Todo: check for multiple desks. */
 static XrmDatabase db;
@@ -243,6 +244,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   GetOlHints(tmp_win);
 
   SelectDecor(tmp_win,styles.on_flags,styles.border_width,styles.resize_width);
+
+#ifdef GNOME
+  /* set GNOME window hints & FVWM flags translated from those hints */
+  GNOME_GetHints(tmp_win);
+#endif
 
 #ifdef SHAPE
   /* set boundary width to zero for shaped windows */
@@ -829,6 +835,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       resize_window(&Event , tmp_win->w, tmp_win, C_WINDOW, "", 0);
     }
   InstallWindowColormaps(colormap_win);
+
+#ifdef GNOME
+  /* set GNOME hints on the window from flags set on tmp_win */
+  GNOME_SetHints(tmp_win);
+#endif
+
   return (tmp_win);
 }
 
