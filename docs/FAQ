@@ -142,6 +142,7 @@ Contents
     7.10  The cat safe desktop :-)
     7.11  Lowering and moving windows.
     7.12  Toggling windows on and off.
+    7.13  How do I start applications by clicking on an icon.
 
 
 ======================================================================
@@ -1906,3 +1907,30 @@ A: Setting the background image is not really part of the window
    the specified name exists.  They will happily close manually
    opened windows or launch an application multiple times if the
    application is slow to start (e.g. like netscape).
+
+----------------------------------------------------------------------
+
+7.13  How do I start applications by clicking on an icon.
+
+   Normally an icon represents a minimized application.
+   If you want to turn that around, and launch applications by clicking
+   on icons we can't stop you.  Heres a way to do that using
+   FvwmButtons:
+
+     # FvwmButtons icon launcher:
+     DestroyFunc Launcher
+     AddToFunc Launcher
+     + I DestroyModuleConfig $0Launch.*
+     + I *$0Launch.Geometry 64x68
+     + I *$0Launch.Columns 1
+     + I *$0Launch.Rows    4
+     + I *$0Launch.Frame  0
+     + I *$0Launch.(1x3+0+0, Icon $1, Action (Mouse 1) `Exec $2`)
+     + I *$0Launch.Pixmap none
+     + I *$0Launch.(1x1+0+3, Font 9x15, Fore White, Back DarkBlue, \
+                    Title $0, Action (Mouse 1) `Exec $2`)
+     + I Style $0Launch. HandleWidth 0, NoTitle
+     + I Module FvwmButtons $3 $0Launch.
+     # Examples:
+     Launcher RXVT xterm.xpm "rxvt -bg black" "-g +0+0"
+     Launcher XV   xv.xpm    "xv"   "-g +0+100"
