@@ -824,7 +824,7 @@ void CMD_Direction(F_CMD_ARGS)
 	/* Parse the direction. */
 	action = GetNextToken(action, &tmp);
 	dir = ParseDirectionArgument(tmp, NULL, -1);
-	if (dir == -1)
+	if (dir == -1 || dir > DIR_MASK)
 	{
 		fvwm_msg(ERR, "Direction", "Invalid direction %s",
 			 (tmp) ? tmp : "");

@@ -825,11 +825,12 @@ void checkPanFrames(void)
 	}
 
 	/* correct the unmap variables if pan frame commands are set */
-	if ( edge_thickness != 0 ) {
-		if ( Scr.PanFrameLeft.command   != NULL ) do_unmap_l = False ;
-		if ( Scr.PanFrameRight.command  != NULL ) do_unmap_r = False ;
-		if ( Scr.PanFrameBottom.command != NULL ) do_unmap_b = False ;
-		if ( Scr.PanFrameTop.command    != NULL ) do_unmap_t = False ;
+	if ( edge_thickness != 0)
+	{
+		if ( Scr.PanFrameLeft.command   != NULL) do_unmap_l = False ;
+		if ( Scr.PanFrameRight.command  != NULL) do_unmap_r = False ;
+		if ( Scr.PanFrameBottom.command != NULL) do_unmap_b = False ;
+		if ( Scr.PanFrameTop.command    != NULL) do_unmap_t = False ;
 	}
 
 	/*
@@ -1441,77 +1442,92 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 	char * command;
 
 	/* get the direction */
-	direction = ParseDirectionArgument( action , &action , DIR_NONE ) ;
+	direction = ParseDirectionArgument(action, &action, DIR_NONE);
 
-	if ( direction == DIR_N ||
-	     direction == DIR_S ||
-	     direction == DIR_E ||
-	     direction == DIR_W  )  {
+	if (direction >= 0 && direction <= DIR_MAJOR_MASK)
+	{
 
 		/* check if the command does contain at least one token */
-		command = safestrdup( action );
-		if ( PeekToken( action , &action ) == NULL ) {
+		command = safestrdup(action);
+		if (PeekToken(action , &action) == NULL)
+		{
 			/* the command does not contain a token so
 			   the command of this edge is removed */
-			free( command );
+			free(command);
 			command = NULL;
 		}
 		/* assign command to the edge(s) */
-		if ( direction == DIR_N ) {
-
-			if ( Scr.PanFrameTop.command != NULL )
-				free( Scr.PanFrameTop.command );
+		if (direction == DIR_N)
+		{
+			if (Scr.PanFrameTop.command != NULL)
+			{
+				free(Scr.PanFrameTop.command);
+			}
 			Scr.PanFrameTop.command = command;
-
-		} else
-		if ( direction == DIR_S ) {
-
-			if ( Scr.PanFrameBottom.command != NULL )
-				free( Scr.PanFrameBottom.command );
+		}
+		else if (direction == DIR_S)
+		{
+			if (Scr.PanFrameBottom.command != NULL)
+			{
+				free(Scr.PanFrameBottom.command);
+			}
 			Scr.PanFrameBottom.command = command;
-
-		} else
-		if ( direction == DIR_W ) {
-
-			if ( Scr.PanFrameLeft.command != NULL )
-				free( Scr.PanFrameLeft.command );
+		}
+		else if (direction == DIR_W)
+		{
+			if (Scr.PanFrameLeft.command != NULL)
+			{
+				free(Scr.PanFrameLeft.command);
+			}
 			Scr.PanFrameLeft.command = command;
-
-		} else
-		if ( direction == DIR_E ) {
-
-			if ( Scr.PanFrameRight.command != NULL )
-				free( Scr.PanFrameRight.command );
+		}
+		else if (direction == DIR_E)
+		{
+			if (Scr.PanFrameRight.command != NULL)
+			{
+				free(Scr.PanFrameRight.command);
+			}
 			Scr.PanFrameRight.command = command;
-
-		} else {
+		}
+		else
+		{
 			/* this should never happen */
 			fvwm_msg(ERR, "EdgeCommand",
 				 "Internal error in CMD_EdgeCommand");
 		}
 
-	} else {
+	}
+	else
+	{
 
 		/* check if the argument does contain at least one token */
-		if ( PeekToken( action , &action ) == NULL ) {
-			/* Just plain EdgeCommand, so all edge commands are removed */
-			if ( Scr.PanFrameTop.command != NULL ) {
-				free( Scr.PanFrameTop.command );
+		if (PeekToken(action , &action) == NULL)
+		{
+			/* Just plain EdgeCommand, so all edge commands are
+			 * removed */
+			if (Scr.PanFrameTop.command != NULL)
+			{
+				free(Scr.PanFrameTop.command);
 				Scr.PanFrameTop.command = NULL;
 			}
-			if ( Scr.PanFrameBottom.command != NULL ) {
-				free( Scr.PanFrameBottom.command );
+			if (Scr.PanFrameBottom.command != NULL)
+			{
+				free(Scr.PanFrameBottom.command);
 				Scr.PanFrameBottom.command = NULL;
 			}
-			if ( Scr.PanFrameLeft.command != NULL ) {
-				free( Scr.PanFrameLeft.command );
+			if (Scr.PanFrameLeft.command != NULL)
+			{
+				free(Scr.PanFrameLeft.command);
 				Scr.PanFrameLeft.command = NULL;
 			}
-			if ( Scr.PanFrameRight.command != NULL ) {
-				free( Scr.PanFrameRight.command );
+			if (Scr.PanFrameRight.command != NULL)
+			{
+				free(Scr.PanFrameRight.command);
 				Scr.PanFrameRight.command = NULL;
 			}
-		} else {
+		}
+		else
+		{
 			/* not a proper direction */
 			fvwm_msg(ERR, "EdgeCommand",
 				 "EdgeCommand [direction [function]]");
@@ -1520,6 +1536,8 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 
 	/* maybe something has changed so we adapt the pan frames */
 	checkPanFrames();
+
+	return;
 }
 
 void CMD_EdgeThickness(F_CMD_ARGS)

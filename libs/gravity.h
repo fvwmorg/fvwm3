@@ -38,21 +38,25 @@ typedef enum
 	DIR_SW = 6,
 	DIR_NW = 7,
 	DIR_MASK = 7,
+	DIR_C = 8,
+	DIR_ALL_MASK = 8,
 } direction_type;
 
 typedef enum
 {
 	MULTI_DIR_NONE = 0,
-	MULTI_DIR_N =    (1 << DIR_N),
-	MULTI_DIR_E =    (1 << DIR_E),
-	MULTI_DIR_S =    (1 << DIR_S),
-	MULTI_DIR_W =    (1 << DIR_W),
-	MULTI_DIR_NE =   (1 << DIR_NE),
-	MULTI_DIR_SE =   (1 << DIR_SE),
-	MULTI_DIR_SW =   (1 << DIR_SW),
-	MULTI_DIR_NW =   (1 << DIR_NW),
-	MULTI_DIR_ALL =  MULTI_DIR_N | MULTI_DIR_E | MULTI_DIR_S | MULTI_DIR_W |
-		  MULTI_DIR_NE | MULTI_DIR_SE | MULTI_DIR_SW | MULTI_DIR_NW,
+	MULTI_DIR_N =  (1 << DIR_N),
+	MULTI_DIR_E =  (1 << DIR_E),
+	MULTI_DIR_S =  (1 << DIR_S),
+	MULTI_DIR_W =  (1 << DIR_W),
+	MULTI_DIR_NE = (1 << DIR_NE),
+	MULTI_DIR_SE = (1 << DIR_SE),
+	MULTI_DIR_SW = (1 << DIR_SW),
+	MULTI_DIR_NW = (1 << DIR_NW),
+	MULTI_DIR_C =  (1 << DIR_C),
+	MULTI_DIR_ALL =
+		MULTI_DIR_N | MULTI_DIR_E | MULTI_DIR_S | MULTI_DIR_W |
+		MULTI_DIR_NE | MULTI_DIR_SE | MULTI_DIR_SW | MULTI_DIR_NW
 } multi_direction_type;
 
 #define FIRST_MULTI_DIR MULTI_DIR_N

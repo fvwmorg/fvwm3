@@ -103,7 +103,7 @@ void CMD_WindowShade(F_CMD_ARGS)
 	}
 	/* parse arguments */
 	shade_dir = ParseDirectionArgument(action, NULL, -1);
-	if (shade_dir != -1)
+	if (shade_dir >= 0 && shade_dir <= DIR_MASK)
 	{
 		has_dir = True;
 		toggle = (!IS_SHADED(fw) || SHADED_DIR(fw) != shade_dir);

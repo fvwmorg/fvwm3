@@ -449,9 +449,13 @@ void FlocaleRotateDrawString(
 	Pixmap canvas_pix, rotated_pix;
 
 	if (fws->str == NULL || len < 1)
+	{
 		return;
+	}
 	if (fws->flags.text_rotation == TEXT_ROTATED_0)
+	{
 		return; /* should not happen */
+	}
 
 	my_gc = fvwmlib_XCreateGC(dpy, fws->win, 0, NULL);
 	XCopyGC(dpy, fws->gc, GCForeground|GCBackground, my_gc);
@@ -461,8 +465,14 @@ void FlocaleRotateDrawString(
 	height = flf->height - FLF_SHADOW_HEIGHT(flf);
 	descent = flf->descent - FLF_SHADOW_DESCENT(flf);;
 
-	if (width < 1) width = 1;
-	if (height < 1) height = 1;
+	if (width < 1)
+	{
+		width = 1;
+	}
+	if (height < 1)
+	{
+		height = 1;
+	}
 
 	/* glyph width and height of the normal text */
 	normal_w = width;
@@ -1214,7 +1224,6 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 				  int orig_x, int orig_y,
 				  int *x, int *y, int *step)
 {
-
 	static multi_direction_type direction = MULTI_DIR_NONE;
 	static unsigned short inter_step = 0;
 	static unsigned short x_sign = 0, y_sign = 0;

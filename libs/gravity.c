@@ -407,6 +407,7 @@ int gravity_dir_to_sign_one_axis(
  *   5 if it is SE, SouthEast, BottomRight or DownRight
  *   6 if it is SW, SouthWest, BottomLeft or DownLeft
  *   7 if it is NW, NorthWest, TopLeft or UpLeft
+ *   8 if it is C, Center or Centre
  *   default_ret if no string matches.
  *
  * A pointer to the first character in action behind the token is returned
@@ -428,6 +429,7 @@ direction_type ParseDirectionArgument(
 		"SE", "SouthEast", "BottomRight", "br", "DownRight", "dr",
 		"SW", "SouthWest", "BottomLeft",  "bl", "DownLeft",  "dl",
 		"NW", "NorthWest", "TopLeft",     "tl", "UpLeft",    "ul",
+		"C",  "Center",    "Centre",      NULL, NULL,        NULL,
 		NULL
 	};
 
@@ -474,6 +476,7 @@ multi_direction_type ParseMultiDirectionArgument(
 			rc = MULTI_DIR_NONE;
 		}
 	}
+
 	return (multi_direction_type)rc;
 }
 
@@ -483,13 +486,19 @@ void GetNextMultiDirection(int dir_set, multi_direction_type *dir)
 	{
 		*dir = FIRST_MULTI_DIR;
 		if (dir_set & *dir)
+		{
 			return;
+		}
 	}
 	while(*dir != LAST_MULTI_DIR)
 	{
 		*dir = (*dir << 1);
 		if (dir_set & *dir)
+		{
 			return;
+		}
 	}
 	*dir = MULTI_DIR_NONE;
+
+	return;
 }
