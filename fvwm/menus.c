@@ -5852,53 +5852,6 @@ static void __menu_loop(
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
-
-void menus_init(void)
-{
-	memset((&Menus), 0, sizeof(MenuInfo));
-
-	return;
-}
-
-/* menus_find_menu expects a token as the input. Make sure you have used
- * GetNextToken before passing a menu name to remove quotes (if necessary) */
-MenuRoot *menus_find_menu(char *name)
-{
-	MenuRoot *mr;
-
-	if (name == NULL)
-	{
-		return NULL;
-	}
-	for (mr = Menus.all; mr != NULL; mr = MR_NEXT_MENU(mr))
-	{
-		if (!MR_IS_DESTROYED(mr) && mr == MR_ORIGINAL_MENU(mr) &&
-		    MR_NAME(mr) != NULL && StrEquals(name, MR_NAME(mr)))
-		{
-			break;
-		}
-	}
-
-	return mr;
-}
-
-void menus_remove_style_from_menus(MenuStyle *ms)
-{
-	MenuRoot *mr;
-
-	for (mr = Menus.all; mr; mr = MR_NEXT_MENU(mr))
-	{
-		if (MR_STYLE(mr) == ms)
-		{
-			MR_STYLE(mr) = menustyle_get_default_style();
-			MR_IS_UPDATED(mr) = 1;
-		}
-	}
-
-	return;
-}
-
 /*
  * Functions dealing with tear off menus
  */
@@ -5977,7 +5930,8 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	initial_window_options_t win_opts;
 	evh_args_t ea;
 	exec_context_changes_t ecc;
-	char *buffer,*action;
+	char *buffer;
+	char *action;
 	cond_rc_t *cond_rc = NULL;
 	const exec_context_t *exc = NULL;
 
@@ -5993,15 +5947,15 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	if (!ms)
 	{
 		/* this must never happen */
-		fvwm_msg(ERR, "menu_tear_off",
-			 "impossible to create %s menu style",
-			 buffer);
+		fvwm_msg(
+			ERR, "menu_tear_off",
+			"impossible to create %s menu style", buffer);
 		free(buffer);
 		DestroyMenu(mr, False, False);
 		return;
 	}
 	free(buffer);
-	copy_menu_style(MR_STYLE(mr_to_copy),ms);
+	menustyle_copy(MR_STYLE(mr_to_copy),ms);
 	MR_STYLE(mr) = ms;
 	MST_USAGE_COUNT(mr) = 0;
 	name = menu_strip_tear_off_title(mr);
@@ -6082,6 +6036,64 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	return;
 }
 
+static void do_menu_close_tear_off_menu(MenuRoot *mr, MenuParameters mp)
+{
+	pop_menu_down(&mr, &mp);
+	menustyle_free(MR_STYLE(mr));
+	DestroyMenu(mr, False, False);
+}
+
+/* ---------------------------- interface functions ------------------------- */
+
+void menus_init(void)
+{
+	memset((&Menus), 0, sizeof(MenuInfo));
+
+	return;
+}
+
+/* menus_find_menu expects a token as the input. Make sure you have used
+ * GetNextToken before passing a menu name to remove quotes (if necessary) */
+MenuRoot *menus_find_menu(char *name)
+{
+	MenuRoot *mr;
+
+	if (name == NULL)
+	{
+		return NULL;
+	}
+	for (mr = Menus.all; mr != NULL; mr = MR_NEXT_MENU(mr))
+	{
+		if (!MR_IS_DESTROYED(mr) && mr == MR_ORIGINAL_MENU(mr) &&
+		    MR_NAME(mr) != NULL && StrEquals(name, MR_NAME(mr)))
+		{
+			break;
+		}
+	}
+
+	return mr;
+}
+
+void menus_remove_style_from_menus(MenuStyle *ms)
+{
+	MenuRoot *mr;
+
+	for (mr = Menus.all; mr; mr = MR_NEXT_MENU(mr))
+	{
+		if (MR_STYLE(mr) == ms)
+		{
+			MR_STYLE(mr) = menustyle_get_default_style();
+			MR_IS_UPDATED(mr) = 1;
+		}
+	}
+
+	return;
+}
+
+/*
+ * Functions dealing with tear off menus
+ */
+
 void menu_enter_tear_off_menu(const exec_context_t *exc)
 {
 	MenuRoot *mr;
@@ -6119,13 +6131,6 @@ void menu_enter_tear_off_menu(const exec_context_t *exc)
 	exc_destroy_context(exc2);
 
 	return;
-}
-
-static void do_menu_close_tear_off_menu(MenuRoot *mr, MenuParameters mp)
-{
-	pop_menu_down(&mr, &mp);
-	menustyle_free(MR_STYLE(mr));
-	DestroyMenu(mr, False, False);
 }
 
 void menu_close_tear_off_menu(FvwmWindow *fw)

@@ -1334,7 +1334,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 	return;
 }
 
-void copy_menu_style(MenuStyle *origms, MenuStyle *destms)
+void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 {
 	FvwmPictureAttributes fpa;
 
@@ -1615,8 +1615,8 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 			 destname);
 		return;
 	}
-	
-	copy_menu_style(origms, destms);
+
+	menustyle_copy(origms, destms);
 
 	return;
 }
