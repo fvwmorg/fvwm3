@@ -1477,12 +1477,20 @@ static void MenuInteraction(
 	  {
 	    Bool is_popup_timed_out =
 	      (MST_POPUP_DELAY(pmp->menu) > 0 &&
-	       popup_delay_10ms++ == MST_POPUP_DELAY(pmp->menu) + 1);
+	       popup_delay_10ms++ >= MST_POPUP_DELAY(pmp->menu) + 1);
 	    Bool is_popdown_timed_out =
 	      (MST_POPDOWN_DELAY(pmp->menu) > 0 && mrPopdown &&
-	       popdown_delay_10ms++ == MST_POPDOWN_DELAY(pmp->menu) + 1);
+	       popdown_delay_10ms++ >= MST_POPDOWN_DELAY(pmp->menu) + 1);
 	    Bool do_fake_motion = False;
 
+	    if (is_popup_timed_out)
+	    {
+	      popup_delay_10ms = MST_POPUP_DELAY(pmp->menu);
+	    }
+	    if (is_popdown_timed_out)
+	    {
+	      popdown_delay_10ms = MST_POPDOWN_DELAY(pmp->menu);
+	    }
 	    if (flags.do_force_popup ||
 		(is_popup_timed_out &&
 		 (is_popdown_timed_out || flags.is_item_entered_by_key_press ||

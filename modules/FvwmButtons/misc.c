@@ -28,6 +28,7 @@
  */
 
 #include "misc.h"
+#include <stdio.h>
 
 /**
 *** ConstrainSize()
@@ -81,8 +82,8 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
   }
   else
   {
-    maxWidth = 10000;
-    maxHeight = 10000;
+    maxWidth = 32767;
+    maxHeight = 32767;
   }
   if(hints->flags & PResizeInc)
   {
@@ -99,9 +100,15 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
    * First, clamp to min and max values
    */
   if (dwidth < minWidth)
+  {
+fprintf(stderr, "+++ button width %d, but min width %d\n", dwidth, minWidth);
     dwidth = minWidth;
+  }
   if (dheight < minHeight)
+  {
+fprintf(stderr, "+++ button height %d, but min height %d\n", dheight, minHeight);
     dheight = minHeight;
+  }
 
   if (dwidth > maxWidth)
     dwidth = maxWidth;

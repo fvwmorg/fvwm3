@@ -1,4 +1,29 @@
+2001-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/misc.c (ConstrainSize):
+	allow bigger max size of swallowed windows
+	(ConstrainSize):
+	added debug code
+
+	* FvwmButtons/FvwmButtons.c (swallow):
+	* FvwmButtons/draw.c (MakeButton):
+	added some debug code to find out how swallowed windows can be bigger
+	than their button
+
+	* FvwmButtons/FvwmButtons.c (swallow):
+	tried to avoid race conditions between wm and module when swallowing
+	windows
+
+	* FvwmButtons/button.c (GetInternalSize):
+	fixed a bug zero width/height buttons
+
+	* FvwmButtons/draw.c (MakeButton):
+	small safety patch
+
 2001-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/parse.c (ParseButton):
+	ignore button icon for swallow buttons to fix a sizing problem.
 
 	* FvwmPager/FvwmPager.c (main):
 	transient pager exits it it can not grab the pointer

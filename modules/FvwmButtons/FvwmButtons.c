@@ -372,6 +372,7 @@ static void DeadPipeCleanup(void)
 #endif
     }
   }
+  XSync(Dpy, 0);
   MyXUngrabServer(Dpy); /* We're through */
 
   /* Hey, we have to free the pictures too! */
@@ -2770,7 +2771,6 @@ void swallow(unsigned long *body)
 	/* "Swallow" the window! Place it in the void so we don't see it
 	 * until it's MoveResize'd */
 	MyXGrabServer(Dpy);
-	XSync(Dpy, 0);
 	do_allow_bad_access = True;
 	XSelectInput(Dpy,swin,SW_EVENTS);
 	XSync(Dpy, 0);
@@ -2789,35 +2789,41 @@ void swallow(unsigned long *body)
 	}
 	/*error checking*/
 	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
-	MyXUngrabServer(Dpy);
-	b->swallow&=~b_Count;
-	b->swallow|=3;
-	if(buttonSwallow(b)&b_UseTitle)
+	XSync(Dpy, 0);
+	b->swallow &= ~b_Count;
+	b->swallow |= 3;
+fprintf(stderr, "+++ swallowing ");
+	if (buttonSwallow(b) & b_UseTitle)
 	{
-	  if(b->flags&b_Title)
+	  if (b->flags & b_Title)
 	    free(b->title);
-	  b->flags|=b_Title;
-	  if (XFetchName(Dpy,swin,&temp))
+	  b->flags |= b_Title;
+	  if (XFetchName(Dpy, swin, &temp))
 	  {
-	    CopyString(&b->title,temp);
+	    CopyString(&b->title, temp);
+fprintf(stderr, "'%s'\n", b->title);
 	    XFree(temp);
 	  }
 	  else
 	  {
 	    CopyString(&b->title, "");
+fprintf(stderr, "(untitled)\n");
 	  }
 	}
-	XMapWindow(Dpy,swin);
+else fprintf(stderr, "(do not use title)\n");
+
 	MakeButton(b);
+	XMapWindow(Dpy, swin);
+	XSync(Dpy, 0);
+	MyXUngrabServer(Dpy);
 
 	if (b->flags & b_Colorset)
 	{
 	  /* A short delay to give the application the chance to set the
 	   * background itself, so we can override it. If we don't do this, the
-	   * application may override out background. On the other hand it may
+	   * application may override our background. On the other hand it may
 	   * still override our background, but our chances are a bit better.
 	   */
-	  XSync(Dpy, 0);
 	  usleep(250000);
 	  XSync(Dpy, 0);
 	  change_swallowed_window_colorset(b, True);
@@ -2836,8 +2842,8 @@ void swallow(unsigned long *body)
       }
       else /* (b->flags & b_Panel) */
       {
-	b->swallow&=~b_Count;
-	b->swallow|=3;
+	b->swallow &= ~b_Count;
+	b->swallow |= 3;
 	XSelectInput(Dpy, swin, PA_EVENTS);
 	if (!XWithdrawWindow(Dpy, swin, screen))
 	{

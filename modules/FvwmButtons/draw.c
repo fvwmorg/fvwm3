@@ -144,7 +144,7 @@ void MakeButton(button_info *b)
     ConfigureIconWindow(b);
   }
   /* For now, hardcoded window centered, title bottom centered, below window */
-  else if(buttonSwallowCount(b)==3 && (b->flags & b_Swallow))
+  if(buttonSwallowCount(b)==3 && (b->flags & b_Swallow))
   {
     long supplied;
     if(!b->IconWin)
@@ -153,29 +153,33 @@ void MakeButton(button_info *b)
       exit(2);
     }
 
-    if(b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
+    if (b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
       ih -= font->ascent+font->descent;
 
     b->icon_w=iw;
     b->icon_h=ih;
 
-    if(iw>0 && ih>0)
+    if (iw>0 && ih>0)
     {
-      if(!(buttonSwallow(b)&b_NoHints))
+fprintf(stderr,"+++ geom before constrain: %dx%d\n", b->icon_w, b->icon_h);
+      if (!(buttonSwallow(b)&b_NoHints))
       {
 	if(!XGetWMNormalHints(Dpy,b->IconWin,b->hints,&supplied))
 	  b->hints->flags=0;
-	ConstrainSize(b->hints,&b->icon_w,&b->icon_h);
+	ConstrainSize(b->hints, &b->icon_w, &b->icon_h);
       }
+fprintf(stderr,"+++ geom after constrain: %dx%d\n", b->icon_w, b->icon_h);
       if (b->flags & b_Right)
 	ix += iw-b->icon_w;
       else if (!(b->flags & b_Left))
 	ix += (iw-b->icon_w)/2;
+fprintf(stderr,"+++ sizing window: %d %d %dx%d\n", ix,iy+(ih-b->icon_h)/2,b->icon_w,b->icon_h);
       XMoveResizeWindow(Dpy,b->IconWin,ix,iy+(ih-b->icon_h)/2,
 			b->icon_w,b->icon_h);
     }
     else
     {
+fprintf(stderr,"+++ hiding window\n");
       XMoveWindow(Dpy,b->IconWin, -32768, -32768);
     }
   }

@@ -137,8 +137,12 @@ void GetInternalSize(button_info *b,int *x,int *y,int *w,int *h)
   *x+=f+px;
   *y+=f+py;
 
-  if(*w<=1 || *h<=1)
-    *w=*h=1;
+  if (*w < 1)
+    *w = 1;
+  if (*h < 1)
+    *h = 1;
+
+  return;
 }
 
 /**

@@ -905,11 +905,20 @@ static void ParseButton(button_info **uberb,char *s)
 	t=seekright(&s);
 	if(t && *t && (t[0] != '-' || t[1] != 0))
 	{
-	  if (b->icon_file)
-	    free(b->icon_file);
-	  b->icon_file=t;
-	  b->IconWin=None;
-	  b->flags|=b_Icon;
+	  if (b->flags & b_Swallow)
+	  {
+	    fprintf(
+	      stderr,"%s: a button can not have an icon and a swallowed window"
+	      " at the same time. Ignoring icon", MyName);
+	  }
+	  else
+	  {
+	    if (b->icon_file)
+	      free(b->icon_file);
+	    b->icon_file=t;
+	    b->IconWin=None;
+	    b->flags|=b_Icon;
+	  }
 	}
 	else
 	{
@@ -995,7 +1004,17 @@ static void ParseButton(button_info **uberb,char *s)
 	    free(b->hangon);
 	  b->hangon=t;
 	  if (is_swallow)
+	  {
+	    if (b->flags & b_Icon)
+	    {
+	      fprintf(
+		stderr,"%s: a button can not have an icon and a swallowed "
+		" window at the same time. Ignoring icon", MyName);
+	      b->flags &= ~ b_Icon;
+	    }
+
 	    b->flags |= (b_Swallow | b_Hangon);
+	  }
 	  else
 	  {
 	    b->flags |= (b_Panel | b_Hangon);
