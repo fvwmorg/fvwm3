@@ -180,6 +180,7 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
   p->count = 1;
   p->name = path;
   p->next = NULL;
+  setFileStamp(&p->stamp, p->name);
 
 #ifdef XPM
   /* Try to load it as an X Pixmap first */
@@ -258,7 +259,8 @@ Picture *CachePicture(Display *dpy, Window Root,
 	    if (*p1 != *p2)
 		break;
 
-	if(!*p1 && !*p2) /* We have found a picture with the wanted name */
+	/* If we have found a picture with the wanted name and stamp */
+	if (!*p1 && !*p2 && !isFileStampChanged(&p->stamp, p->name))
 	{
 	    p->count++; /* Put another weight on the picture */
 	    free(path);

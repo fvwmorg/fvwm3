@@ -24,6 +24,7 @@
 #if HAVE_UNAME
 #include <sys/utsname.h>
 #endif
+#include <sys/stat.h>
 
 
 /*
@@ -152,4 +153,37 @@ char* searchPath( const char* pathlist, const char* filename,
     /* Hmm, couldn't find the file.  Return NULL */
     free(path);
     return NULL;
+}
+
+/*
+ * void setFileStamp(FileStamp *stamp, const char *name);
+ * Bool isFileStampChanged(const FileStamp *stamp, const char *name);
+ *
+ * An interface for verifying cached files.
+ * The first function associates a file stamp with file (named by name).
+ * The second function returns True or False in case the file was changed
+ * from the time the stamp was associated.
+ *
+ * FileStamp can be a structure; try to save memory by evaluating a checksum.
+ */
+
+FileStamp getFileStamp(const char *name)
+{
+  static struct stat buf;
+
+  if (!name || stat(name, &buf))
+    return 0;
+  return
+    (FileStamp)buf.st_mtime << 13 + (FileStamp)buf.st_size;
+}
+
+void setFileStamp(FileStamp *stamp, const char *name)
+{
+  *stamp = getFileStamp(name);
+}
+
+Bool isFileStampChanged(const FileStamp *stamp, const char *name)
+{
+  return
+    *stamp != getFileStamp(name);
 }

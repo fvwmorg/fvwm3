@@ -149,6 +149,12 @@ void setPath( char** p_path, const char* newpath, int free_old_path );
 char* searchPath( const char* path, const char* filename,
 		  const char* suffix, int type );
 
+/* An interface for verifying cached files. */
+
+#define FileStamp unsigned long
+void setFileStamp(FileStamp *stamp, const char *name);
+Bool isFileStampChanged(const FileStamp *stamp, const char *name);
+
 
 
 /***********************************************************************

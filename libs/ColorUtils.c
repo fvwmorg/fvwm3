@@ -308,7 +308,7 @@ XColor *GetShadowColor(Pixel background)
   /* For "dark" backgrounds, make everything a fixed %age lighter */
   if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
     {
-      color.red = 0xffff - ((0xffff - red) * PCT_DARK_BOTTOM) / 100;
+      color.red = 0xffff - ((0xffff - red) * PCT_DARK_BOTTOM + 50) / 100;
       color.green = 0xffff - ((0xffff - green) * PCT_DARK_BOTTOM + 50) / 100;
       color.blue = 0xffff - ((0xffff - blue) * PCT_DARK_BOTTOM + 50) / 100;
     }

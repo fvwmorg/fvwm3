@@ -21,6 +21,7 @@ typedef struct PictureThing
 {
     struct PictureThing *next;
     char *name;
+    unsigned long stamp;  /* should be FileStamp */
     Pixmap picture;
     Pixmap mask;
     unsigned int depth;
