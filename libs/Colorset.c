@@ -297,6 +297,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   XGCValues xgcv;
   static GC shape_gc = None;
   static GC solid_gc = None;
+  static GC fill_gc = None;
   int cs_width;
   int cs_height;
   Bool cs_keep_aspect;
@@ -329,8 +330,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   else if (CSETS_IS_TRANSPARENT_ROOT(colorset) && colorset->pixmap
 	   && !is_shape_mask)
   {
-	  int sx,sy,start_y;
-	  int x = 0, y = 0;
+	  int sx,sy;
 	  int h,w;
 	  XID dummy;
 	  
@@ -380,26 +380,19 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	  {
 		  sy = sy - cs_height;
 	  }
-	  start_y = sy;
-	  while(x < width)
+	  if (!fill_gc)
 	  {
-		  w = cs_width - sx;
-		  w = (w > width - x)? width - x: w;
-		  while(y < height)
-		  {
-			  h = cs_height - sy;
-			  h = (h > height - y)? height-y:h;
-			  XCopyArea(
-				  dpy, cs_pixmap, pixmap, gc,
-				  sx, sy, w, h, x, y);
-			  y = y + h;
-			  sy = 0;
-		  }
-		  x = x + w;
-		  sx = 0;
-		  y = 0;
-		  sy = start_y;
+		  fill_gc = fvwmlib_XCreateGC(dpy, win, 0, 0);
 	  }
+	  xgcv.tile = cs_pixmap;
+	  xgcv.ts_x_origin = cs_width-sx;
+	  xgcv.ts_y_origin = cs_height-sy;
+	  xgcv.fill_style = FillTiled;
+	  XChangeGC(
+		  dpy, fill_gc, GCTile | GCTileStipXOrigin | GCTileStipYOrigin |
+		  GCFillStyle, &xgcv);
+	  XFillRectangle(dpy, pixmap, fill_gc,
+			 0, 0, width, height);
 	  if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset) &&
 	      colorset->tint_percent > 0)
 	  {

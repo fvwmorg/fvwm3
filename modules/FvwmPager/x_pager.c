@@ -1334,7 +1334,7 @@ void ReConfigure(void)
  * Respond to a background change
  *
  ****************************************************************************/
-void update_transparent_windows(void)
+void update_pr_transparent_windows(void)
 {
 	int i,j,k,cset;
 	int n,m,w,h;
@@ -1352,7 +1352,7 @@ void update_transparent_windows(void)
 			i = k*Columns+j;
 			if (i < ndesks)
 			{
-				if (CSET_IS_TRANSPARENT(Desks[i].colorset))
+				if (CSET_IS_TRANSPARENT_PR(Desks[i].colorset))
 				{
 					draw_desk_background(i, w, h);
 				}
@@ -1364,7 +1364,7 @@ void update_transparent_windows(void)
 	for(t = Start; t != NULL; t = t->next)
 	{
 		cset = (t != FocusWin) ? windowcolorset : activecolorset;
-		if (!CSET_IS_TRANSPARENT(cset))
+		if (!CSET_IS_TRANSPARENT_PR(cset))
 		{
 			continue;
 		}
@@ -1388,7 +1388,7 @@ void update_transparent_windows(void)
 	if (BalloonView != None)
 	{
 		cset = Desks[Scr.balloon_desk].ballooncolorset;
-		if (CSET_IS_TRANSPARENT(cset))
+		if (CSET_IS_TRANSPARENT_PR(cset))
 		{
 			XClearArea(dpy, Scr.balloon_w, 0, 0, 0, 0, True);
 		}

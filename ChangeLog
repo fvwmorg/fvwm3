@@ -1,3 +1,8 @@
+2002-09-15  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Colorset.c (CreateBackgroundPixmap):
+	Fixed creation a root transparent pixmap for small root pixmap
+
 2002-09-14  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Fft.c (FftDrawString):

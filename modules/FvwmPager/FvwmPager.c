@@ -1406,7 +1406,7 @@ void list_property_change(unsigned long *body)
 
     if (((!Swallowed && body[2] == 0) || (Swallowed && body[2] == Scr.Pager_w)))
     {
-	    update_transparent_windows();
+	    update_pr_transparent_windows();
     }
   }
   else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == Scr.Pager_w)

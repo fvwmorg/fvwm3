@@ -1,3 +1,10 @@
+2002-09-15  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmPager/x_pager.c (update_pr_transparent_windows):
+	* FvwmPager/FvwmPager.c (list_property_change):
+	* FvwmPager/FvwmPager.h:
+	Transparent fixes
+
 2002-09-14  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/FvwmPager.c (list_property_change):

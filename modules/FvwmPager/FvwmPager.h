@@ -187,7 +187,7 @@ void nocolor(char *a, char *b);
 void DispatchEvent(XEvent *Event);
 void ReConfigure(void);
 void ReConfigureAll(void);
-void update_transparent_windows(void);
+void update_pr_transparent_windows(void);
 void MovePage(Bool is_new_desk);
 void DrawGrid(int desk,int erase);
 void DrawIconGrid(int erase);
