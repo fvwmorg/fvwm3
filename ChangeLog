@@ -1,12 +1,13 @@
 2003-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	**/*.[ch]:
+	**/*.c:
+	**/*.h:
 	shortened some comments
 	removed GPL from .h files
-	added "/* -*-c-*- */ where missing
-	include config.h in all .c files
 	added GPL to all .c files
-	some reformatting
+	include config.h in all .c files
+	added "/* -*-c-*- */" where missing
+	some reformatting and reindenting
 
 	* fvwm/module_interface.c:
 	* fvwm/module_interface.h:
