@@ -5984,7 +5984,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   float dummy_float;
   Bool dummy_flag;
   Window context_window = 0;
-  Bool fHasContext, fUseItemOffset;
+  Bool fHasContext, fUseItemOffset, fRectangleContext;
   Bool fValidPosHints =
     last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
   /* If this is set we may want to reverse the position hints, so don't sum up
@@ -6019,6 +6019,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     pops->pos_hints.is_relative = True; /* set to False for absolute hints! */
     fUseItemOffset = False;
     fHasContext = True;
+    fRectangleContext = False;
     if (StrEquals(tok, "context"))
     {
       if (mi && mr)
@@ -6108,7 +6109,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       int flags;
       /* parse the rectangle */
       free(tok);
-      naction = GetNextToken(taction, &tok);
+      naction = GetNextToken(naction, &tok);
       if (tok == NULL)
       {
 	fvwm_msg(ERR,"GetMenuOptions","missing rectangle geometry");
@@ -6126,6 +6127,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       if (flags & YNegative)
 	y = Scr.MyDisplayHeight - y - height;
       pops->pos_hints.is_relative = False;
+      fRectangleContext = True;
     }
     else if (StrEquals(tok,"this"))
     {
@@ -6151,11 +6153,12 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     else
       naction = action;
 
-    if (!context_window || !fHasContext ||
-	!XGetGeometry(dpy, context_window, &JunkRoot, &JunkX, &JunkY,
-		      &width, &height, &JunkBW, &JunkDepth) ||
-	!XTranslateCoordinates(
-	  dpy, context_window, Scr.Root, 0, 0, &x, &y, &JunkChild))
+    if (!fRectangleContext &&
+	(!context_window || !fHasContext ||
+	 !XGetGeometry(dpy, context_window, &JunkRoot, &JunkX, &JunkY,
+		       &width, &height, &JunkBW, &JunkDepth) ||
+	 !XTranslateCoordinates(
+	   dpy, context_window, Scr.Root, 0, 0, &x, &y, &JunkChild)))
     {
       /* now window or could not get geometry */
       XQueryPointer(dpy,Scr.Root, &JunkRoot, &JunkChild,&x,&y, &JunkX, &JunkY,

@@ -889,6 +889,7 @@ void SetRCDefaults(void)
     "AddToMenu MenuFvwmRoot \"Builtin Menu\" Title",
     "+ \"&1. XTerm\" Exec xterm",
     "+ \"&2. Setup Form\" Module FvwmForm FormFvwmSetup.",
+    "+ \"&3. Issue FVWM commands\" Module FvwmConsole",
     "+ \"&X. Exit FVWM\" Quit",
     "Mouse 0 R N Popup MenuFvwmRoot",
     "Read "FVWM_CONFIGDIR"/ConfigFvwmDefaults",

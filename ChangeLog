@@ -1,3 +1,10 @@
+1999-06-18  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.c (SetRCDefaults): added FvwmConsole to builtin menu
+
+	* fvwm/menus.c (GetMenuOptions): fixed 'rectangle' menu position
+	argument
+
 1999-06-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.c (main):
