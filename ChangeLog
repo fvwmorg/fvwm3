@@ -1,3 +1,7 @@
+1999-02-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* configure.in: updated for 2.1.14
+
 1999-02-16  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/bindings.c (ParseBindEntry): Specifying 'any' modifier and
