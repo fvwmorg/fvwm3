@@ -28,7 +28,7 @@
 void paste_primary(Display *dpy, int window, int property, int delete)
 {
   Atom actual_type;
-  int actual_format,i;
+  int actual_format;
   unsigned long nitems, bytes_after, nread;
   unsigned char *data, *d, *h, buf[256];
 

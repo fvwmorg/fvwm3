@@ -27,7 +27,7 @@ extern XFontStruct *ButtonFont, *SelButtonFont;
 extern Display *dpy;
 extern Window win;
 extern GC shadow, hilite, graph, whitegc, blackgc, checkered;
-extern button_width;
+extern int button_width;
 
 extern Button *StartButton;
 

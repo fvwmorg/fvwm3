@@ -18,11 +18,18 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#ifndef _H_FvwmTaskBar
-#define _H_FvwmTaskBar
+#ifndef FVWMTASKBAR_H
+#define FVWMTASKBAR_H
 
 #include "config.h"
 #include "fvwm/fvwm.h"
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xproto.h>
+#include <X11/Xatom.h>
+#include <X11/Intrinsic.h>
+#include <X11/cursorfont.h>
 
 #define F_SWALLOWED      1
 #define F_NOT_SWALLOWED  2
@@ -77,42 +84,41 @@ typedef PropMotifWmHints        PropMwmHints;
 /*************************************************************************
   Subroutine Prototypes
 **************************************************************************/
-void EndLessLoop(void);
-void ReadFvwmPipe(void);
-void ProcessMessage(unsigned long type,unsigned long *body);
-void SendFvwmPipe(char *message,unsigned long window);
-void DeadPipe(int nonsense);
-void Alarm(int nonsense);
-void SetAlarm(int event);
-void ClearAlarm(void);
-void CheckForTip(int x, int y);
-void MakeMeWindow(void);
-void WaitForExpose(void);
-void RedrawWindow(int force);
-void StartMeUp(void);
-void ShutMeDown(int exitstat);
-void ConsoleMessage(char *fmt,...);
-int OpenConsole(void);
-void ConsoleMessage(char *fmt,...);
-static void ParseConfig();
-void LoopOnEvents(void);
-void AdjustWindow(int width, int height);
-char *makename(char *string,long flags);
-void ChangeWindowName(char *str);
-void LinkAction(char *string);
-void AddToSkipList(char *string);
-int InSkipList(char *string);
-void PrintSkipList(void);
-void FvwmNameMessage(long *body);
-void SetMwmHints(unsigned int value,unsigned int funcs,unsigned int input);
-void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp);
-void RevealTaskBar(void);
-void HideTaskBar(void);
-void WarpTaskBar(int x);
-void PurgeConfigEvents(void);
+extern void EndLessLoop(void);
+extern void ReadFvwmPipe(void);
+extern void ProcessMessage(unsigned long type,unsigned long *body);
+extern void SendFvwmPipe(char *message,unsigned long window);
+extern void DeadPipe(int nonsense);
+extern void Alarm(int nonsense);
+extern void SetAlarm(int event);
+extern void ClearAlarm(void);
+extern void CheckForTip(int x, int y);
+extern void MakeMeWindow(void);
+extern void WaitForExpose(void);
+extern void RedrawWindow(int force);
+extern void StartMeUp(void);
+extern void ShutMeDown(int exitstat);
+extern int OpenConsole(void);
+extern void ConsoleMessage(char *fmt,...);
+extern void LoopOnEvents(void);
+extern void AdjustWindow(int width, int height);
+extern char *makename(char *string,long flags);
+extern void ChangeWindowName(char *str);
+extern void LinkAction(char *string);
+extern void AddToSkipList(char *string);
+extern int InSkipList(char *string);
+extern void PrintSkipList(void);
+extern void FvwmNameMessage(long *body);
+extern void SetMwmHints(unsigned int value,
+			unsigned int funcs,unsigned int input);
+extern void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp);
+extern void RevealTaskBar(void);
+extern void HideTaskBar(void);
+extern void WarpTaskBar(int x);
+extern void PurgeConfigEvents(void);
 
-void Swallow(unsigned long *body);
+extern void Swallow(unsigned long *body);
 
-XErrorHandler ErrorHandler(Display *d, XErrorEvent *event);
+extern XErrorHandler ErrorHandler(Display *d, XErrorEvent *event);
 
 #endif

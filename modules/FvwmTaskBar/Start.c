@@ -4,6 +4,7 @@
 
 #include "libs/fvwmlib.h"
 #include "ButtonArray.h"
+#include "Mallocs.h"
 
 extern Display *dpy;
 extern Window Root, win;

@@ -53,6 +53,32 @@ Sun Apr  4 12:11:38 1999  DanEspen  <dje@blue>
 	closes when something is selected therein (in response to bug report
 	#101). Some cleanup.
 
+Sun Apr  4 12:39:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c: add prototype for ParseConfig().
+
+	* FvwmTaskBar/FvwmTaskBar.h: removed static declaration of
+	ParseConfig(). 
+
+	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmTaskBar/FvwmTaskBar.h: moved X11 includes from .c to .h.
+
+	* FvwmTaskBar/Start.c: include Mallocs.h for prototypes.
+	
+	* FvwmTaskBar/List.c: include FvwmConfig.h for prototypes.
+
+	* FvwmTaskBar/Goodies.c: include Mallocs.h, Colors.h, and
+	FvwmConfig.h for prototypes.
+
+	* FvwmTaskBar/FvwmTaskBar.h: remove duplicate prototype of
+	ConsoleMessage().
+
+	* FvwmTaskBar/ButtonArray.c: explicitly declare `button_width' as
+	integer.
+
+	* FvwmScroll/GrabWindow.c: include libs/Picture.h for prototype of
+	InitPictureCMap.
+
 Sun Apr  4 03:42:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmWinList/FvwmWinList.c: removed some includes.

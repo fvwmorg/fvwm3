@@ -44,12 +44,6 @@
 #endif /* Saul */
 
 #include <stdlib.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-#include <X11/Intrinsic.h>
-#include <X11/cursorfont.h>
 
 #include "fvwm/module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
@@ -149,6 +143,7 @@ Colormap PictureCMap;
 
 char *ImagePath   = NULL;
 
+static void ParseConfig( void );
 static void ParseConfigLine(char *tline);
 
 /******************************************************************************
@@ -570,7 +565,7 @@ void ConsoleMessage(char *fmt, ...)
 /******************************************************************************
   OpenConsole - Open the console as a way of sending messages
 ******************************************************************************/
-int OpenConsole()
+int OpenConsole(void)
 {
 #ifndef NO_CONSOLE
   if ((console = fopen("/dev/console","w")) == NULL) {
@@ -581,11 +576,12 @@ int OpenConsole()
   return 1;
 }
 
-void ParseConfig() {
-  char *buf;
-  while (GetConfigLine(Fvwm_fd,&buf), buf != NULL) {
-    ParseConfigLine(buf);
-  } /* end config lines */
+void ParseConfig( void )
+{
+    char* buf;
+    while (GetConfigLine(Fvwm_fd,&buf), buf != NULL) {
+	ParseConfigLine(buf);
+    } /* end config lines */
 } /* end function */
 
 static void ParseConfigLine(char *tline) {

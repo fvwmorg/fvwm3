@@ -15,6 +15,9 @@
 #include <X11/extensions/shape.h>
 
 #include "Goodies.h"
+#include "FvwmTaskBar.h"
+#include "Mallocs.h"
+#include "Colors.h"
 #include "minimail.xbm"
 
 #define MAILCHECK_DEFAULT 10

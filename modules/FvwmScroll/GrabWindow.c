@@ -35,7 +35,7 @@
 #include <X11/Intrinsic.h>
 
 #include "FvwmScroll.h"
-
+#include "libs/Picture.h"
 
 int Width = 300, Height = 300;
 int target_width, target_height;

@@ -158,6 +158,10 @@ Sun Apr  4 10:53:17 1999  DanEspen  <dje@blue>
 	* fvwm/virtual.c (changeWindowsDesk): renamed obsolete function to new
 	command name 'move_window_to_desk'
 
+Sun Apr  4 11:07:53 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* utils/xselection.c (paste_primary): removed unused variable.
+
 Sun Apr  4 04:04:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/Makefile.am (fvwm2_SOURCES): add `session.h'
