@@ -360,11 +360,8 @@ void initialize_pager(void)
       exit(1);
     }
   };
-  if(uselabel)
-    label_h = font->ascent + font->descent+2;
-  else
-    label_h = 0;
 #endif
+  label_h = (uselabel) ? font->ascent + font->descent + 2 : 0;
 
 #ifdef SHAPE
   /* Check that shape extension exists. */
@@ -534,8 +531,6 @@ void initialize_pager(void)
   sizehints.height_inc = Rows*(m+1);
   sizehints.base_width = Columns * n + Columns - 1;
   sizehints.base_height = Rows * (m + label_h + 1) - 1;
-fprintf(stderr, "r %d, m %d, lh %d\n", Rows, m, label_h);
-fprintf(stderr,"bh %d, hi %d, wh %d\n", sizehints.base_height, sizehints.height_inc, sizehints.height);
 
   /* destroy the temp window first, don't worry if it's the Root */
   if (Scr.Pager_w != Scr.Root)

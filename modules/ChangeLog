@@ -3,6 +3,8 @@
 	* FvwmPager/x_pager.c (initialize_pager):
 	(ReConfigure):
 	Fixed size calculations of pager
+	(initialize_pager):
+	fixed desk labels with multibyte
 
 2001-02-12  Mikhael Goikhman  <migo@homemail.com>
 
