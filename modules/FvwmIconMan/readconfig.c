@@ -1047,11 +1047,11 @@ static NameType parse_format_dependencies (char *format)
      int id = manager;                                             \
      if (id == -1) {                                               \
        for (id = 0; id < globals.num_managers; id++) {             \
-	 globals.managers[id].##field = value;                     \
+	 globals.managers[id]. field = value;                      \
        }                                                           \
      }                                                             \
      else if (id < globals.num_managers) {                         \
-       globals.managers[id].##field = value;                       \
+       globals.managers[id]. field = value;                        \
      }                                                             \
      else {                                                        \
        ConsoleMessage ("Internal error in SET_MANAGER: %d\n", id); \
