@@ -1770,6 +1770,7 @@ static void border_set_button_pixmap(
 		for (tsdf = &TB_STATE(GetDecor(fw, titlebar))[bs];
 		     tsdf != NULL; tsdf = tsdf->next)
 		{
+                        bg.pixel = tsdf->u.back;
 			border_draw_decor_to_pixmap(
 				fw, dest_pix, &bg, button_g, tsdf, td->cd,
 				(td->tbstate.toggled_bmask & mask),
@@ -1780,6 +1781,7 @@ static void border_set_button_pixmap(
 	for ( ; df; df = df->next)
 	{
 		/* draw background from button style */
+                bg.pixel = df->u.back;
 		border_draw_decor_to_pixmap(
 			fw, dest_pix, &bg, button_g, df, td->cd,
 			(td->tbstate.toggled_bmask & mask), is_left_button);
@@ -1959,15 +1961,18 @@ static void border_draw_title_relief(
 }
 
 static void border_draw_title_deep(
-	FvwmWindow *fw, titlebar_descr *td, pixmap_background_type *solid_bg,
+	FvwmWindow *fw, titlebar_descr *td,
 	title_draw_descr *tdd, FlocaleWinString *fstr, Pixmap dest_pix)
 {
 	DecorFace *df;
+        pixmap_background_type bg;
 
+        bg.flags.use_pixmap = 0;
 	for (df = tdd->df; df != NULL; df = df->next)
 	{
+                bg.pixel = df->u.back;
 		border_draw_decor_to_pixmap(
-			fw, dest_pix, solid_bg, &td->layout.title_g, df, td->cd,
+			fw, dest_pix, &bg, &td->layout.title_g, df, td->cd,
 			tdd->is_toggled, 1);
 	}
 	FlocaleDrawString(dpy, fw->title_font, &tdd->fstr, 0);
@@ -2099,7 +2104,7 @@ static void border_set_title_pixmap(
 #endif
 	else
 	{
-		border_draw_title_deep(fw, td, &bg, &tdd, &fstr, dest_pix);
+		border_draw_title_deep(fw, td, &tdd, &fstr, dest_pix);
 	}
 	border_draw_title_relief(fw, td, &tdd, dest_pix);
 	border_draw_title_stick_lines(fw, &tdd, dest_pix);
@@ -2525,7 +2530,7 @@ void border_get_part_geometry(
 	default:
 		break;
 	}
-	
+
 	switch (part)
 	{
 	case PART_BORDER_N:
