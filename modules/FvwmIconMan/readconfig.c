@@ -1126,6 +1126,38 @@ static void handle_button_config (int manager, int context, char *option)
 	       copy_string (&globals.managers[id].backColorName[context], p));
 }
 
+static void add_weighted_sort(WinManager *man, WeightedSort *weighted_sort) {
+  WeightedSort *p;
+  int i;
+
+  if (man->weighted_sorts_len == man->weighted_sorts_size) {
+    i = man->weighted_sorts_size;
+    man->weighted_sorts_size += 16;
+    man->weighted_sorts =
+      (WeightedSort *)saferealloc ((char *)man->weighted_sorts,
+			 man->weighted_sorts_size * sizeof (WeightedSort));
+  }
+  p = &man->weighted_sorts[man->weighted_sorts_len];
+  p->resname = NULL;
+  p->classname = NULL;
+  p->titlename = NULL;
+  p->iconname = NULL;
+  if (weighted_sort->resname) {
+    copy_string(&p->resname, weighted_sort->resname);
+  }
+  if (weighted_sort->classname) {
+    copy_string(&p->classname, weighted_sort->classname);
+  }
+  if (weighted_sort->titlename) {
+    copy_string(&p->titlename, weighted_sort->titlename);
+  }
+  if (weighted_sort->iconname) {
+    copy_string(&p->iconname, weighted_sort->iconname);
+  }
+  p->weight = weighted_sort->weight;
+  ++man->weighted_sorts_len;
+}
+
 void read_in_resources (char *file)
 {
   char *p, *q;
@@ -1365,7 +1397,7 @@ void read_in_resources (char *file)
           if (!strcasecmp (p, "true")) {
             i = 1;
           }
-          /* [NFM 3 Dec 97] added support for FvwmIconMan*drawicons "always" */
+          /* [NFM 3 Dec 97] added support for drawicons "always" */
           else if (!strcasecmp (p, "always")) {
             i = 2;
           }
@@ -1629,9 +1661,12 @@ void read_in_resources (char *file)
 	else if (!strcasecmp (p, "none")) {
 	  i = SortNone;
 	}
+	else if (!strcasecmp (p, "weighted")) {
+	  i = SortWeighted;
+	}
 	else if (!strcasecmp (p, "false") || !strcasecmp (p, "true")) {
 	  /* Old options */
-	  ConsoleMessage ("FvwmIconMan*sort option no longer takes "
+	  ConsoleMessage ("FvwmIconMan: sort option no longer takes "
 			  "true or false value\n"
 			  "Please read the latest manpage\n");
 	  continue;
@@ -1643,6 +1678,60 @@ void read_in_resources (char *file)
 	}
 	ConsoleDebug (CONFIG, "Setting sort to: %d\n", i);
 	SET_MANAGER (manager, sort, i);
+      }
+      else if (!strcasecmp (option1, "sortweight")) {
+	WeightedSort weighted_sort;
+	p = read_next_cmd (READ_ARG);
+	if (!p) {
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int (p, &n) == 0) {
+	  ConsoleMessage ("This is not a number: %s\n", p);
+	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  continue;
+	}
+	weighted_sort.resname = NULL;
+	weighted_sort.classname = NULL;
+	weighted_sort.titlename = NULL;
+	weighted_sort.iconname = NULL;
+	weighted_sort.weight = n;
+	p = read_next_cmd (READ_ARG);
+	while (p) {
+	  if (!strncasecmp(p, "resource=", 9)) {
+	    copy_string(&weighted_sort.resname, p + 9);
+	  } else if (!strncasecmp(p, "class=", 6)) {
+	    copy_string(&weighted_sort.classname, p + 6);
+	  } else if (!strncasecmp(p, "title=", 6)) {
+	    copy_string(&weighted_sort.titlename, p + 6);
+	  } else if (!strncasecmp(p, "icon=", 5)) {
+	    copy_string(&weighted_sort.iconname, p + 5);
+	  } else {
+	    ConsoleMessage ("Unknown sortweight field: %s\n", p);
+	    ConsoleMessage ("Bad line: %s\n", current_line);
+	  }
+	  p = read_next_cmd (READ_ARG);
+	}
+	if (manager == -1) {
+	  for (i = 0; i < globals.num_managers; i++) {
+	    add_weighted_sort (&globals.managers[i], &weighted_sort);
+	  }
+	}
+	else {
+	  add_weighted_sort (&globals.managers[manager], &weighted_sort);
+	}
+	if (weighted_sort.resname) {
+	  Free(weighted_sort.resname);
+	}
+	if (weighted_sort.resname) {
+	  Free(weighted_sort.classname);
+	}
+	if (weighted_sort.resname) {
+	  Free(weighted_sort.titlename);
+	}
+	if (weighted_sort.resname) {
+	  Free(weighted_sort.iconname);
+	}
       }
       else if (!strcasecmp (option1, "NoIconAction")) {
 	char *token;

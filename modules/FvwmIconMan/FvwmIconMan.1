@@ -113,6 +113,7 @@ shape           use shape extension        false
 show            list of windows to show
 showonlyicons   only icons visible         false
 sort            keep managers sorted       name
+sortweight      weight for sorting
 title           manager title              FvwmIconMan
 titlebutton     style for title button     raisededge black grey
 titlecolorset
@@ -285,8 +286,30 @@ Otherwise, fvwm will get confused.
 If \fIname\fP, then the manager list is sorted by name. If \fInamewithcase\fP,
 then it is sorted by name sensitive to case. If \fIid\fP, then
 the manager list is sorted by the window id, which never changes after the
-window is created. Or it can be set to \fInone\fP, which results in no sorting.
-Default is \fIname\fP.
+window is created. If \fIweighted\fP, then the manager list is sorted by
+weight (see the description of \fIsortweight\fP below). Or it can be set to
+\fInone\fP, which results in no sorting. Default is \fIname\fP.
+
+.IP "*FvwmIconMan: [id ]sortweight \fIweight\fP \fIpattern-list\fP"
+Assigns the specified \fIweight\fP to windows that match \fIpattern-list\fP.
+The list is made up of patterns of the form \fItype=pattern\fP, where type
+is one of \fIclass\fP, \fIresource\fP, \fItitle\fP, or \fIicon\fP, and pattern
+is an expression of the same format used in the fvwm style command
+(minimalistic shell pattern matching). Multiple sort weights can be given.
+Each window is matched against the list of sort weights, in order, and is
+given the weight from the first match. Lower-weighted windows are placed
+first in the manager list. For example:
+.EX
+*FvwmIconMan: sort       weighted
+*FvwmIconMan: sortweight 1 class=XTerm title=special*
+*FvwmIconMan: sortweight 10 class=XTerm
+*FvwmIconMan: sortweight 5
+.EE
+In this example, xterm windows whose titles start with "special" (weight 1)
+are listed first, followed by everything but other xterms (weight 5), and the
+other xterms (weight 10) are listed last. If no default weight (empty pattern
+list) is given, the default weight is 0. Only relevant if the sort type is
+set to \fIweighted\fP.
 
 .IP "*FvwmIconMan: [id ]title \fItitlestring\fP"
 Specifies the window title string for that manager window. \fITitlestring\fP
@@ -464,7 +487,7 @@ gotobutton select, gotobutton Down, select
 .EE
 Selects the button below the currently selected button. Since the
 current button is already initialized to the selected button, this may be
-shortened to "gotobutton Down , select".
+shortened to "gotobutton Down, select".
 
 .EX
 gotobutton Up, select
@@ -572,9 +595,9 @@ Key F9 A N SendToModule FvwmIconMan bif select Select, bif focus Focus, gotomana
 *FvwmIconMan: font        7x13
 *FvwmIconMan: usewinlist  true
 *FvwmIconMan: drawicons   true
-*FvwmIconMan: shape	 true
+*FvwmIconMan: shape       true
 *FvwmIconMan: followfocus true
-*FvwmIconMan: sort	 name
+*FvwmIconMan: sort        name
 *FvwmIconMan: plainbutton          up white steelblue
 *FvwmIconMan: selectbutton         down white steelblue
 *FvwmIconMan: focusbutton          up white brown

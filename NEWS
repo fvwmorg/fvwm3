@@ -99,6 +99,8 @@ Changes in alpha release 2.5.1 (not released yet)
 
 * New WindowList option CurrentAtEnd.
 
+* New weighted sorting in FvwmIconMan.
+
 ---------------------------------------------------------------------
 
 Changes in alpha release 2.5.0 (27-Jan-2002)

@@ -1571,8 +1571,36 @@ void draw_manager (WinManager *man)
 }
 
 
+static int compute_weight(WinData *win)
+{
+  WinManager *man;
+  WeightedSort *sort;
+  int i;
+
+  man = win->manager;
+  for (i = 0; i < man->weighted_sorts_len; i++) {
+    sort = &man->weighted_sorts[i];
+    if (sort->resname && !matchWildcards(sort->resname, win->resname)) {
+      continue;
+    }
+    if (sort->classname && !matchWildcards(sort->classname, win->classname)) {
+      continue;
+    }
+    if (sort->titlename && !matchWildcards(sort->titlename, win->titlename)) {
+      continue;
+    }
+    if (sort->iconname && !matchWildcards(sort->iconname, win->iconname)) {
+      continue;
+    }
+    return sort->weight;
+  }
+  return 0;
+}
+
 static int compare_windows(SortType type, WinData *a, WinData *b)
 {
+  int wa, wb;
+
   if (type == SortId) {
     return a->app_id - b->app_id;
   }
@@ -1581,6 +1609,14 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
   }
   else if (type == SortNameCase) {
     return strcmp (a->display_string, b->display_string);
+  }
+  else if (type == SortWeighted) {
+    wa = compute_weight(a);
+    wb = compute_weight(b);
+    if (wa != wb) {
+      return wa - wb;
+    }
+    return strcmp(a->display_string, b->display_string);
   }
   else {
     ConsoleMessage ("Internal error in compare_windows\n");

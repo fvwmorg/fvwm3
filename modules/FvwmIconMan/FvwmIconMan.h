@@ -266,8 +266,17 @@ typedef enum {
   SortNone,          /* no sorting */
   SortId,            /* sort by window id */
   SortName,          /* case insensitive name sorting */
-  SortNameCase       /* case sensitive name sorting */
+  SortNameCase,      /* case sensitive name sorting */
+  SortWeighted       /* custom sort order */
 } SortType;
+
+typedef struct {
+  char *resname;
+  char *classname;
+  char *titlename;
+  char *iconname;
+  int weight;
+} WeightedSort;
 
 typedef struct win_manager {
   unsigned int magic;
@@ -300,6 +309,8 @@ typedef struct win_manager {
   Uchar followFocus;
   Uchar usewinlist;
   SortType sort;
+  WeightedSort *weighted_sorts;
+  int weighted_sorts_len, weighted_sorts_size;
   char *AnimCommand;
   Uchar showonlyiconic;
   rectangle managed_g;    /* dimensions of managed screen portion */
@@ -370,6 +381,7 @@ extern char *copy_string (char **target, const char *src);
 
 extern void init_globals (void);
 extern int allocate_managers (int num);
+extern int expand_weighted_sorts (void);
 
 extern WinData *new_windata (void);
 extern void free_windata (WinData *p);
