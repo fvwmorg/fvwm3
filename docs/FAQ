@@ -96,6 +96,7 @@ Contents
           X).  How can I tell fvwm to use different configurations
           for the screens?
     3.21  How do I maximize a window but not cover up FvwmTaskBar?
+    3.22  Why don't buttons show on the titlebar of dialog windows?
 
 4. Modules
 
@@ -1388,6 +1389,41 @@ A: Instead of Maximize use "Maximize 100 -30p" where 30 is the width of
    your FvwmTaskBar.
 
    Or use EwmhBaseStruts in Fvwm 2.5.x or later.
+
+----------------------------------------------------------------------
+
+3.22  I'm having problems making buttons appear on my windows.
+
+A: Fvwm has some builtin idea of what the buttons do, and some
+   applications can request that certain buttons not be shown.
+   For example, its normal for Fvwm to suppress the iconify button
+   (button 2, the second button from the right)
+   on a transient (dialog) window.
+
+   The command:
+
+   Style * DecorateTransient
+
+   Tells Fvwm you want titles and buttons on transient windows.
+
+   Style * MwmFunctions
+
+   Tells Fvwm to accept application hints not to show certain
+   buttons.
+
+   ButtonStyle 2 - Clear MWMDecorMin
+
+   Says button 2 performs the minimize (iconify) function.
+
+   Mouse 0 2 A Iconify
+
+   Makes any mouse button on button 2 iconify the window.
+   Buttons won't show until some action is assigned to them.
+
+   Things to look for in the man page are:
+
+   DecorateTransient, MwmDecorXXX, MwmFunctions
+
 
 ======================================================================
                              4 - Modules
