@@ -123,6 +123,7 @@ Contents
      6.5  I know this question doesn't have to do with FVWM, but what
           happened to to rxvt and rclock which Rob Nation used to
           support?  Where can I find them now?
+     6.6  How do I set the background with fvwm?
 
 7. Hints and Examples from the Developers
 
@@ -1533,6 +1534,11 @@ A: If you want more color icons, grab the ones out of the ctwm
    http://www.sct.gu.edu.au/~anthony/icons/ (which has a lot, I
    believe).
 
+   Icons used to be distribued along with fvwm.  Now there is a basic
+   set of icons available at the fvwm web site.  You might find some
+   links at the fvwm web site to other sources of icons.
+
+
 ----------------------------------------------------------------------
 
 6.4  Linux XF86 virtual screen size & fvwm interaction...
@@ -1554,6 +1560,27 @@ A: The official home for rxvt is:
 
    and rclock can be found in that rxvt distribution as well.
 
+----------------------------------------------------------------------
+
+6.6  How do I set the background with fvwm?
+
+A: Setting the background image is not really part of the window
+   manager.  If you are using one of the Linux distributions,
+   most likely, some part of the distribution is setting the background
+   for you.
+
+   There is a program that comes with fvwm (xpmroot) which you can use
+   to set the background to a pixmap.  Other programs like "xv", "xli",
+   "xloadimage", and "display" are more robust, they can put most common
+   image types on the root display.
+
+   If you just want a static image on your background, you might invoke
+   one of these programs from your .xsession or .xinitrc file.  You can
+   also invoke one of these programs from the InitFunction in your
+   .fvwm2rc.
+
+   The fvwm module FvwmBacker can be used to change the background
+   depending on the desk you are currently on.
 
 ======================================================================
               7 - Hints and Examples from the Developers
