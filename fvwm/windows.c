@@ -1,6 +1,6 @@
 /****************************************************************************
  * This module is all new
- * by Rob Nation 
+ * by Rob Nation
  * A little of it is borrowed from ctwm.
  * Copyright 1993 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved
@@ -63,7 +63,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   FvwmWindow **windowList;
   int numWindows;
   int ii;
-  char tname[80];
+  char tname[80] = "";
   char loc[40],*name=NULL;
   int dwidth,dheight;
   char tlabel[50]="";
@@ -234,7 +234,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
               (t->flags & STICKY) ||
               (t->flags & ONTOP)))
           continue; /* don't want "normal" ones - skip */
-        
+
         if (++scut == ('9' + 1)) scut = 'A';	/* Next shortcut key */
         if(flags & SHOW_ICONNAME)
           name = t->icon_name;
@@ -253,13 +253,13 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
           dheight = t->frame_height - t->title_height - 2*t->boundary_width;
           dwidth = t->frame_width - 2*t->boundary_width;
-	  
+
           dwidth -= t->hints.base_width;
           dheight -= t->hints.base_height;
-          
+
           dwidth /= t->hints.width_inc;
           dheight /= t->hints.height_inc;
-          
+
           sprintf(loc,"%d",dwidth);
           strcat(tname, loc);
           sprintf(loc,"x%d",dheight);
@@ -304,7 +304,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           mr->last->lpicture = t->mini_icon;
           t->mini_icon->count++; /* increase the cache count!!
                                     otherwise the pixmap will be
-                                    eventually removed from the 
+                                    eventually removed from the
                                     cache by DestroyMenu */
         }
 #endif
