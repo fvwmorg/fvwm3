@@ -53,15 +53,15 @@ DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.Button  quit    "Return - Dismiss" ^M
 *FormFvwmSetup.Command   Nop
 *FormFvwmSetup.Button  continue    "F2 - Copy Config File(s)" F2
-*FormFvwmSetup.Command   $(BASIC?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmSetup ${FVWM_USERHOME}.fvwm2rc)
-*FormFvwmSetup.Command   $(BAK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmBacker  ${FVWM_USERHOME}FvwmBacker)
-*FormFvwmSetup.Command   $(BUT?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmButtons ${FVWM_USERHOME}FvwmButtons)
-*FormFvwmSetup.Command   $(BOX?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIconBox ${FVWM_USERHOME}FvwmIconBox)
-*FormFvwmSetup.Command   $(MAN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIconMan ${FVWM_USERHOME}FvwmIconMan)
-*FormFvwmSetup.Command   $(IDN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIdent   ${FVWM_USERHOME}FvwmIdent)
-*FormFvwmSetup.Command   $(PAG?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmPager   ${FVWM_USERHOME}FvwmPager)
-*FormFvwmSetup.Command   $(SCR?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmScroll  ${FVWM_USERHOME}FvwmScroll)
-*FormFvwmSetup.Command   $(TSK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmTaskBar ${FVWM_USERHOME}FvwmTaskBar)
-*FormFvwmSetup.Command   $(WIN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmWinList ${FVWM_USERHOME}FvwmWinList)
+*FormFvwmSetup.Command   $(BASIC?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmSetup ${FVWM_USERHOME}/.fvwm2rc)
+*FormFvwmSetup.Command   $(BAK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmBacker  ${FVWM_USERHOME}/FvwmBacker)
+*FormFvwmSetup.Command   $(BUT?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmButtons ${FVWM_USERHOME}/FvwmButtons)
+*FormFvwmSetup.Command   $(BOX?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIconBox ${FVWM_USERHOME}/FvwmIconBox)
+*FormFvwmSetup.Command   $(MAN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIconMan ${FVWM_USERHOME}/FvwmIconMan)
+*FormFvwmSetup.Command   $(IDN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIdent   ${FVWM_USERHOME}/FvwmIdent)
+*FormFvwmSetup.Command   $(PAG?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmPager   ${FVWM_USERHOME}/FvwmPager)
+*FormFvwmSetup.Command   $(SCR?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmScroll  ${FVWM_USERHOME}/FvwmScroll)
+*FormFvwmSetup.Command   $(TSK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmTaskBar ${FVWM_USERHOME}/FvwmTaskBar)
+*FormFvwmSetup.Command   $(WIN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmWinList ${FVWM_USERHOME}/FvwmWinList)
 *FormFvwmSetup.Button  quit    "F3 - Restart fvwm2"
 *FormFvwmSetup.Command   Restart fvwm2

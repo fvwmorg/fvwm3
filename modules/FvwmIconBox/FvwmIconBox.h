@@ -19,7 +19,6 @@ extern void   Loop(void);
 extern void   ParseOptions(void);
 extern char   *safemalloc(int length);
 extern int    My_XNextEvent(Display *dpy, XEvent *event);
-extern void   CopyString(char **dest, char *source);
 extern void   SendFvwmPipe(int *,char *text, unsigned long window);
 extern void   DeadPipe(int nonsense);
 extern void   CreateIconWindow(struct icon_info *item);

@@ -24,8 +24,6 @@
 /* Function Prototypes */
 char *safemalloc(int length);
 char *saferealloc(char *ptr, int length);
-void CopyString(char **dest, char *source);
-char *CatString2(char *a, char *b);
 void UpdateString(char **string,char *value);
 
 #endif

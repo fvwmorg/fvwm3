@@ -385,6 +385,7 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
 
   if (tmp[0] != '*' || strncasecmp(tmp+1, module_name, strlen(module_name)))
     {
+      free(tmp);
       *resource = NULL;
       return indata;
     }

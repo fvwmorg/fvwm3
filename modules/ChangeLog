@@ -1,3 +1,8 @@
+Mon Apr 26 12:20:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmForm/FormFvwmSetup.in: Don't require trailing slash in
+ 	FVWM_USERHOME variable.
+
 1999-04-26  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 
 	* FvwmGtk/FvwmGtk.c (menu_item_new_with_pixmap_and_label): 
@@ -12,6 +17,14 @@
 
 	* FvwmGtk/FvwmGtk.1: document document underlined accelerators.
 
+Mon Apr 26 01:33:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/Mallocs.h:
+	* FvwmScroll/FvwmScroll.h: 
+	* FvwmScroll/FvwmScroll.h: 
+	* FvwmIdent/FvwmIdent.h: 
+	* FvwmIconBox/FvwmIconBox.h: remove prototypes for CatString2 and
+	CopyString.  Both are now in libs.
 
 Fri Apr 23 13:22:14 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 

@@ -89,78 +89,13 @@ int usleep( unsigned long usec );
 
 
 
-/***********************************************************************
- * Routines for dealing with strings
- ***********************************************************************/
+#include "Strings.h"
+#include "envvar.h"
+#include "Parse.h"
 
-char *CatString3(char *a, char *b, char *c);
-void CopyString(char **dest, char *source);
-char *stripcpy( const char *source );
-int StrEquals(char *s1,char *s2);
-
-int  envExpand(char *s, int maxstrlen);
-char *envDupExpand(const char *s, int extra);
 
 int matchWildcards(char *pattern, char *string);
 
-/***********************************************************************
- * Stuff for consistent parsing
- ***********************************************************************/
-#define EatWS(s) do { while ((s) && (isspace(*(s)) || *(s) == ',')) (s)++; } while (0)
-#define IsQuote(c) ((c) == '"' || (c) == '\'' || (c) =='`')
-#define IsBlockStart(c) ((c) == '[' || (c) == '{' || (c) == '(')
-#define IsBlockEnd(c,cs) (((c) == ']' && (cs) == '[') || ((c) == '}' && (cs) == '{') || ((c) == ')' && (cs) == '('))
-#define MAX_TOKEN_LENGTH 255
-
-char *SkipQuote(char *s, const char *qlong, const char *qstart,
-		const char *qend);
-char *GetQuotedString(char *sin, char **sout, const char *delims,
-		      const char *qlong, const char *qstart, const char *qend);
-char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
-		  char *out_delim);
-char *PeekToken(char *indata, char **token);
-int MatchToken(char *pstr,char *tok);
-void NukeToken(char **pstr);
-
-/* old style parse routine: */
-char *DoGetNextToken(char *indata,char **token, char *spaces, char *delims,
-		     char *out_delim);
-char *GetNextToken(char *indata,char **token);
-char *GetNextSimpleOption(char *indata, char **option);
-char *GetNextFullOption(char *indata, char **option);
-char *SkipNTokens(char *indata, unsigned int n);
-char *GetModuleResource(char *indata, char **resource, char *module_name);
-int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
-				int num, char *suffixlist,
-				int ret_suffixnum[]);
-int GetIntegerArguments(char *action, char**ret_action, int retvals[],int num);
-int GetTokenIndex(char *token, char *list[], int len, char **next);
-char *GetNextTokenIndex(char *action, char *list[], int len, int *index);
-int GetRectangleArguments(char *action, int *width, int *height);
-int GetOnePercentArgument(char *action, int *value, int *unit_io);
-int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
-			   int *val2_unit);
-int ParseToggleArgument(char *action, char **ret_action, int default_ret,
-			char no_toggle);
-
-/*
-   function:            FindToken
-   description:         find the entry of type 'struct_entry'
-                        holding 'key' in 'table'
-   returns:             pointer to the matching entry
-                        NULL if not found
-
-   table must be sorted in ascending order for FindToken.
-*/
-
-#define FindToken(key,table,struct_entry)                               \
-        (struct_entry *) bsearch(key,                                   \
-                                 (char *)(table),                       \
-                                 sizeof(table) / sizeof(struct_entry),  \
-                                 sizeof(struct_entry),                  \
-                                 XCmpToken)
-
-extern int XCmpToken(); /* const char *s, const char **t); */
 
 
 /***********************************************************************

@@ -117,7 +117,6 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   int fvwm_to_app[2],app_to_fvwm[2];
   int i,val,nargs = 0;
-  char *env_var_ptr;
   char *cptr;
   char *args[20];
   char *arg1 = NULL;
@@ -277,11 +276,8 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       close(app_to_fvwm[0]);
 #endif
       /* Only modules need to know where userhome is. */
-      env_var_ptr = malloc(sizeof("FVWM_USERHOME") + strlen(user_home_ptr) + 1);
-      strcpy(env_var_ptr,"FVWM_USERHOME=");
-      strcat(env_var_ptr,user_home_ptr);
-      putenv(env_var_ptr);              /* env var for module only */
-      free(env_var_ptr);
+      putenv( CatString2("FVWM_USERHOME=", user_home_dir) );
+
       /** Why is this execvp??  We've already searched the module path! **/
       execvp(arg1,args);
       fvwm_msg(ERR,"executeModule","Execution of module failed: %s",arg1);

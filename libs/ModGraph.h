@@ -1,3 +1,5 @@
+#ifndef FVWMLIB_MODGRAPH_H
+#define FVWMLIB_MODGRAPH_H
 
 /* stuff to enable modules to use fvwm visual/colormap/GCs */
 #define DEFGRAPHSTR "Default_Graphics "
@@ -27,5 +29,6 @@ typedef struct GraphicsThing {
 } Graphics;
 
 void InitGraphics(Display *dpy, Graphics *graphics);
-Bool ParseGraphics(Display *dpy, char * line, Graphics *graphics);
+void ParseGraphics(Display *dpy, char * line, Graphics *graphics);
 
+#endif

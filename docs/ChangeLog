@@ -1,9 +1,18 @@
+Mon Apr 26 13:13:02 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* links.html: add link to fvwm2gnome page.
+
 1999-04-26  Dan Espen  <dane@mk.bellcore.com>
 
 	* txt2html.sh (outfile): Changed so that greater than and less
 	than can appear in output  document as links.
 
 	* FAQ (A): Added link to fvwm-cats.
+
+Fri Apr 23 14:37:36 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FAQ (3.13): document the change of FVWM_CONFIGDIR to
+ 	$sysconfdir/fvwm.
 
 1999-04-14  Dominik Vogt  <dominik_vogt@gmx.de>
 

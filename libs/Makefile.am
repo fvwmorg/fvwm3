@@ -2,10 +2,11 @@
 
 noinst_LIBRARIES = libfvwm.a
 
-libfvwm_a_SOURCES = Bindings.c ClientMsg.c ColorUtils.c GetFont.c Grab.c      \
-	Graphics.c Module.c ModGraph.c Parse.c Picture.c Picture.h			      \
-	Strings.c System.c XResource.c envvar.c fvwmlib.h safemalloc.c wild.c \
-	lang-strings.h debug.c
+libfvwm_a_SOURCES = Bindings.c ClientMsg.c ColorUtils.c GetFont.c \
+	Grab.c Graphics.c ModGraph.c ModGraph.h Module.c Parse.c Parse.h \
+	Picture.c Picture.h Strings.c Strings.h \
+	System.c XResource.c debug.c envvar.c envvar.h \
+	fvwmlib.h lang-strings.h safemalloc.c wild.c
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 

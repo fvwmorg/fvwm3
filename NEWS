@@ -1,3 +1,8 @@
+Changes in alpha release 2.3.2 (April 1999)
+
+* System-wide config files are now in ${sysconfdir}/fvwm
+  (i.e. /usr/local/etc/fvwm by default) as many files are now installed there.
+
 Changes in alpha release 2.3.1 (April 1999)
 
 * FixedPosition style: disables moving the window.

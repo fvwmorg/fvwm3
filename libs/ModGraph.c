@@ -2,6 +2,8 @@
 #define XLIB_ILLEGAL_ACCESS
 #include "config.h"
 #include <X11/Intrinsic.h> /* needed for Pixel definition */
+#include <stdio.h>
+
 #include "libs/ModGraph.h"
 
 /***************************************************************************
@@ -48,8 +50,8 @@ void InitGraphics(Display *dpy, Graphics *G) {
 /***************************************************************************
  * Initialises graphics stuff from a graphics config line sent by fvwm
  **************************************************************************/
-Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
-  long junk, backbits, bg;
+void ParseGraphics(Display *dpy, char *line, Graphics *G) {
+  long backbits, bg;
   int viscount;
   XVisualInfo vizinfo, *xvi;
   VisualID vid;

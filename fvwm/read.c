@@ -45,199 +45,164 @@ extern Boolean debugging;
 
 char *fvwm_file = NULL;
 
-int numfilesread = 0;
 
-static int last_read_failed=0;
-
-static const char *read_system_rc_cmd="Read system"FVWMRC;
-
-
-/*
- * func to do actual read/piperead work
- * Arg 1 is file name to read.
- *   If the filename starts with "/", just read it.
- *   Otherwise we need the user home directory which is either
- *   "." or ".fvwm/".
- *   If the file starts with a dot, and  no ".fvwm" dir, read
- *     .x, sysconfdir/x.
- *   If the file starts with a dot, and  a ".fvwm" dir, read
- *     .fvwm/x, sysconfdir/x, .x.
- *   If the file doesn't start with a dot, and no ".fvwm" dir, read
- *     x, sysconfdir/x.
- *   If the file doesn't start with a dot, and a ".fvwm" dir, read
- *     .fvwm/x, sysconfdir/x.
- *
- * Arg 2 (optional) "Quiet" to suppress message on missing file.
- */
-static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                        unsigned long context, char *action,int* Module,
-                        int piperead)
+/**
+ * Read and execute each line from stream.
+ **/
+void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win, 
+			 unsigned long context, int Module )
 {
-  char *filename= NULL,*Home, *home_file, *ofilename = NULL;
-  char *option;                         /* optional arg to read */
-  char *rest,*tline,line[1024];
-  FILE *fd;
-  int thisfileno;
-  char missing_quiet;                   /* missing file msg control */
-  char *cmdname;
+    char *tline,line[1024];
 
-  /* domivogt (30-Dec-1998: I tried using conditional evaluation instead
-   * of the cmdname variable ( piperead?"PipeRead":"Read" ), but gcc seems
-   * to treat this expression as a pointer to a character pointer, not just
-   * as a character pointer, but it doesn't complain either. Or perhaps
-   * insure++ gets this wrong? */
-  if (piperead)
-    cmdname = "PipeRead";
-  else
-    cmdname = "Read";
+    /* Set close-on-exec flag */
+    fcntl(fileno(f), F_SETFD, 1);
 
-  thisfileno = numfilesread;
-  numfilesread++;
-
-/*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
-
-  rest = GetNextToken(action,&ofilename); /* read file name arg */
-  if(ofilename == NULL)
-  {
-    fvwm_msg(ERR, cmdname,"missing parameter");
-    last_read_failed = 1;
-    return;
-  }
-  missing_quiet='n';                    /* init */
-  rest = GetNextToken(rest,&option);    /* read optional arg */
-  if (option != NULL) {                 /* if there is a second arg */
-    if (strncasecmp(option,"Quiet",5)==0) { /* is the arg "quiet"? */
-      missing_quiet='y';                /* no missing file message wanted */
-    } /* end quiet arg */
-    free(option);                       /* arg not needed after this */
-  } /* end there is a second arg */
-
-  filename = ofilename;
-
-/*  fvwm_msg(INFO, cmdname,"trying '%s'",filename); */
-
-  if (piperead) {                       /* if pipe */
-    fd = popen(filename,"r");           /* popen */
-  } else if (ofilename[0] == '/') {     /* if absolute path */
-    fd = fopen(filename,"r");           /* fopen the name given */
-  } else {                              /* else its a relative path */
-    Home = user_home_ptr;               /* try user home first */
-    home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
-    strcpy(home_file,Home);
-    strcat(home_file,ofilename);
-    filename = home_file;
-    fd = fopen(filename,"r");
-    if(fd == 0) {                       /* if not in users home */
-      if((filename != NULL)&&(filename!= ofilename))
-          free(filename);
-      Home = FVWM_CONFIGDIR;          /* where fvwm is installed */
-      home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
-      strcpy(home_file,Home);
-      strcat(home_file,"/");
-      strcat(home_file,ofilename);
-      filename = home_file;
-      fd = fopen(filename,"r");
-    } /* end, not in users home dir */
-  }
-
-  if(fd == NULL)
-  {
-    if (missing_quiet == 'n') {         /* if quiet option not on */
-      if (piperead)
-	fvwm_msg(ERR, cmdname, "piperead command '%s' not run", ofilename);
-      else {
-	fvwm_msg(ERR, cmdname,
-		 "read command, file '%s' not found in %s or "FVWM_CONFIGDIR,
-                 ofilename,user_home_ptr);
-      }
-    } /* end quiet option not on */
-    if((ofilename != filename)&&(filename != NULL))
+    tline = fgets(line,(sizeof line)-1,f);
+    while(tline)
     {
-      free(filename);
+	int l;
+	while(tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
+	      line[l-2]=='\\' && line[l-1]=='\n')
+        {
+	    tline = fgets(line+l-2,sizeof(line)-l+1,f);
+	}
+	tline=line;
+	while(isspace(*tline))
+	    tline++;
+	if (debugging) 
+	    fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
+	
+	ExecuteFunction(tline,tmp_win,eventp,context,Module,EXPAND_COMMAND);
+	tline = fgets(line,(sizeof line)-1,f);
     }
-    if(ofilename != NULL)
-    {
-      free(ofilename);
-    }
-    last_read_failed = 1;
-    return;
-  }
-  if((ofilename != NULL)&&(filename!= ofilename))
-    free(ofilename);
-  fcntl(fileno(fd), F_SETFD, 1);
-  if (!piperead)
-  {
-    if(fvwm_file != NULL)
-      free(fvwm_file);
-    fvwm_file = filename;
-  }
-  else
-  {
-    if (filename)
-      free(filename);
-  }
-
-  tline = fgets(line,(sizeof line)-1,fd);
-  while(tline)
-  {
-    int l;
-    while(tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
-          line[l-2]=='\\' && line[l-1]=='\n')
-    {
-      tline = fgets(line+l-2,sizeof(line)-l+1,fd);
-    }
-    tline=line;
-    while(isspace(*tline))
-      tline++;
-    if (debugging)
-    {
-      fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
-    }
-    ExecuteFunction(tline,tmp_win,eventp,context,*Module,EXPAND_COMMAND);
-    tline = fgets(line,(sizeof line)-1,fd);
-  }
-
-  if (piperead)
-    pclose(fd);
-  else
-    fclose(fd);
-  last_read_failed = 0;
 }
+
+
+/**
+ * Parse the action string.  We expect a filename, and optionally,
+ * the keyword "Quiet".  The parameter `cmdname' is used for diagnostic
+ * messages only.
+ *
+ * Returns true if the parse succeeded.
+ * The filename and the presence of the quiet flag are returned
+ * using the pointer arguments.
+ **/
+static int parse_filename( char* cmdname, char* action, 
+			   char** filename, int* quiet_flag )
+{
+    char* rest;
+    char* option;
+
+    /*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
+
+    /* read file name arg */
+    rest = GetNextToken(action,filename); 
+    if(*filename == NULL) {
+	fvwm_msg(ERR, cmdname, "missing filename parameter");
+	return 0;
+    }
+
+    /* optional "Quiet" argument -- flag defaults to `off' (noisy) */
+    *quiet_flag = 0;
+    rest = GetNextToken(rest,&option);
+    if ( option != NULL) {
+	*quiet_flag = strncasecmp(option,"Quiet",5) == 0;
+	free(option);
+    }
+
+    return 1;
+}
+
+
+/**
+ * Returns FALSE if file not found
+ **/
+int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win, 
+		      unsigned long context, int Module )
+{
+    FILE* f;
+
+    /* Save filename for passing as argument to modules */
+    if (fvwm_file != NULL)
+	free(fvwm_file);
+    fvwm_file = NULL;
+
+    if (filename[0] == '/') {             /* if absolute path */
+	f = fopen(filename,"r");
+	fvwm_file = strdup( filename );
+    } else {                              /* else its a relative path */
+	char* path = CatString3( user_home_dir, "/", filename );
+	f = fopen( path, "r" );
+	if ( f == NULL ) {
+	    path = CatString3( FVWM_CONFIGDIR, "/", filename );
+	    f = fopen( path, "r" );
+	}
+	fvwm_file = strdup( path );
+    }
+
+    if (f == NULL)
+	return 0;
+
+    run_command_stream( f, eventp, tmp_win, context, Module );
+    fclose( f );
+
+    free( fvwm_file );
+    fvwm_file = NULL;
+    return 1;
+}
+
 
 void ReadFile(F_CMD_ARGS)
 {
-  int this_read = numfilesread;
+    char* filename;
+    int read_quietly;
 
-  if (debugging)
-  {
-    fvwm_msg(DBG,"ReadFile","about to attempt '%s'",action);
-  }
+    if (debugging)
+	fvwm_msg(DBG,"ReadFile","about to attempt '%s'",action);
 
-  ReadSubFunc(eventp,w,tmp_win,context,action,Module,0);
+    if ( !parse_filename( "Read", action, &filename, &read_quietly ) )
+	return;
 
-  if (fFvwmInStartup && last_read_failed && this_read == 0)
-  {
-    fvwm_msg(INFO,"Read","trying to read system rc file");
-    ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1,
-		    EXPAND_COMMAND);
-  }
+    if ( !run_command_file( filename, eventp, tmp_win, context, *Module ) &&
+	 !read_quietly )
+    {
+	fvwm_msg( ERR, "Read", 
+		  "file '%s' not found in %s or "FVWM_CONFIGDIR,
+		  filename, user_home_dir );
+    }
+    free( filename );
 }
+
+
 
 void PipeRead(F_CMD_ARGS)
 {
-  int this_read = numfilesread;
+    char* command;
+    int read_quietly;
+    FILE* f;
 
-  if (debugging)
-  {
-    fvwm_msg(DBG,"PipeRead","about to attempt '%s'",action);
-  }
+    /* Save filename for passing as argument to modules */
+    if (fvwm_file != NULL)
+	free(fvwm_file);
+    fvwm_file = NULL;
 
-  ReadSubFunc(eventp,w,tmp_win,context,action,Module,1);
+    if (debugging)
+	fvwm_msg(DBG,"PipeRead","about to attempt '%s'",action);
 
-  if (fFvwmInStartup && last_read_failed && this_read == 0)
-  {
-    fvwm_msg(INFO,"PipeRead","trying to read system rc file");
-    ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1,
-		    EXPAND_COMMAND);
-  }
+    if ( !parse_filename( "PipeRead", action, &command, &read_quietly ) )
+	return;
+
+    f = popen( command, "r" );
+
+    if (f == NULL) {
+	if ( !read_quietly )
+	    fvwm_msg( ERR, "PipeRead", "command '%s' not run", command );
+	free( command );
+	return;
+    }
+    free( command );
+
+    run_command_stream( f, eventp, tmp_win, context, *Module );
+    pclose( f );
+
 }

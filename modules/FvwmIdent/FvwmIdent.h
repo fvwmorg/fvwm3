@@ -50,8 +50,6 @@ void RedrawWindow(void);
 void change_window_name(char *str);
 Pixel GetColor(char *name);
 void nocolor(char *a, char *b);
-void CopyString(char **dest, char *source);
-char *CatString2(char *a, char *b);
 void AddToList(char *, char *);
 void MakeList(void);
 void freelist(void);

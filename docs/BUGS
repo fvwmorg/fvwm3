@@ -11,6 +11,7 @@ from our home page.
 
  - No geometry can be specified for FvwmButtons panels.
  - Running fvwm2 on an XNest X server does not work well.
+   (What does that mean?  I've done it --smr)
  - FvwmSave and FvwmSaveDesk are not up to date.
  - xscreensaver may not be able to allocate a private colormap
  - FvwmButtons and possibly other modules may survive shutdown of the X

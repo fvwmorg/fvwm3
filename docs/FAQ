@@ -59,6 +59,8 @@ Contents
     3.10  My .fvwmrc from version 1.xx no longer works.  What do I do?
     3.11  What happened to the FVWM 1.xx 'include' command?
     3.12  How do I get window titles on sub windows of ...
+    3.13  I just upgraded to version >= 2.3.2, and my configuration settings
+	  disappeared!  How do I get them back?
 
 4. Modules
 
@@ -841,6 +843,20 @@ A: These windows are known as 'transient' windows because of their
    or to switch it off:
 
      Style * NakedTransient
+
+----------------------------------------------------------------------
+
+3.13  I just upgraded to version >= 2.3.2, and my configuration settings
+      disappeared!  How do I get them back?
+
+A: The directory for system-wide configuration files changed from 
+   ${sysconfdir} (/usr/local/etc, unless set otherwise at configure time)
+   to a subdirectory, ${sysconfdir}/fvwm.  Move your config files by hand
+   and restart FVWM.
+
+   This change was made because FVWM now installs several files into this
+   directory.
+
 
 ======================================================================
                              4 - Modules

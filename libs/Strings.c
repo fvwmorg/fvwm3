@@ -22,72 +22,77 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "fvwmlib.h"
+#include "Strings.h"
+#include "fvwmlib.h" /* for safemalloc */
 
-/************************************************************************
- *
- * Concatentates 3 strings
- *
- *************************************************************************/
-char CatS[256];
 
-char *CatString3(char *a, char *b, char *c)
+#define CHUNK_SIZE 256
+
+
+char* CatString3( char* a, char* b, char* c )
 {
-  int len = 0;
+    static char* buffer = NULL;
+    static int buffer_len = 0;
 
-  if(a != NULL)
-    len += strlen(a);
-  if(b != NULL)
-    len += strlen(b);
-  if(c != NULL)
-    len += strlen(c);
+    int len = 0;
+    if (a != NULL) len += strlen(a);
+    if (b != NULL) len += strlen(b);
+    if (c != NULL) len += strlen(c);
 
-  if (len > 255)
-    return NULL;
+    /* Expand buffer to fit string, to a multiple of CHUNK_SIZE */
+    if (len > buffer_len) {
+	if ( buffer ) free( buffer );
+	
+	buffer_len = CHUNK_SIZE * (1 + len / CHUNK_SIZE);
+	buffer = safemalloc( buffer_len );
+    }
 
-  if(a == NULL)
-    CatS[0] = 0;
-  else
-    strcpy(CatS, a);
-  if(b != NULL)
-    strcat(CatS, b);
-  if(c != NULL)
-    strcat(CatS, c);
-  return CatS;
+    buffer[0] = 0;
+    if (a != NULL) strcat( buffer, a );
+    if (b != NULL) strcat( buffer, b );
+    if (c != NULL) strcat( buffer, c );
+
+    return buffer;
 }
 
-/***************************************************************************
- * A simple routine to copy a string, stripping spaces and mallocing
- * space for the new string
- ***************************************************************************/
-void CopyString(char **dest, char *source)
+#undef CHUNK_SIZE
+
+
+void CopyString(char **dest, const char *source)
 {
-  int len;
-  char *start;
+    int len;
+    const char *start;
 
-  if (source == NULL)
-    {
-      *dest = NULL;
-      return;
+    if (source == NULL) {
+	*dest = NULL;
+	return;
     }
-  while(((isspace(*source))&&(*source != '\n'))&&(*source != 0))
-  {
-    source++;
-  }
-  len = 0;
-  start = source;
-  while((*source != '\n')&&(*source != 0))
-  {
-    len++;
-    source++;
-  }
 
-  source--;
-  while((isspace(*source))&&(*source != 0)&&(len >0))
-  {
-    len--;
+    /* set 'start' to the first character of the string,
+       skipping over spaces, but not newlines 
+       (newline terminates the string) */
+
+    while ( isspace(*source) && (*source != '\n') )
+	source++;
+    start = source;
+
+    /* set 'len' to the length of the string, ignoring
+       trailing spaces */
+
+    len = 0;
+    while ( (*source != '\n') && (*source != 0) )
+    { 
+	len++;
+	source++;
+    }
     source--;
-  }
+
+    while( len > 0 && isspace(*source) )
+    {
+	len--;
+	source--;
+    }
+
   *dest = safemalloc(len+1);
   strncpy(*dest,start,len);
   (*dest)[len]=0;
@@ -124,11 +129,10 @@ char *stripcpy( const char *source )
     return ptr;
 }
 
-int StrEquals(char *s1,char *s2)
+
+int StrEquals( const char *s1, const char *s2 )
 {
-  if (!s1 && !s2)
-    return 1;
-  if (!s1 || !s2)
-    return 0;
-  return (strcasecmp(s1,s2)==0);
+    if (s1 == NULL && s2 == NULL) return 1;
+    if (s1 == NULL || s2 == NULL) return 0;
+    return (strcasecmp(s1,s2)==0);
 }

@@ -19,7 +19,7 @@ Cleanups:
     moduleexecdir?
   - Make fvwmlib a shared lib?
   - clean up code duplication (esp in modules) - more stuff in
-    libfvwm2.a, plus perhaps a second module lib?
+    libfvwm.a, plus perhaps a second module lib?
 
 ----------------------------------------------------------------------
 

@@ -33,7 +33,10 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
-#include <pwd.h>
+
+#ifdef HAVE_GETPWUID
+#  include <pwd.h>
+#endif
 
 #include "fvwm.h"
 #include "functions.h"
@@ -42,7 +45,9 @@
 #include "screen.h"
 #include "parse.h"
 #include "module.h"
+#include "read.h"
 #include "session.h"
+
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -75,16 +80,10 @@ Window BlackoutWin=None;        /* window to hide window captures */
 Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 Bool DoingCommandLine = True;	/* False after starting all cmd line modules */
 
-char *default_config_command = "Read "FVWMRC;
-
 #define MAX_CFG_CMDS 10
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
 
-#if 0
-/* unsused */
-char *output_file = NULL;
-#endif
 
 int FvwmErrorHandler(Display *, XErrorEvent *);
 int CatchFatal(Display *);
@@ -137,7 +136,7 @@ extern XEvent Event;
 Bool Restarting = False;
 int fd_width, x_fd;
 char *display_name = NULL;
-char *user_home_ptr;
+char *user_home_dir;
 
 typedef enum { FVWM_RUNNING=0, FVWM_DONE, FVWM_RESTART } FVWM_STATE;
 
@@ -175,7 +174,6 @@ int main(int argc, char **argv)
   int visualClass = -1;
   int visualId = -1;
   int x, y;
-  char *home_ptr;
 
   g_argv = argv;
   g_argc = argc;
@@ -187,29 +185,19 @@ int main(int argc, char **argv)
   putenv("FVWM_MODULEDIR=" FVWM_MODULEDIR);
 
   /* Figure out where to read and write config files. */
-  home_ptr = getenv("HOME");
-  if (home_ptr == NULL) {
-    home_ptr=".";
+  user_home_dir = getenv("FVWM_USERHOME");
+  if ( user_home_dir == NULL ) 
+    user_home_dir = getenv("HOME");
+#ifdef HAVE_GETPWUID
+  if ( user_home_dir == NULL ) {
+    struct passwd* pw = getpwuid(getuid());
+    if ( pw != NULL )
+      user_home_dir = strdup( pw->pw_dir );
   }
-  user_home_ptr = getenv("FVWM_USERHOME");
-  if (user_home_ptr != NULL) {
-    if (user_home_ptr[0] != '/') {
-      char *work_ptr;
-      work_ptr = safemalloc(strlen(home_ptr) + strlen(user_home_ptr) + 3);
-      strcpy (work_ptr, home_ptr);
-      strcat (work_ptr, "/");
-      strcat (work_ptr, user_home_ptr);
-      /* must have trailing slash like $HOME does. */
-      if (work_ptr[strlen(work_ptr)-1] != '/') {
-        strcat(work_ptr,"/");
-      }
-      user_home_ptr = work_ptr;
-    }
-  } else {
-    user_home_ptr = safemalloc(strlen(home_ptr) + 2);
-    strcpy(user_home_ptr,home_ptr);
-    strcat(user_home_ptr,"/");
-  }
+#endif
+  if ( user_home_dir == NULL )
+    user_home_dir = "."; /* give up and use current dir */
+
   for (i = 1; i < argc; i++)
   {
     if (strncasecmp(argv[i],"-debug",6)==0)
@@ -271,15 +259,6 @@ int main(int argc, char **argv)
         fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
       }
     }
-#if 0
-/* unused */
-    else if (strncasecmp(argv[i],"-outfile",8)==0)
-    {
-      if (++i >= argc)
-        usage();
-      output_file = argv[i];
-    }
-#endif
     else if (strncasecmp(argv[i],"-h",2)==0)
     {
       usage();
@@ -622,11 +601,22 @@ int main(int argc, char **argv)
 		      EXPAND_COMMAND);
       free(config_commands[i]);
     }
-  }
-  else
-  {
-    ExecuteFunction(default_config_command, NULL,&Event,C_ROOT,-1,
-		    EXPAND_COMMAND);
+  } else {
+      /** Run startup commands in ~/.fvwm2rc or FVWM_CONFIGDIR/system.fvwm2rc. 
+	  If these fail, try FVWM_CONFIGDIR/.fvwm2rc for backwards compat. **/
+      if ( !run_command_file( CatString3(user_home_dir, "/", FVWMRC),
+			      &Event, NULL, C_ROOT, -1 )
+	   && !run_command_file( CatString3(FVWM_CONFIGDIR, "/system", FVWMRC),
+				 &Event, NULL, C_ROOT, -1 )
+	   && !run_command_file( CatString3(FVWM_CONFIGDIR, "/", FVWMRC),
+				 &Event, NULL, C_ROOT, -1 ) ) 
+      {
+	  fvwm_msg( ERR, "main",
+	    "Cannot read startup file.  Tried %s/%s, %s/system%s, and %s/%s",
+		    user_home_dir, FVWMRC, 
+		    FVWM_CONFIGDIR, FVWMRC,
+		    FVWM_CONFIGDIR, FVWMRC );
+      }
   }
 
   DoingCommandLine = False;
@@ -1693,14 +1683,8 @@ void Done(int restart, char *command)
 
   if(restart)
   {
-     struct passwd   *pwd;
-     char filename[1024];
+     char* filename = strdup( CatString2(user_home_dir, "/.fvwm_restart") );
      FILE *cfg_file;
-
-     pwd = getpwuid (getuid());
-
-     strncpy (filename, pwd->pw_dir, 1024);
-     strncat (filename, "/.fvwm_restart", 1024);
 
      /* We currently still need this, since InitVariables
         sets the Restarting flag based on the presence of
@@ -1710,7 +1694,7 @@ void Done(int restart, char *command)
         deals with WM_DESKTOP could be eliminated. */
      SaveDesktopState();		/* I wonder why ... */
 
-     cfg_file = fopen (filename, "w");
+     cfg_file = fopen( filename, "w");
      SaveWindowStates (cfg_file);
      SaveGlobalState (cfg_file);
      fclose (cfg_file);

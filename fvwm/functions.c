@@ -727,7 +727,7 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 /***********************************************************************
  *
  *  Procedure:
- *	AddToFuncion - add an item to a FvwmFunction
+ *	AddToFunction - add an item to a FvwmFunction
  *
  *  Inputs:
  *	func      - pointer to the FvwmFunction to add the item
