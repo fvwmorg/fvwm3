@@ -1,5 +1,8 @@
 1999-09-02  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmButtons/FvwmButtons.c (Loop): added accidentally removed line
+
+	* FvwmButtons/parse.c:
 	* FvwmButtons/FvwmButtons.c:
 	* FvwmButtons/FvwmButtons.h: removed old panel code
 

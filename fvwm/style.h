@@ -27,6 +27,10 @@
 #define SDO_SKIP_CIRCULATE_ICON(sf)   ((sf)->common.circulate_skip_icon)
 #define SDO_LOWER_TRANSIENT(sf)       ((sf)->common.do_lower_transient)
 #define SDO_RAISE_TRANSIENT(sf)       ((sf)->common.do_raise_transient)
+#define SDO_RAISE_TRANSIENT_STRICT(sf) \
+                                      ((sf)->common.do_raise_transient_strict)
+#define SDO_STACK_TRANSIENT_PARENT(sf) \
+                                      ((sf)->common.do_stack_transient_parent)
 #define SDO_NOT_SHOW_ON_MAP(sf)       ((sf)->common.do_not_show_on_map)
 #define SDO_SKIP_WINDOW_LIST(sf)      ((sf)->common.do_window_list_skip)
 #define SDO_START_ICONIC(sf)          ((sf)->common.do_start_iconic)

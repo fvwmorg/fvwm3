@@ -35,6 +35,10 @@
           (fw)->flag_mask.common.do_circulate_skip_icon = !!(x)
 #define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.do_lower_transient)
 #define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.do_raise_transient)
+#define DO_RAISE_TRANSIENT_STRICT(fw) \
+          ((fw)->flags.common.do_raise_transient_strict)
+#define DO_STACK_TRANSIENT_PARENT(fw) \
+          ((fw)->flags.common.do_stack_transient_parent)
 #define DO_NOT_SHOW_ON_MAP(fw)  \
           ((fw)->flags.common.do_not_show_on_map)
 #define DO_SKIP_WINDOW_LIST(fw) \

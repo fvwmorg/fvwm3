@@ -488,6 +488,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.common.do_lower_transient = 0;
           tmpstyle.flag_mask.common.do_lower_transient = 1;
         }
+        else if(StrEquals(token, "DontStackTransientParent"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_stack_transient_parent = 0;
+          tmpstyle.flag_mask.common.do_stack_transient_parent = 1;
+        }
         break;
 
       case 'e':
@@ -1071,6 +1077,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.common.do_raise_transient = 1;
           tmpstyle.flag_mask.common.do_raise_transient = 1;
         }
+        else if(StrEquals(token, "RaiseTransientStrict"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_raise_transient = 1;
+          tmpstyle.flags.common.do_raise_transient_strict = 1;
+          tmpstyle.flag_mask.common.do_raise_transient = 1;
+          tmpstyle.flag_mask.common.do_raise_transient_strict = 1;
+        }
         break;
 
       case 's':
@@ -1091,6 +1105,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           tmpstyle.flags.common.do_not_show_on_map = 0;
           tmpstyle.flag_mask.common.do_not_show_on_map = 1;
+        }
+        else if(StrEquals(token, "StackTransientParent"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_stack_transient_parent = 1;
+          tmpstyle.flag_mask.common.do_stack_transient_parent = 1;
         }
         else if(StrEquals(token, "StickyIcon"))
         {

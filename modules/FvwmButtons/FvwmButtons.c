@@ -724,80 +724,80 @@ int main(int argc, char **argv)
     has_button_geometry = 0;
   }
 
-    /* Don't quit if only a subpanel is empty */
-    if(UberButton->c->num_buttons==0)
+  /* Don't quit if only a subpanel is empty */
+  if(UberButton->c->num_buttons==0)
+  {
+    fprintf(stderr,"%s: No buttons defined. Quitting\n", MyName);
+    exit(0);
+  }
+
+#ifdef DEBUG_INIT
+  fprintf(stderr,"OK\n%s: Shuffling...",MyName);
+#endif
+
+  ShuffleButtons(UberButton);
+  NumberButtons(UberButton);
+
+#ifdef DEBUG_INIT
+  fprintf(stderr,"OK\n%s: Loading data...\n",MyName);
+#endif
+
+  /* Load fonts and icons, calculate max buttonsize */
+  maxx=0;
+  maxy=0;
+  RecursiveLoadData(UberButton,&maxx,&maxy);
+
+  /* now we can size the main window if pixels per button were specified */
+  if (has_button_geometry && button_width > 0 && button_height > 0)
+  {
+    w = button_width * UberButton->c->num_columns;
+    h = button_height * UberButton->c->num_rows;
+  }
+
+#ifdef DEBUG_INIT
+  fprintf(stderr,"%s: Creating main window...",MyName);
+#endif
+
+  CreateUberButtonWindow(UberButton,maxx,maxy);
+
+#ifdef DEBUG_INIT
+  fprintf(stderr,"OK\n%s: Creating icon windows...",MyName);
+#endif
+
+  i=-1;
+  ub=UberButton;
+  while(NextButton(&ub,&b,&i,0))
+  {
+    if(b->flags&b_Icon)
     {
-      fprintf(stderr,"%s: No buttons defined. Quitting\n", MyName);
-      exit(0);
+#ifdef DEBUG_INIT
+      fprintf(stderr,"0x%06x...",(ushort)b);
+#endif
+      CreateIconWindow(b);
     }
+  }
 
 #ifdef DEBUG_INIT
-    fprintf(stderr,"OK\n%s: Shuffling...",MyName);
+  fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
 #endif
 
-    ShuffleButtons(UberButton);
-    NumberButtons(UberButton);
-
-#ifdef DEBUG_INIT
-    fprintf(stderr,"OK\n%s: Loading data...\n",MyName);
-#endif
-
-    /* Load fonts and icons, calculate max buttonsize */
-    maxx=0;
-    maxy=0;
-    RecursiveLoadData(UberButton,&maxx,&maxy);
-
-    /* now we can size the main window if pixels per button were specified */
-    if (has_button_geometry && button_width > 0 && button_height > 0)
-    {
-      w = button_width * UberButton->c->num_columns;
-      h = button_height * UberButton->c->num_rows;
-    }
-
-#ifdef DEBUG_INIT
-    fprintf(stderr,"%s: Creating main window...",MyName);
-#endif
-
-    CreateUberButtonWindow(UberButton,maxx,maxy);
-
-#ifdef DEBUG_INIT
-    fprintf(stderr,"OK\n%s: Creating icon windows...",MyName);
-#endif
-
-    i=-1;
-    ub=UberButton;
-    while(NextButton(&ub,&b,&i,0))
-    {
-      if(b->flags&b_Icon)
-      {
-#ifdef DEBUG_INIT
-	fprintf(stderr,"0x%06x...",(ushort)b);
-#endif
-	CreateIconWindow(b);
-      }
-    }
-
-#ifdef DEBUG_INIT
-    fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
-#endif
-
-    XGetGeometry(Dpy,MyWindow,&root,&x,&y,&Width,&Height,
-		 &border_width,&depth);
-    SetButtonSize(UberButton,Width,Height);
-    i=-1;
-    ub=UberButton;
-    while(NextButton(&ub,&b,&i,0))
-      ConfigureIconWindow(b);
+  XGetGeometry(Dpy,MyWindow,&root,&x,&y,&Width,&Height,
+	       &border_width,&depth);
+  SetButtonSize(UberButton,Width,Height);
+  i=-1;
+  ub=UberButton;
+  while(NextButton(&ub,&b,&i,0))
+    ConfigureIconWindow(b);
 
 #ifdef SHAPE
-    if(UberButton->c->flags&b_TransBack)
-      SetTransparentBackground(UberButton,Width,Height);
+  if(UberButton->c->flags&b_TransBack)
+    SetTransparentBackground(UberButton,Width,Height);
 #endif
 
-    i=-1;
-    ub=UberButton;
-    while(NextButton(&ub,&b,&i,0))
-      MakeButton(b);
+  i=-1;
+  ub=UberButton;
+  while(NextButton(&ub,&b,&i,0))
+    MakeButton(b);
 
 #ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Mapping windows...",MyName);
@@ -1010,6 +1010,8 @@ void Loop(void)
 	      DumpButtons(UberButton);
 	    else if(strncasecmp(act,"SaveButtons",11)==0)
 	      SaveButtons(UberButton);
+	    else
+	      MySendText(fd,act,0);
 	  } /* act */
 	  if (act != NULL)
 	  {
@@ -1022,9 +1024,6 @@ void Loop(void)
 	CurrentButton=NULL;
 	if(b)
 	  RedrawButton(b,0);
-	break;
-
-      case ClientMessage:
 	break;
 
       case PropertyNotify:

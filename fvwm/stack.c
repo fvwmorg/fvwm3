@@ -82,14 +82,15 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
   return True;
 }
 
-static Bool must_move_transients(FvwmWindow *t, Bool do_lower)
+static Bool must_move_transients(FvwmWindow *t, Bool do_lower, Bool *found_transient)
 {
+  *found_transient = False;
+
   /* raise */
   if ((!do_lower && DO_RAISE_TRANSIENT(t)) ||
-      (do_lower && DO_RAISE_TRANSIENT(t)))
+      (do_lower && DO_LOWER_TRANSIENT(t)))
   {
     Bool scanning_above_window = True;
-    Bool found_transient_window = False;
     FvwmWindow *q;
 
     for (q = Scr.FvwmRoot.stack_next; q != &Scr.FvwmRoot; q = q->stack_next)
@@ -112,7 +113,7 @@ static Bool must_move_transients(FvwmWindow *t, Bool do_lower)
       else if (IS_TRANSIENT(q) && (q->transientfor == t->w))
       {
 	/* found a transient */
-	found_transient_window = True;
+	*found_transient = True;
 	if (!do_lower && !scanning_above_window)
 	{
 	  /* It's below the window, so it must be raised. */
@@ -120,7 +121,7 @@ static Bool must_move_transients(FvwmWindow *t, Bool do_lower)
 	}
       }
       else if ((scanning_above_window && !do_lower) ||
-	       (found_transient_window && do_lower))
+	       (*found_transient && do_lower))
       {
 	/* raise: The window is not raised, so itself and all transients will
 	 * be raised. */
@@ -133,7 +134,7 @@ static Bool must_move_transients(FvwmWindow *t, Bool do_lower)
   return False;
 }
 
-static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
+static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower, Bool allow_recursion)
 {
   FvwmWindow *s, *r, *t2, *next, tmp_r;
   unsigned int flags;
@@ -141,9 +142,60 @@ static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
   XWindowChanges changes;
   Window *wins;
   Bool do_move_transients;
+  Bool found_transient;
+  Bool no_movement;
   int test_layer;
 
-  do_move_transients = must_move_transients(t, do_lower);
+  if ( allow_recursion )
+  {
+    /*
+    ** This part makes Raise/Lower on a Transient act on its Main and sibling Transients.
+    **
+    ** The recursion is limited to one level - which caters for most cases.
+    ** This code does not handle the case where there are trees of Main+Transient
+    ** (ie where a Main_window_with_Transients is itself Transient for another window).
+    **
+    ** Another strategy is required to handle trees of Main+Transients
+    */
+    if (IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
+    {
+      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
+      {
+        if (t2->w == t->transientfor)
+        {
+          if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
+              (do_lower && DO_LOWER_TRANSIENT(t2))  )
+          {
+              inner_RaiseOrLowerWindow(t2,do_lower,False);
+              return;
+          }
+        }
+      }
+    }
+  }
+
+  do_move_transients = must_move_transients(t, do_lower, &found_transient);
+
+  /*
+  ** This part implements the Strict part of RaiseTransientStrict style.
+  **
+  ** There is no need to move the main window when
+  ** (1) Window has style RaiseTransientStrict
+  ** (2) We are Raising
+  ** (3) We will not move any transients
+  ** (4) We found transients belonging to this Main
+  **
+  ** This basically means that Main is already correctly positioned
+  ** near the top of its layer with only its transients above it.
+  ** To move Main now would place it above its transients - contra
+  ** to the RaiseTransientStrict style.
+  */
+  no_movement = DO_RAISE_TRANSIENT_STRICT(t)
+                                && !do_lower
+                                && !do_move_transients
+                                && found_transient;
+
+  if ( ! no_movement ) {
 
   /* detach t, so it doesn't make trouble in the loops */
   remove_window_from_stack_ring(t);
@@ -253,6 +305,8 @@ static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
 
   free (wins);
 
+  }
+
   if (!do_lower)
   {
     raisePanFrames();
@@ -283,6 +337,10 @@ static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
       XFree (tops);
     }
   }
+}
+static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
+{
+  inner_RaiseOrLowerWindow(t, do_lower, True);
 }
 /*
    Raise t and its transients to the top of its layer.

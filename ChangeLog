@@ -1,5 +1,8 @@
 1999-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* **/*: Applied transient handling patches by Mark Rainford.
+	Man page and ChangeLog entries are still missing
+
 	* configure.in: changed version to 2.3.8
 
 1999-09-01  Hippo
