@@ -81,6 +81,7 @@ Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
   Colormap cmap;
   GContext drawGContext, foreGContext, relGContext, shadGContext;
   Font fid;
+  XFontStruct *font;
 
   /* ignore it if not using fvwm's graphics */
   if (!G->useFvwmLook)
@@ -131,9 +132,16 @@ Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
 
   /* get the font, this isn't as dirty as the GC stuff as X provides a way to
    * share font id's */
+  /* this can fail if fvwm is doing lots of DefaultFont commands e.g.
+   * during a re-read of the configuration files so hang on to the old one
+   * if (fid) as been freed rather than store a NULL pointer.
+   * Return False in this case so the module doesn't redraw with incorrect font
+   * info.  Another will be coming along very soon which will fix things up */
+  if (NULL == (font = XQueryFont(dpy, fid)))
+    return False;
   if (G->font)
     XFreeFontInfo(NULL, G->font, 1);
-  G->font = XQueryFont(dpy, fid);
+  G->font = font;
 
   return True;
 }
