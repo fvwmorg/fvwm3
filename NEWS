@@ -62,6 +62,8 @@ Changes in alpha release 2.5.3 (not released yet)
 * Removed the styles MouseFocusClickIgnoreMotion and
   MouseFocusClickIgnoreMotionOff again.
 
+* Many new focus policy styles "FP..." and "!FP...".
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

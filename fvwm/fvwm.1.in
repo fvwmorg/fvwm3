@@ -3901,6 +3901,7 @@ passed to WindowList can be
 .IR NoDeskNum,
 .IR NoNumInDeskTitle ,
 .IR NoCurrentDeskTitle ,
+.IR "MaxLabelLength length",
 .IR TitleForAllDesks ,
 .IR "Function funcname" ,
 .IR "Desk desknum" ,
@@ -3995,6 +3996,20 @@ option removes this title.
 .I TitleForAllDesks
 causes fvwm to add a menu title with the desk name and/or number
 before each group of windows on the same desk.
+With
+.IR NoLayer ,
+the layer of the window is not diplayed.  The options
+.IR ShowPage ", " ShowPageX " and " ShowPageY
+enable displaying the page of the window rounded multiples of the
+display size.
+With
+.IR ShowScreen ,
+the window's Xinerama screen number is displayed.
+
+The
+.I MaxLabelLength
+option takes the number of characters to print as its argument.
+No more than that many characters of the window name are visible.
 
 If you wanted to use the
 .B WindowList
@@ -5477,10 +5492,39 @@ slashes ('/').  The last style in these groups is the default.
 .IR ClickToFocusPassesClickOff " / " ClickToFocusPassesClick ,
 .IR ClickToFocusRaisesOff " / " ClickToFocusRaises ,
 .IR MouseFocusClickRaises " / " MouseFocusClickRaisesOff ,
-.\" .IR MouseFocusClickIgnoreMotion " / " MouseFocusClickIgnoreMotionOff,
-.IR StartsLowered " / " StartsRaised ,
 .IR GrabFocus " / " GrabFocusOff ,
 .IR GrabFocusTransientOff " / " GrabFocusTransient ,
+.IR FPFocusClickButtons ,
+.IR FPFocusClickModifiers ,
+.IR !FPSortWindowlistByFocus " / " FPSortWindowlistByFocus,
+.IR FPClickRaisesFocused " / " !FPClickRaisesFocused,
+.IR FPClickDecorRaisesFocused " / " !FPClickDecorRaisesFocused,
+.IR FPClickIconRaisesFocused " / " !FPClickIconRaisesFocused,
+.IR !FPClickRaisesUnfocused " / " FPClickRaisesUnfocused,
+.IR FPClickDecorRaisesUnfocused " / " !FPClickDecorRaisesUnfocused,
+.IR FPClickIconRaisesUnfocused " / " !FPClickIconRaisesUnfocused,
+.IR FPClickToFocus " / " !FPClickToFocus,
+.IR FPClickDecorToFocus " / " !FPClickDecorToFocus,
+.IR FPClickIconToFocus " / " !FPClickIconToFocus,
+.IR !FPEnterToFocus " / " FPEnterToFocus,
+.IR !FPLeaveToUnfocus " / " FPLeaveToUnfocus,
+.IR !FPFocusByProgram " / " FPFocusByProgram,
+.IR !FPFocusByFunction " / " FPFocusByFunction,
+.IR FPFocusByFunctionWarpPointer " / " !FPFocusByFunctionWarpPointer,
+.IR FPLenient " / " !FPLenient,
+.IR !FPPassFocusClick " / " FPPassFocusClick,
+.IR !FPPassRaiseClick " / " FPPassRaiseClick,
+.IR FPIgnoreFocusClickMotion " / " !FPIgnoreFocusClickMotion,
+.IR FPIgnoreRaiseClickMotion " / " !FPIgnoreRaiseClickMotion,
+.IR !FPAllowFocusClickFunction " / " FPAllowFocusClickFunction,
+.IR !FPAllowRaiseClickFunction " / " FPAllowRaiseClickFunction,
+.IR FPGrabFocus " / " !FPGrabFocus,
+.IR !FPGrabFocusTransient " / " FPGrabFocusTransient,
+.IR FPOverrideGrabFocus " / " !FPOverrideGrabFocus,
+.IR FPReleaseFocus " / " !FPReleaseFocus,
+.IR !FPReleaseFocusTransient " / " FPReleaseFocusTransient,
+.IR FPOverrideReleaseFocus " / " !FPOverrideReleaseFocus,
+.IR StartsLowered " / " StartsRaised ,
 .IR IgnoreRestack " / " AllowRestack ,
 .IR FixedPosition " / " VariablePosition ,
 .IR FixedUSPosition " / " VariableUSPosition ,
@@ -5538,8 +5582,179 @@ style
 never receives the focus.  This is useful for modules like
 .BR FvwmButtons ,
 for example.
+Note:  Once any of the "FP..." styles has been used, the defaults
+that come with the basic focus policies are not restored when the
+latter are used again.  For example, once !FPGrabFocus has been
+used, using ClickToFocus does not restore FPGrabFocus.
 
 The focus model can be augmented with several additional options.
+In fvwm-2.5.3 and later, there is a large number of advanced
+option beginning with "FP" or "!FP".  These options shall replace
+the older options one day and are described first.  Using any of
+this new options may limit compatibility with older releases.  In
+general, options beginning with "FP" turn a feature on, while
+those beginning with "!FP" turn it off.
+
+.B Focusing the window
+
+With
+.IR FPEnterToFocus ,
+when the pointer enters the window it receives focus.
+
+With
+.IR FPLeaveToUnfocus
+the window loses focus when the pointer leaves it.
+
+With
+.IR FPClickToFocus ", " FPClickDecorToFocus " or "
+.IR FPClickIconToFocus ,
+the window reveices focus when the inside of the window or the
+decorations or its icon is clicked.
+
+The
+.IR FPFocusByProgram
+style allows windows to take the focus themselves.
+
+The
+.IR !FPFocusByFunction
+style forbids that the window receives the focus via the
+.BR Focus " and " FlipFocus
+commands.
+
+The
+.IR FPFocusByFunctionWarpPointer
+style controls if the pointer is warped to the selected window
+when the
+.B Focus
+command is used.
+
+.I FPLenient
+instructs fvwm to ignore the convention in the
+.SM ICCCM
+which states that if an application sets the input field of the
+wm_hints structure to False, then it never wants the window
+manager to give it the input focus.  The only application that we
+know of which needs this is sxpm, and that is a silly bug with a
+trivial fix and has no overall effect on the program anyway.
+Rumor is that some older applications have problems too.
+
+The
+.IR FPFocusClickButtons
+style takes a list of mouse buttons that can be clicked to focus
+or raise a window when the appropriate style is used.  The default
+is to use the first three buttons ("123").
+
+The
+.IR FPFocusClickModifiers
+style takes a list of modifier keys just like the
+.B Key
+command.  The exact combination of modifier keys must be pressed
+for the click to focus or raise a window to work.  The default is
+to use no modifiers ("N").
+
+With the
+.IR FPPassFocusClick
+style, the click that was used to focus the window is passed to
+the application.
+
+With the
+.IR FPAllowFocusClickFunction
+style, the click that was used to focus the window can also
+trigger a normal action that was bound to the window with the
+.B Mouse
+command).
+
+If the
+.IR FPIgnoreFocusClickMotion
+style is used, clicking in a window and then dragging the pointer
+with the button held down does not count as the click to focus the
+window.  Instead, the application processes these events
+normally.  This is useful to select text in a terminal window with
+the mouse without raising the window.  However, mouse bindings on
+the client window are not guaranteed to work anymore (see
+.B Mouse
+command.  Note that this style forces that the initial click is
+passed to the application.  The distance that the pointer must be
+moved to trigger this is controlled by the
+.B MoveThreshold
+command.
+
+The
+.IR FPSortWindowlistByFocus " and " !FPSortWindowlistByFocus
+styles control if the internal window list is sorted in the order
+the windows were focused or in the order they were created.  The
+latter is the default for
+.IR ClickToFocus " and " SloppyFocus .
+
+
+.B Clicking the window to raise
+
+The styles
+.IR FPClickRaisesFocused ", " FPClickDecorRaisesFocused " and "
+.IR FPClickIconRaisesFocused
+allow to raise the window when the interior or the decorations or
+the icon of the window is clicked while the window is already
+focused.
+
+The styles
+.IR FPClickRaisesUnfocused ", " FPClickDecorRaisesUnfocused " and "
+.IR FPClickIconRaisesUnfocused
+allow to raise the window when the interior or the decorations or
+the icon of the window is clicked while the window is not yet
+focused.
+
+With the
+.IR FPPassRaiseClick
+style, the click that was used to raise the window is passed to
+the application.
+
+With the
+.IR FPAllowRaiseClickFunction
+style, the click that was used to raise the window can also
+trigger a normal action that was bound to the window with the
+.B Mouse
+command.
+
+.IR FPIgnoreRaiseClickMotion
+style is used, clicking in a window and then dragging the pointer
+with the button held down does not count as the click to raise the
+window.  Instead, the application processes these events
+normally.  This is useful to select text in a terminal window with
+the mouse without raising the window.  However, mouse bindings on
+the client window are not guaranteed to work anymore (see
+.B Mouse
+command.  Note that this style forces that the initial click is
+passed to the application.  The distance that the pointer must be
+moved to trigger this is controlled by the
+.B MoveThreshold
+command.
+
+.B Grabbing the focus when a new window is created
+
+New normal or transient windows with the
+.IR FPGrabFocus " or " FPGrabFocusTransient
+style automatically receive the focus when they are created.
+.I FPGrabFocus
+is the default for windows with the
+.I ClickToFocus
+style.
+
+The
+.I OverrideGrabFocus
+style instructs fvwm to never take away the focus from such a
+window via the
+.IR GrabFocus " or " GrabFocusTransient
+styles.  This can be useful if you like to have transient windows
+receive the focus immediately, for example in a web browser, but
+not while you are working in a terminal window or a text
+processor.
+
+The above three styles are accompanied by
+.IR FPReleaseFocus ", " FPReleaseFocusTransient " and "
+.IR FPOverrideReleaseFocus .
+These control if the focus is returned to another window when the
+window is close.  Otherwise no window or the window under the
+pointer will receive the focus.
 
 .IR ClickToFocusPassesClickOff " and " ClickToFocusPassesClick
 controls if a mouse click to focus a window using the
@@ -5555,71 +5770,20 @@ Note: in fvwm versions prior to
 .I ClickToFocus
 while the "Mouse..." options applied to windows with a different
 focus policy.  This is no longer the case.
-.\"
-.\" With
-.\" .I MouseFocusClickIgnoreMotion
-.\" the click that would normally raise a window with the
-.\" .I MouseFocusClickRaises
-.\" style is ignored if the pointer moves too far while the button is
-.\" pressed (see
-.\" .B MoveThreshold
-.\" command).  This is useful to select text in a terminal window with
-.\" the mouse without raising the window.  However, mouse bindings on
-.\" the client window are not guaranteed to work anymore (see
-.\" .B Mouse
-.\" command).  If
-.\" .I MouseFocusClickRaisesOff
-.\" is used,
-.\" .I MouseFocusClickIgnoreMotion
-.\" has no meaning.  With
-.\" .I  MouseFocusClickIgnoreMotionOff
-.\" the window is always raised, regardless of pointer motion.
-.\" The defaults are
-.\" .IR ClickToFocusPassesClick ,
-.\" .IR ClickToFocusRaises ,
-.\" .IR MouseFocusClickRaisesOff " and " MouseFocusClickIgnoreMotionOff .
 
+The old
 .I GrabFocus
-causes a newly mapped window to grab the focus, while
-.I GrabFocusOff
-turns this off.
-.I GrabFocus
-is the default for
-.I ClickToFocus
-windows and
-.I GrabFocusOff
-is the default for
-.IR MouseFocus " and " SloppyFocus
-windows.  Note that this option is switched back to the default
-every time you change the focus policy.  You have to use it after
-the initial
-.IR ClickToFocus / MouseFocus / SloppyFocus .
-This style does not apply to transient windows.  The
-.IR GrabFocusTransient " and " GrabFocusTransientOff
-styles are responsible for this behavior.  By default,
+style is equivalent to using
+.IR FPGrabFocus " + " FPReleaseFocus .
+
+The old
 .I GrabFocusTransient
-is turned on.
-
-The
-.I OverrideGrabFocus
-instructs fvwm to never take away the focus from such a window
-with the
-.IR GrabFocus " or " GrabFocusTransient
-styles.  This can be useful if you like to have transient windows
-receive the focus immediately, for example in a web browser, but
-not while you are working in a terminal window or a text
-processor.  To restore the default behaviour, use
-.IR AllowGrabFocus .
+style is equivalent to using
+.IR FPGrabFocusTransient " + " FPReleaseFocusTransient .
 
 .I Lenience
-instructs fvwm to ignore the convention in the
-.SM ICCCM
-which states that if an application sets the input field of the
-wm_hints structure to False, then it never wants the window
-manager to give it the input focus.  The only application that we
-know of which needs this is sxpm, and that is a silly bug with a
-trivial fix and has no overall effect on the program anyway.
-Rumor is that some older applications have problems too.
+is equivalent to the new style
+.IR FPLenient .
 
 .\" +++++++++++++++ styles affecting the window title
 .TP

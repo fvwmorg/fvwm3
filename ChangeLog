@@ -1,3 +1,8 @@
+2002-08-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.1.in:
+	describe new focus policy styles
+
 2002-08-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (merge_styles):
