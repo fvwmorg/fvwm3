@@ -162,7 +162,7 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
     float xstep, ystep, wstep, hstep;
     XPoint points[5];
     float angle, angle_finite, a, d;
-    
+
     x += w/2;
     y += h/2;
     fx += fw/2;
@@ -208,8 +208,8 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
         d = sqrt((cw/2)*(cw/2)+(ch/2)*(ch/2));
         if (angle >= angle_finite)
 	    break;
-    }		
-    XFlush(dpy);    
+    }
+    XFlush(dpy);
 }
 
 /*
@@ -225,32 +225,32 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
   float cx, cy, cw, ch;
   float xstep, ystep, wstep, hstep;
   XPoint points[5];
-  
+
   float distortx;
   float distortch;
   float midy;
-  
+
   float angle, angle_finite;
-  
+
   xstep = (float) (fx - x) / Animate.iterations;
   ystep = (float) (fy - y) / Animate.iterations;
   wstep = (float) (fw - w) / Animate.iterations;
   hstep = (float) (fh - h) / Animate.iterations;
-  
+
   cx = (float) x;
   cy = (float) y;
   cw = (float) w;
   ch = (float) h;
-  
+
   angle_finite = 2 * AS_PI * Animate.twist;
   for (angle = 0;; angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
     if (angle > angle_finite)
       angle = angle_finite;
-    
+
     distortx = (cw / 10) - ((cw / 5) * sin(angle));
     distortch = (ch / 2) * cos(angle);
     midy = cy + (ch / 2);
-    
+
     points[0].x = cx + distortx;
     points[0].y = midy - distortch;
     points[1].x = cx + cw - distortx;
@@ -261,7 +261,7 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
     points[3].y = points[2].y;
     points[4].x = points[0].x;
     points[4].y = points[0].y;
-    
+
     XGrabServer(dpy);
     XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
     XFlush(dpy);
@@ -351,7 +351,7 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
     float cx, cy, cw, ch;
     float xstep, ystep, wstep, hstep;
     int i;
-    
+
     xstep = (float)(fx-x)/Animate.iterations;
     ystep = (float)(fy-y)/Animate.iterations;
     wstep = (float)(fw-w)/Animate.iterations;
@@ -372,8 +372,8 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
 	cy+=ystep;
 	cw+=wstep;
 	ch+=hstep;
-    }		
-    XFlush(dpy);    
+    }
+    XFlush(dpy);
 }
 
 /*
@@ -510,7 +510,7 @@ static void AnimateResizeLines(int x, int y, int w, int h,
     XSegment incr[4];                  /* x/y increments */
   } Endpoints;
   Endpoints ends[2];
-  
+
   /* define the array occurances */
 #define UR seg[0]
 #define UL seg[1]
@@ -597,7 +597,7 @@ ant_ctr %d\n",
     XUngrabServer(dpy);                 /* end grab for whole animation */
     myaprintf((stderr,"Did ungrab\n"));
   }
-  XFlush(dpy);    
+  XFlush(dpy);
   myaprintf((stderr,"Done animating\n"));
 }
 
@@ -623,7 +623,7 @@ static void AnimateResizeNone(int x, int y, int w, int h,
 static void AnimateClose(int x, int y, int w, int h)
 {
     int i, step;
-    
+
     if (h>4) {
 	step = h*4/Animate.iterations;
 	if (step==0) {
@@ -649,7 +649,7 @@ static void AnimateClose(int x, int y, int w, int h)
 	XDrawRectangle(dpy, root, DrawGC, x, y, i, 2);
 	x+=step/2;
     }
-    usleep(100000);    
+    usleep(100000);
     XFlush(dpy);
 }
 #endif
@@ -685,10 +685,10 @@ int main(int argc, char **argv) {
     exit(1);
   }
   signal (SIGPIPE, DeadPipe);		/* Dead pipe == Fvwm died */
-    
+
   Channel[0] = atoi(argv[1]);
   Channel[1] = atoi(argv[2]);
-    
+
   dpy = XOpenDisplay("");
   if (dpy==NULL) {
     fprintf(stderr,"%s: could not open display\n",MyName+1);
@@ -841,7 +841,7 @@ static void Loop() {
 }
 
 /*****************************************************************************
- * 
+ *
  * This routine is responsible for reading and parsing the config file
  * Used FvwmEvent as a model.
  *
@@ -907,7 +907,7 @@ void ParseConfigLine(char *buf) {
           return;
         }
       }
-          
+
       switch (e - (char**)table) {
       case Stop_arg:                    /* Stop command */
         if (running == 'y') {           /* if not a stored command */
@@ -928,7 +928,7 @@ void ParseConfigLine(char *buf) {
           Animate.color = 0;            /* show its gone */
         }
         if ((strcasecmp(q,"None") != 0) /* If not color "none"  */
-            && (strcasecmp(q,"Black^White") != 0) 
+            && (strcasecmp(q,"Black^White") != 0)
             && (strcasecmp(q,"White^Black") != 0)) {
           Animate.color = (char *)strdup(q); /* make copy of name */
         }
@@ -1014,7 +1014,7 @@ static void CreateDrawGC() {
       } else {
         fprintf(stderr,"%s: could not allocate color '%s'\n",
                 MyName+1,Animate.color);
-      }	    
+      }
     } else {
       fprintf(stderr,"%s: could not parse color '%s'\n",
               MyName+1,Animate.color);
@@ -1140,7 +1140,7 @@ static void SaveConfig() {
      read.c, right now, this logic only works well if fvwm is started
      from the users home directory.
   */
-  sprintf(filename,".%s",MyName+1);
+  sprintf(filename,"%s%s",getenv("FVWM_USERHOME"),MyName+1);
   config_file = fopen(filename,"w");
   if (config_file == NULL) {
     sprintf(msg,

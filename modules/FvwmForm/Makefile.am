@@ -15,13 +15,21 @@ FvwmTalk:
 
 ## NB: Neither _MANS nor _DATA are included by default in
 ## distributions! 
-EXTRA_DIST = $(man_MANS) $(config_DATA) Changes
+EXTRA_DIST = $(man_MANS) Changes \
+ FormFvwmSetup.in    \
+ FormFvwmForm.       \
+ FormFvwmCapture.    \
+ FormFvwmQuitVerify. \
+ FormFvwmRlogin.     \
+ FormFvwmTalk.       \
+ FormFvwmTalkHelp.
 
 FvwmForm_SOURCES = FvwmForm.c FvwmForm.h ReadXServer.c ParseCommand.c
 
 FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 config_DATA =        \
+ FormFvwmSetup.      \
  FormFvwmForm.       \
  FormFvwmCapture.    \
  FormFvwmQuitVerify. \
@@ -36,3 +44,8 @@ LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
+
+FormFvwmSetup.: FormFvwmSetup.in
+	rm -f $@
+	sed -e 's,xFVWM_CONFIGDIRx,$(FVWM_CONFIGDIR),' $< > $@-t
+	mv $@-t $@

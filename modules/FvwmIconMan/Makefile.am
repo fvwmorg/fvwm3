@@ -1,9 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
+
 module_PROGRAMS = FvwmIconMan
 man_MANS = FvwmIconMan.1
-EXTRA_DIST = $(man_MANS) CHANGES
+EXTRA_DIST = $(man_MANS) CHANGES ConfigFvwmIconMan
+
+config_DATA = \
+  ConfigFvwmIconMan
 
 FvwmIconMan_SOURCES = FvwmIconMan.c FvwmIconMan.h debug.c debug.h \
 	debuglevels.h functions.c fvwm.c globals.c readconfig.c \

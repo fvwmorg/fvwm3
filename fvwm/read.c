@@ -40,6 +40,18 @@ static const char *read_system_rc_cmd="Read system"FVWMRC;
 /*
  * func to do actual read/piperead work
  * Arg 1 is file name to read.
+ *   If the filename starts with "/", just read it.
+ *   Otherwise we need the user home directory which is either
+ *   "." or ".fvwm/".
+ *   If the file starts with a dot, and  no ".fvwm" dir, read
+ *     .x, sysconfdir/x.
+ *   If the file starts with a dot, and  a ".fvwm" dir, read
+ *     .fvwm/x, sysconfdir/x, .x.
+ *   If the file doesn't start with a dot, and no ".fvwm" dir, read
+ *     x, sysconfdir/x.
+ *   If the file doesn't start with a dot, and a ".fvwm" dir, read
+ *     .fvwm/x, sysconfdir/x.
+ *
  * Arg 2 (optional) "Quiet" to suppress message on missing file.
  */
 static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
@@ -51,6 +63,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *rest,*tline,line[1024];
   FILE *fd;
   int thisfileno;
+  int dot_flipper;
   char missing_quiet;                   /* missing file msg control */
   char *cmdname;
 
@@ -66,6 +79,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
   thisfileno = numfilesread;
   numfilesread++;
+  dot_flipper = 0;                      /* init */
 
 /*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
 
@@ -86,41 +100,41 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   } /* end there is a second arg */
 
   filename = ofilename;
+
 /*  fvwm_msg(INFO, cmdname,"trying '%s'",filename); */
 
-  if (piperead)
-    fd = popen(filename,"r");
-  else
+  if (piperead) {                       /* if pipe */
+    fd = popen(filename,"r");           /* popen */
+  } else if (ofilename[0] == '/') {     /* if absolute path */
+    fd = fopen(filename,"r");           /* fopen the name given */
+  } else {                              /* else its a relative path */
+    Home = user_home_ptr;               /* try user home first */
+    home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
+    strcpy(home_file,Home);
+    if (ofilename[0] == '.') {          /* if filename already has dot */
+      dot_flipper = 1;                  /* don't add another one */
+    }
+    strcat(home_file,ofilename+dot_flipper);
+    filename = home_file;
     fd = fopen(filename,"r");
-
-  if (!piperead)
-  {
-    if (fd == 0 && ofilename[0] != '/')
-      {
-	/* find the home directory to look in */
-	Home = getenv("HOME");
-	if (Home == NULL)
-	  Home = ".";
-	home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
-	strcpy(home_file,Home);
-	strcat(home_file,"/");
-	strcat(home_file,ofilename);
-	filename = home_file;
-	fd = fopen(filename,"r");
-	if(fd == 0)
-	  {
-	    if((filename != NULL)&&(filename!= ofilename))
-	      free(filename);
-	    /* find the home directory to look in */
-	    Home = FVWM_CONFIGDIR;
-	    home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
-	    strcpy(home_file,Home);
-	    strcat(home_file,"/");
-	    strcat(home_file,ofilename);
-	    filename = home_file;
-	    fd = fopen(filename,"r");
-	  }
-      }
+    if(fd == 0) {                       /* if not in users home */
+      if((filename != NULL)&&(filename!= ofilename))
+          free(filename);
+      Home = FVWM_CONFIGDIR;          /* where fvwm is installed */
+      home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
+      strcpy(home_file,Home);
+      strcat(home_file,"/");
+      strcat(home_file,ofilename+dot_flipper);
+      filename = home_file;
+      fd = fopen(filename,"r");
+      /* This next bit is for maximum backward compatibility */
+      if (fd == 0 &&                    /* file still not found */
+          dot_flipper == 1  &&          /* and we are dot flipping */
+          missing_quiet == 'n'  &&      /* and its not a quiet read */
+          strcmp(user_home_ptr, ".") != 0) { /* and using a subdirectory */
+        fd = fopen(ofilename,"r");      /* try the actual name as is */
+      } /* end try .x */
+    } /* end, not in users home dir */
   }
 
   if(fd == NULL)
@@ -128,9 +142,13 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     if (missing_quiet == 'n') {         /* if quiet option not on */
       if (piperead)
 	fvwm_msg(ERR, cmdname, "command '%s' not run", ofilename);
+      else if (ofilename[0] == '/')
+	fvwm_msg(ERR, cmdname,
+		 "file '%s' not found.", filename);
       else
 	fvwm_msg(ERR, cmdname,
-		 "file '%s' not found in $HOME or "FVWM_CONFIGDIR, ofilename);
+		 "file '%s' not found, looked for %s%s and %s", 
+                 ofilename+dot_flipper,user_home_ptr,ofilename,filename);
     } /* end quiet option not on */
     if((ofilename != filename)&&(filename != NULL))
     {

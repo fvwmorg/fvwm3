@@ -389,6 +389,7 @@ extern Boolean ShapesSupported;
 extern Window JunkRoot, JunkChild;
 extern int JunkX, JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
+extern char *user_home_ptr;
 
 extern Atom _XA_MIT_PRIORITY_COLORS;
 extern Atom _XA_WM_CHANGE_STATE;

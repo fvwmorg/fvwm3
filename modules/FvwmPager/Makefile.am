@@ -1,9 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
+
 module_PROGRAMS = FvwmPager
 man_MANS = FvwmPager.1
-EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = $(man_MANS) ConfigFvwmPager
+
+config_DATA = \
+  ConfigFvwmPager
 
 FvwmPager_SOURCES = FvwmPager.c FvwmPager.h x_pager.c
 FvwmPager_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a

@@ -1,9 +1,13 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
+
 module_PROGRAMS = FvwmButtons
 man_MANS = FvwmButtons.1
-EXTRA_DIST = $(man_MANS) CHANGES samplebuttonrc BUGS
+EXTRA_DIST = $(man_MANS) CHANGES samplebuttonrc BUGS ConfigFvwmButtons
+
+config_DATA = ConfigFvwmButtons
 
 FvwmButtons_SOURCES = FvwmButtons.c FvwmButtons.h button.c button.h \
 	draw.c draw.h icons.c icons.h misc.c misc.h output.c parse.c \

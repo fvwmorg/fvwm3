@@ -37,7 +37,7 @@ DestroyModuleConfig FormFvwmForm.*
 *FvwmFormDefaultBack "'$(Back)'"\n\
 *FvwmFormDefaultItemFore "'$(ItemFore)'"\n\
 *FvwmFormDefaultItemBack "'$(ItemBack)'"\
-" > .FvwmForm
+" > ${FVWM_USERHOME}FvwmForm
 *FormFvwmForm.Command *FvwmFormDefaultRead n
 *FormFvwmForm.Command Module FvwmForm FormFvwmForm.
 *FormFvwmForm.Button       restart   "F3 - Reset" F3

@@ -1,6 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
 
 module_PROGRAMS = FvwmTaskBar
 
@@ -11,7 +12,10 @@ FvwmTaskBar_SOURCES =  FvwmTaskBar.c List.c ButtonArray.c Mallocs.c	\
 FvwmTaskBar_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmTaskBar.1
-EXTRA_DIST = $(man_MANS) fvwm2.README minimail.xbm
+EXTRA_DIST = $(man_MANS) fvwm2.README minimail.xbm ConfigFvwmTaskBar
+
+config_DATA = \
+  ConfigFvwmTaskBar
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
 	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)

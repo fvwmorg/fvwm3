@@ -1,0 +1,25 @@
+# This file gets installed in the "sysconfdir" during fvwm2
+# installation.  Do not remove or change this file.
+
+#  Modification History
+
+#  Created on 03/21/99 by DanEspen (dje):
+#  - FvwmDefaults file.  Contains fvwm2 defaults, and enough to help out
+#  the new user with no configuration file.
+#  This picks up from where the builtin table in fvwm.c SetUpRCDefaults ends.
+
+# Set at least 2 root keys to bring up the builtin menu:
+Key Help R A Popup MenuFvwmRoot
+Key F1 R A Popup MenuFvwmRoot
+
+# Needed by the builtin WindowList command, this should match the manpage.
+AddToFunc WindowListFunc "I" WindowId $0 Iconify -1
++ "I" WindowId $0 FlipFocus
++ "I" WindowId $0 Raise
++ "I" WindowId $0 WarpToWindow 5p 5p
+# Also in fvwm2 man page.
+AddToFunc UrgencyFunc "I" Iconify -1
++ "I" FlipFocus
++ "I" Raise
++ "I" WarpToWindow 5p 5p
+AddToFunc UrgencyDoneFunc "I" Nop

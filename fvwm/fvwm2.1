@@ -189,12 +189,12 @@ XTerm*Page: 3 2 1
 .SH INITIALIZATION
 During initialization, \fIfvwm2\fP will search for a configuration file
 which describes key and button bindings, and a few other things.  The
-format of these files will be described later.  First, \fIfvwm2\fP will
-search for a file named .fvwm2rc in the user's home directory, then in
-${sysconfdir} (typically /usr/local/etc).
-Failing that, it will look for system.fvwm2rc in ${sysconfdir} for
-system-wide defaults.  If that file is not found, \fIfvwm2\fP will be
-basically useless.
+format of these files will be described later.
+\fIFvwm2\fP first searches for configurations files using the command
+"Read .fvwm2rc".  This will look for $HOME/.fvwm2rc or $HOME/.fvwm/fvwm2rc,
+as described in "read" below.  If a configuration file is not found,
+and mouse button or the "Help" of "F1" keys on the root window will
+bring up menus and forms that will create a starting configuration file.
 
 \fIFvwm2\fP will set two environment variables which will be inherited
 by its children.  These are $DISPLAY which describes the display on
@@ -2413,7 +2413,16 @@ Alternately raises and lowers a window.
 Causes fvwm2 to read commands from the file named \fIfilename\fP.
 If the option following the filename is "Quiet", no message is
 produced if the file is not found.
+If the file name does not begin with a slash, fvwm2 looks
+in the users configuration directory, then the system configuration
+directory.
 
+If the environment variable, FVWM_USERHOME is exported, before fvwm2
+starts, fvwm2 looks there first.  Otherwise, if the directory
+$HOME/.fvwm exists, fvwm2 will remove any leading dot from the filename
+and read the file from the subdirectory.  Otherwise the file is read
+from $HOME.  If the file is still not found, the file is read from
+the system configuration directory with the leading dot removed.
 
 .IP "Recapture [ \fIWindow\fP ]"
 Causes fvwm2 to recapture all of its windows.  This ensures that the

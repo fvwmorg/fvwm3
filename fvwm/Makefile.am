@@ -1,9 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
+configdir = @FVWM_CONFIGDIR@
 bin_PROGRAMS = fvwm2
 
-EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = $(man_MANS) $(config_DATA)
 man_MANS = fvwm2.1
+
+config_DATA =        \
+  ConfigFvwmDefaults \
+  ConfigFvwmSetup
 
 if GNOME
 GNOME = gnome.c
@@ -58,4 +63,3 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libs $(xpm_CFLAGS) $(X_CFLAGS)
 
 AM_CFLAGS = -DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\"     \
 	-DFVWM_CONFIGDIR=\"$(FVWM_CONFIGDIR)\"
-

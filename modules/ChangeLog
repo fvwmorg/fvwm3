@@ -1,3 +1,44 @@
+Sun Apr  4 12:11:38 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/FormFvwmForm.: Save config file in users config dir.
+
+	* FvwmAnimate/FvwmAnimate.c: Save config file in users config dir.
+
+	* FvwmWinList/Makefile.am (config_DATA): New file, ConfigFvwmWinList.
+
+	* FvwmWinList/ConfigFvwmWinList: New file, config data for FvwmWinList.
+
+	* FvwmTaskBar/Makefile.am (config_DATA): New file, ConfigFvwmTaskBar.
+
+	* FvwmTaskBar/ConfigFvwmTaskBar: New file, config data for FvwmTaskBar.
+
+	* FvwmScroll/Makefile.am (config_DATA): New file, ConfigFvwmScroll.
+
+	* FvwmScroll/ConfigFvwmScroll: New file, config data for FvwmScroll.
+
+	* FvwmPager/ConfigFvwmPager: New file, config data for FvwmPager.
+
+	* FvwmPager/Makefile.am (config_DATA): New file, ConfigFvwmPager.
+
+	* FvwmIdent/ConfigFvwmIdent: New file, config data for FvwmIdent.
+
+	* FvwmIdent/Makefile.am (config_DATA): New file, ConfigFvwmIdent.
+
+	* FvwmIconMan/ConfigFvwmIconMan: New file, config data for IconMan.
+
+	* FvwmIconBox/Makefile.am (config_DATA): New file, ConfigFvwmIconBox.
+
+	* FvwmIconBox/ConfigFvwmIconBox: New file, config data for IconBox.
+
+	* FvwmBacker/ConfigFvwmBacker: New file, config data for FvwmBacker.
+
+	* FvwmBacker/Makefile.am (config_DATA): Added ConfigFvwmBacker.
+
+	* FvwmForm/FormFvwmSetup.in: New form, creates starting config.
+
+	* FvwmForm/Makefile.am (config_DATA): Added FormFvwmSetup.in, new
+	form for creating new users config files.
+
 1999-04-04  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmM4/FvwmM4.c (m4_defs):

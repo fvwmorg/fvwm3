@@ -19,6 +19,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>                  /* for stat() */
+#include <sys/stat.h>                   /* for stat() */
 #include <pwd.h>
 
 #include "fvwm.h"
@@ -125,6 +127,7 @@ extern XEvent Event;
 Bool Restarting = False;
 int fd_width, x_fd;
 char *display_name = NULL;
+char *user_home_ptr;
 
 typedef enum { FVWM_RUNNING=0, FVWM_DONE, FVWM_RESTART } FVWM_STATE;
 
@@ -160,6 +163,7 @@ int main(int argc, char **argv)
   Bool replace_wm = False;
   Bool option_error = FALSE;
   int x, y;
+  struct stat statbuf;
 
   g_argv = argv;
   g_argc = argc;
@@ -169,7 +173,17 @@ int main(int argc, char **argv)
   /* Put the default module directory into the environment so it can be used
      later by the config file, etc.  */
   putenv("FVWM_MODULEDIR=" FVWM_MODULEDIR);
-
+#define DIR_URW (S_IFDIR | S_IWUSR | S_IRUSR)
+  /* Note the way this next bit uses the current directory */
+  user_home_ptr = getenv("FVWM_USERHOME");
+  if (user_home_ptr == NULL) {          /* if not already set */
+    if ((stat(".fvwm",&statbuf) == 0) && /* if ".fvwm" exists */
+        ((statbuf.st_mode & DIR_URW) == DIR_URW)) { /* and its a good dir */
+      user_home_ptr = ".fvwm/";         /* use it  */
+    } else {                            /* else it doesnt exist */
+    user_home_ptr = ".";                /* use a hidden file */
+    } /* end exist */
+  } /* end not already set */
   for (i = 1; i < argc; i++)
   {
     if (strncasecmp(argv[i],"-debug",6)==0)
@@ -821,19 +835,12 @@ void SetRCDefaults()
     "TitleStyle Centered -- Raised",
     "Style \"*\" Color lightgrey/dimgrey, Title, MouseFocus, GrabFocusOff",
     "Style \"*\" RandomPlacement, SmartPlacement",
-    "AddToMenu builtin_menu \"Builtin Menu\" Title",
-    "+ \"XTerm\" Exec xterm",
-    "+ \"Exit FVWM\" Quit",
-    "Mouse 1 R N Popup builtin_menu",
-    "AddToFunc WindowListFunc \"I\" WindowId $0 Iconify -1",
-    "+ \"I\" WindowId $0 FlipFocus",
-    "+ \"I\" WindowId $0 Raise",
-    "+ \"I\" WindowId $0 WarpToWindow 5p 5p",
-    "AddToFunc UrgencyFunc \"I\" Iconify -1",
-    "+ \"I\" FlipFocus",
-    "+ \"I\" Raise",
-    "+ \"I\" WarpToWindow 5p 5p",
-    "AddToFunc UrgencyDoneFunc \"I\" Nop",
+    "AddToMenu MenuFvwmRoot \"Builtin Menu\" Title",
+    "+ \"&1. XTerm\" Exec xterm",
+    "+ \"&2. Setup Form\" Module FvwmForm FormFvwmSetup.",
+    "+ \"&X. Exit FVWM\" Quit",
+    "Mouse 0 R N Popup MenuFvwmRoot",
+    "Read "FVWM_CONFIGDIR"/ConfigFvwmDefaults",
     NULL
   };
   int i=0;
@@ -1614,7 +1621,7 @@ void Done(int restart, char *command)
      /* We currently still need this, since InitVariables
         sets the Restarting flag based on the presence of
         WM_DESKTOP on root. This could be changed to eg
-        match restore_filename against ".fvwm_restart". 
+        match restore_filename against ".fvwm_restart".
         Then SaveDesktopState and all places where fvwm
         deals with WM_DESKTOP could be eliminated. */
      SaveDesktopState();		/* I wonder why ... */
@@ -1649,7 +1656,7 @@ void Done(int restart, char *command)
       }
       if(strstr(command,"fvwm")!= NULL)
         my_argv[i++] = "-s";
-      
+
       my_argv[i++] = "-restore";
       my_argv[i++] = filename;
 

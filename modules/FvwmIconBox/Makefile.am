@@ -1,9 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
+
 module_PROGRAMS = FvwmIconBox
 man_MANS = FvwmIconBox.1
-EXTRA_DIST = $(man_MANS) CHANGES COPYRIGHT TO-DO
+EXTRA_DIST = $(man_MANS) CHANGES COPYRIGHT TO-DO ConfigFvwmIconBox
+
+config_DATA = \
+  ConfigFvwmIconBox
 
 FvwmIconBox_SOURCES = FvwmIconBox.c FvwmIconBox.h icons.c
 FvwmIconBox_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a

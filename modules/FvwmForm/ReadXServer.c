@@ -80,8 +80,8 @@ void ReadXServer ()
       case Expose:
 	RedrawFrame();
 	if (CF.grab_server && !CF.server_grabbed) {
-	  if (GrabSuccess == 
-	      XGrabPointer(dpy, CF.frame, True, 0, 
+	  if (GrabSuccess ==
+	      XGrabPointer(dpy, CF.frame, True, 0,
 			   GrabModeAsync, GrabModeAsync,
 			   None, None, CurrentTime))
 	    CF.server_grabbed = 1;
@@ -175,7 +175,7 @@ void ReadXServer ()
 	  if (CF.rel_cursor < CF.cur_input->input.n) {
 	    CF.rel_cursor++;
 	    CF.abs_cursor++;
-	    if (CF.abs_cursor >= CF.cur_input->input.size && 
+	    if (CF.abs_cursor >= CF.cur_input->input.size &&
 		CF.rel_cursor < CF.cur_input->input.n) {
 	      CF.abs_cursor--;
 	      CF.cur_input->input.left++;
@@ -287,18 +287,18 @@ void ReadXServer ()
 	  else
 	    XDrawImageString(dpy, CF.cur_input->header.win,
                              CF.cur_input->header.dt_ptr->dt_item_GC,
-			     BOX_SPC + TEXT_SPC + 
+			     BOX_SPC + TEXT_SPC +
 			     FontWidth(CF.cur_input->header.dt_ptr->
                                        dt_font_struct)
                              * len,
 			     BOX_SPC + TEXT_SPC +
                              CF.cur_input->header.dt_ptr->dt_font_struct->
                              ascent,
-			     CF.cur_input->input.blanks, 
+			     CF.cur_input->input.blanks,
 			     CF.cur_input->input.size - len);
 	  XDrawImageString(dpy, CF.cur_input->header.win,
                            CF.cur_input->header.dt_ptr->dt_item_GC,
-			   BOX_SPC + TEXT_SPC, 
+			   BOX_SPC + TEXT_SPC,
 			   BOX_SPC + TEXT_SPC +
                            CF.cur_input->header.dt_ptr->dt_font_struct->ascent,
 			   CF.cur_input->input.value +
@@ -329,7 +329,7 @@ void ReadXServer ()
 	    old_item->input.o_cursor = CF.rel_cursor;
 	    CF.cur_input = item;
 	    RedrawItem(old_item, 1);
-	    CF.abs_cursor = (event.xbutton.x - BOX_SPC - 
+	    CF.abs_cursor = (event.xbutton.x - BOX_SPC -
 			  TEXT_SPC +
                           FontWidth(item->header.dt_ptr->dt_font_struct) / 2)
 	      / FontWidth(item->header.dt_ptr->dt_font_struct);
@@ -344,7 +344,7 @@ void ReadXServer ()
 	      CF.rel_cursor = item->input.n;
 	    if (CF.rel_cursor > 0 && CF.rel_cursor == item->input.left)
 	      item->input.left--;
-	    if (CF.rel_cursor < item->input.n && 
+	    if (CF.rel_cursor < item->input.n &&
 		CF.rel_cursor == item->input.left + item->input.size)
 	      item->input.left++;
 	    CF.abs_cursor = CF.rel_cursor - item->input.left;
@@ -358,7 +358,7 @@ void ReadXServer ()
 	  if (item->type == I_BUTTON) {
 	    RedrawItem(item, 1);
 	    XGrabPointer(dpy, item->header.win, False, ButtonReleaseMask,
-			 GrabModeAsync, GrabModeAsync, 
+			 GrabModeAsync, GrabModeAsync,
 			 None, None, CurrentTime);
 	  }
 	  break;
@@ -429,7 +429,7 @@ static void process_regular_char_input(char *buf) {
   char *sp, *dp, *ep;
   if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
     CF.cur_input->input.buf += CF.cur_input->input.size;
-    CF.cur_input->input.value = 
+    CF.cur_input->input.value =
       (char *)realloc(CF.cur_input->input.value,
                       CF.cur_input->input.buf);
   }
@@ -457,7 +457,7 @@ static void process_button_release(XEvent *event, Item *item) {
     XUngrabPointer(dpy, CurrentTime);
   }
   XFlush(dpy);
-  if (event->xbutton.x >= 0 && 
+  if (event->xbutton.x >= 0 &&
       event->xbutton.x < item->header.size_x &&
       event->xbutton.y >= 0 &&
       event->xbutton.y < item->header.size_y) {
@@ -485,7 +485,7 @@ static void process_paste_request (XEvent *event, Item *item) {
                             False,           /* delete */
                             AnyPropertyType, /* request type */
                             &actual_type,
-                            &actual_format, &nitems, &bytes_after, 
+                            &actual_format, &nitems, &bytes_after,
                             (unsigned char **)&data) != Success) {
       return;                           /* didn't work, give up */
     } /* end didn't work */
@@ -564,7 +564,7 @@ static void ResizeFrame (void) {
       delta = width - CF.max_width;     /* new width - curr width */
       curr_x = CF.last_error->header.pos_x + TEXT_SPC;
       curr_end = curr_x + CF.last_error->size_x;
-         
+
     }
   }
 #endif

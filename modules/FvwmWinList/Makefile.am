@@ -1,9 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
+
 module_PROGRAMS = FvwmWinList
 man_MANS = FvwmWinList.1
-EXTRA_DIST = $(man_MANS) CHANGELOG config.sample
+EXTRA_DIST = $(man_MANS) CHANGELOG config.sample ConfigFvwmWinList
+
+config_DATA = \
+  ConfigFvwmWinList
 
 FvwmWinList_SOURCES = ButtonArray.c ButtonArray.h Colors.c Colors.h \
     FvwmWinList.c FvwmWinList.h List.c List.h \

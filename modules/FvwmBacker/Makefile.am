@@ -1,9 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
+
 module_PROGRAMS = FvwmBacker
 man_MANS = FvwmBacker.1
-EXTRA_DIST = $(man_MANS) FvwmBacker.README
+EXTRA_DIST = $(man_MANS) FvwmBacker.README ConfigFvwmBacker
+
+config_DATA = \
+  ConfigFvwmBacker
 
 FvwmBacker_SOURCES = FvwmBacker.c FvwmBacker.h Mallocs.c Mallocs.h root_bits.c
 FvwmBacker_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a

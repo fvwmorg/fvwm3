@@ -1,0 +1,33 @@
+Style "FvwmTaskBar" NoTitle,BorderWidth 4, HandleWidth 4, Sticky
+Style "FvwmTaskBar" StaysOnTop,WindowListSkip,CirculateSkip
+
+DestroyModuleConfig FvwmTaskBar*
+*FvwmTaskBarBack #c3c3c3
+*FvwmTaskBarFore black
+*FvwmTaskBarTipsBack bisque
+*FvwmTaskBarTipsFore black
+*FvwmTaskBarGeometry +0-1
+*FvwmTaskBarFont -adobe-helvetica-medium-r-*-*-14-*-*-*-*-*-*-*
+*FvwmTaskBarSelFont -adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
+*FvwmTaskBarStatusFont fixed
+
+*FvwmTaskBarAction Click1 Iconify -1, Raise
+*FvwmTaskBarAction Click2 Iconify +1, Lower
+*FvwmTaskBarAction Click3 Iconify -1, Raise
+
+*FvwmTaskBarUseSkipList
+*FvwmTaskBarUseIconNames
+*FvwmTaskBarAutoStick
+*FvwmTaskBarShowTips
+
+*FvwmTaskBarButtonWidth 180
+*FvwmTaskBarBellVolume 20
+*FvwmTaskBarMailBox /var/spool/mail/
+#*FvwmTaskBarMailCommand Exec xterm -e mail
+*FvwmTaskBarClockFormat %I:%M %p
+
+*FvwmTaskBarStartName Start
+*FvwmTaskBarStartMenu MenuFvwmRoot
+*FvwmTaskBarStartIcon mini.fvwm.xpm
+
+*FvwmTaskBarAutoHide

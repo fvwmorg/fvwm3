@@ -1,0 +1,5 @@
+DestroyModuleConfig FvwmBacker
+*FvwmBackerDesk 0 -solid steelblue
+*FvwmBackerDesk 1 -solid midnightblue
+*FvwmBackerDesk 2 -solid yellow
+*FvwmBackerDesk 3 -solid black

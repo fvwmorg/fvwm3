@@ -1,9 +1,14 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
+
 module_PROGRAMS = FvwmScroll
 man_MANS = FvwmScroll.1
-EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = $(man_MANS) ConfigFvwmScroll
+
+config_DATA = \
+  ConfigFvwmScroll
 
 FvwmScroll_SOURCES = FvwmScroll.c FvwmScroll.h GrabWindow.c
 FvwmScroll_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
