@@ -1,3 +1,14 @@
+2004-07-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (CMD_Wait):
+	ignore MapNotify reported to any window except the root window
+
+	* fvwm/module_interface.c (CONFIGARGS):
+	correct number of CONFIGARGS arguments
+
+	* libs/vpacket.h (ConfigWinPacket):
+	frame_x and frame_y are signed
+
 2004-07-11  Scott Smedley  <scottie7@tpg.com.au>
 
 	* fvwm/conditional.c:

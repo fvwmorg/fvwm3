@@ -25,8 +25,8 @@ typedef struct ConfigWinPacket
 	Window             w;
 	Window             frame;
 	FvwmWindow         *fvwmwin;
-	unsigned long int  frame_x;
-	unsigned long int  frame_y;
+	signed long int  frame_x;
+	signed long int  frame_y;
 	unsigned long int  frame_width;
 	unsigned long int  frame_height;
 	unsigned long int  desk;

@@ -1048,7 +1048,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 	as a dummy to preserve alignment of the other fields in the
 	old packet: we should drop this before the next release.
 */
-#define CONFIGARGS(_t) 28,\
+#define CONFIGARGS(_t) 30,\
 	    (unsigned long)(sizeof(unsigned long)),\
 	    &FW_W(*(_t)),\
 	    (unsigned long)(sizeof(unsigned long)),\

@@ -2525,7 +2525,7 @@ void CMD_Wait(F_CMD_ARGS)
 				t = NULL;
 			}
 
-			if (e.type == MapNotify)
+			if (e.type == MapNotify && e.xmap.event == Scr.Root)
 			{
 				if (!*wait_string)
 				{
@@ -2553,7 +2553,8 @@ void CMD_Wait(F_CMD_ARGS)
 			}
 			else if (e.type == KeyPress)
 			{
-				/* TODO: should I be using <t> or <exc->w.fw>? */
+				/* TODO: should I be using <t> or <exc->w.fw>?
+				 */
 				int context = GetContext(&t, t, &e, &nonewin);
 				escape = CheckBinding(
 					Scr.AllBindings, STROKE_ARG(0)
