@@ -1044,7 +1044,7 @@ static void ShowObj (int NbArg,long *TabArg)
 
   tabxobj[IdItem]->flags[0] = False;
   XMapWindow(dpy,tabxobj[IdItem]->win);
-  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem], NULL);
   free(arg[0]);
 }
 
@@ -1062,7 +1062,7 @@ static void ChangeValue (int NbArg,long *TabArg)
   /* On redessine l'objet pour le mettre a jour */
   if (tabxobj[TabIdObj[atoi(arg[0])]]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[TabIdObj[atoi(arg[0])]]->win);
-  tabxobj[TabIdObj[atoi(arg[0])]]->DrawObj(tabxobj[TabIdObj[atoi(arg[0])]]);
+  tabxobj[TabIdObj[atoi(arg[0])]]->DrawObj(tabxobj[TabIdObj[atoi(arg[0])]],NULL);
   free(arg[0]);
   free(arg[1]);
 }
@@ -1086,7 +1086,7 @@ static void ChangeValueMax (int NbArg,long *TabArg)
     tabxobj[TabIdObj[j]]->value = atoi(arg[1]);
     if (tabxobj[TabIdObj[j]]->TypeWidget != SwallowExec)
       XClearWindow(dpy, tabxobj[TabIdObj[j]]->win);
-    tabxobj[TabIdObj[j]]->DrawObj(tabxobj[TabIdObj[j]]);
+    tabxobj[TabIdObj[j]]->DrawObj(tabxobj[TabIdObj[j]],NULL);
   }
   free(arg[0]);
   free(arg[1]);
@@ -1111,7 +1111,7 @@ static void ChangeValueMin (int NbArg,long *TabArg)
     tabxobj[TabIdObj[j]]->value = atoi(arg[1]);
     if (tabxobj[TabIdObj[j]]->TypeWidget != SwallowExec)
       XClearWindow(dpy, tabxobj[TabIdObj[j]]->win);
-    tabxobj[TabIdObj[j]]->DrawObj(tabxobj[TabIdObj[j]]);
+    tabxobj[TabIdObj[j]]->DrawObj(tabxobj[TabIdObj[j]],NULL);
   }
   free(arg[0]);
   free(arg[1]);
@@ -1174,7 +1174,7 @@ static void ChangeFont (int NbArg,long *TabArg)
 
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);
-  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
   free(arg[0]);
   free(arg[1]);
 }
@@ -1200,7 +1200,7 @@ static void ChangeSize (int NbArg,long *TabArg)
   tabxobj[IdItem]->width = an[1];
   tabxobj[IdItem]->height = an[2];
   XResizeWindow(dpy,tabxobj[IdItem]->win,an[1],an[2]);
-  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
   free(arg[0]);
   free(arg[1]);
   free(arg[2]);
@@ -1223,7 +1223,7 @@ static void ChangeTitle (int NbArg,long *TabArg)
   tabxobj[IdItem]->title=safestrdup(arg[1]);
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);
-  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
   free(arg[0]);
   free(arg[1]);
 }
@@ -1243,7 +1243,7 @@ static void ChangeIcon (int NbArg,long *TabArg)
   LoadIcon(tabxobj[IdItem]);
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);
-  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
   free(arg[0]);
   free(arg[1]);
 }
@@ -1278,7 +1278,7 @@ static void ChangeForeColor (int NbArg,long *TabArg)
 
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);
-  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
 
   free(arg[0]);
   free(arg[1]);
@@ -1319,7 +1319,7 @@ static void ChangeBackColor (int NbArg,long *TabArg)
 			 tabxobj[IdItem]->TabColor[back]);
     XClearWindow(dpy, tabxobj[IdItem]->win);
   }
-  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
 
   free(arg[0]);
   free(arg[1]);
@@ -1384,7 +1384,7 @@ static void ChangeColorset (int NbArg,long *TabArg)
 			tabxobj[IdItem]->gc, False);
     XClearWindow(dpy, tabxobj[IdItem]->win);
   }
-  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
 
   free(arg[0]);
   free(arg[1]);

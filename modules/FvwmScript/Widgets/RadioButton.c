@@ -81,7 +81,7 @@ void DestroyRadioButton(struct XObj *xobj)
  XDestroyWindow(dpy,xobj->win);
 }
 
-void DrawRadioButton(struct XObj *xobj)
+void DrawRadioButton(struct XObj *xobj, XEvent *evp)
 {
  int i,j;
 
@@ -100,7 +100,7 @@ void DrawRadioButton(struct XObj *xobj)
 
  /* Calcul de la position de la chaine de charactere */
  MyDrawString(dpy,xobj,xobj->win,i,j,xobj->title,fore,hili,
-	      back,!xobj->flags[1]);
+	      back,!xobj->flags[1], NULL, evp);
 }
 
 void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)

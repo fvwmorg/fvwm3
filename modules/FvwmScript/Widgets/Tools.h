@@ -44,9 +44,10 @@ extern FlocaleWinString *FwinString;
 #define MENU_DRAG_TIME 300
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
 
-void MyDrawString(Display *dpy, struct XObj *xobj, Window win, int x, int y,
-		  char *str, unsigned long ForeC,unsigned long HiC,
-		  unsigned long BackC, int WithRelief);
+void MyDrawString(
+	Display *dpy, struct XObj *xobj, Window win, int x, int y,
+	char *str, unsigned long ForeC,unsigned long HiC,
+	unsigned long BackC, int WithRelief, XRectangle *clip, XEvent *evp);
 
 int GetXTextPosition(struct XObj *xobj, int obj_width, int str_len,
 		     int left_offset, int center_offset, int right_offset);
@@ -62,7 +63,8 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int value);
 int CountOption(char *str);
 
 void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
-		 int l_offset, int c_offset, int r_offset);
+		 int l_offset, int c_offset, int r_offset,
+		 XRectangle *str_clip, XRectangle *icon_clip, XEvent *evp);
 
 void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
 		unsigned int LiC, unsigned int ShadC);

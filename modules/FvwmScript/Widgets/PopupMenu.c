@@ -95,7 +95,7 @@ void DestroyPopupMenu(struct XObj *xobj)
   XDestroyWindow(dpy, xobj->win);
 }
 
-void DrawPopupMenu(struct XObj *xobj)
+void DrawPopupMenu(struct XObj *xobj, XEvent *evp)
 {
   XSegment segm[4];
   char* str;
@@ -141,7 +141,7 @@ void DrawPopupMenu(struct XObj *xobj)
 		       FlocaleTextWidth(xobj->Ffont,str,strlen(str)),
 		       25,8,8);
   MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
-	     !xobj->flags[1]);
+	     !xobj->flags[1], NULL, evp);
 
   free(str);
 }

@@ -108,7 +108,7 @@ void DestroySwallow(struct XObj *xobj)
   XKillClient(dpy, xobj->win);
 }
 
-void DrawSwallow(struct XObj *xobj)
+void DrawSwallow(struct XObj *xobj, XEvent *evp)
 {
  DrawRelief(xobj);
 }

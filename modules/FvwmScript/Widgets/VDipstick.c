@@ -75,7 +75,7 @@ void DestroyVDipstick(struct XObj *xobj)
  XDestroyWindow(dpy,xobj->win);
 }
 
-void DrawVDipstick(struct XObj *xobj)
+void DrawVDipstick(struct XObj *xobj, XEvent *evp)
 {
  int  i;
 

@@ -115,7 +115,7 @@ void DrawPointTxt(struct XObj *xobj,unsigned int pixel)
 
 /* Dessin du contenu du champs texte */
 /* text field drawing */
-void DrawTextField(struct XObj *xobj)
+void DrawTextField(struct XObj *xobj, XEvent *evp)
 {
  int x1,y1;
  int x2,l;
@@ -216,7 +216,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
     xobj->value=PosCurs+xobj->value3;
     xobj->value2=PosCurs+xobj->value3;
     DrawPointTxt(xobj,xobj->TabColor[fore]);
-    DrawTextField(xobj);
+    DrawTextField(xobj,NULL);
 
     while (ButPress)
     {
@@ -243,7 +243,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 	  -rect.x+1;
 	rect.height=xobj->height;
 	xobj->value2=PosCurs+xobj->value3;
-	DrawTextField(xobj);
+	DrawTextField(xobj,NULL);
        }
        else
        if (PosCurs<xobj->value2)
@@ -254,7 +254,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 			      xobj->value2+1) - rect.x+2;
 	rect.height=xobj->height;
 	xobj->value2=PosCurs+xobj->value3;
-	DrawTextField(xobj);
+	DrawTextField(xobj,NULL);
        }
 
       break;
@@ -317,7 +317,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
      xobj->value=NewPos;
      xobj->value2=NewPos;
      DrawPointTxt(xobj,xobj->TabColor[fore]);
-     DrawTextField(xobj);
+     DrawTextField(xobj,NULL);
      SendMsg(xobj,SingleClic);
     }
     break;
@@ -334,7 +334,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
     if ((PosCurs>xobj->value) && (xobj->value>xobj->value2))
       xobj->value=xobj->value2;
     xobj->value2=PosCurs+xobj->value3;
-    DrawTextField(xobj);
+    DrawTextField(xobj,NULL);
 
     while (ButPress)
     {
@@ -358,7 +358,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 	  -rect.x+1;
 	rect.height=xobj->height;
 	xobj->value2=PosCurs;
-	DrawTextField(xobj);
+	DrawTextField(xobj,NULL);
        }
        else
        if (PosCurs<xobj->value2)
@@ -369,7 +369,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 			      xobj->value2+1)-rect.x+2;
 	rect.height=xobj->height;
 	xobj->value2=PosCurs+xobj->value3;
-	DrawTextField(xobj);
+	DrawTextField(xobj,NULL);
        }
        PosCurs=0;
       break;
@@ -465,7 +465,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
   xobj->value=NewPos;
   xobj->value2=NewPos;
   DrawPointTxt(xobj,xobj->TabColor[fore]);
-  DrawTextField(xobj);
+  DrawTextField(xobj,NULL);
  }
  free(carks);
 }

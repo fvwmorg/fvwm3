@@ -73,7 +73,7 @@ void DestroyMiniScroll(struct XObj *xobj)
   XDestroyWindow(dpy,xobj->win);
 }
 
-void DrawMiniScroll(struct XObj *xobj)
+void DrawMiniScroll(struct XObj *xobj, XEvent *evp)
 {
 
   DrawReliefRect(-1, -1, xobj->width+2, xobj->height+2, xobj, hili, shad);

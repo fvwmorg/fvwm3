@@ -18,39 +18,90 @@
 /***********************************************/
 /* Fonction d'ecriture en relief               */
 /***********************************************/
-void MyDrawString(Display *dpy, struct XObj *xobj, Window win, int x, int y,
-		  char *str, unsigned long ForeC,unsigned long HiC,
-		  unsigned long BackC, int WithRelief)
+void MyDrawString(
+	Display *dpy, struct XObj *xobj, Window win, int x, int y,
+	char *str, unsigned long ForeC,unsigned long HiC,
+	unsigned long BackC, int WithRelief, XRectangle *clip, XEvent *evp)
 {
-  FwinString->win = win;
-  FwinString->str = str;
-  FwinString->gc = xobj->gc;
-  FwinString->flags.has_colorset = False;
-  if (xobj->colorset >= 0)
-  {
-    FwinString->colorset = &Colorset[xobj->colorset];
-    FwinString->flags.has_colorset = True;
-  }
-  if (WithRelief && xobj->Ffont->shadow_size == 0)
-  {
-    XSetBackground(dpy, xobj->gc, xobj->TabColor[BackC]);
-    XSetForeground(dpy, xobj->gc, xobj->TabColor[HiC]);
-    FwinString->x = x+1;
-    FwinString->y = y+1;
-    FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
-    XSetForeground(dpy, xobj->gc, xobj->TabColor[ForeC]);
-    FwinString->x = x;
-    FwinString->y = y;
-    FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
-  }
-  else
-  {
-    XSetBackground(dpy, xobj->gc, xobj->TabColor[BackC]);
-    XSetForeground(dpy, xobj->gc, xobj->TabColor[ForeC]);
-    FwinString->x = x;
-    FwinString->y = y+1;
-    FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
-  }
+	Region region = None;
+	XRectangle inter;
+	Bool do_draw = True;
+
+	if (evp && clip)
+	{
+		if (!frect_get_intersection(
+			clip->x, clip->y, clip->width, clip->height,
+			evp->xexpose.x, evp->xexpose.y, 
+			evp->xexpose.width, evp->xexpose.height,
+			&inter))
+		{
+			do_draw = False;
+		}
+	}
+	else if (clip)
+	{
+		inter.x = clip->x;
+		inter.y = clip->y;
+		inter.width = clip->width;
+		inter.height = clip->height;
+	}
+	else if (evp)
+	{
+		inter.x = evp->xexpose.x;
+		inter.y = evp->xexpose.y;
+		inter.width = evp->xexpose.width;
+		inter.height = evp->xexpose.height;	
+	}
+	if (!do_draw)
+	{
+		return;
+	}
+	if (clip || evp)
+	{
+		region = XCreateRegion();
+		XUnionRectWithRegion (&inter, region, region);
+		FwinString->flags.has_clip_region = True;
+		FwinString->clip_region = region;
+	}
+	else
+	{
+		FwinString->flags.has_clip_region = False;
+	}
+
+	FwinString->win = win;
+	FwinString->str = str;
+	FwinString->gc = xobj->gc;
+	FwinString->flags.has_colorset = False;
+	if (xobj->colorset >= 0)
+	{
+		FwinString->colorset = &Colorset[xobj->colorset];
+		FwinString->flags.has_colorset = True;
+	}
+	if (WithRelief && xobj->Ffont->shadow_size == 0)
+	{
+		XSetBackground(dpy, xobj->gc, xobj->TabColor[BackC]);
+		XSetForeground(dpy, xobj->gc, xobj->TabColor[HiC]);
+		FwinString->x = x+1;
+		FwinString->y = y+1;
+		FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
+		XSetForeground(dpy, xobj->gc, xobj->TabColor[ForeC]);
+		FwinString->x = x;
+		FwinString->y = y;
+		FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
+	}
+	else
+	{
+		XSetBackground(dpy, xobj->gc, xobj->TabColor[BackC]);
+		XSetForeground(dpy, xobj->gc, xobj->TabColor[ForeC]);
+		FwinString->x = x;
+		FwinString->y = y+1;
+		FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
+	}
+	if (region)
+	{
+		XDestroyRegion(region);
+	}
+	FwinString->flags.has_clip_region = False;
 }
 
 /**************************************************/
@@ -181,7 +232,7 @@ void UnselectMenu(struct XObj *xobj, Window WinPop, int hOpt, int value,
   x = GetXTextPosition(xobj, width, FlocaleTextWidth(xobj->Ffont,str,len),
 		       8, 0, 8);
   MyDrawString(dpy, xobj, WinPop, x, y, str, fore, hili, back,
-	       !xobj->flags[1]);
+	       !xobj->flags[1], NULL, NULL);
   free(str);
 }
 
@@ -248,18 +299,54 @@ int CountOption(char *str)
 /*****************************************/
 /* Dessine l'icone et le titre du widget */
 /*****************************************/
-void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
-		 int l_offset, int c_offset, int r_offset)
+void DrawIconStr(
+	int offset, struct XObj *xobj, int DoRedraw,
+	int l_offset, int c_offset, int r_offset,
+	XRectangle *str_clip, XRectangle *icon_clip, XEvent *evp)
 {
 	int i,j;
 	char *str;
 	int len = 0;
+	XRectangle clear_r, inter;
+	Bool do_clear = True;
 
-	if (DoRedraw)
+	inter.x = clear_r.x = 4;
+	inter.y = clear_r.y = 4;
+	inter.width = clear_r.width  = xobj->width-8;
+	inter.height = clear_r.height = xobj->height-8;
+
+	if (evp)
+	{
+		if (!frect_get_intersection(
+			clear_r.x, clear_r.y, clear_r.width, clear_r.height,
+			evp->xexpose.x, evp->xexpose.y, 
+			evp->xexpose.width, evp->xexpose.height,
+			&inter))
+		{
+			do_clear = False;
+		}
+	}
+#if 0
+	else if (clip)
+	{
+		inter.x = clip->x;
+		inter.y = clip->y;
+		inter.width = clip->width;
+		inter.height = clip->height;
+	}
+	else if (evp)
+	{
+		inter.x = evp->xexpose.x;
+		inter.y = evp->xexpose.y;
+		inter.width = evp->xexpose.width;
+		inter.height = evp->xexpose.height;	
+	}
+#endif
+	if (DoRedraw && do_clear)
 	{
 		XClearArea(
-			dpy, xobj->win, 4, 4, xobj->width-8, xobj->height-8,
-			False);
+			dpy, xobj->win,
+			inter.x, inter.y, inter.width, inter.height, False);
 	}
 
 	str = GetMenuTitle(xobj->title,1);
@@ -271,10 +358,11 @@ void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
 	if (len > 0 && xobj->iconPixmap==None)
 	{
 		/* Si l'icone n'existe pas */
-		j = xobj->height/2 + (xobj->Ffont->height)/2 + offset - 3;
+		j = xobj->height/2 - (xobj->Ffont->height)/2 +
+			xobj->Ffont->ascent + offset;
 		MyDrawString(
 			dpy,xobj,xobj->win,i,j,str,fore,hili,back,
-			!xobj->flags[1]);
+			!xobj->flags[1], str_clip, evp);
 	}
 	else
 	{
@@ -285,11 +373,11 @@ void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
 		if (len > 0)
 		{
 			j = ((xobj->height - xobj->icon_h)/4)*3 +
-				xobj->icon_h + offset +
-				(xobj->Ffont->height)/2 - 3;
+				xobj->icon_h + offset + xobj->Ffont->ascent; 
+				/* + (xobj->Ffont->height)/2*/;
 			MyDrawString(
 				dpy,xobj,xobj->win,i,j,str,fore,hili,
-				back,!xobj->flags[1]);
+				back,!xobj->flags[1], str_clip, evp);
 		}
 		/* Dessin de l'icone */
 		fra.mask = FRAM_DEST_IS_A_WINDOW;
@@ -308,7 +396,7 @@ void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
 	}
 	free(str);
 }
-	
+
 /***********************************************/
 /* Fonction de dessin d'un rectangle en relief */
 /***********************************************/
@@ -404,7 +492,7 @@ void UnselectAllTextField(struct XObj **txobj)
       if (txobj[i]->value2 != txobj[i]->value)
       {
 	txobj[i]->value2 = txobj[i]->value;
-	txobj[i]->DrawObj(txobj[i]);
+	txobj[i]->DrawObj(txobj[i],NULL);
 	return;
       }
 }
@@ -418,7 +506,7 @@ void SelectOneTextField(struct XObj *xobj)
       if (tabxobj[i]->value2 != tabxobj[i]->value)
       {
 	tabxobj[i]->value2 = tabxobj[i]->value;
-	tabxobj[i]->DrawObj(tabxobj[i]);
+	tabxobj[i]->DrawObj(tabxobj[i],NULL);
 	return;
       }
 }

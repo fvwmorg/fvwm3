@@ -115,10 +115,10 @@ void DestroyPushButton(struct XObj *xobj)
 }
 
 
-void DrawPushButton(struct XObj *xobj)
+void DrawPushButton(struct XObj *xobj, XEvent *evp)
 {
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
-  DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
+  DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS, NULL, NULL, evp);
 }
 
 void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
@@ -154,7 +154,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	{
 	  WinBut = Win2;
 	  DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, shad, hili);
-	  DrawIconStr(1, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
+	  DrawIconStr(0,xobj, True, PUSH_BUTTON_LCR_OFFSETS, NULL, NULL, NULL);
 	  In = 1;
 	}
 	else
@@ -162,14 +162,17 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	  if (Win2 == WinBut)
 	  {
 	    DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, shad, hili);
-	    DrawIconStr(1, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
+	    DrawIconStr(
+		    1, xobj, True, PUSH_BUTTON_LCR_OFFSETS, NULL, NULL, NULL);
 	    In = 1;
 	  }
 	  else if (In)
 	  {
 	    In = 0;
 	    DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
-	    DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
+	    DrawIconStr(
+		    0, xobj, True, PUSH_BUTTON_LCR_OFFSETS,
+		    NULL, NULL, NULL);
 	  }
 	}
 	break;
@@ -180,19 +183,22 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	{
 	  In = 1;
 	  DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, shad, hili);
-	  DrawIconStr(1, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
+	  DrawIconStr(
+		  1, xobj, True, PUSH_BUTTON_LCR_OFFSETS, NULL, NULL, NULL);
 	}
 	else if (In)
 	{
 	  DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
-	  DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
+	  DrawIconStr(
+		  0, xobj, True, PUSH_BUTTON_LCR_OFFSETS, NULL, NULL, NULL);
 	  In = 0;
 	}
 	break;
       case ButtonRelease:
 	End = 0;
 	DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
-	DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
+	DrawIconStr(
+		0, xobj, True, PUSH_BUTTON_LCR_OFFSETS, NULL, NULL, NULL);
 	if (In)
 	{
 	  /* Envoie d'un message vide de type SingleClic pour un clique souris */
@@ -287,7 +293,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	SendMsg(xobj, SingleClic);
 	xobj->value = 0;
       }
-      xobj->DrawObj(xobj);
+      xobj->DrawObj(xobj, NULL);
     } /* xobj->value3 > 1 */
   } /* EvtButton->button == Button3 */
 }

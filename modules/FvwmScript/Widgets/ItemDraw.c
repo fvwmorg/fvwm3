@@ -122,11 +122,20 @@ void DestroyItemDraw(struct XObj *xobj)
   XDestroyWindow(dpy,xobj->win);
 }
 
-void DrawItemDraw(struct XObj *xobj)
+void DrawItemDraw(struct XObj *xobj, XEvent *evp)
 {
-  XClearArea(dpy,xobj->win,0,0,xobj->width,xobj->height,False);
-  XClearWindow(dpy,xobj->win);
-  DrawIconStr(0,xobj,False,ITEM_DRAW_LCR_OFFSETS);
+
+	if (evp)
+	{
+		XClearArea(
+			dpy,xobj->win, evp->xexpose.x, evp->xexpose.y,
+			evp->xexpose.width, evp->xexpose.height, False);
+	}
+	else
+	{
+		XClearArea(dpy,xobj->win,0,0,xobj->width,xobj->height,False);
+	}
+	DrawIconStr(0,xobj,False,ITEM_DRAW_LCR_OFFSETS, NULL, NULL, evp);
 }
 
 void EvtMouseItemDraw(struct XObj *xobj,XButtonEvent *EvtButton)

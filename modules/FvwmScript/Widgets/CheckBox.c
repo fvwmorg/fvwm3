@@ -78,7 +78,7 @@ void DestroyCheckBox(struct XObj *xobj)
   XDestroyWindow(dpy,xobj->win);
 }
 
-void DrawCheckBox(struct XObj *xobj)
+void DrawCheckBox(struct XObj *xobj, XEvent *evp)
 {
   XSegment segm[2];
 
@@ -89,7 +89,7 @@ void DrawCheckBox(struct XObj *xobj)
   /* Calcul de la position de la chaine de charactere */
   /* Compute the position of string */
   MyDrawString(dpy, xobj, xobj->win, 23, xobj->Ffont->ascent, xobj->title,
-	       fore, hili, back, !xobj->flags[1]);
+	       fore, hili, back, !xobj->flags[1], NULL, evp);
   /* Dessin de la croix / draw the cross */
   if (xobj->value)
   {

@@ -22,6 +22,7 @@
 #include "libs/PictureGraphics.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
+#include "libs/Rectangles.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -224,7 +225,7 @@ struct XObj
   int flags[5];
   void (*InitObj) (struct XObj *xobj);  /* Initialisation de l'objet */
   void (*DestroyObj) (struct XObj *xobj);       /* Destruction objet */
-  void (*DrawObj) (struct XObj *xobj);  /* Dessin de l'objet */
+  void (*DrawObj) (struct XObj *xobj, XEvent *evp);  /* Dessin de l'objet */
   void (*EvtMouse) (struct XObj *xobj,XButtonEvent *EvtButton);
   void (*EvtKey) (struct XObj *xobj,XKeyEvent *EvtKey);
   void (*ProcessMsg) (struct XObj *xobj,unsigned long type,unsigned long *body);

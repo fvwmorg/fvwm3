@@ -100,7 +100,7 @@ void DestroyMenu(struct XObj *xobj)
   XDestroyWindow(dpy, xobj->win);
 }
 
-void DrawMenu(struct XObj *xobj)
+void DrawMenu(struct XObj *xobj, XEvent *evp)
 {
   XSegment segm[2];
   int i;
@@ -136,7 +136,7 @@ void DrawMenu(struct XObj *xobj)
       XDrawSegments(dpy, x11base->win, xobj->gc, segm, 2);
     }
   }
-  DrawIconStr(0, xobj, True, MENU_LCR_OFFSETS);
+  DrawIconStr(0, xobj, True, MENU_LCR_OFFSETS, NULL, NULL, evp);
 }
 
 void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)

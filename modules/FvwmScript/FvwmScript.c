@@ -792,26 +792,54 @@ void SendMsgToScript(XEvent event)
 }
 
 static
-void UpdateRootTransparency(void)
+void UpdateRootTransparency(Bool pr_only)
 {
-  int i;
+	int i;
 
-  if (x11base->colorset > 0 &&
-      Colorset[x11base->colorset].pixmap == ParentRelative)
-  {
-    XClearArea(dpy, x11base->win, 0, 0, 0, 0, True);
-    for (i=0; i<nbobj; i++)
-    {
-      if (Rectangle != tabxobj[i]->TypeWidget &&
-	  SwallowExec != tabxobj[i]->TypeWidget &&
-	  ((tabxobj[i]->colorset > 0 &&
-	   Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)))
-      {
-	XClearArea(dpy, tabxobj[i]->win, 0, 0, 0, 0, True);
-      }
-    }
-  }
+	if (CSET_IS_TRANSPARENT(x11base->colorset))
+	{
+		if (CSET_IS_TRANSPARENT_PR_PURE(x11base->colorset))
+		{
+			XClearArea(dpy, x11base->win, 0, 0, 0, 0, True);
+		}
+		else if (!pr_only || CSET_IS_TRANSPARENT_PR(x11base->colorset))
+		{
+			SetWindowBackground(
+				dpy, x11base->win, x11base->size.width,
+				x11base->size.height,
+				&Colorset[x11base->colorset], Pdepth,
+				x11base->gc, True);
+		}
+	}
+	for (i=0; i<nbobj; i++)
+	{
+		if (Rectangle == tabxobj[i]->TypeWidget ||
+		    SwallowExec == tabxobj[i]->TypeWidget)
+		{
+			continue;
+		}
+		if (!CSET_IS_TRANSPARENT(tabxobj[i]->colorset) ||
+		    (CSET_IS_TRANSPARENT_PR(tabxobj[i]->colorset) &&
+		     !CSET_IS_TRANSPARENT(x11base->colorset)))
+		{
+			continue;
+		}
+		if (CSET_IS_TRANSPARENT_PR_PURE(tabxobj[i]->colorset))
+		{
+			XClearArea(dpy, tabxobj[i]->win, 0, 0, 0, 0, True);
+		}
+		else if (!pr_only ||
+			 CSET_IS_TRANSPARENT_PR(tabxobj[i]->colorset))
+		{
+			SetWindowBackground(
+				dpy, tabxobj[i]->win, tabxobj[i]->width,
+				tabxobj[i]->height,
+				&Colorset[tabxobj[i]->colorset], Pdepth,
+				tabxobj[i]->gc, True);
+		}
+	}
 }
+
 
 /* read an X event */
 void ReadXServer (void)
@@ -824,6 +852,7 @@ void ReadXServer (void)
   static unsigned char buf[10];         /* unsigned for international */
   Bool find = False;
   char *action;
+  int ex, ey, ex2, ey2;
 
   while (FEventsQueued(dpy, QueuedAfterReading))
   {
@@ -831,26 +860,50 @@ void ReadXServer (void)
     switch (event.type)
     {
     case Expose:
-      if (event.xexpose.count == 0) {
-	for (i=0; i<nbobj; i++)
-	  if (event.xexpose.window == tabxobj[i]->win) {
-	    tabxobj[i]->DrawObj(tabxobj[i]);
-	    break;
-	  }
-	/* handle exposes on x11base that need an object to render */
-	if (event.xexpose.window == x11base->win) {
-	  /* redraw first menu item to get the 3d menubar */
-	  for (i=0; i<nbobj; i++)
-	    if (Menu == tabxobj[i]->TypeWidget) {
-	      tabxobj[i]->DrawObj(tabxobj[i]);
-	      break;
-	    }
-	  /* redraw all Rectangles and SwallowExec's */
-	  for (i=0; i<nbobj; i++)
-	    if ((Rectangle == tabxobj[i]->TypeWidget)
-		||(SwallowExec == tabxobj[i]->TypeWidget))
-	      tabxobj[i]->DrawObj(tabxobj[i]);
-	}
+      ex = event.xexpose.x;
+      ey = event.xexpose.y;
+      ex2 = event.xexpose.x + event.xexpose.width;
+      ey2 = event.xexpose.y + event.xexpose.height;
+      while (FCheckTypedWindowEvent(dpy, event.xany.window, Expose, &event))
+      {
+	      ex = min(ex, event.xexpose.x);
+	      ey = min(ey, event.xexpose.y);
+	      ex2 = max(ex2, event.xexpose.x + event.xexpose.width);
+	      ey2 = max(ey2 , event.xexpose.y + event.xexpose.height);
+      }
+      event.xexpose.x = ex;
+      event.xexpose.y = ey;
+      event.xexpose.width = ex2 - ex;
+      event.xexpose.height = ey2 - ey;  
+      for (i=0; i<nbobj; i++)
+      {
+	      if (event.xexpose.window == tabxobj[i]->win)
+	      {
+		      tabxobj[i]->DrawObj(tabxobj[i], &event);
+		      break;
+	      }
+	      /* handle exposes on x11base that need an object to render */
+	      if (event.xexpose.window == x11base->win)
+	      {
+		      /* redraw first menu item to get the 3d menubar */
+		      for (i=0; i<nbobj; i++)
+		      {
+			      if (Menu == tabxobj[i]->TypeWidget)
+			      {
+				      tabxobj[i]->DrawObj(tabxobj[i], &event);
+				      break;
+			      }
+		      }
+		      /* redraw all Rectangles and SwallowExec's */
+		      for (i=0; i<nbobj; i++)
+		      {
+			      if ((Rectangle == tabxobj[i]->TypeWidget)
+				  ||(SwallowExec == tabxobj[i]->TypeWidget))
+			      {
+				      tabxobj[i]->DrawObj(tabxobj[i], &event);
+			      }
+		      }
+	      }
       }
       break;
     case ConfigureNotify:
@@ -866,7 +919,7 @@ void ReadXServer (void)
       }
       if (moved)
       {
-	UpdateRootTransparency();
+	UpdateRootTransparency(False);
       }
     }
     break;
@@ -1082,7 +1135,7 @@ void MainLoop (void)
 				      tabxobj[i]->gc, False);
 		  XClearWindow(dpy, tabxobj[i]->win);
 		}
-		tabxobj[i]->DrawObj(tabxobj[i]);
+		tabxobj[i]->DrawObj(tabxobj[i],NULL);
 	      }
 	    }
 	    if (n == x11base->colorset) {
@@ -1097,8 +1150,7 @@ void MainLoop (void)
 	      {
 		if (Rectangle != tabxobj[i]->TypeWidget &&
 		    SwallowExec != tabxobj[i]->TypeWidget &&
-		    ((tabxobj[i]->colorset > 0 &&
-		      Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)))
+		    CSET_IS_TRANSPARENT_PR(tabxobj[i]->colorset))
 		{
 		  XClearArea(dpy, tabxobj[i]->win, 0, 0, 0, 0, True);
 		}
@@ -1117,7 +1169,7 @@ void MainLoop (void)
 	      ((!x11base->swallowed && packet->body[2] == 0) ||
 	       (x11base->swallowed && packet->body[2] == x11base->win)))
 	  {
-	    UpdateRootTransparency();
+	    UpdateRootTransparency(True);
 	  }
 	  else if  (packet->body[0] == MX_PROPERTY_CHANGE_SWALLOW &&
 		    packet->body[2] == x11base->win)

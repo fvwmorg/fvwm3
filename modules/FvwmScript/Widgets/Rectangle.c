@@ -55,7 +55,7 @@ void DestroyRectangle(struct XObj *xobj)
  XDestroyWindow(dpy,xobj->win);
 }
 
-void DrawRectangle(struct XObj *xobj)
+void DrawRectangle(struct XObj *xobj, XEvent *evp)
 {
  XSegment segm[4];
 

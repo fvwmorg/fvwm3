@@ -21,105 +21,105 @@
 
 extern void InitPushButton(struct XObj *xobj);
 extern void DestroyPushButton(struct XObj *xobj);
-extern void DrawPushButton(struct XObj *xobj);
+extern void DrawPushButton(struct XObj *xobj, XEvent *evp);
 extern void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyPushButton(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgPushButton(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitRadioButton(struct XObj *xobj);
 extern void DestroyRadioButton(struct XObj *xobj);
-extern void DrawRadioButton(struct XObj *xobj);
+extern void DrawRadioButton(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyRadioButton(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgRadioButton(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitItemDraw(struct XObj *xobj);
 extern void DestroyItemDraw(struct XObj *xobj);
-extern void DrawItemDraw(struct XObj *xobj);
+extern void DrawItemDraw(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseItemDraw(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyItemDraw(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgItemDraw(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitCheckBox(struct XObj *xobj);
 extern void DestroyCheckBox(struct XObj *xobj);
-extern void DrawCheckBox(struct XObj *xobj);
+extern void DrawCheckBox(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseCheckBox(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyCheckBox(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgCheckBox(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitTextField(struct XObj *xobj);
 extern void DestroyTextField(struct XObj *xobj);
-extern void DrawTextField(struct XObj *xobj);
+extern void DrawTextField(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgTextField(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitHScrollBar(struct XObj *xobj);
 extern void DestroyHScrollBar(struct XObj *xobj);
-extern void DrawHScrollBar(struct XObj *xobj);
+extern void DrawHScrollBar(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseHScrollBar(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyHScrollBar(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgHScrollBar(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitVScrollBar(struct XObj *xobj);
 extern void DestroyVScrollBar(struct XObj *xobj);
-extern void DrawVScrollBar(struct XObj *xobj);
+extern void DrawVScrollBar(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseVScrollBar(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyVScrollBar(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgVScrollBar(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitPopupMenu(struct XObj *xobj);
 extern void DestroyPopupMenu(struct XObj *xobj);
-extern void DrawPopupMenu(struct XObj *xobj);
+extern void DrawPopupMenu(struct XObj *xobj, XEvent *evp);
 extern void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyPopupMenu(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgPopupMenu(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitRectangle(struct XObj *xobj);
 extern void DestroyRectangle(struct XObj *xobj);
-extern void DrawRectangle(struct XObj *xobj);
+extern void DrawRectangle(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseRectangle(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyRectangle(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgRectangle(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitMiniScroll(struct XObj *xobj);
 extern void DestroyMiniScroll(struct XObj *xobj);
-extern void DrawMiniScroll(struct XObj *xobj);
+extern void DrawMiniScroll(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseMiniScroll(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyMiniScroll(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgMiniScroll(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitSwallow(struct XObj *xobj);
 extern void DestroySwallow(struct XObj *xobj);
-extern void DrawSwallow(struct XObj *xobj);
+extern void DrawSwallow(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseSwallow(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeySwallow(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgSwallow(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitHDipstick(struct XObj *xobj);
 extern void DestroyHDipstick(struct XObj *xobj);
-extern void DrawHDipstick(struct XObj *xobj);
+extern void DrawHDipstick(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseHDipstick(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyHDipstick(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgHDipstick(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitVDipstick(struct XObj *xobj);
 extern void DestroyVDipstick(struct XObj *xobj);
-extern void DrawVDipstick(struct XObj *xobj);
+extern void DrawVDipstick(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseVDipstick(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyVDipstick(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgVDipstick(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitList(struct XObj *xobj);
 extern void DestroyList(struct XObj *xobj);
-extern void DrawList(struct XObj *xobj);
+extern void DrawList(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyList(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgList(struct XObj *xobj,unsigned long type,unsigned long *body);
 
 extern void InitMenu(struct XObj *xobj);
 extern void DestroyMenu(struct XObj *xobj);
-extern void DrawMenu(struct XObj *xobj);
+extern void DrawMenu(struct XObj *xobj, XEvent *evp);
 extern void EvtMouseMenu(struct XObj *xobj,XButtonEvent *EvtButton);
 extern void EvtKeyMenu(struct XObj *xobj,XKeyEvent *EvtKey);
 extern void ProcessMsgMenu(struct XObj *xobj,unsigned long type,unsigned long *body);

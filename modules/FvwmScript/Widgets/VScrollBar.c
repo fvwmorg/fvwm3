@@ -19,7 +19,7 @@
 /***********************************************/
 /* Fonction pour VScrollBar                    */
 /***********************************************/
-void DrawThumbV(struct XObj *xobj)
+void DrawThumbV(struct XObj *xobj, XEvent *evp)
 {
   int x,y,w,h;
   XSegment segm;
@@ -50,7 +50,7 @@ void DrawThumbV(struct XObj *xobj)
   x = x-FlocaleTextWidth(xobj->Ffont, str, strlen(str))-6;
   y = y + 13 + xobj->Ffont->ascent/2;
   MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
-	       !xobj->flags[1]);
+	       !xobj->flags[1], NULL, evp);
 }
 
 void HideThumbV(struct XObj *xobj)
@@ -64,10 +64,7 @@ void HideThumbV(struct XObj *xobj)
     (xobj->value2 - xobj->value3);
   XClearArea(dpy, xobj->win, x, y, 20, 32, False);
   sprintf(str, "%d", xobj->value);
-  x = x - FlocaleTextWidth(xobj->Ffont, str, strlen(str)) - 6;
-  XClearArea(dpy, xobj->win, x, y,
-	     FlocaleTextWidth(xobj->Ffont, str, strlen(str)),
-	     xobj->Ffont->height, False);
+  XClearArea(dpy, xobj->win, 0, 0,xobj->width/2 - 14,xobj->height, False);
 }
 
 void InitVScrollBar(struct XObj *xobj)
@@ -146,7 +143,7 @@ void DestroyVScrollBar(struct XObj *xobj)
   XDestroyWindow(dpy,xobj->win);
 }
 
-void DrawVScrollBar(struct XObj *xobj)
+void DrawVScrollBar(struct XObj *xobj, XEvent *evp)
 {
   int x,y,w,h;
   char str[20];
@@ -156,19 +153,18 @@ void DrawVScrollBar(struct XObj *xobj)
   y = 0;
   w = 24;
   h = xobj->height;
+  DrawThumbV(xobj, evp);
   DrawReliefRect(x, y, w, h, xobj, shad, hili);
-  DrawThumbV(xobj);
-
   /* Ecriture des valeurs */
   x = x + 26;
   y = xobj->Ffont->ascent + 2;
   sprintf(str, "%d", xobj->value3);
   MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
-	       !xobj->flags[1]);
+	       !xobj->flags[1], NULL, evp);
   sprintf(str, "%d", xobj->value2);
   y = h - xobj->Ffont->descent - 2;
   MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
-	       !xobj->flags[1]);
+	       !xobj->flags[1], NULL, evp);
 }
 
 void EvtMouseVScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
@@ -202,9 +198,11 @@ void EvtMouseVScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	HideThumbV(xobj);
 	xobj->value = newvalue;
-	DrawThumbV(xobj);
+	DrawThumbV(xobj, NULL);
 	oldvalue = newvalue;
 	SendMsg(xobj,SingleClic);
+	XSync(dpy,0);
+	usleep(10000);
       }
     }
     FD_ZERO(&in_fdset);
@@ -223,7 +221,7 @@ void EvtKeyVScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)
   if (ks == XK_Down && xobj->value > 0) {
     HideThumbV(xobj);
     xobj->value--;
-    DrawThumbV(xobj);
+    DrawThumbV(xobj, NULL);
     SendMsg(xobj,SingleClic);
   }
   else if (ks == XK_Up &&
@@ -231,7 +229,7 @@ void EvtKeyVScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)
 	   xobj->width*(xobj->value3-xobj->value2)/(xobj->width)+xobj->value2) {
     HideThumbV(xobj);
     xobj->value++;
-    DrawThumbV(xobj);
+    DrawThumbV(xobj, NULL);
     SendMsg(xobj,SingleClic);
   }
   else if (ks == XK_Return) {
