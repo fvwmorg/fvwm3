@@ -38,7 +38,7 @@ void fqueue_init(fqueue *fq)
 	return;
 }
 
-#if 1
+#if 0
 unsigned int fqueue_get_length(fqueue *fq)
 {
 	unsigned int len;
@@ -129,17 +129,6 @@ void fqueue_add_inside(
 	}
 
 	return;
-}
-
-int fqueue_is_empty(
-	fqueue *fq)
-{
-	if (fq->first == NULL)
-	{
-		return 1;
-	}
-
-	return 0;
 }
 
 /*

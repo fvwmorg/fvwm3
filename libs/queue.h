@@ -27,6 +27,8 @@ typedef struct
 } fqueue;
 #define FQUEUE_INIT { NULL, NULL }
 
+
+
 typedef int (*operate_fqueue_object_type)(void *object, void *operate_args);
 typedef int (*cmp_objects_type)(void *object1, void *object2, void *args);
 
@@ -36,8 +38,7 @@ typedef int (*cmp_objects_type)(void *object1, void *object2, void *args);
 
 void fqueue_init(fqueue *fq);
 unsigned int fqueue_get_length(fqueue *fq);
-int fqueue_is_empty(fqueue *fq);
-
+#define FQUEUE_IS_EMPTY(fq) ((fq)->first == NULL)
 
 /*
  * Add record to queue

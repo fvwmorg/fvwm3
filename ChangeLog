@@ -1,5 +1,18 @@
 2002-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	(IS_MESSAGE_IN_MASK):
+	(is_message_selected):
+	(PositiveWrite):
+	(PositiveWrite):
+	* fvwm/schedule.c (deschedule):
+	(squeue_execute):
+	* fvwm/events.c (My_XNextEvent):
+	* libs/queue.h:
+	* fvwm/module_interface.c (ClosePipes):
+	(CMD_ModuleSynchronous):
+	(KillModule):
+	performance enhancements; made macros out of simple functions
+
 	* fvwm/builtins.c (CMD_WindowShade):
 	don't redraw the decorations if window was not shaded or unshaded
 

@@ -55,8 +55,6 @@
 #include "libs/Colorset.h"
 #include "libs/FScreen.h"
 
-extern unsigned long *PipeMask;                /* in module.c */
-
 extern int nColorsets;	/* in libs/Colorset.c */
 
 #define MODULE_CONFIG_DELIM ':'
@@ -95,7 +93,7 @@ void ModuleConfig(char *action)
   new_entry = AddToModList(action);              /* save for config request */
   for (module = 0; module < npipes; module++) /* look at all possible pipes */
   {
-    if (is_message_selected(module, M_SENDCONFIG)) /* does module want config
+    if (IS_MESSAGE_SELECTED(module, M_SENDCONFIG)) /* does module want config
 						    * cmds */
     {
       extern char **pipeName;

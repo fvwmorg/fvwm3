@@ -47,6 +47,27 @@ extern fqueue *pipeQueue;
 #define DEFAULT_MASK   (MAX_MSG_MASK & ~(M_SENDCONFIG))
 #define DEFAULT_XMASK  (DEFAULT_XMSG_MASK)
 
+/*
+ * Returns zero if the msg is not selected by the mask. Takes care of normal
+ * and extended messages.
+ */
+#define IS_MESSAGE_IN_MASK(mask, msg) \
+  (((msg) & M_EXTENDED_MSG) ? ((mask)->m2 & (msg)) : ((mask)->m1 & (msg)))
+
+/*
+ * Returns non zero if one of the specified messages is selected for the module
+ */
+/* please don't use msg_masks_type and PipeMask outside of module_interface.c.
+ * They are only global to allow to access the IS_MESSAGE_SELECTED macro without
+ * having to call a function. */
+typedef struct
+{
+	unsigned long m1;
+	unsigned long m2;
+} msg_masks_type;
+extern msg_masks_type *PipeMask;
+#define IS_MESSAGE_SELECTED(module, msg_mask) \
+  IS_MESSAGE_IN_MASK(&PipeMask[(module)], (msg_mask))
 
 /*
  * M_SENDCONFIG for   modules to tell  fvwm that  they  want to  see each

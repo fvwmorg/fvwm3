@@ -73,18 +73,12 @@ char **pipeAlias;  /* as given in: Module FvwmPager MyAlias */
 
 typedef struct
 {
-	unsigned long m1;
-	unsigned long m2;
-} msg_masks_type;
-
-typedef struct
-{
   unsigned long *data;
   int size;
   int done;
 } mqueue_object_type;
 
-static msg_masks_type *PipeMask;
+msg_masks_type *PipeMask;
 static msg_masks_type *SyncMask;
 static msg_masks_type *NoGrabMask;
 fqueue *pipeQueue;
@@ -94,26 +88,6 @@ extern fd_set init_fdset;
 static void DeleteMessageQueueBuff(int module);
 static void AddToMessageQueue(int module, unsigned long *ptr, int size, int done);
 static void AddToCommandQueue(Window w, int module, char * command);
-
-/*
- * Returns zero if the msg is not selected by the mask. Takes care of normal
- * and extended messages.
- */
-static int is_message_in_mask(msg_masks_type *mask, unsigned long msg)
-{
-	unsigned long rc;
-
-	if (msg & M_EXTENDED_MSG)
-	{
-		rc = (mask->m2 & msg);
-	}
-	else
-	{
-		rc = (mask->m1 & msg);
-	}
-
-	return rc;
-}
 
 /*
  * Sets the mask to the specific value.  If M_EXTENDED_MSG is set in mask, the
@@ -132,14 +106,6 @@ static void set_message_mask(msg_masks_type *mask, unsigned long msg)
 	}
 
 	return;
-}
-
-/*
- * Returns non zero if one of the specified messages is selected for the module
- */
-int is_message_selected(int module, unsigned long msg_mask)
-{
-	return is_message_in_mask(&PipeMask[module], msg_mask);
 }
 
 void initModules(void)
@@ -203,7 +169,7 @@ void ClosePipes(void)
         pipeAlias[i] = NULL;
       }
 #endif
-      while(!fqueue_is_empty(&pipeQueue[i]))
+      while (!FQUEUE_IS_EMPTY(&pipeQueue[i]))
       {
         DeleteMessageQueueBuff(i);
       }
@@ -533,7 +499,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
       FD_ZERO(&out_fdset);
       if (readPipes[pipe_slot] >= 0)
         FD_SET(readPipes[pipe_slot], &in_fdset);
-      if (!fqueue_is_empty(&pipeQueue[pipe_slot]))
+      if (!FQUEUE_IS_EMPTY(&pipeQueue[pipe_slot]))
         FD_SET(writePipes[pipe_slot], &out_fdset);
 
       timeout.tv_sec = 0;
@@ -739,7 +705,7 @@ void KillModule(int channel)
   readPipes[channel] = -1;
   writePipes[channel] = -1;
   pipeOn[channel] = -1;
-  while(!fqueue_is_empty(&pipeQueue[channel]))
+  while (!FQUEUE_IS_EMPTY(&pipeQueue[channel]))
   {
       DeleteMessageQueueBuff(channel);
     }
@@ -1435,7 +1401,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
   {
     return;
   }
-  if (!is_message_in_mask(&PipeMask[module], ptr[1]))
+  if (!IS_MESSAGE_IN_MASK(&PipeMask[module], ptr[1]))
   {
     return;
   }
@@ -1446,7 +1412,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
    * iconify event and server grabbed, then return */
   mask.m1 = (NoGrabMask[module].m1 & SyncMask[module].m1);
   mask.m2 = (NoGrabMask[module].m2 & SyncMask[module].m2);
-  if (is_message_in_mask(&mask, ptr[1]) && myxgrabcount != 0)
+  if (IS_MESSAGE_IN_MASK(&mask, ptr[1]) && myxgrabcount != 0)
   {
     return;
   }
@@ -1461,7 +1427,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
   /* migo (19-Aug-2000): removed !myxgrabcount to sync M_DESTROY_WINDOW */
 /*if ((SyncMask[module] & ptr[1]) && !myxgrabcount) */
 
-  if (is_message_in_mask(&SyncMask[module], ptr[1]))
+  if (IS_MESSAGE_IN_MASK(&SyncMask[module], ptr[1]))
   {
     Window targetWindow;
     fd_set readSet;

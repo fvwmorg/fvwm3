@@ -98,7 +98,7 @@ static void deschedule(int *pid)
 {
 	int id;
 
-	if (fqueue_is_empty(&sq))
+	if (FQUEUE_IS_EMPTY(&sq))
 	{
 		return;
 	}
@@ -205,7 +205,7 @@ void squeue_execute(void)
 {
 	Time current_time;
 
-	if (fqueue_is_empty(&sq))
+	if (FQUEUE_IS_EMPTY(&sq))
 	{
 		return;
 	}
