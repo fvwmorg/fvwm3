@@ -2239,8 +2239,8 @@ static Bool pop_menu_up(
     int old_y = y;
 
     if (HAS_BOTTOM_TITLE(fw))
-      y = fw->frame_g.y + fw->frame_g.height - fw->title_g.height - 1 -
-	MR_HEIGHT(mr);
+      y = fw->frame_g.y - fw->boundary_width - fw->title_g.height - 1 +
+	fw->frame_g.height - MR_HEIGHT(mr);
     else
       y = fw->frame_g.y + fw->boundary_width + fw->title_g.height + 1;
     if(context&C_LALL)
