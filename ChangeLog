@@ -1,9 +1,24 @@
+2002-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (Iconify):
+	icon placement safety patch
+	(CreateIconWindow):
+	fixed initial position of application provided icon windows
+
+	* fvwm/session.c (LoadWindowStates):
+	fixed parsing of strings beginning with whitespace in session file
+
+	* fvwm/fvwm.1.in (Note):
+	* fvwm/style.c (style_set_old_focus_policy):
+	* libs/defaults.h (DEF_FP_MODIFIERS):
+	set default modifiers for raising/focusing to N again
+
 2002-11-11  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm.1.in:
 	* fvwm/fvwm.c (main):
 	(usage):
-	named-palette -> visual-palette, -N -> -P 
+	named-palette -> visual-palette, -N -> -P
 
 2002-11-11  Dominik Vogt  <dominik.vogt@gmx.de>
 

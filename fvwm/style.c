@@ -852,7 +852,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 	{
 	case 0:
 		/* ClickToFocus */
-		FPS_MODIFIERS(S_FOCUS_POLICY(SCF(*ps)), DEF_FP_MODIFIERS);
 		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 1);
@@ -875,7 +874,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 1:
 		/* MouseFocus */
-		FPS_MODIFIERS(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
@@ -898,7 +896,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 2:
 		/* SloppyFocus */
-		FPS_MODIFIERS(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
@@ -921,7 +918,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 3:
 		/* NeverFocus */
-		FPS_MODIFIERS(S_FOCUS_POLICY(SCF(*ps)), DEF_FP_MODIFIERS);
 		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
@@ -943,8 +939,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		FPS_SORT_WINDOWLIST_BY(fp, FPOL_SORT_WL_BY_FOCUS);
 		break;
 	}
-	FPS_MODIFIERS(S_FOCUS_POLICY(SCM(*ps)), 0xffffffff);
-	FPS_MODIFIERS(S_FOCUS_POLICY(SCC(*ps)), 0xffffffff);
 	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCM(*ps)), 1);
 	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCC(*ps)), 1);
 	FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCM(*ps)), 1);

@@ -5956,12 +5956,7 @@ style takes a list of modifier keys just like the
 .B Key
 command.  The exact combination of modifier keys must be pressed
 for the click to focus or raise a window to work.  The default is
-to use any modifiers ("A").  This setting is overwritten each time
-one of the styles
-.IR ClickToFocus " or " NeverFocus
-("A"ny modifier), or
-.IR SloppyFocus " or " MouseFocus
-("N"o modifier) is used.
+to use no modifiers ("N").
 
 With the
 .IR FPPassFocusClick

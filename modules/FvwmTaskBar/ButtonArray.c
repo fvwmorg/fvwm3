@@ -675,7 +675,7 @@ void DrawButtonArray(ButtonArray *array, int all, XEvent *evp)
 {
 	Button *temp;
 	int x, y, n;
-	static exposed = False;
+	static Bool exposed = False;
 
 	if (!exposed && evp)
 	{

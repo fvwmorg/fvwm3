@@ -596,6 +596,13 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 		valuemask = CWEventMask;
 		XChangeWindowAttributes(
 			dpy, FW_W_ICON_PIXMAP(fw), valuemask,&attributes);
+		if (!IS_ICON_OURS(fw))
+		{
+			XMoveWindow(
+				dpy, FW_W_ICON_PIXMAP(fw),
+				fw->icon_g.picture_w_g.x,
+				fw->icon_g.picture_w_g.y);
+		}
 	}
 	if (old_icon_pixmap_w != None &&
 	    old_icon_pixmap_w != FW_W_ICON_PIXMAP(fw))
@@ -2311,7 +2318,11 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 	 * if the window has an icon, but neither a pixmap nor a title. */
 	if (HAS_NO_ICON_TITLE(fw) && FW_W_ICON_PIXMAP(fw) == None)
 	{
-		memset(&fw->icon_g, 0, sizeof(fw->icon_g));
+		fw->icon_g.picture_w_g.width = 0;
+		fw->icon_g.picture_w_g.height = 0;
+		fw->icon_g.title_w_g.width = 0;
+		fw->icon_g.title_w_g.height = 0;
+		fw->icon_g.title_text_width = 0;
 	}
 	SET_ICONIFIED(fw, 1);
 	SET_ICON_UNMAPPED(fw, 0);
