@@ -1,6 +1,10 @@
 2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (draw_clipped_decorations):
+	(get_common_decorations):
+	further performance enhancement
+
+	* fvwm/borders.c (draw_clipped_decorations):
 	removed duplicate get_common_decorations call
 
 	* fvwm/borders.c (draw_clipped_decorations):

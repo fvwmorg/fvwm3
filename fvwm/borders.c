@@ -1345,7 +1345,8 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
 
 static void get_common_decorations(
   common_decorations_type *cd, FvwmWindow *t, draw_window_parts draw_parts,
-  Bool has_focus, int force, Window expose_win, Bool is_border)
+  Bool has_focus, int force, Window expose_win, Bool is_border,
+  Bool do_change_gcs)
 {
   color_quad *draw_colors;
 
@@ -1358,8 +1359,10 @@ static void get_common_decorations(
       cd->texture_pixmap = GetDecor(t, BorderStyle.active.u.p->picture);
     }
     cd->back_pixmap= Scr.gray_pixmap;
-    if (is_border) draw_colors = &(t->border_hicolors);
-    else draw_colors = &(t->hicolors);
+    if (is_border)
+      draw_colors = &(t->border_hicolors);
+    else
+      draw_colors = &(t->hicolors);
   }
   else
   {
@@ -1377,13 +1380,16 @@ static void get_common_decorations(
   }
   cd->fore_color = draw_colors->fore;
   cd->back_color = draw_colors->back;
-  Globalgcv.foreground = draw_colors->hilight;
-  Globalgcm = GCForeground;
-  XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
-  cd->relief_gc = Scr.ScratchGC1;
-  Globalgcv.foreground = draw_colors->shadow;
-  XChangeGC(dpy, Scr.ScratchGC2, Globalgcm, &Globalgcv);
-  cd->shadow_gc = Scr.ScratchGC2;
+  if (do_change_gcs)
+  {
+    Globalgcv.foreground = draw_colors->hilight;
+    Globalgcm = GCForeground;
+    XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
+    cd->relief_gc = Scr.ScratchGC1;
+    Globalgcv.foreground = draw_colors->shadow;
+    XChangeGC(dpy, Scr.ScratchGC2, Globalgcm, &Globalgcv);
+    cd->shadow_gc = Scr.ScratchGC2;
+  }
 
   /* MWMBorder style means thin 3d effects */
   cd->relief_width = (HAS_MWM_BORDER(t) ? 1 : 2);
@@ -1431,6 +1437,8 @@ void draw_clipped_decorations(
   Bool is_button_redraw_allowed = False;
   Bool is_title_redraw_allowed = False;
   Bool do_redraw_title = False;
+  Bool do_redraw_buttons = False;
+  Bool do_change_gcs = False;
 
   if (!t)
     return;
@@ -1495,10 +1503,21 @@ void draw_clipped_decorations(
     return;
   }
 
-  get_common_decorations(
-    &cd, t, draw_parts, has_focus, force, expose_win, False);
+  /* calculate some values and flags */
   if ((draw_parts & DRAW_TITLE) && HAS_TITLE(t) && is_title_redraw_allowed)
+  {
     do_redraw_title = True;
+    do_change_gcs = True;
+  }
+  if ((draw_parts & DRAW_BUTTONS) && HAS_TITLE(t) && is_button_redraw_allowed)
+  {
+    do_redraw_buttons = True;
+    do_change_gcs = True;
+  }
+  get_common_decorations(
+    &cd, t, draw_parts, has_focus, force, expose_win, False, do_change_gcs);
+
+  /* redraw */
   if (cd.flags.has_color_changed && HAS_TITLE(t))
   {
     if (!do_redraw_title || !rclip)
@@ -1507,15 +1526,19 @@ void draw_clipped_decorations(
 	t->title_w, cd.notex_valuemask, &cd.notex_attributes);
     }
   }
-  if ((draw_parts & DRAW_BUTTONS) && HAS_TITLE(t) && is_button_redraw_allowed)
+  if (do_redraw_buttons)
+  {
     RedrawButtons(&cd, t, has_focus, force, expose_win, rclip);
+  }
   if (do_redraw_title)
+  {
     RedrawTitle(&cd, t, has_focus, rclip);
+  }
   if (cd.flags.has_color_changed ||
       ((draw_parts & DRAW_FRAME) && (is_frame_redraw_allowed)))
   {
     get_common_decorations(
-      &cd, t, draw_parts, has_focus, force, expose_win, True);
+      &cd, t, draw_parts, has_focus, force, expose_win, True, True);
     if (!rclip || !IS_WINDOW_BORDER_DRAWN(t))
     {
       change_window_background(t->decor_w, cd.valuemask, &cd.attributes);
