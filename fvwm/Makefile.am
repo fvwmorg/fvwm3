@@ -27,14 +27,14 @@ fvwm_SOURCES = \
 
 fvwm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
-LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(stroke_LIBS) \
-	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm \
-	$(iconv_LIBS) $(Xrender_LIBS) $(Xft_LIBS) $(FT2_LIBS) $(Bidi_LIBS) \
+LDADD = -L$(top_builddir)/libs $(Xft_LIBS) $(X_LIBS) -lfvwm $(xpm_LIBS) \
+	$(stroke_LIBS) $(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 \
+	$(X_EXTRA_LIBS) -lm $(iconv_LIBS) $(Xrender_LIBS) $(Bidi_LIBS) \
 	$(png_LIBS)
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libs $(xpm_CFLAGS) $(stroke_CFLAGS) \
-	$(X_CFLAGS) $(iconv_CFLAGS) $(Xrender_CFLAGS) $(Xft_CFLAGS) \
-	$(FT2_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libs $(Xft_CFLAGS) $(xpm_CFLAGS) \
+	$(stroke_CFLAGS) $(X_CFLAGS) $(iconv_CFLAGS) $(Xrender_CFLAGS) \
+	$(Bidi_CFLAGS) $(png_CFLAGS)
 
 AM_CFLAGS = \
 	-DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\" \

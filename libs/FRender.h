@@ -41,6 +41,12 @@ typedef XRenderDirectFormat FRenderDirectFormat;
 typedef PictFormat FRPictFormat;
 typedef XRenderPictFormat FRenderPictFormat;
 typedef XRenderPicture FRenderPicture;
+typedef XRenderVisual FRenderVisual;
+typedef XRenderDepth FRenderDepth;
+typedef XRenderInfo FRenderInfo;
+typedef XRenderPictureAttributes FRenderPictureAttributes;
+typedef XRenderColor FRenderColor;
+typedef XGlyphInfo FGlyphInfo;
 
 #define FRenderPictFormatID        PictFormatID
 #define FRenderPictFormatType      PictFormatType
@@ -137,12 +143,6 @@ typedef XRenderPicture FRenderPicture;
 #define FRenderCPComponentAlpha    CPComponentAlpha
 #define FRenderCPLastBit           CPLastBit
 
-typedef XRenderVisual FRenderVisual;
-typedef XRenderDepth FRenderDepth;
-typedef XRenderInfo FRenderInfo;
-typedef XRenderPictureAttributes FRenderPictureAttributes;
-typedef XRenderColor FRenderColor;
-
 #define FRenderQueryExtension(a,b,c) XRenderQueryExtension(a,b,c)
 #define FRenderQueryVersion(a,b,c) XRenderQueryVersion(a,b,c)
 #define FRenderQueryFormats(a) XRenderQueryFormats(a)
@@ -181,6 +181,63 @@ typedef struct {
     FRenderDirectFormat	direct;
     Colormap		colormap;
 } FRenderPictFormat;
+
+typedef struct {
+    Visual		*visual;
+    FRenderPictFormat	*format;
+} FRenderVisual;
+typedef struct {
+    int			depth;
+    int			nvisuals;
+    FRenderVisual	*visuals;
+} FRenderDepth;
+
+typedef struct {
+    FRenderDepth	*depths;
+    int			ndepths;
+    FRenderPictFormat	*fallback;
+} FRenderScreen;
+typedef struct _FRenderInfo {
+    FRenderPictFormat	*format;
+    int			nformat;
+    FRenderScreen	*screen;
+    int			nscreen;
+    FRenderDepth	*depth;
+    int			ndepth;
+    FRenderVisual	*visual;
+    int			nvisual;
+} FRenderInfo;
+
+typedef struct _FRenderPictureAttributes {
+    Bool		repeat;
+    FRenderPicture	alpha_map;
+    int			alpha_x_origin;
+    int			alpha_y_origin;
+    int			clip_x_origin;
+    int			clip_y_origin;
+    Pixmap		clip_mask;
+    Bool		graphics_exposures;
+    int			subwindow_mode;
+    int			poly_edge;
+    int			poly_mode;
+    Atom		dither;
+    Bool		component_alpha;
+} FRenderPictureAttributes;
+typedef struct {
+    unsigned short   red;
+    unsigned short   green;
+    unsigned short   blue;
+    unsigned short   alpha;
+} FRenderColor;
+typedef struct _FGlyphInfo {
+    unsigned short  width;
+    unsigned short  height;
+    short	    x;
+    short	    y;
+    short	    xOff;
+    short	    yOff;
+} FGlyphInfo;
+
 #define FRenderPictFormatID 0
 #define FRenderPictFormatType  0
 #define FRenderPictFormatDepth 0
@@ -275,54 +332,6 @@ typedef struct {
 #define FRenderCPDither 0
 #define FRenderCPComponentAlpha 0
 #define FRenderCPLastBit 0
-
-typedef struct {
-    Visual		*visual;
-    FRenderPictFormat	*format;
-} FRenderVisual;
-typedef struct {
-    int			depth;
-    int			nvisuals;
-    FRenderVisual	*visuals;
-} FRenderDepth;
-
-typedef struct {
-    FRenderDepth	*depths;
-    int			ndepths;
-    FRenderPictFormat	*fallback;
-} FRenderScreen;
-typedef struct _FRenderInfo {
-    FRenderPictFormat	*format;
-    int			nformat;
-    FRenderScreen	*screen;
-    int			nscreen;
-    FRenderDepth	*depth;
-    int			ndepth;
-    FRenderVisual	*visual;
-    int			nvisual;
-} FRenderInfo;
-
-typedef struct _FRenderPictureAttributes {
-    Bool		repeat;
-    FRenderPicture	alpha_map;
-    int			alpha_x_origin;
-    int			alpha_y_origin;
-    int			clip_x_origin;
-    int			clip_y_origin;
-    Pixmap		clip_mask;
-    Bool		graphics_exposures;
-    int			subwindow_mode;
-    int			poly_edge;
-    int			poly_mode;
-    Atom		dither;
-    Bool		component_alpha;
-} FRenderPictureAttributes;
-typedef struct {
-    unsigned short   red;
-    unsigned short   green;
-    unsigned short   blue;
-    unsigned short   alpha;
-} FRenderColor;
 
 #define FRenderQueryExtension(a,b,c) 0
 #define FRenderQueryVersion(a,b,c) 0

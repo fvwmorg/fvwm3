@@ -30,5 +30,5 @@ FvwmRearrange_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm  \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(X_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(Xft_CFLAGS) $(X_CFLAGS)
 

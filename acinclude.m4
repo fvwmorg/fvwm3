@@ -1137,6 +1137,7 @@ AC_SUBST(FT2_LIBS)
 #-----------------------------------------------------------------------------
 # Configure paths for fontconfig
 # Marcelo Magallon 2001-10-26, based on gtk.m4 by Owen Taylor
+# modified by olicha for fontconfig
 
 dnl AM_CHECK_FC([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for fontconfig, and define FC_CFLAGS and FC_LIBS
@@ -1146,13 +1147,13 @@ AC_DEFUN(AM_CHECK_FC,
 dnl Get the cflags and libraries from the fontconfig-config script
 dnl
 AC_ARG_WITH(fontconfig-prefix,
-[  --with-fc-prefix=PFX    Prefix where Fontconfig is installed (optional) for Xft 2],
+[  --with-fc-prefix=PFX    Prefix where fontconfig is installed (optional) for Xft2],
             fc_config_prefix="$withval", fc_config_prefix="")
 AC_ARG_WITH(fontconfig-exec-prefix,
-[  --with-fc-exec-prefix=PFX Exec prefix where Fontconfig is installed (optional)],
+[  --with-fc-exec-prefix=PFX Exec prefix where fontconfig is installed (optional)],
             fc_config_exec_prefix="$withval", fc_config_exec_prefix="")
 AC_ARG_ENABLE(fontconfigtest,
-[  --disable-fontconfigtest  Do not try to compile and run a test Fontconfig program],
+[  --disable-fontconfigtest  Do not try to compile and run a test fontconfig program],
             [], enable_fctest=yes)
 
 if test x$fc_config_exec_prefix != x ; then
@@ -1211,8 +1212,8 @@ else
     else
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $FC_CFLAGS"
-      LIBS="$FC_LIBS $LIBS"
+      CFLAGS="$CFLAGS $FC_CFLAGS $FT2_CFLAGS"
+      LIBS="$FC_LIBS $LIBS $FT2_LIBS"
 dnl
 dnl Sanity checks for the results of fontconfig-config to some extent
 dnl
@@ -1224,9 +1225,9 @@ dnl
 int
 main()
 {
-  FcBool result = 1;
+  FcBool result;
 
-  /*result = FcInit();*/
+  result = FcInit();
 
   if (result)
   {
@@ -1248,12 +1249,8 @@ if test "x$no_fc" = x ; then
    ifelse([$2], , :, [$2])
 else
    AC_MSG_RESULT(no)
-   if test "$FC_CONFIG" = "no" -a "no" == "yes" ; then
-     echo "*** The fontconfig-config script installed by Fontconfig could not be found."
-     echo "*** If Fontconfig was installed in PREFIX, make sure PREFIX/bin is in"
-     echo "*** your path, or set the FC_CONFIG environment variable to the"
-     echo "*** full path to fontconfig-config."
-   elif test "no" = "yes" ; then
+   # no errors message "if $FC_CONFIG" = "no" as this is normal with Xft1
+   if test "$FC_CONFIG" != "no" ; then
      echo "*** The Fontconfig test program failed to run.  If your system uses"
      echo "*** shared libraries and they are installed outside the normal"
      echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
@@ -1268,8 +1265,9 @@ AC_SUBST(FC_LIBS)
 ])
 
 #-----------------------------------------------------------------------------
-# Configure paths for xft
+# Configure paths for xft 2
 # Marcelo Magallon 2001-10-26, based on gtk.m4 by Owen Taylor
+# modified by olicha for xft
 
 dnl AM_CHECK_XFT([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for xft, and define XFT_CFLAGS and XFT_LIBS
@@ -1279,10 +1277,10 @@ AC_DEFUN(AM_CHECK_XFT,
 dnl Get the cflags and libraries from the xft-config script
 dnl
 AC_ARG_WITH(xft-prefix,
-[  --with-xft-prefix=PFX    Prefix where Xft 2 is installed (optional)],
+[  --with-xft-prefix=PFX    Prefix where Xft2 is installed (optional)],
             xft_config_prefix="$withval", xft_config_prefix="")
 AC_ARG_WITH(xft-exec-prefix,
-[  --with-xft-exec-prefix=PFX Exec prefix where Xft 2 is installed (optional)],
+[  --with-xft-exec-prefix=PFX Exec prefix where Xft2 is installed (optional)],
             xft_config_exec_prefix="$withval", xft_config_exec_prefix="")
 AC_ARG_ENABLE(xfttest,
 [  --disable-xfttest  Do not try to compile and run a test Xft program],
@@ -1359,7 +1357,7 @@ main()
 {
   FcBool result = 1;
 
-  /*result = XftInit(NULL); */
+  result = XftInit(NULL);
 
   if (result)
   {

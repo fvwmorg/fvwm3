@@ -1,3 +1,20 @@
+2002-05-29  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Fft.c (FftSetupEncoding):
+	* libs/Fft.h:
+	* libs/FRender.h:
+	Added Xft2 support
+
+	* acinclude.m4:
+	* configure.in:
+	Added detection for fontconfig and Xft2. Added FT2 CFLAGS and LIBS
+	to Xft FLAGS and LIBS
+
+	* fvwm/Makefile.am:
+	* libs/Makefile.am: 
+	Put $(Xft_CFLAGS) before $(X_CFLAGS) to be able to use an independent
+	Xft2 library. Removed FT2 CFLAGS and LIBS
+	
 2002-05-27  olicha  <olivier.chapuis@free.fr>
 
 	* acinclude.m4:

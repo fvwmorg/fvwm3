@@ -589,10 +589,7 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints
 	{
 		flf->flags.is_utf8 = True;
 	}
-	else
-	{
-		flf->flags.is_utf8 = False;
-	}
+
 	if (charset != NULL)
 	{
 		free(charset);

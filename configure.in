@@ -256,7 +256,6 @@ AC_SUBST(Xrender_CFLAGS)
 
 dnl ********* xft
 problem_xft=" (experimental)"
-problem_xft2=""
 
 AC_ARG_ENABLE(xft,
   [  --enable-xft            enable Xft anti-aliased font rendering],
@@ -283,11 +282,11 @@ if test "$with_xft" = "check"; then
     problem_xft=": Failed to detect freetype2 (version >= 6.1.0 aka 2.0.6)"
   fi
 
-  dnl check for fontconfig for Xft 2: at present time disabled
+  dnl check for fontconfig for Xft 2
   have_fontconfig=no
-  if test "x$have_freetype" != "xno" -a "yes" = "no" ; then
-    # AM_CHECK_FC(1.0.1)
-    if test "x$no_fc" = x; then
+  if test "x$have_freetype" != "xno" ; then
+    AM_CHECK_FC(1.0.1)
+    if test "x$no_fc" = x ; then
       have_fontconfig=yes
     else
       have_fontconfig=no
@@ -295,34 +294,52 @@ if test "$with_xft" = "check"; then
     fi
   fi
 
-  dnl now check for Xft (a priori it is not needed to check for XRender first)
+  dnl now check for Xft 2
+  with_xft=no
   if test "x$have_fontconfig" != "xno" ; then
     # Xft 2
-    # AM_CHECK_XFT(2.0.0)
-    if test "x$no_xft2" = x; then
+    AM_CHECK_XFT(2.0.0)
+    if test "x$no_xft" = x; then
       with_xft=yes
-      problem_xft=": version 2 (experimental)"
+      problem_xft="  version 2 (experimental)"
       AC_DEFINE(HAVE_XFT2)
       AC_DEFINE(HAVE_XFT)
       AC_DEFINE(HAVE_XFT_UTF8)
       Xft_LIBS=$XFT_LIBS
       Xft_CFLAGS=$XFT_CFLAGS
     else
-      with_xft=no
-      problem_xft=": Failed to detect Xft 2"
+      problem_xft=": Failed to detect Xft 2, but fontconfig detected"
     fi
-  elif test "x$have_freetype" != "xno" ; then
+  fi
+
+  dnl if Xft2 not detected check for Xft1
+  if test "x$have_freetype" != "xno" -a "x$with_xft" != "xyes"; then
     #Xft 1
+    $UNSET ac_cv_lib_XftConfigSubstitute
     $UNSET ac_cv_lib_Xft_XftFontOpen
     $UNSET ac_cv_lib_Xft_XftDrawStringUtf8
     AC_CHECK_LIB(Xft, XftFontOpen,
-      with_xft=yes; Xft_LIBS=-lXft; problem_xft=": (experimental)"; 
-      AC_DEFINE(HAVE_XFT),
-      with_xft=no; Xft_LIBS=
-      problem_xft=": Failed to detect Xft",
+      with_xft=yes, with_xft=no,
       [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
-    AC_CHECK_LIB(Xft, XftDrawStringUtf8, AC_DEFINE(HAVE_XFT_UTF8),,
-                 [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
+    if test "x$with_xft" = "xyes" ; then
+      AC_CHECK_LIB(Xft, XftConfigSubstitute, is_xft1=yes, is_xft1=no,
+                   [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
+      if test "x$is_xft1" = "xyes"; then
+        Xft_LIBS="-lXft $FT2_LIBS"
+	Xft_CFLAGS="$Xft_CFLAGS $FT2_CFLAGS"
+        problem_xft="  version 1 (experimental)" 
+        AC_DEFINE(HAVE_XFT)
+      else
+        with_xft=no
+        problem_xft=": Failed to detect Xft 1 or fontconfig"
+      fi
+    else
+      problem_xft=": Failed to detect Xft 1 or Xft 2 and fontconfig"
+    fi
+    if test "x$with_xft" = "xyes"; then
+      AC_CHECK_LIB(Xft, XftDrawStringUtf8, AC_DEFINE(HAVE_XFT_UTF8),,
+                   [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
+    fi
   fi
 
 fi

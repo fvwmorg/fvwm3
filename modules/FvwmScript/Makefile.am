@@ -16,12 +16,11 @@ YFLAGS = -d
 man_MANS = FvwmScript.1
 EXTRA_DIST = $(man_MANS) scanner.l script.y TODO
 
-LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
-	$(xpm_LIBS) $(Xinerama_LIBS) $(X_PRE_LIBS) -lXext -lX11 \
-	$(X_EXTRA_LIBS) -lm $(Xrender_LIBS) $(Xft_LIBS) $(FT2_LIBS) \
-	$(Bidi_LIBS) $(png_LIBS)
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) \
-	$(Xrender_CFLAGS) $(FT2_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS)
+LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs $(Xft_LIBS) $(X_LIBS) \
+	-lfvwm $(xpm_LIBS) $(Xinerama_LIBS) $(X_PRE_LIBS) -lXext -lX11 \
+	$(X_EXTRA_LIBS) -lm $(Xrender_LIBS) $(Bidi_LIBS) $(png_LIBS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
+	$(Xrender_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS)
 
 # Need this to get datadir into FvwmScript.c:
 AM_CFLAGS = -DFVWM_DATADIR=\"$(FVWM_DATADIR)\"

@@ -19,10 +19,10 @@ FvwmIconMan_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
 ## so we might as well link against libXpm, if present.
-LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
+LDADD = -L$(top_builddir)/libs $(Xft_LIBS) $(X_LIBS) -lfvwm \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
-	$(Xrender_LIBS) $(Xft_LIBS) -lm $(FT2_LIBS) $(Bidi_LIBS)
+	$(Xrender_LIBS) -lm $(Bidi_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(X_CFLAGS) \
-	$(Xrender_CFLAGS) $(FT2_CFLAGS) $(Bidi_CFLAGS)
+INCLUDES = -I$(top_srcdir)  $(Xft_CFLAGS) $(X_CFLAGS) \
+	$(Xrender_CFLAGS) $(Bidi_CFLAGS)
 

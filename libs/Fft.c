@@ -103,31 +103,39 @@ FftChar16 *FftUtf8ToFftString16(unsigned char *str, int len, int *nl)
 static
 void FftSetupEncoding(FftFontType *fftf)
 {
-	int i = 0;
-	FftPatternElt *e;
-	FftFont *f;
-
 	if (fftf == NULL)
 		return;
-	
-	f =  fftf->fftfont;
+
 	fftf->utf8 = False;
 	fftf->encoding = NULL;
 
-	while(i < f->pattern->num)
+	if (FftSupportUseXft2)
 	{
-		e = &f->pattern->elts[i];
-		if (StrEquals(e->object, FFT_ENCODING) &&
-		    e->values->value.u.s != NULL)
+		fftf->utf8 = True;
+		fftf->encoding = "ISO10646-1";
+	}
+	else if (FftSupport)
+	{
+		int i = 0;
+		FftPatternElt *e;
+		Fft1Font *f;
+
+		f =  (Fft1Font *)fftf->fftfont;
+		while(i < f->pattern->num)
 		{
-			fftf->encoding = e->values->value.u.s;
-			if (StrEquals(fftf->encoding, "ISO10646-1"))
+			e = &f->pattern->elts[i];
+			if (StrEquals(e->object, FFT_ENCODING) &&
+			    e->values->value.u.s != NULL)
 			{
-				fftf->utf8 = True;
+				fftf->encoding = e->values->value.u.s;
+				if (StrEquals(fftf->encoding, "ISO10646-1"))
+				{
+					fftf->utf8 = True;
+				}
+				return;
 			}
-			return;
+			i++;
 		}
-		i++;
 	}
 }
 
@@ -146,7 +154,7 @@ FftFont *FftGetRotatedFont(
 	if (rotated_pat == NULL)
 		return NULL;
 
-	dummy = FftPatternDel(rotated_pat, XFT_MATRIX);
+	dummy = FftPatternDel(rotated_pat, FFT_MATRIX);
 
 	if (text_rotation == TEXT_ROTATED_90)
 	{

@@ -1,3 +1,24 @@
+2002-05-29  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Widgets/Makefile.am:
+	* FvwmSaveDesk/Makefile.am:
+	* FvwmSave/Makefile.am:
+	* FvwmRearrange/Makefile.am:
+	* FvwmWinList/Makefile.am:
+	* FvwmTaskBar/Makefile.am:
+	* FvwmGtk/Makefile.am:
+	* FvwmScript/Makefile.am:
+	* FvwmDebug/Makefile.am:
+	* FvwmCommand/Makefile.am:
+	* FvwmPager/Makefile.am:
+	* FvwmIdent/Makefile.am: 
+	* FvwmIconMan/Makefile.am:
+	* FvwmIconBox/Makefile.am:
+	* FvwmForm/Makefile.am:
+	* FvwmButtons/Makefile.am: 
+	Put $(Xft_CFLAGS) before $(X_CFLAGS) to be able to use an independent
+	Xft2 library. Removed FT2 CFLAGS and LIBS.
+
 2002-05-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmButtons/FvwmButtons.1:

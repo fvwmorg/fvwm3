@@ -20,4 +20,4 @@ libfvwm_a_SOURCES = ClientMsg.h Colorset.h Grab.h Module.h Parse.h Picture.h \
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(Bidi_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) $(Bidi_CFLAGS)
