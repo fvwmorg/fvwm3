@@ -515,17 +515,8 @@ char *FlocaleEncodeString(
 		else
 		{
 		        str1 = str2;
-			/* setup a trival logical to visual mapping in this
-			   case */
-			if(l_to_v != NULL)
-			{
-				int i;
-				*l_to_v = (int *)safemalloc(len * sizeof(int));
-				for(i = 0 ; i < len ; i++)
-				{
-					(*l_to_v)[i] = i;
-				}
-			}
+			/* we already have the logical to visual mapping
+			   from combining phase */
 		}
 	}
 
@@ -715,6 +706,8 @@ void FlocaleRotateDrawString(
 				buf2 = (char *)safemalloc(sizeof(char));
 				buf2[0] = 0;
 			}
+			tmp_fws.e_str = buf2;
+			tmp_fws.str2b = NULL;
 			if(flf->fontset != None)
 			{
 				XmbDrawString(dpy, canvas_pix, flf->fontset, 
@@ -724,8 +717,6 @@ void FlocaleRotateDrawString(
 			}
 			else if(flf->font != None)
 			{
-				tmp_fws.e_str = buf2;
-				tmp_fws.str2b = NULL;
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{
 					tmp_fws.str2b = (XChar2b *)
@@ -1942,10 +1933,11 @@ void FlocaleDrawString(
 				buf2 = (char *)safemalloc(sizeof(char));
 				buf2[0] = 0;
 			}
+			tmp_fws.e_str = buf2;
+			tmp_fws.str2b = NULL;
 			if(FftSupport && flf->fftf.fftfont != NULL)
 			{
 			        tmp_fws.x = fws->x + offset;
-				tmp_fws.e_str = buf2;
 				FftDrawString(
 					dpy, flf, &tmp_fws, fg, fgsh,
 					has_fg_pixels, strlen(buf2),
@@ -1961,8 +1953,6 @@ void FlocaleDrawString(
 			}
 			else if(flf->font != None)
 			{
-			        tmp_fws.e_str = buf2;
-				tmp_fws.str2b = NULL;
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{
 					tmp_fws.str2b = (XChar2b *)
@@ -2004,18 +1994,19 @@ void FlocaleDrawString(
 		}
 	}
 
-	if (do_free)
+	if(do_free)
 	{
 		if (fws->e_str != NULL)
 		{
 			free(fws->e_str);
 			fws->e_str = NULL;
 		}
-		if (fws->str2b != NULL)
-		{
-			free(fws->str2b);
-			fws->str2b = NULL;
-		}
+	}
+
+	if (fws->str2b != NULL)
+	{
+		free(fws->str2b);
+		fws->str2b = NULL;
 	}
 
 	if(comb_chars != NULL)
@@ -2023,6 +2014,7 @@ void FlocaleDrawString(
 	        free(comb_chars);
 		free(pixel_pos);
 	}
+
 	return;
 }
 
@@ -2046,7 +2038,6 @@ void FlocaleDrawUnderline(
 	/* need to encode the string first to get BIDI and combining chars */
 	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars, 
 			       &l_to_v);
-	
 	/* we don't need this, only interested in char mapping */
 	free(comb_chars);
 
@@ -2091,7 +2082,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 
 	if (!str || sl == 0)
 		return 0;
-
+	
 	if (sl < 0)
 	{
 		/* a vertical string: nothing to do! */

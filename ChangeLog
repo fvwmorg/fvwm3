@@ -1,3 +1,12 @@
+2003-07-11  Marcus Lundblad  <ml@update.uu.se>
+
+	* libs/Flocale.c (FlocaleEncodeWinString):
+	fixed a memory leak
+
+	* libs/Flocale.c (FlocaleDrawString):
+	(FlocaleRotatedDrawString):
+	removed some code duplication
+	
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/CombineChars.c (combclass_table): 
