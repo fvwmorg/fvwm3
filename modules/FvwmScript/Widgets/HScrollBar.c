@@ -77,6 +77,10 @@ void InitHScrollBar(struct XObj *xobj)
  int asc,desc,dir;
  XCharStruct struc;
  char str[20];
+#ifdef I18N_MB
+ char **ml;
+ XFontStruct **fs_list;
+#endif
 
  /* Enregistrement des couleurs et de la police */
  if (xobj->colorset >= 0) {
@@ -104,10 +108,21 @@ void InitHScrollBar(struct XObj *xobj)
  xobj->gc=fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
- if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
-   fprintf(stderr,"Can't load font %s\n",xobj->font);
- else
-  XSetFont(dpy,xobj->gc,xobj->xfont->fid);
+
+#ifdef I18N_MB
+ if ((xobj->xfontset=GetFontSetOrFixed(dpy,xobj->font)) == NULL) {
+     fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+     exit(1);
+ }
+ XFontsOfFontSet(xobj->xfontset,&fs_list,&ml);
+ xobj->xfont = fs_list[0];
+#else
+ if ((xobj->xfont=GetFontOrFixed(dpy,xobj->font))==NULL) {
+   fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+   exit(1);
+ }
+#endif
+ XSetFont(dpy,xobj->gc,xobj->xfont->fid);
 
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 

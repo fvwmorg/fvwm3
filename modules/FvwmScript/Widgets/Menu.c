@@ -27,6 +27,10 @@ void InitMenu(struct XObj *xobj)
  XCharStruct struc;
  int i;
  char *Option;
+#ifdef I18N_MB
+ char **ml;
+ XFontStruct **fs_list;
+#endif
 
  /* Enregistrement des couleurs et de la police */
  if (xobj->colorset >= 0) {
@@ -54,10 +58,21 @@ void InitMenu(struct XObj *xobj)
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
 
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
- if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
-   fprintf(stderr,"Can't load font %s\n",xobj->font);
- else
-  XSetFont(dpy,xobj->gc,xobj->xfont->fid);
+
+#ifdef I18N_MB
+ if ((xobj->xfontset=GetFontSetOrFixed(dpy,xobj->font)) == NULL) {
+     fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+     exit(1);
+ }
+ XFontsOfFontSet(xobj->xfontset,&fs_list,&ml);
+ xobj->xfont = fs_list[0];
+#else
+ if ((xobj->xfont=GetFontOrFixed(dpy,xobj->font))==NULL) {
+   fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+   exit(1);
+ }
+#endif
+ XSetFont(dpy,xobj->gc,xobj->xfont->fid);
 
  /* Size */
  Option=GetMenuTitle(xobj->title,0);

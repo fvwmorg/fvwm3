@@ -31,6 +31,10 @@ void InitPopupMenu(struct XObj *xobj)
  char *str;
  int asc,desc,dir;
  XCharStruct struc;
+#ifdef I18N_MB
+ char **ml;
+ XFontStruct **fs_list;
+#endif
 
  /* Enregistrement des couleurs et de la police */
  if (xobj->colorset >= 0) {
@@ -57,10 +61,21 @@ void InitPopupMenu(struct XObj *xobj)
 		mask,&Attr);
  xobj->gc=fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
- if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
-   fprintf(stderr,"Can't load font %s\n",xobj->font);
- else
-  XSetFont(dpy,xobj->gc,xobj->xfont->fid);
+
+#ifdef I18N_MB
+ if ((xobj->xfontset=GetFontSetOrFixed(dpy,xobj->font)) == NULL) {
+     fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+     exit(1);
+ }
+ XFontsOfFontSet(xobj->xfontset,&fs_list,&ml);
+ xobj->xfont = fs_list[0];
+#else
+ if ((xobj->xfont=GetFontOrFixed(dpy,xobj->font))==NULL) {
+   fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+   exit(1);
+ }
+#endif
+ XSetFont(dpy,xobj->gc,xobj->xfont->fid);
 
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
  xobj->value3=CountOption(xobj->title);

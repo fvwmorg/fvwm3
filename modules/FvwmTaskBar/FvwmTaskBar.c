@@ -1674,12 +1674,13 @@ void StartMeUp(void)
 #ifdef I18N_MB
    if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
 #ifdef STRICTLY_FIXED
-     if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL)
+     if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL) {
 #else
-     if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL)
+     if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL) { 
 #endif
        fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n",Module);
        exit(1);
+     }
    }
    XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
    ButtonFont = fs_list[0];

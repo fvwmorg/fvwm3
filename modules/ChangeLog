@@ -1,5 +1,10 @@
 2001-03-15  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmScript/Widget/{all widget which use fonts} (init functions):
+	Fixed core dumps when multibyte is enabled
+
+2001-03-15  olicha  <olivier.chapuis@free.fr>
+
 	* FvwmScript/Widget/List.c (DrawCellule):
 	Use the hili colors in the place of the shad colors as the background
 	of a selected item 
