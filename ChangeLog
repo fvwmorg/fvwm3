@@ -1,3 +1,10 @@
+2004-04-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual.c (GetDeskNumber):
+	(CMD_MoveToDesk):
+	(CMD_GotoDesk):
+	fixed MoveToDesk with one argument
+
 2004-04-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (style_parse_one_style_option):

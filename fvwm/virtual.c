@@ -107,7 +107,7 @@ static unsigned int prev_desk_and_page_page_y = 0;
  * read (or if action is empty).
  *
  */
-static int GetDeskNumber(char *action)
+static int GetDeskNumber(char *action, int current_desk)
 {
 	int n;
 	int m;
@@ -123,14 +123,14 @@ static int GetDeskNumber(char *action)
 	n = GetIntegerArguments(action, NULL, &(val[0]), 4);
 	if (n <= 0)
 	{
-		return Scr.CurrentDesk;
+		return current_desk;
 	}
 	if (n == 1)
 	{
-		return Scr.CurrentDesk + val[0];
+		return current_desk + val[0];
 	}
 
-	desk = Scr.CurrentDesk;
+	desk = current_desk;
 	m = 0;
 
 	if (val[0] == 0)
@@ -1785,7 +1785,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
  */
 void CMD_GotoDesk(F_CMD_ARGS)
 {
-	goto_desk(GetDeskNumber(action));
+	goto_desk(GetDeskNumber(action, Scr.CurrentDesk));
 
 	return;
 }
@@ -1889,7 +1889,7 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 	int desk;
 	FvwmWindow * const fw = exc->w.fw;
 
-	desk = GetDeskNumber(action);
+	desk = GetDeskNumber(action, fw->Desk);
 	if (desk == fw->Desk)
 	{
 		return;
