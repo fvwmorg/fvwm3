@@ -1,3 +1,14 @@
+2003-07-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/commands.h:
+	* fvwm/functable.c (func_table):
+	* fvwm/functions.c (CMD_TearMenuOff):
+	(CMD_Title):
+	(CMD_Silent):
+	(CMD_Function):
+	(CMD_KeepRc):
+	merged all dummy commands into one: CMD_Dummy
+
 2003-07-01  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/menus.c (DestroyMenu):

@@ -265,7 +265,7 @@ const func_t func_table[] =
 	CMD_ENT("focusstyle", CMD_FocusStyle, F_FOCUSSTYLE, 0, 0),
 	/* - Configure focus and raise policy for windows */
 
-	CMD_ENT("function", CMD_Function, F_FUNCTION, 0, 0),
+	CMD_ENT("function", CMD_Dummy, F_FUNCTION, 0, 0),
 	/* - Execute a user defined function, see AddToFunc */
 
 	CMD_ENT("globalopts", CMD_GlobalOpts, F_GLOBAL_OPTS, 0, 0),
@@ -313,7 +313,7 @@ const func_t func_table[] =
 	CMD_ENT("imagepath", CMD_ImagePath, F_IMAGE_PATH, 0, 0),
 	/* - Directories to search for images */
 
-	CMD_ENT(PRE_KEEPRC, CMD_KeepRc, F_KEEPRC, 0, 0),
+	CMD_ENT(PRE_KEEPRC, CMD_Dummy, F_KEEPRC, 0, 0),
 	/* - Suppress errors on command, avoid window selection */
 
 	CMD_ENT("key", CMD_Key, F_KEY, 0, 0),
@@ -532,7 +532,7 @@ const func_t func_table[] =
 	CMD_ENT("setenv", CMD_SetEnv, F_SETENV, 0, 0),
 	/* - Set an environment variable */
 
-	CMD_ENT(PRE_SILENT, CMD_Silent, F_SILENT, 0, 0),
+	CMD_ENT(PRE_SILENT, CMD_Dummy, F_SILENT, 0, 0),
 	/* - Suppress errors on command, avoid window selection */
 
 	CMD_ENT("snapattraction", CMD_SnapAttraction, F_SNAP_ATT, 0, 0),
@@ -568,7 +568,7 @@ const func_t func_table[] =
 	CMD_ENT("style", CMD_Style, F_STYLE, 0, 0),
 	/* - Set attributes of windows that match a pattern */
 
-	CMD_ENT("tearmenuoff", CMD_TearMenuOff, F_TEARMENUOFF, 0, 0),
+	CMD_ENT("tearmenuoff", CMD_Dummy, F_TEARMENUOFF, 0, 0),
 	/* - Convert a menu to a window, for use as a menu command */
 
 	CMD_ENT("test", CMD_Test, F_TEST_, 0, 0),
@@ -580,7 +580,7 @@ const func_t func_table[] =
 	CMD_ENT("thiswindow", CMD_ThisWindow, F_THISWINDOW, 0, 0),
 	/* - Operate on the context window if it meets conditions */
 
-	CMD_ENT("title", CMD_Title, F_TITLE, 0, 0),
+	CMD_ENT("title", CMD_Dummy, F_TITLE, 0, 0),
 	/* - Insert title into a menu */
 
 	CMD_ENT("titlestyle", CMD_TitleStyle, F_TITLESTYLE, FUNC_DECOR, 0),

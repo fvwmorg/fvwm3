@@ -295,23 +295,7 @@ static Bool DeferExecution(
 }
 
 /* dummies */
-void CMD_Silent(F_CMD_ARGS)
-{
-	return;
-}
-void CMD_KeepRc(F_CMD_ARGS)
-{
-	return;
-}
-void CMD_Function(F_CMD_ARGS)
-{
-	return;
-}
-void CMD_Title(F_CMD_ARGS)
-{
-	return;
-}
-void CMD_TearMenuOff(F_CMD_ARGS)
+void CMD_Dummy(F_CMD_ARGS)
 {
 	return;
 }
