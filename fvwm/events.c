@@ -1666,10 +1666,20 @@ void  ResyncFvwmStackRing (void)
     {
       for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next) 
 	{
-	  if (t1->frame == children[i]) 
-	    {
-	      break;
-	    }
+          if (t1->flags & ICONIFIED && (!(t1->flags & SUPPRESSICON)))
+            {
+	      if (t1->icon_w == children[i]) 
+	        {
+	          break;
+	        }
+            }
+          else
+            {
+	      if (t1->frame == children[i]) 
+	        {
+	          break;
+	        }
+            }
 	}
 
       if (t1 != NULL && t1 != t2) 

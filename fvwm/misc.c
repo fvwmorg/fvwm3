@@ -984,9 +984,16 @@ void RaiseWindow(FvwmWindow *t)
          Motif menus. Instead raise wins[0] only above the topmost window
 	 which is managed by us. 
       */
-     if (wins[0] != Scr.FvwmRoot.stack_next->frame) 
+     if (wins[0] != Scr.FvwmRoot.stack_next->frame && wins[0] != Scr.FvwmRoot.stack_next->icon_w) 
       { 
-        changes.sibling = Scr.FvwmRoot.stack_next->frame;
+        if (Scr.FvwmRoot.stack_next->flags & ICONIFIED)
+          {
+            changes.sibling = Scr.FvwmRoot.stack_next->icon_w;
+          }
+        else
+          {
+            changes.sibling = Scr.FvwmRoot.stack_next->frame;
+          }
         changes.stack_mode = Above;
         XConfigureWindow(dpy, wins[0], (CWSibling|CWStackMode), &changes);
       }

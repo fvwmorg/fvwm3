@@ -1,3 +1,26 @@
+1999-01-26  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/events.c:  Changed the stacking order chain rebuilder to seek
+	out the icon window's position in the stacking order, not the app 
+	window frame's position, if a window is iconic (and the icon is not
+	being suppressed).
+
+	* fvwm/misc.c:  Corrected the new RaiseWindow logic to recognize the
+	case of an icon window's being at the top of the stacking chain. This
+	corrects the problem of not being able to raise an app window above
+	an icon that has been specifically raised.
+
+1999-01-26  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/fvwm.c:  Changed default from ActivePlacementHonorsStartsOnPage
+	to ActivePlacementIgnoresStartsOnPage. We'll all be the happier for it.
+
+	* fvwm/placement.c:  Fixed improper placement of windows that start
+	iconic, but are not StartsOnPage, and use ActivePlacement. This fix
+	reverts to the former handling - the icon is simply dumped onto the
+	current desk/page without going through any fancy placement logic or
+	expecting the user to place the window interactively.
+
 1999-01-25  Steven Michael ROBBINS  <stever@bongo.cs.mcgill.ca>
 
 	* configure.in: Forget values cached for libreadline; it messes up

@@ -431,6 +431,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
 /**/
   extern Boolean PPosOverride;
 
+  yt = 0;
+
   GetGravityOffsets (tmp_win, &gravx, &gravy);
 
 
@@ -591,8 +593,12 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
       !(tmp_win->hints.flags & USPosition) &&
       ((tflag & NO_PPOSITION_FLAG)||
        !(tmp_win->hints.flags & PPosition)) &&
-      !(PPosOverride) )
-/*  RBW - removed check for IconicState hint - it hindered StartsOnPage.  */
+      !(PPosOverride) &&
+      /*  RBW - allow StartsOnPage to go through, even if iconic.  */
+      ( ((!((tmp_win->wmhints)&&
+	    (tmp_win->wmhints->flags & StateHint)&&
+	    (tmp_win->wmhints->initial_state == IconicState))) 
+	 || (HonorStartsOnPage)) ) )
   {
     /* Get user's window placement, unless RandomPlacement is specified */
     if(tflag & RANDOM_PLACE_FLAG)
@@ -681,8 +687,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
           yt = 0;
         }
       }
-      /* RBW - 11/02/1998  */
-      if (HonorStartsOnPage)
+      /* RBW - 01/24/1999  */
+      if (HonorStartsOnPage && ! smartlyplaced)
       {
         xl -= pdeltax;
         yt -= pdeltay;
@@ -709,8 +715,15 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
            ( !(tmp_win->flags & TRANSIENT) &&
 
              ((tflag & NO_PPOSITION_FLAG) ||
-              !(tmp_win->hints.flags & PPosition)) ) )
-/*  RBW - removed check for IconicState hint - it hindered StartsOnPage.  */
+              !(tmp_win->hints.flags & PPosition)) &&
+
+           /*  RBW - allow StartsOnPage to go through, even if iconic.  */
+           ( ((!((tmp_win->wmhints)&&
+                (tmp_win->wmhints->flags & StateHint)&&
+	        (tmp_win->wmhints->initial_state == IconicState)))
+              || (HonorStartsOnPage)) )
+
+	       ) )
         {
         /*
             We're placing a SkipMapping window - either capturing one that's

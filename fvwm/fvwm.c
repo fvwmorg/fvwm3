@@ -1387,7 +1387,7 @@ void InitVariables(void)
   Scr.go.ModifyUSP                          =  True;
   Scr.go.CaptureHonorsStartsOnPage          =  True;
   Scr.go.RecaptureHonorsStartsOnPage        =  False;
-  Scr.go.ActivePlacementHonorsStartsOnPage  =  True;
+  Scr.go.ActivePlacementHonorsStartsOnPage  =  False;
 
   Scr.gs.EmulateMWM = False;
   Scr.gs.EmulateWIN = False;
