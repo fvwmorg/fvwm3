@@ -237,10 +237,7 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
   attributes.background_pixel = Scr.StdBack;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.border_pixel = 0;
-  attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
-			   | VisibilityChangeMask | ExposureMask | KeyPressMask
-			   | EnterWindowMask | LeaveWindowMask
-			   | FocusChangeMask );
+  attributes.event_mask = XEVMASK_ICONW;
   if (HAS_NO_ICON_TITLE(tmp_win))
   {
     if (tmp_win->icon_w)
@@ -320,9 +317,7 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
   else
   {
     /* client supplied icon window: select events on it */
-    attributes.event_mask = ButtonPressMask | ButtonReleaseMask | KeyPressMask
-      | VisibilityChangeMask | FocusChangeMask
-      | EnterWindowMask | LeaveWindowMask;
+    attributes.event_mask = XEVMASK_ICONPW;
     valuemask = CWEventMask;
     XChangeWindowAttributes(dpy, tmp_win->icon_pixmap_w, valuemask,&attributes);
   }

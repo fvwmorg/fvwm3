@@ -563,7 +563,7 @@ int main(int argc, char **argv)
      windows have it */
   /* do this before any RC parsing as some GC's are created from this window
    * rather than the root window */
-  attributes.event_mask = NO_FOCUS_WIN_EVMASK;
+  attributes.event_mask = XEVMASK_NOFOCUSW;
   attributes.override_redirect = True;
   attributes.colormap = Pcmap;
   attributes.background_pixmap = None;
@@ -584,13 +584,7 @@ int main(int argc, char **argv)
   SetupICCCM2 (replace_wm);
   XSetErrorHandler(CatchRedirectError);
   XSetIOErrorHandler(CatchFatal);
-  XSelectInput(dpy, Scr.Root,
-               LeaveWindowMask| EnterWindowMask | PropertyChangeMask |
-               SubstructureRedirectMask | KeyPressMask |
-               SubstructureNotifyMask|
-	       ColormapChangeMask|
-	       STROKE_CODE(ButtonMotionMask | DEFAULT_ALL_BUTTONS_MOTION_MASK |)
-               ButtonPressMask | ButtonReleaseMask );
+  XSelectInput(dpy, Scr.Root, XEVMASK_ROOTW);
   XSync(dpy, 0);
 
   XSetErrorHandler(FvwmErrorHandler);
@@ -908,7 +902,7 @@ void CaptureOneWindow(
     GNOME_SetLayer(fw);
     GNOME_SetWinArea(fw);
 
-    XSelectInput(dpy, fw->w, 0);
+    XSelectInput(dpy, fw->w, NoEventMask);
     w = fw->w;
     XUnmapWindow(dpy, fw->frame);
     RestoreWithdrawnLocation(fw, is_recapture, parent_win);
@@ -1169,9 +1163,9 @@ static int MappedNotOverride(Window w)
       XFree(prop);
     }
   }
-  if(wa.override_redirect == True)
+  if (wa.override_redirect == True)
   {
-    XSelectInput(dpy,w,FocusChangeMask);
+    XSelectInput(dpy, w, XEVMASK_ORW);
   }
   return (((isIconicState == IconicState)||(wa.map_state != IsUnmapped)) &&
 	  (wa.override_redirect != True));

@@ -97,6 +97,11 @@
 #define MAX_VERTICAL_SPACING             100 /* pixels */
 /* width of a tab in the item format of a menu */
 #define MENU_TAB_WIDTH                     8 /* spaces */
+/* This is the tile width or height for V and H gradients. I guess this should
+ * better be a power of two. A value of 5 definitely causes XFree 3.3.3.1 to
+ * screw up the V_GRADIENT on an 8 bit display, but 4, 6, 7 etc. work well. */
+#define DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS 4
+
 
 
 /*** colours ***/

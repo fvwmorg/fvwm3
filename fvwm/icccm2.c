@@ -28,6 +28,7 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "events.h"
 
 Time managing_since;
 
@@ -90,7 +91,7 @@ SetupICCCM2 (Bool replace_wm)
   XChangeProperty (dpy, Scr.NoFocusWin, XA_WM_CLASS, XA_STRING, 8,
 		   PropModeAppend, NULL, 0);
   XWindowEvent (dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
-  attr.event_mask = 0L;
+  attr.event_mask = NoEventMask;
   XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
 
   managing_since = xev.xproperty.time;
@@ -120,7 +121,7 @@ SetupICCCM2 (Bool replace_wm)
   }
 
   /* restore NoFocusWin event mask */
-  attr.event_mask = NO_FOCUS_WIN_EVMASK;
+  attr.event_mask = XEVMASK_NOFOCUSW;
   XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
 }
 
@@ -131,7 +132,7 @@ void
 CloseICCCM2 (void)
 {
   DBUG("CloseICCCM2", "good luck, new wm");
-  XSelectInput(dpy, Scr.Root, 0 );
+  XSelectInput(dpy, Scr.Root, NoEventMask);
   XSync(dpy, 0);
 }
 

@@ -738,9 +738,8 @@ void initPanFrames(void)
   saved_thickness = edge_thickness;
   if (edge_thickness == 0) edge_thickness = 2;
 
-  attributes.event_mask =  (EnterWindowMask | LeaveWindowMask |
-			    VisibilityChangeMask);
-  valuemask=  (CWEventMask | CWCursor );
+  attributes.event_mask = XEVMASK_PANFW;
+  valuemask=  (CWEventMask | CWCursor);
 
   attributes.cursor = Scr.FvwmCursors[CRS_TOP_EDGE];
   /* I know these overlap, it's useful when at (0,0) and the top one is

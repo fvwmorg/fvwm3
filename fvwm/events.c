@@ -1224,7 +1224,7 @@ void HandleMapNotify(void)
     if((Event.xmap.override_redirect == True)&&
        (Event.xmap.window != Scr.NoFocusWin))
     {
-      XSelectInput(dpy,Event.xmap.window,FocusChangeMask);
+      XSelectInput(dpy, Event.xmap.window, XEVMASK_ORW);
       Scr.UnknownWinFocused = Event.xmap.window;
     }
     return;
@@ -1434,7 +1434,7 @@ void HandleReparentNotify(void)
     SetMapStateProp(Tmp_win, WithdrawnState);
     XRemoveFromSaveSet(dpy, Event.xreparent.window);
     XSelectInput (dpy, Event.xreparent.window, NoEventMask);
-    discard_events(FRAME_EVENT_MASK);
+    discard_events(XEVMASK_FRAMEW);
     destroy_window(Tmp_win);
   }
 
@@ -2428,23 +2428,23 @@ void HandleVisibilityNotify(void)
   DBUG("HandleVisibilityNotify","Routine Entered");
 
   if(Tmp_win && Tmp_win->frame == last_event_window)
+  {
+    if(vevent->state == VisibilityUnobscured)
     {
-      if(vevent->state == VisibilityUnobscured)
-      {
-	SET_FULLY_VISIBLE(Tmp_win, 1);
-	SET_PARTIALLY_VISIBLE(Tmp_win, 1);
-      }
-      else if (vevent->state == VisibilityPartiallyObscured)
-      {
-	SET_FULLY_VISIBLE(Tmp_win, 0);
-	SET_PARTIALLY_VISIBLE(Tmp_win, 1);
-      }
-      else
-      {
-	SET_FULLY_VISIBLE(Tmp_win, 0);
-	SET_PARTIALLY_VISIBLE(Tmp_win, 0);
-      }
+      SET_FULLY_VISIBLE(Tmp_win, 1);
+      SET_PARTIALLY_VISIBLE(Tmp_win, 1);
     }
+    else if (vevent->state == VisibilityPartiallyObscured)
+    {
+      SET_FULLY_VISIBLE(Tmp_win, 0);
+      SET_PARTIALLY_VISIBLE(Tmp_win, 1);
+    }
+    else
+    {
+      SET_FULLY_VISIBLE(Tmp_win, 0);
+      SET_PARTIALLY_VISIBLE(Tmp_win, 0);
+    }
+  }
 }
 
 

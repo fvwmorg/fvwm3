@@ -117,9 +117,6 @@ typedef struct
 #define WithdrawnState 0
 #endif
 
-#define NO_FOCUS_WIN_EVMASK KeyPressMask|FocusChangeMask
-#define NO_FOCUS_WIN_MENU_EVMASK KeyPressMask|KeyReleaseMask|FocusChangeMask
-
 #if RETSIGTYPE != void
 #define SIGNAL_RETURN return 0
 #else

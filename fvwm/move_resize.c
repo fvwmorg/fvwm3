@@ -1250,7 +1250,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 			    KeyPressMask | PointerMotionMask |
 			    ButtonMotionMask | ExposureMask, &Event))
     {
-#if 1
       if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y, False, False, True))
       {
 	/* Fake an event to force window reposition */
@@ -1263,14 +1262,12 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	Event.xmotion.y_root = yt - YOffset;
 	break;
       }
-#endif
     }
     StashEventTime(&Event);
 
     /* discard any extra motion events before a logical release */
     if (Event.type == MotionNotify)
     {
-#if 1
       XEvent new_event;
 
       /*** logic borrowed from icewm ***/
@@ -1289,7 +1286,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  Event = new_event;
 	}
       }
-#endif
       /*** end of code borrowed from icewm ***/
       StashEventTime(&Event);
 
@@ -1390,9 +1386,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx || vy != Scr.Vy)
       {
 	/* only snap if the window actually moved! */
-#if 1
         DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-#endif
       }
 
       *FinalX = xl;
@@ -1406,9 +1400,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       xl = Event.xmotion.x_root + XOffset;
       yt = Event.xmotion.y_root + YOffset;
 
-#if 1
       DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-#endif
 
       /* check Paging request once and only once after outline redrawn */
       /* redraw after paging if needed - mab */
@@ -1447,9 +1439,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, False);
 	  xl += XOffset;
 	  yt += YOffset;
-#if 1
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-#endif
 	  if (!delta_x && !delta_y)
 	    /* break from while (paged <= 1) */
 	    break;
@@ -1651,7 +1641,6 @@ void SetSnapAttraction(F_CMD_ARGS)
   {
     Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
     Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
-fprintf(stderr,"sa1: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
     return;
   }
   Scr.SnapAttraction = val;
@@ -1661,14 +1650,12 @@ fprintf(stderr,"sa1: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
   }
   if (val == 0)
   {
-fprintf(stderr,"sa2: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
     return;
   }
 
   token = PeekToken(action, &action);
   if (token == NULL)
   {
-fprintf(stderr,"sa3: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
     return;
   }
 
@@ -1694,7 +1681,6 @@ fprintf(stderr,"sa3: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
     token = PeekToken(action, &action);
     if (token == NULL)
     {
-fprintf(stderr,"sa4: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
       return;
     }
   }
@@ -1712,7 +1698,7 @@ fprintf(stderr,"sa4: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
     fvwm_msg(ERR,"SetSnapAttraction", "Invalid argument: %s", token);
   }
 
-fprintf(stderr,"sa5: sm = 0x%02x, sa = %d\n", Scr.SnapMode, Scr.SnapAttraction);
+  return;
 }
 
 void SetSnapGrid(F_CMD_ARGS)

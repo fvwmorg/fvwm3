@@ -31,6 +31,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 #include <X11/keysym.h>
 
@@ -55,17 +56,9 @@
  * have to be #defined in the section below or defaults.h to ensure full
  * control over the menus. */
 
-/***************************************************************
- * These values may be adjusted to fine tune the menu looks.
- ***************************************************************/
-
-/* This is the tile width or height for V and H gradients. I guess this should
- * better be a power of two. A value of 5 definitely causes XFree 3.3.3.1 to
- * screw up the V_GRADIENT on an 8 bit display, but 4, 6, 7 etc. work well. */
-#define DEFAULT_GRADIENT_PIXMAP_THICKNESS    4
-
 /* used in float to int arithmetic */
 #define ROUNDING_ERROR_TOLERANCE  0.005
+
 
 /***************************************************************
  * typedefs
@@ -784,12 +777,12 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   {
     if (!pmp->flags.is_submenu)
     {
-      XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_MENU_EVMASK);
+      XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
     }
     MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title);
     if (!pmp->flags.is_submenu)
     {
-      XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_EVMASK);
+      XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
     }
   }
   else
@@ -1480,11 +1473,7 @@ static void MenuInteraction(
 	    MST_POPDOWN_DELAY(pmp->menu) > 0 ||
 	    (MST_POPUP_DELAY(pmp->menu) > 0 && !flags.is_popped_up_by_timeout))
 	{
-	  while (!XPending(dpy) || !XCheckMaskEvent(
-		   dpy, ButtonPressMask|ButtonReleaseMask|ExposureMask|
-		   KeyReleaseMask|KeyPressMask|VisibilityChangeMask|
-		   ButtonMotionMask,
-		   &Event))
+	  while (!XPending(dpy) || !XCheckMaskEvent(dpy, XEVMASK_MENU, &Event))
 	  {
 	    Bool is_popup_timed_out =
 	      (MST_POPUP_DELAY(pmp->menu) > 0 &&
@@ -1554,11 +1543,7 @@ static void MenuInteraction(
 	else
 	{
 	  /* block until there is an event */
-	  XMaskEvent(dpy,
-		     ButtonPressMask|ButtonReleaseMask|ExposureMask |
-		     KeyReleaseMask|KeyPressMask|VisibilityChangeMask|
-		     ButtonMotionMask,
-		     &Event);
+	  XMaskEvent(dpy, XEVMASK_MENU, &Event);
 	  flags.is_popped_up_by_timeout = False;
 	}
       }
@@ -1573,9 +1558,11 @@ static void MenuInteraction(
     if (Event.type == MotionNotify)
     {
       /* discard any extra motion events before a release */
-      while((XCheckMaskEvent(dpy,ButtonMotionMask|ButtonReleaseMask,
+      while ((XCheckMaskEvent(dpy,ButtonMotionMask|ButtonReleaseMask,
 			     &Event))&&(Event.type != ButtonRelease))
-	;
+      {
+	/* nop */
+      }
     }
 
     pmret->rc = MENU_NOP;
@@ -3768,7 +3755,7 @@ static void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  register int dw;
 
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr),
-			       DEFAULT_GRADIENT_PIXMAP_THICKNESS, Pdepth);
+			       DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS, Pdepth);
 	  pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
 	  dw = (float) (bounds.width / ST_FACE(ms).u.grad.npixels) + 1;
 	  for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
@@ -3776,7 +3763,7 @@ static void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	    unsigned short x = i * bounds.width/ST_FACE(ms).u.grad.npixels;
 	    XSetForeground(dpy, pmapgc, ST_FACE(ms).u.grad.pixels[i]);
 	    XFillRectangle(dpy, pmap, pmapgc, x, 0, dw,
-			   DEFAULT_GRADIENT_PIXMAP_THICKNESS);
+			   DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS);
 	  }
 	  XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
 	  XFreeGC(dpy,pmapgc);
@@ -3796,11 +3783,11 @@ static void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  if (best_tile_width == 0)
 	  {
 	    if (!XQueryBestTile(
-	      dpy, Scr.screen, DEFAULT_GRADIENT_PIXMAP_THICKNESS,
-	      DEFAULT_GRADIENT_PIXMAP_THICKNESS, &best_tile_width, &junk))
+	      dpy, Scr.screen, DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS,
+	      DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS, &best_tile_width, &junk))
 	    {
 	      /* call failed, use default and risk a screwed up tile */
-	      best_tile_width = DEFAULT_GRADIENT_PIXMAP_THICKNESS;
+	      best_tile_width = DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS;
 	    }
 	  }
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), best_tile_width,
@@ -4874,8 +4861,7 @@ static void make_menu_window(MenuRoot *mr)
   attributes.colormap = Pcmap;
   attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
     Colorset[MST_CSET_MENU(mr)].bg : MST_MENU_COLORS(mr).back;
-  attributes.event_mask = (ExposureMask | EnterWindowMask);
-  attributes.event_mask |= KeyPressMask|KeyReleaseMask;
+  attributes.event_mask = XEVMASK_MENUW;
   attributes.cursor = Scr.FvwmCursors[CRS_MENU];
   attributes.save_under = True;
 

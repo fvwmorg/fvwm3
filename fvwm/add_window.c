@@ -65,6 +65,7 @@
 #include "screen.h"
 #include "defaults.h"
 #include "add_window.h"
+#include "events.h"
 #include "module_interface.h"
 #include "stack.h"
 #include "update.h"
@@ -645,7 +646,7 @@ void setup_frame_window(
 
   attributes.backing_store = NotUseful;
   attributes.background_pixmap = None;
-  attributes.event_mask = FRAME_EVENT_MASK;
+  attributes.event_mask = XEVMASK_FRAMEW;
   attributes.save_under = False;
 
   /* create the frame window, child of root, grandparent of client */
@@ -667,9 +668,7 @@ void setup_decor_window(
 
   pattributes->border_pixel = 0;
   pattributes->colormap = Pcmap;
-  pattributes->event_mask = ExposureMask | VisibilityChangeMask
-			    | ButtonPressMask | ButtonReleaseMask
-			    | KeyPressMask;
+  pattributes->event_mask = XEVMASK_DECORW;
 
   if (DFS_FACE_TYPE(GetDecor(tmp_win, BorderStyle.inactive.style)) ==
       TiledPixmapButton)
@@ -699,10 +698,7 @@ void setup_title_window(
 {
   valuemask |= CWCursor | CWEventMask;
   pattributes->cursor = Scr.FvwmCursors[CRS_TITLE];
-  pattributes->event_mask = ButtonPressMask | ButtonReleaseMask
-			    | EnterWindowMask | LeaveWindowMask
-			    | ExposureMask | OwnerGrabButtonMask
-			    | ButtonMotionMask | PointerMotionMask;
+  pattributes->event_mask = XEVMASK_TITLEW;
 
   /* set up the title geometry - the height is already known from the decor */
   tmp_win->title_g.width = tmp_win->frame_g.width - 2*tmp_win->boundary_width;
@@ -748,10 +744,7 @@ void setup_button_windows(
 
   valuemask |= CWCursor | CWEventMask;
   pattributes->cursor = Scr.FvwmCursors[CRS_SYS];
-  pattributes->event_mask = ButtonPressMask | ButtonReleaseMask
-			    | EnterWindowMask | LeaveWindowMask
-			    | ExposureMask | OwnerGrabButtonMask
-			    | ButtonMotionMask | PointerMotionMask;
+  pattributes->event_mask = XEVMASK_BUTTONW;
 
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
@@ -819,7 +812,7 @@ void setup_parent_window(FvwmWindow *tmp_win)
   attributes.backing_store = NotUseful;
   attributes.background_pixmap = None;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-  attributes.event_mask = SubstructureRedirectMask;
+  attributes.event_mask = XEVMASK_PARENTW;
   attributes.save_under = False;
 
   /* This window is exactly the same size as the client for the
@@ -844,9 +837,8 @@ void setup_resize_handle_windows(FvwmWindow *tmp_win)
   /* sides and corners are input only */
   /* title and buttons maybe one day */
   valuemask = CWCursor | CWEventMask;
-  attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
-			   | EnterWindowMask | LeaveWindowMask);
-  if(HAS_BORDER(tmp_win))
+  attributes.event_mask = XEVMASK_BORDERW;
+  if (HAS_BORDER(tmp_win))
   {
     /* Just dump the windows any old place and let SetupFrame take
      * care of the mess */
@@ -1427,9 +1419,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /****** select events ******/
   valuemask = CWEventMask | CWDontPropagate;
-  attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
-			   EnterWindowMask | LeaveWindowMask |
-			   ColormapChangeMask | FocusChangeMask);
+  attributes.event_mask = XEVMASK_CLIENTW;
   attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
   XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
   /******  ******/

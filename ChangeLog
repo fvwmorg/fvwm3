@@ -1,4 +1,42 @@
+2001-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (moveLoop):
+	removed debug code
+
+	* libs/defaults.h:
+	* fvwm/menus.c (paint_menu):
+	moved a macro to defaults.h
+
 2001-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (SetSnapAttraction):
+	removed debug code
+
+	* fvwm/icccm2.c (SetupICCCM2):
+	(CloseICCCM2):
+	* fvwm/fvwm.h:
+	* fvwm/menus.c (do_menu):
+	(make_menu_window):
+	* fvwm/fvwm.c (main):
+	(main):
+	(MappedNotOverride):
+	* fvwm/icccm2.c (SetupICCCM2):
+	* fvwm/virtual.c (initPanFrames):
+	* fvwm/menus.c (MenuInteraction):
+	* fvwm/icons.c (CreateIconWindow):
+	(CreateIconWindow):
+	* fvwm/add_window.c (setup_parent_window):
+	(setup_button_windows):
+	(setup_decor_window):
+	(setup_resize_handle_windows):
+	(AddWindow):
+	(setup_frame_window):
+	* fvwm/events.c (HandleReparentNotify):
+	(HandleMapNotify):
+	* fvwm/add_window.h:
+	all window event masks are defined as macros in events.h
+	frame window selects VisibilityNotifyMask so that the raised/visible
+	conditions work again
 
 	* vms/make_fvwm.mms (BaseDirFix):
 	* todo-2.4:

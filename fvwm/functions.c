@@ -1212,8 +1212,8 @@ int DeferExecution(
     done = 0;
     /* block until there is an event */
     XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-               ExposureMask |KeyPressMask | VisibilityChangeMask |
-               ButtonMotionMask| PointerMotionMask
+               ExposureMask | KeyPressMask | VisibilityChangeMask |
+               ButtonMotionMask | PointerMotionMask
 	       /* | EnterWindowMask | LeaveWindowMask*/, eventp);
     StashEventTime(eventp);
 

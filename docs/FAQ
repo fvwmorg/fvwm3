@@ -2191,9 +2191,10 @@ A: Setting the background image is not really part of the window
 
      AddToFunc ToggleFvwmConsole
      + I None (FvwmConsole) Module FvwmConsole
-     + I Next (FvwmConsole) Close
+     + I Next (CurrentPage Visible FvwmConsole) Close
      + I Next (FvwmConsole) MoveToDesk
      + I Next (FvwmConsole) MoveToPage
+     + I Next (FvwmConsole) Raise
 
      AddToMenu <some menu>
      + "toggle FvwmConsole" Function ToggleFvwmConsole
@@ -2202,8 +2203,9 @@ A: Setting the background image is not really part of the window
 
      *FvwmButtons(Action ToggleFvwmConsole)
 
-   The lines with MoveToDesk and MoveToPage will bring the window
-   to the current page if it is not visible instead of closing it.
+   The lines with MoveToDesk, MoveToPage and Raise will bring the
+   window to the top of the current page if it is not visible
+   instead of closing it.
 
    If you want to toggle one specific window, e.g. an xterm, but
    still want to have other xterms that are not toggled, you must

@@ -16,6 +16,41 @@
 #ifndef _EVENTS_
 #define _EVENTS_
 
+#define XEVMASK_FRAMEW  (SubstructureRedirectMask | EnterWindowMask | \
+                         LeaveWindowMask | VisibilityChangeMask)
+#define XEVMASK_DECORW  (ExposureMask | ButtonPressMask | ButtonReleaseMask | \
+			 KeyPressMask)
+#define XEVMASK_TITLEW  (ButtonPressMask | ButtonReleaseMask | \
+			 EnterWindowMask | LeaveWindowMask | \
+			 ExposureMask | OwnerGrabButtonMask | \
+			 ButtonMotionMask | PointerMotionMask)
+#define XEVMASK_BUTTONW XEVMASK_TITLEW
+#define XEVMASK_PARENTW (SubstructureRedirectMask)
+#define XEVMASK_BORDERW (ButtonPressMask | ButtonReleaseMask | \
+			 EnterWindowMask | LeaveWindowMask)
+#define XEVMASK_CLIENTW (StructureNotifyMask | PropertyChangeMask | \
+			 EnterWindowMask | LeaveWindowMask | \
+			 ColormapChangeMask | FocusChangeMask)
+#define XEVMASK_ICONW   (ButtonPressMask | ButtonReleaseMask | \
+			 VisibilityChangeMask | ExposureMask | KeyPressMask | \
+			 EnterWindowMask | LeaveWindowMask | FocusChangeMask)
+#define XEVMASK_ICONPW  XEVMASK_ICONW
+#define XEVMASK_MENU    (ButtonPressMask | ButtonReleaseMask | ExposureMask | \
+ 		         KeyReleaseMask | KeyPressMask | \
+                         VisibilityChangeMask | ButtonMotionMask)
+#define XEVMASK_MENUW   (ExposureMask | EnterWindowMask | \
+                         KeyPressMask | KeyReleaseMask)
+#define XEVMASK_PANFW   (EnterWindowMask | LeaveWindowMask | \
+                         VisibilityChangeMask)
+#define XEVMASK_NOFOCUSW (KeyPressMask|FocusChangeMask)
+#define XEVMASK_MENUNFW  (KeyPressMask|KeyReleaseMask|FocusChangeMask)
+#define XEVMASK_ORW     (FocusChangeMask)
+#define XEVMASK_ROOTW   (LeaveWindowMask| EnterWindowMask | \
+          PropertyChangeMask | SubstructureRedirectMask | KeyPressMask | \
+          SubstructureNotifyMask | ColormapChangeMask | \
+          STROKE_CODE(ButtonMotionMask | DEFAULT_ALL_BUTTONS_MOTION_MASK |) \
+          ButtonPressMask | ButtonReleaseMask)
+
 void DispatchEvent(Bool preserve_Tmp_win);
 int GetContext(FvwmWindow *, XEvent *, Window *dummy);
 int My_XNextEvent(Display *dpy, XEvent *event);
