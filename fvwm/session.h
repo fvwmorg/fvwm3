@@ -57,12 +57,14 @@ void RestartInSession (char *filename, Bool isNative, Bool doPreserveState);
  */
 Bool MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max);
 
+#ifdef SESSION
+void SetClientID(char *new_id);
+
 /*
 **  Try to open a connection to the session manager. If non-NULL,
 **  reuse the client_id.
  */
-void SessionInit(char *client_id);
-
+void SessionInit(void);
 
 /*
 **  The file number of the session manager connection or -1
@@ -75,6 +77,15 @@ extern int sm_fd;
 **  from the main event loop when there is input waiting sm_fd.
  */
 void ProcessICEMsgs(void);
+
+#else
+
+#define sm_id -1
+#define ProcessICEMsgs()
+#define SessionInit()
+#define SetClientID(new_id)
+
+#endif
 
 /*
  * Fvwm Function implementation

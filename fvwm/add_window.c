@@ -1361,14 +1361,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /****** window colormap ******/
   InstallWindowColormaps(colormap_win);
 
-#ifdef GNOME
   /****** gnome setup ******/
   /* set GNOME hints on the window from flags set on tmp_win */
   GNOME_SetHints(tmp_win);
   GNOME_SetLayer(tmp_win);
   GNOME_SetDesk(tmp_win);
   GNOME_SetWinArea(tmp_win);
-#endif
 
   /****** windowshade ******/
   if (do_shade)

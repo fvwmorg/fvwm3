@@ -456,9 +456,7 @@ void executeModuleSync(F_CMD_ARGS)
     if (XPending(dpy) && XCheckMaskEvent(dpy, KeyPressMask, &tmpevent))
     {
       escape = CheckBinding(Scr.AllBindings,
-#ifdef HAVE_STROKE
-			    0,
-#endif /* HAVE_STROKE */
+			    STROKE_ARG(0)
 			    tmpevent.xkey.keycode,
 			    tmpevent.xkey.state, GetUnusedModifiers(),
 			    GetContext(Tmp_win, &tmpevent, &targetWindow),

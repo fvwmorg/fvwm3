@@ -19,6 +19,14 @@
 /* Define if stroke library is used. */
 #undef HAVE_STROKE
 
+#ifdef HAVE_STROKE
+#    define STROKE_ARG(x) x,
+#    define STROKE_CODE(x) x
+#else
+#    define STROKE_ARG(x)
+#    define STROKE_CODE(x)
+#endif
+
 /* Define if readline is available.  */
 #undef HAVE_READLINE
 

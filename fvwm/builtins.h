@@ -74,9 +74,7 @@ void SetClick(F_CMD_ARGS);
 void Recapture(F_CMD_ARGS);
 void RecaptureWindow(F_CMD_ARGS);
 void SetEnv(F_CMD_ARGS);
-#ifdef HAVE_STROKE
-void strokeFunc(F_CMD_ARGS);
-#endif /* HAVE_STROKE */
+STROKE_CODE(void strokeFunc(F_CMD_ARGS));
 void InitFvwmDecor(FvwmDecor *decor);
 void DestroyFvwmDecor(FvwmDecor *decor);
 void reset_decor_changes(void);

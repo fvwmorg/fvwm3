@@ -343,9 +343,7 @@ int GetEqualSizeChildren(
 typedef struct Binding
 {
   BindingType type;       /* Is it a mouse, key, or stroke binding */
-#ifdef HAVE_STROKE
-  void *Stroke_Seq;         /* stroke sequence */
-#endif /* HAVE_STROKE */
+  STROKE_CODE(void *Stroke_Seq;         /* stroke sequence */)
   int Button_Key;         /* Mouse Button number of Keycode */
   char *key_name;         /* In case of keycode, give the key_name too */
   int Context;            /* Contex is Fvwm context, ie titlebar, frame, etc */
@@ -357,24 +355,23 @@ typedef struct Binding
 
 Bool ParseContext(char *in_context, int *out_context_mask);
 Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask);
-Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
-#ifdef HAVE_STROKE
-		    void *stroke,
-#endif /* HAVE_STROKE */
-		    int button, KeySym keysym, char *key_name,
-		    int modifiers, int contexts, void *action, void *action2);
+int AddBinding(Display *dpy, Binding **pblist, BindingType type,
+	       STROKE_ARG(void *stroke)
+	       int button, KeySym keysym, char *key_name,
+	       int modifiers, int contexts, void *action, void *action2);
 void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
-#ifdef HAVE_STROKE
-		   char *stroke,
-#endif /* HAVE_STROKE */
+		   STROKE_ARG(char *stroke)
 		   int button, KeySym keysym, int modifiers, int contexts);
 void *CheckBinding(Binding *blist,
-#ifdef HAVE_STROKE
-		   char *stroke,
-#endif /* HAVE_STROKE */
+		   STROKE_ARG(char *stroke)
 		   int button_keycode,
 		   unsigned int modifier, unsigned int dead_modifiers,
 		   int Context, BindingType type);
+Bool MatchBinding(Display *dpy, Binding *b,
+		  STROKE_ARG(void *stroke)
+		  int button, KeySym keysym,
+		  unsigned int modifier,unsigned int dead_modifiers,
+		  int Context, BindingType type);
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		   unsigned int contexts, unsigned int dead_modifiers,
 		   Bool fGrab);

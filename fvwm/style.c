@@ -496,10 +496,8 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
 
   /* clear callers return area */
   memset(styles, 0, sizeof(window_style));
-#ifdef GNOME
   /* initialize with GNOME hints */
   GNOME_GetStyle (tmp_win, styles);
-#endif
 
   /* look thru all styles in order defined. */
   for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))

@@ -364,10 +364,8 @@ void WindowShade(F_CMD_ARGS)
   FlushOutputQueues();
   XSync(dpy, 0);
 
-#ifdef GNOME
-  GNOME_SetHints (tmp_win);
+  GNOME_SetHints(tmp_win);
   GNOME_SetWinArea(tmp_win);
-#endif
 }
 
 void Bell(F_CMD_ARGS)
@@ -722,9 +720,7 @@ void wait_func(F_CMD_ARGS)
       else if (Event.type == KeyPress)
       {
         escape = CheckBinding(Scr.AllBindings,
-#ifdef HAVE_STROKE
-                              0,
-#endif /* HAVE_STROKE */
+                              STROKE_ARG(0)
                               Event.xkey.keycode,
                               Event.xkey.state, GetUnusedModifiers(),
                               GetContext(Tmp_win,&Event,&nonewin),

@@ -16,14 +16,12 @@
 #ifndef _BINDINGS_
 #define _BINDINGS_
 
-Binding *ParseBinding(Display *dpy, Binding ** pblist, char *tline,
-		      BindingType type, int *nr_left_buttons,
-		      int *nr_right_buttons, unsigned char *buttons_grabbed);
+int ParseBinding(Display *dpy, Binding ** pblist, char *tline,
+		 BindingType type, int *nr_left_buttons,
+		 int *nr_right_buttons, unsigned char *buttons_grabbed);
 void key_binding(F_CMD_ARGS);
 void mouse_binding(F_CMD_ARGS);
-#ifdef HAVE_STROKE
-void stroke_binding(F_CMD_ARGS);
-#endif /* HAVE_STROKE */
+STROKE_CODE(void stroke_binding(F_CMD_ARGS));
 unsigned int MaskUsedModifiers(unsigned int in_modifiers);
 unsigned int GetUnusedModifiers(void);
 void ignore_modifiers(F_CMD_ARGS);

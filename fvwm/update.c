@@ -139,9 +139,7 @@ static void apply_window_updates(
       get_shaded_geometry(t, &t->frame_g, &t->frame_g);
     ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
 		    t->frame_g.height, True);
-#ifdef GNOME
     GNOME_SetWinArea(t);
-#endif
   }
   if (flags->do_update_window_color)
   {

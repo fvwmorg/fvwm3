@@ -135,9 +135,6 @@ Window bad_window = None;
 char **g_argv;
 int g_argc;
 
-#ifdef SESSION
-char *client_id = NULL;
-#endif
 char *state_filename = NULL;
 char *restart_state_filename = NULL;  /* $HOME/.fs-restart */
 
@@ -232,14 +229,12 @@ int main(int argc, char **argv)
     {
       debugging = True;
     }
-#ifdef SESSION
     else if (strncasecmp(argv[i], "-clientId", 9) == 0)
       {
 	if (++i >= argc)
 	  usage();
-	client_id = argv[i];
+	SetClientID(argv[i]);
       }
-#endif
     else if (strncasecmp(argv[i], "-restore", 8) == 0)
       {
 	if (++i >= argc)
@@ -565,12 +560,8 @@ int main(int argc, char **argv)
                SubstructureRedirectMask | KeyPressMask |
                SubstructureNotifyMask|
 	       ColormapChangeMask|
-#ifdef HAVE_STROKE
-		       ButtonMotionMask |
-		       Button1MotionMask |
-		       Button2MotionMask |
-		       Button3MotionMask |
-#endif /* HAVE_STROKE */
+	       STROKE_CODE(ButtonMotionMask | Button1MotionMask |
+			   Button2MotionMask | Button3MotionMask |)
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
 
@@ -706,13 +697,9 @@ int main(int argc, char **argv)
 
   CoerceEnterNotifyOnCurrentWindow();
 
-#ifdef SESSION
-  SessionInit(client_id);
-#endif
+  SessionInit();
 
-#ifdef GNOME
   GNOME_Init();
-#endif
 
   DBUG("main","Entering HandleEvents loop...");
 
@@ -833,12 +820,10 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     XChangeProperty (dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
                      PropModeReplace, (unsigned char *) data, 1);
 
-#if GNOME
     GNOME_SetHints(fw);
     GNOME_SetDesk(fw);
     GNOME_SetLayer(fw);
     GNOME_SetWinArea(fw);
-#endif
 
     XSelectInput(dpy, fw->w, 0);
     w = fw->w;
@@ -2092,6 +2077,9 @@ static void setVersionInfo(void)
 #endif
 #ifdef GNOME
   strcat(buf, " Gnome");
+#endif
+#ifdef SESSION
+  strcat(buf, " Session");
 #endif
 
   Fvwm_ConfigInfo = (strlen(buf) == emptylen) ? '\0' : strdup(buf);

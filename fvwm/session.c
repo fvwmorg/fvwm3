@@ -39,6 +39,9 @@
 #include "icccm2.h"
 #include "virtual.h"
 #include "geometry.h"
+#ifdef SESSION
+#include <X11/SM/SMlib.h>
+#endif
 
 extern int master_pid;
 
@@ -66,6 +69,9 @@ Match;
 
 int                 sm_fd = -1;
 
+#ifdef SESSION
+static char *client_id = NULL;
+#endif
 static char         *sm_client_id = NULL;
 static int          num_match = 0;
 static Match        *matches = NULL;
@@ -124,8 +130,6 @@ SaveGlobalState(FILE *f)
 static Bool doPreserveState = True;
 
 #ifdef SESSION
-#include <X11/SM/SMlib.h>
-
 extern char **g_argv;
 extern int g_argc;
 
@@ -138,7 +142,8 @@ setSmProperties (SmcConn sm_conn, char *filename, char hint);
 
 static void setRealStateFilename(char *filename)
 {
-  if (realStateFilename) free(realStateFilename);
+  if (realStateFilename)
+    free(realStateFilename);
   realStateFilename = strdup(filename);
 }
 
@@ -154,6 +159,8 @@ static char *getUniqueStateFilename(void)
   return tempnam(path, ".fs-");
 }
 
+#else
+#define setRealStateFilename(char *filename)
 #endif /* SESSION */
 
 void
@@ -194,7 +201,7 @@ LoadGlobalState(char *filename)
     {
       sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
     /* migo: we don't want to lose DeskTopSize in configurations,
-     * and it does not work well anyways - GNOME is not updated
+     * and it does not work well anyways - Gnome is not updated
       Scr.VxMax = i3;
       Scr.VyMax = i4;
     */
@@ -272,6 +279,10 @@ GetWindowRole(Window window)
   }
 
   return NULL;
+}
+
+void SetClientID(char *new_id)
+{
 }
 
 static char *
@@ -409,9 +420,7 @@ LoadWindowStates(char *filename)
 
   if (!filename || !*filename) return;
 
-#ifdef SESSION
   setRealStateFilename(filename);
-#endif
 
   if ((f = fopen(filename, "r")) == NULL) return;
 
@@ -767,7 +776,8 @@ static int saveStateFile(char *filename)
   fprintf(f, "# Normally, you must never delete this file, it will be auto-deleted.\n\n");
 
 #ifdef SESSION
-  if (goingToRestart) {
+  if (goingToRestart)
+  {
     fprintf(f, "[REAL_STATE_FILENAME] %s\n", realStateFilename);
     goingToRestart = False;  /* not needed */
   }
@@ -795,7 +805,8 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 {
   doPreserveState = _doPreserveState;
 #ifdef SESSION
-  if (sm_conn && isNative) {
+  if (sm_conn && isNative)
+  {
     goingToRestart = True;
 
     saveStateFile(filename);
@@ -828,7 +839,8 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
 #endif
 
   success = saveStateFile(filename);
-  if (success) {
+  if (success)
+  {
     setSmProperties(sm_conn, filename, SmRestartIfRunning);
     setRealStateFilename(filename);
   }
@@ -1073,16 +1085,14 @@ InstallIOErrorHandler (void)
     prev_handler = NULL;
 }
 
-#endif /* SESSION */
-
 /* ------------------------------------------------------------------------ */
 void
-SessionInit(char *previous_client_id)
+SessionInit(void)
 {
-#ifdef SESSION
-  char                error_string_ret[4096] = "";
-  static SmPointer    context;
-  SmcCallbacks        callbacks;
+  char *previous_client_id = client_id;
+  char error_string_ret[4096] = "";
+  static SmPointer context;
+  SmcCallbacks callbacks;
 
   InstallIOErrorHandler();
 
@@ -1123,14 +1133,12 @@ SessionInit(char *previous_client_id)
       setInitFunctionName(1, "SessionRestartFunction");
       setInitFunctionName(2, "SessionExitFunction");
     }
-#endif
 }
 
 /* ------------------------------------------------------------------------ */
 void
 ProcessICEMsgs(void)
 {
-#ifdef SESSION
   IceProcessMessagesStatus status;
 
   if (sm_fd < 0)

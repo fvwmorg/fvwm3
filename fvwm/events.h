@@ -39,9 +39,7 @@ void HandleClientMessage(void);
 void HandlePropertyNotify(void);
 void HandleKeyPress(void);
 void HandleVisibilityNotify(void);
-#ifdef HAVE_STROKE
-void HandleButtonRelease(void);
-void HandleMotionNotify(void);
-#endif /* HAVE_STROKE */
+STROKE_CODE(void HandleButtonRelease(void));
+STROKE_CODE(void HandleMotionNotify(void));
 
 #endif /* _EVENTS_ */

@@ -298,11 +298,8 @@ void SetDeskSize(F_CMD_ARGS)
 		  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
   checkPanFrames();
-
-#ifdef GNOME
   /* update GNOME pager */
   GNOME_SetAreaCount();
-#endif
 }
 
 
@@ -904,9 +901,7 @@ void MoveViewport(int newx, int newy, Bool grab)
       if (IS_VIEWPORT_MOVED(t))
       {
 	SET_VIEWPORT_MOVED(t, 0); /* Clear double move blocker. */
-#ifdef GNOME
 	GNOME_SetWinArea(t);
-#endif
       }
       /* If its an icon, and its sticking, autoplace it so
        * that it doesn't wind up on top a a stationary
@@ -924,11 +919,8 @@ void MoveViewport(int newx, int newy, Bool grab)
     StashEventTime(&Event);
   if(grab)
     MyXUngrabServer(dpy);
-
-#ifdef GNOME
   /* update GNOME pager */
   GNOME_SetCurrentArea();
-#endif
 }
 
 /**************************************************************************
@@ -954,13 +946,11 @@ void changeDesks(int desk)
     Scr.CurrentDesk = desk;
     MapDesk(desk, True);
     BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
-#ifdef GNOME
     GNOME_SetCurrentDesk();
     GNOME_SetDeskCount();
-#endif
   }
 
-return;
+  return;
 }
 
 
@@ -1134,10 +1124,8 @@ void gotoDeskAndPage_func(F_CMD_ARGS)
   }
   BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
 
-#ifdef GNOME
   GNOME_SetCurrentDesk();
   GNOME_SetDeskCount();
-#endif
 
   return;
 }
@@ -1177,11 +1165,9 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
       tmp_win->Desk = desk;
     BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   }
-#ifdef GNOME
   GNOME_SetDeskCount();
   GNOME_SetDesk(tmp_win);
   GNOME_SetWinArea(tmp_win);
-#endif
 }
 
 /* function with parsing of command line */

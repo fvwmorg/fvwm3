@@ -28,6 +28,8 @@
 #include "stroke.h"
 #endif /* HAVE_STROKE */
 
+static void activate_binding(Binding *binding, BindingType type, Bool do_grab);
+
 #define MODS_UNUSED_DEFAULT LockMask
 static int mods_unused = MODS_UNUSED_DEFAULT;
 
@@ -37,20 +39,16 @@ static int mods_unused = MODS_UNUSED_DEFAULT;
  *  Parses a mouse or key binding
  *
  ****************************************************************************/
-Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
-		      BindingType type, int *nr_left_buttons,
-		      int *nr_right_buttons, unsigned char *buttons_grabbed)
+int ParseBinding(Display *dpy, Binding **pblist, char *tline,
+		 BindingType type, int *nr_left_buttons,
+		 int *nr_right_buttons, unsigned char *buttons_grabbed)
 {
   char *action, context[20], modifiers[20], *ptr, *token;
   char key[20] = { '\0' };
   int button = 0;
-#ifdef HAVE_STROKE
-  char stroke[MAX_SEQUENCE+1] = {'\0'};
-#endif /* HAVE_STROKE */
+  STROKE_CODE(char stroke[MAX_SEQUENCE+1] = {'\0'});
   int n1=0,n2=0,n3=0;
-#ifdef HAVE_STROKE
-  int n4=0;
-#endif /* HAVE_STROKE */
+  STROKE_CODE(int n4=0);
   int i;
   KeySym keysym = NoSymbol;
   int contexts;
@@ -93,7 +91,7 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
       if (strlen(token) > MAX_SEQUENCE+num)
       {
 	fvwm_msg(WARN,"ParseBinding","To long stroke sequence in line %s"
-		 "Only %i elements will be taken in account", 
+		 "Only %i elements will be taken in account",
 		 tline, MAX_SEQUENCE);
       }
     }
@@ -130,13 +128,10 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
   }
 
   if(n1 != 1 || n2 != 1 || n3 != 1
-#ifdef HAVE_STROKE
-     || (type == STROKE_BINDING && n4 != 1)
-#endif /* HAVE_STROKE */
-    )
+     STROKE_CODE(|| (type == STROKE_BINDING && n4 != 1)))
   {
     fvwm_msg(ERR,"ParseBinding","Syntax error in line %s", tline);
-    return NULL;
+    return 0;
   }
 
   if (ParseContext(context, &contexts))
@@ -167,7 +162,7 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
 	    }
 	}
       if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)
-	return NULL;
+	return 0;
     }
 
   /*
@@ -181,56 +176,58 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
   */
   if (!action || action[0] == '-')
   {
-#ifdef HAVE_STROKE
-    if (type == KEY_BINDING)
-      RemoveBinding(dpy, pblist, KEY_BINDING, 0, 0, keysym, mods, contexts);
-    else if (type == STROKE_BINDING)
-      RemoveBinding(dpy, pblist, STROKE_BINDING, stroke, button, 0, mods,
-		    contexts);
-    else
-      RemoveBinding(dpy, pblist, MOUSE_BINDING, 0, button, 0, mods, contexts);
-#else
-    if (type == KEY_BINDING)
-      RemoveBinding(dpy, pblist, KEY_BINDING, 0, keysym, mods, contexts);
-    else
-      RemoveBinding(dpy, pblist, MOUSE_BINDING, button, 0, mods, contexts);
-#endif /* HAVE_STROKE */
-    return NULL;
+    Binding *b;
+    for (b = *pblist; b != NULL; b = b->NextBinding)
+    {
+      if (MatchBinding(dpy, b,
+		       STROKE_ARG(stroke)
+		       button, keysym, mods, GetUnusedModifiers(), contexts,
+		       type))
+      {
+        /* we found it, unbind it */
+	activate_binding(b, type, False);
+	RemoveBinding(dpy, pblist, type,
+		      STROKE_ARG(stroke)
+		      button, keysym, mods, contexts);
+      }
+    }
+
+    return 0;
   }
 
   if (type == MOUSE_BINDING)
-    {
-      int j;
+  {
+    int j;
 
-      if((contexts != C_ALL) && (contexts & C_LALL) &&
-	 (nr_left_buttons != NULL))
-	{
-	  /* check for nr_left_buttons */
-	  i=0;
-	  j=(contexts &C_LALL)/C_L1;
-	  while(j>0)
-	    {
-	      i++;
-	      j=j>>1;
-	    }
-	  if(*nr_left_buttons < i)
-	    *nr_left_buttons = i;
-	}
-      if((contexts != C_ALL) && (contexts & C_RALL) &&
-	 (nr_right_buttons != NULL))
-	{
-	  /* check for nr_right_buttons */
-	  i=0;
-	  j=(contexts&C_RALL)/C_R1;
-	  while(j>0)
-	    {
-	      i++;
-	      j=j>>1;
-	    }
-	  if(*nr_right_buttons < i)
-	    *nr_right_buttons = i;
-	}
+    if((contexts != C_ALL) && (contexts & C_LALL) &&
+       (nr_left_buttons != NULL))
+    {
+      /* check for nr_left_buttons */
+      i=0;
+      j=(contexts &C_LALL)/C_L1;
+      while(j>0)
+      {
+	i++;
+	j=j>>1;
+      }
+      if(*nr_left_buttons < i)
+	*nr_left_buttons = i;
     }
+    if((contexts != C_ALL) && (contexts & C_RALL) &&
+       (nr_right_buttons != NULL))
+    {
+      /* check for nr_right_buttons */
+      i=0;
+      j=(contexts&C_RALL)/C_R1;
+      while(j>0)
+      {
+	i++;
+	j=j>>1;
+      }
+      if(*nr_right_buttons < i)
+	*nr_right_buttons = i;
+    }
+  }
 
   if((mods & AnyModifier)&&(mods&(~AnyModifier)))
   {
@@ -245,17 +242,12 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
     *buttons_grabbed &= ~(1<<(button-1));
   }
 
-#ifdef HAVE_STROKE
-  return AddBinding(dpy, pblist, type, (void *)(stripcpy(stroke)), button, 
-		    keysym, key, mods, contexts, (void *)(stripcpy(action)), 
-		    NULL);
-#else
-  return AddBinding(dpy, pblist, type, button, keysym, key, mods, contexts,
+  return AddBinding(dpy, pblist, type, STROKE_ARG((void *)(stripcpy(stroke)))
+		    button, keysym, key, mods, contexts,
 		    (void *)(stripcpy(action)), NULL);
-#endif /* HAVE_STROKE */
 }
 
-static void activate_binding(Binding *binding, BindingType type)
+static void activate_binding(Binding *binding, BindingType type, Bool do_grab)
 {
   FvwmWindow *t;
 
@@ -264,55 +256,53 @@ static void activate_binding(Binding *binding, BindingType type)
 
   /* grab keys immediately */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    if (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
     {
-      if (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
-      {
-	GrabWindowKey(dpy, t->frame, binding,
-		      C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
-		      GetUnusedModifiers(), True);
-      }
-      if (binding->Context & C_ICON)
-	{
-	  if(t->icon_w != None)
-	    GrabWindowKey(dpy, t->icon_w, binding, C_ICON,
-			  GetUnusedModifiers(), True);
-	  if(t->icon_pixmap_w != None)
-	    GrabWindowKey(dpy, t->icon_pixmap_w, binding, C_ICON,
-			  GetUnusedModifiers(), True);
-	}
+      GrabWindowKey(dpy, t->frame, binding,
+		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+		    GetUnusedModifiers(), do_grab);
     }
+    if (binding->Context & C_ICON)
+    {
+      if(t->icon_w != None)
+	GrabWindowKey(dpy, t->icon_w, binding, C_ICON,
+		      GetUnusedModifiers(), do_grab);
+      if(t->icon_pixmap_w != None)
+	GrabWindowKey(dpy, t->icon_pixmap_w, binding, C_ICON,
+		      GetUnusedModifiers(), do_grab);
+    }
+  }
 }
 
+static void binding_cmd(F_CMD_ARGS, BindingType type)
+{
+  Binding *b;
+  int count;
+
+  count = ParseBinding(dpy, &Scr.AllBindings, action, type,
+		       &Scr.nr_left_buttons, &Scr.nr_right_buttons,
+		       &Scr.buttons2grab);
+  for (b = Scr.AllBindings; count > 0; count--, b = b->NextBinding)
+  {
+    activate_binding(b, type, True);
+  }
+}
 
 void key_binding(F_CMD_ARGS)
 {
-  Binding *b;
-
-  b = ParseBinding(dpy, &Scr.AllBindings, action, KEY_BINDING,
-		   &Scr.nr_left_buttons, &Scr.nr_right_buttons,
-		   &Scr.buttons2grab);
-  activate_binding(b, KEY_BINDING);
+  binding_cmd(F_PASS_ARGS, KEY_BINDING);
 }
 
 void mouse_binding(F_CMD_ARGS)
 {
-  Binding *b;
-
-  b = ParseBinding(dpy, &Scr.AllBindings, action, MOUSE_BINDING,
-		   &Scr.nr_left_buttons, &Scr.nr_right_buttons,
-		   &Scr.buttons2grab);
-  activate_binding(b, MOUSE_BINDING);
+  binding_cmd(F_PASS_ARGS, MOUSE_BINDING);
 }
 
 #ifdef HAVE_STROKE
 void stroke_binding(F_CMD_ARGS)
 {
-  Binding *b;
-
-  b = ParseBinding(dpy, &Scr.AllBindings, action, STROKE_BINDING,
-		   &Scr.nr_left_buttons, &Scr.nr_right_buttons,
-		   &Scr.buttons2grab);
-  activate_binding(b, STROKE_BINDING);
+  binding_cmd(F_PASS_ARGS, STROKE_BINDING);
 }
 #endif /* HAVE_STROKE */
 

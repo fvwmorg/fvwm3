@@ -1018,4 +1018,3 @@ GNOME_ButtonFunc(XEvent *eventp, Window w, FvwmWindow *fwin,
 }
 
 #endif /* GNOME */
-

@@ -1162,9 +1162,7 @@ void DeIconify(FvwmWindow *tmp_win)
 
   if(HAS_CLICK_FOCUS(tmp_win))
     FocusOn(tmp_win, TRUE, "");
-#ifdef GNOME
   GNOME_SetWinArea(tmp_win);
-#endif
 
   return;
 }

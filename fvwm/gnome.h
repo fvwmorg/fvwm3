@@ -52,10 +52,10 @@ void GNOME_SetHints(FvwmWindow *fwin);
 void GNOME_SetLayer(FvwmWindow *fwin);
 void GNOME_SetDesk(FvwmWindow *fwin);
 void GNOME_SetWinArea(FvwmWindow *w);
-void HandleGnomePropRequest(unsigned int propm,
-                            unsigned int prop,
-                            Window win,
-                            XEvent *ev);
+void GNOME_HandlePropRequest(unsigned int propm,
+			     unsigned int prop,
+			     Window win,
+			     XEvent *ev);
 
 /* update public window manager information */
 void GNOME_SetAreaCount(void);
@@ -64,7 +64,26 @@ void GNOME_SetCurrentArea(void);
 void GNOME_SetCurrentDesk(void);
 void GNOME_SetClientList(void);
 
-#endif /* GNOME */
+#else
 
+#define GNOME_Init()
+#define GNOME_ProcessClientMessage(fwin, ev) 0
+#define GNOME_ButtonFunc(eventp, w, fwin, context, action, Module)
+#define GNOME_ProxyButtonEvent(ev)
+#define GNOME_ShowDesks(eventp, w, fwin, context, action, Module)
+#define GNOME_GetHints(fwin)
+#define GNOME_GetStyle(fwin, style)
+#define GNOME_SetHints(fwin)
+#define GNOME_SetLayer(fwin)
+#define GNOME_SetDesk(fwin)
+#define GNOME_SetWinArea(w)
+#define GNOME_HandlePropRequest(propm, prop, win, ev)
+#define GNOME_SetAreaCount()
+#define GNOME_SetDeskCount()
+#define GNOME_SetCurrentArea()
+#define GNOME_SetCurrentDesk()
+#define GNOME_SetClientList()
+
+#endif /* GNOME */
 
 #endif /* GNOME_H */

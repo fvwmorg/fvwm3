@@ -841,9 +841,7 @@ new_layer (FvwmWindow *tmp_win, int layer)
       RaiseWindow(tmp_win);
     }
 
-#ifdef GNOME
   GNOME_SetLayer (tmp_win);
-#endif
 }
 
 /* ----------------------------- common functions -------------------------- */

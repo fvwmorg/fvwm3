@@ -139,16 +139,14 @@ Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask)
 ** Specify either button or keysym, depending on type.
 */
 void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
-#ifdef HAVE_STROKE
-		   char *stroke,
-#endif /* HAVE_STROKE */
+		   STROKE_ARG(char *stroke)
 		   int button, KeySym keysym, int modifiers, int contexts)
 {
   Binding *temp=*pblist, *temp2, *prev=NULL;
   KeyCode keycode = 0;
 
   if (type == KEY_BINDING)
-    keycode=XKeysymToKeycode(dpy,keysym);
+    keycode = XKeysymToKeycode(dpy, keysym);
 
   while (temp)
   {
@@ -157,11 +155,11 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
     {
       if (((type == KEY_BINDING &&
 	    temp->Button_Key == keycode) ||
-#ifdef HAVE_STROKE
-	   (type == STROKE_BINDING &&
-	    temp->Button_Key == button &&
-	    (strcmp(temp->Stroke_Seq,stroke) == 0)) ||
-#endif /* HAVE_STROKE */
+	   STROKE_CODE(
+	     (type == STROKE_BINDING &&
+	      temp->Button_Key == button &&
+	      (strcmp(temp->Stroke_Seq,stroke) == 0)) ||
+	     )
 	   (type == MOUSE_BINDING &&
 	    temp->Button_Key == button)) &&
 	  (temp->Context == contexts) &&
@@ -178,10 +176,10 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
         }
 	if (temp->key_name)
 	  free(temp->key_name);
-#ifdef HAVE_STROKE
-	if (temp->Stroke_Seq)
-	  free(temp->Stroke_Seq);
-#endif /* HAVE_STROKE */
+	STROKE_CODE(
+	  if (temp->Stroke_Seq)
+	    free(temp->Stroke_Seq);
+	  );
 	if (temp->Action)
 	  free(temp->Action);
 	if (temp->Action2)
@@ -206,18 +204,17 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
  *  memory and has to be freed by the caller.
  *
  ****************************************************************************/
-Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
-#ifdef HAVE_STROKE
-		    void *stroke,
-#endif /* HAVE_STROKE */
-		    int button, KeySym keysym, char *key_name,
-		    int modifiers, int contexts, void *action, void *action2)
+int AddBinding(Display *dpy, Binding **pblist, BindingType type,
+	       STROKE_ARG(void *stroke)
+	       int button, KeySym keysym, char *key_name,
+	       int modifiers, int contexts, void *action, void *action2)
 {
   int i;
   int min;
   int max;
   int maxmods;
   int m;
+  int count = 0;
   KeySym tkeysym;
   Binding *temp;
 
@@ -227,26 +224,25 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
   ** any single modifier.
   */
   if (type == KEY_BINDING)
-    {
-      XDisplayKeycodes(dpy, &min, &max);
-      maxmods = 8;
-    }
+  {
+    XDisplayKeycodes(dpy, &min, &max);
+    maxmods = 8;
+  }
   else
-    {
-      min = button;
-      max = button;
-      maxmods = 0;
-    }
-  for (i=min; i<=max; i++)
+  {
+    min = button;
+    max = button;
+    maxmods = 0;
+  }
+  for (i = min; i <= max; i++)
   {
     /* If this is a mouse binding we'll fall through the for loop (maxmods is
      * zero) and the if condition is always true (type is zero). Since min ==
      * max == button there is no loop at all is case of a mouse binding. */
     for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
+    {
       if (type == MOUSE_BINDING ||
-#ifdef HAVE_STROKE
-	  type == STROKE_BINDING ||
-#endif
+	  STROKE_CODE(type == STROKE_BINDING ||)
 	  (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
       {
         /* If the modifier (m) doesn't change the keys value,
@@ -261,24 +257,19 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
             ((type == KEY_BINDING && strcmp((*pblist)->key_name,key_name) == 0)
              ||
              ((type == MOUSE_BINDING
-#ifdef HAVE_STROKE
-	       || (type == STROKE_BINDING)
-#endif
+	       STROKE_CODE(|| (type == STROKE_BINDING))
 	       ) &&(*pblist)->key_name == NULL)) &&
-#ifdef HAVE_STROKE
-	       (*pblist)->Stroke_Seq == stroke &&
-#endif
+	    STROKE_CODE((*pblist)->Stroke_Seq == stroke &&)
             (*pblist)->Action == action &&
-            (*pblist)->Action2 == action2) {
+            (*pblist)->Action2 == action2)
+	{
           continue;
         }
 	temp = *pblist;
 	(*pblist) = (Binding *)safemalloc(sizeof(Binding));
 	(*pblist)->type = type;
 	(*pblist)->Button_Key = i;
-#ifdef HAVE_STROKE
-	(*pblist)->Stroke_Seq = stroke;
-#endif /* HAVE_STROKE */
+	STROKE_CODE((*pblist)->Stroke_Seq = stroke);
 	if (type == KEY_BINDING && key_name != NULL)
 	  (*pblist)->key_name = stripcpy(key_name);
 	else
@@ -288,18 +279,18 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 	(*pblist)->Action = action;
 	(*pblist)->Action2 = action2;
 	(*pblist)->NextBinding = temp;
+	count++;
       }
+    }
   }
-  return *pblist;
+  return count;
 }
 
 
 /* Check if something is bound to a key or button press and return the action
  * to be executed or NULL if not. */
 void *CheckBinding(Binding *blist,
-#ifdef HAVE_STROKE
-		   char *stroke,
-#endif /* HAVE_STROKE */
+		   STROKE_ARG(char *stroke)
 		   int button_keycode,
 		   unsigned int modifier,unsigned int dead_modifiers,
 		   int Context, BindingType type)
@@ -310,25 +301,101 @@ void *CheckBinding(Binding *blist,
   modifier &= used_modifiers;
 
   for (b = blist; b != NULL; b = b->NextBinding)
+  {
+    if ((
+      ((type == MOUSE_BINDING || type == KEY_BINDING) &&
+       b->Button_Key == button_keycode) ||
+      STROKE_CODE((type == STROKE_BINDING &&
+		   (strcmp(b->Stroke_Seq,stroke) == 0) &&
+		   b->Button_Key == button_keycode) ||)
+      (type == MOUSE_BINDING && b->Button_Key == 0))
+	&& (((b->Modifier & used_modifiers) == modifier) ||
+	    (b->Modifier == AnyModifier))
+	&& (b->Context & Context)
+	&& (b->type == type))
     {
-      if ((
-	   ((type == MOUSE_BINDING || type == KEY_BINDING) &&
-	    b->Button_Key == button_keycode) ||
-#ifdef HAVE_STROKE
-	   (type == STROKE_BINDING && (strcmp(b->Stroke_Seq,stroke) == 0) &&
-	    b->Button_Key == button_keycode) ||
-#endif /* HAVE_STROKE */
-	   (type == MOUSE_BINDING && b->Button_Key == 0))
-	  && (((b->Modifier & used_modifiers) == modifier) ||
-	      (b->Modifier == AnyModifier))
-	  && (b->Context & Context)
-	  && (b->type == type))
-	{
-	  /* Make throw away excess events before executing our binding */
-	  return b->Action;
-	}
+      return b->Action;
     }
+  }
   return NULL;
+}
+
+/* Check if something is bound to a key or button press */
+Bool MatchBinding(Display *dpy, Binding *b,
+		  STROKE_ARG(void *stroke)
+		  int button, KeySym keysym,
+		  unsigned int modifier,unsigned int dead_modifiers,
+		  int Context, BindingType type)
+{
+  unsigned int used_modifiers = ~dead_modifiers;
+  static int *kc_list = NULL;
+  static KeySym kc_ksym = NoSymbol;
+  static int kc_len = 0;
+  static int kc_maxlen = 0;
+
+  modifier &= used_modifiers;
+  if (((b->Modifier & used_modifiers) != modifier &&
+       b->Modifier != AnyModifier) ||
+      (b->Context & Context) == 0 ||
+      b->type != type)
+  {
+    return False;
+  }
+
+  /* See comment in AddBinding why this logic is necessary. */
+  if (type == KEY_BINDING)
+  {
+    int max;
+    int min;
+    int maxmods;
+    KeySym tkeysym;
+    int i;
+    int m;
+
+    XDisplayKeycodes(dpy, &min, &max);
+    maxmods = 8;
+
+    if (keysym == NoSymbol)
+      return False;
+    if (kc_ksym != keysym)
+    {
+      kc_len = 0;
+      free(kc_list);
+      kc_list = (int *)safemalloc(sizeof(int) * 8);
+      for (i = min; i <= max; i++)
+      {
+	for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
+	{
+	  if ((tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
+	  {
+	    if (kc_len >= kc_maxlen)
+	    {
+	      kc_maxlen += 8;
+	      kc_list =
+		(int *)saferealloc((char *)kc_list, sizeof(int) * kc_maxlen);
+	    }
+	    kc_list[kc_len] = i;
+	    kc_len++;
+	  }
+	}
+      }
+    }
+    for (i = 0; i < kc_len; i++)
+    {
+      if (kc_list[i] == b->Button_Key)
+	return True;
+    }
+  }
+  else if ((
+      (type == MOUSE_BINDING && b->Button_Key == button) ||
+      STROKE_CODE((type == STROKE_BINDING &&
+		   (strcmp(b->Stroke_Seq,stroke) == 0) &&
+		   b->Button_Key == button) ||)
+      (type == MOUSE_BINDING && b->Button_Key == 0)))
+  {
+      return True;
+  }
+  return False;
 }
 
 /***********************************************************************
@@ -412,12 +479,9 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 
   dead_modifiers &= ~(binding->Modifier & dead_modifiers); /* dje */
 
-  if((binding->Context & contexts) &&
-     ((binding->type == MOUSE_BINDING)
-#ifdef HAVE_STROKE
-       || (binding->type == STROKE_BINDING)
-#endif /* HAVE_STROKE */
-       ))
+  if ((binding->Context & contexts) &&
+      ((binding->type == MOUSE_BINDING)
+       STROKE_CODE(|| (binding->type == STROKE_BINDING))))
     {
       int bmin = 1;
       int bmax = 3;
@@ -486,9 +550,7 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
       switch (blist->type)
       {
       case MOUSE_BINDING:
-#ifdef HAVE_STROKE
-      case STROKE_BINDING:
-#endif
+      STROKE_CODE(case STROKE_BINDING:)
 	GrabWindowButton(dpy, w, blist, contexts, dead_modifiers, cursor,
 			 fGrab);
 	break;

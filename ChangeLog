@@ -1,5 +1,57 @@
 1999-12-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/session.c:
+	* fvwm/events.c (MyXNextEvent):
+	* fvwm/fvwm.c (main):
+	* fvwm/session.h (SessionInit):
+	same for SESSION
+
+	* fvwm/virtual.c (SetDeskSize):
+	(MoveViewport):
+	(changeDesks):
+	(gotoDeskAndPage_func):
+	(do_move_window_to_desk):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/style.c (lookup_style):
+	* fvwm/stack.c (new_layer):
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	(resize_window):
+	(resize_window):
+	(Maximize):
+	(handle_stick):
+	(handle_stick):
+	* fvwm/icons.c (DeIconify):
+	* fvwm/fvwm.c (CaptureOneWindow):
+	(main):
+	* fvwm/events.c (HandleClientMessage):
+	(HandleDestroyNotify):
+	(HandleMapRequestKeepRaised):
+	(HandleUnmapNotify):
+	(HandleButtonPress):
+	(HandleButtonRelease):
+	(HandleConfigureRequest):
+	* fvwm/builtins.c (WindowShade):
+	* fvwm/add_window.c (AddWindow):
+	handle GNOME by using empty macros if undefined; dramatically reduces
+	number of ifdef's
+
+	* libs/Bindings.c (GrabAllWindowKeysAndButtons):
+	* fvwm/events.c (HandleEnterNotify):
+	* fvwm/events.h (STROKE_CODE):
+	* fvwm/builtins.h (FreeDecorFace):
+	* fvwm/bindings.h (ignore_modifiers):
+	* fvwm/functions.c (func_config):
+	* fvwm/functions.h (enum):
+	* fvwm/fvwm.c (setVersionInfo):
+	* fvwm/module_interface.c:
+	* libs/fvwmlib.h (STROKE_ARG):
+	(STROKE_CODE):
+	macros to simplify stroke code
+
+	* libs/Bindings.c:
+	* fvwm/bindings.c:
+	unbinding keys with '-' action works without recapture
+
 	* fvwm/functions.c (ExecuteFunction):
 	removed some '#if 0'ed code
 

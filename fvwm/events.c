@@ -114,10 +114,8 @@ FvwmWindow *Tmp_win;		/* the current fvwm window */
 int last_event_type=0;
 Window last_event_window=0;
 
-#ifdef HAVE_STROKE
-static int send_motion;
-static char sequence[MAX_SEQUENCE+1];
-#endif /* HAVE_STROKE */
+STROKE_CODE(static int send_motion);
+STROKE_CODE(static char sequence[MAX_SEQUENCE+1]);
 
 #ifdef SHAPE
 extern int ShapeEventBase;
@@ -172,18 +170,13 @@ void InitEventHandlerJumpTable(void)
 #endif /* SHAPE */
   EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
   EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
-#ifdef HAVE_STROKE
-  EventHandlerJumpTable[ButtonRelease] =    HandleButtonRelease;
-  EventHandlerJumpTable[MotionNotify] =     HandleMotionNotify;
-#ifdef HAVE_STROKE
+  STROKE_CODE(EventHandlerJumpTable[ButtonRelease] =    HandleButtonRelease);
+  STROKE_CODE(EventHandlerJumpTable[MotionNotify] =     HandleMotionNotify);
 #ifdef MOUSE_DROPPINGS
-  stroke_init(dpy,DefaultRootWindow(dpy));
+  STROKE_CODE(stroke_init(dpy,DefaultRootWindow(dpy)));
 #else /* no MOUSE_DROPPINGS */
-  stroke_init();
+  STROKE_CODE(stroke_init());
 #endif /* MOUSE_DROPPINGS */
-#endif /* HAVE_STROKE */
-#endif /* HAVE_STROKE */
-
 }
 
 /***********************************************************************
@@ -239,9 +232,7 @@ void DispatchEvent(Bool preserve_Tmp_win)
 void HandleEvents(void)
 {
   DBUG("HandleEvents","Routine Entered");
-#ifdef HAVE_STROKE
-  send_motion = FALSE;
-#endif /* HAVE_STROKE */
+  STROKE_CODE(send_motion = FALSE);
   while ( !isTerminated )
   {
     last_event_type = 0;
@@ -480,16 +471,9 @@ void HandleKeyPress(void)
     XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,Event.xkey.keycode,0));
 
   /* Check if there is something bound to the key */
-#ifdef HAVE_STROKE
-  action = CheckBinding(Scr.AllBindings, 0, Event.xkey.keycode,
+  action = CheckBinding(Scr.AllBindings, STROKE_ARG(0) Event.xkey.keycode,
 			Event.xkey.state, GetUnusedModifiers(), Context,
 			KEY_BINDING);
-#else
-  action = CheckBinding(Scr.AllBindings, Event.xkey.keycode,
-			Event.xkey.state, GetUnusedModifiers(), Context,
-			KEY_BINDING);
-#endif /* HAVE_STROKE */
-
   if (action != NULL)
   {
     ButtonWindow = Tmp_win;
@@ -856,9 +840,7 @@ void HandlePropertyNotify(void)
 	{
 	  maximize_adjust_offset(Tmp_win);
 	}
-#ifdef GNOME
 	GNOME_SetWinArea(Tmp_win);
-#endif
       }
       BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
       break;
@@ -900,13 +882,11 @@ void HandleClientMessage(void)
 
   DBUG("HandleClientMessage","Routine Entered");
 
-#ifdef GNOME
   /* Process GNOME Messages */
   if (GNOME_ProcessClientMessage(Tmp_win, &Event))
-    {
-      return;
-    }
-#endif
+  {
+    return;
+  }
 
   if ((Event.xclient.message_type == _XA_WM_CHANGE_STATE)&&
       (Tmp_win)&&(Event.xclient.data.l[0]==IconicState)&&
@@ -992,10 +972,7 @@ void HandleDestroyNotify(void)
   DBUG("HandleDestroyNotify","Routine Entered");
 
   destroy_window(Tmp_win);
-
-#ifdef GNOME
   GNOME_SetClientList();
-#endif
 }
 
 
@@ -1142,13 +1119,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   /* Just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state. */
   SET_DO_START_ICONIC(Tmp_win, 0);
-
   /* Clean out the global so that it isn't used on additional map events. */
   isIconicState = DontCareState;
-
-#ifdef GNOME
   GNOME_SetClientList();
-#endif
 }
 
 
@@ -1389,10 +1362,7 @@ void HandleUnmapNotify(void)
   {
     CoerceEnterNotifyOnCurrentWindow();
   }
-
-#ifdef GNOME
   GNOME_SetClientList();
-#endif
 }
 
 
@@ -1542,24 +1512,16 @@ void HandleButtonPress(void)
   ButtonWindow = Tmp_win;
 
   /* we have to execute a function or pop up a menu */
-#ifdef HAVE_STROKE
-  stroke_init();
-  send_motion = TRUE;
+  STROKE_CODE(stroke_init());
+  STROKE_CODE(send_motion = TRUE);
   /* need to search for an appropriate mouse binding */
-  action = CheckBinding(Scr.AllBindings, 0, Event.xbutton.button,
+  action = CheckBinding(Scr.AllBindings, STROKE_ARG(0) Event.xbutton.button,
 			Event.xbutton.state, GetUnusedModifiers(), Context,
 			MOUSE_BINDING);
-#else
-  /* need to search for an appropriate mouse binding */
-  action = CheckBinding(Scr.AllBindings, Event.xbutton.button,
-			Event.xbutton.state, GetUnusedModifiers(), Context,
-			MOUSE_BINDING);
-#endif /* HAVE_STROKE */
   if (action != NULL && (action[0] != 0))
   {
     ExecuteFunction(action, Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
   }
-#ifdef GNOME
   else
   {
     /*
@@ -1570,7 +1532,6 @@ void HandleButtonPress(void)
       GNOME_ProxyButtonEvent(&Event);
     }
   }
-#endif
 
   OldPressedW = PressedW;
   PressedW = None;
@@ -1610,14 +1571,6 @@ void HandleButtonRelease()
 
    send_motion = FALSE;
    stroke_trans (sequence);
-/* DEBUG printfs
-       if (stroke_trans (sequence) == TRUE)
-         printf ("Translation succeeded: ");
-       else
-         printf ("Translation failed: ");
-       printf ("Sequence=\"%s\"\n",sequence);
-       printf ("Stroke=\"%d\"\n",stroke);
-*/
 
    DBUG("HandleButtonRelease",sequence);
 
@@ -1631,25 +1584,20 @@ void HandleButtonRelease()
      Scr.AllBindings, sequence, Event.xbutton.button, real_modifier,
      GetUnusedModifiers(), Context, STROKE_BINDING);
    /* got a match, now process it */
-/* DEBUG printfs
-   printf ("action is %p\n", action);
-*/
    if (action != NULL && (action[0] != 0))
    {
      ExecuteFunction(action,Tmp_win, &Event,Context,-1, EXPAND_COMMAND);
    }
-#ifdef GNOME
    else
    {
-/*-----------------------------------------------------------------------
-    do gnome buttonpress forwarding if win == root
- -----------------------------------------------------------------------*/
+     /*
+      * do gnome buttonpress forwarding if win == root
+      */
       if (Scr.Root == Event.xany.window)
       {
           GNOME_ProxyButtonEvent(&Event);
       }
    }
-#endif
 
 }
 
@@ -1972,9 +1920,7 @@ void HandleConfigureRequest(void)
     update_absolute_geometry(Tmp_win);
     if (IS_MAXIMIZED(Tmp_win))
       maximize_adjust_offset(Tmp_win);
-#ifdef GNOME
     GNOME_SetWinArea(Tmp_win);
-#endif
   }
 
   /*  Stacking order change requested...  */
@@ -2216,10 +2162,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       if (FD_ISSET(i, &init_fdset))
         break;
 #if 0
-    if (i == npipes) {
+    if (i == npipes)
 #else
-    if (i == npipes || writePipes[i+1] == 0) {
+    if (i == npipes || writePipes[i+1] == 0)
 #endif
+    {
       DBUG("My_XNextEvent", "Starting up after command lines modules\n");
       StartupStuff();
       timeoutP = NULL; /* set an infinite timeout to stop ticking */
@@ -2228,9 +2175,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
-#ifdef SESSION
-  if (sm_fd >= 0) FD_SET(sm_fd, &in_fdset);
-#endif
+  /* nothing is done here if fvem was compiled without session support */
+  if (sm_fd >= 0)
+    FD_SET(sm_fd, &in_fdset);
   FD_ZERO(&out_fdset);
   for(i=0; i<npipes; i++) {
     if(readPipes[i]>=0)
@@ -2260,9 +2207,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       }
     }
 
-#ifdef SESSION
-    if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset))) ProcessICEMsgs();
-#endif
+    /* nothing is done here if fvem was compiled without session support */
+    if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset)))
+      ProcessICEMsgs();
 
   } else {
     /* select has timed out, things must have calmed down so let's decorate */
