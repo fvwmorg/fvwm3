@@ -1,9 +1,63 @@
-#!/bin/zsh
-# sorry, zsh only for now (3.0.5)
+#!/bin/sh
+# Hell, this is really difficult with /bin/sh. I want my zsh back!
 
-emulate zsh
 myname=`basename $0`
 log=archive/automated_tests/$myname.log
+typeset -i c1
+typeset -i c2
+typeset -i c3
+
+usage ()
+{
+  echo "usage: $myname [ -0 | -1 | -2 ] ..."
+  echo "  -0: run tests with all options defined and disabled (2 builds)"
+  echo "  -1: run tests with one option defined and disabled"
+  echo "  -2: run tests with two options defined and disabled"
+  echo "  default is: myname -0 -1"
+  echo "  logging output goes to $log and $log.*"
+}
+
+#
+#parse command line
+#
+run_depth_0=""
+run_depth_1=""
+run_depth_2=""
+custom=""
+while [ -n "$1" ] ; do
+  if [ "$1" = "-h" ] ; then
+    usage
+    exit
+  elif [ "$1" = "-?" ] ; then
+    usage
+    exit
+  elif [ "$1" = "-0" ] ; then
+    run_depth_0=1
+    run_depth_1=""
+    run_depth_2=""
+    custom=1
+  elif [ "$1" = "-1" ] ; then
+    run_depth_0=""
+    run_depth_1=1
+    run_depth_2=""
+    custom=1
+  elif [ "$1" = "-2" ] ; then
+    run_depth_0=""
+    run_depth_1=""
+    run_depth_2=1
+    custom=1
+  else
+    usage
+    exit 1
+  fi
+  shift
+done
+
+# set default if nothing was selected
+if [ -z "$custom" ]; then
+  run_depth_0="1"
+  run_depth_1="1"
+fi
 
 if [ ! -x ./$myname ] ; then
   echo please run $myname from archive/automated_tests
@@ -12,6 +66,12 @@ fi
 cd ../..
 rm -f "$log"* > /dev/null 2>&1
 
+
+##################
+# some functions #
+##################
+
+# clean up before next build
 clean_up ()
 {
   make clean > /dev/null 2>&1
@@ -22,41 +82,49 @@ clean_up ()
   for i in `find . -name "*.o"` ; do rm -f $i; done > /dev/null 2>&1
 }
 
+# generate parameter list for configure
 disable_options ()
 {
-  typeset -i k
-  optlist=""
+  CONFIGURE_OPTS=""
   while [ ! "$1" = "" ]; do
-    optlist="$optlist --disable-${opt[$1]}"
+    CONFIGURE_OPTS="$CONFIGURE_OPTS --disable-${BUILD_OPTIONS[$1]}"
     shift
   done
-  k=1
-  while [ ! "${opt[$k]}" = "" ]; do
-    echo $optlist | grep -q -- "--disable-${opt[$k]}" ||
-      optlist="$optlist --enable-${opt[$k]}"
-    k=$k+1
+  c3=0
+  while [ ! "${BUILD_OPTIONS[$c3]}" = "" ]; do
+    echo $CONFIGURE_OPTS | grep -q -- "--disable-${BUILD_OPTIONS[$c3]}" ||
+      CONFIGURE_OPTS="$CONFIGURE_OPTS --enable-${BUILD_OPTIONS[$c3]}"
+    c3=$c3+1
   done
 }
 
+# disable all enabled options and vice versa
 reverse_options ()
 {
-  optlist=`echo $optlist |
+  CONFIGURE_OPTS=`echo $CONFIGURE_OPTS |
            sed -e 's/--enable-/--xyz-/g' |
            sed -e 's/--disable-/--enable-/g' |
            sed -e 's/--xyz-/--disable-/g'`
 }
 
+# call configure and make (with logging)
 build ()
 {
+return
   clean_up
-  echo "\n\n++++++++++ checking configure with options $optlist\n" >> $log
-  echo "./configure --enable-extras $optlist\n\n" > $log.$1
-  if nice ./configure --enable-extras $optlist >> $log.$1 2>&1; then
+  echo >> $log
+  echo >> $log
+  echo "++++++++++ checking configure with options $CONFIGURE_OPTS" >> $log
+  echo >> $log
+  echo "./configure --enable-extras $CONFIGURE_OPTS\n\n" > $log.$1
+  if nice ./configure --enable-extras $CONFIGURE_OPTS >> $log.$1 2>&1; then
     echo ok >> $log
   else
     echo FAILED >> $log
   fi
-  echo "\nbuilding\n" >> $log
+  echo >> $log
+  echo "building" >> $log
+  echo >> $log
   if nice make > $log.$1 2>&1; then
     echo ok >> $log
   else
@@ -64,36 +132,70 @@ build ()
   fi
 }
 
-typeset -i n
+############################
+# end of functions section #
+############################
 
-# get the option list
-
-n=1
+#
+# get the list of possible options
+#
+c1=0
+for i in `
 grep smr_SWITCH configure.in | grep -v debug-msgs |
 sed -e 's/^smr_SWITCH.//g' |
-cut -f 1 -d "," |
-while read option; do
-  opt[$n]=$option
-  n=$n+1;
+cut -f 1 -d ","`; do
+  BUILD_OPTIONS[$c1]="$i"
+  c1=$c1+1;
 done
 
+#
 # now do the tests
+#
+if [ "$run_depth_1" = "1" ] ; then
+  echo
+  echo " +++ running tests for depth 1 +++"
+  echo
+  c1=0
+  while [ ! "${BUILD_OPTIONS[$c1]}" = "" ]; do
+    disable_options $c1
+    echo build ${BUILD_OPTIONS[$c1]}_off
+    build ${BUILD_OPTIONS[$c1]}_off
+    reverse_options
+    echo build ${BUILD_OPTIONS[$c1]}_on
+    build ${BUILD_OPTIONS[$c1]}_on
+    c1=$c1+1
+  done
+fi
 
-n=1
-while [ ! "${opt[$n]}" = "" ]; do
-  disable_options $n
-  echo build ${opt[$n]}_off
-  build ${opt[$n]}_off
+if [ "$run_depth_2" = "1" ] ; then
+  echo
+  echo " +++ running tests for depth 2 +++"
+  echo
+  c1=0
+  while [ -n "${BUILD_OPTIONS[$c1]}" ]; do
+    c2=$c1+1
+    while [ -n "${BUILD_OPTIONS[$c2]}" ]; do
+      disable_options $c1 $c2
+      echo build ${BUILD_OPTIONS[$c1]}_off,${BUILD_OPTIONS[$c2]}_off
+      build ${BUILD_OPTIONS[$c1]}_off
+      reverse_options
+      echo build ${BUILD_OPTIONS[$c1]}_on,${BUILD_OPTIONS[$c2]}_on
+      build ${BUILD_OPTIONS[$c1]}_on
+      c2=$c2+1
+    done
+    c1=$c1+1
+  done
+fi
+
+if [ "$run_depth_0" = "1" ] ; then
+  echo
+  echo " +++ running tests for depth 0 +++"
+  echo
+  disable_options
   reverse_options
-  echo build ${opt[$n]}_on
-  build ${opt[$n]}_on
-  n=$n+1
-done
-
-disable_options
-reverse_options
-echo build all_disabled
-build all_disabled
-disable_options
-echo build all_enabled
-build all_enabled
+  echo build all_disabled
+  build all_disabled
+  disable_options
+  echo build all_enabled
+  build all_enabled
+fi

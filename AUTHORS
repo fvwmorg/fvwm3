@@ -9,6 +9,10 @@ hilight/shadow calc from scwm as a library routine, updated web docs.
 German Gomez Garcia:
 Named MenuStyles.
 
+Chris Rankin:
+Rework of signal handlers (fvwm, FvwmButtons, FvwmIconMan, FvwmPager and
+FvwmEvent).
+
 Steven M. Robbins:
 Autoconf & automake support.
 

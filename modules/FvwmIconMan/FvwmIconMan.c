@@ -2,11 +2,19 @@
  * Permission is granted to distribute this software freely
  * for any purpose.
  */
+#ifdef USE_BSD
+#  define _BSD_SOURCE
+#else
+#  define USE_POSIX
+#endif
+
+#if defined(USE_POSIX) && defined(USE_BSD)
+#  error EITHER POSIX.1 or BSD signal semantics - not both!
+#endif
 
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <errno.h>
 #include "FvwmIconMan.h"
 #include "readconfig.h"
@@ -20,8 +28,7 @@
 #endif
 
 static int fd_width;
-static sigjmp_buf    deadjump;
-static sig_atomic_t  canJump = False;
+static volatile sig_atomic_t isTerminated = False;
 
 static char *IM_VERSION = "1.3";
 
@@ -29,7 +36,7 @@ static char const rcsid[] =
   "$Id$";
 
 
-static void DeadPipeHandler(int);
+static void TerminateHandler(int);
 
 char *copy_string (char **target, char *src)
 {
@@ -90,14 +97,9 @@ void PrintMemuse (void)
 #endif
 
 
-static void DeadPipeHandler(int sig)
+static void TerminateHandler(int sig)
 {
-  if (canJump)
-  {
-    canJump = False;
-    siglongjmp(deadjump,1);
-  }
-  _exit(0);  /* Does NOT call the chain of exit-procedures */
+  isTerminated = True;
 }
  
 
@@ -133,7 +135,7 @@ void SendFvwmPipe (char *message,unsigned long window)
   }
 }
 
-static int main_loop (void)
+static void main_loop (void)
 {
   fd_set readset, saveset;
 
@@ -141,7 +143,7 @@ static int main_loop (void)
   FD_SET (Fvwm_fd[1], &saveset);
   FD_SET (x_fd, &saveset);
 
-  while(1) {
+  while( !isTerminated ) {
     /* Check the pipes for anything to read, and block if
      * there is nothing there yet ...
      */
@@ -166,7 +168,9 @@ int main (int argc, char **argv)
 {
   char *temp, *s;
   int i;
+#ifdef USE_POSIX
   struct sigaction  sigact;
+#endif
 
 #ifdef ELECTRIC_FENCE
   extern int EF_PROTECT_BELOW, EF_PROTECT_FREE;
@@ -220,26 +224,27 @@ int main (int argc, char **argv)
   init_display();
   init_boxes();
 
-  /*
-   * These 5 signals share a common handler which uses static data.
-   * Therefore we need to ensure that no two of these signals can
-   * be delivered at the same time.
-   */
+#if defined USE_POSIX
   sigemptyset(&sigact.sa_mask);
-  sigaddset(&sigact.sa_mask, SIGPIPE);
-  sigaddset(&sigact.sa_mask, SIGINT);
-  sigaddset(&sigact.sa_mask, SIGHUP);
-  sigaddset(&sigact.sa_mask, SIGTERM);
-  sigaddset(&sigact.sa_mask, SIGQUIT);
-
+#ifdef SA_INTERRUPT
+  sigact.sa_flags = SA_INTERRUPT;
+#else
   sigact.sa_flags = 0;
-  sigact.sa_handler = DeadPipeHandler;
+#endif
+  sigact.sa_handler = TerminateHandler;
 
   sigaction(SIGPIPE, &sigact, NULL);
   sigaction(SIGINT,  &sigact, NULL);
   sigaction(SIGHUP,  &sigact, NULL);
   sigaction(SIGTERM, &sigact, NULL);
   sigaction(SIGQUIT, &sigact, NULL);
+#elif defined USE_BSD
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGINT,  TerminateHandler);
+  signal(SIGHUP,  TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+  signal(SIGQUIT, TerminateHandler);
+#endif
 
   read_in_resources (argv[3]);
 
@@ -261,11 +266,7 @@ int main (int argc, char **argv)
 
   SendInfo (Fvwm_fd, "Send_WindowList", 0);
 
-  if ( !sigsetjmp(deadjump,1) )
-  {
-    canJump = True;
-    main_loop();
-  }
+  main_loop();
 
   return 0;
 }

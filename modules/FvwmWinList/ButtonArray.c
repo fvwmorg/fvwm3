@@ -346,7 +346,6 @@ void DoButton(Button *button, int x, int y, int w, int h)
       }
     }
   }
-fprintf(stderr,"tname=\"%s\"\n",string?string:"(NULL)");
   XDrawString(dpy,win,graph[set],x+newx,y+3+ButtonFont->ascent,string,strlen(string));
   button->needsupdate=0;
 

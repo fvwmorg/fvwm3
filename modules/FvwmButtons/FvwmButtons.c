@@ -13,6 +13,15 @@
 */
 
 /* ------------------------------- includes -------------------------------- */
+#ifdef USE_BSD
+#  define _BSD_SOURCE
+#else
+#  define USE_POSIX
+#endif
+
+#if defined(USE_POSIX) && defined(USE_BSD)
+#  error EITHER POSIX.1 or BSD signal semantics - not both!
+#endif
 
 #include "config.h"
 
@@ -25,7 +34,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -79,16 +87,16 @@ extern void SaveButtons(button_info*);
 
 /* ------------------------------ prototypes ------------------------------- */
 
-void DeadPipe(int nonsense);
+void DeadPipe(int nonsense) __attribute__((__noreturn__));
 static void DeadPipeCleanup(void);
-static void DeadPipeHandler(int sig);
+static void TerminateHandler(int sig);
 void SetButtonSize(button_info*,int,int);
 /* main */
-void Loop(void) __attribute__ ((noreturn));
+void Loop(void);
 void RedrawWindow(button_info*);
 void RecursiveLoadData(button_info*,int*,int*);
 void CreateWindow(button_info*,int,int);
-void nocolor(char *a, char *b);
+void nocolor(const char *a, const char *b) __attribute__((__noreturn__));
 Pixel GetColor(char *name);
 int My_XNextEvent(Display *dpy, XEvent *event);
 void process_message(unsigned long type,unsigned long *body);
@@ -146,8 +154,7 @@ int dpw, dph;
 
 int save_color_limit;                   /* Color limit, if any */
 
-static sigjmp_buf    deadjump;
-static sig_atomic_t  canJump = False;
+static volatile sig_atomic_t isTerminated = False;
 /* ------------------------------ Misc functions ----------------------------*/
 
 #ifdef DEBUG
@@ -190,17 +197,12 @@ void DeadPipe(int whatever)
 }
 
 /**
-*** DeadPipeHandler()
+*** TerminateHandler()
 *** Signal handler that will make the event-loop terminate
 **/
-static void DeadPipeHandler(int sig)
+static void TerminateHandler(int sig)
 {
-  if (canJump)
-  {
-    canJump = False;
-    siglongjmp(deadjump,1); /* Jump to normal termination */
-  }
-  _exit(0);  /* Does NOT call chain of exit-procedures */
+  isTerminated = True;
 }
 
 /**
@@ -487,7 +489,9 @@ int main(int argc, char **argv)
   int x,y,maxx,maxy,border_width,depth;
   char *temp, *s;
   button_info *b,*ub;
+#ifdef USE_POSIX
   struct sigaction  sigact;
+#endif
 
   temp=argv[0];
   s=strrchr(argv[0],'/');
@@ -495,26 +499,27 @@ int main(int argc, char **argv)
   MyName=mymalloc(strlen(temp)+1);
   strcpy(MyName,temp);
 
-  /*
-   * These 5 signals share a common handler which uses static data.
-   * Therefore we need to ensure that no two of these signals can
-   * be delivered at the same time.
-   */
+#if defined USE_POSIX
   sigemptyset(&sigact.sa_mask);
-  sigaddset(&sigact.sa_mask, SIGPIPE);
-  sigaddset(&sigact.sa_mask, SIGINT);
-  sigaddset(&sigact.sa_mask, SIGHUP);
-  sigaddset(&sigact.sa_mask, SIGQUIT);
-  sigaddset(&sigact.sa_mask, SIGTERM);
-
+#ifdef SA_INTERRUPT
+  sigact.sa_flags = SA_INTERRUPT;
+#else
   sigact.sa_flags = 0;
-  sigact.sa_handler = DeadPipeHandler;
+#endif
+  sigact.sa_handler = TerminateHandler;
 
   sigaction(SIGPIPE, &sigact, NULL);
   sigaction(SIGINT,  &sigact, NULL);
   sigaction(SIGHUP,  &sigact, NULL);
   sigaction(SIGQUIT, &sigact, NULL);
   sigaction(SIGTERM, &sigact, NULL);
+#elif defined USE_BSD
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGINT,  TerminateHandler);
+  signal(SIGHUP,  TerminateHandler);
+  signal(SIGQUIT, TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+#endif
 
   if(argc<6 || argc>8)
     {
@@ -681,13 +686,7 @@ int main(int argc, char **argv)
   ** it is safe(r) to install the clean-up handlers ...
   */
   atexit(DeadPipeCleanup);
-  if ( !sigsetjmp(deadjump,1) )
-  {
-    /* ONLY attempt to jump now that the jump-buffer is initialised
-     */
-    canJump = True;
-    Loop();
-  }
+  Loop();
 
   return 0;
 }
@@ -709,7 +708,7 @@ void Loop(void)
   int ex=10000,ey=10000,ex2=0,ey2=0;
 #endif
 
-  while(1)
+  while( !isTerminated )
     {
       if(My_XNextEvent(Dpy,&Event))
 	{
@@ -1445,7 +1444,7 @@ int PleaseAllocColor(XColor *color)
 *** nocolor()
 *** Complain
 **/
-void nocolor(char *a, char *b)
+void nocolor(const char *a, const char *b)
 {
   fprintf(stderr,"%s: Can't %s %s, quitting, sorry...\n", MyName, a,b);
   exit(1);

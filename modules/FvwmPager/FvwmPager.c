@@ -12,9 +12,18 @@
 
 #include "config.h"
 
+#ifdef USE_BSD
+#  define _BSD_SOURCE
+#else
+#  define USE_POSIX
+#endif
+
+#if defined(USE_POSIX) && defined(USE_BSD)
+#  error EITHER POSIX.1 or BSD signal semantics - not both!
+#endif
+
 #include <stdio.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -97,10 +106,9 @@ Pixel win_hi_fore_pix = -1;
 char fAlwaysCurrentDesk = 0;
 PagerStringList string_list = { NULL, 0, NULL, NULL };
 
-static sigjmp_buf    deadjump;
-static sig_atomic_t  canJump = False;
+static volatile sig_atomic_t isTerminated = False;
 
-static void DeadPipeHandler(int);
+static void TerminateHandler(int);
 
 /***********************************************************************
  *
@@ -114,7 +122,9 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   int itemp,i;
   char line[100];
+#if defined USE_POSIX
   struct sigaction  sigact;
+#endif
 
   /* Save our program  name - for error messages */
   temp = argv[0];
@@ -141,26 +151,27 @@ int main(int argc, char **argv)
       exit(1);
     }
 
-  /*
-   * These 5 signals share a common handler which uses static data.
-   * Therefore we need to ensure that no two of these signals can
-   * be delivered at the same time.
-   */
+#if defined USE_POSIX
   sigemptyset(&sigact.sa_mask);
-  sigaddset(&sigact.sa_mask, SIGPIPE);
-  sigaddset(&sigact.sa_mask, SIGTERM);
-  sigaddset(&sigact.sa_mask, SIGQUIT);
-  sigaddset(&sigact.sa_mask, SIGINT);
-  sigaddset(&sigact.sa_mask, SIGHUP);
-
+#ifdef SA_INTERRUPT
+  sigact.sa_flags = SA_INTERRUPT;
+#else
   sigact.sa_flags = 0;
-  sigact.sa_handler = DeadPipeHandler;
+#endif
+  sigact.sa_handler = TerminateHandler;
 
   sigaction(SIGPIPE, &sigact, NULL);
   sigaction(SIGTERM, &sigact, NULL);
   sigaction(SIGQUIT, &sigact, NULL);
   sigaction(SIGINT,  &sigact, NULL);
   sigaction(SIGHUP,  &sigact, NULL);
+#elif defined USE_BSD
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+  signal(SIGQUIT, TerminateHandler);
+  signal(SIGINT,  TerminateHandler);
+  signal(SIGHUP,  TerminateHandler);
+#endif
 
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
@@ -190,7 +201,7 @@ int main(int argc, char **argv)
   HilightC = strdup("black");
   BalloonFont = strdup("fixed");
   BalloonBorderColor = strdup("black");
-  Desks = (DeskInfo *)malloc(ndesks*sizeof(DeskInfo));
+  Desks = (DeskInfo *)safemalloc(ndesks*sizeof(DeskInfo));
   for(i=0;i<ndesks;i++)
     {
       sprintf(line,"Desk %d",i+desk1);
@@ -259,12 +270,7 @@ int main(int argc, char **argv)
   fprintf(stderr,"[main]: back from getting window list, looping\n");
 #endif
 
-  if ( !sigsetjmp(deadjump,1) )
-  {
-    canJump = True;
-    Loop(fd);
-  }
-
+  Loop(fd);
   return 0;
 }
 
@@ -278,7 +284,7 @@ void Loop(int *fd)
 {
   XEvent Event;
 
-  while(1)
+  while( !isTerminated )
     {
       if(My_XNextEvent(dpy,&Event))
 	DispatchEvent(&Event);
@@ -349,14 +355,9 @@ void process_message(unsigned long type,unsigned long *body)
  *	SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
-static void DeadPipeHandler(int nonsense)
+static void TerminateHandler(int nonsense)
 {
-  if (canJump)
-  {
-    canJump = False;
-    siglongjmp(deadjump,1);
-  }
-  _exit(0);  /* Does NOT call chain of exit-procedures */
+  isTerminated = True;
 }
 
 void DeadPipe(int nonsense)

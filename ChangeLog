@@ -1,3 +1,13 @@
+1999-01-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/**: Applied updated signal handler patch by Chris Rankin
+
+	* fvwm/events.c (GetContext): fixed button bindings on client portion
+	of window.
+
+	* archive/ChangeLog: File added to have a ChangeLog for the files that
+	are not distributed.
+
 1998-01-05  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/misc.c (RaiseWindow):  Added Matthias Clasen's patch to keep
@@ -6,7 +16,7 @@
 	beginning of the chain.
 
 1998-01-05  Dominik Vogt  <dominik_vogt@hp.com>
-	
+
 	* BUGS: Removed some fixed bugs.
 
 1999-01-05  Paul D. Smith  <psmith@gnu.org>

@@ -12,11 +12,19 @@
  ***********************************************************************/
 
 #include "config.h"
+#ifdef USE_BSD
+#  define _BSD_SOURCE
+#else
+#  define USE_POSIX
+#endif
+
+#if defined(USE_POSIX) && defined(USE_BSD)
+#  error EITHER POSIX.1 or BSD signal semantics - not both!
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
@@ -70,7 +78,7 @@ char *output_file = NULL;
 int FvwmErrorHandler(Display *, XErrorEvent *);
 int CatchFatal(Display *);
 int CatchRedirectError(Display *, XErrorEvent *);
-void newhandler(int sig, sigset_t mask);
+void newhandler(int sig);
 void CreateCursors(void);
 void ChildDied(int nonsense);
 void SaveDesktopState(void);
@@ -119,9 +127,15 @@ char *display_name = NULL;
 
 typedef enum { FVWM_RUNNING=0, FVWM_DONE, FVWM_RESTART } FVWM_STATE;
 
-static FVWM_STATE    fvwmRunState = FVWM_RUNNING;
-static sig_atomic_t  canJump = False;
-static sigjmp_buf    deadjump;
+/*
+ * Currently, the "isTerminated" variable is superfluous. However,
+ * I am looking to the future where isTerminated controls all
+ * event loops in FVWM: then we can collect such code into a common
+ * object-file ...
+ */
+static volatile sig_atomic_t fvwmRunState = FVWM_RUNNING;
+volatile sig_atomic_t isTerminated = False;
+/**/
 
 /***********************************************************************
  *
@@ -240,11 +254,14 @@ int main(int argc, char **argv)
 
   DBUG("main","Installing signal handlers");
 
+#if defined USE_POSIX
   {
     struct sigaction  sigact;
 
     /*
      * Use reliable signal semantics since they are predictable and portable.
+     * DeadPipe() looks like a no-op, so don't stop processing system calls
+     * to handle a SIGPIPE (Why don't we just -ignore- SIGPIPE?)
      */
 #ifdef SA_RESTART
     sigact.sa_flags = SA_RESTART;
@@ -257,26 +274,27 @@ int main(int argc, char **argv)
     sigaction(SIGPIPE, &sigact, NULL);
 
     /*
-     * The signals USR1, TERM, QUIT, HUP and INT are going to share some
-     * static variables so we must ensure that the handlers don't trip over
-     * each other. This signal mask will be installed while the process is in
-     * the signal handler, and will temporarily block delivery of the other
-     * four signals ...
+     * If we need to restart then we need to stop what we're doing as
+     * quickly as possible - hence interrupt any system call we're
+     * blocked in ...
      */
-    sigaddset(&sigact.sa_mask, SIGUSR1);
-    sigaddset(&sigact.sa_mask, SIGTERM);
-    sigaddset(&sigact.sa_mask, SIGQUIT);
-    sigaddset(&sigact.sa_mask, SIGHUP);
-    sigaddset(&sigact.sa_mask, SIGINT);
-
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
     sigact.sa_handler = Restart;
     sigaction(SIGUSR1, &sigact, NULL);
-
-    newhandler(SIGINT,sigact.sa_mask);
-    newhandler(SIGHUP,sigact.sa_mask);
-    newhandler(SIGQUIT,sigact.sa_mask);
-    newhandler(SIGTERM,sigact.sa_mask);
   }
+#elif defined USE_BSD
+  signal(SIGPIPE,DeadPipe);
+  signal(SIGUSR1,Restart);
+#endif
+
+  newhandler(SIGINT);
+  newhandler(SIGHUP);
+  newhandler(SIGQUIT);
+  newhandler(SIGTERM);
 
   ReapChildren();
 
@@ -508,12 +526,9 @@ int main(int argc, char **argv)
   fFvwmInStartup = False;
   DBUG("main","Entering HandleEvents loop...");
 
-  switch( (fvwmRunState = sigsetjmp(deadjump,1)) )
+  HandleEvents();
+  switch( fvwmRunState )
   {
-  case FVWM_RUNNING:
-    canJump = True;
-    HandleEvents();    /* does not return */
-
   case FVWM_DONE:
     Done(0, NULL);     /* does not return */
 
@@ -835,18 +850,33 @@ void InternUsefulAtoms (void)
  *	newhandler: Installs new signal handler (reliable semantics)
  *
  ************************************************************************/
-void newhandler(int sig, sigset_t mask)
+void newhandler(int sig)
 {
+#if defined USE_POSIX
   struct sigaction  sigact;
 
   sigaction(sig,NULL,&sigact);
   if (sigact.sa_handler != SIG_IGN)
   {
-    sigact.sa_mask = mask;
+    /*
+     * SigDone requires that we QUIT as soon as possible afterwards,
+     * so we need to interrupt any system calls we are blocked in
+     */
+    sigemptyset(&sigact.sa_mask);
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
     sigact.sa_flags = 0;
+#endif
     sigact.sa_handler = SigDone;
     sigaction(sig,&sigact,NULL);
   }
+#elif defined USE_BSD
+  if (signal(sig,SIG_IGN) == SIG_IGN)
+  {
+    signal(sig,SigDone);
+  }
+#endif
 }
 
 
@@ -855,13 +885,8 @@ void newhandler(int sig, sigset_t mask)
  ************************************************************************/
 RETSIGTYPE Restart(int nonsense)
 {
-  if (canJump)
-  {
-    canJump = False;
-    siglongjmp(deadjump,FVWM_RESTART);
-  }
-
-  _exit(0);  /* Does NOT call the chain of exit procedures */
+  isTerminated = True;
+  fvwmRunState = FVWM_RESTART;
 }
 
 /***********************************************************************
@@ -1420,13 +1445,8 @@ void Reborder(void)
  */
 RETSIGTYPE SigDone(int nonsense)
 {
-  if (canJump)
-  {
-    canJump = False;
-    siglongjmp(deadjump,FVWM_DONE);
-  }
-
-  _exit(0);  /* Does NOT call the chain of exit-procedures */
+  isTerminated = True;
+  fvwmRunState = FVWM_DONE;
 }
 
 void Done(int restart, char *command)

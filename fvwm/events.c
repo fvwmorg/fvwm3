@@ -96,7 +96,7 @@ Window PressedW;
 #ifndef LASTEvent
 #define LASTEvent 256
 #endif /* !LASTEvent */
-typedef void (*PFEH)();
+typedef void (*PFEH)(void);
 PFEH EventHandlerJumpTable[LASTEvent];
 
 /*
@@ -167,8 +167,15 @@ void DispatchEvent()
  ************************************************************************/
 void HandleEvents()
 {
+  /*
+   * TEMPORARY declaration: this variable should really be
+   * part of a separate source-file to handle signals
+   */
+  extern volatile sig_atomic_t isTerminated;
+  /**/
+
   DBUG("HandleEvents","Routine Entered");
-  while (TRUE)
+  while ( !isTerminated )
     {
       last_event_type = 0;
       if(My_XNextEvent(dpy, &Event))
@@ -201,8 +208,10 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
    * when we have re-parented windows, we need to find out the real
    * window where the event occured */
 #if 0
-  /* domivogt (2-Jan-1999): Why were button presses treated differently here?
-   * Causes a bug with ClickToFocus. */
+  /* domivogt (2-Jan-1999): Causes a bug with ClickToFocus.
+   * keys and buttons are treated differently here because keys are bound to
+   * the frame window and buttons are bound to the client window (with
+   * XGrabKey/XGrabButton). */
   if((e->type == KeyPress)&&(e->xkey.subwindow != None))
     *w = e->xkey.subwindow;
 
@@ -211,7 +220,15 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     *w = e->xbutton.subwindow;
 #else
   if(e->xkey.subwindow != None)
-    *w = e->xkey.subwindow;
+    {
+      if (e->type == KeyPress)
+	*w = e->xkey.subwindow;
+      else if (*w != t->w && *w != t->Parent)
+	/* domivogt (6-Jan-198): I don't understand what's happening here. If
+	 * the mouse is over the client window. The subwindow has an unique id
+	 * that no visible part of the FvwmWindow has. */
+	e->xbutton.subwindow;
+    }
 #endif
 
   if (*w == Scr.Root)

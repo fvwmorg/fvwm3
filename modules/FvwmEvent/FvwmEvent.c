@@ -81,6 +81,15 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.
  */
+#ifdef USE_BSD
+#  define _BSD_SOURCE
+#else
+#  define USE_POSIX
+#endif
+
+#if defined(USE_POSIX) && defined(USE_BSD)
+#  error EITHER POSIX.1 or BSD signal semantics - not both!
+#endif
 
 #include "config.h"
 #include "../../fvwm/module.h"
@@ -92,7 +101,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <setjmp.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -139,9 +147,9 @@ int	rplay_fd = -1;
 /* prototypes */
 int     execute_event(short); 
 void	config(void);
-void	DeadPipe(int);
+void	DeadPipe(int) __attribute__((__noreturn__));
 
-static void DeadPipeHandler(int);
+static void TerminateHandler(int);
 
 /* define the event table */
 char	*events[MAX_MESSAGES+MAX_BUILTIN] =
@@ -192,15 +200,16 @@ char	*action_table[MAX_MESSAGES+MAX_BUILTIN];
 RPLAY	*rplay_table[MAX_MESSAGES+MAX_BUILTIN];
 #endif
 
-static sig_atomic_t  canJump = False;
-static sigjmp_buf    deadjump;
+static volatile sig_atomic_t isTerminated = False;
 
 int main(int argc, char **argv)
 {
     char *s;
     unsigned long	header[HEADER_SIZE], body[MAX_BODY_SIZE];
     int			total, remaining, count, event;
+#ifdef USE_POSIX
     struct sigaction    sigact;
+#endif
 
 INFO("--- started ----\n");
 
@@ -225,13 +234,20 @@ INFO("--- started ----\n");
 
 INFO("--- installing signal server\n");
 
+#if defined USE_POSIX
     sigemptyset(&sigact.sa_mask);
-    sigaddset(&sigact.sa_mask,SIGPIPE);
-    sigaddset(&sigact.sa_mask,SIGTERM);
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
     sigact.sa_flags = 0;
-    sigact.sa_handler = DeadPipeHandler;
+#endif
+    sigact.sa_handler = TerminateHandler;
     sigaction(SIGPIPE,&sigact,NULL);    /* Dead pipe == Fvwm died */
     sigaction(SIGTERM,&sigact,NULL);    /* "polite" termination signal */
+#elif defined USE_BSD
+    signal(SIGPIPE, TerminateHandler);
+    signal(SIGTERM, TerminateHandler);
+#endif
 
     fd[0] = atoi(argv[1]);
     fd[1] = atoi(argv[2]);
@@ -246,12 +262,8 @@ INFO("--- configuring\n");
     
     /* main loop */
 
-    if ( !sigsetjmp(deadjump,1) )
-    {
-        canJump = True;
-
 INFO("--- waiting\n");
-    while (1)				
+    while ( !isTerminated )				
     {
 	if ((count = read(fd[1],header,
 			  HEADER_SIZE*sizeof(unsigned long))) <= 0)
@@ -295,8 +307,6 @@ INFO("--- waiting\n");
 	execute_event(event);		/* execute action */
     } /* while */
 
-    }
-
     execute_event(BUILTIN_SHUTDOWN);
     return 0;
 }
@@ -312,7 +322,6 @@ INFO("--- waiting\n");
 int execute_event(short event) 
 {
     static char buf[BUFSIZE];
-    int ret;
 
 #ifdef HAVE_RPLAY
     if (rplay_fd != -1)		/* this is the sign that rplay is used */
@@ -495,14 +504,9 @@ INFO("found\n");
  *	SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
-static void DeadPipeHandler(int nonsense)
+static void TerminateHandler(int nonsense)
 {
-    if (canJump)
-    {
-        canJump = False;
-        siglongjmp(deadjump,1);
-    }
-    _exit(0);  /* Does NOT call chain of exit procedures */
+  isTerminated = True;
 }
 
 /***********************************************************************
