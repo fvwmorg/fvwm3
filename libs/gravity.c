@@ -484,13 +484,13 @@ void gravity_get_next_multi_dir(int dir_set, multi_direction_type *dir)
 {
 	if (*dir == MULTI_DIR_NONE)
 	{
-		*dir = FIRST_MULTI_DIR;
+		*dir = MULTI_DIR_FIRST;
 		if (dir_set & *dir)
 		{
 			return;
 		}
 	}
-	while(*dir != LAST_MULTI_DIR)
+	while(*dir != MULTI_DIR_LAST)
 	{
 		*dir = (*dir << 1);
 		if (dir_set & *dir)

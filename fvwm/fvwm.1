@@ -2976,7 +2976,6 @@ AddToMenu RootMenu "Root Menu" Title
  + "Next Focus"        Next (AcceptsFocus) Focus
  + ""                  Nop
  + "Refresh screen"    Refresh
- + "Recapture screen"  Recapture
  + ""                  Nop
  + "Reset X defaults"  Exec xrdb -load \\
                        $HOME/.Xdefaults
@@ -4745,6 +4744,18 @@ Values larger than 100 can be used with caution.
 
 .TP
 .BI "Recapture"
+This command is obsolete and should not be used anymore.  Should
+you want to do something specific that you cannot do without it,
+please report this to the fvwm-workers mailing list (the address
+can be found in the FAQ that ships with fvwm and can also be found
+on the fvwm home page (see end of this man page for the URL)).
+This command will be removed at some point in the future.  Please
+read the note at the end of the section
+.B "BUILT IN COMMANDS"
+to learn about how to avoid the
+.B Recapture
+command.
+
 Causes fvwm to recapture all of its windows.  This ensures that
 the latest style parameters are used.  The recapture operation is
 visually disturbing.
@@ -4758,9 +4769,11 @@ to take effect (e.g.
 
 .TP
 .BI "RecaptureWindow"
-Causes fvwm to recapture the chosen window.  See
+This command is obsolete and should not be used anymore.  See
 .B Recapture
-command above.
+For details.
+
+Causes fvwm to recapture the chosen window.
 
 .TP
 .BI "Refresh"
@@ -6688,6 +6701,10 @@ preferences.  The
 style switches back to the default behavior.
 
 .I UseDecor
+This style is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
+.I UseDecor
 accepts one argument: the name of a decor created with
 .BR AddToDecor .
 If no decor name is specified, the "Default" decor is
@@ -6697,6 +6714,10 @@ assigned to one.  If the decor is later modified with
 the changes are visible for all windows which are assigned to it.
 The decor for a window can be reassigned with
 .BR ChangeDecor .
+
+.I UseStyle
+This style is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
 
 .I UseStyle
 takes one arg, which is the name of another style.  That way you
@@ -6894,6 +6915,9 @@ commands.
 
 .TP
 .BI "AddToDecor " decor
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 Add or divert commands to the decor named
 .IR decor .
 A decor is a name given to the set of commands which affect button
@@ -6966,6 +6990,9 @@ Style xterm UseStyle FlatStyle
 \fB] [\fP \fIstyle\fP \
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 Defines a border style for windows.
 .I state
 can be either "Active" or "Inactive".  If
@@ -7063,6 +7090,9 @@ the "ActiveUp" state is used instead.
 \fB] [\fP \fIstyle\fP \
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 Sets the button style for a title-bar button.
 .I button
 is the title-bar button number between 0 and 9, or one of "All",
@@ -7327,6 +7357,9 @@ used.  This style is fully destructive.
 
 .TP
 .BI "ButtonStyle " button " - [!]" flag " ..."
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 Sets state-independent flags for the specified
 .IR button .
 State-independent flags affect button behavior.  Each
@@ -7393,6 +7426,9 @@ the button looks pressed in.
 
 .TP
 .BI "ChangeDecor " decor
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 Changes the decor of a window to
 .IR decor .
 .I decor
@@ -7413,6 +7449,9 @@ ChangeDecor CustomDecor1
 
 .TP
 .BI "DestroyDecor [" recreate "] " decor
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 Deletes the
 .I decor
 defined with
@@ -7435,6 +7474,9 @@ DestroyDecor CustomDecor1
 
 .TP
 .BI "TitleStyle [" justification "] [" height " [" num "]]"
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 Sets attributes for the title-bar.  Justifications can be
 .IR Centered ", " RightJustified " or " LeftJustified .
 .I height
@@ -7454,6 +7496,9 @@ TitleStyle LeftJustified Height 24
 \fB] [\fP \fIstyle\fP \
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 Sets the style for the title-bar.
 .I state
 can be one of  "ActiveUp", "ActiveDown", or "Inactive".  If
@@ -7570,6 +7615,9 @@ Otherwise you can omit
 
 .TP
 .BI "UpdateDecor [" decor "]"
+This command is deprecated and will be removed in the future.  There
+are plans to replace it with a more flexible solution in fvwm-3.0.
+
 This command is kept mainly for backward compatibility.  Since
 all elements of a decor are updated immediately when they are
 changed, this command is mostly useless.
@@ -7586,7 +7634,7 @@ are updated.  This command is useful, for instance, after a
 (possibly used in conjunction with
 .BR AddToDecor ).
 Specifying an invalid decor results in all windows being
-updated. This command is less disturbing than
+updated.  This command is less disturbing than
 .BR Recapture ,
 but does not affect window style options as
 .B Recapture

@@ -439,7 +439,8 @@ void FlocaleRotateDrawString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, Pixel fg,
 	Pixel fgsh, Bool has_fg_pixels, int len)
 {
-	static GC my_gc, font_gc;
+	static GC my_gc = None;
+	static GC font_gc = None;
 	int j, i, xpfg, ypfg, xpsh, ypsh;
 	unsigned char *normal_data, *rotated_data;
 	unsigned int normal_w, normal_h, normal_len;
@@ -455,7 +456,10 @@ void FlocaleRotateDrawString(
 	if (fws->flags.text_rotation == ROTATION_0)
 		return; /* should not happen */
 
-	my_gc = fvwmlib_XCreateGC(dpy, fws->win, 0, NULL);
+	if (my_gc == None)
+	{
+		my_gc = fvwmlib_XCreateGC(dpy, fws->win, 0, NULL);
+	}
 	XCopyGC(dpy, fws->gc, GCForeground|GCBackground, my_gc);
 
 	/* width and height (no shadow!) */
@@ -477,7 +481,10 @@ void FlocaleRotateDrawString(
 
 	/* create and clear the canvas */
 	canvas_pix = XCreatePixmap(dpy, fws->win, width, height, 1);
-	font_gc = fvwmlib_XCreateGC(dpy, canvas_pix, 0, NULL);
+	if (font_gc == None)
+	{
+		font_gc = fvwmlib_XCreateGC(dpy, canvas_pix, 0, NULL);
+	}
 	XSetBackground(dpy, font_gc, 0);
 	XSetForeground(dpy, font_gc, 0);
 	XFillRectangle(dpy, canvas_pix, font_gc, 0, 0, width, height);
@@ -1315,25 +1322,19 @@ Bool FlocaleGetShadowTextPosition(
 	}
 	else
 	{
-		if (args->direction == MULTI_DIR_C)
-		{
-		}
-		else
-		{
-			direction_type dir;
-			direction_type dir_x;
-			direction_type dir_y;
+		direction_type dir;
+		direction_type dir_x;
+		direction_type dir_y;
 
-			dir = gravity_multi_dir_to_dir(args->direction);
-			gravity_split_xy_dir(&dir_x, &dir_y, dir);
-			args->x_sign = gravity_dir_to_sign_one_axis(dir_x);
-			args->y_sign = gravity_dir_to_sign_one_axis(dir_y);
-			gravity_rotate_xy(
-				args->rot, args->x_sign, args->y_sign,
-				&args->x_sign, &args->y_sign);
-			*x = args->orig_x + args->x_sign * args->offset;
-			*y = args->orig_y + args->y_sign * args->offset;
-		}
+		dir = gravity_multi_dir_to_dir(args->direction);
+		gravity_split_xy_dir(&dir_x, &dir_y, dir);
+		args->x_sign = gravity_dir_to_sign_one_axis(dir_x);
+		args->y_sign = gravity_dir_to_sign_one_axis(dir_y);
+		gravity_rotate_xy(
+			args->rot, args->x_sign, args->y_sign,
+			&args->x_sign, &args->y_sign);
+		*x = args->orig_x + args->x_sign * args->offset;
+		*y = args->orig_y + args->y_sign * args->offset;
 	}
 	args->inter_step++;
 	args->step++;

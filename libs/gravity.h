@@ -45,7 +45,7 @@ typedef enum
 typedef enum
 {
 	MULTI_DIR_NONE = 0,
-	FIRST_MULTI_DIR = (1 << DIR_N),
+	MULTI_DIR_FIRST = (1 << DIR_N),
 	MULTI_DIR_N =     (1 << DIR_N),
 	MULTI_DIR_E =     (1 << DIR_E),
 	MULTI_DIR_S =     (1 << DIR_S),
@@ -54,9 +54,9 @@ typedef enum
 	MULTI_DIR_SE =    (1 << DIR_SE),
 	MULTI_DIR_SW =    (1 << DIR_SW),
 	MULTI_DIR_NW =    (1 << DIR_NW),
+	MULTI_DIR_ALL =  ((1 << (DIR_MASK + 1)) - 1),
 	MULTI_DIR_C =     (1 << DIR_C),
-	LAST_MULTI_DIR =  (1 << DIR_ALL_MASK),
-	MULTI_DIR_ALL =  ((1 << (DIR_ALL_MASK + 1)) - 1)
+	MULTI_DIR_LAST =  (1 << DIR_ALL_MASK)
 } multi_direction_type;
 
 typedef enum

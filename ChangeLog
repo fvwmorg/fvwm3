@@ -1,5 +1,16 @@
 2002-07-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Flocale.c (FlocaleRotateDrawString):
+	create gcs only once
+
+	* fvwm/fvwm.1:
+	removed some references to Recapture
+	UseDecor, UseStyle, AddToDecor, ChangeDecor, DestroyDecor, UpdateDecor,
+	ButtonStyle, BorderStyle and TitleStyle are planned to be removed in 3.0
+
+	* libs/gravity.c (gravity_parse_multi_dir_argument):
+	fixed "all" multidir selecting "center" too
+
 	* libs/Fft.c (FftDrawString):
 	* libs/Flocale.c (FlocaleRotateDrawString):
 	(FlocaleFontStructDrawString):
