@@ -151,13 +151,14 @@ int UpdateItemFlags(List *list, long id, long flags)
   return temp->count;
 }
 
-int UpdateItemFlagsDesk(List *list, long id, long flags, long desk)
+int UpdateItemFlagsDesk(List *list, long flags, ConfigWinPacket *cfgpacket)
 {
   Item *temp;
-  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
+  for(temp=list->head;temp!=NULL && cfgpacket->w!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
   if (flags!=-1) temp->tb_flags=flags;
-  temp->Desk=desk;
+  temp->Desk=cfgpacket->desk;
+  memcpy(&temp->flags, &cfgpacket->flags, sizeof(temp->flags));
   return temp->count;
 }
 
@@ -280,6 +281,17 @@ long ItemIndexFlags(List *list, int i)
   for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
   if (temp==NULL) return -1;
   else return temp->tb_flags;
+}
+
+/******************************************************************************
+  IsItemIndexSticky - Say if an item is sticky
+******************************************************************************/
+int IsItemIndexSticky(List *list, int i)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
+  if (temp==NULL) return -1;
+  return IS_STICKY(temp);
 }
 
 /* RBW- never used... */

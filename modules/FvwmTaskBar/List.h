@@ -58,7 +58,7 @@ int FindItem(List *list, long id);
 int FindNameItem(List *list, char *string);
 int UpdateItemName(List *list, long id, char *string);
 int UpdateItemFlags(List *list, long id, long flags);
-int UpdateItemFlagsDesk(List *list, long id, long flags, long desk);
+int UpdateItemFlagsDesk(List *list, long flags, ConfigWinPacket *cfgpacket);
 int UpdateNameItem(List *list, char *string, long id, long flags);
 void FreeItem(Item *ptr);
 int DeleteItem(List *list,long id);
@@ -67,6 +67,7 @@ void PrintList(List *list);
 char *ItemName(List *list, int n);
 long ItemFlags(List *list, long id );
 long ItemIndexFlags(List *list, int i);
+int IsItemIndexSticky(List *list, int i);
 /* long XorFlags(List *list, int n, long value); */
 int ItemCount(List *list);
 long ItemID(List *list, int n);

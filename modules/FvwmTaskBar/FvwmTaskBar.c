@@ -502,7 +502,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (GetDeskNumber(&windows,i,&Desk) && DeskOnly)
       {
         if (DeskNumber != Desk && DeskNumber == cfgpacket->desk
-	    && !IS_STICKY(cfgpacket))
+	    && !IsItemIndexSticky(&windows,i))
 	{
           /* window moving to current desktop */
           AddButton(&buttons, ItemName(&windows,i),
@@ -518,7 +518,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         }
 	/* NEED TO DETERMINE IF BODY[8] IS RIGHT HERE! */
 	tb_flags = ItemFlags(&windows, cfgpacket->w);
-	UpdateItemFlagsDesk(&windows, cfgpacket->w, tb_flags, cfgpacket->desk);
+	UpdateItemFlagsDesk(&windows, tb_flags, cfgpacket);
       }
     }
     else if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList)
