@@ -88,6 +88,7 @@ enum
 	F_ICON_PATH,
 	F_IGNORE_MODIFIERS,
 	F_IMAGE_PATH,
+	F_KEEPRC,
 	F_KEY,
 	F_KILL_MODULE,
 	F_LAYER,
@@ -291,6 +292,7 @@ void CMD_Iconify(F_CMD_ARGS);
 void CMD_IconPath(F_CMD_ARGS);
 void CMD_IgnoreModifiers(F_CMD_ARGS);
 void CMD_ImagePath(F_CMD_ARGS);
+void CMD_KeepRc(F_CMD_ARGS);
 void CMD_Key(F_CMD_ARGS);
 void CMD_KillModule(F_CMD_ARGS);
 void CMD_Layer(F_CMD_ARGS);

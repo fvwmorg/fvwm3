@@ -28,7 +28,6 @@
 
 #include <stdio.h>
 #include <math.h>
-//#include <sys/stat.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
@@ -1470,22 +1469,12 @@ void CMD_WindowId(F_CMD_ARGS)
 
 void CMD_TestRc(F_CMD_ARGS)
 {
-	cond_rc_t tmp_rc;
-	char *token;
 	char *rest;
 
 	if (cond_rc == NULL)
 	{
 		/* useless if no return code to compare to is given */
 		return;
-	}
-	token = PeekToken(action, &rest);
-	if (StrEquals(token, "KeepRc"))
-	{
-		/* do not modify return code */
-		action = rest;
-		tmp_rc = *cond_rc;
-		cond_rc = &tmp_rc;
 	}
 	if (__rc_matches_rcstring_consume(&rest, cond_rc, action) &&
 	    rest != NULL)
@@ -1501,30 +1490,17 @@ void CMD_TestRc(F_CMD_ARGS)
 void CMD_Break(F_CMD_ARGS)
 {
 	int rc;
-	int do_set_rc = 1;
-	char *token;
-	char *rest;
 
 	if (cond_rc == NULL)
 	{
 		return;
-	}
-	token = PeekToken(action, &rest);
-	if (StrEquals(token, "KeepRc"))
-	{
-		/* do not modify return code */
-		action = rest;
-		do_set_rc = 0;
 	}
 	rc = GetIntegerArguments(action, &action, &cond_rc->break_levels, 1);
 	if (rc != 1 || cond_rc->break_levels <= 0)
 	{
 		cond_rc->break_levels = -1;
 	}
-	if (do_set_rc)
-	{
-		cond_rc->rc = COND_RC_BREAK;
-	}
+	cond_rc->rc = COND_RC_BREAK;
 
 	return;
 }

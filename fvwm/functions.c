@@ -299,6 +299,10 @@ void CMD_Silent(F_CMD_ARGS)
 {
 	return;
 }
+void CMD_KeepRc(F_CMD_ARGS)
+{
+	return;
+}
 void CMD_Function(F_CMD_ARGS)
 {
 	return;
@@ -366,6 +370,8 @@ static void __execute_function(
 	FUNC_FLAGS_TYPE exec_flags, char *args[])
 {
 	static unsigned int func_depth = 0;
+	cond_rc_t *func_rc = NULL;
+	cond_rc_t dummy_rc;
 	Window w;
 	int j;
 	char *function;
@@ -378,7 +384,7 @@ static void __execute_function(
 	Bool set_silent;
 	Bool must_free_string = False;
 	Bool must_free_function = False;
-	cond_rc_t dummy_rc;
+	Bool do_keep_rc = False;
 
 	if (!action)
 	{
@@ -395,11 +401,6 @@ static void __execute_function(
 	{
 		/* a comment */
 		return;
-	}
-	if (cond_rc == NULL)
-	{
-		cond_rc = &dummy_rc;
-		memset(cond_rc, 0, sizeof(*cond_rc));
 	}
 
 	func_depth++;
@@ -486,6 +487,12 @@ static void __execute_function(
 			taction = trash2;
 			trash = PeekToken(taction, &trash2);
 		}
+		else if (StrEquals(trash, PRE_KEEPRC))
+		{
+			do_keep_rc = True;
+			taction = trash2;
+			trash = PeekToken(taction, &trash2);
+		}
 		else
 		{
 			break;
@@ -500,12 +507,21 @@ static void __execute_function(
 		func_depth--;
 		return;
 	}
+	if (cond_rc == NULL || do_keep_rc == True)
+	{
+		memset(&dummy_rc, 0, sizeof(dummy_rc));
+		func_rc = &dummy_rc;
+	}
+	else
+	{
+		func_rc = cond_rc;
+	}
 
 	function = PeekToken(taction, NULL);
 	if (function)
 	{
 		function = expand_vars(
-			function, arguments, exc->w.fw, False, False, cond_rc);
+			function, arguments, exc->w.fw, False, False, func_rc);
 	}
 	if (function && function[0] != '*')
 	{
@@ -552,7 +568,7 @@ static void __execute_function(
 		expaction = expand_vars(
 			taction, arguments, exc->w.fw, (bif) ?
 			!!(bif->flags & FUNC_ADD_TO) :
-			False, (taction[0] == '*'), cond_rc);
+			False, (taction[0] == '*'), func_rc);
 		if (func_depth <= 1)
 		{
 			must_free_string = set_repeat_data(
@@ -625,7 +641,7 @@ static void __execute_function(
 			if (rc == False)
 			{
 				exc2 = exc_clone_context(exc, &ecc, mask);
-				bif->action(cond_rc, exc2, runaction);
+				bif->action(func_rc, exc2, runaction);
 				exc_destroy_context(exc2);
 			}
 		}
@@ -645,11 +661,11 @@ static void __execute_function(
 			}
 			exc2 = exc_clone_context(exc, &ecc, mask);
 			execute_complex_function(
-				cond_rc, exc2, runaction, &desperate);
+				func_rc, exc2, runaction, &desperate);
 			if (!bif && desperate)
 			{
 				if (executeModuleDesperate(
-					    cond_rc, exc, runaction) == -1 &&
+					    func_rc, exc, runaction) == -1 &&
 				    *function != 0 && !set_silent)
 				{
 					fvwm_msg(
@@ -665,6 +681,10 @@ static void __execute_function(
 	if (set_silent)
 	{
 		Scr.flags.silent_functions = 0;
+	}
+	if (cond_rc != NULL)
+	{
+		cond_rc->break_levels = func_rc->break_levels;
 	}
 	if (must_free_string)
 	{
@@ -792,14 +812,14 @@ static cfunc_action_type CheckActionType(
 }
 
 static void __run_complex_function_items(
-	cond_rc_t *cond_func_rc, char cond, FvwmFunction *func,
+	cond_rc_t *cond_rc, char cond, FvwmFunction *func,
 	const exec_context_t *exc, char *args[])
 {
 	char c;
 	FunctionItem *fi;
 
 	for (fi = func->first_item;
-	     fi != NULL && cond_func_rc->break_levels != 0; )
+	     fi != NULL && cond_rc->break_levels == 0; )
 	{
 		/* make lower case */
 		c = fi->condition;
@@ -810,7 +830,7 @@ static void __run_complex_function_items(
 		if (c == cond)
 		{
 			__execute_function(
-				cond_func_rc, exc, fi->action, FUNC_DONT_DEFER,
+				cond_rc, exc, fi->action, FUNC_DONT_DEFER,
 				args);
 		}
 		fi = fi->next_item;
@@ -820,7 +840,7 @@ static void __run_complex_function_items(
 }
 
 static void __cf_cleanup(
-	unsigned int *depth, char **arguments, cond_rc_t *cond_func_rc)
+	unsigned int *depth, char **arguments, cond_rc_t *cond_rc)
 {
 	int i;
 
@@ -836,9 +856,9 @@ static void __cf_cleanup(
 			free(arguments[i]);
 		}
 	}
-	if (cond_func_rc->break_levels > 0)
+	if (cond_rc->break_levels > 0)
 	{
-		cond_func_rc->break_levels--;
+		cond_rc->break_levels--;
 	}
 
 	return;
@@ -848,7 +868,7 @@ static void execute_complex_function(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	Bool *desperate)
 {
-	cond_rc_t cond_func_rc;
+	cond_rc_t tmp_rc;
 	cfunc_action_type type = CF_MOTION;
 	char c;
 	FunctionItem *fi;
@@ -871,8 +891,12 @@ static void execute_complex_function(
 	int trigger_evtype;
 	XEvent *te;
 
-	memset(&cond_func_rc, 0, sizeof(cond_func_rc));
-	cond_func_rc.rc = COND_RC_OK;
+	if (cond_rc == NULL)
+	{
+		memset(&tmp_rc, 0, sizeof(tmp_rc));
+		cond_rc = &tmp_rc;
+	}
+	cond_rc->rc = COND_RC_OK;
 	mask = 0;
 	d.type = 0;
 	ecc.w.fw = exc->w.fw;
@@ -963,7 +987,7 @@ static void execute_complex_function(
 			    do_allow_unmanaged_immediate))
 		{
 			func->use_depth--;
-			__cf_cleanup(&depth, arguments, &cond_func_rc);
+			__cf_cleanup(&depth, arguments, cond_rc);
 			return;
 		}
 		NeedsTarget = False;
@@ -981,15 +1005,15 @@ static void execute_complex_function(
 	{
 		func->use_depth--;
 		XBell(dpy, 0);
-		__cf_cleanup(&depth, arguments, &cond_func_rc);
+		__cf_cleanup(&depth, arguments, cond_rc);
 		return;
 	}
 	exc2 = exc_clone_context(exc, &ecc, mask);
 	__run_complex_function_items(
-		&cond_func_rc, CF_IMMEDIATE, func, exc2, arguments);
+		cond_rc, CF_IMMEDIATE, func, exc2, arguments);
 	exc_destroy_context(exc2);
 	for (fi = func->first_item;
-	     fi != NULL && cond_func_rc.break_levels != 0;
+	     fi != NULL && cond_rc->break_levels == 0;
 	     fi = fi->next_item)
 	{
 		/* c is already lowercase here */
@@ -1012,10 +1036,10 @@ static void execute_complex_function(
 		}
 	}
 
-	if (!Persist || cond_func_rc.break_levels != 0)
+	if (!Persist || cond_rc->break_levels != 0)
 	{
 		func->use_depth--;
-		__cf_cleanup(&depth, arguments, &cond_func_rc);
+		__cf_cleanup(&depth, arguments, cond_rc);
 		UngrabEm(GRAB_NORMAL);
 		return;
 	}
@@ -1029,7 +1053,7 @@ static void execute_complex_function(
 			    do_allow_unmanaged))
 		{
 			func->use_depth--;
-			__cf_cleanup(&depth, arguments, &cond_func_rc);
+			__cf_cleanup(&depth, arguments, cond_rc);
 			UngrabEm(GRAB_NORMAL);
 			return;
 		}
@@ -1110,11 +1134,11 @@ static void execute_complex_function(
 	mask |= ECC_ETRIGGER | ECC_W;
 	exc2 = exc_clone_context(exc, &ecc, mask);
 	__run_complex_function_items(
-		&cond_func_rc, type, func, exc2, arguments);
+		cond_rc, type, func, exc2, arguments);
 	exc_destroy_context(exc2);
 	/* This is the right place to ungrab the pointer (see comment above). */
 	func->use_depth--;
-	__cf_cleanup(&depth, arguments, &cond_func_rc);
+	__cf_cleanup(&depth, arguments, cond_rc);
 	UngrabEm(GRAB_NORMAL);
 
 	return;

@@ -9273,7 +9273,12 @@ is with binding commands
 this disables error messages.
 
 .B Silent
-also disables the error message for non-existent commands.
+also disables the error message for non-existent commands.  Note:
+This command is treated as a prefix to its
+.IR command .
+Expansion of the command line is done as if
+.B Silent
+was not there.
 
 Examples:
 .EX
@@ -9343,14 +9348,15 @@ of conditions is located at the end of this section.
 
 .SS Return Codes
 
-All commands in this
-section (unless specifically stated for the command) also have a
-return code that can be 1 (if the condition was met) or 0 (if the
-condition was not met).  Some commands may return -1 which means
-that an error occurred and the return code is useless.  The
+All commands in this section (unless specifically stated for the
+command) also have a return code that can be 1 (if the condition
+was met) or 0 (if the condition was not met).  Some commands may
+return -1 which means that an error occurred and the return code
+is useless.  The
 .B Break
-command returns -2.  The return
-code is used by the
+command returns -2.  Additionally, the return codes of commands
+run in a complex functions are passed to the invoking complex
+function.  The return code is used by the
 .B TestRc
 command.  Please refer to the commands' description for examples.
 The return code can also be accessed through the variable
@@ -9359,7 +9365,10 @@ Non conditional commands do not modify the return code of the last
 conditional command.  Important note:  return codes are only
 defined inside functions created with the
 .B AddToFunc
-command and are not inherited by sub functions.
+command and are not inherited by sub functions.  To run a command
+without altering the return code, the
+.B KeepRc
+command can be used.
 
 .SS The Ring of Windows
 
@@ -9402,20 +9411,17 @@ exists.  The command is run in the context of the root window.
 .RB "See " Conditions " section below for a list of contitions."
 
 .TP
-.BI "Break [KeepRc] [levels]"
+.BI "Break [levels]"
 If the break command is used in a function, function execution is
 terminated immediately.  Further commands of the function are not
 processed.  Normally, all nested invocations of complex functions
 are left.  An optional integer number
 .I levels
 may be given to break out of the given number of nested function
-and continue execution of a higher level function.  When called
-with the option
-.IR KeepRc ,
-the
+and continue execution of a higher level function.
+The
 .B Break
-command does not change the return code of the previous
-conditional command.  Otherwise it returns -2.  Example:
+command always has the return code -2.  Example:
 .EX
 AddToFunc PickWindowRaiseAndDeiconify
 + I Pick
@@ -9467,6 +9473,18 @@ those farther away.  The
 direction simply selects the window closest to the starting point.
 Returns -1 if an invalid direction was given.
 .RB "See " Conditions " section below for a list of contitions."
+
+.TP
+.BI "KeepRc " command
+Runs the
+.I command
+but does not alter the return code of the previous command.  Note:
+.B KeepRc
+is treated as a prefix to its
+.IR command .
+Expansion of the command line is done as if
+.B KeepRc
+was not there.
 
 .TP
 .BI "Next [(" conditions ")] " command
@@ -9647,7 +9665,7 @@ AddToFunc VerifyVersion
 .EE
 
 .TP
-.BI "TestRc [KeepRc] [([!]" returncode ")] " command
+.BI "TestRc [([!]" returncode ")] " command
 Performs
 .I command
 if the last conditional command returned the value
@@ -9664,9 +9682,7 @@ does not match the value returned by the conditional command.
 command can only be used inside functions.  If the
 .I command
 is another conditional command, the previous return code is
-replaced by the new one unless the
-.I KeepRc
-option was given.  Example:
+replaced by the new one.  Example:
 .EX
 AddToFunc ToggleXterm
 + I Any (my_xtermwindow) Close

@@ -1,11 +1,15 @@
 2003-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functable.h:
+	* fvwm/commands.h:
+	* fvwm/functable.c (func_table):
 	* fvwm/functions.c (__run_complex_function_items):
+	(__execute_function):
+
 	* fvwm/conditional.c (CMD_Break):
 	(__rc_matches_rcstring_consume):
-	new options KeepRc and "levels" to the Break command
+	new option "levels" to the Break command
 	Break takes the number of function levels to break out of as an argument
-	When called with the option KeepRc
 
 	* fvwm/expand.c (expand_vars_extended):
 	* fvwm/conditional.c (circulate_cmd):
@@ -34,7 +38,7 @@
 	* fvwm/conditional.c (CMD_TestRc):
 	replaced conditional commands:
 		Cond -> TestRc
-		CondCase -> TestRc KeepRc
+		CondCase -> KeepRc TestRc
 		On -> Test
 	(__rc_matches_rcstring_consume):
 	new function

@@ -313,6 +313,9 @@ const func_type func_table[] =
 	CMD_ENT("imagepath", CMD_ImagePath, F_IMAGE_PATH, 0, 0),
 	/* - Directories to search for images */
 
+	CMD_ENT(PRE_KEEPRC, CMD_KeepRc, F_KEEPRC, 0, 0),
+	/* - Suppress errors on command, avoid window selection */
+
 	CMD_ENT("key", CMD_Key, F_KEY, 0, 0),
 	/* - Bind or unbind a key to an fvwm action */
 
