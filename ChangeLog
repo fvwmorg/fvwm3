@@ -1,8 +1,3 @@
-1999-06-26  Chris Rankin  <rankinc@zipworld.com.au>
-
-    * modules/FvwmWinList/ButtonArray.c: Set array->head correctly when
-      deleting first button in array.
-
 1999-06-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.c (parseCommandArgs): use isspace()
