@@ -1416,7 +1416,7 @@ Pixmap PGraphicsCreateTranslucent(
 		XUngrabServer(dpy);
 		XFreeGC(dpy,my_gc);
 	}
-	if (0 && XRenderSupport && FRenderGetExtensionSupported())
+	if (XRenderSupport && FRenderGetExtensionSupported())
 	{
 		r = XCreatePixmap(dpy, win, gw, gh, Pdepth);
 		if (FRenderRender(

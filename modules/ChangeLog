@@ -1,3 +1,36 @@
+2003-08-25  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIconBox/FvwmIconBox.c (process_message):
+	(animate):
+	Fixed animation when IconBox or its swallower is shaded: do
+	not animate
+
+	* FvwmButtons/FvwmButtons.c (swallow):
+	(process_message):
+	Indicate the swallower window id into the string part of
+	the MX_PROPERTY_CHANGE(MX_PROPERTY_CHANGE_SWALLOW) msg,
+	so that swallowed modules know about its swallower
+	
+	* FvwmIconMan/fvwm.c (property_change):
+	(set_win_configuration): 
+	* FvwmIconMan/xmanager.c (set_win_iconified):
+	* FvwmIconMan/FvwmIconMan.h:
+	Fixed animation when IconMan or its swallower is shaded: animated on
+	the frame
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	Fixed animation when WinList is shaded: animated on the frame
+
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/parse.c (ParseConfiguration):
+	* FvwmScript/FvwmScript.c (ParseOptions):
+	* FvwmIconBox/icons.c:
+	* FvwmIconBox/FvwmIconBox.c (ParseOptions):
+	* FvwmTaskBar/Start.c:
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	(configopts):
+	Removed color limit config info message which is not used anymore
+
 2003-08-08  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmButtons/FvwmButtons.c (exec_swallow):
