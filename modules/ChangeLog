@@ -1,5 +1,10 @@
 2001-09-21  olicha  <olivier.chapuis@free.fr>
 
+        * FvwmIconMan/x.c (X_init_t_manager)
+	Fixed geometries
+	
+2001-09-21  olicha  <olivier.chapuis@free.fr>
+
         * FvwmButtons/FvwmButtons.c (myErrorHandler)
 	Added BadPixmap as an acceptable error
 
