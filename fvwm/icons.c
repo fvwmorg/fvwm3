@@ -84,6 +84,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   XWindowChanges xwc;
   Window old_icon_pixmap_w;
   Window old_icon_w;
+  Bool is_old_icon_shaped = IS_ICON_SHAPED(tmp_win);
 
   old_icon_w = tmp_win->icon_w;
   old_icon_pixmap_w = (IS_ICON_OURS(tmp_win)) ? tmp_win->icon_pixmap_w : None;
@@ -256,18 +257,33 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     /* destroy the old window */
     XDestroyWindow(dpy, old_icon_pixmap_w);
     XDeleteContext(dpy, old_icon_pixmap_w, FvwmContext);
+    is_old_icon_shaped = False;
   }
 
-
 #ifdef SHAPE
-  if (ShapesSupported && IS_ICON_SHAPED(tmp_win))
+  if (ShapesSupported)
   {
-    /* when fvwm is using the non-default visual client supplied icon pixmaps
-     * are drawn in a window with no relief */
-    int off = (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win))
-      ? 2 : 0;
-    XShapeCombineMask(dpy, tmp_win->icon_pixmap_w, ShapeBounding, off, off,
-		      tmp_win->icon_maskPixmap, ShapeSet);
+    if (IS_ICON_SHAPED(tmp_win))
+    {
+      /* when fvwm is using the non-default visual client supplied icon pixmaps
+       * are drawn in a window with no relief */
+      int off = (Pdefault || (tmp_win->iconDepth == 1) ||
+		 IS_PIXMAP_OURS(tmp_win)) ? 2 : 0;
+      XShapeCombineMask(dpy, tmp_win->icon_pixmap_w, ShapeBounding, off, off,
+			tmp_win->icon_maskPixmap, ShapeSet);
+    }
+    else if (is_old_icon_shaped && tmp_win->icon_pixmap_w == old_icon_pixmap_w)
+    {
+      /* remove the shape */
+      XRectangle r;
+
+      r.x = 0;
+      r.y = 0;
+      r.width = tmp_win->icon_p_width;
+      r.height = tmp_win->icon_p_height;
+      XShapeCombineRectangles(
+	dpy, tmp_win->icon_pixmap_w, ShapeBounding, 0, 0, &r, 1, ShapeSet, 0);
+    }
   }
 #endif
 

@@ -599,6 +599,7 @@ void HandlePropertyNotify(void)
     old_base_height = Tmp_win->hints.base_height;
     /* hack: pause for the tenth of a second to prevent certain race conditions
      * when xemacs is mapped. Hopefully this delay does not hurt. */
+    XSync(dpy, 0);
     usleep(100000);
     GetWindowSizeHints(Tmp_win);
     if (old_width_inc != Tmp_win->hints.width_inc ||
