@@ -4641,7 +4641,10 @@ static mloop_ret_code_t __mloop_handle_event(
 	{
 	case ButtonRelease:
 		med->mi = find_entry(
-			pmp, &med->x_offset, &med->mrMi, None, -1, -1);
+			pmp, &med->x_offset, &med->mrMi,
+			pmp->exc->x.elast->xbutton.subwindow,
+			pmp->exc->x.elast->xbutton.x_root,
+			pmp->exc->x.elast->xbutton.y_root);
 		/* hold the menu up when the button is released
 		 * for the first time if released OFF of the menu */
 		if (pmp->flags.is_sticky && !in->mif.is_motion_first)
@@ -5822,11 +5825,10 @@ static void __menu_loop(
 		mloop_ret = __mloop_get_event(pmp, pmret, &mei, &med, &msi);
 		switch (mloop_ret)
 		{
-		case MENU_MLOOP_RET_LOOP:
-			continue;
 		case MENU_MLOOP_RET_END:
 			is_finished = True;
-			break;
+		case MENU_MLOOP_RET_LOOP:
+			continue;
 		default:
 			break;
 		}
@@ -5834,11 +5836,10 @@ static void __menu_loop(
 			pmp, pmret, pdkp, &mei, &med, &msi);
 		switch (mloop_ret)
 		{
-		case MENU_MLOOP_RET_LOOP:
-			continue;
 		case MENU_MLOOP_RET_END:
 			is_finished = True;
-			break;
+		case MENU_MLOOP_RET_LOOP:
+			continue;
 		default:
 			break;
 		}
