@@ -153,6 +153,7 @@ int main(int argc, char **argv)
   char *display_string;
   char message[255];
   Bool single = False;
+  Bool replace_wm = False;
   Bool option_error = FALSE;
   int x, y;
 
@@ -248,6 +249,10 @@ int main(int argc, char **argv)
     {
       Blackout = True;
     }
+    else if (strncasecmp(argv[i], "-replace", 8) == 0)
+      {
+	replace_wm = True;
+      }
     else if (strncasecmp(argv[i], "-version", 8) == 0)
     {
       fvwm_msg(INFO,"main", "Fvwm Version %s compiled on %s at %s\n",
@@ -457,7 +462,7 @@ int main(int argc, char **argv)
   if(debugging)
     XSynchronize(dpy,1);
 
-  SetupICCCM2 ();
+  SetupICCCM2 (replace_wm);
 
   XSetErrorHandler(CatchRedirectError);
   XSetIOErrorHandler(CatchFatal);
@@ -1667,10 +1672,10 @@ void usage(void)
 {
 #if 0
   fvwm_msg(INFO,"usage","\nFvwm Version %s Usage:\n\n",VERSION);
-  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h]\n",g_argv[0]);
+  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file]\n",g_argv[0]);
 #else
   fprintf(stderr,"\nFvwm Version %s Usage:\n\n",VERSION);
-  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h]\n\n",g_argv[0]);
+  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file]\n\n",g_argv[0]);
 #endif
   exit( 1 );
 }

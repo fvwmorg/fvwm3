@@ -373,7 +373,7 @@ extern void Done(int, char *) __attribute__((__noreturn__));
 extern void BlackoutScreen(void);
 extern void UnBlackoutScreen(void);
 
-extern void SetupICCCM2(void);
+extern void SetupICCCM2(Bool replace_wm);
 extern void CloseICCCM2(void);
 extern void HandleSelectionRequest(void);
 extern void HandleSelectionClear(void);

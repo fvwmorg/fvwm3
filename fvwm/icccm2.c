@@ -33,7 +33,7 @@ Atom conversion_targets[MAX_TARGETS];
 long icccm_version[] = { 2, 0 };
 
 void 
-SetupICCCM2 ()
+SetupICCCM2 (Bool replace_wm)
 {
   Window running_wm_win;
   XSetWindowAttributes attr;
@@ -55,7 +55,12 @@ SetupICCCM2 ()
   running_wm_win = XGetSelectionOwner (dpy, _XA_WIN_SX);
   if (running_wm_win != None) {
     DBUG("SetupICCCM2", "another ICCCM 2.0 compliant WM is running");
-    
+    if (!replace_wm)
+      {
+	fvwm_msg(ERR, "SetupICCCM2",
+		 "another ICCCM 2.0 compliant WM is running");
+	exit (1);
+      }
     /* We need to know when the old manager is gone.
        Thus we wait until it destroys running_wm_win. */
     attr.event_mask = StructureNotifyMask;

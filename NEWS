@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* New command line argument -replace. fvwm will try to "take over"
+  from a running wm only if it is given. 
+
 * ImagePath and ModulePath commands will now expand '+' to be the
   previous value of the path.
 

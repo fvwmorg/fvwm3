@@ -284,14 +284,18 @@ window-manager to give them the keyboard focus anyway, so fvwm2
 provides a window-style, "Lenience", which will allow fvwm2 to overlook
 this ICCCM rule.
 
-The differences between ICCCM 1.1 and 2.0 include the ability to
-"take over" from a running ICCCM 2.0 compliant window manager; thus
+The differences between ICCCM 1.1 and 2.0 include the ability 
+to "take over" from a running ICCCM 2.0 compliant window manager; thus
 .EX
-fvwm2; vi .fvwm2rc; fvwm2
+fvwm2; vi .fvwm2rc; fvwm2 -replace
 .EE
-will work in the same way as the Restart command. Further additions
-are support for client-side colormap installation (see the ICCCM
-for details) and the urgency hint. Clients can set this hint in
+will resemble the Restart command. It is not exactly the same as the 
+Restart command, since killing the previously running wm may terminate 
+your X session, if the wm was started as the last client in your .Xclients 
+file.
+
+Further additions are support for client-side colormap installation (see the
+ICCCM for details) and the urgency hint. Clients can set this hint in
 the WM_HINTS property of their window and expect the window manager
 to attract the users attention to the window. Fvwm has two redefinable
 functions for this purpose, UrgencyFunc and UrgencyDoneFunc, which
@@ -360,6 +364,9 @@ option. Normally, \fIfvwm2\fP will attempt to start up on all screens
 of a multi-screen display.
 .IP "\fB-version\fP"
 Print the version of \fIfvwm2\fP to stderr.
+.IP "\fB-replace\fP"
+Try to take over from a previously running wm. This will not work
+unless the other wm is ICCCM 2.0 compliant.
 .IP "\fB-clientId\fP"
 .IP "\fB-restore\fP"
 These options are used by the session manager when restarting fvwm2.
