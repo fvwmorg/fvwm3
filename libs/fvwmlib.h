@@ -267,10 +267,16 @@ Bool GetResourceString(
  * Stuff for Graphics.c and ModGraph.c
  ***********************************************************************/
 
-void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
-		      GC ReliefGC, GC ShadowGC, int line_width);
-void RelieveRectangle2(Display *dpy, Drawable d, int x,int y,int w,int h,
-		      GC ReliefGC, GC ShadowGC, int line_width);
+void do_relieve_rectangle(
+	Display *dpy, Drawable d, int x, int y, int w, int h,
+	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading);
+
+#define RelieveRectangle(dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width) \
+        do_relieve_rectangle( \
+                dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, False)
+#define RelieveRectangle2(dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width) \
+        do_relieve_rectangle( \
+                dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, True)
 
 Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, int src_width,
 			    int src_height, int src_depth,

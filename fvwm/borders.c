@@ -1153,10 +1153,10 @@ static void border_draw_part_relief(
 	{
 		if (ulgc[i] != 0x7f && w[i] > 0)
 		{
-			RelieveRectangle(
+			do_relieve_rectangle(
 				dpy, dest_pix, off_x, off_y,
 				width, height, gc[(int)ulgc[i]],
-				gc[(int)brgc[i]], w[i]);
+				gc[(int)brgc[i]], w[i], False);
 		}
 		off_x += w[i];
 		off_y += w[i];
@@ -1795,12 +1795,12 @@ static void border_set_button_pixmap(
 		do_reverse_relief ^= 1;
 		/* fall through*/
 	case DFS_BUTTON_IS_UP:
-		RelieveRectangle2(
+		do_relieve_rectangle(
 			dpy, dest_pix, 0, 0, button_g->width - 1,
 			button_g->height - 1,
 			(do_reverse_relief) ? sgc : rgc,
 			(do_reverse_relief) ? rgc : sgc,
-			td->cd->relief_width);
+			td->cd->relief_width, True);
 		break;
 	default:
 		/* flat */
@@ -1877,19 +1877,19 @@ static void border_draw_title_stick_lines(
 	{
 		if (left_w > 0)
 		{
-			RelieveRectangle(
+			do_relieve_rectangle(
 				dpy, dest_pix,
 				SWAP_ARGS(has_vt, left_x, i),
 				SWAP_ARGS(has_vt, left_w, 1),
-				tdd->sgc, tdd->rgc, 1);
+				tdd->sgc, tdd->rgc, 1, False);
 		}
 		if (right_w > 0)
 		{
-			RelieveRectangle(
+			do_relieve_rectangle(
 				dpy, dest_pix,
 				SWAP_ARGS(has_vt, right_x, i),
 				SWAP_ARGS(has_vt, right_w, 1),
-				tdd->sgc, tdd->rgc, 1);
+				tdd->sgc, tdd->rgc, 1, False);
 		}
 	}
 
@@ -1912,17 +1912,17 @@ static void border_draw_title_mono(
 	}
 	/* for mono, we clear an area in the title bar where the window
 	 * title goes, so that its more legible. For color, no need */
-	RelieveRectangle(
+	do_relieve_rectangle(
 		dpy, dest_pix, 0, 0,
 		SWAP_ARGS(has_vt, tdd->offset - 3,
 			  fw->title_thickness - 1),
-		tdd->rgc, tdd->sgc, td->cd->relief_width);
-	RelieveRectangle(
+		tdd->rgc, tdd->sgc, td->cd->relief_width, False);
+	do_relieve_rectangle(
 		dpy, dest_pix,
 		SWAP_ARGS(has_vt, tdd->offset + tdd->length + 2, 0),
 		SWAP_ARGS(has_vt, fw->title_length - tdd->length -
 			  tdd->offset - 3, fw->title_thickness - 1),
-		tdd->rgc, tdd->sgc, td->cd->relief_width);
+		tdd->rgc, tdd->sgc, td->cd->relief_width, False);
 	XDrawLine(
 		dpy, dest_pix, tdd->sgc,
 		SWAP_ARGS(has_vt, 0, tdd->offset + tdd->length + 1),
@@ -1944,13 +1944,14 @@ static void border_draw_title_relief(
 	case DFS_BUTTON_IS_SUNK:
 		reverse = 1;
 	case DFS_BUTTON_IS_UP:
-		RelieveRectangle2(
+		do_relieve_rectangle(
 			dpy, dest_pix, 0, 0,
 			SWAP_ARGS(
 				tdd->has_vt, fw->title_length - 1,
 				fw->title_thickness - 1),
 			(reverse) ? tdd->sgc : tdd->rgc,
-			(reverse) ? tdd->rgc : tdd->sgc, td->cd->relief_width);
+			(reverse) ? tdd->rgc : tdd->sgc, td->cd->relief_width,
+                        True);
 		break;
 	default:
 		/* flat */

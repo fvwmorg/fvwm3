@@ -1,3 +1,17 @@
+2002-04-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (border_draw_part_relief):
+	(border_set_button_pixmap):
+	(border_draw_title_stick_lines):
+	(border_draw_title_mono):
+	(border_draw_title_relief):
+	* libs/fvwmlib.h (RelieveRectangle2):
+	(RelieveRectangle):
+	replaced functions by macros
+
+	* libs/Graphics.c (do_relieve_rectangle):
+	applied performance patch by Dave Trollope
+
 2002-04-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/FBidi.c:

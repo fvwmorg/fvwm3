@@ -46,6 +46,8 @@
 
 /* ---------------------------- local functions ----------------------------- */
 
+/* ---------------------------- interface functions ------------------------- */
+
 /* Draws the relief pattern around a window
  * Draws a line_width wide rectangle from (x,y) to (x+w,y+h) i.e w+1 wide,
  * h+1 high
@@ -55,12 +57,12 @@
  * This is so FvwmBorder windows have a correct bottom edge and the sticky lines
  * look like just lines
  */
-static void do_relieve_rectangle(
+void do_relieve_rectangle(
 	Display *dpy, Drawable d, int x, int y, int w, int h,
 	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading)
 {
 	XSegment* seg;
-	int i;
+	int i,i2;
 	int a = (use_alternate_shading) ? 1 : 0;
 
 	if (w <= 0 || h <= 0)
@@ -72,57 +74,34 @@ static void do_relieve_rectangle(
 		}
 		return;
 	}
-	seg = (XSegment*)alloca(sizeof(XSegment) * line_width);
+	seg = (XSegment*)alloca((sizeof(XSegment) * line_width) * 2);
 	/* left side, from 0 to the lesser of line_width & just over half w */
 	for (i = 0; (i < line_width) && (i <= w / 2); i++) {
 		seg[i].x1 = x+i; seg[i].y1 = y+i+a;
 		seg[i].x2 = x+i; seg[i].y2 = y+h-i-1+a;
 	}
-	XDrawSegments(dpy, d, ReliefGC, seg, i);
+	i2 = i;
+	/* draw top segments */
+	for (i = 0; (i < line_width) && (i <= h / 2); i++,i2++) {
+		seg[i2].x1 = x+w-i-a; seg[i2].y1 = y+i;
+		seg[i2].x2 = x+i+1-a; seg[i2].y2 = y+i;
+	}
+	XDrawSegments(dpy, d, ReliefGC, seg, i2);
 	/* bottom */
 	for (i = 0; (i < line_width) && (i <= h / 2); i++) {
 		seg[i].x1 = x+i+a;     seg[i].y1 = y+h-i;
 		seg[i].x2 = x+w-i-1+a; seg[i].y2 = y+h-i;
 	}
-	XDrawSegments(dpy, d, ShadowGC, seg, i);
 	/* right */
-	for (i = 0; (i < line_width) && (i <= w / 2); i++) {
-		seg[i].x1 = x+w-i; seg[i].y1 = y+h-i-a;
-		seg[i].x2 = x+w-i; seg[i].y2 = y+i+1-a;
+	i2 = i;
+	for (i = 0; (i < line_width) && (i <= w / 2); i++,i2++) {
+		seg[i2].x1 = x+w-i; seg[i2].y1 = y+h-i-a;
+		seg[i2].x2 = x+w-i; seg[i2].y2 = y+i+1-a;
 	}
-	XDrawSegments(dpy, d, ShadowGC, seg, i);
-	/* draw top segments */
-	for (i = 0; (i < line_width) && (i <= h / 2); i++) {
-		seg[i].x1 = x+w-i-a; seg[i].y1 = y+i;
-		seg[i].x2 = x+i+1-a; seg[i].y2 = y+i;
-	}
-	XDrawSegments(dpy, d, ReliefGC, seg, i);
+	XDrawSegments(dpy, d, ShadowGC, seg, i2);
 
 	return;
 }
-
-/* ---------------------------- interface functions ------------------------- */
-
-void RelieveRectangle(
-	Display *dpy, Drawable d, int x,int y,int w,int h, GC ReliefGC,
-	GC ShadowGC, int line_width)
-{
-	do_relieve_rectangle(
-		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, False);
-
-	return;
-}
-
-void RelieveRectangle2(
-	Display *dpy, Drawable d, int x,int y,int w,int h, GC ReliefGC,
-	GC ShadowGC, int line_width)
-{
-	do_relieve_rectangle(
-		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, True);
-
-	return;
-}
-
 
 /* Creates a pixmap that is a horizontally stretched version of the input
  * pixmap
