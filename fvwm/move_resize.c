@@ -951,6 +951,25 @@ static void DoSnapAttract(
 	other.x = tmp->frame_g.x;
 	other.y = tmp->frame_g.y;
       }
+      /* prevent that window snaps off screen */
+      if (other.x <= 0)
+      {
+	other.x -= Scr.SnapAttraction + 10000;
+	other.width += Scr.SnapAttraction + 10000;
+      }
+      if (other.y <= 0)
+      {
+	other.y -= Scr.SnapAttraction + 10000;
+	other.height += Scr.SnapAttraction + 10000;
+      }
+      if (other .x + other.width >= Scr.MyDisplayWidth)
+      {
+	other.width += Scr.SnapAttraction + 10000;
+      }
+      if (other .y + other.height >= Scr.MyDisplayHeight)
+      {
+	other.height += Scr.SnapAttraction + 10000;
+      }
 
       /* snap horizontally */
       if (!((other.y + (int)other.height) < (*py) ||
@@ -1397,6 +1416,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       xl = Event.xmotion.x_root + XOffset;
       yt = Event.xmotion.y_root + YOffset;
 
+fprintf(stderr,"before snapa %d %d\n", xl, yt);
       DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
       /* check Paging request once and only once after outline redrawn */
@@ -1422,6 +1442,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  }
 	  else
 	  {
+fprintf(stderr,"window moved to %d %d\n", xl, yt);
 	    XMoveWindow(dpy,tmp_win->frame,xl,yt);
 	  }
 	}
