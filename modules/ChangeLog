@@ -1,3 +1,8 @@
+2002-10-02  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/FvwmButtons.c (LoadIconFile):
+	Fixed colorset with which we load an icon
+
 2002-10-01  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmButtons/parse.c (ParseButton):

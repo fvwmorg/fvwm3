@@ -51,17 +51,19 @@
 #define XPM_COLOR_CLOSENESS 40000
 
 #define SQUARE(X) ((X)*(X))
-#define TRUE_DIST(r1,g1,b1,r2,g2,b2) (double)\
-                   (SQUARE((double)(r1 - r2)/655.35) \
-		+   SQUARE((double)(g1 - g2)/655.35) \
-                +   SQUARE((double)(b1 - b2)/655.35))
+
+#define TRUE_DIST(r1,g1,b1,r2,g2,b2) (long)\
+                   (SQUARE((long)((r1 - r2)>>8)) \
+		+   SQUARE((long)((g1 - g2)>>8)) \
+                +   SQUARE((long)((b1 - b2)>>8)))
 
 #define FAST_DIST(r1,g1,b1,r2,g2,b2) (long)\
                    (abs((long)(r1 - r2)) \
 		+   abs((long)(g1 - g2)) \
                 +   abs((double)(b1 - b2)))
 
-#define USED_DIST(r1,g1,b1,r2,g2,b2) FAST_DIST(r1,g1,b1,r2,g2,b2)
+#define USED_DIST(r1,g1,b1,r2,g2,b2) TRUE_DIST(r1,g1,b1,r2,g2,b2)
+
 #define PICTURE_COLOR_CLOSENESS USED_DIST(3333,3333,3333,0,0,0)
 
 #define PICTURE_PAllocTable         1000000

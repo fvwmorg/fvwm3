@@ -1,4 +1,15 @@
+2002-10-02  olicha  <olivier.chapuis@free.fr>
+
+	* libs/PictureUtils.c (USED_DIST):
+	Used the euclidian distance for colors distance
+
+	* libs/Fft.c (FftGetFont): 
+	Disable Xft if the Xserver does not support XRender
+
 2002-10-01  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Fft.c (FftGetFont): 
+	Disable Xft if the Xserver does not support XRender
 
 	* libs/FRender.c (FRenderRender):
 	* libs/PictureGraphics.c (PGraphicsTintRectangle):

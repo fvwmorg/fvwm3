@@ -29,6 +29,7 @@
 #include "Fft.h"
 #include "FlocaleCharset.h"
 #include "FftInterface.h"
+#include "FRenderInit.h"
 #include "PictureBase.h"
 
 /* ---------------------------- local definitions --------------------------- */
@@ -238,7 +239,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	char *fn = NULL, *str_enc = NULL;
 	FlocaleCharset *fc;
 
-	if (!FftSupport)
+	if (!FftSupport || !FRenderGetExtensionSupported())
 	{
 		return NULL;
 	}

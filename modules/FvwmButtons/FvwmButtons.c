@@ -1654,7 +1654,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   j=0;
 
   /* Load the icon */
-  if(b->flags&b_Icon && LoadIconFile(b->icon_file,&b->icon, b->colorset))
+  if(b->flags&b_Icon && LoadIconFile(b->icon_file,&b->icon, buttonColorset(b)))
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", icon \"%s\"",b->icon_file);
