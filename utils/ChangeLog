@@ -1,3 +1,9 @@
+2002-01-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm24_convert.in:
+	* Makefile.am:
+	use the same generation as for other perl scripts
+
 2002-01-21  olicha  <olivier.chapuis@free.fr>
 
 	* xpmroot.c (main):

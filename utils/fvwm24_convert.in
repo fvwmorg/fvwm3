@@ -1,8 +1,5 @@
+#!@PERL@
 # -*-perl-*-
-'true' || eval 'exec perl -S $0 $argv:q';
-eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
-  & eval 'exec perl -S $0 $argv:q'
-  if 0;
 
 # Convert .fvwm2rc from 2.2.x format to 2.4.x format.
 
@@ -67,7 +64,7 @@ sub parse_pass {
     print '# This file changed by the .fvwm2rc to .fvwm/.fvwm2rc converter';
   }
   # create assoc array by imagepath:
-  $imagepath = 'FVWM_IMAGEPATH';
+  $imagepath = '@FVWM_IMAGEPATH@';
   $isize = (@iarray = split(/:/, $imagepath, 9999));
   for ($i = 1; $i <= $isize; ++$i) {
     $iassoc{$iarray[$i]} = '1';

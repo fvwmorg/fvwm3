@@ -633,7 +633,7 @@ AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile utils/fvwm-config
 utils/fvwm-menu-xlock utils/fvwm-menu-directory
 utils/fvwm-menu-desktop utils/fvwm-menu-headlines
-utils/fvwmbug.sh
+utils/fvwm24_convert utils/fvwmbug.sh
 rpm/Makefile rpm/fvwm.spec docs/fvwm.lsm
 docs/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl
@@ -669,6 +669,13 @@ modules/FvwmWharf/Makefile
 modules/FvwmWinList/Makefile
 modules/FvwmGtk/Makefile
 )
+
+# ---------------------------------------------------------------------------
+# Original config.status is patched to make generated scripts executable.
+sed 's/> $ac_file/> $ac_file; test "`head -1 $ac_file | cut -c1-2`" = "#!" \&\& chmod a+rx $ac_file/' <config.status >config.status-t && \
+mv config.status-t config.status
+chmod +x config.status
+# ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 cat >config.status-t <<EOF
