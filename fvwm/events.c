@@ -1081,8 +1081,8 @@ void HandleConfigureRequest(const evh_args_t *ea)
 		 * then the WM will read the *second* size inc upon the *first*
 		 * event and use the wrong one in the ConfigureRequest
 		 * calculations. */
-		/* dv (31 Mar 2002): The code now handles these
-		 * situations, so enable it again. */
+		/* dv (31 Mar 2002): The code now handles these situations, so
+		 * enable it again. */
 #ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
 		/* merge all pending ConfigureRequests for the window into a
 		 * single event */

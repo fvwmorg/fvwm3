@@ -2302,7 +2302,6 @@ Bool __move_loop(
 				}
 				paged++;
 			}  /* end while (paged) */
-
 			break;
 
 		case Expose:
@@ -3308,6 +3307,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			}
 			fForceRedraw = False;
 			is_done = True;
+			break;
 
 		case PropertyNotify:
 		{
@@ -3318,6 +3318,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			ea.exc = exc_clone_context(exc, &ecc, ECC_ETRIGGER);
 			HandlePropertyNotify(&ea);
 			exc_destroy_context(ea.exc);
+			is_done = True;
 			break;
 		}
 
@@ -3327,9 +3328,11 @@ static Bool __resize_window(F_CMD_ARGS)
 		if (!is_done)
 		{
 			if (!do_resize_opaque)
+			{
 				/* must undraw the rubber band in case the
 				 * event causes some drawing */
 				switch_move_resize_grid(False);
+			}
 			dispatch_event(&ev);
 			if (!do_resize_opaque)
 			{
