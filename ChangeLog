@@ -1,7 +1,22 @@
 2002-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.h:
+	* fvwm/stack.c:
+	restored versions from before 9th of September
+	(RaiseOrLowerWindow):
+	fixed StackTransientParent style without RaiseTransient or
+	LowerTransient on transient_for window
+	StackTransientParent works only on window in the same layer
+	(mark_transient_subtree):
+	fixed handling of window group hint w/ iconify
+	(restack_windows):
+	(RaiseOrLowerWindow):
+	(new_layer):
+	fixed flickering when overlapping transients aree lowered
+
 	* fvwm/move_resize.c (__resize_window):
 	* fvwm/colorset.c (add_to_junk):
+	cleaned up event handling
 
 	* fvwm/move_resize.c (__resize_window):
 	renamed function and changed callers
@@ -184,6 +199,7 @@
 	* libs/FEvent.c:
 	* libs/FEvent.h:
 	* libs/Makefile.am:
+	new files
 
 	* fvwm/stack.c (__raise_or_lower_recursion):
 	(RaiseOrLowerWindow):
