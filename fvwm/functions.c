@@ -1017,7 +1017,7 @@ void old_execute_function(
  *
  ***********************************************************************/
 int DeferExecution(
-	XEvent *eventp, Window *w,FvwmWindow **fw, unsigned long *context,
+	XEvent *eventp, Window *w, FvwmWindow **fw, unsigned long *context,
 	cursor_type cursor, int FinishEvent)
 {
 	int done;
@@ -1034,7 +1034,7 @@ int DeferExecution(
 		    (FinishEvent == ButtonRelease &&
 		     eventp->type != ButtonPress))
 		{
-			return FALSE;
+			return False;
 		}
 		else if (FinishEvent == ButtonRelease)
 		{
@@ -1084,17 +1084,19 @@ int DeferExecution(
 		switch (eventp->type)
 		{
 		case KeyPress:
-			if (eventp->type != FinishEvent)
-				original_w = eventp->xany.window;
-			/* fall through */
 		case ButtonPress:
+			if (eventp->type != FinishEvent)
+			{
+				original_w = eventp->xany.window;
+			}
+			done = 1;
+			break;
 		case ButtonRelease:
 			done = 1;
 			break;
 		default:
 			break;
 		}
-
 		if (!done)
 		{
 			DispatchEvent(False);
@@ -1104,8 +1106,8 @@ int DeferExecution(
 	MyXUngrabKeyboard(dpy);
 	UngrabEm(GRAB_NORMAL);
 	*w = eventp->xany.window;
-	if (((*w == Scr.Root)||(*w == Scr.NoFocusWin))
-	   && (eventp->xbutton.subwindow != (Window)0))
+	if ((*w == Scr.Root || *w == Scr.NoFocusWin) &&
+	    eventp->xbutton.subwindow != None)
 	{
 		*w = eventp->xbutton.subwindow;
 		eventp->xany.window = *w;
@@ -1114,36 +1116,33 @@ int DeferExecution(
 	{
 		*context = C_ROOT;
 		XBell(dpy, 0);
-		return TRUE;
+		return True;
 	}
-	if (XFindContext (dpy, *w, FvwmContext, (caddr_t *)fw) == XCNOENT)
+	if (XFindContext(dpy, *w, FvwmContext, (caddr_t *)fw) == XCNOENT)
 	{
 		*fw = NULL;
 		XBell(dpy, 0);
-		return (TRUE);
+		return (True);
 	}
-
 	if (*w == FW_W_PARENT(*fw))
 	{
 		*w = FW_W(*fw);
 	}
-
 	if (original_w == FW_W_PARENT(*fw))
 	{
 		original_w = FW_W(*fw);
 	}
-
 	/* this ugly mess attempts to ensure that the release and press
 	 * are in the same window. */
 	if (*w != original_w && original_w != Scr.Root &&
-	   original_w != None && original_w != Scr.NoFocusWin &&
-	   !IS_EWMH_DESKTOP(original_w))
+	    original_w != None && original_w != Scr.NoFocusWin &&
+	    !IS_EWMH_DESKTOP(original_w))
 	{
 		if (*w != FW_W_FRAME(*fw) || original_w != FW_W(*fw))
 		{
 			*context = C_ROOT;
 			XBell(dpy, 0);
-			return TRUE;
+			return True;
 		}
 	}
 
@@ -1151,12 +1150,12 @@ int DeferExecution(
 	{
 		*context = C_ROOT;
 		XBell(dpy, 0);
-		return TRUE;
+		return True;
 	}
 
 	*context = GetContext(*fw,eventp,&dummy);
 
-	return FALSE;
+	return False;
 }
 
 
@@ -1175,14 +1174,14 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 		}
 		len = endtok - action;
 		j=0;
-		matched = FALSE;
+		matched = False;
 		while (!matched && (mlen = strlen(func_table[j].keyword)) > 0)
 		{
 			if (mlen == len &&
 			    strncasecmp(action,func_table[j].keyword,mlen) ==
 			    0)
 			{
-				matched=TRUE;
+				matched=True;
 				/* found key word */
 				if (func_type)
 				{

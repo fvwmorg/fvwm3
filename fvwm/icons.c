@@ -2008,7 +2008,8 @@ void CMD_Iconify(F_CMD_ARGS)
 {
 	int toggle;
 
-	if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT, ButtonRelease))
+	if (DeferExecution(
+		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
 	{
 		return;
 	}
