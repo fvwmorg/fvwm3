@@ -1,3 +1,12 @@
+1999-06-25  Chris Rankin  <rankinc@zipworld.com.au>
+
+    * modules/FvwmTaskBar.c: New signal handling (fvwmsignal.o)
+                             ShutMeDown() is now an exit-procedure
+    * modules/ButtonArray.c: Fixed linked-list problem in RemoveButton()
+    * modules/Mallocs.c:     Fixed implementation of saferealloc()
+    * modules/Mallocs.h:     Removed duplicate declaration of safemalloc()
+                             (Added "libs/safemalloc.h" to affected .c files)
+
 1999-06-25  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Module.c (InitGetConfigLine): allocate buffer instead of using
