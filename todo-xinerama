@@ -47,7 +47,6 @@ Optional to do:
 ---------------
 2 a
 6 b f
-8 f
 
 Already done:
 -------------
@@ -78,7 +77,7 @@ Already done:
 6 a c d g i j k
  7) Control:
     a) Enable and Disable Xinerama on the fly (including modules)
-8 b d
+8 b d f
 
 Not to be done:
 ---------------
