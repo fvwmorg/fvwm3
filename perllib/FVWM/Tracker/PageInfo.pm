@@ -67,11 +67,9 @@ sub calculateInternals ($$) {
 	my $args = shift;
 	my $data = $self->{data};
 
-	while (my ($name, $value) = each %$args) {
-		$data->{$name} = $value;
-	}
-	$data->{page_nx} = $data->{vp_x} / $data->{vp_width};
-	$data->{page_ny} = $data->{vp_y} / $data->{vp_height};
+	@$data{keys %$args} = values %$args;
+	$data->{page_nx} = int($data->{vp_x} / $data->{vp_width});
+	$data->{page_ny} = int($data->{vp_y} / $data->{vp_height});
 }
 
 sub dump ($) {

@@ -146,6 +146,12 @@
 	fixed placement in top left corner when pressing escape during manual
 	placement
 
+2004-05-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	* AUTHORS:
+	added Chinese translations
+
 2004-05-18  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.c (EWMH_SetFrameStrut):

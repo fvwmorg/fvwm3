@@ -66,7 +66,7 @@ my $configTracker = $module->track('ModuleConfig',
 		MenuName => 'MyMenu',
 		MenuStyle => '',
 		Debug => 0,
-		Function => 'MyWindowListFunc',
+		Function => 'WindowListFunc',
 		ItemFormat => '%m%n%t%t(+%x+%y) - Desk %d',
 		ShowName => '',
 		ShowClass => '',
@@ -74,7 +74,8 @@ my $configTracker = $module->track('ModuleConfig',
 		DontShowName => '',
 		DontShowClass => '',
 		DontShowResource => '',
-	});
+	},
+);
 
 my $pConfig = $configTracker->data();
 my $winTracker = $module->track("WindowList", "!stack icons names winfo");
@@ -108,7 +109,7 @@ sub PopupMenu ($$) {
 	foreach my $id (keys(%{$pData}))
 	{
 		my $p = $pData->{$id};
-		$module->debug("\t$id - " . $p->{window_name});
+		$module->debug("\t$id - " . $p->{name});
 
 		if ($pConfig->{AllDesks} =~ /off/i &&
 			$p->{desk} != $winTracker->pageInfo('desk_n'))
@@ -118,8 +119,8 @@ sub PopupMenu ($$) {
 		}
 
 		if ($pConfig->{AllPages} =~ /off/i &&
-			($p->{page_x} != $winTracker->pageInfo('page_x') ||
-			 $p->{page_y} != $winTracker->pageInfo('page_y')))
+			($p->{page_nx} != $winTracker->pageInfo('page_nx') ||
+			 $p->{page_ny} != $winTracker->pageInfo('page_ny')))
 		{
 			$module->debug("\t\tnot on this page");
 			next;
@@ -133,7 +134,7 @@ sub PopupMenu ($$) {
 
  		my $section = 3;
 		if ($pConfig->{ShowName} ne '' &&
- 			$p->{window_name} =~ /$pConfig->{ShowName}/i) {
+ 			$p->{name} =~ /$pConfig->{ShowName}/i) {
 			$section = 0;
 		} elsif ($pConfig->{ShowClass} ne '' &&
 			$p->{res_class_name} =~ /$pConfig->{ShowClass}/i) {
@@ -146,7 +147,7 @@ sub PopupMenu ($$) {
 		if ($section == 3)
 		{
 			if (($pConfig->{DontShowName} ne '' &&
-				$p->{window_name} =~ /$pConfig->{DontShowName}/i) ||
+				$p->{name} =~ /$pConfig->{DontShowName}/i) ||
 				($pConfig->{DontShowClass} ne '' &&
 				$p->{res_class_name} =~ /$pConfig->{DontShowClass}/i) ||
 				($pConfig->{DontShowResource} ne '' &&
@@ -164,11 +165,11 @@ sub PopupMenu ($$) {
 	$module->send("DestroyMenu recreate $pConfig->{MenuName}");
 	$module->send("AddToMenu " . $pConfig->{MenuName} . " 'Desk " .
 		$winTracker->pageInfo('desk_n') . ", Page " .
-		$winTracker->pageInfo('page_x') . ' ' .
-		$winTracker->pageInfo('page_y') . "' Title");
+		$winTracker->pageInfo('page_nx') . ' ' .
+		$winTracker->pageInfo('page_ny') . "' Title");
 
 	# now loop on sections sending menu entries to fvwm
-	while ( @aSection ) {
+	while (@aSection) {
 		my $s = shift @aSection;
 
 		if ($s) {
@@ -201,14 +202,14 @@ sub AddToSection ($$) {
 
 	# make format string substitutions
 	$format =~ s/%t/\t/g;
-	$format =~ s/%n/&Shorten($p->{window_name})/ge;
+	$format =~ s/%n/&Shorten($p->{name})/ge;
 	$format =~ s/%i/&Shorten($p->{icon_name})/ge;
 	$format =~ s/%c/&Shorten($p->{res_class_name})/ge;
 	$format =~ s/%r/&Shorten($p->{res_name})/ge;
-	$format =~ s/%X/$p->{x}/g;
-	$format =~ s/%Y/$p->{y}/g;
-	$format =~ s/%x/$p->{frame_x}/g;
-	$format =~ s/%y/$p->{frame_y}/g;
+	$format =~ s/%X/$p->{X}/g;
+	$format =~ s/%Y/$p->{Y}/g;
+	$format =~ s/%x/$p->{x}/g;
+	$format =~ s/%y/$p->{y}/g;
 	$format =~ s/%d/$p->{desk}/g;
 
 	# TODO: doesn't handle EWMH icons yet.
@@ -370,7 +371,7 @@ section will contain all other windows.
 
 To only include matching windows, add:
 
-	*FvwmWindowMenu: DontShowName .*
+    *FvwmWindowMenu: DontShowName .*
 
 Similarly:
 
@@ -479,5 +480,7 @@ Hold this button while navigating using cursor keys, then release it.
 =item Ric Lister <http://cns.georgetown.edu/~ric/>
 
 =item Scott Smedley
+
+=item Mikhael Goikhman
 
 =cut

@@ -23,6 +23,12 @@ Changes in alpha release 2.5.11 (not released yet)
 
 * New option to FvwmIconMan: ShowNoIcons.
 
+* New WindowList tracker and other enhancements in Perl library.
+
+* New option to fvwm-menu-directory: --func-name.
+
+* Improved FvwmWindowMenu module.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)

@@ -24,6 +24,7 @@ my $windowEvents = M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
 	M_ICONIFY | M_DEICONIFY;
 my $nameEvents = M_RES_NAME | M_RES_CLASS | M_WINDOW_NAME | M_VISIBLE_NAME |
 	M_ICON_NAME;
+my $nameXEvents = MX_VISIBLE_ICON_NAME;
 my $stackEvents = M_RESTACK | M_RAISE_WINDOW | M_LOWER_WINDOW;
 my $iconEvents = M_ICON_LOCATION | M_ICON_FILE | M_DEFAULTICON | M_MINI_ICON;
 
@@ -73,9 +74,8 @@ sub addRequestedInfoHandlers ($$) {
 	$mask |= $stackEvents if $useStack;  
 	$mask |= $iconEvents if $useIcons;
 
-	# Adding MX_VISIBLE_ICON_NAME to $nameEvents does not work.
 	my $xmask = 0;
-	$xmask |= MX_VISIBLE_ICON_NAME if $useNames;
+	$xmask |= $nameXEvents if $useNames;
 
 	$self->addHandler($mask, $handler) if $mask;
 	$self->addHandler($xmask, $handler) if $xmask;
@@ -103,41 +103,50 @@ sub start ($) {
 		my ($winId, $oldHash) = $self->calculateInternals($event);
 		return unless defined $winId;
 		my $type = $event->type();
-		if ($type & M_ADD_WINDOW) {
-			$self->notify("window added", $winId);
+		my $observable = undef;
+
+		if ($self->{module}->isEventExtended($type)) {
+			if ($type & $nameXEvents) {
+				$observable = "window name updated";
+			}
+		} elsif ($type & M_ADD_WINDOW) {
+			$observable = "window added";
 		} elsif ($type & M_CONFIGURE_WINDOW) {
-			$self->notify("window properties updated", $winId, $oldHash);
+			$observable = "window properties updated";
 			# The "window properties updated" observable is very broad &
 			# occurs as a result of many different operations - here we
 			# try & determine if some common operations occur & invoke more
 			# specific observables. This may reduce the amount of parsing
 			# external modules have to do.
-			my $p = $self->{data}->{$winId};
-			if ($p->{frame_width} != $oldHash->{frame_width} ||
-				$p->{frame_height} != $oldHash->{frame_height})
-			{
-				$self->notify("window resized", $winId, $oldHash);
+			if ($oldHash) {
+				my $p = $self->{data}->{$winId};
+				if ($p->{frame_width} != $oldHash->{frame_width} ||
+					$p->{frame_height} != $oldHash->{frame_height})
+				{
+					$self->notify("window resized", $winId, $oldHash);
+				}
+				elsif ($p->{desk} != $oldHash->{desk} ||
+					$p->{x} != $oldHash->{x} ||
+					$p->{y} != $oldHash->{y})
+				{
+					$self->notify("window moved", $winId, $oldHash);
+				}
+				# We can easily add other specific observables here as required.
 			}
-			elsif ($p->{desk} != $oldHash->{desk} ||
-				$p->{x} != $oldHash->{x} ||
-				$p->{y} != $oldHash->{y})
-			{
-				$self->notify("window moved", $winId, $oldHash);
-			}
-			# We can easily add other specific observables here as required.
 		} elsif ($type & M_DESTROY_WINDOW) {
-			$self->notify("window deleted", $winId, $oldHash);
+			$observable = "window deleted";
 		} elsif ($type & M_ICONIFY) {
-			$self->notify("window iconified", $winId, $oldHash);
+			$observable = "window iconified";
 		} elsif ($type & M_DEICONIFY) {
-			$self->notify("window deiconified", $winId, $oldHash);
-		} elsif ($type & $nameEvents || $type & MX_VISIBLE_ICON_NAME) {
-			$self->notify("window name updated", $winId, $oldHash);
+			$observable = "window deiconified";
+		} elsif ($type & $nameEvents) {
+			$observable = "window name updated";
 		} elsif ($type & $stackEvents) {
-			$self->notify("window stack updated", $winId, $oldHash);
+			$observable = "window stack updated";
 		} elsif ($type & $iconEvents) {
-			$self->notify("window icon updated", $winId, $oldHash);
+			$observable = "window icon updated";
 		}
+		$self->notify($observable, $winId, $oldHash) if $observable;
 	});
 
 	return $result;
@@ -151,11 +160,11 @@ sub calculateInternals ($$) {
 	my $winId = $args->{win_id};
 
 	my $oldHash = undef;
-	if (defined $data->{$winId}) {
-		# make a copy of the hash cos we are about to modify it.
-		my %tmp = %{$data->{$winId}};
-		$oldHash = \%tmp;
-	}
+	$oldHash = { %{$data->{$winId}} } if defined $data->{$winId};
+
+	my $window = $data->{$winId} ||=
+		bless { id => $winId, iconified => 0, _tracker => $self },
+		"FVWM::Window";
 
 	# There are some fields that are not unique to all events. To ensure
 	# we don't clobber them, we rename some fields. For example, the 'name'
@@ -176,25 +185,34 @@ sub calculateInternals ($$) {
 #		print(STDERR "    $_=" . $args->{$_} . "\n");
 #	}
 
-	@{$data->{$winId}}{keys %{$args}} = values %{$args};
+	$args->{name} = delete $args->{window_name} if exists $args->{window_name};
+	@$window{keys %$args} = values %$args;
 
-	if (defined $args->{frame_x} && defined $self->{page_info}) {
+	if (defined $args->{frame_x}) {
 		# frame_x & frame_y are _relative_ coords of the window to the
 		# current page - calculate the _absolute_ coords - x & y.
-		my $pW = $data->{$winId};
-		$pW->{x} = $self->pageInfo('vp_x') + $args->{frame_x};
-		$pW->{y} = $self->pageInfo('vp_y') + $args->{frame_y};
-		$pW->{page_x} = int($pW->{x} / $self->pageInfo('vp_width'));
-		$pW->{page_y} = int($pW->{y} / $self->pageInfo('vp_height'));
+		$window->{x} = delete $window->{frame_x};
+		$window->{y} = delete $window->{frame_y};
+		$window->{width}  = delete $window->{frame_width};
+		$window->{height} = delete $window->{frame_height};
+		my $page = $self->{page_info};
+		if (defined $page) {
+			$window->{X} = $page->{vp_x} + $window->{x};
+			$window->{Y} = $page->{vp_y} + $window->{y};
+			$window->{page_nx} = int($window->{X} / $page->{vp_width});
+			$window->{page_ny} = int($window->{Y} / $page->{vp_height});
+		}
 	}
 
 	my $type = $event->type();
-	if ($type & M_ADD_WINDOW || $type & M_DEICONIFY) {
-		$data->{$winId}->{iconified} = 0;
-	} elsif ($type & M_ICONIFY) {
-		$data->{$winId}->{iconified} = 1;
-	} elsif ($type & M_DESTROY_WINDOW) {
-		delete $data->{$winId};
+	if (!$self->{module}->isEventExtended($type)) {
+		if ($type & M_DEICONIFY) {
+			$window->{iconified} = 0;
+		} elsif ($type & M_ICONIFY) {
+			$window->{iconified} = 1;
+		} elsif ($type & M_DESTROY_WINDOW) {
+			delete $data->{$winId};
+		}
 	}
 
 	return wantarray ? ($winId, $oldHash) : $winId;
@@ -204,12 +222,12 @@ sub handlerPageInfo ($$) {
 	my $self = shift;
 	my $event = shift;
 	my $args = $event->args;
+	my $data = $self->{page_info} ||= {};
 
-	@{$self->{page_info}}{keys %{$args}} = values %{$args};
-
-	if ($event->type() & M_NEW_PAGE) {
-		$self->{page_info}->{page_x} = int($args->{vp_x} / $args->{vp_width});
-		$self->{page_info}->{page_y} = int($args->{vp_y} / $args->{vp_height});
+	@$data{keys %$args} = values %$args;
+	if ($event->type & M_NEW_PAGE) {
+		$data->{page_nx} = $data->{vp_x} / $data->{vp_width};
+		$data->{page_ny} = $data->{vp_y} / $data->{vp_height};
 	}
 }
 
@@ -220,7 +238,6 @@ sub pageInfo ($;$) {
 	return $data unless defined $id;
 	return $data->{$id};
 }
-
 
 sub data ($;$) { 
 	my $self = shift;
@@ -238,14 +255,52 @@ sub dump ($;$) {
 
 	my $string = "";
 	foreach (@ids) {
-		my $winData = $data->{$_};
 		$string .= "Window $_\n";
-		while (my ($prop, $value) = %$winData) {
-			$string .= "\t$prop:\t[$value]\n";
+		my $window = $data->{$_};
+		foreach my $prop (sort keys %$window) {
+			next if $prop =~ /^_/;
+			$string .= "\t$prop:\t[$window->{$prop}]\n";
 		}
 	}
 	return $string;
 }
+
+sub windows ($) {
+	my $self = shift;
+	my @windows = values %{$self->data};
+	return wantarray? @windows: \@windows;
+}
+
+# ----------------------------------------------------------------------------
+
+package FVWM::Window;
+
+sub match ($$) {
+	my $self = shift;
+	my $condition = shift;
+	my @conditions = split(/[,\s]+/, $condition);
+
+	my $match = 1;
+	foreach (@conditions) {
+		my $opposite = s/^!//;
+		if (/^iconified$/i) {
+			return 0 unless $opposite ^ $self->{iconified};
+		} elsif (/^current(page|desk)$/i) {
+			my $page = $self->{_tracker}->pageInfo;
+			return 0 unless $opposite ^ ($self->{desk} == $page->{desk_n});
+			next if lc($1) eq "desk";
+			return 0 unless $opposite ^ (
+				$self->{x} + $self->{width} > $page->{vp_x} &&
+				$self->{x} < $page->{vp_x} + $page->{vp_width} &&
+				$self->{y} + $self->{height} > $page->{vp_y} &&
+				$self->{y} < $page->{vp_y} + $page->{vp_height}
+			);
+		}
+	}
+	return $match;
+}
+
+# ----------------------------------------------------------------------------
 
 1;
 
@@ -258,29 +313,40 @@ information.
 
 This tracker defines the following observables:
 
-	"window added",
-	"window deleted",
-	"window properties updated",
-	"window moved",
-	"window resized",
-	"window iconified",
-	"window deiconified",
-	"window name updated",
-	"window stack updated",
-	"window icon updated",
+    "window added",
+    "window deleted",
+    "window properties updated",
+    "window moved",
+    "window resized",
+    "window iconified",
+    "window deiconified",
+    "window name updated",
+    "window stack updated",
+    "window icon updated",
 
 =head1 SYNOPSYS
  
-Using B<FVWM::Module> $module object (preferably):
+Using B<FVWM::Module> $module object:
 
-	my $windowsTracker = $module->track("WindowList", $options);
-	my $windows = $windowsTracker->data;
-	my $windowSizeX = $windows->{$winId}->{'x'};
+    my $tracker = $module->track("WindowList");
+    my @windows = $tracker->windows;
+    foreach my $window ($tracker->windows) {
+        print "+$window->{x}+$window->{y}, $window->{name}\n";
+    }
 
 or:
 
-	my $windowsTracker = $module->track("WindowList", $options);
-	my $windowSizeX = $windowsTracker->data($winId)->{'x'};
+    my $tracker = $module->track("WindowList", "winfo");
+    my $x = $tracker->data("0x230002a")->{x};
+
+or:
+
+    my $tracker = $module->track("WindowList", $options);
+    my $data = $tracker->data;
+    while (my ($winId, $window) = each %$data) {
+        next unless $window->match("CurrentPage, Iconified");
+        $module->send("Iconify off", $winId);
+    }
 
 Default $options string is: "!stack !icons names winfo"
 

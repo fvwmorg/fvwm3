@@ -1,3 +1,14 @@
+2004-06-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Tracker/WindowList.pm:
+	now bless stored hashes to FVWM::Window objects;
+	new method 'match' testing conditions like "CurrentDesk", "Iconified";
+	several incompatible changes in names:
+	s/x/X/, s/frame_x/x/, s/window_name/name/, s/page_x/page_nx/
+
+	* FVWM/Tracker/PageInfo.pm:
+	minor synchronization of code
+
 2004-06-05  Scott Smedley  <ss@aao.gov.au>
 
 	* FVWM/Tracker/WindowList.pm:

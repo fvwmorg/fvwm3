@@ -42,6 +42,7 @@ my $fvwmUserDir = $ENV{'FVWM_USERDIR'} || "$home/.fvwm";
 $fvwmUserDir = $home unless -d $fvwmUserDir;
 my $dirFile = "$fvwmUserDir/.fvwm-menu-directory.dir";
 my $changeMenuStyle = "";
+my $funcName = "FuncFvwmMenuDirectory";
 
 GetOptions(
 	"help|h|?"     => \&showHelp,
@@ -70,6 +71,7 @@ GetOptions(
 	"special-dirs:s"    => \$specialDirVal,
 	"memory-for-speed!" => \$memoryForSpeed,
 	"menu-style=s" => \$changeMenuStyle,
+	"func-name=s"  => \$funcName,
 ) || wrongUsage();
 wrongUsage() if @ARGV;
 
@@ -192,7 +194,7 @@ print qq(+ DynamicPopDownAction DestroyMenu "$menuName"\n)
 	unless $memoryForSpeed || $reuse;
 
 # set the 'missing submenu function'
-print qq(+ MissingSubmenuFunction FuncFvwmMenuDirectory\n) unless $reuse;
+print qq(+ MissingSubmenuFunction $funcName\n) unless $reuse;
 
 # add a new title (item and separator, or real Title if no action)
 my $titleAct = $commT; $titleAct =~ s/%d/$dir/g;
@@ -421,6 +423,7 @@ B<fvwm-menu-directory>
 [ B<--special-dirs>|B<-s> [VALUE] ]
 [ B<--[no]memory-for-speed>|B<-mem> ]
 [ B<--menu-style>|B<-men> NAME ]
+[ B<--func-name>|B<-f> NAME ]
 
 =head1 DESCRIPTION
 
@@ -630,6 +633,11 @@ created directory menus without destroying it when closed, default is
 =item B<--menu-style> name
 
 assign MenuStyle name to the menus
+
+=item B<--func-name> name
+
+overwrite the default MissingSubmenuFunction name that is
+"FuncFvwmMenuDirectory"
 
 =back
 
