@@ -22,7 +22,7 @@ DestroyModuleConfig         FormFvwmRlogin.*
 *FvwmRloginDefaultUserName $(UserName)\n\
 *FvwmRloginDefaultDefault $(Default?on)\n\
 *FvwmRloginDefaultCustom $(Custom?on)"\
-  > ${FVWM_USERHOME}/.FvwmRlogin
+  > ${FVWM_USERDIR}/.FvwmRlogin
 *FormFvwmRlogin.Button       restart "Clear"
 *FormFvwmRlogin.Button       quit    "Cancel"        ^[
 *FormFvwmRlogin.Command      Nop

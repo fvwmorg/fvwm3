@@ -165,7 +165,8 @@ extern XEvent Event;
 Bool Restarting = False;
 int fd_width, x_fd;
 char *display_name = NULL;
-char *user_home_dir;
+char *fvwm_userdir;
+static char *home_dir;
 char const *Fvwm_VersionInfo;
 char const *Fvwm_ConfigInfo;
 
@@ -212,19 +213,33 @@ int main(int argc, char **argv)
      later by the config file, etc.  */
   putenv("FVWM_MODULEDIR=" FVWM_MODULEDIR);
 
-  /* Figure out where to read and write config files. */
-  user_home_dir = getenv("FVWM_USERHOME");
-  if ( user_home_dir == NULL )
-    user_home_dir = getenv("HOME");
+  /* Figure out user's home directory */
+  home_dir = getenv("HOME");
 #ifdef HAVE_GETPWUID
-  if ( user_home_dir == NULL ) {
+  if (home_dir == NULL) {
     struct passwd* pw = getpwuid(getuid());
-    if ( pw != NULL )
-      user_home_dir = strdup( pw->pw_dir );
+    if (pw != NULL)
+      home_dir = strdup(pw->pw_dir);
   }
 #endif
-  if ( user_home_dir == NULL )
-    user_home_dir = "."; /* give up and use current dir */
+  if (home_dir == NULL)
+    home_dir = "."; /* give up and use current dir */
+
+  /* Figure out where to read and write user's data files. */
+  fvwm_userdir = getenv("FVWM_USERDIR");
+  if (fvwm_userdir == NULL)
+  {
+    fvwm_userdir = strdup(CatString2(home_dir, "/.fvwm"));
+    /* Put the user directory into the environment so it can be used
+       later everywhere. */
+    putenv(strdup(CatString2("FVWM_USERDIR=", fvwm_userdir)));
+  }
+
+  /* Create FVWM_USERDIR directory if needed */
+  if (access(fvwm_userdir, F_OK) != 0)
+    mkdir(fvwm_userdir, 0777);
+  if (access(fvwm_userdir, W_OK) != 0)
+    fvwm_msg(ERR, "main", "No write permissions in `%s/'.\n", fvwm_userdir);
 
   for (i = 1; i < argc; i++)
   {
@@ -590,7 +605,7 @@ int main(int argc, char **argv)
   }
 
   restart_state_filename =
-    strdup(CatString3(user_home_dir, "/.fs-restart-", getenv("HOSTDISPLAY")));
+    strdup(CatString3(fvwm_userdir, "/.fs-restart-", getenv("HOSTDISPLAY")));
   if (!state_filename && Restarting)
     state_filename = restart_state_filename;
 
@@ -633,21 +648,28 @@ int main(int argc, char **argv)
     }
     DoingCommandLine = False;
   } else {
-      /** Run startup commands in ~/.fvwm2rc or FVWM_CONFIGDIR/system.fvwm2rc.
-	  If these fail, try FVWM_CONFIGDIR/.fvwm2rc for backwards compat. **/
-      if ( !run_command_file( CatString3(user_home_dir, "/", FVWMRC),
-			      &Event, NULL, C_ROOT, -1 )
-	   && !run_command_file( CatString3(FVWM_CONFIGDIR, "/system", FVWMRC),
-				 &Event, NULL, C_ROOT, -1 )
-	   && !run_command_file( CatString3(FVWM_CONFIGDIR, "/", FVWMRC),
-				 &Event, NULL, C_ROOT, -1 ) )
-      {
-	  fvwm_msg( ERR, "main",
-	    "Cannot read startup file.  Tried %s/%s, %s/system%s, and %s/%s",
-		    user_home_dir, FVWMRC,
-		    FVWM_CONFIGDIR, FVWMRC,
-		    FVWM_CONFIGDIR, FVWMRC );
-      }
+    /* Run startup command file in 5 places: FVWM_USERDIR, FVWM_DATADIR,
+       and for compatibility: ~/.fvwm2rc, $sysconfdir/system.fvwm2rc */
+    if (
+      !run_command_file( CatString3(fvwm_userdir, "/",       FVWMRC),
+        &Event, NULL, C_ROOT, -1 ) &&
+      !run_command_file( CatString3(home_dir,     "/",       FVWMRC),
+        &Event, NULL, C_ROOT, -1 ) &&
+      !run_command_file( CatString3(FVWM_DATADIR, "/",       FVWMRC),
+        &Event, NULL, C_ROOT, -1 ) &&
+      !run_command_file( CatString3(FVWM_DATADIR, "/system", FVWMRC),
+        &Event, NULL, C_ROOT, -1 ) &&
+      !run_command_file( CatString3(FVWM_CONFDIR, "/system", FVWMRC),
+        &Event, NULL, C_ROOT, -1 ) )
+    {
+      fvwm_msg( ERR, "main", "Cannot read startup file, tried: "
+        "\n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system%s\n\t%s/system%s",
+          fvwm_userdir, FVWMRC,
+          home_dir,     FVWMRC,
+          FVWM_DATADIR, FVWMRC,
+          FVWM_DATADIR, FVWMRC,
+          FVWM_CONFDIR, FVWMRC);
+    }
   }
 
   DBUG("main","Done running config_commands");
@@ -957,7 +979,7 @@ void SetRCDefaults(void)
     "+ \"&R. Restart FVWM\" Restart",
     "+ \"&X. Exit FVWM\" Quit",
     "Mouse 0 R N Popup MenuFvwmRoot",
-    "Read "FVWM_CONFIGDIR"/ConfigFvwmDefaults",
+    "Read "FVWM_DATADIR"/ConfigFvwmDefaults",
     NULL
   };
   int i=0;
@@ -1949,8 +1971,8 @@ static int parseCommandArgs(
         else if (!canAddArgChar) break;
         else { *errorMsg = "No closing single quote"; errorCode = -3; break; }
       } else if (!sQuote && theChar == '~') {
-        if (!canAddArgStr(user_home_dir)) break;
-        addArgStr(user_home_dir);
+        if (!canAddArgStr(home_dir)) break;
+        addArgStr(home_dir);
         advChar;
       } else if (theChar == '$') {
         int beg, len;

@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 
   m4_enable = True;
   m4_prefix = False;
-  sprintf(m4_options, "-I '%s'", FVWM_CONFIGDIR);
+  sprintf(m4_options, "-I '%s'", FVWM_DATADIR);
   m4_default_quotes = 1;
 
   /* Record the program name for error messages */
@@ -234,23 +234,14 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   int fd;
   int ScreenWidth, ScreenHeight;
   int Mscreen;
-  char *user_home_dir;
+  char *user_dir;
 
   /* Figure out the working directory and go to it */
-  user_home_dir = getenv("FVWM_USERHOME");
-  if ( user_home_dir == NULL )
-    user_home_dir = getenv("HOME");
-#ifdef HAVE_GETPWUID
-  if ( user_home_dir == NULL ) {
-    struct passwd* pw = getpwuid(getuid());
-    if ( pw != NULL )
-      user_home_dir = strdup( pw->pw_dir );
-  }
-#endif
-  if ( user_home_dir != NULL ) {
-    if ( chdir(user_home_dir) < 0 )
+  user_dir = getenv("FVWM_USERDIR");
+  if ( user_dir != NULL ) {
+    if ( chdir(user_dir) < 0 )
       fprintf(stderr, "%s: <<Warning>> chdir to %s failed in m4_defs",
-	      MyName, user_home_dir);
+	      MyName, user_dir);
   }
 
   /* Generate a temporary filename.  Honor the TMPDIR environment variable,
@@ -447,10 +438,10 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   fputs(MkDef("OPTIONS", options), tmpf);
 
   fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
-  fputs(MkDef("FVWM_CONFIGDIR", FVWM_CONFIGDIR), tmpf);
+  fputs(MkDef("FVWM_DATADIR", FVWM_DATADIR), tmpf);
 
-  if ((vc = getenv("FVWM_USERHOME")))
-     fputs(MkDef("FVWM_USERHOME", vc), tmpf);
+  if ((vc = getenv("FVWM_USERDIR")))
+     fputs(MkDef("FVWM_USERDIR", vc), tmpf);
 #ifdef SESSION
   if ((vc = getenv("SESSION_MANAGER")))
     fputs(MkDef("SESSION_MANAGER", vc), tmpf);

@@ -46,13 +46,13 @@ Init
    HideWidget 63
    HideWidget 64
 
-   Set $FHOME=(GetOutput  {echo "$FVWM_USERHOME"} 1 1)
-   Set $OUTPUT=$FHOME {/.fvwm2rc}
-   Set $T = $FHOME{/}
+   Set $FDIR=(GetOutput  {echo "$FVWM_USERDIR"} 1 1)
+   Set $OUTPUT=$FDIR {/.fvwm2rc}
+   Set $T = $FDIR{/}
    ChangeTitle 11 $T
    
-   Set $CONFDIR = {xFVWM_CONFIGDIRx}
-   Set $INPUT = $CONFDIR {/system.fvwm2rc-sample-95}
+   Set $DATADIR = {xFVWM_DATADIRx}
+   Set $INPUT = $DATADIR {/system.fvwm2rc-sample-95}
    Set $Perl = {xPERLx}
    Set $DefImagePath={xFVWM_IMAGEPATHx}
 
@@ -65,7 +65,7 @@ Init
 
    If $Perl == {} Then
    Begin
-    If $FHOME<>{} Then
+    If $FDIR<>{} Then
     Begin
       HideWidget 4
       HideWidget 19
@@ -177,7 +177,7 @@ Widget 14
 Property
  Position 10 30
  Type ItemDraw
- Title {modules, startup, styles, iconstyles) and copies them to your FVWM_USERHOME directory:}
+ Title {modules, startup, styles, iconstyles) and copies them to your FVWM_USERDIR directory:}
 Main
  Case message of
   SingleClic :
@@ -269,7 +269,7 @@ Widget 22
 Property
  Position 20 165
  Type PopupMenu
- Title {No|$HOME/icons/|$HOME/icons/fvwm/|$FVWM_USERHOME/images/|$FVWM_USERHOME/icons/|$HOME/fvwm-web/icons/|/usr/share/icons/|/usr/share/icons/fvwm/|/usr/local/share/icons/|/usr/local/share/icons/fvwm/}
+ Title {No|$HOME/icons/|$HOME/icons/fvwm/|$FVWM_USERDIR/images/|$FVWM_USERDIR/icons/|$HOME/fvwm-web/icons/|/usr/share/icons/|/usr/share/icons/fvwm/|/usr/local/share/icons/|/usr/local/share/icons/fvwm/}
 Main
  Case message of
   SingleClic :
@@ -281,9 +281,9 @@ Main
    If (GetValue 22) == 3 Then
     ChangeTitle 24 {$HOME/icons/fvwm/}
    If (GetValue 22) == 4 Then
-    ChangeTitle 24 {$FVWM_USERHOME/images/}
+    ChangeTitle 24 {$FVWM_USERDIR/images/}
    If (GetValue 22) == 5 Then
-    ChangeTitle 24 {$FVWM_USERHOME/icons/}
+    ChangeTitle 24 {$FVWM_USERDIR/icons/}
    If (GetValue 22) == 6 Then
     ChangeTitle 24 {$HOME/fvwm-web/icons/}
    If (GetValue 22) == 7 Then
@@ -321,7 +321,7 @@ Main
   Begin
    Set $TMP = (GetTitle 24)
    If $TMP=={No} Then
-	Set $TMP = $FHOME
+	Set $TMP = $FDIR
    Set $ARG={ScriptFvwmFileBrowser } $TMP { I}
    Set $IBROWSER=(LaunchScript $ARG )
   End
@@ -345,7 +345,7 @@ Widget 27
 Property
  Position 20 230
  Type PopupMenu
- Title {/usr/share/sounds/|/usr/share/sounds/fvwm/|/usr/local/share/sounds/|/usr/local/share/sounds/fvwm/|$HOME/sounds|$HOME/sounds/fvwm/}
+ Title {/usr/share/sounds/|/usr/share/sounds/fvwm/|/usr/local/share/sounds/|/usr/local/share/sounds/fvwm/|$HOME/sounds|$HOME/sounds/fvwm/|$FVWM_USERDIR/sounds/}
 Main
  Case message of
   SingleClic :
@@ -362,6 +362,8 @@ Main
      ChangeTitle 29 {$HOME/sounds/}
    If (GetValue 27) == 6 Then
      ChangeTitle 29 {$HOME/sounds/fvwm/}
+   If (GetValue 27) == 7 Then
+     ChangeTitle 29 {$FVWM_USERDIR/sounds/}
   End
 End
 
@@ -1332,7 +1334,7 @@ Main
   Begin
 
    # Create the fvwm user home dir if needed
-   Do {[Exec /bin/mkdir -p } $FHOME
+   Do {[Exec /bin/mkdir -p } $FDIR
  
    # Backup: script-fvwm-setup95.pl do that
    
@@ -1382,36 +1384,36 @@ Main
    If $KdeUserMenu == {1} Then
       Set $KdeMenu = {1}
 
-   Set $PERLCMD = $CONFDIR{/script-fvwm-setup95.pl --configin=} $INPUT { --dirout=} $FHOME { --fvwm=} $Fvwm { --sxs=} $Slow { --km=} $KdeMenu { --ksm=} $KdeSysMenu { --kum=} $KdeUserMenu { --kfm=} $KfmIcons { --gmg=} $GnomeMenuGtk { --gsmg=} $GnomeSysMenuGtk { --gumg=} $GnomeUserMenuGtk { --grmg=} $GnomeRHMenuGtk { --gsmf=} $GnomeSysMenuFvwm { --gumf=} $GnomeUserMenuFvwm { --grmf=} $GnomeRHMenuFvwm { --gs=} $GnomeSession { --gy=} $GnomeY { --gpath=} $GnomePath { --cde=} $Cde { --stroke=} $Stroke { --lap=} $Laptop { --pp=} $PanelStaysPut { --editor="} $Editor {" --reditor="} $Reditor {" --file="} $FileMgr {" --term="} $Term {" --spl="} $SoundPlayer {" --spa=} $SoundPath { --i=} $IP { --ip=} $ImagePath { --dip="} $DefImagePath {"}
+   Set $PERLCMD = $DATADIR{/script-fvwm-setup95.pl --configin=} $INPUT { --dirout=} $FDIR { --fvwm=} $Fvwm { --sxs=} $Slow { --km=} $KdeMenu { --ksm=} $KdeSysMenu { --kum=} $KdeUserMenu { --kfm=} $KfmIcons { --gmg=} $GnomeMenuGtk { --gsmg=} $GnomeSysMenuGtk { --gumg=} $GnomeUserMenuGtk { --grmg=} $GnomeRHMenuGtk { --gsmf=} $GnomeSysMenuFvwm { --gumf=} $GnomeUserMenuFvwm { --grmf=} $GnomeRHMenuFvwm { --gs=} $GnomeSession { --gy=} $GnomeY { --gpath=} $GnomePath { --cde=} $Cde { --stroke=} $Stroke { --lap=} $Laptop { --pp=} $PanelStaysPut { --editor="} $Editor {" --reditor="} $Reditor {" --file="} $FileMgr {" --term="} $Term {" --spl="} $SoundPlayer {" --spa=} $SoundPath { --i=} $IP { --ip=} $ImagePath { --dip="} $DefImagePath {"}
 
   Do {BusyCursor Read True}
   Do {Echo Piperead 'perl } $PERLCMD {'}
   Do {Piperead 'perl } $PERLCMD {'}
 
   # cp the .start-* file if there are no
-  Do {PipeRead '[ -f } $FHOME {/.start-Background ] || echo "AddToFunc StartFunction I Exec exec xsetroot -solid orchid4">} $FHOME {/.start-Background'}
-  Do {PipeRead '[ -f } $FHOME {/.start-DeskerPanelButtons ] || echo "AddToFunc StartFunction I FvwmButtons DeskerPanelButtons">} $FHOME {/.start-DeskerPanelButtons'}
+  Do {PipeRead '[ -f } $FDIR {/.start-Background ] || echo "AddToFunc StartFunction I Exec exec xsetroot -solid orchid4">} $FDIR {/.start-Background'}
+  Do {PipeRead '[ -f } $FDIR {/.start-DeskerPanelButtons ] || echo "AddToFunc StartFunction I FvwmButtons DeskerPanelButtons">} $FDIR {/.start-DeskerPanelButtons'}
   If $GnomeSession == {0} Then
   Begin
     If $Fvwm == {1} Then
-      Do {PipeRead '[ -f } $FHOME {/.start-apps-man ] || echo "AddToFunc StartFunction I IconManGlobal">} $FHOME {/.start-apps-man'}
+      Do {PipeRead '[ -f } $FDIR {/.start-apps-man ] || echo "AddToFunc StartFunction I IconManGlobal">} $FDIR {/.start-apps-man'}
     Else
-      Do {PipeRead '[ -f } $FHOME {/.start-apps-man ] || echo "AddToFunc StartFunction I TaskBarDesk">} $FHOME {/.start-apps-man'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmButtons ] || echo "AddToFunc StartFunction I FvwmButtons BarButtons">} $FHOME {/.start-FvwmButtons'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmAnimate ] || echo "AddToFunc StartFunction I FvwmAnimate">} $FHOME {/.start-FvwmAnimate'}
+      Do {PipeRead '[ -f } $FDIR {/.start-apps-man ] || echo "AddToFunc StartFunction I TaskBarDesk">} $FDIR {/.start-apps-man'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmButtons ] || echo "AddToFunc StartFunction I FvwmButtons BarButtons">} $FDIR {/.start-FvwmButtons'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmAnimate ] || echo "AddToFunc StartFunction I FvwmAnimate">} $FDIR {/.start-FvwmAnimate'}
   End
   Else
   Begin
-    Do {PipeRead '[ -f } $FHOME {/.start-apps-man ] || echo "AddToFunc StartFunction I Style * NoIcon # No applications Manager">} $FHOME {/.start-apps-man'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmButtons ] || echo "# No Buttons Bar">} $FHOME {/.start-FvwmButtons'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmAnimate ] || echo "# Do not start FvwmAnimate">} $FHOME {/.start-FvwmAnimate'}
+    Do {PipeRead '[ -f } $FDIR {/.start-apps-man ] || echo "AddToFunc StartFunction I Style * NoIcon # No applications Manager">} $FDIR {/.start-apps-man'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmButtons ] || echo "# No Buttons Bar">} $FDIR {/.start-FvwmButtons'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmAnimate ] || echo "# Do not start FvwmAnimate">} $FDIR {/.start-FvwmAnimate'}
   End
 
-    Do {PipeRead '[ -f } $FHOME {/.start-MiniButtons ] || echo "# Do not start FvwmButtons MiniButtons">} $FHOME {/.start-MiniButtons'}
-    Do {PipeRead '[ -f } $FHOME {/.start-WinMakerAppButtons ] || echo "# Do not start FvwmButtons WinMakerAppButtons">} $FHOME {/.start-WinMakerAppButtons'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FHOME {/.start-FvwmAuto'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FHOME {/.start-FvwmBanner'}
-   Do {PipeRead '[ -f } $FHOME {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FHOME {/.start-FvwmEvent'}
+    Do {PipeRead '[ -f } $FDIR {/.start-MiniButtons ] || echo "# Do not start FvwmButtons MiniButtons">} $FDIR {/.start-MiniButtons'}
+    Do {PipeRead '[ -f } $FDIR {/.start-WinMakerAppButtons ] || echo "# Do not start FvwmButtons WinMakerAppButtons">} $FDIR {/.start-WinMakerAppButtons'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FDIR {/.start-FvwmAuto'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FDIR {/.start-FvwmBanner'}
+   Do {PipeRead '[ -f } $FDIR {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FDIR {/.start-FvwmEvent'}
 
   Do {BusyCursor Read False}
   ShowWidget 2
@@ -1465,8 +1467,8 @@ Main
   Begin
 
    # Create the fvwm user home dir if need
-   If $FHOME <> {} Then
-      Do {PipeRead '/bin/mkdir -p } $FHOME
+   If $FDIR <> {} Then
+      Do {PipeRead '/bin/mkdir -p } $FDIR
  
    # Backup
    Set $DATE = {date +%Y%m%d-%H%M%S}
@@ -1474,29 +1476,29 @@ Main
    Set $Backup = $OUTPUT {-} $Backup
    Do {PipeRead 'if [ -f } $OUTPUT { ]; then  /bin/mv } $OUTPUT { } $Backup{; fi; sed -e /^#\\!D.*/d -e s/[:space:]*#\\!E.*// } $INPUT { > } $OUTPUT{'}
      # cp the .start-* file if there are no
-  Do {PipeRead '[ -f } $FHOME {/.start-Background ] || echo "AddToFunc StartFunction I Exec exec xsetroot -solid orchid4">} $FHOME {/.start-Background'}
-  Do {PipeRead '[ -f } $FHOME {/.start-DeskerPanelButtons ] || echo "AddToFunc StartFunction I FvwmButtons DeskerPanelButtons">} $FHOME {/.start-DeskerPanelButtons'}
+  Do {PipeRead '[ -f } $FDIR {/.start-Background ] || echo "AddToFunc StartFunction I Exec exec xsetroot -solid orchid4">} $FDIR {/.start-Background'}
+  Do {PipeRead '[ -f } $FDIR {/.start-DeskerPanelButtons ] || echo "AddToFunc StartFunction I FvwmButtons DeskerPanelButtons">} $FDIR {/.start-DeskerPanelButtons'}
   If $GnomeSession == {0} Then
   Begin
     If $Fvwm == {1} Then
-      Do {PipeRead '[ -f } $FHOME {/.start-apps-man ] || echo "AddToFunc StartFunction I IconManGlobal">} $FHOME {/.start-apps-man'}
+      Do {PipeRead '[ -f } $FDIR {/.start-apps-man ] || echo "AddToFunc StartFunction I IconManGlobal">} $FDIR {/.start-apps-man'}
     Else
-      Do {PipeRead '[ -f } $FHOME {/.start-apps-man ] || echo "AddToFunc StartFunction I TaskBarDesk">} $FHOME {/.start-apps-man'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmButtons ] || echo "AddToFunc StartFunction I FvwmButtons BarButtons">} $FHOME {/.start-FvwmButtons'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmAnimate ] || echo "AddToFunc StartFunction I FvwmAnimate">} $FHOME {/.start-FvwmAnimate'}
+      Do {PipeRead '[ -f } $FDIR {/.start-apps-man ] || echo "AddToFunc StartFunction I TaskBarDesk">} $FDIR {/.start-apps-man'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmButtons ] || echo "AddToFunc StartFunction I FvwmButtons BarButtons">} $FDIR {/.start-FvwmButtons'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmAnimate ] || echo "AddToFunc StartFunction I FvwmAnimate">} $FDIR {/.start-FvwmAnimate'}
   End
   Else
   Begin
-    Do {PipeRead '[ -f } $FHOME {/.start-apps-man ] || echo "AddToFunc StartFunction I Style * NoIcon # No applications Manager">} $FHOME {/.start-apps-man'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmButtons ] || echo "# No Buttons Bar">} $FHOME {/.start-FvwmButtons'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmAnimate ] || echo "# Do not start FvwmAnimate">} $FHOME {/.start-FvwmAnimate'}
+    Do {PipeRead '[ -f } $FDIR {/.start-apps-man ] || echo "AddToFunc StartFunction I Style * NoIcon # No applications Manager">} $FDIR {/.start-apps-man'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmButtons ] || echo "# No Buttons Bar">} $FDIR {/.start-FvwmButtons'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmAnimate ] || echo "# Do not start FvwmAnimate">} $FDIR {/.start-FvwmAnimate'}
   End
 
-    Do {PipeRead '[ -f } $FHOME {/.start-MiniButtons ] || echo "# Do not start FvwmButtons MiniButtons">} $FHOME {/.start-MiniButtons'}
-    Do {PipeRead '[ -f } $FHOME {/.start-WinMakerAppButtons ] || echo "# Do not start FvwmButtons WinMakerAppButtons">} $FHOME {/.start-WinMakerAppButtons'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FHOME {/.start-FvwmAuto'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FHOME {/.start-FvwmBanner'}
-    Do {PipeRead '[ -f } $FHOME {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FHOME {/.start-FvwmEvent'}
+    Do {PipeRead '[ -f } $FDIR {/.start-MiniButtons ] || echo "# Do not start FvwmButtons MiniButtons">} $FDIR {/.start-MiniButtons'}
+    Do {PipeRead '[ -f } $FDIR {/.start-WinMakerAppButtons ] || echo "# Do not start FvwmButtons WinMakerAppButtons">} $FDIR {/.start-WinMakerAppButtons'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FDIR {/.start-FvwmAuto'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FDIR {/.start-FvwmBanner'}
+    Do {PipeRead '[ -f } $FDIR {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FDIR {/.start-FvwmEvent'}
 
   ShowWidget 2
   ShowWidget 80

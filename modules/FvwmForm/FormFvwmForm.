@@ -43,7 +43,7 @@ DestroyModuleConfig FormFvwmForm.*
 *FvwmFormDefaultItemFore "'$(ItemFore)'"\n\
 *FvwmFormDefaultItemBack "'$(ItemBack)'"\n\
 *FvwmFormDefaultItemColorset "'$(ItemColorset)'"\
-" > ${FVWM_USERHOME}/.FvwmForm
+" > ${FVWM_USERDIR}/.FvwmForm
 *FormFvwmForm.Command *FvwmFormDefaultRead n
 *FormFvwmForm.Command Module FvwmForm FormFvwmForm.
 *FormFvwmForm.Button       restart   "F3 - Reset" F3

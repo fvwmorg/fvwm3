@@ -139,10 +139,10 @@ int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win,
 	f = fopen(filename,"r");
 	fvwm_file = strdup( filename );
     } else {                              /* else its a relative path */
-	char* path = CatString3( user_home_dir, "/", filename );
+	char* path = CatString3( fvwm_userdir, "/", filename );
 	f = fopen( path, "r" );
 	if ( f == NULL ) {
-	    path = CatString3( FVWM_CONFIGDIR, "/", filename );
+	    path = CatString3( FVWM_DATADIR, "/", filename );
 	    f = fopen( path, "r" );
 	}
 	fvwm_file = strdup( path );
@@ -210,8 +210,8 @@ void ReadFile(F_CMD_ARGS)
 	 !read_quietly )
     {
 	fvwm_msg( ERR, "Read",
-		  "file '%s' not found in %s or "FVWM_CONFIGDIR,
-		  filename, user_home_dir );
+		  "file '%s' not found in %s or "FVWM_DATADIR,
+		  filename, fvwm_userdir );
     }
     free( filename );
 #ifdef BUSYCURSOR

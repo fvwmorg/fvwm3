@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 
-configdir = @FVWM_CONFIGDIR@
+configdir = @FVWM_DATADIR@
 bin_PROGRAMS = fvwm2
 
 EXTRA_DIST = $(man_MANS) $(config_DATA)
@@ -29,9 +29,10 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(stroke_LIBS)\
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libs $(xpm_CFLAGS) $(stroke_CFLAGS)\
-	   $(X_CFLAGS)
+	$(X_CFLAGS)
 
-AM_CFLAGS = -DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\"     \
-	-DFVWM_CONFIGDIR=\"$(FVWM_CONFIGDIR)\"
-
+AM_CFLAGS = \
+	-DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\" \
+	-DFVWM_DATADIR=\"$(FVWM_DATADIR)\" \
+	-DFVWM_CONFDIR=\"$(FVWM_CONFDIR)\"
 

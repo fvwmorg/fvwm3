@@ -20,17 +20,18 @@ Options:
 	[-P]	[--prefix]
 	[-E]	[--exec-prefix]
 	[-B]	[--bindir]
+	[-D]	[--datadir]
 	[-L]	[--libexecdir]
 	[-S]	[--sysconfdir]
 	[-M]	[--mandir]
 
-	[-m]	[--moduledir]
-	[-c]	[--configdir]
+	[-m]	[--fvwm-moduledir]
+	[-d]	[--fvwm-datadir]
 	[-I]	[--default-imagepath]
-	[-U]	[--default-userhome]
+	[-U]	[--default-userdir]
 
-	[-s]	[--supports] - list supported features, one per line
-	[--supports-<feature>] - return: 0 (yes), 100 (no), 200 (unknown)
+	[-s]	[--supports]     list supported features, one per line
+	[--supports-<feature>]   return: 0 (yes), 100 (no), 200 (unknown)
 EOF
 	exit $1
 }
@@ -42,14 +43,15 @@ fi
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
 bindir="@bindir@"
+datadir="@datadir@"
 libexecdir="@libexecdir@"
 sysconfdir="@sysconfdir@"
 mandir="@mandir@"
 
-moduledir="@FVWM_MODULEDIR@"
-configdir="@FVWM_CONFIGDIR@"
-imagepath="@FVWM_IMAGEPATH@"
-userhome='$HOME'
+fvwm_moduledir="@FVWM_MODULEDIR@"
+fvwm_datadir="@FVWM_DATADIR@"
+fvwm_imagepath="@FVWM_IMAGEPATH@"
+fvwm_userdir='$HOME/.fvwm'
 
 with_readline=@with_readline@
 with_rplay=@with_rplay@
@@ -75,6 +77,9 @@ while test $# -gt 0; do
 		--bindir|-bindir|-B)
 			echo "$bindir" ;;
 
+		--datadir|-datadir|-D)
+			echo "$datadir" ;;
+
 		--libexecdir|-libexecdir|-L)
 			echo "$libexecdir" ;;
 
@@ -84,17 +89,17 @@ while test $# -gt 0; do
 		--mandir|-mandir|-M)
 			echo "$mandir" ;;
 
-		--moduledir|-moduledir|-m)
-			echo "$moduledir" ;;
+		--fvwm-moduledir|-fvwm-moduledir|-m)
+			echo "$fvwm_moduledir" ;;
 
-		--configdir|-configdir|-c)
-			echo "$configdir" ;;
+		--fvwm-datadir|-fvwm-datadir|-d)
+			echo "$fvwm_datadir" ;;
 
-		--default-imagepath|-default-imagepath|-I)	
-			echo "$imagepath" ;;
+		--default-imagepath|-default-imagepath|-I)
+			echo "$fvwm_imagepath" ;;
 
-		--default-userhome|-default-userhome|-U)
-			echo "$userhome" ;;
+		--default-userdir|-default-userdir|-U)
+			echo "$fvwm_userdir" ;;
 
 		--supports|-supports|-s)
 			test "$with_readline" = "yes" && echo "readline"
@@ -121,15 +126,16 @@ while test $# -gt 0; do
 			echo "	prefix: $prefix"
 			echo "	exec-prefix: $exec_prefix"
 			echo "	bindir: $bindir"
+			echo "	datadir: $datadir"
 			echo "	libexecdir: $libexecdir"
 			echo "	sysconfdir: $sysconfdir"
 			echo "	mandir: $mandir"
 			echo ""
 			echo "Compiled-in paths:"
-			echo "	Module directory: $moduledir"
-			echo "	Configuration directory: $configdir"
-			echo "	Default ImagePath: $imagepath"
-			echo "	Default UserHome: $userhome"
+			echo "	Module directory: $fvwm_moduledir"
+			echo "	Data directory: $fvwm_datadir"
+			echo "	Default ImagePath: $fvwm_imagepath"
+			echo "	Default UserDir: $fvwm_userdir"
 			echo ""
 			echo "Support for features:"
 			echo "	readline: $with_readline"

@@ -23,7 +23,7 @@ extern void run_command_stream( FILE* f,
  * Given a filename, open it and execute the commands therein.
  *
  * If the filename is not an absolute path, search for it in
- * user_home_dir (set in main()) or in FVWM_CONFIGDIR.  Return TRUE
+ * fvwm_userdir (set in main()) or in FVWM_DATADIR.  Return TRUE
  * if the file was found and executed.
  **/
 extern int run_command_file( char* filename,

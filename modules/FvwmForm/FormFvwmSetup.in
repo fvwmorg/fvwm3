@@ -12,7 +12,7 @@ DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.PadVText 0
 *FormFvwmSetup.Text    "Use this form to create your fvwm2rc configuration file."
 *FormFvwmSetup.Line    left
-*FormFvwmSetup.Text    "The file created is $HOME/.fvwm2rc or $FVWM_USERHOME/.fvwm2rc."
+*FormFvwmSetup.Text    "The file created is ~/.fvwm/.fvwm2rc or $FVWM_USERDIR/.fvwm2rc."
 *FormFvwmSetup.Line    left
 *FormFvwmSetup.Text    ""
 *FormFvwmSetup.Line    left
@@ -53,15 +53,15 @@ DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.Button  quit    "Return - Dismiss" ^M
 *FormFvwmSetup.Command   Nop
 *FormFvwmSetup.Button  continue    "F2 - Copy Config File(s)" F2
-*FormFvwmSetup.Command   $(BASIC?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmSetup ${FVWM_USERHOME}/.fvwm2rc)
-*FormFvwmSetup.Command   $(BAK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmBacker  ${FVWM_USERHOME})
-*FormFvwmSetup.Command   $(BUT?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmButtons ${FVWM_USERHOME})
-*FormFvwmSetup.Command   $(BOX?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIconBox ${FVWM_USERHOME})
-*FormFvwmSetup.Command   $(MAN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIconMan ${FVWM_USERHOME})
-*FormFvwmSetup.Command   $(IDN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmIdent   ${FVWM_USERHOME})
-*FormFvwmSetup.Command   $(PAG?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmPager   ${FVWM_USERHOME})
-*FormFvwmSetup.Command   $(SCR?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmScroll  ${FVWM_USERHOME})
-*FormFvwmSetup.Command   $(TSK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmTaskBar ${FVWM_USERHOME})
-*FormFvwmSetup.Command   $(WIN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmWinList ${FVWM_USERHOME})
+*FormFvwmSetup.Command   $(BASIC?!/bin/cp xFVWM_DATADIRx/ConfigFvwmSetup ${FVWM_USERDIR}/.fvwm2rc)
+*FormFvwmSetup.Command   $(BAK?!/bin/cp xFVWM_DATADIRx/ConfigFvwmBacker  ${FVWM_USERDIR})
+*FormFvwmSetup.Command   $(BUT?!/bin/cp xFVWM_DATADIRx/ConfigFvwmButtons ${FVWM_USERDIR})
+*FormFvwmSetup.Command   $(BOX?!/bin/cp xFVWM_DATADIRx/ConfigFvwmIconBox ${FVWM_USERDIR})
+*FormFvwmSetup.Command   $(MAN?!/bin/cp xFVWM_DATADIRx/ConfigFvwmIconMan ${FVWM_USERDIR})
+*FormFvwmSetup.Command   $(IDN?!/bin/cp xFVWM_DATADIRx/ConfigFvwmIdent   ${FVWM_USERDIR})
+*FormFvwmSetup.Command   $(PAG?!/bin/cp xFVWM_DATADIRx/ConfigFvwmPager   ${FVWM_USERDIR})
+*FormFvwmSetup.Command   $(SCR?!/bin/cp xFVWM_DATADIRx/ConfigFvwmScroll  ${FVWM_USERDIR})
+*FormFvwmSetup.Command   $(TSK?!/bin/cp xFVWM_DATADIRx/ConfigFvwmTaskBar ${FVWM_USERDIR})
+*FormFvwmSetup.Command   $(WIN?!/bin/cp xFVWM_DATADIRx/ConfigFvwmWinList ${FVWM_USERDIR})
 *FormFvwmSetup.Button  quit    "F3 - Restart fvwm"
 *FormFvwmSetup.Command   Restart

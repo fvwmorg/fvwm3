@@ -13,7 +13,7 @@
 /* --- Those defines were intialy in makefiles and command lines --- */
 #define FVWMRC "FvwmRc.Dat"
 #define FVWM_MODULEDIR "Fvwm$BaseDir:[Modules.Bin]"
-#define FVWM_CONFIGDIR "/Sys$Login"
+#define FVWM_DATADIR "/Sys$Login"
 
 #include "libs/vms.h"
 

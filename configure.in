@@ -6,10 +6,12 @@ AM_INIT_AUTOMAKE(fvwm, 2.3.17)
 AM_CONFIG_HEADER(config.h)
 
 FVWM_MODULEDIR='${libexecdir}/${PACKAGE}/${VERSION}'
-FVWM_CONFIGDIR='${sysconfdir}/${PACKAGE}'
+FVWM_DATADIR='${datadir}/${PACKAGE}'
+FVWM_CONFDIR='${sysconfdir}'dnl used _only_ to search for system.fvwm2rc
 
 AC_SUBST(FVWM_MODULEDIR)
-AC_SUBST(FVWM_CONFIGDIR)
+AC_SUBST(FVWM_DATADIR)
+AC_SUBST(FVWM_CONFDIR)
 
 
 dnl Various configure-time options

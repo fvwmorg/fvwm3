@@ -22,7 +22,7 @@ LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 
 # Need this to get configdir into FvwmScript.c:
-AM_CFLAGS = -DFVWM_CONFIGDIR=\"$(FVWM_CONFIGDIR)\"
+AM_CFLAGS = -DFVWM_DATADIR=\"$(FVWM_DATADIR)\"
 
 .PHONY: syntax
 

@@ -1,7 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
-configdir = @FVWM_CONFIGDIR@
+configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmBacker
 man_MANS = FvwmBacker.1

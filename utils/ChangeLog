@@ -1,3 +1,9 @@
+2000-04-26  Mikhael Goikhman  migo@homemail.com
+
+	* utils/fvwm-config.in, utils/fvwmbug.sh.in:
+	Changes in defaults of FVWM_DATADIR & FVWM_USERDIR;
+	renamings and rewordings.
+
 2000-04-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in:

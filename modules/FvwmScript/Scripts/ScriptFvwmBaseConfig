@@ -5,15 +5,11 @@ Font		-adobe-helvetica-bold-r-*-*-12-*
 Init
  Begin
   WarpPointer 3
-  Set $FHOME=(GetOutput  {echo "$FVWM_USERHOME"} 1 -1)
+  Set $FDIR=(GetOutput  {echo "$FVWM_USERDIR"} 1 -1)
   Set $FILE=(GetScriptArgument 1)
   If $FILE=={} Then
    Set $FILE={.FvwmBaseConfig}
-  
-  If $FHOME=={} Then
-   Set $FILE={~/} $FILE
-  Else
-   Set $FILE=$FHOME {/} $FILE
+  Set $FILE=$FDIR {/} $FILE
 
   Set $CAT={cat } $FILE
 

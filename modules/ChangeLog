@@ -1,11 +1,29 @@
-2000-04-25  olicha <olivier.chapuis@free.fr>
+2000-04-26  Mikhael Goikhman  migo@homemail.com
+
+	* FvwmAnimate/FvwmAnimate.c, FvwmBacker/Makefile.am,
+	* FvwmButtons/Makefile.am, FvwmCpp/FvwmCpp.1, FvwmCpp/FvwmCpp.c,
+	* FvwmCpp/Makefile.am, FvwmForm/FormFvwmForm.,
+	* FvwmForm/FormFvwmRlogin., FvwmForm/FormFvwmSetup.in,
+	* FvwmForm/FvwmForm.1, FvwmForm/Makefile.am,
+	* FvwmIconBox/Makefile.am, FvwmIconMan/Makefile.am,
+	* FvwmIdent/Makefile.am, FvwmM4/FvwmM4.1, FvwmM4/FvwmM4.c,
+	* FvwmM4/Makefile.am, FvwmPager/Makefile.am,
+	* FvwmScript/FvwmScript.1, FvwmScript/FvwmScript.c,
+	* FvwmScript/Makefile.am, FvwmScript/Scripts/Makefile.am,
+	* FvwmScript/Scripts/ScriptFvwmBaseConfig,
+	* FvwmScript/Scripts/ScriptFvwmSetup95.in, FvwmScroll/Makefile.am,
+	* FvwmTaskBar/Makefile.am, FvwmWinList/Makefile.am:
+	Changes in defaults of FVWM_DATADIR & FVWM_USERDIR;
+	renamings and rewordings.
+
+2000-04-25  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c:
 	* FvwmTaskBar/List.c:
 	* FvwmTaskBar/Goodies.c:
 	Messages go to stderr as almost all the other modules
 
-2000-04-24  olicha <olivier.chapuis@free.fr>
+2000-04-24  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	* FvwmTaskBar/List.{c,h} (UpdateItemFlagsDesk, UpdateItemFlagsAnimate,
@@ -13,7 +31,7 @@
 	Fixed double animations (module & icon) with NoIconAction. 
 	This does not work perfectly with a dynamic (no)icon style change.
 
-2000-04-24  olicha <olivier.chapuis@free.fr>
+2000-04-24  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	* FvwmTaskBar/List.{c,h} (UpdateItemFlagsDesk, IsItemIndexSticky):

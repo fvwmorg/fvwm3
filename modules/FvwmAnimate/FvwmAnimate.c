@@ -1340,7 +1340,7 @@ static void SaveConfig(void) {
      read.c, right now, this logic only works well if fvwm is started
      from the users home directory.
   */
-  sprintf(filename,"%s/.%s",getenv("FVWM_USERHOME"),MyName+1);
+  sprintf(filename,"%s/.%s",getenv("FVWM_USERDIR"),MyName+1);
   config_file = fopen(filename,"w");
   if (config_file == NULL) {
     sprintf(msg,

@@ -295,8 +295,6 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
       close(fvwm_to_app[1]);
       close(app_to_fvwm[0]);
 #endif
-      /* Only modules need to know these */
-      putenv(CatString2("FVWM_USERHOME=", user_home_dir));
       if (!Pdefault) {
         char *visualid, *colormap;
 

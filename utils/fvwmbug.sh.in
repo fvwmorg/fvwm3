@@ -65,9 +65,9 @@ else
 fi
 
 
-: ${FVWM_CONFIGDIR=unset}
-: ${FVWM_MODULEDIR=unset}
-: ${FVWM_USERHOME=unset}
+: ${FVWM_DATADIR=@FVWM_DATADIR@}
+: ${FVWM_MODULEDIR=@FVWM_MODULEDIR@}
+: ${FVWM_USERDIR=unset}
 
 
 cat > $TEMP <<EOF
@@ -84,9 +84,9 @@ sysconfdir: xsysconfdirx
 libexecdir: xlibexecdirx
 
 FVWM Version: @VERSION@
-FVWM_CONFIGDIR: $FVWM_CONFIGDIR
+FVWM_DATADIR: $FVWM_DATADIR
 FVWM_MODULEDIR: $FVWM_MODULEDIR
-FVWM_USERHOME: $FVWM_USERHOME
+FVWM_USERDIR: $FVWM_USERDIR
 
 Description:
 	[Detailed description of the problem, suggestion, or complaint.]

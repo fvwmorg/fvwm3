@@ -3,6 +3,18 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.17 (not released yet)
 
+* $FVWM_USERHOME used to set the fvwm user directory renamed to $FVWM_USERDIR.
+
+* The default fvwm user directory is now $HOME/.fvwm, not $HOME,
+  the fvwm user directory is now created if needed.
+
+* It is suggested to put all personal fvwm files to $HOME/.fvwm; to simulate
+  the old fvwm behaviour, export FVWM_USERDIR=$HOME .
+
+* Instalating fvwm goodies is now to share/fvwm (FVWM_DATADIR), not etc/fvwm.
+
+* fvwm-config utility can be used for querying fvwm instalation.
+
 Changes in beta release 2.3.16 (April 2000)
 
 * Fixed the annoying rxvt text selection problem that was present

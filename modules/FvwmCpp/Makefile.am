@@ -16,5 +16,5 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm -lm $(xpm_LIBS)  \
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 AM_CFLAGS = -DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\"	\
-	-DFVWM_CONFIGDIR=\"$(FVWM_CONFIGDIR)\"		\
+	-DFVWM_DATADIR=\"$(FVWM_DATADIR)\"		\
 	-DFVWM_CPP='"$(FVWM_CPP)"'

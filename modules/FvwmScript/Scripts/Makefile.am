@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 
-configdir = @FVWM_CONFIGDIR@
+configdir = @FVWM_DATADIR@
 
 EXTRA_DIST = ScriptFvwmBellSetup ScriptFvwmButtons ScriptFvwmColorset	\
 	ScriptFvwmDate ScriptFvwmBaseConfig ScriptFvwmFileBrowser	\
@@ -17,5 +17,5 @@ config_DATA = ScriptFvwmBellSetup ScriptFvwmButtons ScriptFvwmColorset	\
 
 ScriptFvwmSetup95: ScriptFvwmSetup95.in
 	rm -f $@
-	sed -e 's,xFVWM_CONFIGDIRx,$(FVWM_CONFIGDIR),' -e 's,xPERLx,$(PERL),' -e 's,xFVWM_IMAGEPATHx,$(FVWM_IMAGEPATH),' $(top_srcdir)/modules/FvwmScript/Scripts/ScriptFvwmSetup95.in > $@-t
+	sed -e 's,xFVWM_DATADIRx,$(FVWM_DATADIR),' -e 's,xPERLx,$(PERL),' -e 's,xFVWM_IMAGEPATHx,$(FVWM_IMAGEPATH),' $(top_srcdir)/modules/FvwmScript/Scripts/ScriptFvwmSetup95.in > $@-t
 	mv $@-t $@

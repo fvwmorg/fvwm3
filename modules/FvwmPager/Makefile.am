@@ -1,7 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
-configdir = @FVWM_CONFIGDIR@
+configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmPager
 man_MANS = FvwmPager.1

@@ -1,7 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
-configdir = @FVWM_CONFIGDIR@
+configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmForm
 man_MANS = FvwmForm.1
@@ -50,7 +50,7 @@ INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
 
 FormFvwmSetup.: FormFvwmSetup.in
 	rm -f $@
-	sed -e 's,xFVWM_CONFIGDIRx,$(FVWM_CONFIGDIR),' $(top_srcdir)/modules/FvwmForm/FormFvwmSetup.in > $@-t
+	sed -e 's,xFVWM_DATADIRx,$(FVWM_DATADIR),' $(top_srcdir)/modules/FvwmForm/FormFvwmSetup.in > $@-t
 	mv $@-t $@
 
 CLEANFILES = $(module_SCRIPTS) FormFvwmSetup.

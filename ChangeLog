@@ -1,4 +1,13 @@
-2000-04-25  olicha <olivier.chapuis@free.fr>
+2000-04-26  Mikhael Goikhman  migo@homemail.com
+
+	* NEWS, configure.in, fvwm/Makefile.am, fvwm/externs.h, fvwm/fvwm.c,
+	* fvwm/fvwm2.1, fvwm/module_interface.c, fvwm/read.c, fvwm/read.h,
+	* sample.fvwmrc/Makefile.am, sample.fvwmrc/system.fvwm2rc-sample-95,
+	* vms/config.h:
+	Changes in defaults of FVWM_DATADIR & FVWM_USERDIR;
+	renamings and rewordings.
+
+2000-04-25  olicha  <olivier.chapuis@free.fr>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	Fixed some miss prints

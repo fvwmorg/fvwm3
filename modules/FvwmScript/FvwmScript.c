@@ -179,8 +179,8 @@ void ReadConfig (char *ScriptName)
 /* Original method for finding the config file didn't work,
    try using the same strategy fvwm uses in its read command.
    1. If the file name starts with a slash, just try it.
-   2. Look in the home directory, using FVWM_USERHOME.
-   3. If that doesn't work, look in FVWM_CONFIGDIR.
+   2. Look in the home directory, using FVWM_USERDIR.
+   3. If that doesn't work, look in FVWM_DATADIR.
    The extern "yyin" indicates success or failure.
 */
 static void TryToFind(char *filename) {
@@ -191,10 +191,10 @@ static void TryToFind(char *filename) {
     yyin = fopen(filename,"r");
     return;
   }
-  sprintf(path,"%s/%s",getenv("FVWM_USERHOME"),filename);
+  sprintf(path,"%s/%s",getenv("FVWM_USERDIR"),filename);
   yyin = fopen( path, "r" );
   if ( yyin == NULL ) {
-    sprintf(path,"%s/%s",FVWM_CONFIGDIR, filename );
+    sprintf(path,"%s/%s",FVWM_DATADIR, filename );
     yyin = fopen( path, "r" );
   }
   return;

@@ -342,17 +342,23 @@ XTerm*Page: 3 2 1
 .SH INITIALIZATION
 
 During initialization, fvwm will search for a configuration file
-which describes key and button bindings, and a few other things.
+which describes key and button bindings, and many other things.
 The format of these files will be described later.  Fvwm first
-searches for configurations files using the command
+searches for configuration files using the command
 .EX
 .BI "Read " .fvwm2rc
 .EE
 This will look for
-.IR "$HOME/.fvwm2rc" " or " "$FVWM_USERHOME/.fvwm2rc" ,
-as described in
+.IR .fvwm2rc " in "
+.IR "$HOME/.fvwm" " or " "$FVWM_USERDIR"
+directories, as described in
 .B Read
-below.  If a configuration file is not found, any mouse button or the
+below.  If this fails, fvwm also searches for this file in the
+.I $HOME
+directory or for
+.I system.fvwm2rc
+file in the system place.  If a configuration file is not found,
+any mouse button or the
 .SM Help
 or
 .SM F1
@@ -5954,13 +5960,12 @@ If the keyword
 .I Quiet
 follows the command no message is produced if the file is not
 found.  If the file name does not begin with a slash ('/'), fvwm
-looks in the user's configuration directory, then the system
-configuration directory.  The users configuration directory is
-.IR $HOME .
-.I $HOME
-can be overridden by exporting
-.I FVWM_USERHOME
-set to a directory.
+looks in the user's data directory, then the system
+data directory.  The user's data directory is by default
+.IR $HOME/.fvwm .
+It can be overridden by exporting
+.I FVWM_USERDIR
+set to any other directory.
 
 .TP
 .BI "SetEnv " "variable value"
@@ -6514,6 +6519,11 @@ option is given.
 .I FVWM_MODULEDIR
 Set by fvwm to the directory containing the standard fvwm
 modules.
+.TP
+.I FVWM_USERDIR
+Used to determine the user's data directory for reading and sometimes
+writing personal files. If this variable is not already set, it is set by
+fvwm to $HOME/.fvwm, which is the default user's data directory.
 .TP
 .I SESSION_MANAGER
 Fvwm tries to contact this session manager.
