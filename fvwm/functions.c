@@ -593,7 +593,7 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 	out[j++] = input[i];
 	break;
       } /* switch */
-      if (string)
+      if (is_string && string)
       {
 	out[j++] = '\'';
 	for(k = 0; string[k]; k++)
@@ -603,6 +603,7 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 	  out[j++] = string[k];
 	}
 	out[j++] = '\'';
+	string = NULL;
 	is_string = False;
 	i++;
       }

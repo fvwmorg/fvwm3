@@ -3022,7 +3022,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     case 1:
       if(mi != MR_FIRST_ITEM(mr))
       {
-	text_y += SEPARATOR_HEIGHT;
+	text_y += SEPARATOR_TOTAL_HEIGHT;
 	y = y_offset + SEPARATOR_Y_OFFSET;
 	if (sx1 < sx2)
 	  draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);

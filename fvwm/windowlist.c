@@ -417,7 +417,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           tname[0]=0;
           if(IS_ICONIFIED(t))
             strcpy(tname, "(");
-          sprintf(loc," %d(%d):",t->Desk, get_layer(t));
+          sprintf(loc,"%d(%d):",t->Desk, get_layer(t));
           strcat(tname,loc);
 
           dheight = t->frame_g.height - t->title_g.height -2*t->boundary_width;
