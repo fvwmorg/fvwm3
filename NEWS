@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.3 (May 1999)
 
+* New command MaxWindowSize limits the initial dimensions of a window.
+
 * Include fvwmbug script for reporting bugs.
 
 * New button states ToggledActiveUp, ToggledActiveDown, ToggledInactive
