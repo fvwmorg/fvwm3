@@ -1,3 +1,10 @@
+2004-03-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (MaximizeHeight):
+	(MaximizeWidth):
+	(CMD_Maximize):
+	applied modified layer patch for maximize by Rafal Biesinger
+
 2004-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (setup_frame_attributes):

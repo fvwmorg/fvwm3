@@ -3561,7 +3561,7 @@ static void move_sticky_window_to_same_page(
 static void MaximizeHeight(
 	FvwmWindow *win, unsigned int win_width, int win_x,
 	unsigned int *win_height, int *win_y, Bool grow_up, Bool grow_down,
-	int top_border, int bottom_border, Bool layer_grow)
+	int top_border, int bottom_border, int *layers)
 {
 	FvwmWindow *cwin;
 	int x11, x12, x21, x22;
@@ -3581,8 +3581,12 @@ static void MaximizeHeight(
 	{
 		if (cwin == win ||
 		    (cwin->Desk != win->Desk &&
-		     !is_window_sticky_across_desks(cwin)) ||
-		    (layer_grow && cwin->layer <= win->layer))
+		     !is_window_sticky_across_desks(cwin)))
+		{
+			continue;
+		}
+		if ((layers[0] >= 0 && cwin->layer < layers[0]) ||
+		    (layers[1] >= 0 && cwin->layer > layers[1]))
 		{
 			continue;
 		}
@@ -3632,7 +3636,7 @@ static void MaximizeHeight(
 static void MaximizeWidth(
 	FvwmWindow *win, unsigned int *win_width, int *win_x,
 	unsigned int win_height, int win_y, Bool grow_left, Bool grow_right,
-	int left_border, int right_border, Bool layer_grow)
+	int left_border, int right_border, int *layers)
 {
 	FvwmWindow *cwin;
 	int x11, x12, x21, x22;
@@ -3652,8 +3656,12 @@ static void MaximizeWidth(
 	{
 		if (cwin == win ||
 		    (cwin->Desk != win->Desk &&
-		     !is_window_sticky_across_desks(cwin)) ||
-		    (layer_grow && cwin->layer <= win->layer))
+		     !is_window_sticky_across_desks(cwin)))
+		{
+			continue;
+		}
+		if ((layers[0] >= 0 && cwin->layer < layers[0]) ||
+		    (layers[1] >= 0 && cwin->layer > layers[1]))
 		{
 			continue;
 		}
@@ -3777,7 +3785,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	Bool do_force_maximize = False;
 	Bool is_screen_given = False;
 	Bool ignore_working_area = False;
-	Bool layer_grow = False;
+	int layers[2] = { -1, -1 };
 	Bool global_flag_parsed = False;
 	int  scr_x, scr_y, scr_w, scr_h;
 	int sx, sy, sw, sh;
@@ -3816,10 +3824,23 @@ void CMD_Maximize(F_CMD_ARGS)
 				ignore_working_area = True;
 				action = taction;
 			}
-			else if (StrEquals(token, "layer"))
+			else if (StrEquals(token, "windowlayer"))
 			{
-				layer_grow = True;
+				layers[0] = fw->layer;
+				layers[1] = fw->layer;
 				action = taction;
+			}
+			else if (StrEquals(token, "layers"))
+			{
+				int n;
+
+				n = GetIntegerArguments(
+					taction, &action, layers, 2);
+				if (n != 2)
+				{
+					layers[0] = -1;
+					layers[1] = -1;
+				}
 			}
 			else
 			{
@@ -3986,7 +4007,7 @@ void CMD_Maximize(F_CMD_ARGS)
 				fw, new_g.width, new_g.x,
 				(unsigned int *)&new_g.height, &new_g.y,
 				grow_up, grow_down, page_y + scr_y,
-				page_y + scr_y + scr_h, layer_grow);
+				page_y + scr_y + scr_h, layers);
 		}
 		else if (val2 > 0)
 		{
@@ -3999,7 +4020,7 @@ void CMD_Maximize(F_CMD_ARGS)
 				fw, (unsigned int *)&new_g.width, &new_g.x,
 				new_g.height, new_g.y, grow_left, grow_right,
 				page_x + scr_x, page_x + scr_x + scr_w,
-				layer_grow);
+				layers);
 		}
 		else if (val1 >0)
 		{
