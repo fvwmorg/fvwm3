@@ -904,13 +904,23 @@ void redraw_buttons()
 
   for (item=windows.head; item; item=item->next)
   {
-    if ((DeskNumber == item->Desk || IS_STICKY_ACROSS_DESKS(item) ||
-	 (IS_ICONIFIED(item) && IS_ICON_STICKY_ACROSS_DESKS(item))) &&
-	(!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
+    if ((DeskNumber != item->Desk && !IS_STICKY_ACROSS_DESKS(item) &&
+	 (!IS_ICONIFIED(item) || !IS_ICON_STICKY_ACROSS_DESKS(item))))
     {
-      AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count,
-		IS_ICONIFIED(item));
+	    continue;
     }
+    if (DO_SKIP_WINDOW_LIST(item) && UseSkipList)
+    {
+	    continue;
+    }
+    if (PageOnly &&
+	!fvwmrect_do_rectangles_intersect(&item->win_g, &global_scr_g))
+    {
+	    continue;
+    }
+    AddButton(
+	    &buttons, item->name, &(item->p), BUTTON_UP, item->count,
+	    IS_ICONIFIED(item));
   }
 
   RedrawWindow(1, NULL);
