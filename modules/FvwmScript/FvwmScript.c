@@ -24,7 +24,6 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
 
-
 #ifdef MEMDEBUG			/* For debugging */
 #include <unchecked.h>
 #endif
@@ -164,8 +163,8 @@ void ReadConfig (char *ScriptName)
   }
   if (yyin == NULL)
   {
-   fprintf(stderr,"Can't open the script %s\n",s);
-   exit(1);
+    fprintf(stderr,"Can't open the script %s\n",s);
+    exit(1);
   }
   /* On ne redefini pas yyout qui est la sortie standard */
 
@@ -819,8 +818,11 @@ void MainLoop (void)
    }
   }
   if (!isTerminated && x11base->periodictasks!=NULL)
+  {
     /* Execution des taches periodics */
     ExecBloc(x11base->periodictasks);
+    usleep(10000);
+  }
  }
 }
 
