@@ -1,3 +1,8 @@
+2000-06-22  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* FvwmPager/x_pager.c: revert mini-window size calculation, and
+	  put comments in the code to explain original code's reasoning.
+
 2000-06-21  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instruction.c:

@@ -108,7 +108,7 @@ int label_h = 0;
 
 DeskInfo *Desks;
 int Wait = 0;
-XErrorHandler FvwmErrorHandler(Display *, XErrorEvent *);
+int FvwmErrorHandler(Display *, XErrorEvent *);
 extern Bool is_transient;
 extern Bool do_ignore_next_button_release;
 extern Bool use_dashed_separators;
@@ -157,9 +157,12 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   /* absolute coordinate of right hand edge on virtual desktop */
   virt += t->width - 1;
 
-  /* scale the width of the big window to find the mini-window's width   */
-  /* - this way, the width isn't vulnerable to integer arithmetic errors */
-  size = ((t->width - 1) * win_w) / Scr.VWidth;
+  /* Calculate the mini-window's width by subtracting its LHS
+   * from its RHS. This theoretically means that the width will
+   * vary slightly as the window travels around the screen, but
+   * this way ensures that the mini-windows in the pager match
+   * the actual screen layout. */
+  size = ((virt * win_w) / Scr.VWidth) - edge;
 
   /* Make size big enough to be visible */
   if (size < MinSize) {
@@ -194,7 +197,7 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   virt = Scr.Vy + t->y;
   edge = (virt * win_h) / Scr.VHeight;
   virt += t->height - 1;
-  size = ((t->height - 1) * win_h) / Scr.VHeight;
+  size = ((virt * win_h) / Scr.VHeight) - edge;
   if (size < MinSize)
   {
     size = MinSize;
@@ -292,7 +295,7 @@ void initialize_pager(void)
   /* domivogt (07-mar-1999): But it is! A window being moved in the pager
    * might die at any moment causing the Xlib calls to generate BadMatch
    * errors. Without an error handler the pager will die! */
-  XSetErrorHandler((XErrorHandler)FvwmErrorHandler);
+  XSetErrorHandler(FvwmErrorHandler);
 #endif /* 1 */
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
@@ -2202,7 +2205,7 @@ void MoveWindow(XEvent *Event)
  *      FvwmErrorHandler - displays info on internal errors
  *
  ************************************************************************/
-XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
+int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
 #if 1
   extern Bool error_occured;
