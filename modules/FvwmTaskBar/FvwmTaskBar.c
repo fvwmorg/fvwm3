@@ -458,7 +458,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
        2. be carful with dynamic style change */
     if (cfgpacket->w == win)
     {
-      if (win_border != (int)cfgpacket->border_width ||
+      if (win_border != (short)cfgpacket->border_width ||
 	  win_title_height != (int)cfgpacket->title_height ||
 	  win_has_title != HAS_TITLE(cfgpacket) ||
 	  win_has_bottom_title != HAS_BOTTOM_TITLE(cfgpacket))
@@ -466,7 +466,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	XSizeHints hints;
 	long dumy;
 
-	win_border = (int)cfgpacket->border_width;
+	win_border = (short)cfgpacket->border_width;
 	win_width = ScreenWidth-(win_border<<1);
 	win_title_height = (int)cfgpacket->title_height;
 	win_has_title = HAS_TITLE(cfgpacket);
@@ -499,6 +499,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	hints.min_width   = win_width;
 	hints.base_width  = win_width;
 	hints.max_width   = win_width;
+
 	XSetWMNormalHints(dpy,win,&hints);
 
  	if (AutoStick)
@@ -1706,7 +1707,7 @@ void StartMeUp(void)
 
    win_border = 4; /* default border width */
    win_height = RowHeight+(RowsNumber-1)*(RowHeight+2);
-   win_width = ScreenWidth - (win_border << 1);
+   win_width = ScreenWidth - (win_border * 2);
 
    if (geometry == NULL)
      UpdateString(&geometry, "+0-0");
