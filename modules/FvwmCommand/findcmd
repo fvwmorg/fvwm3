@@ -12,17 +12,12 @@ echo 'FvwmCommand "+ $*"'
 echo '}'
 
 
-awk 'OFS="";
-    /struct function/,/""/ {
- 
-	if( $0 ~ /\{ *"[a-zA-Z_]/ ) {
-		sub(/^ *\{ *"/,"",$0); 
-		sub(/".*/,"",$0);
-		print  $0," () {"
-		print  "FvwmCommand \"",$0," $*\""
-        print  "}" ;
-	}
+awk 'BEGIN { OFS=""; }
+     /struct function/,/""/ {
+        if ( $0 ~ /\{ *"[a-zA-Z_]/ ) {
+	  split ( $0, a, "\"" );
+	  print  a[2]," () {"
+	  print  "FvwmCommand \"", a[2], " $*\""
+	  print  "}" ;
+        }
 }'
-
-
-

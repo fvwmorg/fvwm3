@@ -168,6 +168,13 @@ void DispatchEvent()
     (*EventHandlerJumpTable[Event.type])();
   }
 
+#ifdef C_ALLOCA
+  /* If we're using the C version of alloca, see if anything needs to be
+   * freed up.
+   */
+  alloca(0);
+#endif
+
   DBUG("DispatchEvent","Leaving Routine");
   return;
 }
@@ -1779,5 +1786,3 @@ void  ResyncFvwmStackRing (void)
 
   XFree (children);
 }
-
-

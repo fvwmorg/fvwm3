@@ -1,3 +1,16 @@
+1999-03-18  Paul D. Smith  <psmith@gnu.org>
+
+	* libs/Module.c (SendText): Rewrite to work on RISC architectures
+	where you can't dereference non-aligned pointers as ints.
+
+	* configure.in: Use AC_FUNC_ALLOCA to test for alloca() support.
+	* acconfig.h: Add boilerplate to initialize alloca() properly for
+	different systems.
+	* libs/Makefile.am (libfvwm_a_LIBADD): Add alloca.o to the libfvwm
+	library if necessary.
+	* fvwm/events.c (DispatchEvent): If we're using the C version of
+	alloca, call alloca(0) to clean up.
+
 18 Mar 1999  Hippo
 
 	* fvwm/{fvwm2.1,builtins.c} WindowShadeAnimate takes a'p' suffix to
@@ -9,7 +22,7 @@
 
 1999-03-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/builtins.c (CursorStyle): 
+	* fvwm/builtins.c (CursorStyle):
 	* fvwm/fvwm2.1:
 	* NEWS: enhance CursorStyle to allow specification of cursor
 	colors and creating cursors from pixmaps.
@@ -24,7 +37,7 @@
 Wed Mar 17 06:42:10 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* INSTALL.fvwm: add a note about include directories for optional
-	libraries. 
+	libraries.
 
 1999-03-17  Bob Woodside <proteus@pcnet.com>
 
@@ -44,12 +57,12 @@ Wed Mar 17 00:09:32 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/misc.h (name_list_struct): add starts_lowered and
 	has_starts_lowered to tmpflags bitfield.
-	* fvwm/add_window.c (AddWindow): 
+	* fvwm/add_window.c (AddWindow):
 	* fvwm/style.c (ProcessNewStyle): implement
-	StartsLowered/StartRaised style flags.	
-	* NEWS: 
+	StartsLowered/StartRaised style flags.
+	* NEWS:
 	* fvwm/fvwm2.1: document StartsLowered/StartsRaised.
-	
+
 	* fvwm/icccm2.c (HandleSelectionClear): remove spurious fvwm_msg.
 
 	* fvwm/misc.h (name_list_struct): add flag has_layer in a new
@@ -86,7 +99,7 @@ Mon Mar 15 22:17:04 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 1999-03-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/module.c (SendStrToModule): Make sure fvwm doesn't hold
-	any grabs while sending strings to modules. This is necessary for 
+	any grabs while sending strings to modules. This is necessary for
 	implementing menus in modules.
 
 1999-03-14  Dominik Vogt  <dominik_vogt@gmx.de>
@@ -116,7 +129,7 @@ Sat Mar 13 11:04:48 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/borders.c (SetBorder): removed text following #endif, as it
 	violates the ANSI C standard (or so claims SGI cc).
-	
+
 1999-03-12  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (DoMenusOverlap): fixed menu animation bug

@@ -8,7 +8,7 @@ libfvwm_a_SOURCES = ClientMsg.c GetFont.c Grab.c ModParse.c ModParse.h \
 	envvar.c fvwmlib.h safemalloc.c wild.c \
 	lang-strings.h XResource.c debug.c ColorUtils.c Graphics.c
 
-libfvwm_a_LIBADD = @LIBOBJS@
+libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 

@@ -1,23 +1,28 @@
+1999-03-18  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCommand/findcmd: Rewrite to use only very basic awk.  This
+	version should work with any awk.
+
 1999-03-17  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* FvwmScript/types.h: ifdef XPM the include for xpm.h.
 
 Wed Mar 17 07:16:00 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmScript/Scripts/TerminalSettings.fss: 
+	* FvwmScript/Scripts/TerminalSettings.fss:
 	* FvwmScript/Scripts/UpdateFvwm2TermMenu: new files
 
 	* FvwmScript/Scripts/Makefile.am (EXTRA_DIST): distribute new files.
 
 1999-03-16  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* FvwmGtk/FvwmGtk.c : Replace sprintf with g_sprintf 
+	* FvwmGtk/FvwmGtk.c : Replace sprintf with g_sprintf
 	to avoid problems on Solaris.
 	Fix segfaults when redefining dialogs.
 	Various cleanups.
 	Implement tear-off menus.
 	Implement spin buttons.
-	
+
 Mar 16 1999 Hippo
 
 	* FvwmEvent/FvwmEvent.c: new config option *fvwmEventPassID makes
@@ -35,7 +40,7 @@ Mon Mar 15 22:43:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-03-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* FvwmGtk: New module. It implements menus, dialogs and 
+	* FvwmGtk: New module. It implements menus, dialogs and
 	window-lists using the GTK toolkit.
 
 1999-03-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
@@ -64,12 +69,12 @@ Sat Mar 13 14:29:41 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmConsole/changepath.sh
 	* FvwmConsole/INSTALL: removed obsolete files.
-	
+
 	* FvwmCommand/findcmd:
 	* FvwmCommand/findcmd.pl: rewritten as filters, so as not to be
 	dependent on finding ../../fvwm/command.c.  The makefile now takes
 	care of supplying the input & output paths.
-	
+
 	* FvwmCommand/Makefile.am: build and install FvwmCommand.sh and
 	FvwmCommand.pm.
 
@@ -90,7 +95,7 @@ Sat Mar 13 11:52:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 Sat Mar 13 10:05:52 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmM4/FvwmM4.c: fix bad interaction between -m4-prefix and
-	-m4-[e|s]quotes. 
+	-m4-[e|s]quotes.
 	* modules/FvwmSaveDesk/FvwmSaveDesk.1:
 	* modules/FvwmSaveDesk/example/xinitrc: fvwm2 -f "FvwmM4 ..."
 	should be fvwm2 -cmd "FvwmM4 ..."

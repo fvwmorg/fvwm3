@@ -74,26 +74,35 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
  * SendText - Sends arbitrary text/command back to fvwm
  *
  ***********************************************************************/
-void SendText(int *fd,char *message,unsigned long window)
+void SendText(int *fd, char *message, unsigned long window)
 {
-  char *p, buf[1024]; /* should be ok; fvwm limits packet length to 1000 */
-  int w;
+  char *p, *buf;
+  int len;
 
-  if(message != NULL)
-  {
-    p = buf;
-    *((unsigned long*)p) = window;
-    p += sizeof (unsigned long);
-    w = strlen (message);
-    *((int*)p) = w;
-    p += sizeof (int);
-    strncpy (p, message, 1000);
-    p += w;
-    *((int*)p) = 1;
-    p += sizeof (int);
+  if (!message)
+    return;
 
-    write(fd[0], buf, p - buf);
-  }
+  /* Get enough memory to store the entire message.
+   */
+  len = strlen(message);
+  p = buf = alloca(sizeof(long) * (3 + 1 + (len / sizeof(long))));
+
+  /* Put the message in the buffer, and... */
+  *((unsigned long *)p) = window;
+  p += sizeof(unsigned long);
+
+  *((unsigned long *)p) = len;
+  p += sizeof(unsigned long);
+
+  strcpy(p, message);
+  p += len;
+
+  len = 1;
+  memcpy(p, &len, sizeof(unsigned long));
+  p += sizeof(unsigned long);
+
+  /* Send it!  */
+  write(fd[0], buf, p - buf);
 }
 
 

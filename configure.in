@@ -70,7 +70,7 @@ dnl Default is to use them if found; can be disable using --without
 dnl These are put up front so that if they are requested, but
 dnl configure fails to find them, we fail early.
 
-dnl Using 'unset' is said to be unportable, but setting to null is 
+dnl Using 'unset' is said to be unportable, but setting to null is
 dnl not enough to avoid using the cached value!
 
 unset ac_cv_header_X11_xpm_h
@@ -183,7 +183,7 @@ if test $ac_cv_func_waitpid = no; then
     fi
 fi
 
-dnl Make the C++ compiler optional, for it is only used in 
+dnl Make the C++ compiler optional, for it is only used in
 dnl modules, not for the main code.
 AC_ARG_WITH(cxx,
 [  --without-cxx           disable probing for C++ compiler])
@@ -242,6 +242,7 @@ dnl AC_STRUCT_TM
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
+AC_FUNC_ALLOCA
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket waitpid)
 AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
@@ -272,7 +273,7 @@ fi
 dnl Check the availability of SM
 dnl We don't have to add any extra libraries, since
 dnl -lSM -lICE are in X_PRE_LIBS when they exist.
-AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), , 
+AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
              [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 
 dnl FIXME: this requires AM_PATH_GTK to be defined.
@@ -329,5 +330,5 @@ Configuration:
   Have ReadLine support?    $with_readline
   Have RPlay support?	    $with_rplay
   Have XPM support? 	    $with_xpm$xpm_problem
-  Have GTK support?         $with_gtk 
+  Have GTK support?         $with_gtk
 "
