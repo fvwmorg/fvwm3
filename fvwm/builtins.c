@@ -4094,9 +4094,25 @@ void module_zapper(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 void Recapture(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
                unsigned long context, char *action,int* Module)
 {
+  XEvent event;
+
+  /* Wow, this grabbing speeds up recapture tremendously! I think that is the
+   * solution for this weird -blackout option. */
+  MyXGrabServer(dpy);
+  GrabEm(WAIT);
   BlackoutScreen(); /* if they want to hide the recapture */
   CaptureAllWindows();
   UnBlackoutScreen();
+  /* Throw away queued up events. We don't want user input during a
+   * recapture. The window the user clicks in might disapper at the very same
+   * moment and the click goes through to the root window. Not goot */
+  while (XCheckMaskEvent(dpy, ButtonPressMask|ButtonReleaseMask|
+			 ButtonMotionMask|PointerMotionMask|EnterWindowMask|
+			 LeaveWindowMask, &event) != False)
+    ;
+  UngrabEm();
+  MyXUngrabServer(dpy);
+  XSync(dpy, 0);
 }
 
 void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
