@@ -98,10 +98,8 @@ void ModuleConfig(char *action)
     {
       extern char **pipeName;
       char *name = pipeName[module];
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
       extern char **pipeAlias;
       if (pipeAlias[module]) name = pipeAlias[module];
-#endif
       SendConfigToModule(module, new_entry, CatString2("*", name), 0);
     }
   }

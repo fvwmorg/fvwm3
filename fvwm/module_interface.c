@@ -67,9 +67,7 @@ int *readPipes;
 int *writePipes;
 static int *pipeOn;
 char **pipeName;
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
 char **pipeAlias;  /* as given in: Module FvwmPager MyAlias */
-#endif
 
 typedef struct
 {
@@ -121,9 +119,7 @@ void initModules(void)
   SyncMask = (msg_masks_type *)safemalloc(sizeof(msg_masks_type)*npipes);
   NoGrabMask = (msg_masks_type *)safemalloc(sizeof(msg_masks_type)*npipes);
   pipeName = (char **)safemalloc(sizeof(char *)*npipes);
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
   pipeAlias = (char **)safemalloc(sizeof(char *)*npipes);
-#endif
   pipeQueue = (fqueue *)safemalloc(sizeof(fqueue)*npipes);
 
   for (i=0; i < npipes; i++)
@@ -139,9 +135,7 @@ void initModules(void)
     NoGrabMask[i].m2 = 0;
     fqueue_init(&pipeQueue[i]);
     pipeName[i] = NULL;
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
     pipeAlias[i] = NULL;
-#endif
   }
   DBUG("initModules", "Zeroing init module array\n");
   FD_ZERO(&init_fdset);
@@ -162,13 +156,11 @@ void ClosePipes(void)
         free(pipeName[i]);
         pipeName[i] = 0;
       }
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
       if(pipeAlias[i] != NULL)
       {
         free(pipeAlias[i]);
         pipeAlias[i] = NULL;
       }
-#endif
       while (!FQUEUE_IS_EMPTY(&pipeQueue[i]))
       {
         DeleteMessageQueueBuff(i);
@@ -300,14 +292,12 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   {
     args = (char **)saferealloc((void *)args, (nargs + 2) * sizeof(char *));
     args[nargs] = token;
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
     if (pipeAlias[i] == NULL)
     {
       const char *ptr = skipModuleAliasToken(args[nargs]);
       if (ptr && *ptr == '\0')
         pipeAlias[i] = stripcpy(args[nargs]);
     }
-#endif
   }
   args[nargs] = NULL;
 
@@ -714,13 +704,11 @@ void KillModule(int channel)
       free(pipeName[channel]);
       pipeName[channel] = NULL;
     }
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
   if(pipeAlias[channel] != NULL)
     {
       free(pipeAlias[channel]);
       pipeAlias[channel] = NULL;
     }
-#endif
   if (fFvwmInStartup) {
     /* remove from list of command line modules */
     DBUG("killModule", "ending command line module\n");
@@ -730,11 +718,7 @@ void KillModule(int channel)
   return;
 }
 
-static void KillModuleByName(char *name
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
-  , char *alias
-#endif
-)
+static void KillModuleByName(char *name, char *alias)
 {
   int i = 0;
 
@@ -744,9 +728,7 @@ static void KillModuleByName(char *name
   while(i<npipes)
     {
       if((pipeName[i] != NULL)&&(matchWildcards(name,pipeName[i]))
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
           && (!alias || (pipeAlias[i] && matchWildcards(alias, pipeAlias[i])))
-#endif
         )
 	{
 	  KillModule(i);
@@ -759,20 +741,14 @@ static void KillModuleByName(char *name
 void CMD_KillModule(F_CMD_ARGS)
 {
   char *module;
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
   char *alias = NULL;
-#endif
 
   action = GetNextToken(action,&module);
   if (!module)
     return;
 
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
   GetNextToken(action, &alias);
   KillModuleByName(module, alias);
-#else
-  KillModuleByName(module);
-#endif
   free(module);
 }
 
@@ -1368,10 +1344,7 @@ void CMD_SendToModule(F_CMD_ARGS)
   for (i=0;i<npipes;i++)
   {
     if ((pipeName[i] != NULL && matchWildcards(module,pipeName[i]))
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
-      || (pipeAlias[i] && matchWildcards(module, pipeAlias[i]))
-#endif
-    )
+      || (pipeAlias[i] && matchWildcards(module, pipeAlias[i])))
     {
       SendName(i,M_STRING,data0,data1,data2,str);
       FlushMessageQueue(i);
@@ -1465,18 +1438,30 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
       if (rc <= 0 || read(channel, &targetWindow, sizeof(targetWindow))
            != sizeof(targetWindow))
       {
+        char *name;
+
+        if (pipeName[module] != NULL)
+        {
+          if (pipeAlias[module] != NULL)
+          {
+            name = CatString3(pipeName[module], " ", pipeAlias[module]);
+          }
+          else
+          {
+            name = pipeName[module];
+          }
+        }
+        else
+        {
+          name = "(null)";
+        }
+
         /* Doh! Something has gone wrong - get rid of the offender!! */
         fvwm_msg(ERR, "PositiveWrite",
                  "Failed to read descriptor from '%s':\n"
                  "- data available=%c\n"
                  "- terminate signal=%c\n",
-#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
-                 pipeAlias[module]
-                   ? CatString3(pipeName[module], " ", pipeAlias[module])
-                   : pipeName[module],
-#else
-                 pipeName[module],
-#endif
+                 name,
                  (FD_ISSET(channel, &readSet) ? 'Y' : 'N'),
                  isTerminated ? 'Y' : 'N');
         KillModule(module);
