@@ -1,3 +1,11 @@
+1999-04-11  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/events.c (HandleUnmapNotify): Replace one return path
+	with an else, to make sure the GNOME hook at the end is executed
+	for both return paths.
+	Call CoerceEnterNotifyOnCurrentWindow if the window being unmapped
+	has the focus and uses GrabFocus. 
+
 Sun Apr 11 09:43:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in (FVWM_CONFIGDIR): set to ${sysconfdir}/fvwm,

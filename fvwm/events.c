@@ -1056,6 +1056,7 @@ void HandleUnmapNotify(void)
   XEvent dummy;
   extern FvwmWindow *colormap_win;
   int    weMustUnmap;
+  int    focus_grabbed;
 
   DBUG("HandleUnmapNotify","Routine Entered");
 
@@ -1098,6 +1099,8 @@ void HandleUnmapNotify(void)
   if(Scr.PreviousFocus == Tmp_win)
     Scr.PreviousFocus = NULL;
 
+  focus_grabbed = (Tmp_win == Scr.Focus) && DO_GRAB_FOCUS(Tmp_win);
+
   if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
     {
       if(Tmp_win->next)
@@ -1127,10 +1130,8 @@ void HandleUnmapNotify(void)
   if(XCheckTypedWindowEvent (dpy, Event.xunmap.window, DestroyNotify,&dummy))
     {
       Destroy(Tmp_win);
-      MyXUngrabServer (dpy);
-      return;
     }
-
+  else 
   /*
    * The program may have unmapped the client window, from either
    * NormalState or IconicState.  Handle the transition to WithdrawnState.
@@ -1176,6 +1177,11 @@ void HandleUnmapNotify(void)
   MyXUngrabServer(dpy);
 
   XFlush (dpy);
+
+  if (focus_grabbed)
+   {
+     CoerceEnterNotifyOnCurrentWindow();
+   }
 
 #ifdef GNOME
   GNOME_SetClientList();
