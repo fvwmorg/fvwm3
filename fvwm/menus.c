@@ -5342,6 +5342,14 @@ static void FreeMenuStyle(MenuStyle *ms)
     DestroyPicture(dpy, ST_SIDEPIC(ms));
   if (ST_HAS_SIDE_COLOR(ms) == 1)
     FreeColors(&ST_SIDE_COLOR(ms), 1);
+  if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != &Scr.DefaultFont)
+  {
+    FreeFvwmFont(dpy, ST_PSTDFONT(ms));
+    free(ST_PSTDFONT(ms));
+  }
+  if (ST_ITEM_FORMAT(ms))
+    free(ST_ITEM_FORMAT(ms));
+
 
   while(ST_NEXT_STYLE(before) != ms)
     /* Not too many checks, may segfaults in race conditions */

@@ -1,5 +1,10 @@
 2000-11-26  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/menus.c (FreeMenuStyle):
+	Fixed a LEAK_FREE
+	
+2000-11-26  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/builtins.c (strokeFunc):
 	Fixed problems with window title bar and frame
 
