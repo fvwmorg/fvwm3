@@ -1,5 +1,12 @@
 2002-03-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (adjust_fvwm_internal_windows):
+	* fvwm/events.c (HandleFocusIn):
+	(HandleFocusOut):
+	* fvwm/screen.h (ScreenInfo):
+	return the focus to the window that had the focus before an or window
+	stole it and then died.
+
 	* fvwm/menus.c (scanForColor):
 	removed duplicate call of strlen
 	use alloca instead of safemalloc

@@ -622,6 +622,10 @@ static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 	}
 	restore_focus_after_unmap(fw, False);
 	frame_destroyed_frame(FW_W(fw));
+	if (FW_W(fw) == Scr.StolenFocusWin)
+	{
+		Scr.StolenFocusWin = None;
+	}
 
 	return;
 }

@@ -184,11 +184,13 @@ void HandleFocusIn(void)
     Fw = NULL;
   }
 
+  Scr.UnknownWinFocused = None;
   if (!Fw)
   {
     if (w != Scr.NoFocusWin)
     {
       Scr.UnknownWinFocused = w;
+      Scr.StolenFocusWin = (ffw_old != NULL) ? FW_W(ffw_old) : None;
       focus_w = w;
       is_unmanaged_focused = True;
     }
@@ -266,6 +268,19 @@ void HandleFocusIn(void)
     focus_grab_buttons(sf, True);
     focus_grab_buttons(ffw_old, False);
   }
+}
+
+void HandleFocusOut(void)
+{
+	if (Scr.UnknownWinFocused != None && Scr.StolenFocusWin != None &&
+	    Event.xfocus.window == Scr.UnknownWinFocused)
+	{
+		FOCUS_SET(Scr.StolenFocusWin);
+		Scr.UnknownWinFocused = None;
+		Scr.StolenFocusWin = None;
+	}
+
+	return;
 }
 
 /***********************************************************************
@@ -2908,6 +2923,7 @@ void InitEventHandlerJumpTable(void)
   EventHandlerJumpTable[EnterNotify] =      HandleEnterNotify;
   EventHandlerJumpTable[LeaveNotify] =      HandleLeaveNotify;
   EventHandlerJumpTable[FocusIn] =          HandleFocusIn;
+  EventHandlerJumpTable[FocusOut] =         HandleFocusOut;
   EventHandlerJumpTable[ConfigureRequest] = HandleConfigureRequest;
   EventHandlerJumpTable[ClientMessage] =    HandleClientMessage;
   EventHandlerJumpTable[PropertyNotify] =   HandlePropertyNotify;
