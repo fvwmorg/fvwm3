@@ -1,5 +1,13 @@
 1999-12-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/ColorUtils.c (GetShadowColor):
+	(GetHiliteColor):
+	fixed calculations with brightness > 0x7fff treated as a negative value
+	which totally screwed up colour calculations
+
+	* fvwm/add_window.c (AddWindow):
+	fixed recapturing a shaded window twice
+
 	* fvwm/gnome.c:
 	fixed update.h compile error
 

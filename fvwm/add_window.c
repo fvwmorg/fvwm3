@@ -1378,10 +1378,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->frame_g;
     get_shaded_geometry(tmp_win, &tmp_win->frame_g, &tmp_win->frame_g);
     XLowerWindow(dpy, tmp_win->Parent);
+    SET_SHADED(tmp_win ,1);
     SetupFrame(
       tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
       tmp_win->frame_g.width, tmp_win->frame_g.height, False);
-    SET_SHADED(tmp_win ,1);
   }
 
   return tmp_win;

@@ -2690,7 +2690,8 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 
   MyXGrabServer(dpy);
   if (BUSY_RECAPTURE & Scr.BusyCursor)
-    if (GrabEm(CRS_WAIT, GRAB_BUSY)) need_ungrab = True;
+    if (GrabEm(CRS_WAIT, GRAB_BUSY))
+      need_ungrab = True;
   XSync(dpy,0);
   if (fSingle)
     CaptureOneWindow(tmp_win, tmp_win->w);
@@ -2704,19 +2705,20 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 			 LeaveWindowMask|KeyPressMask|KeyReleaseMask,
 			 &event) != False)
     ;
-  if (need_ungrab) UngrabEm(GRAB_BUSY);
+  if (need_ungrab)
+    UngrabEm(GRAB_BUSY);
   MyXUngrabServer(dpy);
   XSync(dpy, 0);
 }
 
 void Recapture(F_CMD_ARGS)
 {
-  do_recapture(eventp, w, tmp_win, context, action, Module, False);
+  do_recapture(F_PASS_ARGS, False);
 }
 
 void RecaptureWindow(F_CMD_ARGS)
 {
-  do_recapture(eventp, w, tmp_win, context, action, Module, True);
+  do_recapture(F_PASS_ARGS, True);
 }
 
 void SetGlobalOptions(F_CMD_ARGS)

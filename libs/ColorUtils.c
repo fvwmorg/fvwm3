@@ -54,7 +54,7 @@
  * to red is twice as bright as blue and green is thrice blue.
  */
 
-#define	BRIGHTNESS (red + red + green + green + green + blue)
+#define	BRIGHTNESS ((int)red + (int)red + (int)green + (int)green + (int)green + (int)blue)
 
 /* From Xm.h on Solaris */
 #define XmDEFAULT_DARK_THRESHOLD        15
@@ -64,16 +64,17 @@ extern Display *Pdpy;
 
 static XColor color;
 
-XColor *GetShadowColor(Pixel background) {
+XColor *GetShadowColor(Pixel background)
+{
   long brightness, brightadj;
-  short red, green, blue;
+  unsigned short red, green, blue;
 
   color.pixel = background;
   XQueryColor (Pdpy, Pcmap, &color);
   red = color.red;
   green = color.green;
   blue = color.blue;
-  
+
   brightness = BRIGHTNESS;
   /* For "dark" backgrounds, make everything a fixed %age lighter */
   if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
@@ -105,7 +106,8 @@ XColor *GetShadowColor(Pixel background) {
   return &color;
 }
 
-Pixel GetShadow(Pixel background) {
+Pixel GetShadow(Pixel background)
+{
   XColor *colorp;
 
   colorp = GetShadowColor(background);
@@ -113,16 +115,17 @@ Pixel GetShadow(Pixel background) {
   return colorp->pixel;
 }
 
-XColor *GetHiliteColor(Pixel background) {
+XColor *GetHiliteColor(Pixel background)
+{
   long brightness, brightadj;
-  short red, green, blue;
+  unsigned short red, green, blue;
 
   color.pixel = background;
   XQueryColor (Pdpy, Pcmap, &color);
   red = color.red;
   green = color.green;
   blue = color.blue;
-  
+
   brightness = BRIGHTNESS;
   /* For "dark" backgrounds, make everything a fixed %age lighter */
   if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
@@ -154,7 +157,8 @@ XColor *GetHiliteColor(Pixel background) {
   return &color;
 }
 
-Pixel GetHilite(Pixel background) {
+Pixel GetHilite(Pixel background)
+{
   XColor *colorp;
 
   colorp = GetHiliteColor(background);
