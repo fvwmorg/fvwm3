@@ -1211,7 +1211,7 @@ void HandleUnmapNotify(void)
     {
       if(Tmp_win->next)
 	{
-	  HandleHardFocus(Tmp_win->next);
+	  SetFocus(Tmp_win->next, Tmp_win, 1);
 	}
       else
 	SetFocus(Scr.NoFocusWin,NULL,1);

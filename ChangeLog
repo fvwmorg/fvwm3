@@ -1,3 +1,15 @@
+1999-07-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/gnome.c (GNOME_GetStyle): Fixed desk handling in GNOME apps.
+
+1999-07-03  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/misc.h:
+	* fvwm/events.c (HandleUnmapNotify):
+	* fvwm/misc.c (Destroy):
+	(HandleHardFocus): removed HandleHardFocus function; calls replaced by
+	SetFocus. Fixes hang with Gnome menu bars.
+
 1999-07-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/Strings.h:

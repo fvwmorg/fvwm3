@@ -3481,7 +3481,7 @@ static void size_menu_horizontally(MenuRoot *mr)
     {
       max.triangle_width = TRIANGLE_WIDTH;
     }
-    else if (MI_IS_TITLE(mi) && MI_PICTURE(mi) == NULL)
+    else if (MI_IS_TITLE(mi) && !MI_HAS_PICTURE(mi))
     {
       Bool is_formatted = False;
 

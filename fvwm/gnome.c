@@ -484,6 +484,9 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   if (retval)
     {
       style->start_desk = *(int*)retval;
+      /* Allow special case of -1 to work. */
+      if (style->start_desk > -1)
+	style->start_desk++;
       style->flags.use_start_on_desk = 1;
       style->flag_mask.use_start_on_desk = 1;
       free(retval);

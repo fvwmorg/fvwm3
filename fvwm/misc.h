@@ -267,7 +267,6 @@ void PipeRead(F_CMD_ARGS);
 void module_zapper(F_CMD_ARGS);
 void Recapture(F_CMD_ARGS);
 void RecaptureWindow(F_CMD_ARGS);
-void HandleHardFocus(FvwmWindow *t);
 void DestroyModConfig(F_CMD_ARGS);
 void AddModConfig(F_CMD_ARGS);
 void SetEnv(F_CMD_ARGS);

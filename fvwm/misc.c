@@ -152,7 +152,7 @@ void Destroy(FvwmWindow *Tmp_win)
       }
       if (t)
       {
-	HandleHardFocus(t);
+	SetFocus(t->w, t, 1);
 	focus_set = True;
       }
     }
@@ -162,7 +162,7 @@ void Destroy(FvwmWindow *Tmp_win)
 	{
 	  if(Tmp_win->next)
 	    {
-	      HandleHardFocus(Tmp_win->next);
+	      SetFocus(Tmp_win->next, Tmp_win, 1);
 	    }
 	  else
 	    SetFocus(Scr.NoFocusWin, NULL,1);
@@ -686,33 +686,6 @@ void MapIt(FvwmWindow *t)
       SET_MAP_PENDING(t, 1);
       XMapWindow(dpy, t->Parent);
    }
-}
-
-
-void HandleHardFocus(FvwmWindow *t)
-{
-  int x,y;
-
-/* domivogt (29-Jun-1999): function doesn't seem to do anything useful. Try
- * replacing it with SetFocus. */
-SetFocus(t->w,t,1);
-return;
-#if 0
-  FocusOnNextTimeStamp = t;
-  Scr.Focus = NULL;
-  /* Do something to guarantee a new time stamp! */
-  XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		&JunkX, &JunkY, &x, &y, &JunkMask);
-  GrabEm(CRS_WAIT);
-  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-	       Scr.MyDisplayHeight,
-	       x + 2,y+2);
-  XSync(dpy,0);
-  XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-	       Scr.MyDisplayHeight,
-	       x ,y);
-  UngrabEm();
-#endif
 }
 
 
