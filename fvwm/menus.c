@@ -709,7 +709,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
     /* Make sure we are using the latest style and menu layout. */
     update_menu(pmp->menu);
 
-    if(pmp->flags.is_submenu)
+    if (pmp->flags.is_submenu)
     {
       /* this is a submenu popup */
       get_prefered_popup_position(
@@ -779,9 +779,15 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   }
   if (!fFailedPopup)
   {
-    XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_MENU_EVMASK);
+    if (!pmp->flags.is_submenu)
+    {
+      XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_MENU_EVMASK);
+    }
     MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title);
-    XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_EVMASK);
+    if (!pmp->flags.is_submenu)
+    {
+      XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_EVMASK);
+    }
   }
   else
   {

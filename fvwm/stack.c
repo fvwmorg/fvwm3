@@ -1080,7 +1080,8 @@ int get_layer(FvwmWindow *t)
  * layer are checked.  If the layer is < 0, all windows are considered.
  */
 void mark_transient_subtree(
-  FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons)
+  FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons,
+  Bool use_window_group_hint)
 {
   FvwmWindow *s;
   FvwmWindow *start;
@@ -1128,28 +1129,63 @@ void mark_transient_subtree(
   while (!is_finished)
   {
     FvwmWindow *r;
+    FvwmWindow *u;
 
     /* recursively search for all transient windows */
     is_finished = True;
     for (s = start; s != end; s = s->stack_next)
     {
-      if (IS_IN_TRANSIENT_SUBTREE(s) || !IS_TRANSIENT(s))
+      Bool use_group_hint = False;
+
+      if (IS_IN_TRANSIENT_SUBTREE(s))
+	continue;
+      if (DO_ICONIFY_WINDOW_GROUPS(s) && s->wmhints &&
+	  (s->wmhints->flags & WindowGroupHint) &&
+	  (s->wmhints->window_group != None) &&
+	  (s->wmhints->window_group != s->w) &&
+	  (s->wmhints->window_group != Scr.Root))
+      {
+	use_group_hint = True;
+      }
+      if (!IS_TRANSIENT(s) && !use_group_hint)
 	continue;
       r = (FvwmWindow *)s->pscratch;
       if (do_ignore_icons && IS_ICONIFIED(r))
 	continue;
-      if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
-	  ((mark_mode == MARK_ALL) ||
-	   (mark_mode == MARK_LOWER && DO_LOWER_TRANSIENT(r)) ||
-	   (mark_mode == MARK_RAISE && DO_RAISE_TRANSIENT(r))))
+      if (IS_TRANSIENT(s))
       {
-	/* have to move this one too */
-	SET_IN_TRANSIENT_SUBTREE(s, 1);
-	/* need another scan through the list */
-	is_finished = False;
+	if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
+	    ((mark_mode == MARK_ALL) ||
+	     (mark_mode == MARK_LOWER && DO_LOWER_TRANSIENT(r)) ||
+	     (mark_mode == MARK_RAISE && DO_RAISE_TRANSIENT(r))))
+	{
+	  /* have to move this one too */
+	  SET_IN_TRANSIENT_SUBTREE(s, 1);
+	  /* need another scan through the list */
+	  is_finished = False;
+	  continue;
+	}
       }
-    }
-  }
+      if (use_group_hint)
+      {
+	for (u = start; u != end; u = u->stack_next)
+	{
+	  if (u->w == s->wmhints->window_group ||
+	      (u->wmhints && (u->wmhints->flags & WindowGroupHint) &&
+	       u->wmhints->window_group == s->wmhints->window_group))
+	  {
+	    if (IS_IN_TRANSIENT_SUBTREE(u))
+	    {
+	      /* have to move this one too */
+	      SET_IN_TRANSIENT_SUBTREE(s, 1);
+	      /* need another scan through the list */
+	      is_finished = False;
+	    }
+	  }
+	}
+      }
+    } /* for */
+  } /* while */
 
   return;
 }
@@ -1160,7 +1196,8 @@ static int collect_transients_recursive(
   FvwmWindow *s;
   int count = 0;
 
-  mark_transient_subtree(t, layer, (do_lower) ? MARK_LOWER : MARK_RAISE, True);
+  mark_transient_subtree(
+    t, layer, (do_lower) ? MARK_LOWER : MARK_RAISE, True, False);
   /* now collect the marked windows in a separate list */
   for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; )
   {

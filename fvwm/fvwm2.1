@@ -4318,6 +4318,7 @@ is a comma separated list containing one or more of the keywords
 .IR LowerTransient " / " DontLowerTransient ,
 .IR StackTransientParent " / " DontStackTransientParent ,
 .IR SkipMapping " / " ShowMapping ,
+.IR ScatterWindowGroups " / " KeepWindowGroupsOnDesk ,
 .IR UseDecor ,
 .IR UseStyle ,
 .IR NoPPosition " / " UsePPosition ,
@@ -4336,6 +4337,7 @@ is a comma separated list containing one or more of the keywords
 .IR IconOverride " / " NoIconOverride " / " NoActiveIconOverride ,
 .IR DepressableBorder " / " FirmBorder ,
 .IR MaxWindowSize ,
+.IR IconifyWindowGroups " / " IconifyWindowGroupsOff ,
 .IR ResizeOpaque " / " ResizeOutline ,
 .IR BackingStore " / " BackingStoreOff ,
 .IR Opacity " / " ParentalRelativity ,
@@ -4784,6 +4786,17 @@ may be less than 100 pixels.  If you omit the parameters or
 their values are invalid, both limits are set to 32767 pixels
 (which is the default).
 
+With
+.I IconifyWindowGroups
+all windows in the same window group will be iconifed at once
+when group leader is iconified.  The default is
+.IR IconifyWindowGroupsOff ,
+which disables this behaviour.  Although a number of applications
+use the window group hint, it is rarely used in a proper way, so
+it is probably best to use
+.I IconifyWindowGroups
+only for selected applications.
+
 .\" +++++++++++++++ Window Manager placement
 .TP
 .B Window Manager placement
@@ -4911,7 +4924,6 @@ Style * ManualPlacementsHonorsStartsOnPage
 Style * ActivePlacementsHonorsStartsOnPageOff
   -->
 Style * ManualPlacementsHonorsStartsOnPageOff
-
 .EE
 
 .\" +++++++++++++++ placement options and stacking policy
@@ -5036,6 +5048,13 @@ tells fvwm not to switch to the desk the window is on when
 it gets mapped initially (useful with
 .IR StartsOnDesk " or " StartsOnPage ).
 
+.I KeepWindowGroupsOnDesk
+makes new windows that have the window group hint set appear on the
+same desk as the other windows of the same group.  Since this
+bevhaviour may be confusing, the default setting is
+.IR ScatterWindowGroups .
+The window group hint is ignored when placing windows in this case.
+
 .\" +++++++++++++++ transient windows
 .TP
 .B Transient windows
@@ -5097,6 +5116,7 @@ Style * RaiseTransient
 Style * LowerTransient
 Style * StackTransientParent
 .EE
+
 .\" +++++++++++++++ miscellaneous
 .TP
 .B Miscellaneous

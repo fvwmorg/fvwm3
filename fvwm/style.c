@@ -1690,7 +1690,9 @@ void ProcessNewStyle(F_CMD_ARGS)
 	      }
             } /* end bad grid */
           } /* end place to grid */
-        } else if (StrEquals(token, "ICONFILL")) {
+        }
+	else if (StrEquals(token, "ICONFILL"))
+	{
 	  found = True;
 	  /* direction to fill iconbox */
           /* The fill always affects the prior iconbox */
@@ -1740,12 +1742,33 @@ void ProcessNewStyle(F_CMD_ARGS)
             } /* end first word valid */
           } /* end have a place to fill */
         } /* end iconfill */
+        else if (StrEquals(token, "IconifyWindowGroups"))
+	{
+	  found = True;
+	  SFSET_DO_ICONIFY_WINDOW_GROUPS(*ptmpstyle, 1);
+	  SMSET_DO_ICONIFY_WINDOW_GROUPS(*ptmpstyle, 1);
+	  SCSET_DO_ICONIFY_WINDOW_GROUPS(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "IconifyWindowGroupsOff"))
+	{
+	  found = True;
+	  SFSET_DO_ICONIFY_WINDOW_GROUPS(*ptmpstyle, 0);
+	  SMSET_DO_ICONIFY_WINDOW_GROUPS(*ptmpstyle, 1);
+	  SCSET_DO_ICONIFY_WINDOW_GROUPS(*ptmpstyle, 1);
+	}
         break;
 
       case 'j':
         break;
 
       case 'k':
+        if (StrEquals(token, "KeepWindowGroupsOnDesk"))
+	{
+	  found = True;
+	  SFSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 0);
+	  SMSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
+	  SCSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
+	}
         break;
 
       case 'l':
@@ -2391,6 +2414,13 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SFSET_HAS_STIPPLED_TITLE(*ptmpstyle, 0);
 	  SMSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
 	  SCSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "ScatterWindowGroups"))
+	{
+	  found = True;
+	  SFSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
+	  SMSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
+	  SCSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	}
         break;
 

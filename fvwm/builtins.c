@@ -754,14 +754,14 @@ void wait_func(F_CMD_ARGS)
     wait_string = safestrdup("");
   }
 
-  while(!done && !isTerminated)
+  while (!done && !isTerminated)
   {
     if (BUSY_WAIT & Scr.BusyCursor)
     {
       XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_WAIT]);
       redefine_cursor = True;
     }
-    if(My_XNextEvent(dpy, &Event))
+    if (My_XNextEvent(dpy, &Event))
     {
       DispatchEvent(False);
       if(Event.type == MapNotify)

@@ -291,6 +291,7 @@ AtomGet(Window win, Atom to_get, Atom type, int *size)
 
 /*** GET WINDOW PROPERTIES ***/
 
+#if 0
 static void
 GNOME_GetHintIcons(FvwmWindow *fwin)
 {
@@ -418,27 +419,6 @@ GNOME_GetHint(FvwmWindow *fwin)
   }
 }
 
-void
-GNOME_SetHints(FvwmWindow *fwin)
-{
-  Atom atom_set;
-  int val;
-
-  atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
-  val = 0;
-
-  if (IS_STICKY(fwin))
-    val |= WIN_STATE_STICKY;
-  if (IS_SHADED(fwin))
-    val |= WIN_STATE_SHADED;
-  if (IS_FIXED(fwin))
-    val |= WIN_STATE_FIXED_POSITION;
-
-  XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)&val, 1);
-}
-
-
 static void
 GNOME_GetExpandedSize(FvwmWindow *fwin)
 {
@@ -461,7 +441,6 @@ GNOME_GetExpandedSize(FvwmWindow *fwin)
   }
 }
 
-
 void
 GNOME_GetHints(FvwmWindow *fwin)
 {
@@ -475,6 +454,28 @@ GNOME_GetHints(FvwmWindow *fwin)
   GNOME_GetHint(fwin);
   GNOME_GetExpandedSize(fwin);
 }
+#endif
+
+void
+GNOME_SetHints(FvwmWindow *fwin)
+{
+  Atom atom_set;
+  int val;
+
+  atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
+  val = 0;
+
+  if (IS_STICKY(fwin))
+    val |= WIN_STATE_STICKY;
+  if (IS_SHADED(fwin))
+    val |= WIN_STATE_SHADED;
+  if (IS_FIXED(fwin))
+    val |= WIN_STATE_FIXED_POSITION;
+
+  XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
+		  PropModeReplace, (unsigned char *)&val, 1);
+}
+
 
 /* this duplicates most of the above... and it assumes
    that style is inizialized to zero.

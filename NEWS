@@ -3,6 +3,11 @@ _+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
 Changes in beta release 2.3.29 (not released yet)
 
+* New styles IconifyWindowGroupsTogether  and IconifyWindowGroupsOff.
+
+* New styles KeepWindowGroupsOnDesk and ScatterWindowGroups to cope with
+  applications using the window group hint incorrectly (mozilla).
+
 * New BugOpts option FlickeringQtDialogsWorkaround.
 
 * New configure option --disable-package-subdirs, see INSTALL.fvwm for info.

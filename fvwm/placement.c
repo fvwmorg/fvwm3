@@ -488,7 +488,8 @@ Bool PlaceWindow(
    * 2. Windows specified with StartsOnDesk go where specified
    * 3. Put it on the desk it was on before the restart.
    * 4. Transients go on the same desk as their parents.
-   * 5. Window groups stay together (completely untested)
+   * 5. Window groups stay together (if the KeepWindowGroupsOnDesk style is
+   *    used).
    */
 
   /*  RBW - 11/02/1998  */
@@ -557,18 +558,27 @@ Bool PlaceWindow(
     tmp_win->Desk = (Desk > -1) ? Desk - 1 : Desk;    /*  RBW - 11/20/1998  */
   else
   {
-    if((tmp_win->wmhints)&&(tmp_win->wmhints->flags & WindowGroupHint)&&
-       (tmp_win->wmhints->window_group != None)&&
+    if((DO_USE_WINDOW_GROUP_HINT(tmp_win)) &&
+       (tmp_win->wmhints) && (tmp_win->wmhints->flags & WindowGroupHint)&&
+       (tmp_win->wmhints->window_group != None) &&
        (tmp_win->wmhints->window_group != Scr.Root))
     {
-      /* Try to find the group leader or another window
-       * in the group */
+      /* Try to find the group leader or another window in the group */
       for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
       {
-	if((t->w == tmp_win->wmhints->window_group)||
-	   ((t->wmhints)&&(t->wmhints->flags & WindowGroupHint)&&
-	    (t->wmhints->window_group==tmp_win->wmhints->window_group)))
+	if (t->w == tmp_win->wmhints->window_group)
+	{
+	  /* found the group leader, break out */
 	  tmp_win->Desk = t->Desk;
+	  break;
+	}
+	else if (t->wmhints && (t->wmhints->flags & WindowGroupHint) &&
+		 (t->wmhints->window_group == tmp_win->wmhints->window_group))
+	{
+	  /* found a window from the same group, but keep looking for the group
+	   * leader */
+	  tmp_win->Desk = t->Desk;
+	}
       }
     }
     if((IS_TRANSIENT(tmp_win))&&(tmp_win->transientfor!=None)&&

@@ -1233,7 +1233,7 @@ void DeIconify(FvwmWindow *tmp_win)
 
   /* AS dje  RaiseWindow(tmp_win); */
 
-  mark_transient_subtree(tmp_win, MARK_ALL_LAYERS, MARK_ALL, False);
+  mark_transient_subtree(tmp_win, MARK_ALL_LAYERS, MARK_ALL, False, True);
   /* now de-iconify transients */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
@@ -1371,7 +1371,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     SetFocusWindow(tmp_win->next, 1);
   }
 
-  mark_transient_subtree(tmp_win, MARK_ALL_LAYERS, MARK_ALL, False);
+  mark_transient_subtree(tmp_win, MARK_ALL_LAYERS, MARK_ALL, False, True);
   /* iconify transients first */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {

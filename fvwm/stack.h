@@ -53,7 +53,8 @@ void SetDefaultLayers(F_CMD_ARGS);
 #define MARK_ALL   2
 #define MARK_ALL_LAYERS -1
 void mark_transient_subtree(
-  FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons);
+  FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons,
+  Bool use_window_group_hint);
 
 
 #endif /* _STACK_H */
