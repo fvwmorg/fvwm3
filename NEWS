@@ -9,8 +9,8 @@ Changes in beta release 2.4.1 (not released yet)
 
 * New context rectangle option XineramaRoot for the menu commands.
 
-* New conditions CurrentGlobalPage and CurrentGlobalPageAnyDesk for
-  conditional commands.
+* New conditions CurrentGlobalPage, CurrentGlobalPageAnyDesk and
+  AcceptsFocus for conditional commands.
 
 * New Geometry option for FvwmForm.
 
@@ -19,6 +19,9 @@ Changes in beta release 2.4.1 (not released yet)
 * Color enhancements in button vectors: @2 is bg color, @3 is fg color.
 
 * Improved detection of the Shape library.
+
+* Fixed FvwmButtons button titles not being erased for swallowed
+  windows that showed up on certain setups.
 
 * Fixed bug that caused transient windows to be buried below their
   parents with the "BugOpts RaiseOverUnmanaged on".  This occured
@@ -42,7 +45,7 @@ Changes in beta release 2.4.1 (not released yet)
 * Fixed a formatting problem of the man page on AIX, Solaris, and
   some other UNIX variants.
 
-* Fixed a problems with FvwmIconBox exitting on 64 bit platforms.
+* Fixed a problems with FvwmIconBox exiting on 64 bit platforms.
 
 * Fixed parameters of fvwm24_convert.
 
@@ -54,6 +57,9 @@ Changes in beta release 2.4.1 (not released yet)
 * Fixed missing button or key events over the pan frames.
 
 * Fixed placement of the FvwmDragWell, FvwmButtons and FvwmForm modules.
+
+* Fixed parsind double quotes in FvwmPager's Font and SmallFont options.
+  Fixed FvwmPager crash with certain font strings.
 
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)

@@ -354,14 +354,14 @@ Key F12 A M Desk 0 3
 # to switch focus to the window next to your current window in that direction.
 # Some people don't like this, if you don't, comment out these lines
 #
-Key Right A C Direction East (CurrentDesk !Iconic) Focus
-Key Left A C Direction West (CurrentDesk !Iconic) Focus
-Key Up A C Direction North (CurrentDesk !Iconic) Focus
-Key Down A C Direction South (CurrentDesk !Iconic) Focus
+Key Right A C Direction East (AcceptsFocus CurrentDesk !Iconic) Focus
+Key Left A C Direction West (AcceptsFocus CurrentDesk !Iconic) Focus
+Key Up A C Direction North (AcceptsFocus CurrentDesk !Iconic) Focus
+Key Down A C Direction South (AcceptsFocus CurrentDesk !Iconic) Focus
 
 # Familiar alt-tabbing
-Key Tab A M Next (CurrentDesk !Iconic) Focus
-Key Tab A SM Prev (CurrentDesk !Iconic) Focus
+Key Tab A M Next (AcceptsFocus CurrentDesk !Iconic) Focus
+Key Tab A SM Prev (AcceptsFocus CurrentDesk !Iconic) Focus
 
 # Mouse bindings
 #

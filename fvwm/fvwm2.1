@@ -2445,8 +2445,8 @@ AddToMenu RootMenu "Root Menu" Title
  + "Fvwm Modules"      Popup Module-Popup
  + "Fvwm Window Ops"   Popup Window-Ops
  + ""                  Nop
- + "Previous Focus"    Prev (*) Focus
- + "Next Focus"        Next (*) Focus
+ + "Previous Focus"    Prev (AcceptsFocus) Focus
+ + "Next Focus"        Next (AcceptsFocus) Focus
  + ""                  Nop
  + "Refresh screen"    Refresh
  + "Recapture screen"  Recapture
@@ -6557,7 +6557,7 @@ and "MailFunction" is
 .EX
 AddToFunc MailFunction
  + I Next ($0) Iconify off
- + I Next ($0) focus
+ + I Next (AcceptsFocus, $0) focus
  + I None ($0) Exec exec $0 $1
 .EE
 Then the last line of the function becomes
@@ -6841,6 +6841,7 @@ The
 .IR conditions
 are a list of keywords from the list below and are separated by
 commas or whitespace.  Conditions include
+"AcceptsFocus", "!AcceptsFocus"
 "Iconic", "!Iconic",
 "Visible", "!Visible",
 "Raised", "!Raised",
@@ -6860,6 +6861,16 @@ class, and resource are considered when attempting to find a
 match.  The window name can begin with '!' which prevents
 .I command
 if any of the window name, icon name, class or resource match.
+
+The "AcceptsFocus" condition excludes all windows that do not want
+the input focus (the application has set the "Input hints" for the
+window to False) and do not use the
+.I Lenience
+option of the
+.B Style
+command.  Also, all windows using the
+.I NoFocus
+style are ignored.
 
 The "CurrentDesk" condition excludes all window that are not on
 the current desk.

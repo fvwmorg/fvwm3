@@ -1675,11 +1675,22 @@ void ParseOptions(void)
     {
       if (font_string)
 	free(font_string);
-      CopyString(&font_string,next);
-      if (font_string[0] == '\"')
-        font_string++;
-      if (font_string[strlen(font_string)-1] == '\"' )
-        font_string[strlen(font_string)-1] = 0;
+      if (next && next[0] == '\"')
+      {
+	int l;
+
+	next++;
+	CopyString(&font_string, next);
+	l = strlen(font_string);
+	if (l > 0 && font_string[l - 1] == '\"')
+	{
+	  font_string[l - 1] = 0;
+	}
+      }
+      else
+      {
+	CopyString(&font_string,next);
+      }
       if(strncasecmp(font_string,"none",4) == 0)
 	uselabel = 0;
     }
@@ -1874,8 +1885,23 @@ void ParseOptions(void)
     {
       if (smallFont)
 	free(smallFont);
-      CopyString(&smallFont,next);
-      if(strncasecmp(smallFont,"none",4) == 0)
+      if (next && next[0] == '\"')
+      {
+	int l;
+
+	next++;
+	CopyString(&smallFont, next);
+	l = strlen(smallFont);
+	if (l > 0 && smallFont[l - 1] == '\"')
+	{
+	  smallFont[l - 1] = 0;
+	}
+      }
+      else
+      {
+	CopyString(&smallFont,next);
+      }
+      if (strncasecmp(smallFont,"none",4) == 0)
       {
 	free(smallFont);
 	smallFont = NULL;

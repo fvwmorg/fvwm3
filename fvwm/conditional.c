@@ -139,108 +139,118 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 
   while (condition)
   {
-    if (StrEquals(condition,"Iconic"))
+    if (StrEquals(condition,"AcceptsFocus"))
+    {
+      mask->my_flags.do_accept_focus = 1;
+      mask->my_flags.use_do_accept_focus = 1;
+    }
+    else if (StrEquals(condition,"!AcceptsFocus"))
+    {
+      mask->my_flags.do_accept_focus = 0;
+      mask->my_flags.use_do_accept_focus = 1;
+    }
+    else if (StrEquals(condition,"Iconic"))
     {
       SET_ICONIFIED(mask, 1);
       SETM_ICONIFIED(mask, 1);
     }
-    else if(StrEquals(condition,"!Iconic"))
+    else if (StrEquals(condition,"!Iconic"))
     {
       SET_ICONIFIED(mask, 0);
       SETM_ICONIFIED(mask, 1);
     }
-    else if(StrEquals(condition,"Visible"))
+    else if (StrEquals(condition,"Visible"))
     {
       SET_PARTIALLY_VISIBLE(mask, 1);
       SETM_PARTIALLY_VISIBLE(mask, 1);
     }
-    else if(StrEquals(condition,"!Visible"))
+    else if (StrEquals(condition,"!Visible"))
     {
       SET_PARTIALLY_VISIBLE(mask, 0);
       SETM_PARTIALLY_VISIBLE(mask, 1);
     }
-    else if(StrEquals(condition,"PlacedByButton3"))
+    else if (StrEquals(condition,"PlacedByButton3"))
     {
       SET_PLACED_WB3(mask, 1);
       SETM_PLACED_WB3(mask, 1);
     }
-    else if(StrEquals(condition,"!PlacedByButton3"))
+    else if (StrEquals(condition,"!PlacedByButton3"))
     {
       SET_PLACED_WB3(mask, 0);
       SETM_PLACED_WB3(mask, 1);
     }
-    else if(StrEquals(condition,"Raised"))
+    else if (StrEquals(condition,"Raised"))
     {
       SET_FULLY_VISIBLE(mask, 1);
       SETM_FULLY_VISIBLE(mask, 1);
     }
-    else if(StrEquals(condition,"!Raised"))
+    else if (StrEquals(condition,"!Raised"))
     {
       SET_FULLY_VISIBLE(mask, 0);
       SETM_FULLY_VISIBLE(mask, 1);
     }
-    else if(StrEquals(condition,"Sticky"))
+    else if (StrEquals(condition,"Sticky"))
     {
       SET_STICKY(mask, 1);
       SETM_STICKY(mask, 1);
     }
-    else if(StrEquals(condition,"!Sticky"))
+    else if (StrEquals(condition,"!Sticky"))
     {
       SET_STICKY(mask, 0);
       SETM_STICKY(mask, 1);
     }
-    else if(StrEquals(condition,"Maximized"))
+    else if (StrEquals(condition,"Maximized"))
     {
       SET_MAXIMIZED(mask, 1);
       SETM_MAXIMIZED(mask, 1);
     }
-    else if(StrEquals(condition,"!Maximized"))
+    else if (StrEquals(condition,"!Maximized"))
     {
       SET_MAXIMIZED(mask, 0);
       SETM_MAXIMIZED(mask, 1);
     }
-    else if(StrEquals(condition,"Shaded"))
+    else if (StrEquals(condition,"Shaded"))
     {
       SET_SHADED(mask, 1);
       SETM_SHADED(mask, 1);
     }
-    else if(StrEquals(condition,"!Shaded"))
+    else if (StrEquals(condition,"!Shaded"))
     {
       SET_SHADED(mask, 0);
       SETM_SHADED(mask, 1);
     }
-    else if(StrEquals(condition,"Transient"))
+    else if (StrEquals(condition,"Transient"))
     {
       SET_TRANSIENT(mask, 1);
       SETM_TRANSIENT(mask, 1);
     }
-    else if(StrEquals(condition,"!Transient"))
+    else if (StrEquals(condition,"!Transient"))
     {
       SET_TRANSIENT(mask, 0);
       SETM_TRANSIENT(mask, 1);
     }
-    else if(StrEquals(condition,"CurrentDesk"))
+    else if (StrEquals(condition,"CurrentDesk"))
       mask->my_flags.needs_current_desk = 1;
-    else if(StrEquals(condition,"CurrentPage"))
+    else if (StrEquals(condition,"CurrentPage"))
     {
       mask->my_flags.needs_current_desk = 1;
       mask->my_flags.needs_current_page = 1;
     }
-    else if(StrEquals(condition,"CurrentGlobalPage"))
+    else if (StrEquals(condition,"CurrentGlobalPage"))
     {
       mask->my_flags.needs_current_desk = 1;
       mask->my_flags.needs_current_global_page = 1;
     }
-    else if(StrEquals(condition,"CurrentPageAnyDesk") ||
+    else if (StrEquals(condition,"CurrentPageAnyDesk") ||
 	    StrEquals(condition,"CurrentScreen"))
       mask->my_flags.needs_current_page = 1;
-    else if(StrEquals(condition,"CurrentGlobbalPageAnyDesk"))
+    else if (StrEquals(condition,"CurrentGlobbalPageAnyDesk"))
       mask->my_flags.needs_current_global_page = 1;
-    else if(StrEquals(condition,"CirculateHit"))
+    else if (StrEquals(condition,"CirculateHit"))
       mask->my_flags.use_circulate_hit = 1;
-    else if(StrEquals(condition,"CirculateHitIcon"))
+    else if (StrEquals(condition,"CirculateHitIcon"))
       mask->my_flags.use_circulate_hit_icon = 1;
-    else if(StrEquals(condition,"CirculateHitShaded"))
+    else if (StrEquals(condition,"CirculateHitShaded"))
       mask->my_flags.use_circulate_hit_shaded = 1;
     else if (StrEquals(condition, "Layer"))
     {
@@ -255,7 +265,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
           mask->layer = -1; /* needs current layer */
        }
     }
-    else if(!mask->my_flags.needs_name && !mask->my_flags.needs_not_name)
+    else if (!mask->my_flags.needs_name && !mask->my_flags.needs_not_name)
     {
       /* only 1st name to avoid mem leak */
       mask->name = condition;
@@ -276,7 +286,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
     tmp = GetNextToken(tmp, &condition);
   }
 
-  if(prev_condition)
+  if (prev_condition)
     free(prev_condition);
 }
 
@@ -362,6 +372,25 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
   if ((mask->layer >= 0) && (fw->layer != mask->layer))
     return 0;
+
+  if (mask->my_flags.use_do_accept_focus)
+  {
+    Bool f;
+
+    f = do_accept_input_focus(fw);
+    if (fw && HAS_NEVER_FOCUS(fw))
+    {
+      f = 0;
+    }
+    else if (fw && IS_LENIENT(fw))
+    {
+      f = 1;
+    }
+    if (!f != !mask->my_flags.do_accept_focus)
+    {
+      return 0;
+    }
+  }
 
   return 1;
 }

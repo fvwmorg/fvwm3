@@ -134,7 +134,7 @@ Style "xmh"		Icon mail2.xpm StartsOnDesk 2
 AddToFunc "StartFunction" I Module FvwmButtons
 +		I Module FvwmPager 0 0
 +		I Module FvwmAudio
-+		I Next [!iconic CurrentScreen xterm] Focus
++		I Next (AcceptsFocus !iconic CurrentScreen xterm) Focus
 +		I CursorMove 30 40
 
 # Uncomment this to make windows auto-raise after [x] milliseconds
@@ -264,13 +264,13 @@ AddToMenu XlockMenu	"Choose one:" Title
 ############################################################################
 # COMPLEX FUNCTIONS
 #
-AddToFunc warp-or-run		I Next [$0 CirculateHit] Iconify -1
-+				I Next [$0 CirculateHit] Focus
-+				I None [$0] $1
+AddToFunc warp-or-run		I Next (AcceptsFocus CirculateHit $0) Iconify -1
++				I Next (AcceptsFocus CirculateHit $0) Focus
++				I None (AcceptsFocus CirculateHit $0) $1
 
-AddToFunc MailFunction		I Next [$0] Iconify -1
-+				I Next [$0] focus
-+				I None [$0] Exec $0 $1
+AddToFunc MailFunction		I Next (AcceptsFocus $0) Iconify -1
++				I Next (AcceptsFocus $0) focus
++				I None (AcceptsFocus $0) Exec $0 $1
 
 AddToFunc Move-or-Raise		I Raise
 +				M Move
@@ -368,8 +368,8 @@ Key F3		A	MC	Module FvwmWinList
 Key F4		A	MC	Iconify
 Key F5		A	MC	Move
 Key F6		A	MC	Resize
-Key F7		A	MC	Next [*] focus
-Key F8		A	MC	Prev [*] focus
+Key F7		A	MC	Next (AcceptsFocus) focus
+Key F8		A	MC	Prev (AcceptsFocus) focus
 
 ############################################################################
 # FvwmButtons

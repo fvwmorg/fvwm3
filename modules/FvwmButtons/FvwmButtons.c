@@ -2882,7 +2882,9 @@ void swallow(unsigned long *body)
 	  }
 	}
 #endif
-	RedrawButton(b,1);
+	/* Redraw and force cleaning the background to erase the old button
+	 * title. */
+	RedrawButton(b, 2);
       }
       else /* (b->flags & b_Panel) */
       {

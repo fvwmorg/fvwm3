@@ -295,6 +295,7 @@ typedef struct WindowConditionMask
 {
   struct
   {
+    unsigned do_accept_focus : 1;
     unsigned needs_current_desk : 1;
     unsigned needs_current_page : 1;
     unsigned needs_current_global_page : 1;
@@ -303,6 +304,7 @@ typedef struct WindowConditionMask
     unsigned use_circulate_hit : 1;
     unsigned use_circulate_hit_icon : 1;
     unsigned use_circulate_hit_shaded : 1;
+    unsigned use_do_accept_focus : 1;
   } my_flags;
   window_flags flags;
   window_flags flag_mask;

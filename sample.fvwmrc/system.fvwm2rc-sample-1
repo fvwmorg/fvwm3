@@ -82,10 +82,10 @@ Key KP_F3	A	M	Module FvwmWinList
 Key KP_F4	A	M	Iconify
 Key F5	A	M	Move        100p 100p
 Key F6	A	M	Resize   10 10
-Key F7	A	M	Next [*] focus
-Key F8	A	M	Prev [*] focus
-Key F10 	A	A	Next [CurrentDesk rxvt]Focus
-Key F11 	A	A	Prev [CurrentDesk rxvt]Focus
+Key F7	A	M	Next (AcceptsFocus) focus
+Key F8	A	M	Prev (AcceptsFocus) focus
+Key F10 	A	A	Next (AcceptsFocus rxvt) Focus
+Key F11 	A	A	Prev (AcceptsFocus CurrentDesk rxvt) Focus
 Key F15		FTIWS	A	Raise
 
 Mouse 1	R   	A       Menu Utilities Nop
@@ -185,9 +185,9 @@ AddToMenu Quit-Verify 	"Really Quit Fvwm?" Title
 
 ########################Functions ########################################
 
-AddToFunc MailFunction	   I Next [$0] Iconify -1
-+		           I Next [$0] focus
-+			   I None [$0] Exec $0 $1
+AddToFunc MailFunction	   I Next (AcceptsFocus $0) Iconify -1
++		           I Next (AcceptsFocus $0) focus
++			   I None (AcceptsFocus $0) Exec $0 $1
 
 AddToFunc Move-or-Raise		I Raise
 +				M Move

@@ -878,9 +878,9 @@ AddToFunc StyleAndRecapture I Style "$0" $1
 #------------------------------------------------------------------------------
 
 DestroyFunc WarpOrExec
-AddToFunc WarpOrExec	   I Next [$0] Iconify -1
-+		           I Next [$0] FocusAndWarp
-+			   I None [$0] Exec $0 $1
+AddToFunc WarpOrExec	   I Next (AcceptsFocus $0) Iconify -1
++		           I Next (AcceptsFocus $0) FocusAndWarp
++			   I None (AcceptsFocus $0) Exec $0 $1
 
 #------------------------------------------------------------------------------
 # For the left button

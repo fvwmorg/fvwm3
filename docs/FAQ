@@ -670,8 +670,13 @@ A: Both of these commands change the keyboard focus to the target
    The Focus command is very useful in conjunction with the Next and
    Prev commands.  e.g.
 
-      Key KP_Add A M Next (CurrentDesk !Iconic) Focus
-      Key KP_Subtract A M Prev (CurrentDesk !Iconic) Focus
+      Key KP_Add A M Next (AcceptsFocus CurrentDesk !Iconic) Focus
+      Key KP_Subtract A M Prev (AcceptsFocus CurrentDesk !Iconic) Focus
+
+   Or for fvwm versions earlier than 2.4.1:
+
+      Key KP_Add A M Next [CurrentDesk !Iconic] Focus
+      Key KP_Subtract A M Prev [CurrentDesk !Iconic] Focus
 
    These bindings allow you to circulate the focus around the windows on
    the current desk in both directions.  If Prev FlipFocus were used the
