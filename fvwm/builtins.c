@@ -3891,11 +3891,13 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   else if (StrEquals("West", tmp))
     dir = 3;
   else {
-    fvwm_msg(ERR, "Direction","Invalid direction %s", tmp);
-    free(tmp);
+    fvwm_msg(ERR, "Direction","Invalid direction %s", (tmp)? tmp : "");
+    if (tmp)
+      free(tmp);
     return;
   }
-  free(tmp);
+  if (tmp)
+    free(tmp);
 
   /* Create the mask for flags */
   flags = CreateFlagString(action, &restofline);
