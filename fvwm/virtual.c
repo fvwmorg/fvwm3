@@ -781,10 +781,10 @@ void MoveViewport(int newx, int newy, Bool grab)
       Identify the bounding rectangle that will be moved into
       the viewport.
   */
-  PageBottom	=  Scr.MyDisplayHeight - deltay;
-  PageRight	=  Scr.MyDisplayWidth  - deltax;
-  PageTop	=  0 - deltay;
-  PageLeft	=  0 - deltax;
+  PageBottom    =  Scr.MyDisplayHeight - deltay - 1;
+  PageRight     =  Scr.MyDisplayWidth  - deltax - 1;
+  PageTop       =  0 - deltay;
+  PageLeft      =  0 - deltax;
 
   Scr.Vx = newx;
   Scr.Vy = newy;
@@ -813,8 +813,8 @@ void MoveViewport(int newx, int newy, Bool grab)
        */
       txl = t->frame_g.x;
       tyt = t->frame_g.y;
-      txr = t->frame_g.x + t->frame_g.width;
-      tyb = t->frame_g.y + t->frame_g.height;
+      txr = t->frame_g.x + t->frame_g.width - 1;
+      tyb = t->frame_g.y + t->frame_g.height - 1;
       if ((IS_STICKY(t) || (IS_ICONIFIED(t) && IS_ICON_STICKY(t))) &&
           !IS_VIEWPORT_MOVED(t))
       {
@@ -872,8 +872,8 @@ void MoveViewport(int newx, int newy, Bool grab)
       SET_VIEWPORT_MOVED(t, 1);
       txl = t1->frame_g.x;
       tyt = t1->frame_g.y;
-      txr = t1->frame_g.x + t1->frame_g.width;
-      tyb = t1->frame_g.y + t1->frame_g.height;
+      txr = t1->frame_g.x + t1->frame_g.width - 1;
+      tyb = t1->frame_g.y + t1->frame_g.height - 1;
       if (! (txr >= PageLeft && txl <= PageRight
 	     && tyb >= PageTop && tyt <= PageBottom)
 	  && !IS_VIEWPORT_MOVED(t1)

@@ -1,5 +1,18 @@
 2000-10-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (size_menu_vertically):
+	(size_menu_horizontally):
+	(paint_item):
+	fixed sizing and geometry of menu items without text but with a picture
+
+	* fvwm/virtual.c (MoveViewport):
+	fixed unnecessary redraw when moving the viewport one page down or right
+	and a window was exactly at the bottom or right border
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	MouseFocusClickRaises works if a newly mapped window is placed over the
+	currently focused window
+
 	* fvwm/fvwm.c (InitVariables):
 	* libs/defaults.h (DEFAULT_MOVE_RESISTANCE):
 	(DEFAULT_SNAP_ATTRACTION):

@@ -981,6 +981,25 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
                     (unsigned long)Tmp_win);
   }
 
+  if (!IS_ICONIFIED(Tmp_win) && Scr.Focus && Scr.Focus != Tmp_win &&
+      !is_on_top_of_layer(Scr.Focus))
+  {
+    if (Tmp_win->Desk == Scr.CurrentDesk &&
+	Tmp_win->frame_g.x + Tmp_win->frame_g.width > Scr.Focus->frame_g.x &&
+	Scr.Focus->frame_g.x + Scr.Focus->frame_g.width > Tmp_win->frame_g.x &&
+	Tmp_win->frame_g.y + Tmp_win->frame_g.height > Scr.Focus->frame_g.y &&
+	Scr.Focus->frame_g.y + Scr.Focus->frame_g.height > Tmp_win->frame_g.y)
+    {
+      /* The newly mapped window overlaps the focused window. Make sure
+       * ClickToFocusRaises and MouseFocusClickRaises work again.
+       *
+       * Note: There are many conditions under which we do not have to call
+       * focus_grab_buttons(), but it is not worth the effort to write them
+       * down here.  Rather do some unnecessary work in this function. */
+      focus_grab_buttons(Scr.Focus, True);
+    }
+  }
+
   /* Just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state. */
   SET_DO_START_ICONIC(Tmp_win, 0);

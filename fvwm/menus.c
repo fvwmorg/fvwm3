@@ -2984,13 +2984,16 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
   for (i = 0; i < MAX_MINI_ICONS; i++)
   {
+    y = 0;
     if (MI_MINI_ICON(mi)[i])
     {
-      y = MI_MINI_ICON(mi)[i]->height - MST_PSTDFONT(mr)->height;
-      if (y > 1)
-      {
-	text_y += y / 2;
-      }
+      if (MI_MINI_ICON(mi)[i]->height > y)
+	y = MI_MINI_ICON(mi)[i]->height;
+    }
+    y -= MST_PSTDFONT(mr)->height;
+    if (y > 1)
+    {
+      text_y += y / 2;
     }
   }
 
@@ -3234,7 +3237,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 
     if (MI_MINI_ICON(mi)[i])
     {
-      if(MI_PICTURE(mi) && MI_HAS_TEXT(mi))
+      if (MI_PICTURE(mi))
       {
 	y = y_offset + MI_HEIGHT(mi) - MI_MINI_ICON(mi)[i]->height;
       }
@@ -3247,8 +3250,9 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
       Globalgcv.clip_x_origin = MR_ICON_X_OFFSET(mr)[k];
       Globalgcv.clip_y_origin = y;
-      if(MI_MINI_ICON(mi)[i]->depth == Pdepth) /* pixmap */
+      if(MI_MINI_ICON(mi)[i]->depth == Pdepth)
       {
+	/* pixmap */
 	Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->mask;
 	XChangeGC(dpy,currentGC,Globalgcm,&Globalgcv);
 	XCopyArea(
@@ -3258,6 +3262,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       }
       else
       {
+	/* monochrome bitmap */
 	Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->picture;
 	XChangeGC(dpy,currentGC,Globalgcm,&Globalgcv);
 	XCopyPlane(
@@ -4191,8 +4196,8 @@ static void size_menu_horizontally(MenuRoot *mr)
     }
 
     total_width = x - MST_BORDER_WIDTH(mr);
-    d = (sidepic_space + 2 * relief_thickness + max.title_width) -
-      total_width;
+    d = (sidepic_space + 2 * relief_thickness +
+	 max(max.title_width, max.picture_width)) - total_width;
     if (d > 0)
     {
       /* The title is larger than all menu items. Stretch the items to match
@@ -4300,6 +4305,7 @@ static void size_menu_vertically(MenuRoot *mr)
     int separator_height;
     Bool last_item_has_relief =
       (MI_PREV_ITEM(mi)) ? MI_IS_SELECTABLE(MI_PREV_ITEM(mi)) : False;
+    Bool has_mini_icon = False;
 
     separator_height = (last_item_has_relief) ?
       SEPARATOR_HEIGHT + relief_thickness : SEPARATOR_TOTAL_HEIGHT;
@@ -4353,17 +4359,22 @@ static void size_menu_vertically(MenuRoot *mr)
 	  relief_thickness;
       }
     }
-    if(MI_PICTURE(mi))
-    {
-      MI_HEIGHT(mi) += MI_PICTURE(mi)->height;
-    }
     for (i = 0; i < MAX_MINI_ICONS; i++)
     {
+      if (MI_MINI_ICON(mi)[i])
+	has_mini_icon = True;
       if(MI_MINI_ICON(mi)[i] &&
 	 MI_HEIGHT(mi) < MI_MINI_ICON(mi)[i]->height + relief_thickness)
       {
 	MI_HEIGHT(mi) = MI_MINI_ICON(mi)[i]->height + relief_thickness;
       }
+    }
+    if (MI_PICTURE(mi))
+    {
+      if (MI_HAS_TEXT(mi) || has_mini_icon)
+	MI_HEIGHT(mi) += MI_PICTURE(mi)->height;
+      else
+	MI_HEIGHT(mi) = MI_PICTURE(mi)->height + relief_thickness;
     }
     y += MI_HEIGHT(mi);
     /* this item would have to be the last item, or else
