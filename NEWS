@@ -5,6 +5,11 @@ Note, the changes for the last STABLE release start with release
 
 Changes in beta release 2.5.13 (not released yet)
 
+* Bug Fixes:
+
+   - The MoveToPage command did not work without arguments in
+     2.5.11 and 2.5.12.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.12 (6-Oct-2004)

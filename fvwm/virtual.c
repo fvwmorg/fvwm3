@@ -119,20 +119,17 @@ static int GetDeskNumber(char *action, int current_desk)
 	{
 		return prev_desk;
 	}
-
 	n = GetIntegerArguments(action, NULL, &(val[0]), 4);
 	if (n <= 0)
 	{
-		return current_desk;
+		return Scr.CurrentDesk;
 	}
 	if (n == 1)
 	{
 		return current_desk + val[0];
 	}
-
 	desk = current_desk;
 	m = 0;
-
 	if (val[0] == 0)
 	{
 		/* absolute desk number */
@@ -143,7 +140,6 @@ static int GetDeskNumber(char *action, int current_desk)
 		/* relative desk number */
 		desk += val[0];
 	}
-
 	if (n == 3)
 	{
 		m = 1;
@@ -152,8 +148,6 @@ static int GetDeskNumber(char *action, int current_desk)
 	{
 		m = 2;
 	}
-
-
 	if (n > 2)
 	{
 		/* handle limits */
