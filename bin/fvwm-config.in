@@ -72,6 +72,7 @@ with_sm=@with_sm@
 with_stroke=@with_stroke@
 with_xinerama=@with_xinerama@
 with_xpm=@with_xpm@
+with_xrender=@with_xrender@
 
 while test $# -gt 0; do
 	case "$1" in
@@ -136,6 +137,7 @@ while test $# -gt 0; do
 			test "$with_stroke"     = "yes" && echo "stroke"
 			test "$with_xinerama"   = "yes" && echo "xinerama"
 			test "$with_xpm"        = "yes" && echo "xpm"
+			test "$with_xrender"    = "yes" && echo "xrender"
 			;;
 
 		--supports-*)
@@ -170,13 +172,13 @@ while test $# -gt 0; do
 			echo ""
 			echo "Support for features:"
 			echo "	bidi (bi-directionality): $with_bidi"
-			echo "	ewmh (extended window manager hints): $with_ewmh"
+			echo "	ewmh (Extended Window Manager Hints): $with_ewmh"
 			echo "	gnome-hints (window manager hints): $with_gnomehints"
-			echo "	gtk (FvwmGtk): $with_gtk"
+			echo "	gtk (required for FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
 			echo "	multibyte: $with_multibyte"
-			echo "	perllib (perl library installed): $with_perllib"
+			echo "	perllib (Perl library installed): $with_perllib"
 			echo "	readline: $with_readline"
 			echo "	rplay: $with_rplay"
 			echo "	shape (shaped windows): $with_shape"
@@ -184,6 +186,7 @@ while test $# -gt 0; do
 			echo "	stroke: $with_stroke"
 			echo "	xinerama: $with_xinerama"
 			echo "	xpm: $with_xpm"
+			echo "	xrender (XFree86 Xrender extention): $with_xrender"
 			;;
 
 		*)

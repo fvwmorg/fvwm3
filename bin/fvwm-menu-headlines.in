@@ -1,7 +1,7 @@
 #!@PERL@
 
 # Filter this script to pod2man to get a man page:
-#   pod2man -c "Fvwm Utility" fvwm-menu-headlines | nroff -man | less -e
+#   pod2man -c "FVWM Utilities" fvwm-menu-headlines | nroff -man | less -e
 
 require 5.002;
 use strict;

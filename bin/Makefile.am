@@ -25,7 +25,7 @@ _fvwm-menu-xlock.1: fvwm-menu-xlock.in
 	@TMP=tmp-$$$$ && (\
 	mkdir $$TMP && \
 	cp fvwm-menu-xlock.in $$TMP/fvwm-menu-xlock && \
-	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-xlock >$$TMP/fvwm-menu-xlock.1 2>/dev/null && \
+	pod2man --center "FVWM Utilities" $$TMP/fvwm-menu-xlock >$$TMP/fvwm-menu-xlock.1 2>/dev/null && \
 	mv $$TMP/fvwm-menu-xlock.1 .; \
 	rm -rf $$TMP)
 
@@ -33,7 +33,7 @@ _fvwm-menu-directory.1: fvwm-menu-directory.in
 	@TMP=tmp-$$$$ && (\
 	mkdir $$TMP && \
 	cp fvwm-menu-directory.in $$TMP/fvwm-menu-directory && \
-	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-directory >$$TMP/fvwm-menu-directory.1 2>/dev/null && \
+	pod2man --center "FVWM Utilities" $$TMP/fvwm-menu-directory >$$TMP/fvwm-menu-directory.1 2>/dev/null && \
 	mv $$TMP/fvwm-menu-directory.1 .; \
 	rm -rf $$TMP)
 
@@ -41,7 +41,7 @@ _fvwm-menu-headlines.1: fvwm-menu-headlines.in
 	@TMP=tmp-$$$$ && (\
 	mkdir $$TMP && \
 	cp fvwm-menu-headlines.in $$TMP/fvwm-menu-headlines && \
-	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-headlines >$$TMP/fvwm-menu-headlines.1 2>/dev/null && \
+	pod2man --center "FVWM Utilities" $$TMP/fvwm-menu-headlines >$$TMP/fvwm-menu-headlines.1 2>/dev/null && \
 	mv $$TMP/fvwm-menu-headlines.1 .; \
 	rm -rf $$TMP)
 

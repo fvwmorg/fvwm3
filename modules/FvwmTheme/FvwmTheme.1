@@ -1,6 +1,6 @@
 .\" t
 .\" @(#)FvwmTheme.1  7/20/1999
-.TH FvwmTheme 1 "3 July 2001"
+.TH FvwmTheme 1 "25 April 2002" FVWM "FVWM Modules"
 .UC
 
 .SH NAME
@@ -131,35 +131,36 @@ and Y is a Yin Yang style (but without the dots, we are not \fIthat\fP mad).
 Please refer to the \fICOLOR GRADIENTS\fP section in the \fIfvwm\fP man page
 for the syntax of gradients.
 
-.\"needs_check_lang
 .I Tint
 and
 .I TintMask
-take a colour and an integer between 0 and 100 as arguments.
-These cause the pixmap defined with 
+both take 2 arguments, a colour and an integer between 0 and 100.
+They cause the image defined using
 .IR Pixmap ,
 .I TiledPixmap
 or
 .I AspectPixmap
-to be tinted with the sepcified colour at a percentage rate given
+to be tinted with the specified colour and a percentage rate given
 by the integer.
+If the image is not transparent both options work equally.
+If the image is transparent
 .I Tint
-tints the pixmap and the pixmap background as
+tints the image part and the colorset background under it,
 .I TintMask
-tint only the pixmap.
-Unfortunately, a
+tints only the image part.
+Unfortunately, a colorset background specified using the
 .I Transparent
-background cannot be tinted. Note that this option is activate only if
-you fvwm is compiled with XFree Xrender support (needs XFree version 4.1
-or better).
+option cannot be tinted.  Note that this option is activated only
+if fvwm is compiled with the XFree Xrender support (needs XFree
+version 4.1 or better).  Run "fvwm-config --supports | grep xrender"
+if you are not sure.
 
 .I NoShape
 removes the shape mask from the colorset,
 .I Plain
 removes the background pixmap or gradient while
 .I NoTint
-removes the pixmap tint. 
-.\"end
+removes the pixmap tint.
 
 .IP "*FvwmTheme: ReadWriteColors"
 Tells FvwmTheme to use read/write color cells for the foreground and background

@@ -8,11 +8,17 @@ Changes in alpha release 2.5.1 (not released yet)
 * Changed the executable and the man page names from fvwm2 to fvwm.
   The old names are still supported by symlinking.
 
+* All fvwm utilities are renamed to conform to the "fvwm-" scheme.
+  fvwm-bug, fvwm-root (was xpmroot), fvwm-config, fvwm-convert-2.4.
+
 * Added a full support for the side window titles. New Style options
   TitleAtLeft and TitleAtRight added to TitleAtTop and TitleAtBottom.
 
 * A title text may now be optionally rotated for both vertical and
   horizontal title directions, search for "Rotated" in the man page.
+
+* Added support for loading images in PNG (including alpha blending)
+  and XBM formats anywhere.
 
 * New commands Schedule and Deschedule.
 
@@ -58,8 +64,6 @@ Changes in alpha release 2.5.1 (not released yet)
 * New extended variables pointer.x, pointer.y, pointer.wx,
   pointer.wy, pointer.cx and pointer.cy.
 
-* Fixed an FvwmScript compile problem on dec-osf5.
-
 * The Current command does not select a random window when no
   window has the focus.
 
@@ -77,12 +81,9 @@ Changes in alpha release 2.5.1 (not released yet)
 * The DO_START_ICONIC flag is no longer supported in the module
   interface.
 
-* Added experimental bi-directional text support for some asian
-  charsets.
+* Added bi-directional text support for asian charsets.
 
 * New option MinimalLayer for FvwmIdent to control window layer.
-
-* Added support for loading image in PNG format.
 
 * New FvwmIconMan configuration syntax now conforms to the syntax of
   other modules, see the man page.
@@ -96,6 +97,8 @@ Changes in alpha release 2.5.1 (not released yet)
   the colorset functionality previously available using FvwmTheme.
 
 * FvwmTheme is obsolete now, but still supported for some time.
+
+* New options Tint, TintMask and NoTint to colorsets.
 
 * New WindowList option CurrentAtEnd.
 

@@ -21,7 +21,7 @@
 .\"  key names:                         small (.SM)     .SM Tab
 .\"  style names and strings:           double quotes   "stylename", "x"
 .\"  single characters:                 single quotes   '@'
-.\"  module names:                      bold (.B)       .B FvwmTheme
+.\"  module names:                      bold (.B)       .B FvwmPager
 .\"  links to web pages:                bold (.B)       .B http://fvwm.org
 .\"  acronyms:                          small (.SM)     .SM ICCCM
 .\"
@@ -46,7 +46,7 @@
 .\" formatted with ".IP".
 .\"  dje 15/June/2001.
 .\"
-.\" @(#)fvwm-2.5.0 27 Jan 2002
+.\" @(#)fvwm-2.5.1 25 April 2002
 .de EX		\"Begin example
 .ne 5
 .if n .sp 1
@@ -61,7 +61,7 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FVWM 1 "11 Apr 2002"
+.TH FVWM 1 "25 April 2002" FVWM "FVWM 2.5.1"
 .UC
 .SH NAME
 
@@ -1213,8 +1213,8 @@ module called "HelpMe".
 
 Note: There are many commands that affect look and feel of
 specific, some or all windows, like
-.BR Style ", " Mouse ", the " FvwmTheme
-module and many others.  For performance reasons such changes are
+.BR Style ", " Mouse ", " Colorset, ", " TitleStyle
+and many others.  For performance reasons such changes are
 not applied immediately but only when fvwm is idle, i.e. no user
 interaction or module input is pending.  Specifically, new
 .B Style
@@ -1518,19 +1518,9 @@ foreground (fg), background (bg), hilight (hilight) or shadow
 (shadow) color that is defined in colorset <n> (replace <n> with
 zero or a positive integer).  For example "$[fg.cs3]" is expanded
 to the name of the foreground color of colorset 3 (in
-rgb:rrrr/gggg/bbbb form).  Please refer to the man page of the
-.B FvwmTheme
-module for details about colorsets.  Note that although other
-parameters cannot be used in module configuration lines, it is
-possible to use this class of parameters.  They can be used
-wherever a module expects a color name.  Since the
-.B FvwmTheme
-module is not running when fvwm first passes through its
-configuration file, you may not get the desired results if you use
-this in commands like
-.EX
-Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]
-.EE
+rgb:rrrr/gggg/bbbb form).  Please refer to the
+.B COLORSETS
+section for details about colorsets.
 .in -.3i
 .in -.5i
 
@@ -2286,11 +2276,8 @@ background of the menu.  Note that the
 menu style has been optimized for memory consumption and may use
 less memory than the background from a colorset.  The shape mask
 from the colorset is used to shape the menu.  Please refer to the
-description of the
-.B Colorset
-command and the documentation of the
-.B FvwmTheme
-module for details about colorsets.
+.B COLORSETS
+section for details about colorsets.
 
 .I ActiveColorset
 works exactly like
@@ -8587,20 +8574,12 @@ with m4),
 .B FvwmTaskBar
 (a Windows like task bar),
 .B FvwmTheme
-(manages colorsets, see below),
+(managed colorsets, obsolete),
 .B FvwmWinList
 (a window list),
 .B FvwmWharf
 (an AfterStep like button bar).  These modules have their own man
 pages.  There may be other modules out on there as well.
-
-Note,
-.B FvwmTheme
-is a special module which manages colorsets. Most of other modules
-and fvwm itself support colorsets and changing colors
-dynamically. Colorsets will probably be the only method to specify
-colors in the next stable fvwm release, and then the functionality
-of FvwmTheme will be moved to the core fvwm.
 
 
 Modules can be short lived transient programs or, like
@@ -8660,10 +8639,8 @@ instead.
 .B ModuleSynchronous
 should only be used during fvwm startup to enforce the order in
 which modules are started.  This command is intended for use with
-the
-.B FvwmTheme
-module since the configuration must be in place before any other
-modules are started.
+the (currently hypothetical) module that should be in place before
+other modules are started.
 
 Warning: It is quite easy to hang fvwm with this command, even if
 a timeout is given.  Be extra careful choosing the string to wait
@@ -8807,6 +8784,49 @@ does not implement this functionality.  Use Unix signals to manage
 xsm remotely.
 
 
+.SS COLORSETS
+
+Colorsets are a powerful method to control colors.  Generally,
+colorset provides support for colored rectangle, this includes,
+foreground color, background color, shadow and highlight colors
+(often based on the background color), background face (this
+includes images and all kinds of gradients).  There is a way to
+render background face and specify other color operations.
+
+In the 2.4.x versions a special module
+.B FvwmTheme
+was introduced to manage colorsets.  The FvwmTheme functionality
+was moved to the core fvwm, so this module became obsolete.
+Some additional information about colorsets may be found in the
+man page of
+.BR FvwmTheme (1),
+although it is obsolete now.
+
+Old syntax:
+
+  DestroyModuleConfig FvwmTheme: *
+  *FvwmTheme: Colorset 0 fg black, bg rgb:b4/aa/94
+  *FvwmTheme: Colorset 1 fg black, bg rgb:a1/b2/c8
+
+corresponds to the new syntax:
+
+  CleanupColorsets
+  Colorset 0 fg black, bg rgb:b4/aa/94
+  Colorset 1 fg black, bg rgb:a1/b2/c8
+
+.TP
+.BI "Colorset " num " [" options "]"
+Defines a colorset, see FvwmTheme(1).
+
+.TP
+.BI ReadWriteColors
+May speed-up changing colorsets, see FvwmTheme(1).
+
+.TP
+.B CleanupColorsets
+Resets a definition of all colorsets.
+
+
 .SS COLOR GRADIENTS
 
 A color gradient is a background that changes its color gradually
@@ -8876,7 +8896,7 @@ MenuStyle * DGradient 100 3 Red 20 Blue 30 \\
 
 # 50% from blue to green, then
 # 50% from yellow to red
-*FvwmTheme: Colorset 0 Blue Red HGradient \\
+Colorset 0 Blue Red HGradient \\
   128 3 Blue 1000 Green 1 Yellow 1000 Red
 .EE
 

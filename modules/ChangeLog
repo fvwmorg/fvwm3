@@ -1,3 +1,11 @@
+2002-04-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* **/*.1:
+	improved main headers
+
+	* FvwmTheme/FvwmTheme.1:
+	spell check in the Tint commands
+
 2002-04-25  Derek B. Noonburg  <derekn@foolabs.com>
 
 	* FvwmIconMan.1:

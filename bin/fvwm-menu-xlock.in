@@ -1,7 +1,7 @@
 #!@PERL@
 
 # Filter this script to pod2man to get a man page:
-#   pod2man -c "Fvwm Utility" fvwm-menu-xlock | nroff -man | less -e
+#   pod2man -c "FVWM Utilities" fvwm-menu-xlock | nroff -man | less -e
 
 use Getopt::Long;
 
@@ -146,7 +146,7 @@ B<fvwm-menu-xlock>
 
 =head1 DESCRIPTION
 
-A simple perl script which parses xlock's output to build an fvwm 2.xx
+A simple perl script which parses xlock's output to build an fvwm
 menu definition of all xlock's modes.
 
 =head1 OPTIONS
