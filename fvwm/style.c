@@ -967,16 +967,23 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         else if (StrEquals(token, "BackingStore"))
         {
           found = True;
-	  ptmpstyle->flags.use_backing_store = 1;
-	  ptmpstyle->flag_mask.use_backing_store = 1;
-	  ptmpstyle->change_mask.use_backing_store = 1;
+	  ptmpstyle->flags.use_backing_store = BACKINGSTORE_ON;
+	  ptmpstyle->flag_mask.use_backing_store = BACKINGSTORE_MASK;
+	  ptmpstyle->change_mask.use_backing_store = BACKINGSTORE_MASK;
         }
         else if (StrEquals(token, "BackingStoreOff"))
         {
           found = True;
-	  ptmpstyle->flags.use_backing_store = 0;
-	  ptmpstyle->flag_mask.use_backing_store = 1;
-	  ptmpstyle->change_mask.use_backing_store = 1;
+	  ptmpstyle->flags.use_backing_store = BACKINGSTORE_OFF;
+	  ptmpstyle->flag_mask.use_backing_store = BACKINGSTORE_MASK;
+	  ptmpstyle->change_mask.use_backing_store = BACKINGSTORE_MASK;
+        }
+        else if (StrEquals(token, "BackingStoreWindowDefault"))
+        {
+          found = True;
+	  ptmpstyle->flags.use_backing_store = BACKINGSTORE_DEFAULT;
+	  ptmpstyle->flag_mask.use_backing_store = BACKINGSTORE_MASK;
+	  ptmpstyle->change_mask.use_backing_store = BACKINGSTORE_MASK;
         }
 	else if (StrEquals(token, "BorderColorset"))
 	{
@@ -3110,7 +3117,8 @@ void check_window_style_change(
    * has_mini_icon
    * do_ewmh_mini_icon_override
    */
-  if (ret_style->change_mask.has_mini_icon || SCDO_EWMH_MINI_ICON_OVERRIDE(*ret_style))
+  if (ret_style->change_mask.has_mini_icon ||
+      SCDO_EWMH_MINI_ICON_OVERRIDE(*ret_style))
   {
     flags->do_update_mini_icon = True;
     flags->do_update_ewmh_mini_icon = True;

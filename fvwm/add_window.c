@@ -1156,9 +1156,24 @@ void setup_frame_attributes(
   XSetWindowAttributes xswa;
 
   /* Backing_store is controlled on the client, decor_w, title & buttons */
-  xswa.backing_store = pstyle->flags.use_backing_store
-		       ? Scr.use_backing_store : NotUseful;
+  switch (pstyle->flags.use_backing_store)
+  {
+  case BACKINGSTORE_DEFAULT:
+	  xswa.backing_store = tmp_win->initial_backing_store;
+	  break;
+  case BACKINGSTORE_ON:
+	  xswa.backing_store = Scr.use_backing_store;
+	  break;
+  case BACKINGSTORE_OFF:
+  default:
+	  xswa.backing_store = NotUseful;
+	  break;
+  }
   XChangeWindowAttributes(dpy, tmp_win->w, CWBackingStore, &xswa);
+  if (pstyle->flags.use_backing_store == BACKINGSTORE_OFF)
+  {
+    xswa.backing_store = NotUseful;
+  }
   XChangeWindowAttributes(dpy, tmp_win->decor_w, CWBackingStore, &xswa);
   if (HAS_TITLE(tmp_win))
   {
@@ -1506,6 +1521,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   setup_window_name(tmp_win);
   setup_class_and_resource(tmp_win);
   setup_wm_hints(tmp_win);
+
+  /* save a copy of the backing store attribute */
+  tmp_win->initial_backing_store = tmp_win->attr.backing_store;
 
   /****** basic style and decor ******/
   /* If the window is in the NoTitle list, or is a transient, dont decorate it.
@@ -2391,6 +2409,7 @@ void RestoreWithdrawnLocation(
   XWindowChanges xwc;
   rectangle naked_g;
   rectangle unshaded_g;
+  XSetWindowAttributes xswa;
 
   if(!tmp)
     return;
@@ -2450,6 +2469,11 @@ void RestoreWithdrawnLocation(
       }
     }
   }
+
+  /* restore initial backing store setting on window */
+  xswa.backing_store = tmp->initial_backing_store;
+  XChangeWindowAttributes(dpy, tmp->w, CWBackingStore, &xswa);
+  /* reparent to root window */
   XReparentWindow(
     dpy, tmp->w, (parent == None) ? Scr.Root : parent, xwc.x, xwc.y);
 

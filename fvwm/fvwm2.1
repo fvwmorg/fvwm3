@@ -2142,9 +2142,9 @@ MenuStyle <style> PopupOffset 1 100
 .EE
 Run you X server with backing storage.  If your X Server is
 started with the -bs option, turn it off.  If not try the -wm
-option.
+and +bs options:
 .EX
-startx -- -wm
+startx -- -wm +bs
 .EE
 You may have to adapt this example to your system (e.g. if you use
 xinit to start X).
@@ -4761,7 +4761,7 @@ is a comma separated list containing one or more of the keywords
 .IR MaxWindowSize ,
 .IR IconifyWindowGroups " / " IconifyWindowGroupsOff ,
 .IR ResizeOpaque " / " ResizeOutline ,
-.IR BackingStore " / " BackingStoreOff ,
+.IR BackingStore " / " BackingStoreOff " / " BackingStoreWindowDefault ,
 .IR Opacity " / " ParentalRelativity ,
 .IR SaveUnder " / " SaveUnderOff ,
 .IR WindowShadeShrinks " / " WindowShadeScrolls ,
@@ -5818,18 +5818,42 @@ style.
 .TP
 .B Miscellaneous
 The
-.IR BackingStore " and " SaveUnder
-styles enable the corresponding window attributes in the X server.
+.IR BackingStore ", " BackingStoreOff " and " BackingStoreWindowDefault
+determine if the X server uses backing store for the window or
+not.
 .I BackingStore
 means that the X server tries to keep the obscured parts of a
-window in memory while windows with
+window in memory.  This is usually slower if the client runs on
+the same machine as the X server, but can be much faster if the
+connection is slow (see also
 .I SaveUnder
-store the graphics below them.  Either option can speed up fvwm if
-the connection to the X server is slow (e.g. over a modem link).
-By default both styles are turned off.  To switch them off
-explicitly you can use the
-.IR BackingStoreOff " and " SaveUnderOff
-styles.
+below).
+.I BackingStoreOff
+tells disables backing store for the window.  By default, fvwm
+does not enable or disable backing store itself but leaves is as
+the window requested it.  To revert back to the application's
+choice, use the
+.I BackingStoreWindowDefault
+style.
+
+Note: This style is useless if the X server does not allow backing
+store.
+
+.I SaveUnder
+enables the corresponding window attribute in the X server.
+For a window using this style, the X server tries to store the
+graphics below it in memory which is usually slower if the client
+runs on the same machine as the X server.
+.I SaveUnder
+may speed up fvwm if the connection to the X server is slow
+(e.g. over a modem link).  To disable backing store, use the
+.I BackingStoreOff
+style.  This is the default. See also
+.I BackingStore
+above.
+
+Note: This style is useless if the X server does not allow save
+under.
 
 .I ParentalRelativity
 enables clients that use a background pixmap of type

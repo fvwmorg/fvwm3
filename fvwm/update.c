@@ -415,7 +415,6 @@ void flush_window_updates(void)
   Bool do_need_ungrab = False;
   update_win flags;
 
-  memset(&flags, 0, sizeof(update_win));
   /* Grab the server during the style update! */
   if (GrabEm(CRS_WAIT, GRAB_BUSY))
     do_need_ungrab = True;
@@ -433,6 +432,7 @@ void flush_window_updates(void)
   /* update styles for all windows */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
+    memset(&flags, 0, sizeof(update_win));
     check_window_style_change(t, &flags, &style);
     if (Scr.flags.has_xinerama_state_changed)
     {

@@ -1,3 +1,19 @@
+2002-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (flush_window_updates):
+	fixed unnecessary window style updates
+
+	* fvwm/style.c (parse_and_set_window_style):
+	* fvwm/add_window.c (RestoreWithdrawnLocation):
+	(AddWindow):
+	(setup_frame_attributes):
+	* fvwm/fvwm.h (FvwmWindow):
+	Fvwm does no longer disable backing store on all of its windows. This
+	cause too many problems with some applications, e.g. rdist.  Introduced
+	the new style BackingStoreWindowDefault that tells fvwm not to modify
+	the backing store attribute on the client window - which now is the
+	default.
+
 2002-01-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/commands.h:
