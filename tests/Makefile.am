@@ -1,7 +1,7 @@
 ## This is a -*- Makefile -*-
 ## Process this file with automake to create Makefile.in
 
-noinst_SUBDIRS = hints
+SUBDIRS = hints
 
 EXTRA_DIST = README.test_options test_options
 
