@@ -2,6 +2,8 @@
 
 	* fvwm/frame.c (frame_get_title_bar_dimensions):
 	fixed order of right buttons
+	(frame_move_resize_step):
+	reduced flashing when maximizing
 
 	* fvwm/geometry.c (update_absolute_geometry):
 	adapted for horizontal shading

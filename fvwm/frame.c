@@ -269,8 +269,6 @@ static void frame_get_title_bar_dimensions(
         else
         {
 		tb_length = frame_g->width - b.total_size.width;
-                fprintf(stderr, "tbl %d, fw %d, bw %d\n",
-                        tb_length, frame_g->width, b.total_size.width);
         }
         /* find out the length of the title and the buttons */
         tb_thick = fw->title_thickness;
@@ -1152,6 +1150,9 @@ static void frame_move_resize_step(
         case FRAME_MR_FORCE_SETUP:
         case FRAME_MR_OPAQUE:
 		XMoveResizeWindow(dpy, FW_W(fw), 0, 0, w, h);
+                /* DV: This XSync prevents flashing, no idea why.  XFlush does
+                 * not work here. */
+                XSync(dpy, 0);
                 XMoveResizeWindow(
                         dpy, FW_W_PARENT(fw), mra->b_g.top_left.width,
                         mra->b_g.top_left.height, w, h);
@@ -1211,10 +1212,8 @@ void frame_move_resize(
 		frame_move_resize_step(fw, mra);
 	}
 	/* clean up */
-	print_g("normal1", &fw->normal_g);
 	fw->frame_g = mra->end_g;
 	update_absolute_geometry(fw);
-	print_g("normal2", &fw->normal_g);
 
 #if 1
 	/*!!! necessary? */
