@@ -50,9 +50,11 @@ char *my_name;
 int my_name_len;
 char *image_path;
 GSList *radio_group;
-char *radio_name;
+char *group_name;
 GHashTable *widgets;
 GtkWidget *current;
+GtkWidget *menu;
+int option_menu_items, option_menu_active_item;
 unsigned long context;
 char *notebook_label;
 int collecting_window_list;
@@ -442,7 +444,7 @@ send_values (GtkWidget *w)
 	{
 	  if (val[0] == '!') 
 	    {
-	      system (val);
+	      system (val + 1);
 	    } 
 	  else
 	    {
@@ -458,7 +460,21 @@ widget_get_value (GtkWidget *w)
 {
   static char buf[100];
 
-  if (GTK_IS_SCALE (w))
+  if (GTK_IS_OPTION_MENU (w))
+    {
+      GtkWidget *item;
+
+      item = gtk_menu_get_active (GTK_MENU (GTK_OPTION_MENU (w)->menu));
+      if (item)  
+	{
+	  return gtk_object_get_data (GTK_OBJECT (item), "value");      
+	}
+      else
+	{
+	  return NULL;
+	}
+    }
+  else if (GTK_IS_SCALE (w))
     {
       g_snprintf (buf, sizeof (buf), "%.*f", 
 	  	  GTK_RANGE (w)->digits,
@@ -515,7 +531,7 @@ void
 update_value (GtkWidget *w)
 {
   char *val;
-
+  
   val = widget_get_value (w);
   if (val) 
     {
@@ -609,7 +625,7 @@ dialog_radiobutton (int argc, char **argv)
 
   item = gtk_radio_button_new_with_label (radio_group, argv[0]);
   radio_group = gtk_radio_button_group (GTK_RADIO_BUTTON (item));
-  gtk_widget_set_name (item, radio_name);
+  gtk_widget_set_name (item, group_name);
   gtk_object_set_data (GTK_OBJECT (item), "on-value", strdup (argv[1]));
   if (argc >= 3 && strcasecmp (argv[2], "on") == 0)
     {
@@ -632,21 +648,21 @@ dialog_start_radiogroup (int argc, char **argv)
 {
   g_return_if_fail (argc >= 1);
 
-  if (radio_name)
+  if (group_name)
     {
-      free (radio_name);
+      free (group_name);
     }
-  radio_name = strdup (argv[0]); 
+  group_name = strdup (argv[0]); 
   radio_group = NULL;
 }
 
 void
 dialog_end_radiogroup (int argc, char **argv)
 {
-  if (radio_name)
+  if (group_name)
     {
-      free (radio_name);
-      radio_name = NULL;
+      free (group_name);
+      group_name = NULL;
     }
   radio_group = NULL;
 }
@@ -830,6 +846,65 @@ dialog_spinbutton (int argc, char **argv)
   add_to_dialog (item, argc, argv);   
 }
 
+void
+dialog_start_option_menu (int argc, char **argv)
+{
+  GtkWidget *item;
+  g_return_if_fail (argc >= 1);
+
+  option_menu_active_item = -1; 
+  option_menu_items = 0;
+  item = gtk_option_menu_new ();
+  gtk_widget_set_name (item, argv[0]);
+  menu = gtk_menu_new ();
+  gtk_widget_show (menu);
+  add_to_dialog (item, argc, argv);
+  current = item;
+}
+
+void
+dialog_end_option_menu (int argc, char **argv)
+{
+  gtk_signal_connect_object
+    (GTK_OBJECT (menu), "deactivate",
+     GTK_SIGNAL_FUNC (update_value), GTK_OBJECT (current));
+  gtk_option_menu_set_menu (GTK_OPTION_MENU (current), menu);
+  menu = NULL;
+  if (option_menu_active_item > 0) 
+   {
+     gtk_option_menu_set_history (GTK_OPTION_MENU (current), 
+				  option_menu_active_item);
+   }
+  update_value (current);
+  gtk_widget_show (current);
+  current = current->parent;
+}
+
+GtkWidget*
+menu_item_new_with_pixmap_and_label (char *x, char *y);
+
+void
+dialog_option_menu_item (int argc, char **argv)
+{
+  GtkWidget *item;
+
+  g_return_if_fail (argc >= 2);
+
+  item = menu_item_new_with_pixmap_and_label ("", argv[0]);
+
+  gtk_object_set_data (GTK_OBJECT (item), "value", strdup (argv[1]));
+  gtk_widget_show (item);
+
+  if (argc >= 3 && strcasecmp (argv[2], "on") == 0)
+    {
+       option_menu_active_item = option_menu_items;
+    }
+
+  gtk_menu_append (GTK_MENU (menu), item);
+  option_menu_items++;
+}
+
+
 /*********************************
  *
  *           Menus
@@ -857,12 +932,8 @@ find_or_create_menu (char *name)
       name_copy = gtk_widget_get_name (menu);
       gtk_object_ref (GTK_OBJECT (menu));
       gtk_object_sink (GTK_OBJECT (menu));
-      fprintf (stderr, "new menu after sinking ref_count == %d\n", 
-	       GTK_OBJECT (menu)->ref_count);
       g_hash_table_insert (widgets, name_copy, menu);
       gtk_object_ref (GTK_OBJECT (menu));
-      fprintf (stderr, "after inserting ref_count == %d\n", 
-	       GTK_OBJECT (menu)->ref_count);
     } 
   if (GTK_IS_MENU (menu))
     {
@@ -1034,21 +1105,6 @@ destroy (int argc, char **argv)
   w = g_hash_table_lookup (widgets, argv[0]);
   if (w != NULL)
     { 
-      if (GTK_IS_MENU (w))
-        {
-	  fprintf(stderr, "destroying menu %s ref_count == %d\n", 
-		  argv[0], GTK_OBJECT (w)->ref_count);
-	}
-      else if (GTK_IS_WINDOW (w))
-	{
-	  fprintf(stderr, "destroying dialog %s ref_count == %d\n", 
-		  argv[0], GTK_OBJECT (w)->ref_count);
-	}
-      else 
-	{
-	  fprintf(stderr, "destroying unknown %s\n", argv[0]);
-	}
-
       if (gtk_widget_get_toplevel (current) == w) 
         {
           current = NULL;
@@ -1074,6 +1130,19 @@ separator (int argc, char **argv)
     }
 }
 
+
+void
+item (int argc, char **argv)
+{
+  if (GTK_IS_MENU (current))
+    {
+      menu_item (argc, argv);
+    }
+  else
+    {
+      dialog_option_menu_item (argc, argv);
+    }
+}
 
 void
 window_list (int argc, char **argv)
@@ -1115,6 +1184,7 @@ char *table[] = {
   "EndBox",
   "EndFrame",
   "EndNotebook",
+  "EndOptionMenu",
   "EndRadioGroup",
   "Entry",
   "Frame",
@@ -1122,6 +1192,7 @@ char *table[] = {
   "Label",
   "Menu",
   "Notebook",
+  "OptionMenu",
   "RadioButton",
   "RadioGroup",
   "Scale",
@@ -1143,13 +1214,15 @@ void (*handler[])(int, char**) = {
   dialog_end_something,
   dialog_end_something,
   dialog_end_notebook,
+  dialog_end_option_menu,
   dialog_end_radiogroup,
   dialog_entry,
   dialog_start_frame,
-  menu_item,
+  item,
   dialog_label,
   open_menu,
   dialog_notebook,
+  dialog_start_option_menu,
   dialog_radiobutton,
   dialog_start_radiogroup,
   dialog_scale,
@@ -1388,7 +1461,7 @@ main (int argc, char **argv)
   current = NULL;
   notebook_label = NULL;
   radio_group = NULL;
-  radio_name = NULL;
+  group_name = NULL;
   collecting_window_list = 0;
 
   parse_options ();
