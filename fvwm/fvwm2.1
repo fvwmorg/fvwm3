@@ -758,28 +758,31 @@ This allows fvwm to work with
 .SM KDE
 version >= 2,
 .SM GNOME
-version 2 and others applications which respect this specification (as
-any application based on
+version 2 and other applications which respect this specification
+(any application based on
 .SM GTK+
-version 2). Applications which respect this specification will
-be called an ewmh compliant applications.
+version 2). Applications which respect this specification are
+called ewmh compliant applications.
 
-This support is configurable with styles and commands. 
-All these styles and commands have
+This support is a compile time option.
+If selected at compile time,
+this support is configurable with styles and commands.
+
+These styles and commands have
 .SM EWMH
-as prefix (so you can find them easily in this man page).
+as the prefix (so you can find them easily in this man page).
 
-You must be award that there is a new Context 'D' for the 
+There is a new Context 'D' for the 
 .BR Key ", " PointerKey ", " Mouse " and " Stroke
 commands. This context is for desktop
-applications (as kdesktop and Nautilus desktop).
+applications (such as kdesktop and Nautilus desktop).
 
-When a compliant taskbar ask fvwm to activate a window (typically
-when you click on a button which represents a window in such taskbar),
-then fvwm call the complex function
+When a compliant taskbar asks fvwm to activate a window (typically
+when you click on a button which represents a window in such a taskbar),
+then fvwm calls the complex function
 .B EWMHActivateWindowFunc
-which by default Iconify Off, Focus and Raise. You can redefine this
-function:
+which by default is Iconify Off, Focus and Raise. You can redefine this
+function.  For example:
 .EX
 DestroyFunc EWMHActivateWindowFunc
 AddToFunc EWMHActivateWindowFunc I Iconify Off
@@ -787,26 +790,26 @@ AddToFunc EWMHActivateWindowFunc I Iconify Off
 + I Raise
 + I WarpToWindow 50 50
 .EE
-additionally warp the cursor in the center of the window.
+additionally warps the cursor to the center of the window.
 
 The
 .SM EWMH
-specification introduce the notion of Working Area.
+specification introduces the notion of Working Area.
 Without ewmh support the Working Area is the full visible screen
 (or all your screens if you have a multi head setup and you use Xinerama).
-However, compliant applications (as a panel) can ask to reserve space
+However, compliant applications (such as a panel) can ask to reserve space
 at the edge of the screen.
-If it is the case, the Working Area is your
+If this is the case, the Working Area is your
 full visible screen minus these reserved spaces. If a panel can be
-hidden by clicking by a button the Working Area does not change (as
+hidden by clicking on a button the Working Area does not change (as
 you can unhide the panel at any time), but the Dynamic Working Area
-is updated: the reserved space by the panel is removed (and added
-again if you pop up the panel). The (Dynamic) Working Area may be used
+is updated: the space reserved by the panel is removed (and added
+again if you pop up the panel). The Dynamic Working Area may be used
 when fvwm places or maximizes a window.  
-To know if an application reserve some space you can type
+To know if an application reserves space you can type
 "xprop | grep _NET_WM_STRUT" in a terminal and select the application.
 If four numbers appear then these numbers define the reserved space
-as it is explained in the
+as explained in the
 .B EWMHBaseStrut
 command.
 
@@ -4877,7 +4880,7 @@ style.
 .I Icon
 takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use. Icons specified this way override pixmap
-icons, but not icon windows neither ewmh icon, provided by the client in the
+icons, but not icon windows or the ewmh icon, provided by the client in the
 application (with the WM_HINTS property or with the ewmh _NET_WM_ICON
 property).  The
 .I IconOverride
@@ -5516,29 +5519,29 @@ Style * LowerTransient
 Style * StackTransientParent
 .EE
 
-.\" +++++++++++++++ Extanded WM Hints styles
+.\" +++++++++++++++ Extended WM Hints styles
 .TP
-.B Extanded Window Manager Hints Styles
+.B Extended Window Manager Hints Styles
 .I EWMHDonateIcon
 instructs fvwm to set the application ewmh icon hint with the icon that
 is used by fvwm if the application does not provide such hint
 (and if the icon used by fvwm is not an icon window).
 .I EWMHDonateMiniIcon
-does the same thing for mini icons. These allow
+does the same thing for mini icons. This allows
 compliant pager, taskbar, iconbox ...etc to display the same (mini) icons
-than fvwm. Note that on some hardware (e.g., 8-bits display) these styles
-can slow down windows mapping and that in general only one of
+as fvwm. Note that on some hardware (e.g., 8-bit displays) these styles
+can slow down window mapping and that in general only one of
 these styles is needed by a compliant application.
 .I EWMHDontDonateIcon
 and
 .I EWMHDontDonateMiniIcon
-restore the defaults which are to do not set any ewmh (mini) icons hints.
+restore the defaults which are to not set any ewmh (mini) icons hints.
 
-By default, if an application provide an ewmh icon hint of small size
-(i.e., of height and width lest or equal to 22), then fvwm uses this
+By default, if an application provides an ewmh icon hint of small size
+(i.e., height and width less than or equal to 22), then fvwm uses this
 icon as its mini icon.
 .I EWMHMiniIconOverride
-instructs fvwm to ignore these icons and to only use the mini icon
+instructs fvwm to ignore emwh icons and to use the mini icon
 provided by the
 .I MiniIcon
 style.
@@ -6709,7 +6712,7 @@ section for a definition of the Working Area.
 .TP
 .BI "EWMHNumberOfDesktops " num "  [" max "]"
 This command is useful only for an ewmh compliant pager or taskbar
-(as kpager or kicker taskbar) and not for an fvwm module (as FvwmPager
+(as kpager or kicker taskbar) and not for fvwm modules (FvwmPager
 or FvwmIconMan). It causes a compliant application to
 consider at least
 .I num
@@ -6734,8 +6737,8 @@ is null.
 Moreover, a compliant pager can ask to change
 .I num
 itself.
-This will be accepted by fvwm only if this number is
-less or equal to
+This is accepted by fvwm only if this number is
+less than or equal to
 .I max
 or if
 .I max

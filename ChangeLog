@@ -1,3 +1,7 @@
+2001-11-25  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm2.1: Clean up ewmh stuff.
+
 2001-11-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh_internal.h:
