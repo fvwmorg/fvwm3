@@ -271,6 +271,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   unlink(tmp_name);
   if ((fd = open(tmp_name, O_WRONLY|O_EXCL|O_CREAT, 0644)) < 0)
   {
+    fprintf(stderr, "error opening file %s\n", tmp_name);
     perror("exclusive open for output file failed in cpp_defs");
     exit(0377);
   }

@@ -3093,4 +3093,11 @@ void parse_message_line(char *line)
     change_icon(b, rest);
     break;
   }
+  if (FShapesSupported)
+  {
+    if (UberButton->c->flags&b_TransBack)
+      SetTransparentBackground(UberButton,Width,Height);
+  }
+
+  return;
 }
