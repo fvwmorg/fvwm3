@@ -299,12 +299,12 @@ are executed when the flag is set/cleared.
 Their default definitions are:
 .EX
 AddToFunc UrgencyFunc
- + "I" Iconify off
- + "I" FlipFocus
- + "I" Raise
- + "I" WarpToWindow 5p 5p
+ + I Iconify off
+ + I FlipFocus
+ + I Raise
+ + I WarpToWindow 5p 5p
 AddToFunc UrgencyDoneFunc
- + "I" Nop
+ + I Nop
 .EE
 
 .SH M4 PREPROCESSING
@@ -503,9 +503,9 @@ instead).  A decor can be destroyed with DestroyDecor.
 .IP "AddToFunc [ \fIname\fP [ \fItrigger\fP \fIaction\fP] ]"
 Begins or add to a function definition.  Here's an example:
 .EX
-AddToFunc Move-or-Raise "I" Raise
- + "M" Move
- + "D" Lower
+AddToFunc Move-or-Raise I Raise
+ + M Move
+ + D Lower
 .EE
 The function name is Move-or-Raise, and could be invoked from a menu
 or a mouse binding or key binding:
@@ -536,13 +536,13 @@ and MailFunction is
 
 .EX
 AddToFunc MailFunction
- + "I" Next [$0] Iconify off
- + "I" Next [$0] focus
- + "I" None [$0] Exec exec $0 $1
+ + I Next [$0] Iconify off
+ + I Next [$0] focus
+ + I None [$0] Exec exec $0 $1
 .EE
 Then the last line of the function becomes
 .EX
- + "I" None [xmh] Exec exec xmh -font fixed
+ + I None [xmh] Exec exec xmh -font fixed
 .EE
 The expansion is performed as the function is executed, so you can use the
 same function with all sorts of different arguments.  I could use
@@ -553,8 +553,8 @@ Key F11 R A Function MailFunction \\
 in the same .fvwm2rc, if I wanted.  An example of using $w is:
 .EX
 AddToFunc PrintFunction
- + "I" Raise
- + "I" Exec xdpr -id $w
+ + I Raise
+ + I Exec xdpr -id $w
 .EE
 Note that $$ is expanded to $.
 
@@ -564,21 +564,21 @@ Begins or adds to a menu definition.  Typically a menu definition looks
 like this:
 .EX
 AddToMenu Utilities "Utilities" Title
- + "Xterm"         Exec  exec xterm -e tcsh
- + "Rxvt"          Exec  exec rxvt
+ + Xterm           Exec  exec xterm -e tcsh
+ + Rxvt            Exec  exec rxvt
  + "Remote Logins" Popup Remote-Logins
- + "Top"           Exec  exec rxvt -T Top -n \\
+ + Top             Exec  exec rxvt -T Top -n \\
                    Top -e top
- + "Calculator"    Exec  exec xcalc
- + "Xman"          Exec  exec xman
- + "Xmag"          Exec  exec xmag
- + "emacs"         Exec  exec xemacs
- + "Mail"          MailFunction \\
+ + Calculator      Exec  exec xcalc
+ + Xman            Exec  exec xman
+ + Xmag            Exec  exec xmag
+ + emacs           Exec  exec xemacs
+ + Mail            MailFunction \\
                    xmh "-font fixed"
  + ""              Nop
- + "Modules"       Popup Module-Popup
+ + Modules         Popup Module-Popup
  + ""              Nop
- + "Exit Fvwm"     Popup Quit-Verify
+ + Exit Fvwm       Popup Quit-Verify
 .EE
 The menu could be invoked via
 .EX
@@ -601,7 +601,7 @@ the keyword "Title", the title will be added to the top of the menu.
 If there was a title already, it is overwritten.
 
 .EX
-AddToMenu Utilities "Tools" Title top
+AddToMenu Utilities Tools Title top
 .EE
 
 All text up to the first TAB in the menu label is aligned to the
@@ -617,12 +617,12 @@ then the text between the stars is expected to be the name of an
 xpm-icon or bitmap-file to insert in the menu.  To get a literal '*',
 insert '**'.For example
 .EX
- + "Calculator*xcalc.xpm*" Exec exec xcalc
+ + Calculator*xcalc.xpm* Exec exec xcalc
 .EE
 inserts a menu item labeled "calculator" with a picture of a
 calculator above it.  The following:
 .EX
- + "*xcalc.xpm*"           Exec exec xcalc
+ + *xcalc.xpm*           Exec exec xcalc
 .EE
 Omits the "Calculator" label, but leaves the picture.
 
@@ -631,12 +631,12 @@ then the text between the percent signs is expected to be the name of an
 xpm-icon or bitmap-file to insert to the left of the menu label.
 To get a literal '%', insert '%%'. For example
 .EX
- + "Calculator%xcalc.xpm%" Exec exec xcalc
+ + Calculator%xcalc.xpm% Exec exec xcalc
 .EE
 inserts a menu item labeled "calculator" with a picture of a
 calculator to the left.  The following:
 .EX
- + "%xcalc.xpm%"           Exec exec xcalc
+ + %xcalc.xpm%           Exec exec xcalc
 .EE
 Omits the "Calculator" label, but leaves the picture.  The pictures
 used with this feature should be small (perhaps 16x16).
@@ -648,7 +648,7 @@ menu (a "side pixmap"). You will probably want to use the SidePic
 option of the \fIMenuStyle\fP command instead.  To get a literal '@',
 insert '@@'.  For example
 .EX
-AddToMenu "StartMenu@linux-menu.xpm@"
+AddToMenu StartMenu@linux-menu.xpm@
 .EE
 creates a menu with a picture in its bottom left corner.
 
@@ -659,7 +659,7 @@ color. You can set this color for a menu style using the SideColor
 option of the \fIMenuStyle\fP command.  To get a literal '^', insert
 '^^'.  Example:
 .EX
-AddToMenu "StartMenu@linux-menu.xpm@^blue^"
+AddToMenu StartMenu@linux-menu.xpm@^blue^
 .EE
 creates a menu with a picture in its bottom left corner and colorizes
 with blue the region of the menu containing the picture.
@@ -893,9 +893,9 @@ The "MiniIcon" style draws the window's miniature icon in the button,
 which is specified with the MiniIcon option of the Style command. This
 button style accepts no arguments.  Example:
 .EX
-Style "*"     MiniIcon mini-bx2.xpm
-Style "xterm" MiniIcon mini-term.xpm
-Style "Emacs" MiniIcon mini-doc.xpm
+Style *     MiniIcon mini-bx2.xpm
+Style xterm MiniIcon mini-term.xpm
+Style Emacs MiniIcon mini-doc.xpm
 
 ButtonStyle 1 MiniIcon
 .EE
@@ -934,14 +934,14 @@ button, it will be hidden.
 
 .IP "ChangeDecor \fIdecor\fP"
 Changes the decor of a window to \fIdecor\fP.  \fIdecor\fP is
-"Default," or the name of a decor defined with AddToDecor.  If
+"Default" or the name of a decor defined with AddToDecor.  If
 \fIdecor\fP is invalid, nothing occurs.  If called from somewhere in a
 window or its border, then that window is affected.  If called from
 the root window the user will be allowed to select the target window.
 ChangeDecor only affects attributes which can be set using the
 AddToDecor command.
 .EX
-ChangeDecor "CustomDecor1"
+ChangeDecor CustomDecor1
 .EE
 
 .IP "ChangeMenuStyle \fImenustyle menu ...\fP"
@@ -1215,7 +1215,7 @@ references to it are no longer valid.  Windows using this \fIdecor\fP
 revert to the default fvwm decor.  The decor named "Default" cannot be
 destroyed.
 .EX
-DestroyDecor "CustomDecor1"
+DestroyDecor CustomDecor1
 .EE
 
 
@@ -1224,7 +1224,7 @@ Deletes a function, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a function during an
 fvwm2 session.  The function can be rebuilt using AddToFunc.
 .EX
-DestroyFunc "PrintFunction"
+DestroyFunc PrintFunction
 .EE
 
 
@@ -1233,7 +1233,7 @@ Deletes a menu, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a menu during an
 fvwm2 session.  The menu can be rebuilt using AddToMenu.
 .EX
-DestroyMenu "Utilities"
+DestroyMenu Utilities
 .EE
 
 .IP "DestroyMenuStyle \fImenustyle\fP"
@@ -1592,8 +1592,8 @@ Allows the user to lower a window. Note that this lowers a window
 only in its layer. To bring a window to the absolute bottom, use
 .EX
 AddToFunc lower-to-bottom
- + "I" Layer 0 0
- + "I" Lower
+ + I Layer 0 0
+ + I Lower
 .EE
 
 .IP "Maximize [ \fImode\fP ] [ \fI horizontal vertical\fP ]"
@@ -2332,7 +2332,7 @@ AddToMenu RootMenu "Root Menu" Title
                        $HOME/.Xdefaults
  + ""                  Nop
  + ""                  Nop
- + "Quit"              Popup Quit-Verify
+ + Quit                Popup Quit-Verify
 .EE
 .in -.25i
 .sp
@@ -2363,8 +2363,8 @@ Allows the user to raise a window. Note that this raises a window
 only in its layer. To bring a window to the absolute top, use
 .EX
 AddToFunc raise-to-top
- + "I" Layer 0 ontop
- + "I" Raise
+ + I Layer 0 ontop
+ + I Raise
 .EE
 where ontop is the highest layer used in your setup.
 
@@ -2623,8 +2623,8 @@ Multiple icon boxes can be defined as overflow areas.  When the first
 icon box is filled, the second one is filled.  All the icon boxes for
 one style must be defined in one command.  For example:
 .EX
-Style "*" IconBox -80x200-1-1, \\
-          IconBox 1000x70-1-1
+Style * IconBox -80x200-1-1, \\
+        IconBox 1000x70-1-1
 .EE
 
 \fIIconGrid\fP takes 2 numeric arguments greater than zero.
@@ -2639,7 +2639,7 @@ Currently there is no way to clip an icon to a maximum size.
 An IconGrid definition must follow the IconBox definition that it
 applies to:
 .EX
-Style "*" IconBox -80x240-1-1, IconGrid 90 90
+Style * IconBox -80x240-1-1, IconGrid 90 90
 .EE
 
 \fIIconFill\fP takes 2 arguments.
@@ -2660,7 +2660,7 @@ The directions can be abbreviated or spelled out as follows: "t", "top",
 An IconFill definition must follow the IconBox definition that it
 applies to:
 .EX
-Style "*" IconBox -80x240-1-1, IconFill b r
+Style * IconBox -80x240-1-1, IconFill b r
 .EE
 
 \fIMiniIcon\fP specifies a pixmap to use as the miniature icon for the
@@ -2791,47 +2791,46 @@ An example:
 .EX
 # Change default fvwm2 behavior to no title-
 # bars on windows! Also define a default icon.
-Style "*"           NoTitle,                 \\
+Style *             NoTitle,                 \\
                     Icon unknown1.xpm,       \\
                     BorderWidth 4,           \\
                     HandleWidth 5
 
 # now, window specific changes:
-Style "Fvwm*"       NoHandles, Sticky,       \\
-                    WindowListSkip,          \\
-                    BorderWidth 0
-Style "Fvwm Pager"  StaysOnTop, BorderWidth 0
-Style "*lock"       NoHandles, Sticky,       \\
-                    StaysOnTop, WindowListSkip
-Style "xbiff"       Sticky, WindowListSkip
-Style "FvwmButtons" NoHandles, Sticky,       \\
-                    WindowListSkip
-Style "sxpm"        NoHandles
-Style "makerkit"
+Style Fvwm*       NoHandles, Sticky,       \\
+                  WindowListSkip,          \\
+                  BorderWidth 0
+Style FvwmPager   StaysOnTop, BorderWidth 0
+Style *lock       NoHandles, Sticky,       \\
+                  StaysOnTop, WindowListSkip
+Style xbiff       Sticky, WindowListSkip
+Style FvwmButtons NoHandles, Sticky,       \\
+                  WindowListSkip
+Style sxpm        NoHandles
 
 # Put title-bars back on xterms only!
-Style "xterm"     Title, Color black/grey
+Style xterm     Title, Color black/grey
 
-Style "rxvt"        Icon term.xpm
-Style "xterm"       Icon rterm.xpm
-Style "xcalc"       Icon xcalc.xpm
-Style "xbiff"       Icon mail1.xpm
-Style "xmh"         Icon mail1.xpm,         \\
+Style rxvt        Icon term.xpm
+Style xterm       Icon rterm.xpm
+Style xcalc       Icon xcalc.xpm
+Style xbiff       Icon mail1.xpm
+Style xmh         Icon mail1.xpm,         \\
                     StartsOnDesk 2
-Style "xman"        Icon xman.xpm
-Style "matlab"      Icon math4.xpm,         \\
+Style xman        Icon xman.xpm
+Style matlab      Icon math4.xpm,         \\
                     StartsOnDesk 3
-Style "xmag"        Icon magnifying_glass2.xpm
-Style "xgraph"      Icon graphs.xpm
-Style "FvwmButtons" Icon toolbox.xpm
-Style "Maker"       StartsOnDesk 1
-Style "signal"      StartsOnDesk 3
+Style xmag        Icon magnifying_glass2.xpm
+Style xgraph      Icon graphs.xpm
+Style FvwmButtons Icon toolbox.xpm
+Style Maker       StartsOnDesk 1
+Style signal      StartsOnDesk 3
 
 # Fire up Netscape on the second desk, in the
 # middle of my 3x3 virtual desktop, and don't
 # bother me with it...
-Style "Netscape*" SkipMapping,              \\
-                  StartsOnPage 1 1 1
+Style Netscape* SkipMapping,              \\
+                StartsOnPage 1 1 1
 .EE
 Note that all properties for a window will be OR'ed together.  In the
 above example "FvwmPager" gets the property StaysOnTop via an exact
@@ -2846,8 +2845,8 @@ the window-list.  If Icon is set without an argument then the NoIcon
 attribute is cleared but no icon is specified.  An example which
 allows only the FvwmPager module icon to exist:
 .EX
-Style "*" NoIcon
-Style "Fvwm Pager" Icon
+Style * NoIcon
+Style FvwmPager Icon
 .EE
 
 
@@ -2922,13 +2921,13 @@ This is particularly useful in the InitFunction if you are trying to
 start windows on specific desktops:
 .EX
 AddToFunc InitFunction
- + "I" exec xterm -geometry 80x64+0+0
- + "I" Wait xterm
- + "I" Desk 0 2
- + "I" Exec exec xmh -font fixed -geometry \\
+ + I exec xterm -geometry 80x64+0+0
+ + I Wait xterm
+ + I Desk 0 2
+ + I Exec exec xmh -font fixed -geometry \\
        507x750+0+0
- + "I" Wait xmh
- + "I" Desk 0 0
+ + I Wait xmh
+ + I Desk 0 0
 .EE
 The above function starts an xterm on the current desk, waits for it
 to map itself, then switches to desk 2 and starts an xmh.  After the
@@ -2976,10 +2975,10 @@ that window passed in as $0.  By default the WindowListFunc looks like
 this:
 .EX
 AddToFunc WindowListFunc
- + "I" WindowId $0 Iconify off
- + "I" WindowId $0 FlipFocus
- + "I" WindowId $0 Raise
- + "I" WindowId $0 WarpToWindow 5p 5p
+ + I WindowId $0 Iconify off
+ + I WindowId $0 FlipFocus
+ + I WindowId $0 Raise
+ + I WindowId $0 WarpToWindow 5p 5p
 .EE
 You can Destroy the builtin WindowListFunc and create your own if
 these defaults do not suit you.
@@ -3010,7 +3009,7 @@ The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
 If you pass in a function via "Function <funcname>", $0 is the window
 id:
 .EX
-AddToFunc IFunc "I" WindowId $0 Iconify toggle
+AddToFunc IFunc I WindowId $0 Iconify toggle
 WindowList Function IFunc, NoSticky, \\
   CurrentDesk, NoIcons
 .EE

@@ -1,5 +1,7 @@
 1999-03-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/fvwm2.1: Removed obsolete doublequotes from many examples
+
 	* libs/Parse.c (CopyToken): fixed quoting with backslashes
 
 	* fvwm/module.c (executeModule): fixed coredump (empty action and
