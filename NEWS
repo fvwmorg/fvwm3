@@ -51,7 +51,7 @@ Changes in beta release 2.5.1 (not released yet)
 
 * Fixed an FvwmScript compile problem on dec-osf5.
 
-* The Circulate command does not select a random window when no
+* The Current command does not select a random window when no
   window has the focus.
 
 Changes in beta release 2.5.0 (27-Jan-2002)

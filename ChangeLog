@@ -1,3 +1,9 @@
+2002-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	Corrected the description of the XineramaPrimaryScreen command that was
+	essentially lying.
+
 2002-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (menu_tear_off):

@@ -449,10 +449,10 @@ or only one screen is used, the screen bit is ignored.
 Style * IconBox 64x300-0-0@p
 .EE
 
-Xinerama support can be configured to use a primary screen.  New
-windows and icons are usually placed on this screen - unless fvwm
-is told otherwise.  The primary screen is screen 0 by default but
-can be changed with the
+Xinerama support can be configured to use a primary screen.  Fwvm
+can be configured to place new windows and icons on this screen.
+The primary screen is screen 0 by default but can be changed with
+the
 .B XineramaPrimaryScreen
 command.
 
@@ -7554,15 +7554,21 @@ Xinerama off
 .BI "XineramaPrimaryScreen [" primary-screen "]"
 Takes an integer number or 'g' or 'c' as its argument.  A number
 is taken as the number of the Xinerama screen that is to be used
-as the primary screen.  The primary screen is the preferred screen
-to place windows.  Any number that is zero or more is taken as the
-primary screen's number.  Instead, the letter 'c' indicates to use
-the curent screen (containing the pointer) whenaver the primary
-screen is used.  This may be very confusing under some
-circumstances.  With 'g', the global screen is used as the primary
-screen, effectively disabling the primary screen.  Calling this
-function with any other argument (including none) resets the
-primary screen to 0.  For Example
+as the primary screen.  The primary screen can be used as the
+preferred screen to place windows with
+.EX
+XineramaPrimaryScreen <screen number>
+Style * StartsOnScreen p
+.EE
+The primary screen is used in some of the modules and for the
+default icon box too.  Any number that is zero or more is taken as
+the primary screen's number.  Instead, the letter 'c' indicates to
+use the curent screen (containing the pointer) whenever the
+primary screen is used.  This may be very confusing under some
+circumstances.  With
+'g', the global screen is used as the primary screen, effectively
+disabling the primary screen.  Calling this function with any
+other argument (including none) resets the primary screen to 0.
 
 .TP
 .BI "XineramaSls [" bool "]"

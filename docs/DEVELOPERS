@@ -174,8 +174,15 @@ Preparations:
     and check it out from scratch to ensure all source files have
     been added to CVS.
   - For a stable release, change the dates in docs/fvwm.lsm.in,
-    fvwm/fvwm2.1, update docs/ANNOUNCE and fill in the release
-    date in NEWS.  Commit these changes.
+    fvwm/fvwm2.1 and fill in the release date in NEWS.  Commit
+    these changes.
+  - For a stable release, update docs/ANNOUNCE file.  For the
+    first version of a major release (e.g. 2.6.0) all user visible
+    changes have to be mentioned.  For the following maintenance
+    releases *all* code changes have to be listed.  This is
+    usually done by copying all entries from the NEWS file.  Don't
+    forget to proof read the file as it will be sent to the
+    fvwm-announce mailing list.
 
 Configuration tests:
 
@@ -284,3 +291,8 @@ Upload the release:
   - Upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
     ftp://ftp.fvwm.org/pub/incoming/fvwm
   - Notify fvwm-owner@fvwm.org of the upload.
+
+Announce the release:
+
+  - Once the tarballs are in place, mail the ANNOUNCE file to the
+    usual places, at least to fvwm-announce.
