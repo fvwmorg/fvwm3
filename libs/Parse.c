@@ -29,6 +29,37 @@
 #include "Parse.h"
 
 
+/* This function escapes all occurences of the characters in the string qchars
+ * in the string as with a preceding echar character.  The resulting string is
+ * returned in a malloced memory area. */
+char *EscapeString(char *s, const char *qchars, char echar)
+{
+  char *t;
+  char *ret;
+  int len;
+
+  for (len = 1, t = s; *t ; t++, len++)
+  {
+    if (strchr(qchars, *t) != NULL)
+    {
+      len++;
+    }
+  }
+  ret = (char *)safemalloc(len);
+  for (t = ret; *s; s++, t++)
+  {
+    if (strchr(qchars, *s) != NULL)
+    {
+      *t = echar;
+      t++;
+    }
+    *t = *s;
+  }
+  *t = 0;
+
+  return ret;
+}
+
 /* If the string s begins with a quote chracter SkipQuote returns a pointer
  * to the first unquoted character or to the final '\0'. If it does not, a
  * pointer to the next character in the string is returned.

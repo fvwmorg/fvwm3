@@ -4761,7 +4761,8 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
     {
       /* Item does not fit on screen anymore. */
       Bool does_fit = False;
-      char *szMenuContinuationActionAndName;
+      char *t;
+      char *tempname;
       MenuRoot *menuContinuation;
 
       /* Remove items form the menu until it fits (plus a 'More' entry). */
@@ -4788,16 +4789,21 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 	exit(1);
       }
 
-      szMenuContinuationActionAndName =
-	(char *)safemalloc((8+strlen(MR_NAME(msp->menu)))*sizeof(char));
-      strcpy(szMenuContinuationActionAndName,"Popup ");
-      strcat(szMenuContinuationActionAndName, MR_NAME(msp->menu));
-      strcat(szMenuContinuationActionAndName,"$");
+      t = EscapeString(MR_NAME(msp->menu), "\"", '\\');
+      tempname = (char *)safemalloc((10 + strlen(t)) * sizeof(char));
+      strcpy(tempname, "Popup \"");
+      strcat(tempname, t);
+      strcat(tempname, "$\"");
+      free(t);
       /* NewMenuRoot inserts at the head of the list of menus
 	 but, we need it at the end */
       /* (Give it just the name, which is 6 chars past the action
 	 since strlen("Popup ")==6 ) */
-      menuContinuation = NewMenuRoot(szMenuContinuationActionAndName + 6);
+      t = (char *)safemalloc(strlen(MR_NAME(msp->menu)) + 2);
+      strcpy(t, MR_NAME(msp->menu));
+      strcat(t, "$");
+      menuContinuation = NewMenuRoot(t);
+      free(t);
       MR_CONTINUATION_MENU(msp->menu) = menuContinuation;
 
       /* Now move this item and the remaining items into the new menu */
@@ -4823,9 +4829,9 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
       /* don't propagate sidepic, sidecolor, popup- and popdown actions */
 
       /* And add the entry pointing to the new menu */
-      AddToMenu(msp->menu, "More&...", szMenuContinuationActionAndName,
+      AddToMenu(msp->menu, "More&...", tempname,
 		False /* no pixmap scan */, False);
-      free(szMenuContinuationActionAndName);
+      free(tempname);
       has_continuation_menu = True;
     }
   } /* for */

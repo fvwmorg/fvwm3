@@ -11,6 +11,7 @@
 #define IsBlockEnd(c,cs) (((c) == ']' && (cs) == '[') || ((c) == '}' && (cs) == '{') || ((c) == ')' && (cs) == '('))
 #define MAX_TOKEN_LENGTH 1023
 
+char *EscapeString(char *s, const char *qchars, char echar);
 char *SkipQuote(char *s, const char *qlong, const char *qstart,
 		const char *qend);
 char *GetQuotedString(char *sin, char **sout, const char *delims,
