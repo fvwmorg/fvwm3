@@ -1091,6 +1091,10 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
 
     if (n != 2 || fPointer)
       InteractiveMove(&w, fw, &FinalX, &FinalY, eventp, fPointer);
+    else if (IS_ICONIFIED(fw))
+    {
+      SET_ICON_MOVED(fw, 1);
+    }
   }
 
   if (w == FW_W_FRAME(fw))
