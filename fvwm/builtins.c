@@ -40,7 +40,7 @@
 #include "builtins.h"
 #include "module_interface.h"
 #include "borders.h"
-#include "placement.h"
+#include "geometry.h"
 #include "events.h"
 #include "gnome.h"
 #include "icons.h"

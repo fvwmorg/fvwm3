@@ -29,7 +29,6 @@ void SetupFrame(
   FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent);
 void ForceSetupFrame(
   FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent);
-void update_absolute_geometry(FvwmWindow *tmp_win);
 void set_decor_gravity(
   FvwmWindow *tmp_win, int gravity, int parent_gravity, int client_gravity);
 void SetShape(FvwmWindow *, int);

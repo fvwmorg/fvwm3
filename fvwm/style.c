@@ -51,7 +51,7 @@
 #include "gnome.h"
 #include "icons.h"
 #include "focus.h"
-#include "placement.h"
+#include "geometry.h"
 #include "move_resize.h"
 #include "add_window.h"
 

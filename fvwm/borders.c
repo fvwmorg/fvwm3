@@ -1566,32 +1566,6 @@ void ForceSetupFrame(
   SetupFrame(tmp_win, x, y, w, h, sendEvent);
 }
 
-void update_absolute_geometry(FvwmWindow *tmp_win)
-{
-  rectangle *dest_g;
-
-#if 0
-fprintf(stderr,"uag: called for window '%s'\n", tmp_win->name);
-#endif
-  /* store orig values in absolute coords */
-  dest_g = (IS_MAXIMIZED(tmp_win)) ? &tmp_win->max_g : &tmp_win->normal_g;
-  dest_g->x = tmp_win->frame_g.x + Scr.Vx;
-  dest_g->y = tmp_win->frame_g.y + Scr.Vy;
-  dest_g->width = tmp_win->frame_g.width;
-  if (!IS_SHADED(tmp_win))
-    dest_g->height = tmp_win->frame_g.height;
-  else if (HAS_BOTTOM_TITLE(tmp_win))
-  {
-    dest_g->y += tmp_win->frame_g.height - dest_g->height;
-  }
-#if 0
-fprintf(stderr,"     frame:  %5d %5d, %4d x %4d\n", tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width, tmp_win->frame_g.height);
-fprintf(stderr,"     normal: %5d %5d, %4d x %4d\n", tmp_win->normal_g.x, tmp_win->normal_g.y, tmp_win->normal_g.width, tmp_win->normal_g.height);
-if (IS_MAXIMIZED(tmp_win))
-fprintf(stderr,"     max:    %5d %5d, %4d x %4d, %5d %5d\n", tmp_win->max_g.x, tmp_win->max_g.y, tmp_win->max_g.width, tmp_win->max_g.height, tmp_win->max_offset.x, tmp_win->max_offset.y);
-#endif
-}
-
 void set_decor_gravity(
   FvwmWindow *tmp_win, int gravity, int parent_gravity, int client_gravity)
 {

@@ -38,7 +38,7 @@
 #include "stack.h"
 #include "icccm2.h"
 #include "virtual.h"
-#include "placement.h"
+#include "geometry.h"
 
 extern int master_pid;
 

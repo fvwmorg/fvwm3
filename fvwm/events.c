@@ -86,7 +86,7 @@
 #include "gnome.h"
 #include "style.h"
 #include "stack.h"
-#include "placement.h"
+#include "geometry.h"
 #include "focus.h"
 #include "move_resize.h"
 #include "virtual.h"
@@ -771,8 +771,6 @@ void HandlePropertyNotify(void)
 	int units_h;
 	int wdiff;
 	int hdiff;
-	int new_w;
-	int new_h;
 
 	/* we have to resize the unmaximized window to keep the size in resize
 	 * increments constant */
@@ -790,16 +788,8 @@ void HandlePropertyNotify(void)
 	  (Tmp_win->hints.base_height - old_base_height);
 	gravity_resize(
 	  Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
-	new_w = Tmp_win->normal_g.width;
-	new_h = Tmp_win->normal_g.height;
-	ConstrainSize(Tmp_win, &Tmp_win->normal_g.width,
-		      &Tmp_win->normal_g.height, 0, 0, False);
-	wdiff = new_w - Tmp_win->normal_g.width;
-	hdiff = new_h - Tmp_win->normal_g.height;
-	Tmp_win->normal_g.width += wdiff;
-	Tmp_win->normal_g.height += hdiff;
-	gravity_resize(
-	  Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
+	gravity_constrain_size(
+	  Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->normal_g);
 	if (!IS_MAXIMIZED(Tmp_win))
 	{
 	  rectangle new_g;
@@ -1840,7 +1830,7 @@ void HandleConfigureRequest(void)
      * requested client window width; the inner height is the same as the
      * requested client window height plus any title bar slop.
      */
-    ConstrainSize(Tmp_win, &new_g.width, &new_g.height, 0, 0, False);
+    gravity_constrain_size(Tmp_win->hints.win_gravity, Tmp_win, &new_g);
     /* dont allow clients to resize maximized windows */
     if (!IS_MAXIMIZED(Tmp_win) || (new_g.width == Tmp_win->frame_g.width &&
 				   new_g.height == Tmp_win->frame_g.height))

@@ -39,9 +39,6 @@ void SetSnapGrid(F_CMD_ARGS);
 void SetXOR(F_CMD_ARGS);
 void SetXORPixmap(F_CMD_ARGS);
 void resize_window(F_CMD_ARGS);
-void ConstrainSize(FvwmWindow *, unsigned int *width, unsigned int *height,
-		   int xmotion, int ymotion, Bool roundUp);
-void maximize_adjust_offset(FvwmWindow *tmp_win);
 void Maximize(F_CMD_ARGS);
 void handle_stick(F_CMD_ARGS, int toggle);
 void stick_function(F_CMD_ARGS);

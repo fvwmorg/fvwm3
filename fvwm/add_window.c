@@ -71,6 +71,7 @@
 #include "gnome.h"
 #include "focus.h"
 #include "placement.h"
+#include "geometry.h"
 #include "session.h"
 #include "move_resize.h"
 #include "borders.h"
@@ -343,8 +344,8 @@ void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle)
     tmp_win->max_window_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
     tmp_win->max_window_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
   }
-  ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
-		0, 0, False);
+  constrain_size(
+    tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height, 0, 0, False);
 }
 
 int setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
@@ -1074,6 +1075,7 @@ XSynchronize(dpy, 1);
   {
     free((char *)tmp_win);
     MyXUngrabServer(dpy);
+/*!!! this is a memory leak!!!*/
     return NULL;
   }
 
@@ -1113,11 +1115,12 @@ XSynchronize(dpy, 1);
   add_window_to_stack_ring_after(tmp_win, &Scr.FvwmRoot);
 
   /****** calculate frame size ******/
+  tmp_win->hints.win_gravity = NorthWestGravity;
   GetWindowSizeHints(tmp_win);
 
   /****** border width ******/
   tmp_win->old_bw = tmp_win->attr.border_width;
-  XSetWindowBorderWidth (dpy, tmp_win->w,0);
+  XSetWindowBorderWidth(dpy, tmp_win->w, 0);
 
   /*
    * MatchWinToSM changes tmp_win->attr and the stacking order.
@@ -1145,11 +1148,9 @@ XSynchronize(dpy, 1);
     /****** maximize ******/
     if (do_maximize)
     {
+      constrain_size(
+	tmp_win, &tmp_win->max_g.width, &tmp_win->max_g.height, 0, 0, False);
       get_relative_geometry(&tmp_win->frame_g, &tmp_win->max_g);
-      ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
-		    0, 0, False);
-      tmp_win->max_g.width = tmp_win->frame_g.width;
-      tmp_win->max_g.height = tmp_win->frame_g.height;
       SET_MAXIMIZED(tmp_win, 1);
     }
     else
@@ -1177,6 +1178,7 @@ XSynchronize(dpy, 1);
     {
     case 0:
       /* failed */
+/*!!! this is a memory leak!!!*/
       return NULL;
     case 1:
       /* ok */
@@ -1190,13 +1192,14 @@ XSynchronize(dpy, 1);
     }
 
     /* set up geometry */
-    tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw;
-    tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw;
-    tmp_win->frame_g.width = tmp_win->attr.width+2*tmp_win->boundary_width;
+    tmp_win->frame_g.x = tmp_win->attr.x;
+    tmp_win->frame_g.y = tmp_win->attr.y;
+    tmp_win->frame_g.width = tmp_win->attr.width + 2 * tmp_win->boundary_width;
     tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
       + 2 * tmp_win->boundary_width;
-    ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
-		  0, 0, False);
+    gravity_constrain_size(
+      tmp_win->hints.win_gravity, tmp_win, &tmp_win->frame_g);
+
     update_absolute_geometry(tmp_win);
 
     /****** layer ******/
@@ -1789,18 +1792,10 @@ void destroy_window(FvwmWindow *tmp_win)
 
   free_window_names (tmp_win, True, True);
 
-  /* removing NoClass change for now... */
-#if 0
-  if (tmp_win->class.res_name)
-    XFree ((char *)tmp_win->class.res_name);
-  if (tmp_win->class.res_class)
-    XFree ((char *)tmp_win->class.res_class);
-#else
   if (tmp_win->class.res_name && tmp_win->class.res_name != NoResource)
     XFree ((char *)tmp_win->class.res_name);
   if (tmp_win->class.res_class && tmp_win->class.res_class != NoClass)
     XFree ((char *)tmp_win->class.res_class);
-#endif /* 0 */
   if(tmp_win->mwm_hints)
     XFree((char *)tmp_win->mwm_hints);
 

@@ -1,3 +1,34 @@
+1999-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandlePropertyNotify):
+	(HandleConfigureRequest):
+	* fvwm/add_window.c (AddWindow):
+	use new function gravity_constrain_size
+
+	* fvwm/borders.c (update_absolute_geometry):
+	* fvwm/move_resize.c (ConstrainSize):
+	(maximize_adjust_offset):
+	* fvwm/placement.c:
+	(get_shaded_geometry):
+	(gravity_translate_to_northwest_geometry_no_bw):
+	(gravity_translate_to_northwest_geometry):
+	(get_relative_geometry):
+	(gravity_add_decoration):
+	(gravity_get_naked_geometry):
+	(gravity_resize):
+	(gravity_move):
+	(gravity_get_offsets):
+	functions moved to geometry.c
+
+	* fvwm/Makefile.am (fvwm2_SOURCES):
+	* fvwm/geometry.h:
+	* fvwm/geometry.c:
+	new files
+
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/placement.c (PlaceWindow):
+	overhauled placement code
+
 1999-11-28  olicha   <olivier.chapuis@free.fr>
 
 	* fvwm/builtins.c (strokeFunc):

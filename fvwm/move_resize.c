@@ -42,7 +42,7 @@
 #include "move_resize.h"
 #include "module_interface.h"
 #include "borders.h"
-#include "placement.h"
+#include "geometry.h"
 #include "gnome.h"
 #include "colormaps.h"
 #include "virtual.h"
@@ -1609,8 +1609,8 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
     drag->height += (tmp_win->title_g.height + 2*tmp_win->boundary_width);
 
     /* size will be less or equal to requested */
-    ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
-		  False);
+    constrain_size(
+      tmp_win, &drag->width, &drag->height, xmotion, ymotion, False);
     if (IS_SHADED(tmp_win))
     {
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
@@ -1998,7 +1998,7 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
   if(!abort && bad_window != tmp_win->w)
   {
     /* size will be >= to requested */
-    ConstrainSize(
+    constrain_size(
       tmp_win, &drag->width, &drag->height, xmotion, ymotion, True);
     if (IS_SHADED(tmp_win))
     {
@@ -2115,7 +2115,7 @@ static void DoResize(
   if (action)
   {
     /* round up to nearest OK size to keep pointer inside rubberband */
-    ConstrainSize(
+    constrain_size(
       tmp_win, &drag->width, &drag->height, *xmotionp, *ymotionp, True);
     if (*xmotionp == 1)
       drag->x = orig->x + orig->width - drag->width;
@@ -2205,220 +2205,6 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
   XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,
 	       offset, Scr.StdFont.font->ascent + SIZE_VINDENT, str, 13);
 #endif
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *      ConstrainSize - adjust the given width and height to account for the
- *              constraints imposed by size hints
- *
- *      The general algorithm, especially the aspect ratio stuff, is
- *      borrowed from uwm's CheckConsistency routine.
- *
- ***********************************************************************/
-
-void ConstrainSize(
-  FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
-  int xmotion, int ymotion, Bool roundUp)
-{
-#define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
-  int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
-  int baseWidth, baseHeight;
-  int dwidth = *widthp, dheight = *heightp;
-  int roundUpX = 0;
-  int roundUpY = 0;
-
-  dwidth -= 2 *tmp_win->boundary_width;
-  dheight -= (tmp_win->title_g.height + 2 * tmp_win->boundary_width);
-
-  minWidth = tmp_win->hints.min_width;
-  minHeight = tmp_win->hints.min_height;
-
-  maxWidth = tmp_win->hints.max_width;
-  maxHeight =  tmp_win->hints.max_height;
-
-  if (maxWidth > tmp_win->max_window_width - 2 * tmp_win->boundary_width)
-  {
-    maxWidth = tmp_win->max_window_width - 2 * tmp_win->boundary_width;
-  }
-  if (maxHeight > tmp_win->max_window_height - 2*tmp_win->boundary_width -
-      tmp_win->title_g.height)
-  {
-    maxHeight =
-      tmp_win->max_window_height - 2*tmp_win->boundary_width -
-      tmp_win->title_g.height;
-  }
-
-  baseWidth = tmp_win->hints.base_width;
-  baseHeight = tmp_win->hints.base_height;
-
-  xinc = tmp_win->hints.width_inc;
-  yinc = tmp_win->hints.height_inc;
-
-  /*
-   * First, clamp to min and max values
-   */
-  if (dwidth < minWidth)
-    dwidth = minWidth;
-  if (dheight < minHeight)
-    dheight = minHeight;
-
-  if (dwidth > maxWidth)
-    dwidth = maxWidth;
-  if (dheight > maxHeight)
-    dheight = maxHeight;
-
-
-  /*
-   * Second, round to base + N * inc (up or down depending on resize type)
-   * if rounding up store amount
-   */
-  if (!roundUp)
-  {
-    dwidth = (((dwidth - baseWidth) / xinc) * xinc) + baseWidth;
-    dheight = (((dheight - baseHeight) / yinc) * yinc) + baseHeight;
-  }
-  else
-  {
-    roundUpX = dwidth;
-    roundUpY = dheight;
-    dwidth = (((dwidth - baseWidth + xinc - 1) / xinc) * xinc) + baseWidth;
-    dheight = (((dheight - baseHeight + yinc - 1) / yinc) * yinc) +
-      baseHeight;
-    roundUpX = dwidth - roundUpX;
-    roundUpY = dheight - roundUpY;
-  }
-
-  /*
-   * Step 2a: check we didn't move the edge off screen in interactive moves
-   */
-  if (roundUp && Event.type == MotionNotify)
-  {
-    if (xmotion > 0 && Event.xmotion.x_root < roundUpX)
-      dwidth -= xinc;
-    else if (xmotion < 0 &&
-	     Event.xmotion.x_root >= Scr.MyDisplayWidth - roundUpX)
-      dwidth -= xinc;
-    if (ymotion > 0 && Event.xmotion.y_root < roundUpY)
-      dheight -= yinc;
-    else if (ymotion < 0 &&
-	     Event.xmotion.y_root >= Scr.MyDisplayHeight - roundUpY)
-      dheight -= yinc;
-  }
-
-  /*
-   * Step 2b: Check that we didn't violate min and max.
-   */
-  if (dwidth < minWidth)
-    dwidth += xinc;
-  if (dheight < minHeight)
-    dheight += yinc;
-  if (dwidth > maxWidth)
-    dwidth -= xinc;
-  if (dheight > maxHeight)
-    dheight -= yinc;
-
-  /*
-   * Third, adjust for aspect ratio
-   */
-#define maxAspectX tmp_win->hints.max_aspect.x
-#define maxAspectY tmp_win->hints.max_aspect.y
-#define minAspectX tmp_win->hints.min_aspect.x
-#define minAspectY tmp_win->hints.min_aspect.y
-  /*
-   * The math looks like this:
-   *
-   * minAspectX    dwidth     maxAspectX
-   * ---------- <= ------- <= ----------
-   * minAspectY    dheight    maxAspectY
-   *
-   * If that is multiplied out, then the width and height are
-   * invalid in the following situations:
-   *
-   * minAspectX * dheight > minAspectY * dwidth
-   * maxAspectX * dheight < maxAspectY * dwidth
-   *
-   */
-
-  if (tmp_win->hints.flags & PAspect)
-  {
-
-    if (tmp_win->hints.flags & PBaseSize)
-    {
-      /*
-	ICCCM 2 demands that aspect ratio should apply
-	to width - base_width. To prevent funny results,
-	we reset PBaseSize in GetWindowSizeHints, if
-	base is not smaller than min.
-      */
-      dwidth -= baseWidth;
-      maxWidth -= baseWidth;
-      minWidth -= baseWidth;
-      dheight -= baseHeight;
-      maxHeight -= baseHeight;
-      minHeight -= baseHeight;
-    }
-
-    if ((minAspectX * dheight > minAspectY * dwidth)&&(xmotion == 0))
-    {
-      /* Change width to match */
-      delta = MAKEMULT(minAspectX * dheight / minAspectY - dwidth,
-		       xinc);
-      if (dwidth + delta <= maxWidth)
-	dwidth += delta;
-    }
-    if (minAspectX * dheight > minAspectY * dwidth)
-    {
-      delta = MAKEMULT(dheight - dwidth*minAspectY/minAspectX,
-		       yinc);
-      if (dheight - delta >= minHeight)
-	dheight -= delta;
-      else
-      {
-	delta = MAKEMULT(minAspectX*dheight / minAspectY - dwidth,
-			 xinc);
-	if (dwidth + delta <= maxWidth)
-	  dwidth += delta;
-      }
-    }
-
-    if ((maxAspectX * dheight < maxAspectY * dwidth)&&(ymotion == 0))
-    {
-      delta = MAKEMULT(dwidth * maxAspectY / maxAspectX - dheight,
-		       yinc);
-      if (dheight + delta <= maxHeight)
-	dheight += delta;
-    }
-    if ((maxAspectX * dheight < maxAspectY * dwidth))
-    {
-      delta = MAKEMULT(dwidth - maxAspectX*dheight/maxAspectY,
-		       xinc);
-      if (dwidth - delta >= minWidth)
-	dwidth -= delta;
-      else
-      {
-	delta = MAKEMULT(dwidth * maxAspectY / maxAspectX - dheight, yinc);
-	if (dheight + delta <= maxHeight)
-	  dheight += delta;
-      }
-    }
-
-    if (tmp_win->hints.flags & PBaseSize)
-    {
-      dwidth += baseWidth;
-      dheight += baseHeight;
-    }
-  }
-
-
-  /*
-   * Fourth, account for border width and title height
-   */
-  *widthp = dwidth + 2*tmp_win->boundary_width;
-  *heightp = dheight + tmp_win->title_g.height + 2*tmp_win->boundary_width;
-
-  return;
 }
 
 
@@ -2674,37 +2460,6 @@ static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
   *win_x = new_x1;
 }
 
-/* make sure a maximized window and it's normal version are never a page or
- * more apart. */
-void maximize_adjust_offset(FvwmWindow *tmp_win)
-{
-  int off_x;
-  int off_y;
-
-  off_x = tmp_win->normal_g.x - tmp_win->max_g.x - tmp_win->max_offset.x;
-  off_y = tmp_win->normal_g.y - tmp_win->max_g.y - tmp_win->max_offset.y;
-  if (off_x >= Scr.MyDisplayWidth)
-  {
-    tmp_win->normal_g.x -=
-      (off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
-  }
-  else if (off_x <= Scr.MyDisplayWidth)
-  {
-    tmp_win->normal_g.x +=
-      ((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
-  }
-  if (off_y >= Scr.MyDisplayHeight)
-  {
-    tmp_win->normal_g.y -=
-      (off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
-  }
-  else if (off_y <= Scr.MyDisplayHeight)
-  {
-    tmp_win->normal_g.y +=
-      ((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
-  }
-}
-
 /***********************************************************************
  *
  *  Procedure:
@@ -2872,7 +2627,7 @@ fprintf(stderr,"maximize window '%s'\n", tmp_win->name);
     }
     /* now maximize it */
     SET_MAXIMIZED(tmp_win, 1);
-    ConstrainSize(tmp_win, &new_g.width, &new_g.height, 0, 0, False);
+    constrain_size(tmp_win, &new_g.width, &new_g.height, 0, 0, False);
     tmp_win->max_g = new_g;
     if (IS_SHADED(tmp_win))
       get_shaded_geometry(tmp_win, &new_g, &tmp_win->max_g);
