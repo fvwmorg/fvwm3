@@ -707,7 +707,8 @@ void GrabWindowButton(
 
 	if ((binding->Context & contexts) &&
 	    ((BIND_IS_MOUSE_BINDING(binding->type) ||
-	      BIND_IS_STROKE_BINDING(binding->type))))
+	      (BIND_IS_STROKE_BINDING(binding->type) &&
+	       binding->Button_Key !=0))))
 	{
 		int bmin = 1;
 		int bmax = NUMBER_OF_MOUSE_BUTTONS;

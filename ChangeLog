@@ -1,3 +1,10 @@
+2003-05-23  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/bindings.c (ParseBinding):
+	(bind_get_bound_button_contexts):
+	* libs/Bindings.c (GrabWindowButton):
+	Fixed window button grabbing
+
 2003-05-22  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/colorset.c (parse_colorset):

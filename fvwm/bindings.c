@@ -188,6 +188,7 @@ static int bind_get_bound_button_contexts(
 			continue;
 		}
 		if ((b->Context & (C_WINDOW | C_EWMH_DESKTOP)) &&
+		    !(BIND_IS_STROKE_BINDING(b->type) && b->Button_Key == 0) &&
 		    buttons_grabbed != NULL)
 		{
 			if (b->Button_Key == 0)
@@ -473,7 +474,8 @@ static int ParseBinding(
 			" ignored.");
 		modifier = AnyModifier;
 	}
-	if ((BIND_IS_MOUSE_BINDING(type) || BIND_IS_STROKE_BINDING(type)) &&
+	if ((BIND_IS_MOUSE_BINDING(type) ||
+	     (BIND_IS_STROKE_BINDING(type) && button != 0)) &&
 	    (context & (C_WINDOW | C_EWMH_DESKTOP)) && buttons_grabbed != NULL)
 	{
 		if (button == 0)
