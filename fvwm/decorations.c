@@ -129,6 +129,11 @@ void GetMwmHints(FvwmWindow *t)
   Atom actual_type;
   unsigned long nitems, bytesafter;
 
+  if (t->mwm_hints)
+  {
+    XFree((char *)t->mwm_hints);
+    t->mwm_hints = NULL;
+  }
   if(XGetWindowProperty (dpy, t->w, _XA_MwmAtom, 0L, 20L, False,
 			 _XA_MwmAtom, &actual_type, &actual_format, &nitems,
 			 &bytesafter,(unsigned char **)&t->mwm_hints)==Success)

@@ -1,3 +1,30 @@
+2001-06-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (execute_function):
+	fixed memory leak
+
+	* fvwm/decorations.c (GetMwmHints):
+	fixed memory leak
+
+	* fvwm/session.c (SaveWindowStates):
+	make sure the string list is properly freed
+
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	* libs/Event.c (GetSubwindowFromEvent):
+	new file and function
+
+	* fvwm/functions.c (execute_function):
+	fixed UMR
+
+	* fvwm/session.c (MatchWinToSM):
+	fixed a memory leak when using session management
+
+	* fvwm/session.c (LoadWindowStates):
+	(duplicate):
+	* fvwm/builtins.c (CMD_StrokeFunc):
+	use saferealloc instead of realloc
+	use safemalloc instead of malloc
+
 2001-06-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (destroy_icon_font):

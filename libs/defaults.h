@@ -221,5 +221,8 @@
  * server. */
 #define MAX_WINDOW_NAME_LEN		 200 /* characters */
 #define MAX_ICON_NAME_LEN		 200 /* characters */
+/* not tested if this hangs the server too */
+#define MAX_RESOURCE_LEN   		 200 /* characters */
+#define MAX_CLASS_LEN    		 200 /* characters */
 
 #endif /* _DEFAULTS_ */

@@ -91,7 +91,7 @@ char *duplicate(const char *s)
 
   if (!s) return NULL;
   l = strlen(s);
-  r = (char *) malloc (sizeof(char)*(l+1));
+  r = (char *) safemalloc (sizeof(char)*(l+1));
   strncpy(r, s, l+1);
   return r;
 }
@@ -431,18 +431,20 @@ SaveWindowStates(FILE *f)
       if (ewin->name)
         fprintf(f, "  [WM_NAME] %s\n", ewin->name);
 
-      if (!XGetCommand (dpy, ewin->w, &wm_command, &wm_command_count))
-      {
-	wm_command = NULL;
-	wm_command_count = 0;
-      }
-      if (wm_command && (wm_command_count > 0))
+      wm_command = NULL;
+      wm_command_count = 0;
+      if (XGetCommand(dpy, ewin->w, &wm_command, &wm_command_count) &&
+	  wm_command && wm_command_count > 0)
       {
         fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
         for (i = 0; i < wm_command_count; i++)
           fprintf(f, " %s", unspace_string(wm_command[i]));
         fprintf(f, "\n");
-        XFreeStringList (wm_command);
+      }
+      if (wm_command)
+      {
+        XFreeStringList(wm_command);
+	wm_command = NULL;
       }
     } /* !window_role */
 
@@ -481,8 +483,8 @@ DisableRestoringState(void)
 void
 LoadWindowStates(char *filename)
 {
-  FILE               *f;
-  char                s[4096], s1[4096];
+  FILE *f;
+  char s[4096], s1[4096];
   int i, pos, pos1;
   unsigned long w;
 
@@ -520,7 +522,8 @@ LoadWindowStates(char *filename)
     {
       sscanf(s, "%*s %lx", &w);
       num_match++;
-      matches = realloc(matches, sizeof(Match) * num_match);
+      matches =
+	(Match *)saferealloc((void *)matches, sizeof(Match) * num_match);
       matches[num_match - 1].win = w;
       matches[num_match - 1].client_id = NULL;
       matches[num_match - 1].res_name = NULL;
@@ -620,8 +623,8 @@ LoadWindowStates(char *filename)
       sscanf(s, "%*s %i%n",
 	&matches[num_match - 1].wm_command_count, &pos);
       matches[num_match - 1].wm_command =
-	(char **) malloc (matches[num_match - 1].wm_command_count *
-			  sizeof (char *));
+	(char **) safemalloc (matches[num_match - 1].wm_command_count *
+			      sizeof (char *));
       for (i = 0; i < matches[num_match - 1].wm_command_count; i++)
       {
         sscanf (s+pos, "%s%n", s1, &pos1);
@@ -762,7 +765,13 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
 	SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
 	if (matches[i].wm_name)
+	{
+	  if (ewin->name)
+	  {
+	    free(ewin->name);
+	  }
 	  ewin->name = matches[i].wm_name;
+	}
       }
       *do_shade = IS_SHADED(&(matches[i]));
       *do_max = IS_MAXIMIZED(&(matches[i]));

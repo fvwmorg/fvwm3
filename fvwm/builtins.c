@@ -3184,8 +3184,8 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	  i++;
 	  if (i >= coords_size) {
 	    coords_size += STROKE_CHUNK_SIZE;
-	    x = (int*)realloc(x, coords_size * sizeof(int));
-	    y = (int*)realloc(y, coords_size * sizeof(int));
+	    x = (int*)saferealloc((void *)x, coords_size * sizeof(int));
+	    y = (int*)saferealloc((void *)y, coords_size * sizeof(int));
 	    if (!x || !y)
 	    {
 	      /* unlikely */

@@ -244,6 +244,10 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName);
  */
 Bool GetLocationFromEventOrQuery(Display *dpy, Window w, XEvent *eventp,
 				 int *ret_x, int *ret_y);
+/*
+ * Return the subwindow member of an event if the event type has one.
+ */
+Window GetSubwindowFromEvent(Display *dpy, XEvent *eventp);
 
 /***********************************************************************
  * Wrappers around Xrm routines (XResources.c)

@@ -961,14 +961,10 @@ void execute_function(exec_func_args_type *efa)
   }
   else
   {
-    if(efa->eventp)
+    if (efa->eventp)
     {
-      if(efa->eventp->xbutton.subwindow != None &&
-	 efa->eventp->xany.window != efa->tmp_win->w)
-      {
-	w = efa->eventp->xbutton.subwindow;
-      }
-      else
+      w = GetSubwindowFromEvent(dpy, efa->eventp);
+      if (!w)
       {
 	w = efa->eventp->xany.window;
       }
@@ -1034,6 +1030,10 @@ void execute_function(exec_func_args_type *efa)
   else
   {
     bif = NULL;
+    if (function)
+    {
+      free(function);
+    }
     function = "";
   }
 
