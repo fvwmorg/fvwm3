@@ -18,6 +18,8 @@
 #ifndef _EWMH_
 #define _EWMH_
 
+/* Extended window manager hints support */
+
 /* ewmh_conf.c */
 Bool EWMH_BugOpts(char *opt, Bool toggle);
 void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
@@ -30,7 +32,6 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
 #define EWMH_USE_DYNAMIC_WORKING_AREA 2
 #define EWMH_WORKING_AREA_MASK        3
 
-#ifdef HAVE_EWMH
 /* Extended window manager hints support */
 
 #include <X11/Xmd.h>
@@ -84,52 +85,5 @@ int EWMH_WMName(FvwmWindow *fwin, XEvent *ev, window_style *style,
 int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style,
 		    unsigned long any);
 void EWMH_SetDesktopNames(void);
-
-#else /* HAVE_EWMH */
-
-
-#define EWMH_SetCurrentDesktop()
-#define EWMH_SetNumberOfDesktops()
-
-#define EWMH_SetActiveWindow(x)
-#define EWMH_SetWMDesktop(x)
-#define EWMH_SetWMState(x,y)
-
-#define EWMH_IsKdeSysTrayWindow(x) 0
-#define EWMH_ManageKdeSysTray(x,y);
-#define EWMH_SetClientList()
-#define EWMH_SetClientListStacking()
-#define EWMH_UpdateWorkArea()
-#define EWMH_GetWorkAreaIntersection(x,y,z,t,u,v)
-#define EWMH_GetStrutIntersection(x,y,z,t,u) 0
-#define EWMH_SetFrameStrut(x)
-#define EWMH_SetAllowedActions(x)
-#define EWMH_GetIconGeometry(x,y)
-
-#define EWMH_GetStyle(x,y)
-#define EWMH_WindowInit(x)
-#define EWMH_RestoreInitialStates(x,y)
-#define EWMH_DestroyWindow(x)
-#define EWMH_WindowDestroyed()
-#define EWMH_Init()
-#define EWMH_ExitStuff()
-
-/* ewmh_conf.c */
-
-/* ewmh_events.c */
-#define EWMH_ProcessClientMessage(x) 0
-#define EWMH_ProcessPropertyNotify(x)
-
-/* ewmh_icon.c */
-#define EWMH_DoUpdateWmIcon(x,y,z)
-#define EWMH_DeleteWmIcon(x,y,z)
-#define EWMH_SetIconFromWMIcon(x,y,z,t) 0
-
-/* ewmh_name.c */
-#define EWMH_SetVisibleName(x,y)
-#define EWMH_WMName(x,y,z,t)     0
-#define EWMH_WMIconName(x,y,z,t) 0
-#define EWMH_SetDesktopNames()
-#endif
 
 #endif /* _EWMH_ */

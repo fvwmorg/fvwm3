@@ -1310,12 +1310,6 @@ static void setVersionInfo(void)
 #ifdef HAVE_PNG
 	strcat(support_str, " PNG,");
 #endif
-#ifdef GNOME
-	strcat(support_str, " GNOME WM hints,");
-#endif
-#ifdef HAVE_EWMH
-	strcat(support_str, " EWMH hints,");
-#endif
 	if (FHaveShapeExtension)
 		strcat(support_str, " Shape,");
 #ifdef HAVE_XSHM

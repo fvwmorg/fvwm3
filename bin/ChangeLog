@@ -1,3 +1,9 @@
+2003-01-03  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-config.in :
+	* fvwm-config.1:
+	Removed HAVE_GNOME and HAVE_EWMH
+
 2002-12-19  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-config.in:

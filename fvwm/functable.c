@@ -141,10 +141,8 @@ const func_type func_table[] =
 	CMD_ENT("focusstyle", CMD_FocusStyle, F_FOCUSSTYLE, 0, 0, 0),
 	CMD_ENT("function", CMD_Function, F_FUNCTION, 0, 0, 0),
 	CMD_ENT("globalopts", CMD_GlobalOpts, F_GLOBAL_OPTS, 0, 0, 0),
-#ifdef GNOME
 	CMD_ENT("gnomebutton", CMD_GnomeButton, F_MOUSE, 0, 0, 0),
 	CMD_ENT("gnomeshowdesks", CMD_GnomeShowDesks, F_GOTO_DESK, 0, 0, 0),
-#endif /* GNOME */
 	CMD_ENT("gotodesk", CMD_GotoDesk, F_GOTO_DESK, 0, 0, 0),
 	CMD_ENT("gotodeskandpage", CMD_GotoDeskAndPage, F_GOTO_DESK, 0, 0, 0),
 	CMD_ENT("gotopage", CMD_GotoPage, F_GOTO_PAGE, 0, 0, 0),

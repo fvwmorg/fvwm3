@@ -18,10 +18,7 @@
 #ifndef _EWMH_INTERN_
 #define _EWMH_INTERN_
 
-#ifdef HAVE_EWMH
 /* Extended window manager hints support */
-
-/*#include "fvwm.h"*/
 
 /* #define EWMH_DEBUG */
 #ifdef EWMH_DEBUG
@@ -171,5 +168,4 @@ void  EWMH_DLOG(char *msg, ...);
 
 #endif
 
-#endif /* HAVE_EWMH */
 #endif /* _EWMH_INTERN_ */

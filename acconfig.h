@@ -7,12 +7,6 @@
 /* Define if gdk-imlib is used */
 #undef GDK_IMLIB
 
-/* define if GNOME WM hints are enabled */
-#undef GNOME
-
-/* define if extended WM hints are enabled */
-#undef HAVE_EWMH
-
 /* Where to search for images. */
 #undef FVWM_IMAGEPATH
 

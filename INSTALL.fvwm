@@ -135,8 +135,6 @@ The sections below explain these options.
   Line shown by configure              Feature name  ./configure options
 ---------------------------------------------------------------------------
   With Asian bi-direct. text support?  bidi          --disable-bidi
-  With Extended Window Manager Hints?  ewmh          --disable-ewmh
-  With GNOME Window Manager Hints?     gnome-hints   --disable-gnome-hints
   With GTK+ required for FvwmGtk?      gtk           --with-gtk
   With GDK image support in FvwmGtk?   gdk-imlib     --with-imlib-*
   With GNOME libs support in FvwmGtk?  gnome-libs    --with-gnome
@@ -144,6 +142,7 @@ The sections below explain these options.
   With ReadLine sup. in FvwmConsole?   readline      --with-readline-*
   With RPlay support in FvwmEvent?     rplay         --with-rpm-*
   With Shaped window support?          shape         --disable-shape
+  With With Shared memory for XImage?  shm           --disable-shm
   With Session Management support?     sm            --disable-sm
   With Mouse strokes (gestures)?       stroke        --with-stroke-*
   With Xinerama multi-head support?    xinerama      --disable-xinerama
@@ -319,23 +318,6 @@ this option.  Remember, when using this, the command time offset is given
 in the system ticks, and it only means anything for commands executed in
 one batch; for example, after startup the command time offset may freely
 reach hours.
-
-
-  --disable-gnome-hints         disable GNOME window manager hints
-  ~~~~~~~~~~~~~~~~~~~~~
-
-By default, FVWM supports GNOME hints regarding windows, desks, pages
-and more.  This turns this support off.  Note, you may turn it off
-dynamically for all or individual windows by: Style * GNOMEIgnoreHints
-Note that no additional libraries are needed for supporting GNOME hints.
-
-
-  --disable-ewmh                disable extended window manager hints
-  ~~~~~~~~~~~~~~
-
-By default, FVWM supports the extended window manager hints specification
-(used by GNOME 2 and KDE version 2 or 3). This turns this support off.
-See the fvwm manual page for more details on this support.
 
 
   --disable-sm                  disable session management support

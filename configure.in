@@ -189,24 +189,6 @@ freebsd*)
 	;;
 esac
 
-dnl ********* GNOME window manager hints
-dnl Note, no gnome headers or libs are needed for FVWM to be GNOME compliant.
-smr_SWITCH(gnome-hints, GNOME window manager hints, on, GNOME)
-dnl AM_CONDITIONAL(GNOME, test "x$enable_gnome_hints" != "xno")
-
-
-dnl ******** ewmh
-smr_SWITCH(ewmh, Extended WM Hints Support, on, HAVE_EWMH)
-
-if test x"$enable_ewmh" != xno; then
-  with_ewmh=yes
-  problem_ewmh=""
-else
-  with_ewmh=no
-  problem_ewmh=": Explicitly disabled"
-fi
-
-
 dnl ********* session management
 dnl Check the availability of SM; we don't have to add any extra libraries,
 dnl since -lSM -lICE are in X_PRE_LIBS when they exist.
@@ -1013,8 +995,6 @@ esac
 
 # mainly for fvwm-config
 AC_SUBST(with_bidi)
-AC_SUBST(with_ewmh)
-AC_SUBST(with_gnomehints)
 AC_SUBST(with_gtk)
 AC_SUBST(with_gdkimlib)
 AC_SUBST(with_gettext)
@@ -1158,9 +1138,7 @@ FVWM Configuration:
   Locale msg:  $my_localedir $INST_LINGUAS
 
   With Asian bi-direct. text support? $with_bidi$problem_bidi
-  With Extended Window Manager Hints? $with_ewmh$problem_ewmh
   With Gettext Native Lang Support?   $with_gettext$problem_gettext
-  With GNOME Window Manager Hints?    $with_gnomehints$problem_gnomehints
   With GTK+ required for FvwmGtk?     $with_gtk$problem_gtk$fvwmgtk_msg
   With PNG image support?             $with_png$problem_png
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline

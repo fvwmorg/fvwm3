@@ -11,8 +11,6 @@
 /*********************************************************/
 #include "config.h"
 
-#ifdef GNOME
-
 #include <stdio.h>
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -1115,4 +1113,3 @@ CMD_GnomeButton(F_CMD_ARGS)
 	return;
 }
 
-#endif /* GNOME */

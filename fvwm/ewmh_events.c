@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#ifdef HAVE_EWMH
-
 #include <stdio.h>
 
 #include <X11/Xlib.h>
@@ -1015,5 +1013,3 @@ void EWMH_ProcessPropertyNotify(const exec_context_t *exc)
   }
 
 }
-
-#endif /* HAVE_EWMH */

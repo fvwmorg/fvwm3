@@ -278,10 +278,8 @@ void CMD_Focus(F_CMD_ARGS);
 void CMD_FocusStyle(F_CMD_ARGS);
 void CMD_Function(F_CMD_ARGS);
 void CMD_GlobalOpts(F_CMD_ARGS);
-#ifdef GNOME
 void CMD_GnomeButton(F_CMD_ARGS);
 void CMD_GnomeShowDesks(F_CMD_ARGS);
-#endif /* GNOME */
 void CMD_GotoDesk(F_CMD_ARGS);
 void CMD_GotoDeskAndPage(F_CMD_ARGS);
 void CMD_GotoPage(F_CMD_ARGS);

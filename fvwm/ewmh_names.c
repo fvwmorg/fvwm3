@@ -18,7 +18,6 @@
 
 #include "config.h"
 
-#ifdef HAVE_EWMH
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
@@ -307,4 +306,3 @@ void EWMH_SetDesktopNames(void)
 			    (unsigned char *)val, len);
 	free(val);
 }
-#endif /* HAVE_EWMH */

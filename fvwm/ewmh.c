@@ -25,8 +25,6 @@
 
 #include "config.h"
 
-#ifdef HAVE_EWMH
-
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
@@ -1432,4 +1430,3 @@ void EWMH_DLOG(char *msg, ...)
 }
 #endif
 
-#endif /* HAVE_EWMH */

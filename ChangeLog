@@ -1,3 +1,25 @@
+2003-01-03  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/commands.h:
+	* INSTALL.fvwm:
+	* fvwm/ewmh.h: 
+	* fvwm/ewmh_intern.h:
+	* fvwm/ewmh_names.c:
+	* fvwm/ewmh_icons.c:
+	* fvwm/ewmh_events.c:
+	* fvwm/ewmh_conf.c:
+	* fvwm/ewmh.c:
+	* fvwm/gnome.c:
+	* fvwm/gnome.h:
+	* fvwm/functable.c (func_table):
+	* fvwm/fvwm.c (setVersionInfo):
+	* acconfig.h:
+	* configure.in:
+	Removed GNOME and HAVE_EWMH ifdef
+
+	* fvwm/fvwm.1.in:
+	Documented UseTitleDecorRotation
+
 2003-01-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/module_interface.c (MoveViewport):

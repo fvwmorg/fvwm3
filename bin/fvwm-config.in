@@ -66,9 +66,7 @@ VERSIONINFO="@VERSIONINFO@"
 release_date="@RELDATENUM@"
 
 with_bidi=@with_bidi@
-with_ewmh=@with_ewmh@
 with_gettext=@with_gettext@
-with_gnomehints=@with_gnomehints@
 with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
@@ -140,9 +138,7 @@ while test $# -gt 0; do
 
 		--supports|-supports|-s)
 			test "$with_bidi"       = "yes" && echo "bidi"
-			test "$with_ewmh"       = "yes" && echo "ewmh"
 			test "$with_gettext"    = "yes" && echo "gettext"
-			test "$with_gnomehints" = "yes" && echo "gnome-hints"
 			test "$with_gtk"        = "yes" && echo "gtk"
 			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
 			test "$with_gnomelibs"  = "yes" && echo "gnome-libs"
@@ -193,9 +189,7 @@ while test $# -gt 0; do
 			echo ""
 			echo "Support for features:"
 			echo "	bidi (bi-directionality): $with_bidi"
-			echo "	ewmh (Extended Window Manager Hints): $with_ewmh"
 			echo "	gettext (Native Lang Support): $with_gettext"
-			echo "	gnome-hints (window manager hints): $with_gnomehints"
 			echo "	gtk (required for FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"

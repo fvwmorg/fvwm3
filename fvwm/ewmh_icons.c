@@ -17,8 +17,6 @@
 
 #include "config.h"
 
-#ifdef HAVE_EWMH
-
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
@@ -809,5 +807,3 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 		free(list);
 	return 1;
 }
-
-#endif /* HAVE_EWMH */

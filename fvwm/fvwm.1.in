@@ -6160,6 +6160,17 @@ is used, and with
 is used.  The defaults can be restored with
 .IR TopTitleNotRotated " and " BottomTitleNotRotated .
 
+.\"needs_lang_check
+By default the title bar decoration defined using the
+.B TitleStyle
+command is rotated following the title text rotation (see the
+previous paragraph). This can be disable by using the
+.I !UseTitleDecorRotation
+style.
+.I UseTitleDecorRotation
+reverts back to the default.
+.\"end
+
 With the
 .I StippledTitle
 style, titles are drawn with the same effect that is usually reserved for
