@@ -663,7 +663,7 @@ static void Exec (int NbArg,long *TabArg)
 
  if (leng >= 998) 
  {
-   fprintf(stderr,"[FvwmScript]: too long command %i chars max 998\n", leng);
+   fprintf(stderr,"[FvwmScript]: too long command %ld chars max 998\n", leng);
    return;
  }
    

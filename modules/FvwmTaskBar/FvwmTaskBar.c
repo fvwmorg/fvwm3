@@ -224,6 +224,7 @@ static void ClearAlarm(void);
 static void DoAlarmAction(void);
 static int ErrorHandler(Display*, XErrorEvent*);
 static Bool change_colorset(int cset, Bool force);
+int IsItemIndexIconSuppressed(List *list, int i);
 
 /******************************************************************************
   Main - Setup the XConnection,request the window list and loop forever

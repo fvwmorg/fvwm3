@@ -106,6 +106,8 @@ Bool GrabPointerState = GRAB_STARTUP;
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
 
+/* Is this definition of mkdir portable? */
+int mkdir(const char *, mode_t);
 int FvwmErrorHandler(Display *, XErrorEvent *);
 int CatchFatal(Display *);
 int CatchRedirectError(Display *, XErrorEvent *);

@@ -253,7 +253,7 @@ void PrintList(List *list)
 		 "R-Name","R-Class");
   fprintf(stderr,"   ---------- --------------- --------------- --------------- --------------- ----\n");
   for(temp=list->head;temp!=NULL;temp=temp->next) {
-    fprintf(stderr,"   %10ld %-15.15s %4d\n",temp->id,
+    fprintf(stderr,"   %10ld %-15.15s %4ld\n",temp->id,
 		   (temp->name==NULL) ? "<null>" : temp->name,
 		   temp->tb_flags);
   }
