@@ -90,3 +90,54 @@ sub dump ($;$) {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This is a subclass of B<FVWM::Tracker> that enables to read the colorset
+definitions.
+
+This tracker defines the following observables:
+
+    "colorset changed"
+
+NOT USABLE YET.
+
+=head1 SYNOPSYS
+ 
+Using B<FVWM::Module> $module object:
+
+    my $csTracker = $module->track("Colorsets");
+    my $csHash = $csTracker->data;
+    my $cs2_fg = $csHash('fg') || 'black';
+
+or:
+
+    my $csTracker = $module->track("Colorsets");
+    my $cs2_fg = $csTracker->data(2)->{'fg'} || 'black';
+
+=head1 OVERRIDDEN METHODS
+
+=over 4
+
+=item B<data> [I<colorset-num>]
+
+Returns an array ref of colorset hashes of one hash ref (if
+I<colorset-num> is given).
+
+=item B<dump> [I<colorset-num>]
+
+Works similarly like B<data>, but returns one or several debug lines.
+
+=back
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=head1 SEE ALSO
+
+For more information, see L<FVWM::Module> and L<FVWM::Tracker>.
+
+=cut

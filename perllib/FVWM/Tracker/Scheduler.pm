@@ -157,3 +157,84 @@ sub dump ($;$) {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This is a subclass of B<FVWM::Tracker> that enables to define alarm callback,
+several at the same time.
+
+This tracker defines the following observables:
+
+    "scheduled alarm"
+
+But it is suggested not to use the usual tracker B<observe>/B<unobserve> API,
+but to use the B<schedule>/B<deschedule>/B<reschedule> API instead.
+
+=head1 SYNOPSYS
+ 
+Using B<FVWM::Module> $module object (preferably):
+
+    my $scheduler = $module->track("Scheduler");
+    $scheduler->schedule(40,
+        sub { $module->send("Beep"); $scheduler->reschedule; });
+    $scheduler->schedule(100, sub { $module->terminate; });
+
+=head1 PUBLIC METHODS
+
+=over 4
+
+=item B<schedule> I<seconds> I<callback> [I<params>]
+
+Sets the alarm I<callback> that is called in about I<seconds> seconds.
+
+The I<callback> parameters are: hash as returned using B<data> when called
+with the I<scheduled-id> parameter, and optional I<params>.
+
+Returns I<scheduled-id> that may be used in B<deschedule> or B<data>.
+
+=item B<deschedule> I<scheduled-id>
+
+Removes the scheduled callback.
+
+=item B<reschedule> [I<seconds>]
+
+When the scheduled callback is called, it is possible to reinitialize the
+same callback using the same or different number of I<seconds>.
+
+This may be useful when defining a periodical callback that should be,
+say, called every 10 minutes (600 seconds).
+
+=back
+
+=head1 OVERRIDDEN METHODS
+
+=over 4
+
+=item B<data> [I<sheduled-id>]
+
+Returns an array ref of hashes of one hash ref (if I<sheduled-id> is given)
+with keys:
+
+    sentTime   - unix seconds
+    seconds    - requested seconds
+    fvwmId     - internal I<fvwm>'s Schedule id
+    callback   - the alarm callback, CODE ref
+    params     - ARRAY ref of optional callback parameters
+
+=item B<dump> [I<sheduled-id>]
+
+Works similarly to B<data>, but returns one or many debug lines.
+
+If no scheduled callbacks are active, the empty string is returned as expected.
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=head1 SEE ALSO
+
+For more information, see L<FVWM::Module> and L<FVWM::Tracker>.
+
+=cut

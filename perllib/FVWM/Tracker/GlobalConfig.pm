@@ -90,3 +90,51 @@ sub dump ($;$) {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This is a subclass of B<FVWM::Tracker> that enables to read the global
+FVWM configuration.
+
+    "value updated"
+
+=head1 SYNOPSYS
+ 
+Using B<FVWM::Module> $module object:
+
+    my $configTracker = $module->track("GlobalConfig");
+    my $configHash = $configTracker->data;
+    my $xineramaInfo = $configHash->{'Xinerama'};
+
+or:
+
+    my $configTracker = $module->track("GlobalConfig");
+    my $xineramaInfo = $configTracker->data('Xinerama');
+    my $desktop2Name = $configTracker->data('DesktopName 2');
+
+=head1 OVERRIDDEN METHODS
+
+=over 4
+
+=item B<data> [I<key>]
+
+Returns a hash ref of all global configuration values of one value (if
+I<key> is given).
+
+=item B<dump> [I<key>]
+
+Works similarly to B<data>, but returns one or many debug lines.
+
+=back
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=head1 SEE ALSO
+
+For more information, see L<FVWM::Module> and L<FVWM::Tracker>.
+
+=cut

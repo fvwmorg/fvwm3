@@ -1,8 +1,11 @@
-Note, the changes for the last STABLE release start with release 2.4.15
+Note, the changes for the last STABLE release start with release 2.4.16
 
 -------------------------------------------------------------------
 
-Changes in development release 2.5.7 (not released yet)
+Changes in development release 2.5.8 (not released yet)
+
+
+Changes in development release 2.5.7 (30-May-2003)
 
 * The commands Cond and CondCase now support checking for
   inequality by prefixing the return code with '!'.

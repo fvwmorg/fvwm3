@@ -3317,16 +3317,15 @@ void CMD_SetEnv(F_CMD_ARGS)
 	char *szValue = NULL;
 	char *szPutenv = NULL;
 
-	action = GetNextToken(action,&szVar);
+	action = GetNextToken(action, &szVar);
 	if (!szVar)
 	{
 		return;
 	}
-	action = GetNextToken(action,&szValue);
+	action = GetNextToken(action, &szValue);
 	if (!szValue)
 	{
-		/* no value, treat as unset */
-		CMD_UnsetEnv(F_PASS_ARGS);
+		/* no value, ignore */
 		free(szVar);
 		return;
 	}
@@ -3345,7 +3344,7 @@ void CMD_UnsetEnv(F_CMD_ARGS)
 	char *szVar = NULL;
 	char *szPutenv = NULL;
 
-	action = GetNextToken(action,&szVar);
+	action = GetNextToken(action, &szVar);
 	if (!szVar)
 	{
 		return;

@@ -293,7 +293,7 @@ uninstall-local-yes:
 update-po: Makefile
 	$(MAKE) $(FVWM_DOMAIN).pot-update
 	$(MAKE) $(FVWMTASKBAR_DOMAIN).pot-update
-	$(MAKE) $(FVWMTASKBAR_DOMAIN).pot-update
+	$(MAKE) $(FVWMSCRIPT_DOMAIN).pot-update
 	$(MAKE) $(UPDATEPOFILES)
 	$(MAKE) update-gmo
 

@@ -146,3 +146,62 @@ sub dump ($;$) {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This is a subclass of B<FVWM::Tracker> that enables to read the window
+information.
+
+This tracker defines the following observables:
+
+    "window added",
+    "window deleted",
+    "window properties updated",
+
+NOT USABLE YET.
+
+=head1 SYNOPSYS
+ 
+Using B<FVWM::Module> $module object (preferably):
+
+    my $windowsTracker = $module->track("ModuleConfig");
+    my $windows = $windowsTracker->data;
+    my $windowSizeX = $windows->{$winId}->{'x'};
+
+or:
+
+    my $windowsTracker = $module->track("WindowList");
+    my $windowSizeX = $windowsTracker->data($winId)->{'x'};
+
+=head1 OVERRIDDEN METHODS
+
+=over 4
+
+=item B<new> I<module> I<params>
+
+It is possible the kind of window list.
+
+To be written.
+
+=item B<data> [I<window-id>]
+
+Returns an array ref of window hashes of one hash ref (if
+I<window-id> is given).
+
+=item B<dump> [I<window-id>]
+
+Works similarly like B<data>, but returns one or several debug lines.
+
+=back
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=head1 SEE ALSO
+
+For more information, see L<FVWM::Module> and L<FVWM::Tracker>.
+
+=cut

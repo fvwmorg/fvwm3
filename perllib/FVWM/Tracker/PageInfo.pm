@@ -81,3 +81,57 @@ sub dump ($) {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This is a subclass of B<FVWM::Tracker> that enables to read the current
+page information.
+
+This tracker defines the following observables:
+
+    "desk/page changed",
+    "desk only changed",
+    "page only changed",
+
+=head1 SYNOPSYS
+ 
+Using B<FVWM::Module> $module object:
+
+    my $pageTracker = $module->track("PageInfo");
+    my $pageHash = $pageTracker->data;
+    my $currDesk = $pageHash->{'desk_n'};
+
+=head1 OVERRIDDEN METHODS
+
+=over 4
+
+=item B<data>
+
+Returns hash ref representing the current page/desk with the following keys:
+
+    desk_n
+    page_nx
+    page_ny
+    vp_x
+    vp_y
+    vp_width
+    vp_height
+
+=item B<dump>
+
+Works similarly to B<data>, but returns 2 debug lines representing
+the current page data in the human readable format.
+
+=back
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=head1 SEE ALSO
+
+For more information, see L<FVWM::Module> and L<FVWM::Tracker>.
+
+=cut

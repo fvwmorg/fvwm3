@@ -9190,7 +9190,7 @@ It can be overridden by exporting
 set to any other directory.
 
 .TP
-.BI "SetEnv " "variable [value]"
+.BI "SetEnv " "variable value"
 Set an environment variable to a new value, similar to the shell's
 export or setenv command.  The
 .I variable
@@ -9211,11 +9211,7 @@ If
 .I value
 includes whitespace, you should enclose it in quotes.  If no
 .I value
-is given, the
-.I variable
-is deleted from the environment as if
-.B UnsetEnv
-had been called.
+is given, the command is ignored.
 
 .TP
 .BI "Silent " command

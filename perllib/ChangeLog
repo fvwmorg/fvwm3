@@ -1,3 +1,9 @@
+2003-05-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* perllib/FVWM/Tracker.pm:
+	* perllib/FVWM/Tracker/*.pm:
+	documented trackers
+
 2003-05-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Event.pm:

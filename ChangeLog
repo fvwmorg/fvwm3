@@ -1,3 +1,9 @@
+2003-05-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/builtins.c:
+	* fvwm/fvwm2.1:
+	SetEnv with only one parameter is ignored now
+
 2003-05-30  Dan Espen  <dane@mk.telcordia.com>
 
 	* NEWS: Add 2.4.16 news.

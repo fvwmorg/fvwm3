@@ -133,3 +133,68 @@ sub dump ($;$) {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This is a subclass of B<FVWM::Tracker> that enables to read the module
+configuration.  The module configuration is usually represented using a hash,
+but it may be represented as array of lines too.
+
+This tracker defines the following observables:
+
+    "config line added"
+
+=head1 SYNOPSYS
+ 
+Using B<FVWM::Module> $module object:
+
+    my $configTracker = $module->track("ModuleConfig");
+    my $configHash = $configTracker->data;
+    my $font = $configHash('Font') || 'fixed';
+
+or:
+
+    my $configTracker = $module->track(
+        "ModuleConfig", InitialConfig => { Font => 'fixed' } );
+    my $font = $configTracker->data('Font');
+
+=head1 OVERRIDDEN METHODS
+
+=over 4
+
+=item B<new> I<module> I<params>
+
+It is possible to specify additional parameters that this tracker understands.
+
+    ConfigType     - "hash" or "array"
+    ModuleName     - module to query, the default is $module->name
+    LineFilter     - "asis", "spacefree" (default), "lowerkeys", "upperkeys"
+    DefaultConfig  - the config hash/array of config to initially use
+
+=item B<data> [I<line-key-or-number>]
+
+Returns an array ref of configuration hashes or one hash ref (if
+I<line-key-or-number> is given).
+
+Returns I<undef> if the configuration line for I<line-key-or-number> is not
+defined.
+
+=item B<dump> [I<line-key-or-number>]
+
+Works similarly like B<data>, but returns one or many debug lines.
+
+Returns an empty string if no module configuration is defined.
+
+=back
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=head1 SEE ALSO
+
+For more information, see L<FVWM::Module> and L<FVWM::Tracker>.
+
+=cut
