@@ -229,7 +229,7 @@ static Status MyXFetchName(Display *dpy, Window win, char **winname)
           if (list)
 	    XFreeStringList(list);
           XFree(text.value); /* return of XGetWMName() */
-          if (XGetWMName(dpy, win, &text); /* XXX: read again ? */)
+          if (XGetWMName(dpy, win, &text); /* XXX: read again ? */
 	  {
 	    *winname = (char *)text.value;
 	  }
