@@ -299,17 +299,15 @@ SnapAttraction 10 SameType Screen
 #FVWM 1
 #SnapAttraction 0 SameType Screen
 
-#FAST 4
+#FAST 3
 OpaqueMoveSize 100
-MoveSmoothness 1
 Style * ResizeOpaque
 Style * WindowShadeSteps 20
-#SLOW 4
+#SLOW 3
 #OpaqueMoveSize 0
-#MoveSmoothness 0
 #Style * ResizeOutline
 #Style * WindowShadeSteps 0
-#Note: MoveSmoothness 0 is equivalent to a very height value.
+
  
 EdgeScroll 0 0
 EdgeResistance 500 0
@@ -343,7 +341,7 @@ Style * GrabFocusOff
 # If you have use Base Config, then the next line overrides this section 
 # with the setting you define! In this case you can replace the next line
 # by "Read .FvwmBaseConfig" and remove all the other lines of this section.
-PipeRead 'F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; [ ! -f $F/.FvwmBaseConfig ] || echo Read .FvwmBaseConfig'
+PipeRead '[ ! -f $FVWM_USERDIR/.FvwmBaseConfig ] || echo Read .FvwmBaseConfig'
 
 #============================================================================#
 #
@@ -492,7 +490,7 @@ Style FormFvwmQuitVerify. NoButton 1, NoButton 2, NoButton 4, NoButton 6, \
 				StaysOnTop, NoHandles, WindowListSkip
 
 # Some version of Netscape need the following if you want that the
-# page source (and others horible banner) to be decorated (but you may 
+# page source (and others horrible banner) to be decorated (but you may 
 # lost some MWM decor hints)
 #Style Netscape NoDecorHint
 
@@ -748,16 +746,16 @@ Style xvidtune		MiniIcon mini.x2.xpm
 #Style "Imlib*"		MiniIcon mini.hammer.xpm
 
 #CDE 10
-Style Dtfile            MiniIcon mini.filemgr.xpm
-Style Dtpad             MiniIcon mini.edit.xpm
-Style Dthelp*           MiniIcon mini.book1.xpm
-Style Dtcm*             MiniIcon mini.calendar.xpm
-Style Dtcalc            MiniIcon mini.calc.xpm
-Style Dticon*           MiniIcon mini.palette.xpm
-Style Dtprint*          MiniIcon mini.paper.xpm
-Style Dtstyle*          MiniIcon mini.desktop.xpm
-Style "Applications Manager" MiniIcon min.programs.xpm
-Style "Trash Can"      MiniIcon mini.dttrash.xpm
+#Style Dtfile            MiniIcon mini.filemgr.xpm
+#Style Dtpad             MiniIcon mini.edit.xpm
+#Style Dthelp*           MiniIcon mini.book1.xpm
+#Style Dtcm*             MiniIcon mini.calendar.xpm
+#Style Dtcalc            MiniIcon mini.calc.xpm
+#Style Dticon*           MiniIcon mini.palette.xpm
+#Style Dtprint*          MiniIcon mini.fax.xpm
+#Style Dtstyle*          MiniIcon mini.desktop.xpm
+#Style "Applications Manager" MiniIcon mini.programs.xpm
+#Style "Trash Can"      MiniIcon mini.paper.xpm
 
 #SEG functions
 #============================================================================#
@@ -896,30 +894,30 @@ AddToFunc "window_ops_func" "C" PopUp Window-Ops2
 
 DestroyFunc RestartModule
 AddToFunc RestartModule
-+ "I" KillModule $0
-+ "I" Module $0
++ I KillModule $0
++ I Module $0
 
 DestroyFunc RestartModuleByAlias
 AddToFunc RestartModuleByAlias
-+ "I" All ($2) Close
-+ "I" Module $0 $1
++ I All ($2) Close
++ I Module $0 $1
 
 
 # This function is for WMakerFvwmButtons (start or iconify id started)
 DestroyFunc MyPanelButtons
 AddToFunc  MyPanelButtons
-+ "I" All ($0) Iconify
-+ "I" None (CirculateHit $0) FvwmButtons -g +$1+$2 $0
++ I All ($0) Iconify
++ I None (CirculateHit $0) FvwmButtons -g +$1+$2 $0
 
 #------------------------------------------------------------------------------
 # Functions for ScriptFvwmBaseConfig
 #------------------------------------------------------------------------------
 
 DestroyFunc BaseConfigOkFunc
-AddToFunc BaseConfigOkFunc I Read styles.fvwm
+AddToFunc BaseConfigOkFunc I Read styles
 
 DestroyFunc BaseConfigApplyFunc
-AddToFunc BaseConfigApplyFunc I Read styles.fvwm
+AddToFunc BaseConfigApplyFunc I Read styles
 
 
 #------------------------------------------------------------------------------
@@ -931,12 +929,12 @@ DestroyFunc ModuleOn
 AddToFunc   ModuleOn
 + I killModule $0
 + I Module $0 $1 $2
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME;echo "AddToFunc StartFunction I $0 $1 $2" > $F/.start-$0
++ I Exec echo "AddToFunc StartFunction I $0 $1 $2" > $FVWM_USERDIR/.start-$0
 
 DestroyFunc ModuleOff
 AddToFunc   ModuleOff
 + I KillModule $0
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME;echo "# Do not start $0" > $F/.start-$0
++ I Exec echo "# Do not start $0" > $FVWM_USERDIR/.start-$0
 
 #------------------------------------------------------------------------------
 # Functions which start and save state for MiniButtons and WinMakerAppButtons
@@ -946,12 +944,12 @@ DestroyFunc ButtonsOn
 AddToFunc   ButtonsOn
 + I All ($2) Close
 + I Module $0 $1
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME;echo "AddToFunc StartFunction I $0 $1" > $F/.start-$1
++ I Exec echo "AddToFunc StartFunction I $0 $1" > $FVWM_USERDIR/.start-$1
 
 DestroyFunc ButtonsOff
 AddToFunc   ButtonsOff
 + I All ($1) Close
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME;echo "# Do not start $0" > $F/.start-$0
++ I Exec echo "# Do not start $0" > $FVWM_USERDIR/.start-$0
 
 #------------------------------------------------------------------------------
 # Functions for choosing the "Big" buttons Wharf or BarButtons
@@ -959,17 +957,17 @@ AddToFunc   ButtonsOff
 
 DestroyFunc ChangeButtonsOn
 AddToFunc  ChangeButtonsOn
-+ "I" All (BarButtons) Close
-+ "I" killmodule FvwmWharf
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; echo "AddToFunc StartFunction I $0" > $F/.start-FvwmButtons
-+ "I" $0
++ I All (BarButtons) Close
++ I killmodule FvwmWharf
++ I Exec echo "AddToFunc StartFunction I $0" > $FVWM_USERDIR/.start-FvwmButtons
++ I $0
 
 DestroyFunc ChangeButtonsOff
 AddToFunc  ChangeButtonsOff
-+ "I" All (BarButtons) Close
-+ "I" killmodule FvwmWharf
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; echo "# No Buttons Bar" > $F/.start-FvwmButtons
-+ "I" $0
++ I All (BarButtons) Close
++ I killmodule FvwmWharf
++ I Exec echo "# No Buttons Bar" > $FVWM_USERDIR/.start-FvwmButtons
++ I $0
 
 #------------------------------------------------------------------------------
 # Functions for Raising modules only
@@ -979,7 +977,7 @@ DestroyFunc StartModulesAutoRaise
 AddToFunc StartModulesAutoRaise
 + I Style FvwmDesker Lenience
 + I FvwmAuto 400 Silent ModulesAutoRaise
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME;echo "AddToFunc StartFunction I StartModulesAutoRaise" > $F/.start-FvwmAuto
++ I Exec echo "AddToFunc StartFunction I StartModulesAutoRaise" > $FVWM_USERDIR/.start-FvwmAuto
 
 DestroyFunc ModulesAutoRaise
 AddToFunc ModulesAutoRaise
@@ -989,7 +987,7 @@ AddToFunc ModulesAutoRaise
 + I Current (FvwmDesker)  Raise
 + I Current (FvwmIconMan) Raise
 + I Current (FvwmWinList) Raise
-+ I Current (FvwmWharf)    Raise
++ I Current (FvwmWharf)   Raise
 + I Current (panel)	  Raise
 
 #------------------------------------------------------------------------------
@@ -1000,12 +998,12 @@ DestroyFunc SetBackground
 AddToFunc   SetBackground 
 + I killModule FvwmBacker
 + I $0
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; echo "AddToFunc StartFunction I $0" > $F/.start-Background
++ I Exec echo "AddToFunc StartFunction I $0" > $FVWM_USERDIR/.start-Background
 
 DestroyFunc SetBackgroundOff
 AddToFunc   SetBackgroundOff
 + I killModule FvwmBacker
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; echo "# Background disabled" > $F/.start-Background
++ I Exec echo "# Background disabled" > $FVWM_USERDIR/.start-Background
 
 #------------------------------------------------------------------------------
 # Functions which start and defines which applications manager we use
@@ -1013,103 +1011,103 @@ AddToFunc   SetBackgroundOff
 
 DestroyFunc ChangeAppsMan
 AddToFunc  ChangeAppsMan
-+ "I" killModule FvwmTaskBar
-+ "I" killModule FvwmWinList
-+ "I" killModule FvwmIconMan
-+ "I" killModule FvwmIconBox
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; echo "AddToFunc StartFunction I $0" > $F/.start-apps-man
-+ "I" $0
++ I killModule FvwmTaskBar
++ I killModule FvwmWinList
++ I killModule FvwmIconMan
++ I killModule FvwmIconBox
++ I Exec echo "AddToFunc StartFunction I $0" > $FVWM_USERDIR/.start-apps-man
++ I $0
 
 DestroyFunc AppsManNone
 AddToFunc  AppsManNone
 +  I  Style * NoIcon
-+ "I" killModule FvwmTaskBar
-+ "I" killModule FvwmWinList
-+ "I" killModule FvwmIconMan
-+ "I" killModule FvwmIconBox
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; echo "AddToFunc StartFunction I Style * NoIcon # No applications Manager" > $F/.start-apps-man
++ I killModule FvwmTaskBar
++ I killModule FvwmWinList
++ I killModule FvwmIconMan
++ I killModule FvwmIconBox
++ I Exec echo "AddToFunc StartFunction I Style * NoIcon # No applications Manager" > $FVWM_USERDIR/.start-apps-man
 
 DestroyFunc UseIcons
 AddToFunc  UseIcons
-+ "I" Style * Icon
++ I Style * Icon
 + I Read iconstyles
 # Need to reaload menus for KDE mini-icons styles
 + I Read menus
-+ "I" killModule FvwmTaskBar
-+ "I" killModule FvwmWinList
-+ "I" killModule FvwmIconMan
-+ "I" killModule FvwmIconBox
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME;echo "# Use Icons" > $F/.start-apps-man
++ I killModule FvwmTaskBar
++ I killModule FvwmWinList
++ I killModule FvwmIconMan
++ I killModule FvwmIconBox
++ I Exec echo "# Use Icons" > $FVWM_USERDIR/.start-apps-man
 
 DestroyFunc WinListDesk
 AddToFunc WinListDesk
-+ "I" Style * NoIcon
-+ "I" *FvwmWinListShowCurrentDesk 
-+ "I" Module FvwmWinList
++ I Style * NoIcon
++ I *FvwmWinListShowCurrentDesk 
++ I Module FvwmWinList
 
 DestroyFunc WinListGlobal
 AddToFunc WinListGlobal
-+ "I" Style * NoIcon
-+ "I" DestroyModuleConfig *FvwmWinListShowCurrent* 
-+ "I" Module FvwmWinList
++ I Style * NoIcon
++ I DestroyModuleConfig *FvwmWinListShowCurrent* 
++ I Module FvwmWinList
 
 DestroyFunc TaskBarDesk
 AddToFunc TaskBarDesk
-+ "I" Style * NoIcon
-+ "I" DestroyModuleConfig *FvwmTaskBarAutoHid*
-+ "I" *FvwmTaskBarDeskOnly 
-+ "I" Module FvwmTaskBar
++ I Style * NoIcon
++ I DestroyModuleConfig *FvwmTaskBarAutoHid*
++ I *FvwmTaskBarDeskOnly 
++ I Module FvwmTaskBar
 
 DestroyFunc TaskBarGlobal
 AddToFunc TaskBarGlobal
-+ "I" Style * NoIcon
-+ "I" DestroyModuleConfig *FvwmTaskBarAutoHid*
-+ "I" DestroyModuleConfig *FvwmTaskBarDesk* 
-+ "I" Module FvwmTaskBar
++ I Style * NoIcon
++ I DestroyModuleConfig *FvwmTaskBarAutoHid*
++ I DestroyModuleConfig *FvwmTaskBarDesk* 
++ I Module FvwmTaskBar
 
 DestroyFunc TaskBarDeskAutoHide
 AddToFunc TaskBarDeskAutoHide
-+ "I" Style * NoIcon
-+ "I" *FvwmTaskBarDeskOnly 
-+ "I" *FvwmTaskBarAutoHide
-+ "I" Module FvwmTaskBar
++ I Style * NoIcon
++ I *FvwmTaskBarDeskOnly 
++ I *FvwmTaskBarAutoHide
++ I Module FvwmTaskBar
 
 DestroyFunc TaskBarGlobalAutoHide
 AddToFunc TaskBarGlobalAutoHide
-+ "I" Style * NoIcon
-+ "I" DestroyModuleConfig *FvwmTaskBarDesk* 
-+ "I" *FvwmTaskBarAutoHide
-+ "I" Module FvwmTaskBar
++ I Style * NoIcon
++ I DestroyModuleConfig *FvwmTaskBarDesk* 
++ I *FvwmTaskBarAutoHide
++ I Module FvwmTaskBar
 
 DestroyFunc IconManGlobal
 AddToFunc IconManGlobal
-+ "I" Style * NoIcon
-+ "I" *FvwmIconMan*Resolution global
-+ "I" Module FvwmIconMan
++ I Style * NoIcon
++ I *FvwmIconMan*Resolution global
++ I Module FvwmIconMan
 
 DestroyFunc IconManDesk
 AddToFunc IconManDesk
-+ "I" Style * NoIcon
-+ "I" *FvwmIconMan*Resolution desk
-+ "I" Module FvwmIconMan
++ I Style * NoIcon
++ I *FvwmIconMan*Resolution desk
++ I Module FvwmIconMan
 
 DestroyFunc IconManPage
 AddToFunc IconManPage
-+ "I" Style * NoIcon
-+ "I" *FvwmIconMan*Resolution page
-+ "I" Module FvwmIconMan
++ I Style * NoIcon
++ I *FvwmIconMan*Resolution page
++ I Module FvwmIconMan
 
 DestroyFunc IconBoxDesk
 AddToFunc IconBoxDesk
-+ "I" Style * NoIcon
-+ "I" *FvwmIconBoxResolutionDesk 
-+ "I" Module FvwmIconBox
++ I Style * NoIcon
++ I *FvwmIconBoxResolutionDesk 
++ I Module FvwmIconBox
 
 DestroyFunc IconBoxGlobal
 AddToFunc IconBoxGlobal
-+ "I" Style * NoIcon
-+ "I" DestroyModuleConfig *FvwmIconBoxReso* 
-+ "I" Module FvwmIconBox
++ I Style * NoIcon
++ I DestroyModuleConfig *FvwmIconBoxReso* 
++ I Module FvwmIconBox
 
 #------------------------------------------------------------------------------
 # Functions for Layers
@@ -1118,24 +1116,23 @@ AddToFunc IconBoxGlobal
 DestroyFunc SetLayers 
 AddToFunc SetLayers 
 + I StyleAndRecapture $n $0
-+ I Exec F=$FVWM_USERDIR;  [ -n "$FVWM_USERDIR" ] || F=$HOME; Z=$F/.fvwm-layers; T=$F/.tmp-layers; if grep -qe "$n" $Z; then sed -e "s/\ $n\ .*/\ $n\ $0/" $Z>$T; cat $T>$Z; else echo "Style $n $0" >>$Z; fi
++ I Exec F=$FVWM_USERDIR; Z=$F/.fvwm-layers; T=$F/.tmp-layers; if grep -qe "$n" $Z; then sed -e "s/\ $n\ .*/\ $n\ $0/" $Z>$T; cat $T>$Z; else echo "Style $n $0" >>$Z; fi
 
 DestroyFunc DestroyLayers
 AddToFunc DestroyLayers
 + I StyleAndRecapture $n StaysPut
-+ I Exec F=$FVWM_USERDIR;  [ -n "$FVWM_USERDIR" ] || F=$HOME; Z=$F/.fvwm-layers; T=$F/.tmp-layers; sed -e "/^Style\ $n\ .*/d" $Z>$T; cat $T>$Z
++ I Exec F=$FVWM_USERDIR; Z=$F/.fvwm-layers; T=$F/.tmp-layers; sed -e "/^Style\ $n\ .*/d" $Z>$T; cat $T>$Z
 
 #------------------------------------------------------------------------------
 # Function for reloading the icons styles
 #------------------------------------------------------------------------------
 
-DestroyFunc Reloadiconstyles
-AddToFunc Reloadiconstyles
+DestroyFunc ReloadIconStylesAndMenus
+AddToFunc ReloadIconStylesAndMenus
 + I Read iconstyles
-# Need to reaload menus for KDE mini-icons styles
 + I Read menus
 # Need to reload the NoIcon style
-+ I PipeRead 'F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; if grep -e AddToStart $F/.start-apps-man; then echo Style * NoIcon; fi'
++ I PipeRead 'if grep -e AddToStart $FVWM_USERDIR/.start-apps-man; then echo Style * NoIcon; fi'
 
 #------------------------------------------------------------------------------
 # Functions for Loading/Saving/Showing Settings
@@ -1143,13 +1140,13 @@ AddToFunc Reloadiconstyles
 
 DestroyFunc SaveAsSettings
 AddToFunc SaveAsSettings
-+ I Exec F=$FVWM_USERDIR;  [ -n "$FVWM_USERDIR" ] || F=$HOME; for i in ~/.xinitrc-fvwm $F/.FvwmBaseConfig $F/.FvwmAnimate $F/.FvwmForm $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner $F/.start-FvwmEvent $F/.fvwm-layers; do [ ! -f "$i" ] || /bin/cp $i $i-$0; done;
++ I Exec F=$FVWM_USERDIR;for i in ~/.xinitrc-fvwm $F/.FvwmBaseConfig $F/.FvwmAnimate $F/.FvwmForm $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner $F/.start-FvwmEvent $F/.fvwm-layers; do [ ! -f "$i" ] || /bin/cp $i $i-$0; done;
 
 DestroyFunc LoadSettings
 AddToFunc LoadSettings
-+ I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; for i in ~/.xinitrc-fvwm $F/.FvwmBaseConfig $F/.FvwmAnimate $F/.FvwmForm $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner $F/.start-FvwmEvent $F/.fvwm-layers; do [ ! -f "$i-$0" ] || /bin/cp $i-$0 $i; done;
++ I Exec F=$FVWM_USERDIR; for i in ~/.xinitrc-fvwm $F/.FvwmBaseConfig $F/.FvwmAnimate $F/.FvwmForm $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner $F/.start-FvwmEvent $F/.fvwm-layers; do [ ! -f "$i-$0" ] || /bin/cp $i-$0 $i; done;
 + I Exec [ ! -f ~/.xinitrc-fvwm-$0 ] || (xscreensaver-command -exit; ~/.xinitrc-fvwm-$0)
-+ I PipeRead 'F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; [ ! -f $F/.FvwmBaseConfig ] || (echo Read .FvwmBaseConfig; echo BaseConfigOkFunc)'
++ I PipeRead '[ ! -f $FVWM_USERDIR/.FvwmBaseConfig ] || (echo Read .FvwmBaseConfig; echo BaseConfigOkFunc)'
 + I Style * StaysPut
 + I Read .fvwm-layers-$0
 + I killModule FvwmAnimate
@@ -1161,10 +1158,10 @@ AddToFunc LoadSettings
 + I killModule FvwmWinList
 + I killModule FvwmIconMan
 + I killModule FvwmIconBox
-+ I PipeRead 'F=$FVWM_USERDIR; F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; for i in $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner $F/.start-FvwmEvent; do [ ! -f "$i-$0" ] || sed -e s/AddToFunc\\.StartFunction\\.I\\.// $i-$0; done; if [ -f "$F/.start-apps-man-$0" ]; then if grep -qe Icons $F/.start-apps-man-$0; then echo "Style * Icon"; echo "Read iconstyles"; echo "Read menus"; fi; fi'
++ I PipeRead 'F=$FVWM_USERDIR; F=$FVWM_USERDIR; for i in $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner $F/.start-FvwmEvent; do [ ! -f "$i-$0" ] || sed -e s/AddToFunc\\.StartFunction\\.I\\.// $i-$0; done; if [ -f "$F/.start-apps-man-$0" ]; then if grep -qe Icons $F/.start-apps-man-$0; then echo "Style * Icon"; echo "Read iconstyles"; echo "Read menus"; fi; fi'
 
 DestroyFunc ShowFvwmSettings
-AddToFunc ShowFvwmSettings I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME;f=$F/.tmp-modules-setting; echo "" > $f; for j in 0 1 2 3 4; do if [ "$j" -eq "0" ]; then j=""; t="Current Setting:"; l="--------------"; else j="-$j"; t="Setting$j:"; l="---------"; fi; echo $t >> $f; echo $l >> $f; for i in $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $FVWM_USERDIR/.start-FvwmBanner $F/.start-FvwmEvent; do z="$i$j"; [ ! -f "$z" ] || sed -e s/^\\#\.// -e s/\.*exec/Background:/ -e s/AddToFunc\.StartFunction\.I/Start/ -e s/FvwmEvent/Sounds\ Effect/ $z >> $f; done; echo -n "Base Config: ">>$f; if [ -f $F/.FvwmBaseConfig$j ]; then echo "Used">>$f; else echo "Not Used">>$f; fi; echo "">>$f;done; xmessage -file $f
+AddToFunc ShowFvwmSettings I Exec F=$FVWM_USERDIR;f=$F/.tmp-modules-setting; echo "" > $f; for j in 0 1 2 3 4; do if [ "$j" -eq "0" ]; then j=""; t="Current Setting:"; l="--------------"; else j="-$j"; t="Setting$j:"; l="---------"; fi; echo $t >> $f; echo $l >> $f; for i in $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $FVWM_USERDIR/.start-FvwmBanner $F/.start-FvwmEvent; do z="$i$j"; [ ! -f "$z" ] || sed -e s/^\\#\.// -e s/\.*exec/Background:/ -e s/AddToFunc\.StartFunction\.I/Start/ -e s/FvwmEvent/Sounds\ Effect/ $z >> $f; done; echo -n "Base Config: ">>$f; if [ -f $F/.FvwmBaseConfig$j ]; then echo "Used">>$f; else echo "Not Used">>$f; fi; echo "">>$f;done; xmessage -file $f
 
 DestroyFunc ShowXSettings
 AddToFunc ShowXSettings \
@@ -1172,7 +1169,7 @@ I Exec T=$FVWM_USERDIR/.tmp-x-set;u=~/.xinitrc-fvwm;echo "">$T;for j in 0 1 2 3 
 
 
 DestroyFunc ShowLayers
-AddToFunc ShowLayers I Exec F=$FVWM_USERDIR; [ -n "$FVWM_USERDIR" ] || F=$HOME; T=$F/.tmp-layers; echo -e "A StaysOnTop window is a window which is above \nthe normal (i.e., StaysPut) windows, a StaysOnBottom\nwindow is below the normal windows. Here the list\nof StaysOnTop and StaysOnBottom windows:\n"> $T; u=$F/.fvwm-layers; for j in 0 1 2 3 4; do if [ "$j" -eq "0" ];then z=$u; t="Current Setting:"; l="---------------"; else z="$u-$j"; t="Setting-$j:"; l="----------"; fi; echo $t >>$T; echo $l >>$T; [ ! -f $z ] || cat $z>>$T; echo "" >> $T; done; xmessage -file $T
+AddToFunc ShowLayers I Exec F=$FVWM_USERDIR; T=$F/.tmp-layers; echo -e "A StaysOnTop window is a window which is above \nthe normal (i.e., StaysPut) windows, a StaysOnBottom\nwindow is below the normal windows. Here the list\nof StaysOnTop and StaysOnBottom windows:\n"> $T; u=$F/.fvwm-layers; for j in 0 1 2 3 4; do if [ "$j" -eq "0" ];then z=$u; t="Current Setting:"; l="---------------"; else z="$u-$j"; t="Setting-$j:"; l="----------"; fi; echo $t >>$T; echo $l >>$T; [ ! -f $z ] || cat $z>>$T; echo "" >> $T; done; xmessage -file $T
 
 #SEG bindings
 #=============================================================================#
@@ -1345,9 +1342,9 @@ Key F3		A	MS	WindowList mouse -1p -1p
 #------------------------------------------------------------------------------
  
 DestroyFunc my_dbltab2
-AddToFunc my_dbltab2 "I" WindowListFunc $w
+AddToFunc my_dbltab2 I WindowListFunc $w
 DestroyFunc my_dbltab_prev
-AddToFunc my_dbltab_prev "I" Prev my_dbltab2
+AddToFunc my_dbltab_prev I Prev my_dbltab2
 
 Key Tab A M	WindowList Root c c NoGeometry NoDeskSort SelectOnRelease Alt_L my_dbltab_prev
 
@@ -1546,7 +1543,7 @@ AddToMenu Programs
 #G_RHM_F 1
 #PipeRead 'fvwm-menu-desktop --desktop gnome-redhat --type fvwm --enable-mini-icons --mini-icons-path '' --icon-toptitle :no::: --icon-title :no::: --icon-folder mini.folder.xpm:ow::: --icon-app mini.ball2.xpm:ow:::'
 
-#CDE 15
+#CDE 17
 #DestroyMenu cde-menu
 #AddToMenu   cde-menu
 #+ "&Applications Manager%mini.programs.xpm%" Exec exec /usr/dt/bin/dtaction Dtappmgr
@@ -1562,6 +1559,8 @@ AddToMenu Programs
 #+ "&Icon Editor%mini.palette.xpm%"      Exec exec /usr/dt/bin/dticon
 #+ "&Print Manager%mini.fax.xpm%"	Exec exec /usr/dt/bin/dtprintinfo
 #+ "&Styles Manager%mini.hammer.xpm%"    Exec exec /usr/dt/bin/dtstyle
+#+ "" Nop
+#+ "&Exit CDE%mini.stop.xpm%"		Exec exec /usr/dt/bin/dtaction ExitSession
 
 #------------------------------------------------------------------------------
 #--------- Accessories
@@ -1826,7 +1825,7 @@ AddToMenu   FvwmConfig
 + "&Form Configuration%mini.fvwm.xpm"		FvwmForm FormFvwmForm.
 + ""		Nop
 + "&Rebuild Sample 95%mini.fvwm.xpm%"		FvwmScript ScriptFvwmSetup95
-+ "&Load Default Sample%mini.fvwm.xpm%"	FvwmForm FormFvwmSetup.
++ "&Load Default Sample%mini.fvwm.xpm%"		FvwmForm FormFvwmSetup.
 
 
 #------------------------------------------------------------------------------
@@ -1903,8 +1902,9 @@ AddToFunc SetBackFromDirectories
 + I PipeRead 'for j in `/bin/ls -d $1`; do echo AddToMenu $0 "`basename $j`:" Title; for i in `/bin/ls $j/*`; do echo AddToMenu $0 "`basename $i`" SetBackground \\"$2 $i\\"; done; done'
 
 
-#Replace $FVWM_USERDIR/images/backgrounds/ by your backgrounds directory
-AddToMenu Back-Personal DynamicPopupAction SetBackFromDirectory 'Back-Personal' '$FVWM_USERDIR/images/backgrounds/*' 'Exec exec xv -root -quit'
+# Replace $FVWM_USERDIR/images/backgrounds/ by your backgrounds directory
+# and comment the next line
+#AddToMenu Back-Personal DynamicPopupAction SetBackFromDirectory 'Back-Personal' '$FVWM_USERDIR/images/backgrounds/*' 'Exec exec xv -root -quit'
 
 AddToMenu Back-Site DynamicPopupAction SetBackFromDirectories 'Back-Site' '/usr/share/pixmaps/backgrounds/*' 'Exec exec xv -root -quit'
 
@@ -2021,7 +2021,7 @@ AddToMenu   WinMakerApp-Settings
 #--------- Sound  settings
 
 DestroyMenu Sound-Settings
-AddToMenu   Sound-settings
+AddToMenu   Sound-Settings
 + "&Sound Effect on%mini.audiovol.xpm%"	ModuleOn FvwmEvent
 + "Sound Effect &off%mini.cross.xpm%"	ModuleOff FvwmEvent
 + "Sound &card%mini.sound.xpm%"		Exec exec xmixer
@@ -2030,7 +2030,7 @@ AddToMenu   Sound-settings
 #--------- Layers Settings
 
 DestroyMenu Layers-Settings
-AddToMenu   Layers-settings
+AddToMenu   Layers-Settings
 + "%mini.raise2.xpm%StaysOn&Top"    Pick (CirculateHit) SetLayers StaysOnTop
 + "%mini.window.xpm%Stays&Put"      Pick (CirculateHit) DestroyLayers
 + "%mini.lower2.xpm%StaysOn&Bottom" Pick (CirculateHit) SetLayers StaysOnBottom
@@ -2070,10 +2070,9 @@ AddToMenu   Reload-Config
 + "Reload decorations%mini.turn.xpm%"	Read decorations
 + "Reload desktop%mini.turn.xpm%"	Read desktop
 + "Reload styles%mini.turn.xpm%"	Read styles
-+ "Reload iconstyles (&& menus)%mini.turn.xpm%"	Reloadiconstyles
++ "Reload iconstyles && menus%mini.turn.xpm%"	ReloadIconStylesAndMenus
 + "Reload functions%mini.turn.xpm%"	Read functions
 + "Reload bindings%mini.turn.xpm%"	Read bindings
-+ "Reload menus%mini.turn.xpm%"		Read menus
 + "Reload modules%mini.turn.xpm%"	Read modules
 
 #------------------------------------------------------------------------------
@@ -2462,7 +2461,7 @@ AddToMenu   WinRearrange
 # Use the winops menus styles for the "Windows Operations Menus"
 # Use it also for big menu
 
-ChangeMenuStyle winops Window Window-Ops2 Window-Ops3 Move-Window WindowGroupOps WindowStyle WinRearrange Back-Solid Back-Gradient FvwmManPage MenuSSaver MenuSLock Back-Personal Back-KDE Back-Site Back-WM Back-AS
+ChangeMenuStyle winops Window Window-Ops2 Window-Ops3 Move-Window WindowGroupOps WindowStyle WinRearrange Back-Solid Back-Gradient FvwmManPage MenuSSaver MenuSLock
 
 #SEG modules
 #=============================================================================#
@@ -2556,7 +2555,7 @@ DestroyModuleConfig MiniButtons*
 *MiniButtonsGeometry -2+2
 *MiniButtonsRows 1
 *MiniButtonsPadding 1 1
-#PERF 3
+#PREF 3
 *MiniButtons -   mini.term.xpm      Exec exec xterm
 *MiniButtons -   mini.filemgr.xpm   Exec exec xfm
 *MiniButtons -   mini.doc1.xpm	    Exec exec emacs
@@ -2913,7 +2912,7 @@ DestroyModuleConfig FvwmWharf*
 *FvwmWharf Exit	       exit.xpm         FvwmForm FormFvwmQuitVerify.
 *FvwmWharf xlock       Jlock.xpm        Exec exec xlock -nice 10 -mode random
 *FvwmWharf ~Folder
-
+#PREF 3
 *FvwmWharf term         rterm2.xpm      Exec exec xterm
 *FvwmWharf editor       lemacs.xpm      Exec exec emacs
 *FvwmWharf filemgr      Xfm.xpm         Exec exec xfm
@@ -3127,6 +3126,10 @@ DestroyModuleConfig FvwmWinList*
 #	GnomeShowDesk x
 # where x is the number of desks you want to see in the GNOME pager at
 # start (if not the GNOME pager is dynamic).
+# Also, for leaving GNOME you must use GNOME or you must use the one of the
+# following command: 
+# "QuitSession" for just exiting or "Exec exec save-session --kill" for
+# saving and exiting.
 #
 #                  ----------------------------------------
 #
@@ -3151,7 +3154,7 @@ DestroyModuleConfig FvwmWinList*
 #	$F/.start-FvwmEvent; \
 #	 	do /bin/cp $i-$X $i; 
 #	done;
-#	env FVWM_USERDIR="your FVWM_USERDIR" fvwm2
+#	fvwm2
 #   ;;
 #   gnome)
 #	F="your FVWM_USERDIR"

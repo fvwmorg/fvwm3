@@ -806,8 +806,8 @@ void MainLoop (void)
 
   if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, ptv) > 0)
   {
-   /* if (FD_ISSET(x_fd, &in_fdset)) */
-/*     ReadXServer(); */    
+    if (FD_ISSET(x_fd, &in_fdset))
+      ReadXServer();
 
    if(FD_ISSET(fd[1], &in_fdset))
    {

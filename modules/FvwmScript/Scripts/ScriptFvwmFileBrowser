@@ -248,7 +248,7 @@ End
 Widget 9
 Property
  Position 20 240
- Size 480 20
+ Size 320 20
  Type TextField
  Title {}
 Main

@@ -85,10 +85,6 @@ while(<IN>) {
 
 	next if ($line =~ /^\#\!D/);
 
-	if ($currentOut =~ /menus/ && $line =~ /^\+/) {
-		$line = menuCheck($line);
-	}
-
 	$line =~ s/^\#// if $uncomment;
    $line = "\#$line" if $comment;
    $uncomment-- if ($uncomment > 0);
@@ -136,6 +132,9 @@ while(<IN>) {
 		$prefapps=$l[1];
 	}
 
+	if ($currentOut =~ /menus/ && $line =~ /^\+/) {
+		$line = menuCheck($line);
+	}
 
 	$line =~ s#rplay#$SoundPlayer# if ($line =~ /Event/);
 	$line =~ s#/usr/share/sounds/#$SoundPath# if ($line =~ /Event/);

@@ -1,3 +1,8 @@
+2000-05-17  olicha <olivier.chapuis@free.fr>
+
+	* samples/system.fvwm2rc-sample-95
+	Some Clean up
+
 2000-05-17  Hippo
 
 	* fvwm/events.c (My_XNextEvent): fixed X events getting lost & tuned up

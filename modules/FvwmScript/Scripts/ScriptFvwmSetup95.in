@@ -428,7 +428,7 @@ End
 
 Widget 33
 Property
- Size 250 30
+ Size 190 30
  Position 345 270
  Type TextField
  Title {rplay}
@@ -1414,6 +1414,7 @@ Main
     Do {PipeRead '[ -f } $FDIR {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FDIR {/.start-FvwmAuto'}
     Do {PipeRead '[ -f } $FDIR {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FDIR {/.start-FvwmBanner'}
    Do {PipeRead '[ -f } $FDIR {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FDIR {/.start-FvwmEvent'}
+   Do {PipeRead '[ -f } $FDIR {/.fvwm-layers ] || echo "Style MiniButtons StaysOnTop">} $FDIR {/.fvwm-layers'}
 
   Do {BusyCursor Read False}
   ShowWidget 2
@@ -1499,6 +1500,7 @@ Main
     Do {PipeRead '[ -f } $FDIR {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FDIR {/.start-FvwmAuto'}
     Do {PipeRead '[ -f } $FDIR {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FDIR {/.start-FvwmBanner'}
     Do {PipeRead '[ -f } $FDIR {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FDIR {/.start-FvwmEvent'}
+   Do {PipeRead '[ -f } $FDIR {/.fvwm-layers ] || echo "Style MiniButtons StaysOnTop">} $FDIR {/.fvwm-layers'}
 
   ShowWidget 2
   ShowWidget 80
