@@ -73,7 +73,7 @@
 #define MAX_MENU_BORDER_WIDTH		  50 /* pixels */
 #define MAX_MENU_ITEM_RELIEF_THICKNESS	  50 /* pixels */
 #define PARENT_MENU_FORCE_VISIBLE_WIDTH	  20 /* pixels */
-#define MENU_POPUP_NOW_RATIO		0.75 /* % of item width */
+#define DEFAULT_MENU_POPUP_NOW_RATIO	  75 /* % of item width */
 /*   default item formats for left and right submenus. */
 #define DEFAULT_MENU_ITEM_FORMAT	  "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
 #define DEFAULT_LEFT_MENU_ITEM_FORMAT	  "%.1|%3.2<%5i%5l%5l%5r%5i%1|%s"

@@ -94,6 +94,7 @@ typedef struct MenuFeel
   } flags;
   int PopdownDelay10ms;
   int PopupOffsetPercent;
+  int ActiveAreaPercent;
   int PopupOffsetAdd;
   int PopupDelay10ms;
   int DoubleClickTime;
@@ -305,6 +306,10 @@ typedef struct MenuStyle
 #define MST_POPUP_OFFSET_PERCENT(m)   ((m)->s->ms->feel.PopupOffsetPercent)
 #define ST_POPUP_OFFSET_ADD(s)        ((s)->feel.PopupOffsetAdd)
 #define MST_POPUP_OFFSET_ADD(m)       ((m)->s->ms->feel.PopupOffsetAdd)
+#define ST_ACTIVE_AREA_PERCENT(s)  \
+        ((s)->feel.ActiveAreaPercent)
+#define MST_ACTIVE_AREA_PERCENT(m) \
+       ((m)->s->ms->feel.ActiveAreaPercent)
 #define ST_POPDOWN_DELAY(s)           ((s)->feel.PopdownDelay10ms)
 #define MST_POPDOWN_DELAY(m)          ((m)->s->ms->feel.PopdownDelay10ms)
 #define ST_POPUP_DELAY(s)             ((s)->feel.PopupDelay10ms)

@@ -177,31 +177,43 @@ static int menu_middle_x_offset(MenuRoot *mr)
 
 static Bool pointer_in_active_item_area(int x_offset, MenuRoot *mr)
 {
+  float ratio = (float)MST_ACTIVE_AREA_PERCENT(mr) / 100.0;
+
+  if (MST_ACTIVE_AREA_PERCENT(mr) >= 100)
+  {
+    return False;
+  }
   if (MST_USE_LEFT_SUBMENUS(mr))
   {
     return (x_offset <=
 	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
-	    MR_ITEM_WIDTH(mr) * MENU_POPUP_NOW_RATIO);
+	    MR_ITEM_WIDTH(mr) * ratio);
   }
   else
   {
     return (x_offset >=
-	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * MENU_POPUP_NOW_RATIO);
+	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * ratio);
   }
 }
 
 static Bool pointer_in_passive_item_area(int x_offset, MenuRoot *mr)
 {
+  float ratio = (float)MST_ACTIVE_AREA_PERCENT(mr) / 100.0;
+
+  if (MST_ACTIVE_AREA_PERCENT(mr) >= 100)
+  {
+    return False;
+  }
   if (MST_USE_LEFT_SUBMENUS(mr))
   {
     return (x_offset >=
-	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * MENU_POPUP_NOW_RATIO);
+	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * ratio);
   }
   else
   {
     return (x_offset <=
 	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
-	    MR_ITEM_WIDTH(mr) * MENU_POPUP_NOW_RATIO);
+	    MR_ITEM_WIDTH(mr) * ratio);
   }
 }
 
@@ -1603,12 +1615,14 @@ static void MenuInteraction(
 	/* handle exposure events first */
 	if (flags.do_force_popup || flags.is_pointer_in_active_item_area ||
 	    MST_POPDOWN_DELAY(pmp->menu) > 0 ||
-	    (MST_POPUP_DELAY(pmp->menu) > 0 && !flags.is_popped_up_by_timeout))
+	    (MST_POPUP_DELAY(pmp->menu) > 0 &&
+             flags.is_popped_up_by_timeout))
 	{
 	  while (!XPending(dpy) || !XCheckMaskEvent(dpy, XEVMASK_MENU, &Event))
 	  {
 	    Bool is_popup_timed_out =
-	      (MST_POPUP_DELAY(pmp->menu) > 0 &&
+	      (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+               MST_POPUP_DELAY(pmp->menu) > 0 &&
 	       popup_delay_10ms++ >= MST_POPUP_DELAY(pmp->menu) + 1);
 	    Bool is_popdown_timed_out =
 	      (MST_POPDOWN_DELAY(pmp->menu) > 0 && mrPopdown &&
@@ -1643,16 +1657,25 @@ static void MenuInteraction(
 	      {
 		flags.do_popdown_now = True;
 		do_fake_motion = True;
-		if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+                if (MST_DO_POPUP_IMMEDIATELY(pmp->menu))
+                {
+fprintf(stderr,"ja0\n");
+		  flags.do_popup_now = True;
+		  flags.is_popped_up_by_timeout = True;
+                }
+		else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+                         flags.is_pointer_in_active_item_area)
+		{
+fprintf(stderr,"ja1 %d %d\n", flags.is_pointer_in_active_item_area, MST_ACTIVE_AREA_PERCENT(pmp->menu));
+		  flags.do_popup_now = True;
+		  flags.is_popped_up_by_timeout = True;
+		}
+		else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
 		    !MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) &&
 		    MST_POPUP_DELAY(pmp->menu) <= MST_POPDOWN_DELAY(pmp->menu)
 		    && popup_delay_10ms == popdown_delay_10ms)
 		{
-		  flags.do_popup_now = True;
-		  flags.is_popped_up_by_timeout = True;
-		}
-		if (flags.is_pointer_in_active_item_area)
-		{
+fprintf(stderr,"ja2 %d <= %d, %d == %d\n", MST_POPUP_DELAY(pmp->menu), MST_POPDOWN_DELAY(pmp->menu), popup_delay_10ms, popdown_delay_10ms);
 		  flags.do_popup_now = True;
 		  flags.is_popped_up_by_timeout = True;
 		}
@@ -2069,7 +2092,7 @@ static void MenuInteraction(
 	    do_it_now = True;
 	  }
 	  else if (MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-		   mi != miRemovedSubmenu)
+                   mi != miRemovedSubmenu)
 	  {
 	    if (flags.is_key_press ||
 		MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !mrPopdown)
@@ -6323,6 +6346,7 @@ static int GetMenuStyleIndex(char *option)
     "SelectOnRelease",
     "PopdownImmediately", "PopdownDelayed",
     "PopdownDelay",
+    "PopupActiveArea",
     NULL
   };
   return GetTokenIndex(option, optlist, 0, NULL);
@@ -6460,6 +6484,8 @@ static void NewMenuStyle(F_CMD_ARGS)
 
       /* common settings */
       ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
+      ST_ACTIVE_AREA_PERCENT(tmpms) = DEFAULT_MENU_POPUP_NOW_RATIO;
+fprintf(stderr,"aap=%d\n", ST_ACTIVE_AREA_PERCENT(tmpms));
       ST_ITEM_GAP_ABOVE(tmpms) = DEFAULT_MENU_ITEM_TEXT_Y_OFFSET;
       ST_ITEM_GAP_BELOW(tmpms) = DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2;
       ST_TITLE_GAP_ABOVE(tmpms) = DEFAULT_MENU_TITLE_TEXT_Y_OFFSET;
@@ -6863,6 +6889,19 @@ static void NewMenuStyle(F_CMD_ARGS)
 	ST_POPDOWN_DELAY(tmpms) = DEFAULT_POPDOWN_DELAY;
       else
 	ST_POPDOWN_DELAY(tmpms) = (*val+9)/10;
+      break;
+
+    case 53: /* PopupActiveArea */
+      if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
+          *val <= 50 || *val > 100)
+      {
+	ST_ACTIVE_AREA_PERCENT(tmpms) = DEFAULT_MENU_POPUP_NOW_RATIO;
+      }
+      else
+      {
+	ST_ACTIVE_AREA_PERCENT(tmpms) = *val;
+      }
+fprintf(stderr,"aap=%d\n", ST_ACTIVE_AREA_PERCENT(tmpms));
       break;
 
 #if 0

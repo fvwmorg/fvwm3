@@ -1968,6 +1968,7 @@ SeparatorsLong / SeparatorsShort,
 TrianglesSolid / TrianglesRelief,
 PopupImmediately / PopupDelayed,
 PopdownImmediately / PopdownDelayed,
+PopupActiveArea,
 DoubleClickTime,
 SidePic,
 SideColor,
@@ -2008,21 +2009,24 @@ style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67,
 TitleWarp, TitleUnderlines1, SeparatorsShort, TrianglesRelief,
 PopupDelayed, PopdownDelayed, PopupAsSubmenu, HoldSubmenus,
-SubmenusRight, BorderWidth 2, AutomaticHotkeysOff.
+SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
+PopupActiveArea 75.
 
 .I Mwm
 style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately, PopdownDelayed, PopupAsSubmenu, HoldSubmenus,
-SubmenusRight, BorderWidth 2, AutomaticHotkeysOff.
+SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
+PopupActiveArea 75.
 
 .I Win
 style is equivalent to HilightBack, Hilight3DOff, ActiveForeOff,
 AnimationOff, Font, MenuFace, PopupOffset -5 100, TitleWarpOff,
 TitleUnderlines1, SeparatorsShort, TrianglesSolid,
 PopupImmediately, PopdownDelayed, PopupAsSubmenu, RemoveSubmenus,
-SubmenusRight, BorderWidth 2, AutomaticHotkeysOff.
+SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
+PopupActiveArea 75.
 
 .I BorderWidth
 takes the thickness of the border around the menus in pixels. It
@@ -2226,6 +2230,16 @@ the parent menu.  If the first value is non-zero the sub-menu is
 shifted that many pixels to the right (or left if negative).  If
 the second value is non-zero the menu is moved by that many
 percent of the parent menu's width to the right or left.
+
+.I PopupActiveArea
+requires an integer value between 51 and 100.  Normally, when the
+pointer is over a menu item with a sub menu and the pointer enters
+the area that starts at 75% of the menu width, the sub menu is
+shown immediately.  This percantage can be changed with
+.IR PopupActiveArea .
+Setting this value to 100 disables this kind of automatic popups
+altogether.  The default value is restored if no or an illegal
+value is given.
 
 .IR TitleWarp " and " TitleWarpOff
 affect if the pointer warps to the menu title when a sub-menu is
