@@ -22,6 +22,7 @@
  *
  *************************************************************************/
 extern void   CreateWindow(void);
+extern void   CreateVizWindow(void);
 extern Pixel  GetColor(char *name);
 extern void   nocolor(char *a, char *b);
 extern void   RedrawWindow(Window *win, int firstbutton, int newbutton, int num_rows, int num_columns);
@@ -61,10 +62,10 @@ void RedrawUnpushedOutline(Window *win, int i,int j);
 void RedrawPushedOutline(Window *win, int i, int j);
 void CreateShadowGC(void);
 extern Display *dpy;			/* which display are we talking to */
+extern Graphics *G;
 extern Window Root;
 extern Window main_win;
 extern int screen;
-extern long d_depth;
 extern Pixel back_pix, fore_pix;
 extern GC  NormalGC, HiReliefGC, HiInnerGC;
 extern GC  MaskGC;

@@ -20,6 +20,9 @@
 
 #include <X11/Xlib.h>
 #include <stdlib.h>
+extern Window main_win;
+#include "libs/fvwmlib.h"
+extern Graphics *G;
 
 /* Masks to apply to color components when allocating colors
  * you may want to set them to 0xffff if your display supports 16bpp+
@@ -517,7 +520,7 @@ void DrawTexturedText(Display *dpy, Drawable d, XFontStruct *font,
     /* make the mask pixmap */
     w = XTextWidth(font,text,chars);
     h = font->ascent+font->descent;
-    mask=XCreatePixmap(dpy,DefaultRootWindow(dpy),w+1,h+1,1);
+    mask=XCreatePixmap(dpy,main_win,w+1,h+1,1);
 	gcv.foreground = 0;
 	gcv.function = GXcopy;
     gcv.font = font->fid;
@@ -546,7 +549,6 @@ int MakeShadowColors(Display *dpy, int from[3], int to[3],
     XColor color;
     int incr;
     int dr,dg,db,dmax;
-
     dr = to[0] - from[0];
     dg = to[1] - from[1];
     db = to[2] - from[2];
@@ -570,9 +572,9 @@ int MakeShadowColors(Display *dpy, int from[3], int to[3],
 	    bv = (float)to[2] * 0.8;
 	}
 	color.red = (short)(rv<0?0:rv);
-    color.green = (short)(gv<0?0:gv);
+	color.green = (short)(gv<0?0:gv);
 	color.blue = (short)(bv<0?0:bv);
-	if (XAllocColor(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),&color))
+	if (XAllocColor(dpy, G->cmap ,&color))
 	  *dark = color.pixel;
 	else
 	  return 0;
@@ -591,10 +593,9 @@ int MakeShadowColors(Display *dpy, int from[3], int to[3],
 	    bv = avg + (float)(from[2]/2);
 	}
 	color.red = (unsigned short)(rv>65535.0 ? 65535.0:rv);
-    color.green = (unsigned short)(gv>65535.0 ? 65535.0:gv);
+	color.green = (unsigned short)(gv>65535.0 ? 65535.0:gv);
 	color.blue = (unsigned short)(bv>65535.0 ? 65535.0:bv);
-	if (XAllocColor(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),
-					&color))
+	if (XAllocColor(dpy, G->cmap, &color))
 	  *light = color.pixel;
 	else
 	  return 0;

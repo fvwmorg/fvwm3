@@ -47,8 +47,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define TRUE 1
-#define FALSE 0
 #define DOUBLECLICKTIME 1
 
 #include "config.h"
@@ -120,14 +118,14 @@ int PlayerChannel[2];
 char *MyName;
 
 Display *dpy;
+Graphics *G;
 int x_fd;
 fd_set_size_t fd_width;
-int ROWS = FALSE;
+int ROWS = False;
 
 Window Root;
 int screen;
 int flags;
-long d_depth;
 Bool NoBorder=0;
 Bool Pushed = 0;
 Bool Pushable = 1;
@@ -135,7 +133,7 @@ Bool ForceSize=0;
 Pixel back_pix, fore_pix, light_grey;
 GC  NormalGC, HiReliefGC, HiInnerGC;
 
-GC MaskGC, DefGC;
+GC MaskGC;
 int AnimationStyle=0,AnimateMain=0;
 int PushStyle=0;
 int AnimationDir=1;
@@ -211,7 +209,7 @@ int main(int argc, char **argv)
 {
   char *display_name = NULL;
   int i,j;
-  Window root;
+  Window junkroot;
   int x,y,border_width,button;
   int depth;
   char *temp, *s;
@@ -249,7 +247,7 @@ int main(int argc, char **argv)
   signal (SIGPIPE, DeadPipe);
   if((argc != 6)&&(argc != 7))
     {
-      fprintf(stderr,"%s Version %s should only be executed by AfterStep!\n",
+      fprintf(stderr,"%s Version %s should only be executed by Fvwm!\n",
 		MyName, VERSION);
       exit(1);
     }
@@ -262,6 +260,7 @@ int main(int argc, char **argv)
 	      XDisplayName(display_name));
       exit (1);
     }
+  G = CreateGraphics(dpy);
   x_fd = XConnectionNumber(dpy);
 
   fd_width = GetFdWidth();
@@ -276,8 +275,6 @@ int main(int argc, char **argv)
   display_width = DisplayWidth(dpy, screen);
   display_height = DisplayHeight(dpy, screen);
 
-  d_depth = DefaultDepth(dpy, screen);
-
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST | M_MAP | M_WINDOW_NAME |
 		 M_RES_CLASS | M_CONFIG_INFO | M_END_CONFIG_INFO | M_RES_NAME);
 /*
@@ -291,6 +288,10 @@ int main(int argc, char **argv)
 
   SendText(fd,set_mask_mesg,0);
 */
+
+  /* create a temporary window of the correct visual for the pixmaps */
+  CreateVizWindow();
+  
   ParseOptions(argv[3]);
   if(num_buttons == 0)
     {
@@ -403,14 +404,13 @@ Solid:
   DndSelection=XInternAtom(dpy,"DndSelection",False);
 #endif
 
-
   CreateWindow();
   for(i=0;i<num_buttons;i++) {
       CreateIconWindow(i, &main_win);
   }
   for(i=num_folderbuttons;i<MAX_BUTTONS;i++)
     CreateIconWindow(i, Buttons[i].parent);
-  XGetGeometry(dpy,main_win,&root,&x,&y,
+  XGetGeometry(dpy,main_win,&junkroot,&x,&y,
 	       (unsigned int *)&Width,(unsigned int *)&Height,
  	       (unsigned int *)&border_width,(unsigned int *)&depth);
 
@@ -1321,7 +1321,7 @@ void CreateShadowGC(void)
   XGCValues gcv;
   unsigned long gcm;
 
-    if(d_depth < 2)
+    if(G->depth < 2)
     {
       back_pix = GetColor("white");
       fore_pix = GetColor("black");
@@ -1341,21 +1341,38 @@ void CreateShadowGC(void)
 
   gcv.foreground = fore_pix;
   gcv.background = back_pix;
-  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);
-
+  NormalGC = XCreateGC(dpy, main_win, gcm, &gcv);
   gcv.foreground = back_pix;
   gcv.background = fore_pix;
-  HiReliefGC = XCreateGC(dpy, Root, gcm, &gcv);
+  HiReliefGC = XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcv.foreground = light_grey;
   gcv.background = fore_pix;
-  HiInnerGC = XCreateGC(dpy, Root, gcm, &gcv);
+  HiInnerGC = XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcm = GCForeground;
   gcv.foreground = fore_pix;
-  MaskGC = XCreateGC(dpy, Root, gcm, &gcv);
+  MaskGC = XCreateGC(dpy, main_win, gcm, &gcv);
+}
 
-  DefGC = DefaultGC(dpy, screen);
+/************************************************************************
+ *
+ * Creates a dummy window of the correct visual for the pixmap creation
+ *
+ ***********************************************************************/
+void CreateVizWindow(void)
+{
+  XSetWindowAttributes attr;
+
+  if (G->usingDefaultVisual)
+    main_win = Root;
+  else {
+    attr.background_pixel = 0;
+    attr.border_pixel = 0;
+    attr.colormap = G->cmap;
+    main_win = XCreateWindow(dpy,Root,-10,-10,10,10,0,G->depth,InputOutput,
+			     G->viz,CWBackPixel|CWBorderPixel|CWColormap,&attr);
+  }
 }
 
 /************************************************************************
@@ -1366,6 +1383,7 @@ void CreateShadowGC(void)
 void CreateWindow(void)
 {
   int first_avail_button,i;
+  XSetWindowAttributes attr;
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
@@ -1406,7 +1424,6 @@ void CreateWindow(void)
   mysizehints.height_inc = num_rows;
   mysizehints.base_height = num_rows - 1;
   mysizehints.base_width = num_columns - 1;
-
   if(x > -100000)
     {
       if (x <= -1)
@@ -1433,9 +1450,14 @@ void CreateWindow(void)
 
   mysizehints.win_gravity = gravity;
 
-  main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
-				 mysizehints.width,mysizehints.height,
-				 0,0,back_pix);
+  attr.background_pixel = back_pix;
+  attr.border_pixel = 0;
+  attr.colormap = G->cmap;
+  XDestroyWindow(dpy, main_win);
+  main_win = XCreateWindow(dpy,Root,mysizehints.x,mysizehints.y,
+			   mysizehints.width,mysizehints.height,
+			   0,G->depth,InputOutput,G->viz,
+			   CWBackPixel|CWBorderPixel|CWColormap,&attr);
 
   for(i=0;i<num_folders;i++)
     {
@@ -1454,9 +1476,10 @@ void CreateWindow(void)
 	  Folders[i].cols = Folders[i].count;
 	  Folders[i].rows = 1;
 	}
-      Folders[i].win = XCreateSimpleWindow(dpy, Root, 0,0,
-					   BUTTONWIDTH*Folders[i].rows,BUTTONHEIGHT*Folders[i].cols,
-					   0,0,back_pix);
+      Folders[i].win = XCreateWindow(dpy, Root,0,0,BUTTONWIDTH*Folders[i].rows,
+				     BUTTONHEIGHT*Folders[i].cols,0,G->depth,
+				     InputOutput,G->viz,
+				     CWBackPixel|CWBorderPixel|CWColormap,&attr);
       XSetWMNormalHints(dpy,Folders[i].win,&mysizehints);
       XSelectInput(dpy, Folders[i].win, MW_EVENTS);
      }
@@ -1483,15 +1506,13 @@ void nocolor(char *a, char *b)
 Pixel GetColor(char *name)
 {
   XColor color;
-  XWindowAttributes attributes;
 
-  XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color))
+   if (!XParseColor (dpy, G->cmap, name, &color))
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color))
+   else if(!XAllocColor (dpy, G->cmap, &color))
      {
        nocolor("alloc",name);
      }
@@ -1578,7 +1599,7 @@ void ParseOptions(char *filename)
 	  len=sscanf(&tline[Clength+5],"%d",&num_rows);
 	  if(len < 1)
 	    num_rows = 0;
-            ROWS = TRUE;
+            ROWS = True;
 	}
       else if((strlen(&tline[0])>1)&&
 	      (strncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
@@ -1586,7 +1607,7 @@ void ParseOptions(char *filename)
 	  len=sscanf(&tline[Clength+8],"%d",&num_columns);
 	  if(len < 1)
 	    num_columns = 0;
-            ROWS = FALSE;
+            ROWS = False;
 	}
       else if((strlen(&tline[0])>1)&&
               (strncasecmp(tline,CatString3("*",MyName,"NoPush"),Clength+5)==0))
@@ -1623,9 +1644,7 @@ void ParseOptions(char *filename)
 	  &&(strncasecmp(tline,CatString3("*",MyName,"TextureColor"),Clength+13)==0)) {
 	    char *c1, *c2;
 	    XColor color;
-	    XWindowAttributes attributes;
 
-	    XGetWindowAttributes(dpy,Root,&attributes);
 	    len = strlen(&tline[Clength+13]);
 	    c1 = safemalloc(len);
 	    c2 = safemalloc(len);
@@ -1638,7 +1657,7 @@ void ParseOptions(char *filename)
 		ToColor[1]=0;
 		ToColor[2]=0;
 	    }
-	    if (!XParseColor (dpy, attributes.colormap, c1, &color))
+	    if (!XParseColor (dpy, G->cmap, c1, &color))
 	    {
 		nocolor("parse",c1);
 		TextureType=TEXTURE_BUILTIN;
@@ -1647,7 +1666,7 @@ void ParseOptions(char *filename)
 		FromColor[1]=color.green;
 		FromColor[2]=color.blue;
 	    }
-	    if (!XParseColor (dpy, attributes.colormap, c2, &color))
+	    if (!XParseColor (dpy, G->cmap, c2, &color))
 	    {
 		nocolor("parse",c2);
 		TextureType=TEXTURE_BUILTIN;
