@@ -982,6 +982,8 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 			free (df->u.vector.x);
 		if (df->u.vector.y)
 			free (df->u.vector.y);
+		if (df->u.vector.c)
+			free (df->u.vector.c);
 	default:
 		/* see below */
 		break;
