@@ -4062,10 +4062,16 @@ void Emulate(F_CMD_ARGS)
  *
  * dje 03/22/99
  */
+ /* It is also ignored if the colormap is static i.e you can't run out */
 void SetColorLimit(F_CMD_ARGS)
 {
   int val;
 
+  /* from X.h:
+   * Note that the statically allocated ones are even numbered and the
+   * dynamically changeable ones are odd numbered */
+  if (!(Scr.viz->class & 1))
+    return;
   if (Scr.depth > 20) {               /* if more than 20 bit color */
     return;                             /* ignore the limit */
   }

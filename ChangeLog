@@ -1,6 +1,7 @@
 1999-04-13  Hippo
 
 	* fvwm/fvwm{.c,2.1}: implemented -visual and -visualId options.
+	* fvwm/builtins.c: Colorlimit ignored on static colormaps.
 
 1999-04-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
