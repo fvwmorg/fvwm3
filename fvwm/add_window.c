@@ -951,12 +951,15 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     }
   if (tmp->hints.flags & PBaseSize)
     {
+      /* CHECK: code originally "a && b || c" which is "(a && b) || c" since 
+	 logical AND has higher precedence than logical OR.  But this doesn't 
+	 look right, so I (SMR) made it "a && (b || c)". */
       if (((tmp->hints.flags & PMinSize) &&
-	   tmp->hints.base_width < tmp->hints.min_width ||
-	   tmp->hints.base_height < tmp->hints.min_height) ||
+	   (tmp->hints.base_width < tmp->hints.min_width ||
+	    tmp->hints.base_height < tmp->hints.min_height)) ||
 	  ((tmp->hints.flags & PMaxSize) &&
-	   tmp->hints.base_width > tmp->hints.max_width ||
-	   tmp->hints.base_height > tmp->hints.max_height))
+	   (tmp->hints.base_width > tmp->hints.max_width ||
+	    tmp->hints.base_height > tmp->hints.max_height)))
 	{
 	  /* The size hints are broken. Ignore min and max hints! */
 	  tmp->hints.max_width = MAX_WINDOW_WIDTH;

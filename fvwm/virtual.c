@@ -892,7 +892,7 @@ void move_window_to_desk(F_CMD_ARGS)
 void scroll(F_CMD_ARGS)
 {
   int x,y;
-  int val1, val2, val1_unit, val2_unit, n;
+  int val1, val2, val1_unit, val2_unit;
 
   if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
     /* to few parameters */
