@@ -1,3 +1,7 @@
+Mon Mar 22 19:01:38 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/Makefile.am (FvwmTalk): Fix loop in FvwmTalk.
+
 1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmAudio/FvwmAudio.c (config): replaced call to PeekToken by

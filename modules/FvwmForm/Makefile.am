@@ -11,7 +11,7 @@ man_MANS = FvwmForm.1
 module_SCRIPTS = FvwmTalk
 FvwmTalk:
 	echo "#!/bin/sh" > $@
-	echo exec ${moduledir}/FvwmTalk '$$@' FormFvwmTalk.>> $@
+	echo exec ${moduledir}/FvwmForm '$$@' FormFvwmTalk.>> $@
 	chmod +x $@
 
 ## NB: Neither _MANS nor _DATA are included by default in
