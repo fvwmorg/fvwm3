@@ -1,3 +1,10 @@
+2003-03-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/create-commands:
+	* FVWM/Commands.pm:
+	* FVWM/Module/Tk.pm:
+	several corrections
+
 2003-01-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/create-commands:

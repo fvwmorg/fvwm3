@@ -211,7 +211,7 @@ instructs to include special modes (usually black, bomb and random) first.
 
 =back
 
-Option parameters can be specified both using '=' and in the next argument.
+Option parameters can be specified either using '=' or in the next argument.
 Short options are ok if not ambiguous: -h, -t; but be careful with
 short options, what is now unambiguous, can became ambiguous in the next
 versions.

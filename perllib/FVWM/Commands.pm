@@ -5,7 +5,7 @@ package FVWM::Commands;
 use vars qw($VERS $TIME @LIST);
 
 $VERS = '2.5.6 (from cvs)';
-$TIME = 1042398132;
+$TIME = 1044264264;
 
 @LIST = (
 	{
@@ -1084,12 +1084,13 @@ __END__
 
 =head1 NAME
 
-FVWM::Commands - lists all available FVWM specific commands
+FVWM::Commands - lists all available FVWM commands
 
 =head1 DESCRIPTION
 
-This class may be used to query all available FVWM commands including the
-command name, its short description and some other command properties.
+This class may be used to get a list of all available FVWM commands
+including the command name, its short description and some other command
+properties.
 
 =head1 USAGE
 
@@ -1104,37 +1105,47 @@ command name, its short description and some other command properties.
         printf "  %-21s - %s\n", $command->{name}, $command->{descr};
     }
 
-=head1 SEE ALSO
-
-For more information about the commands themselves, see L<fvwm>.
-
 =head1 PUBLIC CONSTANTS
 
 =over 4
 
 =item $VERS
 
-The version at the generation time like "2.6.0" and the info that may
-indicate that this is not a final version, but the cvs snapshot.
+The fvwm version number at the generation time like "2.6.0" plus the info
+that may indicate that this is not a final version, but a cvs snapshot.
 
 =item $TIME
 
 The unix time of the command list generation.
 
+Example:
+
+    print "The FVWM command list found on your system was generated "
+        . (time() - $FVWM::Commands::TIME) / 86400 . " days ago\n";
+
 =item @LIST
 
-The command list that is a hash with keys I<name>, I<cursor>, I<descr>
-(strings) and I<window> (boolean).
+The command list that is an array of hashes with keys I<name>, I<cursor>,
+I<descr> (strings) and I<window> (boolean).
 
 I<name> may be special, like "+", "#" and "*".  Other names usually contain
 only isalpha characters, like B<Move>, B<SendToModule>.
 
-I<cursor> may be either empty or symbolic cursor type used in B<CursorStyle>
-like "SELECT" or "MOVE", associated with the command.
+I<cursor> may be either empty or the cursor context used in B<CursorStyle>
+(like "SELECT" or "MOVE"), associated with the command.
 
 I<descr> is a short one line description of the command.
 
 I<window> is true for commands that need a window.
+
+Example:
+
+    # get command names only
+    @commandNames = map { $_->{name} } @FVWM::Commands::LIST;
+
+=head1 SEE ALSO
+
+For more information about the commands themselves, see fvwm(1).
 
 =back
 

@@ -618,7 +618,7 @@ assign MenuStyle name to the menus
 
 =back
 
-Option parameters can be specified both using '=' and in the next argument.
+Option parameters can be specified either using '=' or in the next argument.
 Short options are ok if not ambiguous: C<-a>, C<-x>, C<-icon-f>; but be
 careful with short options, what is now unambiguous, can become ambiguous
 in the next versions.

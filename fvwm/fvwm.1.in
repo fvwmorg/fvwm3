@@ -4100,7 +4100,7 @@ list to a key (or button) like this:
 .EX
 # Here we call an existing function, but it may be different
 AddToFunc SwitchToWindow
-+ I WindowListFunc $w
++ I WindowListFunc $[w.id]
 
 Key Tab A M WindowList "Prev SwitchToWindow"
 .EE
@@ -4711,7 +4711,7 @@ opposite direction of the main motion.  The above settings are the
 default.
 
 .IP "\fBSnapAttraction [\fP\fIproximity\fP \
-\fB[\fP\fIbehavior\fP \
+\fB[\fP\fIbehavior\fP\
 \fB] [\fP\fIScreen\fP\
 \fB]]\fP"
 If during an interactive move the window or icon comes within
@@ -4934,6 +4934,7 @@ frequently causing the application to exit.
 Destroys an application window, which usually causes the
 application to crash and burn.
 
+.TP
 .BI "Iconify [" bool "]"
 Iconifies a window if it is not already iconified or de-iconifies
 it if it is already iconified.  The optional argument
@@ -4950,25 +4951,6 @@ options which influence the appearance and behavior of icons (e.g.
 For backward compatibility, the optional argument may also be a
 positive number instead of "True", or a negative number instead
 of "False".  Note that this syntax is obsolete, and will be removed
-in the future.
-
-.TP
-.BI "Iconify [" bool "]"
-Iconifies a window if it is not already iconified or de-iconifies
-it if it is already iconified.  The optional argument
-.I bool
-is a boolean argument.  "True" means only iconification is
-allowed, while "False" forces de-iconification.  Using "toggle"
-switches between iconified and de-iconified states.
-
-There are a number of
-.B Style
-options which influence the appearance and behavior of icons (e.g.
-.IR StickyIcon ", " NoIcon ).
-
-For backward compatibility, the optional argument may also be a
-positive number instead of "True", or a negative number instead of
-"False".  Note that this syntax is obsolete, and will be removed
 in the future.
 
 .TP
@@ -8920,11 +8902,11 @@ Key F11 R A Function MailFunction \\
 .EE
 in the same
 .IR .fvwm2rc ,
-if you wanted.  An example of using "$w" is:
+if you wanted.  An example of using "$[w.id]" is:
 .EX
 AddToFunc PrintFunction
  + I Raise
- + I Exec xdpr -id $w
+ + I Exec xdpr -id $[w.id]
 .EE
 Note that "$$" is expanded to '$'.
 

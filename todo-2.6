@@ -1,17 +1,17 @@
 ----- Summary ------------------------------------------------------------------
 
-Issues opened recently: many
-Issues closed recently: some
+Issues opened recently: 6 (E.11 - E.16)
+Issues closed recently: 0
                              open / closed
 A. Release stopping bugs:       0 / 1
 B. Normal bugs:                 5 / 3
 C. To be verified:             17 / 9
 D. To be discussed:             1 / 0
-E. To do:                       8 / 2
+E. To do:                      14 / 2
 F. Distribution issues:         3 / 2
 G. Testing:                     5 / 0
 
-Total:                         41 / 15
+Total:                         47 / 15
 
 - When you add/close an item give dates
 
@@ -20,7 +20,7 @@ todo: Entries should look like this:
 
   Section.id ... description ... [id in the bug tracking sys if any]
             {comments}
-            [fvwm worker(s) which want(s) to close the item]
+            [fvwm worker(s) who want(s) to close the item]
 
 
 A. Release stopping bugs (1)
@@ -98,9 +98,7 @@ C. To be verified (26)
 D. To be discussed (1)
 ------------------
 
-  D.1 Make the distinction between FVWM and fvwm?
-
-      [dv: huh?]
+  D.1 Make the distinction between FVWM (project) and fvwm (core executable)?
 
 
 E. To do (10)
@@ -108,7 +106,7 @@ E. To do (10)
 
   E.1 Complete this document
 
-  E.2 Added locale support to FvwmScript
+  E.2 Add locale support to FvwmScript
       [Olivier]
 
   E.3 After F.1 try to find translator
@@ -130,7 +128,28 @@ E. To do (10)
       [dv: added on 02-Mar-2003]
 
   E.10 Rename the "cond", "condcase", etc. commands
-      [dv: added on 02-Mar-2003]
+       [dv: added on 02-Mar-2003]
+
+  E.11 Perl library: finalize API.
+       [Mikhael]
+
+  E.12 Perl Library: add event trackers.
+       [Mikhael, probably in April 2003]
+
+  E.13 Rename ~/.fvwm/.fvwm2rc to ~/.fvwm/main or ~/.fvwm/config.
+       [Mikhael, after a notice and a possible discussion]
+
+  E.14 Rework WindowListFunc so it works under window content and does not
+       need any window id parameter (optionally pass id for compatibility).
+       [Mikhael]
+
+  E.15 Complete FvwmWindowMenu to be more functional.
+       [Mikhael (with help of Richard Lister?)]
+
+  E.16 Rename all "Pixmap" in the syntax to "Image" while supporting both.
+       Probably rename MultiPixmap to Multi, since it accepts Solid + Colorset.
+       [Mikhael]
+
 
 F. Distribution issues (4)
 ----------------------
@@ -158,6 +177,19 @@ G. Testing (5)
 
 
 ---- Closed recently ----------------------------------------------------------
+
+
+---- Postponed until after 2.6 ------------------------------------------------
+
+  F.4 Translate our documentation into "xml/docbook" format
+      [Olivier: do not have the time now, but if someone wants to do it,
+       (s)he is welcome]
+
+  F.5 Dump fvwm and write a better window manager :-)
+      (optionally dump the current life and start a new one, probably on Mars)
+
+
+---- Closed -------------------------------------------------------------------
 
   A.1 Fixed a core dump reported by Mikhael
       Ref.: 2003-02-19 "Mikhael Goikhman"   core dump when freeing pixmap
@@ -219,14 +251,4 @@ G. Testing (5)
   E.9 Either document or disable tear off menus
       [dv: added on 02-Mar-2003]
       [duplicate of E.5]
-
----- Postponed until after 2.6 ------------------------------------------------
-
-  F.4 Translate our documentation into "xml/docbook" format
-      [Olivier: do not have the time now, but if someone wants to do it,
-       (s)he is welcome]
-
-  F.5 Dump fvwm and write a better window manager :-)
-
----- Closed -------------------------------------------------------------------
 

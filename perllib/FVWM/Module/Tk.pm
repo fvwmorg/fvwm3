@@ -72,15 +72,6 @@ sub showError ($$;$) {
 	$self->send("All ('$title') Close") if $btn eq 'Close All Errors';
 }
 
-sub addDefaultErrorHandler ($) {
-	my $self = shift;
-
-	$self->addHandler(M_ERROR, sub {
-		my ($self, $event) = @_;
-		$self->showError($event->_text, "FVWM Error");
-	});
-}
-
 sub topLevel ($) {
 	return shift->{topLevel};
 }
