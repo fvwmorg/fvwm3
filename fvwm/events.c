@@ -856,8 +856,8 @@ static inline int __merge_cr_moveresize(
 #endif
 
 static inline int __handle_cr_on_client(
-	int *ret_do_send_event, XConfigureRequestEvent cre, const evh_args_t *ea,
-	FvwmWindow *fw, Bool force)
+	int *ret_do_send_event, XConfigureRequestEvent cre,
+	const evh_args_t *ea, FvwmWindow *fw, Bool force)
 {
 	rectangle new_g;
 	rectangle d_g;
@@ -869,6 +869,10 @@ static inline int __handle_cr_on_client(
 	if (ea)
 	{
 		cre = ea->exc->x.etrigger->xconfigurerequest;
+	}
+	if ((cre.value_mask & (CWWidth | CWHeight | CWX | CWY)) == 0)
+	{
+		return 0;
 	}
 
 	get_window_borders(fw, &b);
@@ -1154,7 +1158,8 @@ void __handle_configure_request(
 	}
 	/* Stacking order change requested.  Handle this *after* geometry
 	 * changes, since we need the new geometry in occlusion calculations */
-	if ((cre.value_mask & CWStackMode) && (!DO_IGNORE_RESTACK(fw) || force))
+	if ((cre.value_mask & CWStackMode) &&
+	    (!DO_IGNORE_RESTACK(fw) || force))
 	{
 		__handle_cr_restack(&do_send_event, &cre, fw);
 	}
