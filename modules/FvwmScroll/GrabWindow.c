@@ -516,6 +516,13 @@ void Loop(Window target)
       char *tline, *token;
 
       packet = ReadFvwmPacket(fd[1]);
+      if (!packet) {
+	/* fvwm has gone away or done KillModule */
+	XUnmapWindow(dpy,main_win);
+	XReparentWindow(dpy,target,Root,0,0);
+	XSync(dpy,0);
+	exit(0);
+      }
       if (packet && packet->type == M_CONFIG_INFO ) {
 	tline = (char*)&(packet->body[3]);
 	tline = GetNextToken(tline, &token);
