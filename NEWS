@@ -29,6 +29,9 @@ Font loading and memory management has been improved in the multibyte case.
   Error).  This return code can be checked and tied to an action
   with the new commands Cond and CondCase.
 
+* Bindings can be made to the separate parts of the window border
+  with the new contexts '[', ']', '-', '_', '<', '^', '>' and '_'.
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify

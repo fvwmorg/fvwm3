@@ -3120,38 +3120,60 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
       Context = C_ICON;
     else if (*w == t->decor_w)
       Context = C_SIDEBAR;
+    else if (*w == t->corners[0])
+    {
+      Context = C_F_TOPLEFT;
+      Button = 0;
+    }
+    else if (*w == t->corners[1])
+    {
+      Context = C_F_TOPRIGHT;
+      Button = 1;
+    }
+    else if (*w == t->corners[2])
+    {
+      Context = C_F_BOTTOMLEFT;
+      Button = 2;
+    }
+    else if (*w == t->corners[3])
+    {
+      Context = C_F_BOTTOMRIGHT;
+      Button = 3;
+    }
+    else if (*w == t->sides[0])
+    {
+      Context = C_SB_TOP;
+      Button = 0;
+    }
+    else if (*w == t->sides[1])
+    {
+      Context = C_SB_RIGHT;
+      Button = 1;
+    }
+    else if (*w == t->sides[2])
+    {
+      Context = C_SB_BOTTOM;
+      Button = 2;
+    }
+    else if (*w == t->sides[3])
+    {
+      Context = C_SB_LEFT;
+      Button = 3;
+    }
     else
     {
-      for(i=0;i<4;i++)
+      for (i = 0; i < NUMBER_OF_BUTTONS; i++)
       {
-	if(*w == t->corners[i])
-	{
-	  Context = C_FRAME;
-	  break;
-	}
-	if(*w == t->sides[i])
-	{
-	  Context = C_SIDEBAR;
-	  break;
-	}
-      }
-      if (i < 4)
-	Button = i;
-      else
-      {
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
-	{
-	  if (*w == t->button_w[i])
-	  {
-	    if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
-		( (i & 1) && i / 2 < Scr.nr_right_buttons))
-	    {
-	      Context = (1 << i) * C_L1;
-	      Button = i;
-	      break;
-	    }
-	  }
-	}
+        if (*w == t->button_w[i])
+        {
+          if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
+              ( (i & 1) && i / 2 < Scr.nr_right_buttons))
+          {
+            Context = (1 << i) * C_L1;
+            Button = i;
+            break;
+          }
+        }
       }
     } /* else */
   } /* if (t) */

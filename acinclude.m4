@@ -30,7 +30,7 @@ if test "$ac_cv_func_select" = yes; then
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif],
-[extern select ($ac_cv_type_fd_set_size_t, 
+[extern select ($ac_cv_type_fd_set_size_t,
  $ac_cv_type_fd_set *,	$ac_cv_type_fd_set *, $ac_cv_type_fd_set *,
  $ac_type_timeval *);],
 [ac_found=yes ; break 3],ac_found=no)
@@ -262,7 +262,7 @@ ifelse($2, , smr_lib=[$1], smr_lib=[$2])
 ifelse($5, , , smr_header=[$5])
 smr_ARG_WITHLIB($1,$2,$3)
 if test "$with_$1" != no; then
-    AC_CHECK_LIB(${smr_lib}, $4,
+    AC_CHECK_LIB(ifelse($2, , $1, $2), $4,
         smr_havelib=yes,
         smr_havelib=no; problem_$1=": Can't find working lib$smr_lib",
         ifelse($6, , ${$1_LIBS}, [${$1_LIBS} $6]))
@@ -330,7 +330,7 @@ dnl AM_PATH_GTK([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for GTK, and define GTK_CFLAGS and GTK_LIBS
 dnl
 AC_DEFUN(AM_PATH_GTK,
-[dnl 
+[dnl
 dnl Get the cflags and libraries from the gtk-config script
 dnl
 AC_ARG_WITH(gtk-prefix,[  --with-gtk-prefix=PFX   prefix for GTK files (optional)],
@@ -383,7 +383,7 @@ dnl
 #include <stdio.h>
 #include <stdlib.h>
 
-int 
+int
 main ()
 {
   int major, minor, micro;
@@ -402,7 +402,7 @@ main ()
       (gtk_minor_version != $gtk_config_minor_version) ||
       (gtk_micro_version != $gtk_config_micro_version))
     {
-      printf("\n*** 'gtk-config --version' returned %d.%d.%d, but GTK+ (%d.%d.%d)\n", 
+      printf("\n*** 'gtk-config --version' returned %d.%d.%d, but GTK+ (%d.%d.%d)\n",
              $gtk_config_major_version, $gtk_config_minor_version, $gtk_config_micro_version,
              gtk_major_version, gtk_minor_version, gtk_micro_version);
       printf ("*** was found! If gtk-config was correct, then it is best\n");
@@ -413,7 +413,7 @@ main ()
       printf("*** If gtk-config was wrong, set the environment variable GTK_CONFIG\n");
       printf("*** to point to the correct copy of gtk-config, and remove the file config.cache\n");
       printf("*** before re-running configure\n");
-    } 
+    }
 #if defined (GTK_MAJOR_VERSION) && defined (GTK_MINOR_VERSION) && defined (GTK_MICRO_VERSION)
   else if ((gtk_major_version != GTK_MAJOR_VERSION) ||
 	   (gtk_minor_version != GTK_MINOR_VERSION) ||
@@ -459,7 +459,7 @@ main ()
   fi
   if test "x$no_gtk" = x ; then
      AC_MSG_RESULT(yes)
-     ifelse([$2], , :, [$2])     
+     ifelse([$2], , :, [$2])
   else
      AC_MSG_RESULT(no)
      if test "$GTK_CONFIG" = "no" ; then
@@ -523,7 +523,7 @@ dnl AM_PATH_IMLIB([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for IMLIB, and define IMLIB_CFLAGS and IMLIB_LIBS
 dnl
 AC_DEFUN(AM_PATH_IMLIB,
-[dnl 
+[dnl
 dnl Get the cflags and libraries from the imlib-config script
 dnl
 AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (optional)],
@@ -615,7 +615,7 @@ int main ()
   fi
   if test "x$no_imlib" = x ; then
      AC_MSG_RESULT(yes)
-     ifelse([$2], , :, [$2])     
+     ifelse([$2], , :, [$2])
   else
      AC_MSG_RESULT(no)
      if test "$IMLIBCONF" = "no" ; then
@@ -662,7 +662,7 @@ int main ()
 
 # Check for gdk-imlib
 AC_DEFUN(AM_PATH_GDK_IMLIB,
-[dnl 
+[dnl
 dnl Get the cflags and libraries from the imlib-config script
 dnl
 AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (optional)],
@@ -756,7 +756,7 @@ int main ()
   fi
   if test "x$no_imlib" = x ; then
      AC_MSG_RESULT(yes)
-     ifelse([$2], , :, [$2])     
+     ifelse([$2], , :, [$2])
   else
      AC_MSG_RESULT(no)
      if test "$IMLIBCONF" = "no" ; then
@@ -828,7 +828,7 @@ dnl
 dnl GNOME_INIT_HOOK (script-if-gnome-enabled, [failflag])
 dnl
 dnl if failflag is "fail" then GNOME_INIT_HOOK will abort if gnomeConf.sh
-dnl is not found. 
+dnl is not found.
 dnl
 
 AC_DEFUN([GNOME_INIT_HOOK],[
@@ -843,7 +843,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	])
 
 	gnome_prefix=$ac_default_prefix/lib
-	
+
 	AC_ARG_WITH(gnome-libs,
 	[  --with-gnome-libs       location of GNOME libs],[
 	LDFLAGS="$LDFLAGS -L$withval"
@@ -901,7 +901,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 #	    else
 #	        gnome_prefix=`eval echo \`echo $libdir\``
 #	    fi
-	
+
 	    if test "$no_gnome_config" = "yes"; then
               AC_MSG_CHECKING(for gnomeConf.sh file in $gnome_prefix)
 	      if test -f $gnome_prefix/gnomeConf.sh; then
@@ -940,7 +940,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 			[with_gnomelibs=no]
 		)
 		AC_MSG_RESULT($with_gnomelibs)
-		CPPFLAGS="$my_CPPFLAGS" 
+		CPPFLAGS="$my_CPPFLAGS"
 		LIBS="$my_LIBS"
 	else
 		# just for safety

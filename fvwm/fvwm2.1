@@ -4592,10 +4592,12 @@ is zero then any button performs the specified function.
 describes where the binding applies.  Valid contexts are 'R' for
 the root window, 'W' for an application window, 'D' for a desktop
 application (as kdesktop or Nautilus desktop), 'T' for a window
-title-bar, 'S' for a window side, top, or bottom bar, 'F' for a
-window frame (the corners), 'I' for an Icon window, or '0' through
-'9' for title-bar buttons, or any combination of these letters.
-'A' is for any context except for title-bar buttons.  For
+title-bar, 'S' for a window side, top, or bottom bar, '[', ']',
+'-' and '_' for the left, rigth, top or bottom side only, 'F' for
+a window frame (the corners), '<', '^', '>' and 'v' for the top
+left, top right, bottom right or bottom left corner, 'I' for an
+Icon window, or '0' through '9' for title-bar buttons, or any
+combination of these letters.  'A' is for any context.  For
 instance, a context of "FST" applies when the mouse is anywhere in
 a window's border except the title-bar buttons.  Only 'S' and 'W'
 are valid for an undecorated window.
