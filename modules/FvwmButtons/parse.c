@@ -780,7 +780,7 @@ static void ParseButton(button_info **uberb,char *s)
       "padding",
       "swallow",
       "panel",
-      "action",
+      "actionignoresclientwindow",
       "container",
       "end",
       "nosize",
@@ -789,6 +789,7 @@ static void ParseButton(button_info **uberb,char *s)
       "right",
       "center",
       "colorset",
+      "action",
       NULL
     };
     s = trimleft(s);
@@ -1053,52 +1054,8 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	break;
 
-	/* --------------------------- action ------------------------ */
-
-      case 9: /* Action */
-	s = trimleft(s);
-	i=0;
-	if(*s=='(')
-	{
-	  s++;
-	  if(strncasecmp(s,"mouse",5)!=0)
-	  {
-	    fprintf(stderr,"%s: Couldn't parse action\n",MyName);
-	  }
-	  s+=5;
-	  i=strtol(s,&t,10);
-	  s=t;
-	  while(*s && *s!=')')
-	    s++;
-	  if(*s==')')
-            s++;
-	}
-        {
-          char *r;
-          char *u = s;
-
-          s = GetQuotedString(s, &t, ",)", NULL, "(", ")");
-          r = s;
-          if (t && r > u + 1)
-          {
-            /* remove unquoted trailing spaces */
-            r -= 2;
-            while (r >= u && isspace(*r))
-              r--;
-            r++;
-            if (isspace(*r))
-            {
-              t[strlen(t) - (s - r - 1)] = 0;
-            }
-          }
-        }
-	if(t)
-	{
-	  AddButtonAction(b,i,t);
-	  free(t);
-	}
-	else
-	  fprintf(stderr,"%s: Missing action argument\n",MyName);
+      case 9: /* ActionIgnoresClientWindow */
+	b->flags |= b_ActionIgnoresClientWindow;
 	break;
 
 	/* -------------------------- container ---------------------- */
@@ -1169,6 +1126,54 @@ static void ParseButton(button_info **uberb,char *s)
 	{
 	  b->flags &= ~b_Colorset;
 	}
+	break;
+
+	/* --------------------------- action ------------------------ */
+
+      case 18: /* Action */
+	s = trimleft(s);
+	i=0;
+	if(*s=='(')
+	{
+	  s++;
+	  if(strncasecmp(s,"mouse",5)!=0)
+	  {
+	    fprintf(stderr,"%s: Couldn't parse action\n",MyName);
+	  }
+	  s+=5;
+	  i=strtol(s,&t,10);
+	  s=t;
+	  while(*s && *s!=')')
+	    s++;
+	  if(*s==')')
+            s++;
+	}
+        {
+          char *r;
+          char *u = s;
+
+          s = GetQuotedString(s, &t, ",)", NULL, "(", ")");
+          r = s;
+          if (t && r > u + 1)
+          {
+            /* remove unquoted trailing spaces */
+            r -= 2;
+            while (r >= u && isspace(*r))
+              r--;
+            r++;
+            if (isspace(*r))
+            {
+              t[strlen(t) - (s - r - 1)] = 0;
+            }
+          }
+        }
+	if(t)
+	{
+	  AddButtonAction(b,i,t);
+	  free(t);
+	}
+	else
+	  fprintf(stderr,"%s: Missing action argument\n",MyName);
 	break;
 
       default:

@@ -1,3 +1,14 @@
+2002-01-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconBox/icons.c (GetIconBitmap):
+	(GetIconWindow):
+	fixed core dump when application has an icon with an illegal depth
+
+	* FvwmButtons/FvwmButtons.c (swallow):
+	* FvwmButtons/parse.c (ParseButton):
+	new button option ActionIgnoresClientWindow to augment binding actions
+	on buttons with swallowed windows.
+
 2002-01-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconBox/FvwmIconBox.c:

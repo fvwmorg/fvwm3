@@ -195,33 +195,56 @@ FvwmButtons exits with an error message.
 .IP "Action [(\fIoptions\fP)] \fIcommand\fP"
 Specifies an fvwm command to be executed when the button is activated
 by pressing return or a mouse button. The \fIcommand\fP needs to be
-quoted if it contains a comma or a closing parenthesis. You can use a
-number of predefined variables: \fI$left\fP, \fI$right\fP, \fI$top\fP
-and \fI$bottom\fP are substituted by the left, right, top and bottom
-coordinates of the button pressed. \fI$-left\fP, \fI$-right\fP,
-\fI$-top\fP and\fI$-bottom\fP are substituted likewise, but the
-coordinates are calculated from the bottom or the
-right edge of the screen instead (for a button that is 5 pixels away
-from the right screen border, $-right will be 5). \fI$width\fP
-and \fI$height\fP are replaced by the width or height of the button.
-The variables \fI$fg\fP and \fI$bg\fP are replaced with the name
-of the foreground or background color set with the \fIBack\fP
-or \fIFore\fP option (see below). All this is done regardless of
-any quoting characters. To get a literal '$' use the string '$$'.
+quoted if it contains a comma or a closing parenthesis.
+
+The current options of the \fIAction\fP are: Mouse \fIn\fP - this
+action is only executed for mouse button \fIn\fP. One action can
+be defined for each mouse button, in addition to the general
+action.
+
+In the \fIcommand\fP part, you can use a number of predefined
+variables: \fI$left\fP, \fI$right\fP, \fI$top\fP and \fI$bottom\fP
+are substituted by the left, right, top and bottom coordinates of
+the button pressed. \fI$-left\fP, \fI$-right\fP, \fI$-top\fP and
+\fI$-bottom\fP are substituted likewise, but the coordinates are
+calculated from the bottom or the right edge of the screen instead
+(for a button that is 5 pixels away from the right screen border,
+$-right will be 5). \fI$width\fP and \fI$height\fP are replaced by
+the width or height of the button. The variables \fI$fg\fP and
+\fI$bg\fP are replaced with the name of the foreground or
+background color set with the \fIBack\fP or \fIFore\fP option (see
+below). All this is done regardless of any quoting characters. To
+get a literal '$' use the string '$$'.
+
 Example:
 
 .nf
 .sp
-  *FvwmButtons: (Swallow xload \\
+  *FvwmButtons: (Title xload, Action (Mouse 1) \\
     `Exec exec xload -fg $fg -bg $bg -geometry -3000-3000`)
 .sp
 .fi
 
-The current options of the \fIAction\fP are:
+Note: With fvwm versions prior to 2.5.0, actions could not be
+assigned to a button that swallowed an application window (see
+\fISwallow\fP option).  Such actions worked only when the border
+around the button was clicked.  This is now possible, but to get
+back the old behaviour, the \fIActionIgnoresClientWindow\fP can be
+used on the button:
 
-Mouse \fIn\fP - this action is only executed for mouse button \fIn\fP.
-One action can be defined for each mouse button, in addition to the
-general action.
+.nf
+.sp
+  *FvwmButtons: (Action beep, ActionIgnoresClientWindow, \\
+     Swallow xeyes "Exec exec xload")
+.sp
+.fi
+
+In this example, the action is only executed when you click on the
+border of the button or the transparent part of the xeyes window,
+but not on the xeyes window itself.
+
+.IP "ActionIgnoresClientWindow"
+See the note in the description of \fIAction\fP above.
 
 .IP "Back \fIcolor\fP"
 Specifies the background color to be used drawing this box. A relief color

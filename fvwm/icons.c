@@ -1342,12 +1342,18 @@ void GetIconWindow(FvwmWindow *tmp_win)
 {
   /* We are guaranteed that wmhints is non-null when calling this
    * routine */
-  if(XGetGeometry(dpy,   tmp_win->wmhints->icon_window, &JunkRoot,
-		  &JunkX, &JunkY,(unsigned int *)&tmp_win->icon_p_width,
-		  (unsigned int *)&tmp_win->icon_p_height,
-		  &JunkBW, &JunkDepth)==0)
+  if (XGetGeometry(
+	dpy, tmp_win->wmhints->icon_window, &JunkRoot, &JunkX, &JunkY,
+	(unsigned int *)&tmp_win->icon_p_width,
+	(unsigned int *)&tmp_win->icon_p_height, &JunkBW, &JunkDepth) == 0)
   {
-    fvwm_msg(ERR,"GetIconWindow","Help! Bad Icon Window!");
+    fvwm_msg(ERR,"GetIconWindow", "Window '%s' has a bad icon window!"
+	     " Ignoring icon window.",
+	     tmp_win->name);
+    /* disable the icon window hint */
+    tmp_win->wmhints->icon_window = None;
+    tmp_win->wmhints->flags &= ~IconWindowHint;
+    return;
   }
   tmp_win->icon_p_width += JunkBW<<1;
   tmp_win->icon_p_height += JunkBW<<1;
@@ -1386,13 +1392,24 @@ void GetIconBitmap(FvwmWindow *tmp_win)
   if (!XGetGeometry(dpy, tmp_win->wmhints->icon_pixmap, &JunkRoot,
 		    &JunkX, &JunkY, &width, &height, &JunkBW, &depth))
   {
+    fvwm_msg(ERR,"GetIconBitmap", "Window '%s' has a bad icon pixmap!"
+	     " Ignoring icon.", tmp_win->name);
+    /* disable icon pixmap hint */
+    tmp_win->wmhints->icon_pixmap = None;
+    tmp_win->wmhints->flags &= ~IconPixmapHint;
     return;
   }
 
   /* sanity check the pixmap depth, it must be the same as the root or 1 */
   if ((depth != 1) && (depth != DefaultDepth(dpy,Scr.screen)))
   {
-    fvwm_msg(ERR, "GetIconBitmap", "Bad client icon pixmap depth %d", depth);
+    fvwm_msg(ERR, "GetIconBitmap",
+	     "Window '%s' has a bad icon bitmap depth %d (should be 1 or %d)!"
+	     " Ignoring icon bitmap.",
+	     tmp_win->name, depth, DefaultDepth(dpy,Scr.screen));
+    /* disable icon pixmap hint */
+    tmp_win->wmhints->icon_pixmap = None;
+    tmp_win->wmhints->flags &= ~IconPixmapHint;
     return;
   }
 

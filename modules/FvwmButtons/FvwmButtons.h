@@ -82,6 +82,9 @@
 #define b_Colorset   0x00200000 /* use colorset instead of fore/back colours */
 #define b_ColorsetParent 0x00400000 /* Parent has a colorset background */
 #define b_Panel      0x00800000 /* similar to swallow, but drawn differently */
+#define b_ActionIgnoresClientWindow \
+                     0x01000000 /* Actions work only on the background of a
+				 * button with a swallowed app. */
 
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */

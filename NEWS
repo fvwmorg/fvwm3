@@ -7,7 +7,9 @@ Changes in beta release 2.5.0 (not released yet)
   FixedPSize, VariablePPosition, VariableUSPosition, VariableSize,
   VariableUSSize, and VariablePSize.
 
-* Actions can be bound to windows swallowed in FvwmButtons.
+* Actions can be bound to windows swallowed in FvwmButtons.  To
+  diasable this feature for a specific button, the new option
+  ActionIgnoresClientWindow can be used.
 
 * Fvwm respect the extended window manager hints specification.
   This allows fvwm to work with KDE version >= 2 and GNOME version 2.

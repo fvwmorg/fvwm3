@@ -2899,7 +2899,8 @@ void swallow(unsigned long *body)
 	  return;
 	}
 	/*error checking*/
-        for (i = 0; i <= NUMBER_OF_MOUSE_BUTTONS; i++)
+        for (i = 0; !(b->flags & b_ActionIgnoresClientWindow) &&
+		     i <= NUMBER_OF_MOUSE_BUTTONS; i++)
         {
           if (b->action != NULL && b->action[i] != NULL)
           {

@@ -324,7 +324,12 @@ void GetIconWindow(struct icon_info *item)
                   &x, &y, (unsigned int *)&item->icon_w,
 		   (unsigned int *)&item->icon_h,
 		   &bw, (unsigned int *)&item->icon_depth))
+  {
+    /* disable the icon window hint */
+    item->wmhints->icon_window = None;
+    item->wmhints->flags &= ~IconWindowHint;
     return;
+  }
 
   item->icon_pixmap_w = item->wmhints->icon_window;
 
@@ -366,6 +371,17 @@ void GetIconBitmap(struct icon_info *item)
                (unsigned int *)&item->icon_w,
                (unsigned int *)&item->icon_h, &bw, &depth))
   {
+    /* disable icon pixmap hint */
+    item->wmhints->icon_pixmap = None;
+    item->wmhints->flags &= ~IconPixmapHint;
+    return;
+  }
+  /* sanity check the pixmap depth, it must be the same as the root or 1 */
+  if (depth != 1 && depth != DefaultDepth(dpy, screen))
+  {
+    /* disable icon pixmap hint */
+    item->wmhints->icon_pixmap = None;
+    item->wmhints->flags &= ~IconPixmapHint;
     return;
   }
   item->icon_depth = depth;
