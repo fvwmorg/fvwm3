@@ -1,3 +1,9 @@
+2002-03-07  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c (FInitLocale):
+	* fvwm/fvwm.c (main):
+	Set the locale using "" as locale argument
+
 2002-03-07  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:

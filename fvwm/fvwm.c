@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 
   setVersionInfo();
 
-  FInitLocale(LC_CTYPE, getenv("LC_CTYPE"), "", "FVWM");
+  FInitLocale(LC_CTYPE, "", "", "FVWM");
   FInitCharset("FVWM");
 
   /* Put the default module directory into the environment so it can be used

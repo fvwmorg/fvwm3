@@ -86,9 +86,9 @@ void FInitCharset(const char *module)
 
   if (Flocale == NULL)
   {
-    if (setlocale(LC_CTYPE, getenv("LC_CTYPE")) == NULL)
+    if (setlocale(LC_CTYPE, "") == NULL)
       fprintf(stderr,
-				"[%s][%s]: WARNNING -- Cannot set locale\n", module, "FInitCharset");
+	"[%s][%s]: WARNNING -- Cannot set locale\n", module, "FInitCharset");
   }
 #ifdef HAVE_CODESET
   if (!Fcharset)
