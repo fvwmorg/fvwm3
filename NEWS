@@ -24,6 +24,9 @@ Changes in development release 2.5.8 (not released yet)
   (default).  The method can be overridden manually if the
   detection does not work.
 
+* Added support for new BBC headlines in fvwm-menu-headlines, this
+  replaces the old BBC-Worlds and BBC-SciTech headlines.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.7 (30-May-2003)

@@ -147,19 +147,28 @@ local $siteInfo = {
 		'func' => \&processCNN,
 		'flds' => 'headline, url',
 	},
+	# to be removed
 	'bbc-world' => {
-		'name' => "BBC-World",
+		'name' => "BBC-World (obsolete)",
 		'host' => "news.bbc.co.uk",
 		'path' => "/low/english/world/default.stm",
-		'func' => \&processBBC,
+		'func' => \&processOldBBC,
 		'flds' => 'headline, url, abstract',
 	},
+	# to be removed
 	'bbc-scitech' => {
-		'name' => "BBC-SciTech",
+		'name' => "BBC-SciTech (obsolete)",
 		'host' => "news.bbc.co.uk",
 		'path' => "/low/english/sci/tech/default.stm",
-		'func' => \&processBBC,
+		'func' => \&processOldBBC,
 		'flds' => 'headline, url, abstract',
+	},
+	'bbc' => {
+		'name' => "BBC",
+		'host' => "news.bbc.co.uk", 'host0' => "tickers.bbc.co.uk",
+		'path' => "/tickerdata/story2.dat",
+		'func' => \&processBBC,
+		'flds' => 'story, headline, url',
 	},
 };
 
@@ -231,10 +240,11 @@ if (defined $info) {
 	if ($info) {
 		my $_info = $siteInfo->{lc($info)};
 		die "Unsupported site '$info'; try --info.\n" unless $_info;
+		my $host0 = $_info->{'host0'} || $_info->{'host'};
 		print
 			"Site Name:\n\t$_info->{'name'}\n",
 			"Home Page:\n\thttp://$_info->{'host'}/\n",
-			"Headlines:\n\thttp://$_info->{'host'}$_info->{'path'}\n",
+			"Headlines:\n\thttp://$host0$_info->{'path'}\n",
 			"Headline fields:\n\t$_info->{'flds'}\n";
 	} else {
 		print "All supported sites:\n\t", join(", ", &getAllSiteNames()),
@@ -310,6 +320,8 @@ if (defined $frontpage && $frontpage !~ /^b/) {
 
 unless (defined $fakeFile) {
 	# network connection portion is pretty much stolen from 'man perlipc'
+	$siteHost = $siteInfo->{$site}->{'host0'}
+		if defined $siteInfo->{$site}->{'host0'};
 	my $host = $proxy || $siteHost;
 	my $iaddr = inet_aton($host) || &dieNet("Can't resolve host $host");
 	my $paddr = sockaddr_in($port, $iaddr);
@@ -716,7 +728,7 @@ sub processCNN () {
 	$contents =~ s{<a href="(/.*?)".*?>(.*?)</a>}{
 		my $entry = {};
 		$entry->{'url'} = "http://www.cnn.com$1";
-      $entry->{'headline'} = $2;
+		$entry->{'headline'} = $2;
 		setEntryAliasesAndTime(
 			$entry,
 			{ 'h' => 'headline', 'u' => 'url', 'd' => $linkToDate },
@@ -733,7 +745,7 @@ sub processCNN () {
 	return \@entries;
 }
 
-sub processBBC () {
+sub processOldBBC () {
 	my $contents = readAllLines();
 	$contents =~ s!\r\n...\r\n!!sg;  # they insert this randomly!
 	$contents =~ s!\s*<(br|/h3|h3|span[^>]*|/span|img [^>]+)>[ \t\r]*\n?!!sig;
@@ -742,8 +754,8 @@ sub processBBC () {
 	$contents =~ s{\s+<a href="(/[^"]+?)">\s*([^\s][^<]+?)\s*</a>\s*([^<]+?)\s*(?:\n|<br )}{
 		my $entry = {};
 		my $path = $1;
-      $entry->{'headline'} = $2;
-      $entry->{'abstract'} = $3;
+		$entry->{'headline'} = $2;
+		$entry->{'abstract'} = $3;
 		$path =~ s|^(/\d+)?/low/|$1/hi/|;
 		$entry->{'url'} = "http://news.bbc.co.uk$path";
 		setEntryAliasesAndTime(
@@ -751,6 +763,43 @@ sub processBBC () {
 			{ 'h' => 'headline', 'u' => 'url', 'd' => undef },
 			sub ($) {
 				();  # no time...
+			}, +0,
+		);
+		push @entries, $entry;
+		""
+	}sige;
+
+	return \@entries;
+}
+
+sub processBBC () {
+	readAllLines() =~ /STORY 1\nHEADLINE Last update at (\d+:\d+)\nURL \n(.*)$/s;
+	my ($time, $contents) = ($1, $2);
+	dieNet("Parse error. Did BBC site change format?", "") unless defined $time;
+	my @entries = ();
+
+	$contents =~ s{STORY (\d+)\nHEADLINE (.*?)\nURL (.*?)\n}{
+		my $entry = {};
+		my $date = undef;
+		$entry->{'story'} = $1;
+		my $headline = $2;
+		my $url = $3;
+		if ($headline =~ /^(.+?)  (\d+ \w+ \d+)$/) {
+			$headline = $1;
+			$date = $2 . " $time";
+		}
+		$entry->{'headline'} = $headline;
+		$url =~ s|^(http://.*?/).*/-/(.*)$|$1$2|;
+		$url = "http://news.bbc.co.uk/" if $url eq "";
+		$entry->{'url'} = $url;
+		$entry->{'date'} = $date;
+		setEntryAliasesAndTime(
+			$entry,
+			{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
+			sub ($) {
+				return () unless defined $_[0] &&
+	         $_[0] =~ /^(\d+) (\w+) (\d+) (\d+):(\d+)/;
+	         ($3, $lmonthHash{$2}, $1, $4, $5);
 			}, +0,
 		);
 		push @entries, $entry;
@@ -906,7 +955,7 @@ B<fvwm-menu-headlines>
 This configurable perl script builds an fvwm menu definition for headlines
 of popular news web sites: FreshMeat, Slashdot, LinuxToday, LinuxApps,
 DaemonNews, GNOME-News, KDE-News, RootPrompt,
-LinuxFr, ThinkGeek, CNN, BBC-World, BBC-SciTech and more.
+LinuxFr, ThinkGeek, CNN, BBC and more.
 
 It is possible to specify a customized menu item format, change a command
 (usually launching a browser) and add menu icons (there is a support for
