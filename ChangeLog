@@ -2,6 +2,9 @@
 
 	* libs/ModGraph.{h,c}: new function (Graphics *)CreateGraphics(void);
 	* libs/Picture.{h,c}: new function (void)SavePictureCMap.
+	* fvwm/builtins.c: use XFlushGC before sending look to modules,
+	removed subliminal advertisment
+	* libs/ModGraph.{h,c}: changed DEFGRAPHSTR for FvwmButtons
 
 1999-04-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 

@@ -86,15 +86,17 @@ Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
     return False;
     
   /* bail out on short lines */
-  if (DEFGRAPHLEN + 1 >= strlen(line)) {
+  if (strlen(line) < (size_t)(DEFGRAPHLEN + 2 * DEFGRAPHNUM)) {
     G->useFvwmLook = False;
     return False;
   }
 
-  if (sscanf(line + DEFGRAPHLEN, "%lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
-            &vid, &cmap, &drawGContext, &bgtype, &bg, &foreGContext,
-            &relGContext, &shadGContext, &fid) != DEFGRAPHNUM)
+  if (sscanf(line + DEFGRAPHLEN + 1, "%lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
+	     &vid, &cmap, &drawGContext, &bgtype, &bg, &foreGContext,
+	     &relGContext, &shadGContext, &fid) != DEFGRAPHNUM) {
+    G->useFvwmLook = False;
     return False;
+  }
     
   /* if this is the first one grab a visual to use */
   if (!G->initialised) {

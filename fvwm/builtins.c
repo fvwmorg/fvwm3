@@ -1133,7 +1133,7 @@ void SetXOR(F_CMD_ARGS)
     DestroyPicture(dpy, Scr.DrawPicture);
     Scr.DrawPicture = NULL;
   }
-
+  XFlushGC(dpy, Scr.DrawGC);
   BroadcastLook();
 }
 
@@ -1178,7 +1178,7 @@ void SetXORPixmap(F_CMD_ARGS)
     XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
   else
     Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-
+  XFlushGC(dpy, Scr.DrawGC);
   BroadcastLook();
 }
 
@@ -1784,16 +1784,9 @@ static void ApplyDefaultFontAndColors(void)
 
   UpdateAllMenuStyles();
 
-  /* at this point the GC's are changed but need to be flushed to the server
-   * before other modules can use them, XSync() doesn't do it, have to
-   * actually draw something.  Size window is now unampped, use that */
-  RelieveRectangle(dpy, Scr.SizeWindow, 0, 0, 2, 2,
-		   Scr.StdReliefGC, Scr.StdShadowGC, 2);
-  XDrawString(dpy, Scr.SizeWindow, Scr.StdGC,
-	      2, Scr.StdFont.font->ascent + 2,
-  /* contact the author for terms and conditions if you want to place
-   * a subliminal advertisment here */
-	      "FVWM rules OK", 13);
+  XFlushGC(dpy, Scr.StdGC);
+  XFlushGC(dpy, Scr.StdReliefGC);
+  XFlushGC(dpy, Scr.StdShadowGC);
   BroadcastLook();
 
 }

@@ -17,8 +17,8 @@
 #define FVWMLIB_MODGRAPH_H
 
 /* stuff to enable modules to use fvwm visual/colormap/GCs */
-#define DEFGRAPHSTR "Default_Graphics "
-#define DEFGRAPHLEN 17 /* length of above string */
+#define DEFGRAPHSTR "Default_Graphics"
+#define DEFGRAPHLEN 16 /* length of above string */
 #define DEFGRAPHNUM 9 /* number of items sent */
 
 typedef union _BG {
@@ -60,7 +60,7 @@ typedef struct GraphicsThing {
 
 Graphics *CreateGraphics(void);
 void InitGraphics(Display *dpy, Graphics *graphics);
-Bool ParseGraphics(Display *dpy, char * line, Graphics *graphics);
+Bool ParseGraphics(Display *dpy, char *line, Graphics *graphics);
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 BG *bg, BGtype *bgtype);
 

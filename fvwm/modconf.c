@@ -211,8 +211,8 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
 char *make_look_packet()
 {
-  char *b = safemalloc(DEFGRAPHNUM * (sizeof(long) * 2 + 1) + DEFGRAPHLEN + 2);
-  sprintf(b, "%s%lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
+  char *b = safemalloc(DEFGRAPHNUM * (sizeof(long) * 2 + 1) + DEFGRAPHLEN + 3);
+  sprintf(b, "%s %lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
 	  DEFGRAPHSTR,
  	  XVisualIDFromVisual(Scr.viz),
 	  Scr.cmap,
