@@ -195,10 +195,11 @@ During initialization, \fIfvwm2\fP will search for a configuration file
 which describes key and button bindings, and a few other things.  The
 format of these files will be described later.
 \fIFvwm2\fP first searches for configurations files using the command
-"Read .fvwm2rc".  This will look for $HOME/.fvwm2rc or $HOME/.fvwm/fvwm2rc,
+"Read .fvwm2rc".  This will look for $HOME/.fvwm2rc or
+$FVWM_USERHOME/.fvwm2rc,
 as described in "read" below.  If a configuration file is not found,
-and mouse button or the "Help" of "F1" keys on the root window will
-bring up menus and forms that will create a starting configuration file.
+any mouse button or the "Help" or "F1" keys on the root window will
+bring up menus and forms that can create a starting configuration file.
 
 \fIFvwm2\fP will set two environment variables which will be inherited
 by its children.  These are $DISPLAY which describes the display on
@@ -3355,3 +3356,4 @@ which was written by Tom LaStrange.  After Robert Nation came Charles Hines,
 followed by Brady Montz. Currently fvwm2 is maintained by a number of people
 on the fvwm-workers mailing list (Dan Espen, Steve Robbins, Paul Smith,
 Jason Tibbitts, Dominik Vogt, Bob Woodside and others).
+\"  LocalWords:  XTerm rc

@@ -1,3 +1,11 @@
+1999-05-12  Dan Espen  <dane@mk.bellcore.com>
+
+	* INSTALL.fvwm (Configuration File): Some clarification on config files
+	that are installed.  Ssysconfdir is ${prefix}/etc/fvwm.
+
+	* fvwm/fvwm2.1 (INITIALIZATION): Correct typo and facts about
+	startup.
+
 1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/builtins.c (Maximize): make windows go back to their 

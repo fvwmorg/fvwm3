@@ -33,6 +33,7 @@ What gets installed, and Where
 * a couple of utilities (xpmroot, etc) are also installed in ${prefix}/bin
 * all the modules (and extra modules) are installed
   into ${libexecdir}/fvwm/${VERSION}
+* some configuration files are installed into ${sysconfdir}
 
 Where VERSION is the version string of FVWM, typically something like
 "2.2.0".  No other files are installed.  There are sample
@@ -42,12 +43,12 @@ see below.
 Unless you used configure options,
 
 * ${prefix} is /usr/local.
-* ${sysconfdir} is ${prefix}/etc,
+* ${sysconfdir} is ${prefix}/etc/fvwm,
 * ${libexecdir} is ${prefix}/libexec
 
 Thus the default locations are: /usr/local/bin,
-/usr/local/libexec/fvwm/VERSION, and /usr/local/etc for the FVWM
-binary, modules, and system.fvwm2rc, respectively.
+/usr/local/libexec/fvwm/VERSION, and /usr/local/etc/fvwm for the FVWM
+binary, modules, and configuration files, respectively.
 
 Note that by default, none of the executables are stripped when they're
 installed.  If you'd like them to be, run `make install-strip' instead
@@ -62,7 +63,7 @@ Configuration File
 
 FVWM configures itself at runtime by reading one or more configuration
 files.  The default location for the system-wide configuration (named
-system.fvwm2rc) is /usr/local/etc; this may be changed by changing the
+system.fvwm2rc) is /usr/local/etc/fvwm; this may be changed by changing the
 prefix or setting sysconfdir explicitly.  This system-wide file is
 read only if the user's ~/.fvwm2rc is not found.
 
@@ -71,6 +72,15 @@ directory.  To avoid clobbering the current configuration, no
 configuration file is installed by default.  You must copy it manually
 the first time FVWM is installed.
 
+Other configuration files are installed that can be used directly
+from the configuration directory.  See the FvwmForm man page for
+some examples.
+
+For users starting fvwm2 without
+a .fvwm2rc file, there are built-in dialogs that can copy files
+from the configuration directory into the users home directory
+to create the users starting .fvwm2rc.  See the fvwm2 man page
+under "INITIALIZATION".
 
 C++
 ===
