@@ -97,6 +97,7 @@ typedef struct
 	{
 		unsigned is_last_menu_pos_hints_valid : 1;
 		unsigned do_ignore_pos_hints : 1;
+		unsigned do_warp_title : 1;
 	} flags;
 	MenuPosHints pos_hints;
 } saved_pos_hints;
@@ -140,6 +141,73 @@ typedef enum
 	SA_ABORT
 } shortcut_action;
 
+/* ---------------------------- menu loop types ----------------------------- */
+
+typedef enum
+{
+	MENU_MLOOP_RET_NORMAL,
+	MENU_MLOOP_RET_LOOP,
+	MENU_MLOOP_RET_END
+} mloop_ret_code_t;
+
+typedef struct
+{
+	unsigned do_popup_immediately : 1;
+	/* used for delay popups, to just popup the menu */
+	unsigned do_popup_now : 1;
+	unsigned do_popdown_now : 1;
+	/* used for keystrokes, to popup and move to that menu */
+	unsigned do_popup_and_warp : 1;
+	unsigned do_force_reposition : 1;
+	unsigned do_force_popup : 1;
+	unsigned do_popdown : 1;
+	unsigned do_popup : 1;
+	unsigned do_menu : 1;
+	unsigned do_recycle_event : 1;
+	unsigned do_propagate_event_into_submenu : 1;
+	unsigned has_mouse_moved : 1;
+	unsigned is_off_menu_allowed : 1;
+	unsigned is_key_press : 1;
+	unsigned is_item_entered_by_key_press : 1;
+	unsigned is_motion_faked : 1;
+	unsigned is_popped_up_by_timeout : 1;
+	unsigned is_pointer_in_active_item_area : 1;
+	unsigned is_motion_first : 1;
+	unsigned is_release_first : 1;
+	unsigned is_submenu_mapped : 1;
+	unsigned was_item_unposted : 1;
+} mloop_flags_t;
+
+typedef struct
+{
+	MenuItem *mi;
+	MenuRoot *mrMi;
+	int x_offset;
+	int popdown_delay_10ms;
+	int popup_delay_10ms;
+} mloop_evh_data_t;
+
+typedef struct
+{
+	XEvent *e;
+	MenuRoot *mrPopup;
+	MenuRoot *mrPopdown;
+	mloop_flags_t mif;
+	/* used to reduce network traffic with delayed popup/popdown */
+	MenuItem *mi_with_popup;
+	MenuItem *mi_wants_popup;
+	MenuItem *miRemovedSubmenu;
+} mloop_evh_input_t;
+
+/* values that are set once when the menu loop is entered */
+typedef struct
+{
+	int x_init;
+	int y_init;
+	Time t0;
+	unsigned int event_mask;
+} mloop_static_info_t;
+
 /* ---------------------------- forward declarations ------------------------ */
 
 /* ---------------------------- local variables ----------------------------- */
@@ -149,7 +217,7 @@ typedef enum
 static saved_pos_hints last_saved_pos_hints =
 {
 	{ False, False },
-	{ 0, 0, 0.0, 0.0, 0, 0, False, False, False }
+	{ 0, 0, 0.0, 0.0, 0, 0, False, False, False, False }
 };
 
 /* structures for menus */
@@ -659,7 +727,7 @@ static void handle_emacs_bindings(
  * Procedure
  *      menuShortcuts() - Menu keyboard processing
  *
- * Function called from MenuInteraction instead of Keyboard_Shortcuts()
+ * Function called from __menu_loop instead of Keyboard_Shortcuts()
  * when a KeyPress event is received.  If the key is alphanumeric,
  * then the menu is scanned for a matching hot key.  Otherwise if
  * it was the escape key then the menu processing is aborted.
@@ -778,9 +846,13 @@ static void menuShortcuts(
 		{
 			*pmiCurrent = newItem;
 			if (newItem && MI_IS_POPUP(newItem))
+			{
 				pmret->rc = MENU_POPUP;
+			}
 			else
+			{
 				pmret->rc = MENU_SELECTED;
+			}
 			return;
 		}
 		/* MMH mikehan@best.com 2/7/99 */
@@ -3236,7 +3308,9 @@ static void select_menu_item(
 					dpy, MST_MENU_GC(mr), True);
 				XSync(dpy, 0);
 				while (XCheckTypedEvent(dpy, NoExpose, &e))
-					;
+				{
+					/* nothing to do here */
+				}
 				XCopyArea(
 					dpy, MR_WINDOW(mr),
 					MR_STORED_ITEM(mr).stored,
@@ -3493,7 +3567,7 @@ static int pop_menu_up(
 	MenuItem *parent_item,
 	FvwmWindow **pfw, int *pcontext, int x, int y, Bool prefer_left_submenu,
 	Bool do_warp_to_item, MenuOptions *pops, Bool *ret_overlap,
-	Bool *pdo_warp_to_title, Window popdown_window)
+	Window popdown_window)
 {
 	Bool do_warp_to_title = False;
 	int x_overlap = 0;
@@ -3513,10 +3587,9 @@ static int pop_menu_up(
 	Bool parent_relative_bg = False;
 
 	mr = *pmenu;
-	if (!mr || (MR_MAPPED_COPIES(mr) > 0 &&
-		    MR_COPIES(mr) >= MAX_MENU_COPIES))
+	if (!mr ||
+	    (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) >= MAX_MENU_COPIES))
 	{
-		*pdo_warp_to_title = False;
 		return False;
 	}
 
@@ -3529,7 +3602,6 @@ static int pop_menu_up(
 	{
 		char *menu_name;
 		saved_pos_hints pos_hints;
-		Bool f;
 		Bool is_busy_grabbed = False;
 		Time t;
 		exec_func_args_type efa;
@@ -3540,7 +3612,6 @@ static int pop_menu_up(
 		 * overwritten */
 		menu_name = safestrdup(MR_NAME(mr));
 		pos_hints = last_saved_pos_hints;
-		f = *pdo_warp_to_title;
 		t = lastTimestamp;
 		if (Scr.BusyCursor & BUSY_DYNAMICMENU)
 		{
@@ -3563,7 +3634,6 @@ static int pop_menu_up(
 		}
 		/* restore the stuff we saved */
 		lastTimestamp = t;
-		*pdo_warp_to_title = f;
 		last_saved_pos_hints = pos_hints;
 		/* See if the window has been deleted */
 		if (!check_if_fvwm_window_exists(*pfw))
@@ -3597,7 +3667,6 @@ static int pop_menu_up(
 	{
 		/* The menu deleted itself or all its items or it has been
 		 * empty from the start. */
-		*pdo_warp_to_title = False;
 		return False;
 	}
 	fw = *pfw;
@@ -4114,10 +4183,11 @@ static int pop_menu_up(
 	{
 		do_warp_to_title = True;
 	}
-	if (*pdo_warp_to_title)
+	if (pops->flags.has_poshints &&
+	    !last_saved_pos_hints.flags.do_ignore_pos_hints &&
+	    pops->flags.do_warp_title)
 	{
 		do_warp_to_title = True;
-		*pdo_warp_to_title = False;
 	}
 	if (do_warp_to_item)
 	{
@@ -4304,1194 +4374,1265 @@ static void pop_menu_down_and_repaint_parent(
 
 /* ---------------------------- menu main loop ------------------------------ */
 
-/***********************************************************************
- *
- *  Procedure:
- *      Interacts with user to Update menu display and start new submenus,
- *      return to old sub menus, etc.
- *  Input
- *      sticks = 0, transient style menu, drops on button release
- *      sticks = 1, sticky style, stays up on a click (i.e. initial release
- *                  comes soon after initial press.
- *  Returns:
- *      MENU_ERROR on error condition
- *      MENU_SUBMENU_DONE on return from submenu to parent menu
- *      MENU_DONE on completion by non-button-release (e.g. keyboard)
- *      MENU_ABORT on abort of menu by non-button-release (e.g. keyboard)
- *      MENU_SELECTED on item selection -- returns action * in *ret_paction
- *
- ***********************************************************************/
-static void MenuInteraction(
-	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
-	Bool *pdo_warp_to_title)
+static void __mloop_init(
+	MenuParameters *pmp, MenuReturn *pmret,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
+	MenuOptions *pops)
 {
-  extern XEvent Event;
-  MenuItem *mi = NULL;
-  MenuItem *tmi;
-  MenuItem *miRemovedSubmenu = NULL;
-  MenuRoot *mrMi = NULL;
-  MenuRoot *tmrMi = NULL;
-  MenuRoot *mrPopup = NULL;
-  MenuRoot *mrMiPopup = NULL;
-  MenuRoot *mrPopdown = NULL;
-  /* used to reduce network traffic with delayed popup/popdown */
-  MenuItem *mi_with_popup = NULL;
-  MenuItem *mi_wants_popup = NULL;
+	extern XEvent Event;
 
-  int x_init = 0;
-  int y_init = 0;
-  int x_offset = 0;
-  int popdown_delay_10ms = 0;
-  int popup_delay_10ms = 0;
-  unsigned int event_mask;
-  Time t0 = lastTimestamp;
-  MenuOptions mops;
-  exec_func_args_type efa;
-  struct
-  {
-    unsigned do_popup_immediately : 1;
-    /* used for delay popups, to just popup the menu */
-    unsigned do_popup_now : 1;
-    unsigned do_popdown_now : 1;
-    /* used for keystrokes, to popup and move to that menu */
-    unsigned do_popup_and_warp : 1;
-    unsigned do_force_reposition : 1;
-    unsigned do_force_popup : 1;
-    unsigned do_popdown : 1;
-    unsigned do_popup : 1;
-    unsigned do_menu : 1;
-    unsigned do_recycle_event : 1;
-    unsigned do_propagate_event_into_submenu : 1;
-    unsigned has_mouse_moved : 1;
-    unsigned is_off_menu_allowed : 1;
-    unsigned is_key_press : 1;
-    unsigned is_item_entered_by_key_press : 1;
-    unsigned is_motion_faked : 1;
-    unsigned is_popped_up_by_timeout : 1;
-    unsigned is_pointer_in_active_item_area : 1;
-    unsigned is_motion_first : 1;
-    unsigned is_release_first : 1;
-    unsigned is_submenu_mapped : 1;
-    unsigned was_item_unposted : 1;
-  } flags;
-  /* Can't make this a member of the flags as we have to take its address. */
-  Bool does_submenu_overlap = False;
-  Bool does_popdown_submenu_overlap = False;
-
-  pmret->rc = MENU_NOP;
-  memset(&flags, 0, sizeof(flags));
-  flags.do_force_reposition = 1;
-  memset(&mops, 0, sizeof(mops));
-  /* remember where the pointer was so we can tell if it has moved */
-  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &x_init, &y_init, &JunkX, &JunkY, &JunkMask) == False)
-  {
-    /* pointer is on a different screen */
-    x_init = 0;
-    y_init = 0;
-  }
-  /* get the event mask right */
-  if (pmp->tear_off_root_menu_window == NULL)
-  {
-    event_mask = XEVMASK_MENU;
-  }
-  else
-  {
-    event_mask = XEVMASK_TEAR_OFF_MENU;
-  }
-
-  while (True)
-  {
-    flags.do_popup_and_warp = False;
-    flags.do_popup_now = False;
-    flags.do_popdown_now = False;
-    flags.do_propagate_event_into_submenu = False;
-    flags.is_key_press = False;
-    if (pmp->event_propagate_to_submenu)
-    {
-      /* handle an event that was passed in from the parent menu */
-      memcpy(&Event, pmp->event_propagate_to_submenu, sizeof(XEvent));
-      pmp->event_propagate_to_submenu = NULL;
-    }
-    else if (flags.do_recycle_event)
-    {
-      flags.is_popped_up_by_timeout = False;
-      flags.do_recycle_event = 0;
-      if (pmp->menu != pmret->menu)
-      {
-	/* the event is for a previous menu, just close this one */
-	pmret->rc = MENU_PROPAGATE_EVENT;
-	goto DO_RETURN;
-      }
-      if (Event.type == KeyPress)
-      {
-	/* since the pointer has been warped since the key was pressed, fake a
-	 * different key press position */
-	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-			  &Event.xkey.x_root, &Event.xkey.y_root,
-			  &JunkX, &JunkY, &JunkMask) == False)
+	memset(in, 0, sizeof(*in));
+	in->e = &Event;
+	in->mif.do_force_reposition = 1;
+	memset(med, 0, sizeof(*med));
+	msi->t0 = lastTimestamp;
+	pmret->rc = MENU_NOP;
+	memset(pops, 0, sizeof(*pops));
+	/* remember where the pointer was so we can tell if it has moved */
+	if (XQueryPointer(
+		    dpy, Scr.Root, &JunkRoot, &JunkChild, &(msi->x_init),
+		    &(msi->y_init), &JunkX, &JunkY, &JunkMask) == False)
 	{
-	  /* pointer is on a different screen */
-	  Event.xkey.x_root = 0;
-	  Event.xkey.y_root = 0;
+		/* pointer is on a different screen */
+		msi->x_init = 0;
+		msi->y_init = 0;
 	}
-	mi = MR_SELECTED_ITEM(pmp->menu);
-      }
-    } /* flags.do_recycle_event */
-    else if (pmp->tear_off_root_menu_window != NULL &&
-	     XCheckTypedWindowEvent(
-	       dpy, FW_W_PARENT(pmp->tear_off_root_menu_window), ClientMessage,
-	       &Event))
-    {
-      /* Got a ClientMessage for the tear out menu */
-    }
-    else
-    {
-      if (flags.do_force_reposition)
-      {
-	Event.type = MotionNotify;
-	Event.xmotion.time = lastTimestamp;
-	flags.is_motion_faked = True;
-	flags.do_force_reposition = False;
-	flags.is_popped_up_by_timeout = False;
-      }
-      else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
-      {
-	Bool is_popdown_timer_active = False;
-	Bool is_popup_timer_active = False;
+	/* get the event mask right */
+	msi->event_mask = (pmp->tear_off_root_menu_window == NULL) ?
+		XEVMASK_MENU : XEVMASK_TEAR_OFF_MENU;
 
-	if (MST_POPDOWN_DELAY(pmp->menu) > 0 && mi_with_popup != NULL &&
-	    mi_with_popup != MR_SELECTED_ITEM(pmp->menu))
+	return;
+}
+
+static void __mloop_get_event_timeout_loop(
+	MenuParameters *pmp,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
+{
+	while (!XPending(dpy) || !XCheckMaskEvent(dpy, msi->event_mask, &Event))
 	{
-	  is_popdown_timer_active = True;
+		Bool is_popup_timed_out =
+			(MST_POPUP_DELAY(pmp->menu) > 0 &&
+			 med->popup_delay_10ms++ >=
+			 MST_POPUP_DELAY(pmp->menu) + 1);
+		Bool is_popdown_timed_out =
+			(MST_POPDOWN_DELAY(pmp->menu) > 0 && in->mrPopdown &&
+			 med->popdown_delay_10ms++ >=
+			 MST_POPDOWN_DELAY(pmp->menu) + 1);
+		Bool do_fake_motion = False;
+
+		if (is_popup_timed_out)
+		{
+			med->popup_delay_10ms = MST_POPUP_DELAY(pmp->menu);
+		}
+		if (is_popdown_timed_out)
+		{
+			med->popdown_delay_10ms = MST_POPDOWN_DELAY(pmp->menu);
+		}
+		if (in->mif.do_force_popup ||
+		    (is_popup_timed_out &&
+		     (is_popdown_timed_out ||
+		      in->mif.is_item_entered_by_key_press ||
+		      !in->mrPopdown || MST_DO_POPDOWN_IMMEDIATELY(pmp->menu))))
+		{
+			in->mif.do_popup_now = True;
+			in->mif.do_force_popup = False;
+			do_fake_motion = True;
+			in->mif.is_popped_up_by_timeout = True;
+			is_popdown_timed_out = True;
+		}
+		if ((in->mrPopdown || in->mrPopup) &&
+		    (is_popdown_timed_out ||
+		     MST_DO_POPDOWN_IMMEDIATELY(pmp->menu)))
+		{
+			MenuRoot *m = (in->mrPopdown) ?
+				in->mrPopdown : in->mrPopup;
+
+			if (!m || med->mi != MR_PARENT_ITEM(m))
+			{
+				in->mif.do_popdown_now = True;
+				do_fake_motion = True;
+				if (MST_DO_POPUP_IMMEDIATELY(pmp->menu))
+				{
+					in->mif.do_popup_now = True;
+					in->mif.is_popped_up_by_timeout = True;
+				}
+				else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+					 in->mif.
+					 is_pointer_in_active_item_area)
+				{
+					in->mif.do_popup_now = True;
+					in->mif.is_popped_up_by_timeout = True;
+				}
+				else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+					 !MST_DO_POPDOWN_IMMEDIATELY(
+						 pmp->menu) &&
+					 MST_POPUP_DELAY(pmp->menu) <=
+					 MST_POPDOWN_DELAY(pmp->menu) &&
+					 med->popup_delay_10ms ==
+					 med->popdown_delay_10ms)
+				{
+					in->mif.do_popup_now = True;
+					in->mif.is_popped_up_by_timeout = True;
+				}
+			}
+		}
+		if (in->mif.do_popup_now && med->mi == in->miRemovedSubmenu &&
+		    !in->mif.is_key_press)
+		{
+			/* prevent popping up the menu again with
+			 * RemoveSubemenus */
+			in->mif.do_popup_now = False;
+			in->mif.do_force_popup = False;
+			do_fake_motion = in->mif.do_popdown_now;
+			in->mif.is_popped_up_by_timeout = False;
+		}
+
+		if (do_fake_motion)
+		{
+			/* fake a motion event, and set in->mif.do_popup_now */
+			Event.type = MotionNotify;
+			Event.xmotion.time = lastTimestamp;
+			in->mif.is_motion_faked = True;
+			break;
+		}
+		usleep(10000 /* 10 ms*/);
 	}
-	if (MST_POPUP_DELAY(pmp->menu) > 0 && !flags.is_popped_up_by_timeout &&
-	    mi_wants_popup != NULL)
+
+	return;
+}
+
+static mloop_ret_code_t __mloop_get_event(
+	MenuParameters *pmp, MenuReturn *pmret,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
+{
+	in->mif.do_popup_and_warp = False;
+	in->mif.do_popup_now = False;
+	in->mif.do_popdown_now = False;
+	in->mif.do_propagate_event_into_submenu = False;
+	in->mif.is_key_press = False;
+	if (pmp->event_propagate_to_submenu)
 	{
-	  is_popup_timer_active = True;
+		/* handle an event that was passed in from the parent menu */
+		memcpy(&Event, pmp->event_propagate_to_submenu, sizeof(XEvent));
+		pmp->event_propagate_to_submenu = NULL;
 	}
-	/* handle exposure events first */
-	if (flags.do_force_popup || flags.is_pointer_in_active_item_area ||
-	    is_popdown_timer_active || is_popup_timer_active)
+	else if (in->mif.do_recycle_event)
 	{
-	  while (!XPending(dpy) || !XCheckMaskEvent(dpy, event_mask, &Event))
-	  {
-	    Bool is_popup_timed_out =
-	      (MST_POPUP_DELAY(pmp->menu) > 0 &&
-	       popup_delay_10ms++ >= MST_POPUP_DELAY(pmp->menu) + 1);
-	    Bool is_popdown_timed_out =
-	      (MST_POPDOWN_DELAY(pmp->menu) > 0 && mrPopdown &&
-	       popdown_delay_10ms++ >= MST_POPDOWN_DELAY(pmp->menu) + 1);
-	    Bool do_fake_motion = False;
-
-	    if (is_popup_timed_out)
-	    {
-	      popup_delay_10ms = MST_POPUP_DELAY(pmp->menu);
-	    }
-	    if (is_popdown_timed_out)
-	    {
-	      popdown_delay_10ms = MST_POPDOWN_DELAY(pmp->menu);
-	    }
-	    if (flags.do_force_popup ||
-		(is_popup_timed_out &&
-		 (is_popdown_timed_out || flags.is_item_entered_by_key_press ||
-		  !mrPopdown || MST_DO_POPDOWN_IMMEDIATELY(pmp->menu))))
-	    {
-	      flags.do_popup_now = True;
-	      flags.do_force_popup = False;
-	      do_fake_motion = True;
-	      flags.is_popped_up_by_timeout = True;
-	      is_popdown_timed_out = True;
-	    }
-	    if ((mrPopdown || mrPopup) &&
-		(is_popdown_timed_out || MST_DO_POPDOWN_IMMEDIATELY(pmp->menu)))
-	    {
-	      MenuRoot *m = (mrPopdown) ? mrPopdown : mrPopup;
-
-	      if (!m || mi != MR_PARENT_ITEM(m))
-	      {
-		flags.do_popdown_now = True;
-		do_fake_motion = True;
-		if (MST_DO_POPUP_IMMEDIATELY(pmp->menu))
+		in->mif.is_popped_up_by_timeout = False;
+		in->mif.do_recycle_event = 0;
+		if (pmp->menu != pmret->menu)
 		{
-		  flags.do_popup_now = True;
-		  flags.is_popped_up_by_timeout = True;
+			/* the event is for a previous menu, just close this
+			 * one */
+			pmret->rc = MENU_PROPAGATE_EVENT;
+			return MENU_MLOOP_RET_END;
 		}
-		else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-			 flags.is_pointer_in_active_item_area)
+		if (Event.type == KeyPress)
 		{
-		  flags.do_popup_now = True;
-		  flags.is_popped_up_by_timeout = True;
+			/* since the pointer has been warped since the key was
+			 * pressed, fake a different key press position */
+			if (XQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &JunkChild,
+				    &Event.xkey.x_root, &Event.xkey.y_root,
+				    &JunkX, &JunkY, &JunkMask) == False)
+			{
+				/* pointer is on a different screen */
+				Event.xkey.x_root = 0;
+				Event.xkey.y_root = 0;
+			}
+			med->mi = MR_SELECTED_ITEM(pmp->menu);
 		}
-		else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-		    !MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) &&
-		    MST_POPUP_DELAY(pmp->menu) <= MST_POPDOWN_DELAY(pmp->menu)
-		    && popup_delay_10ms == popdown_delay_10ms)
-		{
-		  flags.do_popup_now = True;
-		  flags.is_popped_up_by_timeout = True;
-		}
-	      }
-	    }
-	    if (flags.do_popup_now && mi == miRemovedSubmenu &&
-		!flags.is_key_press)
-	    {
-	      /* prevent popping up the menu again with RemoveSubemenus */
-	      flags.do_popup_now = False;
-	      flags.do_force_popup = False;
-	      do_fake_motion = flags.do_popdown_now;
-	      flags.is_popped_up_by_timeout = False;
-	    }
-
-	    if (do_fake_motion)
-	    {
-	      /* fake a motion event, and set flags.do_popup_now */
-	      Event.type = MotionNotify;
-	      Event.xmotion.time = lastTimestamp;
-	      flags.is_motion_faked = True;
-	      break;
-	    }
-	    usleep(10000 /* 10 ms*/);
-	  }
+	} /* in->mif.do_recycle_event */
+	else if (pmp->tear_off_root_menu_window != NULL &&
+		 XCheckTypedWindowEvent(
+			 dpy, FW_W_PARENT(pmp->tear_off_root_menu_window),
+			 ClientMessage, &Event))
+	{
+		/* Got a ClientMessage for the tear out menu */
 	}
 	else
 	{
-	  /* block until there is an event */
-	  XMaskEvent(dpy, event_mask, &Event);
-	  flags.is_popped_up_by_timeout = False;
-	}
-      }
-      else
-      {
-	flags.is_popped_up_by_timeout = False;
-      }
-    } /* !flags.do_recycle_event */
+		if (in->mif.do_force_reposition)
+		{
+			Event.type = MotionNotify;
+			Event.xmotion.time = lastTimestamp;
+			in->mif.is_motion_faked = True;
+			in->mif.do_force_reposition = False;
+			in->mif.is_popped_up_by_timeout = False;
+		}
+		else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
+		{
+			Bool is_popdown_timer_active = False;
+			Bool is_popup_timer_active = False;
 
-    flags.is_pointer_in_active_item_area = False;
-    StashEventTime(&Event);
-    if (Event.type == MotionNotify)
-    {
-      /* discard any extra motion events before a release */
-      while ((XCheckMaskEvent(dpy,ButtonMotionMask|ButtonReleaseMask,
-			     &Event))&&(Event.type != ButtonRelease))
-      {
-	/* nop */
-      }
-    }
+			if (MST_POPDOWN_DELAY(pmp->menu) > 0 &&
+			    in->mi_with_popup != NULL &&
+			    in->mi_with_popup != MR_SELECTED_ITEM(pmp->menu))
+			{
+				is_popdown_timer_active = True;
+			}
+			if (MST_POPUP_DELAY(pmp->menu) > 0 &&
+			    !in->mif.is_popped_up_by_timeout &&
+			    in->mi_wants_popup != NULL)
+			{
+				is_popup_timer_active = True;
+			}
+			/* handle exposure events first */
+			if (in->mif.do_force_popup ||
+			    in->mif.is_pointer_in_active_item_area ||
+			    is_popdown_timer_active || is_popup_timer_active)
+			{
+				__mloop_get_event_timeout_loop(
+					pmp, in, med, msi);
+			}
+			else
+			{
+				/* block until there is an event */
+				XMaskEvent(dpy, msi->event_mask, &Event);
+				in->mif.is_popped_up_by_timeout = False;
+			}
+		}
+		else
+		{
+			in->mif.is_popped_up_by_timeout = False;
+		}
+	} /* !in->mif.do_recycle_event */
 
-    pmret->rc = MENU_NOP;
-    switch (Event.type)
-    {
-    case ButtonRelease:
-      mi = find_entry(pmp, &x_offset, &mrMi, None, -1, -1);
-      /* hold the menu up when the button is released
-       * for the first time if released OFF of the menu */
-      if (pmp->flags.is_sticky && !flags.is_motion_first)
-      {
-	flags.is_release_first = True;
-	pmp->flags.is_sticky = False;
-	continue;
-	/* break; */
-      }
-      if (mi != NULL)
-      {
-	if (Event.xbutton.button == 2 && MI_IS_TITLE(mi))
+	in->mif.is_pointer_in_active_item_area = False;
+	StashEventTime(&Event);
+	if (Event.type == MotionNotify)
 	{
-	  pmret->rc = MENU_TEAR_OFF;
-	  goto DO_RETURN;
+		/* discard any extra motion events before a release */
+		while ((XCheckMaskEvent(
+				dpy,ButtonMotionMask | ButtonReleaseMask,
+				&Event)) &&
+		       (Event.type != ButtonRelease))
+		{
+			/* nop */
+		}
 	}
-      }
-      flags.was_item_unposted = 0;
-      if (pmret->flags.is_menu_posted && mrMi != NULL)
-      {
-	if (pmret->flags.do_unpost_submenu)
+
+	return MENU_MLOOP_RET_NORMAL;
+}
+
+static mloop_ret_code_t __mloop_handle_event(
+	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
+{
+	MenuRoot *tmrMi;
+
+	pmret->rc = MENU_NOP;
+	switch (in->e->type)
 	{
-	  pmret->flags.do_unpost_submenu = 0;
-	  pmret->flags.is_menu_posted = 0;
-	  /* just ignore the event */
-	  continue;
-	}
-	else if (mi && MI_IS_POPUP(mi) && mrMi == pmp->menu)
+	case ButtonRelease:
+		med->mi = find_entry(
+			pmp, &med->x_offset, &med->mrMi, None, -1, -1);
+		/* hold the menu up when the button is released
+		 * for the first time if released OFF of the menu */
+		if (pmp->flags.is_sticky && !in->mif.is_motion_first)
+		{
+			in->mif.is_release_first = True;
+			pmp->flags.is_sticky = False;
+			return MENU_MLOOP_RET_LOOP;
+			/* break; */
+		}
+		if (med->mi != NULL)
+		{
+			if (in->e->xbutton.button == 2 && MI_IS_TITLE(med->mi))
+			{
+				pmret->rc = MENU_TEAR_OFF;
+				return MENU_MLOOP_RET_END;
+			}
+		}
+		in->mif.was_item_unposted = 0;
+		if (pmret->flags.is_menu_posted && med->mrMi != NULL)
+		{
+			if (pmret->flags.do_unpost_submenu)
+			{
+				pmret->flags.do_unpost_submenu = 0;
+				pmret->flags.is_menu_posted = 0;
+				/* just ignore the event */
+				return MENU_MLOOP_RET_LOOP;
+			}
+			else if (med->mi && MI_IS_POPUP(med->mi) &&
+				 med->mrMi == pmp->menu)
+			{
+				/* post menu - done below */
+			}
+			else if (MR_PARENT_ITEM(pmp->menu) &&
+				 med->mi == MR_PARENT_ITEM(pmp->menu))
+			{
+				/* propagate back to parent menu and unpost
+				 * current menu */
+				pmret->flags.do_unpost_submenu = 1;
+				pmret->rc = MENU_PROPAGATE_EVENT;
+				pmret->menu = med->mrMi;
+				return MENU_MLOOP_RET_END;
+			}
+			else if (med->mrMi != pmp->menu &&
+				 med->mrMi != in->mrPopup)
+			{
+				/* unpost and propagate back to ancestor */
+				pmret->flags.is_menu_posted = 0;
+				pmret->rc = MENU_PROPAGATE_EVENT;
+				pmret->menu = med->mrMi;
+				return MENU_MLOOP_RET_END;
+			}
+			else if (in->mrPopup && med->mrMi == in->mrPopup)
+			{
+				/* unpost and propagate into submenu */
+				in->mif.was_item_unposted = 1;
+				in->mif.do_propagate_event_into_submenu = True;
+				break;
+			}
+			else
+			{
+				/* simply unpost the menu */
+				pmret->flags.is_menu_posted = 0;
+			}
+		}
+		if (is_double_click(
+			    msi->t0, med->mi, pmp, pmret, pdkp,
+			    in->mif.has_mouse_moved))
+		{
+			pmret->rc = MENU_DOUBLE_CLICKED;
+			return MENU_MLOOP_RET_END;
+		}
+		pmret->rc = (med->mi) ? MENU_SELECTED : MENU_ABORTED;
+		if (pmret->rc == MENU_SELECTED && med->mi &&
+		    MI_IS_POPUP(med->mi) &&
+		    !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
+		{
+			if (in->mif.was_item_unposted)
+			{
+				pmret->flags.is_menu_posted = 0;
+				pmret->rc = MENU_UNPOST;
+				pmret->menu = NULL;
+				pmret->parent_menu = pmp->menu;
+				in->mif.do_popup_now = False;
+			}
+			else
+			{
+				pmret->flags.is_menu_posted = 1;
+				pmret->rc = MENU_POST;
+				pmret->menu = NULL;
+				pmret->parent_menu = pmp->menu;
+				in->mif.do_popup_now = True;
+				if ((in->mrPopup || in->mrPopdown) &&
+				    med->mi != MR_SELECTED_ITEM(pmp->menu))
+				{
+					in->mif.do_popdown_now = True;
+				}
+			}
+			break;
+		}
+		pdkp->timestamp = 0;
+		return MENU_MLOOP_RET_END;
+
+	case ButtonPress:
+		/* if the first event is a button press allow the release to
+		 * select something */
+		pmp->flags.is_sticky = False;
+		return MENU_MLOOP_RET_LOOP;
+
+	case VisibilityNotify:
+		return MENU_MLOOP_RET_LOOP;
+
+	case KeyRelease:
+		if (in->e->xkey.keycode != MST_SELECT_ON_RELEASE_KEY(pmp->menu))
+			return MENU_MLOOP_RET_LOOP;
+		/* fall through to KeyPress */
+
+	case KeyPress:
+		/* Handle a key press events to allow mouseless operation */
+		in->mif.is_key_press = True;
+		med->x_offset = menudim_middle_x_offset(&MR_DIM(pmp->menu));
+
+		/* if there is a posted menu we may have to move back into a
+		 * previous menu or possibly ignore the mouse position */
+		if (pmret->flags.is_menu_posted)
+		{
+			MenuItem *l_mi;
+			MenuRoot *l_mrMi;
+			int l_x_offset;
+
+			pmret->flags.is_menu_posted = 0;
+			l_mi = find_entry(
+				pmp, &l_x_offset, &l_mrMi, None, -1, -1);
+			if (l_mrMi != NULL)
+			{
+				if (pmp->menu != l_mrMi)
+				{
+					/* unpost the menu and propagate the
+					 * event to the correct menu */
+					pmret->rc = MENU_PROPAGATE_EVENT;
+					pmret->menu = l_mrMi;
+					return MENU_MLOOP_RET_END;
+				}
+			}
+			med->mi = MR_SELECTED_ITEM(pmp->menu);
+			in->e->xkey.x_root = med->x_offset;
+			in->e->xkey.y_root = menuitem_middle_y_offset(
+				med->mi, MR_STYLE(pmp->menu));
+		}
+
+		/* now handle the actual key press */
+		menuShortcuts(pmp->menu, pmp, pmret, in->e, &med->mi, pdkp);
+		if (pmret->rc != MENU_NOP)
+		{
+			/* using a key 'unposts' the posted menu */
+			pmret->flags.is_menu_posted = 0;
+		}
+		switch (pmret->rc)
+		{
+		case MENU_SELECTED:
+			if (med->mi && MI_IS_POPUP(med->mi) &&
+			    !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
+			{
+				pmret->rc = MENU_POPUP;
+				break;
+			}
+			return MENU_MLOOP_RET_END;
+		case MENU_POPDOWN:
+		case MENU_ABORTED:
+		case MENU_DOUBLE_CLICKED:
+		case MENU_TEAR_OFF:
+		case MENU_KILL_TEAR_OFF_MENU:
+			return MENU_MLOOP_RET_END;
+		case MENU_NEWITEM:
+		case MENU_POPUP:
+			if (med->mrMi == NULL)
+			{
+				/* Set the MenuRoot of the current item in case
+				 * we have just warped to the menu from the
+				 * void or unposted a popup menu. */
+				med->mrMi = pmp->menu;
+			}
+			/*tmrMi = med->mrMi;*/
+			break;
+		default:
+			break;
+		}
+		/* now warp to the new menu item, if any */
+		if (pmret->rc == MENU_NEWITEM && med->mi)
+		{
+			warp_pointer_to_item(med->mrMi, med->mi, False);
+		}
+		if (pmret->rc == MENU_POPUP && med->mi && MI_IS_POPUP(med->mi))
+		{
+			in->mif.do_popup_and_warp = True;
+			break;
+		}
+		break;
+
+	case MotionNotify:
 	{
-	  /* post menu - done below */
+		int p_rx = -1;
+		int p_ry = -1;
+		Window p_child = None;
+
+		if (in->mif.has_mouse_moved == False)
+		{
+			if (XQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &p_child, &p_rx,
+				    &p_ry, &JunkX, &JunkY, &JunkMask) == False)
+			{
+				/* pointer is on a different screen */
+				p_rx = 0;
+				p_ry = 0;
+			}
+			if (p_rx - msi->x_init > Scr.MoveThreshold ||
+			    msi->x_init - p_rx > Scr.MoveThreshold ||
+			    p_ry - msi->y_init > Scr.MoveThreshold ||
+			    msi->y_init - p_ry > Scr.MoveThreshold)
+			{
+				/* global variable remember that this isn't just
+				 * a click any more since the pointer moved */
+				in->mif.has_mouse_moved = True;
+			}
+		}
+		med->mi = find_entry(
+			pmp, &med->x_offset, &med->mrMi, p_child, p_rx, p_ry);
+		if (pmret->flags.is_menu_posted && med->mrMi != pmret->menu)
+		{
+			/* ignore mouse movement outside a posted menu */
+			med->mrMi = NULL;
+			med->mi = NULL;
+		}
+		if (!in->mif.is_release_first && !in->mif.is_motion_faked &&
+		    in->mif.has_mouse_moved)
+		{
+			in->mif.is_motion_first = True;
+		}
+		in->mif.is_motion_faked = False;
+		break;
 	}
-	else if (MR_PARENT_ITEM(pmp->menu) && mi == MR_PARENT_ITEM(pmp->menu))
-	{
-	  /* propagate back to parent menu and unpost current menu */
-	  pmret->flags.do_unpost_submenu = 1;
-	  pmret->rc = MENU_PROPAGATE_EVENT;
-	  pmret->menu = mrMi;
-	  goto DO_RETURN;
-	}
-	else if (mrMi != pmp->menu && mrMi != mrPopup)
-	{
-	  /* unpost and propagate back to ancestor */
-	  pmret->flags.is_menu_posted = 0;
-	  pmret->rc = MENU_PROPAGATE_EVENT;
-	  pmret->menu = mrMi;
-	  goto DO_RETURN;
-	}
-	else if (mrPopup && mrMi == mrPopup)
-	{
-	  /* unpost and propagate into submenu */
-	  flags.was_item_unposted = 1;
-	  flags.do_propagate_event_into_submenu = True;
-	  break;
-	}
-	else
-	{
-	  /* simply unpost the menu */
-	  pmret->flags.is_menu_posted = 0;
-	}
-      }
-      if (is_double_click(t0, mi, pmp, pmret, pdkp, flags.has_mouse_moved))
-      {
-	pmret->rc = MENU_DOUBLE_CLICKED;
-	goto DO_RETURN;
-      }
-      pmret->rc = (mi) ? MENU_SELECTED : MENU_ABORTED;
-      if (pmret->rc == MENU_SELECTED && mi &&
-	  MI_IS_POPUP(mi) && !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
-      {
-	if (flags.was_item_unposted)
-	{
-	  pmret->flags.is_menu_posted = 0;
-	  pmret->rc = MENU_UNPOST;
-	  pmret->menu = NULL;
-	  pmret->parent_menu = pmp->menu;
-	  flags.do_popup_now = False;
-	}
-	else
-	{
-	  pmret->flags.is_menu_posted = 1;
-	  pmret->rc = MENU_POST;
-	  pmret->menu = NULL;
-	  pmret->parent_menu = pmp->menu;
-	  flags.do_popup_now = True;
-	  if ((mrPopup || mrPopdown) && mi != MR_SELECTED_ITEM(pmp->menu))
-	  {
-	    flags.do_popdown_now = True;
-	  }
-	}
-	break;
-      }
-      pdkp->timestamp = 0;
-      goto DO_RETURN;
 
-    case ButtonPress:
-      /* if the first event is a button press allow the release to
-       * select something */
-      pmp->flags.is_sticky = False;
-      continue;
+	case Expose:
+		/* grab our expose events, let the rest go through */
+		menu_expose(in->e, (*pmp->pfw));
+		/* we want to dispatch this too so window decorations get
+		 * redrawn after being obscured by menus. */
+		/* We need to preserve the Fw here! Note that handling an Expose
+		 * event will never invalidate the Fw. */
+		DispatchEvent(True);
+		return MENU_MLOOP_RET_LOOP;
 
-    case VisibilityNotify:
-      continue;
+	case ClientMessage:
+		if (in->e->xclient.format == 32 &&
+		    in->e->xclient.data.l[0] == _XA_WM_DELETE_WINDOW &&
+		    pmp->tear_off_root_menu_window != NULL &&
+		    in->e->xclient.window == FW_W_PARENT(
+			    pmp->tear_off_root_menu_window))
+		{
+			/* handle deletion of tear out menus */
+			pmret->rc = MENU_KILL_TEAR_OFF_MENU;
+			return MENU_MLOOP_RET_END;
+		}
+		break;
 
-    case KeyRelease:
-      if (Event.xkey.keycode != MST_SELECT_ON_RELEASE_KEY(pmp->menu))
-	continue;
-      /* fall through to KeyPress */
+	case EnterNotify:
+		/* ignore EnterNotify events */
+		break;
 
-    case KeyPress:
-      /* Handle a key press events to allow mouseless operation */
-      flags.is_key_press = True;
-      x_offset = menudim_middle_x_offset(&MR_DIM(pmp->menu));
+	case LeaveNotify:
+		if (pmp->tear_off_root_menu_window != NULL &&
+		    find_entry(pmp, NULL, &tmrMi, None, -1, -1) == NULL &&
+		    tmrMi == NULL)
+		{
+			/* handle deletion of tear out menus */
+			pmret->rc = MENU_ABORTED;
+			return MENU_MLOOP_RET_END;
+		}
+		/* ignore it */
+		return MENU_MLOOP_RET_LOOP;
 
-      /* if there is a posted menu we may have to move back into a previous
-       * menu or possibly ignore the mouse position */
-      if (pmret->flags.is_menu_posted)
-      {
-	MenuItem *l_mi;
-	MenuRoot *l_mrMi;
-	int l_x_offset;
+	case UnmapNotify:
+		/* should never happen, but does not hurt */
+		if (pmp->tear_off_root_menu_window != NULL &&
+		    in->e->xunmap.window ==
+		    FW_W(pmp->tear_off_root_menu_window))
+		{
+			/* handle deletion of tear out menus */
+			pmret->rc = MENU_KILL_TEAR_OFF_MENU;
+			/* extra safety: pass event back to main event loop to
+			 * make sure the is destroyed */
+			XPutBackEvent(dpy, in->e);
+			return MENU_MLOOP_RET_END;
+		}
+		break;
 
-	pmret->flags.is_menu_posted = 0;
-	l_mi = find_entry(pmp, &l_x_offset, &l_mrMi, None, -1, -1);
-	if (l_mrMi != NULL)
-	{
-	  if (pmp->menu != l_mrMi)
-	  {
-	    /* unpost the menu and propagate the event to the correct menu */
-	    pmret->rc = MENU_PROPAGATE_EVENT;
-	    pmret->menu = l_mrMi;
-	    goto DO_RETURN;
-	  }
-	}
-	mi = MR_SELECTED_ITEM(pmp->menu);
-	Event.xkey.x_root = x_offset;
-	Event.xkey.y_root = menuitem_middle_y_offset(mi, MR_STYLE(pmp->menu));
-      }
-
-      /* now handle the actual key press */
-      menuShortcuts(pmp->menu, pmp, pmret, &Event, &mi, pdkp);
-      if (pmret->rc != MENU_NOP)
-      {
-	/* using a key 'unposts' the posted menu */
-	pmret->flags.is_menu_posted = 0;
-      }
-      switch (pmret->rc)
-      {
-      case MENU_SELECTED:
-	if (mi && MI_IS_POPUP(mi) && !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
-	{
-	  pmret->rc = MENU_POPUP;
-	  break;
-	}
-	goto DO_RETURN;
-      case MENU_POPDOWN:
-      case MENU_ABORTED:
-      case MENU_DOUBLE_CLICKED:
-      case MENU_TEAR_OFF:
-      case MENU_KILL_TEAR_OFF_MENU:
-	goto DO_RETURN;
-      case MENU_NEWITEM:
-      case MENU_POPUP:
-	if (mrMi == NULL)
-	{
-	  /* Set the MenuRoot of the current item in case we have just warped to
-	   * the menu from the void or unposted a popup menu. */
-	  mrMi = pmp->menu;
-	}
-	/*tmrMi = mrMi;*/
-	break;
-      default:
-	break;
-      }
-      /* now warp to the new menu item, if any */
-      if (pmret->rc == MENU_NEWITEM && mi)
-      {
-	warp_pointer_to_item(mrMi, mi, False);
-      }
-      if (pmret->rc == MENU_POPUP && mi && MI_IS_POPUP(mi))
-      {
-	flags.do_popup_and_warp = True;
-	break;
-      }
-      break;
-
-    case MotionNotify:
-    {
-      int p_rx = -1;
-      int p_ry = -1;
-      Window p_child = None;
-
-      if (flags.has_mouse_moved == False)
-      {
-	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &p_child,
-			  &p_rx, &p_ry, &JunkX, &JunkY, &JunkMask) == False)
-	{
-	  /* pointer is on a different screen */
-	  p_rx = 0;
-	  p_ry = 0;
-	}
-	if (p_rx - x_init > Scr.MoveThreshold ||
-	    x_init - p_rx > Scr.MoveThreshold ||
-	    p_ry - y_init > Scr.MoveThreshold ||
-	    y_init - p_ry > Scr.MoveThreshold)
-	{
-	  /* global variable remember that this isn't just
-	   * a click any more since the pointer moved */
-	  flags.has_mouse_moved = True;
-	}
-      }
-      mi = find_entry(pmp, &x_offset, &mrMi, p_child, p_rx, p_ry);
-      if (pmret->flags.is_menu_posted && mrMi != pmret->menu)
-      {
-	/* ignore mouse movement outside a posted menu */
-	mrMi = NULL;
-	mi = NULL;
-      }
-      if (!flags.is_release_first && !flags.is_motion_faked &&
-	  flags.has_mouse_moved)
-	flags.is_motion_first = True;
-      flags.is_motion_faked = False;
-      break;
-    }
-
-    case Expose:
-      /* grab our expose events, let the rest go through */
-      menu_expose(&Event, (*pmp->pfw));
-      /* we want to dispatch this too so window decorations get redrawn
-       * after being obscured by menus. */
-      /* We need to preserve the Fw here! Note that handling an Expose
-       * event will never invalidate the Fw. */
-      DispatchEvent(True);
-      continue;
-
-    case ClientMessage:
-      if (Event.xclient.format == 32 &&
-	  Event.xclient.data.l[0] == _XA_WM_DELETE_WINDOW &&
-	  pmp->tear_off_root_menu_window != NULL &&
-	  Event.xclient.window == FW_W_PARENT(pmp->tear_off_root_menu_window))
-      {
-	/* handle deletion of tear out menus */
-	pmret->rc = MENU_KILL_TEAR_OFF_MENU;
-	goto DO_RETURN;
-      }
-      break;
-
-    case EnterNotify:
-      /* ignore EnterNotify events */
-      break;
-
-    case LeaveNotify:
-      if (pmp->tear_off_root_menu_window != NULL &&
-	  find_entry(pmp, NULL, &tmrMi, None, -1, -1) == NULL &&
-	  tmrMi == NULL)
-      {
-	/* handle deletion of tear out menus */
-	pmret->rc = MENU_ABORTED;
-	goto DO_RETURN;
-      }
-      /* ignore it */
-      continue;
-
-    case UnmapNotify:
-      /* should never happen, but does not hurt */
-      if (pmp->tear_off_root_menu_window != NULL &&
-	  Event.xunmap.window == FW_W(pmp->tear_off_root_menu_window))
-      {
-	/* handle deletion of tear out menus */
-	pmret->rc = MENU_KILL_TEAR_OFF_MENU;
-	/* extra safety: pass event back to main event loop to make sure the
-	 * FvwmWindow is destroyed */
-	XPutBackEvent(dpy, &Event);
-	goto DO_RETURN;
-      }
-      break;
-
-    default:
-      /* We must not dispatch events here.  There is no guarantee that
-       * DispatchEvent doesn't destroy a window stored in the menu structures.
-       * Anyway, no events should ever get here except to tear off menus and
-       * these must be handled individually. */
+	default:
+		/* We must not dispatch events here.  There is no guarantee that
+		 * DispatchEvent doesn't destroy a window stored in the menu
+		 * structures.  Anyway, no events should ever get here except
+		 * to tear off menus and these must be handled individually. */
 #if 0
-      DispatchEvent(False);
+		DispatchEvent(False);
 #endif
-      break;
-    } /* switch (Event.type) */
-
-
-    /************************************************************************
-     * Now handle new menu items, whether it is from a keypress or a pointer
-     * motion event.
-     ************************************************************************/
-
-    pmret->flags.do_unpost_submenu = 0;
-    if (mi)
-    {
-      /* we're on a menu item */
-      flags.is_off_menu_allowed = False;
-      if (mrMi == pmp->menu && mi != miRemovedSubmenu)
-      {
-	miRemovedSubmenu = NULL;
-      }
-      if (mrMi != pmp->menu && mrMi != mrPopup && mrMi != mrPopdown)
-      {
-	/* we're on an item from a prior menu */
-	if (mrMi != MR_PARENT_MENU(pmp->menu))
-	{
-	  /* the event is for a previous menu, just close this one */
-	  pmret->rc = MENU_PROPAGATE_EVENT;
-	  pmret->menu = mrMi;
+		break;
 	}
-	else
-	{
-	  pmret->rc = MENU_POPDOWN;
-	}
-	pdkp->timestamp = 0;
-	goto DO_RETURN;
-      }
 
-      /* see if we're on a new item of this menu */
-      if (mi != MR_SELECTED_ITEM(pmp->menu) && mrMi == pmp->menu)
-      {
-	flags.is_item_entered_by_key_press = flags.is_key_press;
-	popup_delay_10ms = 0;
-	/* we're on the same menu, but a different item,
-	 * so we need to unselect the old item */
+	return MENU_MLOOP_RET_NORMAL;
+}
+
+static void __mloop_select_item(
+	MenuParameters *pmp, mloop_evh_input_t *in, mloop_evh_data_t *med,
+	Bool does_submenu_overlap, Bool *pdoes_popdown_submenu_overlap)
+{
+	in->mif.is_item_entered_by_key_press = in->mif.is_key_press;
+	med->popup_delay_10ms = 0;
+	/* we're on the same menu, but a different item, so we need to unselect
+	 * the old item */
 	if (MR_SELECTED_ITEM(pmp->menu))
 	{
-	  /* something else was already selected on this menu */
-	  /* We have to pop down the menu before unselecting the item in case
-	   * we are using gradient menus. The recalled image would paint over
-	   * the submenu. */
-	  if (mrPopup && mrPopup != mrPopdown)
-	  {
-	    mrPopdown = mrPopup;
-	    popdown_delay_10ms = 0;
-	    does_popdown_submenu_overlap = does_submenu_overlap;
-	    mrPopup = NULL;
-	  }
-	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			   (*pmp->pfw));
+		/* something else was already selected on this menu.  We have
+		 * to pop down the menu before unselecting the item in case we
+		 * are using gradient menus. The recalled image would paint
+		 * over the submenu. */
+		if (in->mrPopup && in->mrPopup != in->mrPopdown)
+		{
+			in->mrPopdown = in->mrPopup;
+			med->popdown_delay_10ms = 0;
+			*pdoes_popdown_submenu_overlap = does_submenu_overlap;
+			in->mrPopup = NULL;
+		}
+		select_menu_item(
+			pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			(*pmp->pfw));
 	}
-	/* highlight the new item; sets MR_SELECTED_ITEM(pmp->menu), too */
-	select_menu_item(pmp->menu, mi, True, (*pmp->pfw));
-      } /* new item of the same menu */
-      else if (mi != MR_SELECTED_ITEM(pmp->menu) && mrMi && mrMi == mrPopdown)
-      {
-	/* we're on the popup menu of a different menu item of this menu */
-	mi = MR_PARENT_ITEM(mrPopdown);
-	mrPopup = mrPopdown;
-	mrPopdown = NULL;
-	does_submenu_overlap = does_popdown_submenu_overlap;
-	select_menu_item(pmp->menu, mi, True, (*pmp->pfw));
-      }
-      mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
+	/* highlight the new item; sets MR_SELECTED_ITEM(pmp->menu) too */
+	select_menu_item(pmp->menu, med->mi, True, (*pmp->pfw));
 
-      /* check what has to be done with the item */
-      flags.do_popdown = False;
-      flags.do_popup = False;
-      flags.do_menu = False;
-      flags.is_submenu_mapped = False;
+	return;
+}
 
-      if (!mrPopup && mrPopdown && mi == MR_PARENT_ITEM(mrPopdown))
-      {
-	      /* We're again on the item that we left before.  Deschedule
-	       * popping it down. */
-	      mrPopup = mrPopdown;
-	      mrPopdown = NULL;
-      }
-      if (mrMi == mrPopup)
-      {
-	/* must make current popup menu a real menu */
-	flags.do_menu = True;
-	flags.is_submenu_mapped = True;
-      }
-      else if (pmret->rc == MENU_POST)
-      {
-	/* must create a real menu and warp into it */
-	if (mrPopup == NULL || mrPopup != mrMiPopup)
-	{
-	  flags.do_popup = True;
-	}
-	flags.do_menu = True;
-	flags.is_submenu_mapped = True;
-      }
-      else if (flags.do_popup_and_warp)
-      {
-	/* must create a real menu and warp into it */
-	if (mrPopup == NULL || mrPopup != mrMiPopup)
-	{
-	  flags.do_popup = True;
-	}
-	else
-	{
-	  XRaiseWindow(dpy, MR_WINDOW(mrPopup));
-	  warp_pointer_to_item(mrPopup, MR_FIRST_ITEM(mrPopup), True);
-	  flags.do_menu = True;
-	  flags.is_submenu_mapped = True;
-	}
-      }
-      else if (mi && MI_IS_POPUP(mi))
-      {
-	if (Event.type == ButtonPress &&
-	    is_double_click(t0, mi, pmp, pmret, pdkp, flags.has_mouse_moved))
-	{
-	  pmret->rc = MENU_DOUBLE_CLICKED;
-	  goto DO_RETURN;
-	}
-	else if (!mrPopup || mrPopup != mrMiPopup || flags.do_popup_and_warp)
-	{
-	  Bool do_it_now = False;
+static void __mloop_wants_popup(
+	MenuParameters *pmp, mloop_evh_input_t *in, mloop_evh_data_t *med,
+	MenuRoot *mrMiPopup)
+{
+	Bool do_it_now = False;
 
-	  mi_wants_popup = mi;
-	  if (flags.do_popup_now)
-	  {
-	    do_it_now = True;
-	  }
-	  else if (MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-		   mi != miRemovedSubmenu)
-	  {
-	    if (flags.is_key_press ||
-		MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !mrPopdown)
-	    {
-	      do_it_now = True;
-	    }
-	  }
-	  else if (pointer_in_active_item_area(x_offset, mrMi))
-	  {
-	    if (flags.is_key_press || mi == miRemovedSubmenu ||
-		MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !mrPopdown)
-	    {
-	      do_it_now = True;
-	    }
-	    else
-	    {
-	      flags.is_pointer_in_active_item_area = True;
-	    }
-	  }
-	  if (do_it_now)
-	  {
-	    miRemovedSubmenu = NULL;
-	    /* must create a new menu or popup */
-	    if (mrPopup == NULL || mrPopup != mrMiPopup)
-	    {
-	      if (flags.do_popup_now)
-		flags.do_popup = True;
-	      else
-	      {
-		/* pop up in next pass through loop */
-		flags.do_force_popup = True;
-	      }
-	    }
-	    else if (flags.do_popup_and_warp)
-	    {
-	      warp_pointer_to_item(mrPopup, MR_FIRST_ITEM(mrPopup), True);
-	    }
-	  }
-	}
-      } /* else if (mi && MI_IS_POPUP(mi)) */
-      if (flags.do_popdown_now)
-      {
-	flags.do_popdown = True;
-	flags.do_popdown_now = False;
-      }
-      else if (flags.do_popup)
-      {
-	if (mrPopup && mrPopup != mrMiPopup)
+	in->mi_wants_popup = med->mi;
+	if (in->mif.do_popup_now)
 	{
-	  flags.do_popdown = True;
-	  mrPopdown = mrPopup;
-	  popdown_delay_10ms = 0;
-	  does_popdown_submenu_overlap = does_submenu_overlap;
+		do_it_now = True;
 	}
-	else if (mrPopdown && mrPopdown != mrMiPopup)
+	else if (MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+		 med->mi != in->miRemovedSubmenu)
 	{
-	  flags.do_popdown = True;
+		if (in->mif.is_key_press ||
+		    MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !in->mrPopdown)
+		{
+			do_it_now = True;
+		}
 	}
-	else if (mrPopdown && mrPopdown == mrMiPopup)
+	else if (pointer_in_active_item_area(med->x_offset, med->mrMi))
 	{
-	  mrPopup = mrPopdown;
-	  does_submenu_overlap = does_popdown_submenu_overlap;
-	  mrPopdown = NULL;
-	  flags.do_popup = False;
-	  flags.do_popdown = False;
+		if (in->mif.is_key_press || med->mi == in->miRemovedSubmenu ||
+		    MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !in->mrPopdown)
+		{
+			do_it_now = True;
+		}
+		else
+		{
+			in->mif.is_pointer_in_active_item_area = 1;
+		}
 	}
-      }
-      if (flags.do_popdown && !flags.do_popup)
-      {
-	/* popdown previous popup */
-	if (mrPopdown)
+	if (do_it_now)
 	{
-	  pop_menu_down_and_repaint_parent(
-	    &mrPopdown, &does_popdown_submenu_overlap, pmp);
-	  mi_with_popup = NULL;
-	  MR_SUBMENU_ITEM(pmp->menu) = NULL;
-	  if (mrPopup == mrPopdown)
-	  {
-	    mrPopup = NULL;
-	  }
-	  mrPopdown = NULL;
+		in->miRemovedSubmenu = NULL;
+		/* must create a new menu or popup */
+		if (in->mrPopup == NULL || in->mrPopup != mrMiPopup)
+		{
+			if (in->mif.do_popup_now)
+			{
+				in->mif.do_popup = True;
+			}
+			else
+			{
+				/* pop up in next pass through loop */
+				in->mif.do_force_popup = True;
+			}
+		}
+		else if (in->mif.do_popup_and_warp)
+		{
+			warp_pointer_to_item(
+				in->mrPopup, MR_FIRST_ITEM(in->mrPopup), True);
+		}
 	}
-	flags.do_popdown = False;
-      } /* if (flags.do_popdown && !flags.do_popup) */
-      if (flags.do_popup)
-      {
+
+	return;
+}
+
+static mloop_ret_code_t __mloop_make_popup(
+	MenuParameters *pmp, MenuReturn *pmret,
+	mloop_evh_input_t *in, mloop_evh_data_t *med,
+	MenuOptions *pops, Bool *pdoes_submenu_overlap)
+{
+	/* create a popup menu */
+	if (!is_submenu_mapped(pmp->menu, med->mi))
+	{
+		/* We want to pop prepop menus so it doesn't *have* to be
+		   unpopped; do_menu pops down any menus it pops up, but we
+		   want to be able to popdown w/o actually removing the menu */
+		int x;
+		int y;
+		Bool prefer_left_submenus;
+
+		/* Make sure we are using the latest style and menu layout. */
+		update_menu(in->mrPopup, pmp);
+
+		get_prefered_popup_position(
+			pmp->menu, in->mrPopup, &x, &y, &prefer_left_submenus);
+		/* Note that we don't care if popping up the menu works. If it
+		 * doesn't we'll catch it below. */
+		pop_menu_up(
+			&in->mrPopup, pmp, pmp->menu, med->mi, pmp->pfw,
+			pmp->pcontext, x, y, prefer_left_submenus,
+			in->mif.do_popup_and_warp, pops, pdoes_submenu_overlap,
+			(in->mrPopdown) ? MR_WINDOW(in->mrPopdown) : None);
+		in->mi_with_popup = med->mi;
+		in->mi_wants_popup = NULL;
+		if (in->mrPopup == NULL)
+		{
+			/* the menu deleted itself when execution the dynamic
+			 * popup * action */
+			pmret->rc = MENU_ERROR;
+			return MENU_MLOOP_RET_END;
+		}
+		MR_SUBMENU_ITEM(pmp->menu) = med->mi;
+	}
+
+	return MENU_MLOOP_RET_NORMAL;
+}
+
+static mloop_ret_code_t __mloop_get_mi_actions(
+	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
+	MenuRoot *mrMiPopup, Bool *pdoes_submenu_overlap,
+	Bool *pdoes_popdown_submenu_overlap)
+{
+	in->mif.do_popdown = False;
+	in->mif.do_popup = False;
+	in->mif.do_menu = False;
+	in->mif.is_submenu_mapped = False;
+	if (!in->mrPopup && in->mrPopdown &&
+	    med->mi == MR_PARENT_ITEM(in->mrPopdown))
+	{
+		/* We're again on the item that we left before.
+		 * Deschedule popping it down. */
+		in->mrPopup = in->mrPopdown;
+		in->mrPopdown = NULL;
+	}
+	if (med->mrMi == in->mrPopup)
+	{
+		/* must make current popup menu a real menu */
+		in->mif.do_menu = True;
+		in->mif.is_submenu_mapped = True;
+	}
+	else if (pmret->rc == MENU_POST)
+	{
+		/* must create a real menu and warp into it */
+		if (in->mrPopup == NULL || in->mrPopup != mrMiPopup)
+		{
+			in->mif.do_popup = True;
+		}
+		in->mif.do_menu = True;
+		in->mif.is_submenu_mapped = True;
+	}
+	else if (in->mif.do_popup_and_warp)
+	{
+		/* must create a real menu and warp into it */
+		if (in->mrPopup == NULL || in->mrPopup != mrMiPopup)
+		{
+			in->mif.do_popup = True;
+		}
+		else
+		{
+			XRaiseWindow(dpy, MR_WINDOW(in->mrPopup));
+			warp_pointer_to_item(
+				in->mrPopup, MR_FIRST_ITEM(in->mrPopup), True);
+			in->mif.do_menu = True;
+			in->mif.is_submenu_mapped = True;
+		}
+	}
+	else if (med->mi && MI_IS_POPUP(med->mi))
+	{
+		if (Event.type == ButtonPress && is_double_click(
+			    msi->t0, med->mi, pmp, pmret, pdkp,
+			    in->mif.has_mouse_moved))
+		{
+			pmret->rc = MENU_DOUBLE_CLICKED;
+			return MENU_MLOOP_RET_END;
+		}
+		else if (!in->mrPopup || in->mrPopup != mrMiPopup ||
+			 in->mif.do_popup_and_warp)
+		{
+			__mloop_wants_popup(pmp, in, med, mrMiPopup);
+		}
+	}
+	if (in->mif.do_popdown_now)
+	{
+		in->mif.do_popdown = True;
+		in->mif.do_popdown_now = False;
+	}
+	else if (in->mif.do_popup)
+	{
+		if (in->mrPopup && in->mrPopup != mrMiPopup)
+		{
+			in->mif.do_popdown = True;
+			in->mrPopdown = in->mrPopup;
+			med->popdown_delay_10ms = 0;
+			*pdoes_popdown_submenu_overlap = *pdoes_submenu_overlap;
+		}
+		else if (in->mrPopdown && in->mrPopdown != mrMiPopup)
+		{
+			in->mif.do_popdown = True;
+		}
+		else if (in->mrPopdown && in->mrPopdown == mrMiPopup)
+		{
+			in->mrPopup = in->mrPopdown;
+			*pdoes_submenu_overlap = *pdoes_popdown_submenu_overlap;
+			in->mrPopdown = NULL;
+			in->mif.do_popup = False;
+			in->mif.do_popdown = False;
+		}
+	}
+
+	return MENU_MLOOP_RET_NORMAL;
+}
+
+static void __mloop_do_popdown(
+	MenuParameters *pmp, mloop_evh_input_t *in,
+	Bool *pdoes_popdown_submenu_overlap)
+{
+	if (in->mrPopdown)
+	{
+		pop_menu_down_and_repaint_parent(
+			&in->mrPopdown, pdoes_popdown_submenu_overlap, pmp);
+		in->mi_with_popup = NULL;
+		MR_SUBMENU_ITEM(pmp->menu) = NULL;
+		if (in->mrPopup == in->mrPopdown)
+		{
+			in->mrPopup = NULL;
+		}
+		in->mrPopdown = NULL;
+	}
+	in->mif.do_popdown = False;
+
+	return;
+}
+
+static mloop_ret_code_t __mloop_do_popup(
+	MenuParameters *pmp, MenuReturn *pmret,
+	mloop_evh_input_t *in, mloop_evh_data_t *med,
+	MenuOptions *pops, MenuRoot *mrMiPopup, Bool *pdoes_submenu_overlap,
+	Bool *pdoes_popdown_submenu_overlap)
+{
+	exec_func_args_type efa;
+
 	if (!MR_IS_PAINTED(pmp->menu))
 	{
-	  /* draw the parent menu if it is not already drawn */
-	  flush_expose(MR_WINDOW(pmp->menu));
-	  paint_menu(pmp->menu, NULL, (*pmp->pfw));
+		/* draw the parent menu if it is not already drawn */
+		flush_expose(MR_WINDOW(pmp->menu));
+		paint_menu(pmp->menu, NULL, (*pmp->pfw));
 	}
 	/* get pos hints for item's action */
-	get_popup_options(pmp, mi, &mops);
-	if (mrMi == pmp->menu && mrMiPopup == NULL && MI_IS_POPUP(mi) &&
-	    MR_MISSING_SUBMENU_FUNC(pmp->menu))
+	get_popup_options(pmp, med->mi, pops);
+	if (med->mrMi == pmp->menu && mrMiPopup == NULL &&
+	    MI_IS_POPUP(med->mi) && MR_MISSING_SUBMENU_FUNC(pmp->menu))
 	{
-	  /* We're on a submenu item, but the submenu does not exist. The
-	   * user defined missing_submenu_action may create it. */
-	  Bool is_complex_function;
-	  Bool f;
-	  Bool is_busy_grabbed = False;
-	  Time t;
-	  char *menu_name;
-	  char *action;
-	  extern XEvent Event;
-	  char *missing_action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
+		/* We're on a submenu item, but the submenu does not exist.
+		 * The user defined missing_submenu_action may create it. */
+		Bool is_complex_function;
+		Bool is_busy_grabbed = False;
+		Time t;
+		char *menu_name;
+		char *action;
+		extern XEvent Event;
+		char *missing_action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
 
-	  f = *pdo_warp_to_title;
-	  t = lastTimestamp;
-	  menu_name = PeekToken(SkipNTokens(MI_ACTION(mi), 1), NULL);
-	  if (!menu_name)
-	  {
-	    menu_name = "";
-	  }
-	  is_complex_function = functions_is_complex_function(missing_action);
-	  if (is_complex_function)
-	  {
-	    char *action_ptr;
-	    action =
-	      safemalloc(
-		strlen("Function") + 3 +
-		strlen(missing_action) * 2 + 3 +
-		strlen(menu_name) * 2 + 1);
-	    strcpy(action, "Function ");
-	    action_ptr = action + strlen(action);
-	    action_ptr = QuoteString(action_ptr, missing_action);
-	    *action_ptr++ = ' ';
-	    action_ptr = QuoteString(action_ptr, menu_name);
-	  }
-	  else
-	  {
-	    action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
-	  }
-	  if (Scr.BusyCursor & BUSY_DYNAMICMENU)
-	    is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
-	  /* Execute the action */
-	  memset(&efa, 0, sizeof(efa));
-	  efa.cond_rc = NULL;
-	  efa.eventp = &Event;
-	  efa.fw = *(pmp->pfw);
-	  efa.action = action;
-	  efa.context = *(pmp->pcontext);
-	  efa.module = -2;
-	  efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
-	  efa.flags.do_save_tmpwin = 1;
-	  execute_function(&efa);
-	  if (is_complex_function)
-	    free(action);
-	  if (is_busy_grabbed)
-	    UngrabEm(GRAB_BUSYMENU);
-	  /* restore the stuff we saved */
-	  lastTimestamp = t;
-	  *pdo_warp_to_title = f;
-	  if (!check_if_fvwm_window_exists(*(pmp->pfw)))
-	  {
-	    *(pmp->pfw) = NULL;
-	    *(pmp->pcontext) = 0;
-	  }
-	  /* Let's see if the menu exists now. */
-	  mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
+		t = lastTimestamp;
+		menu_name = PeekToken(
+			SkipNTokens(MI_ACTION(med->mi), 1), NULL);
+		if (!menu_name)
+		{
+			menu_name = "";
+		}
+		is_complex_function =
+			functions_is_complex_function(missing_action);
+		if (is_complex_function)
+		{
+			char *action_ptr;
+			action =
+				safemalloc(
+					strlen("Function") + 3 +
+					strlen(missing_action) * 2 + 3 +
+					strlen(menu_name) * 2 + 1);
+			strcpy(action, "Function ");
+			action_ptr = action + strlen(action);
+			action_ptr = QuoteString(action_ptr, missing_action);
+			*action_ptr++ = ' ';
+			action_ptr = QuoteString(action_ptr, menu_name);
+		}
+		else
+		{
+			action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
+		}
+		if (Scr.BusyCursor & BUSY_DYNAMICMENU)
+		{
+			is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
+		}
+		/* Execute the action */
+		memset(&efa, 0, sizeof(efa));
+		efa.cond_rc = NULL;
+		efa.eventp = &Event;
+		efa.fw = *(pmp->pfw);
+		efa.action = action;
+		efa.context = *(pmp->pcontext);
+		efa.module = -2;
+		efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
+		efa.flags.do_save_tmpwin = 1;
+		execute_function(&efa);
+		if (is_complex_function)
+		{
+			free(action);
+		}
+		if (is_busy_grabbed)
+		{
+			UngrabEm(GRAB_BUSYMENU);
+		}
+		/* restore the stuff we saved */
+		lastTimestamp = t;
+		if (!check_if_fvwm_window_exists(*(pmp->pfw)))
+		{
+			*(pmp->pfw) = NULL;
+			*(pmp->pcontext) = 0;
+		}
+		/* Let's see if the menu exists now. */
+		mrMiPopup = mr_popup_for_mi(pmp->menu, med->mi);
 	} /* run MISSING_SUBMENU_FUNCTION */
-	mrPopup = mrMiPopup;
-	if (!mrPopup)
+	in->mrPopup = mrMiPopup;
+	if (!in->mrPopup)
 	{
-	  flags.do_menu = False;
-	  pmret->flags.is_menu_posted = 0;
+		in->mif.do_menu = False;
+		pmret->flags.is_menu_posted = 0;
 	}
 	else
 	{
-	  /* create a popup menu */
-	  if (!is_submenu_mapped(pmp->menu, mi))
-	  {
-	    /* We want to pop prepop menus so it doesn't *have* to be
-	       unpopped; do_menu pops down any menus it pops up, but we
-	       want to be able to popdown w/o actually removing the menu */
-	    int x;
-	    int y;
-	    Bool prefer_left_submenus;
-
-	    /* Make sure we are using the latest style and menu layout. */
-	    update_menu(mrPopup, pmp);
-
-	    get_prefered_popup_position(
-	      pmp->menu, mrPopup, &x, &y, &prefer_left_submenus);
-	    /* Note that we don't care if popping up the menu works. If it
-	     * doesn't we'll catch it below. */
-	    pop_menu_up(
-	      &mrPopup, pmp, pmp->menu, mi, pmp->pfw, pmp->pcontext, x, y,
-	      prefer_left_submenus, flags.do_popup_and_warp, &mops,
-	      &does_submenu_overlap, pdo_warp_to_title,
-	      (mrPopdown) ? MR_WINDOW(mrPopdown) : None);
-	    mi_with_popup = mi;
-	    mi_wants_popup = NULL;
-	    if (mrPopup == NULL)
-	    {
-	      /* the menu deleted itself when execution the dynamic popup
-	       * action */
-	      pmret->rc = MENU_ERROR;
-	      goto DO_RETURN;
-	    }
-	    MR_SUBMENU_ITEM(pmp->menu) = mi;
-	  }
-	} /* else (mrPopup) */
-	if (flags.do_popdown)
+		if (__mloop_make_popup(
+			    pmp, pmret, in, med, pops, pdoes_submenu_overlap) ==
+		    MENU_MLOOP_RET_END)
+		{
+			return MENU_MLOOP_RET_END;
+		}
+	} /* else (in->mrPopup) */
+	if (in->mif.do_popdown)
 	{
-	  if (mrPopdown)
-	  {
-	    if (mrPopdown != mrPopup)
-	    {
-	      if (mi_with_popup == MR_PARENT_ITEM(mrPopdown))
-	      {
-		mi_with_popup = NULL;
-	      }
-	      pop_menu_down_and_repaint_parent(
-		&mrPopdown, &does_popdown_submenu_overlap, pmp);
-	    }
-	    mrPopdown = NULL;
-	  }
-	  flags.do_popdown = False;
+		if (in->mrPopdown)
+		{
+			if (in->mrPopdown != in->mrPopup)
+			{
+				if (in->mi_with_popup ==
+				    MR_PARENT_ITEM(in->mrPopdown))
+				{
+					in->mi_with_popup = NULL;
+				}
+				pop_menu_down_and_repaint_parent(
+					&in->mrPopdown,
+					pdoes_popdown_submenu_overlap, pmp);
+			}
+			in->mrPopdown = NULL;
+		}
+		in->mif.do_popdown = False;
 	}
-	if (mrPopup)
+	if (in->mrPopup)
 	{
-	  if (MR_PARENT_MENU(mrPopup) == pmp->menu)
-	  {
-	    mi = find_entry(pmp, NULL, &mrMi, None, -1, -1);
-	    if (mi && mrMi == mrPopup)
-	    {
-	      flags.do_menu = True;
-	      flags.is_submenu_mapped = True;
-	    }
-	  }
-	  else
-	  {
-	    /* This menu must be already mapped somewhere else, so ignore
-	     * it completely. This can only happen if we have reached the
-	     * maximum allowed number of menu copies. */
-	    flags.do_menu = False;
-	    flags.do_popdown = False;
-	    mrPopup = NULL;
-	  }
-	} /* if (mrPopup) */
-      } /* if (flags.do_popup) */
-      /* remember the 'posted' menu */
-      if (pmret->flags.is_menu_posted && mrPopup != NULL &&
-	  pmret->menu == NULL)
-      {
-	pmret->menu = mrPopup;
-      }
-      if (flags.do_menu)
-      {
-	{
-	  MenuParameters mp;
-	  XEvent e;
-
-	  memset(&mp, 0, sizeof(mp));
-	  mp.menu = mrPopup;
-	  mp.parent_menu = pmp->menu;
-	  mp.parent_item = mi;
-	  mp.pfw = pmp->pfw;
-	  mp.tear_off_root_menu_window = pmp->tear_off_root_menu_window;
-	  MR_IS_TEAR_OFF_MENU(mrPopup) = 0;
-	  mp.pcontext = pmp->pcontext;
-	  mp.flags.has_default_action = False;
-	  mp.flags.is_already_mapped = flags.is_submenu_mapped;
-	  mp.flags.is_sticky = False;
-	  mp.flags.is_submenu = True;
-	  mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
-	  mp.pops = &mops;
-	  mp.ret_paction = pmp->ret_paction;
-	  mp.screen_origin_x = pmp->screen_origin_x;
-	  mp.screen_origin_y = pmp->screen_origin_y;
-	  if (flags.do_propagate_event_into_submenu)
-	  {
-	    memcpy(&e, &Event, sizeof(XEvent));
-	    mp.event_propagate_to_submenu = &e;
-	  }
-	  else
-	  {
-	    mp.event_propagate_to_submenu = NULL;
-	  }
-
-	  /* recursively do the new menu we've moved into */
-	  do_menu(&mp, pmret);
+		if (MR_PARENT_MENU(in->mrPopup) == pmp->menu)
+		{
+			med->mi = find_entry(
+				pmp, NULL, &med->mrMi, None, -1, -1);
+			if (med->mi && med->mrMi == in->mrPopup)
+			{
+				in->mif.do_menu = True;
+				in->mif.is_submenu_mapped = True;
+			}
+		}
+		else
+		{
+			/* This menu must be already mapped somewhere else, so
+			 * ignore it completely.  This can only happen if we
+			 * have reached the maximum allowed number of menu
+			 * copies. */
+			in->mif.do_menu = False;
+			in->mif.do_popdown = False;
+			in->mrPopup = NULL;
+		}
 	}
 
-	flags.do_propagate_event_into_submenu = False;
+	return MENU_MLOOP_RET_NORMAL;
+}
+
+static mloop_ret_code_t __mloop_do_menu(
+	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, MenuOptions *pops,
+	Bool *pdoes_submenu_overlap)
+{
+	MenuParameters mp;
+	XEvent e;
+
+	memset(&mp, 0, sizeof(mp));
+	mp.menu = in->mrPopup;
+	mp.parent_menu = pmp->menu;
+	mp.parent_item = med->mi;
+	mp.pfw = pmp->pfw;
+	mp.tear_off_root_menu_window = pmp->tear_off_root_menu_window;
+	MR_IS_TEAR_OFF_MENU(in->mrPopup) = 0;
+	mp.pcontext = pmp->pcontext;
+	mp.flags.has_default_action = False;
+	mp.flags.is_already_mapped = in->mif.is_submenu_mapped;
+	mp.flags.is_sticky = False;
+	mp.flags.is_submenu = True;
+	mp.eventp = (in->mif.do_popup_and_warp) ? (XEvent *)1 : NULL;
+	mp.pops = pops;
+	mp.ret_paction = pmp->ret_paction;
+	mp.screen_origin_x = pmp->screen_origin_x;
+	mp.screen_origin_y = pmp->screen_origin_y;
+	if (in->mif.do_propagate_event_into_submenu)
+	{
+		memcpy(&e, &Event, sizeof(XEvent));
+		mp.event_propagate_to_submenu = &e;
+	}
+	else
+	{
+		mp.event_propagate_to_submenu = NULL;
+	}
+
+	/* recursively do the new menu we've moved into */
+	do_menu(&mp, pmret);
+
+	in->mif.do_propagate_event_into_submenu = False;
 	if (pmret->rc == MENU_PROPAGATE_EVENT)
 	{
-	  flags.do_recycle_event = 1;
-	  continue;
+		in->mif.do_recycle_event = 1;
+		return MENU_MLOOP_RET_LOOP;
 	}
 	if (IS_MENU_RETURN(pmret->rc))
 	{
-	  pdkp->timestamp = 0;
-	  goto DO_RETURN;
+		pdkp->timestamp = 0;
+		return MENU_MLOOP_RET_END;
 	}
 	if (MST_DO_UNMAP_SUBMENU_ON_POPDOWN(pmp->menu) &&
 	    pmret->flags.is_key_press)
 	{
-	  miRemovedSubmenu = MR_PARENT_ITEM(mrPopup);
-	  pop_menu_down_and_repaint_parent(
-	    &mrPopup, &does_submenu_overlap, pmp);
-	  mi_with_popup = NULL;
-	  MR_SUBMENU_ITEM(pmp->menu) = NULL;
-	  if (mrPopup == mrPopdown)
-	  {
-	    mrPopdown = NULL;
-	  }
-	  mrPopup = NULL;
+		in->miRemovedSubmenu = MR_PARENT_ITEM(in->mrPopup);
+		pop_menu_down_and_repaint_parent(
+			&in->mrPopup, pdoes_submenu_overlap, pmp);
+		in->mi_with_popup = NULL;
+		MR_SUBMENU_ITEM(pmp->menu) = NULL;
+		if (in->mrPopup == in->mrPopdown)
+		{
+			in->mrPopdown = NULL;
+		}
+		in->mrPopup = NULL;
 	}
 	if (pmret->rc == MENU_POPDOWN)
 	{
-	  popup_delay_10ms = 0;
-	  flags.do_force_reposition = True;
+		med->popup_delay_10ms = 0;
+		in->mif.do_force_reposition = True;
 	}
-      } /* if (flags.do_menu) */
 
-      /* Now check whether we can animate the current popup menu back to the
-       * original place to unobscure the current menu;  this happens only when
-       * using animation */
-      if (mrPopup && MR_XANIMATION(mrPopup) &&
-	  (tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1))  &&
-	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
-      {
-	animated_move_back(mrPopup, False, (*pmp->pfw));
-      }
-      /* now check whether we should animate the current real menu
-       * over to the right to unobscure the prior menu; only a very
-       * limited case where this might be helpful and not too disruptive */
-      if (mrPopup == NULL && pmp->parent_menu != NULL &&
-	  MR_XANIMATION(pmp->menu) != 0 &&
-	  pointer_in_passive_item_area(x_offset, mrMi))
-      {
-	/* we have to see if we need menu to be moved */
-	animated_move_back(pmp->menu, True, (*pmp->pfw));
-	  if (mrPopdown)
-	  {
-	    if (mrPopdown != mrPopup)
-	    {
-	      pop_menu_down_and_repaint_parent(
-		&mrPopdown, &does_popdown_submenu_overlap, pmp);
-	      mi_with_popup = NULL;
-	    }
-	    mrPopdown = NULL;
-	  }
-	  flags.do_popdown = False;
-      }
+	return MENU_MLOOP_RET_NORMAL;
+}
 
-    } /* if (mi) */
-    else
-    {
-      /* moved off menu, deselect selected item... */
-      if (MR_SELECTED_ITEM(pmp->menu) &&
-	  flags.is_off_menu_allowed == False && !pmret->flags.is_menu_posted)
-      {
-	if (mrPopup)
+static mloop_ret_code_t __mloop_handle_action_with_mi(
+	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
+	MenuOptions *pops)
+{
+	MenuItem *tmi;
+	MenuRoot *tmrMi;
+	MenuRoot *mrMiPopup = NULL;
+	Bool does_submenu_overlap = False;
+	Bool does_popdown_submenu_overlap = False;
+
+	pmret->flags.do_unpost_submenu = 0;
+	/* we're on a menu item */
+	in->mif.is_off_menu_allowed = False;
+	if (med->mrMi == pmp->menu && med->mi != in->miRemovedSubmenu)
 	{
-	  int x, y, mx, my;
-	  unsigned int mw, mh;
+		in->miRemovedSubmenu = NULL;
+	}
+	if (med->mrMi != pmp->menu && med->mrMi != in->mrPopup &&
+	    med->mrMi != in->mrPopdown)
+	{
+		/* we're on an item from a prior menu */
+		if (med->mrMi != MR_PARENT_MENU(pmp->menu))
+		{
+			/* the event is for a previous menu, just close
+			 * this one */
+			pmret->rc = MENU_PROPAGATE_EVENT;
+			pmret->menu = med->mrMi;
+		}
+		else
+		{
+			pmret->rc = MENU_POPDOWN;
+		}
+		pdkp->timestamp = 0;
+		return MENU_MLOOP_RET_END;
+	}
+	if (med->mi != MR_SELECTED_ITEM(pmp->menu) && med->mrMi == pmp->menu)
+	{
+		/* new item of the same menu */
+		__mloop_select_item(
+			pmp, in, med, does_submenu_overlap,
+			&does_popdown_submenu_overlap);
+	}
+	else if (med->mi != MR_SELECTED_ITEM(pmp->menu) && med->mrMi &&
+		 med->mrMi == in->mrPopdown)
+	{
+		/* we're on the popup menu of a different menu item of this
+		 * menu */
+		med->mi = MR_PARENT_ITEM(in->mrPopdown);
+		in->mrPopup = in->mrPopdown;
+		in->mrPopdown = NULL;
+		does_submenu_overlap = does_popdown_submenu_overlap;
+		select_menu_item(pmp->menu, med->mi, True, (*pmp->pfw));
+	}
+	mrMiPopup = mr_popup_for_mi(pmp->menu, med->mi);
+	/* check what has to be done with the item */
+	if (__mloop_get_mi_actions(
+		    pmp, pmret, pdkp, in, med, msi, mrMiPopup,
+		    &does_submenu_overlap, &does_popdown_submenu_overlap) ==
+	    MENU_MLOOP_RET_END)
+	{
+		return MENU_MLOOP_RET_END;
+	}
+	/* do what needs to be done */
+	if (in->mif.do_popdown && !in->mif.do_popup)
+	{
+		/* popdown previous popup */
+		__mloop_do_popdown(pmp, in, &does_popdown_submenu_overlap);
+	}
+	if (in->mif.do_popup)
+	{
+		if (__mloop_do_popup(
+			    pmp, pmret, in, med, pops, mrMiPopup,
+			    &does_submenu_overlap,
+			    &does_popdown_submenu_overlap) ==
+		    MENU_MLOOP_RET_END)
+		{
+			return MENU_MLOOP_RET_END;
+		}
+	}
+	/* remember the 'posted' menu */
+	if (pmret->flags.is_menu_posted && in->mrPopup != NULL &&
+	    pmret->menu == NULL)
+	{
+		pmret->menu = in->mrPopup;
+	}
+	if (in->mif.do_menu)
+	{
+		mloop_ret_code_t rc;
 
-	  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-			    &x, &y, &JunkX, &JunkY, &JunkMask) == False)
-	  {
-	    /* pointer is on a different screen */
-	    x = 0;
-	    y = 0;
-	  }
-	  if (menu_get_geometry(
-		    pmp->menu, &JunkRoot, &mx, &my, &mw, &mh, &JunkBW,
-		    &JunkDepth) &&
-	      ((!MR_IS_LEFT(mrPopup)  && x < mx) ||
-	       (!MR_IS_RIGHT(mrPopup) && x > mx + mw) ||
-	       (!MR_IS_UP(mrPopup)    && y < my) ||
-	       (!MR_IS_DOWN(mrPopup)  && y > my + mh)))
-	  {
-	    select_menu_item(
-	      pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pfw));
-	    pop_menu_down_and_repaint_parent(
-	      &mrPopup, &does_submenu_overlap, pmp);
-	    mi_with_popup = NULL;
-	    MR_SUBMENU_ITEM(pmp->menu) = NULL;
-	    if (mrPopup == mrPopdown)
-	    {
-	      mrPopdown = NULL;
-	    }
-	    mrPopup = NULL;
-	  }
-	  else if (x < mx || x >= mx + mw || y < my || y >= my + mh)
-	  {
-	    /* pointer is outside the menu but do not pop down  */
-	    flags.is_off_menu_allowed = True;
-	  }
-	  else
-	  {
-	    /* Pointer is still in the menu. Postpone the decision if we have
-	     * to pop down. */
-	  }
-	} /* if (mrPopup) */
+		rc = __mloop_do_menu(
+			pmp, pmret, pdkp, in, med, pops, &does_submenu_overlap);
+		if (rc != MENU_MLOOP_RET_NORMAL)
+		{
+			return rc;
+		}
+	}
+	/* Now check whether we can animate the current popup menu back to the
+	 * original place to unobscure the current menu;  this happens only when
+	 * using animation */
+	if (in->mrPopup && MR_XANIMATION(in->mrPopup) &&
+	    (tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1))  &&
+	    (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
+	{
+		animated_move_back(in->mrPopup, False, (*pmp->pfw));
+	}
+	/* now check whether we should animate the current real menu
+	 * over to the right to unobscure the prior menu; only a very
+	 * limited case where this might be helpful and not too disruptive */
+	if (in->mrPopup == NULL && pmp->parent_menu != NULL &&
+	    MR_XANIMATION(pmp->menu) != 0 &&
+	    pointer_in_passive_item_area(med->x_offset, med->mrMi))
+	{
+		/* we have to see if we need menu to be moved */
+		animated_move_back(pmp->menu, True, (*pmp->pfw));
+		if (in->mrPopdown)
+		{
+			if (in->mrPopdown != in->mrPopup)
+			{
+				pop_menu_down_and_repaint_parent(
+					&in->mrPopdown,
+					&does_popdown_submenu_overlap, pmp);
+				in->mi_with_popup = NULL;
+			}
+			in->mrPopdown = NULL;
+		}
+		in->mif.do_popdown = False;
+	}
+
+	return MENU_MLOOP_RET_NORMAL;
+}
+
+static mloop_ret_code_t __mloop_handle_action_without_mi(
+	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
+	MenuOptions *pops)
+{
+	Bool does_submenu_overlap = False;
+
+	pmret->flags.do_unpost_submenu = 0;
+	/* moved off menu, deselect selected item... */
+	if (!MR_SELECTED_ITEM(pmp->menu) ||
+	    in->mif.is_off_menu_allowed == True || pmret->flags.is_menu_posted)
+	{
+		/* nothing to do */
+		return MENU_MLOOP_RET_NORMAL;
+	}
+	if (in->mrPopup)
+	{
+		int x, y, mx, my;
+		unsigned int mw, mh;
+
+		if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+				  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
+		{
+			/* pointer is on a different screen */
+			x = 0;
+			y = 0;
+		}
+		if (menu_get_geometry(
+			    pmp->menu, &JunkRoot, &mx, &my, &mw, &mh, &JunkBW,
+			    &JunkDepth) &&
+		    ((!MR_IS_LEFT(in->mrPopup)  && x < mx) ||
+		     (!MR_IS_RIGHT(in->mrPopup) && x > mx + mw) ||
+		     (!MR_IS_UP(in->mrPopup)    && y < my) ||
+		     (!MR_IS_DOWN(in->mrPopup)  && y > my + mh)))
+		{
+			select_menu_item(
+				pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+				(*pmp->pfw));
+			pop_menu_down_and_repaint_parent(
+				&in->mrPopup, &does_submenu_overlap, pmp);
+			in->mi_with_popup = NULL;
+			MR_SUBMENU_ITEM(pmp->menu) = NULL;
+			if (in->mrPopup == in->mrPopdown)
+			{
+				in->mrPopdown = NULL;
+			}
+			in->mrPopup = NULL;
+		}
+		else if (x < mx || x >= mx + mw || y < my || y >= my + mh)
+		{
+			/* pointer is outside the menu but do not pop down */
+			in->mif.is_off_menu_allowed = True;
+		}
+		else
+		{
+			/* Pointer is still in the menu. Postpone the decision
+			 * if we have to pop down. */
+		}
+	} /* if (in->mrPopup) */
 	else
 	{
-	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			   (*pmp->pfw));
+		select_menu_item(
+			pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			(*pmp->pfw));
 	}
-      } /* if (MR_SELECTED_ITEM(mpmp->enu)) */
-    } /* else (!mi) */
-    XFlush(dpy);
-  } /* while (True) */
 
-  DO_RETURN:
-  if (mrPopdown)
-  {
-    pop_menu_down_and_repaint_parent(
-      &mrPopdown, &does_popdown_submenu_overlap, pmp);
-    MR_SUBMENU_ITEM(pmp->menu) = NULL;
-  }
-  if (pmret->rc == MENU_SELECTED &&
-      is_double_click(t0, mi, pmp, pmret, pdkp, flags.has_mouse_moved))
-  {
-    pmret->rc = MENU_DOUBLE_CLICKED;
-  }
-  if (pmret->rc == MENU_SELECTED && mi && MI_FUNC_TYPE(mi) == F_TEARMENUOFF)
-  {
-    pmret->rc = (MR_IS_TEAR_OFF_MENU(pmp->menu)) ?
-      MENU_KILL_TEAR_OFF_MENU : MENU_TEAR_OFF;
-  }
+	return MENU_MLOOP_RET_NORMAL;
+}
 
-  switch (pmret->rc)
-  {
-  case MENU_POPDOWN:
-  case MENU_PROPAGATE_EVENT:
-  case MENU_DOUBLE_CLICKED:
-    if (MR_SELECTED_ITEM(pmp->menu))
-      select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-		       (*pmp->pfw));
-    if (flags.is_key_press && pmret->rc != MENU_DOUBLE_CLICKED)
-    {
-      if (!pmp->flags.is_submenu)
-      {
-	/* abort a root menu rather than pop it down */
-	pmret->rc = MENU_ABORTED;
-      }
-      if (pmp->parent_menu && MR_SELECTED_ITEM(pmp->parent_menu))
-      {
-	warp_pointer_to_item(pmp->parent_menu,
-			     MR_SELECTED_ITEM(pmp->parent_menu), False);
-	tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1);
-	if (pmp->parent_menu != tmrMi && MR_XANIMATION(pmp->menu) == 0)
+static void __mloop_exit_warp_back(MenuParameters *pmp)
+{
+	MenuItem *tmi;
+	MenuRoot *tmrMi;
+
+	if (pmp->parent_menu && MR_SELECTED_ITEM(pmp->parent_menu))
 	{
-	  /* Warping didn't take us to the correct menu, i.e. the spot we want
-	   * to warp to is obscured. So raise our window first. */
-	  XRaiseWindow(dpy, MR_WINDOW(pmp->parent_menu));
+		warp_pointer_to_item(
+			pmp->parent_menu, MR_SELECTED_ITEM(pmp->parent_menu),
+			False);
+		tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1);
+		if (pmp->parent_menu != tmrMi && MR_XANIMATION(pmp->menu) == 0)
+		{
+			/* Warping didn't take us to the correct menu, i.e. the
+			 * spot we want to warp to is obscured. So raise our
+			 * window first. */
+			XRaiseWindow(dpy, MR_WINDOW(pmp->parent_menu));
+		}
 	}
-      }
-    }
-    break;
 
-  case MENU_TEAR_OFF:
-    if (MR_SELECTED_ITEM(pmp->menu))
-    {
-      select_menu_item(
-	pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pfw));
-    }
-    break;
+	return;
+}
 
-  case MENU_ABORTED:
-    if (!MR_IS_TEAR_OFF_MENU(pmp->menu))
-    {
-      break;
-    }
-    /* fall through */
-  case MENU_KILL_TEAR_OFF_MENU:
-    if (MR_SELECTED_ITEM(pmp->menu))
-    {
-      select_menu_item(
-	pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pfw));
-    }
-    break;
-
-  case MENU_SELECTED:
-    /* save action to execute so that the menu may be destroyed now */
-    if (pmp->ret_paction)
-      *pmp->ret_paction = (mi) ? safestrdup(MI_ACTION(mi)) : NULL;
-    pmret->rc = MENU_DONE;
-    if (pmp->ret_paction && *pmp->ret_paction && mi && MI_IS_POPUP(mi))
-    {
-      get_popup_options(pmp, mi, &mops);
-      if (mops.flags.do_select_in_place)
-      {
+static void __mloop_exit_select_in_place(
+	MenuParameters *pmp, mloop_evh_data_t *med, MenuOptions *pops)
+{
 	MenuRoot *submenu;
 	XWindowAttributes win_attribs;
 
@@ -5502,63 +5643,202 @@ static void MenuInteraction(
 	last_saved_pos_hints.pos_hints.y_factor = 0;
 	last_saved_pos_hints.pos_hints.is_relative = False;
 	last_saved_pos_hints.pos_hints.is_menu_relative = False;
-	submenu = mr_popup_for_mi(pmp->menu, mi);
-	if (submenu &&
-	    MR_WINDOW(submenu) != None &&
+	submenu = mr_popup_for_mi(pmp->menu, med->mi);
+	if (submenu && MR_WINDOW(submenu) != None &&
 	    XGetWindowAttributes(dpy, MR_WINDOW(submenu), &win_attribs) &&
 	    win_attribs.map_state == IsViewable &&
 	    menu_get_geometry(
-		    submenu, &JunkRoot,
-		    &last_saved_pos_hints.pos_hints.x,
-		    &last_saved_pos_hints.pos_hints.y,
-		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+		    submenu, &JunkRoot, &last_saved_pos_hints.pos_hints.x,
+		    &last_saved_pos_hints.pos_hints.y, &JunkWidth, &JunkHeight,
+		    &JunkBW, &JunkDepth))
 	{
-	  /* The submenu is mapped, just take its position and put it in the
-	   * position hints. */
+		/* The submenu is mapped, just take its position and put it in
+		 * the position hints. */
 	}
-	else if (mops.flags.has_poshints)
+	else if (pops->flags.has_poshints)
 	{
-	  last_saved_pos_hints.pos_hints = mops.pos_hints;
+		last_saved_pos_hints.pos_hints = pops->pos_hints;
 	}
 	else
 	{
-	  Bool dummy;
+		Bool dummy;
 
-	  get_prefered_popup_position(
-	    pmp->menu, submenu, &last_saved_pos_hints.pos_hints.x,
-	    &last_saved_pos_hints.pos_hints.y, &dummy);
+		get_prefered_popup_position(
+			pmp->menu, submenu, &last_saved_pos_hints. pos_hints.x,
+			&last_saved_pos_hints. pos_hints.y, &dummy);
 	}
-	if (mops.flags.do_warp_on_select)
+	if (pops->flags.do_warp_on_select)
 	{
-	  *pdo_warp_to_title = True;
+		last_saved_pos_hints.flags.do_warp_title = 1;
 	}
-      } /* select in place */
-      else
-      {
-	last_saved_pos_hints.flags.do_ignore_pos_hints = True;
-      } /* mops.flags.do_select_in_place */
-      last_saved_pos_hints.pos_hints.screen_origin_x = pmp->screen_origin_x;
-      last_saved_pos_hints.pos_hints.screen_origin_y = pmp->screen_origin_y;
-    } /* a menu was selected */
-    break;
 
-  default:
-    break;
-  }
+	return;
+}
 
-  if (pmret->rc == MENU_SUBMENU_TORN_OFF)
-  {
-    mrPopup = NULL;
-    MR_SUBMENU_ITEM(pmp->menu) = NULL;
-  }
-  if (mrPopup)
-  {
-    pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap, pmp);
-    MR_SUBMENU_ITEM(pmp->menu) = NULL;
-  }
-  pmret->flags.is_key_press = flags.is_key_press;
+static void __mloop_exit_selected(
+	MenuParameters *pmp, MenuReturn *pmret,
+	mloop_evh_data_t *med, MenuOptions *pops)
+{
+	/* save action to execute so that the menu may be destroyed
+	 * now */
+	if (pmp->ret_paction)
+	{
+		*pmp->ret_paction = (med->mi) ?
+			safestrdup(MI_ACTION(med->mi)) : NULL;
+	}
+	if (pmp->ret_paction && *pmp->ret_paction && med->mi &&
+	    MI_IS_POPUP(med->mi))
+	{
+		get_popup_options(pmp, med->mi, pops);
+		if (pops->flags.do_select_in_place)
+		{
+			__mloop_exit_select_in_place(pmp, med, pops);
+		}
+		else
+		{
+			last_saved_pos_hints.flags.do_ignore_pos_hints = True;
+		} /* pops->flags.do_select_in_place */
+		last_saved_pos_hints.pos_hints.screen_origin_x =
+			pmp->screen_origin_x;
+		last_saved_pos_hints.pos_hints.screen_origin_y =
+			pmp->screen_origin_y;
+	}
 
-  return;
+	return;
+}
+
+static void __mloop_exit(
+	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
+	MenuOptions *pops)
+{
+	Bool dummy;
+	Bool do_deselect = False;
+
+	if (in->mrPopdown)
+	{
+		pop_menu_down_and_repaint_parent(&in->mrPopdown, &dummy, pmp);
+		MR_SUBMENU_ITEM(pmp->menu) = NULL;
+	}
+	if (pmret->rc == MENU_SELECTED && is_double_click(
+		    msi->t0, med->mi, pmp, pmret, pdkp,
+		    in->mif.has_mouse_moved))
+	{
+		pmret->rc = MENU_DOUBLE_CLICKED;
+	}
+	if (pmret->rc == MENU_SELECTED && med->mi &&
+	    MI_FUNC_TYPE(med->mi) == F_TEARMENUOFF)
+	{
+		pmret->rc = (MR_IS_TEAR_OFF_MENU(pmp->menu)) ?
+			MENU_KILL_TEAR_OFF_MENU : MENU_TEAR_OFF;
+	}
+	switch (pmret->rc)
+	{
+	case MENU_POPDOWN:
+	case MENU_PROPAGATE_EVENT:
+	case MENU_DOUBLE_CLICKED:
+		do_deselect = True;
+		if (in->mif.is_key_press && pmret->rc != MENU_DOUBLE_CLICKED)
+		{
+			if (!pmp->flags.is_submenu)
+			{
+				/* abort a root menu rather than pop it down */
+				pmret->rc = MENU_ABORTED;
+			}
+			__mloop_exit_warp_back(pmp);
+		}
+		break;
+	case MENU_ABORTED:
+	case MENU_TEAR_OFF:
+	case MENU_KILL_TEAR_OFF_MENU:
+		do_deselect = True;
+		break;
+	case MENU_SELECTED:
+		__mloop_exit_selected(pmp, pmret, med, pops);
+		pmret->rc = MENU_DONE;
+		break;
+
+	default:
+		break;
+	}
+	if (do_deselect && MR_SELECTED_ITEM(pmp->menu))
+	{
+		select_menu_item(
+			pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			(*pmp->pfw));
+	}
+	if (pmret->rc == MENU_SUBMENU_TORN_OFF)
+	{
+		in->mrPopup = NULL;
+		MR_SUBMENU_ITEM(pmp->menu) = NULL;
+	}
+	if (in->mrPopup)
+	{
+		pop_menu_down_and_repaint_parent(&in->mrPopup, &dummy, pmp);
+		MR_SUBMENU_ITEM(pmp->menu) = NULL;
+	}
+	pmret->flags.is_key_press = in->mif.is_key_press;
+
+	return;
+}
+
+static void __menu_loop(
+	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp)
+{
+	mloop_evh_input_t mei;
+	mloop_ret_code_t mloop_ret;
+	mloop_evh_data_t med;
+	mloop_static_info_t msi;
+	MenuOptions mops;
+	Bool is_finished;
+
+	__mloop_init(pmp, pmret, &mei, &med, &msi, &mops);
+	for (is_finished = False; !is_finished; )
+	{
+		mloop_ret = __mloop_get_event(pmp, pmret, &mei, &med, &msi);
+		switch (mloop_ret)
+		{
+		case MENU_MLOOP_RET_LOOP:
+			continue;
+		case MENU_MLOOP_RET_END:
+			is_finished = True;
+			break;
+		default:
+			break;
+		}
+		mloop_ret = __mloop_handle_event(
+			pmp, pmret, pdkp, &mei, &med, &msi);
+		switch (mloop_ret)
+		{
+		case MENU_MLOOP_RET_LOOP:
+			continue;
+		case MENU_MLOOP_RET_END:
+			is_finished = True;
+			break;
+		default:
+			break;
+		}
+		/* Now handle new menu items, whether it is from a keypress or
+		 * a pointer motion event. */
+		if (med.mi != NULL)
+		{
+			mloop_ret = __mloop_handle_action_with_mi(
+				pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+		}
+		else
+		{
+			mloop_ret = __mloop_handle_action_without_mi(
+				pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+		}
+		if (mloop_ret == MENU_MLOOP_RET_END)
+		{
+			is_finished = True;
+		}
+		XFlush(dpy);
+	}
+	__mloop_exit(pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+
+	return;
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -5847,9 +6127,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	Time t0 = lastTimestamp;
 	XEvent tmpevent;
 	double_keypress dkp;
-	/* must be saved before launching parallel menus (by using the dynamic
-	 * actions). */
-	static Bool do_warp_to_title = False;
 	/* don't save these ones, we want them to work even within recursive
 	 * menus popped up by dynamic actions. */
 	static int indirect_depth = 0;
@@ -5960,7 +6237,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			    &(pmp->menu), pmp, pmp->parent_menu, NULL,
 			    pmp->pfw, pmp->pcontext, x, y,
 			    prefer_left_submenus, key_press /*warp*/,
-			    pmp->pops, NULL, &do_warp_to_title, None))
+			    pmp->pops, NULL, None))
 		{
 			XBell(dpy, 0);
 			UngrabEm(GRAB_MENU);
@@ -5989,7 +6266,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 				True /* skip Title */);
 		}
 	}
-	do_warp_to_title = False;
 
 	/* Remember the key that popped up the root menu. */
 	if (pmp->flags.is_submenu)
@@ -6029,7 +6305,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		{
 			XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
 		}
-		MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title);
+		__menu_loop(pmp, pmret, &dkp);
 		if (!pmp->flags.is_submenu)
 		{
 			XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
