@@ -220,7 +220,7 @@ static const char *getEnv(const char *name, int len)
     static char *empty = "";
     char   *ret, *tmp, *p, *p2;
 
-    if ((tmp = strdup(name)) == NULL)
+    if ((tmp = safestrdup(name)) == NULL)
 	return empty;  /* better than no test at all. */
     p = tmp;
     if (*p == '$')

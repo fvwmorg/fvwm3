@@ -276,7 +276,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         opts = GetNextSimpleOption(opts, &sor_keyname);
       }
       else if (!opts || !*opts)
-	default_action = strdup(tok);
+	default_action = safestrdup(tok);
       else
       {
         fvwm_msg(ERR,"WindowList","Unknown option '%s'",tok);

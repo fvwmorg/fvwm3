@@ -2306,7 +2306,7 @@ static void MenuInteraction(
   case MENU_SELECTED:
     /* save action to execute so that the menu may be destroyed now */
     if (pmp->ret_paction)
-      *pmp->ret_paction = (mi) ? strdup(MI_ACTION(mi)) : NULL;
+      *pmp->ret_paction = (mi) ? safestrdup(MI_ACTION(mi)) : NULL;
     pmret->rc = MENU_DONE;
     if (pmp->ret_paction && *pmp->ret_paction && mi && MI_IS_POPUP(mi))
     {
@@ -2480,7 +2480,7 @@ static int pop_menu_up(
     extern XEvent Event;
 
     /* save variables that we still need but that may be overwritten */
-    menu_name = strdup(MR_NAME(mr));
+    menu_name = safestrdup(MR_NAME(mr));
     pos_hints = last_saved_pos_hints;
     f = *pdo_warp_to_title;
     t = lastTimestamp;
@@ -4773,7 +4773,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
       if (MR_MISSING_SUBMENU_FUNC(msp->menu))
       {
 	MR_MISSING_SUBMENU_FUNC(menuContinuation) =
-	  strdup(MR_MISSING_SUBMENU_FUNC(msp->menu));
+	  safestrdup(MR_MISSING_SUBMENU_FUNC(msp->menu));
       }
       /* don't propagate sidepic, sidecolor, popup- and popdown actions */
 
@@ -6417,7 +6417,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       }
       if (arg1)
       {
-	ST_ITEM_FORMAT(tmpms) = strdup(arg1);
+	ST_ITEM_FORMAT(tmpms) = safestrdup(arg1);
       }
       break;
 
@@ -6796,7 +6796,7 @@ void CopyMenuStyle(F_CMD_ARGS)
     ST_ITEM_FORMAT(destms) = NULL;
   }
   if (ST_ITEM_FORMAT(origms))
-    ST_ITEM_FORMAT(destms) = strdup(ST_ITEM_FORMAT(origms));
+    ST_ITEM_FORMAT(destms) = safestrdup(ST_ITEM_FORMAT(origms));
 
   /* AutomaticHotkeys */
   ST_USE_AUTOMATIC_HOTKEYS(destms) = ST_USE_AUTOMATIC_HOTKEYS(origms);

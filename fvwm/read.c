@@ -61,8 +61,7 @@ static int push_read_file(const char *file)
     return FALSE;
   }
   prev_read_files[curr_read_depth++] = curr_read_file;
-  /* we need a library function safestrdup(); stripcpy() is bad for this */
-  curr_read_file = strdup(file);
+  curr_read_file = safestrdup(file);
 
   if (curr_read_dir)
     free(curr_read_dir);

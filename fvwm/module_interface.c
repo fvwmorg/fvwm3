@@ -1210,7 +1210,7 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   GetNextToken(action,&module);
   if (!module)
     return;
-  str = strdup(action + strlen(module) + 1);
+  str = safestrdup(action + strlen(module) + 1);
 
   if (tmp_win) {
     /* Modules may need to know which window this applies to */
@@ -1463,7 +1463,7 @@ static void AddToCommandQueue(Window window, int module, char *command)
 
   new->window = window;
   new->module = module;
-  new->command = strdup(command);
+  new->command = safestrdup(command);
   new->next = NULL;
 
   DBUG("AddToCommandQueue", command);

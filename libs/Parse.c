@@ -352,7 +352,7 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
   if (tmptok == NULL)
     *token = NULL;
   else
-    *token = strdup(tmptok);
+    *token = safestrdup(tmptok);
 
   return end;
 }

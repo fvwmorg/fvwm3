@@ -1,3 +1,10 @@
+2001-02-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/{builtins,functions,fvwm,menus,module_interface}.c:
+	* fvwm/{move_resize,read,session,style,windowlist}.c:
+	* libs/{Parse.c,envvar.c,safemalloc.c,safemalloc.h}:
+	safestrdup patch by Lorenz Minder
+
 2001-02-06  Dan Espen  <dane@mk.telcordia.com>
 
 	* AUTHORS: Incorporate change from Dan Astoorian.

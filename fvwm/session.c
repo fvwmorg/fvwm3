@@ -139,7 +139,7 @@ static void setRealStateFilename(char *filename)
 {
   if (realStateFilename)
     free(realStateFilename);
-  realStateFilename = strdup(filename);
+  realStateFilename = safestrdup(filename);
 }
 
 static char *getUniqueStateFilename(void)

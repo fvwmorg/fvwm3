@@ -607,10 +607,10 @@ void exec_setup(F_CMD_ARGS)
   else /* no arg, so use $SHELL -- not working??? */
   {
     if (getenv("SHELL"))
-      exec_shell_name = strdup(getenv("SHELL"));
+      exec_shell_name = safestrdup(getenv("SHELL"));
     else
       /* if $SHELL not set, use default */
-      exec_shell_name = strdup("/bin/sh");
+      exec_shell_name = safestrdup("/bin/sh");
   }
 }
 
@@ -632,7 +632,7 @@ void exec_function(F_CMD_ARGS)
   else
 #endif
   {
-    cmd = strdup(action);
+    cmd = safestrdup(action);
   }
   if (!cmd)
     return;
@@ -728,7 +728,7 @@ void wait_func(F_CMD_ARGS)
       temp = action;
       while (*temp && isspace((unsigned char)*temp))
         temp++;
-      wait_string = strdup(temp);
+      wait_string = safestrdup(temp);
       for (i = strlen(wait_string) - 1; i >= 0 && isspace(wait_string[i]); i--)
       {
         wait_string[i] = 0;
@@ -737,7 +737,7 @@ void wait_func(F_CMD_ARGS)
   }
   else
   {
-    wait_string = strdup("");
+    wait_string = safestrdup("");
   }
 
   while(!done && !isTerminated)
@@ -1180,9 +1180,9 @@ void SetDefaultColors(F_CMD_ARGS)
   if (action)
     action = GetNextToken(action, &back);
   if (!back)
-    back = strdup("grey");
+    back = safestrdup("grey");
   if (!fore)
-    fore = strdup("black");
+    fore = safestrdup("black");
 
   if (!StrEquals(fore, "-"))
   {

@@ -268,8 +268,7 @@ static const func_type *FindBuiltinFunction(char *func)
   if (func[0]=='+' || (func[0] == ' ' && func[1] == '+'))
     return &(func_config[0]);
 
-  if (!(temp = strdup(func)))
-    return NULL;
+  temp = safestrdup(func);
   for (s = temp; *s != 0; s++)
     if (isupper(*s))
       *s = tolower(*s);
@@ -1556,7 +1555,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   /* duplicate the whole argument list for use as '$*' */
   if (taction)
   {
-    arguments[0] = strdup(taction);
+    arguments[0] = safestrdup(taction);
     /* strip trailing newline */
     if (arguments[0][0])
     {

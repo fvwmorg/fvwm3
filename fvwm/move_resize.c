@@ -306,7 +306,7 @@ static int GetResizeArguments(
   }
   else
   {
-    s1 = strdup(token);
+    s1 = safestrdup(token);
     naction = GetNextToken(naction, &s2);
     if (!s2)
     {

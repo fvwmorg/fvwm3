@@ -280,7 +280,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_ICON_NAME(*merged_style));
       SSET_ICON_NAME(*merged_style, (SGET_ICON_NAME(*add_style)) ?
-		     strdup(SGET_ICON_NAME(*add_style)) : NULL);
+		     safestrdup(SGET_ICON_NAME(*add_style)) : NULL);
     }
     else
     {
@@ -294,7 +294,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_MINI_ICON_NAME(*merged_style));
       SSET_MINI_ICON_NAME(*merged_style, (SGET_MINI_ICON_NAME(*add_style)) ?
-			  strdup(SGET_MINI_ICON_NAME(*add_style)) : NULL);
+			  safestrdup(SGET_MINI_ICON_NAME(*add_style)) : NULL);
     }
     else
     {
@@ -309,7 +309,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_DECOR_NAME(*merged_style));
       SSET_DECOR_NAME(*merged_style, (SGET_DECOR_NAME(*add_style)) ?
-		      strdup(SGET_DECOR_NAME(*add_style)) : NULL);
+		      safestrdup(SGET_DECOR_NAME(*add_style)) : NULL);
     }
     else
     {
@@ -323,7 +323,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_ICON_FONT(*merged_style));
       SSET_ICON_FONT(*merged_style, (SGET_ICON_FONT(*add_style)) ?
-		     strdup(SGET_ICON_FONT(*add_style)) : NULL);
+		     safestrdup(SGET_ICON_FONT(*add_style)) : NULL);
     }
     else
     {
@@ -336,7 +336,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_WINDOW_FONT(*merged_style));
       SSET_WINDOW_FONT(*merged_style, (SGET_WINDOW_FONT(*add_style)) ?
-		       strdup(SGET_WINDOW_FONT(*add_style)) : NULL);
+		       safestrdup(SGET_WINDOW_FONT(*add_style)) : NULL);
     }
     else
     {
@@ -356,7 +356,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_FORE_COLOR_NAME(*merged_style));
       SSET_FORE_COLOR_NAME(*merged_style, (SGET_FORE_COLOR_NAME(*add_style)) ?
-			   strdup(SGET_FORE_COLOR_NAME(*add_style)) : NULL);
+			   safestrdup(SGET_FORE_COLOR_NAME(*add_style)) : NULL);
     }
     else
     {
@@ -369,7 +369,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_BACK_COLOR_NAME(*merged_style));
       SSET_BACK_COLOR_NAME(*merged_style, (SGET_BACK_COLOR_NAME(*add_style)) ?
-			   strdup(SGET_BACK_COLOR_NAME(*add_style)) : NULL);
+			   safestrdup(SGET_BACK_COLOR_NAME(*add_style)) : NULL);
     }
     else
     {

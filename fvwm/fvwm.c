@@ -227,7 +227,7 @@ int main(int argc, char **argv)
   if (home_dir == NULL) {
     struct passwd* pw = getpwuid(getuid());
     if (pw != NULL)
-      home_dir = strdup(pw->pw_dir);
+      home_dir = safestrdup(pw->pw_dir);
   }
 #endif
   if (home_dir == NULL)
@@ -237,10 +237,10 @@ int main(int argc, char **argv)
   fvwm_userdir = getenv("FVWM_USERDIR");
   if (fvwm_userdir == NULL)
   {
-    fvwm_userdir = strdup(CatString2(home_dir, "/.fvwm"));
+    fvwm_userdir = safestrdup(CatString2(home_dir, "/.fvwm"));
     /* Put the user directory into the environment so it can be used
        later everywhere. */
-    putenv(strdup(CatString2("FVWM_USERDIR=", fvwm_userdir)));
+    putenv(safestrdup(CatString2("FVWM_USERDIR=", fvwm_userdir)));
   }
 
   /* Create FVWM_USERDIR directory if needed */
@@ -300,7 +300,7 @@ int main(int argc, char **argv)
         usage();
       if (num_config_commands < MAX_CFG_CMDS)
       {
-        config_commands[num_config_commands] = strdup(argv[i]);
+        config_commands[num_config_commands] = safestrdup(argv[i]);
         num_config_commands++;
       }
       else
@@ -421,7 +421,7 @@ int main(int argc, char **argv)
     g_argv[argc++] = "-s";
 /*
     g_argv[argc++] = "-d";
-    g_argv[argc++] = strdup(XDisplayString(dpy));
+    g_argv[argc++] = safestrdup(XDisplayString(dpy));
 */
     g_argv[argc] = NULL;
   }
@@ -618,7 +618,7 @@ int main(int argc, char **argv)
   }
 
   restart_state_filename =
-    strdup(CatString3(fvwm_userdir, "/.fs-restart-", getenv("HOSTDISPLAY")));
+    safestrdup(CatString3(fvwm_userdir, "/.fs-restart-", getenv("HOSTDISPLAY")));
   if (!state_filename && Restarting)
     state_filename = restart_state_filename;
 
@@ -815,7 +815,7 @@ void StartupStuff(void)
   /* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
   initFuncName = getInitFunctionName(Restarting == True);
   if (FindFunction(initFuncName)) {
-    char *action = strdup(CatString2("Function ", initFuncName));
+    char *action = safestrdup(CatString2("Function ", initFuncName));
     old_execute_function(action, NULL, &Event, C_ROOT, 1, 0, NULL);
     free(action);
   }
@@ -1903,7 +1903,7 @@ void Done(int restart, char *command)
   exitFuncName = getInitFunctionName(2);
   if (FindFunction(exitFuncName))
   {
-    char *action = strdup(CatString2("Function ", exitFuncName));
+    char *action = safestrdup(CatString2("Function ", exitFuncName));
     old_execute_function(action, NULL, &Event, C_ROOT, 1, 0, NULL);
     free(action);
   }
@@ -2287,7 +2287,7 @@ static void setVersionInfo(void)
   /* Set version information string */
   sprintf(version_str, "FVWM version %s compiled on %s at %s",
           VERSION, __DATE__, __TIME__);
-  Fvwm_VersionInfo = strdup(version_str);
+  Fvwm_VersionInfo = safestrdup(version_str);
 
 #ifdef HAVE_READLINE
   strcat(support_str, " ReadLine,");
@@ -2321,7 +2321,7 @@ static void setVersionInfo(void)
   {
     /* strip last comma */
     support_str[support_len - 1] = '\0';
-    Fvwm_SupportInfo = strdup(CatString2("with support for:", support_str));
+    Fvwm_SupportInfo = safestrdup(CatString2("with support for:", support_str));
   }
   else
     Fvwm_SupportInfo = "with no optional feature support";

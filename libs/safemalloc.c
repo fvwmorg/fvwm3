@@ -20,7 +20,7 @@
 
 static void alloc_failed(char *c, int length)
 {
-  fprintf(stderr, "%salloc of %d bytes failed. Exiting\n", c, length);
+  fprintf(stderr, "%s of %d bytes failed. Exiting\n", c, length);
   exit(1);
 }
 
@@ -43,7 +43,7 @@ char *safemalloc(int length)
   if(ptr == (char *)0)
   {
     /* doesn't return */
-    alloc_failed("m", length);
+    alloc_failed("malloc", length);
   }
   return ptr;
 }
@@ -64,7 +64,7 @@ char *safecalloc(int num, int length)
   if(ptr == (char *)0)
   {
     /* doesn't return */
-    alloc_failed("c", length);
+    alloc_failed("calloc", length);
   }
   return ptr;
 }
@@ -88,7 +88,25 @@ char *saferealloc(char *src, int length)
   if(ptr == (char *)0)
   {
     /* doesn't return */
-    alloc_failed("re", length);
+    alloc_failed("realloc", length);
   }
   return ptr;
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	safestrdup - duplicates a string or exits if there's a
+ *		     problem
+ *
+ ***********************************************************************/
+char *safestrdup(const char *src)
+{
+  char *cpy = strdup(src);
+  if (cpy == (char *)0)
+  {
+    /* doesn't return */
+    alloc_failed("strdup", strlen(src) + (size_t)1);
+  }
+  return cpy;
 }
