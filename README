@@ -8,6 +8,10 @@ Motif mwm compatibility.
 For users of the old FVWM 1.xx, please be aware that version 2.2 has a
 lot of differences.
 
+For users of the FVWM 2.0.x betas, please be aware that version 2.2 uses
+GNU autoconf/automake rather than Imake, so things will install in
+different places by default.
+
 FVWM's original author, Rob Nation (THANKS ROB!), has "retired" from
 work on it, so please don't bother him with silly little things like bug
 reports or enhancement requests.  Care and feeding of FVWM is now
@@ -21,7 +25,9 @@ carefully.  Next, try the FVWM mailing list.  Another excellent resource
 is the official WWW page http://www.fvwm.org and the mailing list archives
 found there.
 
-For information on compiling and installing FVWM, see the INSTALL file.
+For information on compiling and installing FVWM, see the INSTALL and
+INSTALL.fvwm files (INSTALL is the boilerplate autoconf instruction
+file; INSTALL.fvwm contains FVWM-specific details).
 
 For known bugs, check out the BUGS, FAQ and TODO files.
 

@@ -2,7 +2,7 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-last updated 15/01/99 as of beta release 2.1.8.
+Last updated 02 Feb 1999 for release 2.2.0.
 
 INDEX
 
@@ -24,10 +24,9 @@ INDEX
        11) What happened to the FVWM 1.xx 'include' command?
        12) I really like the horizontal bars that appear on the title bars of
            sticky windows.  Can I get those on other windows as well?
-       13) I'm trying to build FVWM, but the linker is complaining
-           about missing functions like 'XpmReadFileToPixmap' or not
-           being able to find libXpm or the compiler can't find the
-           include file X11/xpm.h.  Why is that?
+       13) I want colored icons, but they won't work.  Why not?
+           When I run configure, it reports "no" to "Have XPM support?"  How
+           can I get XPM support?
        14) I'm trying to compile FVWM under SunOS using cc, but the compiler
            is having lots of problems.  What gives?
 
@@ -496,22 +495,48 @@ A: Yes. Put the line "GlobalOpts StipledTitles" in your .fvwm2rc.
 
 ----------------------------------------------------------------------
 
-13) I'm trying to build FVWM, but the linker is complaining about
-    missing functions like 'XpmReadFileToPixmap' or not being able to
-    find libXpm or the compiler can't find the include file X11/xpm.h.
-    Why is that?
+13) I want colored icons, but they won't work.  Why not?
+    When I run configure, it reports "no" to "Have XPM support?"  How
+    can I get XPM support?
 
-A: With autoconf, this should no longer happen.  If you have *any*
-   compile or link errors, it is a bug; please report it.
+A: FVWM uses the XPM (X PixMap) library to provide support for colored
+   and shaped icons.  XPM doesn't ship with the basic X distribution as
+   provided by The Open Group or XFree86.  However, many vendors will
+   bundle it as a standard component anyway.  If not, you can get a copy
+   of the source from ftp://ftp.x.org/contrib/libraries/ and build it
+   yourself.
 
-   (The old answer:)
-   You need to have the Xpm (X Pixmap) library on your system.  You
-   can find the source for it at ftp.x.org in /contrib/libraries (or
-   at its home page http://www.inria.fr/koala/lehors/xpm.html) to
-   compile and install it by hand, or you can find some "standard"
-   distribution for your particular flavor of OS and install that.  Or
-   you can compile fvwm without Xpm support (try ./configure --help)
-   and lose out on all the pretty color icons.
+   If you have XPM on your system, there are a number of ways configure
+   could still decide not to use it.
+
+   First, if you've installed XPM in a non-standard place (not in the
+   normal system or X11 directories--say in /opt/xpm or /usr/local or
+   similar) then you need to tell configure where to look.  Use the
+   --with-xpm-library and --with-xpm-includes options (see
+   INSTALL.fvwm).  Typically configure will say "Xpm library or header
+   not found" if this is the problem.
+
+   Second, your version of XPM may be too old.  FVWM requires XPM 3.4f
+   or better.  Typically configure will say "Xpm library version is too
+   old!" if this is the problem.  In that case, you'll need to install a
+   newer version.
+
+   Third, XPM may be mis-installed on your system.  If configure says "
+   Xpm library version and header file version don't match!" then this
+   may be the problem.  Either use the --with-xpm-library and
+   --with-xpm-includes options to specify more precisely what you want,
+   or try re-installing XPM.
+
+   Last, there could be a linker error.  This is especially common on
+   systems where XPM may be built as a shared library and installed in a
+   non-standard directory (Solaris is a good example).  There are some
+   notes about building using shared libraries in the INSTALL.fvwm
+   file.
+
+   If you can't figure it out, contact the FVWM mailing list.  Please be
+   sure to provide the type of hardware and operating system you're
+   using, how you invoked configure, and extract the lines dealing with
+   XPM from the config.log file and include that.
 
 ----------------------------------------------------------------------
 

@@ -4,6 +4,13 @@
 	use only integer arithmetic and draw in one pass to fix some missing
 	pixel errors on some servers.
 
+1999-02-01  Paul D. Smith  <psmith@gnu.org>
+
+	* INSTALL.fvwm: Added note about config.cache.  Tweaked shared
+	libs information.
+
+	* README: Mention the INSTALL.fvwm file.
+
 1999-01-29  Hippo
 
 	* fvwm/menus.c (PaintMenu): Fixed {D,B}Gradient's being clipped by the

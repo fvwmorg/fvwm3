@@ -1,6 +1,27 @@
 This file details only configuration options peculiar to FVWM.  Please
 read the generic instructions in INSTALL first.
 
+Important Note!
+===============
+
+The `configure' script keeps a cache of information it discovers, so
+that subsequent invocations of `configure' will be faster.
+
+However, if you update information on your system (such as install or
+upgrade an optional library like Xpm, etc. [see below]) the cache may
+contain outdated information; this can lead to confusing behavior during
+subsequent `configure' invocations or builds.
+
+If you're not familiar with how this works it might be safest to remove
+the cache each time before running `configure'; you can either do a
+simple:
+
+  $ rm -f config.cache
+
+Or you may feel more comfortable with a complete cleaning:
+
+  $ make distclean
+
 
 Extra Modules
 =============
@@ -104,7 +125,8 @@ configuring FVWM.
 Xpm allows the use of coloured icons.  See the Xpm web page at
 http://www.inria.fr/koala/lehors/xpm.html for all the latest info and
 links to source code.  You can also get the source code from
-ftp://ftp.x.org/contrib/libraries.
+ftp://ftp.x.org/contrib/libraries/.  If you're having trouble building
+with XPM even after reading this, try Question #13 in the FVWM FAQ.
 
 Rplay is used in a few modules (FvwmEvent, for one) for playing sounds
 without invoking an external program.  This library appears to have
@@ -113,7 +135,7 @@ rplay 3.2.0beta6, available at ftp://ftp.x.org/contrib/audio/rplay.
 
 Readline is used in one module (FvwmConsole) to allow fancy
 command-line editing, a history buffer, etc.  It is GNU software, and
-should be found on any GNU site, such as ftp://ftp.gnu.org/pub/gnu/readline.
+should be found on any GNU site, such as ftp://ftp.gnu.org/gnu/readline/.
 
 If configure doesn't do the right thing, try one or more of the
 following flags (examples assume library is named "foo"):
@@ -134,8 +156,8 @@ Note that at this time, autoconf and FVWM don't handle systems which
 require a runtime library path separate from the link path very
 gracefully.  If you have such a system (e.g., Solaris) and you have
 installed the optional libraries in places not normally searched (e.g.,
-not in /lib or similar), you may need to specify the runtime path
-separately; the above options won't add it for you.
+not in /usr/lib, /lib or similar), you may need to specify the runtime
+path separately; the above options won't add it for you.
 
 A good way to do this is set the LDFLAGS variable before configure
 runs to contain the -R option.  For example:
