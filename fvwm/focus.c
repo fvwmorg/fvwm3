@@ -897,7 +897,7 @@ void focus_grab_buttons(FvwmWindow *fw)
 	do_grab_window = focus_query_grab_buttons(fw);
 	if (do_grab_window == True)
 	{
-		grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+		grab_buttons |= FP_USE_MOUSE_BUTTONS(FW_FOCUS_POLICY(fw));
 	}
 	if (grab_buttons != fw->grabbed_buttons)
 	{

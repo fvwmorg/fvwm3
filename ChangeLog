@@ -1,3 +1,8 @@
+2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/focus.c (focus_grab_buttons):
+	only grab necessary buttons on the client window
+
 2002-08-11  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureUtils.c (PICTURE_DEBUG_COLORS_ALLOC_FAILURE):
