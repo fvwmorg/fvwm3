@@ -1,3 +1,10 @@
+2002-06-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleEnterNotify):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/events.h:
+	Fixed colormap handling over decorative parts of a window
+
 2002-06-03  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/module_interface.c (make_named_packet):

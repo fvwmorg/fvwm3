@@ -1421,7 +1421,7 @@ static void InitVariables(void)
   Scr.fvwm_pushes = 0;
   Scr.pushed_window = &Scr.FvwmRoot;
   Scr.FvwmRoot.number_cmap_windows = 0;
-
+  Scr.FvwmRoot.attr_backup.colormap = Pcmap;
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);

@@ -24,7 +24,8 @@
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
 
-#define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
+#define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|\
+	EnterWindowMask|LeaveWindowMask)
 
 Display *theDisplay;
 Window theRoot;
@@ -313,7 +314,7 @@ void xevent_loop (void)
 	  moved = True;
       }
       theEvent = saveEvent;
-	      
+
       if (man->geometry.dir & GROW_FIXED)
       {
 	man->geometry.rows =
@@ -524,7 +525,7 @@ void X_init_manager (int man_id)
     man->FButtonFont = FlocaleLoadFont(theDisplay, FONT_STRING, MyName);
   else
     man->FButtonFont = FlocaleLoadFont(theDisplay, man->fontname, MyName)  ;
-  if (man->FButtonFont == NULL) 
+  if (man->FButtonFont == NULL)
   {
     ConsoleMessage ("Can't get font, exiting\n");
     ShutMeDown (1);

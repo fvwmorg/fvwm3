@@ -25,10 +25,12 @@
                          EnterWindowMask | LeaveWindowMask)
 #define XEVMASK_TITLEW  (ButtonPressMask | ButtonReleaseMask | \
 			 OwnerGrabButtonMask | \
-			 ButtonMotionMask | PointerMotionMask)
+			 ButtonMotionMask | PointerMotionMask | \
+                         EnterWindowMask | LeaveWindowMask)
 #define XEVMASK_BUTTONW XEVMASK_TITLEW
 #define XEVMASK_PARENTW (SubstructureRedirectMask)
-#define XEVMASK_BORDERW (ButtonPressMask | ButtonReleaseMask)
+#define XEVMASK_BORDERW (ButtonPressMask | ButtonReleaseMask | \
+                         EnterWindowMask | LeaveWindowMask)
 #define XEVMASK_CLIENTW (StructureNotifyMask | PropertyChangeMask | \
 			 EnterWindowMask | LeaveWindowMask | \
 			 ColormapChangeMask | FocusChangeMask)

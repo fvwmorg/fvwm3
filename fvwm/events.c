@@ -1307,6 +1307,23 @@ void HandleEnterNotify(void)
 
 	DBUG("HandleEnterNotify","Routine Entered");
 
+	if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
+	{
+		if (Fw && !IS_ICONIFIED(Fw) && Event.xany.window == FW_W(Fw))
+		{
+			InstallWindowColormaps(Fw);
+		}
+		else
+		{
+			/* make sure its for one of our windows */
+			/* handle a subwindow cmap */
+			InstallWindowColormaps(NULL);
+		}
+	}
+	else if (!Fw)
+	{
+		EnterSubWindowColormap(Event.xany.window);
+	}
 	if (Scr.focus_in_pending_window != NULL)
 	{
 		/* Ignore EnterNotify event while we are waiting for a window to
@@ -1498,14 +1515,6 @@ void HandleEnterNotify(void)
 			return;
 		}
 	}
-	/* make sure its for one of our windows */
-	if (!Fw)
-	{
-		/* handle a subwindow cmap */
-		EnterSubWindowColormap(Event.xany.window);
-		return;
-	}
-
 	BroadcastPacket(
 		MX_ENTER_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw),
 		(unsigned long)Fw);
@@ -1536,17 +1545,6 @@ void HandleEnterNotify(void)
 		 * otherwise.  But do not try to refresh the focus of
 		 * applications that want to handle it themselves. */
 		FOCUS_SET(FW_W(Fw));
-	}
-	if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
-	{
-		if ((!IS_ICONIFIED(Fw))&&(Event.xany.window == FW_W(Fw)))
-		{
-			InstallWindowColormaps(Fw);
-		}
-		else
-		{
-			InstallWindowColormaps(NULL);
-		}
 	}
 	/* We get an EnterNotify with mode == UnGrab when fvwm releases the
 	 * grab held during iconification. We have to ignore this, or icon
