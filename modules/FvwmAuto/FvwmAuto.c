@@ -119,7 +119,6 @@ main(int argc, char **argv)
 	struct timeval value;
 	struct timeval *delay;
 	fd_set in_fdset;
-	char raise_immediately;
 	Bool do_pass_id = False;
 	Bool use_enter_mode = False;
 	Bool use_leave_mode = False;
@@ -192,17 +191,16 @@ main(int argc, char **argv)
 	{
 		sec = timeout / 1000;
 		usec = (timeout % 1000) * 1000;
-		delay = &value;
-		raise_immediately = 0;
 	}
 	else
 	{
-		raise_immediately = 1;
-		delay = NULL;
+		sec = 0;
+		usec = 1000;
 	}
+	delay = &value;
 
 	n = 7;
-	if (n < argc && argv[n])                  /* if specified */
+	if (n < argc && argv[n])
 	{
 		char *token;
 
@@ -347,18 +345,11 @@ main(int argc, char **argv)
 		FD_SET(fd[1], &in_fdset);
 
 		myfprintf(
-			(stderr, "\nstart %d (ri = %d, hnw = %d, usec = %d)\n",
-			 count++, raise_immediately, have_new_window, usec));
-		if (!raise_immediately)
-		{
-			/* fill in struct - modified by select() */
-			delay->tv_sec = sec;
-			delay->tv_usec = usec;
-		}
-		else
-		{
-			/* delay is already a NULL pointer */
-		}
+			(stderr, "\nstart %d (hnw = %d, usec = %d)\n", count++,
+			 have_new_window, usec));
+		/* fill in struct - modified by select() */
+		delay->tv_sec = sec;
+		delay->tv_usec = usec;
 #ifdef DEBUG
 		{
 			char tmp[32];
@@ -382,6 +373,7 @@ main(int argc, char **argv)
 		if (FD_ISSET(fd[1], &in_fdset))
 		{
 			FvwmPacket *packet = ReadFvwmPacket(fd[1]);
+
 			if (packet == NULL)
 			{
 				myfprintf(
@@ -405,7 +397,7 @@ main(int argc, char **argv)
 					myfprintf((stderr,
 						   "entered new window\n"));
 					have_new_window = 1;
-					raise_window_now = raise_immediately;
+					raise_window_now = 0;
 				}
 				else
 				{
@@ -424,7 +416,7 @@ main(int argc, char **argv)
 					myfprintf((stderr,
 						   "left raised window\n"));
 					have_new_window = 1;
-					raise_window_now = raise_immediately;
+					raise_window_now = 0;
 				}
 				break;
 
@@ -436,7 +428,7 @@ main(int argc, char **argv)
 					myfprintf((stderr,
 						   "focus on new window\n"));
 					have_new_window = 1;
-					raise_window_now = raise_immediately;
+					raise_window_now = 0;
 				}
 				else
 				{
@@ -530,6 +522,10 @@ main(int argc, char **argv)
 			{
 				raised_win = focus_win;
 			}
+			/* force fvwm to synchronise on slow X connections to
+			 * avoid a race contition.  Still possible, but much
+			 * less likely. */
+			SendInfo(fd, "XSync", focus_win);
 
 			/* switch to wait mode again */
 			last_win = focus_win;

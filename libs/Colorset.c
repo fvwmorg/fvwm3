@@ -37,6 +37,32 @@
 colorset_t *Colorset = NULL;
 int nColorsets = 0;
 
+/* stretch the src rectangle to the dest ractangle keeping its aspect so that
+ * it fills the destination completely. */
+static int get_aspect_dimensions(
+	int *ret_w, int *ret_h, int dest_w, int dest_h, int src_w, int src_h)
+{
+	double ax;
+	double ay;
+
+	ax = dest_w / src_w;
+	ay = dest_h / src_h;
+	if (ax >= ay)
+	{
+		/* fit in x direction */
+		*ret_w = dest_w;
+		*ret_h = dest_h * dest_w / src_w;
+		return 0;
+	}
+	else
+	{
+		/* fit in y direction */
+		*ret_w = dest_w * dest_h / src_h;
+		*ret_h = dest_h;
+		return 1;
+	}
+}
+
 /*****************************************************************************
  * AllocColorset() grows the size of the Colorset array to include set n
  * colorset_t *Colorset will be altered
@@ -316,15 +342,20 @@ void GetWindowBackgroundPixmapSize(
 	{
 		*w = cs_t->width;
 		*h = cs_t->height;
-		if (cs_t->pixmap_type == PIXMAP_STRETCH_ASPECT ||
-		    cs_t->pixmap_type == PIXMAP_STRETCH_X)
+		switch (cs_t->pixmap_type)
 		{
+		case PIXMAP_STRETCH_ASPECT:
+			get_aspect_dimensions(
+				w, h, width, height, cs_t->width, cs_t->height);
+			break;
+		case PIXMAP_STRETCH_X:
 			*w = width;
-		}
-		if (cs_t->pixmap_type == PIXMAP_STRETCH_ASPECT ||
-		    cs_t->pixmap_type == PIXMAP_STRETCH_Y)
-		{
+			break;
+		case PIXMAP_STRETCH_Y:
 			*h = height;
+			break;
+		default:
+			break;
 		}
 	}
 }
@@ -496,13 +527,11 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 		Pixmap big_pixmap;
 		int x, y;
 
-		/* do sides need triming or top/bottom? */
-		trim_side = (cs_width * height > cs_height * width);
-
 		/* make a pixmap big enough to cover the destination but with
 		 * the aspect ratio of the cs_pixmap */
-		big_width = trim_side ? height * cs_width / cs_height : width;
-		big_height = trim_side ? height : width * cs_width / cs_width;
+		trim_side = get_aspect_dimensions(
+			&big_width, &big_height, width, height, cs_width,
+			cs_height);
 		big_pixmap = CreateStretchPixmap(
 			dpy, cs_pixmap, cs_width, cs_height, depth, big_width,
 			big_height, gc);
@@ -515,8 +544,8 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 		if (pixmap && big_pixmap)
 		{
 			XCopyArea(
-				dpy, big_pixmap, pixmap, gc, x, y, width, height,
-				0, 0);
+				dpy, big_pixmap, pixmap, gc, x, y, width,
+				height, 0, 0);
 		}
 		if (big_pixmap)
 		{

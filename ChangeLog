@@ -1,3 +1,10 @@
+2003-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Colorset.c (CreateBackgroundPixmap):
+	(GetWindowBackgroundPixmapSize):
+	(get_aspect_dimensions):
+	fixed size calculation of aspect pixmaps
+
 2003-03-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/icons.c (clear_icon):
