@@ -2986,7 +2986,7 @@ intended for internal use by modules like
 
 The operation can be aborted with Escape or by pressing mouse button 2.
 Pressing button 3 sets the
-.I MovedButton3
+.I PlacedByButton3
 condition (see
 .B Current
 command).
@@ -4037,7 +4037,6 @@ is a comma separated list containing one or more of the keywords
 .IR DecorateTransient " / " NakedTransient ,
 .IR RaiseTransient " / " DontRaiseTransient ,
 .IR LowerTransient " / " DontLowerTransient ,
-.IR FlipTransient " / " DontFlipTransient ,
 .IR StackTransientParent " / " DontStackTransientParent ,
 .IR SkipMapping " / " ShowMapping ,
 .IR UseDecor ,
@@ -4535,7 +4534,7 @@ and mouse button 1 in case Mwm emulation has been enabled with the
 .B Emulate
 command), the user is asked to resize the window too.  Pressing
 button 3 sets the
-.I MovedButton3
+.I PlacedByButton3
 condition (see
 .B Current
 command).  If you like this a lot, you will probably also want
@@ -4553,7 +4552,7 @@ AddToFunc StartFunction
 + I FvwmEvent
 
 AddToFunc GrowDownFunc
-+ I windowid $0 (MovedButton3) \\
++ I windowid $0 (PlacedByButton3) \\
   Resize bottomright keep -0p
 .EE
 Now, whenever a window with the name or class "XTerm" is created
@@ -4747,25 +4746,6 @@ style disables this behavior.  All windows are then treated as
 if they had no transients.
 
 The
-.I FlipTransient
-style augments
-.I RaiseTransient
-and
-.I LowerTransient
-styles so that repeated raising or repeated lowering of the main
-window makes the transients flip above and below the main.  Note
-that flipping only occurs at the top or bottom of the layer, and
-so a second raise or lower may be necessary to actually flip when the
-first has simply moved the window's position.  The
-.I DontFlipTransient
-style disables this behavior so that the main window is always
-below its transients.
-.I (Dont)FlipTransient
-has no effect if
-.IR RaiseTransient " and " LowerTransient
-are not used.
-
-The
 .I StackTransientParent
 style augments
 .IR RaiseTransient " and " LowerTransient
@@ -4792,7 +4772,6 @@ possible like this
 Style * RaiseTransient
 Style * LowerTransient
 Style * StackTransientParent
-Style * DontFlipTransient
 .EE
 .\" +++++++++++++++ miscellaneous
 .TP
@@ -6193,12 +6172,15 @@ are used exactly as with the
 command.
 
 .TP
-.BI "Current [(" conditions ")] " command
+.BI "Current [(" condition ... ")] " command
 Performs
 .I command
 on the currently focused window if it satisfies all
 .IR conditions .
-Conditions include
+The
+.IR contidions
+are a list of keywords from the list below and are separated
+by commas or whitespace.  Conditions include
 "Iconic", "!Iconic",
 "Visible", "!Visible",
 "Raised", "!Raised",
@@ -6207,7 +6189,7 @@ Conditions include
 "Maximized", "!Maximized",
 "Shaded", "!Shaded",
 "Transient", "!Transient",
-"MovedButton3", "!MovedButton3",
+"PlacedByButton3", "!PlacedByButton3",
 "CurrentDesk", "CurrentPage", and "CurrentPageAnyDesk".
 In addition, the
 .I condition
@@ -6221,7 +6203,7 @@ if any of the window name, icon name, class or resource match.
 The argument of the "Layer" condition defaults to the layer of the
 focus window.
 
-The "MovedButton3" condition is fulfilled if the last interactive
+The "PlacedByButton3" condition is fulfilled if the last interactive
 motion of the window (with the
 .B Move
 command) was ended by pressing mouse button 3.  This is especially

@@ -169,7 +169,6 @@ typedef struct
     unsigned do_circulate_skip : 1;
     unsigned do_circulate_skip_icon : 1;
     unsigned do_circulate_skip_shaded : 1;
-    unsigned do_flip_transient : 1;
     unsigned do_grab_focus_when_created : 1;
     unsigned do_grab_focus_when_transient_created : 1;
     unsigned do_ignore_restack : 1;

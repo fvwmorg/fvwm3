@@ -274,7 +274,6 @@ static void RaiseOrLowerWindow(
   Bool do_move_transients;
   Bool found_transient;
   Bool no_movement;
-  Bool flip_at_bottom=False;
   int test_layer;
 
   /* New windows are simply raised/lowered without touching the transientfor
@@ -333,23 +332,6 @@ static void RaiseOrLowerWindow(
      * on do_lower.
      */
     no_movement = found_transient && !do_move_transients;
-
-    /*
-     * FlipTransient style may flip from this no_movement state
-     * by moving the main above the transients anyway.
-     * The next Raise/Lower naturally moves main back below its transients.
-     */
-    if (no_movement && DO_FLIP_TRANSIENT(t) &&
-	((do_lower && DO_LOWER_TRANSIENT(t)) ||
-	 (!do_lower && DO_RAISE_TRANSIENT(t))))
-    {
-      no_movement = False;
-      if ( do_lower )
-      {
-	flip_at_bottom = True;
-	do_move_transients = True;
-      }
-    }
   }
 
   if (!no_movement)
@@ -422,17 +404,9 @@ static void RaiseOrLowerWindow(
     }
 
     /*
-    ** Re-insert t - either above transients at the bottom
-    ** when flipping, or else below transients
+    ** Re-insert t - below transients
     */
-    if ( flip_at_bottom )
-    {
-      add_window_to_stack_ring_after(t, r);
-    }
-    else
-    {
-      add_window_to_stack_ring_after(t, s->stack_prev);
-    }
+    add_window_to_stack_ring_after(t, s->stack_prev);
 
     wins = (Window*) safemalloc (count * sizeof (Window));
 

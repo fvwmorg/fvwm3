@@ -1,8 +1,26 @@
+2000-05-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/conditional.c (CreateConditionMask):
+	* fvwm/fvwm2.1:
+	renamed MovedButton3 contidion to PlacedByButton3
+
+	* fvwm/fvwm2.1:
+	* fvwm/events.c (HandleButtonPress):
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	removed (Dont)FlipTransient styles
+
+	* fvwm/conditional.c (CreateConditionMask):
+	conditions can be separated by commas
+
 2000-05-20  olicha <olivier.chapuis@free.fr>
 
 	* sample/system.fvwm2rc-sample-95
 	Corrected some miss prints (thanks to sa)
-	
+
 2000-05-20  olicha <olivier.chapuis@free.fr>
 
 	* fvwm/update{c,h} (apply_window_updates):

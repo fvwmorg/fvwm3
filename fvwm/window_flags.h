@@ -21,7 +21,6 @@
 #define FW_COMMON_FLAGS(fw)         ((fw)->flags.common)
 #define FW_COMMON_STATIC_FLAGS(fw)  ((fw)->flags.common.s)
 
-#define DO_FLIP_TRANSIENT(fw)  ((fw)->flags.common.s.do_flip_transient)
 #define DO_GRAB_FOCUS(fw) \
           ((fw)->flags.common.s.do_grab_focus_when_created)
 #define DO_GRAB_FOCUS_TRANSIENT(fw) \

@@ -1162,13 +1162,6 @@ void ProcessNewStyle(F_CMD_ARGS)
           ptmpstyle->flag_mask.placement_mode |= PLACE_SMART;
           ptmpstyle->change_mask.placement_mode |= PLACE_SMART;
         }
-        else if(StrEquals(token, "DontFlipTransient"))
-        {
-	  found = True;
-	  SFSET_DO_FLIP_TRANSIENT(*ptmpstyle, 0);
-	  SMSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
-	  SCSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
-        }
         else if(StrEquals(token, "DONTRAISETRANSIENT"))
         {
 	  found = True;
@@ -1260,13 +1253,6 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SMSET_IS_FIXED(*ptmpstyle, 1);
 	  SCSET_IS_FIXED(*ptmpstyle, 1);
 	}
-        else if(StrEquals(token, "FlipTransient"))
-        {
-	  found = True;
-	  SFSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
-	  SMSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
-	  SCSET_DO_FLIP_TRANSIENT(*ptmpstyle, 1);
-        }
         break;
 
       case 'g':
@@ -2641,7 +2627,7 @@ void check_window_style_change(
 
   /*
    * has_ol_decor
-   */
+0   */
   if (ret_style->change_mask.has_ol_decor)
   {
     /* old decor overrides 'has_no_icon_title'! */

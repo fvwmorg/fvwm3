@@ -1341,8 +1341,7 @@ void HandleButtonPress(void)
 	 Scr.Ungrabbed = Tmp_win;
 	}
 
-    if (((DO_RAISE_TRANSIENT(Tmp_win) && DO_FLIP_TRANSIENT(Tmp_win)) ||
-	 !is_on_top_of_layer(Tmp_win))&&
+    if (!is_on_top_of_layer(Tmp_win) &&
         MaskUsedModifiers(Event.xbutton.state) == 0)
     {
       RaiseWindow(Tmp_win);

@@ -132,7 +132,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 
   /* Next parse the flags in the string. */
   tmp = flags;
-  tmp = GetNextToken(tmp, &condition);
+  tmp = GetNextSimpleOption(tmp, &condition);
 
   while (condition)
   {
@@ -156,12 +156,12 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       SET_PARTIALLY_VISIBLE(mask, 0);
       SETM_PARTIALLY_VISIBLE(mask, 1);
     }
-    else if(StrEquals(condition,"MovedButton3"))
+    else if(StrEquals(condition,"PlacedByButton3"))
     {
       SET_PLACED_WB3(mask, 1);
       SETM_PLACED_WB3(mask, 1);
     }
-    else if(StrEquals(condition,"!MovedButton3"))
+    else if(StrEquals(condition,"!PlacedByButton3"))
     {
       SET_PLACED_WB3(mask, 0);
       SETM_PLACED_WB3(mask, 1);
