@@ -1,7 +1,15 @@
+2003-04-29  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIdent/FvwmIdent.h:
+	* FvwmIdent/FvwmIdent.c (ErrorHandler):
+	(main):
+	Added an X error handler
+
 2003-04-28  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIdent/FvwmIdent.c (MakeList): 
-	Fixed report of EWMH state hints 
+	Fixed report of EWMH state hints
+	(ErrorHandler): 
 
 2003-04-26  Mikhael Goikhman  <migo@homemail.com>
 

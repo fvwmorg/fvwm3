@@ -215,6 +215,7 @@ int main(int argc, char **argv)
 	x_fd = XConnectionNumber(dpy);
 	screen= DefaultScreen(dpy);
 	Root = RootWindow(dpy, screen);
+	XSetErrorHandler(ErrorHandler);
 
 	PictureInitCMap(dpy);
 	FScreenInit(dpy);
@@ -1395,4 +1396,23 @@ void MakeList(void)
 		ewmh_init_state[strlen(ewmh_init_state)-1] = '\0';
 		AddToList("EWMH Init State:",ewmh_init_state);
 	}
+}
+
+/************************************************************************
+  X Error Handler
+************************************************************************/
+static int
+ErrorHandler(Display *d, XErrorEvent *event)
+{
+#if 0
+  if (event->error_code == BadPixmap)
+    return 0;
+  if (event->error_code == BadDrawable)
+    return 0;
+  if (FRenderGetErrorCodeBase() + FRenderBadPicture == event->error_code)
+    return 0;
+#endif
+
+  PrintXErrorAndCoredump(d, event, MyName);
+  return 0;
 }

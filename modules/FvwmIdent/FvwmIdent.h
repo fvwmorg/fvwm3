@@ -77,3 +77,4 @@ void list_res_name(unsigned long *body);
 void list_property_change(unsigned long *body);
 void list_end(void);
 
+static int ErrorHandler(Display *d, XErrorEvent *event);
