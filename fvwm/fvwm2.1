@@ -3719,7 +3719,8 @@ Warps the cursor to the associated window.  The parameters
 default to percentage of window down and in from the upper left hand
 corner (or number of pixels down and in if
 .RI ' p '
-is appended to the numbers).  This command works also with windows
+is appended to the numbers).  If a number is negative the opposite edge
+is used and the direction reversed.  This command works also with windows
 that are not managed by fvwm.  In this case fvwm does not bring
 the window onto the screen if it is not visible.  For example it is
 possible to warp the pointer to the center of the root window on

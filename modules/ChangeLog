@@ -1,3 +1,7 @@
+2001-05-10  Hippo
+
+	* FvwmEvent/FvwmEvent.[c1]: PassId returns a hex number
+
 2001-05-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPager/FvwmPager.c (main):

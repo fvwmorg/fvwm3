@@ -129,8 +129,8 @@ You can even call different shell commands for each event just by setting
 .IP "*FvwmEventPassID"
 Specifies that the event action will have an ID parameter added to the end
 of the command line. Most events will have the windowID of the window that the
-event refers to, new_desk will have the new desk number.
-
+event refers to, new_desk will have the new desk number. The windowID is a
+hexadecimal string preceded by 0x, desk numbers are decimal.
 
 .IP "*FvwmEvent \fIwindow-manager-event action-or-filename\fP"
 Binds particular actions to window manager events.

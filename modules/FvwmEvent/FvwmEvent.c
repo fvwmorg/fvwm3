@@ -173,8 +173,8 @@ event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
   { "default_icon", -1 },
   { "string", -1 },
   { "mini_icon", -1 },
-  { "windowshade", -1 },
-  { "dewindowshade", -1 },
+  { "windowshade", 0 },
+  { "dewindowshade", 0 },
   { "lockonsend", -1 },
   { "sendconfig", -1 },
   { "restack", -1 },
@@ -394,8 +394,14 @@ void execute_event(short event, unsigned long *body)
 	else
 	  {
 	    if(PassID && (event_table[event].action_arg != -1))
-	      sprintf(buf,"%s %s %ld", cmd_line, action_table[event],
-		      body[event_table[event].action_arg]);
+	    {
+	      if (M_NEW_DESK == (1 << event))
+		sprintf(buf, "%s %s %ld", cmd_line, action_table[event],
+			body[event_table[event].action_arg]);
+	      else
+		sprintf(buf, "%s %s 0x%lx", cmd_line, action_table[event],
+			body[event_table[event].action_arg]);
+	    }
 	    else
 	      sprintf(buf,"%s %s", cmd_line, action_table[event]);
 	    INFO(buf);

@@ -458,30 +458,37 @@ static void warp_to_fvwm_window(
   }
 
   dx = (cx + Scr.Vx) / Scr.MyDisplayWidth * Scr.MyDisplayWidth;
-  dy = (cy +Scr.Vy) / Scr.MyDisplayHeight * Scr.MyDisplayHeight;
+  dy = (cy + Scr.Vy) / Scr.MyDisplayHeight * Scr.MyDisplayHeight;
 
   MoveViewport(dx,dy,True);
 
   if(IS_ICONIFIED(t))
   {
-    x = t->icon_xl_loc + t->icon_g.width/2;
+    x = t->icon_xl_loc + t->icon_g.width / 2;
     y = t->icon_g.y + t->icon_p_height + ICON_HEIGHT(t) / 2;
   }
   else
   {
-    if (x_unit != Scr.MyDisplayWidth)
+    if (x_unit != Scr.MyDisplayWidth && warp_x >= 0)
       x = t->frame_g.x + warp_x;
-    else
+    else if (x_unit != Scr.MyDisplayWidth)
+      x = t->frame_g.x + t->frame_g.width + warp_x;
+    else if (warp_x >= 0)
       x = t->frame_g.x + (t->frame_g.width - 1) * warp_x / 100;
-    if (y_unit != Scr.MyDisplayHeight)
-      y = t->frame_g.y + warp_y;
     else
+      x = t->frame_g.x + (t->frame_g.width - 1) * (100 + warp_x) / 100;
+
+    if (y_unit != Scr.MyDisplayHeight && warp_y >= 0)
+      y = t->frame_g.y + warp_y;
+    else if (y_unit != Scr.MyDisplayHeight)
+      y = t->frame_g.y + t->frame_g.height + warp_y;
+    else if (warp_y >= 0)
       y = t->frame_g.y + (t->frame_g.height - 1) * warp_y / 100;
+    else
+      y = t->frame_g.y + (t->frame_g.height - 1) * (100 + warp_y) / 100;
   }
-  if (warp_x >= 0 && warp_y >= 0) {
-    XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
-    SetPointerEventPosition(eventp, x, y);
-  }
+  XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
+  SetPointerEventPosition(eventp, x, y);
   RaiseWindow(t);
 
   /* If the window is still not visible, make it visible! */
