@@ -766,9 +766,9 @@ void HandleMapRequest()
 {
   DBUG("HandleMapRequest","Routine Entered");
 
-  HandleMapRequestKeepRaised(None);
+  HandleMapRequestKeepRaised(None, NULL);
 }
-void HandleMapRequestKeepRaised(Window KeepRaised)
+void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 {
   extern long isIconicState;
   extern Boolean PPosOverride;
@@ -776,18 +776,26 @@ void HandleMapRequestKeepRaised(Window KeepRaised)
 
   Event.xany.window = Event.xmaprequest.window;
 
-  if(XFindContext(dpy, Event.xany.window, FvwmContext,
-		  (caddr_t *)&Tmp_win)==XCNOENT)
-    Tmp_win = NULL;
+  if (ReuseWin == NULL)
+    {
+      if(XFindContext(dpy, Event.xany.window, FvwmContext,
+		      (caddr_t *)&Tmp_win)==XCNOENT)
+      Tmp_win = NULL;
+    }
+  else
+    {
+      Tmp_win = ReuseWin;
+    }
+
 
   if(!PPosOverride)
     XFlush(dpy);
 
   /* If the window has never been mapped before ... */
-  if(!Tmp_win)
+  if(!Tmp_win || (Tmp_win && Tmp_win->tmpflags.ReuseDestroyed))
     {
       /* Add decorations. */
-      Tmp_win = AddWindow(Event.xany.window);
+      Tmp_win = AddWindow(Event.xany.window, ReuseWin);
       if (Tmp_win == NULL)
 	return;
     }

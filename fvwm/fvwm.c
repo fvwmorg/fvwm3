@@ -682,7 +682,7 @@ void CaptureAllWindows(void)
       {
         XUnmapWindow(dpy, children[i]);
         Event.xmaprequest.window = children[i];
-        HandleMapRequestKeepRaised (BlackoutWin);
+        HandleMapRequestKeepRaised (BlackoutWin, NULL);
       }
     }
     Scr.flags.windows_captured = 1;
@@ -718,9 +718,10 @@ void CaptureAllWindows(void)
         XUnmapWindow(dpy,tmp->frame);
         XUnmapWindow(dpy,w);
         RestoreWithdrawnLocation (tmp,True);
+        tmp->tmpflags.ReuseDestroyed = True;  /* RBW - 1999/03/20 */
         Destroy(tmp);
         Event.xmaprequest.window = w;
-        HandleMapRequestKeepRaised(BlackoutWin);
+        HandleMapRequestKeepRaised(BlackoutWin, tmp);
         tmp = next;
       }
     }

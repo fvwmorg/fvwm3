@@ -81,7 +81,7 @@ static void merge_styles(name_list *, name_list *); /* prototype */
  *	iconm	- flag to tell if this is an icon manager window
  *
  ***********************************************************************/
-FvwmWindow *AddWindow(Window w)
+FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 {
   FvwmWindow *tmp_win;		        /* new fvwm window structure */
   unsigned long valuemask;		/* mask for create windows */
@@ -110,12 +110,31 @@ FvwmWindow *AddWindow(Window w)
 #endif
 
   NeedToResizeToo = False;
-  /* allocate space for the fvwm window */
-  tmp_win = (FvwmWindow *)calloc(1, sizeof(FvwmWindow));
-  if (tmp_win == (FvwmWindow *)0)
+
+  /*
+      Allocate space for the FvwmWindow struct, or reuse an
+      old one (on Recapture).
+  */
+  if (ReuseWin == NULL)
     {
-      return NULL;
+      tmp_win = (FvwmWindow *)calloc(1, sizeof(FvwmWindow));
+      if (tmp_win == (FvwmWindow *)0)
+        {
+          return NULL;
+        }
     }
+  else
+    {
+      tmp_win = ReuseWin;
+      /*
+          RBW - 1999/03/20 - modify this when we implement the preserving of
+          various states across a Restart. The Destroy function in misc.c may
+          also need tweaking, depending on what you want to preserve.
+          For now, just zap any old information.
+      */
+      memset(tmp_win, '\0', sizeof(FvwmWindow));
+    }
+
   tmp_win->flags = 0;
   tmp_win->tmpflags.ViewportMoved = 0;
   tmp_win->tmpflags.IconifiedByParent = 0;

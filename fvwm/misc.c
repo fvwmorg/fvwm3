@@ -205,7 +205,11 @@ void Destroy(FvwmWindow *Tmp_win)
   if(Tmp_win->cmap_windows != (Window *)NULL)
     XFree((void *)Tmp_win->cmap_windows);
 
-  free((char *)Tmp_win);
+  /*  Recapture reuses this struct, so don't free it.  */
+  if (! Tmp_win->tmpflags.ReuseDestroyed)
+    {
+      free((char *)Tmp_win);
+    }
 
   if(!PPosOverride)
     XSync(dpy,0);
