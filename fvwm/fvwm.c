@@ -116,6 +116,7 @@ int g_argc;
 char *client_id = NULL;
 #endif
 char *restore_filename = NULL;
+char *restart_restore_filename = NULL;  /* $HOME/.fvwm_restart */
 
 /* assorted gray bitmaps for decorative borders */
 #define g_width 2
@@ -208,6 +209,12 @@ int main(int argc, char **argv)
 	client_id = argv[i];
       }
 #endif
+    else if (strncasecmp(argv[i], "-restore", 8) == 0)
+      {
+	if (++i >= argc)
+	  usage();
+	restore_filename = argv[i];
+      }
     else if (strncasecmp(argv[i],"-s",2)==0)
     {
       single = True;
@@ -547,13 +554,14 @@ int main(int argc, char **argv)
     }
   }
 
-  restore_filename = strdup(CatString2(user_home_dir, "/.fvwm_restart"));
+  restart_restore_filename = strdup(CatString2(user_home_dir, "/.fvwm_restart"));
+  if (Restarting) restore_filename = restart_restore_filename;
 
   /*
      This should be done early enough to have the window states loaded
      before the first call to AddWindow.
    */
-  if (Restarting) LoadWindowStates(restore_filename);
+  LoadWindowStates(restore_filename);
 
   BlackoutScreen(); /* if they want to hide the capture/startup */
 
@@ -733,17 +741,12 @@ void StartupStuff(void)
      This should be done after the initialization is finished, since
      it directly changes the global state.
    */
-  if (Restarting) {
-    LoadGlobalState(restore_filename);
+  LoadGlobalState(restore_filename);
 
-
-    /*
-    ** migo - 19/Jun/1999 - Remove restore-file after usage.
-    ** Currently renamed for easier debugging.
-    */
-    /* unlink(restore_filename); */
-    rename(restore_filename, CatString2(restore_filename, ".last"));
-  }
+  /*
+  ** migo - 20/Jun/1999 - Remove restart-file after usage.
+  */
+  unlink(restore_filename);
 
   XUngrabPointer(dpy, CurrentTime);
 
@@ -1766,7 +1769,7 @@ void Done(int restart, char *command)
 
     if (command[0] == '\0') command = NULL; /* native restart */
     if (!command)
-      RestartInSession(restore_filename); /* won't return under SM */
+      RestartInSession(restart_restore_filename); /* won't return under SM */
 
     /* 
       RBW - 06/08/1999 - without this, windows will wander to other pages on
@@ -1887,10 +1890,10 @@ void usage(void)
 {
 #if 0
   fvwm_msg(INFO,"usage","\nFvwm Version %s Usage:\n\n",VERSION);
-  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-visualId id] [-visual class]\n",g_argv[0]);
+  fvwm_msg(INFO,"usage","  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n",g_argv[0]);
 #else
   fprintf(stderr,"\nFvwm Version %s Usage:\n\n",VERSION);
-  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-visualId id] [-visual class]\n\n",g_argv[0]);
+  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
 #endif
   exit( 1 );
 }

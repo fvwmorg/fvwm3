@@ -80,7 +80,8 @@ char *duplicate(char *s)
  * config files and session save files. The proper way
  * to do this may be to extend the config file format
  * to allow the specification of everything we need
- * to save here.
+ * to save here. Then the option "-restore xyz" could
+ * be replaced by "-f xyz".
  */
 static int
 SaveGlobalState(FILE *f)
@@ -306,9 +307,9 @@ SaveWindowStates(FILE *f)
       else
 	{
 	  if (ewin->class.res_class)
-	    fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_class);
+	    fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_name);
 	  if (ewin->class.res_name)
-	    fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_name);
+	    fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_class);
 	  if (ewin->name)
 	    fprintf(f, "  [WM_NAME] %s\n", ewin->name);
 
@@ -354,11 +355,17 @@ LoadWindowStates(char *filename)
 {
   FILE               *f;
   char                s[4096], s1[4096];
-  int i, pos;
+  int i, pos, pos1;
   unsigned long w;
 
   if (filename && (f = fopen (filename, "r")))
     {
+
+/* migo - 20/Jun/1999 - debug */
+/*
+system(CatString3("mkdir -p /tmp/f-$USER; cp ", filename, " /tmp/f-$USER"));
+*/
+
       while (fgets(s, sizeof(s), f))
 	{
 	  sscanf(s, "%4000s", s1);
@@ -460,14 +467,15 @@ LoadWindowStates(char *filename)
 	    }
 	  else if (!strcmp(s1, "[WM_COMMAND]"))
 	    {
-	      sscanf(s, "%*s %i", &matches[num_match - 1].wm_command_count);
+	      sscanf(s, "%*s %i%n",
+		&matches[num_match - 1].wm_command_count, &pos);
 	      matches[num_match - 1].wm_command =
 		(char **) malloc (matches[num_match - 1].wm_command_count *
 				  sizeof (char *));
-	      pos = 0;
 	      for (i = 0; i < matches[num_match - 1].wm_command_count; i++)
 		{
-		  sscanf (s+pos, "%s%n", s1, &pos);
+		  sscanf (s+pos, "%s%n", s1, &pos1);
+		  pos += pos1;
 		  matches[num_match - 1].wm_command[i] = duplicate (s1);
 		}
 	    }
@@ -789,6 +797,7 @@ set_sm_properties (SmcConn sm_conn, char *filename, char hint)
   for (i = 0; i < g_argc; i++)
     {
       if (strcmp (g_argv[i], "-clientId") == 0 ||
+	  strcmp (g_argv[i], "-restore") == 0 ||
 	  strcmp (g_argv[i], "-d") == 0)
 	{
 	  i++;
@@ -812,6 +821,12 @@ set_sm_properties (SmcConn sm_conn, char *filename, char hint)
 
   prop5.vals[numVals].value = (SmPointer) sm_client_id;
   prop5.vals[numVals++].length = strlen (sm_client_id);
+
+  prop5.vals[numVals].value = (SmPointer) "-restore";
+  prop5.vals[numVals++].length = 8;
+
+  prop5.vals[numVals].value = (SmPointer) filename;
+  prop5.vals[numVals++].length = strlen (filename);
 
   prop5.num_vals = numVals;
 

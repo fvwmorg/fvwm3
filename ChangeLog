@@ -1,7 +1,17 @@
+1999-06-20  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.c, fvwm/session.c, fvwm/fvwm2.1:
+	recovered "-restore" option
+
+	* fvwm/fvwm.c (StartupStuff): restore file is removed after usage.
+
+	* fvwm/session.c (LoadWindowStates): fixed reading [WM_COMMAND]
+	(SaveWindowStates): fixed writing [RES_NAME] and [RES_CLASS]
+
 1999-06-20  Chris Rankin  <rankinc@zipworld.com.au>
 
-    * modules/FvwmPager/FvwmPager.c: Changed signal handling to use
-    the fvwmsignal modules.
+	* modules/FvwmPager/FvwmPager.c: Changed signal handling to use
+	the fvwmsignal modules.
 
 1999-06-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
@@ -9,6 +19,7 @@
 	(StartupStuff): Grab the pointer during startup with cursor XC_watch.
 
 1999-06-19  Mikhael Goikhman  <migo@homemail.com>
+
 	* fvwm/fvwm.c (getBasename): removed
 	(Done): Improved Restart logic - three forms (no special cases)
 	include 'Restart', 'Restart wm params', 'Restart --pass-args wm'.
