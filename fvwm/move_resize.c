@@ -1416,7 +1416,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       xl = Event.xmotion.x_root + XOffset;
       yt = Event.xmotion.y_root + YOffset;
 
-fprintf(stderr,"before snapa %d %d\n", xl, yt);
       DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
       /* check Paging request once and only once after outline redrawn */
@@ -1442,7 +1441,6 @@ fprintf(stderr,"before snapa %d %d\n", xl, yt);
 	  }
 	  else
 	  {
-fprintf(stderr,"window moved to %d %d\n", xl, yt);
 	    XMoveWindow(dpy,tmp_win->frame,xl,yt);
 	  }
 	}
