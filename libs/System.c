@@ -174,7 +174,7 @@ FileStamp getFileStamp(const char *name)
   if (!name || stat(name, &buf))
     return 0;
   return
-    (FileStamp)buf.st_mtime << 13 + (FileStamp)buf.st_size;
+    ((FileStamp)buf.st_mtime << 13) + (FileStamp)buf.st_size;
 }
 
 void setFileStamp(FileStamp *stamp, const char *name)
