@@ -1,4 +1,13 @@
-2004-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-07-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmGtk/Makefile.am (man_onedir):
+	fixed FvwmGtk.1 rule when DESTDIR is set
+
+2004-07-08  Bjoern Steinbrink <b.steinbrink@gmx.de>
+
+	* FvwmAuto/FvwmAuto.c (main):
+	Added check to avoid calling enter and leave function for the same
+	window if the focus was lost for less than delay time.
 
 	* FvwmPager/FvwmPager.c (ParseColorset):
 	64 bit fix

@@ -402,6 +402,10 @@ main(int argc, char **argv)
 					have_new_window = 1;
 					raise_window_now = 0;
 				}
+				else if (focus_win == last_win)
+				{
+					have_new_window = 0;
+				}
 				else
 				{
 					myfprintf((stderr,

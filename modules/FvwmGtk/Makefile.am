@@ -9,7 +9,7 @@ EXTRA_PROGRAMS = FvwmGtk
 # generate an install rule for man pages unless one of them is an existing file
 # name.  Use a hand made rule to install the man page instead.
 #man_MANS = @MANFVWMGTK@
-man_onedir = $(DESTDIR)$(mandir)/man1
+man_onedir = $(mandir)/man1
 man_one_DATA = @MANFVWMGTK@
 EXTRA_DIST = FvwmGtk.1
 

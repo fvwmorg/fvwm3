@@ -18,6 +18,8 @@
 /*  RBW- typedef struct config_win_packet  */
 typedef struct ConfigWinPacket
 {
+	/*** Alignment notes ***/
+	/*** Put long int, Window, and pointers  here ***/
 	Window             w;
 	Window             frame;
 	FvwmWindow         *fvwmwin;
@@ -34,8 +36,6 @@ typedef struct ConfigWinPacket
 	*/
 	unsigned long int  layer;
 
-	unsigned short int title_height;
-	unsigned short int border_width;
 	unsigned long int  hints_base_width;
 	unsigned long int  hints_base_height;
 	unsigned long int  hints_width_inc;
@@ -54,7 +54,17 @@ typedef struct ConfigWinPacket
 	unsigned long int  ewmh_hint_layer;
 	unsigned long int  ewmh_hint_desktop;
 	unsigned long int  ewmh_window_type;
+
+	/*** Put structures here ***/
 	window_flags       flags;
+
+	/*** Put int here, fill with dummies to a multiple of 2 ***/
+
+	/*** Put short int here, fill with dummies to a multiple of 4 ***/
+	unsigned short int title_height;
+	unsigned short int border_width;
+	unsigned short int short_dummy_3;
+	unsigned short int short_dummy_4;
 
 } ConfigWinPacket;
 

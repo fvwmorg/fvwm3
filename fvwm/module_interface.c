@@ -53,9 +53,6 @@
 #include "geometry.h"
 #include "fvwmsignal.h"
 
-/* Diasable old ConfigureWindow module interface */
-#define DISABLE_MBC
-
 /*
  * Use POSIX behaviour if we can, otherwise use SysV instead
  */
@@ -81,6 +78,8 @@ msg_masks_t *PipeMask;
 static msg_masks_t *SyncMask;
 static msg_masks_t *NoGrabMask;
 fqueue *pipeQueue;
+
+static const unsigned long dummy = 0;
 
 extern fd_set init_fdset;
 
@@ -558,7 +557,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 			}
 
 			timeout.tv_sec = 0;
-			timeout.tv_usec = 1;  /* use 1 usec timeout in select */
+			timeout.tv_usec = 1;
 			num_fd = fvwmSelect(
 				fd_width, &in_fdset, &out_fdset, 0, &timeout);
 		} while (num_fd < 0 && !isTerminated);
@@ -619,7 +618,8 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 				GetContext(
 					NULL, exc->w.fw, &tmpevent,
 					&targetWindow),
-				BIND_KEYPRESS, &exc->w.fw->class, exc->w.fw->name.name);
+				BIND_KEYPRESS, &exc->w.fw->class,
+				exc->w.fw->name.name);
 			if (escape != NULL)
 			{
 				if (!strcasecmp(escape,"escapefunc"))
@@ -895,7 +895,7 @@ make_vpacket(unsigned long *body, unsigned long event_type,
     RBW - 05/01/2000 -
     A length of zero means that an int is being passed which
     must be stored in the packet as an unsigned long. This is
-    a special hack to accommodate the old CONFIGARGSNEW
+    a special hack to accommodate the old CONFIGARGS
     technique of sending the args for the M_CONFIGURE_WINDOW
     packet.
 */
@@ -1038,107 +1038,6 @@ static void BroadcastNewPacket(unsigned long event_type,
 	return;
 }
 
-
-/* this is broken, the flags may not fit in a word */
-#define CONFIGARGS(_t) 27,\
-	    FW_W(_t),\
-	    FW_W_FRAME(_t),\
-	    (unsigned long)(_t),\
-	    (_t)->frame_g.x,\
-	    (_t)->frame_g.y,\
-	    (_t)->frame_g.width,\
-	    (_t)->frame_g.height,\
-	    (_t)->Desk,\
-	    (_t)->flags,\
-	    (_t)->title_thickness,\
-	    (_t)->boundary_width,\
-	    (_t)->hints.base_width,\
-	    (_t)->hints.base_height,\
-	    (_t)->hints.width_inc,\
-	    (_t)->hints.height_inc,\
-	    (_t)->hints.min_width,\
-	    (_t)->hints.min_height,\
-	    (_t)->hints.max_width,\
-	    (_t)->hints.max_height,\
-	    FW_W_ICON_TITLE(_t),\
-	    FW_W_ICON_PIXMAP(_t),\
-	    (_t)->hints.win_gravity,\
-	    (_t)->colors.fore,\
-	    (_t)->colors.back,\
-	    (_t)->ewmh_hint_layer,\
-	    (_t)->ewmh_hint_desktop,\
-	    (_t)->ewmh_window_type
-
-#ifndef DISABLE_MBC
-#define OLDCONFIGARGS(_t) 27,\
-	    FW_W(_t),\
-	    FW_W_FRAME(_t),\
-	    (unsigned long)(_t),\
-	    (_t)->frame_g.x,\
-	    (_t)->frame_g.y,\
-	    (_t)->frame_g.width,\
-	    (_t)->frame_g.height,\
-	    (_t)->Desk,\
-	    old_flags,\
-	    (_t)->title_thickness,\
-	    (_t)->boundary_width,\
-	    (_t)->hints.base_width,\
-	    (_t)->hints.base_height,\
-	    (_t)->hints.width_inc,\
-	    (_t)->hints.height_inc,\
-	    (_t)->hints.min_width,\
-	    (_t)->hints.min_height,\
-	    (_t)->hints.max_width,\
-	    (_t)->hints.max_height,\
-	    FW_W_ICON_TITLE(_t),\
-	    FW_W_ICON_PIXMAP(_t),\
-	    (_t)->hints.win_gravity,\
-	    (_t)->colors.fore,\
-	    (_t)->colors.back,\
-	    (_t)->ewmh_hint_layer,\
-	    (_t)->ewmh_hint_desktop,\
-	    (_t)->ewmh_window_type
-
-#define SETOLDFLAGS \
-{ \
-	int i = 1; \
-	old_flags |= 0 /* was start_iconic */         ? i : 0; i<<=1; \
-	old_flags |= False /* OnTop */                ? i : 0; i<<=1; \
-	old_flags |= IS_STICKY(t)                     ? i : 0; i<<=1; \
-	old_flags |= DO_SKIP_WINDOW_LIST(t)           ? i : 0; i<<=1; \
-	old_flags |= IS_ICON_SUPPRESSED(t)            ? i : 0; i<<=1; \
-	old_flags |= HAS_NO_ICON_TITLE(t)             ? i : 0; i<<=1; \
-	old_flags |= FP_IS_LENIENT(FW_FOCUS_POLICY(t)) ? i : 0; i<<=1; \
-	old_flags |= IS_ICON_STICKY(t)                ? i : 0; i<<=1; \
-	old_flags |= DO_SKIP_ICON_CIRCULATE(t)        ? i : 0; i<<=1; \
-	old_flags |= DO_SKIP_CIRCULATE(t)             ? i : 0; i<<=1; \
-	old_flags |= HASx_CLICK_FOCUS(t)               ? i : 0; i<<=1; \
-	old_flags |= HASx_SLOPPY_FOCUS(t)              ? i : 0; i<<=1; \
-	old_flags |= !DO_NOT_SHOW_ON_MAP(t)           ? i : 0; i<<=1; \
-	old_flags |= !HAS_NO_BORDER(t)                ? i : 0; i<<=1; \
-	old_flags |= HAS_TITLE(t)                     ? i : 0; i<<=1; \
-	old_flags |= IS_MAPPED(t)                     ? i : 0; i<<=1; \
-	old_flags |= IS_ICONIFIED(t)                  ? i : 0; i<<=1; \
-	old_flags |= IS_TRANSIENT(t)                  ? i : 0; i<<=1; \
-	old_flags |= False /* Raised */               ? i : 0; i<<=1; \
-	old_flags |= IS_FULLY_VISIBLE(t)              ? i : 0; i<<=1; \
-	old_flags |= IS_ICON_OURS(t)                  ? i : 0; i<<=1; \
-	old_flags |= IS_PIXMAP_OURS(t)                ? i : 0; i<<=1; \
-	old_flags |= IS_ICON_SHAPED(t)                ? i : 0; i<<=1; \
-	old_flags |= IS_MAXIMIZED(t)                  ? i : 0; i<<=1; \
-	old_flags |= WM_TAKES_FOCUS(t)                ? i : 0; i<<=1; \
-	old_flags |= WM_DELETES_WINDOW(t)             ? i : 0; i<<=1; \
-	old_flags |= IS_ICON_MOVED(t)                 ? i : 0; i<<=1; \
-	old_flags |= IS_ICON_UNMAPPED(t)              ? i : 0; i<<=1; \
-	old_flags |= IS_MAP_PENDING(t)                ? i : 0; i<<=1; \
-	old_flags |= HAS_MWM_OVERRIDE_HINTS(t)        ? i : 0; i<<=1; \
-	old_flags |= HAS_MWM_BUTTONS(t)               ? i : 0; i<<=1; \
-	old_flags |= HAS_MWM_BORDER(t)                ? i : 0; \
-}
-#endif /* DISABLE_MBC */
-
-
-
 /*
     RBW - 04/16/1999 - new version for GSFR --
 	- args are now pairs:
@@ -1149,7 +1048,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 	as a dummy to preserve alignment of the other fields in the
 	old packet: we should drop this before the next release.
 */
-#define CONFIGARGSNEW(_t) 28,\
+#define CONFIGARGS(_t) 28,\
 	    (unsigned long)(sizeof(unsigned long)),\
 	    &FW_W(*(_t)),\
 	    (unsigned long)(sizeof(unsigned long)),\
@@ -1168,10 +1067,6 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    &(*(_t))->Desk,\
 	    (unsigned long)(0),\
 	    &(*(_t))->layer,\
-	    (unsigned long)(sizeof(short)),\
-	    &(*(_t))->title_thickness,\
-	    (unsigned long)(sizeof(short)),\
-	    &(*(_t))->boundary_width,\
 	    (unsigned long)(0),\
 	    &(*(_t))->hints.base_width,\
 	    (unsigned long)(0),\
@@ -1205,57 +1100,39 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    (unsigned long)(0),\
 	    &(*(_t))->ewmh_window_type,\
 	    (unsigned long)(sizeof((*(_t))->flags)),\
-	    &(*(_t))->flags
-
-
+	    &(*(_t))->flags,\
+	    (unsigned long)(sizeof(short)),\
+	    &(*(_t))->title_thickness,\
+	    (unsigned long)(sizeof(short)),\
+	    &(*(_t))->boundary_width,\
+	    (unsigned long)(sizeof(short)),\
+	    &dummy,\
+	    (unsigned long)(sizeof(short)),\
+	    &dummy
 
 void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 {
 	const FvwmWindow **t1 = &t;
 
 	/*  RBW-  SendPacket(module, event_type, CONFIGARGS(t)); */
-	SendNewPacket(module, event_type, CONFIGARGSNEW(t1));
-#ifndef DISABLE_MBC
-	/* send out an old version of the packet to keep old mouldules happy */
-	/* fixme: should test to see if module wants this packet first */
-	{
-		long old_flags = 0;
-		SETOLDFLAGS
-			SendPacket(module, event_type == M_ADD_WINDOW ?
-				   M_OLD_ADD_WINDOW : M_OLD_CONFIGURE_WINDOW,
-				   OLDCONFIGARGS(t));
-	}
-#endif /* DISABLE_MBC */
+	SendNewPacket(module, event_type, CONFIGARGS(t1));
 
 	return;
 }
-
 
 void BroadcastConfig(unsigned long event_type, const FvwmWindow *t)
 {
 	const FvwmWindow **t1 = &t;
 
 	/*  RBW-  BroadcastPacket(event_type, CONFIGARGS(t)); */
-	BroadcastNewPacket(event_type, CONFIGARGSNEW(t1));
-#ifndef DISABLE_MBC
-	/* send out an old version of the packet to keep old modules happy */
-	{
-		long old_flags = 0;
-		SETOLDFLAGS
-			BroadcastPacket(
-				event_type == M_ADD_WINDOW ?
-				M_OLD_ADD_WINDOW : M_OLD_CONFIGURE_WINDOW,
-				OLDCONFIGARGS(t));
-	}
-#endif /* DISABLE_MBC */
+	BroadcastNewPacket(event_type, CONFIGARGS(t1));
 
 	return;
 }
 
-
 static unsigned long *
-make_named_packet(int *len, unsigned long event_type, const char *name,
-		  int num, ...)
+make_named_packet(
+	int *len, unsigned long event_type, const char *name, int num, ...)
 {
 	unsigned long *body;
 	va_list ap;
