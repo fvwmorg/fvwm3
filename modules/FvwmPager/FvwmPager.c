@@ -63,6 +63,7 @@ int fd[2];
 
 PagerStringList *FindDeskStrings(int desk);
 PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
+extern XFontStruct *windowFont;
 
 /*************************************************************************
  *
@@ -658,10 +659,12 @@ void list_configure(unsigned long *body)
 
       else
 	MoveResizePagerView(t);
+/*
       if(FocusWin == t)
 	Hilight(t,True);
       else
 	Hilight(t,False);
+*/
     }
 }
 
@@ -758,7 +761,9 @@ void list_new_page(unsigned long *body)
   }
   MovePage();
   MoveStickyWindows();
+/*
   Hilight(FocusWin,False);
+*/
   Hilight(FocusWin,True);
 }
 
@@ -865,7 +870,9 @@ void list_new_desk(unsigned long *body)
   DrawGrid(oldDesk - desk1,1);
   DrawGrid(Scr.CurrentDesk - desk1,1);
   MoveStickyWindows();
+/*
   Hilight(FocusWin,False);
+*/
   Hilight(FocusWin,True);
 }
 
@@ -1018,10 +1025,12 @@ void list_deiconify(unsigned long *body)
 	ShowBalloons = ShowPagerBalloons;
 
       MoveResizePagerView(t);
+/*
       if(FocusWin == t)
 	Hilight(t,True);
       else
 	Hilight(t,False);
+*/
     }
 }
 
@@ -1056,8 +1065,14 @@ void list_window_name(unsigned long *body,unsigned long type)
         CopyString(&t->window_name,(char *)(&body[3]));
         break;
       }
-      LabelWindow(t);
-      LabelIconWindow(t);
+      /* repaint by clearing window */
+      if ((windowFont != NULL) && (t->icon_name != NULL)
+	   && !(MiniIcons && t->mini_icon.picture)) {
+	if (t->PagerView)
+	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+	if (t->IconView);
+	  XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+      }
     }
 }
 
@@ -1083,8 +1098,14 @@ void list_icon_name(unsigned long *body)
       if(t->icon_name != NULL)
 	free(t->icon_name);
       CopyString(&t->icon_name,(char *)(&body[3]));
-      LabelWindow(t);
-      LabelIconWindow(t);
+      /* repaint by clearing window */
+      if ((windowFont != NULL) && (t->icon_name != NULL)
+	   && !(MiniIcons && t->mini_icon.picture)) {
+	if (t->PagerView)
+	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+	if (t->IconView);
+	  XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+      }
     }
 }
 
@@ -1104,8 +1125,13 @@ void list_mini_icon(unsigned long *body)
     t->mini_icon.depth   = body[5];
     t->mini_icon.picture = body[6];
     t->mini_icon.mask    = body[7];
-    PictureWindow (t);
-    PictureIconWindow (t);
+    /* repaint by clearing window */
+    if (MiniIcons && t->mini_icon.picture) {
+      if (t->PagerView)
+	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+      if (t->IconView);
+	XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+    }
   }
 }
 

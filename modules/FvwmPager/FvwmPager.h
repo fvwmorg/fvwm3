@@ -30,6 +30,7 @@ typedef struct ScreenInfo
   Font PagerFont;        /* font struct for window labels in pager (optional)*/
 
   GC NormalGC;		 /* normal GC for menus, pager, resize window */
+  GC MiniIconGC;
 
   char  *Hilite;	 /* the fvwm window that is highlighted
 			  * except for networking delays, this is the
@@ -117,7 +118,6 @@ typedef struct desk_info
   char *Dcolor;
   char *label;
   GC NormalGC;
-  GC MiniIconGC;
   GC StdGC;
   GC DashedGC;
   GC HiliteGC;
