@@ -14,7 +14,7 @@
 
 package FVWM::Module;
 
-require 5.003;
+use 5.004;
 use strict;
 use IO::File;
 
@@ -291,9 +291,8 @@ sub send ($$;$$) {
 
 	my @lines = split(/\n/s, $text);
 
-	my $line;
 	my $lastLine = "";
-	for $line (@lines) {
+	for my $line (@lines) {
 		# support continuation lines
 		$line = "$lastLine$line" if $lastLine ne "";
 		if ($line =~ /^(.*)\\$/) {
@@ -390,11 +389,10 @@ sub invokeHandler ($$) {
 	my $type = $event->type;
 
 	my $category = $self->getHandlerCategory($type);
-	my @types = sort { $a <=> $b } keys %{$self->{handlers}->{$category}};
-	foreach (@types) {
-		if ($type eq $_ || $type & $_) {
-			my $handler;
-			for $handler (@{$self->{handlers}->{$category}->{$_}}) {
+	my @masks = sort { $a <=> $b } keys %{$self->{handlers}->{$category}};
+	foreach my $mask (@masks) {
+		if ($type eq $mask || $type & $mask) {
+			foreach my $handler (@{$self->{handlers}->{$category}->{$mask}}) {
 				last unless $event->propagationAllowed;
 				next unless defined $handler;  # skip deleted ones
 

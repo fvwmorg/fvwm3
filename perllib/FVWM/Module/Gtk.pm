@@ -14,8 +14,7 @@
 
 package FVWM::Module::Gtk;
 
-use 5.003;
-
+use 5.004;
 use strict;
 use vars qw($VERSION @ISA @EXPORT);
 use Exporter;
@@ -30,9 +29,11 @@ BEGIN {
 		my $errorTitle = 'FVWM Perl library error';
 		my $errorMsg = "$scriptName requires Gtk-Perl package to be installed";
 		print STDERR "[$errorTitle]: $errorMsg\n$@";
-		if (-x '/usr/bin/gdialog') {
+		if (-x '/usr/bin/gdialog' || -x '/usr/bin/X11/gdialog') {
 			system("gdialog --title '$errorTitle' --msgbox '$errorMsg' 500 100");
-		} elsif (-x '/usr/bin/X11/xmessage') {
+		} elsif (-x '/usr/bin/gtk-shell' || -x '/usr/bin/X11/gtk-shell') {
+			system("gtk-shell --size 500 100 --title '$errorTitle' --label '$errorMsg' --button Close");
+		} elsif (-x '/usr/bin/xmessage' || -x '/usr/bin/X11/xmessage') {
 			system("xmessage -name '$errorTitle' '$errorMsg'");
 		}
 		exit(1);
@@ -41,8 +42,7 @@ BEGIN {
 
 @ISA = qw(FVWM::Module Exporter);
 @EXPORT = @FVWM::Module::EXPORT;
-
-$VERSION = "1.1";
+$VERSION = $FVWM::Module::VERSION;
 
 sub eventLoop ($) {
 	my $self = shift;

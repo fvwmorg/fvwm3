@@ -343,7 +343,7 @@ $EVENTS_INFO = {
 			ewmh_layer   => number,
 			ewmh_desktop => number,
 			ewmh_window_type  => number,
-			style_flags  => wflags,
+			window_flags => wflags,
 		],
 	},
 
@@ -377,7 +377,7 @@ $EVENTS_INFO = {
 			ewmh_layer   => number,
 			ewmh_desktop => number,
 			ewmh_window_type  => number,
-			style_flags  => wflags,
+			window_flags => wflags,
 		],
 	},
 
