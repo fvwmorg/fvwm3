@@ -1,13 +1,15 @@
 Note, the changes for the last STABLE release start with release
-2.4.17.
+2.4.18.
 
 -------------------------------------------------------------------
 
-Changes in alpha release 2.5.10 (not released yet)
+Changes in alpha release 2.5.10 (19-Mar-2004)
 
 * New command FakeKeyPress.
 
 * New BugOpts option ExplainWindowPlacement.
+
+* Inverted button reliefs in FvwmIconMan.
 
 * Security patch in fvwm-bug.
   See http://securitytracker.com/alerts/2004/Jan/1008781.html
@@ -608,6 +610,22 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 * New conditional commands Any and PointerWindow.
 
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.18 (19-Mar-2004)
+
+* Corrected rebooting the machine in FvwmScript-Quit.
+
+* Fixed the FlickeringMoveWorkaround option to the BugOpts command.
+
+* Security patch in fvwmbug.sh.
+  See http://securitytracker.com/alerts/2004/Jan/1008781.html
+
+* Security fixes in
+    fvwm-menu-directory (BugTraq id 9161)
+    fvwm_make_directory_menu.sh
+    fvwm_make_browse_menu.sh
 
 -------------------------------------------------------------------
 

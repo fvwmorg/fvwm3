@@ -1,5 +1,9 @@
 2004-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* NEWS:
+	* configure.in:
+	updated for 2.5.10 release
+
 	* libs/Graphics.c (do_relieve_rectangle_with_rotation):
 	improved rotation code
 

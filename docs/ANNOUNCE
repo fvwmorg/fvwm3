@@ -1,26 +1,29 @@
-fvwm is a powerful window manager.  Version 2.5.9 is an alpha
-release that includes a couple of new features and bug fixes over
-2.5.8.  You are welcome to upgrade and test the new features or
-help stabilizing the code.  Please be aware that any features
-introduced in the 2.5.x development versions may be renamed,
-changed or removed without notice before 2.6.0.
+fvwm is a powerful window manager.  Version 2.5.10 is an alpha
+release that includes a couple of new features and important
+security bug fixes bug fixes over 2.5.9.  You are welcome to
+upgrade and test the new features or help stabilizing the code.
+Please be aware that any features introduced in the 2.5.x
+development versions may be renamed, changed or removed without
+notice before 2.6.0.
 
 This release is available at the home page: http://www.fvwm.org/.
 
 New features:
 -------------
 
-* New MenuStyle options PopupIgnore and PopupClose.
+* New command FakeKeyPress.
 
-* New configure option --disable-iconv to disable iconv support.
+* New BugOpts option ExplainWindowPlacement.
 
-* New extended variables $[w.iconfile] and $[w.miniiconfile].
+* Inverted button reliefs in FvwmIconMan.
 
-* New Style option Unmanaged.  Such windows are not managed by
-  fvwm.
+Bug Fixes:
+----------
 
-* New binding context 'U' for unmanaged windows, similar to 'R'oot.
+* Security patch in fvwm-bug.
+  See http://securitytracker.com/alerts/2004/Jan/1008781.html
 
-* New option DisplayNewWindowNames to the BugOpts command.
-
-See the ChangeLog file for all details.
+* Security fixes in
+    fvwm-menu-directory (BugTraq id 9161)
+    fvwm_make_directory_menu.sh
+    fvwm_make_browse_menu.sh
