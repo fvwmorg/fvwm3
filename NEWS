@@ -77,8 +77,6 @@ Changes in *experimental* release 2.5.4 (not released yet)
   each other.  HilightBack without using ActiveFore does no longer
   hilight the item text.
 
-* New MenuStyle options HilightRelief and HilightReliefOff.
-
 * New WindowList option SortByResource.
 
 * New command PrintInfo for debugging.

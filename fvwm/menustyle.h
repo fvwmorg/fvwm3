@@ -39,8 +39,6 @@
 #define MST_DO_HILIGHT_BACK(m)        ((m)->s->ms->look.flags.do_hilight_back)
 #define ST_DO_HILIGHT_FORE(s)         ((s)->look.flags.do_hilight_fore)
 #define MST_DO_HILIGHT_FORE(m)        ((m)->s->ms->look.flags.do_hilight_fore)
-#define ST_DO_HILIGHT_RELIEF(s)       ((s)->look.flags.do_hilight_relief)
-#define MST_DO_HILIGHT_RELIEF(m)      ((m)->s->ms->look.flags.do_hilight_relief)
 #define ST_HAS_ACTIVE_FORE(s)         ((s)->look.flags.has_active_fore)
 #define MST_HAS_ACTIVE_FORE(m)        ((m)->s->ms->look.flags.has_active_fore)
 #define ST_HAS_ACTIVE_BACK(s)         ((s)->look.flags.has_active_back)
@@ -110,8 +108,6 @@
 #define MST_MENU_ACTIVE_COLORS(m)     ((m)->s->ms->look.MenuActiveColors)
 #define ST_MENU_STIPPLE_COLORS(s)     ((s)->look.MenuStippleColors)
 #define MST_MENU_STIPPLE_COLORS(m)    ((m)->s->ms->look.MenuStippleColors)
-#define ST_MENU_RELIEF_COLORS(s)      ((s)->look.MenuReliefColors)
-#define MST_MENU_RELIEF_COLORS(m)     ((m)->s->ms->look.MenuReliefColors)
 #define ST_PSTDFONT(s)                ((s)->look.pStdFont)
 #define MST_PSTDFONT(m)               ((m)->s->ms->look.pStdFont)
 #define ST_FONT_HEIGHT(s)             ((s)->look.FontHeight)
@@ -229,7 +225,6 @@ typedef struct MenuLook
 	{
 		unsigned do_hilight_back : 1;
 		unsigned do_hilight_fore : 1;
-		unsigned do_hilight_relief : 1;
 		unsigned has_active_fore : 1;
 		unsigned has_active_back : 1;
 		unsigned has_stipple_fore : 1;
@@ -269,7 +264,6 @@ typedef struct MenuLook
 	ColorPair MenuColors;
 	ColorPair MenuActiveColors;
 	ColorPair MenuStippleColors;
-	ColorPair MenuReliefColors;
 	FlocaleFont *pStdFont;
 	int FontHeight;
 } MenuLook;

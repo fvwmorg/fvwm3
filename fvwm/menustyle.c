@@ -346,7 +346,6 @@ static int menustyle_get_styleopt_index(char *option)
 		"PopdownImmediately", "PopdownDelayed",
 		"PopdownDelay",
 		"PopupActiveArea",
-		"HilightRelief", "HilightReliefOff",
 		NULL
 	};
 
@@ -497,22 +496,6 @@ void menustyle_update(MenuStyle *ms)
 	{
 		ST_MENU_STIPPLE_COLORS(ms).fore = ST_MENU_COLORS(ms).back;
 	}
-	if (Pdepth > 2)
-	{
-		/* if not black and white */
-		ST_MENU_RELIEF_COLORS(ms).back =
-			GetShadow(ST_MENU_COLORS(ms).back);
-		ST_MENU_RELIEF_COLORS(ms).fore =
-			GetHilite(ST_MENU_COLORS(ms).back);
-	}
-	else
-	{
-		/* black and white */
-		ST_MENU_RELIEF_COLORS(ms).back =
-			GetColor(DEFAULT_SHADOW_COLOR);
-		ST_MENU_RELIEF_COLORS(ms).fore =
-			GetColor(DEFAULT_HILIGHT_COLOR);
-	}
 	ST_MENU_STIPPLE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
 	/* prepare colours for changing the gcs */
 	if (ST_HAS_MENU_CSET(ms))
@@ -526,8 +509,16 @@ void menustyle_update(MenuStyle *ms)
 	{
 		c_inactive.fore = ST_MENU_COLORS(ms).fore;
 		c_inactive.back = ST_MENU_COLORS(ms).back;
-		c_inactive.hilight = ST_MENU_RELIEF_COLORS(ms).fore;
-		c_inactive.shadow = ST_MENU_RELIEF_COLORS(ms).back;
+		if (Pdepth > 2)
+		{
+			c_inactive.hilight = GetHilite(ST_MENU_COLORS(ms).back);
+			c_inactive.shadow = GetShadow(ST_MENU_COLORS(ms).back);
+		}
+		else
+		{
+			c_inactive.hilight = GetColor(DEFAULT_HILIGHT_COLOR);
+			c_inactive.shadow = GetColor(DEFAULT_SHADOW_COLOR);
+		}
 	}
 	if (ST_HAS_ACTIVE_CSET(ms))
 	{
@@ -540,8 +531,18 @@ void menustyle_update(MenuStyle *ms)
 	{
 		c_active.fore = ST_MENU_ACTIVE_COLORS(ms).fore;
 		c_active.back = ST_MENU_ACTIVE_COLORS(ms).back;
-		c_active.hilight = ST_MENU_RELIEF_COLORS(ms).fore;
-		c_active.shadow = ST_MENU_RELIEF_COLORS(ms).back;
+		if (Pdepth > 2)
+		{
+			c_active.hilight =
+				GetHilite(ST_MENU_ACTIVE_COLORS(ms).back);
+			c_active.shadow =
+				GetShadow(ST_MENU_ACTIVE_COLORS(ms).back);
+		}
+		else
+		{
+			c_active.hilight = GetColor(DEFAULT_HILIGHT_COLOR);
+			c_active.shadow = GetColor(DEFAULT_SHADOW_COLOR);
+		}
 	}
 	if (ST_HAS_GREYED_CSET(ms))
 	{
@@ -561,9 +562,6 @@ void menustyle_update(MenuStyle *ms)
 	if (!ST_DO_HILIGHT_BACK(ms))
 	{
 		c_active.back = c_inactive.back;
-	}
-	if (!ST_DO_HILIGHT_RELIEF(ms))
-	{
 		c_active.hilight = c_inactive.hilight;
 		c_active.shadow = c_inactive.shadow;
 	}
@@ -775,7 +773,6 @@ void menustyle_parse_style(F_CMD_ARGS)
 			ST_CSET_MENU(tmpms) = -1;
 			ST_CSET_ACTIVE(tmpms) = -1;
 			ST_CSET_GREYED(tmpms) = -1;
-			ST_DO_HILIGHT_RELIEF(tmpms) = 0;
 			ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
 			ST_ACTIVE_AREA_PERCENT(tmpms) =
 				DEFAULT_MENU_POPUP_NOW_RATIO;
@@ -1277,16 +1274,6 @@ void menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 54: /* HilightRelief */
-			ST_DO_HILIGHT_RELIEF(tmpms) = 1;
-			has_gc_changed = True;
-			break;
-
-		case 55: /* HilightReliefOff */
-			ST_DO_HILIGHT_RELIEF(tmpms) = 0;
-			has_gc_changed = True;
-			break;
-
 #if 0
 		case 99: /* PositionHints */
 			/* to be implemented */
@@ -1457,7 +1444,6 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		       &ST_MENU_ACTIVE_COLORS(origms).back, sizeof(Pixel));
 	}
 	ST_DO_HILIGHT_BACK(destms) = ST_DO_HILIGHT_BACK(origms);
-	ST_DO_HILIGHT_RELIEF(destms) = ST_DO_HILIGHT_RELIEF(origms);
 
 	/* ActiveFore */
 	if (ST_HAS_ACTIVE_FORE(destms))
