@@ -1,3 +1,8 @@
+1999-03-16  Tomas Ogren  <stric@ing.umu.se>
+
+	* modules/FvwmGtk/Makefile.am: Added GTK_CFLAGS and friends, the values
+	we got from autoconf...
+
 16th Mar 1999  Hippo
 
 	* fvwm/builtins.c,functions.c,misc.h,parse.h: applied Replace patch from

@@ -9,6 +9,10 @@ EXTRA_PROGRAMS = FvwmGtk
 man_MANS = FvwmGtk.1
 EXTRA_DIST = $(man_MANS)
 
+GTK_CFLAGS = @GTK_CFLAGS@
+GTK_CONFIG = @GTK_CONFIG@
+GTK_LIBS = @GTK_LIBS@
+
 FvwmGtk_SOURCES = FvwmGtk.c gtkpixmapmenuitem.c gtkpixmapmenuitem.h
 FvwmGtk_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
