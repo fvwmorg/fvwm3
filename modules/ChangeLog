@@ -1,5 +1,13 @@
 2002-06-03  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmScript/script.y:
+	* FvwmScript/scanner.l:
+	* FvwmScript/script.c:
+	* FvwmScript/scanner.c:
+	Run make syntax for removing debug code
+
+2002-06-03  olicha  <olivier.chapuis@free.fr>
+
 	* FvwmForm/FvwmForm.c:
 	Applied FlocaleInit YAMAGUCHI Shingo patch
 

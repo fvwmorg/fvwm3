@@ -1231,7 +1231,7 @@ YY_RULE_SETUP
   char *tmp,*rest;
 
   rest = GetNextToken(yytext, &tmp); /* skip Font */
-  GetNextToken(rest, &yylval.str);
+  GetNextToken(rest, &yylval.str); /* get the font */
   if (tmp != NULL)
     free(tmp);
   return FONT;
