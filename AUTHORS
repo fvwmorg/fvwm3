@@ -19,7 +19,9 @@ FvwmGtk module, colored and xpm cursors.
 
 Dan Espen:
 Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d
-hilight/shadow calc from scwm as a library routine, updated web docs.
+hilight/shadow calc from scwm as a library routine, updated web docs,
+lots of improvements in FvwmForm, replacement of FvwmTalk with FvwmForm,
+fvwm setup form.
 
 Will French:
 $d, $x and $y macros for functions.
@@ -33,8 +35,17 @@ Named MenuStyles.
 Mike Han:
 Multiple menu hotkeys.
 
+Albrecht Kadlec:
+Code & manual cleanups, enhancements, Fixes and module-library which
+partially made it into fvwm2.0.42-47d.
+Rewrite & cleanup of FvwmAuto & FvwmAudio.
+Created FvwmEvent to supersede FvwmAudio (& FvwmAuto).
+
 Andrew Morton:
 MoveThreshold command.
+
+Tomas Ogren:
+Animated windowshading, "adaptive maximize", various bugfixes.
 
 Jay Painter:
 Gnome support (thanks, Jay!).
@@ -83,15 +94,6 @@ SnapAttraction patch.
 Bob Woodside:
 StartsOnPage style, Stacking Order chain, new variable module packets,
 GSFR for the modules.
-
-Tomas Ogren:
-Animated windowshading, "adaptive maximize", various bugfixes.
-
-Albrecht Kadlec:
-Code & manual cleanups, enhancements, Fixes and module-library which
-partially made it into fvwm2.0.42-47d.
-Rewrite & cleanup of FvwmAuto & FvwmAudio.
-Created FvwmEvent to supersede FvwmAudio (& FvwmAuto).
 
 
 Along with a cast of thousands (well, dozens) mentioned in old
