@@ -1389,6 +1389,7 @@ void HandleButtonPress(void)
   char *action;
   Window OldPressedW;
   Window eventw;
+  int i;
 
   DBUG("HandleButtonPress","Routine Entered");
 
@@ -1422,6 +1423,8 @@ void HandleButtonPress(void)
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
+    /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
+       I'll leave this as is for now.  */
     if (Scr.go.ClickToFocusRaises ||
 	((Event.xany.window != Tmp_win->w)&&
 	 (Event.xbutton.subwindow != Tmp_win->w)&&
@@ -1454,11 +1457,35 @@ void HandleButtonPress(void)
     }
   }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
-           (Event.xbutton.window == Tmp_win->w ||
-            Event.xbutton.window == Tmp_win->Parent ||
-            Event.xbutton.window == Tmp_win->frame) &&
+           (Event.xbutton.window == Tmp_win->Parent
+	    /* RBW - I don't think we need these!!! Dominik...if this sems
+	    to cause a problem, just uncomment them.
+	    || Event.xbutton.window == Tmp_win->w 
+	    || Event.xbutton.window == Tmp_win->frame  
+	    */ 
+	    ) &&
 	   Scr.go.MouseFocusClickRaises)
   {
+      /*
+          RBW - Release the Parent grab here (whether we raise or not). We
+	  have to wait till this point or we would miss the raise click, which
+	  is not contemporaneous with the focus change.
+	  Scr.Ungrabbed should always be NULL here. I don't know anything
+	  useful we could do if it's not, other than ignore this window.
+      */
+      if (Scr.Ungrabbed == NULL)
+	{
+         for(i=0;i<3;i++)
+	  {
+	   if(Scr.buttons2grab & (1<<i))
+	    {
+	     XUngrabButton(dpy,(i+1),0,Tmp_win->Parent);
+	     XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Tmp_win->Parent);
+	    }
+	  }
+	 Scr.Ungrabbed = Tmp_win;
+	}
+
     if (((DO_RAISE_TRANSIENT(Tmp_win) && DO_FLIP_TRANSIENT(Tmp_win)) ||
 	 !is_on_top_of_layer(Tmp_win))&&
         MaskUsedModifiers(Event.xbutton.state) == 0)

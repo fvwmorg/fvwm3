@@ -122,18 +122,19 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 	{
 	  if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed)))
 	    {
+	      /*
+	          RBW - 12/09/1999 - this grab stuff looks way out of sync with
+		  the regular handling - look into this later. I can't test a
+		  multi-head setup just now.
+	      */
 	      /* Need to grab buttons for focus window */
 	      XSync(dpy,0);
 	      for(i=0;i<3;i++)
 		if(Scr.buttons2grab & (1<<i))
 		  {
-		    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->decor_w,True,
-				ButtonPressMask, GrabModeSync,GrabModeAsync,
-				None,Scr.FvwmCursors[CRS_SYS]);
-		    XGrabButton(dpy,(i+1),GetUnusedModifiers(),
-				Scr.Ungrabbed->frame,True,
-				ButtonPressMask, GrabModeSync,GrabModeAsync,
-				None,Scr.FvwmCursors[CRS_SYS]);
+		    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
+			      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
+			      Scr.FvwmCursors[CRS_SYS]);
 		  }
 	      Scr.Focus = NULL;
 	      Scr.Ungrabbed = NULL;
@@ -150,7 +151,13 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
       w = Scr.NoFocusWin;
     }
 
-  if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed))
+  /*
+      RBW - 1999/12/08 - we have to re-grab the unfocused window here for the
+      MouseFocusClickRaises case also, but we can't ungrab the newly focused
+      window here, or we'll never catch the raise click. For this special case,
+      the newly-focused window is ungrabbed in events.c (HandleButtonPress).
+  */
+  if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed) || Scr.go.MouseFocusClickRaises)
      && (Scr.Ungrabbed != Fw))
     {
       /* need to grab all buttons for window that we are about to
@@ -158,7 +165,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
       XSync(dpy,0);
       for(i=0;i<3;i++)
 	if(Scr.buttons2grab & (1<<i))
-	  XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->decor_w,True,
+	  XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
 		      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
 		      Scr.FvwmCursors[CRS_SYS]);
       Scr.Ungrabbed = NULL;
@@ -170,8 +177,8 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
       for(i=0;i<3;i++)
 	if(Scr.buttons2grab & (1<<i))
 	  {
-	    XUngrabButton(dpy,(i+1),0,Fw->decor_w);
-	    XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Fw->decor_w);
+	    XUngrabButton(dpy,(i+1),0,Fw->Parent);
+	    XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Fw->Parent);
 	  }
       Scr.Ungrabbed = Fw;
     }

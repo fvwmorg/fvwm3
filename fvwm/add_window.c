@@ -964,9 +964,9 @@ void setup_focus_policy(FvwmWindow *tmp_win)
     /* need to grab all buttons for window */
     for(button = 1; button <= 3; button++)
     {
-      XGrabButton(dpy, button, 0, tmp_win->w, True, ButtonPressMask,
+      XGrabButton(dpy, button, 0, tmp_win->Parent, True, ButtonPressMask,
 		  GrabModeSync, GrabModeAsync, None,
-		  None);
+		  Scr.FvwmCursors[CRS_SYS]);
       if(GetUnusedModifiers() != 0)
       {
 	register unsigned int mods;
@@ -981,7 +981,7 @@ void setup_focus_policy(FvwmWindow *tmp_win)
 	   * modifiers would be zero ==> mods == 0 */
 	  if (mods & living_modifiers)
 	    continue;
-	  XGrabButton(dpy, button, mods, tmp_win->w, True,
+	  XGrabButton(dpy, button, mods, tmp_win->Parent, True,
 		      ButtonPressMask, GrabModeSync, GrabModeAsync, None,
 		      None);
 	}
