@@ -110,7 +110,13 @@ The default is Nop.
 
 .IP "*FvwmProxy: Action Unmark \fIcommand\fP"
 This selects an fvwm function to be called on a marked window just after
-another winodw get the mark.
+another window gets the mark.
+The default is Nop.
+
+.IP "*FvwmProxy: Action ModifierRelease \fImodifiers\fP \fIcommand\fP"
+This selects an fvwm function to be called while proxies are shown and
+the specified modifiers are all released.  The modifiers are specified
+using the same syntax as in the Mouse command.
 The default is Nop.
 
 .SH COMMANDS
@@ -155,6 +161,7 @@ If no proxy on this desk was recently selected,
 the leftmost proxy is used.
 This nearly duplicates the functionality of
 Circulate ScanForWindow East South (CurrentPage).
+
 .IP "SendToModule FvwmProxy Prev" (temporary)
 If a proxy window is selected, the previous proxy is selected.
 The starting point is the same as with the Next command, except
@@ -167,24 +174,26 @@ The following are excerpts from a .fvwm2rc file which describe
 FvwmProxy initialization commands:
 .nf
 .sp
-Key Meta_L  A  C   SendToModule  FvwmProxy  Hide
-Key Tab     A  M   SendToModule  FvwmProxy  Circulate \
-	ScanForWindow  East South (CurrentPage)
-Key Tab     A  SM  SendToModule  FvwmProxy  Circulate \
-        ScanForWindow  West North (CurrentPage)
+Key Tab    A M  SendToModule FvwmProxy Circulate ScanForWindow East South (CurrentPage)
+Key Tab    A SM SendToModule FvwmProxy Circulate ScanForWindow West North (CurrentPage)
+
+*FvwmProxy: Action ModifierRelease M SendToModule FvwmProxy Hide
 .sp
 .fi
+You might consider adding !Sticky to the (CurrentPage) conditional if you
+use Sticky for low-interactivity programs, like load meters and music players.
+
 To have the proxies immediately pop up when you hold the Alt key, add
 .nf
 .sp
-Key Meta_L  A  N   SendToModule  FvwmProxy  Show
+Key Meta_L A N  SendToModule FvwmProxy Show
 .sp
 .fi
 If that's too intrusive, you can assign Alt-Esc to switch the proxies
 on and off by adding
 .nf
 .sp
-Key Escape  A  M   SendToModule  FvwmProxy  ShowToggle
+Key Escape A M  SendToModule FvwmProxy ShowToggle
 .sp
 .fi
 Some platforms have problems where general Alt key combinations becoming
@@ -199,7 +208,15 @@ AddToFunc WindowListFunc
 + I WarpToWindow 50 50
 .sp
 .fi
-or just make your own list function from scratch.
+or just make your own list function from scratch, for example
+.nf
+.sp
+DestroyFunc WindowListFunc
+AddToFunc WindowListFunc
++ I WindowId $w Raise
++ I WindowId $w WarpToWindow 50 50
+.sp
+.fi
 
 Note that the default configuration does not activate any Next/Prev operations
 for Alt-Tab since that sequence is, by default, used by another module.

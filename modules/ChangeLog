@@ -1,3 +1,9 @@
+2004-07-12  Jason Weber  <baboon@imonk.com>
+
+	* FvwmProxy/FvwmProxy.c:
+	* FvwmProxy/FvwmProxy.1:
+	New modifier release
+
 2004-07-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/FvwmDebug.in:

@@ -41,6 +41,7 @@
 
 /* defaults for things we put in a configuration file */
 
+#define PROXY_KEY_POLLING	True
 #define PROXY_MOVE		False	/* move window when proxy is dragged */
 #define PROXY_WIDTH		180
 #define PROXY_HEIGHT		60
@@ -50,18 +51,10 @@
 
 #define STARTUP_DEBUG		False	/* store output before log is opened */
 
-#if 0
-#define CMD_SHOW		"Function FvwmProxyShowFunc"
-#define CMD_HIDE		"Function FvwmProxyHideFunc"
-#define CMD_ABORT		"Function FvwmProxyAbortFunc"
-#define CMD_SELECT		"Function FvwmProxySelectFunc"
-#define CMD_MARK		"Function FvwmProxyMarkFunc"
-#else
 #define CMD_SELECT		"WindowListFunc $[w.id]"
 #define CMD_CLICK1		"Raise"
 #define CMD_CLICK3		"Lower"
 #define CMD_DEFAULT		"Nop"
-#endif
 
 /* ---------------------------- local macros -------------------------------- */
 
@@ -97,6 +90,9 @@ static ProxyWindow *startProxy=NULL;
 static ProxyWindow *enterProxy=NULL;
 static XGCValues xgcv;
 static int are_windows_shown = 0;
+static int watching_modifiers = 0;
+static unsigned int held_modifiers=0;
+static unsigned int watched_modifiers=0;
 static FlocaleWinString *FwinString;
 
 static int cset_normal = 0;
@@ -127,6 +123,7 @@ typedef enum
 	PROXY_ACTION_ABORT,
 	PROXY_ACTION_MARK,
 	PROXY_ACTION_UNMARK,
+	PROXY_ACTION_MODIFIER_RELEASE,
 	/* this one *must* be last */
 	PROXY_ACTION_CLICK,
 	PROXY_ACTION_LAST = PROXY_ACTION_CLICK + NUMBER_OF_BUTTONS
@@ -209,6 +206,18 @@ static void LinkAction(char *string)
 		}
 		action_list[PROXY_ACTION_UNMARK] = safestrdup(string);
 	}
+	else if (StrEquals(token, "ModifierRelease"))
+	{
+		token = PeekToken(string, &string);
+
+		if (action_list[PROXY_ACTION_MODIFIER_RELEASE] != NULL)
+		{
+			free(action_list[PROXY_ACTION_MODIFIER_RELEASE]);
+		}
+
+		modifiers_string_to_modmask(token,&watched_modifiers);
+		action_list[PROXY_ACTION_MODIFIER_RELEASE] = safestrdup(string);
+	}
 
 	return;
 }
@@ -235,13 +244,6 @@ static Bool parse_options(void)
 	int m;
 	char *tline;
 
-#if 0
-	show_command = safestrdup(CMD_SHOW);
-	hide_command = safestrdup(CMD_HIDE);
-	abort_command = safestrdup(CMD_ABORT);
-	mark_command = safestrdup(CMD_MARK);
-	select_command = safestrdup(CMD_SELECT);
-#endif
 	memset(action_list, 0, sizeof(action_list));
 	action_list[PROXY_ACTION_SELECT] = strdup(CMD_SELECT);
 	action_list[PROXY_ACTION_CLICK + 0] = strdup(CMD_CLICK1);
@@ -334,45 +336,6 @@ static Bool parse_options(void)
 			if (sscanf(tline, "%d", &proxySeparation) < 1)
 				proxySeparation=False;
 		}
-#if 0
-		else if (StrEquals(resource, "ShowCommand"))
-		{
-			parse_cmd(&show_command, next);
-		}
-		else if (StrEquals(resource, "HideCommand"))
-		{
-			parse_cmd(&hide_command, next);
-		}
-		else if (StrEquals(resource, "AbortCommand"))
-		{
-			parse_cmd(&abort_command, next);
-		}
-		else if (StrEquals(resource, "MarkCommand"))
-		{
-			parse_cmd(&mark_command, next);
-		}
-		else if (StrEquals(resource, "SelectCommand"))
-		{
-			parse_cmd(&select_command, next);
-		}
-		else if (StrEquals(resource, "ProxyGeometry"))
-		{
-			flags = FScreenParseGeometry(
-				tline, &g_x, &g_y, &width, &height);
-			if (flags & WidthValue)
-			{
-				/*!!!*/
-			}
-			if (flags & HeightValue)
-			{
-				/*!!!*/
-			}
-			if (flags & (XValue | YValue))
-			{
-				/*!!!error*/
-			}
-		}
-#endif
 
 		free(resource);
 	}
@@ -743,7 +706,7 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 		int dx=abs(proxy->proxyx-other->proxyx);
 		int dy=abs(proxy->proxyy-other->proxyy);
 		if (dx<(proxyWidth+proxySeparation) &&
-		   dy<proxyHeight+proxySeparation )
+				dy<proxyHeight+proxySeparation )
 		{
 			rc = True;
 			if (proxyWidth-dx<proxyHeight-dy)
@@ -950,6 +913,33 @@ static void IconifyWindow(Window w, int is_iconified)
 	return;
 }
 
+static unsigned int GetModifiers(void)
+{
+	Window root_return, child_return;
+	int root_x_return, root_y_return;
+	int win_x_return, win_y_return;
+	unsigned int mask_return;
+
+	if (FQueryPointer(
+			dpy,rootWindow,&root_return,
+			&child_return,
+			&root_x_return,&root_y_return,
+			&win_x_return,&win_y_return,
+			&mask_return) == False)
+	{
+		/* pointer is on another screen - ignore */
+	}
+
+	/* mask_return
+		0x01	shift
+		0x02	caplock
+		0x04	ctrl
+		0x08	alt
+		0x40	logo
+	*/
+	return mask_return;
+}
+
 static void StartProxies(void)
 {
 	if (are_windows_shown)
@@ -957,8 +947,12 @@ static void StartProxies(void)
 		return;
 	}
 
+	held_modifiers=GetModifiers();
 	enterProxy=NULL;
 	selectProxy=NULL;
+
+	if(action_list[PROXY_ACTION_MODIFIER_RELEASE])
+		watching_modifiers=1;
 
 	send_command_to_fvwm(action_list[PROXY_ACTION_SHOW], None);
 	are_windows_shown = 1;
@@ -1180,7 +1174,7 @@ static void ProcessMessage(FvwmPacket* packet)
 				if (!newSelect)
 					newSelect=first;
 				while (newSelect!=lastSelect &&
-				      newSelect->desk!=deskNumber)
+						newSelect->desk!=deskNumber)
 				{
 					if (prev)
 						newSelect=newSelect->prev;
@@ -1343,8 +1337,8 @@ static void DispatchEvent(XEvent *pEvent)
 			if (button >= 1 && button<=NUMBER_OF_MOUSE_BUTTONS)
 			{
 				SendFvwmPipe(
-					fd, action_list[
-						PROXY_ACTION_CLICK + button-1],
+					fd, action_list
+						[PROXY_ACTION_CLICK + button-1],
 					proxy->window);
 			}
 		}
@@ -1398,6 +1392,21 @@ static void Loop(int *fd)
 		{
 			DispatchEvent(&event);
 		}
+
+#if PROXY_KEY_POLLING
+		if(are_windows_shown && watching_modifiers)
+		{
+			unsigned int mask_return=GetModifiers();
+			if(!(mask_return&watched_modifiers))
+			{
+				watching_modifiers=0;
+				send_command_to_fvwm(
+					action_list
+					[PROXY_ACTION_MODIFIER_RELEASE],
+					None);
+			}
+		}
+#endif
 	}
 }
 
