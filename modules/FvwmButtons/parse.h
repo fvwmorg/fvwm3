@@ -28,5 +28,4 @@
  */
 
 void ParseOptions(button_info*);
-
-
+void get_window_geometry(char *geom);

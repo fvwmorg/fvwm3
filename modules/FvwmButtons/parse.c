@@ -839,6 +839,34 @@ void match_string(button_info **uberb,char *s)
   return;
 }
 
+void get_window_geometry(char *geom)
+{
+  int flags;
+  int g_x;
+  int g_y;
+  unsigned int width;
+  unsigned int height;
+
+  flags = XParseGeometry(geom,&g_x,&g_y,&width,&height);
+fprintf(stderr,"parsed geom = %s\n");
+  UberButton->w = 0;
+  UberButton->h = 0;
+  if (flags&WidthValue)
+    w = width;
+  if (flags&HeightValue)
+    h = height;
+  if (flags&XValue)
+    UberButton->x = g_x;
+  if (flags&YValue)
+    UberButton->y = g_y;
+  if (flags&XNegative)
+    UberButton->w = 1;
+  if (flags&YNegative)
+    UberButton->h = 1;
+
+  return;
+}
+
 /**
 *** ParseConfigLine
 **/
@@ -869,26 +897,11 @@ void ParseConfigLine(button_info **ubb,char *s)
     case 0:/* Geometry */
       {
 	char geom[64];
-	int flags,g_x,g_y;
-        unsigned int width,height;
+
 	i=sscanf(s,"%63s",geom);
 	if(i==1)
 	  {
-	    flags=XParseGeometry(geom,&g_x,&g_y,&width,&height);
-	    UberButton->w = 0;
-	    UberButton->h = 0;
-	    if(flags&WidthValue)
-	      w=width;
-	    if(flags&HeightValue)
-	      h=height;
-	    if(flags&XValue)
-	      UberButton->x = g_x;
-	    if(flags&YValue)
-	      UberButton->y = g_y;
-	    if(flags&XNegative)
-	      UberButton->w = 1;
-	    if(flags&YNegative)
-	      UberButton->h = 1;
+	    get_window_geometry(geom);
 	  }
 	break;
       }

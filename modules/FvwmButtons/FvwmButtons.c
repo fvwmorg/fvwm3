@@ -555,6 +555,7 @@ int main(int argc, char **argv)
   int x,y,maxx,maxy,border_width,depth;
   button_info *b,*ub;
   panel_info *LastPanel;
+  int geom_option_argc = 0;
 
 #ifdef I18N_MB
   setlocale(LC_CTYPE, "");
@@ -608,23 +609,40 @@ int main(int argc, char **argv)
 #endif
 #endif
 
-  if(argc<6 || argc>8)
+  if(argc<6 || argc>10)
     {
       fprintf(stderr,"%s v%s should only be executed by fvwm!\n",MyName,
 	      VERSION);
       exit(1);
     }
 
-  if(argc>6) /* There is a naming argument here! */
+  for (i = 6; i < argc && i < 10; i++)
+  {
+    static Bool has_name = 0;
+    static Bool has_file = 0;
+    static Bool has_geometry = 0;
+
+    if (!has_geometry && strcmp(argv[i], "-g") == 0)
+    {
+      has_geometry = 1;
+      if (++i < argc)
+      {
+	/* can't do that now because the UberButton has not been set up */
+	geom_option_argc = i;
+      }
+    }
+    else if (!has_name) /* There is a naming argument here! */
     {
       free(MyName);
-      MyName=strdup(argv[6]);
+      MyName=strdup(argv[i]);
+      has_name = 1;
     }
-
-  if(argc>7) /* There is a config file here! */
+    else if (!has_file) /* There is a config file here! */
     {
-      config_file=strdup(argv[7]);
+      config_file=strdup(argv[i]);
+      has_file = 1;
     }
+  }
 
   fd[0]=atoi(argv[1]);
   fd[1]=atoi(argv[2]);
@@ -670,6 +688,12 @@ int main(int argc, char **argv)
   UberButton->title   = MyName;
   UberButton->swallow = 1; /* the panel is shown */
 
+  /* parse the geometry string */
+  if (geom_option_argc != 0)
+  {
+    get_window_geometry(argv[geom_option_argc]);
+  }
+  /* parse module options */
   ParseOptions(UberButton);
 
   for (CurrentPanel = MainPanel, LastPanel = NULL;

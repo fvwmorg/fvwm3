@@ -1,5 +1,9 @@
 1999-08-12  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
+	* FvwmButtons/parse.c (get_window_geometry): 
+	(ParseConfigLine): moved parsing of geometry string into separate
+	function
+
 	* FvwmPager/x_pager.c (MoveResizePagerView): fixed shrinking windows
 	when pager was resized
 
