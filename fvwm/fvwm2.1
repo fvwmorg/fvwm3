@@ -1337,6 +1337,17 @@ ChangeMenuStyle pixmap1 \\
 .EE
 
 .TP
+.BI "CopyMenuStyle " "orig-menustyle dest-menustyle"
+Copy
+.IR orig-menustyle " to " dest-menustyle ,
+where
+.IR orig-menustyle
+is an existing menu style different from the default menu style "*". 
+If the menu style
+.IR dest_menustyle
+does not exist, then it is created.
+
+.TP
 .BI "DestroyMenu [" recreate "] " menu
 Deletes a menu, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a menu during an

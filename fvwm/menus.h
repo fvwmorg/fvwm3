@@ -687,6 +687,6 @@ void SetMenuStyle(F_CMD_ARGS);
 void UpdateAllMenuStyles(void);
 void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
-
+void CopyMenuStyle(F_CMD_ARGS);
 
 #endif /* _MENUS_ */

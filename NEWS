@@ -4,6 +4,7 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 Changes in beta release 2.3.28 (not released yet)
 
 * New menu styles PopdownImmediately, PopdownDelayed and PopdownDelay.
+* New command CopyMenuStyle
 
 Changes in beta release 2.3.27 (2001-01-03)
 

@@ -6572,6 +6572,273 @@ static void NewMenuStyle(F_CMD_ARGS)
   return;
 }
 
+void CopyMenuStyle(F_CMD_ARGS)
+{
+  char *origname = NULL;
+  char *destname = NULL;
+  char *buffer;
+  MenuStyle *origms;
+  MenuStyle *destms;
+
+  origname = PeekToken(action, &action);
+  if (origname == NULL)
+  {
+    fvwm_msg(ERR,"CopyMenuStyle", "need two arguments");
+    return;
+  }
+
+  origms = FindMenuStyle(origname);
+  if (!origms)
+  {
+    fvwm_msg(ERR,"CopyMenuStyle", "%s: no such menu style", origname);
+    return;
+  }
+
+  destname = PeekToken(action, &action);
+  if (destname == NULL)
+  {
+    fvwm_msg(ERR,"CopyMenuStyle", "need two arguments");
+    return;
+  }
+
+  if (action && *action)
+  {
+    fvwm_msg(ERR,"CopyMenuStyle", "too many arguments");
+    return;
+  }
+
+  destms = FindMenuStyle(destname);
+  if (!destms)
+  {
+    /* create destms menu style */
+    buffer = (char *)safemalloc(strlen(destname) + 3);
+    sprintf(buffer,"\"%s\"",destname);
+    action = buffer;
+    NewMenuStyle(F_PASS_ARGS);
+    free(buffer);
+    destms = FindMenuStyle(destname);
+    if (!destms)
+    {
+      /* this must never happen */
+      fvwm_msg(ERR,"CopyMenuStyle", "impossible to create %s menu style",
+	       destname);
+      return;
+    }
+  }
+
+  if (strcasecmp("*",destname) == 0)
+  {
+    fvwm_msg(ERR,"CopyMenuStyle", "You cannot copy on the default menu style");
+    return;
+  }
+  if (strcasecmp(ST_NAME(origms),destname) == 0)
+  {
+    fvwm_msg(ERR,"CopyMenuStyle", "%s and %s identify the same menu style",
+	     ST_NAME(origms),destname);
+    return;
+  }
+
+  if (ST_USAGE_COUNT(destms) != 0)
+  {
+    fvwm_msg(ERR,"CopyMenuStyle", "menu style %s is in use", destname);
+    return;
+  }
+
+  /* Copy origms to destms, be award of all pointers in the MenuStyle
+     strcture. Use  the same order as in NewMenuStyle */
+
+  /* menu colors */
+  FreeColors(&ST_MENU_COLORS(destms).fore, 1);
+  FreeColors(&ST_MENU_COLORS(destms).back, 1);
+  memcpy(&ST_MENU_COLORS(destms),&ST_MENU_COLORS(origms),sizeof(ColorPair));
+
+  /* Greyed */
+  if (ST_HAS_STIPPLE_FORE(destms))
+    FreeColors(&ST_MENU_STIPPLE_COLORS(destms).fore, 1);
+  ST_HAS_STIPPLE_FORE(destms) = ST_HAS_STIPPLE_FORE(origms);
+  if (ST_HAS_STIPPLE_FORE(origms))
+    memcpy(&ST_MENU_STIPPLE_COLORS(destms).fore,
+	   &ST_MENU_STIPPLE_COLORS(origms).fore, sizeof(Pixel));
+
+  /* HilightBack */
+  if (ST_HAS_ACTIVE_BACK(destms))
+    FreeColors(&ST_MENU_ACTIVE_COLORS(destms).back, 1);
+  ST_HAS_ACTIVE_BACK(destms) = ST_HAS_ACTIVE_BACK(origms);
+  if (ST_HAS_ACTIVE_BACK(origms))
+    memcpy(&ST_MENU_ACTIVE_COLORS(destms).back,
+	   &ST_MENU_ACTIVE_COLORS(origms).back, sizeof(Pixel));
+
+  ST_DO_HILIGHT(destms) = ST_DO_HILIGHT(origms);
+
+  /* ActiveFore */
+  if (ST_HAS_ACTIVE_FORE(destms))
+    FreeColors(&ST_MENU_ACTIVE_COLORS(destms).fore, 1);
+  ST_HAS_ACTIVE_FORE(destms) = ST_HAS_ACTIVE_FORE(origms);
+  if (ST_HAS_ACTIVE_FORE(origms))
+    memcpy(&ST_MENU_ACTIVE_COLORS(destms).fore,
+	   &ST_MENU_ACTIVE_COLORS(origms).fore, sizeof(Pixel));
+
+  /* Hilight3D */
+  ST_RELIEF_THICKNESS(destms) = ST_RELIEF_THICKNESS(origms);
+  /* Animation */
+  ST_IS_ANIMATED(destms) = ST_IS_ANIMATED(origms);
+
+  /* font */
+  if (ST_PSTDFONT(destms) && ST_PSTDFONT(destms) != &Scr.DefaultFont)
+  {
+    FreeFvwmFont(dpy, ST_PSTDFONT(destms));
+    free(ST_PSTDFONT(destms));
+  }
+  if (ST_PSTDFONT(origms) && ST_PSTDFONT(origms) != &Scr.DefaultFont) 
+  {
+    unsigned long *value;
+    char *orig_font_name;
+    FvwmFont new_font;
+    Bool loaded = 0;
+
+    if (XGetFontProperty(ST_PSTDFONT(origms)->font,XA_FONT,value))
+    {
+      orig_font_name = XGetAtomName(dpy, *value);
+      if (orig_font_name != NULL)
+      {
+	if (!LoadFvwmFont(dpy, orig_font_name, &new_font))
+	{
+	  fvwm_msg(ERR, "CopyMenuStyle",
+		   "Couldn't load font '%s' or 'fixed'\n", orig_font_name);
+	}
+	else
+	{
+	  loaded = 1;
+	}
+	XFree(orig_font_name);
+      }
+    }
+    if (loaded) 
+    {
+      ST_PSTDFONT(destms) = (FvwmFont *)safemalloc(sizeof(FvwmFont));
+      *ST_PSTDFONT(destms) = new_font;
+    }
+    else
+    {
+      ST_PSTDFONT(destms) = &Scr.DefaultFont;
+      fvwm_msg(ERR, "CopyMenuStyle",
+	       "Unable to find origin font name: Using Default Font\n");
+    }
+  }
+  else
+    ST_PSTDFONT(destms) = &Scr.DefaultFont;
+
+  /* MenuFace */
+  FreeMenuFace(dpy, &ST_FACE(destms));
+  ST_FACE(destms).type = SimpleMenu;
+  switch (ST_FACE(origms).type)
+  {
+  case SolidMenu:
+    memcpy(&ST_FACE(destms).u.back,&ST_FACE(origms).u.back,sizeof(Pixel));
+    ST_FACE(destms).type = SolidMenu;
+    break;
+  case GradientMenu:
+    ST_FACE(destms).u.grad.pixels = 
+      (Pixel *)safemalloc(sizeof(Pixel) * ST_FACE(origms).u.grad.npixels);
+    memcpy(ST_FACE(destms).u.grad.pixels,ST_FACE(origms).u.grad.pixels,
+	   sizeof(Pixel) * ST_FACE(origms).u.grad.npixels);
+    ST_FACE(destms).u.grad.npixels = ST_FACE(origms).u.grad.npixels;
+    ST_FACE(destms).type = GradientMenu;
+    ST_FACE(destms).gradient_type = ST_FACE(origms).gradient_type;
+    break;
+  case PixmapMenu:
+  case TiledPixmapMenu:
+    ST_FACE(destms).u.p = CachePicture(dpy, Scr.NoFocusWin, NULL,
+			     ST_FACE(origms).u.p->name, Scr.ColorLimit);
+    memcpy(&ST_FACE(destms).u.back,&ST_FACE(origms).u.back,sizeof(Pixel));
+    ST_FACE(destms).type = ST_FACE(origms).type;
+    break;
+  default:
+    break;
+  }
+
+  /* PopupDelay */
+  ST_POPUP_DELAY(destms) = ST_POPUP_DELAY(origms);
+  /* PopupOffset */
+  ST_POPUP_OFFSET_PERCENT(destms) = ST_POPUP_OFFSET_PERCENT(origms);
+  /* TitleWarp */
+  ST_DO_WARP_TO_TITLE(destms) = ST_DO_WARP_TO_TITLE(origms);
+  /* TitleUnderlines */
+  ST_TITLE_UNDERLINES(destms) = ST_TITLE_UNDERLINES(origms);
+  /* Separators */
+  ST_HAS_LONG_SEPARATORS(destms) = ST_HAS_LONG_SEPARATORS(origms);
+  /* Triangles */
+  ST_HAS_TRIANGLE_RELIEF(destms) = ST_HAS_TRIANGLE_RELIEF(origms);
+  /* PopupDelayed */
+  ST_DO_POPUP_IMMEDIATELY(destms) = ST_DO_POPUP_IMMEDIATELY(origms);
+  /* DoubleClickTime */
+  ST_DOUBLE_CLICK_TIME(destms) = ST_DOUBLE_CLICK_TIME(origms);
+
+  /* SidePic */
+  if (ST_SIDEPIC(destms))
+  {
+    DestroyPicture(dpy, ST_SIDEPIC(destms));
+    ST_SIDEPIC(destms) = NULL;
+  }
+  if (ST_SIDEPIC(origms))
+    ST_SIDEPIC(destms) = CachePicture(dpy, Scr.NoFocusWin, NULL,
+				      ST_SIDEPIC(origms)->name,
+				      Scr.ColorLimit);
+
+  /* side color */
+  if (ST_HAS_SIDE_COLOR(destms) == 1)
+    FreeColors(&ST_SIDE_COLOR(destms), 1);
+  ST_HAS_SIDE_COLOR(destms) = ST_HAS_SIDE_COLOR(origms);
+  if (ST_HAS_SIDE_COLOR(origms) == 1)
+    memcpy(&ST_SIDE_COLOR(destms),&ST_SIDE_COLOR(origms),sizeof(Pixel));
+
+  /* PopupAsRootmenu */
+  ST_DO_POPUP_AS_ROOT_MENU(destms) = ST_DO_POPUP_AS_ROOT_MENU(origms);
+  /* RemoveSubmenus */
+  ST_DO_UNMAP_SUBMENU_ON_POPDOWN(destms) =
+    ST_DO_UNMAP_SUBMENU_ON_POPDOWN(origms);
+  /* SubmenusRight */
+  ST_USE_LEFT_SUBMENUS(destms) = ST_USE_LEFT_SUBMENUS(origms);
+  /* BorderWidth */
+  ST_BORDER_WIDTH(destms) = ST_BORDER_WIDTH(origms);
+  /* Hilight3DThickness */
+  ST_IS_ITEM_RELIEF_REVERSED(destms) = ST_IS_ITEM_RELIEF_REVERSED(origms);
+
+  /* ItemFormat */
+  if (ST_ITEM_FORMAT(destms))
+  {
+    free(ST_ITEM_FORMAT(destms));
+    ST_ITEM_FORMAT(destms) = NULL;
+  }
+  if (ST_ITEM_FORMAT(origms))
+    ST_ITEM_FORMAT(destms) = strdup(ST_ITEM_FORMAT(origms));
+
+  /* AutomaticHotkeys */
+  ST_USE_AUTOMATIC_HOTKEYS(destms) = ST_USE_AUTOMATIC_HOTKEYS(origms);
+  /* Item and Title Spacing */
+  ST_ITEM_GAP_ABOVE(destms) =  ST_ITEM_GAP_ABOVE(origms);
+  ST_ITEM_GAP_BELOW(destms) = ST_ITEM_GAP_BELOW(origms);
+  ST_TITLE_GAP_ABOVE(destms) = ST_TITLE_GAP_ABOVE(origms);
+  ST_TITLE_GAP_BELOW(destms) = ST_TITLE_GAP_BELOW(origms);
+  /* MenuColorset */
+  ST_HAS_MENU_CSET(destms) = ST_HAS_MENU_CSET(origms);
+  ST_CSET_MENU(destms) = ST_CSET_MENU(origms);
+  /* ActiveColorset */
+  ST_HAS_ACTIVE_CSET(destms) = ST_HAS_ACTIVE_CSET(origms);
+  ST_CSET_ACTIVE(destms) = ST_CSET_ACTIVE(origms);
+  /* MenuColorset */
+  ST_HAS_GREYED_CSET(destms) = ST_HAS_GREYED_CSET(origms);
+  ST_CSET_GREYED(destms) = ST_CSET_GREYED(origms);
+  /* SelectOnRelease */
+  ST_SELECT_ON_RELEASE_KEY(destms) = ST_SELECT_ON_RELEASE_KEY(origms);
+  /* PopdownImmediately */
+  ST_DO_POPDOWN_IMMEDIATELY(destms) = ST_DO_POPDOWN_IMMEDIATELY(origms);
+  /* PopdownDelay */
+  ST_POPDOWN_DELAY(destms) = ST_POPDOWN_DELAY(destms);
+
+  UpdateMenuStyle(destms);
+}
+
 static void OldMenuStyle(F_CMD_ARGS)
 {
   char *buffer, *rest;

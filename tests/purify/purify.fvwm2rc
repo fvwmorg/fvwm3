@@ -92,6 +92,83 @@ AddToFunc ChangeMenuStyle-Func
  + I ChangeMenuStyle " a large quoted arg with spaces at the front, middle, end"
  + I Echo End intentional errors
 
+AddTest "Test CopyMenuStyle" CopyMenuStyle-Func
+AddToFunc CopyMenuStyle-Func
+# create 2 menus styles
+ + I CopyMenuStyle * FirstMenuStyle
+ + I CopyMenuStyle TMS SecondMenuStyle
+# create a menu
+ + I DestroyMenu Menu-CopyMenuStyle
+ + I AddToMenu Menu-CopyMenuStyle "CopyMenuStyle test menu" Title
+ + I AddToMenu Menu-CopyMenuStyle "Press Escape to continue" Echo "Tester selected item on menu to proceed"
+ + I AddToMenu Menu-CopyMenuStyle "First we use TMS style"
+ + I ChangeMenuStyle SecondMenuStyle Menu-CopyMenuStyle
+ + I Popup Menu-CopyMenuStyle
+ + I MenuStyle SecondMenuStyle mwm, Background red, Foreground blue 
+ + I MenuStyle SecondMenuStyle ActiveFore yellow, Font fixed
+ + I MenuStyle SecondMenuStyle ItemFormat "%.2|%4.3<%6i%6l%6l%6r%6i%2|%5s"
+ + I MenuStyle SecondMenuStyle SidePic /tmp/test1.xpm, SideColor green
+ + I CopyMenuStyle SecondMenuStyle tmpMenuStyle
+ + I DestroyMenuStyle tmpMenuStyle
+ + I ChangeMenuStyle * Menu-CopyMenuStyle
+ + I ChangeMenuStyle SecondMenuStyle Menu-CopyMenuStyle
+ + I AddToMenu Menu-CopyMenuStyle "Menu now red/blue/yellow, mwm, fixed, ..."
+ + I Popup Menu-CopyMenuStyle
+ + I CopyMenuStyle SecondMenuStyle tmpMenuStyle
+ + I MenuStyle FirstMenuStyle MenuFace DGradient 128 2 lightgrey 50 blue 50 white
+ + I MenuStyle FirstMenuStyle Font -adobe-helvetica-bold-r-*-*-14-*-*
+ + I MenuStyle FirstMenuStyle ItemFormat
+ + I CopyMenuStyle FirstMenuStyle SecondMenuStyle
+ + I CopyMenuStyle SecondMenuStyle FirstMenuStyle
+ + I CopyMenuStyle FirstMenuStyle SecondMenuStyle
+ + I DestroyMenuStyle FirstMenuStyle
+ + I AddToMenu Menu-CopyMenuStyle "Menu now as default + a gradient + a font"
+ + I Popup Menu-CopyMenuStyle
+ + I CopyMenuStyle tmpMenuStyle SecondMenuStyle
+ + I AddToMenu Menu-CopyMenuStyle "Menu again red/blue/yellow, mwm, fixed, ..."
+ + I Popup Menu-CopyMenuStyle
+ + I CopyMenuStyle * FirstMenuStyle
+ + I MenuStyle FirstMenuStyle MenuFace TiledPixmap /tmp/test3.xpm
+ + I CopyMenuStyle FirstMenuStyle SecondMenuStyle
+ + I CopyMenuStyle * SecondMenuStyle
+ + I CopyMenuStyle FirstMenuStyle SecondMenuStyle
+ + I DestroyMenuStyle FirstMenuStyle
+ + I AddToMenu Menu-CopyMenuStyle "Menu now as default + tiled Pixmap"
+ + I Popup Menu-CopyMenuStyle
+ + I CopyMenuStyle tmpMenuStyle SecondMenuStyle
+ + I CopyMenuStyle * FirstMenuStyle
+ + I CopyMenuStyle FirstMenuStyle SecondMenuStyle
+ + I CopyMenuStyle * SecondMenuStyle
+ + I CopyMenuStyle FirstMenuStyle SecondMenuStyle
+ + I DestroyMenuStyle FirstMenuStyle
+ + I CopyMenuStyle tmpMenuStyle SecondMenuStyle
+ + I DestroyMenuStyle tmpMenuStyle
+ + I CopyMenuStyle SecondMenuStyle FirstMenuStyle
+ + I DestroyMenuStyle SecondMenuStyle
+ + I CopyMenuStyle FirstMenuStyle SecondMenuStyle
+ + I CopyMenuStyle TMS SecondMenuStyle
+ + I CopyMenuStyle * FirstMenuStyle
+ + I CopyMenuStyle FirstMenuStyle tmpMenuStyle
+ + I DestroyMenuStyle tmpMenuStyle
+ + I CopyMenuStyle SecondMenuStyle FirstMenuStyle
+ + I CopyMenuStyle * FirstMenuStyle
+ + I DestroyMenuStyle SecondMenuStyle
+ + I DestroyMenuStyle FirstMenuStyle
+ + I AddToMenu Menu-CopyMenuStyle "Finally as default"
+ + I Popup Menu-CopyMenuStyle
+# Syntax tests:
+ + I Echo Start intentional errors
+ + I CopyMenuStyle FirstMenuStyle *
+ + I CopyMenuStyle
+ + I CopyMenuStyle none_such
+ + I CopyMenuStyle not_at_all same_here
+ + I CopyMenuStyle FirstMenuStyle
+ + I CopyMenuStyle no_such_style FirstMenuStyle
+ + I CopyMenuStyle FirstMenuStyle FirstMenuStyle
+ + I CopyMenuStyle * FirstMenuStyle to_many
+ + I CopyMenuStyle " a large quoted arg with spaces at the front, middle, end"
+ + I Echo End intentional errors
+
 AddTest "Test DestroyMenu - needs ChangeMenuStyle" DestroyMenuStyle-Func
 AddToFunc DestroyMenuStyle-Func
  + I Echo "The next test attempts to popup a menu thats been destroyed w. recreate"
@@ -1696,7 +1773,6 @@ AddToFunc DefaultLayers-Func
  + I DefaultLayers junk three times
  + I DefaultLayers 2 4 6
  + I Refresh
-
 
 AddTest "Test TitleStyle_justify" TitleStyle_justify-Func
 AddToFunc TitleStyle_justify-Func
