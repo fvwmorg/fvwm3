@@ -170,6 +170,7 @@ The following commands are accepted before the form is displayed:
 *FvwmFormPosition
 *FvwmFormSelection
 *FvwmFormText
+*FvwmFormUseData
 *FvwmFormWarpPointer
 .EE
 
@@ -397,6 +398,17 @@ If the choice is not selected, the result is empty.
 .B $(\fIname\fP!\fIstring\fP)
 The same as the above, except that the converse conditions are taken.
 
+.TP 4
+.B *FvwmFormUseData \fIdatafile\fP \fIleading\fP
+Tells FvwmForm to read a data file and extract data from module
+commands that match the "leading" argument and an input
+variable in a form.
+
+This lets a form display current fvwm2 module configuration data.
+For an example of how this works, examine the file "FormFvwmForm."
+which is installed in read-only architecture-independent data directory,
+[PREFIX/share].
+
 .SH EXAMPLES
 All of the following "examples" are installed in the 
 read-only architecture-independent data directory,
@@ -406,83 +418,83 @@ The following commands create a menu to invoke the examples:
 
 .EX
 DestroyMenu Forms
-AddToMenu Forms "&Q. QuitVerify" Module FvwmForm FormFvwmQuitVerify
-AddToMenu Forms "&C. Capture" Module FvwmForm FormFvwmCapture
-AddToMenu Forms "&R. Rlogin" Module FvwmForm FormFvwmRlogin
+AddToMenu Forms "&Q. QuitVerify" Module FvwmForm FormFvwmQuitVerify.
+AddToMenu Forms "&C. Capture" Module FvwmForm FormFvwmCapture.
+AddToMenu Forms "&R. Rlogin" Module FvwmForm FormFvwmRlogin.
 AddToMenu Forms "&T. Talk Form" Module FvwmForm FormFvwmTalk.
 .EE
-.SH EXAMPLE 1 - QuitVerify
+.SH EXAMPLE 1 - Quit Verify
 This example simulates the mwm way of confirming logout.
 Return does the logout, Escape cancels logout.
 .EX
-DestroyModuleConfig            FormFvwmQuitVerify*
-*FormFvwmQuitVerifyGrabServer
-*FormFvwmQuitVerifyWarpPointer
-*FormFvwmQuitVerifyCommand     Beep
-*FormFvwmQuitVerifyLine        center
-*FormFvwmQuitVerifyText        "Do you really want to logout?"
-*FormFvwmQuitVerifyLine        expand
-*FormFvwmQuitVerifyButton      quit "Logout" ^M
-*FormFvwmQuitVerifyCommand     Quit 
-*FormFvwmQuitVerifyButton      quit "Cancel" ^[
-*FormFvwmQuitVerifyCommand     Nop
+DestroyModuleConfig            FormFvwmQuitVerify.*
+*FormFvwmQuitVerify.GrabServer
+*FormFvwmQuitVerify.WarpPointer
+*FormFvwmQuitVerify.Command     Beep
+*FormFvwmQuitVerify.Line        center
+*FormFvwmQuitVerify.Text        "Do you really want to logout?"
+*FormFvwmQuitVerify.Line        expand
+*FormFvwmQuitVerify.Button      quit "Logout" ^M
+*FormFvwmQuitVerify.Command     Quit 
+*FormFvwmQuitVerify.Button      quit "Cancel" ^[
+*FormFvwmQuitVerify.Command     Nop
 .EE
 .SH EXAMPLE 2 - Remote Login
 This example lets the user type in a hostname, 
 an optional user name,
 and opens an xterm window from the remote host.
 .EX
-DestroyModuleConfig         FormFvwmRlogin*
-*FormFvwmRloginWarpPointer
-*FormFvwmRloginLine         center
-*FormFvwmRloginText         "Login to Remote Host"
-*FormFvwmRloginLine         center
-*FormFvwmRloginText         "Host:"
-*FormFvwmRloginInput        HostName        20      ""
-*FormFvwmRloginLine         center
-*FormFvwmRloginSelection    UserSel single
-*FormFvwmRloginChoice       Default Default on      "same user"
-*FormFvwmRloginChoice       Custom  Custom  off     "user:"
-*FormFvwmRloginInput        UserName        10      ""
-*FormFvwmRloginLine         expand
-*FormFvwmRloginButton       quit    "Login"         ^M
-*FormFvwmRloginCommand      Exec exec rsh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
-*FormFvwmRloginButton       restart "Clear"
-*FormFvwmRloginButton       quit    "Cancel"        ^[
-*FormFvwmRloginCommand      Nop
+DestroyModuleConfig         FormFvwmRlogin.*
+*FormFvwmRlogin.WarpPointer
+*FormFvwmRlogin.Line         center
+*FormFvwmRlogin.Text         "Login to Remote Host"
+*FormFvwmRlogin.Line         center
+*FormFvwmRlogin.Text         "Host:"
+*FormFvwmRlogin.Input        HostName        20      ""
+*FormFvwmRlogin.Line         center
+*FormFvwmRlogin.Selection    UserSel single
+*FormFvwmRlogin.Choice       Default Default on      "same user"
+*FormFvwmRlogin.Choice       Custom  Custom  off     "user:"
+*FormFvwmRlogin.Input        UserName        10      ""
+*FormFvwmRlogin.Line         expand
+*FormFvwmRlogin.Button       quit    "Login"         ^M
+*FormFvwmRlogin.Command      Exec exec rsh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
+*FormFvwmRlogin.Button       restart "Clear"
+*FormFvwmRlogin.Button       quit    "Cancel"        ^[
+*FormFvwmRlogin.Command      Nop
 .EE
 .SH EXAMPLE 3 - Capture Window
 This example provides a front-end to xwd, xwud, and xpr.
 .EX
 # Capture Window - This example is a front-end to xwd, xwud, and xpr.
-DestroyModuleConfig        FormFvwmCapture*
-*FormFvwmCaptureLine       center
-*FormFvwmCaptureText       "Capture Window"
-*FormFvwmCaptureLine       left
-*FormFvwmCaptureText       "File: "
-*FormFvwmCaptureInput      file            25      "/tmp/Capture"
-*FormFvwmCaptureLine       left
-*FormFvwmCaptureText       "Printer: "
-*FormFvwmCaptureInput      printer         20      "$PRINTER"
-*FormFvwmCaptureLine       expand
-*FormFvwmCaptureSelection  PtrType single
-*FormFvwmCaptureChoice     PS      ps      on      "PostScript"
-*FormFvwmCaptureChoice     Ljet    ljet    off     "HP LaserJet"
-*FormFvwmCaptureLine       left
-*FormFvwmCaptureText       "xwd options:"
-*FormFvwmCaptureLine       expand
-*FormFvwmCaptureSelection  Options multiple
-*FormFvwmCaptureChoice     Brd     -nobdrs off     "No border"
-*FormFvwmCaptureChoice     Frm     -frame  on      "With frame"
-*FormFvwmCaptureChoice     XYZ     -xy     off     "XY format"
-*FormFvwmCaptureLine       expand
-*FormFvwmCaptureButton     continue        "Capture"       ^M
-*FormFvwmCaptureCommand    Exec exec xwd -out $(file) $(Options) &
-*FormFvwmCaptureButton     continue        "Preview"
-*FormFvwmCaptureCommand    Exec exec xwud -in $(file) &
-*FormFvwmCaptureButton     continue        "Print"
-*FormFvwmCaptureCommand    Exec exec xpr -device $(PtrType) $(file) | lpr -P $(printer) &
-*FormFvwmCaptureButton     quit            "Quit"
+DestroyModuleConfig        FormFvwmCapture.*
+*FormFvwmCapture.Line       center
+*FormFvwmCapture.Text       "Capture Window"
+*FormFvwmCapture.Line       left
+*FormFvwmCapture.Text       "File: "
+*FormFvwmCapture.Input      file            25      "/tmp/Capture"
+*FormFvwmCapture.Line       left
+*FormFvwmCapture.Text       "Printer: "
+*FormFvwmCapture.Input      printer         20      "$PRINTER"
+*FormFvwmCapture.Line       expand
+*FormFvwmCapture.Selection  PtrType single
+*FormFvwmCapture.Choice     PS      ps      on      "PostScript"
+*FormFvwmCapture.Choice     Ljet    ljet    off     "HP LaserJet"
+*FormFvwmCapture.Line       left
+*FormFvwmCapture.Text       "xwd options:"
+*FormFvwmCapture.Line       expand
+*FormFvwmCapture.Selection  Options multiple
+*FormFvwmCapture.Choice     Brd     -nobdrs off     "No border"
+*FormFvwmCapture.Choice     Frm     -frame  on      "With frame"
+*FormFvwmCapture.Choice     XYZ     -xy     off     "XY format"
+*FormFvwmCapture.Line       expand
+*FormFvwmCapture.Button     continue        "Capture"       ^M
+*FormFvwmCapture.Command    Exec exec xwd -out $(file) $(Options) &
+*FormFvwmCapture.Button     continue        "Preview"
+*FormFvwmCapture.Command    Exec exec xwud -in $(file) &
+*FormFvwmCapture.Button     continue        "Print"
+*FormFvwmCapture.Command    Exec exec xpr -device $(PtrType) $(file) | lpr -P $(printer) &
+*FormFvwmCapture.Button     quit            "Quit"
 .EE
 .SH EXAMPLE 4 - Talk Form
 This example provides a replacement for the module FvwmTalk.
@@ -567,8 +579,9 @@ risk.  Permission to use, modify, and redistribute this program is hereby
 given, provided that this copyright is kept intact.
 
 .SH CHANGES
-During the fall of 1988, Dan Espen removed all form size limits,
-added unlimited font and color changing, added form spacing control,
-added config file reading, form defaults and the builtin form
-for creating defaults, and synchronous command execution.
+During the fall of 1998, Dan Espen removed all form size limits,
+added unlimited font and color changing, form spacing control,
+config file reading, global control of appearance,
+synchronous command execution, Error message display,
+and lots of other damage.
 No additional copyright is imposed.

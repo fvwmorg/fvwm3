@@ -60,7 +60,9 @@
    Add "Message" command, display "Error" and "String" messages from fvwm.
    Removed CopyNString, strdup replaces it.
 
-   Moved ParseCommand, to separate file.
+   Moved ParseCommand, ReadXServer to separate file.
+   Add UseData.
+   Remove DefineMe.
 
  */
 #include "config.h"
@@ -68,6 +70,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <signal.h>
+#include <stdlib.h>                     /* for getenv */
 
 #include <sys/time.h>
 #include <fcntl.h>
@@ -79,10 +82,11 @@
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
 
-#include "fvwm/module.h"          /* for headersize, etc. */
+#include "fvwm/module.h"                /* for headersize, etc. */
 #include "libs/fvwmlib.h"
 
-#include <libs/ModParse.h>                   /* for FindToken */
+#include <libs/ModParse.h>              /* for FindToken */
+#include <libs/Picture.h>               /* for InitPictureCMap */
 
 #define IamTheMain 1                    /* in FvwmForm.h, chg extern to "" */
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
@@ -93,6 +97,8 @@ static Pixel MyGetColor(char *color,char *Myname,int bw);
 static void nocolor(char *, char *,char *);
 static void AssignDrawTable(Item *);
 static void AddItem();
+static void PutDataInForm(char *);
+static void ReadFormData();
 
 /* copy a string until '"', or '\n', or '\0' */
 static char *CopyQuotedString (char *cp)
@@ -171,6 +177,7 @@ static void ct_Position(char *);
 static void ct_Read(char *);
 static void ct_Selection(char *);
 static void ct_Text(char *);
+static void ct_UseData(char *);
 static void ct_padVText(char *);
 static void ct_WarpPointer(char *);
 
@@ -194,6 +201,7 @@ static struct CommandTable ct_table[] = {
   {"Position",ct_Position},
   {"Selection",ct_Selection},
   {"Text",ct_Text},
+  {"UseData",ct_UseData},
   {"WarpPointer",ct_WarpPointer}
 };
 /* These commands are the default setting commands,
@@ -364,7 +372,7 @@ static void ct_Message(char *cp) {
   /* Item now added to list of items, now it needs a pointer
      to the correct DrawTable. */
   AssignDrawTable(item);
-  item->header.name = "FvwmMessage";    /* whats this for? dje */
+  item->header.name = "FvwmMessage";    /* No purpose to this? dje */
   item->text.value = malloc(80);        /* point at last error recvd */
   item->text.n = 80;
   memset(item->text.value,'M',80);      /* for font width calc */
@@ -547,10 +555,19 @@ static void ct_Input(char *cp) {
   item->input.size = atoi(cp);
   while (!isspace(*cp)) cp++;
   while (isspace(*cp)) cp++;
-  if (*cp == '\"')
+  item->input.init_value = "";          /* init */
+  if (*cp == '\"') {
     item->input.init_value = CopyQuotedString(++cp);
-  else
-    item->input.init_value = "";
+#if 0
+    /* does this have any value? dje */
+  } else if (*cp == '$') {              /* if environment var */
+    item->input.init_value = getenv(++cp); /* get its value */
+    if (item->input.init_value == NULL) { /* if env var not set */
+      myfprintf((stderr,"Bad Envir var = %s\n",cp));
+      item->input.init_value = "";      /* its blank */
+    } /* end var not set */
+#endif
+  } /* end env var */
   item->input.blanks = (char *)malloc(item->input.size);
   for (j = 0; j < item->input.size; j++)
     item->input.blanks[j] = ' ';
@@ -581,6 +598,80 @@ static void ct_Read(char *cp) {
   /* syntax: *FFRead 0 | 1 */
   myfprintf((stderr,"Got read command, char is %c\n",(int)*cp));
   endDefaultsRead = *cp;                /* copy whatever it is */
+}
+/* read and save vars from a file for later use in form
+   painting.
+*/
+static void ct_UseData(char *cp) {
+  /* syntax: *FFUseData filename cmd_prefix */
+  CF.file_to_read = CopySolidString(cp);
+  if (*CF.file_to_read == 0) {
+    fprintf(stderr,"UseData command missing first arg, File to read\n");
+    return;
+  }
+  cp += strlen(CF.file_to_read);
+  while (isspace(*cp)) cp++;
+  CF.leading = CopySolidString(cp);
+  if (*CF.leading == 0) {
+    fprintf(stderr,"UseData command missing second arg, Leading\n");
+    CF.file_to_read = 0;                   /* stop read */
+    return;
+  }
+  /* Cant do the actual reading of the data file here,
+     we are already in a readconfig loop. */
+}
+static void ReadFormData() {
+  int leading_len;
+  char *line_buf;                       /* ptr to curr config line */
+  char cmd_buffer[200];
+  sprintf(cmd_buffer,"read %s Quiet",CF.file_to_read);
+  SendText(Channel,cmd_buffer,0); /* read data */
+  leading_len = strlen(CF.leading);    /* is this right? dje */
+  SendInfo(Channel,"Send_ConfigInfo",0); /* ask for the config */
+  while (GetConfigLine(Channel,&line_buf),line_buf) { /* while there is some */
+    if (strncasecmp(line_buf, CF.leading, leading_len) == 0) { /* leading = */
+      if (line_buf[strlen(line_buf)-1] == '\n') { /* if line ends with nl */
+        line_buf[strlen(line_buf)-1] = '\0'; /* strip off \n */
+      }
+      PutDataInForm(line_buf+leading_len); /* pass arg, space, value */
+    } /* end match on arg 2, "leading" */
+  } /* end while there is config data */
+  free(CF.file_to_read);                /* dont need it anymore */
+  free(CF.leading);
+  CF.file_to_read = 0;
+  CF.leading = 0;
+}
+/*
+  Input is a line with varname space value.
+  Search form for matching input fields and set values.
+*/
+static void PutDataInForm(char *cp) {
+  char *var_name;
+  char *var_value;
+  int var_len;
+  Item *item;
+
+  if (CF.cur_input == 0) return;        /* if no input, leave */
+  var_name = CopySolidString(cp);       /* var */
+  if (*var_name == 0) {
+    return;
+  }
+  cp += strlen(var_name);
+  while (isspace(*cp)) cp++;
+  var_value = cp;
+  item = CF.cur_input;
+  do {
+    if (strcasecmp(var_name,item->header.name) == 0) {
+      var_len = strlen(cp);
+      item->input.init_value = malloc(var_len+1); /* leak! */
+      strcpy(item->input.init_value,cp); /* new initial value in field */
+      item->input.value = malloc(var_len+1); /* leak! */
+      strcpy(item->input.value,cp);     /* new value in field */
+      /* New value, but don't change length */
+    }
+    item=item->input.next_input;        /* next input field */
+  } while (item != CF.cur_input);       /* while not end of ring */
+  free(var_name);                       /* not needed now */
 }
 static void ct_Selection(char *cp) {
   /* syntax: *FFSelection <name> single | multiple */
@@ -763,6 +854,9 @@ static void MassageConfig() {
   int i, extra;
   Line *line;                           /* for scanning form lines */
 
+  if (CF.file_to_read) {                /* if theres a data file to read */
+    ReadFormData();                     /* go read it */
+  }
   /* get the geometry right */
   CF.max_width = 0;
   CF.total_height = ITEM_VSPC;
@@ -1429,20 +1523,19 @@ int main (int argc, char **argv)
   InitPictureCMap(dpy,root);            /* for shadow routines */
                                         /* also creates PictureCMap */
   ReadDefaults();                       /* get config from fvwm */
-  DefineMe();                           /* create form "FormFvwmForm" */
   if (strcasecmp(MyName+1,"FvwmForm") != 0) { /* if not already read */
-    sprintf(cmd,"read .%s Quiet",MyName+1); /* read quiet modules config */
+    sprintf(cmd,"read %s Quiet",MyName+1); /* read quiet modules config */
     SendText(Channel,cmd,0);
   }
 
   ReadConfig();                         /* get config from fvwm */
 
+  MassageConfig();                      /* add data, calc window x/y */
+
   /* Now tell fvwm we want *Alias commands in real time */
   sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)
           (M_SENDCONFIG|M_CONFIG_INFO|M_ERROR|M_STRING));
   SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
-
-  MassageConfig();                      /* calc window x/y */
   OpenWindows();                        /* create initial window */
   MainLoop();                           /* start */
 

@@ -1,3 +1,32 @@
+Sat Mar 20 14:55:15 1999  DanEspen  <dje@blue>
+
+	* FvwmTalk: If I did this right, the FvwmTalk directory should
+	disappear.
+
+	* FvwmForm/ReadXServer.c: Paste tab as a space when the input form
+	only has one input field.
+
+	* FvwmForm/FvwmForm.c (main): Remove the builtin customization form,
+	there is now a way to do this with a standalone form definition.
+	Add "UseData" command.
+
+	* FvwmForm/FvwmForm.1: Add FvwmTalk, other cleanups.
+
+	* FvwmForm/FormFvwmTalkHelp.: New naming rule.
+
+	* FvwmForm/FormFvwmTalk.: New naming rule.
+
+	* FvwmForm/FormFvwmRlogin.: New naming rule.
+
+	* FvwmForm/FormFvwmQuitVerify.: New naming rule.
+
+	* FvwmForm/FormFvwmForm.: New naming rule.
+
+	* FvwmForm/FormFvwmCapture.: New naming rule.
+
+	* FvwmForm/Makefile.am (config_DATA): Remove DefineMe.c, rename forms,
+	provide FvwmTalk replacement shell.
+
 1999-03-16  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTaskBar/Start.c:

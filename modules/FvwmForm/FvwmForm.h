@@ -167,6 +167,8 @@ typedef struct _form {
   int rel_cursor;
   Window frame;
   int padVText;                         /* vert space for text item */
+  char *leading;                        /* part of command to match for data */
+  char *file_to_read;                   /* file to read for data */
 } Form;
 
 EXTERN Form cur_form;                   /* current form */
@@ -277,7 +279,6 @@ void RedrawFrame ();                    /* FvwmForm.c */
 char * ParseCommand (int, char *, char, int *, char **s); /* ParseCommand.c */
 
 void DeadPipe(int nonsense);            /* FvwmForm.c */
-void DefineMe();                        /* DefineMe.c */
 
 #endif
 

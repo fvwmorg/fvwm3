@@ -1,0 +1,47 @@
+DestroyModuleConfig FormFvwmForm.*
+*FormFvwmForm.WarpPointer
+*FormFvwmForm.Line  center
+*FormFvwmForm.Text  "FvwmForm Set Form Defaults:"
+*FormFvwmForm.Line  left
+*FormFvwmForm.Text  ""
+*FormFvwmForm.Line  left
+*FormFvwmForm.Text  "Font for text:  "
+*FormFvwmForm.Input Font 60 "8x13bold"
+*FormFvwmForm.Line  left
+*FormFvwmForm.Text  "Font for input: "
+*FormFvwmForm.Input InputFont 60 "8x13bold"
+*FormFvwmForm.Line  left
+*FormFvwmForm.Text  "Font for button:"
+*FormFvwmForm.Input ButtonFont 60 "8x13bold"
+*FormFvwmForm.Line  left
+*FormFvwmForm.Text  "Color of text f/g:   "
+*FormFvwmForm.Input Fore 20 "Wheat"
+*FormFvwmForm.Text  "b/g:"
+*FormFvwmForm.Input Back 20 "Gray50"
+*FormFvwmForm.Line  left
+*FormFvwmForm.Text  "Color of buttons f/g:"
+*FormFvwmForm.Input ItemFore 20 "Black"
+*FormFvwmForm.Text  "b/g:"
+*FormFvwmForm.Input ItemBack 20 "Light Gray"
+*FormFvwmForm.Line left
+*FormFvwmForm.Message
+*FormFvwmForm.Line         expand
+*FormFvwmForm.Button       quit "F1 - Save & Restart This Form" F1
+*FormFvwmForm.Command DestroyModuleConfig FvwmFormDefault*
+*FormFvwmForm.Command !/bin/echo "# This file last created by\
+ FormFvwmForm on: `/bin/date`.\n\
+*FvwmFormDefaultFont "'$(Font)'"\n\
+*FvwmFormDefaultInputFont "'$(InputFont)'"\n\
+*FvwmFormDefaultButtonFont "'$(ButtonFont)'"\n\
+*FvwmFormDefaultFore "'$(Fore)'"\n\
+*FvwmFormDefaultBack "'$(Back)'"\n\
+*FvwmFormDefaultItemFore "'$(ItemFore)'"\n\
+*FvwmFormDefaultItemBack "'$(ItemBack)'"\
+" > .FvwmForm
+*FormFvwmForm.Command *FvwmFormDefaultRead n
+*FormFvwmForm.Command Module FvwmForm FormFvwmForm.
+*FormFvwmForm.Button       restart   "F3 - Reset" F3
+*FormFvwmForm.Button       quit "F4 - Dismiss" F4
+*FormFvwmForm.Command Nop
+# Tell FvwmForm to read and save vars from the .FvwmForm file.
+*FormFvwmForm.UseData .FvwmForm *FvwmFormDefault

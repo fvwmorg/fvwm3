@@ -13,6 +13,9 @@
  */
 /*  Modification History */
 
+/*  Changed on 03/19/99 by DanEspen (dje): */
+/*  - paste tab as space if there is one input field. */
+
 /*  Changed on 03/10/99 by DanEspen (dje): */
 /*  - Make button 2 paste work. */
 
@@ -490,10 +493,15 @@ static void process_paste_request (XEvent *event, Item *item) {
     }
     for (c = data; c != data + nitems; c++) { /* each char */
       switch (*c) {
-      case '\t':
-      case '\015':
-      case '\016':  /* LINEFEED, TAB, ^N, jump to the next field */
-        process_tabtypes(c);
+      case '\t':                        /* TAB */
+        if (CF.cur_input == CF.cur_input->input.next_input) { /* 1 ip field */
+          process_tabtypes(" ");        /* paste tab as space */
+        } else {
+          process_tabtypes(c);          /* jump to the next field */
+        }
+      case '\015':                      /* LINEFEED */
+      case '\016':                      /* ^N */
+        process_tabtypes(c);            /* jump to the next field */
         break;
       case '\n':
         process_tabtypes("\r");         /* change \n to \r for pasting */

@@ -6,5 +6,5 @@ SUBDIRS = FvwmAnimate FvwmAudio FvwmAuto FvwmBacker FvwmBanner	\
 	FvwmIconBox FvwmIconMan					\
 	FvwmIdent FvwmM4 FvwmPager FvwmRearrange		\
 	FvwmSave FvwmSaveDesk FvwmScript FvwmScroll		\
-	FvwmTalk FvwmTaskBar FvwmWharf FvwmWinList 
+	FvwmTaskBar FvwmWharf FvwmWinList 
 
