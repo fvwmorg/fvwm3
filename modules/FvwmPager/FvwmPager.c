@@ -749,7 +749,8 @@ void list_new_desk(unsigned long *body)
 	{
 	  Desks[0].bgPixmap = item->next->bgPixmap;
 	  Desks[0].bgPixmap->count++;
-	  XSetWindowBackgroundPixmap(dpy, Desks[0].w, Desks[0].bgPixmap->picture);
+	  XSetWindowBackgroundPixmap(dpy, Desks[0].w,
+				     Desks[0].bgPixmap->picture);
 	}
       else if (item->next != NULL && item->next->Dcolor != NULL)
 	{
@@ -760,7 +761,8 @@ void list_new_desk(unsigned long *body)
 	{
 	  Desks[0].bgPixmap = PixmapBack;
 	  Desks[0].bgPixmap->count++;
-	  XSetWindowBackgroundPixmap(dpy, Desks[0].w, Desks[0].bgPixmap->picture);
+	  XSetWindowBackgroundPixmap(dpy, Desks[0].w,
+				     Desks[0].bgPixmap->picture);
 	}
       else
 	{
@@ -772,12 +774,14 @@ void list_new_desk(unsigned long *body)
       if (item->next != NULL && item->next->Dcolor != NULL)
 	{
 	  CopyString(&Desks[0].Dcolor, item->next->Dcolor);
-	  XSetWindowBackground(dpy, Desks[0].title_w, GetColor(Desks[0].Dcolor));
+	  XSetWindowBackground(dpy, Desks[0].title_w,
+			       GetColor(Desks[0].Dcolor));
 	}
       else
 	{
 	  CopyString(&Desks[0].Dcolor, PagerBack);
-	  XSetWindowBackground(dpy, Desks[0].title_w, GetColor(Desks[0].Dcolor));
+	  XSetWindowBackground(dpy, Desks[0].title_w,
+			       GetColor(Desks[0].Dcolor));
 	}
 
       XClearWindow(dpy, Desks[0].w);
@@ -1664,6 +1668,7 @@ void ParseOptions(void)
 	  if (BalloonFont)
 	    free(BalloonFont);
 	  CopyString(&BalloonFont, arg1);
+fprintf(stderr,"BalloonFont = %s\n", BalloonFont);
 	}
 
       else if (StrEquals(resource, "BalloonBorderColor"))

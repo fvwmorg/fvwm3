@@ -85,8 +85,8 @@ Contents
      5.4  I have a window that is behaving unexpectedly under FVWM, but just
           fine under (whatever other window manager), or I have just some
           random bug.  What do I do?
-     5.5  Why do NumLock and ScrollLock interfere with ClickToFocus
-          and/or my mouse bindings?
+     5.5  Why do NumLock, CapsLock and ScrollLock interfere with
+          ClickToFocus and/or my mouse bindings?
      5.6  Menus with gradient backgrounds flicker or are very slow.
      5.7  Why won't the StartIconic style work with {Netscape, etc.}?
      5.8  How do I capture the output (eg errors) of fvwm?
@@ -95,7 +95,6 @@ Contents
           under MWM or OLWM.  What's going on?
     5.10  Every time I update my install, my currently running fvwm
           session dies.  Why is that?
-
 
 6. Miscellaneous
 
@@ -1073,8 +1072,8 @@ A: First, check your rc file and your .Xdefaults to make sure that
 
 ----------------------------------------------------------------------
 
-5.5  Why do NumLock and ScrollLock interfere with ClickToFocus and/or my
-     mouse bindings?
+5.5  Why do NumLock, CapsLock and ScrollLock interfere with
+     ClickToFocus and/or my mouse bindings?
 
 A: Because they are treated as modifiers. You can use the
    IgnoreModifiers command to turn individual modifiers off for
@@ -1093,13 +1092,30 @@ A: Because they are treated as modifiers. You can use the
    bindings you should not ignore more than two modifiers. E.g. do
    not ignore scroll-lock if you have no problem with it.
 
+   A better way to solve this problem is to modify the keyboard
+   mapping of your X server. The commands
+
+     xmodmap -e "clear Lock"
+     xmodmap -e "clear Mod2"
+     xmodmap -e "clear Mod5"
+
+   remove the CapsLock, NumLock and ScrollLock from the keyboard map.
+   Pressing these keys has no effect then. To re-add them try this:
+
+     xmodmap -e "add Lock = Caps_Lock"
+     xmodmap -e "add Mod2 = Num_Lock"
+     xmodmap -e "add Mod5 = Scroll_Lock"
+
+   Please refer to the manpage of the xmodmap command for further
+   details.
+
 ----------------------------------------------------------------------
 
 5.6  Menus with gradient backgrounds flicker or are very slow.
 
 A: The flickering is caused by fvwm constantly redrawing the menus
-   when a submenu pops up or down.  One way to help this is to use a
-   X server with backing storage (XFree86 has backing storage
+   when a submenu pops up or down.  One way to help this is to use
+   a X server with backing storage (XFree86 has backing storage
    support, I don't know about other servers but I guess that any
    decent X server has it).  If your Xserver is started with the
    -bs option, remove it.  If not try the -wm option, for example:
@@ -1511,7 +1527,7 @@ A: This has come up a few times, so I thought I'd put it here too.
 
 ----------------------------------------------------------------------
 
-7.10  The cat safe desktop :-)
+7.10  The cat safe desktop ^_^
 
     If your cats keep stepping on your keyboard while you are brewing
     another cup of coffee on of these hints may help:

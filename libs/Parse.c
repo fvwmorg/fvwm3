@@ -130,22 +130,20 @@ char *CopyToken(char *src, char *dest, char *spaces, int snum, char *delims,
 	  src++;
 	  while((*src != c)&&(*src != 0))
 	    {
-	      *(dest++) = *src;
-	      /* Skip over escaped text, ie \quote */
-	      if((*src == '\\')&&(*(src+1) != 0))
-		*(dest++) = *(++src);
-	      src++;
+	      if((*src == '\\' && *(src+1) != 0))
+		/* Skip over backslashes */
+		src++;
+	      *(dest++) = *(src++);
 	    }
 	  if(*src == c)
 	    src++;
 	}
       else
 	{
-	  *(dest++) = *src;
-	  /* Skip over escaped text, ie \" or \space */
-	  if((*src == '\\')&&(*(src+1) != 0))
-	    *(dest++) = *(++src);
-	  src++;
+	  if((*src == '\\' && *(src+1) != 0))
+	    /* Skip over backslashes */
+	    src++;
+	  *(dest++) = *(src++);
 	}
     }
   if (out_delim)

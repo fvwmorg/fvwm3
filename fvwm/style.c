@@ -232,6 +232,7 @@ void ProcessNewStyle(XEvent *eventp,
           SKIP("CLICKTOFOCUS");
           tname.off_flags |= CLICK_FOCUS_FLAG;
           tname.on_flags |= SLOPPY_FOCUS_FLAG;
+          tname.off_flags |= GRAB_FOCUS;
         }
         else if(ITIS("CirculateSkip"))
         {
@@ -551,6 +552,7 @@ void ProcessNewStyle(XEvent *eventp,
           SKIP("MOUSEFOCUS");
           tname.on_flags |= CLICK_FOCUS_FLAG;
           tname.on_flags |= SLOPPY_FOCUS_FLAG;
+          tname.on_flags |= GRAB_FOCUS;
         }
         break;
       case 'n':
@@ -673,6 +675,7 @@ void ProcessNewStyle(XEvent *eventp,
           SKIP("SLOPPYFOCUS");
           tname.on_flags |= CLICK_FOCUS_FLAG;
           tname.off_flags |= SLOPPY_FOCUS_FLAG;
+          tname.on_flags |= GRAB_FOCUS;
         }
         else if(ITIS("StartIconic"))
         {

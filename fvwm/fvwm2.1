@@ -1512,11 +1512,9 @@ This command is obsolete. Please use \fIImagePath\fP instead.
 
 .IP "IgnoreModifiers \fI[ Modifiers ]\fP"
 Tells FVWM which modifiers to ignore when matching Mouse or Key
-bindings (if any binding actually have one of those modifiers,
-they will never be matched). \fIIgnoreModifiers\fP affects the
-ClickToFocus style too. This command belongs into your .fvwm2rc.
-If you issue it when your fvwm session is already up and running
-the results are unpredictable.
+bindings. \fIIgnoreModifiers\fP affects the ClickToFocus style too.
+This command belongs into your .fvwm2rc. If you issue it when your
+fvwm session is already up and running the results are unpredictable.
 
 \fIModifiers\fP has the same syntax as in the Mouse or Key bindings,
 with the addition of L meaning caps lock. The default is 'L'.
@@ -1536,7 +1534,7 @@ or \fIMouse\fP commands in you configuration file and the number of
 modifiers you want to ignore. If you do not have a lightning fast
 machine ore very few bindings you should not ignore more than two
 modifiers. E.g. do not ignore scroll-lock if you have no problem with
-it.
+it. In the FAQ you will find a better solution of this problem.
 
 .IP "ImagePath \fIpath\fP"
 Specifies a colon separated list of full path names of directories
@@ -2109,10 +2107,11 @@ will apply when the mouse is anywhere in a window's border except the
 title-bar buttons.  Only S and W are valid for an undecorated window.
 
 \fIModifiers\fP is any combination of N for no modifiers, C for
-control, S for shift, M for Meta, or A for any modifier.  For example,
-a modifier of SM will apply when both the Meta and Shift keys are
-down.  X11 modifiers mod1 through mod5 are represented as the digits
-1 through 5.
+control, S for shift, M for Meta, L for casp-lock or A for any modifier.
+For example, a modifier of SM will apply when both the Meta and Shift
+keys are down.  X11 modifiers mod1 through mod5 are represented as the
+digits 1 through 5.  The modifier L is ignored by default.  To turn
+it on, use the \fIIgnoreModifiers\fP command.
 
 \fIFunction\fP is one of \fIfvwm2\fP's built-in functions.
 
@@ -2782,7 +2781,11 @@ possible worlds use both RandomPlacement and SmartPlacement.
 bottom of its layer rather than the default \fIStartsRaised\fP.
 
 \fIGrabFocus\fP causes a newly mapped window to grab the focus, wile
-\fIGrabFocusOff\fP turns this off. \fIGrabFocusOff\fP is the default.
+\fIGrabFocusOff\fP turns this off. \fIGrabFocus\fP is the default
+for ClickToFocus windows and \fIGrabFocusOff\fP is the deafult for
+MouseFocus and SloppyFocus windows. Note that this option is switched
+back to the deafult every time you change the focus policy. You
+have to use it after the initial ClickToFocus/MouseFocus/SloppyFocus.
 
 An example:
 .EX

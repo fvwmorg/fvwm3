@@ -10,54 +10,58 @@
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include "fvwm.h"
-#include "misc.h"
-#include "parse.h"
 #include "screen.h"
-#include "module.h"
 
 
 #define MODS_UNUSED_DEFAULT LockMask
 static unsigned int mods_unused = MODS_UNUSED_DEFAULT;
 
 
-void key_binding(F_CMD_ARGS)
+static void activate_binding(Binding *binding, BindingType type)
 {
-  Binding *b;
   FvwmWindow *t;
 
-  b = ParseBinding(dpy, &Scr.AllBindings, action, KEY_BINDING,
-		   &Scr.nr_left_buttons, &Scr.nr_right_buttons,
-		   &Scr.buttons2grab);
-
-  if (fFvwmInStartup == False)
+  if (fFvwmInStartup == True || binding == NULL)
     return;
 
   /* grab keys immediately */
-  if (b != NULL)
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
-      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+      if (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
+	GrabWindowKey(dpy, t->frame, binding,
+		      C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+		      GetUnusedModifiers(), True);
+      if (binding->Context & C_ICON)
 	{
-	  if (b->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
-	    GrabWindowKey(dpy, t->frame, b,
-			  C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+	  if(t->icon_w != None)
+	    GrabWindowKey(dpy, t->icon_w, binding, C_ICON,
 			  GetUnusedModifiers(), True);
-	  if (b->Context & C_ICON)
-	    {
-	      if(tmp_win->icon_w != None)
-		GrabWindowKey(dpy, tmp_win->icon_w, b, C_ICON,
-			      GetUnusedModifiers(), True);
-	      if(tmp_win->icon_pixmap_w != None)
-		GrabWindowKey(dpy, tmp_win->icon_pixmap_w, b, C_ICON,
-			      GetUnusedModifiers(), True);
-	    }
+	  if(t->icon_pixmap_w != None)
+	    GrabWindowKey(dpy, t->icon_pixmap_w, binding, C_ICON,
+			  GetUnusedModifiers(), True);
 	}
     }
 }
 
+
+void key_binding(F_CMD_ARGS)
+{
+  Binding *b;
+
+  b = ParseBinding(dpy, &Scr.AllBindings, action, KEY_BINDING,
+		   &Scr.nr_left_buttons, &Scr.nr_right_buttons,
+		   &Scr.buttons2grab);
+  activate_binding(b, KEY_BINDING);
+}
+
 void mouse_binding(F_CMD_ARGS)
 {
-  ParseBinding(dpy, &Scr.AllBindings, action, MOUSE_BINDING,
-	       &Scr.nr_left_buttons, &Scr.nr_right_buttons, &Scr.buttons2grab);
+  Binding *b;
+
+  b = ParseBinding(dpy, &Scr.AllBindings, action, MOUSE_BINDING,
+		   &Scr.nr_left_buttons, &Scr.nr_right_buttons,
+		   &Scr.buttons2grab);
+  activate_binding(b, MOUSE_BINDING);
 }
 
 /* Removes all unused modifiers from in_modifiers */
@@ -105,43 +109,10 @@ void ignore_modifiers(F_CMD_ARGS)
       mods_unused = MODS_UNUSED_DEFAULT;
       return;
     }
-  tmp = token;
-  while ((c = *(tmp++)) != '\0')
-  {
-    switch (c)
-    {
-    case 's':
-    case 'S':
-      mods_unused |= ShiftMask;
-      break;
-    case 'l':
-    case 'L':
-      mods_unused |= LockMask;
-      break;
-    case 'c':
-    case 'C':
-      mods_unused |= ControlMask;
-      break;
-    case 'm':
-    case 'M':
-    case '1':
-      mods_unused |= Mod1Mask;
-      break;
-    case '2':
-      mods_unused |= Mod2Mask;
-      break;
-    case '3':
-      mods_unused |= Mod3Mask;
-      break;
-    case '4':
-      mods_unused |= Mod4Mask;
-      break;
-    case '5':
-      mods_unused |= Mod5Mask;
-      break;
-    default:
-      fvwm_msg( ERR, "SetModifierLocks", "illegal modifier: %c\n", c);
-    }
-  }
+
+  if (ParseModifiers(token, &mods_unused))
+    fvwm_msg(ERR, "ignore_modifiers", "illegal modifier in line %s\n", action);
+
   free(token);
+  return;
 }

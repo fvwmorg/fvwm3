@@ -1,6 +1,7 @@
 1999-03-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* FAQ (5.5): added a warning about IgnoreModifiers performace
+	* FAQ (5.5): added a warning about IgnoreModifiers performace, added
+	instructions to disable modifiers
 
 1999-03-19  Fred Maciel  <fred-m@crl.hitachi.co.jp>
 

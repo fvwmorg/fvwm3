@@ -233,6 +233,8 @@ typedef struct Binding
   struct Binding *NextBinding;
 } Binding;
 
+Bool ParseContext(char *in_context, int *out_context_mask);
+Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask);
 Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 		    int button, KeySym keysym, char *key_name, int modifiers,
 		    int contexts, void *action, void *action2);
@@ -242,7 +244,7 @@ Binding *ParseBinding(Display *dpy, Binding ** pblist, char *tline,
 		      BindingType type, int *nr_left_buttons,
 		      int *nr_right_buttons, unsigned char *buttons_grabbed);
 void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
-		   int Context, BindingType type);
+		   unsigned int dead_modifiers, int Context, BindingType type);
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		   unsigned int contexts, unsigned int dead_modifiers,
 		   Bool fGrab);

@@ -195,7 +195,7 @@ typedef struct FvwmWindow
       mwm_override : 1;
       noicon_title : 1;
       place_random : 1; /* was random_place */
-      place_smart : 1; /* was smart_place */
+      place_smart : 1;  /* was smart_place */
       show_mapping : 1;
       start_iconic : 1;
       startsondesk : 1;
@@ -208,8 +208,9 @@ typedef struct FvwmWindow
       unsigned iconified_by_parent : 1; /* To prevent iconified transients in
 					 * a parent icon from counting for
 					 * Next */
-      unsigned reuse_destroyed : 1;     /* Reuse this struct, don't free it, when
-                                           destroying/recapturing window. */
+      unsigned reuse_destroyed : 1;     /* Reuse this struct, don't free it,
+					 * when destroying/recapturing window.
+					 */
 #ifdef SESSION
       unsigned name_changed : 1; /* Set if the client changes its WM_NAME.
 				  * The source of twm contains an explanation

@@ -408,7 +408,7 @@ void HandleKeyPress()
 
   /* Check if there is something bound to the key */
   action = CheckBinding(Scr.AllBindings, Event.xkey.keycode,
-			MaskUsedModifiers(Event.xkey.state), Context,
+			Event.xkey.state, GetUnusedModifiers(), Context,
 			KEY_BINDING);
   if (action != NULL)
     {
@@ -1223,7 +1223,7 @@ void HandleButtonPress()
   /* we have to execute a function or pop up a menu */
   /* need to search for an appropriate mouse binding */
   action = CheckBinding(Scr.AllBindings, Event.xbutton.button,
-			MaskUsedModifiers(Event.xbutton.state), Context,
+			Event.xbutton.state, GetUnusedModifiers(), Context,
 			MOUSE_BINDING);
   if (action != NULL)
     ExecuteFunction(action,Tmp_win, &Event, Context, -1);

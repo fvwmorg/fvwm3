@@ -1,19 +1,25 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* Key and mouse bindings take effect immediately. A 'Recapture' was necessary
+  before this change.
+
 * Unmaximizing keeps windows on the same page.
  
 * Maximize can now expand until some other window is found to fully utilize
   available screen space.
 
-* ClickToFocus windows don't take the focus from other ClickToFocus windows
-  when they are mapped the first time automatically anymore. To force this use
-  the 'GrabFocus' style (works with MouseFocus and SloppyFocus too).
+* Use the 'GrabFocusOff' style to prevent ClickToFocus windows taking the focus
+  from other ClickToFocus windows when they are mapped the first time. The
+  opposite option is called 'GrabFocus' and can be used in conjunction with
+  MouseFocus and SloppyFocus too.
 
 * IgnoreModifiers command allows to ignore this pesky num-lock key to be
   ignored as far as key and mouse bindings are concerned. Hint: try this
   command with XFree86:
 
     IgnoreModifiers L25
+
+  If you encounter performance problems please consult the manpage and the FAQ.
 
 * Enhancements to MoveToPage and GotoPage: 'prev' option to refer to the last
   visited page, negative numbers refer to lower/right page, suffix 'p'

@@ -1,5 +1,28 @@
 1999-03-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Parse.c (CopyToken): fixed quoting with backslashes
+
+	* fvwm/module.c (executeModule): fixed coredump (empty action and
+	REMOVE_EXECUTABLE_EXTENSION defined)
+
+	* fvwm/fvwm2.1 (GrabFocus): documented syntax change
+
+	* fvwm/style.c (ProcessNewStyle): ClickToFocus implies GrabFocus,
+	MouseFocus and SloppyFocus imply GrabFocusOff
+
+	* fvwm/fvwm2.1 (Mouse): syntax update ('l' allowed as a modifier).
+
+	* fvwm/bindings.c (ignore_modifiers): use ParseModifiers from library
+
+	* libs/Bindings.c (win_contexts): allow function key names in 'Key'
+	command to be lower case.
+	(key_modifiers): caps-lock is now an allowed modifier
+
+	* fvwm/bindings.c (mouse_binding):
+	(key_binding):
+	(activate_binding): Key and mouse bindings are activated immediately
+	now. No need for racapture anymore.
+
 	* fvwm/icons.c (GrabIconButtons):
 	* fvwm/add_window.c (GrabButtons): remove terribly redundant code
 	(GrabButtons): moved functionality into library

@@ -48,6 +48,7 @@ static struct charstring key_modifiers[]=
 {
   {'s',ShiftMask},
   {'c',ControlMask},
+  {'l',LockMask},
   {'m',Mod1Mask},
   {'1',Mod1Mask},
   {'2',Mod2Mask},
@@ -66,12 +67,12 @@ static struct charstring key_modifiers[]=
  * true/false values (bits)
  *
  ****************************************************************************/
-static void find_context(char *string, int *output, struct charstring *table,
-			 char *tline)
+static Bool find_context(char *string, int *output, struct charstring *table)
 {
   int i=0,j=0;
   Bool matched;
   char tmp1;
+  Bool error = False;
 
   *output=0;
   i=0;
@@ -97,13 +98,25 @@ static void find_context(char *string, int *output, struct charstring *table,
     }
     if(!matched)
     {
-      fprintf(stderr,"find_context: bad context in line %s\n", tline);
+      fprintf(stderr,"find_context: bad context or modifier %c\n", tmp1);
+      error = True;
     }
     i++;
   }
-  return;
+  return error;
 }
 
+/* Converts the input string into a mask with bits for the contexts */
+Bool ParseContext(char *in_context, int *out_context_mask)
+{
+  return find_context(in_context, out_context_mask, win_contexts);
+}
+
+/* Converts the input string into a mask with bits for the modifiers */
+Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask)
+{
+  return find_context(in_modifiers, out_modifier_mask, key_modifiers);
+}
 
 /*
 ** to remove a binding from the global list (probably needs more processing
@@ -263,12 +276,14 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
 
   if((n1 != 1)||(n2 != 1)||(n3 != 1))
   {
-    fprintf(stderr,"ParseBindEntry: Syntax error in line %s\n", tline);
+    fprintf(stderr,"ParseBinding: Syntax error in line %s\n", tline);
     return NULL;
   }
 
-  find_context(context,&contexts,win_contexts,tline);
-  find_context(modifiers,&mods,key_modifiers,tline);
+  if (ParseContext(context, &contexts))
+    fprintf(stderr,"ParseBinding: Illegal context in line %s\n", tline);
+  if (ParseModifiers(modifiers, &mods))
+    fprintf(stderr,"ParseBinding: Illegal modifier in line %s\n", tline);
 
   if (type == KEY_BINDING)
     {
@@ -276,8 +291,23 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
        * Don't let a 0 keycode go through, since that means AnyKey to the
        * XGrabKey call in GrabKeys().
        */
-      if ((keysym = XStringToKeysym(key)) == NoSymbol ||
-	  (XKeysymToKeycode(dpy, keysym)) == 0)
+      keysym = XStringToKeysym(key);
+      if (keysym == NoSymbol)
+	{
+	  char c = 'X';
+	  char d = 'X';
+
+	  /* If the key name is in the form '<letter><digits>...' it's probably
+	   * something like 'f10'. Convert the letter to upper case and try
+	   * again. */
+	  sscanf(key, "%c%c", &c, &d);
+	  if (islower(c) && isdigit(d))
+	    {
+	      key[0] = toupper(key[0]);
+	      keysym = XStringToKeysym(key);
+	    }
+	}
+      if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)
 	return NULL;
     }
 
@@ -335,7 +365,7 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
 
   if((mods & AnyModifier)&&(mods&(~AnyModifier)))
   {
-    fprintf(stderr,"ParseBindEntry: Binding specified AnyModifier and other modifers too.\n");
+    fprintf(stderr,"ParseBinding: Binding specified AnyModifier and other modifers too.\n");
     fprintf(stderr,"Excess modifiers will be ignored.\n");
     mods &= AnyModifier;
   }
@@ -353,17 +383,21 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
 /* Check if something is bound to a key or button press and return the action
  * to be executed or NULL if not. */
 void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
-		   int Context, BindingType type)
+		   unsigned int dead_modifiers, int Context, BindingType type)
 {
   Binding *b;
+  unsigned int used_modifiers = ~dead_modifiers;
+
+  modifier &= used_modifiers;
 
   for (b = blist; b != NULL; b = b->NextBinding)
     {
       if ((b->Button_Key == button_keycode ||
-	   (type == MOUSE_BINDING && b->Button_Key == 0)) &&
-	  ((b->Modifier == modifier) || (b->Modifier == AnyModifier)) &&
-	  (b->Context & Context) &&
-	  (b->type == type))
+	   (type == MOUSE_BINDING && b->Button_Key == 0))
+	  && (((b->Modifier & used_modifiers) == modifier) ||
+	      (b->Modifier == AnyModifier))
+	  && (b->Context & Context)
+	  && (b->type == type))
 	{
 	  /* Make throw away excess events before executing our binding */
 	  return b->Action;
@@ -375,9 +409,11 @@ void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
 /***********************************************************************
  *
  *  Procedure:
- *	GrabWindowKey     - grab needed keys for the window for one binding
- *	GrabAllWindowKeys - grab needed keys for the window for all bindings
- *                          in blist
+ *	GrabWindowKey        - grab needed keys for the window for one binding
+ *	GrabAllWindowKeys    - grab needed keys for the window for all bindings
+ *                             in blist
+ *	GrabWindowButton     - same for mouse buttons
+ *	GrabAllWindowButtons - same for mouse buttons
  *
  *  Inputs:
  *   w              - the window to use (the frame window)
@@ -385,6 +421,8 @@ void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
  *   binding        - pointer to the bindinge to grab/ungrab
  *   contexts       - all context bits that shall receive bindings
  *   dead_modifiers - modifiers to ignore for 'AnyModifier'
+ *   cursor         - the mouse cursor to use when the pointer is on the
+ *                    grabbed area (mouse bindings only)
  *
  ***********************************************************************/
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,
@@ -437,15 +475,6 @@ void GrabAllWindowKeys(Display *dpy, Window w, Binding *blist,
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *	GrabButtons - grab needed buttons for the window
- *
- *  Inputs:
- *	tmp_win - the fvwm window structure to use
- *
- ***********************************************************************/
 void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 		      unsigned int contexts, unsigned int dead_modifiers,
 		      Cursor cursor, Bool fGrab)

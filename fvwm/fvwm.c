@@ -755,7 +755,7 @@ void SetRCDefaults()
     "DefaultColors black grey",
     "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey",
     "TitleStyle Centered -- Raised",
-    "Style \"*\" Color lightgrey/dimgrey, Title",
+    "Style \"*\" Color lightgrey/dimgrey, Title, ClickToFocus, GrabFocus",
     "Style \"*\" RandomPlacement, SmartPlacement",
     "AddToMenu builtin_menu \"Builtin Menu\" Title",
     "+ \"XTerm\" Exec xterm",

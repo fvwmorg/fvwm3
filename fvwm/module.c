@@ -134,14 +134,6 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   arg1 = searchPath( ModulePath, cptr, EXECUTABLE_EXTENSION, X_OK );
 
-#ifdef REMOVE_EXECUTABLE_EXTENSION
-  {
-      char* p = arg1 + strlen( arg1 ) - strlen( EXECUTABLE_EXTENSION );
-      if ( strcmp( p, EXECUTABLE_EXTENSION ) ==  0 )
-	  *p = 0;
-  }
-#endif
-
   if(arg1 == NULL)
     {
       fvwm_msg(ERR,"executeModule",
@@ -149,6 +141,14 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       free(cptr);
       return;
     }
+
+#ifdef REMOVE_EXECUTABLE_EXTENSION
+  {
+      char* p = arg1 + strlen( arg1 ) - strlen( EXECUTABLE_EXTENSION );
+      if ( strcmp( p, EXECUTABLE_EXTENSION ) ==  0 )
+	  *p = 0;
+  }
+#endif
 
   /* Look for an available pipe slot */
   i=0;
@@ -786,7 +786,7 @@ void FlushQueue(int module)
 void FlushOutputQueues()
 {
   int i;
-  
+
   for(i = 0; i < npipes; i++) {
     if(writePipes[i] >= 0) {
       FlushQueue(i);
