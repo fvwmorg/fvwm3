@@ -46,6 +46,7 @@
    The file is the alias with a leading dot.
    The file is in $HOME or the system configuration directory.
    Comes with forms installed in the system configuration directory.
+   Variable substitution throught the form input from invocation command line.
 
  - Operability:
    You can tab to previous input field with ^P, Up arrow, shift tab.
@@ -125,6 +126,7 @@ static void AssignDrawTable(Item *);
 static void AddItem();
 static void PutDataInForm(char *);
 static void ReadFormData();
+static void FormVarsCheck(char **);
 
 /* copy a string until '"', or '\n', or '\0' */
 static char *CopyQuotedString (char *cp)
@@ -251,6 +253,24 @@ static struct CommandTable def_table[] = {
   {"Read",ct_Read}
 };
 
+/* If there were vars on the command line, do env var sustitution on
+   all input. */
+static void FormVarsCheck(char **p) {
+  if (CF.have_env_var) {                /* if cmd line vars */
+    if (strlen(*p) + 200 > CF.expand_buffer_size) { /* fast and loose */
+      CF.expand_buffer_size = strlen(*p) + 2000; /* new size */
+      if (CF.expand_buffer) {           /* already have one */
+        CF.expand_buffer = realloc(CF.expand_buffer, CF.expand_buffer_size);
+      } else {                          /* first time */
+        CF.expand_buffer = malloc(CF.expand_buffer_size);
+      }
+    }
+    strcpy(CF.expand_buffer,*p);
+    *p = CF.expand_buffer;
+    envExpand(*p,CF.expand_buffer_size); /* expand the command in place */
+  }
+}
+
 static void ParseDefaults(char *buf) {
   char *p;
   struct CommandTable *e;
@@ -262,6 +282,7 @@ static void ParseDefaults(char *buf) {
      Note the hack w. bg_state. */
   if (strncasecmp(buf, "*FvwmFormDefault", 16) == 0) {
     p=buf+16;
+    FormVarsCheck(&p);                   /* do var substitution if called for */
     e = FindToken(p,def_table,struct CommandTable);/* find cmd in table */
     if (e != 0) {                       /* if its valid */
       p=p+strlen(e->name);              /* skip over name */
@@ -271,6 +292,7 @@ static void ParseDefaults(char *buf) {
     }
   }
 } /* end function */
+
 
 static void ParseConfigLine(char *buf) {
   char *p;
@@ -289,6 +311,7 @@ static void ParseConfigLine(char *buf) {
   } /* Now I know its for me. */
   p = buf+MyNameLen;                  /* jump to end of my name */
   /* at this point we have recognized "*FvwmForm" */
+  FormVarsCheck(&p);
   e = FindToken(p,ct_table,struct CommandTable);/* find cmd in table */
   if (e == 0) {                       /* if no match */
     fprintf(stderr,"%s: unknown command: %s\n",MyName+1,buf);
@@ -297,6 +320,9 @@ static void ParseConfigLine(char *buf) {
 
   p=p+strlen(e->name);                  /* skip over name */
   while (isspace((unsigned char)*p)) p++;              /* skip whitespace */
+
+  FormVarsCheck(&p);                     /* do var substitution if called for */
+
   e->function(p);                       /* call cmd processor */
   return;
 } /* end function */
@@ -1599,6 +1625,8 @@ static void ParseActiveMessage(char *buf) {
 
   p=p+strlen(e->name);                  /* skip over name */
   while (isspace((unsigned char)*p)) p++;              /* skip whitespace */
+  
+  FormVarsCheck(&p);
   e->function(p);                       /* call cmd processor */
   return;
 } /* end function */
@@ -1654,6 +1682,7 @@ TerminateHandler(int sig)
 /* main procedure */
 int main (int argc, char **argv)
 {
+  int i;
   FILE *fdopen();
   char *s;                              /* FvwmAnimate */
   char mask_mesg[20];
@@ -1683,7 +1712,7 @@ int main (int argc, char **argv)
   myfprintf((stderr,"%s: Starting, argv[0] is %s, len %d\n",MyName+1,
              argv[0],MyNameLen));
 
-  if ((argc < 6)||(argc > 9)) {	/* Now MyName is defined */
+  if (argc < 6) {                       /* Now MyName is defined */
     fprintf(stderr,"%s Version "VERSION" should only be executed by fvwm!\n",
             MyName+1);
     exit(1);
@@ -1732,9 +1761,17 @@ int main (int argc, char **argv)
   }
   /* From FvwmAnimate end */
 
+  i = 7;
   if (argc >= 8) {                      /* if have arg 7 */
     if (strcasecmp(argv[7],"preload") == 0) { /* if its preload */
       preload_yorn = 'y';               /* remember that. */
+      i = 8;
+    }
+  }
+  for (;i<argc;i++) {                   /* look at remaining args */
+    if (strchr(argv[i],'=')) {          /* if its a candidate */
+      putenv(argv[i]);                  /* save it away */
+      CF.have_env_var = 'y';            /* remember we have at least one */
     }
   }
   ref = strtol(argv[4], NULL, 16);      /* capture reference window */

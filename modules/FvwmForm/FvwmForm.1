@@ -140,6 +140,26 @@ or after the file is changed by "FormFvwmForm".  It does so
 by sending the command "*FvwmFormDefaultRead x". With "x" set to "y" or
 "n".  "n" makes FvwmForm send a "read .FvwmForm quiet" command to fvwm.
 
+.SH VARIABLE SUBSTITUTION
+
+If you supply variables and values on the command line used to start
+FvwmForm (like this):
+
+.EX
+Module FvwmForm MyForm. ACTION=Browse "TITLE=Browse Form"
+.EE
+
+Then all FvwmForm input commands undergo variable substitution.
+The variables from the command line are exported.
+Then every command gets expanded using the variables from the
+environment.  For example, assuming the above invocation
+of "MyForm", commands would be changed like this:
+
+.EX
+Before *MyForm.Text "$TITLE, Home Directory $HOME, Going to $ACTION"
+After  *MyForm.TEXT "Browse Form, Home Directory /home/me, Going to Browse"
+.EE
+
 .SH CONFIGURATION
 The following commands can be set in the .fvwm2rc file or thru
 any of the other ways that fvwm can accept commands.

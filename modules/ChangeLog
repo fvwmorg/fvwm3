@@ -1,3 +1,8 @@
+1999-11-25  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/FvwmForm.c: Allow for command line variables for forms.
+	* FvwmForm/FvwmForm.1: Document variable substitution in forms.
+
 1999-11-25  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmIconBox/FvwmIconBox.c (ParseOptions):
