@@ -9,6 +9,8 @@ Changes in beta release 2.5.13 (not released yet)
 
    - The MoveToPage command did not work without arguments in
      2.5.11 and 2.5.12.
+   - Mouse/Key command no args possible core dump.
+   - Direction with no args possible core dump.
 
 * New module features:
 
