@@ -1,17 +1,4 @@
-/*
- * FvwmButtons, copyright 1996, Jarl Totland
- *
- * This module, and the entire GoodStuff program, and the concept for
- * interfacing this module to the Window Manager, are all original work
- * by Robert Nation
- *
- * Copyright 1993, Robert Nation. No guarantees or warantees or anything
- * are provided or implied in any way whatsoever. Use this program at your
- * own risk. Permission to use this program for any purpose is given,
- * as long as the copyright is kept intact.
- *
- */
-
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -27,6 +14,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ------------------------------ prototypes ------------------------------- */
-void CreateIconWindow(button_info*);
-void ConfigureIconWindow(button_info*);
+#ifndef DYNAMIC_H
+#define DYNAMIC_H
+
+/* ---------------------------- included header files ----------------------- */
+
+/* ---------------------------- global definitions -------------------------- */
+
+/* ---------------------------- global macros ------------------------------- */
+
+/* ---------------------------- type definitions ---------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- interface functions ------------------------- */
+
+void parse_message_line(char *line);
+
+#endif /* DYNAMIC_H */

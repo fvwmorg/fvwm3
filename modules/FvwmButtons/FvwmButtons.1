@@ -345,6 +345,11 @@ the icon to display on the button. FvwmButtons searches through
 the path specified in the fvwm ImagePath configuration item to
 find the icon file.
 
+.IP "Id \fIid\fP"
+The id to be used to identify this button.
+The first character of the id should be alphabetic.
+See also the "DYNAMICAL ACTIONS" section.
+
 .IP "Left"
 The contents of the button are aligned to the left. The default is
 to center the contents on the button.
@@ -938,6 +943,52 @@ window, it can be set in that button's configuration line using
 the option "Size \fIwidth height\fP". This will tell FvwmButtons
 to give this button at least \fIwidth\fP by \fIheight\fP pixels
 inside the relief and padding.
+
+.SH DYNAMICAL ACTIONS
+A running FvwmButtons instance may receive some dynamical actions.
+This is achived using the fvwm command
+.nf
+.sp
+SendToModule FvwmButtons-Alias <action> <params>
+.sp
+.fi
+Supported actions:
+
+.IP "ChangeButton \fIbutton_id\fP options"
+where
+.I button_id
+is the id of the button to change as specified using the
+.B Id
+button option. It may also be a number, in this case the button
+with the given number is assumed.  And finally,
+.I button_id
+may be in the form +x+y, where x and y are a column number and
+a row number of the button to be changed.
+It is possible to specify multiple option pairs (name with value)
+by delimiting them using comma. Currentrly options include
+.BR Title " and " Icon .
+
+.IP "ExpandButtonVars \fIbutton_id\fP command"
+where
+.I button_id
+has the same syntax as described in
+.B ChangeButton
+above. Command may be any fvwm command with variables $var that
+are expanded if supported.
+
+.IP Silent
+This prefix may be specified before other actions. It disables
+all possible error and warning messages.
+
+.IP Example:
+.nf
+.sp
+*FvwmButtons: (Id note1, Title "13:30 - Dinner", Icon clock1.xpm)
+
+SendToModule FvwmButtons Silent \\
+  ChangeButton note1 Icon clock2.xpm, Title "18:00 - Go Home"
+.sp
+.fi
 
 .SH SAMPLE CONFIGURATION
 The following are excepts from a .fvwm2rc file which describe

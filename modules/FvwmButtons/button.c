@@ -40,7 +40,7 @@
 extern char *MyName;
 
 
-int buttonXPos(button_info *b, int i)
+int buttonXPos(const button_info *b, int i)
 {
   int column = i % b->parent->c->num_columns;
 
@@ -48,7 +48,7 @@ int buttonXPos(button_info *b, int i)
     (b->parent->c->width * column / b->parent->c->num_columns);
 }
 
-int buttonYPos(button_info *b, int i)
+int buttonYPos(const button_info *b, int i)
 {
   int row = i / b->parent->c->num_columns;
 
@@ -56,7 +56,7 @@ int buttonYPos(button_info *b, int i)
     (b->parent->c->height * row / b->parent->c->num_rows);
 }
 
-int buttonWidth(button_info *b)
+int buttonWidth(const button_info *b)
 {
   int column = b->n % b->parent->c->num_columns;
   int column2 = column + b->BWidth;
@@ -65,7 +65,7 @@ int buttonWidth(button_info *b)
     (b->parent->c->width * column / b->parent->c->num_columns);
 }
 
-int buttonHeight(button_info *b)
+int buttonHeight(const button_info *b)
 {
   int row = b->n / b->parent->c->num_columns;
   int row2 = row + b->BHeight;
@@ -84,7 +84,7 @@ int buttonSwallowCount(button_info *b)
 *** buttonInfo()
 *** Give lots of info for this button: XPos, YPos, XPad, YPad, Frame(signed)
 **/
-void buttonInfo(button_info *b,int *x,int *y,int *px,int *py,int *f)
+void buttonInfo(const button_info *b, int *x, int *y, int *px, int *py, int *f)
 {
   ushort w=b_Padding|b_Frame;
   *x=buttonXPos(b,b->n);
@@ -223,7 +223,7 @@ FlocaleFont *buttonFont(button_info *b)
 *** buttonFore()
 *** Give the foreground pixel of this button
 **/
-Pixel buttonFore(button_info *b)
+Pixel buttonFore(const button_info *b)
 {
   if(b->flags&b_Fore)
     return b->fc;
@@ -242,7 +242,7 @@ Pixel buttonFore(button_info *b)
 *** buttonBack()
 *** Give the background pixel of this button
 **/
-Pixel buttonBack(button_info *b)
+Pixel buttonBack(const button_info *b)
 {
   if(b->flags&b_Back)
     return b->bc;
@@ -853,7 +853,7 @@ button_info *select_button(button_info *ub,int x,int y)
       y + ub->c->ypos - buttonYPos(b, i));
 }
 
-void get_button_root_geometry(rectangle *r, button_info *b)
+void get_button_root_geometry(rectangle *r, const button_info *b)
 {
 	int x;
 	int y;

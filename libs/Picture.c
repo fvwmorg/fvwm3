@@ -65,7 +65,7 @@
 static FvwmPicture *FvwmPictureList=NULL;
 
 FvwmPicture *PGetFvwmPicture(
-	Display *dpy, Window Root, char *ImagePath, char *name,
+	Display *dpy, Window Root, char *ImagePath, const char *name,
 	FvwmPictureAttributes fpa)
 {
 	char *path = PictureFindImageFile(name, ImagePath, R_OK );
@@ -85,7 +85,7 @@ FvwmPicture *PGetFvwmPicture(
 }
 
 FvwmPicture *PCacheFvwmPicture(
-	Display *dpy, Window Root, char *ImagePath, char *name,
+	Display *dpy, Window Root, char *ImagePath, const char *name,
 	FvwmPictureAttributes fpa)
 {
 	char *path;
@@ -200,9 +200,9 @@ void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p)
 	return;
 }
 
-FvwmPicture *PLoadFvwmPictureFromPixmap(Display *dpy, Window Root, char *name,
-					Pixmap pixmap, Pixmap mask, Pixmap alpha,
-					int width, int height)
+FvwmPicture *PLoadFvwmPictureFromPixmap(
+	Display *dpy, Window Root, char *name, Pixmap pixmap,
+	Pixmap mask, Pixmap alpha, int width, int height)
 {
 	FvwmPicture *q;
 
@@ -224,9 +224,9 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(Display *dpy, Window Root, char *name,
 	return q;
 }
 
-FvwmPicture *PCacheFvwmPictureFromPixmap(Display *dpy, Window Root, char *name,
-					 Pixmap pixmap, Pixmap mask,
-					 Pixmap alpha, int width, int height)
+FvwmPicture *PCacheFvwmPictureFromPixmap(
+	Display *dpy, Window Root, char *name, Pixmap pixmap,
+	Pixmap mask, Pixmap alpha, int width, int height)
 {
 	FvwmPicture *p = FvwmPictureList;
 

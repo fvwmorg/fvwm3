@@ -67,6 +67,7 @@
 #include "parse.h" /* ParseConfiguration(), parse_window_geometry() */
 #include "icons.h" /* CreateIconWindow(), ConfigureIconWindow() */
 #include "draw.h"
+#include "dynamic.h"
 
 
 #define MW_EVENTS   (ExposureMask |\
@@ -140,7 +141,7 @@ GC  NormalGC;
 /* needed for relief drawing only */
 GC  ShadowGC;
 
-static int Width,Height;
+int Width, Height;
 static int x= -30000,y= -30000;
 int w = -1;
 int h = -1;
@@ -1467,7 +1468,7 @@ void RedrawWindow(button_info *b)
 /**
 *** LoadIconFile()
 **/
-int LoadIconFile(char *s, FvwmPicture **p, int cset)
+int LoadIconFile(const char *s, FvwmPicture **p, int cset)
 {
 	FvwmPictureAttributes fpa;
 
@@ -1478,7 +1479,7 @@ int LoadIconFile(char *s, FvwmPicture **p, int cset)
 		fpa.mask |= FPAM_DITHER;
 	}
 	*p = PCacheFvwmPicture(Dpy, Root, imagePath, s, fpa);
-	if(*p)
+	if (*p)
 	{
 		return 1;
 	}
@@ -2914,138 +2915,4 @@ void swallow(unsigned long *body)
       break;
     }
   }
-}
-
-
-/* SendToModule options */
-static void change_title(button_info *b, char *line)
-{
-  if (!(b->flags & b_Title)) {
-    fprintf(stderr, "%s: cannot create a title, only change one\n", MyName);
-    return;
-  }
-  free(b->title);
-  CopyString(&b->title, line);
-  RedrawButton(b, 2);
-  return;
-}
-
-static void change_icon(button_info *b, char *line)
-{
-  FvwmPicture *new_icon;
-  int l;
-
-  if (line == NULL) {
-    return;
-  }
-  if (!(b->flags & b_Icon)) {
-    fprintf(stderr, "%s: cannot create an icon, only change one\n", MyName);
-    return;
-  }
-  l = strlen(line);
-  if (l > 0 && line[l - 1] == '\n') {
-    line[l - 1] = 0;
-  }
-  if (LoadIconFile(line, &new_icon, b->colorset) == 0) {
-    fprintf(stderr, "%s: cannot load icon %s\n", MyName, line);
-    return;
-  }
-  free(b->icon_file);
-  CopyString(&b->icon_file, line);
-  PDestroyFvwmPicture(Dpy, b->icon);
-  XDestroyWindow(Dpy, b->IconWin);
-  b->IconWin = None;
-  b->icon = new_icon;
-  CreateIconWindow(b);
-  ConfigureIconWindow(b);
-  XMapWindow(Dpy, b->IconWin);
-  RedrawButton(b, 2);
-  return;
-}
-
-static char *message_options[] = {"Title", "Icon", NULL};
-
-void parse_message_line(char *line)
-{
-  char *rest;
-  char *next;
-  char *s;
-  int type;
-  int count, i;
-  int n;
-  int mask;
-  int x;
-  int y;
-  button_info *b, *ub = UberButton;
-
-  type = GetTokenIndex(line, message_options, -1, &rest);
-  if (type == -1) {
-    fprintf(stderr, "%s: Message not understood: %s\n", MyName, line);
-    return;
-  }
-
-  /* find out which button */
-  s = PeekToken(rest, &next);
-  if (s != NULL && *s == '+')
-  {
-    unsigned int JunkWidth;
-    unsigned int JunkHeight;
-
-    mask = XParseGeometry(s, &x, &y, &JunkWidth, &JunkHeight);
-    if (!(mask & XValue) || (mask & XNegative) ||
-	!(mask & YValue) || (mask & YNegative))
-    {
-      fprintf(stderr, "%s: illegal button position '%s'\n", MyName, s);
-      return;
-    }
-    rest = next;
-    if (x < 0 || y < 0) {
-      fprintf(stderr, "%s: button column/row must not be negative\n", MyName);
-      return;
-    }
-    b = get_xy_button(ub, y, x);
-    if (b == NULL) {
-      fprintf(stderr, "%s: button at column %d row %d not found\n", MyName,
-	      x, y);
-      return;
-    }
-  }
-  else
-  {
-    n = GetIntegerArguments(rest, &rest, &x, 1);
-    if (n < 1) {
-      fprintf(stderr, "%s: missing button number\n", MyName);
-      return;
-    }
-    if (x < 0) {
-      fprintf(stderr, "%s: button number must not be negative\n", MyName);
-      return;
-    }
-    i = count = -1;
-    /* find the button */
-    while (NextButton(&ub, &b, &i, 0)) {
-      if (++count == x)
-	break;
-    }
-    if (count != x || b == NULL) {
-      fprintf(stderr, "%s: button number %d not found\n", MyName, x);
-      return;
-    }
-  }
-
-  switch(type) {
-  case 0:
-    change_title(b, rest);
-    break;
-  case 1:
-    change_icon(b, rest);
-    break;
-  }
-  if (FShapesSupported)
-  {
-    if (UberButton->c->flags&b_TransBack)
-      SetTransparentBackground(UberButton,Width,Height);
-  }
-
-  return;
 }

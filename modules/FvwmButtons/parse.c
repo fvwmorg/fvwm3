@@ -801,6 +801,7 @@ static void ParseButton(button_info **uberb,char *s)
       "center",
       "colorset",
       "action",
+      "id",
       NULL
     };
     s = trimleft(s);
@@ -1202,6 +1203,38 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	else
 	  fprintf(stderr,"%s: Missing action argument\n",MyName);
+	break;
+
+      case 20: /* Id */
+	s = trimleft(s);
+	s = DoGetNextToken(s, &t, NULL, ",)", &terminator);
+
+	/* it should include the delimiter */
+	if (s && terminator == ')')
+	{
+	  s--;
+	}
+
+	if (t)
+	{
+	  if (isalpha(t[0]))
+	  {
+	    /* should check for duplicate ids first... */
+	    b->flags |= b_Id;
+	    if (b->id)
+	      free(b->id);
+	    CopyString(&b->id, t);
+	  }
+          else
+	  {
+	    fprintf(stderr, "%s: Incorrect id '%s' ignored\n", MyName, t);
+	  }
+	  free(t);
+	}
+	else
+	{
+	  fprintf(stderr, "%s: Missing id argument\n", MyName);
+	}
 	break;
 
       default:

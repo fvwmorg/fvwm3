@@ -87,6 +87,7 @@
 				 * button with a swallowed app. */
 #define b_ActionOnPress \
 		     0x02000000 /* By default this only done on Popup */
+#define b_Id         0x04000000 /* Has a user defined id for referencing */
 
 /* Flags for b->swallow */
 #define b_Count       0x0003 /* Init counter for swallowing */
@@ -161,6 +162,7 @@ struct button_info_struct
   int n;                   /* number in parent */
 
   /* conditional fields */ /* applicable if these flags are set */
+  char *id;                /* b_Id */
   FlocaleFont *Ffont;      /* b_Font */
   char *font_string;       /* b_Font */
   char *back;              /* b_Back */
@@ -234,6 +236,8 @@ char *mymalloc(int);
 #define mymalloc(a) safemalloc(a)
 #endif
 void handle_xinerama_string(char *args);
+int LoadIconFile(const char *s, FvwmPicture **p, int cset);
+void SetTransparentBackground(button_info *ub,int w,int h);
 
 /* ----------------------------- global variables -------------------------- */
 

@@ -33,7 +33,7 @@
  * </description>
  */
 FvwmPicture* PGetFvwmPicture(
-	Display* dpy, Window Root, char* ImagePath, char* pictureName,
+	Display* dpy, Window Root, char* ImagePath, const char* pictureName,
 	FvwmPictureAttributes fpa);
 
 /* <pubfunc>PCacheFvwmPicture
@@ -47,7 +47,7 @@ FvwmPicture* PGetFvwmPicture(
  * </description>
  */
 FvwmPicture* PCacheFvwmPicture(
-	Display *dpy, Window Root, char* ImagePath, char* pictureName,
+	Display *dpy, Window Root, char* ImagePath, const char* pictureName,
 	FvwmPictureAttributes fpa);
 
 /* <pubfunc>PLoadFvwmPictureFromPixmap
@@ -76,7 +76,7 @@ FvwmPicture *PCacheFvwmPictureFromPixmap(
  * If the weight is zero the allocated datas from p are freed
  * </description>
  */
-void PDestroyFvwmPicture(Display* dpy, FvwmPicture* p);
+void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p);
 
 /* <pubfunc>PCloneFvwmPicture
  * <description>

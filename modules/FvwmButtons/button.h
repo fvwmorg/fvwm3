@@ -29,15 +29,16 @@
 
 /* --------------------------- button information -------------------------- */
 
-void buttonInfo(button_info*,int *x,int *y,int *padx,int *pady,int *frame);
+void buttonInfo(
+	const button_info*, int *x, int *y, int *padx, int *pady, int *frame);
 void GetInternalSize(button_info*,int*,int*,int*,int*);
 #define buttonFrame(b) abs(buttonFrameSigned(b))
 int buttonFrameSigned(button_info*);
 int buttonXPad(button_info*);
 int buttonYPad(button_info*);
 FlocaleFont *buttonFont(button_info*);
-Pixel buttonFore(button_info*);
-Pixel buttonBack(button_info*);
+Pixel buttonFore(const button_info *);
+Pixel buttonBack(const button_info *);
 Pixel buttonHilite(button_info*);
 Pixel buttonShadow(button_info*);
 int buttonColorset(button_info *b);
@@ -68,11 +69,11 @@ button_info *select_button(button_info*,int,int);
 
 /* --------------------------- button geometry ----------------------------- */
 
-int buttonXPos(button_info *b, int i);
-int buttonYPos(button_info *b, int i);
-int buttonWidth(button_info *b);
-int buttonHeight(button_info *b);
-void get_button_root_geometry(rectangle *r, button_info *b);
+int buttonXPos(const button_info *b, int i);
+int buttonYPos(const button_info *b, int i);
+int buttonWidth(const button_info *b);
+int buttonHeight(const button_info *b);
+void get_button_root_geometry(rectangle *r, const button_info *b);
 
 /* --------------------------- swallowing ---------------------------------- */
 

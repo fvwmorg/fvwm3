@@ -160,7 +160,7 @@ dnl AM_CONDITIONAL(GNOME, test "x$enable_gnome_hints" != "xno")
 dnl ******** ewmh
 smr_SWITCH(ewmh, Extended WM Hints Support, on, HAVE_EWMH)
 
-if test x"$enable_ewmh" != no; then
+if test x"$enable_ewmh" != xno; then
   with_ewmh=yes
   problem_ewmh=""
 else
