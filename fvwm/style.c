@@ -424,7 +424,7 @@ static void merge_styles(
 
   /* Note, only one style cmd can define a windows iconboxes,
    * the last one encountered. */
-  if (SHAS_ICON_BOXES(&add_style->flags))
+  if (SHAS_ICON_BOXES(&add_style->flag_mask))
   {
     /* If style has iconboxes */
     /* copy it */
@@ -834,7 +834,7 @@ void ProcessNewStyle(F_CMD_ARGS)
   /* temp area to build name list */
   window_style *ptmpstyle;
   /* which current boxes to chain to */
-  icon_boxes *which = 0;
+  icon_boxes *which = NULL;
 
   ptmpstyle = (window_style *)safemalloc(sizeof(window_style));
   /* init temp window_style area */
@@ -1475,6 +1475,34 @@ void ProcessNewStyle(F_CMD_ARGS)
           icon_boxes *IconBoxes = NULL;
 
 	  found = True;
+	  token = PeekToken(rest, NULL);
+	  if (!token || StrEquals(token, "none"))
+	  {
+	    /* delete icon boxes from style */
+            if (SGET_ICON_BOXES(*ptmpstyle))
+	    {
+	      remove_icon_boxes_from_style(ptmpstyle);
+	    }
+	    which = NULL;
+	    if (token)
+	    {
+	      /* disable default icon box */
+	      SFSET_DO_IGNORE_ICON_BOXES(*ptmpstyle, 1);
+	    }
+	    else
+	    {
+	      /* use default icon box */
+	      SFSET_DO_IGNORE_ICON_BOXES(*ptmpstyle, 0);
+	    }
+	    SMSET_DO_IGNORE_ICON_BOXES(*ptmpstyle, 1);
+	    SCSET_DO_IGNORE_ICON_BOXES(*ptmpstyle, 1);
+	    ptmpstyle->flags.has_icon_boxes = 0;
+	    ptmpstyle->flag_mask.has_icon_boxes = 1;
+	    ptmpstyle->change_mask.has_icon_boxes = 1;
+	    break;
+	  }
+
+	  /* otherwise try to parse the icon box */
           IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
 	  /* clear it */
           memset(IconBoxes, 0, sizeof(icon_boxes));
@@ -1580,6 +1608,9 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    /* new current box. save for grid */
             which = IconBoxes;
           } /* end no error */
+	  SFSET_DO_IGNORE_ICON_BOXES(*ptmpstyle, 0);
+	  SMSET_DO_IGNORE_ICON_BOXES(*ptmpstyle, 1);
+	  SCSET_DO_IGNORE_ICON_BOXES(*ptmpstyle, 1);
 	  ptmpstyle->flags.has_icon_boxes = !!(SGET_ICON_BOXES(*ptmpstyle));
 	  ptmpstyle->flag_mask.has_icon_boxes = 1;
 	  ptmpstyle->change_mask.has_icon_boxes = 1;

@@ -463,16 +463,22 @@ void setup_style_and_decor(
 
 void setup_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)
 {
+  icon_boxes *ib;
+
   /* copy iconboxes ptr (if any) */
   if (SHAS_ICON_BOXES(&pstyle->flags))
   {
     tmp_win->IconBoxes = SGET_ICON_BOXES(*pstyle);
-    tmp_win->IconBoxes->use_count++;
+    for (ib = tmp_win->IconBoxes; ib; ib = ib->next)
+    {
+      ib->use_count++;
+    }
   }
   else
+  {
     tmp_win->IconBoxes = NULL;
+  }
 }
-
 
 void destroy_icon_boxes(FvwmWindow *tmp_win)
 {

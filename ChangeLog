@@ -1,7 +1,23 @@
 2001-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/placement.c (test_fit):
+	* libs/defaults.h (PLACEMENT_AVOID_BELOW):
+	lower avoidance factor for windows on lower layers
+
+	* fvwm/icons.c (AutoPlaceIcon):
+	* fvwm/style.c (ProcessNewStyle):
+	new icon box option "none" to disable all icon boxes, including the
+	default box
+
+	* fvwm/add_window.c (setup_icon_boxes):
+	fixed icon box count that could lead to a core dump with multiple icon
+	boxes
+
+	* fvwm/style.c (merge_styles):
+	fixed IconBox style without arguments
+
 	* fvwm/menus.c (MenuInteraction):
-	supprecc unnecessary sub menu popdown
+	suppress unnecessary sub menu popdown
 
 2001-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
 

@@ -354,7 +354,7 @@ static float test_fit( FvwmWindow *t, int x11, int y11, float aoimin,
   float aoi = 0;      /* area of interference */
   float anew;
   float cover_factor = 1;
-  int avoidance_factor;
+  float avoidance_factor;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
   int stickyx, stickyy;
@@ -411,10 +411,12 @@ static float test_fit( FvwmWindow *t, int x11, int y11, float aoimin,
         avoidance_factor = PLACEMENT_AVOID_ICON;
       else if(compare_window_layers(testw, t) > 0)
         avoidance_factor = PLACEMENT_AVOID_ONTOP;
+      else if(compare_window_layers(testw, t) < 0)
+        avoidance_factor = PLACEMENT_AVOID_BELOW;
       else if(IS_STICKY(testw))
         avoidance_factor = PLACEMENT_AVOID_STICKY;
       else
-        avoidance_factor = 1;
+        avoidance_factor = 1.0;
 
       if (use_percent)
       {
@@ -433,7 +435,8 @@ static float test_fit( FvwmWindow *t, int x11, int y11, float aoimin,
 	    cover_factor = PLACEMENT_AVOID_COVER_75;
 	}
 	if (avoidance_factor>1)
-	  avoidance_factor = avoidance_factor + (cover_factor>1)? cover_factor:0;
+	  avoidance_factor =
+	    avoidance_factor + (cover_factor>1) ? cover_factor : 0;
 	else
 	  avoidance_factor = cover_factor;
       }

@@ -3,6 +3,8 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.29 (not released yet)
 
+* New option "None" to the IconBox style.
+
 Changes in beta release 2.3.28 (2001-01-25)
 
 * Security fix related to .fvwm2rc being searched in the current directory

@@ -4556,8 +4556,10 @@ module icon to exist:
 Style * NoIcon
 Style FvwmPager Icon
 .EE
+
 .I IconBox
-takes four numeric arguments or an X11 geometry string:
+takes no argument, four numeric arguments, an X11 geometry string or the
+string "none":
 .EX
 .RI "IconBox " "l t r b"
 .EE
@@ -4597,7 +4599,8 @@ then left to right, and has an 80x80 pixel grid.  To disable all but
 the default icon box you can use IconBox without arguments in a
 separate
 .B Style
-command.
+command.  To disable all icon boxes including the default icon box,
+the argument "none" can be specified.
 
 Hint: You can auto arrange your icons in the icon box with a simple
 fvwm function.  Put the "DeiconifyAndRearrange" function below in your

@@ -132,12 +132,13 @@
  * place one there.  The same rules apply for the other "AVOID" factors. */
 /* With the advent of layers, the meaning of ONTOP in the following
    explanation has changed to mean any window in a higher layer. */
-#define PLACEMENT_AVOID_STICKY		   1
+#define PLACEMENT_AVOID_BELOW		   0.05
+#define PLACEMENT_AVOID_STICKY		   1.0
 #define PLACEMENT_AVOID_ONTOP		   5
-#define PLACEMENT_AVOID_ICON               10
+#define PLACEMENT_AVOID_ICON              10
 /* used in MinOverlapPercentPlacement to forbid complete covering (99%, 95%
    85% and 75%) of windows */
-#define PLACEMENT_AVOID_COVER_99           12
+#define PLACEMENT_AVOID_COVER_99          12
 #define PLACEMENT_AVOID_COVER_95           6
 #define PLACEMENT_AVOID_COVER_85           4
 #define PLACEMENT_AVOID_COVER_75           1

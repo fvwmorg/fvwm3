@@ -719,6 +719,31 @@ void AutoPlaceIcon(FvwmWindow *t)
      Look thru chain of icon boxes assigned to window.
      Add logic for grids and fill direction.
   */
+  else if (DO_IGNORE_ICON_BOXES(t))
+  {
+    t->icon_g.x = t->frame_g.x;
+    if (HAS_BOTTOM_TITLE(t))
+    {
+      t->icon_g.y =
+	t->frame_g.y + t->frame_g.height - t->icon_g.height - t->icon_p_height;
+    }
+    else
+    {
+      t->icon_g.y = t->frame_g.y;
+    }
+    if (t->icon_g.x < 0)
+      t->icon_g.x = 0;
+    else if (t->icon_g.x + t->icon_g.width > Scr.MyDisplayWidth)
+      t->icon_g.x = Scr.MyDisplayWidth - t->icon_g.width;
+    if (t->icon_g.y < 0)
+      t->icon_g.y = 0;
+    else if (t->icon_g.y + t->icon_g.height + t->icon_p_height >
+	     Scr.MyDisplayHeight)
+      t->icon_g.y =
+	Scr.MyDisplayHeight - t->icon_g.height - t->icon_p_height;
+    do_move_pixmap = True;
+    do_move_title = True;
+  }
   else
   {
     /* A place to hold inner and outer loop variables. */

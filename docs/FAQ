@@ -126,6 +126,8 @@ Contents
     5.12  The StartsOnPage style does not work for me.  Why?
     5.13  Some modules can not be started when I restart fvwm.
     5.14  I'm running Rational Rose and fvwm ignores its windows.
+    5.15  Although I use the WIndowListSkip style for my modules they
+          still show up in FvwmIconMan, FvwmWinList etc.
 
 6. Miscellaneous
 
@@ -1742,6 +1744,19 @@ A: This problem might occur on other applications besides the one
      Knowledgebase pages above.)   I don't  recall what Rose
      looks like with dtwm, but I suspect it's quite close to
      all MWWM=MWM.
+
+----------------------------------------------------------------------
+
+5.15  Although I use the WIndowListSkip style for my modules they
+      still show up in FvwmIconMan, FvwmWinList etc.
+
+A: Make sure you have
+
+     *FvwmIconMan*UseWinList true
+
+   in you .fvwm2rc file.  If that does not help, the modules you are
+   using may not match the fvwm executable.  Recompile and reinstall
+   everything and the problem should go away.
 
 ======================================================================
                           6 - Miscellaneous

@@ -164,8 +164,9 @@
                                ((fw)->flags.common.s.do_ignore_gnome_hints)
 #define DO_IGNORE_RESTACK(fw)  \
                                ((fw)->flags.common.s.do_ignore_restack)
-#define IS_FIXED(fw)  \
-                               ((fw)->flags.common.s.is_fixed)
+#define DO_IGNORE_ICON_BOXES(fw)  \
+                               ((fw)->flags.common.s.do_ignore_icon_boxes)
+#define IS_FIXED(fw)           ((fw)->flags.common.s.is_fixed)
 #define SET_FIXED(fw,x)        (fw)->flags.common.s.is_fixed = !!(x)
 #define SETM_FIXED(fw,x)       (fw)->flag_mask.common.s.is_fixed = !!(x)
 #define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.s.has_depressable_border)
