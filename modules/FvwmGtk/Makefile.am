@@ -14,7 +14,9 @@ GTK_LIBS = @GTK_LIBS@
 GDK_IMLIB_CFLAGS = @GDK_IMLIB_CFLAGS@
 GDK_IMLIB_LIBS = @GDK_IMLIB_LIBS@
 
-FvwmGtk_SOURCES = FvwmGtk.c gtkpixmapmenuitem.c gtkpixmapmenuitem.h
+FvwmGtk_SOURCES = FvwmGtk.c gtkpixmapmenuitem.c gtkpixmapmenuitem.h \
+	dialog.c dialog.h expand.c expand.h windowlist.c windowlist.h \
+	menu.c menu.h
 FvwmGtk_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
