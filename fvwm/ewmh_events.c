@@ -181,71 +181,83 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 
 int ewmh_MoveResize(EWMH_CMD_ARGS)
 {
-  if (ev == NULL)
-    return 0;
+	int dir = -1;
+	int x_warp = 0;
+	int y_warp = 0;
+	Bool move = False;
+	char cmd[256];
 
-  {
-    int dir = ev->xclient.data.l[2];
-    int x_warp = 0;
-    int y_warp = 0;
-    Bool move = False;
-    char cmd[256];
+	if (ev == NULL)
+	{
+		return 0;
+	}
 
-    switch(dir)
-    {
-      case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:
-	break;
-      case _NET_WM_MOVERESIZE_SIZE_TOP:
-	x_warp = 50;
-	break;
-      case _NET_WM_MOVERESIZE_SIZE_TOPRIGHT:
-	x_warp = 100;
-	break;
-      case _NET_WM_MOVERESIZE_SIZE_RIGHT:
-	x_warp = 100; y_warp = 50;
-	break;
-      case _NET_WM_MOVERESIZE_SIZE_BOTTOMRIGHT:
-	x_warp = 100; y_warp = 100;
-	break;
-      case _NET_WM_MOVERESIZE_SIZE_BOTTOM:
-	x_warp = 50; y_warp = 100;
-	break;
-      case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
-	y_warp = 100;
-	break;
-      case _NET_WM_MOVERESIZE_SIZE_LEFT:
-	y_warp = 50;
-	break;
-      case _NET_WM_MOVERESIZE_MOVE:
-	x_warp = 50; y_warp = 50; /* why not */
-	move = True;
-	break;
-    }
+	dir = ev->xclient.data.l[2];
+	switch(dir)
+	{
+	case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:
+		break;
+	case _NET_WM_MOVERESIZE_SIZE_TOP:
+		x_warp = 50;
+		break;
+	case _NET_WM_MOVERESIZE_SIZE_TOPRIGHT:
+		x_warp = 100;
+		break;
+	case _NET_WM_MOVERESIZE_SIZE_RIGHT:
+		x_warp = 100; y_warp = 50;
+		break;
+	case _NET_WM_MOVERESIZE_SIZE_KEYBOARD:
+	case _NET_WM_MOVERESIZE_SIZE_BOTTOMRIGHT:
+		x_warp = 100; y_warp = 100;
+		break;
+	case _NET_WM_MOVERESIZE_SIZE_BOTTOM:
+		x_warp = 50; y_warp = 100;
+		break;
+	case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
+		y_warp = 100;
+		break;
+	case _NET_WM_MOVERESIZE_SIZE_LEFT:
+		y_warp = 50;
+		break;
+	case _NET_WM_MOVERESIZE_MOVE_KEYBOARD:
+	case _NET_WM_MOVERESIZE_MOVE:
+		x_warp = 50; y_warp = 50; /* why not */
+		move = True;
+		break;
+	default:
+		return 0;
+		break;
+	}
 
-    if (move)
-    {
-	    if (!is_function_allowed(F_MOVE, NULL, fwin, True, False))
-	    {
-		    return 0;
-	    }
-    }
-    else
-    {
-	    if (!is_function_allowed(F_RESIZE, NULL, fwin, True, False))
-	    {
-		    return 0;
-	    }
-    }
-  
-    sprintf(cmd, "WarpToWindow %i %i",x_warp,y_warp);
-    execute_function_override_window(NULL, NULL, cmd, 0, fwin);
-    if (move)
-      execute_function_override_window(NULL, NULL, "Move", 0, fwin);
-    else
-      execute_function_override_window(NULL, NULL, "Resize", 0, fwin);
+	if (move)
+	{
+		if (!is_function_allowed(F_MOVE, NULL, fwin, True, False))
+		{
+			return 0;
+		}
+	}
+	else
+	{
+		if (!is_function_allowed(F_RESIZE, NULL, fwin, True, False))
+		{
+			return 0;
+		}
+	}
 
-    return 0;
-  }
+	sprintf(cmd, "WarpToWindow %i %i",x_warp,y_warp);
+	execute_function_override_window(NULL, NULL, cmd, 0, fwin);
+	if (move)
+	{
+		execute_function_override_window(
+			NULL, NULL, "Move", 0, fwin);
+	}
+	else
+	{
+		execute_function_override_window(
+			NULL, NULL, "Resize", 0, fwin);
+	}
+
+	return 0;
 }
 
 /* ************************************************************************* *
@@ -828,6 +840,71 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 	bool_arg == NET_WM_STATE_ADD)
     {
       new_layer(fwin, Scr.TopLayer);
+    }
+    else
+    {
+      new_layer(fwin, Scr.DefaultLayer);
+    }
+  }
+  return 0;
+}
+
+int ewmh_WMStateStaysOnBottom(EWMH_CMD_ARGS)
+{
+  if (ev == NULL && style == NULL)
+  {
+    unsigned long do_restore = any;
+
+    if (do_restore)
+    {
+      if (fwin->ewmh_hint_layer == Scr.BottomLayer)
+	return True;
+      return False;
+    }
+    if (fwin->layer >= Scr.BottomLayer)
+      return True;
+    return False;
+  }
+
+  if (ev == NULL && style != NULL)
+  {
+    unsigned long has_hint = any;
+#if DEBUG_EWMH_INIT_STATE
+    if (has_hint)
+      fprintf(stderr,"\tStaysOnBottom\n");
+#endif
+    if (!has_hint && fwin->ewmh_hint_layer == 0)
+    {
+      return 0;
+    }
+
+    fwin->ewmh_hint_layer = Scr.BottomLayer;
+    if (DO_EWMH_USE_STACKING_HINTS(style))
+    {
+      SSET_LAYER(*style, Scr.BottomLayer);
+      style->flags.use_layer = 1;
+      style->flag_mask.use_layer = 1;
+      style->change_mask.use_layer = 1;
+    }
+    else if (!style->change_mask.use_layer)
+    {
+      SSET_LAYER(*style, Scr.DefaultLayer);
+      style->flags.use_layer = 1;
+      style->flag_mask.use_layer = 1;
+      style->change_mask.use_layer = 1;
+    }
+    return 0;
+  }
+
+  if (ev != NULL)
+  {
+    /* client message */
+    int bool_arg = ev->xclient.data.l[0];
+
+    if ((bool_arg == NET_WM_STATE_TOGGLE && fwin->layer > Scr.BottomLayer) ||
+	bool_arg == NET_WM_STATE_ADD)
+    {
+      new_layer(fwin, Scr.BottomLayer);
     }
     else
     {

@@ -1,5 +1,15 @@
 2003-04-24  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/ewmh_events.c (ewmh_WMStateStaysOnBottom):
+	(ewmh_MoveResize)
+	* fvwm/ewmh.c (ewmh_AllowsMinimize):
+	* fvwm/ewmh_intern.h:
+	Added comment on the implementation at the top of ewmh.c.
+	Fixed _NET_WM_MOVERESIZE.  Added _NET_WM_ACTION_MINIMIZE in
+	_NET_WM_ALLOWED_ACTIONS (almost nothing todo). Added
+	_NET_WM_STATE_ABOVE (just an alias of _NET_WM_STATE_STAYS_ON_TOP)
+	and _NET_WM_STATE_BELOW.
+
 	* AUTHORS:
 	Added David Fries. Updated my entries.
 

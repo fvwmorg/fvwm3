@@ -16,10 +16,34 @@
  */
 
 /* ************************************************************************
- * An implementation of the Extended Window Manager Hints specification
- * version 1.0, 1.1 and 1.2
- *
+ * An partial implementation of the Extended Window Manager Hints specification
  * http://www.freedesktop.org/standards/wm-spec.html
+ *
+ * Not Implemented (draft 1.3 - 2003-01-03):
+ *
+ * _NET_DESKTOP_LAYOUT
+ *
+ * _NET_SHOWING_DESKTOP
+ *
+ * _NET_MOVERESIZE_WINDOW
+ *
+ * Some _NET_WINDOW_TYPE:
+ *         _NET_WM_WINDOW_TYPE_SPLASH
+ *         _NET_WM_WINDOW_TYPE_UTILITIES
+ *
+ * One _NET_WINDOW_STATE:
+ *         _NET_WM_STATE_FULLSCREEN
+ *
+ * One _NET_WM_ALLOWED_ACTIONS: _NET_WM_ACTION_FULLSCREEN
+ *
+ * The kill huge process protocol: _NET_WM_PID and _NET_WM_PING
+ *
+ * _NET_WM_HANDLED_ICONS (what to do? Nothing?)
+ *
+ * Problems:
+ * - _NET_WM_WINDOW_TYPE_TOOLBAR is interpreted in a different way
+ * in GNOME (the spec) and in KDE 2/3.0 (~ simple dock?).
+ * - What is a window of TYPE MENU ?
  *
  * ************************************************************************/
 
@@ -112,6 +136,8 @@ ewmh_atom ewmh_atom_wm_state[] =
   ENTRY("_NET_WM_STATE_SKIP_PAGER",      XA_ATOM,   ewmh_WMStateSkipPager),
   ENTRY("_NET_WM_STATE_SKIP_TASKBAR",    XA_ATOM,   ewmh_WMStateSkipTaskBar),
   ENTRY("_NET_WM_STATE_STAYS_ON_TOP",    XA_ATOM,   ewmh_WMStateStaysOnTop),
+  ENTRY("_NET_WM_STATE_ABOVE",           XA_ATOM,   ewmh_WMStateStaysOnTop),
+  ENTRY("_NET_WM_STATE_BELOW",           XA_ATOM,   ewmh_WMStateStaysOnBottom),
   ENTRY("_NET_WM_STATE_STICKY",          XA_ATOM,   ewmh_WMStateSticky),
   {NULL,0,0,0}
 };
@@ -125,6 +151,7 @@ ewmh_atom ewmh_atom_allowed_actions[] =
   ENTRY("_NET_WM_ACTION_MAXIMIZE_HORZ",  XA_ATOM, ewmh_AllowsMaximize),
   ENTRY("_NET_WM_ACTION_MAXIMIZE_VERT",  XA_ATOM, ewmh_AllowsMaximize),
   ENTRY("_NET_WM_ACTION_MOVE",           XA_ATOM, ewmh_AllowsMove),
+  ENTRY("_NET_WM_ACTION_MINIMIZE",       XA_ATOM, ewmh_AllowsMinimize),
   ENTRY("_NET_WM_ACTION_RESIZE",         XA_ATOM, ewmh_AllowsResize),
   ENTRY("_NET_WM_ACTION_SHADE",          XA_ATOM, ewmh_AllowsYes),
   ENTRY("_NET_WM_ACTION_STICK",          XA_ATOM, ewmh_AllowsYes),
@@ -934,7 +961,12 @@ Bool ewmh_AllowsYes(EWMH_CMD_ARGS)
 
 Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
 {
-  return is_function_allowed(F_CLOSE, NULL, fwin, False, False);
+  return is_function_allowed(F_CLOSE, NULL, fwin, True, False);
+}
+
+Bool ewmh_AllowsMinimize(EWMH_CMD_ARGS)
+{
+  return is_function_allowed(F_ICONIFY, NULL, fwin, True, False);
 }
 
 Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS)

@@ -83,7 +83,9 @@ typedef enum
   _NET_WM_MOVERESIZE_SIZE_BOTTOM,
   _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT,
   _NET_WM_MOVERESIZE_SIZE_LEFT,
-  _NET_WM_MOVERESIZE_MOVE
+  _NET_WM_MOVERESIZE_MOVE,
+  _NET_WM_MOVERESIZE_SIZE_KEYBOARD,
+  _NET_WM_MOVERESIZE_MOVE_KEYBOARD
 } ewmh_move_resize;
 
 typedef struct ewmh_info
@@ -143,6 +145,7 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS);
 int ewmh_WMStateSkipPager(EWMH_CMD_ARGS);
 int ewmh_WMStateSkipTaskBar(EWMH_CMD_ARGS);
 int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS);
+int ewmh_WMStateStaysOnBottom(EWMH_CMD_ARGS);
 int ewmh_WMStateSticky(EWMH_CMD_ARGS);
 
 int ewmh_WMIconGeometry(EWMH_CMD_ARGS);
@@ -150,6 +153,7 @@ int ewmh_WMStrut(EWMH_CMD_ARGS);
 
 Bool ewmh_AllowsYes(EWMH_CMD_ARGS);
 Bool ewmh_AllowsClose(EWMH_CMD_ARGS);
+Bool ewmh_AllowsMinimize(EWMH_CMD_ARGS);
 Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS);
 Bool ewmh_AllowsMove(EWMH_CMD_ARGS);
 Bool ewmh_AllowsResize(EWMH_CMD_ARGS);
