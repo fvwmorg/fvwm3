@@ -56,7 +56,7 @@ my $options = {
 	'm|mask=i'    => \$mask,
 	'x|xmask=i'   => \$xmask,
 	'sc|send-configinfo' => \$sendConfigInfo,
-	'sw|semd-windowlist' => \$sendWindowList,
+	'sw|send-windowlist' => \$sendWindowList,
 	'd|debug=i'   => \$debug,
 	't|track=s'   => \@trackerNames,
 };

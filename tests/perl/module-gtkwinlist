@@ -92,7 +92,7 @@ $module->addHandler(M_END_WINDOWLIST, sub {
 });
 
 $module->addHandler(M_STRING, sub {
-	my $string = $_[1]->_line;
+	my $string = $_[1]->_text;
 	my $winid = $dialog->window->XWINDOW();
 	if ($string =~ /^close|stop|quit|exit/i) {
 		Gtk->exit(0);

@@ -1,3 +1,8 @@
+2004-12-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/FvwmDebug.in:
+	s/--semd-windowlist/--send-windowlist/
+
 2004-12-11  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmIconMan/FvwmIconMan.1.in: Remove lang_check markers.

@@ -445,7 +445,8 @@ A: Some people find this annoying, but let me say that I did that for
           they are running.
 
    Note, starting from 2.5.1, the executable fvwm2 became fvwm again.
-   Also, starting from 2.5.11, the default config file is fvwm/config.
+   Also, starting from 2.5.11, the default config file is either
+   personal ~/.fvwm/config or system wide $datadir/fvwm/config.
    So, we completely returned to the "fvwm" name.
 
 ----------------------------------------------------------------------
