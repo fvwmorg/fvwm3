@@ -630,7 +630,8 @@ static void parse_colorset(char *line)
   {
     Bool do_set_default_background = False;
 
-    if ((cs->color_flags & BG_AVERAGE) && cs->pixmap != None)
+    if ((cs->color_flags & BG_AVERAGE) && cs->pixmap != None &&
+        cs->pixmap != ParentRelative)
     {
       /* calculate average background color */
       XColor *colors;
@@ -711,7 +712,8 @@ static void parse_colorset(char *line)
 	  have_pixels_changed = True;
       }
     } /* user specified */
-    else if (bg == NULL && has_bg_changed)
+    else if ((bg == NULL && has_bg_changed) ||
+             ((cs->color_flags & BG_AVERAGE) && cs->pixmap == ParentRelative))
     {
       /* default */
       do_set_default_background = True;
