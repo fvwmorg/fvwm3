@@ -328,6 +328,12 @@
           (fw)->flags.was_icon_hint_provided = (x)
 #define SETM_WAS_ICON_HINT_PROVIDED(fw,x) \
           (fw)->flag_mask.was_icon_hint_provided = (x)
+#define WAS_ICON_NAME_PROVIDED(fw) \
+          ((fw)->flags.was_icon_name_provided)
+#define SET_WAS_ICON_NAME_PROVIDED(fw,x) \
+          (fw)->flags.was_icon_name_provided = (x)
+#define SETM_WAS_ICON_NAME_PROVIDED(fw,x) \
+          (fw)->flag_mask.was_icon_name_provided = (x)
 
 
 #endif /* _WINDOW_FLAGS_ */

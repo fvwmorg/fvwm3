@@ -297,6 +297,7 @@ typedef struct
 #define ICON_HINT_ONCE     1
 #define ICON_HINT_MULTIPLE 2
   unsigned was_icon_hint_provided : 2;
+  unsigned was_icon_name_provided : 1;
 } window_flags;
 
 /* Window mask for Circulate and Direction functions */

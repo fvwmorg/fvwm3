@@ -1064,8 +1064,11 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
   /* icon name */
   GET_NAME_PROPERTY(XGetWMIconName, tmp_win->w, &(tmp_win->icon_name),
 		    &(tmp_win->icon_name_list));
-  if(tmp_win->icon_name == (char *)NULL)
+  if (tmp_win->icon_name == NoName)
+  {
     tmp_win->icon_name = tmp_win->name;
+    SET_WAS_ICON_NAME_PROVIDED(tmp_win, 0);
+  }
 
   /* wait until the window is iconified and the icon window is mapped
    * before creating the icon window
@@ -1444,6 +1447,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* these are sent and broadcast before res_{class,name} for the benefit
    * of FvwmIconBox which can't handle M_ICON_FILE after M_RES_NAME */
   /****** icon and mini icon ******/
+  /* migo (20-Jan-2000): the logic is to unset this flag on NULL values */
+  SET_WAS_ICON_NAME_PROVIDED(tmp_win, 1);
   setup_icon(tmp_win, &style);
 #ifdef MINI_ICONS
   setup_mini_icon(tmp_win, &style);

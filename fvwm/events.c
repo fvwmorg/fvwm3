@@ -439,7 +439,7 @@ void HandlePropertyNotify(void)
      * if the icon name is NoName, set the name of the icon to be
      * the same as the window
      */
-    if (Tmp_win->icon_name == NoName)
+    if (!WAS_ICON_NAME_PROVIDED(Tmp_win))
     {
       Tmp_win->icon_name = Tmp_win->name;
       BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,
@@ -504,8 +504,12 @@ void HandlePropertyNotify(void)
       /* limit to prevent hanging X server */
       Tmp_win->icon_name[MAX_ICON_NAME_LEN] = 0;
 #endif
+    SET_WAS_ICON_NAME_PROVIDED(Tmp_win, 1);
     if (Tmp_win->icon_name == NULL)
-      Tmp_win->icon_name = NoName;
+    {
+      Tmp_win->icon_name = Tmp_win->name;
+      SET_WAS_ICON_NAME_PROVIDED(Tmp_win, 0);
+    }
     BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,
 		  (unsigned long)Tmp_win,Tmp_win->icon_name);
     RedoIconName(Tmp_win);

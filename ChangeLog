@@ -1,3 +1,14 @@
+2001-01-20  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/add_window.c (setup_icon, AddWindow):
+	* fvwm/events.c (HandleProperyNotify):
+	* fvwm/fvwm.h:
+	* fvwm/window_flags.h:
+	Fixed "Untitled" icon name; it is updated from window name as usual.
+	Implemented a full synchronization of window name and icon name when
+	no icon name is provided (it was only updated on the first change)
+	by adding a new window flag was_icon_name_provided.
+
 2001-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.c (main):
