@@ -468,6 +468,15 @@ static void RedrawBorder(
     w_shin = 0;
     sum--;
     trim--;
+    if (w_trin)
+    {
+      w_trout = 0;
+      w_trin = 0;
+      w_din = 0;
+      w_hiout = 1;
+      sum -= 2;
+      trim -= 2;
+    }
   }
   /* If the border is too thin to accomodate the standard look, we remove parts
    * of the border so that at least one pixel of the original colour is
