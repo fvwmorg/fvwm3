@@ -275,7 +275,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->boundary_width = 0;
 #endif /* SHAPE */
 
-  memcpy(&(tmp_win->gsfr_flags), sflags, sizeof(common_flags_type));
+  memcpy(&(tmp_win->flags), sflags, sizeof(common_flags_type));
   /* find a suitable icon pixmap */
   if(SHAS_ICON(sflags))
     {

@@ -1,3 +1,24 @@
+1999-04-18  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.c (Done): removed debugging code
+
+	* fvwm/builtins.c (MatchesConditionMask):
+	* fvwm/fvwm.h:
+	* fvwm/gsfr.h:
+	renamed gsfr_flag_mask to flag_mask
+
+	* fvwm/session.c:
+	* fvwm/module.c:
+	* fvwm/fvwm.h:
+	* fvwm/gsfr.h:
+	* fvwm/builtins.c (MatchesConditionMask):
+	* fvwm/add_window.c (AddWindow):
+	renamed gsfr_flags to flags
+
+	* fvwm/windowlist.c:
+	* fvwm/windows.c:
+ 	renamed file windows.c to windowlist.c
+
 1999-04-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/icons.c (DrawIconWindow): implement CDE-like raising
@@ -14,12 +35,12 @@
 	* fvwm/misc.c (RaiseWindow): use the hack for raising over
 	NT windows if Scr.go.RaiseHackNeeded is set.
 
-	* fvwm/builtins.c (SetGlobalOptions): allow to set 
+	* fvwm/builtins.c (SetGlobalOptions): allow to set
 	Scr.go.RaiseHackNeeded with the global options
 	RaiseOverNativeWindows/IgnoreNativeWindows.
 
 	* fvwm/fvwm2.1: Document the new global options
-	RaiseOverNativeWindows/IgnoreNativeWindows.	
+	RaiseOverNativeWindows/IgnoreNativeWindows.
 
 	* fvwm/fvwm.c:
 	* fvwm/builtins.c:
@@ -28,7 +49,7 @@
 
 	* fvwm/virtual.c (HandlePaging): ensure that HandlePaging
 	doesn't return false unless it really did change the viewport,
-	ie called MoveViewPort with nonzero delta_x, delta_y. The 
+	ie called MoveViewPort with nonzero delta_x, delta_y. The
 	previous logic could also return true if the pointer stayed
 	long enough on a pan frame where paging is not possible.
 
@@ -55,9 +76,9 @@ Sat Apr 17 13:55:41 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-04-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/screen.h (TOP_EDGE): 
-	(RIGHT_EDGE): 
-	(BOTTOM_EDGE): 
+	* fvwm/screen.h (TOP_EDGE):
+	(RIGHT_EDGE):
+	(BOTTOM_EDGE):
 	(LEFT_EDGE): separate cursor types for the pan frames.
 
 	* fvwm/fvwm.c (CreateCursors): initialize the _EDGE cursors
@@ -67,25 +88,25 @@ Sat Apr 17 13:55:41 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/builtins.c (CursorStyle): allow to change the _EDGE cursors.
 
-	* fvwm/fvwm2.1: 
+	* fvwm/fvwm2.1:
 	* NEWS: document the new cursors.
-	
+
 1999-04-16  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm2.1: expanded the introductory remarks on layers,
 	documented StaysOnBottom, more detailed explanation of the
 	override behaviour of Icon.
-	
-	* fvwm/windows.c (do_windowList): 
-	* fvwm/style.c (ProcessNewStyle): 
+
+	* fvwm/windows.c (do_windowList):
+	* fvwm/style.c (ProcessNewStyle):
 	* fvwm/fvwm.c:
 	* fvwm/screen.h (ScreenInfo): renamed OnTopLayer -->
 	TopLayer, StaysPutLayer --> DefaultLayer, new variable
 	BottomLayer.
 
-	* fvwm/builtins.c (SetDefaultLayers): set all three 
+	* fvwm/builtins.c (SetDefaultLayers): set all three
 	layer variables in the Scr struct.
-	
+
 	* fvwm/style.c (ProcessNewStyle): added style option
 	StaysOnBottom.
 

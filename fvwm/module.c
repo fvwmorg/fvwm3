@@ -495,7 +495,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
     PositiveWrite(i, body, (num_datum+HEADER_SIZE)*sizeof(body[0]));
 }
 
-/* this is broken, the gsfr_flags may not fit in a word */
+/* this is broken, the flags may not fit in a word */
 #define CONFIGARGS(_t) 24,\
             (_t)->w,\
             (_t)->frame,\
@@ -505,7 +505,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
             (_t)->frame_width,\
             (_t)->frame_height,\
             (_t)->Desk,\
-            (_t)->gsfr_flags,\
+            (_t)->flags,\
             (_t)->title_height,\
             (_t)->boundary_width,\
             ((_t)->hints.flags & PBaseSize) ? (_t)->hints.base_width : 0,\
@@ -584,7 +584,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
   old_flags |= HAS_MWM_BUTTONS(t)		? i : 0; i<<=1; \
   old_flags |= HAS_MWM_BORDER(t)		? i : 0; }
 #endif /* DISABLE_MBC */
-  
+
 void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 {
   SendPacket(module, event_type, CONFIGARGS(t));

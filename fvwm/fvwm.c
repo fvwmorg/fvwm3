@@ -1614,15 +1614,15 @@ void InitVariables(void)
   /* Initialize RaiseHackNeeded by identifying X servers
      possibly running under NT. This is probably not an
      ideal solution, since eg NCD also produces X servers
-     which do not run under NT. 
+     which do not run under NT.
 
-     "Hummingbird Communications Ltd." 
+     "Hummingbird Communications Ltd."
         is the ServerVendor string of the Exceed X server under NT,
 
      "Network Computing Devices Inc."
         is the ServerVendor string of the PCXware X server under Windows.
   */
-  Scr.go.RaiseHackNeeded = 
+  Scr.go.RaiseHackNeeded =
     (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0) ||
     (strcmp (ServerVendor (dpy), "Network Computing Devices Inc.") == 0);
   Scr.gs.EmulateMWM = False;
@@ -1762,12 +1762,8 @@ void Done(int restart, char *command)
       while(i<10)
         my_argv[i++] = NULL;
 
-      for (i = 0; i < 10; i++)
-	fprintf (stderr, "%s ", my_argv[i]);
-      fprintf(stderr, "\n");
       /* really need to destroy all windows, explicitly,
        * not sleep, but this is adequate for now */
-
       sleep(1);
       ReapChildren();
       if (command)

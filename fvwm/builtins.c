@@ -3429,8 +3429,8 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   Bool fMatchesResource;
   Bool fMatches;
 
-  if (cmp_masked_flags(&(fw->gsfr_flags), &(mask->gsfr_flags),
-		       &(mask->gsfr_flag_mask), sizeof(fw->gsfr_flags)) != 0)
+  if (cmp_masked_flags(&(fw->flags), &(mask->flags),
+		       &(mask->flag_mask), sizeof(fw->flags)) != 0)
     return 0;
 
   /*

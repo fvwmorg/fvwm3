@@ -307,7 +307,7 @@ typedef struct FvwmWindow
     int DeIconifyDesk;          /* Desk to deiconify to, for StubbornIcons */
     Window transientfor;
 
-    window_flags gsfr_flags;
+    window_flags flags;
     window_style style;
 
 #ifdef MINI_ICONS
@@ -354,8 +354,8 @@ typedef struct WindowConditionMask {
     unsigned use_circulate_skip : 1;
     unsigned use_circulate_skip_icon : 1;
   } my_flags;
-  window_flags gsfr_flags;
-  window_flags gsfr_flag_mask;
+  window_flags flags;
+  window_flags flag_mask;
   char *name;
   int layer;
 } WindowConditionMask;

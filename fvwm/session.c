@@ -48,7 +48,7 @@ typedef struct _match
   int                 desktop;
   int                 layer;
   int                 used;
-  window_flags        gsfr_flags;
+  window_flags        flags;
 }
 Match;
 
@@ -304,7 +304,7 @@ SaveWindowStates(FILE *f)
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
       fprintf(f, "  [FLAGS] ");
       for (i = 0; i < sizeof(window_flags); i++)
-	fprintf(f, "%02x ", (int)(((unsigned char *)&(ewin->gsfr_flags))[i]));
+	fprintf(f, "%02x ", (int)(((unsigned char *)&(ewin->flags))[i]));
       fprintf(f, "\n");
     }
   return 1;
@@ -348,7 +348,7 @@ LoadWindowStates(char *filename)
 	      matches[num_match - 1].icon_y = 0;
 	      matches[num_match - 1].desktop = 0;
 	      matches[num_match - 1].layer = 0;
-	      memset(&(matches[num_match - 1].gsfr_flags), 0,
+	      memset(&(matches[num_match - 1].flags), 0,
 		     sizeof(window_flags));
 	      matches[num_match - 1].used = 0;
 	    }
@@ -389,7 +389,7 @@ LoadWindowStates(char *filename)
 		{
 		    unsigned int f;
 		    sscanf(ts, "%02x ", &f);
-		    ((unsigned char *)&(matches[num_match-1].gsfr_flags))[i]
+		    ((unsigned char *)&(matches[num_match-1].flags))[i]
 		      = f;
 		    ts += 3;
 		}
