@@ -373,102 +373,102 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			on = 0;
 			cond++;
 		}
-		if (StrEquals(condition,"AcceptsFocus"))
+		if (StrEquals(cond,"AcceptsFocus"))
 		{
 			mask->my_flags.do_accept_focus = on;
 			mask->my_flags.use_do_accept_focus = 1;
 		}
-		else if (StrEquals(condition,"Focused"))
+		else if (StrEquals(cond,"Focused"))
 		{
 			mask->my_flags.needs_focus =
 				(on) ? NEEDS_TRUE : NEEDS_FALSE;
 		}
-		else if (StrEquals(condition,"HasPointer"))
+		else if (StrEquals(cond,"HasPointer"))
 		{
 			mask->my_flags.needs_pointer =
 				(on) ? NEEDS_TRUE : NEEDS_FALSE;
 		}
-		else if (StrEquals(condition,"Iconic"))
+		else if (StrEquals(cond,"Iconic"))
 		{
 			SET_ICONIFIED(mask, on);
 			SETM_ICONIFIED(mask, 1);
 		}
-		else if (StrEquals(condition,"Visible"))
+		else if (StrEquals(cond,"Visible"))
 		{
 			SET_PARTIALLY_VISIBLE(mask, on);
 			SETM_PARTIALLY_VISIBLE(mask, 1);
 		}
-		else if (StrEquals(condition,"PlacedByButton3"))
+		else if (StrEquals(cond,"PlacedByButton3"))
 		{
 			SET_PLACED_WB3(mask, on);
 			SETM_PLACED_WB3(mask, 1);
 		}
-		else if (StrEquals(condition,"Raised"))
+		else if (StrEquals(cond,"Raised"))
 		{
 			SET_FULLY_VISIBLE(mask, on);
 			SETM_FULLY_VISIBLE(mask, 1);
 		}
-		else if (StrEquals(condition,"Sticky"))
+		else if (StrEquals(cond,"Sticky"))
 		{
 			SET_STICKY(mask, on);
 			SETM_STICKY(mask, 1);
 		}
-		else if (StrEquals(condition,"Maximized"))
+		else if (StrEquals(cond,"Maximized"))
 		{
 			SET_MAXIMIZED(mask, on);
 			SETM_MAXIMIZED(mask, 1);
 		}
-		else if (StrEquals(condition,"Shaded"))
+		else if (StrEquals(cond,"Shaded"))
 		{
 			SET_SHADED(mask, on);
 			SETM_SHADED(mask, 1);
 		}
-		else if (StrEquals(condition,"Transient"))
+		else if (StrEquals(cond,"Transient"))
 		{
 			SET_TRANSIENT(mask, on);
 			SETM_TRANSIENT(mask, 1);
 		}
-		else if (StrEquals(condition,"PlacedByFvwm"))
+		else if (StrEquals(cond,"PlacedByFvwm"))
 		{
 			SET_PLACED_BY_FVWM(mask, on);
 			SETM_PLACED_BY_FVWM(mask, 1);
 		}
-		else if (StrEquals(condition,"CurrentDesk"))
+		else if (StrEquals(cond,"CurrentDesk"))
 		{
 			mask->my_flags.needs_current_desk = on;
 		}
-		else if (StrEquals(condition,"CurrentPage"))
+		else if (StrEquals(cond,"CurrentPage"))
 		{
 			mask->my_flags.needs_current_desk = on;
 			mask->my_flags.needs_current_page = on;
 		}
-		else if (StrEquals(condition,"CurrentGlobalPage"))
+		else if (StrEquals(cond,"CurrentGlobalPage"))
 		{
 			mask->my_flags.needs_current_desk = on;
 			mask->my_flags.needs_current_global_page = on;
 		}
-		else if (StrEquals(condition,"CurrentPageAnyDesk") ||
-			 StrEquals(condition,"CurrentScreen"))
+		else if (StrEquals(cond,"CurrentPageAnyDesk") ||
+			 StrEquals(cond,"CurrentScreen"))
 		{
 			mask->my_flags.needs_current_page = on;
 		}
-		else if (StrEquals(condition,"CurrentGlobbalPageAnyDesk"))
+		else if (StrEquals(cond,"CurrentGlobbalPageAnyDesk"))
 		{
 			mask->my_flags.needs_current_global_page = on;
 		}
-		else if (StrEquals(condition,"CirculateHit"))
+		else if (StrEquals(cond,"CirculateHit"))
 		{
 			mask->my_flags.use_circulate_hit = on;
 		}
-		else if (StrEquals(condition,"CirculateHitIcon"))
+		else if (StrEquals(cond,"CirculateHitIcon"))
 		{
 			mask->my_flags.use_circulate_hit_icon = on;
 		}
-		else if (StrEquals(condition,"CirculateHitShaded"))
+		else if (StrEquals(cond,"CirculateHitShaded"))
 		{
 			mask->my_flags.use_circulate_hit_shaded = on;
 		}
-		else if (StrEquals(condition,"State"))
+		else if (StrEquals(cond,"State"))
 		{
 			if (sscanf(tmp, "%d", &state) &&
 			    state >= 0 && state <= 31)
