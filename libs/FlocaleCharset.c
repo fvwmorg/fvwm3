@@ -506,7 +506,7 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf)
 	{
 		flf->fc = FlocaleCharsetOfFontStruct(dpy, flf->font);
 	}
-	if (flf->fc == NULL || flf->fc = FlocaleGetUnsetCharset())
+	if (flf->fc == NULL || flf->fc == FlocaleGetUnsetCharset())
 	{
 		flf->fc = &UnkownCharset;
 	}
