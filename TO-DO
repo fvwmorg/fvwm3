@@ -10,6 +10,25 @@ too...
 
 ----------------------------------------------------------------------
 
+Cleanups:
+
+  - Reindent the code and implement coding conventions(minimal).
+  - Remove texture and Bradys config from the distribution (make a
+    new distribution for that stuff?)
+  - Make fvwmlib a shared lib?
+  - Copyrights (GPL?)
+
+----------------------------------------------------------------------
+
+Administration:
+
+  - Implement a bug tracking system
+  - Copy the entries from the debian bug tracking system
+    http://www.debian.org/Bugs/db/pa/lfvwm2.html
+  -
+
+----------------------------------------------------------------------
+
 Doc cleanups:
 
   - Add to FAQ
@@ -57,6 +76,8 @@ Bugfixes:
 ----------------------------------------------------------------------
 
 New stuff:
+
+  - Official themes support
 
   - Allow resizing to leave the x/y ratio intact?
 
