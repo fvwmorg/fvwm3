@@ -48,6 +48,12 @@ Changes in alpha release 2.5.3 (not released yet)
   or vice versa no longer work as like before.  Remove the second
   line to fix the problem.
 
+* New color limit method for screens that only display 256 colors (or less)
+
+* In depth less or equal to 16 image and gradient can be dithered. This
+can be enabled/disabled by using the new dither/nodither options to
+the Colorset coomand
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

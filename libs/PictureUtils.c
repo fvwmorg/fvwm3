@@ -73,18 +73,35 @@ typedef struct
 {
 	XColor color;               /* rgb color info */
 	unsigned long alloc_count;  /* nbr of allocation */
-} PColorInfo;
+} PColor;
 
 typedef struct
 {
+	/*
+	 * info for colors table (depth <= 8)
+	 */
+	/* color cube used */
 	short nr;
 	short ng;
 	short nb;
+	/* grey palette def, nbr of grey = 2^grey_bits */
 	short grey_bits;
+	/* color cube used for dithering with the named table */
 	short d_nr;
 	short d_ng;
 	short d_nb;
-} PTableInfo;
+       /* info for depth > 8 */
+	int red_shift;
+	int green_shift;
+	int blue_shift;
+	int red_prec;
+	int green_prec;
+	int blue_prec;
+	/* for dithering in depth 15 and 16 */
+	unsigned short *red_dither;
+	unsigned short *green_dither;
+	unsigned short *blue_dither;
+} PColorsInfo;
 
 typedef struct {
     int cols_index;
@@ -98,12 +115,13 @@ static int get_color_index(int r, int g, int b, int is_8);
 /* ---------------------------- local variables ----------------------------- */
 
 static int PColorLimit = 0;
-static PColorInfo *Pct = NULL;
+static PColor *Pct = NULL;
 static short *PMappingTable = NULL;
 static short *PDitherMappingTable = NULL;
 static Bool PStrictColorLimit = 0;
 static Bool PAllocTable = 0;
-static PTableInfo Pti;
+static PColorsInfo Pcsi = { 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL};
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -116,7 +134,8 @@ static PTableInfo Pti;
  * ***************************************************************************/
 
 static
-void decompose_mask(unsigned long mask, int *shift, int *prec)
+void decompose_mask(
+	unsigned long mask, int *shift, int *prec)
 {
 	*shift = 0;
 	*prec = 0;
@@ -240,13 +259,6 @@ int alloc_color_in_pct(XColor *c, int index)
 
 int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
 {
-	static int red_shift = 0;
-	static int green_shift = 0;
-	static int blue_shift = 0;
-	static int red_prec = 0;
-	static int green_prec = 0;
-	static int blue_prec = 0;
-	static Bool init = False;
 
 	if (PStrictColorLimit && Pct != NULL)
 	{
@@ -295,16 +307,20 @@ int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
 		return alloc_color_in_pct(c, index);
 	}
 	/* Pdepth > 8 */
-	if (!init)
+	if (Pcsi.red_shift == 0)
 	{
-		init = True;
-		decompose_mask(Pvisual->red_mask, &red_shift, &red_prec);
-		decompose_mask(Pvisual->green_mask, &green_shift, &green_prec);
-		decompose_mask(Pvisual->blue_mask, &blue_shift, &blue_prec);
+		decompose_mask(
+			Pvisual->red_mask,&Pcsi.red_shift,&Pcsi.red_prec);
+		decompose_mask(
+			Pvisual->green_mask,&Pcsi.green_shift,&Pcsi.green_prec);
+		decompose_mask(
+			Pvisual->blue_mask,&Pcsi.blue_shift,&Pcsi.blue_prec);
 	}
-	c->pixel= (Pixel)((((c->red) >> (16 - red_prec)) << red_shift) +
-			  (((c->green) >> (16 - green_prec)) << green_shift) +
-			  (((c->blue) >> (16 - blue_prec)) << blue_shift));
+	c->pixel = (Pixel)(
+		((c->red   >> (16 - Pcsi.red_prec))   << Pcsi.red_shift) +
+		((c->green >> (16 - Pcsi.green_prec)) << Pcsi.green_shift) +
+		((c->blue  >> (16 - Pcsi.blue_prec))  << Pcsi.blue_shift)
+		);
 	return 1;
 }
 
@@ -316,11 +332,11 @@ int my_dither(int x, int y, XColor *c)
 	int index;
 	const char *dmp;
 
-	if (Pti.grey_bits != 0)
+	if (Pcsi.grey_bits != 0)
 	{
-		int prec = Pti.grey_bits;
+		int prec = Pcsi.grey_bits;
 
-		if (Pti.grey_bits == 1)
+		if (Pcsi.grey_bits == 1)
 		{
 			/* FIXME, can we do a better dithering */
 			prec = 2;
@@ -329,27 +345,27 @@ int my_dither(int x, int y, XColor *c)
 		index = (c->green + ((c->blue + c->red) >> 1)) >> 1;
 		index += (dmp[(0 + x) & (DM_WIDTH - 1)] << 2) >> prec;
 		index = (index - (index >> prec));
-		index = index >> (8 - Pti.grey_bits);
+		index = index >> (8 - Pcsi.grey_bits);
 	}
 	else
 	{
 		int dith, rs, gs, bs, gb, b;
 
-		if (Pti.d_nr > 0)
+		if (Pcsi.d_nr > 0)
 		{
-			rs = Pti.d_nr - 1;
-			gs = Pti.d_ng - 1;
-			bs = Pti.d_nb - 1;
-			gb = Pti.d_ng*Pti.d_nb;
-			b = Pti.d_nb;
+			rs = Pcsi.d_nr - 1;
+			gs = Pcsi.d_ng - 1;
+			bs = Pcsi.d_nb - 1;
+			gb = Pcsi.d_ng*Pcsi.d_nb;
+			b = Pcsi.d_nb;
 		}
 		else
 		{
-			rs = Pti.nr - 1;
-			gs = Pti.ng - 1;
-			bs = Pti.nb - 1;
-			gb = Pti.ng*Pti.nb;
-			b = Pti.nb;
+			rs = Pcsi.nr - 1;
+			gs = Pcsi.ng - 1;
+			bs = Pcsi.nb - 1;
+			gb = Pcsi.ng*Pcsi.nb;
+			b = Pcsi.nb;
 		}
 		dmp = DM[(0 + y) & (DM_HEIGHT - 1)];
 		dith = (dmp[(0 + x) & (DM_WIDTH - 1)] << 2) | 7;
@@ -365,42 +381,183 @@ int my_dither(int x, int y, XColor *c)
 	return index;
 }
 
+static
+int my_dither_depth_15_16_init(void)
+{
+	const unsigned char _dither_44[4][4] =
+	{
+		{0, 4, 1, 5},
+		{6, 2, 7, 3},
+		{1, 5, 0, 4},
+		{7, 3, 6, 2}
+	};
+	int y,x,i;
+	int rm = 0xf8, re = 0x7, gm = 0xfc, ge = 0x3, bm = 0xf8, be = 0x7;
+	
+	if (Pdepth == 16 && (Pvisual->red_mask == 0xf800) &&
+	    (Pvisual->green_mask == 0x7e0) &&
+	    (Pvisual->blue_mask == 0x1f))
+	{
+		/* ok */
+	}
+	else if (Pdepth == 15 && (Pvisual->red_mask == 0x7c00) &&
+		 (Pvisual->green_mask == 0x3e0) &&
+		 (Pvisual->blue_mask == 0x1f))
+	{
+		gm = 0xf8; ge = 0x7;
+	}
+	else
+	{
+		return 2; /* fail */
+	}
+
+	Pcsi.red_dither =
+		(unsigned short *)safemalloc(4*4*256*sizeof(unsigned short));
+	Pcsi.green_dither =
+		(unsigned short *)safemalloc(4*4*256*sizeof(unsigned short));
+	Pcsi.blue_dither =
+		(unsigned short *)safemalloc(4*4*256*sizeof(unsigned short));
+
+	for (y = 0; y < 4; y++)
+	{
+		for (x = 0; x < 4; x++)
+		{
+			for (i = 0; i < 256; i++)
+			{
+				if ((_dither_44[x][y] < (i & re)) &&
+				    (i < (256 - 8)))
+				{
+					Pcsi.red_dither[
+						(x << 10) | (y << 8) | i] =
+						((i + 8) & rm) << 8;
+				}
+				else
+				{
+					Pcsi.red_dither[
+						(x << 10) | (y << 8) | i] =
+						(i & rm) << 8;
+				}
+				if ((_dither_44[x][y] < ((i & ge) << 1))
+				    && (i < (256 - 4)))
+				{
+					Pcsi.green_dither[
+						(x << 10) | (y << 8) | i] =
+						((i + 4) & gm) << 8;
+				}
+				else
+				{
+					Pcsi.green_dither[
+						(x << 10) | (y << 8) | i] =
+						(i & gm) << 8;
+				}
+				if ((_dither_44[x][y] < (i & be)) &&
+				    (i < (256 - 8)))
+				{
+					Pcsi.blue_dither[
+						(x << 10) | (y << 8) | i] =
+						((i + 8) & bm) << 8;
+				}
+				else
+				{
+					Pcsi.blue_dither[
+						(x << 10) | (y << 8) | i] =
+						(i & bm) << 8;
+				}
+			}
+		}
+	}
+	return 1;
+}
+
 int PictureAllocColorAllProp(
 	Display *dpy, Colormap cmap, XColor *c, int x, int y,
 	Bool no_limit, Bool is_8, Bool do_dither)
 {
 	int index;
+	static int dither_ok = 0; /* not initalized, 1 ok, 2 init fail */
+	int switcher =
+		(do_dither && dither_ok != 2 && !no_limit &&
+		 Pdepth <= 16)? Pdepth:0;
 
-	if (Pct == NULL || no_limit)
+	if (dither_ok == 0 && (switcher == 15 || switcher == 16))
 	{
-		if (is_8)
+		/* init dithering in depth 15 and 16 */
+		if (Pcsi.red_shift == 0)
 		{
-			c->red = c->red*257;
-			c->green = c->green*257;
-			c->blue = c->blue*257;
+			decompose_mask(
+				Pvisual->red_mask,
+				&Pcsi.red_shift,
+				&Pcsi.red_prec);
+			decompose_mask(
+				Pvisual->green_mask,
+				&Pcsi.green_shift,
+				&Pcsi.green_prec);
+			decompose_mask(
+				Pvisual->blue_mask,
+				&Pcsi.blue_shift,
+				&Pcsi.blue_prec);
 		}
-		return PictureAllocColor(dpy, cmap, c, no_limit);
-	}
-	if (!is_8)
-	{
-#if 0
-		c->red = c->red/257;
-		c->green = c->green/257;
-		c->blue = c->blue/257;
-#else
-		c->red = c->red >> 8;
-		c->green = c->green >> 8;
-		c->blue = c->blue >> 8;
-#endif
-	}
-	if (!do_dither)
-	{
-		index = get_color_index(c->red,c->green,c->blue, True);
-		return alloc_color_in_pct(c, index);
+		dither_ok = my_dither_depth_15_16_init();
+		if (dither_ok == 2)
+		{
+			switcher = 0;
+		}
 	}
 
-	index = my_dither(x, y, c);
-	return alloc_color_in_pct(c, index);
+	switch(switcher)
+	{
+	case 0: /* no dithering and maybe no_limit */
+		if (Pct == NULL || no_limit)
+		{
+			if (is_8)
+			{
+				c->red = c->red*257;
+				c->green = c->green*257;
+				c->blue = c->blue*257;
+			}
+			return PictureAllocColor(dpy, cmap, c, no_limit);
+		}
+
+		/* Pdepth <= 8, no dither */
+		index = get_color_index(c->red,c->green,c->blue, is_8);
+		return alloc_color_in_pct(c, index);
+		break;
+	case 16: /* depth 15 or 16 and dithering */
+	case 15:
+		if (!is_8)
+		{
+			c->red = c->red >> 8;
+			c->green = c->green >> 8;
+			c->blue = c->blue >> 8;
+		}
+		c->red = Pcsi.red_dither[
+			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
+			((c->red) & 0xff)] * 257;
+		c->green = Pcsi.green_dither[
+			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
+			((c->green) & 0xff)] * 257;
+		c->blue = Pcsi.blue_dither[
+			(((x + 0) & 0x3) << 10) | ((y & 0x3) << 8) |
+			((c->blue) & 0xff)] * 257;
+		c->pixel = (Pixel)(
+			((c->red >> (16 - Pcsi.red_prec)) << Pcsi.red_shift) +
+			((c->green >> (16 - Pcsi.green_prec))
+			 << Pcsi.green_shift) +
+			((c->blue >> (16 - Pcsi.blue_prec)) << Pcsi.blue_shift)
+			);
+		return 1;
+		break;
+	default: /* Pdepth <= 8, dithering */
+		if (!is_8)
+		{
+			c->red = c->red >> 8;
+			c->green = c->green >> 8;
+			c->blue = c->blue >> 8;
+		}
+		index = my_dither(x, y, c);
+		return alloc_color_in_pct(c, index);
+		break;
+	}
 }
 
 void PictureFreeColors(
@@ -510,15 +667,15 @@ int get_color_index(int r, int g, int b, int is_8)
 		g= g >> 8;
 		b= b >> 8;
 	}
-	if (Pti.grey_bits > 0)
+	if (Pcsi.grey_bits > 0)
 	{
-		index = ((r+g+b)/3) >> (8 - Pti.grey_bits);
+		index = ((r+g+b)/3) >> (8 - Pcsi.grey_bits);
 	}
 	else
 	{
-		index = ((r * Pti.nr)>>8) * Pti.ng*Pti.nb +
-			((g * Pti.ng)>>8) * Pti.nb +
-			((b * Pti.nb)>>8);
+		index = ((r * Pcsi.nr)>>8) * Pcsi.ng*Pcsi.nb +
+			((g * Pcsi.ng)>>8) * Pcsi.nb +
+			((b * Pcsi.nb)>>8);
 		if (PMappingTable != NULL)
 		{
 			index = PMappingTable[index];
@@ -593,53 +750,53 @@ static
 void create_mapping_table(
 	int nr, int ng, int nb, int grey_bits, Bool use_named)
 {
-	Pti.d_nr = Pti.d_ng = Pti.d_nb = 0;
+	Pcsi.d_nr = Pcsi.d_ng = Pcsi.d_nb = 0;
 	if (!use_named || PColorLimit == 0)
 	{
 		/* pure color cube */
-		Pti.nr = nr;
-		Pti.ng = ng;
-		Pti.nb = nb;
-		Pti.grey_bits = grey_bits;
+		Pcsi.nr = nr;
+		Pcsi.ng = ng;
+		Pcsi.nb = nb;
+		Pcsi.grey_bits = grey_bits;
 	}
 	else if (PColorLimit == 2)
 	{
 		/* ok */
-		Pti.nr = 0;
-		Pti.ng = 0;
-		Pti.nb = 0;
-		Pti.grey_bits = 1;
+		Pcsi.nr = 0;
+		Pcsi.ng = 0;
+		Pcsi.nb = 0;
+		Pcsi.grey_bits = 1;
 	}
 	else /* named table */
 	{
 		/* dither table should be small */
 		if (PColorLimit <= 9)
 		{
-			Pti.d_nr = 3;
-			Pti.d_ng = 3;
-			Pti.d_nb = 3;
+			Pcsi.d_nr = 3;
+			Pcsi.d_ng = 3;
+			Pcsi.d_nb = 3;
 		}
 		else
 		{
-			Pti.d_nr = 4;
-			Pti.d_ng = 4;
-			Pti.d_nb = 4;
+			Pcsi.d_nr = 4;
+			Pcsi.d_ng = 4;
+			Pcsi.d_nb = 4;
 		}
 		PDitherMappingTable =
-			build_mapping_table(Pti.d_nr, Pti.d_ng, Pti.d_nb);
+			build_mapping_table(Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb);
 		if (PColorLimit <= 9)
 		{
-			Pti.nr = 8;
-			Pti.ng = 8;
-			Pti.nb = 8;
+			Pcsi.nr = 8;
+			Pcsi.ng = 8;
+			Pcsi.nb = 8;
 		}
 		else
 		{
-			Pti.nr = 16;
-			Pti.ng = 16;
-			Pti.nb = 16;
+			Pcsi.nr = 16;
+			Pcsi.ng = 16;
+			Pcsi.nb = 16;
 		}
-		PMappingTable = build_mapping_table(Pti.nr, Pti.ng, Pti.nb);
+		PMappingTable = build_mapping_table(Pcsi.nr, Pcsi.ng, Pcsi.nb);
 	}
 
 }
@@ -688,7 +845,7 @@ void PictureReduceColorName(char **my_color)
 #define PICTURE_TABLETYPE_LENGHT    7
 
 static
-void free_table_colors(PColorInfo *color_table, int npixels)
+void free_table_colors(PColor *color_table, int npixels)
 {
 	Pixel pixels[256];
 	int i,n=0;
@@ -743,15 +900,15 @@ int get_nbr_of_free_colors(int max_check)
 }
 
 static
-PColorInfo *alloc_color_cube(
+PColor *alloc_color_cube(
 	int nr, int ng, int nb, int grey_bits, Bool do_allocate)
 {
 	int r, g, b, grey, i;
-	PColorInfo *color_table;
+	PColor *color_table;
 	XColor color;
 	int size = nr*ng*nb + (1 << grey_bits)*(grey_bits != 0);
 
-	color_table = (PColorInfo *)safemalloc((size+1) * sizeof(PColorInfo));
+	color_table = (PColor *)safemalloc((size+1) * sizeof(PColor));
 
 	i = 0;
 
@@ -830,7 +987,7 @@ PColorInfo *alloc_color_cube(
 
 
 static
-PColorInfo *alloc_named_ct(int *limit, Bool do_allocate)
+PColor *alloc_named_ct(int *limit, Bool do_allocate)
 {
 
 /* First thing in base array are colors probably already in the color map
@@ -906,11 +1063,11 @@ PColorInfo *alloc_named_ct(int *limit, Bool do_allocate)
 	};
 	int NColors = sizeof(color_names)/sizeof(char *);
 	int i,rc;
-	PColorInfo *color_table;
+	PColor *color_table;
 	XColor color;
 
 	*limit = (*limit > NColors)? NColors: *limit;
-	color_table = (PColorInfo *)safemalloc((*limit+1) * sizeof(PColorInfo));
+	color_table = (PColor *)safemalloc((*limit+1) * sizeof(PColor));
 	for(i=0; i<*limit; i++)
 	{
 		rc=XParseColor(Pdpy, Pcmap, color_names[i], &color);

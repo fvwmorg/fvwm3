@@ -1,3 +1,24 @@
+2002-08-13  olicha  <olivier.chapuis@free.fr>
+
+	* NEWS:
+	Color limit and dithering news
+	
+	* fvwm/fvwm.1:
+	Added a minimal doc for the -color-limit option
+
+	* fvwm/builtins.c (CMD_ColorLimit):
+	ColorLimit is obsolete
+
+	* fvwm/builtins.c (ReadDecorFace):
+	* libs/PictureUtils.c (my_dither_depth_15_16_init):
+	(PictureAllocColorAllProp): 
+	Implemented dithering for depth 16 and 15. This is off by default
+	in colorset (use the dither colorset option) and on by default
+	for window title gradient. Gradient are visibly more smooth.
+
+	* libs/PictureUtils.c (*):
+	Some cleanup
+	
 2002-08-13  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.1:

@@ -1304,7 +1304,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				return False;
 			}
 			/* grab the colors */
-			if (Pdepth <= 8)
+			if (Pdepth <= 16)
 			{
 				do_dither = True;
 			}
@@ -3160,50 +3160,12 @@ void CMD_Emulate(F_CMD_ARGS)
 	return;
 }
 
-/*
- * The ColorLimit command is  ignored if the  user has no reason to limit
- * color.  This is so the   same configuration will work on  colorlimited
- * and   non-colorlimited  displays  without    resorting   to using    a
- * preprocessor.
- *
- * Lets assume  the display is  no more  than  2000x1000 pixels. Ie.  the
- * display can display no more than 2,000,000 million  pixels at once.  A
- * display depth of 21 will display 2  million colors at once.  Hence the
- * logic below.
- *
- * dje 03/22/99
- */
-/* It is also ignored if the colormap is static i.e you can't run out */
 void CMD_ColorLimit(F_CMD_ARGS)
 {
-#ifndef USE_OLD_COLOR_LIMIT_METHODE
 	fvwm_msg(
 		WARN, "ColorLimit", "ColorLimit is obsolete,\n\tuse the "
-		"FVWM_COLORLIMIT environment variable");
-#else
-	int val;
+		"fvwm -color-limit option");
 
-	/* from X.h:
-	 * Note that the statically allocated ones are even numbered and the
-	 * dynamically changeable ones are odd numbered */
-	if (!(Pvisual->class & 1))
-	{
-		return;
-	}
-	if (Pdepth > 20)
-	{
-		/* if more than 20 bit color ignore the limit */
-		return;
-	}
-	if (GetIntegerArguments(action, NULL, &val, 1) != 1)
-	{
-		fvwm_msg(ERR, "SetColorLimit",
-			 "ColorLimit requires one argument");
-		return;
-	}
-
-	Scr.ColorLimit = (long)val;
-#endif
 	return;
 }
 

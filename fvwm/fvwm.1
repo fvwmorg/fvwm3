@@ -90,7 +90,8 @@ fvwm \- F(?) Virtual Window Manager (version 2) for X11
 .IR       visual_class ]
 .RB [ \-visualId
 .IR       id ]
-
+.RB [ \-color\-limit
+.IR       cl ]
 .SH DESCRIPTION
 
 Fvwm is a window manager for X11.  It is designed to minimize
@@ -245,7 +246,20 @@ as the visualId for the window borders and menus.
 .I id
 can be specified as N for decimal or 0xN for hexadecimal. See man
 page of xdpyinfo for a list of supported visuals.
-
+.TP
+.BI "-color-limit " limit[:A]
+.\"needs_lang_check
+Specifies a
+.I limit
+on the colors used in image, gradient and possibly simple colors used
+by fvwm. The optional
+.I A
+should be a sequence of 0 and 1's and allows fine tuning of how fvwm
+limit the colors. This option is useful only with screens that only
+display 256 colors (or less). The default depends on your X server and
+the conditions you run fvwm. A more detailed description of this option
+will be added later.
+.\"end
 
 .SH ANATOMY OF A WINDOW
 
@@ -3149,39 +3163,44 @@ to the default.
 
 .TP
 .BI "ColorLimit " limit
-Specifies a
-.I limit
-on the colors used in pixmaps used by fvwm. Zero (the default)
-sets no limit.  Fvwm uses pixmaps for icons, mini-icons, and
-pixmap borders, menu backgrounds and titles. This command limits
-pixmap colors to a set of colors that starts out with common
-colors.  The current list contains about 60 colors and starts with
-white, black, grey, green, blue, red, cyan, yellow, and magenta.
-The command
-.EX
-ColorLimit 9
-.EE
-would limit pixmaps to these 9 colors.
-
-It makes the most sense to put this command at the front of the
-.I .fvwm2rc
-file.  This command should occur before any menu definitions that
-contain mini-icons.
-
-Solid frame and title colors (including shadows and gradients) are
-not controlled by this command.
-
-This command only makes sense on screens that display a limited
-number of colors at once.  If your  display can display more than
-2 million colors at once, this command is ignored.  Screens that
-only display 256 colors at once are known as 8 bit displays. The 2
-million color cutoff point corresponds to 21 bit color, the most
-common screen that exceeds this limit would be 24 bit.
-
-On 8 bit displays, the default color limit is set to the size of
-the built in table (about 60).  We recommend that you start with
-the default value, and not include this command in your
-.IR .fvwm2rc .
+.\"needs_lang_check
+This command is obsolete. See the
+.I -color-limit
+option to fvwm.
+.\"
+.\"Specifies a
+.\".I limit
+.\"on the colors used in pixmaps used by fvwm. Zero (the default)
+.\"sets no limit.  Fvwm uses pixmaps for icons, mini-icons, and
+.\"pixmap borders, menu backgrounds and titles. This command limits
+.\"pixmap colors to a set of colors that starts out with common
+.\"colors.  The current list contains about 60 colors and starts with
+.\"white, black, grey, green, blue, red, cyan, yellow, and magenta.
+.\"The command
+.\".EX
+.\"ColorLimit 9
+.\".EE
+.\"would limit pixmaps to these 9 colors.
+.\"
+.\"It makes the most sense to put this command at the front of the
+.\".I .fvwm2rc
+.\"file.  This command should occur before any menu definitions that
+.\"contain mini-icons.
+.\"
+.\"Solid frame and title colors (including shadows and gradients) are
+.\"not controlled by this command.
+.\"
+.\"This command only makes sense on screens that display a limited
+.\"number of colors at once.  If your  display can display more than
+.\"2 million colors at once, this command is ignored.  Screens that
+.\"only display 256 colors at once are known as 8 bit displays. The 2
+.\"million color cutoff point corresponds to 21 bit color, the most
+.\"common screen that exceeds this limit would be 24 bit.
+.\"
+.\"On 8 bit displays, the default color limit is set to the size of
+.\"the built in table (about 60).  We recommend that you start with
+.\"the default value, and not include this command in your
+.\".IR .fvwm2rc .
 
 .TP
 .BI "ColormapFocus " FollowsMouse | FollowsFocus
