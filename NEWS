@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.14"_-_2.4.14_+_/A_-_.
+_+_A HREF="#2.4.15"_-_2.4.15_+_/A_-_.
 
 -------------------------------------------------------------------
 
@@ -495,9 +495,55 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 -------------------------------------------------------------------
 
-_+_A NAME="2.4.12"_-_
-Changes in stable release 2.4.13 (1-Nov-2002)
+_+_A NAME="2.4.15"_-_
+Changes in stable release 2.4.15 (24-Jan-2003)
 _+_/A_-_
+
+* Fix for gmplayer launched by fvwm.  Close stdin on Exec so the
+  exec'd process knows its not running interactively.
+
+* Windows using the WindowListSkip style do not appear in the
+  FvwmTaskBar at random.
+
+* Fixed a memory leak in ChangeIcon, ChangeForeColor and
+  ChangeBackColor FvwmScript Instruction.
+
+* Fixed a core dump in the parsing of FvwmAuto arguments.
+
+* Fixed screwed calculation of icon picture size when application
+  specifies it explicitly.
+
+* The option ShowOnlyIcons now works as described in the
+  FvwmIconMan man page.  It was accidentally named ShowOnlyIconic
+  before.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.14 (29-Nov-2002)
+
+* Modules do not crash anymore when more than 126 windows are on
+  the desktop.
+
+* FvwmIconMan displays windows correctly that were iconified and
+  then moved to another page.
+
+* Application provided icon windows no longer appear at 0 0 when
+  restarting.
+
+* The built-in session management can handle window names, classes
+  etc. beginning with whitespace (textedit).
+
+* Removed the flawed "A"ny context key binding patch from 2.4.13.
+
+* The default EdgeScroll (if not specified) was incorrectly
+  assumed to be 100 pixels instead of 100 percents.
+
+* Icons no longer appear on top of all other windows after a
+  restart.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.13 (1-Nov-2002)
 
 * Icon titles for windows with an icon position hint no longer
   appear at random places.
