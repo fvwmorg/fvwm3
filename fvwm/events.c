@@ -164,12 +164,15 @@ void InitEventHandlerJumpTable(void)
  *	DispatchEvent - handle a single X event stored in global var Event
  *
  ************************************************************************/
-void DispatchEvent(void)
+void DispatchEvent(Bool preserve_Tmp_win)
 {
   Window w = Event.xany.window;
+  FvwmWindow *s_Tmp_win;
 
   DBUG("DispatchEvent","Routine Entered");
 
+  if (preserve_Tmp_win)
+    s_Tmp_win = Tmp_win;
   StashEventTime(&Event);
 
   XFlush(dpy);
@@ -178,7 +181,8 @@ void DispatchEvent(void)
   last_event_type = Event.type;
   last_event_window = w;
 
-  if (EventHandlerJumpTable[Event.type]) {
+  if (EventHandlerJumpTable[Event.type])
+  {
     /* clear the rubber band outline, this is NOP if it doesn't exist */
     MoveOutline(Scr.Root, 0, 0, 0, 0);
     (*EventHandlerJumpTable[Event.type])();
@@ -191,6 +195,8 @@ void DispatchEvent(void)
   alloca(0);
 #endif
 
+  if (preserve_Tmp_win)
+    Tmp_win = s_Tmp_win;
   DBUG("DispatchEvent","Leaving Routine");
   return;
 }
@@ -217,7 +223,7 @@ void HandleEvents(void)
       last_event_type = 0;
       if(My_XNextEvent(dpy, &Event))
 	{
-	  DispatchEvent ();
+	  DispatchEvent(False);
 	}
     }
 }

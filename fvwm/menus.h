@@ -221,7 +221,7 @@ typedef struct MenuRootStatic
     MenuItem *last;	/* last item in menu */
 
     int copies;         /* # of copies, 0 if none except this one */
-
+    int usage_count;    /* # of mapped instances */
     char *name;			/* name of root */
     short height;		/* height of the menu */
     short width0;               /* width of the menu-left-picture col */
@@ -239,7 +239,6 @@ typedef struct MenuRootStatic
     struct
     {
       unsigned is_background_set : 1; /* is win background set? */
-      unsigned is_in_use : 1;
       unsigned is_painted : 1;
       unsigned is_continuation_menu : 1;
       unsigned is_left : 1;   /* menu direction relative to parent menu */
@@ -263,6 +262,7 @@ typedef struct MenuRootStatic
 #define MR_FIRST_ITEM(m)    ((m)->s->first)
 #define MR_LAST_ITEM(m)     ((m)->s->last)
 #define MR_COPIES(m)        ((m)->s->copies)
+#define MR_MAPPED_COPIES(m) ((m)->s->usage_count)
 #define MR_NAME(m)          ((m)->s->name)
 #define MR_HEIGHT(m)        ((m)->s->height)
 #define MR_WIDTH0(m)        ((m)->s->width0)
@@ -315,7 +315,6 @@ typedef struct MenuRootDynamic
 #ifdef GRADIENT_BUTTONS
 #define MR_STORED_ITEM(m)           ((m)->d->stored_item)
 #endif
-
 
 
 typedef struct MenuRoot
@@ -388,7 +387,8 @@ typedef struct
  * before */
 /* This is a lame hack, in that "_BUTTON" is added to mean a button-release
    caused the return-- the macros below help deal with the ugliness */
-typedef enum {
+typedef enum
+{
     MENU_ERROR = -1,
     MENU_NOP = 0,
     MENU_DONE = 1,
@@ -439,7 +439,6 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 void MakeMenu(MenuRoot *);
-Bool PopUpMenu(MenuRoot *, int, int);
 MenuStatus do_menu(MenuParameters *pmp);
 MenuRoot *FindPopup(char *popup_name);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
@@ -457,4 +456,3 @@ void SetMenuCursor(Cursor cursor);
 
 
 #endif /* _MENUS_ */
-

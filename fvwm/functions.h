@@ -76,6 +76,9 @@ extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 		     unsigned long context, int Module,
 		     expand_command_type expand_cmd);
+void ExecuteFunctionSaveTmpWin(char *Action, FvwmWindow *tmp_win,
+			       XEvent *eventp, unsigned long context,
+			       int Module, expand_command_type expand_cmd);
 void AddToFunction(FvwmFunction *func, char *action);
 
 #endif /* _FUNCTIONS_ */

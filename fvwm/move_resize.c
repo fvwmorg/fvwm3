@@ -865,7 +865,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	} /* switch */
       if(!done)
 	{
-	  DispatchEvent();
+	  DispatchEvent(False);
 	  if(!opaque_move)
 	    MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
 	}
@@ -1331,7 +1331,7 @@ void resize_window(F_CMD_ARGS)
 	}
       if(!done)
 	{
-	  DispatchEvent();
+	  DispatchEvent(False);
 	  MoveOutline(Scr.Root, drag->x, drag->y,
 		      drag->width - 1,
 		      drag->height - 1);

@@ -16,7 +16,7 @@
 #ifndef _EVENTS_
 #define _EVENTS_
 
-void DispatchEvent(void);
+void DispatchEvent(Bool preserve_Tmp_win);
 int GetContext(FvwmWindow *, XEvent *, Window *dummy);
 int My_XNextEvent(Display *dpy, XEvent *event);
 void InitEventHandlerJumpTable(void);

@@ -1,3 +1,35 @@
+1999-05-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (ReadButtonFace): removed stray fprintf
+
+	* fvwm/menus.c: more work on multiple menu instances and tear-off menus
+
+	* menus.c: use ExecuteFunctionSaveTmpWin
+
+	* fvwm/functions.c (ExecuteFunctionSaveTmpWin): wrapper around
+	ExecuteFunction that restores Tmp_win
+
+	* fvwm/menus.c (MakeMenu):
+	(MakeMenuWindow):
+ 	Split off dynamic part of MakeMenu and moved it to new function.
+
+	* fvwm/menus.c (MenuInteraction):
+	Backed out ret_event argument. We can safely continue to use the global
+	Event. Caused a bug when executing functions from window menus.
+
+	* fvwm/events.c (HandleEvents):
+	* fvwm/functions.c (DeferExecution):
+	* fvwm/move_resize.c (resize_window):
+	(moveLoop):
+	* fvwm/builtins.c (wait_func):
+	* fvwm/menus.c (MenuInteraction):
+	* fvwm/events.c (DispatchEvent):
+	Added a parameter to DispatchEvent that allows to preserve the current
+	Tmp_win when calling. Fixes a bug in menus.
+
+	* fvwm/functions.c (DeferExecution): Fixed a bug that caused function
+	to work on a random window.
+
 1999--5-21  Hippo
 
 	* libs/Graphics.c: CreateStretch*Pixmap: small adjustments
@@ -6,7 +38,7 @@
 	* fvwm/colors.c: New function CreateGradientPixmap understands H, V & D
 	gradients
 	* fvwm/builtins.c: SetDefaultBackground() understands gradients
-	
+
 Mon May 17 21:38:18 1999  DanEspen  <dje@blue>
 
 	* libs/Module.c (GetConfigLine): New function "InitGetConfigLine"
@@ -22,10 +54,10 @@ Mon May 17 21:38:18 1999  DanEspen  <dje@blue>
 	a problem, since AutoPlaceIcon takes care of this later. But
 	it enables Restart to put icons in the proper place.
 
-	* fvwm/icons.c (Iconify): 
-	(CreateIconWindow): 
-	* fvwm/events.c (HandleMapRequestKeepRaised): 
-	(HandlePropertyNotify): 
+	* fvwm/icons.c (Iconify):
+	(CreateIconWindow):
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	(HandlePropertyNotify):
 	remove some #ifdef SESSION's, since the session stuff is now
 	also used for restarting.
 
@@ -51,34 +83,34 @@ Mon May 17 21:38:18 1999  DanEspen  <dje@blue>
 
 	* fvwm/screen.h (ButtonFace): reduce memory consumption by
 	moving the vector member into the union and making it more compact.
-	The old vector_coords always used 61 ints. The new vector_coords 
-	use 10 ints for the most common case of buttons with a pattern of 
+	The old vector_coords always used 61 ints. The new vector_coords
+	use 10 ints for the most common case of buttons with a pattern of
 	4 lines. Considering that I counted up to 33 ButtonFace structs
 	per FvwmDecor, this should sum up to a memory reduction of
 	approx. 6k / FvwmDecor.
 
-	* fvwm/fvwm.c (LoadDefaultLeftButton): 
-	(LoadDefaultRightButton): 
+	* fvwm/fvwm.c (LoadDefaultLeftButton):
+	(LoadDefaultRightButton):
 	(ResetAllButtons): adapt to new vector_coords.
 
 	* fvwm/builtins.c (FreeButtonFace): free the dynamically allocated
 	memory in vector_coords.
-	* fvwm/builtins.c (ReadButtonFace): allocate memory for 
+	* fvwm/builtins.c (ReadButtonFace): allocate memory for
 	vector_coords dynamically, allow up to 32 points in vector
 	patterns, since we use a long to hold the line_style flags.
 
-	* fvwm/borders.c (DrawButton): 
+	* fvwm/borders.c (DrawButton):
 	(DrawLinePattern): adapt to new vector_coords.
 
 	* fvwm/fvwm2.1: document the limit of 32 points / pattern.
-	
+
 1999-05-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.c: remove SaveDesktopState, remove all references
 	to _XA_WM_DESKTOP, set the Restarting flag based on restore_filename.
 	(Done): don't move to viewport 0,0 if restarting.
 
-	* fvwm/placement.c (PlaceWindow): 
+	* fvwm/placement.c (PlaceWindow):
 	* fvwm/fvwm.h: remove _XA_WM_DESKTOP
 
 1999-05-19  Hippo

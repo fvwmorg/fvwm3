@@ -556,6 +556,17 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 }
 
 
+void ExecuteFunctionSaveTmpWin(char *Action, FvwmWindow *tmp_win,
+			       XEvent *eventp, unsigned long context,
+			       int Module, expand_command_type expand_cmd)
+{
+  FvwmWindow *s_Tmp_win = Tmp_win;
+
+  ExecuteFunction(Action, tmp_win, eventp, context, Module, expand_cmd);
+  Tmp_win = s_Tmp_win;
+}
+
+
 /***********************************************************************
  *
  *  Procedure:
@@ -623,24 +634,31 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
       Keyboard_shortcuts(eventp, NULL, FinishEvent);
     }
     if(eventp->type == FinishEvent)
-      finished = 1;
-    if(eventp->type == ButtonPress)
     {
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
-      done = 1;
+      finished = 1;
     }
-    if(eventp->type == ButtonRelease)
+    switch (eventp->type)
+    {
+    case ButtonPress:
+      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      /* fall through */
+    case KeyPress:
+      if (eventp->type != FinishEvent)
+	original_w = eventp->xany.window;
+      /* fall through */
+    case ButtonRelease:
       done = 1;
-    if(eventp->type == KeyPress)
-      done = 1;
+      break;
+    default:
+      break;
+    }
 
     if(!done)
     {
-      DispatchEvent();
+      DispatchEvent(False);
     }
 
   }
-
 
   *w = eventp->xany.window;
   if(((*w == Scr.Root)||(*w == Scr.NoFocusWin))
@@ -665,15 +683,20 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
   }
 
   if(*w == (*tmp_win)->Parent)
+  {
     *w = (*tmp_win)->w;
+  }
 
   if(original_w == (*tmp_win)->Parent)
+  {
     original_w = (*tmp_win)->w;
+  }
 
   /* this ugly mess attempts to ensure that the release and press
    * are in the same window. */
   if((*w != original_w)&&(original_w != Scr.Root)&&
      (original_w != None)&&(original_w != Scr.NoFocusWin))
+  {
     if(!((*w == (*tmp_win)->frame)&&
          (original_w == (*tmp_win)->w)))
     {
@@ -682,7 +705,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
       UngrabEm();
       return TRUE;
     }
-
+  }
   *context = GetContext(*tmp_win,eventp,&dummy);
 
   UngrabEm();

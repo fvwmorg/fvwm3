@@ -232,7 +232,7 @@ void Maximize(F_CMD_ARGS)
     if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
       {
 	/* Make sure we keep it on screen while unmaximizing. Since
-	   orig_g is in absolute coords, we need to extract the 
+	   orig_g is in absolute coords, we need to extract the
 	   page-relative coords. This doesn't work well if the page
 	   has been moved by a fractional part of the page size
 	   between maximizing and unmaximizing. */
@@ -869,7 +869,7 @@ void wait_func(F_CMD_ARGS)
 #endif
     if(My_XNextEvent(dpy, &Event))
     {
-      DispatchEvent ();
+      DispatchEvent(False);
       if(Event.type == MapNotify)
       {
         if((Tmp_win)&&(matchWildcards(action,Tmp_win->name)==True))
@@ -1852,7 +1852,7 @@ void SetDefaultBackground(F_CMD_ARGS)
         free(type);
         return;
       }
-      
+
       pic = CachePicture(dpy, Scr.NoFocusWin, NULL, name, Scr.ColorLimit);
 
       if (pic && pic->depth == Scr.depth) {
@@ -1904,7 +1904,7 @@ void SetDefaultBackground(F_CMD_ARGS)
       fvwm_msg(ERR, "DefaultBackground", "unknown type %s %s", type,
 	       action ? action : "");
     }
-  
+
     free(type);
   }
 
@@ -2265,7 +2265,6 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		  }
 		s += offset;
 	    }
-fprintf(stderr, "parsed vector style %d\n", vc->line_style);	    
 	    bf->style = VectorButton;
 	}
 #endif
