@@ -41,14 +41,14 @@ void SlideWindow(
   Display *dpy, Window win,
   int s_x, int s_y, unsigned int s_w, unsigned int s_h,
   int e_x, int e_y, unsigned int e_w, unsigned int e_h,
-  int steps, int delay_ms, float *ppctMovement, 
+  int steps, int delay_ms, float *ppctMovement,
   Bool do_sync, Bool use_hints)
 {
   int x = 0;
   int y = 0;
   int w = 0;
   int h = 0;
-  int g_w = 0; 
+  int g_w = 0;
   int g_h = 0;  /* -Wall fixes :o( */
   int min_w = 1;
   int min_h = 1;
@@ -118,11 +118,11 @@ void SlideWindow(
     {
       if (hints.width_inc >= 1 && hints.width_inc <= max(e_w,s_w))
 	inc_w = hints.width_inc;
-      if (hints.height_inc >= 1 && hints.width_inc <= max(e_h,s_h)) 
+      if (hints.height_inc >= 1 && hints.width_inc <= max(e_h,s_h))
 	inc_h = hints.height_inc;
     }
   }
-  
+
   if (s_x == e_x)
     keep_x1 = True;
   if (s_y == e_y)
@@ -165,7 +165,7 @@ void SlideWindow(
       g_w = s_x + s_w - x;
     if (keep_y2)
       g_h = s_y + s_h - y;
-    
+
     if (g_w < min_w || g_h < min_h)
     {
       /* don't show zero width/height windows */
@@ -178,7 +178,6 @@ void SlideWindow(
     else
     {
       XMoveResizeWindow(dpy, win, x, y, g_w, g_h);
-      fprintf(stderr, "x: %i, y: %i, w: %i, h: %i\n", x, y, g_w, g_h);
       if (!is_mapped)
       {
 	XMapWindow(dpy, win);

@@ -1,5 +1,8 @@
 2000-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/WinMagic.c (SlideWindow):
+	removed debug fprintf
+
 	* fvwm/events.c (HandleMapRequestKeepRaised):
 	removed debug fprintf
 

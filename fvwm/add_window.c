@@ -623,7 +623,6 @@ void setup_frame_window(
     (ExposureMask | VisibilityChangeMask | ButtonPressMask |
      ButtonReleaseMask);
   pattributes->event_mask |= KeyPressMask;
-pattributes->event_mask |= OwnerGrabButtonMask|ButtonMotionMask|PointerMotionMask;
   /* decor window, parent of all decorative subwindows */
   tmp_win->decor_w =
     XCreateWindow(

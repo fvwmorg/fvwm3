@@ -271,6 +271,22 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     XFindContext(dpy, e->xkey.window, FvwmContext, (caddr_t *) &t);
     Tmp_win = t;
   }
+if (e->type == ButtonPress && t && e->xkey.window == t->frame &&
+    e->xkey.subwindow != None)
+{
+ /* Translate frame coordinates into subwindow coordinates. */
+ e->xkey.window = e->xkey.subwindow;
+ XTranslateCoordinates(
+  dpy, t->frame, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+   &(e->xkey.y), &(e->xkey.subwindow));
+ if (e->xkey.window == t->Parent)
+ {
+  e->xkey.window = e->xkey.subwindow;
+  XTranslateCoordinates(
+   dpy, t->Parent, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+   &(e->xkey.y), &(e->xkey.subwindow));
+ }
+}
   if(!t)
     return C_ROOT;
 
