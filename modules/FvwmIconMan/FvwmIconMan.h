@@ -316,6 +316,7 @@ typedef struct win_manager {
   Uchar usewinlist;
   SortType sort;
   char *AnimCommand;
+  Uchar showonlyiconic;
   rectangle managed_g;    /* dimensions of managed screen portion */
 
   /* X11 state */

@@ -260,10 +260,11 @@ static void MoveFocus(
           RBW - 2001/08/17 - For a MouseFocusClickRaises win, we must not drop
           the grab, since the (potential) click hasn't happened yet.
       */
-      if (!((HAS_SLOPPY_FOCUS(ffw_old) || HAS_MOUSE_FOCUS(ffw_old))
-          && DO_RAISE_MOUSE_FOCUS_CLICK(ffw_old)))  {
+      if ((!HAS_SLOPPY_FOCUS(ffw_old) && !HAS_MOUSE_FOCUS(ffw_old)) ||
+	  !DO_RAISE_MOUSE_FOCUS_CLICK(ffw_old))
+      {
         focus_grab_buttons(ffw_old, True);
-        }
+      }
     }
     return;
   }
@@ -274,10 +275,14 @@ static void MoveFocus(
     {
       /*  RBW - Ibid.  */
       ffw_new = get_focus_window();
-      if (ffw_new && !((HAS_SLOPPY_FOCUS(ffw_new) || HAS_MOUSE_FOCUS(ffw_new))
-          && DO_RAISE_MOUSE_FOCUS_CLICK(ffw_new)))  {
-      focus_grab_buttons(ffw_new, True);
-        }
+      if (ffw_new)
+      {
+	if ((!HAS_SLOPPY_FOCUS(ffw_new) && !HAS_MOUSE_FOCUS(ffw_new)) ||
+	    !DO_RAISE_MOUSE_FOCUS_CLICK(ffw_new))
+	{
+	  focus_grab_buttons(ffw_new, True);
+	}
+      }
     }
     focus_grab_buttons(ffw_old, False);
   }
@@ -596,7 +601,7 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
 {
   int i;
   Bool accepts_input_focus;
-  Bool do_grab_all = False;
+  Bool do_grab_window = False;
   unsigned char grab_buttons = Scr.buttons2grab;
 
   if (!tmp_win)
@@ -606,19 +611,21 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
   accepts_input_focus = do_accept_input_focus(tmp_win);
   if ((HAS_SLOPPY_FOCUS(tmp_win) || HAS_MOUSE_FOCUS(tmp_win) ||
        HAS_NEVER_FOCUS(tmp_win)) &&
+      DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win) &&
       (!is_focused || !is_on_top_of_layer(tmp_win)))
   {
     grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
-    do_grab_all = True;
+    do_grab_window = True;
   }
   else if (HAS_CLICK_FOCUS(tmp_win) &&
 	   (!is_focused || !is_on_top_of_layer(tmp_win)) &&
 	   (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(tmp_win) || accepts_input_focus))
   {
     grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
-    do_grab_all = True;
+    do_grab_window = True;
   }
 
+#if 0
   /*
       RBW - If we've come here to grab and all buttons are already grabbed,
       or to ungrab and none is grabbed, then we've nothing to do.
@@ -628,16 +635,18 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
   {
     return;
   }
-
+#else
+  if (grab_buttons != tmp_win->grabbed_buttons)
+#endif
   {
     Bool do_grab;
 
-    MyXGrabServer (dpy);
-    Scr.Ungrabbed = (!is_focused) ? NULL : tmp_win;
+    MyXGrabServer(dpy);
+    Scr.Ungrabbed = (do_grab_window) ? NULL : tmp_win;
     for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
       /*  RBW - Set flag for grab or ungrab according to how we were called. */
-      if (!is_focused)
+      if (!is_focused||1)
       {
         do_grab = !!(grab_buttons & (1 << i));
       }

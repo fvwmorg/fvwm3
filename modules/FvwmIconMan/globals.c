@@ -75,8 +75,9 @@ static void init_win_manager (int id)
   globals.managers[id].dontshow.mask = ALL_NAME;
   globals.managers[id].usewinlist = 1;
   globals.managers[id].sort = SortName;
-  globals.managers[id].bindings[MOUSE]    = ParseMouseEntry (DEFAULT_MOUSE);
+  globals.managers[id].bindings[MOUSE] = ParseMouseEntry (DEFAULT_MOUSE);
   globals.managers[id].we_are_drawing = 1;
+  globals.managers[id].showonlyiconic = 0;
 }
 
 void print_managers (void)
