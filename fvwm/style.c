@@ -689,7 +689,8 @@ void ProcessNewStyle(XEvent *eventp,
           spargs = sscanf(restofline,"%d",&tmpno1);
           if (spargs == 1)
             {
-              tname.Desk = tmpno1 + 1;
+              /*  RBW - 11/20/1998 - allow for the special case of -1  */
+              tname.Desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
             }
           else
 	    {
@@ -714,7 +715,8 @@ void ProcessNewStyle(XEvent *eventp,
           if (spargs == 1 || spargs == 3)
             {
             /*  We have a desk no., with or without page.  */
-              tname.Desk = tmpno1 + 1;        /*  Desk is now actual + 1  */
+              /*  RBW - 11/20/1998 - allow for the special case of -1  */
+              tname.Desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;  /*  Desk is now actual + 1  */
               /*  Bump past desk no.    */
 	      GETWORD;
               restofline = tmp;
@@ -725,13 +727,14 @@ void ProcessNewStyle(XEvent *eventp,
             {
               if (spargs == 3)
                 {
-                  tname.PageX = tmpno2 + 1;
-                  tname.PageY = tmpno3 + 1;
+                  /*  RBW - 11/20/1998 - allow for the special case of -1  */
+                  tname.PageX = (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
+                  tname.PageY = (tmpno3 > -1) ? tmpno3 + 1 : tmpno3;
                 }
               else
                 {
-                  tname.PageX       =  tmpno1 + 1;
-                  tname.PageY       =  tmpno2 + 1;
+                  tname.PageX       =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
+                  tname.PageY       =  (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
                 }
               /*  Bump past next 2 args.    */
 	      GETWORD;

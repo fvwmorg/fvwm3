@@ -439,7 +439,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
   if (tflag & STICKY_FLAG)
     tmp_win->Desk = Scr.CurrentDesk;
   else if ((tflag & STARTSONDESK_FLAG) && Desk && HonorStartsOnPage)
-    tmp_win->Desk = Desk - 1;    /*  RBW - 11/02/1998    */
+    tmp_win->Desk = (Desk > -1) ? Desk - 1 : Desk;    /*  RBW - 11/20/1998  */
   else
   {
     Atom atype;

@@ -1,3 +1,13 @@
+1998-11-20  Bob Woodside  <proteus@pcnet.com>
+
+	* add_window.c 
+	* placement.c 
+	* style.c 
+	Fixed StartsOnDesk/StartsOnPage bug that prevented a desk or page
+	specification of -1 from working.
+
+	* AUTHORS:  added entry.
+
 1998-11-20  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* configure.in: Version 2.1.2 released (CVS tag = version-2_1_2)

@@ -255,6 +255,7 @@ FvwmWindow *AddWindow(Window w)
   ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height);
 
   /* Find out if the client requested a specific desk on the command line. */
+  /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
   if (XGetCommand (dpy, tmp_win->w, &client_argv, &client_argc)) {
       XrmParseCommand (&db, table, 4, "fvwm", &client_argc, client_argv);
       XFreeStringList(client_argv);
@@ -262,12 +263,16 @@ FvwmWindow *AddWindow(Window w)
                                &str_type, &rm_value);
       if ((status == True) && (rm_value.size != 0)) {
           styles.Desk = atoi(rm_value.addr);
-          /*  RBW - 11/02/1998  */
-          styles.Desk++;
+          /*  RBW - 11/20/1998  */
+          if (styles.Desk > -1)
+            {
+              styles.Desk++;
+            }
           /**/
 	  styles.on_flags |= STARTSONDESK_FLAG;
       }
 /*  RBW - 11/02/1998  */
+/*  RBW - 11/20/1998 - allow desk or page specs of -1 to work.  */
       /*  Handle the X Resource equivalent of StartsOnPage.  */
       status = XrmGetResource (db, "fvwm.page", "Fvwm.Page", &str_type,
 			       &rm_value);
@@ -279,22 +284,22 @@ FvwmWindow *AddWindow(Window w)
             case 1:
               {
                 styles.on_flags |= STARTSONDESK_FLAG;
-                styles.Desk     =  tmpno1 + 1;
+                styles.Desk     =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
                 break;
               }
             case 2:
               {
                 styles.on_flags |= STARTSONDESK_FLAG;
-                styles.PageX    =  tmpno1 + 1;
-                styles.PageY    =  tmpno2 + 1;
+                styles.PageX    =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
+                styles.PageY    =  (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
                 break;
               }
             case 3:
               {
                 styles.on_flags |= STARTSONDESK_FLAG;
-                styles.Desk     =  tmpno1 + 1;
-                styles.PageX    =  tmpno2 + 1;
-                styles.PageY    =  tmpno3 + 1;
+                styles.Desk     =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
+                styles.PageX    =  (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
+                styles.PageY    =  (tmpno3 > -1) ? tmpno3 + 1 : tmpno3;
                 break;
               }
             default:
