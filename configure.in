@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
-AM_INIT_AUTOMAKE(fvwm, 2.1.8)
+AM_INIT_AUTOMAKE(fvwm, 2.1.9)
 AM_CONFIG_HEADER(config.h)
 
 FVWM_MODULEDIR='${libexecdir}/${PACKAGE}/${VERSION}'
@@ -151,7 +151,7 @@ AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket waitpid)
 AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
-AC_CHECK_FUNCS(sigaction)
+AC_CHECK_FUNCS(sigaction siginterrupt)
 
 pds_CHECK_TYPE(sig_atomic_t, int, [#include <signal.h>])
 

@@ -32,14 +32,6 @@ from our home page.
 ======================================================================
 ======================================================================
 
-Due to a problem with the automake tool, running "make install-strip"
-will not work unless you have a BSD-compatible install on your system
-(it won't work if configure decides to use the install-sh script that
-comes with fvwm).  This will be fixed in the next release of automake
-(and hence the next release of fvwm).
-
-----------------------------------------------------------------------
-
 Binding a key to a window decoration but not to the window itself is
 discouraged because when the key-press event finally gets to the
 window it will be marked as SYNTHETIC and will be ignored by many

@@ -1,6 +1,24 @@
+1999-01-17  Chris Rankin  <rankinc@bellsouth.net>
+
+	* FvwmWinList/ButtonArray.c (UpdateButton): Use saferealloc().
+	* FvwmWinList/FvwmWinList.c: ShutMeDown turned into an
+	exit-procedure (installed via atexit).
+	SIGPIPE and SIGTERM now set a global flag which breaks the event
+	loop, rather than exiting directly.
+	Event loop restyled after FvwmIconMan, which is neater and simpler.
+	Signals installed with sigaction (if present).
+	If no sigaction, then use signal & siginterrupt (BSD 4.3).
+	If no siginterrupt then just bang a couple of rocks together.
+	Added "const" and function attributes to a select few prototypes.
+	Loose malloc turned into safemalloc.
+	* FvwmWinList/Mallocs.c (saferealloc): saferealloc() fixed.
+	* FvwmWinList/Mallocs.h: Removed duplicate fvwmlib prototype
+	(CopyString).
+	Removed useless prototype (CatString2).
+
 Sat Jan 16 00:31:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmSaveDesk/FvwmSaveDesk.1: 
+	* FvwmSaveDesk/FvwmSaveDesk.1:
 	* FvwmSaveDesk/FvwmSaveDesk.c (do_save): No longer have build-time
 	option for fvwm and config file names.
 

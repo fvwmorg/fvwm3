@@ -140,7 +140,7 @@ int UpdateButton(ButtonArray *array, int butnum, char *title, int up)
   {
     if (title!=NULL)
     {
-      temp->title=(char *)realloc(temp->title,strlen(title)+1);
+      temp->title=(char *)saferealloc(temp->title,strlen(title)+1);
       strcpy(temp->title,title);
       temp->tw=XTextWidth(ButtonFont,title,strlen(title));
       temp->truncatewidth = 0;

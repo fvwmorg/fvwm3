@@ -28,8 +28,8 @@
 
 */
 
-#define TRUE 1
-#define FALSE
+#define TRUE  1
+#define FALSE 0
 
 #ifndef NO_CONSOLE
 #define NO_CONSOLE
@@ -114,6 +114,18 @@ int UseSkipList=0,Anchor=1,UseIconNames=0,LeftJustify=0,TruncateLeft=0,ShowFocus
 long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
 
+static volatile sig_atomic_t isTerminated = False;
+
+static RETSIGTYPE TerminateHandler(int sig);
+
+/***************************************************************************
+ * TerminateHandler - reentrant signal handler that ends the main event loop
+ ***************************************************************************/
+static RETSIGTYPE TerminateHandler(int sig)
+{
+  isTerminated = True;
+}
+
 int ItemCountD(List *list )
 {
 	if(!ShowCurrentDesk)
@@ -131,6 +143,9 @@ int ItemCountD(List *list )
 int main(int argc, char **argv)
 {
   char *temp, *s;
+#ifdef HAVE_SIGACTION
+  struct sigaction  sigact;
+#endif
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
@@ -161,14 +176,31 @@ int main(int argc, char **argv)
   Fvwm_fd[0] = atoi(argv[1]);
   Fvwm_fd[1] = atoi(argv[2]);
 
-  signal (SIGPIPE, DeadPipe);
+#ifdef HAVE_SIGACTION
+#ifdef SA_INTERRUPT
+  sigact.sa_flags = SA_INTERRUPT;
+#else
+  sigact.sa_flags = 0;
+#endif
+  sigemptyset(&sigact.sa_mask);
+  sigact.sa_handler = TerminateHandler;
+  sigaction(SIGPIPE, &sigact, NULL);
+  sigaction(SIGTERM, &sigact, NULL);  
+#else
+  signal(SIGPIPE, TerminateHandler);
+  signal(SIGTERM, TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, True);
+  siginterrupt(SIGTERM, True);
+#endif
+#endif
 
   /* Parse the config file */
   ParseConfig();
 
   /* Setup the XConnection */
   StartMeUp();
-  XSetErrorHandler((XErrorHandler) ErrorHandler);
+  XSetErrorHandler(ErrorHandler);
 
   InitPictureCMap(dpy, Root);
 
@@ -192,38 +224,36 @@ int main(int argc, char **argv)
   SendFvwmPipe("Send_WindowList",0);
 
   /* Recieve all messages from Fvwm */
-  EndLessLoop();
+  atexit(ShutMeDown);
+  MainEventLoop();
   return 0;
 }
 
 
 /******************************************************************************
-  EndLessLoop -  Read and redraw until we get killed, blocking when can't read
+  MainEventLoop -  Read and redraw until we die, blocking when can't read
 ******************************************************************************/
-void EndLessLoop()
+void MainEventLoop(void)
 {
 fd_set readset;
-struct timeval tv;
 
-  while(1) {
+  while( !isTerminated ) {
     FD_ZERO(&readset);
     FD_SET(Fvwm_fd[1],&readset);
     FD_SET(x_fd,&readset);
-    tv.tv_sec=0;
-    tv.tv_usec=0;
 
-    if (!select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,&tv)) {
-      XPending(dpy);
-      FD_ZERO(&readset);
-      FD_SET(Fvwm_fd[1],&readset);
-      FD_SET(x_fd,&readset);
-      select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,NULL);
+    /* This code restyled after FvwmIconMan, which is simpler.
+     * The biggest advantage over the original approach is
+     * having one fewer select statements
+     */
+    if (select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,NULL) > 0) {
+
+      if (FD_ISSET(x_fd,&readset) || XPending(dpy)) LoopOnEvents();
+      if (FD_ISSET(Fvwm_fd[1],&readset)) ReadFvwmPipe();
+
     }
 
-    if (FD_ISSET(x_fd,&readset)) LoopOnEvents();
-    if (!FD_ISSET(Fvwm_fd[1],&readset)) continue;
-    ReadFvwmPipe();
-  }
+  } /* while */
 }
 
 /******************************************************************************
@@ -231,7 +261,7 @@ struct timeval tv;
     Originally Loop() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
-void ReadFvwmPipe()
+void ReadFvwmPipe(void)
 {
   unsigned long header[HEADER_SIZE],*body;
 
@@ -252,7 +282,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   int redraw=0,i;
   long flags;
   char *name,*string;
-  static current_focus=-1;
+  static int current_focus=-1;
 
   Picture p;
 
@@ -379,7 +409,7 @@ void SendFvwmPipe(char *message,unsigned long window)
     temp=strchr(hold,',');
     if (temp!=NULL)
     {
-      temp_msg=malloc(temp-hold+1);
+      temp_msg=safemalloc(temp-hold+1);
       strncpy(temp_msg,hold,(temp-hold));
       temp_msg[(temp-hold)]='\0';
       hold=temp+1;
@@ -411,6 +441,9 @@ void DeadPipe(int nonsense)
   /*
    * do not call ShutMeDown, it may make X calls which are not allowed
    * in a signal hander.
+   *
+   * THIS IS NO LONGER A SIGNAL HANDLER - we may now shut down gracefully
+   * NOTE: ShutMeDown will now be called automatically by exit().
    */
   exit(1);
 }
@@ -424,6 +457,20 @@ void WaitForExpose(void)
 
   while(1)
   {
+    /*
+     * Temporary solution to stop the process blocking
+     * in XNextEvent once we have been asked to quit.
+     * There is still a small race condition between
+     * checking the flag and calling the X-Server, but
+     * we can fix that ...
+     */
+    if (isTerminated)
+    {
+      /* Just exit - the installed exit-procedure will clean up */
+      exit(0);
+    }
+    /**/
+
     XNextEvent(dpy,&Event);
     if (Event.type==Expose)
     {
@@ -444,7 +491,7 @@ void RedrawWindow(int force)
 /******************************************************************************
   ConsoleMessage - Print a message on the console.  Works like printf.
 ******************************************************************************/
-void ConsoleMessage(char *fmt, ...)
+void ConsoleMessage(const char *fmt, ...)
 {
 #ifndef NO_CONSOLE
   va_list args;
@@ -461,7 +508,7 @@ void ConsoleMessage(char *fmt, ...)
 /******************************************************************************
   OpenConsole - Open the console as a way of sending messages
 ******************************************************************************/
-int OpenConsole()
+int OpenConsole(void)
 {
 #ifndef NO_CONSOLE
   if ((console=fopen("/dev/console","w"))==NULL) {
@@ -477,7 +524,7 @@ int OpenConsole()
     Based on part of main() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
-void ParseConfig()
+void ParseConfig(void)
 {
   char *tline;
 
@@ -536,7 +583,7 @@ void ParseConfig()
 /******************************************************************************
   LoopOnEvents - Process all the X events we get
 ******************************************************************************/
-void LoopOnEvents()
+void LoopOnEvents(void)
 {
   int num;
   char buffer[10];
@@ -575,7 +622,7 @@ void LoopOnEvents()
             SwitchButton(&buttons,num);
           }
         }
-        if (Transient) ShutMeDown(0);
+        if (Transient) exit(0);
         Pressed=0;
         ButPressed=-1;
         break;
@@ -596,14 +643,14 @@ void LoopOnEvents()
         num=XLookupString(&Event.xkey,buffer,10,NULL,0);
         if (num==1)
         {
-          if (buffer[0]=='q' || buffer[0]=='Q') ShutMeDown(0);
+          if (buffer[0]=='q' || buffer[0]=='Q') exit(0);
           else if (buffer[0]=='i' || buffer[0]=='I') PrintList(&windows);
           else if (buffer[0]=='b' || buffer[0]=='B') PrintButtons(&buttons);
         }
         break;
       case ClientMessage:
         if ((Event.xclient.format==32) && (Event.xclient.data.l[0]==wm_del_win))
-          ShutMeDown(0);
+          exit(0);
       case EnterNotify:
         if (!SomeButtonDown(Event.xcrossing.state)) break;
         num=WhichButton(&buttons,Event.xcrossing.x,Event.xcrossing.y);
@@ -666,7 +713,7 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
 /******************************************************************************
   AdjustWindow - Resize the window according to maxwidth by number of buttons
 ******************************************************************************/
-void AdjustWindow()
+void AdjustWindow(void)
 {
   int new_width=0,new_height=0,tw,i,total,off_x,off_y;
   char *temp;
@@ -739,12 +786,12 @@ void AdjustWindow()
 /******************************************************************************
   makename - Based on the flags return me '(name)' or 'name'
 ******************************************************************************/
-char *makename(char *string,long flags)
+char *makename(const char *string,long flags)
 {
 char *ptr;
   ptr=safemalloc(strlen(string)+3);
+  *ptr = '\0';
   if (flags&ICONIFIED) strcpy(ptr,"(");
-  else strcpy(ptr,"");
   strcat(ptr,string);
   if (flags&ICONIFIED) strcat(ptr,")");
   return ptr;
@@ -782,7 +829,7 @@ void MakeMeWindow(void)
   int i;
 
 
-  if ((count = ItemCountD(&windows))==0 && Transient) ShutMeDown(0);
+  if ((count = ItemCountD(&windows))==0 && Transient) exit(0);
   AdjustWindow();
 
   hints.width=win_width;
@@ -910,9 +957,9 @@ void MakeMeWindow(void)
   if (Transient)
   {
     if ( XGrabPointer(dpy,win,True,GRAB_EVENTS,GrabModeAsync,GrabModeAsync,
-      None,None,CurrentTime)!=GrabSuccess) ShutMeDown(1);
+      None,None,CurrentTime)!=GrabSuccess) exit(1);
     XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,&dummy1);
-    if (!SomeButtonDown(dummy1)) ShutMeDown(0);
+    if (!SomeButtonDown(dummy1)) exit(0);
   }
 
 }
@@ -920,7 +967,7 @@ void MakeMeWindow(void)
 /******************************************************************************
   StartMeUp - Do X initialization things
 ******************************************************************************/
-void StartMeUp()
+void StartMeUp(void)
 {
   if (!(dpy = XOpenDisplay("")))
   {
@@ -950,14 +997,13 @@ void StartMeUp()
 /******************************************************************************
   ShutMeDown - Do X client cleanup
 ******************************************************************************/
-void ShutMeDown(int exitstat)
+void ShutMeDown(void)
 {
   FreeList(&windows);
   FreeAllButtons(&buttons);
 /*  XFreeGC(dpy,graph);*/
   if (WindowIsUp) XDestroyWindow(dpy,win);
   XCloseDisplay(dpy);
-  exit(exitstat);
 }
 
 /******************************************************************************
@@ -1016,11 +1062,11 @@ PropMwmHints prop;
 /************************************************************************
   X Error Handler
 ************************************************************************/
-XErrorHandler ErrorHandler(Display *d, XErrorEvent *event)
+int ErrorHandler(Display *d, XErrorEvent *event)
 {
     char errmsg[256];
     
-    XGetErrorText(d, event->error_code, errmsg, 256);
+    XGetErrorText(d, event->error_code, errmsg, sizeof(errmsg));
     ConsoleMessage("%s failed request: %s\n", Module, errmsg);
     ConsoleMessage("Major opcode: 0x%x, resource id: 0x%x\n",
 		   event->request_code, event->resourceid);

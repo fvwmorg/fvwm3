@@ -77,22 +77,22 @@ typedef PropMotifWmHints        PropMwmHints;
 /*************************************************************************
   Subroutine Prototypes
 **************************************************************************/
-void EndLessLoop(void);
+void MainEventLoop(void);
 void ReadFvwmPipe(void);
 void ProcessMessage(unsigned long type,unsigned long *body);
 void SendFvwmPipe(char *message,unsigned long window);
-void DeadPipe(int nonsense);
+void DeadPipe(int nonsense) __attribute__((noreturn));
 void MakeMeWindow(void);
 void WaitForExpose(void);
 void RedrawWindow(int force);
 void StartMeUp(void);
-void ShutMeDown(int exitstat);
-void ConsoleMessage(char *fmt,...);
+void ShutMeDown(void);
+void ConsoleMessage(const char *fmt,...) __attribute__((format(printf,1,2)));
 int OpenConsole(void);
 void ParseConfig(void);
 void LoopOnEvents(void);
 void AdjustWindow(void);
-char *makename(char *string,long flags);
+char *makename(const char *string,long flags);
 void ChangeWindowName(char *str);
 void LinkAction(char *string);
 void AddToSkipList(char *string);
@@ -101,4 +101,4 @@ void PrintSkipList(void);
 void FvwmNameMessage(long *body);
 void SetMwmHints(unsigned int value,unsigned int funcs,unsigned int input);
 
-XErrorHandler ErrorHandler(Display *d, XErrorEvent *event);
+int ErrorHandler(Display *d, XErrorEvent *event);

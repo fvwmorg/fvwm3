@@ -31,26 +31,27 @@ extern char *Module;
 
 /******************************************************************************
   saferealloc - safely reallocate memory or exit if fails. (Doesn't work right)
+  (No kidding! Try it now ...)
 ******************************************************************************/
-char *saferealloc(char *ptr, int length)
+char *saferealloc(char *ptr, size_t length)
 {
 char *newptr;
 
   if(length <=0) length=1;
 
+  /* If ptr is NULL then realloc does a malloc */
   newptr=realloc(ptr,length);
-    if (ptr == (char *)0) {
+    if (newptr == (char *)0) {
       fprintf(stderr,"%s:realloc failed",Module);
       exit(1);
     }
-  return ptr;
+  return newptr;
 }
 
-void UpdateString(char **string,char *value)
+void UpdateString(char **string,const char *value)
 {
   if (value==NULL) return;
-  if (*string==NULL) *string=safemalloc(strlen(value)+1);
-  else *string=(char *)realloc(*string,strlen(value)+1);
+  *string = saferealloc(*string,strlen(value+1));
   strcpy(*string,value);
 }
 
