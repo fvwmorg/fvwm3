@@ -3,6 +3,7 @@ Makefile.in
 .deps
 fvwm2
 fvwm
+fvwm.1
 .gdb_history
 bb.out
 outfile
