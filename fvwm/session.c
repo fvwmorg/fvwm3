@@ -66,7 +66,7 @@ static Bool         sent_save_done = 0;
 extern Bool Restarting;
 
 static
-char *duplicate(char *s)
+char *duplicate(const char *s)
 {
   int l;
   char *r;
@@ -122,9 +122,6 @@ extern char **g_argv;
 extern int g_argc;
 
 SmcConn sm_conn = NULL;
-/* migo: to delete soon
-static char *last_used_filename = NULL;
-*/
 static char *realStateFilename = NULL;
 static Bool goingToRestart = False;
 
@@ -174,10 +171,6 @@ system(CatString3("mkdir -p /tmp/fs-load; cp ", filename, " /tmp/fs-load"));
 	    {
 	      sscanf(s, "%*s %s", s2);
 	      set_sm_properties (sm_conn, s2, SmRestartIfRunning);
-/* migo: to delete soon
-	      if (last_used_filename) free (last_used_filename);
-	      last_used_filename = strdup (s2);
-*/
 	      setRealStateFilename(s2);
 	    }
 	  else
@@ -467,27 +460,27 @@ LoadWindowStates(char *filename)
 	    }
 	  else if (!strcmp(s1, "[CLIENT_ID]"))
 	    {
-	      sscanf(s, "%*s %4000s", s1);
+	      sscanf(s, "%*s %[^\n]", s1);
 	      matches[num_match - 1].client_id = duplicate(s1);
 	    }
 	  else if (!strcmp(s1, "[WINDOW_ROLE]"))
 	    {
-	      sscanf(s, "%*s %4000s", s1);
+	      sscanf(s, "%*s %[^\n]", s1);
 	      matches[num_match - 1].window_role = duplicate(s1);
 	    }
 	  else if (!strcmp(s1, "[RES_NAME]"))
 	    {
-	      sscanf(s, "%*s %4000s", s1);
+	      sscanf(s, "%*s %[^\n]", s1);
 	      matches[num_match - 1].res_name = duplicate(s1);
 	    }
 	  else if (!strcmp(s1, "[RES_CLASS]"))
 	    {
-	      sscanf(s, "%*s %4000s", s1);
+	      sscanf(s, "%*s %[^\n]", s1);
 	      matches[num_match - 1].res_class = duplicate(s1);
 	    }
 	  else if (!strcmp(s1, "[WM_NAME]"))
 	    {
-	      sscanf(s, "%*s %4000s", s1);
+	      sscanf(s, "%*s %[^\n]", s1);
 	      matches[num_match - 1].wm_name = duplicate(s1);
 	    }
 	  else if (!strcmp(s1, "[WM_COMMAND]"))
@@ -950,10 +943,6 @@ save_session_state (SmcConn sm_conn, char *filename)
   set_sm_properties (sm_conn, filename, SmRestartIfRunning);
   /* if (!goingToRestart) */
   setRealStateFilename(filename);
-/* migo: to delete soon
-  if (last_used_filename) free (last_used_filename);
-  last_used_filename = filename;
-*/
 
   return success;
 }

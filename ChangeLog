@@ -1,3 +1,8 @@
+1999-07-13  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/session.c (LoadWindowStates): Replaced all sscanf "%4000s"
+	with "[^\n]". This caused all windows with spaces in names not match.
+
 Sun Jul 11 11:16:15 1999  DanEspen  <dje@blue>
 
 	* NEWS: Describe the default iconbox.
