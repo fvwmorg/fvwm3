@@ -6,7 +6,7 @@ libfvwm_a_SOURCES = Bindings.c ClientMsg.c ColorUtils.c GetFont.c \
 	Grab.c Graphics.c ModGraph.c Module.c Module.h \
 	Parse.c Parse.h Picture.c Picture.h Strings.c Strings.h \
 	System.c XResource.c debug.c envvar.c envvar.h \
-	fvwmlib.h lang-strings.h safemalloc.c vpacket.h wild.c
+	fvwmlib.h lang-strings.h safemalloc.c vpacket.h wild.c fvwmsignal.c
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 
