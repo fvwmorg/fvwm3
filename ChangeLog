@@ -1,3 +1,8 @@
+1999-03-06  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/fvwm2.1: Reformatted 2 paragraphs.. 'tr in the beginning of a
+	line starts rot13-mode or something in nroff..
+
 1999-03-05  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/builtins.c (WindowShade): Removed a little check for MAXIMIZED
