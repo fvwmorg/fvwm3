@@ -838,7 +838,7 @@ void changeDesks(int desk)
    * then the following lines are screwed up. */
 /*  else if (StickyWin && (StickyWin->flags && STICKY))
     SetFocus(StickyWin->w, StickyWin,1);*/
-  else if (!HAS_NEVER_FOCUS(FocusWin))
+  else if ((FocusWin) && (!HAS_NEVER_FOCUS(FocusWin)))
 #endif
     SetFocus(Scr.NoFocusWin,NULL,1);
 }
