@@ -29,13 +29,14 @@ int main(int argc, char *argv[]){
   char client[120];
   char **eargv;
   int i,j,k;
-  char *xterm_a[] = { "-title", Name, "-name", Name, "-e", NULL, NULL };
+  char *xterm_pre[] = { "-title", Name, "-name", Name, NULL };
+  char *xterm_post[] = { "-e", NULL, NULL };
   int  clpid; 
 
   /* Why is this not just put in the initializer of xterm_a?
      Apparently, it is a non-standard extension to use a non-constant address (of client)
      in an initializer (of xterm_a). */
-  xterm_a[5] = client;
+  xterm_post[1] = client;
 
   /* Save the program name - its used for error messages and option parsing */
   tmp = argv[0];
@@ -67,6 +68,10 @@ int main(int argc, char *argv[]){
   /* copy arguments */
   eargv[0] = XTERM;
   j = 1;
+  for ( k=0 ; xterm_pre[k] != NULL ; j++, k++ ) {
+	eargv[j] = xterm_pre[k];
+  }
+
   for ( i=FARGS ; i<argc; i++ ) {
 	if( !strcmp ( argv[i], "-e" ) ) {
 	  i++;
@@ -76,8 +81,8 @@ int main(int argc, char *argv[]){
 	}
   }
 
-  for ( k=0 ; xterm_a[k] != NULL ; j++, k++ ) {
-	eargv[j] = xterm_a[k];
+  for ( k=0 ; xterm_post[k] != NULL ; j++, k++ ) {
+	eargv[j] = xterm_post[k];
   }
 
   /* copy rest of -e args */
