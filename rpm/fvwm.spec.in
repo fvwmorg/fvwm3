@@ -43,10 +43,6 @@ improved window decoration code (no flickering anymore), bi-directional
 asian text support, FreeType font support (antialiasing), image rendering,
 Perl based module library, support for PNG images, side titles and much more.
 
-colorsets, ICCCM2 and GNOME
-compliance, session management, improvements in all modules, several
-new modules, revised menu code, stroke support and much more.
-
 %description -l fr
 FVWM est un gestionnaire de fenêtres puissant et extrêmement configurable
 pour le système X Window.

@@ -1,3 +1,12 @@
+2002-05-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/colorset.h:
+	fixed #endif warning
+	* fvwm/ConfigFvwmDefaults:
+	added CirculateSkip to tear off menus
+	* fvwm.1:
+	fixed ShadeAgain quoting
+
 2002-05-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleButtonPress):
