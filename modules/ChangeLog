@@ -1,3 +1,7 @@
+2001-02-07  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmBacker/FvwmBacker.1: Add Exec to xpmroot example.
+
 2001-02-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmScript/Scripts/FvwmScript-Setup95.in:
