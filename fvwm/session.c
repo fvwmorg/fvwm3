@@ -688,12 +688,12 @@ MatchWinToSM(FvwmWindow *ewin,
 }
 
 void
-RestartInSession (char *filename)
+RestartInSession (char *filename, Bool really)
 {
   FILE *f = fopen (filename, "w");
 
 #ifdef SESSION
-  if (sm_conn)
+  if (sm_conn && really)
     {
       if (last_used_filename)
 	{

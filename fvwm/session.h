@@ -41,7 +41,7 @@ void LoadWindowStates (char *filename);
 ** Save state to the named file, and if running under SM,
 ** make the SM properly restart fvwm. 
 */
-void RestartInSession (char *filename);
+void RestartInSession (char *filename, Bool really);
 
 /*
 **  Fill in the FvwmWindow struct with information saved from

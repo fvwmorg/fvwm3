@@ -556,7 +556,8 @@ int main(int argc, char **argv)
   }
 
   restart_restore_filename = strdup(CatString2(user_home_dir, "/.fvwm_restart"));
-  if (Restarting) restore_filename = restart_restore_filename;
+  if (!restore_filename && Restarting)
+    restore_filename = restart_restore_filename;
 
   /*
      This should be done early enough to have the window states loaded
@@ -745,7 +746,7 @@ void StartupStuff(void)
   LoadGlobalState(restore_filename);
 
   /*
-  ** migo - 20/Jun/1999 - Remove restart-file after usage.
+  ** migo - 20/Jun/1999 - Remove state file after usage.
   */
   unlink(restore_filename);
 
@@ -1767,9 +1768,11 @@ void Done(int restart, char *command)
   {
     SaveDesktopState();
 
+    if (command) while (isspace(command[0])) command++;
     if (command[0] == '\0') command = NULL; /* native restart */
-    if (!command)
-      RestartInSession(restart_restore_filename); /* won't return under SM */
+
+    /* won't return under SM on Restart without parameters */
+    RestartInSession(restart_restore_filename, command == NULL);
 
     /*
       RBW - 06/08/1999 - without this, windows will wander to other pages on
@@ -1988,7 +1991,7 @@ void UnBlackoutScreen(void)
  *
  * Any character can be quoted with a backslash (even inside single quotes).
  * Every command argument is separated by a space/tab/new-line from both sizes
- * or is at the start/end of a string. Sequential spaces are ignored.
+ * or is at the start/end of the command. Sequential spaces are ignored.
  * An argument can be enclosed into single quotes (no further expanding)
  * or double quotes (expending environmental variables $VAR or ${VAR}).
  * The character '~' is expanded into user home directory (if not in quotes).
@@ -2013,7 +2016,6 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
   #define advChar (cptr++)
   #define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
   #define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
-  #define isSpace (theChar == ' ' || theChar == '\t' || theChar == '\n')
   #define canAddArgChar (totalArgLen < MAX_TOTAL_ARG_LEN-1)
   #define addArgChar(ch) (++totalArgLen, *(aptr++) = ch)
   #define canAddArgStr(str) (totalArgLen < MAX_TOTAL_ARG_LEN-strlen(str))
@@ -2024,9 +2026,9 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
   for (argc = 0; argc < maxArgc - 1; argc++) {
     int sQuote = 0;
     argv[argc] = aptr;
-    while (isSpace) advChar;
+    while (isspace(theChar)) advChar;
     if (theChar == '\0') break;
-    while ((sQuote || !isSpace) && theChar != '\0' && canAddArgChar) {
+    while ((sQuote || !isspace(theChar)) && theChar != '\0' && canAddArgChar) {
       if (theChar == '"') {
         if (sQuote) { sQuote = 0; }
         else { sQuote = 1; }
@@ -2066,7 +2068,6 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
   #undef advChar
   #undef topChar
   #undef popChar
-  #undef isSpace
   #undef canAddArgChar
   #undef addArgChar
   #undef canAddArgStr

@@ -1,3 +1,14 @@
+1999-06-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.c (parseCommandArgs): use isspace()
+	* fvwm/placement.c (PlaceWindow): minor spacing
+
+	* fvwm/session.h:
+	* fvwm/session.c (RestartInSession): added flag, which enables
+	to call this function unconditionally (needed for saving .fvwm_restart
+	in all Restart cases).
+	* fvwm/fvwm.c (Done): fixed Restart command with only spaces
+
 1999-06-25  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/add_window.c (GetWindowSizeHints): print the
