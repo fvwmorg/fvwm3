@@ -5,6 +5,8 @@
  *
  * Written by Andrew Veliath
  * Copyright 1996
+ * Permission is granted to distrubute this software for any  purpose,
+ * as the copyright and this copyright notice remain intact.
  *
  * Combined FvwmTile and FvwmCascade to FvwmRearrange module.
  * 9-Nov-1998 Dominik Vogt

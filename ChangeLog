@@ -449,7 +449,7 @@ Sat Oct 31 06:02:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
         14. Added check to GetWindowSizeHints to compensate for bad
             aspect ratios (fixes some windows that startup HUGE)
         15. Patch to FvwmButtons to add animated panels to it (like CDE
-            or Wharf) from Jui-Hsuan Joshua Feng
+            or Wharf) from Jui-Hsuan Joshua Feng <fengj@percy.engr.wisc.edu>
 	16. Brady Montz <bradym@cs.arizona.edu> is the new maintainer.
 	17. The Imakefile for FvwmCpp sets FVWM_CPP to CppCmd. If Imake
             is incorrectly configured, you have to override this in Fvwm.tmpl.
