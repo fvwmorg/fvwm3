@@ -1336,11 +1336,11 @@ void LoopOnEvents(void)
         if (Tip.open)
 	  ShowTipWindow(0);
 
-        if (Event.xcrossing.mode != NotifyNormal)
-	  break;
-
         if (AutoHide)
 	  SetAlarm(HIDE_TASK_BAR);
+
+        if (Event.xcrossing.mode != NotifyNormal)
+	  break;
 
         if (!HighlightFocus) {
           if (SomeButtonDown(Event.xcrossing.state)) {

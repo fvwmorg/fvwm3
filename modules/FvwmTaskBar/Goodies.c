@@ -134,9 +134,11 @@ static void CreateOrUpdateGoodyGC(void)
       XFreePixmap(dpy, wmailpix);
     wmailpix = XCreatePixmapFromBitmapData(
       dpy, win, (char *)minimail_bits, minimail_width, minimail_height,
-      pfore, WhitePixel(dpy, screen), Pdepth);
+      BlackPixel(dpy, screen), WhitePixel(dpy, screen), Pdepth);
     goodies_width += minimail_width + 7;
   }
+  else
+    goodies_width += 3;
 }
 
 Bool change_goody_colorset(int cset, Bool force)
@@ -366,14 +368,14 @@ void DrawGoodies(void)
 int MouseInClock(int x, int y)
 {
   int clockl = win_width - stwin_width;
-  int clockr = win_width - stwin_width + clock_width;
-  return (x>=clockl && x<clockr && y>1 && y<RowHeight-2);
+  int clockr = win_width - stwin_width + clock_width + (Mailcheck ? 2 : 3);
+  return (x>clockl && x<clockr && y>1 && y<RowHeight-2);
 }
 
 int MouseInMail(int x, int y)
 {
-  int maill = win_width - stwin_width + clock_width;
-  int mailr = win_width;
+  int maill = win_width - stwin_width + clock_width + 2;
+  int mailr = win_width - (Mailcheck ? 0 : 3);
   return (x>=maill && x<mailr && y>1 && y<RowHeight-2);
 }
 
@@ -395,8 +397,10 @@ void CreateMailTipWindow()
 {
   char str[20];
 
-  if (!anymail) return;
-  sprintf(str, "You have %smail", (newmail || unreadmail) ? "new " : "");
+  if (!anymail)
+    sprintf(str, "No new mail");
+  else
+    sprintf(str, "You have %smail", (newmail || unreadmail) ? "new " : "");
   PopupTipWindow(win_width, 0, str);
 }
 

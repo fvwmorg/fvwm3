@@ -1,5 +1,16 @@
 1999-11-22  olicha   <olivier.chapuis@free.fr>
 
+	* FvwmTaskBar/Goodies.c (CreateOrUpdateGoody):
+	(CreateMailTipWidow):
+	(MouseInClock):
+	(MouseInMail):
+	Fixed mail drawing and tips drawing.
+
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	Fixed an AutoHide bug: no hide after a "StartMenu" Popup
+	
+1999-11-22  olicha   <olivier.chapuis@free.fr>
+
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	(LoopOnEvents):
 	(StartMeUp):
