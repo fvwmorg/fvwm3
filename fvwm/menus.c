@@ -457,12 +457,14 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       break;
 
     case XK_Left:
+    case XK_KP_4:
     case XK_b: /* back */
     case XK_h: /* vi left */
       return MENU_POPDOWN;
       break;
 
     case XK_Right:
+    case XK_KP_6:
     case XK_f: /* forward */
     case XK_l: /* vi right */
       if (IS_POPUP_MENU_ITEM(miCurrent))
@@ -470,6 +472,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       break;
 
     case XK_Up:
+    case XK_KP_8:
     case XK_k: /* vi up */
     case XK_p: /* prior */
       if (!miCurrent) {
@@ -501,6 +504,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       break;
 
     case XK_Down:
+    case XK_KP_2:
     case XK_j: /* vi down */
     case XK_n: /* next */
       if (!miCurrent) {
@@ -535,7 +539,9 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 
       /* Nothing special --- Allow other shortcuts */
     default:
-      Keyboard_shortcuts(Event,ButtonRelease);
+      /* There are no useful shortcuts, so don't do that.
+       * (Dominik Vogt, 11-Nov-1998)
+       * Keyboard_shortcuts(Event,ButtonRelease); */
       break;
     }
 
@@ -2265,7 +2271,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       if (StrEquals(token2, "title"))
 	{
 	  tmp->next = menu->first->next;
-	  free(menu->first);
+	  FreeMenuItem(menu->first);
 	}
       else
 	{

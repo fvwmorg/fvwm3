@@ -48,39 +48,16 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
   if (!tmp)
     return;
 
-  if (nukename && nukeicon)
+  if (nukename && tmp->name)
     {
-      if (tmp->name == tmp->icon_name)
-	{
-	  if (tmp->name != NoName && tmp->name != NULL)
-	    XFree (tmp->name);
-	  tmp->name = NULL;
-	  tmp->icon_name = NULL;
-	}
-      else
-	{
-	  if (tmp->name != NoName && tmp->name != NULL)
-	    XFree (tmp->name);
-	  tmp->name = NULL;
-	  if (tmp->icon_name != NoName && tmp->icon_name != NULL)
-	    XFree (tmp->icon_name);
-	  tmp->icon_name = NULL;
-	}
-    }
-  else if (nukename)
-    {
-      if (tmp->name != tmp->icon_name
-          && tmp->name != NoName
-          && tmp->name != NULL)
-	XFree (tmp->name);
+      if (tmp->name != tmp->icon_name && tmp->name != NoName)
+	XFree(tmp->name);
       tmp->name = NULL;
     }
-  else
-    { /* if (nukeicon) */
-      if (tmp->icon_name != tmp->name
-          && tmp->icon_name != NoName
-          && tmp->icon_name != NULL)
-	XFree (tmp->icon_name);
+  if (nukeicon && tmp->icon_name)
+    {
+      if (tmp->name != tmp->icon_name && tmp->icon_name != NoName)
+	XFree(tmp->icon_name);
       tmp->icon_name = NULL;
     }
 
@@ -158,7 +135,15 @@ void Destroy(FvwmWindow *Tmp_win)
   XDeleteContext(dpy, Tmp_win->w, FvwmContext);
 
   if ((Tmp_win->icon_w)&&(Tmp_win->flags & PIXMAP_OURS))
-    XFreePixmap(dpy, Tmp_win->iconPixmap);
+    {
+      XFreePixmap(dpy, Tmp_win->iconPixmap);
+      XFreePixmap(dpy, Tmp_win->icon_maskPixmap);
+    }
+
+  if (Tmp_win->mini_icon)
+    {
+      DestroyPicture(dpy, Tmp_win->mini_icon);
+    }
 
   if (Tmp_win->icon_w)
     {

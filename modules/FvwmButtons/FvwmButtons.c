@@ -718,9 +718,8 @@ void Loop(void)
                 UberButton = PanelIndex->uber;
                 MyWindow   = UberButton->IconWinParent;
                 if (Event.xany.window == MyWindow)
-	    CurrentButton = b = 
-	      select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
-
+		  CurrentButton = b = 
+		    select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
               }
             while (!b && PanelIndex->next && (PanelIndex = PanelIndex->next));
 
@@ -730,7 +729,8 @@ void Loop(void)
 		break;
 	      }
 
-            CurrentPanel = PanelIndex; /* record which panel, the button pressed */
+	    /* record the panel, the button pressed */
+            CurrentPanel = PanelIndex;
             UberButton = CurrentPanel->uber;
             MyWindow   = UberButton->IconWinParent;
 
@@ -754,7 +754,7 @@ void Loop(void)
               { UberButton = PanelIndex->uber;
                 MyWindow   = UberButton->IconWinParent;
                 if (Event.xany.window == MyWindow)
-	    b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+		  b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
               }
               PanelIndex = PanelIndex->next;
             }
@@ -1260,7 +1260,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
   }
   else
   {
-    myclasshints.res_name=(char *)malloc(sizeof(MyName)+6);
+    myclasshints.res_name=(char *)malloc(strlen(MyName)+6);
     strcpy(myclasshints.res_name,MyName);
     strcat(myclasshints.res_name,"Panel");
   }
@@ -1760,7 +1760,7 @@ void swallow(unsigned long *body)
 /*
  * Button
  *   b->flags     |= b_Action (though b->hangon is ilegally used)
- *   b->action[0]  = "panel-h" or "panel-v"
+ *   b->action[0]  = "panel-u", "panel-l", "panel-d", or "panel-r"
  *   b->hangon     = panel title (case sensitive)
  * Panel
  *   uber->flags  |= b_Container (though the following fields are ilegally used)
@@ -1793,28 +1793,33 @@ void Slide (panel_info *p, button_info *b)
   Window PanelWin;
   Window root;
   int x, y, iw, ih, BW, depth;
+  char direction;
+  ushort i, c, xstep, ystep, wstep, hstep;
 
   if (!p) return;                            /* no such panel */
   else    PanelWin = p->uber->IconWinParent; /* PanelWin is found */
 
+  direction = b ? b->action[0][6] : 'u';
+           
   if (p->uber->swallow)
   { /* shown ---> hidden */
     root = GetRealGeometry(Dpy, PanelWin, &x, &y,
                            (ushort*)&iw, (ushort*)&ih,
                            (ushort*)&BW, (ushort*)&depth);
 
-    if (b && b->action[0][6] == 'h')
-      while (PanelPopUpStep < iw)  /* horizontal */
-      { iw -= PanelPopUpStep;
-        x  += PanelPopUpStep;
-        XMoveResizeWindow(Dpy, PanelWin, x, y, iw, ih);
-      }
+    if      (b && b->action[0][6] == 'l')
+    { c = iw / PanelPopUpStep; xstep = wstep = PanelPopUpStep; ystep = hstep = 0; }
+    else if (b && b->action[0][6] == 'r')
+    { c = iw / PanelPopUpStep; wstep = PanelPopUpStep; xstep = ystep = hstep = 0; }
+    else if (b && b->action[0][6] == 'd')
+    { c = ih / PanelPopUpStep; hstep = PanelPopUpStep; xstep = ystep = wstep = 0; }
     else
-      while (PanelPopUpStep < ih)  /* vertical */
-      { ih -= PanelPopUpStep;
-        y  += PanelPopUpStep;
-        XMoveResizeWindow(Dpy, PanelWin, x, y, iw, ih);
-      }
+    { c = ih / PanelPopUpStep; ystep = hstep = PanelPopUpStep; xstep = wstep = 0; }
+
+    for (i = 1; i < c; i++)
+    { iw -= wstep; x += xstep; ih -= hstep; y += ystep;
+      XMoveResizeWindow(Dpy, PanelWin, x, y, iw, ih);
+    }
 
     XUnmapWindow(Dpy, PanelWin);
     p->uber->swallow = 0;
@@ -1837,34 +1842,38 @@ void Slide (panel_info *p, button_info *b)
     y += p->uber->y + iy;
 
     /* initial position and size */
-    if (b->action[0][6] == 'h')
-    { w = mw % PanelPopUpStep;      /* horizontal */
-      if (w == 0) w = PanelPopUpStep;
-      x -= w;
-      XMoveResizeWindow(Dpy, PanelWin, x, y, w, mh);
+    if (direction == 'l')
+    { h = mh; w = mw % PanelPopUpStep;
+      x -= w; c = mw / PanelPopUpStep;
+      xstep = wstep = PanelPopUpStep; ystep = hstep = 0;
+    }
+    else if (direction == 'r')
+    { h = mh; w = mw % PanelPopUpStep;
+      x += b->BWidth * b->parent->c->ButtonWidth; c = mw / PanelPopUpStep;
+      wstep = PanelPopUpStep; xstep = ystep = hstep = 0;
+    }
+    else if (direction == 'd')
+    { w = mw; h = mh % PanelPopUpStep;
+      y += b->BHeight * b->parent->c->ButtonHeight; c = mh / PanelPopUpStep;
+      hstep = PanelPopUpStep; xstep = ystep = wstep = 0;
     }
     else
-    { h = mh % PanelPopUpStep;      /* vertical */
-      if (h == 0) h = PanelPopUpStep;
-      y -= h;
-      XMoveResizeWindow(Dpy, PanelWin, x, y, mw, h);
+    { w = mw; h = mh % PanelPopUpStep;
+      y -= h; c = mh / PanelPopUpStep;
+      ystep = hstep = PanelPopUpStep; xstep = wstep = 0;
     }
- 
+    if      (w == 0) { w = PanelPopUpStep; c--; }
+    else if (h == 0) { h = PanelPopUpStep; c--; }
+
+    XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
     XMapSubwindows(Dpy, PanelWin);
     XMapWindow(Dpy, PanelWin);
 
-    if (b->action[0][6] == 'h')
-      while (w < mw)            /* horizontal */
-      { x -= PanelPopUpStep;
-        w += PanelPopUpStep;
-        XMoveResizeWindow(Dpy, PanelWin, x, y, w, mh);
-      }
-    else
-      while (h < mh)            /* vertical */
-      { y -= PanelPopUpStep;
-        h += PanelPopUpStep;
-        XMoveResizeWindow(Dpy, PanelWin, x, y, mw, h);
-      }
+    for (i = 0; i < c; i++)
+    { x -= xstep; w += wstep; y -= ystep; h += hstep;
+      XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
+    }
+
     p->uber->swallow = 1;
   }
 }

@@ -100,10 +100,12 @@ void print_managers (void)
     ConsoleDebug (CORE, "Show:\n");
     print_stringlist (&globals.managers[i].show);
     
-    ConsoleDebug (CORE, "Font: %s\n", globals.managers[i].fontname);
+    ConsoleDebug (CORE, "Font: %s\n", (globals.managers[i].fontname)?
+      globals.managers[i].fontname : "(NULL)");
     ConsoleDebug (CORE, "Geometry: %s\n", globals.managers[i].geometry_str);
     ConsoleDebug (CORE, "Button geometry: %s\n", 
-		  globals.managers[i].button_geometry_str);
+		  (globals.managers[i].button_geometry_str)?
+      globals.managers[i].button_geometry_str : "(NULL)");
     ConsoleDebug (CORE, "\n");
   }
 

@@ -1,3 +1,19 @@
+1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.1:
+	removed AutoHide documentation (no patch)
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	* FvwmButtons/parse.c (match_string):
+	* FvwmButtons/README: updated panels patch
+
+1998-11-11  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmIconMan/globals.c (print_managers): fixed coredump with fonts
+
+	* FvwmIconMan/readconfig.c (parse_function): fixed parsing bug:
+	JmpArg's did not work if followed by a comma.
+
 1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/FvwmButtons.1: Updated manpage for AutoHide and Panels

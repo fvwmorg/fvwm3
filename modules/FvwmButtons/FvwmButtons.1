@@ -45,11 +45,6 @@ to locate FvwmButtons.
 
 .SH CONFIGURATION OPTIONS
 The following options int the .fvwmrc file are understood by FvwmButtons:
-.IP "*FvwmButtonsAutoHide \fIoptions\fP"
-The default value for the option is bottom. When the button bar is dragged
-to the bottom of the desktop, it hides itself after the pointer leaves. When
-the pointer enters the FvwmButtons window, the button bar will pop out.
-The othter options are top, left and right.
 .IP "*FvwmButtonsBack \fIcolor\fP"
 Specifies the background color for the buttons. A relief and a shadow color
 will also be calculated from this.
@@ -100,10 +95,7 @@ specifies the default horizontal padding to be \fIwidth\fP pixels, and the
 vertical padding to be \fIheight\fP pixels.
 .IP "*FvwmButtonsPanel \fItitle\fP"
 Specifies the title of a panel. This statement acts as a separator.
-The panel will pop up at the position specified by "*FvwmButtonsGeometry"
-with respect to the upper left corner of the invoking button window for
-upwards and leftwards panels, lower right corner for downwards and rightwards
-panels.
+The panel will pop up as specified by the following "*FvwmButtonsGeometry".
 .IP "*FvwmButtonsPixmap \fIpixmapfile\fP"
 Specifies a background pixmap to use.  Specify "none" for a transparent
 background.
@@ -196,9 +188,9 @@ This option sets the horizontal padding to \fIwidth\fP and the vertical
 padding to \fIheight\fP.
 .IP "  Panel (\fIdirection\fP) \fItitle\fP"
 Pop up a menu at the position specified by *FvwmButtonsGeometry with respect
-to the upperleft corner of the button if direction is up (default) or left,
-lowerright corner if down or right. The panel is a button bar itself. Its
-style is specified by "FvwmButtonsPanel".
+to the upper left corner of the button if direction is up (default) or left,
+the lower left corner if down, and the upper right corner if right. The panel
+is a button bar itself. Its style is specified by "FvwmButtonsPanel".
 .IP "  Right"
 The contents of the button will be aligned to the Right. The default is to
 center the contents on the button.
@@ -384,7 +376,7 @@ equals 9 unit buttons total area. Assume you have requested 3 columns.
    +---+       +      +---+   2   +      +---+   2   +
    |           |      |   |       |      | 3 |       |
    +           +      +   +---+---+      +---+---+---+
-   |           |      |           |      | 5 | 6 |   |
+   |           |      |           |      |   |   |   |
    +-----------+      +---+-------+      +---+---+---+
 
 4) +---+---+---+   5) +---+-------+   6) +---+-------+
@@ -441,8 +433,8 @@ Style "FvwmButtonsPanel" NoButton 2, NoButton 4, Sticky
 *FvwmButtonsFont -*-helvetica-medium-r-*-*-12-*
 *FvwmButtonsPadding 2 2
 
-*FvwmButtons(Title Menu  ,Title WinOps    ,Panel  WinOps)
-*FvwmButtons(Title Menu  ,Title Tools     ,Panel  Tools)
+*FvwmButtons(Title WinOps,Panel WinOps)
+*FvwmButtons(Title Tools ,Panel Tools)
 
 *FvwmButtons(Title Resize,Icon resize.xpm ,Action Resize)
 *FvwmButtons(Title Move  ,Icon arrows2.xpm,Action Move  )

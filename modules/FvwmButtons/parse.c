@@ -644,38 +644,24 @@ void match_string(button_info **uberb,char *s)
 	     
 	    case 13: /* Panel */
 	      trimleft(s);
-	      i=0;
 	      if(*s=='(')
-		{
+	      {
+		s++;
+		t = seekright(&s);
+		while(*s && *s!=')')
 		  s++;
-		  i=strtol(s,&t,10);
-		  s=t;
-		  while(*s && *s!=')') 
-		    s++;
-		  if(*s==')')s++;
-		}
-              if (i == 1)
-              { /* horizontal */
-                AddButtonAction(b,0,strdup("panel-h"));
-                if ((~b->flags)&(b_Title | b_Icon))
-		{ b->icon_file = strdup("arrow_left.xpm");
-		  b->IconWin   = None;
-		  b->flags    |= b_Icon;
-                }
-              }
-	      else
-              { /* vertical */
-                AddButtonAction(b,0,strdup("panel-v"));
-                if ((~b->flags)&(b_Title | b_Icon))
-		{ b->icon_file = strdup("arrow_up.xpm");
-		  b->IconWin   = None;
-		  b->flags    |= b_Icon;
-                }
-              }
+		if(*s==')')s++;
+	      }
+	      if      (strncasecmp(t,"right",5)==0) t = "panel-r";
+	      else if (strncasecmp(t,"left" ,4)==0) t = "panel-l";
+	      else if (strncasecmp(t,"down" ,4)==0) t = "panel-d";
+	      else                                  t = "panel-u";
+	      AddButtonAction(b,0,strdup(t));
+	      b->IconWin = None;
 	      t = seekright(&s);
-              b->hangon = t;  /* which panel to popup */
+	      b->hangon = strdup(t);  /* which panel to popup */ 
 	      break;
-
+ 
 	    case 14: /* Left */
 	      b->flags |= b_Left;
 	      b->flags &= ~b_Right;

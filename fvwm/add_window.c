@@ -133,10 +133,7 @@ FvwmWindow *AddWindow(Window w)
 	return(NULL);
       }
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 ) 
-    {
-      tmp_win->name = stripcpy((char *)text_prop.value);
-      free(text_prop.value);
-    }
+    tmp_win->name = (char *)text_prop.value;
   else
     tmp_win->name = NoName;
 
@@ -334,10 +331,7 @@ FvwmWindow *AddWindow(Window w)
 
   XSetWindowBorderWidth (dpy, tmp_win->w,0);
   if (XGetWMIconName (dpy, tmp_win->w, &text_prop))
-    {
-      tmp_win->icon_name = stripcpy((char *) text_prop.value);
-      free(text_prop.value);
-    }
+    tmp_win->icon_name = (char *)text_prop.value;
   if(tmp_win->icon_name==(char *)NULL)
     tmp_win->icon_name = tmp_win->name;
 
@@ -628,10 +622,7 @@ FvwmWindow *AddWindow(Window w)
 
   XChangeWindowAttributes (dpy, tmp_win->w, valuemask, &attributes);
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
-    { 
-      tmp_win->name = stripcpy((char *)text_prop.value);
-      free(text_prop.value);
-    }
+    tmp_win->name = (char *)text_prop.value;
   else
     tmp_win->name = NoName;
   

@@ -51,7 +51,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 {
   char *filename= NULL,*Home, *home_file, *ofilename = NULL;
   char *option;                         /* optional arg to read */
-  char *rest,*tline,line[1000];
+  char *rest,*tline,line[1024];
   FILE *fd;
   int thisfileno;
   extern XEvent Event;
@@ -143,16 +143,17 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   fvwm_file = filename;
 
   tline = fgets(line,(sizeof line)-1,fd);
-  while(tline != (char *)0)
+  while(tline)
   {
     int l;
-    while(tline && (l=strlen(line))<sizeof(line) &&
+    while(tline && (l = strlen(line)) < sizeof(line) && strlen(tline) >= 2 &&
           line[l-1]=='\n' && line[l-2]=='\\')
     {
-      tline = fgets(line+l-2,sizeof(line)-l,fd);
+      tline = fgets(line+l-2,sizeof(line)-l+1,fd);
     }
     tline=line;
-    while(isspace(*tline))tline++;
+    while(isspace(*tline))
+      tline++;
     if (debugging)
     {
       fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);

@@ -7,8 +7,6 @@
 
 #if 1
 #define OUTPUT_FILE "/dev/console"
-#else
-#define OUTPUT_FILE "/usr/bradym/log"
 #endif
 
 

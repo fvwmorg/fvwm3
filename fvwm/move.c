@@ -501,6 +501,8 @@ void Keyboard_shortcuts(XEvent *Event, int ReturnEvent)
   int x_move_size,y_move_size,x_move,y_move;
   KeySym keysym;
 
+  if (!Scr.Hilite)
+    return;
   /* Pick the size of the cursor movement, window resize increments are first
      choice followed by height of a menu item */
   x_move_size = Scr.Hilite->hints.width_inc;

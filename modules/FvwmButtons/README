@@ -63,6 +63,7 @@ out in approximate BNF:
 		   |	'Fore' STRING
 		   |	'Frame' SIGNED
 		   |	'NoSize'
+		   |    'Panel' poption STRING
 		   |	'Padding' UNSIGNED
 		   |	'Padding' UNSIGNED UNSIGNED
 		   |	'Size' UNSIGNED UNSIGNED
@@ -91,6 +92,12 @@ out in approximate BNF:
 		   |	'Size' UNSIGNED UNSIGNED
 		   |	'Swallow' soptions
 		   |	'Title' toptions
+
+	poption    :=   '(up)'
+		   |    '(left)'
+		   |    '(down)'
+		   |    '(right)'
+		   |    NULL
 
 	sflags     :=	'(' sflags2 ')'
 		   |	NULL

@@ -1,4 +1,23 @@
+1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/misc.c (free_window_names): simplified code
+	(Destroy): fixed memory leaks: icon_maskPixmap and mini_icon were
+ 	not free'd
+
+	* fvwm/add_window.c (AddWindow): removed stripcpy patch. Old stuff was
+	ok.
+
+	* fvwm/menus.c (AddToMenu): fixed memory leak (freeing menu items)
+
+	* fvwm/read.c (ReadSubFunc): coredump fix and a little cleanup
+
 1998-11-11  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (menuShortcuts): removed call of Keyboard_shortcuts
+	(dosn't make sense).
+
+	* fvwm/move.c (Keyboard_shortcuts): fixed coredump when no window
+	has the focus (e.g. possible with menus and MouseFocus policy).
 
 	* fvwm/bindings.c (ParseKeyEntry): Speedup for Key binding parsing
 	(ParseBindEntry): Merged ParseMouseEntry and ParseKeyEntry.

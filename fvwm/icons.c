@@ -70,10 +70,12 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if(tmp_win->icon_bitmap_file != NULL)
     GetBitmapFile(tmp_win);
 
+#ifdef XPM
   /* Next, check for a color pixmap */
   if((tmp_win->icon_bitmap_file != NULL)&&
      (tmp_win->icon_p_height == 0)&&(tmp_win->icon_p_width == 0))
     GetXPMFile(tmp_win);
+#endif /* XPM */
 
   /* Next, See if the app supplies its own icon window */
   if((tmp_win->icon_p_height == 0)&&(tmp_win->icon_p_width == 0)&&
@@ -686,7 +688,7 @@ void GetXPMFile(FvwmWindow *tmp_win)
   XpmAttributes xpm_attributes;
   extern char *PixmapPath;
   char *path = NULL;
-  XpmImage	my_image;
+  XpmImage my_image;
   int rc;
 
   path = findIconFile(tmp_win->icon_bitmap_file, PixmapPath,R_OK);
@@ -701,8 +703,10 @@ void GetXPMFile(FvwmWindow *tmp_win)
   if (rc != XpmSuccess) {
     fvwm_msg(ERR,"GetXPMFile","XpmReadFileToXpmImage failed, pixmap %s, rc %d",
            path, rc);
+    free(path);
     return;
   }
+  free(path);
   color_reduce_pixmap(&my_image,Scr.ColorLimit);
   rc = XpmCreatePixmapFromXpmImage(dpy,Scr.Root, &my_image,
                                    &tmp_win->iconPixmap,
@@ -725,7 +729,7 @@ void GetXPMFile(FvwmWindow *tmp_win)
 #endif
 
   XpmFreeXpmImage(&my_image);
-  free(path);
+
 #endif /* XPM */
 }
 
@@ -884,7 +888,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
   eventMask = winattrs.your_event_mask;
 
-  if((tmp_win)&&(tmp_win == Scr.Hilite)&&
+  if((tmp_win == Scr.Hilite)&&
      (tmp_win->flags & ClickToFocus)&&(tmp_win->next))
     {
       SetFocus(tmp_win->next->w,tmp_win->next,1);
@@ -926,8 +930,8 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
                               t->icon_w_height+t->icon_p_height);
 	      BroadcastConfig(M_CONFIGURE_WINDOW,t);
 	    }
-	}
-    }
+	} /* if */
+    } /* for */
   if (tmp_win->icon_w == None)
     if(tmp_win->flags & ICON_MOVED)
       CreateIconWindow(tmp_win,tmp_win->icon_x_loc,tmp_win->icon_y_loc);
