@@ -1,3 +1,11 @@
+1999-02-12  Bob Woodside  <proteus@pcnet.com>
+	* fvwm/events.c: Corrected failure to focus/auto-raise NoIconTitle
+	icon windows.
+
+	* fvwm/focus.c: Ibid.
+
+	* fvwm/misc.c: Ibid.
+
 1999-02-12  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/bindings.c (ParseBindEntry): fixed key binding bug

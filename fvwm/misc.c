@@ -995,11 +995,26 @@ void RaiseWindow(FvwmWindow *t)
          Motif menus. Instead raise wins[0] only above the topmost window
 	 which is managed by us.
       */
-     if (wins[0] != Scr.FvwmRoot.stack_next->frame && wins[0] != Scr.FvwmRoot.stack_next->icon_w)
-      {
+     if (wins[0] != Scr.FvwmRoot.stack_next->frame && wins[0] != Scr.FvwmRoot.stack_next->icon_w && wins[0] != Scr.FvwmRoot.stack_next->icon_pixmap_w) 
+      { 
         if (Scr.FvwmRoot.stack_next->flags & ICONIFIED)
           {
-            changes.sibling = Scr.FvwmRoot.stack_next->icon_w;
+            /*
+                RBW - use the icon window or pixmap if there is one; but
+                there may not be (NoIconTitle or NoIcon) --
+            */
+            if (Scr.FvwmRoot.stack_next->icon_w)
+              {
+                changes.sibling = Scr.FvwmRoot.stack_next->icon_w;
+              }
+            else if (Scr.FvwmRoot.stack_next->icon_pixmap_w)
+              {
+                changes.sibling = Scr.FvwmRoot.stack_next->icon_pixmap_w;
+              }
+            else
+              {
+                changes.sibling = Scr.FvwmRoot.stack_next->frame;
+              }
           }
         else
           {

@@ -162,8 +162,22 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 	  }
       Scr.Ungrabbed = Fw;
     }
+/*  RBW - allow focus to go to a NoIconTitle icon window so
+    auto-raise will work on it...
   if((Fw)&&(Fw->flags & ICONIFIED)&&(Fw->icon_w))
     w= Fw->icon_w;
+*/
+  if((Fw)&&(Fw->flags & ICONIFIED))
+    {
+      if (Fw->icon_w)
+        {
+          w = Fw->icon_w;
+        }
+      else if (Fw->icon_pixmap_w)
+        {
+          w = Fw->icon_pixmap_w;
+        }
+    }
   
   if((Fw)&&(Fw->flags & Lenience))
     {

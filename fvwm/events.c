@@ -1672,6 +1672,10 @@ void  ResyncFvwmStackRing (void)
 	        {
 	          break;
 	        }
+              else if (t1->icon_pixmap_w == children[i])
+	        {
+	          break;
+	        }
             }
           else
             {
