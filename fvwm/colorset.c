@@ -598,6 +598,7 @@ void parse_colorset(int n, char *line)
 			break;
 		case 18: /* Plain */
 			has_pixmap_changed = True;
+			pixmap_is_a_bitmap = False;
 			free_colorset_background(cs);
 			break;
 		case 19: /* NoShape */
@@ -685,6 +686,10 @@ void parse_colorset(int n, char *line)
 		optstring = NULL;
 	} /* while (line && *line) */
 
+	if (cs->picture != NULL && cs->picture->depth != Pdepth)
+	{
+		pixmap_is_a_bitmap = True;
+	}
 	/*
 	 * ---------- change the background colour ----------
 	 */
@@ -692,9 +697,11 @@ void parse_colorset(int n, char *line)
 	{
 		Bool do_set_default_background = False;
 
+		/* note: no average for bitmap */
 		if ((cs->color_flags & BG_AVERAGE) &&
-		    cs->picture != NULL && cs->picture->picture != None &&
-		    cs->pixmap != ParentRelative && !pixmap_is_a_bitmap)
+		    cs->pixmap != None &&
+		    cs->pixmap != ParentRelative &&
+		    !pixmap_is_a_bitmap)
 		{
 			/* calculate average background color */
 			XColor *colors;
@@ -702,14 +709,19 @@ void parse_colorset(int n, char *line)
 			XImage *mask_image = None;
 			unsigned int i, j, k = 0;
 			unsigned long red = 0, blue = 0, green = 0;
+			Pixmap pix;
 
+			/* chose the good pixmap (tint problems) */
+			pix =
+			   (cs->picture != NULL && cs->picture->picture != None)?
+				cs->picture->picture:cs->pixmap;
 			/* create an array to store all the pixmap colors in */
 			colors = (XColor *)safemalloc(
 				cs->width * cs->height * sizeof(XColor));
 			/* get the pixmap and mask into an image */
 			image = XGetImage(
-				dpy, cs->picture->picture, 0, 0, cs->width,
-                                cs->height, AllPlanes, ZPixmap);
+				dpy, pix, 0, 0, cs->width, cs->height,
+				AllPlanes, ZPixmap);
 			if (cs->mask != None)
                         {
 				mask_image = XGetImage(
@@ -809,7 +821,8 @@ void parse_colorset(int n, char *line)
 		} /* user specified */
 		else if ((bg == NULL && has_bg_changed) ||
 			 ((cs->color_flags & BG_AVERAGE) &&
-			  (cs->pixmap == ParentRelative || pixmap_is_a_bitmap)))
+			  (cs->pixmap == None || cs->pixmap == ParentRelative ||
+			   pixmap_is_a_bitmap)))
 		{
 			/* default */
 			do_set_default_background = True;
@@ -1036,7 +1049,8 @@ void parse_colorset(int n, char *line)
 	/*
 	 * ------- the pixmap is a bitmap: create here cs->pixmap -------
 	 */
-	if (pixmap_is_a_bitmap && (has_pixmap_changed || has_bg_changed))
+	if (cs->picture != None && pixmap_is_a_bitmap && 
+	    (has_pixmap_changed || has_bg_changed))
 	{
 		cs->pixmap = XCreatePixmap(
                         dpy, win, cs->width, cs->height, Pdepth);
