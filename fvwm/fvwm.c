@@ -1059,7 +1059,6 @@ void CaptureAllWindows(void)
    * don't use PPosition */
   PPosOverride = False;
   MyXUngrabServer(dpy);
-  XSync(dpy,0); /* should we do this on initial capture? */
 }
 
 /*

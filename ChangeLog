@@ -1,3 +1,20 @@
+2000-12-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c:
+	* fvwm/fvwm.c:
+	* fvwm/focus.c:
+	* fvwm/events.c:
+	* fvwm/builtins.c:
+	* libs/Bindings.c (GrabAllWindowKeysAndButtons):
+	(GrabAllWindowButtons):
+	(GrabAllWindowKeys):
+	Don't call XSync after grabbing/ungrabbing the server. This is done
+	automatically in the library.
+
+	* libs/Grab.c (MyXUngrabServer):
+	(MyXGrabServer):
+	sync the server after grabbing/releasing the server
+
 2000-12-22  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: A few more tests.

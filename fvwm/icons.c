@@ -294,7 +294,6 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_w, Scr.AllBindings,
 				C_ICON, GetUnusedModifiers(),
 				Scr.FvwmCursors[CRS_DEFAULT], True);
-
     xwc.sibling = tmp_win->frame;
     xwc.stack_mode = Below;
     XConfigureWindow(dpy, tmp_win->icon_w, CWSibling|CWStackMode, &xwc);
@@ -307,7 +306,6 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings,
 				C_ICON, GetUnusedModifiers(),
 				Scr.FvwmCursors[CRS_DEFAULT], True);
-
     xwc.sibling = tmp_win->frame;
     xwc.stack_mode = Below;
     XConfigureWindow(dpy,tmp_win->icon_pixmap_w,CWSibling|CWStackMode,&xwc);

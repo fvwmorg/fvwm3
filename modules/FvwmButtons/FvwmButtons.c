@@ -59,6 +59,7 @@
 
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
+#include "libs/Grab.h"
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
@@ -318,8 +319,7 @@ static void DeadPipeCleanup(void)
 
   signal(SIGPIPE, SIG_IGN);/* Xsync may cause SIGPIPE */
 
-  XSync(Dpy,0); /* Wait for thing to settle down a bit */
-  XGrabServer(Dpy); /* We don't want interference right now */
+  MyXGrabServer(Dpy); /* We don't want interference right now */
   while(NextButton(&ub,&b,&button,0))
   {
     swin = SwallowedWindow(b);
@@ -366,8 +366,7 @@ static void DeadPipeCleanup(void)
 #endif
     }
   }
-  XUngrabServer(Dpy); /* We're through */
-  XSync(Dpy,0); /* Let it all die down again so we can catch our X errors... */
+  MyXUngrabServer(Dpy); /* We're through */
 
   /* Hey, we have to free the pictures too! */
   button=-1;
@@ -1690,7 +1689,7 @@ static void HandlePanelPress(button_info *b)
 
   /* We're sure that the window is mapped and decorated now. Find the top level
    * ancestor now. */
-  XGrabServer(Dpy);
+  MyXGrabServer(Dpy);
   lb = 0;
   tb = 0;
   rb = 0;
@@ -1725,7 +1724,7 @@ static void HandlePanelPress(button_info *b)
   /* now find the source and destination positions for the slide operation */
   GetPanelGeometry(is_mapped, b, lb, tb, rb, bb, &x1, &y1, &w1, &h1);
   GetPanelGeometry(!is_mapped, b, lb, tb, rb, bb, &x2, &y2, &w2, &h2);
-  XUngrabServer(Dpy);
+  MyXUngrabServer(Dpy);
 
   /* to force fvwm to map the window where we want */
   if (is_mapped)
@@ -2657,8 +2656,7 @@ void swallow(unsigned long *body)
       {
 	/* "Swallow" the window! Place it in the void so we don't see it
 	 * until it's MoveResize'd */
-	XGrabServer(Dpy);
-	XSync(Dpy, 0);
+	MyXGrabServer(Dpy);
 	do_allow_bad_access = True;
 	XSelectInput(Dpy,swin,SW_EVENTS);
 	XSync(Dpy, 0);
@@ -2672,13 +2670,12 @@ void swallow(unsigned long *body)
 	  b->swallow&=~b_Count;
 	  b->swallow|=1;
 	  b->flags|=b_Hangon;
-	  XUngrabServer(Dpy);
+	  MyXUngrabServer(Dpy);
 	  return;
 	}
 	/*error checking*/
 	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
-	XUngrabServer(Dpy);
-	XSync(Dpy, 0);
+	MyXUngrabServer(Dpy);
 	b->swallow&=~b_Count;
 	b->swallow|=3;
 	if(buttonSwallow(b)&b_UseTitle)

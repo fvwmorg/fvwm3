@@ -2439,7 +2439,6 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
   }
-  XSync(dpy,0);
   MyXGrabServer(dpy);
   if (fSingle)
     CaptureOneWindow(tmp_win, tmp_win->w, None, None);
@@ -2453,7 +2452,6 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
     ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask|
     EnterWindowMask|LeaveWindowMask|KeyPressMask|KeyReleaseMask);
   MyXUngrabServer(dpy);
-  XSync(dpy, 0);
 }
 
 void Recapture(F_CMD_ARGS)

@@ -26,8 +26,10 @@ void MyXGrabServer(Display *disp)
 {
   if (myxgrabcount == 0)
   {
+    XSync(disp, 0);
     XGrabServer(disp);
   }
+  XSync(disp, 0);
   ++myxgrabcount;
 }
 
@@ -35,12 +37,12 @@ void MyXUngrabServer(Display *disp)
 {
   if (--myxgrabcount < 0) /* should never happen */
   {
-    /* fvwm_msg(ERR,"MyXUngrabServer","too many ungrabs!\n"); */
     myxgrabcount = 0;
   }
   if (myxgrabcount == 0)
   {
     XUngrabServer(disp);
   }
+  XSync(disp, 0);
 }
 

@@ -1002,8 +1002,11 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       }
       break;
     }
+#if 0
+    /* This is implicitly done in MyXUngrabServer(). */
     if(!PPosOverride)
       XSync(dpy,0);
+#endif
     MyXUngrabServer(dpy);
   }
   /* If no hints, or currently an icon, just "deiconify" */
@@ -1137,9 +1140,7 @@ void HandleMapNotify(void)
      * hilighted after being de-iconified by a key press. */
     DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
   }
-  XSync(dpy,0);
   MyXUngrabServer (dpy);
-  XFlush (dpy);
   SET_MAPPED(Tmp_win, 1);
   SET_ICONIFIED(Tmp_win, 0);
   SET_ICON_UNMAPPED(Tmp_win, 0);
@@ -1275,8 +1276,6 @@ void HandleUnmapNotify(void)
 */
   } /* else window no longer exists and we'll get a destroy notify */
   MyXUngrabServer(dpy);
-
-  XFlush (dpy);
 
   if (focus_grabbed)
   {
@@ -2903,7 +2902,6 @@ void WaitForButtonsUp(Bool do_handle_expose)
   if (do_handle_expose)
     evmask |= ExposureMask;
   MyXGrabServer(dpy);
-  XSync(dpy, 0);
   mask = DEFAULT_ALL_BUTTONS_MASK;
   while (mask & (DEFAULT_ALL_BUTTONS_MASK))
   {
@@ -2932,7 +2930,6 @@ void WaitForButtonsUp(Bool do_handle_expose)
 		    &JunkX, &JunkY, &mask);
     }
   }
-  XSync(dpy, 0);
   MyXUngrabServer(dpy);
 
   return;

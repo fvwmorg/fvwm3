@@ -98,6 +98,7 @@ static struct
 #endif
 
 
+
 /* #define DEBUG_ANIMATION */
 #ifdef DEBUG_ANIMATION
 #define myaprintf(X) \
@@ -216,7 +217,7 @@ static void AnimateResizeTwist(
     d = sqrt((cw/2)*(cw/2)+(ch/2)*(ch/2));
 
     angle_finite = 2*AS_PI*Animate.twist;
-    XGrabServer(dpy);
+    MyXGrabServer(dpy);
     XInstallColormap(dpy, Pcmap);
     for (angle=0;; angle+=(float)(2*AS_PI*Animate.twist/Animate.iterations)) {
         if (angle > angle_finite)
@@ -244,8 +245,7 @@ static void AnimateResizeTwist(
         if (angle >= angle_finite)
 	    break;
     }
-    XUngrabServer(dpy);
-    XFlush(dpy);
+    MyXUngrabServer(dpy);
 }
 
 /*
@@ -283,7 +283,7 @@ void AnimateResizeFlip(
   ch = (float) h;
 
   angle_finite = 2 * AS_PI * Animate.twist;
-  XGrabServer(dpy);
+  MyXGrabServer(dpy);
   XInstallColormap(dpy, Pcmap);
   for (angle = 0; ;
        angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
@@ -316,8 +316,7 @@ void AnimateResizeFlip(
     if (angle >= angle_finite)
       break;
   }
-  XUngrabServer(dpy);
-  XFlush(dpy);
+  MyXUngrabServer(dpy);
 }
 
 
@@ -351,7 +350,7 @@ void AnimateResizeTurn(
     ch = (float) h;
 
     angle_finite = 2 * AS_PI * Animate.twist;
-    XGrabServer(dpy);
+    MyXGrabServer(dpy);
     XInstallColormap(dpy, Pcmap);
     for (angle = 0; ;
          angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
@@ -384,8 +383,7 @@ void AnimateResizeTurn(
 	if (angle >= angle_finite)
 	    break;
     }
-    XUngrabServer(dpy);
-    XFlush(dpy);
+    MyXUngrabServer(dpy);
 }
 
 /*
@@ -412,7 +410,7 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
     cy = (float)y;
     cw = (float)w;
     ch = (float)h;
-    XGrabServer(dpy);
+    MyXGrabServer(dpy);
     XInstallColormap(dpy, Pcmap);
     for (i=0; i<Animate.iterations; i++) {
 	XDrawRectangle(dpy, Scr.root, gc, (int)cx, (int)cy, (int)cw, (int)ch);
@@ -424,8 +422,7 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
 	cw+=wstep;
 	ch+=hstep;
     }
-    XUngrabServer(dpy);
-    XFlush(dpy);
+    MyXUngrabServer(dpy);
 }
 
 /*
@@ -457,7 +454,7 @@ void AnimateResizeZoom3D(
     cy = (float) y;
     cw = (float) w;
     ch = (float) h;
-    XGrabServer(dpy);
+    MyXGrabServer(dpy);
     XInstallColormap(dpy, Pcmap);
 
     if (dsta <= srca)
@@ -525,8 +522,7 @@ void AnimateResizeZoom3D(
 	    ch += hstep;
 	}
     }
-    XUngrabServer(dpy);
-    XFlush(dpy);
+    MyXUngrabServer(dpy);
 }
 
 /*
@@ -582,7 +578,7 @@ static void AnimateResizeLines(int x, int y, int w, int h,
 #define INC ends[1]
 
   if (ants == 1) {                      /* if draw then erase */
-    XGrabServer(dpy);                   /* grab for whole animation */
+    MyXGrabServer(dpy);                   /* grab for whole animation */
     XInstallColormap(dpy, Pcmap);
   }
   for (ant_ctr=0;ant_ctr<=ants;ant_ctr++) {
@@ -639,7 +635,7 @@ static void AnimateResizeLines(int x, int y, int w, int h,
                  BEG.LR.x1, BEG.LR.y1, BEG.LR.x2, BEG.LR.y2,
                  BEG.LL.x1, BEG.LL.y1, BEG.LL.x2, BEG.LL.y2, ant_ctr));
       if (ants==0) {
-        XGrabServer(dpy);
+        MyXGrabServer(dpy);
 	XInstallColormap(dpy, Pcmap);
       }
       XDrawSegments(dpy, Scr.root, gc, BEG.seg, 4);
@@ -649,7 +645,7 @@ static void AnimateResizeLines(int x, int y, int w, int h,
       }
       if (ants==0) {
         XDrawSegments(dpy, Scr.root, gc, BEG.seg, 4);
-        XUngrabServer(dpy);
+        MyXUngrabServer(dpy);
       }
       for (j=0;j<4;j++) {                 /* all 4 lines segs */
         BEG.seg[j].x1 += INC.seg[j].x2;   /* calc new starting point */
@@ -658,7 +654,7 @@ static void AnimateResizeLines(int x, int y, int w, int h,
     } /* end iterations */
   } /* end for ants */
   if (ants == 1) {                      /* if draw then erase */
-    XUngrabServer(dpy);                 /* end grab for whole animation */
+    MyXUngrabServer(dpy);                 /* end grab for whole animation */
     myaprintf((stderr,"Did ungrab\n"));
   }
   XFlush(dpy);

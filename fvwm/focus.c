@@ -610,7 +610,6 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       }
     } /* for */
     tmp_win->grabbed_buttons = grab_buttons;
-    XSync(dpy, 0);
     MyXUngrabServer (dpy);
   }
 

@@ -295,7 +295,6 @@ void destroy_scheduled_windows(void)
   if (GrabEm(CRS_WAIT, GRAB_BUSY))
     do_need_ungrab = True;
   MyXGrabServer(dpy);
-  XSync(dpy,0);
   Scr.flags.is_window_scheduled_for_destroy = 0;
   /* need to destroy one or more windows before looking at the window list */
   for (t = Scr.FvwmRoot.next, next = NULL; t != NULL; t = next)
@@ -310,7 +309,6 @@ void destroy_scheduled_windows(void)
   MyXUngrabServer(dpy);
   if (do_need_ungrab)
     UngrabEm(GRAB_BUSY);
-  XSync(dpy, 0);
 
   return;
 }
@@ -343,7 +341,6 @@ void flush_window_updates(void)
   if (GrabEm(CRS_WAIT, GRAB_BUSY))
     do_need_ungrab = True;
   MyXGrabServer(dpy);
-  XSync(dpy,0);
 
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */
@@ -411,7 +408,6 @@ void flush_window_updates(void)
   MyXUngrabServer(dpy);
   if (do_need_ungrab)
     UngrabEm(GRAB_BUSY);
-  XSync(dpy, 0);
 
   return;
 }

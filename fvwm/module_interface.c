@@ -1241,7 +1241,7 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
 
 /* This used to be marked "fvwm_inline".  I removed this
-   when I added the lockonsend logic.  The routine seems to0 big to
+   when I added the lockonsend logic.  The routine seems too big to
    want to inline.  dje 9/4/98 */
 extern int myxgrabcount;                /* defined in libs/Grab.c */
 extern char *ModuleUnlock;		/* defined in libs/Module.c */
